@@ -1,6 +1,5 @@
-import { OtFLinkedAction } from './../../src/module/otf/base';
 /* eslint-disable jest/no-disabled-tests */
-import { OtFCostsAction, parselink } from "@module/otf"
+import { OtFLinkedAction, OtFTestAction, OtFCostsAction, parselink } from "@module/otf"
 
 describe('too small or non-matching', () => {
   it("empty", () => {
@@ -172,4 +171,61 @@ describe("html", () => {
     }
     expect(parsed_otf.text).toMatch(new RegExp(`<a href="http:///someplace">override</a>`))
   })
+ })
+ describe("[@margin] [@isCritSuccess] [@IsCritFailure]", () => {
+  it("[@margin]", () => {
+    let s = "@margin"
+     let parsed_otf = parselink(s)
+    let action = <OtFTestAction>parsed_otf.action
+    if (action) {
+      expect(action.type === 'test-if')
+      expect(action.orig).toBe(s)
+      expect(action.desc).toBe(s.substring(1))
+      expect(action.formula).toBeUndefined()
+    }
+   })
+  it("[@isCritSuccess]", () => {
+    let s = "@isCritSuccess"
+    let parsed_otf = parselink(s)
+    let action = <OtFTestAction>parsed_otf.action
+    if (action) {
+      expect(action.type === 'test-if')
+      expect(action.orig).toBe(s)
+      expect(action.desc).toBe(s.substring(1))
+      expect(action.formula).toBeUndefined()
+    }
+   })
+  it("[@IsCritFailure]", () => {
+    let s = "@IsCritFailure"
+    let parsed_otf = parselink(s)
+    let action = <OtFTestAction>parsed_otf.action
+    if (action) {
+      expect(action.type === 'test-if')
+      expect(action.orig).toBe(s)
+      expect(action.desc).toBe(s.substring(1))
+      expect(action.formula).toBeUndefined()
+    }
+  })
+  it("[@margin > 1]", () => {
+    let s = "@margin > 1"
+     let parsed_otf = parselink(s)
+    let action = <OtFTestAction>parsed_otf.action
+    if (action) {
+      expect(action.type === 'test-if')
+      expect(action.orig).toBe(s)
+      expect(action.desc).toBe("margin")
+      expect(action.formula).toBe("> 1")
+    }
+   })
+   it("[@margin = 99]", () => {
+    let s = "@margin = 99"
+     let parsed_otf = parselink(s)
+    let action = <OtFTestAction>parsed_otf.action
+    if (action) {
+      expect(action.type === 'test-if')
+      expect(action.orig).toBe(s)
+      expect(action.desc).toBe("margin")
+      expect(action.formula).toBe("= 99")
+    }
+   })
  })
