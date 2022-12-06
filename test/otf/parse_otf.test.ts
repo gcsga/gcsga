@@ -1,6 +1,5 @@
-import { OtFLinkedAction } from "./../../src/module/otf/base"
 /* eslint-disable jest/no-disabled-tests */
-import { OtFCostsAction, parselink } from "@module/otf"
+import { OtFLinkedAction, OtFTestAction, OtFCostsAction, parselink } from "@module/otf"
 
 describe("too small or non-matching", () => {
 	it("empty", () => {
