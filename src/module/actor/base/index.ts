@@ -7,13 +7,20 @@ import Document, {
 import { ActorDataConstructorData } from "@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/actorData"
 import { BaseUser } from "@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/documents.mjs"
 import { SYSTEM_NAME } from "@module/data"
-import { ContainerGURPS, ItemGURPS, TraitContainerGURPS, TraitGURPS, TraitModifierGURPS } from "@item"
+import { TraitContainerGURPS, TraitGURPS, TraitModifierGURPS } from "@item"
 import { ActorFlags, ActorSystemData, BaseActorSourceGURPS } from "./data"
-import { ApplyDamageDialog } from "@module/damage_calculator/apply_damage_dlg"
-import { DamageRoll, DamageRollAdapter } from "@module/damage_calculator/damage_roll"
 import { Attribute } from "@module/attribute"
-import { DamageTarget, HitPointsCalc, TargetTrait, TargetTraitModifier } from "@module/damage_calculator/damage_target"
 import { HitLocationTable } from "@actor/character/hit_location"
+import {
+	DamageRoll,
+	DamageRollAdapter,
+	DamageTarget,
+	HitPointsCalc,
+	TargetTrait,
+	TargetTraitModifier,
+} from "@module/damage_calculator"
+import { ApplyDamageDialog } from "@module/damage_calculator/apply_damage_dlg"
+import { DamagePayload } from "@module/damage_calculator/damage_chat_message"
 
 export interface ActorConstructorContextGURPS extends Context<TokenDocument> {
 	gurps?: {
@@ -110,14 +117,14 @@ class BaseActorGURPS extends Actor {
 		}
 	}
 
-	handleDamageDrop(payload: any): void {
+	handleDamageDrop(payload: DamagePayload): void {
 		let roll: DamageRoll = new DamageRollAdapter(payload)
-		let target: DamageTarget = this.createDamageTargetAdapter()
-		new ApplyDamageDialog(roll, target).render(true)
+		let target: DamageTarget = new DamageTargetActor(this)
+		ApplyDamageDialog.create(roll, target).then(dialog => dialog.render(true))
 	}
 
 	createDamageTargetAdapter(): DamageTarget {
-		throw new DamageTargetActor(this)
+		return new DamageTargetActor(this)
 	}
 }
 
@@ -154,14 +161,18 @@ class DamageTargetActor implements DamageTarget {
 
 	/**
 	 * This is where we would add special handling to look for traits under different names.
+	 *  Actor
+	 *  .traits.contents.find(it => it.name === 'Damage Resistance')
+	 *	 .modifiers.contents.filter(it => it.enabled === true).find(it => it.name === 'Hardened')
 	 * @param name
 	 */
 	getTrait(name: string): TargetTrait | undefined {
 		if (this.actor instanceof BaseActorGURPS) {
 			let traits = this.actor.traits.contents.filter(it => it instanceof TraitGURPS)
 			let found = traits.find(it => it.name === name)
-			return new TraitAdapter(found as TraitGURPS)
+			return found ? new TraitAdapter(found as TraitGURPS) : undefined
 		}
+		return undefined
 	}
 
 	hasTrait(name: string): boolean {
@@ -197,8 +208,12 @@ class DamageTargetActor implements DamageTarget {
 class TraitAdapter implements TargetTrait {
 	private trait: TraitGURPS
 
+	// Actor
+	//  .traits.contents.find(it => it.name === 'Damage Resistance')
+	//  .modifiers.contents.filter(it => it.enabled === true).find(it => it.name === 'Hardened')
+
 	getModifier(name: string): TraitModifierAdapter | undefined {
-		return this.modifiers.find(it => it.name === name)
+		return this.modifiers?.find(it => it.name === name)
 	}
 
 	get levels() {
@@ -212,6 +227,7 @@ class TraitAdapter implements TargetTrait {
 	get modifiers(): TraitModifierAdapter[] {
 		return this.trait.modifiers.contents
 			.filter(it => it instanceof TraitModifierGURPS)
+			.filter(it => it.enabled === true)
 			.map(it => new TraitModifierAdapter(it as TraitModifierGURPS))
 	}
 
@@ -230,7 +246,9 @@ class TraitModifierAdapter implements TargetTraitModifier {
 		return this.modifier.levels
 	}
 
-	name = ""
+	get name(): string {
+		return this.modifier.name!
+	}
 
 	constructor(modifier: TraitModifierGURPS) {
 		this.modifier = modifier

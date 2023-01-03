@@ -4,9 +4,10 @@ import { CharacterGURPS } from "."
 import { CharacterImporter } from "./import"
 import { CharacterSheetGURPS } from "./sheet"
 import { i18n, i18n_f, prepareFormData } from "@util"
-import { SYSTEM_NAME } from "@module/data"
+import { SETTINGS, SYSTEM_NAME } from "@module/data"
 import { CharacterSettings } from "./data"
 import { HitLocationTable } from "./hit_location"
+import { DnD } from "@util/drag_drop"
 
 export class CharacterSheetConfig extends FormApplication {
 	object: CharacterGURPS
@@ -47,7 +48,7 @@ export class CharacterSheetConfig extends FormApplication {
 				},
 			],
 			dragDrop: [{ dragSelector: ".item-list .item .controls .drag", dropSelector: null }],
-			scrollY: [".item-list", ".tab"],
+			scrollY: [".content", ".item-list", ".tab"],
 		})
 	}
 
@@ -108,7 +109,7 @@ export class CharacterSheetConfig extends FormApplication {
 						request.open("GET", path)
 						new Promise(resolve => {
 							request.onload = () => {
-								if (request.status == 200) {
+								if (request.status === 200) {
 									const text = request.response
 									this.file = {
 										text: text,
@@ -445,7 +446,8 @@ export class CharacterSheetConfig extends FormApplication {
 	}
 
 	protected async _onDrop(event: DragEvent): Promise<unknown> {
-		let dragData = JSON.parse(event.dataTransfer!.getData("text/plain"))
+		let dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
+
 		let element = $(event.target!)
 		if (!element.hasClass("item")) element = element.parent(".item")
 

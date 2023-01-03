@@ -66,10 +66,9 @@ import { TokenModifierControl } from "./token_modifier"
 import { StaticHitLocation } from "@actor/static_character/hit_location"
 import { StaticItemSheet } from "@item/static/sheet"
 import { ColorSettings } from "./settings/colors"
-import { ApplyDamageDialog } from "./damage_calculator/apply_damage_dlg"
+import { DamageChat } from "./damage_calculator/damage_chat_message"
 // Import { XMLtoJS } from "@util/xml_js";
 // import { GCAImporter } from "@actor/character/import_GCA";
-import DamageChat from "./damage_calculator/damage_chat_message"
 
 Error.stackTraceLimit = Infinity
 
@@ -99,8 +98,8 @@ if (!(globalThis as any).GURPS) {
 	GURPS.pdf = PDFViewerSheet
 	GURPS.TokenModifierControl = new TokenModifierControl()
 	GURPS.recurseList = Static.recurseList
-	GURPS.LastActor = LastActor.get
-	GURPS.LastToken = LastActor.getToken
+	GURPS.LastActor = null
+	GURPS.LastToken = null
 	GURPS.setLastActor = LastActor.set
 }
 // GURPS.XMLtoJS = XMLtoJS;
@@ -237,7 +236,7 @@ Hooks.once("init", async () => {
 	// 	types: ["pdf"],
 	// 	makeDefault: true,
 	// 	label: i18n("gurps.system.sheet.pdf"),
-	// });
+	// })
 
 	// @ts-ignore
 	DocumentSheetConfig.registerSheet(JournalEntryPage, SYSTEM_NAME, PDFEditorSheet, {
@@ -245,8 +244,6 @@ Hooks.once("init", async () => {
 		makeDefault: true,
 		label: i18n("gurps.system.sheet.pdf_edit"),
 	})
-
-	Hooks.on("renderChatMessage", DamageChat.renderChatMessage)
 })
 
 // Setup system
@@ -258,6 +255,7 @@ Hooks.once("setup", async () => {
 Hooks.once("ready", async () => {
 	// Do anything once the system is ready
 	ColorSettings.applyColors()
+	// ApplyDiceCSS()
 
 	// Enable drag image
 	const DRAG_IMAGE = document.createElement("div")
@@ -269,19 +267,32 @@ Hooks.once("ready", async () => {
 	document.body.appendChild(DRAG_IMAGE)
 	;(game as Game).user?.setFlag(SYSTEM_NAME, UserFlags.Init, true)
 	;(game as any).ModifierButton = new ModifierButton()
-	;(game as any).ModifierButton.render(true)(game as any).CompendiumBrowser = new CompendiumBrowser()
+	;(game as any).ModifierButton.render(true)
+	;(game as any).CompendiumBrowser = new CompendiumBrowser()
 
 	await Promise.all(
 		(game as Game).actors!.map(async actor => {
 			actor.prepareData()
 		})
 	)
+	;(game as Game).socket?.on("system.gcsga", async response => {
+		console.log("receive socket")
+		switch (response.type) {
+			case "updateBucket":
+				console.log("test?")
+				return (game as any).ModifierButton.render(true)
+			default:
+				return console.error("Unknown socket:", response.type)
+		}
+	})
 
 	// Render modifier app after user object loaded to avoid old data
 })
 
 // Add any additional hooks if necessary
 Hooks.on("renderChatMessage", (_app, html, _data) => Chat.addChatListeners(html))
+Hooks.on("renderChatMessage", DamageChat.renderChatMessage)
+Hooks.on("dropCanvasData", DamageChat.handleDropOnCanvas)
 
 Hooks.on("renderSidebarTab", async (app: SidebarTab, html: JQuery<HTMLElement>) => {
 	if (app.options.id === "compendium") {
@@ -313,6 +324,30 @@ Hooks.on("controlToken", (...args: any[]) => {
 		if (a) {
 			if (args[1]) LastActor.set(a, args[0].document)
 			else LastActor.clear(a)
+			GURPS.LastActor = LastActor.get()
+			GURPS.LastToken = LastActor.getToken()
 		}
 	}
 })
+
+Hooks.on("renderActorSheetGURPS", (...args: any[]) => {
+	/**
+	 *
+	 */
+	async function updateLastActor() {
+		GURPS.LastActor = await LastActor.get()
+		GURPS.LastToken = await LastActor.getToken()
+	}
+	if (args.length) {
+		let a = args[0]?.actor
+		if (a) {
+			LastActor.set(a, args[0])
+			updateLastActor()
+		}
+	}
+})
+
+// Hooks.on("renderChatMessage", () => {
+// 	console.log("lag?")
+// 	applyDiceCSS()
+// })

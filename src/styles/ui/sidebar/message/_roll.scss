@@ -1,19 +1,4 @@
 .message-roll {
-	/* .rollable { */
-	/* 	&.hover.fas { */
-	/* 		color: rgb(var(--color-link)); */
-	/* 	} */
-	/* 	&.hover:not(.fas) { */
-	/* 		background-color: rgba(var(--color-link), 1) !important; */
-	/* 		color: rgba(var(--color-on-link), 1) !important; */
-	/* 		cursor: pointer; */
-	/* 	} */
-	/* } */
-	// font-size: var(--font-size-16);
-	// .skill-text {
-	// 	font-size: var(--font-size-18);
-	// 	text-align: center;
-	// }
 	&.attack,
 	&.attribute,
 	&.damage,
@@ -50,6 +35,20 @@
 				color: rgb(var(--color-skill));
 				background-color: white;
 			}
+		}
+
+		.static-name {
+			font-size: var(--font-size-18);
+			font-weight: bold;
+			margin: auto;
+			width: min-content;
+			white-space: nowrap;
+			padding: 0 5px;
+			margin-top: 5px;
+			margin-bottom: 5px;
+			text-align: center;
+			color: rgb(var(--color-skill));
+			background-color: transparent;
 		}
 
 		.mod {
@@ -140,6 +139,18 @@
 		}
 
 		.total {
+			// .dice-1:before { content: "\f525"; }
+			// .dice-2:before { content: "\f528"; }
+			// .dice-3:before { content: "\f527"; }
+			// .dice-4:before { content: "\f524"; }
+			// .dice-5:before { content: "\f523"; }
+			// .dice-6:before { content: "\f526"; }
+			// .dice-1.num:before { content: "\e256"; }
+			// .dice-2.num:before { content: "\e257"; }
+			// .dice-3.num:before { content: "\e258"; }
+			// .dice-4.num:before { content: "\e259"; }
+			// .dice-5.num:before { content: "\e25a"; }
+			// .dice-6.num:before { content: "\e25b"; }
 			margin-bottom: 5px;
 		}
 	}

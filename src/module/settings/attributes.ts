@@ -1,6 +1,7 @@
 import { AttributeType } from "@module/attribute/attribute_def"
 import { SYSTEM_NAME } from "@module/data"
 import { prepareFormData } from "@util"
+import { DnD } from "@util/drag_drop"
 import { SettingsMenuGURPS } from "./menu"
 
 export class DefaultAttributeSettings extends SettingsMenuGURPS {
@@ -86,11 +87,6 @@ export class DefaultAttributeSettings extends SettingsMenuGURPS {
 						cost_adj_percent_per_sm: 0,
 					},
 					{
-						id: "senses",
-						type: "secondary_separator",
-						name: "Senses",
-					},
-					{
 						id: "per",
 						type: AttributeType.Integer,
 						name: "Per",
@@ -132,11 +128,6 @@ export class DefaultAttributeSettings extends SettingsMenuGURPS {
 						cost_adj_percent_per_sm: 0,
 					},
 					{
-						id: "movement",
-						type: "secondary_separator",
-						name: "Movement",
-					},
-					{
 						id: "basic_speed",
 						type: AttributeType.Decimal,
 						name: "Basic Speed",
@@ -151,20 +142,6 @@ export class DefaultAttributeSettings extends SettingsMenuGURPS {
 						attribute_base: "floor($basic_speed)",
 						cost_per_point: 5,
 						cost_adj_percent_per_sm: 0,
-					},
-					{
-						id: "highjump",
-						type: "integer_ref",
-						name: "High Jump (inches)",
-						attribute_base:
-							"(6 * max(max($basic_move, floor(skill_level(jumping) / 2)), $st / 4) - 10) * enc(false, true)",
-					},
-					{
-						id: "broadjump",
-						type: "integer_ref",
-						name: "Broad Jump (feet)",
-						attribute_base:
-							'(2 * max($basic_move, $st / 4) - 3) * enc(false, true) * (1 + max(0, trait_level("enhanced move (ground)")))',
 					},
 					{
 						id: "fp",
@@ -371,7 +348,7 @@ export class DefaultAttributeSettings extends SettingsMenuGURPS {
 	}
 
 	protected async _onDrop(event: DragEvent): Promise<unknown> {
-		let dragData = JSON.parse(event.dataTransfer!.getData("text/plain"))
+		let dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
 		let element = $(event.target!)
 		if (!element.hasClass("item")) element = element.parent(".item")
 

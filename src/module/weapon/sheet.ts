@@ -1,10 +1,9 @@
 import { CharacterGURPS } from "@actor"
 import { ItemGURPS } from "@item"
 import { Attribute } from "@module/attribute"
-import { SYSTEM_NAME } from "@module/data"
+import { gid, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { SkillDefault } from "@module/default"
 import { DiceGURPS } from "@module/dice"
-import { SETTINGS } from "@module/settings"
 import { i18n } from "@util"
 import { Weapon } from "."
 
@@ -96,7 +95,7 @@ export class WeaponSheet extends FormApplication {
 		const weapons: Partial<Weapon>[] = (this.object.system as any).weapons
 		const defaults: Partial<SkillDefault>[] = this.weapon.defaults
 		defaults.push({
-			type: "skill",
+			type: gid.Skill,
 			name: "",
 			specialization: "",
 			modifier: 0,

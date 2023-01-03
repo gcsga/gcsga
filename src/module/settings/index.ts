@@ -1,30 +1,12 @@
 import { CharacterProfile } from "@actor/character/data"
-import { SYSTEM_NAME } from "@module/data"
+import { DefaultHitLocations } from "@module/damage_calculator"
+import { SETTINGS, SYSTEM_NAME } from "@module/data"
 import { DefaultAttributeSettings } from "./attributes"
 import { ColorSettings } from "./colors"
 import { DefaultHitLocationSettings } from "./hit_locations"
 import { DefaultResourceTrackerSettings } from "./resource_trackers"
+import { RollModifierSettings } from "./roll_modifiers"
 import { DefaultSheetSettings } from "./sheet_settings"
-
-// Export const SYSTEM_NAME = "gcsga"
-export enum SETTINGS {
-	BASIC_SET_PDF = "basic_set_pdf",
-	SERVER_SIDE_FILE_DIALOG = "server_side_file_dialog",
-	PORTRAIT_OVERWRITE = "portrait_overwrite",
-	COMPENDIUM_BROWSER_PACKS = "compendium_browser_packs",
-	SHOW_TOKEN_MODIFIERS = "enable_token_modifier_window",
-	IGNORE_IMPORT_NAME = "ignore_import_name",
-	STATIC_IMPORT_HP_FP = "import_hp_fp",
-	STATIC_IMPORT_BODY_PLAN = "import_bodyplan",
-	STATIC_AUTOMATICALLY_SET_IGNOREQTY = "auto-ignore-qty",
-	MODIFIER_MODE = "modifier_mode",
-	COLORS = "colors",
-	SHOW_IMPORT_BUTTON = "show_import_button",
-	DEFAULT_ATTRIBUTES = "default_attributes",
-	DEFAULT_RESOURCE_TRACKERS = "default_resource_trackers",
-	DEFAULT_HIT_LOCATIONS = "default_hit_locations",
-	DEFAULT_SHEET_SETTINGS = "default_sheet_settings",
-}
 
 /**
  *
@@ -87,6 +69,17 @@ export function registerSettings(): void {
 		restricted: true,
 	})
 	DefaultSheetSettings.registerSettings()
+
+	g.settings.registerMenu(SYSTEM_NAME, SETTINGS.ROLL_MODIFIERS, {
+		name: "gurps.settings.roll_modifiers.name",
+		label: "gurps.settings.roll_modifiers.label",
+		hint: "gurps.settings.roll_modifiers.hint",
+		icon: "fas fa-plus-minus",
+		// @ts-ignore
+		type: RollModifierSettings,
+		restricted: false,
+	})
+	RollModifierSettings.registerSettings()
 
 	g.settings.register(SYSTEM_NAME, SETTINGS.MODIFIER_MODE, {
 		name: "gurps.settings.modifier_mode.name",
@@ -193,6 +186,31 @@ export function registerSettings(): void {
 		default: false,
 		onChange: value => console.log(`Ignore import name : ${value}`),
 	})
+
+	g.settings.register(SYSTEM_NAME, SETTINGS.DEFAULT_DAMAGE_LOCATION, {
+		name: "gurps.settings.default_damage_location.name",
+		hint: "gurps.settings.default_damage_location.hint",
+		scope: "world",
+		config: true,
+		type: String,
+		// @ts-ignore
+		choices: {
+			torso: "gurps.static.hit_location.Torso",
+			Random: "gurps.static.hit_location.Random",
+		},
+		default: "torso",
+		onChange: value => console.log(`Default damage location: ${value}`),
+	})
+
+	g.settings.register(SYSTEM_NAME, SETTINGS.DISPLAY_DICE, {
+		name: "gurps.settings.display_dice.name",
+		hint: "gurps.settings.display_dice.hint",
+		scope: "world",
+		config: true,
+		type: Boolean,
+		default: true,
+		// OnChange: value => applyDiceCSS(value)
+	})
 }
 
 /**
@@ -214,6 +232,12 @@ function autoFillProfile(): CharacterProfile {
 	p.birthday = "January 1"
 	return p
 }
+
+// Export function applyDiceCSS(value?: Boolean) {
+// 	value ??= (game as Game).settings.get(SYSTEM_NAME, SETTINGS.DISPLAY_DICE) as Boolean
+// 	if (value) $("[class^='fas dice-']").removeClass("num")
+// 	else $("[class^='fas dice-']").addClass("num")
+// }
 
 interface provider {
 	general: {
