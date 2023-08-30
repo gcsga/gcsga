@@ -75,7 +75,7 @@ class ApplyDamageDialog extends Application {
 		return data
 	}
 
-	activateListeners(html: JQuery<HTMLElement>): void {
+	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 
 		html.find("[data-control]").on("change click", event => this._onApplyControl(event))
@@ -103,14 +103,16 @@ class ApplyDamageDialog extends Application {
 		event.preventDefault()
 
 		switch (target.dataset.action) {
-			case "location-select":
+			case "location-select": {
 				const value = parseInt(target.value)
 				this.calculator.damageRoll.locationId = target.value
 				break
+			}
 
-			case "hardened-select":
+			case "hardened-select": {
 				this.calculator.overrideHardenedDR = target.value
 				break
+			}
 
 			case "override-dr": {
 				const value = parseInt(target.value)
@@ -130,13 +132,20 @@ class ApplyDamageDialog extends Application {
 				break
 			}
 
-			case "damagetype-select":
+			case "damagetype-select": {
 				this.calculator.overrideDamageType = target.value
 				break
+			}
 
 			case "override-woundingmod": {
 				const value = parseFloat(target.value)
 				this.calculator.overrideWoundingModifier = isNaN(value) ? undefined : value
+				break
+			}
+
+			case "override-vulnerability": {
+				const value = parseInt(target.value)
+				this.calculator.overrideVulnerability = isNaN(value) ? undefined : value
 				break
 			}
 		}
@@ -160,8 +169,17 @@ class ApplyDamageDialog extends Application {
 				this.calculator.target.incrementDamage(this.calculator.results.rawDamage!.value)
 				break
 
+			case "apply-injury":
+				this.calculator.target.incrementDamage(this.calculator.results.injury!.value)
+				break
+
 			case "reset-form":
 				this.calculator.resetOverrides()
+				break
+
+			case "apply-vulnerability":
+				const index = parseInt(target.dataset.index)
+				this.calculator.applyVulnerability(index, target.checked)
 				break
 		}
 

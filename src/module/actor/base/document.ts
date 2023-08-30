@@ -30,6 +30,7 @@ import {
 	HitPointsCalc,
 	TargetTrait,
 	TargetTraitModifier,
+	Vulnerability,
 } from "@module/damage_calculator"
 import { ApplyDamageDialog } from "@module/damage_calculator/apply_damage_dlg"
 import { DamagePayload } from "@module/damage_calculator/damage_chat_message"
@@ -404,6 +405,8 @@ class DamageTargetActor implements DamageTarget {
 	}
 
 	/**
+	 * @returns the FIRST trait we find with the given name.
+	 *
 	 * This is where we would add special handling to look for traits under different names.
 	 *  Actor
 	 *  .traits.contents.find(it => it.name === 'Damage Resistance')
@@ -419,6 +422,11 @@ class DamageTargetActor implements DamageTarget {
 		return undefined
 	}
 
+	/**
+	 *
+	 * @param name
+	 * @returns all traits with the given name.
+	 */
 	getTraits(name: string): TargetTrait[] {
 		if (this.actor instanceof BaseActorGURPS) {
 			let traits = this.actor.traits.contents.filter(it => it instanceof TraitGURPS)
@@ -451,14 +459,6 @@ class DamageTargetActor implements DamageTarget {
 		if (!this.hasTrait("Injury Tolerance")) return false
 		let trait = this.getTrait("Injury Tolerance")
 		return !!trait?.getModifier("Diffuse")
-	}
-
-	get vulnerabilityLevel(): number {
-		let trait = this.getTrait("Vulnerability")
-		if (trait?.getModifier("Wounding x2")) return 2
-		if (trait?.getModifier("Wounding x3")) return 3
-		if (trait?.getModifier("Wounding x4")) return 4
-		return 1
 	}
 }
 

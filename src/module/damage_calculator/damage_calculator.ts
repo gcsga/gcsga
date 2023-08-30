@@ -1,4 +1,4 @@
-import { DamageRoll, DamageTarget, DefaultHitLocations } from "."
+import { DamageRoll, DamageTarget, DefaultHitLocations, TargetTrait, Vulnerability } from "."
 import { RollType } from "../data"
 import { AnyPiercingType, DamageType, DamageTypes } from "./damage_type"
 import { HitLocationUtil } from "./hitlocation_utils"
@@ -124,6 +124,13 @@ class DamageCalculator {
 
 	damageRoll: DamageRoll
 
+	/*
+	 * TODO Sometime in the future, I want to save the overrides and vulnerabilities on the target in a map keyed by
+	 * Attacker and Weapon. Then, whenever we create a DamageCalculator, we can check to see if we have a cached set
+	 * of overrides and vulnerabilities for tthe current Attacker and Weapon, and restore the values from the cache.
+	 * This should make the use of the DamageCalculator much more efficient for the user. The cache would be cleared
+	 * when removing the actor from combat (or ending combat).
+	 */
 	private overrides: Overrides = {
 		rawDR: undefined,
 		flexible: undefined,
@@ -135,10 +142,15 @@ class DamageCalculator {
 		woundingModifier: undefined,
 	}
 
+	vulnerabilities: Vulnerability[] = []
+
 	constructor(damageRoll: DamageRoll, defender: DamageTarget) {
 		if (damageRoll.armorDivisor < 0) throw new Error(`Invalid Armor Divisor value: [${damageRoll.armorDivisor}]`)
 		this.damageRoll = damageRoll
 		this.target = defender
+
+		// Precreate and cache the list of vulnerabilities.
+		this.vulnerabilities = this.vulnerabilitiesAsObjects
 	}
 
 	resetOverrides() {
@@ -300,18 +312,13 @@ class DamageCalculator {
 	private addWoundingModifierSteps(results: DamageResults): void {
 		const STEP = "Wounding Modifier"
 
-		const modifier = this.woundingModifierAndReason
+		const [value, reason] = this.woundingModifierAndReason
 		results.addResult(
-			new CalculatorStep(
-				"Wounding Modifier",
-				STEP,
-				modifier[0],
-				`×${this.formatFraction(modifier[0])}`,
-				modifier[1]
-			)
+			new CalculatorStep("Wounding Modifier", STEP, value, `×${this.formatFraction(value)}`, reason)
 		)
 
-		results.addResult(this.adjustWoundingModifier(results.woundingModifier!.value))
+		results.addResult(this.adjustWoundingModifierForInjuryTolerance(results.woundingModifier!.value))
+		results.addResult(this.adjustWoundingModifierForVulnerabilities(results.woundingModifier!.value))
 	}
 
 	get woundingModifierAndReason() {
@@ -390,7 +397,7 @@ class DamageCalculator {
 		return this.damageType === DamageTypes.burn && this.damageRoll.damageModifier === "tbb"
 	}
 
-	private adjustWoundingModifier(woundingModifier: number): CalculatorStep | undefined {
+	private adjustWoundingModifierForInjuryTolerance(woundingModifier: number): CalculatorStep | undefined {
 		const mod = this.modifierByInjuryTolerance
 		if (mod && mod[0] !== woundingModifier) {
 			const newValue = mod[0]
@@ -427,6 +434,22 @@ class DamageCalculator {
 		return undefined
 	}
 
+	private adjustWoundingModifierForVulnerabilities(woundingModifier: number): CalculatorStep | undefined {
+		// Adjust for Vulnerability
+		if (this.vulnerabilityLevel !== 1) {
+			let temp = woundingModifier * this.vulnerabilityLevel
+			return new CalculatorStep(
+				"Wounding Modifier",
+				"Effective Modifier",
+				temp,
+				undefined,
+				`= ${woundingModifier} × ${this.vulnerabilityLevel} (Vulnerability)`
+			)
+		}
+
+		return undefined
+	}
+
 	private addInjurySteps(results: DamageResults): void {
 		let value = Math.floor(results.woundingModifier!.value * results.penetratingDamage!.value)
 		if (results.woundingModifier!.value !== 0 && value === 0 && results.penetratingDamage!.value > 0) value = 1
@@ -444,16 +467,16 @@ class DamageCalculator {
 
 	private adjustInjury(results: DamageResults): CalculatorStep | undefined {
 		// Adjust for Vulnerability
-		if (this.vulnerabilityLevel !== 1) {
-			let temp = results.injury!.value * this.vulnerabilityLevel
-			return new CalculatorStep(
-				"Injury",
-				"Adjusted Injury",
-				temp,
-				undefined,
-				`= ${results.injury!.value} × ${this.vulnerabilityLevel} (Vulnerability)`
-			)
-		}
+		// if (this.vulnerabilityLevel !== 1) {
+		// 	let temp = results.injury!.value * this.vulnerabilityLevel
+		// 	return new CalculatorStep(
+		// 		"Injury",
+		// 		"Adjusted Injury",
+		// 		temp,
+		// 		undefined,
+		// 		`= ${results.injury!.value} × ${this.vulnerabilityLevel} (Vulnerability)`
+		// 	)
+		// }
 
 		// Adjust for Damage Reduction.
 		if (this._damageReductionValue !== 1) {
@@ -871,8 +894,48 @@ class DamageCalculator {
 		)
 	}
 
+	// -- Vulnerability --
+
 	get vulnerabilityLevel(): number {
-		return this.overrides.vulnerability ?? this.target.vulnerabilityLevel ?? 1
+		return (
+			this.overrides.vulnerability ??
+			Math.max(
+				1,
+				this.vulnerabilities.filter(it => it.apply).reduce((acc, cur) => acc * cur.value, 1)
+			)
+		)
+	}
+
+	get overrideVulnerability(): number | undefined {
+		return this.overrides.vulnerability
+	}
+
+	set overrideVulnerability(value: number | undefined) {
+		this.overrides.vulnerability = value
+	}
+
+	applyVulnerability(index: number, checked: any) {
+		this.vulnerabilities[index].apply = checked
+	}
+
+	private get vulnerabilitiesAsObjects(): Vulnerability[] {
+		// Find all traits with name "Vulnerability".
+		// Convert to a Vulnerability object.
+		return this.target.getTraits("Vulnerability").map(
+			it =>
+				<Vulnerability>{
+					name: it.modifiers.map(it => it.name).join("; "),
+					value: this._vulnerabilityLevel(it),
+					apply: false,
+				}
+		)
+	}
+
+	private _vulnerabilityLevel(trait: TargetTrait): number {
+		if (trait?.getModifier("Wounding x2")) return 2
+		if (trait?.getModifier("Wounding x3")) return 3
+		if (trait?.getModifier("Wounding x4")) return 4
+		return 1
 	}
 
 	private get _isCollateralDamage(): boolean {
