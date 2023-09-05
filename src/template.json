@@ -194,7 +194,14 @@
 						"daystoheal": 0
 					}
 				}
-			}
+			},
+			"dmg_calc": [
+				{
+					"attacker": "",
+					"weapon": "",
+					"overrides": [{ "name": "", "value": "" }]
+				}
+			]
 		},
 		"character_gcs": {
 			"version": 4,
@@ -224,7 +231,8 @@
 				"dodge_bonus": 0,
 				"block_bonus": 0,
 				"parry_bonus": 0
-			}
+			},
+			"templates": ["dmg_calc"]
 		},
 		"loot": {
 			"description": "",
@@ -236,10 +244,10 @@
 			"settings": {}
 		},
 		"character": {
-			"templates": ["legacy"]
+			"templates": ["legacy", "dmg_calc"]
 		},
 		"enemy": {
-			"templates": ["legacy"]
+			"templates": ["legacy", "dmg_calc"]
 		}
 	},
 	"Item": {
