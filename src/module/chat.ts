@@ -3,7 +3,7 @@ import { gid, GURPS_COMMANDS, RollModifier, RollType } from "./data"
 import { RollGURPS } from "@module/roll"
 import { ActorGURPS } from "./config"
 import { CharacterGURPS, LootGURPS } from "@actor"
-import { MookGeneratorSheet } from "./mook_generator"
+import { MookGeneratorSheet } from "./mook"
 
 export function parse(message: string): [string, string[]] {
 	for (const [rule, rgx] of Object.entries(GURPS_COMMANDS)) {

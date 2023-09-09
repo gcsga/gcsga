@@ -1177,7 +1177,7 @@
 				"start": "Importing library: {name}",
 				"finished": "Finished importing {number} items."
 			},
-			"mook_generator": {
+			"mook": {
 				"title": "Mook Generator",
 				"name": "Mook",
 				"traits": "Traits",

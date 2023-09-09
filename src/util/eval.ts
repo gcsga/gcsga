@@ -5,7 +5,7 @@ import { AttributeBonusLimitation } from "@feature/attribute_bonus"
 import { TooltipGURPS } from "@module/tooltip"
 import { AttributeDefObj } from "@module/attribute"
 import { DamageProgression } from "@module/data"
-import { MookSkill, MookTrait } from "@module/mook_generator"
+import { MookSkill, MookTrait } from "@module/mook"
 
 // VariableResolver is used to resolve variables in expressions into their values.
 export interface VariableResolver {
@@ -198,7 +198,7 @@ class Evaluator {
 			;[index, op] = this.processFunction(expression, index)
 			index += op?.symbol.length || 0
 			let tmp: number
-			;[tmp, op] = this.nextOperator(expression, index, null)
+				;[tmp, op] = this.nextOperator(expression, index, null)
 			if (!op) return index
 			index = tmp
 		}
