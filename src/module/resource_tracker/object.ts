@@ -1,6 +1,6 @@
 import { CharacterGURPS } from "@actor"
 import { PoolThreshold, reserved_ids } from "@module/attribute"
-import { sanitize } from "@util"
+import { sanitizeId } from "@util"
 import { ResourceTrackerDef } from "./tracker_def"
 
 export class ResourceTracker {
@@ -25,7 +25,7 @@ export class ResourceTracker {
 	}
 
 	set id(v: string) {
-		this.tracker_id = sanitize(v, false, reserved_ids)
+		this.tracker_id = sanitizeId(v, false, reserved_ids)
 	}
 
 	get tracker_def(): ResourceTrackerDef {

@@ -81,7 +81,7 @@ import { UserGURPS } from "./user/document"
 import { CombatantGURPS } from "./combatant"
 import { parselink } from "./otf"
 import { CombatTrackerGURPS } from "@ui"
-import { MookGeneratorSheet } from "./mook"
+import { MookGeneratorSheet, MookParser } from "./mook"
 
 Error.stackTraceLimit = Infinity
 
@@ -118,6 +118,7 @@ if (!(globalThis as any).GURPS) {
 	// GURPS.static = Static
 	GURPS.parseLink = parselink
 	GURPS.chat = Chat
+	GURPS.mook = MookParser
 }
 
 // Initialize system

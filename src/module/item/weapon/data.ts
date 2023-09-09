@@ -8,7 +8,6 @@ export type BaseWeaponSource<
 > = BaseItemSourceGURPS<TItemType, TSystemData>
 
 export interface WeaponDamageObj {
-	// Parent: BaseWeaponGURPS | any
 	type: string
 	st: StrengthDamage
 	base: string

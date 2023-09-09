@@ -1,5 +1,29 @@
-import { WeaponDamageObj } from "@item"
-import { Difficulty } from "@module/data"
+import { WeaponDamageObj } from "@item/weapon/data"
+import { Attribute, AttributeDefObj, AttributeObj } from "@module/attribute"
+import { DamageProgression, Difficulty } from "@module/data"
+import { DiceGURPS } from "@module/dice"
+
+export interface MookData {
+	settings: {
+		attributes: AttributeDefObj[]
+		damage_progression: DamageProgression
+	}
+	system: {
+		attributes: AttributeObj[]
+	}
+	attributes: Map<string, Attribute>
+	traits: MookTrait[]
+	skills: MookSkill[]
+	spells: MookSpell[]
+	melee: MookMelee[]
+	ranged: MookRanged[]
+	equipment: MookEquipment[]
+	other_equipment: MookEquipment[]
+	notes: MookNote[]
+	profile: MookProfile
+	thrust: DiceGURPS
+	swing: DiceGURPS
+}
 
 export interface MookProfile {
 	name: string
@@ -15,20 +39,23 @@ interface _MookItem {
 	name: string
 	notes: string
 	reference: string
-	reference_highlight: string
+	// reference_highlight: string
 }
 
 export interface MookTrait extends _MookItem {
 	points: number
 	cr: number
+	modifiers: MookTraitModifier[]
 }
 
-type NewType = Difficulty
+export interface MookTraitModifier extends _MookItem {
+	cost: string
+}
 
 export interface MookSkill extends _MookItem {
 	specialization: string
 	tech_level: string
-	difficulty: `${string}/${NewType}`
+	difficulty: `${string}/${Difficulty}`
 	points: number
 	level: number
 }

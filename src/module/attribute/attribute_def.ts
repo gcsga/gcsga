@@ -1,6 +1,6 @@
 import { PoolThreshold } from "./pool_threshold"
 import { DamageProgression } from "@module/data"
-import { VariableResolver, evaluateToNumber, sanitize } from "@util"
+import { VariableResolver, evaluateToNumber, sanitizeId } from "@util"
 import { AttributeDefObj, AttributeType, reserved_ids } from "./data"
 
 export class AttributeDef {
@@ -21,7 +21,7 @@ export class AttributeDef {
 	}
 
 	set id(v: string) {
-		this.def_id = sanitize(v, false, reserved_ids)
+		this.def_id = sanitizeId(v, false, reserved_ids)
 	}
 
 	get resolveFullName(): string {
