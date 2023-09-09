@@ -460,6 +460,13 @@ class DamageTargetActor implements DamageTarget {
 		let trait = this.getTrait("Injury Tolerance")
 		return !!trait?.getModifier("Diffuse")
 	}
+
+	get injuryTolerance(): string {
+		if (this.isDiffuse) return "Diffuse"
+		if (this.isHomogenous) return "Homogenous"
+		if (this.isUnliving) return "Unliving"
+		return "None"
+	}
 }
 
 /**

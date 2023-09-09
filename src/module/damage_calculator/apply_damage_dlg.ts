@@ -148,6 +148,11 @@ class ApplyDamageDialog extends Application {
 				this.calculator.overrideVulnerability = isNaN(value) ? undefined : value
 				break
 			}
+
+			case "tolerance-select": {
+				this.calculator.overrideInjuryTolerance = target.value
+				break
+			}
 		}
 
 		this.render(true)

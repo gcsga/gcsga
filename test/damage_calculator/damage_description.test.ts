@@ -393,7 +393,7 @@ describe("Damage calculator", () => {
 		describe("Unliving.", () => {
 			beforeEach(() => {
 				_torso._map.set("all", 5)
-				_target.isUnliving = true
+				_target.injuryTolerance = "Unliving"
 				_roll.locationId = "torso"
 			})
 
@@ -468,7 +468,7 @@ describe("Damage calculator", () => {
 		describe("Homogenous.", () => {
 			beforeEach(() => {
 				_torso._map.set("all", 5)
-				_target.isHomogenous = true
+				_target.injuryTolerance = "Homogenous"
 			})
 
 			it("This gives impaling and huge piercing a wounding modifier of ×1/2; ...", () => {
@@ -534,7 +534,7 @@ describe("Damage calculator", () => {
 		describe("Diffuse.", () => {
 			beforeEach(() => {
 				_torso._map.set("all", 5)
-				_target.isDiffuse = true
+				_target.injuryTolerance = "Diffuse"
 				_roll.basicDamage = 100
 			})
 

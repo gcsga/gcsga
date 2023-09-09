@@ -1394,7 +1394,7 @@ describe("Damage calculator", () => {
 		describe("Unliving.", () => {
 			beforeEach(() => {
 				_torso._map.set("all", 5)
-				_target.isUnliving = true
+				_target.injuryTolerance = "Unliving"
 			})
 
 			it("This gives impaling and huge piercing a wounding modifier of ×1; ...", () => {
@@ -1445,7 +1445,7 @@ describe("Damage calculator", () => {
 		describe("Homogenous.", () => {
 			beforeEach(() => {
 				_torso._map.set("all", 5)
-				_target.isHomogenous = true
+				_target.injuryTolerance = "Homogenous"
 			})
 
 			it("This gives impaling and huge piercing a wounding modifier of ×1/2; ...", () => {
@@ -1496,7 +1496,7 @@ describe("Damage calculator", () => {
 		describe("Diffuse.", () => {
 			beforeEach(() => {
 				_torso._map.set("all", 5)
-				_target.isDiffuse = true
+				_target.injuryTolerance = "Diffuse"
 				_roll.basicDamage = 100
 			})
 
@@ -1539,7 +1539,7 @@ describe("Damage calculator", () => {
 		describe("Unliving.", () => {
 			beforeEach(() => {
 				_torso._map.set("all", 5)
-				_target.isUnliving = true
+				_target.injuryTolerance = "Unliving"
 			})
 
 			it("Piercing and impaling damage to any location other than eye, skull, or vitals uses wounding modifiers from Injury to Unliving, Homogenous, and Diffuse Targets.", () => {
@@ -1557,7 +1557,7 @@ describe("Damage calculator", () => {
 		describe("Homogenous.", () => {
 			beforeEach(() => {
 				_torso._map.set("all", 5)
-				_target.isHomogenous = true
+				_target.injuryTolerance = "Homogenous"
 			})
 
 			it("Ignore all wounding modifiers for hit location.", () => {
@@ -1659,7 +1659,7 @@ describe("Damage calculator", () => {
 		describe("Diffuse.", () => {
 			beforeEach(() => {
 				_torso._map.set("all", 5)
-				_target.isDiffuse = true
+				_target.injuryTolerance = "Diffuse"
 				_roll.basicDamage = 100
 			})
 

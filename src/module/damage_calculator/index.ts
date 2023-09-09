@@ -190,6 +190,8 @@ export interface DamageTarget {
 	getTraits(name: string): TargetTrait[]
 	//
 	hasTrait(name: string): boolean
+	// Return None, Unliving, Homogenous, or Diffuse.
+	injuryTolerance: string
 	// This.hasTrait("Injury Tolerance (Unliving)").
 	isUnliving: boolean
 	// This.hasTrait("Injury Torance (Homogenous)").

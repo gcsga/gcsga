@@ -201,9 +201,19 @@
 
 			<div class="label">Injury Tolerance</div>
 			<div class="field">
-				<select name="tolerance">
-					{{selectOptions choices.injuryTolerance selected=injuryTolerance}}
+				<select
+					data-action="tolerance-select"
+					value="{{calculator.injuryTolerance}}"
+					class="{{overridden calculator.overrideInjuryTolerance}}"
+				>
+					{{#select calculator.injuryTolerance}}
+						<option value="None">None</option>
+						<option value="Unliving">Unliving</option>
+						<option value="Homogenous">Homogenous</option>
+						<option value="Diffuse">Diffuse</option>
+					{{/select}}
 				</select>
+
 			</div>
 			<div class="label ref" data-pdf="B60">B60</div>
 

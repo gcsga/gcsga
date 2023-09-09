@@ -102,6 +102,7 @@ class DamageResults {
 }
 
 type Overrides = {
+	injuryTolerance: string | undefined
 	rawDR: number | undefined
 	flexible: boolean | undefined
 	hardenedDR: number | undefined
@@ -140,6 +141,7 @@ class DamageCalculator {
 		damageType: undefined,
 		armorDivisor: undefined,
 		woundingModifier: undefined,
+		injuryTolerance: undefined,
 	}
 
 	vulnerabilities: Vulnerability[] = []
@@ -417,17 +419,17 @@ class DamageCalculator {
 		/**
 		 * TODO Diffuse: Exception: Area-effect, cone, and explosion attacks cause normal injury.
 		 */
-		if (this.target.isHomogenous) return [this.damageType.homogenous, "Homogenous"]
+		if (this.isHomogenous) return [this.damageType.homogenous, "Homogenous"]
 
 		// Unliving uses unliving modifiers unless the hit location is skull, eye, or vitals.
-		if (this.target.isUnliving && !["skull", "eye", "vitals"].includes(this.damageRoll.locationId))
+		if (this.isUnliving && !["skull", "eye", "vitals"].includes(this.damageRoll.locationId))
 			return [this.damageType.unliving, "Unliving"]
 
 		// No Brain has no extra wounding modifier if hit location is skull or eye.
 		if (this.target.hasTrait("No Brain") && ["skull", "eye"].includes(this.damageRoll.locationId))
 			return [this.damageType.theDefault, "No Brain"]
 
-		if (this.target.isDiffuse && this.woundingModifierByHitLocation) {
+		if (this.isDiffuse && this.woundingModifierByHitLocation) {
 			return [this.damageType.theDefault, "Diffuse (ignores hit location)"]
 		}
 
@@ -633,7 +635,7 @@ class DamageCalculator {
 		const wounds = []
 
 		// Fatigue attacks and Injury Tolerance (Homogenous) ignore hit location.
-		if (this.damageType === DamageTypes.fat || this.target.isHomogenous || this.target.isDiffuse) {
+		if (this.damageType === DamageTypes.fat || this.isHomogenous || this.isDiffuse) {
 			if (this.isMajorWound(results))
 				wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck()]))
 		} else {
@@ -726,7 +728,7 @@ class DamageCalculator {
 	 * @returns {number} the maximum injury based on Injury Tolerance, or Infinity.
 	 */
 	private get maximumForInjuryTolerance(): [number, string] {
-		if (this.target.isDiffuse) {
+		if (this.isDiffuse) {
 			if ([DamageTypes.imp, ...AnyPiercingType].includes(this.damageType)) return [1, "Maximum 1 (Diffuse)"]
 			return [2, "Maximum 2 (Diffuse)"]
 		}
@@ -829,6 +831,7 @@ class DamageCalculator {
 	}
 
 	// --- Damage Resistance ---
+
 	get damageResistance(): number {
 		return this.damageResistanceAndReason[0]
 	}
@@ -841,6 +844,34 @@ class DamageCalculator {
 	get overrideDamageResistance() {
 		return this.overrides.rawDR
 	}
+
+	// --- Injury Tolerance ---
+
+	get overrideInjuryTolerance(): string | undefined {
+		return this.overrides.injuryTolerance
+	}
+
+	set overrideInjuryTolerance(value: string | undefined) {
+		this.overrides.injuryTolerance = this.target.injuryTolerance === value ? undefined : value
+	}
+
+	get injuryTolerance(): string {
+		return this.overrides.injuryTolerance ?? this.target.injuryTolerance
+	}
+
+	private get isUnliving(): boolean {
+		return this.injuryTolerance === "Unliving"
+	}
+
+	private get isHomogenous(): boolean {
+		return this.injuryTolerance === "Homogenous"
+	}
+
+	private get isDiffuse(): boolean {
+		return this.injuryTolerance === "Diffuse"
+	}
+
+	// --- ---
 
 	private get isKnockbackOnly() {
 		return this.damageType === DamageTypes.kb
