@@ -192,12 +192,6 @@ export interface DamageTarget {
 	hasTrait(name: string): boolean
 	// Return None, Unliving, Homogenous, or Diffuse.
 	injuryTolerance: string
-	// This.hasTrait("Injury Tolerance (Unliving)").
-	isUnliving: boolean
-	// This.hasTrait("Injury Torance (Homogenous)").
-	isHomogenous: boolean
-	// This.hasTrait("Injury Tolerance (Diffuse)").
-	isDiffuse: boolean
 	// Subtract value from HitPoints
 	incrementDamage(delta: number): void
 }

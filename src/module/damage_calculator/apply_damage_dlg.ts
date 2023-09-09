@@ -69,7 +69,6 @@ class ApplyDamageDialog extends Application {
 			armorDivisorSelect: this.armorDivisorText,
 			hitLocation: this.hitLocation,
 			vulnerabilities: this.vulnerabilities,
-			injuryTolerance: this.injuryTolerance,
 			damageReduction: this.damageReduction,
 		})
 		return data
@@ -238,13 +237,6 @@ class ApplyDamageDialog extends Application {
 		return results
 	}
 
-	private get injuryTolerance(): number {
-		if (this.target.isDiffuse) return 3
-		if (this.target.isHomogenous) return 2
-		if (this.target.isUnliving) return 1
-		return 0
-	}
-
 	private get damageReduction(): number {
 		let trait = this.target.getTraits(Injury_Tolerance).find(it => !!it.getModifier(Damage_Reduction))
 		if (!trait) trait = this.target.getTrait(InjuryTolerance_DamageReduction)
@@ -256,7 +248,6 @@ class ApplyDamageDialog extends Application {
 			hardened: hardenedChoices,
 			vulnerability: vulnerabilityChoices,
 			damageReduction: damageReductionChoices,
-			injuryTolerance: injuryToleranceChoices,
 			pool: poolChoices,
 			damageType: this.damageTypeChoice,
 			hitlocation: this.hitLocationChoice,
@@ -317,13 +308,6 @@ const damageReductionChoices = {
 	2: "2",
 	3: "3",
 	4: "4",
-}
-
-const injuryToleranceChoices = {
-	0: "None",
-	1: "Unliving",
-	2: "Homogenous",
-	3: "Diffuse",
 }
 
 const poolChoices = {
