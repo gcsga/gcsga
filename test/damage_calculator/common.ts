@@ -24,19 +24,7 @@ export class _Target implements DamageTarget {
 
 	name = "doesn't matter"
 
-	private get isDiffuse(): boolean {
-		return this.injuryTolerance === "Diffuse"
-	}
-
-	private get isHomogenous(): boolean {
-		return this.injuryTolerance === "Homogenous"
-	}
-
-	private get isUnliving(): boolean {
-		return this.injuryTolerance === "Unliving"
-	}
-
-	injuryTolerance = "None"
+	injuryTolerance: "None" | "Unliving" | "Homogenous" | "Diffuse" = "None"
 
 	ST = 12
 
