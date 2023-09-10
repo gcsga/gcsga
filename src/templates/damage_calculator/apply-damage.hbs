@@ -193,7 +193,11 @@
 
 			<div class="label">{{localize "gurps.damage.hardened_dr"}}</div>
 			<div class="field">
-				<select name="hardened" data-action="hardened-select">
+				<select
+					name="hardened"
+					data-action="hardened-select"
+					class="{{overridden calculator.overrideHardenedDR}}"
+				>
 					{{selectOptions choices.hardened selected=calculator.hardenedDRLevel}}
 				</select>
 			</div>

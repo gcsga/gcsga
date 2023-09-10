@@ -885,43 +885,10 @@ class DamageCalculator {
 		return this.overrides.damageReduction ?? this._damageReductionValue
 	}
 
-	// --- ---
+	// --- Hardened DR ---
 
-	private get isKnockbackOnly() {
-		return this.damageType === DamageTypes.kb
-	}
-
-	get isExplosion(): boolean {
-		return this.damageRoll.damageModifier === "ex"
-	}
-
-	private get _diceOfDamage(): number {
-		return this.damageRoll.dice.count
-	}
-
-	get _hitLocation() {
-		return HitLocationUtil.getHitLocation(this.target.hitLocationTable, this.damageRoll.locationId)
-	}
-
-	get isFlexibleArmor(): boolean {
-		return (
-			this.overrides.flexible ??
-			HitLocationUtil.isFlexibleArmor(
-				HitLocationUtil.getHitLocation(this.target.hitLocationTable, this.damageRoll.locationId)
-			)
-		)
-	}
-
-	overrideFlexible(value: boolean | undefined): void {
-		this.overrides.flexible = value
-	}
-
-	get isInternalExplosion(): boolean {
-		return this.isExplosion && this.damageRoll.internalExplosion
-	}
-
-	private get isLargeAreaInjury() {
-		return this.damageRoll.locationId === DefaultHitLocations.LargeArea
+	get overrideHardenedDR(): number | undefined {
+		return this.overrides.hardenedDR
 	}
 
 	set overrideHardenedDR(level: number | undefined) {
@@ -976,6 +943,43 @@ class DamageCalculator {
 		if (trait?.getModifier("Wounding x3")) return 3
 		if (trait?.getModifier("Wounding x4")) return 4
 		return 1
+	}
+
+	private get isKnockbackOnly() {
+		return this.damageType === DamageTypes.kb
+	}
+
+	get isExplosion(): boolean {
+		return this.damageRoll.damageModifier === "ex"
+	}
+
+	private get _diceOfDamage(): number {
+		return this.damageRoll.dice.count
+	}
+
+	get _hitLocation() {
+		return HitLocationUtil.getHitLocation(this.target.hitLocationTable, this.damageRoll.locationId)
+	}
+
+	get isFlexibleArmor(): boolean {
+		return (
+			this.overrides.flexible ??
+			HitLocationUtil.isFlexibleArmor(
+				HitLocationUtil.getHitLocation(this.target.hitLocationTable, this.damageRoll.locationId)
+			)
+		)
+	}
+
+	overrideFlexible(value: boolean | undefined): void {
+		this.overrides.flexible = value
+	}
+
+	get isInternalExplosion(): boolean {
+		return this.isExplosion && this.damageRoll.internalExplosion
+	}
+
+	private get isLargeAreaInjury() {
+		return this.damageRoll.locationId === DefaultHitLocations.LargeArea
 	}
 
 	private get _isCollateralDamage(): boolean {
