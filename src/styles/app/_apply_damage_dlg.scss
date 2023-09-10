@@ -85,6 +85,10 @@
 			content: "×";
 		}
 
+		.input-wrapper.divide:before {
+			content: "÷";
+		}
+
 		.input-wrapper>input {
 			border: 0;
 			margin: 0;

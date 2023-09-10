@@ -213,7 +213,6 @@
 						<option value="Diffuse">Diffuse</option>
 					{{/select}}
 				</select>
-
 			</div>
 			<div class="label ref" data-pdf="B60">B60</div>
 
@@ -228,6 +227,7 @@
 								data-action="apply-vulnerability"
 								data-index="{{@index}}"
 								{{checked apply}}
+								class="{{overridden apply}}"
 							/>{{name}}</label>
 					</div>
 				{{/each}}
@@ -260,11 +260,16 @@
 
 			<div class="label">Damage Reduction</div>
 			<div class="field no-stretch">
-				<select name="reduction">
-					{{selectOptions choices.damageReduction selected=damageReduction}}
-				</select>
-				<div class="label">Override</div>
-				<input type="number" data-action="override-reduction" value="" step="any" size="3" />
+				<span class="input-wrapper divide">
+					<input
+						type="number"
+						data-action="override-reduction"
+						value="{{calculator.damageReduction}}"
+						class="{{overridden calculator.overrideDamageReduction}}"
+						step="any"
+						size="3"
+					/>
+				</span>
 			</div>
 			<div class="label ref" data-pdf="P53">P53</div>
 		</div>
@@ -280,7 +285,7 @@
 
 				{{#each calculator.results.steps}}
 					<div class="step">{{substep}}</div>
-					<div class="value">{{text}}</div>
+					<div class="value">{{{text}}}</div>
 					<div class="descr">{{notes}}</div>
 				{{/each}}
 			</div>

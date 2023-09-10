@@ -102,6 +102,7 @@ class DamageResults {
 }
 
 type Overrides = {
+	damageReduction: number | undefined
 	injuryTolerance: string | undefined
 	rawDR: number | undefined
 	flexible: boolean | undefined
@@ -142,6 +143,7 @@ class DamageCalculator {
 		armorDivisor: undefined,
 		woundingModifier: undefined,
 		injuryTolerance: undefined,
+		damageReduction: undefined,
 	}
 
 	vulnerabilities: Vulnerability[] = []
@@ -159,6 +161,10 @@ class DamageCalculator {
 		let key: keyof Overrides
 		for (key in this.overrides) {
 			this.overrides[key] = undefined
+		}
+
+		for (const trait of this.vulnerabilities) {
+			trait.apply = false
 		}
 	}
 
@@ -405,7 +411,7 @@ class DamageCalculator {
 			const newValue = mod[0]
 			return new CalculatorStep(
 				"Wounding Modifier",
-				"Effective Modifier",
+				"Injury Tolerance",
 				newValue,
 				`×${this.formatFraction(newValue)}`,
 				mod[1]
@@ -444,8 +450,8 @@ class DamageCalculator {
 				"Wounding Modifier",
 				"Effective Modifier",
 				temp,
-				undefined,
-				`= ${woundingModifier} × ${this.vulnerabilityLevel} (Vulnerability)`
+				`×${this.formatFraction(temp)}`,
+				`= ${this.formatFraction(woundingModifier)} × ${this.vulnerabilityLevel} (Vulnerability)`
 			)
 		}
 
@@ -468,27 +474,15 @@ class DamageCalculator {
 	}
 
 	private adjustInjury(results: DamageResults): CalculatorStep | undefined {
-		// Adjust for Vulnerability
-		// if (this.vulnerabilityLevel !== 1) {
-		// 	let temp = results.injury!.value * this.vulnerabilityLevel
-		// 	return new CalculatorStep(
-		// 		"Injury",
-		// 		"Adjusted Injury",
-		// 		temp,
-		// 		undefined,
-		// 		`= ${results.injury!.value} × ${this.vulnerabilityLevel} (Vulnerability)`
-		// 	)
-		// }
-
 		// Adjust for Damage Reduction.
-		if (this._damageReductionValue !== 1) {
-			const newValue = results.injury!.value / this._damageReductionValue
+		if (this.damageReduction !== 1) {
+			const newValue = Math.ceil(results.injury!.value / this.damageReduction)
 			return new CalculatorStep(
 				"Injury",
 				"Adjusted Injury",
 				newValue,
 				undefined,
-				`= ${results.injury!.value} ÷ ${this._damageReductionValue} (Damage Reduction)`
+				`= ${results.injury!.value} ÷ ${this.damageReduction} (Damage Reduction)`
 			)
 		}
 
@@ -765,6 +759,7 @@ class DamageCalculator {
 	formatFraction(value: number) {
 		if (value === 0.5) return "1/2"
 		if (value === 1 / 3) return "1/3"
+		if (value === 2 / 3) return "2/3"
 		if (value === 0.2) return "1/5"
 		if (value === 0.1) return "1/10"
 		return `${value}`
@@ -871,6 +866,25 @@ class DamageCalculator {
 		return this.injuryTolerance === "Diffuse"
 	}
 
+	// --- Damage Reduction ---
+
+	private get _damageReductionValue() {
+		let trait = this.target.getTrait("Damage Reduction")
+		return trait ? trait.levels : 1
+	}
+
+	get overrideDamageReduction(): number | undefined {
+		return this.overrides.damageReduction
+	}
+
+	set overrideDamageReduction(value: number | undefined) {
+		this.overrides.damageReduction = this._damageReductionValue === value ? undefined : value
+	}
+
+	get damageReduction(): number {
+		return this.overrides.damageReduction ?? this._damageReductionValue
+	}
+
 	// --- ---
 
 	private get isKnockbackOnly() {
@@ -887,11 +901,6 @@ class DamageCalculator {
 
 	get _hitLocation() {
 		return HitLocationUtil.getHitLocation(this.target.hitLocationTable, this.damageRoll.locationId)
-	}
-
-	private get _damageReductionValue() {
-		let trait = this.target.getTrait("Damage Reduction")
-		return trait ? trait.levels : 1
 	}
 
 	get isFlexibleArmor(): boolean {

@@ -64,12 +64,6 @@ class ApplyDamageDialog extends Application {
 			results: this.calculator.results,
 			choices: this.choices,
 			books,
-
-			target: this.target,
-			armorDivisorSelect: this.armorDivisorText,
-			hitLocation: this.hitLocation,
-			vulnerabilities: this.vulnerabilities,
-			damageReduction: this.damageReduction,
 		})
 		return data
 	}
@@ -150,6 +144,12 @@ class ApplyDamageDialog extends Application {
 
 			case "tolerance-select": {
 				this.calculator.overrideInjuryTolerance = target.value
+				break
+			}
+
+			case "override-reduction": {
+				const value = parseFloat(target.value)
+				this.calculator.overrideDamageReduction = isNaN(value) ? undefined : value
 				break
 			}
 		}
@@ -246,10 +246,9 @@ class ApplyDamageDialog extends Application {
 	private get choices() {
 		return {
 			hardened: hardenedChoices,
-			vulnerability: vulnerabilityChoices,
-			damageReduction: damageReductionChoices,
 			pool: poolChoices,
 			damageType: this.damageTypeChoice,
+			vulnerability: vulnerabilityChoices,
 			hitlocation: this.hitLocationChoice,
 		}
 	}
@@ -265,24 +264,6 @@ class ApplyDamageDialog extends Application {
 		this.target.hitLocationTable.locations.forEach(it => (choice[it.id] = it.choice_name))
 		return choice
 	}
-
-	private get armorDivisorText() {
-		const key = this.calculator.armorDivisor === -1 ? "-1" : this.calculator.armorDivisor
-		return armorDivisorChoices[key]
-	}
-}
-
-const armorDivisorChoices: Record<number, string> = {
-	0: "Ignores DR",
-	100: "(100)",
-	10: "(10)",
-	5: "(5)",
-	3: "(3)",
-	2: "(2)",
-	1: "No Divisor",
-	0.5: "(0.5)",
-	0.2: "(0.2)",
-	0.1: "(0.1)",
 }
 
 const hardenedChoices = {
@@ -300,14 +281,6 @@ const vulnerabilityChoices = {
 	2: "×2",
 	3: "×3",
 	4: "×4",
-}
-
-const damageReductionChoices = {
-	0: "Custom",
-	1: "None",
-	2: "2",
-	3: "3",
-	4: "4",
 }
 
 const poolChoices = {
