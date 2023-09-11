@@ -191,12 +191,13 @@ export interface DamageTarget {
 	//
 	hasTrait(name: string): boolean
 	// Return None, Unliving, Homogenous, or Diffuse.
-	injuryTolerance: string
+	injuryTolerance: "None" | "Unliving" | "Homogenous" | "Diffuse"
 	// Subtract value from HitPoints
 	incrementDamage(delta: number): void
 }
 
 export interface TargetTrait {
+	// TODO change this method to accept a Regex expression for advanced searching.
 	getModifier(name: string): TargetTraitModifier | undefined
 	levels: number
 	name: string | null

@@ -406,7 +406,7 @@ describe("Damage calculator", () => {
 					{ substep: "Damage Resistance", text: "5", notes: "Torso" },
 					{ substep: "Penetrating", text: "6", notes: "= 11 – 5" },
 					{ substep: "Wounding Modifier", text: "×2", notes: "imp, torso" },
-					{ substep: "Effective Modifier", text: "×1", notes: "Unliving" },
+					{ substep: "Injury Tolerance", text: "×1", notes: "Unliving" },
 					{ substep: "Injury", text: "6", notes: "= 6 × 1" },
 				])
 
@@ -417,7 +417,7 @@ describe("Damage calculator", () => {
 					{ substep: "Damage Resistance", text: "5", notes: "Torso" },
 					{ substep: "Penetrating", text: "6", notes: "= 11 – 5" },
 					{ substep: "Wounding Modifier", text: "×2", notes: "pi++, torso" },
-					{ substep: "Effective Modifier", text: "×1", notes: "Unliving" },
+					{ substep: "Injury Tolerance", text: "×1", notes: "Unliving" },
 					{ substep: "Injury", text: "6", notes: "= 6 × 1" },
 				])
 			})
@@ -431,7 +431,7 @@ describe("Damage calculator", () => {
 					{ substep: "Damage Resistance", text: "5", notes: "Torso" },
 					{ substep: "Penetrating", text: "6", notes: "= 11 – 5" },
 					{ substep: "Wounding Modifier", text: "×1.5", notes: "pi+, torso" },
-					{ substep: "Effective Modifier", text: "×1/2", notes: "Unliving" },
+					{ substep: "Injury Tolerance", text: "×1/2", notes: "Unliving" },
 					{ substep: "Injury", text: "3", notes: "= 6 × 1/2" },
 				])
 			})
@@ -445,7 +445,7 @@ describe("Damage calculator", () => {
 					{ substep: "Damage Resistance", text: "5", notes: "Torso" },
 					{ substep: "Penetrating", text: "6", notes: "= 11 – 5" },
 					{ substep: "Wounding Modifier", text: "×1", notes: "pi, torso" },
-					{ substep: "Effective Modifier", text: "×1/3", notes: "Unliving" },
+					{ substep: "Injury Tolerance", text: "×1/3", notes: "Unliving" },
 					{ substep: "Injury", text: "2", notes: "= 6 × 1/3" },
 				])
 			})
@@ -459,7 +459,7 @@ describe("Damage calculator", () => {
 					{ substep: "Damage Resistance", text: "5", notes: "Torso" },
 					{ substep: "Penetrating", text: "10", notes: "= 15 – 5" },
 					{ substep: "Wounding Modifier", text: "×1/2", notes: "pi-, torso" },
-					{ substep: "Effective Modifier", text: "×1/5", notes: "Unliving" },
+					{ substep: "Injury Tolerance", text: "×1/5", notes: "Unliving" },
 					{ substep: "Injury", text: "2", notes: "= 10 × 1/5" },
 				])
 			})
@@ -482,7 +482,7 @@ describe("Damage calculator", () => {
 						{ substep: "Damage Resistance", text: "5", notes: "Torso" },
 						{ substep: "Penetrating", text: "6", notes: "= 11 – 5" },
 						{ substep: "Wounding Modifier", text: "×2", notes: `${type.key}, torso` },
-						{ substep: "Effective Modifier", text: "×1/2", notes: "Homogenous" },
+						{ substep: "Injury Tolerance", text: "×1/2", notes: "Homogenous" },
 						{ substep: "Injury", text: "3", notes: "= 6 × 1/2" },
 					])
 				}
@@ -497,7 +497,7 @@ describe("Damage calculator", () => {
 					{ substep: "Damage Resistance", text: "5", notes: "Torso" },
 					{ substep: "Penetrating", text: "6", notes: "= 11 – 5" },
 					{ substep: "Wounding Modifier", text: "×1.5", notes: "pi+, torso" },
-					{ substep: "Effective Modifier", text: "×1/3", notes: "Homogenous" },
+					{ substep: "Injury Tolerance", text: "×1/3", notes: "Homogenous" },
 					{ substep: "Injury", text: "2", notes: "= 6 × 1/3" },
 				])
 			})
@@ -511,7 +511,7 @@ describe("Damage calculator", () => {
 					{ substep: "Damage Resistance", text: "5", notes: "Torso" },
 					{ substep: "Penetrating", text: "10", notes: "= 15 – 5" },
 					{ substep: "Wounding Modifier", text: "×1", notes: "pi, torso" },
-					{ substep: "Effective Modifier", text: "×1/5", notes: "Homogenous" },
+					{ substep: "Injury Tolerance", text: "×1/5", notes: "Homogenous" },
 					{ substep: "Injury", text: "2", notes: "= 10 × 1/5" },
 				])
 			})
@@ -525,7 +525,7 @@ describe("Damage calculator", () => {
 					{ substep: "Damage Resistance", text: "5", notes: "Torso" },
 					{ substep: "Penetrating", text: "10", notes: "= 15 – 5" },
 					{ substep: "Wounding Modifier", text: "×1/2", notes: "pi-, torso" },
-					{ substep: "Effective Modifier", text: "×1/10", notes: "Homogenous" },
+					{ substep: "Injury Tolerance", text: "×1/10", notes: "Homogenous" },
 					{ substep: "Injury", text: "1", notes: "= 10 × 1/10" },
 				])
 			})

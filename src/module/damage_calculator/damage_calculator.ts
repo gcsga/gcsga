@@ -18,6 +18,7 @@ const Torso = "torso"
 
 type StepName = "Basic Damage" | "Damage Resistance" | "Penetrating Damage" | "Wounding Modifier" | "Injury"
 
+// TODO Localize the substep strings (and any text in the text field).
 class CalculatorStep {
 	constructor(name: StepName, substep: string, value: number, text: string | undefined, notes: string | undefined) {
 		this.name = name
@@ -102,6 +103,7 @@ class DamageResults {
 }
 
 type Overrides = {
+	damageReduction: number | undefined
 	injuryTolerance: string | undefined
 	rawDR: number | undefined
 	flexible: boolean | undefined
@@ -142,6 +144,7 @@ class DamageCalculator {
 		armorDivisor: undefined,
 		woundingModifier: undefined,
 		injuryTolerance: undefined,
+		damageReduction: undefined,
 	}
 
 	vulnerabilities: Vulnerability[] = []
@@ -159,6 +162,10 @@ class DamageCalculator {
 		let key: keyof Overrides
 		for (key in this.overrides) {
 			this.overrides[key] = undefined
+		}
+
+		for (const trait of this.vulnerabilities) {
+			trait.apply = false
 		}
 	}
 
@@ -405,7 +412,7 @@ class DamageCalculator {
 			const newValue = mod[0]
 			return new CalculatorStep(
 				"Wounding Modifier",
-				"Effective Modifier",
+				"Injury Tolerance",
 				newValue,
 				`×${this.formatFraction(newValue)}`,
 				mod[1]
@@ -444,8 +451,8 @@ class DamageCalculator {
 				"Wounding Modifier",
 				"Effective Modifier",
 				temp,
-				undefined,
-				`= ${woundingModifier} × ${this.vulnerabilityLevel} (Vulnerability)`
+				`×${this.formatFraction(temp)}`,
+				`= ${this.formatFraction(woundingModifier)} × ${this.vulnerabilityLevel} (Vulnerability)`
 			)
 		}
 
@@ -468,27 +475,15 @@ class DamageCalculator {
 	}
 
 	private adjustInjury(results: DamageResults): CalculatorStep | undefined {
-		// Adjust for Vulnerability
-		// if (this.vulnerabilityLevel !== 1) {
-		// 	let temp = results.injury!.value * this.vulnerabilityLevel
-		// 	return new CalculatorStep(
-		// 		"Injury",
-		// 		"Adjusted Injury",
-		// 		temp,
-		// 		undefined,
-		// 		`= ${results.injury!.value} × ${this.vulnerabilityLevel} (Vulnerability)`
-		// 	)
-		// }
-
 		// Adjust for Damage Reduction.
-		if (this._damageReductionValue !== 1) {
-			const newValue = results.injury!.value / this._damageReductionValue
+		if (this.damageReduction !== 1) {
+			const newValue = Math.ceil(results.injury!.value / this.damageReduction)
 			return new CalculatorStep(
 				"Injury",
 				"Adjusted Injury",
 				newValue,
 				undefined,
-				`= ${results.injury!.value} ÷ ${this._damageReductionValue} (Damage Reduction)`
+				`= ${results.injury!.value} ÷ ${this.damageReduction} (Damage Reduction)`
 			)
 		}
 
@@ -765,6 +760,7 @@ class DamageCalculator {
 	formatFraction(value: number) {
 		if (value === 0.5) return "1/2"
 		if (value === 1 / 3) return "1/3"
+		if (value === 2 / 3) return "2/3"
 		if (value === 0.2) return "1/5"
 		if (value === 0.1) return "1/10"
 		return `${value}`
@@ -871,48 +867,29 @@ class DamageCalculator {
 		return this.injuryTolerance === "Diffuse"
 	}
 
-	// --- ---
-
-	private get isKnockbackOnly() {
-		return this.damageType === DamageTypes.kb
-	}
-
-	get isExplosion(): boolean {
-		return this.damageRoll.damageModifier === "ex"
-	}
-
-	private get _diceOfDamage(): number {
-		return this.damageRoll.dice.count
-	}
-
-	get _hitLocation() {
-		return HitLocationUtil.getHitLocation(this.target.hitLocationTable, this.damageRoll.locationId)
-	}
+	// --- Damage Reduction ---
 
 	private get _damageReductionValue() {
 		let trait = this.target.getTrait("Damage Reduction")
 		return trait ? trait.levels : 1
 	}
 
-	get isFlexibleArmor(): boolean {
-		return (
-			this.overrides.flexible ??
-			HitLocationUtil.isFlexibleArmor(
-				HitLocationUtil.getHitLocation(this.target.hitLocationTable, this.damageRoll.locationId)
-			)
-		)
+	get overrideDamageReduction(): number | undefined {
+		return this.overrides.damageReduction
 	}
 
-	overrideFlexible(value: boolean | undefined): void {
-		this.overrides.flexible = value
+	set overrideDamageReduction(value: number | undefined) {
+		this.overrides.damageReduction = this._damageReductionValue === value ? undefined : value
 	}
 
-	get isInternalExplosion(): boolean {
-		return this.isExplosion && this.damageRoll.internalExplosion
+	get damageReduction(): number {
+		return this.overrides.damageReduction ?? this._damageReductionValue
 	}
 
-	private get isLargeAreaInjury() {
-		return this.damageRoll.locationId === DefaultHitLocations.LargeArea
+	// --- Hardened DR ---
+
+	get overrideHardenedDR(): number | undefined {
+		return this.overrides.hardenedDR
 	}
 
 	set overrideHardenedDR(level: number | undefined) {
@@ -967,6 +944,43 @@ class DamageCalculator {
 		if (trait?.getModifier("Wounding x3")) return 3
 		if (trait?.getModifier("Wounding x4")) return 4
 		return 1
+	}
+
+	private get isKnockbackOnly() {
+		return this.damageType === DamageTypes.kb
+	}
+
+	get isExplosion(): boolean {
+		return this.damageRoll.damageModifier === "ex"
+	}
+
+	private get _diceOfDamage(): number {
+		return this.damageRoll.dice.count
+	}
+
+	get _hitLocation() {
+		return HitLocationUtil.getHitLocation(this.target.hitLocationTable, this.damageRoll.locationId)
+	}
+
+	get isFlexibleArmor(): boolean {
+		return (
+			this.overrides.flexible ??
+			HitLocationUtil.isFlexibleArmor(
+				HitLocationUtil.getHitLocation(this.target.hitLocationTable, this.damageRoll.locationId)
+			)
+		)
+	}
+
+	overrideFlexible(value: boolean | undefined): void {
+		this.overrides.flexible = value
+	}
+
+	get isInternalExplosion(): boolean {
+		return this.isExplosion && this.damageRoll.internalExplosion
+	}
+
+	private get isLargeAreaInjury() {
+		return this.damageRoll.locationId === DefaultHitLocations.LargeArea
 	}
 
 	private get _isCollateralDamage(): boolean {

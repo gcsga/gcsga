@@ -461,7 +461,7 @@ class DamageTargetActor implements DamageTarget {
 		return !!trait?.getModifier("Diffuse")
 	}
 
-	get injuryTolerance(): string {
+	get injuryTolerance(): "None" | "Unliving" | "Homogenous" | "Diffuse" {
 		if (this.isDiffuse) return "Diffuse"
 		if (this.isHomogenous) return "Homogenous"
 		if (this.isUnliving) return "Unliving"

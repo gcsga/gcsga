@@ -85,12 +85,22 @@
 			content: "×";
 		}
 
+		.input-wrapper.divide:before {
+			content: "÷";
+		}
+
 		.input-wrapper>input {
 			border: 0;
 			margin: 0;
 			padding: 0;
 			outline: none;
 			border-left: 1px solid lightgrey;
+		}
+
+		select[data-action="override-reduction"],
+		select[data-action="armordivisor-select"],
+		select[data-action="hardened-select"] {
+			text-align: center;
 		}
 
 		.header {
@@ -168,6 +178,7 @@
 			flex-flow: column nowrap;
 			justify-content: space-between;
 			margin: 2px 16px;
+			row-gap: 4px;
 
 			.table {
 				border: 1px solid rgb(var(--color-header));
