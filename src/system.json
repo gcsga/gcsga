@@ -37,7 +37,6 @@
 			"path": "lang/en.json"
 		}
 	],
-	"socket": false,
 	"url": "https://github.com/crnormand/gurps",
 	"manifest": "this is autoreplaced",
 	"download": "this is autoreplaced",

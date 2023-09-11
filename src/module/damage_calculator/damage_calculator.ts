@@ -75,7 +75,7 @@ class DamageResults {
 	}
 
 	get rawDamage() {
-		return this.steps.find(it => it.name === "Basic Damage" && it.substep === "Basic Damage")
+		return this.steps.find(it => it.name === "Basic Damage" && it.substep === "gurps.damage.substep.basic_damage")
 	}
 
 	get miscellaneousEffects(): InjuryEffect[] {
@@ -127,6 +127,8 @@ class DamageCalculator {
 
 	damageRoll: DamageRoll
 
+	format: (stringId: string, data?: any) => string
+
 	/*
 	 * TODO Sometime in the future, I want to save the overrides and vulnerabilities on the target in a map keyed by
 	 * Attacker and Weapon. Then, whenever we create a DamageCalculator, we can check to see if we have a cached set
@@ -149,10 +151,11 @@ class DamageCalculator {
 
 	vulnerabilities: Vulnerability[] = []
 
-	constructor(damageRoll: DamageRoll, defender: DamageTarget) {
+	constructor(damageRoll: DamageRoll, defender: DamageTarget, localize: (stringId: string, data?: any) => string) {
 		if (damageRoll.armorDivisor < 0) throw new Error(`Invalid Armor Divisor value: [${damageRoll.armorDivisor}]`)
 		this.damageRoll = damageRoll
 		this.target = defender
+		this.format = localize
 
 		// Precreate and cache the list of vulnerabilities.
 		this.vulnerabilities = this.vulnerabilitiesAsObjects
@@ -201,12 +204,20 @@ class DamageCalculator {
 
 	private addBasicDamageSteps(results: DamageResults): void {
 		const basic = this.basicDamage
-		results.addResult(new CalculatorStep("Basic Damage", "Basic Damage", basic, undefined, "HP"))
+		results.addResult(
+			new CalculatorStep(
+				"Basic Damage",
+				this.format("gurps.damage.substep.basic_damage"),
+				basic,
+				undefined,
+				this.format("gurps.damage.damage_pool.hp")
+			)
+		)
 		results.addResult(this.adjustBasicDamage(basic))
 	}
 
 	private adjustBasicDamage(basicDamage: number): CalculatorStep | undefined {
-		const STEP = "Adjusted Damage"
+		const STEP = this.format("gurps.damage.substep.adjusted_damage")
 
 		if (this.isExplosion && this.damageRoll.range) {
 			if (this.damageRoll.range > this._diceOfDamage * 2) {
@@ -214,7 +225,7 @@ class DamageCalculator {
 			} else {
 				return new CalculatorStep(
 					"Basic Damage",
-					STEP,
+					this.format(STEP),
 					Math.floor(basicDamage / (3 * this.damageRoll.range)),
 					undefined,
 					`Explosion; ${this.damageRoll.range} yards`
@@ -222,16 +233,17 @@ class DamageCalculator {
 			}
 		}
 
-		if (this.isKnockbackOnly) return new CalculatorStep("Basic Damage", STEP, 0, undefined, "Knockback only")
+		if (this.isKnockbackOnly)
+			return new CalculatorStep("Basic Damage", this.format(STEP), 0, undefined, "Knockback only")
 
 		if (this.damageRoll.isHalfDamage) {
-			return new CalculatorStep("Basic Damage", STEP, basicDamage * 0.5, undefined, "Ranged, 1/2D")
+			return new CalculatorStep("Basic Damage", this.format(STEP), basicDamage * 0.5, undefined, "Ranged, 1/2D")
 		}
 
 		if (this.multiplierForShotgunExtremelyClose !== 1) {
 			return new CalculatorStep(
 				"Basic Damage",
-				STEP,
+				this.format(STEP),
 				basicDamage * this.multiplierForShotgunExtremelyClose,
 				undefined,
 				`Shotgun, extremely close (×${this.multiplierForShotgunExtremelyClose})`
@@ -242,10 +254,10 @@ class DamageCalculator {
 	}
 
 	private addDamageResistanceSteps(results: DamageResults): void {
-		const STEP = "Damage Resistance"
+		const STEP = "gurps.damage.substep.damage_resistance"
 
 		const dr = this.damageResistanceAndReason
-		results.addResult(new CalculatorStep("Damage Resistance", STEP, dr[0], undefined, dr[1]))
+		results.addResult(new CalculatorStep("Damage Resistance", this.format(STEP), dr[0], undefined, dr[1]))
 		results.addResult(this.adjustDamageResistance(results.damageResistance!.value))
 	}
 
@@ -269,22 +281,28 @@ class DamageCalculator {
 	}
 
 	private adjustDamageResistance(dr: number): CalculatorStep | undefined {
-		const STEP = "Effective DR"
+		const STEP = "gurps.damage.substep.effective_dr"
 
 		// Armor Divisor is "Ignores DR"
 		if (this._isIgnoreDRArmorDivisor)
-			return new CalculatorStep("Damage Resistance", STEP, 0, undefined, "Armor Divisor (Ignores DR)")
+			return new CalculatorStep(
+				"Damage Resistance",
+				this.format(STEP),
+				0,
+				undefined,
+				"Armor Divisor (Ignores DR)"
+			)
 
 		if (this.isInternalExplosion)
-			return new CalculatorStep("Damage Resistance", STEP, 0, undefined, "Explosion (Internal)")
+			return new CalculatorStep("Damage Resistance", this.format(STEP), 0, undefined, "Explosion (Internal)")
 
 		if (this.damageType === DamageTypes.injury)
-			return new CalculatorStep("Damage Resistance", STEP, 0, undefined, "Ignores DR")
+			return new CalculatorStep("Damage Resistance", this.format(STEP), 0, undefined, "Ignores DR")
 
 		if (this.multiplierForShotgunExtremelyClose > 1) {
 			return new CalculatorStep(
 				"Damage Resistance",
-				STEP,
+				this.format(STEP),
 				dr * this.multiplierForShotgunExtremelyClose,
 				undefined,
 				`Shotgun, extremely close (×${this.multiplierForShotgunExtremelyClose})`
@@ -296,7 +314,7 @@ class DamageCalculator {
 			result = this.effectiveArmorDivisor < 1 ? Math.max(result, 1) : result
 			return new CalculatorStep(
 				"Damage Resistance",
-				STEP,
+				this.format(STEP),
 				result,
 				undefined,
 				`Armor Divisor (${this.effectiveArmorDivisor})`
@@ -310,7 +328,7 @@ class DamageCalculator {
 		results.addResult(
 			new CalculatorStep(
 				"Penetrating Damage",
-				"Penetrating",
+				this.format("gurps.damage.substep.penetrating"),
 				Math.max(results.basicDamage!.value - results.damageResistance!.value, 0),
 				undefined,
 				`= ${results.basicDamage!.value} – ${results.damageResistance!.value}`
@@ -319,11 +337,11 @@ class DamageCalculator {
 	}
 
 	private addWoundingModifierSteps(results: DamageResults): void {
-		const STEP = "Wounding Modifier"
+		const STEP = "gurps.damage.substep.wounding_modifier"
 
 		const [value, reason] = this.woundingModifierAndReason
 		results.addResult(
-			new CalculatorStep("Wounding Modifier", STEP, value, `×${this.formatFraction(value)}`, reason)
+			new CalculatorStep("Wounding Modifier", this.format(STEP), value, `×${this.formatFraction(value)}`, reason)
 		)
 
 		results.addResult(this.adjustWoundingModifierForInjuryTolerance(results.woundingModifier!.value))
@@ -412,7 +430,7 @@ class DamageCalculator {
 			const newValue = mod[0]
 			return new CalculatorStep(
 				"Wounding Modifier",
-				"Injury Tolerance",
+				this.format("gurps.damage.substep.injury_tolerance"),
 				newValue,
 				`×${this.formatFraction(newValue)}`,
 				mod[1]
@@ -449,7 +467,7 @@ class DamageCalculator {
 			let temp = woundingModifier * this.vulnerabilityLevel
 			return new CalculatorStep(
 				"Wounding Modifier",
-				"Effective Modifier",
+				this.format("gurps.damage.substep.effective_modifier"),
 				temp,
 				`×${this.formatFraction(temp)}`,
 				`= ${this.formatFraction(woundingModifier)} × ${this.vulnerabilityLevel} (Vulnerability)`
@@ -465,7 +483,7 @@ class DamageCalculator {
 		results.addResult(
 			new CalculatorStep(
 				"Injury",
-				"Injury",
+				this.format("gurps.damage.substep.injury"),
 				value,
 				undefined,
 				`= ${results.penetratingDamage!.value} × ${this.formatFraction(results.woundingModifier!.value)}`
@@ -475,12 +493,13 @@ class DamageCalculator {
 	}
 
 	private adjustInjury(results: DamageResults): CalculatorStep | undefined {
+		const step = this.format("gurps.damage.substep.adjusted_injury")
 		// Adjust for Damage Reduction.
 		if (this.damageReduction !== 1) {
 			const newValue = Math.ceil(results.injury!.value / this.damageReduction)
 			return new CalculatorStep(
 				"Injury",
-				"Adjusted Injury",
+				step,
 				newValue,
 				undefined,
 				`= ${results.injury!.value} ÷ ${this.damageReduction} (Damage Reduction)`
@@ -490,24 +509,18 @@ class DamageCalculator {
 		// Adjust for Injury Tolerance. This must be before Hit Location or Trauma.
 		let newValue = Math.min(results.injury!.value, this.maximumForInjuryTolerance[0])
 		if (newValue < results.injury!.value) {
-			return new CalculatorStep(
-				"Injury",
-				"Adjusted Injury",
-				newValue,
-				undefined,
-				this.maximumForInjuryTolerance[1]
-			)
+			return new CalculatorStep("Injury", step, newValue, undefined, this.maximumForInjuryTolerance[1])
 		}
 
 		// Adjust for hit location.
 		newValue = Math.min(results.injury!.value, this.maximumForHitLocation[0])
 		if (newValue < results.injury!.value) {
-			return new CalculatorStep("Injury", "Adjusted Injury", newValue, undefined, this.maximumForHitLocation[1])
+			return new CalculatorStep("Injury", step, newValue, undefined, this.maximumForHitLocation[1])
 		}
 
 		// Adjust for blunt trauma.
 		if (this.isBluntTrauma(results)) {
-			return new CalculatorStep("Injury", "Adjusted Injury", this.bluntTrauma(results), undefined, "Blunt Trauma")
+			return new CalculatorStep("Injury", step, this.bluntTrauma(results), undefined, "Blunt Trauma")
 		}
 
 		return undefined

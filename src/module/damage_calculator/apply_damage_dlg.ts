@@ -36,7 +36,7 @@ class ApplyDamageDialog extends Application {
 	private constructor(roll: DamageRoll, target: DamageTarget, options = {}) {
 		super(options)
 		console.log(target)
-		this.calculator = new DamageCalculator(roll, target)
+		this.calculator = new DamageCalculator(roll, target, game.i18n.format)
 	}
 
 	static get defaultOptions(): ApplicationOptions {
@@ -184,7 +184,6 @@ class ApplyDamageDialog extends Application {
 			case "apply-vulnerability":
 				const index = parseInt(target.dataset.index)
 				this.calculator.applyVulnerability(index, target.checked)
-				break
 		}
 
 		this.render(true)
