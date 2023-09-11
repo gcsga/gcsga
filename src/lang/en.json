@@ -1452,16 +1452,37 @@
 			"apply-to": "Apply to"
 		},
 		"damage": {
+			"armor_divisor": {
+				"ignores_dr": "Ignores DR",
+				"no_divisor": "No Divisor"
+			},
 			"attacker": "Attacker",
+			"calculation": "Damage Calculation",
+			"damage_reduction": "Damage Reduction",
+			"explosion": "Explosion",
 			"flexible": "Flexible Armor",
+			"half_d": "Ranged, 1/2D",
 			"hardened_dr": "Hardened DR",
 			"hit_location": "Hit Location",
+			"internal": "Internal",
 			"injury": "Injury",
+			"injury_tolerance": "Injury Tolerance",
 			"location": "Location",
+			"none": "None",
+			"override": "Override",
 			"random_location_roll": "Rolling Hit Location",
+			"range": "Range (yards)",
+			"rof": "RoF Multiplier",
 			"roll": "Damage Roll",
+			"shotgun": "Shotgun, extremely close",
 			"source_roll": "Source Roll",
 			"target": "Target",
+			"tolerance": {
+				"none": "None",
+				"unliving": "Unliving",
+				"homogenous": "Homogenous",
+				"diffuse": "Diffuse"
+			},
 			"type": {
 				"injury": "injury",
 				"burn": "burning",
@@ -1477,6 +1498,7 @@
 				"tox": "toxic",
 				"kb": "knockback only"
 			},
+			"vulnerability": "Vulnerability",
 			"weapon": "Weapon",
 			"wounding_modifier": "Modifier"
 		},

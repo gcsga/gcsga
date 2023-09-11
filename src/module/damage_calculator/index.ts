@@ -197,6 +197,7 @@ export interface DamageTarget {
 }
 
 export interface TargetTrait {
+	// TODO change this method to accept a Regex expression for advanced searching.
 	getModifier(name: string): TargetTraitModifier | undefined
 	levels: number
 	name: string | null

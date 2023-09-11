@@ -18,6 +18,7 @@ const Torso = "torso"
 
 type StepName = "Basic Damage" | "Damage Resistance" | "Penetrating Damage" | "Wounding Modifier" | "Injury"
 
+// TODO Localize the substep strings (and any text in the text field).
 class CalculatorStep {
 	constructor(name: StepName, substep: string, value: number, text: string | undefined, notes: string | undefined) {
 		this.name = name
