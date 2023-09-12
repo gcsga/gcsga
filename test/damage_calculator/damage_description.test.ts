@@ -169,21 +169,34 @@ describe("Damage calculator", () => {
 				{ substep: "gurps.damage.substep.basic_damage", text: "8", notes: "gurps.damage.damage_pool.hp" },
 				{ substep: "gurps.damage.substep.damage_resistance", text: "0", notes: "Torso" },
 				{ substep: "gurps.damage.substep.penetrating", text: "8", notes: "= 8 – 0" },
-				{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "cr, torso" },
+				{
+					substep: "gurps.damage.substep.wounding_modifier",
+					text: "×1",
+					notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.cr","location":"torso"}',
+				},
 				{ substep: "gurps.damage.substep.injury", text: "8", notes: "= 8 × 1" },
 			])
 		})
 
-		it.skip("(Knockback Only does no damage.)", () => {
+		it("(Knockback Only does no damage.)", () => {
 			_roll.basicDamage = 8
 			_roll.damageType = DamageTypes.kb
 			let calc = _create(_roll, _target)
 			expect(calc.results.steps).toMatchObject([
 				{ substep: "gurps.damage.substep.basic_damage", text: "8", notes: "gurps.damage.damage_pool.hp" },
-				{ substep: "gurps.damage.substep.damage_resistance", text: "0", notes: "Knockback only" },
-				{ substep: "gurps.damage.substep.penetrating", text: "8", notes: "= 8 – 0" },
-				{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "gurps.damage.type.cr" },
-				{ substep: "gurps.damage.substep.injury", text: "0", notes: "Knockback only" },
+				{
+					substep: "gurps.damage.substep.adjusted_damage",
+					text: "0",
+					notes: "gurps.damage.description.knockback_only",
+				},
+				{ substep: "gurps.damage.substep.damage_resistance", text: "0", notes: "Torso" },
+				{ substep: "gurps.damage.substep.penetrating", text: "0", notes: "= 0 – 0" },
+				{
+					substep: "gurps.damage.substep.wounding_modifier",
+					text: "×1",
+					notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.kb","location":"torso"}',
+				},
+				{ substep: "gurps.damage.substep.injury", text: "0", notes: "= 0 × 1" },
 			])
 		})
 	})
@@ -198,7 +211,11 @@ describe("Damage calculator", () => {
 				{ substep: "gurps.damage.substep.basic_damage", text: "8", notes: "gurps.damage.damage_pool.hp" },
 				{ substep: "gurps.damage.substep.damage_resistance", text: "2", notes: "Torso" },
 				{ substep: "gurps.damage.substep.penetrating", text: "6", notes: "= 8 – 2" },
-				{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "cr, torso" },
+				{
+					substep: "gurps.damage.substep.wounding_modifier",
+					text: "×1",
+					notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.cr","location":"torso"}',
+				},
 				{ substep: "gurps.damage.substep.injury", text: "6", notes: "= 6 × 1" },
 			])
 		})
@@ -212,7 +229,11 @@ describe("Damage calculator", () => {
 				{ substep: "gurps.damage.substep.basic_damage", text: "5", notes: "gurps.damage.damage_pool.hp" },
 				{ substep: "gurps.damage.substep.damage_resistance", text: "9", notes: "Torso" },
 				{ substep: "gurps.damage.substep.penetrating", text: "0", notes: "= 5 – 9" },
-				{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "cr, torso" },
+				{
+					substep: "gurps.damage.substep.wounding_modifier",
+					text: "×1",
+					notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.cr","location":"torso"}',
+				},
 				{ substep: "gurps.damage.substep.injury", text: "0", notes: "= 0 × 1" },
 			])
 		})
@@ -228,7 +249,11 @@ describe("Damage calculator", () => {
 				{ substep: "gurps.damage.substep.damage_resistance", text: "9", notes: "Torso" },
 				{ substep: "gurps.damage.substep.effective_dr", text: "0", notes: "Ignores DR" },
 				{ substep: "gurps.damage.substep.penetrating", text: "8", notes: "= 8 – 0" },
-				{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "injury, torso" },
+				{
+					substep: "gurps.damage.substep.wounding_modifier",
+					text: "×1",
+					notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.injury","location":"torso"}',
+				},
 				{ substep: "gurps.damage.substep.injury", text: "8", notes: "= 8 × 1" },
 			])
 		})
@@ -249,7 +274,11 @@ describe("Damage calculator", () => {
 					{ substep: "gurps.damage.substep.damage_resistance", text: "20", notes: "Torso" },
 					{ substep: "gurps.damage.substep.effective_dr", text: "10", notes: "Armor Divisor (2)" },
 					{ substep: "gurps.damage.substep.penetrating", text: "10", notes: "= 20 – 10" },
-					{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "cr, torso" },
+					{
+						substep: "gurps.damage.substep.wounding_modifier",
+						text: "×1",
+						notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.cr","location":"torso"}',
+					},
 					{ substep: "gurps.damage.substep.injury", text: "10", notes: "= 10 × 1" },
 				])
 
@@ -260,7 +289,11 @@ describe("Damage calculator", () => {
 					{ substep: "gurps.damage.substep.damage_resistance", text: "20", notes: "Torso" },
 					{ substep: "gurps.damage.substep.effective_dr", text: "40", notes: "Armor Divisor (0.5)" },
 					{ substep: "gurps.damage.substep.penetrating", text: "0", notes: "= 20 – 40" },
-					{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "cr, torso" },
+					{
+						substep: "gurps.damage.substep.wounding_modifier",
+						text: "×1",
+						notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.cr","location":"torso"}',
+					},
 					{ substep: "gurps.damage.substep.injury", text: "0", notes: "= 0 × 1" },
 				])
 			})
@@ -274,7 +307,11 @@ describe("Damage calculator", () => {
 					{ substep: "gurps.damage.substep.damage_resistance", text: "20", notes: "Torso" },
 					{ substep: "gurps.damage.substep.effective_dr", text: "0", notes: "Armor Divisor (Ignores DR)" },
 					{ substep: "gurps.damage.substep.penetrating", text: "20", notes: "= 20 – 0" },
-					{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "cr, torso" },
+					{
+						substep: "gurps.damage.substep.wounding_modifier",
+						text: "×1",
+						notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.cr","location":"torso"}',
+					},
 					{ substep: "gurps.damage.substep.injury", text: "20", notes: "= 20 × 1" },
 				])
 			})
@@ -291,7 +328,11 @@ describe("Damage calculator", () => {
 					{ substep: "gurps.damage.substep.damage_resistance", text: "5", notes: "Torso" },
 					{ substep: "gurps.damage.substep.effective_dr", text: "10", notes: "Armor Divisor (0.5)" },
 					{ substep: "gurps.damage.substep.penetrating", text: "10", notes: "= 20 – 10" },
-					{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "cr, torso" },
+					{
+						substep: "gurps.damage.substep.wounding_modifier",
+						text: "×1",
+						notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.cr","location":"torso"}',
+					},
 					{ substep: "gurps.damage.substep.injury", text: "10", notes: "= 10 × 1" },
 				])
 			})
@@ -305,7 +346,11 @@ describe("Damage calculator", () => {
 					{ substep: "gurps.damage.substep.damage_resistance", text: "0", notes: "Torso" },
 					{ substep: "gurps.damage.substep.effective_dr", text: "1", notes: "Armor Divisor (0.5)" },
 					{ substep: "gurps.damage.substep.penetrating", text: "19", notes: "= 20 – 1" },
-					{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "cr, torso" },
+					{
+						substep: "gurps.damage.substep.wounding_modifier",
+						text: "×1",
+						notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.cr","location":"torso"}',
+					},
 					{ substep: "gurps.damage.substep.injury", text: "19", notes: "= 19 × 1" },
 				])
 			})
@@ -325,7 +370,11 @@ describe("Damage calculator", () => {
 				{ substep: "gurps.damage.substep.basic_damage", text: "11", notes: "gurps.damage.damage_pool.hp" },
 				{ substep: "gurps.damage.substep.damage_resistance", text: "5", notes: "Torso" },
 				{ substep: "gurps.damage.substep.penetrating", text: "6", notes: "= 11 – 5" },
-				{ substep: "gurps.damage.substep.wounding_modifier", text: "×1/2", notes: "pi-, torso" },
+				{
+					substep: "gurps.damage.substep.wounding_modifier",
+					text: "×1/2",
+					notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.pi-","location":"torso"}',
+				},
 				{ substep: "gurps.damage.substep.injury", text: "3", notes: "= 6 × 1/2" },
 			])
 		})
@@ -345,7 +394,11 @@ describe("Damage calculator", () => {
 				{ substep: "gurps.damage.substep.basic_damage", text: "9", notes: "gurps.damage.damage_pool.hp" },
 				{ substep: "gurps.damage.substep.damage_resistance", text: "20", notes: "Torso" },
 				{ substep: "gurps.damage.substep.penetrating", text: "0", notes: "= 9 – 20" },
-				{ substep: "gurps.damage.substep.wounding_modifier", text: "×1.5", notes: "cut, torso" },
+				{
+					substep: "gurps.damage.substep.wounding_modifier",
+					text: "×1.5",
+					notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.cut","location":"torso"}',
+				},
 				{ substep: "gurps.damage.substep.injury", text: "0", notes: "= 0 × 1.5" },
 			])
 
@@ -356,7 +409,11 @@ describe("Damage calculator", () => {
 				{ substep: "gurps.damage.substep.basic_damage", text: "10", notes: "gurps.damage.damage_pool.hp" },
 				{ substep: "gurps.damage.substep.damage_resistance", text: "20", notes: "Torso" },
 				{ substep: "gurps.damage.substep.penetrating", text: "0", notes: "= 10 – 20" },
-				{ substep: "gurps.damage.substep.wounding_modifier", text: "×1.5", notes: "cut, torso" },
+				{
+					substep: "gurps.damage.substep.wounding_modifier",
+					text: "×1.5",
+					notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.cut","location":"torso"}',
+				},
 				{ substep: "gurps.damage.substep.injury", text: "0", notes: "= 0 × 1.5" },
 				{ substep: "gurps.damage.substep.adjusted_injury", text: "1", notes: "Blunt Trauma" },
 			])
@@ -368,7 +425,11 @@ describe("Damage calculator", () => {
 				{ substep: "gurps.damage.substep.basic_damage", text: "20", notes: "gurps.damage.damage_pool.hp" },
 				{ substep: "gurps.damage.substep.damage_resistance", text: "20", notes: "Torso" },
 				{ substep: "gurps.damage.substep.penetrating", text: "0", notes: "= 20 – 20" },
-				{ substep: "gurps.damage.substep.wounding_modifier", text: "×1.5", notes: "cut, torso" },
+				{
+					substep: "gurps.damage.substep.wounding_modifier",
+					text: "×1.5",
+					notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.cut","location":"torso"}',
+				},
 				{ substep: "gurps.damage.substep.injury", text: "0", notes: "= 0 × 1.5" },
 				{ substep: "gurps.damage.substep.adjusted_injury", text: "2", notes: "Blunt Trauma" },
 			])
@@ -383,7 +444,11 @@ describe("Damage calculator", () => {
 				{ substep: "gurps.damage.substep.basic_damage", text: "21", notes: "gurps.damage.damage_pool.hp" },
 				{ substep: "gurps.damage.substep.damage_resistance", text: "20", notes: "Torso" },
 				{ substep: "gurps.damage.substep.penetrating", text: "1", notes: "= 21 – 20" },
-				{ substep: "gurps.damage.substep.wounding_modifier", text: "×1/2", notes: "pi-, torso" },
+				{
+					substep: "gurps.damage.substep.wounding_modifier",
+					text: "×1/2",
+					notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.pi-","location":"torso"}',
+				},
 				{ substep: "gurps.damage.substep.injury", text: "1", notes: "= 1 × 1/2" },
 			])
 		})
@@ -405,7 +470,11 @@ describe("Damage calculator", () => {
 					{ substep: "gurps.damage.substep.basic_damage", text: "11", notes: "gurps.damage.damage_pool.hp" },
 					{ substep: "gurps.damage.substep.damage_resistance", text: "5", notes: "Torso" },
 					{ substep: "gurps.damage.substep.penetrating", text: "6", notes: "= 11 – 5" },
-					{ substep: "gurps.damage.substep.wounding_modifier", text: "×2", notes: "imp, torso" },
+					{
+						substep: "gurps.damage.substep.wounding_modifier",
+						text: "×2",
+						notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.imp","location":"torso"}',
+					},
 					{ substep: "gurps.damage.substep.injury_tolerance", text: "×1", notes: "Unliving" },
 					{ substep: "gurps.damage.substep.injury", text: "6", notes: "= 6 × 1" },
 				])
@@ -416,7 +485,11 @@ describe("Damage calculator", () => {
 					{ substep: "gurps.damage.substep.basic_damage", text: "11", notes: "gurps.damage.damage_pool.hp" },
 					{ substep: "gurps.damage.substep.damage_resistance", text: "5", notes: "Torso" },
 					{ substep: "gurps.damage.substep.penetrating", text: "6", notes: "= 11 – 5" },
-					{ substep: "gurps.damage.substep.wounding_modifier", text: "×2", notes: "pi++, torso" },
+					{
+						substep: "gurps.damage.substep.wounding_modifier",
+						text: "×2",
+						notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.pi++","location":"torso"}',
+					},
 					{ substep: "gurps.damage.substep.injury_tolerance", text: "×1", notes: "Unliving" },
 					{ substep: "gurps.damage.substep.injury", text: "6", notes: "= 6 × 1" },
 				])
@@ -430,7 +503,11 @@ describe("Damage calculator", () => {
 					{ substep: "gurps.damage.substep.basic_damage", text: "11", notes: "gurps.damage.damage_pool.hp" },
 					{ substep: "gurps.damage.substep.damage_resistance", text: "5", notes: "Torso" },
 					{ substep: "gurps.damage.substep.penetrating", text: "6", notes: "= 11 – 5" },
-					{ substep: "gurps.damage.substep.wounding_modifier", text: "×1.5", notes: "pi+, torso" },
+					{
+						substep: "gurps.damage.substep.wounding_modifier",
+						text: "×1.5",
+						notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.pi+","location":"torso"}',
+					},
 					{ substep: "gurps.damage.substep.injury_tolerance", text: "×1/2", notes: "Unliving" },
 					{ substep: "gurps.damage.substep.injury", text: "3", notes: "= 6 × 1/2" },
 				])
@@ -444,7 +521,11 @@ describe("Damage calculator", () => {
 					{ substep: "gurps.damage.substep.basic_damage", text: "11", notes: "gurps.damage.damage_pool.hp" },
 					{ substep: "gurps.damage.substep.damage_resistance", text: "5", notes: "Torso" },
 					{ substep: "gurps.damage.substep.penetrating", text: "6", notes: "= 11 – 5" },
-					{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "pi, torso" },
+					{
+						substep: "gurps.damage.substep.wounding_modifier",
+						text: "×1",
+						notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.pi","location":"torso"}',
+					},
 					{ substep: "gurps.damage.substep.injury_tolerance", text: "×1/3", notes: "Unliving" },
 					{ substep: "gurps.damage.substep.injury", text: "2", notes: "= 6 × 1/3" },
 				])
@@ -458,7 +539,11 @@ describe("Damage calculator", () => {
 					{ substep: "gurps.damage.substep.basic_damage", text: "15", notes: "gurps.damage.damage_pool.hp" },
 					{ substep: "gurps.damage.substep.damage_resistance", text: "5", notes: "Torso" },
 					{ substep: "gurps.damage.substep.penetrating", text: "10", notes: "= 15 – 5" },
-					{ substep: "gurps.damage.substep.wounding_modifier", text: "×1/2", notes: "pi-, torso" },
+					{
+						substep: "gurps.damage.substep.wounding_modifier",
+						text: "×1/2",
+						notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.pi-","location":"torso"}',
+					},
 					{ substep: "gurps.damage.substep.injury_tolerance", text: "×1/5", notes: "Unliving" },
 					{ substep: "gurps.damage.substep.injury", text: "2", notes: "= 10 × 1/5" },
 				])
@@ -485,7 +570,12 @@ describe("Damage calculator", () => {
 						},
 						{ substep: "gurps.damage.substep.damage_resistance", text: "5", notes: "Torso" },
 						{ substep: "gurps.damage.substep.penetrating", text: "6", notes: "= 11 – 5" },
-						{ substep: "gurps.damage.substep.wounding_modifier", text: "×2", notes: `${type.key}, torso` },
+						{
+							substep: "gurps.damage.substep.wounding_modifier",
+							text: "×2",
+							notes: `gurps.damage.description.damage_location:{"type":"gurps.damage.type.${type.key}","location":"torso"}`,
+						},
+
 						{ substep: "gurps.damage.substep.injury_tolerance", text: "×1/2", notes: "Homogenous" },
 						{ substep: "gurps.damage.substep.injury", text: "3", notes: "= 6 × 1/2" },
 					])
@@ -500,7 +590,11 @@ describe("Damage calculator", () => {
 					{ substep: "gurps.damage.substep.basic_damage", text: "11", notes: "gurps.damage.damage_pool.hp" },
 					{ substep: "gurps.damage.substep.damage_resistance", text: "5", notes: "Torso" },
 					{ substep: "gurps.damage.substep.penetrating", text: "6", notes: "= 11 – 5" },
-					{ substep: "gurps.damage.substep.wounding_modifier", text: "×1.5", notes: "pi+, torso" },
+					{
+						substep: "gurps.damage.substep.wounding_modifier",
+						text: "×1.5",
+						notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.pi+","location":"torso"}',
+					},
 					{ substep: "gurps.damage.substep.injury_tolerance", text: "×1/3", notes: "Homogenous" },
 					{ substep: "gurps.damage.substep.injury", text: "2", notes: "= 6 × 1/3" },
 				])
@@ -514,7 +608,11 @@ describe("Damage calculator", () => {
 					{ substep: "gurps.damage.substep.basic_damage", text: "15", notes: "gurps.damage.damage_pool.hp" },
 					{ substep: "gurps.damage.substep.damage_resistance", text: "5", notes: "Torso" },
 					{ substep: "gurps.damage.substep.penetrating", text: "10", notes: "= 15 – 5" },
-					{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "pi, torso" },
+					{
+						substep: "gurps.damage.substep.wounding_modifier",
+						text: "×1",
+						notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.pi","location":"torso"}',
+					},
 					{ substep: "gurps.damage.substep.injury_tolerance", text: "×1/5", notes: "Homogenous" },
 					{ substep: "gurps.damage.substep.injury", text: "2", notes: "= 10 × 1/5" },
 				])
@@ -528,7 +626,11 @@ describe("Damage calculator", () => {
 					{ substep: "gurps.damage.substep.basic_damage", text: "15", notes: "gurps.damage.damage_pool.hp" },
 					{ substep: "gurps.damage.substep.damage_resistance", text: "5", notes: "Torso" },
 					{ substep: "gurps.damage.substep.penetrating", text: "10", notes: "= 15 – 5" },
-					{ substep: "gurps.damage.substep.wounding_modifier", text: "×1/2", notes: "pi-, torso" },
+					{
+						substep: "gurps.damage.substep.wounding_modifier",
+						text: "×1/2",
+						notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.pi-","location":"torso"}',
+					},
 					{ substep: "gurps.damage.substep.injury_tolerance", text: "×1/10", notes: "Homogenous" },
 					{ substep: "gurps.damage.substep.injury", text: "1", notes: "= 10 × 1/10" },
 				])
@@ -564,7 +666,7 @@ describe("Damage calculator", () => {
 						{
 							substep: "gurps.damage.substep.wounding_modifier",
 							text: "×2",
-							notes: `${type[0].key}, torso`,
+							notes: `gurps.damage.description.damage_location:{"type":"gurps.damage.type.${type[0].key}","location":"torso"}`,
 						},
 						{ substep: "gurps.damage.substep.injury", text: "190", notes: "= 95 × 2" },
 						{ substep: "gurps.damage.substep.adjusted_injury", text: "1", notes: "Maximum 1 (Diffuse)" },
@@ -577,7 +679,11 @@ describe("Damage calculator", () => {
 					{ substep: "gurps.damage.substep.basic_damage", text: "100", notes: "gurps.damage.damage_pool.hp" },
 					{ substep: "gurps.damage.substep.damage_resistance", text: "5", notes: "Torso" },
 					{ substep: "gurps.damage.substep.penetrating", text: "95", notes: "= 100 – 5" },
-					{ substep: "gurps.damage.substep.wounding_modifier", text: "×1.5", notes: "pi+, torso" },
+					{
+						substep: "gurps.damage.substep.wounding_modifier",
+						text: "×1.5",
+						notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.pi+","location":"torso"}',
+					},
 					{ substep: "gurps.damage.substep.injury", text: "142", notes: "= 95 × 1.5" },
 					{ substep: "gurps.damage.substep.adjusted_injury", text: "1", notes: "Maximum 1 (Diffuse)" },
 				])
@@ -588,7 +694,11 @@ describe("Damage calculator", () => {
 					{ substep: "gurps.damage.substep.basic_damage", text: "100", notes: "gurps.damage.damage_pool.hp" },
 					{ substep: "gurps.damage.substep.damage_resistance", text: "5", notes: "Torso" },
 					{ substep: "gurps.damage.substep.penetrating", text: "95", notes: "= 100 – 5" },
-					{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "pi, torso" },
+					{
+						substep: "gurps.damage.substep.wounding_modifier",
+						text: "×1",
+						notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.pi","location":"torso"}',
+					},
 					{ substep: "gurps.damage.substep.injury", text: "95", notes: "= 95 × 1" },
 					{ substep: "gurps.damage.substep.adjusted_injury", text: "1", notes: "Maximum 1 (Diffuse)" },
 				])
@@ -599,7 +709,11 @@ describe("Damage calculator", () => {
 					{ substep: "gurps.damage.substep.basic_damage", text: "100", notes: "gurps.damage.damage_pool.hp" },
 					{ substep: "gurps.damage.substep.damage_resistance", text: "5", notes: "Torso" },
 					{ substep: "gurps.damage.substep.penetrating", text: "95", notes: "= 100 – 5" },
-					{ substep: "gurps.damage.substep.wounding_modifier", text: "×1/2", notes: "pi-, torso" },
+					{
+						substep: "gurps.damage.substep.wounding_modifier",
+						text: "×1/2",
+						notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.pi-","location":"torso"}',
+					},
 					{ substep: "gurps.damage.substep.injury", text: "47", notes: "= 95 × 1/2" },
 					{ substep: "gurps.damage.substep.adjusted_injury", text: "1", notes: "Maximum 1 (Diffuse)" },
 				])
@@ -628,7 +742,7 @@ describe("Damage calculator", () => {
 						{
 							substep: "gurps.damage.substep.wounding_modifier",
 							text: `×${type[1]}`,
-							notes: `${type[0].key}, torso`,
+							notes: `gurps.damage.description.damage_location:{"type":"gurps.damage.type.${type[0].key}","location":"torso"}`,
 						},
 						{
 							substep: "gurps.damage.substep.injury",
@@ -672,7 +786,11 @@ describe("Damage calculator", () => {
 				{ substep: "gurps.damage.substep.basic_damage", text: "10", notes: "gurps.damage.damage_pool.hp" },
 				{ substep: "gurps.damage.substep.damage_resistance", text: "0", notes: "Right Arm" },
 				{ substep: "gurps.damage.substep.penetrating", text: "10", notes: "= 10 – 0" },
-				{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "cr, arm" },
+				{
+					substep: "gurps.damage.substep.wounding_modifier",
+					text: "×1",
+					notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.cr","location":"arm"}',
+				},
 				{ substep: "gurps.damage.substep.injury", text: "10", notes: "= 10 × 1" },
 				{ substep: "gurps.damage.substep.adjusted_injury", text: "8", notes: "Maximum 8 (arm)" },
 			])
@@ -704,7 +822,11 @@ describe("Damage calculator", () => {
 					notes: "Torso",
 				},
 				{ substep: "gurps.damage.substep.penetrating", text: "0", notes: "= 0 – 0" },
-				{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "cr, torso" },
+				{
+					substep: "gurps.damage.substep.wounding_modifier",
+					text: "×1",
+					notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.cr","location":"torso"}',
+				},
 				{ substep: "gurps.damage.substep.injury", text: "0", notes: "= 0 × 1" },
 			])
 
@@ -722,7 +844,11 @@ describe("Damage calculator", () => {
 					notes: "Torso",
 				},
 				{ substep: "gurps.damage.substep.penetrating", text: "1", notes: "= 1 – 0" },
-				{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "cr, torso" },
+				{
+					substep: "gurps.damage.substep.wounding_modifier",
+					text: "×1",
+					notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.cr","location":"torso"}',
+				},
 				{ substep: "gurps.damage.substep.injury", text: "1", notes: "= 1 × 1" },
 			])
 		})
@@ -746,7 +872,11 @@ describe("Damage calculator", () => {
 					notes: "Torso",
 				},
 				{ substep: "gurps.damage.substep.penetrating", text: "1", notes: "= 2 – 1" },
-				{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "cr, torso" },
+				{
+					substep: "gurps.damage.substep.wounding_modifier",
+					text: "×1",
+					notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.cr","location":"torso"}',
+				},
 				{ substep: "gurps.damage.substep.injury", text: "1", notes: "= 1 × 1" },
 			])
 
@@ -764,7 +894,11 @@ describe("Damage calculator", () => {
 					notes: "Torso",
 				},
 				{ substep: "gurps.damage.substep.penetrating", text: "3", notes: "= 4 – 1" },
-				{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "cr, torso" },
+				{
+					substep: "gurps.damage.substep.wounding_modifier",
+					text: "×1",
+					notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.cr","location":"torso"}',
+				},
 				{ substep: "gurps.damage.substep.injury", text: "3", notes: "= 3 × 1" },
 			])
 
@@ -782,7 +916,11 @@ describe("Damage calculator", () => {
 					notes: "Torso",
 				},
 				{ substep: "gurps.damage.substep.penetrating", text: "0", notes: "= 1 – 1" },
-				{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "cr, torso" },
+				{
+					substep: "gurps.damage.substep.wounding_modifier",
+					text: "×1",
+					notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.cr","location":"torso"}',
+				},
 				{ substep: "gurps.damage.substep.injury", text: "0", notes: "= 0 × 1" },
 			])
 		})
@@ -886,7 +1024,11 @@ describe("Damage calculator", () => {
 					notes: "Explosion (Internal)",
 				},
 				{ substep: "gurps.damage.substep.penetrating", text: "24", notes: "= 24 – 0" },
-				{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "cr, torso" },
+				{
+					substep: "gurps.damage.substep.wounding_modifier",
+					text: "×1",
+					notes: 'gurps.damage.description.damage_location:{"type":"gurps.damage.type.cr","location":"torso"}',
+				},
 				{ substep: "gurps.damage.substep.injury", text: "24", notes: "= 24 × 1" },
 			])
 		})

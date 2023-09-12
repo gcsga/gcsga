@@ -1464,7 +1464,9 @@
 			},
 			"description": {
 				"explosion_outofrange": "Explosion; Out of range",
-				"explosion_range": "Explosion; {range} yards"
+				"explosion_range": "Explosion; {range} yards",
+				"knockback_only": "Knockback only",
+				"damage_location": "{type}, {location}"
 			},
 			"explosion": "Explosion",
 			"flexible": "Flexible Armor",

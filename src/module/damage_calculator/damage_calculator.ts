@@ -242,7 +242,13 @@ class DamageCalculator {
 		}
 
 		if (this.isKnockbackOnly)
-			return new CalculatorStep("Basic Damage", this.format(STEP), 0, undefined, "Knockback only")
+			return new CalculatorStep(
+				"Basic Damage",
+				this.format(STEP),
+				0,
+				undefined,
+				this.format("gurps.damage.description.knockback_only")
+			)
 
 		if (this.damageRoll.isHalfDamage) {
 			return new CalculatorStep("Basic Damage", this.format(STEP), basicDamage * 0.5, undefined, "Ranged, 1/2D")
@@ -360,7 +366,13 @@ class DamageCalculator {
 		if (this.overrides.woundingModifier) return <[number, string]>[this.overrides.woundingModifier, "Override"]
 		if (this.woundingModifierByDamageType) return this.woundingModifierByDamageType
 		if (this.woundingModifierByHitLocation) return this.woundingModifierByHitLocation
-		return <[number, string]>[this.damageType.theDefault, `${this.damageType.key}, ${this.damageRoll.locationId}`]
+
+		const standardMessage = this.format("gurps.damage.description.damage_location", {
+			type: this.format(`gurps.damage.type.${this.damageType.key}`),
+			location: this.damageRoll.locationId,
+		})
+
+		return <[number, string]>[this.damageType.theDefault, standardMessage]
 	}
 
 	private get woundingModifierByDamageType(): [number, string] | undefined {
@@ -395,7 +407,12 @@ class DamageCalculator {
 	 * @returns {number} wounding modifier only based on hit location.
 	 */
 	private get woundingModifierByHitLocation(): [number, string] | undefined {
-		const standardMessage = `${this.damageType.key}, ${this.damageRoll.locationId}`
+		const standardMessage = this.format("gurps.damage.description.damage_location", {
+			type: this.format(`gurps.damage.type.${this.damageType.key}`),
+			location: this.damageRoll.locationId,
+		})
+
+		// `${this.damageType.key}, ${this.damageRoll.locationId}`
 
 		switch (this.damageRoll.locationId) {
 			case "vitals":
