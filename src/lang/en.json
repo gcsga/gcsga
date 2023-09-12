@@ -1462,6 +1462,10 @@
 			"damage_pool": {
 				"hp": "HP"
 			},
+			"description": {
+				"explosion_outofrange": "Explosion; Out of range",
+				"explosion_range": "Explosion; {range} yards"
+			},
 			"explosion": "Explosion",
 			"flexible": "Flexible Armor",
 			"half_d": "Ranged, 1/2D",

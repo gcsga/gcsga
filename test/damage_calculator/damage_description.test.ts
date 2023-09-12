@@ -678,4 +678,217 @@ describe("Damage calculator", () => {
 			])
 		})
 	})
+
+	describe("B414: Explosions.", () => {
+		beforeEach(() => {
+			_roll.dice = new DiceGURPS("3d")
+			_roll.damageModifier = "ex"
+		})
+
+		it("An explosion inflicts “collateral damage” on everything within (2 × dice of damage) yards.", () => {
+			_roll.dice = new DiceGURPS("1d+3")
+			_roll.range = 3
+			_roll.basicDamage = 9
+
+			const calc = _create(_roll, _target)
+			expect(calc.results.steps).toMatchObject([
+				{ substep: "gurps.damage.substep.basic_damage", text: "9", notes: "gurps.damage.damage_pool.hp" },
+				{
+					substep: "gurps.damage.substep.adjusted_damage",
+					text: "0",
+					notes: "gurps.damage.description.explosion_outofrange",
+				},
+				{
+					substep: "gurps.damage.substep.damage_resistance",
+					text: "0",
+					notes: "Torso",
+				},
+				{ substep: "gurps.damage.substep.penetrating", text: "0", notes: "= 0 – 0" },
+				{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "cr, torso" },
+				{ substep: "gurps.damage.substep.injury", text: "0", notes: "= 0 × 1" },
+			])
+
+			_roll.range = 2
+			expect(calc.results.steps).toMatchObject([
+				{ substep: "gurps.damage.substep.basic_damage", text: "9", notes: "gurps.damage.damage_pool.hp" },
+				{
+					substep: "gurps.damage.substep.adjusted_damage",
+					text: "1",
+					notes: 'gurps.damage.description.explosion_range:{"range":2}',
+				},
+				{
+					substep: "gurps.damage.substep.damage_resistance",
+					text: "0",
+					notes: "Torso",
+				},
+				{ substep: "gurps.damage.substep.penetrating", text: "1", notes: "= 1 – 0" },
+				{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "cr, torso" },
+				{ substep: "gurps.damage.substep.injury", text: "1", notes: "= 1 × 1" },
+			])
+		})
+
+		it("Roll this damage but divide it by (3 × yards from the center of the blast), rounding down.", () => {
+			_roll.range = 2
+			_roll.basicDamage = 13
+			_torso._map.set("all", 1)
+
+			const calc = _create(_roll, _target)
+			expect(calc.results.steps).toMatchObject([
+				{ substep: "gurps.damage.substep.basic_damage", text: "13", notes: "gurps.damage.damage_pool.hp" },
+				{
+					substep: "gurps.damage.substep.adjusted_damage",
+					text: "2",
+					notes: 'gurps.damage.description.explosion_range:{"range":2}',
+				},
+				{
+					substep: "gurps.damage.substep.damage_resistance",
+					text: "1",
+					notes: "Torso",
+				},
+				{ substep: "gurps.damage.substep.penetrating", text: "1", notes: "= 2 – 1" },
+				{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "cr, torso" },
+				{ substep: "gurps.damage.substep.injury", text: "1", notes: "= 1 × 1" },
+			])
+
+			_roll.range = 1
+			expect(calc.results.steps).toMatchObject([
+				{ substep: "gurps.damage.substep.basic_damage", text: "13", notes: "gurps.damage.damage_pool.hp" },
+				{
+					substep: "gurps.damage.substep.adjusted_damage",
+					text: "4",
+					notes: 'gurps.damage.description.explosion_range:{"range":1}',
+				},
+				{
+					substep: "gurps.damage.substep.damage_resistance",
+					text: "1",
+					notes: "Torso",
+				},
+				{ substep: "gurps.damage.substep.penetrating", text: "3", notes: "= 4 – 1" },
+				{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "cr, torso" },
+				{ substep: "gurps.damage.substep.injury", text: "3", notes: "= 3 × 1" },
+			])
+
+			_roll.range = 3
+			expect(calc.results.steps).toMatchObject([
+				{ substep: "gurps.damage.substep.basic_damage", text: "13", notes: "gurps.damage.damage_pool.hp" },
+				{
+					substep: "gurps.damage.substep.adjusted_damage",
+					text: "1",
+					notes: 'gurps.damage.description.explosion_range:{"range":3}',
+				},
+				{
+					substep: "gurps.damage.substep.damage_resistance",
+					text: "1",
+					notes: "Torso",
+				},
+				{ substep: "gurps.damage.substep.penetrating", text: "0", notes: "= 1 – 1" },
+				{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "cr, torso" },
+				{ substep: "gurps.damage.substep.injury", text: "0", notes: "= 0 × 1" },
+			])
+		})
+
+		it.skip("If an explosive attack has an armor divisor, it does not apply to the collateral damage.", () => {
+			_roll.dice = new DiceGURPS("6d")
+			_roll.basicDamage = 24
+			_roll.armorDivisor = 3
+			_torso._map.set("all", 3)
+
+			_roll.range = 2
+			const calc = _create(_roll, _target)
+			expect(calc.results.steps).toMatchObject([
+				{
+					substep: "gurps.damage.substep.basic_damage",
+					text: "24",
+					notes: "gurps.damage.damage_pool.hp",
+				},
+				{
+					substep: "gurps.damage.substep.adjusted_damage",
+					text: "4",
+					notes: 'gurps.damage.description.explosion_range:{"range":2}',
+				},
+				{
+					substep: "gurps.damage.substep.damage_resistance",
+					text: "3",
+					notes: "Torso",
+				},
+				{ substep: "gurps.damage.substep.penetrating", text: "1", notes: "= 4 – 3" },
+				{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "cr, torso" },
+				{ substep: "gurps.damage.substep.injury", text: "1", notes: "= 1 × 1" },
+			])
+
+			_roll.range = 1
+			expect(calc.results.steps).toMatchObject([
+				{
+					substep: "gurps.damage.substep.basic_damage",
+					text: "24",
+					notes: "gurps.damage.damage_pool.hp",
+				},
+				{
+					substep: "gurps.damage.substep.adjusted_damage",
+					text: "8",
+					notes: 'gurps.damage.description.explosion_range:{"range":1}',
+				},
+				{
+					substep: "gurps.damage.substep.damage_resistance",
+					text: "3",
+					notes: "Torso",
+				},
+				{ substep: "gurps.damage.substep.penetrating", text: "5", notes: "= 8 – 3" },
+				{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "cr, torso" },
+				{ substep: "gurps.damage.substep.injury", text: "5", notes: "= 5 × 1" },
+			])
+
+			_roll.range = 3
+			expect(calc.results.steps).toMatchObject([
+				{
+					substep: "gurps.damage.substep.basic_damage",
+					text: "24",
+					notes: "gurps.damage.damage_pool.hp",
+				},
+				{
+					substep: "gurps.damage.substep.adjusted_damage",
+					text: "2",
+					notes: 'gurps.damage.description.explosion_range:{"range":3}',
+				},
+				{
+					substep: "gurps.damage.substep.damage_resistance",
+					text: "3",
+					notes: "Torso",
+				},
+				{ substep: "gurps.damage.substep.penetrating", text: "0", notes: "= 2 – 3" },
+				{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "cr, torso" },
+				{ substep: "gurps.damage.substep.injury", text: "0", notes: "= 0 × 1" },
+			])
+		})
+
+		it("Internal Explosions: DR has no effect! In addition, treat the blast as an attack on the vitals, with a ×3 wounding modifier.", () => {
+			_roll.dice = new DiceGURPS("6d")
+			_roll.basicDamage = 24
+			_roll.internalExplosion = true
+			_torso._map.set("all", 3)
+
+			_roll.range = 0
+			const calc = _create(_roll, _target)
+			expect(calc.results.steps).toMatchObject([
+				{
+					substep: "gurps.damage.substep.basic_damage",
+					text: "24",
+					notes: "gurps.damage.damage_pool.hp",
+				},
+				{
+					substep: "gurps.damage.substep.damage_resistance",
+					text: "3",
+					notes: "Torso",
+				},
+				{
+					substep: "gurps.damage.substep.effective_dr",
+					text: "0",
+					notes: "Explosion (Internal)",
+				},
+				{ substep: "gurps.damage.substep.penetrating", text: "24", notes: "= 24 – 0" },
+				{ substep: "gurps.damage.substep.wounding_modifier", text: "×1", notes: "cr, torso" },
+				{ substep: "gurps.damage.substep.injury", text: "24", notes: "= 24 × 1" },
+			])
+		})
+	})
 })

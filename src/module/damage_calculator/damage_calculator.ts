@@ -221,14 +221,22 @@ class DamageCalculator {
 
 		if (this.isExplosion && this.damageRoll.range) {
 			if (this.damageRoll.range > this._diceOfDamage * 2) {
-				return new CalculatorStep("Basic Damage", STEP, 0, undefined, "Explosion; Out of range")
+				return new CalculatorStep(
+					"Basic Damage",
+					STEP,
+					0,
+					undefined,
+					this.format("gurps.damage.description.explosion_outofrange")
+				)
 			} else {
 				return new CalculatorStep(
 					"Basic Damage",
 					this.format(STEP),
 					Math.floor(basicDamage / (3 * this.damageRoll.range)),
 					undefined,
-					`Explosion; ${this.damageRoll.range} yards`
+					this.format("gurps.damage.description.explosion_range", {
+						range: this.damageRoll.range,
+					})
 				)
 			}
 		}

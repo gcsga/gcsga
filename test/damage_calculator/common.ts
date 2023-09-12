@@ -104,7 +104,9 @@ interface IDamageCalculator {
 	vulnerabilities: Vulnerability[]
 }
 
-const dummyLocalize = (stringId: string, data?: any) => stringId
+const dummyLocalize = (stringId: string, data?: any) => {
+	return `${stringId}${data ? `:${JSON.stringify(data)}` : ""}`
+}
 
 export const _create = function (roll: DamageRoll, target: DamageTarget): IDamageCalculator {
 	return new DamageCalculator(roll, target, dummyLocalize)
