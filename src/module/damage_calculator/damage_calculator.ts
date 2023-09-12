@@ -75,7 +75,7 @@ class DamageResults {
 	}
 
 	get rawDamage() {
-		return this.steps.find(it => it.name === "Basic Damage" && it.substep === "gurps.damage.substep.basic_damage")
+		return this.steps.find(it => it.name === "Basic Damage" && it.substep === "gurps.dmgcalc.substep.basic_damage")
 	}
 
 	get miscellaneousEffects(): InjuryEffect[] {
@@ -207,17 +207,17 @@ class DamageCalculator {
 		results.addResult(
 			new CalculatorStep(
 				"Basic Damage",
-				this.format("gurps.damage.substep.basic_damage"),
+				this.format("gurps.dmgcalc.substep.basic_damage"),
 				basic,
 				undefined,
-				this.format("gurps.damage.damage_pool.hp")
+				this.format("gurps.dmgcalc.damage_pool.hp")
 			)
 		)
 		results.addResult(this.adjustBasicDamage(basic))
 	}
 
 	private adjustBasicDamage(basicDamage: number): CalculatorStep | undefined {
-		const STEP = this.format("gurps.damage.substep.adjusted_damage")
+		const STEP = this.format("gurps.dmgcalc.substep.adjusted_damage")
 
 		if (this.isExplosion && this.damageRoll.range) {
 			if (this.damageRoll.range > this._diceOfDamage * 2) {
@@ -226,7 +226,7 @@ class DamageCalculator {
 					STEP,
 					0,
 					undefined,
-					this.format("gurps.damage.description.explosion_outofrange")
+					this.format("gurps.dmgcalc.description.explosion_outofrange")
 				)
 			} else {
 				return new CalculatorStep(
@@ -234,7 +234,7 @@ class DamageCalculator {
 					this.format(STEP),
 					Math.floor(basicDamage / (3 * this.damageRoll.range)),
 					undefined,
-					this.format("gurps.damage.description.explosion_range", {
+					this.format("gurps.dmgcalc.description.explosion_range", {
 						range: this.damageRoll.range,
 					})
 				)
@@ -247,7 +247,7 @@ class DamageCalculator {
 				this.format(STEP),
 				0,
 				undefined,
-				this.format("gurps.damage.description.knockback_only")
+				this.format("gurps.dmgcalc.description.knockback_only")
 			)
 
 		if (this.damageRoll.isHalfDamage) {
@@ -256,7 +256,7 @@ class DamageCalculator {
 				this.format(STEP),
 				basicDamage * 0.5,
 				undefined,
-				this.format("gurps.damage.description.ranged_halfd")
+				this.format("gurps.dmgcalc.description.ranged_halfd")
 			)
 		}
 
@@ -266,7 +266,7 @@ class DamageCalculator {
 				this.format(STEP),
 				basicDamage * this.multiplierForShotgunExtremelyClose,
 				undefined,
-				this.format("gurps.damage.description.shotgun", {
+				this.format("gurps.dmgcalc.description.shotgun", {
 					multiplier: this.multiplierForShotgunExtremelyClose,
 				})
 			)
@@ -276,7 +276,7 @@ class DamageCalculator {
 	}
 
 	private addDamageResistanceSteps(results: DamageResults): void {
-		const STEP = "gurps.damage.substep.damage_resistance"
+		const STEP = "gurps.dmgcalc.substep.damage_resistance"
 
 		const dr = this.damageResistanceAndReason
 		results.addResult(new CalculatorStep("Damage Resistance", this.format(STEP), dr[0], undefined, dr[1]))
@@ -284,7 +284,7 @@ class DamageCalculator {
 	}
 
 	private get damageResistanceAndReason(): [number, string] {
-		if (this.overrides.rawDR) return <[number, string]>[this.overrides.rawDR, this.format("gurps.damage.override")]
+		if (this.overrides.rawDR) return <[number, string]>[this.overrides.rawDR, this.format("gurps.dmgcalc.override")]
 		if (this.isLargeAreaInjury) {
 			let torso = HitLocationUtil.getHitLocation(this.target.hitLocationTable, Torso)
 
@@ -293,7 +293,7 @@ class DamageCalculator {
 				.filter(it => it !== -1)
 
 			const basicDr = (HitLocationUtil.getHitLocationDR(torso, this.damageType) + Math.min(...allDR)) / 2
-			return <[number, string]>[basicDr, this.format("gurps.damage.description.large_area_injury")]
+			return <[number, string]>[basicDr, this.format("gurps.dmgcalc.description.large_area_injury")]
 		}
 		return [this.drForHitLocation, `${this._hitLocation?.choice_name}`]
 	}
@@ -303,7 +303,7 @@ class DamageCalculator {
 	}
 
 	private adjustDamageResistance(dr: number): CalculatorStep | undefined {
-		const STEP = "gurps.damage.substep.effective_dr"
+		const STEP = "gurps.dmgcalc.substep.effective_dr"
 
 		// Armor Divisor is "Ignores DR"
 		if (this._isIgnoreDRArmorDivisor)
@@ -312,7 +312,7 @@ class DamageCalculator {
 				this.format(STEP),
 				0,
 				undefined,
-				this.format("gurps.damage.description.armor_divisor_ignores")
+				this.format("gurps.dmgcalc.description.armor_divisor_ignores")
 			)
 
 		if (this.isInternalExplosion)
@@ -321,7 +321,7 @@ class DamageCalculator {
 				this.format(STEP),
 				0,
 				undefined,
-				this.format("gurps.damage.description.explosion_internal")
+				this.format("gurps.dmgcalc.description.explosion_internal")
 			)
 
 		if (this.damageType === DamageTypes.injury)
@@ -330,7 +330,7 @@ class DamageCalculator {
 				this.format(STEP),
 				0,
 				undefined,
-				this.format("gurps.damage.description.ignores_dr")
+				this.format("gurps.dmgcalc.description.ignores_dr")
 			)
 
 		if (this.multiplierForShotgunExtremelyClose > 1) {
@@ -339,7 +339,9 @@ class DamageCalculator {
 				this.format(STEP),
 				dr * this.multiplierForShotgunExtremelyClose,
 				undefined,
-				this.format("gurps.damage.description.shotgun", { multiplier: this.multiplierForShotgunExtremelyClose })
+				this.format("gurps.dmgcalc.description.shotgun", {
+					multiplier: this.multiplierForShotgunExtremelyClose,
+				})
 			)
 		}
 
@@ -351,7 +353,7 @@ class DamageCalculator {
 				this.format(STEP),
 				result,
 				undefined,
-				this.format("gurps.damage.description.armor_divisor", { divisor: this.effectiveArmorDivisor })
+				this.format("gurps.dmgcalc.description.armor_divisor", { divisor: this.effectiveArmorDivisor })
 			)
 		}
 
@@ -362,7 +364,7 @@ class DamageCalculator {
 		results.addResult(
 			new CalculatorStep(
 				"Penetrating Damage",
-				this.format("gurps.damage.substep.penetrating"),
+				this.format("gurps.dmgcalc.substep.penetrating"),
 				Math.max(results.basicDamage!.value - results.damageResistance!.value, 0),
 				undefined,
 				`= ${results.basicDamage!.value} – ${results.damageResistance!.value}`
@@ -371,7 +373,7 @@ class DamageCalculator {
 	}
 
 	private addWoundingModifierSteps(results: DamageResults): void {
-		const STEP = "gurps.damage.substep.wounding_modifier"
+		const STEP = "gurps.dmgcalc.substep.wounding_modifier"
 
 		const [value, reason] = this.woundingModifierAndReason
 		results.addResult(
@@ -384,12 +386,12 @@ class DamageCalculator {
 
 	get woundingModifierAndReason() {
 		if (this.overrides.woundingModifier)
-			return <[number, string]>[this.overrides.woundingModifier, this.format("gurps.damage.override")]
+			return <[number, string]>[this.overrides.woundingModifier, this.format("gurps.dmgcalc.override")]
 		if (this.woundingModifierByDamageType) return this.woundingModifierByDamageType
 		if (this.woundingModifierByHitLocation) return this.woundingModifierByHitLocation
 
-		const standardMessage = this.format("gurps.damage.description.damage_location", {
-			type: this.format(`gurps.damage.type.${this.damageType.key}`),
+		const standardMessage = this.format("gurps.dmgcalc.description.damage_location", {
+			type: this.format(`gurps.dmgcalc.type.${this.damageType.key}`),
 			location: this.damageRoll.locationId,
 		})
 
@@ -398,7 +400,7 @@ class DamageCalculator {
 
 	private get woundingModifierByDamageType(): [number, string] | undefined {
 		// Fatigue damage always ignores hit location.
-		if (this.damageType === DamageTypes.fat) return [1, this.format("gurps.damage.description.fatigue")]
+		if (this.damageType === DamageTypes.fat) return [1, this.format("gurps.dmgcalc.description.fatigue")]
 		return undefined
 	}
 
@@ -428,8 +430,8 @@ class DamageCalculator {
 	 * @returns {number} wounding modifier only based on hit location.
 	 */
 	private get woundingModifierByHitLocation(): [number, string] | undefined {
-		const standardMessage = this.format("gurps.damage.description.damage_location", {
-			type: this.format(`gurps.damage.type.${this.damageType.key}`),
+		const standardMessage = this.format("gurps.dmgcalc.description.damage_location", {
+			type: this.format(`gurps.dmgcalc.type.${this.damageType.key}`),
 			location: this.damageRoll.locationId,
 		})
 
@@ -441,7 +443,7 @@ class DamageCalculator {
 				if (this.isTightBeamBurning())
 					return [
 						2,
-						this.format("gurps.damage.description.tight_beam_burn", {
+						this.format("gurps.dmgcalc.description.tight_beam_burn", {
 							location: this.damageRoll.locationId,
 						}),
 					]
@@ -482,7 +484,7 @@ class DamageCalculator {
 			const newValue = mod[0]
 			return new CalculatorStep(
 				"Wounding Modifier",
-				this.format("gurps.damage.substep.injury_tolerance"),
+				this.format("gurps.dmgcalc.substep.injury_tolerance"),
 				newValue,
 				`×${this.formatFraction(newValue)}`,
 				mod[1]
@@ -496,18 +498,18 @@ class DamageCalculator {
 		/**
 		 * TODO Diffuse: Exception: Area-effect, cone, and explosion attacks cause normal injury.
 		 */
-		if (this.isHomogenous) return [this.damageType.homogenous, this.format("gurps.damage.tolerance.homogenous")]
+		if (this.isHomogenous) return [this.damageType.homogenous, this.format("gurps.dmgcalc.tolerance.homogenous")]
 
 		// Unliving uses unliving modifiers unless the hit location is skull, eye, or vitals.
 		if (this.isUnliving && !["skull", "eye", "vitals"].includes(this.damageRoll.locationId))
-			return [this.damageType.unliving, this.format("gurps.damage.tolerance.unliving")]
+			return [this.damageType.unliving, this.format("gurps.dmgcalc.tolerance.unliving")]
 
 		// No Brain has no extra wounding modifier if hit location is skull or eye.
 		if (this.target.hasTrait("No Brain") && ["skull", "eye"].includes(this.damageRoll.locationId))
-			return [this.damageType.theDefault, this.format("gurps.damage.description.no_brain")]
+			return [this.damageType.theDefault, this.format("gurps.dmgcalc.description.no_brain")]
 
 		if (this.isDiffuse && this.woundingModifierByHitLocation) {
-			return [this.damageType.theDefault, this.format("gurps.damage.description.diffuse")]
+			return [this.damageType.theDefault, this.format("gurps.dmgcalc.description.diffuse")]
 		}
 
 		return undefined
@@ -519,10 +521,10 @@ class DamageCalculator {
 			let temp = woundingModifier * this.vulnerabilityLevel
 			return new CalculatorStep(
 				"Wounding Modifier",
-				this.format("gurps.damage.substep.effective_modifier"),
+				this.format("gurps.dmgcalc.substep.effective_modifier"),
 				temp,
 				`×${this.formatFraction(temp)}`,
-				this.format("gurps.damage.description.vulnerability", {
+				this.format("gurps.dmgcalc.description.vulnerability", {
 					modifier: this.formatFraction(woundingModifier),
 					vulnerability: this.vulnerabilityLevel,
 				})
@@ -538,7 +540,7 @@ class DamageCalculator {
 		results.addResult(
 			new CalculatorStep(
 				"Injury",
-				this.format("gurps.damage.substep.injury"),
+				this.format("gurps.dmgcalc.substep.injury"),
 				value,
 				undefined,
 				`= ${results.penetratingDamage!.value} × ${this.formatFraction(results.woundingModifier!.value)}`
@@ -548,7 +550,7 @@ class DamageCalculator {
 	}
 
 	private adjustInjury(results: DamageResults): CalculatorStep | undefined {
-		const step = this.format("gurps.damage.substep.adjusted_injury")
+		const step = this.format("gurps.dmgcalc.substep.adjusted_injury")
 		// Adjust for Damage Reduction.
 		if (this.damageReduction !== 1) {
 			const newValue = Math.ceil(results.injury!.value / this.damageReduction)
@@ -557,7 +559,7 @@ class DamageCalculator {
 				step,
 				newValue,
 				undefined,
-				this.format("gurps.damage.description.damage_reduction", {
+				this.format("gurps.dmgcalc.description.damage_reduction", {
 					injury: results.injury!.value,
 					reduction: this.damageReduction,
 				})
@@ -583,7 +585,7 @@ class DamageCalculator {
 				step,
 				this.bluntTrauma(results),
 				undefined,
-				this.format("gurps.damage.description.blunt_trauma")
+				this.format("gurps.dmgcalc.description.blunt_trauma")
 			)
 		}
 
@@ -638,8 +640,8 @@ class DamageCalculator {
 	private get maximumForInjuryTolerance(): [number, string] {
 		if (this.isDiffuse) {
 			if ([DamageTypes.imp, ...AnyPiercingType].includes(this.damageType))
-				return [1, this.format("gurps.damage.description.diffuse_max", { value: 1 })]
-			return [2, this.format("gurps.damage.description.diffuse_max", { value: 2 })]
+				return [1, this.format("gurps.dmgcalc.description.diffuse_max", { value: 1 })]
+			return [2, this.format("gurps.dmgcalc.description.diffuse_max", { value: 2 })]
 		}
 		return [Infinity, ""]
 	}
@@ -652,7 +654,7 @@ class DamageCalculator {
 			const max = Math.floor(this.target.hitPoints.value / 2) + 1
 			return [
 				max,
-				this.format("gurps.damage.description.location_max", {
+				this.format("gurps.dmgcalc.description.location_max", {
 					value: max,
 					location: this.damageRoll.locationId,
 				}),
@@ -663,7 +665,7 @@ class DamageCalculator {
 			const max = Math.floor(this.target.hitPoints.value / 3) + 1
 			return [
 				max,
-				this.format("gurps.damage.description.location_max", {
+				this.format("gurps.dmgcalc.description.location_max", {
 					value: max,
 					location: this.damageRoll.locationId,
 				}),
