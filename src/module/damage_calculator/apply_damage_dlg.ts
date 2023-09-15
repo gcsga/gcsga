@@ -36,7 +36,7 @@ class ApplyDamageDialog extends Application {
 	private constructor(roll: DamageRoll, target: DamageTarget, options = {}) {
 		super(options)
 		console.log(target)
-		this.calculator = new DamageCalculator(roll, target, game.i18n.format)
+		this.calculator = new DamageCalculator(roll, target, game.i18n.format.bind(game.i18n))
 	}
 
 	static get defaultOptions(): ApplicationOptions {
