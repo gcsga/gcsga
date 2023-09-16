@@ -1,5 +1,5 @@
 import { sanitize } from "@util"
-import { MookData, MookTrait } from "./data"
+import { MookData, MookTrait, MookTraitModifier } from "./data"
 import { Mook } from "./document"
 
 class MookParser {
@@ -90,6 +90,14 @@ class MookParser {
 				t = t.replace(/\((CR:?)?\s*(\d+)\)/, "").trim()
 			}
 
+			// Capture modifiers
+			let modifiers: MookTraitModifier[] = []
+			if (t.match(/\(.+\)/)) {
+				modifiers = this.parseTraitModifiers(t.match(/\((.*)\)/)![1])
+				t = t.replace(/\(.*\)/, "").trim()
+			}
+
+
 			t = this.cleanLine(t)
 
 			const trait: MookTrait = {
@@ -98,10 +106,42 @@ class MookParser {
 				cr,
 				notes: "",
 				reference: "",
-				modifiers: []
+				modifiers
 			}
-			console.log(trait)
+			this.object.traits.push(trait)
 		})
+	}
+
+	private parseTraitModifiers(text: string): MookTraitModifier[] {
+		const modifiers: MookTraitModifier[] = []
+		const textmods = text.split(";")
+		textmods.forEach(m => {
+			if (m.split(",").length === 2) { // assumes common format for modifier notation
+				const mod = m.split(",")
+				modifiers.push({
+					name: mod[0].trim(),
+					cost: mod[1].trim(),
+					notes: "",
+					reference: ""
+				})
+			}
+		})
+		return modifiers
+	}
+
+	private parseSkills(): void {
+		this._object.traits = []
+		const start = this.findInText(["Skills"])
+		if (start === -1) return console.error("Skills not found")
+		const end = this.findInText(["Spells", "Equipment"])
+		if (end === -1) return console.error("Spells/Equipment not found")
+		let text = this.text.substring(start, end)
+
+		// if (text.includes(";")) text = text.replace(/\n/g, " ") // if ; separated, remove newlines
+		// else if (text.split(",").length > 2) text = text.replace(/,/g, ";") // if , separated, replace with ;
+		// text = text.trim()
+		// text.split(";").forEach(s => {
+		// })
 	}
 
 	private get resetObject(): MookData {
