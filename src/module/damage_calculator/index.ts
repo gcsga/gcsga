@@ -175,25 +175,28 @@ class DamageRollAdapter implements DamageRoll {
 
 export type HitPointsCalc = { value: number; current: number }
 export type Vulnerability = { name: string; value: number; apply: boolean }
+export type TargetPool = { id: string; name: string; fullName: string }
 
 export interface DamageTarget {
 	name: string
-	// CharacterGURPS.attributes.get(gid.ST).calc.value
+	// CharacterGURPS.attributes.get(gid.ST).calc.value.
 	ST: number
-	// CharacterGURPS.attributes.get(gid.HitPoints).calc
+	// CharacterGURPS.attributes.get(gid.HitPoints).calc.
 	hitPoints: HitPointsCalc
-	// CharacterGURPS.BodyType
+	// CharacterGURPS.BodyType.
 	hitLocationTable: HitLocationTable
-	// CharacterGURPS.traits.contents.filter(it => it instanceof TraitGURPS)
+	// CharacterGURPS.traits.contents.filter(it => it instanceof TraitGURPS).
 	getTrait(name: string): TargetTrait | undefined
-	// CharacterGURPS.traits.contents.filter(it => it instanceof TraitGURPS)
+	// CharacterGURPS.traits.contents.filter(it => it instanceof TraitGURPS).
 	getTraits(name: string): TargetTrait[]
 	//
 	hasTrait(name: string): boolean
 	// Return None, Unliving, Homogenous, or Diffuse.
 	injuryTolerance: "None" | "Unliving" | "Homogenous" | "Diffuse"
-	// Subtract value from HitPoints
+	// Subtract value from HitPoints.
 	incrementDamage(delta: number): void
+	// Get all pools.
+	pools: TargetPool[]
 }
 
 export interface TargetTrait {

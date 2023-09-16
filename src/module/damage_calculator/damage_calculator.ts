@@ -1,4 +1,4 @@
-import { DamageRoll, DamageTarget, DefaultHitLocations, TargetTrait, Vulnerability } from "."
+import { DamageRoll, DamageTarget, DefaultHitLocations, TargetPool, TargetTrait, Vulnerability } from "."
 import { RollType } from "../data"
 import { AnyPiercingType, DamageType, DamageTypes } from "./damage_type"
 import { HitLocationUtil } from "./hitlocation_utils"
@@ -103,6 +103,7 @@ class DamageResults {
 }
 
 type Overrides = {
+	damagePool: string | undefined
 	damageReduction: number | undefined
 	injuryTolerance: string | undefined
 	rawDR: number | undefined
@@ -147,6 +148,7 @@ class DamageCalculator {
 		woundingModifier: undefined,
 		injuryTolerance: undefined,
 		damageReduction: undefined,
+		damagePool: undefined,
 	}
 
 	vulnerabilities: Vulnerability[] = []
@@ -1037,6 +1039,28 @@ class DamageCalculator {
 		if (trait?.getModifier("Wounding x4")) return 4
 		return 1
 	}
+
+	// --- Damage Pool ---
+
+	// TODO - Pull a list of damage types from a system setting.
+	// TODO - Get a mapping of damage type to damage pool from a system setting.
+
+	get damagePoolID(): string {
+		// defender.actor.poolAttributes()
+		if (this.overrides.damagePool) return this.overrides.damagePool
+		switch (this.damageType) {
+			case DamageTypes.fat:
+				return "fp"
+			default:
+				return "hp"
+		}
+	}
+
+	get damagePools(): TargetPool[] {
+		return this.target.pools
+	}
+
+	// --- ---
 
 	private get isKnockbackOnly() {
 		return this.damageType === DamageTypes.kb

@@ -28,14 +28,14 @@ import {
 	DamageTarget,
 	DamageWeapon,
 	HitPointsCalc,
+	TargetPool,
 	TargetTrait,
 	TargetTraitModifier,
-	Vulnerability,
 } from "@module/damage_calculator"
 import { ApplyDamageDialog } from "@module/damage_calculator/apply_damage_dlg"
 import { DamagePayload } from "@module/damage_calculator/damage_chat_message"
 import { DiceGURPS } from "@module/dice"
-import { ActorDataGURPS, ActorSourceGURPS } from "@module/config"
+import { ActorDataGURPS, ActorGURPS, ActorSourceGURPS } from "@module/config"
 import Document, { DocumentModificationOptions, Metadata } from "types/foundry/common/abstract/document.mjs"
 import { BaseUser } from "types/foundry/common/documents.mjs"
 import { Attribute } from "@module/attribute"
@@ -467,6 +467,12 @@ class DamageTargetActor implements DamageTarget {
 		if (this.isUnliving) return "Unliving"
 		return "None"
 	}
+
+	get pools(): TargetPool[] {
+		return [...this.actor.poolAttributes().keys()]
+			.map(key => this.actor.attributes.get(key)?.attribute_def)
+			.map(def => <TargetPool>{ id: def?.id, name: def?.name, fullName: def?.resolveFullName })
+	}
 }
 
 /**
@@ -556,6 +562,8 @@ interface BaseActorGURPS extends Actor {
 	// deepItems: Collection<ItemGURPS>
 	attributes: Map<string, Attribute>
 	traits: Collection<TraitGURPS | TraitContainerGURPS>
+	poolAttributes(includeSeparators?: boolean): Map<string, Attribute>
+
 	// Temp
 	system: ActorSystemData
 	_source: BaseActorSourceGURPS
