@@ -1,4 +1,3 @@
-import { HitLocation } from "@actor"
 import { SETTINGS, SYSTEM_NAME } from "@module/data"
 import { PDF } from "@module/pdf"
 import { toWord } from "@util/misc"

@@ -8,6 +8,7 @@ type DamageType = {
 	unliving: number
 	homogenous: number
 	diffuse: number
+	pool?: string
 }
 
 const DamageTypes = {
@@ -58,6 +59,7 @@ const DamageTypes = {
 		unliving: 1,
 		homogenous: 1,
 		diffuse: 1,
+		pool: "fp",
 	},
 	imp: <DamageType>{
 		key: "imp",

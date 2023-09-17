@@ -44,6 +44,7 @@ export enum SETTINGS {
 	COLORS = "colors",
 	SHOW_IMPORT_BUTTON = "show_import_button",
 	DEFAULT_ATTRIBUTES = "default_attributes",
+	DAMAGE_TYPES = "damage_types",
 	DEFAULT_RESOURCE_TRACKERS = "default_resource_trackers",
 	DEFAULT_HIT_LOCATIONS = "default_hit_locations",
 	DEFAULT_SHEET_SETTINGS = "default_sheet_settings",

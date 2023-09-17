@@ -1048,12 +1048,7 @@ class DamageCalculator {
 	get damagePoolID(): string {
 		// defender.actor.poolAttributes()
 		if (this.overrides.damagePool) return this.overrides.damagePool
-		switch (this.damageType) {
-			case DamageTypes.fat:
-				return "fp"
-			default:
-				return "hp"
-		}
+		return this.damageType.pool ?? "hp"
 	}
 
 	get damagePools(): TargetPool[] {

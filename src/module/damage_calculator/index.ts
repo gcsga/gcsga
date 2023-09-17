@@ -2,7 +2,7 @@ import { DiceGURPS } from "../dice"
 import { DamageType, DamageTypes } from "./damage_type"
 import { HitLocationTable } from "@actor/character/hit_location"
 import { DamagePayload } from "./damage_chat_message"
-import { SETTINGS, SYSTEM_NAME } from "../data"
+import { SETTINGS, SYSTEM_NAME } from "@module/data"
 
 /**
  * DamageRoll is the parameter that is sent in (along with DamageTarget) to the DamageCalculator.
