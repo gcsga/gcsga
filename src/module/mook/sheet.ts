@@ -32,7 +32,7 @@ class MookGeneratorSheet extends FormApplication {
 	}
 
 	get title(): string {
-		return LocalizeGURPS.translations.gurps.system.mook_generator.title
+		return LocalizeGURPS.translations.gurps.system.mook.title
 	}
 
 	activateListeners(html: JQuery<HTMLElement>): void {
@@ -68,7 +68,7 @@ class MookGeneratorSheet extends FormApplication {
 		// 			sheetClass: `${SYSTEM_NAME}.MookGeneratorSheet`,
 		// 		},
 		// 	},
-		// 	name: LocalizeGURPS.translations.gurps.system.mook_generator.name,
+		// 	name: LocalizeGURPS.translations.gurps.system.mook.name,
 		// 	type: ActorType.Character,
 		// 	system: {
 		// 		version: 4,
@@ -79,7 +79,7 @@ class MookGeneratorSheet extends FormApplication {
 		// 			...settings.settings,
 		// 		},
 		// 		profile: mergeObject(SETTINGS_TEMP.general.auto_fill, {
-		// 			name: LocalizeGURPS.translations.gurps.system.mook_generator.name,
+		// 			name: LocalizeGURPS.translations.gurps.system.mook.name,
 		// 			player_name: game.user.name!,
 		// 			tech_level: settings.tech_level,
 		// 		}),

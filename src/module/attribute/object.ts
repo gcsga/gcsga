@@ -1,7 +1,7 @@
 import { ActorFlags } from "@actor/base/data"
 import { AttributeBonusLimitation } from "@feature/attribute_bonus"
 import { gid, SYSTEM_NAME } from "@module/data"
-import { sanitize, VariableResolver } from "@util"
+import { sanitizeId, VariableResolver } from "@util"
 import { AttributeDef } from "./attribute_def"
 import { AttributeObj, AttributeType, reserved_ids } from "./data"
 import { PoolThreshold } from "./pool_threshold"
@@ -68,7 +68,7 @@ export class Attribute {
 	}
 
 	set id(v: string) {
-		this.attr_id = sanitize(v, false, reserved_ids)
+		this.attr_id = sanitizeId(v, false, reserved_ids)
 	}
 
 	get attribute_def(): AttributeDef {

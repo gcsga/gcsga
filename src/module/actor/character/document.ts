@@ -1129,6 +1129,9 @@ class CharacterGURPS extends BaseActorGURPS {
 				pools[e.id] = { value: e.current, min: -Infinity, max: e.max }
 			}
 		})
+		this.resource_trackers.forEach(e => {
+			pools[e.id] = { value: e.current, min: e.min, max: e.max }
+		})
 		this.system.pools = pools
 	}
 

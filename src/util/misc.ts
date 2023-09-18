@@ -39,13 +39,7 @@ import { v4 as uuidv4 } from "uuid"
 // 	return result
 // }
 
-/**
- *
- * @param id
- * @param permit_leading_digits
- * @param reserved
- */
-export function sanitize(id: string, permit_leading_digits: boolean, reserved: string[]): string {
+export function sanitizeId(id: string, permit_leading_digits: boolean, reserved: string[]): string {
 	const buffer: string[] = []
 	for (let ch of id.split("")) {
 		if (ch.match("[A-Z]")) ch = ch.toLowerCase()
@@ -69,6 +63,24 @@ export function sanitize(id: string, permit_leading_digits: boolean, reserved: s
 	// Cannot reach
 	return ""
 }
+
+export function sanitize(text: string): string {
+	text = text.replace(/%(?![0-9][0-9a-fA-F]+)/g, "%25")
+	text = decodeURIComponent(text) // convert % (not followed by 2 digit hex) to %25, unicode characters into html format
+	text = text.replace(/&nbsp;/g, " ") // we need to convert non-breaking spaces into regular spaces for parsing
+	text = text.replace(/&amp;/g, "&") // we need to convert to & for easier parsing
+	text = text.replace(/&minus;/g, "-") // we need to convert to - for easier parsing
+	text = text.replace(/&plus;/g, "+") // we need to convert to - for easier parsing
+	text = text.replace(/(&#215;|&#xD7;|&times)/g, "x") // we need to convert the multiplication symbol to x for easier parsing
+	text = text.replace(/(<([^>]+)>)/gi, "") // remove <html> tags
+	text = text.replace(/(\u201c|\u201d)/g, '"') // double quotes
+	text = text.replace(/&quot;/g, '"') // double quotes
+	text = text.replace(/&#x27;/g, "'") // single quotes
+	text = text.replace(/\u2011/g, "-") // replace non-breaking hyphon with a minus sign
+	text = text.replace(/\u2212/g, "-") // unicode minus to minus
+	return text
+}
+
 
 /**
  *

@@ -1,5 +1,5 @@
 import { PoolThreshold, reserved_ids } from "@module/attribute"
-import { sanitize, VariableResolver } from "@util"
+import { sanitizeId, VariableResolver } from "@util"
 import { ResourceTrackerDefObj } from "./data"
 
 export class ResourceTrackerDef {
@@ -39,7 +39,7 @@ export class ResourceTrackerDef {
 	}
 
 	set id(v: string) {
-		this._id = sanitize(v, false, reserved_ids)
+		this._id = sanitizeId(v, false, reserved_ids)
 	}
 
 	get resolveFullName(): string {
