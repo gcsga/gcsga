@@ -53,7 +53,7 @@ class ApplyDamageDialog extends Application {
 	}
 
 	get title() {
-		return "Apply Damage"
+		return game.i18n.localize("Apply Damage")
 	}
 
 	getData(options?: Partial<ApplicationOptions> | undefined): object {
