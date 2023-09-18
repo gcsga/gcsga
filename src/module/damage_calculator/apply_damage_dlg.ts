@@ -36,7 +36,7 @@ class ApplyDamageDialog extends Application {
 	private constructor(roll: DamageRoll, target: DamageTarget, options = {}) {
 		super(options)
 		console.log(target)
-		this.calculator = new DamageCalculator(roll, target)
+		this.calculator = new DamageCalculator(roll, target, game.i18n.format)
 	}
 
 	static get defaultOptions(): ApplicationOptions {
@@ -45,7 +45,7 @@ class ApplyDamageDialog extends Application {
 			minimizable: false,
 			resizable: true,
 			width: 0,
-			height: 0,
+			height: "auto",
 			id: "ApplyDamageDialog",
 			template: `systems/${SYSTEM_NAME}/templates/damage_calculator/apply-damage.hbs`,
 			classes: ["apply-damage", "gurps"],
@@ -64,13 +64,6 @@ class ApplyDamageDialog extends Application {
 			results: this.calculator.results,
 			choices: this.choices,
 			books,
-
-			target: this.target,
-			armorDivisorSelect: this.armorDivisorText,
-			hitLocation: this.hitLocation,
-			vulnerabilities: this.vulnerabilities,
-			injuryTolerance: this.injuryTolerance,
-			damageReduction: this.damageReduction,
 		})
 		return data
 	}
@@ -148,6 +141,17 @@ class ApplyDamageDialog extends Application {
 				this.calculator.overrideVulnerability = isNaN(value) ? undefined : value
 				break
 			}
+
+			case "tolerance-select": {
+				this.calculator.overrideInjuryTolerance = target.value
+				break
+			}
+
+			case "override-reduction": {
+				const value = parseFloat(target.value)
+				this.calculator.overrideDamageReduction = isNaN(value) ? undefined : value
+				break
+			}
 		}
 
 		this.render(true)
@@ -180,7 +184,6 @@ class ApplyDamageDialog extends Application {
 			case "apply-vulnerability":
 				const index = parseInt(target.dataset.index)
 				this.calculator.applyVulnerability(index, target.checked)
-				break
 		}
 
 		this.render(true)
@@ -233,13 +236,6 @@ class ApplyDamageDialog extends Application {
 		return results
 	}
 
-	private get injuryTolerance(): number {
-		if (this.target.isDiffuse) return 3
-		if (this.target.isHomogenous) return 2
-		if (this.target.isUnliving) return 1
-		return 0
-	}
-
 	private get damageReduction(): number {
 		let trait = this.target.getTraits(Injury_Tolerance).find(it => !!it.getModifier(Damage_Reduction))
 		if (!trait) trait = this.target.getTrait(InjuryTolerance_DamageReduction)
@@ -249,11 +245,9 @@ class ApplyDamageDialog extends Application {
 	private get choices() {
 		return {
 			hardened: hardenedChoices,
-			vulnerability: vulnerabilityChoices,
-			damageReduction: damageReductionChoices,
-			injuryTolerance: injuryToleranceChoices,
 			pool: poolChoices,
 			damageType: this.damageTypeChoice,
+			vulnerability: vulnerabilityChoices,
 			hitlocation: this.hitLocationChoice,
 		}
 	}
@@ -269,24 +263,6 @@ class ApplyDamageDialog extends Application {
 		this.target.hitLocationTable.locations.forEach(it => (choice[it.id] = it.choice_name))
 		return choice
 	}
-
-	private get armorDivisorText() {
-		const key = this.calculator.armorDivisor === -1 ? "-1" : this.calculator.armorDivisor
-		return armorDivisorChoices[key]
-	}
-}
-
-const armorDivisorChoices: Record<number, string> = {
-	0: "Ignores DR",
-	100: "(100)",
-	10: "(10)",
-	5: "(5)",
-	3: "(3)",
-	2: "(2)",
-	1: "No Divisor",
-	0.5: "(0.5)",
-	0.2: "(0.2)",
-	0.1: "(0.1)",
 }
 
 const hardenedChoices = {
@@ -304,21 +280,6 @@ const vulnerabilityChoices = {
 	2: "×2",
 	3: "×3",
 	4: "×4",
-}
-
-const damageReductionChoices = {
-	0: "Custom",
-	1: "None",
-	2: "2",
-	3: "3",
-	4: "4",
-}
-
-const injuryToleranceChoices = {
-	0: "None",
-	1: "Unliving",
-	2: "Homogenous",
-	3: "Diffuse",
 }
 
 const poolChoices = {

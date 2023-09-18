@@ -190,17 +190,14 @@ export interface DamageTarget {
 	getTraits(name: string): TargetTrait[]
 	//
 	hasTrait(name: string): boolean
-	// This.hasTrait("Injury Tolerance (Unliving)").
-	isUnliving: boolean
-	// This.hasTrait("Injury Torance (Homogenous)").
-	isHomogenous: boolean
-	// This.hasTrait("Injury Tolerance (Diffuse)").
-	isDiffuse: boolean
+	// Return None, Unliving, Homogenous, or Diffuse.
+	injuryTolerance: "None" | "Unliving" | "Homogenous" | "Diffuse"
 	// Subtract value from HitPoints
 	incrementDamage(delta: number): void
 }
 
 export interface TargetTrait {
+	// TODO change this method to accept a Regex expression for advanced searching.
 	getModifier(name: string): TargetTraitModifier | undefined
 	levels: number
 	name: string | null

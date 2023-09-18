@@ -439,7 +439,7 @@ class DamageTargetActor implements DamageTarget {
 		return !!this.getTrait(name)
 	}
 
-	get isUnliving(): boolean {
+	private get isUnliving(): boolean {
 		// Try "Injury Tolerance (Unliving)" and "Unliving"
 		if (this.hasTrait("Unliving")) return true
 		if (!this.hasTrait("Injury Tolerance")) return false
@@ -447,18 +447,25 @@ class DamageTargetActor implements DamageTarget {
 		return !!trait?.getModifier("Unliving")
 	}
 
-	get isHomogenous(): boolean {
+	private get isHomogenous(): boolean {
 		if (this.hasTrait("Homogenous")) return true
 		if (!this.hasTrait("Injury Tolerance")) return false
 		let trait = this.getTrait("Injury Tolerance")
 		return !!trait?.getModifier("Homogenous")
 	}
 
-	get isDiffuse(): boolean {
+	private get isDiffuse(): boolean {
 		if (this.hasTrait("Diffuse")) return true
 		if (!this.hasTrait("Injury Tolerance")) return false
 		let trait = this.getTrait("Injury Tolerance")
 		return !!trait?.getModifier("Diffuse")
+	}
+
+	get injuryTolerance(): "None" | "Unliving" | "Homogenous" | "Diffuse" {
+		if (this.isDiffuse) return "Diffuse"
+		if (this.isHomogenous) return "Homogenous"
+		if (this.isUnliving) return "Unliving"
+		return "None"
 	}
 }
 
