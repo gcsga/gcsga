@@ -11,6 +11,9 @@
 	-	create object type/interface for Mook, acts as simplified actor model
 	-	grab simplified version of attributes from default settings (not editable in sheet)
 	-	keep simple textbox parsing as for previous version
+	-	implement name matching from imported libraries
+	-	warning tag on simplified mook items as not having full functionality
+		-	option to suppress
 
 ## Jeff and Chris
 
