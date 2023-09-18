@@ -8,6 +8,7 @@ import { DefaultHitLocationSettings } from "./hit_locations"
 import { DefaultResourceTrackerSettings } from "./resource_trackers"
 import { RollModifierSettings } from "./roll_modifiers"
 import { DefaultSheetSettings } from "./sheet_settings"
+import { DamageTypeSettings } from "@module/settings/damage_type"
 
 /**
  *
@@ -34,6 +35,16 @@ export function registerSettings(): void {
 		restricted: false,
 	})
 	DefaultAttributeSettings.registerSettings()
+
+	game.settings.registerMenu(SYSTEM_NAME, SETTINGS.DAMAGE_TYPES, {
+		name: "gurps.settings.damage_types.name",
+		label: "gurps.settings.damage_types.label",
+		hint: "gurps.settings.damage_types.hint",
+		icon: "gcs-melee-weapon",
+		type: DamageTypeSettings,
+		restricted: false,
+	})
+	DamageTypeSettings.registerSettings()
 
 	game.settings.registerMenu(SYSTEM_NAME, SETTINGS.DEFAULT_RESOURCE_TRACKERS, {
 		name: "gurps.settings.default_resource_trackers.name",

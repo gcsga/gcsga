@@ -1,0 +1,54 @@
+<form autocomplete="off" onsubmit="event.preventDefault();">
+	<section class="content">
+		<div class="add">
+			<a class="gcs-circled-add add" data-action="add-damage"></a>
+		</div>
+		<div class="item-list">
+			{{#each types}}
+				<div class="item" data-id="{{this.id}}" data-index="{{@index}}">
+					<div class="controls">
+						<a class="gcs-trash delete" data-index="{{@index}}" data-action="delete-type"></a>
+					</div>
+					<div class="fieldblock">
+						<div class="label">{{localize "gurps.settings.damage_types.id"}}</div>
+						<div class="field">
+							<input
+								type="text"
+								name="array.system.settings.damagetypes.{{@index}}.id"
+								value="{{id}}"
+								data-dtype="String"
+							/>
+						</div>
+						<div class="label">{{localize "gurps.settings.damage_types.short_name"}}</div>
+						<div class="field">
+							<input
+								type="text"
+								name="array.system.settings.damagetypes.{{@index}}.short_name"
+								value="{{short_name}}"
+								data-dtype="String"
+							/>
+						</div>
+						<div class="label">{{localize "gurps.settings.damage_types.full_name"}}</div>
+						<div class="field">
+							<input
+								type="text"
+								name="array.system.settings.damagetypes.{{@index}}.full_name"
+								value="{{full_name}}"
+								data-dtype="String"
+							/>
+						</div>
+						<div class="label">{{localize "gurps.settings.damage_types.pool_id"}}</div>
+						<div class="field">
+							<input
+								type="text"
+								name="array.system.settings.damagetypes.{{@index}}.pool_id"
+								value="{{pool_id}}"
+								data-dtype="String"
+							/>
+						</div>
+					</div>
+				</div>
+			{{/each}}
+		</div>
+	</section>
+</form>

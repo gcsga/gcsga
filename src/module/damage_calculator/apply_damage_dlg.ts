@@ -1,4 +1,3 @@
-import { HitLocation } from "@actor"
 import { SETTINGS, SYSTEM_NAME } from "@module/data"
 import { PDF } from "@module/pdf"
 import { toWord } from "@util/misc"
@@ -61,7 +60,6 @@ class ApplyDamageDialog extends Application {
 
 		const data = mergeObject(super.getData(options), {
 			calculator: this.calculator,
-			results: this.calculator.results,
 			choices: this.choices,
 			books,
 		})
@@ -223,29 +221,9 @@ class ApplyDamageDialog extends Application {
 		return this.calculator.target
 	}
 
-	private get hitLocation(): HitLocation | undefined {
-		return HitLocationUtil.getHitLocation(this.target.hitLocationTable, this.calculator.damageRoll.locationId)
-	}
-
-	private get vulnerabilities(): string[] {
-		let results = []
-		const traits = this.target.getTraits(Vulnerability)
-		for (const trait of traits) {
-			results.push(trait.modifiers.map(it => it.name).join("; "))
-		}
-		return results
-	}
-
-	private get damageReduction(): number {
-		let trait = this.target.getTraits(Injury_Tolerance).find(it => !!it.getModifier(Damage_Reduction))
-		if (!trait) trait = this.target.getTrait(InjuryTolerance_DamageReduction)
-		return trait?.levels ?? 1
-	}
-
 	private get choices() {
 		return {
 			hardened: hardenedChoices,
-			pool: poolChoices,
 			damageType: this.damageTypeChoice,
 			vulnerability: vulnerabilityChoices,
 			hitlocation: this.hitLocationChoice,
@@ -254,7 +232,7 @@ class ApplyDamageDialog extends Application {
 
 	private get damageTypeChoice(): Record<string, string> {
 		let results: Record<string, string> = {}
-		Object.entries(DamageTypes).map(e => (results[e[0]] = e[1].label))
+		Object.entries(DamageTypes).map(e => (results[e[0]] = e[1].full_name))
 		return results
 	}
 
@@ -280,12 +258,6 @@ const vulnerabilityChoices = {
 	2: "×2",
 	3: "×3",
 	4: "×4",
-}
-
-const poolChoices = {
-	hp: "Hit Points",
-	fp: "Fatigue Points",
-	cp: "Control Points",
 }
 
 export { ApplyDamageDialog }

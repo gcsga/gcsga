@@ -28,8 +28,12 @@
 				class="{{overridden calculator.overrideBasicDamage}}"
 			/>
 
-			<select name="pool" disabled>
-				{{selectOptions choices.pool value="hp"}}
+			<select name="pool">
+				{{#select calculator.damagePoolID}}
+					{{#each calculator.damagePools}}
+						<option value="{{id}}">{{fullName}}</option>
+					{{/each}}
+				{{/select}}
 			</select>
 
 			<button type="button" class="gcs-checkmark" data-action="apply-basic">{{localize
@@ -288,7 +292,53 @@
 
 	<div id="results">
 		<div id="effects">
+			{{!--
+			<div class="header">{{localize "gurps.dmgcalc.effects"}}</div>
+			<div class="fieldblock">
+				<div class="label">{{localize "gurps.dmgcalc.knockback"}}</div>
+				<div class="field">
+					{{calculator.results.knockback}}
+				</div>
+				<div class="label ref" data-pdf="B378">B378</div>
 
+				<div class="label">{{localize "gurps.dmgcalc.knockdown"}}</div>
+				<div class="field">
+					{{calculator.results.knockdown}}
+				</div>
+				<div class="label ref" data-pdf="B378">B378</div>
+
+				<div class="label">{{localize "gurps.dmgcalc.knockdown_recovery"}}</div>
+				<div class="field">
+					{{calculator.results.knockdownRecovery}}
+				</div>
+				<div class="label ref" data-pdf="B378">B378</div>
+
+				<div class="label">{{localize "gurps.dmgcalc.stun"}}</div>
+				<div class="field">
+					{{calculator.results.stun}}
+				</div>
+				<div class="label ref" data-pdf="B378">B378</div>
+
+				<div class="label">{{localize "gurps.dmgcalc.stun_recovery"}}</div>
+				<div class="field">
+					{{calculator.results.stunRecovery}}
+				</div>
+				<div class="label ref" data-pdf="B378">B378</div>
+
+				<div class="label">{{localize "gurps.dmgcalc.knockout"}}</div>
+				<div class="field">
+					{{calculator.results.knockout}}
+				</div>
+				<div class="label ref" data-pdf="B378">B378</div>
+
+				<div class="label">{{localize "gurps.dmgcalc.knockout_recovery"}}</div>
+				<div class="field">
+					{{calculator.results.knockoutRecovery}}
+				</div>
+				<div class="label ref" data-pdf="B378">B378</div>
+
+				<div class="label">{{localize "gurps.dmgcalc.major_wound"}}</div>
+			--}}
 		</div>
 		<div id="calc">
 			<div class="table">

@@ -1393,6 +1393,15 @@
 				"condition": "Condition",
 				"action": "Action"
 			},
+			"damage_types": {
+				"name": "Damage Types",
+				"label": "Edit Damage Types",
+				"hint": "Damage Types mapped to an Attribute Pool.",
+				"id": "ID",
+				"short_name": "Short Name",
+				"full_name": "Full Name",
+				"pool_id": "Pool ID"
+			},
 			"default_resource_trackers": {
 				"name": "Default Resource Trackers",
 				"label": "Edit Default Resource Trackers",
