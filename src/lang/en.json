@@ -1393,6 +1393,15 @@
 				"condition": "Condition",
 				"action": "Action"
 			},
+			"damage_types": {
+				"name": "Damage Types",
+				"label": "Edit Damage Types",
+				"hint": "Damage Types mapped to an Attribute Pool.",
+				"id": "ID",
+				"short_name": "Short Name",
+				"full_name": "Full Name",
+				"pool_id": "Pool ID"
+			},
 			"default_resource_trackers": {
 				"name": "Default Resource Trackers",
 				"label": "Edit Default Resource Trackers",
@@ -1451,7 +1460,7 @@
 			"apply": "Apply",
 			"apply-to": "Apply to"
 		},
-		"damage": {
+		"dmgcalc": {
 			"armor_divisor": {
 				"ignores_dr": "Ignores DR",
 				"no_divisor": "No Divisor"
@@ -1461,6 +1470,28 @@
 			"damage_reduction": "Damage Reduction",
 			"damage_pool": {
 				"hp": "HP"
+			},
+			"description": {
+				"armor_divisor": "Armor Divisor ({divisor})",
+				"armor_divisor_ignores": "Armor Divisor (Ignores DR)",
+				"blunt_trauma": "Blunt Trauma",
+				"damage_location": "{type}, {location}",
+				"damage_reduction": "= {injury} ÷ {reduction} (Damage Reduction)",
+				"diffuse": "Diffuse (ignores hit location)",
+				"diffuse_max": "Maximum {value} (Diffuse)",
+				"explosion_internal": "Explosion (Internal)",
+				"explosion_outofrange": "Explosion; Out of range",
+				"explosion_range": "Explosion; {range} yards",
+				"fatigue": "Fatigue ignores Hit Location",
+				"ignores_dr": "Ignores DR",
+				"knockback_only": "Knockback only",
+				"large_area_injury": "Large Injury Area",
+				"location_max": "Maximum {value} ({location})",
+				"no_brain": "No Brain",
+				"ranged_halfd": "Ranged, 1/2D",
+				"shotgun": "Shotgun, extremely close (×{multiplier})",
+				"tight_beam_burn": "Tight beam burning, {location}",
+				"vulnerability": "= {modifier} × {vulnerability} (Vulnerability)"
 			},
 			"explosion": "Explosion",
 			"flexible": "Flexible Armor",
