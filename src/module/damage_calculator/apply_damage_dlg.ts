@@ -232,7 +232,7 @@ class ApplyDamageDialog extends Application {
 
 	private get damageTypeChoice(): Record<string, string> {
 		let results: Record<string, string> = {}
-		Object.entries(DamageTypes).map(e => (results[e[0]] = e[1].label))
+		Object.entries(DamageTypes).map(e => (results[e[0]] = e[1].full_name))
 		return results
 	}
 

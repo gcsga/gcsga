@@ -393,11 +393,11 @@ class DamageCalculator {
 		if (this.woundingModifierByHitLocation) return this.woundingModifierByHitLocation
 
 		const standardMessage = this.format("gurps.dmgcalc.description.damage_location", {
-			type: this.format(`gurps.dmgcalc.type.${this.damageType.key}`),
+			type: this.format(`gurps.dmgcalc.type.${this.damageType.id}`),
 			location: this.damageRoll.locationId,
 		})
 
-		return <[number, string]>[this.damageType.theDefault, standardMessage]
+		return <[number, string]>[this.damageType.woundingModifier, standardMessage]
 	}
 
 	private get woundingModifierByDamageType(): [number, string] | undefined {
@@ -422,7 +422,7 @@ class DamageCalculator {
 			woundingModifier = modifier[0]
 			// reason = modifier[1]
 		} else {
-			woundingModifier = this.damageType.theDefault
+			woundingModifier = this.damageType.woundingModifier
 			// reason = `${this.damageType.key}, ${this.damageRoll.locationId}`
 		}
 		return woundingModifier
@@ -433,7 +433,7 @@ class DamageCalculator {
 	 */
 	private get woundingModifierByHitLocation(): [number, string] | undefined {
 		const standardMessage = this.format("gurps.dmgcalc.description.damage_location", {
-			type: this.format(`gurps.dmgcalc.type.${this.damageType.key}`),
+			type: this.format(`gurps.dmgcalc.type.${this.damageType.id}`),
 			location: this.damageRoll.locationId,
 		})
 
@@ -508,10 +508,10 @@ class DamageCalculator {
 
 		// No Brain has no extra wounding modifier if hit location is skull or eye.
 		if (this.target.hasTrait("No Brain") && ["skull", "eye"].includes(this.damageRoll.locationId))
-			return [this.damageType.theDefault, this.format("gurps.dmgcalc.description.no_brain")]
+			return [this.damageType.woundingModifier, this.format("gurps.dmgcalc.description.no_brain")]
 
 		if (this.isDiffuse && this.woundingModifierByHitLocation) {
-			return [this.damageType.theDefault, this.format("gurps.dmgcalc.description.diffuse")]
+			return [this.damageType.woundingModifier, this.format("gurps.dmgcalc.description.diffuse")]
 		}
 
 		return undefined
@@ -598,7 +598,7 @@ class DamageCalculator {
 		return (
 			this.isFlexibleArmor &&
 			results.penetratingDamage!.value === 0 &&
-			this.isBluntTraumaDamageType &&
+			this.damageType.bluntTraumaDivisor > 1 &&
 			this.bluntTrauma(results) > 0
 		)
 	}
@@ -607,33 +607,10 @@ class DamageCalculator {
 	 * @returns {number} the amount of blunt trauma damage, if any.
 	 */
 	private bluntTrauma(results: DamageResults): number {
-		if (this.damageType === DamageTypes.fat) return 0
-
 		if (results.penetratingDamage!.value > 0 || !this.isFlexibleArmor) return 0
-		return this.bluntTraumaDivisor > 0 ? Math.floor(results.basicDamage!.value / this.bluntTraumaDivisor) : 0
-	}
-
-	/**
-	 * @returns {number} the divisor used to determine amount of blunt trauma; this is a fraction
-	 * of the total damage done.
-	 */
-	private get bluntTraumaDivisor(): number {
-		if (!this.isFlexibleArmor) return 1
-		if (this.damageType === DamageTypes.cr) return 5
-		return [
-			DamageTypes.cut,
-			DamageTypes.imp,
-			DamageTypes.pi,
-			DamageTypes["pi-"],
-			DamageTypes["pi+"],
-			DamageTypes["pi++"],
-		].includes(this.damageType)
-			? 10
-			: 1
-	}
-
-	private get isBluntTraumaDamageType(): boolean {
-		return [DamageTypes.cr, DamageTypes.cut, DamageTypes.imp, ...AnyPiercingType].includes(this.damageType)
+		return this.damageType.bluntTraumaDivisor > 0
+			? Math.floor(results.basicDamage!.value / this.damageType.bluntTraumaDivisor)
+			: 0
 	}
 
 	/**
@@ -881,7 +858,7 @@ class DamageCalculator {
 	}
 
 	get damageTypeKey(): string {
-		return this.damageType.key
+		return this.damageType.id
 	}
 
 	set overrideDamageType(key: string | undefined) {
@@ -893,7 +870,7 @@ class DamageCalculator {
 	}
 
 	get overrideDamageType(): string | undefined {
-		return this.overrides.damageType?.key
+		return this.overrides.damageType?.id
 	}
 
 	// --- Armor Divisor ---
@@ -1048,7 +1025,7 @@ class DamageCalculator {
 	get damagePoolID(): string {
 		// defender.actor.poolAttributes()
 		if (this.overrides.damagePool) return this.overrides.damagePool
-		return this.damageType.pool ?? "hp"
+		return this.damageType.pool_id ?? "hp"
 	}
 
 	get damagePools(): TargetPool[] {
