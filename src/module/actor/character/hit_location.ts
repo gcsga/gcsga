@@ -2,10 +2,7 @@ import { ActorType, gid } from "@module/data"
 import { DiceGURPS } from "@module/dice"
 import { TooltipGURPS } from "@module/tooltip"
 import { LocalizeGURPS } from "@util"
-
-/**
- * Breaking these out into their own file so as to not be dependent on any other types.
- */
+import { CharacterGURPS } from "./document"
 
 export interface HitLocationTable {
 	name: string
@@ -21,9 +18,10 @@ export interface HitLocationTableData {
 }
 
 export class HitLocation {
-	actor: Actor
+	// actor: CharacterGURPS
 
-	owningTable: HitLocationTable
+	private _actor: string
+	// private _owningTable: HitLocationTable
 
 	id: string
 
@@ -46,7 +44,7 @@ export class HitLocation {
 	calc: any
 
 	// TODO: change "any" to something accepting both CharacterGURPS and other (for testing?)
-	constructor(actor: any, owningTable: HitLocationTable, data?: HitLocationData) {
+	constructor(actor: CharacterGURPS, data?: HitLocationData) {
 		this.id = "id"
 		if (typeof game !== "undefined") {
 			this.choice_name = LocalizeGURPS.translations.gurps.placeholder.hit_location.choice_name
@@ -59,17 +57,49 @@ export class HitLocation {
 		this.hit_penalty = 0
 		this.dr_bonus = 0
 		this.description = ""
-		this.actor = actor
-		this.owningTable = owningTable
+		this._actor = actor.uuid
 		this.roll_range = "-"
 		this.calc = { roll_range: "-", dr: {} }
 
 		if (data) {
 			Object.assign(this, data)
-			if (this.sub_table)
+			if (this.sub_table) {
 				for (let i = 0; i < this.sub_table?.locations.length; i++) {
-					this.sub_table!.locations[i] = new HitLocation(actor, this.sub_table!, this.sub_table!.locations[i])
+					this.sub_table!.locations[i] = new HitLocation(actor, this.sub_table!.locations[i])
 				}
+			}
+		}
+	}
+
+	get actor(): CharacterGURPS {
+		return fromUuidSync(this._actor) as CharacterGURPS
+	}
+
+	get owningTable(): HitLocationTable | undefined {
+		const recurseLocation = function(location: HitLocation): HitLocation[] {
+			const children: HitLocation[] = []
+			location.sub_table?.locations?.forEach(e => {
+				children.push(e)
+				children.push(...recurseLocation(e))
+			})
+			return children
+		}
+		const hit_locations: HitLocation[] = []
+		this.actor.HitLocations.forEach(e => {
+			hit_locations.push(e)
+			hit_locations.push(...recurseLocation(e))
+		})
+
+		if (this.actor.HitLocations.some(e => e.id === this.id)) return this.actor.BodyType
+		const owningLocation = hit_locations.find(e => e.sub_table?.locations.some(e => e.id === this.id))
+		if (!owningLocation) {
+			console.error(`Location ${this.id} somehow has no parent table`)
+			return
+		}
+
+		return {
+			...owningLocation.sub_table!,
+			owningLocation
 		}
 	}
 
@@ -96,7 +126,10 @@ export class HitLocation {
 			)
 		}
 		if (this.actor.type === ActorType.Character)
-			drMap = (this.actor as any).addDRBonusesFor(this.id, tooltip, drMap)
+			drMap = this.actor.addDRBonusesFor(this.id, tooltip, drMap)
+		if (this.owningTable?.owningLocation) {
+			drMap = this.owningTable.owningLocation._DR(tooltip, drMap)
+		}
 		for (const k of drMap.keys()) {
 			if (k === gid.All) continue
 			drMap.set(k, drMap.get(k)! + (drMap.get(gid.All) ?? 0))
@@ -125,9 +158,6 @@ export class HitLocation {
 			LocalizeGURPS.format(LocalizeGURPS.translations.gurps.tooltip.dr_name, { name: this.table_name })
 		)
 
-		if (this.owningTable?.owningLocation) {
-			drMap = this.owningTable.owningLocation._DR(tooltip, drMap)
-		}
 		// If (tooltip && drMap?.entries.length !== 0) {
 		// 	drMap?.forEach(e => {
 		// 		tooltip.push(`TODO: ${e}`)
@@ -152,7 +182,7 @@ export class HitLocation {
 	updateRollRange(start: number): number {
 		// This.calc ??= { roll_range: "", dr: {} }
 		this.slots ??= 0
-		if (this.slots === 0) this.roll_range = "-"
+		if (this.slots === 0) this.roll_range = ""
 		else if (this.slots === 1) this.roll_range = start.toString()
 		else {
 			this.roll_range = `${start}-${start + this.slots - 1}`

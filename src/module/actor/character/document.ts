@@ -749,7 +749,7 @@ class CharacterGURPS extends BaseActorGURPS {
 		}
 		let start = new DiceGURPS(b.roll).minimum(false)
 		for (const l of b.locations) {
-			const loc = new HitLocation(this, body, l)
+			const loc = new HitLocation(this, l)
 			start = loc.updateRollRange(start)
 			body.locations.push(loc)
 		}
@@ -1720,8 +1720,15 @@ class CharacterGURPS extends BaseActorGURPS {
 		tooltip: TooltipGURPS | null = null,
 		drMap: Map<string, number> = new Map()
 	): Map<string, number> {
+		const isTopLevel = this.HitLocations.some(e => e.id === locationID)
+
 		for (const f of this.features.drBonuses) {
-			if (f.type === "dr_bonus" && equalFold(locationID, f.location)) {
+			if (f.type === FeatureType.DRBonus &&
+				(
+					(f.location === gid.All && isTopLevel) ||
+					equalFold(locationID, f.location)
+				)
+			) {
 				const current = drMap.has(f.specialization!.toLowerCase())
 					? drMap.get(f.specialization!.toLowerCase()) || 0
 					: 0

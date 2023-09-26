@@ -27,7 +27,10 @@ class EquipmentGURPS extends ItemGCS {
 
 	override get notes(): string {
 		let outString = '<div class="item-notes">'
-		if ([DisplayMode.Inline, DisplayMode.InlineAndTooltip].includes(this.actor.settings.modifiers_display)) {
+		let display_mode = (game.settings
+			.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`) as any).modifiers_display as DisplayMode
+		if (this.actor) display_mode = this.actor.settings.modifiers_display
+		if ([DisplayMode.Inline, DisplayMode.InlineAndTooltip].includes(display_mode)) {
 			this.modifiers
 				.filter(e => e.enabled)
 				.forEach((mod, i) => {

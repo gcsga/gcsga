@@ -87,7 +87,7 @@
 			{{#with this.sub_table}}
 			<div class="item-list">
 			{{#each this.locations}}
-			{{>actor/character/config/location path=(concat ../../path "." @index ".sub_table.locations") l=../this.locations.length}}
+				{{>actor/character/config/location path=(concat ../../path "." @../index ".sub_table.locations") l=../this.locations.length}}
 			{{/each}}
 			</div>
 			{{/with}}

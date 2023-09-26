@@ -32,6 +32,7 @@ import EmbeddedCollection from "types/foundry/common/abstract/embedded-collectio
 import { CharacterSheetConfig } from "./config_sheet"
 import { CharacterFlagDefaults, CharacterMove, Encumbrance } from "./data"
 import { CharacterGURPS } from "./document"
+import { HitLocation } from "./hit_location"
 import { PointRecordSheet } from "./points_sheet"
 
 export class CharacterSheetGURPS extends ActorSheetGURPS {
@@ -212,7 +213,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		const element = $(event.currentTarget)
 		const type = element.parent(".item-list")[0].id
 		const ctx = new ContextMenu(html, ".menu", [])
-		ctx.menuItems = (function (self: CharacterSheetGURPS): ContextMenuEntry[] {
+		ctx.menuItems = (function(self: CharacterSheetGURPS): ContextMenuEntry[] {
 			switch (type) {
 				case "traits":
 					return [
@@ -813,15 +814,15 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		const lifting = this.prepareLifts()
 		const moveData = this.prepareMoveData()
 		const overencumbered = this.actor.allEncumbrance.at(-1)!.maximum_carry! < this.actor!.weightCarried(false)
-		const hit_locations = this.actor.HitLocations.map(e => {
-			return {
-				...e,
-				...{
-					displayDR: e.displayDR,
-					tooltip: e.tooltip,
-				},
-			}
-		})
+		// const hit_locations = this.actor.HitLocations.map(e => {
+		// 	return {
+		// 		...e,
+		// 		...{
+		// 			displayDR: e.displayDR,
+		// 			tooltip: e.tooltip,
+		// 		},
+		// 	}
+		// })
 
 		const heightUnits = this.actor.settings.default_length_units
 		const weightUnits = this.actor.settings.default_weight_units
@@ -851,11 +852,11 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 				autoEncumbrance: (this.actor.getFlag(SYSTEM_NAME, ActorFlags.AutoEncumbrance) as any)?.active,
 				autoThreshold: (this.actor.getFlag(SYSTEM_NAME, ActorFlags.AutoThreshold) as any)?.active,
 				overencumbered,
-				hit_locations,
 				skillDefaultsOpen: this.skillDefaultsOpen,
 			},
 		}
 		this.prepareItems(sheetData)
+		this.prepareHitLocations(sheetData)
 		return sheetData
 	}
 
@@ -986,6 +987,35 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		}
 	}
 
+	prepareHitLocations(data: any) {
+		const recurseLocation = function(location: HitLocation, indent = 1): HitLocation[] {
+			const children: HitLocation[] = []
+			location.sub_table?.locations?.forEach(e => {
+				e.calc.indent = indent
+				children.push(e)
+				children.push(...recurseLocation(e, indent + 1))
+			})
+			return children
+		}
+		const hit_locations: HitLocation[] = []
+		this.actor.HitLocations.forEach(e => {
+			e.calc.indent = 0
+			hit_locations.push(e)
+			hit_locations.push(...recurseLocation(e))
+		})
+
+		data.hit_locations = hit_locations.map(e => {
+			return {
+				...e,
+				...{
+					displayDR: e.displayDR,
+					tooltip: e.tooltip,
+				},
+			}
+		})
+
+	}
+
 	// Events
 	async _onEditToggle(event: JQuery.ClickEvent) {
 		event.preventDefault()
@@ -1002,21 +1032,21 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		}
 		const buttons: Application.HeaderButton[] = this.actor.canUserModify(game.user!, "update")
 			? [
-					edit_button,
-					// {
-					// 	label: "",
-					// 	// Label: "Import",
-					// 	class: "import",
-					// 	icon: "fas fa-file-import",
-					// 	onclick: event => this._onFileImport(event),
-					// },
-					{
-						label: "",
-						class: "gmenu",
-						icon: "gcs-all-seeing-eye",
-						onclick: event => this._openGMenu(event),
-					},
-			  ]
+				edit_button,
+				// {
+				// 	label: "",
+				// 	// Label: "Import",
+				// 	class: "import",
+				// 	icon: "fas fa-file-import",
+				// 	onclick: event => this._onFileImport(event),
+				// },
+				{
+					label: "",
+					class: "gmenu",
+					icon: "gcs-all-seeing-eye",
+					onclick: event => this._openGMenu(event),
+				},
+			]
 			: []
 		const all_buttons = [...buttons, ...super._getHeaderButtons()]
 		// All_buttons.at(-1)!.label = ""

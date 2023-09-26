@@ -61,7 +61,7 @@ export interface MookSkill extends _MookItem {
 }
 
 export interface MookSpell extends _MookItem {
-	specialization: string
+	// specialization: string
 	tech_level: string
 	difficulty: `${string}/${Difficulty}`
 	points: number
