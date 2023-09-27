@@ -8,7 +8,6 @@
 - Finish "static" character (0.15 and older) compatibility
  - don't bother with editing features
 - mook generator
- - create object type/interface for Mook, acts as simplified actor model
  - grab simplified version of attributes from default settings (not editable in sheet)
  - keep simple textbox parsing as for previous version
  - implement name matching from imported libraries
