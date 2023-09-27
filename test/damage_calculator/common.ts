@@ -3,6 +3,7 @@ import {
 	DamageAttacker,
 	DamageRoll,
 	DamageTarget,
+	TargetPool,
 	TargetTrait,
 	TargetTraitModifier,
 	Vulnerability,
@@ -53,6 +54,8 @@ export class _Target implements DamageTarget {
 
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	incrementDamage(delta: number): void {}
+
+	pools: TargetPool[] = [{ id: "hp", name: "HP", fullName: "Hit Points" }]
 }
 
 export class _DamageRoll implements DamageRoll {
@@ -104,7 +107,9 @@ interface IDamageCalculator {
 	vulnerabilities: Vulnerability[]
 }
 
-const dummyLocalize = (stringId: string, data?: any) => stringId
+const dummyLocalize = (stringId: string, data?: any) => {
+	return `${stringId}${data ? `:${JSON.stringify(data)}` : ""}`
+}
 
 export const _create = function (roll: DamageRoll, target: DamageTarget): IDamageCalculator {
 	return new DamageCalculator(roll, target, dummyLocalize)
