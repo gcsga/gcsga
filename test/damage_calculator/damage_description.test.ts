@@ -35,7 +35,7 @@ describe("Damage calculator", () => {
 		_roll.dice = new DiceGURPS("2d")
 		_roll.locationId = "torso"
 
-		_torso = new DamageHitLocation(_target, _target.hitLocationTable, {
+		_torso = new DamageHitLocation(_target, ".locations.0", {
 			choice_name: "Torso",
 			description: "",
 			dr_bonus: 0,
@@ -45,7 +45,7 @@ describe("Damage calculator", () => {
 			slots: 2,
 		})
 
-		_vitals = new DamageHitLocation(_target, _target.hitLocationTable, {
+		_vitals = new DamageHitLocation(_target, ".locations.1", {
 			choice_name: "Vitals",
 			description: "",
 			dr_bonus: 0,
@@ -55,7 +55,7 @@ describe("Damage calculator", () => {
 			slots: 0,
 		})
 
-		_skull = new DamageHitLocation(_target, _target.hitLocationTable, {
+		_skull = new DamageHitLocation(_target, ".locations.2", {
 			choice_name: "Skull",
 			description: "",
 			dr_bonus: 2,
@@ -65,7 +65,7 @@ describe("Damage calculator", () => {
 			slots: 0,
 		})
 
-		_eye = new DamageHitLocation(_target, _target.hitLocationTable, {
+		_eye = new DamageHitLocation(_target, ".locations.3", {
 			choice_name: "Eye",
 			description: "",
 			dr_bonus: 0,
@@ -75,7 +75,7 @@ describe("Damage calculator", () => {
 			slots: 0,
 		})
 
-		_face = new DamageHitLocation(_target, _target.hitLocationTable, {
+		_face = new DamageHitLocation(_target, ".locations.4", {
 			choice_name: "Face",
 			description: "",
 			dr_bonus: 0,
@@ -85,7 +85,7 @@ describe("Damage calculator", () => {
 			slots: 1,
 		})
 
-		_neck = new DamageHitLocation(_target, _target.hitLocationTable, {
+		_neck = new DamageHitLocation(_target, ".locations.5", {
 			choice_name: "Face",
 			description: "",
 			dr_bonus: 0,
@@ -95,7 +95,7 @@ describe("Damage calculator", () => {
 			slots: 1,
 		})
 
-		_groin = new DamageHitLocation(_target, _target.hitLocationTable, {
+		_groin = new DamageHitLocation(_target, ".locations.6", {
 			choice_name: "Face",
 			description: "",
 			dr_bonus: 0,
@@ -105,7 +105,7 @@ describe("Damage calculator", () => {
 			slots: 1,
 		})
 
-		_arm = new DamageHitLocation(_target, _target.hitLocationTable, {
+		_arm = new DamageHitLocation(_target, ".locations.7", {
 			choice_name: "Right Arm",
 			description: "",
 			dr_bonus: 0,
@@ -115,7 +115,7 @@ describe("Damage calculator", () => {
 			slots: 1,
 		})
 
-		_leg = new DamageHitLocation(_target, _target.hitLocationTable, {
+		_leg = new DamageHitLocation(_target, ".locations.8", {
 			choice_name: "Right Leg",
 			description: "",
 			dr_bonus: 0,
@@ -125,7 +125,7 @@ describe("Damage calculator", () => {
 			slots: 2,
 		})
 
-		_hand = new DamageHitLocation(_target, _target.hitLocationTable, {
+		_hand = new DamageHitLocation(_target, ".locations.9", {
 			choice_name: "Hand",
 			description: "",
 			dr_bonus: 0,
@@ -135,7 +135,7 @@ describe("Damage calculator", () => {
 			slots: 1,
 		})
 
-		_foot = new DamageHitLocation(_target, _target.hitLocationTable, {
+		_foot = new DamageHitLocation(_target, ".locations.10", {
 			choice_name: "Foot",
 			description: "",
 			dr_bonus: 0,

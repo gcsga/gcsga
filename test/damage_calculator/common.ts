@@ -1,4 +1,4 @@
-import { HitLocation, HitLocationTable } from "@actor/character/hit_location"
+import { HitLocation, HitLocationTable, HitLocationTableData } from "@actor/character/hit_location"
 import {
 	DamageAttacker,
 	DamageRoll,
@@ -42,17 +42,17 @@ export class _Target implements DamageTarget {
 
 	_dummyHitLocationTable = {
 		name: "humanoid",
-		roll: new DiceGURPS("3d"),
+		roll: "3d",
 		// eslint-disable-next-line no-array-constructor
 		locations: new Array<HitLocation>(),
 	}
 
-	get hitLocationTable(): HitLocationTable {
+	get hitLocationTable(): any {
 		return this._dummyHitLocationTable
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	incrementDamage(delta: number): void {}
+	incrementDamage(delta: number): void { }
 }
 
 export class _DamageRoll implements DamageRoll {
@@ -106,7 +106,7 @@ interface IDamageCalculator {
 
 const dummyLocalize = (stringId: string, data?: any) => stringId
 
-export const _create = function (roll: DamageRoll, target: DamageTarget): IDamageCalculator {
+export const _create = function(roll: DamageRoll, target: DamageTarget): IDamageCalculator {
 	return new DamageCalculator(roll, target, dummyLocalize)
 }
 

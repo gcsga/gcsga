@@ -15,7 +15,7 @@ class HitLocationTable {
 		name: string,
 		roll: DiceGURPS | string,
 		locations: HitLocationData[],
-		actor: CharacterGURPS,
+		actor: CharacterGURPS | any,
 		keyPrefix: string,
 	) {
 		this.name = name
@@ -80,7 +80,7 @@ interface HitLocationData {
 	dr_bonus: number
 	description: string
 	sub_table?: HitLocationTableData
-	calc: {
+	calc?: {
 		roll_range: string
 		dr: Record<string, number>
 		[key: string]: any
@@ -95,7 +95,7 @@ class HitLocation {
 	roll_range: string
 	// owningTable?: HitLocationTable
 
-	constructor(actor: CharacterGURPS, keyPrefix: string, data?: HitLocationData) {
+	constructor(actor: CharacterGURPS | any, keyPrefix: string, data?: HitLocationData) {
 		this.actor = actor
 		this.keyPrefix = keyPrefix
 		this.roll_range = ""
@@ -144,7 +144,7 @@ class HitLocation {
 		return this._DR()
 	}
 
-	private _DR(tooltip?: TooltipGURPS, drMap: Map<string, number> = new Map()): Map<string, number> {
+	_DR(tooltip?: TooltipGURPS, drMap: Map<string, number> = new Map()): Map<string, number> {
 		if (this.dr_bonus !== 0) {
 			drMap.set(gid.All, this.dr_bonus)
 			tooltip?.push(
