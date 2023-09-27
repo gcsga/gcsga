@@ -28,6 +28,7 @@ import {
 	DamageTarget,
 	DamageWeapon,
 	HitPointsCalc,
+	TargetPool,
 	TargetTrait,
 	TargetTraitModifier,
 } from "@module/damage_calculator"
@@ -461,6 +462,12 @@ class DamageTargetActor implements DamageTarget {
 		if (this.isUnliving) return "Unliving"
 		return "None"
 	}
+
+	get pools(): TargetPool[] {
+		return [...this.actor.poolAttributes().keys()]
+			.map(key => this.actor.attributes.get(key)?.attribute_def)
+			.map(def => <TargetPool>{ id: def?.id, name: def?.name, fullName: def?.resolveFullName })
+	}
 }
 
 /**
@@ -550,6 +557,8 @@ interface BaseActorGURPS extends Actor {
 	// deepItems: Collection<ItemGURPS>
 	attributes: Map<string, Attribute>
 	traits: Collection<TraitGURPS | TraitContainerGURPS>
+	poolAttributes(includeSeparators?: boolean): Map<string, Attribute>
+
 	// Temp
 	system: ActorSystemData
 	_source: BaseActorSourceGURPS

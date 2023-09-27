@@ -1671,7 +1671,7 @@ describe("Damage calculator", () => {
 						_roll.damageType = type
 						_roll.basicDamage = 11
 						let calc = _create(_roll, _target)
-						if (calc.results.injury!.value === 8) console.debug(`${type.key}:${location}`)
+						if (calc.results.injury!.value === 8) console.debug(`${type.id}:${location}`)
 						expect(calc.results.penetratingDamage!.value).toBe(11)
 						expect(calc.results.injury!.value).toBe(1)
 					}
