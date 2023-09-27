@@ -30,11 +30,9 @@ import {
 	HitPointsCalc,
 	TargetTrait,
 	TargetTraitModifier,
-	Vulnerability,
 } from "@module/damage_calculator"
 import { ApplyDamageDialog } from "@module/damage_calculator/apply_damage_dlg"
 import { DamagePayload } from "@module/damage_calculator/damage_chat_message"
-import { DiceGURPS } from "@module/dice"
 import { ActorDataGURPS, ActorSourceGURPS } from "@module/config"
 import Document, { DocumentModificationOptions, Metadata } from "types/foundry/common/abstract/document.mjs"
 import { BaseUser } from "types/foundry/common/documents.mjs"
@@ -83,11 +81,7 @@ class BaseActorGURPS extends Actor {
 	}
 
 	get hitLocationTable(): HitLocationTable {
-		return {
-			name: "",
-			roll: new DiceGURPS("3d6"),
-			locations: [],
-		}
+		return new HitLocationTable("", "3d", [], this as unknown as CharacterGURPS, "")
 	}
 
 	static override async createDialog(
@@ -145,8 +139,8 @@ class BaseActorGURPS extends Actor {
 		const effects = this.gEffects.map(e => {
 			const overlay = e instanceof ConditionGURPS && e.cid === ConditionID.Dead
 			const a = new ActiveEffect({ name: e.name, icon: e.img || "" } as any)
-			// a.setFlag("core", "overlay", overlay)
-			;(a as any).flags = { core: { overlay: overlay } }
+				// a.setFlag("core", "overlay", overlay)
+				; (a as any).flags = { core: { overlay: overlay } }
 			return a
 		})
 		return super.temporaryEffects.concat(effects)

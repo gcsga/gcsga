@@ -2,7 +2,6 @@ import { ItemFlags, ItemFlagsGURPS, ItemGCSSystemData, NoteData } from "@item"
 import { ItemGURPS, ItemSystemDataGURPS } from "@module/config"
 import { gid, ItemType, SETTINGS, StringComparison, SYSTEM_NAME } from "@module/data"
 import { SkillDefault } from "@module/default"
-import { DiceGURPS } from "@module/dice"
 import { BasePrereq } from "@prereq"
 import { capitalize, LocalizeGURPS, newUUID } from "@util"
 import { XMLtoJS } from "@util/xml_js"
@@ -189,7 +188,7 @@ export class GCAImporter {
 
 	importSettings(data: any) {
 		const body: Partial<HitLocationTableData> = {
-			roll: new DiceGURPS("3d"),
+			roll: "3d",
 			locations: [],
 		}
 		body.name = data.bodytype || ""
@@ -224,6 +223,10 @@ export class GCAImporter {
 				hit_penalty: hit_penalty,
 				dr_bonus: dr_bonus,
 				description: description,
+				calc: {
+					roll_range: "-",
+					dr: {}
+				}
 			})
 		}
 		const default_sheet = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`) as any
