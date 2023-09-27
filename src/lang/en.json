@@ -739,7 +739,8 @@
 			"percent": "as a percentage",
 			"per_level_text": "{leveled} ({amt} per {what})",
 			"level": "level",
-			"die": "die"
+			"die": "die",
+			"all_locations": "to all locations"
 		},
 		"default": {
 			"header": "Defaults"
@@ -1376,7 +1377,10 @@
 				"colorSuccess": "Success",
 				"colorFailure": "Failure",
 				"colorCriticalSuccess": "Critical Success",
-				"colorCriticalFailure": "Critical Failure"
+				"colorCriticalFailure": "Critical Failure",
+				"colorChatPublic": "Chat (Public)",
+				"colorChatWhisper": "Chat (Whisper)",
+				"colorChatBlind": "Chat (Blind)"
 			},
 			"default_sheet_settings": {
 				"name": "Default Sheet Settings",

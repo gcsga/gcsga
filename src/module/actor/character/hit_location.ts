@@ -1,82 +1,143 @@
-import { ActorType, gid } from "@module/data"
-import { DiceGURPS } from "@module/dice"
-import { TooltipGURPS } from "@module/tooltip"
-import { LocalizeGURPS } from "@util"
+import { ActorType, gid } from "@module/data";
+import { DiceGURPS } from "@module/dice";
+import { TooltipGURPS } from "@module/tooltip";
+import { LocalizeGURPS } from "@util";
+import { CharacterGURPS } from "./document";
 
-/**
- * Breaking these out into their own file so as to not be dependent on any other types.
- */
+class HitLocationTable {
+	actor: CharacterGURPS
 
-export interface HitLocationTable {
-	name: string
-	roll: DiceGURPS
 	locations: HitLocation[]
-	owningLocation?: HitLocation
+
+	keyPrefix: string
+
+	constructor(
+		name: string,
+		roll: DiceGURPS | string,
+		locations: HitLocationData[],
+		actor: CharacterGURPS | any,
+		keyPrefix: string,
+	) {
+		this.name = name
+		this.roll = roll instanceof DiceGURPS ? roll : new DiceGURPS(roll)
+		this.actor = actor
+		this.keyPrefix = keyPrefix
+		this.locations = locations.map((e, index) =>
+			new HitLocation(actor, `${keyPrefix}.locations.${index}`, e)
+		)
+		this.updateRollRanges()
+	}
+
+	updateRollRanges(): void {
+		let start = this.roll.minimum(false)
+		for (const location of this.locations) {
+			start = location.updateRollRange(start)
+		}
+	}
+
+	populateMap(actor: CharacterGURPS, m: Map<string, HitLocation>): void {
+		for (const location of this.locations) {
+			location.populateMap(actor, m)
+		}
+	}
+
+	get owningLocation(): HitLocation | undefined {
+		const path = this.keyPrefix.replaceAll("sub_table", "subTable",)
+			.split(".").slice(1, -1)
+		if (path.length === 0) return undefined
+		let result: any = this.actor.BodyType
+		for (let i = 0; i < path.length; i++) {
+			result = result[path[i]]
+		}
+		return result
+	}
+
+	toObject(): HitLocationTableData {
+		return {
+			name: this.name,
+			roll: this.roll.string,
+			locations: this.locations.map(e => e.toObject())
+		}
+	}
 }
 
-export interface HitLocationTableData {
-	name: string
+interface HitLocationTable extends Omit<HitLocationTableData, "locations" | "roll"> {
 	roll: DiceGURPS
+}
+
+interface HitLocationTableData {
+	name: string
+	roll: string
 	locations: HitLocationData[]
 }
 
-export class HitLocation {
-	actor: Actor
-
-	owningTable: HitLocationTable
-
+interface HitLocationData {
 	id: string
-
 	choice_name: string
-
 	table_name: string
-
 	slots: number
-
 	hit_penalty: number
-
 	dr_bonus: number
-
 	description: string
+	sub_table?: HitLocationTableData
+	calc?: {
+		roll_range: string
+		dr: Record<string, number>
+		[key: string]: any
+	}
+}
 
-	sub_table?: HitLocationTable
+class HitLocation {
+	actor: CharacterGURPS
+
+	keyPrefix: string
 
 	roll_range: string
+	// owningTable?: HitLocationTable
 
-	calc: any
-
-	// TODO: change "any" to something accepting both CharacterGURPS and other (for testing?)
-	constructor(actor: any, owningTable: HitLocationTable, data?: HitLocationData) {
-		this.id = "id"
-		if (typeof game !== "undefined") {
-			this.choice_name = LocalizeGURPS.translations.gurps.placeholder.hit_location.choice_name
-			this.table_name = LocalizeGURPS.translations.gurps.placeholder.hit_location.table_name
-		} else {
-			this.choice_name = "untitled choice"
-			this.table_name = "untitled location"
-		}
-		this.slots = 0
-		this.hit_penalty = 0
-		this.dr_bonus = 0
-		this.description = ""
+	constructor(actor: CharacterGURPS | any, keyPrefix: string, data?: HitLocationData) {
 		this.actor = actor
-		this.owningTable = owningTable
-		this.roll_range = "-"
-		this.calc = { roll_range: "-", dr: {} }
+		this.keyPrefix = keyPrefix
+		this.roll_range = ""
+		Object.assign(this, data)
+	}
 
-		if (data) {
-			Object.assign(this, data)
-			if (this.sub_table)
-				for (let i = 0; i < this.sub_table?.locations.length; i++) {
-					this.sub_table!.locations[i] = new HitLocation(actor, this.sub_table!, this.sub_table!.locations[i])
-				}
+	get subTable(): HitLocationTable | undefined {
+		return (this.sub_table) ? new HitLocationTable(
+			this.sub_table.name,
+			this.sub_table.roll,
+			this.sub_table.locations,
+			this.actor,
+			`${this.keyPrefix}.sub_table`
+		) : undefined
+	}
+
+	get owningTable(): HitLocationTable {
+		const path = this.keyPrefix.replaceAll("sub_table", "subTable")
+			.split(".").slice(1, -2)
+		let result: any = this.actor.BodyType
+		for (let i = 0; i < path.length; i++) {
+			result = result[path[i]]
 		}
+		return result
 	}
 
 	get tooltip(): string {
 		const tooltip = new TooltipGURPS()
 		this._DR(tooltip)
 		return tooltip.toString("<br>", 0)
+	}
+
+	get displayDR(): string {
+		const dr = this.DR
+		if (!dr.has(gid.All)) dr.set(gid.All, 0)
+		let buffer = ""
+		buffer += dr.get(gid.All)
+		dr.forEach((v, id) => {
+			if (id === gid.All) return
+			buffer += `/${v}`
+		})
+		return buffer
 	}
 
 	get DR(): Map<string, number> {
@@ -96,7 +157,11 @@ export class HitLocation {
 			)
 		}
 		if (this.actor.type === ActorType.Character)
-			drMap = (this.actor as any).addDRBonusesFor(this.id, tooltip, drMap)
+			drMap = this.actor.addDRBonusesFor(this.id, tooltip, drMap)
+		if (this.owningTable.owningLocation) {
+			// console.log(this.owningTable.owningLocation)
+			drMap = this.owningTable.owningLocation._DR(tooltip, drMap)
+		}
 		for (const k of drMap.keys()) {
 			if (k === gid.All) continue
 			drMap.set(k, drMap.get(k)! + (drMap.get(gid.All) ?? 0))
@@ -125,60 +190,54 @@ export class HitLocation {
 			LocalizeGURPS.format(LocalizeGURPS.translations.gurps.tooltip.dr_name, { name: this.table_name })
 		)
 
-		if (this.owningTable?.owningLocation) {
-			drMap = this.owningTable.owningLocation._DR(tooltip, drMap)
-		}
 		// If (tooltip && drMap?.entries.length !== 0) {
 		// 	drMap?.forEach(e => {
 		// 		tooltip.push(`TODO: ${e}`)
 		// 	})
 		// }
-		this.calc.dr = Object.fromEntries(drMap)
+		// this.calc.dr = Object.fromEntries(drMap)
 		return drMap
 	}
 
-	get displayDR(): string {
-		const dr = this.DR
-		if (!dr.has(gid.All)) dr.set(gid.All, 0)
-		let buffer = ""
-		buffer += dr.get(gid.All)
-		dr.forEach((v, id) => {
-			if (id === gid.All) return
-			buffer += `/${v}`
-		})
-		return buffer
+	populateMap(actor: CharacterGURPS, m: Map<string, HitLocation>): void {
+		this.actor = actor
+		m.set(this.id, this)
+		if (this.sub_table) {
+			this.subTable?.populateMap(actor, m)
+		}
 	}
 
 	updateRollRange(start: number): number {
-		// This.calc ??= { roll_range: "", dr: {} }
-		this.slots ??= 0
 		if (this.slots === 0) this.roll_range = "-"
 		else if (this.slots === 1) this.roll_range = start.toString()
-		else {
-			this.roll_range = `${start}-${start + this.slots - 1}`
-		}
-		if (this.sub_table) {
-			let nested_start = new DiceGURPS(this.sub_table.roll).minimum(false)
-			for (const l of this.sub_table.locations) {
-				nested_start = l.updateRollRange(nested_start)
+		else this.roll_range = `${start}-${start + this.slots - 1}`
+
+		if (this.sub_table) this.subTable?.updateRollRanges()
+		return start + this.slots
+	}
+
+	toObject(): HitLocationData {
+		return {
+			id: this.id,
+			choice_name: this.choice_name,
+			table_name: this.table_name,
+			slots: this.slots,
+			hit_penalty: this.hit_penalty,
+			dr_bonus: this.dr_bonus,
+			description: this.description,
+			sub_table: this.subTable?.toObject(),
+			calc: {
+				dr: Object.fromEntries(this.DR),
+				roll_range: this.roll_range,
+				displayDR: this.displayDR,
+				tooltip: this.tooltip
 			}
 		}
-		this.calc.roll_range = this.roll_range
-		return start + this.slots
 	}
 }
 
-export interface HitLocationData {
-	id: string
-	choice_name: string
-	table_name: string
-	slots: number
-	hit_penalty: number
-	dr_bonus: number
-	description: string
-	sub_table?: HitLocationTableData
-	calc?: {
-		roll_range: string
-		dr: Record<string, number>
-	}
+interface HitLocation extends HitLocationData {
+	actor: CharacterGURPS
 }
+
+export { HitLocation, HitLocationTable, HitLocationData, HitLocationTableData }

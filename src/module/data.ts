@@ -435,6 +435,7 @@ export enum SpellSubType {
 	ANY = "any",
 }
 
+
 export const GURPS_COMMANDS = (() => {
 	// const dice = "([^#]+)(?:#(.*))?";       // Dice expression with appended flavor text
 	const any = "([^]*)" // Any character, including new lines

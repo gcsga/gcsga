@@ -1,6 +1,6 @@
 import { CharacterImporter } from "./import"
 import { LocalizeGURPS, prepareFormData } from "@util"
-import { SETTINGS, SYSTEM_NAME } from "@module/data"
+import { gid, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { CharacterSettings } from "./data"
 import { HitLocationTable } from "./hit_location"
 import { DnD } from "@util/drag_drop"
@@ -82,7 +82,7 @@ export class CharacterSheetConfig extends FormApplication {
 	activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		html.find("textarea")
-			.each(function () {
+			.each(function() {
 				this.setAttribute("style", `height:${this.scrollHeight + 2}px;overflow-y:hidden;`)
 			})
 			.on("input", event => {
@@ -98,16 +98,19 @@ export class CharacterSheetConfig extends FormApplication {
 			const name = $(event.currentTarget).prop("name")
 			let invalid = false
 			if (value === "") invalid = true
-			this.attributes.forEach((e, i) => {
-				if (e.id === value && name !== `attributes.${i}.id`) invalid = true
-			})
-			this.resource_trackers.forEach((e, i) => {
-				if (e.id === value && name !== `resource_trackers.${i}.id`) invalid = true
-			})
+			if (name.includes("locations")) {
+				if (value === gid.All) invalid = true
+			} else {
+				this.attributes.forEach((e, i) => {
+					if (e.id === value && name !== `attributes.${i}.id`) invalid = true
+				})
+				this.resource_trackers.forEach((e, i) => {
+					if (e.id === value && name !== `resource_trackers.${i}.id`) invalid = true
+				})
+			}
 			if (invalid) $(event.currentTarget).addClass("invalid")
 			else $(event.currentTarget).removeClass("invalid")
 		})
-
 		// Re-uploading old character
 		html.find(".quick-import").on("click", event => this._reimport(event))
 
@@ -148,11 +151,11 @@ export class CharacterSheetConfig extends FormApplication {
 				if (files) {
 					readTextFromFile(files[0]).then(
 						text =>
-							(this.file = {
-								text: text,
-								name: files[0].name,
-								path: files[0].path,
-							})
+						(this.file = {
+							text: text,
+							name: files[0].name,
+							path: files[0].path,
+						})
 					)
 				}
 				this.render()
@@ -404,13 +407,13 @@ export class CharacterSheetConfig extends FormApplication {
 	}
 
 	protected async _updateObject(event: Event, formData?: any | undefined): Promise<unknown> {
-		formData = prepareFormData(formData, this.object)
 		const element = $(event.currentTarget!)
 		if (element.hasClass("invalid")) delete formData[element.prop("name")]
+		formData = prepareFormData(formData, this.object)
 		if (!this.object.id) return
 		if (formData["system.settings.block_layout"])
 			formData["system.settings.block_layout"] = formData["system.settings.block_layout"].split("\n")
-		console.log("checkem")
+		// console.log("checkem")
 		console.log(formData)
 		await this.object.update(formData)
 		return this.render()
@@ -431,7 +434,7 @@ export class CharacterSheetConfig extends FormApplication {
 				parent_index: parent_index,
 			})
 		)
-		;(event as any).dragType = type
+			; (event as any).dragType = type
 	}
 
 	protected _onDragItem(event: JQuery.DragOverEvent): void {
@@ -511,7 +514,7 @@ export class CharacterSheetConfig extends FormApplication {
 	}
 
 	close(options?: FormApplication.CloseOptions | undefined): Promise<void> {
-		;(this.object.sheet as unknown as CharacterSheetGURPS).config = null
+		; (this.object.sheet as unknown as CharacterSheetGURPS).config = null
 		return super.close(options)
 	}
 }

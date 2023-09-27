@@ -1,4 +1,4 @@
-import { ItemType } from "@module/data"
+import { gid, ItemType } from "@module/data"
 import { TooltipGURPS } from "@module/tooltip"
 import { LocalizeGURPS } from "@util"
 import { LeveledAmount } from "@util/leveled_amount"
@@ -9,8 +9,8 @@ export class DRBonus extends BaseFeature {
 	static get defaults(): Record<string, any> {
 		return mergeObject(super.defaults, {
 			type: FeatureType.DRBonus,
-			location: "torso",
-			specialization: "all",
+			location: gid.Torso,
+			specialization: gid.All,
 		})
 	}
 

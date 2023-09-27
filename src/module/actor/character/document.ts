@@ -61,7 +61,7 @@ import {
 	Encumbrance,
 } from "./data"
 import { CharacterImporter } from "./import"
-import { HitLocation, HitLocationTable } from "./hit_location"
+import { HitLocation, HitLocationTable, HitLocationTableData } from "./hit_location"
 import { AttributeBonusLimitation } from "@feature/attribute_bonus"
 import { Feature, featureMap, ItemGURPS, WeaponGURPS } from "@module/config"
 import { ConditionID } from "@item/condition"
@@ -137,7 +137,7 @@ class CharacterGURPS extends BaseActorGURPS {
 			name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
 			roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
 			locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
-		} as HitLocationTable
+		} as HitLocationTableData
 		const populate_description = game.settings.get(
 			SYSTEM_NAME,
 			`${SETTINGS.DEFAULT_SHEET_SETTINGS}.populate_description`
@@ -741,19 +741,11 @@ class CharacterGURPS extends BaseActorGURPS {
 
 	get BodyType(): HitLocationTable {
 		let b = this.system.settings.body_type
-		if (!b) return { name: "", roll: new DiceGURPS(), locations: [] }
-		const body: HitLocationTable = {
-			name: b.name,
-			roll: b.roll,
-			locations: [],
-		}
-		let start = new DiceGURPS(b.roll).minimum(false)
-		for (const l of b.locations) {
-			const loc = new HitLocation(this, body, l)
-			start = loc.updateRollRange(start)
-			body.locations.push(loc)
-		}
-		return body
+		if (!b) return new HitLocationTable("", new DiceGURPS(), [], this, "")
+		return new HitLocationTable(b.name, b.roll, b.locations, this, "")
+		// const table = new HitLocationTable(b.name, b.roll, b.locations, this, "")
+		// table.updateRollRanges()
+		// return table
 	}
 
 	get HitLocations(): HitLocation[] {
@@ -1137,6 +1129,7 @@ class CharacterGURPS extends BaseActorGURPS {
 
 	override prepareBaseData(): void {
 		super.prepareBaseData()
+		this.BodyType.updateRollRanges()
 		this.system.settings.attributes.forEach(e => (e.cost_adj_percent_per_sm ??= 0))
 		if (this.system.attributes.length === 0) {
 			this.system.attributes = this.newAttributes()
@@ -1232,7 +1225,8 @@ class CharacterGURPS extends BaseActorGURPS {
 		this.processThresholds()
 
 		this.resource_trackers = this.getResourceTrackers()
-		// This.updateProfile()
+
+
 		this.calc.dodge_bonus = this.attributeBonusFor(gid.Dodge, AttributeBonusLimitation.None)
 		this.calc.parry_bonus = this.attributeBonusFor(gid.Parry, AttributeBonusLimitation.None)
 		this.calc.block_bonus = this.attributeBonusFor(gid.Block, AttributeBonusLimitation.None)
@@ -1720,8 +1714,15 @@ class CharacterGURPS extends BaseActorGURPS {
 		tooltip: TooltipGURPS | null = null,
 		drMap: Map<string, number> = new Map()
 	): Map<string, number> {
+		const isTopLevel = this.HitLocations.some(e => e.id === locationID)
+
 		for (const f of this.features.drBonuses) {
-			if (f.type === "dr_bonus" && equalFold(locationID, f.location)) {
+			if (f.type === FeatureType.DRBonus &&
+				(
+					(f.location === gid.All && isTopLevel) ||
+					equalFold(locationID, f.location)
+				)
+			) {
 				const current = drMap.has(f.specialization!.toLowerCase())
 					? drMap.get(f.specialization!.toLowerCase()) || 0
 					: 0

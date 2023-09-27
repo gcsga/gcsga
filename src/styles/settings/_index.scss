@@ -4,7 +4,6 @@
 }
 
 .window-app.settings-menu {
-
 	&#colors-settings,
 	&#default_sheet_settings-settings {
 		.label {
@@ -140,7 +139,7 @@
 						}
 					}
 
-					>.disabled {
+					> .disabled {
 						color: rgba(var(--color-icon-button), 0.6);
 						cursor: default;
 						pointer-events: none;
@@ -303,7 +302,7 @@
 						}
 					}
 
-					>.disabled {
+					> .disabled {
 						color: rgba(var(--color-icon-button), 0.6);
 						cursor: default;
 						pointer-events: none;
