@@ -1,10 +1,10 @@
-<div class="roll" {{{indent tab "text" 0 6}}}>{{this.calc.roll_range}}</div>
-<div class="location" {{{indent tab "text" 0 6}}}>{{this.table_name}}</div>
+{{#if this.actor.BodyType.isNested}}
+<div class="roll" style="text-align: left; text-indent: {{this.indent}}px;">{{this.roll_range}}</div>
+<div class="location" style="text-align: left; text-indent: {{this.indent}}px;">{{this.table_name}}</div>
+{{else}}
+<div class="roll" style="text-align: center;">{{this.roll_range}}</div>
+<div class="location" style="text-align: center;">{{this.table_name}}</div>
+{{/if}}
 <div data-modifier="{{ror this.hit_penalty 0}}" data-comment="{{localize 'gurps.character.body_type.penalty_for' name=this.table_name}}"
 	data-type="modifier" class="penalty rollable">{{signed (ror this.hit_penalty 0)}}</div>
-<div class="dr" data-tooltip="{{this.calc.tooltip}}" data-tooltip-direction="DOWN">{{this.calc.displayDR}}</div>
-{{#if this.sub_table}}
-{{#each this.sub_table.locations}}
-{{>actor/character/sections/hit-location tab=(sum ../tab 1)}}
-{{/each}}
-{{/if}}
+<div class="dr" data-tooltip="{{this.tooltip}}" data-tooltip-direction="DOWN">{{this.displayDR}}</div>

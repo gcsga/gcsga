@@ -852,7 +852,6 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 				autoThreshold: (this.actor.getFlag(SYSTEM_NAME, ActorFlags.AutoThreshold) as any)?.active,
 				overencumbered,
 				skillDefaultsOpen: this.skillDefaultsOpen,
-				// hit_locations: this.actor.BodyType.locations
 			},
 		}
 		this.prepareItems(sheetData)
@@ -987,37 +986,10 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		}
 	}
 
-	prepareHitLocations(data: any) {
-		data.body_type = this.actor.BodyType.toObject()
+	prepareHitLocations(data: any): void {
+		this.actor.BodyType.updateRollRanges()
+		data.hit_locations = this.actor.HitLocations
 	}
-	// prepareHitLocations(data: any) {
-	// 	const recurseLocation = function(location: HitLocation, indent = 1): HitLocation[] {
-	// 		const children: HitLocation[] = []
-	// 		location.sub_table?.locations?.forEach(e => {
-	// 			// e.calc.indent = indent
-	// 			children.push(e)
-	// 			children.push(...recurseLocation(e, indent + 1))
-	// 		})
-	// 		return children
-	// 	}
-	// 	const hit_locations: HitLocation[] = []
-	// 	this.actor.HitLocations.forEach(e => {
-	// 		// e.calc.indent = 0
-	// 		hit_locations.push(e)
-	// 		hit_locations.push(...recurseLocation(e))
-	// 	})
-
-	// 	data.hit_locations = hit_locations.map(e => {
-	// 		return {
-	// 			...e,
-	// 			...{
-	// 				displayDR: e.displayDR,
-	// 				tooltip: e.tooltip,
-	// 			},
-	// 		}
-	// 	})
-
-	// }
 
 	// Events
 	async _onEditToggle(event: JQuery.ClickEvent) {

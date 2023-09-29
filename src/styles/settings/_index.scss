@@ -236,10 +236,8 @@
 	&#default_resource_trackers-settings {
 		.label {
 			white-space: nowrap;
-			display: inline-flex;
-			flex-flow: column nowrap;
+			display: grid;
 			align-items: end;
-			justify-content: center;
 		}
 
 		.fieldblock {
@@ -254,7 +252,11 @@
 
 		div.add {
 			display: grid;
-			height: 20px;
+			grid-auto-flow: column;
+			white-space: nowrap;
+			gap: 5px;
+			justify-content: start;
+			color: rgb(var(--color-icon-button));
 			align-items: center;
 		}
 

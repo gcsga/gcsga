@@ -44,6 +44,14 @@ export class RollModifierSettings extends SettingsMenuGURPS {
 		html.find(".delete").on("click", event => this._onDeleteItem(event))
 	}
 
+	_onDataImport(event: JQuery.ClickEvent) {
+		event.preventDefault()
+	}
+
+	_onDataExport(event: JQuery.ClickEvent) {
+		event.preventDefault()
+	}
+
 	async _onAddItem(event: JQuery.ClickEvent) {
 		event.preventDefault()
 		event.stopPropagation()

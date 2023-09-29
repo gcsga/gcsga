@@ -1,7 +1,7 @@
 import { ConditionID } from "@item/condition/data"
 import { AttributeType } from "@module/attribute/data"
 import { EFFECT_ACTION, SYSTEM_NAME } from "@module/data"
-import { prepareFormData } from "@util"
+import { LocalizeGURPS, prepareFormData } from "@util"
 import { DnD } from "@util/drag_drop"
 import { SettingsMenuGURPS } from "./menu"
 
@@ -344,6 +344,25 @@ export class DefaultAttributeSettings extends SettingsMenuGURPS {
 		html.find(".delete").on("click", event => this._onDeleteItem(event))
 	}
 
+	_onDataImport(event: JQuery.ClickEvent) {
+		event.preventDefault()
+	}
+
+	_onDataExport(event: JQuery.ClickEvent) {
+		event.preventDefault()
+		const extension = "attr"
+		const data = {
+			type: "attribute_settings",
+			version: 4,
+			rows: game.settings.get(SYSTEM_NAME, `${this.namespace}.attributes`,)
+		}
+		return saveDataToFile(
+			JSON.stringify(data, null, "\t"),
+			extension,
+			`${LocalizeGURPS.translations.gurps.settings.default_attributes.name}.${extension}`
+		)
+	}
+
 	async _onAddItem(event: JQuery.ClickEvent) {
 		event.preventDefault()
 		event.stopPropagation()
@@ -446,7 +465,7 @@ export class DefaultAttributeSettings extends SettingsMenuGURPS {
 				parent_index: parent_index,
 			})
 		)
-		;(event as any).dragType = type
+			; (event as any).dragType = type
 	}
 
 	protected _onDragItem(event: JQuery.DragOverEvent): void {

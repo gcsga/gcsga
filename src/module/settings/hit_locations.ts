@@ -263,6 +263,27 @@ export class DefaultHitLocationSettings extends SettingsMenuGURPS {
 		html.find(".delete").on("click", event => this._onDeleteItem(event))
 	}
 
+	_onDataImport(event: JQuery.ClickEvent) {
+		event.preventDefault()
+	}
+
+	_onDataExport(event: JQuery.ClickEvent) {
+		event.preventDefault()
+		const extension = "body"
+		const data = {
+			type: "body_type",
+			version: 4,
+			name: game.settings.get(SYSTEM_NAME, `${this.namespace}.name`,),
+			roll: game.settings.get(SYSTEM_NAME, `${this.namespace}.roll`,),
+			locations: game.settings.get(SYSTEM_NAME, `${this.namespace}.locations`,)
+		}
+		return saveDataToFile(
+			JSON.stringify(data, null, "\t"),
+			extension,
+			`${LocalizeGURPS.translations.gurps.settings.default_hit_locations.name}.${extension}`
+		)
+	}
+
 	async _onAddItem(event: JQuery.ClickEvent) {
 		event.preventDefault()
 		event.stopPropagation()
@@ -350,7 +371,7 @@ export class DefaultHitLocationSettings extends SettingsMenuGURPS {
 				index: index,
 			})
 		)
-		;(event as any).dragType = type
+			; (event as any).dragType = type
 	}
 
 	protected _onDragItem(event: JQuery.DragOverEvent): void {

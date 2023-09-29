@@ -66,7 +66,7 @@ export class ModifierList extends Application {
 			if (pinnedMods.find(e => e.name === m.name && e.modifier && m.modifier)) m.pinned = true
 			else m.pinned = false
 		}
-		mods.splice(10)
+		mods.splice(20)
 
 		return mergeObject(super.getData(options), {
 			mods: mods,
