@@ -6,6 +6,7 @@ import { DamageChat, DamagePayload } from "@module/damage_calculator/damage_chat
 import { gid, RollModifier, RollType, SETTINGS, SYSTEM_NAME, UserFlags } from "@module/data"
 import { LocalizeGURPS } from "@util"
 import { DamageRollGURPS } from "./damage_roll"
+import { RollTypeData, rollTypeHandlers } from "./refactor"
 
 enum RollSuccess {
 	Success = "success",
@@ -101,99 +102,18 @@ export class RollGURPS extends Roll {
 
 		console.log(data)
 
-		switch (data.type) {
-			case RollType.Modifier:
-				return this.addModifier(user, actor, data)
-			case RollType.Attribute:
-				return RollGURPS.rollAgainst(
-					user,
-					actor,
-					data.attribute.effective,
-					raFormula,
-					data.attribute.attribute_def.combinedName,
-					RollType.Attribute,
-					data.attribute,
-					data.hidden
-				)
-			case RollType.Skill:
-			case RollType.SkillRelative:
-			case RollType.Spell:
-			case RollType.SpellRelative:
-				if (isNaN(data.item.effectiveLevel)) return
-				return RollGURPS.rollAgainst(
-					user,
-					actor,
-					data.item.effectiveLevel,
-					raFormula,
-					data.item.formattedName,
-					RollType.Skill,
-					data.item,
-					data.hidden
-				)
-			case RollType.ControlRoll:
-				return RollGURPS.rollAgainst(
-					user,
-					actor,
-					data.item.skillLevel,
-					raFormula,
-					data.item.formattedName,
-					RollType.ControlRoll,
-					data.item,
-					data.hidden
-				)
-			case RollType.Attack:
-				if (isNaN(data.item.skillLevel(null))) return
-				return RollGURPS.rollAgainst(
-					user,
-					actor,
-					data.item.skillLevel(null),
-					raFormula,
-					`${data.item.itemName}${data.item.usage ? ` - ${data.item.usage}` : ""}`,
-					RollType.Attack,
-					data.item,
-					data.hidden
-				)
-			case RollType.Parry:
-				if (isNaN(data.item.parry) || data.item.parry === "") return
-				return RollGURPS.rollAgainst(
-					user,
-					actor,
-					data.item.parry,
-					raFormula,
-					// `${data.item.itemName}${data.item.usage ? ` - ${data.item.usage}` : ""}`,
-					`${data.item.itemName} - Parry`,
-					RollType.Attack,
-					data.item,
-					data.hidden
-				)
-			case RollType.Block:
-				if (isNaN(data.item.block) || data.item.block === "") return
-				return RollGURPS.rollAgainst(
-					user,
-					actor,
-					data.item.block,
-					raFormula,
-					// `${data.item.itemName}${data.item.usage ? ` - ${data.item.usage}` : ""}`,
-					`${data.item.itemName} - Block`,
-					RollType.Attack,
-					data.item,
-					data.hidden
-				)
-			case RollType.Damage:
-				return this.rollDamage(
-					user,
-					actor,
-					data,
-					`${data.item.itemName}${data.item.usage ? ` - ${data.item.usage}` : ""}`,
-					data.hidden
-				)
-			case RollType.Generic:
-				return this.rollGeneric(user, actor, data.formula, RollType.Generic, data.hidden)
-		}
+		return rollTypeHandlers[data.type as RollType].handleRollType(
+			user,
+			actor,
+			data as RollTypeData,
+			raFormula,
+			data.hidden
+		)
 	}
 
 	/**
-	 *
+	 * TODO - This really needs to be the exact same as handleRoll! The interfaces of Character and StaticCharacter
+	 * need to be the same.
 	 * @param user
 	 * @param actor
 	 * @param data
@@ -276,7 +196,7 @@ export class RollGURPS extends Roll {
 		}
 	}
 
-	private static getMargin(name: string, level: number, roll: number): [RollSuccess, string] {
+	static getMargin(name: string, level: number, roll: number): [RollSuccess, string] {
 		const success = this.getSuccess(level, roll)
 		const margin = Math.abs(level - roll)
 		const marginMod: Partial<RollModifier> = { modifier: margin }
@@ -386,6 +306,7 @@ export class RollGURPS extends Roll {
 	}
 
 	/**
+	 * TODO: Consider refactoring to move some or all of this to the DamageRollGURPS class.
 	 * Handle Damage Rolls.
 	 * @param {StoredDocument<User>} user
 	 * @param {ActorGURPS} actor
@@ -492,7 +413,7 @@ export class RollGURPS extends Roll {
 		await this.resetMods(user)
 	}
 
-	private static async resetMods(user: StoredDocument<User> | null) {
+	static async resetMods(user: StoredDocument<User> | null) {
 		if (!user) return
 		const sticky = user.getFlag(SYSTEM_NAME, UserFlags.ModifierSticky)
 		if (sticky === false) {
@@ -503,7 +424,7 @@ export class RollGURPS extends Roll {
 		}
 	}
 
-	private static addModsDisplayClass(
+	static addModsDisplayClass(
 		modifiers: Array<RollModifier & { class?: string }>
 	): Array<RollModifier & { class?: string }> {
 		modifiers.forEach(m => {
