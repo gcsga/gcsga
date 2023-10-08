@@ -1,11 +1,11 @@
-import { RollModifier, RollType, SYSTEM_NAME, gid } from "@module/data"
+import { RollModifier, RollType, SETTINGS, SYSTEM_NAME, UserFlags, gid } from "@module/data"
 import { RollGURPS } from "."
 import { CharacterGURPS } from "@actor"
 import { SkillGURPS, TechniqueGURPS } from "@item"
 import { LocalizeGURPS } from "@util"
-import { Attribute } from "@module/attribute"
 import { DamageRollGURPS } from "./damage_roll"
 import { DamageChat, DamagePayload } from "@module/damage_calculator/damage_chat_message"
+import { ActorGURPS } from "@module/config"
 
 enum RollSuccess {
 	Success = "success",
@@ -50,7 +50,7 @@ abstract class RollTypeHandler {
 		if (hidden) messageData.rollMode = CONST.DICE_ROLL_MODES.PRIVATE
 
 		await ChatMessage.create(messageData, {})
-		await RollGURPS.resetMods(user)
+		await RollTypeHandler.resetMods(user)
 	}
 
 	isValid(_: RollTypeData): boolean {
@@ -98,7 +98,7 @@ abstract class RollTypeHandler {
 		type: RollType
 	): Promise<Record<string, any>> {
 		// Create an array of Modifiers suitable for display.
-		const modifiers: Array<RollModifier & { class?: string }> = RollGURPS.getModifiers(user)
+		const modifiers: Array<RollModifier & { class?: string }> = RollTypeHandler.getModifiers(user)
 
 		// Determine the encumbrance penalty, if any, and add it to the modifiers.
 		const encumbrance = actor.encumbranceLevel(true)
@@ -113,7 +113,7 @@ abstract class RollTypeHandler {
 		// await roll.evaluate({ async: true })
 		const [success, margin] = RollTypeHandler.getMargin(name, effectiveLevel, roll.total!)
 
-		RollGURPS.addModsDisplayClass(modifiers)
+		RollTypeHandler.addModsDisplayClass(modifiers)
 
 		const chatData = {
 			name,
@@ -237,6 +237,33 @@ abstract class RollTypeHandler {
 		if (level >= rollTotal) return RollSuccess.Success
 		return RollSuccess.Failure
 	}
+
+	static getModifiers(user: StoredDocument<User> | null): RollModifier[] {
+		const stack = user?.getFlag(SYSTEM_NAME, UserFlags.ModifierStack) as RollModifier[]
+		return stack ? [...stack] : []
+	}
+
+	static async resetMods(user: StoredDocument<User> | null) {
+		if (!user) return
+		const sticky = user.getFlag(SYSTEM_NAME, UserFlags.ModifierSticky)
+		if (sticky === false) {
+			await user.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, [])
+			await user.setFlag(SYSTEM_NAME, UserFlags.ModifierTotal, 0)
+			const button = game.ModifierButton
+			return button.render()
+		}
+	}
+
+	static addModsDisplayClass(
+		modifiers: Array<RollModifier & { class?: string }>
+	): Array<RollModifier & { class?: string }> {
+		modifiers.forEach(m => {
+			m.class = MODIFIER_CLASS_ZERO
+			if (m.modifier > 0) m.class = MODIFIER_CLASS_POSITIVE
+			if (m.modifier < 0) m.class = MODIFIER_CLASS_NEGATIVE
+		})
+		return modifiers
+	}
 }
 
 class ModifierRollTypeHandler extends RollTypeHandler {
@@ -331,15 +358,19 @@ class ControlRollTypeHandler extends RollTypeHandler {
 }
 class AttackRollTypeHandler extends RollTypeHandler {
 	override isValid(data: RollTypeData): boolean {
-		return !isNaN(data.item.skillLevel(null))
+		return !isNaN(this.getLevel(data))
 	}
 
 	override getLevel(data: any): any {
-		return data.item.skillLevel(null) as number
+		// TODO If data.item.skillLevel is a function, call it with null as the argument;
+		// otherwise, just return the value.
+		if (typeof data.item.skillLevel === "function") return data.item.skillLevel(null)
+		else return data.item.skillLevel
 	}
 
 	override getName(data: any): string {
-		return `${data.item.itemName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
+		if (data.item.itemType) return `${data.item.itemName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
+		return `${data.item.formattedName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
 	}
 }
 
@@ -353,7 +384,7 @@ class ParryRollTypeHandler extends RollTypeHandler {
 	}
 
 	override getName(data: any): string {
-		return `${data.item.itemName} - Parry`
+		return data.item.itemName ? `${data.item.itemName} - Parry` : `${data.item.formattedName} - Parry`
 	}
 
 	override getType(data: any): RollType {
@@ -371,7 +402,7 @@ class BlockRollTypeHandler extends RollTypeHandler {
 	}
 
 	override getName(data: any): string {
-		return `${data.item.itemName} - Block`
+		return data.item.itemName ? `${data.item.itemName} - Block` : `${data.item.formattedName} - Block`
 	}
 
 	override getType(data: any): RollType {
@@ -380,6 +411,12 @@ class BlockRollTypeHandler extends RollTypeHandler {
 }
 
 class DamageRollTypeHandler extends RollTypeHandler {
+	override getName(data: any): string {
+		return data.item.itemName
+			? `${data.item.itemName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
+			: `${data.item.formattedName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
+	}
+
 	async handleRollType(
 		user: StoredDocument<User> | null,
 		actor: CharacterGURPS,
@@ -387,13 +424,13 @@ class DamageRollTypeHandler extends RollTypeHandler {
 		raFormula: string,
 		hidden: boolean
 	): Promise<void> {
-		const name = `${data.item.itemName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
+		const name = this.getName(data)
 
 		const damageRoll = new DamageRollGURPS(data.item.fastResolvedDamage)
 
 		// Roll the damage for the attack.
 		const roll = await damageRoll.roll.evaluate({ async: true })
-		const modifierTotal = RollGURPS.applyMods(0, RollGURPS.getModifiers(user))
+		const modifierTotal = RollTypeHandler.applyMods(0, RollTypeHandler.getModifiers(user))
 		const total = roll.total! + modifierTotal
 
 		// Console.log(damageRoll)
@@ -409,9 +446,10 @@ class DamageRollTypeHandler extends RollTypeHandler {
 			damageModifier: damageRoll.damageModifier,
 			total: total,
 			// Create an array of Modifiers suitable for display.
-			modifiers: RollGURPS.addModsDisplayClass(RollGURPS.getModifiers(user)),
+			modifiers: RollTypeHandler.addModsDisplayClass(RollTypeHandler.getModifiers(user)),
 			modifierTotal: modifierTotal,
-			hitlocation: RollGURPS.getHitLocationFromLastAttackRoll(actor),
+			hitlocation: DamageRollTypeHandler.getHitLocationFromLastAttackRoll(actor),
+
 			tooltip: await roll.getTooltip(),
 		}
 
@@ -435,7 +473,18 @@ class DamageRollTypeHandler extends RollTypeHandler {
 		messageData = DamageChat.setTransferFlag(messageData, chatData, userTarget)
 
 		await ChatMessage.create(messageData, {})
-		await RollGURPS.resetMods(user)
+		await RollTypeHandler.resetMods(user)
+	}
+
+	/**
+	 * Determine Hit Location. In the future, the Attack roll (above) should be able to determine if there is a modifier
+	 * for hit location. If there is, use that. Otherwise go to the world settings to determine the default damage
+	 * location. (Or, eventually, we could ask the target for it's default hit location...).
+	 *
+	 * @param _actor
+	 */
+	private static getHitLocationFromLastAttackRoll(_actor: ActorGURPS): string {
+		return game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_DAMAGE_LOCATION) as string
 	}
 }
 
@@ -451,13 +500,13 @@ class GenericRollTypeHandler extends RollTypeHandler {
 		formula = data.formula
 
 		// Create an array of Modifiers suitable for display.
-		const modifiers: Array<RollModifier & { class?: string }> = RollGURPS.getModifiers(user)
-		RollGURPS.addModsDisplayClass(modifiers)
+		const modifiers: Array<RollModifier & { class?: string }> = RollTypeHandler.getModifiers(user)
+		RollTypeHandler.addModsDisplayClass(modifiers)
 
 		const roll = Roll.create(formula) as RollGURPS
 		await roll.evaluate({ async: true })
 
-		const total = RollGURPS.applyMods(roll.total!, modifiers)
+		const total = RollTypeHandler.applyMods(roll.total!, modifiers)
 
 		const chatData = {
 			formula,
@@ -481,7 +530,7 @@ class GenericRollTypeHandler extends RollTypeHandler {
 		if (hidden) messageData.rollMode = CONST.DICE_ROLL_MODES.PRIVATE
 
 		await ChatMessage.create(messageData, {})
-		await RollGURPS.resetMods(user)
+		await RollTypeHandler.resetMods(user)
 	}
 }
 
