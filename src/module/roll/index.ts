@@ -1,18 +1,7 @@
 import { CharacterGURPS } from "@actor"
 import { ActorGURPS } from "@module/config"
-import { RollModifier, RollType, SETTINGS, SYSTEM_NAME, UserFlags } from "@module/data"
-import { RollTypeData, rollTypeHandlers } from "./refactor"
-
-enum RollSuccess {
-	Success = "success",
-	Failure = "failure",
-	CriticalSuccess = "critical_success",
-	CriticalFailure = "critical_failure",
-}
-
-const MODIFIER_CLASS_ZERO = "zero"
-const MODIFIER_CLASS_NEGATIVE = "neg"
-const MODIFIER_CLASS_POSITIVE = "pos"
+import { RollType, SETTINGS, SYSTEM_NAME, UserFlags } from "@module/data"
+import { RollTypeData, rollTypeHandlers } from "./roll_handler"
 
 export class RollGURPS extends Roll {
 	originalFormula = ""

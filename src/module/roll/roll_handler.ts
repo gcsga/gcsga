@@ -1,4 +1,4 @@
-import { RollModifier, RollType, SETTINGS, SYSTEM_NAME, UserFlags, gid } from "@module/data"
+import { RollModifier, RollType, SETTINGS, SYSTEM_NAME, UserFlags } from "@module/data"
 import { RollGURPS } from "."
 import { CharacterGURPS } from "@actor"
 import { SkillGURPS, TechniqueGURPS } from "@item"
@@ -15,7 +15,7 @@ enum RollSuccess {
 }
 
 export type RollTypeData = {
-	type: RollType
+	type: RollType // RollTypeHandler
 	modifier: number // AddModifier
 	comment: string // AddModifier
 	attribute: any
@@ -50,7 +50,7 @@ abstract class RollTypeHandler {
 		if (hidden) messageData.rollMode = CONST.DICE_ROLL_MODES.PRIVATE
 
 		await ChatMessage.create(messageData, {})
-		await RollTypeHandler.resetMods(user)
+		await this.resetMods(user)
 	}
 
 	isValid(_: RollTypeData): boolean {
@@ -98,22 +98,22 @@ abstract class RollTypeHandler {
 		type: RollType
 	): Promise<Record<string, any>> {
 		// Create an array of Modifiers suitable for display.
-		const modifiers: Array<RollModifier & { class?: string }> = RollTypeHandler.getModifiers(user)
+		const modifiers: Array<RollModifier & { class?: string }> = this.getModifiers(user)
 
 		// Determine the encumbrance penalty, if any, and add it to the modifiers.
 		const encumbrance = actor.encumbranceLevel(true)
 		level = this.modifyForEncumbrance(item, encumbrance, modifiers, level)
 
 		// Calculate the effective level by applying all modifiers.
-		const effectiveLevel = RollTypeHandler.applyMods(level, modifiers)
+		const effectiveLevel = this.applyMods(level, modifiers)
 
 		// Roll the dice and determine the success/failure and margin.
 		const roll = await Roll.create(formula).evaluate({ async: true })
 		// const roll = Roll.create(formula) as RollGURPS
 		// await roll.evaluate({ async: true })
-		const [success, margin] = RollTypeHandler.getMargin(name, effectiveLevel, roll.total!)
+		const [success, margin] = this.getMargin(name, effectiveLevel, roll.total!)
 
-		RollTypeHandler.addModsDisplayClass(modifiers)
+		this.addModsDisplayClass(modifiers)
 
 		const chatData = {
 			name,
@@ -184,7 +184,7 @@ abstract class RollTypeHandler {
 	 * @param modStack - The stack of modifiers to apply to the roll.
 	 * @returns The effective level after applying all modifiers.
 	 */
-	static applyMods(level: number, modStack: RollModifier[]): number {
+	applyMods(level: number, modStack: RollModifier[]): number {
 		let effectiveLevel = level
 		modStack.forEach(m => {
 			effectiveLevel += m.modifier
@@ -192,7 +192,7 @@ abstract class RollTypeHandler {
 		return effectiveLevel
 	}
 
-	static getMargin(name: string, level: number, roll: number): [RollSuccess, string] {
+	getMargin(name: string, level: number, roll: number): [RollSuccess, string] {
 		const success = this.getSuccess(level, roll)
 		const margin = Math.abs(level - roll)
 		const marginMod: Partial<RollModifier> = { modifier: margin }
@@ -227,7 +227,7 @@ abstract class RollTypeHandler {
 	 * @param {number} rollTotal
 	 * @returns {RollSuccess}
 	 */
-	static getSuccess(level: number, rollTotal: number): RollSuccess {
+	getSuccess(level: number, rollTotal: number): RollSuccess {
 		if (rollTotal === 18) return RollSuccess.CriticalFailure
 		if (rollTotal <= 4) return RollSuccess.CriticalSuccess
 		if (level >= 15 && rollTotal <= 5) return RollSuccess.CriticalSuccess
@@ -238,12 +238,12 @@ abstract class RollTypeHandler {
 		return RollSuccess.Failure
 	}
 
-	static getModifiers(user: StoredDocument<User> | null): RollModifier[] {
+	getModifiers(user: StoredDocument<User> | null): RollModifier[] {
 		const stack = user?.getFlag(SYSTEM_NAME, UserFlags.ModifierStack) as RollModifier[]
 		return stack ? [...stack] : []
 	}
 
-	static async resetMods(user: StoredDocument<User> | null) {
+	async resetMods(user: StoredDocument<User> | null) {
 		if (!user) return
 		const sticky = user.getFlag(SYSTEM_NAME, UserFlags.ModifierSticky)
 		if (sticky === false) {
@@ -254,9 +254,7 @@ abstract class RollTypeHandler {
 		}
 	}
 
-	static addModsDisplayClass(
-		modifiers: Array<RollModifier & { class?: string }>
-	): Array<RollModifier & { class?: string }> {
+	addModsDisplayClass(modifiers: Array<RollModifier & { class?: string }>): Array<RollModifier & { class?: string }> {
 		modifiers.forEach(m => {
 			m.class = MODIFIER_CLASS_ZERO
 			if (m.modifier > 0) m.class = MODIFIER_CLASS_POSITIVE
@@ -356,6 +354,7 @@ class ControlRollTypeHandler extends RollTypeHandler {
 		return LocalizeGURPS.translations.gurps.roll.cr_level
 	}
 }
+
 class AttackRollTypeHandler extends RollTypeHandler {
 	override isValid(data: RollTypeData): boolean {
 		return !isNaN(this.getLevel(data))
@@ -430,7 +429,7 @@ class DamageRollTypeHandler extends RollTypeHandler {
 
 		// Roll the damage for the attack.
 		const roll = await damageRoll.roll.evaluate({ async: true })
-		const modifierTotal = RollTypeHandler.applyMods(0, RollTypeHandler.getModifiers(user))
+		const modifierTotal = this.applyMods(0, this.getModifiers(user))
 		const total = roll.total! + modifierTotal
 
 		// Console.log(damageRoll)
@@ -446,7 +445,7 @@ class DamageRollTypeHandler extends RollTypeHandler {
 			damageModifier: damageRoll.damageModifier,
 			total: total,
 			// Create an array of Modifiers suitable for display.
-			modifiers: RollTypeHandler.addModsDisplayClass(RollTypeHandler.getModifiers(user)),
+			modifiers: this.addModsDisplayClass(this.getModifiers(user)),
 			modifierTotal: modifierTotal,
 			hitlocation: DamageRollTypeHandler.getHitLocationFromLastAttackRoll(actor),
 
@@ -473,7 +472,7 @@ class DamageRollTypeHandler extends RollTypeHandler {
 		messageData = DamageChat.setTransferFlag(messageData, chatData, userTarget)
 
 		await ChatMessage.create(messageData, {})
-		await RollTypeHandler.resetMods(user)
+		await this.resetMods(user)
 	}
 
 	/**
@@ -500,13 +499,13 @@ class GenericRollTypeHandler extends RollTypeHandler {
 		formula = data.formula
 
 		// Create an array of Modifiers suitable for display.
-		const modifiers: Array<RollModifier & { class?: string }> = RollTypeHandler.getModifiers(user)
-		RollTypeHandler.addModsDisplayClass(modifiers)
+		const modifiers: Array<RollModifier & { class?: string }> = this.getModifiers(user)
+		this.addModsDisplayClass(modifiers)
 
 		const roll = Roll.create(formula) as RollGURPS
 		await roll.evaluate({ async: true })
 
-		const total = RollTypeHandler.applyMods(roll.total!, modifiers)
+		const total = this.applyMods(roll.total!, modifiers)
 
 		const chatData = {
 			formula,
@@ -530,7 +529,7 @@ class GenericRollTypeHandler extends RollTypeHandler {
 		if (hidden) messageData.rollMode = CONST.DICE_ROLL_MODES.PRIVATE
 
 		await ChatMessage.create(messageData, {})
-		await RollTypeHandler.resetMods(user)
+		await this.resetMods(user)
 	}
 }
 
