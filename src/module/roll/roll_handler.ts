@@ -57,19 +57,19 @@ abstract class RollTypeHandler {
 		return true
 	}
 
-	getItem(data: any): any {
+	getItem(data: RollTypeData): any {
 		return data.item
 	}
 
-	getLevel(data: any): number {
+	getLevel(data: RollTypeData): number {
 		return data.item.effective.level as number
 	}
 
-	getName(data: any): string {
+	getName(data: RollTypeData): string {
 		return data.item.formattedName
 	}
 
-	getType(data: any): RollType {
+	getType(data: RollTypeData): RollType {
 		return data.type
 	}
 
@@ -346,7 +346,7 @@ class SkillRollTypeHandler extends RollTypeHandler {
 }
 
 class ControlRollTypeHandler extends RollTypeHandler {
-	override getLevel(data: any): number {
+	override getLevel(data: RollTypeData): number {
 		return data.item.skillLevel as number
 	}
 
@@ -360,14 +360,14 @@ class AttackRollTypeHandler extends RollTypeHandler {
 		return !isNaN(this.getLevel(data))
 	}
 
-	override getLevel(data: any): any {
+	override getLevel(data: RollTypeData): any {
 		// TODO If data.item.skillLevel is a function, call it with null as the argument;
 		// otherwise, just return the value.
 		if (typeof data.item.skillLevel === "function") return data.item.skillLevel(null)
 		else return data.item.skillLevel
 	}
 
-	override getName(data: any): string {
+	override getName(data: RollTypeData): string {
 		if (data.item.itemType) return `${data.item.itemName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
 		return `${data.item.formattedName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
 	}
@@ -396,21 +396,21 @@ class BlockRollTypeHandler extends RollTypeHandler {
 		return !isNaN(data.item.block) && data.item.block !== ""
 	}
 
-	override getLevel(data: any): number {
+	override getLevel(data: RollTypeData): number {
 		return data.item.block as number
 	}
 
-	override getName(data: any): string {
+	override getName(data: RollTypeData): string {
 		return data.item.itemName ? `${data.item.itemName} - Block` : `${data.item.formattedName} - Block`
 	}
 
-	override getType(data: any): RollType {
+	override getType(data: RollTypeData): RollType {
 		return RollType.Attack
 	}
 }
 
 class DamageRollTypeHandler extends RollTypeHandler {
-	override getName(data: any): string {
+	override getName(data: RollTypeData): string {
 		return data.item.itemName
 			? `${data.item.itemName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
 			: `${data.item.formattedName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
