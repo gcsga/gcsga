@@ -804,6 +804,9 @@
 				"failure": "Miss!",
 				"critical_success": "Critical Hit!",
 				"critical_failure": "Critical Miss!"
+			},
+			"ranged": {
+				"extra": "potential hits for RoF {rate_of_fire} & Recoil {recoil}"
 			}
 		},
 		"reaction": {
@@ -1465,8 +1468,8 @@
 			"apply-to": "Apply to"
 		},
 		"dmgcalc": {
-			"apply_damage": "Apply Damage"
-,			"armor_divisor": {
+			"apply_damage": "Apply Damage",
+			"armor_divisor": {
 				"ignores_dr": "Ignores DR",
 				"no_divisor": "No Divisor"
 			},
