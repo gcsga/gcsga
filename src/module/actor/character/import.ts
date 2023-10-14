@@ -105,9 +105,7 @@ export class CharacterImporter {
 		}
 
 		try {
-			console.log(commit)
 			if (this.document.isToken) {
-				console.log("isToken")
 				await this.document.deleteEmbeddedDocuments(
 					"Item",
 					[...this.document.items.keys()],

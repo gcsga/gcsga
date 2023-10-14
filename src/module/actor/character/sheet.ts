@@ -694,7 +694,6 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			includeScore: true,
 			keys: ["name", "specialization", "tags"],
 		}).map(e => e.item)
-		console.log(list)
 		this.skillDefaultsOpen = true
 		this.render()
 		const searchbar = this._element?.find("input.defaults")

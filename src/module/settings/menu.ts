@@ -55,7 +55,6 @@ abstract class SettingsMenuGURPS extends FormApplication {
 
 	override async getData(): Promise<any> {
 		const settings = (this.constructor as typeof SettingsMenuGURPS).settings
-		// Console.log(settings)
 		const templateData: any[] = Object.entries(settings).map(([key, setting]) => {
 			const value = game.settings.get(SYSTEM_NAME, `${this.namespace}.${key}`)
 			return {

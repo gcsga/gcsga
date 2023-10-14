@@ -68,7 +68,6 @@ export class ModifierChoiceSheet extends FormApplication {
 		const updates = Object.keys(this.choices).map(k => {
 			return { _id: k, "system.disabled": !this.choices[k] }
 		})
-		console.log(updates)
 		await this.object.updateEmbeddedDocuments("Item", updates)
 		const items = this.nextObjects
 		await this.close()

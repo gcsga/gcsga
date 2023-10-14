@@ -94,8 +94,6 @@ export class StaticCharacterImporter {
 		const deletes = Object.fromEntries(Object.entries(commit).filter(([key, _value]) => key.includes(".-=")))
 		const adds = Object.fromEntries(Object.entries(commit).filter(([key, _value]) => !key.includes(".-=")))
 		try {
-			console.log(deletes)
-			console.log(adds)
 			await this.document.update(deletes, { diff: false, render: false })
 			await this.document.update(adds, { diff: false })
 			await this.document.postImport()

@@ -89,7 +89,6 @@ export class CharacterSheetConfig extends FormApplication {
 				const e = event.currentTarget
 				e.style.height = "0px"
 				e.style.height = `${e.scrollHeight + 2}px`
-				console.log(e.style.height)
 			})
 
 		html.find("a.reset-all").on("click", event => this._onReset(event))
@@ -429,8 +428,6 @@ export class CharacterSheetConfig extends FormApplication {
 		if (!this.object.id) return
 		if (formData["system.settings.block_layout"])
 			formData["system.settings.block_layout"] = formData["system.settings.block_layout"].split("\n")
-		// console.log("checkem")
-		console.log(formData)
 		await this.object.update(formData)
 		return this.render()
 	}

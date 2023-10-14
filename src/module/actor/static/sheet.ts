@@ -46,7 +46,6 @@ export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
 			if (this.actor.system.additionalresources.importpath.includes(".gca5")) deprecation = "easy"
 		}
 
-		// console.log(actorData.system)
 		const sheetData = {
 			...super.getData(options),
 			items,
@@ -96,42 +95,6 @@ export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
 		html.find(".move-select").on("change", event => this._onMoveChange(event))
 	}
 
-	// private prepareItems(data: { items: StaticItemGURPS[]; system: StaticCharacterSystemData } & any) {
-	// 	console.log(data)
-	// 	console.log(data.system.ads)
-	// 	console.log(Static.flatList(data.system.ads, 0, "", {}, false))
-	// 	const [traits, skills, spells, equipment, other_equipment, notes, melee, ranged] = [
-	// 		Object.values(Static.flatList(data.system.ads ?? {}, 0, "", {}, false)),
-	// 		Object.values(Static.flatList(data.system.skills ?? {}, 0, "", {}, false)),
-	// 		Object.values(Static.flatList(data.system.spells ?? {}, 0, "", {}, false)),
-	// 		Object.values(Static.flatList(data.system.equipment.carried ?? {}, 0, "", {}, false)),
-	// 		Object.values(Static.flatList(data.system.equipment.other ?? {}, 0, "", {}, false)),
-	// 		Object.values(Static.flatList(data.system.notes ?? {}, 0, "", {}, false)),
-	// 		Object.values(Static.flatList(data.system.melee ?? {}, 0, "", {}, false)),
-	// 		Object.values(Static.flatList(data.system.ranged ?? {}, 0, "", {}, false)),
-	// 	]
-	// 	data.items.forEach((e: StaticItemGURPS) => {
-	// 		Object.values(Static.flatList(e.system.ads, 0, "", {}, false)).forEach(f => traits.push(f))
-	// 		Object.values(Static.flatList(e.system.skills, 0, "", {}, false)).forEach(f => skills.push(f))
-	// 		Object.values(Static.flatList(e.system.spells, 0, "", {}, false)).forEach(f => spells.push(f))
-	// 		Object.values(Static.flatList(e.system.melee, 0, "", {}, false)).forEach(f => melee.push(f))
-	// 		Object.values(Static.flatList(e.system.ranged, 0, "", {}, false)).forEach(f => ranged.push(f))
-	// 		if (e.system.equipped) equipment.push(e.system.eqt)
-	// 		else other_equipment.push(e.system.eqt)
-	// 	})
-
-	// 	data.traits = traits
-	// 	data.skills = skills
-	// 	data.spells = spells
-	// 	data.equipment = equipment
-	// 	data.other_equipment = other_equipment
-	// 	data.notes = notes
-	// 	data.melee = melee
-	// 	data.ranged = ranged
-
-	// 	console.log(data)
-	// }
-
 	private _prepareTrackers(): any {
 		function _getConditionKey(pts: any, conditions: Record<string, any>) {
 			let found = "NORMAL"
@@ -159,7 +122,6 @@ export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
 	}
 
 	private _prepareItems(sheetData: any, items: StaticItemGURPS[]) {
-		console.log(sheetData)
 		const tempItems = {
 			melee: [...Object.values(sheetData.system.melee)],
 			ranged: [...Object.values(sheetData.system.ranged)],

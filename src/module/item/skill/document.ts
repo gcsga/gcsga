@@ -208,7 +208,6 @@ class SkillGURPS extends ItemGCS {
 	}
 
 	updateLevel(): boolean {
-		console.trace()
 		const saved = this.level
 		this.defaultedFrom = this.bestDefaultWithPoints()
 		this.level = this.calculateLevel()

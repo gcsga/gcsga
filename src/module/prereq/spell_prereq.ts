@@ -86,7 +86,6 @@ export class SpellPrereq extends BasePrereq {
 				}
 			}
 		}
-		console.log(tooltip)
 		return [satisfied, false]
 	}
 }

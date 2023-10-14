@@ -171,7 +171,6 @@ class HitLocation {
 		if (this.actor.type === ActorType.Character)
 			drMap = this.actor.addDRBonusesFor(this.id, tooltip, drMap)
 		if (this.owningTable.owningLocation) {
-			// console.log(this.owningTable.owningLocation)
 			drMap = this.owningTable.owningLocation._DR(tooltip, drMap)
 		}
 		for (const k of drMap.keys()) {

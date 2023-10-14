@@ -136,13 +136,12 @@ export class ContainerSheetGURPS extends ItemSheetGURPS {
 		})
 		const updateData = sortUpdates.map(u => {
 			const update = u.update
-			;(update as any)._id = u.target!._id
+				; (update as any)._id = u.target!._id
 			return update
 		})
 
 		if (source && source.parent !== parent) {
 			if (source.items && parents.includes(source)) return []
-			console.log(source.name, "going in", parent.name)
 			await source.parent!.deleteEmbeddedDocuments("Item", [source!._id!], { render: false })
 			return parent?.createEmbeddedDocuments(
 				"Item",

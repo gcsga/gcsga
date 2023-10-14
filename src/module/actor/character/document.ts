@@ -1342,7 +1342,6 @@ class CharacterGURPS extends BaseActorGURPS {
 	}
 
 	updateSkills(): boolean {
-		console.log("updateSkills")
 		let changed = false
 		for (const k of [...this.itemTypes[ItemType.Skill], ...this.itemTypes[ItemType.Technique]]) {
 			if ((k as any).updateLevel()) {
@@ -1756,7 +1755,6 @@ class CharacterGURPS extends BaseActorGURPS {
 			if (path === "settings.attributes") data.type = "attribute_settings"
 			else if (path === "settings.body_type") data.type = "body_type"
 		}
-		console.log(data, name, extension)
 		return saveDataToFile(JSON.stringify(data, null, "\t"), extension, `${name}.${extension}`)
 	}
 

@@ -364,11 +364,6 @@ function setArrayProperty(a: any[], index: number, prop: string, value: any): an
 	return a
 }
 
-/**
- *
- * @param s
- * @param t
- */
 export function equalFold(s: string, t: string): boolean {
 	if (!s && !t) return false
 	return s.toLowerCase() === t.toLowerCase()
@@ -385,49 +380,6 @@ export function d6ify(str: string, flavor: string | null = ""): string {
 	return w.replace(/d$/g, `d6${flavor || ""}`) // And do the same for the end of the line.
 }
 
-// /**
-//  *
-//  * @param body
-//  */
-// export function getHitLocations(body: HitLocationTable): HitLocation[] {
-// 	/**
-// 	 *
-// 	 * @param b
-// 	 */
-// 	function updateRollRanges(b: HitLocationTable) {
-// 		let start = new DiceGURPS(b.roll).minimum(false)
-// 		for (const i of b.locations) {
-// 			start = updateRollRange(i, start)
-// 		}
-// 	}
-// 	/**
-// 	 *
-// 	 * @param h
-// 	 * @param start
-// 	 */
-// 	function updateRollRange(h: HitLocation, start: number): number {
-// 		h.calc ??= { roll_range: "", dr: {} }
-// 		h.slots ??= 0
-// 		if (h.slots === 0) h.calc.roll_range = "-"
-// 		else if (h.slots === 1) h.calc.roll_range = start.toString()
-// 		else {
-// 			h.calc.roll_range = `${start}-${start + h.slots - 1}`
-// 		}
-// 		if (h.sub_table) {
-// 			updateRollRanges(h.sub_table)
-// 		}
-// 		return start + h.slots
-// 	}
-
-// 	if (!body) return []
-// 	updateRollRanges(body)
-// 	return body.locations
-// }
-
-/**
- *
- * @param d
- */
 export function difficultyRelativeLevel(d: Difficulty): number {
 	switch (d) {
 		case Difficulty.Easy:
@@ -444,10 +396,6 @@ export function difficultyRelativeLevel(d: Difficulty): number {
 	}
 }
 
-/**
- *
- * @param imageUrl
- */
 export async function urlToBase64(imageUrl: string) {
 	const format = imageUrl.split(".").at(-1) || ""
 	if (!["png", "webp", "jpg", "jpeg"].includes(format)) return ""
@@ -470,27 +418,11 @@ export async function urlToBase64(imageUrl: string) {
 	}
 }
 
-/**
- *
- */
 export function setInitiative() {
 	let formula: string = game.settings.get(SYSTEM_NAME, SETTINGS.INITIATIVE_FORMULA) as string
 	if (!formula) formula = DEFAULT_INITIATIVE_FORMULA
 	if (game.user?.isGM) game.settings.set(SYSTEM_NAME, SETTINGS.INITIATIVE_FORMULA, formula)
-	// Const formulaMatch = formula.match(/([^:]*):?(\d)?/)
-	// console.log(formulaMatch)
-	// let minDigits = formulaMatch && !!formulaMatch[2] ? parseInt(formulaMatch[2]) : 5
 	CONFIG.Combat.initiative.formula = formula
-	// If (broadcast) {
-	// 	game.socket?.emit(`system.${SYSTEM_NAME}`, {
-	// 		type: SOCKET.INITIATIVE_CHANGED,
-	// 		formula: formula
-	// 	})
-	// }
-	// CONFIG.Combat.initiative = {
-	// 	formula: formulaMatch?.[1] ?? DEFAULT_INITIATIVE_FORMULA,
-	// 	decimals: minDigits
-	// }
 }
 
 export function pick<T extends object, K extends keyof T>(obj: T, keys: Iterable<K>): Pick<T, K> {

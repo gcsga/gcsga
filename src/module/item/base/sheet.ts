@@ -74,7 +74,6 @@ export class ItemSheetGURPS extends ItemSheet {
 				attributes: attributes,
 				locations: locations,
 				sysPrefix: "array.system.",
-				// defaultBodyType: default_locations.name,
 			},
 		}
 
@@ -95,7 +94,6 @@ export class ItemSheetGURPS extends ItemSheet {
 				const e = event.currentTarget
 				e.style.height = "0px"
 				e.style.height = `${e.scrollHeight + 2}px`
-				console.log(e.style.height)
 			})
 
 		html.find(".ref").on("click", event => PDF.handle(event))
