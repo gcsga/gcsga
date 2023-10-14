@@ -1,3 +1,4 @@
+import { CharacterSystemData } from "@actor/character"
 import { HitLocationTable } from "@actor/character/hit_location"
 import { CharacterImportedData } from "@actor/character/import"
 import { EquipmentContainerSystemData, EquipmentSystemData } from "@item"
@@ -93,6 +94,8 @@ export class StaticCharacterImporter {
 		const deletes = Object.fromEntries(Object.entries(commit).filter(([key, _value]) => key.includes(".-=")))
 		const adds = Object.fromEntries(Object.entries(commit).filter(([key, _value]) => !key.includes(".-=")))
 		try {
+			console.log(deletes)
+			console.log(adds)
 			await this.document.update(deletes, { diff: false, render: false })
 			await this.document.update(adds, { diff: false })
 			await this.document.postImport()
@@ -938,8 +941,8 @@ export class StaticCharacterImporter {
 		}
 		return {
 			"system.-=melee": null,
-			"system.melee": melee,
 			"system.-=ranged": null,
+			"system.melee": melee,
 			"system.ranged": ranged,
 		}
 	}
@@ -1002,8 +1005,8 @@ export class StaticCharacterImporter {
 		tableNames.forEach(it => (tableScores[it] = 0))
 
 		// Increment the count for a tableScore if it contains the same hit location as "prot"
-		locations.forEach(function (hitLocation) {
-			tableNames.forEach(function (tableName) {
+		locations.forEach(function(hitLocation) {
+			tableNames.forEach(function(tableName) {
 				if (StaticHitLocationDictionary[tableName].hasOwnProperty(hitLocation.where)) {
 					tableScores[tableName] = tableScores[tableName] + 1
 				}
@@ -1013,7 +1016,7 @@ export class StaticCharacterImporter {
 		// Select the tableScore with the highest score.
 		let match = -1
 		let name = StaticHitLocation.HUMANOID
-		Object.keys(tableScores).forEach(function (score) {
+		Object.keys(tableScores).forEach(function(score) {
 			if (tableScores[score] > match) {
 				match = tableScores[score]
 				name = score

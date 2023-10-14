@@ -14,7 +14,7 @@ export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
 
 	static get defaultOptions(): ActorSheet.Options {
 		return mergeObject(super.defaultOptions, {
-			classes: super.defaultOptions.classes.concat(["static"]),
+			classes: super.defaultOptions.classes.concat(["character", "static"]),
 			width: 800,
 			height: 800,
 			tabs: [{ navSelector: ".tabs-navigation", contentSelector: ".tabs-content", initial: "lifting" }],
@@ -159,6 +159,7 @@ export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
 	}
 
 	private _prepareItems(sheetData: any, items: StaticItemGURPS[]) {
+		console.log(sheetData)
 		const tempItems = {
 			melee: [...Object.values(sheetData.system.melee)],
 			ranged: [...Object.values(sheetData.system.ranged)],
@@ -377,13 +378,13 @@ export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
 		}
 		const buttons: Application.HeaderButton[] = this.actor.canUserModify(game.user!, "update")
 			? [
-					{
-						label: "",
-						class: "gmenu",
-						icon: "gcs-all-seeing-eye",
-						onclick: event => this._onGMenu(event),
-					},
-			  ]
+				{
+					label: "",
+					class: "gmenu",
+					icon: "gcs-all-seeing-eye",
+					onclick: event => this._onGMenu(event),
+				},
+			]
 			: []
 		const show_import = game.settings.get(SYSTEM_NAME, SETTINGS.SHOW_IMPORT_BUTTON) ?? false
 		const import_path = this.actor.system.additionalresources.importpath
