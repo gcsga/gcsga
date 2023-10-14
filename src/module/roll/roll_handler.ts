@@ -368,7 +368,7 @@ class AttackRollTypeHandler extends RollTypeHandler {
 	}
 
 	override getName(data: RollTypeData): string {
-		if (data.item.itemType) return `${data.item.itemName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
+		if (data.item.itemName) return `${data.item.itemName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
 		return `${data.item.formattedName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
 	}
 }
