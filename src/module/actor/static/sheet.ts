@@ -281,22 +281,25 @@ export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
 		if (type === RollType.Attribute) {
 			const attribute = {
 				current: 0,
+				effective: 0,
 				attr_id: "",
 				attribute_def: {
 					combinedName: "",
 				},
 			}
 			if (["frightcheck", "vision", "hearing", "tastesmell", "touch"].includes(element.data("id"))) {
-				attribute.current = this.actor.system[element.data("id") as StaticSecondaryAttributeName]
+				attribute.effective = attribute.current =
+					this.actor.system[element.data("id") as StaticSecondaryAttributeName]
 			} else {
-				attribute.current = this.actor.system.attributes[element.data("id") as StaticAttributeName].value
+				attribute.effective = attribute.current =
+					this.actor.system.attributes[element.data("id") as StaticAttributeName].value
 			}
 			attribute.attribute_def.combinedName = game.i18n.localize(
 				`gurps.static.${element.data("id").toLowerCase()}`
 			)
 			attribute.attr_id = element.data("id").toLowerCase()
 			data.attribute = attribute
-			return RollGURPS.staticHandleRoll(game.user, this.actor, data)
+			return RollGURPS.handleRoll(game.user, this.actor, data)
 		}
 		const key = element.data("item-id")
 		switch (type) {
@@ -305,42 +308,46 @@ export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
 				data.item = {
 					formattedName: getProperty(items, `skills.${key}.name`),
 					skillLevel: getProperty(items, `skills.${key}.import`),
+					effectiveLevel: getProperty(items, `skills.${key}.import`),
 				}
-				return RollGURPS.staticHandleRoll(game.user, this.actor, data)
+				return RollGURPS.handleRoll(game.user, this.actor, data)
 			case RollType.Spell:
 			case RollType.SpellRelative:
 				data.item = {
 					formattedName: getProperty(items, `spells.${key}.name`),
 					skillLevel: getProperty(items, `spells.${key}.import`),
+					effectiveLevel: getProperty(items, `skills.${key}.import`),
 				}
-				return RollGURPS.staticHandleRoll(game.user, this.actor, data)
+				return RollGURPS.handleRoll(game.user, this.actor, data)
 			case RollType.Attack:
 				data.item = {
 					formattedName: getProperty(items, `${element.data("weapon")}.${key}.name`),
 					usage: getProperty(items, `${element.data("weapon")}.${key}.mode`),
 					skillLevel: getProperty(items, `${element.data("weapon")}.${key}.import`),
 				}
-				return RollGURPS.staticHandleRoll(game.user, this.actor, data)
+				return RollGURPS.handleRoll(game.user, this.actor, data)
 			case RollType.Parry:
 			case RollType.Block:
 				data.item = {
 					formattedName: getProperty(items, `${element.data("weapon")}.${key}.name`),
 					usage: getProperty(items, `${element.data("weapon")}.${key}.mode`),
 					skillLevel: getProperty(items, `${element.data("weapon")}.${key}.${type}`),
+					parry: getProperty(items, `${element.data("weapon")}.${key}.${type}`),
+					block: getProperty(items, `${element.data("weapon")}.${key}.${type}`),
 				}
-				return RollGURPS.staticHandleRoll(game.user, this.actor, data)
+				return RollGURPS.handleRoll(game.user, this.actor, data)
 			case RollType.Damage:
 				data.item = {
 					formattedName: getProperty(items, `${element.data("weapon")}.${key}.name`),
 					usage: getProperty(items, `${element.data("weapon")}.${key}.mode`),
 					fastResolvedDamage: getProperty(items, `${element.data("weapon")}.${key}.damage`),
 				}
-				return RollGURPS.staticHandleRoll(game.user, this.actor, data)
+				return RollGURPS.handleRoll(game.user, this.actor, data)
 			case RollType.Modifier:
 				data.modifier = element.data("modifier")
 				data.comment = element.data("comment")
 				if (event.type === "contextmenu") data.modifier = -data.modifier
-				return RollGURPS.staticHandleRoll(game.user, this.actor, data)
+				return RollGURPS.handleRoll(game.user, this.actor, data)
 		}
 	}
 

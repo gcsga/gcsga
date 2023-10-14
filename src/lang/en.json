@@ -1465,7 +1465,8 @@
 			"apply-to": "Apply to"
 		},
 		"dmgcalc": {
-			"armor_divisor": {
+			"apply_damage": "Apply Damage"
+,			"armor_divisor": {
 				"ignores_dr": "Ignores DR",
 				"no_divisor": "No Divisor"
 			},
