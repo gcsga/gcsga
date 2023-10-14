@@ -422,6 +422,13 @@ Hooks.on("userConnected", async () => {
 })
 
 Hooks.on("updateCombat", EffectGURPS.updateCombat)
+
+// Hook for updating damageMap when combat ends
+Hooks.on("deleteCombat", CombatGURPS.deleteCombat)
+
+// Hook for updating damageMap when an actor is removed from combat
+Hooks.on("updateCombat", CombatGURPS.updateCombat)
+
 Hooks.on("renderTokenHUD", (_app: any, $html: JQuery<HTMLElement>, data: any) => {
 	TokenHUDGURPS.onRenderTokenHUD($html[0]!, data)
 })
