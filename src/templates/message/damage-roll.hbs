@@ -1,19 +1,29 @@
 <div class="dice-roll damage">
-	<div data-uuid="{{weaponUUID}}" data-type="damage" class="name rollable">
+	<div
+		data-uuid="{{uuid}}"
+		data-weapon="{{weaponID}}"
+		data-actor="{{attacker}}"
+		data-type="damage"
+		class="name damage rollable"
+	>
 		{{name}}
-		({{diceString dice}})
+		({{damage}})
 	</div>
 	{{#if modifiers.length}}
-	<div class="modifiers">
-		{{#each modifiers}}
-		<div class="mod mod-{{this.class}}" data-mod="{{json this}}">{{signed this.modifier}}{{#if this.name}}:
-			{{this.name}}{{/if}}</div>
-		{{/each}}
-	</div>
+		<div class="modifiers">
+			{{#each modifiers}}
+				<div class="mod mod-{{this.class}}" data-mod="{{json this}}">{{signed this.modifier}}{{#if this.name}}:
+						{{this.name}}{{/if}}</div>
+			{{/each}}
+		</div>
 	{{/if}}
-	<hr>
+	<hr />
 	<div class="dice-result">
-		<div class="dice-total failure" draggable="true">{{localize "gurps.roll.damage"total=total type=damageType}}</div>
+		<div class="dice-total failure" draggable="true">{{localize
+				"gurps.roll.damage"
+				total=total
+				type=damageType
+			}}</div>
 		{{{margin}}}
 		{{{tooltip}}}
 	</div>

@@ -474,7 +474,7 @@ class DamageRollTypeHandler extends RollTypeHandler {
 		user: StoredDocument<User> | null,
 		actor: CharacterGURPS,
 		data: RollTypeData,
-		raFormula: string,
+		_: string,
 		hidden: boolean
 	): Promise<void> {
 		const name = this.getName(data)
@@ -490,8 +490,9 @@ class DamageRollTypeHandler extends RollTypeHandler {
 
 		const chatData: Partial<DamagePayload> = {
 			name,
-			attacker: actor.uuid,
-			weaponID: `${data.item.uuid}`,
+			uuid: data.item.uuid,
+			attacker: actor.id ?? undefined,
+			weaponID: data.item.id ?? undefined,
 			damage: damageRoll.displayString,
 			dice: damageRoll.dice,
 			damageType: damageRoll.damageType,

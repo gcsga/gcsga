@@ -4,7 +4,6 @@ import { DiceGURPS } from "@module/dice"
 import { TokenUtil } from "../../util/token_utils"
 import { BaseActorGURPS } from "@actor/base"
 import { CanvasUtil } from "@util/canvas"
-import { ChatMessageData } from "types/foundry/common/data/module.mjs"
 
 export enum DamageChatFlags {
 	Transfer = "transfer",
@@ -14,6 +13,7 @@ export type DamagePayload = {
 	hitlocation: string
 	attacker: string
 	weaponID: string
+	uuid: string
 	name: string
 	damage: string
 	dice: DiceGURPS
