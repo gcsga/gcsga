@@ -36,17 +36,17 @@
 					{{localize "gurps.dmgcalc.damage"}}
 					{{extra.damage.damage}}
 				</div>
-				{{#with extra.ranged}}
+				{{#if extra.ranged}}
 					<div
 						data-weapon="{{extra.damage.weaponID}}"
 						data-actor="{{extra.damage.attacker}}"
 						data-type="damage"
-						data-times="{{potential_hits}}"
+						data-times="{{extra.ranged.potential_hits}}"
 						class="damage rollable"
 					>
-						&times;{{potential_hits}}
+						&times;{{extra.ranged.potential_hits}}
 					</div>
-				{{/with}}
+				{{/if}}
 			</div>
 		{{/if}}
 		{{{tooltip}}}
