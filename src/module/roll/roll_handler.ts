@@ -1,7 +1,7 @@
 import { RollModifier, RollType, SETTINGS, SYSTEM_NAME, UserFlags } from "@module/data"
 import { RollGURPS } from "."
 import { CharacterGURPS } from "@actor"
-import { SkillGURPS, TechniqueGURPS } from "@item"
+import { RangedWeaponGURPS, SkillGURPS, TechniqueGURPS } from "@item"
 import { LocalizeGURPS } from "@util"
 import { DamageRollGURPS } from "./damage_roll"
 import { DamageChat, DamagePayload } from "@module/damage_calculator/damage_chat_message"
@@ -14,19 +14,24 @@ enum RollSuccess {
 	CriticalFailure = "critical_failure",
 }
 
-export type RollTypeData = {
-	type: RollType // RollTypeHandler
-	modifier: number // AddModifier
-	comment: string // AddModifier
-	attribute: any
-	item: any
-	formula: string
-	hidden: boolean
-}
-
 const MODIFIER_CLASS_ZERO = "zero"
 const MODIFIER_CLASS_NEGATIVE = "neg"
 const MODIFIER_CLASS_POSITIVE = "pos"
+
+type ChatData = {
+	name: string
+	displayName: string
+	modifiers: Array<RollModifier & { class?: string }>
+	success: RollSuccess
+	margin: string
+	margin_number: number
+	type: RollType
+	item: any
+	total: string
+	tooltip: string
+	eff: string
+	extra?: any
+}
 
 abstract class RollTypeHandler {
 	async handleRollType(
@@ -57,20 +62,24 @@ abstract class RollTypeHandler {
 		return true
 	}
 
-	getItem(data: any): any {
+	getItem(data: RollTypeData): any {
 		return data.item
 	}
 
-	getLevel(data: any): number {
+	getLevel(data: RollTypeData): number {
 		return data.item.effective.level as number
 	}
 
-	getName(data: any): string {
+	getName(data: RollTypeData): string {
 		return data.item.formattedName
 	}
 
-	getType(data: any): RollType {
+	getType(data: RollTypeData): RollType {
 		return data.type
+	}
+
+	get chatMessageTemplate(): string {
+		return `systems/${SYSTEM_NAME}/templates/message/roll-against.hbs`
 	}
 
 	/**
@@ -109,30 +118,30 @@ abstract class RollTypeHandler {
 
 		// Roll the dice and determine the success/failure and margin.
 		const roll = await Roll.create(formula).evaluate({ async: true })
-		// const roll = Roll.create(formula) as RollGURPS
-		// await roll.evaluate({ async: true })
-		const [success, margin] = this.getMargin(name, effectiveLevel, roll.total!)
+		const [success, margin, marginText] = this.getMargin(name, effectiveLevel, roll.total!)
 
 		this.addModsDisplayClass(modifiers)
 
-		const chatData = {
+		const chatData: ChatData = {
 			name,
 			displayName: LocalizeGURPS.format(this.displayNameLocalizationKey, { name, level }),
-			level,
 			modifiers,
 			success,
-			margin,
+			margin: marginText,
+			margin_number: margin,
 			type,
-			encumbrance,
 			item: this.getItemData(item, actor),
 			total: `${roll.total!}: ${LocalizeGURPS.translations.gurps.roll.success[success]}`,
 			tooltip: await roll.getTooltip(),
-			eff: `<div class="effective">${game.i18n.format(this.effectiveTemplate, {
+			eff: `<div class="effective">${game.i18n.format(this.effectiveLevelLabel, {
 				level: effectiveLevel,
 			})}</div>`,
+			extra: null,
 		}
 
-		const message = await renderTemplate(`systems/${SYSTEM_NAME}/templates/message/roll-against.hbs`, chatData)
+		chatData.extra = this.getExtraData(chatData)
+
+		const message = await renderTemplate(this.chatMessageTemplate, chatData)
 		const messageData: any = {
 			user: user,
 			speaker: { actor: actor.id },
@@ -147,8 +156,12 @@ abstract class RollTypeHandler {
 	/**
 	 * @returns The Handlebars template to use for the chat message content.
 	 */
-	get effectiveTemplate(): string {
+	get effectiveLevelLabel(): string {
 		return "gurps.roll.effective_skill"
+	}
+
+	getExtraData(_: ChatData): any {
+		return null
 	}
 
 	/**
@@ -192,7 +205,7 @@ abstract class RollTypeHandler {
 		return effectiveLevel
 	}
 
-	getMargin(name: string, level: number, roll: number): [RollSuccess, string] {
+	getMargin(name: string, level: number, roll: number): [RollSuccess, number, string] {
 		const success = this.getSuccess(level, roll)
 		const margin = Math.abs(level - roll)
 		const marginMod: Partial<RollModifier> = { modifier: margin }
@@ -213,6 +226,7 @@ abstract class RollTypeHandler {
 
 		return [
 			success,
+			margin,
 			`<div
 			class="margin mod mod-${marginClass}"
 			data-mod='${JSON.stringify(marginMod)}'
@@ -295,7 +309,7 @@ class AttributeRollTypeHandler extends RollTypeHandler {
 		return data.attribute.attribute_def.combinedName
 	}
 
-	override get effectiveTemplate(): string {
+	override get effectiveLevelLabel(): string {
 		return "gurps.roll.effective_target"
 	}
 
@@ -346,7 +360,7 @@ class SkillRollTypeHandler extends RollTypeHandler {
 }
 
 class ControlRollTypeHandler extends RollTypeHandler {
-	override getLevel(data: any): number {
+	override getLevel(data: RollTypeData): number {
 		return data.item.skillLevel as number
 	}
 
@@ -356,20 +370,60 @@ class ControlRollTypeHandler extends RollTypeHandler {
 }
 
 class AttackRollTypeHandler extends RollTypeHandler {
+	static SHOTGUN_ROF = /(\d+)[×xX*](\d+)/ // 3x10, for example
+
 	override isValid(data: RollTypeData): boolean {
 		return !isNaN(this.getLevel(data))
 	}
 
-	override getLevel(data: any): any {
+	override getLevel(data: RollTypeData): any {
 		// TODO If data.item.skillLevel is a function, call it with null as the argument;
 		// otherwise, just return the value.
 		if (typeof data.item.skillLevel === "function") return data.item.skillLevel(null)
 		else return data.item.skillLevel
 	}
 
-	override getName(data: any): string {
-		if (data.item.itemType) return `${data.item.itemName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
+	override getName(data: RollTypeData): string {
+		if (data.item.itemName) return `${data.item.itemName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
 		return `${data.item.formattedName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
+	}
+
+	get chatMessageTemplate(): string {
+		return `systems/${SYSTEM_NAME}/templates/message/roll-against-ranged.hbs`
+	}
+
+	override getItemData(item: any, actor: CharacterGURPS): any {
+		return item
+	}
+
+	override getExtraData(data: ChatData): any {
+		if (data.item instanceof RangedWeaponGURPS) {
+			const item = data.item
+			if (this.validRateOfFire(item.rate_of_fire) && data.margin_number > 0 && parseInt(item.recoil) > 0) {
+				const effectiveRof = this.effectiveRateOfFire(item.rate_of_fire)
+				let numberOfShots = Math.min(Math.floor(data.margin_number / parseInt(item.recoil)) + 1, effectiveRof)
+				return {
+					rate_of_fire: item.rate_of_fire,
+					recoil: item.recoil,
+					potential_hits: numberOfShots,
+				}
+			}
+		}
+		return null
+	}
+
+	private effectiveRateOfFire(rate_of_fire: string) {
+		if (rate_of_fire.match(AttackRollTypeHandler.SHOTGUN_ROF)) {
+			const match = rate_of_fire.match(AttackRollTypeHandler.SHOTGUN_ROF)
+			return parseInt(match![1]) * parseInt(match![2])
+		}
+		return parseInt(rate_of_fire)
+	}
+
+	private validRateOfFire(rof: string): boolean {
+		if (rof.match(AttackRollTypeHandler.SHOTGUN_ROF)) return true
+		if (parseInt(rof) > 0) return true
+		return false
 	}
 }
 
@@ -396,21 +450,21 @@ class BlockRollTypeHandler extends RollTypeHandler {
 		return !isNaN(data.item.block) && data.item.block !== ""
 	}
 
-	override getLevel(data: any): number {
+	override getLevel(data: RollTypeData): number {
 		return data.item.block as number
 	}
 
-	override getName(data: any): string {
+	override getName(data: RollTypeData): string {
 		return data.item.itemName ? `${data.item.itemName} - Block` : `${data.item.formattedName} - Block`
 	}
 
-	override getType(data: any): RollType {
+	override getType(data: RollTypeData): RollType {
 		return RollType.Attack
 	}
 }
 
 class DamageRollTypeHandler extends RollTypeHandler {
-	override getName(data: any): string {
+	override getName(data: RollTypeData): string {
 		return data.item.itemName
 			? `${data.item.itemName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
 			: `${data.item.formattedName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
@@ -533,7 +587,16 @@ class GenericRollTypeHandler extends RollTypeHandler {
 	}
 }
 
-// Usage:
+export type RollTypeData = {
+	type: RollType // RollTypeHandler
+	modifier: number // AddModifier
+	comment: string // AddModifier
+	attribute: any
+	item: any
+	formula: string
+	hidden: boolean
+}
+
 export const rollTypeHandlers: Record<RollType, RollTypeHandler> = {
 	[RollType.Modifier]: new ModifierRollTypeHandler(),
 	[RollType.Attribute]: new AttributeRollTypeHandler(),
