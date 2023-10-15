@@ -8,11 +8,11 @@
 - Finish "static" character (0.15 and older) compatibility
  - don't bother with editing features
 - mook generator
- - grab simplified version of attributes from default settings (not editable in sheet)
  - keep simple textbox parsing as for previous version
  - implement name matching from imported libraries
  - warning tag on simplified mook items as not having full functionality
   - option to suppress
+ - weapon damage parsing
 
 ## Jeff and Chris
 
@@ -110,3 +110,4 @@
   - A small grid is presented in the window, with your image in the middle. You can manipulate the size of the image to match your aesthetic needs.
  - There is also a "hex-side" choosing option on this grid, wherein you choose which sides of which hexes should count as Front, Side, or Back. Whether or not this has any mechanical difference will remain to be seen, but it's a possibility.
  - There is a checkbox allowing you to toggle a "hex frame" for your token, which may be rendered as part of the token image. - Color red beyond limit
+ - Weapon Robustness secret rolls Pyramid #3-87:6

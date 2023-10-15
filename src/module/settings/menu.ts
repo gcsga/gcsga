@@ -32,6 +32,17 @@ abstract class SettingsMenuGURPS extends FormApplication {
 		return {}
 	}
 
+	activateListeners(html: JQuery<HTMLElement>): void {
+		super.activateListeners(html)
+		html.find(".data-import").on("click", event => this._onDataImport(event))
+		html.find(".data-export").on("click", event => this._onDataExport(event))
+	}
+
+
+	abstract _onDataImport(_event: JQuery.ClickEvent): void
+
+	abstract _onDataExport(_event: JQuery.ClickEvent): void
+
 	static registerSettings(): void {
 		const settings = this.settings
 		for (const setting of this.SETTINGS) {
@@ -44,7 +55,6 @@ abstract class SettingsMenuGURPS extends FormApplication {
 
 	override async getData(): Promise<any> {
 		const settings = (this.constructor as typeof SettingsMenuGURPS).settings
-		// Console.log(settings)
 		const templateData: any[] = Object.entries(settings).map(([key, setting]) => {
 			const value = game.settings.get(SYSTEM_NAME, `${this.namespace}.${key}`)
 			return {

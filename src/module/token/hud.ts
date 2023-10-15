@@ -127,17 +127,6 @@ export class TokenHUDGURPS extends TokenHUD {
 		if (!(actor && id)) return
 		const combatant = token.combatant
 
-		// if (id === ConditionID.Dead) {
-		// 	actor.toggleDefeated()
-		// }
-		// if (id === "dead") {
-		// 	const isDefeated = combatant ? !combatant.isDefeated : !actor.hasCondition([ConditionID.Dead])
-		// 	if (combatant) await combatant.update({ defeated: isDefeated })
-		// 	const status = CONFIG.statusEffects.find(e => e.id === CONFIG.specialStatusEffects.DEFEATED)
-		// const effect = token.actor && status ? status : CONFIG.controlIcons.defeated
-		// token.toggleEffect(effect, { overlay: true, active: isDefeated })
-		// 	return
-		// }
 		if (event.type === "click") {
 			await actor?.increaseCondition(id)
 		} else if (event.type === "contextmenu") {
@@ -212,7 +201,6 @@ export class TokenHUDGURPS extends TokenHUD {
 			img.dataset.statusId && this.object?.actor
 				? CONFIG.statusEffects.find(e => e.id === img.dataset.statusId)
 				: img.getAttribute("src")
-		// Console.log(img, effect)
 		return this.object!.toggleEffect(effect, { overlay })
 	}
 }

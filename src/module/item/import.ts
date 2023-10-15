@@ -91,7 +91,6 @@ export class ItemImporter {
 			return this.throwImportError(errorMessages)
 		}
 
-		// Let commit: ItemLibraryData | any = {};
 		try {
 			if (r.version < this.version)
 				return this.throwImportError(
@@ -102,12 +101,8 @@ export class ItemImporter {
 					errorMessages.concat(LocalizeGURPS.translations.gurps.error.import.format_new)
 				)
 
-			// Commit = { ...commit, ...{ type: r.type } };
-			// commit = { ...commit, ...{ version: r.version } };
-
 			const items: Array<ItemSystemDataGURPS> = []
 			items.push(...ImportUtils.importItems(r.rows))
-			// Commit = { ...commit, ...{ rows: items } };
 
 			let pack = game.packs.find(p => p.metadata.name === name.toLowerCase().replaceAll(" ", "-"))
 			if (!pack) {
@@ -128,19 +123,12 @@ export class ItemImporter {
 				pack: pack.collection,
 				keepId: true,
 			})
-			console.log(newItems)
-			// Item.create(items as any, { pack: `world.${name}` })
-			// newItems.forEach((i: any) => {
-			// const item = new BaseItemGURPS(i)
-			// pack!.importDocument(i, { keepId: true })
-			// })
 			ui.notifications?.info(
 				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.system.library_import.finished, {
 					number: counter,
 				})
 			)
 			const cb = game.CompendiumBrowser
-			// Const cb = GURPS.CompendiumBrowser
 			if (cb.rendered) cb.render(true)
 		} catch (err) {
 			console.error(err)

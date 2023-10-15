@@ -1,6 +1,5 @@
-import { CharacterGURPS } from "@actor"
 import { ActorGURPS } from "@module/config"
-import { RollType, SETTINGS, SYSTEM_NAME, UserFlags } from "@module/data"
+import { ActorType, RollType, SETTINGS, SYSTEM_NAME, UserFlags } from "@module/data"
 import { RollTypeData, rollTypeHandlers } from "./roll_handler"
 
 export class RollGURPS extends Roll {
@@ -43,7 +42,7 @@ export class RollGURPS extends Roll {
 		let dataRgx = new RegExp(/\$([a-z.0-9_-]+)/gi)
 		const newFormula = formula.replace(dataRgx, (match, term) => {
 			if (data.actor) {
-				let value: any = (data.actor as CharacterGURPS).resolveVariable(term.replace("$", "")) ?? null
+				let value: any = data.actor.resolveVariable(term.replace("$", "")) ?? null
 				if (value === null) {
 					if (options?.warn && ui.notifications)
 						ui.notifications.warn(game.i18n.format("DICE.WarnMissingData", { match }))
@@ -77,7 +76,7 @@ export class RollGURPS extends Roll {
 	 * @param data
 	 */
 	static async handleRoll(user: StoredDocument<User> | null, actor: ActorGURPS | any, data: any): Promise<void> {
-		if (actor instanceof CharacterGURPS) {
+		if (actor.type === ActorType.Character) {
 			const lastStack = user?.getFlag(SYSTEM_NAME, UserFlags.ModifierStack)
 			const lastTotal = user?.getFlag(SYSTEM_NAME, UserFlags.ModifierTotal)
 			await user?.setFlag(SYSTEM_NAME, UserFlags.LastStack, lastStack)

@@ -145,8 +145,8 @@ export class ActorSheetGURPS extends ActorSheet {
 			// Create custom drag image
 			const dragImage = document.createElement("div")
 			dragImage.innerHTML = await renderTemplate(`systems/${SYSTEM_NAME}/templates/actor/drag-image.hbs`, {
-				name: `${itemData?.name}`,
-				type: `${itemData?.type.replace("_container", "").replaceAll("_", "-")}`,
+				name: `${item?.name}`,
+				type: `${item?.type.replace("_container", "").replaceAll("_", "-")}`,
 			})
 			dragImage.id = "drag-ghost"
 			document.body.querySelectorAll("#drag-ghost").forEach(e => e.remove())
@@ -193,9 +193,9 @@ export class ActorSheetGURPS extends ActorSheet {
 		})
 		const updateData = sortUpdates.map(u => {
 			const update = u.update
-			;(update as any)._id = u.target!._id
+				; (update as any)._id = u.target!._id
 			return update
-		}) as { _id: string; sort: number; [key: string]: any }[]
+		}) as { _id: string; sort: number;[key: string]: any }[]
 
 		if (source && source.container !== parent) {
 			const id = updateData.findIndex(e => (e._id = source._id))

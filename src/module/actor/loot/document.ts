@@ -18,7 +18,6 @@ class LootGURPS extends BaseActorGURPS {
 		data?: DeepPartial<ActorDataConstructorData | (ActorDataConstructorData & Record<string, unknown>)>,
 		context?: DocumentModificationContext & foundry.utils.MergeObjectOptions & { noPrepare?: boolean }
 	): Promise<this | undefined> {
-		// Console.log(data, context)
 		if (context?.noPrepare) this.noPrepare = true
 		this.checkImport(data)
 		return super.update(data, context)

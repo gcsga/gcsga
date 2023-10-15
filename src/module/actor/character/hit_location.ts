@@ -28,6 +28,10 @@ class HitLocationTable {
 		this.updateRollRanges()
 	}
 
+	get isNested(): boolean {
+		return this.locations.some(e => !!e.subTable)
+	}
+
 	updateRollRanges(): void {
 		let start = this.roll.minimum(false)
 		for (const location of this.locations) {
@@ -51,6 +55,7 @@ class HitLocationTable {
 		}
 		return result
 	}
+
 
 	toObject(): HitLocationTableData {
 		return {
@@ -102,6 +107,13 @@ class HitLocation {
 		Object.assign(this, data)
 	}
 
+	// gets pixel indent for sheet purposes. Currently hardcoded at 6px per indent
+	// TODO: find a way around hardcoding a pixel value
+	get indent(): number {
+		if (!this.owningTable.owningLocation) return 0
+		return this.owningTable.owningLocation.indent + 6
+	}
+
 	get subTable(): HitLocationTable | undefined {
 		return (this.sub_table) ? new HitLocationTable(
 			this.sub_table.name,
@@ -145,7 +157,7 @@ class HitLocation {
 	}
 
 	_DR(tooltip?: TooltipGURPS, drMap: Map<string, number> = new Map()): Map<string, number> {
-		if (this.dr_bonus !== 0) {
+		if (this.dr_bonus && this.dr_bonus !== 0) {
 			drMap.set(gid.All, this.dr_bonus)
 			tooltip?.push(
 				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.tooltip.dr_bonus, {
@@ -159,7 +171,6 @@ class HitLocation {
 		if (this.actor.type === ActorType.Character)
 			drMap = this.actor.addDRBonusesFor(this.id, tooltip, drMap)
 		if (this.owningTable.owningLocation) {
-			// console.log(this.owningTable.owningLocation)
 			drMap = this.owningTable.owningLocation._DR(tooltip, drMap)
 		}
 		for (const k of drMap.keys()) {
@@ -208,7 +219,8 @@ class HitLocation {
 	}
 
 	updateRollRange(start: number): number {
-		if (this.slots === 0) this.roll_range = "-"
+		if (this.slots === undefined) this.slots = 0
+		if (this.slots === 0) this.roll_range = ""
 		else if (this.slots === 1) this.roll_range = start.toString()
 		else this.roll_range = `${start}-${start + this.slots - 1}`
 

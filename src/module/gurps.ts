@@ -342,7 +342,6 @@ Hooks.once("ready", async () => {
 	setInitiative()
 
 	game.socket?.on("system.gcsga", async (response: any) => {
-		console.log(response)
 		switch (response.type as SOCKET) {
 			case SOCKET.UPDATE_BUCKET:
 				// Ui.notifications?.info(response.users)
@@ -577,11 +576,6 @@ Hooks.on("renderHotbar", function(_hotbar: any, element: JQuery<HTMLElement>, _o
 })
 
 Hooks.on("chatMessage", function(_chatlog: ChatLog, message: string, _data: any) {
-	console.log("checkem")
 	Chat.procesMessage(message)
 	return false
-})
-
-Hooks.on("createActor", function(...args: any[]) {
-	console.log(args)
 })

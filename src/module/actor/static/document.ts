@@ -23,7 +23,7 @@ import {
 } from "./data"
 import { StaticCharacterImporter } from "./import"
 
-Hooks.on("createActor", async function (actor: StaticCharacterGURPS) {
+Hooks.on("createActor", async function(actor: StaticCharacterGURPS) {
 	if (actor.type === "character")
 		await actor.update({
 			"_stats.systemVersion": game.system.version,
@@ -35,7 +35,6 @@ class StaticCharacterGURPS extends BaseActorGURPS {
 		data?: DeepPartial<ActorDataConstructorData | (ActorDataConstructorData & Record<string, unknown>)> | undefined,
 		context?: (DocumentModificationContext & MergeObjectOptions) | undefined
 	): Promise<this | undefined> {
-		// Console.log(data)
 		return super.update(data, context)
 	}
 
@@ -977,7 +976,7 @@ class StaticCharacterGURPS extends BaseActorGURPS {
 		newobj[objkey] = oldotf
 		let notes
 		let newotf
-		;[notes, newotf] = this._removeOtf(otfkey, newobj.notes || "")
+			;[notes, newotf] = this._removeOtf(otfkey, newobj.notes || "")
 		if (newotf) newobj[objkey] = newotf
 		newobj.notes = notes?.trim()
 	}

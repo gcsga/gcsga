@@ -51,6 +51,14 @@ export class DamageTypeSettings extends SettingsMenuGURPS {
 		html.find("[data-action]").on("change click", event => this._onApplyControl(event))
 	}
 
+	_onDataImport(event: JQuery.ClickEvent) {
+		event.preventDefault()
+	}
+
+	_onDataExport(event: JQuery.ClickEvent) {
+		event.preventDefault()
+	}
+
 	_onApplyControl(event: JQuery.Event) {
 		if (event.type === "click") {
 			const e = event as JQuery.ClickEvent
