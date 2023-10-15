@@ -18,12 +18,24 @@
 	<div class="dice-result">
 		<div class="dice-total {{success}}">{{total}}</div>
 		{{{margin}}}
-		{{#if extra}}
+		{{#with extra.ranged}}
 			<div class="gcs-ranged-weapon">
-				<strong>{{extra.potential_hits}}</strong>
-				{{localize "gurps.roll.ranged.extra" rate_of_fire=extra.rate_of_fire recoil=extra.recoil}}.
+				<strong>{{potential_hits}}</strong>
+				{{localize "gurps.roll.ranged.extra" rate_of_fire=rate_of_fire recoil=recoil}}.
 			</div>
-		{{/if}}
+		{{/with}}
+		{{#with extra.damage}}
+			<div
+				data-uuid="{{uuid}}"
+				data-weapon="{{weaponID}}"
+				data-actor="{{attacker}}"
+				data-type="damage"
+				class="damage rollable"
+			>
+				{{localize "gurps.dmgcalc.roll"}}
+				{{damage}}
+			</div>
+		{{/with}}
 		{{{tooltip}}}
 	</div>
 </div>

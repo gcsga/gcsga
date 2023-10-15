@@ -1,4 +1,5 @@
 .dice-roll {
+
 	&.attack,
 	&.attribute,
 	&.damage,
@@ -10,7 +11,7 @@
 		align-items: center;
 		text-align: center;
 
-		> hr {
+		>hr {
 			border-color: rgb(var(--color-divider));
 			height: 1px;
 			width: 90%;
@@ -40,6 +41,7 @@
 			cursor: pointer;
 			transition: all 0.1s linear 0s;
 			margin-top: 4px;
+
 			&:hover {
 				color: rgb(var(--color-skill));
 				background-color: white;
@@ -117,6 +119,7 @@
 		.modifiers {
 			display: grid;
 			grid-auto-flow: row;
+
 			// grid-gap: 2px;
 			&.generic {
 				margin-top: 4px;
@@ -125,6 +128,30 @@
 
 		.dice-result {
 			width: 100%;
+
+			.damage.rollable {
+				color: rgb(var(--color-failure));
+				border-color: rgb(var(--color-failure));
+				font-weight: bold;
+				margin: auto;
+				width: min-content;
+				padding: 0 5px;
+				margin-bottom: 5px;
+				white-space: nowrap;
+				text-align: center;
+				background-color: white;
+				border: 2px solid;
+				border-radius: 5px;
+				font-size: var(--font-size-16);
+				cursor: pointer;
+
+				&:hover {
+					cursor: pointer;
+					color: white;
+					background-color: rgb(var(--color-failure));
+					border-color: rgb(var(--color-failure));
+				}
+			}
 		}
 
 		.dice-total {
@@ -238,13 +265,16 @@
 		.result-image {
 			border: none;
 		}
+
 		.result-text {
 			width: min-content;
+
 			.content-link {
 				background: rgb(var(--color-control));
 				color: rgb(var(--color-on-control));
 				border: 2px solid rgb(var(--color-control-edge));
 				border-radius: 5px;
+
 				&:hover {
 					text-shadow: none;
 				}
