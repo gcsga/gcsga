@@ -24,18 +24,31 @@
 				{{localize "gurps.roll.ranged.extra" rate_of_fire=rate_of_fire recoil=recoil}}.
 			</div>
 		{{/with}}
-		{{#with extra.damage}}
-			<div
-				data-uuid="{{uuid}}"
-				data-weapon="{{weaponID}}"
-				data-actor="{{attacker}}"
-				data-type="damage"
-				class="damage rollable"
-			>
-				{{localize "gurps.dmgcalc.roll"}}
-				{{damage}}
+		{{#if extra.damage}}
+			<div class="damage-buttons">
+				<div
+					data-weapon="{{extra.damage.weaponID}}"
+					data-actor="{{extra.damage.attacker}}"
+					data-type="damage"
+					class="damage rollable"
+				>
+					<i class="fa-light fa-dice"></i>
+					{{localize "gurps.dmgcalc.damage"}}
+					{{extra.damage.damage}}
+				</div>
+				{{#with extra.ranged}}
+					<div
+						data-weapon="{{extra.damage.weaponID}}"
+						data-actor="{{extra.damage.attacker}}"
+						data-type="damage"
+						data-times="{{potential_hits}}"
+						class="damage rollable"
+					>
+						&times;{{potential_hits}}
+					</div>
+				{{/with}}
 			</div>
-		{{/with}}
+		{{/if}}
 		{{{tooltip}}}
 	</div>
 </div>

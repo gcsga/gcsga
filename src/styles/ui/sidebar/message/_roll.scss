@@ -129,17 +129,24 @@
 		.dice-result {
 			width: 100%;
 
+			.damage-buttons {
+				display: flex;
+				flex-flow: row nowrap;
+				justify-content: center
+			}
+
 			.damage.rollable {
-				color: rgb(var(--color-failure));
-				border-color: rgb(var(--color-failure));
+				color: white;
+				background-color: rgb(var(--color-failure));
+				border-color: rgb(var(--color-failure)) !important;
 				font-weight: bold;
-				margin: auto;
+				margin-top: 4px;
+				margin-bottom: 5px;
 				width: min-content;
 				padding: 0 5px;
 				margin-bottom: 5px;
 				white-space: nowrap;
 				text-align: center;
-				background-color: white;
 				border: 2px solid;
 				border-radius: 5px;
 				font-size: var(--font-size-16);
@@ -147,9 +154,13 @@
 
 				&:hover {
 					cursor: pointer;
-					color: white;
-					background-color: rgb(var(--color-failure));
+					color: rgb(var(--color-failure));
+					background-color: white;
 					border-color: rgb(var(--color-failure));
+				}
+
+				&:not(:first-child) {
+					margin-left: 3px;
 				}
 			}
 		}
