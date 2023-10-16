@@ -124,6 +124,14 @@ export class ColorSettings extends SettingsMenuGURPS {
 		// Html.find(".reset-all").on("click", event => this._onResetAll(event))
 	}
 
+	_onDataImport(event: JQuery.ClickEvent) {
+		event.preventDefault()
+	}
+
+	_onDataExport(event: JQuery.ClickEvent) {
+		event.preventDefault()
+	}
+
 	async _onReset(event: JQuery.ClickEvent) {
 		event.preventDefault()
 		const id = $(event.currentTarget).data("id")

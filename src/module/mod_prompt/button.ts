@@ -124,7 +124,6 @@ class ModifierButton extends Application {
 
 	async _onDiceContextMenu(event: JQuery.ContextMenuEvent): Promise<void> {
 		event.preventDefault()
-		console.log(event.ctrlKey)
 		return RollGURPS.handleRoll(game.user, null, {
 			type: RollType.Generic,
 			formula: "1d6",

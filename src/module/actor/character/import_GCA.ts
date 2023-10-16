@@ -37,7 +37,6 @@ export class GCAImporter {
 			errorMessages.push(LocalizeGURPS.translations.gurps.error.import.no_json_detected)
 			return this.throwImportError(errorMessages)
 		}
-		console.log("raw data:", r)
 		let commit: Partial<CharacterDataGURPS> = {}
 		const imp = document.importData
 		imp.name = file.name ?? imp.name

@@ -374,7 +374,6 @@ class DamageTargetActor implements DamageTarget {
 	}
 
 	incrementDamage(delta: number): void {
-		console.log(`Reduce HP by ${delta}`)
 		const attributes = [...(this.actor as CharacterGURPS).system.attributes]
 		const index = attributes.findIndex(it => it.attr_id === "hp")
 		attributes[index].damage = attributes[index].damage! + delta

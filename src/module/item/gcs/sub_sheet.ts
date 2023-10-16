@@ -89,19 +89,14 @@ export class ItemSubstitutionSheet extends FormApplication {
 				update[j] = update[j].replaceAll(`@${k}@`, this.subs[k])
 			}
 		}
-		console.log(duplicate(update))
 		update = prepareFormData(update, { ...this.object })
 		this.object.update(update)
-		// Const items = this.nextObjects
 		await this.close()
-		// ModifierChoiceSheet.new(items {puuid: this.puuid})
 	}
 
 	protected async _onCancel(event: JQuery.ClickEvent) {
 		event.preventDefault()
-		// Const items = this.nextObjects
 		await this.close()
-		// ModifierChoiceSheet.new(items)
 	}
 
 	protected async _updateObject(event: Event, formData?: any | undefined): Promise<any> {

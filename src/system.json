@@ -7,7 +7,7 @@
 		{
 			"name": "Chris Normand",
 			"email": "nose66@bellsouth.net",
-			"discord": "Nose66#6689"
+			"discord": "nose66"
 		},
 		{
 			"name": "M. Jeff Wilson",
@@ -17,12 +17,12 @@
 		{
 			"name": "Mikolaj Tomczynski",
 			"email": "mikolajtomczynski@gmail.com",
-			"discord": "neck#0001"
+			"discord": "sasiedny"
 		}
 	],
 	"compatibility": {
 		"minimum": 11,
-		"verified": "11.308",
+		"verified": "11.311",
 		"maximum": 11
 	},
 	"scripts": [],
@@ -37,12 +37,12 @@
 			"path": "lang/en.json"
 		}
 	],
-	"url": "https://github.com/crnormand/gurps",
+	"url": "https://github.com/gcsga/gcsga",
 	"manifest": "this is autoreplaced",
 	"download": "this is autoreplaced",
 	"license": "MIT",
 	"readme": "README.md",
-	"bugs": "https://github.com/crnormand/gurps/issues",
+	"bugs": "https://github.com/gcsga/gcsga/issues",
 	"changelog": "",
 	"gridDistance": 1,
 	"gridUnits": "yd",

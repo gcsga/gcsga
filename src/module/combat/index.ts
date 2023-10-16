@@ -31,14 +31,11 @@ class CombatGURPS extends Combat {
 	}
 
 	static async deleteCombat(combat: Combat) {
-		console.log("Hooks.on(deleteCombat)")
 		const tokenIds = combat.combatants.map(combatant => combatant.token?.id ?? undefined).filter(it => !!it)
 		await CombatGURPS.updateDamageMapForTokens(tokenIds as string[])
 	}
 
 	static async updateCombat(combat: Combat, updateData: CombatData) {
-		console.log("Hooks.on(updateCombat)")
-
 		if (!updateData.combatants) return
 
 		const previousCombatants = combat.data.combatants

@@ -89,7 +89,6 @@ export class CharacterSheetConfig extends FormApplication {
 				const e = event.currentTarget
 				e.style.height = "0px"
 				e.style.height = `${e.scrollHeight + 2}px`
-				console.log(e.style.height)
 			})
 
 		html.find("a.reset-all").on("click", event => this._onReset(event))
@@ -166,6 +165,8 @@ export class CharacterSheetConfig extends FormApplication {
 		html.find(".add").on("click", event => this._onAddItem(event))
 		html.find(".delete").on("click", event => this._onDeleteItem(event))
 		html.find(".export").on("click", event => this._onExport(event))
+		html.find(".data-import").on("click", event => this._onDataImport(event))
+		html.find(".data-export").on("click", event => this._onDataExport(event))
 	}
 
 	async _onReset(event: JQuery.ClickEvent) {
@@ -195,6 +196,20 @@ export class CharacterSheetConfig extends FormApplication {
 	_onExport(event: JQuery.ClickEvent) {
 		event.preventDefault()
 		return this.object.saveLocal()
+	}
+
+	_onDataImport(event: JQuery.ClickEvent) {
+		event.preventDefault()
+	}
+
+	_onDataExport(event: JQuery.ClickEvent) {
+		event.preventDefault()
+		switch ($(event.currentTarget).data("type")) {
+			case "attributes":
+				return this.object.saveLocal("settings.attributes", "attr")
+			case "locations":
+				return this.object.saveLocal("settings.body_type", "body")
+		}
 	}
 
 	async _onAddItem(event: JQuery.ClickEvent) {
@@ -413,8 +428,6 @@ export class CharacterSheetConfig extends FormApplication {
 		if (!this.object.id) return
 		if (formData["system.settings.block_layout"])
 			formData["system.settings.block_layout"] = formData["system.settings.block_layout"].split("\n")
-		// console.log("checkem")
-		console.log(formData)
 		await this.object.update(formData)
 		return this.render()
 	}

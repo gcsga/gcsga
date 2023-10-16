@@ -41,7 +41,6 @@ class CompendiumBrowser extends Application {
 
 	get skillDefaults(): string[] {
 		const skillPacks: string[] = []
-		// Console.log(this.settings)
 		for (const id in this.settings.skill) {
 			if (this.settings.skill[id]?.skillDefault) skillPacks.push(id)
 		}
@@ -71,7 +70,6 @@ class CompendiumBrowser extends Application {
 	override activateListeners(html: JQuery<HTMLElement>): void {
 		const _html = html[0]
 		super.activateListeners(html)
-		// Html.find(".item").on("dragover", event => this._onDragItem(event))
 		html.find(".item").on("dblclick", event => this._onClickEntry(event))
 		html.find(".dropdown-toggle").on("click", event => this._onCollapseToggle(event))
 		html.find(".ref").on("click", event => PDF.handle(event))
@@ -82,9 +80,6 @@ class CompendiumBrowser extends Application {
 		const options = html.find(".options")
 		options.css("top", `${90}px`)
 		options.css("left", `${630}px`)
-		console.log(tags.position())
-		// Options.css("top", `${tags.position()?.top}px`)
-		// options.css("left", `${tags.position()?.left}px`)
 
 		// Settings Tab
 		if (activeTabName === "settings") {
@@ -169,7 +164,6 @@ class CompendiumBrowser extends Application {
 	_updateQuery(event: JQuery.TriggeredEvent): void {
 		if (this.activeTab === TabName.Settings) return
 		this.tabs[this.activeTab].filterData.searchQuery = String($(event.currentTarget).val())
-		console.log(this.tabs[this.activeTab].filterData.searchQuery)
 		this.render()
 	}
 
@@ -179,12 +173,8 @@ class CompendiumBrowser extends Application {
 		const options = $(event.currentTarget).parent().children(".options")
 		const x = button.position().left
 		const y = button.position().top + 28
-		// Const options = button.children(".options")
 		options.css("left", `${x}px`)
 		options.css("top", `${y}px`)
-		// Options.css("left", `${0}px`)
-		// options.css("top", `${0}px`)
-		console.log(options)
 		return options.toggleClass("visible")
 	}
 
@@ -192,7 +182,6 @@ class CompendiumBrowser extends Application {
 		event.preventDefault()
 		if (this.activeTab === TabName.Settings) return
 		const value = $(event.currentTarget).data("value") as string
-		console.log(value)
 		if (value === "any") {
 			this.tabs[this.activeTab].filterData.tagFilter = []
 			return this.render()
@@ -207,9 +196,6 @@ class CompendiumBrowser extends Application {
 
 		this.tabs[this.activeTab].filterData.tagFilter = tags
 		this.render()
-		// Console.log(event.currentTarget)
-		// console.log($(event.currentTarget).val())
-		// this.tabs[this.activeTab].filterData.tagFilter = String($(event.currentTarget).val())
 	}
 
 	override getData(): object | Promise<object> {
@@ -418,7 +404,6 @@ class CompendiumBrowser extends Application {
 		const type = "Item"
 		const id = $(li!).data("item-id")
 		const item = this.tabs[this.activeTab as ItemTabName].indexData.find(e => e._id === id)
-		console.log(item)
 		event.dataTransfer?.setData(
 			"text/plain",
 			JSON.stringify({

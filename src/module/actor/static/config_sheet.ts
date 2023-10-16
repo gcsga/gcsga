@@ -143,7 +143,6 @@ export class StaticCharacterSheetConfig extends FormApplication {
 
 	protected async _easyUpdate(event: JQuery.ClickEvent) {
 		event.preventDefault()
-		console.log("updating character:", this.object.name)
 		const import_path = this.object.system.additionalresources.importpath
 		const import_name = import_path.match(/.*[/\\]Data[/\\](.*)/)
 		const file_path = import_name?.[1].replace(/\\/g, "/") || this.object.system.additionalresources.importpath
@@ -262,7 +261,6 @@ export class StaticCharacterSheetConfig extends FormApplication {
 				await this.object.update({ "system.additionalresources.tracker": updated_trackers })
 				return this.render()
 			case "tracker_thresholds":
-				console.log(this.resource_trackers, parent_index, index)
 				this.resource_trackers[parent_index].thresholds?.splice(index, 1)
 				updated_trackers = this.resource_trackers.reduce(
 					(a, v, k) => ({
@@ -370,7 +368,6 @@ export class StaticCharacterSheetConfig extends FormApplication {
 
 	protected async _updateObject(_event: Event, formData?: any | undefined): Promise<unknown> {
 		formData = prepareFormData(formData, this.object)
-		console.log(formData)
 		await this.object.update({ "system.additionalresources.-=tracker": null }, { render: false })
 		await this.object.update(formData)
 		return this.render()

@@ -2,6 +2,7 @@ import { BaseItemGURPS } from "@item/base"
 import { NoteData } from "./data"
 
 class NoteGURPS extends BaseItemGURPS {
+
 	get formattedName(): string {
 		return this.formattedText
 	}
@@ -15,7 +16,7 @@ class NoteGURPS extends BaseItemGURPS {
 		Object.entries(showdown_options).forEach(([k, v]) => showdown.setOption(k, v))
 		// @ts-ignore until v10 types
 		const converter = new showdown.Converter()
-		const text = this.system.text
+		const text = this.system.text || this.name
 		return converter.makeHtml(text)?.replace(/\s\+/g, "\r")
 	}
 

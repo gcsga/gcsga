@@ -235,7 +235,6 @@ export async function insertBeforeKey(actor: StaticCharacterGURPS, path: string,
  * @param {string} path
  */
 export async function removeKey(actor: StaticCharacterGURPS | StaticItemGURPS, path: string) {
-	console.log(actor, path)
 	let i = path.lastIndexOf(".")
 	let objpath = path.substring(0, i)
 	let key = path.substring(i + 1)
