@@ -153,7 +153,6 @@ class TechniqueGURPS extends ItemGCS {
 		if (actor) {
 			if (this.default.type === gid.Skill) {
 				const sk = actor.baseSkill(this.default, true)
-				console.log(sk)
 				if (sk) level = sk.calculateLevel().level
 			} else if (this.default) {
 				level = (this.default?.skillLevelFast(actor, true, false, null) ?? 0) - (this.default?.modifier ?? 0)
@@ -177,7 +176,6 @@ class TechniqueGURPS extends ItemGCS {
 			}
 		}
 
-		console.log(level)
 		return {
 			level: level,
 			relative_level: relative_level,
