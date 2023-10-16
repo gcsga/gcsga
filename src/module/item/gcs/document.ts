@@ -38,6 +38,7 @@ abstract class ItemGCS extends ContainerGURPS {
 		data: DeepPartial<ItemDataConstructorData | (ItemDataConstructorData & Record<string, unknown>)>,
 		context?: DocumentModificationContext & MergeObjectOptions & { noPrepare?: boolean }
 	): Promise<this | undefined> {
+		console.log(data)
 		if (this.actor && context?.noPrepare) (this.actor as any).noPrepare = true
 		if (!(this.parent instanceof Item)) return super.update(data, context)
 		data._id = this.id
@@ -173,7 +174,7 @@ abstract class ItemGCS extends ContainerGURPS {
 		if ((this as any).modifiers)
 			system.modifiers = (this as any).modifiers.map((e: ItemGCS) => e.exportSystemData(false))
 		if (system.weapons)
-			system.weapons = system.weapons.map(function (e: BaseWeaponGURPS) {
+			system.weapons = system.weapons.map(function(e: BaseWeaponGURPS) {
 				const f: any = { ...e }
 				f.damage.base = new DiceGURPS(e.damage.base).toString(false)
 				return f

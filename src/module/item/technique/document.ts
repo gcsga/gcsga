@@ -115,8 +115,6 @@ class TechniqueGURPS extends ItemGCS {
 	}
 
 	get skillLevel(): string {
-		// if (this.calculateLevel().level === -Infinity) return "-"
-		// return this.calculateLevel().level.toString()
 		if (this.effectiveLevel === -Infinity) return "-"
 		return this.effectiveLevel.toString()
 	}
@@ -153,9 +151,10 @@ class TechniqueGURPS extends ItemGCS {
 		let points = this.adjustedPoints()
 		let level = -Infinity
 		if (actor) {
-			if (this.default?.type === gid.Skill) {
-				const sk = actor.baseSkill(this.default!, true)
-				if (sk) level = sk.calculateLevel.level
+			if (this.default.type === gid.Skill) {
+				const sk = actor.baseSkill(this.default, true)
+				console.log(sk)
+				if (sk) level = sk.calculateLevel().level
 			} else if (this.default) {
 				level = (this.default?.skillLevelFast(actor, true, false, null) ?? 0) - (this.default?.modifier ?? 0)
 			}
@@ -165,7 +164,6 @@ class TechniqueGURPS extends ItemGCS {
 				if (this.difficulty === Difficulty.Hard) points -= 1
 				if (points > 0) relative_level = points
 				if (level !== -Infinity) {
-					// Relative_level += actor.bonusFor(`skill.name/${this.name}`, tooltip)
 					relative_level += actor.skillBonusFor(this.name!, this.specialization, this.tags, tooltip)
 					level += relative_level
 				}
@@ -178,6 +176,8 @@ class TechniqueGURPS extends ItemGCS {
 				}
 			}
 		}
+
+		console.log(level)
 		return {
 			level: level,
 			relative_level: relative_level,
