@@ -21,12 +21,6 @@ class BaseItemGURPS extends Item {
 		}
 	}
 
-	// override delete(context?: DocumentModificationContext | undefined): Promise<any> {
-	// 	if (!(this.parent instanceof Item)) return super.delete(context)
-	// 	return this.container?.deleteEmbeddedDocuments("Item", [this.id!])
-	// }
-	//
-
 	static override async createDialog(
 		data: { folder?: string } = {},
 		options: Partial<FormApplicationOptions> = {}

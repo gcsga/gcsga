@@ -15,8 +15,8 @@ export class DRBonus extends BaseFeature {
 	}
 
 	addToTooltip(buffer: TooltipGURPS | null): void {
-		if (buffer) {
-			let item: Item | null | undefined = this.item
+		if (buffer !== null) {
+			let item: any | null | undefined = this.item
 			if (item?.actor)
 				while (
 					[
@@ -26,7 +26,7 @@ export class DRBonus extends BaseFeature {
 						ItemType.EquipmentModifierContainer,
 					].includes(item?.type as any)
 				) {
-					if (item?.parent instanceof Item) item = item?.parent
+					if (item?.container instanceof Item) item = item?.container
 				}
 			if (this.per_level)
 				buffer.push(
