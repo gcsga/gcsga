@@ -13,9 +13,9 @@
 		{{/if}}
 	</div>
 	<div class="name">
-		<div class="name2">{{this.formattedName}}</div>
+		<div class="name">{{this.formattedName}}</div>
 		<div class="container-type">
-{{#if (and this.isContainer (ne this.system.container_type "group"))}}{{localize (concat "gurps.select.container_type." this.system.container_type)}}{{/if}}</div>
+{{#if (and this.isContainer (ne this.system.container_type "group"))}}{{localize (concat "gurps.character.traits.container_type." this.system.container_type)}}{{/if}}</div>
 	</div>
 	{{{this.notes}}}
 </div>

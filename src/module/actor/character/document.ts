@@ -1157,7 +1157,7 @@ class CharacterGURPS extends BaseActorGURPS {
 				this.processFeature(e, f, 0)
 			}
 			for (const m of e.deepModifiers) {
-				if (!m.enabled) continue
+				if (m.enabled === false) continue
 				for (const f of m.features) {
 					this.processFeature(e, f, 0)
 				}
@@ -1651,18 +1651,16 @@ class CharacterGURPS extends BaseActorGURPS {
 		tooltip: TooltipGURPS | null = null,
 		drMap: Map<string, number> = new Map()
 	): Map<string, number> {
-		const isTopLevel = this.BodyType.locations.some(e => e.id === locationID)
-
+		let isTopLevel = false
+		for (const location of this.BodyType.locations) {
+			if (location.id === locationID) {
+				isTopLevel = true
+				break
+			}
+		}
 		for (const f of this.features.drBonuses) {
-			if (f.type === FeatureType.DRBonus &&
-				(
-					(f.location === gid.All && isTopLevel) ||
-					equalFold(locationID, f.location)
-				)
-			) {
-				const current = drMap.has(f.specialization!.toLowerCase())
-					? drMap.get(f.specialization!.toLowerCase()) || 0
-					: 0
+			if ((f.location === gid.All && isTopLevel) || equalFold(locationID, f.location)) {
+				const current = drMap.get(f.specialization!.toLowerCase()) ?? 0
 				drMap.set(f.specialization!.toLowerCase(), current + f.adjustedAmount)
 				f.addToTooltip(tooltip)
 			}

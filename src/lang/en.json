@@ -567,7 +567,14 @@
 			},
 			"traits": {
 				"desc": "Trait",
-				"points": "Pts"
+				"points": "Pts",
+				"container_type": {
+					"group": "",
+					"meta_trait": "Meta",
+					"attributes": "Attribute",
+					"ancestry": "Ancestry",
+					"alternative_abilities": "Alternate"
+				}
 			},
 			"skills": {
 				"desc": "Skill / Technique",
@@ -932,6 +939,7 @@
 			"container_type": {
 				"group": "Group",
 				"meta_trait": "Meta-Trait",
+				"attributes": "Attributes",
 				"ancestry": "Ancestry",
 				"alternative_abilities": "Alternative Abilities"
 			},

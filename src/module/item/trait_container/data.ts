@@ -20,5 +20,6 @@ export enum TraitContainerType {
 	Group = "group",
 	MetaTrait = "meta_trait",
 	Ancestry = "ancestry",
+	Attributes = "attributes",
 	AlternativeAbilities = "alternative_abilities",
 }
