@@ -111,3 +111,4 @@
  - There is also a "hex-side" choosing option on this grid, wherein you choose which sides of which hexes should count as Front, Side, or Back. Whether or not this has any mechanical difference will remain to be seen, but it's a possibility.
  - There is a checkbox allowing you to toggle a "hex frame" for your token, which may be rendered as part of the token image. - Color red beyond limit
  - Weapon Robustness secret rolls Pyramid #3-87:6
+ - Add option to hide current PC HP from player, showing only condition.
