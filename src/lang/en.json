@@ -800,6 +800,8 @@
 			"attack_level": "{name} ({level})",
 			"cr_level": "{name} (CR: {level})",
 			"damage": "{total} {type} damage",
+			"parry": "{name} - Parry",
+			"block": "{name} - Block",
 			"success": {
 				"success": "Success!",
 				"failure": "Failure!",

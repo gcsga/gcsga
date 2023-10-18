@@ -5,7 +5,6 @@ import { RangedWeaponGURPS } from "@item/ranged_weapon"
 import { BaseWeaponGURPS } from "@item/weapon"
 import { Feature, ItemDataGURPS } from "@module/config"
 import { ActorType, ItemType, Study, SYSTEM_NAME } from "@module/data"
-import { DiceGURPS } from "@module/dice"
 import { PrereqList } from "@prereq"
 import { getAdjustedStudyHours, LocalizeGURPS } from "@util"
 import { HandlebarsHelpersGURPS } from "@util/handlebars_helpers"
@@ -28,9 +27,11 @@ abstract class ItemGCS extends ContainerGURPS {
 		else if (type === ItemType.RitualMagicSpell) type = ItemType.Spell
 		else if (type === ItemType.Equipment) type = "equipment"
 		else if (type === ItemType.LegacyEquipment) type = "legacy_equipment"
-		// TODO: remove any
 		if (this._source.img === (foundry.documents.BaseItem as any).DEFAULT_ICON)
 			this._source.img = data.img = `systems/${SYSTEM_NAME}/assets/icons/${type}.svg`
+		let gcs_type: string = data.type
+		if (gcs_type === ItemType.Equipment) gcs_type = "equipment"
+			; (this._source.system as any).type = gcs_type
 		await super._preCreate(data, options, user)
 	}
 
@@ -164,6 +165,7 @@ abstract class ItemGCS extends ContainerGURPS {
 
 	exportSystemData(keepOther: boolean): any {
 		const system: any = this.system
+		system.name = this.name
 		if (system.features)
 			system.features = system.features.map((e: Feature) => {
 				const { _levels: _, effective: __, ...rest } = e
@@ -173,12 +175,8 @@ abstract class ItemGCS extends ContainerGURPS {
 			system.children = (this as any).children.map((e: ItemGCS) => e.exportSystemData(false))
 		if ((this as any).modifiers)
 			system.modifiers = (this as any).modifiers.map((e: ItemGCS) => e.exportSystemData(false))
-		if (system.weapons)
-			system.weapons = system.weapons.map(function(e: BaseWeaponGURPS) {
-				const f: any = { ...e }
-				f.damage.base = new DiceGURPS(e.damage.base).toString(false)
-				return f
-			})
+		if ((this as any).weapons)
+			system.weapons = (this as any).weapons.map((e: BaseWeaponGURPS) => e.exportSystemData(false))
 		if (!keepOther) delete system.other
 		return system
 	}

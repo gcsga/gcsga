@@ -1,7 +1,7 @@
-import { SkillBonus } from "@feature/skill_bonus"
+import { SkillBonus, SkillBonusSelectionType } from "@feature/skill_bonus"
 import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
 import { Feature } from "@module/config"
-import { CRAdjustment, ItemType, Study, StudyHoursNeeded } from "@module/data"
+import { CRAdjustment, ItemType, StringComparison, Study, StudyHoursNeeded } from "@module/data"
 import { PrereqList } from "@prereq"
 
 export type TraitSource = ItemGCSSource<ItemType.Trait, TraitSystemData>
@@ -25,17 +25,18 @@ export interface TraitSystemData extends ItemGCSSystemData {
 	study: Study[]
 	study_hours_needed: StudyHoursNeeded
 	userdesc: string
+	type: ItemType.Trait
 }
 
 const CR_Features = new Map()
 
-CR_Features.set("major_cost_of_living_increase", [
+CR_Features.set(CRAdjustment.MajorCostOfLivingIncrease, [
 	new SkillBonus(
 		{
-			selection_type: "skills_with_name",
-			name: { compare: "is", qualifier: "Merchant" },
-			specialization: { compare: "none" },
-			tags: { compare: "none" },
+			selection_type: SkillBonusSelectionType.SkillsWithName,
+			name: { compare: StringComparison.Is, qualifier: "Merchant" },
+			specialization: { compare: StringComparison.None },
+			tags: { compare: StringComparison.None },
 		},
 		{ ready: true }
 	),

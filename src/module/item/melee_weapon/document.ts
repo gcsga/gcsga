@@ -20,14 +20,12 @@ class MeleeWeaponGURPS extends BaseWeaponGURPS {
 		return this.resolvedValue(this.system.block, gid.Block, tooltip)
 	}
 
-	get parry(): string {
-		// Return this.system.parry
-		return this.resolvedParry()
+	get parry(): number {
+		return parseInt(this.resolvedParry()) ?? 0
 	}
 
-	get block(): string {
-		// Return this.system.block
-		return this.resolvedBlock()
+	get block(): number {
+		return parseInt(this.resolvedBlock()) ?? 0
 	}
 
 	get reach(): string {

@@ -1772,6 +1772,7 @@ class CharacterGURPS extends BaseActorGURPS {
 		const items = (this.items as unknown as Collection<BaseItemGURPS>)
 			.filter(e => !e.getFlag(SYSTEM_NAME, ItemFlags.Container))
 			.map((e: BaseItemGURPS) => e.exportSystemData(true))
+		console.log(items)
 		const third_party: any = {}
 
 		third_party.settings = { resource_trackers: system.settings.resource_trackers }
