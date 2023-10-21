@@ -147,26 +147,21 @@ async function _onRollClick(event: JQuery.ClickEvent) {
 async function _onDamageRoll(event: JQuery.ClickEvent) {
 	event.preventDefault()
 	event.stopPropagation()
-	const actor = game.actors!.get($(event.currentTarget).data("actorId")) as ActorGURPS
-	const type: RollType = $(event.currentTarget).data("type")
-	const data: { [key: string]: any } = { type: type }
-	if (
-		[
-			RollType.Damage,
-			RollType.Attack,
-			RollType.Skill,
-			RollType.SkillRelative,
-			RollType.Spell,
-			RollType.SpellRelative,
-		].includes(type)
-	)
-		data.item = actor!.items.get($(event.currentTarget).data("item-id"))
-	if ([RollType.Damage, RollType.Attack].includes(type))
-		data.weapon = data.item.weapons.get($(event.currentTarget).data("attack-id"))
-	if (type === RollType.Modifier) {
-		data.modifier = $(event.currentTarget).data("modifier")
-		data.comment = $(event.currentTarget).data("comment")
+
+	const eventData = $(event.currentTarget).data()
+	const type: RollType = eventData.type
+
+	if (type !== RollType.Damage) {
+		console.error(`Damage roll called with wrong type: ${type}`)
+		return
 	}
+
+	// fromUuidSync(eventData.uuid)
+
+	const actor = game.actors!.get(eventData.actor) as ActorGURPS
+	const data: { [key: string]: any } = { type: type }
+	data.item = actor.items.get(eventData.weapon)
+
 	return RollGURPS.handleRoll(game.user, actor, data)
 }
 

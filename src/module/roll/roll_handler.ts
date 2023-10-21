@@ -20,6 +20,7 @@ const MODIFIER_CLASS_POSITIVE = "pos"
 
 type ChatData = {
 	name: string
+	actor: string | null
 	displayName: string
 	modifiers: Array<RollModifier & { class?: string }>
 	success: RollSuccess
@@ -124,6 +125,7 @@ abstract class RollTypeHandler {
 
 		const chatData: ChatData = {
 			name,
+			actor: actor.id,
 			displayName: LocalizeGURPS.format(this.displayNameLocalizationKey, { name, level }),
 			modifiers,
 			success,
@@ -397,19 +399,36 @@ class AttackRollTypeHandler extends RollTypeHandler {
 	}
 
 	override getExtraData(data: ChatData): any {
+		let extra = {}
+
+		// If Ranged, add number of potential hits if greater than one.
 		if (data.item instanceof RangedWeaponGURPS) {
 			const item = data.item
 			if (this.validRateOfFire(item.rate_of_fire) && data.margin_number > 0 && parseInt(item.recoil) > 0) {
 				const effectiveRof = this.effectiveRateOfFire(item.rate_of_fire)
 				let numberOfShots = Math.min(Math.floor(data.margin_number / parseInt(item.recoil)) + 1, effectiveRof)
-				return {
-					rate_of_fire: item.rate_of_fire,
-					recoil: item.recoil,
-					potential_hits: numberOfShots,
-				}
+				if (numberOfShots > 1)
+					mergeObject(extra, {
+						ranged: {
+							rate_of_fire: item.rate_of_fire,
+							recoil: item.recoil,
+							potential_hits: numberOfShots,
+						},
+					})
 			}
 		}
-		return null
+
+		// For any attack, add the damage data for easy access.
+		mergeObject(extra, {
+			damage: {
+				uuid: data.item.uuid,
+				weaponID: data.item.id,
+				attacker: data.actor,
+				damage: data.item.fastResolvedDamage,
+			},
+		})
+
+		return Object.keys(extra).length ? extra : null
 	}
 
 	private effectiveRateOfFire(rate_of_fire: string) {
@@ -474,7 +493,7 @@ class DamageRollTypeHandler extends RollTypeHandler {
 		user: StoredDocument<User> | null,
 		actor: CharacterGURPS,
 		data: RollTypeData,
-		raFormula: string,
+		_: string,
 		hidden: boolean
 	): Promise<void> {
 		const name = this.getName(data)
@@ -490,8 +509,9 @@ class DamageRollTypeHandler extends RollTypeHandler {
 
 		const chatData: Partial<DamagePayload> = {
 			name,
-			attacker: actor.uuid,
-			weaponID: `${data.item.uuid}`,
+			uuid: data.item.uuid,
+			attacker: actor.id ?? undefined,
+			weaponID: data.item.id ?? undefined,
 			damage: damageRoll.displayString,
 			dice: damageRoll.dice,
 			damageType: damageRoll.damageType,

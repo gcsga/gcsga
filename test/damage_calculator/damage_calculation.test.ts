@@ -481,7 +481,7 @@ describe("Damage calculator", () => {
 			_torso._map.set("all", 2)
 		})
 
-		let verify: any = function(hp: number, noShockValues: number[], shockValues: DamageShock[]) {
+		let verify: any = function (hp: number, noShockValues: number[], shockValues: DamageShock[]) {
 			_target.hitPoints.value = hp
 
 			for (const damage of noShockValues) {
@@ -1296,6 +1296,23 @@ describe("Damage calculator", () => {
 					// Math.floor(_target.hitPoints.value / 2) + 1
 					expect(calc.results.injury!.value).toBe(8)
 				}
+			})
+
+			it("(Ensure that max damage for a limb is still applied with a Damage Reduction value.)", () => {
+				_target.hitPoints.value = 18
+				_arm._map.set("all", 3)
+
+				_roll.locationId = "arm"
+				_roll.basicDamage = 20
+				_roll.damageType = DamageTypes.cr
+
+				let calc = _create(_roll, _target)
+				expect(calc.results.penetratingDamage!.value).toBe(17)
+				expect(calc.results.injury!.value).toBe(10)
+
+				calc.overrideDamageReduction = 1.6
+				expect(calc.results.penetratingDamage!.value).toBe(17)
+				expect(calc.results.injury!.value).toBe(10)
 			})
 		})
 

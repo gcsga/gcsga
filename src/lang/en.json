@@ -1483,6 +1483,7 @@
 			},
 			"attacker": "Attacker",
 			"calculation": "Damage Calculation",
+			"damage": "Damage",
 			"damage_reduction": "Damage Reduction",
 			"damage_pool": {
 				"hp": "HP"
