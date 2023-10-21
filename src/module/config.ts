@@ -371,6 +371,7 @@ const GURPSCONFIG: CONFIG["GURPS"] = {
 			[TraitContainerType.Group]: "gurps.select.container_type.group",
 			[TraitContainerType.MetaTrait]: "gurps.select.container_type.meta_trait",
 			[TraitContainerType.Ancestry]: "gurps.select.container_type.ancestry",
+			[TraitContainerType.Attributes]: "gurps.select.container_type.attributes",
 			[TraitContainerType.AlternativeAbilities]: "gurps.select.container_type.alternative_abilities",
 		},
 		difficulty: {

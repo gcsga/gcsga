@@ -2,9 +2,6 @@ import { ItemSheetGURPS } from "@item/base"
 import { WeaponGURPS } from "@module/config"
 
 export class WeaponSheet extends ItemSheetGURPS {
-	// Get template(): string {
-	// 	return `systems/${SYSTEM_NAME}/templates/item/${this.item.type.replaceAll("_", "-")}.hbs`
-	// }
 
 	static get defaultOptions() {
 		const options = super.defaultOptions
@@ -27,6 +24,7 @@ export class WeaponSheet extends ItemSheetGURPS {
 				defaults: (this.item as any).defaults,
 			},
 		}
+		console.log(sheetData)
 		return sheetData
 	}
 	// GetData(options?: Partial<FormApplicationOptions> | undefined): any {
