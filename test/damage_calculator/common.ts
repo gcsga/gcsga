@@ -102,6 +102,7 @@ export const Knockdown = [
 export type DamageShock = { damage: number; shock: number }
 
 interface IDamageCalculator {
+	overrideDamageReduction: number | undefined
 	results: DamageResults
 	overrideFlexible(arg: boolean | undefined): void
 	vulnerabilities: Vulnerability[]
@@ -111,7 +112,7 @@ const dummyLocalize = (stringId: string, data?: any) => {
 	return `${stringId}${data ? `:${JSON.stringify(data)}` : ""}`
 }
 
-export const _create = function(roll: DamageRoll, target: DamageTarget): IDamageCalculator {
+export const _create = function (roll: DamageRoll, target: DamageTarget): IDamageCalculator {
 	return new DamageCalculator(roll, target, dummyLocalize)
 }
 

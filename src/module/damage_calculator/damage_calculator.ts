@@ -548,50 +548,59 @@ class DamageCalculator {
 				`= ${results.penetratingDamage!.value} × ${this.formatFraction(results.woundingModifier!.value)}`
 			)
 		)
-		results.addResult(this.adjustInjury(results))
+		const newLocal = this.adjustInjury(results)
+		newLocal.forEach(it => results.addResult(it))
 	}
 
-	private adjustInjury(results: DamageResults): CalculatorStep | undefined {
+	private adjustInjury(results: DamageResults): CalculatorStep[] {
 		const STEP = "gurps.dmgcalc.substep.adjusted_injury"
+		const steps = []
+
 		// Adjust for Damage Reduction.
 		if (this.damageReduction !== 1) {
 			const newValue = Math.ceil(results.injury!.value / this.damageReduction)
-			return new CalculatorStep(
-				"Injury",
-				STEP,
-				newValue,
-				undefined,
-				this.format("gurps.dmgcalc.description.damage_reduction", {
-					injury: results.injury!.value,
-					reduction: this.damageReduction,
-				})
+			steps.push(
+				new CalculatorStep(
+					"Injury",
+					STEP,
+					newValue,
+					undefined,
+					this.format("gurps.dmgcalc.description.damage_reduction", {
+						injury: results.injury!.value,
+						reduction: this.damageReduction,
+					})
+				)
 			)
 		}
 
 		// Adjust for Injury Tolerance. This must be before Hit Location or Trauma.
 		let newValue = Math.min(results.injury!.value, this.maximumForInjuryTolerance[0])
 		if (newValue < results.injury!.value) {
-			return new CalculatorStep("Injury", STEP, newValue, undefined, this.maximumForInjuryTolerance[1])
+			steps.push(new CalculatorStep("Injury", STEP, newValue, undefined, this.maximumForInjuryTolerance[1]))
 		}
+
+		if (this.isDiffuse) return steps
 
 		// Adjust for hit location.
 		newValue = Math.min(results.injury!.value, this.maximumForHitLocation[0])
 		if (newValue < results.injury!.value) {
-			return new CalculatorStep("Injury", STEP, newValue, undefined, this.maximumForHitLocation[1])
+			steps.push(new CalculatorStep("Injury", STEP, newValue, undefined, this.maximumForHitLocation[1]))
 		}
 
 		// Adjust for blunt trauma.
 		if (this.isBluntTrauma(results)) {
-			return new CalculatorStep(
-				"Injury",
-				STEP,
-				this.bluntTrauma(results),
-				undefined,
-				this.format("gurps.dmgcalc.description.blunt_trauma")
+			steps.push(
+				new CalculatorStep(
+					"Injury",
+					STEP,
+					this.bluntTrauma(results),
+					undefined,
+					this.format("gurps.dmgcalc.description.blunt_trauma")
+				)
 			)
 		}
 
-		return undefined
+		return steps
 	}
 
 	private isBluntTrauma(results: DamageResults): boolean {
@@ -661,7 +670,7 @@ class DamageCalculator {
 		if (this.isDamageTypeKnockbackEligible) {
 			if (this.damageType === DamageTypes.cut && results.penetratingDamage!.value > 0) return 0
 
-			console.log(results)
+			// console.log(results)
 			return Math.floor(results.rawDamage!.value / (this.knockbackResistance - 2))
 		}
 		return 0
