@@ -38,26 +38,26 @@ class DiceGURPS {
 		}
 		let i = 0
 		let ch: string
-		;[dice.count, i] = extractValue(str, 0)
+			;[dice.count, i] = extractValue(str, 0)
 		let hadCount = i !== 0
-		;[ch, i] = nextChar(str, i)
+			;[ch, i] = nextChar(str, i)
 		let hadSides = false
 		let hadD = false
 		if (ch.toLowerCase() === "d") {
 			hadD = true
 			const j = i
-			;[dice.sides, i] = extractValue(str, i)
+				;[dice.sides, i] = extractValue(str, i)
 			hadSides = i !== j
-			;[ch, i] = nextChar(str, i)
+				;[ch, i] = nextChar(str, i)
 		}
 		if (hadSides && !hadCount) dice.count = 1
 		else if (hadD && !hadSides && hadCount) dice.sides = 6
 
 		if (["+", ...negative].includes(ch)) {
 			const neg = negative.includes(ch)
-			;[dice.modifier, i] = extractValue(str, i)
+				;[dice.modifier, i] = extractValue(str, i)
 			if (neg) dice.modifier = -dice.modifier
-			;[ch, i] = nextChar(str, i)
+				;[ch, i] = nextChar(str, i)
 		}
 
 		if (!hadD) {
@@ -132,13 +132,17 @@ class DiceGURPS {
 		modifier = this.modifier
 		if (applyExtractDiceFromModifiers && modifier > 0) {
 			let average = (this.sides + 1) / 2
-			if (this.sides % 2 !== 1) {
+			console.log(this.sides, count, modifier, average)
+			if (this.sides % 2 === 1) {
+				// Odd number of sides, so average is a whole number
 				count += modifier / average
 				modifier %= average
 			} else {
+				// Even number of sides, so average has an extra half, which means
+				// we alternate
 				while (modifier > average) {
-					if (modifier > 2 * average) {
-						modifier -= 2 * average + 1
+					if (modifier > (2 * average)) {
+						modifier -= (2 * average) + 1
 						count += 2
 					} else {
 						modifier -= average + 1
@@ -148,7 +152,9 @@ class DiceGURPS {
 			}
 		}
 		if (count < 0) count = 0
-		return [count, modifier]
+		// HACK: not sure if this is the actual way to do it, maybe it doesn't work out
+		// like it should because JS doesn't have an explicit int type but Go does. Oh well.
+		return [count, Math.round(modifier)]
 	}
 
 	roll(extraDiceFromModifiers: boolean): number {

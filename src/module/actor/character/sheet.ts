@@ -26,7 +26,7 @@ import { gid, ItemType, RollType, SYSTEM_NAME } from "@module/data"
 import { PDF } from "@module/pdf"
 import { ResourceTrackerObj } from "@module/resource_tracker"
 import { RollGURPS } from "@module/roll"
-import { dollarFormat, Length, LocalizeGURPS, Weight } from "@util"
+import { dollarFormat, Length, LocalizeGURPS, newUUID, Weight } from "@util"
 import { fSearch } from "@util/fuse"
 import EmbeddedCollection from "types/foundry/common/abstract/embedded-collection.mjs"
 import { CharacterSheetConfig } from "./config_sheet"
@@ -318,7 +318,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		const itemData: any = {
 			type,
 			name: LocalizeGURPS.translations.TYPES.Item[type],
-			system: {},
+			system: { id: newUUID() },
 			flags: {
 				[SYSTEM_NAME]: {
 					[ItemFlags.Container]: null,

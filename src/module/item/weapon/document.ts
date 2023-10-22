@@ -4,6 +4,7 @@ import { ContainerGURPS } from "@item/container"
 import { Feature } from "@module/config"
 import { ActorType, gid, ItemType } from "@module/data"
 import { SkillDefault } from "@module/default"
+import { DiceGURPS } from "@module/dice"
 import { TooltipGURPS } from "@module/tooltip"
 import { LocalizeGURPS, stringCompare } from "@util"
 import { HandlebarsHelpersGURPS } from "@util/handlebars_helpers"
@@ -228,6 +229,14 @@ class BaseWeaponGURPS extends BaseItemGURPS {
 		const num = String(Math.trunc(skillLevel + modifier))
 		buffer = num + buffer
 		return buffer
+	}
+
+	exportSystemData(_keepOther: boolean): any {
+		const system = this.system
+		console.log(system)
+		// system.damage.base = new DiceGURPS(this.damage.base).toString(false)
+		// system.damage.fragmentation = new DiceGURPS(this.damage.fragmentation).toString(false)
+		return system
 	}
 }
 
