@@ -236,6 +236,7 @@ class EquipmentGURPS extends ItemGCS {
 	override exportSystemData(keepOther: boolean): any {
 		const system: any = super.exportSystemData(keepOther)
 		system.type = "equipment"
+		system.description = this.name
 		delete system.name
 		system.calc = {
 			extended_value: this.extendedValue,

@@ -74,18 +74,18 @@ export class WeaponDamage {
 		}
 		let intST = Math.trunc(st)
 		switch (this.st) {
-			case "thr":
+			case StrengthDamage.Thrust:
 				base = addDice(base, actor.thrustFor(intST))
 				break
-			case "thr_leveled":
+			case StrengthDamage.ThrustLeveled:
 				let thrust = actor.thrustFor(intST)
 				if (t.type === ItemType.Trait && t.isLeveled) multiplyDice(Math.trunc(t.levels), thrust)
 				base = addDice(base, thrust)
 				break
-			case "sw":
+			case StrengthDamage.Swing:
 				base = addDice(base, actor.swingFor(intST))
 				break
-			case "sw_leveled":
+			case StrengthDamage.SwingLeveled:
 				let swing = actor.swingFor(intST)
 				if (t.type === ItemType.Trait && t.isLeveled) multiplyDice(Math.trunc(t.levels), swing)
 				base = addDice(base, swing)

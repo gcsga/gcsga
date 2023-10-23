@@ -135,7 +135,7 @@ abstract class RollTypeHandler {
 			item: this.getItemData(item, actor),
 			total: `${roll.total!}: ${LocalizeGURPS.translations.gurps.roll.success[success]}`,
 			tooltip: await roll.getTooltip(),
-			eff: `<div class="effective">${game.i18n.format(this.effectiveLevelLabel, {
+			eff: `<div class="effective">${LocalizeGURPS.format(this.effectiveLevelLabel, {
 				level: effectiveLevel,
 			})}</div>`,
 			extra: null,
@@ -159,7 +159,7 @@ abstract class RollTypeHandler {
 	 * @returns The Handlebars template to use for the chat message content.
 	 */
 	get effectiveLevelLabel(): string {
-		return "gurps.roll.effective_skill"
+		return LocalizeGURPS.translations.gurps.roll.effective_skill
 	}
 
 	getExtraData(_: ChatData): any {
@@ -312,7 +312,7 @@ class AttributeRollTypeHandler extends RollTypeHandler {
 	}
 
 	override get effectiveLevelLabel(): string {
-		return "gurps.roll.effective_target"
+		return LocalizeGURPS.translations.gurps.roll.effective_skill
 	}
 
 	override getItemData(item: any, actor: CharacterGURPS) {
@@ -452,11 +452,14 @@ class ParryRollTypeHandler extends RollTypeHandler {
 	}
 
 	override getLevel(data: any): number {
-		return data.item.parry as number
+		return data.item.parry
 	}
 
 	override getName(data: any): string {
-		return data.item.itemName ? `${data.item.itemName} - Parry` : `${data.item.formattedName} - Parry`
+		return LocalizeGURPS.format(
+			LocalizeGURPS.translations.gurps.roll.parry,
+			{ name: data.item.itemName ?? data.item.formattedName }
+		)
 	}
 
 	override getType(data: any): RollType {
@@ -470,11 +473,14 @@ class BlockRollTypeHandler extends RollTypeHandler {
 	}
 
 	override getLevel(data: RollTypeData): number {
-		return data.item.block as number
+		return data.item.block
 	}
 
 	override getName(data: RollTypeData): string {
-		return data.item.itemName ? `${data.item.itemName} - Block` : `${data.item.formattedName} - Block`
+		return LocalizeGURPS.format(
+			LocalizeGURPS.translations.gurps.roll.block,
+			{ name: data.item.itemName ?? data.item.formattedName }
+		)
 	}
 
 	override getType(data: RollTypeData): RollType {
