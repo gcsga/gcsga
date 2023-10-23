@@ -405,6 +405,7 @@
 			"uses": 0,
 			"max_uses": 0,
 			"legality_class": "4",
+			"rated_strenght": 0,
 			"features": [],
 			"weapons": []
 		},
@@ -416,6 +417,7 @@
 			"uses": 0,
 			"max_uses": 0,
 			"legality_class": "4",
+			"rated_strenght": 0,
 			"features": [],
 			"weapons": [],
 			"open": false

@@ -79,7 +79,7 @@ export class SkillDefault {
 			case gid.Skill:
 				return this.finalLevel(this.best(actor, require_points, excludes))
 			default:
-				return this.skillLevelFast(actor, require_points, rule_of_20, excludes)
+				return this.skillLevelFast(actor, require_points, excludes, rule_of_20)
 		}
 	}
 
@@ -95,8 +95,8 @@ export class SkillDefault {
 	skillLevelFast(
 		actor: CharacterGURPS,
 		require_points: boolean,
-		rule_of_20: boolean,
-		excludes: Map<string, boolean> | null = new Map()
+		excludes: Map<string, boolean> | null = new Map(),
+		rule_of_20 = false
 	): number {
 		let level = 0
 		let best = 0

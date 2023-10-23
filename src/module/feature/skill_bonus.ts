@@ -24,5 +24,5 @@ export interface SkillBonus extends BaseFeature {
 export enum SkillBonusSelectionType {
 	SkillsWithName = "skills_with_name",
 	WeaponsWithName = "weapons_with_name",
-	ThisWeapon = "this_weapon"
+	ThisWeapon = "this_weapon",
 }

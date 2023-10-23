@@ -354,7 +354,7 @@ export class DefaultAttributeSettings extends SettingsMenuGURPS {
 		const data = {
 			type: "attribute_settings",
 			version: 4,
-			rows: game.settings.get(SYSTEM_NAME, `${this.namespace}.attributes`,)
+			rows: game.settings.get(SYSTEM_NAME, `${this.namespace}.attributes`),
 		}
 		return saveDataToFile(
 			JSON.stringify(data, null, "\t"),
@@ -465,7 +465,7 @@ export class DefaultAttributeSettings extends SettingsMenuGURPS {
 				parent_index: parent_index,
 			})
 		)
-			; (event as any).dragType = type
+		;(event as any).dragType = type
 	}
 
 	protected _onDragItem(event: JQuery.DragOverEvent): void {

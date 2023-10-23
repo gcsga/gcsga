@@ -9,7 +9,7 @@
 		{{else if (or (eq this.attribute_def.type "integer_ref") (eq this.attribte_def.type "decimal_ref"))}}
 		<div class="points"> </div>
 		<div data-id="{{this.attr_id}}" data-type="attribute" class="field rollable {{effective this}}">
-			<input class="number" type="text" value="{{this.effective}}" disabled style="min-width: {{len this.effective}}ch;"/>
+			<input class="number" type="text" value="{{this.effective}}" disabled style="min-width: {{length this.effective}}ch;"/>
 		</div>
 		<div class="label">{{this.attribute_def.combinedName}}</div>
 		{{else}}

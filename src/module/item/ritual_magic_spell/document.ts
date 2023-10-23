@@ -212,7 +212,7 @@ class RitualMagicSpellGURPS extends ItemGCS {
 				const sk = this.actor.baseSkill(def!, true)
 				if (sk) level = sk.calculateLevel.level
 			} else if (def) {
-				level = (def?.skillLevelFast(this.actor, true, false, null) || 0) - (def?.modifier || 0)
+				level = (def?.skillLevelFast(this.actor, true, null, false) || 0) - (def?.modifier || 0)
 			}
 			if (level !== -Infinity) {
 				const base_level = level

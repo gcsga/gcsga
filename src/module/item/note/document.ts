@@ -2,7 +2,6 @@ import { BaseItemGURPS } from "@item/base"
 import { NoteData } from "./data"
 
 class NoteGURPS extends BaseItemGURPS {
-
 	get formattedName(): string {
 		return this.formattedText
 	}

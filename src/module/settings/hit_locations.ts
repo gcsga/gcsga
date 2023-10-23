@@ -273,9 +273,9 @@ export class DefaultHitLocationSettings extends SettingsMenuGURPS {
 		const data = {
 			type: "body_type",
 			version: 4,
-			name: game.settings.get(SYSTEM_NAME, `${this.namespace}.name`,),
-			roll: game.settings.get(SYSTEM_NAME, `${this.namespace}.roll`,),
-			locations: game.settings.get(SYSTEM_NAME, `${this.namespace}.locations`,)
+			name: game.settings.get(SYSTEM_NAME, `${this.namespace}.name`),
+			roll: game.settings.get(SYSTEM_NAME, `${this.namespace}.roll`),
+			locations: game.settings.get(SYSTEM_NAME, `${this.namespace}.locations`),
 		}
 		return saveDataToFile(
 			JSON.stringify(data, null, "\t"),
@@ -371,7 +371,7 @@ export class DefaultHitLocationSettings extends SettingsMenuGURPS {
 				index: index,
 			})
 		)
-			; (event as any).dragType = type
+		;(event as any).dragType = type
 	}
 
 	protected _onDragItem(event: JQuery.DragOverEvent): void {

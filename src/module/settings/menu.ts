@@ -38,7 +38,6 @@ abstract class SettingsMenuGURPS extends FormApplication {
 		html.find(".data-export").on("click", event => this._onDataExport(event))
 	}
 
-
 	abstract _onDataImport(_event: JQuery.ClickEvent): void
 
 	abstract _onDataExport(_event: JQuery.ClickEvent): void

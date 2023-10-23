@@ -106,18 +106,14 @@ export class CharacterImporter {
 
 		try {
 			if (this.document.isToken) {
-				await this.document.deleteEmbeddedDocuments(
-					"Item",
-					[...this.document.items.keys()],
-					{ render: false }
-				)
+				await this.document.deleteEmbeddedDocuments("Item", [...this.document.items.keys()], { render: false })
 			}
 			await this.document.update(commit, {
 				diff: false,
 				recursive: false,
 			})
 			if ((this.document.sheet as unknown as CharacterSheetGURPS)?.config !== null) {
-				; (this.document.sheet as unknown as CharacterSheetGURPS)?.config?.render(true)
+				;(this.document.sheet as unknown as CharacterSheetGURPS)?.config?.render(true)
 			}
 		} catch (err) {
 			console.error(err)

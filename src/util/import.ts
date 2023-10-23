@@ -394,6 +394,7 @@ class ImportUtils {
 			legality_class: data.legality_class ?? "4",
 			quantity: data.quantity ?? 1,
 			ignore_weight_for_skills: data.ignore_weight_for_skills ?? false,
+			rated_strength: data.rated_strength ?? 0,
 			other: other,
 			vtt_notes: data.vtt_notes ?? "",
 		}
@@ -423,6 +424,7 @@ class ImportUtils {
 			legality_class: data.legality_class ?? "4",
 			quantity: data.quantity ?? 1,
 			ignore_weight_for_skills: data.ignore_weight_for_skills ?? false,
+			rated_strength: data.rated_strength ?? 0,
 			other: other,
 			open: data.open ?? false,
 			vtt_notes: data.vtt_notes ?? "",

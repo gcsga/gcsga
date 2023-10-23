@@ -14,5 +14,14 @@ export enum FeatureType {
 	// ThresholdBonus = "threshold_bonus",
 }
 
-export type SpellBonusMatch = "all_colleges" | "college_name" | "spell_name" | "power_source_name"
-export type WeaponBonusSelectionType = "weapons_with_required_skill" | "weapons_with_name" | "this_weapon"
+export enum SpellBonusMatch {
+	All = "all_colleges",
+	College = "college_name",
+	Spell = "spell_name",
+	PowerSource = "power_source_name",
+}
+export enum WeaponBonusSelectionType {
+	Skill = "weapons_with_required_skill",
+	Name = "weapons_with_name",
+	This = "this_weapon",
+}

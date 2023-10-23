@@ -31,7 +31,7 @@ abstract class ItemGCS extends ContainerGURPS {
 			this._source.img = data.img = `systems/${SYSTEM_NAME}/assets/icons/${type}.svg`
 		let gcs_type: string = data.type
 		if (gcs_type === ItemType.Equipment) gcs_type = "equipment"
-			; (this._source.system as any).type = gcs_type
+		;(this._source.system as any).type = gcs_type
 		await super._preCreate(data, options, user)
 	}
 

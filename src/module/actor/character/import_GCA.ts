@@ -224,8 +224,8 @@ export class GCAImporter {
 				description: description,
 				calc: {
 					roll_range: "-",
-					dr: {}
-				}
+					dr: {},
+				},
 			})
 		}
 		const default_sheet = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`) as any

@@ -72,16 +72,6 @@ class BaseItemGURPS extends Item {
 		return {}
 	}
 
-	// get parentCount(): number {
-	// 	let i = 0
-	// 	let p: any = this.container
-	// 	while (p) {
-	// 		i++
-	// 		p = p.container
-	// 	}
-	// 	return i
-	// }
-
 	prepareData(): void {
 		super.prepareData()
 	}
