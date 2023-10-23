@@ -52,7 +52,7 @@ class ModifierButton extends Application {
 
 	async getData(options?: Partial<ApplicationOptions> | undefined): Promise<object> {
 		const user = game.user
-		let total = user?.getFlag(SYSTEM_NAME, UserFlags.ModifierTotal) ?? 0
+		let total = (user?.getFlag(SYSTEM_NAME, UserFlags.ModifierTotal) as number) ?? 0
 		let buttonMagnet = ""
 		if (user?.getFlag(SYSTEM_NAME, UserFlags.ModifierSticky) === true) buttonMagnet = "sticky"
 		let buttonColor = "total-white"
