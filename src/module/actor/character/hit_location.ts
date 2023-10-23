@@ -1,8 +1,8 @@
-import { ActorType, gid } from "@module/data";
-import { DiceGURPS } from "@module/dice";
-import { TooltipGURPS } from "@module/tooltip";
-import { LocalizeGURPS } from "@util";
-import { CharacterGURPS } from "./document";
+import { ActorType, gid } from "@module/data"
+import { DiceGURPS } from "@module/dice"
+import { TooltipGURPS } from "@module/tooltip"
+import { LocalizeGURPS } from "@util"
+import { CharacterGURPS } from "./document"
 
 class HitLocationTable {
 	actor: CharacterGURPS
@@ -16,15 +16,13 @@ class HitLocationTable {
 		roll: DiceGURPS | string,
 		locations: HitLocationData[],
 		actor: CharacterGURPS | any,
-		keyPrefix: string,
+		keyPrefix: string
 	) {
 		this.name = name
 		this.roll = roll instanceof DiceGURPS ? roll : new DiceGURPS(roll)
 		this.actor = actor
 		this.keyPrefix = keyPrefix
-		this.locations = locations.map((e, index) =>
-			new HitLocation(actor, `${keyPrefix}.locations.${index}`, e)
-		)
+		this.locations = locations.map((e, index) => new HitLocation(actor, `${keyPrefix}.locations.${index}`, e))
 		this.updateRollRanges()
 	}
 
@@ -46,8 +44,7 @@ class HitLocationTable {
 	}
 
 	get owningLocation(): HitLocation | undefined {
-		const path = this.keyPrefix.replaceAll("sub_table", "subTable",)
-			.split(".").slice(1, -1)
+		const path = this.keyPrefix.replaceAll("sub_table", "subTable").split(".").slice(1, -1)
 		if (path.length === 0) return undefined
 		let result: any = this.actor.BodyType
 		for (let i = 0; i < path.length; i++) {
@@ -56,12 +53,11 @@ class HitLocationTable {
 		return result
 	}
 
-
 	toObject(): HitLocationTableData {
 		return {
 			name: this.name,
 			roll: this.roll.string,
-			locations: this.locations.map(e => e.toObject())
+			locations: this.locations.map(e => e.toObject()),
 		}
 	}
 }
@@ -115,18 +111,19 @@ class HitLocation {
 	}
 
 	get subTable(): HitLocationTable | undefined {
-		return (this.sub_table) ? new HitLocationTable(
-			this.sub_table.name,
-			this.sub_table.roll,
-			this.sub_table.locations,
-			this.actor,
-			`${this.keyPrefix}.sub_table`
-		) : undefined
+		return this.sub_table
+			? new HitLocationTable(
+					this.sub_table.name,
+					this.sub_table.roll,
+					this.sub_table.locations,
+					this.actor,
+					`${this.keyPrefix}.sub_table`
+			  )
+			: undefined
 	}
 
 	get owningTable(): HitLocationTable {
-		const path = this.keyPrefix.replaceAll("sub_table", "subTable")
-			.split(".").slice(1, -2)
+		const path = this.keyPrefix.replaceAll("sub_table", "subTable").split(".").slice(1, -2)
 		let result: any = this.actor.BodyType
 		for (let i = 0; i < path.length; i++) {
 			result = result[path[i]]
@@ -168,8 +165,7 @@ class HitLocation {
 				"<br>"
 			)
 		}
-		if (this.actor.type === ActorType.Character)
-			drMap = this.actor.addDRBonusesFor(this.id, tooltip, drMap)
+		if (this.actor.type === ActorType.Character) drMap = this.actor.addDRBonusesFor(this.id, tooltip, drMap)
 		if (this.owningTable.owningLocation) {
 			drMap = this.owningTable.owningLocation._DR(tooltip, drMap)
 		}
@@ -242,8 +238,8 @@ class HitLocation {
 				dr: Object.fromEntries(this.DR),
 				roll_range: this.roll_range,
 				displayDR: this.displayDR,
-				tooltip: this.tooltip
-			}
+				tooltip: this.tooltip,
+			},
 		}
 	}
 }

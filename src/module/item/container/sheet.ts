@@ -136,7 +136,7 @@ export class ContainerSheetGURPS extends ItemSheetGURPS {
 		})
 		const updateData = sortUpdates.map(u => {
 			const update = u.update
-				; (update as any)._id = u.target!._id
+			;(update as any)._id = u.target!._id
 			return update
 		})
 

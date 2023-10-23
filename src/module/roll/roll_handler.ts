@@ -456,10 +456,9 @@ class ParryRollTypeHandler extends RollTypeHandler {
 	}
 
 	override getName(data: any): string {
-		return LocalizeGURPS.format(
-			LocalizeGURPS.translations.gurps.roll.parry,
-			{ name: data.item.itemName ?? data.item.formattedName }
-		)
+		return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.roll.parry, {
+			name: data.item.itemName ?? data.item.formattedName,
+		})
 	}
 
 	override getType(data: any): RollType {
@@ -477,10 +476,9 @@ class BlockRollTypeHandler extends RollTypeHandler {
 	}
 
 	override getName(data: RollTypeData): string {
-		return LocalizeGURPS.format(
-			LocalizeGURPS.translations.gurps.roll.block,
-			{ name: data.item.itemName ?? data.item.formattedName }
-		)
+		return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.roll.block, {
+			name: data.item.itemName ?? data.item.formattedName,
+		})
 	}
 
 	override getType(data: RollTypeData): RollType {

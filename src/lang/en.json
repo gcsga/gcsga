@@ -675,6 +675,7 @@
 			"ignore_weight_for_skills": "Ignore weight for skills",
 			"uses": "Uses",
 			"max_uses": "Maximum Uses",
+			"rated_strength": "Rated ST",
 			"limit": "Cannot exceed default skill level by more than",
 			"total": "Total",
 			"slash": "/",

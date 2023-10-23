@@ -4,7 +4,6 @@ import { ContainerGURPS } from "@item/container"
 import { Feature } from "@module/config"
 import { ActorType, gid, ItemType } from "@module/data"
 import { SkillDefault } from "@module/default"
-import { DiceGURPS } from "@module/dice"
 import { TooltipGURPS } from "@module/tooltip"
 import { LocalizeGURPS, stringCompare } from "@util"
 import { HandlebarsHelpersGURPS } from "@util/handlebars_helpers"
@@ -76,7 +75,7 @@ class BaseWeaponGURPS extends BaseItemGURPS {
 			this.skillLevelBaseAdjustment(actor, primaryTooltip) + this.skillLevelPostAdjustment(actor, primaryTooltip)
 		let best = -Infinity
 		for (const def of this.defaults) {
-			let level = def.skillLevelFast(actor, false, true, null)
+			let level = def.skillLevelFast(actor, false, null, true)
 			if (level !== -Infinity) {
 				level += adj
 				if (best < level) best = level
@@ -200,7 +199,7 @@ class BaseWeaponGURPS extends BaseItemGURPS {
 			else adj += this.actor.blockBonus
 			let best = -Infinity
 			for (const def of this.defaults) {
-				let level = def.skillLevelFast(actor, false, true, null)
+				let level = def.skillLevelFast(actor, false, null, true)
 				if (level === -Infinity) continue
 				level += preAdj
 				if (baseDefaultType !== def.type) level = Math.trunc(level / 2 + adj)

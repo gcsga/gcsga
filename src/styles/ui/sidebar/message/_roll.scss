@@ -1,5 +1,4 @@
 .dice-roll {
-
 	&.attack,
 	&.attribute,
 	&.damage,
@@ -11,7 +10,7 @@
 		align-items: center;
 		text-align: center;
 
-		>hr {
+		> hr {
 			border-color: rgb(var(--color-divider));
 			height: 1px;
 			width: 90%;
@@ -132,7 +131,7 @@
 			.damage-buttons {
 				display: flex;
 				flex-flow: row nowrap;
-				justify-content: center
+				justify-content: center;
 			}
 
 			.damage.rollable {

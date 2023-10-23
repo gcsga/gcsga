@@ -74,9 +74,11 @@ import {
 	FeatureType,
 	ReactionBonus,
 	SkillBonus,
+	WeaponBonusSelectionType,
 	WeaponDamageBonus,
 	WeaponDRDivisorBonus,
 } from "@feature"
+import { SkillBonusSelectionType } from "@feature/skill_bonus"
 
 class CharacterGURPS extends BaseActorGURPS {
 	attributes: Map<string, Attribute> = new Map()
@@ -579,7 +581,7 @@ class CharacterGURPS extends BaseActorGURPS {
 	weightCarried(for_skills: boolean): number {
 		let total = 0
 		this.carried_equipment.forEach(e => {
-			if (e.parent === this) {
+			if (e.container === this) {
 				total += e.extendedWeight(for_skills, this.settings.default_weight_units)
 			}
 		})
@@ -589,7 +591,7 @@ class CharacterGURPS extends BaseActorGURPS {
 	wealthCarried(): number {
 		let value = 0
 		for (const e of this.carried_equipment) {
-			if (e.parent === this) value += e.extendedValue
+			if (e.container === this) value += e.extendedValue
 		}
 		return round(value, 4)
 	}
@@ -601,7 +603,7 @@ class CharacterGURPS extends BaseActorGURPS {
 	wealthNotCarried(): number {
 		let value = 0
 		this.other_equipment.forEach(e => {
-			if (e.parent === this) value += e.extendedValue
+			if (e.container === this) value += e.extendedValue
 		})
 		return round(value, 4)
 	}
@@ -610,8 +612,20 @@ class CharacterGURPS extends BaseActorGURPS {
 		return Math.max(this.resolveAttributeCurrent(gid.Strength), 0)
 	}
 
+	get StrikingST(): number {
+		return this.strengthOrZero + this.striking_st_bonus
+	}
+
+	get LiftingST(): number {
+		return this.strengthOrZero + this.lifting_st_bonus
+	}
+
+	get ThrowingST(): number {
+		return this.strengthOrZero + this.throwing_st_bonus
+	}
+
 	get thrust(): DiceGURPS {
-		return this.thrustFor(this.strengthOrZero + this.striking_st_bonus)
+		return this.thrustFor(this.StrikingST)
 	}
 
 	thrustFor(st: number): DiceGURPS {
@@ -619,7 +633,7 @@ class CharacterGURPS extends BaseActorGURPS {
 	}
 
 	get swing(): DiceGURPS {
-		return this.swingFor(this.strengthOrZero + this.striking_st_bonus)
+		return this.swingFor(this.StrikingST)
 	}
 
 	swingFor(st: number): DiceGURPS {
@@ -713,17 +727,15 @@ class CharacterGURPS extends BaseActorGURPS {
 		return this.BodyType
 	}
 
-
 	// Flat list of all hit locations
 	get HitLocations(): HitLocation[] {
-		const recurseLocations =
-			function(locations: HitLocation[] = [], table: HitLocationTable): HitLocation[] {
-				table.locations.forEach(e => {
-					locations.push(e)
-					if (e.subTable) locations = recurseLocations(locations, e.subTable)
-				})
-				return locations
-			}
+		const recurseLocations = function (locations: HitLocation[] = [], table: HitLocationTable): HitLocation[] {
+			table.locations.forEach(e => {
+				locations.push(e)
+				if (e.subTable) locations = recurseLocations(locations, e.subTable)
+			})
+			return locations
+		}
 
 		return recurseLocations([], this.BodyType)
 	}
@@ -821,16 +833,18 @@ class CharacterGURPS extends BaseActorGURPS {
 		return weapons
 	}
 
-	equippedWeapons(type: WeaponType): WeaponGURPS[] {
+	equippedWeapons(type: WeaponType): MeleeWeaponGURPS[] | RangedWeaponGURPS[] {
 		switch (type) {
 			case ItemType.MeleeWeapon:
 				return this.meleeWeapons
 					.filter(e => e.equipped)
 					.sort((a, b) => (a.usage > b.usage ? 1 : b.usage > a.usage ? -1 : 0))
+					.sort((a, b) => (a.itemName > b.itemName ? 1 : b.itemName > a.itemName ? -1 : 0))
 			case ItemType.RangedWeapon:
 				return this.rangedWeapons
 					.filter(e => e.equipped)
 					.sort((a, b) => (a.usage > b.usage ? 1 : b.usage > a.usage ? -1 : 0))
+					.sort((a, b) => (a.itemName > b.itemName ? 1 : b.itemName > a.itemName ? -1 : 0))
 		}
 	}
 
@@ -1558,8 +1572,8 @@ class CharacterGURPS extends BaseActorGURPS {
 		tags: string[],
 		dieCount: number,
 		levels: number,
-		m: Map<WeaponDamageBonus | WeaponDRDivisorBonus, boolean> = new Map(),
-		tooltip: TooltipGURPS | null = null
+		tooltip: TooltipGURPS | null = null,
+		m: Map<WeaponDamageBonus | WeaponDRDivisorBonus, boolean> = new Map()
 	): Map<WeaponDamageBonus | WeaponDRDivisorBonus, boolean> {
 		let rsl = -Infinity
 		for (const sk of this.skillNamed(name, specialization, true, null)) {
@@ -1568,7 +1582,7 @@ class CharacterGURPS extends BaseActorGURPS {
 		if (rsl !== -Infinity)
 			for (const f of this.features.weaponBonuses) {
 				if (
-					f.selection_type === "weapons_with_required_skill" &&
+					f.selection_type === WeaponBonusSelectionType.Skill &&
 					stringCompare(name, f.name) &&
 					stringCompare(specialization, f.specialization) &&
 					numberCompare(rsl, f.level) &&
@@ -1599,7 +1613,7 @@ class CharacterGURPS extends BaseActorGURPS {
 	): Map<WeaponDamageBonus | WeaponDRDivisorBonus, boolean> {
 		for (const f of this.features.weaponBonuses) {
 			if (
-				f.selection_type === "weapons_with_name" &&
+				f.selection_type === WeaponBonusSelectionType.Name &&
 				stringCompare(name, f.name) &&
 				stringCompare(usage, f.specialization) &&
 				stringCompare(tags, f.tags)
@@ -1622,7 +1636,7 @@ class CharacterGURPS extends BaseActorGURPS {
 		const bonuses: SkillBonus[] = []
 		for (const f of this.features.skillBonuses) {
 			if (
-				f.selection_type === "weapons_with_name" &&
+				f.selection_type === SkillBonusSelectionType.WeaponsWithName &&
 				stringCompare(name, f.name) &&
 				stringCompare(usage, f.specialization) &&
 				stringCompare(tags, f.tags)

@@ -24,11 +24,14 @@ class EquipmentGURPS extends ItemGCS {
 	// }
 
 	// Getters
+	get ratedStrength(): number {
+		return this.system.rated_strength
+	}
 
 	override get notes(): string {
 		let outString = '<div class="item-notes">'
-		let display_mode = (game.settings
-			.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`) as any).modifiers_display as DisplayMode
+		let display_mode = (game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`) as any)
+			.modifiers_display as DisplayMode
 		if (this.actor) display_mode = this.actor.settings.modifiers_display
 		if ([DisplayMode.Inline, DisplayMode.InlineAndTooltip].includes(display_mode)) {
 			this.modifiers
@@ -46,6 +49,7 @@ class EquipmentGURPS extends ItemGCS {
 	}
 
 	get other(): boolean {
+		if (this.container instanceof Item) return (this.container as EquipmentContainerGURPS).other
 		return this.system.other
 	}
 
@@ -79,7 +83,7 @@ class EquipmentGURPS extends ItemGCS {
 	}
 
 	get equipped(): boolean {
-		return this.system.equipped
+		return this.system.equipped && !this.other
 	}
 
 	set equipped(equipped: boolean) {

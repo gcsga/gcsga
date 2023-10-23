@@ -28,4 +28,5 @@ export interface EquipmentContainerSystemData extends ItemGCSSystemData {
 	max_uses: number
 	features: Feature[]
 	other: boolean
+	rated_strength: number
 }

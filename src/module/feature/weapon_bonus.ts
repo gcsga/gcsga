@@ -7,7 +7,7 @@ export class WeaponDamageBonus extends BaseFeature {
 		return mergeObject(super.defaults, {
 			type: FeatureType.WeaponBonus,
 			percent: false,
-			selection_type: "weapons_with_required_skill",
+			selection_type: WeaponBonusSelectionType.Skill,
 			name: { compare: StringComparison.Is, qualifier: "" },
 			specialization: { compare: StringComparison.None, qualifier: "" },
 			tags: { compare: StringComparison.None, qualifier: "" },

@@ -90,7 +90,9 @@ export class ModifierWindow extends Application {
 			includeMatches: true,
 			includeScore: true,
 			keys: ["name", "modifier", "tags"],
-		}).filter(e => e.score <= 0.5).map(e => e.item)
+		})
+			.filter(e => e.score <= 0.5)
+			.map(e => e.item)
 		if (this.list.mods.length > 0) this.list.selection = 0
 		else this.list.selection = -1
 

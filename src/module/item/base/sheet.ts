@@ -40,11 +40,9 @@ export class ItemSheetGURPS extends ItemSheet {
 				attributes[e.attr_id] = e.attribute_def.name
 			})
 			for (const e of actor.HitLocations) {
-				locations[e.id] = LocalizeGURPS.format(
-					LocalizeGURPS.translations.gurps.field_prefix.dr, {
-					location: e.choice_name
-				}
-				)
+				locations[e.id] = LocalizeGURPS.format(LocalizeGURPS.translations.gurps.field_prefix.dr, {
+					location: e.choice_name,
+				})
 			}
 		} else {
 			default_attributes.forEach(e => {
@@ -52,11 +50,9 @@ export class ItemSheetGURPS extends ItemSheet {
 				attributes[e.id] = e.name
 			})
 			default_locations.locations.forEach(e => {
-				locations[e.id] = LocalizeGURPS.format(
-					LocalizeGURPS.translations.gurps.field_prefix.dr, {
-					location: e.choice_name
-				}
-				)
+				locations[e.id] = LocalizeGURPS.format(LocalizeGURPS.translations.gurps.field_prefix.dr, {
+					location: e.choice_name,
+				})
 			})
 		}
 		attributes.dodge = LocalizeGURPS.translations.gurps.attributes.dodge
@@ -87,7 +83,7 @@ export class ItemSheetGURPS extends ItemSheet {
 	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		html.find("textarea")
-			.each(function() {
+			.each(function () {
 				this.setAttribute("style", `height:${this.scrollHeight + 2}px;overflow-y:hidden;`)
 			})
 			.on("input", event => {

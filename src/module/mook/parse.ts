@@ -52,7 +52,7 @@ class MookParser {
 
 	private extractText(startMatches: string[], endMatches: string[], cut = true): string {
 		// console.log(startMatches, endMatches, this.text)
-		const start = (startMatches.length === 0) ? 0 : this.findInText(startMatches)
+		const start = startMatches.length === 0 ? 0 : this.findInText(startMatches)
 		if (start === -1) {
 			console.error(`No matches for: ${startMatches.join(", ")}`)
 			return ""
@@ -89,14 +89,13 @@ class MookParser {
 
 	private parseAttributes(): void {
 		this.text = this.cleanLine(this.text)
-		const attribute_names: { id: string, match: string }[] = []
-			; (game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) as any[]).forEach(e => {
-				attribute_names.push({ id: e.id.toLowerCase(), match: e.id.toLowerCase() })
-				if (e.name && e.name !== "")
-					attribute_names.push({ id: e.id.toLowerCase(), match: e.name.toLowerCase() })
-				if (e.full_name && e.full_name !== "")
-					attribute_names.push({ id: e.id.toLowerCase(), match: e.full_name.toLowerCase() })
-			})
+		const attribute_names: { id: string; match: string }[] = []
+		;(game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) as any[]).forEach(e => {
+			attribute_names.push({ id: e.id.toLowerCase(), match: e.id.toLowerCase() })
+			if (e.name && e.name !== "") attribute_names.push({ id: e.id.toLowerCase(), match: e.name.toLowerCase() })
+			if (e.full_name && e.full_name !== "")
+				attribute_names.push({ id: e.id.toLowerCase(), match: e.full_name.toLowerCase() })
+		})
 
 		const preText = this.extractText([], ["Advantages:", "Advantages/Disadvantages:", "Traits:"])
 
@@ -124,12 +123,13 @@ class MookParser {
 
 					break
 				}
-				if (e.match.includes(" ")) for (const f of e.match.split(" ")) {
-					if (t.match(f)) {
-						id = e.id
-						break
+				if (e.match.includes(" "))
+					for (const f of e.match.split(" ")) {
+						if (t.match(f)) {
+							id = e.id
+							break
+						}
 					}
-				}
 			}
 			if (!id) return
 
@@ -141,10 +141,8 @@ class MookParser {
 		this.object.attributes = this.object.getAttributes()
 	}
 
-
 	private parseTraits(): void {
 		const regex_cr = /\((CR:?)?\s*(\d+)\)/
-
 
 		this._object.traits = []
 		// const start = this.findInText(["Advantages", "Advantages/Disadvantages", "Traits"])
@@ -152,10 +150,7 @@ class MookParser {
 		// const end = this.findInText(["Skills", "Spells"], start) + start
 		// if (end === -1) return console.error("Skills/Spells not found")
 		// let text = this.text.substring(start, end)
-		let text = this.extractText(
-			["Advantages:", "Advantages/Disadvantages:", "Traits:"],
-			["Skills:", "Spells:"]
-		)
+		let text = this.extractText(["Advantages:", "Advantages/Disadvantages:", "Traits:"], ["Skills:", "Spells:"])
 
 		if (text.includes(";")) text = text.replace(/\n/g, " ") // if ; separated, remove newlines
 		else if (text.split(",").length > 2) text = text.replace(/,/g, " ") // if , separated, replace with ;
@@ -190,7 +185,6 @@ class MookParser {
 				t = t.replace(/\(.*\)/, "").trim()
 			}
 
-
 			t = this.cleanLine(t)
 
 			const trait: MookTrait = {
@@ -199,7 +193,7 @@ class MookParser {
 				cr,
 				notes: "",
 				reference: "",
-				modifiers
+				modifiers,
 			}
 			this.object.traits.push(trait)
 		})
@@ -209,13 +203,14 @@ class MookParser {
 		const modifiers: MookTraitModifier[] = []
 		const textmods = text.split(";")
 		textmods.forEach(m => {
-			if (m.split(",").length === 2) { // assumes common format for modifier notation
+			if (m.split(",").length === 2) {
+				// assumes common format for modifier notation
 				const mod = m.split(",")
 				modifiers.push({
 					name: mod[0].trim(),
 					cost: mod[1].trim(),
 					notes: "",
-					reference: ""
+					reference: "",
 				})
 			}
 		})
@@ -223,9 +218,11 @@ class MookParser {
 	}
 
 	private parseSkills(): void {
-		const attributes: { name: string, id: string }[] =
-			(game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) as any)
-				.map((e: any) => { return { id: e.id, name: e.name } })
+		const attributes: { name: string; id: string }[] = (
+			game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) as any
+		).map((e: any) => {
+			return { id: e.id, name: e.name }
+		})
 
 		const regex_level = /\s?-(\d+)/
 		const regex_difficulty = /\(([EAHV][H]?)\)/
@@ -311,9 +308,11 @@ class MookParser {
 	}
 
 	private parseSpells(): void {
-		const attributes: { name: string, id: string }[] =
-			(game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) as any)
-				.map((e: any) => { return { id: e.id, name: e.name } })
+		const attributes: { name: string; id: string }[] = (
+			game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) as any
+		).map((e: any) => {
+			return { id: e.id, name: e.name }
+		})
 
 		const regex_level = /\s-(\d+)/
 		const regex_difficulty = /\(([EAHV][H]?)\)/
@@ -389,7 +388,6 @@ class MookParser {
 		})
 	}
 
-
 	parseAttacks(oldFormat = false) {
 		const regex_acc = / ?[Aa]cc *(\\d+) ?,?/
 		const regex_rof = / ?[Rr]o[Ff] *(\\d+) ?,?/
@@ -430,8 +428,11 @@ class MookParser {
 		else if (weapons.split(",").length > 2) weapons = weapons.replace(/,/g, ";") // if , separated, replace with ;
 		weapons = weapons.replace(/weapons:?/gi, ";")
 
-
-		weapons = weapons.split(";").filter(e => e.match(/\):?/)).join(";").trim()
+		weapons = weapons
+			.split(";")
+			.filter(e => e.match(/\):?/))
+			.join(";")
+			.trim()
 		weapons.split(";").forEach(t => {
 			t = this.cleanLine(t).trim()
 			if (!t) return
@@ -506,7 +507,6 @@ class MookParser {
 				t = t.replace(regex_bulk, "").trim()
 			}
 
-
 			// Capture range
 			let range = 0
 			if (t.match(regex_range)) {
@@ -548,10 +548,10 @@ class MookParser {
 		return {
 			settings: {
 				attributes: [],
-				damage_progression: this.object.settings.damage_progression
+				damage_progression: this.object.settings.damage_progression,
 			},
 			system: {
-				attributes: this.object.system.attributes
+				attributes: this.object.system.attributes,
 			},
 			attributes: this.object.attributes,
 			traits: [],
@@ -572,10 +572,9 @@ class MookParser {
 				portrait: foundry.CONST.DEFAULT_TOKEN,
 			},
 			thrust: this.object.thrust,
-			swing: this.object.swing
+			swing: this.object.swing,
 		}
 	}
-
 }
 
 interface MookParser {

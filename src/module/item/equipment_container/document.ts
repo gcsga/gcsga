@@ -18,7 +18,12 @@ class EquipmentContainerGURPS extends ItemGCS {
 	unsatisfied_reason = ""
 
 	// Getters
+	get ratedStrength(): number {
+		return this.system.rated_strength ?? 0
+	}
+
 	get other(): boolean {
+		if (this.container instanceof Item) return (this.container as EquipmentContainerGURPS).other
 		return this.system.other
 	}
 
@@ -52,7 +57,7 @@ class EquipmentContainerGURPS extends ItemGCS {
 	}
 
 	get equipped(): boolean {
-		return this.system.equipped
+		return this.system.equipped && !this.other
 	}
 
 	set equipped(equipped: boolean) {

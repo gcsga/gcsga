@@ -193,9 +193,9 @@ export class ActorSheetGURPS extends ActorSheet {
 		})
 		const updateData = sortUpdates.map(u => {
 			const update = u.update
-				; (update as any)._id = u.target!._id
+			;(update as any)._id = u.target!._id
 			return update
-		}) as { _id: string; sort: number;[key: string]: any }[]
+		}) as { _id: string; sort: number; [key: string]: any }[]
 
 		if (source && source.container !== parent) {
 			const id = updateData.findIndex(e => (e._id = source._id))
