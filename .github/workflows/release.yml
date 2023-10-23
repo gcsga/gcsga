@@ -4,6 +4,9 @@ on:
     release:
         types: [published]
 
+permissions:
+    contents: write
+
 env:
     package_type: system
     node_version: 16
@@ -141,8 +144,6 @@ jobs:
             - typecheck
             - build
         runs-on: ubuntu-latest
-        permissions:
-            contents: write
         steps:
             - name: Checkout code
               uses: actions/checkout@v2
