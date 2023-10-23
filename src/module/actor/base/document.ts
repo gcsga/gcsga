@@ -140,8 +140,8 @@ class BaseActorGURPS extends Actor {
 		const effects = this.gEffects.map(e => {
 			const overlay = e instanceof ConditionGURPS && e.cid === ConditionID.Dead
 			const a = new ActiveEffect({ name: e.name, icon: e.img || "" } as any)
-				// a.setFlag("core", "overlay", overlay)
-				; (a as any).flags = { core: { overlay: overlay } }
+			// a.setFlag("core", "overlay", overlay)
+			;(a as any).flags = { core: { overlay: overlay } }
 			return a
 		})
 		return super.temporaryEffects.concat(effects)
@@ -218,13 +218,15 @@ class BaseActorGURPS extends Actor {
 	handleDamageDrop(payload: DamagePayload): void {
 		let attacker = undefined
 		if (payload.attacker) {
-			const actor = fromUuidSync(payload.attacker) as BaseActorGURPS
-			attacker = new DamageAttackerAdapter(actor)
+			const actor = game.actors?.get(payload.attacker) as BaseActorGURPS | undefined
+			if (actor) {
+				attacker = new DamageAttackerAdapter(actor)
+			}
 		}
 
 		let weapon = undefined
-		if (payload.weaponID) {
-			const temp = fromUuidSync(payload.weaponID) as BaseWeaponGURPS
+		if (payload.uuid) {
+			const temp = fromUuidSync(payload.uuid) as BaseWeaponGURPS
 			weapon = new DamageWeaponAdapter(temp)
 		}
 
