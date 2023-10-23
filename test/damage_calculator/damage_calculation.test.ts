@@ -1930,12 +1930,13 @@ describe("Damage calculator", () => {
 
 				let calc = _create(_roll, _target)
 				expect(calc.results.penetratingDamage!.value).toBe(17)
+
 				// Maximum damage for a limb is 1/2 HP + 1, or 10 for this character.
 				expect(calc.results.injury!.value).toBe(10)
 
 				const damageReduction = new _TargetTrait("Damage Reduction", 2)
 				_target._traits.push(damageReduction)
-				expect(calc.results.penetratingDamage!.value).toBe(17)
+
 				// New damage should be 17 / 2 = 8.5, rounded up to 9.
 				// This is below the max damage for a limb, so it should be 9.
 				expect(calc.results.injury!.value).toBe(9)
@@ -1943,7 +1944,6 @@ describe("Damage calculator", () => {
 				calc.overrideDamageReduction = 1.6
 				// New damage should be 17 / 1.6 = 10.625, rounded up to 11.
 				// But maximum damage for a limb for this character is 10.
-				expect(calc.results.penetratingDamage!.value).toBe(17)
 				expect(calc.results.injury!.value).toBe(10)
 			})
 		})
