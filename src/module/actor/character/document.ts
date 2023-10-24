@@ -173,7 +173,7 @@ export class CharacterGURPS extends BaseActorGURPS {
 				religion: "",
 				portrait: "",
 			},
-			editing: true,
+			editing: false,
 			calc: {
 				swing: "",
 				thrust: "",
