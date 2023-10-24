@@ -988,11 +988,23 @@
 				"no_school_grognard_damage": "No School Grognard Damage",
 				"thrust_equals_swing_minus_2": "Thrust = Swing - 2",
 				"swing_equals_thrust_plus_2": "Swing = Thrust + 2",
-				"phoenix_flame_d3": "Phoenix Flame D3",
 				"tbone_1": "T Bone's New Damage for ST (option 1)",
 				"tbone_1_clean": "T Bone's New Damage for ST (option 1, cleaned)",
 				"tbone_2": "T Bone's New Damage for ST (option 2)",
-				"tbone_2_clean": "T Bone's New Damage for ST (option 2, cleaned)"
+				"tbone_2_clean": "T Bone's New Damage for ST (option 2, cleaned)",
+				"phoenix_flame_d3": "Phoenix Flame D3"
+			},
+			"damage_progression_comment": {
+				"basic_set": "The standard damage progression",
+				"knowing_your_own_strength": "From <span class='ref' data-pdf='PY83:16'>Pyramid 3-83, pages 16-19</span>",
+				"no_school_grognard_damage": "From <span class='ref' data-pdf='https://noschoolgrognard.blogspot.com/2013/04/adjusting-swing-damage-in-dungeon.html'>Adjusting Swing Damage in Dungeon Fantasy</span>",
+				"thrust_equals_swing_minus_2": "From <span class='ref' data-pdf='https://github.com/richardwilkes/gcs/issues/97'>Alternate Damage Scheme (Thr = Sw-2)</span>",
+				"swing_equals_thrust_plus_2": "From a <span class='ref' data-pdf='https://gamingballistic.com/2020/12/04/df-eastmarch-boss-fight-and-house-rules/'>house rule</span> originating with Kevin Smyth",
+				"tbone_1": "From <span class='ref' data-pdf='https://www.gamesdiner.com/2009/10/new-st-damage/'>T Bone's Games Diner</span>",
+				"tbone_1_clean": "From <span class='ref' data-pdf='https://www.gamesdiner.com/2009/10/new-st-damage/'>T Bone's Games Diner</span>",
+				"tbone_2": "From <span class='ref' data-pdf='https://www.gamesdiner.com/2009/10/new-st-damage/'>T Bone's Games Diner</span>",
+				"tbone_2_clean": "From <span class='ref' data-pdf='https://www.gamesdiner.com/2009/10/new-st-damage/'>T Bone's Games Diner</span>",
+				"phoenix_flame_d3": "From a <span class='ref' data-pdf='https://github.com/richardwilkes/gcs/pull/393'>house rule</span> that uses d3s instead of d6s for damage"
 			},
 			"display": {
 				"not_shown": "Not Shown",
