@@ -37,10 +37,6 @@ export class EquipmentSheet extends ItemSheetGCS {
 		const weightPounds = Weight.fromString(`${parseFloat(weight)} ${weightFormat}`)
 		formData["system.weight"] = Weight.format(weightPounds, weightFormat)
 
-		console.log(weightFormat)
-		console.log(weight)
-		console.log(formData["system.weight"])
-
 		return super._updateObject(event, formData)
 	}
 }
