@@ -25,6 +25,7 @@ import { CondMod } from "@module/conditional_modifier"
 import {
 	attrPrefix,
 	CRAdjustment,
+	DamageProgression,
 	EFFECT_ACTION,
 	gid,
 	ItemType,
@@ -530,7 +531,9 @@ export class CharacterGURPS extends BaseActorGURPS {
 	// Returns Basic Lift in pounds
 	get basicLift(): number {
 		const ST = this.attributes.get(gid.Strength)?._effective(this.calc?.lifting_st_bonus ?? 0) || 0
-		const basicLift = ST ** 2 / 5
+		let basicLift = ST ** 2 / 5
+		if (this.settings.damage_progression === DamageProgression.KnowingYourOwnStrength)
+			basicLift = round(2 * 10 ** (ST / 10), 1)
 		if (basicLift === Infinity || basicLift === -Infinity) return 0
 		if (basicLift >= 10) return Math.round(basicLift)
 		return basicLift

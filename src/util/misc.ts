@@ -232,7 +232,7 @@ export function dollarFormat(i: number): string {
 	return formatter.format(i)
 }
 
-export function round(n: number, p = 2): number {
+export function round(n: number, p = 4): number {
 	return Math.round(n * 10 ** p) / 10 ** p
 }
 
@@ -439,9 +439,9 @@ export async function getDefaultSkills() {
 	for (const s in skillPacks)
 		if (skillPacks[s].skillDefault) {
 			const pack = game.packs.get(s) as CompendiumCollection<any>
-			;(await pack.getDocuments()).forEach(e => {
-				skills.push(e)
-			})
+				; (await pack.getDocuments()).forEach(e => {
+					skills.push(e)
+				})
 		}
 	CONFIG.GURPS.skillDefaults = skills
 }
