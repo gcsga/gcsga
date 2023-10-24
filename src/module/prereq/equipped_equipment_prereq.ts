@@ -5,9 +5,12 @@ import { LocalizeGURPS, stringCompare } from "@util"
 import { BasePrereq, PrereqConstructionContext } from "./base"
 
 class EquippedEquipmentPrereq extends BasePrereq {
+	name: StringCompare
+
 	constructor(data: EquippedEquipmentPrereq | any, context: PrereqConstructionContext = {}) {
 		data = mergeObject(EquippedEquipmentPrereq.defaults, data)
 		super(data, context)
+		this.name ??= { compare: StringComparison.None, qualifier: "" }
 	}
 
 	static get defaults(): Record<string, any> {
@@ -31,10 +34,6 @@ class EquippedEquipmentPrereq extends BasePrereq {
 		}
 		return [satisfied, false]
 	}
-}
-
-interface EquippedEquipmentPrereq extends BasePrereq {
-	name: StringCompare
 }
 
 export { EquippedEquipmentPrereq }

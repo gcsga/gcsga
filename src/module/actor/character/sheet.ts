@@ -33,6 +33,10 @@ import { CharacterGURPS } from "./document"
 import { PointRecordSheet } from "./points_sheet"
 
 export class CharacterSheetGURPS extends ActorSheetGURPS {
+	editing!: boolean
+
+	object!: CharacterGURPS
+
 	config: CharacterSheetConfig | null = null
 
 	skillDefaultsOpen = false
@@ -101,10 +105,6 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 				formData["system.resource_trackers"] = resource_trackers
 				delete formData[i]
 			}
-			// If (i === "system.move.posture")
-			// 	if (getProperty(this.actor, i) !== formData[i]) this.actor.changePosture(formData[i] as any)
-			// if (i === "system.move.maneuver")
-			// 	if (getProperty(this.actor, i) !== formData[i]) this.actor.changeManeuver(formData[i] as any)
 		}
 		return super._updateObject(event, formData)
 	}
@@ -149,13 +149,6 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		html.find(".item").each((_index, element) => this._addItemContextMenu(element))
 		html.find(".item-list .header.desc").each((_index, element) => this._addItemHeaderContextMenu(element))
 		html.find(".menu").each((_index, element) => this._addPoolContextMenu(element))
-
-		// // Skill Defaults
-		// html.find("a.defaults").on("click", event => this._openDefaultLookup(event))
-
-		// const searchbar = html.find("input.defaults")
-		// searchbar.on("input", event => this._updateQuery(event, searchbar))
-		// searchbar.on("keydown", event => this._keyDown(event))
 	}
 
 	async _onThresholdChange(event: JQuery.ChangeEvent): Promise<any> {
@@ -198,42 +191,18 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			{
 				name: "Apply Threshold Modifiers",
 				icon: attribute.apply_ops ? "<i class='gcs-checkmark'></i>" : "",
-				callback: event => {
+				callback: _event => {
 					const update: any = {}
 					update[`attributes.${id}.apply_ops`] = !apply_ops
 					return this._updateObject(null as any as Event, update)
 				},
 			},
 		])
-		// await ctx.render($(event.currentTarget))
 	}
-
-	// async _getPoolContextMenu(event: JQuery.ClickEvent, html: JQuery<HTMLElement>): Promise<void> {
-	// 	event.preventDefault()
-	// 	const id = $(event.currentTarget).data("id")
-	// 	const attribute = this.actor.attributes.get(id)
-	// 	if (!attribute) return
-	// 	attribute.apply_ops ??= true
-	// 	const apply_ops = attribute.apply_ops
-	// 	const ctx = new ContextMenu(html, "#pool-attributes .menu", [
-	// 		{
-	// 			name: "Apply Threshold Modifiers",
-	// 			icon: attribute.apply_ops ? "<i class='gcs-checkmark'></i>" : "",
-	// 			callback: () => {
-	// 				const update: any = {}
-	// 				update[`attributes.${id}.apply_ops`] = !apply_ops
-	// 				return this._updateObject(event as unknown as Event, update)
-	// 			},
-	// 		},
-	// 	])
-	// 	await ctx.render($(event.currentTarget))
-	// 	// $(event.currentTarget).trigger("contextmenu")
-	// }
 
 	_addItemHeaderContextMenu(element: HTMLElement) {
 		const type = $(element).parent(".item-list")[0].id
-		// const ctx = new ContextMenu(html, ".menu", [])
-		const menuItems = (function (self: CharacterSheetGURPS): ContextMenuEntry[] {
+		const menuItems = (function(self: CharacterSheetGURPS): ContextMenuEntry[] {
 			switch (type) {
 				case "traits":
 					return [
@@ -334,115 +303,8 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		})(this)
 
 		ContextMenu.create(this, $(element), "*", menuItems)
-		// await ctx.render(element)
 	}
 
-	// async _getAddItemMenu(event: JQuery.ContextMenuEvent, html: JQuery<HTMLElement>) {
-	// 	event.preventDefault()
-	// 	const element = $(event.currentTarget)
-	// 	const type = element.parent(".item-list")[0].id
-	// 	const ctx = new ContextMenu(html, ".menu", [])
-	// 	ctx.menuItems = (function(self: CharacterSheetGURPS): ContextMenuEntry[] {
-	// 		switch (type) {
-	// 			case "traits":
-	// 				return [
-	// 					{
-	// 						name: LocalizeGURPS.translations.gurps.context.new_trait,
-	// 						icon: "<i class='gcs-trait'></i>",
-	// 						callback: () => self._newItem(ItemType.Trait),
-	// 					},
-	// 					{
-	// 						name: LocalizeGURPS.translations.gurps.context.new_trait_container,
-	// 						icon: "<i class='gcs-trait'></i>",
-	// 						callback: () => self._newItem(ItemType.TraitContainer),
-	// 					},
-	// 					{
-	// 						name: LocalizeGURPS.translations.gurps.context.new_natural_attacks,
-	// 						icon: "<i class='gcs-melee-weapon'></i>",
-	// 						callback: () => self._newNaturalAttacks(),
-	// 					},
-	// 				]
-	// 			case "skills":
-	// 				return [
-	// 					{
-	// 						name: LocalizeGURPS.translations.gurps.context.new_skill,
-	// 						icon: "<i class='gcs-skill'></i>",
-	// 						callback: () => self._newItem(ItemType.Skill),
-	// 					},
-	// 					{
-	// 						name: LocalizeGURPS.translations.gurps.context.new_skill_container,
-	// 						icon: "<i class='gcs-skill'></i>",
-	// 						callback: () => self._newItem(ItemType.SkillContainer),
-	// 					},
-	// 					{
-	// 						name: LocalizeGURPS.translations.gurps.context.new_technique,
-	// 						icon: "<i class='gcs-skill'></i>",
-	// 						callback: () => self._newItem(ItemType.Technique),
-	// 					},
-	// 				]
-	// 			case "spells":
-	// 				return [
-	// 					{
-	// 						name: LocalizeGURPS.translations.gurps.context.new_spell,
-	// 						icon: "<i class='gcs-spell'></i>",
-	// 						callback: () => self._newItem(ItemType.Spell),
-	// 					},
-	// 					{
-	// 						name: LocalizeGURPS.translations.gurps.context.new_spell_container,
-	// 						icon: "<i class='gcs-spell'></i>",
-	// 						callback: () => self._newItem(ItemType.SpellContainer),
-	// 					},
-	// 					{
-	// 						name: LocalizeGURPS.translations.gurps.context.new_ritual_magic_spell,
-	// 						icon: "<i class='gcs-spell'></i>",
-	// 						callback: () => self._newItem(ItemType.RitualMagicSpell),
-	// 					},
-	// 				]
-	// 			case "equipment":
-	// 				return [
-	// 					{
-	// 						name: LocalizeGURPS.translations.gurps.context.new_carried_equipment,
-	// 						icon: "<i class='gcs-equipment'></i>",
-	// 						callback: () => self._newItem(ItemType.Equipment),
-	// 					},
-	// 					{
-	// 						name: LocalizeGURPS.translations.gurps.context.new_carried_equipment_container,
-	// 						icon: "<i class='gcs-equipment'></i>",
-	// 						callback: () => self._newItem(ItemType.EquipmentContainer),
-	// 					},
-	// 				]
-	// 			case "other-equipment":
-	// 				return [
-	// 					{
-	// 						name: LocalizeGURPS.translations.gurps.context.new_other_equipment,
-	// 						icon: "<i class='gcs-equipment'></i>",
-	// 						callback: () => self._newItem(ItemType.Equipment, true),
-	// 					},
-	// 					{
-	// 						name: LocalizeGURPS.translations.gurps.context.new_other_equipment_container,
-	// 						icon: "<i class='gcs-equipment'></i>",
-	// 						callback: () => self._newItem(ItemType.EquipmentContainer, true),
-	// 					},
-	// 				]
-	// 			case "notes":
-	// 				return [
-	// 					{
-	// 						name: LocalizeGURPS.translations.gurps.context.new_note,
-	// 						icon: "<i class='gcs-note'></i>",
-	// 						callback: () => self._newItem(ItemType.Note),
-	// 					},
-	// 					{
-	// 						name: LocalizeGURPS.translations.gurps.context.new_note_container,
-	// 						icon: "<i class='gcs-note'></i>",
-	// 						callback: () => self._newItem(ItemType.NoteContainer),
-	// 					},
-	// 				]
-	// 			default:
-	// 				return []
-	// 		}
-	// 	})(this)
-	// 	await ctx.render(element)
-	// }
 
 	async _newItem(type: ItemType, other = false) {
 		const itemData: any = {
@@ -736,200 +598,6 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		ContextMenu.create(this, $(element), "*", menuItems)
 	}
 
-	// async _getItemContextMenu(event: JQuery.ContextMenuEvent, html: JQuery<HTMLElement>) {
-	// 	event.preventDefault()
-	// 	const id = $(event.currentTarget).data("item-id")
-	// 	const item = this.actor.items.get(id) as ItemGURPS
-	// 	if (!item) return
-	// 	const ctx = new ContextMenu(html, ".menu", [])
-	// 	ctx.menuItems.push({
-	// 		name: LocalizeGURPS.translations.gurps.context.duplicate,
-	// 		icon: "",
-	// 		callback: async () => {
-	// 			const itemData = {
-	// 				type: item.type,
-	// 				name: item.name,
-	// 				system: item.system,
-	// 				flags: (item as any).flags,
-	// 				sort: ((item as any).sort ?? 0) + 1,
-	// 			}
-	// 			await item.container?.createEmbeddedDocuments("Item", [itemData])
-	// 		},
-	// 	})
-	// 	ctx.menuItems.push({
-	// 		name: LocalizeGURPS.translations.gurps.context.delete,
-	// 		icon: "<i class='gcs-trash'></i>",
-	// 		callback: () => {
-	// 			return this.actor.deleteEmbeddedDocuments("Item", [item.id!])
-	// 		},
-	// 	})
-	// 	if (item instanceof TraitGURPS || item instanceof TraitContainerGURPS) {
-	// 		ctx.menuItems.push({
-	// 			name: LocalizeGURPS.translations.gurps.context.toggle_state,
-	// 			icon: "<i class='fas fa-sliders-simple'></i>",
-	// 			callback: () => {
-	// 				return item.update({ "system.disabled": item.enabled })
-	// 			},
-	// 		})
-	// 	}
-	// 	if (item instanceof EquipmentGURPS || item instanceof EquipmentContainerGURPS) {
-	// 		ctx.menuItems.push({
-	// 			name: LocalizeGURPS.translations.gurps.context.toggle_state,
-	// 			icon: "<i class='fas fa-sliders-simple'></i>",
-	// 			callback: () => {
-	// 				return item.update({ "system.equipped": !item.equipped })
-	// 			},
-	// 		})
-	// 	}
-	// 	if (item instanceof TraitGURPS && item.isLeveled) {
-	// 		ctx.menuItems.push({
-	// 			name: LocalizeGURPS.translations.gurps.context.increment,
-	// 			icon: "<i class='fas fa-up'></i>",
-	// 			callback: () => {
-	// 				let level = item.system.levels + 1
-	// 				if (level % 1) level = Math.floor(level)
-	// 				return item.update({ "system.levels": level })
-	// 			},
-	// 		})
-	// 		if (item.levels > 0)
-	// 			ctx.menuItems.push({
-	// 				name: LocalizeGURPS.translations.gurps.context.decrement,
-	// 				icon: "<i class='fas fa-down'></i>",
-	// 				callback: () => {
-	// 					let level = item.system.levels - 1
-	// 					if (level % 1) level = Math.ceil(level)
-	// 					return item.update({ "system.levels": level })
-	// 				},
-	// 			})
-	// 	}
-	// 	if (
-	// 		item instanceof SkillGURPS ||
-	// 		item instanceof TechniqueGURPS ||
-	// 		item instanceof SpellGURPS ||
-	// 		item instanceof RitualMagicSpellGURPS
-	// 	) {
-	// 		ctx.menuItems.push({
-	// 			name: LocalizeGURPS.translations.gurps.context.increment,
-	// 			icon: "<i class='fas fa-up'></i>",
-	// 			callback: () => {
-	// 				return item.update({ "system.points": item.system.points + 1 })
-	// 			},
-	// 		})
-	// 		if (item.points > 0)
-	// 			ctx.menuItems.push({
-	// 				name: LocalizeGURPS.translations.gurps.context.decrement,
-	// 				icon: "<i class='fas fa-down'></i>",
-	// 				callback: () => {
-	// 					return item.update({ "system.points": item.system.points - 1 })
-	// 				},
-	// 			})
-	// 		ctx.menuItems.push({
-	// 			name: LocalizeGURPS.translations.gurps.context.increase_level,
-	// 			icon: "<i class='fas fa-up-long'></i>",
-	// 			callback: () => {
-	// 				return item.incrementSkillLevel()
-	// 			},
-	// 		})
-	// 		if (item.points > 0)
-	// 			ctx.menuItems.push({
-	// 				name: LocalizeGURPS.translations.gurps.context.decrease_level,
-	// 				icon: "<i class='fas fa-down-long'></i>",
-	// 				callback: () => {
-	// 					return item.decrementSkillLevel()
-	// 				},
-	// 			})
-	// 	}
-	// 	if (item instanceof EquipmentGURPS || item instanceof EquipmentContainerGURPS) {
-	// 		ctx.menuItems.push({
-	// 			name: LocalizeGURPS.translations.gurps.context.increment,
-	// 			icon: "<i class='fas fa-up'></i>",
-	// 			callback: () => {
-	// 				return item.update({ "system.quantity": item.system.quantity + 1 })
-	// 			},
-	// 		})
-	// 		if (item.quantity > 0)
-	// 			ctx.menuItems.push({
-	// 				name: LocalizeGURPS.translations.gurps.context.decrement,
-	// 				icon: "<i class='fas fa-down'></i>",
-	// 				callback: () => {
-	// 					return item.update({ "system.quantity": item.system.quantity - 1 })
-	// 				},
-	// 			})
-	// 	}
-	// 	if (
-	// 		item instanceof EquipmentGURPS ||
-	// 		item instanceof EquipmentContainerGURPS ||
-	// 		((item instanceof SkillGURPS || item instanceof SpellGURPS || item instanceof RitualMagicSpellGURPS) &&
-	// 			item.system.tech_level_required)
-	// 	) {
-	// 		ctx.menuItems.push({
-	// 			name: LocalizeGURPS.translations.gurps.context.increase_tech_level,
-	// 			icon: "<i class='fas fa-gear'></i><i class='fas fa-up'></i>",
-	// 			callback: () => {
-	// 				let tl = item.techLevel
-	// 				let tlNumber = tl.match(/\d+/)?.[0]
-	// 				if (!tlNumber) return
-	// 				const newTLNumber = parseInt(tlNumber) + 1
-	// 				tl = tl.replace(tlNumber, `${newTLNumber}`)
-	// 				return item.update({ "system.tech_level": tl })
-	// 			},
-	// 		})
-	// 		if (parseInt(item.techLevel) > 0)
-	// 			ctx.menuItems.push({
-	// 				name: LocalizeGURPS.translations.gurps.context.decrease_tech_level,
-	// 				icon: "<i class='fas fa-gear'></i><i class='fas fa-down'></i>",
-	// 				callback: () => {
-	// 					let tl = item.techLevel
-	// 					let tlNumber = tl.match(/\d+/)?.[0]
-	// 					if (!tlNumber) return
-	// 					const newTLNumber = parseInt(tlNumber) - 1
-	// 					tl = tl.replace(tlNumber, `${newTLNumber}`)
-	// 					return item.update({ "system.tech_level": tl })
-	// 				},
-	// 			})
-	// 	}
-	// 	if (item instanceof TraitGURPS || item instanceof EquipmentGURPS)
-	// 		ctx.menuItems.push({
-	// 			name: LocalizeGURPS.translations.gurps.context.convert_to_container,
-	// 			icon: "",
-	// 			callback: async () => {
-	// 				const type = item.type === ItemType.Trait ? ItemType.TraitContainer : ItemType.EquipmentContainer
-	// 				const itemData = {
-	// 					type: type,
-	// 					name: item.name,
-	// 					system: item.system,
-	// 					flags: (item as any).flags,
-	// 					sort: ((item as any).sort ?? 0) + 1,
-	// 					_id: item._id,
-	// 				}
-	// 				await item.delete()
-	// 				await item.container?.createEmbeddedDocuments("Item", [itemData])
-	// 			},
-	// 		})
-	// 	if (
-	// 		(item instanceof TraitContainerGURPS || item instanceof EquipmentContainerGURPS) &&
-	// 		item.children.size === 0
-	// 	)
-	// 		ctx.menuItems.push({
-	// 			name: LocalizeGURPS.translations.gurps.context.convert_to_non_container,
-	// 			icon: "",
-	// 			callback: async () => {
-	// 				const type = item.type === ItemType.TraitContainer ? ItemType.Trait : ItemType.Equipment
-	// 				const itemData = {
-	// 					type: type,
-	// 					name: item.name,
-	// 					system: item.system,
-	// 					flags: (item as any).flags,
-	// 					sort: ((item as any).sort ?? 0) + 1,
-	// 					_id: item._id,
-	// 				}
-	// 				await item.delete()
-	// 				await item.container?.createEmbeddedDocuments("Item", [itemData])
-	// 			},
-	// 		})
-	// 	await ctx.render($(event.currentTarget))
-	// }
-
 	protected _resizeInput(event: JQuery.ChangeEvent) {
 		event.preventDefault()
 		const field = event.currentTarget
@@ -1134,16 +802,6 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		const lifting = this.prepareLifts()
 		const moveData = this.prepareMoveData()
 		const overencumbered = this.actor.allEncumbrance.at(-1)!.maximum_carry! < this.actor!.weightCarried(false)
-		// const hit_locations = this.actor.HitLocations.map(e => {
-		// 	return {
-		// 		...e,
-		// 		...{
-		// 			displayDR: e.displayDR,
-		// 			tooltip: e.tooltip,
-		// 		},
-		// 	}
-		// })
-
 		const heightUnits = this.actor.settings.default_length_units
 		const weightUnits = this.actor.settings.default_weight_units
 		const height = Length.format(Length.fromString(this.actor.profile?.height || ""), heightUnits)
@@ -1328,33 +986,18 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		}
 		const buttons: Application.HeaderButton[] = this.actor.canUserModify(game.user!, "update")
 			? [
-					edit_button,
-					// {
-					// 	label: "",
-					// 	// Label: "Import",
-					// 	class: "import",
-					// 	icon: "fas fa-file-import",
-					// 	onclick: event => this._onFileImport(event),
-					// },
-					{
-						label: "",
-						class: "gmenu",
-						icon: "gcs-all-seeing-eye",
-						onclick: event => this._openGMenu(event),
-					},
-			  ]
+				edit_button,
+				{
+					label: "",
+					class: "gmenu",
+					icon: "gcs-all-seeing-eye",
+					onclick: event => this._openGMenu(event),
+				},
+			]
 			: []
 		const all_buttons = [...buttons, ...super._getHeaderButtons()]
-		// All_buttons.at(-1)!.label = ""
-		// all_buttons.at(-1)!.icon = "gcs-circled-x"
 		return all_buttons
-		// Return buttons.concat(super._getHeaderButtons());
 	}
-
-	// Async _onFileImport(event: any) {
-	// 	event.preventDefault()
-	// 	this.actor.importCharacter()
-	// }
 
 	protected async _openGMenu(event: JQuery.ClickEvent) {
 		event.preventDefault()
@@ -1369,17 +1012,4 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		await this.config?.close(options)
 		return super.close(options)
 	}
-
-	// protected override _onConfigureSheet(event: JQuery.ClickEvent<any, any, any, any>): void {
-	// 	event.preventDefault();
-	// 	new CharacterSheetConfig(this.object, {
-	// 		top: this.position.top! + 40,
-	// 		left: this.position.left! + ((this.position.width! - DocumentSheet.defaultOptions.width!) / 2)
-	// 	}).render(true);
-	// }
-}
-
-export interface CharacterSheetGURPS extends ActorSheetGURPS {
-	editing: boolean
-	object: CharacterGURPS
 }

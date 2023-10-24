@@ -1,7 +1,9 @@
 import { SYSTEM_NAME } from "@module/data"
 
 // @ts-ignore
-class PDFEditorSheet extends JournalPDFPageSheet {
+export class PDFEditorSheet extends JournalPDFPageSheet {
+	isEditable = false
+
 	get template(): string {
 		return `systems/${SYSTEM_NAME}/templates/app/pdf-${this.isEditable ? "edit" : "view"}.hbs`
 	}
@@ -12,10 +14,3 @@ class PDFEditorSheet extends JournalPDFPageSheet {
 		return this.render(true)
 	}
 }
-
-// @ts-ignore
-interface PDFEditorSheet extends JournalPDFPageSheet {
-	isEditable: boolean
-}
-
-export { PDFEditorSheet }

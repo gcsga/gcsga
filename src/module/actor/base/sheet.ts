@@ -11,6 +11,8 @@ import { DocumentSheetConfigGURPS } from "./config"
 type DispatchFunctions = Record<string, (arg: any) => void>
 
 export class ActorSheetGURPS extends ActorSheet {
+	object!: ActorGURPS
+
 	readonly dropDispatch: DispatchFunctions = {
 		[DamageChat.TYPE]: this.actor.handleDamageDrop.bind(this.actor),
 	}
@@ -193,9 +195,9 @@ export class ActorSheetGURPS extends ActorSheet {
 		})
 		const updateData = sortUpdates.map(u => {
 			const update = u.update
-			;(update as any)._id = u.target!._id
+				; (update as any)._id = u.target!._id
 			return update
-		}) as { _id: string; sort: number; [key: string]: any }[]
+		}) as { _id: string; sort: number;[key: string]: any }[]
 
 		if (source && source.container !== parent) {
 			const id = updateData.findIndex(e => (e._id = source._id))
@@ -223,8 +225,4 @@ export class ActorSheetGURPS extends ActorSheet {
 			left: this.position.left! + (this.position.width! - DocumentSheet.defaultOptions.width!) / 2,
 		}).render(true)
 	}
-}
-
-export interface ActorSheetGURPS extends ActorSheet {
-	object: ActorGURPS
 }

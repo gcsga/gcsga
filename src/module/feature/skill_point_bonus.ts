@@ -3,6 +3,12 @@ import { BaseFeature } from "./base"
 import { FeatureType } from "./data"
 
 export class SkillPointBonus extends BaseFeature {
+	name?: StringCompare
+
+	specialization?: StringCompare
+
+	tags?: StringCompare
+
 	static get defaults(): Record<string, any> {
 		return mergeObject(super.defaults, {
 			type: FeatureType.SkillPointBonus,
@@ -14,8 +20,3 @@ export class SkillPointBonus extends BaseFeature {
 	}
 }
 
-export interface SkillPointBonus extends BaseFeature {
-	name?: StringCompare
-	specialization?: StringCompare
-	tags?: StringCompare
-}

@@ -4,6 +4,24 @@ import { VariableResolver, evaluateToNumber, sanitizeId } from "@util"
 import { AttributeDefObj, AttributeType, reserved_ids } from "./data"
 
 export class AttributeDef {
+	def_id!: string
+
+	type!: AttributeType
+
+	name!: string
+
+	full_name!: string
+
+	attribute_base!: string
+
+	cost_per_point?: number
+
+	cost_adj_percent_per_sm?: number
+
+	thresholds?: PoolThreshold[]
+
+	order?: number
+
 	constructor(data?: AttributeDefObj) {
 		if (data) {
 			const thr: PoolThreshold[] = []
@@ -59,16 +77,4 @@ export class AttributeDef {
 		}
 		return Math.round(cost)
 	}
-}
-
-export interface AttributeDef {
-	def_id: string
-	type: AttributeType
-	name: string
-	full_name: string
-	attribute_base: string
-	cost_per_point?: number
-	cost_adj_percent_per_sm?: number
-	thresholds?: PoolThreshold[]
-	order: number
 }

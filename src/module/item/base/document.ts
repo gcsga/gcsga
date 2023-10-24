@@ -5,7 +5,13 @@ import { Context } from "types/foundry/common/abstract/document.mjs"
 import { ItemData } from "types/foundry/common/data/module.mjs"
 import { BaseItemSourceGURPS, ItemConstructionContextGURPS, ItemFlags } from "./data"
 
-class BaseItemGURPS extends Item {
+export class BaseItemGURPS extends Item {
+	system: any
+
+	_id!: string
+
+	_source!: BaseItemSourceGURPS
+
 	constructor(data: ItemDataGURPS | any, context: Context<Actor> & ItemConstructionContextGURPS = {}) {
 		if (context.gurps?.ready) {
 			super(data, context)
@@ -76,11 +82,3 @@ class BaseItemGURPS extends Item {
 		super.prepareData()
 	}
 }
-
-interface BaseItemGURPS extends Item {
-	system: any
-	_id: string
-	_source: BaseItemSourceGURPS
-}
-
-export { BaseItemGURPS }

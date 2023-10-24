@@ -3,7 +3,9 @@ import { TooltipGURPS } from "@module/tooltip"
 import { LocalizeGURPS, numberCompare } from "@util"
 import { BasePrereq, PrereqConstructionContext } from "./base"
 
-class ContainedQuantityPrereq extends BasePrereq {
+export class ContainedQuantityPrereq extends BasePrereq {
+	qualifier!: NumberCompare
+
 	constructor(data: ContainedQuantityPrereq | any, context: PrereqConstructionContext = {}) {
 		data = mergeObject(ContainedQuantityPrereq.defaults, data)
 		super(data, context)
@@ -38,9 +40,3 @@ class ContainedQuantityPrereq extends BasePrereq {
 		return [satisfied, false]
 	}
 }
-
-interface ContainedQuantityPrereq extends BasePrereq {
-	qualifier: NumberCompare
-}
-
-export { ContainedQuantityPrereq }

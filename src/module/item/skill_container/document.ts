@@ -3,10 +3,8 @@ import { SkillGURPS } from "@item/skill"
 import { TechniqueGURPS } from "@item/technique"
 import { SkillContainerData } from "./data"
 
-class SkillContainerGURPS extends ItemGCS {
-	// Static override get schema(): typeof SkillContainerData {
-	// 	return SkillContainerData;
-	// }
+export class SkillContainerGURPS extends ItemGCS {
+	readonly system!: SkillContainerData
 
 	// Embedded Items
 	get children(): Collection<SkillGURPS | TechniqueGURPS | SkillContainerGURPS> {
@@ -23,9 +21,3 @@ class SkillContainerGURPS extends ItemGCS {
 		return points
 	}
 }
-
-interface SkillContainerGURPS {
-	readonly system: SkillContainerData
-}
-
-export { SkillContainerGURPS }

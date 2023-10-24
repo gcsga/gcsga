@@ -4,8 +4,10 @@ import { LastActor } from "@util"
 import { ModifierBucket } from "./bucket"
 import { ModifierWindow } from "./window"
 
-class ModifierButton extends Application {
+export class ModifierButton extends Application {
 	modifierMode: "prompt" | "bucket" = "prompt"
+
+	showing: boolean
 
 	private _window?: ModifierWindow | ModifierBucket
 
@@ -183,10 +185,3 @@ class ModifierButton extends Application {
 		await user.setFlag(SYSTEM_NAME, UserFlags.ModifierTotal, total)
 	}
 }
-
-interface ModifierButton extends Application {
-	showing: boolean
-	window: ModifierWindow | ModifierBucket
-}
-
-export { ModifierButton }

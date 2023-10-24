@@ -3,8 +3,42 @@ import { DamageProgression, gid, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { DiceGURPS } from "@module/dice"
 import { damageProgression } from "@util"
 import { MookEquipment, MookMelee, MookNote, MookProfile, MookRanged, MookSkill, MookSpell, MookTrait } from "./data"
-class Mook {
+
+export class Mook {
 	protected variableResolverExclusions: Map<string, boolean> = new Map()
+
+	settings: {
+		attributes: AttributeDefObj[]
+		damage_progression: DamageProgression
+	}
+
+	system: {
+		attributes: AttributeObj[]
+	}
+
+	attributes: Map<string, Attribute>
+
+	traits: MookTrait[]
+
+	skills: MookSkill[]
+
+	spells: MookSpell[]
+
+	melee: MookMelee[]
+
+	ranged: MookRanged[]
+
+	equipment: MookEquipment[]
+
+	other_equipment: MookEquipment[]
+
+	notes: MookNote[]
+
+	profile: MookProfile
+
+	thrust!: DiceGURPS
+
+	swing!: DiceGURPS
 
 	update(data: any): void {
 		mergeObject(this, data)
@@ -151,36 +185,4 @@ class Mook {
 	effectiveST(initialST: number): number {
 		return initialST
 	}
-
-	// get traits(): Collection<any> {
-	// 	return new Collection()
-	// }
-
-	// get skills(): Collection<any> {
-	// 	return new Collection()
-	// }
 }
-
-interface Mook {
-	settings: {
-		attributes: AttributeDefObj[]
-		damage_progression: DamageProgression
-	}
-	system: {
-		attributes: AttributeObj[]
-	}
-	attributes: Map<string, Attribute>
-	traits: MookTrait[]
-	skills: MookSkill[]
-	spells: MookSpell[]
-	melee: MookMelee[]
-	ranged: MookRanged[]
-	equipment: MookEquipment[]
-	other_equipment: MookEquipment[]
-	notes: MookNote[]
-	profile: MookProfile
-	thrust: DiceGURPS
-	swing: DiceGURPS
-}
-
-export { Mook }

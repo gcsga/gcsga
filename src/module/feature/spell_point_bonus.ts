@@ -4,6 +4,12 @@ import { stringCompare } from "@util"
 import { FeatureType, SpellBonusMatch } from "./data"
 
 export class SpellPointBonus extends BaseFeature {
+	match!: SpellBonusMatch
+
+	name?: StringCompare
+
+	tags?: StringCompare
+
 	static get defaults(): Record<string, any> {
 		return mergeObject(super.defaults, {
 			type: FeatureType.SpellPointBonus,
@@ -25,10 +31,4 @@ export class SpellPointBonus extends BaseFeature {
 				return stringCompare(powerSource, this.name)
 		}
 	}
-}
-
-export interface SpellPointBonus extends BaseFeature {
-	match: SpellBonusMatch
-	name?: StringCompare
-	tags?: StringCompare
 }

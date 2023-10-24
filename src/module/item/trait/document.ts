@@ -5,7 +5,9 @@ import { CR, CRAdjustment, ItemType } from "@module/data"
 import { inlineNote, LocalizeGURPS, SelfControl } from "@util"
 import { TraitData } from "./data"
 
-class TraitGURPS extends ItemGCS {
+export class TraitGURPS extends ItemGCS {
+	readonly system!: TraitData
+
 	unsatisfied_reason = ""
 
 	// Getters
@@ -262,9 +264,3 @@ class TraitGURPS extends ItemGCS {
 		return (points * modifier) / 100
 	}
 }
-
-interface TraitGURPS {
-	readonly system: TraitData
-}
-
-export { TraitGURPS }

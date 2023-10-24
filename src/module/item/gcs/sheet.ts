@@ -5,6 +5,8 @@ import { LocalizeGURPS, Weight } from "@util"
 import { ItemGCS } from "./document"
 
 export class ItemSheetGCS extends ContainerSheetGURPS {
+	object!: ItemGCS
+
 	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		html.find(".item").on("dblclick", event => this._openItemSheet(event))
@@ -227,8 +229,4 @@ export class ItemSheetGCS extends ContainerSheetGURPS {
 		}
 		return super._updateObject(event, formData)
 	}
-}
-
-export interface ItemSheetGCS extends ContainerSheetGURPS {
-	object: ItemGCS
 }

@@ -8,6 +8,10 @@ export interface PrereqConstructionContext {
 }
 
 export class BasePrereq {
+	type!: PrereqType
+
+	has!: boolean
+
 	constructor(data: Prereq | any, context: PrereqConstructionContext = {}) {
 		if (context.ready) {
 			Object.assign(this, data)
@@ -48,10 +52,8 @@ export class BasePrereq {
 			prereqs: [],
 		})
 	}
-}
 
-export interface BasePrereq {
-	satisfied(character: CharacterGURPS, exclude: any, tooltip: TooltipGURPS): [boolean, boolean]
-	type: PrereqType
-	has: boolean
+	satisfied(character: CharacterGURPS, exclude: any, tooltip: TooltipGURPS): [boolean, boolean] {
+		return [false, false]
+	}
 }

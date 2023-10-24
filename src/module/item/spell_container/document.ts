@@ -3,10 +3,8 @@ import { RitualMagicSpellGURPS } from "@item/ritual_magic_spell"
 import { SpellGURPS } from "@item/spell"
 import { SpellContainerData } from "./data"
 
-class SpellContainerGURPS extends ItemGCS {
-	// Static override get schema(): typeof SpellContainerData {
-	// 	return SpellContainerData;
-	// }
+export class SpellContainerGURPS extends ItemGCS {
+	readonly system!: SpellContainerData
 
 	// Embedded Items
 	get children(): Collection<SpellGURPS | RitualMagicSpellGURPS | SpellContainerGURPS> {
@@ -23,9 +21,3 @@ class SpellContainerGURPS extends ItemGCS {
 		return points
 	}
 }
-
-interface SpellContainerGURPS {
-	readonly system: SpellContainerData
-}
-
-export { SpellContainerGURPS }

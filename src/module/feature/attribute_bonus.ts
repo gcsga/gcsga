@@ -2,6 +2,10 @@ import { BaseFeature } from "./base"
 import { FeatureType } from "./data"
 
 export class AttributeBonus extends BaseFeature {
+	attribute!: string
+
+	limitation!: AttributeBonusLimitation
+
 	static get defaults(): Record<string, any> {
 		return mergeObject(super.defaults, {
 			type: FeatureType.AttributeBonus,
@@ -9,12 +13,6 @@ export class AttributeBonus extends BaseFeature {
 			limitation: "none",
 		})
 	}
-}
-
-export interface AttributeBonus extends BaseFeature {
-	type: FeatureType.AttributeBonus
-	attribute: string
-	limitation: AttributeBonusLimitation
 }
 
 export enum AttributeBonusLimitation {

@@ -14,7 +14,9 @@ import { BaseUser } from "types/foundry/common/documents.mjs"
 import { MergeObjectOptions } from "types/foundry/common/utils/helpers.mjs"
 import { ItemGCSSystemData } from "./data"
 
-abstract class ItemGCS extends ContainerGURPS {
+export abstract class ItemGCS extends ContainerGURPS {
+	readonly system!: ItemGCSSystemData
+
 	unsatisfied_reason = ""
 
 	protected async _preCreate(
@@ -31,7 +33,7 @@ abstract class ItemGCS extends ContainerGURPS {
 			this._source.img = data.img = `systems/${SYSTEM_NAME}/assets/icons/${type}.svg`
 		let gcs_type: string = data.type
 		if (gcs_type === ItemType.Equipment) gcs_type = "equipment"
-		;(this._source.system as any).type = gcs_type
+			; (this._source.system as any).type = gcs_type
 		await super._preCreate(data, options, user)
 	}
 
@@ -181,9 +183,3 @@ abstract class ItemGCS extends ContainerGURPS {
 		return system
 	}
 }
-
-interface ItemGCS extends ContainerGURPS {
-	readonly system: ItemGCSSystemData
-}
-
-export { ItemGCS }

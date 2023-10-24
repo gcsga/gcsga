@@ -3,6 +3,18 @@ import { BaseFeature } from "./base"
 import { FeatureType, WeaponBonusSelectionType } from "./data"
 
 export class WeaponDamageBonus extends BaseFeature {
+	selection_type!: WeaponBonusSelectionType
+
+	name?: StringCompare
+
+	specialization?: StringCompare
+
+	tags?: StringCompare
+
+	level?: NumberCompare
+
+	percent!: boolean
+
 	static get defaults(): Record<string, any> {
 		return mergeObject(super.defaults, {
 			type: FeatureType.WeaponBonus,
@@ -14,12 +26,4 @@ export class WeaponDamageBonus extends BaseFeature {
 			level: { compare: NumberComparison.None, qualifier: 0 },
 		})
 	}
-}
-export interface WeaponDamageBonus extends BaseFeature {
-	selection_type: WeaponBonusSelectionType
-	name?: StringCompare
-	specialization?: StringCompare
-	tags?: StringCompare
-	level?: NumberCompare
-	percent: boolean
 }

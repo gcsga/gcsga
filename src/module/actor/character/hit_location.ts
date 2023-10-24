@@ -4,7 +4,11 @@ import { TooltipGURPS } from "@module/tooltip"
 import { LocalizeGURPS } from "@util"
 import { CharacterGURPS } from "./document"
 
-class HitLocationTable {
+class HitLocationTable implements Omit<HitLocationTableData, "roll"> {
+	name: string
+
+	roll: DiceGURPS
+
 	actor: CharacterGURPS
 
 	locations: HitLocation[]
@@ -62,10 +66,6 @@ class HitLocationTable {
 	}
 }
 
-interface HitLocationTable extends Omit<HitLocationTableData, "locations" | "roll"> {
-	roll: DiceGURPS
-}
-
 interface HitLocationTableData {
 	name: string
 	roll: string
@@ -88,7 +88,29 @@ interface HitLocationData {
 	}
 }
 
-class HitLocation {
+class HitLocation implements HitLocationData {
+	id!: string
+
+	choice_name!: string
+
+	table_name!: string
+
+	slots!: number
+
+	hit_penalty!: number
+
+	dr_bonus!: number
+
+	description!: string
+
+	sub_table?: HitLocationTableData
+
+	calc?: {
+		roll_range: string
+		dr: Record<string, number>
+		[key: string]: any
+	}
+
 	actor: CharacterGURPS
 
 	keyPrefix: string
@@ -113,12 +135,12 @@ class HitLocation {
 	get subTable(): HitLocationTable | undefined {
 		return this.sub_table
 			? new HitLocationTable(
-					this.sub_table.name,
-					this.sub_table.roll,
-					this.sub_table.locations,
-					this.actor,
-					`${this.keyPrefix}.sub_table`
-			  )
+				this.sub_table.name,
+				this.sub_table.roll,
+				this.sub_table.locations,
+				this.actor,
+				`${this.keyPrefix}.sub_table`
+			)
 			: undefined
 	}
 
@@ -243,9 +265,4 @@ class HitLocation {
 		}
 	}
 }
-
-interface HitLocation extends HitLocationData {
-	actor: CharacterGURPS
-}
-
 export { HitLocation, HitLocationTable, HitLocationData, HitLocationTableData }

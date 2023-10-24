@@ -1,7 +1,9 @@
 import { BaseWeaponGURPS } from "@item/weapon"
 import { RangedWeaponSystemData } from "./data"
 
-class RangedWeaponGURPS extends BaseWeaponGURPS {
+export class RangedWeaponGURPS extends BaseWeaponGURPS {
+	readonly system!: RangedWeaponSystemData
+
 	get resolvedRange(): string {
 		const actor = this.actor
 		if (!actor) return this.system.range
@@ -66,9 +68,3 @@ class RangedWeaponGURPS extends BaseWeaponGURPS {
 		return this.system.recoil
 	}
 }
-
-interface RangedWeaponGURPS extends BaseWeaponGURPS {
-	readonly system: RangedWeaponSystemData
-}
-
-export { RangedWeaponGURPS }

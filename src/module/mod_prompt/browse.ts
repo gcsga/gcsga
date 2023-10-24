@@ -8,7 +8,19 @@ interface ModCategory {
 	showing: boolean
 }
 
-class ModifierBrowse extends Application {
+export class ModifierBrowse extends Application {
+	mods: RollModifier[]
+
+	categories: ModCategory[]
+
+	selection: [number, number, number]
+
+	showing: boolean
+
+	window: ModifierWindow
+
+	catShowing: number
+
 	constructor(window: ModifierWindow, options = {}) {
 		super(options)
 		this.window = window
@@ -155,14 +167,3 @@ class ModifierBrowse extends Application {
 		})
 	}
 }
-
-interface ModifierBrowse extends Application {
-	mods: RollModifier[]
-	categories: ModCategory[]
-	selection: [number, number, number]
-	showing: boolean
-	window: ModifierWindow
-	catShowing: number
-}
-
-export { ModifierBrowse }
