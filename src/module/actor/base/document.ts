@@ -47,7 +47,7 @@ export class BaseActorGURPS extends Actor {
 
 	noPrepare!: boolean
 
-	attributes: Map<string, Attribute> = new Map()
+	attributes!: Map<string, Attribute>
 
 	// Temp
 	system!: ActorSystemData

@@ -16,24 +16,8 @@ export class Weight {
 	// 	return Weight.format(this.pounds, WeightUnits.Pound)
 	// }
 
-	static format(pounds: number, unit: WeightUnits): string {
+	static format(pounds: number, unit: WeightUnits = WeightUnits.Pound): string {
 		return `${round(Weight.fromPounds(pounds, unit))} ${unit}`
-		// Switch (unit) {
-		// 	case WeightUnits.Pound:
-		// 	case WeightUnits.PoundAlt:
-		// 		return `${round(pounds, 4)} ${unit}`
-		// 	case WeightUnits.Ounce:
-		// 		return `${round(pounds * 16, 4)} ${unit}`
-		// 	case WeightUnits.Ton:
-		// 	case WeightUnits.TonAlt:
-		// 		return `${round(pounds / 2000, 4)} ${unit}`
-		// 	case WeightUnits.Kilogram:
-		// 		return `${round(pounds / 2, 4)} ${unit}`
-		// 	case WeightUnits.Gram:
-		// 		return `${round(pounds * 500, 4)} ${unit}`
-		// 	default:
-		// 		return this.format(pounds, WeightUnits.Pound)
-		// }
 	}
 
 	static fromString(text: string): number {
