@@ -6,12 +6,10 @@ import { CR, CRAdjustment } from "@module/data"
 import { LocalizeGURPS, SelfControl } from "@util"
 import { TraitContainerData, TraitContainerType } from "./data"
 
-class TraitContainerGURPS extends ItemGCS {
-	unsatisfied_reason = ""
+export class TraitContainerGURPS extends ItemGCS {
+	readonly system!: TraitContainerData
 
-	// Static override get schema(): typeof TraitContainerData {
-	// 	return TraitContainerData;
-	// }
+	unsatisfied_reason = ""
 
 	// Getters
 	get enabled(): boolean {
@@ -162,9 +160,3 @@ class TraitContainerGURPS extends ItemGCS {
 		this.enabled = !this.enabled
 	}
 }
-
-interface TraitContainerGURPS {
-	readonly system: TraitContainerData
-}
-
-export { TraitContainerGURPS }

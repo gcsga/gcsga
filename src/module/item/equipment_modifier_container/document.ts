@@ -2,10 +2,8 @@ import { EquipmentModifierGURPS } from "@item/equipment_modifier"
 import { ItemGCS } from "@item/gcs"
 import { EquipmentModifierContainerData } from "./data"
 
-class EquipmentModifierContainerGURPS extends ItemGCS {
-	// Static override get schema(): typeof EquipmentModifierContainerData {
-	// 	return EquipmentModifierContainerData;
-	// }
+export class EquipmentModifierContainerGURPS extends ItemGCS {
+	readonly system!: EquipmentModifierContainerData
 
 	get enabled(): boolean {
 		return true
@@ -16,9 +14,3 @@ class EquipmentModifierContainerGURPS extends ItemGCS {
 		return super.children as Collection<EquipmentModifierGURPS | EquipmentModifierContainerGURPS>
 	}
 }
-
-interface EquipmentModifierContainerGURPS {
-	readonly system: EquipmentModifierContainerData
-}
-
-export { EquipmentModifierContainerGURPS }

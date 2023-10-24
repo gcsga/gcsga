@@ -4,6 +4,8 @@ import { ItemType, SYSTEM_NAME } from "@module/data"
 import { EquipmentGURPS } from "./document"
 
 export class EquipmentSheet extends ItemSheetGCS {
+	object!: EquipmentGURPS | EquipmentContainerGURPS
+
 	static get defaultOptions(): DocumentSheetOptions<Item> {
 		const options = super.defaultOptions
 		mergeObject(options, {
@@ -26,8 +28,4 @@ export class EquipmentSheet extends ItemSheetGCS {
 			// rangedWeapons: this.object.rangedWeapons,
 		})
 	}
-}
-
-export interface EquipmentSheet extends ItemSheetGCS {
-	object: EquipmentGURPS | EquipmentContainerGURPS
 }

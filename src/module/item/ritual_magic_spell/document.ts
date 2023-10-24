@@ -6,7 +6,9 @@ import { TooltipGURPS } from "@module/tooltip"
 import { inlineNote, LocalizeGURPS } from "@util"
 import { RitualMagicSpellData } from "./data"
 
-class RitualMagicSpellGURPS extends ItemGCS {
+export class RitualMagicSpellGURPS extends ItemGCS {
+	readonly system!: RitualMagicSpellData
+
 	level: SkillLevel = { level: 0, relative_level: 0, tooltip: new TooltipGURPS() }
 
 	unsatisfied_reason = ""
@@ -283,9 +285,3 @@ class RitualMagicSpellGURPS extends ItemGCS {
 		}
 	}
 }
-
-interface RitualMagicSpellGURPS {
-	readonly system: RitualMagicSpellData
-}
-
-export { RitualMagicSpellGURPS }

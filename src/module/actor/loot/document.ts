@@ -9,7 +9,11 @@ import Document, { Metadata } from "types/foundry/common/abstract/document.mjs"
 import { ActorDataConstructorData } from "types/foundry/common/data/data.mjs/actorData"
 import { LootSource, LootSystemData } from "./data"
 
-class LootGURPS extends BaseActorGURPS {
+export class LootGURPS extends BaseActorGURPS {
+	system!: LootSystemData
+
+	_source!: LootSource
+
 	constructor(data: LootSource, context: ActorConstructorContextGURPS = {}) {
 		super(data, context)
 	}
@@ -219,9 +223,3 @@ class LootGURPS extends BaseActorGURPS {
 	}
 }
 
-interface LootGURPS extends BaseActorGURPS {
-	system: LootSystemData
-	_source: LootSource
-}
-
-export { LootGURPS }

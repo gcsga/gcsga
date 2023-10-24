@@ -3,7 +3,9 @@ import { gid } from "@module/data"
 import { TooltipGURPS } from "@module/tooltip"
 import { MeleeWeaponSystemData } from "./data"
 
-class MeleeWeaponGURPS extends BaseWeaponGURPS {
+export class MeleeWeaponGURPS extends BaseWeaponGURPS {
+	readonly system!: MeleeWeaponSystemData
+
 	get fastResolvedParry(): string {
 		return this.resolvedParry()
 	}
@@ -32,9 +34,3 @@ class MeleeWeaponGURPS extends BaseWeaponGURPS {
 		return this.system.reach
 	}
 }
-
-interface MeleeWeaponGURPS extends BaseWeaponGURPS {
-	readonly system: MeleeWeaponSystemData
-}
-
-export { MeleeWeaponGURPS }

@@ -58,7 +58,3 @@ export class ResourceTrackerDef {
 		// Return evaluateToNumber(this.tracker_base, resolver)
 	}
 }
-
-export interface ResourceTrackerDef {
-	id: string
-}

@@ -5,7 +5,7 @@ import { DiceGURPS } from "@module/dice"
 import { LocalizeGURPS } from "@util"
 import { Mook } from "./document"
 
-class MookGeneratorSheet extends FormApplication {
+export class MookGeneratorSheet extends FormApplication {
 	config: CharacterSheetConfig | null = null
 
 	object: Mook
@@ -171,9 +171,3 @@ class MookGeneratorSheet extends FormApplication {
 		return this.object.update(formData)
 	}
 }
-
-interface MookGeneratorSheet extends FormApplication {
-	object: Mook
-}
-
-export { MookGeneratorSheet }

@@ -6,7 +6,9 @@ import { TooltipGURPS } from "@module/tooltip"
 import { inlineNote, LocalizeGURPS } from "@util"
 import { TechniqueData } from "./data"
 
-class TechniqueGURPS extends ItemGCS {
+export class TechniqueGURPS extends ItemGCS {
+	readonly system!: TechniqueData
+
 	level: SkillLevel = { level: 0, relative_level: 0, tooltip: new TooltipGURPS() }
 
 	unsatisfied_reason = ""
@@ -226,9 +228,3 @@ class TechniqueGURPS extends ItemGCS {
 		}
 	}
 }
-
-interface TechniqueGURPS {
-	readonly system: TechniqueData
-}
-
-export { TechniqueGURPS }

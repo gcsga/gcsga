@@ -4,17 +4,14 @@ import {
 	determineModWeightValueTypeFromString,
 	extractFraction,
 	Fraction,
-	Fractions,
 	LocalizeGURPS,
 	WeightUnits,
 	WeightValueType,
 } from "@util"
 import { EquipmentCostType, EquipmentModifierData, EquipmentWeightType } from "./data"
 
-class EquipmentModifierGURPS extends ItemGCS {
-	// Static get schema(): typeof EquipmentModifierData {
-	// 	return EquipmentModifierData;
-	// }
+export class EquipmentModifierGURPS extends ItemGCS {
+	readonly system!: EquipmentModifierData
 
 	get enabled(): boolean {
 		return !this.system.disabled
@@ -92,9 +89,3 @@ class EquipmentModifierGURPS extends ItemGCS {
 		return this.system.weight
 	}
 }
-
-interface EquipmentModifierGURPS {
-	readonly system: EquipmentModifierData
-}
-
-export { EquipmentModifierGURPS }

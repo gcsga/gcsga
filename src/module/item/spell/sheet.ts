@@ -2,6 +2,8 @@ import { ItemSheetGCS } from "@item/gcs"
 import { SpellGURPS } from "."
 
 export class SpellSheet extends ItemSheetGCS {
+	object!: SpellGURPS
+
 	static get defaultOptions(): DocumentSheetOptions<Item> {
 		const options = super.defaultOptions
 		mergeObject(options, {
@@ -29,8 +31,4 @@ export class SpellSheet extends ItemSheetGCS {
 		delete formData.difficulty
 		return super._updateObject(event, formData)
 	}
-}
-
-export interface SpellSheet extends ItemSheetGCS {
-	object: SpellGURPS
 }

@@ -16,12 +16,10 @@ import {
 import { HandlebarsHelpersGURPS } from "@util/handlebars_helpers"
 import { CostValueType, EquipmentData } from "./data"
 
-class EquipmentGURPS extends ItemGCS {
-	unsatisfied_reason = ""
+export class EquipmentGURPS extends ItemGCS {
+	readonly system!: EquipmentData
 
-	// Static override get schema(): typeof EquipmentData {
-	// 	return EquipmentData;
-	// }
+	unsatisfied_reason = ""
 
 	// Getters
 	get ratedStrength(): number {
@@ -348,9 +346,3 @@ class EquipmentGURPS extends ItemGCS {
 		return weight + sum
 	}
 }
-
-interface EquipmentGURPS {
-	readonly system: EquipmentData
-}
-
-export { EquipmentGURPS }

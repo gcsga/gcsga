@@ -7,6 +7,8 @@ import { StaticItemSystemData } from "./data"
 import { StaticPopout, StaticPopoutType } from "./popouts"
 
 export class StaticItemSheet extends ItemSheet {
+	object!: StaticItemGURPS
+
 	static get defaultOptions(): DocumentSheetOptions<Item> {
 		const options = super.defaultOptions
 		mergeObject(options, {
@@ -276,9 +278,4 @@ export class StaticItemSheet extends ItemSheet {
 		if (formData.name) formData["system.eqt.name"] = formData.name
 		return super._updateObject(event, formData)
 	}
-}
-
-// @ts-ignore
-export interface StaticItemSheet {
-	object: StaticItemGURPS
 }

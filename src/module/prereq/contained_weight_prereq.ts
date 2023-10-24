@@ -4,14 +4,13 @@ import { TooltipGURPS } from "@module/tooltip"
 import { LocalizeGURPS, numberCompare, Weight } from "@util"
 import { BasePrereq, PrereqConstructionContext } from "./base"
 
-export interface ContainedWeightPrereq extends BasePrereq {
-	qualifier: WeightCompare
-}
-
 export class ContainedWeightPrereq extends BasePrereq {
+	qualifier: WeightCompare
+
 	constructor(data: ContainedWeightPrereq | any, context: PrereqConstructionContext = {}) {
 		data = mergeObject(ContainedWeightPrereq.defaults, data)
 		super(data, context)
+		this.qualifier ??= { compare: NumberComparison.None, qualifier: "5 lb" }
 	}
 
 	static get defaults(): Record<string, any> {

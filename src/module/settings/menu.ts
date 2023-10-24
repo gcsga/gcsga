@@ -1,8 +1,10 @@
 import { SYSTEM_NAME } from "@module/data"
 import { LocalizeGURPS } from "@util"
 
-abstract class SettingsMenuGURPS extends FormApplication {
+export abstract class SettingsMenuGURPS extends FormApplication {
 	static readonly namespace: string
+
+	object!: object
 
 	static override get defaultOptions(): FormApplicationOptions {
 		const options = super.defaultOptions
@@ -23,7 +25,7 @@ abstract class SettingsMenuGURPS extends FormApplication {
 	}
 
 	get namespace(): string {
-		return this.constructor.namespace
+		return (this.constructor as typeof SettingsMenuGURPS).namespace
 	}
 
 	static readonly SETTINGS: readonly string[]
@@ -80,7 +82,7 @@ abstract class SettingsMenuGURPS extends FormApplication {
 	async _onResetAll(event: JQuery.ClickEvent) {
 		event.preventDefault()
 		const constructor = this.constructor
-		for (const setting of constructor.SETTINGS) {
+		for (const setting of (constructor as typeof SettingsMenuGURPS).SETTINGS) {
 			const defaults = game.settings.settings.get(`${SYSTEM_NAME}.${this.namespace}.${setting}`)?.default as any
 			await game.settings.set(SYSTEM_NAME, `${this.namespace}.${setting}`, defaults)
 		}
@@ -102,10 +104,3 @@ abstract class SettingsMenuGURPS extends FormApplication {
 		return all_buttons
 	}
 }
-
-interface SettingsMenuGURPS extends FormApplication {
-	constructor: typeof SettingsMenuGURPS
-	object: object
-}
-
-export { SettingsMenuGURPS }

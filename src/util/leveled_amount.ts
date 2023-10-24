@@ -45,9 +45,3 @@ export class LeveledAmount {
 		return this.amount
 	}
 }
-
-export interface LeveledAmount {
-	level: number
-	amount: number
-	per_level: boolean
-}

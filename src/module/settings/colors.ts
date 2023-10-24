@@ -145,7 +145,7 @@ export class ColorSettings extends SettingsMenuGURPS {
 
 	override async _onResetAll(event: JQuery.ClickEvent) {
 		event.preventDefault()
-		const constructor = this.constructor
+		const constructor = this.constructor as typeof SettingsMenuGURPS
 		for (const setting of constructor.SETTINGS) {
 			const defaults = game.settings.settings.get(`${SYSTEM_NAME}.${this.namespace}.${setting}`)?.default as any
 			await game.settings.set(SYSTEM_NAME, `${this.namespace}.${setting}`, defaults)

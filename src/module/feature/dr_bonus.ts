@@ -6,6 +6,10 @@ import { BaseFeature } from "./base"
 import { FeatureType } from "./data"
 
 export class DRBonus extends BaseFeature {
+	location!: string
+
+	specialization?: string
+
 	static get defaults(): Record<string, any> {
 		return mergeObject(super.defaults, {
 			type: FeatureType.DRBonus,
@@ -52,9 +56,4 @@ export class DRBonus extends BaseFeature {
 			buffer.push("<br>")
 		}
 	}
-}
-
-export interface DRBonus extends BaseFeature {
-	location: string
-	specialization?: string
 }

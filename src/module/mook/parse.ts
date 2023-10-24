@@ -5,7 +5,11 @@ import { Mook } from "./document"
 
 const regex_points = /\[(-?\d+)\]/
 
-class MookParser {
+export class MookParser {
+	text: string
+
+	object: Mook
+
 	private _text: string
 
 	private _object: MookData
@@ -90,12 +94,12 @@ class MookParser {
 	private parseAttributes(): void {
 		this.text = this.cleanLine(this.text)
 		const attribute_names: { id: string; match: string }[] = []
-		;(game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) as any[]).forEach(e => {
-			attribute_names.push({ id: e.id.toLowerCase(), match: e.id.toLowerCase() })
-			if (e.name && e.name !== "") attribute_names.push({ id: e.id.toLowerCase(), match: e.name.toLowerCase() })
-			if (e.full_name && e.full_name !== "")
-				attribute_names.push({ id: e.id.toLowerCase(), match: e.full_name.toLowerCase() })
-		})
+			; (game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) as any[]).forEach(e => {
+				attribute_names.push({ id: e.id.toLowerCase(), match: e.id.toLowerCase() })
+				if (e.name && e.name !== "") attribute_names.push({ id: e.id.toLowerCase(), match: e.name.toLowerCase() })
+				if (e.full_name && e.full_name !== "")
+					attribute_names.push({ id: e.id.toLowerCase(), match: e.full_name.toLowerCase() })
+			})
 
 		const preText = this.extractText([], ["Advantages:", "Advantages/Disadvantages:", "Traits:"])
 
@@ -397,7 +401,7 @@ class MookParser {
 		const regex_shots = / ?[Ss]hots *([\\w\\)\\(]+) ?,?/
 		const regex_bulk = / ?[Bb]ulk *([\\w-]+) ?,?/
 		const regex_ST = / ?[Ss][Tt] *(\\d+) ?,?/
-		const regex_reach = / ?[Rr]each *([^\.]+) ?,?/
+		const regex_reach = / ?[Rr]each *([^.]+) ?,?/
 		const regex_range = / ?[Rr]ange ([0-9/]+) *,?/
 		const regex_level = /\((\d+)\):/
 
@@ -576,10 +580,3 @@ class MookParser {
 		}
 	}
 }
-
-interface MookParser {
-	text: string
-	object: Mook
-}
-
-export { MookParser }

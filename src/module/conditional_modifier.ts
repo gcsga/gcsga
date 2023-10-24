@@ -1,4 +1,10 @@
 export class CondMod {
+	from: string
+
+	amounts: number[]
+
+	sources: string[]
+
 	constructor(source: string, from: string, amount: number) {
 		this.from = from
 		this.amounts = [amount]
@@ -13,10 +19,4 @@ export class CondMod {
 	get total(): number {
 		return this.amounts.reduce((partialSum, a) => partialSum + a, 0)
 	}
-}
-
-export interface CondMod {
-	from: string
-	amounts: number[]
-	sources: string[]
 }

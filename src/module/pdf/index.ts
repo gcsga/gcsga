@@ -11,7 +11,12 @@ interface EntryPageConstructorContextGURPS extends Context<JournalEntryPage> {
 }
 
 // @ts-ignore
-class JournalEntryPageGURPS extends JournalEntryPage {
+export class JournalEntryPageGURPS extends JournalEntryPage {
+	system!: {
+		offset: number
+		code: string
+	}
+
 	constructor(data: any, context: EntryPageConstructorContextGURPS = {}) {
 		if (context.gurps?.ready) {
 			super(data, context)
@@ -23,14 +28,6 @@ class JournalEntryPageGURPS extends JournalEntryPage {
 			// @ts-ignore
 			else return new JournalEntryPage(data, context)
 		}
-	}
-}
-
-// @ts-ignore
-interface JournalEntryPageGURPS extends JournalEntryPage {
-	system: {
-		offset: number
-		code: string
 	}
 }
 

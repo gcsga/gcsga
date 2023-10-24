@@ -2,6 +2,8 @@ import { ItemSheetGCS } from "@item/gcs"
 import { SkillGURPS } from "."
 
 export class SkillSheet extends ItemSheetGCS {
+	object!: SkillGURPS
+
 	static get defaultOptions(): DocumentSheetOptions<Item> {
 		const options = super.defaultOptions
 		mergeObject(options, {
@@ -33,8 +35,4 @@ export class SkillSheet extends ItemSheetGCS {
 		delete formData.difficulty
 		return super._updateObject(event, formData)
 	}
-}
-
-export interface SkillSheet extends ItemSheetGCS {
-	object: SkillGURPS
 }

@@ -4,10 +4,22 @@ import { ModifierBrowse } from "./browse"
 import { ModifierButton } from "./button"
 import { ModifierList } from "./list"
 
-type WindowSelected = "browse" | "current" | "none"
+enum WindowSelected {
+	Browse = "browse",
+	Current = "current",
+	None = "none",
+}
 
 export class ModifierWindow extends Application {
 	selected: WindowSelected
+
+	button: ModifierButton
+
+	list: ModifierList
+
+	browse: ModifierBrowse
+
+	value: string
 
 	constructor(button: ModifierButton, options = {}) {
 		super(options)
@@ -16,7 +28,7 @@ export class ModifierWindow extends Application {
 		this.button = button
 		this.list = new ModifierList(this, [])
 		this.browse = new ModifierBrowse(this)
-		this.selected = "none"
+		this.selected = WindowSelected.None
 	}
 
 	static get defaultOptions(): ApplicationOptions {
@@ -119,11 +131,11 @@ export class ModifierWindow extends Application {
 				case "h":
 				case "ArrowLeft":
 					switch (this.selected) {
-						case "current":
-							this.selected = "none"
+						case WindowSelected.Current:
+							this.selected = WindowSelected.None
 							return
-						case "none":
-							this.selected = "browse"
+						case WindowSelected.None:
+							this.selected = WindowSelected.Browse
 							return this.browse.show()
 						case "browse":
 							return
@@ -131,24 +143,24 @@ export class ModifierWindow extends Application {
 				case "l":
 				case "ArrowRight":
 					switch (this.selected) {
-						case "browse":
-							this.selected = "none"
+						case WindowSelected.Browse:
+							this.selected = WindowSelected.None
 							return this.browse.hide()
-						case "none":
-							this.selected = "current"
+						case WindowSelected.None:
+							this.selected = WindowSelected.Current
 							return this.browse.show()
-						case "current":
+						case WindowSelected.Current:
 							return
 					}
 				case "k":
 				case "ArrowUp":
 					switch (this.selected) {
-						case "current":
+						case WindowSelected.Current:
 							return
 						// Return this.currentUp()
-						case "browse":
+						case WindowSelected.Browse:
 							return this.browse.up()
-						case "none":
+						case WindowSelected.None:
 							if (this.list.mods.length === 0) return this.getPinnedMods()
 							this.list.selection += 1
 							if (this.list.selection >= this.list.mods.length) this.list.selection = 0
@@ -157,12 +169,12 @@ export class ModifierWindow extends Application {
 				case "j":
 				case "ArrowDown":
 					switch (this.selected) {
-						case "current":
+						case WindowSelected.Current:
 							return
 						// Return this.currentUp()
-						case "browse":
+						case WindowSelected.Browse:
 							return this.browse.down()
-						case "none":
+						case WindowSelected.None:
 							this.list.selection -= 1
 							if (this.list.selection < 0) this.list.selection = this.list.mods.length - 1
 							return this.list.render()
@@ -223,11 +235,4 @@ export class ModifierWindow extends Application {
 		this.render()
 		this.button.render()
 	}
-}
-
-export interface ModifierWindow extends Application {
-	button: ModifierButton
-	list: ModifierList
-	browse: ModifierBrowse
-	value: string
 }

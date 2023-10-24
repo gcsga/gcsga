@@ -14,7 +14,9 @@ import {
 } from "@util"
 import { EquipmentContainerData } from "./data"
 
-class EquipmentContainerGURPS extends ItemGCS {
+export class EquipmentContainerGURPS extends ItemGCS {
+	readonly system!: EquipmentContainerData
+
 	unsatisfied_reason = ""
 
 	// Getters
@@ -223,9 +225,3 @@ class EquipmentContainerGURPS extends ItemGCS {
 		this.equipped = !this.equipped
 	}
 }
-
-interface EquipmentContainerGURPS {
-	readonly system: EquipmentContainerData
-}
-
-export { EquipmentContainerGURPS }

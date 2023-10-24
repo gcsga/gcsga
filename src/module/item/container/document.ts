@@ -7,7 +7,9 @@ import EmbeddedCollection from "types/foundry/common/abstract/embedded-collectio
 import { DocumentConstructor } from "types/types/helperTypes"
 import { BaseContainerSystemData } from "./data"
 
-abstract class ContainerGURPS extends BaseItemGURPS {
+export abstract class ContainerGURPS extends BaseItemGURPS {
+	readonly system!: BaseContainerSystemData
+
 	items: foundry.utils.Collection<BaseItemGURPS> = new Collection()
 
 	// Getters
@@ -99,7 +101,7 @@ abstract class ContainerGURPS extends BaseItemGURPS {
 				(e: BaseItemGURPS) => e.getFlag(SYSTEM_NAME, ItemFlags.Container) === this.id
 			)) {
 				if (this.type === ItemType.EquipmentContainer && item.type === ItemType.Equipment) {
-					;(item as any).system.other = (this.system as any).other
+					; (item as any).system.other = (this.system as any).other
 				}
 				this.items.set(item.id!, item)
 			}
@@ -118,9 +120,3 @@ abstract class ContainerGURPS extends BaseItemGURPS {
 		}
 	}
 }
-
-interface ContainerGURPS extends BaseItemGURPS {
-	readonly system: BaseContainerSystemData
-}
-
-export { ContainerGURPS }

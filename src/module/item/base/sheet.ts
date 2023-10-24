@@ -8,6 +8,8 @@ import { LocalizeGURPS, prepareFormData } from "@util"
 import { BaseItemGURPS } from "."
 
 export class ItemSheetGURPS extends ItemSheet {
+	object!: BaseItemGURPS
+
 	static override get defaultOptions(): DocumentSheetOptions<Item> {
 		const options = super.defaultOptions
 		mergeObject(options, {
@@ -83,7 +85,7 @@ export class ItemSheetGURPS extends ItemSheet {
 	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		html.find("textarea")
-			.each(function () {
+			.each(function() {
 				this.setAttribute("style", `height:${this.scrollHeight + 2}px;overflow-y:hidden;`)
 			})
 			.on("input", event => {
@@ -283,8 +285,4 @@ export class ItemSheetGURPS extends ItemSheet {
 		all_buttons.at(-1)!.icon = "gcs-circled-x"
 		return all_buttons
 	}
-}
-
-export interface ItemSheetGURPS extends ItemSheet {
-	object: BaseItemGURPS
 }

@@ -2,6 +2,8 @@ import { ItemSheetGCS } from "@item/gcs"
 import { TraitContainerGURPS } from "./document"
 
 export class TraitContainerSheet extends ItemSheetGCS {
+	object!: TraitContainerGURPS
+
 	static get defaultOptions(): DocumentSheetOptions<Item> {
 		const options = super.defaultOptions
 		mergeObject(options, {
@@ -23,8 +25,4 @@ export class TraitContainerSheet extends ItemSheetGCS {
 			formData["system.disabled"] = !formData["system.disabled"]
 		return super._updateObject(event, formData)
 	}
-}
-
-export interface TraitContainerSheet extends ItemSheetGCS {
-	object: TraitContainerGURPS
 }
