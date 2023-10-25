@@ -77,10 +77,8 @@ export class ItemImporter {
 
 	async _import(file: { text: string; name: string; path: string }) {
 		const json = file.text
-		// Return;
 		const label = file.name.split(".")[0]
 		const name = label.toLowerCase().replaceAll(" ", "-")
-		// Const name = "Library Test";
 		let r: ItemLibraryData | any
 		const errorMessages: string[] = []
 		try {

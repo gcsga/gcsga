@@ -151,6 +151,8 @@ Hooks.once("init", async () => {
 
 	CONFIG.Dice.rolls.unshift(RollGURPS)
 
+	CONFIG.Item.compendiumIndexFields = ["flags"]
+
 	StaticHitLocation.init()
 	SpeedProviderGURPS.init()
 

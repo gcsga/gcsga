@@ -41,7 +41,6 @@ export abstract class ItemGCS extends ContainerGURPS {
 		data: DeepPartial<ItemDataConstructorData | (ItemDataConstructorData & Record<string, unknown>)>,
 		context?: DocumentModificationContext & MergeObjectOptions & { noPrepare?: boolean }
 	): Promise<this | undefined> {
-		console.log(data)
 		if (this.actor && context?.noPrepare) (this.actor as any).noPrepare = true
 		if (!(this.parent instanceof Item)) return super.update(data, context)
 		data._id = this.id
