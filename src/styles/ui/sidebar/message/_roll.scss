@@ -1,4 +1,5 @@
 .dice-roll {
+
 	&.attack,
 	&.attribute,
 	&.damage,
@@ -10,7 +11,7 @@
 		align-items: center;
 		text-align: center;
 
-		> hr {
+		>hr {
 			border-color: rgb(var(--color-divider));
 			height: 1px;
 			width: 90%;
@@ -134,7 +135,7 @@
 				justify-content: center;
 			}
 
-			.damage.rollable {
+			.damage {
 				color: white;
 				background-color: rgb(var(--color-failure));
 				border-color: rgb(var(--color-failure)) !important;
@@ -151,7 +152,21 @@
 				font-size: var(--font-size-16);
 				cursor: pointer;
 
-				&:hover {
+				&.hits>div {
+					padding: 0;
+					border: 0px solid;
+					min-width: 1em;
+					padding: 0 3px;
+				}
+
+				&.hits {
+					display: flex;
+					flex-flow: row nowrap;
+				}
+
+				&.hits>div:hover,
+				.rollable:hover,
+				&.rollable:hover {
 					cursor: pointer;
 					color: rgb(var(--color-failure));
 					background-color: white;

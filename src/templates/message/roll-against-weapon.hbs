@@ -40,9 +40,11 @@
 						data-actor="{{extra.damage.attacker}}"
 						data-type="damage"
 						data-times="{{extra.ranged.potential_hits}}"
-						class="damage rollable"
+						class="damage hits"
 					>
-						&minus;&nbsp;{{extra.ranged.potential_hits}}&nbsp;&plus;
+						<div class="minus">&minus;</div>
+						<div class="roll">{{extra.ranged.potential_hits}}</div>
+						<div class="plus">&plus;</div>
 					</div>
 				{{/if}}
 			</div>

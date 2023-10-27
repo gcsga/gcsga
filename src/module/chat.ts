@@ -60,12 +60,42 @@ export async function _processDiceCommand(
  * @param html
  */
 export function addChatListeners(html: JQuery<HTMLElement>): void {
-	html.find(".rollable").on("click", event => _onRollClick(event))
+	html.find(".rollable:not(.damage)").on("click", event => _onRollClick(event))
 	html.find(".rollable.damage").on("click", event => _onDamageRoll(event))
+	html.find(".damage.hits > .roll").on("click", event => _onMultiDamageRoll(event))
+	html.find(".damage.hits > .minus").on("click", event => _onMinusHits(event))
+	html.find(".damage.hits > .plus").on("click", event => _onPlusHits(event))
 	html.find(".rollable").on("mouseover", event => _onRollableHover(event, true))
 	html.find(".rollable").on("mouseout", event => _onRollableHover(event, false))
 	html.find(".mod").on("click", event => _onModClick(event))
 	html.find(".mod").on("contextmenu", event => _onModRClick(event))
+}
+
+async function _onMultiDamageRoll(event: JQuery.ClickEvent): Promise<void> {
+	event.preventDefault()
+	event.stopPropagation()
+	console.log("MultiDamageRoll")
+}
+
+async function _onHitsChange(event: JQuery.ClickEvent, delta: number): Promise<void> {
+	event.preventDefault()
+	event.stopPropagation()
+
+	// Get the parent HTML element of target
+	const parent = event.currentTarget.closest(".damage.hits")
+	if (!parent) return
+
+	// Get the data-times attribute from the parent element
+	parent.dataset.times = Math.max(1, parseInt(parent.dataset.times) + delta)
+	$(parent).find(".roll").text(`${parent.dataset.times}`)
+}
+
+async function _onMinusHits(event: JQuery.ClickEvent): Promise<void> {
+	await _onHitsChange(event, -1)
+}
+
+async function _onPlusHits(event: JQuery.ClickEvent): Promise<void> {
+	await _onHitsChange(event, 1)
 }
 
 /**
