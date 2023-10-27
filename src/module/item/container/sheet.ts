@@ -7,6 +7,8 @@ import { TraitModifierGURPS } from "@item/trait_modifier"
 import { ContainerGURPS } from "./document"
 
 export class ContainerSheetGURPS extends ItemSheetGURPS {
+	object!: ContainerGURPS
+
 	static get defaultOptions(): DocumentSheetOptions<Item> {
 		return mergeObject(ItemSheetGURPS.defaultOptions, {
 			template: `/systems/${SYSTEM_NAME}/templates/item/container-sheet.hbs`,
@@ -136,7 +138,7 @@ export class ContainerSheetGURPS extends ItemSheetGURPS {
 		})
 		const updateData = sortUpdates.map(u => {
 			const update = u.update
-			;(update as any)._id = u.target!._id
+				; (update as any)._id = u.target!._id
 			return update
 		})
 
@@ -178,8 +180,4 @@ export class ContainerSheetGURPS extends ItemSheetGURPS {
 		})
 		return this.render()
 	}
-}
-
-export interface ContainerSheetGURPS extends ItemSheetGURPS {
-	object: ContainerGURPS
 }

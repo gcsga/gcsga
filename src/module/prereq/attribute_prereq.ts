@@ -5,6 +5,12 @@ import { LocalizeGURPS, numberCompare } from "@util"
 import { BasePrereq, PrereqConstructionContext } from "./base"
 
 export class AttributePrereq extends BasePrereq {
+	which!: string
+
+	combined_with!: string
+
+	qualifier!: NumberCompare
+
 	constructor(data: AttributePrereq | any, context: PrereqConstructionContext = {}) {
 		data = mergeObject(AttributePrereq.defaults, data)
 		super(data, context)
@@ -39,10 +45,4 @@ export class AttributePrereq extends BasePrereq {
 		}
 		return [satisfied, false]
 	}
-}
-
-export interface AttributePrereq extends BasePrereq {
-	which: string
-	combined_with: string
-	qualifier: NumberCompare
 }

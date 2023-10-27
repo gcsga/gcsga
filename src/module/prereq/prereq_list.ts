@@ -4,24 +4,16 @@ import { TooltipGURPS } from "@module/tooltip"
 import { extractTechLevel, LocalizeGURPS, numberCompare } from "@util"
 import { BasePrereq, PrereqConstructionContext } from "./base"
 
-export interface PrereqList extends Omit<BasePrereq, "has"> {
-	prereqs: Prereq[]
-	all: boolean
-	when_tl: NumberCompare
-}
-
-export interface PrereqListObj {
-	type: PrereqType
-	prereqs: Prereq[]
-	all: boolean
-	when_tl?: NumberCompare
-}
-
 export class PrereqList extends BasePrereq {
+	prereqs!: Prereq[]
+
+	all!: boolean
+
+	when_tl!: NumberCompare
+
 	constructor(data?: PrereqList | any, context: PrereqConstructionContext = {}) {
 		data = mergeObject(PrereqList.defaults, data)
 		super(data, context)
-		// Object.assign(this, mergeObject(PrereqList.defaults, data))
 		if ((data as PrereqList).prereqs) {
 			const list = (data as PrereqList).prereqs
 			this.prereqs = []

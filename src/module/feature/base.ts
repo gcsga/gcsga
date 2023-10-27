@@ -9,6 +9,18 @@ export interface FeatureConstructionContext {
 }
 
 export class BaseFeature {
+	type: FeatureType
+
+	item?: Item
+
+	amount!: number
+
+	per_level!: boolean
+
+	_levels!: number
+
+	effective?: boolean
+
 	constructor(data: Feature | any, context: FeatureConstructionContext = {}) {
 		this.type = data.type // Needed?
 		if (context?.ready) {
@@ -37,12 +49,6 @@ export class BaseFeature {
 		return this.amount * (this.per_level ? this.levels || 0 : 1)
 	}
 
-	// Get levels(): number {
-	// 	const parent: ItemGURPS = fromUuid(this.parent) as unknown as ItemGURPS
-	// 	if (parent instanceof TraitGURPS) return parent.levels
-	// 	return 1
-	// }
-
 	get levels(): number {
 		if (this.item) {
 			if (this.item.type === ItemType.Trait) return (this.item as any).levels
@@ -70,14 +76,4 @@ export class BaseFeature {
 			)
 		}
 	}
-}
-
-export interface BaseFeature {
-	// Parent: string
-	type: FeatureType
-	item?: Item
-	amount: number
-	per_level: boolean
-	_levels: number
-	effective?: boolean
 }

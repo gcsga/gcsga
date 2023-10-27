@@ -33,6 +33,17 @@
 			overflow-y: scroll;
 		}
 	}
+	span.ref {
+		padding: 0;
+		text-decoration: underline;
+		color: rgb(var(--color-link));
+		&:hover {
+			color: rgb(var(--color-link-rollover));
+		}
+		&:active {
+			color: rgb(var(--color-link-pressed));
+		}
+	}
 	#details,
 	.fieldblock {
 		display: grid;

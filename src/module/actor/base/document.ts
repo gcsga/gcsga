@@ -42,9 +42,23 @@ import { ActorDataConstructorData } from "types/foundry/common/data/data.mjs/act
 import { MergeObjectOptions } from "types/foundry/common/utils/helpers.mjs"
 import { CharacterGURPS } from "@actor/character"
 
-class BaseActorGURPS extends Actor {
+export class BaseActorGURPS extends Actor {
+	flags!: ActorFlagsGURPS
+
+	noPrepare!: boolean
+
+	attributes!: Map<string, Attribute>
+
+	// Temp
+	system!: ActorSystemData
+
+	_source!: BaseActorSourceGURPS
+
+	_id!: string
+
 	constructor(data: ActorSourceGURPS, context: ActorConstructorContextGURPS = {}) {
 		if (context.gurps?.ready) {
+			// @ts-ignore
 			super(data, context)
 			this.noPrepare = false
 		} else {
@@ -54,6 +68,14 @@ class BaseActorGURPS extends Actor {
 			if (ActorConstructor) return new ActorConstructor(data, context)
 			throw Error(`Invalid Actor Type "${data.type}"`)
 		}
+	}
+
+	get traits(): Collection<TraitGURPS | TraitContainerGURPS> {
+		return new Collection()
+	}
+
+	poolAttributes(_includeSeparators?: boolean): Map<string, Attribute> {
+		return new Map()
 	}
 
 	protected async _preCreate(data: any, options: DocumentModificationOptions, user: BaseUser): Promise<void> {
@@ -140,8 +162,8 @@ class BaseActorGURPS extends Actor {
 		const effects = this.gEffects.map(e => {
 			const overlay = e instanceof ConditionGURPS && e.cid === ConditionID.Dead
 			const a = new ActiveEffect({ name: e.name, icon: e.img || "" } as any)
-			// a.setFlag("core", "overlay", overlay)
-			;(a as any).flags = { core: { overlay: overlay } }
+				// a.setFlag("core", "overlay", overlay)
+				; (a as any).flags = { core: { overlay: overlay } }
 			return a
 		})
 		return super.temporaryEffects.concat(effects)
@@ -551,19 +573,3 @@ class DamageWeaponAdapter implements DamageWeapon {
 		return this.base?.fastResolvedDamage ?? ""
 	}
 }
-
-interface BaseActorGURPS extends Actor {
-	flags: ActorFlagsGURPS
-	noPrepare: boolean
-	// deepItems: Collection<ItemGURPS>
-	attributes: Map<string, Attribute>
-	traits: Collection<TraitGURPS | TraitContainerGURPS>
-	poolAttributes(includeSeparators?: boolean): Map<string, Attribute>
-
-	// Temp
-	system: ActorSystemData
-	_source: BaseActorSourceGURPS
-	_id: string
-}
-
-export { BaseActorGURPS }

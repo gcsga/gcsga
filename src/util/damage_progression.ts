@@ -176,7 +176,7 @@ export function swingFor(p: DamageProgression, st: number): DiceGURPS {
 				multiplier: 1,
 			})
 		case DamageProgression.KnowingYourOwnStrength:
-			if (st < 12) {
+			if (st < 10) {
 				return new DiceGURPS({
 					count: 1,
 					sides: 6,
@@ -187,7 +187,7 @@ export function swingFor(p: DamageProgression, st: number): DiceGURPS {
 			return new DiceGURPS({
 				count: (st - 5) / 4,
 				sides: 6,
-				modifier: ((st + 1) % 4) - 1,
+				modifier: ((st - 1) % 4) - 1,
 				multiplier: 1,
 			})
 		case DamageProgression.NoSchoolGrognardDamage:

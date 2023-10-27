@@ -1,8 +1,12 @@
 import { RollModifier, SOCKET, SYSTEM_NAME, UserFlags } from "@module/data"
 import { PDF } from "@module/pdf"
 
-class ModifierBucket extends Application {
+export class ModifierBucket extends Application {
 	categoriesOpen: boolean[] = [false, false, false, false, false, false, false, false, false, false]
+
+	button: any
+
+	value: string
 
 	constructor(button: any, options = {}) {
 		super(options)
@@ -170,10 +174,3 @@ class ModifierBucket extends Application {
 		game.socket?.emit(`system.${SYSTEM_NAME}`, { type: SOCKET.UPDATE_BUCKET, users: [player.id] })
 	}
 }
-
-interface ModifierBucket extends Application {
-	button: any
-	value: string
-}
-
-export { ModifierBucket }

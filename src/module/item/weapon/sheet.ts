@@ -2,6 +2,8 @@ import { ItemSheetGURPS } from "@item/base"
 import { WeaponGURPS } from "@module/config"
 
 export class WeaponSheet extends ItemSheetGURPS {
+	object!: WeaponGURPS
+
 	static get defaultOptions() {
 		const options = super.defaultOptions
 		return mergeObject(super.defaultOptions, {
@@ -67,8 +69,4 @@ export class WeaponSheet extends ItemSheetGURPS {
 		all_buttons.at(-1)!.icon = "gcs-circled-x"
 		return all_buttons
 	}
-}
-
-export interface WeaponSheet extends ItemSheetGURPS {
-	object: WeaponGURPS
 }

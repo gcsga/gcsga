@@ -25,6 +25,7 @@ import { CondMod } from "@module/conditional_modifier"
 import {
 	attrPrefix,
 	CRAdjustment,
+	DamageProgression,
 	EFFECT_ACTION,
 	gid,
 	ItemType,
@@ -80,7 +81,11 @@ import {
 } from "@feature"
 import { SkillBonusSelectionType } from "@feature/skill_bonus"
 
-class CharacterGURPS extends BaseActorGURPS {
+export class CharacterGURPS extends BaseActorGURPS {
+	system!: CharacterSystemData
+
+	_source!: CharacterSource
+
 	attributes: Map<string, Attribute> = new Map()
 
 	private _prevAttributes: Map<string, Attribute> = new Map()
@@ -526,7 +531,9 @@ class CharacterGURPS extends BaseActorGURPS {
 	// Returns Basic Lift in pounds
 	get basicLift(): number {
 		const ST = this.attributes.get(gid.Strength)?._effective(this.calc?.lifting_st_bonus ?? 0) || 0
-		const basicLift = ST ** 2 / 5
+		let basicLift = ST ** 2 / 5
+		if (this.settings.damage_progression === DamageProgression.KnowingYourOwnStrength)
+			basicLift = round(2 * 10 ** (ST / 10), 1)
 		if (basicLift === Infinity || basicLift === -Infinity) return 0
 		if (basicLift >= 10) return Math.round(basicLift)
 		return basicLift
@@ -729,15 +736,15 @@ class CharacterGURPS extends BaseActorGURPS {
 
 	// Flat list of all hit locations
 	get HitLocations(): HitLocation[] {
-		const recurseLocations = function (locations: HitLocation[] = [], table: HitLocationTable): HitLocation[] {
+		const recurseLocations = function(table: HitLocationTable, locations: HitLocation[] = [],): HitLocation[] {
 			table.locations.forEach(e => {
 				locations.push(e)
-				if (e.subTable) locations = recurseLocations(locations, e.subTable)
+				if (e.subTable) locations = recurseLocations(e.subTable, locations)
 			})
 			return locations
 		}
 
-		return recurseLocations([], this.BodyType)
+		return recurseLocations(this.BodyType, [])
 	}
 
 	// Item Types
@@ -1963,10 +1970,3 @@ class CharacterGURPS extends BaseActorGURPS {
 		return allowed !== false ? this.update(updates) : this
 	}
 }
-
-interface CharacterGURPS extends BaseActorGURPS {
-	system: CharacterSystemData
-	_source: CharacterSource
-}
-
-export { CharacterGURPS }

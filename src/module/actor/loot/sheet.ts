@@ -8,6 +8,10 @@ import EmbeddedCollection from "types/foundry/common/abstract/embedded-collectio
 import { LootGURPS } from "./document"
 
 export class LootSheetGURPS extends ActorSheetGURPS {
+	editing!: boolean
+
+	object!: LootGURPS
+
 	static override get defaultOptions(): ActorSheet.Options {
 		return mergeObject(super.defaultOptions, {
 			classes: super.defaultOptions.classes.concat(["character"]),
@@ -41,7 +45,7 @@ export class LootSheetGURPS extends ActorSheetGURPS {
 		const element = $(event.currentTarget)
 		const type = element.parent(".item-list")[0].id
 		const ctx = new ContextMenu(html, ".menu", [])
-		ctx.menuItems = (function (self: LootSheetGURPS): ContextMenuEntry[] {
+		ctx.menuItems = (function(self: LootSheetGURPS): ContextMenuEntry[] {
 			switch (type) {
 				case "equipment":
 					return [
@@ -400,9 +404,4 @@ export class LootSheetGURPS extends ActorSheetGURPS {
 		const all_buttons = [...buttons, ...super._getHeaderButtons()]
 		return all_buttons
 	}
-}
-
-export interface LootSheetGURPS extends ActorSheetGURPS {
-	editing: boolean
-	object: LootGURPS
 }

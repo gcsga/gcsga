@@ -10,7 +10,9 @@ import { HandlebarsHelpersGURPS } from "@util/handlebars_helpers"
 import { WeaponDamage } from "./damage"
 import { BaseWeaponSystemData } from "./data"
 
-class BaseWeaponGURPS extends BaseItemGURPS {
+export class BaseWeaponGURPS extends BaseItemGURPS {
+	readonly system!: BaseWeaponSystemData
+
 	get itemName(): string {
 		if (this.container instanceof Item) return this.container?.name ?? ""
 		return ""
@@ -238,9 +240,3 @@ class BaseWeaponGURPS extends BaseItemGURPS {
 		return system
 	}
 }
-
-interface BaseWeaponGURPS extends BaseItemGURPS {
-	readonly system: BaseWeaponSystemData
-}
-
-export { BaseWeaponGURPS }

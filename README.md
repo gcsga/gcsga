@@ -59,8 +59,14 @@ with the following content:
 }
 ```
 
-(if you are using Windows, make sure to use `\` as a path separator instead of
-`/`)
+If you are using Windows, make sure to use `\\` as a path separator instead of
+`/`:
+
+```
+{
+  "dataPath": "c:\\absolute\\path\\to\\your\\FoundryVTT\\"
+}
+```
 
 Then run
 

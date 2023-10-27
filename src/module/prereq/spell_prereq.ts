@@ -12,13 +12,13 @@ export enum SpellPrereqSubType {
 	Tag = "tag",
 }
 
-export interface SpellPrereq extends BasePrereq {
-	quantity: NumberCompare
-	sub_type: SpellPrereqSubType
-	qualifier: StringCompare
-}
-
 export class SpellPrereq extends BasePrereq {
+	quantity!: NumberCompare
+
+	sub_type!: SpellPrereqSubType
+
+	qualifier!: StringCompare
+
 	constructor(data: SpellPrereq | any, context: PrereqConstructionContext = {}) {
 		data = mergeObject(SpellPrereq.defaults, data)
 		super(data, context)
@@ -43,46 +43,50 @@ export class SpellPrereq extends BasePrereq {
 			if (exclude === sp || sp.points === 0) continue
 			if (tech_level && (sp as any).techLevel && tech_level !== (sp as any).techLevel) continue
 			switch (this.sub_type) {
-				case "name":
+				case SpellPrereqSubType.Name:
 					if (stringCompare(sp.name, this.qualifier)) count++
 					continue
-				case "tag":
+				case SpellPrereqSubType.Tag:
 					if (stringCompare(sp.tags, this.qualifier)) count++
 					break
-				case "college":
+				case SpellPrereqSubType.College:
 					if (stringCompare((sp as any).college, this.qualifier)) count++
 					break
-				case "college_count":
+				case SpellPrereqSubType.CollegeCount:
 					for (const c of (sp as any).college) colleges.set(c, true)
 					break
-				case "any":
+				case SpellPrereqSubType.Any:
 					count++
 					break
 			}
 		}
-		if (this.sub_type === "college_count") count = colleges.entries.length
+		if (this.sub_type === SpellPrereqSubType.CollegeCount) count = colleges.entries.length
 		let satisfied = numberCompare(count, this.quantity)
 		if (!this.has) satisfied = !satisfied
 		if (!satisfied) {
 			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.has[this.has ? "true" : "false"])
-			if (this.sub_type === "college_count") {
+			if (this.sub_type === SpellPrereqSubType.CollegeCount) {
 				tooltip.push(LocalizeGURPS.translations.gurps.prereqs.spell.college_count)
 				tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.quantity.compare])
 				tooltip.push(this.quantity.qualifier.toString())
 			} else {
-				if (this.sub_type === "any") tooltip.push(LocalizeGURPS.translations.gurps.prereqs.spell.any)
+				if (this.sub_type === SpellPrereqSubType.Any)
+					tooltip.push(LocalizeGURPS.translations.gurps.prereqs.spell.any)
 				else tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.quantity.compare])
 				tooltip.push(`${this.quantity.qualifier} `)
 				if (this.quantity?.qualifier === 1) tooltip.push(LocalizeGURPS.translations.gurps.prereqs.spell.one)
 				else tooltip.push(LocalizeGURPS.translations.gurps.prereqs.spell.many)
-				if (this.sub_type === "any") tooltip.push(LocalizeGURPS.translations.gurps.prereqs.spell.any)
+				if (this.sub_type === SpellPrereqSubType.Any)
+					tooltip.push(LocalizeGURPS.translations.gurps.prereqs.spell.any)
 				else {
-					if (this.sub_type === "name") tooltip.push(LocalizeGURPS.translations.gurps.prereqs.spell.name)
-					else if (this.sub_type === "tag") tooltip.push(LocalizeGURPS.translations.gurps.prereqs.spell.tag)
-					else if (this.sub_type === "college")
+					if (this.sub_type === SpellPrereqSubType.Name)
+						tooltip.push(LocalizeGURPS.translations.gurps.prereqs.spell.name)
+					else if (this.sub_type === SpellPrereqSubType.Tag)
+						tooltip.push(LocalizeGURPS.translations.gurps.prereqs.spell.tag)
+					else if (this.sub_type === SpellPrereqSubType.College)
 						tooltip.push(LocalizeGURPS.translations.gurps.prereqs.spell.college)
 					tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.qualifier.compare])
-					if (this.qualifier.compare !== "none") tooltip.push(`"${this.qualifier.qualifier}"`)
+					if (this.qualifier?.compare !== StringComparison.None) tooltip.push(`"${this.qualifier.qualifier}"`)
 				}
 			}
 		}

@@ -1,10 +1,8 @@
 import { ItemGCS } from "@item/gcs"
 import { TraitModifierAffects, TraitModifierCostType, TraitModifierData } from "./data"
 
-class TraitModifierGURPS extends ItemGCS {
-	// Static get schema(): typeof TraitModifierData {
-	// 	return TraitModifierData;
-	// }
+export class TraitModifierGURPS extends ItemGCS {
+	readonly system!: TraitModifierData
 
 	prepareBaseData() {
 		super.prepareBaseData()
@@ -64,8 +62,3 @@ class TraitModifierGURPS extends ItemGCS {
 		return this.costType === "percentage" && this.levels > 0
 	}
 }
-interface TraitModifierGURPS {
-	readonly system: TraitModifierData
-}
-
-export { TraitModifierGURPS }

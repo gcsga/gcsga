@@ -3,6 +3,14 @@ import { BaseFeature } from "./base"
 import { FeatureType } from "./data"
 
 export class SkillBonus extends BaseFeature {
+	selection_type!: SkillBonusSelectionType
+
+	name?: StringCompare
+
+	specialization?: StringCompare
+
+	tags?: StringCompare
+
 	static get defaults(): Record<string, any> {
 		return mergeObject(super.defaults, {
 			type: FeatureType.SkillBonus,
@@ -12,13 +20,6 @@ export class SkillBonus extends BaseFeature {
 			tags: { compare: StringComparison.None, qualifier: "" },
 		})
 	}
-}
-
-export interface SkillBonus extends BaseFeature {
-	selection_type: SkillBonusSelectionType
-	name?: StringCompare
-	specialization?: StringCompare
-	tags?: StringCompare
 }
 
 export enum SkillBonusSelectionType {

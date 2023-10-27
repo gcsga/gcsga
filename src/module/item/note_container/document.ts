@@ -1,7 +1,9 @@
 import { ContainerGURPS } from "@item/container"
 import { NoteContainerData } from "./data"
 
-class NoteContainerGURPS extends ContainerGURPS {
+export class NoteContainerGURPS extends ContainerGURPS {
+	readonly system!: NoteContainerData
+
 	get formattedName(): string {
 		return this.formattedText
 	}
@@ -23,9 +25,3 @@ class NoteContainerGURPS extends ContainerGURPS {
 		return this.system.reference
 	}
 }
-
-interface NoteContainerGURPS {
-	readonly system: NoteContainerData
-}
-
-export { NoteContainerGURPS }

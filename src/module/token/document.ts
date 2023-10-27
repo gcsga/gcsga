@@ -1,7 +1,11 @@
 import { BaseActorGURPS, CharacterGURPS } from "@actor"
 import { ConditionID } from "@item/condition"
 
-class TokenDocumentGURPS extends TokenDocument {
+export class TokenDocumentGURPS extends TokenDocument {
+	sort!: number
+
+	overlayEffect: any
+
 	hasStatusEffect(statusId: ConditionID): boolean {
 		if (statusId === ConditionID.Dead) return this.overlayEffect === CONFIG.controlIcons.defeated
 		const { actor } = this
@@ -50,10 +54,3 @@ class TokenDocumentGURPS extends TokenDocument {
 		return null
 	}
 }
-
-interface TokenDocumentGURPS extends TokenDocument {
-	overlayEffect: any
-	sort: number
-}
-
-export { TokenDocumentGURPS }

@@ -1,10 +1,8 @@
 import { BaseActorGURPS } from "@actor/base"
 import { ConditionGURPS, EffectID, ManeuverID, Postures } from "@item"
-// Import { ActorFlags } from "@actor/base/data"
 import { StaticItemGURPS } from "@item/static"
 import { StaticItemSystemData } from "@item/static/data"
 import { SETTINGS, SYSTEM_NAME } from "@module/data"
-// Import { RollModifier } from "@module/data"
 import { LocalizeGURPS, newUUID, Static } from "@util"
 import { ActorDataConstructorData } from "types/foundry/common/data/data.mjs/actorData"
 import { MergeObjectOptions } from "types/foundry/common/utils/helpers.mjs"
@@ -23,14 +21,18 @@ import {
 } from "./data"
 import { StaticCharacterImporter } from "./import"
 
-Hooks.on("createActor", async function (actor: StaticCharacterGURPS) {
+Hooks.on("createActor", async function(actor: StaticCharacterGURPS) {
 	if (actor.type === "character")
 		await actor.update({
 			"_stats.systemVersion": game.system.version,
 		})
 })
 
-class StaticCharacterGURPS extends BaseActorGURPS {
+export class StaticCharacterGURPS extends BaseActorGURPS {
+	system!: StaticCharacterSystemData
+
+	_source!: StaticCharacterSource
+
 	update(
 		data?: DeepPartial<ActorDataConstructorData | (ActorDataConstructorData & Record<string, unknown>)> | undefined,
 		context?: (DocumentModificationContext & MergeObjectOptions) | undefined
@@ -53,21 +55,6 @@ class StaticCharacterGURPS extends BaseActorGURPS {
 			path: this.system.additionalresources.importpath,
 			last_import: this.system.lastImport,
 		}
-	}
-
-	get attributes(): Map<string, any> {
-		const atts = new Map()
-		for (const [key, value] of Object.entries(this.system.attributes)) {
-			atts.set(key.toLowerCase(), {
-				attr_id: key.toLowerCase(),
-				current: value.value,
-				points: value.points,
-				attribute_def: {
-					combinedName: game.i18n.localize(`gurps.static.${key.toLowerCase()}`),
-				},
-			})
-		}
-		return atts
 	}
 
 	get dodgeAttribute() {
@@ -182,6 +169,22 @@ class StaticCharacterGURPS extends BaseActorGURPS {
 		}
 
 		this.calculateDerivedValues()
+		this.prepareAttributes()
+	}
+
+	prepareAttributes() {
+		const atts = new Map()
+		for (const [key, value] of Object.entries(this.system.attributes)) {
+			atts.set(key.toLowerCase(), {
+				attr_id: key.toLowerCase(),
+				current: value.value,
+				points: value.points,
+				attribute_def: {
+					combinedName: game.i18n.localize(`gurps.static.${key.toLowerCase()}`),
+				},
+			})
+		}
+		this.attributes = atts
 	}
 
 	// Execute after every import
@@ -976,7 +979,7 @@ class StaticCharacterGURPS extends BaseActorGURPS {
 		newobj[objkey] = oldotf
 		let notes
 		let newotf
-		;[notes, newotf] = this._removeOtf(otfkey, newobj.notes || "")
+			;[notes, newotf] = this._removeOtf(otfkey, newobj.notes || "")
 		if (newotf) newobj[objkey] = newotf
 		newobj.notes = notes?.trim()
 	}
@@ -1115,10 +1118,3 @@ class StaticCharacterGURPS extends BaseActorGURPS {
 		return allowed !== false ? this.update(updates) : this
 	}
 }
-
-interface StaticCharacterGURPS extends BaseActorGURPS {
-	system: StaticCharacterSystemData
-	_source: StaticCharacterSource
-}
-
-export { StaticCharacterGURPS }

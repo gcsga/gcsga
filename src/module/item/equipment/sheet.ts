@@ -2,8 +2,11 @@ import { EquipmentContainerGURPS } from "@item/equipment_container"
 import { ItemSheetGCS } from "@item/gcs"
 import { ItemType, SYSTEM_NAME } from "@module/data"
 import { EquipmentGURPS } from "./document"
+import { Weight, WeightUnits, allWeightUnits } from "@util"
 
 export class EquipmentSheet extends ItemSheetGCS {
+	object!: EquipmentGURPS | EquipmentContainerGURPS
+
 	static get defaultOptions(): DocumentSheetOptions<Item> {
 		const options = super.defaultOptions
 		mergeObject(options, {
@@ -22,12 +25,18 @@ export class EquipmentSheet extends ItemSheetGCS {
 		return mergeObject(data, {
 			modifiers: this.object.modifiers,
 			meleeWeapons: data.items.filter((e: any) => e.type === ItemType.MeleeWeapon),
-			// meleeWeapons: this.object.meleeWeapons,
-			// rangedWeapons: this.object.rangedWeapons,
 		})
 	}
-}
 
-export interface EquipmentSheet extends ItemSheetGCS {
-	object: EquipmentGURPS | EquipmentContainerGURPS
+	protected _updateObject(event: Event, formData: Record<string, any>): Promise<unknown> {
+		const weight: string = formData["system.weight"]
+		let weightFormat: WeightUnits = this.object.actor.settings.default_weight_units
+		allWeightUnits.forEach(u => {
+			if (weight.includes(u)) weightFormat = u
+		})
+		const weightPounds = Weight.fromString(`${parseFloat(weight)} ${weightFormat}`)
+		formData["system.weight"] = Weight.format(weightPounds, weightFormat)
+
+		return super._updateObject(event, formData)
+	}
 }

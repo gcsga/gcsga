@@ -12,6 +12,24 @@ import { SkillDefault } from "@module/default"
 import { ContainerGURPS } from "@item/container"
 
 export class WeaponDamage {
+	parent!: BaseWeaponGURPS
+
+	type: string
+
+	st: StrengthDamage
+
+	base!: DiceGURPS
+
+	armor_divisor: number
+
+	fragmentation!: DiceGURPS
+
+	fragmentation_armor_divisor: number
+
+	fragmentation_type: string
+
+	modifier_per_die: number
+
 	constructor(data?: WeaponDamage | any) {
 		this.type = ""
 		this.st = StrengthDamage.None
@@ -40,9 +58,8 @@ export class WeaponDamage {
 			if (this.armor_divisor !== 1) buffer += `(${this.armor_divisor})`
 			if (this.modifier_per_die !== 0) {
 				if (buffer.length !== 0) buffer += " "
-				buffer += `(${this.modifier_per_die.signedString()} ${
-					LocalizeGURPS.translations.gurps.feature.per_die
-				})`
+				buffer += `(${this.modifier_per_die.signedString()} ${LocalizeGURPS.translations.gurps.feature.per_die
+					})`
 			}
 			const t = this.type.trim()
 			if (t !== "") buffer += ` ${t}`
@@ -131,7 +148,7 @@ export class WeaponDamage {
 		const nameQualifier = this.parent.name || ""
 		actor.addNamedWeaponBonusesFor(nameQualifier, this.parent.usage, tags, base.count, levels, tooltip, bonusSet)
 		if (container instanceof Item)
-			for (const f of (container as any)?.features) {
+			for (const f of (container as any).features) {
 				this.extractWeaponBonus(f, bonusSet, base.count, levels, tooltip)
 			}
 		if ([ItemType.Trait, ItemType.Equipment, ItemType.EquipmentContainer].includes(container.type as any)) {
@@ -412,16 +429,4 @@ function adjustDiceForPercentBonus(d: DiceGURPS, percent: number): DiceGURPS {
 		modifier: modifier,
 		multiplier: d.multiplier,
 	})
-}
-
-export interface WeaponDamage {
-	parent: BaseWeaponGURPS
-	type: string
-	st: StrengthDamage
-	base: DiceGURPS
-	armor_divisor: number
-	fragmentation: DiceGURPS
-	fragmentation_armor_divisor: number
-	fragmentation_type: string
-	modifier_per_die: number
 }

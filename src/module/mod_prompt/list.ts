@@ -2,6 +2,14 @@ import { RollModifier, SYSTEM_NAME, UserFlags } from "@module/data"
 import { ModifierWindow } from "./window"
 
 export class ModifierList extends Application {
+	mods: RollModifier[]
+
+	customMod: RollModifier | null
+
+	selection: number
+
+	window: ModifierWindow
+
 	constructor(window: ModifierWindow, list: any[], options = {}) {
 		super(options)
 
@@ -74,11 +82,4 @@ export class ModifierList extends Application {
 			selection: this.selection,
 		})
 	}
-}
-
-export interface ModifierList extends Application {
-	mods: RollModifier[]
-	customMod: RollModifier | null
-	selection: number
-	window: ModifierWindow
 }

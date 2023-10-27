@@ -68,6 +68,8 @@
 			{{/select}}
 		</select>
 	</div>
+	<div><i>{{{localize (concat "gurps.select.damage_progression_comment." system.settings.damage_progression)}}}</i></div>
+	<hr />
 	{{#unless actor}}
 		<label class="label checkbox-label">
 			<input type="checkbox" name="populate_description" data-dtype="Boolean" {{checked populate_description}} />

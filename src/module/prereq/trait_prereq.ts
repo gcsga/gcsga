@@ -5,6 +5,12 @@ import { LocalizeGURPS, numberCompare, stringCompare } from "@util"
 import { BasePrereq, PrereqConstructionContext } from "./base"
 
 export class TraitPrereq extends BasePrereq {
+	name!: StringCompare
+
+	level!: NumberCompare
+
+	notes!: StringCompare
+
 	constructor(data: TraitPrereq | any, context: PrereqConstructionContext = {}) {
 		data = mergeObject(TraitPrereq.defaults, data)
 		super(data, context)
@@ -34,24 +40,18 @@ export class TraitPrereq extends BasePrereq {
 		if (!satisfied) {
 			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.has[this.has ? "true" : "false"])
 			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.trait.name)
-			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.name?.compare])
-			if (this.name?.compare !== "none") tooltip.push(`"${this.name!.qualifier!}"`)
-			if (this.notes?.compare !== "none") {
+			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.name.compare])
+			if (this.name.compare !== "none") tooltip.push(`"${this.name.qualifier!}"`)
+			if (this.notes.compare !== "none") {
 				tooltip.push(LocalizeGURPS.translations.gurps.prereqs.trait.notes)
-				tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.notes?.compare])
+				tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.notes.compare])
 				tooltip.push(`"${this.notes.qualifier!}"`)
 			}
 
 			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.trait.level)
-			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.level?.compare])
-			if (this.level?.compare !== "none") tooltip.push(((this.level ? this.level.qualifier : 0) ?? 0).toString())
+			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.level.compare])
+			if (this.level.compare !== "none") tooltip.push(((this.level ? this.level.qualifier : 0) ?? 0).toString())
 		}
 		return [satisfied, false]
 	}
-}
-
-export interface TraitPrereq extends BasePrereq {
-	name: StringCompare
-	level: NumberCompare
-	notes: StringCompare
 }
