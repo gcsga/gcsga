@@ -22,6 +22,7 @@ import rollupConfig from "./rollup.config.mjs"
 /** ******************/
 
 const packageId = "gurps"
+const systemId = "gcsga"
 const sourceDirectory = "./src"
 const distDirectory = "./dist"
 const stylesDirectory = `${sourceDirectory}/styles`
@@ -150,7 +151,7 @@ export async function link() {
 	}
 
 	const linkDirectories = getDataPaths().map(dataPath =>
-		path.resolve(dataPath, "Data", destinationDirectory, packageId)
+		path.resolve(dataPath, "Data", destinationDirectory, systemId)
 	)
 
 	const argv = yargs(hideBin(process.argv)).option("clean", {
