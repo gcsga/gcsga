@@ -32,9 +32,7 @@
 					data-type="damage"
 					class="damage rollable"
 				>
-					<i class="fa-light fa-dice"></i>
-					{{localize "gurps.dmgcalc.damage"}}
-					{{extra.damage.damage}}
+					<i class="fa-light fa-dice"></i>&nbsp;{{extra.damage.damage}}
 				</div>
 				{{#if extra.ranged}}
 					<div
@@ -44,7 +42,7 @@
 						data-times="{{extra.ranged.potential_hits}}"
 						class="damage rollable"
 					>
-						&times;{{extra.ranged.potential_hits}}
+						&minus;&nbsp;{{extra.ranged.potential_hits}}&nbsp;&plus;
 					</div>
 				{{/if}}
 			</div>
