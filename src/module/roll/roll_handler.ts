@@ -401,6 +401,8 @@ class AttackRollTypeHandler extends RollTypeHandler {
 	}
 
 	override getExtraData(data: ChatData): any {
+		if (data.success === RollSuccess.Failure) return null
+
 		let extra = {}
 
 		// If Ranged, add number of potential hits if greater than one.
