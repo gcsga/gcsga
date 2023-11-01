@@ -19,12 +19,13 @@
 	{{/if}}
 	<hr />
 	<div class="dice-result">
-		<div class="dice-total failure" draggable="true">{{localize
-				"gurps.roll.damage"
-				total=total
-				type=damageType
-			}}</div>
-		{{{margin}}}
-		{{{tooltip}}}
+		{{#each damageRoll}}
+			<div class="dice-total failure" draggable="true">{{localize
+					"gurps.roll.damage"
+					total=total
+					type=../damageType
+				}}</div>
+			{{{tooltip}}}
+		{{/each}}
 	</div>
 </div>

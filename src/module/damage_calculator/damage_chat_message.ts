@@ -9,22 +9,25 @@ export enum DamageChatFlags {
 	Transfer = "transfer",
 }
 
-export type DamagePayload = {
+export type DamageRoll = {
+	total: number
+	tooltip: any
 	hitlocation: string
+}
+
+export type DamagePayload = {
+	name: string
+	uuid: string
 	attacker: string
 	weaponID: string
-	uuid: string
-	name: string
 	damage: string
 	dice: DiceGURPS
-	modifiers: Array<RollModifier & { class?: string }>
-	total: number
 	damageType: string
 	armorDivisor: number
 	damageModifier: string
-	rolls: { result: number; word: string }[]
+	damageRoll: DamageRoll[]
+	modifiers: Array<RollModifier & { class?: string }>
 	modifierTotal: number
-	tooltip: any
 }
 
 type DropData = { type: string; x: number; y: number; payload: DamagePayload }
@@ -45,7 +48,7 @@ export class DamageChat {
 		let transfer = JSON.parse(DamageChat.getTransferFlag(app))
 		let payload = transfer.payload as DamagePayload
 
-		payload.damageType = payload.damageType ? payload.damageType : "injury"
+		payload.damageType = payload.damageType ?? "injury"
 
 		const dragSections = html.find(".dice-result")
 		for (const section of dragSections) {
