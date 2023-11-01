@@ -1,5 +1,7 @@
 import { DamageRollGURPS } from "@module/roll/damage_roll"
 
+
+
 describe("Damage Roll tests", () => {
 	describe("sanitize", () => {
 		it("3d imp", () => {
@@ -119,7 +121,7 @@ describe("Damage Roll tests", () => {
 			expect(roll.displayString).toBe("3d–2×5 (2) pi+ ex")
 		})
 
-		it("3d-2x5(2)injuryex", () => {
+		it("3d-2x5(2)injury ex", () => {
 			const roll = new DamageRollGURPS("3d-2x5(2)injuryex")
 			expect(roll.displayString).toBe("3d–2×5 (2) injury ex")
 		})

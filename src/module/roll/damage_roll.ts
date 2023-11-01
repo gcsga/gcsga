@@ -14,7 +14,8 @@ export class DamageRollGURPS {
 
 	readonly groups: { [key: string]: string }
 
-	readonly roll: Roll
+	// Lazily evaluated to allow testing of this class outside of Foundry.
+	private _roll: Roll | undefined = undefined
 
 	private _evaluatedRoll: Evaluated<Roll> | undefined
 
@@ -24,11 +25,15 @@ export class DamageRollGURPS {
 		if (!groups) throw new Error("Bad damage term")
 		this.text = text
 		this.groups = groups
-		this.roll = new Roll(this.rollFormula)
 	}
 
 	get dice(): DiceGURPS {
 		return new DiceGURPS(this.rollFormula)
+	}
+
+	get roll(): Roll {
+		if (!this._roll) this._roll = new Roll(this.rollFormula)
+		return this._roll
 	}
 
 	get rollFormula(): string {
@@ -69,11 +74,14 @@ export class DamageRollGURPS {
 	}
 
 	get total(): number | undefined {
-		return this.roll.total
+		if (!this._roll) this._roll = new Roll(this.rollFormula)
+
+		return this._roll.total
 	}
 
 	async evaluate() {
-		this._evaluatedRoll = await this.roll.evaluate({ async: true })
+		if (!this._roll) this._roll = new Roll(this.rollFormula)
+		this._evaluatedRoll = await this._roll.evaluate({ async: true })
 	}
 
 	async getTooltip(): Promise<unknown> {
