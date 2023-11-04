@@ -16,6 +16,7 @@ export type DamageRoll = {
 }
 
 export type DamagePayload = {
+	index: number
 	name: string
 	uuid: string
 	attacker: string
@@ -50,12 +51,20 @@ export class DamageChat {
 
 		payload.damageType = payload.damageType ?? "injury"
 
-		const dragSections = html.find(".dice-result")
-		for (const section of dragSections) {
-			// Section.setAttribute("draggable", "true")
+		// in the new world, I want to add event listeners to ".dice-total" divs
+		// const dragSections = html.find(".dice-result")
+		// for (const section of dragSections) {
+		// 	// Section.setAttribute("draggable", "true")
+		// 	section.addEventListener("dragstart", DamageChat._dragStart.bind(this, payload))
+		// 	section.addEventListener("dragend", DamageChat._dragEnd)
+		// }
+
+		const dragSectionss = html.find(".dice-total")
+		for (const section of dragSectionss) {
 			section.addEventListener("dragstart", DamageChat._dragStart.bind(this, payload))
-			section.addEventListener("dragend", DamageChat._dragEnd)
+			section.addEventListener("dragend", DamageChat._dragEnd.bind(this))
 		}
+
 		return false
 	}
 
@@ -71,6 +80,7 @@ export class DamageChat {
 	}
 
 	static async _dragStart(payload: DamagePayload, event: DragEvent) {
+		payload.index = parseInt((event.currentTarget! as any).dataset.index)
 		DnD.setDragData(event, DamageChat.TYPE, payload, DnD.TEXT_PLAIN)
 	}
 

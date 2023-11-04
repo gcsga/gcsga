@@ -1,7 +1,5 @@
 import { DamageRollGURPS } from "@module/roll/damage_roll"
 
-
-
 describe("Damage Roll tests", () => {
 	describe("sanitize", () => {
 		it("3d imp", () => {

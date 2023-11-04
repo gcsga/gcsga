@@ -133,7 +133,7 @@ class DamageRollAdapter implements DamageRoll {
 	}
 
 	get basicDamage(): number {
-		return this._payload.damageRoll[0].total
+		return this._payload.damageRoll[this._payload.index].total
 	}
 
 	get armorDivisor(): number {
