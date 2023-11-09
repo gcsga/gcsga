@@ -536,6 +536,7 @@ export function registerHandlebarsHelpers() {
 		staticSpellValues: HandlebarsHelpersGURPS.staticSpellValues,
 		adjustedStudyHours: HandlebarsHelpersGURPS.adjustedStudyHours,
 		studyinfo: HandlebarsHelpersGURPS.studyinfo,
+		diff: (v1, v2) => v1 - v2,
 		// Multiselect: HandlebarsHelpersGURPS.multiselect
 	})
 }
