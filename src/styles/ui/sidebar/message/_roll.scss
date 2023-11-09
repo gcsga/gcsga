@@ -128,7 +128,6 @@
 
 		.dice-result {
 			width: 100%;
-			display: inline-grid;
 
 			.damage-buttons {
 				display: flex;
@@ -248,6 +247,17 @@
 	}
 
 	&.damage {
+		.dice-result {
+			display: inline-grid;
+			grid-auto-rows: 7px;
+			padding-bottom: 25px;
+
+			&.expanded {
+				grid-auto-rows: auto !important;
+				padding-bottom: 0;
+			}
+		}
+
 		.modifiers {
 			margin-bottom: 5px;
 		}

@@ -43,7 +43,7 @@ export class DamageChat {
 	 * object.
 	 */
 	static async renderChatMessage(app: ChatMessage, html: JQuery<HTMLElement>, msg: any) {
-		// TODO use a way to identify elements not tied to their appearance (data attributes, for example).
+		// TODO Find a way to identify elements not tied to their appearance (data attributes, for example).
 		if (!html.find(".dice-roll.damage").length) return true
 
 		let transfer = JSON.parse(DamageChat.getTransferFlag(app))
@@ -51,19 +51,13 @@ export class DamageChat {
 
 		payload.damageType = payload.damageType ?? "injury"
 
-		// in the new world, I want to add event listeners to ".dice-total" divs
-		// const dragSections = html.find(".dice-result")
-		// for (const section of dragSections) {
-		// 	// Section.setAttribute("draggable", "true")
-		// 	section.addEventListener("dragstart", DamageChat._dragStart.bind(this, payload))
-		// 	section.addEventListener("dragend", DamageChat._dragEnd)
-		// }
-
-		const dragSectionss = html.find(".dice-total")
-		for (const section of dragSectionss) {
+		const dragSections = html.find(".dice-total")
+		for (const section of dragSections) {
 			section.addEventListener("dragstart", DamageChat._dragStart.bind(this, payload))
 			section.addEventListener("dragend", DamageChat._dragEnd.bind(this))
 		}
+
+		html.find(".dice-result").on("click", event => DamageChat._clickOnDiceResults(event))
 
 		return false
 	}
@@ -73,7 +67,6 @@ export class DamageChat {
 	}
 
 	static setTransferFlag(object: any, payload: Partial<DamagePayload>, userTarget: string) {
-		console.log({ type: DamageChat.TYPE, payload: payload, userTarget: userTarget })
 		let transfer = JSON.stringify({ type: DamageChat.TYPE, payload: payload, userTarget: userTarget })
 		setProperty(object, `flags.${SYSTEM_NAME}.${DamageChatFlags.Transfer}`, transfer)
 		return object
@@ -86,6 +79,23 @@ export class DamageChat {
 
 	static async _dragEnd(ev: DragEvent) {
 		// Add any handling code here.
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
+	static async _clickOnDiceResults(event: JQuery.ClickEvent) {
+		event.preventDefault()
+		event.stopPropagation()
+
+		// Toggle the message flag
+		let roll = $(event.currentTarget)
+		if (roll.hasClass("expanded")) {
+			roll.toggleClass("expanded")
+			roll.animate({ "grid-auto-rows": 7, "padding-bottom": 25 }, 200, "linear")
+		} else {
+			roll.animate({ "grid-auto-rows": 35, "padding-bottom": 0 }, 200, "linear", function () {
+				roll.toggleClass("expanded")
+			})
+		}
 	}
 
 	static async handleDropOnCanvas(canvas: Canvas, dropData: DropData): Promise<void> {
