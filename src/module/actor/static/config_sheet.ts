@@ -6,6 +6,7 @@ import { DnD } from "@util/drag_drop"
 import { StaticCharacterGURPS } from "."
 import { StaticResourceTracker, StaticThresholdComparison, StaticThresholdOperator } from "./data"
 import { StaticCharacterImporter } from "./import"
+import { CharacterConverter } from "./convert"
 
 export class StaticCharacterSheetConfig extends FormApplication {
 	object: StaticCharacterGURPS
@@ -93,11 +94,11 @@ export class StaticCharacterSheetConfig extends FormApplication {
 				if (files) {
 					readTextFromFile(files[0]).then(
 						text =>
-							(this.file = {
-								text: text,
-								name: files[0].name,
-								path: files[0].path,
-							})
+						(this.file = {
+							text: text,
+							name: files[0].name,
+							path: files[0].path,
+						})
 					)
 				}
 				this.render()
@@ -179,6 +180,11 @@ export class StaticCharacterSheetConfig extends FormApplication {
 				actor: this.object.name!,
 			})
 		)
+	}
+
+	protected async _forceConvert(event: JQuery.ClickEvent) {
+		event.preventDefault()
+		CharacterConverter.update(this.object)
 	}
 
 	async _onAddItem(event: JQuery.ClickEvent) {
@@ -290,7 +296,7 @@ export class StaticCharacterSheetConfig extends FormApplication {
 				parent_index: parent_index,
 			})
 		)
-		;(event as any).dragType = type
+			; (event as any).dragType = type
 	}
 
 	protected _onDragItem(event: JQuery.DragOverEvent): void {

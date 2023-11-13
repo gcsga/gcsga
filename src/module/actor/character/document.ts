@@ -1021,7 +1021,7 @@ export class CharacterGURPS extends BaseActorGURPS {
 		for (const tracker_def of defs) {
 			const tracker = new ResourceTracker(this, tracker_def.id, i)
 			t.push({
-				order: tracker.order,
+				// order: tracker.order,
 				tracker_id: tracker.tracker_id,
 				damage: tracker.damage,
 			})
