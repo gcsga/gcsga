@@ -31,8 +31,8 @@ export class ItemImporter {
 		setTimeout(async () => {
 			new Dialog(
 				{
-					title: LocalizeGURPS.translations.gurps.system.library_import.title,
-					content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/library-import.hbs`, {}),
+					title: LocalizeGURPS.translations.gurps.system.library_import.title_item,
+					content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/item-library-import.hbs`, {}),
 					buttons: {
 						import: {
 							icon: '<i class="fas fa-file-import"></i>',
@@ -75,7 +75,7 @@ export class ItemImporter {
 		importer._import(file)
 	}
 
-	async _import(file: { text: string; name: string; path: string }) {
+	private async _import(file: { text: string; name: string; path: string }) {
 		const json = file.text
 		const label = file.name.split(".")[0]
 		const name = label.toLowerCase().replaceAll(" ", "-")
@@ -117,10 +117,10 @@ export class ItemImporter {
 				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.system.library_import.start, { name: name })
 			)
 			let counter = items.length
-			const newItems = await BaseItemGURPS.createDocuments(items as any[], {
-				pack: pack.collection,
-				keepId: true,
-			})
+			// const newItems = await BaseItemGURPS.createDocuments(items as any[], {
+			// 	pack: pack.collection,
+			// 	keepId: true,
+			// })
 			ui.notifications?.info(
 				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.system.library_import.finished, {
 					number: counter,
