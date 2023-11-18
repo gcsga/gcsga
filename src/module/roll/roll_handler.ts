@@ -381,6 +381,7 @@ class AttackRollTypeHandler extends RollTypeHandler {
 	override getLevel(data: RollTypeData): any {
 		// TODO If data.item.skillLevel is a function, call it with null as the argument;
 		// otherwise, just return the value.
+		console.log(data)
 		if (typeof data.item.skillLevel === "function") return data.item.skillLevel(null)
 		else return data.item.skillLevel
 	}
