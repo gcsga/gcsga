@@ -3,7 +3,6 @@ import { sanitizeId, VariableResolver } from "@util"
 import { ResourceTrackerDefObj } from "./data"
 
 export class ResourceTrackerDef {
-	// Def_id = ""
 	_id = ""
 
 	name = ""

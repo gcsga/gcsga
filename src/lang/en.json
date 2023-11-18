@@ -1197,8 +1197,12 @@
 				"cost": "*Cost {value}{id}"
 			},
 			"library_import": {
-				"button": "Import GCS Library",
-				"title": "Import GCS Library",
+				"button_character": "Import GCS Character Library",
+				"button_item": "Import GCS Item Library",
+				"title_character": "Import GCS Character Library",
+				"title_item": "Import GCS Item Library",
+				"file_picker_single": "Select a GCS library file",
+				"source_data": "Source Data",
 				"import": "Import",
 				"cancel": "Cancel",
 				"start": "Importing library: {name}",

@@ -1,4 +1,5 @@
 import { DiceGURPS } from "@module/dice"
+import { Evaluated } from "types/foundry/client/dice/roll"
 
 export const DamageRegEx =
 	// eslint-disable-next-line max-len
@@ -13,6 +14,11 @@ export class DamageRollGURPS {
 
 	readonly groups: { [key: string]: string }
 
+	// Lazily evaluated to allow testing of this class outside of Foundry.
+	private _roll: Roll | undefined = undefined
+
+	private _evaluatedRoll: Evaluated<Roll> | undefined
+
 	constructor(text: string) {
 		// console.log(text)
 		const groups = text.match(DamageRegEx)?.groups
@@ -21,13 +27,13 @@ export class DamageRollGURPS {
 		this.groups = groups
 	}
 
-	get roll(): Roll {
-		const formula = this.rollFormula
-		return new Roll(formula)
-	}
-
 	get dice(): DiceGURPS {
 		return new DiceGURPS(this.rollFormula)
+	}
+
+	get roll(): Roll {
+		if (!this._roll) this._roll = new Roll(this.rollFormula)
+		return this._roll
 	}
 
 	get rollFormula(): string {
@@ -65,5 +71,24 @@ export class DamageRollGURPS {
 
 	get damageModifier(): string {
 		return this.groups.ex
+	}
+
+	get total(): number | undefined {
+		if (!this._roll) this._roll = new Roll(this.rollFormula)
+
+		return this._roll.total
+	}
+
+	async evaluate() {
+		if (!this._roll) this._roll = new Roll(this.rollFormula)
+		this._evaluatedRoll = await this._roll.evaluate({ async: true })
+	}
+
+	async getTooltip(): Promise<unknown> {
+		return await this._evaluatedRoll!.getTooltip()
+	}
+
+	get stringified(): string {
+		return JSON.stringify(this._evaluatedRoll!)
 	}
 }

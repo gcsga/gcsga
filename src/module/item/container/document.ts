@@ -106,14 +106,13 @@ export abstract class ContainerGURPS extends BaseItemGURPS {
 				this.items.set(item.id!, item)
 			}
 		} else if (this.pack) {
-			// container = await this.compendium.getIndex({ fields: ["flags"] })
+			if (!this.compendium.indexed) this.compendium.getIndex()
 			container = this.compendium.index
 			for (const i of container.filter(
 				(e: any) =>
 					!!e.flags?.[SYSTEM_NAME]?.[ItemFlags.Container] &&
 					e.flags[SYSTEM_NAME][ItemFlags.Container] === this.id
 			)) {
-				// const item = await this.compendium.getDocument(i._id)
 				const item = fromUuidSync(i.uuid) as BaseItemGURPS
 				this.items.set(item._id, item)
 			}

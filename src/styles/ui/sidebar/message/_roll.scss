@@ -1,5 +1,4 @@
 .dice-roll {
-
 	&.attack,
 	&.attribute,
 	&.damage,
@@ -11,7 +10,7 @@
 		align-items: center;
 		text-align: center;
 
-		>hr {
+		> hr {
 			border-color: rgb(var(--color-divider));
 			height: 1px;
 			width: 90%;
@@ -151,13 +150,12 @@
 				font-size: var(--font-size-16);
 				cursor: pointer;
 
-				&.hits>div {
+				&.hits > div {
 					padding: 0;
 					border: 0px solid;
 					min-width: 1em;
 					padding: 0 9px;
 				}
-
 
 				&.hits {
 					display: flex;
@@ -173,7 +171,7 @@
 					}
 				}
 
-				&.hits>div:hover,
+				&.hits > div:hover,
 				.rollable:hover,
 				&.rollable:hover {
 					cursor: pointer;
@@ -191,18 +189,16 @@
 		.dice-total {
 			font-size: var(--font-size-20);
 			font-weight: bold;
-			// margin: 0 30px;
 			margin: auto;
 			width: min-content;
 			padding: 0 5px;
 			margin-bottom: 5px;
 			white-space: nowrap;
 			text-align: center;
-			/* color: white; */
 			background-color: white;
 			border: 2px solid;
-			/* border-color: rgb(var(--color-header)); */
 			border-radius: 5px;
+			box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2);
 
 			&.critical_success {
 				color: rgb(var(--color-critical-success));
@@ -249,6 +245,17 @@
 	}
 
 	&.damage {
+		.dice-result {
+			display: inline-grid;
+			grid-auto-rows: 7px;
+			padding-bottom: 25px;
+
+			&.expanded {
+				grid-auto-rows: auto !important;
+				padding-bottom: 0;
+			}
+		}
+
 		.modifiers {
 			margin-bottom: 5px;
 		}
@@ -289,7 +296,6 @@
 		margin-left: auto;
 		margin-right: auto;
 		max-width: 100%;
-		width: fit-content;
 		background: white;
 		border: 2px solid;
 		border-radius: 5px;

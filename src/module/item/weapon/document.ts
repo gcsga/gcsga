@@ -18,6 +18,10 @@ export class BaseWeaponGURPS extends BaseItemGURPS {
 		return ""
 	}
 
+	get formattedName(): string {
+		return this.system.usage
+	}
+
 	get usage(): string {
 		return this.system.usage
 	}

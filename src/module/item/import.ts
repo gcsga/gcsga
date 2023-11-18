@@ -31,7 +31,7 @@ export class ItemImporter {
 		setTimeout(async () => {
 			new Dialog(
 				{
-					title: LocalizeGURPS.translations.gurps.system.library_import.title,
+					title: LocalizeGURPS.translations.gurps.system.library_import.title_item,
 					content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/library-import.hbs`, {}),
 					buttons: {
 						import: {
@@ -75,12 +75,10 @@ export class ItemImporter {
 		importer._import(file)
 	}
 
-	async _import(file: { text: string; name: string; path: string }) {
+	private async _import(file: { text: string; name: string; path: string }) {
 		const json = file.text
-		// Return;
 		const label = file.name.split(".")[0]
 		const name = label.toLowerCase().replaceAll(" ", "-")
-		// Const name = "Library Test";
 		let r: ItemLibraryData | any
 		const errorMessages: string[] = []
 		try {

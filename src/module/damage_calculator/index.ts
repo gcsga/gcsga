@@ -90,7 +90,7 @@ class DamageRollAdapter implements DamageRoll {
 		this._payload = payload
 
 		this.attacker = attacker
-		this._locationId = payload.hitlocation
+		this._locationId = payload.damageRoll[0].hitlocation
 		console.log(`location = ${this._locationId}`)
 
 		this.weapon = weapon
@@ -133,7 +133,7 @@ class DamageRollAdapter implements DamageRoll {
 	}
 
 	get basicDamage(): number {
-		return this._payload.total
+		return this._payload.damageRoll[this._payload.index].total
 	}
 
 	get armorDivisor(): number {
