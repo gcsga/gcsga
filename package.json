@@ -82,6 +82,6 @@
 	"dependencies": {
 		"fuse.js": "^6.6.2",
 		"jest-html-reporter": "^3.10.2",
-		"npm": "^10.1.0"
+		"npm": "^10.2.3"
 	}
 }
