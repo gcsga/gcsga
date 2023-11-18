@@ -1,7 +1,7 @@
-import { RollModifier, RollType, SETTINGS, SYSTEM_NAME, UserFlags } from "@module/data"
+import { ItemType, RollModifier, RollType, SETTINGS, SYSTEM_NAME, UserFlags } from "@module/data"
 import { RollGURPS } from "."
 import { CharacterGURPS } from "@actor"
-import { RangedWeaponGURPS, SkillGURPS, TechniqueGURPS } from "@item"
+import { MeleeWeaponGURPS, RangedWeaponGURPS, SkillGURPS, TechniqueGURPS } from "@item"
 import { LocalizeGURPS } from "@util"
 import { DamageRollGURPS } from "./damage_roll"
 import { DamageChat, DamagePayload } from "@module/damage_calculator/damage_chat_message"
@@ -381,7 +381,6 @@ class AttackRollTypeHandler extends RollTypeHandler {
 	override getLevel(data: RollTypeData): any {
 		// TODO If data.item.skillLevel is a function, call it with null as the argument;
 		// otherwise, just return the value.
-		console.log(data)
 		if (typeof data.item.skillLevel === "function") return data.item.skillLevel(null)
 		else return data.item.skillLevel
 	}
@@ -396,14 +395,31 @@ class AttackRollTypeHandler extends RollTypeHandler {
 	}
 
 	override getItemData(item: any, actor: CharacterGURPS): any {
-		return item
+		let itemData = {} as any
+		if (item instanceof MeleeWeaponGURPS || item instanceof RangedWeaponGURPS) {
+			itemData = {
+				usage: item.system.usage,
+				itemName: item.itemName,
+				formattedName: item.formattedName,
+				uuid: item.uuid,
+				weaponID: item.id,
+				damage: item.fastResolvedDamage,
+			}
+			if (item instanceof RangedWeaponGURPS) {
+				mergeObject(itemData, {
+					rate_of_fire: item.rate_of_fire,
+					recoil: item.recoil
+				})
+			}
+		}
+		return itemData
 	}
 
 	override getExtraData(data: ChatData): any {
 		let extra = {}
 
 		// If Ranged, add number of potential hits if greater than one.
-		if (data.item instanceof RangedWeaponGURPS) {
+		if (data.item.type === ItemType.RangedWeapon) {
 			const item = data.item
 			if (this.validRateOfFire(item.rate_of_fire) && data.margin_number > 0 && parseInt(item.recoil) > 0) {
 				const effectiveRof = this.effectiveRateOfFire(item.rate_of_fire)
@@ -423,9 +439,9 @@ class AttackRollTypeHandler extends RollTypeHandler {
 		mergeObject(extra, {
 			damage: {
 				uuid: data.item.uuid,
-				weaponID: data.item.id,
+				weaponID: data.item.weaponID,
 				attacker: data.actor,
-				damage: data.item.fastResolvedDamage,
+				damage: data.item.damage,
 			},
 		})
 
@@ -509,8 +525,6 @@ class DamageRollTypeHandler extends RollTypeHandler {
 		const roll = await damageRoll.roll.evaluate({ async: true })
 		const modifierTotal = this.applyMods(0, this.getModifiers(user))
 		const total = roll.total! + modifierTotal
-
-		// Console.log(damageRoll)
 
 		const chatData: Partial<DamagePayload> = {
 			name,

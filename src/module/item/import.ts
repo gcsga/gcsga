@@ -76,7 +76,6 @@ export class ItemImporter {
 	}
 
 	private async _import(file: { text: string; name: string; path: string }) {
-		console.log(file)
 		const json = file.text
 		const label = file.name.split(".")[0]
 		const name = label.toLowerCase().replaceAll(" ", "-")

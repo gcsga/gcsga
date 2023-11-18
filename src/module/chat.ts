@@ -60,8 +60,8 @@ export async function _processDiceCommand(
  * @param html
  */
 export function addChatListeners(html: JQuery<HTMLElement>): void {
-	html.find(".rollable").on("click", event => _onRollClick(event))
 	html.find(".rollable.damage").on("click", event => _onDamageRoll(event))
+	html.find(".rollable").on("click", event => _onRollClick(event))
 	html.find(".rollable").on("mouseover", event => _onRollableHover(event, true))
 	html.find(".rollable").on("mouseout", event => _onRollableHover(event, false))
 	html.find(".mod").on("click", event => _onModClick(event))
@@ -120,7 +120,6 @@ async function _onRollClick(event: JQuery.ClickEvent) {
 	) {
 		if (actor instanceof CharacterGURPS) {
 			const itemData = $(event.currentTarget).data("json")
-			// Const skill = new BaseItemGURPS(json) as SkillGURPS | TechniqueGURPS
 
 			// Grab best skill or default
 			data.item = actor.bestSkillNamed(itemData.name!, itemData.specialization || "", false, null)
@@ -131,6 +130,34 @@ async function _onRollClick(event: JQuery.ClickEvent) {
 				ui.notifications?.warn(LocalizeGURPS.translations.gurps.notification.no_default_skill)
 				return
 			}
+		}
+	} else if ([
+		RollType.Spell,
+		RollType.SpellRelative
+	].includes(type)) {
+		if (actor instanceof CharacterGURPS) {
+			const itemData = $(event.currentTarget).data("json")
+			data.item = actor.spells.find(e =>
+				e.name === itemData.name
+			)
+		}
+		if (!data.item || data.item.effectiveLevel === -Infinity) {
+			ui.notifications?.warn(LocalizeGURPS.translations.gurps.notification.no_default_skill)
+			return
+		}
+	} else if ([
+		RollType.Attack
+	].includes(type)) {
+		if (actor instanceof CharacterGURPS) {
+			const itemData = $(event.currentTarget).data("json")
+			data.item = actor.weapons.find(e =>
+				e.itemName === itemData.itemName &&
+				e.usage === itemData.usage
+			)
+		}
+		if (!data.item || data.item.effectiveLevel === -Infinity) {
+			ui.notifications?.warn(LocalizeGURPS.translations.gurps.notification.no_default_skill)
+			return
 		}
 	}
 	if (type === RollType.Modifier) {
@@ -147,6 +174,7 @@ async function _onRollClick(event: JQuery.ClickEvent) {
 async function _onDamageRoll(event: JQuery.ClickEvent) {
 	event.preventDefault()
 	event.stopPropagation()
+	event.stopImmediatePropagation()
 
 	const eventData = $(event.currentTarget).data()
 	const type: RollType = eventData.type

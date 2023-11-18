@@ -746,6 +746,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			data.comment = $(event.currentTarget).data("comment")
 			if (event.type === "contextmenu") data.modifier = -data.modifier
 		}
+		console.log(data)
 		return RollGURPS.handleRoll(game.user, this.actor, data)
 	}
 
