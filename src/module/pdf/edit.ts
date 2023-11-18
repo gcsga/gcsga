@@ -2,7 +2,8 @@ import { SYSTEM_NAME } from "@module/data"
 
 // @ts-ignore
 export class PDFEditorSheet extends JournalPDFPageSheet {
-	isEditable = false
+	// TODO: remove when types fixed
+	isEditable!: boolean
 
 	get template(): string {
 		return `systems/${SYSTEM_NAME}/templates/app/pdf-${this.isEditable ? "edit" : "view"}.hbs`

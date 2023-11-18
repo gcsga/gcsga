@@ -462,5 +462,7 @@ export function inlineNote(
 	actor: CharacterGURPS,
 	option: "user_description_display" | "modifiers_display" | "notes_display" | "skill_level_adj_display"
 ): boolean {
-	return [DisplayMode.Inline, DisplayMode.InlineAndTooltip].includes(actor.settings[option])
+	if (actor)
+		return [DisplayMode.Inline, DisplayMode.InlineAndTooltip].includes(actor.settings[option])
+	return [DisplayMode.Inline, DisplayMode.InlineAndTooltip].includes((game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`) as any)[option])
 }

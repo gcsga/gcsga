@@ -1,7 +1,7 @@
 import { PoolThresholdDef } from "@module/attribute"
 
 export interface ResourceTrackerObj {
-	order: number
+	// order: number
 	tracker_id: string
 	damage: number
 	calc?: {
@@ -19,5 +19,5 @@ export interface ResourceTrackerDefObj {
 	isMaxEnforced: boolean
 	isMinEnforced: boolean
 	thresholds?: PoolThresholdDef[]
-	order: number
+	// order: number
 }

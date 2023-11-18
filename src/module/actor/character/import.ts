@@ -39,8 +39,56 @@ export class CharacterImporter {
 		this.document = document
 	}
 
+	static showDialog() {
+		setTimeout(async () => {
+			new Dialog(
+				{
+					title: LocalizeGURPS.translations.gurps.system.library_import.title_character,
+					content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/character-library-import.hbs`, {}),
+					buttons: {
+						import: {
+							icon: '<i class="fas fa-file-import"></i>',
+							label: LocalizeGURPS.translations.gurps.system.library_import.import,
+							callback: (html: HTMLElement | JQuery<HTMLElement>) => {
+								const form = $(html).find("form")[0]
+								const files = form.data.files
+								if (!files.length)
+									return ui.notifications?.error(
+										LocalizeGURPS.translations.gurps.error.import.no_file
+									)
+								else {
+									// const file = files[0]
+									// files.forEach((file: any) => readTextFromFile(file)).then((text: string) => console.log(text))
+									// readTextFromFile(file).then(text =>
+									// 	CharacterImporter.importCompendium({
+									// 		text: text,
+									// 		name: file.name,
+									// 		path: file.path,
+									// 	})
+									// )
+								}
+							},
+						},
+						no: {
+							icon: '<i class="fas fa-times"></i>',
+							label: LocalizeGURPS.translations.gurps.system.library_import.cancel,
+						},
+					},
+					default: "import",
+				},
+				{
+					width: 400,
+				}
+			).render(true)
+		}, 200)
+	}
+
+	static importCompendium(file: { text: string; name: string; path: string }) {
+		// const importer = new CharacterImporter(document)
+		// importer._import(document, file)
+	}
+
 	static import(document: Actor, file: { text: string; name: string; path: string }) {
-		// If (file.name.includes(".gca5")) return GCAImporter.import(document, file)
 		const importer = new CharacterImporter(document)
 		importer._import(document, file)
 	}
@@ -113,7 +161,7 @@ export class CharacterImporter {
 				recursive: false,
 			})
 			if ((this.document.sheet as unknown as CharacterSheetGURPS)?.config !== null) {
-				;(this.document.sheet as unknown as CharacterSheetGURPS)?.config?.render(true)
+				; (this.document.sheet as unknown as CharacterSheetGURPS)?.config?.render(true)
 			}
 		} catch (err) {
 			console.error(err)

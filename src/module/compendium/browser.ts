@@ -283,7 +283,7 @@ class CompendiumBrowser extends Application {
 					name: pack.metadata.label,
 				}
 			}
-			if (["modifier", "modifier_container"].some(type => types.has(type))) {
+			else if (["modifier", "modifier_container"].some(type => types.has(type))) {
 				const load = this.settings.modifier?.[pack.collection]?.load ?? false
 				settings.modifier![pack.collection] = {
 					load,
@@ -306,14 +306,14 @@ class CompendiumBrowser extends Application {
 					name: pack.metadata.label,
 				}
 			}
-			if (["equipment", "equipment_container"].some(type => types.has(type))) {
+			if (["equipment_gcs", "equipment_container"].some(type => types.has(type))) {
 				const load = this.settings.equipment?.[pack.collection]?.load ?? false
 				settings.equipment![pack.collection] = {
 					load,
 					name: pack.metadata.label,
 				}
 			}
-			if (["eqp_modifier", "eqp_modifier_container"].some(type => types.has(type))) {
+			else if (["eqp_modifier", "eqp_modifier_container"].some(type => types.has(type))) {
 				const load = this.settings.eqp_modifier?.[pack.collection]?.load ?? false
 				settings.eqp_modifier![pack.collection] = {
 					load,

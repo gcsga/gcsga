@@ -82,6 +82,7 @@ import { CombatantGURPS } from "./combatant"
 import { parselink } from "./otf"
 import { CombatTrackerGURPS } from "@ui"
 import { MookGeneratorSheet, MookParser } from "./mook"
+import { CharacterImporter } from "@actor/character/import"
 
 Error.stackTraceLimit = Infinity
 
@@ -150,6 +151,8 @@ Hooks.once("init", async () => {
 	CONFIG.Combatant.documentClass = CombatantGURPS
 
 	CONFIG.Dice.rolls.unshift(RollGURPS)
+
+	CONFIG.Item.compendiumIndexFields = ["flags"]
 
 	StaticHitLocation.init()
 	SpeedProviderGURPS.init()
@@ -369,11 +372,16 @@ Hooks.on("canvasReady", () => {
 
 Hooks.on("renderSidebarTab", async (app: SidebarTab, html: JQuery<HTMLElement>) => {
 	if (app.options.id === "compendium") {
-		const importButton = $(
-			`<button><i class='fas fa-file-import'></i>${LocalizeGURPS.translations.gurps.system.library_import.button}</button>`
+		const itemImportButton = $(
+			`<button><i class='fas fa-file-import'></i>${LocalizeGURPS.translations.gurps.system.library_import.button_item}</button>`
 		)
-		importButton.on("click", _event => ItemImporter.showDialog())
-		html.find(".directory-footer").append(importButton)
+		itemImportButton.on("click", _event => ItemImporter.showDialog())
+		html.find(".directory-footer").append(itemImportButton)
+		const characterImportButton = $(
+			`<button><i class='fas fa-file-import'></i>${LocalizeGURPS.translations.gurps.system.library_import.button_character}</button>`
+		)
+		characterImportButton.on("click", _event => CharacterImporter.showDialog())
+		html.find(".directory-footer").append(characterImportButton)
 
 		const browseButton = $(
 			`<button><i class='fas fa-book-open-cover'></i>${LocalizeGURPS.translations.gurps.compendium_browser.button}</button>`
@@ -578,5 +586,5 @@ Hooks.on("renderHotbar", function(_hotbar: any, element: JQuery<HTMLElement>, _o
 
 Hooks.on("chatMessage", function(_chatlog: ChatLog, message: string, _data: any) {
 	Chat.procesMessage(message)
-	return false
+	return message
 })

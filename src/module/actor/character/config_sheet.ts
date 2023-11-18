@@ -258,7 +258,7 @@ export class CharacterSheetConfig extends FormApplication {
 					isMaxEnforced: false,
 					min: 0,
 					isMinEnforced: false,
-					order: this.resource_trackers.length,
+					// order: this.resource_trackers.length,
 					thresholds: [],
 				})
 				await this.object.update({ "system.settings.resource_trackers": this.resource_trackers })

@@ -1,6 +1,6 @@
 import { EquipmentContainerGURPS } from "@item/equipment_container"
 import { ItemSheetGCS } from "@item/gcs"
-import { ItemType, SYSTEM_NAME } from "@module/data"
+import { ItemType, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { EquipmentGURPS } from "./document"
 import { Weight, WeightUnits, allWeightUnits } from "@util"
 
@@ -30,7 +30,10 @@ export class EquipmentSheet extends ItemSheetGCS {
 
 	protected _updateObject(event: Event, formData: Record<string, any>): Promise<unknown> {
 		const weight: string = formData["system.weight"]
-		let weightFormat: WeightUnits = this.object.actor.settings.default_weight_units
+		let weightFormat: WeightUnits = this.object.isOwned
+			? this.object.actor.settings.default_weight_units
+			: (game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`) as any)
+				.default_weight_units
 		allWeightUnits.forEach(u => {
 			if (weight.includes(u)) weightFormat = u
 		})

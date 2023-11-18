@@ -173,7 +173,7 @@ export class CharacterGURPS extends BaseActorGURPS {
 				religion: "",
 				portrait: "",
 			},
-			editing: true,
+			editing: false,
 			calc: {
 				swing: "",
 				thrust: "",
@@ -305,8 +305,8 @@ export class CharacterGURPS extends BaseActorGURPS {
 
 	get spentPoints(): number {
 		let total = this.attributePoints
-		const { advantages, disadvantages, race, quirks } = this.traitPoints
-		total += advantages + disadvantages + race + quirks
+		const { advantages, disadvantages, ancestry, quirks } = this.traitPoints
+		total += advantages + disadvantages + ancestry + quirks
 		total += this.skillPoints
 		total += this.spellPoints
 		return total
@@ -350,17 +350,17 @@ export class CharacterGURPS extends BaseActorGURPS {
 		return total
 	}
 
-	get traitPoints(): { advantages: number; disadvantages: number; race: number; quirks: number } {
-		let [advantages, disadvantages, race, quirks] = [0, 0, 0, 0]
+	get traitPoints(): { advantages: number; disadvantages: number; ancestry: number; quirks: number } {
+		let [advantages, disadvantages, ancestry, quirks] = [0, 0, 0, 0]
 		for (const t of this.traits) {
 			if (t.container !== t.actor) continue
 			let [a, d, r, q] = t.calculatePoints()
 			advantages += a
 			disadvantages += d
-			race += r
+			ancestry += r
 			quirks += q
 		}
-		return { advantages, disadvantages, race, quirks }
+		return { advantages, disadvantages, ancestry, quirks }
 	}
 
 	get skillPoints(): number {
@@ -1021,7 +1021,7 @@ export class CharacterGURPS extends BaseActorGURPS {
 		for (const tracker_def of defs) {
 			const tracker = new ResourceTracker(this, tracker_def.id, i)
 			t.push({
-				order: tracker.order,
+				// order: tracker.order,
 				tracker_id: tracker.tracker_id,
 				damage: tracker.damage,
 			})
