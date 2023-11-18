@@ -586,5 +586,5 @@ Hooks.on("renderHotbar", function(_hotbar: any, element: JQuery<HTMLElement>, _o
 
 Hooks.on("chatMessage", function(_chatlog: ChatLog, message: string, _data: any) {
 	Chat.procesMessage(message)
-	return false
+	return message
 })
