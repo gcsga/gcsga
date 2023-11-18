@@ -9,22 +9,26 @@ export enum DamageChatFlags {
 	Transfer = "transfer",
 }
 
-export type DamagePayload = {
+export type DamageRoll = {
+	total: number
+	tooltip: any
 	hitlocation: string
+}
+
+export type DamagePayload = {
+	index: number
+	name: string
+	uuid: string
 	attacker: string
 	weaponID: string
-	uuid: string
-	name: string
 	damage: string
 	dice: DiceGURPS
-	modifiers: Array<RollModifier & { class?: string }>
-	total: number
 	damageType: string
 	armorDivisor: number
 	damageModifier: string
-	rolls: { result: number; word: string }[]
+	damageRoll: DamageRoll[]
+	modifiers: Array<RollModifier & { class?: string }>
 	modifierTotal: number
-	tooltip: any
 }
 
 type DropData = { type: string; x: number; y: number; payload: DamagePayload }
@@ -39,20 +43,22 @@ export class DamageChat {
 	 * object.
 	 */
 	static async renderChatMessage(app: ChatMessage, html: JQuery<HTMLElement>, msg: any) {
-		// TODO use a way to identify elements not tied to their appearance (data attributes, for example).
+		// TODO Find a way to identify elements not tied to their appearance (data attributes, for example).
 		if (!html.find(".dice-roll.damage").length) return true
 
 		let transfer = JSON.parse(DamageChat.getTransferFlag(app))
 		let payload = transfer.payload as DamagePayload
 
-		payload.damageType = payload.damageType ? payload.damageType : "injury"
+		payload.damageType = payload.damageType ?? "injury"
 
-		const dragSections = html.find(".dice-result")
+		const dragSections = html.find(".dice-total")
 		for (const section of dragSections) {
-			// Section.setAttribute("draggable", "true")
 			section.addEventListener("dragstart", DamageChat._dragStart.bind(this, payload))
-			section.addEventListener("dragend", DamageChat._dragEnd)
+			section.addEventListener("dragend", DamageChat._dragEnd.bind(this))
 		}
+
+		html.find(".dice-result").on("click", event => DamageChat._clickOnDiceResults(event))
+
 		return false
 	}
 
@@ -61,18 +67,35 @@ export class DamageChat {
 	}
 
 	static setTransferFlag(object: any, payload: Partial<DamagePayload>, userTarget: string) {
-		console.log({ type: DamageChat.TYPE, payload: payload, userTarget: userTarget })
 		let transfer = JSON.stringify({ type: DamageChat.TYPE, payload: payload, userTarget: userTarget })
 		setProperty(object, `flags.${SYSTEM_NAME}.${DamageChatFlags.Transfer}`, transfer)
 		return object
 	}
 
 	static async _dragStart(payload: DamagePayload, event: DragEvent) {
+		payload.index = parseInt((event.currentTarget! as any).dataset.index)
 		DnD.setDragData(event, DamageChat.TYPE, payload, DnD.TEXT_PLAIN)
 	}
 
 	static async _dragEnd(ev: DragEvent) {
 		// Add any handling code here.
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-empty-function
+	static async _clickOnDiceResults(event: JQuery.ClickEvent) {
+		event.preventDefault()
+		event.stopPropagation()
+
+		// Toggle the message flag
+		let roll = $(event.currentTarget)
+		if (roll.hasClass("expanded")) {
+			roll.toggleClass("expanded")
+			roll.animate({ "grid-auto-rows": 7, "padding-bottom": 25 }, 200, "linear")
+		} else {
+			roll.animate({ "grid-auto-rows": 35, "padding-bottom": 0 }, 200, "linear", function () {
+				roll.toggleClass("expanded")
+			})
+		}
 	}
 
 	static async handleDropOnCanvas(canvas: Canvas, dropData: DropData): Promise<void> {

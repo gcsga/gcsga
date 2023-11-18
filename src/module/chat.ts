@@ -60,12 +60,36 @@ export async function _processDiceCommand(
  * @param html
  */
 export function addChatListeners(html: JQuery<HTMLElement>): void {
+	html.find(".rollable:not(.damage)").on("click", event => _onRollClick(event))
 	html.find(".rollable.damage").on("click", event => _onDamageRoll(event))
-	html.find(".rollable").on("click", event => _onRollClick(event))
+	html.find(".damage.hits > .roll").on("click", event => _onMultiDamageRoll(event))
+	html.find(".damage.hits > .minus").on("click", event => _onMinusHits(event))
+	html.find(".damage.hits > .plus").on("click", event => _onPlusHits(event))
 	html.find(".rollable").on("mouseover", event => _onRollableHover(event, true))
 	html.find(".rollable").on("mouseout", event => _onRollableHover(event, false))
 	html.find(".mod").on("click", event => _onModClick(event))
 	html.find(".mod").on("contextmenu", event => _onModRClick(event))
+}
+
+async function _onMinusHits(event: JQuery.ClickEvent): Promise<void> {
+	await _onHitsChange(event, -1)
+}
+
+async function _onPlusHits(event: JQuery.ClickEvent): Promise<void> {
+	await _onHitsChange(event, 1)
+}
+
+async function _onHitsChange(event: JQuery.ClickEvent, delta: number): Promise<void> {
+	event.preventDefault()
+	event.stopPropagation()
+
+	// Get the parent HTML element of target
+	const parent = event.currentTarget.closest(".damage.hits") as HTMLElement
+	if (!parent) return
+
+	// Get the data-times attribute from the parent element
+	parent.dataset.times = `${Math.max(1, parseInt(parent.dataset.times!) + delta)}`
+	$(parent).find(".roll").text(`${parent.dataset.times}`)
 }
 
 /**
@@ -177,20 +201,47 @@ async function _onDamageRoll(event: JQuery.ClickEvent) {
 	event.stopImmediatePropagation()
 
 	const eventData = $(event.currentTarget).data()
+
+	const rollData = getDamageRollData(eventData)
+	const { actor, data } = rollData ?? {}
+
+	return RollGURPS.handleRoll(game.user, actor, data)
+}
+
+function getDamageRollData(eventData: any): { actor: ActorGURPS; data: any } | undefined {
 	const type: RollType = eventData.type
 
 	if (type !== RollType.Damage) {
 		console.error(`Damage roll called with wrong type: ${type}`)
-		return
+		return undefined
 	}
-
-	// fromUuidSync(eventData.uuid)
 
 	const actor = game.actors!.get(eventData.actor) as ActorGURPS
 	const data: { [key: string]: any } = { type: type }
 	data.item = actor.items.get(eventData.weapon)
+	data.times = 1
 
-	return RollGURPS.handleRoll(game.user, actor, data)
+	return { actor, data }
+}
+
+async function _onMultiDamageRoll(event: JQuery.ClickEvent): Promise<void> {
+	event.preventDefault()
+	event.stopPropagation()
+	console.log("MultiDamageRoll")
+
+	const damageButtons = $(event.currentTarget).closest(".damage-buttons")
+
+	const damageRoll = $(damageButtons).find(".damage.rollable")
+	const eventData = $(damageRoll).data()
+	const data = getDamageRollData(eventData)
+	if (!data) return
+
+	// const damageHits = $(damageButtons).find(".damage.hits")
+	// let times = parseInt($(damageHits).data("times"))
+
+	let times = parseInt(event.currentTarget.innerText)
+	data.data.times = times
+	await RollGURPS.handleRoll(game.user, data.actor, data.data)
 }
 
 /**

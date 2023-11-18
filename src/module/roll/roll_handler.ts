@@ -6,6 +6,9 @@ import { LocalizeGURPS } from "@util"
 import { DamageRollGURPS } from "./damage_roll"
 import { DamageChat, DamagePayload } from "@module/damage_calculator/damage_chat_message"
 import { ActorGURPS } from "@module/config"
+import { TIMESTAMP_FIELD } from "../../../types/foundry/common/data/fields.mjs"
+
+// // vscode-fold=1
 
 enum RollSuccess {
 	Success = "success",
@@ -51,7 +54,8 @@ abstract class RollTypeHandler {
 			this.getLevel(data),
 			formula,
 			this.getName(data),
-			this.getType(data)
+			this.getType(data),
+			this.getExtras(data)
 		)
 		if (hidden) messageData.rollMode = CONST.DICE_ROLL_MODES.PRIVATE
 
@@ -77,6 +81,10 @@ abstract class RollTypeHandler {
 
 	getType(data: RollTypeData): RollType {
 		return data.type
+	}
+
+	getExtras(data: RollTypeData): any {
+		return {}
 	}
 
 	get chatMessageTemplate(): string {
@@ -105,7 +113,8 @@ abstract class RollTypeHandler {
 		level: number,
 		formula: string,
 		name: string,
-		type: RollType
+		type: RollType,
+		extras: any
 	): Promise<Record<string, any>> {
 		// Create an array of Modifiers suitable for display.
 		const modifiers: Array<RollModifier & { class?: string }> = this.getModifiers(user)
@@ -391,7 +400,7 @@ class AttackRollTypeHandler extends RollTypeHandler {
 	}
 
 	get chatMessageTemplate(): string {
-		return `systems/${SYSTEM_NAME}/templates/message/roll-against-ranged.hbs`
+		return `systems/${SYSTEM_NAME}/templates/message/roll-against-weapon.hbs`
 	}
 
 	override getItemData(item: any, actor: CharacterGURPS): any {
@@ -416,6 +425,8 @@ class AttackRollTypeHandler extends RollTypeHandler {
 	}
 
 	override getExtraData(data: ChatData): any {
+		if (data.success === RollSuccess.Failure) return null
+
 		let extra = {}
 
 		// If Ranged, add number of potential hits if greater than one.
@@ -483,6 +494,9 @@ class ParryRollTypeHandler extends RollTypeHandler {
 	}
 }
 
+/**
+ * A RollTypeHandler for handling block rolls.
+ */
 class BlockRollTypeHandler extends RollTypeHandler {
 	override isValid(data: RollTypeData): boolean {
 		return !isNaN(data.item.block) && data.item.block !== ""
@@ -510,39 +524,57 @@ class DamageRollTypeHandler extends RollTypeHandler {
 			: `${data.item.formattedName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
 	}
 
-	async handleRollType(
-		user: StoredDocument<User> | null,
+	override getLevel(data: RollTypeData): number {
+		return 0
+	}
+
+	override getExtras(data: RollTypeData) {
+		return { times: data.times ?? 1 }
+	}
+
+	override async getMessageData(
 		actor: CharacterGURPS,
-		data: RollTypeData,
-		_: string,
-		hidden: boolean
-	): Promise<void> {
-		const name = this.getName(data)
-
-		const damageRoll = new DamageRollGURPS(data.item.fastResolvedDamage)
-
-		// Roll the damage for the attack.
-		const roll = await damageRoll.roll.evaluate({ async: true })
+		user: StoredDocument<User> | null,
+		item: any,
+		_: number,
+		__: string,
+		name: string,
+		___: RollType,
+		extras: any
+	): Promise<Record<string, any>> {
 		const modifierTotal = this.applyMods(0, this.getModifiers(user))
-		const total = roll.total! + modifierTotal
 
 		const chatData: Partial<DamagePayload> = {
 			name,
-			uuid: data.item.uuid,
+			uuid: item.uuid,
 			attacker: actor.id ?? undefined,
-			weaponID: data.item.id ?? undefined,
-			damage: damageRoll.displayString,
-			dice: damageRoll.dice,
-			damageType: damageRoll.damageType,
-			armorDivisor: damageRoll.armorDivisorAsInt,
-			damageModifier: damageRoll.damageModifier,
-			total: total,
-			// Create an array of Modifiers suitable for display.
+			weaponID: item.id ?? undefined,
 			modifiers: this.addModsDisplayClass(this.getModifiers(user)),
 			modifierTotal: modifierTotal,
-			hitlocation: DamageRollTypeHandler.getHitLocationFromLastAttackRoll(actor),
+			damageRoll: [],
+		}
 
-			tooltip: await roll.getTooltip(),
+		let stringified = undefined
+
+		while (extras.times-- > 0) {
+			// Roll the damage for the attack.
+			const damageRoll = new DamageRollGURPS(item.fastResolvedDamage)
+			await damageRoll.evaluate()
+
+			if (!stringified) {
+				stringified = damageRoll.stringified
+				chatData.damage = damageRoll.displayString
+				chatData.dice = damageRoll.dice
+				chatData.damageType = damageRoll.damageType
+				chatData.armorDivisor = damageRoll.armorDivisorAsInt
+				chatData.damageModifier = damageRoll.damageModifier
+			}
+
+			chatData.damageRoll?.push({
+				total: damageRoll.total! + modifierTotal,
+				tooltip: await damageRoll.getTooltip(),
+				hitlocation: DamageRollTypeHandler.getHitLocationFromLastAttackRoll(actor),
+			})
 		}
 
 		const message = await renderTemplate(`systems/${SYSTEM_NAME}/templates/message/damage-roll.hbs`, chatData)
@@ -552,10 +584,9 @@ class DamageRollTypeHandler extends RollTypeHandler {
 			speaker: chatData.attacker,
 			type: CONST.CHAT_MESSAGE_TYPES.ROLL,
 			content: message,
-			roll: JSON.stringify(roll),
+			roll: stringified,
 			sound: CONFIG.sounds.dice,
 		}
-		if (hidden) messageData.rollMode = CONST.DICE_ROLL_MODES.PRIVATE
 
 		let userTarget = ""
 		if (game.user?.targets.size) {
@@ -563,9 +594,7 @@ class DamageRollTypeHandler extends RollTypeHandler {
 		}
 
 		messageData = DamageChat.setTransferFlag(messageData, chatData, userTarget)
-
-		await ChatMessage.create(messageData, {})
-		await this.resetMods(user)
+		return messageData
 	}
 
 	/**
@@ -627,6 +656,7 @@ class GenericRollTypeHandler extends RollTypeHandler {
 }
 
 export type RollTypeData = {
+	times: number | undefined
 	type: RollType // RollTypeHandler
 	modifier: number // AddModifier
 	comment: string // AddModifier

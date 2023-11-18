@@ -130,20 +130,19 @@
 
 			.damage-buttons {
 				display: flex;
-				flex-flow: row nowrap;
+				flex-flow: row wrap;
 				justify-content: center;
+				padding-bottom: 5px;
 			}
 
-			.damage.rollable {
+			.damage {
 				color: white;
 				background-color: rgb(var(--color-failure));
 				border-color: rgb(var(--color-failure)) !important;
 				font-weight: bold;
 				margin-top: 4px;
-				margin-bottom: 5px;
 				width: min-content;
 				padding: 0 5px;
-				margin-bottom: 5px;
 				white-space: nowrap;
 				text-align: center;
 				border: 2px solid;
@@ -151,7 +150,30 @@
 				font-size: var(--font-size-16);
 				cursor: pointer;
 
-				&:hover {
+				&.hits > div {
+					padding: 0;
+					border: 0px solid;
+					min-width: 1em;
+					padding: 0 9px;
+				}
+
+				&.hits {
+					display: flex;
+					flex-flow: row nowrap;
+					padding: 0;
+
+					:first-child {
+						border-right: 1px solid rgb(var(--color-divider));
+					}
+
+					:last-child {
+						border-left: 1px solid rgb(var(--color-divider));
+					}
+				}
+
+				&.hits > div:hover,
+				.rollable:hover,
+				&.rollable:hover {
 					cursor: pointer;
 					color: rgb(var(--color-failure));
 					background-color: white;
@@ -167,18 +189,16 @@
 		.dice-total {
 			font-size: var(--font-size-20);
 			font-weight: bold;
-			// margin: 0 30px;
 			margin: auto;
 			width: min-content;
 			padding: 0 5px;
 			margin-bottom: 5px;
 			white-space: nowrap;
 			text-align: center;
-			/* color: white; */
 			background-color: white;
 			border: 2px solid;
-			/* border-color: rgb(var(--color-header)); */
 			border-radius: 5px;
+			box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.2);
 
 			&.critical_success {
 				color: rgb(var(--color-critical-success));
@@ -225,6 +245,17 @@
 	}
 
 	&.damage {
+		.dice-result {
+			display: inline-grid;
+			grid-auto-rows: 7px;
+			padding-bottom: 25px;
+
+			&.expanded {
+				grid-auto-rows: auto !important;
+				padding-bottom: 0;
+			}
+		}
+
 		.modifiers {
 			margin-bottom: 5px;
 		}
