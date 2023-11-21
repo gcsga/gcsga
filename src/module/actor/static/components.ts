@@ -1,5 +1,5 @@
 import { ItemType } from "@module/data"
-import { LocalizeGURPS, round, Static } from "@util"
+import { LocalizeGURPS, Static, fxp } from "@util"
 import { convertRollStringToArrayOfInt } from "@util/static"
 import { StaticCharacterGURPS } from "."
 
@@ -341,8 +341,8 @@ export class StaticEquipment extends NamedComponent {
 		}
 
 		eqt.count = cln(eqt.count)
-		eqt.cost = round(cln(eqt.cost), 4)
-		eqt.weight = round(cln(eqt.weight), 4)
+		eqt.cost = fxp.Int.from(cln(eqt.cost), 4)
+		eqt.weight = fxp.Int.from(cln(eqt.weight), 4)
 		let cs = eqt.count * eqt.cost
 		let ws = eqt.count * eqt.weight
 		if (eqt.contains) {
@@ -363,12 +363,12 @@ export class StaticEquipment extends NamedComponent {
 		}
 		if (actor)
 			await actor.update({
-				[`${objkey}.costsum`]: round(cs, 4),
-				[`${objkey}.weightsum`]: round(ws, 4),
+				[`${objkey}.costsum`]: fxp.Int.from(cs, 4),
+				[`${objkey}.weightsum`]: fxp.Int.from(ws, 4),
 			})
 		// The local values 'should' be updated... but I need to force them anyway
-		eqt.costsum = round(cs, 4)
-		eqt.weightsum = round(ws, 4)
+		eqt.costsum = fxp.Int.from(cs, 4)
+		eqt.weightsum = fxp.Int.from(ws, 4)
 	}
 }
 
@@ -420,7 +420,7 @@ export class StaticReaction {
 	}
 }
 
-export class StaticModifier extends StaticReaction {}
+export class StaticModifier extends StaticReaction { }
 
 export class StaticLanguage {
 	name: string

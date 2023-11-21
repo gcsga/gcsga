@@ -21,7 +21,7 @@ export class SpellGURPS extends ItemGCS {
 		return `${name}${this.system.tech_level_required ? `/TL${TL ?? ""}` : ""}`
 	}
 
-	override get notes(): string {
+	get secondaryText(): string {
 		const out: string[] = []
 		if (inlineNote(this.actor, "notes_display")) {
 			if (this.system.notes.trim()) out.push(this.system.notes)

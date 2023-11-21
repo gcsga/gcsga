@@ -53,7 +53,7 @@ export class TraitModifierGURPS extends ItemGCS {
 	get fullDescription(): string {
 		let d = ""
 		d += this.name
-		if (this.notes) d += ` (${this.notes})`
+		if (this.secodaryText) d += ` (${this.secodaryText})`
 		if (this.actor && this.actor.settings.show_trait_modifier_adj) d += ` [${this.costDescription}]`
 		return d
 	}

@@ -79,7 +79,7 @@ export abstract class ItemGCS extends ContainerGURPS {
 		return this.system.tags
 	}
 
-	get notes(): string {
+	get secodaryText(): string {
 		let outString = '<div class="item-notes">'
 		if (this.system.notes) outString += HandlebarsHelpersGURPS.format(this.system.notes)
 		if (this.studyHours !== 0)

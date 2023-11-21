@@ -36,7 +36,7 @@ export class BaseWeaponGURPS extends BaseItemGURPS {
 		return null
 	}
 
-	get notes(): string {
+	get secondaryText(): string {
 		let outString = '<div class="item-notes">'
 		if (this.container) {
 			outString += HandlebarsHelpersGURPS.format((this.container as any).notes)

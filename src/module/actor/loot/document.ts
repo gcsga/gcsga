@@ -4,7 +4,7 @@ import { CharacterImporter } from "@actor/character/import"
 import { EquipmentContainerGURPS, EquipmentGURPS, ItemGCS, ModifierChoiceSheet } from "@item"
 import { ItemType, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { TooltipGURPS } from "@module/tooltip"
-import { LocalizeGURPS, round, Weight, WeightUnits } from "@util"
+import { LocalizeGURPS, Weight, WeightUnits, fxp } from "@util"
 import Document, { Metadata } from "types/foundry/common/abstract/document.mjs"
 import { ActorDataConstructorData } from "types/foundry/common/data/data.mjs/actorData"
 import { LootSource, LootSystemData } from "./data"
@@ -70,7 +70,7 @@ export class LootGURPS extends BaseActorGURPS {
 				total += e.extendedWeight(for_skills, this.settings.default_weight_units)
 			}
 		})
-		return round(total, 4)
+		return fxp.Int.from(total, 4)
 	}
 
 	wealthCarried(): number {
@@ -78,7 +78,7 @@ export class LootGURPS extends BaseActorGURPS {
 		for (const e of this.equipment) {
 			if (e.parent === this) value += e.extendedValue
 		}
-		return round(value, 4)
+		return fxp.Int.from(value, 4)
 	}
 
 	get equipment(): Collection<EquipmentGURPS | EquipmentContainerGURPS> {
