@@ -20,7 +20,7 @@ export class TechniqueGURPS extends ItemGCS {
 	// }
 
 	// Getters
-	override get notes(): string {
+	get secondaryText(): string {
 		const out: string[] = []
 		if (inlineNote(this.actor, "modifiers_display")) {
 			if (this.difficulty !== Difficulty.Wildcard && this.default) {

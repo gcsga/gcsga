@@ -1,14 +1,10 @@
-import { ContainedWeightReduction } from "@feature/contained_weight_reduction"
-import { EquipmentGURPS } from "@item/equipment"
-import { EquipmentModifierGURPS } from "@item/equipment_modifier"
+import { EquipmentGURPS, extendedWeightAdjustedForModifiers } from "@item/equipment"
+import { EquipmentModifierGURPS, valueAdjustedForModifiers, weightAdjustedForModifiers } from "@item/equipment_modifier"
 import { EquipmentModifierContainerGURPS } from "@item/equipment_modifier_container"
 import { ItemGCS } from "@item/gcs"
 import { SETTINGS, SYSTEM_NAME } from "@module/data"
 import {
-	allWeightUnits,
-	determineModWeightValueTypeFromString,
-	extractFraction,
-	round,
+	fxp,
 	Weight,
 	WeightUnits,
 } from "@util"
@@ -29,19 +25,9 @@ export class EquipmentContainerGURPS extends ItemGCS {
 		return this.system.other
 	}
 
-	get quantity(): number {
-		return this.system.quantity
-	}
-
-	get value(): number {
-		return this.system.value
-	}
-
+	// Gets weight in pounds
 	get weight(): number {
-		const baseWeight = parseFloat(this.system.weight)
-		const units = this.system.weight.replace(`${baseWeight}`, "").trim()
-		if (allWeightUnits.includes(units as any)) return Weight.toPounds(baseWeight, units as WeightUnits)
-		return baseWeight
+		return Weight.fromString(this.system.weight, this.weightUnits)
 	}
 
 	get weightUnits(): WeightUnits {
@@ -64,22 +50,6 @@ export class EquipmentContainerGURPS extends ItemGCS {
 
 	set equipped(equipped: boolean) {
 		this.system.equipped = equipped
-	}
-
-	get techLevel(): string {
-		return this.system.tech_level
-	}
-
-	get legalityClass(): string {
-		return this.system.legality_class
-	}
-
-	get uses(): number {
-		return this.system.uses
-	}
-
-	get maxUses(): number {
-		return this.system.max_uses
 	}
 
 	// Embedded Items
@@ -112,97 +82,42 @@ export class EquipmentContainerGURPS extends ItemGCS {
 	}
 
 	get adjustedValue(): number {
-		return EquipmentGURPS.valueAdjustedForModifiers(
-			this.value,
-			this.deepModifiers.filter(e => e.enabled)
-		)
+		return valueAdjustedForModifiers(this.system.value, this.deepModifiers)
 	}
 
-	// Value Calculator
 	get extendedValue(): number {
-		if (this.quantity <= 0) return 0
+		if (this.system.quantity <= 0) return 0
 		let value = this.adjustedValue
 		for (const ch of this.children) {
 			value += ch.extendedValue
 		}
-		return round(value * this.quantity, 4)
+		return fxp.Int.from(value * this.system.quantity, 4)
 	}
 
-	adjustedWeight(for_skills: boolean, units: WeightUnits): number {
-		if (for_skills && this.system.ignore_weight_for_skills) return 0
-		return this.weightAdjustedForMods(units)
+	adjustedWeight(forSkills: boolean, defUnits: WeightUnits): number {
+		if (forSkills && this.system.ignore_weight_for_skills) return 0
+		return weightAdjustedForModifiers(Weight.fromString(this.system.weight, defUnits), this.deepModifiers, defUnits)
 	}
 
 	get adjustedWeightFast(): string {
 		return Weight.format(this.adjustedWeight(false, this.weightUnits), this.weightUnits)
 	}
 
-	weightAdjustedForMods(units: WeightUnits): number {
-		let percentages = 0
-		let w = this.weight
-		const modifiers = this.deepModifiers.filter(e => e.enabled)
-
-		for (const mod of modifiers) {
-			if (mod.weightType === "to_original_weight") {
-				const t = determineModWeightValueTypeFromString(mod.weightAmount)
-				const f = extractFraction(mod.weightAmount)
-				const amt = f.numerator / f.denominator
-				if (t === "weight_addition") {
-					w = w + amt
-				} else {
-					percentages += amt
-				}
-			}
-		}
-		if (percentages !== 0) w += (this.weight * percentages) / 100
-
-		w = EquipmentGURPS.processMultiplyAddWeightStep("to_base_weight", w, units, modifiers)
-
-		w = EquipmentGURPS.processMultiplyAddWeightStep("to_final_base_weight", w, units, modifiers)
-
-		w = EquipmentGURPS.processMultiplyAddWeightStep("to_final_weight", w, units, modifiers)
-
-		return w
-	}
-
-	extendedWeight(for_skills: boolean, units: WeightUnits): number {
-		return this.extendedWeightAdjustForMods(units, for_skills)
+	extendedWeight(forSkills: boolean, defUnits: WeightUnits): number {
+		return extendedWeightAdjustedForModifiers(
+			defUnits,
+			this.system.quantity,
+			this.weight,
+			this.deepModifiers,
+			this.features,
+			this.children,
+			forSkills,
+			this.system.ignore_weight_for_skills && this.equipped
+		)
 	}
 
 	get extendedWeightFast(): string {
 		return Weight.format(this.extendedWeight(false, this.weightUnits), this.weightUnits)
-	}
-
-	extendedWeightAdjustForMods(units: WeightUnits, for_skills: boolean): number {
-		if (this.quantity <= 0) return 0
-		let base = 0
-		if (!for_skills || !this.system.ignore_weight_for_skills) base = this.weightAdjustedForMods(units)
-		if (this.children) {
-			let contained = 0
-			for (const ch of this.children ?? []) {
-				contained += ch.extendedWeight(for_skills, units)
-			}
-			let percentage = 0
-			let reduction = 0
-			for (const f of this.features) {
-				if (f instanceof ContainedWeightReduction) {
-					if (f.is_percentage_reduction) percentage += parseFloat(f.reduction)
-					else reduction += parseFloat(f.reduction)
-				}
-			}
-			for (const mod of this.deepModifiers.filter(e => e.enabled)) {
-				for (const f of mod.features) {
-					if (f instanceof ContainedWeightReduction) {
-						if (f.is_percentage_reduction) percentage += parseFloat(f.reduction)
-						else reduction += parseFloat(f.reduction)
-					}
-				}
-			}
-			if (percentage >= 100) contained = 0
-			else if (percentage > 0) contained -= (contained * percentage) / 100
-			base += Math.max(contained - reduction, 0)
-		}
-		return round(base * this.quantity, 4)
 	}
 
 	prepareBaseData(): void {
@@ -216,7 +131,7 @@ export class EquipmentContainerGURPS extends ItemGCS {
 		delete system.name
 		system.calc = {
 			extended_value: this.extendedValue,
-			extended_weight: this.extendedWeightFast,
+			extended_weight: Weight.format(this.extendedWeight(false, this.weightUnits), this.weightUnits),
 		}
 		return system
 	}

@@ -1,36 +1,25 @@
-import { round } from "./misc"
+import { Int } from "./fxp"
 
 export class Weight {
-	// Private pounds: number
 
-	// constructor(weight: string | number) {
-	// 	if (typeof weight === "string") this.pounds = Weight.fromString(weight)
-	// 	else this.pounds = weight
-	// }
-
-	// get(): number {
-	// 	return this.pounds
-	// }
-
-	// get string(): string {
-	// 	return Weight.format(this.pounds, WeightUnits.Pound)
+	// toString(radix?: number | undefined): string {
+	// 	return Weight.format(parseFloat(super.toString(radix)), WeightUnits.Pound)
 	// }
 
 	static format(pounds: number, unit: WeightUnits = WeightUnits.Pound): string {
-		return `${round(Weight.fromPounds(pounds, unit))} ${unit}`
+		return `${Weight.fromPounds(pounds, unit)} ${unit}`
 	}
 
-	static fromString(text: string): number {
-		const number = parseFloat(text) || 0
-		text = text.replace(/[0-9.,]/g, "").trim()
-		let units = WeightUnits.Pound
+	static fromString(text: string, defUnits: WeightUnits = WeightUnits.Pound): number {
+		text = text.trim().replace(/^\++/, "")
 		for (const unit of allWeightUnits) {
-			if (text === unit) {
-				units = unit
-				break
+			if (text.endsWith(unit)) {
+				const value = Int.fromString(text)
+				return Weight.toPounds(value, unit)
 			}
 		}
-		return Weight.toPounds(number, units)
+		const value = Int.fromString(text)
+		return Weight.toPounds(value, defUnits)
 	}
 
 	static toPounds(weight: number, unit: WeightUnits): number {
@@ -67,10 +56,19 @@ export class Weight {
 			case WeightUnits.Gram:
 				return weight * 500
 			default:
-				return Weight.toPounds(weight, WeightUnits.Pound)
+				return Weight.fromPounds(weight, WeightUnits.Pound)
 		}
 	}
+
+	static trailingWeightUnitsFromString(s: string, defUnits: WeightUnits): WeightUnits {
+		s = s.trim().toLowerCase()
+		for (const one of allWeightUnits) {
+			if (s.endsWith(one)) return one
+		}
+		return defUnits
+	}
 }
+
 
 export enum WeightUnits {
 	Pound = "lb",

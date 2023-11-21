@@ -11,20 +11,20 @@
     {{#if (in @root.settings.modifiers_display "inline") }}
         {{#each (enabledList this.modifiers) }}
             {{#unless (eq @index 0)}}; {{/unless }}{{ this.name }}
-            {{#if this.notes }}
-                ({{ this.notes }})
+            {{#if this.secondaryText }}
+                ({{ this.secondaryText }})
             {{/if }}
         {{/each }}
     {{/if}}
 {{/if }}
-{{#if (and (in @root.settings.notes_display "inline") this.notes) }}
-    {{{ format this.notes }}}
+{{#if (and (in @root.settings.notes_display "inline") this.secondaryText) }}
+    {{{ format this.secondaryText }}}
 	{{#if this.system.study}}
 	{{localize "gurps.study.studied" hours=this.studyHours}}
 	{{/if}}
 {{/if}}
 {{#if (and (or (eq this.type "spell") (eq this.type "ritual_magic_spell")) (not @root/inCompendium)) }}
-    {{#if (and this.notes (spellValues this)) }}
+    {{#if (and this.secondaryText (spellValues this)) }}
         <br>
     {{/if }}
     {{{ spellValues this }}}

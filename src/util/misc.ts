@@ -157,73 +157,10 @@ export function numberCompare(value: number, base?: NumberCompare): boolean {
 	}
 }
 
-/**
- *
- * @param str
- */
 export function extractTechLevel(str: string): number {
 	return Math.min(Math.max(0, parseInt(str)), 12)
 }
 
-export type WeightValueType =
-	| "weight_addition"
-	| "weight_percentage_addition"
-	| "weight_percentage_multiplier"
-	| "weight_multiplier"
-
-/**
- *
- * @param s
- */
-export function determineModWeightValueTypeFromString(s: string): WeightValueType {
-	if (typeof s !== "string") s = `${s}`
-	s = s.toLowerCase().trim()
-	if (s.endsWith("%")) {
-		if (s.startsWith("x")) return "weight_percentage_multiplier"
-		return "weight_percentage_addition"
-	} else if (s.endsWith("x") || s.startsWith("x")) return "weight_multiplier"
-	return "weight_addition"
-}
-
-export interface Fraction {
-	numerator: number
-	denominator: number
-}
-
-/**
- *
- * @param s
- */
-export function extractFraction(s: string): Fraction {
-	if (typeof s !== "string") s = `${s}`
-	let v = s.trim()
-	while (v.length > 0 && v.at(-1)?.match("[0-9]")) {
-		v = v.substring(0, v.length - 1)
-	}
-	const f = v.split("/")
-	const fraction: Fraction = {
-		numerator: parseInt(f[0]) || 0,
-		denominator: parseInt(f[1]) || 1,
-	}
-	const revised = determineModWeightValueTypeFromString(s)
-	if (revised === "weight_percentage_multiplier") {
-		if (fraction.numerator <= 0) {
-			fraction.numerator = 100
-			fraction.denominator = 1
-		}
-	} else if (revised === "weight_multiplier") {
-		if (fraction.numerator <= 0) {
-			fraction.numerator = 1
-			fraction.denominator = 1
-		}
-	}
-	return fraction
-}
-
-/**
- *
- * @param i
- */
 export function dollarFormat(i: number): string {
 	const formatter = new Intl.NumberFormat("en-US", {
 		style: "currency",
@@ -232,14 +169,6 @@ export function dollarFormat(i: number): string {
 	return formatter.format(i)
 }
 
-export function round(n: number, p = 4): number {
-	return Math.round(n * 10 ** p) / 10 ** p
-}
-
-/**
- *
- * @param n
- */
 export function toWord(n: number): string {
 	switch (n) {
 		case 1:
@@ -259,10 +188,6 @@ export function toWord(n: number): string {
 	}
 }
 
-/**
- *
- * @param str
- */
 export function removeAccents(str: string): string {
 	return str
 		.normalize("NFD")
@@ -272,25 +197,10 @@ export function removeAccents(str: string): string {
 		.replace(/(^-+|-+$)/g, "")
 }
 
-/**
- *
- * @param s
- */
 export function capitalize(s: string): string {
 	return s.charAt(0).toUpperCase() + s.slice(1)
 }
 
-// Object.defineProperty(String.prototype, 'capitalize', {
-// 	value: function() {
-// 		return this.charAt(0).toUpperCase() + this.slice(1);
-// 	},
-// 	enumerable: false
-// });
-
-/**
- *
- * @param s
- */
 export function getAdjustedStudyHours(s: Study): number {
 	switch (s.type) {
 		case StudyType.Self:

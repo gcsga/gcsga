@@ -1,11 +1,10 @@
-import { CharacterSystemData } from "@actor/character"
 import { HitLocationTable } from "@actor/character/hit_location"
 import { CharacterImportedData } from "@actor/character/import"
 import { EquipmentContainerSystemData, EquipmentSystemData } from "@item"
 import { TraitSystemData } from "@item/trait/data"
 import { TraitContainerSystemData } from "@item/trait_container/data"
 import { SYSTEM_NAME, SETTINGS } from "@module/data"
-import { LocalizeGURPS, round, Static } from "@util"
+import { LocalizeGURPS, fxp, Static } from "@util"
 import { StaticCharacterGURPS } from "."
 import {
 	StaticTrait,
@@ -538,7 +537,7 @@ export class StaticCharacterImporter {
 		let e = new StaticEquipment()
 		e.name = i.description || "Equipment"
 		e.count = i.type === "equipment_container" ? "1" : i.quantity || "0"
-		e.cost = round(parseFloat(i.calc.extended_value) ?? 0) / (i.quantity || 1, 4)
+		e.cost = fxp.Int.from(parseFloat(i.calc.extended_value) ?? 0) / (i.quantity || 1, 4)
 		e.carried = carried
 		e.equipped = i.equipped
 		e.techlevel = i.tech_level || ""
@@ -555,7 +554,7 @@ export class StaticCharacterImporter {
 				if (!j.disabled) e.notes += `${e.notes ? "; " : ""}${j.name}${j.notes ? ` (${j.notes})` : ""}`
 		}
 		if (e.note) e.notes += (e.notes ? "\n" : "") + e.note
-		e.weight = round(parseFloat(i.calc.extended_weight) ?? 0) / (i.quantity || 1, 4)
+		e.weight = fxp.Int.from(parseFloat(i.calc.extended_weight) ?? 0) / (i.quantity || 1, 4)
 		e.pageref = i.reference || ""
 		let old = this.document._findElementIn("system.equipment.carried", e.uuid)
 		if (!old) old = this.document._findElementIn("system.equipment.other", e.uuid)
@@ -1003,8 +1002,8 @@ export class StaticCharacterImporter {
 		tableNames.forEach(it => (tableScores[it] = 0))
 
 		// Increment the count for a tableScore if it contains the same hit location as "prot"
-		locations.forEach(function (hitLocation) {
-			tableNames.forEach(function (tableName) {
+		locations.forEach(function(hitLocation) {
+			tableNames.forEach(function(tableName) {
 				if (StaticHitLocationDictionary[tableName].hasOwnProperty(hitLocation.where)) {
 					tableScores[tableName] = tableScores[tableName] + 1
 				}
@@ -1014,7 +1013,7 @@ export class StaticCharacterImporter {
 		// Select the tableScore with the highest score.
 		let match = -1
 		let name = StaticHitLocation.HUMANOID
-		Object.keys(tableScores).forEach(function (score) {
+		Object.keys(tableScores).forEach(function(score) {
 			if (tableScores[score] > match) {
 				match = tableScores[score]
 				name = score

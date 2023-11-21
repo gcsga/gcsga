@@ -41,12 +41,12 @@ import { TooltipGURPS } from "@module/tooltip"
 import {
 	damageProgression,
 	equalFold,
+	fxp,
 	getCurrentTime,
 	LengthUnits,
 	LocalizeGURPS,
 	newUUID,
 	numberCompare,
-	round,
 	SelfControl,
 	stringCompare,
 	urlToBase64,
@@ -533,34 +533,34 @@ export class CharacterGURPS extends BaseActorGURPS {
 		const ST = this.attributes.get(gid.Strength)?._effective(this.calc?.lifting_st_bonus ?? 0) || 0
 		let basicLift = ST ** 2 / 5
 		if (this.settings.damage_progression === DamageProgression.KnowingYourOwnStrength)
-			basicLift = round(2 * 10 ** (ST / 10), 1)
+			basicLift = fxp.Int.from(2 * 10 ** (ST / 10), 1)
 		if (basicLift === Infinity || basicLift === -Infinity) return 0
 		if (basicLift >= 10) return Math.round(basicLift)
 		return basicLift
 	}
 
 	get oneHandedLift(): number {
-		return round(this.basicLift * 2, 4)
+		return fxp.Int.from(this.basicLift * 2, 4)
 	}
 
 	get twoHandedLift(): number {
-		return round(this.basicLift * 8, 4)
+		return fxp.Int.from(this.basicLift * 8, 4)
 	}
 
 	get shove(): number {
-		return round(this.basicLift * 12, 4)
+		return fxp.Int.from(this.basicLift * 12, 4)
 	}
 
 	get runningShove(): number {
-		return round(this.basicLift * 24, 4)
+		return fxp.Int.from(this.basicLift * 24, 4)
 	}
 
 	get carryOnBack(): number {
-		return round(this.basicLift * 15, 4)
+		return fxp.Int.from(this.basicLift * 15, 4)
 	}
 
 	get shiftSlightly(): number {
-		return round(this.basicLift * 50, 4)
+		return fxp.Int.from(this.basicLift * 50, 4)
 	}
 
 	get fastWealthCarried(): string {
@@ -571,36 +571,36 @@ export class CharacterGURPS extends BaseActorGURPS {
 		return Weight.format(this.weightCarried(false), this.weightUnits)
 	}
 
-	encumbranceLevel(for_skills = true, carried = this.weightCarried(for_skills)): Encumbrance {
+	encumbranceLevel(forSkills = true, carried = this.weightCarried(forSkills)): Encumbrance {
 		const autoEncumbrance = this.getFlag(SYSTEM_NAME, ActorFlags.AutoEncumbrance) as {
 			active: boolean
 			manual: number
 		}
 		const allEncumbrance = this.allEncumbrance
 		if (autoEncumbrance && !autoEncumbrance.active) return allEncumbrance[autoEncumbrance?.manual || 0]
-		// Const carried = this.weightCarried(for_skills)
+		// Const carried = this.weightCarried(forSkills)
 		for (const e of allEncumbrance) {
 			if (carried <= e.maximum_carry) return e
 		}
 		return allEncumbrance[allEncumbrance.length - 1]
 	}
 
-	weightCarried(for_skills: boolean): number {
+	weightCarried(forSkills: boolean): number {
 		let total = 0
-		this.carried_equipment.forEach(e => {
+		this.carriedEquipment.forEach(e => {
 			if (e.container === this) {
-				total += e.extendedWeight(for_skills, this.settings.default_weight_units)
+				total += e.extendedWeight(forSkills, this.settings.default_weight_units)
 			}
 		})
-		return round(total, 4)
+		return fxp.Int.from(total, 4)
 	}
 
 	wealthCarried(): number {
 		let value = 0
-		for (const e of this.carried_equipment) {
+		for (const e of this.carriedEquipment) {
 			if (e.container === this) value += e.extendedValue
 		}
-		return round(value, 4)
+		return fxp.Int.from(value, 4)
 	}
 
 	get fastWealthNotCarried(): string {
@@ -612,7 +612,7 @@ export class CharacterGURPS extends BaseActorGURPS {
 		this.other_equipment.forEach(e => {
 			if (e.container === this) value += e.extendedValue
 		})
-		return round(value, 4)
+		return fxp.Int.from(value, 4)
 	}
 
 	get strengthOrZero(): number {
@@ -652,31 +652,31 @@ export class CharacterGURPS extends BaseActorGURPS {
 		const ae: Encumbrance[] = [
 			{
 				level: 0,
-				maximum_carry: round(bl, 4),
+				maximum_carry: fxp.Int.from(bl, 4),
 				penalty: 0,
 				name: LocalizeGURPS.translations.gurps.character.encumbrance[0],
 			},
 			{
 				level: 1,
-				maximum_carry: round(bl * 2, 4),
+				maximum_carry: fxp.Int.from(bl * 2, 4),
 				penalty: -1,
 				name: LocalizeGURPS.translations.gurps.character.encumbrance[1],
 			},
 			{
 				level: 2,
-				maximum_carry: round(bl * 3, 4),
+				maximum_carry: fxp.Int.from(bl * 3, 4),
 				penalty: -2,
 				name: LocalizeGURPS.translations.gurps.character.encumbrance[2],
 			},
 			{
 				level: 3,
-				maximum_carry: round(bl * 6, 4),
+				maximum_carry: fxp.Int.from(bl * 6, 4),
 				penalty: -3,
 				name: LocalizeGURPS.translations.gurps.character.encumbrance[3],
 			},
 			{
 				level: 4,
-				maximum_carry: round(bl * 10, 4),
+				maximum_carry: fxp.Int.from(bl * 10, 4),
 				penalty: -4,
 				name: LocalizeGURPS.translations.gurps.character.encumbrance[4],
 			},
@@ -786,7 +786,7 @@ export class CharacterGURPS extends BaseActorGURPS {
 		return equipment
 	}
 
-	get carried_equipment(): Collection<EquipmentGURPS | EquipmentContainerGURPS> {
+	get carriedEquipment(): Collection<EquipmentGURPS | EquipmentContainerGURPS> {
 		return new Collection(
 			this.equipment
 				.filter(item => !item.other)
@@ -874,8 +874,8 @@ export class CharacterGURPS extends BaseActorGURPS {
 				else reactionMap.set(situation, new CondMod(source, situation, amount))
 			}
 		}
-		for (const e of this.carried_equipment) {
-			if (e.equipped && e.quantity > 0) {
+		for (const e of this.carriedEquipment) {
+			if (e.equipped && e.system.quantity > 0) {
 				let source = LocalizeGURPS.format(LocalizeGURPS.translations.gurps.reaction.from_equipment, {
 					name: e.name ?? "",
 				})
@@ -930,8 +930,8 @@ export class CharacterGURPS extends BaseActorGURPS {
 				this.conditionalModifiersFromFeatureList(source, mod.features, reactionMap)
 			}
 		})
-		for (const e of this.carried_equipment) {
-			if (e.equipped && e.quantity > 0) {
+		for (const e of this.carriedEquipment) {
+			if (e.equipped && e.system.quantity > 0) {
 				let source = LocalizeGURPS.format(LocalizeGURPS.translations.gurps.reaction.from_equipment, {
 					name: e.name ?? "",
 				})
@@ -1793,7 +1793,6 @@ export class CharacterGURPS extends BaseActorGURPS {
 		const items = (this.items as unknown as Collection<BaseItemGURPS>)
 			.filter(e => !e.getFlag(SYSTEM_NAME, ItemFlags.Container))
 			.map((e: BaseItemGURPS) => e.exportSystemData(true))
-		console.log(items)
 		const third_party: any = {}
 
 		third_party.settings = { resource_trackers: system.settings.resource_trackers }

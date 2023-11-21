@@ -203,7 +203,7 @@ export class LootSheetGURPS extends ActorSheetGURPS {
 				return item.update({ "system.quantity": item.system.quantity + 1 })
 			},
 		})
-		if (item.quantity > 0)
+		if (item.system.quantity > 0)
 			ctx.menuItems.push({
 				name: LocalizeGURPS.translations.gurps.context.decrement,
 				icon: "<i class='fas fa-down'></i>",
@@ -215,7 +215,7 @@ export class LootSheetGURPS extends ActorSheetGURPS {
 			name: LocalizeGURPS.translations.gurps.context.increase_tech_level,
 			icon: "<i class='fas fa-gear'></i><i class='fas fa-up'></i>",
 			callback: () => {
-				let tl = item.techLevel
+				let tl = item.system.tech_level
 				let tlNumber = tl.match(/\d+/)?.[0]
 				if (!tlNumber) return
 				const newTLNumber = parseInt(tlNumber) + 1
@@ -223,12 +223,12 @@ export class LootSheetGURPS extends ActorSheetGURPS {
 				return item.update({ "system.tech_level": tl })
 			},
 		})
-		if (parseInt(item.techLevel) > 0)
+		if (parseInt(item.system.tech_level) > 0)
 			ctx.menuItems.push({
 				name: LocalizeGURPS.translations.gurps.context.decrease_tech_level,
 				icon: "<i class='fas fa-gear'></i><i class='fas fa-down'></i>",
 				callback: () => {
-					let tl = item.techLevel
+					let tl = item.system.tech_level
 					let tlNumber = tl.match(/\d+/)?.[0]
 					if (!tlNumber) return
 					const newTLNumber = parseInt(tlNumber) - 1

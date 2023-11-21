@@ -17,7 +17,7 @@ export class TraitGURPS extends ItemGCS {
 		return `${name}${levels ? ` ${levels}` : ""}`
 	}
 
-	override get notes(): string {
+	get secondaryText(): string {
 		const out: string[] = []
 		if (inlineNote(this.actor, "user_description_display")) {
 			if (this.system.userdesc) out.push(this.system.userdesc)

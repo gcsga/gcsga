@@ -19,12 +19,11 @@ export class SkillGURPS extends ItemGCS {
 		const name: string = this.name ?? ""
 		const specialization = this.specialization
 		const TL = this.techLevel
-		return `${name}${this.system.tech_level_required ? `/TL${TL ?? ""}` : ""}${
-			specialization ? ` (${specialization})` : ""
-		}`
+		return `${name}${this.system.tech_level_required ? `/TL${TL ?? ""}` : ""}${specialization ? ` (${specialization})` : ""
+			}`
 	}
 
-	override get notes(): string {
+	get secondaryText(): string {
 		const out: string[] = []
 		if (inlineNote(this.actor, "modifiers_display")) {
 			if (this.difficulty !== Difficulty.Wildcard && this.defaultSkill) {
