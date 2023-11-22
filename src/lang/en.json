@@ -1549,11 +1549,13 @@
 				"adjusted_damage": "Adjusted Damage",
 				"adjusted_injury": "Adjusted Injury",
 				"basic_damage": "Basic Damage",
+				"damage_reduction": "Damage Reduction",
 				"damage_resistance": "Damage Resistance",
 				"effective_dr": "Effective DR",
 				"effective_modifier": "Effective Modifier",
 				"injury": "Injury",
 				"injury_tolerance": "Injury Tolerance",
+				"max_location": "Max for Location",
 				"penetrating": "Penetrating",
 				"wounding_modifier": "Wounding Modifier"
 			},
