@@ -411,16 +411,30 @@ class DamageTargetActor implements DamageTarget {
 	}
 
 	get ST(): number {
-		return (this.actor.attributes.get("st") as any).calc.value
+		return this.getSyntheticAttribute("st")?.calc.value ?? 0
 	}
 
 	get hitPoints(): HitPointsCalc {
-		const hp = this.actor.attributes.get("hp") as any
-		return hp.calc ?? hp
+		return this.getSyntheticAttribute("hp")!.calc
 	}
 
 	get hitLocationTable(): HitLocationTable {
 		return this.actor.hitLocationTable
+	}
+
+	/**
+	 * This is my sneaky way to make dynamic and static actor attributes look the same. Most of my logic uses the calc
+	 * property, but I don't want to have to add that to all the static attributes. So, if the attribute doesn't have
+	 * a calc property, I'll add one. This is a bit of a hack, but it works.
+	 * @param name
+	 * @returns an object with a calc property containing the current and max values.
+	 */
+	private getSyntheticAttribute(name: string): any | undefined {
+		const attr = this.actor.attributes.get(name) as any
+		if (attr && !attr?.calc) {
+			attr.calc = { value: attr?.max, current: attr?.current }
+		}
+		return attr
 	}
 
 	/**
