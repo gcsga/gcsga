@@ -162,8 +162,8 @@ export class BaseActorGURPS extends Actor {
 		const effects = this.gEffects.map(e => {
 			const overlay = e instanceof ConditionGURPS && e.cid === ConditionID.Dead
 			const a = new ActiveEffect({ name: e.name, icon: e.img || "" } as any)
-				// a.setFlag("core", "overlay", overlay)
-				; (a as any).flags = { core: { overlay: overlay } }
+			// a.setFlag("core", "overlay", overlay)
+			;(a as any).flags = { core: { overlay: overlay } }
 			return a
 		})
 		return super.temporaryEffects.concat(effects)
@@ -415,7 +415,8 @@ class DamageTargetActor implements DamageTarget {
 	}
 
 	get hitPoints(): HitPointsCalc {
-		return (this.actor.attributes.get("hp") as any).calc
+		const hp = this.actor.attributes.get("hp") as any
+		return hp.calc ?? hp
 	}
 
 	get hitLocationTable(): HitLocationTable {

@@ -101,6 +101,11 @@ export class DamageChat {
 	static async handleDropOnCanvas(canvas: Canvas, dropData: DropData): Promise<void> {
 		if (dropData.type !== DamageChat.TYPE) return
 
+		if (dropData.payload.index === -1) {
+			ui.notifications?.warn("Multiple damage rolls are not yet supported.")
+			return
+		}
+
 		// Check to see what is under the cursor at this drop point
 		const tokens = CanvasUtil.getCanvasTokensAtPosition({ x: dropData.x, y: dropData.y })
 
