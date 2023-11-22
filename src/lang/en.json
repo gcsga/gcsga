@@ -1202,6 +1202,7 @@
 				"title_character": "Import GCS Character Library",
 				"title_item": "Import GCS Item Library",
 				"file_picker_single": "Select a GCS library file",
+				"file_picker_multiple": "Select GCS character files",
 				"source_data": "Source Data",
 				"import": "Import",
 				"cancel": "Cancel",

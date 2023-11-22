@@ -20,7 +20,7 @@ export class ItemSheetGCS extends ContainerSheetGURPS {
 	protected _addItemHeaderContextMenu(element: HTMLElement) {
 		const type = $(element).parent(".item-list")[0].id
 		// const ctx = new ContextMenu(html, ".menu", [])
-		const menuItems = (function(self: ItemSheetGCS): ContextMenuEntry[] {
+		const menuItems = (function (self: ItemSheetGCS): ContextMenuEntry[] {
 			switch (type) {
 				case "trait-modifiers":
 					return [
@@ -141,7 +141,7 @@ export class ItemSheetGCS extends ContainerSheetGURPS {
 		const element = $(event.currentTarget)
 		const type = element.parent(".item-list")[0].id
 		const ctx = new ContextMenu(html, ".menu", [])
-		ctx.menuItems = (function(self: ItemSheetGCS): ContextMenuEntry[] {
+		ctx.menuItems = (function (self: ItemSheetGCS): ContextMenuEntry[] {
 			switch (type) {
 				case "trait-modifiers":
 					return [
@@ -230,7 +230,10 @@ export class ItemSheetGCS extends ContainerSheetGURPS {
 		return super._updateObject(event, formData)
 	}
 
-	render(force?: boolean | undefined, options?: Application.RenderOptions<DocumentSheetOptions<Item>> | undefined): this {
+	render(
+		force?: boolean | undefined,
+		options?: Application.RenderOptions<DocumentSheetOptions<Item>> | undefined
+	): this {
 		if (this.object.container instanceof Item && this.object.container.sheet?.rendered)
 			this.object.container.sheet.render(true)
 		return super.render(force)

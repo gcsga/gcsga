@@ -156,15 +156,15 @@ export class EffectGURPS extends BaseItemGURPS {
 		if (this.canLevel && this.level) label += ` ${this.level}`
 		for (let t of tokens) {
 			if (!t.visible || !t.renderable) continue
-				; (canvas as any).interface.createScrollingText(t.center, label, {
-					anchor: CONST.TEXT_ANCHOR_POINTS.CENTER,
-					direction: enabled ? CONST.TEXT_ANCHOR_POINTS.TOP : CONST.TEXT_ANCHOR_POINTS.BOTTOM,
-					distance: 2 * t.h,
-					fontSize: 28,
-					stroke: 0x000000,
-					strokeThickness: 4,
-					jitter: 0.25,
-				})
+			;(canvas as any).interface.createScrollingText(t.center, label, {
+				anchor: CONST.TEXT_ANCHOR_POINTS.CENTER,
+				direction: enabled ? CONST.TEXT_ANCHOR_POINTS.TOP : CONST.TEXT_ANCHOR_POINTS.BOTTOM,
+				distance: 2 * t.h,
+				fontSize: 28,
+				stroke: 0x000000,
+				strokeThickness: 4,
+				jitter: 0.25,
+			})
 		}
 	}
 

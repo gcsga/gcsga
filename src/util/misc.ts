@@ -349,9 +349,9 @@ export async function getDefaultSkills() {
 	for (const s in skillPacks)
 		if (skillPacks[s].skillDefault) {
 			const pack = game.packs.get(s) as CompendiumCollection<any>
-				; (await pack.getDocuments()).forEach(e => {
-					skills.push(e)
-				})
+			;(await pack.getDocuments()).forEach(e => {
+				skills.push(e)
+			})
 		}
 	CONFIG.GURPS.skillDefaults = skills
 }
@@ -372,7 +372,8 @@ export function inlineNote(
 	actor: CharacterGURPS,
 	option: "user_description_display" | "modifiers_display" | "notes_display" | "skill_level_adj_display"
 ): boolean {
-	if (actor)
-		return [DisplayMode.Inline, DisplayMode.InlineAndTooltip].includes(actor.settings[option])
-	return [DisplayMode.Inline, DisplayMode.InlineAndTooltip].includes((game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`) as any)[option])
+	if (actor) return [DisplayMode.Inline, DisplayMode.InlineAndTooltip].includes(actor.settings[option])
+	return [DisplayMode.Inline, DisplayMode.InlineAndTooltip].includes(
+		(game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`) as any)[option]
+	)
 }

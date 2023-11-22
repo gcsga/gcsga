@@ -16,37 +16,36 @@ export enum EquipmentModifierWeightType {
 	Original = "to_original_weight",
 	Base = "to_base_weight",
 	FinalBase = "to_final_base_weight",
-	Final = "to_final_weight"
+	Final = "to_final_weight",
 }
 
 export enum EquipmentModifierWeightValueType {
 	Addition = "+",
 	PercentageAddition = "%",
 	PercentageMultiplier = "x%",
-	Multiplier = "x"
+	Multiplier = "x",
 }
-
 
 const PermittedValueTypes: Record<EquipmentModifierWeightType, EquipmentModifierWeightValueType[]> = {
 	[EquipmentModifierWeightType.Original]: [
 		EquipmentModifierWeightValueType.Addition,
-		EquipmentModifierWeightValueType.PercentageAddition
+		EquipmentModifierWeightValueType.PercentageAddition,
 	],
 	[EquipmentModifierWeightType.Base]: [
 		EquipmentModifierWeightValueType.Addition,
 		EquipmentModifierWeightValueType.PercentageMultiplier,
-		EquipmentModifierWeightValueType.Multiplier
+		EquipmentModifierWeightValueType.Multiplier,
 	],
 	[EquipmentModifierWeightType.Final]: [
 		EquipmentModifierWeightValueType.Addition,
 		EquipmentModifierWeightValueType.PercentageMultiplier,
-		EquipmentModifierWeightValueType.Multiplier
+		EquipmentModifierWeightValueType.Multiplier,
 	],
 	[EquipmentModifierWeightType.FinalBase]: [
 		EquipmentModifierWeightValueType.Addition,
 		EquipmentModifierWeightValueType.PercentageMultiplier,
-		EquipmentModifierWeightValueType.Multiplier
-	]
+		EquipmentModifierWeightValueType.Multiplier,
+	],
 }
 
 export function determineModifierWeightValueTypeFromString(
@@ -65,7 +64,6 @@ export function determineModifierWeightValueTypeFromString(
 				return EquipmentModifierWeightValueType.Multiplier
 			default:
 				return EquipmentModifierWeightValueType.Addition
-
 		}
 	}
 	const mvt = fromString(s)
@@ -73,10 +71,7 @@ export function determineModifierWeightValueTypeFromString(
 	return permitted.find(e => e === mvt) ?? permitted[0]
 }
 
-export function extractFraction(
-	type: EquipmentModifierWeightValueType,
-	s: string
-): fxp.Fraction {
+export function extractFraction(type: EquipmentModifierWeightValueType, s: string): fxp.Fraction {
 	s = s.trim().replace(new RegExp(`^${EquipmentModifierWeightValueType.Multiplier}*`), "")
 	while (s.length > 0 && s.at(-1)?.match(/[0-9]/)) s = s.substring(0, s.length - 1)
 	const fraction = fxp.Fraction.new(s)
@@ -86,7 +81,7 @@ export function extractFraction(
 				fraction.numerator = 100
 				fraction.denominator = 1
 			}
-			break;
+			break
 		case EquipmentModifierWeightValueType.Multiplier:
 			if (fraction.numerator <= 0) {
 				fraction.numerator = 1

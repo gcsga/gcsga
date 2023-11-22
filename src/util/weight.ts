@@ -1,7 +1,6 @@
 import { Int } from "./fxp"
 
 export class Weight {
-
 	// toString(radix?: number | undefined): string {
 	// 	return Weight.format(parseFloat(super.toString(radix)), WeightUnits.Pound)
 	// }
@@ -68,7 +67,6 @@ export class Weight {
 		return defUnits
 	}
 }
-
 
 export enum WeightUnits {
 	Pound = "lb",

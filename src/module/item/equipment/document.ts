@@ -4,11 +4,7 @@ import { EquipmentModifierGURPS, valueAdjustedForModifiers, weightAdjustedForMod
 import { EquipmentModifierContainerGURPS } from "@item/equipment_modifier_container"
 import { ItemGCS } from "@item/gcs"
 import { DisplayMode, SETTINGS, SYSTEM_NAME } from "@module/data"
-import {
-	Weight,
-	WeightUnits,
-	fxp,
-} from "@util"
+import { Weight, WeightUnits, fxp } from "@util"
 import { HandlebarsHelpersGURPS } from "@util/handlebars_helpers"
 import { EquipmentData } from "./data"
 import { Feature } from "@module/config"
@@ -128,7 +124,16 @@ export class EquipmentGURPS extends ItemGCS {
 	}
 
 	extendedWeight(forSkills: boolean, defUnits: WeightUnits): number {
-		return extendedWeightAdjustedForModifiers(defUnits, this.system.quantity, this.weight, this.deepModifiers, this.features, this.children, forSkills, this.system.ignore_weight_for_skills && this.equipped)
+		return extendedWeightAdjustedForModifiers(
+			defUnits,
+			this.system.quantity,
+			this.weight,
+			this.deepModifiers,
+			this.features,
+			this.children,
+			forSkills,
+			this.system.ignore_weight_for_skills && this.equipped
+		)
 	}
 
 	get extendedWeightFast(): string {
@@ -155,7 +160,6 @@ export class EquipmentGURPS extends ItemGCS {
 	toggleState(): void {
 		this.equipped = !this.equipped
 	}
-
 }
 
 export function extendedWeightAdjustedForModifiers(
@@ -185,7 +189,7 @@ export function extendedWeightAdjustedForModifiers(
 			}
 		})
 		if (percentage >= 100) contained = 0
-		else if (percentage > 0) contained -= contained * percentage / 100
+		else if (percentage > 0) contained -= (contained * percentage) / 100
 		base += Math.max(0, contained - reduction)
 	}
 	return fxp.Int.from(base * quantity)

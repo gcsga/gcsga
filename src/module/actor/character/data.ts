@@ -3,7 +3,7 @@ import { ActorFlags, ActorFlagsGURPS, ActorSystemData, BaseActorSourceGURPS } fr
 import { HitLocationTableData } from "./hit_location"
 import { AttributeDefObj, AttributeObj, PoolThreshold } from "@module/attribute"
 import { ResourceTrackerDefObj, ResourceTrackerObj } from "@module/resource_tracker"
-import { LengthUnits, Weight, WeightUnits, } from "@util"
+import { LengthUnits, Weight, WeightUnits } from "@util"
 import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
 
 export interface DocumentModificationOptionsGURPS extends DocumentModificationOptions {
@@ -16,7 +16,7 @@ export interface CharacterSource extends BaseActorSourceGURPS<ActorType.Characte
 }
 export interface CharacterDataGURPS
 	extends Omit<CharacterSource, "effects" | "flags" | "items" | "token">,
-	CharacterSystemData {
+		CharacterSystemData {
 	readonly type: CharacterSource["type"]
 	data: CharacterSystemData
 	flags: CharacterFlags

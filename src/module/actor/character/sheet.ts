@@ -200,7 +200,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 
 	_addItemHeaderContextMenu(element: HTMLElement) {
 		const type = $(element).parent(".item-list")[0].id
-		const menuItems = (function(self: CharacterSheetGURPS): ContextMenuEntry[] {
+		const menuItems = (function (self: CharacterSheetGURPS): ContextMenuEntry[] {
 			switch (type) {
 				case "traits":
 					return [
@@ -302,7 +302,6 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 
 		ContextMenu.create(this, $(element), "*", menuItems)
 	}
-
 
 	async _newItem(type: ItemType, other = false) {
 		const itemData: any = {
@@ -985,14 +984,14 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		}
 		const buttons: Application.HeaderButton[] = this.actor.canUserModify(game.user!, "update")
 			? [
-				edit_button,
-				{
-					label: "",
-					class: "gmenu",
-					icon: "gcs-all-seeing-eye",
-					onclick: event => this._openGMenu(event),
-				},
-			]
+					edit_button,
+					{
+						label: "",
+						class: "gmenu",
+						icon: "gcs-all-seeing-eye",
+						onclick: event => this._openGMenu(event),
+					},
+			  ]
 			: []
 		const all_buttons = [...buttons, ...super._getHeaderButtons()]
 		return all_buttons

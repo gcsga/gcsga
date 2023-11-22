@@ -155,29 +155,19 @@ async function _onRollClick(event: JQuery.ClickEvent) {
 				return
 			}
 		}
-	} else if ([
-		RollType.Spell,
-		RollType.SpellRelative
-	].includes(type)) {
+	} else if ([RollType.Spell, RollType.SpellRelative].includes(type)) {
 		if (actor instanceof CharacterGURPS) {
 			const itemData = $(event.currentTarget).data("json")
-			data.item = actor.spells.find(e =>
-				e.name === itemData.name
-			)
+			data.item = actor.spells.find(e => e.name === itemData.name)
 		}
 		if (!data.item || data.item.effectiveLevel === -Infinity) {
 			ui.notifications?.warn(LocalizeGURPS.translations.gurps.notification.no_default_skill)
 			return
 		}
-	} else if ([
-		RollType.Attack
-	].includes(type)) {
+	} else if ([RollType.Attack].includes(type)) {
 		if (actor instanceof CharacterGURPS) {
 			const itemData = $(event.currentTarget).data("json")
-			data.item = actor.weapons.find(e =>
-				e.itemName === itemData.itemName &&
-				e.usage === itemData.usage
-			)
+			data.item = actor.weapons.find(e => e.itemName === itemData.itemName && e.usage === itemData.usage)
 		}
 		if (!data.item || data.item.effectiveLevel === -Infinity) {
 			ui.notifications?.warn(LocalizeGURPS.translations.gurps.notification.no_default_skill)

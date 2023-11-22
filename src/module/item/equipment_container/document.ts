@@ -3,11 +3,7 @@ import { EquipmentModifierGURPS, valueAdjustedForModifiers, weightAdjustedForMod
 import { EquipmentModifierContainerGURPS } from "@item/equipment_modifier_container"
 import { ItemGCS } from "@item/gcs"
 import { SETTINGS, SYSTEM_NAME } from "@module/data"
-import {
-	fxp,
-	Weight,
-	WeightUnits,
-} from "@util"
+import { fxp, Weight, WeightUnits } from "@util"
 import { EquipmentContainerData } from "./data"
 
 export class EquipmentContainerGURPS extends ItemGCS {
