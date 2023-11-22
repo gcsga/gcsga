@@ -1946,6 +1946,19 @@ describe("Damage calculator", () => {
 				// But maximum damage for a limb for this character is 10.
 				expect(calc.results.injury!.value).toBe(10)
 			})
+
+			it("Damage Reduction applies to Blunt Trauma.", () => {
+				_roll.basicDamage = 20
+				_roll.damageType = DamageTypes.cr
+
+				_torso._map.set("all", 20)
+				const damageReduction = new _TargetTrait("Damage Reduction", 2)
+				_target._traits.push(damageReduction)
+
+				let calc = _create(_roll, _target)
+				calc.overrideFlexible(true)
+				expect(calc.results.injury!.value).toBe(2)
+			})
 		})
 	})
 
