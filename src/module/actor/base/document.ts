@@ -411,16 +411,23 @@ class DamageTargetActor implements DamageTarget {
 	}
 
 	get ST(): number {
-		return (this.actor.attributes.get("st") as any).calc.value
+		return this.getSyntheticAttribute("st")?.calc.value ?? 0
 	}
 
 	get hitPoints(): HitPointsCalc {
-		const hp = this.actor.attributes.get("hp") as any
-		return hp.calc ?? hp
+		return this.getSyntheticAttribute("hp")!.calc
 	}
 
 	get hitLocationTable(): HitLocationTable {
 		return this.actor.hitLocationTable
+	}
+
+	private getSyntheticAttribute(name: string): any | undefined {
+		const attr = this.actor.attributes.get(name) as any
+		if (attr && !attr?.calc) {
+			attr.calc = { value: attr?.max, current: attr?.current }
+		}
+		return attr
 	}
 
 	/**

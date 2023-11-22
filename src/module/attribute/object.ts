@@ -75,13 +75,6 @@ export class Attribute {
 		return new AttributeDef(this.actor.settings.attributes.find(e => e.id === this.attr_id))
 	}
 
-	/**
-	 * Adding this to drive parity with imported Characters, at least for HitPoints.
-	 */
-	get value(): number {
-		return this.max
-	}
-
 	get max(): number {
 		const def = this.attribute_def
 		if (!def) return 0
