@@ -1,8 +1,8 @@
 import { ActorGURPS } from "@module/config"
 import { ConfiguredDocumentClass, PropertiesToSource } from "types/types/helperTypes"
-import { TokenDocumentGURPS } from "./document";
-import { TokenDataProperties } from "types/foundry/common/data/data.mjs/tokenData";
-import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs";
+import { TokenDocumentGURPS } from "./document"
+import { TokenDataProperties } from "types/foundry/common/data/data.mjs/tokenData"
+import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
 
 export class TokenGURPS extends Token {
 	x!: number

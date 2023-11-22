@@ -222,4 +222,3 @@ export class LootGURPS extends BaseActorGURPS {
 		dialog.render(true)
 	}
 }
-

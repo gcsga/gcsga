@@ -101,7 +101,7 @@ export abstract class ContainerGURPS extends BaseItemGURPS {
 				(e: BaseItemGURPS) => e.getFlag(SYSTEM_NAME, ItemFlags.Container) === this.id
 			)) {
 				if (this.type === ItemType.EquipmentContainer && item.type === ItemType.Equipment) {
-					; (item as any).system.other = (this.system as any).other
+					;(item as any).system.other = (this.system as any).other
 				}
 				this.items.set(item.id!, item)
 			}

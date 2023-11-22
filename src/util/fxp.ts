@@ -1,9 +1,8 @@
-
 const FourDecimalPlaces = 4
 
 export class Int {
 	static from(n: number, DP = FourDecimalPlaces): number {
-		return Math.round(n * (10 ** DP)) / (10 ** DP)
+		return Math.round(n * 10 ** DP) / 10 ** DP
 	}
 
 	static fromStringForced(str: string): number {
@@ -29,10 +28,7 @@ export class Fraction {
 
 	static new(str: string): Fraction {
 		const parts = str.split("/")
-		const f = new Fraction(
-			Int.fromStringForced(parts[0]),
-			Int.from(1)
-		)
+		const f = new Fraction(Int.fromStringForced(parts[0]), Int.from(1))
 		if (parts.length > 1) f.denominator = Int.fromStringForced(parts[1])
 		return f
 	}

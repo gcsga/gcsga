@@ -25,35 +25,35 @@ export class CompendiumEquipmentTab extends CompendiumTab {
 			indexFields
 		)) {
 			const collection = game.packs.get(pack.collection)
-				; ((await collection?.getDocuments()) as any).forEach((equipment: any) => {
-					if (![ItemType.Equipment, ItemType.EquipmentContainer].includes(equipment.type)) return
-					equipment.prepareData()
-					equipment_list.push({
-						_id: equipment._id,
-						type: equipment.type,
-						name: equipment.name,
-						formattedName: equipment.formattedName,
-						notes: equipment.notes,
-						img: equipment.img,
-						compendium: pack,
-						open: equipment.open,
-						uuid: equipment.uuid,
-						id: equipment._id,
-						children: equipment instanceof EquipmentContainerGURPS ? equipment.children : [],
-						uses: equipment.maxUses,
-						techLevel: equipment.techLevel,
-						legalityClass: equipment.legalityClass,
-						adjustedValue: equipment.adjustedValue,
-						adjustedWeightFast: equipment.adjustedWeightFast,
-						tags: equipment.tags,
-						reference: equipment.reference,
-						reference_highlight: equipment.reference_highlight,
-						parents: equipment.parents,
-						indent: equipment.indent,
-						modifiers: equipment.modifiers,
-						flags: equipment.flags,
-					})
+			;((await collection?.getDocuments()) as any).forEach((equipment: any) => {
+				if (![ItemType.Equipment, ItemType.EquipmentContainer].includes(equipment.type)) return
+				equipment.prepareData()
+				equipment_list.push({
+					_id: equipment._id,
+					type: equipment.type,
+					name: equipment.name,
+					formattedName: equipment.formattedName,
+					notes: equipment.notes,
+					img: equipment.img,
+					compendium: pack,
+					open: equipment.open,
+					uuid: equipment.uuid,
+					id: equipment._id,
+					children: equipment instanceof EquipmentContainerGURPS ? equipment.children : [],
+					uses: equipment.maxUses,
+					techLevel: equipment.techLevel,
+					legalityClass: equipment.legalityClass,
+					adjustedValue: equipment.adjustedValue,
+					adjustedWeightFast: equipment.adjustedWeightFast,
+					tags: equipment.tags,
+					reference: equipment.reference,
+					reference_highlight: equipment.reference_highlight,
+					parents: equipment.parents,
+					indent: equipment.indent,
+					modifiers: equipment.modifiers,
+					flags: equipment.flags,
 				})
+			})
 		}
 		equipment_list.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0))
 

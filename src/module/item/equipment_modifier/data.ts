@@ -24,4 +24,3 @@ export interface EquipmentModifierSystemData extends ItemGCSSystemData {
 }
 
 export { EquipmentModifierWeightType }
-
