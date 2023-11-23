@@ -14,7 +14,7 @@ describe("Mook generator", () => {
 		_parser = new MookParser("", _mook)
 	})
 
-	xdescribe("Attribute Parsing", () => {
+	describe.skip("Attribute Parsing", () => {
 		it("Standard attributes are parsed", () => {
 			_parser.text = `
 ST: 11 HP: 12 Speed: 6.00
