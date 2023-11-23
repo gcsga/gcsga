@@ -2,19 +2,22 @@
 import { Mook } from "@module/mook/document"
 import { MookParser } from "@module/mook/parse"
 import { _defaultMookData } from "./common"
+import { gid } from "@module/data"
 
 // Add real tests here.
 describe("Mook generator", () => {
 	let _mook: Mook
 	let _parser: MookParser
+	let game: null
 
 
 	beforeEach(() => {
 		_mook = new Mook(_defaultMookData)
 		_parser = new MookParser("", _mook)
+			; (global as any).game = null
 	})
 
-	describe.skip("Attribute Parsing", () => {
+	describe("Attribute Parsing", () => {
 		it("Standard attributes are parsed", () => {
 			_parser.text = `
 ST: 11 HP: 12 Speed: 6.00
@@ -25,18 +28,36 @@ Dodge: 8 Parry/Block: 9 DR: 2
 		`
 			_parser.parseStatBlock(_parser.text)
 			_mook.getAttributes()
-			expect(_mook.system.attributes).toMatchObject([
-				{ attr_id: "st", adj: 1 },
-				{ attr_id: "dx", adj: 1 },
-				{ attr_id: "iq", adj: -1 },
-				{ attr_id: "ht", adj: 1 },
-				{ attr_id: "per", adj: 1 },
-				{ attr_id: "will", adj: 1 },
-				{ attr_id: "basic_speed", adj: 0.5 },
-				{ attr_id: "basic_move", adj: -2 },
-				{ attr_id: "hp", adj: 1 },
-				{ attr_id: "fp", adj: 0 }
-			])
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Strength)?.adj)
+				.toBe(1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Dexterity)?.adj)
+				.toBe(1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Intelligence)?.adj)
+				.toBe(-1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Health)?.adj)
+				.toBe(1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Will)?.adj)
+				.toBe(1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.FrightCheck)?.adj)
+				.toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Perception)?.adj)
+				.toBe(1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Vision)?.adj)
+				.toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Hearing)?.adj)
+				.toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.TasteSmell)?.adj)
+				.toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Touch)?.adj)
+				.toBe(1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.BasicSpeed)?.adj)
+				.toBe(0.5)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.BasicMove)?.adj)
+				.toBe(-2)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.FatiguePoints)?.adj)
+				.toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.HitPoints)?.adj)
+				.toBe(1)
 		})
 
 	})
