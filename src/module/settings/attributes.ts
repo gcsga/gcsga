@@ -1,5 +1,5 @@
 import { ConditionID } from "@item/condition/data"
-import { AttributeType } from "@module/attribute/data"
+import { AttributeType, ThresholdOp } from "@module/attribute/data"
 import { EFFECT_ACTION, SYSTEM_NAME } from "@module/data"
 import { LocalizeGURPS, prepareFormData } from "@util"
 import { DnD } from "@util/drag_drop"
@@ -171,20 +171,20 @@ export class DefaultAttributeSettings extends SettingsMenuGURPS {
 							{
 								state: "Unconscious",
 								expression: "-$fp",
-								ops: ["halve_move", "halve_dodge", "halve_st"],
+								ops: [ThresholdOp.HalveMove, ThresholdOp.HalveDodge, ThresholdOp.HalveST],
 							},
 							{
 								state: "Collapse",
 								explanation:
 									"Roll vs. Will to do anything besides talk or rest; failure causes unconsciousness\nEach FP you lose below 0 also causes 1 HP of injury\nMove, Dodge and ST are halved (B426)",
 								expression: "0",
-								ops: ["halve_move", "halve_dodge", "halve_st"],
+								ops: [ThresholdOp.HalveMove, ThresholdOp.HalveDodge, ThresholdOp.HalveST],
 							},
 							{
 								state: "Tired",
 								explanation: "Move, Dodge and ST are halved (B426)",
 								expression: "round($fp/3)",
-								ops: ["halve_move", "halve_dodge", "halve_st"],
+								ops: [ThresholdOp.HalveMove, ThresholdOp.HalveDodge, ThresholdOp.HalveST],
 							},
 							{
 								state: "Tiring",
@@ -208,48 +208,48 @@ export class DefaultAttributeSettings extends SettingsMenuGURPS {
 							{
 								state: "Dead",
 								expression: "round(-$hp*5)",
-								ops: ["halve_move", "halve_dodge"],
+								ops: [ThresholdOp.HalveMove, ThresholdOp.HalveDodge],
 							},
 							{
 								state: "Dying #4",
 								explanation:
 									"Roll vs. HT to avoid death\nRoll vs. HT-4 every second to avoid falling unconscious\nMove and Dodge are halved (B419)",
 								expression: "round(-$hp*4)",
-								ops: ["halve_move", "halve_dodge"],
+								ops: [ThresholdOp.HalveMove, ThresholdOp.HalveDodge],
 							},
 							{
 								state: "Dying #3",
 								explanation:
 									"Roll vs. HT to avoid death\nRoll vs. HT-3 every second to avoid falling unconscious\nMove and Dodge are halved (B419)",
 								expression: "round(-$hp*3)",
-								ops: ["halve_move", "halve_dodge"],
+								ops: [ThresholdOp.HalveMove, ThresholdOp.HalveDodge],
 							},
 							{
 								state: "Dying #2",
 								explanation:
 									"Roll vs. HT to avoid death\nRoll vs. HT-2 every second to avoid falling unconscious\nMove and Dodge are halved (B419)",
 								expression: "round(-$hp*2)",
-								ops: ["halve_move", "halve_dodge"],
+								ops: [ThresholdOp.HalveMove, ThresholdOp.HalveDodge],
 							},
 							{
 								state: "Dying #1",
 								explanation:
 									"Roll vs. HT to avoid death\nRoll vs. HT-1 every second to avoid falling unconscious\nMove and Dodge are halved (B419)",
 								expression: "-$hp",
-								ops: ["halve_move", "halve_dodge"],
+								ops: [ThresholdOp.HalveMove, ThresholdOp.HalveDodge],
 							},
 							{
 								state: "Collapse",
 								explanation:
 									"Roll vs. HT every second to avoid falling unconscious\nMove and Dodge are halved (B419)",
 								expression: "round($hp/3)",
-								ops: ["halve_move", "halve_dodge"],
+								ops: [ThresholdOp.HalveMove, ThresholdOp.HalveDodge],
 							},
 							{
 								state: "Reeling",
 								explanation: "Move and Dodge are halved (B419)",
 								expression: "round($hp/3)",
-								ops: ["halve_move", "halve_dodge"],
+								ops: [ThresholdOp.HalveMove, ThresholdOp.HalveDodge],
 							},
 							{
 								state: "Wounded",
@@ -465,7 +465,7 @@ export class DefaultAttributeSettings extends SettingsMenuGURPS {
 				parent_index: parent_index,
 			})
 		)
-		;(event as any).dragType = type
+			; (event as any).dragType = type
 	}
 
 	protected _onDragItem(event: JQuery.DragOverEvent): void {

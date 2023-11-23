@@ -94,12 +94,12 @@ export class MookParser {
 	private parseAttributes(): void {
 		this.text = this.cleanLine(this.text)
 		const attribute_names: { id: string; match: string }[] = []
-		;(game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) as any[]).forEach(e => {
-			attribute_names.push({ id: e.id.toLowerCase(), match: e.id.toLowerCase() })
-			if (e.name && e.name !== "") attribute_names.push({ id: e.id.toLowerCase(), match: e.name.toLowerCase() })
-			if (e.full_name && e.full_name !== "")
-				attribute_names.push({ id: e.id.toLowerCase(), match: e.full_name.toLowerCase() })
-		})
+			; (game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) as any[]).forEach(e => {
+				attribute_names.push({ id: e.id.toLowerCase(), match: e.id.toLowerCase() })
+				if (e.name && e.name !== "") attribute_names.push({ id: e.id.toLowerCase(), match: e.name.toLowerCase() })
+				if (e.full_name && e.full_name !== "")
+					attribute_names.push({ id: e.id.toLowerCase(), match: e.full_name.toLowerCase() })
+			})
 
 		const preText = this.extractText([], ["Advantages:", "Advantages/Disadvantages:", "Traits:"])
 
@@ -573,7 +573,7 @@ export class MookParser {
 				height: "",
 				weight: "",
 				SM: 0,
-				portrait: foundry.CONST.DEFAULT_TOKEN,
+				portrait: "icons/svg/mystery-man.svg"
 			},
 			thrust: this.object.thrust,
 			swing: this.object.swing,
