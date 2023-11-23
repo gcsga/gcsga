@@ -229,7 +229,3 @@ export const _defaultMookData: Partial<MookData> = {
 		portrait: "icons/svg/mystery-man.svg"
 	}
 }
-
-const game: any = {}
-game.settings = new Map()
-export { game }
