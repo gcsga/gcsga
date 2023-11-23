@@ -69,15 +69,6 @@ export class CharacterImporter {
 										})
 									}
 									CharacterImporter.importCompendium(actors)
-									// const file = files[0]
-									// files.forEach((file: any) => readTextFromFile(file)).then((text: string) => console.log(text))
-									// readTextFromFile(file).then(text =>
-									// 	CharacterImporter.importCompendium({
-									// 		text: text,
-									// 		name: file.name,
-									// 		path: file.path,
-									// 	})
-									// )
 								}
 							},
 						},
@@ -206,7 +197,7 @@ export class CharacterImporter {
 				recursive: false,
 			})
 			if ((this.document?.sheet as unknown as CharacterSheetGURPS)?.config !== null) {
-				;(this.document?.sheet as unknown as CharacterSheetGURPS)?.config?.render(true)
+				; (this.document?.sheet as unknown as CharacterSheetGURPS)?.config?.render(true)
 			}
 		} catch (err) {
 			console.error(err)
