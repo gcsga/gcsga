@@ -125,7 +125,7 @@ if (!(globalThis as any).GURPS) {
 
 // Initialize system
 Hooks.once("init", async () => {
-	CONFIG.debug.hooks = true
+	// CONFIG.debug.hooks = true
 	console.log(`${SYSTEM_NAME} | Initializing ${SYSTEM_NAME}`)
 	console.log(`%c${GURPS.BANNER}`, "color:limegreen")
 	console.log(`%c${GURPS.LEGAL}`, "color:yellow")
@@ -589,8 +589,3 @@ Hooks.on("chatMessage", function(_chatlog: ChatLog, message: string, _data: any)
 	Chat.procesMessage(message)
 	return message
 })
-
-
-// Hooks.on("refreshToken", function(token: TokenGURPS, _options: any) {
-// 	token.actor.prepareData()
-// })
