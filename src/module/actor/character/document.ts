@@ -736,7 +736,7 @@ export class CharacterGURPS extends BaseActorGURPS {
 
 	// Flat list of all hit locations
 	get HitLocations(): HitLocation[] {
-		const recurseLocations = function (table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
+		const recurseLocations = function(table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
 			table.locations.forEach(e => {
 				locations.push(e)
 				if (e.subTable) locations = recurseLocations(e.subTable, locations)
@@ -1091,6 +1091,7 @@ export class CharacterGURPS extends BaseActorGURPS {
 
 	// Prepare data
 	override prepareData(): void {
+		console.warn(this.name, this.id, this.isToken, "refreshing")
 		super.prepareData()
 		const pools: any = {}
 		this.attributes.forEach(e => {
@@ -1132,6 +1133,13 @@ export class CharacterGURPS extends BaseActorGURPS {
 			let spellsChanged = this.updateSpells()
 			if (!skillsChanged && !spellsChanged) break
 		}
+		console.warn(
+			this.name,
+			this.isToken,
+			"processFeatures should be done",
+			this.features,
+			this.attributes.get(gid.Strength)?.effective
+		)
 	}
 
 	processFeatures() {

@@ -363,6 +363,8 @@ export enum UserFlags {
 	ModifierTotal = "modifierTotal",
 	ModifierSticky = "modifierSticky",
 	ModifierPinned = "pinnedMods",
+	LastActor = "lastActor",
+	LastToken = "lastToken"
 }
 
 export enum PrereqType {
