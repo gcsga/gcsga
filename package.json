@@ -80,7 +80,7 @@
 		"*.(json|yml|scss)": "prettier --write"
 	},
 	"dependencies": {
-		"fuse.js": "^6.6.2",
+		"fuse.js": "^7.0.0",
 		"jest-html-reporter": "^3.10.2",
 		"npm": "^10.2.4"
 	}
