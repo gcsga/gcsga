@@ -2,6 +2,7 @@ import { Difficulty, gid, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { sanitize } from "@util"
 import { MookData, MookSkill, MookSpell, MookTrait, MookTraitModifier } from "./data"
 import { Mook } from "./document"
+import { SettingsGURPS } from "@module/settings/defaults"
 
 const regex_points = /\[(-?\d+)\]/
 
@@ -58,7 +59,7 @@ export class MookParser {
 		// console.log(startMatches, endMatches, this.text)
 		const start = startMatches.length === 0 ? 0 : this.findInText(startMatches)
 		if (start === -1) {
-			console.error(`No matches for: ${startMatches.join(", ")}`)
+			console.log(`No matches for: ${startMatches.join(", ")}`)
 			return ""
 		}
 		const end = this.findInText(endMatches)
@@ -94,12 +95,12 @@ export class MookParser {
 	private parseAttributes(): void {
 		this.text = this.cleanLine(this.text)
 		const attribute_names: { id: string; match: string }[] = []
-		;(game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) as any[]).forEach(e => {
-			attribute_names.push({ id: e.id.toLowerCase(), match: e.id.toLowerCase() })
-			if (e.name && e.name !== "") attribute_names.push({ id: e.id.toLowerCase(), match: e.name.toLowerCase() })
-			if (e.full_name && e.full_name !== "")
-				attribute_names.push({ id: e.id.toLowerCase(), match: e.full_name.toLowerCase() })
-		})
+			; (SettingsGURPS.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) as any[]).forEach(e => {
+				attribute_names.push({ id: e.id.toLowerCase(), match: e.id.toLowerCase() })
+				if (e.name && e.name !== "") attribute_names.push({ id: e.id.toLowerCase(), match: e.name.toLowerCase() })
+				if (e.full_name && e.full_name !== "")
+					attribute_names.push({ id: e.id.toLowerCase(), match: e.full_name.toLowerCase() })
+			})
 
 		const preText = this.extractText([], ["Advantages:", "Advantages/Disadvantages:", "Traits:"])
 
@@ -150,9 +151,9 @@ export class MookParser {
 
 		this._object.traits = []
 		// const start = this.findInText(["Advantages", "Advantages/Disadvantages", "Traits"])
-		// if (start === -1) return console.error("Traits not found")
+		// if (start === -1) return console.log("Traits not found")
 		// const end = this.findInText(["Skills", "Spells"], start) + start
-		// if (end === -1) return console.error("Skills/Spells not found")
+		// if (end === -1) return console.log("Skills/Spells not found")
 		// let text = this.text.substring(start, end)
 		let text = this.extractText(["Advantages:", "Advantages/Disadvantages:", "Traits:"], ["Skills:", "Spells:"])
 
@@ -223,7 +224,7 @@ export class MookParser {
 
 	private parseSkills(): void {
 		const attributes: { name: string; id: string }[] = (
-			game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) as any
+			SettingsGURPS.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) as any
 		).map((e: any) => {
 			return { id: e.id, name: e.name }
 		})
@@ -236,9 +237,9 @@ export class MookParser {
 
 		this._object.skills = []
 		// const start = this.findInText(["Skills"])
-		// if (start === -1) return console.error("Skills not found")
+		// if (start === -1) return console.log("Skills not found")
 		// const end = this.findInText(["Spells", "Equipment", "Languages", "Weapons"], start) + start
-		// if (end === -1) return console.error("Spells/Equipment not found")
+		// if (end === -1) return console.log("Spells/Equipment not found")
 		// let text = this.text.substring(start, end)
 		let text = this.extractText(["Skills:"], ["Spells:", "Equipment:", "Language:", "Weapons:", "Class:", "Notes:"])
 
@@ -313,7 +314,7 @@ export class MookParser {
 
 	private parseSpells(): void {
 		const attributes: { name: string; id: string }[] = (
-			game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) as any
+			SettingsGURPS.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) as any
 		).map((e: any) => {
 			return { id: e.id, name: e.name }
 		})
@@ -325,9 +326,9 @@ export class MookParser {
 
 		this._object.spells = []
 		// const start = this.findInText(["Spells"])
-		// if (start === -1) return console.error("Spells not found")
+		// if (start === -1) return console.log("Spells not found")
 		// const end = this.findInText(["Equipment", "Languages", "Weapons"], start) + start
-		// if (end === -1) return console.error("Equipment not found")
+		// if (end === -1) return console.log("Equipment not found")
 		// let text = this.text.substring(start, end)
 		let text = this.extractText(["Spells:"], ["Equipment:", "Language:", "Weapons:", "Class:", "Notes:"])
 
@@ -414,7 +415,7 @@ export class MookParser {
 			let text = this.extractText(["Traits:"], ["Advantages/Disadvantages:", "Advantages:"], false)
 			if (text === "") {
 				if (this.findInText(["Skills:"]) !== -1) text = this.extractText(["Skills:"], ["junk"])
-				else if (this.findInText(["Weapons:"]) === -1) console.error("No attacks found")
+				else if (this.findInText(["Weapons:"]) === -1) console.log("No attacks found")
 			}
 		}
 
@@ -573,7 +574,7 @@ export class MookParser {
 				height: "",
 				weight: "",
 				SM: 0,
-				portrait: foundry.CONST.DEFAULT_TOKEN,
+				portrait: "icons/svg/mystery-man.svg"
 			},
 			thrust: this.object.thrust,
 			swing: this.object.swing,

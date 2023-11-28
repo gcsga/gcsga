@@ -32,7 +32,7 @@ export class ItemImporter {
 			new Dialog(
 				{
 					title: LocalizeGURPS.translations.gurps.system.library_import.title_item,
-					content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/library-import.hbs`, {}),
+					content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/item-library-import.hbs`, {}),
 					buttons: {
 						import: {
 							icon: '<i class="fas fa-file-import"></i>',
