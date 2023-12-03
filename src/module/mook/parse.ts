@@ -2,7 +2,6 @@ import { Difficulty, gid, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { sanitize } from "@util"
 import { MookData, MookSkill, MookSpell, MookTrait, MookTraitModifier } from "./data"
 import { Mook } from "./document"
-import { SettingsGURPS } from "@module/settings/defaults"
 
 const regex_points = /\[(-?\d+)\]/
 
@@ -35,13 +34,13 @@ export class MookParser {
 		console.log(this._text)
 		this.parseAttributes()
 		// this.parseAttacks()
-		this.parseTraits()
-		this.parseSkills()
-		this.parseSpells()
+		// this.parseTraits()
+		// this.parseSkills()
+		// this.parseSpells()
 		// this.parseMelee()
 		// this.parseRanged()
 		// this.parseEquipment()
-		this.parseAttacks(true)
+		// this.parseAttacks(true)
 		console.log("Leftover:")
 		console.log(this.text)
 		return this.object
@@ -95,29 +94,40 @@ export class MookParser {
 	private parseAttributes(): void {
 		this.text = this.cleanLine(this.text)
 		const attribute_names: { id: string; match: string }[] = []
-			; (SettingsGURPS.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) as any[]).forEach(e => {
+			; (game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) as any[]).forEach(e => {
 				attribute_names.push({ id: e.id.toLowerCase(), match: e.id.toLowerCase() })
 				if (e.name && e.name !== "") attribute_names.push({ id: e.id.toLowerCase(), match: e.name.toLowerCase() })
 				if (e.full_name && e.full_name !== "")
 					attribute_names.push({ id: e.id.toLowerCase(), match: e.full_name.toLowerCase() })
 			})
+		attribute_names.push(
+			{ id: gid.BasicSpeed, match: "speed" },
+			{ id: gid.BasicMove, match: "move" }
+		)
 
 		const preText = this.extractText([], ["Advantages:", "Advantages/Disadvantages:", "Traits:"])
+		console.log("preText", preText)
 
-		const regex_att = new RegExp(`[^a-z](${attribute_names.map(e => e.match).join("|")}):?\\s*(\\d+)?`)
+		const regex_att = new RegExp(`[^a-z]*(${attribute_names.map(e => e.match).join("|")}):?\\s*(\\d+)`, "g")
 
 		let text = ""
 		let leftOverText = ""
 		preText.split("\n").forEach(e => {
-			if (e.toLowerCase().match(regex_att)) text += `${e.toLowerCase()}\n`
+			if (e.toLowerCase().match(regex_att)) {
+				e.toLowerCase().match(regex_att)?.forEach(match => {
+					text += `${match}\n`
+				})
+			}
 			else leftOverText += `${e}\n`
 		})
-		// console.log(text)
-		// console.log(leftOverText)
 		this.text = `${leftOverText}\n${this.text}`
 		if (text.includes(";")) text = text.replace(/\n/g, ";") // if ; separated, remove newlines
 		else if (text.split(",").length > 2) text = text.replace(/,/g, ";") // if , separated, replace with ;
+		else if (text.split("\n").length > 2) text = text.replace(/\n/g, ";") // if , separated, replace with ;
 
+
+		// Assemble list of final values of attributes
+		const newValues: Map<string, number> = new Map()
 		text.split(";").forEach(t => {
 			t = t.trim()
 			if (!t) return
@@ -137,13 +147,31 @@ export class MookParser {
 					}
 			}
 			if (!id) return
-
-			const currentValue = this.object.attributes.get(id)!.max
 			const newValue = parseFloat(t.match(/\d+/)?.[0] || "0")
-			const index = this.object.system.attributes.findIndex(e => e.attr_id === id)
-			this.object.system.attributes[index].adj = newValue - currentValue
+			newValues.set(id, newValue)
 		})
+
 		this.object.attributes = this.object.getAttributes()
+		let currentValues: Map<string, number> = new Map(Array.from(this.object.attributes).map(e => [e[0], e[1].max]))
+
+		// While loop to account for attributes which affect other attributes
+		// hard-capped at 5 iterations to prevent infinite loop, may result in inaccuracies
+		let i = 0
+		while (Array.from(newValues).some(([k, _v]) => newValues.get(k) !== currentValues.get(k))) {
+			if (i > 5) break
+			for (const id of newValues.keys()) {
+				if (!newValues.has(id) || !currentValues.has(id)) continue
+				if (newValues.get(id) === currentValues.get(id)) continue
+				const index = this.object.system.attributes.findIndex(e => e.attr_id === id)
+				this.object.system.attributes[index].adj = 0 // Reset values in case of weird behavior
+				this.object.attributes = this.object.getAttributes()
+				currentValues = new Map(Array.from(this.object.attributes).map(e => [e[0], e[1].max]))
+				this.object.system.attributes[index].adj = newValues.get(id)! - currentValues.get(id)!
+			}
+			this.object.attributes = this.object.getAttributes()
+			currentValues = new Map(Array.from(this.object.attributes).map(e => [e[0], e[1].max]))
+		}
+		i++
 	}
 
 	private parseTraits(): void {
@@ -224,7 +252,7 @@ export class MookParser {
 
 	private parseSkills(): void {
 		const attributes: { name: string; id: string }[] = (
-			SettingsGURPS.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) as any
+			game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) as any
 		).map((e: any) => {
 			return { id: e.id, name: e.name }
 		})
@@ -314,7 +342,7 @@ export class MookParser {
 
 	private parseSpells(): void {
 		const attributes: { name: string; id: string }[] = (
-			SettingsGURPS.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) as any
+			game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) as any
 		).map((e: any) => {
 			return { id: e.id, name: e.name }
 		})
