@@ -1,32 +1,26 @@
 /* eslint-disable jest/no-disabled-tests */
 import { Mook } from "@module/mook/document"
 import { MookParser } from "@module/mook/parse"
-import { _defaultMookData } from "./common"
+import { FakeGame, _defaultMookData } from "./common"
 import { gid } from "@module/data"
 
 // Add real tests here.
 describe("Mook generator", () => {
 	let _mook: Mook
 	let _parser: MookParser
-	let game: null
 
 
 	beforeEach(() => {
 		_mook = new Mook(_defaultMookData)
 		_parser = new MookParser("", _mook)
-			; (global as any).game = null
+			; (global as any).game = new FakeGame()
 	})
 
-	describe.skip("Attribute Parsing", () => {
+	describe("Attribute Parsing", () => {
 		it("Standard attributes are parsed", () => {
-			_parser.text = `
-ST: 11 HP: 12 Speed: 6.00
-DX: 11 Will: 10 Move: 4
-IQ: 9 Per: 10
-HT: 11 FP: 11 SM: 0
-Dodge: 8 Parry/Block: 9 DR: 2
-		`
+			_parser.text = _oldStats[0] // Goblin
 			_parser.parseStatBlock(_parser.text)
+
 			_mook.getAttributes()
 			expect(_mook.system.attributes.find(e => e.attr_id === gid.Strength)?.adj)
 				.toBe(1)
@@ -49,7 +43,7 @@ Dodge: 8 Parry/Block: 9 DR: 2
 			expect(_mook.system.attributes.find(e => e.attr_id === gid.TasteSmell)?.adj)
 				.toBe(0)
 			expect(_mook.system.attributes.find(e => e.attr_id === gid.Touch)?.adj)
-				.toBe(1)
+				.toBe(0)
 			expect(_mook.system.attributes.find(e => e.attr_id === gid.BasicSpeed)?.adj)
 				.toBe(0.5)
 			expect(_mook.system.attributes.find(e => e.attr_id === gid.BasicMove)?.adj)

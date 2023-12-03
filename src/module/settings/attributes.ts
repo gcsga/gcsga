@@ -1,10 +1,9 @@
 import { ConditionID } from "@item/condition/data"
-import { AttributeType, ThresholdOp } from "@module/attribute/data"
+import { AttributeType } from "@module/attribute/data"
 import { EFFECT_ACTION, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { LocalizeGURPS, prepareFormData } from "@util"
 import { DnD } from "@util/drag_drop"
 import { SettingsMenuGURPS } from "./menu"
-import { SettingsGURPS } from "./defaults"
 
 enum ListType {
 	Attribute = "attributes",
@@ -50,14 +49,14 @@ export class DefaultAttributeSettings extends SettingsMenuGURPS {
 				name: "",
 				hint: "",
 				type: Array,
-				default: SettingsGURPS.getDefault(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
+				default: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
 				,
 			},
 			effects: {
 				name: "",
 				hint: "",
 				type: Array,
-				default: SettingsGURPS.getDefault(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
+				default: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
 			},
 		}
 	}

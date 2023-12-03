@@ -1,8 +1,5 @@
 # TO DO
 
-## Bugs
-- Token character skills are not behaving properly
-
 ## In Progress
 
 - Finish "static" character (0.15 and older) compatibility
