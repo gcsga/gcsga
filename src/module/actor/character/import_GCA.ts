@@ -228,7 +228,7 @@ export class GCAImporter {
 				},
 			})
 		}
-		const default_sheet = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`) as any
+		const default_sheet = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
 		return {
 			"system.settings": mergeObject(default_sheet, {
 				body_type: body,

@@ -28,7 +28,7 @@ export class EquipmentContainerGURPS extends ItemGCS {
 
 	get weightUnits(): WeightUnits {
 		if (this.actor) return this.actor.weightUnits
-		const default_settings = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`) as any
+		const default_settings = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
 		return default_settings.default_weight_units
 	}
 

@@ -13,8 +13,6 @@ import { LocalizeGURPS } from "@util"
 import { DamageRollGURPS } from "./damage_roll"
 import { DamageChat, DamagePayload } from "@module/damage_calculator/damage_chat_message"
 import { ActorGURPS } from "@module/config"
-import { TIMESTAMP_FIELD } from "../../../types/foundry/common/data/fields.mjs"
-import { ItemData } from "types/foundry/common/data/module.mjs"
 
 // // vscode-fold=1
 
@@ -615,7 +613,7 @@ class DamageRollTypeHandler extends RollTypeHandler {
 	 * @param _actor
 	 */
 	private static getHitLocationFromLastAttackRoll(_actor: ActorGURPS): string {
-		return game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_DAMAGE_LOCATION) as string
+		return game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_DAMAGE_LOCATION)
 	}
 }
 

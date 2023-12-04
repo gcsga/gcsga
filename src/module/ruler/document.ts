@@ -1,4 +1,4 @@
-import { RollModifierTags, SETTINGS, SYSTEM_NAME } from "@module/data"
+import { RollModifierTags, SETTINGS, SSRT_SETTING, SYSTEM_NAME } from "@module/data"
 import { allLengthUnits, Length, LengthSymbols, LengthUnits, LocalizeGURPS } from "@util"
 
 class RulerGURPS extends Ruler {
@@ -38,13 +38,13 @@ class RulerGURPS extends Ruler {
 
 	static getRangeMod(yards: number): number {
 		yards = Math.round(yards * 100) / 100
-		const tableChoice = game.settings.get(SYSTEM_NAME, SETTINGS.SSRT) as any
+		const tableChoice = game.settings.get(SYSTEM_NAME, SETTINGS.SSRT)
 		switch (tableChoice) {
-			case "standard":
+			case SSRT_SETTING.STANDARD:
 				return RulerGURPS._getRangeModStandard(yards)
-			case "simplified":
+			case SSRT_SETTING.SIMPLIFIED:
 				return RulerGURPS._getRangeModSimplified(yards)
-			case "tens":
+			case SSRT_SETTING.TENS:
 				return RulerGURPS._getRangeModTens(yards)
 			default:
 				return RulerGURPS._getRangeModStandard(yards)

@@ -1,4 +1,4 @@
-import { ConditionID, EffectID, ManeuverID } from "@item"
+import { EffectID, ManeuverID } from "@item"
 import { SOCKET, SYSTEM_NAME } from "@module/data"
 import { TokenGURPS } from "./object"
 
@@ -155,7 +155,7 @@ export class TokenHUDGURPS extends TokenHUD {
 
 			const id = picture.dataset.statusId ?? ""
 			const affecting = affectingConditions?.filter(c => c.cid === id) || []
-			if (affecting.length > 0 || iconSrc === (token.document as any).overlayEffect) {
+			if (affecting.length > 0 || iconSrc === token.document.overlayEffect) {
 				picture.classList.add("active")
 			}
 

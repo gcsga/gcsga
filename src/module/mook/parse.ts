@@ -94,12 +94,12 @@ export class MookParser {
 	private parseAttributes(): void {
 		this.text = this.cleanLine(this.text)
 		const attribute_names: { id: string; match: string }[] = []
-			; (game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) as any[]).forEach(e => {
-				attribute_names.push({ id: e.id.toLowerCase(), match: e.id.toLowerCase() })
-				if (e.name && e.name !== "") attribute_names.push({ id: e.id.toLowerCase(), match: e.name.toLowerCase() })
-				if (e.full_name && e.full_name !== "")
-					attribute_names.push({ id: e.id.toLowerCase(), match: e.full_name.toLowerCase() })
-			})
+		game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`).forEach(e => {
+			attribute_names.push({ id: e.id.toLowerCase(), match: e.id.toLowerCase() })
+			if (e.name && e.name !== "") attribute_names.push({ id: e.id.toLowerCase(), match: e.name.toLowerCase() })
+			if (e.full_name && e.full_name !== "")
+				attribute_names.push({ id: e.id.toLowerCase(), match: e.full_name.toLowerCase() })
+		})
 		attribute_names.push(
 			{ id: gid.BasicSpeed, match: "speed" },
 			{ id: gid.BasicMove, match: "move" }
@@ -252,7 +252,7 @@ export class MookParser {
 
 	private parseSkills(): void {
 		const attributes: { name: string; id: string }[] = (
-			game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) as any
+			game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
 		).map((e: any) => {
 			return { id: e.id, name: e.name }
 		})
@@ -342,7 +342,7 @@ export class MookParser {
 
 	private parseSpells(): void {
 		const attributes: { name: string; id: string }[] = (
-			game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) as any
+			game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
 		).map((e: any) => {
 			return { id: e.id, name: e.name }
 		})

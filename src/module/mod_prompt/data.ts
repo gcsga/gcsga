@@ -2,7 +2,7 @@ import { ModifierItem, RollModifierTags, SETTINGS, SYSTEM_NAME } from "@module/d
 import { Length, LengthUnits, LocalizeGURPS } from "@util"
 
 export function loadModifiers() {
-	const books = game.settings.get(SYSTEM_NAME, SETTINGS.BASE_BOOKS) as "gurps" | "dfrpg"
+	const books = game.settings.get(SYSTEM_NAME, SETTINGS.BASE_BOOKS)
 	let meleeMods: ModifierItem[] = []
 	let rangedMods: ModifierItem[] = []
 	let defenseMods: ModifierItem[] = []
