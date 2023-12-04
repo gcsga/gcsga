@@ -1,4 +1,4 @@
-import { HitLocationTable } from "@actor"
+import { HitLocationTableData } from "@actor"
 import { SETTINGS, SYSTEM_NAME } from "@module/data"
 import { LocalizeGURPS, prepareFormData } from "@util"
 import { DnD } from "@util/drag_drop"
@@ -417,7 +417,7 @@ export class DefaultHitLocationSettings extends SettingsMenuGURPS {
 			name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
 			roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
 			locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
-		} as HitLocationTable
+		} as HitLocationTableData
 		formData = prepareFormData(formData, { body_type: body_type })
 		Object.keys(formData).forEach(k => {
 			formData[k.replace("body_type.", "")] = formData[k]
