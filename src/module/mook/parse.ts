@@ -160,18 +160,16 @@ export class MookParser {
 		while (Array.from(newValues).some(([k, _v]) => newValues.get(k) !== currentValues.get(k))) {
 			if (i > 5) break
 			for (const id of newValues.keys()) {
-				if (!newValues.has(id) || !currentValues.has(id)) continue
-				if (newValues.get(id) === currentValues.get(id)) continue
+				const [newValue, currentValue] = [newValues.get(id), currentValues.get(id)]
+				if (!newValue || !currentValue) continue
+				if (newValue === currentValue) continue
 				const index = this.object.system.attributes.findIndex(e => e.attr_id === id)
-				this.object.system.attributes[index].adj = 0 // Reset values in case of weird behavior
-				this.object.attributes = this.object.getAttributes()
-				currentValues = new Map(Array.from(this.object.attributes).map(e => [e[0], e[1].max]))
-				this.object.system.attributes[index].adj = newValues.get(id)! - currentValues.get(id)!
+				this.object.system.attributes[index].adj += newValue - currentValue
 			}
 			this.object.attributes = this.object.getAttributes()
 			currentValues = new Map(Array.from(this.object.attributes).map(e => [e[0], e[1].max]))
+			i++
 		}
-		i++
 	}
 
 	private parseTraits(): void {
