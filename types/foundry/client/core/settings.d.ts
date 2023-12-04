@@ -1,3 +1,4 @@
+import { CharacterSettings } from "@actor"
 import type { DocumentSubTypes, DocumentType } from "../../../types/helperTypes"
 
 import type { TokenDataSource } from "../../common/data/data.mjs/tokenData"
@@ -222,6 +223,22 @@ declare global {
 			"core.time": number
 			"core.tokenDragPreview": boolean
 			"core.visionAnimation": boolean
+			// start GCSGA specific
+			"gcsga.initiative_formula": string
+			"gcsga.compendium_browser_packs": Omit<TabData<Record<string, PackInfo | undefined>>, "settings">
+			"gcsga.default_sheet_settings.settings": CharacterSettings
+			"gcsga.ssrt": SSRT_SETTING
+			"gcsga.default_damage_location": "torso" | "random"
+			"gcsga.default_attributes.attributes": AttributeDefObj[]
+			"gcsga.default_attributes.effects": AttributeDefObj[]
+			"gcsga.default_resource_trackers.resource_trackers": ResourceTrackerDefObj[]
+			"gcsga.default_hit_locations.name": string
+			"gcsga.default_hit_locations.roll": string
+			"gcsga.default_hit_locations.locations": HitLocationData[]
+			"gcsga.damage_types.types": CustomDamageType[]
+			"gcsga.colors.colors": Record<string, { light: string, dark: string }>
+			"gcsga.roll_formula": string
+			"gcsga.modifier_mode": "prompt" | "bucket"
 			[key: string]: unknown
 		}
 	}

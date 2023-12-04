@@ -32,8 +32,8 @@ export class EquipmentSheet extends ItemSheetGCS {
 		const weight: string = formData["system.weight"]
 		let weightFormat: WeightUnits = this.object.isOwned
 			? this.object.actor.settings.default_weight_units
-			: (game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`) as any)
-					.default_weight_units
+			: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
+				.default_weight_units
 		allWeightUnits.forEach(u => {
 			if (weight.includes(u)) weightFormat = u
 		})

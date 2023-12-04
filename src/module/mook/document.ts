@@ -51,7 +51,7 @@ export class Mook {
 				SYSTEM_NAME,
 				`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`
 			) as AttributeDefObj[],
-			damage_progression: (game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`) as any)
+			damage_progression: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
 				.damage_progression,
 		}
 		this.system = data?.system ?? {

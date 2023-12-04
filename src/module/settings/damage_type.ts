@@ -1,4 +1,4 @@
-import { SYSTEM_NAME } from "@module/data"
+import { SETTINGS, SYSTEM_NAME } from "@module/data"
 import { SettingsMenuGURPS } from "@module/settings/menu"
 import { prepareFormData } from "@util"
 
@@ -22,9 +22,9 @@ export class DamageTypeSettings extends SettingsMenuGURPS {
 		options.classes.push("settings-menu")
 
 		return mergeObject(options, {
-			title: `gurps.settings.${this.namespace}.name`,
-			id: `${this.namespace}-settings`,
-			template: `systems/${SYSTEM_NAME}/templates/system/settings/${this.namespace}.hbs`,
+			title: `gurps.settings.${SETTINGS.DAMAGE_TYPES}.name`,
+			id: `${SETTINGS.DAMAGE_TYPES}-settings`,
+			template: `systems/${SYSTEM_NAME}/templates/system/settings/${SETTINGS.DAMAGE_TYPES}.hbs`,
 			width: 480,
 			height: "auto",
 			submitOnClose: true,
@@ -95,14 +95,14 @@ export class DamageTypeSettings extends SettingsMenuGURPS {
 		switch (target.dataset.action) {
 			case "add-damage":
 				const damagetypes: any[] =
-					(game.settings.get(SYSTEM_NAME, `${this.namespace}.${DamageTypeSettings.TYPES}`) as any[]) ?? []
+					game.settings.get(SYSTEM_NAME, `${SETTINGS.DAMAGE_TYPES}.${DamageTypeSettings.TYPES}`) ?? []
 				damagetypes.push({
 					id: "new",
 					short_name: "new",
 					full_name: "New Damage Type",
 					pool_id: "pool",
 				})
-				await game.settings.set(SYSTEM_NAME, `${this.namespace}.${DamageTypeSettings.TYPES}`, damagetypes)
+				await game.settings.set(SYSTEM_NAME, `${SETTINGS.DAMAGE_TYPES}.${DamageTypeSettings.TYPES}`, damagetypes)
 				break
 		}
 
@@ -112,7 +112,7 @@ export class DamageTypeSettings extends SettingsMenuGURPS {
 	override async getData(): Promise<any> {
 		const types = game.settings.get(
 			SYSTEM_NAME,
-			`${this.namespace}.${DamageTypeSettings.TYPES}`
+			`${SETTINGS.DAMAGE_TYPES}.${DamageTypeSettings.TYPES}`
 		) as CustomDamageType[]
 		return {
 			types: types,
@@ -121,11 +121,8 @@ export class DamageTypeSettings extends SettingsMenuGURPS {
 	}
 
 	protected override async _updateObject(_event: Event, formData: any): Promise<void> {
-		const types = (await game.settings.get(
-			SYSTEM_NAME,
-			`${this.namespace}.${DamageTypeSettings.TYPES}`
-		)) as CustomDamageType[]
+		const types = game.settings.get(SYSTEM_NAME, `${SETTINGS.DAMAGE_TYPES}.${DamageTypeSettings.TYPES}`)
 		formData = prepareFormData(formData, { types: types })
-		await game.settings.set(SYSTEM_NAME, `${this.namespace}.${DamageTypeSettings.TYPES}`, formData.types)
+		await game.settings.set(SYSTEM_NAME, `${SETTINGS.DAMAGE_TYPES}.${DamageTypeSettings.TYPES}`, formData.types)
 	}
 }

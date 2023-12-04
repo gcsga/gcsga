@@ -89,7 +89,7 @@ export class RollGURPS extends Roll {
 			user,
 			actor,
 			data as RollTypeData,
-			(game.settings.get(SYSTEM_NAME, SETTINGS.ROLL_FORMULA) as string) || "3d6",
+			game.settings.get(SYSTEM_NAME, SETTINGS.ROLL_FORMULA) || "3d6",
 			data.hidden
 		)
 	}
