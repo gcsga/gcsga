@@ -34,15 +34,16 @@ export class MookParser {
 		console.log(this._text)
 		this.parseAttributes()
 		// this.parseAttacks()
-		// this.parseTraits()
-		// this.parseSkills()
+		this.parseTraits()
+		this.parseSkills()
 		// this.parseSpells()
 		// this.parseMelee()
 		// this.parseRanged()
 		// this.parseEquipment()
 		// this.parseAttacks(true)
-		console.log("Leftover:")
-		console.log(this.text)
+		// console.log("Leftover:")
+		// console.log(this.text)
+		console.log(JSON.stringify(this.object.skills, null, "\t"))
 		return this.object
 	}
 
@@ -58,7 +59,7 @@ export class MookParser {
 		// console.log(startMatches, endMatches, this.text)
 		const start = startMatches.length === 0 ? 0 : this.findInText(startMatches)
 		if (start === -1) {
-			console.log(`No matches for: ${startMatches.join(", ")}`)
+			// console.log(`No matches for: ${startMatches.join(", ")}`)
 			return ""
 		}
 		const end = this.findInText(endMatches)
@@ -106,25 +107,15 @@ export class MookParser {
 		)
 
 		const preText = this.extractText([], ["Advantages:", "Advantages/Disadvantages:", "Traits:"])
-		console.log("preText", preText)
 
-		const regex_att = new RegExp(`[^a-z]*(${attribute_names.map(e => e.match).join("|")}):?\\s*(\\d+)`, "g")
+		const regex_att = new RegExp(`(${attribute_names.map(e => e.match).join("|")}):?[\\n\\s]*(\\d+\.?\\d*)`, "g")
 
 		let text = ""
 		let leftOverText = ""
-		preText.split("\n").forEach(e => {
-			if (e.toLowerCase().match(regex_att)) {
-				e.toLowerCase().match(regex_att)?.forEach(match => {
-					text += `${match}\n`
-				})
-			}
-			else leftOverText += `${e}\n`
+		preText.replaceAll("\n", " ").toLowerCase().match(regex_att)?.forEach(match => {
+			text += `${match};`
 		})
 		this.text = `${leftOverText}\n${this.text}`
-		if (text.includes(";")) text = text.replace(/\n/g, ";") // if ; separated, remove newlines
-		else if (text.split(",").length > 2) text = text.replace(/,/g, ";") // if , separated, replace with ;
-		else if (text.split("\n").length > 2) text = text.replace(/\n/g, ";") // if , separated, replace with ;
-
 
 		// Assemble list of final values of attributes
 		const newValues: Map<string, number> = new Map()
@@ -147,7 +138,7 @@ export class MookParser {
 					}
 			}
 			if (!id) return
-			const newValue = parseFloat(t.match(/\d+/)?.[0] || "0")
+			const newValue = parseFloat(t.match(/\d+\.?\d*/)?.[0] || "0")
 			newValues.set(id, newValue)
 		})
 
@@ -173,6 +164,7 @@ export class MookParser {
 	}
 
 	private parseTraits(): void {
+		const regex_levels = /\s(\d+)$/
 		const regex_cr = /\((CR:?)?\s*(\d+)\)/
 
 		this._object.traits = []
@@ -191,6 +183,7 @@ export class MookParser {
 		text = text.replace(/advantages:?/gi, ";")
 		text = text.replace(/perks:?/gi, ";")
 		text = text.replace(/quirks:?/gi, ";")
+		text = text.replace(/traits:?/gi, ";")
 		text = text.trim()
 		text.split(";").forEach(t => {
 			if (!t.trim()) return
@@ -202,6 +195,21 @@ export class MookParser {
 				t = t.replace(regex_points, "").trim()
 			}
 
+			// Capture modifiers
+			let modifiers: MookTraitModifier[] = []
+			if (t.match(/\(.+\)/)) {
+				modifiers = this.parseTraitModifiers(t.match(/\((.*)\)/)![1])
+				if (modifiers.length > 0)
+					t = t.replace(/\(.*\)/, "").trim()
+			}
+
+			// Capture Levels
+			let levels = 0
+			if (t.match(regex_levels)) {
+				levels = parseInt(t.match(regex_levels)![1])
+				t = t.replace(regex_levels, "").trim()
+			}
+
 			// Capture CR
 			let cr = 0
 			if (t.match(regex_cr)) {
@@ -209,12 +217,6 @@ export class MookParser {
 				t = t.replace(regex_cr, "").trim()
 			}
 
-			// Capture modifiers
-			let modifiers: MookTraitModifier[] = []
-			if (t.match(/\(.+\)/)) {
-				modifiers = this.parseTraitModifiers(t.match(/\((.*)\)/)![1])
-				t = t.replace(/\(.*\)/, "").trim()
-			}
 
 			t = this.cleanLine(t)
 
@@ -222,6 +224,7 @@ export class MookParser {
 				name: t,
 				points,
 				cr,
+				levels,
 				notes: "",
 				reference: "",
 				modifiers,
@@ -267,14 +270,16 @@ export class MookParser {
 		// const end = this.findInText(["Spells", "Equipment", "Languages", "Weapons"], start) + start
 		// if (end === -1) return console.log("Spells/Equipment not found")
 		// let text = this.text.substring(start, end)
-		let text = this.extractText(["Skills:"], ["Spells:", "Equipment:", "Language:", "Weapons:", "Class:", "Notes:"])
+		let text = this.extractText(["Skills:"],
+			["Spells:", "Equipment:", "Language:", "Languages:", "Weapons:", "Class:", "Notes:", "*"]
+		)
 
 		text = text.replace(/skills:?/gi, " ")
 		text = this.cleanLine(text)
 		text = text.trim()
 
 		text.split(";").forEach(t => {
-			t = this.cleanLine(t).trim()
+			t = this.cleanLine(t).trim().replace("\n", "")
 			if (!t) return
 
 			// Capture points
@@ -356,7 +361,8 @@ export class MookParser {
 		// const end = this.findInText(["Equipment", "Languages", "Weapons"], start) + start
 		// if (end === -1) return console.log("Equipment not found")
 		// let text = this.text.substring(start, end)
-		let text = this.extractText(["Spells:"], ["Equipment:", "Language:", "Weapons:", "Class:", "Notes:"])
+		let text = this.extractText(["Spells:"],
+			["Equipment:", "Language:", "Languages:", "Weapons:", "Class:", "Notes:"])
 
 		text = text.replace(/spells:?/gi, ";")
 		text = text.trim()
@@ -452,8 +458,8 @@ export class MookParser {
 			else leftOverText += `${e}\n`
 		})
 
-		console.log("WEAPONS")
-		console.log(weapons)
+		// console.log("WEAPONS")
+		// console.log(weapons)
 
 		if (weapons.includes(";")) weapons = weapons.replace(/\n/g, ";") // if ; separated, remove newlines
 		else if (weapons.split(",").length > 2) weapons = weapons.replace(/,/g, ";") // if , separated, replace with ;
@@ -556,22 +562,22 @@ export class MookParser {
 			t = t.trim()
 
 			if (isRanged) {
-				console.log("Name", t)
-				console.log("Level", level)
-				console.log("Acc", accuracy)
-				console.log("1/2D", half_damage)
-				console.log("Max", range ?? max_range)
-				console.log("ROF", rof)
-				console.log("Recoil", recoil)
-				console.log("ST", ST)
+				// console.log("Name", t)
+				// console.log("Level", level)
+				// console.log("Acc", accuracy)
+				// console.log("1/2D", half_damage)
+				// console.log("Max", range ?? max_range)
+				// console.log("ROF", rof)
+				// console.log("Recoil", recoil)
+				// console.log("ST", ST)
 			} else {
-				console.log("Name", t)
-				console.log("Level", level)
-				console.log("ST", ST)
-				console.log("Reach", reach)
+				// console.log("Name", t)
+				// console.log("Level", level)
+				// console.log("ST", ST)
+				// console.log("Reach", reach)
 			}
 
-			console.log(t)
+			// console.log(t)
 		})
 	}
 

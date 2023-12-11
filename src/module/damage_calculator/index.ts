@@ -133,6 +133,7 @@ class DamageRollAdapter implements DamageRoll {
 	}
 
 	get basicDamage(): number {
+		console.log(this._payload)
 		return this._payload.damageRoll[this._payload.index].total
 	}
 

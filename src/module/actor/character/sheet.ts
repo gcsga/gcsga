@@ -41,6 +41,8 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 
 	searchValue = ""
 
+	noPrepare = false
+
 	static override get defaultOptions(): ActorSheet.Options {
 		return mergeObject(super.defaultOptions, {
 			classes: super.defaultOptions.classes.concat(["character"]),
@@ -111,13 +113,10 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		super.activateListeners(html)
 		if (this.actor.editing) html.find(".rollable").addClass("noroll")
 
-		// html.find(".menu").on("click", event => this._getPoolContextMenu(event, html))
 		html.find("input").on("change", event => this._resizeInput(event))
 		html.find(".dropdown-toggle").on("click", event => this._onCollapseToggle(event))
 		html.find(".ref").on("click", event => PDF.handle(event))
-		// html.find(".item-list .header.desc").on("contextmenu", event => this._getAddItemMenu(event, html))
 		html.find(".item").on("dblclick", event => this._openItemSheet(event))
-		// html.find(".item").on("contextmenu", event => this._getItemContextMenu(event, html))
 		html.find(".equipped").on("click", event => this._onEquippedToggle(event))
 		html.find(".rollable").on("mouseover", event => this._onRollableHover(event, true))
 		html.find(".rollable").on("mouseout", event => this._onRollableHover(event, false))
@@ -129,8 +128,6 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 
 		// Hover Over
 		html.find(".item").on("dragover", event => this._onDragItem(event))
-		// Html.find(".item").on("dragleave", event => this._onItemDragLeave(event))
-		// html.find(".item").on("dragenter", event => this._onItemDragEnter(event))
 
 		// Points Record
 		html.find(".edit-points").on("click", event => this._openPointsRecord(event))
@@ -592,7 +589,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 					await item.container?.createEmbeddedDocuments("Item", [itemData])
 				},
 			})
-		ContextMenu.create(this, $(element), "*", menuItems)
+		ContextMenu.create(this, $(element), ".desc", menuItems)
 	}
 
 	protected _resizeInput(event: JQuery.ChangeEvent) {
@@ -602,14 +599,13 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 	}
 
 	protected _onCollapseToggle(event: JQuery.ClickEvent): void {
-		console.time("toggle")
 		event.preventDefault()
 		const id: string = $(event.currentTarget).data("item-id")
 		const open = !!$(event.currentTarget).attr("class")?.includes("closed")
-		const item = this.actor.items.get(id)
-		// item?.update({ _id: id, "system.open": open }, { noPrepare: true })
-		item?.update({ _id: id, "system.open": open })
-		console.timeEnd("toggle")
+		const item = this.actor.items.get(id) as ItemGURPS
+		this.noPrepare = true
+		item?.update({ _id: id, "system.open": open }, { noPrepare: true })
+		// item?.update({ _id: id, "system.open": open })
 	}
 
 	protected async _openItemSheet(event: JQuery.DoubleClickEvent) {
@@ -745,7 +741,6 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			data.comment = $(event.currentTarget).data("comment")
 			if (event.type === "contextmenu") data.modifier = -data.modifier
 		}
-		console.log(data)
 		return RollGURPS.handleRoll(game.user, this.actor, data)
 	}
 
@@ -787,7 +782,8 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 	}
 
 	getData(options?: Partial<ActorSheet.Options> | undefined): any {
-		this.actor.prepareData()
+		if (!this.noPrepare) this.actor.prepareData()
+		else this.noPrepare = false
 		const actorData = this.actor.toObject(false) as any
 		const items = deepClone(
 			(this.actor.items as EmbeddedCollection<any, any>)
