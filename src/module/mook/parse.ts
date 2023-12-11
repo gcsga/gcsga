@@ -36,14 +36,14 @@ export class MookParser {
 		// this.parseAttacks()
 		this.parseTraits()
 		this.parseSkills()
-		// this.parseSpells()
+		this.parseSpells()
 		// this.parseMelee()
 		// this.parseRanged()
 		// this.parseEquipment()
 		// this.parseAttacks(true)
 		// console.log("Leftover:")
 		// console.log(this.text)
-		console.log(JSON.stringify(this.object.skills, null, "\t"))
+		// console.log(JSON.stringify(this.object.spells, null, "\t"))
 		return this.object
 	}
 
@@ -276,6 +276,7 @@ export class MookParser {
 
 		text = text.replace(/skills:?/gi, " ")
 		text = this.cleanLine(text)
+		text = text.replaceAll(/\.\n/g, ";").replaceAll(",", ";")
 		text = text.trim()
 
 		text.split(";").forEach(t => {
@@ -297,8 +298,8 @@ export class MookParser {
 			}
 
 			// Capture difficulty
-			let attribute: string = gid.Ten
-			let rsl = level - 10
+			let attribute: string = gid.Dexterity
+			// let rsl = level - 10
 			let difficulty = Difficulty.Average
 			if (t.match(regex_difficulty)) {
 				difficulty = t.match(regex_difficulty)![1].toLowerCase() as Difficulty
@@ -307,9 +308,9 @@ export class MookParser {
 
 			if (t.match(regex_rsl)) {
 				const match = t.match(regex_rsl)!
-				if (match[2]) rsl = parseInt(match[2])
-				else rsl = 0
-				attribute = attributes.find(e => e.name === match[1])?.id ?? gid.Ten
+				// if (match[2]) rsl = parseInt(match[2])
+				// else rsl = 0
+				attribute = attributes.find(e => e.name === match[1])?.id ?? gid.Dexterity
 				t = t.replace(regex_rsl, "").trim()
 			}
 
@@ -350,7 +351,7 @@ export class MookParser {
 			return { id: e.id, name: e.name }
 		})
 
-		const regex_level = /\s-(\d+)/
+		const regex_level = /\s?-(\d+)/
 		const regex_difficulty = /\(([EAHV][H]?)\)/
 		const regex_rsl = new RegExp(`(${attributes.map(e => e.name).join("|")})([-+]\\d+)?`)
 		const regex_tl = /\/TL(\d+\^?)/
@@ -365,10 +366,13 @@ export class MookParser {
 			["Equipment:", "Language:", "Languages:", "Weapons:", "Class:", "Notes:"])
 
 		text = text.replace(/spells:?/gi, ";")
+		text = text.replace(/^.*:\n/, ";")
+		text = this.cleanLine(text)
+		text = text.replaceAll(/\.\n/g, ";").replaceAll(",", ";")
 		text = text.trim()
 
 		text.split(";").forEach(t => {
-			t = this.cleanLine(t).trim()
+			t = this.cleanLine(t).trim().replace("\n", "")
 			if (!t) return
 
 			// Capture points
@@ -386,9 +390,8 @@ export class MookParser {
 			}
 
 			// Capture difficulty
-			let attribute: string = gid.Ten
-			let rsl = level - 10
-			let difficulty = Difficulty.Average
+			let attribute: string = gid.Intelligence
+			let difficulty = Difficulty.Hard
 			if (t.match(regex_difficulty)) {
 				difficulty = t.match(regex_difficulty)![1].toLowerCase() as Difficulty
 				t = t.replace(regex_difficulty, "").trim()
@@ -396,9 +399,9 @@ export class MookParser {
 
 			if (t.match(regex_rsl)) {
 				const match = t.match(regex_rsl)!
-				if (match[2]) rsl = parseInt(match[2])
-				else rsl = 0
-				attribute = attributes.find(e => e.name === match[1])?.id ?? gid.Ten
+				// if (match[2]) rsl = parseInt(match[2])
+				// else rsl = 0
+				attribute = attributes.find(e => e.name === match[1])?.id ?? gid.Intelligence
 				t = t.replace(regex_rsl, "").trim()
 			}
 
