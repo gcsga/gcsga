@@ -83,8 +83,6 @@ export class RollGURPS extends Roll {
 			await user?.setFlag(SYSTEM_NAME, UserFlags.LastTotal, lastTotal)
 		}
 
-		console.trace()
-		console.log(data)
 		return rollTypeHandlers[data.type as RollType].handleRollType(
 			user,
 			actor,

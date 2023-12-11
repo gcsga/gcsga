@@ -33,7 +33,7 @@ export abstract class ItemGCS extends ContainerGURPS {
 			this._source.img = data.img = `systems/${SYSTEM_NAME}/assets/icons/${type}.svg`
 		let gcs_type: string = data.type
 		if (gcs_type === ItemType.Equipment) gcs_type = "equipment"
-		;(this._source.system as any).type = gcs_type
+			; (this._source.system as any).type = gcs_type
 		await super._preCreate(data, options, user)
 	}
 
@@ -41,7 +41,6 @@ export abstract class ItemGCS extends ContainerGURPS {
 		data: DeepPartial<ItemDataConstructorData | (ItemDataConstructorData & Record<string, unknown>)>,
 		context?: DocumentModificationContext & MergeObjectOptions & { noPrepare?: boolean }
 	): Promise<this | undefined> {
-		if (this.actor && context?.noPrepare) (this.actor as any).noPrepare = true
 		if (!(this.parent instanceof Item)) return super.update(data, context)
 		data._id = this.id
 		await this.container?.updateEmbeddedDocuments("Item", [data])

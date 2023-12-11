@@ -45,6 +45,7 @@ interface _MookItem {
 export interface MookTrait extends _MookItem {
 	points: number
 	cr: number
+	levels: number
 	modifiers: MookTraitModifier[]
 }
 

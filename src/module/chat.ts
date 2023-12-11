@@ -217,7 +217,6 @@ function getDamageRollData(eventData: any): { actor: ActorGURPS; data: any } | u
 async function _onMultiDamageRoll(event: JQuery.ClickEvent): Promise<void> {
 	event.preventDefault()
 	event.stopPropagation()
-	console.log("MultiDamageRoll")
 
 	const damageButtons = $(event.currentTarget).closest(".damage-buttons")
 

@@ -5,7 +5,7 @@ import { EFFECT_ACTION, SETTINGS, SYSTEM_NAME, gid } from "@module/data"
 
 export const defaultSettings = {
 	[SYSTEM_NAME]: {
-		[`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`]: [
+		[`${SETTINGS.DEFAULT_ATTRIBUTES}.effects`]: [
 			{
 				attribute: gid.FatiguePoints,
 				state: "Unconscious",
@@ -282,7 +282,6 @@ export const defaultSettings = {
 					},
 				],
 			},
-		],
-		[`${SETTINGS.DEFAULT_ATTRIBUTES}.effects`]: []
+		]
 	}
 }
