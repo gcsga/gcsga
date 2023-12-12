@@ -12,7 +12,7 @@ describe("Mook generator", () => {
 	beforeEach(() => {
 		_mook = new Mook(_defaultMookData)
 		_parser = new MookParser("", _mook)
-		;(global as any).game = new FakeGame()
+			; (global as any).game = new FakeGame()
 	})
 
 	describe("Attribute Parsing", () => {
@@ -37,51 +37,52 @@ describe("Mook generator", () => {
 			expect(_mook.system.attributes.find(e => e.attr_id === gid.FatiguePoints)?.adj).toBe(0)
 			expect(_mook.system.attributes.find(e => e.attr_id === gid.HitPoints)?.adj).toBe(1)
 		})
+
+		it("Attributes separated by ; and newlines", () => {
+			_parser.text = _oldStats[9]
+			_parser.parseStatBlock(_parser.text)
+
+			_mook.getAttributes()
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Strength)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Dexterity)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Intelligence)?.adj).toBe(-1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Health)?.adj).toBe(1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Will)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.FrightCheck)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Perception)?.adj).toBe(1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Vision)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Hearing)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.TasteSmell)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Touch)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.BasicSpeed)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.BasicMove)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.FatiguePoints)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.HitPoints)?.adj).toBe(0)
+		})
+
+		it("Attributes separated by , and newlines, points added", () => {
+			_parser.text = _oldStats[13]
+			_parser.parseStatBlock(_parser.text)
+
+			_mook.getAttributes()
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Strength)?.adj).toBe(3)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Dexterity)?.adj).toBe(4)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Intelligence)?.adj).toBe(3)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Health)?.adj).toBe(2)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Will)?.adj).toBe(-1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.FrightCheck)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Perception)?.adj).toBe(1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Vision)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Hearing)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.TasteSmell)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Touch)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.BasicSpeed)?.adj).toBe(0.25)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.BasicMove)?.adj).toBe(1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.FatiguePoints)?.adj).toBe(1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.HitPoints)?.adj).toBe(-1)
+		})
 	})
 
-	it("Attributes separated by ; and newlines", () => {
-		_parser.text = _oldStats[9]
-		_parser.parseStatBlock(_parser.text)
-
-		_mook.getAttributes()
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.Strength)?.adj).toBe(0)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.Dexterity)?.adj).toBe(0)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.Intelligence)?.adj).toBe(-1)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.Health)?.adj).toBe(1)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.Will)?.adj).toBe(0)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.FrightCheck)?.adj).toBe(0)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.Perception)?.adj).toBe(1)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.Vision)?.adj).toBe(0)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.Hearing)?.adj).toBe(0)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.TasteSmell)?.adj).toBe(0)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.Touch)?.adj).toBe(0)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.BasicSpeed)?.adj).toBe(0)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.BasicMove)?.adj).toBe(0)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.FatiguePoints)?.adj).toBe(0)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.HitPoints)?.adj).toBe(0)
-	})
-
-	it("Attributes separated by , and newlines, points added", () => {
-		_parser.text = _oldStats[13]
-		_parser.parseStatBlock(_parser.text)
-
-		_mook.getAttributes()
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.Strength)?.adj).toBe(3)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.Dexterity)?.adj).toBe(4)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.Intelligence)?.adj).toBe(3)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.Health)?.adj).toBe(2)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.Will)?.adj).toBe(-1)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.FrightCheck)?.adj).toBe(0)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.Perception)?.adj).toBe(1)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.Vision)?.adj).toBe(0)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.Hearing)?.adj).toBe(0)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.TasteSmell)?.adj).toBe(0)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.Touch)?.adj).toBe(0)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.BasicSpeed)?.adj).toBe(0.25)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.BasicMove)?.adj).toBe(1)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.FatiguePoints)?.adj).toBe(1)
-		expect(_mook.system.attributes.find(e => e.attr_id === gid.HitPoints)?.adj).toBe(-1)
-	})
 
 	describe("Trait Parsing", () => {
 		it("Traits with CR, levels, no points, no modifiers", () => {
@@ -144,7 +145,7 @@ describe("Mook generator", () => {
 					s =>
 						s.name === "Bow" &&
 						s.level === 13 &&
-						s.difficulty === "dx/a" && // default difficulty
+						s.difficulty === "dx/a" &&
 						s.points === 0
 				)
 			).toBe(true)
@@ -153,7 +154,7 @@ describe("Mook generator", () => {
 					s =>
 						s.name === "Brawling" &&
 						s.level === 13 &&
-						s.difficulty === "dx/a" && // default difficulty
+						s.difficulty === "dx/a" &&
 						s.points === 0
 				)
 			).toBe(true)
@@ -162,7 +163,7 @@ describe("Mook generator", () => {
 					s =>
 						s.name === "Knife" &&
 						s.level === 13 &&
-						s.difficulty === "dx/a" && // default difficulty
+						s.difficulty === "dx/a" &&
 						s.points === 0
 				)
 			).toBe(true)
@@ -171,7 +172,7 @@ describe("Mook generator", () => {
 					s =>
 						s.name === "Shield" &&
 						s.level === 12 &&
-						s.difficulty === "dx/a" && // default difficulty
+						s.difficulty === "dx/a" &&
 						s.points === 0
 				)
 			).toBe(true)
@@ -180,7 +181,7 @@ describe("Mook generator", () => {
 					s =>
 						s.name === "Stealth" &&
 						s.level === 12 &&
-						s.difficulty === "dx/a" && // default difficulty
+						s.difficulty === "dx/a" &&
 						s.points === 0
 				)
 			).toBe(true)
@@ -195,7 +196,7 @@ describe("Mook generator", () => {
 					s =>
 						s.name === "Acrobatics" &&
 						s.level === 15 &&
-						s.difficulty === "dx/a" && // default difficulty
+						s.difficulty === "dx/a" &&
 						s.points === 0
 				)
 			).toBe(true)
@@ -204,7 +205,7 @@ describe("Mook generator", () => {
 					s =>
 						s.name === "Brawling" &&
 						s.level === 18 &&
-						s.difficulty === "dx/a" && // default difficulty
+						s.difficulty === "dx/a" &&
 						s.points === 0
 				)
 			).toBe(true)
@@ -213,7 +214,7 @@ describe("Mook generator", () => {
 					s =>
 						s.name === "Climbing" &&
 						s.level === 18 &&
-						s.difficulty === "dx/a" && // default difficulty
+						s.difficulty === "dx/a" &&
 						s.points === 0
 				)
 			).toBe(true)
@@ -222,7 +223,7 @@ describe("Mook generator", () => {
 					s =>
 						s.name === "Cloak" &&
 						s.level === 15 &&
-						s.difficulty === "dx/a" && // default difficulty
+						s.difficulty === "dx/a" &&
 						s.points === 0
 				)
 			).toBe(true)
@@ -231,7 +232,7 @@ describe("Mook generator", () => {
 					s =>
 						s.name === "Escape" &&
 						s.level === 16 &&
-						s.difficulty === "dx/a" && // default difficulty
+						s.difficulty === "dx/a" &&
 						s.points === 0
 				)
 			).toBe(true)
@@ -240,7 +241,7 @@ describe("Mook generator", () => {
 					s =>
 						s.name === "Filch" &&
 						s.level === 16 &&
-						s.difficulty === "dx/a" && // default difficulty
+						s.difficulty === "dx/a" &&
 						s.points === 0
 				)
 			).toBe(true)
@@ -249,7 +250,7 @@ describe("Mook generator", () => {
 					s =>
 						s.name === "Forced Entry" &&
 						s.level === 17 &&
-						s.difficulty === "dx/a" && // default difficulty
+						s.difficulty === "dx/a" &&
 						s.points === 0
 				)
 			).toBe(true)
@@ -258,7 +259,7 @@ describe("Mook generator", () => {
 					s =>
 						s.name === "Garrote" &&
 						s.level === 18 &&
-						s.difficulty === "dx/a" && // default difficulty
+						s.difficulty === "dx/a" &&
 						s.points === 0
 				)
 			).toBe(true)
@@ -267,7 +268,7 @@ describe("Mook generator", () => {
 					s =>
 						s.name === "Holdout" &&
 						s.level === 15 &&
-						s.difficulty === "dx/a" && // default difficulty
+						s.difficulty === "dx/a" &&
 						s.points === 0
 				)
 			).toBe(true)
@@ -276,7 +277,7 @@ describe("Mook generator", () => {
 					s =>
 						s.name === "Knife" &&
 						s.level === 18 &&
-						s.difficulty === "dx/a" && // default difficulty
+						s.difficulty === "dx/a" &&
 						s.points === 0
 				)
 			).toBe(true)
@@ -285,7 +286,7 @@ describe("Mook generator", () => {
 					s =>
 						s.name === "Lockpicking" &&
 						s.level === 16 &&
-						s.difficulty === "dx/a" && // default difficulty
+						s.difficulty === "dx/a" &&
 						s.points === 0
 				)
 			).toBe(true)
@@ -294,7 +295,7 @@ describe("Mook generator", () => {
 					s =>
 						s.name === "Observation" &&
 						s.level === 16 &&
-						s.difficulty === "dx/a" && // default difficulty
+						s.difficulty === "dx/a" &&
 						s.points === 0
 				)
 			).toBe(true)
@@ -303,7 +304,7 @@ describe("Mook generator", () => {
 					s =>
 						s.name === "Pickpocket" &&
 						s.level === 16 &&
-						s.difficulty === "dx/a" && // default difficulty
+						s.difficulty === "dx/a" &&
 						s.points === 0
 				)
 			).toBe(true)
@@ -312,7 +313,7 @@ describe("Mook generator", () => {
 					s =>
 						s.name === "Search" &&
 						s.level === 17 &&
-						s.difficulty === "dx/a" && // default difficulty
+						s.difficulty === "dx/a" &&
 						s.points === 0
 				)
 			).toBe(true)
@@ -321,7 +322,7 @@ describe("Mook generator", () => {
 					s =>
 						s.name === "Shadowing" &&
 						s.level === 14 &&
-						s.difficulty === "dx/a" && // default difficulty
+						s.difficulty === "dx/a" &&
 						s.points === 0
 				)
 			).toBe(true)
@@ -330,7 +331,7 @@ describe("Mook generator", () => {
 					s =>
 						s.name === "Shortsword" &&
 						s.level === 16 &&
-						s.difficulty === "dx/a" && // default difficulty
+						s.difficulty === "dx/a" &&
 						s.points === 0
 				)
 			).toBe(true)
@@ -339,7 +340,7 @@ describe("Mook generator", () => {
 					s =>
 						s.name === "Staff" &&
 						s.level === 16 &&
-						s.difficulty === "dx/a" && // default difficulty
+						s.difficulty === "dx/a" &&
 						s.points === 0
 				)
 			).toBe(true)
@@ -348,7 +349,7 @@ describe("Mook generator", () => {
 					s =>
 						s.name === "Stealth" &&
 						s.level === 18 &&
-						s.difficulty === "dx/a" && // default difficulty
+						s.difficulty === "dx/a" &&
 						s.points === 0
 				)
 			).toBe(true)
@@ -357,7 +358,7 @@ describe("Mook generator", () => {
 					s =>
 						s.name === "Tactics" &&
 						s.level === 12 &&
-						s.difficulty === "dx/a" && // default difficulty
+						s.difficulty === "dx/a" &&
 						s.points === 0
 				)
 			).toBe(true)
@@ -366,7 +367,7 @@ describe("Mook generator", () => {
 					s =>
 						s.name === "Traps" &&
 						s.level === 14 &&
-						s.difficulty === "dx/a" && // default difficulty
+						s.difficulty === "dx/a" &&
 						s.points === 0
 				)
 			).toBe(true)
@@ -444,7 +445,7 @@ describe("Mook generator", () => {
 		})
 	})
 
-	describe("Spell Parsing - Bandit Mage", () => {
+	describe("Spell Parsing", () => {
 		it("Spells with name-level notation, no points, no specializations, no RSL, no attributes", () => {
 			_parser.text = _oldStats[14]
 			_parser.parseStatBlock(_parser.text)
@@ -582,6 +583,14 @@ describe("Mook generator", () => {
 					s => s.name === "Light" && s.level === 15 && s.difficulty === "iq/h" && s.points === 0
 				)
 			).toBe(true)
+		})
+	})
+
+	describe("Attack parsing", () => {
+
+		it("Attack test test", () => {
+			_parser.text = _oldStats[0]
+			_parser.parseStatBlock(_parser.text)
 		})
 	})
 })
