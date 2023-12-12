@@ -17,6 +17,7 @@ describe("Mook generator", () => {
 	})
 
 	describe("Attribute Parsing", () => {
+
 		it("Attributes separated by spaces and newlines", () => {
 			_parser.text = _oldStats[0]
 			_parser.parseStatBlock(_parser.text)
@@ -589,9 +590,47 @@ describe("Mook generator", () => {
 
 	describe("Attack parsing", () => {
 
-		it("Attack test test", () => {
+		it("Attacks separated by . and newlines, some armor divisors, notes, long form damage types", () => {
 			_parser.text = _oldStats[0]
 			_parser.parseStatBlock(_parser.text)
+
+			expect(
+				_mook.melee.some(
+					w => w.name === "Bite" && w.level === 13 && w.reach === "C" &&
+						w.damage.type === "cut" && w.damage.base === "1d-1"
+				)
+			).toBe(true)
+			expect(
+				_mook.melee.some(
+					w => w.name === "Kick" && w.level === 11 && w.reach === "C, 1" &&
+						w.damage.type === "cr" && w.damage.base === "1d+1"
+				)
+			).toBe(true)
+			expect(
+				_mook.melee.some(
+					w => w.name === "Long Knife" && w.level === 13 && w.reach === "C, 1" &&
+						w.damage.type === "cut" && w.damage.base === "1d"
+				)
+			).toBe(true)
+			expect(
+				_mook.melee.some(
+					w => w.name === "Punch" && w.level === 13 && w.reach === "C" &&
+						w.damage.type === "cr" && w.damage.base === "1d-1"
+				)
+			).toBe(true)
+			expect(
+				_mook.melee.some(
+					w => w.name === "Shield Bash" && w.level === 12 && w.reach === "1" &&
+						w.damage.type === "cr" && w.damage.base === "1d-1"
+				)
+			).toBe(true)
+			expect(
+				_mook.ranged.some(
+					w => w.name === "Short Bow" && w.level === 13 &&
+						w.damage.type === "pi" && w.damage.base === "1d-1" && w.damage.armor_divisor === 2 &&
+						w.accuracy === "1" && w.range === "110/165" && w.shots === "1(2)" && w.bulk === "-6"
+				)
+			).toBe(true)
 		})
 	})
 })
