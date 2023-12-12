@@ -7,7 +7,7 @@ declare global {
 	 * @typeParam Options - the type of the options object
 	 */
 	class RollTableConfig<
-		Options extends DocumentSheetOptions<RollTable> = DocumentSheetOptions<RollTable>
+		Options extends DocumentSheetOptions<RollTable> = DocumentSheetOptions<RollTable>,
 	> extends DocumentSheet<Options, InstanceType<ConfiguredDocumentClassForName<"RollTable">>> {
 		/**
 		 * @defaultValue

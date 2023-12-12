@@ -335,19 +335,19 @@ type RemoveDeletingObjectKeys<T, M extends MergeObjectOptions> = M["performDelet
 type MergeObjectProperty<T, U, M extends MergeObjectOptions> = T extends Array<any>
 	? U
 	: T extends Record<string, any>
-	? U extends Record<string, any>
-		? M extends { recursive: false }
-			? U
-			: Result<
-					T,
-					U,
-					Omit<M, "insertKeys" | "performDeletions"> & {
-						insertKeys: M["insertValues"]
-						performDeletions: M["performDeletions"] extends true ? true : false
-					}
-			  >
-		: U
-	: U
+	  ? U extends Record<string, any>
+			? M extends { recursive: false }
+				? U
+				: Result<
+						T,
+						U,
+						Omit<M, "insertKeys" | "performDeletions"> & {
+							insertKeys: M["insertValues"]
+							performDeletions: M["performDeletions"] extends true ? true : false
+						}
+				  >
+			: U
+	  : U
 type UpdateKeys<T, U, M extends MergeObjectOptions> = M extends { overwrite: false }
 	? T
 	: { [K in keyof T]: K extends keyof U ? MergeObjectProperty<T[K], U[K], M> : T[K] }
@@ -364,8 +364,8 @@ type Result<T, U, M extends MergeObjectOptions> = UpdateInsert<
 type WithWidenedArrayTypes<T> = T extends Array<any>
 	? Array<any>
 	: T extends Record<string, any>
-	? { [K in keyof T]: WithWidenedArrayTypes<T[K]> }
-	: T
+	  ? { [K in keyof T]: WithWidenedArrayTypes<T[K]> }
+	  : T
 
 /**
  * Update a source object by replacing its keys and values with those from a target object.
@@ -407,17 +407,17 @@ type WithWidenedArrayTypes<T> = T extends Array<any>
 export declare function mergeObject<
 	T extends object,
 	U extends DeepPartial<WithWidenedArrayTypes<T>>,
-	M extends MergeObjectOptions & { enforceTypes: true }
+	M extends MergeObjectOptions & { enforceTypes: true },
 >(original: T, other?: U, options?: M, _d?: number): Result<T, U, M>
 export declare function mergeObject<
 	T extends object,
 	U extends DeepPartial<Record<keyof T, never>> & object,
-	M extends MergeObjectOptions & { enforceTypes: true }
+	M extends MergeObjectOptions & { enforceTypes: true },
 >(original: T, other?: U, options?: M, _d?: number): Result<T, U, M>
 export declare function mergeObject<
 	T extends object,
 	U extends object,
-	M extends MergeObjectOptions & { enforceTypes: true }
+	M extends MergeObjectOptions & { enforceTypes: true },
 >(original: T, other?: U, options?: M, _d?: number): never
 export declare function mergeObject<T extends object, U extends object, M extends MergeObjectOptions>(
 	original: T,

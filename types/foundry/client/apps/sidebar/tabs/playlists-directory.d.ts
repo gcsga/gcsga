@@ -6,7 +6,7 @@ declare global {
 	 * @typeParam Options - The type of the options object
 	 */
 	class PlaylistDirectory<
-		Options extends SidebarDirectory.Options = SidebarDirectory.Options
+		Options extends SidebarDirectory.Options = SidebarDirectory.Options,
 	> extends SidebarDirectory<"Playlist", Options> {
 		constructor(options?: Partial<Options>)
 

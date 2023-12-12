@@ -75,7 +75,7 @@ declare abstract class DocumentData<
 	PropertiesData extends object,
 	SourceData extends object = PropertiesToSource<PropertiesData>,
 	ConstructorData extends object = DeepPartial<SourceData>,
-	ConcreteDocument extends Document<any, any> | null = null
+	ConcreteDocument extends Document<any, any> | null = null,
 > {
 	/**
 	 * @param data     - Initial data used to construct the data object
@@ -137,8 +137,8 @@ declare abstract class DocumentData<
 	): ConcreteDocumentField extends { default?: undefined }
 		? undefined
 		: ConcreteDocumentField extends { default: (data?: object) => infer V }
-		? V
-		: ConcreteDocumentField["default"]
+		  ? V
+		  : ConcreteDocumentField["default"]
 
 	/**
 	 * Initialize the instance by copying data from the source object to instance attributes.

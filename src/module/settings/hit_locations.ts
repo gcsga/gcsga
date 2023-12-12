@@ -371,7 +371,7 @@ export class DefaultHitLocationSettings extends SettingsMenuGURPS {
 				index: index,
 			})
 		)
-			; (event as any).dragType = type
+		;(event as any).dragType = type
 	}
 
 	protected _onDragItem(event: JQuery.DragOverEvent): void {

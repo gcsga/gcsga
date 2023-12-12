@@ -19,7 +19,7 @@ export type DocumentDataType<T extends Document<any, any>> = T extends Document<
 declare abstract class Document<
 	ConcreteDocumentData extends AnyDocumentData,
 	Parent extends Document<any, any> | null = null,
-	ConcreteMetadata extends Metadata<any> = Metadata<any>
+	ConcreteMetadata extends Metadata<any> = Metadata<any>,
 > {
 	/**
 	 * Create a new Document by providing an initial data object.
@@ -506,12 +506,12 @@ declare abstract class Document<
 	 */
 	getFlag<
 		S extends keyof ConcreteDocumentData["_source"]["flags"],
-		K extends keyof ConcreteDocumentData["_source"]["flags"][S]
+		K extends keyof ConcreteDocumentData["_source"]["flags"][S],
 	>(scope: S, key: K): ConcreteDocumentData["_source"]["flags"][S][K]
 
 	getFlag<
 		S extends keyof ConcreteDocumentData["_source"]["flags"],
-		K extends keyof Required<ConcreteDocumentData["_source"]["flags"]>[S]
+		K extends keyof Required<ConcreteDocumentData["_source"]["flags"]>[S],
 	>(scope: S, key: K): Required<ConcreteDocumentData["_source"]["flags"]>[S][K] | undefined
 
 	getFlag<S extends keyof ConcreteDocumentData["_source"]["flags"]>(
@@ -542,7 +542,7 @@ declare abstract class Document<
 	setFlag<
 		S extends keyof ConcreteDocumentData["_source"]["flags"],
 		K extends keyof Required<ConcreteDocumentData["_source"]["flags"]>[S],
-		V extends Required<ConcreteDocumentData["_source"]["flags"]>[S][K]
+		V extends Required<ConcreteDocumentData["_source"]["flags"]>[S][K],
 	>(scope: S, key: K, value: V): Promise<this>
 
 	setFlag<S extends keyof ConcreteDocumentData["_source"]["flags"], K extends string>(

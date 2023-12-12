@@ -2,7 +2,6 @@ import { ConditionID } from "@item/condition/data"
 import { AttributeType, ThresholdOp } from "@module/attribute/data"
 import { EFFECT_ACTION, SETTINGS, SYSTEM_NAME, gid } from "@module/data"
 
-
 export const defaultSettings = {
 	[SYSTEM_NAME]: {
 		[`${SETTINGS.DEFAULT_ATTRIBUTES}.effects`]: [
@@ -282,6 +281,6 @@ export const defaultSettings = {
 					},
 				],
 			},
-		]
-	}
+		],
+	},
 }

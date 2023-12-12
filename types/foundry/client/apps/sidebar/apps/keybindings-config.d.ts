@@ -2,7 +2,7 @@
  * Allows for viewing and editing of Keybinding Actions
  */
 declare class KeybindingsConfig<
-	Options extends FormApplicationOptions = FormApplicationOptions
+	Options extends FormApplicationOptions = FormApplicationOptions,
 > extends FormApplication<Options> {
 	/**
 	 * A cached copy of the Categories

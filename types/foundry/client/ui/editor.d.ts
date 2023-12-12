@@ -305,14 +305,14 @@ declare global {
 							 * @defaultValue `true`
 							 */
 							wrapper?: boolean
-						}
+						},
 					]
 
 					/**
 					 * @defaultValue `"Custom"`
 					 */
 					title?: string
-				}
+				},
 			]
 
 			/**

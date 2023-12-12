@@ -10,7 +10,7 @@ declare global {
 		D extends Document<any, InstanceType<ConfiguredDocumentClass<typeof Scene>>> = Document<
 			any,
 			InstanceType<ConfiguredDocumentClass<typeof Scene>>
-		>
+		>,
 	> extends PIXI.Container {
 		/**
 		 * @param document - The Document instance which is represented by this object
