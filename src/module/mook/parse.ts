@@ -3,8 +3,42 @@ import { sanitize } from "@util"
 import { MookData, MookMelee, MookRanged, MookSkill, MookSpell, MookTrait, MookTraitModifier } from "./data"
 import { Mook } from "./document"
 import { StrengthDamage, WeaponDamageObj } from "@item/weapon/data"
+import { DiceGURPS } from "@module/dice"
 
 const regex_points = /\[(-?\d+)\]/
+const damage_type_matches: Map<string, string> = new Map([
+	["pi", "pi"],
+	["pierce", "pi"],
+	["piercing", "pi"],
+	["cr", "cr"],
+	["crush", "cr"],
+	["crushing", "cr"],
+	["pi-", "pi-"],
+	["small pierce", "pi-"],
+	["small piercing", "pi-"],
+	["pi+", "pi+"],
+	["large pierce", "pi+"],
+	["large piercing", "pi+"],
+	["pi++", "pi++"],
+	["huge pierce", "pi++"],
+	["huge piercing", "pi++"],
+	["burn", "burn"],
+	["burning", "burn"],
+	["imp", "imp"],
+	["impale", "imp"],
+	["impaling", "imp"],
+	["cut", "cut"],
+	["cutting", "cut"],
+	["injury", "injury"],
+	["cor", "cor"],
+	["corrosion", "cor"],
+	["corrosive", "cor"],
+	["tox", "tox"],
+	["toxic", "tox"]
+])
+const regex_damage_type = new RegExp(`\\s+\\b(${Array.from(damage_type_matches.keys())
+	.map(e => e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")
+	})\\b`)
 
 export class MookParser {
 	text: string
@@ -32,7 +66,8 @@ export class MookParser {
 		this._object = this.resetObject
 		this.text = this.sanitizeStatBlock(text)
 		this._text = this.text
-		console.log(this._text)
+		// console.log(this._text)
+		this.parseAttacks()
 		this.parseAttributes()
 		this.parseTraits()
 		this.parseSkills()
@@ -40,11 +75,11 @@ export class MookParser {
 		// this.parseMelee()
 		// this.parseRanged()
 		// this.parseEquipment()
-		this.parseAttacks()
 		this.parseAttacks(true)
-		console.log("Leftover:")
-		console.log(this.text)
-		console.log(JSON.stringify(this.object, null, "\t"))
+		// console.log("Leftover:")
+		// console.log(this.text)
+		// console.log(JSON.stringify(this.object.melee, null, "\t"))
+		// console.log(JSON.stringify(this.object.ranged, null, "\t"))
 		return this.object
 	}
 
@@ -57,10 +92,8 @@ export class MookParser {
 	}
 
 	private extractText(startMatches: string[], endMatches: string[], cut = true): string {
-		// console.log(startMatches, endMatches, this.text)
 		const start = startMatches.length === 0 ? 0 : this.findInText(startMatches)
 		if (start === -1) {
-			// console.log(`No matches for: ${startMatches.join(", ")}`)
 			return ""
 		}
 		const end = this.findInText(endMatches)
@@ -128,7 +161,6 @@ export class MookParser {
 			for (const e of attribute_names) {
 				if (t.match(e.match)) {
 					id = e.id
-
 					break
 				}
 				if (e.match.includes(" "))
@@ -431,60 +463,146 @@ export class MookParser {
 		})
 	}
 
+	parseDamage(input: string): [WeaponDamageObj, string] {
+		const regex_full_damage = /(\d+d)([+-]\d+)?\s*(\(\d+\))?\s+\w+/
+		const regex_armor_divisor = /\((\d+)\)/
+
+		const damage: WeaponDamageObj = {
+			type: "",
+			st: StrengthDamage.None,
+			base: "",
+			armor_divisor: 1,
+			fragmentation: "",
+			fragmentation_armor_divisor: 1,
+			fragmentation_type: "",
+			modifier_per_die: 0,
+		}
+
+		let base = ""
+
+		// capture whole damage string
+		if (input.match(regex_full_damage)) {
+			base = input.match(regex_full_damage)?.[0] ?? base
+			const inputArr = input.split(base)
+			if (inputArr.length > 1) input = `${inputArr[0].trim()} {{${inputArr[1].trim()}}}`
+			else input = inputArr[0]
+		}
+		if (base === "") return [damage, input]
+
+		// capture armor divisor if any
+		if (base.match(regex_armor_divisor)) {
+			damage.armor_divisor = parseInt(base.match(regex_armor_divisor)?.[1] ?? "1")
+			base = base.replace(`(${damage.armor_divisor})`, "").trim()
+		}
+
+		// capture damage type
+		if (base.match(regex_damage_type)) {
+			damage.type = damage_type_matches.get(base.match(regex_damage_type)?.[1] ?? "") ?? ""
+			base = base.replace(`${base.match(regex_damage_type)?.[0]}`, "").trim()
+		}
+
+		// capture damage dice
+		damage.base = new DiceGURPS(base).string
+		base = base.replace(damage.base, "").trim()
+		return [damage, input]
+	}
+
 	parseAttacks(oldFormat = false) {
-		const regex_acc = / ?[Aa]cc *(\\d+) ?,?/
-		const regex_rof = / ?[Rr]o[Ff] *(\\d+) ?,?/
-		const regex_recoil = / ?[Rr]cl *(\\d+) ?,?/
-		const regex_half_damage = / ?1\/2[Dd] *(\\d+) ?,?/
-		const regex_max_range = / ?[Mm]ax *(\\d+) ?,?/
-		const regex_shots = / ?[Ss]hots *([\\w\\)\\(]+) ?,?/
-		const regex_bulk = / ?[Bb]ulk *([\\w-]+) ?,?/
-		const regex_ST = / ?[Ss][Tt] *(\\d+) ?,?/
-		const regex_reach = / ?[Rr]each *([^.]+) ?,?/
-		const regex_range = / ?[Rr]ange ([0-9/]+) *,?/
+		const regex_acc = /\s?[Aa]cc *(\d+)\s?,?/
+		const regex_rof = /\s?[Rr]o[Ff] *(\d+)\s?,?/
+		const regex_recoil = /\s?[Rr]cl *(\d+)\s?,?/
+		const regex_half_damage = /\s?1\/2[Dd] *(\d+)\s?,?/
+		const regex_max_range = /\s?[Mm]ax *(\d+) ?,?/
+		const regex_shots = /\s?[Ss]hots *([\dT\)\(]+)\s?,?/
+		const regex_bulk = /\s?[Bb]ulk\s*(-\d+)\s?,?/
+		const regex_ST = / ?[Ss][Tt] *(\d+)\s?,?/
+		const regex_reach = /\s?[Rr]each *([^.]+)\s?,?/
+		const regex_range = /\s?[Rr]ange ([0-9/]+)\s*,?/
 		const regex_level = /\((\d+)\):/
 
 		this._object.melee = []
 		this._object.ranged = []
 
+		// console.log(this.text)
+
 		let text = ""
 		if (oldFormat) text = this.text
 		else {
-			text = this.extractText(["Traits:"], ["Advantages/Disadvantages:", "Advantages:"], false)
-			if (text === "") {
-				if (this.findInText(["Skills:"]) !== -1) text = this.extractText(["Skills:"], ["junk"])
-				else if (this.findInText(["Weapons:"]) !== -1)
-					text = this.extractText(["Weapons:"], [])
-				else console.log("No attacks found")
-			}
+			text = this.extractText([], ["Traits:"])
+			// text = this.extractText(["Traits:"], ["Advantages/Disadvantages:", "Advantages:"], false)
+			// if (text === "") {
+			// 	if (this.findInText(["Skills:"]) !== -1) text = this.extractText(["Skills:"], [])
+			// 	else if (this.findInText(["Weapons:"]) !== -1)
+			// 		text = this.extractText(["Weapons:"], [])
+			// 	else console.log("No attacks found")
+			// }
 		}
 
 		let weapons = ""
-		let leftOverText = ""
+		let beforeText = ""
+		let afterText = ""
+
+		// if we come across a line which isn't accepted, don't bother with the rest
+		let last_matched = false
+		let at_least_one_level = false
 		text.split("\n").forEach(e => {
-			if (e.match(/\):/)) weapons += `${e}\n`
-			else leftOverText += `${e}\n`
+			if (!last_matched && weapons.length !== 0) {
+				afterText += `${e}\n`
+				return
+			}
+			if (
+				e.match(/^(\w+\s+)*\(\d+\):?/)) {
+				weapons += `${e}\n`
+				at_least_one_level = true
+				last_matched = true
+			} else if (
+				at_least_one_level && (
+					e.match(regex_acc) ||
+					e.match(regex_rof) ||
+					e.match(regex_recoil) ||
+					e.match(regex_half_damage) ||
+					e.match(regex_max_range) ||
+					e.match(regex_shots) ||
+					e.match(regex_bulk) ||
+					e.match(regex_ST) ||
+					e.match(regex_reach) ||
+					e.match(regex_range)
+				)
+			) {
+				weapons += `${e}\n`
+				last_matched = true
+			}
+			else if (weapons.length !== 0) {
+				afterText += `${e}\n`
+				last_matched = false
+			} else {
+				beforeText += `${e}\n`
+			}
 		})
 
 		// this.text += leftOverText
+		this.text = beforeText + this.text + afterText
 
-		console.log("WEAPONS")
-		console.log(weapons)
+		if (weapons.includes(".\n")) weapons = weapons.replace(/\.\n/g, ";")
 
-		if (weapons.includes(";")) weapons = weapons.replace(/\n/g, ";") // if ; separated, remove newlines
-		else if (weapons.split(",").length > 2) weapons = weapons.replace(/,/g, ";") // if , separated, replace with ;
-		weapons = weapons.replace(/weapons:?/gi, ";")
 
-		weapons = weapons
-			.split(";")
-			.filter(e => e.match(/\):?/))
-			.join(";")
-			.trim()
+		weapons = (() => {
+			let final = ""
+			const list = weapons.split(";")
+			for (let line of list) {
+				line = line.replace(/\n/, " ")
+				if (line.match(/^(\w+\s+)*\(\d+\):?/)) final += `; ${this.cleanLine(line).trim()}`
+				else final += ` ${this.cleanLine(line).trim()}`
+			}
+
+			return final
+		})()
+
 		weapons.split(";").forEach(t => {
 
 			const reference = ""
 			const reference_highlight = ""
-			const notes = ""
+			let notes = ""
 			const parry = "0"
 			const block = "0"
 
@@ -551,7 +669,7 @@ export class MookParser {
 			let shots = "0"
 			if (t.match(regex_shots)) {
 				isRanged = true
-				shots = String(parseInt(t.match(regex_shots)![1]))
+				shots = t.match(regex_shots)![1]
 				t = t.replace(regex_shots, "").trim()
 			}
 
@@ -580,8 +698,8 @@ export class MookParser {
 
 			t = t.trim()
 
-			const damage: WeaponDamageObj = {
-				type: "ouch",
+			let damage: WeaponDamageObj = {
+				type: "",
 				st: StrengthDamage.None,
 				base: "",
 				armor_divisor: 1,
@@ -591,15 +709,18 @@ export class MookParser {
 				modifier_per_die: 0,
 			}
 
+				// capture damage
+				;[damage, t] = this.parseDamage(t)
+
+			// if damage parser captures anything after the name, add it as a note
+			if (t.match(/\{\{.*\}\}/)) {
+				notes = t.match(/\{\{(.*)\}\}/)?.[1] ?? ""
+				t = t.replace(/\{\{.*\}\}/, "").trim()
+			}
+
+			t = t.trim()
+
 			if (isRanged) {
-				// console.log("Name", t)
-				// console.log("Level", level)
-				// console.log("Acc", accuracy)
-				// console.log("1/2D", half_damage)
-				// console.log("Max", range ?? max_range)
-				// console.log("ROF", rof)
-				// console.log("Recoil", recoil)
-				// console.log("ST", ST)
 				const rangedWeapon: MookRanged = {
 					name: t,
 					accuracy,
@@ -630,14 +751,7 @@ export class MookParser {
 
 				}
 				this.object.melee.push(meleeWeapon)
-				// console.log("Name", t)
-				// console.log("Level", level)
-				// console.log("ST", ST)
-				// console.log("Reach", reach)
 			}
-
-
-			// console.log(t)
 		})
 	}
 
