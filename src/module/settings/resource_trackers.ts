@@ -57,8 +57,10 @@ export class DefaultResourceTrackerSettings extends SettingsMenuGURPS {
 	async _onAddItem(event: JQuery.ClickEvent) {
 		event.preventDefault()
 		event.stopPropagation()
-		const resource_trackers: ResourceTrackerDefObj[] =
-			game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`)
+		const resource_trackers: ResourceTrackerDefObj[] = game.settings.get(
+			SYSTEM_NAME,
+			`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`
+		)
 		const type: "resource_trackers" | "tracker_thresholds" = $(event.currentTarget).data("type")
 		let new_id = ""
 		if (type === "resource_trackers")
@@ -100,8 +102,10 @@ export class DefaultResourceTrackerSettings extends SettingsMenuGURPS {
 	private async _onDeleteItem(event: JQuery.ClickEvent) {
 		event.preventDefault()
 		event.stopPropagation()
-		const resource_trackers: ResourceTrackerDefObj[] =
-			game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`)
+		const resource_trackers: ResourceTrackerDefObj[] = game.settings.get(
+			SYSTEM_NAME,
+			`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`
+		)
 		const type: "resource_trackers" | "tracker_thresholds" = $(event.currentTarget).data("type")
 		const index = Number($(event.currentTarget).data("index")) || 0
 		const parent_index = Number($(event.currentTarget).data("pindex")) || 0
@@ -131,7 +135,7 @@ export class DefaultResourceTrackerSettings extends SettingsMenuGURPS {
 				parent_index: parent_index,
 			})
 		)
-			; (event as any).dragType = type
+		;(event as any).dragType = type
 	}
 
 	protected _onDragItem(event: JQuery.DragOverEvent): void {
@@ -152,8 +156,10 @@ export class DefaultResourceTrackerSettings extends SettingsMenuGURPS {
 		let element = $(event.target!)
 		if (!element.hasClass("item")) element = element.parent(".item")
 
-		const resource_trackers: ResourceTrackerDefObj[] =
-			game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`)
+		const resource_trackers: ResourceTrackerDefObj[] = game.settings.get(
+			SYSTEM_NAME,
+			`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`
+		)
 		const target_index = element.data("index")
 		const above = element.hasClass("border-top")
 		if (dragData.order === target_index) return this.render()

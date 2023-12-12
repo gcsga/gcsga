@@ -303,7 +303,7 @@ interface PackageDataConstructorData {
 export class PackageData<
 	Schema extends Omit<PackageDataSchema, "system">,
 	Properties extends Omit<PackageDataProperties, "system">,
-	ConstructorData extends Omit<PackageDataConstructorData, "system">
+	ConstructorData extends Omit<PackageDataConstructorData, "system">,
 > extends DocumentData<Schema, Properties, PropertiesToSource<Properties>, ConstructorData> {
 	static override defineSchema(): Omit<PackageDataSchema, "system">
 

@@ -2,7 +2,17 @@ import { Attribute, AttributeDefObj, AttributeObj, AttributeType } from "@module
 import { DamageProgression, gid, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { DiceGURPS } from "@module/dice"
 import { damageProgression } from "@util"
-import { MookData, MookEquipment, MookMelee, MookNote, MookProfile, MookRanged, MookSkill, MookSpell, MookTrait } from "./data"
+import {
+	MookData,
+	MookEquipment,
+	MookMelee,
+	MookNote,
+	MookProfile,
+	MookRanged,
+	MookSkill,
+	MookSpell,
+	MookTrait,
+} from "./data"
 
 export class Mook {
 	protected variableResolverExclusions: Map<string, boolean> = new Map()

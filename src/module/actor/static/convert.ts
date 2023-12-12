@@ -19,10 +19,7 @@ export class CharacterConverter {
 				roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
 				locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
 			},
-			attributes: game.settings.get(
-				SYSTEM_NAME,
-				`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`
-			),
+			attributes: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`),
 			resource_trackers: Object.values(actor.system.additionalresources.tracker).map(e => {
 				return {
 					id: e.alias.toLowerCase(),

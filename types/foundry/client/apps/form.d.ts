@@ -53,7 +53,7 @@ declare global {
 	 */
 	abstract class FormApplication<
 		Options extends FormApplicationOptions = FormApplicationOptions,
-		ConcreteObject = unknown
+		ConcreteObject = unknown,
 	> extends Application<Options> {
 		/**
 		 * @param object  - Some object or entity which is the target to be updated.
@@ -309,7 +309,7 @@ declare global {
 	}
 
 	interface DocumentSheetOptions<
-		ConcreteDocument extends foundry.abstract.Document<any, any> = foundry.abstract.Document<any, any>
+		ConcreteDocument extends foundry.abstract.Document<any, any> = foundry.abstract.Document<any, any>,
 	> extends FormApplicationOptions {
 		/**
 		 * The default permissions required to view this Document sheet.
@@ -330,7 +330,7 @@ declare global {
 	 */
 	abstract class DocumentSheet<
 		Options extends DocumentSheetOptions<ConcreteDocument>,
-		ConcreteDocument extends foundry.abstract.Document<any, any> = foundry.abstract.Document<any, any>
+		ConcreteDocument extends foundry.abstract.Document<any, any> = foundry.abstract.Document<any, any>,
 	> extends FormApplication<Options, ConcreteDocument> {
 		/**
 		 * @param object  - A Document instance which should be managed by this form.

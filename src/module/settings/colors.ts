@@ -136,9 +136,10 @@ export class ColorSettings extends SettingsMenuGURPS {
 		event.preventDefault()
 		const id = $(event.currentTarget).data("id")
 		const colors = game.settings.get(SYSTEM_NAME, `${SETTINGS.COLORS}.colors`)
-		const defaults =
-			game.settings.settings.get(`${SYSTEM_NAME}.${SETTINGS.COLORS}.colors`)?.default as
-			Record<string, { light: string, dark: string }>
+		const defaults = game.settings.settings.get(`${SYSTEM_NAME}.${SETTINGS.COLORS}.colors`)?.default as Record<
+			string,
+			{ light: string; dark: string }
+		>
 		colors[id] = defaults[id]
 		await game.settings.set(SYSTEM_NAME, `${SETTINGS.COLORS}.colors`, colors)
 		ColorSettings.applyColors()

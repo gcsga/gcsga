@@ -50,14 +50,13 @@ export class DefaultAttributeSettings extends SettingsMenuGURPS {
 				name: "",
 				hint: "",
 				type: Array,
-				default: defaultSettings[SYSTEM_NAME][`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`]
-				,
+				default: defaultSettings[SYSTEM_NAME][`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`],
 			},
 			effects: {
 				name: "",
 				hint: "",
 				type: Array,
-				default: defaultSettings[SYSTEM_NAME][`${SETTINGS.DEFAULT_ATTRIBUTES}.effects`]
+				default: defaultSettings[SYSTEM_NAME][`${SETTINGS.DEFAULT_ATTRIBUTES}.effects`],
 			},
 		}
 	}
@@ -191,7 +190,7 @@ export class DefaultAttributeSettings extends SettingsMenuGURPS {
 				parent_index: parent_index,
 			})
 		)
-			; (event as any).dragType = type
+		;(event as any).dragType = type
 	}
 
 	protected _onDragItem(event: JQuery.DragOverEvent): void {
@@ -258,7 +257,11 @@ export class DefaultAttributeSettings extends SettingsMenuGURPS {
 		const attributes = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
 		const effects = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`)
 		formData = prepareFormData(formData, { system: { settings: { attributes } }, effects })
-		await game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`, formData["system.settings.attributes"])
+		await game.settings.set(
+			SYSTEM_NAME,
+			`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`,
+			formData["system.settings.attributes"]
+		)
 		await game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`, formData.effects)
 	}
 }

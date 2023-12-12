@@ -335,12 +335,15 @@ export function setInitiative() {
 }
 
 export function pick<T extends object, K extends keyof T>(obj: T, keys: Iterable<K>): Pick<T, K> {
-	return [...keys].reduce((result, key) => {
-		if (key in obj) {
-			result[key] = obj[key]
-		}
-		return result
-	}, {} as Pick<T, K>)
+	return [...keys].reduce(
+		(result, key) => {
+			if (key in obj) {
+				result[key] = obj[key]
+			}
+			return result
+		},
+		{} as Pick<T, K>
+	)
 }
 
 export async function getDefaultSkills() {
@@ -349,9 +352,9 @@ export async function getDefaultSkills() {
 	for (const s in skillPacks)
 		if (skillPacks[s].skillDefault) {
 			const pack = game.packs.get(s) as CompendiumCollection<any>
-				; (await pack.getDocuments()).forEach(e => {
-					skills.push(e)
-				})
+			;(await pack.getDocuments()).forEach(e => {
+				skills.push(e)
+			})
 		}
 	CONFIG.GURPS.skillDefaults = skills
 }

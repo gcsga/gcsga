@@ -6,7 +6,7 @@ declare global {
 	 * @typeParam Options - The type of the options object
 	 */
 	class WallConfig<
-		Options extends DocumentSheetOptions<WallDocument> = DocumentSheetOptions<WallDocument>
+		Options extends DocumentSheetOptions<WallDocument> = DocumentSheetOptions<WallDocument>,
 	> extends DocumentSheet<Options, InstanceType<ConfiguredDocumentClassForName<"Wall">>> {
 		/**
 		 * @defaultValue

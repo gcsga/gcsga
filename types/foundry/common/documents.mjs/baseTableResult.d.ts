@@ -15,7 +15,7 @@ type TableResultMetadata = Merge<
 		types: [
 			`${typeof CONST.TABLE_RESULT_TYPES.TEXT}`,
 			`${typeof CONST.TABLE_RESULT_TYPES.DOCUMENT}`,
-			`${typeof CONST.TABLE_RESULT_TYPES.COMPENDIUM}`
+			`${typeof CONST.TABLE_RESULT_TYPES.COMPENDIUM}`,
 		]
 		permissions: {
 			update: (user: BaseUser, doc: BaseTableResult, data: DeepPartial<TableResultDataConstructorData>) => boolean

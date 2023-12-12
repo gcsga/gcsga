@@ -9,7 +9,7 @@ declare global {
 	 */
 	abstract class SidebarDirectory<
 		Name extends foundry.CONST.DOCUMENT_TYPES,
-		Options extends SidebarDirectory.Options = SidebarDirectory.Options
+		Options extends SidebarDirectory.Options = SidebarDirectory.Options,
 	> extends SidebarTab<Options> {
 		constructor(options?: Partial<SidebarDirectory.Options>)
 

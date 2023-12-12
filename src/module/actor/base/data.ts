@@ -21,7 +21,7 @@ export enum ActorFlags {
 
 export interface BaseActorSourceGURPS<
 	TActorType extends ActorType = ActorType,
-	TSystemData extends ActorSystemData = ActorSystemData
+	TSystemData extends ActorSystemData = ActorSystemData,
 > extends ActorDataSource {
 	name: string
 	type: TActorType

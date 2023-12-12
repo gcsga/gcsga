@@ -60,7 +60,7 @@ export enum SETTINGS {
 export enum SSRT_SETTING {
 	STANDARD = "standard",
 	SIMPLIFIED = "simplified",
-	TENS = "tens"
+	TENS = "tens",
 }
 
 export enum EFFECT_ACTION {
@@ -370,7 +370,7 @@ export enum UserFlags {
 	ModifierSticky = "modifierSticky",
 	ModifierPinned = "pinnedMods",
 	LastActor = "lastActor",
-	LastToken = "lastToken"
+	LastToken = "lastToken",
 }
 
 export enum PrereqType {

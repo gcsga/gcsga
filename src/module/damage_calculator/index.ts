@@ -110,8 +110,7 @@ class DamageRollAdapter implements DamageRoll {
 			case undefined:
 			case DefaultHitLocations.Default:
 				// Set to default value from world settings.
-				this._locationId =
-					game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_DAMAGE_LOCATION) ?? gid.Torso
+				this._locationId = game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_DAMAGE_LOCATION) ?? gid.Torso
 				break
 		}
 

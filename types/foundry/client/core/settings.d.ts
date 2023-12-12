@@ -45,7 +45,7 @@ declare global {
 			typeof Boolean,
 			typeof Array,
 			typeof Symbol,
-			typeof BigInt
+			typeof BigInt,
 		]
 
 		/**
@@ -236,7 +236,7 @@ declare global {
 			"gcsga.default_hit_locations.roll": string
 			"gcsga.default_hit_locations.locations": HitLocationData[]
 			"gcsga.damage_types.types": CustomDamageType[]
-			"gcsga.colors.colors": Record<string, { light: string, dark: string }>
+			"gcsga.colors.colors": Record<string, { light: string; dark: string }>
 			"gcsga.roll_formula": string
 			"gcsga.modifier_mode": "prompt" | "bucket"
 			[key: string]: unknown

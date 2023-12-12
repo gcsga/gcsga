@@ -102,7 +102,11 @@ export class DamageTypeSettings extends SettingsMenuGURPS {
 					full_name: "New Damage Type",
 					pool_id: "pool",
 				})
-				await game.settings.set(SYSTEM_NAME, `${SETTINGS.DAMAGE_TYPES}.${DamageTypeSettings.TYPES}`, damagetypes)
+				await game.settings.set(
+					SYSTEM_NAME,
+					`${SETTINGS.DAMAGE_TYPES}.${DamageTypeSettings.TYPES}`,
+					damagetypes
+				)
 				break
 		}
 

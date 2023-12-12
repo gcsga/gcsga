@@ -18,7 +18,7 @@ declare global {
 	 */
 	abstract class PlaceablesLayer<
 		DocumentName extends PlaceableDocumentType,
-		Options extends PlaceablesLayer.LayerOptions<DocumentName> = PlaceablesLayer.LayerOptions<DocumentName>
+		Options extends PlaceablesLayer.LayerOptions<DocumentName> = PlaceablesLayer.LayerOptions<DocumentName>,
 	> extends CanvasLayer<Options> {
 		constructor()
 

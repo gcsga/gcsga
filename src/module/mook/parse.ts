@@ -101,20 +101,21 @@ export class MookParser {
 			if (e.full_name && e.full_name !== "")
 				attribute_names.push({ id: e.id.toLowerCase(), match: e.full_name.toLowerCase() })
 		})
-		attribute_names.push(
-			{ id: gid.BasicSpeed, match: "speed" },
-			{ id: gid.BasicMove, match: "move" }
-		)
+		attribute_names.push({ id: gid.BasicSpeed, match: "speed" }, { id: gid.BasicMove, match: "move" })
 
 		const preText = this.extractText([], ["Advantages:", "Advantages/Disadvantages:", "Traits:"])
 
-		const regex_att = new RegExp(`(${attribute_names.map(e => e.match).join("|")}):?[\\n\\s]*(\\d+\.?\\d*)`, "g")
+		const regex_att = new RegExp(`(${attribute_names.map(e => e.match).join("|")}):?[\\n\\s]*(\\d+.?\\d*)`, "g")
 
 		let text = ""
 		let leftOverText = ""
-		preText.replaceAll("\n", " ").toLowerCase().match(regex_att)?.forEach(match => {
-			text += `${match};`
-		})
+		preText
+			.replaceAll("\n", " ")
+			.toLowerCase()
+			.match(regex_att)
+			?.forEach(match => {
+				text += `${match};`
+			})
 		this.text = `${leftOverText}\n${this.text}`
 
 		// Assemble list of final values of attributes
@@ -199,8 +200,7 @@ export class MookParser {
 			let modifiers: MookTraitModifier[] = []
 			if (t.match(/\(.+\)/)) {
 				modifiers = this.parseTraitModifiers(t.match(/\((.*)\)/)![1])
-				if (modifiers.length > 0)
-					t = t.replace(/\(.*\)/, "").trim()
+				if (modifiers.length > 0) t = t.replace(/\(.*\)/, "").trim()
 			}
 
 			// Capture Levels
@@ -216,7 +216,6 @@ export class MookParser {
 				cr = parseInt(t.match(regex_cr)![2])
 				t = t.replace(regex_cr, "").trim()
 			}
-
 
 			t = this.cleanLine(t)
 
@@ -252,11 +251,11 @@ export class MookParser {
 	}
 
 	private parseSkills(): void {
-		const attributes: { name: string; id: string }[] = (
-			game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
-		).map((e: any) => {
-			return { id: e.id, name: e.name }
-		})
+		const attributes: { name: string; id: string }[] = game.settings
+			.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
+			.map((e: any) => {
+				return { id: e.id, name: e.name }
+			})
 
 		const regex_level = /\s?-(\d+)/
 		const regex_difficulty = /\(([EAHV][H]?)\)/
@@ -270,7 +269,8 @@ export class MookParser {
 		// const end = this.findInText(["Spells", "Equipment", "Languages", "Weapons"], start) + start
 		// if (end === -1) return console.log("Spells/Equipment not found")
 		// let text = this.text.substring(start, end)
-		let text = this.extractText(["Skills:"],
+		let text = this.extractText(
+			["Skills:"],
 			["Spells:", "Equipment:", "Language:", "Languages:", "Weapons:", "Class:", "Notes:", "*"]
 		)
 
@@ -345,11 +345,11 @@ export class MookParser {
 	}
 
 	private parseSpells(): void {
-		const attributes: { name: string; id: string }[] = (
-			game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
-		).map((e: any) => {
-			return { id: e.id, name: e.name }
-		})
+		const attributes: { name: string; id: string }[] = game.settings
+			.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
+			.map((e: any) => {
+				return { id: e.id, name: e.name }
+			})
 
 		const regex_level = /\s?-(\d+)/
 		const regex_difficulty = /\(([EAHV][H]?)\)/
@@ -362,8 +362,10 @@ export class MookParser {
 		// const end = this.findInText(["Equipment", "Languages", "Weapons"], start) + start
 		// if (end === -1) return console.log("Equipment not found")
 		// let text = this.text.substring(start, end)
-		let text = this.extractText(["Spells:"],
-			["Equipment:", "Language:", "Languages:", "Weapons:", "Class:", "Notes:"])
+		let text = this.extractText(
+			["Spells:"],
+			["Equipment:", "Language:", "Languages:", "Weapons:", "Class:", "Notes:"]
+		)
 
 		text = text.replace(/spells:?/gi, ";")
 		text = text.replace(/^.*:\n/, ";")
@@ -609,7 +611,7 @@ export class MookParser {
 				height: "",
 				weight: "",
 				SM: 0,
-				portrait: "icons/svg/mystery-man.svg"
+				portrait: "icons/svg/mystery-man.svg",
 			},
 			thrust: this.object.thrust,
 			swing: this.object.swing,

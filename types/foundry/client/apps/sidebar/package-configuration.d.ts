@@ -3,7 +3,7 @@ export {}
 declare global {
 	/** An application for configuring data across all installed and active packages. */
 	abstract class PackageConfiguration<
-		Options extends PackageConfiguration.Options = PackageConfiguration.Options
+		Options extends PackageConfiguration.Options = PackageConfiguration.Options,
 	> extends FormApplication<Options, object> {
 		static get categoryOrder(): string[]
 

@@ -1,10 +1,9 @@
-import { ConditionID } from "@item/condition/data";
-import { AttributeType, ThresholdOp } from "@module/attribute";
-import { DamageProgression, EFFECT_ACTION, SETTINGS, SYSTEM_NAME, gid } from "@module/data";
-import { MookData } from "@module/mook";
+import { ConditionID } from "@item/condition/data"
+import { AttributeType, ThresholdOp } from "@module/attribute"
+import { DamageProgression, EFFECT_ACTION, SETTINGS, SYSTEM_NAME, gid } from "@module/data"
+import { MookData } from "@module/mook"
 
 export class FakeGame {
-
 	settings: FakeSettings
 
 	constructor() {
@@ -17,10 +16,7 @@ class FakeSettings {
 		return this.getDefault(namespace, key)
 	}
 
-	private getDefault<N extends string, K extends string>(
-		namespace: N,
-		key: K
-	): typeof this.defaultSettings[N][K] {
+	private getDefault<N extends string, K extends string>(namespace: N, key: K): (typeof this.defaultSettings)[N][K] {
 		return this.defaultSettings[namespace]?.[key] ?? null
 	}
 
@@ -303,8 +299,8 @@ class FakeSettings {
 						},
 					],
 				},
-			]
-		}
+			],
+		},
 	}
 }
 
@@ -523,7 +519,7 @@ export const _defaultMookData: Partial<MookData> = {
 				],
 			},
 		],
-		damage_progression: DamageProgression.BasicSet
+		damage_progression: DamageProgression.BasicSet,
 	},
 	profile: {
 		name: "Bad Guy",
@@ -532,6 +528,6 @@ export const _defaultMookData: Partial<MookData> = {
 		height: "",
 		weight: "",
 		SM: 0,
-		portrait: "icons/svg/mystery-man.svg"
-	}
+		portrait: "icons/svg/mystery-man.svg",
+	},
 }

@@ -133,7 +133,7 @@ declare global {
 	 * A sheet that alters the values of the default Token configuration used when new Token documents are created.
 	 */
 	class DefaultTokenConfig<
-		Options extends FormApplicationOptions = FormApplicationOptions
+		Options extends FormApplicationOptions = FormApplicationOptions,
 	> extends TokenConfig<Options> {
 		constructor(object: unknown, options?: Partial<Options> | undefined)
 

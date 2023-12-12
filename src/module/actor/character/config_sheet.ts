@@ -83,7 +83,7 @@ export class CharacterSheetConfig extends FormApplication {
 	activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		html.find("textarea")
-			.each(function() {
+			.each(function () {
 				this.setAttribute("style", `height:${this.scrollHeight + 2}px;overflow-y:hidden;`)
 			})
 			.on("input", event => {
@@ -152,11 +152,11 @@ export class CharacterSheetConfig extends FormApplication {
 				if (files) {
 					readTextFromFile(files[0]).then(
 						text =>
-						(this.file = {
-							text: text,
-							name: files[0].name,
-							path: files[0].path,
-						})
+							(this.file = {
+								text: text,
+								name: files[0].name,
+								path: files[0].path,
+							})
 					)
 				}
 				this.render()
@@ -449,7 +449,7 @@ export class CharacterSheetConfig extends FormApplication {
 				parent_index: parent_index,
 			})
 		)
-			; (event as any).dragType = type
+		;(event as any).dragType = type
 	}
 
 	protected _onDragItem(event: JQuery.DragOverEvent): void {
@@ -529,7 +529,7 @@ export class CharacterSheetConfig extends FormApplication {
 	}
 
 	close(options?: FormApplication.CloseOptions | undefined): Promise<void> {
-		; (this.object.sheet as unknown as CharacterSheetGURPS).config = null
+		;(this.object.sheet as unknown as CharacterSheetGURPS).config = null
 		return super.close(options)
 	}
 }
