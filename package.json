@@ -35,6 +35,7 @@
 		"format": "prettier --write \"./**/*.(ts|js|cjs|mjs|json|yml|scss)\"",
 		"test": "jest --verbose",
 		"test:watch": "jest --watch",
+		"test:ci": "jest --ci --reporters=default --reporters=jest-junit",
 		"test:cov": "jest --coverage",
 		"test:verbose": "jest --verbose --coverage",
 		"postinstall": "husky install"
@@ -55,6 +56,7 @@
 		"fs-extra": "^11.1.0",
 		"husky": "^8.0.3",
 		"jest": "^29.7.0",
+		"jest-junit": "^16.0.0",
 		"lint-staged": "^15.0.2",
 		"prettier": "^3.1.0",
 		"rollup": "^4.8.0",
