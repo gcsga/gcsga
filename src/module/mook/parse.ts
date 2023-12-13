@@ -72,12 +72,10 @@ export class MookParser {
 		this.parseTraits()
 		this.parseSkills()
 		this.parseSpells()
-		// this.parseMelee()
-		// this.parseRanged()
 		// this.parseEquipment()
 		this.parseAttacks(true)
-		// console.log("Leftover:")
-		// console.log(this.text)
+		console.log("Leftover:")
+		console.log(this.text)
 		// console.log(JSON.stringify(this.object.melee, null, "\t"))
 		// console.log(JSON.stringify(this.object.ranged, null, "\t"))
 		return this.object
@@ -480,8 +478,8 @@ export class MookParser {
 		if (input.match(regex_full_damage)) {
 			base = input.match(regex_full_damage)?.[0] ?? base
 			const inputArr = input.split(base)
-			if (inputArr.length > 1) input = `${inputArr[0].trim()} {{${inputArr[1].trim()}}}`
-			else input = inputArr[0]
+			if (inputArr.length > 1) input = `{{${inputArr[0].trim()} ${inputArr[1].trim()}}}`
+			else input = `{{${inputArr[0]}}}`
 		}
 		if (base === "") return [damage, input]
 
@@ -512,14 +510,12 @@ export class MookParser {
 		const regex_shots = /\s?[Ss]hots *([\dT\)\(]+)\s?,?/
 		const regex_bulk = /\s?[Bb]ulk\s*(-\d+)\s?,?/
 		const regex_ST = / ?[Ss][Tt] *(\d+)\s?,?/
-		const regex_reach = /\s?[Rr]each *([^.]+)\s?,?/
+		const regex_reach = /\s?[Rr]each\s*((?:[C1-9]+\s*)(?:,\s*[C1-9]+\s*)*)/
 		const regex_range = /\s?[Rr]ange ([0-9/]+)\s*,?/
 		const regex_level = /\((\d+)\):/
 
 		this._object.melee = []
 		this._object.ranged = []
-
-		// console.log(this.text)
 
 		let text = ""
 		if (oldFormat) text = this.text
@@ -539,10 +535,10 @@ export class MookParser {
 		let afterText = ""
 
 		// if we come across a line which isn't accepted, don't bother with the rest
-		let last_matched = false
+		let last_matched = 0
 		let at_least_one_level = false
 		text.split("\n").forEach(e => {
-			if (!last_matched && weapons.length !== 0) {
+			if (last_matched > 1 && weapons.length !== 0) {
 				afterText += `${e}\n`
 				return
 			}
@@ -550,7 +546,7 @@ export class MookParser {
 				e.match(/^(\w+\s+)*\(\d+\):?/)) {
 				weapons += `${e}\n`
 				at_least_one_level = true
-				last_matched = true
+				last_matched = 0
 			} else if (
 				at_least_one_level && (
 					e.match(regex_acc) ||
@@ -566,21 +562,23 @@ export class MookParser {
 				)
 			) {
 				weapons += `${e}\n`
-				last_matched = true
+				last_matched = 0
 			}
 			else if (weapons.length !== 0) {
-				afterText += `${e}\n`
-				last_matched = false
+				weapons += `${e}\n`
+				last_matched++
 			} else {
 				beforeText += `${e}\n`
 			}
 		})
 
-		// this.text += leftOverText
-		this.text = beforeText + this.text + afterText
+
+		if (oldFormat)
+			this.text = beforeText + afterText
+		else
+			this.text = (`${beforeText + this.text}\n${afterText}`).replace(weapons, "")
 
 		if (weapons.includes(".\n")) weapons = weapons.replace(/\.\n/g, ";")
-
 
 		weapons = (() => {
 			let final = ""
@@ -608,11 +606,13 @@ export class MookParser {
 
 			let isRanged = false
 
-			// Capture level
+			// Capture level and name
+			let name = ""
 			let level = 0
 			if (t.match(regex_level)) {
 				level = parseInt(t.match(regex_level)![1])
-				t = t.replace(regex_level, "").trim()
+				name = t.split(t.match(regex_level)![0])[0].trim()
+				t = t.replace(regex_level, "").replace(name, "").trim()
 			}
 
 			// Capture ST
@@ -688,7 +688,8 @@ export class MookParser {
 			// Capture reach
 			let reach = ""
 			if (t.match(regex_reach)) {
-				reach = t.match(regex_reach)![1]
+				// trim required here as regex grabs whitespace at end
+				reach = t.match(regex_reach)![1].trim()
 				t = t.replace(regex_reach, "").trim()
 			}
 
@@ -718,7 +719,7 @@ export class MookParser {
 
 			if (isRanged) {
 				const rangedWeapon: MookRanged = {
-					name: t,
+					name,
 					accuracy,
 					range: (half_damage > 0 && max_range > 0) ? `${half_damage}/${max_range}` : range,
 					level,
@@ -735,7 +736,7 @@ export class MookParser {
 				this.object.ranged.push(rangedWeapon)
 			} else {
 				const meleeWeapon: MookMelee = {
-					name: t,
+					name,
 					reach,
 					strength: ST,
 					level,
