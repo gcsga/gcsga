@@ -101,11 +101,8 @@ export const Knockdown = [
 
 export type DamageShock = { damage: number; shock: number }
 
-interface IDamageCalculator {
-	overrideDamageReduction: number | undefined
+interface IDamageCalculator extends DamageCalculator {
 	results: DamageResults
-	overrideFlexible(arg: boolean | undefined): void
-	vulnerabilities: Vulnerability[]
 }
 
 const dummyLocalize = (stringId: string, data?: any) => {

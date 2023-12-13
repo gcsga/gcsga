@@ -400,25 +400,25 @@ describe("Damage calculator", () => {
 
 				_roll.basicDamage = 9
 				let calc = _create(_roll, _target)
-				calc.overrideFlexible(true)
+				calc.overrideFlexibleArmor(true)
 				expect(calc.results.penetratingDamage!.value).toBe(0)
 				expect(calc.results.injury!.value).toBe(0)
 
 				_roll.basicDamage = 10
 				calc = _create(_roll, _target)
-				calc.overrideFlexible(true)
+				calc.overrideFlexibleArmor(true)
 				expect(calc.results.penetratingDamage!.value).toBe(0)
 				expect(calc.results.injury!.value).toBe(1)
 
 				_roll.basicDamage = 19
 				calc = _create(_roll, _target)
-				calc.overrideFlexible(true)
+				calc.overrideFlexibleArmor(true)
 				expect(calc.results.injury!.value).toBe(1)
 				expect(calc.results.penetratingDamage!.value).toBe(0)
 
 				_roll.basicDamage = 20
 				calc = _create(_roll, _target)
-				calc.overrideFlexible(true)
+				calc.overrideFlexibleArmor(true)
 				expect(calc.results.injury!.value).toBe(2)
 				expect(calc.results.penetratingDamage!.value).toBe(0)
 			}
@@ -429,25 +429,25 @@ describe("Damage calculator", () => {
 
 			_roll.basicDamage = 4
 			let calc = _create(_roll, _target)
-			calc.overrideFlexible(true)
+			calc.overrideFlexibleArmor(true)
 			expect(calc.results.penetratingDamage!.value).toBe(0)
 			expect(calc.results.injury!.value).toBe(0)
 
 			_roll.basicDamage = 5
 			calc = _create(_roll, _target)
-			calc.overrideFlexible(true)
+			calc.overrideFlexibleArmor(true)
 			expect(calc.results.penetratingDamage!.value).toBe(0)
 			expect(calc.results.injury!.value).toBe(1)
 
 			_roll.basicDamage = 19
 			calc = _create(_roll, _target)
-			calc.overrideFlexible(true)
+			calc.overrideFlexibleArmor(true)
 			expect(calc.results.penetratingDamage!.value).toBe(0)
 			expect(calc.results.injury!.value).toBe(3)
 
 			_roll.basicDamage = 20
 			calc = _create(_roll, _target)
-			calc.overrideFlexible(true)
+			calc.overrideFlexibleArmor(true)
 			expect(calc.results.penetratingDamage!.value).toBe(0)
 			expect(calc.results.injury!.value).toBe(4)
 		})
@@ -456,13 +456,13 @@ describe("Damage calculator", () => {
 			_roll.damageType = DamageTypes.cr
 			_roll.basicDamage = 21
 			let calc = _create(_roll, _target)
-			calc.overrideFlexible(true)
+			calc.overrideFlexibleArmor(true)
 			expect(calc.results.injury!.value).toBe(1)
 
 			_roll.damageType = DamageTypes["pi-"]
 			_roll.basicDamage = 21
 			calc = _create(_roll, _target)
-			calc.overrideFlexible(true)
+			calc.overrideFlexibleArmor(true)
 			expect(calc.results.injury!.value).toBe(1)
 		})
 
@@ -1956,7 +1956,7 @@ describe("Damage calculator", () => {
 				_target._traits.push(damageReduction)
 
 				let calc = _create(_roll, _target)
-				calc.overrideFlexible(true)
+				calc.overrideFlexibleArmor(true)
 				expect(calc.results.injury!.value).toBe(2)
 			})
 		})

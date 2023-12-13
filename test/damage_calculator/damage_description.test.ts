@@ -433,7 +433,7 @@ describe("Damage calculator", () => {
 			_roll.damageType = DamageTypes.cut
 			_roll.basicDamage = 9
 			let calc = _create(_roll, _target)
-			calc.overrideFlexible(true)
+			calc.overrideFlexibleArmor(true)
 			expect(calc.results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "9", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{ substep: "gurps.dmgcalc.substep.damage_resistance", text: "20", notes: "Torso" },
@@ -448,7 +448,7 @@ describe("Damage calculator", () => {
 
 			_roll.basicDamage = 10
 			calc = _create(_roll, _target)
-			calc.overrideFlexible(true)
+			calc.overrideFlexibleArmor(true)
 			expect(calc.results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "10", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{ substep: "gurps.dmgcalc.substep.damage_resistance", text: "20", notes: "Torso" },
@@ -468,7 +468,7 @@ describe("Damage calculator", () => {
 
 			_roll.basicDamage = 20
 			calc = _create(_roll, _target)
-			calc.overrideFlexible(true)
+			calc.overrideFlexibleArmor(true)
 			expect(calc.results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "20", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{ substep: "gurps.dmgcalc.substep.damage_resistance", text: "20", notes: "Torso" },
@@ -491,7 +491,7 @@ describe("Damage calculator", () => {
 			_roll.damageType = DamageTypes["pi-"]
 			_roll.basicDamage = 21
 			let calc = _create(_roll, _target)
-			calc.overrideFlexible(true)
+			calc.overrideFlexibleArmor(true)
 			expect(calc.results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "21", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{ substep: "gurps.dmgcalc.substep.damage_resistance", text: "20", notes: "Torso" },

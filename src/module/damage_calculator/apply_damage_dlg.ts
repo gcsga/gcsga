@@ -163,7 +163,7 @@ class ApplyDamageDialog extends Application {
 				break
 
 			case "location-flexible":
-				this.calculator.overrideFlexible(!this.calculator.isFlexibleArmor)
+				this.calculator.overrideFlexibleArmor(!this.calculator.isFlexibleArmor)
 				break
 
 			case "apply-basic":

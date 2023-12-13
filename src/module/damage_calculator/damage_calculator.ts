@@ -116,6 +116,155 @@ type Overrides = {
 	woundingModifier: number | undefined
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface DamageCalculatorComponent {
+	target: DamageTarget
+	damageRoll: DamageRoll
+	results: DamageResults
+	vulnerabilities: Vulnerability[]
+
+	readonly isOverridden: boolean
+	resetOverrides(): void
+
+	readonly basicDamage: number
+	overrideBasicDamage: number | undefined
+
+	readonly damageTypeKey: string
+	overrideDamageType: string | undefined
+
+	readonly armorDivisor: number
+	overrideArmorDivisor: number | undefined
+
+	readonly damageResistance: number
+	overrideDamageResistance: number | undefined
+
+	readonly woundingModifier: number
+	overrideWoundingModifier: number | undefined
+
+	readonly injuryTolerance: string
+	overrideInjuryTolerance: string | undefined
+
+	readonly damageReduction: number
+	overrideDamageReduction: number | undefined
+
+	readonly hardenedDRLevel: number
+	overrideHardenedDR: number | undefined
+
+	readonly vulnerabilityLevel: number
+	overrideVulnerability: number | undefined
+	applyVulnerability: (index: number, checked: boolean) => void
+
+	readonly damagePools: TargetPool[]
+	readonly damagePoolID: string
+
+	readonly isExplosion: boolean
+	readonly isFlexibleArmor: boolean
+	overrideFlexibleArmor(newValue: boolean | undefined): void
+}
+
+/**
+ * Represents a collection of DamageCalculatorComponents all with the same target and "base" damage roll.
+ * The components only differ in basicDamage and hitlocation.
+ */
+class DamageCalculatorComposite implements DamageCalculatorComponent {
+	constructor(damageRolls: DamageRoll[], defender: DamageTarget, localize: (stringId: string, data?: any) => string) {
+		this.damageRolls = damageRolls
+		this.target = defender
+		this.format = localize
+
+		// Precreate and cache the list of vulnerabilities.
+		this.vulnerabilities = this.vulnerabilitiesAsObjects
+	}
+
+	damageRoll!: DamageRoll
+
+	results: DamageResults = new DamageResults()
+
+	isOverridden = false
+
+	resetOverrides(): void {
+		throw new Error("Method not implemented.")
+	}
+
+	basicDamage!: number
+
+	overrideBasicDamage: number | undefined
+
+	damageTypeKey!: string
+
+	overrideDamageType: string | undefined
+
+	armorDivisor!: number
+
+	overrideArmorDivisor: number | undefined
+
+	damageResistance!: number
+
+	overrideDamageResistance: number | undefined
+
+	woundingModifier!: number
+
+	overrideWoundingModifier: number | undefined
+
+	injuryTolerance!: string
+
+	overrideInjuryTolerance: string | undefined
+
+	damageReduction!: number
+
+	overrideDamageReduction: number | undefined
+
+	hardenedDRLevel!: number
+
+	overrideHardenedDR: number | undefined
+
+	vulnerabilityLevel!: number
+
+	overrideVulnerability: number | undefined
+
+	applyVulnerability!: (index: number, checked: boolean) => void
+
+	damagePools: TargetPool[] = []
+
+	damagePoolID!: string
+
+	isExplosion = false
+
+	isFlexibleArmor = false
+
+	overrideFlexibleArmor(newValue: boolean | undefined): void {
+		throw new Error("Method not implemented.")
+	}
+
+	damageRolls: DamageRoll[]
+
+	target: DamageTarget
+
+	format: (stringId: string, data?: any) => string
+
+	vulnerabilities: Vulnerability[]
+
+	private get vulnerabilitiesAsObjects(): Vulnerability[] {
+		// Find all traits with name "Vulnerability".
+		// Convert to a Vulnerability object.
+		return this.target.getTraits("Vulnerability").map(
+			it =>
+				<Vulnerability>{
+					name: it.modifiers.map(it => it.name).join("; "),
+					value: this._vulnerabilityLevel(it),
+					apply: false,
+				}
+		)
+	}
+
+	private _vulnerabilityLevel(trait: TargetTrait): number {
+		if (trait?.getModifier("Wounding x2")) return 2
+		if (trait?.getModifier("Wounding x3")) return 3
+		if (trait?.getModifier("Wounding x4")) return 4
+		return 1
+	}
+}
+
 /**
  * Given a DamageRoll and a DamageTarget, the DamageCalculator determines the damage done, if any.
  *
@@ -123,12 +272,12 @@ type Overrides = {
  *
  * The DamageCalculator is immutable; you need to create a new one for every damage resolution.
  */
-class DamageCalculator {
+class DamageCalculator implements DamageCalculatorComponent {
 	target: DamageTarget
 
 	damageRoll: DamageRoll
 
-	format: (stringId: string, data?: any) => string
+	private format: (stringId: string, data?: any) => string
 
 	/*
 	 * TODO Sometime in the future, I want to save the overrides and vulnerabilities on the target in a map keyed by
@@ -300,7 +449,7 @@ class DamageCalculator {
 		return [this.drForHitLocation, `${this._hitLocation?.choice_name}`]
 	}
 
-	get drForHitLocation(): number {
+	private get drForHitLocation(): number {
 		return this.overrides.rawDR ?? HitLocationUtil.getHitLocationDR(this._hitLocation, this.damageType)
 	}
 
@@ -386,7 +535,7 @@ class DamageCalculator {
 		results.addResult(this.adjustWoundingModifierForVulnerabilities(results.woundingModifier!.value))
 	}
 
-	get woundingModifierAndReason() {
+	private get woundingModifierAndReason() {
 		if (this.overrides.woundingModifier)
 			return <[number, string]>[this.overrides.woundingModifier, this.format("gurps.dmgcalc.override")]
 		if (this.woundingModifierByDamageType) return this.woundingModifierByDamageType
@@ -404,28 +553,6 @@ class DamageCalculator {
 		// Fatigue damage always ignores hit location.
 		if (this.damageType === DamageTypes.fat) return [1, this.format("gurps.dmgcalc.description.fatigue")]
 		return undefined
-	}
-
-	get woundingModifier(): number {
-		let woundingModifier = 1
-		// let reason = undefined
-
-		if (this.overrides.woundingModifier) {
-			woundingModifier = this.overrides.woundingModifier
-			// reason = "Override"
-		} else if (this.woundingModifierByDamageType) {
-			const modifier = this.woundingModifierByDamageType
-			woundingModifier = modifier[0]
-			// reason = modifier[1]
-		} else if (this.woundingModifierByHitLocation) {
-			const modifier = this.woundingModifierByHitLocation
-			woundingModifier = modifier[0]
-			// reason = modifier[1]
-		} else {
-			woundingModifier = this.damageType.woundingModifier
-			// reason = `${this.damageType.key}, ${this.damageRoll.locationId}`
-		}
-		return woundingModifier
 	}
 
 	/**
@@ -839,7 +966,7 @@ class DamageCalculator {
 		return armorDivisors[index]
 	}
 
-	formatFraction(value: number) {
+	private formatFraction(value: number) {
 		if (value === 0.5) return "1/2"
 		if (value === 1 / 3) return "1/3"
 		if (value === 2 / 3) return "2/3"
@@ -900,6 +1027,28 @@ class DamageCalculator {
 
 	// --- Wounding Modifier ---
 
+	get woundingModifier(): number {
+		let woundingModifier = 1
+		// let reason = undefined
+
+		if (this.overrides.woundingModifier) {
+			woundingModifier = this.overrides.woundingModifier
+			// reason = "Override"
+		} else if (this.woundingModifierByDamageType) {
+			const modifier = this.woundingModifierByDamageType
+			woundingModifier = modifier[0]
+			// reason = modifier[1]
+		} else if (this.woundingModifierByHitLocation) {
+			const modifier = this.woundingModifierByHitLocation
+			woundingModifier = modifier[0]
+			// reason = modifier[1]
+		} else {
+			woundingModifier = this.damageType.woundingModifier
+			// reason = `${this.damageType.key}, ${this.damageRoll.locationId}`
+		}
+		return woundingModifier
+	}
+
 	get overrideWoundingModifier(): number | undefined {
 		return this.overrides.woundingModifier
 	}
@@ -925,16 +1074,16 @@ class DamageCalculator {
 
 	// --- Injury Tolerance ---
 
+	get injuryTolerance(): string {
+		return this.overrides.injuryTolerance ?? this.target.injuryTolerance
+	}
+
 	get overrideInjuryTolerance(): string | undefined {
 		return this.overrides.injuryTolerance
 	}
 
 	set overrideInjuryTolerance(value: string | undefined) {
 		this.overrides.injuryTolerance = this.target.injuryTolerance === value ? undefined : value
-	}
-
-	get injuryTolerance(): string {
-		return this.overrides.injuryTolerance ?? this.target.injuryTolerance
 	}
 
 	private get isUnliving(): boolean {
@@ -951,9 +1100,8 @@ class DamageCalculator {
 
 	// --- Damage Reduction ---
 
-	private get _damageReductionValue() {
-		let trait = this.target.getTrait("Damage Reduction")
-		return trait ? trait.levels : 1
+	get damageReduction(): number {
+		return this.overrides.damageReduction ?? this.damageReductionValue
 	}
 
 	get overrideDamageReduction(): number | undefined {
@@ -961,14 +1109,21 @@ class DamageCalculator {
 	}
 
 	set overrideDamageReduction(value: number | undefined) {
-		this.overrides.damageReduction = this._damageReductionValue === value ? undefined : value
+		this.overrides.damageReduction = this.damageReductionValue === value ? undefined : value
 	}
 
-	get damageReduction(): number {
-		return this.overrides.damageReduction ?? this._damageReductionValue
+	private get damageReductionValue() {
+		let trait = this.target.getTrait("Damage Reduction")
+		return trait ? trait.levels : 1
 	}
 
 	// --- Hardened DR ---
+
+	get hardenedDRLevel(): number {
+		return (
+			this.overrides.hardenedDR ?? this.target.getTrait("Damage Resistance")?.getModifier("Hardened")?.levels ?? 0
+		)
+	}
 
 	get overrideHardenedDR(): number | undefined {
 		return this.overrides.hardenedDR
@@ -976,12 +1131,6 @@ class DamageCalculator {
 
 	set overrideHardenedDR(level: number | undefined) {
 		this.overrides.hardenedDR = level
-	}
-
-	get hardenedDRLevel(): number {
-		return (
-			this.overrides.hardenedDR ?? this.target.getTrait("Damage Resistance")?.getModifier("Hardened")?.levels ?? 0
-		)
 	}
 
 	// -- Vulnerability --
@@ -1004,7 +1153,7 @@ class DamageCalculator {
 		this.overrides.vulnerability = value
 	}
 
-	applyVulnerability(index: number, checked: any) {
+	applyVulnerability(index: number, checked: boolean) {
 		this.vulnerabilities[index].apply = checked
 	}
 
@@ -1057,7 +1206,7 @@ class DamageCalculator {
 		return this.damageRoll.dice.count
 	}
 
-	get _hitLocation() {
+	private get _hitLocation() {
 		return HitLocationUtil.getHitLocation(this.target.hitLocationTable, this.damageRoll.locationId)
 	}
 
@@ -1070,11 +1219,11 @@ class DamageCalculator {
 		)
 	}
 
-	overrideFlexible(value: boolean | undefined): void {
+	overrideFlexibleArmor(value: boolean | undefined): void {
 		this.overrides.flexible = value
 	}
 
-	get isInternalExplosion(): boolean {
+	private get isInternalExplosion(): boolean {
 		return this.isExplosion && this.damageRoll.internalExplosion
 	}
 
