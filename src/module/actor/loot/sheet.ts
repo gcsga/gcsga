@@ -45,7 +45,7 @@ export class LootSheetGURPS extends ActorSheetGURPS {
 		const element = $(event.currentTarget)
 		const type = element.parent(".item-list")[0].id
 		const ctx = new ContextMenu(html, ".menu", [])
-		ctx.menuItems = (function(self: LootSheetGURPS): ContextMenuEntry[] {
+		ctx.menuItems = (function (self: LootSheetGURPS): ContextMenuEntry[] {
 			switch (type) {
 				case "equipment":
 					return [

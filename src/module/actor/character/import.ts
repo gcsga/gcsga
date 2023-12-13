@@ -17,6 +17,7 @@ import { CharacterSystemData } from "./data"
 import { CharacterSheetGURPS } from "./sheet"
 import { ItemGURPS } from "@module/config"
 import { ImportUtils } from "@util/import"
+import { ActorFlags, BaseActorGURPS } from "@actor/base"
 
 export interface CharacterImportedData extends Omit<CharacterSystemData, "attributes"> {
 	traits: Array<TraitSystemData | TraitContainerSystemData>
@@ -32,11 +33,11 @@ export interface CharacterImportedData extends Omit<CharacterSystemData, "attrib
 export class CharacterImporter {
 	version: number
 
-	document: Actor
+	document?: Actor
 
-	constructor(document: Actor) {
+	constructor(document?: Actor) {
 		this.version = 4
-		this.document = document
+		if (document) this.document = document
 	}
 
 	static showDialog() {
@@ -49,23 +50,25 @@ export class CharacterImporter {
 						import: {
 							icon: '<i class="fas fa-file-import"></i>',
 							label: LocalizeGURPS.translations.gurps.system.library_import.import,
-							callback: (html: HTMLElement | JQuery<HTMLElement>) => {
+							callback: async (html: HTMLElement | JQuery<HTMLElement>) => {
 								const form = $(html).find("form")[0]
-								const files = form.data.files
+								const files = form.data.files as FileList
 								if (!files.length)
 									return ui.notifications?.error(
 										LocalizeGURPS.translations.gurps.error.import.no_file
 									)
 								else {
-									// const file = files[0]
-									// files.forEach((file: any) => readTextFromFile(file)).then((text: string) => console.log(text))
-									// readTextFromFile(file).then(text =>
-									// 	CharacterImporter.importCompendium({
-									// 		text: text,
-									// 		name: file.name,
-									// 		path: file.path,
-									// 	})
-									// )
+									const actors: any[] = []
+									for (const file of Array.from(files)) {
+										const text = await readTextFromFile(file)
+										actors.push({
+											text: text,
+											name: file.name,
+											// @ts-ignore path DOES exist on File
+											path: file.path,
+										})
+									}
+									CharacterImporter.importCompendium(actors)
 								}
 							},
 						},
@@ -83,17 +86,136 @@ export class CharacterImporter {
 		}, 200)
 	}
 
-	static importCompendium(file: { text: string; name: string; path: string }) {
-		// const importer = new CharacterImporter(document)
-		// importer._import(document, file)
+	static async importCompendium(files: { text: string; name: string; path: string }[]) {
+		const label = files[0].path.split(/\\|\//).at(-2)!
+		const name = label?.slugify()
+
+		let pack = game.packs.find(p => p.metadata.name === name)
+		if (!pack) {
+			pack = await CompendiumCollection.createCompendium({
+				type: "Actor",
+				label: label,
+				name: name,
+				package: "world",
+				path: "",
+				private: true,
+			})
+		}
+		ui.notifications?.info(
+			LocalizeGURPS.format(LocalizeGURPS.translations.gurps.system.library_import.start, { name: name })
+		)
+		const importer = new CharacterImporter()
+		const actors: Partial<CharacterSystemData>[] = []
+		files.forEach(async file => {
+			await importer.importData(file).then(actor => actors.push(actor))
+		})
+
+		let counter = files.length
+		await BaseActorGURPS.createDocuments(actors as any[], {
+			pack: pack.collection,
+			keepId: true,
+		})
+		ui.notifications?.info(
+			LocalizeGURPS.format(LocalizeGURPS.translations.gurps.system.library_import.finished, {
+				number: counter,
+			})
+		)
 	}
 
 	static import(document: Actor, file: { text: string; name: string; path: string }) {
 		const importer = new CharacterImporter(document)
-		importer._import(document, file)
+		importer._import(file)
 	}
 
-	async _import(document: Actor, file: { text: string; name: string; path: string }) {
+	async _import(file: { text: string; name: string; path: string }) {
+		const errorMessages: string[] = []
+		// const json = file.text
+		// let r: CharacterImportedData
+		// const errorMessages: string[] = []
+		// try {
+		// 	r = JSON.parse(json)
+		// } catch (err) {
+		// 	console.error(err)
+		// 	errorMessages.push(LocalizeGURPS.translations.gurps.error.import.no_json_detected)
+		// 	return this.throwImportError(errorMessages)
+		// }
+		let commit: Partial<CharacterSystemData> = await this.importData(file, this.document)
+
+		// let commit: Partial<CharacterSystemData> = {}
+		// const imp = (document as any).importData
+		// imp.name = file.name ?? imp.name
+		// imp.path = file.path ?? imp.path
+		// imp.last_import = new Date().toISOString()
+		// try {
+		// 	if (r.version < this.version)
+		// 		return this.throwImportError([
+		// 			...errorMessages,
+		// 			LocalizeGURPS.translations.gurps.error.import.format_old,
+		// 		])
+		// 	else if (r.version > this.version)
+		// 		return this.throwImportError([
+		// 			...errorMessages,
+		// 			LocalizeGURPS.translations.gurps.error.import.format_new,
+		// 		])
+		// 	if (this.document?.type === ActorType.LegacyCharacter) {
+		// 		commit = { ...commit, ...{ type: ActorType.Character } }
+		// 	}
+		// 	commit = { ...commit, ...{ "system.import": imp } }
+		// 	commit = { ...commit, ...{ name: r.profile.name, "prototypeToken.name": r.profile.name } }
+		// 	commit = { ...commit, ...this.importMiscData(r) }
+		// 	commit = { ...commit, ...(await this.importProfile(r.profile)) }
+		// 	commit = { ...commit, ...this.importSettings(r.settings) }
+		// 	commit = { ...commit, ...this.importAttributes(r.attributes) }
+		// 	commit = { ...commit, ...this.importResourceTrackers(r.third_party) }
+
+		// 	// Begin item import
+		// 	const items: Array<ItemGURPS> = []
+		// 	items.push(...ImportUtils.importItems(r.traits))
+		// 	items.push(...ImportUtils.importItems(r.skills))
+		// 	items.push(...ImportUtils.importItems(r.spells))
+		// 	items.push(...ImportUtils.importItems(r.equipment))
+		// 	items.push(...ImportUtils.importItems(r.other_equipment, { container: null, other: true, sort: 0 }))
+		// 	items.push(...ImportUtils.importItems(r.notes))
+		// 	commit = { ...commit, ...{ items: items } }
+		// } catch (err) {
+		// 	console.error(err)
+		// 	errorMessages.push(
+		// 		LocalizeGURPS.format(LocalizeGURPS.translations.gurps.error.import.generic, {
+		// 			name: r.profile.name,
+		// 			message: (err as Error).message,
+		// 		})
+		// 	)
+		// 	return this.throwImportError(errorMessages)
+		// }
+
+		try {
+			if (this.document?.isToken) {
+				await this.document.deleteEmbeddedDocuments("Item", [...this.document.items.keys()], { render: false })
+			}
+			await this.document?.update(commit, {
+				diff: false,
+				recursive: false,
+			})
+			if ((this.document?.sheet as unknown as CharacterSheetGURPS)?.config !== null) {
+				;(this.document?.sheet as unknown as CharacterSheetGURPS)?.config?.render(true)
+			}
+		} catch (err) {
+			console.error(err)
+			errorMessages.push(
+				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.error.import.generic, {
+					name: commit.profile?.name || LocalizeGURPS.translations.TYPES.Actor.character_gcs,
+					message: (err as Error).message,
+				})
+			)
+			return this.throwImportError(errorMessages)
+		}
+		return true
+	}
+
+	async importData(
+		file: { text: string; name: string; path: string },
+		document?: Actor
+	): Promise<Partial<CharacterSystemData>> {
 		const json = file.text
 		let r: CharacterImportedData
 		const errorMessages: string[] = []
@@ -106,26 +228,38 @@ export class CharacterImporter {
 		}
 
 		let commit: Partial<CharacterSystemData> = {}
-		const imp = (document as any).importData
+		const imp = (document as any)?.importData ?? { name: "", path: "", last_import: "" }
 		imp.name = file.name ?? imp.name
 		imp.path = file.path ?? imp.path
 		imp.last_import = new Date().toISOString()
 		try {
 			if (r.version < this.version)
-				return this.throwImportError([
-					...errorMessages,
-					LocalizeGURPS.translations.gurps.error.import.format_old,
-				])
+				this.throwImportError([...errorMessages, LocalizeGURPS.translations.gurps.error.import.format_old])
 			else if (r.version > this.version)
-				return this.throwImportError([
-					...errorMessages,
-					LocalizeGURPS.translations.gurps.error.import.format_new,
-				])
-			if (this.document.type === ActorType.LegacyCharacter) {
+				this.throwImportError([...errorMessages, LocalizeGURPS.translations.gurps.error.import.format_new])
+			if (this.document?.type === ActorType.LegacyCharacter) {
 				commit = { ...commit, ...{ type: ActorType.Character } }
 			}
-			commit = { ...commit, ...{ "system.import": imp } }
-			commit = { ...commit, ...{ name: r.profile.name, "prototypeToken.name": r.profile.name } }
+			commit = {
+				...commit,
+				...{
+					"system.import": imp,
+					type: ActorType.Character,
+					flags: {
+						[SYSTEM_NAME]: {
+							[ActorFlags.AutoThreshold]: { active: true },
+							[ActorFlags.AutoEncumbrance]: { active: true },
+						},
+					},
+				},
+			}
+			commit = {
+				...commit,
+				...{
+					name: r.profile.name ?? LocalizeGURPS.translations.TYPES.Actor.character_gcs,
+					"prototypeToken.name": r.profile.name ?? LocalizeGURPS.translations.TYPES.Actor.character_gcs,
+				},
+			}
 			commit = { ...commit, ...this.importMiscData(r) }
 			commit = { ...commit, ...(await this.importProfile(r.profile)) }
 			commit = { ...commit, ...this.importSettings(r.settings) }
@@ -151,29 +285,7 @@ export class CharacterImporter {
 			)
 			return this.throwImportError(errorMessages)
 		}
-
-		try {
-			if (this.document.isToken) {
-				await this.document.deleteEmbeddedDocuments("Item", [...this.document.items.keys()], { render: false })
-			}
-			await this.document.update(commit, {
-				diff: false,
-				recursive: false,
-			})
-			if ((this.document.sheet as unknown as CharacterSheetGURPS)?.config !== null) {
-				; (this.document.sheet as unknown as CharacterSheetGURPS)?.config?.render(true)
-			}
-		} catch (err) {
-			console.error(err)
-			errorMessages.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.error.import.generic, {
-					name: r.profile.name,
-					message: (err as Error).message,
-				})
-			)
-			return this.throwImportError(errorMessages)
-		}
-		return true
+		return commit
 	}
 
 	importMiscData(data: CharacterImportedData) {
@@ -190,7 +302,7 @@ export class CharacterImporter {
 	async importProfile(profile: CharacterImportedData["profile"]) {
 		const r: any = {
 			"system.profile.player_name": profile.player_name || "",
-			"system.profile.name": profile.name || this.document.name,
+			"system.profile.name": profile.name || this.document?.name,
 			"system.profile.title": profile.title || "",
 			"system.profile.organization": profile.organization || "",
 			"system.profile.age": profile.age || "",
@@ -267,6 +379,6 @@ export class CharacterImporter {
 			type: CONST.CHAT_MESSAGE_TYPES.WHISPER,
 			whisper: [game.user!.id],
 		})
-		return false
+		return {}
 	}
 }

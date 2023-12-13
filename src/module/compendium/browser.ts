@@ -215,10 +215,11 @@ class CompendiumBrowser extends Application {
 		if (tab) {
 			const indexData = tab.getIndexData(0)
 			const tagSet: Set<string> = new Set()
-			tab.indexData.map(e =>
-				e.tags?.forEach((t: string) => {
-					tagSet.add(t)
-				})
+			tab.indexData.map(
+				e =>
+					e.tags?.forEach((t: string) => {
+						tagSet.add(t)
+					})
 			)
 			const tagList = Array.from(tagSet).sort()
 			let tags = tab.filterData.tagFilter[0]
@@ -282,8 +283,7 @@ class CompendiumBrowser extends Application {
 					load,
 					name: pack.metadata.label,
 				}
-			}
-			else if (["modifier", "modifier_container"].some(type => types.has(type))) {
+			} else if (["modifier", "modifier_container"].some(type => types.has(type))) {
 				const load = this.settings.modifier?.[pack.collection]?.load ?? false
 				settings.modifier![pack.collection] = {
 					load,
@@ -312,8 +312,7 @@ class CompendiumBrowser extends Application {
 					load,
 					name: pack.metadata.label,
 				}
-			}
-			else if (["eqp_modifier", "eqp_modifier_container"].some(type => types.has(type))) {
+			} else if (["eqp_modifier", "eqp_modifier_container"].some(type => types.has(type))) {
 				const load = this.settings.eqp_modifier?.[pack.collection]?.load ?? false
 				settings.eqp_modifier![pack.collection] = {
 					load,

@@ -57,6 +57,12 @@ export enum SETTINGS {
 	BASE_BOOKS = "base_books",
 }
 
+export enum SSRT_SETTING {
+	STANDARD = "standard",
+	SIMPLIFIED = "simplified",
+	TENS = "tens",
+}
+
 export enum EFFECT_ACTION {
 	ADD = "add",
 	REMOVE = "remove",
@@ -363,6 +369,8 @@ export enum UserFlags {
 	ModifierTotal = "modifierTotal",
 	ModifierSticky = "modifierSticky",
 	ModifierPinned = "pinnedMods",
+	LastActor = "lastActor",
+	LastToken = "lastToken",
 }
 
 export enum PrereqType {

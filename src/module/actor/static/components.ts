@@ -420,7 +420,7 @@ export class StaticReaction {
 	}
 }
 
-export class StaticModifier extends StaticReaction { }
+export class StaticModifier extends StaticReaction {}
 
 export class StaticLanguage {
 	name: string

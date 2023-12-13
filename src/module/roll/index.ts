@@ -83,13 +83,11 @@ export class RollGURPS extends Roll {
 			await user?.setFlag(SYSTEM_NAME, UserFlags.LastTotal, lastTotal)
 		}
 
-		console.trace()
-		console.log(data)
 		return rollTypeHandlers[data.type as RollType].handleRollType(
 			user,
 			actor,
 			data as RollTypeData,
-			(game.settings.get(SYSTEM_NAME, SETTINGS.ROLL_FORMULA) as string) || "3d6",
+			game.settings.get(SYSTEM_NAME, SETTINGS.ROLL_FORMULA) || "3d6",
 			data.hidden
 		)
 	}

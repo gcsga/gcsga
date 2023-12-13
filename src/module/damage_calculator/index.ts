@@ -2,7 +2,7 @@ import { DiceGURPS } from "../dice"
 import { DamageType, DamageTypes } from "./damage_type"
 import { HitLocationTable } from "@actor/character/hit_location"
 import { DamagePayload } from "./damage_chat_message"
-import { SETTINGS, SYSTEM_NAME } from "@module/data"
+import { SETTINGS, SYSTEM_NAME, gid } from "@module/data"
 
 /**
  * DamageRoll is the parameter that is sent in (along with DamageTarget) to the DamageCalculator.
@@ -110,8 +110,7 @@ class DamageRollAdapter implements DamageRoll {
 			case undefined:
 			case DefaultHitLocations.Default:
 				// Set to default value from world settings.
-				this._locationId =
-					(game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_DAMAGE_LOCATION) as string) ?? "torso"
+				this._locationId = game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_DAMAGE_LOCATION) ?? gid.Torso
 				break
 		}
 
@@ -133,6 +132,7 @@ class DamageRollAdapter implements DamageRoll {
 	}
 
 	get basicDamage(): number {
+		console.log(this._payload)
 		return this._payload.damageRoll[this._payload.index].total
 	}
 

@@ -55,7 +55,7 @@ class ApplyDamageDialog extends Application {
 	}
 
 	getData(options?: Partial<ApplicationOptions> | undefined): object {
-		const books = game.settings.get(SYSTEM_NAME, SETTINGS.BASE_BOOKS) as "gurps" | "dfrpg"
+		const books = game.settings.get(SYSTEM_NAME, SETTINGS.BASE_BOOKS)
 
 		const data = mergeObject(super.getData(options), {
 			calculator: this.calculator,

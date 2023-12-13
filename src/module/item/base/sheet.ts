@@ -1,5 +1,4 @@
 import { CharacterGURPS } from "@actor"
-import { HitLocationTable } from "@actor/character/hit_location"
 import { FeatureType } from "@feature"
 import { AttributeDefObj } from "@module/attribute"
 import { gid, NumberComparison, PrereqType, SETTINGS, StringComparison, StudyType, SYSTEM_NAME } from "@module/data"
@@ -30,11 +29,11 @@ export class ItemSheetGURPS extends ItemSheet {
 			SYSTEM_NAME,
 			`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`
 		) as AttributeDefObj[]
-		const default_locations = {
+		const default_hit_locations = {
 			name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
 			roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
 			locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
-		} as HitLocationTable
+		}
 		const actor = this.item.actor as unknown as CharacterGURPS
 		if (actor) {
 			actor.attributes.forEach(e => {
@@ -51,7 +50,7 @@ export class ItemSheetGURPS extends ItemSheet {
 				if (e.type.includes("_separator")) return
 				attributes[e.id] = e.name
 			})
-			default_locations.locations.forEach(e => {
+			default_hit_locations.locations.forEach(e => {
 				locations[e.id] = LocalizeGURPS.format(LocalizeGURPS.translations.gurps.field_prefix.dr, {
 					location: e.choice_name,
 				})
@@ -85,7 +84,7 @@ export class ItemSheetGURPS extends ItemSheet {
 	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		html.find("textarea")
-			.each(function() {
+			.each(function () {
 				this.setAttribute("style", `height:${this.scrollHeight + 2}px;overflow-y:hidden;`)
 			})
 			.on("input", event => {

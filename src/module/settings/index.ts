@@ -1,5 +1,5 @@
 import { CharacterProfile } from "@actor/character/data"
-import { DEFAULT_INITIATIVE_FORMULA, SETTINGS, SYSTEM_NAME } from "@module/data"
+import { DEFAULT_INITIATIVE_FORMULA, SETTINGS, SSRT_SETTING, SYSTEM_NAME } from "@module/data"
 import { loadModifiers } from "@module/mod_prompt/data"
 import { getDefaultSkills, setInitiative } from "@util"
 import { DefaultAttributeSettings } from "./attributes"
@@ -160,7 +160,7 @@ export function registerSettings(): void {
 	game.settings.register(SYSTEM_NAME, SETTINGS.COMPENDIUM_BROWSER_PACKS, {
 		name: "gurps.settings.compendium_browser_packs.name",
 		hint: "gurps.settings.compendium_browser_packs.hint",
-		default: "{}",
+		default: {},
 		type: Object,
 		scope: "world",
 		onChange: () => {
@@ -186,9 +186,9 @@ export function registerSettings(): void {
 		config: true,
 		type: String,
 		choices: {
-			standard: "gurps.settings.ssrt.choices.standard",
-			simplified: "gurps.settings.ssrt.choices.simplified",
-			tens: "gurps.settings.ssrt.choices.tens",
+			[SSRT_SETTING.STANDARD]: "gurps.settings.ssrt.choices.standard",
+			[SSRT_SETTING.SIMPLIFIED]: "gurps.settings.ssrt.choices.simplified",
+			[SSRT_SETTING.TENS]: "gurps.settings.ssrt.choices.tens",
 		},
 		default: "standard",
 		onChange: (value: string) => console.log(`Range Modifier Formula : ${value}`),
@@ -252,7 +252,7 @@ export function registerSettings(): void {
 		type: String,
 		choices: {
 			torso: "gurps.static.hit_location.Torso",
-			Random: "gurps.static.hit_location.Random",
+			random: "gurps.static.hit_location.Random",
 		},
 		default: "torso",
 		onChange: (value: string) => console.log(`Default Damage Location : ${value}`),

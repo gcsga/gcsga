@@ -40,71 +40,19 @@ export class MookGeneratorSheet extends FormApplication {
 	}
 
 	static async init(): Promise<unknown> {
-		// const attributes = game.settings.get(
-		// 	SYSTEM_NAME,
-		// 	`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`
-		// ) as AttributeDefObj[]
-		// const trackers = game.settings.get(
-		// 	SYSTEM_NAME,
-		// 	`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`
-		// ) as ResourceTrackerDefObj[]
-		// const locations = {
-		// 	name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`) as string,
-		// 	roll: new DiceGURPS(game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`) as string),
-		// 	locations: game.settings.get(
-		// 		SYSTEM_NAME,
-		// 		`${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`
-		// 	) as HitLocationData[],
-		// }
-		// const settings = {
-		// 	settings: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`) as any,
-		// 	tech_level: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.tech_level`) as string,
-		// }
-
-		// const mookActor = await Actor.create({
-		// 	_id: randomID(),
-		// 	flags: {
-		// 		core: {
-		// 			sheetClass: `${SYSTEM_NAME}.MookGeneratorSheet`,
-		// 		},
-		// 	},
-		// 	name: LocalizeGURPS.translations.gurps.system.mook.name,
-		// 	type: ActorType.Character,
-		// 	system: {
-		// 		version: 4,
-		// 		settings: {
-		// 			attributes: attributes,
-		// 			resource_trackers: trackers,
-		// 			body_type: locations,
-		// 			...settings.settings,
-		// 		},
-		// 		profile: mergeObject(SETTINGS_TEMP.general.auto_fill, {
-		// 			name: LocalizeGURPS.translations.gurps.system.mook.name,
-		// 			player_name: game.user.name!,
-		// 			tech_level: settings.tech_level,
-		// 		}),
-		// 	},
-		// } as any)
-
-		// return mookActor?.sheet?.render(true)
 		const mg = new MookGeneratorSheet()
 		return mg.render(true)
 	}
 
 	getData(options?: Partial<ApplicationOptions> | undefined): MaybePromise<object> {
 		console.log("refresh")
-		// const actorData = this.actor.toObject(false) as any
 		const [primary_attributes, secondary_attributes, point_pools] = this.prepareAttributes(this.object.attributes)
-		// const resource_trackers = Array.from(this.actor.resource_trackers.values())
 
 		return mergeObject(super.getData(options), {
 			actor: this.object,
-			// actor: this.actor,
-			// system: actorData.system,
 			primary_attributes,
 			secondary_attributes,
 			point_pools,
-			// resource_trackers,
 		})
 	}
 

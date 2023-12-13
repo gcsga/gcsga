@@ -1,8 +1,6 @@
 import { ActorGURPS } from "@module/config"
-import { ConfiguredDocumentClass, PropertiesToSource } from "types/types/helperTypes"
-import { TokenDocumentGURPS } from "./document";
-import { TokenDataProperties } from "types/foundry/common/data/data.mjs/tokenData";
-import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs";
+import { ConfiguredDocumentClass } from "types/types/helperTypes"
+import { TokenDocumentGURPS } from "./document"
 
 export class TokenGURPS extends Token {
 	x!: number
@@ -30,12 +28,5 @@ export class TokenGURPS extends Token {
 	): Promise<InstanceType<ConfiguredDocumentClass<typeof TokenDocument>>> | undefined {
 		game.EffectPanel.refresh()
 		return super._onRelease(options)
-	}
-
-	protected _onCreate(options: PropertiesToSource<TokenDataProperties>, userId: DocumentModificationOptions): void {
-		super._onCreate(options, userId)
-		// Force container actor to go through data preparation once to ensure features are applied
-		// TODO: this is slow. find a way around it.
-		this.actor.prepareData()
 	}
 }

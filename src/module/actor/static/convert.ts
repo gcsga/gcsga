@@ -1,11 +1,10 @@
-import { CharacterGURPS, CharacterSystemData } from "@actor/character";
-import { StaticCharacterGURPS } from "./document";
-import { SETTINGS, SYSTEM_NAME } from "@module/data";
-import { AttributeDef } from "@module/attribute";
-import { StaticResourceThreshold, StaticThresholdComparison } from "./data";
+import { CharacterGURPS, CharacterSystemData } from "@actor/character"
+import { StaticCharacterGURPS } from "./document"
+import { SETTINGS, SYSTEM_NAME } from "@module/data"
+import { AttributeDef } from "@module/attribute"
+import { StaticResourceThreshold, StaticThresholdComparison } from "./data"
 
 export class CharacterConverter {
-
 	public static update(actor: StaticCharacterGURPS): CharacterGURPS {
 		const converter = new CharacterConverter()
 		return converter._update(actor)
@@ -14,10 +13,13 @@ export class CharacterConverter {
 	private _update(actor: StaticCharacterGURPS): CharacterGURPS {
 		const newData: Partial<CharacterSystemData> = {}
 		newData.settings = {
-			...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`) as any,
-			// TODO: fix types, get correctly
-			body_type: {},
-			attributes: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) as Array<AttributeDef>,
+			...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`),
+			body_type: {
+				name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
+				roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
+				locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
+			},
+			attributes: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`),
 			resource_trackers: Object.values(actor.system.additionalresources.tracker).map(e => {
 				return {
 					id: e.alias.toLowerCase(),
@@ -32,12 +34,11 @@ export class CharacterConverter {
 							state: f.condition,
 							explanation: "",
 							expression: this._getThresholdExpression(f),
-							ops: []
+							ops: [],
 						}
-					})
-
+					}),
 				}
-			})
+			}),
 		}
 
 		return new CharacterGURPS({} as any)
@@ -52,4 +53,3 @@ export class CharacterConverter {
 		}
 	}
 }
-

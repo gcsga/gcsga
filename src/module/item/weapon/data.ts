@@ -4,7 +4,7 @@ import { SkillDefault } from "@module/default"
 
 export type BaseWeaponSource<
 	TItemType extends ItemType = ItemType,
-	TSystemData extends BaseWeaponSystemData = BaseWeaponSystemData
+	TSystemData extends BaseWeaponSystemData = BaseWeaponSystemData,
 > = BaseItemSourceGURPS<TItemType, TSystemData>
 
 export interface WeaponDamageObj {

@@ -924,23 +924,23 @@ declare global {
 			"Localization#_loadTranslationFile": [
 				location: "Localization#_loadTranslationFile",
 				err: Error,
-				data: { src: string }
+				data: { src: string },
 			]
 			"ClientDatabaseBackend#_preCreateDocumentArray": [
 				location: "ClientDatabaseBackend#_preCreateDocumentArray",
 				err: Error,
-				data: { id: string }
+				data: { id: string },
 			]
 			"ClientDatabaseBackend#_preUpdateDocumentArray": [
 				location: "ClientDatabaseBackend#_preUpdateDocumentArray",
 				err: Error,
-				data: { id: string }
+				data: { id: string },
 			]
 			"WorldCollection#_initialize": [location: "WorldCollection#_initialize", err: Error, data: { id: string }]
 			"ClientDocumentMixin#_initialize": [
 				location: "ClientDocumentMixin#_initialize",
 				err: Error,
-				data: { id: string }
+				data: { id: string },
 			]
 			"Actor#getTokenImages": [location: "Actor#getTokenImages", err: Error, data: Record<string, never>]
 			"Macro#executeChat": [location: "Macro#executeChat", err: Error, data: { command: string }]
@@ -948,20 +948,20 @@ declare global {
 			"DefaultTokenConfig#_updateObject": [
 				location: "DefaultTokenConfig#_updateObject",
 				err: Error,
-				data: Record<string, never>
+				data: Record<string, never>,
 			]
 			"SceneConfig#_updateObject": [location: "SceneConfig#_updateObject", err: Error, data: { scene: string }]
 			"SidebarDirectory.setupFolders": [
 				location: "SidebarDirectory.setupFolders",
 				err: Error,
-				data: Record<string, never>
+				data: Record<string, never>,
 			]
 			"Sidebar#_render": [location: "Sidebar#_render", err: Error, data: { name: string }]
 			"Game#initializeCanvas": [location: "Game#initializeCanvas", err: Error, data: Record<string, never>]
 			"EmbeddedCollection#_initialize": [
 				location: "EmbeddedCollection#_initialize",
 				err: Error,
-				data: { id: string; documentName: string }
+				data: { id: string; documentName: string },
 			]
 		}
 	}

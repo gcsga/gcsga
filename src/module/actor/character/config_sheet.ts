@@ -83,7 +83,7 @@ export class CharacterSheetConfig extends FormApplication {
 	activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		html.find("textarea")
-			.each(function() {
+			.each(function () {
 				this.setAttribute("style", `height:${this.scrollHeight + 2}px;overflow-y:hidden;`)
 			})
 			.on("input", event => {
@@ -152,11 +152,11 @@ export class CharacterSheetConfig extends FormApplication {
 				if (files) {
 					readTextFromFile(files[0]).then(
 						text =>
-						(this.file = {
-							text: text,
-							name: files[0].name,
-							path: files[0].path,
-						})
+							(this.file = {
+								text: text,
+								name: files[0].name,
+								path: files[0].path,
+							})
 					)
 				}
 				this.render()
@@ -186,7 +186,7 @@ export class CharacterSheetConfig extends FormApplication {
 			name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
 			roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
 			locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
-		} as HitLocationTable
+		}
 		const update: any = {}
 		if (type === "attributes") update["system.settings.attributes"] = default_attributes
 		if (type === "resource_trackers") update["system.settings.resource_trackers"] = default_resource_trackers
@@ -449,7 +449,7 @@ export class CharacterSheetConfig extends FormApplication {
 				parent_index: parent_index,
 			})
 		)
-			; (event as any).dragType = type
+		;(event as any).dragType = type
 	}
 
 	protected _onDragItem(event: JQuery.DragOverEvent): void {
@@ -529,7 +529,7 @@ export class CharacterSheetConfig extends FormApplication {
 	}
 
 	close(options?: FormApplication.CloseOptions | undefined): Promise<void> {
-		; (this.object.sheet as unknown as CharacterSheetGURPS).config = null
+		;(this.object.sheet as unknown as CharacterSheetGURPS).config = null
 		return super.close(options)
 	}
 }

@@ -1,13 +1,18 @@
 import { ItemType, RollModifier, RollType, SETTINGS, SYSTEM_NAME, UserFlags } from "@module/data"
 import { RollGURPS } from "."
 import { CharacterGURPS } from "@actor"
-import { MeleeWeaponGURPS, RangedWeaponGURPS, RitualMagicSpellGURPS, SkillGURPS, SpellGURPS, TechniqueGURPS } from "@item"
+import {
+	MeleeWeaponGURPS,
+	RangedWeaponGURPS,
+	RitualMagicSpellGURPS,
+	SkillGURPS,
+	SpellGURPS,
+	TechniqueGURPS,
+} from "@item"
 import { LocalizeGURPS } from "@util"
 import { DamageRollGURPS } from "./damage_roll"
 import { DamageChat, DamagePayload } from "@module/damage_calculator/damage_chat_message"
 import { ActorGURPS } from "@module/config"
-import { TIMESTAMP_FIELD } from "../../../types/foundry/common/data/fields.mjs"
-import { ItemData } from "types/foundry/common/data/module.mjs"
 
 // // vscode-fold=1
 
@@ -340,12 +345,7 @@ class SkillRollTypeHandler extends RollTypeHandler {
 	}
 
 	override getType(data: any): RollType {
-		if (
-			[
-				ItemType.Spell,
-				ItemType.RitualMagicSpell
-			].includes(data.item.type)
-		) return RollType.Spell
+		if ([ItemType.Spell, ItemType.RitualMagicSpell].includes(data.item.type)) return RollType.Spell
 		return RollType.Skill
 	}
 
@@ -422,12 +422,12 @@ class AttackRollTypeHandler extends RollTypeHandler {
 				uuid: item.uuid,
 				weaponID: item.id,
 				damage: item.fastResolvedDamage,
-				type: item.type
+				type: item.type,
 			}
 			if (item instanceof RangedWeaponGURPS) {
 				mergeObject(itemData, {
 					rate_of_fire: item.rate_of_fire,
-					recoil: item.recoil
+					recoil: item.recoil,
 				})
 			}
 		}
@@ -613,7 +613,7 @@ class DamageRollTypeHandler extends RollTypeHandler {
 	 * @param _actor
 	 */
 	private static getHitLocationFromLastAttackRoll(_actor: ActorGURPS): string {
-		return game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_DAMAGE_LOCATION) as string
+		return game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_DAMAGE_LOCATION)
 	}
 }
 

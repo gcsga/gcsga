@@ -14,7 +14,7 @@ export class ModifierButton extends Application {
 	constructor(options = {}) {
 		super(options)
 		this.showing = false
-		this.modifierMode = game.settings.get(SYSTEM_NAME, SETTINGS.MODIFIER_MODE) as "prompt" | "bucket"
+		this.modifierMode = game.settings.get(SYSTEM_NAME, SETTINGS.MODIFIER_MODE)
 	}
 
 	async render(
@@ -22,13 +22,13 @@ export class ModifierButton extends Application {
 		options?: Application.RenderOptions<ApplicationOptions> | undefined
 	): Promise<unknown> {
 		await this.recalculateModTotal(game.user)
-		this.modifierMode = game.settings.get(SYSTEM_NAME, SETTINGS.MODIFIER_MODE) as "prompt" | "bucket"
+		this.modifierMode = game.settings.get(SYSTEM_NAME, SETTINGS.MODIFIER_MODE)
 		if (this.window?.rendered) await this.window.render()
 		return super.render(force, options)
 	}
 
 	get window(): ModifierWindow | ModifierBucket {
-		this.modifierMode = game.settings.get(SYSTEM_NAME, SETTINGS.MODIFIER_MODE) as "prompt" | "bucket"
+		this.modifierMode = game.settings.get(SYSTEM_NAME, SETTINGS.MODIFIER_MODE)
 		if (this._window) {
 			if (this._window instanceof ModifierWindow && this.modifierMode === "bucket")
 				this._window = new ModifierBucket(this, {})

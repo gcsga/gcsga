@@ -4,11 +4,7 @@ import { EquipmentModifierGURPS, valueAdjustedForModifiers, weightAdjustedForMod
 import { EquipmentModifierContainerGURPS } from "@item/equipment_modifier_container"
 import { ItemGCS } from "@item/gcs"
 import { DisplayMode, SETTINGS, SYSTEM_NAME } from "@module/data"
-import {
-	Weight,
-	WeightUnits,
-	fxp,
-} from "@util"
+import { Weight, WeightUnits, fxp } from "@util"
 import { HandlebarsHelpersGURPS } from "@util/handlebars_helpers"
 import { EquipmentData } from "./data"
 import { Feature } from "@module/config"
@@ -25,7 +21,7 @@ export class EquipmentGURPS extends ItemGCS {
 
 	get secondaryText(): string {
 		let outString = '<div class="item-notes">'
-		let display_mode = (game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`) as any)
+		let display_mode = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
 			.modifiers_display as DisplayMode
 		if (this.actor) display_mode = this.actor.settings.modifiers_display
 		if ([DisplayMode.Inline, DisplayMode.InlineAndTooltip].includes(display_mode)) {
@@ -55,7 +51,7 @@ export class EquipmentGURPS extends ItemGCS {
 
 	get weightUnits(): WeightUnits {
 		if (this.actor) return this.actor.weightUnits
-		const default_settings = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`) as any
+		const default_settings = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
 		return default_settings.default_weight_units
 	}
 
@@ -128,7 +124,16 @@ export class EquipmentGURPS extends ItemGCS {
 	}
 
 	extendedWeight(forSkills: boolean, defUnits: WeightUnits): number {
-		return extendedWeightAdjustedForModifiers(defUnits, this.system.quantity, this.weight, this.deepModifiers, this.features, this.children, forSkills, this.system.ignore_weight_for_skills && this.equipped)
+		return extendedWeightAdjustedForModifiers(
+			defUnits,
+			this.system.quantity,
+			this.weight,
+			this.deepModifiers,
+			this.features,
+			this.children,
+			forSkills,
+			this.system.ignore_weight_for_skills && this.equipped
+		)
 	}
 
 	get extendedWeightFast(): string {
@@ -155,7 +160,6 @@ export class EquipmentGURPS extends ItemGCS {
 	toggleState(): void {
 		this.equipped = !this.equipped
 	}
-
 }
 
 export function extendedWeightAdjustedForModifiers(
@@ -185,7 +189,7 @@ export function extendedWeightAdjustedForModifiers(
 			}
 		})
 		if (percentage >= 100) contained = 0
-		else if (percentage > 0) contained -= contained * percentage / 100
+		else if (percentage > 0) contained -= (contained * percentage) / 100
 		base += Math.max(0, contained - reduction)
 	}
 	return fxp.Int.from(base * quantity)

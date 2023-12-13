@@ -90,7 +90,6 @@ export abstract class ContainerGURPS extends BaseItemGURPS {
 	}
 
 	prepareEmbeddedDocuments(): void {
-		// If (this.actor?.noPrepare) return
 		super.prepareEmbeddedDocuments()
 		let container = null
 		if (!this.actor && !this.pack) return
@@ -101,7 +100,7 @@ export abstract class ContainerGURPS extends BaseItemGURPS {
 				(e: BaseItemGURPS) => e.getFlag(SYSTEM_NAME, ItemFlags.Container) === this.id
 			)) {
 				if (this.type === ItemType.EquipmentContainer && item.type === ItemType.Equipment) {
-					; (item as any).system.other = (this.system as any).other
+					;(item as any).system.other = (this.system as any).other
 				}
 				this.items.set(item.id!, item)
 			}

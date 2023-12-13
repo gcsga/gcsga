@@ -19,7 +19,7 @@ class ModifierList extends Application {
 	}
 
 	get collapse(): boolean {
-		const collapse = game.settings.get(SYSTEM_NAME, SETTINGS.MODIFIER_LIST_COLLAPSE) as boolean
+		const collapse = game.settings.get(SYSTEM_NAME, SETTINGS.MODIFIER_LIST_COLLAPSE)
 		const button_open = game.ModifierButton.window.rendered
 		if (collapse && !button_open) return true
 		return false

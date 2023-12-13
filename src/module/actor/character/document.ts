@@ -736,7 +736,7 @@ export class CharacterGURPS extends BaseActorGURPS {
 
 	// Flat list of all hit locations
 	get HitLocations(): HitLocation[] {
-		const recurseLocations = function(table: HitLocationTable, locations: HitLocation[] = [],): HitLocation[] {
+		const recurseLocations = function (table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
 			table.locations.forEach(e => {
 				locations.push(e)
 				if (e.subTable) locations = recurseLocations(e.subTable, locations)
@@ -1211,7 +1211,7 @@ export class CharacterGURPS extends BaseActorGURPS {
 
 		this._processingThresholds = true
 
-		const effects = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`) as any
+		const effects = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`)
 
 		this.poolAttributes(false).forEach(e => {
 			if (!this._prevAttributes.has(e.id)) return

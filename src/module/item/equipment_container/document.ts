@@ -3,11 +3,7 @@ import { EquipmentModifierGURPS, valueAdjustedForModifiers, weightAdjustedForMod
 import { EquipmentModifierContainerGURPS } from "@item/equipment_modifier_container"
 import { ItemGCS } from "@item/gcs"
 import { SETTINGS, SYSTEM_NAME } from "@module/data"
-import {
-	fxp,
-	Weight,
-	WeightUnits,
-} from "@util"
+import { fxp, Weight, WeightUnits } from "@util"
 import { EquipmentContainerData } from "./data"
 
 export class EquipmentContainerGURPS extends ItemGCS {
@@ -32,7 +28,7 @@ export class EquipmentContainerGURPS extends ItemGCS {
 
 	get weightUnits(): WeightUnits {
 		if (this.actor) return this.actor.weightUnits
-		const default_settings = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`) as any
+		const default_settings = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
 		return default_settings.default_weight_units
 	}
 

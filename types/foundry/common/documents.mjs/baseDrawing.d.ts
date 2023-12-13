@@ -19,7 +19,7 @@ type DrawingMetadata = Merge<
 			typeof CONST.DRAWING_TYPES.ELLIPSE,
 			typeof CONST.DRAWING_TYPES.TEXT,
 			typeof CONST.DRAWING_TYPES.POLYGON,
-			typeof CONST.DRAWING_TYPES.FREEHAND
+			typeof CONST.DRAWING_TYPES.FREEHAND,
 		]
 		permissions: {
 			create: "DRAWING_CREATE"

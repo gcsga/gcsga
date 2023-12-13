@@ -2,7 +2,17 @@ import { Attribute, AttributeDefObj, AttributeObj, AttributeType } from "@module
 import { DamageProgression, gid, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { DiceGURPS } from "@module/dice"
 import { damageProgression } from "@util"
-import { MookEquipment, MookMelee, MookNote, MookProfile, MookRanged, MookSkill, MookSpell, MookTrait } from "./data"
+import {
+	MookData,
+	MookEquipment,
+	MookMelee,
+	MookNote,
+	MookProfile,
+	MookRanged,
+	MookSkill,
+	MookSpell,
+	MookTrait,
+} from "./data"
 
 export class Mook {
 	protected variableResolverExclusions: Map<string, boolean> = new Map()
@@ -45,28 +55,28 @@ export class Mook {
 		this.attributes = this.getAttributes()
 	}
 
-	constructor() {
-		this.settings = {
+	constructor(data?: Partial<MookData>) {
+		this.settings = data?.settings ?? {
 			attributes: game.settings.get(
 				SYSTEM_NAME,
 				`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`
 			) as AttributeDefObj[],
-			damage_progression: (game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`) as any)
+			damage_progression: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
 				.damage_progression,
 		}
-		this.system = {
+		this.system = data?.system ?? {
 			attributes: this.newAttributes(this.settings.attributes),
 		}
 		this.attributes = this.getAttributes()
-		this.traits = []
-		this.skills = []
-		this.spells = []
-		this.melee = []
-		this.ranged = []
-		this.equipment = []
-		this.other_equipment = []
-		this.notes = []
-		this.profile = {
+		this.traits = data?.traits ?? []
+		this.skills = data?.skills ?? []
+		this.spells = data?.spells ?? []
+		this.melee = data?.melee ?? []
+		this.ranged = data?.ranged ?? []
+		this.equipment = data?.equipment ?? []
+		this.other_equipment = data?.other_equipment ?? []
+		this.notes = data?.notes ?? []
+		this.profile = data?.profile ?? {
 			name: "Bad Guy",
 			description: "",
 			title: "",

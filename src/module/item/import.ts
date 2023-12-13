@@ -32,7 +32,7 @@ export class ItemImporter {
 			new Dialog(
 				{
 					title: LocalizeGURPS.translations.gurps.system.library_import.title_item,
-					content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/library-import.hbs`, {}),
+					content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/item-library-import.hbs`, {}),
 					buttons: {
 						import: {
 							icon: '<i class="fas fa-file-import"></i>',
@@ -78,7 +78,7 @@ export class ItemImporter {
 	private async _import(file: { text: string; name: string; path: string }) {
 		const json = file.text
 		const label = file.name.split(".")[0]
-		const name = label.toLowerCase().replaceAll(" ", "-")
+		const name = label.slugify()
 		let r: ItemLibraryData | any
 		const errorMessages: string[] = []
 		try {
@@ -117,7 +117,7 @@ export class ItemImporter {
 				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.system.library_import.start, { name: name })
 			)
 			let counter = items.length
-			const newItems = await BaseItemGURPS.createDocuments(items as any[], {
+			await BaseItemGURPS.createDocuments(items as any[], {
 				pack: pack.collection,
 				keepId: true,
 			})

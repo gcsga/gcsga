@@ -328,30 +328,33 @@ export async function urlToBase64(imageUrl: string) {
 }
 
 export function setInitiative() {
-	let formula: string = game.settings.get(SYSTEM_NAME, SETTINGS.INITIATIVE_FORMULA) as string
+	let formula = game.settings.get(SYSTEM_NAME, SETTINGS.INITIATIVE_FORMULA)
 	if (!formula) formula = DEFAULT_INITIATIVE_FORMULA
 	if (game.user?.isGM) game.settings.set(SYSTEM_NAME, SETTINGS.INITIATIVE_FORMULA, formula)
 	CONFIG.Combat.initiative.formula = formula
 }
 
 export function pick<T extends object, K extends keyof T>(obj: T, keys: Iterable<K>): Pick<T, K> {
-	return [...keys].reduce((result, key) => {
-		if (key in obj) {
-			result[key] = obj[key]
-		}
-		return result
-	}, {} as Pick<T, K>)
+	return [...keys].reduce(
+		(result, key) => {
+			if (key in obj) {
+				result[key] = obj[key]
+			}
+			return result
+		},
+		{} as Pick<T, K>
+	)
 }
 
 export async function getDefaultSkills() {
 	const skills: Item[] = []
-	const skillPacks = (game.settings.get(SYSTEM_NAME, SETTINGS.COMPENDIUM_BROWSER_PACKS) as any).skill
+	const skillPacks = game.settings.get(SYSTEM_NAME, SETTINGS.COMPENDIUM_BROWSER_PACKS).skill
 	for (const s in skillPacks)
 		if (skillPacks[s].skillDefault) {
 			const pack = game.packs.get(s) as CompendiumCollection<any>
-				; (await pack.getDocuments()).forEach(e => {
-					skills.push(e)
-				})
+			;(await pack.getDocuments()).forEach(e => {
+				skills.push(e)
+			})
 		}
 	CONFIG.GURPS.skillDefaults = skills
 }
@@ -372,7 +375,8 @@ export function inlineNote(
 	actor: CharacterGURPS,
 	option: "user_description_display" | "modifiers_display" | "notes_display" | "skill_level_adj_display"
 ): boolean {
-	if (actor)
-		return [DisplayMode.Inline, DisplayMode.InlineAndTooltip].includes(actor.settings[option])
-	return [DisplayMode.Inline, DisplayMode.InlineAndTooltip].includes((game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`) as any)[option])
+	if (actor) return [DisplayMode.Inline, DisplayMode.InlineAndTooltip].includes(actor.settings[option])
+	return [DisplayMode.Inline, DisplayMode.InlineAndTooltip].includes(
+		game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)[option]
+	)
 }

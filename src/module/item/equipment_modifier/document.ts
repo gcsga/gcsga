@@ -1,13 +1,19 @@
 import { ItemGCS } from "@item/gcs"
 import { SETTINGS, SYSTEM_NAME } from "@module/data"
-import {
-	Weight,
-	WeightUnits,
-	fxp,
-} from "@util"
+import { Weight, WeightUnits, fxp } from "@util"
 import { EquipmentModifierData } from "./data"
-import { EquipmentModifierWeightType, EquipmentModifierWeightValueType, determineModifierWeightValueTypeFromString, extractFraction } from "./weight"
-import { EquipmentModifierCostType, EquipmentModifierCostValueType, determineModifierCostValueTypeFromString, extractValue } from "./cost"
+import {
+	EquipmentModifierWeightType,
+	EquipmentModifierWeightValueType,
+	determineModifierWeightValueTypeFromString,
+	extractFraction,
+} from "./weight"
+import {
+	EquipmentModifierCostType,
+	EquipmentModifierCostValueType,
+	determineModifierCostValueTypeFromString,
+	extractValue,
+} from "./cost"
 
 export class EquipmentModifierGURPS extends ItemGCS {
 	readonly system!: EquipmentModifierData
@@ -30,7 +36,7 @@ export class EquipmentModifierGURPS extends ItemGCS {
 
 	get weightUnits(): WeightUnits {
 		if (this.actor) return this.actor.weightUnits
-		const default_settings = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`) as any
+		const default_settings = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
 		return default_settings.default_weight_units
 	}
 }
@@ -79,17 +85,13 @@ function processMultiplyAddWeightStep(
 			if (t === EquipmentModifierWeightValueType.Addition) sum += parseFloat(mod.system.weight)
 			else if (t === EquipmentModifierWeightValueType.PercentageMultiplier)
 				weight = (weight * f.numerator) / (f.denominator * 100)
-			else if (t === EquipmentModifierWeightValueType.Multiplier)
-				weight = (weight * f.numerator) / f.denominator
+			else if (t === EquipmentModifierWeightValueType.Multiplier) weight = (weight * f.numerator) / f.denominator
 		}
 	}
 	return weight + sum
 }
 
-export function valueAdjustedForModifiers(
-	value: number,
-	modifiers: Collection<EquipmentModifierGURPS>
-): number {
+export function valueAdjustedForModifiers(value: number, modifiers: Collection<EquipmentModifierGURPS>): number {
 	let cost = processNonCFStep(EquipmentModifierCostType.Original, value, modifiers)
 
 	let cf = 0
@@ -103,7 +105,7 @@ export function valueAdjustedForModifiers(
 	})
 	if (cf !== 0) {
 		cf = Math.max(cf, -0.8)
-		cost *= (cf + 1)
+		cost *= cf + 1
 	}
 
 	cost = processNonCFStep(EquipmentModifierCostType.FinalBase, cost, modifiers)
@@ -125,9 +127,11 @@ function processNonCFStep(
 			const amt = extractValue(t, mod.costAmount)
 			switch (t) {
 				case EquipmentModifierCostValueType.Addition:
-					additions += amt; break
+					additions += amt
+					break
 				case EquipmentModifierCostValueType.Percentage:
-					percentages += amt; break
+					percentages += amt
+					break
 				case EquipmentModifierCostValueType.Multiplier:
 					cost *= amt
 			}

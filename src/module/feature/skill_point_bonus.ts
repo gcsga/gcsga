@@ -19,4 +19,3 @@ export class SkillPointBonus extends BaseFeature {
 		})
 	}
 }
-
