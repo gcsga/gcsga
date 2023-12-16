@@ -507,7 +507,7 @@ export class MookParser {
 		const regex_recoil = /\s?[Rr]cl *(\d+)\s?,?/
 		const regex_half_damage = /\s?1\/2[Dd] *(\d+)\s?,?/
 		const regex_max_range = /\s?[Mm]ax *(\d+) ?,?/
-		const regex_shots = /\s?[Ss]hots *([\dT\)\(]+)\s?,?/
+		const regex_shots = /\s?[Ss]hots *([\dT)(]+)\s?,?/
 		const regex_bulk = /\s?[Bb]ulk\s*(-\d+)\s?,?/
 		const regex_ST = / ?[Ss][Tt] *(\d+)\s?,?/
 		const regex_reach = /\s?[Rr]each\s*((?:[C1-9]+\s*)(?:,\s*[C1-9]+\s*)*)/
