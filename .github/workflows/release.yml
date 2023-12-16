@@ -13,7 +13,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
-              uses: actions/checkout@v2
+              uses: actions/checkout@v4
 
             - name: Install node
               uses: actions/setup-node@v2
@@ -39,7 +39,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
-              uses: actions/checkout@v2
+              uses: actions/checkout@v4
 
             - name: Install node
               uses: actions/setup-node@v2
@@ -65,7 +65,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
-              uses: actions/checkout@v2
+              uses: actions/checkout@v4
 
             - name: Install node
               uses: actions/setup-node@v2
@@ -91,7 +91,7 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
-              uses: actions/checkout@v2
+              uses: actions/checkout@v4
 
             - name: Install node
               uses: actions/setup-node@v2
@@ -145,7 +145,7 @@ jobs:
             contents: write
         steps:
             - name: Checkout code
-              uses: actions/checkout@v2
+              uses: actions/checkout@v4
 
             - name: Download production artifacts for publication
               uses: actions/download-artifact@v2
