@@ -3,11 +3,9 @@ import { TraitModifierGURPS } from "@item/trait_modifier"
 import { TraitModifierContainerGURPS } from "@item/trait_modifier_container"
 import { CR, CRAdjustment, ItemType } from "@module/data"
 import { inlineNote, LocalizeGURPS, SelfControl } from "@util"
-import { TraitData } from "./data"
+import { TraitSource, TraitSystemData } from "./data"
 
-export class TraitGURPS extends ItemGCS {
-	readonly system!: TraitData
-
+export class TraitGURPS extends ItemGCS<TraitSource> {
 	unsatisfied_reason = ""
 
 	// Getters

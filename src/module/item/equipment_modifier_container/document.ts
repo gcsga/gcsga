@@ -1,10 +1,8 @@
 import { EquipmentModifierGURPS } from "@item/equipment_modifier"
 import { ItemGCS } from "@item/gcs"
-import { EquipmentModifierContainerData } from "./data"
+import { EquipmentModifierContainerSource } from "./data"
 
-export class EquipmentModifierContainerGURPS extends ItemGCS {
-	readonly system!: EquipmentModifierContainerData
-
+export class EquipmentModifierContainerGURPS extends ItemGCS<EquipmentModifierContainerSource> {
 	get enabled(): boolean {
 		return true
 	}

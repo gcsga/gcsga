@@ -64,7 +64,7 @@ export class CharacterImporter {
 										actors.push({
 											text: text,
 											name: file.name,
-											// @ts-ignore path DOES exist on File
+											// @ts-expect-error path DOES exist on File
 											path: file.path,
 										})
 									}

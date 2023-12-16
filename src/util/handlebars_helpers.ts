@@ -156,9 +156,9 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 		const showdown_options = {
 			...CONST.SHOWDOWN_OPTIONS,
 		}
-		// @ts-ignore until v10 types
+		// @ts-expect-error Showdown not properly declared yet
 		Object.entries(showdown_options).forEach(([k, v]) => showdown.setOption(k, v))
-		// @ts-ignore until v10 types
+		// @ts-expect-error Showdown not properly declared yet
 		const converter = new showdown.Converter()
 		return converter.makeHtml(s)?.replace(/\s\+/g, "\r")
 	}

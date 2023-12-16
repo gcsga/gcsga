@@ -3,7 +3,7 @@ import { allLengthUnits, Length, LengthSymbols, LengthUnits, LocalizeGURPS } fro
 
 class RulerGURPS extends Ruler {
 	override _getSegmentLabel(segment: RulerMeasurementSegment, totalDistance: number): string {
-		// @ts-ignore
+		// @ts-expect-error canvas type definition out of date
 		let units = canvas?.scene?.grid.units
 		Object.keys(LengthSymbols).forEach(k => {
 			if (LengthSymbols[k as LengthUnits].includes(units)) units = k

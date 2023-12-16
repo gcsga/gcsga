@@ -81,11 +81,7 @@ import {
 } from "@feature"
 import { SkillBonusSelectionType } from "@feature/skill_bonus"
 
-export class CharacterGURPS extends BaseActorGURPS {
-	system!: CharacterSystemData
-
-	_source!: CharacterSource
-
+export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	attributes: Map<string, Attribute> = new Map()
 
 	private _prevAttributes: Map<string, Attribute> = new Map()
@@ -736,7 +732,7 @@ export class CharacterGURPS extends BaseActorGURPS {
 
 	// Flat list of all hit locations
 	get HitLocations(): HitLocation[] {
-		const recurseLocations = function (table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
+		const recurseLocations = function(table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
 			table.locations.forEach(e => {
 				locations.push(e)
 				if (e.subTable) locations = recurseLocations(e.subTable, locations)

@@ -1,6 +1,8 @@
 import { ItemSheetGURPS } from "@item/base"
+import { NoteContainerGURPS } from "@item/note_container"
+import { NoteGURPS } from "./document"
 
-export class NoteSheet extends ItemSheetGURPS {
+export class NoteSheet extends ItemSheetGURPS<NoteGURPS | NoteContainerGURPS> {
 	static get defaultOptions(): DocumentSheetOptions<Item> {
 		const options = super.defaultOptions
 		mergeObject(options, {

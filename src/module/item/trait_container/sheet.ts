@@ -2,7 +2,7 @@ import { ItemSheetGCS } from "@item/gcs"
 import { TraitContainerGURPS } from "./document"
 
 export class TraitContainerSheet extends ItemSheetGCS {
-	object!: TraitContainerGURPS
+	declare object: TraitContainerGURPS
 
 	static get defaultOptions(): DocumentSheetOptions<Item> {
 		const options = super.defaultOptions

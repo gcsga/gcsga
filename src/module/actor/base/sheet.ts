@@ -11,7 +11,7 @@ import { DocumentSheetConfigGURPS } from "./config"
 type DispatchFunctions = Record<string, (arg: any) => void>
 
 export class ActorSheetGURPS extends ActorSheet {
-	object!: ActorGURPS
+	declare object: ActorGURPS
 
 	readonly dropDispatch: DispatchFunctions = {
 		[DamageChat.TYPE]: this.actor.handleDamageDrop.bind(this.actor),

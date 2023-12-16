@@ -12,7 +12,8 @@ describe("Mook generator", () => {
 	beforeEach(() => {
 		_mook = new Mook(_defaultMookData)
 		_parser = new MookParser("", _mook)
-		;(global as any).game = new FakeGame()
+		// @ts-expect-error game does not exist on globalThis type
+		global.game = FakeGame
 	})
 
 	describe("Attribute Parsing", () => {
@@ -1042,7 +1043,7 @@ Knife: 2d-3 cutting, 1 die impaling.`,
 	`Bandit Mage
 ST: 10	HP: 10	Speed: 5.25
 DX: 11	Will: 14	Move: 4
-IQ: 14	Per: 14	
+IQ: 14	Per: 14
 HT: 10	FP: 12	SM: 0
 Dodge: 7	Parry: 8	DR: 2
 Spear (12): 1d impaling; Reach 1. +1 damage and Reach if used two-handed or thrown.

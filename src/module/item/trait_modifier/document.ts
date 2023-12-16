@@ -1,9 +1,7 @@
 import { ItemGCS } from "@item/gcs"
-import { TraitModifierAffects, TraitModifierCostType, TraitModifierData } from "./data"
+import { TraitModifierAffects, TraitModifierCostType, TraitModifierSource } from "./data"
 
-export class TraitModifierGURPS extends ItemGCS {
-	readonly system!: TraitModifierData
-
+export class TraitModifierGURPS extends ItemGCS<TraitModifierSource> {
 	prepareBaseData() {
 		super.prepareBaseData()
 		// HACK: find a way to avoid this

@@ -3,11 +3,9 @@ import { ActorType, Difficulty, gid } from "@module/data"
 import { SkillDefault } from "@module/default"
 import { TooltipGURPS } from "@module/tooltip"
 import { difficultyRelativeLevel, inlineNote, LocalizeGURPS } from "@util"
-import { SkillData, SkillLevel } from "./data"
+import { SkillLevel, SkillSource } from "./data"
 
-export class SkillGURPS extends ItemGCS {
-	readonly system!: SkillData
-
+export class SkillGURPS extends ItemGCS<SkillSource> {
 	level: SkillLevel = { level: 0, relative_level: 0, tooltip: new TooltipGURPS() }
 
 	unsatisfied_reason = ""

@@ -11,7 +11,9 @@ declare global {
 	 * @see TokenDocument
 	 * @see TokenLayer
 	 */
-	class Token extends PlaceableObject<InstanceType<ConfiguredDocumentClass<typeof TokenDocument>>> {
+	class Token<T extends TokenDocument = TokenDocument> extends PlaceableObject<
+		InstanceType<ConfiguredDocumentClass<typeof T>>
+	> {
 		/**
 		 * A Ray which represents the Token's current movement path
 		 */

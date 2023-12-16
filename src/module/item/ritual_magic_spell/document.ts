@@ -4,11 +4,9 @@ import { Difficulty, gid } from "@module/data"
 import { SkillDefault } from "@module/default"
 import { TooltipGURPS } from "@module/tooltip"
 import { inlineNote, LocalizeGURPS } from "@util"
-import { RitualMagicSpellData } from "./data"
+import { RitualMagicSpellSource } from "./data"
 
-export class RitualMagicSpellGURPS extends ItemGCS {
-	readonly system!: RitualMagicSpellData
-
+export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 	level: SkillLevel = { level: 0, relative_level: 0, tooltip: new TooltipGURPS() }
 
 	unsatisfied_reason = ""

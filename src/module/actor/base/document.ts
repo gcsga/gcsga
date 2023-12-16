@@ -17,7 +17,6 @@ import {
 	ActorConstructorContextGURPS,
 	ActorFlags,
 	ActorFlagsGURPS,
-	ActorSystemData,
 	BaseActorSourceGURPS,
 } from "./data"
 import { HitLocationTable } from "@actor/character/hit_location"
@@ -42,26 +41,28 @@ import { ActorDataConstructorData } from "types/foundry/common/data/data.mjs/act
 import { MergeObjectOptions } from "types/foundry/common/utils/helpers.mjs"
 import { CharacterGURPS } from "@actor/character"
 
-export class BaseActorGURPS extends Actor {
+export class BaseActorGURPS<
+	SourceType extends BaseActorSourceGURPS = BaseActorSourceGURPS
+> extends Actor {
+	_source!: SourceType
+
+	system!: SourceType["system"]
+
 	flags!: ActorFlagsGURPS
 
 	noPrepare!: boolean
 
 	attributes!: Map<string, Attribute>
 
-	// Temp
-	system!: ActorSystemData
-
-	_source!: BaseActorSourceGURPS
 
 	_id!: string
 
 	constructor(data: ActorSourceGURPS, context: ActorConstructorContextGURPS = {}) {
 		if (context.gurps?.ready) {
-			// @ts-ignore
 			super(data, context)
 			this.noPrepare = false
 		} else {
+			super(data, context)
 			mergeObject(context, { gurps: { ready: true } })
 			const ActorConstructor = CONFIG.GURPS.Actor.documentClasses[data.type]
 			// eslint-disable-next-line no-constructor-return
@@ -79,6 +80,7 @@ export class BaseActorGURPS extends Actor {
 	}
 
 	protected async _preCreate(data: any, options: DocumentModificationOptions, user: BaseUser): Promise<void> {
+		this._source ??= {} as any
 		if (this._source.img === foundry.CONST.DEFAULT_TOKEN)
 			this._source.img = data.img = `systems/${SYSTEM_NAME}/assets/icons/${data.type}.svg`
 		await super._preCreate(data, options, user)
@@ -162,8 +164,8 @@ export class BaseActorGURPS extends Actor {
 		const effects = this.gEffects.map(e => {
 			const overlay = e instanceof ConditionGURPS && e.cid === ConditionID.Dead
 			const a = new ActiveEffect({ name: e.name, icon: e.img || "" } as any)
-			// a.setFlag("core", "overlay", overlay)
-			;(a as any).flags = { core: { overlay: overlay } }
+				// a.setFlag("core", "overlay", overlay)
+				; (a as any).flags = { core: { overlay: overlay } }
 			return a
 		})
 		return super.temporaryEffects.concat(effects)

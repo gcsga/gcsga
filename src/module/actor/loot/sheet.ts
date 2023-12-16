@@ -10,7 +10,7 @@ import { LootGURPS } from "./document"
 export class LootSheetGURPS extends ActorSheetGURPS {
 	editing!: boolean
 
-	object!: LootGURPS
+	declare object: LootGURPS
 
 	static override get defaultOptions(): ActorSheet.Options {
 		return mergeObject(super.defaultOptions, {

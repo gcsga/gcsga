@@ -12,11 +12,9 @@ import { DocumentModificationOptions } from "types/foundry/common/abstract/docum
 import { ItemDataConstructorData } from "types/foundry/common/data/data.mjs/itemData"
 import { BaseUser } from "types/foundry/common/documents.mjs"
 import { MergeObjectOptions } from "types/foundry/common/utils/helpers.mjs"
-import { ItemGCSSystemData } from "./data"
+import { ItemGCSSource } from "./data"
 
-export abstract class ItemGCS extends ContainerGURPS {
-	readonly system!: ItemGCSSystemData
-
+export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> extends ContainerGURPS<SourceType> {
 	unsatisfied_reason = ""
 
 	protected async _preCreate(
@@ -33,7 +31,7 @@ export abstract class ItemGCS extends ContainerGURPS {
 			this._source.img = data.img = `systems/${SYSTEM_NAME}/assets/icons/${type}.svg`
 		let gcs_type: string = data.type
 		if (gcs_type === ItemType.Equipment) gcs_type = "equipment"
-		;(this._source.system as any).type = gcs_type
+			; (this._source.system as any).type = gcs_type
 		await super._preCreate(data, options, user)
 	}
 
@@ -44,7 +42,7 @@ export abstract class ItemGCS extends ContainerGURPS {
 		if (!(this.parent instanceof Item)) return super.update(data, context)
 		data._id = this.id
 		await this.container?.updateEmbeddedDocuments("Item", [data])
-		// @ts-ignore
+		// @ts-expect-error type not properly declared, to do later
 		this.render(false, { action: "update", data: data })
 	}
 

@@ -8,11 +8,9 @@ import { TooltipGURPS } from "@module/tooltip"
 import { LocalizeGURPS, stringCompare } from "@util"
 import { HandlebarsHelpersGURPS } from "@util/handlebars_helpers"
 import { WeaponDamage } from "./damage"
-import { BaseWeaponSystemData } from "./data"
+import { BaseWeaponSource } from "./data"
 
-export class BaseWeaponGURPS extends BaseItemGURPS {
-	readonly system!: BaseWeaponSystemData
-
+export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSource> extends BaseItemGURPS<SourceType> {
 	get itemName(): string {
 		if (this.container instanceof Item) return this.container?.name ?? ""
 		return ""

@@ -199,12 +199,10 @@ export class ColorSettings extends SettingsMenuGURPS {
 			if (!e.startsWith("color")) return
 			const name = `--${e.replace(/(\w)([A-Z])/g, "$1-$2").toLowerCase()}`
 			const value = colors[e]
-			// @ts-ignore until types v10
-			value.light = Color.fromString(value.light)
+			value.light = foundry.utils.Color.fromString(value.light)
 				.rgb.map((i: number) => i * 255)
 				.join(", ")
-			// @ts-ignore until types v10
-			value.dark = Color.fromString(value.dark)
+			value.dark = foundry.utils.Color.fromString(value.dark)
 				.rgb.map((i: number) => i * 255)
 				.join(", ")
 			if (modePreference === "light") $(":root").css(name, value.light)

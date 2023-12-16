@@ -1,8 +1,9 @@
 import { ItemSheetGURPS } from "@item/base"
 import { ItemType, SYSTEM_NAME } from "@module/data"
 import { DurationType } from "./data"
+import { EffectGURPS } from "./document"
 
-export class EffectSheet extends ItemSheetGURPS {
+export class EffectSheet extends ItemSheetGURPS<EffectGURPS> {
 	static get defaultOptions(): DocumentSheetOptions<Item> {
 		const options = super.defaultOptions
 		mergeObject(options, {
@@ -28,7 +29,7 @@ export class EffectSheet extends ItemSheetGURPS {
 
 	protected async _addModifier(event: JQuery.ClickEvent): Promise<any> {
 		event.preventDefault()
-		const modifiers = this.item.system.modifiers
+		const modifiers = this.item.system.modifiers ?? []
 		modifiers.push({
 			name: "",
 			modifier: 0,

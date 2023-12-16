@@ -144,23 +144,19 @@ export class MookParser {
 		})
 
 		this.object.attributes = this.object.getAttributes()
-		let currentValues: Map<string, number> = new Map(Array.from(this.object.attributes).map(e => [e[0], e[1].max]))
 
 		// While loop to account for attributes which affect other attributes
 		// hard-capped at 5 iterations to prevent infinite loop, may result in inaccuracies
-		let i = 0
-		while (Array.from(newValues).some(([k, _v]) => newValues.get(k) !== currentValues.get(k))) {
-			if (i > 5) break
+		for (let i = 0; i < 5; i++) {
+			if (!Array.from(newValues).some(([k, _v]) => newValues.get(k) !== this.object.attributes.get(k)?.max)) break
 			for (const id of newValues.keys()) {
-				const [newValue, currentValue] = [newValues.get(id), currentValues.get(id)]
+				const [newValue, currentValue] = [newValues.get(id), this.object.attributes.get(id)!.max]
 				if (!newValue || !currentValue) continue
 				if (newValue === currentValue) continue
 				const index = this.object.system.attributes.findIndex(e => e.attr_id === id)
 				this.object.system.attributes[index].adj += newValue - currentValue
 			}
 			this.object.attributes = this.object.getAttributes()
-			currentValues = new Map(Array.from(this.object.attributes).map(e => [e[0], e[1].max]))
-			i++
 		}
 	}
 

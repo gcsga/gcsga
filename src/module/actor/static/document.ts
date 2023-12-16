@@ -21,18 +21,14 @@ import {
 } from "./data"
 import { StaticCharacterImporter } from "./import"
 
-Hooks.on("createActor", async function (actor: StaticCharacterGURPS) {
+Hooks.on("createActor", async function(actor: StaticCharacterGURPS) {
 	if (actor.type === "character")
 		await actor.update({
 			"_stats.systemVersion": game.system.version,
 		})
 })
 
-export class StaticCharacterGURPS extends BaseActorGURPS {
-	system!: StaticCharacterSystemData
-
-	_source!: StaticCharacterSource
-
+export class StaticCharacterGURPS extends BaseActorGURPS<StaticCharacterSource> {
 	update(
 		data?: DeepPartial<ActorDataConstructorData | (ActorDataConstructorData & Record<string, unknown>)> | undefined,
 		context?: (DocumentModificationContext & MergeObjectOptions) | undefined
@@ -395,7 +391,7 @@ export class StaticCharacterGURPS extends BaseActorGURPS {
 		let found = "ERROR"
 		let any = false
 		if (!key.startsWith("system.")) key = `system.${key}`
-		while (found) {
+		while (found !== "") {
 			found = ""
 			let list = getProperty(this, key)
 			Static.recurseList(list, (e, k, _d) => {
@@ -817,17 +813,17 @@ export class StaticCharacterGURPS extends BaseActorGURPS {
 		key: keyof StaticCharacterSystemData & keyof StaticItemSystemData
 	) {
 		let found = false
-		// @ts-ignore
+		// @ts-expect-error variable type ambiguity...
 		Static.recurseList(this.system[key], (e, _k, _d) => {
 			if (e.itemid === itemData._id) found = true
 		})
 		if (found) return
-		// @ts-ignore
+		// @ts-expect-error variable type ambiguity...
 		let list = { ...this.system[key] }
 		let i = 0
-		// @ts-ignore
+		// @ts-expect-error variable type ambiguity...
 		for (const k in itemData.system[key]) {
-			// @ts-ignore
+			// @ts-expect-error variable type ambiguity...
 			let e = duplicate(itemData.system[key][k])
 			e.itemid = itemData._id
 			e.uuid = `${key}-${i++}-${e.itemid}`
@@ -979,7 +975,7 @@ export class StaticCharacterGURPS extends BaseActorGURPS {
 		newobj[objkey] = oldotf
 		let notes
 		let newotf
-		;[notes, newotf] = this._removeOtf(otfkey, newobj.notes || "")
+			;[notes, newotf] = this._removeOtf(otfkey, newobj.notes || "")
 		if (newotf) newobj[objkey] = newotf
 		newobj.notes = notes?.trim()
 	}
@@ -1040,9 +1036,9 @@ export class StaticCharacterGURPS extends BaseActorGURPS {
 	 */
 	async addNewItemData(itemData: StaticItemGURPS, targetkey: string | null = null) {
 		let d = itemData
-		// @ts-ignore
+		// @ts-expect-error incomplete item
 		if (typeof itemData.toObject === "function") d = itemData.toObject()
-		// @ts-ignore
+		// @ts-expect-error incomplete item
 		let localItems = await this.createEmbeddedDocuments("Item", [d]) // Add a local Foundry Item based on some Item data
 		let localItem = localItems[0] as StaticItemGURPS
 		await this.updateEmbeddedDocuments("Item", [{ _id: localItem.id, "system.eqt.uuid": newUUID() }])

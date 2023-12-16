@@ -7,11 +7,7 @@ import { ConditionID, ConditionSource, ConditionSystemData, ManeuverID } from ".
 import { getConditionList } from "./list"
 import { getManeuverList } from "./maneuver"
 
-export class ConditionGURPS extends EffectGURPS {
-	_source!: ConditionSource
-
-	readonly system!: ConditionSystemData
-
+export class ConditionGURPS extends EffectGURPS<ConditionSource> {
 	static getData(id: ConditionID | ManeuverID): Partial<ConditionSource> {
 		const [data, folder] = Object.values(ConditionID).includes(id as any)
 			? [getConditionList()[id as ConditionID], "status"]

@@ -171,7 +171,7 @@ Hooks.once("init", async () => {
 	Items.unregisterSheet("core", ItemSheet)
 	Actors.unregisterSheet("core", ActorSheet)
 
-	// @ts-ignore
+	// @ts-expect-error type not properly declared
 	DocumentSheetConfig.unregisterSheet(JournalEntryPage, "core", JournalPDFPageSheet)
 
 	Items.registerSheet(SYSTEM_NAME, TraitSheet, {
@@ -286,7 +286,7 @@ Hooks.once("init", async () => {
 		label: game.i18n.localize("gurps.system.sheet.character"),
 	})
 
-	// @ts-ignore
+	// @ts-expect-error type not properly declared
 	DocumentSheetConfig.registerSheet(JournalEntryPage, SYSTEM_NAME, PDF.PDFEditorSheet, {
 		types: ["pdf"],
 		makeDefault: true,

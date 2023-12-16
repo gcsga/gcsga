@@ -4,11 +4,9 @@ import { EquipmentModifierContainerGURPS } from "@item/equipment_modifier_contai
 import { ItemGCS } from "@item/gcs"
 import { SETTINGS, SYSTEM_NAME } from "@module/data"
 import { fxp, Weight, WeightUnits } from "@util"
-import { EquipmentContainerData } from "./data"
+import { EquipmentContainerSource } from "./data"
 
-export class EquipmentContainerGURPS extends ItemGCS {
-	readonly system!: EquipmentContainerData
-
+export class EquipmentContainerGURPS extends ItemGCS<EquipmentContainerSource> {
 	unsatisfied_reason = ""
 
 	// Getters

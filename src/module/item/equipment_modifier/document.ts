@@ -1,7 +1,7 @@
 import { ItemGCS } from "@item/gcs"
 import { SETTINGS, SYSTEM_NAME } from "@module/data"
 import { Weight, WeightUnits, fxp } from "@util"
-import { EquipmentModifierData } from "./data"
+import { EquipmentModifierSource } from "./data"
 import {
 	EquipmentModifierWeightType,
 	EquipmentModifierWeightValueType,
@@ -15,9 +15,7 @@ import {
 	extractValue,
 } from "./cost"
 
-export class EquipmentModifierGURPS extends ItemGCS {
-	readonly system!: EquipmentModifierData
-
+export class EquipmentModifierGURPS extends ItemGCS<EquipmentModifierSource> {
 	get enabled(): boolean {
 		return !this.system.disabled
 	}

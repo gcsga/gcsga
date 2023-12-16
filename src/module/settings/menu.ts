@@ -4,7 +4,7 @@ import { LocalizeGURPS } from "@util"
 export abstract class SettingsMenuGURPS extends FormApplication {
 	static readonly namespace: string
 
-	object!: object
+	declare object: object
 
 	static override get defaultOptions(): FormApplicationOptions {
 		const options = super.defaultOptions

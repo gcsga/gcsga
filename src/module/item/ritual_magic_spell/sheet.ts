@@ -1,6 +1,7 @@
 import { ItemSheetGCS } from "@item/gcs"
+import { RitualMagicSpellGURPS } from "./document"
 
-export class RitualMagicSpellSheet extends ItemSheetGCS {
+export class RitualMagicSpellSheet extends ItemSheetGCS<RitualMagicSpellGURPS> {
 	static get defaultOptions(): DocumentSheetOptions<Item> {
 		const options = super.defaultOptions
 		mergeObject(options, {

@@ -1,11 +1,9 @@
 import { ItemGCS } from "@item/gcs"
 import { SkillGURPS } from "@item/skill"
 import { TechniqueGURPS } from "@item/technique"
-import { SkillContainerData } from "./data"
+import { SkillContainerSource } from "./data"
 
-export class SkillContainerGURPS extends ItemGCS {
-	readonly system!: SkillContainerData
-
+export class SkillContainerGURPS extends ItemGCS<SkillContainerSource> {
 	// Embedded Items
 	get children(): Collection<SkillGURPS | TechniqueGURPS | SkillContainerGURPS> {
 		return super.children as Collection<SkillGURPS | TechniqueGURPS | SkillContainerGURPS>

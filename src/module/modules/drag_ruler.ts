@@ -23,7 +23,7 @@ export const init = function () {
 			}
 		}
 
-		// @ts-ignore
+		// @ts-expect-error dragRuler not imported or defined
 		dragRuler.registerSystem(SYSTEM_NAME, SpeedProviderGURPS)
 	})
 }

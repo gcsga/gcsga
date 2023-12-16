@@ -33,7 +33,7 @@ import { CharacterGURPS } from "./document"
 import { PointRecordSheet } from "./points_sheet"
 
 export class CharacterSheetGURPS extends ActorSheetGURPS {
-	object!: CharacterGURPS
+	declare object: CharacterGURPS
 
 	config: CharacterSheetConfig | null = null
 

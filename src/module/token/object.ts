@@ -2,7 +2,7 @@ import { ActorGURPS } from "@module/config"
 import { ConfiguredDocumentClass } from "types/types/helperTypes"
 import { TokenDocumentGURPS } from "./document"
 
-export class TokenGURPS extends Token {
+export class TokenGURPS extends Token<TokenDocumentGURPS> {
 	x!: number
 
 	y!: number
@@ -11,8 +11,6 @@ export class TokenGURPS extends Token {
 		right: number
 		bottom: number
 	}
-
-	document!: TokenDocumentGURPS
 
 	get actor(): ActorGURPS {
 		return super.actor as ActorGURPS

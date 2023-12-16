@@ -10,7 +10,7 @@ export enum StaticPopoutType {
 }
 
 export class StaticPopout extends FormApplication {
-	object!: StaticItemGURPS
+	declare object: StaticItemGURPS
 
 	key!: StaticPopoutType
 

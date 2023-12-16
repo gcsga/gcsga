@@ -6,8 +6,8 @@ import { PDF } from "@module/pdf"
 import { LocalizeGURPS, prepareFormData } from "@util"
 import { BaseItemGURPS } from "."
 
-export class ItemSheetGURPS extends ItemSheet {
-	object!: BaseItemGURPS
+export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends ItemSheet {
+	declare object: IType
 
 	static override get defaultOptions(): DocumentSheetOptions<Item> {
 		const options = super.defaultOptions

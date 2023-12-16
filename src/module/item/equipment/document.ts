@@ -6,12 +6,10 @@ import { ItemGCS } from "@item/gcs"
 import { DisplayMode, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { Weight, WeightUnits, fxp } from "@util"
 import { HandlebarsHelpersGURPS } from "@util/handlebars_helpers"
-import { EquipmentData } from "./data"
 import { Feature } from "@module/config"
+import { EquipmentSource } from "./data"
 
-export class EquipmentGURPS extends ItemGCS {
-	readonly system!: EquipmentData
-
+export class EquipmentGURPS extends ItemGCS<EquipmentSource> {
 	unsatisfied_reason = ""
 
 	// Getters

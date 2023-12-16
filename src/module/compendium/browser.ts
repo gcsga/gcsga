@@ -273,7 +273,7 @@ class CompendiumBrowser extends Application {
 		}
 
 		for (const pack of game.packs) {
-			// @ts-ignore
+			// @ts-expect-error type does exist but not delcared properly
 			const types = new Set(pack.index.map(entry => entry.type))
 			if (types.size === 0) continue
 

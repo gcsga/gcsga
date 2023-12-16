@@ -14,7 +14,7 @@ export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
 
 	editing!: boolean
 
-	object!: StaticCharacterGURPS
+	declare object: StaticCharacterGURPS
 
 	static get defaultOptions(): ActorSheet.Options {
 		return mergeObject(super.defaultOptions, {
