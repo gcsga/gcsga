@@ -65,6 +65,8 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v2
+              with:
+                  node-version: ${{ env.node_version }}
 
             - name: Install node
               uses: actions/setup-node@v2
@@ -74,6 +76,7 @@ jobs:
             - name: Cache Node.js modules
               uses: actions/cache@v2
               with:
+                  node-version: ${{ env.node_version }}
                   path: .npm
                   key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
                   restore-keys: |
