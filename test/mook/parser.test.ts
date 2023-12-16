@@ -13,7 +13,7 @@ describe("Mook generator", () => {
 		_mook = new Mook(_defaultMookData)
 		_parser = new MookParser("", _mook)
 		// @ts-expect-error game does not exist on globalThis type
-		global.game = FakeGame
+		global.game = new FakeGame()
 	})
 
 	describe("Attribute Parsing", () => {
