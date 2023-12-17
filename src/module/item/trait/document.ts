@@ -2,7 +2,7 @@ import { ItemGCS } from "@item/gcs"
 import { TraitModifierGURPS } from "@item/trait_modifier"
 import { TraitModifierContainerGURPS } from "@item/trait_modifier_container"
 import { CR, CRAdjustment, ItemType } from "@module/data"
-import { inlineNote, LocalizeGURPS, SelfControl } from "@util"
+import { inlineNote, LocalizeGURPS, parseInlineNoteExpressions, SelfControl } from "@util"
 import { TraitSource, TraitSystemData } from "./data"
 
 export class TraitGURPS extends ItemGCS<TraitSource> {
@@ -50,7 +50,10 @@ export class TraitGURPS extends ItemGCS<TraitSource> {
 					)
 			}
 		}
-		return `<div class="item-notes">${out.join("")}</div>`
+		let outString = out.join("")
+		if (this.parent)
+			outString = parseInlineNoteExpressions(out.join(""), this.parent as any)
+		return `<div class="item-notes">${outString}</div>`
 	}
 
 	get enabled(): boolean {

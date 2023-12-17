@@ -140,8 +140,8 @@ export function registerSettings(): void {
 	})
 
 	game.settings.register(SYSTEM_NAME, SETTINGS.SERVER_SIDE_FILE_DIALOG, {
-		name: "gurps.settings.server_side_file_dialogame.name",
-		hint: "gurps.settings.server_side_file_dialogame.hint",
+		name: "gurps.settings.server_side_file_dialog.name",
+		hint: "gurps.settings.server_side_file_dialog.hint",
 		scope: "client",
 		config: true,
 		type: Boolean,

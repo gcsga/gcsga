@@ -198,7 +198,7 @@ class Evaluator {
 			;[index, op] = this.processFunction(expression, index)
 			index += op?.symbol.length || 0
 			let tmp: number
-			;[tmp, op] = this.nextOperator(expression, index, null)
+				;[tmp, op] = this.nextOperator(expression, index, null)
 			if (!op) return index
 			index = tmp
 		}
@@ -395,4 +395,12 @@ export function evaluateToNumber(expression: string, resolver: VariableResolver)
 	else if (typeof parseFloat(result) === "number") return parseFloat(result)
 	console.error(`Unable to resolve ${expression} to a number`)
 	return 0
+}
+
+export function parseInlineNoteExpressions(inString: string, resolver: VariableResolver): string {
+	const regex_eval = /\|\|[^|]+\|\|/g
+	inString.match(regex_eval)?.forEach(e => {
+		inString = inString.replaceAll(e, new Evaluator({ resolver }).evaluate(e.replaceAll("||", "")))
+	})
+	return inString
 }
