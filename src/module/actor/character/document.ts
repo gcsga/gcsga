@@ -274,7 +274,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		return this.system.editing
 	}
 
-	get profile() {
+	get profile(): this["system"]["profile"] {
 		return this.system.profile
 	}
 

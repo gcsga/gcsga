@@ -53,9 +53,9 @@ export class EquipmentGURPS extends ItemGCS<EquipmentSource> {
 		return default_settings.default_weight_units
 	}
 
-	// get weightString(): string {
-	// 	return Weight.format(this.weight, this.weightUnits)
-	// }
+	get weightString(): string {
+		return Weight.format(this.weight, this.weightUnits)
+	}
 
 	get enabled(): boolean {
 		return this.equipped

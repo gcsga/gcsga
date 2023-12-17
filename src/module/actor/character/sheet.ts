@@ -24,7 +24,7 @@ import { gid, ItemType, RollType, SYSTEM_NAME } from "@module/data"
 import { PDF } from "@module/pdf"
 import { ResourceTrackerObj } from "@module/resource_tracker"
 import { RollGURPS } from "@module/roll"
-import { dollarFormat, Length, LocalizeGURPS, newUUID, Weight } from "@util"
+import { dollarFormat, Length, LocalizeGURPS, newUUID, Weight, WeightUnits } from "@util"
 import { fSearch } from "@util/fuse"
 import EmbeddedCollection from "types/foundry/common/abstract/embedded-collection.mjs"
 import { CharacterSheetConfig } from "./config_sheet"
@@ -197,7 +197,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 
 	_addItemHeaderContextMenu(element: HTMLElement) {
 		const type = $(element).parent(".item-list")[0].id
-		const menuItems = (function (self: CharacterSheetGURPS): ContextMenuEntry[] {
+		const menuItems = (function(self: CharacterSheetGURPS): ContextMenuEntry[] {
 			switch (type) {
 				case "traits":
 					return [
@@ -798,7 +798,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		const moveData = this.prepareMoveData()
 		const overencumbered = this.actor.allEncumbrance.at(-1)!.maximum_carry! < this.actor!.weightCarried(false)
 		const heightUnits = this.actor.settings.default_length_units
-		const weightUnits = this.actor.settings.default_weight_units
+		const weightUnits: WeightUnits = this.actor.settings.default_weight_units
 		const height = Length.format(Length.fromString(this.actor.profile?.height || ""), heightUnits)
 		const weight = Weight.format(Weight.fromString(this.actor.profile?.weight || "", weightUnits), weightUnits)
 
@@ -981,14 +981,14 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		}
 		const buttons: Application.HeaderButton[] = this.actor.canUserModify(game.user!, "update")
 			? [
-					edit_button,
-					{
-						label: "",
-						class: "gmenu",
-						icon: "gcs-all-seeing-eye",
-						onclick: event => this._openGMenu(event),
-					},
-			  ]
+				edit_button,
+				{
+					label: "",
+					class: "gmenu",
+					icon: "gcs-all-seeing-eye",
+					onclick: event => this._openGMenu(event),
+				},
+			]
 			: []
 		const all_buttons = [...buttons, ...super._getHeaderButtons()]
 		return all_buttons
