@@ -823,6 +823,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 
 		let element = $(event.target!).closest(".item.desc")
 		if (!element.length) element = currentTable.children(".item.desc").last()
+		if (!element.length) return
 		let heightAcross = (event.pageY! - element.offset()!.top) / element.height()!
 		const widthAcross = (event.pageX! - element.offset()!.left) / element.width()!
 		let inContainer = widthAcross > 0.3 && element.hasClass("container")
