@@ -76,7 +76,7 @@ class CompendiumBrowser extends Application {
 
 		const activeTabName = this.activeTab
 
-		const tags = html.find(".tags")
+		// const tags = html.find(".tags")
 		const options = html.find(".options")
 		options.css("top", `${90}px`)
 		options.css("left", `${630}px`)
@@ -402,13 +402,13 @@ class CompendiumBrowser extends Application {
 		// Const type: "Item" | "Actor" = $(li!).data("type")
 		const type = "Item"
 		const id = $(li!).data("item-id")
-		const item = this.tabs[this.activeTab as ItemTabName].indexData.find(e => e._id === id)
+		const itemData = this.tabs[this.activeTab as ItemTabName].indexData.find(e => e._id === id)
+		const item = itemData!.compendium.get(id)
 		event.dataTransfer?.setData(
 			"text/plain",
 			JSON.stringify({
 				type: type,
 				uuid: item?.uuid,
-				// ...item
 			})
 		)
 
@@ -418,6 +418,7 @@ class CompendiumBrowser extends Application {
 			type: `${item?.type.replace("_container", "").replaceAll("_", "-")}`,
 		})
 		dragImage.id = "drag-ghost"
+		dragImage.setAttribute("data-item", JSON.stringify(item?.toObject()))
 		document.body.querySelectorAll("#drag-ghost").forEach(e => e.remove())
 		document.body.appendChild(dragImage)
 		const height = (document.body.querySelector("#drag-ghost") as HTMLElement).offsetHeight

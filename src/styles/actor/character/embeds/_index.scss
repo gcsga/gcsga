@@ -20,6 +20,54 @@
 		content: "";
 	}
 
+	.item-list.dragsection::before,
+	.item-list.dragindirect::before {
+		content: "";
+		display: block;
+		position: absolute;
+		top: var(--top);
+		left: var(--left);
+		width: var(--width);
+		height: var(--height);
+		pointer-events: none;
+	}
+
+	.item-list.dragsection::before {
+		border: 2px solid red;
+		box-sizing: border-box;
+	}
+
+	.item-list.dragindirect::before {
+		background-color: rgba(var(--color-drop-area), 0.5);
+	}
+	/* :not(.header) { */
+	/* 	&.desc, */
+	/* 	&.points, */
+	/* 	&.level, */
+	/* 	&.rsl, */
+	/* 	&.reference, */
+	/* 	&.equipped, */
+	/* 	&.quantity, */
+	/* 	&.uses, */
+	/* 	&.tech-level, */
+	/* 	&.legality-class, */
+	/* 	&.value, */
+	/* 	&.weight, */
+	/* 	&.extended-value, */
+	/* 	&.extended-weight { */
+	/* 		&::before { */
+	/* 			content: ""; */
+	/* 			display: block; */
+	/* 			position: absolute; */
+	/* 			top: var(--top); */
+	/* 			left: var(--left); */
+	/* 			width: var(--width); */
+	/* 			height: var(--height); */
+	/* background-color: rgba(var(--color-drop-area), 0.5); /* Change the color and opacity as needed */
+	/* 		} */
+	/* 	} */
+	/* } */
+
 	> div > .desc {
 		display: grid;
 		grid-template:

@@ -19,7 +19,7 @@ import {
 } from "@item"
 import { Attribute, AttributeObj, AttributeType } from "@module/attribute"
 import { CondMod } from "@module/conditional_modifier"
-import { ItemGURPS, WeaponGURPS } from "@module/config"
+import { ItemDataGURPS, ItemGURPS, WeaponGURPS } from "@module/config"
 import { gid, ItemType, RollType, SYSTEM_NAME } from "@module/data"
 import { PDF } from "@module/pdf"
 import { ResourceTrackerObj } from "@module/resource_tracker"
@@ -60,6 +60,9 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 
 	protected _onDrop(event: DragEvent): void {
 		super._onDrop(event)
+		const sheet = $(this.element)
+		sheet.find(".item-list.dragsection").removeClass("dragsection")
+		sheet.find(".item-list.dragindirect").removeClass("dragindirect")
 	}
 
 	protected async _updateObject(event: Event, formData: Record<string, unknown>): Promise<unknown> {
@@ -127,7 +130,8 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		html.find(".move-select").on("change", event => this._onMoveChange(event))
 
 		// Hover Over
-		html.find(".item").on("dragover", event => this._onDragItem(event))
+		// html.find(".item").on("dragover", event => this._onDragItem(event))
+		html.on("dragover", event => this._onDragItem(event))
 
 		// Points Record
 		html.find(".edit-points").on("click", event => this._openPointsRecord(event))
@@ -745,12 +749,88 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 	}
 
 	protected _onDragItem(event: JQuery.DragOverEvent): void {
-		let element = $(event.currentTarget!).closest(".item.desc")
-		if (!element.length) return
-		const heightAcross = (event.pageY! - element.offset()!.top) / element.height()!
+		const sheet = $(this.element)
+		const itemData = $("#drag-ghost").data("item") as ItemDataGURPS
+		let currentTable = $(event.target).closest(".item-list")
+		if (([ItemType.Equipment, ItemType.EquipmentContainer].includes(itemData.type))) {
+			if ($(event.target).closest(".item-list#other-equipment").length > 0)
+				currentTable = $(event.target).closest(".item-list#other-equipment")
+			else currentTable = sheet.find(".item-list#equipment")
+		} else {
+			const idLookup = (function() {
+				switch (itemData.type) {
+					case ItemType.Trait:
+					case ItemType.TraitContainer:
+						return "traits"
+					case ItemType.Skill:
+					case ItemType.Technique:
+					case ItemType.SkillContainer:
+						return "skills"
+					case ItemType.Spell:
+					case ItemType.RitualMagicSpell:
+					case ItemType.SpellContainer:
+						return "spells"
+					case ItemType.Note:
+					case ItemType.NoteContainer:
+						return "notes"
+					default:
+						return "invalid"
+				}
+			})()
+			currentTable = sheet.find(`.item-list#${idLookup}`)
+		}
+
+		sheet.find(".item-list").each(function() {
+			if ($(this) !== currentTable) {
+				$(this).removeClass("dragsection")
+				$(this).removeClass("dragindirect")
+			}
+		})
+
+		let direct = false
+		currentTable.addClass("dragsection")
+		if (!([...$(event.target), ...$(event.target).parents()].includes(currentTable[0]))) {
+			currentTable.addClass("dragindirect")
+		} else {
+			direct = true
+		}
+
+		const top = Math.max(
+			(currentTable.position().top ?? 0) + (currentTable.children(".header.reference").outerHeight() ?? 0),
+			sheet.find(".window-content").position().top
+		)
+		currentTable[0].style.setProperty(
+			"--top", `${top}px`
+		)
+		currentTable[0].style.setProperty("--left", `${(currentTable.position().left + 1) ?? 0}px`)
+		const height = (function() {
+			const tableBottom =
+				(currentTable.position().top ?? 0) +
+				(currentTable.height() ?? 0)
+			const contentBottom =
+				(sheet.find(".window-content").position().top ?? 0) +
+				(sheet.find(".window-content").height() ?? 0)
+			return Math.min(contentBottom - top, tableBottom - top)
+		})()
+		if (height !== 0) {
+			currentTable[0].style.setProperty(
+				"--height", `${height}px`
+			)
+			currentTable[0].style.setProperty(
+				"--width", `${currentTable.width()}px`
+			)
+		}
+
+		let element = $(event.target!).closest(".item.desc")
+		if (!element.length) element = currentTable.children(".item.desc").last()
+		let heightAcross = (event.pageY! - element.offset()!.top) / element.height()!
 		const widthAcross = (event.pageX! - element.offset()!.left) / element.width()!
-		const inContainer = widthAcross > 0.3 && element.hasClass("container")
-		if (heightAcross > 0.5 && element.hasClass("border-bottom")) return
+		let inContainer = widthAcross > 0.3 && element.hasClass("container")
+		if (!direct) {
+			element = currentTable.children(".item.desc").last()
+			heightAcross = 1
+			inContainer = false
+		} if (heightAcross > 0.5 && element.hasClass("border-bottom")) return
 		if (heightAcross < 0.5 && element.hasClass("border-top")) return
 		if (inContainer && element.hasClass("border-in")) return
 
