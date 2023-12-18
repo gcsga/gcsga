@@ -17,7 +17,6 @@ describe("Mook generator", () => {
 	})
 
 	describe("Attribute Parsing", () => {
-
 		it("Attributes separated by spaces and newlines", () => {
 			_parser.text = _oldStats[0]
 			_parser.parseStatBlock(_parser.text)
@@ -85,7 +84,6 @@ describe("Mook generator", () => {
 		})
 	})
 
-
 	describe("Trait Parsing", () => {
 		it("Traits with CR, levels, no points, no modifiers", () => {
 			_parser.text = _oldStats[0]
@@ -143,48 +141,26 @@ describe("Mook generator", () => {
 			_parser.parseStatBlock(_parser.text)
 
 			expect(
+				_mook.skills.some(s => s.name === "Bow" && s.level === 13 && s.difficulty === "dx/a" && s.points === 0)
+			).toBe(true)
+			expect(
 				_mook.skills.some(
-					s =>
-						s.name === "Bow" &&
-						s.level === 13 &&
-						s.difficulty === "dx/a" &&
-						s.points === 0
+					s => s.name === "Brawling" && s.level === 13 && s.difficulty === "dx/a" && s.points === 0
 				)
 			).toBe(true)
 			expect(
 				_mook.skills.some(
-					s =>
-						s.name === "Brawling" &&
-						s.level === 13 &&
-						s.difficulty === "dx/a" &&
-						s.points === 0
+					s => s.name === "Knife" && s.level === 13 && s.difficulty === "dx/a" && s.points === 0
 				)
 			).toBe(true)
 			expect(
 				_mook.skills.some(
-					s =>
-						s.name === "Knife" &&
-						s.level === 13 &&
-						s.difficulty === "dx/a" &&
-						s.points === 0
+					s => s.name === "Shield" && s.level === 12 && s.difficulty === "dx/a" && s.points === 0
 				)
 			).toBe(true)
 			expect(
 				_mook.skills.some(
-					s =>
-						s.name === "Shield" &&
-						s.level === 12 &&
-						s.difficulty === "dx/a" &&
-						s.points === 0
-				)
-			).toBe(true)
-			expect(
-				_mook.skills.some(
-					s =>
-						s.name === "Stealth" &&
-						s.level === 12 &&
-						s.difficulty === "dx/a" &&
-						s.points === 0
+					s => s.name === "Stealth" && s.level === 12 && s.difficulty === "dx/a" && s.points === 0
 				)
 			).toBe(true)
 		})
@@ -195,182 +171,102 @@ describe("Mook generator", () => {
 
 			expect(
 				_mook.skills.some(
-					s =>
-						s.name === "Acrobatics" &&
-						s.level === 15 &&
-						s.difficulty === "dx/a" &&
-						s.points === 0
+					s => s.name === "Acrobatics" && s.level === 15 && s.difficulty === "dx/a" && s.points === 0
 				)
 			).toBe(true)
 			expect(
 				_mook.skills.some(
-					s =>
-						s.name === "Brawling" &&
-						s.level === 18 &&
-						s.difficulty === "dx/a" &&
-						s.points === 0
+					s => s.name === "Brawling" && s.level === 18 && s.difficulty === "dx/a" && s.points === 0
 				)
 			).toBe(true)
 			expect(
 				_mook.skills.some(
-					s =>
-						s.name === "Climbing" &&
-						s.level === 18 &&
-						s.difficulty === "dx/a" &&
-						s.points === 0
+					s => s.name === "Climbing" && s.level === 18 && s.difficulty === "dx/a" && s.points === 0
 				)
 			).toBe(true)
 			expect(
 				_mook.skills.some(
-					s =>
-						s.name === "Cloak" &&
-						s.level === 15 &&
-						s.difficulty === "dx/a" &&
-						s.points === 0
+					s => s.name === "Cloak" && s.level === 15 && s.difficulty === "dx/a" && s.points === 0
 				)
 			).toBe(true)
 			expect(
 				_mook.skills.some(
-					s =>
-						s.name === "Escape" &&
-						s.level === 16 &&
-						s.difficulty === "dx/a" &&
-						s.points === 0
+					s => s.name === "Escape" && s.level === 16 && s.difficulty === "dx/a" && s.points === 0
 				)
 			).toBe(true)
 			expect(
 				_mook.skills.some(
-					s =>
-						s.name === "Filch" &&
-						s.level === 16 &&
-						s.difficulty === "dx/a" &&
-						s.points === 0
+					s => s.name === "Filch" && s.level === 16 && s.difficulty === "dx/a" && s.points === 0
 				)
 			).toBe(true)
 			expect(
 				_mook.skills.some(
-					s =>
-						s.name === "Forced Entry" &&
-						s.level === 17 &&
-						s.difficulty === "dx/a" &&
-						s.points === 0
+					s => s.name === "Forced Entry" && s.level === 17 && s.difficulty === "dx/a" && s.points === 0
 				)
 			).toBe(true)
 			expect(
 				_mook.skills.some(
-					s =>
-						s.name === "Garrote" &&
-						s.level === 18 &&
-						s.difficulty === "dx/a" &&
-						s.points === 0
+					s => s.name === "Garrote" && s.level === 18 && s.difficulty === "dx/a" && s.points === 0
 				)
 			).toBe(true)
 			expect(
 				_mook.skills.some(
-					s =>
-						s.name === "Holdout" &&
-						s.level === 15 &&
-						s.difficulty === "dx/a" &&
-						s.points === 0
+					s => s.name === "Holdout" && s.level === 15 && s.difficulty === "dx/a" && s.points === 0
 				)
 			).toBe(true)
 			expect(
 				_mook.skills.some(
-					s =>
-						s.name === "Knife" &&
-						s.level === 18 &&
-						s.difficulty === "dx/a" &&
-						s.points === 0
+					s => s.name === "Knife" && s.level === 18 && s.difficulty === "dx/a" && s.points === 0
 				)
 			).toBe(true)
 			expect(
 				_mook.skills.some(
-					s =>
-						s.name === "Lockpicking" &&
-						s.level === 16 &&
-						s.difficulty === "dx/a" &&
-						s.points === 0
+					s => s.name === "Lockpicking" && s.level === 16 && s.difficulty === "dx/a" && s.points === 0
 				)
 			).toBe(true)
 			expect(
 				_mook.skills.some(
-					s =>
-						s.name === "Observation" &&
-						s.level === 16 &&
-						s.difficulty === "dx/a" &&
-						s.points === 0
+					s => s.name === "Observation" && s.level === 16 && s.difficulty === "dx/a" && s.points === 0
 				)
 			).toBe(true)
 			expect(
 				_mook.skills.some(
-					s =>
-						s.name === "Pickpocket" &&
-						s.level === 16 &&
-						s.difficulty === "dx/a" &&
-						s.points === 0
+					s => s.name === "Pickpocket" && s.level === 16 && s.difficulty === "dx/a" && s.points === 0
 				)
 			).toBe(true)
 			expect(
 				_mook.skills.some(
-					s =>
-						s.name === "Search" &&
-						s.level === 17 &&
-						s.difficulty === "dx/a" &&
-						s.points === 0
+					s => s.name === "Search" && s.level === 17 && s.difficulty === "dx/a" && s.points === 0
 				)
 			).toBe(true)
 			expect(
 				_mook.skills.some(
-					s =>
-						s.name === "Shadowing" &&
-						s.level === 14 &&
-						s.difficulty === "dx/a" &&
-						s.points === 0
+					s => s.name === "Shadowing" && s.level === 14 && s.difficulty === "dx/a" && s.points === 0
 				)
 			).toBe(true)
 			expect(
 				_mook.skills.some(
-					s =>
-						s.name === "Shortsword" &&
-						s.level === 16 &&
-						s.difficulty === "dx/a" &&
-						s.points === 0
+					s => s.name === "Shortsword" && s.level === 16 && s.difficulty === "dx/a" && s.points === 0
 				)
 			).toBe(true)
 			expect(
 				_mook.skills.some(
-					s =>
-						s.name === "Staff" &&
-						s.level === 16 &&
-						s.difficulty === "dx/a" &&
-						s.points === 0
+					s => s.name === "Staff" && s.level === 16 && s.difficulty === "dx/a" && s.points === 0
 				)
 			).toBe(true)
 			expect(
 				_mook.skills.some(
-					s =>
-						s.name === "Stealth" &&
-						s.level === 18 &&
-						s.difficulty === "dx/a" &&
-						s.points === 0
+					s => s.name === "Stealth" && s.level === 18 && s.difficulty === "dx/a" && s.points === 0
 				)
 			).toBe(true)
 			expect(
 				_mook.skills.some(
-					s =>
-						s.name === "Tactics" &&
-						s.level === 12 &&
-						s.difficulty === "dx/a" &&
-						s.points === 0
+					s => s.name === "Tactics" && s.level === 12 && s.difficulty === "dx/a" && s.points === 0
 				)
 			).toBe(true)
 			expect(
 				_mook.skills.some(
-					s =>
-						s.name === "Traps" &&
-						s.level === 14 &&
-						s.difficulty === "dx/a" &&
-						s.points === 0
+					s => s.name === "Traps" && s.level === 14 && s.difficulty === "dx/a" && s.points === 0
 				)
 			).toBe(true)
 		})
@@ -589,46 +485,72 @@ describe("Mook generator", () => {
 	})
 
 	describe("Attack parsing", () => {
-
 		it("Attacks separated by . and newlines, some armor divisors, notes, long form damage types", () => {
 			_parser.text = _oldStats[0]
 			_parser.parseStatBlock(_parser.text)
 
 			expect(
 				_mook.melee.some(
-					w => w.name === "Bite" && w.level === 13 && w.reach === "C" &&
-						w.damage.type === "cut" && w.damage.base === "1d-1"
+					w =>
+						w.name === "Bite" &&
+						w.level === 13 &&
+						w.reach === "C" &&
+						w.damage.type === "cut" &&
+						w.damage.base === "1d-1"
 				)
 			).toBe(true)
 			expect(
 				_mook.melee.some(
-					w => w.name === "Kick" && w.level === 11 && w.reach === "C, 1" &&
-						w.damage.type === "cr" && w.damage.base === "1d+1"
+					w =>
+						w.name === "Kick" &&
+						w.level === 11 &&
+						w.reach === "C, 1" &&
+						w.damage.type === "cr" &&
+						w.damage.base === "1d+1"
 				)
 			).toBe(true)
 			expect(
 				_mook.melee.some(
-					w => w.name === "Long Knife" && w.level === 13 && w.reach === "C, 1" &&
-						w.damage.type === "cut" && w.damage.base === "1d"
+					w =>
+						w.name === "Long Knife" &&
+						w.level === 13 &&
+						w.reach === "C, 1" &&
+						w.damage.type === "cut" &&
+						w.damage.base === "1d"
 				)
 			).toBe(true)
 			expect(
 				_mook.melee.some(
-					w => w.name === "Punch" && w.level === 13 && w.reach === "C" &&
-						w.damage.type === "cr" && w.damage.base === "1d-1"
+					w =>
+						w.name === "Punch" &&
+						w.level === 13 &&
+						w.reach === "C" &&
+						w.damage.type === "cr" &&
+						w.damage.base === "1d-1"
 				)
 			).toBe(true)
 			expect(
 				_mook.melee.some(
-					w => w.name === "Shield Bash" && w.level === 12 && w.reach === "1" &&
-						w.damage.type === "cr" && w.damage.base === "1d-1"
+					w =>
+						w.name === "Shield Bash" &&
+						w.level === 12 &&
+						w.reach === "1" &&
+						w.damage.type === "cr" &&
+						w.damage.base === "1d-1"
 				)
 			).toBe(true)
 			expect(
 				_mook.ranged.some(
-					w => w.name === "Short Bow" && w.level === 13 &&
-						w.damage.type === "pi" && w.damage.base === "1d-1" && w.damage.armor_divisor === 2 &&
-						w.accuracy === "1" && w.range === "110/165" && w.shots === "1(2)" && w.bulk === "-6"
+					w =>
+						w.name === "Short Bow" &&
+						w.level === 13 &&
+						w.damage.type === "pi" &&
+						w.damage.base === "1d-1" &&
+						w.damage.armor_divisor === 2 &&
+						w.accuracy === "1" &&
+						w.range === "110/165" &&
+						w.shots === "1(2)" &&
+						w.bulk === "-6"
 				)
 			).toBe(true)
 		})
@@ -639,18 +561,25 @@ describe("Mook generator", () => {
 
 			expect(
 				_mook.melee.some(
-					w => w.name === "Fiery Blow" && w.level === 12 && w.reach === "C, 1" &&
-						w.damage.type === "burn" && w.damage.base === "1d"
+					w =>
+						w.name === "Fiery Blow" &&
+						w.level === 12 &&
+						w.reach === "C, 1" &&
+						w.damage.type === "burn" &&
+						w.damage.base === "1d"
 				)
 			).toBe(true)
 			expect(
 				_mook.ranged.some(
-					w => w.name === "Firebolt" && w.level === 15 &&
-						w.damage.type === "burn" && w.damage.base === "2d" &&
-						w.accuracy === "3" && w.range === "10/100"
+					w =>
+						w.name === "Firebolt" &&
+						w.level === 15 &&
+						w.damage.type === "burn" &&
+						w.damage.base === "2d" &&
+						w.accuracy === "3" &&
+						w.range === "10/100"
 				)
 			).toBe(true)
 		})
 	})
 })
-

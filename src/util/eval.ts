@@ -6,6 +6,7 @@ import { TooltipGURPS } from "@module/tooltip"
 import { AttributeDefObj } from "@module/attribute"
 import { DamageProgression } from "@module/data"
 import { MookSkill, MookTrait } from "@module/mook"
+import { MoveTypeDefObj } from "@module/move_type"
 
 // VariableResolver is used to resolve variables in expressions into their values.
 export interface VariableResolver {
@@ -13,6 +14,7 @@ export interface VariableResolver {
 	settings: {
 		attributes: AttributeDefObj[]
 		damage_progression: DamageProgression
+		move_types: MoveTypeDefObj[]
 	}
 	resolveVariable: (variableName: string) => string
 	skills: Collection<SkillGURPS | TechniqueGURPS | SkillContainerGURPS> | MookSkill[]

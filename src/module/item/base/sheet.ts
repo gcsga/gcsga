@@ -38,7 +38,7 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 		if (actor) {
 			actor.attributes.forEach(e => {
 				if (e.attribute_def.type.includes("_separator")) return
-				attributes[e.attr_id] = e.attribute_def.name
+				attributes[e.id] = e.attribute_def.name
 			})
 			for (const e of actor.HitLocations) {
 				locations[e.id] = LocalizeGURPS.format(LocalizeGURPS.translations.gurps.field_prefix.dr, {

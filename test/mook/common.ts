@@ -520,6 +520,7 @@ export const _defaultMookData: Partial<MookData> = {
 			},
 		],
 		damage_progression: DamageProgression.BasicSet,
+		move_types: [],
 	},
 	profile: {
 		name: "Bad Guy",
@@ -531,7 +532,6 @@ export const _defaultMookData: Partial<MookData> = {
 		portrait: "icons/svg/mystery-man.svg",
 	},
 }
-
 
 // Old test stablocks here
 export const _oldStats = [

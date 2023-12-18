@@ -23,12 +23,11 @@ import { PoolThreshold } from "./pool_threshold"
 // }
 
 export class Attribute {
-	// actor: CharacterGURPS | Mook
 	actor: VariableResolver
 
 	order: number
 
-	attr_id: string
+	private attr_id: string
 
 	adj = 0
 

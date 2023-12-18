@@ -2,11 +2,13 @@ import { WeaponDamageObj } from "@item/weapon/data"
 import { Attribute, AttributeDefObj, AttributeObj } from "@module/attribute"
 import { DamageProgression, Difficulty } from "@module/data"
 import { DiceGURPS } from "@module/dice"
+import { MoveTypeDefObj } from "@module/move_type"
 
 export interface MookData {
 	settings: {
 		attributes: AttributeDefObj[]
 		damage_progression: DamageProgression
+		move_types: MoveTypeDefObj[]
 	}
 	system: {
 		attributes: AttributeObj[]

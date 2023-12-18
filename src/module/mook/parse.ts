@@ -34,11 +34,13 @@ const damage_type_matches: Map<string, string> = new Map([
 	["corrosion", "cor"],
 	["corrosive", "cor"],
 	["tox", "tox"],
-	["toxic", "tox"]
+	["toxic", "tox"],
 ])
-const regex_damage_type = new RegExp(`\\s+\\b(${Array.from(damage_type_matches.keys())
-	.map(e => e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")
-	})\\b`)
+const regex_damage_type = new RegExp(
+	`\\s+\\b(${Array.from(damage_type_matches.keys())
+		.map(e => e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+		.join("|")})\\b`
+)
 
 export class MookParser {
 	text: string
@@ -542,14 +544,13 @@ export class MookParser {
 				afterText += `${e}\n`
 				return
 			}
-			if (
-				e.match(/^(\w+\s+)*\(\d+\):?/)) {
+			if (e.match(/^(\w+\s+)*\(\d+\):?/)) {
 				weapons += `${e}\n`
 				at_least_one_level = true
 				last_matched = 0
 			} else if (
-				at_least_one_level && (
-					e.match(regex_acc) ||
+				at_least_one_level &&
+				(e.match(regex_acc) ||
 					e.match(regex_rof) ||
 					e.match(regex_recoil) ||
 					e.match(regex_half_damage) ||
@@ -558,13 +559,11 @@ export class MookParser {
 					e.match(regex_bulk) ||
 					e.match(regex_ST) ||
 					e.match(regex_reach) ||
-					e.match(regex_range)
-				)
+					e.match(regex_range))
 			) {
 				weapons += `${e}\n`
 				last_matched = 0
-			}
-			else if (weapons.length !== 0) {
+			} else if (weapons.length !== 0) {
 				weapons += `${e}\n`
 				last_matched++
 			} else {
@@ -572,11 +571,8 @@ export class MookParser {
 			}
 		})
 
-
-		if (oldFormat)
-			this.text = beforeText + afterText
-		else
-			this.text = (`${beforeText + this.text}\n${afterText}`).replace(weapons, "")
+		if (oldFormat) this.text = beforeText + afterText
+		else this.text = `${beforeText + this.text}\n${afterText}`.replace(weapons, "")
 
 		if (weapons.includes(".\n")) weapons = weapons.replace(/\.\n/g, ";")
 
@@ -593,13 +589,11 @@ export class MookParser {
 		})()
 
 		weapons.split(";").forEach(t => {
-
 			const reference = ""
 			const reference_highlight = ""
 			let notes = ""
 			const parry = "0"
 			const block = "0"
-
 
 			t = this.cleanLine(t).trim()
 			if (!t) return
@@ -706,8 +700,8 @@ export class MookParser {
 				modifier_per_die: 0,
 			}
 
-				// capture damage
-				;[damage, t] = this.parseDamage(t)
+			// capture damage
+			;[damage, t] = this.parseDamage(t)
 
 			// if damage parser captures anything after the name, add it as a note
 			if (t.match(/\{\{.*\}\}/)) {
@@ -721,7 +715,7 @@ export class MookParser {
 				const rangedWeapon: MookRanged = {
 					name,
 					accuracy,
-					range: (half_damage > 0 && max_range > 0) ? `${half_damage}/${max_range}` : range,
+					range: half_damage > 0 && max_range > 0 ? `${half_damage}/${max_range}` : range,
 					level,
 					rate_of_fire: rof,
 					shots,
@@ -731,7 +725,7 @@ export class MookParser {
 					reference_highlight,
 					strength: ST,
 					notes,
-					damage
+					damage,
 				}
 				this.object.ranged.push(rangedWeapon)
 			} else {
@@ -744,8 +738,7 @@ export class MookParser {
 					parry,
 					block,
 					notes,
-					reference
-
+					reference,
 				}
 				this.object.melee.push(meleeWeapon)
 			}
@@ -757,6 +750,7 @@ export class MookParser {
 			settings: {
 				attributes: [],
 				damage_progression: this.object.settings.damage_progression,
+				move_types: this.object.settings.move_types,
 			},
 			system: {
 				attributes: this.object.system.attributes,

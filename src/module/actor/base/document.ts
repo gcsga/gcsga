@@ -13,12 +13,7 @@ import {
 	TraitGURPS,
 	TraitModifierGURPS,
 } from "@item"
-import {
-	ActorConstructorContextGURPS,
-	ActorFlags,
-	ActorFlagsGURPS,
-	BaseActorSourceGURPS,
-} from "./data"
+import { ActorConstructorContextGURPS, ActorFlags, ActorFlagsGURPS, BaseActorSourceGURPS } from "./data"
 import { HitLocationTable } from "@actor/character/hit_location"
 import {
 	DamageAttacker,
@@ -41,9 +36,7 @@ import { ActorDataConstructorData } from "types/foundry/common/data/data.mjs/act
 import { MergeObjectOptions } from "types/foundry/common/utils/helpers.mjs"
 import { CharacterGURPS } from "@actor/character"
 
-export class BaseActorGURPS<
-	SourceType extends BaseActorSourceGURPS = BaseActorSourceGURPS
-> extends Actor {
+export class BaseActorGURPS<SourceType extends BaseActorSourceGURPS = BaseActorSourceGURPS> extends Actor {
 	_source!: SourceType
 
 	system!: SourceType["system"]
@@ -53,7 +46,6 @@ export class BaseActorGURPS<
 	noPrepare!: boolean
 
 	attributes!: Map<string, Attribute>
-
 
 	_id!: string
 
@@ -164,8 +156,8 @@ export class BaseActorGURPS<
 		const effects = this.gEffects.map(e => {
 			const overlay = e instanceof ConditionGURPS && e.cid === ConditionID.Dead
 			const a = new ActiveEffect({ name: e.name, icon: e.img || "" } as any)
-				// a.setFlag("core", "overlay", overlay)
-				; (a as any).flags = { core: { overlay: overlay } }
+			// a.setFlag("core", "overlay", overlay)
+			;(a as any).flags = { core: { overlay: overlay } }
 			return a
 		})
 		return super.temporaryEffects.concat(effects)

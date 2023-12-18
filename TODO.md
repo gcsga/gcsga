@@ -39,7 +39,7 @@
  - attribute resolution (?)
  - dice generation
  - mook generator
--   manual thrust and swing (?)
+- manual thrust and swing (?)
 - Globally visible modifier for rough terrain, darkness, etc.
 
 ## 1.1.0 and beyond

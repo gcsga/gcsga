@@ -732,7 +732,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	// Flat list of all hit locations
 	get HitLocations(): HitLocation[] {
-		const recurseLocations = function(table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
+		const recurseLocations = function (table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
 			table.locations.forEach(e => {
 				locations.push(e)
 				if (e.subTable) locations = recurseLocations(e.subTable, locations)
@@ -988,12 +988,12 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 				].includes(def.type)
 			) {
 				atts.push({
-					attr_id: attr.attr_id,
+					attr_id: attr.id,
 					adj: attr.adj,
 				})
 			} else {
 				atts.push({
-					attr_id: attr.attr_id,
+					attr_id: attr.id,
 					adj: attr.adj,
 				})
 			}
@@ -1821,8 +1821,8 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		system.notes = items.filter(e => [ItemType.Note, ItemType.NoteContainer].includes(e.type)) ?? []
 		system.settings.attributes = system.settings.attributes.map((e: Partial<AttributeDef>) => {
 			const f = { ...e }
-			f.id = e.def_id
-			delete f.def_id
+			f.id = e.id
+			delete f.id
 			delete f.order
 			if (f.type !== AttributeType.Pool) delete f.thresholds
 			return f
