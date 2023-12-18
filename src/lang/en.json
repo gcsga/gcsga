@@ -470,6 +470,9 @@
 				"resource_trackers": {
 					"button": "Resource Trackers"
 				},
+				"move_types": {
+					"button": "Move Types"
+				},
 				"damage_progression": "Damage Progression",
 				"show_trait_modifier_adj": "Show trait modifier cost adjustments",
 				"show_equipment_modifier_adj": "Show equipment modifier cost & weight adjustments",

@@ -5,6 +5,7 @@ import { AttributeDefObj, AttributeObj, PoolThreshold } from "@module/attribute"
 import { ResourceTrackerDefObj, ResourceTrackerObj } from "@module/resource_tracker"
 import { LengthUnits, Weight, WeightUnits } from "@util"
 import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
+import { MoveTypeDefObj, MoveTypeObj } from "@module/move_type"
 
 export interface DocumentModificationOptionsGURPS extends DocumentModificationOptions {
 	temporary: boolean
@@ -54,6 +55,7 @@ export interface CharacterSystemData extends ActorSystemData {
 	profile: CharacterProfile
 	attributes: AttributeObj[]
 	resource_trackers: ResourceTrackerObj[]
+	move_types: MoveTypeObj[]
 	total_points: number
 	points_record: PointsRecord[]
 	calc: CharacterCalc
@@ -98,6 +100,7 @@ export interface CharacterSettings {
 	body_type: HitLocationTableData
 	attributes: AttributeDefObj[]
 	resource_trackers: ResourceTrackerDefObj[]
+	move_types: MoveTypeDefObj[]
 }
 
 export interface CharacterProfile {

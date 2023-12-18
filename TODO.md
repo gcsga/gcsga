@@ -2,6 +2,9 @@
 
 ## In Progress
 
+- Move Type Editor
+ - default setting
+ - per character setting
 - Finish "static" character (0.15 and older) compatibility
  - don't bother with editing features
 - mook generator
@@ -35,7 +38,7 @@
  - attribute resolution (?)
  - dice generation
  - mook generator
--   manual thrust and swing (?)
+- manual thrust and swing (?)
 - Globally visible modifier for rough terrain, darkness, etc.
 
 ## 1.1.0 and beyond
