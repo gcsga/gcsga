@@ -9,13 +9,15 @@ type AttributeBaseSettingField = {
 	default: Array<any>
 }
 
-export abstract class AtributeBaseSettings extends SettingsMenuGURPS {
+export abstract class AttributeBaseSettings extends SettingsMenuGURPS {
 
 	static override readonly namespace: SETTINGS
 
 	static override readonly SETTINGS = [] as const
 
 	static readonly ListType = [] as const
+
+	static readonly ObjectType: Record<string, any>
 
 	extension!: string
 
@@ -92,7 +94,14 @@ export abstract class AtributeBaseSettings extends SettingsMenuGURPS {
 	async _onAddItem(event: JQuery.ClickEvent) {
 		event.preventDefault()
 		event.stopPropagation()
-		const type = $(event.currentTarget).data("type")
+		const type: string = $(event.currentTarget).data("type")
+		// HACK: idk what I'm doing
+		if ((<typeof AttributeBaseSettings> this.constructor).SETTINGS.includes(type as never)) {
+			const list: any[] = game.settings.get(SYSTEM_NAME, `${this.namespace}.${type}`) as any[]
+			list.push((<typeof AttributeBaseSettings> this.constructor).ObjectType[type])
+			await game.settings.set(SYSTEM_NAME, `${this.namespace}.${type}`, list)
+			return this.render
+		}
 		// if (this.constructor().SETTINGS)
 		// const attributes: any[] = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
 		// const effects: any[] = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`)
