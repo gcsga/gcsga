@@ -21,8 +21,7 @@ export class DefaultAttributeSettings extends SettingsMenuGURPS {
 
 	static override get defaultOptions(): FormApplicationOptions {
 		const options = super.defaultOptions
-		options.classes.push("gurps")
-		options.classes.push("settings-menu")
+		options.classes.push("gurps", "settings-menu")
 
 		return mergeObject(options, {
 			title: `gurps.settings.${SETTINGS.DEFAULT_ATTRIBUTES}.name`,
@@ -190,7 +189,7 @@ export class DefaultAttributeSettings extends SettingsMenuGURPS {
 				parent_index: parent_index,
 			})
 		)
-		;(event as any).dragType = type
+			; (event as any).dragType = type
 	}
 
 	protected _onDragItem(event: JQuery.DragOverEvent): void {
