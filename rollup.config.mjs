@@ -28,14 +28,14 @@ export default () => ({
 		scss({
 			include: ["src/styles/**/*.scss"],
 			fileName: "styles/gurps.css",
-			watch: "src/styles/**",
+			watch: ["src/styles"],
 		}),
 		copy({
 			targets: [
 				{ src: "src/*.json", dest: "dist" },
 				{ src: "src/lang/*", dest: "dist/lang" },
-				{ src: "src/assets/**/*", dest: "dist/assets" },
-				{ src: "src/templates/**/*", dest: "dist/templates" },
+				{ src: "src/assets/*", dest: "dist/assets" },
+				{ src: "src/templates/*", dest: "dist/templates" },
 				{ src: ["src/fonts/*.woff", "src/fonts/*.woff2", "src/fonts/*.ttf"], dest: "dist/fonts" },
 			],
 		}),

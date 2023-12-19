@@ -1,8 +1,8 @@
 {{#unless @root/inCompendium}}
-<div class="quantity">{{ this.quantity }}</div>
+<div class="quantity">{{ this.system.quantity }}</div>
 {{/unless}}
 <div
-	class="desc item{{#if this.isContainer}} container{{/if}} other"
+	class="desc item{{#if this.isContainer}} container{{/if}} other {{disabled this.isGreyedOut}}"
 	data-item-id="{{ this.id }}"
 	{{{indent this.parents.length}}}
 >
@@ -19,26 +19,26 @@
 	{{{this.secondaryText}}}
 </div>
 {{#if @root/inCompendium}}
-<div class="uses">{{ this.maxUses }}</div>
-<div class="tech-level">{{ this.techLevel }}</div>
-<div class="legality-class">{{ this.legalityClass }}</div>
-<div class="value">{{ this.adjustedValue }}</div>
-<div class="weight">{{ this.adjustedWeightFast }}</div>
-<div class="tags">{{join this.tags ", "}}</div>
+<div class="uses {{disabled this.isGreyedOut}}">{{ this.maxUses }}</div>
+<div class="tech-level {{disabled this.isGreyedOut}}">{{ this.techLevel }}</div>
+<div class="legality-class {{disabled this.isGreyedOut}}">{{ this.legalityClass }}</div>
+<div class="value {{disabled this.isGreyedOut}}">{{ this.adjustedValue }}</div>
+<div class="weight {{disabled this.isGreyedOut}}">{{ this.adjustedWeightFast }}</div>
+<div class="tags {{disabled this.isGreyedOut}}">{{join this.tags ", "}}</div>
 {{else}}
 <div class="uses">
 	{{#if (and this.uses this.maxUses) }}
 	{{ this.uses }}
 	{{/if }}
 </div>
-<div class="tech-level">{{ this.techLevel }}</div>
-<div class="legality-class">{{ this.legalityClass }}</div>
-<div class="value">{{ this.adjustedValue }}</div>
-<div class="weight">{{ this.adjustedWeightFast }}</div>
-<div class="extended-value">{{ this.extendedValue }}</div>
-<div class="extended-weight">{{ this.extendedWeightFast }}</div>
+<div class="tech-level {{disabled this.isGreyedOut}}">{{ this.techLevel }}</div>
+<div class="legality-class {{disabled this.isGreyedOut}}">{{ this.legalityClass }}</div>
+<div class="value {{disabled this.isGreyedOut}}">{{ this.adjustedValue }}</div>
+<div class="weight {{disabled this.isGreyedOut}}">{{ this.adjustedWeightFast }}</div>
+<div class="extended-value {{disabled this.isGreyedOut}}">{{ this.extendedValue }}</div>
+<div class="extended-weight {{disabled this.isGreyedOut}}">{{ this.extendedWeightFast }}</div>
 {{/if}}
-<div class="reference">{{{ref this.reference}}}</div>
+<div class="reference {{disabled this.isGreyedOut}}">{{{ref this.reference}}}</div>
 {{#if this.open }}
 {{#each (sort this.children "sort") }}
 {{>actor/character/sections/other-equipment }}

@@ -2,7 +2,7 @@ import { ItemGCS } from "@item/gcs"
 import { ActorType, Difficulty, gid } from "@module/data"
 import { SkillDefault } from "@module/default"
 import { TooltipGURPS } from "@module/tooltip"
-import { difficultyRelativeLevel, inlineNote, LocalizeGURPS } from "@util"
+import { difficultyRelativeLevel, inlineNote, LocalizeGURPS, parseInlineNoteExpressions, VariableResolver } from "@util"
 import { SkillLevel, SkillSource } from "./data"
 
 export class SkillGURPS extends ItemGCS<SkillSource> {
@@ -17,9 +17,8 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		const name: string = this.name ?? ""
 		const specialization = this.specialization
 		const TL = this.techLevel
-		return `${name}${this.system.tech_level_required ? `/TL${TL ?? ""}` : ""}${
-			specialization ? ` (${specialization})` : ""
-		}`
+		return `${name}${this.system.tech_level_required ? `/TL${TL ?? ""}` : ""}${specialization ? ` (${specialization})` : ""
+			}`
 	}
 
 	get secondaryText(): string {
@@ -56,7 +55,10 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 				out.push(this.level.tooltip.toString())
 			}
 		}
-		return `<div class="item-notes">${out.join("")}</div>`
+		let outString = out.join("")
+		if (this.parent)
+			outString = parseInlineNoteExpressions(out.join(""), this.parent as any)
+		return `<div class="item-notes">${outString}</div>`
 	}
 
 	get points(): number {

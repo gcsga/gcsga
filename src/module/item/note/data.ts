@@ -3,8 +3,6 @@ import { ItemType } from "@module/data"
 
 export type NoteSource = ItemGCSSource<ItemType.Note, NoteSystemData>
 
-// Export class NoteData extends BaseItemDataGURPS<NoteGURPS> {}
-
 export interface NoteData extends Omit<NoteSource, "effects">, NoteSystemData {
 	readonly type: NoteSource["type"]
 	data: NoteSystemData
@@ -14,4 +12,9 @@ export interface NoteData extends Omit<NoteSource, "effects">, NoteSystemData {
 
 export interface NoteSystemData extends ItemGCSSystemData {
 	text: string
+	type: ItemType.Note
+	calc?: {
+		resolved_text?: string
+		resolved_notes?: string // not used
+	}
 }

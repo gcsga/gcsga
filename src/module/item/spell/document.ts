@@ -2,7 +2,7 @@ import { ItemGCS } from "@item/gcs"
 import { SkillLevel } from "@item/skill/data"
 import { Difficulty, gid } from "@module/data"
 import { TooltipGURPS } from "@module/tooltip"
-import { difficultyRelativeLevel, inlineNote, LocalizeGURPS } from "@util"
+import { difficultyRelativeLevel, inlineNote, LocalizeGURPS, parseInlineNoteExpressions } from "@util"
 import { SpellSource } from "./data"
 
 export class SpellGURPS extends ItemGCS<SpellSource> {
@@ -59,7 +59,10 @@ export class SpellGURPS extends ItemGCS<SpellSource> {
 			if (v && v !== "" && v !== "-") list.push(`${game.i18n.localize(`gurps.character.spells.${k}`)}: ${v}`)
 		}
 		out.push(list.join("; "))
-		return `<div class="item-notes">${out.join("")}</div>`
+		let outString = out.join("")
+		if (this.parent)
+			outString = parseInlineNoteExpressions(out.join(""), this.parent as any)
+		return `<div class="item-notes">${outString}</div>`
 	}
 
 	get rituals(): string {

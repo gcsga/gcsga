@@ -13,15 +13,15 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
-              uses: actions/checkout@v2
+              uses: actions/checkout@v4
 
             - name: Install node
-              uses: actions/setup-node@v2
+              uses: actions/setup-node@v4
               with:
                   node-version: ${{ env.node_version }}
 
             - name: Cache Node.js modules
-              uses: actions/cache@v2
+              uses: actions/cache@v3
               with:
                   path: .npm
                   key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -39,15 +39,15 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
-              uses: actions/checkout@v2
+              uses: actions/checkout@v4
 
             - name: Install node
-              uses: actions/setup-node@v2
+              uses: actions/setup-node@v4
               with:
                   node-version: ${{ env.node_version }}
 
             - name: Cache Node.js modules
-              uses: actions/cache@v2
+              uses: actions/cache@v3
               with:
                   path: .npm
                   key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -65,15 +65,15 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
-              uses: actions/checkout@v2
+              uses: actions/checkout@v4
 
             - name: Install node
-              uses: actions/setup-node@v2
+              uses: actions/setup-node@v4
               with:
                   node-version: ${{ env.node_version }}
 
             - name: Cache Node.js modules
-              uses: actions/cache@v2
+              uses: actions/cache@v3
               with:
                   path: .npm
                   key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -91,15 +91,15 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout code
-              uses: actions/checkout@v2
+              uses: actions/checkout@v4
 
             - name: Install node
-              uses: actions/setup-node@v2
+              uses: actions/setup-node@v4
               with:
                   node-version: ${{ env.node_version }}
 
             - name: Cache Node.js modules
-              uses: actions/cache@v2
+              uses: actions/cache@v3
               with:
                   path: .npm
                   key: ${{ runner.OS }}-node-${{ hashFiles('**/package-lock.json') }}
@@ -129,7 +129,7 @@ jobs:
               run: npm run build
 
             - name: Archive production artifacts
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v4
               with:
                   name: dist
                   path: dist
@@ -145,10 +145,10 @@ jobs:
             contents: write
         steps:
             - name: Checkout code
-              uses: actions/checkout@v2
+              uses: actions/checkout@v4
 
             - name: Download production artifacts for publication
-              uses: actions/download-artifact@v2
+              uses: actions/download-artifact@v4
               with:
                   name: dist
                   path: dist

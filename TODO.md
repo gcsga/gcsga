@@ -2,6 +2,11 @@
 
 ## In Progress
 
+- Charsheet
+ - allow switching between carried and other equipment
+ - display empty field when no items display
+ - make sure you can drag items to any table
+ - add "other" property to equipment dependent on drop location
 - Finish "static" character (0.15 and older) compatibility
  - don't bother with editing features
 - mook generator
@@ -35,7 +40,7 @@
  - attribute resolution (?)
  - dice generation
  - mook generator
--   manual thrust and swing (?)
+- manual thrust and swing (?)
 - Globally visible modifier for rough terrain, darkness, etc.
 
 ## 1.1.0 and beyond

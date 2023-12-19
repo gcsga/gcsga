@@ -17,4 +17,7 @@ export interface ItemGCSSystemData extends BaseContainerSystemData {
 	tags: Array<string>
 	type: ItemType
 	weapons?: Array<MeleeWeaponSystemData | RangedWeaponSystemData>
+	calc?: {
+		resolved_notes?: string
+	}
 }

@@ -1,7 +1,7 @@
 <div class="equipped" data-item-id="{{this.id}}">{{#if this.equipped}}<i class="gcs-checkmark"></i>{{/if}}</div>
-<div class="quantity">{{this.quantity}}</div>
+<div class="quantity">{{this.system.quantity}}</div>
 <div
-	class="desc item{{#if this.isContainer}} container{{/if}} other"
+	class="desc item{{#if this.isContainer}} container{{/if}} other {{disabled this.isGreyedOut}}"
 	data-item-id="{{ this.id }}"
 	{{{indent this.parents.length}}}
 >
@@ -19,14 +19,14 @@
 	</div>
 	{{{this.secondaryText}}}
 </div>
-<div class="uses">{{#if (and this.system.uses this.system.max_ses)}}{{this.system.uses}}{{/if}}</div>
-<div class="tech-level">{{this.system.tech_level}}</div>
-<div class="legality-class">{{this.system_legality_class}}</div>
-<div class="value">{{this.adjustedValue}}</div>
-<div class="weight">{{this.adjustedWeight}}</div>
-<div class="extended-value">{{this.extendedValue}}</div>
-<div class="extended-weight">{{this.extendedWeightFast}}</div>
-<div class="reference">{{{ref this.reference}}}</div>
+<div class="uses {{disabled this.isGreyedOut}}">{{#if (and this.system.uses this.system.max_ses)}}{{this.system.uses}}{{/if}}</div>
+<div class="tech-level {{disabled this.isGreyedOut}}">{{this.system.tech_level}}</div>
+<div class="legality-class {{disabled this.isGreyedOut}}">{{this.system_legality_class}}</div>
+<div class="value {{disabled this.isGreyedOut}}">{{this.adjustedValue}}</div>
+<div class="weight {{disabled this.isGreyedOut}}">{{this.adjustedWeight}}</div>
+<div class="extended-value {{disabled this.isGreyedOut}}">{{this.extendedValue}}</div>
+<div class="extended-weight {{disabled this.isGreyedOut}}">{{this.extendedWeightFast}}</div>
+<div class="reference {{disabled this.isGreyedOut}}">{{{ref this.reference}}}</div>
 {{#if this.open}}
 {{#each (sort this.children "sort")}}
 {{>actor/character/sections/equipment}}

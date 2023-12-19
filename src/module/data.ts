@@ -48,6 +48,7 @@ export enum SETTINGS {
 	DEFAULT_RESOURCE_TRACKERS = "default_resource_trackers",
 	DEFAULT_HIT_LOCATIONS = "default_hit_locations",
 	DEFAULT_SHEET_SETTINGS = "default_sheet_settings",
+	DEFAULT_MOVE_TYPES = "default_move_types",
 	ROLL_MODIFIERS = "roll_modifiers",
 	DEFAULT_DAMAGE_LOCATION = "default_damage_location",
 	SSRT = "ssrt",

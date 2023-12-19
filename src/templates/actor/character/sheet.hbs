@@ -107,6 +107,14 @@
 			<div class="header reference"><i class="gcs-bookmark"></i></div>
 			{{#each traits }}
 			{{>actor/character/sections/trait }}
+				{{else}}
+
+<div class ="desc item placeholder">
+	<div class="dropdown"></div>
+	<div class="name"></div>
+</div>
+<div class="points"></div>
+<div class="reference"></div>
 			{{/each }}
 		</div>
 		{{!-- {{/if }} --}}
@@ -134,6 +142,12 @@
 			</div>
 			{{#each skills }}
 			{{>actor/character/sections/skill }}
+				{{else}}
+<div class ="desc item placeholder"></div>
+<div class="level placeholder"></div>
+<div class="rsl placeholder"></div>
+<div class="points placeholder"></div>
+<div class="reference placeholder"></div>
 			{{/each }}
 		</div>
 		{{!-- {{/if }} --}}
@@ -156,6 +170,12 @@
 			</div>
 			{{#each spells }}
 			{{>actor/character/sections/spell }}
+				{{else}}
+				<div class="desc item placeholder"></div>
+				<div class="level placeholder"></div>
+				<div class="rsl placeholder"></div>
+				<div class="points placeholder"></div>
+				<div class="reference placeholder"></div>
 			{{/each }}
 		</div>
 		{{!-- {{/if }} --}}
@@ -197,6 +217,18 @@
 			</div>
 			{{#each equipment }}
 			{{>actor/character/sections/equipment }}
+				{{else}}
+				<div class="equipped"></div>
+<div class="quantity placeholder"></div>
+<div class ="desc item placeholder placeholder"></div>
+<div class="uses placeholder"></div>
+<div class="tech-level placeholder"></div>
+<div class="legality-class placeholder"></div>
+<div class="value placeholder"></div>
+<div class="weight placeholder"></div>
+<div class="extended-value placeholder"></div>
+<div class="extended-weight placeholder"></div>
+<div class="reference placeholder"></div>
 			{{/each }}
 		</div>
 		{{!-- {{/if }} --}}
@@ -234,6 +266,17 @@
 			</div>
 			{{#each other_equipment }}
 			{{>actor/character/sections/other-equipment }}
+				{{else}}
+<div class="quantity"></div>
+<div class ="desc item placeholder"></div>
+<div class="uses placeholder"></div>
+<div class="tech-level placeholder"></div>
+<div class="legality-class placeholder"></div>
+<div class="value placeholder"></div>
+<div class="weight placeholder"></div>
+<div class="extended-value placeholder"></div>
+<div class="extended-weight placeholder"></div>
+<div class="reference placeholder"></div>
 			{{/each }}
 		</div>
 		{{!-- {{/if }} --}}
@@ -247,6 +290,9 @@
 			</div>
 			{{#each notes }}
 			{{>actor/character/sections/note }}
+				{{else}}
+<div class ="desc item placeholder"></div>
+<div class="reference placeholder"></div>
 			{{/each }}
 		</div>
 		{{!-- {{/if }} --}}

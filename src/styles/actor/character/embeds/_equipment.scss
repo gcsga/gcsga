@@ -24,10 +24,42 @@
 			background-color: rgba(var(--color-banding), 1);
 			color: rgba(var(--color-on-banding), 1);
 			@import "roll_banding";
+			&.disabled {
+				.name,
+				.item-notes,
+				&.quantity,
+				&.uses,
+				&.tech-level,
+				&.legality-class,
+				&.value,
+				&.weight,
+				&.extended-value,
+				&.extended-weight,
+				&.reference {
+					color: rgba(var(--color-on-content), 0.3);
+				}
+			}
 		}
 	}
 
 	.equipped {
 		padding: var(--padding-header);
+	}
+
+	.disabled {
+		.quantity,
+		.name,
+		.item-notes,
+		&.quantity,
+		&.uses,
+		&.tech-level,
+		&.legality-class,
+		&.value,
+		&.weight,
+		&.extended-value,
+		&.extended-weight,
+		&.reference {
+			color: rgba(var(--color-on-content), 0.3);
+		}
 	}
 }

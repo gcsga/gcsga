@@ -396,12 +396,13 @@
 			},
 			"cr_reaction": "from others when {trait} is triggered",
 			"cr_adj_display": {
+				"none": "",
 				"action_penalty": "{penalty} Action Penalty",
 				"reaction_penalty": "{penalty} Reaction Penalty",
 				"fright_check_penalty": "{penalty} Fright Check Penalty",
-				"fright_check_bonus": "{penalty} Fright Check Bonus",
-				"minor_cost_of_living_increase": "{penalty} Cost of Living Increase",
-				"major_cost_of_living_increase": "{penalty} Cost of Living Increase"
+				"fright_check_bonus": "+{penalty} Fright Check Bonus",
+				"minor_cost_of_living_increase": "+{penalty}% Cost of Living Increase",
+				"major_cost_of_living_increase": "+{penalty}% Cost of Living Increase"
 			},
 			"resource_trackers": {
 				"title": "Resource Trackers"
@@ -470,6 +471,9 @@
 				"resource_trackers": {
 					"button": "Resource Trackers"
 				},
+				"move_types": {
+					"button": "Move Types"
+				},
 				"damage_progression": "Damage Progression",
 				"show_trait_modifier_adj": "Show trait modifier cost adjustments",
 				"show_equipment_modifier_adj": "Show equipment modifier cost & weight adjustments",
@@ -484,7 +488,7 @@
 				},
 				"display": {
 					"title": "Where to Display...",
-					"user_description": "User Description",
+					"userdesc": "User Description",
 					"modifiers": "Modifiers",
 					"notes": "Notes",
 					"skill_level_adj": "Skill Level Adjustments"
@@ -622,7 +626,7 @@
 			"enabled": "Enabled",
 			"notes": "Notes",
 			"vtt_notes": "VTT Notes",
-			"user_description": "User Description",
+			"userdesc": "User Description",
 			"tags": "Tags",
 			"point_cost": "Point Cost",
 			"base_cost": "Base Cost",
