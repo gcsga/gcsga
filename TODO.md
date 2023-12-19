@@ -6,6 +6,7 @@
  - allow switching between carried and other equipment
  - display empty field when no items display
  - make sure you can drag items to any table
+ - add "other" property to equipment dependent on drop location
 - Finish "static" character (0.15 and older) compatibility
  - don't bother with editing features
 - mook generator

@@ -2,8 +2,8 @@ import { ItemGCS } from "@item/gcs"
 import { TraitModifierGURPS } from "@item/trait_modifier"
 import { TraitModifierContainerGURPS } from "@item/trait_modifier_container"
 import { CR, CRAdjustment, ItemType } from "@module/data"
-import { inlineNote, LocalizeGURPS, parseInlineNoteExpressions, SelfControl } from "@util"
-import { TraitSource, TraitSystemData } from "./data"
+import { inlineNote, LocalizeGURPS, parseInlineNoteExpressions, resolveStudyHours, SelfControl, studyHoursProgressText } from "@util"
+import { TraitSource } from "./data"
 
 export class TraitGURPS extends ItemGCS<TraitSource> {
 	unsatisfied_reason = ""
@@ -16,43 +16,34 @@ export class TraitGURPS extends ItemGCS<TraitSource> {
 	}
 
 	get secondaryText(): string {
-		const out: string[] = []
-		if (inlineNote(this.actor, "user_description_display")) {
-			if (this.system.userdesc) out.push(this.system.userdesc)
+		const buffer: string[] = []
+		if (inlineNote(this.actor, "user_description_display") && this.system.userdesc !== "") {
+			buffer.push(this.system.userdesc)
 		}
 		if (inlineNote(this.actor, "modifiers_display")) {
-			if (out.length) out.push("<br>")
-			if (this.cr !== 0)
-				out.push(
-					`<div data-item-id="${this.id}" data-type="control_roll" class="cr rollable">${this.formattedCR}</div>`
-				)
-			if (out.length) out.push("<br>")
-			this.modifiers
-				.filter(e => e.enabled)
-				.forEach((mod, i) => {
-					if (i !== 0) out.push("; ")
-					out.push(mod.name + (mod.system.notes ? `(${mod.system.notes})` : ""))
-				})
+			if (this.modifierNotes !== "") {
+				if (buffer.length > 0) buffer.push("<br>")
+				buffer.push(this.modifierNotes)
+			}
 		}
 		if (inlineNote(this.actor, "notes_display")) {
-			if (this.system.notes.trim()) {
-				if (out.length) out.push("<br>")
-				out.push(this.system.notes)
+			if (this.system.notes.trim() !== "") {
+				if (buffer.length > 0) buffer.push("<br>")
+				buffer.push(this.system.notes.trim())
 			}
-			if (this.studyHours !== 0) {
-				if (out.length) out.push("<br>")
-				if (this.studyHours !== 0)
-					out.push(
-						LocalizeGURPS.format(LocalizeGURPS.translations.gurps.study.studied, {
-							hours: this.studyHours,
-							total: (this.system as any).study_hours_needed,
-						})
-					)
+			const study = studyHoursProgressText(
+				resolveStudyHours(this.system.study),
+				this.system.study_hours_needed,
+				false
+			)
+			if (study !== "") {
+				if (buffer.length > 0) buffer.push("<br>")
+				buffer.push(study)
 			}
 		}
-		let outString = out.join("")
+		let outString = buffer.join("")
 		if (this.parent)
-			outString = parseInlineNoteExpressions(out.join(""), this.parent as any)
+			outString = parseInlineNoteExpressions(buffer.join(""), this.parent as any)
 		return `<div class="item-notes">${outString}</div>`
 	}
 
@@ -111,20 +102,42 @@ export class TraitGURPS extends ItemGCS<TraitSource> {
 	}
 
 	get modifierNotes(): string {
-		let n = ""
-		if (this.cr !== CR.None) {
-			n += game.i18n.localize(`gurps.select.cr_level.${this.cr}`)
-			if (this.crAdj !== "none") {
-				n += `, ${game.i18n.format(`gurps.item.cr_adj_display.${this.crAdj}`, {
-					penalty: "TODO",
-				})}`
+		function adjustment(crAdj: CRAdjustment, cr: CR): number {
+			const allSelfControlRolls = [CR.None, CR.CR6, CR.CR9, CR.CR12, CR.CR15]
+			if (cr === CR.None) return 0
+			switch (crAdj) {
+				case CRAdjustment.None: return 0
+				case CRAdjustment.ActionPenalty:
+				case CRAdjustment.ReactionPenalty:
+				case CRAdjustment.FrightCheckPenalty:
+					return allSelfControlRolls.indexOf(cr) - allSelfControlRolls.length
+				case CRAdjustment.FrightCheckBonus:
+					return allSelfControlRolls.length - allSelfControlRolls.indexOf(cr)
+				case CRAdjustment.MinorCostOfLivingIncrease:
+					return 5 * (allSelfControlRolls.length - allSelfControlRolls.indexOf(cr))
+				case CRAdjustment.MajorCostOfLivingIncrease:
+					return 10 * (1 << (allSelfControlRolls.length - (allSelfControlRolls.indexOf(cr) + 1)))
+				default:
+					return adjustment(CRAdjustment.None, cr)
 			}
 		}
-		for (const m of this.deepModifiers) {
-			if (n.length) n += ";"
-			n += m.fullDescription
+		const buffer: string[] = []
+
+		if (this.cr !== CR.None) {
+			buffer.push(LocalizeGURPS.translations.gurps.select.cr_level[this.cr])
+			if (this.crAdj !== CRAdjustment.None) buffer.push(", ")
+			buffer.push(LocalizeGURPS.format(
+				LocalizeGURPS.translations.gurps.character.cr_adj_display[this.crAdj],
+				{ penalty: adjustment(this.crAdj, this.cr) }
+			))
 		}
-		return n
+
+		this.deepModifiers.forEach(mod => {
+			if (!mod.enabled) return
+			if (buffer.length > 0) buffer.push("; ")
+			buffer.push(mod.fullDescription)
+		})
+		return buffer.join("")
 	}
 
 	get adjustedPoints(): number {

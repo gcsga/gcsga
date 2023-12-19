@@ -6,7 +6,7 @@ import { BaseWeaponGURPS } from "@item/weapon"
 import { Feature, ItemDataGURPS } from "@module/config"
 import { ActorType, ItemType, Study, SYSTEM_NAME } from "@module/data"
 import { PrereqList } from "@prereq"
-import { Evaluator, getAdjustedStudyHours, LocalizeGURPS } from "@util"
+import { getAdjustedStudyHours, LocalizeGURPS } from "@util"
 import { HandlebarsHelpersGURPS } from "@util/handlebars_helpers"
 import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
 import { ItemDataConstructorData } from "types/foundry/common/data/data.mjs/itemData"
@@ -31,7 +31,7 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 			this._source.img = data.img = `systems/${SYSTEM_NAME}/assets/icons/${type}.svg`
 		let gcs_type: string = data.type
 		if (gcs_type === ItemType.Equipment) gcs_type = "equipment"
-		;(this._source.system as any).type = gcs_type
+			; (this._source.system as any).type = gcs_type
 		await super._preCreate(data, options, user)
 	}
 

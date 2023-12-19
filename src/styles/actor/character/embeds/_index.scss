@@ -10,6 +10,11 @@
 		border: 1px solid red !important;
 	}
 
+	.placeholder {
+		height: 16px;
+		border-bottom: none;
+	}
+
 	> div {
 		display: grid;
 		// grid-template-rows: repeat(1000, auto) 1fr;
