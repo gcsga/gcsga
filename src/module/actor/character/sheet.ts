@@ -202,7 +202,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 
 	_addItemHeaderContextMenu(element: HTMLElement) {
 		const type = $(element).parent(".item-list")[0].id
-		const menuItems = (function (self: CharacterSheetGURPS): ContextMenuEntry[] {
+		const menuItems = (function(self: CharacterSheetGURPS): ContextMenuEntry[] {
 			switch (type) {
 				case "traits":
 					return [
@@ -758,7 +758,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 				currentTable = $(event.target).closest(".item-list#other-equipment")
 			else currentTable = sheet.find(".item-list#equipment")
 		} else {
-			const idLookup = (function () {
+			const idLookup = (function() {
 				switch (itemData.type) {
 					case ItemType.Trait:
 					case ItemType.TraitContainer:
@@ -784,7 +784,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			currentTable = sheet.find(`.item-list#${idLookup}`)
 		}
 
-		sheet.find(".item-list").each(function () {
+		sheet.find(".item-list").each(function() {
 			if ($(this) !== currentTable) {
 				$(this).removeClass("dragsection")
 				$(this).removeClass("dragindirect")
@@ -805,7 +805,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		)
 		currentTable[0].style.setProperty("--top", `${top}px`)
 		currentTable[0].style.setProperty("--left", `${currentTable.position().left + 1 ?? 0}px`)
-		const height = (function () {
+		const height = (function() {
 			const tableBottom = (currentTable.position().top ?? 0) + (currentTable.height() ?? 0)
 			const contentBottom =
 				(sheet.find(".window-content").position().top ?? 0) + (sheet.find(".window-content").height() ?? 0)
@@ -869,6 +869,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		)
 		const [primary_attributes, secondary_attributes, point_pools] = this.prepareAttributes(this.actor.attributes)
 		const resource_trackers = Array.from(this.actor.resource_trackers.values())
+		const move_types = Array.from(this.actor.move_types.values())
 		const encumbrance = this.prepareEncumbrance()
 		const lifting = this.prepareLifts()
 		const moveData = this.prepareMoveData()
@@ -889,6 +890,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 				secondary_attributes,
 				point_pools,
 				resource_trackers,
+				move_types,
 				encumbrance,
 				lifting,
 				moveData,
@@ -1056,14 +1058,14 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		}
 		const buttons: Application.HeaderButton[] = this.actor.canUserModify(game.user!, "update")
 			? [
-					edit_button,
-					{
-						label: "",
-						class: "gmenu",
-						icon: "gcs-all-seeing-eye",
-						onclick: event => this._openGMenu(event),
-					},
-			  ]
+				edit_button,
+				{
+					label: "",
+					class: "gmenu",
+					icon: "gcs-all-seeing-eye",
+					onclick: event => this._openGMenu(event),
+				},
+			]
 			: []
 		const all_buttons = [...buttons, ...super._getHeaderButtons()]
 		return all_buttons

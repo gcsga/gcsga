@@ -80,7 +80,7 @@ import {
 	WeaponDRDivisorBonus,
 } from "@feature"
 import { SkillBonusSelectionType } from "@feature/skill_bonus"
-import { MoveType } from "@module/move_type"
+import { MoveType, MoveTypeObj } from "@module/move_type"
 
 export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	attributes: Map<string, Attribute> = new Map()
@@ -459,31 +459,8 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	resolveMove(type: string): number {
 		const move = this.move_types?.get(type)?.base
 		if (move) return move
-		return -Infinity
-	}
-
-	// TODO: improve
-	moveByType(): number {
-		let move = Math.max(0, this.resolveAttributeCurrent(gid.BasicMove))
-		switch (this.moveType) {
-			case "ground":
-				if (this.hasCondition([ConditionID.PostureCrawl, ConditionID.PostureKneel])) move *= 1 / 3
-				if (this.hasCondition([ConditionID.PostureCrouch])) move *= 2 / 3
-				if (this.hasCondition([ConditionID.PostureProne])) move = 1
-				if (this.hasCondition([ConditionID.PostureSit])) move = 0
-				if (this.hasTrait("Aquatic")) return move
-				return move
-			case "water":
-				if (this.hasTrait("Amphibious")) return move
-				if (this.hasTrait("Aquatic")) return move
-				return Math.floor(move / 5)
-			case "air":
-				if (this.hasTrait("Flight")) return this.resolveAttributeCurrent(gid.BasicSpeed) * 2
-				return 0
-			case "space":
-				return 0
-		}
 		return 0
+		// return -Infinity
 	}
 
 	get moveType(): string {
@@ -742,7 +719,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	// Flat list of all hit locations
 	get HitLocations(): HitLocation[] {
-		const recurseLocations = function (table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
+		const recurseLocations = function(table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
 			table.locations.forEach(e => {
 				locations.push(e)
 				if (e.subTable) locations = recurseLocations(e.subTable, locations)
@@ -1042,6 +1019,26 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		return t
 	}
 
+	newMoveTypes(defs = this.system.settings.move_types, prev: MoveTypeObj[] = []): MoveTypeObj[] {
+		const m: MoveTypeObj[] = []
+		let i = 0
+		for (const def of defs) {
+			const move_type = new MoveType(this, def.id, i)
+			m.push({
+				move_type_id: move_type.id,
+				adj: move_type.adj,
+			})
+			i++
+		}
+		if (prev) {
+			m.forEach(type => {
+				const prev_move = prev.find(e => e.move_type_id === type.move_type_id)
+				Object.assign(type, prev_move)
+			})
+		}
+		return m
+	}
+
 	get BodyType(): HitLocationTable {
 		let b = this.system.settings.body_type
 		if (!b) return new HitLocationTable("", new DiceGURPS(), [], this, "")
@@ -1129,6 +1126,10 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		if (this.system.settings.resource_trackers.length === 0) {
 			this.system.resource_trackers = this.newTrackers()
 			this.resource_trackers = this.getResourceTrackers()
+		}
+		if (this.system.settings.move_types.length === 0) {
+			this.system.move_types = this.newMoveTypes()
+			this.move_types = this.getMoveTypes()
 		}
 	}
 

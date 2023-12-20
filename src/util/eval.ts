@@ -1,6 +1,6 @@
 import { evalOperators, Operator } from "./operator"
 import { eFunction, evalFunctions } from "./function"
-import { SkillContainerGURPS, SkillGURPS, TechniqueGURPS, TraitContainerGURPS, TraitGURPS } from "@item"
+import { ConditionGURPS, SkillContainerGURPS, SkillGURPS, TechniqueGURPS, TraitContainerGURPS, TraitGURPS } from "@item"
 import { TooltipGURPS } from "@module/tooltip"
 import { AttributeDefObj } from "@module/attribute"
 import { DamageProgression } from "@module/data"
@@ -19,6 +19,7 @@ export interface VariableResolver {
 	resolveVariable: (variableName: string) => string
 	skills: Collection<SkillGURPS | TechniqueGURPS | SkillContainerGURPS> | MookSkill[]
 	traits: Collection<TraitGURPS | TraitContainerGURPS> | MookTrait[]
+	conditions: Collection<ConditionGURPS> | ConditionGURPS[]
 	attributeBonusFor: (
 		attributeId: string,
 		limitation: AttributeBonusLimitation,
@@ -201,7 +202,7 @@ class Evaluator {
 			;[index, op] = this.processFunction(expression, index)
 			index += op?.symbol.length || 0
 			let tmp: number
-			;[tmp, op] = this.nextOperator(expression, index, null)
+				;[tmp, op] = this.nextOperator(expression, index, null)
 			if (!op) return index
 			index = tmp
 		}
