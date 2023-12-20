@@ -293,39 +293,39 @@ export const defaultSettings = {
 					{
 						condition: {
 							type: MoveTypeOverrideConditionType.Condition,
-							qualifier: ConditionID.PostureCrawl
+							qualifier: ConditionID.PostureCrawl,
 						},
-						move_type_base: "floor($basic_move/3)"
+						move_type_base: "floor($basic_move/3)",
 					},
 					{
 						condition: {
 							type: MoveTypeOverrideConditionType.Condition,
-							qualifier: ConditionID.PostureKneel
+							qualifier: ConditionID.PostureKneel,
 						},
-						move_type_base: "floor($basic_move/3)"
+						move_type_base: "floor($basic_move/3)",
 					},
 					{
 						condition: {
 							type: MoveTypeOverrideConditionType.Condition,
-							qualifier: ConditionID.PostureCrouch
+							qualifier: ConditionID.PostureCrouch,
 						},
-						move_type_base: "floor($basic_move*2/3)"
+						move_type_base: "floor($basic_move*2/3)",
 					},
 					{
 						condition: {
 							type: MoveTypeOverrideConditionType.Condition,
-							qualifier: ConditionID.PostureProne
+							qualifier: ConditionID.PostureProne,
 						},
-						move_type_base: "1"
+						move_type_base: "1",
 					},
 					{
 						condition: {
 							type: MoveTypeOverrideConditionType.Condition,
-							qualifier: ConditionID.PostureSit
+							qualifier: ConditionID.PostureSit,
 						},
-						move_type_base: "0"
+						move_type_base: "0",
 					},
-				]
+				],
 			},
 			{
 				id: gid.Water,
@@ -337,19 +337,19 @@ export const defaultSettings = {
 						condition: {
 							type: MoveTypeOverrideConditionType.Trait,
 							// TODO: replace with variable for better language support
-							qualifier: "Amphibious"
+							qualifier: "Amphibious",
 						},
-						move_type_base: "$basic_move"
+						move_type_base: "$basic_move",
 					},
 					{
 						condition: {
 							type: MoveTypeOverrideConditionType.Trait,
 							// TODO: replace with variable for better language support
-							qualifier: "Aquatic"
+							qualifier: "Aquatic",
 						},
-						move_type_base: "$basic_move"
+						move_type_base: "$basic_move",
 					},
-				]
+				],
 			},
 			{
 				id: gid.Air,
@@ -361,28 +361,27 @@ export const defaultSettings = {
 						condition: {
 							type: MoveTypeOverrideConditionType.Trait,
 							// TODO: replace with variable for better language support
-							qualifier: "Flight"
+							qualifier: "Flight",
 						},
-						move_type_base: "$basic_speed*2"
+						move_type_base: "$basic_speed*2",
 					},
 					{
 						condition: {
 							type: MoveTypeOverrideConditionType.Trait,
 							// TODO: replace with variable for better language support
-							qualifier: "Walk on Air"
+							qualifier: "Walk on Air",
 						},
-						move_type_base: `$${gid.Ground}`
+						move_type_base: `$${gid.Ground}`,
 					},
-				]
+				],
 			},
 			{
-
 				id: gid.Space,
 				name: "Space Move",
 				move_type_base: "0",
 				cost_per_point: 5,
-				overrides: []
-			}
-		]
+				overrides: [],
+			},
+		],
 	},
 }

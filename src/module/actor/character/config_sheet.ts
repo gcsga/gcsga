@@ -8,7 +8,18 @@ import { AttributeDefObj, AttributeType } from "@module/attribute"
 import { CharacterSheetGURPS } from "./sheet"
 import { ResourceTrackerDefObj } from "@module/resource_tracker"
 import { PDF } from "@module/pdf"
-import { MoveTypeDefObj } from "@module/move_type"
+import { MoveTypeDefObj, MoveTypeOverrideConditionType } from "@module/move_type"
+
+enum ListType {
+	Attributes = "attributes",
+	ResourceTrackers = "resource_trackers",
+	AttributeThresholds = "attribute_thresholds",
+	TrackerThresholds = "tracker_thresholds",
+	Locations = "locations",
+	SubTable = "sub_table",
+	MoveType = "move_types",
+	Overrides = "override"
+}
 
 export class CharacterSheetConfig extends FormApplication {
 	object: CharacterGURPS
@@ -230,25 +241,19 @@ export class CharacterSheetConfig extends FormApplication {
 		event.stopPropagation()
 		let path = ""
 		let locations = []
-		const type:
-			| "attributes"
-			| "resource_trackers"
-			| "attribute_thresholds"
-			| "tracker_thresholds"
-			| "locations"
-			| "sub_table" = $(event.currentTarget).data("type")
+		const type: ListType = $(event.currentTarget).data("type")
 		let new_id = ""
 		if (type === "attributes" || type === "resource_trackers")
 			for (let n = 0; n < 26; n++) {
 				const char = String.fromCharCode(97 + n)
-				if (![...this.attributes, ...this.resource_trackers].find(e => e.id === char)) {
+				if (![...this.attributes, ...this.resource_trackers, ...this.move_types].find(e => e.id === char)) {
 					new_id = char
 					break
 				}
 			}
 		let formData: any = {}
 		switch (type) {
-			case "attributes":
+			case ListType.Attributes:
 				this.attributes.push({
 					type: AttributeType.Integer,
 					id: new_id,
@@ -259,7 +264,7 @@ export class CharacterSheetConfig extends FormApplication {
 				})
 				await this.object.update({ "system.settings.attributes": this.attributes })
 				return this.render()
-			case "resource_trackers":
+			case ListType.ResourceTrackers:
 				this.resource_trackers.push({
 					id: new_id,
 					name: "",
@@ -272,7 +277,7 @@ export class CharacterSheetConfig extends FormApplication {
 				})
 				await this.object.update({ "system.settings.resource_trackers": this.resource_trackers })
 				return this.render()
-			case "attribute_thresholds":
+			case ListType.AttributeThresholds:
 				this.attributes[$(event.currentTarget).data("id")].thresholds ??= []
 				this.attributes[$(event.currentTarget).data("id")].thresholds!.push({
 					state: "",
@@ -282,7 +287,7 @@ export class CharacterSheetConfig extends FormApplication {
 				})
 				await this.object.update({ "system.settings.attributes": this.attributes })
 				return this.render()
-			case "tracker_thresholds":
+			case ListType.TrackerThresholds:
 				this.resource_trackers[$(event.currentTarget).data("id")].thresholds ??= []
 				this.resource_trackers[$(event.currentTarget).data("id")].thresholds!.push({
 					state: "",
@@ -292,7 +297,7 @@ export class CharacterSheetConfig extends FormApplication {
 				})
 				await this.object.update({ "system.settings.resource_trackers": this.resource_trackers })
 				return this.render()
-			case "locations":
+			case ListType.Locations:
 				path = $(event.currentTarget).data("path").replace("array.", "")
 				locations = getProperty(this.object, `${path}.locations`) ?? []
 				locations.push({
@@ -308,7 +313,7 @@ export class CharacterSheetConfig extends FormApplication {
 				formData[`array.${path}.locations`] = locations
 				await this._updateObject(event as unknown as Event, formData)
 				return this.render()
-			case "sub_table":
+			case ListType.SubTable:
 				path = $(event.currentTarget).data("path").replace("array.", "")
 				const index = Number($(event.currentTarget).data("index"))
 				locations = getProperty(this.object, `${path}`) ?? []
@@ -331,6 +336,27 @@ export class CharacterSheetConfig extends FormApplication {
 				formData[`array.${path}`] = locations
 				await this._updateObject(event as unknown as Event, formData)
 				return this.render()
+			case ListType.MoveType:
+				this.move_types.push({
+					id: new_id,
+					name: "",
+					move_type_base: "",
+					cost_per_point: 0,
+					overrides: []
+				})
+				await this.object.update({ "system.settings.move_types": this.move_types })
+				return this.render()
+			case ListType.Overrides:
+				this.move_types[$(event.currentTarget).data("id")].overrides ??= []
+				this.move_types[$(event.currentTarget).data("id")].overrides.push({
+					condition: {
+						type: MoveTypeOverrideConditionType.Condition,
+						qualifier: ""
+					},
+					move_type_base: ""
+				})
+				await this.object.update({ "system.settings.move_types": this.move_types })
+				return this.render()
 		}
 	}
 
@@ -340,35 +366,34 @@ export class CharacterSheetConfig extends FormApplication {
 		const path = $(event.currentTarget).data("path")?.replace("array.", "")
 		let locations = []
 		let formData: any = {}
-		const type:
-			| "attributes"
-			| "resource_trackers"
-			| "attribute_thresholds"
-			| "tracker_thresholds"
-			| "locations"
-			| "sub_table" = $(event.currentTarget).data("type")
+		const type: ListType = $(event.currentTarget).data("type")
 		const index = Number($(event.currentTarget).data("index")) || 0
 		const parent_index = Number($(event.currentTarget).data("pindex")) || 0
 		switch (type) {
-			case "attributes":
-			case "resource_trackers":
+			case ListType.Attributes:
+			case ListType.ResourceTrackers:
+			case ListType.MoveType:
 				this[type].splice(index, 1)
 				await this.object.update({ [`system.settings.${type}`]: this[type] })
 				return this.render()
-			case "attribute_thresholds":
-			case "tracker_thresholds":
+			case ListType.AttributeThresholds:
+			case ListType.TrackerThresholds:
 				const list = (type === "attribute_thresholds") ? "attributes" : "resource_trackers"
 				this[list][parent_index].thresholds?.splice(index, 1)
 				await this.object.update({ [`system.settings.${list}`]: this[list] })
 				return this.render()
-			case "locations":
+			case ListType.Overrides:
+				this.move_types[parent_index].overrides?.splice(index, 1)
+				await this.object.update({ "system.settings.move_types": this.move_types })
+				return this.render()
+			case ListType.Locations:
 				locations = getProperty(this.object, `${path}`) ?? []
 				locations.splice($(event.currentTarget).data("index"), 1)
 				formData ??= {}
 				formData[`array.${path}`] = locations
 				await this._updateObject(event as unknown as Event, formData)
 				return this.render()
-			case "sub_table":
+			case ListType.SubTable:
 				locations = getProperty(this.object, `${path}`) ?? []
 				delete locations[index].sub_table
 				formData ??= {}
@@ -435,8 +460,7 @@ export class CharacterSheetConfig extends FormApplication {
 	async _onDragStart(event: DragEvent) {
 		// TODO:update
 		const item = $(event.currentTarget!)
-		const type: "attributes" | "resource_trackers" | "attribute_thresholds" | "tracker_thresholds" | "locations" =
-			item.data("type")
+		const type = item.data("type")
 		const index = Number(item.data("index"))
 		const parent_index = Number(item.data("pindex")) || 0
 		event.dataTransfer?.setData(
@@ -465,6 +489,7 @@ export class CharacterSheetConfig extends FormApplication {
 
 	protected async _onDrop(event: DragEvent): Promise<unknown> {
 		let dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
+		const type: ListType = dragData.type
 
 		let element = $(event.target!)
 		if (!element.hasClass("item")) element = element.parent(".item")
@@ -475,38 +500,53 @@ export class CharacterSheetConfig extends FormApplication {
 		if (above && dragData.order === target_index - 1) return this.render()
 		if (!above && dragData.order === target_index + 1) return this.render()
 
-		let container: any[] = []
 		const path = element.data("path")?.replace("array.", "")
-		if (dragData.type === "attributes") container = this.attributes
-		else if (dragData.type === "resource_trackers") container = this.resource_trackers
-		else if (dragData.type === "attribute_thresholds") container = this.attributes
-		else if (dragData.type === "tracker_thresholds") container = this.resource_trackers
-		else if (dragData.type === "locations") container = getProperty(this.object, path)
-		if (!container) return
+		let container
+		switch (type) {
+			case ListType.Attributes:
+			case ListType.AttributeThresholds:
+				container = this.attributes; break
+			case ListType.ResourceTrackers:
+			case ListType.TrackerThresholds:
+				container = this.resource_trackers; break
+			case ListType.MoveType:
+			case ListType.Overrides:
+				container = this.move_types; break
+			case ListType.Locations:
+			case ListType.SubTable:
+				container = getProperty(this.object, path); break
+		}
 
 		let item
-		if (dragData.type.includes("_thresholds")) {
+		if ([ListType.AttributeThresholds, ListType.TrackerThresholds].includes(type)) {
 			item = container[dragData.parent_index].thresholds.splice(dragData.index, 1)[0]
 			container[dragData.parent_index].thresholds.splice(target_index, 0, item as any)
+		} else if (type === ListType.Overrides) {
+			item = container[dragData.parent_index].overrides.splice(dragData.index, 1)[0]
+			container[dragData.parent_index].overrides.splice(target_index, 0, item as any)
 		} else {
 			item = container.splice(dragData.index, 1)[0]
 			container.splice(target_index, 0, item as any)
 		}
-		if (["attributes", "resource_tracers"].includes(dragData.type))
+		if ([ListType.Attributes, ListType.ResourceTrackers, ListType.MoveType].includes(type))
 			container.forEach((v: any, k: number) => {
 				v.order = k
 			})
 
-		switch (dragData.type) {
-			case "attributes":
-			case "attribute_thresholds":
+		switch (type) {
+			case ListType.Attributes:
+			case ListType.AttributeThresholds:
+				await this.object.update({ "system.settings.attributes": container })
+			case ListType.ResourceTrackers:
+			case ListType.TrackerThresholds:
+				await this.object.update({ "system.settings.resource_trackers": container })
+			case ListType.MoveType:
+			case ListType.Overrides:
+				await this.object.update({ "system.settings.move_types": container })
 				await this.object.update({ "system.settings.attributes": container })
 				return this.render()
-			case "resource_trackers":
-			case "tracker_thresholds":
-				await this.object.update({ "system.settings.resource_trackers": container })
-				return this.render()
-			case "locations":
+			case ListType.Locations:
+			case ListType.SubTable:
 				const formData: any = {}
 				formData[`array.${path}`] = container
 				return this._updateObject(event, formData)

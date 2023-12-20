@@ -1,8 +1,6 @@
 import { SYSTEM_NAME } from "@module/data"
 
 export class ItemDirectoryGURPS extends ItemDirectory {
-
-
 	protected async _onDragStart(event: DragEvent): Promise<void> {
 		const li = event.currentTarget
 		const id = $(li!).data("entry-id")

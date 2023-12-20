@@ -32,8 +32,7 @@ export class EquipmentContainerGURPS extends ItemGCS<EquipmentContainerSource> {
 		if (this.system.notes) outString += HandlebarsHelpersGURPS.format(this.system.notes)
 		if (this.unsatisfied_reason) outString += HandlebarsHelpersGURPS.unsatisfied(this.unsatisfied_reason)
 		outString += "</div>"
-		if (this.parent)
-			outString = parseInlineNoteExpressions(outString, this.parent as any)
+		if (this.parent) outString = parseInlineNoteExpressions(outString, this.parent as any)
 		return outString
 	}
 
@@ -58,9 +57,10 @@ export class EquipmentContainerGURPS extends ItemGCS<EquipmentContainerSource> {
 	}
 
 	get isGreyedOut(): boolean {
-		return !(this.system.quantity > 0 &&
-			((this.container?.type === ItemType.EquipmentContainer) ?
-				!(this.container as any).isGreyedOut : true))
+		return !(
+			this.system.quantity > 0 &&
+			(this.container?.type === ItemType.EquipmentContainer ? !(this.container as any).isGreyedOut : true)
+		)
 	}
 
 	get enabled(): boolean {

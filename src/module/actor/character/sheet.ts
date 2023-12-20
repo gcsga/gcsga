@@ -49,7 +49,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			width: 800,
 			height: 800,
 			tabs: [{ navSelector: ".tabs-navigation", contentSelector: ".tabs-content", initial: "lifting" }],
-			dragDrop: [{ dragSelector: ".item-list .item:not(.placeholder)", dropSelector: null }]
+			dragDrop: [{ dragSelector: ".item-list .item:not(.placeholder)", dropSelector: null }],
 		})
 	}
 
@@ -202,7 +202,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 
 	_addItemHeaderContextMenu(element: HTMLElement) {
 		const type = $(element).parent(".item-list")[0].id
-		const menuItems = (function(self: CharacterSheetGURPS): ContextMenuEntry[] {
+		const menuItems = (function (self: CharacterSheetGURPS): ContextMenuEntry[] {
 			switch (type) {
 				case "traits":
 					return [
@@ -753,12 +753,12 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		const sheet = $(this.element)
 		const itemData = $("#drag-ghost").data("item") as ItemDataGURPS
 		let currentTable = $(event.target).closest(".item-list")
-		if (([ItemType.Equipment, ItemType.EquipmentContainer].includes(itemData.type))) {
+		if ([ItemType.Equipment, ItemType.EquipmentContainer].includes(itemData.type)) {
 			if ($(event.target).closest(".item-list#other-equipment").length > 0)
 				currentTable = $(event.target).closest(".item-list#other-equipment")
 			else currentTable = sheet.find(".item-list#equipment")
 		} else {
-			const idLookup = (function() {
+			const idLookup = (function () {
 				switch (itemData.type) {
 					case ItemType.Trait:
 					case ItemType.TraitContainer:
@@ -784,7 +784,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			currentTable = sheet.find(`.item-list#${idLookup}`)
 		}
 
-		sheet.find(".item-list").each(function() {
+		sheet.find(".item-list").each(function () {
 			if ($(this) !== currentTable) {
 				$(this).removeClass("dragsection")
 				$(this).removeClass("dragindirect")
@@ -793,7 +793,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 
 		let direct = false
 		currentTable.addClass("dragsection")
-		if (!([...$(event.target), ...$(event.target).parents()].includes(currentTable[0]))) {
+		if (![...$(event.target), ...$(event.target).parents()].includes(currentTable[0])) {
 			currentTable.addClass("dragindirect")
 		} else {
 			direct = true
@@ -803,26 +803,17 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			(currentTable.position().top ?? 0) + (currentTable.children(".header.reference").outerHeight() ?? 0),
 			sheet.find(".window-content").position().top
 		)
-		currentTable[0].style.setProperty(
-			"--top", `${top}px`
-		)
-		currentTable[0].style.setProperty("--left", `${(currentTable.position().left + 1) ?? 0}px`)
-		const height = (function() {
-			const tableBottom =
-				(currentTable.position().top ?? 0) +
-				(currentTable.height() ?? 0)
+		currentTable[0].style.setProperty("--top", `${top}px`)
+		currentTable[0].style.setProperty("--left", `${currentTable.position().left + 1 ?? 0}px`)
+		const height = (function () {
+			const tableBottom = (currentTable.position().top ?? 0) + (currentTable.height() ?? 0)
 			const contentBottom =
-				(sheet.find(".window-content").position().top ?? 0) +
-				(sheet.find(".window-content").height() ?? 0)
+				(sheet.find(".window-content").position().top ?? 0) + (sheet.find(".window-content").height() ?? 0)
 			return Math.min(contentBottom - top, tableBottom - top)
 		})()
 		if (height !== 0) {
-			currentTable[0].style.setProperty(
-				"--height", `${height}px`
-			)
-			currentTable[0].style.setProperty(
-				"--width", `${currentTable.width()}px`
-			)
+			currentTable[0].style.setProperty("--height", `${height}px`)
+			currentTable[0].style.setProperty("--width", `${currentTable.width()}px`)
 		}
 
 		let element = $(event.target!).closest(".item.desc")
@@ -834,7 +825,8 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			element = currentTable.children(".item.desc").last()
 			heightAcross = 1
 			inContainer = false
-		} if (heightAcross > 0.5 && element.hasClass("border-bottom")) return
+		}
+		if (heightAcross > 0.5 && element.hasClass("border-bottom")) return
 		if (heightAcross < 0.5 && element.hasClass("border-top")) return
 		if (inContainer && element.hasClass("border-in")) return
 
@@ -1064,14 +1056,14 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		}
 		const buttons: Application.HeaderButton[] = this.actor.canUserModify(game.user!, "update")
 			? [
-				edit_button,
-				{
-					label: "",
-					class: "gmenu",
-					icon: "gcs-all-seeing-eye",
-					onclick: event => this._openGMenu(event),
-				},
-			]
+					edit_button,
+					{
+						label: "",
+						class: "gmenu",
+						icon: "gcs-all-seeing-eye",
+						onclick: event => this._openGMenu(event),
+					},
+			  ]
 			: []
 		const all_buttons = [...buttons, ...super._getHeaderButtons()]
 		return all_buttons

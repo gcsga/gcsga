@@ -14,7 +14,6 @@ enum ListType {
 }
 
 export class DefaultAttributeSettings extends AttributeBaseSettings {
-
 	static override readonly namespace = SETTINGS.DEFAULT_ATTRIBUTES
 
 	static override readonly SETTINGS = ["attributes", "effects"] as const

@@ -742,7 +742,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	// Flat list of all hit locations
 	get HitLocations(): HitLocation[] {
-		const recurseLocations = function(table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
+		const recurseLocations = function (table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
 			table.locations.forEach(e => {
 				locations.push(e)
 				if (e.subTable) locations = recurseLocations(e.subTable, locations)
@@ -1500,11 +1500,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	): number {
 		let total = 0
 		for (const feature of this.features.moveBonuses) {
-			if (
-				feature.limitation === limitation &&
-				feature.move_type === id &&
-				feature.effective === effective
-			) {
+			if (feature.limitation === limitation && feature.move_type === id && feature.effective === effective) {
 				total += feature.adjustedAmount
 				feature.addToTooltip(tooltip)
 			}

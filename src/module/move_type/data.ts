@@ -27,5 +27,5 @@ export interface MoveTypeOverrideObj {
 export enum MoveTypeOverrideConditionType {
 	Trait = "trait",
 	Skill = "skill",
-	Condition = "condition"
+	Condition = "condition",
 }

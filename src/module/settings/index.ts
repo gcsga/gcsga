@@ -57,7 +57,6 @@ export function registerSettings(): void {
 	})
 	DefaultResourceTrackerSettings.registerSettings()
 
-
 	game.settings.registerMenu(SYSTEM_NAME, SETTINGS.DEFAULT_MOVE_TYPES, {
 		name: "gurps.settings.default_move_types.name",
 		label: "gurps.settings.default_move_types.label",

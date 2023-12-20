@@ -4,14 +4,12 @@ import { DnD } from "@util/drag_drop"
 import { ResourceTrackerDefObj } from "@module/resource_tracker/data"
 import { AttributeBaseSettings } from "./attribute_base"
 
-
 enum ListType {
 	ResourceTracker = "resource_trackers",
 	Thresholds = "tracker_thresholds",
 }
 
 export class DefaultResourceTrackerSettings extends AttributeBaseSettings {
-
 	static override readonly namespace = SETTINGS.DEFAULT_RESOURCE_TRACKERS
 
 	static override readonly SETTINGS = ["resource_trackers"]

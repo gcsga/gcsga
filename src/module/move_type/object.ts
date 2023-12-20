@@ -41,7 +41,6 @@ export class MoveType {
 		const def = this.move_type_def
 		if (!def) return 0
 		return Math.floor(def.baseValue(this.actor) + this.adj + this.bonus)
-
 	}
 
 	get enhanced(): number {
@@ -54,12 +53,3 @@ export class MoveType {
 		return enhanced
 	}
 }
-
-// TODO:
-// definition should contain separate definition fields for normal move and enhanced move
-// need to add interface on charsheet for diretly modifying point value of move types
-// this will be added to third_party section of GCS file
-// should also add a new feature type which modifies a move type, maybe be able to choose between normal or enhanced move
-// or maybe two new feature types
-// or maybe just a list of attributes whose level should be taken into account
-// or maybe just add it to the definition by default so we don't have to screw around with new feature types and the like

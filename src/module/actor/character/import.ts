@@ -197,7 +197,7 @@ export class CharacterImporter {
 				recursive: false,
 			})
 			if ((this.document?.sheet as unknown as CharacterSheetGURPS)?.config !== null) {
-				; (this.document?.sheet as unknown as CharacterSheetGURPS)?.config?.render(true)
+				;(this.document?.sheet as unknown as CharacterSheetGURPS)?.config?.render(true)
 			}
 		} catch (err) {
 			console.error(err)
@@ -375,8 +375,10 @@ export class CharacterImporter {
 				"system.resource_trackers": (this.document as any).system.resource_trackers,
 			}
 		else {
-			const tracker_defs =
-				game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`)
+			const tracker_defs = game.settings.get(
+				SYSTEM_NAME,
+				`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`
+			)
 			data = {
 				...data,
 				"system.settings.resource_trackers": tracker_defs,
@@ -389,8 +391,7 @@ export class CharacterImporter {
 				"system.settings.move_types": (this.document as any).system.settings.move_types,
 			}
 		else {
-			const move_types =
-				game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
+			const move_types = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
 			data = {
 				...data,
 				"system.settings.move_types": move_types,

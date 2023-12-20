@@ -25,12 +25,7 @@ export interface VariableResolver {
 		effective?: boolean,
 		tooltip?: TooltipGURPS | null
 	) => number
-	moveBonusFor: (
-		id: string,
-		limitation: MoveBonusType,
-		effective?: boolean,
-		tooltip?: TooltipGURPS | null
-	) => number
+	moveBonusFor: (id: string, limitation: MoveBonusType, effective?: boolean, tooltip?: TooltipGURPS | null) => number
 	effectiveST: (initialST: number) => number
 	getFlag: (scope: any, key: string) => unknown
 	costReductionFor: (attributeID: string) => number
@@ -206,7 +201,7 @@ class Evaluator {
 			;[index, op] = this.processFunction(expression, index)
 			index += op?.symbol.length || 0
 			let tmp: number
-				;[tmp, op] = this.nextOperator(expression, index, null)
+			;[tmp, op] = this.nextOperator(expression, index, null)
 			if (!op) return index
 			index = tmp
 		}

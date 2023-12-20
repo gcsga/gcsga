@@ -354,9 +354,9 @@ export async function getDefaultSkills() {
 	for (const s in skillPacks)
 		if (skillPacks[s].skillDefault) {
 			const pack = game.packs.get(s) as CompendiumCollection<any>
-				; (await pack.getDocuments()).forEach(e => {
-					skills.push(e)
-				})
+			;(await pack.getDocuments()).forEach(e => {
+				skills.push(e)
+			})
 		}
 	CONFIG.GURPS.skillDefaults = skills
 }
@@ -382,4 +382,3 @@ export function inlineNote(
 		game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)[option]
 	)
 }
-

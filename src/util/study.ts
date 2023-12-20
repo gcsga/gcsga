@@ -3,10 +3,14 @@ import { LocalizeGURPS } from "./localize"
 
 function getMultiplier(type: StudyType): number {
 	switch (type) {
-		case StudyType.Self: return 1 / 2
-		case StudyType.Job: return 1 / 4
-		case StudyType.Teacher: return 1
-		case StudyType.Intensive: return 2
+		case StudyType.Self:
+			return 1 / 2
+		case StudyType.Job:
+			return 1 / 4
+		case StudyType.Teacher:
+			return 1
+		case StudyType.Intensive:
+			return 2
 		default:
 			console.error(`Unknown Study type ${type}`)
 			return 1
@@ -27,12 +31,9 @@ export function studyHoursProgressText(hours: number, needed: StudyHoursNeeded, 
 		if (!force) return ""
 	}
 	let studyNeeded = "200"
-	if (needed !== studyNeeded)
-		studyNeeded = needed
-	return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.study.studied_alt,
-		{
-			hours: hours,
-			total: studyNeeded
-		}
-	)
+	if (needed !== studyNeeded) studyNeeded = needed
+	return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.study.studied_alt, {
+		hours: hours,
+		total: studyNeeded,
+	})
 }

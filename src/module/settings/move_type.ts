@@ -5,21 +5,18 @@ import { prepareFormData } from "@util"
 import { DnD } from "@util/drag_drop"
 
 enum ListType {
-	MoveType = "move_type",
-	Overrides = "override"
+	MoveType = "move_types",
+	Overrides = "override",
 }
 
 export class DefaultMoveSettings extends AttributeBaseSettings {
-
 	static override readonly namespace = SETTINGS.DEFAULT_MOVE_TYPES
 
 	static override readonly SETTINGS = ["move_types"] as const
 
-
 	_onDataImport(event: JQuery.ClickEvent) {
 		event.preventDefault()
 	}
-
 
 	_onDataExport(event: JQuery.ClickEvent) {
 		event.preventDefault()
@@ -52,7 +49,7 @@ export class DefaultMoveSettings extends AttributeBaseSettings {
 					name: "",
 					move_type_base: "",
 					cost_per_point: 0,
-					overrides: []
+					overrides: [],
 				})
 				await game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`, move_types)
 				return this.render()
@@ -61,9 +58,9 @@ export class DefaultMoveSettings extends AttributeBaseSettings {
 				move_types[$(event.currentTarget).data("id")].overrides!.push({
 					condition: {
 						type: MoveTypeOverrideConditionType.Condition,
-						qualifier: ""
+						qualifier: "",
 					},
-					move_type_base: ""
+					move_type_base: "",
 				})
 				await game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`, move_types)
 				return this.render()
@@ -94,18 +91,12 @@ export class DefaultMoveSettings extends AttributeBaseSettings {
 		let element = $(event.target!)
 		if (!element.hasClass("item")) element = element.parent(".item")
 
-		const move_types: MoveTypeDefObj[] =
-			game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
+		const move_types: MoveTypeDefObj[] = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
 		const target_index = element.data("index")
 		const above = element.hasClass("border-top")
 		if (dragData.order === target_index) return this.render()
 		if (above && dragData.order === target_index - 1) return this.render()
 		if (!above && dragData.order === target_index + 1) return this.render()
-
-		// let container: any[] = []
-		// if (dragData.type === ListType.MoveType) container = move_types
-		// else if (dragData.type === ListType.Overrides) container = move_types
-		// if (!container) return
 
 		let item
 		if (dragData.type === ListType.Overrides) {
