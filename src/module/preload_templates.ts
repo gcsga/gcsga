@@ -44,6 +44,7 @@ export async function preloadTemplates(): Promise<Handlebars.TemplateDelegate[]>
 		"actor/character/config/location",
 		"actor/character/config/resource-trackers",
 		"actor/character/config/move-types",
+		"actor/character/config/override",
 
 		"actor/static/sections/attributes",
 		"actor/static/sections/basic-damage",

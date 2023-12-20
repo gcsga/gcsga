@@ -11,7 +11,7 @@ import { TechniqueSystemData } from "@item/technique/data"
 import { TraitSystemData } from "@item/trait/data"
 import { TraitContainerSystemData } from "@item/trait_container/data"
 import { AttributeObj } from "@module/attribute"
-import { ActorType, DamageProgression, DisplayMode, SYSTEM_NAME } from "@module/data"
+import { ActorType, DamageProgression, DisplayMode, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { LengthUnits, LocalizeGURPS, WeightUnits } from "@util"
 import { CharacterSystemData } from "./data"
 import { CharacterSheetGURPS } from "./sheet"
@@ -197,7 +197,7 @@ export class CharacterImporter {
 				recursive: false,
 			})
 			if ((this.document?.sheet as unknown as CharacterSheetGURPS)?.config !== null) {
-				;(this.document?.sheet as unknown as CharacterSheetGURPS)?.config?.render(true)
+				; (this.document?.sheet as unknown as CharacterSheetGURPS)?.config?.render(true)
 			}
 		} catch (err) {
 			console.error(err)
@@ -264,7 +264,7 @@ export class CharacterImporter {
 			commit = { ...commit, ...(await this.importProfile(r.profile)) }
 			commit = { ...commit, ...this.importSettings(r.settings) }
 			commit = { ...commit, ...this.importAttributes(r.attributes) }
-			commit = { ...commit, ...this.importResourceTrackers(r.third_party) }
+			commit = { ...commit, ...this.importThirdPartyData(r.third_party) }
 
 			// Begin item import
 			const items: Array<ItemGURPS> = []
@@ -360,12 +360,43 @@ export class CharacterImporter {
 		}
 	}
 
-	importResourceTrackers(tp: any) {
-		if (!tp) return
-		return {
-			"system.settings.resource_trackers": tp.settings?.resource_trackers ?? [],
-			"system.resource_trackers": tp.resource_trackers ?? [],
+	importThirdPartyData(tp: any) {
+		if (tp)
+			return {
+				"system.settings.resource_trackers": tp.settings?.resource_trackers ?? [],
+				"system.resource_trackers": tp.resource_trackers ?? [],
+				"system.settings.move_types": tp.settings?.move_types ?? [],
+			}
+		let data: any = {}
+		if ((this.document as any).system.settings.resource_trackers.length > 0)
+			data = {
+				...data,
+				"system.settings.resource_trackers": (this.document as any).system.settings.resource_trackers,
+				"system.resource_trackers": (this.document as any).system.resource_trackers,
+			}
+		else {
+			const tracker_defs =
+				game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`)
+			data = {
+				...data,
+				"system.settings.resource_trackers": tracker_defs,
+				"system.resource_trackers": (this.document as any).newTrackers(tracker_defs),
+			}
 		}
+		if ((this.document as any).system.settings.move_types.length > 0)
+			data = {
+				...data,
+				"system.settings.move_types": (this.document as any).system.settings.move_types,
+			}
+		else {
+			const move_types =
+				game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
+			data = {
+				...data,
+				"system.settings.move_types": move_types,
+			}
+		}
+		return data
 	}
 
 	async throwImportError(msg: string[]) {

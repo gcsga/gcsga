@@ -27,6 +27,8 @@
 		<select class="move-select" data-name="move">
 			{{#select moveData.type}}
 				{{#each move_types as |v k|}}
+					{{print k}}
+					{{print v}}
 					<option value="{{k}}">{{localize v}}</option>
 				{{/each}}
 			{{/select}}

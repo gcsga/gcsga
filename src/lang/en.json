@@ -744,6 +744,14 @@
 			"min_enforced": "Enforce",
 			"current": "Current"
 		},
+		"move_type_def": {
+			"id": "ID",
+			"name": "Name",
+			"move_type_base": "Base Value",
+			"cost_per_point": "Cost per Point",
+			"condition_type": "Condition Type",
+			"condition_qualifier": "Qualifier"
+		},
 		"feature": {
 			"header": "Features",
 			"per_level": "per level",
@@ -1067,6 +1075,11 @@
 			"effect_action": {
 				"add": "Add",
 				"remove": "Remove"
+			},
+			"move_condition_type": {
+				"trait": "Has a trait whose name is",
+				"skill": "Has a skill whose name is",
+				"condition": "Has a condition whose ID is"
 			},
 			"study_hours_needed": {
 				"200": "Standard",
@@ -1446,6 +1459,11 @@
 				"label": "Edit Default Resource Trackers",
 				"hint": "Resource Trackers assigned when creating new Characters."
 			},
+			"default_move_types": {
+				"name": "Default Move Types",
+				"label": "Edit Default Move Types",
+				"hint": "Move Types assigned when creating new Characters."
+			},
 			"default_hit_locations": {
 				"name": "Default Body Type",
 				"label": "Edit Default Body Type",
@@ -1784,6 +1802,12 @@
 			"cost": "; Cost: -{adj}",
 			"time": "; Time: x1/{adj}, rounded up, min 1 sec",
 			"none": "Ritual: none"
+		},
+		"move_types": {
+			"ground": "Ground Move",
+			"water": "Water Move",
+			"air": "Air Move",
+			"space": "Space Move"
 		}
 	}
 }

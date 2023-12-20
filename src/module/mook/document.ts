@@ -143,6 +143,10 @@ export class Mook {
 		return 0
 	}
 
+	moveBonusFor(..._args: any[]): number {
+		return 0
+	}
+
 	costReductionFor(..._args: any[]): number {
 		return 0
 	}

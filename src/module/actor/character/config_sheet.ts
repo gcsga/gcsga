@@ -1,7 +1,6 @@
 import { CharacterImporter } from "./import"
 import { LocalizeGURPS, prepareFormData } from "@util"
 import { gid, SETTINGS, SYSTEM_NAME } from "@module/data"
-import { CharacterSettings } from "./data"
 import { HitLocationTable } from "./hit_location"
 import { DnD } from "@util/drag_drop"
 import { CharacterGURPS } from "./document"
@@ -9,6 +8,7 @@ import { AttributeDefObj, AttributeType } from "@module/attribute"
 import { CharacterSheetGURPS } from "./sheet"
 import { ResourceTrackerDefObj } from "@module/resource_tracker"
 import { PDF } from "@module/pdf"
+import { MoveTypeDefObj } from "@module/move_type"
 
 export class CharacterSheetConfig extends FormApplication {
 	object: CharacterGURPS
@@ -23,12 +23,15 @@ export class CharacterSheetConfig extends FormApplication {
 
 	body_type: HitLocationTable
 
+	move_types: MoveTypeDefObj[]
+
 	constructor(object: CharacterGURPS, options?: any) {
 		super(object, options)
 		this.object = object
 		this.filename = ""
 		this.attributes = this.object.system.settings.attributes
 		this.resource_trackers = this.object.system.settings.resource_trackers
+		this.move_types = this.object.system.settings.move_types
 		this.body_type = this.object.BodyType
 	}
 
@@ -63,17 +66,19 @@ export class CharacterSheetConfig extends FormApplication {
 		const actor = this.object
 		this.attributes = this.object.system.settings.attributes
 		this.resource_trackers = this.object.system.settings.resource_trackers
-		const attributes = actor.settings.attributes.map(e =>
-			mergeObject(e, { order: actor.attributes.get(e.id)!.order })
-		)
-		const resourceTrackers = actor.settings.resource_trackers
+		this.move_types = this.object.system.settings.move_types
+		// const attributes = actor.settings.attributes.map(e =>
+		// 	mergeObject(e, { order: actor.attributes.get(e.id)!.order })
+		// )
+		// const resourceTrackers = actor.settings.resource_trackers
 
 		return {
 			options: options,
 			actor: actor.toObject(),
 			system: actor.system,
-			attributes: attributes,
-			resourceTrackers: resourceTrackers,
+			attributes: this.attributes,
+			resource_trackers: this.resource_trackers,
+			move_types: this.move_types,
 			locations: actor.system.settings.body_type,
 			filename: this.filename,
 			config: CONFIG.GURPS,
@@ -177,20 +182,26 @@ export class CharacterSheetConfig extends FormApplication {
 		const default_attributes = game.settings.get(
 			SYSTEM_NAME,
 			`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`
-		) as CharacterSettings["attributes"]
+		)
 		const default_resource_trackers = game.settings.get(
 			SYSTEM_NAME,
 			`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`
-		) as CharacterSettings["resource_trackers"]
+		)
 		const default_hit_locations = {
 			name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
 			roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
 			locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
 		}
+		const default_move_types =
+			game.settings.get(
+				SYSTEM_NAME,
+				`${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`
+			)
 		const update: any = {}
 		if (type === "attributes") update["system.settings.attributes"] = default_attributes
 		if (type === "resource_trackers") update["system.settings.resource_trackers"] = default_resource_trackers
 		if (type === "locations") update["system.settings.body_type"] = default_hit_locations
+		if (type === "move_types") update["system.settings.move_types"] = default_move_types
 		await this.object.update(update)
 		return this.render()
 	}
@@ -238,7 +249,6 @@ export class CharacterSheetConfig extends FormApplication {
 		let formData: any = {}
 		switch (type) {
 			case "attributes":
-				// TODO: account for possibility of all letters being taken
 				this.attributes.push({
 					type: AttributeType.Integer,
 					id: new_id,
@@ -258,7 +268,6 @@ export class CharacterSheetConfig extends FormApplication {
 					isMaxEnforced: false,
 					min: 0,
 					isMinEnforced: false,
-					// order: this.resource_trackers.length,
 					thresholds: [],
 				})
 				await this.object.update({ "system.settings.resource_trackers": this.resource_trackers })
@@ -342,20 +351,15 @@ export class CharacterSheetConfig extends FormApplication {
 		const parent_index = Number($(event.currentTarget).data("pindex")) || 0
 		switch (type) {
 			case "attributes":
-				this.attributes.splice(index, 1)
-				await this.object.update({ "system.settings.attributes": this.attributes })
-				return this.render()
 			case "resource_trackers":
-				this.resource_trackers.splice(index, 1)
-				await this.object.update({ "system.settings.resource_trackers": this.resource_trackers })
+				this[type].splice(index, 1)
+				await this.object.update({ [`system.settings.${type}`]: this[type] })
 				return this.render()
 			case "attribute_thresholds":
-				this.attributes[parent_index].thresholds?.splice(index, 1)
-				await this.object.update({ "system.settings.attributes": this.attributes })
-				return this.render()
 			case "tracker_thresholds":
-				this.resource_trackers[parent_index].thresholds?.splice(index, 1)
-				await this.object.update({ "system.settings.resource_trackers": this.resource_trackers })
+				const list = (type === "attribute_thresholds") ? "attributes" : "resource_trackers"
+				this[list][parent_index].thresholds?.splice(index, 1)
+				await this.object.update({ [`system.settings.${list}`]: this[list] })
 				return this.render()
 			case "locations":
 				locations = getProperty(this.object, `${path}`) ?? []
@@ -410,12 +414,6 @@ export class CharacterSheetConfig extends FormApplication {
 
 	protected _getHeaderButtons(): Application.HeaderButton[] {
 		const all_buttons = [
-			// {
-			// 	label: "",
-			// 	class: "apply",
-			// 	icon: "gcs-checkmark",
-			// 	onclick: (event: any) => this._onSubmit(event),
-			// },
 			...super._getHeaderButtons(),
 		]
 		all_buttons.at(-1)!.label = ""
@@ -513,19 +511,6 @@ export class CharacterSheetConfig extends FormApplication {
 				formData[`array.${path}`] = container
 				return this._updateObject(event, formData)
 		}
-
-		// Const attributes = this.object.system.attributes
-		// const att = attributes.splice(
-		// 	attributes.findIndex(e => e.attr_id === dragData.id),
-		// 	1
-		// )[0]
-		// attributes.splice(target_order, 0, att)
-		// attributes.forEach((v, k) => {
-		// 	v.order = k
-		// })
-
-		// await this.object.update({ "system.settings.attributes": attribute_defs, "system.attributes": attributes })
-		// this.render()
 	}
 
 	close(options?: FormApplication.CloseOptions | undefined): Promise<void> {

@@ -167,8 +167,14 @@ export enum gid {
 	Vision = "vision",
 	Will = "will",
 	Flexible = "flexible",
+	// Damage
 	Thrust = "thrust",
 	Swing = "swing",
+	// Move Types
+	Ground = "ground",
+	Water = "water",
+	Air = "air",
+	Space = "space"
 }
 
 export const attrPrefix = "attr."
@@ -429,12 +435,12 @@ export enum ActorType {
 	// Merchant = "merchant",
 }
 
-export enum MoveType {
-	Ground = "ground",
-	Air = "air",
-	Water = "water",
-	Space = "space",
-}
+// export enum MoveType {
+// 	Ground = "ground",
+// 	Air = "air",
+// 	Water = "water",
+// 	Space = "space",
+// }
 
 export enum SpellSubType {
 	NAME = "name",

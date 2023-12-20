@@ -1,5 +1,6 @@
 export { BaseFeature } from "./base"
 export { AttributeBonus } from "./attribute_bonus"
+export { MoveBonus } from "./move_bonus"
 export { ConditionalModifier } from "./conditional_modifier"
 export { ContainedWeightReduction } from "./contained_weight_reduction"
 export { CostReduction } from "./cost_reduction"

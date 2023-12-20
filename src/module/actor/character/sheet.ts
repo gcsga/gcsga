@@ -774,6 +774,9 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 					case ItemType.Note:
 					case ItemType.NoteContainer:
 						return "notes"
+					case ItemType.Effect:
+					case ItemType.Condition:
+						return "effects"
 					default:
 						return "invalid"
 				}
@@ -902,7 +905,6 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 				current_year: new Date().getFullYear(),
 				maneuvers: CONFIG.GURPS.select.maneuvers,
 				postures: CONFIG.GURPS.select.postures,
-				move_types: CONFIG.GURPS.select.move_types,
 				autoEncumbrance: (this.actor.getFlag(SYSTEM_NAME, ActorFlags.AutoEncumbrance) as any)?.active,
 				autoThreshold: (this.actor.getFlag(SYSTEM_NAME, ActorFlags.AutoThreshold) as any)?.active,
 				overencumbered,
