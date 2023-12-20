@@ -16,6 +16,7 @@ import {
 	CostReduction,
 	DRBonus,
 	FeatureType,
+	MoveBonus,
 	ReactionBonus,
 	SkillBonus,
 	SkillPointBonus,
@@ -83,7 +84,7 @@ import {
 	TraitSystemData,
 } from "@item"
 import { ConditionData, ConditionGURPS, ConditionID, ManeuverID } from "@item/condition"
-import { DurationType, EffectGURPS } from "@item/effect"
+import { DurationType, EffectData, EffectGURPS } from "@item/effect"
 import { StaticItemGURPS } from "@item/static"
 import {
 	AttributePrereq,
@@ -95,7 +96,8 @@ import {
 	SpellPrereq,
 	TraitPrereq,
 } from "@prereq"
-import { ActorType, EFFECT_ACTION, ItemType, MoveType, PrereqType, StudyHoursNeeded, StudyType } from "./data"
+import { ActorType, EFFECT_ACTION, ItemType, PrereqType, StudyHoursNeeded, StudyType } from "./data"
+import { MoveTypeOverrideConditionType } from "./move_type"
 
 // Const GURPSCONFIG: any = CONFIG;
 const GURPSCONFIG: CONFIG["GURPS"] = {
@@ -451,12 +453,12 @@ const GURPSCONFIG: CONFIG["GURPS"] = {
 			[ManeuverID.AODBlock]: `gurps.maneuver.${ManeuverID.AODBlock}`,
 			[ManeuverID.AODDouble]: `gurps.maneuver.${ManeuverID.AODDouble}`,
 		},
-		move_types: {
-			[MoveType.Ground]: "gurps.select.move_type.ground",
-			[MoveType.Air]: "gurps.select.move_type.air",
-			[MoveType.Water]: "gurps.select.move_type.water",
-			[MoveType.Space]: "gurps.select.move_type.space",
-		},
+		// move_types: {
+		// 	[MoveType.Ground]: "gurps.select.move_type.ground",
+		// 	[MoveType.Air]: "gurps.select.move_type.air",
+		// 	[MoveType.Water]: "gurps.select.move_type.water",
+		// 	[MoveType.Space]: "gurps.select.move_type.space",
+		// },
 		postures: {
 			standing: "gurps.status.posture_standing",
 			[ConditionID.PostureProne]: `gurps.status.${ConditionID.PostureProne}`,
@@ -542,6 +544,11 @@ const GURPSCONFIG: CONFIG["GURPS"] = {
 			[EFFECT_ACTION.ADD]: "gurps.select.effect_action.add",
 			[EFFECT_ACTION.REMOVE]: "gurps.select.effect_action.remove",
 		},
+		move_condition_type: {
+			[MoveTypeOverrideConditionType.Trait]: "gurps.select.move_condition_type.trait",
+			[MoveTypeOverrideConditionType.Skill]: "gurps.select.move_condition_type.skill",
+			[MoveTypeOverrideConditionType.Condition]: "gurps.select.move_condition_type.condition",
+		},
 		conditions: Object.values(ConditionID).reduce((acc, c) => {
 			return Object.assign(acc, {
 				[c]: `gurps.status.${c}`,
@@ -625,6 +632,7 @@ export type featureMap = {
 	spellBonuses: SpellBonus[]
 	spellPointBonuses: SpellPointBonus[]
 	weaponBonuses: Array<WeaponDamageBonus | WeaponDRDivisorBonus>
+	moveBonuses: MoveBonus[]
 	// thresholdBonuses: ThresholdBonus[]
 }
 
@@ -647,6 +655,7 @@ export type ItemDataGURPS =
 	| EquipmentModifierContainerData
 	| NoteData
 	| NoteContainerData
+	| EffectData
 	| ConditionData
 
 export type ItemSourceGURPS = ItemDataGURPS["_source"]

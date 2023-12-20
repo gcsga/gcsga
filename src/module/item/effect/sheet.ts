@@ -29,6 +29,7 @@ export class EffectSheet extends ItemSheetGURPS<EffectGURPS> {
 
 	protected async _addModifier(event: JQuery.ClickEvent): Promise<any> {
 		event.preventDefault()
+		if (!this.isEditable) return
 		const modifiers = this.item.system.modifiers ?? []
 		modifiers.push({
 			name: "",
@@ -42,6 +43,7 @@ export class EffectSheet extends ItemSheetGURPS<EffectGURPS> {
 	}
 
 	protected async _removeModifier(event: JQuery.ClickEvent): Promise<any> {
+		if (!this.isEditable) return
 		const index = $(event.currentTarget).data("index")
 		const modifiers = (this.item.system as any).modifiers
 		modifiers.splice(index, 1)

@@ -3,8 +3,7 @@ import { AttributeType } from "@module/attribute/data"
 import { EFFECT_ACTION, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { LocalizeGURPS, prepareFormData } from "@util"
 import { DnD } from "@util/drag_drop"
-import { SettingsMenuGURPS } from "./menu"
-import { defaultSettings } from "./defaults"
+import { AttributeBaseSettings } from "./attribute_base"
 
 enum ListType {
 	Attribute = "attributes",
@@ -14,59 +13,11 @@ enum ListType {
 	Leave = "leave",
 }
 
-export class DefaultAttributeSettings extends SettingsMenuGURPS {
-	static override readonly namespace = "default_attributes"
+export class DefaultAttributeSettings extends AttributeBaseSettings {
+
+	static override readonly namespace = SETTINGS.DEFAULT_ATTRIBUTES
 
 	static override readonly SETTINGS = ["attributes", "effects"] as const
-
-	static override get defaultOptions(): FormApplicationOptions {
-		const options = super.defaultOptions
-		options.classes.push("gurps", "settings-menu")
-
-		return mergeObject(options, {
-			title: `gurps.settings.${SETTINGS.DEFAULT_ATTRIBUTES}.name`,
-			id: `${SETTINGS.DEFAULT_ATTRIBUTES}-settings`,
-			template: `systems/${SYSTEM_NAME}/templates/system/settings/${SETTINGS.DEFAULT_ATTRIBUTES}.hbs`,
-			width: 480,
-			height: 600,
-			submitOnClose: true,
-			submitOnChange: true,
-			closeOnSubmit: false,
-			resizable: true,
-			tabs: [
-				{
-					navSelector: "nav",
-					contentSelector: "section.content",
-					initital: "attributes",
-				},
-			],
-		})
-	}
-
-	protected static override get settings(): Record<string, any> {
-		return {
-			attributes: {
-				name: "",
-				hint: "",
-				type: Array,
-				default: defaultSettings[SYSTEM_NAME][`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`],
-			},
-			effects: {
-				name: "",
-				hint: "",
-				type: Array,
-				default: defaultSettings[SYSTEM_NAME][`${SETTINGS.DEFAULT_ATTRIBUTES}.effects`],
-			},
-		}
-	}
-
-	activateListeners(html: JQuery<HTMLElement>): void {
-		super.activateListeners(html)
-		// Html.find(".reset-all").on("click", event => this._onResetAll(event))
-		html.find(".item").on("dragover", event => this._onDragItem(event))
-		html.find(".add").on("click", event => this._onAddItem(event))
-		html.find(".delete").on("click", event => this._onDeleteItem(event))
-	}
 
 	_onDataImport(event: JQuery.ClickEvent) {
 		event.preventDefault()
@@ -146,7 +97,7 @@ export class DefaultAttributeSettings extends SettingsMenuGURPS {
 		}
 	}
 
-	private async _onDeleteItem(event: JQuery.ClickEvent) {
+	async _onDeleteItem(event: JQuery.ClickEvent): Promise<unknown> {
 		event.preventDefault()
 		event.stopPropagation()
 		const attributes = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
@@ -172,36 +123,6 @@ export class DefaultAttributeSettings extends SettingsMenuGURPS {
 				effects[parent_index][type]?.splice(index, 1)
 				await game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`, effects)
 				return this.render()
-		}
-	}
-
-	async _onDragStart(event: DragEvent) {
-		// TODO:update
-		const item = $(event.currentTarget!)
-		const type: Omit<ListType, ListType.Enter | ListType.Leave> = item.data("type")
-		const index = Number(item.data("index"))
-		const parent_index = Number(item.data("pindex")) || 0
-		event.dataTransfer?.setData(
-			"text/plain",
-			JSON.stringify({
-				type: type,
-				index: index,
-				parent_index: parent_index,
-			})
-		)
-			; (event as any).dragType = type
-	}
-
-	protected _onDragItem(event: JQuery.DragOverEvent): void {
-		const element = $(event.currentTarget!)
-		const heightAcross = (event.pageY! - element.offset()!.top) / element.height()!
-		element.siblings(".item").removeClass("border-top").removeClass("border-bottom")
-		if (heightAcross > 0.5) {
-			element.removeClass("border-top")
-			element.addClass("border-bottom")
-		} else {
-			element.removeClass("border-bottom")
-			element.addClass("border-top")
 		}
 	}
 
@@ -239,17 +160,6 @@ export class DefaultAttributeSettings extends SettingsMenuGURPS {
 		await game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`, attributes)
 		await game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`, effects)
 		return this.render()
-	}
-
-	override async getData(): Promise<any> {
-		const attributes = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
-		const effects = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`)
-		return {
-			attributes: attributes,
-			effects: effects,
-			actor: null,
-			config: CONFIG.GURPS,
-		}
 	}
 
 	protected override async _updateObject(_event: Event, formData: any): Promise<void> {

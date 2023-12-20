@@ -8,6 +8,7 @@ export class LocalizeGURPS {
 
 	static get translations(): TranslationsGURPS {
 		if (!this.ready) {
+			console.trace()
 			throw Error("LocalizeGURPS instantiated too early")
 		}
 		if (this._translations === undefined) {

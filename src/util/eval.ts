@@ -1,12 +1,12 @@
 import { evalOperators, Operator } from "./operator"
 import { eFunction, evalFunctions } from "./function"
 import { SkillContainerGURPS, SkillGURPS, TechniqueGURPS, TraitContainerGURPS, TraitGURPS } from "@item"
-import { AttributeBonusLimitation } from "@feature/attribute_bonus"
 import { TooltipGURPS } from "@module/tooltip"
 import { AttributeDefObj } from "@module/attribute"
 import { DamageProgression } from "@module/data"
 import { MookSkill, MookTrait } from "@module/mook"
 import { MoveTypeDefObj } from "@module/move_type"
+import { AttributeBonusLimitation, MoveBonusType } from "@feature"
 
 // VariableResolver is used to resolve variables in expressions into their values.
 export interface VariableResolver {
@@ -22,6 +22,12 @@ export interface VariableResolver {
 	attributeBonusFor: (
 		attributeId: string,
 		limitation: AttributeBonusLimitation,
+		effective?: boolean,
+		tooltip?: TooltipGURPS | null
+	) => number
+	moveBonusFor: (
+		id: string,
+		limitation: MoveBonusType,
 		effective?: boolean,
 		tooltip?: TooltipGURPS | null
 	) => number

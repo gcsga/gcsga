@@ -1,5 +1,4 @@
-import { FeatureType } from "@feature"
-import { AttributeBonusLimitation } from "@feature/attribute_bonus"
+import { AttributeBonusLimitation, FeatureType } from "@feature"
 import { DurationType } from "@item/effect"
 // import { ThresholdOp } from "@module/attribute"
 import { gid, SYSTEM_NAME } from "@module/data"

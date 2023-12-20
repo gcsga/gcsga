@@ -94,6 +94,7 @@
 			align-items: center;
 		}
 
+		.overrides,
 		.thresholds {
 			grid-column: 1 / span 2;
 			border: 1px solid rgb(var(--color-divider));
@@ -233,11 +234,13 @@
 
 	&#default_attributes-settings,
 	&#damage_types-settings,
-	&#default_resource_trackers-settings {
+	&#default_resource_trackers-settings,
+	&#default_move_types-settings {
 		.label {
 			white-space: nowrap;
 			display: grid;
 			align-items: end;
+			text-align: right;
 		}
 
 		.fieldblock {
@@ -262,6 +265,7 @@
 
 		.enter,
 		.leave,
+		.overrides,
 		.thresholds {
 			grid-column: 1 / span 2;
 			border: 1px solid rgb(var(--color-divider));

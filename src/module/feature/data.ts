@@ -11,7 +11,20 @@ export enum FeatureType {
 	WeaponDRDivisorBonus = "weapon_dr_divisor_bonus",
 	CostReduction = "cost_reduction",
 	ContaiedWeightReduction = "contained_weight_reduction",
+	MoveBonus = "move_bonus" // custom
 	// ThresholdBonus = "threshold_bonus",
+}
+
+export enum AttributeBonusLimitation {
+	None = "none",
+	Striking = "striking_only",
+	Lifting = "lifting_only",
+	Throwing = "throwing_only",
+}
+
+export enum MoveBonusType {
+	Base = "base",
+	Enhanced = "enhanced"
 }
 
 export enum SpellBonusMatch {

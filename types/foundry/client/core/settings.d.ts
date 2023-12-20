@@ -235,6 +235,7 @@ declare global {
 			"gcsga.default_hit_locations.name": string
 			"gcsga.default_hit_locations.roll": string
 			"gcsga.default_hit_locations.locations": HitLocationData[]
+			"gcsga.default_move_types.move_types": MoveTypeDefObj[]
 			"gcsga.damage_types.types": CustomDamageType[]
 			"gcsga.colors.colors": Record<string, { light: string; dark: string }>
 			"gcsga.roll_formula": string
