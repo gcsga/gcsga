@@ -18,7 +18,7 @@ enum ListType {
 	Locations = "locations",
 	SubTable = "sub_table",
 	MoveType = "move_types",
-	Overrides = "override"
+	Overrides = "override",
 }
 
 export class CharacterSheetConfig extends FormApplication {
@@ -99,7 +99,7 @@ export class CharacterSheetConfig extends FormApplication {
 	activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		html.find("textarea")
-			.each(function() {
+			.each(function () {
 				this.setAttribute("style", `height:${this.scrollHeight + 2}px;overflow-y:hidden;`)
 			})
 			.on("input", event => {
@@ -168,11 +168,11 @@ export class CharacterSheetConfig extends FormApplication {
 				if (files) {
 					readTextFromFile(files[0]).then(
 						text =>
-						(this.file = {
-							text: text,
-							name: files[0].name,
-							path: files[0].path,
-						})
+							(this.file = {
+								text: text,
+								name: files[0].name,
+								path: files[0].path,
+							})
 					)
 				}
 				this.render()
@@ -190,10 +190,7 @@ export class CharacterSheetConfig extends FormApplication {
 	async _onReset(event: JQuery.ClickEvent) {
 		event.preventDefault()
 		const type = $(event.currentTarget).data("type")
-		const default_attributes = game.settings.get(
-			SYSTEM_NAME,
-			`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`
-		)
+		const default_attributes = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
 		const default_resource_trackers = game.settings.get(
 			SYSTEM_NAME,
 			`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`
@@ -203,11 +200,7 @@ export class CharacterSheetConfig extends FormApplication {
 			roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
 			locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
 		}
-		const default_move_types =
-			game.settings.get(
-				SYSTEM_NAME,
-				`${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`
-			)
+		const default_move_types = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
 		const update: any = {}
 		if (type === "attributes") update["system.settings.attributes"] = default_attributes
 		if (type === "resource_trackers") update["system.settings.resource_trackers"] = default_resource_trackers
@@ -336,7 +329,7 @@ export class CharacterSheetConfig extends FormApplication {
 					name: "",
 					move_type_base: "",
 					cost_per_point: 0,
-					overrides: []
+					overrides: [],
 				})
 				await this.object.update({ "system.settings.move_types": this.move_types })
 				return this.render()
@@ -345,9 +338,9 @@ export class CharacterSheetConfig extends FormApplication {
 				this.move_types[$(event.currentTarget).data("id")].overrides.push({
 					condition: {
 						type: MoveTypeOverrideConditionType.Condition,
-						qualifier: ""
+						qualifier: "",
 					},
-					move_type_base: ""
+					move_type_base: "",
 				})
 				await this.object.update({ "system.settings.move_types": this.move_types })
 				return this.render()
@@ -372,7 +365,7 @@ export class CharacterSheetConfig extends FormApplication {
 				return this.render()
 			case ListType.AttributeThresholds:
 			case ListType.TrackerThresholds:
-				const list = (type === "attribute_thresholds") ? "attributes" : "resource_trackers"
+				const list = type === "attribute_thresholds" ? "attributes" : "resource_trackers"
 				this[list][parent_index].thresholds?.splice(index, 1)
 				await this.object.update({ [`system.settings.${list}`]: this[list] })
 				return this.render()
@@ -432,9 +425,7 @@ export class CharacterSheetConfig extends FormApplication {
 	}
 
 	protected _getHeaderButtons(): Application.HeaderButton[] {
-		const all_buttons = [
-			...super._getHeaderButtons(),
-		]
+		const all_buttons = [...super._getHeaderButtons()]
 		all_buttons.at(-1)!.label = ""
 		all_buttons.at(-1)!.icon = "gcs-circled-x"
 		return all_buttons
@@ -465,7 +456,7 @@ export class CharacterSheetConfig extends FormApplication {
 				parent_index: parent_index,
 			})
 		)
-			; (event as any).dragType = type
+		;(event as any).dragType = type
 	}
 
 	protected _onDragItem(event: JQuery.DragOverEvent): void {
@@ -499,16 +490,20 @@ export class CharacterSheetConfig extends FormApplication {
 		switch (type) {
 			case ListType.Attributes:
 			case ListType.AttributeThresholds:
-				container = this.attributes; break
+				container = this.attributes
+				break
 			case ListType.ResourceTrackers:
 			case ListType.TrackerThresholds:
-				container = this.resource_trackers; break
+				container = this.resource_trackers
+				break
 			case ListType.MoveType:
 			case ListType.Overrides:
-				container = this.move_types; break
+				container = this.move_types
+				break
 			case ListType.Locations:
 			case ListType.SubTable:
-				container = getProperty(this.object, path); break
+				container = getProperty(this.object, path)
+				break
 		}
 
 		let item
@@ -548,7 +543,7 @@ export class CharacterSheetConfig extends FormApplication {
 	}
 
 	close(options?: FormApplication.CloseOptions | undefined): Promise<void> {
-		; (this.object.sheet as unknown as CharacterSheetGURPS).config = null
+		;(this.object.sheet as unknown as CharacterSheetGURPS).config = null
 		return super.close(options)
 	}
 }

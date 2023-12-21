@@ -36,4 +36,3 @@ export class MoveTypeDef {
 		return evaluateToNumber(this.move_type_base, resolver)
 	}
 }
-

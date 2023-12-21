@@ -31,8 +31,7 @@ export class DefaultResourceTrackerSettings extends AttributeBaseSettings {
 		)
 		const type: ListType = $(event.currentTarget).data("type")
 		let new_id = ""
-		if (type === ListType.ResourceTracker)
-			new_id = getNewAttributeId(resource_trackers)
+		if (type === ListType.ResourceTracker) new_id = getNewAttributeId(resource_trackers)
 		switch (type) {
 			case ListType.ResourceTracker:
 				resource_trackers.push({

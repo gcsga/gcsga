@@ -34,8 +34,7 @@ export class DefaultMoveSettings extends AttributeBaseSettings {
 		const move_types: MoveTypeDefObj[] = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
 		const type: ListType = $(event.currentTarget).data("type")
 		let new_id = ""
-		if (type === ListType.MoveType)
-			new_id = getNewAttributeId(move_types)
+		if (type === ListType.MoveType) new_id = getNewAttributeId(move_types)
 		switch (type) {
 			case ListType.MoveType:
 				move_types.push({

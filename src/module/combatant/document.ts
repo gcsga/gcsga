@@ -4,7 +4,6 @@ import { DocumentModificationOptions } from "types/foundry/common/abstract/docum
 import { BaseUser } from "types/foundry/common/documents.mjs"
 
 class CombatantGURPS extends Combatant {
-
 	get actor(): BaseActorGURPS | null {
 		return super.actor as BaseActorGURPS | null
 	}
@@ -13,7 +12,6 @@ class CombatantGURPS extends Combatant {
 		if (this.actor?.type === ActorType.Character) return (this.actor as any).isDefeated
 		return super.isDefeated
 	}
-
 
 	protected async _preDelete(options: DocumentModificationOptions, user: BaseUser): Promise<void> {
 		await this.actor?.resetManeuvers()

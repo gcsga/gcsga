@@ -8,6 +8,7 @@ import { Weight, WeightUnits, fxp, parseInlineNoteExpressions } from "@util"
 import { HandlebarsHelpersGURPS } from "@util/handlebars_helpers"
 import { Feature } from "@module/config"
 import { EquipmentSource } from "./data"
+import { ItemFlags } from "@item/base"
 
 export class EquipmentGURPS extends ItemGCS<EquipmentSource> {
 	unsatisfied_reason = ""
@@ -40,7 +41,7 @@ export class EquipmentGURPS extends ItemGCS<EquipmentSource> {
 
 	get other(): boolean {
 		if (this.container instanceof Item) return (this.container as EquipmentContainerGURPS).other
-		return this.system.other
+		return this.getFlag(SYSTEM_NAME, ItemFlags.Other) as boolean
 	}
 
 	// Gets weight in pounds

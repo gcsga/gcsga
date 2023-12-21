@@ -69,7 +69,9 @@ class ImportUtils {
 		id: string
 	): [ItemSystemDataGURPS, ItemFlagsGURPS, Array<any>, string] {
 		// const flags: ItemFlagsGURPS = { [SYSTEM_NAME]: { [ItemFlags.Container]: null } }
-		const flags = { [SYSTEM_NAME]: { [ItemFlags.Container]: context.container } }
+		const flags: ItemFlagsGURPS = { [SYSTEM_NAME]: { [ItemFlags.Container]: context.container } }
+		if (["equipment", "equipment_container"].includes(item.type))
+			flags[SYSTEM_NAME]![ItemFlags.Other] = context.other || false
 		let items: Array<any> = []
 		switch (item.type) {
 			case "trait":
@@ -118,19 +120,14 @@ class ImportUtils {
 					...ImportUtils.importItems((item as any).modifiers, { container: id, sort: context.sort }),
 					...ImportUtils.importItems((item as any).weapons, { container: id, sort: context.sort }),
 				]
-				return [ImportUtils.getEquipmentData(item as EquipmentSystemData, context?.other), flags, items, id]
+				return [ImportUtils.getEquipmentData(item as EquipmentSystemData), flags, items, id]
 			case "equipment_container":
 				items = [
 					...ImportUtils.importItems((item as any).children, { container: id, sort: context.sort }),
 					...ImportUtils.importItems((item as any).modifiers, { container: id, sort: context.sort }),
 					...ImportUtils.importItems((item as any).weapons, { container: id, sort: context.sort }),
 				]
-				return [
-					ImportUtils.getEquipmentContainerData(item as EquipmentContainerSystemData, context?.other),
-					flags,
-					items,
-					id,
-				]
+				return [ImportUtils.getEquipmentContainerData(item as EquipmentContainerSystemData), flags, items, id]
 			case "eqp_modifier":
 				return [ImportUtils.getEquipmentModifierData(item as EquipmentModifierSystemData), flags, items, id]
 			case "eqp_modifier_container":
@@ -373,7 +370,8 @@ class ImportUtils {
 		}
 	}
 
-	private static getEquipmentData(data: EquipmentSystemData, other = false): EquipmentSystemData {
+	// private static getEquipmentData(data: EquipmentSystemData, other = false): EquipmentSystemData {
+	private static getEquipmentData(data: EquipmentSystemData): EquipmentSystemData {
 		return {
 			name: data.name ?? "Equipment",
 			type: ItemType.Equipment,
@@ -395,14 +393,14 @@ class ImportUtils {
 			quantity: data.quantity ?? 0,
 			ignore_weight_for_skills: data.ignore_weight_for_skills ?? false,
 			rated_strength: data.rated_strength ?? 0,
-			other: other,
+			// other: other,
 			vtt_notes: data.vtt_notes ?? "",
 		}
 	}
 
 	private static getEquipmentContainerData(
-		data: EquipmentContainerSystemData,
-		other = false
+		data: EquipmentContainerSystemData
+		// other = false
 	): EquipmentContainerSystemData {
 		return {
 			name: data.name ?? "Equipment",
@@ -425,7 +423,7 @@ class ImportUtils {
 			quantity: data.quantity ?? 0,
 			ignore_weight_for_skills: data.ignore_weight_for_skills ?? false,
 			rated_strength: data.rated_strength ?? 0,
-			other: other,
+			// other: other,
 			open: data.open ?? false,
 			vtt_notes: data.vtt_notes ?? "",
 		}

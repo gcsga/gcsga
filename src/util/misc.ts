@@ -1,5 +1,4 @@
 import { CharacterGURPS } from "@actor"
-import { AttributeDefObj } from "@module/attribute"
 import {
 	DEFAULT_INITIATIVE_FORMULA,
 	Difficulty,
@@ -353,9 +352,9 @@ export async function getDefaultSkills() {
 	for (const s in skillPacks)
 		if (skillPacks[s].skillDefault) {
 			const pack = game.packs.get(s) as CompendiumCollection<any>
-				; (await pack.getDocuments()).forEach(e => {
-					skills.push(e)
-				})
+			;(await pack.getDocuments()).forEach(e => {
+				skills.push(e)
+			})
 		}
 	CONFIG.GURPS.skillDefaults = skills
 }
@@ -384,11 +383,13 @@ export function inlineNote(
 
 export function getNewAttributeId(list: { id: string }[]): string {
 	let base = ""
-	while (true) {
+	for (let i = 0; i < 5; i++) {
 		for (let n = 0; n < 26; n++) {
 			let attempt = `${base}${String.fromCharCode(97 + n)}`
 			if (!list.some(e => e.id === attempt)) return attempt
 		}
 		base += "a"
 	}
+	ui.notifications?.error("Ran out of valid IDs. How did you manage this?")
+	throw new Error("Error generating new attribute ID, ran out of possible auto-generated IDs.")
 }

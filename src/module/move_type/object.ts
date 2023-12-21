@@ -42,8 +42,7 @@ export class MoveType {
 		let base = def.baseValue(this.actor)
 		if (!def) return 0
 		for (const override of def.overrides) {
-			if (override.conditionMet(this.actor))
-				base = override.baseValue(this.actor)
+			if (override.conditionMet(this.actor)) base = override.baseValue(this.actor)
 		}
 		return Math.floor(base + this.adj + bonus)
 	}

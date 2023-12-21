@@ -44,8 +44,7 @@ export class DefaultAttributeSettings extends AttributeBaseSettings {
 		const effects: any[] = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`)
 		const type: ListType = $(event.currentTarget).data("type")
 		let new_id = ""
-		if (type === ListType.Attribute)
-			new_id = getNewAttributeId(attributes)
+		if (type === ListType.Attribute) new_id = getNewAttributeId(attributes)
 		switch (type) {
 			case ListType.Attribute:
 				attributes.push({

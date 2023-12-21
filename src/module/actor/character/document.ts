@@ -121,14 +121,8 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	SizeModBonus = 0
 
 	protected _onCreate(data: any, options: DocumentModificationOptions | any, userId: string): void {
-		const default_settings = game.settings.get(
-			SYSTEM_NAME,
-			`${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`
-		)
-		const default_attributes = game.settings.get(
-			SYSTEM_NAME,
-			`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`
-		)
+		const default_settings = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
+		const default_attributes = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
 		const default_resource_trackers = game.settings.get(
 			SYSTEM_NAME,
 			`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`
@@ -138,22 +132,13 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 			roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
 			locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
 		}
-		const default_move_types = game.settings.get(
-			SYSTEM_NAME,
-			`${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`
-		)
+		const default_move_types = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
 		const populate_description = game.settings.get(
 			SYSTEM_NAME,
 			`${SETTINGS.DEFAULT_SHEET_SETTINGS}.populate_description`
 		)
-		const initial_points = game.settings.get(
-			SYSTEM_NAME,
-			`${SETTINGS.DEFAULT_SHEET_SETTINGS}.initial_points`
-		)
-		const default_tech_level = game.settings.get(
-			SYSTEM_NAME,
-			`${SETTINGS.DEFAULT_SHEET_SETTINGS}.tech_level`
-		)
+		const initial_points = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.initial_points`)
+		const default_tech_level = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.tech_level`)
 		const sd: Partial<CharacterSystemData> = {
 			id: newUUID(),
 			created_date: getCurrentTime(),
@@ -732,7 +717,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	// Flat list of all hit locations
 	get HitLocations(): HitLocation[] {
-		const recurseLocations = function(table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
+		const recurseLocations = function (table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
 			table.locations.forEach(e => {
 				locations.push(e)
 				if (e.subTable) locations = recurseLocations(e.subTable, locations)

@@ -1,9 +1,8 @@
-import { MoveTypeOverrideConditionType, MoveTypeOverrideObj } from "./data";
-import { VariableResolver, evaluateToNumber } from "@util";
+import { MoveTypeOverrideConditionType, MoveTypeOverrideObj } from "./data"
+import { VariableResolver, evaluateToNumber } from "@util"
 
 export class MoveTypeOverride {
-
-	condition: { type: MoveTypeOverrideConditionType, qualifier: any }
+	condition: { type: MoveTypeOverrideConditionType; qualifier: any }
 
 	move_type_base: string
 
