@@ -730,41 +730,67 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	// Item Types
 	get traits(): Collection<TraitGURPS | TraitContainerGURPS> {
-		const traits: Collection<TraitGURPS | TraitContainerGURPS> = new Collection()
-		for (const item of this.items) {
-			if (item instanceof TraitGURPS || item instanceof TraitContainerGURPS) traits.set(item._id, item)
-		}
-		return traits
+		// const traits: Collection<TraitGURPS | TraitContainerGURPS> = new Collection()
+		// for (const item of this.items) {
+		// 	if (item instanceof TraitGURPS || item instanceof TraitContainerGURPS) traits.set(item._id, item)
+		// }
+		// return traits
+		return new Collection(
+			[...this.itemTypes[ItemType.Trait], ...this.itemTypes[ItemType.TraitContainer]].map(e => [
+				e.id,
+				e,
+			]) as readonly [string, Item][]
+		) as Collection<TraitGURPS | TraitContainerGURPS>
 	}
 
 	get skills(): Collection<SkillGURPS | TechniqueGURPS | SkillContainerGURPS> {
-		const skills: Collection<SkillGURPS | TechniqueGURPS | SkillContainerGURPS> = new Collection()
-		for (const item of this.items) {
-			if (item instanceof SkillGURPS || item instanceof TechniqueGURPS || item instanceof SkillContainerGURPS)
-				skills.set(item._id, item)
-		}
-		return skills
+		// const skills: Collection<SkillGURPS | TechniqueGURPS | SkillContainerGURPS> = new Collection()
+		// for (const item of this.items) {
+		// 	if (item instanceof SkillGURPS || item instanceof TechniqueGURPS || item instanceof SkillContainerGURPS)
+		// 		skills.set(item._id, item)
+		// }
+		// return skills
+		return new Collection(
+			[
+				...this.itemTypes[ItemType.Skill],
+				...this.itemTypes[ItemType.Technique],
+				...this.itemTypes[ItemType.SkillContainer],
+			].map(e => [e.id, e]) as readonly [string, Item][]
+		) as Collection<SkillGURPS | TechniqueGURPS | SkillContainerGURPS>
 	}
 
 	get spells(): Collection<SpellGURPS | RitualMagicSpellGURPS | SpellContainerGURPS> {
-		const spells: Collection<SpellGURPS | RitualMagicSpellGURPS | SpellContainerGURPS> = new Collection()
-		for (const item of this.items) {
-			if (
-				item instanceof SpellGURPS ||
-				item instanceof RitualMagicSpellGURPS ||
-				item instanceof SpellContainerGURPS
-			)
-				spells.set(item._id, item)
-		}
-		return spells
+		// const spells: Collection<SpellGURPS | RitualMagicSpellGURPS | SpellContainerGURPS> = new Collection()
+		// for (const item of this.items) {
+		// 	if (
+		// 		item instanceof SpellGURPS ||
+		// 		item instanceof RitualMagicSpellGURPS ||
+		// 		item instanceof SpellContainerGURPS
+		// 	)
+		// 		spells.set(item._id, item)
+		// }
+		// return spells
+		return new Collection(
+			[
+				...this.itemTypes[ItemType.Spell],
+				...this.itemTypes[ItemType.RitualMagicSpell],
+				...this.itemTypes[ItemType.SpellContainer],
+			].map(e => [e.id, e]) as readonly [string, Item][]
+		) as Collection<SpellGURPS | RitualMagicSpellGURPS | SpellContainerGURPS>
 	}
 
 	get equipment(): Collection<EquipmentGURPS | EquipmentContainerGURPS> {
-		const equipment: Collection<EquipmentGURPS | EquipmentContainerGURPS> = new Collection()
-		for (const item of this.items) {
-			if (item instanceof EquipmentGURPS || item instanceof EquipmentContainerGURPS) equipment.set(item._id, item)
-		}
-		return equipment
+		// const equipment: Collection<EquipmentGURPS | EquipmentContainerGURPS> = new Collection()
+		// for (const item of this.items) {
+		// 	if (item instanceof EquipmentGURPS || item instanceof EquipmentContainerGURPS) equipment.set(item._id, item)
+		// }
+		// return equipment
+		return new Collection(
+			[...this.itemTypes[ItemType.Equipment], ...this.itemTypes[ItemType.EquipmentContainer]].map(e => [
+				e.id,
+				e,
+			]) as readonly [string, Item][]
+		) as Collection<EquipmentGURPS | EquipmentContainerGURPS>
 	}
 
 	get carriedEquipment(): Collection<EquipmentGURPS | EquipmentContainerGURPS> {
@@ -1083,10 +1109,8 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		// Replace @X@ notation fields with given text
 		if (embeddedName === "Item" && options.substitutions) {
 			for (const item of documents.filter(e => e instanceof ItemGCS)) {
-				// If ((item as any).modifiers) ModifierChoiceSheet.new([item as ItemGCS])
 				const sheet = ModifierChoiceSheet.new([item as ItemGCS])
 				if (game.userId === userId) sheet?.render(true)
-				// ItemSubstitutionSheet.new([item as ItemGCS])
 			}
 		}
 		if (this.system.profile.tech_level !== "" && embeddedName === "Item") {

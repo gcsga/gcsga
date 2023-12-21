@@ -22,12 +22,6 @@ export class DefaultMoveSettings extends AttributeBaseSettings {
 		event.preventDefault()
 	}
 
-	getData(): Promise<any> {
-		const obj = super.getData()
-		console.log(obj)
-		return obj
-	}
-
 	async _onAddItem(event: JQuery.ClickEvent) {
 		event.preventDefault()
 		event.stopPropagation()

@@ -1,4 +1,4 @@
-import { ActorType, RollModifier, SYSTEM_NAME } from "@module/data"
+import { ActorType, ItemType, RollModifier, SYSTEM_NAME } from "@module/data"
 import {
 	BaseWeaponGURPS,
 	ConditionGURPS,
@@ -28,7 +28,7 @@ import {
 } from "@module/damage_calculator"
 import { ApplyDamageDialog } from "@module/damage_calculator/apply_damage_dlg"
 import { DamagePayload } from "@module/damage_calculator/damage_chat_message"
-import { ActorDataGURPS, ActorSourceGURPS } from "@module/config"
+import { ActorDataGURPS, ActorSourceGURPS, ItemGURPS } from "@module/config"
 import Document, { DocumentModificationOptions, Metadata } from "types/foundry/common/abstract/document.mjs"
 import { BaseUser } from "types/foundry/common/documents.mjs"
 import { Attribute } from "@module/attribute"
@@ -165,6 +165,38 @@ export class BaseActorGURPS<SourceType extends BaseActorSourceGURPS = BaseActorS
 
 	get inCombat(): boolean {
 		return game.combat?.combatants.some(c => c.actor?.id === this.id) || false
+	}
+
+	async createNestedEmbeddedDocuments(
+		items: ItemGURPS[],
+		options: { id: string | null; other: boolean } = { id: null, other: false }
+	): Promise<ItemGURPS[]> {
+		const itemData = items.map(e => {
+			if ([ItemType.Equipment, ItemType.EquipmentContainer].includes(e.type as ItemType))
+				return mergeObject(e.toObject(), {
+					[`flags.${SYSTEM_NAME}.${ItemFlags.Container}`]: options.id,
+					[`flags.${SYSTEM_NAME}.${ItemFlags.Other}`]: options.other,
+				})
+			return mergeObject(e.toObject(), { [`flags.${SYSTEM_NAME}.${ItemFlags.Container}`]: options.id })
+		})
+
+		const newItems = await this.createEmbeddedDocuments("Item", itemData, {
+			render: false,
+			temporary: false,
+		})
+
+		let totalItems = newItems
+		for (let i = 0; i < items.length; i++) {
+			if (items[i] instanceof ContainerGURPS && (items[i] as ContainerGURPS).items.size) {
+				const parent = items[i] as ContainerGURPS
+				const childItems = await this.createNestedEmbeddedDocuments(parent.items.contents as ItemGURPS[], {
+					id: newItems[i].id,
+					other: options.other,
+				})
+				totalItems = totalItems.concat(childItems)
+			}
+		}
+		return totalItems
 	}
 
 	createEmbeddedDocuments(
