@@ -1,16 +1,15 @@
-import { HitLocation, HitLocationTable, HitLocationTableData } from "@actor/character/hit_location"
+import { HitLocation } from "@actor/character/hit_location"
 import {
 	DamageAttacker,
+	DamageHit,
 	DamageRoll,
 	DamageTarget,
 	TargetPool,
 	TargetTrait,
 	TargetTraitModifier,
-	Vulnerability,
 } from "@module/damage_calculator"
-import { DamageCalculator, DamageResults } from "@module/damage_calculator/damage_calculator"
+import { DamageCalculator, IDamageCalculator } from "@module/damage_calculator/damage_calculator"
 import { DamageTypes } from "@module/damage_calculator/damage_type"
-// import { InjuryEffect } from "@module/damage_calculator/injury_effect"
 import { DiceGURPS } from "@module/dice"
 import { TooltipGURPS } from "@module/tooltip"
 
@@ -65,8 +64,7 @@ export class _DamageRoll implements DamageRoll {
 
 	applyTo = "HP"
 
-	// Not a real location id, which should be something like "torso".
-	locationId = "dummy"
+	hits: DamageHit[] = [{ basicDamage: 0, locationId: "torso" }]
 
 	attacker = new _Attacker()
 
@@ -100,10 +98,6 @@ export const Knockdown = [
 ]
 
 export type DamageShock = { damage: number; shock: number }
-
-interface IDamageCalculator extends DamageCalculator {
-	results: DamageResults
-}
 
 const dummyLocalize = (stringId: string, data?: any) => {
 	return `${stringId}${data ? `:${JSON.stringify(data)}` : ""}`

@@ -1,41 +1,27 @@
-import { DiceGURPS } from "../dice"
+import { DiceGURPS } from "@module/dice"
 import { DamageType, DamageTypes } from "./damage_type"
-import { HitLocationTable } from "@actor/character/hit_location"
 import { DamagePayload } from "./damage_chat_message"
-import { SETTINGS, SYSTEM_NAME, gid } from "@module/data"
+import { HitLocationTable } from "@actor/character/hit_location"
 
 /**
- * DamageRoll is the parameter that is sent in (along with DamageTarget) to the DamageCalculator.
+ * The Damage Calculator needs three things: The DamageRoll, DamageHit, and DamageTarget.
+ *
+ * DamageRoll contains the information about the attacker and his weapon, including
  */
 interface DamageRoll {
-	/**
-	 * The body_plan location id, or "Default" or "Random". The DamageCalculator will resolve "Default" or "Random" to
-	 * a real location id.
-	 */
-	locationId: string | DefaultHitLocations
-
 	attacker: DamageAttacker | undefined
-	dice: DiceGURPS
-	damageText: string
-	basicDamage: number
+  dice: DiceGURPS
+	readonly damageText: string
 	damageType: DamageType
-	applyTo: "HP" | "FP" | string
-
-	/**
-	 * Currently, the DamageCalculator only cares about "tbb" (tight beam burning).
-	 */
-	damageModifier: string
-
-	/**
-	 * A reference to the weapon used in the attack. Might be used to determine 1/2D for Ranged weapons, for example.
-	 * Or DamageType, damageModifier, armorDivisor, rofMultiplier, ...
-	 */
-	weapon: DamageWeapon | undefined
+	readonly applyTo: "HP" | "FP" | string
+	readonly hits: DamageHit[]
+  damageModifier: string
+	readonly weapon: DamageWeapon | undefined
 
 	/**
 	 * Value 1 = no Armor Divisor, 0 = Ignores DR; otherwise, it takes any non-negative value.
 	 */
-	armorDivisor: number
+ 	armorDivisor: number
 
 	/**
 	 * The multiplier on the RoF, such as the "9" of 3x9. If none, should be equal to 1.
@@ -58,9 +44,17 @@ interface DamageRoll {
 	/**
 	 * A weapon with a RoF multipler (such as RoF 3x9) is within 10% of 1/2D range.
 	 */
-	isShotgunCloseRange: boolean
-
+  isShotgunCloseRange: boolean
 	internalExplosion: boolean
+}
+
+interface DamageHit {
+	/**
+	 * The body_plan location id, or "Default" or "Random". The DamageCalculator will resolve "Default" or "Random" to
+	 * a real location id.
+	 */
+	locationId: string | DefaultHitLocations
+	basicDamage: number
 }
 
 interface DamageAttacker {
@@ -81,47 +75,48 @@ enum DefaultHitLocations {
 	Random = "Random",
 	LargeArea = "LargeArea",
 }
+
 class DamageRollAdapter implements DamageRoll {
-	private _payload: DamagePayload
-
-	private _locationId: string
-
+	/**
+	 * Constructor.
+	 * @param payload
+	 * @param attacker
+	 * @param weapon
+	 */
 	constructor(payload: DamagePayload, attacker: DamageAttacker | undefined, weapon: DamageWeapon | undefined) {
 		this._payload = payload
 
+		if (this._payload.index === -1) {
+			this._payload.damageRoll.forEach(it => {
+				this.hits.push(
+					{
+						locationId: it.hitlocation,
+						basicDamage: it.total
+					}
+				)
+			})
+		} else {
+			this.hits.push(
+				{
+					locationId: this._payload.damageRoll[this._payload.index].hitlocation,
+					basicDamage: this._payload.damageRoll[this._payload.index].total
+				}
+			)
+		}
+
 		this.attacker = attacker
-		this._locationId = payload.damageRoll[0].hitlocation
-		console.log(`location = ${this._locationId}`)
-
 		this.weapon = weapon
-
 		this.internalExplosion = false
 		this.applyTo = ""
-
 		this.rofMultiplier = 1
 		this.range = null
 		this.isHalfDamage = false
 		this.isShotgunCloseRange = false
-		this.vulnerability = 1
 	}
 
-	get locationId(): string {
-		switch (this._locationId) {
-			case undefined:
-			case DefaultHitLocations.Default:
-				// Set to default value from world settings.
-				this._locationId = game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_DAMAGE_LOCATION) ?? gid.Torso
-				break
-		}
+	private _payload: DamagePayload
 
-		return this._locationId
-	}
-
-	set locationId(id: string) {
-		this._locationId = id
-	}
-
-	attacker: DamageAttacker | undefined
+	readonly attacker: DamageAttacker | undefined
 
 	get dice(): DiceGURPS {
 		return this._payload.dice
@@ -131,38 +126,33 @@ class DamageRollAdapter implements DamageRoll {
 		return this._payload.damage
 	}
 
-	get basicDamage(): number {
-		console.log(this._payload)
-		return this._payload.damageRoll[this._payload.index].total
-	}
-
-	get armorDivisor(): number {
-		return this._payload.armorDivisor ?? 1
-	}
-
 	get damageType(): DamageType {
 		return (DamageTypes as any)[this._payload.damageType]
 	}
+
+	readonly applyTo: string
+
+	readonly hits: DamageHit[] = []
 
 	get damageModifier(): string {
 		return this._payload.damageModifier
 	}
 
-	applyTo: string
+	readonly weapon: DamageWeapon | undefined
 
-	weapon: DamageWeapon | undefined
+	get armorDivisor(): number {
+		return this._payload.armorDivisor ?? 1
+	}
 
-	rofMultiplier: number
+	readonly rofMultiplier: number
 
-	range: number | null
+	readonly range: number | null
 
-	isHalfDamage: boolean
+	readonly isHalfDamage: boolean
 
-	isShotgunCloseRange: boolean
+	readonly isShotgunCloseRange: boolean
 
-	vulnerability: number
-
-	internalExplosion: boolean
+	readonly internalExplosion: boolean
 }
 
 /**
@@ -212,4 +202,4 @@ export interface TargetTraitModifier {
 	name: string
 }
 
-export { DamageRoll, DamageRollAdapter, DamageAttacker, DefaultHitLocations, DamageWeapon }
+export { DamageRoll, DamageHit, DamageRollAdapter, DamageAttacker, DefaultHitLocations, DamageWeapon }

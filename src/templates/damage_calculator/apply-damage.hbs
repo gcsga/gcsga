@@ -25,7 +25,7 @@
 				step="any"
 				data-action="override-basic"
 				size="4"
-				class="{{overridden calculator.overrideBasicDamage}}"
+				class="{{overridden calculator.basicDamageOverride}}"
 			/>
 
 			<select name="pool">
@@ -47,7 +47,7 @@
 			<select
 				data-action="armordivisor-select"
 				value="{{calculator.armorDivisor}}"
-				class="{{overridden calculator.overrideArmorDivisor}}"
+				class="{{overridden calculator.armorDivisorOverride}}"
 			>
 				{{#select calculator.armorDivisor}}
 					<option value="0">{{localize "gurps.dmgcalc.armor_divisor.ignores_dr"}}</option>
@@ -71,7 +71,7 @@
 
 		<div class="label">{{localize "gurps.weapon.damage.type"}}</div>
 		<div class="field no-stretch type">
-			<select data-action="damagetype-select" class="{{overridden calculator.overrideDamageType}}">
+			<select data-action="damagetype-select" class="{{overridden calculator.damageTypeOverride}}">
 				{{selectOptions choices.damageType selected=calculator.damageTypeKey localize=true}}
 			</select>
 			<label for="override-woundingmod" class="label">{{localize "gurps.dmgcalc.wounding_modifier"}}
@@ -81,7 +81,7 @@
 						type="number"
 						data-action="override-woundingmod"
 						value="{{calculator.woundingModifier}}"
-						class="{{overridden calculator.overrideWoundingModifier}}"
+						class="{{overridden calculator.woundingModifierOverride}}"
 						step="any"
 						size="3"
 					/></span>
@@ -145,6 +145,24 @@
 	</div>
 
 	<div id="target">
+
+		<nav class="nav-tabs" data-group="primary">
+			{{#each calculator.damageRolls}}
+				<a data-tab="{{@index}}">{{this.basicDamage}}
+					{{this.damageTypeKey}}
+					({{this.locationId}})</a>
+			{{/each}}
+		</nav>
+		<section class="content">
+			{{#each calculator.damageRolls}}
+				<div class="tab browser" dagr-group="primary" data-tab="{{@index}}">
+					<div>{{calculator.basicDamage}}
+						{{calculator.damageTypeKey}}
+						({{calculator.damageRoll.locationId}})</div>
+				</div>
+			{{/each}}
+		</section>
+
 		<div class="header">{{localize "gurps.dmgcalc.target"}}</div>
 		<div class="fieldblock">
 
@@ -171,7 +189,7 @@
 						value="{{calculator.damageResistance}}"
 						step="any"
 						size="6"
-						class="{{overridden calculator.overrideDamageResistance}}"
+						class="{{overridden calculator.damageResistanceOverride}}"
 					/>
 				</label>
 			</div>
@@ -198,7 +216,7 @@
 				<select
 					name="hardened"
 					data-action="hardened-select"
-					class="{{overridden calculator.overrideHardenedDR}}"
+					class="{{overridden calculator.hardenedDROverride}}"
 				>
 					{{selectOptions choices.hardened selected=calculator.hardenedDRLevel}}
 				</select>
@@ -210,7 +228,7 @@
 				<select
 					data-action="tolerance-select"
 					value="{{calculator.injuryTolerance}}"
-					class="{{overridden calculator.overrideInjuryTolerance}}"
+					class="{{overridden calculator.injuryToleranceOverride}}"
 				>
 					{{#select calculator.injuryTolerance}}
 						<option value="None">{{localize "gurps.dmgcalc.tolerance.none"}}</option>
@@ -244,7 +262,7 @@
 							type="number"
 							data-action="override-vulnerability"
 							value="{{calculator.vulnerabilityLevel}}"
-							class="{{overridden calculator.overrideVulnerability}}"
+							class="{{overridden calculator.vulnerabilityOverride}}"
 							step="any"
 							size="3"
 						/></span>
@@ -263,7 +281,7 @@
 				<select
 					name="reduction"
 					data-action="override-reduction"
-					class="{{overridden calculator.overrideDamageReduction}}"
+					class="{{overridden calculator.damageReductionOverride}}"
 				>
 					{{#select calculator.damageReduction}}
 						<option value="1">{{localize "gurps.dmgcalc.none"}}</option>
@@ -279,7 +297,7 @@
 							type="number"
 							data-action="override-reduction"
 							value="{{calculator.damageReduction}}"
-							class="{{overridden calculator.overrideDamageReduction}}"
+							class="{{overridden calculator.damageReductionOverride}}"
 							step="any"
 							size="3"
 						/>

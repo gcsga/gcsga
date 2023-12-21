@@ -29,11 +29,10 @@ describe("Damage calculator", () => {
 		_target = new _Target()
 		_roll = new _DamageRoll()
 		_roll.attacker = _attacker
-		_roll.basicDamage = 8
+		_roll.hits[0]= { basicDamage: 0, locationId: "torso" }
 		_roll.armorDivisor = 1
 		_roll.damageType = DamageTypes.cr
 		_roll.dice = new DiceGURPS("2d")
-		_roll.locationId = "torso"
 
 		_torso = new DamageHitLocation(_target, ".locations.0", {
 			choice_name: "Torso",
@@ -156,16 +155,16 @@ describe("Damage calculator", () => {
 		_target.hitLocationTable.locations.push(_leg)
 		_target.hitLocationTable.locations.push(_hand)
 		_target.hitLocationTable.locations.push(_foot)
-		_roll.basicDamage = 10
+		_roll.hits[0].basicDamage = 10
 	})
 
 	describe("B378: Damage Roll.", () => {
 		it("The result of the damage roll is the hit’s “basic damage.”", () => {
-			_roll.basicDamage = 8
-			_roll.locationId = "torso"
+			_roll.hits[0].basicDamage = 8
+			_roll.hits[0].locationId = "torso"
 			let calc = _create(_roll, _target)
 
-			expect(calc.results.steps).toMatchObject([
+			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "8", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{ substep: "gurps.dmgcalc.substep.damage_resistance", text: "0", notes: "Torso" },
 				{ substep: "gurps.dmgcalc.substep.penetrating", text: "8", notes: "= 8 – 0" },
@@ -179,10 +178,10 @@ describe("Damage calculator", () => {
 		})
 
 		it("(Knockback Only does no damage.)", () => {
-			_roll.basicDamage = 8
+			_roll.hits[0].basicDamage = 8
 			_roll.damageType = DamageTypes.kb
 			let calc = _create(_roll, _target)
-			expect(calc.results.steps).toMatchObject([
+			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "8", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{
 					substep: "gurps.dmgcalc.substep.adjusted_damage",
@@ -203,11 +202,11 @@ describe("Damage calculator", () => {
 
 	describe("B378: Damage Resistance and Penetration. Subtract DR from basic damage. The result is the “penetrating damage”", () => {
 		it("If your target has any Damage Resistance (DR) he subtracts this from your damage roll.", () => {
-			_roll.basicDamage = 8
+			_roll.hits[0].basicDamage = 8
 			_torso._map.set("all", 2)
 
 			let calc = _create(_roll, _target)
-			expect(calc.results.steps).toMatchObject([
+			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "8", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{ substep: "gurps.dmgcalc.substep.damage_resistance", text: "2", notes: "Torso" },
 				{ substep: "gurps.dmgcalc.substep.penetrating", text: "6", notes: "= 8 – 2" },
@@ -221,11 +220,11 @@ describe("Damage calculator", () => {
 		})
 
 		it("If your damage roll is less than or equal to your target’s effective DR, your attack failed to penetrate.", () => {
-			_roll.basicDamage = 5
+			_roll.hits[0].basicDamage = 5
 			_torso._map.set("all", 9)
 
 			let calc = _create(_roll, _target)
-			expect(calc.results.steps).toMatchObject([
+			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "5", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{ substep: "gurps.dmgcalc.substep.damage_resistance", text: "9", notes: "Torso" },
 				{ substep: "gurps.dmgcalc.substep.penetrating", text: "0", notes: "= 5 – 9" },
@@ -242,9 +241,9 @@ describe("Damage calculator", () => {
 			_roll.damageType = DamageTypes.injury
 			_torso._map.set("all", 9)
 
-			_roll.basicDamage = 8
+			_roll.hits[0].basicDamage = 8
 			let calc = _create(_roll, _target)
-			expect(calc.results.steps).toMatchObject([
+			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "8", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{ substep: "gurps.dmgcalc.substep.damage_resistance", text: "9", notes: "Torso" },
 				{
@@ -265,7 +264,7 @@ describe("Damage calculator", () => {
 
 	describe("B378: Armor Divisors and Penetration Modifiers.", () => {
 		beforeEach(() => {
-			_roll.basicDamage = 20
+			_roll.hits[0].basicDamage = 20
 		})
 
 		describe("A divisor of (2) or more means that DR protects at reduced value against the attack.", () => {
@@ -273,7 +272,7 @@ describe("Damage calculator", () => {
 				_torso._map.set("all", 20)
 				_roll.armorDivisor = 2
 				let calc = _create(_roll, _target)
-				expect(calc.results.steps).toMatchObject([
+				expect(calc.hits[0].results.steps).toMatchObject([
 					{
 						substep: "gurps.dmgcalc.substep.basic_damage",
 						text: "20",
@@ -296,7 +295,7 @@ describe("Damage calculator", () => {
 
 				_roll.armorDivisor = 0.5
 				calc = _create(_roll, _target)
-				expect(calc.results.steps).toMatchObject([
+				expect(calc.hits[0].results.steps).toMatchObject([
 					{
 						substep: "gurps.dmgcalc.substep.basic_damage",
 						text: "20",
@@ -322,11 +321,11 @@ describe("Damage calculator", () => {
 				_torso._map.set("all", 20)
 				_roll.armorDivisor = 0
 				let calc = _create(_roll, _target)
-				expect(calc.results.steps).toMatchObject([
+				expect(calc.hits[0].results.steps).toMatchObject([
 					{
+						notes: "gurps.dmgcalc.damage_pool.hp",
 						substep: "gurps.dmgcalc.substep.basic_damage",
 						text: "20",
-						notes: "gurps.dmgcalc.damage_pool.hp",
 					},
 					{ substep: "gurps.dmgcalc.substep.damage_resistance", text: "20", notes: "Torso" },
 					{
@@ -351,7 +350,7 @@ describe("Damage calculator", () => {
 
 				_roll.armorDivisor = 0.5
 				let calc = _create(_roll, _target)
-				expect(calc.results.steps).toMatchObject([
+				expect(calc.hits[0].results.steps).toMatchObject([
 					{
 						substep: "gurps.dmgcalc.substep.basic_damage",
 						text: "20",
@@ -377,7 +376,7 @@ describe("Damage calculator", () => {
 				_torso._map.set("all", 0)
 				_roll.armorDivisor = 0.5
 				let calc = _create(_roll, _target)
-				expect(calc.results.steps).toMatchObject([
+				expect(calc.hits[0].results.steps).toMatchObject([
 					{
 						substep: "gurps.dmgcalc.substep.basic_damage",
 						text: "20",
@@ -404,13 +403,13 @@ describe("Damage calculator", () => {
 	describe("B379: Wounding Modifiers and Injury. If there is any penetrating damage, multiply it by the attack’s “wounding modifier.”", () => {
 		beforeEach(() => {
 			_torso._map.set("all", 5)
-			_roll.basicDamage = 11
+			_roll.hits[0].basicDamage = 11
 		})
 
 		it("Small piercing (pi-): ×0.5.", () => {
 			_roll.damageType = DamageTypes["pi-"]
 			let calc = _create(_roll, _target)
-			expect(calc.results.steps).toMatchObject([
+			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "11", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{ substep: "gurps.dmgcalc.substep.damage_resistance", text: "5", notes: "Torso" },
 				{ substep: "gurps.dmgcalc.substep.penetrating", text: "6", notes: "= 11 – 5" },
@@ -431,10 +430,10 @@ describe("Damage calculator", () => {
 
 		it("For every full 10 points of cutting, impaling, or piercing damage stopped by your DR, you suffer 1 HP of injury due to blunt trauma.", () => {
 			_roll.damageType = DamageTypes.cut
-			_roll.basicDamage = 9
+			_roll.hits[0].basicDamage = 9
 			let calc = _create(_roll, _target)
-			calc.overrideFlexibleArmor(true)
-			expect(calc.results.steps).toMatchObject([
+			calc.hits[0].flexibleArmorOverride = true
+			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "9", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{ substep: "gurps.dmgcalc.substep.damage_resistance", text: "20", notes: "Torso" },
 				{ substep: "gurps.dmgcalc.substep.penetrating", text: "0", notes: "= 9 – 20" },
@@ -446,10 +445,10 @@ describe("Damage calculator", () => {
 				{ substep: "gurps.dmgcalc.substep.injury", text: "0", notes: "= 0 × 1.5" },
 			])
 
-			_roll.basicDamage = 10
+			_roll.hits[0].basicDamage = 10
 			calc = _create(_roll, _target)
-			calc.overrideFlexibleArmor(true)
-			expect(calc.results.steps).toMatchObject([
+			calc.hits[0].flexibleArmorOverride = true
+			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "10", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{ substep: "gurps.dmgcalc.substep.damage_resistance", text: "20", notes: "Torso" },
 				{ substep: "gurps.dmgcalc.substep.penetrating", text: "0", notes: "= 10 – 20" },
@@ -466,10 +465,10 @@ describe("Damage calculator", () => {
 				},
 			])
 
-			_roll.basicDamage = 20
+			_roll.hits[0].basicDamage = 20
 			calc = _create(_roll, _target)
-			calc.overrideFlexibleArmor(true)
-			expect(calc.results.steps).toMatchObject([
+			calc.hits[0].flexibleArmorOverride =true
+			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "20", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{ substep: "gurps.dmgcalc.substep.damage_resistance", text: "20", notes: "Torso" },
 				{ substep: "gurps.dmgcalc.substep.penetrating", text: "0", notes: "= 20 – 20" },
@@ -489,10 +488,10 @@ describe("Damage calculator", () => {
 
 		it("If even one point of damage penetrates your flexible DR, however, you do not suffer blunt trauma.", () => {
 			_roll.damageType = DamageTypes["pi-"]
-			_roll.basicDamage = 21
+			_roll.hits[0].basicDamage = 21
 			let calc = _create(_roll, _target)
-			calc.overrideFlexibleArmor(true)
-			expect(calc.results.steps).toMatchObject([
+			calc.hits[0].flexibleArmorOverride = true
+			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "21", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{ substep: "gurps.dmgcalc.substep.damage_resistance", text: "20", notes: "Torso" },
 				{ substep: "gurps.dmgcalc.substep.penetrating", text: "1", notes: "= 21 – 20" },
@@ -511,14 +510,14 @@ describe("Damage calculator", () => {
 			beforeEach(() => {
 				_torso._map.set("all", 5)
 				_target.injuryTolerance = "Unliving"
-				_roll.locationId = "torso"
+				_roll.hits[0].locationId = "torso"
 			})
 
 			it("This gives impaling and huge piercing a wounding modifier of ×1; ...", () => {
 				_roll.damageType = DamageTypes.imp
-				_roll.basicDamage = 11
+				_roll.hits[0].basicDamage = 11
 				let calc = _create(_roll, _target)
-				expect(calc.results.steps).toMatchObject([
+				expect(calc.hits[0].results.steps).toMatchObject([
 					{
 						substep: "gurps.dmgcalc.substep.basic_damage",
 						text: "11",
@@ -541,7 +540,7 @@ describe("Damage calculator", () => {
 
 				_roll.damageType = DamageTypes["pi++"]
 				calc = _create(_roll, _target)
-				expect(calc.results.steps).toMatchObject([
+				expect(calc.hits[0].results.steps).toMatchObject([
 					{
 						substep: "gurps.dmgcalc.substep.basic_damage",
 						text: "11",
@@ -565,9 +564,9 @@ describe("Damage calculator", () => {
 
 			it("... large piercing, ×1/2;", () => {
 				_roll.damageType = DamageTypes["pi+"]
-				_roll.basicDamage = 11
+				_roll.hits[0].basicDamage = 11
 				let calc = _create(_roll, _target)
-				expect(calc.results.steps).toMatchObject([
+				expect(calc.hits[0].results.steps).toMatchObject([
 					{
 						substep: "gurps.dmgcalc.substep.basic_damage",
 						text: "11",
@@ -591,9 +590,9 @@ describe("Damage calculator", () => {
 
 			it("... piercing, ×1/3;", () => {
 				_roll.damageType = DamageTypes.pi
-				_roll.basicDamage = 11
+				_roll.hits[0].basicDamage = 11
 				let calc = _create(_roll, _target)
-				expect(calc.results.steps).toMatchObject([
+				expect(calc.hits[0].results.steps).toMatchObject([
 					{
 						substep: "gurps.dmgcalc.substep.basic_damage",
 						text: "11",
@@ -617,9 +616,9 @@ describe("Damage calculator", () => {
 
 			it("... and small piercing, ×1/5.", () => {
 				_roll.damageType = DamageTypes["pi-"]
-				_roll.basicDamage = 15
+				_roll.hits[0].basicDamage = 15
 				let calc = _create(_roll, _target)
-				expect(calc.results.steps).toMatchObject([
+				expect(calc.hits[0].results.steps).toMatchObject([
 					{
 						substep: "gurps.dmgcalc.substep.basic_damage",
 						text: "15",
@@ -652,9 +651,9 @@ describe("Damage calculator", () => {
 				let types = [DamageTypes.imp, DamageTypes["pi++"]]
 				for (const type of types) {
 					_roll.damageType = type
-					_roll.basicDamage = 11
+					_roll.hits[0].basicDamage = 11
 					let calc = _create(_roll, _target)
-					expect(calc.results.steps).toMatchObject([
+					expect(calc.hits[0].results.steps).toMatchObject([
 						{
 							substep: "gurps.dmgcalc.substep.basic_damage",
 							text: "11",
@@ -680,9 +679,9 @@ describe("Damage calculator", () => {
 
 			it("... large piercing, ×1/3;", () => {
 				_roll.damageType = DamageTypes["pi+"]
-				_roll.basicDamage = 11
+				_roll.hits[0].basicDamage = 11
 				let calc = _create(_roll, _target)
-				expect(calc.results.steps).toMatchObject([
+				expect(calc.hits[0].results.steps).toMatchObject([
 					{
 						substep: "gurps.dmgcalc.substep.basic_damage",
 						text: "11",
@@ -706,9 +705,9 @@ describe("Damage calculator", () => {
 
 			it("... piercing, ×1/5;", () => {
 				_roll.damageType = DamageTypes.pi
-				_roll.basicDamage = 15
+				_roll.hits[0].basicDamage = 15
 				let calc = _create(_roll, _target)
-				expect(calc.results.steps).toMatchObject([
+				expect(calc.hits[0].results.steps).toMatchObject([
 					{
 						substep: "gurps.dmgcalc.substep.basic_damage",
 						text: "15",
@@ -732,9 +731,9 @@ describe("Damage calculator", () => {
 
 			it("... and small piercing, ×1/10.", () => {
 				_roll.damageType = DamageTypes["pi-"]
-				_roll.basicDamage = 15
+				_roll.hits[0].basicDamage = 15
 				let calc = _create(_roll, _target)
-				expect(calc.results.steps).toMatchObject([
+				expect(calc.hits[0].results.steps).toMatchObject([
 					{
 						substep: "gurps.dmgcalc.substep.basic_damage",
 						text: "15",
@@ -761,7 +760,7 @@ describe("Damage calculator", () => {
 			beforeEach(() => {
 				_torso._map.set("all", 5)
 				_target.injuryTolerance = "Diffuse"
-				_roll.basicDamage = 100
+				_roll.hits[0].basicDamage = 100
 			})
 
 			it("Impaling and piercing attacks (of any size) never do more than 1 HP of injury.", () => {
@@ -775,7 +774,7 @@ describe("Damage calculator", () => {
 				for (const type of [types[0], types[1]]) {
 					_roll.damageType = type[0]
 					let calc = _create(_roll, _target)
-					expect(calc.results.steps).toMatchObject([
+					expect(calc.hits[0].results.steps).toMatchObject([
 						{
 							substep: "gurps.dmgcalc.substep.basic_damage",
 							text: "100",
@@ -799,7 +798,7 @@ describe("Damage calculator", () => {
 
 				_roll.damageType = DamageTypes["pi+"]
 				let calc = _create(_roll, _target)
-				expect(calc.results.steps).toMatchObject([
+				expect(calc.hits[0].results.steps).toMatchObject([
 					{
 						substep: "gurps.dmgcalc.substep.basic_damage",
 						text: "100",
@@ -822,7 +821,7 @@ describe("Damage calculator", () => {
 
 				_roll.damageType = DamageTypes.pi
 				calc = _create(_roll, _target)
-				expect(calc.results.steps).toMatchObject([
+				expect(calc.hits[0].results.steps).toMatchObject([
 					{
 						substep: "gurps.dmgcalc.substep.basic_damage",
 						text: "100",
@@ -845,7 +844,7 @@ describe("Damage calculator", () => {
 
 				_roll.damageType = DamageTypes["pi-"]
 				calc = _create(_roll, _target)
-				expect(calc.results.steps).toMatchObject([
+				expect(calc.hits[0].results.steps).toMatchObject([
 					{
 						substep: "gurps.dmgcalc.substep.basic_damage",
 						text: "100",
@@ -879,7 +878,7 @@ describe("Damage calculator", () => {
 				for (const type of types) {
 					_roll.damageType = type[0]
 					let calc = _create(_roll, _target)
-					expect(calc.results.steps).toMatchObject([
+					expect(calc.hits[0].results.steps).toMatchObject([
 						{
 							substep: "gurps.dmgcalc.substep.basic_damage",
 							text: "100",
@@ -907,7 +906,7 @@ describe("Damage calculator", () => {
 
 				_roll.damageType = DamageTypes.fat
 				let calc = _create(_roll, _target)
-				expect(calc.results.steps).toMatchObject([
+				expect(calc.hits[0].results.steps).toMatchObject([
 					{
 						substep: "gurps.dmgcalc.substep.basic_damage",
 						text: "100",
@@ -933,16 +932,16 @@ describe("Damage calculator", () => {
 
 	describe("Arm or Leg.", () => {
 		beforeEach(() => {
-			_roll.basicDamage = 6
+			_roll.hits[0].basicDamage = 6
 		})
 		it("...but damage beyond the minimum required to inflict a crippling injury is lost.", () => {
-			_roll.locationId = "arm"
+			_roll.hits[0].locationId = "arm"
 
 			_target.hitPoints.value = 15
-			_roll.basicDamage = 10
+			_roll.hits[0].basicDamage = 10
 			_roll.damageType = DamageTypes.cr
 			let calc = _create(_roll, _target)
-			expect(calc.results.steps).toMatchObject([
+			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "10", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{ substep: "gurps.dmgcalc.substep.damage_resistance", text: "0", notes: "Right Arm" },
 				{ substep: "gurps.dmgcalc.substep.penetrating", text: "10", notes: "= 10 – 0" },
@@ -970,10 +969,10 @@ describe("Damage calculator", () => {
 		it("An explosion inflicts “collateral damage” on everything within (2 × dice of damage) yards.", () => {
 			_roll.dice = new DiceGURPS("1d+3")
 			_roll.range = 3
-			_roll.basicDamage = 9
+			_roll.hits[0].basicDamage = 9
 
 			const calc = _create(_roll, _target)
-			expect(calc.results.steps).toMatchObject([
+			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "9", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{
 					substep: "gurps.dmgcalc.substep.adjusted_damage",
@@ -995,7 +994,7 @@ describe("Damage calculator", () => {
 			])
 
 			_roll.range = 2
-			expect(calc.results.steps).toMatchObject([
+			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "9", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{
 					substep: "gurps.dmgcalc.substep.adjusted_damage",
@@ -1019,11 +1018,11 @@ describe("Damage calculator", () => {
 
 		it("Roll this damage but divide it by (3 × yards from the center of the blast), rounding down.", () => {
 			_roll.range = 2
-			_roll.basicDamage = 13
+			_roll.hits[0].basicDamage = 13
 			_torso._map.set("all", 1)
 
 			const calc = _create(_roll, _target)
-			expect(calc.results.steps).toMatchObject([
+			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "13", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{
 					substep: "gurps.dmgcalc.substep.adjusted_damage",
@@ -1045,7 +1044,7 @@ describe("Damage calculator", () => {
 			])
 
 			_roll.range = 1
-			expect(calc.results.steps).toMatchObject([
+			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "13", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{
 					substep: "gurps.dmgcalc.substep.adjusted_damage",
@@ -1067,7 +1066,7 @@ describe("Damage calculator", () => {
 			])
 
 			_roll.range = 3
-			expect(calc.results.steps).toMatchObject([
+			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "13", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{
 					substep: "gurps.dmgcalc.substep.adjusted_damage",
@@ -1091,13 +1090,13 @@ describe("Damage calculator", () => {
 
 		it.skip("If an explosive attack has an armor divisor, it does not apply to the collateral damage.", () => {
 			_roll.dice = new DiceGURPS("6d")
-			_roll.basicDamage = 24
+			_roll.hits[0].basicDamage = 24
 			_roll.armorDivisor = 3
 			_torso._map.set("all", 3)
 
 			_roll.range = 2
 			const calc = _create(_roll, _target)
-			expect(calc.results.steps).toMatchObject([
+			expect(calc.hits[0].results.steps).toMatchObject([
 				{
 					substep: "gurps.dmgcalc.substep.basic_damage",
 					text: "24",
@@ -1119,7 +1118,7 @@ describe("Damage calculator", () => {
 			])
 
 			_roll.range = 1
-			expect(calc.results.steps).toMatchObject([
+			expect(calc.hits[0].results.steps).toMatchObject([
 				{
 					substep: "gurps.dmgcalc.substep.basic_damage",
 					text: "24",
@@ -1141,7 +1140,7 @@ describe("Damage calculator", () => {
 			])
 
 			_roll.range = 3
-			expect(calc.results.steps).toMatchObject([
+			expect(calc.hits[0].results.steps).toMatchObject([
 				{
 					substep: "gurps.dmgcalc.substep.basic_damage",
 					text: "24",
@@ -1165,13 +1164,13 @@ describe("Damage calculator", () => {
 
 		it("Internal Explosions: DR has no effect! In addition, treat the blast as an attack on the vitals, with a ×3 wounding modifier.", () => {
 			_roll.dice = new DiceGURPS("6d")
-			_roll.basicDamage = 24
+			_roll.hits[0].basicDamage = 24
 			_roll.internalExplosion = true
 			_torso._map.set("all", 3)
 
 			_roll.range = 0
 			const calc = _create(_roll, _target)
-			expect(calc.results.steps).toMatchObject([
+			expect(calc.hits[0].results.steps).toMatchObject([
 				{
 					substep: "gurps.dmgcalc.substep.basic_damage",
 					text: "24",
