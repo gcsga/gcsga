@@ -1,11 +1,9 @@
 import { ItemGCS } from "@item/gcs"
 import { RitualMagicSpellGURPS } from "@item/ritual_magic_spell"
 import { SpellGURPS } from "@item/spell"
-import { SpellContainerData } from "./data"
+import { SpellContainerSource } from "./data"
 
-export class SpellContainerGURPS extends ItemGCS {
-	readonly system!: SpellContainerData
-
+export class SpellContainerGURPS extends ItemGCS<SpellContainerSource> {
 	// Embedded Items
 	get children(): Collection<SpellGURPS | RitualMagicSpellGURPS | SpellContainerGURPS> {
 		return super.children as Collection<SpellGURPS | RitualMagicSpellGURPS | SpellContainerGURPS>

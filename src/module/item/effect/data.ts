@@ -3,7 +3,7 @@ import { FeatureConstructor } from "@module/config"
 import { ItemType, RollModifier } from "@module/data"
 import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
 
-export type EffectSource = BaseItemSourceGURPS<ItemType.Effect, EffectSystemData>
+export type EffectSource = BaseItemSourceGURPS<ItemType.Effect | ItemType.Condition, EffectSystemData>
 
 // Export interface EffectFlags extends ItemFlagsGURPS {
 // 	aura: boolean

@@ -1,6 +1,7 @@
 import { ConditionID } from "@item/condition/data"
 import { AttributeType, ThresholdOp } from "@module/attribute/data"
 import { EFFECT_ACTION, SETTINGS, SYSTEM_NAME, gid } from "@module/data"
+import { MoveTypeOverrideConditionType } from "@module/move_type"
 
 export const defaultSettings = {
 	[SYSTEM_NAME]: {
@@ -282,5 +283,106 @@ export const defaultSettings = {
 				],
 			},
 		],
+		[`${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`]: [
+			{
+				id: gid.Ground,
+				name: "Ground Move",
+				move_type_base: "$basic_move",
+				cost_per_point: 5,
+				overrides: [
+					{
+						condition: {
+							type: MoveTypeOverrideConditionType.Condition,
+							qualifier: ConditionID.PostureCrawl
+						},
+						move_type_base: "floor($basic_move/3)"
+					},
+					{
+						condition: {
+							type: MoveTypeOverrideConditionType.Condition,
+							qualifier: ConditionID.PostureKneel
+						},
+						move_type_base: "floor($basic_move/3)"
+					},
+					{
+						condition: {
+							type: MoveTypeOverrideConditionType.Condition,
+							qualifier: ConditionID.PostureCrouch
+						},
+						move_type_base: "floor($basic_move*2/3)"
+					},
+					{
+						condition: {
+							type: MoveTypeOverrideConditionType.Condition,
+							qualifier: ConditionID.PostureProne
+						},
+						move_type_base: "1"
+					},
+					{
+						condition: {
+							type: MoveTypeOverrideConditionType.Condition,
+							qualifier: ConditionID.PostureSit
+						},
+						move_type_base: "0"
+					},
+				]
+			},
+			{
+				id: gid.Water,
+				name: "Water Move",
+				move_type_base: "$basic_move/5",
+				cost_per_point: 5,
+				overrides: [
+					{
+						condition: {
+							type: MoveTypeOverrideConditionType.Trait,
+							// TODO: replace with variable for better language support
+							qualifier: "Amphibious"
+						},
+						move_type_base: "$basic_move"
+					},
+					{
+						condition: {
+							type: MoveTypeOverrideConditionType.Trait,
+							// TODO: replace with variable for better language support
+							qualifier: "Aquatic"
+						},
+						move_type_base: "$basic_move"
+					},
+				]
+			},
+			{
+				id: gid.Air,
+				name: "Air Move",
+				move_type_base: "0",
+				cost_per_point: 5,
+				overrides: [
+					{
+						condition: {
+							type: MoveTypeOverrideConditionType.Trait,
+							// TODO: replace with variable for better language support
+							qualifier: "Flight"
+						},
+						move_type_base: "$basic_speed*2"
+					},
+					{
+						condition: {
+							type: MoveTypeOverrideConditionType.Trait,
+							// TODO: replace with variable for better language support
+							qualifier: "Walk on Air"
+						},
+						move_type_base: `$${gid.Ground}`
+					},
+				]
+			},
+			{
+
+				id: gid.Space,
+				name: "Space Move",
+				move_type_base: "0",
+				cost_per_point: 5,
+				overrides: []
+			}
+		]
 	},
 }

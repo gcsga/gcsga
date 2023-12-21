@@ -1,11 +1,12 @@
 import { evalOperators, Operator } from "./operator"
 import { eFunction, evalFunctions } from "./function"
 import { SkillContainerGURPS, SkillGURPS, TechniqueGURPS, TraitContainerGURPS, TraitGURPS } from "@item"
-import { AttributeBonusLimitation } from "@feature/attribute_bonus"
 import { TooltipGURPS } from "@module/tooltip"
 import { AttributeDefObj } from "@module/attribute"
 import { DamageProgression } from "@module/data"
 import { MookSkill, MookTrait } from "@module/mook"
+import { MoveTypeDefObj } from "@module/move_type"
+import { AttributeBonusLimitation, MoveBonusType } from "@feature"
 
 // VariableResolver is used to resolve variables in expressions into their values.
 export interface VariableResolver {
@@ -13,6 +14,7 @@ export interface VariableResolver {
 	settings: {
 		attributes: AttributeDefObj[]
 		damage_progression: DamageProgression
+		move_types: MoveTypeDefObj[]
 	}
 	resolveVariable: (variableName: string) => string
 	skills: Collection<SkillGURPS | TechniqueGURPS | SkillContainerGURPS> | MookSkill[]
@@ -20,6 +22,12 @@ export interface VariableResolver {
 	attributeBonusFor: (
 		attributeId: string,
 		limitation: AttributeBonusLimitation,
+		effective?: boolean,
+		tooltip?: TooltipGURPS | null
+	) => number
+	moveBonusFor: (
+		id: string,
+		limitation: MoveBonusType,
 		effective?: boolean,
 		tooltip?: TooltipGURPS | null
 	) => number
@@ -198,7 +206,7 @@ class Evaluator {
 			;[index, op] = this.processFunction(expression, index)
 			index += op?.symbol.length || 0
 			let tmp: number
-			;[tmp, op] = this.nextOperator(expression, index, null)
+				;[tmp, op] = this.nextOperator(expression, index, null)
 			if (!op) return index
 			index = tmp
 		}
@@ -395,4 +403,12 @@ export function evaluateToNumber(expression: string, resolver: VariableResolver)
 	else if (typeof parseFloat(result) === "number") return parseFloat(result)
 	console.error(`Unable to resolve ${expression} to a number`)
 	return 0
+}
+
+export function parseInlineNoteExpressions(inString: string, resolver: VariableResolver): string {
+	const regex_eval = /\|\|[^|]+\|\|/g
+	inString.match(regex_eval)?.forEach(e => {
+		inString = inString.replaceAll(e, new Evaluator({ resolver }).evaluate(e.replaceAll("||", "")))
+	})
+	return inString
 }

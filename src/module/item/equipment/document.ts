@@ -3,15 +3,13 @@ import { EquipmentContainerGURPS } from "@item/equipment_container"
 import { EquipmentModifierGURPS, valueAdjustedForModifiers, weightAdjustedForModifiers } from "@item/equipment_modifier"
 import { EquipmentModifierContainerGURPS } from "@item/equipment_modifier_container"
 import { ItemGCS } from "@item/gcs"
-import { DisplayMode, SETTINGS, SYSTEM_NAME } from "@module/data"
-import { Weight, WeightUnits, fxp } from "@util"
+import { DisplayMode, ItemType, SETTINGS, SYSTEM_NAME } from "@module/data"
+import { Weight, WeightUnits, fxp, parseInlineNoteExpressions } from "@util"
 import { HandlebarsHelpersGURPS } from "@util/handlebars_helpers"
-import { EquipmentData } from "./data"
 import { Feature } from "@module/config"
+import { EquipmentSource } from "./data"
 
-export class EquipmentGURPS extends ItemGCS {
-	readonly system!: EquipmentData
-
+export class EquipmentGURPS extends ItemGCS<EquipmentSource> {
 	unsatisfied_reason = ""
 
 	// Getters
@@ -36,6 +34,8 @@ export class EquipmentGURPS extends ItemGCS {
 		if (this.system.notes) outString += HandlebarsHelpersGURPS.format(this.system.notes)
 		if (this.unsatisfied_reason) outString += HandlebarsHelpersGURPS.unsatisfied(this.unsatisfied_reason)
 		outString += "</div>"
+		if (this.parent)
+			outString = parseInlineNoteExpressions(outString, this.parent as any)
 		return outString
 	}
 
@@ -55,9 +55,15 @@ export class EquipmentGURPS extends ItemGCS {
 		return default_settings.default_weight_units
 	}
 
-	// get weightString(): string {
-	// 	return Weight.format(this.weight, this.weightUnits)
-	// }
+	get weightString(): string {
+		return Weight.format(this.weight, this.weightUnits)
+	}
+
+	get isGreyedOut(): boolean {
+		return !(this.system.quantity > 0 &&
+			((this.container?.type === ItemType.EquipmentContainer) ?
+				!(this.container as any).isGreyedOut : true))
+	}
 
 	get enabled(): boolean {
 		return this.equipped

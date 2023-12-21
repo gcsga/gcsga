@@ -6,8 +6,8 @@ import { PDF } from "@module/pdf"
 import { LocalizeGURPS, prepareFormData } from "@util"
 import { BaseItemGURPS } from "."
 
-export class ItemSheetGURPS extends ItemSheet {
-	object!: BaseItemGURPS
+export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends ItemSheet {
+	declare object: IType
 
 	static override get defaultOptions(): DocumentSheetOptions<Item> {
 		const options = super.defaultOptions
@@ -38,7 +38,7 @@ export class ItemSheetGURPS extends ItemSheet {
 		if (actor) {
 			actor.attributes.forEach(e => {
 				if (e.attribute_def.type.includes("_separator")) return
-				attributes[e.attr_id] = e.attribute_def.name
+				attributes[e.id] = e.attribute_def.name
 			})
 			for (const e of actor.HitLocations) {
 				locations[e.id] = LocalizeGURPS.format(LocalizeGURPS.translations.gurps.field_prefix.dr, {
@@ -84,7 +84,7 @@ export class ItemSheetGURPS extends ItemSheet {
 	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		html.find("textarea")
-			.each(function () {
+			.each(function() {
 				this.setAttribute("style", `height:${this.scrollHeight + 2}px;overflow-y:hidden;`)
 			})
 			.on("input", event => {
@@ -124,6 +124,7 @@ export class ItemSheetGURPS extends ItemSheet {
 
 	protected async _addPrereqChild(event: JQuery.ClickEvent): Promise<any> {
 		event.preventDefault()
+		if (!this.isEditable) return
 		const path = $(event.currentTarget).data("path").replace("array.", "")
 		const prereqs = getProperty(this.item, `${path}.prereqs`)
 		prereqs.push({
@@ -140,6 +141,7 @@ export class ItemSheetGURPS extends ItemSheet {
 
 	protected async _addPrereqList(event: JQuery.ClickEvent): Promise<any> {
 		event.preventDefault()
+		if (!this.isEditable) return
 		const path = $(event.currentTarget).data("path").replace("array.", "")
 		const prereqs = getProperty(this.item, `${path}.prereqs`)
 		prereqs.push({
@@ -167,6 +169,7 @@ export class ItemSheetGURPS extends ItemSheet {
 
 	protected async _onPrereqTypeChange(event: JQuery.ChangeEvent): Promise<any> {
 		event.preventDefault()
+		if (!this.isEditable) return
 		const value = event.currentTarget.value
 		const PrereqConstructor = CONFIG.GURPS.Prereq.classes[value as PrereqType]
 		let path = $(event.currentTarget).data("path").replace("array.", "")
@@ -186,6 +189,7 @@ export class ItemSheetGURPS extends ItemSheet {
 
 	protected async _addFeature(event: JQuery.ClickEvent): Promise<any> {
 		event.preventDefault()
+		if (!this.isEditable) return
 		const features = (this.item.system as any).features
 		features.push({
 			type: FeatureType.AttributeBonus,
@@ -201,6 +205,7 @@ export class ItemSheetGURPS extends ItemSheet {
 	}
 
 	protected async _removeFeature(event: JQuery.ClickEvent): Promise<any> {
+		if (!this.isEditable) return
 		const index = $(event.currentTarget).data("index")
 		const features = (this.item.system as any).features
 		features.splice(index, 1)
@@ -211,6 +216,7 @@ export class ItemSheetGURPS extends ItemSheet {
 
 	protected async _addDefault(event: JQuery.ClickEvent): Promise<any> {
 		event.preventDefault()
+		if (!this.isEditable) return
 		const defaults = (this.item.system as any).defaults ?? []
 		defaults.push({
 			type: gid.Skill,
@@ -225,6 +231,7 @@ export class ItemSheetGURPS extends ItemSheet {
 	}
 
 	protected async _removeDefault(event: JQuery.ClickEvent): Promise<any> {
+		if (!this.isEditable) return
 		const index = $(event.currentTarget).data("index")
 		const defaults = (this.item.system as any).defaults ?? []
 		defaults.splice(index, 1)
@@ -235,6 +242,7 @@ export class ItemSheetGURPS extends ItemSheet {
 	}
 
 	protected async _addStudy(event: JQuery.ClickEvent): Promise<any> {
+		if (!this.isEditable) return
 		event.preventDefault()
 		const study = (this.item.system as any).study
 		study.push({
@@ -248,6 +256,7 @@ export class ItemSheetGURPS extends ItemSheet {
 	}
 
 	protected async _removeStudy(event: JQuery.ClickEvent): Promise<any> {
+		if (!this.isEditable) return
 		const index = $(event.currentTarget).data("index")
 		const study = (this.item.system as any).study
 		study.splice(index, 1)
@@ -257,6 +266,7 @@ export class ItemSheetGURPS extends ItemSheet {
 	}
 
 	protected async _onFeatureTypeChange(event: JQuery.ChangeEvent): Promise<any> {
+		if (!this.isEditable) return
 		const value = event.currentTarget.value
 		const index = $(event.currentTarget).data("index")
 		const FeatureConstructor = CONFIG.GURPS.Feature.classes[value as FeatureType]

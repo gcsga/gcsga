@@ -1,50 +1,20 @@
 import { SETTINGS, SYSTEM_NAME } from "@module/data"
 import { prepareFormData } from "@util"
 import { DnD } from "@util/drag_drop"
-import { SettingsMenuGURPS } from "./menu"
 import { ResourceTrackerDefObj } from "@module/resource_tracker/data"
+import { AttributeBaseSettings } from "./attribute_base"
 
-export class DefaultResourceTrackerSettings extends SettingsMenuGURPS {
-	static override readonly namespace = "default_resource_trackers"
+
+enum ListType {
+	ResourceTracker = "resource_trackers",
+	Thresholds = "tracker_thresholds",
+}
+
+export class DefaultResourceTrackerSettings extends AttributeBaseSettings {
+
+	static override readonly namespace = SETTINGS.DEFAULT_RESOURCE_TRACKERS
 
 	static override readonly SETTINGS = ["resource_trackers"]
-
-	static override get defaultOptions(): FormApplicationOptions {
-		const options = super.defaultOptions
-		options.classes.push("gurps")
-		options.classes.push("settings-menu")
-
-		return mergeObject(options, {
-			title: `gurps.settings.${this.namespace}.name`,
-			id: `${this.namespace}-settings`,
-			template: `systems/${SYSTEM_NAME}/templates/system/settings/${this.namespace}.hbs`,
-			width: 480,
-			height: "auto",
-			submitOnClose: true,
-			submitOnChange: true,
-			closeOnSubmit: false,
-			resizable: true,
-		} as FormApplicationOptions)
-	}
-
-	protected static override get settings(): Record<string, any> {
-		return {
-			resource_trackers: {
-				name: "",
-				hint: "",
-				type: Array,
-				default: [],
-			},
-		}
-	}
-
-	activateListeners(html: JQuery<HTMLElement>): void {
-		super.activateListeners(html)
-		// Html.find(".reset-all").on("click", event => this._onResetAll(event))
-		html.find(".item").on("dragover", event => this._onDragItem(event))
-		html.find(".add").on("click", event => this._onAddItem(event))
-		html.find(".delete").on("click", event => this._onDeleteItem(event))
-	}
 
 	_onDataImport(event: JQuery.ClickEvent) {
 		event.preventDefault()
@@ -61,9 +31,9 @@ export class DefaultResourceTrackerSettings extends SettingsMenuGURPS {
 			SYSTEM_NAME,
 			`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`
 		)
-		const type: "resource_trackers" | "tracker_thresholds" = $(event.currentTarget).data("type")
+		const type: ListType = $(event.currentTarget).data("type")
 		let new_id = ""
-		if (type === "resource_trackers")
+		if (type === ListType.ResourceTracker)
 			for (let n = 0; n < 26; n++) {
 				const char = String.fromCharCode(97 + n)
 				if (![...resource_trackers].find(e => e.id === char)) {
@@ -72,8 +42,7 @@ export class DefaultResourceTrackerSettings extends SettingsMenuGURPS {
 				}
 			}
 		switch (type) {
-			case "resource_trackers":
-				// TODO: account for possibility of all letters being taken
+			case ListType.ResourceTracker:
 				resource_trackers.push({
 					id: new_id,
 					name: "",
@@ -86,7 +55,7 @@ export class DefaultResourceTrackerSettings extends SettingsMenuGURPS {
 				})
 				await game.settings.set(SYSTEM_NAME, `${this.namespace}.resource_trackers`, resource_trackers)
 				return this.render()
-			case "tracker_thresholds":
+			case ListType.Thresholds:
 				resource_trackers[$(event.currentTarget).data("id")].thresholds ??= []
 				resource_trackers[$(event.currentTarget).data("id")].thresholds!.push({
 					state: "",
@@ -99,7 +68,7 @@ export class DefaultResourceTrackerSettings extends SettingsMenuGURPS {
 		}
 	}
 
-	private async _onDeleteItem(event: JQuery.ClickEvent) {
+	async _onDeleteItem(event: JQuery.ClickEvent) {
 		event.preventDefault()
 		event.stopPropagation()
 		const resource_trackers: ResourceTrackerDefObj[] = game.settings.get(
@@ -118,36 +87,6 @@ export class DefaultResourceTrackerSettings extends SettingsMenuGURPS {
 				resource_trackers[parent_index].thresholds?.splice(index, 1)
 				await game.settings.set(SYSTEM_NAME, `${this.namespace}.resource_trackers`, resource_trackers)
 				return this.render()
-		}
-	}
-
-	async _onDragStart(event: DragEvent) {
-		// TODO:update
-		const item = $(event.currentTarget!)
-		const type: "resource_trackers" | "tracker_thresholds" = item.data("type")
-		const index = Number(item.data("index"))
-		const parent_index = Number(item.data("pindex")) || 0
-		event.dataTransfer?.setData(
-			"text/plain",
-			JSON.stringify({
-				type: type,
-				index: index,
-				parent_index: parent_index,
-			})
-		)
-		;(event as any).dragType = type
-	}
-
-	protected _onDragItem(event: JQuery.DragOverEvent): void {
-		const element = $(event.currentTarget!)
-		const heightAcross = (event.pageY! - element.offset()!.top) / element.height()!
-		element.siblings(".item").removeClass("border-top").removeClass("border-bottom")
-		if (heightAcross > 0.5) {
-			element.removeClass("border-top")
-			element.addClass("border-bottom")
-		} else {
-			element.removeClass("border-bottom")
-			element.addClass("border-top")
 		}
 	}
 
@@ -185,15 +124,6 @@ export class DefaultResourceTrackerSettings extends SettingsMenuGURPS {
 
 		await game.settings.set(SYSTEM_NAME, `${this.namespace}.resource_trackers`, resource_trackers)
 		return this.render()
-	}
-
-	override async getData(): Promise<any> {
-		const resource_trackers = game.settings.get(SYSTEM_NAME, `${this.namespace}.resource_trackers`)
-		return {
-			resourceTrackers: resource_trackers,
-			actor: null,
-			config: CONFIG.GURPS,
-		}
 	}
 
 	protected override async _updateObject(_event: Event, formData: any): Promise<void> {

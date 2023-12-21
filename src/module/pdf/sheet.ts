@@ -25,7 +25,7 @@ export class PDFViewerSheet extends DocumentSheet<DocumentSheetOptions<JournalEn
 	private _getPDFData(): URLSearchParams {
 		const params = new URLSearchParams()
 		if ((this.object as any).src) {
-			// @ts-ignore
+			// @ts-expect-error type not properly declared
 			const src = URL.parseSafe(this.object.src) ? this.object.src : foundry.utils.getRoute(this.object.src)
 			params.append("file", src)
 		}

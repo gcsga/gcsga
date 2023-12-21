@@ -1,6 +1,7 @@
 import { ItemSheetGURPS } from "@item/base/sheet"
+import { EquipmentModifierGURPS } from "./document"
 
-export class EquipmentModifierSheet extends ItemSheetGURPS {
+export class EquipmentModifierSheet extends ItemSheetGURPS<EquipmentModifierGURPS> {
 	static get defaultOptions(): DocumentSheetOptions<Item> {
 		const options = super.defaultOptions
 		mergeObject(options, {

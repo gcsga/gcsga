@@ -48,6 +48,7 @@ export enum SETTINGS {
 	DEFAULT_RESOURCE_TRACKERS = "default_resource_trackers",
 	DEFAULT_HIT_LOCATIONS = "default_hit_locations",
 	DEFAULT_SHEET_SETTINGS = "default_sheet_settings",
+	DEFAULT_MOVE_TYPES = "default_move_types",
 	ROLL_MODIFIERS = "roll_modifiers",
 	DEFAULT_DAMAGE_LOCATION = "default_damage_location",
 	SSRT = "ssrt",
@@ -166,8 +167,14 @@ export enum gid {
 	Vision = "vision",
 	Will = "will",
 	Flexible = "flexible",
+	// Damage
 	Thrust = "thrust",
 	Swing = "swing",
+	// Move Types
+	Ground = "ground",
+	Water = "water",
+	Air = "air",
+	Space = "space"
 }
 
 export const attrPrefix = "attr."
@@ -428,12 +435,12 @@ export enum ActorType {
 	// Merchant = "merchant",
 }
 
-export enum MoveType {
-	Ground = "ground",
-	Air = "air",
-	Water = "water",
-	Space = "space",
-}
+// export enum MoveType {
+// 	Ground = "ground",
+// 	Air = "air",
+// 	Water = "water",
+// 	Space = "space",
+// }
 
 export enum SpellSubType {
 	NAME = "name",

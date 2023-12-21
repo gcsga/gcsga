@@ -1,4 +1,4 @@
-import { BaseItemGURPS, ItemFlags } from "@item/base"
+import { BaseItemGURPS, BaseItemSourceGURPS, ItemFlags } from "@item/base"
 import { ItemGURPS } from "@module/config"
 import { ItemType, SYSTEM_NAME } from "@module/data"
 import { AnyDocumentData } from "types/foundry/common/abstract/data.mjs"
@@ -7,9 +7,11 @@ import EmbeddedCollection from "types/foundry/common/abstract/embedded-collectio
 import { DocumentConstructor } from "types/types/helperTypes"
 import { BaseContainerSystemData } from "./data"
 
-export abstract class ContainerGURPS extends BaseItemGURPS {
-	readonly system!: BaseContainerSystemData
-
+export abstract class ContainerGURPS<
+	SourceType extends BaseItemSourceGURPS = BaseItemSourceGURPS,
+	// SystemType extends BaseContainerSystemData = BaseContainerSystemData
+	// > extends BaseItemGURPS<SourceType, SystemType> {
+> extends BaseItemGURPS<SourceType> {
 	items: foundry.utils.Collection<BaseItemGURPS> = new Collection()
 
 	// Getters

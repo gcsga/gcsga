@@ -4,7 +4,7 @@ import { VariableResolver, evaluateToNumber, sanitizeId } from "@util"
 import { AttributeDefObj, AttributeType, reserved_ids } from "./data"
 
 export class AttributeDef {
-	def_id!: string
+	private def_id!: string
 
 	type!: AttributeType
 

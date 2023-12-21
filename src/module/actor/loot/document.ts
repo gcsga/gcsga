@@ -7,13 +7,9 @@ import { TooltipGURPS } from "@module/tooltip"
 import { LocalizeGURPS, Weight, WeightUnits, fxp } from "@util"
 import Document, { Metadata } from "types/foundry/common/abstract/document.mjs"
 import { ActorDataConstructorData } from "types/foundry/common/data/data.mjs/actorData"
-import { LootSource, LootSystemData } from "./data"
+import { LootSource } from "./data"
 
-export class LootGURPS extends BaseActorGURPS {
-	system!: LootSystemData
-
-	_source!: LootSource
-
+export class LootGURPS extends BaseActorGURPS<LootSource> {
 	constructor(data: LootSource, context: ActorConstructorContextGURPS = {}) {
 		super(data, context)
 	}

@@ -7,7 +7,7 @@ import { StaticItemSystemData } from "./data"
 import { StaticPopout, StaticPopoutType } from "./popouts"
 
 export class StaticItemSheet extends ItemSheet {
-	object!: StaticItemGURPS
+	declare object: StaticItemGURPS
 
 	static get defaultOptions(): DocumentSheetOptions<Item> {
 		const options = super.defaultOptions

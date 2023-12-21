@@ -1,11 +1,9 @@
 import { BaseWeaponGURPS } from "@item/weapon"
 import { gid } from "@module/data"
 import { TooltipGURPS } from "@module/tooltip"
-import { MeleeWeaponSystemData } from "./data"
+import { MeleeWeaponSource } from "./data"
 
-export class MeleeWeaponGURPS extends BaseWeaponGURPS {
-	readonly system!: MeleeWeaponSystemData
-
+export class MeleeWeaponGURPS extends BaseWeaponGURPS<MeleeWeaponSource> {
 	get fastResolvedParry(): string {
 		return this.resolvedParry()
 	}

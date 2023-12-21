@@ -3,14 +3,14 @@ import { SETTINGS, SYSTEM_NAME } from "@module/data"
 import { PDFViewerSheet } from "./sheet"
 import { PDFEditorSheet } from "./edit"
 
-// @ts-ignore
+// @ts-expect-error type not properly declared
 interface EntryPageConstructorContextGURPS extends Context<JournalEntryPage> {
 	gurps?: {
 		ready?: boolean
 	}
 }
 
-// @ts-ignore
+// @ts-expect-error type not properly declared
 export class JournalEntryPageGURPS extends JournalEntryPage {
 	system!: {
 		offset: number
@@ -25,7 +25,7 @@ export class JournalEntryPageGURPS extends JournalEntryPage {
 		} else {
 			mergeObject(context, { gurps: { ready: true } })
 			if (data.type === "pdf") return new JournalEntryPageGURPS(data, context)
-			// @ts-ignore
+			// @ts-expect-error type not properly declared
 			else return new JournalEntryPage(data, context)
 		}
 	}

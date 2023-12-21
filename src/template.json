@@ -208,10 +208,12 @@
 			"points_record": [],
 			"settings": {
 				"resource_trackers": [],
-				"attributes": []
+				"attributes": [],
+				"move_types": []
 			},
 			"resource_trackers": [],
 			"attributes": [],
+			"move_types": [],
 			"calc": {
 				"swing": "",
 				"thrust": "",

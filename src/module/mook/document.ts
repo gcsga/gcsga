@@ -13,6 +13,7 @@ import {
 	MookSpell,
 	MookTrait,
 } from "./data"
+import { MoveTypeDefObj } from "@module/move_type"
 
 export class Mook {
 	protected variableResolverExclusions: Map<string, boolean> = new Map()
@@ -20,6 +21,7 @@ export class Mook {
 	settings: {
 		attributes: AttributeDefObj[]
 		damage_progression: DamageProgression
+		move_types: MoveTypeDefObj[]
 	}
 
 	system: {
@@ -63,6 +65,7 @@ export class Mook {
 			) as AttributeDefObj[],
 			damage_progression: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
 				.damage_progression,
+			move_types: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`) as MoveTypeDefObj[],
 		}
 		this.system = data?.system ?? {
 			attributes: this.newAttributes(this.settings.attributes),
@@ -104,12 +107,12 @@ export class Mook {
 				].includes(def.type)
 			) {
 				atts.push({
-					attr_id: attr.attr_id,
+					attr_id: attr.id,
 					adj: attr.adj,
 				})
 			} else {
 				atts.push({
-					attr_id: attr.attr_id,
+					attr_id: attr.id,
 					adj: attr.adj,
 				})
 			}
@@ -137,6 +140,10 @@ export class Mook {
 	}
 
 	attributeBonusFor(..._args: any[]): number {
+		return 0
+	}
+
+	moveBonusFor(..._args: any[]): number {
 		return 0
 	}
 

@@ -9,11 +9,9 @@ import { ItemDataBaseProperties, ItemDataConstructorData } from "types/foundry/c
 import { CombatData } from "types/foundry/common/data/module.mjs"
 import { BaseUser } from "types/foundry/common/documents.mjs"
 import { PropertiesToSource } from "types/types/helperTypes"
-import { DurationType, EffectModificationOptions, EffectSystemData } from "./data"
+import { DurationType, EffectModificationOptions, EffectSource } from "./data"
 
-export class EffectGURPS extends BaseItemGURPS {
-	readonly system!: EffectSystemData
-
+export class EffectGURPS<SourceType extends EffectSource = EffectSource> extends BaseItemGURPS<SourceType> {
 	_statusId: string | null = null
 
 	get features(): Feature[] {

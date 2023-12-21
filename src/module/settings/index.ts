@@ -9,6 +9,7 @@ import { DefaultResourceTrackerSettings } from "./resource_trackers"
 import { RollModifierSettings } from "./roll_modifiers"
 import { DefaultSheetSettings } from "./sheet_settings"
 import { DamageTypeSettings } from "@module/settings/damage_type"
+import { DefaultMoveSettings } from "./move_type"
 
 /**
  *
@@ -55,6 +56,17 @@ export function registerSettings(): void {
 		restricted: true,
 	})
 	DefaultResourceTrackerSettings.registerSettings()
+
+
+	game.settings.registerMenu(SYSTEM_NAME, SETTINGS.DEFAULT_MOVE_TYPES, {
+		name: "gurps.settings.default_move_types.name",
+		label: "gurps.settings.default_move_types.label",
+		hint: "gurps.settings.default_move_types.hint",
+		icon: "fas fa-person-running",
+		type: DefaultMoveSettings,
+		restricted: false,
+	})
+	DefaultMoveSettings.registerSettings()
 
 	game.settings.registerMenu(SYSTEM_NAME, SETTINGS.DEFAULT_HIT_LOCATIONS, {
 		name: "gurps.settings.default_hit_locations.name",
@@ -140,8 +152,8 @@ export function registerSettings(): void {
 	})
 
 	game.settings.register(SYSTEM_NAME, SETTINGS.SERVER_SIDE_FILE_DIALOG, {
-		name: "gurps.settings.server_side_file_dialogame.name",
-		hint: "gurps.settings.server_side_file_dialogame.hint",
+		name: "gurps.settings.server_side_file_dialog.name",
+		hint: "gurps.settings.server_side_file_dialog.hint",
 		scope: "client",
 		config: true,
 		type: Boolean,

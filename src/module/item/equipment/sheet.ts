@@ -4,9 +4,7 @@ import { ItemType, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { EquipmentGURPS } from "./document"
 import { Weight, WeightUnits, allWeightUnits } from "@util"
 
-export class EquipmentSheet extends ItemSheetGCS {
-	object!: EquipmentGURPS | EquipmentContainerGURPS
-
+export class EquipmentSheet extends ItemSheetGCS<EquipmentGURPS | EquipmentContainerGURPS> {
 	static get defaultOptions(): DocumentSheetOptions<Item> {
 		const options = super.defaultOptions
 		mergeObject(options, {

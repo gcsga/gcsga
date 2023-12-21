@@ -1,5 +1,5 @@
 import { BaseFeature } from "./base"
-import { FeatureType } from "./data"
+import { AttributeBonusLimitation, FeatureType } from "./data"
 
 export class AttributeBonus extends BaseFeature {
 	attribute!: string
@@ -13,11 +13,4 @@ export class AttributeBonus extends BaseFeature {
 			limitation: "none",
 		})
 	}
-}
-
-export enum AttributeBonusLimitation {
-	None = "none",
-	Striking = "striking_only",
-	Lifting = "lifting_only",
-	Throwing = "throwing_only",
 }

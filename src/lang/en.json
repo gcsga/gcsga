@@ -396,12 +396,13 @@
 			},
 			"cr_reaction": "from others when {trait} is triggered",
 			"cr_adj_display": {
+				"none": "",
 				"action_penalty": "{penalty} Action Penalty",
 				"reaction_penalty": "{penalty} Reaction Penalty",
 				"fright_check_penalty": "{penalty} Fright Check Penalty",
-				"fright_check_bonus": "{penalty} Fright Check Bonus",
-				"minor_cost_of_living_increase": "{penalty} Cost of Living Increase",
-				"major_cost_of_living_increase": "{penalty} Cost of Living Increase"
+				"fright_check_bonus": "+{penalty} Fright Check Bonus",
+				"minor_cost_of_living_increase": "+{penalty}% Cost of Living Increase",
+				"major_cost_of_living_increase": "+{penalty}% Cost of Living Increase"
 			},
 			"resource_trackers": {
 				"title": "Resource Trackers"
@@ -470,6 +471,9 @@
 				"resource_trackers": {
 					"button": "Resource Trackers"
 				},
+				"move_types": {
+					"button": "Move Types"
+				},
 				"damage_progression": "Damage Progression",
 				"show_trait_modifier_adj": "Show trait modifier cost adjustments",
 				"show_equipment_modifier_adj": "Show equipment modifier cost & weight adjustments",
@@ -484,7 +488,7 @@
 				},
 				"display": {
 					"title": "Where to Display...",
-					"user_description": "User Description",
+					"userdesc": "User Description",
 					"modifiers": "Modifiers",
 					"notes": "Notes",
 					"skill_level_adj": "Skill Level Adjustments"
@@ -622,7 +626,7 @@
 			"enabled": "Enabled",
 			"notes": "Notes",
 			"vtt_notes": "VTT Notes",
-			"user_description": "User Description",
+			"userdesc": "User Description",
 			"tags": "Tags",
 			"point_cost": "Point Cost",
 			"base_cost": "Base Cost",
@@ -739,6 +743,14 @@
 			"min": "Min",
 			"min_enforced": "Enforce",
 			"current": "Current"
+		},
+		"move_type_def": {
+			"id": "ID",
+			"name": "Name",
+			"move_type_base": "Base Value",
+			"cost_per_point": "Cost per Point",
+			"condition_type": "Condition Type",
+			"condition_qualifier": "Qualifier"
 		},
 		"feature": {
 			"header": "Features",
@@ -1063,6 +1075,11 @@
 			"effect_action": {
 				"add": "Add",
 				"remove": "Remove"
+			},
+			"move_condition_type": {
+				"trait": "Has a trait whose name is",
+				"skill": "Has a skill whose name is",
+				"condition": "Has a condition whose ID is"
 			},
 			"study_hours_needed": {
 				"200": "Standard",
@@ -1442,6 +1459,11 @@
 				"label": "Edit Default Resource Trackers",
 				"hint": "Resource Trackers assigned when creating new Characters."
 			},
+			"default_move_types": {
+				"name": "Default Move Types",
+				"label": "Edit Default Move Types",
+				"hint": "Move Types assigned when creating new Characters."
+			},
 			"default_hit_locations": {
 				"name": "Default Body Type",
 				"label": "Edit Default Body Type",
@@ -1780,6 +1802,12 @@
 			"cost": "; Cost: -{adj}",
 			"time": "; Time: x1/{adj}, rounded up, min 1 sec",
 			"none": "Ritual: none"
+		},
+		"move_types": {
+			"ground": "Ground Move",
+			"water": "Water Move",
+			"air": "Air Move",
+			"space": "Space Move"
 		}
 	}
 }

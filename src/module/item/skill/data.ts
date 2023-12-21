@@ -33,11 +33,12 @@ export interface SkillSystemData extends ItemGCSSystemData {
 	features: Feature[]
 	study: Study[]
 	study_hours_needed: StudyHoursNeeded
-	// Calc: {
-	// 	level: number;
-	// 	rsl: string;
-	// 	points: number;
-	// };
+	calc?: {
+		level?: number,
+		rsl?: string,
+		points?: number
+		resolved_notes?: string
+	}
 }
 
 export type EncumbrancePenaltyMultiplier = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9

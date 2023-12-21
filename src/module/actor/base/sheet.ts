@@ -11,7 +11,7 @@ import { DocumentSheetConfigGURPS } from "./config"
 type DispatchFunctions = Record<string, (arg: any) => void>
 
 export class ActorSheetGURPS extends ActorSheet {
-	object!: ActorGURPS
+	declare object: ActorGURPS
 
 	readonly dropDispatch: DispatchFunctions = {
 		[DamageChat.TYPE]: this.actor.handleDamageDrop.bind(this.actor),
@@ -58,32 +58,34 @@ export class ActorSheetGURPS extends ActorSheet {
 		$(".border-top").removeClass("border-top")
 		$(".border-in").removeClass("border-in")
 
-		// Return super._onDropItem(event, data)
-
 		if (!this.actor.isOwner) return false
 
-		// let item: Item
-		// if (data._uuid) {
 		const importData = {
 			type: data.type,
 			uuid: data.uuid,
 		}
 		const item = await (Item.implementation as any).fromDropData(importData)
-		// } else {
-		// item = await (Item.implementation as any).fromDropData(data)
-		// }
 		const itemData = item.toObject()
 
 		// Handle item sorting within the same Actor
 		if (this.actor.uuid === item.actor?.uuid) {
-			return this._onSortItem(event, itemData, { top: top, in: inContainer })
+			return this._onSortItem(event, itemData, { top, inContainer })
 		}
 
-		let id: string | null = null
+		return this._onDropNewItem(event, item, { top, inContainer })
 
+	}
+
+	protected async _onDropNewItem(
+		event: DragEvent,
+		item: Item,
+		options: { top: boolean; inContainer: boolean } = { top: false, inContainer: false }
+	): Promise<this> {
+
+		let id: string | null = null
 		let dropTarget = $(event.target!).closest(".desc[data-item-id]")
 		id = dropTarget?.data("item-id") ?? null
-		if (!id || inContainer) {
+		if (!id || options.inContainer) {
 			await this._onDropNestedItemCreate([item], { id: id })
 			return this.render()
 		}
@@ -91,20 +93,22 @@ export class ActorSheetGURPS extends ActorSheet {
 		const targetItem = this.actor.items.get(id) as any
 
 		id = (this.actor.items.get(id) as any)?.container.id
+		if (id === this.actor.id) id = null
 
 		const newItems = await this._onDropNestedItemCreate([item], { id: id })
 
 		const sortUpdates = SortingHelpers.performIntegerSort(newItems[0], {
 			target: targetItem,
 			siblings: targetItem.container.items.contents,
-			sortBefore: top,
+			sortBefore: options.top,
 		}).map(u => {
 			return {
 				...u.update,
 				_id: u.target._id,
 			}
 		})
-		return this.actor?.updateEmbeddedDocuments("Item", sortUpdates)
+		await this.actor?.updateEmbeddedDocuments("Item", sortUpdates)
+		return this.render()
 	}
 
 	async _onDropNestedItemCreate(items: Item[], context: { id: string | null } = { id: null }): Promise<Item[]> {
@@ -132,7 +136,7 @@ export class ActorSheetGURPS extends ActorSheet {
 		const list = event.currentTarget
 		// If (event.target.classList.contains("contents-link")) return;
 
-		let itemData: any
+		// let itemData: any
 		let dragData: any
 
 		// Owned Items
@@ -151,6 +155,7 @@ export class ActorSheetGURPS extends ActorSheet {
 				type: `${item?.type.replace("_container", "").replaceAll("_", "-")}`,
 			})
 			dragImage.id = "drag-ghost"
+			dragImage.setAttribute("data-item", JSON.stringify(item?.toObject()))
 			document.body.querySelectorAll("#drag-ghost").forEach(e => e.remove())
 			document.body.appendChild(dragImage)
 			const height = (document.body.querySelector("#drag-ghost") as HTMLElement).offsetHeight
@@ -170,7 +175,7 @@ export class ActorSheetGURPS extends ActorSheet {
 	protected override async _onSortItem(
 		event: DragEvent,
 		itemData: PropertiesToSource<ItemDataBaseProperties>,
-		options: { top: boolean; in: boolean } = { top: false, in: false }
+		options: { top: boolean; inContainer: boolean } = { top: false, inContainer: false }
 	): Promise<Item[]> {
 		const source: any = this.actor.items.get(itemData._id!)
 		let dropTarget = $(event.target!).closest(".desc[data-item-id]")
@@ -179,7 +184,7 @@ export class ActorSheetGURPS extends ActorSheet {
 		if (!target) return []
 		let parent: any = target?.container
 		let parents = target?.parents
-		if (options.in) {
+		if (options.inContainer) {
 			parent = target
 			target = parent.children.contents[0] ?? null
 		}
@@ -195,9 +200,9 @@ export class ActorSheetGURPS extends ActorSheet {
 		})
 		const updateData = sortUpdates.map(u => {
 			const update = u.update
-			;(update as any)._id = u.target!._id
+				; (update as any)._id = u.target!._id
 			return update
-		}) as { _id: string; sort: number; [key: string]: any }[]
+		}) as { _id: string; sort: number;[key: string]: any }[]
 
 		if (source && source.container !== parent) {
 			const id = updateData.findIndex(e => (e._id = source._id))

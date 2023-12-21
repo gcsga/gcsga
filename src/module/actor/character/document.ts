@@ -29,7 +29,6 @@ import {
 	EFFECT_ACTION,
 	gid,
 	ItemType,
-	MoveType,
 	SETTINGS,
 	StringComparison,
 	SYSTEM_NAME,
@@ -63,7 +62,6 @@ import {
 } from "./data"
 import { CharacterImporter } from "./import"
 import { HitLocation, HitLocationTable, HitLocationTableData } from "./hit_location"
-import { AttributeBonusLimitation } from "@feature/attribute_bonus"
 import { Feature, featureMap, ItemGURPS, WeaponGURPS } from "@module/config"
 import { ConditionID } from "@item/condition"
 import Document, { DocumentModificationOptions, Metadata } from "types/foundry/common/abstract/document.mjs"
@@ -71,8 +69,10 @@ import { ActorDataConstructorData } from "types/foundry/common/data/data.mjs/act
 import { Attribute, AttributeDef, AttributeObj, AttributeType, PoolThreshold, ThresholdOp } from "@module/attribute"
 import { ResourceTracker, ResourceTrackerDef, ResourceTrackerObj } from "@module/resource_tracker"
 import {
+	AttributeBonusLimitation,
 	ConditionalModifier,
 	FeatureType,
+	MoveBonusType,
 	ReactionBonus,
 	SkillBonus,
 	WeaponBonusSelectionType,
@@ -80,12 +80,9 @@ import {
 	WeaponDRDivisorBonus,
 } from "@feature"
 import { SkillBonusSelectionType } from "@feature/skill_bonus"
+import { MoveType } from "@module/move_type"
 
-export class CharacterGURPS extends BaseActorGURPS {
-	system!: CharacterSystemData
-
-	_source!: CharacterSource
-
+export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	attributes: Map<string, Attribute> = new Map()
 
 	private _prevAttributes: Map<string, Attribute> = new Map()
@@ -93,6 +90,8 @@ export class CharacterGURPS extends BaseActorGURPS {
 	private _processingThresholds = false
 
 	resource_trackers: Map<string, ResourceTracker> = new Map()
+
+	move_types: Map<string, MoveType> = new Map()
 
 	variableResolverExclusions: Map<string, boolean> = new Map()
 
@@ -105,8 +104,8 @@ export class CharacterGURPS extends BaseActorGURPS {
 	constructor(data: CharacterSource, context: ActorConstructorContextGURPS = {}) {
 		super(data, context)
 		if (this.system.attributes) this.attributes = this.getAttributes()
-		// this._prevAttributes = this.attributes
 		if (this.system.resource_trackers) this.resource_trackers = this.getResourceTrackers()
+		if (this.system.move_types) this.move_types = this.getMoveTypes()
 		this.features = {
 			attributeBonuses: [],
 			costReductions: [],
@@ -116,6 +115,7 @@ export class CharacterGURPS extends BaseActorGURPS {
 			spellBonuses: [],
 			spellPointBonuses: [],
 			weaponBonuses: [],
+			moveBonuses: [],
 		}
 	}
 
@@ -278,7 +278,7 @@ export class CharacterGURPS extends BaseActorGURPS {
 		return this.system.editing
 	}
 
-	get profile() {
+	get profile(): this["system"]["profile"] {
 		return this.system.profile
 	}
 
@@ -444,7 +444,7 @@ export class CharacterGURPS extends BaseActorGURPS {
 	// Move accounting for pool thresholds
 	eMove(enc: Encumbrance): number {
 		// Let initialMove = this.moveByType(Math.max(0, this.resolveAttributeCurrent(gid.BasicMove)))
-		let initialMove = this.moveByType()
+		let initialMove = this.resolveMove(this.moveType)
 		let divisor = 2 * Math.min(this.countThresholdOpMet(ThresholdOp.HalveMove), 2)
 		if (divisor === 0) divisor = 1
 		if (divisor > 0) initialMove = Math.ceil(initialMove / divisor)
@@ -454,6 +454,12 @@ export class CharacterGURPS extends BaseActorGURPS {
 			return 0
 		}
 		return move
+	}
+
+	resolveMove(type: string): number {
+		const move = this.move_types?.get(type)?.base
+		if (move) return move
+		return -Infinity
 	}
 
 	// TODO: improve
@@ -480,8 +486,8 @@ export class CharacterGURPS extends BaseActorGURPS {
 		return 0
 	}
 
-	get moveType(): MoveType {
-		return this.getFlag(SYSTEM_NAME, ActorFlags.MoveType) as MoveType
+	get moveType(): string {
+		return this.getFlag(SYSTEM_NAME, ActorFlags.MoveType) as string
 	}
 
 	dodge(enc: Encumbrance): number {
@@ -736,7 +742,7 @@ export class CharacterGURPS extends BaseActorGURPS {
 
 	// Flat list of all hit locations
 	get HitLocations(): HitLocation[] {
-		const recurseLocations = function (table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
+		const recurseLocations = function(table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
 			table.locations.forEach(e => {
 				locations.push(e)
 				if (e.subTable) locations = recurseLocations(e.subTable, locations)
@@ -992,12 +998,12 @@ export class CharacterGURPS extends BaseActorGURPS {
 				].includes(def.type)
 			) {
 				atts.push({
-					attr_id: attr.attr_id,
+					attr_id: attr.id,
 					adj: attr.adj,
 				})
 			} else {
 				atts.push({
-					attr_id: attr.attr_id,
+					attr_id: attr.id,
 					adj: attr.adj,
 				})
 			}
@@ -1059,6 +1065,15 @@ export class CharacterGURPS extends BaseActorGURPS {
 			trackers.set(v.tracker_id, new ResourceTracker(this, v.tracker_id, k, v))
 		})
 		return trackers
+	}
+
+	getMoveTypes(mt_array = this.system.move_types): Map<string, MoveType> {
+		const move_types: Map<string, MoveType> = new Map()
+		if (mt_array.length === 0) return move_types
+		mt_array.forEach((v, k) => {
+			move_types.set(v.move_type_id, new MoveType(this, v.move_type_id, k, v))
+		})
+		return move_types
 	}
 
 	protected override _onCreateDescendantDocuments(
@@ -1144,6 +1159,7 @@ export class CharacterGURPS extends BaseActorGURPS {
 			spellBonuses: [],
 			spellPointBonuses: [],
 			weaponBonuses: [],
+			moveBonuses: [],
 		}
 		for (const t of this.traits) {
 			let levels = 0
@@ -1476,6 +1492,26 @@ export class CharacterGURPS extends BaseActorGURPS {
 	}
 
 	// Feature Processing
+	moveBonusFor(
+		id: string,
+		limitation: MoveBonusType,
+		effective = false,
+		tooltip: TooltipGURPS | null = null
+	): number {
+		let total = 0
+		for (const feature of this.features.moveBonuses) {
+			if (
+				feature.limitation === limitation &&
+				feature.move_type === id &&
+				feature.effective === effective
+			) {
+				total += feature.adjustedAmount
+				feature.addToTooltip(tooltip)
+			}
+		}
+		return total
+	}
+
 	attributeBonusFor(
 		attributeId: string,
 		limitation: AttributeBonusLimitation,
@@ -1825,8 +1861,8 @@ export class CharacterGURPS extends BaseActorGURPS {
 		system.notes = items.filter(e => [ItemType.Note, ItemType.NoteContainer].includes(e.type)) ?? []
 		system.settings.attributes = system.settings.attributes.map((e: Partial<AttributeDef>) => {
 			const f = { ...e }
-			f.id = e.def_id
-			delete f.def_id
+			f.id = e.id
+			delete f.id
 			delete f.order
 			if (f.type !== AttributeType.Pool) delete f.thresholds
 			return f

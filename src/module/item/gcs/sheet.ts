@@ -4,9 +4,7 @@ import { ItemType, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { LocalizeGURPS, Weight } from "@util"
 import { ItemGCS } from "./document"
 
-export class ItemSheetGCS extends ContainerSheetGURPS {
-	object!: ItemGCS
-
+export class ItemSheetGCS<IType extends ItemGCS = ItemGCS> extends ContainerSheetGURPS<IType> {
 	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		html.find(".item").on("dblclick", event => this._openItemSheet(event))

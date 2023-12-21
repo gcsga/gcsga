@@ -3,7 +3,7 @@ import { CharacterImportedData } from "@actor/character/import"
 import { EquipmentContainerSystemData, EquipmentSystemData } from "@item"
 import { TraitSystemData } from "@item/trait/data"
 import { TraitContainerSystemData } from "@item/trait_container/data"
-import { SYSTEM_NAME, SETTINGS } from "@module/data"
+import { SYSTEM_NAME, SETTINGS, ItemType } from "@module/data"
 import { LocalizeGURPS, fxp, Static } from "@util"
 import { StaticCharacterGURPS } from "."
 import {
@@ -268,8 +268,8 @@ export class StaticCharacterImporter {
 		if (!eqp) return t
 		for (let i of eqp) {
 			let w = 0
-			w += parseFloat(i.weight || "0") * (i.type === "equipment_container" ? 1 : i.quantity || 0)
-			// @ts-ignore
+			w += parseFloat(i.weight || "0") * (i.type === ItemType.EquipmentContainer ? 1 : i.quantity || 0)
+			// @ts-expect-error children doesn't exist here but I don't care
 			if (i.children?.length) w += this.calcTotalCarried(i.children)
 			t += w
 		}

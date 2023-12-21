@@ -6,9 +6,7 @@ import { ItemSheetGURPS } from "@item/base"
 import { TraitModifierGURPS } from "@item/trait_modifier"
 import { ContainerGURPS } from "./document"
 
-export class ContainerSheetGURPS extends ItemSheetGURPS {
-	object!: ContainerGURPS
-
+export class ContainerSheetGURPS<IType extends ContainerGURPS = ContainerGURPS> extends ItemSheetGURPS<IType> {
 	static get defaultOptions(): DocumentSheetOptions<Item> {
 		return mergeObject(ItemSheetGURPS.defaultOptions, {
 			template: `/systems/${SYSTEM_NAME}/templates/item/container-sheet.hbs`,

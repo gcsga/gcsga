@@ -2,7 +2,7 @@ import { ItemSheetGURPS } from "@item/base"
 import { WeaponGURPS } from "@module/config"
 
 export class WeaponSheet extends ItemSheetGURPS {
-	object!: WeaponGURPS
+	declare object: WeaponGURPS
 
 	static get defaultOptions() {
 		const options = super.defaultOptions

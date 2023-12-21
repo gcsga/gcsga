@@ -4,11 +4,9 @@ import { ActorType, Difficulty, gid } from "@module/data"
 import { SkillDefault } from "@module/default"
 import { TooltipGURPS } from "@module/tooltip"
 import { inlineNote, LocalizeGURPS } from "@util"
-import { TechniqueData } from "./data"
+import { TechniqueSource } from "./data"
 
-export class TechniqueGURPS extends ItemGCS {
-	readonly system!: TechniqueData
-
+export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 	level: SkillLevel = { level: 0, relative_level: 0, tooltip: new TooltipGURPS() }
 
 	unsatisfied_reason = ""

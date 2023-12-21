@@ -1,10 +1,10 @@
 import { ActorFlags } from "@actor/base/data"
-import { AttributeBonusLimitation } from "@feature/attribute_bonus"
 import { gid, SYSTEM_NAME } from "@module/data"
 import { sanitizeId, VariableResolver } from "@util"
 import { AttributeDef } from "./attribute_def"
 import { AttributeObj, AttributeType, reserved_ids } from "./data"
 import { PoolThreshold } from "./pool_threshold"
+import { AttributeBonusLimitation } from "@feature"
 
 // interface Mook {
 // 	resolveVariable: (variableName: string) => string
@@ -23,12 +23,11 @@ import { PoolThreshold } from "./pool_threshold"
 // }
 
 export class Attribute {
-	// actor: CharacterGURPS | Mook
 	actor: VariableResolver
 
 	order: number
 
-	attr_id: string
+	private attr_id: string
 
 	adj = 0
 

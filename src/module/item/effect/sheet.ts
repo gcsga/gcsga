@@ -1,8 +1,9 @@
 import { ItemSheetGURPS } from "@item/base"
 import { ItemType, SYSTEM_NAME } from "@module/data"
 import { DurationType } from "./data"
+import { EffectGURPS } from "./document"
 
-export class EffectSheet extends ItemSheetGURPS {
+export class EffectSheet extends ItemSheetGURPS<EffectGURPS> {
 	static get defaultOptions(): DocumentSheetOptions<Item> {
 		const options = super.defaultOptions
 		mergeObject(options, {
@@ -28,7 +29,8 @@ export class EffectSheet extends ItemSheetGURPS {
 
 	protected async _addModifier(event: JQuery.ClickEvent): Promise<any> {
 		event.preventDefault()
-		const modifiers = this.item.system.modifiers
+		if (!this.isEditable) return
+		const modifiers = this.item.system.modifiers ?? []
 		modifiers.push({
 			name: "",
 			modifier: 0,
@@ -41,6 +43,7 @@ export class EffectSheet extends ItemSheetGURPS {
 	}
 
 	protected async _removeModifier(event: JQuery.ClickEvent): Promise<any> {
+		if (!this.isEditable) return
 		const index = $(event.currentTarget).data("index")
 		const modifiers = (this.item.system as any).modifiers
 		modifiers.splice(index, 1)

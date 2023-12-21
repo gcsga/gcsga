@@ -1,9 +1,7 @@
 import { ItemSheetGCS } from "@item/gcs"
 import { SpellGURPS } from "."
 
-export class SpellSheet extends ItemSheetGCS {
-	object!: SpellGURPS
-
+export class SpellSheet extends ItemSheetGCS<SpellGURPS> {
 	static get defaultOptions(): DocumentSheetOptions<Item> {
 		const options = super.defaultOptions
 		mergeObject(options, {

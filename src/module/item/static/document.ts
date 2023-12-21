@@ -1,9 +1,7 @@
 import { BaseItemGURPS } from "@item/base"
-import { StaticItemData } from "./data"
+import { StaticItemSource } from "./data"
 
-export class StaticItemGURPS extends BaseItemGURPS {
-	readonly system!: StaticItemData
-
+export class StaticItemGURPS extends BaseItemGURPS<StaticItemSource> {
 	async internalUpdate(data: any, context = {}): Promise<unknown> {
 		let ctx = { render: true }
 		if (context) ctx = { ...context, ...ctx }
