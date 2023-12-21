@@ -240,6 +240,8 @@ declare global {
 			"gcsga.colors.colors": Record<string, { light: string; dark: string }>
 			"gcsga.roll_formula": string
 			"gcsga.modifier_mode": "prompt" | "bucket"
+			"gcsga.default_sheet_settings.initial_points": number
+			"gcsga.default_sheet_settings.tech_level": string
 			[key: string]: unknown
 		}
 	}

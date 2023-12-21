@@ -26,8 +26,8 @@
 	<div class="field">
 		<select class="move-select" data-name="move">
 			{{#select moveData.type}}
-				{{#each move_types}}
-					<option value="{{this.id}}">{{this.name}}</option>
+				{{#each move_types as |v k|}}
+					<option value="{{v.id}}">{{v.name}}</option>
 				{{/each}}
 			{{/select}}
 		</select>

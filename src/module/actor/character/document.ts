@@ -54,14 +54,13 @@ import {
 } from "@util"
 import {
 	CharacterFlagDefaults,
-	CharacterSettings,
 	CharacterSource,
 	CharacterSystemData,
 	DocumentModificationOptionsGURPS,
 	Encumbrance,
 } from "./data"
 import { CharacterImporter } from "./import"
-import { HitLocation, HitLocationTable, HitLocationTableData } from "./hit_location"
+import { HitLocation, HitLocationTable } from "./hit_location"
 import { Feature, featureMap, ItemGURPS, WeaponGURPS } from "@module/config"
 import { ConditionID } from "@item/condition"
 import Document, { DocumentModificationOptions, Metadata } from "types/foundry/common/abstract/document.mjs"
@@ -80,7 +79,7 @@ import {
 	WeaponDRDivisorBonus,
 } from "@feature"
 import { SkillBonusSelectionType } from "@feature/skill_bonus"
-import { MoveType, MoveTypeObj } from "@module/move_type"
+import { MoveType, MoveTypeDef, MoveTypeObj } from "@module/move_type"
 
 export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	attributes: Map<string, Attribute> = new Map()
@@ -125,32 +124,36 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		const default_settings = game.settings.get(
 			SYSTEM_NAME,
 			`${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`
-		) as CharacterSettings
+		)
 		const default_attributes = game.settings.get(
 			SYSTEM_NAME,
 			`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`
-		) as CharacterSettings["attributes"]
+		)
 		const default_resource_trackers = game.settings.get(
 			SYSTEM_NAME,
 			`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`
-		) as CharacterSettings["resource_trackers"]
+		)
 		const default_hit_locations = {
 			name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
 			roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
 			locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
-		} as HitLocationTableData
+		}
+		const default_move_types = game.settings.get(
+			SYSTEM_NAME,
+			`${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`
+		)
 		const populate_description = game.settings.get(
 			SYSTEM_NAME,
 			`${SETTINGS.DEFAULT_SHEET_SETTINGS}.populate_description`
-		) as boolean
+		)
 		const initial_points = game.settings.get(
 			SYSTEM_NAME,
 			`${SETTINGS.DEFAULT_SHEET_SETTINGS}.initial_points`
-		) as number
+		)
 		const default_tech_level = game.settings.get(
 			SYSTEM_NAME,
 			`${SETTINGS.DEFAULT_SHEET_SETTINGS}.tech_level`
-		) as string
+		)
 		const sd: Partial<CharacterSystemData> = {
 			id: newUUID(),
 			created_date: getCurrentTime(),
@@ -200,11 +203,13 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		sd.settings.attributes = default_attributes
 		sd.settings.body_type = default_hit_locations
 		sd.settings.resource_trackers = default_resource_trackers
+		sd.settings.move_types = default_move_types
 		sd.modified_date = sd.created_date
 		if (populate_description) sd.profile = SETTINGS_TEMP.general.auto_fill
 		sd.profile!.tech_level = default_tech_level
 		sd.attributes = this.newAttributes(sd.settings.attributes)
 		sd.resource_trackers = this.newTrackers(sd.settings.resource_trackers)
+		sd.move_types = this.newMoveTypes(sd.settings.move_types)
 		const flags = CharacterFlagDefaults
 		this.update({ _id: this._id, system: sd, flags: flags })
 		super._onCreate(data, options, userId)
@@ -248,6 +253,12 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 				data["system.resource_trackers"] = this.newTrackers(
 					data["system.settings.resource_trackers"],
 					this.system.resource_trackers
+				)
+			}
+			if (i === "system.settings.move_types") {
+				data["system.move_types"] = this.newMoveTypes(
+					data["system.settings.move_types"],
+					this.system.move_types
 				)
 			}
 			if (i.startsWith("system.attributes.")) {
@@ -493,10 +504,12 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	}
 
 	get settings() {
-		let settings = this.system.settings
-		settings.resource_trackers = settings.resource_trackers.map(e => new ResourceTrackerDef(e))
-		settings.attributes = settings.attributes.map(e => new AttributeDef(e))
-		return settings
+		return {
+			...this.system.settings,
+			resource_trackers: this.system.settings.resource_trackers.map(e => new ResourceTrackerDef(e)),
+			attributes: this.system.settings.attributes.map(e => new AttributeDef(e)),
+			move_types: this.system.settings.move_types.map(e => new MoveTypeDef(e)),
+		}
 	}
 
 	get adjustedSizeModifier(): number {
@@ -987,7 +1000,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 			if (attr.damage) atts[i].damage = attr.damage
 			i++
 		}
-		if (prev) {
+		if (prev.length !== 0) {
 			atts.forEach(attr => {
 				const prev_attr = prev.find(e => e.attr_id === attr.attr_id)
 				Object.assign(attr, prev_attr)
@@ -1010,7 +1023,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 			})
 			i++
 		}
-		if (prev) {
+		if (prev.length !== 0) {
 			t.forEach(tracker => {
 				const prev_tracker = prev.find(e => e.tracker_id === tracker.tracker_id)
 				Object.assign(tracker, prev_tracker)
@@ -1030,7 +1043,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 			})
 			i++
 		}
-		if (prev) {
+		if (prev.length !== 0) {
 			m.forEach(type => {
 				const prev_move = prev.find(e => e.move_type_id === type.move_type_id)
 				Object.assign(type, prev_move)
@@ -1066,7 +1079,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	getMoveTypes(mt_array = this.system.move_types): Map<string, MoveType> {
 		const move_types: Map<string, MoveType> = new Map()
-		if (mt_array.length === 0) return move_types
+		if (!mt_array?.length) return move_types
 		mt_array.forEach((v, k) => {
 			move_types.set(v.move_type_id, new MoveType(this, v.move_type_id, k, v))
 		})
@@ -1217,6 +1230,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		this.processThresholds()
 
 		this.resource_trackers = this.getResourceTrackers()
+		this.move_types = this.getMoveTypes()
 
 		this.calc.dodge_bonus = this.attributeBonusFor(gid.Dodge, AttributeBonusLimitation.None)
 		this.calc.parry_bonus = this.attributeBonusFor(gid.Parry, AttributeBonusLimitation.None)

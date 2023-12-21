@@ -20,6 +20,10 @@ export class MoveType {
 		this.order = order
 	}
 
+	get name(): string {
+		return this.move_type_def.name
+	}
+
 	get id(): string {
 		return this.move_type_id
 	}
@@ -40,9 +44,7 @@ export class MoveType {
 		for (const override of def.overrides) {
 			if (override.conditionMet(this.actor))
 				base = override.baseValue(this.actor)
-			return Math.floor(def.baseValue(this.actor) + this.adj + bonus)
 		}
-
 		return Math.floor(base + this.adj + bonus)
 	}
 

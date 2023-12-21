@@ -53,6 +53,10 @@ export class ActorSheetGURPS extends ActorSheet {
 	): Promise<unknown> {
 		const top = Boolean($(".border-top").length)
 		const inContainer = Boolean($(".border-in").length)
+		const other = [
+			...$(event.target!),
+			...$(event.target!).parents()
+		].map(e => (e as unknown as HTMLElement).id).some(e => e === "other-equipment")
 
 		$(".border-bottom").removeClass("border-bottom")
 		$(".border-top").removeClass("border-top")
@@ -69,22 +73,24 @@ export class ActorSheetGURPS extends ActorSheet {
 
 		// Handle item sorting within the same Actor
 		if (this.actor.uuid === item.actor?.uuid) {
-			return this._onSortItem(event, itemData, { top, inContainer })
+			return this._onSortItem(event, itemData, { top, inContainer, other })
 		}
 
-		return this._onDropNewItem(event, item, { top, inContainer })
+		return this._onDropNewItem(event, item, { top, inContainer, other })
 	}
 
 	protected async _onDropNewItem(
 		event: DragEvent,
 		item: Item,
-		options: { top: boolean; inContainer: boolean } = { top: false, inContainer: false }
+		options:
+			{ top: boolean; inContainer: boolean, other: boolean } =
+			{ top: false, inContainer: false, other: false }
 	): Promise<this> {
 		let id: string | null = null
 		let dropTarget = $(event.target!).closest(".desc[data-item-id]")
 		id = dropTarget?.data("item-id") ?? null
 		if (!id || options.inContainer) {
-			await this._onDropNestedItemCreate([item], { id: id })
+			await this._onDropNestedItemCreate([item], { id, other: options.other })
 			return this.render()
 		}
 
@@ -93,7 +99,7 @@ export class ActorSheetGURPS extends ActorSheet {
 		id = (this.actor.items.get(id) as any)?.container.id
 		if (id === this.actor.id) id = null
 
-		const newItems = await this._onDropNestedItemCreate([item], { id: id })
+		const newItems = await this._onDropNestedItemCreate([item], { id, other: options.other })
 
 		const sortUpdates = SortingHelpers.performIntegerSort(newItems[0], {
 			target: targetItem,
@@ -109,10 +115,24 @@ export class ActorSheetGURPS extends ActorSheet {
 		return this.render()
 	}
 
-	async _onDropNestedItemCreate(items: Item[], context: { id: string | null } = { id: null }): Promise<Item[]> {
-		const itemData = items.map(e =>
-			mergeObject(e.toObject(), { [`flags.${SYSTEM_NAME}.${ItemFlags.Container}`]: context.id })
+	async _onDropNestedItemCreate(
+		items: Item[],
+		context: { id: string | null, other: boolean } = { id: null, other: false }
+	): Promise<Item[]> {
+		const itemData = items.map(e => {
+			if ([ItemType.Equipment, ItemType.EquipmentContainer].includes(e.type as ItemType))
+				return mergeObject(e.toObject(),
+					{
+						[`flags.${SYSTEM_NAME}.${ItemFlags.Container}`]: context.id,
+						"system.other": context.other
+					},
+				)
+			return mergeObject(e.toObject(),
+				{ [`flags.${SYSTEM_NAME}.${ItemFlags.Container}`]: context.id },
+			)
+		}
 		)
+
 
 		const newItems = await this.actor.createEmbeddedDocuments("Item", itemData, {
 			render: false,
@@ -123,7 +143,8 @@ export class ActorSheetGURPS extends ActorSheet {
 		for (let i = 0; i < items.length; i++) {
 			if (items[i] instanceof ContainerGURPS && (items[i] as ContainerGURPS).items.size) {
 				const parent = items[i] as ContainerGURPS
-				const childItems = await this._onDropNestedItemCreate(parent.items.contents, { id: newItems[i].id })
+				const childItems =
+					await this._onDropNestedItemCreate(parent.items.contents, { id: newItems[i].id, other: context.other })
 				totalItems = totalItems.concat(childItems)
 			}
 		}
@@ -173,8 +194,13 @@ export class ActorSheetGURPS extends ActorSheet {
 	protected override async _onSortItem(
 		event: DragEvent,
 		itemData: PropertiesToSource<ItemDataBaseProperties>,
-		options: { top: boolean; inContainer: boolean } = { top: false, inContainer: false }
+		options:
+			{ top: boolean; inContainer: boolean, other: boolean } =
+			{ top: false, inContainer: false, other: false }
 	): Promise<Item[]> {
+		// TODO: currently this does not work if you are dropping an item onto a table with no items present
+		// also it is a mess and needs a rewrite anyway so, rewrite
+		console.log("_onSortItem")
 		const source: any = this.actor.items.get(itemData._id!)
 		let dropTarget = $(event.target!).closest(".desc[data-item-id]")
 		const id = dropTarget?.data("item-id")
@@ -198,18 +224,23 @@ export class ActorSheetGURPS extends ActorSheet {
 		})
 		const updateData = sortUpdates.map(u => {
 			const update = u.update
-			;(update as any)._id = u.target!._id
+				; (update as any)._id = u.target!._id
 			return update
-		}) as { _id: string; sort: number; [key: string]: any }[]
+		}) as { _id: string; sort: number;[key: string]: any }[]
+
+		console.log(source, options)
+
+		console.log(updateData)
 
 		if (source && source.container !== parent) {
 			const id = updateData.findIndex(e => (e._id = source._id))
 			if (source.items && parents.includes(source)) return []
 			updateData[id][`flags.${SYSTEM_NAME}.${ItemFlags.Container}`] = parent instanceof Item ? parent.id : null
-			if ([ItemType.Equipment, ItemType.EquipmentContainer].includes(source.type)) {
-				if (dropTarget.hasClass("other")) updateData[id]["system.other"] = true
-				else updateData[id]["system.other"] = false
-			}
+		}
+		if ([ItemType.Equipment, ItemType.EquipmentContainer].includes(source.type)) {
+			const id = updateData.findIndex(e => (e._id = source._id))
+			console.log("other", options.other, id)
+			updateData[id]["system.other"] = options.other
 		}
 		return this.actor!.updateEmbeddedDocuments("Item", updateData) as unknown as Item[]
 	}
