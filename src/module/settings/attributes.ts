@@ -1,7 +1,7 @@
 import { ConditionID } from "@item/condition/data"
 import { AttributeType } from "@module/attribute/data"
 import { EFFECT_ACTION, SETTINGS, SYSTEM_NAME } from "@module/data"
-import { LocalizeGURPS, prepareFormData } from "@util"
+import { LocalizeGURPS, getNewAttributeId, prepareFormData } from "@util"
 import { DnD } from "@util/drag_drop"
 import { AttributeBaseSettings } from "./attribute_base"
 
@@ -45,16 +45,9 @@ export class DefaultAttributeSettings extends AttributeBaseSettings {
 		const type: ListType = $(event.currentTarget).data("type")
 		let new_id = ""
 		if (type === ListType.Attribute)
-			for (let n = 0; n < 26; n++) {
-				const char = String.fromCharCode(97 + n)
-				if (![...attributes].find(e => e.id === char)) {
-					new_id = char
-					break
-				}
-			}
+			new_id = getNewAttributeId(attributes)
 		switch (type) {
 			case ListType.Attribute:
-				// TODO: account for possibility of all letters being taken
 				attributes.push({
 					type: AttributeType.Integer,
 					id: new_id,

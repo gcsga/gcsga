@@ -1,4 +1,5 @@
 import { CharacterGURPS } from "@actor"
+import { AttributeDefObj } from "@module/attribute"
 import {
 	DEFAULT_INITIATIVE_FORMULA,
 	Difficulty,
@@ -13,8 +14,6 @@ import {
 	SYSTEM_NAME,
 } from "@module/data"
 import { v4 as uuidv4 } from "uuid"
-import { Evaluator } from "./eval"
-import { VariableResolver } from "./function"
 
 // /**
 //  *
@@ -354,9 +353,9 @@ export async function getDefaultSkills() {
 	for (const s in skillPacks)
 		if (skillPacks[s].skillDefault) {
 			const pack = game.packs.get(s) as CompendiumCollection<any>
-			;(await pack.getDocuments()).forEach(e => {
-				skills.push(e)
-			})
+				; (await pack.getDocuments()).forEach(e => {
+					skills.push(e)
+				})
 		}
 	CONFIG.GURPS.skillDefaults = skills
 }
@@ -381,4 +380,15 @@ export function inlineNote(
 	return [DisplayMode.Inline, DisplayMode.InlineAndTooltip].includes(
 		game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)[option]
 	)
+}
+
+export function getNewAttributeId(list: { id: string }[]): string {
+	let base = ""
+	while (true) {
+		for (let n = 0; n < 26; n++) {
+			let attempt = `${base}${String.fromCharCode(97 + n)}`
+			if (!list.some(e => e.id === attempt)) return attempt
+		}
+		base += "a"
+	}
 }

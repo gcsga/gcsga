@@ -1,7 +1,7 @@
 import { SETTINGS, SYSTEM_NAME } from "@module/data"
 import { MoveTypeDefObj, MoveTypeOverrideConditionType } from "@module/move_type"
 import { AttributeBaseSettings } from "./attribute_base"
-import { prepareFormData } from "@util"
+import { getNewAttributeId, prepareFormData } from "@util"
 import { DnD } from "@util/drag_drop"
 
 enum ListType {
@@ -35,13 +35,7 @@ export class DefaultMoveSettings extends AttributeBaseSettings {
 		const type: ListType = $(event.currentTarget).data("type")
 		let new_id = ""
 		if (type === ListType.MoveType)
-			for (let n = 0; n < 26; n++) {
-				const char = String.fromCharCode(97 + n)
-				if (![...move_types].find(e => e.id === char)) {
-					new_id = char
-					break
-				}
-			}
+			new_id = getNewAttributeId(move_types)
 		switch (type) {
 			case ListType.MoveType:
 				move_types.push({

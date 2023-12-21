@@ -1,5 +1,5 @@
 import { CharacterImporter } from "./import"
-import { LocalizeGURPS, prepareFormData } from "@util"
+import { LocalizeGURPS, getNewAttributeId, prepareFormData } from "@util"
 import { gid, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { HitLocationTable } from "./hit_location"
 import { DnD } from "@util/drag_drop"
@@ -243,14 +243,8 @@ export class CharacterSheetConfig extends FormApplication {
 		let locations = []
 		const type: ListType = $(event.currentTarget).data("type")
 		let new_id = ""
-		if (type === "attributes" || type === "resource_trackers")
-			for (let n = 0; n < 26; n++) {
-				const char = String.fromCharCode(97 + n)
-				if (![...this.attributes, ...this.resource_trackers, ...this.move_types].find(e => e.id === char)) {
-					new_id = char
-					break
-				}
-			}
+		if ([ListType.Attributes, ListType.ResourceTrackers, ListType.MoveType].includes(type))
+			new_id = getNewAttributeId([...this.attributes, ...this.resource_trackers, ...this.move_types])
 		let formData: any = {}
 		switch (type) {
 			case ListType.Attributes:
