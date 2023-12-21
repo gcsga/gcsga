@@ -17,8 +17,9 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		const name: string = this.name ?? ""
 		const specialization = this.specialization
 		const TL = this.techLevel
-		return `${name}${this.system.tech_level_required ? `/TL${TL ?? ""}` : ""}${specialization ? ` (${specialization})` : ""
-			}`
+		return `${name}${this.system.tech_level_required ? `/TL${TL ?? ""}` : ""}${
+			specialization ? ` (${specialization})` : ""
+		}`
 	}
 
 	get secondaryText(): string {
@@ -56,8 +57,7 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 			}
 		}
 		let outString = out.join("")
-		if (this.parent)
-			outString = parseInlineNoteExpressions(out.join(""), this.parent as any)
+		if (this.parent) outString = parseInlineNoteExpressions(out.join(""), this.parent as any)
 		return `<div class="item-notes">${outString}</div>`
 	}
 

@@ -174,7 +174,7 @@ export enum gid {
 	Ground = "ground",
 	Water = "water",
 	Air = "air",
-	Space = "space"
+	Space = "space",
 }
 
 export const attrPrefix = "attr."

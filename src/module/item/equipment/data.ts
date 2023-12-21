@@ -27,6 +27,6 @@ export interface EquipmentSystemData extends Omit<ItemGCSSystemData, "open"> {
 	uses: number
 	max_uses: number
 	features: Feature[]
-	other: boolean
+	// other: boolean
 	rated_strength: number
 }

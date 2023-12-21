@@ -1,9 +1,8 @@
 import { SETTINGS, SYSTEM_NAME } from "@module/data"
-import { prepareFormData } from "@util"
+import { getNewAttributeId, prepareFormData } from "@util"
 import { DnD } from "@util/drag_drop"
 import { ResourceTrackerDefObj } from "@module/resource_tracker/data"
 import { AttributeBaseSettings } from "./attribute_base"
-
 
 enum ListType {
 	ResourceTracker = "resource_trackers",
@@ -11,7 +10,6 @@ enum ListType {
 }
 
 export class DefaultResourceTrackerSettings extends AttributeBaseSettings {
-
 	static override readonly namespace = SETTINGS.DEFAULT_RESOURCE_TRACKERS
 
 	static override readonly SETTINGS = ["resource_trackers"]
@@ -33,14 +31,7 @@ export class DefaultResourceTrackerSettings extends AttributeBaseSettings {
 		)
 		const type: ListType = $(event.currentTarget).data("type")
 		let new_id = ""
-		if (type === ListType.ResourceTracker)
-			for (let n = 0; n < 26; n++) {
-				const char = String.fromCharCode(97 + n)
-				if (![...resource_trackers].find(e => e.id === char)) {
-					new_id = char
-					break
-				}
-			}
+		if (type === ListType.ResourceTracker) new_id = getNewAttributeId(resource_trackers)
 		switch (type) {
 			case ListType.ResourceTracker:
 				resource_trackers.push({

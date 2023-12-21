@@ -13,6 +13,10 @@ export class TraitModifierGURPS extends ItemGCS<TraitModifierSource> {
 		return this.system.levels
 	}
 
+	get secodaryText(): string {
+		return this.system.notes
+	}
+
 	get costDescription() {
 		let base = ""
 		if (this.costType === "percentage") {

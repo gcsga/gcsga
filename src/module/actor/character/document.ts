@@ -54,14 +54,13 @@ import {
 } from "@util"
 import {
 	CharacterFlagDefaults,
-	CharacterSettings,
 	CharacterSource,
 	CharacterSystemData,
 	DocumentModificationOptionsGURPS,
 	Encumbrance,
 } from "./data"
 import { CharacterImporter } from "./import"
-import { HitLocation, HitLocationTable, HitLocationTableData } from "./hit_location"
+import { HitLocation, HitLocationTable } from "./hit_location"
 import { Feature, featureMap, ItemGURPS, WeaponGURPS } from "@module/config"
 import { ConditionID } from "@item/condition"
 import Document, { DocumentModificationOptions, Metadata } from "types/foundry/common/abstract/document.mjs"
@@ -80,7 +79,7 @@ import {
 	WeaponDRDivisorBonus,
 } from "@feature"
 import { SkillBonusSelectionType } from "@feature/skill_bonus"
-import { MoveType } from "@module/move_type"
+import { MoveType, MoveTypeDef, MoveTypeObj } from "@module/move_type"
 
 export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	attributes: Map<string, Attribute> = new Map()
@@ -122,35 +121,24 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	SizeModBonus = 0
 
 	protected _onCreate(data: any, options: DocumentModificationOptions | any, userId: string): void {
-		const default_settings = game.settings.get(
-			SYSTEM_NAME,
-			`${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`
-		) as CharacterSettings
-		const default_attributes = game.settings.get(
-			SYSTEM_NAME,
-			`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`
-		) as CharacterSettings["attributes"]
+		const default_settings = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
+		const default_attributes = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
 		const default_resource_trackers = game.settings.get(
 			SYSTEM_NAME,
 			`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`
-		) as CharacterSettings["resource_trackers"]
+		)
 		const default_hit_locations = {
 			name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
 			roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
 			locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
-		} as HitLocationTableData
+		}
+		const default_move_types = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
 		const populate_description = game.settings.get(
 			SYSTEM_NAME,
 			`${SETTINGS.DEFAULT_SHEET_SETTINGS}.populate_description`
-		) as boolean
-		const initial_points = game.settings.get(
-			SYSTEM_NAME,
-			`${SETTINGS.DEFAULT_SHEET_SETTINGS}.initial_points`
-		) as number
-		const default_tech_level = game.settings.get(
-			SYSTEM_NAME,
-			`${SETTINGS.DEFAULT_SHEET_SETTINGS}.tech_level`
-		) as string
+		)
+		const initial_points = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.initial_points`)
+		const default_tech_level = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.tech_level`)
 		const sd: Partial<CharacterSystemData> = {
 			id: newUUID(),
 			created_date: getCurrentTime(),
@@ -200,11 +188,13 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		sd.settings.attributes = default_attributes
 		sd.settings.body_type = default_hit_locations
 		sd.settings.resource_trackers = default_resource_trackers
+		sd.settings.move_types = default_move_types
 		sd.modified_date = sd.created_date
 		if (populate_description) sd.profile = SETTINGS_TEMP.general.auto_fill
 		sd.profile!.tech_level = default_tech_level
 		sd.attributes = this.newAttributes(sd.settings.attributes)
 		sd.resource_trackers = this.newTrackers(sd.settings.resource_trackers)
+		sd.move_types = this.newMoveTypes(sd.settings.move_types)
 		const flags = CharacterFlagDefaults
 		this.update({ _id: this._id, system: sd, flags: flags })
 		super._onCreate(data, options, userId)
@@ -248,6 +238,12 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 				data["system.resource_trackers"] = this.newTrackers(
 					data["system.settings.resource_trackers"],
 					this.system.resource_trackers
+				)
+			}
+			if (i === "system.settings.move_types") {
+				data["system.move_types"] = this.newMoveTypes(
+					data["system.settings.move_types"],
+					this.system.move_types
 				)
 			}
 			if (i.startsWith("system.attributes.")) {
@@ -459,31 +455,8 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	resolveMove(type: string): number {
 		const move = this.move_types?.get(type)?.base
 		if (move) return move
-		return -Infinity
-	}
-
-	// TODO: improve
-	moveByType(): number {
-		let move = Math.max(0, this.resolveAttributeCurrent(gid.BasicMove))
-		switch (this.moveType) {
-			case "ground":
-				if (this.hasCondition([ConditionID.PostureCrawl, ConditionID.PostureKneel])) move *= 1 / 3
-				if (this.hasCondition([ConditionID.PostureCrouch])) move *= 2 / 3
-				if (this.hasCondition([ConditionID.PostureProne])) move = 1
-				if (this.hasCondition([ConditionID.PostureSit])) move = 0
-				if (this.hasTrait("Aquatic")) return move
-				return move
-			case "water":
-				if (this.hasTrait("Amphibious")) return move
-				if (this.hasTrait("Aquatic")) return move
-				return Math.floor(move / 5)
-			case "air":
-				if (this.hasTrait("Flight")) return this.resolveAttributeCurrent(gid.BasicSpeed) * 2
-				return 0
-			case "space":
-				return 0
-		}
 		return 0
+		// return -Infinity
 	}
 
 	get moveType(): string {
@@ -516,10 +489,12 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	}
 
 	get settings() {
-		let settings = this.system.settings
-		settings.resource_trackers = settings.resource_trackers.map(e => new ResourceTrackerDef(e))
-		settings.attributes = settings.attributes.map(e => new AttributeDef(e))
-		return settings
+		return {
+			...this.system.settings,
+			resource_trackers: this.system.settings.resource_trackers.map(e => new ResourceTrackerDef(e)),
+			attributes: this.system.settings.attributes.map(e => new AttributeDef(e)),
+			move_types: this.system.settings.move_types.map(e => new MoveTypeDef(e)),
+		}
 	}
 
 	get adjustedSizeModifier(): number {
@@ -742,7 +717,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	// Flat list of all hit locations
 	get HitLocations(): HitLocation[] {
-		const recurseLocations = function(table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
+		const recurseLocations = function (table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
 			table.locations.forEach(e => {
 				locations.push(e)
 				if (e.subTable) locations = recurseLocations(e.subTable, locations)
@@ -755,41 +730,67 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	// Item Types
 	get traits(): Collection<TraitGURPS | TraitContainerGURPS> {
-		const traits: Collection<TraitGURPS | TraitContainerGURPS> = new Collection()
-		for (const item of this.items) {
-			if (item instanceof TraitGURPS || item instanceof TraitContainerGURPS) traits.set(item._id, item)
-		}
-		return traits
+		// const traits: Collection<TraitGURPS | TraitContainerGURPS> = new Collection()
+		// for (const item of this.items) {
+		// 	if (item instanceof TraitGURPS || item instanceof TraitContainerGURPS) traits.set(item._id, item)
+		// }
+		// return traits
+		return new Collection(
+			[...this.itemTypes[ItemType.Trait], ...this.itemTypes[ItemType.TraitContainer]].map(e => [
+				e.id,
+				e,
+			]) as readonly [string, Item][]
+		) as Collection<TraitGURPS | TraitContainerGURPS>
 	}
 
 	get skills(): Collection<SkillGURPS | TechniqueGURPS | SkillContainerGURPS> {
-		const skills: Collection<SkillGURPS | TechniqueGURPS | SkillContainerGURPS> = new Collection()
-		for (const item of this.items) {
-			if (item instanceof SkillGURPS || item instanceof TechniqueGURPS || item instanceof SkillContainerGURPS)
-				skills.set(item._id, item)
-		}
-		return skills
+		// const skills: Collection<SkillGURPS | TechniqueGURPS | SkillContainerGURPS> = new Collection()
+		// for (const item of this.items) {
+		// 	if (item instanceof SkillGURPS || item instanceof TechniqueGURPS || item instanceof SkillContainerGURPS)
+		// 		skills.set(item._id, item)
+		// }
+		// return skills
+		return new Collection(
+			[
+				...this.itemTypes[ItemType.Skill],
+				...this.itemTypes[ItemType.Technique],
+				...this.itemTypes[ItemType.SkillContainer],
+			].map(e => [e.id, e]) as readonly [string, Item][]
+		) as Collection<SkillGURPS | TechniqueGURPS | SkillContainerGURPS>
 	}
 
 	get spells(): Collection<SpellGURPS | RitualMagicSpellGURPS | SpellContainerGURPS> {
-		const spells: Collection<SpellGURPS | RitualMagicSpellGURPS | SpellContainerGURPS> = new Collection()
-		for (const item of this.items) {
-			if (
-				item instanceof SpellGURPS ||
-				item instanceof RitualMagicSpellGURPS ||
-				item instanceof SpellContainerGURPS
-			)
-				spells.set(item._id, item)
-		}
-		return spells
+		// const spells: Collection<SpellGURPS | RitualMagicSpellGURPS | SpellContainerGURPS> = new Collection()
+		// for (const item of this.items) {
+		// 	if (
+		// 		item instanceof SpellGURPS ||
+		// 		item instanceof RitualMagicSpellGURPS ||
+		// 		item instanceof SpellContainerGURPS
+		// 	)
+		// 		spells.set(item._id, item)
+		// }
+		// return spells
+		return new Collection(
+			[
+				...this.itemTypes[ItemType.Spell],
+				...this.itemTypes[ItemType.RitualMagicSpell],
+				...this.itemTypes[ItemType.SpellContainer],
+			].map(e => [e.id, e]) as readonly [string, Item][]
+		) as Collection<SpellGURPS | RitualMagicSpellGURPS | SpellContainerGURPS>
 	}
 
 	get equipment(): Collection<EquipmentGURPS | EquipmentContainerGURPS> {
-		const equipment: Collection<EquipmentGURPS | EquipmentContainerGURPS> = new Collection()
-		for (const item of this.items) {
-			if (item instanceof EquipmentGURPS || item instanceof EquipmentContainerGURPS) equipment.set(item._id, item)
-		}
-		return equipment
+		// const equipment: Collection<EquipmentGURPS | EquipmentContainerGURPS> = new Collection()
+		// for (const item of this.items) {
+		// 	if (item instanceof EquipmentGURPS || item instanceof EquipmentContainerGURPS) equipment.set(item._id, item)
+		// }
+		// return equipment
+		return new Collection(
+			[...this.itemTypes[ItemType.Equipment], ...this.itemTypes[ItemType.EquipmentContainer]].map(e => [
+				e.id,
+				e,
+			]) as readonly [string, Item][]
+		) as Collection<EquipmentGURPS | EquipmentContainerGURPS>
 	}
 
 	get carriedEquipment(): Collection<EquipmentGURPS | EquipmentContainerGURPS> {
@@ -1010,7 +1011,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 			if (attr.damage) atts[i].damage = attr.damage
 			i++
 		}
-		if (prev) {
+		if (prev.length !== 0) {
 			atts.forEach(attr => {
 				const prev_attr = prev.find(e => e.attr_id === attr.attr_id)
 				Object.assign(attr, prev_attr)
@@ -1033,13 +1034,33 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 			})
 			i++
 		}
-		if (prev) {
+		if (prev.length !== 0) {
 			t.forEach(tracker => {
 				const prev_tracker = prev.find(e => e.tracker_id === tracker.tracker_id)
 				Object.assign(tracker, prev_tracker)
 			})
 		}
 		return t
+	}
+
+	newMoveTypes(defs = this.system.settings.move_types, prev: MoveTypeObj[] = []): MoveTypeObj[] {
+		const m: MoveTypeObj[] = []
+		let i = 0
+		for (const def of defs) {
+			const move_type = new MoveType(this, def.id, i)
+			m.push({
+				move_type_id: move_type.id,
+				adj: move_type.adj,
+			})
+			i++
+		}
+		if (prev.length !== 0) {
+			m.forEach(type => {
+				const prev_move = prev.find(e => e.move_type_id === type.move_type_id)
+				Object.assign(type, prev_move)
+			})
+		}
+		return m
 	}
 
 	get BodyType(): HitLocationTable {
@@ -1069,7 +1090,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	getMoveTypes(mt_array = this.system.move_types): Map<string, MoveType> {
 		const move_types: Map<string, MoveType> = new Map()
-		if (mt_array.length === 0) return move_types
+		if (!mt_array?.length) return move_types
 		mt_array.forEach((v, k) => {
 			move_types.set(v.move_type_id, new MoveType(this, v.move_type_id, k, v))
 		})
@@ -1088,10 +1109,8 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		// Replace @X@ notation fields with given text
 		if (embeddedName === "Item" && options.substitutions) {
 			for (const item of documents.filter(e => e instanceof ItemGCS)) {
-				// If ((item as any).modifiers) ModifierChoiceSheet.new([item as ItemGCS])
 				const sheet = ModifierChoiceSheet.new([item as ItemGCS])
 				if (game.userId === userId) sheet?.render(true)
-				// ItemSubstitutionSheet.new([item as ItemGCS])
 			}
 		}
 		if (this.system.profile.tech_level !== "" && embeddedName === "Item") {
@@ -1129,6 +1148,10 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		if (this.system.settings.resource_trackers.length === 0) {
 			this.system.resource_trackers = this.newTrackers()
 			this.resource_trackers = this.getResourceTrackers()
+		}
+		if (this.system.settings.move_types.length === 0) {
+			this.system.move_types = this.newMoveTypes()
+			this.move_types = this.getMoveTypes()
 		}
 	}
 
@@ -1216,6 +1239,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		this.processThresholds()
 
 		this.resource_trackers = this.getResourceTrackers()
+		this.move_types = this.getMoveTypes()
 
 		this.calc.dodge_bonus = this.attributeBonusFor(gid.Dodge, AttributeBonusLimitation.None)
 		this.calc.parry_bonus = this.attributeBonusFor(gid.Parry, AttributeBonusLimitation.None)
@@ -1500,11 +1524,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	): number {
 		let total = 0
 		for (const feature of this.features.moveBonuses) {
-			if (
-				feature.limitation === limitation &&
-				feature.move_type === id &&
-				feature.effective === effective
-			) {
+			if (feature.limitation === limitation && feature.move_type === id && feature.effective === effective) {
 				total += feature.adjustedAmount
 				feature.addToTooltip(tooltip)
 			}

@@ -16,8 +16,7 @@ export class NoteContainerGURPS extends ContainerGURPS<NoteContainerSource> {
 		// @ts-expect-error Showdown not properly declared yet
 		const converter = new showdown.Converter()
 		let text = this.system.text
-		if (this.parent)
-			text = parseInlineNoteExpressions(text ?? "", this.parent as any)
+		if (this.parent) text = parseInlineNoteExpressions(text ?? "", this.parent as any)
 		return converter.makeHtml(text)?.replace(/\s\+/g, "\r")
 	}
 

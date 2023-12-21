@@ -1,5 +1,5 @@
 <div class="add">
-	<a class="gcs-circled-add add" data-type="move_type"></a>
+	<a class="gcs-circled-add add" data-type="move_types"></a>
 	{{#if actor}}
 	<a class="gcs-reset reset-all" data-type="move_types"></a>
 	<div>{{localize "gurps.settings.reset_all"}}</div>
@@ -7,10 +7,10 @@
 </div>
 <div class="item-list">
 	{{#each move_types}}
-		<div class="item" data-id="{{this.id}}" data-index="{{@index}}" data-type="move_type">
+		<div class="item" data-id="{{this.id}}" data-index="{{@index}}" data-type="move_types">
 			<div class="controls">
-				<a class="gcs-grip drag" data-index="{{@index}}" data-type="move_type"></a>
-				<a class="gcs-trash delete" data-index="{{@index}}" data-type="move_type"></a>
+				<a class="gcs-grip drag" data-index="{{@index}}" data-type="move_types"></a>
+				<a class="gcs-trash delete" data-index="{{@index}}" data-type="move_types"></a>
 				<a class="gcs-circled-add add" data-id="{{@index}}" data-type="override"></a>
 			</div>
 			<div class="fieldblock">

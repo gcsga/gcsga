@@ -76,8 +76,8 @@ export class MookParser {
 		this.parseSpells()
 		// this.parseEquipment()
 		this.parseAttacks(true)
-		console.log("Leftover:")
-		console.log(this.text)
+		// console.log("Leftover:")
+		// console.log(this.text)
 		// console.log(JSON.stringify(this.object.melee, null, "\t"))
 		// console.log(JSON.stringify(this.object.ranged, null, "\t"))
 		return this.object

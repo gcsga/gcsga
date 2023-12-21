@@ -1,6 +1,6 @@
-import { SETTINGS, SYSTEM_NAME } from "@module/data";
-import { SettingsMenuGURPS } from "./menu";
-import { defaultSettings } from "./defaults";
+import { SETTINGS, SYSTEM_NAME } from "@module/data"
+import { SettingsMenuGURPS } from "./menu"
+import { defaultSettings } from "./defaults"
 
 type AttributeBaseSettingField = {
 	name: string
@@ -10,7 +10,6 @@ type AttributeBaseSettingField = {
 }
 
 export abstract class AttributeBaseSettings extends SettingsMenuGURPS {
-
 	static override readonly namespace: SETTINGS
 
 	static override readonly SETTINGS: readonly string[] = [] as const
@@ -41,17 +40,19 @@ export abstract class AttributeBaseSettings extends SettingsMenuGURPS {
 	}
 
 	protected static override get settings(): Record<string, AttributeBaseSettingField> {
-		return this.SETTINGS.reduce((array, value) => (
-			{
-				...array, [value]: {
+		return this.SETTINGS.reduce(
+			(array, value) => ({
+				...array,
+				[value]: {
 					name: "",
 					hint: "",
 					type: Array,
 					// @ts-expect-error all values willbe correct so this doesn't matter
 					// but should probably fix at some point anyway
-					default: defaultSettings[SYSTEM_NAME][`${this.namespace}.${value}`]
-				}
-			}), {}
+					default: defaultSettings[SYSTEM_NAME][`${this.namespace}.${value}`],
+				},
+			}),
+			{}
 		)
 	}
 
@@ -61,7 +62,6 @@ export abstract class AttributeBaseSettings extends SettingsMenuGURPS {
 		html.find(".add").on("click", event => this._onAddItem(event))
 		html.find(".delete").on("click", event => this._onDeleteItem(event))
 	}
-
 
 	_onDataImport(event: JQuery.ClickEvent) {
 		event.preventDefault()
@@ -84,7 +84,7 @@ export abstract class AttributeBaseSettings extends SettingsMenuGURPS {
 				parent_index: parent_index,
 			})
 		)
-			; (event as any).dragType = type
+		;(event as any).dragType = type
 		console.log(event.dataTransfer?.getData("text/plain"))
 	}
 
@@ -103,16 +103,18 @@ export abstract class AttributeBaseSettings extends SettingsMenuGURPS {
 	}
 
 	override async getData(): Promise<any> {
-		return (<typeof AttributeBaseSettings> this.constructor).SETTINGS.reduce((array, value) => (
-			{
+		return (<typeof AttributeBaseSettings> this.constructor).SETTINGS.reduce(
+			(array, value) => ({
 				...array,
 				[value]: game.settings.get(
-					SYSTEM_NAME, `${(<typeof AttributeBaseSettings> this.constructor).namespace}.${value}` as any
-				)
-			}), {
-			actor: null,
-			config: CONFIG.GURPS
-		}
+					SYSTEM_NAME,
+					`${(<typeof AttributeBaseSettings> this.constructor).namespace}.${value}` as any
+				),
+			}),
+			{
+				actor: null,
+				config: CONFIG.GURPS,
+			}
 		)
 	}
 }

@@ -55,7 +55,6 @@ export class ItemImporter {
 									)
 								}
 							},
-
 						},
 						no: {
 							icon: '<i class="fas fa-times"></i>',

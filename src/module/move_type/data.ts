@@ -1,7 +1,7 @@
 export interface MoveTypeObj {
 	move_type_id: string
 	adj: number
-	move_type_def: MoveTypeDefObj
+	// move_type_def: MoveTypeDefObj
 	calc?: {
 		value: number
 		points: number
@@ -27,5 +27,5 @@ export interface MoveTypeOverrideObj {
 export enum MoveTypeOverrideConditionType {
 	Trait = "trait",
 	Skill = "skill",
-	Condition = "condition"
+	Condition = "condition",
 }
