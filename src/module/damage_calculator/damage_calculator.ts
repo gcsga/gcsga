@@ -113,6 +113,24 @@ class InjuryStep extends CalculatorStep {
 	}
 }
 
+class AdjustedInjuryStep extends CalculatorStep {
+	constructor(value: number, notes: string | undefined) {
+		super("Injury", "gurps.dmgcalc.substep.adjusted_injury", value, undefined, notes)
+	}
+}
+
+class DamageReductionStep extends CalculatorStep {
+	constructor(value: number, notes: string | undefined) {
+		super("Injury", "gurps.dmgcalc.substep.damage_reduction", value, undefined, notes)
+	}
+}
+
+class MaxForLocationStep extends CalculatorStep {
+	constructor(value: number, notes: string | undefined) {
+		super("Injury", "gurps.dmgcalc.substep.max_location", value, undefined, notes)
+	}
+}
+
 export class DamageResults {
 	steps = <Array<CalculatorStep>>[]
 
@@ -984,11 +1002,8 @@ class DamageCalculator implements IDamageCalculator {
 		let value = Math.floor(results.woundingModifier!.value * results.penetratingDamage!.value)
 		if (results.woundingModifier!.value !== 0 && value === 0 && results.penetratingDamage!.value > 0) value = 1
 		results.addResult(
-			new CalculatorStep(
-				"Injury",
-				"gurps.dmgcalc.substep.injury",
+			new InjuryStep(
 				value,
-				undefined,
 				`= ${results.penetratingDamage!.value} × ${formatFraction(results.woundingModifier!.value)}`
 			)
 		)
@@ -998,11 +1013,8 @@ class DamageCalculator implements IDamageCalculator {
 		if (this.damageReduction !== 1) {
 			const newValue = Math.ceil(results.injury!.value / this.damageReduction)
 			results.addResult(
-				new CalculatorStep(
-					"Injury",
-					"gurps.dmgcalc.substep.damage_reduction",
+				new DamageReductionStep(
 					newValue,
-					undefined,
 					this.format("gurps.dmgcalc.description.damage_reduction", {
 						injury: results.injury!.value,
 						reduction: this.damageReduction,
@@ -1013,11 +1025,9 @@ class DamageCalculator implements IDamageCalculator {
 
 		// Adjust for hit location.
 		const maxResult = hitlocation.maximumInjury(this.target.hitPoints.value)
-		const newValue = Math.min(results.injury!.value, maxResult[0])
+		const newValue = Math.min(results.injury!.value, maxResult.value)
 		if (newValue < results.injury!.value) {
-			results.addResult(
-				new CalculatorStep("Injury", "gurps.dmgcalc.substep.max_location", newValue, undefined, maxResult[1])
-			)
+			results.addResult(new MaxForLocationStep(newValue, maxResult.key))
 		}
 	}
 
@@ -1028,7 +1038,7 @@ class DamageCalculator implements IDamageCalculator {
 		const maximumForInjuryTolerance = this.maximumForInjuryTolerance
 		let newValue = Math.min(results.injury!.value, maximumForInjuryTolerance.value)
 		if (newValue < results.injury!.value) {
-			results.addResult(new CalculatorStep("Injury", STEP, newValue, undefined, maximumForInjuryTolerance.key))
+			results.addResult(new AdjustedInjuryStep(newValue, maximumForInjuryTolerance.key))
 		}
 
 		if (this.isDiffuse) return
@@ -1036,13 +1046,7 @@ class DamageCalculator implements IDamageCalculator {
 		// Adjust for blunt trauma.
 		if (this.isBluntTrauma(results, hitlocation)) {
 			results.addResult(
-				new CalculatorStep(
-					"Injury",
-					STEP,
-					this.bluntTrauma(results),
-					undefined,
-					this.format("gurps.dmgcalc.description.blunt_trauma")
-				)
+				new AdjustedInjuryStep(this.bluntTrauma(results), this.format("gurps.dmgcalc.description.blunt_trauma"))
 			)
 		}
 	}
@@ -1164,30 +1168,30 @@ class HitLocationDamage implements LocationDamage {
 	/**
 	 * @returns the maximum injury based on hit location, or Infinity if none.
 	 */
-	maximumInjury(maxHitPoints: number): [number, string] {
+	maximumInjury(maxHitPoints: number): KeyValue {
 		if (Limb.includes(this.locationId)) {
 			const max = Math.floor(maxHitPoints / 2) + 1
-			return [
-				max,
-				this.format("gurps.dmgcalc.description.location_max", {
+			return {
+				value: max,
+				key: this.format("gurps.dmgcalc.description.location_max", {
 					value: max,
 					location: this.locationId,
 				}),
-			]
+			}
 		}
 
 		if (Extremity.includes(this.hit.locationId)) {
 			const max = Math.floor(maxHitPoints / 3) + 1
-			return [
-				max,
-				this.format("gurps.dmgcalc.description.location_max", {
+			return {
+				value: max,
+				key: this.format("gurps.dmgcalc.description.location_max", {
 					value: max,
 					location: this.hit.locationId,
 				}),
-			]
+			}
 		}
 
-		return [Infinity, ""]
+		return { value: Infinity, key: "" }
 	}
 
 	/**
