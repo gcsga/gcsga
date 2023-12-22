@@ -259,15 +259,19 @@ export interface IDamageCalculator {
 
 interface LocationDamage {
 	hitLocation: HitLocation | undefined
+
 	readonly isOverridden: boolean
+	resetOverrides(): void
+
 	readonly results: DamageResults
-	readonly drForHitLocation: KeyValue
 
 	readonly basicDamage: number
 	basicDamageOverride: number | undefined
 
 	locationId: string | undefined
+	readonly isLargeAreaInjury: boolean
 
+	readonly drForHitLocation: KeyValue
 	damageResistanceOverride: number | undefined
 
 	readonly isFlexibleArmor: boolean
@@ -278,8 +282,6 @@ interface LocationDamage {
 
 	readonly woundingModifier: number
 	woundingModifierOverride: number | undefined
-
-	readonly isLargeAreaInjury: boolean
 }
 
 const formatFraction = (value: number) => {
@@ -338,7 +340,11 @@ class DamageCalculator implements IDamageCalculator {
 		vulnerability: undefined,
 	}
 
-	isOverridden = false
+	get isOverridden(): boolean {
+		const overriden = Object.values(this.overrides).some(it => it !== undefined)
+		if (overriden) return true
+		return this.hits.some(it => it.isOverridden)
+	}
 
 	resetOverrides(): void {
 		let key: keyof ContainerOverrides
@@ -349,6 +355,8 @@ class DamageCalculator implements IDamageCalculator {
 		for (const trait of this.vulnerabilities) {
 			trait.apply = false
 		}
+
+		this.hits.forEach(it => it.resetOverrides())
 	}
 
 	// === Target ===
@@ -480,11 +488,11 @@ class DamageCalculator implements IDamageCalculator {
 		return this.damageRoll.attacker
 	}
 
+	// === Weapon ===
+
 	get weapon(): DamageWeapon | undefined {
 		return this.damageRoll.weapon
 	}
-
-	// === Weapon ===
 
 	get dice(): DiceGURPS {
 		return this.damageRoll.dice
@@ -1010,7 +1018,7 @@ class DamageCalculator implements IDamageCalculator {
 		this.adjustInjury(results, hitlocation)
 
 		// Adjust for Damage Reduction.
-		if (this.damageReduction !== 1) {
+		if (this.damageReduction !== NoDamageReduction) {
 			const newValue = Math.ceil(results.injury!.value / this.damageReduction)
 			results.addResult(
 				new DamageReductionStep(
@@ -1437,5 +1445,9 @@ class HitLocationDamage implements LocationDamage {
 
 	get isLargeAreaInjury(): boolean {
 		return this.hit.locationId === DefaultHitLocations.LargeArea
+	}
+
+	get damageTypeKey(): string {
+		return this.calculator.damageTypeKey
 	}
 }
