@@ -32,8 +32,8 @@ export interface RitualMagicSpellSystemData extends ItemGCSSystemData {
 	study: Study[]
 	study_hours_needed: StudyHoursNeeded
 	calc?: {
-		level?: number,
-		rsl?: string,
+		level?: number
+		rsl?: string
 		points?: number
 		resolved_notes?: string
 	}

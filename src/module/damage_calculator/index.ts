@@ -105,6 +105,9 @@ class DamageRollAdapter implements DamageRoll {
 		}
 
 		this.attacker = attacker
+		this._locationId = payload.damageRoll[0].hitlocation
+		// console.log(`location = ${this._locationId}`)
+
 		this.weapon = weapon
 		this.internalExplosion = false
 		this.applyTo = ""
@@ -126,6 +129,15 @@ class DamageRollAdapter implements DamageRoll {
 		return this._payload.damage
 	}
 
+	get basicDamage(): number {
+		// console.log(this._payload)
+		return this._payload.damageRoll[this._payload.index].total
+	}
+
+	get armorDivisor(): number {
+		return this._payload.armorDivisor ?? 1
+	}
+
 	get damageType(): DamageType {
 		return (DamageTypes as any)[this._payload.damageType]
 	}
@@ -139,10 +151,6 @@ class DamageRollAdapter implements DamageRoll {
 	}
 
 	readonly weapon: DamageWeapon | undefined
-
-	get armorDivisor(): number {
-		return this._payload.armorDivisor ?? 1
-	}
 
 	readonly rofMultiplier: number
 

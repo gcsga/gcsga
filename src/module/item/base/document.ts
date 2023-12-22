@@ -81,4 +81,17 @@ export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSour
 	prepareData(): void {
 		super.prepareData()
 	}
+
+	sameSection(compare: Item): boolean {
+		const traits = [ItemType.Trait, ItemType.TraitContainer]
+		const skills = [ItemType.Skill, ItemType.Technique, ItemType.SkillContainer]
+		const spells = [ItemType.Spell, ItemType.RitualMagicSpell, ItemType.SpellContainer]
+		const equipment = [ItemType.Equipment, ItemType.EquipmentContainer]
+		const notes = [ItemType.Note, ItemType.NoteContainer]
+		const sections = [traits, skills, spells, equipment, notes]
+		for (const i of sections) {
+			if (i.includes(this.type as any) && i.includes(compare.type as any)) return true
+		}
+		return false
+	}
 }

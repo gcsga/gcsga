@@ -2,7 +2,14 @@ import { ItemGCS } from "@item/gcs"
 import { TraitModifierGURPS } from "@item/trait_modifier"
 import { TraitModifierContainerGURPS } from "@item/trait_modifier_container"
 import { CR, CRAdjustment, ItemType } from "@module/data"
-import { inlineNote, LocalizeGURPS, parseInlineNoteExpressions, resolveStudyHours, SelfControl, studyHoursProgressText } from "@util"
+import {
+	inlineNote,
+	LocalizeGURPS,
+	parseInlineNoteExpressions,
+	resolveStudyHours,
+	SelfControl,
+	studyHoursProgressText,
+} from "@util"
 import { TraitSource } from "./data"
 
 export class TraitGURPS extends ItemGCS<TraitSource> {
@@ -42,8 +49,7 @@ export class TraitGURPS extends ItemGCS<TraitSource> {
 			}
 		}
 		let outString = buffer.join("")
-		if (this.parent)
-			outString = parseInlineNoteExpressions(buffer.join(""), this.parent as any)
+		if (this.parent) outString = parseInlineNoteExpressions(buffer.join(""), this.parent as any)
 		return `<div class="item-notes">${outString}</div>`
 	}
 
@@ -106,7 +112,8 @@ export class TraitGURPS extends ItemGCS<TraitSource> {
 			const allSelfControlRolls = [CR.None, CR.CR6, CR.CR9, CR.CR12, CR.CR15]
 			if (cr === CR.None) return 0
 			switch (crAdj) {
-				case CRAdjustment.None: return 0
+				case CRAdjustment.None:
+					return 0
 				case CRAdjustment.ActionPenalty:
 				case CRAdjustment.ReactionPenalty:
 				case CRAdjustment.FrightCheckPenalty:
@@ -126,10 +133,11 @@ export class TraitGURPS extends ItemGCS<TraitSource> {
 		if (this.cr !== CR.None) {
 			buffer.push(LocalizeGURPS.translations.gurps.select.cr_level[this.cr])
 			if (this.crAdj !== CRAdjustment.None) buffer.push(", ")
-			buffer.push(LocalizeGURPS.format(
-				LocalizeGURPS.translations.gurps.character.cr_adj_display[this.crAdj],
-				{ penalty: adjustment(this.crAdj, this.cr) }
-			))
+			buffer.push(
+				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.character.cr_adj_display[this.crAdj], {
+					penalty: adjustment(this.crAdj, this.cr),
+				})
+			)
 		}
 
 		this.deepModifiers.forEach(mod => {

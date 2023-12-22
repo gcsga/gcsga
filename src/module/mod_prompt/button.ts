@@ -94,7 +94,8 @@ export class ModifierButton extends Application {
 		// 	) this._onMouseWheel(delta)
 		// }, { passive: false })
 
-		html.on("wheel", event => this._onMouseWheel(event))
+		// html.on("wheel", event => this._onMouseWheel(event), {passive: true})
+		html[0].addEventListener("wheel", event => this._onMouseWheel(event), { passive: true })
 
 		html.find("#modifier-app").on("click", event => this._onClick(event))
 		html.find(".magnet").on("click", event => this._onMagnetClick(event))
@@ -162,11 +163,8 @@ export class ModifierButton extends Application {
 	// 	})
 	// }
 
-	async _onMouseWheel(event: JQuery.TriggeredEvent) {
-		const originalEvent = event.originalEvent
-		if (!(originalEvent instanceof WheelEvent)) return
-
-		const delta = Math.round(originalEvent.deltaY / -100)
+	async _onMouseWheel(event: WheelEvent) {
+		const delta = Math.round(event.deltaY / -100)
 		return game.ModifierList.addModifier({
 			name: "",
 			modifier: delta,

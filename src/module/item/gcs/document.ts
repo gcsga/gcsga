@@ -31,7 +31,7 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 			this._source.img = data.img = `systems/${SYSTEM_NAME}/assets/icons/${type}.svg`
 		let gcs_type: string = data.type
 		if (gcs_type === ItemType.Equipment) gcs_type = "equipment"
-			; (this._source.system as any).type = gcs_type
+		;(this._source.system as any).type = gcs_type
 		await super._preCreate(data, options, user)
 	}
 
@@ -148,19 +148,6 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 			.reduce((partialSum: number, a: number) => partialSum + a, 0)
 	}
 
-	sameSection(compare: Item): boolean {
-		const traits = [ItemType.Trait, ItemType.TraitContainer]
-		const skills = [ItemType.Skill, ItemType.Technique, ItemType.SkillContainer]
-		const spells = [ItemType.Spell, ItemType.RitualMagicSpell, ItemType.SpellContainer]
-		const equipment = [ItemType.Equipment, ItemType.EquipmentContainer]
-		const notes = [ItemType.Note, ItemType.NoteContainer]
-		const sections = [traits, skills, spells, equipment, notes]
-		for (const i of sections) {
-			if (i.includes(this.type as any) && i.includes(compare.type as any)) return true
-		}
-		return false
-	}
-
 	exportSystemData(keepOther: boolean): any {
 		const system: any = this.system
 		system.name = this.name
@@ -175,7 +162,7 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 			system.modifiers = (this as any).modifiers.map((e: ItemGCS) => e.exportSystemData(false))
 		if ((this as any).weapons)
 			system.weapons = (this as any).weapons.map((e: BaseWeaponGURPS) => e.exportSystemData(false))
-		if (!keepOther) delete system.other
+		// if (!keepOther) delete system.other
 		return system
 	}
 }

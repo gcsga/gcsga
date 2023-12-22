@@ -46,6 +46,8 @@ export class Mook {
 
 	notes: MookNote[]
 
+	conditions = []
+
 	profile: MookProfile
 
 	thrust!: DiceGURPS

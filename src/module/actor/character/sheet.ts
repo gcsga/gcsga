@@ -1,5 +1,6 @@
 import { ActorFlags, ActorSheetGURPS } from "@actor/base"
 import {
+	ContainerGURPS,
 	EffectGURPS,
 	EquipmentContainerGURPS,
 	EquipmentGURPS,
@@ -25,12 +26,13 @@ import { PDF } from "@module/pdf"
 import { ResourceTrackerObj } from "@module/resource_tracker"
 import { RollGURPS } from "@module/roll"
 import { dollarFormat, Length, LocalizeGURPS, newUUID, Weight, WeightUnits } from "@util"
-import { fSearch } from "@util/fuse"
 import EmbeddedCollection from "types/foundry/common/abstract/embedded-collection.mjs"
 import { CharacterSheetConfig } from "./config_sheet"
 import { CharacterFlagDefaults, CharacterMove, Encumbrance } from "./data"
 import { CharacterGURPS } from "./document"
 import { PointRecordSheet } from "./points_sheet"
+import { PropertiesToSource } from "types/types/helperTypes"
+import { ItemDataBaseProperties } from "types/foundry/common/data/data.mjs/itemData"
 
 export class CharacterSheetGURPS extends ActorSheetGURPS {
 	declare object: CharacterGURPS
@@ -49,7 +51,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			width: 800,
 			height: 800,
 			tabs: [{ navSelector: ".tabs-navigation", contentSelector: ".tabs-content", initial: "lifting" }],
-			dragDrop: [{ dragSelector: ".item-list .item:not(.placeholder)", dropSelector: null }]
+			dragDrop: [{ dragSelector: ".item-list .item:not(.placeholder)", dropSelector: null }],
 		})
 	}
 
@@ -59,11 +61,37 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		return `/systems/${SYSTEM_NAME}/templates/actor/character/sheet.hbs`
 	}
 
-	protected _onDrop(event: DragEvent): void {
-		super._onDrop(event)
+	protected async _onDropItem(event: DragEvent, data: ActorSheet.DropData.Item & { uuid: string }): Promise<unknown> {
+		const top = Boolean($(".border-top").length)
+		const inContainer = Boolean($(".border-in").length)
+		const other = [...$(event.target!), ...$(event.target!).parents()]
+			.map(e => (e as unknown as HTMLElement).id)
+			.some(e => e === "other-equipment")
+
+		$(".border-bottom").removeClass("border-bottom")
+		$(".border-top").removeClass("border-top")
+		$(".border-in").removeClass("border-in")
+
+		if (!this.actor.isOwner) return false
+
+		const importData = {
+			type: data.type,
+			uuid: data.uuid,
+		}
+		const item = await (Item.implementation as any).fromDropData(importData)
+		const itemData = item.toObject()
+		let result
+
+		// Handle item sorting within the same Actor
+		if (this.actor.uuid === item.actor?.uuid) {
+			result = this._onSortItem(event, itemData, { top, inContainer, other })
+		}
+
+		result = this._onDropNewItem(event, item, { top, inContainer, other })
 		const sheet = $(this.element)
 		sheet.find(".item-list.dragsection").removeClass("dragsection")
 		sheet.find(".item-list.dragindirect").removeClass("dragindirect")
+		return result
 	}
 
 	protected async _updateObject(event: Event, formData: Record<string, unknown>): Promise<unknown> {
@@ -202,7 +230,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 
 	_addItemHeaderContextMenu(element: HTMLElement) {
 		const type = $(element).parent(".item-list")[0].id
-		const menuItems = (function(self: CharacterSheetGURPS): ContextMenuEntry[] {
+		const menuItems = (function (self: CharacterSheetGURPS): ContextMenuEntry[] {
 			switch (type) {
 				case "traits":
 					return [
@@ -677,12 +705,12 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 
 	protected _openDefaultLookup(event: JQuery.ClickEvent) {
 		event.preventDefault()
-		const defaultSkills = CONFIG.GURPS.skillDefaults
-		const list = fSearch(defaultSkills, "serv", {
-			includeMatches: true,
-			includeScore: true,
-			keys: ["name", "specialization", "tags"],
-		}).map(e => e.item)
+		// const defaultSkills = CONFIG.GURPS.skillDefaults
+		// const list = fSearch(defaultSkills, "serv", {
+		// 	includeMatches: true,
+		// 	includeScore: true,
+		// 	keys: ["name", "specialization", "tags"],
+		// }).map(e => e.item)
 		this.skillDefaultsOpen = true
 		this.render()
 		const searchbar = this._element?.find("input.defaults")
@@ -749,17 +777,16 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		return RollGURPS.handleRoll(game.user, this.actor, data)
 	}
 
-	protected _onDragItem(event: JQuery.DragOverEvent): void {
+	private getTargetTableFromItemType(event: JQuery.DragOverEvent | DragEvent, type: ItemType): JQuery<HTMLElement> {
 		const sheet = $(this.element)
-		const itemData = $("#drag-ghost").data("item") as ItemDataGURPS
 		let currentTable = $(event.target).closest(".item-list")
-		if (([ItemType.Equipment, ItemType.EquipmentContainer].includes(itemData.type))) {
+		if ([ItemType.Equipment, ItemType.EquipmentContainer].includes(type)) {
 			if ($(event.target).closest(".item-list#other-equipment").length > 0)
 				currentTable = $(event.target).closest(".item-list#other-equipment")
 			else currentTable = sheet.find(".item-list#equipment")
 		} else {
-			const idLookup = (function() {
-				switch (itemData.type) {
+			const idLookup = (function () {
+				switch (type) {
 					case ItemType.Trait:
 					case ItemType.TraitContainer:
 						return "traits"
@@ -783,8 +810,204 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			})()
 			currentTable = sheet.find(`.item-list#${idLookup}`)
 		}
+		return currentTable
+	}
 
-		sheet.find(".item-list").each(function() {
+	protected async _onDropNewItem(
+		event: DragEvent,
+		sourceItem: ItemGURPS,
+		options: { top: boolean; inContainer: boolean; other: boolean } = {
+			top: false,
+			inContainer: false,
+			other: false,
+		}
+	): Promise<ItemGURPS[] | undefined> {
+		// The table element where the dragged item was dropped
+		let targetTableEl = [...$(event.target!).filter(".item-list"), ...$(event.target!).parents(".item-list")][0]
+		if (!targetTableEl) targetTableEl = this.getTargetTableFromItemType(event, sourceItem.type as ItemType)[0]
+		if (!targetTableEl) return
+
+		// The item element onto which the dragged item was dropped
+		const targetItemEl = $(event.target!).closest(".desc[data-item-id]")
+		// This should only happen when switching between carried and other equipment
+		if (!targetItemEl)
+			return this.actor.createNestedEmbeddedDocuments([sourceItem], { id: null, other: options.other })
+
+		let targetItem = this.actor.items.get(targetItemEl.data("item-id")) as ItemGURPS
+		let targetItemContainer = targetItem?.container
+		// Dropping item into a container
+		if (options.inContainer && targetItem instanceof ContainerGURPS) {
+			targetItemContainer = targetItem
+			targetItem = targetItemContainer.children.contents[0] ?? null
+		}
+
+		const newItems = await this.actor.createNestedEmbeddedDocuments([sourceItem], {
+			id: targetItemContainer instanceof ContainerGURPS ? targetItemContainer?.id : null,
+			other: options.other,
+		})
+
+		const siblingItems = targetItemContainer?.items.filter(
+			e => e.id !== sourceItem.id && sourceItem.sameSection(e)
+		) as ItemGURPS[]
+
+		const sortUpdates = SortingHelpers.performIntegerSort(newItems[0], {
+			target: targetItem,
+			siblings: siblingItems,
+			sortBefore: options.top,
+		})
+
+		const updateData = sortUpdates.map(u => {
+			return { ...u.update, _id: u.target._id } as { _id: string; [key: string]: any }
+		})
+		await this.actor?.updateEmbeddedDocuments("Item", updateData)
+		return newItems
+	}
+
+	protected override async _onDragStart(event: DragEvent): Promise<void> {
+		const list = event.currentTarget
+		// If (event.target.classList.contains("contents-link")) return;
+
+		// let itemData: any
+		let dragData: any
+
+		// Owned Items
+		if ($(list as HTMLElement).data("item-id")) {
+			const id = $(list as HTMLElement).data("item-id")
+			const item = this.actor.items.get(id) ?? null
+			dragData = {
+				type: "Item",
+				uuid: item?.uuid,
+			}
+
+			// Create custom drag image
+			const dragImage = document.createElement("div")
+			dragImage.innerHTML = await renderTemplate(`systems/${SYSTEM_NAME}/templates/actor/drag-image.hbs`, {
+				name: `${item?.name}`,
+				type: `${item?.type.replace("_container", "").replaceAll("_", "-")}`,
+			})
+			dragImage.id = "drag-ghost"
+			dragImage.setAttribute("data-item", JSON.stringify(item?.toObject()))
+			document.body.querySelectorAll("#drag-ghost").forEach(e => e.remove())
+			document.body.appendChild(dragImage)
+			const height = (document.body.querySelector("#drag-ghost") as HTMLElement).offsetHeight
+			event.dataTransfer?.setDragImage(dragImage, 0, height / 2)
+		}
+
+		// Active Effect
+		if ((list as HTMLElement).dataset.effectId) {
+			const effect = this.actor.effects.get((list as HTMLElement).dataset.effectId!)
+			dragData = (effect as any)?.toDragData()
+		}
+
+		// Set data transfer
+		event.dataTransfer?.setData("text/plain", JSON.stringify(dragData))
+	}
+
+	protected override _onSortItem(
+		event: DragEvent,
+		itemData: PropertiesToSource<ItemDataBaseProperties>,
+		options: { top: boolean; inContainer: boolean; other: boolean } = {
+			top: false,
+			inContainer: false,
+			other: false,
+		}
+	): Promise<Item[]> | undefined {
+		// Dragged item
+		const sourceItem = this.actor.items.get(itemData._id!) as ItemGURPS
+		if (!sourceItem) return
+
+		// The table element where the dragged item was dropped
+		const targetTableEl = [...$(event.target!).filter(".item-list"), ...$(event.target!).parents(".item-list")][0]
+		if (!targetTableEl) return
+
+		// The item element onto which the dragged item was dropped
+		const targetItemEl = $(event.target!).closest(".desc[data-item-id]")
+		// This should only happen when switching between carried and other equipment
+		if (!targetItemEl) {
+			if (![ItemType.Equipment, ItemType.EquipmentContainer].includes(sourceItem.type as ItemType)) return // this should not happen
+			if (sourceItem.getFlag(SYSTEM_NAME, ItemFlags.Other) !== options.other)
+				return this.actor.updateEmbeddedDocuments("Item", [
+					{ _id: sourceItem.id, [`flags.${SYSTEM_NAME}.${ItemFlags.Other}`]: options.other },
+				]) as Promise<Item[]>
+		}
+
+		let targetItem = this.actor.items.get(targetItemEl.data("item-id")) as ItemGURPS
+		let targetItemContainer = targetItem?.container
+		// Dropping item into a container
+		if (options.inContainer && targetItem instanceof ContainerGURPS) {
+			targetItemContainer = targetItem
+			targetItem = targetItemContainer.children.contents[0] ?? null
+		}
+
+		const siblingItems = targetItemContainer?.items.filter(
+			e => e.id !== sourceItem.id && sourceItem.sameSection(e)
+		) as ItemGURPS[]
+
+		// target item and source item are not in the same table
+		if (targetItem && !sourceItem.sameSection(targetItem)) return
+
+		// Sort updates sorts all items within the same container
+		const sortUpdates = SortingHelpers.performIntegerSort(sourceItem, {
+			target: targetItem,
+			siblings: siblingItems,
+			sortBefore: options.top,
+		})
+
+		const updateData = sortUpdates.map(u => {
+			return { ...u.update, _id: u.target._id } as { _id: string; [key: string]: any }
+		})
+
+		// Set container flag if containers are not the same
+		if (sourceItem.container !== targetItemContainer)
+			updateData[updateData.findIndex(e => e._id === sourceItem._id)][
+				`flags.${SYSTEM_NAME}.${ItemFlags.Container}`
+			] = targetItemContainer instanceof ContainerGURPS ? targetItemContainer.id : null
+
+		// Set other flag for equipment
+		if ([ItemType.Equipment, ItemType.EquipmentContainer].includes(sourceItem.type as ItemType))
+			updateData[updateData.findIndex(e => e._id === sourceItem._id)][`flags.${SYSTEM_NAME}.${ItemFlags.Other}`] =
+				options.other
+
+		return this.actor.updateEmbeddedDocuments("Item", updateData) as Promise<ItemGURPS[]>
+	}
+
+	protected _onDragItem(event: JQuery.DragOverEvent): void {
+		const sheet = $(this.element)
+		const itemData = $("#drag-ghost").data("item") as ItemDataGURPS
+		const currentTable = this.getTargetTableFromItemType(event, itemData.type)
+		// let currentTable = $(event.target).closest(".item-list")
+		// if ([ItemType.Equipment, ItemType.EquipmentContainer].includes(itemData.type)) {
+		// 	if ($(event.target).closest(".item-list#other-equipment").length > 0)
+		// 		currentTable = $(event.target).closest(".item-list#other-equipment")
+		// 	else currentTable = sheet.find(".item-list#equipment")
+		// } else {
+		// 	const idLookup = (function() {
+		// 		switch (itemData.type) {
+		// 			case ItemType.Trait:
+		// 			case ItemType.TraitContainer:
+		// 				return "traits"
+		// 			case ItemType.Skill:
+		// 			case ItemType.Technique:
+		// 			case ItemType.SkillContainer:
+		// 				return "skills"
+		// 			case ItemType.Spell:
+		// 			case ItemType.RitualMagicSpell:
+		// 			case ItemType.SpellContainer:
+		// 				return "spells"
+		// 			case ItemType.Note:
+		// 			case ItemType.NoteContainer:
+		// 				return "notes"
+		// 			case ItemType.Effect:
+		// 			case ItemType.Condition:
+		// 				return "effects"
+		// 			default:
+		// 				return "invalid"
+		// 		}
+		// 	})()
+		// 	currentTable = sheet.find(`.item-list#${idLookup}`)
+		// }
+
+		sheet.find(".item-list").each(function () {
 			if ($(this) !== currentTable) {
 				$(this).removeClass("dragsection")
 				$(this).removeClass("dragindirect")
@@ -793,7 +1016,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 
 		let direct = false
 		currentTable.addClass("dragsection")
-		if (!([...$(event.target), ...$(event.target).parents()].includes(currentTable[0]))) {
+		if (![...$(event.target), ...$(event.target).parents()].includes(currentTable[0])) {
 			currentTable.addClass("dragindirect")
 		} else {
 			direct = true
@@ -803,26 +1026,17 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			(currentTable.position().top ?? 0) + (currentTable.children(".header.reference").outerHeight() ?? 0),
 			sheet.find(".window-content").position().top
 		)
-		currentTable[0].style.setProperty(
-			"--top", `${top}px`
-		)
-		currentTable[0].style.setProperty("--left", `${(currentTable.position().left + 1) ?? 0}px`)
-		const height = (function() {
-			const tableBottom =
-				(currentTable.position().top ?? 0) +
-				(currentTable.height() ?? 0)
+		currentTable[0].style.setProperty("--top", `${top}px`)
+		currentTable[0].style.setProperty("--left", `${currentTable.position().left + 1 ?? 0}px`)
+		const height = (function () {
+			const tableBottom = (currentTable.position().top ?? 0) + (currentTable.height() ?? 0)
 			const contentBottom =
-				(sheet.find(".window-content").position().top ?? 0) +
-				(sheet.find(".window-content").height() ?? 0)
+				(sheet.find(".window-content").position().top ?? 0) + (sheet.find(".window-content").height() ?? 0)
 			return Math.min(contentBottom - top, tableBottom - top)
 		})()
 		if (height !== 0) {
-			currentTable[0].style.setProperty(
-				"--height", `${height}px`
-			)
-			currentTable[0].style.setProperty(
-				"--width", `${currentTable.width()}px`
-			)
+			currentTable[0].style.setProperty("--height", `${height}px`)
+			currentTable[0].style.setProperty("--width", `${currentTable.width()}px`)
 		}
 
 		let element = $(event.target!).closest(".item.desc")
@@ -834,7 +1048,8 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			element = currentTable.children(".item.desc").last()
 			heightAcross = 1
 			inContainer = false
-		} if (heightAcross > 0.5 && element.hasClass("border-bottom")) return
+		}
+		if (heightAcross > 0.5 && element.hasClass("border-bottom")) return
 		if (heightAcross < 0.5 && element.hasClass("border-top")) return
 		if (inContainer && element.hasClass("border-in")) return
 
@@ -877,6 +1092,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		)
 		const [primary_attributes, secondary_attributes, point_pools] = this.prepareAttributes(this.actor.attributes)
 		const resource_trackers = Array.from(this.actor.resource_trackers.values())
+		const move_types = Array.from(this.actor.move_types.values())
 		const encumbrance = this.prepareEncumbrance()
 		const lifting = this.prepareLifts()
 		const moveData = this.prepareMoveData()
@@ -897,6 +1113,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 				secondary_attributes,
 				point_pools,
 				resource_trackers,
+				move_types,
 				encumbrance,
 				lifting,
 				moveData,
@@ -1064,14 +1281,14 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		}
 		const buttons: Application.HeaderButton[] = this.actor.canUserModify(game.user!, "update")
 			? [
-				edit_button,
-				{
-					label: "",
-					class: "gmenu",
-					icon: "gcs-all-seeing-eye",
-					onclick: event => this._openGMenu(event),
-				},
-			]
+					edit_button,
+					{
+						label: "",
+						class: "gmenu",
+						icon: "gcs-all-seeing-eye",
+						onclick: event => this._openGMenu(event),
+					},
+			  ]
 			: []
 		const all_buttons = [...buttons, ...super._getHeaderButtons()]
 		return all_buttons

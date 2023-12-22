@@ -60,8 +60,7 @@ export class SpellGURPS extends ItemGCS<SpellSource> {
 		}
 		out.push(list.join("; "))
 		let outString = out.join("")
-		if (this.parent)
-			outString = parseInlineNoteExpressions(out.join(""), this.parent as any)
+		if (this.parent) outString = parseInlineNoteExpressions(out.join(""), this.parent as any)
 		return `<div class="item-notes">${outString}</div>`
 	}
 

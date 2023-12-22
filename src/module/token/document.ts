@@ -6,6 +6,10 @@ export class TokenDocumentGURPS extends TokenDocument {
 
 	overlayEffect: any
 
+	get actor(): BaseActorGURPS | null {
+		return super.actor as BaseActorGURPS | null
+	}
+
 	hasStatusEffect(statusId: ConditionID): boolean {
 		if (statusId === ConditionID.Dead) return this.overlayEffect === CONFIG.controlIcons.defeated
 		const { actor } = this

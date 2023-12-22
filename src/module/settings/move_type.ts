@@ -1,34 +1,25 @@
 import { SETTINGS, SYSTEM_NAME } from "@module/data"
 import { MoveTypeDefObj, MoveTypeOverrideConditionType } from "@module/move_type"
 import { AttributeBaseSettings } from "./attribute_base"
-import { prepareFormData } from "@util"
+import { getNewAttributeId, prepareFormData } from "@util"
 import { DnD } from "@util/drag_drop"
 
 enum ListType {
-	MoveType = "move_type",
-	Overrides = "override"
+	MoveType = "move_types",
+	Overrides = "override",
 }
 
 export class DefaultMoveSettings extends AttributeBaseSettings {
-
 	static override readonly namespace = SETTINGS.DEFAULT_MOVE_TYPES
 
 	static override readonly SETTINGS = ["move_types"] as const
-
 
 	_onDataImport(event: JQuery.ClickEvent) {
 		event.preventDefault()
 	}
 
-
 	_onDataExport(event: JQuery.ClickEvent) {
 		event.preventDefault()
-	}
-
-	getData(): Promise<any> {
-		const obj = super.getData()
-		console.log(obj)
-		return obj
 	}
 
 	async _onAddItem(event: JQuery.ClickEvent) {
@@ -37,14 +28,7 @@ export class DefaultMoveSettings extends AttributeBaseSettings {
 		const move_types: MoveTypeDefObj[] = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
 		const type: ListType = $(event.currentTarget).data("type")
 		let new_id = ""
-		if (type === ListType.MoveType)
-			for (let n = 0; n < 26; n++) {
-				const char = String.fromCharCode(97 + n)
-				if (![...move_types].find(e => e.id === char)) {
-					new_id = char
-					break
-				}
-			}
+		if (type === ListType.MoveType) new_id = getNewAttributeId(move_types)
 		switch (type) {
 			case ListType.MoveType:
 				move_types.push({
@@ -52,7 +36,7 @@ export class DefaultMoveSettings extends AttributeBaseSettings {
 					name: "",
 					move_type_base: "",
 					cost_per_point: 0,
-					overrides: []
+					overrides: [],
 				})
 				await game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`, move_types)
 				return this.render()
@@ -61,9 +45,9 @@ export class DefaultMoveSettings extends AttributeBaseSettings {
 				move_types[$(event.currentTarget).data("id")].overrides!.push({
 					condition: {
 						type: MoveTypeOverrideConditionType.Condition,
-						qualifier: ""
+						qualifier: "",
 					},
-					move_type_base: ""
+					move_type_base: "",
 				})
 				await game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`, move_types)
 				return this.render()
@@ -94,18 +78,12 @@ export class DefaultMoveSettings extends AttributeBaseSettings {
 		let element = $(event.target!)
 		if (!element.hasClass("item")) element = element.parent(".item")
 
-		const move_types: MoveTypeDefObj[] =
-			game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
+		const move_types: MoveTypeDefObj[] = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
 		const target_index = element.data("index")
 		const above = element.hasClass("border-top")
 		if (dragData.order === target_index) return this.render()
 		if (above && dragData.order === target_index - 1) return this.render()
 		if (!above && dragData.order === target_index + 1) return this.render()
-
-		// let container: any[] = []
-		// if (dragData.type === ListType.MoveType) container = move_types
-		// else if (dragData.type === ListType.Overrides) container = move_types
-		// if (!container) return
 
 		let item
 		if (dragData.type === ListType.Overrides) {

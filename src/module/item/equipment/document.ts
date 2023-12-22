@@ -8,6 +8,7 @@ import { Weight, WeightUnits, fxp, parseInlineNoteExpressions } from "@util"
 import { HandlebarsHelpersGURPS } from "@util/handlebars_helpers"
 import { Feature } from "@module/config"
 import { EquipmentSource } from "./data"
+import { ItemFlags } from "@item/base"
 
 export class EquipmentGURPS extends ItemGCS<EquipmentSource> {
 	unsatisfied_reason = ""
@@ -34,14 +35,13 @@ export class EquipmentGURPS extends ItemGCS<EquipmentSource> {
 		if (this.system.notes) outString += HandlebarsHelpersGURPS.format(this.system.notes)
 		if (this.unsatisfied_reason) outString += HandlebarsHelpersGURPS.unsatisfied(this.unsatisfied_reason)
 		outString += "</div>"
-		if (this.parent)
-			outString = parseInlineNoteExpressions(outString, this.parent as any)
+		if (this.parent) outString = parseInlineNoteExpressions(outString, this.parent as any)
 		return outString
 	}
 
 	get other(): boolean {
 		if (this.container instanceof Item) return (this.container as EquipmentContainerGURPS).other
-		return this.system.other
+		return this.getFlag(SYSTEM_NAME, ItemFlags.Other) as boolean
 	}
 
 	// Gets weight in pounds
@@ -60,9 +60,10 @@ export class EquipmentGURPS extends ItemGCS<EquipmentSource> {
 	}
 
 	get isGreyedOut(): boolean {
-		return !(this.system.quantity > 0 &&
-			((this.container?.type === ItemType.EquipmentContainer) ?
-				!(this.container as any).isGreyedOut : true))
+		return !(
+			this.system.quantity > 0 &&
+			(this.container?.type === ItemType.EquipmentContainer ? !(this.container as any).isGreyedOut : true)
+		)
 	}
 
 	get enabled(): boolean {

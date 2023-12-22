@@ -197,7 +197,7 @@ export class CharacterImporter {
 				recursive: false,
 			})
 			if ((this.document?.sheet as unknown as CharacterSheetGURPS)?.config !== null) {
-				; (this.document?.sheet as unknown as CharacterSheetGURPS)?.config?.render(true)
+				;(this.document?.sheet as unknown as CharacterSheetGURPS)?.config?.render(true)
 			}
 		} catch (err) {
 			console.error(err)
@@ -249,6 +249,7 @@ export class CharacterImporter {
 						[SYSTEM_NAME]: {
 							[ActorFlags.AutoThreshold]: { active: true },
 							[ActorFlags.AutoEncumbrance]: { active: true },
+							[ActorFlags.MoveType]: this.document?.getFlag(SYSTEM_NAME, ActorFlags.MoveType),
 						},
 					},
 				},
@@ -366,6 +367,7 @@ export class CharacterImporter {
 				"system.settings.resource_trackers": tp.settings?.resource_trackers ?? [],
 				"system.resource_trackers": tp.resource_trackers ?? [],
 				"system.settings.move_types": tp.settings?.move_types ?? [],
+				"system.move_types": tp.move_types ?? [],
 			}
 		let data: any = {}
 		if ((this.document as any).system.settings.resource_trackers.length > 0)
@@ -375,8 +377,10 @@ export class CharacterImporter {
 				"system.resource_trackers": (this.document as any).system.resource_trackers,
 			}
 		else {
-			const tracker_defs =
-				game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`)
+			const tracker_defs = game.settings.get(
+				SYSTEM_NAME,
+				`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`
+			)
 			data = {
 				...data,
 				"system.settings.resource_trackers": tracker_defs,
@@ -387,13 +391,14 @@ export class CharacterImporter {
 			data = {
 				...data,
 				"system.settings.move_types": (this.document as any).system.settings.move_types,
+				"system.move_types": (this.document as any).system.move_types,
 			}
 		else {
-			const move_types =
-				game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
+			const move_types = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
 			data = {
 				...data,
 				"system.settings.move_types": move_types,
+				"system.move_types": (this.document as any).newMoveTypes(move_types),
 			}
 		}
 		return data

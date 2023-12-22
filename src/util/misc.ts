@@ -13,8 +13,6 @@ import {
 	SYSTEM_NAME,
 } from "@module/data"
 import { v4 as uuidv4 } from "uuid"
-import { Evaluator } from "./eval"
-import { VariableResolver } from "./function"
 
 // /**
 //  *
@@ -354,9 +352,9 @@ export async function getDefaultSkills() {
 	for (const s in skillPacks)
 		if (skillPacks[s].skillDefault) {
 			const pack = game.packs.get(s) as CompendiumCollection<any>
-				; (await pack.getDocuments()).forEach(e => {
-					skills.push(e)
-				})
+			;(await pack.getDocuments()).forEach(e => {
+				skills.push(e)
+			})
 		}
 	CONFIG.GURPS.skillDefaults = skills
 }
@@ -383,3 +381,15 @@ export function inlineNote(
 	)
 }
 
+export function getNewAttributeId(list: { id: string }[]): string {
+	let base = ""
+	for (let i = 0; i < 5; i++) {
+		for (let n = 0; n < 26; n++) {
+			let attempt = `${base}${String.fromCharCode(97 + n)}`
+			if (!list.some(e => e.id === attempt)) return attempt
+		}
+		base += "a"
+	}
+	ui.notifications?.error("Ran out of valid IDs. How did you manage this?")
+	throw new Error("Error generating new attribute ID, ran out of possible auto-generated IDs.")
+}
