@@ -17,6 +17,18 @@
 		</div>
 		<div></div>
 
+		<div class="label">Damage Resource</div>
+		<div class="field">
+			<select name="pool">
+				{{#select this.calculator.damagePoolID}}
+					{{#each this.calculator.damagePools}}
+						<option value="{{id}}">{{fullName}}</option>
+					{{/each}}
+				{{/select}}
+			</select>
+		</div>
+		<div></div>
+
 		<div class="label">{{localize "gurps.weapon.damage.armor_divisor"}}</div>
 		<div class="field">
 			<select
@@ -131,30 +143,25 @@
 		<section class="content">
 			{{#each calculator.hits}}
 				<div class="tab browser" dagr-group="primary" data-tab="{{@index}}">
-					<div class="label">{{localize "gurps.character.basic_damage"}}</div>
-					<div class="field no-stretch direct-damage">
-						<input
-							type="number"
-							value="{{this.basicDamage}}"
-							step="any"
-							data-action="override-basic"
-							size="4"
-							class="{{overridden this.basicDamageOverride}}"
-						/>
+					<div class="fieldblock">
 
-						<select name="pool">
-							{{#select this.calculator.damagePoolID}}
-								{{#each this.calculator.damagePools}}
-									<option value="{{id}}">{{fullName}}</option>
-								{{/each}}
-							{{/select}}
-						</select>
+						<div class="label">{{localize "gurps.character.basic_damage"}}</div>
+						<div class="field no-stretch direct-damage">
+							<input
+								type="number"
+								value="{{this.basicDamage}}"
+								step="any"
+								data-action="override-basic"
+								size="4"
+								class="{{overridden this.basicDamageOverride}}"
+							/>
 
-						<button type="button" class="gcs-checkmark" data-action="apply-basic">{{localize
-								"gurps.misc.apply"
-							}}</button>
+							<button type="button" class="gcs-checkmark" data-action="apply-basic">{{localize
+									"gurps.misc.apply"
+								}}</button>
+						</div>
+						<div></div>
 					</div>
-					<div></div>
 				</div>
 			{{/each}}
 		</section>
