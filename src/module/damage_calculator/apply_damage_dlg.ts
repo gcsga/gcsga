@@ -2,7 +2,7 @@ import { SETTINGS, SYSTEM_NAME } from "@module/data"
 import { PDF } from "@module/pdf"
 import { toWord } from "@util/misc"
 import { DamageRoll, DamageTarget } from "."
-import { DamageCalculator, IDamageCalculator } from "./damage_calculator"
+import { IDamageCalculator, createDamageCalculator } from "./damage_calculator"
 import { DamageTypes } from "./damage_type"
 import { HitLocationUtil } from "./hitlocation_utils"
 
@@ -29,19 +29,19 @@ class ApplyDamageDialog extends Application {
 	 */
 	private constructor(roll: DamageRoll, target: DamageTarget, options: any = {}) {
 		options.tabs = [
-      {
-        navSelector: ".nav-tabs",
-        contentSelector: ".content",
-        initial: "0",
-      },
-    ]
+			{
+				navSelector: ".nav-tabs",
+				contentSelector: ".content",
+				initial: "0",
+			},
+		]
 
 		super(options)
 
-		this.calculator = new DamageCalculator(roll, target, game.i18n.format.bind(game.i18n))
+		this.calculator = createDamageCalculator(roll, target, game.i18n.format.bind(game.i18n))
 	}
 
- 	private calculator: IDamageCalculator
+	private calculator: IDamageCalculator
 
 	static get defaultOptions(): ApplicationOptions {
 		return mergeObject(super.defaultOptions, {

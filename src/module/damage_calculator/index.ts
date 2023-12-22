@@ -10,18 +10,18 @@ import { HitLocationTable } from "@actor/character/hit_location"
  */
 interface DamageRoll {
 	attacker: DamageAttacker | undefined
-  dice: DiceGURPS
+	dice: DiceGURPS
 	readonly damageText: string
 	damageType: DamageType
 	readonly applyTo: "HP" | "FP" | string
 	readonly hits: DamageHit[]
-  damageModifier: string
+	damageModifier: string
 	readonly weapon: DamageWeapon | undefined
 
 	/**
 	 * Value 1 = no Armor Divisor, 0 = Ignores DR; otherwise, it takes any non-negative value.
 	 */
- 	armorDivisor: number
+	armorDivisor: number
 
 	/**
 	 * The multiplier on the RoF, such as the "9" of 3x9. If none, should be equal to 1.
@@ -44,7 +44,7 @@ interface DamageRoll {
 	/**
 	 * A weapon with a RoF multipler (such as RoF 3x9) is within 10% of 1/2D range.
 	 */
-  isShotgunCloseRange: boolean
+	isShotgunCloseRange: boolean
 	internalExplosion: boolean
 }
 
@@ -88,26 +88,19 @@ class DamageRollAdapter implements DamageRoll {
 
 		if (this._payload.index === -1) {
 			this._payload.damageRoll.forEach(it => {
-				this.hits.push(
-					{
-						locationId: it.hitlocation,
-						basicDamage: it.total
-					}
-				)
+				this.hits.push({
+					locationId: it.hitlocation,
+					basicDamage: it.total,
+				})
 			})
 		} else {
-			this.hits.push(
-				{
-					locationId: this._payload.damageRoll[this._payload.index].hitlocation,
-					basicDamage: this._payload.damageRoll[this._payload.index].total
-				}
-			)
+			this.hits.push({
+				locationId: this._payload.damageRoll[this._payload.index].hitlocation,
+				basicDamage: this._payload.damageRoll[this._payload.index].total,
+			})
 		}
 
 		this.attacker = attacker
-		this._locationId = payload.damageRoll[0].hitlocation
-		// console.log(`location = ${this._locationId}`)
-
 		this.weapon = weapon
 		this.internalExplosion = false
 		this.applyTo = ""

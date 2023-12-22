@@ -8,7 +8,7 @@ import {
 	TargetTrait,
 	TargetTraitModifier,
 } from "@module/damage_calculator"
-import { DamageCalculator, IDamageCalculator } from "@module/damage_calculator/damage_calculator"
+import { IDamageCalculator, createDamageCalculator } from "@module/damage_calculator/damage_calculator"
 import { DamageTypes } from "@module/damage_calculator/damage_type"
 import { DiceGURPS } from "@module/dice"
 import { TooltipGURPS } from "@module/tooltip"
@@ -104,7 +104,7 @@ const dummyLocalize = (stringId: string, data?: any) => {
 }
 
 export const _create = function (roll: DamageRoll, target: DamageTarget): IDamageCalculator {
-	return new DamageCalculator(roll, target, dummyLocalize)
+	return createDamageCalculator(roll, target, dummyLocalize)
 }
 
 export class _TargetTrait implements TargetTrait {
