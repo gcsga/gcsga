@@ -255,6 +255,7 @@ export interface IDamageCalculator {
 	damageReductionOverride: number | undefined
 
 	readonly hitLocationTable: HitLocationTable
+	readonly hitLocationChoice: Record<string, string>
 }
 
 interface LocationDamage {
@@ -271,7 +272,7 @@ interface LocationDamage {
 	locationId: string | undefined
 	readonly isLargeAreaInjury: boolean
 
-	readonly drForHitLocation: KeyValue
+	readonly damageResistance: KeyValue
 	damageResistanceOverride: number | undefined
 
 	readonly isFlexibleArmor: boolean
@@ -367,6 +368,12 @@ class DamageCalculator implements IDamageCalculator {
 
 	get shockFactor(): number {
 		return Math.floor(this.target.hitPoints.value / 10)
+	}
+
+	get hitLocationChoice(): Record<string, string> {
+		const choice: Record<string, string> = {}
+		this.hitLocationTable.locations.forEach(it => (choice[it.id] = it.choice_name))
+		return choice
 	}
 
 	/**
@@ -730,7 +737,7 @@ class DamageCalculator implements IDamageCalculator {
 			return { key: this.format("gurps.dmgcalc.description.large_area_injury"), value: averageDR }
 		}
 
-		return hitLocation.drForHitLocation
+		return hitLocation.damageResistance
 
 		function leastProtectedLocationDR(hitLocationTable: HitLocationTable, damageType: DamageType) {
 			const allLocationsDR = hitLocationTable.locations
@@ -1109,7 +1116,7 @@ class HitLocationDamage implements LocationDamage {
 		return this.calculator.format(arg0, data)
 	}
 
-	get drForHitLocation(): KeyValue {
+	get damageResistance(): KeyValue {
 		return {
 			key: `${this.hitLocation?.choice_name}`,
 			value:

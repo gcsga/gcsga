@@ -231,7 +231,7 @@ class ApplyDamageDialog extends Application {
 			hardened: hardenedChoices,
 			damageType: this.damageTypeChoice,
 			vulnerability: vulnerabilityChoices,
-			hitlocation: this.hitLocationChoice,
+			// hitlocation: this.calculator.hitLocationChoice,
 		}
 	}
 
@@ -241,11 +241,11 @@ class ApplyDamageDialog extends Application {
 		return results
 	}
 
-	private get hitLocationChoice(): Record<string, string> {
-		const choice: Record<string, string> = {}
-		this.target.hitLocationTable.locations.forEach(it => (choice[it.id] = it.choice_name))
-		return choice
-	}
+	// private get hitLocationChoice(): Record<string, string> {
+	// 	const choice: Record<string, string> = {}
+	// 	this.target.hitLocationTable.locations.forEach(it => (choice[it.id] = it.choice_name))
+	// 	return choice
+	// }
 }
 
 const hardenedChoices = {
