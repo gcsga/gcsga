@@ -1607,7 +1607,7 @@
 			},
 			"vulnerability": "Vulnerability",
 			"weapon": "Weapon",
-			"wounding_modifier": "Modifier"
+			"wounding_modifier": "Wounding Modifier"
 		},
 		"effect": {
 			"increment": "[Left Click] Increase Level",

@@ -38,6 +38,14 @@
 				flex-flow: row nowrap;
 			}
 
+			&.no-ref {
+				grid-column: span 2;
+
+				:last-child {
+					justify-self: right;
+				}
+			}
+
 			&.no-stretch {
 				.checkbox-label + .checkbox-label {
 					margin: 0;
