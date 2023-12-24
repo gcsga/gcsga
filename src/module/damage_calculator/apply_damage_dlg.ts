@@ -61,6 +61,7 @@ class ApplyDamageDialog extends Application {
 	}
 
 	getData(options?: Partial<ApplicationOptions> | undefined): object {
+		console.log((this.calculator as any).range_)
 		const books = game.settings.get(SYSTEM_NAME, SETTINGS.BASE_BOOKS)
 
 		const data = mergeObject(super.getData(options), {

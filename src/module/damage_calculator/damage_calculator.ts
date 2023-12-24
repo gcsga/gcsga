@@ -22,6 +22,7 @@ import {
 	RollModifier,
 } from "./injury_effect"
 import { HitLocation, HitLocationTable } from "@actor"
+import { TokenDocumentGURPS } from "@module/token"
 
 export const Head = ["skull", "eye", "face"]
 export const Limb = ["arm", "leg"]
@@ -207,6 +208,7 @@ type Overrides = {
 }
 
 type ContainerOverrides = {
+	range: number | undefined
 	armorDivisor: number | undefined
 	damagePool: string | undefined
 	damageReduction: number | undefined
@@ -235,7 +237,7 @@ export interface IDamageCalculator {
 
 	readonly isExplosion: boolean
 	readonly isInternalExplosion: boolean
-	readonly range: number | null
+	range: number | undefined
 	readonly isHalfDamage: boolean
 	readonly isShotgunCloseRange: boolean
 	readonly rofMultiplier: number
@@ -339,6 +341,7 @@ class DamageCalculator implements IDamageCalculator {
 		damageType: undefined,
 		injuryTolerance: undefined,
 		vulnerability: undefined,
+		range: undefined,
 	}
 
 	get isOverridden(): boolean {
@@ -597,8 +600,28 @@ class DamageCalculator implements IDamageCalculator {
 		return this.isShotgunCloseRange ? Math.floor(this.rofMultiplier / 2) : 1
 	}
 
-	get range(): number | null {
-		return this.damageRoll.range
+	get range(): number | undefined {
+		if (this.overrides.range) return this.overrides.range
+
+		const scenes = (globalThis as any).game?.scenes
+		if (scenes) {
+			const canvas = scenes.active
+			const token1 = canvas!.tokens.get(this.attacker!.tokenId) as TokenDocumentGURPS & { x: number; y: number }
+			const token2 = canvas!.tokens.get(this.target!.tokenId) as TokenDocumentGURPS & { x: number; y: number }
+			console.log(token1, token2)
+
+			const ruler = new Ruler() as Ruler & { totalDistance: number }
+			ruler.waypoints = [{ x: token1.x, y: token1.y }]
+			ruler.measure({ x: token2.x, y: token2.y }, { gridSpaces: true })
+			const distance = ruler.totalDistance
+			ruler.clear()
+			return distance
+		}
+		return undefined
+	}
+
+	set range(value: number | undefined) {
+		this.overrides.range = value
 	}
 
 	get isHalfDamage(): boolean {

@@ -500,8 +500,8 @@ describe("Damage calculator", () => {
 					})
 				)
 
-				let modifiers =
-					calc.hits[0].results.shockEffects.find(it => it.id === InjuryEffectType.shock)?.modifiers
+				let modifiers = calc.hits[0].results.shockEffects.find(it => it.id === InjuryEffectType.shock)
+					?.modifiers
 				expect(modifiers).toContainEqual(
 					expect.objectContaining({
 						id: "dx",
@@ -860,8 +860,9 @@ describe("Damage calculator", () => {
 				expect(calc.hits[0].results.penetratingDamage!.value).toBe(1)
 				expect(calc.hits[0].results.injury!.value).toBe(1)
 
-				expect(calc.hits[0].results.effects)
-					.toContainEqual(expect.objectContaining({ id: InjuryEffectType.shock }))
+				expect(calc.hits[0].results.effects).toContainEqual(
+					expect.objectContaining({ id: InjuryEffectType.shock })
+				)
 
 				let checks = calc.hits[0].results.effects.find(it => it.id === InjuryEffectType.majorWound)?.checks
 				expect(checks).toContainEqual(
@@ -1077,7 +1078,8 @@ describe("Damage calculator", () => {
 					expect.objectContaining({ id: InjuryEffectType.majorWound })
 				)
 				expect(calc.hits[0].results.effects).toContainEqual(
-					expect.objectContaining({ id: InjuryEffectType.blinded }))
+					expect.objectContaining({ id: InjuryEffectType.blinded })
+				)
 			})
 		})
 
@@ -2068,32 +2070,32 @@ describe("Damage calculator", () => {
 
 		it("An explosion inflicts “collateral damage” on everything within (2 × dice of damage) yards.", () => {
 			_roll.dice = new DiceGURPS("1d+3")
-			_roll.range = 3
 			_roll.hits[0].basicDamage = 9
 
 			const calc = _create(_roll, _target)
+			calc.range = 3
 			// It would be 9 ÷ (3 × 3) = 1; except the range is too far.
 			expect(calc.hits[0].results.injury!.value).toBe(0)
 
-			_roll.range = 2
+			calc.range = 2
 			// It should be 9 ÷ (3 × 2) = 1.
 			expect(calc.hits[0].results.injury!.value).toBe(1)
 		})
 
 		it("Roll this damage but divide it by (3 × yards from the center of the blast), rounding down.", () => {
-			_roll.range = 2
 			_roll.hits[0].basicDamage = 13
 			_torso._map.set("all", 1)
 
 			const calc = _create(_roll, _target)
+			calc.range = 2
 			expect(calc.hits[0].results.basicDamage!.value).toBe(2) // 13 ÷ (3 × 2) = 2
 			expect(calc.hits[0].results.injury!.value).toBe(1)
 
-			_roll.range = 1
+			calc.range = 1
 			expect(calc.hits[0].results.basicDamage!.value).toBe(4) // 13 ÷ (3 × 1) = 4
 			expect(calc.hits[0].results.injury!.value).toBe(3)
 
-			_roll.range = 3
+			calc.range = 3
 			expect(calc.hits[0].results.basicDamage!.value).toBe(1) // 13 ÷ (3 × 3) = 1
 			expect(calc.hits[0].results.injury!.value).toBe(0)
 		})
@@ -2104,16 +2106,16 @@ describe("Damage calculator", () => {
 			_roll.armorDivisor = 3
 			_torso._map.set("all", 3)
 
-			_roll.range = 2
 			const calc = _create(_roll, _target)
+			calc.range = 2
 			expect(calc.hits[0].results.basicDamage!.value).toBe(4) // 24 ÷ (3 × 2) = 4
 			expect(calc.hits[0].results.injury!.value).toBe(1)
 
-			_roll.range = 1
+			calc.range = 1
 			expect(calc.hits[0].results.basicDamage!.value).toBe(8) // 24 ÷ (3 × 1) = 8
 			expect(calc.hits[0].results.injury!.value).toBe(5)
 
-			_roll.range = 3
+			calc.range = 3
 			expect(calc.hits[0].results.basicDamage!.value).toBe(2) // 24 ÷ (3 × 3) = 2
 			expect(calc.hits[0].results.injury!.value).toBe(0)
 		})
@@ -2134,16 +2136,16 @@ describe("Damage calculator", () => {
 			_roll.internalExplosion = true
 			_torso._map.set("all", 3)
 
-			_roll.range = 2
 			const calc = _create(_roll, _target)
+			calc.range = 2
 			expect(calc.hits[0].results.basicDamage!.value).toBe(4) // 24 ÷ (3 × 2) = 4
 			expect(calc.hits[0].results.injury!.value).toBe(4)
 
-			_roll.range = 1
+			calc.range = 1
 			expect(calc.hits[0].results.basicDamage!.value).toBe(8) // 24 ÷ (3 × 1) = 8
 			expect(calc.hits[0].results.injury!.value).toBe(8)
 
-			_roll.range = 3
+			calc.range = 3
 			expect(calc.hits[0].results.basicDamage!.value).toBe(2) // 24 ÷ (3 × 3) = 2
 			expect(calc.hits[0].results.injury!.value).toBe(2)
 		})

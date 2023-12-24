@@ -29,7 +29,7 @@ describe("Damage calculator", () => {
 		_target = new _Target()
 		_roll = new _DamageRoll()
 		_roll.attacker = _attacker
-		_roll.hits[0]= { basicDamage: 0, locationId: "torso" }
+		_roll.hits[0] = { basicDamage: 0, locationId: "torso" }
 		_roll.armorDivisor = 1
 		_roll.damageType = DamageTypes.cr
 		_roll.dice = new DiceGURPS("2d")
@@ -467,7 +467,7 @@ describe("Damage calculator", () => {
 
 			_roll.hits[0].basicDamage = 20
 			calc = _create(_roll, _target)
-			calc.hits[0].flexibleArmorOverride =true
+			calc.hits[0].flexibleArmorOverride = true
 			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "20", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{ substep: "gurps.dmgcalc.substep.damage_resistance", text: "20", notes: "Torso" },
@@ -972,6 +972,7 @@ describe("Damage calculator", () => {
 			_roll.hits[0].basicDamage = 9
 
 			const calc = _create(_roll, _target)
+			calc.range = 3
 			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "9", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{
@@ -993,7 +994,7 @@ describe("Damage calculator", () => {
 				{ substep: "gurps.dmgcalc.substep.injury", text: "0", notes: "= 0 × 1" },
 			])
 
-			_roll.range = 2
+			calc.range = 2
 			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "9", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{
@@ -1017,11 +1018,11 @@ describe("Damage calculator", () => {
 		})
 
 		it("Roll this damage but divide it by (3 × yards from the center of the blast), rounding down.", () => {
-			_roll.range = 2
 			_roll.hits[0].basicDamage = 13
 			_torso._map.set("all", 1)
 
 			const calc = _create(_roll, _target)
+			calc.range = 2
 			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "13", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{
@@ -1043,7 +1044,7 @@ describe("Damage calculator", () => {
 				{ substep: "gurps.dmgcalc.substep.injury", text: "1", notes: "= 1 × 1" },
 			])
 
-			_roll.range = 1
+			calc.range = 1
 			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "13", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{
@@ -1065,7 +1066,7 @@ describe("Damage calculator", () => {
 				{ substep: "gurps.dmgcalc.substep.injury", text: "3", notes: "= 3 × 1" },
 			])
 
-			_roll.range = 3
+			calc.range = 3
 			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "13", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{
@@ -1094,8 +1095,8 @@ describe("Damage calculator", () => {
 			_roll.armorDivisor = 3
 			_torso._map.set("all", 3)
 
-			_roll.range = 2
 			const calc = _create(_roll, _target)
+			calc.range = 2
 			expect(calc.hits[0].results.steps).toMatchObject([
 				{
 					substep: "gurps.dmgcalc.substep.basic_damage",
@@ -1117,7 +1118,7 @@ describe("Damage calculator", () => {
 				{ substep: "gurps.dmgcalc.substep.injury", text: "1", notes: "= 1 × 1" },
 			])
 
-			_roll.range = 1
+			calc.range = 1
 			expect(calc.hits[0].results.steps).toMatchObject([
 				{
 					substep: "gurps.dmgcalc.substep.basic_damage",
@@ -1139,7 +1140,7 @@ describe("Damage calculator", () => {
 				{ substep: "gurps.dmgcalc.substep.injury", text: "5", notes: "= 5 × 1" },
 			])
 
-			_roll.range = 3
+			calc.range = 3
 			expect(calc.hits[0].results.steps).toMatchObject([
 				{
 					substep: "gurps.dmgcalc.substep.basic_damage",
@@ -1168,8 +1169,8 @@ describe("Damage calculator", () => {
 			_roll.internalExplosion = true
 			_torso._map.set("all", 3)
 
-			_roll.range = 0
 			const calc = _create(_roll, _target)
+			calc.range = 0
 			expect(calc.hits[0].results.steps).toMatchObject([
 				{
 					substep: "gurps.dmgcalc.substep.basic_damage",

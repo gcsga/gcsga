@@ -14,10 +14,14 @@ import { DiceGURPS } from "@module/dice"
 import { TooltipGURPS } from "@module/tooltip"
 
 export class _Attacker implements DamageAttacker {
+	tokenId: string = ""
+
 	name = "Arnold"
 }
 
 export class _Target implements DamageTarget {
+	tokenId: string = ""
+
 	getTraits(name: string): TargetTrait[] {
 		return this._traits.filter(it => it.name === name)
 	}

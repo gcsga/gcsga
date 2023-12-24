@@ -58,6 +58,7 @@ interface DamageHit {
 }
 
 interface DamageAttacker {
+	tokenId: string
 	name: string | null
 }
 
@@ -169,6 +170,7 @@ export type Vulnerability = { name: string; value: number; apply: boolean }
 export type TargetPool = { id: string; name: string; fullName: string }
 
 export interface DamageTarget {
+	tokenId: string
 	name: string
 	// CharacterGURPS.attributes.get(gid.ST).calc.value.
 	ST: number

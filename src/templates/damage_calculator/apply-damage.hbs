@@ -297,33 +297,37 @@
 						</div>
 						<div class="label ref" data-pdf="B47">B47</div>
 
-						{{!-- <div class="label">{{localize "gurps.dmgcalc.wounding_modifier"}}</div>
-						<div class="field">
-							<div>
-								<span class="input-wrapper multiply">
-									<input
-										id="override-woundingmod"
-										type="number"
-										data-action="override-woundingmod"
-										value="{{this.woundingModifier}}"
-										class="{{overridden this.woundingModifierOverride}}"
-										step="any"
-										size="3"
-									/>
-								</span>
+						<div id="results" style="grid-column: span 3;">
+							<div id="effects">
+							</div>
+
+							<div id="calc">
+								<div class="table">
+									<div class="header">{{localize "gurps.dmgcalc.calculation"}}</div>
+
+									{{#each calculator.results.steps}}
+										<div class="step">{{localize substep}}</div>
+										<div class="value">{{{text}}}</div>
+										<div class="descr">{{notes}}</div>
+									{{/each}}
+								</div>
 							</div>
 						</div>
-						<div></div> --}}
-
 					</div>
 				</div>
 			{{/each}}
 		</section>
+		<div class="apply">
+			<div class="label">{{localize "gurps.dmgcalc.injury"}}&nbsp;({{localize "gurps.static.hp"}})</div>
+			<input type="number" value="{{calculator.results.injury.value}}" step="any" name="injury" size="4" />
+			<button type="button" class="apply-button gcs-checkmark" data-action="apply-injury">{{localize
+					"gurps.misc.apply"
+				}}</button>
+		</div>
+
 	</div>
 
-	<div id="results">
-		<div id="effects">
-			{{!--
+	{{!--
 			<div class="header">{{localize "gurps.dmgcalc.effects"}}</div>
 			<div class="fieldblock">
 				<div class="label">{{localize "gurps.dmgcalc.knockback"}}</div>
@@ -370,24 +374,5 @@
 
 				<div class="label">{{localize "gurps.dmgcalc.major_wound"}}</div>
 			--}}
-		</div>
-		<div id="calc">
-			<div class="table">
-				<div class="header">{{localize "gurps.dmgcalc.calculation"}}</div>
 
-				{{#each calculator.results.steps}}
-					<div class="step">{{localize substep}}</div>
-					<div class="value">{{{text}}}</div>
-					<div class="descr">{{notes}}</div>
-				{{/each}}
-			</div>
-			<div class="apply">
-				<div class="label">{{localize "gurps.dmgcalc.injury"}}&nbsp;({{localize "gurps.static.hp"}})</div>
-				<input type="number" value="{{calculator.results.injury.value}}" step="any" name="injury" size="4" />
-				<button type="button" class="apply-button gcs-checkmark" data-action="apply-injury">{{localize
-						"gurps.misc.apply"
-					}}</button>
-			</div>
-		</div>
-	</div>
 </div>
