@@ -1542,6 +1542,7 @@
 				"explosion_outofrange": "Explosion; Out of range",
 				"explosion_range": "Explosion; {range} yards",
 				"fatigue": "Fatigue ignores Hit Location",
+				"half_damage": "Ranged, 1/2D",
 				"ignores_dr": "Ignores DR",
 				"knockback_only": "Knockback only",
 				"large_area_injury": "Large Injury Area",

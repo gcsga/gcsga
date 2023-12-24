@@ -29,194 +29,6 @@ export const Limb = ["arm", "leg"]
 export const Extremity = ["hand", "foot"]
 const Torso = "torso"
 
-type StepName = "Basic Damage" | "Damage Resistance" | "Penetrating Damage" | "Wounding Modifier" | "Injury"
-
-type KeyValue = { key: string; value: number }
-
-// TODO Localize the substep strings (and any text in the text field).
-class CalculatorStep {
-	constructor(name: StepName, substep: string, value: number, text: string | undefined, notes: string | undefined) {
-		this.name = name
-		this.substep = substep
-		this.value = value
-		this.text = text ?? `${value}`
-		this.notes = notes
-	}
-
-	name: StepName
-
-	substep: string
-
-	value: number
-
-	text: string
-
-	notes?: string
-}
-
-class BasicDamageStep extends CalculatorStep {
-	constructor(value: number, notes: string | undefined) {
-		super("Basic Damage", "gurps.dmgcalc.substep.basic_damage", value, undefined, notes)
-	}
-}
-
-class AdjustedBasicDamageStep extends CalculatorStep {
-	constructor(value: number, notes: string | undefined) {
-		super("Basic Damage", "gurps.dmgcalc.substep.adjusted_damage", value, undefined, notes)
-	}
-}
-
-class DamageResistanceStep extends CalculatorStep {
-	constructor(value: number, notes: string | undefined) {
-		super("Damage Resistance", "gurps.dmgcalc.substep.damage_resistance", value, undefined, notes)
-	}
-}
-
-class EffectiveDamageResistanceStep extends CalculatorStep {
-	constructor(value: number, notes: string | undefined) {
-		super("Damage Resistance", "gurps.dmgcalc.substep.effective_dr", value, undefined, notes)
-	}
-}
-
-class PenetratingDamageStep extends CalculatorStep {
-	constructor(value: number, notes: string | undefined) {
-		super("Penetrating Damage", "gurps.dmgcalc.substep.penetrating", value, undefined, notes)
-	}
-}
-
-class WoundingModifierStep extends CalculatorStep {
-	constructor(value: number, notes: string | undefined) {
-		super("Wounding Modifier", "gurps.dmgcalc.substep.wounding_modifier", value, `×${formatFraction(value)}`, notes)
-	}
-}
-
-class InjuryToleranceStep extends CalculatorStep {
-	constructor(value: number, notes: string | undefined) {
-		super("Wounding Modifier", "gurps.dmgcalc.substep.injury_tolerance", value, `×${formatFraction(value)}`, notes)
-	}
-}
-
-class EffectiveWoundingModifieStep extends CalculatorStep {
-	constructor(value: number, notes: string | undefined) {
-		super(
-			"Wounding Modifier",
-			"gurps.dmgcalc.substep.effective_modifier",
-			value,
-			`×${formatFraction(value)}`,
-			notes
-		)
-	}
-}
-
-class InjuryStep extends CalculatorStep {
-	constructor(value: number, notes: string | undefined) {
-		super("Injury", "gurps.dmgcalc.substep.injury", value, undefined, notes)
-	}
-}
-
-class AdjustedInjuryStep extends CalculatorStep {
-	constructor(value: number, notes: string | undefined) {
-		super("Injury", "gurps.dmgcalc.substep.adjusted_injury", value, undefined, notes)
-	}
-}
-
-class DamageReductionStep extends CalculatorStep {
-	constructor(value: number, notes: string | undefined) {
-		super("Injury", "gurps.dmgcalc.substep.damage_reduction", value, undefined, notes)
-	}
-}
-
-class MaxForLocationStep extends CalculatorStep {
-	constructor(value: number, notes: string | undefined) {
-		super("Injury", "gurps.dmgcalc.substep.max_location", value, undefined, notes)
-	}
-}
-
-export class DamageResults {
-	steps = <Array<CalculatorStep>>[]
-
-	knockback = 0
-
-	effects = <Array<InjuryEffect>>[]
-
-	addResult(result: CalculatorStep | undefined) {
-		if (result) this.steps.push(result)
-	}
-
-	addResults(results: (CalculatorStep | undefined)[]) {
-		results.forEach(it => this.addResult(it))
-	}
-
-	addEffects(effects: InjuryEffect[]) {
-		if (effects) this.effects.push(...effects)
-	}
-
-	get injury() {
-		return this.reverseList.find(it => it.name === "Injury")
-	}
-
-	get woundingModifier() {
-		return this.reverseList.find(it => it.name === "Wounding Modifier")
-	}
-
-	get penetratingDamage() {
-		return this.reverseList.find(it => it.name === "Penetrating Damage")
-	}
-
-	get damageResistance() {
-		return this.reverseList.find(it => it.name === "Damage Resistance")
-	}
-
-	get basicDamage() {
-		return this.reverseList.find(it => it.name === "Basic Damage")
-	}
-
-	get rawDamage() {
-		return this.steps.find(it => it.name === "Basic Damage" && it.substep === "gurps.dmgcalc.substep.basic_damage")
-	}
-
-	get miscellaneousEffects(): InjuryEffect[] {
-		return this.effects.filter(
-			it => ![InjuryEffectType.knockback, InjuryEffectType.majorWound, InjuryEffectType.shock].includes(it.id)
-		)
-	}
-
-	get knockbackEffects(): InjuryEffect[] {
-		return this.effects.filter(it => it.id === InjuryEffectType.knockback)
-	}
-
-	get shockEffects(): InjuryEffect[] {
-		return this.effects.filter(it => it.id === InjuryEffectType.shock)
-	}
-
-	get majorWoundEffects(): InjuryEffect[] {
-		return this.effects.filter(it => it.id === InjuryEffectType.majorWound)
-	}
-
-	private get reverseList(): CalculatorStep[] {
-		const temp = [...this.steps]
-		return temp.reverse()
-	}
-}
-
-type Overrides = {
-	basicDamage: number | undefined
-	flexible: boolean | undefined
-	hardenedDR: number | undefined
-	rawDR: number | undefined
-	woundingModifier: number | undefined
-}
-
-type ContainerOverrides = {
-	range: number | undefined
-	armorDivisor: number | undefined
-	damagePool: string | undefined
-	damageReduction: number | undefined
-	damageType: DamageType | undefined
-	injuryTolerance: string | undefined
-	vulnerability: number | undefined
-}
-
 export interface IDamageCalculator {
 	readonly hits: LocationDamage[]
 
@@ -226,19 +38,29 @@ export interface IDamageCalculator {
 	// === Attacker ===
 	readonly attacker: DamageAttacker | undefined
 	readonly weapon: DamageWeapon | undefined
-	readonly damagePoolID: string
 	readonly dice: DiceGURPS
 
-	readonly armorDivisor: number
-	armorDivisorOverride: number | undefined
+	readonly damagePoolID: string
+	damagePoolOverride: string | undefined
 
 	readonly damageTypeKey: string
 	damageTypeOverride: string | undefined
 
 	readonly isExplosion: boolean
+	isExplosionOverride: boolean | undefined
+
 	readonly isInternalExplosion: boolean
-	range: number | undefined
+	isInternalOverride: boolean | undefined
+
+	readonly armorDivisor: number
+	armorDivisorOverride: number | undefined
+
+	readonly range: number | undefined
+	rangeOverride: number | undefined
+
 	readonly isHalfDamage: boolean
+	isHalfDamageOverride: boolean | undefined
+
 	readonly isShotgunCloseRange: boolean
 	readonly rofMultiplier: number
 
@@ -326,12 +148,6 @@ class DamageCalculator implements IDamageCalculator {
 		damageRoll.hits.forEach(it => this.hits.push(new HitLocationDamage(it, this)))
 	}
 
-	target: DamageTarget
-
-	private damageRoll: DamageRoll
-
-	format: (stringId: string, data?: any) => string
-
 	hits: LocationDamage[] = []
 
 	private overrides: ContainerOverrides = {
@@ -342,6 +158,9 @@ class DamageCalculator implements IDamageCalculator {
 		injuryTolerance: undefined,
 		vulnerability: undefined,
 		range: undefined,
+		isExplosion: undefined,
+		isInternalExplosion: undefined,
+		isHalfDamage: undefined,
 	}
 
 	get isOverridden(): boolean {
@@ -361,6 +180,186 @@ class DamageCalculator implements IDamageCalculator {
 		}
 
 		this.hits.forEach(it => it.resetOverrides())
+	}
+
+	target: DamageTarget
+
+	private damageRoll: DamageRoll
+
+	format: (stringId: string, data?: any) => string
+
+	// === Attacker ===
+
+	get attacker(): DamageAttacker | undefined {
+		return this.damageRoll.attacker
+	}
+
+	// === Weapon ===
+
+	get weapon(): DamageWeapon | undefined {
+		return this.damageRoll.weapon
+	}
+
+	get dice(): DiceGURPS {
+		return this.damageRoll.dice
+	}
+
+	private get diceOfDamage(): number {
+		return this.dice.count
+	}
+
+	// --- Damage Pool ---
+	get damagePoolID(): string {
+		if (this.overrides.damagePool) return this.overrides.damagePool
+		return this.damageType.pool_id ?? "hp"
+	}
+
+	get damagePoolOverride(): string | undefined {
+		return this.overrides.damagePool
+	}
+
+	set damagePoolOverride(value: string | undefined) {
+		this.overrides.damagePool = this.damageType.pool_id === value ? undefined : value
+	}
+
+	// --- Damage Type ---
+	get damageType(): DamageType {
+		return this.overrides.damageType ?? this.damageRoll.damageType
+	}
+
+	get damageTypeKey(): string {
+		return this.overrides.damageType ? this.overrides.damageType.id : this.damageRoll.damageType.id
+	}
+
+	set damageTypeOverride(key: string | undefined) {
+		if (key === undefined) this.overrides.damageType = undefined
+		else {
+			const value = getProperty(DamageTypes, key) as DamageType
+			this.overrides.damageType = this.damageRoll.damageType === value ? undefined : value
+		}
+	}
+
+	get damageTypeOverride(): string | undefined {
+		return this.overrides.damageType?.id
+	}
+
+	get damageModifier(): string {
+		return this.damageRoll.damageModifier
+	}
+
+	get isExplosion(): boolean {
+		return this.overrides.isExplosion ?? this._hasExplosionModifier
+	}
+
+	private get _hasExplosionModifier(): boolean {
+		return this.damageRoll.damageModifier === "ex"
+	}
+
+	get isExplosionOverride(): boolean | undefined {
+		return this.overrides.isExplosion
+	}
+
+	set isExplosionOverride(value: boolean | undefined) {
+		if (value) {
+			this.overrides.isExplosion = true
+			this.overrides.range = 0
+		}
+		this.overrides.isExplosion = this._hasExplosionModifier === value ? undefined : value
+	}
+
+	get isInternalExplosion(): boolean {
+		return this.overrides.isInternalExplosion ?? this._isInternalExplosion
+	}
+
+	private get _isInternalExplosion(): boolean {
+		return this.isExplosion && this.damageRoll.internalExplosion
+	}
+
+	get isInternalOverride(): boolean | undefined {
+		return this.overrides.isInternalExplosion
+	}
+
+	set isInternalOverride(value: boolean | undefined) {
+		this.overrides.isInternalExplosion = this._isInternalExplosion === value ? undefined : value
+	}
+
+	// --- Armor Divisor ---
+	get armorDivisor() {
+		return this.overrides.armorDivisor ?? this.damageRoll.armorDivisor
+	}
+
+	get armorDivisorOverride(): number | undefined {
+		return this.overrides.armorDivisor
+	}
+
+	set armorDivisorOverride(value: number | undefined) {
+		this.overrides.armorDivisor = this.damageRoll.armorDivisor === value ? undefined : value
+	}
+
+	private effectiveArmorDivisor(hardenedDRLevel: number): number {
+		let ad = this.armorDivisor
+		if (isArmorDivisorLimitation()) return ad
+
+		// B414: If an explosive attack has an armor divisor, it does not apply to the collateral damage.
+		if (this.isCollateralDamage) {
+			return 1
+		}
+
+		const armorDivisors = [0, 100, 10, 5, 3, 2, 1]
+		let index = armorDivisors.indexOf(ad)
+
+		// B47: Each level of Hardened reduces the armor divisor of an attack by one step
+		index += hardenedDRLevel
+		if (index > armorDivisors.length - 1) index = armorDivisors.length - 1
+
+		return armorDivisors[index]
+
+		function isArmorDivisorLimitation() {
+			return ad > 0 && ad < 1
+		}
+	}
+
+	// --- Range ---
+	get range(): number | undefined {
+		return this.overrides.range !== undefined ? this.overrides.range : this._calculateRange()
+	}
+
+	private _calculateRange(): number | undefined {
+		const scenes = (globalThis as any).game?.scenes
+		if (scenes) {
+			const canvas = scenes.active
+			const token1 = canvas!.tokens.get(this.attacker!.tokenId) as TokenDocumentGURPS & { x: number; y: number }
+			const token2 = canvas!.tokens.get(this.target!.tokenId) as TokenDocumentGURPS & { x: number; y: number }
+
+			const ruler = new Ruler() as Ruler & { totalDistance: number }
+			ruler.waypoints = [{ x: token1.x, y: token1.y }]
+			ruler.measure({ x: token2.x, y: token2.y }, { gridSpaces: true })
+			const distance = ruler.totalDistance
+			ruler.clear()
+			return distance
+		}
+		return undefined
+	}
+
+	get rangeOverride(): number | undefined {
+		return this.overrides.range
+	}
+
+	set rangeOverride(value: number | undefined) {
+		this.overrides.range = value === this._calculateRange() ? undefined : value
+	}
+
+	// --- Half Damage ---
+	get isHalfDamage(): boolean {
+		return this.overrides.isHalfDamage === undefined ? this.damageRoll.isHalfDamage : this.overrides.isHalfDamage
+	}
+
+	get isHalfDamageOverride(): boolean | undefined {
+		return this.overrides.isHalfDamage
+	}
+
+	set isHalfDamageOverride(value: boolean | undefined) {
+		this.overrides.isHalfDamage = this.damageRoll.isHalfDamage === value ? undefined : value
 	}
 
 	// === Target ===
@@ -389,20 +388,6 @@ class DamageCalculator implements IDamageCalculator {
 			return { value: 2, key: this.format("gurps.dmgcalc.description.diffuse_max", { value: 2 }) }
 		}
 		return { value: Infinity, key: "" }
-	}
-
-	// --- Damage Pool ---
-	// TODO - Pull a list of damage types from a system setting.
-	// TODO - Get a mapping of damage type to damage pool from a system setting.
-
-	get damagePoolID(): string {
-		// defender.actor.poolAttributes()
-		if (this.overrides.damagePool) return this.overrides.damagePool
-		return this.damageType.pool_id ?? "hp"
-	}
-
-	get damagePools(): TargetPool[] {
-		return this.target.pools
 	}
 
 	// --- Damage Reduction ---
@@ -492,96 +477,7 @@ class DamageCalculator implements IDamageCalculator {
 		return 1
 	}
 
-	// === Attacker ===
-
-	get attacker(): DamageAttacker | undefined {
-		return this.damageRoll.attacker
-	}
-
-	// === Weapon ===
-
-	get weapon(): DamageWeapon | undefined {
-		return this.damageRoll.weapon
-	}
-
-	get dice(): DiceGURPS {
-		return this.damageRoll.dice
-	}
-
-	get diceOfDamage(): number {
-		return this.dice.count
-	}
-
-	// --- Damage Type ---
-	get damageType(): DamageType {
-		return this.overrides.damageType ?? this.damageRoll.damageType
-	}
-
-	get damageTypeKey(): string {
-		return this.damageRoll.damageType.id
-	}
-
-	set damageTypeOverride(key: string | undefined) {
-		if (key === undefined) this.overrides.damageType = undefined
-		else {
-			const value = getProperty(DamageTypes, key) as DamageType
-			this.overrides.damageType = this.damageRoll.damageType === value ? undefined : value
-		}
-	}
-
-	get damageTypeOverride(): string | undefined {
-		return this.overrides.damageType?.id
-	}
-
-	// --- Armor Divisor ---
-	get armorDivisor() {
-		return this.overrides.armorDivisor ?? this.damageRoll.armorDivisor
-	}
-
-	get armorDivisorOverride(): number | undefined {
-		return this.overrides.armorDivisor
-	}
-
-	set armorDivisorOverride(value: number | undefined) {
-		this.overrides.armorDivisor = this.damageRoll.armorDivisor === value ? undefined : value
-	}
-
-	private effectiveArmorDivisor(hardenedDRLevel: number): number {
-		let ad = this.armorDivisor
-		if (isArmorDivisorLimitation()) return ad
-
-		// B414: If an explosive attack has an armor divisor, it does not apply to the collateral damage.
-		if (this.isCollateralDamage) {
-			return 1
-		}
-
-		const armorDivisors = [0, 100, 10, 5, 3, 2, 1]
-		let index = armorDivisors.indexOf(ad)
-
-		// B47: Each level of Hardened reduces the armor divisor of an attack by one step
-		index += hardenedDRLevel
-		if (index > armorDivisors.length - 1) index = armorDivisors.length - 1
-
-		return armorDivisors[index]
-
-		function isArmorDivisorLimitation() {
-			return ad > 0 && ad < 1
-		}
-	}
-
 	// --- Other Attack Properties ---
-	get damageModifier(): string {
-		return this.damageRoll.damageModifier
-	}
-
-	get isExplosion(): boolean {
-		return this.damageRoll.damageModifier === "ex"
-	}
-
-	get isInternalExplosion(): boolean {
-		return this.isExplosion && this.damageRoll.internalExplosion
-	}
-
 	get isTightBeamBurning(): boolean {
 		return this.damageType === DamageTypes.burn && this.damageModifier === "tbb"
 	}
@@ -598,34 +494,6 @@ class DamageCalculator implements IDamageCalculator {
 		// B409:At ranges less than 10% of 1/2D, don’t apply the RoF multiplier to RoF.
 		// Instead, multiply both basic damage dice and the target’s DR by half that value (round down).
 		return this.isShotgunCloseRange ? Math.floor(this.rofMultiplier / 2) : 1
-	}
-
-	get range(): number | undefined {
-		if (this.overrides.range) return this.overrides.range
-
-		const scenes = (globalThis as any).game?.scenes
-		if (scenes) {
-			const canvas = scenes.active
-			const token1 = canvas!.tokens.get(this.attacker!.tokenId) as TokenDocumentGURPS & { x: number; y: number }
-			const token2 = canvas!.tokens.get(this.target!.tokenId) as TokenDocumentGURPS & { x: number; y: number }
-			console.log(token1, token2)
-
-			const ruler = new Ruler() as Ruler & { totalDistance: number }
-			ruler.waypoints = [{ x: token1.x, y: token1.y }]
-			ruler.measure({ x: token2.x, y: token2.y }, { gridSpaces: true })
-			const distance = ruler.totalDistance
-			ruler.clear()
-			return distance
-		}
-		return undefined
-	}
-
-	set range(value: number | undefined) {
-		this.overrides.range = value
-	}
-
-	get isHalfDamage(): boolean {
-		return this.damageRoll.isHalfDamage
 	}
 
 	get isKnockbackOnly() {
@@ -695,7 +563,10 @@ class DamageCalculator implements IDamageCalculator {
 
 		// B378: If the target is at or beyond 1/2D range, divide basic damage by 2, rounding down.
 		if (this.isHalfDamage) {
-			return new AdjustedBasicDamageStep(basicDamage * 0.5, this.format("gurps.dmgcalc.description.half_damage"))
+			return new AdjustedBasicDamageStep(
+				Math.floor(basicDamage * 0.5),
+				this.format("gurps.dmgcalc.description.half_damage")
+			)
 		}
 
 		// B409: At ranges less than 10% of 1/2D, don’t apply the RoF multiplier to RoF.
@@ -883,6 +754,40 @@ class DamageCalculator implements IDamageCalculator {
 	}
 
 	/**
+	 *
+	 * @param hitLocation
+	 * @returns
+	 */
+	woundingModifierAndReason(hitLocation: LocationDamage): KeyValue {
+		if (hitLocation.woundingModifierOverride)
+			return { value: hitLocation.woundingModifierOverride, key: this.format("gurps.dmgcalc.override") }
+
+		if (this.woundingModifierByDamageType) return this.woundingModifierByDamageType
+
+		const modifierAndReason = this.woundingModifierByHitLocation(hitLocation.locationId!)
+		if (modifierAndReason) return modifierAndReason
+
+		const location = this.hitLocationTable.locations.find(it => it.id === hitLocation.locationId)
+		return {
+			value: this.damageType.woundingModifier,
+			key: this.format("gurps.dmgcalc.description.damage_location", {
+				type: this.format(this.damageType.full_name),
+				location: location?.choice_name,
+			}),
+		}
+	}
+
+	get woundingModifierByDamageType(): KeyValue | undefined {
+		// B398: Fatigue damage always ignores hit location.
+		if (this.damageType === DamageTypes.fat)
+			return { value: 1, key: this.format("gurps.dmgcalc.description.fatigue") }
+
+		if (this.isInternalExplosion)
+			return { value: 3, key: this.format("gurps.dmgcalc.description.explosion_internal") }
+		return undefined
+	}
+
+	/**
 	 * Adjusts the wounding modifier for injury tolerance.
 	 * @param woundingModifier - The original wounding modifier.
 	 * @param hitLocation - The location damage.
@@ -930,9 +835,11 @@ class DamageCalculator implements IDamageCalculator {
 	 * @returns {number} wounding modifier only based on hit location.
 	 */
 	woundingModifierByHitLocation(locationId: string): KeyValue | undefined {
+		const location = this.hitLocationTable.locations.find(it => it.id === locationId)
 		const standardMessage = this.format("gurps.dmgcalc.description.damage_location", {
 			type: this.format(`gurps.dmgcalc.type.${this.damageType.id}`),
-			location: locationId,
+			location: location?.choice_name,
+			// this.hitLocation.choice_name
 		})
 
 		switch (locationId) {
@@ -945,7 +852,7 @@ class DamageCalculator implements IDamageCalculator {
 					return {
 						value: 2,
 						key: this.format("gurps.dmgcalc.description.tight_beam_burn", {
-							location: locationId,
+							location: location?.choice_name,
 						}),
 					}
 				break
@@ -1003,36 +910,6 @@ class DamageCalculator implements IDamageCalculator {
 			)
 		}
 
-		return undefined
-	}
-
-	/**
-	 *
-	 * @param hitLocation
-	 * @returns
-	 */
-	woundingModifierAndReason(hitLocation: LocationDamage): KeyValue {
-		if (hitLocation.woundingModifierOverride)
-			return { value: hitLocation.woundingModifierOverride, key: this.format("gurps.dmgcalc.override") }
-
-		if (this.woundingModifierByDamageType) return this.woundingModifierByDamageType
-
-		const modifierAndReason = this.woundingModifierByHitLocation(hitLocation.locationId!)
-		if (modifierAndReason) return modifierAndReason
-
-		return {
-			value: this.damageType.woundingModifier,
-			key: this.format("gurps.dmgcalc.description.damage_location", {
-				type: this.format(`gurps.dmgcalc.type.${this.damageType.id}`),
-				location: hitLocation.locationId,
-			}),
-		}
-	}
-
-	get woundingModifierByDamageType(): KeyValue | undefined {
-		// B398: Fatigue damage always ignores hit location.
-		if (this.damageType === DamageTypes.fat)
-			return { value: 1, key: this.format("gurps.dmgcalc.description.fatigue") }
 		return undefined
 	}
 
@@ -1145,6 +1022,10 @@ class HitLocationDamage implements LocationDamage {
 			value:
 				this.overrides.rawDR ?? HitLocationUtil.getHitLocationDR(this.hitLocation, this.calculator.damageType),
 		}
+	}
+
+	get damageType(): DamageType {
+		return this.calculator.damageType
 	}
 
 	/*
@@ -1480,4 +1361,194 @@ class HitLocationDamage implements LocationDamage {
 	get damageTypeKey(): string {
 		return this.calculator.damageTypeKey
 	}
+}
+
+type StepName = "Basic Damage" | "Damage Resistance" | "Penetrating Damage" | "Wounding Modifier" | "Injury"
+
+type KeyValue = { key: string; value: number }
+
+// TODO Localize the substep strings (and any text in the text field).
+class CalculatorStep {
+	constructor(name: StepName, substep: string, value: number, text: string | undefined, notes: string | undefined) {
+		this.name = name
+		this.substep = substep
+		this.value = value
+		this.text = text ?? `${value}`
+		this.notes = notes
+	}
+
+	name: StepName
+
+	substep: string
+
+	value: number
+
+	text: string
+
+	notes?: string
+}
+
+class BasicDamageStep extends CalculatorStep {
+	constructor(value: number, notes: string | undefined) {
+		super("Basic Damage", "gurps.dmgcalc.substep.basic_damage", value, undefined, notes)
+	}
+}
+
+class AdjustedBasicDamageStep extends CalculatorStep {
+	constructor(value: number, notes: string | undefined) {
+		super("Basic Damage", "gurps.dmgcalc.substep.adjusted_damage", value, undefined, notes)
+	}
+}
+
+class DamageResistanceStep extends CalculatorStep {
+	constructor(value: number, notes: string | undefined) {
+		super("Damage Resistance", "gurps.dmgcalc.substep.damage_resistance", value, undefined, notes)
+	}
+}
+
+class EffectiveDamageResistanceStep extends CalculatorStep {
+	constructor(value: number, notes: string | undefined) {
+		super("Damage Resistance", "gurps.dmgcalc.substep.effective_dr", value, undefined, notes)
+	}
+}
+
+class PenetratingDamageStep extends CalculatorStep {
+	constructor(value: number, notes: string | undefined) {
+		super("Penetrating Damage", "gurps.dmgcalc.substep.penetrating", value, undefined, notes)
+	}
+}
+
+class WoundingModifierStep extends CalculatorStep {
+	constructor(value: number, notes: string | undefined) {
+		super("Wounding Modifier", "gurps.dmgcalc.substep.wounding_modifier", value, `×${formatFraction(value)}`, notes)
+	}
+}
+
+class InjuryToleranceStep extends CalculatorStep {
+	constructor(value: number, notes: string | undefined) {
+		super("Wounding Modifier", "gurps.dmgcalc.substep.injury_tolerance", value, `×${formatFraction(value)}`, notes)
+	}
+}
+
+class EffectiveWoundingModifieStep extends CalculatorStep {
+	constructor(value: number, notes: string | undefined) {
+		super(
+			"Wounding Modifier",
+			"gurps.dmgcalc.substep.effective_modifier",
+			value,
+			`×${formatFraction(value)}`,
+			notes
+		)
+	}
+}
+
+class InjuryStep extends CalculatorStep {
+	constructor(value: number, notes: string | undefined) {
+		super("Injury", "gurps.dmgcalc.substep.injury", value, undefined, notes)
+	}
+}
+
+class AdjustedInjuryStep extends CalculatorStep {
+	constructor(value: number, notes: string | undefined) {
+		super("Injury", "gurps.dmgcalc.substep.adjusted_injury", value, undefined, notes)
+	}
+}
+
+class DamageReductionStep extends CalculatorStep {
+	constructor(value: number, notes: string | undefined) {
+		super("Injury", "gurps.dmgcalc.substep.damage_reduction", value, undefined, notes)
+	}
+}
+
+class MaxForLocationStep extends CalculatorStep {
+	constructor(value: number, notes: string | undefined) {
+		super("Injury", "gurps.dmgcalc.substep.max_location", value, undefined, notes)
+	}
+}
+
+export class DamageResults {
+	steps = <Array<CalculatorStep>>[]
+
+	knockback = 0
+
+	effects = <Array<InjuryEffect>>[]
+
+	addResult(result: CalculatorStep | undefined) {
+		if (result) this.steps.push(result)
+	}
+
+	addResults(results: (CalculatorStep | undefined)[]) {
+		results.forEach(it => this.addResult(it))
+	}
+
+	addEffects(effects: InjuryEffect[]) {
+		if (effects) this.effects.push(...effects)
+	}
+
+	get injury() {
+		return this.reverseList.find(it => it.name === "Injury")
+	}
+
+	get woundingModifier() {
+		return this.reverseList.find(it => it.name === "Wounding Modifier")
+	}
+
+	get penetratingDamage() {
+		return this.reverseList.find(it => it.name === "Penetrating Damage")
+	}
+
+	get damageResistance() {
+		return this.reverseList.find(it => it.name === "Damage Resistance")
+	}
+
+	get basicDamage() {
+		return this.reverseList.find(it => it.name === "Basic Damage")
+	}
+
+	get rawDamage() {
+		return this.steps.find(it => it.name === "Basic Damage" && it.substep === "gurps.dmgcalc.substep.basic_damage")
+	}
+
+	get miscellaneousEffects(): InjuryEffect[] {
+		return this.effects.filter(
+			it => ![InjuryEffectType.knockback, InjuryEffectType.majorWound, InjuryEffectType.shock].includes(it.id)
+		)
+	}
+
+	get knockbackEffects(): InjuryEffect[] {
+		return this.effects.filter(it => it.id === InjuryEffectType.knockback)
+	}
+
+	get shockEffects(): InjuryEffect[] {
+		return this.effects.filter(it => it.id === InjuryEffectType.shock)
+	}
+
+	get majorWoundEffects(): InjuryEffect[] {
+		return this.effects.filter(it => it.id === InjuryEffectType.majorWound)
+	}
+
+	private get reverseList(): CalculatorStep[] {
+		return [...this.steps].reverse()
+	}
+}
+
+type Overrides = {
+	basicDamage: number | undefined
+	flexible: boolean | undefined
+	hardenedDR: number | undefined
+	rawDR: number | undefined
+	woundingModifier: number | undefined
+}
+
+type ContainerOverrides = {
+	isHalfDamage: boolean | undefined
+	isInternalExplosion: boolean | undefined
+	isExplosion: boolean | undefined
+	range: number | undefined
+	armorDivisor: number | undefined
+	damagePool: string | undefined
+	damageReduction: number | undefined
+	damageType: DamageType | undefined
+	injuryTolerance: string | undefined
+	vulnerability: number | undefined
 }

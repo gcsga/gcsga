@@ -171,7 +171,7 @@ describe("Damage calculator", () => {
 				{
 					substep: "gurps.dmgcalc.substep.wounding_modifier",
 					text: "×1",
-					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"torso"}',
+					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"Torso"}',
 				},
 				{ substep: "gurps.dmgcalc.substep.injury", text: "8", notes: "= 8 × 1" },
 			])
@@ -193,7 +193,7 @@ describe("Damage calculator", () => {
 				{
 					substep: "gurps.dmgcalc.substep.wounding_modifier",
 					text: "×1",
-					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.kb","location":"torso"}',
+					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.kb","location":"Torso"}',
 				},
 				{ substep: "gurps.dmgcalc.substep.injury", text: "0", notes: "= 0 × 1" },
 			])
@@ -213,7 +213,7 @@ describe("Damage calculator", () => {
 				{
 					substep: "gurps.dmgcalc.substep.wounding_modifier",
 					text: "×1",
-					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"torso"}',
+					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"Torso"}',
 				},
 				{ substep: "gurps.dmgcalc.substep.injury", text: "6", notes: "= 6 × 1" },
 			])
@@ -231,7 +231,7 @@ describe("Damage calculator", () => {
 				{
 					substep: "gurps.dmgcalc.substep.wounding_modifier",
 					text: "×1",
-					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"torso"}',
+					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"Torso"}',
 				},
 				{ substep: "gurps.dmgcalc.substep.injury", text: "0", notes: "= 0 × 1" },
 			])
@@ -255,7 +255,7 @@ describe("Damage calculator", () => {
 				{
 					substep: "gurps.dmgcalc.substep.wounding_modifier",
 					text: "×1",
-					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.injury","location":"torso"}',
+					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.injury","location":"Torso"}',
 				},
 				{ substep: "gurps.dmgcalc.substep.injury", text: "8", notes: "= 8 × 1" },
 			])
@@ -288,7 +288,7 @@ describe("Damage calculator", () => {
 					{
 						substep: "gurps.dmgcalc.substep.wounding_modifier",
 						text: "×1",
-						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"torso"}',
+						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"Torso"}',
 					},
 					{ substep: "gurps.dmgcalc.substep.injury", text: "10", notes: "= 10 × 1" },
 				])
@@ -311,7 +311,7 @@ describe("Damage calculator", () => {
 					{
 						substep: "gurps.dmgcalc.substep.wounding_modifier",
 						text: "×1",
-						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"torso"}',
+						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"Torso"}',
 					},
 					{ substep: "gurps.dmgcalc.substep.injury", text: "0", notes: "= 0 × 1" },
 				])
@@ -337,7 +337,7 @@ describe("Damage calculator", () => {
 					{
 						substep: "gurps.dmgcalc.substep.wounding_modifier",
 						text: "×1",
-						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"torso"}',
+						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"Torso"}',
 					},
 					{ substep: "gurps.dmgcalc.substep.injury", text: "20", notes: "= 20 × 1" },
 				])
@@ -366,7 +366,7 @@ describe("Damage calculator", () => {
 					{
 						substep: "gurps.dmgcalc.substep.wounding_modifier",
 						text: "×1",
-						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"torso"}',
+						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"Torso"}',
 					},
 					{ substep: "gurps.dmgcalc.substep.injury", text: "10", notes: "= 10 × 1" },
 				])
@@ -392,7 +392,7 @@ describe("Damage calculator", () => {
 					{
 						substep: "gurps.dmgcalc.substep.wounding_modifier",
 						text: "×1",
-						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"torso"}',
+						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"Torso"}',
 					},
 					{ substep: "gurps.dmgcalc.substep.injury", text: "19", notes: "= 19 × 1" },
 				])
@@ -416,7 +416,7 @@ describe("Damage calculator", () => {
 				{
 					substep: "gurps.dmgcalc.substep.wounding_modifier",
 					text: "×1/2",
-					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.pi-","location":"torso"}',
+					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.pi-","location":"Torso"}',
 				},
 				{ substep: "gurps.dmgcalc.substep.injury", text: "3", notes: "= 6 × 1/2" },
 			])
@@ -440,7 +440,7 @@ describe("Damage calculator", () => {
 				{
 					substep: "gurps.dmgcalc.substep.wounding_modifier",
 					text: "×1.5",
-					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cut","location":"torso"}',
+					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cut","location":"Torso"}',
 				},
 				{ substep: "gurps.dmgcalc.substep.injury", text: "0", notes: "= 0 × 1.5" },
 			])
@@ -455,7 +455,7 @@ describe("Damage calculator", () => {
 				{
 					substep: "gurps.dmgcalc.substep.wounding_modifier",
 					text: "×1.5",
-					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cut","location":"torso"}',
+					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cut","location":"Torso"}',
 				},
 				{ substep: "gurps.dmgcalc.substep.injury", text: "0", notes: "= 0 × 1.5" },
 				{
@@ -475,7 +475,7 @@ describe("Damage calculator", () => {
 				{
 					substep: "gurps.dmgcalc.substep.wounding_modifier",
 					text: "×1.5",
-					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cut","location":"torso"}',
+					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cut","location":"Torso"}',
 				},
 				{ substep: "gurps.dmgcalc.substep.injury", text: "0", notes: "= 0 × 1.5" },
 				{
@@ -498,7 +498,7 @@ describe("Damage calculator", () => {
 				{
 					substep: "gurps.dmgcalc.substep.wounding_modifier",
 					text: "×1/2",
-					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.pi-","location":"torso"}',
+					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.pi-","location":"Torso"}',
 				},
 				{ substep: "gurps.dmgcalc.substep.injury", text: "1", notes: "= 1 × 1/2" },
 			])
@@ -528,7 +528,7 @@ describe("Damage calculator", () => {
 					{
 						substep: "gurps.dmgcalc.substep.wounding_modifier",
 						text: "×2",
-						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.imp","location":"torso"}',
+						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.imp","location":"Torso"}',
 					},
 					{
 						substep: "gurps.dmgcalc.substep.injury_tolerance",
@@ -551,7 +551,7 @@ describe("Damage calculator", () => {
 					{
 						substep: "gurps.dmgcalc.substep.wounding_modifier",
 						text: "×2",
-						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.pi++","location":"torso"}',
+						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.pi++","location":"Torso"}',
 					},
 					{
 						substep: "gurps.dmgcalc.substep.injury_tolerance",
@@ -577,7 +577,7 @@ describe("Damage calculator", () => {
 					{
 						substep: "gurps.dmgcalc.substep.wounding_modifier",
 						text: "×1.5",
-						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.pi+","location":"torso"}',
+						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.pi+","location":"Torso"}',
 					},
 					{
 						substep: "gurps.dmgcalc.substep.injury_tolerance",
@@ -603,7 +603,7 @@ describe("Damage calculator", () => {
 					{
 						substep: "gurps.dmgcalc.substep.wounding_modifier",
 						text: "×1",
-						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.pi","location":"torso"}',
+						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.pi","location":"Torso"}',
 					},
 					{
 						substep: "gurps.dmgcalc.substep.injury_tolerance",
@@ -629,7 +629,7 @@ describe("Damage calculator", () => {
 					{
 						substep: "gurps.dmgcalc.substep.wounding_modifier",
 						text: "×1/2",
-						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.pi-","location":"torso"}',
+						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.pi-","location":"Torso"}',
 					},
 					{
 						substep: "gurps.dmgcalc.substep.injury_tolerance",
@@ -664,7 +664,7 @@ describe("Damage calculator", () => {
 						{
 							substep: "gurps.dmgcalc.substep.wounding_modifier",
 							text: "×2",
-							notes: `gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.${type.id}","location":"torso"}`,
+							notes: `gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.${type.id}","location":"Torso"}`,
 						},
 
 						{
@@ -692,7 +692,7 @@ describe("Damage calculator", () => {
 					{
 						substep: "gurps.dmgcalc.substep.wounding_modifier",
 						text: "×1.5",
-						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.pi+","location":"torso"}',
+						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.pi+","location":"Torso"}',
 					},
 					{
 						substep: "gurps.dmgcalc.substep.injury_tolerance",
@@ -718,7 +718,7 @@ describe("Damage calculator", () => {
 					{
 						substep: "gurps.dmgcalc.substep.wounding_modifier",
 						text: "×1",
-						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.pi","location":"torso"}',
+						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.pi","location":"Torso"}',
 					},
 					{
 						substep: "gurps.dmgcalc.substep.injury_tolerance",
@@ -744,7 +744,7 @@ describe("Damage calculator", () => {
 					{
 						substep: "gurps.dmgcalc.substep.wounding_modifier",
 						text: "×1/2",
-						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.pi-","location":"torso"}',
+						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.pi-","location":"Torso"}',
 					},
 					{
 						substep: "gurps.dmgcalc.substep.injury_tolerance",
@@ -785,7 +785,7 @@ describe("Damage calculator", () => {
 						{
 							substep: "gurps.dmgcalc.substep.wounding_modifier",
 							text: "×2",
-							notes: `gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.${type[0].id}","location":"torso"}`,
+							notes: `gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.${type[0].id}","location":"Torso"}`,
 						},
 						{ substep: "gurps.dmgcalc.substep.injury", text: "190", notes: "= 95 × 2" },
 						{
@@ -809,7 +809,7 @@ describe("Damage calculator", () => {
 					{
 						substep: "gurps.dmgcalc.substep.wounding_modifier",
 						text: "×1.5",
-						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.pi+","location":"torso"}',
+						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.pi+","location":"Torso"}',
 					},
 					{ substep: "gurps.dmgcalc.substep.injury", text: "142", notes: "= 95 × 1.5" },
 					{
@@ -832,7 +832,7 @@ describe("Damage calculator", () => {
 					{
 						substep: "gurps.dmgcalc.substep.wounding_modifier",
 						text: "×1",
-						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.pi","location":"torso"}',
+						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.pi","location":"Torso"}',
 					},
 					{ substep: "gurps.dmgcalc.substep.injury", text: "95", notes: "= 95 × 1" },
 					{
@@ -855,7 +855,7 @@ describe("Damage calculator", () => {
 					{
 						substep: "gurps.dmgcalc.substep.wounding_modifier",
 						text: "×1/2",
-						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.pi-","location":"torso"}',
+						notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.pi-","location":"Torso"}',
 					},
 					{ substep: "gurps.dmgcalc.substep.injury", text: "47", notes: "= 95 × 1/2" },
 					{
@@ -889,7 +889,7 @@ describe("Damage calculator", () => {
 						{
 							substep: "gurps.dmgcalc.substep.wounding_modifier",
 							text: `×${type[1]}`,
-							notes: `gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.${type[0].id}","location":"torso"}`,
+							notes: `gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.${type[0].id}","location":"Torso"}`,
 						},
 						{
 							substep: "gurps.dmgcalc.substep.injury",
@@ -948,7 +948,7 @@ describe("Damage calculator", () => {
 				{
 					substep: "gurps.dmgcalc.substep.wounding_modifier",
 					text: "×1",
-					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"arm"}',
+					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"Right Arm"}',
 				},
 				{ substep: "gurps.dmgcalc.substep.injury", text: "10", notes: "= 10 × 1" },
 				{
@@ -972,7 +972,7 @@ describe("Damage calculator", () => {
 			_roll.hits[0].basicDamage = 9
 
 			const calc = _create(_roll, _target)
-			calc.range = 3
+			calc.rangeOverride = 3
 			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "9", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{
@@ -989,12 +989,12 @@ describe("Damage calculator", () => {
 				{
 					substep: "gurps.dmgcalc.substep.wounding_modifier",
 					text: "×1",
-					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"torso"}',
+					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"Torso"}',
 				},
 				{ substep: "gurps.dmgcalc.substep.injury", text: "0", notes: "= 0 × 1" },
 			])
 
-			calc.range = 2
+			calc.rangeOverride = 2
 			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "9", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{
@@ -1011,7 +1011,7 @@ describe("Damage calculator", () => {
 				{
 					substep: "gurps.dmgcalc.substep.wounding_modifier",
 					text: "×1",
-					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"torso"}',
+					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"Torso"}',
 				},
 				{ substep: "gurps.dmgcalc.substep.injury", text: "1", notes: "= 1 × 1" },
 			])
@@ -1022,7 +1022,7 @@ describe("Damage calculator", () => {
 			_torso._map.set("all", 1)
 
 			const calc = _create(_roll, _target)
-			calc.range = 2
+			calc.rangeOverride = 2
 			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "13", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{
@@ -1039,12 +1039,12 @@ describe("Damage calculator", () => {
 				{
 					substep: "gurps.dmgcalc.substep.wounding_modifier",
 					text: "×1",
-					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"torso"}',
+					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"Torso"}',
 				},
 				{ substep: "gurps.dmgcalc.substep.injury", text: "1", notes: "= 1 × 1" },
 			])
 
-			calc.range = 1
+			calc.rangeOverride = 1
 			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "13", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{
@@ -1061,12 +1061,12 @@ describe("Damage calculator", () => {
 				{
 					substep: "gurps.dmgcalc.substep.wounding_modifier",
 					text: "×1",
-					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"torso"}',
+					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"Torso"}',
 				},
 				{ substep: "gurps.dmgcalc.substep.injury", text: "3", notes: "= 3 × 1" },
 			])
 
-			calc.range = 3
+			calc.rangeOverride = 3
 			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "13", notes: "gurps.dmgcalc.damage_pool.hp" },
 				{
@@ -1083,7 +1083,7 @@ describe("Damage calculator", () => {
 				{
 					substep: "gurps.dmgcalc.substep.wounding_modifier",
 					text: "×1",
-					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"torso"}',
+					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"Torso"}',
 				},
 				{ substep: "gurps.dmgcalc.substep.injury", text: "0", notes: "= 0 × 1" },
 			])
@@ -1096,7 +1096,7 @@ describe("Damage calculator", () => {
 			_torso._map.set("all", 3)
 
 			const calc = _create(_roll, _target)
-			calc.range = 2
+			calc.rangeOverride = 2
 			expect(calc.hits[0].results.steps).toMatchObject([
 				{
 					substep: "gurps.dmgcalc.substep.basic_damage",
@@ -1118,7 +1118,7 @@ describe("Damage calculator", () => {
 				{ substep: "gurps.dmgcalc.substep.injury", text: "1", notes: "= 1 × 1" },
 			])
 
-			calc.range = 1
+			calc.rangeOverride = 1
 			expect(calc.hits[0].results.steps).toMatchObject([
 				{
 					substep: "gurps.dmgcalc.substep.basic_damage",
@@ -1140,7 +1140,7 @@ describe("Damage calculator", () => {
 				{ substep: "gurps.dmgcalc.substep.injury", text: "5", notes: "= 5 × 1" },
 			])
 
-			calc.range = 3
+			calc.rangeOverride = 3
 			expect(calc.hits[0].results.steps).toMatchObject([
 				{
 					substep: "gurps.dmgcalc.substep.basic_damage",
@@ -1170,7 +1170,7 @@ describe("Damage calculator", () => {
 			_torso._map.set("all", 3)
 
 			const calc = _create(_roll, _target)
-			calc.range = 0
+			calc.rangeOverride = 0
 			expect(calc.hits[0].results.steps).toMatchObject([
 				{
 					substep: "gurps.dmgcalc.substep.basic_damage",
@@ -1190,10 +1190,10 @@ describe("Damage calculator", () => {
 				{ substep: "gurps.dmgcalc.substep.penetrating", text: "24", notes: "= 24 – 0" },
 				{
 					substep: "gurps.dmgcalc.substep.wounding_modifier",
-					text: "×1",
-					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"torso"}',
+					text: "×3",
+					notes: "gurps.dmgcalc.description.explosion_internal",
 				},
-				{ substep: "gurps.dmgcalc.substep.injury", text: "24", notes: "= 24 × 1" },
+				{ substep: "gurps.dmgcalc.substep.injury", text: "72", notes: "= 24 × 3" },
 			])
 		})
 	})

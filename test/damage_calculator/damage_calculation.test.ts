@@ -2073,11 +2073,11 @@ describe("Damage calculator", () => {
 			_roll.hits[0].basicDamage = 9
 
 			const calc = _create(_roll, _target)
-			calc.range = 3
+			calc.rangeOverride = 3
 			// It would be 9 ÷ (3 × 3) = 1; except the range is too far.
 			expect(calc.hits[0].results.injury!.value).toBe(0)
 
-			calc.range = 2
+			calc.rangeOverride = 2
 			// It should be 9 ÷ (3 × 2) = 1.
 			expect(calc.hits[0].results.injury!.value).toBe(1)
 		})
@@ -2087,15 +2087,15 @@ describe("Damage calculator", () => {
 			_torso._map.set("all", 1)
 
 			const calc = _create(_roll, _target)
-			calc.range = 2
+			calc.rangeOverride = 2
 			expect(calc.hits[0].results.basicDamage!.value).toBe(2) // 13 ÷ (3 × 2) = 2
 			expect(calc.hits[0].results.injury!.value).toBe(1)
 
-			calc.range = 1
+			calc.rangeOverride = 1
 			expect(calc.hits[0].results.basicDamage!.value).toBe(4) // 13 ÷ (3 × 1) = 4
 			expect(calc.hits[0].results.injury!.value).toBe(3)
 
-			calc.range = 3
+			calc.rangeOverride = 3
 			expect(calc.hits[0].results.basicDamage!.value).toBe(1) // 13 ÷ (3 × 3) = 1
 			expect(calc.hits[0].results.injury!.value).toBe(0)
 		})
@@ -2107,15 +2107,15 @@ describe("Damage calculator", () => {
 			_torso._map.set("all", 3)
 
 			const calc = _create(_roll, _target)
-			calc.range = 2
+			calc.rangeOverride = 2
 			expect(calc.hits[0].results.basicDamage!.value).toBe(4) // 24 ÷ (3 × 2) = 4
 			expect(calc.hits[0].results.injury!.value).toBe(1)
 
-			calc.range = 1
+			calc.rangeOverride = 1
 			expect(calc.hits[0].results.basicDamage!.value).toBe(8) // 24 ÷ (3 × 1) = 8
 			expect(calc.hits[0].results.injury!.value).toBe(5)
 
-			calc.range = 3
+			calc.rangeOverride = 3
 			expect(calc.hits[0].results.basicDamage!.value).toBe(2) // 24 ÷ (3 × 3) = 2
 			expect(calc.hits[0].results.injury!.value).toBe(0)
 		})
@@ -2137,17 +2137,8 @@ describe("Damage calculator", () => {
 			_torso._map.set("all", 3)
 
 			const calc = _create(_roll, _target)
-			calc.range = 2
-			expect(calc.hits[0].results.basicDamage!.value).toBe(4) // 24 ÷ (3 × 2) = 4
-			expect(calc.hits[0].results.injury!.value).toBe(4)
-
-			calc.range = 1
-			expect(calc.hits[0].results.basicDamage!.value).toBe(8) // 24 ÷ (3 × 1) = 8
-			expect(calc.hits[0].results.injury!.value).toBe(8)
-
-			calc.range = 3
-			expect(calc.hits[0].results.basicDamage!.value).toBe(2) // 24 ÷ (3 × 3) = 2
-			expect(calc.hits[0].results.injury!.value).toBe(2)
+			expect(calc.hits[0].results.basicDamage!.value).toBe(24)
+			expect(calc.hits[0].results.injury!.value).toBe(72) // 24 × 3 = 72
 		})
 	})
 

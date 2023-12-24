@@ -15,7 +15,7 @@
 		<div class="label">{{localize "gurps.dmgcalc.source_roll"}}</div>
 		<div class="field no-stretch">
 			<div>{{calculator.damageRoll.damageText}}</div>
-			<select name="pool">
+			<select data-action="damagepool-select" name="pool" class="{{overridden calculator.damagePoolOverride}}">
 				{{#select this.calculator.damagePoolID}}
 					{{#each this.calculator.damagePools}}
 						<option value="{{id}}">{{fullName}}</option>
@@ -35,6 +35,31 @@
 			<div class="label ref" data-pdf="DFX53">DFX53</div>
 		{{else}}
 			<div class="label ref" data-pdf="B268">B268</div>
+		{{/if}}
+
+		<div class="label"></div>
+		<div class="field no-stretch">
+			<label for="exp" class="checkbox-label">
+				<input
+					class="{{overridden calculator.isExplosionOverride}}"
+					data-action="override-isExplosion"
+					id="exp"
+					type="checkbox"
+					{{checked calculator.isExplosion}}
+				/>{{localize "gurps.dmgcalc.explosion"}}</label>
+			<label for="internal" class="checkbox-label">
+				<input
+					class="{{overridden calculator.isInternalOverride}}"
+					data-action="override-internal"
+					id="internal"
+					type="checkbox"
+					{{checked calculator.isInternalExplosion}}
+				/>{{localize "gurps.dmgcalc.internal"}}</label>
+		</div>
+		{{#if (eq books "dfrpg")}}
+			<div class="label ref" data-pdf="DFX46">DFX46</div>
+		{{else}}
+			<div class="label ref" data-pdf="B414">B414</div>
 		{{/if}}
 
 		<div class="label">{{localize "gurps.weapon.damage.armor_divisor"}}</div>
@@ -64,26 +89,24 @@
 			<div class="label ref" data-pdf="B378">B378</div>
 		{{/if}}
 
-		<div class="label"></div>
-		<div class="field no-stretch">
-			<label for="exp" class="checkbox-label">
-				<input id="exp" type="checkbox" {{checked calculator.isExplosion}} />{{localize
-					"gurps.dmgcalc.explosion"
-				}}</label>
-			<label for="explosion" class="checkbox-label">
-				<input id="explosion" type="checkbox" />{{localize "gurps.dmgcalc.internal"}}</label>
-		</div>
-		{{#if (eq books "dfrpg")}}
-			<div class="label ref" data-pdf="DFX46">DFX46</div>
-		{{else}}
-			<div class="label ref" data-pdf="B414">B414</div>
-		{{/if}}
-
 		<div class="label">{{localize "gurps.dmgcalc.range"}}</div>
 		<div class="field no-stretch range">
-			<input type="number" value="{{calculator.roll.range}}" step="any" name="range" />
+			<input
+				type="number"
+				data-action="override-range"
+				class="{{overridden calculator.rangeOverride}}"
+				value="{{calculator.range}}"
+				step="any"
+				name="range"
+			/>
 			<label for="1/2D" class="checkbox-label">
-				<input id="1/2D" type="checkbox" />{{localize "gurps.dmgcalc.half_d"}}</label>
+				<input
+					id="1/2D"
+					type="checkbox"
+					class="{{overridden calculator.isHalfDamageOverride}}"
+					{{checked calculator.isHalfDamage}}
+					data-action="override-isHalfDamage"
+				/>{{localize "gurps.dmgcalc.half_d"}}</label>
 		</div>
 		{{#if (eq books "dfrpg")}}
 			<div class="label ref" data-pdf="DFX43">DFX43</div>
@@ -204,9 +227,11 @@
 
 		<nav class="nav-tabs" data-group="primary">
 			{{#each calculator.hits}}
-				<a data-tab="{{@index}}">{{this.basicDamage}}
-					{{this.damageTypeKey}}
-					({{this.locationId}})</a>
+				<a data-tab="{{@index}}">
+					{{#if this.isOverridden}}*{{/if}}
+					{{this.basicDamage}}
+					{{this.damageType.id}}
+					({{this.hitLocation.choice_name}})</a>
 			{{/each}}
 		</nav>
 		<section class="content">
@@ -305,7 +330,7 @@
 								<div class="table">
 									<div class="header">{{localize "gurps.dmgcalc.calculation"}}</div>
 
-									{{#each calculator.results.steps}}
+									{{#each this.results.steps}}
 										<div class="step">{{localize substep}}</div>
 										<div class="value">{{{text}}}</div>
 										<div class="descr">{{notes}}</div>
@@ -319,7 +344,7 @@
 		</section>
 		<div class="apply">
 			<div class="label">{{localize "gurps.dmgcalc.injury"}}&nbsp;({{localize "gurps.static.hp"}})</div>
-			<input type="number" value="{{calculator.results.injury.value}}" step="any" name="injury" size="4" />
+			<input type="number" value="{{this.results.injury.value}}" step="any" name="injury" size="4" />
 			<button type="button" class="apply-button gcs-checkmark" data-action="apply-injury">{{localize
 					"gurps.misc.apply"
 				}}</button>

@@ -61,7 +61,6 @@ class ApplyDamageDialog extends Application {
 	}
 
 	getData(options?: Partial<ApplicationOptions> | undefined): object {
-		console.log((this.calculator as any).range_)
 		const books = game.settings.get(SYSTEM_NAME, SETTINGS.BASE_BOOKS)
 
 		const data = mergeObject(super.getData(options), {
@@ -125,12 +124,17 @@ class ApplyDamageDialog extends Application {
 
 			case "armordivisor-select": {
 				const value = parseFloat(target.value)
-				// this.calculator.armorDivisorOverride = isNaN(value) ? undefined : value
+				this.calculator.armorDivisorOverride = isNaN(value) ? undefined : value
 				break
 			}
 
 			case "damagetype-select": {
-				// this.calculator.damageTypeOverride = target.value
+				this.calculator.damageTypeOverride = target.value
+				break
+			}
+
+			case "damagepool-select": {
+				this.calculator.damagePoolOverride = target.value
 				break
 			}
 
@@ -154,6 +158,12 @@ class ApplyDamageDialog extends Application {
 			case "override-reduction": {
 				const value = parseFloat(target.value)
 				this.calculator.damageReductionOverride = isNaN(value) ? undefined : value
+				break
+			}
+
+			case "override-range": {
+				const value = parseInt(target.value)
+				this.calculator.rangeOverride = isNaN(value) ? undefined : value
 				break
 			}
 		}
@@ -188,6 +198,19 @@ class ApplyDamageDialog extends Application {
 			case "apply-vulnerability":
 				const index = parseInt(target.dataset.index)
 				this.calculator.applyVulnerability(index, target.checked)
+				break
+
+			case "override-isExplosion":
+				this.calculator.isExplosionOverride = target.checked
+				break
+
+			case "override-internal":
+				this.calculator.isInternalOverride = target.checked
+				break
+
+			case "override-isHalfDamage":
+				this.calculator.isHalfDamageOverride = target.checked
+				break
 		}
 
 		this.render(true)
@@ -232,7 +255,6 @@ class ApplyDamageDialog extends Application {
 			hardened: hardenedChoices,
 			damageType: this.damageTypeChoice,
 			vulnerability: vulnerabilityChoices,
-			// hitlocation: this.calculator.hitLocationChoice,
 		}
 	}
 
@@ -241,12 +263,6 @@ class ApplyDamageDialog extends Application {
 		Object.entries(DamageTypes).map(e => (results[e[0]] = e[1].full_name))
 		return results
 	}
-
-	// private get hitLocationChoice(): Record<string, string> {
-	// 	const choice: Record<string, string> = {}
-	// 	this.target.hitLocationTable.locations.forEach(it => (choice[it.id] = it.choice_name))
-	// 	return choice
-	// }
 }
 
 const hardenedChoices = {

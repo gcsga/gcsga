@@ -209,6 +209,11 @@
 					font: var(--font-label);
 					font-size: 80%;
 					text-align: right;
+				}
+
+				.step,
+				.descr,
+				.value {
 					display: inline-flex;
 					flex-flow: column nowrap;
 					justify-content: center;
