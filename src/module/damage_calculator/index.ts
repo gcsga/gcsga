@@ -187,7 +187,7 @@ export interface DamageTarget {
 	// Return None, Unliving, Homogenous, or Diffuse.
 	injuryTolerance: "None" | "Unliving" | "Homogenous" | "Diffuse"
 	// Subtract value from HitPoints.
-	incrementDamage(delta: number): void
+	incrementDamage(delta: number, damagePoolId: string): void
 	// Get all pools.
 	pools: TargetPool[]
 }

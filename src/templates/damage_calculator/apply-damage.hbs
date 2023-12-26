@@ -1,14 +1,16 @@
 <div id="apply-damage" autocomplete="off">
 	<div class="header">{{localize "gurps.dmgcalc.attacker"}}: {{calculator.attacker.name}}</div>
 	<div class="fieldblock">
-
 		<div class="label">{{localize "gurps.dmgcalc.weapon"}}</div>
 		<div class="field no-ref">
 			<div>{{calculator.weapon.name}}</div>
 			<div>
-				<button type="button" data-action="reset-form" {{disabled (not calculator.isOverridden)}}>{{localize
-						"gurps.settings.reset_all"
-					}}</button>
+				<button
+					type="button"
+					class="gcs-reset"
+					data-action="reset-form"
+					{{disabled (not calculator.isOverridden)}}
+				>&nbsp;{{localize "gurps.settings.reset_all"}}</button>
 			</div>
 		</div>
 
@@ -41,18 +43,18 @@
 		<div class="field no-stretch">
 			<label for="exp" class="checkbox-label">
 				<input
-					class="{{overridden calculator.isExplosionOverride}}"
-					data-action="override-isExplosion"
 					id="exp"
 					type="checkbox"
+					class="{{overridden calculator.isExplosionOverride}}"
+					data-action="override-isExplosion"
 					{{checked calculator.isExplosion}}
 				/>{{localize "gurps.dmgcalc.explosion"}}</label>
 			<label for="internal" class="checkbox-label">
 				<input
-					class="{{overridden calculator.isInternalOverride}}"
-					data-action="override-internal"
 					id="internal"
 					type="checkbox"
+					class="{{overridden calculator.isInternalOverride}}"
+					data-action="override-internal"
 					{{checked calculator.isInternalExplosion}}
 				/>{{localize "gurps.dmgcalc.internal"}}</label>
 		</div>
@@ -65,9 +67,9 @@
 		<div class="label">{{localize "gurps.weapon.damage.armor_divisor"}}</div>
 		<div class="field">
 			<select
-				data-action="armordivisor-select"
-				value="{{calculator.armorDivisor}}"
 				class="{{overridden calculator.armorDivisorOverride}}"
+				value="{{calculator.armorDivisor}}"
+				data-action="armordivisor-select"
 			>
 				{{#select calculator.armorDivisor}}
 					<option value="0">{{localize "gurps.dmgcalc.armor_divisor.ignores_dr"}}</option>
@@ -93,11 +95,10 @@
 		<div class="field no-stretch range">
 			<input
 				type="number"
-				data-action="override-range"
 				class="{{overridden calculator.rangeOverride}}"
 				value="{{calculator.range}}"
 				step="any"
-				name="range"
+				data-action="override-range"
 			/>
 			<label for="1/2D" class="checkbox-label">
 				<input
@@ -115,34 +116,36 @@
 		{{/if}}
 
 		<div class="label"></div>
-		<div class="field">
-			<label for="shotgun" class="checkbox-label">
-				<input id="shotgun" type="checkbox" />{{localize "gurps.dmgcalc.shotgun"}}</label>
-		</div>
-		<div class="label ref" data-pdf="B409">B409</div>
-
-		<div class="label"></div>
-
 		<div class="field no-stretch">
-			<label class="label">{{localize "gurps.dmgcalc.rof"}}
+			<label for="shotgun" class="checkbox-label">
 				<input
-					type="number"
-					value="{{calculator.roll.rofMultiplier}}"
-					step="any"
-					name="rofMultiplier"
-					size="3"
-				/>
+					id="shotgun"
+					type="checkbox"
+					class="{{overridden calculator.isShotgunCloseRangeOverride}}"
+					{{checked calculator.isShotgunCloseRange}}
+					data-action="override-isShotgunCloseRange"
+				/>{{localize "gurps.dmgcalc.shotgun"}}
+			</label>
+			<label for="rof" class="label">{{localize "gurps.dmgcalc.rof"}}
+				<span class="input-wrapper multiply">
+					<input
+						id="rof"
+						type="number"
+						class="{{overridden calculator.rofMultiplierOverride}}"
+						value="{{calculator.rofMultiplier}}"
+						step="any"
+						size="3"
+						data-action="override-rofMultiplier"
+					/>
+				</span>
 			</label>
 		</div>
-
-		<div> </div>
+		<div class="label ref" data-pdf="B409">B409</div>
 	</div>
 
 	<div id="target">
-
 		<div class="header">{{localize "gurps.dmgcalc.target"}}: {{calculator.target.name}}</div>
 		<div class="fieldblock">
-
 			<div class="label">{{localize "gurps.dmgcalc.injury_tolerance"}}</div>
 			<div class="field">
 				<select
@@ -159,6 +162,36 @@
 				</select>
 			</div>
 			<div class="label ref" data-pdf="B60">B60</div>
+
+			<div class="label">{{localize "gurps.dmgcalc.damage_reduction"}}</div>
+			<div class="field no-stretch">
+				<select
+					name="reduction"
+					data-action="override-reduction"
+					class="{{overridden calculator.damageReductionOverride}}"
+				>
+					{{#select calculator.damageReduction}}
+						<option value="1">{{localize "gurps.dmgcalc.none"}}</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+					{{/select}}
+				</select>
+				<label class="label" for="override-reduction">{{localize "gurps.dmgcalc.override"}}
+					<span class="input-wrapper divide">
+						<input
+							id="override-reduction"
+							type="number"
+							data-action="override-reduction"
+							value="{{calculator.damageReduction}}"
+							class="{{overridden calculator.damageReductionOverride}}"
+							step="any"
+							size="3"
+						/>
+					</span>
+				</label>
+			</div>
+			<div class="label ref" data-pdf="P53">P53</div>
 
 			<div class="label">{{localize "gurps.dmgcalc.vulnerability"}}</div>
 			<div id="vulnerability" class="field">
@@ -194,35 +227,6 @@
 				<div class="label ref" data-pdf="B161">B161</div>
 			{{/if}}
 
-			<div class="label">{{localize "gurps.dmgcalc.damage_reduction"}}</div>
-			<div class="field no-stretch">
-				<select
-					name="reduction"
-					data-action="override-reduction"
-					class="{{overridden calculator.damageReductionOverride}}"
-				>
-					{{#select calculator.damageReduction}}
-						<option value="1">{{localize "gurps.dmgcalc.none"}}</option>
-						<option value="2">2</option>
-						<option value="3">3</option>
-						<option value="4">4</option>
-					{{/select}}
-				</select>
-				<label class="label" for="override-reduction">{{localize "gurps.dmgcalc.override"}}
-					<span class="input-wrapper divide">
-						<input
-							id="override-reduction"
-							type="number"
-							data-action="override-reduction"
-							value="{{calculator.damageReduction}}"
-							class="{{overridden calculator.damageReductionOverride}}"
-							step="any"
-							size="3"
-						/>
-					</span>
-				</label>
-			</div>
-			<div class="label ref" data-pdf="P53">P53</div>
 		</div>
 
 		<nav class="nav-tabs" data-group="primary">
@@ -240,44 +244,54 @@
 					<div class="fieldblock">
 
 						<div class="label">{{localize "gurps.character.basic_damage"}}</div>
-						<div class="field no-stretch no-ref direct-damage">
-							<input
-								type="number"
-								value="{{this.basicDamage}}"
-								step="any"
-								data-action="override-basic"
-								size="4"
-								class="{{overridden this.basicDamageOverride}}"
-							/>
-							<label class="label" for="override-woundingmod">Modifier
-								<span class="input-wrapper multiply">
-									<input
-										id="override-woundingmod"
-										type="number"
-										data-action="override-woundingmod"
-										value="{{this.woundingModifier}}"
-										class="{{overridden this.woundingModifierOverride}}"
-										step="any"
-										size="3"
-									/>
-								</span>
-							</label>
-							<button type="button" class="gcs-checkmark" data-action="apply-basic">{{localize
-									"gurps.misc.apply"
-								}}</button>
+						<div class="field no-ref">
+							<div><input
+									type="number"
+									value="{{this.basicDamage}}"
+									step="any"
+									data-action="override-basic"
+									data-index="{{@index}}"
+									size="4"
+									class="{{overridden this.basicDamageOverride}}"
+								/>
+							</div>
+							<div>
+								<label class="label" for="override-woundingmod">Modifier
+									<span class="input-wrapper multiply">
+										<input
+											id="override-woundingmod"
+											type="number"
+											data-action="override-woundingmod"
+											data-index="{{@index}}"
+											value="{{this.woundingModifier}}"
+											class="{{overridden this.woundingModifierOverride}}"
+											step="any"
+											size="3"
+										/>
+									</span>
+								</label>
+							</div>
+							<div>
+								<button
+									type="button"
+									class="gcs-checkmark"
+									data-index="{{@index}}"
+									data-action="apply-basic"
+								>{{localize "gurps.misc.apply"}}</button>
+							</div>
 						</div>
 
 						<div class="label">{{localize "gurps.dmgcalc.hit_location"}}</div>
 						<div class="field no-stretch location">
 							{{print this}}
-							<select name="hitLocation" data-action="location-select">
+							<select name="hitLocation" data-index="{{@index}}" data-action="location-select">
 								{{selectOptions
 									@root.calculator.hitLocationChoice
 									selected=this.locationId
 									localize=false
 								}}
 							</select>
-							<button type="button" data-action="location-random">
+							<button type="button" data-index="{{@index}}" data-action="location-random">
 								<i class="fa-light fa-dice"></i>
 							</button>
 							<label for="override-dr" class="label">{{localize "gurps.character.body_type.dr"}}
@@ -285,6 +299,7 @@
 									id="override-dr"
 									type="number"
 									data-action="override-dr"
+									data-index="{{@index}}"
 									value="{{this.damageResistance.value}}"
 									step="any"
 									size="6"
@@ -305,6 +320,7 @@
 									id="flexible"
 									type="checkbox"
 									data-action="location-flexible"
+									data-index="{{@index}}"
 									{{checked this.isFlexibleArmor}}
 								/>{{localize "gurps.dmgcalc.flexible"}}</label>
 						</div>
@@ -315,6 +331,7 @@
 							<select
 								name="hardened"
 								data-action="hardened-select"
+								data-index="{{@index}}"
 								class="{{overridden this.hardenedDROverride}}"
 							>
 								{{selectOptions @root.choices.hardened selected=this.hardenedDRLevel}}

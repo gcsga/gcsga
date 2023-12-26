@@ -35,6 +35,9 @@ export interface IDamageCalculator {
 	readonly isOverridden: boolean
 	resetOverrides(): void
 
+	applyTotalDamage(): void
+	applyBasicDamage(index: number): unknown
+
 	// === Attacker ===
 	readonly attacker: DamageAttacker | undefined
 	readonly weapon: DamageWeapon | undefined
@@ -62,7 +65,10 @@ export interface IDamageCalculator {
 	isHalfDamageOverride: boolean | undefined
 
 	readonly isShotgunCloseRange: boolean
+	isShotgunCloseRangeOverride: boolean | undefined
+
 	readonly rofMultiplier: number
+	rofMultiplierOverride: number | undefined
 
 	// === Target ===
 	readonly target: DamageTarget
@@ -156,16 +162,18 @@ class DamageCalculator implements IDamageCalculator {
 		damageReduction: undefined,
 		damageType: undefined,
 		injuryTolerance: undefined,
-		vulnerability: undefined,
-		range: undefined,
 		isExplosion: undefined,
-		isInternalExplosion: undefined,
 		isHalfDamage: undefined,
+		isInternalExplosion: undefined,
+		isShotgunCloseRange: undefined,
+		range: undefined,
+		rofMultiplier: undefined,
+		vulnerability: undefined,
 	}
 
 	get isOverridden(): boolean {
-		const overriden = Object.values(this.overrides).some(it => it !== undefined)
-		if (overriden) return true
+		if (Object.values(this.overrides).some(it => it !== undefined)) return true
+		if (this.vulnerabilities.some(it => it.apply)) return true
 		return this.hits.some(it => it.isOverridden)
 	}
 
@@ -182,11 +190,28 @@ class DamageCalculator implements IDamageCalculator {
 		this.hits.forEach(it => it.resetOverrides())
 	}
 
-	target: DamageTarget
-
 	private damageRoll: DamageRoll
 
 	format: (stringId: string, data?: any) => string
+
+	target: DamageTarget
+
+	applyBasicDamage(index: number): void {
+		const amount = this.hits[index].results.basicDamage!.value
+		this.target.incrementDamage(amount, this.damagePoolID)
+	}
+
+	applyTotalDamage(): void {
+		const amount = this.injury
+		this.target.incrementDamage(amount, this.damagePoolID)
+	}
+
+	get injury(): number {
+		return this.hits
+			.map(it => it.results)
+			.map(it => it.injury!.value)
+			.reduce((acc, cur) => acc + cur, 0)
+	}
 
 	// === Attacker ===
 
@@ -220,6 +245,10 @@ class DamageCalculator implements IDamageCalculator {
 
 	set damagePoolOverride(value: string | undefined) {
 		this.overrides.damagePool = this.damageType.pool_id === value ? undefined : value
+	}
+
+	get damagePools(): TargetPool[] {
+		return this.target.pools
 	}
 
 	// --- Damage Type ---
@@ -362,6 +391,40 @@ class DamageCalculator implements IDamageCalculator {
 		this.overrides.isHalfDamage = this.damageRoll.isHalfDamage === value ? undefined : value
 	}
 
+	// --- Shotgun ---
+	get isShotgunCloseRange(): boolean {
+		return this.overrides.isShotgunCloseRange === undefined
+			? this.damageRoll.isShotgunCloseRange
+			: this.overrides.isShotgunCloseRange
+	}
+
+	get isShotgunCloseRangeOverride(): boolean | undefined {
+		return this.overrides.isShotgunCloseRange
+	}
+
+	set isShotgunCloseRangeOverride(value: boolean | undefined) {
+		this.overrides.isShotgunCloseRange = this.damageRoll.isShotgunCloseRange === value ? undefined : value
+	}
+
+	private get multiplierForShotgun() {
+		// B409:At ranges less than 10% of 1/2D, don’t apply the RoF multiplier to RoF.
+		// Instead, multiply both basic damage dice and the target’s DR by half that value (round down).
+		return this.isShotgunCloseRange ? Math.floor(this.rofMultiplier / 2) : 1
+	}
+
+	// --- RoF Multiplier ---
+	get rofMultiplier(): number {
+		return this.overrides.rofMultiplier ?? this.damageRoll.rofMultiplier
+	}
+
+	get rofMultiplierOverride(): number | undefined {
+		return this.overrides.rofMultiplier
+	}
+
+	set rofMultiplierOverride(value: number | undefined) {
+		this.overrides.rofMultiplier = this.damageRoll.rofMultiplier === value ? undefined : value
+	}
+
 	// === Target ===
 
 	get hitLocationTable(): HitLocationTable {
@@ -388,24 +451,6 @@ class DamageCalculator implements IDamageCalculator {
 			return { value: 2, key: this.format("gurps.dmgcalc.description.diffuse_max", { value: 2 }) }
 		}
 		return { value: Infinity, key: "" }
-	}
-
-	// --- Damage Reduction ---
-	get damageReduction(): number {
-		return this.overrides.damageReduction ?? this.damageReductionValue
-	}
-
-	get damageReductionOverride(): number | undefined {
-		return this.overrides.damageReduction
-	}
-
-	set damageReductionOverride(value: number | undefined) {
-		this.overrides.damageReduction = this.damageReductionValue === value ? undefined : value
-	}
-
-	private get damageReductionValue() {
-		let trait = this.target.getTrait("Damage Reduction")
-		return trait ? trait.levels : 1
 	}
 
 	// --- Injury Tolerance ---
@@ -477,23 +522,27 @@ class DamageCalculator implements IDamageCalculator {
 		return 1
 	}
 
+	// --- Damage Reduction ---
+	get damageReduction(): number {
+		return this.overrides.damageReduction ?? this.damageReductionValue
+	}
+
+	get damageReductionOverride(): number | undefined {
+		return this.overrides.damageReduction
+	}
+
+	set damageReductionOverride(value: number | undefined) {
+		this.overrides.damageReduction = this.damageReductionValue === value ? undefined : value
+	}
+
+	private get damageReductionValue() {
+		let trait = this.target.getTrait("Damage Reduction")
+		return trait ? trait.levels : 1
+	}
+
 	// --- Other Attack Properties ---
 	get isTightBeamBurning(): boolean {
 		return this.damageType === DamageTypes.burn && this.damageModifier === "tbb"
-	}
-
-	get rofMultiplier(): number {
-		return this.damageRoll.rofMultiplier
-	}
-
-	get isShotgunCloseRange(): boolean {
-		return this.damageRoll.isShotgunCloseRange
-	}
-
-	get multiplierForShotgun() {
-		// B409:At ranges less than 10% of 1/2D, don’t apply the RoF multiplier to RoF.
-		// Instead, multiply both basic damage dice and the target’s DR by half that value (round down).
-		return this.isShotgunCloseRange ? Math.floor(this.rofMultiplier / 2) : 1
 	}
 
 	get isKnockbackOnly() {
@@ -1541,14 +1590,16 @@ type Overrides = {
 }
 
 type ContainerOverrides = {
-	isHalfDamage: boolean | undefined
-	isInternalExplosion: boolean | undefined
-	isExplosion: boolean | undefined
-	range: number | undefined
 	armorDivisor: number | undefined
 	damagePool: string | undefined
 	damageReduction: number | undefined
 	damageType: DamageType | undefined
 	injuryTolerance: string | undefined
+	isExplosion: boolean | undefined
+	isHalfDamage: boolean | undefined
+	isInternalExplosion: boolean | undefined
+	isShotgunCloseRange: boolean | undefined
+	range: number | undefined
+	rofMultiplier: number | undefined
 	vulnerability: number | undefined
 }

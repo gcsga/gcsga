@@ -431,9 +431,9 @@ class DamageTargetActor implements DamageTarget {
 		return result as string
 	}
 
-	incrementDamage(delta: number): void {
+	incrementDamage(delta: number, damagePoolId: string): void {
 		const attributes = [...(this.actor as CharacterGURPS).system.attributes]
-		const index = attributes.findIndex(it => it.attr_id === "hp")
+		const index = attributes.findIndex(it => it.attr_id === damagePoolId)
 		attributes[index].damage = attributes[index].damage! + delta
 		this.actor.update({
 			"system.attributes": attributes,

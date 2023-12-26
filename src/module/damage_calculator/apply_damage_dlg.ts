@@ -166,6 +166,12 @@ class ApplyDamageDialog extends Application {
 				this.calculator.rangeOverride = isNaN(value) ? undefined : value
 				break
 			}
+
+			case "override-rofMultiplier": {
+				const value = parseInt(target.value)
+				this.calculator.rofMultiplierOverride = isNaN(value) ? undefined : value
+				break
+			}
 		}
 
 		this.render(true)
@@ -184,11 +190,11 @@ class ApplyDamageDialog extends Application {
 				break
 
 			case "apply-basic":
-				this.calculator.target.incrementDamage(this.calculator.hits[0].results.rawDamage!.value)
+				this.calculator.applyBasicDamage(parseInt(target.dataset.index))
 				break
 
 			case "apply-injury":
-				this.calculator.target.incrementDamage(this.calculator.hits[0].results.injury!.value)
+				this.calculator.applyTotalDamage()
 				break
 
 			case "reset-form":
@@ -210,6 +216,10 @@ class ApplyDamageDialog extends Application {
 
 			case "override-isHalfDamage":
 				this.calculator.isHalfDamageOverride = target.checked
+				break
+
+			case "override-isShotgunCloseRange":
+				this.calculator.isShotgunCloseRangeOverride = target.checked
 				break
 		}
 

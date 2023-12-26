@@ -52,10 +52,6 @@
 				}
 			}
 
-			button {
-				height: 100%;
-			}
-
 			* {
 				align-self: center;
 			}
@@ -66,8 +62,8 @@
 		}
 
 		input[data-action="override-basic"],
-		input[name="rofMultiplier"],
-		input[name="range"],
+		input[data-action="override-rofMultiplier"],
+		input[data-action="override-range"],
 		input[data-action="override-woundingmod"],
 		input[data-action="override-vulnerability"],
 		input[name="injury"],
@@ -191,7 +187,7 @@
 			.table {
 				border: 1px solid rgb(var(--color-header));
 				display: grid;
-				grid-template-columns: max-content min-content 1fr;
+				grid-template-columns: auto min-content auto;
 
 				> div:not(.header) {
 					background-color: rgb(var(--color-content));
