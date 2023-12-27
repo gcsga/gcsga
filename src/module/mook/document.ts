@@ -1,5 +1,5 @@
 import { Attribute, AttributeDefObj, AttributeObj, AttributeType } from "@module/attribute"
-import { DamageProgression, gid, SETTINGS, SYSTEM_NAME } from "@module/data"
+import { ActorType, DamageProgression, gid, ItemType, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { DiceGURPS } from "@module/dice"
 import { damageProgression } from "@util"
 import {
@@ -14,6 +14,9 @@ import {
 	MookTrait,
 } from "./data"
 import { MoveTypeDefObj } from "@module/move_type"
+import { CharacterSource, Posture } from "@actor"
+import { ManeuverID, MeleeWeaponSource, RangedWeaponSource, SkillGURPS, SkillSource, SpellSource, TraitSource } from "@item"
+import { ItemSourceGURPS } from "@module/config"
 
 export class Mook {
 	protected variableResolverExclusions: Map<string, boolean> = new Map()
@@ -54,8 +57,18 @@ export class Mook {
 
 	swing!: DiceGURPS
 
+	text: {
+		traits: string,
+		skills: string,
+		spells: string,
+		melee: string,
+		ranged: string,
+		equipment: string,
+		catchall: string
+	}
+
 	update(data: any): void {
-		mergeObject(this, data)
+		Object.assign(this, mergeObject(this, data))
 		this.attributes = this.getAttributes()
 	}
 
@@ -82,13 +95,23 @@ export class Mook {
 		this.other_equipment = data?.other_equipment ?? []
 		this.notes = data?.notes ?? []
 		this.profile = data?.profile ?? {
-			name: "Bad Guy",
+			name: "",
 			description: "",
 			title: "",
 			height: "",
 			weight: "",
 			SM: 0,
 			portrait: foundry.CONST.DEFAULT_TOKEN,
+			userdesc: ""
+		}
+		this.text = {
+			traits: "",
+			skills: "",
+			spells: "",
+			melee: "",
+			ranged: "",
+			equipment: "",
+			catchall: "",
 		}
 		if (this.attributes.has(gid.Strength)) {
 			this.thrust = damageProgression.thrustFor(this.settings.damage_progression, this.attributes.get("st")!.max)

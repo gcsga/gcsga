@@ -12,11 +12,16 @@ export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSour
 
 	_source!: SourceType
 
+	// @ts-expect-error this is in fact always defined
+	private _dummyActor: VariableResolver | null
+
 	system!: SourceType["system"]
+
 
 	constructor(data: ItemDataGURPS | any, context: Context<Actor> & ItemConstructionContextGURPS = {}) {
 		if (context.gurps?.ready) {
 			super(data, context)
+			this._dummyActor = null
 		} else {
 			mergeObject(context, {
 				gurps: {

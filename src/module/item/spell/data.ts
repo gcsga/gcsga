@@ -15,7 +15,7 @@ export interface SpellData extends Omit<SpellSource, "effects">, SpellSystemData
 
 export interface SpellSystemData extends ItemGCSSystemData {
 	prereqs: PrereqList
-	difficulty: `${string}\${Difficulty}`
+	difficulty: `${string}/${Difficulty}`
 	tech_level: string
 	tech_level_required: boolean
 	college: Array<string>

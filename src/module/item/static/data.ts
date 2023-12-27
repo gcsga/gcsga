@@ -6,7 +6,7 @@ export type StaticItemSource = BaseItemSourceGURPS<ItemType.LegacyEquipment, Sta
 
 // Export class StaticItemData extends BaseItemDataGURPS<StaticItemGURPS> {}
 
-export interface StaticItemData extends Omit<StaticItemSource, "effects">, StaticItemSystemData {
+export interface StaticItemData extends StaticItemSource, StaticItemSystemData {
 	readonly type: StaticItemSource["type"]
 	data: StaticItemSystemData
 

@@ -3,17 +3,20 @@
 		text-align: center;
 	}
 	#attributes {
-		display: grid;
-		grid-template: "primary secondary";
-		#primary_attributes {
-			grid-area: "primary";
-		}
-		#secondary_attributes {
-			grid-area: "secondary";
-		}
-		> div {
-			background-color: rgb(var(--color-content));
-			border: 2px solid rbg(var(--color-header));
+		.content {
+			display: grid;
+			grid-template: "primary secondary";
+			#primary_attributes {
+				grid-area: "primary";
+			}
+			#secondary_attributes {
+				grid-area: "secondary";
+			}
+			border: 1px solid rgba(var(--color-control-edge));
+			> div {
+				background-color: rgb(var(--color-content));
+				border: 2px solid rbg(var(--color-header));
+			}
 		}
 	}
 	.fieldblock {
@@ -39,5 +42,9 @@
 			margin: 2px;
 			height: 180px;
 		}
+	}
+	#buttons {
+		display: flex;
+		justify-content: space-evenly;
 	}
 }

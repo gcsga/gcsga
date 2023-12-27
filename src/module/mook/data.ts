@@ -35,6 +35,7 @@ export interface MookProfile {
 	weight: string
 	SM: number
 	portrait: string
+	userdesc: string
 }
 
 interface _MookItem {
@@ -91,8 +92,8 @@ export interface MookRanged extends MookWeapon {
 	shots: string
 	bulk: string
 	recoil: string
-	reference: string
-	reference_highlight: string
+	// reference: string
+	// reference_highlight: string
 }
 
 export interface MookEquipment extends _MookItem {
