@@ -282,7 +282,6 @@
 
 						<div class="label">{{localize "gurps.dmgcalc.hit_location"}}</div>
 						<div class="field no-stretch location">
-							{{print this}}
 							<select
 								name="hitLocation"
 								class="{{overridden this.locationIdOverride}}"
@@ -323,6 +322,7 @@
 								<input
 									id="flexible"
 									type="checkbox"
+									class="{{overridden this.flexibleArmorOverride}}"
 									data-action="location-flexible"
 									data-index="{{@index}}"
 									{{checked this.flexibleArmorOverride}}
@@ -342,7 +342,7 @@
 						</div>
 						<div class="label ref" data-pdf="B47">B47</div>
 
-						<div id="results" style="grid-column: span 3;">
+						<div id="results">
 							<div id="effects">
 							</div>
 

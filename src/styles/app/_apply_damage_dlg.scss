@@ -78,7 +78,6 @@
 
 		.input-wrapper {
 			border: 1px solid rgba(var(--color-control-edge));
-			// padding: 1px 3px;
 			padding-left: 3px;
 			display: inline-block;
 			border-radius: 3px 0 0 3px;
@@ -133,19 +132,6 @@
 			color: rgb(var(--color-on-warning)) !important;
 		}
 
-		// .pdf {
-		// 	color: rgba(var(--color-text-dark-inactive), 1);
-		// 	text-decoration: none;
-		// 	font-size: 80%;
-		// 	text-align: left;
-
-		// 	&:hover {
-		// 		color: blue;
-		// 		text-decoration: underline;
-		// 		font-weight: 500;
-		// 	}
-		// }
-
 		#target {
 			padding: 2px 16px;
 
@@ -169,6 +155,7 @@
 		}
 
 		#results {
+			grid-column: span 3;
 			display: grid;
 			grid-template-columns: 1fr 2fr;
 			row-gap: 4px;

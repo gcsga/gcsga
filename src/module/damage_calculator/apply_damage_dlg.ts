@@ -102,12 +102,16 @@ class ApplyDamageDialog extends Application {
 		const locationDamage = this.calculator.hits[index]
 
 		switch (target.dataset.action) {
+			case "override-woundingmod":
+				locationDamage.woundingModifierOverride = isNaN(floatValue) ? undefined : floatValue
+				break
+
 			case "location-select":
-				locationDamage.locationIdOverride = target.value
+				locationDamage.locationNameOverride = target.value
 				break
 
 			case "hardened-select":
-				// this.calculator.hardenedDROverride = target.value
+				locationDamage.hardenedDROverride = intValue
 				break
 
 			case "override-dr":
@@ -128,10 +132,6 @@ class ApplyDamageDialog extends Application {
 
 			case "damagepool-select":
 				this.calculator.damagePoolOverride = target.value
-				break
-
-			case "override-woundingmod":
-				locationDamage.woundingModifierOverride = isNaN(floatValue) ? undefined : floatValue
 				break
 
 			case "override-vulnerability":
@@ -168,7 +168,7 @@ class ApplyDamageDialog extends Application {
 
 		switch (target.dataset.action) {
 			case "location-random":
-				locationDamage.locationIdOverride = await this._rollRandomLocation()
+				locationDamage.locationNameOverride = await this._rollRandomLocation()
 				break
 
 			case "location-flexible":

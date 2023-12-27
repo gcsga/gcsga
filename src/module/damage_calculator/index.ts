@@ -50,8 +50,8 @@ interface DamageRoll {
 
 interface DamageHit {
 	/**
-	 * The body_plan location id, or "Default" or "Random". The DamageCalculator will resolve "Default" or "Random" to
-	 * a real location id.
+	 * The body_plan location table_name, or "Default" or "Random". The DamageCalculator will resolve "Default" or
+	 * "Random" to a real location id.
 	 */
 	locationId: string | DefaultHitLocations
 	basicDamage: number

@@ -1533,6 +1533,7 @@
 			"description": {
 				"armor_divisor": "Armor Divisor ({divisor})",
 				"armor_divisor_ignores": "Armor Divisor (Ignores DR)",
+				"armor_divisor_collateral": "Collateral Damage",
 				"blunt_trauma": "Blunt Trauma",
 				"damage_location": "{type}, {location}",
 				"damage_reduction": "= {injury} ÷ {reduction}",
@@ -1543,7 +1544,8 @@
 				"explosion_range": "Explosion; {range} yards",
 				"fatigue": "Fatigue ignores Hit Location",
 				"half_damage": "Ranged, 1/2D",
-				"ignores_dr": "Ignores DR",
+				"hardened_dr": "Armor Divisor ({divisor}) & Hardened DR ({level})",
+				"ignores_dr": "Armor Divisor (Ignores DR)",
 				"knockback_only": "Knockback only",
 				"large_area_injury": "Large Injury Area",
 				"location_max": "{location}",
@@ -1566,7 +1568,7 @@
 			"override": "Override",
 			"random_location_roll": "Rolling Hit Location",
 			"range": "Range (yards)",
-			"rof": "RoF",
+			"rof": "RoF Multiplier",
 			"roll": "Damage Roll",
 			"shotgun": "Shotgun, close",
 			"substep": {

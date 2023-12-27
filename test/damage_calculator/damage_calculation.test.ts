@@ -1,5 +1,4 @@
 /* eslint-disable jest/no-disabled-tests */
-import { Extremity, Head, Limb } from "@module/damage_calculator/damage_calculator"
 import { DamageAttacker, DamageRoll, DefaultHitLocations } from "@module/damage_calculator"
 import { DamageTypes, AnyPiercingType } from "@module/damage_calculator/damage_type"
 import { InjuryEffectType } from "@module/damage_calculator/injury_effect"
@@ -18,6 +17,11 @@ import {
 	_create,
 } from "./common"
 
+const Head = ["Skull", "Eye", "Face"]
+const Limb = ["Arm", "Leg"]
+const Extremity = ["Hand", "Foot"]
+const Torso = "Torso"
+
 // Add real tests here.
 describe("Damage calculator", () => {
 	let _attacker: DamageAttacker
@@ -35,7 +39,7 @@ describe("Damage calculator", () => {
 	let _leg: DamageHitLocation
 	let _hand: DamageHitLocation
 	let _foot: DamageHitLocation
-	const locations = ["groin", "vitals", "neck", ...Head, ...Limb, ...Extremity]
+	const locations = ["Groin", "Vitals", "Neck", ...Head, ...Limb, ...Extremity]
 
 	beforeEach(() => {
 		_attacker = new _Attacker()
@@ -45,7 +49,7 @@ describe("Damage calculator", () => {
 		_roll.armorDivisor = 1
 		_roll.damageType = DamageTypes.cr
 		_roll.dice = new DiceGURPS("2d")
-		_roll.hits[0] = { basicDamage: 8, locationId: "torso" }
+		_roll.hits[0] = { basicDamage: 8, locationId: "Torso" }
 
 		_torso = new DamageHitLocation(_target, ".locations.0", {
 			choice_name: "Torso",
@@ -98,40 +102,40 @@ describe("Damage calculator", () => {
 		})
 
 		_neck = new DamageHitLocation(_target, ".locations.5", {
-			choice_name: "Face",
+			choice_name: "Neck",
 			description: "",
 			dr_bonus: 0,
-			table_name: "Face",
+			table_name: "Neck",
 			hit_penalty: -5,
-			id: "face",
+			id: "neck",
 			slots: 1,
 		})
 
 		_groin = new DamageHitLocation(_target, ".locations.6", {
-			choice_name: "Face",
+			choice_name: "Groin",
 			description: "",
 			dr_bonus: 0,
-			table_name: "Face",
+			table_name: "Groin",
 			hit_penalty: -5,
-			id: "face",
+			id: "groin",
 			slots: 1,
 		})
 
 		_arm = new DamageHitLocation(_target, ".locations.7", {
-			choice_name: "Right Arm",
+			choice_name: "Arm",
 			description: "",
 			dr_bonus: 0,
-			table_name: "Right Arm",
+			table_name: "Arm",
 			hit_penalty: -2,
 			id: "arm",
 			slots: 1,
 		})
 
 		_leg = new DamageHitLocation(_target, ".locations.8", {
-			choice_name: "Right Leg",
+			choice_name: "Leg",
 			description: "",
 			dr_bonus: 0,
-			table_name: "Right Leg",
+			table_name: "Leg",
 			hit_penalty: -2,
 			id: "leg",
 			slots: 2,
@@ -604,7 +608,7 @@ describe("Damage calculator", () => {
 
 		it("For a major wound to the torso, you must make a HT roll. Failure means you’re stunned and knocked down; failure by 5+ means you pass out.", () => {
 			_target.hitPoints.value = 12
-			_roll.hits[0].locationId = "torso"
+			_roll.hits[0].locationId = "Torso"
 			_roll.hits[0].basicDamage = 7
 
 			const calc = _create(_roll, _target)
@@ -832,7 +836,7 @@ describe("Damage calculator", () => {
 	describe("B398: Hit Location", () => {
 		describe("Vitals.", () => {
 			beforeEach(() => {
-				_roll.hits[0].locationId = "vitals"
+				_roll.hits[0].locationId = "Vitals"
 			})
 
 			it("Increase the wounding modifier for an impaling or any piercing attack to ×3.", () => {
@@ -876,7 +880,7 @@ describe("Damage calculator", () => {
 
 		describe("Skull or Eye. (For eye, treat as a skull hit without the extra DR 2!)", () => {
 			it("The wounding modifier for all attacks increases to ×4.", () => {
-				for (const location of ["skull", "eye"]) {
+				for (const location of ["Skull", "Eye"]) {
 					_roll.hits[0].locationId = location
 
 					let types = [
@@ -897,7 +901,7 @@ describe("Damage calculator", () => {
 			})
 
 			it("Knockdown (stun) rolls are at -10.", () => {
-				for (const location of ["skull", "eye"]) {
+				for (const location of ["Skull", "Eye"]) {
 					_roll.hits[0].locationId = location
 
 					let types = [
@@ -924,7 +928,7 @@ describe("Damage calculator", () => {
 			})
 
 			it("B420: Whenever you are struck in the head for enough injury to cause a shock penalty, you must make an immediate HT roll to avoid knockdown.", () => {
-				for (const location of ["skull", "eye"]) {
+				for (const location of ["Skull", "Eye"]) {
 					_roll.hits[0].locationId = location
 
 					_roll.hits[0].basicDamage = 1
@@ -946,7 +950,7 @@ describe("Damage calculator", () => {
 			})
 
 			it("None of these effects apply to toxic damage.", () => {
-				for (const location of ["skull", "eye"]) {
+				for (const location of ["Skull", "Eye"]) {
 					_roll.hits[0].locationId = location
 
 					_roll.hits[0].basicDamage = 8
@@ -960,7 +964,7 @@ describe("Damage calculator", () => {
 			})
 
 			it("Fatigue damage always ignores hit location.", () => {
-				for (const location of ["skull", "eye"]) {
+				for (const location of ["Skull", "Eye"]) {
 					_roll.hits[0].locationId = location
 
 					_roll.damageType = DamageTypes.fat
@@ -972,7 +976,7 @@ describe("Damage calculator", () => {
 
 			it("Injury over HP/10 blinds the eye.", () => {
 				_target.hitPoints.value = 50
-				_roll.hits[0].locationId = "eye"
+				_roll.hits[0].locationId = "Eye"
 
 				_roll.hits[0].basicDamage = 1
 				_roll.damageType = DamageTypes.cr
@@ -996,7 +1000,7 @@ describe("Damage calculator", () => {
 
 		describe("Face.", () => {
 			beforeEach(() => {
-				_roll.hits[0].locationId = "face"
+				_roll.hits[0].locationId = "Face"
 			})
 
 			it("Corrosion damage (only) gets a ×1.5 wounding modifier.", () => {
@@ -1052,7 +1056,7 @@ describe("Damage calculator", () => {
 			})
 
 			it("If (Corrosive damage) inflicts a major wound, it also blinds one eye...", () => {
-				_roll.hits[0].locationId = "face"
+				_roll.hits[0].locationId = "Face"
 				_roll.hits[0].basicDamage = 8
 				_roll.damageType = DamageTypes.cor
 				let calc = _create(_roll, _target)
@@ -1068,7 +1072,7 @@ describe("Damage calculator", () => {
 			})
 
 			it("...(both eyes on damage greater than full HP).", () => {
-				_roll.hits[0].locationId = "face"
+				_roll.hits[0].locationId = "Face"
 				_roll.hits[0].basicDamage = 15
 				_roll.damageType = DamageTypes.cor
 				let calc = _create(_roll, _target)
@@ -1085,7 +1089,7 @@ describe("Damage calculator", () => {
 
 		describe("Neck.", () => {
 			beforeEach(() => {
-				_roll.hits[0].locationId = "neck"
+				_roll.hits[0].locationId = "Neck"
 			})
 
 			it("Increase the wounding multiplier of crushing and corrosion attacks to ×1.5", () => {
@@ -1134,7 +1138,7 @@ describe("Damage calculator", () => {
 
 		describe("Groin.", () => {
 			beforeEach(() => {
-				_roll.hits[0].locationId = "groin"
+				_roll.hits[0].locationId = "Groin"
 			})
 
 			it("Treat as a torso hit...", () => {
@@ -1218,7 +1222,7 @@ describe("Damage calculator", () => {
 			})
 
 			it("Reduce the wounding multiplier of large piercing, huge piercing, and impaling damage to ×1.", () => {
-				for (const id of Limb) {
+				for (const id of ["Arm", "Leg"]) {
 					_roll.hits[0].locationId = id
 					_roll.damageType = DamageTypes["pi-"]
 					// Let calc = _create(_roll, _target)
@@ -1232,7 +1236,7 @@ describe("Damage calculator", () => {
 			})
 
 			it("(Other damage types are unchanged.)", () => {
-				for (const id of Limb) {
+				for (const id of ["Arm", "Leg"]) {
 					_roll.hits[0].locationId = id
 					_roll.hits[0].basicDamage = 6
 
@@ -1266,7 +1270,7 @@ describe("Damage calculator", () => {
 			})
 
 			it("Any major wound (loss of over 1/2 HP from one blow) cripples the limb...", () => {
-				for (const id of Limb) {
+				for (const id of ["Arm", "Leg"]) {
 					_roll.hits[0].locationId = id
 
 					_roll.hits[0].basicDamage = 10
@@ -1289,7 +1293,7 @@ describe("Damage calculator", () => {
 			})
 
 			it("...but damage beyond the minimum required to inflict a crippling injury is lost.", () => {
-				for (const id of Limb) {
+				for (const id of ["Arm", "Leg"]) {
 					_roll.hits[0].locationId = id
 
 					_target.hitPoints.value = 15
@@ -1309,7 +1313,7 @@ describe("Damage calculator", () => {
 			})
 
 			it("Reduce the wounding multiplier of large piercing, huge piercing, and impaling damage to ×1.", () => {
-				for (const id of Extremity) {
+				for (const id of ["Hand", "Foot"]) {
 					_roll.hits[0].locationId = id
 					for (const type of [DamageTypes.imp, DamageTypes["pi++"], DamageTypes["pi+"]]) {
 						_roll.damageType = type
@@ -1321,7 +1325,7 @@ describe("Damage calculator", () => {
 			})
 
 			it("(Other damage types are unchanged.)", () => {
-				for (const id of Extremity) {
+				for (const id of ["Hand", "Foot"]) {
 					_roll.hits[0].locationId = id
 					_roll.hits[0].basicDamage = 6
 
@@ -1355,7 +1359,7 @@ describe("Damage calculator", () => {
 			})
 
 			it("damage over 1/3 HP in one blow inflicts a crippling major wound...", () => {
-				for (const id of Extremity) {
+				for (const id of ["Hand", "Foot"]) {
 					_roll.hits[0].locationId = id
 
 					_roll.hits[0].basicDamage = 8
@@ -1378,7 +1382,7 @@ describe("Damage calculator", () => {
 			})
 
 			it("...but damage beyond the minimum required to inflict a crippling injury is lost.", () => {
-				for (const id of Extremity) {
+				for (const id of ["Hand", "Foot"]) {
 					_roll.hits[0].locationId = id
 
 					_target.hitPoints.value = 15
@@ -1546,7 +1550,7 @@ describe("Damage calculator", () => {
 			})
 
 			it("Piercing and impaling damage to any location other than eye, skull, or vitals uses wounding modifiers from Injury to Unliving, Homogenous, and Diffuse Targets.", () => {
-				_roll.hits[0].locationId = "skull"
+				_roll.hits[0].locationId = "Skull"
 				let types = [DamageTypes.imp, ...AnyPiercingType]
 				for (const type of types) {
 					_roll.damageType = type
@@ -1613,7 +1617,7 @@ describe("Damage calculator", () => {
 
 			it("(Eyes can still be crippled.)", () => {
 				_target.hitPoints.value = 50
-				_roll.hits[0].locationId = "eye"
+				_roll.hits[0].locationId = "Eye"
 
 				_roll.hits[0].basicDamage = 5
 				_roll.damageType = DamageTypes.cr
@@ -1715,7 +1719,7 @@ describe("Damage calculator", () => {
 
 			it("(Eyes can still be crippled.)", () => {
 				_target.hitPoints.value = 10
-				_roll.hits[0].locationId = "eye"
+				_roll.hits[0].locationId = "Eye"
 
 				_roll.hits[0].basicDamage = 5
 				_roll.damageType = DamageTypes.imp
@@ -1762,7 +1766,7 @@ describe("Damage calculator", () => {
 		})
 
 		describe("No Brain.", () => {
-			const theLocations = ["skull", "eye"]
+			const theLocations = ["Skull", "Eye"]
 			beforeEach(() => {
 				_target._traits.push(new _TargetTrait("No Brain", 0))
 			})
@@ -1834,7 +1838,7 @@ describe("Damage calculator", () => {
 
 			it("Hits to the eye can cripple the eye.", () => {
 				_target.hitPoints.value = 20
-				_roll.hits[0].locationId = "eye"
+				_roll.hits[0].locationId = "Eye"
 
 				_roll.hits[0].basicDamage = 1
 				_roll.damageType = DamageTypes.cr
@@ -1857,7 +1861,7 @@ describe("Damage calculator", () => {
 		})
 
 		describe("No Vitals.", () => {
-			const theLocations = ["vitals", "groin"]
+			const theLocations = ["Vitals", "Groin"]
 			beforeEach(() => {
 				_target._traits.push(new _TargetTrait("No Vitals", 0))
 			})
@@ -1928,7 +1932,7 @@ describe("Damage calculator", () => {
 				_target.hitPoints.value = 18
 				_arm._map.set("all", 3)
 
-				_roll.hits[0].locationId = "arm"
+				_roll.hits[0].locationId = "Arm"
 				_roll.hits[0].basicDamage = 20
 				_roll.damageType = DamageTypes.cr
 

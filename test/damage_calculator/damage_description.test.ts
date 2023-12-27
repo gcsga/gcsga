@@ -1,9 +1,10 @@
 /* eslint-disable jest/no-disabled-tests */
 import { DamageAttacker, DamageRoll } from "@module/damage_calculator"
-import { Extremity, Head, Limb } from "@module/damage_calculator/damage_calculator"
 import { DamageType, DamageTypes } from "@module/damage_calculator/damage_type"
 import { DiceGURPS } from "@module/dice"
 import { DamageHitLocation, _Attacker, _DamageRoll, _Target, _create } from "./common"
+
+const Torso = "Torso"
 
 // Add real tests here.
 describe("Damage calculator", () => {
@@ -22,23 +23,22 @@ describe("Damage calculator", () => {
 	let _leg: DamageHitLocation
 	let _hand: DamageHitLocation
 	let _foot: DamageHitLocation
-	const locations = ["groin", "vitals", "neck", ...Head, ...Limb, ...Extremity]
 
 	beforeEach(() => {
 		_attacker = new _Attacker()
 		_target = new _Target()
 		_roll = new _DamageRoll()
 		_roll.attacker = _attacker
-		_roll.hits[0] = { basicDamage: 0, locationId: "torso" }
+		_roll.hits[0] = { basicDamage: 0, locationId: Torso }
 		_roll.armorDivisor = 1
 		_roll.damageType = DamageTypes.cr
 		_roll.dice = new DiceGURPS("2d")
 
 		_torso = new DamageHitLocation(_target, ".locations.0", {
-			choice_name: "Torso",
+			choice_name: Torso,
 			description: "",
 			dr_bonus: 0,
-			table_name: "Torso",
+			table_name: Torso,
 			hit_penalty: 0,
 			id: "torso",
 			slots: 2,
@@ -85,40 +85,40 @@ describe("Damage calculator", () => {
 		})
 
 		_neck = new DamageHitLocation(_target, ".locations.5", {
-			choice_name: "Face",
+			choice_name: "Neck",
 			description: "",
 			dr_bonus: 0,
-			table_name: "Face",
+			table_name: "Neck",
 			hit_penalty: -5,
-			id: "face",
+			id: "neck",
 			slots: 1,
 		})
 
 		_groin = new DamageHitLocation(_target, ".locations.6", {
-			choice_name: "Face",
+			choice_name: "Groin",
 			description: "",
 			dr_bonus: 0,
-			table_name: "Face",
+			table_name: "Groin",
 			hit_penalty: -5,
-			id: "face",
+			id: "groin",
 			slots: 1,
 		})
 
 		_arm = new DamageHitLocation(_target, ".locations.7", {
-			choice_name: "Right Arm",
+			choice_name: "Arm",
 			description: "",
 			dr_bonus: 0,
-			table_name: "Right Arm",
+			table_name: "Arm",
 			hit_penalty: -2,
 			id: "arm",
 			slots: 1,
 		})
 
 		_leg = new DamageHitLocation(_target, ".locations.8", {
-			choice_name: "Right Leg",
+			choice_name: "Leg",
 			description: "",
 			dr_bonus: 0,
-			table_name: "Right Leg",
+			table_name: "Leg",
 			hit_penalty: -2,
 			id: "leg",
 			slots: 2,
@@ -161,7 +161,7 @@ describe("Damage calculator", () => {
 	describe("B378: Damage Roll.", () => {
 		it("The result of the damage roll is the hit’s “basic damage.”", () => {
 			_roll.hits[0].basicDamage = 8
-			_roll.hits[0].locationId = "torso"
+			_roll.hits[0].locationId = Torso
 			let calc = _create(_roll, _target)
 
 			expect(calc.hits[0].results.steps).toMatchObject([
@@ -510,7 +510,7 @@ describe("Damage calculator", () => {
 			beforeEach(() => {
 				_torso._map.set("all", 5)
 				_target.injuryTolerance = "Unliving"
-				_roll.hits[0].locationId = "torso"
+				_roll.hits[0].locationId = Torso
 			})
 
 			it("This gives impaling and huge piercing a wounding modifier of ×1; ...", () => {
@@ -935,7 +935,7 @@ describe("Damage calculator", () => {
 			_roll.hits[0].basicDamage = 6
 		})
 		it("...but damage beyond the minimum required to inflict a crippling injury is lost.", () => {
-			_roll.hits[0].locationId = "arm"
+			_roll.hits[0].locationId = "Arm"
 
 			_target.hitPoints.value = 15
 			_roll.hits[0].basicDamage = 10
@@ -943,18 +943,18 @@ describe("Damage calculator", () => {
 			let calc = _create(_roll, _target)
 			expect(calc.hits[0].results.steps).toMatchObject([
 				{ substep: "gurps.dmgcalc.substep.basic_damage", text: "10", notes: "gurps.dmgcalc.damage_pool.hp" },
-				{ substep: "gurps.dmgcalc.substep.damage_resistance", text: "0", notes: "Right Arm" },
+				{ substep: "gurps.dmgcalc.substep.damage_resistance", text: "0", notes: "Arm" },
 				{ substep: "gurps.dmgcalc.substep.penetrating", text: "10", notes: "= 10 – 0" },
 				{
 					substep: "gurps.dmgcalc.substep.wounding_modifier",
 					text: "×1",
-					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"Right Arm"}',
+					notes: 'gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.cr","location":"Arm"}',
 				},
 				{ substep: "gurps.dmgcalc.substep.injury", text: "10", notes: "= 10 × 1" },
 				{
 					substep: "gurps.dmgcalc.substep.max_location",
 					text: "8",
-					notes: 'gurps.dmgcalc.description.location_max:{"location":"Right Arm"}',
+					notes: 'gurps.dmgcalc.description.location_max:{"location":"Arm"}',
 				},
 			])
 		})
