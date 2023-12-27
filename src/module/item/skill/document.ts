@@ -1,5 +1,5 @@
 import { ItemGCS } from "@item/gcs"
-import { ActorType, Difficulty, gid } from "@module/data"
+import { Difficulty, gid } from "@module/data"
 import { SkillDefault } from "@module/default"
 import { TooltipGURPS } from "@module/tooltip"
 import { difficultyRelativeLevel, inlineNote, LocalizeGURPS, parseInlineNoteExpressions } from "@util"
@@ -10,16 +10,13 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 
 	unsatisfied_reason = ""
 
-	private _dummyActor: (typeof CONFIG.GURPS.Actor.documentClasses)[ActorType.Character] | null = null
-
 	// Getters
 	get formattedName(): string {
 		const name: string = this.name ?? ""
 		const specialization = this.specialization
 		const TL = this.techLevel
-		return `${name}${this.system.tech_level_required ? `/TL${TL ?? ""}` : ""}${
-			specialization ? ` (${specialization})` : ""
-		}`
+		return `${name}${this.system.tech_level_required ? `/TL${TL ?? ""}` : ""}${specialization ? ` (${specialization})` : ""
+			}`
 	}
 
 	get secondaryText(): string {
@@ -123,15 +120,6 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		return this.calculateLevel().level - att + effectiveAtt
 	}
 
-	// Used for defaults
-	get dummyActor(): (typeof CONFIG.GURPS.Actor.documentClasses)[ActorType.Character] | null {
-		return this._dummyActor
-	}
-
-	set dummyActor(actor: (typeof CONFIG.GURPS.Actor.documentClasses)[ActorType.Character] | null) {
-		this._dummyActor = actor
-	}
-
 	// Point & Level Manipulation
 	calculateLevel(): SkillLevel {
 		const none = { level: -Infinity, relative_level: 0, tooltip: new TooltipGURPS() }
@@ -167,6 +155,7 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 				level = -Infinity
 				relative_level = 0
 		}
+
 		if (level === -Infinity) return none
 		level += relative_level
 		if (this.difficulty !== Difficulty.Wildcard && def && level < def.adjustedLevel) {

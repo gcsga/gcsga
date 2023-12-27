@@ -1,0 +1,134 @@
+<div id="description">
+	<div class="header">{{localize "gurps.character.description"}}</div>
+	<div class="fieldblock">
+		<div class="label">{{localize "gurps.character.gender"}}</div>
+		<div class="field">
+			<input
+				type="text"
+				name="system.profile.gender"
+				data-dtype="String"
+				value="{{system.profile.gender}}"
+				{{disabled (not editing)}}
+			/>
+		</div>
+		<div class="label">{{localize "gurps.character.age"}}</div>
+		<div class="field">
+			<input
+				type="text"
+				name="system.profile.age"
+				data-dtype="String"
+				value="{{system.profile.age}}"
+				{{disabled (not editing)}}
+			/>
+		</div>
+		<div class="label">{{localize "gurps.character.birthday"}}</div>
+		<div class="field">
+			<input
+				type="text"
+				name="system.profile.birthday"
+				data-dtype="String"
+				value="{{system.profile.birthday}}"
+				{{disabled (not editing)}}
+			/>
+		</div>
+		<div class="label">{{localize "gurps.character.religion"}}</div>
+		<div class="field">
+			<input
+				type="text"
+				name="system.profile.religion"
+				data-dtype="String"
+				value="{{system.profile.religion}}"
+				{{disabled (not editing)}}
+			/>
+		</div>
+	</div>
+	<div class="fieldblock">
+		<div class="label">{{localize "gurps.character.height"}}</div>
+		<div class="field">
+			<input
+				type="text"
+				name="system.profile.height"
+				data-dtype="String"
+				value="{{height}}"
+				{{disabled (not editing)}}
+			/>
+		</div>
+		<div class="label">{{localize "gurps.character.weight"}}</div>
+		<div class="field">
+			<input
+				type="text"
+				name="system.profile.weight"
+				data-dtype="String"
+				value="{{weight}}"
+				{{disabled (not editing)}}
+			/>
+		</div>
+		<div class="label">{{localize "gurps.character.sm"}}</div>
+		<div
+			class="field rollable"
+			data-type="modifier"
+			data-comment="{{localize 'gurps.modifier.size.size' size=(signed actor.adjustedSizeModifier)}}"
+			data-modifier="{{system.profile.SM}}"
+		>
+			<input
+				type="text"
+				name="system.profile.SM"
+				data-dtype="Number"
+				value="{{signed actor.adjustedSizeModifier}}"
+				{{disabled (not editing)}}
+			/>
+		</div>
+		<div class="label">{{localize "gurps.character.tech_level"}}</div>
+		<div class="field">
+			<input
+				type="text"
+				name="system.profile.tech_level"
+				data-dtype="String"
+				value="{{system.profile.tech_level}}"
+				{{disabled (not editing)}}
+			/>
+		</div>
+	</div>
+	<div class="fieldblock">
+		<div class="label">{{localize "gurps.character.hair"}}</div>
+		<div class="field">
+			<input
+				type="text"
+				name="system.profile.hair"
+				data-dtype="String"
+				value="{{system.profile.hair}}"
+				{{disabled (not editing)}}
+			/>
+		</div>
+		<div class="label">{{localize "gurps.character.eyes"}}</div>
+		<div class="field">
+			<input
+				type="text"
+				name="system.profile.eyes"
+				data-dtype="String"
+				value="{{system.profile.eyes}}"
+				{{disabled (not editing)}}
+			/>
+		</div>
+		<div class="label">{{localize "gurps.character.skin"}}</div>
+		<div class="field">
+			<input
+				type="text"
+				name="system.profile.skin"
+				data-dtype="String"
+				value="{{system.profile.skin}}"
+				{{disabled (not editing)}}
+			/>
+		</div>
+		<div class="label">{{localize "gurps.character.handedness"}}</div>
+		<div class="field">
+			<input
+				type="text"
+				name="system.profile.handedness"
+				data-dtype="String"
+				value="{{system.profile.handedness}}"
+				{{disabled (not editing)}}
+			/>
+		</div>
+	</div>
+</div>

@@ -115,6 +115,8 @@ export class SkillDefault {
 				return this.finalLevel(best)
 			case gid.Skill:
 				return this.finalLevel(this.bestFast(actor, require_points, excludes))
+			case gid.Ten:
+				return this.finalLevel(10)
 			default:
 				level = actor.resolveAttributeCurrent(this.type)
 				if (rule_of_20) level = Math.min(level, 20)
