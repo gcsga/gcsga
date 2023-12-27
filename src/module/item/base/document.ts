@@ -18,6 +18,7 @@ export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSour
 
 	system!: SourceType["system"]
 
+
 	constructor(data: ItemDataGURPS | any, context: Context<Actor> & ItemConstructionContextGURPS = {}) {
 		if (context.gurps?.ready) {
 			super(data, context)

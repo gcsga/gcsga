@@ -16,9 +16,8 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		const name: string = this.name ?? ""
 		const specialization = this.specialization
 		const TL = this.techLevel
-		return `${name}${this.system.tech_level_required ? `/TL${TL ?? ""}` : ""}${
-			specialization ? ` (${specialization})` : ""
-		}`
+		return `${name}${this.system.tech_level_required ? `/TL${TL ?? ""}` : ""}${specialization ? ` (${specialization})` : ""
+			}`
 	}
 
 	get secondaryText(): string {
