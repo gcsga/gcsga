@@ -99,7 +99,9 @@ interface LocationDamage {
 	readonly basicDamage: number
 	basicDamageOverride: number | undefined
 
-	locationId: string | undefined
+	readonly locationId: string
+	locationIdOverride: string | undefined
+
 	readonly isLargeAreaInjury: boolean
 
 	readonly damageResistance: KeyValue
@@ -804,19 +806,19 @@ class DamageCalculator implements IDamageCalculator {
 
 	/**
 	 *
-	 * @param hitLocation
+	 * @param locationDamage
 	 * @returns
 	 */
-	woundingModifierAndReason(hitLocation: LocationDamage): KeyValue {
-		if (hitLocation.woundingModifierOverride)
-			return { value: hitLocation.woundingModifierOverride, key: this.format("gurps.dmgcalc.override") }
+	woundingModifierAndReason(locationDamage: LocationDamage): KeyValue {
+		if (locationDamage.woundingModifierOverride)
+			return { value: locationDamage.woundingModifierOverride, key: this.format("gurps.dmgcalc.override") }
 
 		if (this.woundingModifierByDamageType) return this.woundingModifierByDamageType
 
-		const modifierAndReason = this.woundingModifierByHitLocation(hitLocation.locationId!)
+		const modifierAndReason = this.woundingModifierByHitLocation(locationDamage.locationId!)
 		if (modifierAndReason) return modifierAndReason
 
-		const location = this.hitLocationTable.locations.find(it => it.id === hitLocation.locationId)
+		const location = this.hitLocationTable.locations.find(it => it.id === locationDamage.locationId)
 		return {
 			value: this.damageType.woundingModifier,
 			key: this.format("gurps.dmgcalc.description.damage_location", {
@@ -839,12 +841,12 @@ class DamageCalculator implements IDamageCalculator {
 	/**
 	 * Adjusts the wounding modifier for injury tolerance.
 	 * @param woundingModifier - The original wounding modifier.
-	 * @param hitLocation - The location damage.
+	 * @param locationDamage - The location damage.
 	 * @returns The calculator step if the wounding modifier is adjusted, otherwise undefined.
 	 */
 	private adjustWoundingModifierForInjuryTolerance(
 		woundingModifier: number,
-		hitLocation: LocationDamage
+		locationDamage: LocationDamage
 	): CalculatorStep | undefined {
 		let mod = undefined
 
@@ -857,19 +859,19 @@ class DamageCalculator implements IDamageCalculator {
 		// undead, are less vulnerable to impaling and piercing damage.
 		// B400: Hit location has its usual effect, save that piercing and impaling damage to any location other than
 		// the eye, skull, or vitals uses the Unliving wounding modifiers.
-		if (this.isUnliving && !["skull", "eye", "vitals"].includes(hitLocation.locationId!))
+		if (this.isUnliving && !["skull", "eye", "vitals"].includes(locationDamage.locationId!))
 			mod = { value: this.damageType.unliving, key: this.format("gurps.dmgcalc.tolerance.unliving") }
 
 		// B400: No Brain: Hits to the skull get no extra knockdown or wounding modifier. Hits to the eye can cripple
 		// the eye; otherwise, treat them as face hits, not skull hits.
-		if (this.target.hasTrait("No Brain") && ["skull", "eye"].includes(hitLocation.locationId!))
+		if (this.target.hasTrait("No Brain") && ["skull", "eye"].includes(locationDamage.locationId!))
 			mod = { value: this.damageType.woundingModifier, key: this.format("gurps.dmgcalc.description.no_brain") }
 
 		/**
 		 * TODO Diffuse: Exception: Area-effect, cone, and explosion attacks cause normal injury.
 		 */
 		// B400: Diffuse: Ignore all knockdown or wounding modifiers for hit location.
-		if (this.isDiffuse && this.woundingModifierByHitLocation(hitLocation.locationId!)) {
+		if (this.isDiffuse && this.woundingModifierByHitLocation(locationDamage.locationId!)) {
 			mod = { value: this.damageType.woundingModifier, key: this.format("gurps.dmgcalc.description.diffuse") }
 		}
 
@@ -1045,37 +1047,13 @@ class HitLocationDamage implements LocationDamage {
 		this.calculator = calculator
 	}
 
-	calculator: DamageCalculator
-
-	hit: DamageHit
-
-	get locationId(): string {
-		return this.hit.locationId
-	}
-
-	set locationId(value: string) {
-		this.hit.locationId = value
-	}
-
-	private get vulnerabilities() {
-		return this.calculator.vulnerabilities
-	}
-
 	private format(arg0: string, data?: any): string {
 		return this.calculator.format(arg0, data)
 	}
 
-	get damageResistance(): KeyValue {
-		return {
-			key: `${this.hitLocation?.choice_name}`,
-			value:
-				this.overrides.rawDR ?? HitLocationUtil.getHitLocationDR(this.hitLocation, this.calculator.damageType),
-		}
-	}
+	calculator: DamageCalculator
 
-	get damageType(): DamageType {
-		return this.calculator.damageType
-	}
+	hit: DamageHit
 
 	/*
 	 * TODO Sometime in the future, I want to save the overrides and vulnerabilities on the target in a map keyed by
@@ -1088,6 +1066,7 @@ class HitLocationDamage implements LocationDamage {
 		basicDamage: undefined,
 		flexible: undefined,
 		hardenedDR: undefined,
+		locationId: undefined,
 		rawDR: undefined,
 		woundingModifier: undefined,
 	}
@@ -1133,28 +1112,150 @@ class HitLocationDamage implements LocationDamage {
 		return results
 	}
 
+	// --- Basic Damage ---
+	get basicDamage(): number {
+		return this.overrides.basicDamage ?? this.hit.basicDamage
+	}
+
+	get basicDamageOverride(): number | undefined {
+		return this.overrides.basicDamage
+	}
+
+	set basicDamageOverride(value: number | undefined) {
+		this.overrides.basicDamage = this.hit.basicDamage === value ? undefined : value
+	}
+
+	// --- Wounding Modifier ---
+	// TODO Move this to DamageCalculator
+	get woundingModifier(): number {
+		let woundingModifier = 1
+
+		if (this.overrides.woundingModifier) {
+			woundingModifier = this.overrides.woundingModifier
+		} else if (this.calculator.woundingModifierByDamageType) {
+			const modifier = this.calculator.woundingModifierByDamageType
+			woundingModifier = modifier.value
+		} else if (this.calculator.woundingModifierByHitLocation(this.locationId)) {
+			const modifier = this.calculator.woundingModifierByHitLocation(this.locationId)
+			woundingModifier = modifier ? modifier.value : 1
+		} else {
+			woundingModifier = this.calculator.damageType.woundingModifier
+		}
+		return woundingModifier
+	}
+
+	get woundingModifierOverride(): number | undefined {
+		return this.overrides.woundingModifier
+	}
+
+	set woundingModifierOverride(value: number | undefined) {
+		this.overrides.woundingModifier = this.woundingModifier === value ? undefined : value
+	}
+
+	// --- Hit Location ---
+	get locationId(): string {
+		return this.overrides.locationId ?? this.hit.locationId
+	}
+
+	get locationIdOverride(): string | undefined {
+		return this.overrides.locationId
+	}
+
+	set locationIdOverride(value: string | undefined) {
+		this.overrides.locationId = this.hit.locationId === value ? undefined : value
+	}
+
+	get hitLocation(): HitLocation | undefined {
+		return HitLocationUtil.getHitLocation(this.calculator.hitLocationTable, this.locationId)
+	}
+
+	get isLargeAreaInjury(): boolean {
+		return this.locationId === DefaultHitLocations.LargeArea
+	}
+
+	// --- Damage Resistance ---
+	get damageResistance(): KeyValue {
+		return {
+			key: `${this.hitLocation?.choice_name}`,
+			value:
+				this.overrides.rawDR ?? HitLocationUtil.getHitLocationDR(this.hitLocation, this.calculator.damageType),
+		}
+	}
+
+	set damageResistanceOverride(dr: number | undefined) {
+		this.overrides.rawDR =
+			HitLocationUtil.getHitLocationDR(this.hitLocation, this.calculator.damageType) === dr ? undefined : dr
+	}
+
+	get damageResistanceOverride() {
+		return this.overrides.rawDR
+	}
+
+	// --- Flexible Armor ---
+	get isFlexibleArmor(): boolean {
+		return this.overrides.flexible === undefined ? this._isFlexibleArmor : this.overrides.flexible
+	}
+
+	get _isFlexibleArmor(): boolean {
+		const hitLocation = HitLocationUtil.getHitLocation(this.calculator.hitLocationTable, this.locationId)
+		return HitLocationUtil.isFlexibleArmor(hitLocation)
+	}
+
+	get flexibleArmorOverride(): boolean | undefined {
+		return this.overrides.flexible
+	}
+
+	set flexibleArmorOverride(value: boolean | undefined) {
+		this.overrides.flexible = this._isFlexibleArmor === value ? undefined : value
+	}
+
+	// --- Hardened DR ---
+	get hardenedDRLevel(): number {
+		return (
+			this.overrides.hardenedDR ??
+			this.calculator.target.getTrait("Damage Resistance")?.getModifier("Hardened")?.levels ??
+			0
+		)
+	}
+
+	get hardenedDROverride(): number | undefined {
+		return this.overrides.hardenedDR
+	}
+
+	set hardenedDROverride(level: number | undefined) {
+		this.overrides.hardenedDR = level
+	}
+
+	get damageTypeKey(): string {
+		return this.calculator.damageTypeKey
+	}
+
+	private get vulnerabilities() {
+		return this.calculator.vulnerabilities
+	}
+
 	/**
 	 * @returns the maximum injury based on hit location, or Infinity if none.
 	 */
 	maximumInjury(maxHitPoints: number): KeyValue {
+		const location = this.calculator.hitLocationTable.locations.find(it => it.id === this.locationId)
+
 		if (Limb.includes(this.locationId)) {
 			const max = Math.floor(maxHitPoints / 2) + 1
 			return {
 				value: max,
 				key: this.format("gurps.dmgcalc.description.location_max", {
-					value: max,
-					location: this.locationId,
+					location: location?.choice_name,
 				}),
 			}
 		}
 
-		if (Extremity.includes(this.hit.locationId)) {
+		if (Extremity.includes(this.locationId)) {
 			const max = Math.floor(maxHitPoints / 3) + 1
 			return {
 				value: max,
 				key: this.format("gurps.dmgcalc.description.location_max", {
-					value: max,
-					location: this.hit.locationId,
+					location: location?.choice_name,
 				}),
 			}
 		}
@@ -1216,7 +1317,7 @@ class HitLocationDamage implements LocationDamage {
 			// 	 "No Vitals" Injury Tolerance trait.
 			if (
 				this.calculator.damageType === DamageTypes.cr &&
-				this.hit.locationId === "groin" &&
+				this.locationId === "groin" &&
 				!this.calculator.target.hasTrait("No Vitals")
 			)
 				modifier *= 2
@@ -1294,121 +1395,24 @@ class HitLocationDamage implements LocationDamage {
 	}
 
 	private miscellaneousEffects(results: DamageResults): InjuryEffect[] {
-		if (this.hit.locationId === "eye" && results.injury!.value > this.calculator.target.hitPoints.value / 10)
+		if (this.locationId === "eye" && results.injury!.value > this.calculator.target.hitPoints.value / 10)
 			return [new InjuryEffect(InjuryEffectType.eyeBlinded)]
 
-		if (this.hit.locationId === "face" && this.isMajorWound(results)) {
+		if (this.locationId === "face" && this.isMajorWound(results)) {
 			return results.injury!.value > this.calculator.target.hitPoints.value
 				? [new InjuryEffect(InjuryEffectType.blinded)]
 				: [new InjuryEffect(InjuryEffectType.eyeBlinded)]
 		}
 
-		if (Limb.includes(this.hit.locationId) && this.isMajorWound(results)) {
+		if (Limb.includes(this.locationId) && this.isMajorWound(results)) {
 			return [new InjuryEffect(InjuryEffectType.limbCrippled)]
 		}
 
-		if (Extremity.includes(this.hit.locationId) && this.isMajorWound(results)) {
+		if (Extremity.includes(this.locationId) && this.isMajorWound(results)) {
 			return [new InjuryEffect(InjuryEffectType.limbCrippled)]
 		}
 
 		return []
-	}
-
-	// --- Basic Damage ---
-
-	get basicDamage(): number {
-		return this.overrides.basicDamage ?? this.hit.basicDamage
-	}
-
-	get basicDamageOverride(): number | undefined {
-		return this.overrides.basicDamage
-	}
-
-	set basicDamageOverride(value: number | undefined) {
-		this.overrides.basicDamage = this.hit.basicDamage === value ? undefined : value
-	}
-
-	// --- Damage Resistance ---
-
-	set damageResistanceOverride(dr: number | undefined) {
-		this.overrides.rawDR =
-			HitLocationUtil.getHitLocationDR(this.hitLocation, this.calculator.damageType) === dr ? undefined : dr
-	}
-
-	get damageResistanceOverride() {
-		return this.overrides.rawDR
-	}
-
-	// --- Hardened DR ---
-
-	get hardenedDRLevel(): number {
-		return (
-			this.overrides.hardenedDR ??
-			this.calculator.target.getTrait("Damage Resistance")?.getModifier("Hardened")?.levels ??
-			0
-		)
-	}
-
-	get hardenedDROverride(): number | undefined {
-		return this.overrides.hardenedDR
-	}
-
-	set hardenedDROverride(level: number | undefined) {
-		this.overrides.hardenedDR = level
-	}
-
-	// --- Wounding Modifier ---
-
-	get woundingModifier(): number {
-		let woundingModifier = 1
-		// let reason = undefined
-
-		if (this.overrides.woundingModifier) {
-			woundingModifier = this.overrides.woundingModifier
-			// reason = "Override"
-		} else if (this.calculator.woundingModifierByDamageType) {
-			const modifier = this.calculator.woundingModifierByDamageType
-			woundingModifier = modifier.value
-			// reason = modifier[1]
-		} else if (this.calculator.woundingModifierByHitLocation(this.locationId)) {
-			const modifier = this.calculator.woundingModifierByHitLocation(this.hit.locationId)
-			woundingModifier = modifier ? modifier.value : 1
-			// reason = modifier[1]
-		} else {
-			woundingModifier = this.calculator.damageType.woundingModifier
-			// reason = `${this.damageType.key}, ${this.damageRoll.locationId}`
-		}
-		return woundingModifier
-	}
-
-	get woundingModifierOverride(): number | undefined {
-		return this.overrides.woundingModifier
-	}
-
-	set woundingModifierOverride(value: number | undefined) {
-		this.overrides.woundingModifier = this.woundingModifier === value ? undefined : value
-	}
-	// --- ---
-
-	get hitLocation(): HitLocation | undefined {
-		return HitLocationUtil.getHitLocation(this.calculator.hitLocationTable, this.hit.locationId)
-	}
-
-	get isFlexibleArmor(): boolean {
-		const hitLocation = HitLocationUtil.getHitLocation(this.calculator.hitLocationTable, this.hit.locationId)
-		return this.overrides.flexible ?? HitLocationUtil.isFlexibleArmor(hitLocation)
-	}
-
-	set flexibleArmorOverride(value: boolean | undefined) {
-		this.overrides.flexible = value
-	}
-
-	get isLargeAreaInjury(): boolean {
-		return this.hit.locationId === DefaultHitLocations.LargeArea
-	}
-
-	get damageTypeKey(): string {
-		return this.calculator.damageTypeKey
 	}
 }
 
@@ -1582,6 +1586,7 @@ export class DamageResults {
 }
 
 type Overrides = {
+	locationId: string | undefined
 	basicDamage: number | undefined
 	flexible: boolean | undefined
 	hardenedDR: number | undefined

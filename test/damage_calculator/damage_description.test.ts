@@ -954,7 +954,7 @@ describe("Damage calculator", () => {
 				{
 					substep: "gurps.dmgcalc.substep.max_location",
 					text: "8",
-					notes: 'gurps.dmgcalc.description.location_max:{"value":8,"location":"arm"}',
+					notes: 'gurps.dmgcalc.description.location_max:{"location":"Right Arm"}',
 				},
 			])
 		})

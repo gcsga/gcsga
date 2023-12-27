@@ -245,7 +245,8 @@
 
 						<div class="label">{{localize "gurps.character.basic_damage"}}</div>
 						<div class="field no-ref">
-							<div><input
+							<div>
+								<input
 									type="number"
 									value="{{this.basicDamage}}"
 									step="any"
@@ -254,6 +255,12 @@
 									size="4"
 									class="{{overridden this.basicDamageOverride}}"
 								/>
+								<button
+									type="button"
+									class="gcs-checkmark"
+									data-index="{{@index}}"
+									data-action="apply-basic"
+								>{{localize "gurps.misc.apply"}}</button>
 							</div>
 							<div>
 								<label class="label" for="override-woundingmod">Modifier
@@ -271,20 +278,17 @@
 									</span>
 								</label>
 							</div>
-							<div>
-								<button
-									type="button"
-									class="gcs-checkmark"
-									data-index="{{@index}}"
-									data-action="apply-basic"
-								>{{localize "gurps.misc.apply"}}</button>
-							</div>
 						</div>
 
 						<div class="label">{{localize "gurps.dmgcalc.hit_location"}}</div>
 						<div class="field no-stretch location">
 							{{print this}}
-							<select name="hitLocation" data-index="{{@index}}" data-action="location-select">
+							<select
+								name="hitLocation"
+								class="{{overridden this.locationIdOverride}}"
+								data-index="{{@index}}"
+								data-action="location-select"
+							>
 								{{selectOptions
 									@root.calculator.hitLocationChoice
 									selected=this.locationId
@@ -321,7 +325,7 @@
 									type="checkbox"
 									data-action="location-flexible"
 									data-index="{{@index}}"
-									{{checked this.isFlexibleArmor}}
+									{{checked this.flexibleArmorOverride}}
 								/>{{localize "gurps.dmgcalc.flexible"}}</label>
 						</div>
 						<div class="label ref" data-pdf="B378">B378</div>
@@ -329,7 +333,6 @@
 						<div class="label">{{localize "gurps.dmgcalc.hardened_dr"}}</div>
 						<div class="field">
 							<select
-								name="hardened"
 								data-action="hardened-select"
 								data-index="{{@index}}"
 								class="{{overridden this.hardenedDROverride}}"

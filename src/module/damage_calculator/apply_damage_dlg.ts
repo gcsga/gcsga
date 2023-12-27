@@ -8,15 +8,13 @@ import { HitLocationUtil } from "./hitlocation_utils"
 
 class ApplyDamageDialog extends Application {
 	static async create(roll: DamageRoll, target: DamageTarget, options = {}): Promise<ApplyDamageDialog> {
-		const dialog = new ApplyDamageDialog(roll, target, options)
-
-		dialog.calculator.hits.forEach(async it => {
+		roll.hits.forEach(async it => {
 			if (it.locationId === "Random") {
-				it.locationId = await dialog._rollRandomLocation()
+				it.locationId = await new ApplyDamageDialog(roll, target, options)._rollRandomLocation()
 			}
 		})
 
-		return dialog
+		return new ApplyDamageDialog(roll, target, options)
 	}
 
 	/**
@@ -98,80 +96,63 @@ class ApplyDamageDialog extends Application {
 	async _onApplyControlChange(event: JQuery.ChangeEvent, target: any): Promise<void> {
 		event.preventDefault()
 
-		switch (target.dataset.action) {
-			case "location-select": {
-				const value = parseInt(target.value)
-				// this.calculator.damageRoll.locationId = target.value
-				break
-			}
+		const intValue = parseInt(target.value)
+		const floatValue = parseFloat(target.value)
+		const index = parseInt(target.dataset.index)
+		const locationDamage = this.calculator.hits[index]
 
-			case "hardened-select": {
+		switch (target.dataset.action) {
+			case "location-select":
+				locationDamage.locationIdOverride = target.value
+				break
+
+			case "hardened-select":
 				// this.calculator.hardenedDROverride = target.value
 				break
-			}
 
-			case "override-dr": {
-				const value = parseInt(target.value)
-				// this.calculator.damageResistanceOverride = isNaN(value) ? undefined : value
+			case "override-dr":
+				locationDamage.damageResistanceOverride = isNaN(intValue) ? undefined : intValue
 				break
-			}
 
-			case "override-basic": {
-				const value = parseInt(target.value)
-				// this.calculator.basicDamageOverride = isNaN(value) ? undefined : value
+			case "override-basic":
+				locationDamage.basicDamageOverride = isNaN(intValue) ? undefined : intValue
 				break
-			}
 
-			case "armordivisor-select": {
-				const value = parseFloat(target.value)
-				this.calculator.armorDivisorOverride = isNaN(value) ? undefined : value
+			case "armordivisor-select":
+				this.calculator.armorDivisorOverride = isNaN(floatValue) ? undefined : floatValue
 				break
-			}
 
-			case "damagetype-select": {
+			case "damagetype-select":
 				this.calculator.damageTypeOverride = target.value
 				break
-			}
 
-			case "damagepool-select": {
+			case "damagepool-select":
 				this.calculator.damagePoolOverride = target.value
 				break
-			}
 
-			case "override-woundingmod": {
-				const value = parseFloat(target.value)
-				this.calculator.hits[0].woundingModifierOverride = isNaN(value) ? undefined : value
+			case "override-woundingmod":
+				locationDamage.woundingModifierOverride = isNaN(floatValue) ? undefined : floatValue
 				break
-			}
 
-			case "override-vulnerability": {
-				const value = parseInt(target.value)
-				this.calculator.vulnerabilityOverride = isNaN(value) ? undefined : value
+			case "override-vulnerability":
+				this.calculator.vulnerabilityOverride = isNaN(intValue) ? undefined : intValue
 				break
-			}
 
-			case "tolerance-select": {
+			case "tolerance-select":
 				this.calculator.injuryToleranceOverride = target.value
 				break
-			}
 
-			case "override-reduction": {
-				const value = parseFloat(target.value)
-				this.calculator.damageReductionOverride = isNaN(value) ? undefined : value
+			case "override-reduction":
+				this.calculator.damageReductionOverride = isNaN(floatValue) ? undefined : floatValue
 				break
-			}
 
-			case "override-range": {
-				const value = parseInt(target.value)
-				this.calculator.rangeOverride = isNaN(value) ? undefined : value
+			case "override-range":
+				this.calculator.rangeOverride = isNaN(intValue) ? undefined : intValue
 				break
-			}
 
-			case "override-rofMultiplier": {
-				const value = parseInt(target.value)
-				this.calculator.rofMultiplierOverride = isNaN(value) ? undefined : value
+			case "override-rofMultiplier":
+				this.calculator.rofMultiplierOverride = isNaN(intValue) ? undefined : intValue
 				break
-			}
 		}
 
 		this.render(true)
@@ -180,17 +161,22 @@ class ApplyDamageDialog extends Application {
 	async _onApplyControlClick(event: JQuery.ClickEvent, target: any): Promise<void> {
 		event.preventDefault()
 
+		const intValue = parseInt(target.value)
+		const floatValue = parseFloat(target.value)
+		const index = parseInt(target.dataset.index)
+		const locationDamage = this.calculator.hits[index]
+
 		switch (target.dataset.action) {
 			case "location-random":
-				// this.calculator.damageRoll.locationId = await this._rollRandomLocation()
+				locationDamage.locationIdOverride = await this._rollRandomLocation()
 				break
 
 			case "location-flexible":
-				// this.calculator.overrideFlexibleArmor(!this.calculator.isFlexibleArmor)
+				locationDamage.flexibleArmorOverride = target.checked
 				break
 
 			case "apply-basic":
-				this.calculator.applyBasicDamage(parseInt(target.dataset.index))
+				this.calculator.applyBasicDamage(intValue)
 				break
 
 			case "apply-injury":
@@ -202,8 +188,7 @@ class ApplyDamageDialog extends Application {
 				break
 
 			case "apply-vulnerability":
-				const index = parseInt(target.dataset.index)
-				this.calculator.applyVulnerability(index, target.checked)
+				this.calculator.applyVulnerability(intValue, target.checked)
 				break
 
 			case "override-isExplosion":
