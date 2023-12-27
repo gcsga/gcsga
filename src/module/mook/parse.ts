@@ -773,7 +773,7 @@ export class MookParser {
 				weight: "",
 				SM: 0,
 				portrait: "icons/svg/mystery-man.svg",
-				userdesc: "",
+				userdesc: ""
 			},
 			thrust: this.object.thrust,
 			swing: this.object.swing,

@@ -4,8 +4,6 @@ import { ItemType, SYSTEM_NAME } from "@module/data"
 import { Context } from "types/foundry/common/abstract/document.mjs"
 import { ItemData } from "types/foundry/common/data/module.mjs"
 import { BaseItemSourceGURPS, ItemConstructionContextGURPS, ItemFlags } from "./data"
-import { ItemDataConstructorData } from "types/foundry/common/data/data.mjs/itemData"
-import { MergeObjectOptions } from "types/foundry/common/utils/helpers.mjs"
 import { VariableResolver } from "@util"
 
 export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSourceGURPS> extends Item {
@@ -35,11 +33,16 @@ export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSour
 		}
 	}
 
-	override async update(
-		data: DeepPartial<ItemDataConstructorData | Record<string, unknown>>,
-		context?: DocumentModificationContext & MergeObjectOptions & { noPrepare?: boolean }
-	): Promise<this | undefined> {
-		return super.update(data, context)
+
+	// Used for defaults
+	// get dummyActor(): (typeof CONFIG.GURPS.Actor.documentClasses)[ActorType.Character] | null {
+	get dummyActor(): VariableResolver | null {
+		return this._dummyActor
+	}
+
+	// set dummyActor(actor: (typeof CONFIG.GURPS.Actor.documentClasses)[ActorType.Character] | null) {
+	set dummyActor(actor: VariableResolver) {
+		this._dummyActor = actor
 	}
 
 	static override async createDialog(

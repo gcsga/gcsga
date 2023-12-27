@@ -164,14 +164,11 @@ export class EquipmentContainerGURPS extends ItemGCS<EquipmentContainerSource> {
 		this.equipped = !this.equipped
 	}
 
-	protected _getCalcValues(): this["system"]["calc"] {
-		return {
-			...super._getCalcValues(),
-			weight: this.adjustedWeightFast,
-			extended_weight: this.extendedWeightFast,
-			value: this.adjustedValue,
-			extended_value: this.extendedValue,
-			disabled: this.isGreyedOut,
-		}
+	toggleOther(withParent = false) {
+		if (!this.parent) return
+		const updateData: any = { [`flags.${SYSTEM_NAME}.${ItemFlags.Other}`]: !this.getFlag(SYSTEM_NAME, ItemFlags.Other) }
+		if (!withParent) updateData[`flags.${SYSTEM_NAME}.${ItemFlags.Container}`] = null
+		const childData: { _id: string, [key: string]: any }[] = this.children.map(e => e.toggleOther(true))
+		return this.parent?.updateEmbeddedDocuments("Item", [{ _id: this.id, ...updateData }, ...childData])
 	}
 }

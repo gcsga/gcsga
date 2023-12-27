@@ -57,9 +57,9 @@ export class MookGeneratorSheet extends FormApplication {
 			primary_attributes,
 			secondary_attributes,
 			point_pools,
-			button_text: this.testing
-				? LocalizeGURPS.translations.gurps.system.mook.test
-				: LocalizeGURPS.translations.gurps.system.mook.create,
+			button_text: this.testing ?
+				LocalizeGURPS.translations.gurps.system.mook.test :
+				LocalizeGURPS.translations.gurps.system.mook.create,
 			text: {
 				traits: this.object.traits.toString(),
 				skills: this.object.skills.toString(),
@@ -67,8 +67,8 @@ export class MookGeneratorSheet extends FormApplication {
 				equipment: this.object.equipment.toString(),
 				melee: this.object.melee.toString(),
 				ranged: this.object.traits.toString(),
-				catchall: this.object.text.catchall,
-			},
+				catchall: this.object.text.catchall
+			}
 		})
 	}
 
@@ -88,7 +88,9 @@ export class MookGeneratorSheet extends FormApplication {
 
 	private _onImportText(event: JQuery.ClickEvent) {
 		event.preventDefault()
-		const data = MookParser.init(this.object.text.catchall, this.object).parseStatBlock(this.object.text.catchall)
+		const data = MookParser.init(this.object.text.catchall, this.object)
+			.parseStatBlock(this.object.text.catchall)
+		console.log(data)
 		this.object.update(data)
 		return this.render()
 	}
@@ -98,10 +100,12 @@ export class MookGeneratorSheet extends FormApplication {
 		if (this.testing) {
 			this.testing = !this.testMook()
 			return this.render()
-		} else return this.createMook()
+		}
+		else return this.createMook()
 	}
 
 	private testMook() {
+		console.log(this.object)
 		if (this.object.profile.name === "") {
 			ui.notifications?.error(LocalizeGURPS.translations.gurps.error.mook.name)
 			return false

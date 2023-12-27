@@ -77,7 +77,7 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 	}
 
 	skillLevel(tooltip?: TooltipGURPS): number {
-		const actor = (this.actor || this.dummyActor) as unknown as CharacterGURPS
+		const actor = this.actor || this.dummyActor
 		if (!actor) return 0
 		let primaryTooltip = new TooltipGURPS()
 		if (tooltip) primaryTooltip = tooltip

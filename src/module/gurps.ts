@@ -73,14 +73,7 @@ import {
 	TraitModifierSheet,
 	TraitSheet,
 } from "@item"
-import {
-	ActorSheetGURPS,
-	BaseActorGURPS,
-	CharacterSheetGURPS,
-	LootSheetGURPS,
-	MookSheetGURPS,
-	StaticCharacterSheetGURPS,
-} from "@actor"
+import { ActorSheetGURPS, BaseActorGURPS, CharacterSheetGURPS, LootSheetGURPS, StaticCharacterSheetGURPS } from "@actor"
 import { ActiveEffectGURPS } from "@module/effect"
 import { ModifierList } from "./mod_list"
 import { PDF } from "@module/pdf"
@@ -275,11 +268,6 @@ Hooks.once("init", async () => {
 		types: [ActorType.Character],
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.character_gcs"),
-	})
-	Actors.registerSheet(SYSTEM_NAME, MookSheetGURPS, {
-		types: [ActorType.Character],
-		makeDefault: false,
-		label: game.i18n.localize("gurps.system.sheet.mook"),
 	})
 	Actors.registerSheet(SYSTEM_NAME, MookGeneratorSheet, {
 		types: [ActorType.Character],
@@ -591,17 +579,12 @@ Hooks.on("renderPlayerList", function(_hotbar: any, element: JQuery<HTMLElement>
 })
 
 Hooks.on("renderHotbar", function (_hotbar: any, element: JQuery<HTMLElement>, _options: any) {
-	if (!game.ModifierBucket) return
-	game.ModifierBucket._injectHTML(element.parent("#ui-bottom"))
-	game.ModifierBucket.render()
+	if (!game.ModifierButton) return
+	game.ModifierButton._injectHTML(element.parent("#ui-bottom"))
+	game.ModifierButton.render()
 })
 
 Hooks.on("chatMessage", function (_chatlog: ChatLog, message: string, _data: any) {
-	return Chat.procesMessage(message)
-})
-
-Hooks.on(HooksGURPS.AddModifier, function () {
-	game.ModifierBucket.render()
-	game.ModifierList.render()
-	if (game.ModifierBucket.window.rendered) game.ModifierBucket.window.render()
+	Chat.procesMessage(message)
+	return message
 })
