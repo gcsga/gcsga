@@ -167,6 +167,16 @@ export class EquipmentGURPS extends ItemGCS<EquipmentSource> {
 	toggleState(): void {
 		this.equipped = !this.equipped
 	}
+
+	toggleOther(withParent = false) {
+		if (!this.parent) return
+		const updateData: any = { [`flags.${SYSTEM_NAME}.${ItemFlags.Other}`]: !this.getFlag(SYSTEM_NAME, ItemFlags.Other) }
+		if (!withParent) {
+			updateData[`flags.${SYSTEM_NAME}.${ItemFlags.Container}`] = null
+			return this.update(updateData)
+		}
+		return { _id: this.id, ...updateData }
+	}
 }
 
 export function extendedWeightAdjustedForModifiers(

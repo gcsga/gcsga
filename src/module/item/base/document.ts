@@ -4,17 +4,23 @@ import { ItemType, SYSTEM_NAME } from "@module/data"
 import { Context } from "types/foundry/common/abstract/document.mjs"
 import { ItemData } from "types/foundry/common/data/module.mjs"
 import { BaseItemSourceGURPS, ItemConstructionContextGURPS, ItemFlags } from "./data"
+import { VariableResolver } from "@util"
 
 export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSourceGURPS> extends Item {
 	_id!: string
 
 	_source!: SourceType
 
+	// @ts-expect-error this is in fact always defined
+	private _dummyActor: VariableResolver | null
+
 	system!: SourceType["system"]
+
 
 	constructor(data: ItemDataGURPS | any, context: Context<Actor> & ItemConstructionContextGURPS = {}) {
 		if (context.gurps?.ready) {
 			super(data, context)
+			this._dummyActor = null
 		} else {
 			mergeObject(context, {
 				gurps: {
@@ -25,6 +31,18 @@ export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSour
 			if (ItemConstructor) return new ItemConstructor(data, context)
 			throw Error(`Invalid Item Type "${data.type}"`)
 		}
+	}
+
+
+	// Used for defaults
+	// get dummyActor(): (typeof CONFIG.GURPS.Actor.documentClasses)[ActorType.Character] | null {
+	get dummyActor(): VariableResolver | null {
+		return this._dummyActor
+	}
+
+	// set dummyActor(actor: (typeof CONFIG.GURPS.Actor.documentClasses)[ActorType.Character] | null) {
+	set dummyActor(actor: VariableResolver) {
+		this._dummyActor = actor
 	}
 
 	static override async createDialog(

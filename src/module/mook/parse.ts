@@ -47,7 +47,7 @@ export class MookParser {
 
 	object: Mook
 
-	private _text: string
+	// private _text: string
 
 	private _object: MookData
 
@@ -55,7 +55,7 @@ export class MookParser {
 		this.text = text
 		this.object = object
 		this._object = this.resetObject
-		this._text = ""
+		// this._text = ""
 	}
 
 	static init(text?: string, object?: Mook) {
@@ -67,7 +67,7 @@ export class MookParser {
 	parseStatBlock(text: string): any {
 		this._object = this.resetObject
 		this.text = this.sanitizeStatBlock(text)
-		this._text = this.text
+		// this._text = this.text
 		// console.log(this._text)
 		this.parseAttacks()
 		this.parseAttributes()
@@ -76,6 +76,7 @@ export class MookParser {
 		this.parseSpells()
 		// this.parseEquipment()
 		this.parseAttacks(true)
+		this.object.text.catchall = this.text
 		// console.log("Leftover:")
 		// console.log(this.text)
 		// console.log(JSON.stringify(this.object.melee, null, "\t"))
@@ -590,7 +591,7 @@ export class MookParser {
 
 		weapons.split(";").forEach(t => {
 			const reference = ""
-			const reference_highlight = ""
+			// const reference_highlight = ""
 			let notes = ""
 			const parry = "0"
 			const block = "0"
@@ -700,8 +701,8 @@ export class MookParser {
 				modifier_per_die: 0,
 			}
 
-			// capture damage
-			;[damage, t] = this.parseDamage(t)
+				// capture damage
+				;[damage, t] = this.parseDamage(t)
 
 			// if damage parser captures anything after the name, add it as a note
 			if (t.match(/\{\{.*\}\}/)) {
@@ -722,7 +723,6 @@ export class MookParser {
 					bulk,
 					recoil,
 					reference,
-					reference_highlight,
 					strength: ST,
 					notes,
 					damage,
@@ -765,13 +765,14 @@ export class MookParser {
 			other_equipment: [],
 			notes: [],
 			profile: {
-				name: "Mook",
+				name: "",
 				description: "",
 				title: "",
 				height: "",
 				weight: "",
 				SM: 0,
 				portrait: "icons/svg/mystery-man.svg",
+				userdesc: ""
 			},
 			thrust: this.object.thrust,
 			swing: this.object.swing,

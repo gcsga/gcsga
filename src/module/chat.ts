@@ -14,14 +14,15 @@ export function parse(message: string): [string, string[]] {
 	return ["none", [message, "", message]]
 }
 
-export async function procesMessage(message: string) {
+export function procesMessage(message: string): boolean {
 	let [command, _match] = parse(message)
 	if (command === "none") return true
 	switch (command) {
 		case "mook":
-			await MookGeneratorSheet.init()
+			MookGeneratorSheet.init()
 			return false
 	}
+	return true
 }
 
 /**

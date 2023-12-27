@@ -71,7 +71,7 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 	}
 
 	skillLevel(tooltip?: TooltipGURPS): number {
-		const actor = this.actor
+		const actor = this.actor || this.dummyActor
 		if (!actor) return 0
 		let primaryTooltip = new TooltipGURPS()
 		if (tooltip) primaryTooltip = tooltip
@@ -236,7 +236,6 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 
 	exportSystemData(_keepOther: boolean): any {
 		const system = this.system
-		console.log(system)
 		// system.damage.base = new DiceGURPS(this.damage.base).toString(false)
 		// system.damage.fragmentation = new DiceGURPS(this.damage.fragmentation).toString(false)
 		return system

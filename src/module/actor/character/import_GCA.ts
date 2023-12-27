@@ -107,7 +107,7 @@ export class GCAImporter {
 			if (items.filter(e => e.type === "ritual_magic_spell").length > 0)
 				errorMessages.push(LocalizeGURPS.translations.gurps.error.import.ritual_magic_gca)
 
-			commit = { ...commit, ...{ items: items } }
+			commit = { ...commit, ...{ items: items as any } }
 		} catch (err) {
 			console.error(err)
 			errorMessages.push(

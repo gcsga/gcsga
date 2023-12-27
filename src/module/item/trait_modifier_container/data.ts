@@ -8,7 +8,7 @@ export type TraitModifierContainerSource = ItemGCSSource<
 
 export interface TraitModifierContainerData
 	extends Omit<TraitModifierContainerSource, "effects" | "items">,
-		TraitModifierContainerSystemData {
+	TraitModifierContainerSystemData {
 	readonly type: TraitModifierContainerSource["type"]
 	readonly _source: TraitModifierContainerSource
 }

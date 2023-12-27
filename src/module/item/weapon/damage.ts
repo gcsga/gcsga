@@ -9,7 +9,6 @@ import { DamageProgression, ItemType } from "@module/data"
 import { StrengthDamage } from "./data"
 import { BaseWeaponGURPS } from "./document"
 import { SkillDefault } from "@module/default"
-import { ContainerGURPS } from "@item/container"
 
 export class WeaponDamage {
 	parent!: BaseWeaponGURPS
@@ -58,9 +57,8 @@ export class WeaponDamage {
 			if (this.armor_divisor !== 1) buffer += `(${this.armor_divisor})`
 			if (this.modifier_per_die !== 0) {
 				if (buffer.length !== 0) buffer += " "
-				buffer += `(${this.modifier_per_die.signedString()} ${
-					LocalizeGURPS.translations.gurps.feature.per_die
-				})`
+				buffer += `(${this.modifier_per_die.signedString()} ${LocalizeGURPS.translations.gurps.feature.per_die
+					})`
 			}
 			const t = this.type.trim()
 			if (t !== "") buffer += ` ${t}`
@@ -91,9 +89,9 @@ export class WeaponDamage {
 		if (maxST > 0 && maxST < st) st = maxST
 		let base = new DiceGURPS({ sides: 6, multiplier: 1 })
 		if (this.base) base = this.base
-		const container = this.parent.container as ContainerGURPS
+		const container = this.parent.container
 		let levels = 0
-		const tOk = container.type === ItemType.Trait
+		const tOk = container?.type === ItemType.Trait || false
 		if (tOk && (container as any).isLeveled) {
 			levels = (container as any).levels
 			multiplyDice((container as any).levels, base)
@@ -134,7 +132,7 @@ export class WeaponDamage {
 			}
 		}
 		const bonusSet: Map<WeaponDamageBonus | WeaponDRDivisorBonus, boolean> = new Map()
-		const tags = (container as any).tags
+		const tags = (container as any)?.tags
 		if (bestDef !== null) {
 			actor.addWeaponWithSkillBonusesFor(
 				bestDef.name || "",
@@ -152,7 +150,7 @@ export class WeaponDamage {
 			for (const f of (container as any).features) {
 				this.extractWeaponBonus(f, bonusSet, base.count, levels, tooltip)
 			}
-		if ([ItemType.Trait, ItemType.Equipment, ItemType.EquipmentContainer].includes(container.type as any)) {
+		if ([ItemType.Trait, ItemType.Equipment, ItemType.EquipmentContainer].includes(container?.type as any)) {
 			for (const mod of (container as any).modifiers) {
 				for (const f of mod.features) {
 					this.extractWeaponBonus(f, bonusSet, base.count, levels, tooltip)

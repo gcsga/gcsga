@@ -4,16 +4,19 @@ import { SYSTEM_NAME } from "@module/data"
 import { DiceGURPS } from "@module/dice"
 import { LocalizeGURPS } from "@util"
 import { Mook } from "./document"
+import { MookParser } from "./parse"
 
 export class MookGeneratorSheet extends FormApplication {
 	config: CharacterSheetConfig | null = null
 
 	object: Mook
 
+	testing = true
+
 	constructor(options?: Partial<ApplicationOptions>) {
 		super(options)
 		this.object = new Mook()
-		;(game as any).mook = this.object
+			; (game as any).mook = this.object
 	}
 
 	static get defaultOptions(): FormApplicationOptions {
@@ -22,7 +25,7 @@ export class MookGeneratorSheet extends FormApplication {
 			minimizable: true,
 			resizable: false,
 			width: 800,
-			height: 960,
+			height: "auto",
 			template: `systems/${SYSTEM_NAME}/templates/mook-generator/sheet.hbs`,
 			classes: ["mook-generator", "gurps"],
 			closeOnSubmit: false,
@@ -37,6 +40,8 @@ export class MookGeneratorSheet extends FormApplication {
 
 	activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
+		html.find("#import").on("click", event => this._onImportText(event))
+		html.find("#create").on("click", event => this._onCreateMook(event))
 	}
 
 	static async init(): Promise<unknown> {
@@ -53,6 +58,18 @@ export class MookGeneratorSheet extends FormApplication {
 			primary_attributes,
 			secondary_attributes,
 			point_pools,
+			button_text: this.testing ?
+				LocalizeGURPS.translations.gurps.system.mook.test :
+				LocalizeGURPS.translations.gurps.system.mook.create,
+			text: {
+				traits: this.object.traits.toString(),
+				skills: this.object.skills.toString(),
+				spells: this.object.spells.toString(),
+				equipment: this.object.equipment.toString(),
+				melee: this.object.melee.toString(),
+				ranged: this.object.traits.toString(),
+				catchall: this.object.text.catchall
+			}
 		})
 	}
 
@@ -68,6 +85,39 @@ export class MookGeneratorSheet extends FormApplication {
 				else secondary_attributes.push(a)
 			})
 		return [primary_attributes, secondary_attributes, point_pools]
+	}
+
+	private _onImportText(event: JQuery.ClickEvent) {
+		event.preventDefault()
+		const data = MookParser.init(this.object.text.catchall, this.object)
+			.parseStatBlock(this.object.text.catchall)
+		console.log(data)
+		this.object.update(data)
+		return this.render()
+	}
+
+	private _onCreateMook(event: JQuery.ClickEvent) {
+		event.preventDefault()
+		if (this.testing) {
+			this.testing = !this.testMook()
+			return this.render()
+		}
+		else return this.createMook()
+	}
+
+	private testMook() {
+		console.log(this.object)
+		if (this.object.profile.name === "") {
+			ui.notifications?.error(LocalizeGURPS.translations.gurps.error.mook.name)
+			return false
+		}
+		return true
+	}
+
+	private async createMook() {
+		const actor = await this.object.createActor()
+		await actor?.sheet?.render(true)
+		return this.close()
 	}
 
 	protected override _getHeaderButtons(): Application.HeaderButton[] {

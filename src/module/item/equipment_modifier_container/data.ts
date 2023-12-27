@@ -8,7 +8,7 @@ export type EquipmentModifierContainerSource = ItemGCSSource<
 
 export interface EquipmentModifierContainerData
 	extends Omit<EquipmentModifierContainerSource, "effects" | "items">,
-		EquipmentModifierContainerSystemData {
+	EquipmentModifierContainerSystemData {
 	readonly type: EquipmentModifierContainerSource["type"]
 	data: EquipmentModifierContainerSystemData
 	readonly _source: EquipmentModifierContainerSource
