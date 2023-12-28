@@ -280,7 +280,7 @@ abstract class RollTypeHandler {
 		if (sticky === false) {
 			await user.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, [])
 			await user.setFlag(SYSTEM_NAME, UserFlags.ModifierTotal, 0)
-			const button = game.ModifierButton
+			const button = game.ModifierBucket
 			return button.render()
 		}
 	}
@@ -309,7 +309,7 @@ class ModifierRollTypeHandler extends RollTypeHandler {
 			modifier: data.modifier,
 			tags: [],
 		}
-		return game.ModifierButton.window.addModifier(mod)
+		return game.ModifierBucket.window.addModifier(mod)
 	}
 }
 

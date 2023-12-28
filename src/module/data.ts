@@ -40,7 +40,7 @@ export enum SETTINGS {
 	STATIC_IMPORT_HP_FP = "import_hp_fp",
 	STATIC_IMPORT_BODY_PLAN = "import_bodyplan",
 	STATIC_AUTOMATICALLY_SET_IGNOREQTY = "auto-ignore-qty",
-	MODIFIER_MODE = "modifier_mode",
+	// MODIFIER_MODE = "modifier_mode",
 	COLORS = "colors",
 	SHOW_IMPORT_BUTTON = "show_import_button",
 	DEFAULT_ATTRIBUTES = "default_attributes",

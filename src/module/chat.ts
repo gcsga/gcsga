@@ -100,7 +100,7 @@ async function _onModClick(event: JQuery.ClickEvent): Promise<void> {
 	event.preventDefault()
 	event.stopPropagation()
 	const mod: RollModifier = $(event.currentTarget).data("mod")
-	return game.ModifierButton.window.addModifier(mod)
+	return game.ModifierBucket.addModifier(mod)
 }
 
 /**
@@ -112,7 +112,7 @@ async function _onModRClick(event: JQuery.ContextMenuEvent): Promise<void> {
 	event.stopPropagation()
 	const mod: RollModifier = duplicate($(event.currentTarget).data("mod"))
 	mod.modifier = -mod.modifier
-	return game.ModifierButton.window.addModifier(mod)
+	return game.ModifierBucket.addModifier(mod)
 }
 
 /**

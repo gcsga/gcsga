@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { RollModifier, RollType, SETTINGS, SYSTEM_NAME, UserFlags } from "@module/data"
 import { RollGURPS } from "@module/roll"
 import { LastActor } from "@util"

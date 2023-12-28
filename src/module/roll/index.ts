@@ -62,7 +62,7 @@ export class RollGURPS extends Roll {
 			Object.defineProperty(d, "gmodc", {
 				get() {
 					const mod = game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierTotal) as number
-					game.ModifierButton.clear()
+					game.ModifierBucket.clear()
 					return mod
 				},
 			})
