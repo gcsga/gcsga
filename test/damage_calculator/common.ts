@@ -58,7 +58,10 @@ export class _Target implements DamageTarget {
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	incrementDamage(delta: number): void {}
 
-	pools: TargetPool[] = [{ id: "hp", name: "HP", fullName: "Hit Points" }]
+	pools: TargetPool[] = [
+		{ id: "hp", name: "HP", fullName: "Hit Points" },
+		{ id: "fp", name: "FP", fullName: "Fatigue Points" },
+	]
 }
 
 export class _DamageRoll implements DamageRoll {

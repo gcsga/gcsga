@@ -2215,4 +2215,33 @@ describe("Damage calculator", () => {
 			expect(false).toBeTruthy()
 		})
 	})
+
+	describe("Calculator Overrides.", () => {
+		it("... can override injury.", () => {
+			_roll.hits[0].basicDamage = 8
+			let calc = _create(_roll, _target)
+			expect(calc.injury).toBe(8)
+			expect(calc.isOverridden).toBeFalsy()
+			expect(calc.injuryOverride).toBeUndefined()
+
+			calc.injuryOverride = 4
+			expect(calc.injury).toBe(4)
+			expect(calc.isOverridden).toBeTruthy()
+			expect(calc.injuryOverride).toBe(4)
+
+			calc.resetOverrides()
+			expect(calc.isOverridden).toBeFalsy()
+			expect(calc.injuryOverride).toBeUndefined()
+		})
+
+		it("... can override damagePool.", () => {
+			_roll.hits[0].basicDamage = 8
+			let calc = _create(_roll, _target)
+			expect(calc.damagePoolID).toBe("hp")
+
+			calc.damagePoolOverride = "fp"
+			expect(calc.damagePoolID).toBe("fp")
+			expect(calc.damagePoolOverride).toBe("fp")
+		})
+	})
 })

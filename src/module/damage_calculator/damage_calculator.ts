@@ -590,15 +590,36 @@ class DamageCalculator implements IDamageCalculator {
 
 	// === Step Calculations ===
 
-	getDamageResults(hitLocationDamage: HitLocationDamage): DamageResults {
+	getDamageResults(locationDamage: HitLocationDamage): DamageResults {
 		const results = new DamageResults()
-		results.addResults(this.getBasicDamageSteps(hitLocationDamage))
-		results.addResults(this.getDamageResistanceSteps(hitLocationDamage))
+
+		// Basic Damage
+		results.addResults(this.getBasicDamageSteps(locationDamage))
+
+		// Damage Resistance
+		results.addResults(this.getDamageResistanceSteps(locationDamage))
+
+		// Penetrating Damge = Basic Damage - Damage Resistance
 		results.addResults(this.getPenetratingDamageSteps(results.basicDamage!, results.damageResistance!))
-		results.addResults(this.getWoundingModifierSteps(hitLocationDamage))
-		// results.addResults(
-		// 	this.getInjurySteps(hitLocationDamage, results.woundingModifier!.value, results.penetratingDamage!.value)
-		// )
+
+		// Wounding Modifier
+		results.addResults(this.getWoundingModifierSteps(locationDamage))
+
+		// Injury = Penetrating Damage * Wounding Modifier
+		results.addResults(
+			this.getInjurySteps(
+				results.basicDamage!.value,
+				results.woundingModifier!.value,
+				results.penetratingDamage!.value,
+				locationDamage
+			)
+		)
+
+		results.knockback = this.knockback(results)
+		results.addEffects(this.knockbackEffects(results.knockback))
+		results.addEffects(this.shockEffects(results, locationDamage.locationName))
+		results.addEffects(this.majorWoundEffects(results, locationDamage.locationName))
+		results.addEffects(this.miscellaneousEffects(results, locationDamage.locationName))
 		return results
 	}
 
@@ -609,11 +630,6 @@ class DamageCalculator implements IDamageCalculator {
 		basicDamages.push(this.adjustBasicDamage(hit.basicDamage))
 
 		return basicDamages
-	}
-
-	addBasicDamageSteps(results: DamageResults, basicDamage: number): void {
-		results.addResult(new BasicDamageStep(basicDamage, this.damagePool.name))
-		results.addResult(this.adjustBasicDamage(basicDamage))
 	}
 
 	/**
@@ -675,17 +691,6 @@ class DamageCalculator implements IDamageCalculator {
 		results.push(this.adjustDamageResistance(dr.value, hit))
 
 		return results
-	}
-
-	/**
-	 * Adds damage resistance steps to the results based on the given hitLocation.
-	 * @param results - The damage results object.
-	 * @param hitLocation - The damage to location object.
-	 */
-	addDamageResistanceSteps(results: DamageResults, hitLocation: LocationDamage): void {
-		const dr = this.damageResistanceAndReason(hitLocation)
-		results.addResult(new DamageResistanceStep(dr.value, dr.explanation))
-		results.addResult(this.adjustDamageResistance(results.damageResistance!.value, hitLocation))
 	}
 
 	/**
@@ -793,21 +798,6 @@ class DamageCalculator implements IDamageCalculator {
 		]
 	}
 
-	/**
-	 * Adds the steps for calculating penetrating damage to the given DamageResults object.
-	 * B377: If your damage roll exceeds your target’s DR, the excess is the penetrating damage.
-	 *
-	 * @param results - The DamageResults object to add the penetrating damage steps to.
-	 */
-	addPenetratingDamageSteps(results: DamageResults): void {
-		results.addResult(
-			new PenetratingDamageStep(
-				Math.max(results.basicDamage!.value - results.damageResistance!.value, 0),
-				`= ${results.basicDamage!.value} – ${results.damageResistance!.value}`
-			)
-		)
-	}
-
 	getWoundingModifierSteps(hit: LocationDamage): (CalculatorStep | undefined)[] {
 		const results: (CalculatorStep | undefined)[] = []
 
@@ -821,19 +811,6 @@ class DamageCalculator implements IDamageCalculator {
 		results.push(this.adjustWoundingModifierForVulnerabilities(step2?.value ?? step1.value))
 
 		return results
-	}
-
-	/**
-	 * Adds the wounding modifier steps to the damage results.
-	 * @param results The damage results object.
-	 * @param hitLocation The location damage object.
-	 */
-	addWoundingModifierSteps(results: DamageResults, hitLocation: LocationDamage): void {
-		const mod = this.woundingModifierAndReason(hitLocation)
-		results.addResult(new WoundingModifierStep(mod.value, mod.explanation))
-
-		results.addResult(this.adjustWoundingModifierForInjuryTolerance(results.woundingModifier!.value, hitLocation))
-		results.addResult(this.adjustWoundingModifierForVulnerabilities(results.woundingModifier!.value))
 	}
 
 	/**
@@ -1003,25 +980,40 @@ class DamageCalculator implements IDamageCalculator {
 		return undefined
 	}
 
-	addInjurySteps(results: DamageResults, hitlocation: HitLocationDamage): void {
-		let value = Math.floor(results.woundingModifier!.value * results.penetratingDamage!.value)
-		if (results.woundingModifier!.value !== 0 && value === 0 && results.penetratingDamage!.value > 0) value = 1
-		results.addResult(
-			new InjuryStep(
-				value,
-				`= ${results.penetratingDamage!.value} × ${formatFraction(results.woundingModifier!.value)}`
-			)
-		)
-		this.adjustInjury(results, hitlocation)
+	getInjurySteps(
+		basicDamage: number,
+		woundingModifier: number,
+		penetratingDamage: number,
+		locationDamage: HitLocationDamage
+	): (CalculatorStep | undefined)[] {
+		let injury = Math.floor(woundingModifier * penetratingDamage)
+
+		// If the wounding modifier is not zero, and any damage penetrates, then the minimum injury is 1.
+		if (injury === 0 && woundingModifier !== 0 && penetratingDamage > 0) injury = 1
+
+		const results = []
+		results.push(new InjuryStep(injury, `= ${penetratingDamage} × ${formatFraction(woundingModifier)}`))
+
+		const maximumForInjuryTolerance = this.maximumForInjuryTolerance
+		if (injury > maximumForInjuryTolerance.value) {
+			results.push(new AdjustedInjuryStep(maximumForInjuryTolerance.value, maximumForInjuryTolerance.explanation))
+		}
+
+		if (!this.isDiffuse) {
+			const bluntTrauma = this.bluntTrauma_(locationDamage.isFlexibleArmor, basicDamage, penetratingDamage)
+			if (bluntTrauma > 0) {
+				results.push(new AdjustedInjuryStep(bluntTrauma, this.format("gurps.dmgcalc.description.blunt_trauma")))
+			}
+		}
 
 		// Adjust for Damage Reduction.
 		if (this.damageReduction !== NoDamageReduction) {
-			const newValue = Math.ceil(results.injury!.value / this.damageReduction)
-			results.addResult(
+			const newValue = Math.ceil(getCurrentValue(results) / this.damageReduction)
+			results.push(
 				new DamageReductionStep(
 					newValue,
 					this.format("gurps.dmgcalc.description.damage_reduction", {
-						injury: results.injury!.value,
+						injury: getCurrentValue(results),
 						reduction: this.damageReduction,
 					})
 				)
@@ -1029,51 +1021,172 @@ class DamageCalculator implements IDamageCalculator {
 		}
 
 		// Adjust for hit location.
-		const maxResult = hitlocation.maximumInjury(this.target.hitPoints.value)
-		const newValue = Math.min(results.injury!.value, maxResult.value)
-		if (newValue < results.injury!.value) {
-			results.addResult(new MaxForLocationStep(newValue, maxResult.explanation))
-		}
-	}
-
-	adjustInjury(results: DamageResults, hitlocation: HitLocationDamage): void {
-		const STEP = "gurps.dmgcalc.substep.adjusted_injury"
-
-		// Adjust for Injury Tolerance. This must be before Hit Location or Trauma.
-		const maximumForInjuryTolerance = this.maximumForInjuryTolerance
-		let newValue = Math.min(results.injury!.value, maximumForInjuryTolerance.value)
-		if (newValue < results.injury!.value) {
-			results.addResult(new AdjustedInjuryStep(newValue, maximumForInjuryTolerance.explanation))
+		injury = getCurrentValue(results)
+		const maximumForHitLocation = locationDamage.maximumInjury(this.target.hitPoints.value)
+		const newValue = Math.min(injury, maximumForHitLocation.value)
+		if (newValue < injury) {
+			results.push(new MaxForLocationStep(newValue, maximumForHitLocation.explanation))
 		}
 
-		if (this.isDiffuse) return
+		return results
 
-		// Adjust for blunt trauma.
-		if (this.isBluntTrauma(results, hitlocation)) {
-			results.addResult(
-				new AdjustedInjuryStep(this.bluntTrauma(results), this.format("gurps.dmgcalc.description.blunt_trauma"))
-			)
+		function getCurrentValue(results: (CalculatorStep | undefined)[]): number {
+			return [...results].reverse().find(it => it !== undefined)!.value
 		}
 	}
 
 	/**
 	 * @returns {number} the amount of blunt trauma damage, if any.
 	 */
-	private bluntTrauma(results: DamageResults): number {
+	private bluntTrauma_(isFlexibleArmor: boolean, basicDamage: number, penetratingDamage: number): number {
 		// No need to do this check -- this method is only called if isBluntTrauma is true.
-		// if (results.penetratingDamage!.value > 0 || !this.isFlexibleArmor) return 0
-		return this.damageType.bluntTraumaDivisor > 0
-			? Math.floor(results.basicDamage!.value / this.damageType.bluntTraumaDivisor)
-			: 0
+		if (penetratingDamage > 0 || !isFlexibleArmor) return 0
+		return this.damageType.bluntTraumaDivisor > 0 ? Math.floor(basicDamage / this.damageType.bluntTraumaDivisor) : 0
 	}
 
-	private isBluntTrauma(results: DamageResults, hitLocation: HitLocationDamage): boolean {
-		return (
-			hitLocation.isFlexibleArmor &&
-			results.penetratingDamage!.value === 0 &&
-			this.damageType.bluntTraumaDivisor > 1 &&
-			this.bluntTrauma(results) > 0
+	/**
+	 * @returns {number} yards of knockback, if any.
+	 */
+	private knockback(results: DamageResults): number {
+		if (this.isDamageTypeKnockbackEligible) {
+			if (this.damageType === DamageTypes.cut && results.penetratingDamage!.value > 0) return 0
+
+			// console.log(results)
+			return Math.floor(results.rawDamage!.value / (this.knockbackResistance - 2))
+		}
+		return 0
+	}
+
+	private get isDamageTypeKnockbackEligible() {
+		return [DamageTypes.cr, DamageTypes.cut, DamageTypes.kb].includes(this.damageType)
+	}
+
+	private get knockbackResistance() {
+		return this.target.ST
+	}
+
+	private knockbackEffects(knockback: number): InjuryEffect[] {
+		if (knockback === 0) return []
+
+		let penalty = knockback === 1 ? 0 : -1 * (knockback - 1)
+
+		if (this.target.hasTrait("Perfect Balance")) penalty += 4
+
+		const knockbackEffect = new InjuryEffect(
+			InjuryEffectType.knockback,
+			[],
+			[
+				new EffectCheck(
+					[
+						new RollModifier("dx", RollType.Attribute, penalty),
+						new RollModifier("Acrobatics", RollType.Skill, penalty),
+						new RollModifier("Judo", RollType.Skill, penalty),
+					],
+					[new CheckFailureConsequence("fall prone", 0)]
+				),
+			]
 		)
+		return [knockbackEffect]
+	}
+
+	private shockEffects(results: DamageResults, locationName: string): InjuryEffect[] {
+		let rawModifier = Math.floor(results.injury!.value / this.shockFactor)
+		if (rawModifier > 0) {
+			let modifier = Math.min(4, rawModifier) * -1
+
+			// TODO In RAW, this doubling only occurs if the target is physiologically male and does not have the
+			// 	 "No Vitals" Injury Tolerance trait.
+			const location = this.hitLocationTable.locations.find(it => it.table_name === locationName)
+			if (this.damageType === DamageTypes.cr && location?.id === "groin" && !this.target.hasTrait("No Vitals"))
+				modifier *= 2
+
+			const shockEffect = new InjuryEffect(InjuryEffectType.shock, [
+				new RollModifier("dx", RollType.Attribute, modifier),
+				new RollModifier("iq", RollType.Attribute, modifier),
+			])
+			return [shockEffect]
+		}
+		return []
+	}
+
+	private majorWoundEffects(results: DamageResults, locationName: string): InjuryEffect[] {
+		const wounds = []
+
+		// Fatigue attacks and Injury Tolerance (Homogenous) ignore hit location.
+		if (this.damageType === DamageTypes.fat || this.isHomogenous || this.isDiffuse) {
+			if (this.isMajorWound(results, locationName))
+				wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck()]))
+		} else {
+			const location = this.hitLocationTable.locations.find(it => it.table_name === locationName)
+			switch (location?.id) {
+				case "torso":
+					if (this.isMajorWound(results, locationName))
+						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck()]))
+					break
+
+				case "skull":
+				case "eye":
+					if (results.shockEffects.length > 0 || this.isMajorWound(results, locationName)) {
+						let penalty = this.damageType !== DamageTypes.tox && !this.target.hasTrait("No Brain") ? -10 : 0
+						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck(penalty)]))
+					}
+					break
+
+				case "vitals":
+					if (results.shockEffects.length > 0) {
+						const penalty = this.target.hasTrait("No Vitals") ? 0 : -5
+						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck(penalty)]))
+					}
+					break
+
+				case "face":
+					if (this.isMajorWound(results, locationName))
+						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck(-5)]))
+					break
+
+				case "groin":
+					if (this.isMajorWound(results, locationName)) {
+						const penalty = this.target.hasTrait("No Vitals") ? 0 : -5
+						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck(penalty)]))
+					}
+					break
+
+				default:
+					if (this.isMajorWound(results, locationName))
+						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck()]))
+			}
+		}
+
+		return wounds
+	}
+
+	private isMajorWound(results: DamageResults, locationName: string): boolean {
+		const location = this.hitLocationTable.locations.find(it => it.table_name === locationName)
+		let divisor = location && Extremity.includes(location.id) ? 3 : 2
+		return results.injury!.value > this.target.hitPoints.value / divisor
+	}
+
+	private miscellaneousEffects(results: DamageResults, locationName: string): InjuryEffect[] {
+		const location = this.hitLocationTable.locations.find(it => it.table_name === locationName)
+
+		if (location && location.id === "eye" && results.injury!.value > this.target.hitPoints.value / 10)
+			return [new InjuryEffect(InjuryEffectType.eyeBlinded)]
+
+		if (location && location.id === "face" && this.isMajorWound(results, locationName)) {
+			return results.injury!.value > this.target.hitPoints.value
+				? [new InjuryEffect(InjuryEffectType.blinded)]
+				: [new InjuryEffect(InjuryEffectType.eyeBlinded)]
+		}
+
+		if (location && Limb.includes(location.id) && this.isMajorWound(results, locationName)) {
+			return [new InjuryEffect(InjuryEffectType.limbCrippled)]
+		}
+
+		if (location && Extremity.includes(location.id) && this.isMajorWound(results, locationName)) {
+			return [new InjuryEffect(InjuryEffectType.limbCrippled)]
+		}
+
+		return []
 	}
 }
 
@@ -1122,29 +1235,7 @@ class HitLocationDamage implements LocationDamage {
 	}
 
 	get results(): DamageResults {
-		const results = new DamageResults()
-
-		// Basic Damage
-		this.calculator.addBasicDamageSteps(results, this.basicDamage)
-
-		// Damage Resistance
-		this.calculator.addDamageResistanceSteps(results, this)
-
-		// Penetrating Damge = Basic Damage - Damage Resistance
-		this.calculator.addPenetratingDamageSteps(results)
-
-		// Wounding Modifier
-		this.calculator.addWoundingModifierSteps(results, this)
-
-		// Injury = Penetrating Damage * Wounding Modifier
-		this.calculator.addInjurySteps(results, this)
-
-		results.knockback = this.knockback(results)
-		results.addEffects(this.knockbackEffects(results.knockback))
-		results.addEffects(this.shockEffects(results))
-		results.addEffects(this.majorWoundEffects(results))
-		results.addEffects(this.miscellaneousEffects(results))
-		return results
+		return this.calculator.getDamageResults(this)
 	}
 
 	// --- Basic Damage ---
@@ -1288,163 +1379,6 @@ class HitLocationDamage implements LocationDamage {
 		}
 
 		return { value: Infinity, explanation: "" }
-	}
-
-	/**
-	 * @returns {number} yards of knockback, if any.
-	 */
-	private knockback(results: DamageResults): number {
-		if (this.isDamageTypeKnockbackEligible) {
-			if (this.calculator.damageType === DamageTypes.cut && results.penetratingDamage!.value > 0) return 0
-
-			// console.log(results)
-			return Math.floor(results.rawDamage!.value / (this.knockbackResistance - 2))
-		}
-		return 0
-	}
-
-	private get isDamageTypeKnockbackEligible() {
-		return [DamageTypes.cr, DamageTypes.cut, DamageTypes.kb].includes(this.calculator.damageType)
-	}
-
-	private get knockbackResistance() {
-		return this.calculator.target.ST
-	}
-
-	private knockbackEffects(knockback: number): InjuryEffect[] {
-		if (knockback === 0) return []
-
-		let penalty = knockback === 1 ? 0 : -1 * (knockback - 1)
-
-		if (this.calculator.target.hasTrait("Perfect Balance")) penalty += 4
-
-		const knockbackEffect = new InjuryEffect(
-			InjuryEffectType.knockback,
-			[],
-			[
-				new EffectCheck(
-					[
-						new RollModifier("dx", RollType.Attribute, penalty),
-						new RollModifier("Acrobatics", RollType.Skill, penalty),
-						new RollModifier("Judo", RollType.Skill, penalty),
-					],
-					[new CheckFailureConsequence("fall prone", 0)]
-				),
-			]
-		)
-		return [knockbackEffect]
-	}
-
-	private shockEffects(results: DamageResults): InjuryEffect[] {
-		let rawModifier = Math.floor(results.injury!.value / this.calculator.shockFactor)
-		if (rawModifier > 0) {
-			let modifier = Math.min(4, rawModifier) * -1
-
-			// TODO In RAW, this doubling only occurs if the target is physiologically male and does not have the
-			// 	 "No Vitals" Injury Tolerance trait.
-			const location = this.calculator.hitLocationTable.locations.find(it => it.table_name === this.locationName)
-			if (
-				this.calculator.damageType === DamageTypes.cr &&
-				location?.id === "groin" &&
-				!this.calculator.target.hasTrait("No Vitals")
-			)
-				modifier *= 2
-
-			const shockEffect = new InjuryEffect(InjuryEffectType.shock, [
-				new RollModifier("dx", RollType.Attribute, modifier),
-				new RollModifier("iq", RollType.Attribute, modifier),
-			])
-			return [shockEffect]
-		}
-		return []
-	}
-
-	private majorWoundEffects(results: DamageResults): InjuryEffect[] {
-		const wounds = []
-
-		// Fatigue attacks and Injury Tolerance (Homogenous) ignore hit location.
-		if (
-			this.calculator.damageType === DamageTypes.fat ||
-			this.calculator.isHomogenous ||
-			this.calculator.isDiffuse
-		) {
-			if (this.isMajorWound(results))
-				wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck()]))
-		} else {
-			const location = this.calculator.hitLocationTable.locations.find(it => it.table_name === this.locationName)
-			switch (location?.id) {
-				case "torso":
-					if (this.isMajorWound(results))
-						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck()]))
-					break
-
-				case "skull":
-				case "eye":
-					if (results.shockEffects.length > 0 || this.isMajorWound(results)) {
-						let penalty =
-							this.calculator.damageType !== DamageTypes.tox &&
-							!this.calculator.target.hasTrait("No Brain")
-								? -10
-								: 0
-						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck(penalty)]))
-					}
-					break
-
-				case "vitals":
-					if (results.shockEffects.length > 0) {
-						const penalty = this.calculator.target.hasTrait("No Vitals") ? 0 : -5
-						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck(penalty)]))
-					}
-					break
-
-				case "face":
-					if (this.isMajorWound(results))
-						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck(-5)]))
-					break
-
-				case "groin":
-					if (this.isMajorWound(results)) {
-						const penalty = this.calculator.target.hasTrait("No Vitals") ? 0 : -5
-						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck(penalty)]))
-					}
-					break
-
-				default:
-					if (this.isMajorWound(results))
-						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck()]))
-			}
-		}
-
-		return wounds
-	}
-
-	private isMajorWound(results: DamageResults): boolean {
-		const location = this.calculator.hitLocationTable.locations.find(it => it.table_name === this.locationName)
-		let divisor = location && Extremity.includes(location.id) ? 3 : 2
-		return results.injury!.value > this.calculator.target.hitPoints.value / divisor
-	}
-
-	private miscellaneousEffects(results: DamageResults): InjuryEffect[] {
-		const location = this.calculator.hitLocationTable.locations.find(it => it.table_name === this.locationName)
-
-		if (location && location.id === "eye" && results.injury!.value > this.calculator.target.hitPoints.value / 10)
-			return [new InjuryEffect(InjuryEffectType.eyeBlinded)]
-
-		if (location && location.id === "face" && this.isMajorWound(results)) {
-			return results.injury!.value > this.calculator.target.hitPoints.value
-				? [new InjuryEffect(InjuryEffectType.blinded)]
-				: [new InjuryEffect(InjuryEffectType.eyeBlinded)]
-		}
-
-		if (location && Limb.includes(location.id) && this.isMajorWound(results)) {
-			return [new InjuryEffect(InjuryEffectType.limbCrippled)]
-		}
-
-		if (location && Extremity.includes(location.id) && this.isMajorWound(results)) {
-			return [new InjuryEffect(InjuryEffectType.limbCrippled)]
-		}
-
-		return []
 	}
 }
 
