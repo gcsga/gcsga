@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { RollModifier, SOCKET, SYSTEM_NAME, UserFlags } from "@module/data"
 import { PDF } from "@module/pdf"
 
@@ -158,11 +159,11 @@ export class ModifierBucket extends Application {
 		this.render()
 	}
 
-	addModifier(mod: RollModifier) {
-		this.value = ""
-		game.ModifierList.addModifier(mod)
-		game.ModifierList.render()
-	}
+	// addModifier(mod: RollModifier) {
+	// 	this.value = ""
+	// 	// game.ModifierList.addModifier(mod)
+	// 	return (game.user as UserGURPS).addModifier(mod)
+	// }
 
 	async sendToPlayer(event: JQuery.ClickEvent) {
 		event.preventDefault()

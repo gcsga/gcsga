@@ -25,7 +25,7 @@ export class ContainedQuantityPrereq extends BasePrereq {
 			if (!satisfied) {
 				let quantity = 0
 				for (const ch of exclude.children) {
-					quantity += ch.quantity
+					quantity += ch.system.quantity
 				}
 				satisfied = numberCompare(quantity, this.qualifier)
 			}

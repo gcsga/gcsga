@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { RollModifier, SYSTEM_NAME, UserFlags } from "@module/data"
 import { ModifierWindow } from "./window"
 

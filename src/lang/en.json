@@ -202,7 +202,7 @@
 			},
 			"rof": {
 				"title": "Rate of Fire",
-				"rof": "Rof: {rof}"
+				"rof": "RoF: {rof}"
 			},
 			"attribute": {
 				"all": "to all attribute rolls",
@@ -1211,7 +1211,10 @@
 				"pinned": "Pinned Modifiers",
 				"custom": "Custom Modifiers",
 				"max": "*Max {max}",
-				"cost": "*Cost {value}{id}"
+				"cost": "*Cost {value}{id}",
+				"saved_stacks": "Saved Buckets",
+				"save_current": "Save Current Bucket",
+				"untitled_stack": "Untitled Bucket"
 			},
 			"library_import": {
 				"button_character": "Import GCS Character Library",

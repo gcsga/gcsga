@@ -42,13 +42,15 @@ declare global {
 			 * @defaultValue `false`
 			 */
 			keepId?: boolean | undefined
+
+			sort: number
 		}
 	}
 }
 
 type ClientDocumentConstructor<T extends ConstructorOf<foundry.abstract.Document<any, any>>> = Pick<T, keyof T> &
 	Pick<typeof ClientDocumentMixin, keyof typeof ClientDocumentMixin> & {
-		new (...args: ConstructorParameters<T>): InstanceType<T> & ClientDocumentMixin<InstanceType<T>>
+		new(...args: ConstructorParameters<T>): InstanceType<T> & ClientDocumentMixin<InstanceType<T>>
 	}
 
 export declare class ClientDocumentMixin<T extends foundry.abstract.Document<any, any>> {
@@ -315,9 +317,9 @@ export declare class ClientDocumentMixin<T extends foundry.abstract.Document<any
 		this: T,
 		data?:
 			| DeepPartial<
-					| ConstructorDataType<InstanceType<T>["data"]>
-					| (ConstructorDataType<InstanceType<T>["data"]> & Record<string, unknown>)
-			  >
+				| ConstructorDataType<InstanceType<T>["data"]>
+				| (ConstructorDataType<InstanceType<T>["data"]> & Record<string, unknown>)
+			>
 			| undefined,
 		context?: (Pick<DocumentModificationContext, "parent" | "pack"> & Partial<DialogOptions>) | undefined
 	): Promise<InstanceType<ConfiguredDocumentClass<T>> | null | undefined>

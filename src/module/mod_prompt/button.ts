@@ -4,6 +4,7 @@ import { RollGURPS } from "@module/roll"
 import { LastActor } from "@util"
 import { ModifierBucket } from "./bucket"
 import { ModifierWindow } from "./window"
+import { UserGURPS } from "@module/user/document"
 
 export class ModifierButton extends Application {
 	modifierMode: "prompt" | "bucket" = "prompt"
@@ -54,8 +55,10 @@ export class ModifierButton extends Application {
 	}
 
 	async getData(options?: Partial<ApplicationOptions> | undefined): Promise<object> {
-		const user = game.user
-		let total = (user?.getFlag(SYSTEM_NAME, UserFlags.ModifierTotal) as number) ?? 0
+		console.log("what")
+		const user = game.user as UserGURPS
+		let total = user.modifierTotal
+		// let total = (user?.getFlag(SYSTEM_NAME, UserFlags.ModifierTotal) as number) ?? 0
 		let buttonMagnet = ""
 		if (user?.getFlag(SYSTEM_NAME, UserFlags.ModifierSticky) === true) buttonMagnet = "sticky"
 		let buttonColor = "total-white"
@@ -145,7 +148,7 @@ export class ModifierButton extends Application {
 
 	async clear() {
 		await game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, [])
-		await game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierTotal, 0)
+		// await game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierTotal, 0)
 		game.ModifierList.render()
 		return this.render(true)
 	}
@@ -166,21 +169,22 @@ export class ModifierButton extends Application {
 
 	async _onMouseWheel(event: WheelEvent) {
 		const delta = Math.round(event.deltaY / -100)
-		return game.ModifierList.addModifier({
+		// return game.ModifierList.addModifier({
+		return (game.user as UserGURPS).addModifier({
 			name: "",
 			modifier: delta,
 			tags: [],
 		})
 	}
 
-	async recalculateModTotal(user: StoredDocument<User> | null): Promise<unknown> {
-		if (!user) return
-		let total = 0
-		const mods: RollModifier[] = (user.getFlag(SYSTEM_NAME, UserFlags.ModifierStack) as RollModifier[]) ?? []
-		if (mods.length > 0)
-			for (const m of mods) {
-				total += m.modifier
-			}
-		await user.setFlag(SYSTEM_NAME, UserFlags.ModifierTotal, total)
-	}
+	// async recalculateModTotal(user: StoredDocument<User> | null): Promise<unknown> {
+	// 	if (!user) return
+	// 	let total = 0
+	// 	const mods: RollModifier[] = (user.getFlag(SYSTEM_NAME, UserFlags.ModifierStack) as RollModifier[]) ?? []
+	// 	if (mods.length > 0)
+	// 		for (const m of mods) {
+	// 			total += m.modifier
+	// 		}
+	// 	await user.setFlag(SYSTEM_NAME, UserFlags.ModifierTotal, total)
+	// }
 }

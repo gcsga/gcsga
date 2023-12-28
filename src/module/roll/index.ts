@@ -1,6 +1,7 @@
 import { ActorGURPS } from "@module/config"
 import { ActorType, RollType, SETTINGS, SYSTEM_NAME, UserFlags } from "@module/data"
 import { RollTypeData, rollTypeHandlers } from "./roll_handler"
+import { UserGURPS } from "@module/user/document"
 
 export class RollGURPS extends Roll {
 	originalFormula = ""
@@ -57,11 +58,13 @@ export class RollGURPS extends Roll {
 
 	override _prepareData(data: any) {
 		let d: any = super._prepareData(data) ?? {}
-		d.gmod = game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierTotal)
+		// d.gmod = game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierTotal)
+		d.gmod = (game.user as UserGURPS)?.modifierTotal
 		if (!d.hasOwnProperty("gmodc"))
 			Object.defineProperty(d, "gmodc", {
 				get() {
-					const mod = game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierTotal) as number
+					// const mod = game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierTotal) as number
+					const mod = (game.user as UserGURPS)?.modifierTotal
 					game.ModifierBucket.clear()
 					return mod
 				},
@@ -76,11 +79,10 @@ export class RollGURPS extends Roll {
 	 * @param data
 	 */
 	static async handleRoll(user: StoredDocument<User> | null, actor: ActorGURPS | any, data: any): Promise<void> {
+		user = user as StoredDocument<UserGURPS>
 		if (actor.type === ActorType.Character) {
 			const lastStack = user?.getFlag(SYSTEM_NAME, UserFlags.ModifierStack)
-			const lastTotal = user?.getFlag(SYSTEM_NAME, UserFlags.ModifierTotal)
 			await user?.setFlag(SYSTEM_NAME, UserFlags.LastStack, lastStack)
-			await user?.setFlag(SYSTEM_NAME, UserFlags.LastTotal, lastTotal)
 		}
 
 		return rollTypeHandlers[data.type as RollType].handleRollType(

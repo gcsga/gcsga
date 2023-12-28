@@ -1,8 +1,10 @@
+// @ts-nocheck
 import { RollModifier, SYSTEM_NAME, UserFlags } from "@module/data"
 import { fSearch } from "@util/fuse"
 import { ModifierBrowse } from "./browse"
 import { ModifierButton } from "./button"
 import { ModifierList } from "./list"
+import { UserGURPS } from "@module/user/document"
 
 enum WindowSelected {
 	Browse = "browse",
@@ -213,7 +215,8 @@ export class ModifierWindow extends Application {
 	addModFromList() {
 		const newMod: RollModifier = this.list.mods[this.list.selection]
 		if (!newMod) return
-		return game.ModifierList.addModifier(newMod)
+		// return game.ModifierList.addModifier(newMod)
+		return (game.user as UserGURPS).addModifier(newMod)
 	}
 
 	addModFromBrowse() {
@@ -222,7 +225,8 @@ export class ModifierWindow extends Application {
 		const cat = this.browse.categories[this.browse.selection[1]]
 		if (cat) newMod = cat.mods[this.browse.selection[2]]
 		if (!newMod) return
-		return game.ModifierList.addModifier(newMod)
+		// return game.ModifierList.addModifier(newMod)
+		return (game.user as UserGURPS).addModifier(newMod)
 	}
 
 	removeModifier(event: JQuery.ClickEvent) {
