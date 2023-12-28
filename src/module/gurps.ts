@@ -38,7 +38,7 @@ import { GURPSCONFIG } from "./config"
 import * as Chat from "@module/chat"
 import { ItemImporter } from "@item/import"
 import { CompendiumBrowser } from "./compendium"
-import { ActorType, ItemType, SOCKET, SYSTEM_NAME, UserFlags } from "./data"
+import { ActorType, HooksGURPS, ItemType, SOCKET, SYSTEM_NAME, UserFlags } from "./data"
 import { StaticHitLocation } from "@actor/static/hit_location"
 import * as SpeedProviderGURPS from "./modules/drag_ruler"
 import { ColorSettings } from "./settings/colors"
@@ -83,8 +83,8 @@ import { MookGeneratorSheet, MookParser } from "./mook"
 import { CharacterImporter } from "@actor/character/import"
 import { ItemDirectoryGURPS } from "@ui/item_directory"
 import { CombatantGURPS } from "./combatant"
-import { ModifierBucket } from "./mod_bucket"
-import { loadModifiers } from "./mod_bucket/data"
+import { ModifierBucket } from "@module/mod_bucket"
+import { loadModifiers } from "@module/mod_bucket/data"
 
 Error.stackTraceLimit = Infinity
 
@@ -331,11 +331,10 @@ Hooks.once("ready", async () => {
 	// Set default user flag state
 	if (!game.user?.getFlag(SYSTEM_NAME, UserFlags.Init)) {
 		game.user?.setFlag(SYSTEM_NAME, UserFlags.LastStack, [])
-		game.user?.setFlag(SYSTEM_NAME, UserFlags.LastTotal, 0)
 		game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, [])
-		game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierTotal, 0)
 		game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierSticky, false)
 		game.user?.setFlag(SYSTEM_NAME, UserFlags.Init, true)
+		game.user?.setFlag(SYSTEM_NAME, UserFlags.SavedStacks, [])
 	}
 	if (canvas && canvas.hud) {
 		canvas.hud.token = new TokenHUDGURPS()
@@ -591,4 +590,12 @@ Hooks.on("renderHotbar", function(_hotbar: any, element: JQuery<HTMLElement>, _o
 Hooks.on("chatMessage", function(_chatlog: ChatLog, message: string, _data: any) {
 	Chat.procesMessage(message)
 	return message
+})
+
+
+Hooks.on(HooksGURPS.AddModifier, function() {
+	game.ModifierBucket.render()
+	game.ModifierList.render()
+	if (game.ModifierBucket.window.rendered)
+		game.ModifierBucket.window.render()
 })

@@ -243,6 +243,13 @@ export enum RollType {
 
 export type ModifierItem = RollModifier | ModifierHeader
 
+export interface RollModifierStack {
+	title: string
+	// editing: boolean
+	// open: boolean
+	items: RollModifier[]
+}
+
 export interface RollModifier {
 	name: string
 	modifier: number
@@ -372,11 +379,12 @@ type ImageFileExtension = "jpg" | "jpeg" | "png" | "svg" | "webp"
 export enum UserFlags {
 	Init = "init",
 	LastStack = "lastStack",
-	LastTotal = "lastTotal",
+	// LastTotal = "lastTotal",
 	ModifierStack = "modifierStack",
-	ModifierTotal = "modifierTotal",
+	// ModifierTotal = "modifierTotal",
 	ModifierSticky = "modifierSticky",
-	ModifierPinned = "pinnedMods",
+	SavedStacks = "savedStacks",
+	// ModifierPinned = "pinnedMods",
 	LastActor = "lastActor",
 	LastToken = "lastToken",
 }
@@ -458,3 +466,7 @@ export const GURPS_COMMANDS = (() => {
 		mook: new RegExp(`^\\/mook ?${any}`, "i"),
 	}
 })()
+
+export enum HooksGURPS {
+	AddModifier = "addModifier"
+}

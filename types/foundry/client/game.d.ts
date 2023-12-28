@@ -19,7 +19,7 @@ declare global {
 		CompendiumBrowser: CompendiumBrowser
 		// ModifierButton: ModifierButton
 		ModifierBucket: ModifierBucket
-		ModifierList: ModList
+		ModifierList: ModifierList
 		EffectPanel: EffectPanel
 		model: any
 

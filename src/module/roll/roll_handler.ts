@@ -13,6 +13,7 @@ import { LocalizeGURPS } from "@util"
 import { DamageRollGURPS } from "./damage_roll"
 import { DamageChat, DamagePayload } from "@module/damage_calculator/damage_chat_message"
 import { ActorGURPS } from "@module/config"
+import { UserGURPS } from "@module/user/document"
 
 // // vscode-fold=1
 
@@ -279,7 +280,7 @@ abstract class RollTypeHandler {
 		const sticky = user.getFlag(SYSTEM_NAME, UserFlags.ModifierSticky)
 		if (sticky === false) {
 			await user.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, [])
-			await user.setFlag(SYSTEM_NAME, UserFlags.ModifierTotal, 0)
+			// await user.setFlag(SYSTEM_NAME, UserFlags.ModifierTotal, 0)
 			const button = game.ModifierBucket
 			return button.render()
 		}
@@ -309,7 +310,8 @@ class ModifierRollTypeHandler extends RollTypeHandler {
 			modifier: data.modifier,
 			tags: [],
 		}
-		return game.ModifierBucket.window.addModifier(mod)
+		// return game.ModifierBucket.window.addModifier(mod)
+		return (game.user as UserGURPS).addModifier(mod)
 	}
 }
 

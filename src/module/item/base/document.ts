@@ -41,14 +41,6 @@ export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSour
 		return newItem
 	}
 
-	static override async updateDocuments(
-		updates: any[],
-		context: DocumentModificationContext & { options: any }
-	): Promise<any[]> {
-		if (!(context.parent instanceof Item)) return super.updateDocuments(updates, context)
-		return context.parent.updateEmbeddedDocuments("Item", updates, context.options)
-	}
-
 	static override getDefaultArtwork(itemData: ItemData): { img: string } {
 		let type = itemData.type.replace("_container", "")
 		if (type === ItemType.Technique) type = ItemType.Skill

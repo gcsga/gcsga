@@ -1,5 +1,6 @@
 import { ActorGURPS } from "@module/config"
 import { RollModifier, RollModifierTags, SETTINGS, SYSTEM_NAME, UserFlags } from "@module/data"
+import { UserGURPS } from "@module/user/document"
 import { LastActor } from "@util"
 
 class ModifierList extends Application {
@@ -77,7 +78,7 @@ class ModifierList extends Application {
 			name: $(event.currentTarget).data("name"),
 			modifier: $(event.currentTarget).data("modifier"),
 		}
-		return this.addModifier(modifier)
+		return (game.user as UserGURPS).addModifier(modifier)
 	}
 
 	_onCollapseToggle(event: JQuery.ClickEvent) {
@@ -91,28 +92,28 @@ class ModifierList extends Application {
 	}
 
 	addRangeMod() {
-		this.addModifier(this._tempRangeMod)
+		(game.user as UserGURPS).addModifier(this._tempRangeMod)
 	}
 
-	addModifier(mod: RollModifier) {
-		const modList: RollModifier[] =
-			(game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierStack) as RollModifier[]) ?? []
-		if (mod.tags?.includes(RollModifierTags.Range)) {
-			const oldMod = modList.find(e => e.tags?.includes(RollModifierTags.Range))
-			if (oldMod) {
-				oldMod.modifier = mod.modifier
-				oldMod.name = mod.name
-			} else modList.push(mod)
-		} else {
-			const oldMod = modList.find(e => e.name === mod.name)
-			if (oldMod) oldMod.modifier += mod.modifier
-			else modList.push(mod)
-		}
-		game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, modList)
-		this.render()
-		game.ModifierBucket.render()
-		Hooks.call("addModifier")
-	}
+	// addModifier(mod: RollModifier) {
+	// 	const modList: RollModifier[] =
+	// 		(game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierStack) as RollModifier[]) ?? []
+	// 	if (mod.tags?.includes(RollModifierTags.Range)) {
+	// 		const oldMod = modList.find(e => e.tags?.includes(RollModifierTags.Range))
+	// 		if (oldMod) {
+	// 			oldMod.modifier = mod.modifier
+	// 			oldMod.name = mod.name
+	// 		} else modList.push(mod)
+	// 	} else {
+	// 		const oldMod = modList.find(e => e.name === mod.name)
+	// 		if (oldMod) oldMod.modifier += mod.modifier
+	// 		else modList.push(mod)
+	// 	}
+	// 	game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, modList)
+	// 	this.render()
+	// 	game.ModifierBucket.render()
+	// 	Hooks.call("addModifier")
+	// }
 
 	removeModifier(event: JQuery.ClickEvent) {
 		event.preventDefault()

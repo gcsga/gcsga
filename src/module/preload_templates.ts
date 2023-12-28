@@ -139,6 +139,7 @@ export async function preloadTemplates(): Promise<Handlebars.TemplateDelegate[]>
 		"modifier-bucket/collapsible",
 		"modifier-bucket/modifier",
 		"modifier-bucket/player",
+		"modifier-bucket/stack",
 
 		"system/settings/attribute-effects",
 		"system/settings/attribute-condition",

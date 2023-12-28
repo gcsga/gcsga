@@ -54,4 +54,18 @@
 			</div>
 		</div>
 	</div>
+	<div class="column">
+		<div id="stacks" class="section">
+			<div class="header">{{localize "gurps.system.modifier_bucket.saved_stacks"}}</div>
+			<div class="content" style="gap: 0;" autocomplete="off">
+				<button id="save-current">
+					<i class="fas fa-save"></i>
+					{{localize "gurps.system.modifier_bucket.save_current"}}
+					</button>
+				{{#each savedStacks}}
+				{{>modifier-bucket/stack}}
+				{{/each}}
+			</div>
+		</div>
+	</div>
 </div>

@@ -1,7 +1,8 @@
 import { RollType, SYSTEM_NAME, UserFlags } from "@module/data"
 import { RollGURPS } from "@module/roll"
 import { LastActor } from "@util"
-import { ModifierBucketWindow } from "./document"
+import { ModifierBucketWindow } from "./window"
+import { UserGURPS } from "@module/user/document"
 
 export class ModifierBucket extends Application {
 
@@ -25,9 +26,7 @@ export class ModifierBucket extends Application {
 
 
 	protected _injectHTML(html: JQuery<HTMLElement>): void {
-		console.warn("_injectHTML")
 		if ($("body").find("#modifier-bucket-button").length === 0) {
-			console.warn("success?")
 			html.insertAfter($("body").find("#hotbar-page-controls"))
 			this._element = html
 		}
@@ -47,9 +46,10 @@ export class ModifierBucket extends Application {
 	}
 
 	async getData(options?: Partial<ApplicationOptions> | undefined): Promise<object> {
-		let total = (game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierTotal) as number) ?? 0
-		let buttonMagnet = ""
-		if (game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierSticky) === true) buttonMagnet = "sticky"
+		// let total = (game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierTotal) as number) ?? 0
+		let total = (game.user as UserGURPS).modifierTotal
+		let buttonMagnet =
+			(game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierSticky) === true) ? "sticky" : ""
 		let buttonColor = "total-white"
 		if (total > 0) buttonColor = "total-green"
 		if (total < 0) buttonColor = "total-red"
@@ -71,7 +71,7 @@ export class ModifierBucket extends Application {
 	// Increase/Decrease modifier by 1 with the mouse wheel
 	async _onMouseWheel(event: WheelEvent) {
 		const delta = Math.round(event.deltaY / -100)
-		return game.ModifierList.addModifier({
+		return (game.user as UserGURPS).addModifier({
 			name: "",
 			modifier: delta,
 			tags: [],
@@ -91,17 +91,16 @@ export class ModifierBucket extends Application {
 	}
 
 	// Toggle modifier bucket magnet
-	_onMagnetClick(event: JQuery.ClickEvent): unknown {
+	private async _onMagnetClick(event: JQuery.ClickEvent): Promise<unknown> {
 		event.preventDefault()
 		event.stopPropagation()
 		const sticky = game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierSticky) ?? false
-		// await game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierSticky, !sticky)
-		game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierSticky, !sticky)
+		await game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierSticky, !sticky)
 		return this.render()
 	}
 
 	// Roll 3d6
-	async _onDiceClick(event: JQuery.ClickEvent): Promise<void> {
+	private async _onDiceClick(event: JQuery.ClickEvent): Promise<void> {
 		event.preventDefault()
 		return RollGURPS.handleRoll(game.user, null, {
 			type: RollType.Generic,
@@ -129,7 +128,7 @@ export class ModifierBucket extends Application {
 
 	async clear(): Promise<unknown> {
 		await game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, [])
-		await game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierTotal, 0)
+		// await game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierTotal, 0)
 		game.ModifierList.render()
 		return this.render(true)
 	}

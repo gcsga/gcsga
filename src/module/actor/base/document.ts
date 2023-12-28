@@ -94,7 +94,7 @@ export class BaseActorGURPS<SourceType extends BaseActorSourceGURPS = BaseActorS
 				setProperty(changed, "prototypeToken.texture.src", (this as any).prototypeToken.texture.src)
 			}
 		}
-		await super._preUpdate(changed, options, user)
+		return super._preUpdate(changed, options, user)
 	}
 
 	get hitLocationTable(): HitLocationTable {
@@ -139,9 +139,9 @@ export class BaseActorGURPS<SourceType extends BaseActorSourceGURPS = BaseActorS
 	}
 
 	get modifiers(): RollModifier[] {
-		let modifiers: RollModifier[] = []
+		const modifiers: RollModifier[] = []
 		this.gEffects.forEach(e => {
-			modifiers = modifiers.concat(e.system.modifiers || [])
+			modifiers.push(...e.system.modifiers ?? [])
 		})
 		return modifiers
 	}
@@ -156,8 +156,8 @@ export class BaseActorGURPS<SourceType extends BaseActorSourceGURPS = BaseActorS
 		const effects = this.gEffects.map(e => {
 			const overlay = e instanceof ConditionGURPS && e.cid === ConditionID.Dead
 			const a = new ActiveEffect({ name: e.name, icon: e.img || "" } as any)
-			// a.setFlag("core", "overlay", overlay)
-			;(a as any).flags = { core: { overlay: overlay } }
+				// a.setFlag("core", "overlay", overlay)
+				; (a as any).flags = { core: { overlay: overlay } }
 			return a
 		})
 		return super.temporaryEffects.concat(effects)
