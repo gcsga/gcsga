@@ -80,6 +80,11 @@ declare global {
 		labels: PIXI.Container
 
 		/**
+		 * The computed total distance of the Ruler.
+		 */
+		totalDistance: number
+
+		/**
 		 * Track the current measurement state
 		 * @defaultValue `Ruler.STATES.INACTIVE`
 		 */

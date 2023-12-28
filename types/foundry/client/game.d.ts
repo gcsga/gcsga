@@ -17,7 +17,8 @@ declare global {
 		 * GURPS specific definitions
 		 */
 		CompendiumBrowser: CompendiumBrowser
-		ModifierButton: ModifierButton
+		// ModifierButton: ModifierButton
+		ModifierBucket: ModifierBucket
 		ModifierList: ModList
 		EffectPanel: EffectPanel
 		model: any
@@ -566,23 +567,23 @@ declare global {
 			_systemUpdateCheckTime: number
 			documentTypes: {
 				[Key in
-					| foundry.CONST.DOCUMENT_TYPES
-					| "ActiveEffect"
-					| "Adventure"
-					| "AmbientLight"
-					| "AmbientSound"
-					| "Card"
-					| "Combatant"
-					| "Drawing"
-					| "FogExploration"
-					| "MeasuredTemplate"
-					| "Note"
-					| "PlaylistSound"
-					| "Setting"
-					| "TableResult"
-					| "Tile"
-					| "Token"
-					| "Wall"]: string[]
+				| foundry.CONST.DOCUMENT_TYPES
+				| "ActiveEffect"
+				| "Adventure"
+				| "AmbientLight"
+				| "AmbientSound"
+				| "Card"
+				| "Combatant"
+				| "Drawing"
+				| "FogExploration"
+				| "MeasuredTemplate"
+				| "Note"
+				| "PlaylistSound"
+				| "Setting"
+				| "TableResult"
+				| "Tile"
+				| "Token"
+				| "Wall"]: string[]
 			}
 			model: {
 				Actor: Record<string, Record<string, unknown>>
@@ -691,12 +692,12 @@ declare global {
 			version?: string
 			world: WorldData<foundry.packages.WorldData>
 		} & {
-			[DocumentType in
+				[DocumentType in
 				| foundry.CONST.DOCUMENT_TYPES
 				| "Setting" as ConfiguredDocumentClassForName<DocumentType>["metadata"]["collection"]]?: InstanceType<
-				ConfiguredDocumentClassForName<DocumentType>
-			>["data"]["_source"][]
-		}
+					ConfiguredDocumentClassForName<DocumentType>
+				>["data"]["_source"][]
+			}
 
 		type ConstructorData = Omit<Data, "world" | "system" | "modules"> & {
 			world: WorldData<foundry.packages.WorldData["_source"]>

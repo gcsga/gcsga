@@ -31,6 +31,16 @@ declare global {
 		protected _actor: InstanceType<ConfiguredDocumentClass<typeof Actor>> | null
 
 		/**
+		 * The horizontal position of the token.
+		 */
+		x: number
+
+		/**
+		 * The vertical position of the token.
+		 */
+		y: number
+
+		/**
 		 * A lazily evaluated reference to the Actor this Token modifies.
 		 * If actorLink is true, then the document is the primary Actor document.
 		 * Otherwise the Actor document is a synthetic (ephemeral) document constructed using the Token's actorData.
