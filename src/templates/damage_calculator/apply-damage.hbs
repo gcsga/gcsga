@@ -234,7 +234,7 @@
 				<a data-tab="{{@index}}">
 					{{#if this.isOverridden}}*{{/if}}
 					{{this.basicDamage}}
-					{{this.damageType.id}}
+					{{@root.calculator.damageType.id}}
 					({{this.hitLocation.choice_name}})</a>
 			{{/each}}
 		</nav>
@@ -290,7 +290,7 @@
 							>
 								{{selectOptions
 									@root.calculator.hitLocationChoice
-									selected=this.locationId
+									selected=this.locationName
 									localize=false
 								}}
 							</select>
