@@ -1,24 +1,27 @@
-import { HitLocation, HitLocationTable, HitLocationTableData } from "@actor/character/hit_location"
+import { HitLocation } from "@actor/character/hit_location"
 import {
 	DamageAttacker,
+	DamageHit,
 	DamageRoll,
 	DamageTarget,
 	TargetPool,
 	TargetTrait,
 	TargetTraitModifier,
-	Vulnerability,
 } from "@module/damage_calculator"
-import { DamageCalculator, DamageResults } from "@module/damage_calculator/damage_calculator"
+import { IDamageCalculator, createDamageCalculator } from "@module/damage_calculator/damage_calculator"
 import { DamageTypes } from "@module/damage_calculator/damage_type"
-// import { InjuryEffect } from "@module/damage_calculator/injury_effect"
 import { DiceGURPS } from "@module/dice"
 import { TooltipGURPS } from "@module/tooltip"
 
 export class _Attacker implements DamageAttacker {
+	tokenId: string = ""
+
 	name = "Arnold"
 }
 
 export class _Target implements DamageTarget {
+	tokenId: string = ""
+
 	getTraits(name: string): TargetTrait[] {
 		return this._traits.filter(it => it.name === name)
 	}
@@ -55,7 +58,10 @@ export class _Target implements DamageTarget {
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	incrementDamage(delta: number): void {}
 
-	pools: TargetPool[] = [{ id: "hp", name: "HP", fullName: "Hit Points" }]
+	pools: TargetPool[] = [
+		{ id: "hp", name: "HP", fullName: "Hit Points" },
+		{ id: "fp", name: "FP", fullName: "Fatigue Points" },
+	]
 }
 
 export class _DamageRoll implements DamageRoll {
@@ -65,8 +71,7 @@ export class _DamageRoll implements DamageRoll {
 
 	applyTo = "HP"
 
-	// Not a real location id, which should be something like "torso".
-	locationId = "dummy"
+	hits: DamageHit[] = [{ basicDamage: 0, locationId: "torso" }]
 
 	attacker = new _Attacker()
 
@@ -101,19 +106,12 @@ export const Knockdown = [
 
 export type DamageShock = { damage: number; shock: number }
 
-interface IDamageCalculator {
-	overrideDamageReduction: number | undefined
-	results: DamageResults
-	overrideFlexible(arg: boolean | undefined): void
-	vulnerabilities: Vulnerability[]
-}
-
 const dummyLocalize = (stringId: string, data?: any) => {
 	return `${stringId}${data ? `:${JSON.stringify(data)}` : ""}`
 }
 
 export const _create = function (roll: DamageRoll, target: DamageTarget): IDamageCalculator {
-	return new DamageCalculator(roll, target, dummyLocalize)
+	return createDamageCalculator(roll, target, dummyLocalize)
 }
 
 export class _TargetTrait implements TargetTrait {

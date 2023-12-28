@@ -613,7 +613,9 @@ class DamageRollTypeHandler extends RollTypeHandler {
 	 * @param _actor
 	 */
 	private static getHitLocationFromLastAttackRoll(_actor: ActorGURPS): string {
-		return game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_DAMAGE_LOCATION)
+		const name = game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_DAMAGE_LOCATION)
+		const location = _actor.hitLocationTable.locations.find(l => l.id === name)
+		return location?.table_name ?? "Torso"
 	}
 }
 
