@@ -72,9 +72,9 @@
 			width: 4em;
 		}
 
-		input[name="injury"] {
-			text-align: right;
-		}
+		// input[name="injury"] {
+		// 	text-align: right;
+		// }
 
 		.input-wrapper {
 			border: 1px solid rgba(var(--color-control-edge));
@@ -222,8 +222,12 @@
 			.apply {
 				display: flex;
 				flex-flow: row nowrap;
-				justify-content: space-between;
-				margin-top: 2px;
+				justify-content: end;
+				align-items: center;
+
+				* {
+					margin-left: 3px;
+				}
 			}
 		}
 	}

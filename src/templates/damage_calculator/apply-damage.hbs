@@ -349,27 +349,39 @@
 							<div id="calc">
 								<div class="table">
 									<div class="header">{{localize "gurps.dmgcalc.calculation"}}</div>
-
 									{{#each this.results.steps}}
 										<div class="step">{{localize substep}}</div>
 										<div class="value">{{{text}}}</div>
 										<div class="descr">{{notes}}</div>
 									{{/each}}
 								</div>
+								<div class="apply">
+									<div class="label">{{localize
+											"gurps.dmgcalc.injury"
+										}}&nbsp;({{calculator.damagePool.name}})</div>
+									<input
+										type="number"
+										class="{{overridden calculator.injuryOverride}}"
+										value="{{calculator.injury}}"
+										step="any"
+										name="injury"
+										size="4"
+									/>
+									<button
+										type="button"
+										class="apply-button gcs-checkmark"
+										data-action="apply-injury"
+									>{{localize "gurps.misc.apply"}}</button>
+								</div>
+
 							</div>
+
 						</div>
+
 					</div>
 				</div>
 			{{/each}}
 		</section>
-		<div class="apply">
-			<div class="label">{{localize "gurps.dmgcalc.injury"}}&nbsp;({{localize "gurps.static.hp"}})</div>
-			<input type="number" value="{{this.results.injury.value}}" step="any" name="injury" size="4" />
-			<button type="button" class="apply-button gcs-checkmark" data-action="apply-injury">{{localize
-					"gurps.misc.apply"
-				}}</button>
-		</div>
-
 	</div>
 
 	{{!--

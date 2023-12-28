@@ -35,6 +35,8 @@ export interface IDamageCalculator {
 	readonly isOverridden: boolean
 	resetOverrides(): void
 
+	readonly injury: number
+	injuryOverride: number | undefined
 	applyTotalDamage(): void
 	applyBasicDamage(index: number): unknown
 
@@ -163,6 +165,7 @@ class DamageCalculator implements IDamageCalculator {
 		damagePool: undefined,
 		damageReduction: undefined,
 		damageType: undefined,
+		injury: undefined,
 		injuryTolerance: undefined,
 		isExplosion: undefined,
 		isHalfDamage: undefined,
@@ -209,10 +212,22 @@ class DamageCalculator implements IDamageCalculator {
 	}
 
 	get injury(): number {
+		return this.overrides.injury ? this.overrides.injury : this._injury
+	}
+
+	private get _injury(): number {
 		return this.hits
 			.map(it => it.results)
 			.map(it => it.injury!.value)
 			.reduce((acc, cur) => acc + cur, 0)
+	}
+
+	get injuryOverride(): number | undefined {
+		return this.overrides.injury
+	}
+
+	set injuryOverride(value: number | undefined) {
+		this.overrides.injury = this._injury === value ? undefined : value
 	}
 
 	// === Attacker ===
@@ -251,6 +266,10 @@ class DamageCalculator implements IDamageCalculator {
 
 	get damagePools(): TargetPool[] {
 		return this.target.pools
+	}
+
+	get damagePool(): TargetPool {
+		return this.damagePools.find(it => it.id === this.damagePoolID)!
 	}
 
 	// --- Damage Type ---
@@ -586,14 +605,14 @@ class DamageCalculator implements IDamageCalculator {
 	getBasicDamageSteps(hit: HitLocationDamage): (CalculatorStep | undefined)[] {
 		const basicDamages: (CalculatorStep | undefined)[] = []
 
-		basicDamages.push(new BasicDamageStep(hit.basicDamage, this.format("gurps.dmgcalc.damage_pool.hp")))
+		basicDamages.push(new BasicDamageStep(hit.basicDamage, this.damagePool.name))
 		basicDamages.push(this.adjustBasicDamage(hit.basicDamage))
 
 		return basicDamages
 	}
 
 	addBasicDamageSteps(results: DamageResults, basicDamage: number): void {
-		results.addResult(new BasicDamageStep(basicDamage, this.format("gurps.dmgcalc.damage_pool.hp")))
+		results.addResult(new BasicDamageStep(basicDamage, this.damagePool.name))
 		results.addResult(this.adjustBasicDamage(basicDamage))
 	}
 
@@ -1612,6 +1631,7 @@ type ContainerOverrides = {
 	damagePool: string | undefined
 	damageReduction: number | undefined
 	damageType: DamageType | undefined
+	injury: number | undefined
 	injuryTolerance: string | undefined
 	isExplosion: boolean | undefined
 	isHalfDamage: boolean | undefined
