@@ -253,7 +253,7 @@ class DamageCalculator implements IDamageCalculator {
 	// --- Damage Pool ---
 	get damagePoolID(): string {
 		if (this.overrides.damagePool) return this.overrides.damagePool
-		return this.damageType.pool_id ?? "hp"
+		return this.damageType?.pool_id ?? "hp"
 	}
 
 	get damagePoolOverride(): string | undefined {
@@ -388,15 +388,24 @@ class DamageCalculator implements IDamageCalculator {
 		const scenes = (globalThis as any).game?.scenes
 		if (scenes) {
 			const canvas = scenes.active
-			const token1 = canvas!.tokens.get(this.attacker!.tokenId) as TokenDocumentGURPS & { x: number; y: number }
-			const token2 = canvas!.tokens.get(this.target!.tokenId) as TokenDocumentGURPS & { x: number; y: number }
+			const token1 = canvas!.tokens.get(this.attacker!.tokenId) as TokenDocumentGURPS & {
+				x: number
+				y: number
+				elevation: number
+			}
+			const token2 = canvas!.tokens.get(this.target!.tokenId) as TokenDocumentGURPS & {
+				x: number
+				y: number
+				elevation: number
+			}
 
 			const ruler = new Ruler() as Ruler & { totalDistance: number }
 			ruler.waypoints = [{ x: token1.x, y: token1.y }]
 			ruler.measure({ x: token2.x, y: token2.y }, { gridSpaces: true })
-			const distance = ruler.totalDistance
+			const horizontalDistance = ruler.totalDistance
+			const verticalDistance = Math.abs(token1.elevation - token2.elevation)
 			ruler.clear()
-			return distance
+			return Math.ceil(Math.sqrt(horizontalDistance ** 2 + verticalDistance ** 2))
 		}
 		return undefined
 	}
@@ -469,6 +478,8 @@ class DamageCalculator implements IDamageCalculator {
 	get hitLocationChoice(): Record<string, string> {
 		const choice: Record<string, string> = {}
 		this.hitLocationTable.locations.forEach(it => (choice[it.table_name] = it.table_name))
+		choice.divider = "────────"
+		choice[DefaultHitLocations.LargeArea] = this.format("gurps.dmgcalc.description.large_area_injury")
 		return choice
 	}
 
@@ -835,7 +846,10 @@ class DamageCalculator implements IDamageCalculator {
 			value: this.damageType.woundingModifier,
 			explanation: this.format("gurps.dmgcalc.description.damage_location", {
 				type: this.format(this.damageType.full_name),
-				location: location?.table_name,
+				location:
+					locationDamage.locationName === DefaultHitLocations.LargeArea
+						? this.format("gurps.dmgcalc.description.large_area_injury")
+						: location?.table_name,
 			}),
 		}
 	}
@@ -904,7 +918,10 @@ class DamageCalculator implements IDamageCalculator {
 
 		const standardMessage = this.format("gurps.dmgcalc.description.damage_location", {
 			type: this.format(`gurps.dmgcalc.type.${this.damageType.id}`),
-			location: location?.table_name,
+			location:
+				locationName === DefaultHitLocations.LargeArea
+					? this.format("gurps.dmgcalc.description.large_area_injury")
+					: location?.table_name,
 		})
 
 		if (!location) return undefined

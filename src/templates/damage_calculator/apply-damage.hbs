@@ -284,13 +284,14 @@
 						<div class="field no-stretch location">
 							<select
 								name="hitLocation"
-								class="{{overridden this.locationIdOverride}}"
+								class="{{overridden this.locationNameOverride}}"
 								data-index="{{@index}}"
 								data-action="location-select"
 							>
-								{{selectOptions
+								{{selectOptsGURPS
 									@root.calculator.hitLocationChoice
 									selected=this.locationName
+									disabled="divider"
 									localize=false
 								}}
 							</select>

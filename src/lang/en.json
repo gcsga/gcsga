@@ -1547,7 +1547,7 @@
 				"hardened_dr": "Armor Divisor ({divisor}) & Hardened DR ({level})",
 				"ignores_dr": "Armor Divisor (Ignores DR)",
 				"knockback_only": "Knockback only",
-				"large_area_injury": "Large Injury Area",
+				"large_area_injury": "Large-Area Injury",
 				"location_max": "{location}",
 				"no_brain": "No Brain",
 				"ranged_halfd": "Ranged, 1/2D",
