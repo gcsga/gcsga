@@ -37,3 +37,12 @@ export enum StrengthDamage {
 	Swing = "sw",
 	SwingLeveled = "sw_leveled",
 }
+
+export interface WeaponStrength {
+	min: number
+	bipod: boolean
+	mounted: boolean
+	musketRest: boolean
+	twoHanded: boolean
+	twoHandedUnready: boolean
+}
