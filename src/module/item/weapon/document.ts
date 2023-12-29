@@ -8,7 +8,8 @@ import { TooltipGURPS } from "@module/tooltip"
 import { LocalizeGURPS, stringCompare } from "@util"
 import { HandlebarsHelpersGURPS } from "@util/handlebars_helpers"
 import { WeaponDamage } from "./damage"
-import { BaseWeaponSource } from "./data"
+import { BaseWeaponSource, WeaponStrength } from "./data"
+import { Int } from "@util/fxp"
 
 export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSource> extends BaseItemGURPS<SourceType> {
 	get itemName(): string {
@@ -24,8 +25,16 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 		return this.system.usage
 	}
 
-	get strength(): string {
-		return this.system.strength
+	get strength(): WeaponStrength {
+		let s = this.system.strength.trim()
+		return {
+			min: Int.fromString(s),
+			bipod: s.includes("b"),
+			mounted: s.includes("m"),
+			musketRest: s.includes("r"),
+			twoHanded: s.includes("†") || s.includes("*"),
+			twoHandedUnready: s.includes("‡")
+		}
 	}
 
 	override get actor(): (typeof CONFIG.GURPS.Actor.documentClasses)[ActorType.Character] | null {

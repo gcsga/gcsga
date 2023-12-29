@@ -13,3 +13,22 @@ export interface MeleeWeaponSystemData extends BaseWeaponSystemData {
 	parry: string
 	block: string
 }
+
+export interface WeaponReach {
+	min: number
+	max: number
+	closeComabt: boolean
+	changeRequiresReady: boolean
+}
+
+export interface WeaponParry {
+	no: boolean
+	fencing: boolean
+	unbalanced: boolean
+	modifier: number
+}
+
+export interface WeaponBlock {
+	no: boolean
+	modifier: number
+}
