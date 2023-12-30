@@ -1640,22 +1640,25 @@
 			"description": {
 				"armor_divisor": "Armor Divisor ({divisor})",
 				"armor_divisor_ignores": "Armor Divisor (Ignores DR)",
+				"armor_divisor_collateral": "Collateral Damage",
 				"blunt_trauma": "Blunt Trauma",
 				"damage_location": "{type}, {location}",
-				"damage_reduction": "= {injury} ÷ {reduction} (Damage Reduction)",
+				"damage_reduction": "= {injury} ÷ {reduction}",
 				"diffuse": "Diffuse (ignores hit location)",
 				"diffuse_max": "Maximum {value} (Diffuse)",
 				"explosion_internal": "Explosion (Internal)",
 				"explosion_outofrange": "Explosion; Out of range",
 				"explosion_range": "Explosion; {range} yards",
 				"fatigue": "Fatigue ignores Hit Location",
-				"ignores_dr": "Ignores DR",
+				"half_damage": "Ranged, 1/2D",
+				"hardened_dr": "Armor Divisor ({divisor}) & Hardened DR ({level})",
+				"ignores_dr": "Armor Divisor (Ignores DR)",
 				"knockback_only": "Knockback only",
 				"large_area_injury": "Large Injury Area",
-				"location_max": "Maximum {value} ({location})",
+				"location_max": "{location}",
 				"no_brain": "No Brain",
 				"ranged_halfd": "Ranged, 1/2D",
-				"shotgun": "Shotgun, extremely close (×{multiplier})",
+				"shotgun": "Shotgun, close (×{multiplier})",
 				"tight_beam_burn": "Tight beam burning, {location}",
 				"vulnerability": "= {modifier} × {vulnerability} (Vulnerability)"
 			},
@@ -1674,7 +1677,7 @@
 			"range": "Range (yards)",
 			"rof": "RoF Multiplier",
 			"roll": "Damage Roll",
-			"shotgun": "Shotgun, extremely close",
+			"shotgun": "Shotgun, close",
 			"substep": {
 				"adjusted_damage": "Adjusted Damage",
 				"adjusted_injury": "Adjusted Injury",
@@ -1685,7 +1688,7 @@
 				"effective_modifier": "Effective Modifier",
 				"injury": "Injury",
 				"injury_tolerance": "Injury Tolerance",
-				"max_location": "Max for Location",
+				"max_location": "Location Maximum",
 				"penetrating": "Penetrating",
 				"wounding_modifier": "Wounding Modifier"
 			},
@@ -1714,7 +1717,7 @@
 			},
 			"vulnerability": "Vulnerability",
 			"weapon": "Weapon",
-			"wounding_modifier": "Modifier"
+			"wounding_modifier": "Wounding Modifier"
 		},
 		"effect": {
 			"increment": "[Left Click] Increase Level",
