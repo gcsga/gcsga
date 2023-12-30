@@ -1,13 +1,13 @@
-<div class="equipped" data-item-id="{{this.id}}">{{#if this.equipped}}<i class="gcs-checkmark"></i>{{/if}}</div>
+<div class="equipped" data-item-id="{{this._id}}">{{#if this.system.calc.equipped}}<i class="gcs-checkmark"></i>{{/if}}</div>
 <div class="quantity">{{this.system.quantity}}</div>
 <div
-	class="desc item{{#if this.isContainer}} container{{/if}} other {{disabled this.isGreyedOut}}"
-	data-item-id="{{ this.id }}"
-	{{{indent this.parents.length}}}
+	class="desc item{{#if (isContainer this)}} container{{/if}} other {{disabled this.system.calc.disabled}}"
+	data-item-id="{{ this._id }}"
+	{{{indent this.system.calc.indent}}}
 >
 	<div class="dropdown">
 		{{#if (eq this.type "equipment_container")}}
-		{{#if this.open}}
+		{{#if this.system.open}}
 		{{>actor/character/sections/dropdown-open}}
 		{{else}}
 		{{>actor/character/sections/dropdown-closed}}
@@ -15,19 +15,19 @@
 		{{/if}}
 	</div>
 	<div class="name">
-		{{this.name}}
+		{{this.system.calc.name}}
 	</div>
-	{{{this.secondaryText}}}
+	{{{this.system.calc.resolved_notes}}}
 </div>
-<div class="uses {{disabled this.isGreyedOut}}">{{#if (and this.system.uses this.system.max_ses)}}{{this.system.uses}}{{/if}}</div>
-<div class="tech-level {{disabled this.isGreyedOut}}">{{this.system.tech_level}}</div>
-<div class="legality-class {{disabled this.isGreyedOut}}">{{this.system_legality_class}}</div>
-<div class="value {{disabled this.isGreyedOut}}">{{this.adjustedValue}}</div>
-<div class="weight {{disabled this.isGreyedOut}}">{{this.adjustedWeight}}</div>
-<div class="extended-value {{disabled this.isGreyedOut}}">{{this.extendedValue}}</div>
-<div class="extended-weight {{disabled this.isGreyedOut}}">{{this.extendedWeightFast}}</div>
-<div class="reference {{disabled this.isGreyedOut}}">{{{ref this.reference}}}</div>
-{{#if this.open}}
+<div class="uses {{disabled this.system.calc.disabled}}">{{#if (and this.system.uses this.system.max_uses)}}{{this.system.uses}}{{/if}}</div>
+<div class="tech-level {{disabled this.system.calc.disabled}}">{{this.system.tech_level}}</div>
+<div class="legality-class {{disabled this.system.calc.disabled}}">{{this.system.legality_class}}</div>
+<div class="value {{disabled this.system.calc.disabled}}">{{this.system.calc.value}}</div>
+<div class="weight {{disabled this.system.calc.disabled}}">{{this.system.calc.weight}}</div>
+<div class="extended-value {{disabled this.system.calc.disabled}}">{{this.system.calc.extended_value}}</div>
+<div class="extended-weight {{disabled this.system.calc.disabled}}">{{this.system.calc.extended_weight}}</div>
+<div class="reference {{disabled this.system.calc.disabled}}">{{{ref this.system.reference}}}</div>
+{{#if this.system.open}}
 {{#each (sort this.children "sort")}}
 {{>actor/character/sections/equipment}}
 {{/each}}

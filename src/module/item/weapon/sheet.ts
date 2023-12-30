@@ -1,9 +1,6 @@
 import { ItemSheetGURPS } from "@item/base"
-import { WeaponGURPS } from "@module/config"
 
-export class WeaponSheet extends ItemSheetGURPS {
-	declare object: WeaponGURPS
-
+export abstract class WeaponSheet extends ItemSheetGURPS {
 	static get defaultOptions() {
 		const options = super.defaultOptions
 		return mergeObject(super.defaultOptions, {
@@ -25,43 +22,15 @@ export class WeaponSheet extends ItemSheetGURPS {
 				defaults: (this.item as any).defaults,
 			},
 		}
-		console.log(sheetData)
 		return sheetData
 	}
-	// GetData(options?: Partial<FormApplicationOptions> | undefined): any {
-	// 	const attributes: Record<string, string> = {}
-	// 	const defaultAttributes = game.settings.get(
-	// 		SYSTEM_NAME,
-	// 		`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`
-	// 	) as Attribute[]
-	// 	if (this.item.actor) {
-	// 		const actor = this.object.actor as unknown as CharacterGURPS
-	// 		for (const e of Object.values(actor.attributes)) {
-	// 			attributes[e.attr_id] = e.attribute_def.name
-	// 		}
-	// 	} else {
-	// 		mergeObject(
-	// 			attributes,
-	// 			defaultAttributes.reduce(function(map: any, obj: any) {
-	// 				map[obj.id] = obj.name
-	// 				return map
-	// 			}, {})
-	// 		)
-	// 	}
-	// 	// return {
-	// 	// 	...super.getData(options),
-	// 	// 	weapon: this.item,
-	// 	// 	config: CONFIG.GURPS,
-	// 	// 	attributes: attributes,
-	// 	// 	sysPrefix: "",
-	// 	// }
-	// 	const sheetData = {
-	// 		...super.getData(options),
-	// 		...{
-	// 		},
-	// 	}
-	// 	return sheetData
-	// }
+
+	protected _updateObject(event: Event, formData: Record<string, any>): Promise<unknown> {
+		formData = this._processWeaponFieldChanges(formData)
+		return super._updateObject(event, formData)
+	}
+
+	protected abstract _processWeaponFieldChanges(data: Record<string, any>): Record<string, any>
 
 	protected _getHeaderButtons(): Application.HeaderButton[] {
 		const all_buttons = super._getHeaderButtons()

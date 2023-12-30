@@ -1,4 +1,4 @@
-import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
+import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
 import { Feature } from "@module/config"
 import { Difficulty, ItemType, Study, StudyHoursNeeded } from "@module/data"
 import { SkillDefault } from "@module/default"
@@ -33,12 +33,16 @@ export interface SkillSystemData extends ItemGCSSystemData {
 	features: Feature[]
 	study: Study[]
 	study_hours_needed: StudyHoursNeeded
-	calc?: {
-		level?: number
-		rsl?: string
-		points?: number
-		resolved_notes?: string
-	}
+	calc?: SkillCalcValues
+}
+
+export interface SkillCalcValues extends ItemGCSCalcValues {
+	level: number
+	rsl: string
+	points: number
+	resolved_notes?: string
+	tooltip: string
+	difficulty: string
 }
 
 export type EncumbrancePenaltyMultiplier = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9

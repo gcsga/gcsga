@@ -32,7 +32,7 @@
 import "../styles/gurps.scss"
 import { registerSettings } from "./settings"
 import { preloadTemplates } from "./preload_templates"
-import { getDefaultSkills, LastActor, LocalizeGURPS, setInitiative, Weight } from "@util"
+import { evaluateToNumber, getDefaultSkills, LastActor, LocalizeGURPS, setInitiative, Weight } from "@util"
 import { registerHandlebarsHelpers } from "@util/handlebars_helpers"
 import { GURPSCONFIG } from "./config"
 import * as Chat from "@module/chat"
@@ -58,8 +58,10 @@ import {
 	EquipmentModifierContainerSheet,
 	EquipmentModifierSheet,
 	EquipmentSheet,
+	MeleeWeaponSheet,
 	NoteContainerSheet,
 	NoteSheet,
+	RangedWeaponSheet,
 	RitualMagicSpellSheet,
 	SkillContainerSheet,
 	SkillSheet,
@@ -72,7 +74,6 @@ import {
 	TraitModifierContainerSheet,
 	TraitModifierSheet,
 	TraitSheet,
-	WeaponSheet,
 } from "@item"
 import { ActorSheetGURPS, BaseActorGURPS, CharacterSheetGURPS, LootSheetGURPS, StaticCharacterSheetGURPS } from "@actor"
 import { ActiveEffectGURPS } from "@module/effect"
@@ -108,21 +109,12 @@ if (!(globalThis as any).GURPS) {
     7#@@&P?!~&@@G    !&@@@#GPP@@@#    5@@@.    !@@@P.  .&@@Y          .5@@@B5JYG@@@&~
       .^?5GBBBGG5.     .~?JYY5YJJJ^  .JJJJ~     :JJY7  ~JJJJ.           .~YB#&&BP7:
                                                                                        `
-	// GURPS.eval = evaluateToNumber
-	// GURPS.search = fSearch
-	// GURPS.dice = DiceGURPS
 	GURPS.pdf = PDF.PDFViewerSheet
-	// GURPS.TokenModifierControl = new TokenModifierControl()
-	// GURPS.recurseList = Static.recurseList
-	// GURPS.setLastActor = LastActor.set
-	// GURPS.DamageCalculator = DamageCalculator
-	// GURPS.getDefaultSkills = getDefaultSkills
-	// GURPS.roll = RollGURPS
-	// GURPS.static = Static
 	GURPS.parseLink = parselink
 	GURPS.chat = Chat
 	GURPS.mook = MookParser
 	GURPS.Weight = Weight
+	GURPS.eval = evaluateToNumber
 }
 
 // Initialize system
@@ -251,10 +243,15 @@ Hooks.once("init", async () => {
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.note_container"),
 	})
-	Items.registerSheet(SYSTEM_NAME, WeaponSheet, {
-		types: [ItemType.MeleeWeapon, ItemType.RangedWeapon],
+	Items.registerSheet(SYSTEM_NAME, MeleeWeaponSheet, {
+		types: [ItemType.MeleeWeapon],
 		makeDefault: true,
-		label: game.i18n.localize("gurps.system.sheet.weapon"),
+		label: game.i18n.localize("gurps.system.sheet.melee_weapon"),
+	})
+	Items.registerSheet(SYSTEM_NAME, RangedWeaponSheet, {
+		types: [ItemType.RangedWeapon],
+		makeDefault: true,
+		label: game.i18n.localize("gurps.system.sheet.ranged_weapon"),
 	})
 	Items.registerSheet(SYSTEM_NAME, EffectSheet, {
 		types: [ItemType.Effect, ItemType.Condition],

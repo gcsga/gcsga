@@ -96,39 +96,39 @@ export enum DamageProgression {
 	Tbone2Clean = "tbone_2_clean",
 }
 
-export interface StringCompare {
-	compare: StringComparison
+export interface StringCriteria {
+	compare: StringComparisonType
 	qualifier?: string
 }
 
-export enum StringComparison {
-	None = "none",
-	Is = "is",
-	IsNot = "is_not",
-	Contains = "contains",
-	DoesNotContain = "does_not_contain",
-	StartsWith = "starts_with",
-	DoesNotStartWith = "does_not_start_with",
-	EndsWith = "ends_with",
-	DoesNotEndWith = "does_not_end_with",
+export enum StringComparisonType {
+	AnyString = "none",
+	IsString = "is",
+	IsNotString = "is_not",
+	ContainsString = "contains",
+	DoesNotContainString = "does_not_contain",
+	StartsWithString = "starts_with",
+	DoesNotStartWithString = "does_not_start_with",
+	EndsWithString = "ends_with",
+	DoesNotEndWithString = "does_not_end_with",
 }
 
-export interface NumberCompare {
-	compare: NumberComparison
-	qualifier: number
+export interface NumericCriteria {
+	compare: NumericComparisonType
+	qualifier?: number
 }
 
-export interface WeightCompare {
-	compare: NumberComparison
-	qualifier: string
+export interface WeightCriteria {
+	compare: NumericComparisonType
+	qualifier?: string
 }
 
-export enum NumberComparison {
-	None = "none",
-	Is = "is",
-	IsNot = "is_not",
-	AtLeast = "at_least",
-	AtMost = "at_most",
+export enum NumericComparisonType {
+	AnyNumber = "none",
+	EqualsNumber = "is",
+	NotEqualsNumber = "is_not",
+	AtLeastNumber = "at_least",
+	AtMostNumber = "at_most",
 }
 
 // Standard attribute related ids
@@ -457,3 +457,16 @@ export const GURPS_COMMANDS = (() => {
 		mook: new RegExp(`^\\/mook ?${any}`, "i"),
 	}
 })()
+
+export interface Stringer {
+	formattedName: string
+	// isLeveled: boolean
+	// currentLevel: number
+}
+
+export interface WeaponOwner {
+	formattedName: string
+	isLeveled: boolean
+	currentLevel: number
+	ratedStrength: number
+}

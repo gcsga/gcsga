@@ -1,18 +1,18 @@
-<div class="item desc" data-item-id="{{this.id}}">
+<div class="item desc" data-item-id="{{this._id}}">
 	<div class="name">
-		{{this.itemName}}
+		{{this.system.calc.name}}
 	</div>
-	{{{this.secondaryText}}}
+	{{{this.system.calc.resolved_notes}}}
 </div>
-<div data-item-id="{{this.id}}" data-type="attack" class="usage rollable">
-	{{this.usage}}</div>
-<div data-item-id="{{this.id}}" data-type="attack" class="level rollable">
-	{{this.level}}</div>
-<div data-item-id="{{this.id}}" data-type="parry" class="parry rollable">
-	{{this.fastResolvedParry}}</div>
-<div data-item-id="{{this.id}}" data-type="block" class="block rollable">
-	{{this.fastResolvedBlock}}</div>
-<div data-item-id="{{this.id}}" data-type="damage" class="damage rollable">
-	{{this.fastResolvedDamage}}</div>
-<div class="reach">{{this.reach}}</div>
-<div class="st">{{this.strength}}</div>
+<div data-item-id="{{this._id}}" data-type="attack" class="usage rollable">
+	{{this.system.usage}}</div>
+<div data-item-id="{{this._id}}" data-type="attack" class="level rollable">
+	{{this.system.calc.level}}</div>
+<div data-item-id="{{this._id}}" data-type="parry" class="parry rollable">
+	{{this.system.calc.parry}}</div>
+<div data-item-id="{{this._id}}" data-type="block" class="block rollable">
+	{{this.system.calc.block}}</div>
+<div data-item-id="{{this._id}}" data-type="damage" class="damage rollable">
+	{{this.system.calc.damage}}</div>
+<div class="reach">{{this.system.calc.reach}}</div>
+<div class="st">{{this.system.calc.strength}}</div>

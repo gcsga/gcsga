@@ -1,7 +1,8 @@
-import { SkillBonus, SkillBonusSelectionType } from "@feature/skill_bonus"
-import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
+import { skillsel } from "@feature"
+import { SkillBonus } from "@feature/skill_bonus"
+import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
 import { Feature } from "@module/config"
-import { CRAdjustment, ItemType, StringComparison, Study, StudyHoursNeeded } from "@module/data"
+import { CRAdjustment, ItemType, StringComparisonType, Study, StudyHoursNeeded } from "@module/data"
 import { PrereqList } from "@prereq"
 
 export type TraitSource = ItemGCSSource<ItemType.Trait, TraitSystemData>
@@ -26,20 +27,23 @@ export interface TraitSystemData extends ItemGCSSystemData {
 	study_hours_needed: StudyHoursNeeded
 	userdesc: string
 	type: ItemType.Trait
+	calc?: TraitCalcValues
+}
+
+export interface TraitCalcValues extends ItemGCSCalcValues {
+	enabled: boolean
+	points: number
 }
 
 const CR_Features = new Map()
 
-CR_Features.set(CRAdjustment.MajorCostOfLivingIncrease, [
-	new SkillBonus(
-		{
-			selection_type: SkillBonusSelectionType.SkillsWithName,
-			name: { compare: StringComparison.Is, qualifier: "Merchant" },
-			specialization: { compare: StringComparison.None },
-			tags: { compare: StringComparison.None },
-		},
-		{ ready: true }
-	),
-])
+const merchantPenalty = new SkillBonus()
+Object.assign(merchantPenalty, {
+	selection_type: skillsel.Name,
+	name: { compare: StringComparisonType.IsString, qualifier: "Merchant" },
+	specialization: { compare: StringComparisonType.AnyString },
+	tags: { compare: StringComparisonType.AnyString },
+})
+CR_Features.set(CRAdjustment.MajorCostOfLivingIncrease, [merchantPenalty])
 
 export { CR_Features }

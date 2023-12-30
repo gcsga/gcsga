@@ -1,5 +1,12 @@
 import { BaseWeaponGURPS } from "@item/weapon"
 import { RangedWeaponSource } from "./data"
+import { WeaponAccuracy } from "@item/weapon/weapon_accuracy"
+import { WeaponRange } from "@item/weapon/weapon_range"
+import { WeaponBulk } from "@item/weapon/weapon_bulk"
+import { WeaponROF } from "@item/weapon/weapon_rof"
+import { WeaponShots } from "@item/weapon/weapon_shots"
+import { WeaponRecoil } from "@item/weapon/weapon_recoil"
+import { TooltipGURPS } from "@module/tooltip"
 
 export class RangedWeaponGURPS extends BaseWeaponGURPS<RangedWeaponSource> {
 	get resolvedRange(): string {
@@ -42,27 +49,51 @@ export class RangedWeaponGURPS extends BaseWeaponGURPS<RangedWeaponSource> {
 		return buffer
 	}
 
-	get accuracy(): string {
-		return this.system.accuracy
+	get accuracy(): WeaponAccuracy {
+		const wa = WeaponAccuracy.parse(this.system.accuracy)
+		wa.current = wa.resolve(this, new TooltipGURPS()).toString()
+		return wa
 	}
 
-	get range(): string {
-		return this.system.range
+	get range(): WeaponRange {
+		const wr = WeaponRange.parse(this.system.range)
+		wr.current = wr.resolve(this, new TooltipGURPS()).toString(true)
+		return wr
 	}
 
-	get rate_of_fire(): string {
-		return this.system.rate_of_fire
+	get rate_of_fire(): WeaponROF {
+		const wr = WeaponROF.parse(this.system.rate_of_fire)
+		wr.current = wr.resolve(this, new TooltipGURPS()).toString()
+		return wr
 	}
 
-	get shots(): string {
-		return this.system.shots
+	get shots(): WeaponShots {
+		const ws = WeaponShots.parse(this.system.shots)
+		ws.current = ws.resolve(this, new TooltipGURPS()).toString()
+		return ws
 	}
 
-	get bulk(): string {
-		return this.system.bulk
+	get bulk(): WeaponBulk {
+		const wb = WeaponBulk.parse(this.system.bulk)
+		wb.current = wb.resolve(this, new TooltipGURPS()).toString()
+		return wb
 	}
 
-	get recoil(): string {
-		return this.system.recoil
+	get recoil(): WeaponRecoil {
+		const wr = WeaponRecoil.parse(this.system.recoil)
+		wr.current = wr.resolve(this, new TooltipGURPS()).toString()
+		return wr
+	}
+
+	protected _getCalcValues(): this["system"]["calc"] {
+		return {
+			...super._getCalcValues(),
+			accuracy: this.accuracy.current ?? this.system.accuracy,
+			range: this.range.current ?? this.system.range,
+			rate_of_fire: this.rate_of_fire.current ?? this.system.rate_of_fire,
+			shots: this.shots.current ?? this.system.shots,
+			bulk: this.bulk.current ?? this.system.bulk,
+			recoil: this.recoil.current ?? this.system.recoil,
+		}
 	}
 }

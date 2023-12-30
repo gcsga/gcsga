@@ -4,6 +4,8 @@ import { ItemType, SYSTEM_NAME } from "@module/data"
 import { Context } from "types/foundry/common/abstract/document.mjs"
 import { ItemData } from "types/foundry/common/data/module.mjs"
 import { BaseItemSourceGURPS, ItemConstructionContextGURPS, ItemFlags } from "./data"
+import { ItemDataConstructorData } from "types/foundry/common/data/data.mjs/itemData"
+import { MergeObjectOptions } from "types/foundry/common/utils/helpers.mjs"
 
 export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSourceGURPS> extends Item {
 	_id!: string
@@ -39,6 +41,13 @@ export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSour
 		const newItem = super.createDialog(data, options) as Promise<BaseItemGURPS | undefined>
 		game.system.documentTypes.Item = original
 		return newItem
+	}
+
+	override async update(
+		data: DeepPartial<ItemDataConstructorData | Record<string, unknown>>,
+		context?: DocumentModificationContext & MergeObjectOptions & { noPrepare?: boolean }
+	): Promise<this | undefined> {
+		return super.update(data, context)
 	}
 
 	static override async updateDocuments(

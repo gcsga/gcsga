@@ -21,7 +21,7 @@ import {
 	TraitGURPS,
 	WeaponType,
 } from "@item"
-import { CondMod } from "@module/conditional_modifier"
+import { ConditionalModifier } from "@module/conditional_modifier"
 import {
 	attrPrefix,
 	CRAdjustment,
@@ -30,7 +30,8 @@ import {
 	gid,
 	ItemType,
 	SETTINGS,
-	StringComparison,
+	StringComparisonType,
+	Stringer,
 	SYSTEM_NAME,
 } from "@module/data"
 import { DiceGURPS } from "@module/dice"
@@ -61,25 +62,31 @@ import {
 } from "./data"
 import { CharacterImporter } from "./import"
 import { HitLocation, HitLocationTable } from "./hit_location"
-import { Feature, featureMap, ItemGURPS, WeaponGURPS } from "@module/config"
+import { Feature, featureMap, WeaponGURPS } from "@module/config"
 import { ConditionID } from "@item/condition"
 import Document, { DocumentModificationOptions, Metadata } from "types/foundry/common/abstract/document.mjs"
 import { ActorDataConstructorData } from "types/foundry/common/data/data.mjs/actorData"
 import { Attribute, AttributeDef, AttributeObj, AttributeType, PoolThreshold, ThresholdOp } from "@module/attribute"
 import { ResourceTracker, ResourceTrackerDef, ResourceTrackerObj } from "@module/resource_tracker"
 import {
-	AttributeBonusLimitation,
-	ConditionalModifier,
-	FeatureType,
+	AttributeBonus,
+	ConditionalModifierBonus,
+	CostReduction,
+	DRBonus,
 	MoveBonusType,
 	ReactionBonus,
 	SkillBonus,
-	WeaponBonusSelectionType,
-	WeaponDamageBonus,
-	WeaponDRDivisorBonus,
+	SkillPointBonus,
+	SpellBonus,
+	SpellPointBonus,
+	WeaponBonus,
+	WeaponBonusType,
+	skillsel,
+	stlimit,
+	wsel,
 } from "@feature"
-import { SkillBonusSelectionType } from "@feature/skill_bonus"
 import { MoveType, MoveTypeDef, MoveTypeObj } from "@module/move_type"
+import { Int } from "@util/fxp"
 
 export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	attributes: Map<string, Attribute> = new Map()
@@ -600,20 +607,20 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		return Math.max(this.resolveAttributeCurrent(gid.Strength), 0)
 	}
 
-	get StrikingST(): number {
+	get strikingST(): number {
 		return this.strengthOrZero + this.striking_st_bonus
 	}
 
-	get LiftingST(): number {
+	get liftingST(): number {
 		return this.strengthOrZero + this.lifting_st_bonus
 	}
 
-	get ThrowingST(): number {
+	get throwingST(): number {
 		return this.strengthOrZero + this.throwing_st_bonus
 	}
 
 	get thrust(): DiceGURPS {
-		return this.thrustFor(this.StrikingST)
+		return this.thrustFor(this.strikingST)
 	}
 
 	thrustFor(st: number): DiceGURPS {
@@ -621,7 +628,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	}
 
 	get swing(): DiceGURPS {
-		return this.swingFor(this.StrikingST)
+		return this.swingFor(this.strikingST)
 	}
 
 	swingFor(st: number): DiceGURPS {
@@ -667,7 +674,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	// Bonuses
 	get size_modifier_bonus(): number {
-		return this.attributeBonusFor(attrPrefix + gid.SizeModifier, AttributeBonusLimitation.None)
+		return this.attributeBonusFor(attrPrefix + gid.SizeModifier, stlimit.None)
 	}
 
 	get striking_st_bonus(): number {
@@ -862,8 +869,8 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		}
 	}
 
-	get reactions(): CondMod[] {
-		let reactionMap: Map<string, CondMod> = new Map()
+	get reactions(): ConditionalModifier[] {
+		let reactionMap: Map<string, ConditionalModifier> = new Map()
 		for (const t of this.traits) {
 			let source = LocalizeGURPS.format(LocalizeGURPS.translations.gurps.reaction.from_trait, {
 				name: t.name ?? "",
@@ -878,7 +885,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 					trait: t.name ?? "",
 				})
 				if (reactionMap.has(situation)) reactionMap.get(situation)!.add(source, amount)
-				else reactionMap.set(situation, new CondMod(source, situation, amount))
+				else reactionMap.set(situation, new ConditionalModifier(source, situation, amount))
 			}
 		}
 		for (const e of this.carriedEquipment) {
@@ -906,28 +913,18 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		return reactionList
 	}
 
-	reactionsFromFeatureList(source: string, features: Feature[], m: Map<string, CondMod>): void {
-		features.forEach(f => {
-			if (
-				[
-					ItemType.Trait,
-					ItemType.TraitModifier,
-					ItemType.Equipment,
-					ItemType.EquipmentContainer,
-					ItemType.EquipmentModifier,
-				].includes(f.item?.type as any)
-			)
-				if ((f.item as any).enabled === false) return
+	reactionsFromFeatureList(source: string, features: Feature[], m: Map<string, ConditionalModifier>): void {
+		for (const f of features) {
 			if (f instanceof ReactionBonus) {
-				let amount = f.adjustedAmount
-				if (m.has(f.situation)) m.get(f.situation)!.add(source, amount)
-				else m.set(f.situation, new CondMod(source, f.situation, amount))
+				const amt = f.adjustedAmount
+				if (m.has(f.situation)) m.get(f.situation)!.add(source, amt)
+				else m.set(f.situation, new ConditionalModifier(source, f.situation, amt))
 			}
-		})
+		}
 	}
 
-	get conditionalModifiers(): CondMod[] {
-		let reactionMap: Map<string, CondMod> = new Map()
+	get conditionalModifiers(): ConditionalModifier[] {
+		let reactionMap: Map<string, ConditionalModifier> = new Map()
 		this.traits.forEach(t => {
 			let source = LocalizeGURPS.format(LocalizeGURPS.translations.gurps.reaction.from_trait, {
 				name: t.name ?? "",
@@ -962,24 +959,18 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		return reactionList
 	}
 
-	conditionalModifiersFromFeatureList(source: string, features: Feature[], m: Map<string, CondMod>): void {
-		features.forEach(f => {
-			if (
-				[
-					ItemType.Trait,
-					ItemType.TraitModifier,
-					ItemType.Equipment,
-					ItemType.EquipmentContainer,
-					ItemType.EquipmentModifier,
-				].includes(f.item?.type as any)
-			)
-				if ((f.item as any).enabled === false) return
-			if (f instanceof ConditionalModifier) {
-				let amount = f.adjustedAmount
-				if (m.has(f.situation)) m.get(f.situation)!.add(source, amount)
-				else m.set(f.situation, new CondMod(source, f.situation, amount))
+	conditionalModifiersFromFeatureList(
+		source: string,
+		features: Feature[],
+		m: Map<string, ConditionalModifier>
+	): void {
+		for (const f of features) {
+			if (f instanceof ConditionalModifierBonus) {
+				const amt = f.adjustedAmount
+				if (m.has(f.situation)) m.get(f.situation)!.add(source, amt)
+				else m.set(f.situation, new ConditionalModifier(source, f.situation, amt))
 			}
-		})
+		}
 	}
 
 	get maxHP(): number {
@@ -1191,49 +1182,49 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 			if (t instanceof TraitGURPS) {
 				if (t.features)
 					for (const f of t.features) {
-						this.processFeature(t, f, levels)
+						this.processFeature(t, undefined, f, levels)
 					}
 			}
 			if (CR_Features.has(t.crAdj))
 				for (const f of CR_Features?.get(t.crAdj) || []) {
-					this.processFeature(t, f, levels)
+					this.processFeature(t, undefined, f, levels)
 				}
 			for (const m of t.deepModifiers) {
 				if (m.enabled === false) continue
 				for (const f of m.features) {
-					this.processFeature(t, f, m.levels)
+					this.processFeature(t, undefined, f, m.levels)
 				}
 			}
 		}
 		for (const s of this.skills) {
 			if (!(s instanceof SkillContainerGURPS))
 				for (const f of s.features) {
-					this.processFeature(s, f, 0)
+					this.processFeature(s, undefined, f, 0)
 				}
 		}
 		for (const e of this.equipment) {
 			if (!e.enabled) continue
 			for (const f of e.features) {
-				this.processFeature(e, f, 0)
+				this.processFeature(e, undefined, f, 0)
 			}
 			for (const m of e.deepModifiers) {
 				if (m.enabled === false) continue
 				for (const f of m.features) {
-					this.processFeature(e, f, 0)
+					this.processFeature(e, undefined, f, 0)
 				}
 			}
 		}
 		for (const e of this.gEffects) {
 			// If (!(e instanceof ConditionGURPS)) continue
 			for (const f of e.features) {
-				this.processFeature(e, f, 0)
+				this.processFeature(e, undefined, f, 0)
 			}
 		}
 
 		this.calc ??= {}
-		this.calc.lifting_st_bonus = this.attributeBonusFor(gid.Strength, AttributeBonusLimitation.Lifting)
-		this.calc.striking_st_bonus = this.attributeBonusFor(gid.Strength, AttributeBonusLimitation.Striking)
-		this.calc.throwing_st_bonus = this.attributeBonusFor(gid.Strength, AttributeBonusLimitation.Throwing)
+		this.calc.lifting_st_bonus = this.attributeBonusFor(gid.Strength, stlimit.LiftingOnly)
+		this.calc.striking_st_bonus = this.attributeBonusFor(gid.Strength, stlimit.StrikingOnly)
+		this.calc.throwing_st_bonus = this.attributeBonusFor(gid.Strength, stlimit.ThrowingOnly)
 
 		this.attributes = this.getAttributes()
 		this.processThresholds()
@@ -1241,9 +1232,9 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		this.resource_trackers = this.getResourceTrackers()
 		this.move_types = this.getMoveTypes()
 
-		this.calc.dodge_bonus = this.attributeBonusFor(gid.Dodge, AttributeBonusLimitation.None)
-		this.calc.parry_bonus = this.attributeBonusFor(gid.Parry, AttributeBonusLimitation.None)
-		this.calc.block_bonus = this.attributeBonusFor(gid.Block, AttributeBonusLimitation.None)
+		this.calc.dodge_bonus = this.attributeBonusFor(gid.Dodge, stlimit.None)
+		this.calc.parry_bonus = this.attributeBonusFor(gid.Parry, stlimit.None)
+		this.calc.block_bonus = this.attributeBonusFor(gid.Block, stlimit.None)
 	}
 
 	processThresholds() {
@@ -1304,31 +1295,41 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		this._processingThresholds = false
 	}
 
-	processFeature(_parent: ItemGURPS, f: Feature, levels: number) {
-		f.levels = levels
+	processFeature(owner: Stringer, subOwner: Stringer | undefined, f: Feature, levels: number) {
+		f.owner = owner
+		f.subOwner = subOwner
+		f.setLevel(levels)
 
-		switch (f.type) {
-			case FeatureType.AttributeBonus:
-				return this.features.attributeBonuses.push(f as any)
-			case FeatureType.CostReduction:
-				return this.features.costReductions.push(f as any)
-			case FeatureType.DRBonus:
-				return this.features.drBonuses.push(f as any)
-			case FeatureType.SkillBonus:
-				return this.features.skillBonuses.push(f as any)
-			case FeatureType.SkillPointBonus:
-				return this.features.skillPointBonuses.push(f as any)
-			case FeatureType.SpellBonus:
-				return this.features.spellBonuses.push(f as any)
-			case FeatureType.SpellPointBonus:
-				return this.features.spellPointBonuses.push(f as any)
-			case FeatureType.WeaponBonus:
-			case FeatureType.WeaponDRDivisorBonus:
-				return this.features.weaponBonuses.push(f as any)
-			case FeatureType.ConditionalModifier:
-			case FeatureType.ReactionBonus:
-			case FeatureType.ContaiedWeightReduction:
-		}
+		if (f instanceof AttributeBonus) return this.features.attributeBonuses.push(f)
+		else if (f instanceof CostReduction) return this.features.costReductions.push(f)
+		else if (f instanceof DRBonus) {
+			if (f.location === "") {
+				if (owner instanceof EquipmentGURPS || owner instanceof EquipmentContainerGURPS) {
+					const allLocations: Map<string, boolean> = new Map()
+					const locationsMatched: Map<string, boolean> = new Map()
+					for (const f2 of owner.features) {
+						if (f2 instanceof DRBonus && f2.location !== "") {
+							allLocations.set(f2.location, true)
+							if (f2.specialization === f.specialization) {
+								locationsMatched.set(f2.location, true)
+								const additionalDRBonus = new DRBonus()
+								additionalDRBonus.location = f2.location
+								additionalDRBonus.specialization = f.specialization
+								additionalDRBonus.leveledAmount = f.leveledAmount
+								additionalDRBonus.owner = owner
+								additionalDRBonus.subOwner = subOwner
+								additionalDRBonus.setLevel(levels)
+								this.features.drBonuses.push(additionalDRBonus)
+							}
+						}
+					}
+				}
+			} else this.features.drBonuses.push(f)
+		} else if (f instanceof SkillBonus) return this.features.skillBonuses.push(f)
+		else if (f instanceof SkillPointBonus) return this.features.skillPointBonuses.push(f)
+		else if (f instanceof SpellBonus) return this.features.spellBonuses.push(f)
+		else if (f instanceof SpellPointBonus) return this.features.spellPointBonuses.push(f)
+		else if (f instanceof WeaponBonus) return this.features.weaponBonuses.push(f)
 	}
 
 	processPrereqs(): void {
@@ -1351,20 +1352,17 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 			if (!k.prereqsEmpty) [satisfied, eqpPenalty] = k.prereqs.satisfied(this, k, tooltip)
 			if (satisfied && k instanceof TechniqueGURPS) satisfied = k.satisfied(tooltip)
 			if (eqpPenalty) {
-				const penalty = new SkillBonus({
-					type: FeatureType.SkillBonus,
-					selection_type: "skills_with_name",
-					name: {
-						compare: StringComparison.Is,
-						qualifier: k.name!,
-					},
-					specialization: {
-						compare: StringComparison.Is,
-						qualifier: k.specialization,
-					},
-					amount: k.techLevel && k.techLevel !== "" ? -10 : -5,
-					levels: 0,
-				})
+				const penalty = new SkillBonus()
+				penalty.selection_type = skillsel.Name
+				penalty.name = {
+					compare: StringComparisonType.IsString,
+					qualifier: k.name!,
+				}
+				penalty.specialization = {
+					compare: StringComparisonType.IsString,
+					qualifier: k.specialization,
+				}
+				penalty.amount = k.techLevel && k.techLevel !== "" ? -10 : -5
 				this.features.skillBonuses.push(penalty)
 			}
 			if (!satisfied) {
@@ -1380,7 +1378,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 			if (!b.prereqsEmpty) [satisfied, eqpPenalty] = b.prereqs.satisfied(this, b, tooltip)
 			if (satisfied && b instanceof RitualMagicSpellGURPS) satisfied = b.satisfied(tooltip)
 			if (eqpPenalty) {
-				const penalty = new SkillBonus(SkillBonus.defaults)
+				const penalty = new SkillBonus()
 				penalty.name!.qualifier = b.name!
 				if (b.techLevel && b.techLevel !== "") {
 					penalty.amount = -10
@@ -1424,6 +1422,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	// Directed Skill Getters
 	baseSkill(def: SkillDefault, require_points: boolean): SkillGURPS | TechniqueGURPS | null {
+		if (!def) return null
 		if (!def.skillBased) return null
 		return this.bestSkillNamed(def.name ?? "", def.specialization ?? "", require_points, null)
 	}
@@ -1534,7 +1533,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	attributeBonusFor(
 		attributeId: string,
-		limitation: AttributeBonusLimitation,
+		limitation: stlimit,
 		effective = false,
 		tooltip: TooltipGURPS | null = null
 	): number {
@@ -1632,36 +1631,32 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	addWeaponWithSkillBonusesFor(
 		name: string,
 		specialization: string,
+		usage: string,
 		tags: string[],
 		dieCount: number,
-		levels: number,
 		tooltip: TooltipGURPS | null = null,
-		m: Map<WeaponDamageBonus | WeaponDRDivisorBonus, boolean> = new Map()
-	): Map<WeaponDamageBonus | WeaponDRDivisorBonus, boolean> {
+		m: Map<WeaponBonus, boolean> | null = null,
+		allowedFeatureTypes: Map<WeaponBonusType, boolean> = new Map()
+	): Map<WeaponBonus, boolean> {
+		if (m === null) m = new Map()
 		let rsl = -Infinity
 		for (const sk of this.skillNamed(name, specialization, true, null)) {
 			if (rsl < sk.level.relative_level) rsl = sk.level.relative_level
 		}
-		if (rsl !== -Infinity)
-			for (const f of this.features.weaponBonuses) {
-				if (
-					f.selection_type === WeaponBonusSelectionType.Skill &&
-					stringCompare(name, f.name) &&
-					stringCompare(specialization, f.specialization) &&
-					numberCompare(rsl, f.level) &&
-					stringCompare(tags, f.tags)
-				) {
-					const level = f.levels
-					if (f.type === FeatureType.WeaponBonus) {
-						f.levels = dieCount
-					} else {
-						f.levels = levels
-					}
-					f.addToTooltip(tooltip)
-					f.levels = level
-					m.set(f, true)
-				}
+		// if (rsl !== -Infinity)
+		for (const f of this.features.weaponBonuses) {
+			if (
+				allowedFeatureTypes.get(f.type) &&
+				f.selection_type === wsel.WithRequiredSkill &&
+				stringCompare(name, f.name) &&
+				stringCompare(specialization, f.specialization) &&
+				numberCompare(rsl, f.level) &&
+				stringCompare(usage, f.usage) &&
+				stringCompare(tags, f.tags)
+			) {
+				addWeaponBonusToMap(f, dieCount, tooltip, m)
 			}
+		}
 		return m
 	}
 
@@ -1670,36 +1665,34 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		usage: string,
 		tags: string[],
 		dieCount: number,
-		levels: number,
 		tooltip: TooltipGURPS | null = null,
-		m: Map<WeaponDamageBonus | WeaponDRDivisorBonus, boolean> = new Map()
-	): Map<WeaponDamageBonus | WeaponDRDivisorBonus, boolean> {
+		m: Map<WeaponBonus, boolean> = new Map(),
+		allowedFeatureTypes: Map<WeaponBonusType, boolean> = new Map()
+	): Map<WeaponBonus, boolean> {
 		for (const f of this.features.weaponBonuses) {
 			if (
-				f.selection_type === WeaponBonusSelectionType.Name &&
+				allowedFeatureTypes.get(f.type) &&
+				f.selection_type === wsel.WithName &&
 				stringCompare(name, f.name) &&
-				stringCompare(usage, f.specialization) &&
+				stringCompare(usage, f.usage) &&
 				stringCompare(tags, f.tags)
 			) {
-				const level = f.levels
-				if (f.type === FeatureType.WeaponBonus) {
-					f.levels = dieCount
-				} else {
-					f.levels = levels
-				}
-				f.addToTooltip(tooltip)
-				f.levels = level
-				m.set(f, true)
+				addWeaponBonusToMap(f, dieCount, tooltip, m)
 			}
 		}
 		return m
 	}
 
-	namedWeaponSkillBonusesFor(name: string, usage: string, tags: string[], tooltip: TooltipGURPS): SkillBonus[] {
+	namedWeaponSkillBonusesFor(
+		name: string,
+		usage: string,
+		tags: string[],
+		tooltip: TooltipGURPS | null
+	): SkillBonus[] {
 		const bonuses: SkillBonus[] = []
 		for (const f of this.features.skillBonuses) {
 			if (
-				f.selection_type === SkillBonusSelectionType.WeaponsWithName &&
+				f.selection_type === skillsel.WeaponsWithName &&
 				stringCompare(name, f.name) &&
 				stringCompare(usage, f.specialization) &&
 				stringCompare(tags, f.tags)
@@ -1716,7 +1709,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		if (this.features)
 			for (const f of this.features.costReductions) {
 				if (f.attribute === attributeID) {
-					total += f.percentage
+					total += f.percentage ?? 0
 				}
 			}
 		if (total > 80) total = 80
@@ -2024,4 +2017,20 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		const allowed = Hooks.call("modifyTokenAttribute", { attribute, value, isDelta, isBar }, updates)
 		return allowed !== false ? this.update(updates) : this
 	}
+}
+
+export function addWeaponBonusToMap(
+	bonus: WeaponBonus,
+	dieCount: number,
+	tooltip: TooltipGURPS | null = null,
+	m: Map<WeaponBonus, boolean> = new Map()
+) {
+	const savedLevel = bonus.leveledAmount.level
+	const savedDieCount = bonus.leveledAmount.dieCount
+	bonus.leveledAmount.dieCount = Int.from(dieCount)
+	bonus.leveledAmount.level = bonus.derivedLevel
+	bonus.addToTooltip(tooltip)
+	bonus.leveledAmount.level = savedLevel
+	bonus.leveledAmount.dieCount = savedDieCount
+	m.set(bonus, true)
 }

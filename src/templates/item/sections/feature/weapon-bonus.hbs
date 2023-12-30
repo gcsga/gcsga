@@ -1,23 +1,23 @@
 <div class="field-3">
-    <div class="placeholder"></div>
-    <select name="array.system.features.{{@index}}.selection_type">
-        {{#select this.selection_type}}
-        {{#each config.select.weapon_bonus_selection_type as |v k| }}
-            <option value="{{k}}">
-                {{localize v}}
-            </option>
-        {{/each}}
-    {{/select}}
-</select>
-<select name="array.system.features.{{@index}}.name.compare" {{disabled (eq this.selection_type "this_weapon" )}}>
-    {{#select this.name.compare}}
-    {{#each config.select.string_compare as |v k| }}
-        <option value="{{k}}">
-            {{localize v}}
-        </option>
-    {{/each}}
-{{/select}}
-</select>
+	<div class="placeholder"></div>
+	<select name="array.system.features.{{@index}}.selection_type">
+			{{#select this.selection_type}}
+			{{#each config.select.weapon_bonus_selection_type as |v k| }}
+					<option value="{{k}}">
+							{{localize v}}
+					</option>
+			{{/each}}
+	{{/select}}
+	</select>
+	<select name="array.system.features.{{@index}}.name.compare" {{disabled (eq this.selection_type "this_weapon" )}}>
+			{{#select this.name.compare}}
+			{{#each config.select.string_compare as |v k| }}
+					<option value="{{k}}">
+							{{localize v}}
+					</option>
+			{{/each}}
+	{{/select}}
+	</select>
 	<div class="field">
 		<input
 			type="text"

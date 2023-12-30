@@ -1,4 +1,4 @@
-import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
+import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
 import { ItemType } from "@module/data"
 
 export type SpellContainerSource = ItemGCSSource<ItemType.SpellContainer, SpellContainerSystemData>
@@ -10,4 +10,10 @@ export interface SpellContainerData extends Omit<SpellContainerSource, "effects"
 	readonly _source: SpellContainerSource
 }
 
-export type SpellContainerSystemData = ItemGCSSystemData
+export interface SpellContainerSystemData extends ItemGCSSystemData {
+	calc?: SpellContainerCalcValues
+}
+
+export interface SpellContainerCalcValues extends ItemGCSCalcValues {
+	points: number
+}

@@ -204,4 +204,16 @@ export class Mook {
 	effectiveST(initialST: number): number {
 		return initialST
 	}
+
+	get strikingST(): number {
+		return this.attributes.get(gid.Strength)?.max ?? 0
+	}
+
+	get throwingST(): number {
+		return this.attributes.get(gid.Strength)?.max ?? 0
+	}
+
+	get liftingST(): number {
+		return this.attributes.get(gid.Strength)?.max ?? 0
+	}
 }

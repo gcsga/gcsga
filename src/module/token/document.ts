@@ -14,7 +14,7 @@ export class TokenDocumentGURPS extends TokenDocument {
 		if (statusId === ConditionID.Dead) return this.overlayEffect === CONFIG.controlIcons.defeated
 		const { actor } = this
 		const hasCondition = (actor as BaseActorGURPS<any>)?.hasCondition(statusId) || false
-		const hasEffect = (actor as BaseActorGURPS<any>).gEffects.some(e => e.name === statusId)
+		const hasEffect = (actor as BaseActorGURPS<any>)?.gEffects.some(e => e.name === statusId)
 		return hasCondition || hasEffect
 	}
 

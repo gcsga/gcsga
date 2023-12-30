@@ -2,7 +2,7 @@ import { ItemGCS } from "@item/gcs"
 import { ActorType, Difficulty, gid } from "@module/data"
 import { SkillDefault } from "@module/default"
 import { TooltipGURPS } from "@module/tooltip"
-import { difficultyRelativeLevel, inlineNote, LocalizeGURPS, parseInlineNoteExpressions, VariableResolver } from "@util"
+import { difficultyRelativeLevel, inlineNote, LocalizeGURPS, parseInlineNoteExpressions } from "@util"
 import { SkillLevel, SkillSource } from "./data"
 
 export class SkillGURPS extends ItemGCS<SkillSource> {
@@ -348,6 +348,17 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 					return this.update({ "system.points": this.points })
 				}
 			}
+		}
+	}
+
+	protected _getCalcValues(): this["system"]["calc"] {
+		return {
+			...super._getCalcValues(),
+			level: this.level?.level ?? 0,
+			rsl: this.relativeLevel ?? "",
+			points: this.adjustedPoints(),
+			tooltip: this.level?.tooltip.toString() ?? "",
+			difficulty: `${this.attribute.toUpperCase()}/${this.difficulty.toUpperCase()}`,
 		}
 	}
 }
