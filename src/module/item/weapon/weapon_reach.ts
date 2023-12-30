@@ -3,8 +3,9 @@ import { TooltipGURPS } from "@module/tooltip"
 import { Int } from "@util/fxp"
 import { wswitch } from "./data"
 import { FeatureType } from "@feature"
+import { WeaponField } from "./weapon_field"
 
-export class WeaponReach {
+export class WeaponReach extends WeaponField {
 	min = 0
 
 	max = 0
@@ -37,7 +38,7 @@ export class WeaponReach {
 	}
 
 	resolve(w: WeaponGURPS, tooltip: TooltipGURPS): WeaponReach {
-		const result = new WeaponReach()
+		const result = WeaponReach.parse(this.toString())
 		result.closeCombat = w.resolveBoolFlag(wswitch.CloseCombat, result.closeCombat)
 		result.changeRequiresReady = w.resolveBoolFlag(wswitch.ReachChangeRequiresReady, result.changeRequiresReady)
 		for (const bonus of w.collectWeaponBonuses(

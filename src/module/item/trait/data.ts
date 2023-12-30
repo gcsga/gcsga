@@ -1,6 +1,6 @@
 import { skillsel } from "@feature"
 import { SkillBonus } from "@feature/skill_bonus"
-import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
+import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
 import { Feature } from "@module/config"
 import { CRAdjustment, ItemType, StringComparisonType, Study, StudyHoursNeeded } from "@module/data"
 import { PrereqList } from "@prereq"
@@ -27,6 +27,12 @@ export interface TraitSystemData extends ItemGCSSystemData {
 	study_hours_needed: StudyHoursNeeded
 	userdesc: string
 	type: ItemType.Trait
+	calc?: TraitCalcValues
+}
+
+export interface TraitCalcValues extends ItemGCSCalcValues {
+	enabled: boolean
+	points: number
 }
 
 const CR_Features = new Map()

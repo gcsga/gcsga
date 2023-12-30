@@ -1,3 +1,4 @@
+import { EquipmentCalcValues } from "@item/equipment/data"
 import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
 import { Feature } from "@module/config"
 import { ItemType } from "@module/data"
@@ -29,4 +30,5 @@ export interface EquipmentContainerSystemData extends ItemGCSSystemData {
 	features: Feature[]
 	// other: boolean
 	rated_strength: number
+	calc?: EquipmentCalcValues
 }

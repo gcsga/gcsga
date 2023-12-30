@@ -1,10 +1,10 @@
 <div
-	class="desc item{{#if (in this.type '_container')}} container{{/if}} other"
-	data-item-id="{{ this.id }}"
-	{{{indent this.parents.length}}}
+	class="desc item{{#if (isContainer this)}} container{{/if}} other"
+	data-item-id="{{ this._id }}"
+	{{{indent this.system.calc.indent}}}
 >
 	<div class="dropdown">
-		{{#if (eq this.type "note_container")}}
+		{{#if (isContainer this)}}
 		{{#if this.system.open }}
 		{{>actor/character/sections/dropdown-open }}
 		{{ else }}
@@ -12,10 +12,10 @@
 		{{/if }}
 		{{/if }}
 	</div>
-	<div class="md">{{{this.formattedText}}}</div>
+	<div class="md">{{{this.system.calc.name}}}</div>
 </div>
-<div class="reference">{{{ref this.reference}}}</div>
-{{#if this.open }}
+<div class="reference">{{{ref this.system.reference}}}</div>
+{{#if this.system.open }}
 {{#each (sort this.children "sort")}}
 {{>actor/character/sections/note }}
 {{/each }}

@@ -1,4 +1,4 @@
-import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
+import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
 import { ItemType, Study, StudyHoursNeeded } from "@module/data"
 import { PrereqList } from "@prereq"
 
@@ -29,10 +29,11 @@ export interface SpellSystemData extends ItemGCSSystemData {
 	points: number
 	study: Study[]
 	study_hours_needed: StudyHoursNeeded
-	calc?: {
-		level?: number
-		rsl?: string
-		points?: number
-		resolved_notes?: string
-	}
+	calc?: SpellCalcValues
+}
+
+export interface SpellCalcValues extends ItemGCSCalcValues {
+	level: number
+	rsl: string
+	points?: number
 }

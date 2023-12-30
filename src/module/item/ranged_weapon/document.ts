@@ -1,8 +1,12 @@
 import { BaseWeaponGURPS } from "@item/weapon"
 import { RangedWeaponSource } from "./data"
-import { Int } from "@util/fxp"
 import { WeaponAccuracy } from "@item/weapon/weapon_accuracy"
 import { WeaponRange } from "@item/weapon/weapon_range"
+import { WeaponBulk } from "@item/weapon/weapon_bulk"
+import { WeaponROF } from "@item/weapon/weapon_rof"
+import { WeaponShots } from "@item/weapon/weapon_shots"
+import { WeaponRecoil } from "@item/weapon/weapon_recoil"
+import { TooltipGURPS } from "@module/tooltip"
 
 export class RangedWeaponGURPS extends BaseWeaponGURPS<RangedWeaponSource> {
 	get resolvedRange(): string {
@@ -45,83 +49,51 @@ export class RangedWeaponGURPS extends BaseWeaponGURPS<RangedWeaponSource> {
 		return buffer
 	}
 
-	get accuracy(): Partial<WeaponAccuracy> {
-		return WeaponAccuracy.parse(this.system.accuracy)
+	get accuracy(): WeaponAccuracy {
+		const wa = WeaponAccuracy.parse(this.system.accuracy)
+		wa.current = wa.resolve(this, new TooltipGURPS()).toString()
+		return wa
 	}
 
-	get range(): Partial<WeaponRange> {
-		return WeaponRange.parse(this.system.range)
-	}
-
-	get rate_of_fire(): DeepPartial<WeaponROF> {
-		const wr: DeepPartial<WeaponROF> = {}
-		let s = this.system.rate_of_fire.trim()
-		if (s.includes("jet")) wr.jet = true
-		else {
-			const parts = s.split("/")
-			wr.mode1 = this._parseWeaponROFMode(parts[0])
-			if (parts.length > 1) wr.mode2 = this._parseWeaponROFMode(parts[1])
-		}
-
-		return wr
-		// return this.system.rate_of_fire
-	}
-
-	private _parseWeaponROFMode(s: string): Partial<WeaponROFMode> {
-		const wr: Partial<WeaponROFMode> = {}
-		s = s.trim().toLowerCase().replaceAll(".", "x")
-		wr.fullAutoOnly = s.includes("!")
-		s = s.replaceAll("!", "")
-		wr.highCyclicControlledBursts = s.includes("#")
-		s = s.replaceAll("#", "")
-		s = s.replaceAll("×", "x")
-		if (s.startsWith("x")) s = `1${s}`
-		const parts = s.split("x")
-		wr.shotsPerAttack = Int.fromString(s)
-		if (parts.length > 1) wr.secondaryProjectiles = Int.fromString(parts[1])
-
+	get range(): WeaponRange {
+		const wr = WeaponRange.parse(this.system.range)
+		wr.current = wr.resolve(this, new TooltipGURPS()).toString(true)
 		return wr
 	}
 
-	get shots(): Partial<WeaponShots> {
-		const ws: Partial<WeaponShots> = {}
-		let s = this.system.shots.trim().toLowerCase().replaceAll(",", "")
-		if (!s.includes("fp") && !s.includes("hrs") && !s.includes("day")) {
-			ws.thrown = s.includes("t")
-			if (!s.includes("spec")) {
-				;[ws.count, s] = Int.extract(s)
-				if (s.startsWith("+")) [ws.inChamber, s] = Int.extract(s)
-				if (s.startsWith("x")) [ws.duration, s] = Int.extract(s.slice(1))
-				if (s.startsWith("(")) {
-					;[ws.reloadTime, s] = Int.extract(s.slice(1))
-					ws.reloadTimeIsPerShot = s.includes("i")
-				}
-			}
-		}
+	get rate_of_fire(): WeaponROF {
+		const wr = WeaponROF.parse(this.system.rate_of_fire)
+		wr.current = wr.resolve(this, new TooltipGURPS()).toString()
+		return wr
+	}
 
+	get shots(): WeaponShots {
+		const ws = WeaponShots.parse(this.system.shots)
+		ws.current = ws.resolve(this, new TooltipGURPS()).toString()
 		return ws
-		// return this.system.shots
 	}
 
-	get bulk(): Partial<WeaponBulk> {
-		const wb: Partial<WeaponBulk> = {}
-		let s = this.system.bulk.trim().replaceAll(",", "")
-		wb.retractingStock = s.includes("*")
-		const parts = s.split("/")
-		;[wb.normal] = Int.extract(parts[0])
-		if (parts.length > 1) [wb.giant] = Int.extract(parts[1])
+	get bulk(): WeaponBulk {
+		const wb = WeaponBulk.parse(this.system.bulk)
+		wb.current = wb.resolve(this, new TooltipGURPS()).toString()
 		return wb
-		// return this.system.bulk
 	}
 
-	get recoil(): Partial<WeaponRecoil> {
-		let wr: Partial<WeaponRecoil> = {}
-		let s = this.system.recoil.trim().replaceAll(",", "")
-		const parts = s.split("/")
-		;[wr.shot] = Int.extract(parts[0])
-		if (parts.length > 1) [wr.slug] = Int.extract(parts[1])
-
+	get recoil(): WeaponRecoil {
+		const wr = WeaponRecoil.parse(this.system.recoil)
+		wr.current = wr.resolve(this, new TooltipGURPS()).toString()
 		return wr
-		// return this.system.recoil
+	}
+
+	protected _getCalcValues(): this["system"]["calc"] {
+		return {
+			...super._getCalcValues(),
+			accuracy: this.accuracy.current ?? this.system.accuracy,
+			range: this.range.current ?? this.system.range,
+			rate_of_fire: this.rate_of_fire.current ?? this.system.rate_of_fire,
+			shots: this.shots.current ?? this.system.shots,
+			bulk: this.bulk.current ?? this.system.bulk,
+			recoil: this.recoil.current ?? this.system.recoil,
+		}
 	}
 }

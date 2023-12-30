@@ -21,7 +21,7 @@ import {
 } from "./data"
 import { StaticCharacterImporter } from "./import"
 
-Hooks.on("createActor", async function(actor: StaticCharacterGURPS) {
+Hooks.on("createActor", async function (actor: StaticCharacterGURPS) {
 	if (actor.type === "character")
 		await actor.update({
 			"_stats.systemVersion": game.system.version,
@@ -975,7 +975,7 @@ export class StaticCharacterGURPS extends BaseActorGURPS<StaticCharacterSource> 
 		newobj[objkey] = oldotf
 		let notes
 		let newotf
-			;[notes, newotf] = this._removeOtf(otfkey, newobj.notes || "")
+		;[notes, newotf] = this._removeOtf(otfkey, newobj.notes || "")
 		if (newotf) newobj[objkey] = newotf
 		newobj.notes = notes?.trim()
 	}

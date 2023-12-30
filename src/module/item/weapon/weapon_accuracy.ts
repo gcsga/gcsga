@@ -3,8 +3,9 @@ import { TooltipGURPS } from "@module/tooltip"
 import { Int } from "@util/fxp"
 import { wswitch } from "./data"
 import { FeatureType } from "@feature"
+import { WeaponField } from "./weapon_field"
 
-export class WeaponAccuracy {
+export class WeaponAccuracy extends WeaponField {
 	base = 0
 
 	scope = 0
@@ -16,7 +17,7 @@ export class WeaponAccuracy {
 		s = s.replaceAll(" ", "").toLowerCase()
 		if (s.includes("jet")) wa.jet = true
 		else {
-			s = s.replace(/^+/, "")
+			s = s.replace(/^\+/, "")
 			const parts = s.split("+")
 			;[wa.base, parts[0]] = Int.extract(parts[0])
 			if (parts.length > 1) wa.scope = Int.fromString(parts[1])
@@ -26,8 +27,7 @@ export class WeaponAccuracy {
 	}
 
 	resolve(w: WeaponGURPS, tooltip: TooltipGURPS): WeaponAccuracy {
-		const result = new WeaponAccuracy()
-		Object.assign(result, this)
+		const result = WeaponAccuracy.parse(this.toString())
 		result.jet = w.resolveBoolFlag(wswitch.Jet, result.jet)
 		if (!result.jet) {
 			if (w.actor) {

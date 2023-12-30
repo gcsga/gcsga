@@ -1,4 +1,4 @@
-import { BaseWeaponSource, BaseWeaponSystemData } from "@item/weapon"
+import { BaseWeaonCalcValues, BaseWeaponSource, BaseWeaponSystemData } from "@item/weapon"
 import { ItemType } from "@module/data"
 
 export type MeleeWeaponSource = BaseWeaponSource<ItemType.MeleeWeapon, MeleeWeaponSystemData>
@@ -12,16 +12,11 @@ export interface MeleeWeaponSystemData extends BaseWeaponSystemData {
 	reach: string
 	parry: string
 	block: string
+	calc?: MeleeWeaponCalcValues
 }
 
-export interface WeaponParry {
-	no: boolean
-	fencing: boolean
-	unbalanced: boolean
-	modifier: number
-}
-
-export interface WeaponBlock {
-	no: boolean
-	modifier: number
+export interface MeleeWeaponCalcValues extends BaseWeaonCalcValues {
+	reach: string
+	parry: string
+	block: string
 }

@@ -15,12 +15,12 @@ import {
 } from "@item"
 import { Attribute, AttributeObj, AttributeType } from "@module/attribute"
 import { ConditionalModifier } from "@module/conditional_modifier"
-import { ItemDataGURPS, ItemGURPS, WeaponGURPS } from "@module/config"
+import { ItemDataGURPS, ItemGURPS, ItemSourceGURPS } from "@module/config"
 import { gid, ItemType, RollType, SYSTEM_NAME } from "@module/data"
 import { PDF } from "@module/pdf"
 import { ResourceTrackerObj } from "@module/resource_tracker"
 import { RollGURPS } from "@module/roll"
-import { dollarFormat, Length, LocalizeGURPS, newUUID, Weight, WeightUnits } from "@util"
+import { dollarFormat, evaluateToNumber, isContainer, Length, LocalizeGURPS, newUUID, Weight, WeightUnits } from "@util"
 import { CharacterSheetConfig } from "./config_sheet"
 import { CharacterFlagDefaults, CharacterMove, Encumbrance } from "./data"
 import { PointRecordSheet } from "./points_sheet"
@@ -598,7 +598,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 						_id: item._id,
 					}
 					await item.delete()
-					await item.container?.createEmbeddedDocuments("Item", [itemData])
+					await item.container?.createEmbeddedDocuments("Item", [itemData], { keepId: true })
 				},
 			})
 		if (
@@ -619,7 +619,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 						_id: item._id,
 					}
 					await item.delete()
-					await item.container?.createEmbeddedDocuments("Item", [itemData])
+					await item.container?.createEmbeddedDocuments("Item", [itemData], { keepId: true })
 				},
 			})
 		return menuItems
@@ -633,12 +633,11 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 
 	protected _onCollapseToggle(event: JQuery.ClickEvent): void {
 		event.preventDefault()
-		const id: string = $(event.currentTarget).data("item-id")
+		const id = $(event.currentTarget).data("item-id")
 		const open = !!$(event.currentTarget).attr("class")?.includes("closed")
 		const item = this.actor.items.get(id) as ItemGURPS
 		this.noPrepare = true
 		item?.update({ _id: id, "system.open": open }, { noPrepare: true })
-		// item?.update({ _id: id, "system.open": open })
 	}
 
 	protected async _openItemSheet(event: JQuery.DoubleClickEvent) {
@@ -770,8 +769,8 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			} else data.item = this.actor.items.get(id)
 		}
 		if (type === RollType.Modifier) {
-			data.modifier = $(event.currentTarget).data("modifier")
-			data.comment = $(event.currentTarget).data("comment")
+			data.modifier = evaluateToNumber(event.currentTarget.dataset.modifier, this.actor)
+			data.comment = event.currentTarget.dataset.comment
 			if (event.type === "contextmenu") data.modifier = -data.modifier
 		}
 		return RollGURPS.handleRoll(game.user, this.actor, data)
@@ -834,7 +833,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			return this.actor.createNestedEmbeddedDocuments([sourceItem], { id: null, other: options.other })
 
 		let targetItem = this.actor.items.get(targetItemEl.data("item-id")) as ItemGURPS
-		let targetItemContainer = targetItem?.container
+		let targetItemContainer: Actor | ContainerGURPS | null = targetItem?.container
 		// Dropping item into a container
 		if (options.inContainer && targetItem instanceof ContainerGURPS) {
 			targetItemContainer = targetItem
@@ -846,8 +845,8 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			other: options.other,
 		})
 
-		const siblingItems = targetItemContainer?.items.filter(
-			e => e.id !== sourceItem.id && sourceItem.sameSection(e)
+		const siblingItems = (targetItemContainer?.items as any).filter(
+			(e: ItemGURPS) => e.id !== sourceItem.id && sourceItem.sameSection(e)
 		) as ItemGURPS[]
 
 		const sortUpdates = SortingHelpers.performIntegerSort(newItems[0], {
@@ -939,8 +938,8 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			targetItem = targetItemContainer.children.contents[0] ?? null
 		}
 
-		const siblingItems = targetItemContainer?.items.filter(
-			e => e.id !== sourceItem.id && sourceItem.sameSection(e)
+		const siblingItems = (targetItemContainer?.items as any).filter(
+			(e: ItemGURPS) => e.id !== sourceItem.id && sourceItem.sameSection(e)
 		) as ItemGURPS[]
 
 		// target item and source item are not in the same table
@@ -974,9 +973,10 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 	protected _onDragItem(event: JQuery.DragOverEvent): void {
 		const sheet = $(this.element)
 		const itemData = $("#drag-ghost").data("item") as ItemDataGURPS
-		const currentTable = this._getTargetTableFromItemType(event, itemData.type)
+		if (!itemData) return
+		const currentTable = this.getTargetTableFromItemType(event, itemData.type)
 
-		sheet.find(".item-list").each(function() {
+		sheet.find(".item-list").each(function () {
 			if ($(this) !== currentTable) {
 				$(this).removeClass("dragsection")
 				$(this).removeClass("dragindirect")
@@ -1060,7 +1060,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		// 		.map(item => item)
 		// 		.sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0))
 		// )
-		const [primary_attributes, secondary_attributes, point_pools] = this._prepareAttributes(this.actor.attributes)
+		const [primary_attributes, secondary_attributes, point_pools] = this.prepareAttributes(this.actor.attributes)
 		const resource_trackers = Array.from(this.actor.resource_trackers.values())
 		const move_types = Array.from(this.actor.move_types.values())
 		const encumbrance = this._prepareEncumbrance()
@@ -1077,7 +1077,6 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			// ...super.getData(options),
 			...{
 				system: actorData.system,
-				// items: data.items,
 				// items,
 				settings: (actorData.system as any).settings,
 				editing: this.actor.editing,
@@ -1101,8 +1100,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			},
 		}
 		this._prepareItems(sheetData)
-		this._prepareHitLocations(sheetData)
-		// console.log(sheetData)
+		this.prepareHitLocations(sheetData)
 		return sheetData
 	}
 
@@ -1169,71 +1167,54 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		}
 	}
 
-	private _prepareItems(data: any) {
-		// const [traits, skills, spells, equipment, other_equipment, notes, effects] = data.items.reduce(
-		// 	(arr: ItemGURPS[][], item: ItemGURPS) => {
-		// 		if (item instanceof TraitGURPS || item instanceof TraitContainerGURPS) arr[0].push(item)
-		// 		else if (
-		// 			item instanceof SkillGURPS ||
-		// 			item instanceof TechniqueGURPS ||
-		// 			item instanceof SkillContainerGURPS
-		// 		)
-		// 			arr[1].push(item)
-		// 		else if (
-		// 			item instanceof SpellGURPS ||
-		// 			item instanceof RitualMagicSpellGURPS ||
-		// 			item instanceof SpellContainerGURPS
-		// 		)
-		// 			arr[2].push(item)
-		// 		else if (item instanceof EquipmentGURPS || item instanceof EquipmentContainerGURPS) {
-		// 			if (item.other) arr[4].push(item)
-		// 			else arr[3].push(item)
-		// 		} else if (item instanceof NoteGURPS || item instanceof NoteContainerGURPS) arr[5].push(item)
-		// 		else if (item instanceof EffectGURPS) arr[6].push(item)
-		// 		return arr
-		// 	},
-		// 	[[], [], [], [], [], [], []]
-		// )
-		const items = this.actor.items
-			.filter(e => !e.getFlag(SYSTEM_NAME, ItemFlags.Container))
-			.sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0)) as ItemGURPS[]
-		const [traits, skills, spells, equipment, other_equipment, notes, effects] =
-			items.reduce(
-				(arr: ItemGURPS[][], item: ItemGURPS) => {
-					if (item.getFlag(SYSTEM_NAME, ItemFlags.Container)) return arr
-					if ([
-						ItemType.Trait,
-						ItemType.TraitContainer
-					].includes(item.type as ItemType)) arr[0].push(item)
-					else if ([
-						ItemType.Skill,
-						ItemType.Technique,
-						ItemType.SkillContainer
-					].includes(item.type as ItemType)) arr[1].push(item)
-					if ([
-						ItemType.Spell,
-						ItemType.RitualMagicSpell,
-						ItemType.SpellContainer
-					].includes(item.type as ItemType)) arr[2].push(item)
-					if ([
-						ItemType.Equipment,
-						ItemType.EquipmentContainer
-					].includes(item.type as ItemType)) arr[(item as EquipmentGURPS).other ? 4 : 3].push(item)
-					if ([
-						ItemType.Note,
-						ItemType.NoteContainer
-					].includes(item.type as ItemType)) arr[5].push(item)
-					if ([
-						ItemType.Effect,
-						ItemType.Condition
-					].includes(item.type as ItemType)) arr[6].push(item)
-					return arr
-				},
-				[[], [], [], [], [], [], []]
-			)
+	private _addItemChildren(items: any[], item: any): any {
+		const children: any[] = []
+		for (const i of items.filter(e => e.flags[SYSTEM_NAME][ItemFlags.Container] === item._id)) {
+			if ([ItemType.MeleeWeapon, ItemType.RangedWeapon].includes(i.type)) continue
+			children.push(this._addItemChildren(items, i))
+		}
+		if (isContainer(item)) item.children = children
+		return item
+	}
 
-		const melee: WeaponGURPS[] = this.actor.equippedWeapons(ItemType.MeleeWeapon)
-		const ranged: WeaponGURPS[] = this.actor.equippedWeapons(ItemType.RangedWeapon)
+	private _prepareItems(data: any) {
+		const items = data.items as any[]
+		const processedItems: any[] = []
+		for (const item of items.filter(e => e.flags[SYSTEM_NAME][ItemFlags.Container] === null)) {
+			processedItems.push(this._addItemChildren(items, item))
+		}
+
+		const [traits, skills, spells, equipment, other_equipment, notes, effects] = processedItems.reduce(
+			(arr: ItemSourceGURPS[][], item: ItemSourceGURPS) => {
+				if (item.type === ItemType.Trait || item.type === ItemType.TraitContainer) arr[0].push(item)
+				else if (
+					item.type === ItemType.Skill ||
+					item.type === ItemType.Technique ||
+					item.type === ItemType.SkillContainer
+				)
+					arr[1].push(item)
+				else if (
+					item.type === ItemType.Spell ||
+					item.type === ItemType.RitualMagicSpell ||
+					item.type === ItemType.SpellContainer
+				)
+					arr[2].push(item)
+				else if (item.type === ItemType.Equipment || item.type === ItemType.EquipmentContainer) {
+					if (item.flags[SYSTEM_NAME]![ItemFlags.Other]) arr[4].push(item)
+					else arr[3].push(item)
+				} else if (item.type === ItemType.Note || item.type === ItemType.NoteContainer) arr[5].push(item)
+				else if (item.type === ItemType.Effect) arr[6].push(item)
+				return arr
+			},
+			[[], [], [], [], [], [], []]
+		)
+
+		// const melee: WeaponGURPS[] = this.actor.equippedWeapons(ItemType.MeleeWeapon)
+		// const ranged: WeaponGURPS[] = this.actor.equippedWeapons(ItemType.RangedWeapon)
+		const melee = items.filter(e => e.type === ItemType.MeleeWeapon)
+		const ranged = items.filter(e => e.type === ItemType.RangedWeapon)
+		// const melee: WeaponGURPS[] = []
+		// const ranged: WeaponGURPS[] = []
 		const reactions: ConditionalModifier[] = this.actor.reactions
 		const conditionalModifiers: ConditionalModifier[] = this.actor.conditionalModifiers
 

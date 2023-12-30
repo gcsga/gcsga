@@ -23,4 +23,17 @@ export class NoteGURPS extends BaseItemGURPS<NoteSource> {
 	get reference(): string {
 		return this.system.reference
 	}
+
+	protected _getCalcValues(): this["system"]["calc"] {
+		return {
+			name: this.formattedName,
+			resolved_text: this.formattedName,
+			indent: this.parents.length,
+			resolved_notes: "",
+		}
+	}
+
+	prepareDerivedData(): void {
+		this.system.calc = this._getCalcValues()
+	}
 }

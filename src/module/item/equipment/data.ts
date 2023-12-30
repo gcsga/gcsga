@@ -1,4 +1,4 @@
-import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
+import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
 import { Feature } from "@module/config"
 import { ItemType } from "@module/data"
 import { PrereqList } from "@prereq"
@@ -29,4 +29,12 @@ export interface EquipmentSystemData extends Omit<ItemGCSSystemData, "open"> {
 	features: Feature[]
 	// other: boolean
 	rated_strength: number
+	calc?: EquipmentCalcValues
+}
+
+export interface EquipmentCalcValues extends ItemGCSCalcValues {
+	weight: string
+	extended_weight: string
+	value: string
+	extended_value: string
 }

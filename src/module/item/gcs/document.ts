@@ -31,7 +31,7 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 			this._source.img = data.img = `systems/${SYSTEM_NAME}/assets/icons/${type}.svg`
 		let gcs_type: string = data.type
 		if (gcs_type === ItemType.Equipment) gcs_type = "equipment"
-			; (this._source.system as any).type = gcs_type
+		;(this._source.system as any).type = gcs_type
 		await super._preCreate(data, options, user)
 	}
 
@@ -56,18 +56,6 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 		return 0
 	}
 
-	get isContainer(): boolean {
-		return [
-			ItemType.TraitContainer,
-			ItemType.SkillContainer,
-			ItemType.SpellContainer,
-			ItemType.EquipmentContainer,
-			ItemType.TraitModifierContainer,
-			ItemType.EquipmentModifierContainer,
-			ItemType.NoteContainer,
-		].includes(this.type as any)
-	}
-
 	get formattedName(): string {
 		return this.name ?? ""
 	}
@@ -80,7 +68,7 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 		return this.system.tags
 	}
 
-	get secodaryText(): string {
+	get secondaryText(): string {
 		let outString = '<div class="item-notes">'
 		if (this.system.notes) outString += HandlebarsHelpersGURPS.format(this.system.notes)
 		if (this.studyHours !== 0)
@@ -102,8 +90,7 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 			return (this.system as any).features.map((e: Partial<Feature>) => {
 				const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as FeatureType]
 				if (FeatureConstructor) {
-					const f = new FeatureConstructor(e)
-					Object.assign(f, e)
+					const f = FeatureConstructor.fromObject(e)
 					return f
 				}
 				return new AttributeBonus(gid.Strength) // default
@@ -174,5 +161,17 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 			system.weapons = (this as any).weapons.map((e: BaseWeaponGURPS) => e.exportSystemData(false))
 		// if (!keepOther) delete system.other
 		return system
+	}
+
+	protected _getCalcValues(): this["system"]["calc"] {
+		return {
+			name: this.formattedName,
+			indent: this.parents.length,
+			resolved_notes: this.secondaryText,
+		}
+	}
+
+	prepareDerivedData(): void {
+		this.system.calc = this._getCalcValues()
 	}
 }

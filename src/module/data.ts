@@ -477,4 +477,5 @@ export interface WeaponOwner {
 	formattedName: string
 	isLeveled: boolean
 	currentLevel: number
+	ratedStrength: number
 }

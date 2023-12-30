@@ -1,6 +1,6 @@
 import { FeatureType, skillsel } from "./data"
 import { BonusOwner } from "./bonus_owner"
-import { LeveledAmount, LeveledAmountObj } from "./leveled_amount"
+import { LeveledAmount, LeveledAmountKeys, LeveledAmountObj } from "./leveled_amount"
 import { StringComparisonType, StringCriteria } from "@module/data"
 
 export interface SkillBonusObj extends LeveledAmountObj {
@@ -19,7 +19,7 @@ export class SkillBonus extends BonusOwner {
 
 	tags?: StringCriteria
 
-	// leveledAmount: LeveledAmount
+	leveledAmount: LeveledAmount
 
 	constructor() {
 		super()
@@ -35,5 +35,27 @@ export class SkillBonus extends BonusOwner {
 			compare: StringComparisonType.AnyString,
 		}
 		this.leveledAmount = new LeveledAmount({ amount: 1 })
+	}
+
+	toObject(): SkillBonusObj {
+		return {
+			...super.toObject(),
+			selection_type: this.selection_type,
+			name: this.name,
+			specialization: this.specialization,
+			tags: this.tags,
+		}
+	}
+
+	static fromObject(data: SkillBonusObj): SkillBonus {
+		const bonus = new SkillBonus()
+		const levelData: Partial<Record<keyof LeveledAmountObj, any>> = {}
+		for (const key of Object.keys(data)) {
+			if (LeveledAmountKeys.includes(key)) {
+				levelData[key as keyof LeveledAmountObj] = data[key as keyof SkillBonusObj]
+			} else (bonus as any)[key] = data[key as keyof SkillBonusObj]
+		}
+		bonus.leveledAmount = new LeveledAmount(levelData)
+		return bonus
 	}
 }

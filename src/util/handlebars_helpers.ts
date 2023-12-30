@@ -1,6 +1,6 @@
 import { ItemType, Study, StudyType } from "@module/data"
 import { DiceGURPS } from "@module/dice"
-import { getAdjustedStudyHours } from "./misc"
+import { getAdjustedStudyHours, isContainer } from "./misc"
 import { LocalizeGURPS } from "./localize"
 import { CharacterGURPS, StaticSpell } from "@actor"
 import { Static } from "@util"
@@ -13,6 +13,10 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 			n = `${n}<span class="first-letter">${word.substring(0, 1)}</span>${word.substring(1)} `
 		}
 		return n
+	}
+
+	static isContainer(item: { type: ItemType }): boolean {
+		return isContainer(item)
 	}
 
 	static signed(n: number, replaceMinus = true) {
@@ -592,6 +596,7 @@ export function registerHandlebarsHelpers() {
 		staticSpellValues: HandlebarsHelpersGURPS.staticSpellValues,
 		adjustedStudyHours: HandlebarsHelpersGURPS.adjustedStudyHours,
 		studyinfo: HandlebarsHelpersGURPS.studyinfo,
+		isContainer: HandlebarsHelpersGURPS.isContainer,
 		diff: (v1, v2) => v1 - v2,
 		// Multiselect: HandlebarsHelpersGURPS.multiselect
 		selectOptsGURPS: HandlebarsHelpersGURPS.selectOptions,
