@@ -3,12 +3,12 @@ import { LocalizeGURPS, getNewAttributeId, prepareFormData } from "@util"
 import { gid, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { HitLocationTable } from "./hit_location"
 import { DnD } from "@util/drag_drop"
-import { CharacterGURPS } from "./document"
 import { AttributeDefObj, AttributeType } from "@module/attribute"
 import { CharacterSheetGURPS } from "./sheet"
 import { ResourceTrackerDefObj } from "@module/resource_tracker"
 import { PDF } from "@module/pdf"
 import { MoveTypeDefObj, MoveTypeOverrideConditionType } from "@module/move_type"
+import { CharacterGURPS } from "./document"
 
 enum ListType {
 	Attributes = "attributes",

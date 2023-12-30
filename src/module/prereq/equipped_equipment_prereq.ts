@@ -1,22 +1,22 @@
 import { ActorGURPS } from "@module/config"
-import { ActorType, PrereqType, StringCompare, StringComparison } from "@module/data"
+import { ActorType, PrereqType, StringComparisonType, StringCriteria } from "@module/data"
 import { TooltipGURPS } from "@module/tooltip"
 import { LocalizeGURPS, stringCompare } from "@util"
 import { BasePrereq, PrereqConstructionContext } from "./base"
 
 class EquippedEquipmentPrereq extends BasePrereq {
-	name: StringCompare
+	name: StringCriteria
 
 	constructor(data: EquippedEquipmentPrereq | any, context: PrereqConstructionContext = {}) {
 		data = mergeObject(EquippedEquipmentPrereq.defaults, data)
 		super(data, context)
-		this.name ??= { compare: StringComparison.None, qualifier: "" }
+		this.name ??= { compare: StringComparisonType.AnyString, qualifier: "" }
 	}
 
 	static get defaults(): Record<string, any> {
 		return mergeObject(super.defaults, {
 			type: PrereqType.Equipment,
-			name: { compare: StringComparison.Is, qualifier: "" },
+			name: { compare: StringComparisonType.IsString, qualifier: "" },
 		})
 	}
 
@@ -29,7 +29,7 @@ class EquippedEquipmentPrereq extends BasePrereq {
 		if (!satisfied) {
 			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.equipment)
 			tooltip.push(LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereqs.criteria[this.name.compare]))
-			if (this.name.compare !== StringComparison.None) tooltip.push(this.name.qualifier!)
+			if (this.name.compare !== StringComparisonType.AnyString) tooltip.push(this.name.qualifier!)
 			return [satisfied, true]
 		}
 		return [satisfied, false]

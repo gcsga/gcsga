@@ -1,17 +1,24 @@
 import { gid } from "@module/data"
-import { BaseFeature } from "./base"
-import { FeatureType, MoveBonusType } from "./data"
+import { BonusOwner } from "./bonus_owner"
+import { MoveBonusType } from "./data"
+import { LeveledAmount, LeveledAmountObj } from "./leveled_amount"
 
-export class MoveBonus extends BaseFeature {
-	move_type!: string
+export interface MoveBonusObj extends LeveledAmountObj {
+	move_type: string
+	limitation: MoveBonusType
+}
 
-	limitation!: MoveBonusType
+export class MoveBonus extends BonusOwner {
+	move_type: string
 
-	static get defaults(): Record<string, any> {
-		return mergeObject(super.defaults, {
-			type: FeatureType.MoveBonus,
-			attribute: gid.Ground,
-			limitation: MoveBonusType.Base,
-		})
+	limitation: MoveBonusType
+
+	leveledAmount: LeveledAmount
+
+	constructor() {
+		super()
+		this.move_type = gid.Ground
+		this.limitation = MoveBonusType.Base
+		this.leveledAmount = new LeveledAmount({ amount: 1 })
 	}
 }

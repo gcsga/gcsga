@@ -1,10 +1,9 @@
-import { BaseFeature } from "@feature"
 import { ContainerGURPS } from "@item/container"
 import { MeleeWeaponGURPS } from "@item/melee_weapon"
 import { RangedWeaponGURPS } from "@item/ranged_weapon"
 import { BaseWeaponGURPS } from "@item/weapon"
 import { Feature, ItemDataGURPS } from "@module/config"
-import { ActorType, ItemType, Study, SYSTEM_NAME } from "@module/data"
+import { ActorType, gid, ItemType, Study, SYSTEM_NAME } from "@module/data"
 import { PrereqList } from "@prereq"
 import { getAdjustedStudyHours, LocalizeGURPS } from "@util"
 import { HandlebarsHelpersGURPS } from "@util/handlebars_helpers"
@@ -13,6 +12,7 @@ import { ItemDataConstructorData } from "types/foundry/common/data/data.mjs/item
 import { BaseUser } from "types/foundry/common/documents.mjs"
 import { MergeObjectOptions } from "types/foundry/common/utils/helpers.mjs"
 import { ItemGCSSource } from "./data"
+import { AttributeBonus, FeatureType } from "@feature"
 
 export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> extends ContainerGURPS<SourceType> {
 	unsatisfied_reason = ""
@@ -31,7 +31,7 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 			this._source.img = data.img = `systems/${SYSTEM_NAME}/assets/icons/${type}.svg`
 		let gcs_type: string = data.type
 		if (gcs_type === ItemType.Equipment) gcs_type = "equipment"
-		;(this._source.system as any).type = gcs_type
+			; (this._source.system as any).type = gcs_type
 		await super._preCreate(data, options, user)
 	}
 
@@ -50,6 +50,10 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 		const actor = super.actor
 		if (actor?.type === ActorType.Character) return actor
 		return null
+	}
+
+	get ratedStrength(): number {
+		return 0
 	}
 
 	get isContainer(): boolean {
@@ -95,9 +99,15 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 
 	get features(): Feature[] {
 		if (this.system.hasOwnProperty("features")) {
-			return (this.system as any).features.map(
-				(e: Partial<Feature>) => new BaseFeature({ ...e, parent: this.uuid, item: this })
-			)
+			return (this.system as any).features.map((e: Partial<Feature>) => {
+				const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as FeatureType]
+				if (FeatureConstructor) {
+					const f = new FeatureConstructor(e)
+					Object.assign(f, e)
+					return f
+				}
+				return new AttributeBonus(gid.Strength) // default
+			})
 		}
 		return []
 	}
@@ -148,12 +158,12 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 			.reduce((partialSum: number, a: number) => partialSum + a, 0)
 	}
 
-	exportSystemData(keepOther: boolean): any {
+	exportSystemData(_keepOther: boolean): any {
 		const system: any = this.system
 		system.name = this.name
 		if (system.features)
 			system.features = system.features.map((e: Feature) => {
-				const { _levels: _, effective: __, ...rest } = e
+				const { effective: _, ...rest } = e
 				return rest
 			})
 		if ((this as any).children)

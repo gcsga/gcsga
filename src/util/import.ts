@@ -1,4 +1,3 @@
-import { BaseFeature } from "@feature"
 import {
 	EquipmentContainerSystemData,
 	EquipmentModifierContainerSystemData,
@@ -20,6 +19,7 @@ import {
 	TraitModifierContainerSystemData,
 	TraitModifierSystemData,
 	TraitSystemData,
+	stdmg,
 } from "@item"
 import { Feature, ItemSystemDataGURPS } from "@module/config"
 import { CR, ItemType, SYSTEM_NAME } from "@module/data"
@@ -27,6 +27,7 @@ import { SkillDefault } from "@module/default"
 import { PrereqList } from "@prereq"
 import { LocalizeGURPS } from "./localize"
 import { newUUID } from "./misc"
+import { FeatureType } from "@feature"
 
 class ImportUtils {
 	static importItems(
@@ -507,7 +508,7 @@ class ImportUtils {
 			block: data.block ?? "",
 			damage: {
 				type: data.damage.type ?? "",
-				st: data.damage.st ?? "none",
+				st: data.damage.st ?? stdmg.None,
 				base: data.damage.base ?? "",
 				armor_divisor: data.damage.armor_divisor ?? 1,
 				fragmentation: data.damage.fragmentation ?? "",
@@ -534,7 +535,7 @@ class ImportUtils {
 			recoil: data.recoil ?? "",
 			damage: {
 				type: data.damage.type ?? "",
-				st: data.damage.st ?? "none",
+				st: data.damage.st ?? stdmg.None,
 				base: data.damage.base ?? "",
 				armor_divisor: data.damage.armor_divisor ?? 1,
 				fragmentation: data.damage.fragmentation ?? "",
@@ -547,8 +548,13 @@ class ImportUtils {
 
 	private static importFeatures(features: Feature[]): Feature[] {
 		const list: Feature[] = []
-		for (const f of features) {
-			list.push(new BaseFeature(f, {}))
+		for (const e of features) {
+			const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as FeatureType]
+			if (FeatureConstructor) {
+				const f = new FeatureConstructor()
+				Object.assign(f, e)
+				list.push(f)
+			}
 		}
 		return list
 	}

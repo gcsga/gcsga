@@ -1,17 +1,22 @@
-import { BaseFeature } from "./base"
+import { LocalizeGURPS } from "@util"
+import { BonusOwner } from "./bonus_owner"
 import { FeatureType } from "./data"
+import { LeveledAmount, LeveledAmountObj } from "./leveled_amount"
 
-export class ConditionalModifier extends BaseFeature {
-	situation!: string
+export interface ConditionalModifierBonusObj extends LeveledAmountObj {
+	situation: string
+}
 
-	static get defaults(): Record<string, any> {
-		return mergeObject(super.defaults, {
-			type: FeatureType.ConditionalModifier,
-			situation: "triggering condition",
-		})
-	}
+export class ConditionalModifierBonus extends BonusOwner {
+	type = FeatureType.ConditionalModifierBonus
 
-	get adjustedAmount(): number {
-		return this.amount * (this.per_level ? this.levels || 0 : 1)
+	situation: string
+
+	leveledAmount: LeveledAmount
+
+	constructor() {
+		super()
+		this.situation = LocalizeGURPS.translations.gurps.feature.conditional_modifier
+		this.leveledAmount = new LeveledAmount({ amount: 1 })
 	}
 }

@@ -2,7 +2,7 @@ import { Difficulty, gid, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { sanitize } from "@util"
 import { MookData, MookMelee, MookRanged, MookSkill, MookSpell, MookTrait, MookTraitModifier } from "./data"
 import { Mook } from "./document"
-import { StrengthDamage, WeaponDamageObj } from "@item/weapon/data"
+import { stdmg, WeaponDamageObj } from "@item/weapon/data"
 import { DiceGURPS } from "@module/dice"
 
 const regex_points = /\[(-?\d+)\]/
@@ -465,7 +465,7 @@ export class MookParser {
 
 		const damage: WeaponDamageObj = {
 			type: "",
-			st: StrengthDamage.None,
+			st: stdmg.None,
 			base: "",
 			armor_divisor: 1,
 			fragmentation: "",
@@ -691,7 +691,7 @@ export class MookParser {
 
 			let damage: WeaponDamageObj = {
 				type: "",
-				st: StrengthDamage.None,
+				st: stdmg.None,
 				base: "",
 				armor_divisor: 1,
 				fragmentation: "",

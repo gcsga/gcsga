@@ -1,16 +1,21 @@
-import { BaseFeature } from "./base"
+import { BonusOwner } from "./bonus_owner"
 import { FeatureType } from "./data"
 
-export class CostReduction extends BaseFeature {
-	attribute!: string
+export interface CostReductionObj {
+	attribute?: string
+	percentage?: number
+}
 
-	percentage!: number
+export class CostReduction extends BonusOwner {
+	type = FeatureType.CostReduction
 
-	static get defaults(): Record<string, any> {
-		return mergeObject(super.defaults, {
-			type: FeatureType.CostReduction,
-			attribute: "st",
-			percentage: 40,
-		})
+	attribute?: string
+
+	percentage?: number
+
+	constructor(attrID: string) {
+		super()
+		this.attribute = attrID
+		this.percentage = 40
 	}
 }

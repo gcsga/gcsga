@@ -1,21 +1,35 @@
-import { StringCompare, StringComparison } from "@module/data"
-import { BaseFeature } from "./base"
 import { FeatureType } from "./data"
+import { BonusOwner } from "./bonus_owner"
+import { LeveledAmount, LeveledAmountObj } from "./leveled_amount"
+import { StringComparisonType, StringCriteria } from "@module/data"
 
-export class SkillPointBonus extends BaseFeature {
-	name?: StringCompare
+export interface SkillPointBonusObj extends LeveledAmountObj {
+	name?: StringCriteria
+	specialization?: StringCriteria
+	tags?: StringCriteria
+}
 
-	specialization?: StringCompare
+export class SkillPointBonus extends BonusOwner {
+	name?: StringCriteria
 
-	tags?: StringCompare
+	specialization?: StringCriteria
 
-	static get defaults(): Record<string, any> {
-		return mergeObject(super.defaults, {
-			type: FeatureType.SkillPointBonus,
-			selection_type: "skills_with_name",
-			name: { compare: StringComparison.Is, qualifier: "" },
-			specialization: { compare: StringComparison.None, qualifier: "" },
-			tags: { compare: StringComparison.None, qualifier: "" },
-		})
+	tags?: StringCriteria
+
+	leveledAmount: LeveledAmount
+
+	constructor() {
+		super()
+		this.type = FeatureType.SkillPointBonus
+		this.name = {
+			compare: StringComparisonType.IsString,
+		}
+		this.specialization = {
+			compare: StringComparisonType.AnyString,
+		}
+		this.tags = {
+			compare: StringComparisonType.AnyString,
+		}
+		this.leveledAmount = new LeveledAmount({ amount: 1 })
 	}
 }

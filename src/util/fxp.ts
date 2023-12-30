@@ -28,11 +28,7 @@ export class Int {
 		let found = false
 		let decimal = false
 		let start = last
-		while (
-			(start === last && (ch === "-" || ch === "+")) ||
-			(!decimal && ch === ".") ||
-			(ch.match(/[0-9]/))
-		) {
+		while ((start === last && (ch === "-" || ch === "+")) || (!decimal && ch === ".") || ch.match(/[0-9]/)) {
 			if (ch.match(/[0-9]/)) found = true
 			if (ch === ".") decimal = true
 			last++

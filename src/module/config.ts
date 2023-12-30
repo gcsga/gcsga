@@ -10,21 +10,30 @@ import {
 } from "@actor"
 import {
 	AttributeBonus,
-	BaseFeature,
-	ConditionalModifier,
+	AttributeBonusObj,
+	ConditionalModifierBonus,
+	ConditionalModifierBonusObj,
 	ContainedWeightReduction,
+	ContainedWeightReductionObj,
 	CostReduction,
+	CostReductionObj,
 	DRBonus,
+	DRBonusObj,
 	FeatureType,
 	MoveBonus,
 	ReactionBonus,
+	ReactionBonusObj,
 	SkillBonus,
+	SkillBonusObj,
 	SkillPointBonus,
+	SkillPointBonusObj,
 	SpellBonus,
+	SpellBonusObj,
 	SpellPointBonus,
+	SpellPointBonusObj,
+	WeaponBonus,
+	WeaponBonusObj,
 	// ThresholdBonus,
-	WeaponDamageBonus,
-	WeaponDRDivisorBonus,
 } from "@feature"
 import {
 	// BaseItemGURPS,
@@ -217,17 +226,39 @@ const GURPSCONFIG: CONFIG["GURPS"] = {
 	Feature: {
 		classes: {
 			[FeatureType.AttributeBonus]: AttributeBonus,
-			[FeatureType.ConditionalModifier]: ConditionalModifier,
+			[FeatureType.ConditionalModifierBonus]: ConditionalModifierBonus,
 			[FeatureType.DRBonus]: DRBonus,
 			[FeatureType.ReactionBonus]: ReactionBonus,
 			[FeatureType.SkillBonus]: SkillBonus,
 			[FeatureType.SkillPointBonus]: SkillPointBonus,
 			[FeatureType.SpellBonus]: SpellBonus,
 			[FeatureType.SpellPointBonus]: SpellPointBonus,
-			[FeatureType.WeaponBonus]: WeaponDamageBonus,
-			[FeatureType.WeaponDRDivisorBonus]: WeaponDRDivisorBonus,
+			[FeatureType.WeaponBonus]: WeaponBonus,
+			[FeatureType.WeaponAccBonus]: WeaponBonus,
+			[FeatureType.WeaponScopeAccBonus]: WeaponBonus,
+			[FeatureType.WeaponDRDivisorBonus]: WeaponBonus,
+			[FeatureType.WeaponMinSTBonus]: WeaponBonus,
+			[FeatureType.WeaponMinReachBonus]: WeaponBonus,
+			[FeatureType.WeaponMaxReachBonus]: WeaponBonus,
+			[FeatureType.WeaponHalfDamageRangeBonus]: WeaponBonus,
+			[FeatureType.WeaponMinRangeBonus]: WeaponBonus,
+			[FeatureType.WeaponMaxRangeBonus]: WeaponBonus,
+			[FeatureType.WeaponRecoilBonus]: WeaponBonus,
+			[FeatureType.WeaponBulkBonus]: WeaponBonus,
+			[FeatureType.WeaponParryBonus]: WeaponBonus,
+			[FeatureType.WeaponBlockBonus]: WeaponBonus,
+			[FeatureType.WeaponRofMode1ShotsBonus]: WeaponBonus,
+			[FeatureType.WeaponRofMode1SecondaryBonus]: WeaponBonus,
+			[FeatureType.WeaponRofMode2ShotsBonus]: WeaponBonus,
+			[FeatureType.WeaponRofMode2SecondaryBonus]: WeaponBonus,
+			[FeatureType.WeaponNonChamberShotsBonus]: WeaponBonus,
+			[FeatureType.WeaponChamberShotsBonus]: WeaponBonus,
+			[FeatureType.WeaponShotDurationBonus]: WeaponBonus,
+			[FeatureType.WeaponReloadTimeBonus]: WeaponBonus,
+			[FeatureType.WeaponSwitch]: WeaponBonus,
 			[FeatureType.CostReduction]: CostReduction,
-			[FeatureType.ContaiedWeightReduction]: ContainedWeightReduction,
+			[FeatureType.ContainedWeightReduction]: ContainedWeightReduction,
+			[FeatureType.MoveBonus]: MoveBonus,
 		},
 	},
 	Prereq: {
@@ -307,20 +338,43 @@ const GURPSCONFIG: CONFIG["GURPS"] = {
 			any: "gurps.select.spell_sub_type.any",
 		},
 		features: {
-			attribute_bonus: "gurps.select.features.attribute_bonus",
-			conditional_modifier: "gurps.select.features.conditional_modifier",
-			dr_bonus: "gurps.select.features.dr_bonus",
-			reaction_bonus: "gurps.select.features.reaction_bonus",
-			skill_bonus: "gurps.select.features.skill_bonus",
-			skill_point_bonus: "gurps.select.features.skill_point_bonus",
-			spell_bonus: "gurps.select.features.spell_bonus",
-			spell_point_bonus: "gurps.select.features.spell_point_bonus",
-			weapon_bonus: "gurps.select.features.weapon_bonus",
-			weapon_dr_divisor_bonus: "gurps.select.features.weapon_dr_divisor_bonus",
-			cost_reduction: "gurps.select.features.cost_reduction",
+			[FeatureType.AttributeBonus]: `gurps.select.features.${FeatureType.AttributeBonus}`,
+			[FeatureType.ConditionalModifierBonus]: `gurps.select.features.${FeatureType.ConditionalModifierBonus}`,
+			[FeatureType.DRBonus]: `gurps.select.features.${FeatureType.DRBonus}`,
+			[FeatureType.ReactionBonus]: `gurps.select.features.${FeatureType.ReactionBonus}`,
+			[FeatureType.SkillBonus]: `gurps.select.features.${FeatureType.SkillBonus}`,
+			[FeatureType.SkillPointBonus]: `gurps.select.features.${FeatureType.SkillPointBonus}`,
+			[FeatureType.SpellBonus]: `gurps.select.features.${FeatureType.SpellBonus}`,
+			[FeatureType.SpellPointBonus]: `gurps.select.features.${FeatureType.SpellPointBonus}`,
+			[FeatureType.WeaponBonus]: `gurps.select.features.${FeatureType.WeaponBonus}`,
+			[FeatureType.WeaponAccBonus]: `gurps.select.features.${FeatureType.WeaponAccBonus}`,
+			[FeatureType.WeaponScopeAccBonus]: `gurps.select.features.${FeatureType.WeaponScopeAccBonus}`,
+			[FeatureType.WeaponDRDivisorBonus]: `gurps.select.features.${FeatureType.WeaponDRDivisorBonus}`,
+			[FeatureType.WeaponMinSTBonus]: `gurps.select.features.${FeatureType.WeaponMinSTBonus}`,
+			[FeatureType.WeaponMinReachBonus]: `gurps.select.features.${FeatureType.WeaponMinReachBonus}`,
+			[FeatureType.WeaponMaxReachBonus]: `gurps.select.features.${FeatureType.WeaponMaxReachBonus}`,
+			[FeatureType.WeaponHalfDamageRangeBonus]: `gurps.select.features.${FeatureType.WeaponHalfDamageRangeBonus}`,
+			[FeatureType.WeaponMinRangeBonus]: `gurps.select.features.${FeatureType.WeaponMinRangeBonus}`,
+			[FeatureType.WeaponMaxRangeBonus]: `gurps.select.features.${FeatureType.WeaponMaxRangeBonus}`,
+			[FeatureType.WeaponRecoilBonus]: `gurps.select.features.${FeatureType.WeaponRecoilBonus}`,
+			[FeatureType.WeaponBulkBonus]: `gurps.select.features.${FeatureType.WeaponBulkBonus}`,
+			[FeatureType.WeaponParryBonus]: `gurps.select.features.${FeatureType.WeaponParryBonus}`,
+			[FeatureType.WeaponBlockBonus]: `gurps.select.features.${FeatureType.WeaponBlockBonus}`,
+			[FeatureType.WeaponRofMode1ShotsBonus]: `gurps.select.features.${FeatureType.WeaponRofMode1ShotsBonus}`,
+			[FeatureType.WeaponRofMode1SecondaryBonus]: `gurps.select.features.${FeatureType.WeaponRofMode1SecondaryBonus}`,
+			[FeatureType.WeaponRofMode2ShotsBonus]: `gurps.select.features.${FeatureType.WeaponRofMode2ShotsBonus}`,
+			[FeatureType.WeaponRofMode2SecondaryBonus]: `gurps.select.features.${FeatureType.WeaponRofMode2SecondaryBonus}`,
+			[FeatureType.WeaponNonChamberShotsBonus]: `gurps.select.features.${FeatureType.WeaponNonChamberShotsBonus}`,
+			[FeatureType.WeaponChamberShotsBonus]: `gurps.select.features.${FeatureType.WeaponChamberShotsBonus}`,
+			[FeatureType.WeaponShotDurationBonus]: `gurps.select.features.${FeatureType.WeaponShotDurationBonus}`,
+			[FeatureType.WeaponReloadTimeBonus]: `gurps.select.features.${FeatureType.WeaponReloadTimeBonus}`,
+			[FeatureType.WeaponSwitch]: `gurps.select.features.${FeatureType.WeaponSwitch}`,
+			[FeatureType.CostReduction]: `gurps.select.features.${FeatureType.CostReduction}`,
+			[FeatureType.ContainedWeightReduction]: `gurps.select.features.${FeatureType.ContainedWeightReduction}`,
+			[FeatureType.MoveBonus]: `gurps.select.features.${FeatureType.MoveBonus}`,
 		},
 		features_eqc: {
-			contained_weight_reduction: "gurps.select.features.contained_weight_reduction",
+			[FeatureType.ContainedWeightReduction]: "gurps.select.features.contained_weight_reduction",
 		},
 		st_limitation: {
 			none: "gurps.select.st_limitation.none",
@@ -408,28 +462,6 @@ const GURPSCONFIG: CONFIG["GURPS"] = {
 		},
 		maneuvers: {
 			none: "gurps.maneuver.none",
-			// Do_nothing: "gurps.select.maneuvers.do_nothing",
-			// move: "gurps.select.maneuvers.move",
-			// aim: "gurps.select.maneuvers.aim",
-			// change_posture: "gurps.select.maneuvers.change_posture",
-			// evaluate: "gurps.select.maneuvers.evaluate",
-			// attack: "gurps.select.maneuvers.attack",
-			// feint: "gurps.select.maneuvers.feint",
-			// all_out_attack: "gurps.select.maneuvers.all_out_attack",
-			// all_out_attack_determined: "gurps.select.maneuvers.all_out_attack_determined",
-			// all_out_attack_double: "gurps.select.maneuvers.all_out_attack_double",
-			// all_out_attack_feint: "gurps.select.maneuvers.all_out_attack_feint",
-			// all_out_attack_strong: "gurps.select.maneuvers.all_out_attack_strong",
-			// all_out_attack_suppressing_fire: "gurps.select.maneuvers.all_out_attack_suppressing_fire",
-			// move_and_attack: "gurps.select.maneuvers.move_and_attack",
-			// all_out_defense: "gurps.select.maneuvers.all_out_defense",
-			// all_out_defense_dodge: "gurps.select.maneuvers.all_out_defense_dodge",
-			// all_out_defense_parry: "gurps.select.maneuvers.all_out_defense_parry",
-			// all_out_defense_block: "gurps.select.maneuvers.all_out_defense_block",
-			// all_out_defense_double: "gurps.select.maneuvers.all_out_defense_double",
-			// ready: "gurps.select.maneuvers.ready",
-			// concentrate: "gurps.select.maneuvers.concentrate",
-			// wait: "gurps.select.maneuvers.wait",
 			[ManeuverID.DoNothing]: `gurps.maneuver.${ManeuverID.DoNothing}`,
 			[ManeuverID.Move]: `gurps.maneuver.${ManeuverID.Move}`,
 			[ManeuverID.ChangePosture]: `gurps.maneuver.${ManeuverID.ChangePosture}`,
@@ -453,12 +485,6 @@ const GURPSCONFIG: CONFIG["GURPS"] = {
 			[ManeuverID.AODBlock]: `gurps.maneuver.${ManeuverID.AODBlock}`,
 			[ManeuverID.AODDouble]: `gurps.maneuver.${ManeuverID.AODDouble}`,
 		},
-		// move_types: {
-		// 	[MoveType.Ground]: "gurps.select.move_type.ground",
-		// 	[MoveType.Air]: "gurps.select.move_type.air",
-		// 	[MoveType.Water]: "gurps.select.move_type.water",
-		// 	[MoveType.Space]: "gurps.select.move_type.space",
-		// },
 		postures: {
 			standing: "gurps.status.posture_standing",
 			[ConditionID.PostureProne]: `gurps.status.${ConditionID.PostureProne}`,
@@ -609,17 +635,16 @@ export type Prereq =
 export type Bonus = Feature
 
 export type Feature =
-	| BaseFeature
+	// | BaseFeature
 	| AttributeBonus
-	| ConditionalModifier
+	| ConditionalModifierBonus
 	| DRBonus
 	| ReactionBonus
 	| SkillBonus
 	| SkillPointBonus
 	| SpellBonus
 	| SpellPointBonus
-	| WeaponDamageBonus
-	| WeaponDRDivisorBonus
+	| WeaponBonus
 	| CostReduction
 	| ContainedWeightReduction
 
@@ -631,12 +656,25 @@ export type featureMap = {
 	skillPointBonuses: SkillPointBonus[]
 	spellBonuses: SpellBonus[]
 	spellPointBonuses: SpellPointBonus[]
-	weaponBonuses: Array<WeaponDamageBonus | WeaponDRDivisorBonus>
+	weaponBonuses: WeaponBonus[]
 	moveBonuses: MoveBonus[]
 	// thresholdBonuses: ThresholdBonus[]
 }
 
-export type FeatureConstructor = Partial<Bonus>
+// export type FeatureConstructor = Partial<Bonus>
+
+export type FeatureObj =
+	| AttributeBonusObj
+	| ConditionalModifierBonusObj
+	| DRBonusObj
+	| ReactionBonusObj
+	| SkillBonusObj
+	| SkillPointBonusObj
+	| SpellBonusObj
+	| SpellPointBonusObj
+	| WeaponBonusObj
+	| CostReductionObj
+	| ContainedWeightReductionObj
 
 export type ItemDataGURPS =
 	| TraitData

@@ -1,6 +1,6 @@
 import { CharacterGURPS } from "@actor"
 import { Prereq } from "@module/config"
-import { NumberComparison, PrereqType, StringComparison } from "@module/data"
+import { NumericComparisonType, PrereqType, StringComparisonType } from "@module/data"
 import { TooltipGURPS } from "@module/tooltip"
 
 export interface PrereqConstructionContext {
@@ -35,9 +35,9 @@ export class BasePrereq {
 		return new BasePrereq(
 			{
 				type: PrereqType.Trait,
-				name: { compare: StringComparison.Is, qualifier: "" },
-				notes: { compare: StringComparison.None, qualifier: "" },
-				levels: { compare: NumberComparison.AtLeast, qualifier: 0 },
+				name: { compare: StringComparisonType.IsString, qualifier: "" },
+				notes: { compare: StringComparisonType.AnyString, qualifier: "" },
+				levels: { compare: NumericComparisonType.AtLeastNumber, qualifier: 0 },
 				has: true,
 			},
 			{ ready: true }
@@ -48,7 +48,7 @@ export class BasePrereq {
 		return new BasePrereq({
 			type: PrereqType.List,
 			all: true,
-			when_tl: { compare: NumberComparison.None, qualifier: 0 },
+			when_tl: { compare: NumericComparisonType.AnyNumber, qualifier: 0 },
 			prereqs: [],
 		})
 	}

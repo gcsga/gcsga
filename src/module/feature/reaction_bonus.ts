@@ -1,15 +1,22 @@
-import { BaseFeature } from "./base"
+import { LocalizeGURPS } from "@util"
+import { BonusOwner } from "./bonus_owner"
 import { FeatureType } from "./data"
+import { LeveledAmount, LeveledAmountObj } from "./leveled_amount"
 
-export class ReactionBonus extends BaseFeature {
-	sources: string[] = []
+export interface ReactionBonusObj extends LeveledAmountObj {
+	situation: string
+}
 
-	situation!: string
+export class ReactionBonus extends BonusOwner {
+	type = FeatureType.ReactionBonus
 
-	static get defaults(): Record<string, any> {
-		return mergeObject(super.defaults, {
-			type: FeatureType.ReactionBonus,
-			situation: "from others",
-		})
+	situation: string
+
+	leveledAmount: LeveledAmount
+
+	constructor() {
+		super()
+		this.situation = LocalizeGURPS.translations.gurps.feature.reaction_bonus
+		this.leveledAmount = new LeveledAmount({ amount: 1 })
 	}
 }

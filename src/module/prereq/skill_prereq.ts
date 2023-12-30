@@ -1,15 +1,22 @@
 import { CharacterGURPS } from "@actor"
-import { ItemType, NumberCompare, NumberComparison, PrereqType, StringCompare, StringComparison } from "@module/data"
+import {
+	ItemType,
+	NumericCriteria,
+	NumericComparisonType,
+	PrereqType,
+	StringCriteria,
+	StringComparisonType,
+} from "@module/data"
 import { TooltipGURPS } from "@module/tooltip"
 import { LocalizeGURPS, numberCompare, stringCompare } from "@util"
 import { BasePrereq, PrereqConstructionContext } from "./base"
 
 export class SkillPrereq extends BasePrereq {
-	name!: StringCompare
+	name!: StringCriteria
 
-	specialization!: StringCompare
+	specialization!: StringCriteria
 
-	level!: NumberCompare
+	level!: NumericCriteria
 
 	constructor(data: SkillPrereq | any, context: PrereqConstructionContext = {}) {
 		data = mergeObject(SkillPrereq.defaults, data)
@@ -19,9 +26,9 @@ export class SkillPrereq extends BasePrereq {
 	static get defaults(): Record<string, any> {
 		return mergeObject(super.defaults, {
 			type: PrereqType.Skill,
-			name: { compare: StringComparison.Is, qualifier: "" },
-			specialization: { compare: StringComparison.None, qualifier: "" },
-			level: { compare: NumberComparison.AtLeast, qualifier: 0 },
+			name: { compare: StringComparisonType.IsString, qualifier: "" },
+			specialization: { compare: StringComparisonType.AnyString, qualifier: "" },
+			level: { compare: NumericComparisonType.AtLeastNumber, qualifier: 0 },
 		})
 	}
 
@@ -48,7 +55,7 @@ export class SkillPrereq extends BasePrereq {
 			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.has[this.has ? "true" : "false"])
 			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.skill.name)
 			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.name?.compare])
-			if (this.name?.compare !== StringComparison.None) tooltip.push(`"${this.name!.qualifier!}"`)
+			if (this.name?.compare !== StringComparisonType.AnyString) tooltip.push(`"${this.name!.qualifier!}"`)
 			if (this.specialization.compare !== "none") {
 				tooltip.push(LocalizeGURPS.translations.gurps.prereqs.skill.specialization)
 				tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.specialization.compare])
@@ -57,15 +64,15 @@ export class SkillPrereq extends BasePrereq {
 			if (!tech_level) {
 				tooltip.push(LocalizeGURPS.translations.gurps.prereqs.skill.level)
 				tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.level.compare])
-				if (this.level?.compare !== NumberComparison.None)
+				if (this.level?.compare !== NumericComparisonType.AnyNumber)
 					tooltip.push(((this.level ? this.level.qualifier : 0) ?? 0).toString())
 			} else {
-				if (this.specialization.compare !== StringComparison.None) {
+				if (this.specialization.compare !== StringComparisonType.AnyString) {
 					tooltip.push(",")
 				}
 				tooltip.push(LocalizeGURPS.translations.gurps.prereqs.skill.level)
 				tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.level.compare])
-				if (this.level?.compare !== NumberComparison.None)
+				if (this.level?.compare !== NumericComparisonType.AnyNumber)
 					tooltip.push(((this.level ? this.level.qualifier : 0) ?? 0).toString())
 				tooltip.push(LocalizeGURPS.translations.gurps.prereqs.skill.tech_level)
 			}

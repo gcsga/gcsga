@@ -1,4 +1,4 @@
-import { AttributeBonusLimitation, FeatureType } from "@feature"
+import { stlimit, FeatureType } from "@feature"
 import { DurationType } from "@item/effect"
 // import { ThresholdOp } from "@module/attribute"
 import { gid, SYSTEM_NAME } from "@module/data"
@@ -88,7 +88,7 @@ export function getConditionList(): Record<ConditionID, Partial<ConditionSystemD
 				{
 					type: FeatureType.AttributeBonus,
 					attribute: gid.Dexterity,
-					limitation: AttributeBonusLimitation.None,
+					limitation: stlimit.None,
 					effective: true,
 					per_level: true,
 					amount: -1,
@@ -96,7 +96,7 @@ export function getConditionList(): Record<ConditionID, Partial<ConditionSystemD
 				{
 					type: FeatureType.AttributeBonus,
 					attribute: gid.Intelligence,
-					limitation: AttributeBonusLimitation.None,
+					limitation: stlimit.None,
 					effective: true,
 					per_level: true,
 					amount: -1,
@@ -130,7 +130,7 @@ export function getConditionList(): Record<ConditionID, Partial<ConditionSystemD
 					type: FeatureType.AttributeBonus,
 					amount: -4,
 					attribute: "dx",
-					limitation: AttributeBonusLimitation.None,
+					limitation: stlimit.None,
 					per_level: false,
 				},
 			],

@@ -1,59 +1,51 @@
-import { gid, ItemType } from "@module/data"
-import { TooltipGURPS } from "@module/tooltip"
-import { LocalizeGURPS } from "@util"
-import { LeveledAmount } from "@util/leveled_amount"
-import { BaseFeature } from "./base"
+import { gid } from "@module/data"
+import { BonusOwner } from "./bonus_owner"
 import { FeatureType } from "./data"
+import { LeveledAmount, LeveledAmountObj } from "./leveled_amount"
+import { TooltipGURPS } from "@module/tooltip"
+import { LocalizeGURPS, equalFold } from "@util"
 
-export class DRBonus extends BaseFeature {
-	location!: string
+export interface DRBonusObj extends LeveledAmountObj {
+	location: string
+	specialization?: string
+}
+
+export class DRBonus extends BonusOwner {
+	type = FeatureType.DRBonus
+
+	location: string
 
 	specialization?: string
 
-	static get defaults(): Record<string, any> {
-		return mergeObject(super.defaults, {
-			type: FeatureType.DRBonus,
-			location: gid.Torso,
-			specialization: gid.All,
-		})
+	leveledAmount: LeveledAmount
+
+	constructor() {
+		super()
+		this.location = gid.Torso
+		this.specialization = gid.All
+		this.leveledAmount = new LeveledAmount({ amount: 1 })
 	}
 
-	addToTooltip(buffer: TooltipGURPS | null): void {
-		if (buffer !== null) {
-			let item: any | null | undefined = this.item
-			if (item?.actor)
-				while (
-					[
-						ItemType.TraitModifier,
-						ItemType.TraitModifierContainer,
-						ItemType.EquipmentModifier,
-						ItemType.EquipmentModifierContainer,
-					].includes(item?.type as any)
-				) {
-					if (item?.container instanceof Item) item = item?.container
-				}
-			if (this.per_level)
-				buffer.push(
-					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.tooltip.dr_bonus_leveled, {
-						item: item?.name || "",
-						bonus: new LeveledAmount({
-							level: this.levels,
-							amount: this.amount,
-							per_level: this.per_level,
-						}).adjustedAmount.signedString(),
-						per_level: this.amount.signedString(),
-						type: this.specialization || "",
-					})
-				)
-			else
-				buffer.push(
-					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.tooltip.dr_bonus, {
-						item: item?.name || "",
-						bonus: this.amount.signedString(),
-						type: this.specialization || "",
-					})
-				)
-			buffer.push("<br>")
+	private normalize(): void {
+		let s = this.location.trim()
+		if (equalFold(s, gid.All)) s = gid.All
+		this.location = s
+		s = this.specialization?.trim() ?? ""
+		if (s === "" || equalFold(s, gid.All)) s = gid.All
+		this.specialization = s
+	}
+
+	addToTooltip(tooltip: TooltipGURPS | null): void {
+		if (tooltip !== null) {
+			this.normalize()
+			tooltip.push("\n")
+			tooltip.push(this.parentName)
+			tooltip.push(
+				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.feature.dr_bonus, {
+					level: this.leveledAmount.format(false),
+					type: this.specialization ?? gid.All,
+				})
+			)
 		}
 	}
 }
