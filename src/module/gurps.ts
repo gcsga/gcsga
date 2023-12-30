@@ -32,7 +32,7 @@
 import "../styles/gurps.scss"
 import { registerSettings } from "./settings"
 import { preloadTemplates } from "./preload_templates"
-import { getDefaultSkills, LastActor, LocalizeGURPS, setInitiative, Weight } from "@util"
+import { evaluateToNumber, getDefaultSkills, LastActor, LocalizeGURPS, setInitiative, Weight } from "@util"
 import { registerHandlebarsHelpers } from "@util/handlebars_helpers"
 import { GURPSCONFIG } from "./config"
 import * as Chat from "@module/chat"
@@ -109,21 +109,12 @@ if (!(globalThis as any).GURPS) {
     7#@@&P?!~&@@G    !&@@@#GPP@@@#    5@@@.    !@@@P.  .&@@Y          .5@@@B5JYG@@@&~
       .^?5GBBBGG5.     .~?JYY5YJJJ^  .JJJJ~     :JJY7  ~JJJJ.           .~YB#&&BP7:
                                                                                        `
-	// GURPS.eval = evaluateToNumber
-	// GURPS.search = fSearch
-	// GURPS.dice = DiceGURPS
 	GURPS.pdf = PDF.PDFViewerSheet
-	// GURPS.TokenModifierControl = new TokenModifierControl()
-	// GURPS.recurseList = Static.recurseList
-	// GURPS.setLastActor = LastActor.set
-	// GURPS.DamageCalculator = DamageCalculator
-	// GURPS.getDefaultSkills = getDefaultSkills
-	// GURPS.roll = RollGURPS
-	// GURPS.static = Static
 	GURPS.parseLink = parselink
 	GURPS.chat = Chat
 	GURPS.mook = MookParser
 	GURPS.Weight = Weight
+	GURPS.eval = evaluateToNumber
 }
 
 // Initialize system

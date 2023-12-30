@@ -1,11 +1,11 @@
 <div
-	class="desc item{{#if this.isContainer}} container{{/if}} other"
-	data-item-id="{{ this.id }}"
-	{{{indent this.parents.length}}}
+	class="desc item{{#if (isContainer this)}} container{{/if}} other"
+	data-item-id="{{ this._id }}"
+	{{{indent this.system.calc.indent}}}
 >
 	<div class="dropdown">
 		{{#if (eq this.type "skill_container")}}
-		{{#if this.open}}
+		{{#if this.system.open}}
 		{{>actor/character/sections/dropdown-open}}
 		{{else}}
 		{{>actor/character/sections/dropdown-closed}}
@@ -13,25 +13,25 @@
 		{{/if}}
 	</div>
 	<div class="name">
-		{{this.formattedName}}
+		{{this.system.calc.name}}
 	</div>
-	{{{this.secondaryText}}}
+	{{{this.system.calc.resolved_notes}}}
 </div>
 {{#if @root/inCompendium}}
-<div class="difficulty">{{this.difficulty}}</div>
+<div class="difficulty">{{this.system.calc.difficulty}}</div>
 <div class="tags">{{join this.tags ", "}}</div>
 {{else}}
-{{#if this.isContainer}}
+{{#if (isContainer this)}}
 <div class="level"></div>
 <div class="rsl"></div>
 {{else}}
-<div data-item-id="{{this.id}}" data-type="skill" class="level rollable {{effective this}}">{{this.skillLevel}}</div>
-<div data-item-id="{{this.id}}" data-type="skill_rsl" class="rsl rollable {{effective this}}">{{this.relativeLevel}}</div>
+<div data-item-id="{{this._id}}" data-type="skill" class="level rollable {{effective this}}">{{this.system.calc.level}}</div>
+<div data-item-id="{{this._id}}" data-type="skill_rsl" class="rsl rollable {{effective this}}">{{this.system.calc.rsl}}</div>
 {{/if}}
-<div class="points">{{this.adjustedPoints}}</div>
+<div class="points">{{this.system.calc.points}}</div>
 {{/if}}
-<div class="reference">{{{ref this.reference}}}</div>
-{{#if this.open}}
+<div class="reference">{{{ref this.system.reference}}}</div>
+{{#if this.system.open}}
 {{#each (sort this.children "sort")}}
 {{>actor/character/sections/skill}}
 {{/each}}

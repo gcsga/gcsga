@@ -107,13 +107,13 @@ export class TraitContainerGURPS extends ItemGCS<TraitContainerSource> {
 		)
 	}
 
-	get adjustedPoints(): number {
+	adjustedPoints(): number {
 		if (!this.enabled) return 0
 		let points = 0
 		if (this.containerType === TraitContainerType.AlternativeAbilities) {
 			let values: number[] = []
 			for (const child of this.children) {
-				values.push(child.adjustedPoints)
+				values.push(child.adjustedPoints())
 				if (values[values.length - 1] > points) points = values[values.length - 1]
 			}
 			let max = points
@@ -125,7 +125,7 @@ export class TraitContainerGURPS extends ItemGCS<TraitContainerSource> {
 			}
 		} else {
 			for (const child of this.children) {
-				points += child.adjustedPoints
+				points += child.adjustedPoints()
 			}
 		}
 		return points
@@ -144,10 +144,10 @@ export class TraitContainerGURPS extends ItemGCS<TraitContainerSource> {
 				}
 				return [ad, disad, race, quirk]
 			case TraitContainerType.Ancestry: {
-				return [0, 0, this.adjustedPoints, 0]
+				return [0, 0, this.adjustedPoints(), 0]
 			}
 		}
-		let pts = this.adjustedPoints
+		let pts = this.adjustedPoints()
 		if (pts === -1) quirk += pts
 		else if (pts > 0) ad += pts
 		else if (pts < 0) disad += pts
@@ -156,5 +156,13 @@ export class TraitContainerGURPS extends ItemGCS<TraitContainerSource> {
 
 	toggleState(): void {
 		this.enabled = !this.enabled
+	}
+
+	protected _getCalcValues(): this["system"]["calc"] {
+		return {
+			...super._getCalcValues(),
+			enabled: this.enabled,
+			points: this.adjustedPoints(),
+		}
 	}
 }

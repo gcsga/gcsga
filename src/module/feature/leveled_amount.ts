@@ -1,9 +1,15 @@
 import { LocalizeGURPS } from "@util"
 import { FeatureType } from "./data"
 
+export const LeveledAmountKeys = [
+	"amount",
+	"per_level",
+	// "effective"
+]
+
 export interface LeveledAmountObj {
 	type: FeatureType
-	level: number
+	// level: number
 	amount: number
 	per_level: boolean
 	effective: boolean
@@ -15,6 +21,7 @@ export class LeveledAmount {
 	amount = 0
 
 	per_level = false
+	// effective = false
 
 	constructor(data: Partial<LeveledAmount>) {
 		Object.assign(this, data)

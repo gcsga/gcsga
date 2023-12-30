@@ -1,4 +1,4 @@
-import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
+import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
 import { ItemType } from "@module/data"
 
 export type SkillContainerSource = ItemGCSSource<ItemType.SkillContainer, SkillContainerSystemData>
@@ -9,4 +9,10 @@ export interface SkillContainerData extends Omit<SkillContainerSource, "effects"
 	readonly _source: SkillContainerSource
 }
 
-export type SkillContainerSystemData = ItemGCSSystemData
+export interface SkillContainerSystemData extends ItemGCSSystemData {
+	calc?: SkillContainerCalcValues
+}
+
+export interface SkillContainerCalcValues extends ItemGCSCalcValues {
+	points: number
+}

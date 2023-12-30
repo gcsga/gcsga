@@ -1,7 +1,7 @@
 import { gid } from "@module/data"
 import { BonusOwner } from "./bonus_owner"
 import { FeatureType } from "./data"
-import { LeveledAmount, LeveledAmountObj } from "./leveled_amount"
+import { LeveledAmount, LeveledAmountKeys, LeveledAmountObj } from "./leveled_amount"
 import { TooltipGURPS } from "@module/tooltip"
 import { LocalizeGURPS, equalFold } from "@util"
 
@@ -13,9 +13,9 @@ export interface DRBonusObj extends LeveledAmountObj {
 export class DRBonus extends BonusOwner {
 	type = FeatureType.DRBonus
 
-	location: string
+	location: string = gid.Torso
 
-	specialization?: string
+	specialization: string = gid.All
 
 	leveledAmount: LeveledAmount
 
@@ -47,5 +47,25 @@ export class DRBonus extends BonusOwner {
 				})
 			)
 		}
+	}
+
+	toObject(): DRBonusObj {
+		return {
+			...super.toObject(),
+			location: this.location,
+			specialization: this.specialization,
+		}
+	}
+
+	static fromObject(data: DRBonusObj): DRBonus {
+		const bonus = new DRBonus()
+		const levelData: Partial<Record<keyof LeveledAmountObj, any>> = {}
+		for (const key of Object.keys(data)) {
+			if (LeveledAmountKeys.includes(key)) {
+				levelData[key as keyof LeveledAmountObj] = data[key as keyof DRBonusObj]
+			} else (bonus as any)[key] = data[key as keyof DRBonusObj]
+		}
+		bonus.leveledAmount = new LeveledAmount(levelData)
+		return bonus
 	}
 }

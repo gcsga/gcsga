@@ -91,6 +91,7 @@ import {
 	TraitModifierGURPS,
 	TraitModifierSystemData,
 	TraitSystemData,
+	wswitch,
 } from "@item"
 import { ConditionData, ConditionGURPS, ConditionID, ManeuverID } from "@item/condition"
 import { DurationType, EffectData, EffectGURPS } from "@item/effect"
@@ -585,6 +586,15 @@ const GURPSCONFIG: CONFIG["GURPS"] = {
 				[c]: `gurps.select.study_hours_needed.${c}`,
 			})
 		}, {}),
+		switch_type: Object.values(wswitch).reduce((acc, c) => {
+			return Object.assign(acc, {
+				[c]: `gurps.select.switch_type.${c}`,
+			})
+		}, {}),
+		switch_type_value: {
+			true: "gurps.select.switch_type_value.true",
+			false: "gurps.select.switch_type_value.false",
+		},
 	},
 	meleeMods: {},
 	rangedMods: {},

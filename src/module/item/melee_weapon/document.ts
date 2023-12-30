@@ -1,9 +1,10 @@
 import { BaseWeaponGURPS } from "@item/weapon"
 import { gid } from "@module/data"
 import { TooltipGURPS } from "@module/tooltip"
-import { MeleeWeaponSource, WeaponBlock, WeaponParry } from "./data"
-import { Int } from "@util/fxp"
+import { MeleeWeaponSource } from "./data"
 import { WeaponReach } from "@item/weapon/weapon_reach"
+import { WeaponBlock } from "@item/weapon/weapon_block"
+import { WeaponParry } from "@item/weapon/weapon_parry"
 
 export class MeleeWeaponGURPS extends BaseWeaponGURPS<MeleeWeaponSource> {
 	get fastResolvedParry(): string {
@@ -22,39 +23,30 @@ export class MeleeWeaponGURPS extends BaseWeaponGURPS<MeleeWeaponSource> {
 		return this.resolvedValue(this.system.block, gid.Block, tooltip)
 	}
 
-	get parry(): Partial<WeaponParry> {
-		const s = this.system.parry
-		if (s.includes("no"))
-			return {
-				no: true,
-				fencing: false,
-				unbalanced: false,
-				modifier: 0,
-			}
-		return {
-			no: false,
-			fencing: s.includes("f"),
-			unbalanced: s.includes("u"),
-			modifier: Int.fromString(s),
-		}
-		// return parseInt(this.resolvedParry()) ?? 0
+	get parry(): WeaponParry {
+		const wp = WeaponParry.parse(this.system.parry)
+		wp.current = wp.resolve(this, new TooltipGURPS()).toString()
+		return wp
 	}
 
-	get block(): Partial<WeaponBlock> {
-		const s = this.system.block
-		if (s.includes("no"))
-			return {
-				no: true,
-				modifier: 0,
-			}
-		return {
-			no: false,
-			modifier: Int.fromString(s),
-		}
-		// return parseInt(this.resolvedBlock()) ?? 0
+	get block(): WeaponBlock {
+		const wb = WeaponBlock.parse(this.system.block)
+		wb.current = wb.resolve(this, new TooltipGURPS()).toString()
+		return wb
 	}
 
 	get reach(): WeaponReach {
-		return WeaponReach.parse(this.system.reach)
+		const wr = WeaponReach.parse(this.system.reach)
+		wr.current = wr.resolve(this, new TooltipGURPS()).toString()
+		return wr
+	}
+
+	protected _getCalcValues(): this["system"]["calc"] {
+		return {
+			...super._getCalcValues(),
+			reach: this.reach.current ?? this.system.reach,
+			parry: this.parry.current ?? this.system.parry,
+			block: this.block.current ?? this.system.block,
+		}
 	}
 }

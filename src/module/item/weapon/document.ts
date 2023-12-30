@@ -1,4 +1,4 @@
-import { FeatureType, SkillBonus, WeaponBonus, WeaponBonusType, wsel } from "@feature"
+import { FeatureType, SkillBonus, WeaponBonus, WeaponBonusType, skillsel, wsel } from "@feature"
 import { BaseItemGURPS } from "@item/base"
 import { ContainerGURPS } from "@item/container"
 import { Bonus, Feature } from "@module/config"
@@ -12,9 +12,6 @@ import { BaseWeaponSource, wswitch } from "./data"
 import { Int } from "@util/fxp"
 import { ItemGCS } from "@item/gcs"
 import { CharacterGURPS } from "@actor"
-import { TraitGURPS } from "@item/trait"
-import { EquipmentGURPS } from "@item/equipment"
-import { EquipmentContainerGURPS, TraitContainerGURPS } from "@item"
 import { WeaponStrength } from "./weapon_strength"
 
 export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSource> extends BaseItemGURPS<SourceType> {
@@ -32,7 +29,9 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 	}
 
 	get strength(): WeaponStrength {
-		return WeaponStrength.parse(this.system.strength)
+		const ws = WeaponStrength.parse(this.system.strength)
+		ws.current = ws.resolve(this, new TooltipGURPS()).toString()
+		return ws
 	}
 
 	override get actor(): CharacterGURPS | null {
@@ -101,7 +100,7 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 		return best
 	}
 
-	skillLevelBaseAdjustment(actor: this["actor"], tooltip: TooltipGURPS): number {
+	skillLevelBaseAdjustment(actor: this["actor"], tooltip: TooltipGURPS | null): number {
 		if (!actor) return 0
 		let adj = 0
 		if (!(this.container instanceof ContainerGURPS)) return 0
@@ -138,13 +137,13 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 		return adj
 	}
 
-	skillLevelPostAdjustment(actor: this["actor"], tooltip: TooltipGURPS): number {
+	skillLevelPostAdjustment(actor: this["actor"], tooltip: TooltipGURPS | null): number {
 		if (this.type === ItemType.MeleeWeapon)
 			if ((this.system as any).parry?.includes("F")) return this.encumbrancePenalty(actor, tooltip)
 		return 0
 	}
 
-	encumbrancePenalty(actor: this["actor"], tooltip: TooltipGURPS): number {
+	encumbrancePenalty(actor: this["actor"], tooltip: TooltipGURPS | null): number {
 		if (!actor) return 0
 		const penalty = actor.encumbranceLevel(true).penalty
 		if (penalty !== 0 && tooltip) {
@@ -158,9 +157,9 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 		return penalty
 	}
 
-	extractSkillBonusForThisWeapon(f: Feature, tooltip: TooltipGURPS): number {
+	extractSkillBonusForThisWeapon(f: Feature, tooltip: TooltipGURPS | null): number {
 		if (f instanceof SkillBonus) {
-			if (f.selection_type === "this_weapon") {
+			if (f.selection_type === skillsel.ThisWeapon) {
 				if (stringCompare(this.usage, f.specialization)) {
 					f.addToTooltip(tooltip)
 					return f.adjustedAmount
@@ -294,15 +293,16 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 		actor.addWeaponWithSkillBonusesFor(name, specialization, this.usage, tags, dieCount, tooltip, bonusSet, allowed)
 		const nameQualifier = this.formattedName
 		actor.addNamedWeaponBonusesFor(nameQualifier, this.usage, tags, dieCount, tooltip, bonusSet, allowed)
-		for (const f of (this.container as ItemGCS).features)
-			this._extractWeaponBonus(f, bonusSet, allowed, Int.from(dieCount), tooltip)
+		const container = this.container as ItemGCS
+		if (container)
+			for (const f of container.features)
+				this._extractWeaponBonus(f, bonusSet, allowed, Int.from(dieCount), tooltip)
 		if (
-			this.container instanceof TraitGURPS ||
-			this.container instanceof TraitContainerGURPS ||
-			this.container instanceof EquipmentGURPS ||
-			this.container instanceof EquipmentContainerGURPS
+			[ItemType.Trait, ItemType.TraitContainer, ItemType.Equipment, ItemType.EquipmentContainer].includes(
+				this.container?.type as ItemType
+			)
 		) {
-			this.container.modifiers.forEach(mod => {
+			;(this.container as any).modifiers.forEach((mod: any) => {
 				let bonus: Bonus
 				for (const f of mod.features) {
 					bonus = f
@@ -338,6 +338,7 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 							f.addToTooltip(tooltip)
 						}
 					}
+					break
 				case wsel.WithName:
 					if (
 						stringCompare(this.formattedName, f.name) &&
@@ -349,11 +350,27 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 							f.addToTooltip(tooltip)
 						}
 					}
+					break
 				default:
-					throw Error(`Unknown selection type ${f.selection_type}`)
+					throw Error(`Unknown selection type ${(f as any).selection_type}`)
 			}
 			f.leveledAmount.level = savedLevel
 			f.leveledAmount.dieCount = savedDieCount
 		}
+	}
+
+	protected _getCalcValues(): this["system"]["calc"] {
+		return {
+			name: this.itemName,
+			resolved_notes: this.secondaryText,
+			usage: this.usage,
+			level: this.level,
+			damage: this.fastResolvedDamage,
+			strength: this.strength.current ?? this.system.strength,
+		}
+	}
+
+	prepareDerivedData(): void {
+		this.system.calc = this._getCalcValues()
 	}
 }

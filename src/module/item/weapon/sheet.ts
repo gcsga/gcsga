@@ -22,7 +22,6 @@ export abstract class WeaponSheet extends ItemSheetGURPS {
 				defaults: (this.item as any).defaults,
 			},
 		}
-		console.log(sheetData)
 		return sheetData
 	}
 

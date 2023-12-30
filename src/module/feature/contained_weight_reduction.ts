@@ -32,6 +32,14 @@ export class ContainedWeightReduction extends BonusOwner {
 		if (this.isPercentageReduction) return 0
 		return Weight.fromString(this.reduction, defUnits)
 	}
+
+	static fromObject(data: ContainedWeightReductionObj): ContainedWeightReduction {
+		const bonus = new ContainedWeightReduction()
+		for (const key of Object.keys(data)) {
+			;(bonus as any)[key] = data[key as keyof ContainedWeightReductionObj]
+		}
+		return bonus
+	}
 }
 
 export function extractContainedWeightReduction(s: string, defUnits: WeightUnits): string {

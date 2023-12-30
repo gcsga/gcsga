@@ -1,12 +1,9 @@
 import { DiceGURPS } from "@module/dice"
 import { WeaponDamageObj, stdmg } from "./data"
 import { LocalizeGURPS } from "@util"
-import { WeaponGURPS } from "@module/config"
-import { ItemGCS } from "@item/gcs"
-import { TraitGURPS } from "@item/trait"
 import { Int } from "@util/fxp"
 import { TooltipGURPS } from "@module/tooltip"
-import { DamageProgression } from "@module/data"
+import { DamageProgression, ItemType } from "@module/data"
 import { FeatureType } from "@feature"
 import { BaseWeaponGURPS } from "./document"
 
@@ -55,8 +52,9 @@ export class WeaponDamage {
 			if (this.armor_divisor !== 1) buffer += `(${this.armor_divisor})`
 			if (this.modifier_per_die !== 0) {
 				if (buffer.length !== 0) buffer += " "
-				buffer += `(${this.modifier_per_die?.signedString()} ${LocalizeGURPS.translations.gurps.feature.per_die
-					})`
+				buffer += `(${this.modifier_per_die?.signedString()} ${
+					LocalizeGURPS.translations.gurps.feature.per_die
+				})`
 			}
 			const t = this.type.trim()
 			if (t !== "") buffer += ` ${t}`
@@ -78,13 +76,13 @@ export class WeaponDamage {
 		if (!actor) return new DiceGURPS({ sides: 6, multiplier: 1 })
 		const maxST = (this.owner.strength.resolve(this.owner, null).min ?? 0) * 3
 		let st = 0
-		if (this.owner.container instanceof ItemGCS) st = this.owner.container.ratedStrength
+		if (this.owner.container instanceof Item) st = (this.owner.container as any).ratedStrength
 		if (st === 0) st = actor.strikingST
 		if (maxST > 0 && maxST < st) st = maxST
 		let base = new DiceGURPS({ sides: 6, multiplier: 1 })
 		if (this.base) base = this.base
-		if (this.owner.container instanceof TraitGURPS && this.owner.container.isLeveled)
-			multiplyDice(Int.from(this.owner.container.levels), base)
+		if (this.owner.container?.type === ItemType.Trait && (this.owner.container as any).isLeveled)
+			multiplyDice(Int.from((this.owner.container as any).levels), base)
 		let intST = Int.from(st)
 		switch (this.st) {
 			case stdmg.Thrust:
@@ -92,8 +90,8 @@ export class WeaponDamage {
 				break
 			case stdmg.LeveledThrust:
 				const thrust = actor.thrustFor(intST)
-				if (this.owner.container instanceof TraitGURPS && this.owner.container.isLeveled)
-					multiplyDice(Int.from(this.owner.container.levels), thrust)
+				if (this.owner.container?.type === ItemType.Trait && (this.owner.container as any).isLeveled)
+					multiplyDice(Int.from((this.owner.container as any).levels), base)
 				base = addDice(base, thrust)
 				break
 			case stdmg.Swing:
@@ -101,8 +99,8 @@ export class WeaponDamage {
 				break
 			case stdmg.LeveledSwing:
 				const swing = actor.swingFor(intST)
-				if (this.owner.container instanceof TraitGURPS && this.owner.container.isLeveled)
-					multiplyDice(Int.from(this.owner.container.levels), swing)
+				if (this.owner.container?.type === ItemType.Trait && (this.owner.container as any).isLeveled)
+					multiplyDice(Int.from((this.owner.container as any).levels), swing)
 				base = addDice(base, swing)
 				break
 		}

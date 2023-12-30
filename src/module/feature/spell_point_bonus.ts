@@ -1,7 +1,7 @@
 import { StringComparisonType, StringCriteria } from "@module/data"
 import { BonusOwner } from "./bonus_owner"
 import { FeatureType, spellmatch } from "./data"
-import { LeveledAmount, LeveledAmountObj } from "./leveled_amount"
+import { LeveledAmount, LeveledAmountKeys, LeveledAmountObj } from "./leveled_amount"
 import { stringCompare } from "@util"
 
 export interface SpellPointBonusObj extends LeveledAmountObj {
@@ -43,5 +43,26 @@ export class SpellPointBonus extends BonusOwner {
 			case spellmatch.PowerSource:
 				return stringCompare(powerSource, this.name)
 		}
+	}
+
+	toObject(): SpellPointBonusObj {
+		return {
+			...super.toObject(),
+			match: this.match,
+			name: this.name,
+			tags: this.tags,
+		}
+	}
+
+	static fromObject(data: SpellPointBonusObj): SpellPointBonus {
+		const bonus = new SpellPointBonus()
+		const levelData: Partial<Record<keyof LeveledAmountObj, any>> = {}
+		for (const key of Object.keys(data)) {
+			if (LeveledAmountKeys.includes(key)) {
+				levelData[key as keyof LeveledAmountObj] = data[key as keyof SpellPointBonusObj]
+			} else (bonus as any)[key] = data[key as keyof SpellPointBonusObj]
+		}
+		bonus.leveledAmount = new LeveledAmount(levelData)
+		return bonus
 	}
 }

@@ -1,11 +1,11 @@
 <div
-	class="desc item{{#if this.isContainer}} container{{/if}} other {{disabled (not this.enabled)}}"
-	data-item-id="{{ this.id }}"
-	{{{indent this.parents.length}}}
+	class="desc item{{#if (isContainer this)}} container{{/if}} other {{disabled (not this.system.calc.enabled)}}"
+	data-item-id="{{ this._id }}"
+	{{{indent this.system.calc.indent}}}
 >
 	<div class="dropdown">
-		{{#if (or this.isContainer this.children.size)}}
-		{{#if this.open}}
+		{{#if (or (isContainer this) this.children.size)}}
+		{{#if this.system.open}}
 		{{>actor/character/sections/dropdown-open}}
 		{{else}}
 		{{>actor/character/sections/dropdown-closed}}
@@ -13,18 +13,18 @@
 		{{/if}}
 	</div>
 	<div class="name">
-		<div>{{this.formattedName}}</div>
+		{{this.system.calc.name}}
 		<div class="container-type">
-{{#if (and this.isContainer (ne this.system.container_type "group"))}}{{localize (concat "gurps.character.traits.container_type." this.system.container_type)}}{{/if}}</div>
+{{#if (and (isContainer this) (ne this.system.container_type "group"))}}{{localize (concat "gurps.character.traits.container_type." this.system.container_type)}}{{/if}}</div>
 	</div>
-	{{{this.secondaryText}}}
+	{{{this.system.calc.resolved_notes}}}
 </div>
 <div class="points {{disabled (not this.enabled)}}">{{this.adjustedPoints}}</div>
 {{#if @root/inCompendium}}
 <div class="tags">{{join this.tags ", "}}</div>
 {{/if}}
-<div class="reference" {{disabled (not this.enabled)}}>{{{ref this.reference}}}</div>
-{{#if this.open}}
+<div class="reference" {{disabled (not this.enabled)}}>{{{ref this.system.reference}}}</div>
+{{#if this.system.open}}
 {{#each (sort this.children "sort")}}
 {{>actor/character/sections/trait}}
 {{/each}}

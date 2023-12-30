@@ -3,9 +3,9 @@ import { TooltipGURPS } from "@module/tooltip"
 import { Int } from "@util/fxp"
 import { wswitch } from "./data"
 import { FeatureType } from "@feature"
-import { ItemGCS } from "@item/gcs"
+import { WeaponField } from "./weapon_field"
 
-export class WeaponRange {
+export class WeaponRange extends WeaponField {
 	halfDamage = 0
 
 	min = 0
@@ -62,7 +62,7 @@ export class WeaponRange {
 		result.inMiles = w.resolveBoolFlag(wswitch.RangeInMiles, result.inMiles)
 		if (result.musclePowered) {
 			let st = 0
-			if (w.container instanceof ItemGCS) st = w.container.ratedStrength
+			if (w.container instanceof Item) st = (w.container as any).ratedStrength
 			if (st === 0) {
 				if (w.actor) st = w.actor.throwingST
 			}

@@ -1,12 +1,11 @@
-import { EquipmentGURPS } from "@item/equipment"
-import { WeaponGURPS } from "@module/config"
 import { TooltipGURPS } from "@module/tooltip"
 import { Int } from "@util/fxp"
 import { wswitch } from "./data"
 import { FeatureType } from "@feature"
 import { BaseWeaponGURPS } from "./document"
+import { WeaponField } from "./weapon_field"
 
-export class WeaponStrength {
+export class WeaponStrength extends WeaponField {
 	min?: number
 
 	bipod?: boolean
@@ -29,7 +28,7 @@ export class WeaponStrength {
 			ws.musketRest = s.includes("r")
 			ws.twoHanded = s.includes("†") || s.includes("*")
 			ws.twoHandedUnready = s.includes("‡")
-				;[ws.min] = Int.extract(s)
+			;[ws.min] = Int.extract(s)
 			ws.validate()
 		}
 		return ws
@@ -39,8 +38,8 @@ export class WeaponStrength {
 		const result = new WeaponStrength()
 		Object.assign(result, this)
 		if (w.actor) {
-			if (w.container instanceof EquipmentGURPS) {
-				const st = Math.max(w.container?.ratedStrength, 0)
+			if (w.container instanceof Item) {
+				const st = Math.max((w.container as any).ratedStrength, 0)
 				if (st !== 0) result.min = st
 			}
 		}
@@ -67,7 +66,7 @@ export class WeaponStrength {
 		if (this.mounted) buffer += "M"
 		if (this.musketRest) buffer += "R"
 		if (this.twoHanded || this.twoHandedUnready) {
-			if (this.twoHandedUnready) buffer += " ‡"
+			if (this.twoHandedUnready) buffer += "‡"
 			else buffer += "†"
 		}
 

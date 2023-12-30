@@ -26,6 +26,16 @@ export interface BaseWeaponSystemData {
 	usage_notes: string
 	defaults: SkillDefault[]
 	damage: WeaponDamageObj
+	calc?: BaseWeaonCalcValues
+}
+
+export interface BaseWeaonCalcValues {
+	name: string
+	usage: string
+	resolved_notes: string
+	level: number
+	damage: string
+	strength: string
 }
 
 export type WeaponType = ItemType.MeleeWeapon | ItemType.RangedWeapon

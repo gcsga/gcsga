@@ -3,6 +3,7 @@ import {
 	DEFAULT_INITIATIVE_FORMULA,
 	Difficulty,
 	DisplayMode,
+	ItemType,
 	NumericComparisonType,
 	NumericCriteria,
 	SETTINGS,
@@ -394,4 +395,16 @@ export function getNewAttributeId(list: { id: string }[]): string {
 	}
 	ui.notifications?.error("Ran out of valid IDs. How did you manage this?")
 	throw new Error("Error generating new attribute ID, ran out of possible auto-generated IDs.")
+}
+
+export function isContainer(item: { type: ItemType }): boolean {
+	return [
+		ItemType.TraitContainer,
+		ItemType.SkillContainer,
+		ItemType.SpellContainer,
+		ItemType.EquipmentContainer,
+		ItemType.TraitModifierContainer,
+		ItemType.EquipmentModifierContainer,
+		ItemType.NoteContainer,
+	].includes(item.type as any)
 }

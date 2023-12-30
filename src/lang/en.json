@@ -756,7 +756,7 @@
 			"header": "Features",
 			"per_level": "per level",
 			"per_die": "per die",
-			"percent": "as a percentage",
+			"percent": "as a %",
 			"per_level_text": "{leveled} ({amt} per {what})",
 			"level": "level",
 			"die": "die",
@@ -825,6 +825,29 @@
 			"shots": "Shots",
 			"bulk": "Bulk",
 			"bulk_for": "Bulk ({name})",
+			"accuracy_scope": "Scope",
+			"accuracy_jet": "Jet",
+			"range_half_damage": "½ Damage",
+			"range_min": "Minimum",
+			"muscle_powered": "Muscle-powered",
+			"in_miles": "Ranges are in miles",
+			"mode_1": "Mode 1",
+			"mode_2": "Mode 2",
+			"shots_per_attack": "per attack with",
+			"secondary_projectiles": "secondary projectiles",
+			"full_auto_only": "Fully Automatic Only",
+			"high_cyclic_controlled_bursts": "High-cyclic Controlled Bursts",
+			"in_chamber": "In Chamber",
+			"duration": "Duration",
+			"reload_time": "Reload Time",
+			"reload_time_is_per_shot": "Per Shot",
+			"thrown": "Thrown",
+			"bulk_giant": "For Giants",
+			"retracting_stock": "Retracting Stock",
+			"slug": "For Slugs",
+			"bipod": "Has bipod",
+			"mounted": "Mounted",
+			"musket_rest": "Uses a musket rest",
 			"damage_display": {
 				"thr": "thr",
 				"thr_leveled": "thr",
@@ -1142,6 +1165,33 @@
 				"160": "Reduction for Talent level 2",
 				"140": "Reduction for Talent level 3",
 				"120": "Reduction for Talent level 4"
+			},
+			"switch_type": {
+				"can_block": "Can Block",
+				"can_parry": "Can Parry",
+				"close_combat": "Close Combat",
+				"fencing": "Fencing",
+				"full_auto_1": "Fully Automatic (Mode 1)",
+				"full_auto_2": "Fully Automatic (Mode 2)",
+				"bipod": "Has Bipod",
+				"controlled_bursts_1": "High-cyclic Controlled Bursts (Mode 1)",
+				"controlled_bursts_2": "High-cyclic Controlled Bursts (Mode 2)",
+				"jet": "Jet",
+				"mounted": "Mounted",
+				"muscle_powered": "Muscle Powered",
+				"range_in_miles": "Range In Miles",
+				"change_requires_ready": "Reach Change Requires Ready",
+				"reload_time_is_per_shot": "Reload Time Is Per Shot",
+				"retracting_stock": "Retracting Stock",
+				"two_handed": "Two-handed",
+				"thrown": "Thrown",
+				"unbalanced": "Unbalanced",
+				"two_handed_unready": "Two-handed and Unready After Attack",
+				"musket_rest": "Uses a Musket Rest"
+			},
+			"switch_type_value": {
+				"true": "to true",
+				"false": "to false"
 			}
 		},
 		"study": {
@@ -1796,7 +1846,11 @@
 			"dr_bonus_leveled": "{item} [{bonus} ({per_level} per level) against {type} attacks]",
 			"encumbrance": "Encumbrance [{bonus}]",
 			"auto_encumbrance": "Toggle automatic encumbrance calculation",
-			"auto_threshold": "Toggle automatic attribute threshold calculation"
+			"auto_threshold": "Toggle automatic attribute threshold calculation",
+			"weapon_rof": {
+				"mode1": "First mode:\n{content}",
+				"mode2": "\n\nSecond mode:\n{content}"
+			}
 		},
 		"prereqs": {
 			"unsatisfied": "Unsatisfied Prerequisite(s)",

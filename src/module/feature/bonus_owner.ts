@@ -1,7 +1,7 @@
 import { Stringer, WeaponOwner } from "@module/data"
 import { LocalizeGURPS } from "@util"
 import { FeatureType } from "./data"
-import { LeveledAmount } from "./leveled_amount"
+import { LeveledAmount, LeveledAmountObj } from "./leveled_amount"
 import { TooltipGURPS } from "@module/tooltip"
 import { WeaponLeveledAmount } from "./weapon_leveled_amount"
 
@@ -69,5 +69,12 @@ export abstract class BonusOwner {
 		}
 	}
 
-	// abstract toObject(): object
+	toObject(): LeveledAmountObj {
+		return {
+			type: this.type,
+			amount: this.amount,
+			per_level: this.leveledAmount.per_level,
+			effective: this.effective ?? false,
+		}
+	}
 }

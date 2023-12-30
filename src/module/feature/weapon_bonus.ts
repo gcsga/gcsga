@@ -4,7 +4,7 @@ import { NumericComparisonType, NumericCriteria, StringComparisonType, StringCri
 import { Int } from "@util/fxp"
 import { TooltipGURPS } from "@module/tooltip"
 import { LocalizeGURPS } from "@util"
-import { WeaponLeveledAmount, WeaponLeveledAmountObj } from "./weapon_leveled_amount"
+import { WeaponLeveledAmount, WeaponLeveledAmountKeys, WeaponLeveledAmountObj } from "./weapon_leveled_amount"
 
 export interface WeaponBonusObj extends WeaponLeveledAmountObj {
 	type: WeaponBonusType
@@ -162,5 +162,17 @@ export class WeaponBonus {
 			leveled: this.leveledAmount.leveled,
 			per_die: this.leveledAmount.per_die,
 		}
+	}
+
+	static fromObject(data: WeaponBonusObj): WeaponBonus {
+		const bonus = new WeaponBonus(data.type)
+		const levelData: Partial<Record<keyof WeaponLeveledAmountObj, any>> = {}
+		for (const key of Object.keys(data)) {
+			if (WeaponLeveledAmountKeys.includes(key)) {
+				levelData[key as keyof WeaponLeveledAmountObj] = data[key as keyof WeaponBonusObj]
+			} else (bonus as any)[key] = data[key as keyof WeaponBonusObj]
+		}
+		bonus.leveledAmount = new WeaponLeveledAmount(levelData)
+		return bonus
 	}
 }

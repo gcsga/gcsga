@@ -42,7 +42,7 @@
 		</div>
 		<div></div>
 
-		<div class="label">{{localize "gurps.weapon.damage.armor_divisor"}}</div>
+		<div class="label">{{localize "gurps.weapon.armor_divisor"}}</div>
 		<div class="field">
 			<select
 				data-action="armordivisor-select"
@@ -69,7 +69,7 @@
 			<div class="label ref" data-pdf="B378">B378</div>
 		{{/if}}
 
-		<div class="label">{{localize "gurps.weapon.damage.type"}}</div>
+		<div class="label">{{localize "gurps.weapon.damage_type"}}</div>
 		<div class="field no-stretch type">
 			<select data-action="damagetype-select" class="{{overridden calculator.overrideDamageType}}">
 				{{selectOptions choices.damageType selected=calculator.damageTypeKey localize=true}}

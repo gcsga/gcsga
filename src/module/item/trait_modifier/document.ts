@@ -13,7 +13,7 @@ export class TraitModifierGURPS extends ItemGCS<TraitModifierSource> {
 		return this.system.levels
 	}
 
-	get secodaryText(): string {
+	get secondaryText(): string {
 		return this.system.notes
 	}
 
@@ -55,7 +55,7 @@ export class TraitModifierGURPS extends ItemGCS<TraitModifierSource> {
 	get fullDescription(): string {
 		let d = ""
 		d += this.name
-		if (this.secodaryText) d += ` (${this.secodaryText})`
+		if (this.secondaryText) d += ` (${this.secondaryText})`
 		if (this.actor && this.actor.settings.show_trait_modifier_adj) d += ` [${this.costDescription}]`
 		return d
 	}

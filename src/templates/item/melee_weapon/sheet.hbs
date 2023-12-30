@@ -20,7 +20,7 @@
 					data-dtype="String"
 				/>
 			</div>
-			<div class="label checkbox-label" style="justify-self: end;">
+			<label class="label checkbox-label" style="justify-self: end;">
 				<input
 					type="checkbox"
 					name="weapon.parry.no"
@@ -28,7 +28,7 @@
 					{{checked (not document.parry.no)}}
 				/>
 				{{ localize "gurps.weapon.parry" }}
-			</div>
+			</label>
 			<div class="field no-stretch">
 				<input
 					type="text"
@@ -170,7 +170,7 @@
 				<input
 					type="text"
 					name="weapon.strength.min"
-					value="{{weapon.strength.min}}"
+					value="{{document.strength.min}}"
 					data-dtype="Number"
 				/>
 				<label class="label checkbox-label">

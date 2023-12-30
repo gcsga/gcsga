@@ -724,7 +724,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	// Flat list of all hit locations
 	get HitLocations(): HitLocation[] {
-		const recurseLocations = function(table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
+		const recurseLocations = function (table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
 			table.locations.forEach(e => {
 				locations.push(e)
 				if (e.subTable) locations = recurseLocations(e.subTable, locations)
@@ -1325,11 +1325,11 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 					}
 				}
 			} else this.features.drBonuses.push(f)
-		} else if (f instanceof SkillBonus) return this.features.skillBonuses.push(f as any)
-		else if (f instanceof SkillPointBonus) return this.features.skillPointBonuses.push(f as any)
-		else if (f instanceof SpellBonus) return this.features.spellBonuses.push(f as any)
-		else if (f instanceof SpellPointBonus) return this.features.spellPointBonuses.push(f as any)
-		else if (f instanceof WeaponBonus) return this.features.weaponBonuses.push(f as any)
+		} else if (f instanceof SkillBonus) return this.features.skillBonuses.push(f)
+		else if (f instanceof SkillPointBonus) return this.features.skillPointBonuses.push(f)
+		else if (f instanceof SpellBonus) return this.features.spellBonuses.push(f)
+		else if (f instanceof SpellPointBonus) return this.features.spellPointBonuses.push(f)
+		else if (f instanceof WeaponBonus) return this.features.weaponBonuses.push(f)
 	}
 
 	processPrereqs(): void {
@@ -1422,6 +1422,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	// Directed Skill Getters
 	baseSkill(def: SkillDefault, require_points: boolean): SkillGURPS | TechniqueGURPS | null {
+		if (!def) return null
 		if (!def.skillBased) return null
 		return this.bestSkillNamed(def.name ?? "", def.specialization ?? "", require_points, null)
 	}
@@ -1682,7 +1683,12 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		return m
 	}
 
-	namedWeaponSkillBonusesFor(name: string, usage: string, tags: string[], tooltip: TooltipGURPS): SkillBonus[] {
+	namedWeaponSkillBonusesFor(
+		name: string,
+		usage: string,
+		tags: string[],
+		tooltip: TooltipGURPS | null
+	): SkillBonus[] {
 		const bonuses: SkillBonus[] = []
 		for (const f of this.features.skillBonuses) {
 			if (

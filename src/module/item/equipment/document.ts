@@ -167,6 +167,18 @@ export class EquipmentGURPS extends ItemGCS<EquipmentSource> {
 	toggleState(): void {
 		this.equipped = !this.equipped
 	}
+
+	protected _getCalcValues(): this["system"]["calc"] {
+		return {
+			...super._getCalcValues(),
+			equipped: this.equipped,
+			weight: this.adjustedWeightFast,
+			extended_weight: this.extendedWeightFast,
+			value: this.adjustedValue,
+			extended_value: this.extendedValue,
+			disabled: this.isGreyedOut,
+		}
+	}
 }
 
 export function extendedWeightAdjustedForModifiers(
