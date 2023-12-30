@@ -14,13 +14,6 @@ export interface MeleeWeaponSystemData extends BaseWeaponSystemData {
 	block: string
 }
 
-export interface WeaponReach {
-	min: number
-	max: number
-	closeComabt: boolean
-	changeRequiresReady: boolean
-}
-
 export interface WeaponParry {
 	no: boolean
 	fencing: boolean

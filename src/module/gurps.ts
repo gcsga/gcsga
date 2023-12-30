@@ -58,8 +58,10 @@ import {
 	EquipmentModifierContainerSheet,
 	EquipmentModifierSheet,
 	EquipmentSheet,
+	MeleeWeaponSheet,
 	NoteContainerSheet,
 	NoteSheet,
+	RangedWeaponSheet,
 	RitualMagicSpellSheet,
 	SkillContainerSheet,
 	SkillSheet,
@@ -72,7 +74,6 @@ import {
 	TraitModifierContainerSheet,
 	TraitModifierSheet,
 	TraitSheet,
-	WeaponSheet,
 } from "@item"
 import { ActorSheetGURPS, BaseActorGURPS, CharacterSheetGURPS, LootSheetGURPS, StaticCharacterSheetGURPS } from "@actor"
 import { ActiveEffectGURPS } from "@module/effect"
@@ -251,10 +252,15 @@ Hooks.once("init", async () => {
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.note_container"),
 	})
-	Items.registerSheet(SYSTEM_NAME, WeaponSheet, {
-		types: [ItemType.MeleeWeapon, ItemType.RangedWeapon],
+	Items.registerSheet(SYSTEM_NAME, MeleeWeaponSheet, {
+		types: [ItemType.MeleeWeapon],
 		makeDefault: true,
-		label: game.i18n.localize("gurps.system.sheet.weapon"),
+		label: game.i18n.localize("gurps.system.sheet.melee_weapon"),
+	})
+	Items.registerSheet(SYSTEM_NAME, RangedWeaponSheet, {
+		types: [ItemType.RangedWeapon],
+		makeDefault: true,
+		label: game.i18n.localize("gurps.system.sheet.ranged_weapon"),
 	})
 	Items.registerSheet(SYSTEM_NAME, EffectSheet, {
 		types: [ItemType.Effect, ItemType.Condition],

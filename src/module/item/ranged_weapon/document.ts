@@ -1,6 +1,8 @@
 import { BaseWeaponGURPS } from "@item/weapon"
-import { RangedWeaponSource, WeaponAccuracy, WeaponBulk, WeaponROF, WeaponROFMode, WeaponRange, WeaponRecoil, WeaponShots } from "./data"
+import { RangedWeaponSource } from "./data"
 import { Int } from "@util/fxp"
+import { WeaponAccuracy } from "@item/weapon/weapon_accuracy"
+import { WeaponRange } from "@item/weapon/weapon_range"
 
 export class RangedWeaponGURPS extends BaseWeaponGURPS<RangedWeaponSource> {
 	get resolvedRange(): string {
@@ -44,59 +46,11 @@ export class RangedWeaponGURPS extends BaseWeaponGURPS<RangedWeaponSource> {
 	}
 
 	get accuracy(): Partial<WeaponAccuracy> {
-		const wa: Partial<WeaponAccuracy> = {}
-		let s = this.system.accuracy.trim()
-		if (s.includes("jet")) {
-			wa.jet = true
-		} else {
-			s = s.replace(/^\+/, "")
-			const parts = s.split("+");
-			[wa.base, parts[0]] = Int.extract(parts[0])
-			if (parts.length > 1) wa.scope = Int.fromString(parts[1])
-		}
-		return wa
-
-		// return this.system.accuracy
+		return WeaponAccuracy.parse(this.system.accuracy)
 	}
 
 	get range(): Partial<WeaponRange> {
-		const wr: Partial<WeaponRange> = {}
-		let s = this.system.range.trim()
-		if (
-			!s.includes("sight") &&
-			!s.includes("spec") &&
-			!s.includes("skill") &&
-			!s.includes("point") &&
-			!s.includes("pbaoe") &&
-			!s.startsWith("b")
-		) {
-			s = s.replaceAll(",max", "/")
-			s = s.replaceAll("max", "")
-			s = s.replaceAll("1/2d", "")
-			wr.musclePowered = s.includes("x")
-			s = s.replaceAll("x", "")
-			s = s.replaceAll("st", "")
-			s = s.replaceAll("c/", "")
-			wr.inMiles = s.includes("mi")
-			s = s.replaceAll("mi.", "")
-			s = s.replaceAll("mi", "")
-			s = s.replaceAll(",", "")
-			let parts = s.split("/")
-			if (parts.length > 1) {
-				wr.halfDamage = Int.fromString(parts[0])
-				parts[0] = parts[1]
-			}
-			parts = parts[0].split("-")
-			if (parts.length > 1) {
-				wr.min = Int.fromString(parts[0])
-				wr.max = Int.fromString(parts[1])
-			} else {
-				wr.max = Int.fromString(parts[0])
-			}
-		}
-
-		return wr
-		// return this.system.range
+		return WeaponRange.parse(this.system.range)
 	}
 
 	get rate_of_fire(): DeepPartial<WeaponROF> {
@@ -106,8 +60,7 @@ export class RangedWeaponGURPS extends BaseWeaponGURPS<RangedWeaponSource> {
 		else {
 			const parts = s.split("/")
 			wr.mode1 = this._parseWeaponROFMode(parts[0])
-			if (parts.length > 1)
-				wr.mode2 = this._parseWeaponROFMode(parts[1])
+			if (parts.length > 1) wr.mode2 = this._parseWeaponROFMode(parts[1])
 		}
 
 		return wr
@@ -133,18 +86,14 @@ export class RangedWeaponGURPS extends BaseWeaponGURPS<RangedWeaponSource> {
 	get shots(): Partial<WeaponShots> {
 		const ws: Partial<WeaponShots> = {}
 		let s = this.system.shots.trim().toLowerCase().replaceAll(",", "")
-		if (
-			!s.includes("fp") &&
-			!s.includes("hrs") &&
-			!s.includes("day")
-		) {
+		if (!s.includes("fp") && !s.includes("hrs") && !s.includes("day")) {
 			ws.thrown = s.includes("t")
 			if (!s.includes("spec")) {
-				[ws.count, s] = Int.extract(s)
+				;[ws.count, s] = Int.extract(s)
 				if (s.startsWith("+")) [ws.inChamber, s] = Int.extract(s)
 				if (s.startsWith("x")) [ws.duration, s] = Int.extract(s.slice(1))
 				if (s.startsWith("(")) {
-					[ws.reloadTime, s] = Int.extract(s.slice(1))
+					;[ws.reloadTime, s] = Int.extract(s.slice(1))
 					ws.reloadTimeIsPerShot = s.includes("i")
 				}
 			}
@@ -158,9 +107,9 @@ export class RangedWeaponGURPS extends BaseWeaponGURPS<RangedWeaponSource> {
 		const wb: Partial<WeaponBulk> = {}
 		let s = this.system.bulk.trim().replaceAll(",", "")
 		wb.retractingStock = s.includes("*")
-		const parts = s.split("/");
-		[wb.normal,] = Int.extract(parts[0])
-		if (parts.length > 1) [wb.giant,] = Int.extract(parts[1])
+		const parts = s.split("/")
+		;[wb.normal] = Int.extract(parts[0])
+		if (parts.length > 1) [wb.giant] = Int.extract(parts[1])
 		return wb
 		// return this.system.bulk
 	}
@@ -168,10 +117,9 @@ export class RangedWeaponGURPS extends BaseWeaponGURPS<RangedWeaponSource> {
 	get recoil(): Partial<WeaponRecoil> {
 		let wr: Partial<WeaponRecoil> = {}
 		let s = this.system.recoil.trim().replaceAll(",", "")
-		const parts = s.split("/");
-		[wr.shot,] = Int.extract(parts[0])
-		if (parts.length > 1)
-			[wr.slug,] = Int.extract(parts[1])
+		const parts = s.split("/")
+		;[wr.shot] = Int.extract(parts[0])
+		if (parts.length > 1) [wr.slug] = Int.extract(parts[1])
 
 		return wr
 		// return this.system.recoil

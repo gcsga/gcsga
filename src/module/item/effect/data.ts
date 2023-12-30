@@ -1,5 +1,5 @@
 import { BaseItemSourceGURPS } from "@item/base/data"
-import { FeatureConstructor } from "@module/config"
+import { FeatureObj } from "@module/config"
 import { ItemType, RollModifier } from "@module/data"
 import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
 
@@ -23,7 +23,7 @@ export interface EffectData extends Omit<EffectSource, "effects">, EffectSystemD
 
 export interface EffectSystemData {
 	id: string | null
-	features?: FeatureConstructor[]
+	features?: FeatureObj[]
 	modifiers?: RollModifier[]
 	can_level: boolean
 	levels?: {

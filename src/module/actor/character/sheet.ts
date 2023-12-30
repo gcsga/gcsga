@@ -19,7 +19,7 @@ import {
 	TraitGURPS,
 } from "@item"
 import { Attribute, AttributeObj, AttributeType } from "@module/attribute"
-import { CondMod } from "@module/conditional_modifier"
+import { ConditionalModifier } from "@module/conditional_modifier"
 import { ItemDataGURPS, ItemGURPS, WeaponGURPS } from "@module/config"
 import { gid, ItemType, RollType, SYSTEM_NAME } from "@module/data"
 import { PDF } from "@module/pdf"
@@ -29,10 +29,10 @@ import { dollarFormat, Length, LocalizeGURPS, newUUID, Weight, WeightUnits } fro
 import EmbeddedCollection from "types/foundry/common/abstract/embedded-collection.mjs"
 import { CharacterSheetConfig } from "./config_sheet"
 import { CharacterFlagDefaults, CharacterMove, Encumbrance } from "./data"
-import { CharacterGURPS } from "./document"
 import { PointRecordSheet } from "./points_sheet"
 import { PropertiesToSource } from "types/types/helperTypes"
 import { ItemDataBaseProperties } from "types/foundry/common/data/data.mjs/itemData"
+import { CharacterGURPS } from "./document"
 
 export class CharacterSheetGURPS extends ActorSheetGURPS {
 	declare object: CharacterGURPS
@@ -1224,8 +1224,8 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 
 		const melee: WeaponGURPS[] = this.actor.equippedWeapons(ItemType.MeleeWeapon)
 		const ranged: WeaponGURPS[] = this.actor.equippedWeapons(ItemType.RangedWeapon)
-		const reactions: CondMod[] = this.actor.reactions
-		const conditionalModifiers: CondMod[] = this.actor.conditionalModifiers
+		const reactions: ConditionalModifier[] = this.actor.reactions
+		const conditionalModifiers: ConditionalModifier[] = this.actor.conditionalModifiers
 
 		const carried_value = this.actor.wealthCarried()
 		let carried_weight = this.actor.weightCarried(true)

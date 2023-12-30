@@ -1,15 +1,15 @@
 import { ActorGURPS } from "@module/config"
-import { NumberCompare, NumberComparison, PrereqType, StringCompare, StringComparison } from "@module/data"
 import { TooltipGURPS } from "@module/tooltip"
 import { LocalizeGURPS, numberCompare, stringCompare } from "@util"
 import { BasePrereq, PrereqConstructionContext } from "./base"
+import { NumericComparisonType, NumericCriteria, PrereqType, StringComparisonType, StringCriteria } from "@module/data"
 
 export class TraitPrereq extends BasePrereq {
-	name!: StringCompare
+	name?: StringCriteria
 
-	level!: NumberCompare
+	level?: NumericCriteria
 
-	notes!: StringCompare
+	notes?: StringCriteria
 
 	constructor(data: TraitPrereq | any, context: PrereqConstructionContext = {}) {
 		data = mergeObject(TraitPrereq.defaults, data)
@@ -19,9 +19,9 @@ export class TraitPrereq extends BasePrereq {
 	static get defaults(): Record<string, any> {
 		return mergeObject(super.defaults, {
 			type: PrereqType.Trait,
-			name: { compare: StringComparison.Is, qualifier: "" },
-			notes: { compare: StringComparison.None, qualifier: "" },
-			level: { compare: NumberComparison.None, qualifier: 0 },
+			name: { compare: StringComparisonType.IsString, qualifier: "" },
+			notes: { compare: StringComparisonType.AnyString, qualifier: "" },
+			level: { compare: NumericComparisonType.AnyNumber, qualifier: 0 },
 		})
 	}
 
@@ -40,17 +40,19 @@ export class TraitPrereq extends BasePrereq {
 		if (!satisfied) {
 			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.has[this.has ? "true" : "false"])
 			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.trait.name)
-			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.name.compare])
-			if (this.name.compare !== "none") tooltip.push(`"${this.name.qualifier!}"`)
-			if (this.notes.compare !== "none") {
+			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.name!.compare])
+			if (this.name && this.name.compare !== StringComparisonType.AnyString)
+				tooltip.push(`"${this.name!.qualifier}"`)
+			if (this.notes!.compare !== StringComparisonType.AnyString) {
 				tooltip.push(LocalizeGURPS.translations.gurps.prereqs.trait.notes)
-				tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.notes.compare])
-				tooltip.push(`"${this.notes.qualifier!}"`)
+				tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.notes!.compare])
+				tooltip.push(`"${this.notes!.qualifier}"`)
 			}
 
 			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.trait.level)
-			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.level.compare])
-			if (this.level.compare !== "none") tooltip.push(((this.level ? this.level.qualifier : 0) ?? 0).toString())
+			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.level!.compare])
+			if (this.level!.compare !== NumericComparisonType.AnyNumber)
+				tooltip.push(((this.level ? this.level.qualifier : 0) ?? 0).toString())
 		}
 		return [satisfied, false]
 	}

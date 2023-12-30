@@ -20,12 +20,59 @@
 					data-dtype="String"
 				/>
 			</div>
-			<div class="label">{{localize "gurps.weapon.strength"}}</div>
-			<div class="field">
-				<input type="text" name="system.strength" value="{{system.strength}}" data-dtype="String" />
+			<div class="label checkbox-label" style="justify-self: end;">
+				<input
+					type="checkbox"
+					name="weapon.parry.no"
+					data-dtype="Boolean"
+					{{checked (not document.parry.no)}}
+				/>
+				{{ localize "gurps.weapon.parry" }}
 			</div>
-			<div class="label">{{localize "gurps.weapon.damage.st"}}</div>
-			<div class="field">
+			<div class="field no-stretch">
+				<input
+					type="text"
+					name="weapon.parry.modifier"
+					value="{{signed document.parry.modifier}}"
+					data-dtype="Number"
+					{{disabled document.parry.no}}
+				/>
+				<label class="label checkbox-label">
+					<input
+						type="checkbox"
+						name="weapon.parry.fencing"
+						data-dtype="Boolean"
+						{{checked document.parry.fencing}}
+						{{disabled document.parry.no}}
+					/>
+					{{localize "gurps.weapon.fencing"}}
+				</label>
+				<label class="label checkbox-label">
+					<input
+						type="checkbox"
+						name="weapon.parry.unbalanced"
+						data-dtype="Boolean"
+						{{checked document.parry.unbalanced}}
+						{{disabled document.parry.no}}
+					/>
+					{{localize "gurps.weapon.unbalanced"}}
+				</label>
+			</div>
+			<div class="label checkbox-label" style="justify-self: end;">
+					<input type="checkbox" name="weapon.block.no" data-dtype="Boolean" {{checked (not document.block.no)}} />
+					{{ localize "gurps.weapon.block" }}
+			</div>
+			<div class="field no-stretch">
+				<input
+					type="text"
+					name="weapon.block.modifier"
+					value="{{signed document.block.modifier}}"
+					data-dtype="Number"
+					{{disabled document.block.no}}
+				/>
+			</div>
+			<div class="label">{{localize "gurps.weapon.damage"}}</div>
+			<div class="field no-stretch">
 				<select name="system.damage.st" data-dtype="String">
 					{{#select system.damage.st}}
 						{{#each config.select.damage_st as |v k|}}
@@ -33,36 +80,24 @@
 						{{/each}}
 					{{/select}}
 				</select>
-			</div>
-			<div class="label">{{localize "gurps.weapon.damage.base"}}</div>
-			<div class="field">
-				<input
-					type="text"
-					name="system.damage.base"
-					value="{{diceString system.damage.base}}"
-					data-dtype="String"
-				/>
-			</div>
-			<div class="label">{{localize "gurps.weapon.damage.modifier_per_die"}}</div>
-			<div class="field">
 				<input
 					type="text"
 					name="system.damage.modifier_per_die"
-					value="{{system.damage.modifier_per_die}}"
+					value="{{signed system.damage.modifier_per_die}}"
 					data-dtype="Number"
 				/>
+				<div class="label">{{localize "gurps.weapon.modifier_per_die"}}</div>
 			</div>
-			<div class="label">{{localize "gurps.weapon.damage.armor_divisor"}}</div>
-			<div class="field">
+			<div class="label"></div>
+			<div class="field no-stretch">
+				<div class="label">{{localize "gurps.weapon.armor_divisor"}}</div>
 				<input
 					type="text"
 					name="system.damage.armor_divisor"
 					value="{{system.damage.armor_divisor}}"
 					data-dtype="Number"
 				/>
-			</div>
-			<div class="label">{{localize "gurps.weapon.damage.type"}}</div>
-			<div class="field">
+				<div class="label">{{localize "gurps.weapon.damage_type"}}</div>
 				<input
 					type="text"
 					name="system.damage.type"
@@ -70,26 +105,22 @@
 					data-dtype="String"
 				/>
 			</div>
-			<div class="label">{{localize "gurps.weapon.damage.fragmentation"}}</div>
-			<div class="field">
+			<div class="label">{{localize "gurps.weapon.fragmentation"}}</div>
+			<div class="field no-stretch">
 				<input
 					type="text"
 					name="system.damage.fragmentation"
 					value="{{diceString system.damage.fragmentation}}"
 					data-dtype="String"
 				/>
-			</div>
-			<div class="label">{{localize "gurps.weapon.damage.fragmentation_armor_divisor"}}</div>
-			<div class="field">
+				<div class="label">{{localize "gurps.weapon.armor_divisor"}}</div>
 				<input
 					type="text"
 					name="system.damage.fragmentation_armor_divisor"
 					value="{{system.damage.fragmentation_armor_divisor}}"
 					data-dtype="Number"
 				/>
-			</div>
-			<div class="label">{{localize "gurps.weapon.damage.fragmentation_type"}}</div>
-			<div class="field">
+				<div class="label">{{localize "gurps.weapon.damage_type"}}</div>
 				<input
 					type="text"
 					name="system.damage.fragmentation_type"
@@ -97,17 +128,69 @@
 					data-dtype="String"
 				/>
 			</div>
-			<div class="label">{{localize "gurps.weapon.reach"}}</div>
-			<div class="field">
-				<input type="text" name="system.reach" value="{{system.reach}}" data-dtype="String" />
+			<div class="label">{{localize "gurps.weapon.reach_max"}}</div>
+			<div class="field no-stretch">
+				<input
+					type="text"
+					name="weapon.reach.max"
+					value="{{document.reach.max}}"
+					data-dtype="Number"
+				/>
+				<div class="label">{{localize "gurps.weapon.reach_min"}}</div>
+				<input
+					type="text"
+					name="weapon.reach.min"
+					value="{{document.reach.min}}"
+					data-dtype="Number"
+				/>
 			</div>
-			<div class="label">{{localize "gurps.weapon.parry"}}</div>
-			<div class="field">
-				<input type="text" name="system.parry" value="{{system.parry}}" data-dtype="String" />
+			<div class="label"></div>
+			<div class="field no-stretch">
+				<label class="label checkbox-label">
+					<input
+						type="checkbox"
+						name="weapon.reach.closeCombat"
+						data-dtype="Boolean"
+						{{checked document.reach.closeCombat}}
+					/>
+					{{localize "gurps.weapon.close_combat"}}
+				</label>
+				<label class="label checkbox-label">
+					<input
+						type="checkbox"
+						name="weapon.reach.changeRequiresReady"
+						data-dtype="Boolean"
+						{{checked document.reach.changeRequiresReady}}
+					/>
+					{{localize "gurps.weapon.change_requires_ready"}}
+				</label>
 			</div>
-			<div class="label">{{localize "gurps.weapon.block"}}</div>
-			<div class="field">
-				<input type="text" name="system.block" value="{{system.bulk}}" data-dtype="String" />
+			<div class="label">{{localize "gurps.weapon.strength"}}</div>
+			<div class="field no-stretch">
+				<input
+					type="text"
+					name="weapon.strength.min"
+					value="{{weapon.strength.min}}"
+					data-dtype="Number"
+				/>
+				<label class="label checkbox-label">
+					<input
+						type="checkbox"
+						name="weapon.strength.twoHanded"
+						data-dtype="Boolean"
+						{{checked document.strength.twoHanded}}
+					/>
+					{{localize "gurps.weapon.two_handed"}}
+				</label>
+				<label class="label checkbox-label">
+					<input
+						type="checkbox"
+						name="weapon.strength.twoHandedUnready"
+						data-dtype="Boolean"
+						{{checked document.strength.twoHandedUnready}}
+					/>
+					{{localize "gurps.weapon.two_handed_unready"}}
+				</label>
 			</div>
 		</div>
 		{{>item/sections/defaults attributes=attributes sysPrefix=sysPrefix}}

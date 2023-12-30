@@ -1,7 +1,15 @@
 import { CharacterGURPS } from "@actor"
 import { FeatureType } from "@feature"
 import { AttributeDefObj } from "@module/attribute"
-import { gid, NumberComparison, PrereqType, SETTINGS, StringComparison, StudyType, SYSTEM_NAME } from "@module/data"
+import {
+	gid,
+	NumericComparisonType,
+	PrereqType,
+	SETTINGS,
+	StringComparisonType,
+	StudyType,
+	SYSTEM_NAME,
+} from "@module/data"
 import { PDF } from "@module/pdf"
 import { LocalizeGURPS, prepareFormData } from "@util"
 import { BaseItemGURPS } from "."
@@ -128,10 +136,10 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 		const path = $(event.currentTarget).data("path").replace("array.", "")
 		const prereqs = getProperty(this.item, `${path}.prereqs`)
 		prereqs.push({
-			type: "trait_prereq",
-			name: { compare: StringComparison.Is, qualifier: "" },
-			notes: { compare: StringComparison.None, qualifier: "" },
-			level: { compare: NumberComparison.AtLeast, qualifier: 0 },
+			type: PrereqType.Trait,
+			name: { compare: StringComparisonType.IsString, qualifier: "" },
+			notes: { compare: StringComparisonType.AnyString, qualifier: "" },
+			level: { compare: NumericComparisonType.AtLeastNumber, qualifier: 0 },
 			has: true,
 		})
 		const formData: any = {}
@@ -147,7 +155,7 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 		prereqs.push({
 			type: "prereq_list",
 			prereqs: [],
-			when_tl: { compare: NumberComparison.None },
+			when_tl: { compare: NumericComparisonType.AnyNumber },
 		})
 		const formData: any = {}
 		formData[`array.${path}.prereqs`] = prereqs

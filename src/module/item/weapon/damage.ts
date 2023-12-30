@@ -1,54 +1,51 @@
-import { WeaponDamageBonus } from "@feature/weapon_bonus"
 import { DiceGURPS } from "@module/dice"
+import { WeaponDamageObj, stdmg } from "./data"
+import { LocalizeGURPS } from "@util"
+import { WeaponGURPS } from "@module/config"
+import { ItemGCS } from "@item/gcs"
+import { TraitGURPS } from "@item/trait"
+import { Int } from "@util/fxp"
 import { TooltipGURPS } from "@module/tooltip"
-import { LocalizeGURPS, stringCompare } from "@util"
-import { CharacterGURPS } from "@actor"
-import { Feature } from "@module/config"
-import { FeatureType, WeaponBonusSelectionType, WeaponDRDivisorBonus } from "@feature"
-import { DamageProgression, ItemType } from "@module/data"
-import { StrengthDamage } from "./data"
+import { DamageProgression } from "@module/data"
+import { FeatureType } from "@feature"
 import { BaseWeaponGURPS } from "./document"
-import { SkillDefault } from "@module/default"
-import { ContainerGURPS } from "@item/container"
 
 export class WeaponDamage {
-	parent!: BaseWeaponGURPS
+	owner: BaseWeaponGURPS<any>
 
 	type: string
 
-	st: StrengthDamage
+	st: stdmg
 
-	base!: DiceGURPS
+	base?: DiceGURPS
 
-	armor_divisor: number
+	armor_divisor?: number
 
-	fragmentation!: DiceGURPS
+	fragmentation?: DiceGURPS
 
-	fragmentation_armor_divisor: number
+	fragmentation_armor_divisor?: number
 
-	fragmentation_type: string
+	fragmentation_type?: string
 
-	modifier_per_die: number
+	modifier_per_die?: number
 
-	constructor(data?: WeaponDamage | any) {
-		this.type = ""
-		this.st = StrengthDamage.None
-		this.armor_divisor = 1
-		this.fragmentation_armor_divisor = 1
-		this.fragmentation_type = ""
-		this.modifier_per_die = 0
-		if (data) {
-			Object.assign(this, data)
-			if (data.base) this.base = new DiceGURPS(data.base)
-			if (data.fragmentation) this.fragmentation = new DiceGURPS(data.fragmentation)
-		}
+	constructor(data: WeaponDamageObj & { owner: BaseWeaponGURPS<any> }) {
+		this.owner = data.owner
+		this.type = data.type
+		this.st = data.st ?? stdmg.None
+		this.base = new DiceGURPS(data.base)
+		this.armor_divisor = data.armor_divisor
+		this.fragmentation = new DiceGURPS(data.fragmentation)
+		this.fragmentation_armor_divisor = data.fragmentation_armor_divisor
+		this.fragmentation_type = data.fragmentation_type
+		this.modifier_per_die = data.modifier_per_die
 	}
 
 	toString(): string {
 		let buffer = ""
-		if (this.st !== StrengthDamage.None) buffer += LocalizeGURPS.translations.gurps.weapon.damage_display[this.st]
+		if (this.st !== stdmg.None) buffer += LocalizeGURPS.translations.gurps.weapon.damage_display[this.st]
 		let convertMods = false
-		if (this.parent && this.parent.actor) convertMods = this.parent.actor.settings.use_modifying_dice_plus_adds
+		if (this.owner && this.owner.actor) convertMods = this.owner.actor.settings.use_modifying_dice_plus_adds
 		if (this.base) {
 			let base = this.base.stringExtra(convertMods)
 			if (base !== "0") {
@@ -58,9 +55,8 @@ export class WeaponDamage {
 			if (this.armor_divisor !== 1) buffer += `(${this.armor_divisor})`
 			if (this.modifier_per_die !== 0) {
 				if (buffer.length !== 0) buffer += " "
-				buffer += `(${this.modifier_per_die.signedString()} ${
-					LocalizeGURPS.translations.gurps.feature.per_die
-				})`
+				buffer += `(${this.modifier_per_die?.signedString()} ${LocalizeGURPS.translations.gurps.feature.per_die
+					})`
 			}
 			const t = this.type.trim()
 			if (t !== "") buffer += ` ${t}`
@@ -76,326 +72,120 @@ export class WeaponDamage {
 		return buffer
 	}
 
-	resolvedDamage(tooltip?: TooltipGURPS): string {
-		if (!this.parent) return this.toString()
-		if (!this.parent.parent) return this.toString()
-		let actor = this.parent.parent as CharacterGURPS
-		let maxST = this.parent.resolvedMinimumStrength * 3
+	get baseDamageDice(): DiceGURPS {
+		if (!this.owner) return new DiceGURPS({ sides: 6, multiplier: 1 })
+		const actor = this.owner.actor
+		if (!actor) return new DiceGURPS({ sides: 6, multiplier: 1 })
+		const maxST = (this.owner.strength.resolve(this.owner, null).min ?? 0) * 3
 		let st = 0
-		let stFromItem = false
-		if ([ItemType.Equipment, ItemType.EquipmentContainer].includes(this.parent.container?.type as any)) {
-			st = (this.parent.container as any).ratedStrength
-			stFromItem = st !== 0
-		}
-		if (st === 0) st = actor.StrikingST
+		if (this.owner.container instanceof ItemGCS) st = this.owner.container.ratedStrength
+		if (st === 0) st = actor.strikingST
 		if (maxST > 0 && maxST < st) st = maxST
 		let base = new DiceGURPS({ sides: 6, multiplier: 1 })
 		if (this.base) base = this.base
-		const container = this.parent.container as ContainerGURPS
-		let levels = 0
-		const tOk = container.type === ItemType.Trait
-		if (tOk && (container as any).isLeveled) {
-			levels = (container as any).levels
-			multiplyDice((container as any).levels, base)
-		}
-		let intST = Math.trunc(st)
-		let thrust: DiceGURPS
-		let swing: DiceGURPS
+		if (this.owner.container instanceof TraitGURPS && this.owner.container.isLeveled)
+			multiplyDice(Int.from(this.owner.container.levels), base)
+		let intST = Int.from(st)
 		switch (this.st) {
-			case StrengthDamage.Thrust:
-				thrust = actor.thrustFor(intST)
+			case stdmg.Thrust:
+				base = addDice(base, actor.thrustFor(intST))
+				break
+			case stdmg.LeveledThrust:
+				const thrust = actor.thrustFor(intST)
+				if (this.owner.container instanceof TraitGURPS && this.owner.container.isLeveled)
+					multiplyDice(Int.from(this.owner.container.levels), thrust)
 				base = addDice(base, thrust)
 				break
-			case StrengthDamage.ThrustLeveled:
-				thrust = actor.thrustFor(intST)
-				if (tOk && (container as any).isLeveled) multiplyDice((container as any).levels, thrust)
-				base = addDice(base, thrust)
+			case stdmg.Swing:
+				base = addDice(base, actor.swingFor(intST))
 				break
-			case StrengthDamage.Swing:
-				swing = actor.swingFor(intST)
-				base = addDice(base, swing)
-				break
-			case StrengthDamage.SwingLeveled:
-				swing = actor.swingFor(intST)
-				if (tOk && (container as any).isLeveled) multiplyDice((container as any).levels, swing)
+			case stdmg.LeveledSwing:
+				const swing = actor.swingFor(intST)
+				if (this.owner.container instanceof TraitGURPS && this.owner.container.isLeveled)
+					multiplyDice(Int.from(this.owner.container.levels), swing)
 				base = addDice(base, swing)
 				break
 		}
+		return base
+	}
 
-		let bestDef: SkillDefault | null = null
-		let best = -Infinity
-		for (const one of this.parent.defaults) {
-			if (one.skillBased) {
-				let level = one.skillLevelFast(actor, false, null, true)
-				if (best < level) {
-					best = level
-					bestDef = one
-				}
-			}
-		}
-		const bonusSet: Map<WeaponDamageBonus | WeaponDRDivisorBonus, boolean> = new Map()
-		const tags = (container as any).tags
-		if (bestDef !== null) {
-			actor.addWeaponWithSkillBonusesFor(
-				bestDef.name || "",
-				bestDef.specialization || "",
-				tags,
-				base.count,
-				levels,
-				tooltip,
-				bonusSet
-			)
-		}
-		const nameQualifier = this.parent.name || ""
-		actor.addNamedWeaponBonusesFor(nameQualifier, this.parent.usage, tags, base.count, levels, tooltip, bonusSet)
-		if (container instanceof Item)
-			for (const f of (container as any).features) {
-				this.extractWeaponBonus(f, bonusSet, base.count, levels, tooltip)
-			}
-		if ([ItemType.Trait, ItemType.Equipment, ItemType.EquipmentContainer].includes(container.type as any)) {
-			for (const mod of (container as any).modifiers) {
-				for (const f of mod.features) {
-					this.extractWeaponBonus(f, bonusSet, base.count, levels, tooltip)
-				}
-			}
-		}
+	resolvedDamage(tooltip: TooltipGURPS | null): string {
+		let base = this.baseDamageDice
+		if (base.count === 0 && base.modifier === 0) return this.toString()
+		const actor = this.owner.actor
 		const adjustForPhoenixFlame =
-			actor.settings.damage_progression === DamageProgression.PhoenixFlameD3 && base.sides === 3
+			actor?.settings.damage_progression === DamageProgression.PhoenixFlameD3 && base.sides === 3
 		let [percentDamageBonus, percentDRDivisorBonus] = [0, 0]
-		let armorDivisor = this.armor_divisor
-		for (const bonus of bonusSet.keys()) {
+		let armorDivisor = this.armor_divisor ?? 1
+		for (const bonus of this.owner.collectWeaponBonuses(
+			base.count,
+			tooltip,
+			FeatureType.WeaponBonus,
+			FeatureType.WeaponDRDivisorBonus
+		)) {
 			if (bonus.type === FeatureType.WeaponBonus) {
-				if (bonus.percent) percentDamageBonus += bonus.amount
+				bonus.leveledAmount.dieCount = Int.from(base.count)
+				let amt = bonus.adjustedAmountForWeapon(this.owner)
+				if (bonus.percent) percentDamageBonus += amt
 				else {
-					let amt = bonus.amount
-					if (bonus.per_level) {
-						amt *= base.count
-						if (adjustForPhoenixFlame) amt /= 2
+					if (adjustForPhoenixFlame) {
+						if (bonus.leveledAmount.leveled) amt /= 2
+						if (bonus.leveledAmount.per_die) amt /= 2
 					}
-					base.modifier += Math.trunc(amt)
+					base.modifier += Int.from(amt)
 				}
-			} else if (bonus.percent) percentDRDivisorBonus += bonus.amount
-			else {
-				let amt = bonus.amount
-				if (bonus.per_level) amt *= levels
-				armorDivisor += amt
+			} else if (bonus.type === FeatureType.WeaponDRDivisorBonus) {
+				let amt = bonus.adjustedAmountForWeapon(this.owner)
+				if (bonus.percent) percentDRDivisorBonus += amt
+				else armorDivisor += amt
 			}
 		}
-
-		if (this.modifier_per_die !== 0) {
-			let amt = this.modifier_per_die * base.count
+		if (this.modifier_per_die && this.modifier_per_die !== 0) {
+			let amt = this.modifier_per_die * Int.from(base.count)
 			if (adjustForPhoenixFlame) amt /= 2
-			base.modifier += Math.trunc(amt)
+			base.modifier += Int.from(amt)
 		}
 		if (percentDamageBonus !== 0) base = adjustDiceForPercentBonus(base, percentDamageBonus)
-		if (percentDRDivisorBonus) armorDivisor *= percentDRDivisorBonus / 100
-
+		if (percentDRDivisorBonus !== 0) armorDivisor = (armorDivisor * percentDRDivisorBonus) / 100
 		let buffer = ""
 		if (base.count !== 0 || base.modifier !== 0)
-			buffer += base.stringExtra(actor.settings.use_modifying_dice_plus_adds)
-		if (armorDivisor !== 1) buffer += `(${armorDivisor.toString()})`
-		if (this.type.trim()) {
+			buffer += base.stringExtra(actor?.settings.use_modifying_dice_plus_adds ?? false)
+		if (armorDivisor !== 1) buffer += `(${armorDivisor})`
+		if (this.type.trim() !== "") {
 			if (buffer.length !== 0) buffer += " "
 			buffer += this.type
 		}
 		if (this.fragmentation) {
-			let frag = this.fragmentation.stringExtra(actor.settings.use_modifying_dice_plus_adds)
+			const frag = this.fragmentation.stringExtra(actor?.settings.use_modifying_dice_plus_adds ?? false)
 			if (frag !== "0") {
 				if (buffer.length !== 0) buffer += " "
-				buffer += `[${frag}`
-				if (this.fragmentation_armor_divisor !== 1) buffer += `(${this.fragmentation_armor_divisor.toString()})`
+				buffer += "[]"
+				buffer += frag
+				if (this.fragmentation_armor_divisor !== 1) buffer += `(${this.fragmentation_armor_divisor})`
 				buffer += ` ${this.fragmentation_type}]`
 			}
 		}
 		return buffer
 	}
-	// resolvedDamage(tooltip?: TooltipGURPS): string {
-	// 	const parent = this.parent
-	// 	if (!parent) return this.toString()
-	// 	const actor: CharacterGURPS = this.parent.actor
-	// 	if (!actor) return this.toString()
-	// 	const maxST = this.parent.resolvedMinimumStrength * 3
-	// 	let st = actor.strengthOrZero + actor.striking_st_bonus
-	// 	if (maxST > 0 && maxST < st) st = maxST
-	// 	let base = new DiceGURPS({ sides: 6, multiplier: 1 })
-	// 	if (this.base) base = this.base
-	// 	const t = this.parent.container
-	// 	let levels = 0
-	// 	if (t.type === ItemType.Trait && t.isLeveled) {
-	// 		levels = t.levels
-	// 		multiplyDice(t.levels, base)
-	// 	}
-	// 	let intST = Math.trunc(st)
-	// 	switch (this.st) {
-	// 		case StrengthDamage.Thrust:
-	// 			base = addDice(base, actor.thrustFor(intST))
-	// 			break
-	// 		case StrengthDamage.ThrustLeveled:
-	// 			let thrust = actor.thrustFor(intST)
-	// 			if (t.type === ItemType.Trait && t.isLeveled) multiplyDice(Math.trunc(t.levels), thrust)
-	// 			base = addDice(base, thrust)
-	// 			break
-	// 		case StrengthDamage.Swing:
-	// 			base = addDice(base, actor.swingFor(intST))
-	// 			break
-	// 		case StrengthDamage.SwingLeveled:
-	// 			let swing = actor.swingFor(intST)
-	// 			if (t.type === ItemType.Trait && t.isLeveled) multiplyDice(Math.trunc(t.levels), swing)
-	// 			base = addDice(base, swing)
-	// 	}
-	// 	let bestDefault: SkillDefault | null = null
-	// 	let best = -Infinity
-	// 	for (const d of this.parent.defaults) {
-	// 		if (d.skillBased) {
-	// 			let level = d.skillLevelFast(actor, false, true, null)
-	// 			if (best < level) {
-	// 				best = level
-	// 				bestDefault = d
-	// 			}
-	// 		}
-	// 	}
-	// 	let bonusSet: Map<WeaponDamageBonus, boolean> = new Map()
-	// 	let tags = this.parent.container.tags
-	// 	if (bestDefault) {
-	// 		actor.addWeaponWithSkillBonusesFor(
-	// 			bestDefault.name!,
-	// 			bestDefault.specialization!,
-	// 			tags,
-	// 			base.count,
-	// 			levels,
-	// 			bonusSet,
-	// 			tooltip
-	// 		)
-	// 	}
-	// 	const nameQualifier = this.parent.name
-	// 	actor.addNamedWeaponBonusesFor(nameQualifier, this.parent.usage, tags, base.count, levels, tooltip, bonusSet)
-	// 	for (const f of this.parent.container.features) {
-	// 		this.extractWeaponBonus(f, bonusSet, base.count, levels, tooltip)
-	// 	}
-	// 	if ([ItemType.Trait, ItemType.Equipment, ItemType.EquipmentContainer].includes(t.type)) {
-	// 		for (const mod of t.modifiers) {
-	// 			for (const f of mod.features) {
-	// 				this.extractWeaponBonus(f, bonusSet, base.count, levels, tooltip)
-	// 			}
-	// 		}
-	// 	}
-	// 	const adjustForPhoenixFlame = actor.settings.damage_progression === "phoenix_flame_d3" && base.sides === 3
-	// 	let [percentDamageBonus, percentDRDivisorBonus] = [0, 0]
-	// 	let armorDivisor = this.armor_divisor
-	// 	for (const bonus of bonusSet.keys()) {
-	// 		if (bonus.type === "weapon_bonus") {
-	// 			if (bonus.percent) percentDamageBonus += bonus.amount
-	// 			else {
-	// 				let amount = bonus.amount
-	// 				if (bonus.per_level) {
-	// 					amount *= base.count
-	// 					if (adjustForPhoenixFlame) amount /= 2
-	// 				}
-	// 				base.modifier += Math.trunc(amount)
-	// 			}
-	// 		} else if (bonus.percent) percentDRDivisorBonus += bonus.amount
-	// 		else {
-	// 			let amount = bonus.amount
-	// 			if (bonus.per_level) {
-	// 				amount *= base.count
-	// 			}
-	// 			armorDivisor += amount
-	// 		}
-	// 	}
-	// 	if (this.modifier_per_die !== 0) {
-	// 		let amount = this.modifier_per_die * base.count
-	// 		if (adjustForPhoenixFlame) amount /= 2
-	// 		base.modifier += Math.trunc(amount)
-	// 	}
-	// 	if (percentDamageBonus !== 0) base = adjustDiceForPercentBonus(base, percentDamageBonus)
-	// 	if (percentDRDivisorBonus !== 0) armorDivisor = (armorDivisor * percentDRDivisorBonus) / 100
-	// 	let buffer = ""
-	// 	if (base.count !== 0 || base.modifier !== 0) {
-	// 		buffer += base.stringExtra(actor.settings.use_modifying_dice_plus_adds)
-	// 	}
-	// 	if (armorDivisor !== 1) buffer += `(${armorDivisor})`
-	// 	if (this.type.trim() !== "") {
-	// 		if (buffer.length !== 0) buffer += " "
-	// 		buffer += this.type
-	// 	}
-	// 	if (this.fragmentation) {
-	// 		let frag = this.fragmentation.stringExtra(actor.settings.use_modifying_dice_plus_adds)
-	// 		if (frag !== "0") {
-	// 			if (buffer.length !== 0) buffer += " "
-	// 			buffer += `[${frag}`
-	// 			if (this.fragmentation_armor_divisor !== 1) buffer += `(${this.fragmentation_armor_divisor})`
-	// 			buffer += ` ${this.fragmentation_type}]`
-	// 		}
-	// 	}
-	// 	return buffer
-	// }
-
-	extractWeaponBonus(
-		f: Feature,
-		set: Map<WeaponDamageBonus | WeaponDRDivisorBonus, boolean>,
-		dieCount: number,
-		levels: number,
-		tooltip: TooltipGURPS | null = null
-	): void {
-		if (f instanceof WeaponDamageBonus || f instanceof WeaponDRDivisorBonus) {
-			const level = f.levels
-			f.levels = f instanceof WeaponDamageBonus ? dieCount : levels
-			switch (f.selection_type) {
-				case WeaponBonusSelectionType.Skill:
-					break
-				case WeaponBonusSelectionType.This:
-					if (stringCompare(this.parent.usage, f.specialization)) {
-						if (!set.has(f)) {
-							set.set(f, true)
-							f.addToTooltip(tooltip)
-						}
-					}
-					break
-				case WeaponBonusSelectionType.Name:
-					if (
-						stringCompare(this.parent.name, f.name) &&
-						stringCompare(this.parent.usage, f.specialization) &&
-						stringCompare((this.parent.container as any).tags, f.tags)
-					) {
-						if (!set.has(f)) {
-							set.set(f, true)
-							f.addToTooltip(tooltip)
-						}
-					}
-					break
-			}
-			f.levels = level
-		}
-	}
 }
 
-/**
- *
- * @param multiplier
- * @param d
- */
-function multiplyDice(multiplier: number, d: DiceGURPS): void {
+function multiplyDice(multiplier: number, d: DiceGURPS) {
 	d.count *= multiplier
 	d.modifier *= multiplier
 	if (d.multiplier !== 1) d.multiplier *= multiplier
 }
 
-/**
- *
- * @param left
- * @param right
- */
 function addDice(left: DiceGURPS, right: DiceGURPS): DiceGURPS {
 	if (left.sides > 1 && right.sides > 1 && left.sides !== right.sides) {
 		const sides = Math.min(left.sides, right.sides)
-		const average = (sides + 1) / 2
-		const averageLeft = ((left.count * (left.sides + 1)) / 2) * left.multiplier
-		const averageRight = ((right.count * (right.sides + 1)) / 2) * right.multiplier
+		const average = Int.from(sides + 1) / 2
+		const averageLeft = Int.from(((left.count * (left.sides + 1)) / 2) * Int.from(left.multiplier))
+		const averageRight = Int.from(((right.count * (right.sides + 1)) / 2) * Int.from(right.multiplier))
 		const averageBoth = averageLeft + averageRight
 		return new DiceGURPS({
-			count: Math.trunc(averageBoth / average),
+			count: Int.from(averageBoth / average),
 			sides: sides,
-			modifier: Math.round(averageBoth % average) + left.modifier + right.modifier,
+			modifier: Int.from(Math.round(averageBoth % average)) + left.modifier + right.modifier,
 			multiplier: 1,
 		})
 	}
@@ -407,11 +197,6 @@ function addDice(left: DiceGURPS, right: DiceGURPS): DiceGURPS {
 	})
 }
 
-/**
- *
- * @param d
- * @param percent
- */
 function adjustDiceForPercentBonus(d: DiceGURPS, percent: number): DiceGURPS {
 	let count = d.count
 	let modifier = d.modifier

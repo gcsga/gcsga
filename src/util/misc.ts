@@ -3,11 +3,11 @@ import {
 	DEFAULT_INITIATIVE_FORMULA,
 	Difficulty,
 	DisplayMode,
-	NumberCompare,
-	NumberComparison,
+	NumericComparisonType,
+	NumericCriteria,
 	SETTINGS,
-	StringCompare,
-	StringComparison,
+	StringComparisonType,
+	StringCriteria,
 	Study,
 	StudyType,
 	SYSTEM_NAME,
@@ -100,7 +100,7 @@ export function getCurrentTime(): string {
  * @param value
  * @param base
  */
-export function stringCompare(value?: string | string[] | null, base?: StringCompare): boolean {
+export function stringCompare(value?: string | string[] | null, base?: StringCriteria): boolean {
 	if (!base) return true
 	if (!value) value = ""
 	if (typeof value === "string") value = [value]
@@ -109,28 +109,28 @@ export function stringCompare(value?: string | string[] | null, base?: StringCom
 	})
 	base.qualifier = base.qualifier?.toLowerCase()
 	switch (base.compare) {
-		case StringComparison.None:
+		case StringComparisonType.AnyString:
 			return true
-		case StringComparison.Is:
+		case StringComparisonType.IsString:
 			return base.qualifier !== undefined && value.includes(base.qualifier)
-		case StringComparison.IsNot:
+		case StringComparisonType.IsNotString:
 			return base.qualifier !== undefined && !value.includes(base.qualifier)
-		case StringComparison.Contains:
+		case StringComparisonType.ContainsString:
 			for (const v of value) if (base.qualifier && v.includes(base.qualifier)) return true
 			return false
-		case StringComparison.DoesNotContain:
+		case StringComparisonType.DoesNotContainString:
 			for (const v of value) if (base.qualifier && v.includes(base.qualifier)) return false
 			return true
-		case StringComparison.StartsWith:
+		case StringComparisonType.StartsWithString:
 			for (const v of value) if (base.qualifier && v.startsWith(base.qualifier)) return true
 			return false
-		case StringComparison.DoesNotStartWith:
+		case StringComparisonType.DoesNotStartWithString:
 			for (const v of value) if (base.qualifier && v.startsWith(base.qualifier)) return false
 			return true
-		case StringComparison.EndsWith:
+		case StringComparisonType.EndsWithString:
 			for (const v of value) if (base.qualifier && v.endsWith(base.qualifier)) return true
 			return false
-		case StringComparison.DoesNotEndWith:
+		case StringComparisonType.DoesNotEndWithString:
 			for (const v of value) if (base.qualifier && v.endsWith(base.qualifier)) return false
 			return true
 	}
@@ -141,19 +141,21 @@ export function stringCompare(value?: string | string[] | null, base?: StringCom
  * @param value
  * @param base
  */
-export function numberCompare(value: number, base?: NumberCompare): boolean {
+export function numberCompare(value: number, base?: NumericCriteria): boolean {
 	if (!base) return true
 	switch (base.compare) {
-		case NumberComparison.None:
+		case NumericComparisonType.AnyNumber:
 			return true
-		case NumberComparison.Is:
+		case NumericComparisonType.EqualsNumber:
 			return value === base.qualifier
-		case NumberComparison.IsNot:
+		case NumericComparisonType.NotEqualsNumber:
 			return value !== base.qualifier
-		case NumberComparison.AtMost:
-			return value <= base.qualifier
-		case NumberComparison.AtLeast:
-			return value >= base.qualifier
+		case NumericComparisonType.AtMostNumber:
+			return value <= base.qualifier!
+		case NumericComparisonType.AtLeastNumber:
+			return value >= base.qualifier!
+		default:
+			return true
 	}
 }
 

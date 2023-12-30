@@ -1,33 +1,46 @@
-import { BaseFeature } from "./base"
-import { StringCompare, StringComparison } from "@module/data"
+import { StringComparisonType, StringCriteria } from "@module/data"
+import { BonusOwner } from "./bonus_owner"
+import { FeatureType, spellmatch } from "./data"
+import { LeveledAmount, LeveledAmountObj } from "./leveled_amount"
 import { stringCompare } from "@util"
-import { FeatureType, SpellBonusMatch } from "./data"
 
-export class SpellPointBonus extends BaseFeature {
-	match!: SpellBonusMatch
+export interface SpellPointBonusObj extends LeveledAmountObj {
+	match: spellmatch
+	name: StringCriteria
+	tags: StringCriteria
+}
 
-	name?: StringCompare
+export class SpellPointBonus extends BonusOwner {
+	match: spellmatch
 
-	tags?: StringCompare
+	name: StringCriteria
 
-	static get defaults(): Record<string, any> {
-		return mergeObject(super.defaults, {
-			type: FeatureType.SpellPointBonus,
-			match: SpellBonusMatch.All,
-			name: { compare: StringComparison.None, qualifier: "" },
-			tags: { compare: StringComparison.None, qualifier: "" },
-		})
+	tags: StringCriteria
+
+	leveledAmount: LeveledAmount
+
+	constructor() {
+		super()
+		this.type = FeatureType.SpellBonus
+		this.match = spellmatch.AllColleges
+		this.name = {
+			compare: StringComparisonType.IsString,
+		}
+		this.tags = {
+			compare: StringComparisonType.AnyString,
+		}
+		this.leveledAmount = new LeveledAmount({ amount: 1 })
 	}
 
 	matchForType(name: string, powerSource: string, colleges: string[]): boolean {
 		switch (this.match) {
-			case SpellBonusMatch.All:
+			case spellmatch.AllColleges:
 				return true
-			case SpellBonusMatch.Spell:
+			case spellmatch.Name:
 				return stringCompare(name, this.name)
-			case SpellBonusMatch.College:
+			case spellmatch.CollegeName:
 				return stringCompare(colleges, this.name)
-			case SpellBonusMatch.PowerSource:
+			case spellmatch.PowerSource:
 				return stringCompare(powerSource, this.name)
 		}
 	}

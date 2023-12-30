@@ -1,29 +1,166 @@
-import { NumberCompare, NumberComparison, StringCompare, StringComparison } from "@module/data"
-import { BaseFeature } from "./base"
-import { FeatureType, WeaponBonusSelectionType } from "./data"
+import { BaseWeaponGURPS, wswitch } from "@item"
+import { FeatureType, WeaponBonusType, wsel } from "./data"
+import { NumericComparisonType, NumericCriteria, StringComparisonType, StringCriteria, WeaponOwner } from "@module/data"
+import { Int } from "@util/fxp"
+import { TooltipGURPS } from "@module/tooltip"
+import { LocalizeGURPS } from "@util"
+import { WeaponLeveledAmount, WeaponLeveledAmountObj } from "./weapon_leveled_amount"
 
-export class WeaponDamageBonus extends BaseFeature {
-	selection_type!: WeaponBonusSelectionType
+export interface WeaponBonusObj extends WeaponLeveledAmountObj {
+	type: WeaponBonusType
+	percent?: boolean
+	switch_type_value?: boolean
+	selection_type: wsel
+	switch_type?: wswitch
+	name?: StringCriteria
+	specialization?: StringCriteria
+	level?: NumericCriteria
+	usage?: StringCriteria
+	tags?: StringCriteria
+}
 
-	name?: StringCompare
+export class WeaponBonus {
+	type: WeaponBonusType
 
-	specialization?: StringCompare
+	private _owner?: WeaponOwner
 
-	tags?: StringCompare
+	private _subOwner?: WeaponOwner
 
-	level?: NumberCompare
+	percent?: boolean
 
-	percent!: boolean
+	switch_type_value?: boolean
 
-	static get defaults(): Record<string, any> {
-		return mergeObject(super.defaults, {
-			type: FeatureType.WeaponBonus,
-			percent: false,
-			selection_type: WeaponBonusSelectionType.Skill,
-			name: { compare: StringComparison.Is, qualifier: "" },
-			specialization: { compare: StringComparison.None, qualifier: "" },
-			tags: { compare: StringComparison.None, qualifier: "" },
-			level: { compare: NumberComparison.None, qualifier: 0 },
-		})
+	selection_type: wsel
+
+	switch_type?: wswitch
+
+	name?: StringCriteria
+
+	specialization?: StringCriteria
+
+	level?: NumericCriteria
+
+	usage?: StringCriteria
+
+	tags?: StringCriteria
+
+	leveledAmount: WeaponLeveledAmount
+
+	effective?: boolean // If true, bonus is applied later as part of effect bonuses
+
+	constructor(type: WeaponBonusType) {
+		this.type = type
+		this.selection_type = wsel.WithRequiredSkill
+		this.name = {
+			compare: StringComparisonType.IsString,
+		}
+		this.specialization = {
+			compare: StringComparisonType.AnyString,
+		}
+		this.level = {
+			compare: NumericComparisonType.AtLeastNumber,
+		}
+		this.usage = {
+			compare: StringComparisonType.AnyString,
+		}
+		this.tags = {
+			compare: StringComparisonType.AnyString,
+		}
+		this.leveledAmount = new WeaponLeveledAmount({ amount: 1 })
+	}
+
+	get owner(): WeaponOwner | undefined {
+		return this._owner
+	}
+
+	set owner(owner: WeaponOwner | undefined) {
+		this._owner = owner
+	}
+
+	get subOwner(): WeaponOwner | undefined {
+		return this._subOwner
+	}
+
+	set subOwner(subOwner: WeaponOwner | undefined) {
+		this._subOwner = subOwner
+	}
+
+	setLevel(level: number): void {
+		this.leveledAmount.level = level
+	}
+
+	get parentName(): string {
+		if (!this.owner) return LocalizeGURPS.translations.gurps.misc.unknown
+		const owner = this.owner.formattedName
+		if (!this.subOwner) return owner
+		return `${owner} (${this.subOwner.formattedName})`
+	}
+
+	get adjustedAmount(): number {
+		return this.leveledAmount.adjustedAmount
+	}
+
+	get amount(): number {
+		return this.leveledAmount.amount
+	}
+
+	set amount(amt: number) {
+		this.leveledAmount.amount = amt
+	}
+
+	adjustedAmountForWeapon(wpn: BaseWeaponGURPS<any>): number {
+		this.leveledAmount.dieCount = Int.from(wpn.damage.base!.count)
+		return this.leveledAmount.adjustedAmount
+	}
+
+	addToTooltip(tooltip: TooltipGURPS | null) {
+		if (tooltip === null) return
+		const buf = new TooltipGURPS()
+		buf.push("\n")
+		buf.push(this.parentName)
+		buf.push(" [")
+		if (this.type === FeatureType.WeaponSwitch) {
+			buf.push(
+				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.feature.weapon_bonus.switch, {
+					type: this.switch_type!,
+					value: this.switch_type_value!,
+				})
+			)
+		} else {
+			buf.push(
+				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.feature.weapon_bonus[this.type], {
+					level: this.leveledAmount.format(this.percent ?? false),
+				})
+			)
+		}
+		buf.push("]")
+		tooltip.push(buf)
+	}
+
+	get derivedLevel(): number {
+		if (this.subOwner) {
+			if (this.subOwner.isLeveled) return this.subOwner.currentLevel
+		} else if (this.owner) {
+			if (this.owner.isLeveled) return this.owner.currentLevel
+		}
+		return 0
+	}
+
+	toObject(): WeaponBonusObj {
+		return {
+			type: this.type,
+			percent: this.percent,
+			switch_type_value: this.switch_type_value,
+			selection_type: this.selection_type,
+			switch_type: this.switch_type,
+			name: this.name,
+			specialization: this.specialization,
+			level: this.level,
+			usage: this.usage,
+			tags: this.tags,
+			amount: this.amount,
+			leveled: this.leveledAmount.leveled,
+			per_die: this.leveledAmount.per_die,
+		}
 	}
 }

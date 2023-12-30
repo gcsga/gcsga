@@ -1,5 +1,12 @@
 import { CharacterGURPS } from "@actor"
-import { ItemType, NumberCompare, NumberComparison, PrereqType, StringCompare, StringComparison } from "@module/data"
+import {
+	ItemType,
+	NumericCriteria,
+	NumericComparisonType,
+	PrereqType,
+	StringCriteria,
+	StringComparisonType,
+} from "@module/data"
 import { TooltipGURPS } from "@module/tooltip"
 import { LocalizeGURPS, numberCompare, stringCompare } from "@util"
 import { BasePrereq, PrereqConstructionContext } from "./base"
@@ -13,11 +20,11 @@ export enum SpellPrereqSubType {
 }
 
 export class SpellPrereq extends BasePrereq {
-	quantity!: NumberCompare
+	quantity!: NumericCriteria
 
 	sub_type!: SpellPrereqSubType
 
-	qualifier!: StringCompare
+	qualifier!: StringCriteria
 
 	constructor(data: SpellPrereq | any, context: PrereqConstructionContext = {}) {
 		data = mergeObject(SpellPrereq.defaults, data)
@@ -27,9 +34,9 @@ export class SpellPrereq extends BasePrereq {
 	static get defaults(): Record<string, any> {
 		return mergeObject(super.defaults, {
 			type: PrereqType.Spell,
-			quantity: { compare: NumberComparison.AtLeast, qualifier: 1 },
+			quantity: { compare: NumericComparisonType.AtLeastNumber, qualifier: 1 },
 			sub_type: SpellPrereqSubType.Name,
-			qualifier: { compare: StringComparison.Is, qualifier: "" },
+			qualifier: { compare: StringComparisonType.IsString, qualifier: "" },
 		})
 	}
 
@@ -68,7 +75,7 @@ export class SpellPrereq extends BasePrereq {
 			if (this.sub_type === SpellPrereqSubType.CollegeCount) {
 				tooltip.push(LocalizeGURPS.translations.gurps.prereqs.spell.college_count)
 				tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.quantity.compare])
-				tooltip.push(this.quantity.qualifier.toString())
+				tooltip.push(this.quantity.qualifier!.toString())
 			} else {
 				if (this.sub_type === SpellPrereqSubType.Any)
 					tooltip.push(LocalizeGURPS.translations.gurps.prereqs.spell.any)
@@ -86,7 +93,8 @@ export class SpellPrereq extends BasePrereq {
 					else if (this.sub_type === SpellPrereqSubType.College)
 						tooltip.push(LocalizeGURPS.translations.gurps.prereqs.spell.college)
 					tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.qualifier.compare])
-					if (this.qualifier?.compare !== StringComparison.None) tooltip.push(`"${this.qualifier.qualifier}"`)
+					if (this.qualifier?.compare !== StringComparisonType.AnyString)
+						tooltip.push(`"${this.qualifier.qualifier}"`)
 				}
 			}
 		}

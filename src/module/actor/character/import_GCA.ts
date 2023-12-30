@@ -1,6 +1,6 @@
 import { ItemFlags, ItemFlagsGURPS, ItemGCSSystemData, NoteData } from "@item"
 import { ItemGURPS, ItemSystemDataGURPS } from "@module/config"
-import { gid, ItemType, SETTINGS, StringComparison, SYSTEM_NAME } from "@module/data"
+import { gid, ItemType, SETTINGS, StringComparisonType, SYSTEM_NAME } from "@module/data"
 import { SkillDefault } from "@module/default"
 import { BasePrereq } from "@prereq"
 import { capitalize, LocalizeGURPS, newUUID } from "@util"
@@ -432,7 +432,7 @@ export class GCAImporter {
 							selection_type: "skills_with_name",
 							amount: parseInt(bonus.value),
 							name: {
-								compare: StringComparison.Is,
+								compare: StringComparisonType.IsString,
 								qualifier: groupitem.name,
 							},
 							per_level: bonus.bonustype !== "3",

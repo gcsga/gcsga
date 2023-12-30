@@ -1,8 +1,9 @@
 import { BaseWeaponGURPS } from "@item/weapon"
 import { gid } from "@module/data"
 import { TooltipGURPS } from "@module/tooltip"
-import { MeleeWeaponSource, WeaponBlock, WeaponParry, WeaponReach } from "./data"
+import { MeleeWeaponSource, WeaponBlock, WeaponParry } from "./data"
 import { Int } from "@util/fxp"
+import { WeaponReach } from "@item/weapon/weapon_reach"
 
 export class MeleeWeaponGURPS extends BaseWeaponGURPS<MeleeWeaponSource> {
 	get fastResolvedParry(): string {
@@ -23,55 +24,37 @@ export class MeleeWeaponGURPS extends BaseWeaponGURPS<MeleeWeaponSource> {
 
 	get parry(): Partial<WeaponParry> {
 		const s = this.system.parry
-		if (s.includes("no")) return {
-			no: true,
-			fencing: false,
-			unbalanced: false,
-			modifier: 0
-		}
+		if (s.includes("no"))
+			return {
+				no: true,
+				fencing: false,
+				unbalanced: false,
+				modifier: 0,
+			}
 		return {
 			no: false,
 			fencing: s.includes("f"),
 			unbalanced: s.includes("u"),
-			modifier: Int.fromString(s)
+			modifier: Int.fromString(s),
 		}
 		// return parseInt(this.resolvedParry()) ?? 0
 	}
 
 	get block(): Partial<WeaponBlock> {
 		const s = this.system.block
-		if (s.includes("no")) return {
-			no: true,
-			modifier: 0
-		}
+		if (s.includes("no"))
+			return {
+				no: true,
+				modifier: 0,
+			}
 		return {
 			no: false,
-			modifier: Int.fromString(s)
+			modifier: Int.fromString(s),
 		}
 		// return parseInt(this.resolvedBlock()) ?? 0
 	}
 
-	get reach(): Partial<WeaponReach> {
-		const wr: Partial<WeaponReach> = {
-			min: 0,
-			max: 0,
-			closeComabt: false,
-			changeRequiresReady: false
-		}
-		let s = this.system.reach.trim()
-		if (s === "") return wr
-		if (!s.includes("spec")) {
-			s = s.replaceAll("-", ",")
-			wr.closeComabt = s.includes("c")
-			wr.changeRequiresReady = s.includes("*")
-			s = s.replaceAll("*", "")
-			const parts = s.split(",")
-			wr.min = Int.fromString(parts[0])
-			if (parts.length > 1)
-				wr.max = Math.max(...parts.slice(1).map(e => Int.fromString(e)))
-		}
-
-		return wr
-		// return this.system.reach
+	get reach(): WeaponReach {
+		return WeaponReach.parse(this.system.reach)
 	}
 }
