@@ -1638,7 +1638,6 @@
 				"armor_divisor": "Armor Divisor ({divisor})",
 				"armor_divisor_ignores": "Armor Divisor (Ignores DR)",
 				"armor_divisor_collateral": "Collateral Damage",
-				"armor_divisor_collateral": "Collateral Damage",
 				"blunt_trauma": "Blunt Trauma",
 				"damage_location": "{type}, {location}",
 				"damage_reduction": "= {injury} ÷ {reduction}",

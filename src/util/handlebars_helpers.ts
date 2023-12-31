@@ -5,6 +5,7 @@ import { LocalizeGURPS } from "./localize"
 import { CharacterGURPS, StaticSpell } from "@actor"
 import { Static } from "@util"
 import { SafeString } from "handlebars"
+import { ItemData } from "types/foundry/common/data/module.mjs"
 
 class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 	static camelcase(s: string) {
