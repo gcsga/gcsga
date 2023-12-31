@@ -28,6 +28,14 @@ export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSour
 			throw Error(`Invalid Item Type "${data.type}"`)
 		}
 	}
+	
+		override async update(
+		data: DeepPartial<ItemDataConstructorData | Record<string, unknown>>,
+		context?: DocumentModificationContext & MergeObjectOptions & { noPrepare?: boolean }
+	): Promise<this | undefined> {
+		return super.update(data, context)
+	}
+
 
 	static override async createDialog(
 		data: { folder?: string } = {},
