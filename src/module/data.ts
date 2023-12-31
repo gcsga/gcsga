@@ -473,6 +473,10 @@ export interface Stringer {
 	// currentLevel: number
 }
 
+export enum HooksGURPS {
+	AddModifier = "addModifier",
+}
+
 export interface WeaponOwner {
 	formattedName: string
 	isLeveled: boolean
