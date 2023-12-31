@@ -1,6 +1,5 @@
 import { CharacterProfile } from "@actor/character/data"
 import { DEFAULT_INITIATIVE_FORMULA, SETTINGS, SSRT_SETTING, SYSTEM_NAME } from "@module/data"
-import { loadModifiers } from "@module/mod_prompt/data"
 import { getDefaultSkills, setInitiative } from "@util"
 import { DefaultAttributeSettings } from "./attributes"
 import { ColorSettings } from "./colors"
@@ -10,6 +9,7 @@ import { RollModifierSettings } from "./roll_modifiers"
 import { DefaultSheetSettings } from "./sheet_settings"
 import { DamageTypeSettings } from "@module/settings/damage_type"
 import { DefaultMoveSettings } from "./move_type"
+import { loadModifiers } from "@module/mod_bucket/data"
 
 /**
  *
