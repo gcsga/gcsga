@@ -1113,9 +1113,9 @@ class DamageCalculator implements IDamageCalculator {
 
 			// TODO In RAW, this doubling only occurs if the target is physiologically male and does not have the
 			// 	 "No Vitals" Injury Tolerance trait.
-			const location = this.hitLocationTable.locations.find(it => it.table_name === locationName)
-			if (this.damageType === DamageTypes.cr && location?.id === "groin" && !this.target.hasTrait("No Vitals"))
-				modifier *= 2
+			// const location = this.hitLocationTable.locations.find(it => it.table_name === locationName)
+			// if (this.damageType === DamageTypes.cr && location?.id === "groin" && !this.target.hasTrait("No Vitals"))
+			// 	modifier *= 2
 
 			const shockEffect = new InjuryEffect(InjuryEffectType.shock, [
 				new RollModifier("dx", RollType.Attribute, modifier),

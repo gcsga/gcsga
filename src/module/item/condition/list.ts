@@ -170,6 +170,11 @@ export function getConditionList(): Record<ConditionID, Partial<ConditionSystemD
 		},
 		[ConditionID.Drowsy]: { id: ConditionID.Drowsy, reference: "B428" },
 		[ConditionID.Daze]: { id: ConditionID.Daze, reference: "B428" },
+		[ConditionID.Trigger]: {
+			id: ConditionID.Trigger,
+			checks: [],
+			consequences: [],
+		},
 	}
 
 	return ConditionList

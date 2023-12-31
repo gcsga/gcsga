@@ -246,6 +246,7 @@ export type ModifierItem = RollModifier | ModifierHeader
 export interface RollModifier {
 	name: string
 	modifier: number
+	rollType?: RollType
 	max?: number
 	tags?: string[]
 	cost?: { id: string; value: number }

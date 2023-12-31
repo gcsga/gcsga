@@ -345,6 +345,22 @@
 
 						<div id="results">
 							<div id="effects">
+								<div class="table">
+									<div class="header">{{localize "gurps.dmgcalc.effects_table"}}</div>
+									{{#each this.results.effects}}
+										{{print this.displayName this.description this.level}}
+										<div class="effect">
+											<div class="enable gcs-checkmark">
+												{{! <i class="fas fa-times"></i> }}
+											</div>
+											<div>{{localize this.displayName}}</div>
+											<div class="descr">{{localize
+													this.description
+													level=(signed this.level)
+												}}</div>
+										</div>
+									{{/each}}
+								</div>
 							</div>
 
 							<div id="calc">
@@ -374,9 +390,7 @@
 										data-action="apply-injury"
 									>{{localize "gurps.misc.apply"}}</button>
 								</div>
-
 							</div>
-
 						</div>
 
 					</div>
