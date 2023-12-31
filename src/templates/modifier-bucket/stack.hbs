@@ -20,8 +20,10 @@
 	{{else}}
 	<div class="name" data-index="{{@index}}">{{this.title}}</div>
 	{{/if}}
-	<a class="apply gcs-checkmark" data-index="{{@index}}"></a>
-	<a class="delete gcs-trash" data-index="{{@index}}"></a>
+	<div class="controls">
+		<a class="apply gcs-checkmark" data-index="{{@index}}"></a>
+		<a class="delete gcs-trash" data-index="{{@index}}"></a>
+	</div>
 </div>
 {{#if this.open}}
 <div class="stack-content open">

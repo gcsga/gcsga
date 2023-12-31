@@ -389,8 +389,8 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 		if (a instanceof Item) {
 			if (a.type === ItemType.Skill) {
 				const sk = a as any
-				if (sk.effectiveLevel > sk.level.level) return "pos"
-				if (sk.effectiveLevel < sk.level.level) return "neg"
+				if (sk.system.calc.effective > sk.system.calc.level) return "pos"
+				if (sk.system.calc.effective < sk.system.calc.level) return "neg"
 			}
 		}
 		if (a.effective && a.current) {

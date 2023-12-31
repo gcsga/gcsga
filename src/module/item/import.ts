@@ -1,5 +1,5 @@
 import { ItemSystemDataGURPS } from "@module/config"
-import { SETTINGS, SYSTEM_NAME } from "@module/data"
+import { SYSTEM_NAME } from "@module/data"
 import { LocalizeGURPS } from "@util"
 import { ImportUtils } from "@util/import"
 import { BaseItemGURPS } from "./base"

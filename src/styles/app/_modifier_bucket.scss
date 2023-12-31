@@ -76,6 +76,14 @@
 		flex-wrap: wrap;
 	}
 
+	#stacks {
+		width: 320px;
+		max-width: 320px;
+		#save-current {
+			width: 100%;
+		}
+	}
+
 	.generic {
 		display: flex;
 		gap: 4px;
@@ -102,6 +110,10 @@
 			border-radius: 4px 4px 0 0;
 			border-bottom: 0;
 		}
+	}
+	.stack {
+		gap: 5px;
+		justify-content: space-between;
 	}
 	.collapsible-content,
 	.stack-content {

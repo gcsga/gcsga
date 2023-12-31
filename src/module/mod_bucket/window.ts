@@ -1,7 +1,8 @@
-import { HooksGURPS, RollModifier, RollModifierStack, SYSTEM_NAME, UserFlags } from "@module/data"
+import { HooksGURPS, RollModifier, RollModifierStack, SOCKET, SYSTEM_NAME, UserFlags } from "@module/data"
 import { ModifierBucket } from "./button"
 import { PDF } from "@module/pdf"
 import { LocalizeGURPS } from "@util"
+import { UserGURPS } from "@module/user/document"
 
 export class ModifierBucketWindow extends Application {
 
@@ -59,9 +60,8 @@ export class ModifierBucketWindow extends Application {
 		// searchbar.on("keydown", event => this._keyDown(event))
 
 		// Modifier Deleting
-		// html.find(".active").on("click", event => this.removeModifier(event))
-		// html.find(".player").on("click", event => this.sendToPlayer(event))
-		// html.find(".modifier").on("click", event => this._onClickModifier(event))
+		html.find(".player").on("click", event => this._onSendToPlayer(event))
+		html.find(".modifier").on("click", event => this._onClickModifier(event))
 		html.find(".collapsible").on("click", event => this._onCollapseToggle(event))
 		html.find(".ref").on("click", event => PDF.handle(event))
 
@@ -71,8 +71,13 @@ export class ModifierBucketWindow extends Application {
 		html.find("#stacks .apply").on("click", event => this._onApplyStack(event))
 		html.find("#stacks .apply").on("click", event => this._onApplyStack(event))
 		html.find("#stacks .delete").on("click", event => this._onDeleteStack(event))
-		html.find("#stacks .name").on("dblclick", event => this._onEditToggleStack(event))
-		html.find("#stacks input").on("change", event => this._onEditStack(event))
+	}
+
+
+	_onClickModifier(event: JQuery.ClickEvent) {
+		event.preventDefault()
+		const modifier = $(event.currentTarget).data("modifier")
+		return (game.user as UserGURPS).addModifier(modifier)
 	}
 
 	private async _onCollapseToggle(event: JQuery.ClickEvent): Promise<unknown> {
@@ -94,16 +99,46 @@ export class ModifierBucketWindow extends Application {
 		return this.render()
 	}
 
-	private async _onSaveCurrentStack(event: JQuery.ClickEvent): Promise<boolean> {
+	private async _onSaveCurrentStack(event: JQuery.ClickEvent): Promise<void> {
 		event.preventDefault()
 		const modStack = game.user.getFlag(SYSTEM_NAME, UserFlags.ModifierStack) as RollModifier[]
-		const savedStacks = game.user.getFlag(SYSTEM_NAME, UserFlags.SavedStacks) as RollModifierStack[] ?? []
-		savedStacks.push({
-			title: LocalizeGURPS.translations.gurps.system.modifier_bucket.untitled_stack,
-			items: modStack
-		})
-		await game.user.setFlag(SYSTEM_NAME, UserFlags.SavedStacks, savedStacks)
-		return Hooks.call(HooksGURPS.AddModifier)
+		setTimeout(async () => {
+			new Dialog(
+				{
+					title: LocalizeGURPS.translations.gurps.system.modifier_bucket.save_current,
+					content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/modifier-bucket/name.hbs`, {}),
+					buttons: {
+						apply: {
+							icon: '<i class="fas fa-check"></i>',
+							label: LocalizeGURPS.translations.gurps.system.modifier_bucket.save_apply,
+							callback: async (html: HTMLElement | JQuery<HTMLElement>) => {
+								const form = $(html).find("form")
+								let name = form.find("input").val()
+								if (!name || name === "")
+									name =
+										LocalizeGURPS.translations.gurps.system.modifier_bucket.untitled_stack
+								const savedStacks =
+									game.user.getFlag(SYSTEM_NAME, UserFlags.SavedStacks) as RollModifierStack[] ?? []
+								savedStacks.push({
+									title: name,
+									items: modStack
+								})
+								await game.user.setFlag(SYSTEM_NAME, UserFlags.SavedStacks, savedStacks)
+								return Hooks.call(HooksGURPS.AddModifier)
+							},
+						},
+						no: {
+							icon: '<i class="fas fa-times"></i>',
+							label: LocalizeGURPS.translations.gurps.system.modifier_bucket.save_cancel,
+						},
+					},
+					default: "apply",
+				},
+				{
+					width: 400,
+				}
+			).render(true)
+		}, 200)
 	}
 
 	private async _onApplyStack(event: JQuery.ClickEvent): Promise<boolean> {
@@ -111,13 +146,6 @@ export class ModifierBucketWindow extends Application {
 		const index = event.currentTarget.dataset.index
 		const savedStacks = game.user.getFlag(SYSTEM_NAME, UserFlags.SavedStacks) as RollModifierStack[] ?? []
 		await game.user.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, savedStacks[index].items)
-		return Hooks.call(HooksGURPS.AddModifier)
-	}
-
-	private async _onEditToggleStack(event: JQuery.DoubleClickEvent): Promise<boolean> {
-		event.preventDefault()
-		const index = parseInt(event.currentTarget.dataset.index)
-		this.stackEditing = this.stackEditing === index ? -1 : index
 		return Hooks.call(HooksGURPS.AddModifier)
 	}
 
@@ -130,14 +158,14 @@ export class ModifierBucketWindow extends Application {
 		return Hooks.call(HooksGURPS.AddModifier)
 	}
 
-	private async _onEditStack(event: JQuery.ChangeEvent) {
-		const index = parseInt(event.currentTarget.dataset.index)
-		const savedStacks = game.user.getFlag(SYSTEM_NAME, UserFlags.SavedStacks) as RollModifierStack[] ?? []
-		savedStacks[index].title = $(event.currentTarget).val()
-		await game.user.setFlag(SYSTEM_NAME, UserFlags.SavedStacks, savedStacks)
-		this.stackEditing = -1
-		// return this.refresh()
-		// return Hooks.call(HooksGURPS.AddModifier)
+	private async _onSendToPlayer(event: JQuery.ClickEvent) {
+		event.preventDefault()
+		const id = $(event.currentTarget).data("user-id")
+		const player = game.users?.get(id)
+		if (!player) return
+		const modStack = game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierStack)
+		await player.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, modStack)
+		game.socket?.emit(`system.${SYSTEM_NAME}`, { type: SOCKET.UPDATE_BUCKET, users: [player.id] })
 	}
 
 	getData(options?: Partial<ApplicationOptions> | undefined): MaybePromise<object> {
