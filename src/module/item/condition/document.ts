@@ -26,6 +26,8 @@ export class ConditionGURPS extends EffectGURPS<ConditionSource> {
 			can_level: false,
 			reference: "",
 			reference_highlight: "",
+			checks: [],
+			consequences: [],
 			duration: {
 				type: DurationType.None,
 				rounds: 0,
