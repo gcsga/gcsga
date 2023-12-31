@@ -1,11 +1,12 @@
 import { ActorGURPS } from "@module/config"
 import { RollModifier, RollModifierTags, SETTINGS, SYSTEM_NAME, UserFlags } from "@module/data"
+import { UserGURPS } from "@module/user/document"
 import { LastActor } from "@util"
 
 class ModifierList extends Application {
 	_tempRangeMod: RollModifier = { name: "", modifier: 0, tags: [RollModifierTags.Range] }
 
-	hover = false
+	// hover = false
 
 	static get defaultOptions(): ApplicationOptions {
 		return mergeObject(super.defaultOptions, {
@@ -20,7 +21,7 @@ class ModifierList extends Application {
 
 	get collapse(): boolean {
 		const collapse = game.settings.get(SYSTEM_NAME, SETTINGS.MODIFIER_LIST_COLLAPSE)
-		const button_open = game.ModifierButton.window.rendered
+		const button_open = game.ModifierBucket.window.rendered
 		if (collapse && !button_open) return true
 		return false
 	}
@@ -40,7 +41,7 @@ class ModifierList extends Application {
 		let actorMods = actor?.modifiers
 
 		return mergeObject(super.getData(options), {
-			hover: this.hover ? "hover" : "",
+			// hover: this.hover ? "hover" : "",
 			currentMods,
 			targetMods,
 			actorMods,
@@ -57,10 +58,10 @@ class ModifierList extends Application {
 		html.find(".active").on("click", event => this.removeModifier(event))
 		html.find(".modifier").on("click", event => this._onClickModifier(event))
 		html.find(".collapse-toggle").on("click", event => this._onCollapseToggle(event))
-		html.on("mouseleave", () => {
-			this.hover = false
-			this.render(true)
-		})
+		// html.on("mouseleave", () => {
+		// 	this.hover = false
+		// 	this.render(true)
+		// })
 	}
 
 	protected _injectHTML(html: JQuery<HTMLElement>): void {
@@ -72,12 +73,12 @@ class ModifierList extends Application {
 
 	_onClickModifier(event: JQuery.ClickEvent) {
 		event.preventDefault()
-		this.hover = true
+		// this.hover = true
 		const modifier: RollModifier = {
 			name: $(event.currentTarget).data("name"),
 			modifier: $(event.currentTarget).data("modifier"),
 		}
-		return this.addModifier(modifier)
+		return (game.user as UserGURPS).addModifier(modifier)
 	}
 
 	_onCollapseToggle(event: JQuery.ClickEvent) {
@@ -91,28 +92,28 @@ class ModifierList extends Application {
 	}
 
 	addRangeMod() {
-		this.addModifier(this._tempRangeMod)
+		(game.user as UserGURPS).addModifier(this._tempRangeMod)
 	}
 
-	addModifier(mod: RollModifier) {
-		const modList: RollModifier[] =
-			(game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierStack) as RollModifier[]) ?? []
-		if (mod.tags?.includes(RollModifierTags.Range)) {
-			const oldMod = modList.find(e => e.tags?.includes(RollModifierTags.Range))
-			if (oldMod) {
-				oldMod.modifier = mod.modifier
-				oldMod.name = mod.name
-			} else modList.push(mod)
-		} else {
-			const oldMod = modList.find(e => e.name === mod.name)
-			if (oldMod) oldMod.modifier += mod.modifier
-			else modList.push(mod)
-		}
-		game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, modList)
-		this.render()
-		game.ModifierButton.render()
-		Hooks.call("addModifier")
-	}
+	// addModifier(mod: RollModifier) {
+	// 	const modList: RollModifier[] =
+	// 		(game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierStack) as RollModifier[]) ?? []
+	// 	if (mod.tags?.includes(RollModifierTags.Range)) {
+	// 		const oldMod = modList.find(e => e.tags?.includes(RollModifierTags.Range))
+	// 		if (oldMod) {
+	// 			oldMod.modifier = mod.modifier
+	// 			oldMod.name = mod.name
+	// 		} else modList.push(mod)
+	// 	} else {
+	// 		const oldMod = modList.find(e => e.name === mod.name)
+	// 		if (oldMod) oldMod.modifier += mod.modifier
+	// 		else modList.push(mod)
+	// 	}
+	// 	game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, modList)
+	// 	this.render()
+	// 	game.ModifierBucket.render()
+	// 	Hooks.call("addModifier")
+	// }
 
 	removeModifier(event: JQuery.ClickEvent) {
 		event.preventDefault()
@@ -122,18 +123,18 @@ class ModifierList extends Application {
 		modList.splice(index, 1)
 		game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, modList)
 		this.render()
-		game.ModifierButton.render()
+		game.ModifierBucket.render()
 	}
 
-	fadeIn() {
-		this.hover = true
-		this.render(true)
-	}
+	// fadeIn() {
+	// 	this.hover = true
+	// 	this.render(true)
+	// }
 
-	fadeOut() {
-		this.hover = false
-		this.render(true)
-	}
+	// fadeOut() {
+	// 	this.hover = false
+	// 	this.render(true)
+	// }
 }
 
 export { ModifierList }

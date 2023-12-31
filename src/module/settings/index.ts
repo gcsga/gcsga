@@ -1,6 +1,5 @@
 import { CharacterProfile } from "@actor/character/data"
 import { DEFAULT_INITIATIVE_FORMULA, SETTINGS, SSRT_SETTING, SYSTEM_NAME } from "@module/data"
-import { loadModifiers } from "@module/mod_prompt/data"
 import { getDefaultSkills, setInitiative } from "@util"
 import { DefaultAttributeSettings } from "./attributes"
 import { ColorSettings } from "./colors"
@@ -10,6 +9,7 @@ import { RollModifierSettings } from "./roll_modifiers"
 import { DefaultSheetSettings } from "./sheet_settings"
 import { DamageTypeSettings } from "@module/settings/damage_type"
 import { DefaultMoveSettings } from "./move_type"
+import { loadModifiers } from "@module/mod_bucket/data"
 
 /**
  *
@@ -95,20 +95,6 @@ export function registerSettings(): void {
 		restricted: false,
 	})
 	RollModifierSettings.registerSettings()
-
-	game.settings.register(SYSTEM_NAME, SETTINGS.MODIFIER_MODE, {
-		name: "gurps.settings.modifier_mode.name",
-		hint: "gurps.settings.modifier_mode.hint",
-		scope: "client",
-		config: true,
-		type: String,
-		choices: {
-			prompt: "gurps.settings.modifier_mode.choices.prompt",
-			bucket: "gurps.settings.modifier_mode.choices.bucket",
-		},
-		default: "bucket",
-		onChange: (value: string) => console.log(`Modifier Mode: ${value}`),
-	})
 
 	game.settings.register(SYSTEM_NAME, SETTINGS.BASIC_SET_PDF, {
 		name: "gurps.settings.basic_set_pdfs.name",

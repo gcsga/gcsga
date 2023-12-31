@@ -202,7 +202,7 @@
 			},
 			"rof": {
 				"title": "Rate of Fire",
-				"rof": "Rof: {rof}"
+				"rof": "RoF: {rof}"
 			},
 			"attribute": {
 				"all": "to all attribute rolls",
@@ -1317,7 +1317,12 @@
 				"pinned": "Pinned Modifiers",
 				"custom": "Custom Modifiers",
 				"max": "*Max {max}",
-				"cost": "*Cost {value}{id}"
+				"cost": "*Cost {value}{id}",
+				"saved_stacks": "Saved Buckets",
+				"save_current": "Save Current Bucket",
+				"untitled_stack": "Untitled Bucket",
+				"save_apply": "Save",
+				"save_cancel": "Cancel"
 			},
 			"library_import": {
 				"button_character": "Import GCS Character Library",
@@ -1410,14 +1415,6 @@
 			"enable_token_modifier_window": {
 				"name": "Enable Token Modifier Window",
 				"hint": "Enable the Token Modifier Window, which shows modifiers related to selected and targeted tokens"
-			},
-			"modifier_mode": {
-				"name": "Modifier Application",
-				"hint": "Choose between using the Modifier Bucket and Modifier Prompt.",
-				"choices": {
-					"bucket": "Modifier Bucket",
-					"prompt": "Modifier Prompt"
-				}
 			},
 			"ssrt": {
 				"name": "Range Modifier Formula",

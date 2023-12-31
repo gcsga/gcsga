@@ -4,6 +4,7 @@ import { RollGURPS } from "@module/roll"
 import { ActorGURPS } from "./config"
 import { CharacterGURPS, LootGURPS } from "@actor"
 import { MookGeneratorSheet } from "./mook"
+import { UserGURPS } from "./user/document"
 
 export function parse(message: string): [string, string[]] {
 	for (const [rule, rgx] of Object.entries(GURPS_COMMANDS)) {
@@ -100,7 +101,8 @@ async function _onModClick(event: JQuery.ClickEvent): Promise<void> {
 	event.preventDefault()
 	event.stopPropagation()
 	const mod: RollModifier = $(event.currentTarget).data("mod")
-	return game.ModifierButton.window.addModifier(mod)
+	return (game.user as UserGURPS).addModifier(mod)
+	// return game.ModifierBucket.addModifier(mod)
 }
 
 /**
@@ -112,7 +114,8 @@ async function _onModRClick(event: JQuery.ContextMenuEvent): Promise<void> {
 	event.stopPropagation()
 	const mod: RollModifier = duplicate($(event.currentTarget).data("mod"))
 	mod.modifier = -mod.modifier
-	return game.ModifierButton.window.addModifier(mod)
+	// return game.ModifierBucket.addModifier(mod)
+	return (game.user as UserGURPS).addModifier(mod)
 }
 
 /**
@@ -178,6 +181,9 @@ async function _onRollClick(event: JQuery.ClickEvent) {
 		data.modifier = $(event.currentTarget).data("modifier")
 		data.comment = $(event.currentTarget).data("comment")
 	}
+	if (type === RollType.Generic)
+		data.formula = $(event.currentTarget).data("formula")
+
 	return RollGURPS.handleRoll(game.user, actor, data)
 }
 

@@ -38,14 +38,12 @@ import { GURPSCONFIG } from "./config"
 import * as Chat from "@module/chat"
 import { ItemImporter } from "@item/import"
 import { CompendiumBrowser } from "./compendium"
-import { ActorType, ItemType, SOCKET, SYSTEM_NAME, UserFlags } from "./data"
+import { ActorType, HooksGURPS, ItemType, SOCKET, SYSTEM_NAME, UserFlags } from "./data"
 import { StaticHitLocation } from "@actor/static/hit_location"
 import * as SpeedProviderGURPS from "./modules/drag_ruler"
 import { ColorSettings } from "./settings/colors"
 import { DamageChat } from "./damage_calculator/damage_chat_message"
 import { RollGURPS } from "@module/roll"
-import { ModifierButton } from "./mod_prompt/button"
-import { loadModifiers } from "@module/mod_prompt/data"
 import { CombatGURPS } from "@module/combat"
 import { TokenHUDGURPS } from "./token/hud"
 import { TokenDocumentGURPS, TokenGURPS } from "@module/token"
@@ -86,13 +84,15 @@ import { MookGeneratorSheet, MookParser } from "./mook"
 import { CharacterImporter } from "@actor/character/import"
 import { ItemDirectoryGURPS } from "@ui/item_directory"
 import { CombatantGURPS } from "./combatant"
+import { ModifierBucket } from "@module/mod_bucket"
+import { loadModifiers } from "@module/mod_bucket/data"
 
 Error.stackTraceLimit = Infinity
 
 // TODO: make GURPS type concrete
 export const GURPS: any = {}
 if (!(globalThis as any).GURPS) {
-	;(globalThis as any).GURPS = GURPS
+	; (globalThis as any).GURPS = GURPS
 	GURPS.DEBUG = true
 	GURPS.LEGAL =
 		"GURPS is a trademark of Steve Jackson Games, and its rules and art are copyrighted by Steve Jackson Games.\nAll rights are reserved by Steve Jackson Games.\nThis game aid is the original creation of Mikolaj Tomczynski and is released for free distribution, and not for resale, under the permissions granted by\nhttp://www.sjgames.com/general/online_policy.html"
@@ -300,8 +300,8 @@ Hooks.once("setup", async () => {
 	// LocalizeGURPS.ready = true
 	// Do anything after initialization but before ready
 
-	game.ModifierButton = new ModifierButton()
-	game.ModifierButton.render(true)
+	game.ModifierBucket = new ModifierBucket()
+	game.ModifierBucket.render(true)
 	game.ModifierList = new ModifierList()
 	game.ModifierList.render(true)
 	game.CompendiumBrowser = new CompendiumBrowser()
@@ -328,11 +328,10 @@ Hooks.once("ready", async () => {
 	// Set default user flag state
 	if (!game.user?.getFlag(SYSTEM_NAME, UserFlags.Init)) {
 		game.user?.setFlag(SYSTEM_NAME, UserFlags.LastStack, [])
-		game.user?.setFlag(SYSTEM_NAME, UserFlags.LastTotal, 0)
 		game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, [])
-		game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierTotal, 0)
 		game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierSticky, false)
 		game.user?.setFlag(SYSTEM_NAME, UserFlags.Init, true)
+		game.user?.setFlag(SYSTEM_NAME, UserFlags.SavedStacks, [])
 	}
 	if (canvas && canvas.hud) {
 		canvas.hud.token = new TokenHUDGURPS()
@@ -351,7 +350,7 @@ Hooks.once("ready", async () => {
 			case SOCKET.UPDATE_BUCKET:
 				// Ui.notifications?.info(response.users)
 				await game.ModifierList.render()
-				return game.ModifierButton.render()
+				return game.ModifierBucket.render()
 			case SOCKET.INITIATIVE_CHANGED:
 				CONFIG.Combat.initiative.formula = response.formula
 			default:
@@ -493,12 +492,12 @@ Hooks.on("renderDialog", (_dialog: any, html: JQuery<HTMLElement>) => {
 	}
 })
 
-Hooks.on("updateToken", function () {
+Hooks.on("updateToken", function() {
 	game.ModifierList.render(true)
 })
 
-Hooks.once("item-piles-ready", async function () {
-	;(game as any).itempiles.API.addSystemIntegration({
+Hooks.once("item-piles-ready", async function() {
+	; (game as any).itempiles.API.addSystemIntegration({
 		VERSION: "1.0.0",
 
 		// The actor class type is the type of actor that will be used for the default
@@ -557,7 +556,7 @@ Hooks.once("item-piles-ready", async function () {
 	})
 })
 
-Hooks.on("dropCanvasData", async function (_canvas, data: any) {
+Hooks.on("dropCanvasData", async function(_canvas, data: any) {
 	const dropTarget = [...(canvas!.tokens!.placeables as TokenGURPS[])]
 		.sort((a, b) => b.document.sort - a.document.sort)
 		.find(token => {
@@ -573,19 +572,27 @@ Hooks.on("dropCanvasData", async function (_canvas, data: any) {
 	}
 })
 
-Hooks.on("renderPlayerList", function (_hotbar: any, element: JQuery<HTMLElement>, _options: any) {
+Hooks.on("renderPlayerList", function(_hotbar: any, element: JQuery<HTMLElement>, _options: any) {
 	if (!game.ModifierList) return
-	game.ModifierButton._injectHTML(element.parent("#interface"))
-	game.ModifierList.render()
+	game.ModifierBucket._injectHTML(element.parent("#interface"))
+	game.ModifierList.render(true)
 })
 
-Hooks.on("renderHotbar", function (_hotbar: any, element: JQuery<HTMLElement>, _options: any) {
-	if (!game.ModifierButton) return
-	game.ModifierButton._injectHTML(element.parent("#ui-bottom"))
-	game.ModifierButton.render()
+Hooks.on("renderHotbar", function(_hotbar: any, element: JQuery<HTMLElement>, _options: any) {
+	if (!game.ModifierBucket) return
+	game.ModifierBucket._injectHTML(element.parent("#ui-bottom"))
+	game.ModifierBucket.render()
 })
 
-Hooks.on("chatMessage", function (_chatlog: ChatLog, message: string, _data: any) {
+Hooks.on("chatMessage", function(_chatlog: ChatLog, message: string, _data: any) {
 	Chat.procesMessage(message)
 	return message
+})
+
+
+Hooks.on(HooksGURPS.AddModifier, function() {
+	game.ModifierBucket.render()
+	game.ModifierList.render()
+	if (game.ModifierBucket.window.rendered)
+		game.ModifierBucket.window.render()
 })

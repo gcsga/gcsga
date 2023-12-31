@@ -15,31 +15,6 @@ import {
 } from "@module/data"
 import { v4 as uuidv4 } from "uuid"
 
-// /**
-//  *
-//  * @param value
-//  * @param fallback
-//  */
-// export function i18n(value: string, fallback?: string): string {
-// 	const result = game.i18n.localize(value)
-// 	if (fallback) return value === result ? fallback : result
-// 	return result
-// }
-
-// /**
-//  * @param value
-//  * @param data
-//  * @param fallback
-//  * @returns {string}
-//  */
-// export function i18n_f(value: string, data: Record<string, unknown>, fallback?: string): string {
-// 	const template = game.i18n.has(value) ? value : fallback
-// 	if (!template) return value
-// 	const result = game.i18n.format(template, data)
-// 	if (fallback) return value === result ? fallback : result
-// 	return result
-// }
-
 export function sanitizeId(id: string, permit_leading_digits: boolean, reserved: string[]): string {
 	const buffer: string[] = []
 	for (let ch of id.split("")) {
@@ -355,9 +330,9 @@ export async function getDefaultSkills() {
 	for (const s in skillPacks)
 		if (skillPacks[s].skillDefault) {
 			const pack = game.packs.get(s) as CompendiumCollection<any>
-			;(await pack.getDocuments()).forEach(e => {
-				skills.push(e)
-			})
+				; (await pack.getDocuments()).forEach(e => {
+					skills.push(e)
+				})
 		}
 	CONFIG.GURPS.skillDefaults = skills
 }

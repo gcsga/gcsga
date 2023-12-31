@@ -228,7 +228,6 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		data["system.modified_date"] = new Date().toISOString()
 	}
 
-	// TODO: move to character/sheet -> _updateObject (maybe?)
 	updateAttributes(data?: any) {
 		for (const i in data) {
 			if (i.includes("system.import")) return
@@ -724,7 +723,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	// Flat list of all hit locations
 	get HitLocations(): HitLocation[] {
-		const recurseLocations = function (table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
+		const recurseLocations = function(table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
 			table.locations.forEach(e => {
 				locations.push(e)
 				if (e.subTable) locations = recurseLocations(e.subTable, locations)
@@ -1403,9 +1402,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	updateSkills(): boolean {
 		let changed = false
 		for (const k of [...this.itemTypes[ItemType.Skill], ...this.itemTypes[ItemType.Technique]]) {
-			if ((k as any).updateLevel()) {
-				changed = true
-			}
+			if ((k as SkillGURPS).updateLevel()) changed = true
 		}
 		return changed
 	}
@@ -1413,9 +1410,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	updateSpells(): boolean {
 		let changed = false
 		for (const b of [...this.itemTypes[ItemType.Spell], ...this.itemTypes[ItemType.RitualMagicSpell]]) {
-			if ((b as any).updateLevel()) {
-				changed = true
-			}
+			if ((b as SpellGURPS).updateLevel()) changed = true
 		}
 		return changed
 	}
