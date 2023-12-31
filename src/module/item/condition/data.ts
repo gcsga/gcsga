@@ -1,6 +1,6 @@
 import { BaseItemSourceGURPS } from "@item/base/data"
 import { EffectSystemData } from "@item/effect"
-import { ItemType } from "@module/data"
+import { ItemType, RollModifier } from "@module/data"
 
 export enum ConditionID {
 	// Posture
@@ -57,6 +57,8 @@ export enum ConditionID {
 	Drunk = "drunk",
 	Drowsy = "drowsy",
 	Daze = "daze",
+	// ConditionTrigger -- this is a special condition that is used to trigger other effects.
+	Trigger = "trigger",
 }
 
 export const Postures = [
@@ -109,6 +111,13 @@ export interface ConditionData extends Omit<ConditionSource, "effects">, Conditi
 	readonly _source: ConditionSource
 }
 
+export interface Consequence {
+	id: ConditionID
+	margin: number
+}
+
 export interface ConditionSystemData extends EffectSystemData {
 	id: ConditionID | ManeuverID | null
+	checks: RollModifier[]
+	consequences: Consequence[]
 }

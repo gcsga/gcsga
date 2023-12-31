@@ -253,6 +253,7 @@ export interface RollModifierStack {
 export interface RollModifier {
 	name: string
 	modifier: number
+	rollType?: RollType
 	max?: number
 	tags?: string[]
 	cost?: { id: string; value: number }
@@ -466,11 +467,10 @@ export const GURPS_COMMANDS = (() => {
 	}
 })()
 
-export enum HooksGURPS {
-	AddModifier = "addModifier"
-}
 export interface Stringer {
 	formattedName: string
+	// isLeveled: boolean
+	// currentLevel: number
 }
 
 export interface WeaponOwner {

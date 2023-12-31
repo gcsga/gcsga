@@ -974,7 +974,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		const sheet = $(this.element)
 		const itemData = $("#drag-ghost").data("item") as ItemDataGURPS
 		if (!itemData) return
-		const currentTable = this._getTargetTableFromItemType(event, itemData.type)
+		const currentTable = this.getTargetTableFromItemType(event, itemData.type)
 
 		sheet.find(".item-list").each(function () {
 			if ($(this) !== currentTable) {
@@ -1054,7 +1054,13 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		if (!this.noPrepare) this.actor.prepareData()
 		else this.noPrepare = false
 		const actorData = this.actor.toObject(false) as any
-		const [primary_attributes, secondary_attributes, point_pools] = this._prepareAttributes(this.actor.attributes)
+		// const items = deepClone(
+		// 	(this.actor.items as EmbeddedCollection<any, any>)
+		// 		.filter(e => !e.getFlag(SYSTEM_NAME, ItemFlags.Container))
+		// 		.map(item => item)
+		// 		.sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0))
+		// )
+		const [primary_attributes, secondary_attributes, point_pools] = this.prepareAttributes(this.actor.attributes)
 		const resource_trackers = Array.from(this.actor.resource_trackers.values())
 		const move_types = Array.from(this.actor.move_types.values())
 		const encumbrance = this._prepareEncumbrance()
@@ -1068,8 +1074,10 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 
 		const sheetData = {
 			...data,
+			// ...super.getData(options),
 			...{
 				system: actorData.system,
+				// items,
 				settings: (actorData.system as any).settings,
 				editing: this.actor.editing,
 				primary_attributes,
@@ -1092,8 +1100,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			},
 		}
 		this._prepareItems(sheetData)
-		this._prepareHitLocations(sheetData)
-		// console.log(sheetData)
+		this.prepareHitLocations(sheetData)
 		return sheetData
 	}
 

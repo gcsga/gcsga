@@ -4,6 +4,7 @@ import { getAdjustedStudyHours, isContainer } from "./misc"
 import { LocalizeGURPS } from "./localize"
 import { CharacterGURPS, StaticSpell } from "@actor"
 import { Static } from "@util"
+import { SafeString } from "handlebars"
 import { ItemData } from "types/foundry/common/data/module.mjs"
 
 class HandlebarsHelpersGURPS extends HandlebarsHelpers {
@@ -503,6 +504,61 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 	// 	}
 	// 	return html
 	// }
+
+	static selectOptions(choices: Record<string, string>, options: any): SafeString {
+		let {
+			localize = false,
+			selected = null,
+			blank = null,
+			sort = false,
+			nameAttr,
+			labelAttr,
+			inverted,
+			disabled = null,
+		} = options.hash
+		selected = selected instanceof Array ? selected.map(String) : [String(selected)]
+		disabled = disabled instanceof Array ? disabled.map(String) : [String(disabled)]
+
+		// Prepare the choices as an array of objects
+		const selectOptions = []
+		if (choices instanceof Array) {
+			for (const choice of choices) {
+				const name = String(choice[nameAttr])
+				let label = choice[labelAttr]
+				if (localize) label = game.i18n.localize(label)
+				selectOptions.push({ name, label })
+			}
+		} else {
+			for (const choice of Object.entries(choices)) {
+				const [key, value] = inverted ? choice.reverse() : choice
+				const name = String(nameAttr ? (value as any)[nameAttr] : key)
+				let label = labelAttr ? (value as any)[labelAttr] : value
+				if (localize) label = game.i18n.localize(label)
+				selectOptions.push({ name, label })
+			}
+		}
+
+		// Sort the array of options
+		if (sort) selectOptions.sort((a, b) => a.label.localeCompare(b.label))
+
+		// Prepend a blank option
+		if (blank !== null) {
+			const label = localize ? game.i18n.localize(blank) : blank
+			selectOptions.unshift({ name: "", label })
+		}
+
+		// Create the HTML
+		let html = ""
+		for (const option of selectOptions) {
+			const label = Handlebars.escapeExpression(option.label)
+			const isSelected = selected.includes(option.name)
+			const isDisabled = disabled.includes(option.name)
+			html += `<option value="${option.name}" ${isSelected ? "selected" : ""} ${
+				isDisabled ? "disabled" : ""
+			}>${label}</option>`
+		}
+		return new Handlebars.SafeString(html)
+	}
 }
 
 export function registerHandlebarsHelpers() {
@@ -544,6 +600,7 @@ export function registerHandlebarsHelpers() {
 		isContainer: HandlebarsHelpersGURPS.isContainer,
 		diff: (v1, v2) => v1 - v2,
 		// Multiselect: HandlebarsHelpersGURPS.multiselect
+		selectOptsGURPS: HandlebarsHelpersGURPS.selectOptions,
 	})
 }
 
