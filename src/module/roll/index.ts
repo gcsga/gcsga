@@ -80,7 +80,7 @@ export class RollGURPS extends Roll {
 	 */
 	static async handleRoll(user: StoredDocument<User> | null, actor: ActorGURPS | any, data: any): Promise<void> {
 		user = user as StoredDocument<UserGURPS>
-		if (actor.type === ActorType.Character) {
+		if (actor && actor.type === ActorType.Character) {
 			const lastStack = user?.getFlag(SYSTEM_NAME, UserFlags.ModifierStack)
 			await user?.setFlag(SYSTEM_NAME, UserFlags.LastStack, lastStack)
 		}

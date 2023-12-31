@@ -96,20 +96,6 @@ export function registerSettings(): void {
 	})
 	RollModifierSettings.registerSettings()
 
-	// game.settings.register(SYSTEM_NAME, SETTINGS.MODIFIER_MODE, {
-	// 	name: "gurps.settings.modifier_mode.name",
-	// 	hint: "gurps.settings.modifier_mode.hint",
-	// 	scope: "client",
-	// 	config: true,
-	// 	type: String,
-	// 	choices: {
-	// 		prompt: "gurps.settings.modifier_mode.choices.prompt",
-	// 		bucket: "gurps.settings.modifier_mode.choices.bucket",
-	// 	},
-	// 	default: "bucket",
-	// 	onChange: (value: string) => console.log(`Modifier Mode: ${value}`),
-	// })
-
 	game.settings.register(SYSTEM_NAME, SETTINGS.BASIC_SET_PDF, {
 		name: "gurps.settings.basic_set_pdfs.name",
 		hint: "gurps.settings.basic_set_pdfs.hint",
