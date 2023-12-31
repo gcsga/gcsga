@@ -38,8 +38,6 @@ export class ConditionGURPS extends EffectGURPS<ConditionSource> {
 				startTime: 0,
 				combat: null,
 			},
-			checks: [], // Add this line
-			consequences: [], // Add this line
 		}
 	}
 
