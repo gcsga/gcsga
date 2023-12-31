@@ -1,5 +1,5 @@
 import { ActorGURPS } from "@module/config"
-import { ActorType, gid, NumberCompare, NumberComparison, PrereqType } from "@module/data"
+import { ActorType, gid, NumericComparisonType, NumericCriteria, PrereqType } from "@module/data"
 import { TooltipGURPS } from "@module/tooltip"
 import { LocalizeGURPS, numberCompare } from "@util"
 import { BasePrereq, PrereqConstructionContext } from "./base"
@@ -9,7 +9,7 @@ export class AttributePrereq extends BasePrereq {
 
 	combined_with!: string
 
-	qualifier!: NumberCompare
+	qualifier!: NumericCriteria
 
 	constructor(data: AttributePrereq | any, context: PrereqConstructionContext = {}) {
 		data = mergeObject(AttributePrereq.defaults, data)
@@ -21,7 +21,7 @@ export class AttributePrereq extends BasePrereq {
 			type: PrereqType.Attribute,
 			which: gid.Strength,
 			combined_with: "",
-			qualifier: { compare: NumberComparison.AtLeast, qualifier: 10 },
+			qualifier: { compare: NumericComparisonType.AtLeastNumber, qualifier: 10 },
 		})
 	}
 
@@ -32,7 +32,6 @@ export class AttributePrereq extends BasePrereq {
 		let satisfied = numberCompare(value, this.qualifier)
 		if (!this.has) satisfied = !satisfied
 		if (!satisfied) {
-			// Tooltip.push(prefix)
 			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.has[this.has ? "true" : "false"])
 			tooltip.push((actor as any).resolveAttributeName(this.which))
 			if (this.combined_with !== "") {
@@ -41,7 +40,7 @@ export class AttributePrereq extends BasePrereq {
 			}
 			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.attribute.which)
 			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.qualifier?.compare])
-			tooltip.push((this.qualifier ? this.qualifier.qualifier : 0).toString())
+			tooltip.push((this.qualifier ? this.qualifier.qualifier ?? 0 : 0).toString())
 		}
 		return [satisfied, false]
 	}

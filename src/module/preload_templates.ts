@@ -108,8 +108,8 @@ export async function preloadTemplates(): Promise<Handlebars.TemplateDelegate[]>
 		"item/sections/feature/skill-point-bonus",
 		"item/sections/feature/spell-bonus",
 		"item/sections/feature/spell-point-bonus",
+		"item/sections/feature/weapon-switch",
 		"item/sections/feature/weapon-bonus",
-		"item/sections/feature/weapon-dr-divisor-bonus",
 		"item/sections/feature/cost-reduction",
 		"item/sections/feature/contained-weight-reduction",
 

@@ -1,17 +1,36 @@
 import { gid } from "@module/data"
-import { BaseFeature } from "./base"
-import { FeatureType, MoveBonusType } from "./data"
+import { BonusOwner } from "./bonus_owner"
+import { MoveBonusType } from "./data"
+import { LeveledAmount, LeveledAmountKeys, LeveledAmountObj } from "./leveled_amount"
 
-export class MoveBonus extends BaseFeature {
-	move_type!: string
+export interface MoveBonusObj extends LeveledAmountObj {
+	move_type: string
+	limitation: MoveBonusType
+}
 
-	limitation!: MoveBonusType
+export class MoveBonus extends BonusOwner {
+	move_type: string
 
-	static get defaults(): Record<string, any> {
-		return mergeObject(super.defaults, {
-			type: FeatureType.MoveBonus,
-			attribute: gid.Ground,
-			limitation: MoveBonusType.Base,
-		})
+	limitation: MoveBonusType
+
+	leveledAmount: LeveledAmount
+
+	constructor() {
+		super()
+		this.move_type = gid.Ground
+		this.limitation = MoveBonusType.Base
+		this.leveledAmount = new LeveledAmount({ amount: 1 })
+	}
+
+	static fromObject(data: MoveBonusObj): MoveBonus {
+		const bonus = new MoveBonus()
+		const levelData: Partial<Record<keyof LeveledAmountObj, any>> = {}
+		for (const key of Object.keys(data)) {
+			if (LeveledAmountKeys.includes(key)) {
+				levelData[key as keyof LeveledAmountObj] = data[key as keyof MoveBonusObj]
+			} else (bonus as any)[key] = data[key as keyof MoveBonusObj]
+		}
+		bonus.leveledAmount = new LeveledAmount(levelData)
+		return bonus
 	}
 }

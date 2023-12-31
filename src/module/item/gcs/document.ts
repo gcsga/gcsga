@@ -1,10 +1,9 @@
-import { BaseFeature } from "@feature"
 import { ContainerGURPS } from "@item/container"
 import { MeleeWeaponGURPS } from "@item/melee_weapon"
 import { RangedWeaponGURPS } from "@item/ranged_weapon"
 import { BaseWeaponGURPS } from "@item/weapon"
 import { Feature, ItemDataGURPS } from "@module/config"
-import { ActorType, ItemType, Study, SYSTEM_NAME } from "@module/data"
+import { ActorType, gid, ItemType, Study, SYSTEM_NAME } from "@module/data"
 import { PrereqList } from "@prereq"
 import { getAdjustedStudyHours, LocalizeGURPS } from "@util"
 import { HandlebarsHelpersGURPS } from "@util/handlebars_helpers"
@@ -13,6 +12,7 @@ import { ItemDataConstructorData } from "types/foundry/common/data/data.mjs/item
 import { BaseUser } from "types/foundry/common/documents.mjs"
 import { MergeObjectOptions } from "types/foundry/common/utils/helpers.mjs"
 import { ItemGCSSource } from "./data"
+import { AttributeBonus, FeatureType } from "@feature"
 
 export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> extends ContainerGURPS<SourceType> {
 	unsatisfied_reason = ""
@@ -52,16 +52,8 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 		return null
 	}
 
-	get isContainer(): boolean {
-		return [
-			ItemType.TraitContainer,
-			ItemType.SkillContainer,
-			ItemType.SpellContainer,
-			ItemType.EquipmentContainer,
-			ItemType.TraitModifierContainer,
-			ItemType.EquipmentModifierContainer,
-			ItemType.NoteContainer,
-		].includes(this.type as any)
+	get ratedStrength(): number {
+		return 0
 	}
 
 	get formattedName(): string {
@@ -76,7 +68,7 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 		return this.system.tags
 	}
 
-	get secodaryText(): string {
+	get secondaryText(): string {
 		let outString = '<div class="item-notes">'
 		if (this.system.notes) outString += HandlebarsHelpersGURPS.format(this.system.notes)
 		if (this.studyHours !== 0)
@@ -95,9 +87,14 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 
 	get features(): Feature[] {
 		if (this.system.hasOwnProperty("features")) {
-			return (this.system as any).features.map(
-				(e: Partial<Feature>) => new BaseFeature({ ...e, parent: this.uuid, item: this })
-			)
+			return (this.system as any).features.map((e: Partial<Feature>) => {
+				const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as FeatureType]
+				if (FeatureConstructor) {
+					const f = FeatureConstructor.fromObject(e)
+					return f
+				}
+				return new AttributeBonus(gid.Strength) // default
+			})
 		}
 		return []
 	}
@@ -148,12 +145,12 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 			.reduce((partialSum: number, a: number) => partialSum + a, 0)
 	}
 
-	exportSystemData(keepOther: boolean): any {
+	exportSystemData(_keepOther: boolean): any {
 		const system: any = this.system
 		system.name = this.name
 		if (system.features)
 			system.features = system.features.map((e: Feature) => {
-				const { _levels: _, effective: __, ...rest } = e
+				const { effective: _, ...rest } = e
 				return rest
 			})
 		if ((this as any).children)
@@ -164,5 +161,17 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 			system.weapons = (this as any).weapons.map((e: BaseWeaponGURPS) => e.exportSystemData(false))
 		// if (!keepOther) delete system.other
 		return system
+	}
+
+	protected _getCalcValues(): this["system"]["calc"] {
+		return {
+			name: this.formattedName,
+			indent: this.parents.length,
+			resolved_notes: this.secondaryText,
+		}
+	}
+
+	prepareDerivedData(): void {
+		this.system.calc = this._getCalcValues()
 	}
 }

@@ -423,9 +423,17 @@ class DamageTargetActor implements DamageTarget {
 		this.actor = actor
 	}
 
-	incrementDamage(delta: number): void {
+	get tokenId(): string {
+		let result = ""
+		if (game.scenes?.active?.tokens) {
+			result = game.scenes.active.tokens.find(it => (it as any).actorId === this.actor.id)?.id ?? ""
+		}
+		return result as string
+	}
+
+	incrementDamage(delta: number, damagePoolId: string): void {
 		const attributes = [...(this.actor as CharacterGURPS).system.attributes]
-		const index = attributes.findIndex(it => it.attr_id === "hp")
+		const index = attributes.findIndex(it => it.attr_id === damagePoolId)
 		attributes[index].damage = attributes[index].damage! + delta
 		this.actor.update({
 			"system.attributes": attributes,
@@ -592,6 +600,14 @@ class DamageAttackerAdapter implements DamageAttacker {
 
 	constructor(actor: BaseActorGURPS) {
 		this.actor = actor
+	}
+
+	get tokenId(): string {
+		let result = ""
+		if (game.scenes?.active?.tokens) {
+			result = game.scenes.active.tokens.find(it => (it as any).actorId === this.actor.id)?.id ?? ""
+		}
+		return result as string
 	}
 
 	get name(): string | null {

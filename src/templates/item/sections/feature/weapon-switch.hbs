@@ -1,0 +1,22 @@
+<div class="field-3">
+	<div class="placeholder"></div>
+	<div class="placeholder"></div>
+	<select name="array.system.features.{{@index}}.switch_type">
+			{{#select this.switch_type}}
+			{{#each config.select.switch_type as |v k| }}
+					<option value="{{k}}">
+							{{localize v}}
+					</option>
+			{{/each}}
+	{{/select}}
+	</select>
+	<select name="array.system.features.{{@index}}.switch_type_value">
+			{{#select this.switch_type_value}}
+			{{#each config.select.switch_type_value as |v k| }}
+					<option value="{{k}}">
+							{{localize v}}
+					</option>
+			{{/each}}
+	{{/select}}
+	</select>
+</div>

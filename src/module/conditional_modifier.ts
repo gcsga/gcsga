@@ -1,4 +1,4 @@
-export class CondMod {
+export class ConditionalModifier {
 	from: string
 
 	amounts: number[]

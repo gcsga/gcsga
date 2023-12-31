@@ -6,7 +6,7 @@ import { AttributeDefObj } from "@module/attribute"
 import { DamageProgression } from "@module/data"
 import { MookSkill, MookTrait } from "@module/mook"
 import { MoveTypeDefObj } from "@module/move_type"
-import { AttributeBonusLimitation, MoveBonusType } from "@feature"
+import { stlimit, MoveBonusType } from "@feature"
 
 // VariableResolver is used to resolve variables in expressions into their values.
 export interface VariableResolver {
@@ -22,11 +22,14 @@ export interface VariableResolver {
 	conditions: Collection<ConditionGURPS> | ConditionGURPS[]
 	attributeBonusFor: (
 		attributeId: string,
-		limitation: AttributeBonusLimitation,
+		limitation: stlimit,
 		effective?: boolean,
 		tooltip?: TooltipGURPS | null
 	) => number
 	moveBonusFor: (id: string, limitation: MoveBonusType, effective?: boolean, tooltip?: TooltipGURPS | null) => number
+	strikingST: number
+	throwingST: number
+	liftingST: number
 	effectiveST: (initialST: number) => number
 	getFlag: (scope: any, key: string) => unknown
 	costReductionFor: (attributeID: string) => number

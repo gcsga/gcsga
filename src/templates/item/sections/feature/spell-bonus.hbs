@@ -7,7 +7,7 @@
 			{{/each}}
 		{{/select}}
 	</select>
-	<select name="array.system.features.{{@index}}.name.compare" {{disabeld (eq this.match "all_colleges")}}>
+	<select name="array.system.features.{{@index}}.name.compare" {{disabled (eq this.match "all_colleges")}}>
 		{{#select this.name.compare}}
 			{{#each config.select.string_compare as |v k|}}
 				<option value="{{k}}">{{localize v}}</option>

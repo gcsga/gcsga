@@ -1,4 +1,4 @@
-import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
+import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
 import { ItemType } from "@module/data"
 
 export type NoteSource = ItemGCSSource<ItemType.Note, NoteSystemData>
@@ -13,8 +13,9 @@ export interface NoteData extends Omit<NoteSource, "effects">, NoteSystemData {
 export interface NoteSystemData extends ItemGCSSystemData {
 	text: string
 	type: ItemType.Note
-	calc?: {
-		resolved_text?: string
-		resolved_notes?: string // not used
-	}
+	calc?: NoteCalcValues
+}
+
+export interface NoteCalcValues extends ItemGCSCalcValues {
+	resolved_text: string
 }

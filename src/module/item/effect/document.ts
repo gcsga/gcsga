@@ -1,7 +1,6 @@
-import { BaseFeature } from "@feature"
 import { BaseItemGURPS } from "@item/base"
 import { Feature } from "@module/config"
-import { RollModifier } from "@module/data"
+import { RollModifier, gid } from "@module/data"
 import { TokenGURPS } from "@module/token"
 import { LocalizeGURPS } from "@util"
 import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
@@ -10,17 +9,28 @@ import { CombatData } from "types/foundry/common/data/module.mjs"
 import { BaseUser } from "types/foundry/common/documents.mjs"
 import { PropertiesToSource } from "types/types/helperTypes"
 import { DurationType, EffectModificationOptions, EffectSource } from "./data"
+import { AttributeBonus, FeatureType } from "@feature"
 
 export class EffectGURPS<SourceType extends EffectSource = EffectSource> extends BaseItemGURPS<SourceType> {
 	_statusId: string | null = null
 
 	get features(): Feature[] {
 		if (this.system.hasOwnProperty("features")) {
-			return (this.system as any).features.map(
-				(e: Partial<Feature>) => new BaseFeature({ ...e, parent: this.uuid, item: this })
-			)
+			return (this.system as any).features.map((e: Partial<Feature>) => {
+				const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as FeatureType]
+				if (FeatureConstructor) {
+					const f = new FeatureConstructor()
+					Object.assign(f, e)
+					return f
+				}
+				return new AttributeBonus(gid.Strength) // default
+			})
 		}
 		return []
+	}
+
+	get formattedName(): string {
+		return this.name || ""
 	}
 
 	get reference(): string {

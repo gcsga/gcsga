@@ -15,6 +15,31 @@ export class Int {
 		str = str.match(/[\d.]+/) ? str.match(/[\d.]+/)![0] : "0"
 		return Int.from(parseFloat(str))
 	}
+
+	static extract(str: string): [number, string] {
+		// const num = Int.fromString(str)
+		// str = str.replace(`${num}`, "")
+		// return [num, str]
+		let last = 0
+		let maximum = str.length
+		if (last < maximum && str[last] === " ") last++
+		if (last >= maximum) return [0, str]
+		let ch = str[last]
+		let found = false
+		let decimal = false
+		let start = last
+		while ((start === last && (ch === "-" || ch === "+")) || (!decimal && ch === ".") || ch.match(/[0-9]/)) {
+			if (ch.match(/[0-9]/)) found = true
+			if (ch === ".") decimal = true
+			last++
+			if (last >= maximum) break
+			ch = str[last]
+		}
+		if (!found) return [0, str]
+		const num = Int.fromString(str.slice(start, last))
+		if (isNaN(num)) return [0, str]
+		return [num, str.slice(last)]
+	}
 }
 export class Fraction {
 	numerator: number

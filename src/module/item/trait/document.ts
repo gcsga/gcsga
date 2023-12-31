@@ -148,7 +148,7 @@ export class TraitGURPS extends ItemGCS<TraitSource> {
 		return buffer.join("")
 	}
 
-	get adjustedPoints(): number {
+	adjustedPoints(): number {
 		if (!this.enabled) return 0
 		let baseEnh = 0
 		let levelEnh = 0
@@ -250,7 +250,7 @@ export class TraitGURPS extends ItemGCS<TraitSource> {
 	calculatePoints(): [number, number, number, number] {
 		if (!this.enabled) return [0, 0, 0, 0]
 		let [ad, disad, race, quirk] = [0, 0, 0, 0]
-		let pts = this.adjustedPoints
+		let pts = this.adjustedPoints()
 		if (pts === -1) quirk += pts
 		else if (pts > 0) ad += pts
 		else if (pts < 0) disad += pts
@@ -284,5 +284,13 @@ export class TraitGURPS extends ItemGCS<TraitSource> {
 
 	static calculateModifierPoints(points: number, modifier: number): number {
 		return (points * modifier) / 100
+	}
+
+	protected _getCalcValues(): this["system"]["calc"] {
+		return {
+			...super._getCalcValues(),
+			enabled: this.enabled,
+			points: this.adjustedPoints(),
+		}
 	}
 }

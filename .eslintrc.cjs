@@ -35,7 +35,7 @@ module.exports = {
 		"comma-style": "warn",
 		"computed-property-spacing": "warn",
 		"constructor-super": "error",
-		"default-param-last": "warn",
+		"default-param-last": "error",
 		"dot-location": ["warn", "property"],
 		"eol-last": ["error", "always"],
 		eqeqeq: ["warn", "smart"],

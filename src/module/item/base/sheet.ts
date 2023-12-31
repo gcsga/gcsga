@@ -1,10 +1,45 @@
 import { CharacterGURPS } from "@actor"
 import { FeatureType } from "@feature"
 import { AttributeDefObj } from "@module/attribute"
-import { gid, NumberComparison, PrereqType, SETTINGS, StringComparison, StudyType, SYSTEM_NAME } from "@module/data"
+import {
+	gid,
+	NumericComparisonType,
+	PrereqType,
+	SETTINGS,
+	StringComparisonType,
+	StudyType,
+	SYSTEM_NAME,
+} from "@module/data"
 import { PDF } from "@module/pdf"
 import { LocalizeGURPS, prepareFormData } from "@util"
 import { BaseItemGURPS } from "."
+import { FeatureObj } from "@module/config"
+
+const weaponFeatures = [
+	FeatureType.WeaponBonus,
+	FeatureType.WeaponAccBonus,
+	FeatureType.WeaponScopeAccBonus,
+	FeatureType.WeaponDRDivisorBonus,
+	FeatureType.WeaponMinSTBonus,
+	FeatureType.WeaponMinReachBonus,
+	FeatureType.WeaponMaxReachBonus,
+	FeatureType.WeaponHalfDamageRangeBonus,
+	FeatureType.WeaponMinRangeBonus,
+	FeatureType.WeaponMaxRangeBonus,
+	FeatureType.WeaponRecoilBonus,
+	FeatureType.WeaponBulkBonus,
+	FeatureType.WeaponParryBonus,
+	FeatureType.WeaponBlockBonus,
+	FeatureType.WeaponRofMode1ShotsBonus,
+	FeatureType.WeaponRofMode1SecondaryBonus,
+	FeatureType.WeaponRofMode2ShotsBonus,
+	FeatureType.WeaponRofMode2SecondaryBonus,
+	FeatureType.WeaponNonChamberShotsBonus,
+	FeatureType.WeaponChamberShotsBonus,
+	FeatureType.WeaponShotDurationBonus,
+	FeatureType.WeaponReloadTimeBonus,
+	FeatureType.WeaponSwitch,
+]
 
 export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends ItemSheet {
 	declare object: IType
@@ -70,6 +105,7 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 				config: CONFIG.GURPS,
 				attributes: attributes,
 				locations: locations,
+				weaponFeatures,
 				sysPrefix: "array.system.",
 			},
 		}
@@ -128,10 +164,10 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 		const path = $(event.currentTarget).data("path").replace("array.", "")
 		const prereqs = getProperty(this.item, `${path}.prereqs`)
 		prereqs.push({
-			type: "trait_prereq",
-			name: { compare: StringComparison.Is, qualifier: "" },
-			notes: { compare: StringComparison.None, qualifier: "" },
-			level: { compare: NumberComparison.AtLeast, qualifier: 0 },
+			type: PrereqType.Trait,
+			name: { compare: StringComparisonType.IsString, qualifier: "" },
+			notes: { compare: StringComparisonType.AnyString, qualifier: "" },
+			level: { compare: NumericComparisonType.AtLeastNumber, qualifier: 0 },
 			has: true,
 		})
 		const formData: any = {}
@@ -147,7 +183,7 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 		prereqs.push({
 			type: "prereq_list",
 			prereqs: [],
-			when_tl: { compare: NumberComparison.None },
+			when_tl: { compare: NumericComparisonType.AnyNumber },
 		})
 		const formData: any = {}
 		formData[`array.${path}.prereqs`] = prereqs
@@ -268,19 +304,19 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 	protected async _onFeatureTypeChange(event: JQuery.ChangeEvent): Promise<any> {
 		if (!this.isEditable) return
 		const value = event.currentTarget.value
-		const index = $(event.currentTarget).data("index")
+		const index = parseInt($(event.currentTarget).data("index"))
 		const FeatureConstructor = CONFIG.GURPS.Feature.classes[value as FeatureType]
-		const features = (this.item.system as any).features
-		features[index] = {
-			type: value,
-			...FeatureConstructor.defaults,
-		}
-		// Const preUpdate: any = {}
+		let features = duplicate((this.item.system as any).features as FeatureObj[])
+		let feature = new FeatureConstructor().toObject()
+		if (weaponFeatures.includes(value)) feature = new FeatureConstructor(value).toObject()
+		features.splice(index, 1, feature)
 		const update: any = {}
-		// PreUpdate[`system.features.${index}`] = {}
+		await this.item.update(
+			{ "system.-=features": null },
+			{ render: false, performDeletions: true, noPrepare: true }
+		)
 		update["system.features"] = features
-		// Await this.item.update(preUpdate, { render: false })
-		return this.item.update(update)
+		return this.item.update(update, { render: true })
 	}
 
 	get item(): this["object"] {
