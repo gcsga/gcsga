@@ -170,7 +170,9 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 
 		// Context Menus
 		// @ts-expect-error incorrect types
-		new ContextMenu(html, ".item-list .item", [], { onOpen: this._onItemContext.bind(this) });
+		new ContextMenu(html, ".item-list .item", [], { onOpen: this._onItemContext.bind(this) })
+		// @ts-expect-error incorrect types
+		new ContextMenu(html, ".item-list .header", [], { onOpen: this._onItemHeaderContext.bind(this) })
 		// html.find(".item").each((_index, element) => this._addItemContextMenu(element))
 		// html.find(".item-list .header.desc").each((_index, element) => this._addItemHeaderContextMenu(element))
 		// html.find(".menu").each((_index, element) => this._addPoolContextMenu(element))
@@ -225,112 +227,113 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		])
 	}
 
-	_addItemHeaderContextMenu(element: HTMLElement) {
+	_onItemHeaderContext(element: HTMLElement) {
 		const type = $(element).parent(".item-list")[0].id
-		const menuItems = (function(self: CharacterSheetGURPS): ContextMenuEntry[] {
-			switch (type) {
-				case "traits":
-					return [
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_trait,
-							icon: "<i class='gcs-trait'></i>",
-							callback: () => self._newItem(ItemType.Trait),
-						},
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_trait_container,
-							icon: "<i class='gcs-trait'></i>",
-							callback: () => self._newItem(ItemType.TraitContainer),
-						},
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_natural_attacks,
-							icon: "<i class='gcs-melee-weapon'></i>",
-							callback: () => self._newNaturalAttacks(),
-						},
-					]
-				case "skills":
-					return [
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_skill,
-							icon: "<i class='gcs-skill'></i>",
-							callback: () => self._newItem(ItemType.Skill),
-						},
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_skill_container,
-							icon: "<i class='gcs-skill'></i>",
-							callback: () => self._newItem(ItemType.SkillContainer),
-						},
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_technique,
-							icon: "<i class='gcs-skill'></i>",
-							callback: () => self._newItem(ItemType.Technique),
-						},
-					]
-				case "spells":
-					return [
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_spell,
-							icon: "<i class='gcs-spell'></i>",
-							callback: () => self._newItem(ItemType.Spell),
-						},
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_spell_container,
-							icon: "<i class='gcs-spell'></i>",
-							callback: () => self._newItem(ItemType.SpellContainer),
-						},
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_ritual_magic_spell,
-							icon: "<i class='gcs-spell'></i>",
-							callback: () => self._newItem(ItemType.RitualMagicSpell),
-						},
-					]
-				case "equipment":
-					return [
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_carried_equipment,
-							icon: "<i class='gcs-equipment'></i>",
-							callback: () => self._newItem(ItemType.Equipment),
-						},
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_carried_equipment_container,
-							icon: "<i class='gcs-equipment'></i>",
-							callback: () => self._newItem(ItemType.EquipmentContainer),
-						},
-					]
-				case "other-equipment":
-					return [
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_other_equipment,
-							icon: "<i class='gcs-equipment'></i>",
-							callback: () => self._newItem(ItemType.Equipment, true),
-						},
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_other_equipment_container,
-							icon: "<i class='gcs-equipment'></i>",
-							callback: () => self._newItem(ItemType.EquipmentContainer, true),
-						},
-					]
-				case "notes":
-					return [
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_note,
-							icon: "<i class='gcs-note'></i>",
-							callback: () => self._newItem(ItemType.Note),
-						},
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_note_container,
-							icon: "<i class='gcs-note'></i>",
-							callback: () => self._newItem(ItemType.NoteContainer),
-						},
-					]
-				default:
-					return []
-			}
-		})(this)
-
-		ContextMenu.create(this, $(element), "*", menuItems)
+		if (!type) return
+		ui.context!.menuItems = this._getHeaderContextOptions(type)
 	}
 
-	async _newItem(type: ItemType, other = false) {
+	private _getHeaderContextOptions(type: string): ContextMenuEntry[] {
+		switch (type) {
+			case "traits":
+				return [
+					{
+						name: LocalizeGURPS.translations.gurps.context.new_trait,
+						icon: "<i class='gcs-trait'></i>",
+						callback: () => this._newItem(ItemType.Trait),
+					},
+					{
+						name: LocalizeGURPS.translations.gurps.context.new_trait_container,
+						icon: "<i class='gcs-trait'></i>",
+						callback: () => this._newItem(ItemType.TraitContainer),
+					},
+					{
+						name: LocalizeGURPS.translations.gurps.context.new_natural_attacks,
+						icon: "<i class='gcs-melee-weapon'></i>",
+						callback: () => this._newNaturalAttacks(),
+					},
+				]
+			case "skills":
+				return [
+					{
+						name: LocalizeGURPS.translations.gurps.context.new_skill,
+						icon: "<i class='gcs-skill'></i>",
+						callback: () => this._newItem(ItemType.Skill),
+					},
+					{
+						name: LocalizeGURPS.translations.gurps.context.new_skill_container,
+						icon: "<i class='gcs-skill'></i>",
+						callback: () => this._newItem(ItemType.SkillContainer),
+					},
+					{
+						name: LocalizeGURPS.translations.gurps.context.new_technique,
+						icon: "<i class='gcs-skill'></i>",
+						callback: () => this._newItem(ItemType.Technique),
+					},
+				]
+			case "spells":
+				return [
+					{
+						name: LocalizeGURPS.translations.gurps.context.new_spell,
+						icon: "<i class='gcs-spell'></i>",
+						callback: () => this._newItem(ItemType.Spell),
+					},
+					{
+						name: LocalizeGURPS.translations.gurps.context.new_spell_container,
+						icon: "<i class='gcs-spell'></i>",
+						callback: () => this._newItem(ItemType.SpellContainer),
+					},
+					{
+						name: LocalizeGURPS.translations.gurps.context.new_ritual_magic_spell,
+						icon: "<i class='gcs-spell'></i>",
+						callback: () => this._newItem(ItemType.RitualMagicSpell),
+					},
+				]
+			case "equipment":
+				return [
+					{
+						name: LocalizeGURPS.translations.gurps.context.new_carried_equipment,
+						icon: "<i class='gcs-equipment'></i>",
+						callback: () => this._newItem(ItemType.Equipment),
+					},
+					{
+						name: LocalizeGURPS.translations.gurps.context.new_carried_equipment_container,
+						icon: "<i class='gcs-equipment'></i>",
+						callback: () => this._newItem(ItemType.EquipmentContainer),
+					},
+				]
+			case "other-equipment":
+				return [
+					{
+						name: LocalizeGURPS.translations.gurps.context.new_other_equipment,
+						icon: "<i class='gcs-equipment'></i>",
+						callback: () => this._newItem(ItemType.Equipment, true),
+					},
+					{
+						name: LocalizeGURPS.translations.gurps.context.new_other_equipment_container,
+						icon: "<i class='gcs-equipment'></i>",
+						callback: () => this._newItem(ItemType.EquipmentContainer, true),
+					},
+				]
+			case "notes":
+				return [
+					{
+						name: LocalizeGURPS.translations.gurps.context.new_note,
+						icon: "<i class='gcs-note'></i>",
+						callback: () => this._newItem(ItemType.Note),
+					},
+					{
+						name: LocalizeGURPS.translations.gurps.context.new_note_container,
+						icon: "<i class='gcs-note'></i>",
+						callback: () => this._newItem(ItemType.NoteContainer),
+					},
+				]
+			default:
+				return []
+		}
+	}
+
+	private async _newItem(type: ItemType, other = false) {
 		const itemData: any = {
 			type,
 			name: LocalizeGURPS.translations.TYPES.Item[type],
@@ -349,7 +352,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		})
 	}
 
-	async _newNaturalAttacks() {
+	private async _newNaturalAttacks() {
 		const itemName = LocalizeGURPS.translations.gurps.item.natural_attacks
 		const itemData = {
 			type: ItemType.Trait,
@@ -784,7 +787,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 				currentTable = $(event.target).closest(".item-list#other-equipment")
 			else currentTable = sheet.find(".item-list#equipment")
 		} else {
-			const idLookup = (function() {
+			const idLookup = (function () {
 				switch (type) {
 					case ItemType.Trait:
 					case ItemType.TraitContainer:
@@ -856,7 +859,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		})
 
 		const updateData = sortUpdates.map(u => {
-			return { ...u.update, _id: u.target._id } as { _id: string;[key: string]: any }
+			return { ...u.update, _id: u.target._id } as { _id: string; [key: string]: any }
 		})
 		await this.actor?.updateEmbeddedDocuments("Item", updateData)
 		return newItems
@@ -953,7 +956,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		})
 
 		const updateData = sortUpdates.map(u => {
-			return { ...u.update, _id: u.target._id } as { _id: string;[key: string]: any }
+			return { ...u.update, _id: u.target._id } as { _id: string; [key: string]: any }
 		})
 
 		// Set container flag if containers are not the same
@@ -976,7 +979,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		if (!itemData) return
 		const currentTable = this._getTargetTableFromItemType(event, itemData.type)
 
-		sheet.find(".item-list").each(function() {
+		sheet.find(".item-list").each(function () {
 			if ($(this) !== currentTable) {
 				$(this).removeClass("dragsection")
 				$(this).removeClass("dragindirect")
@@ -997,7 +1000,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		)
 		currentTable[0].style.setProperty("--top", `${top}px`)
 		currentTable[0].style.setProperty("--left", `${currentTable.position().left + 1 ?? 0}px`)
-		const height = (function() {
+		const height = (function () {
 			const tableBottom = (currentTable.position().top ?? 0) + (currentTable.height() ?? 0)
 			const contentBottom =
 				(sheet.find(".window-content").position().top ?? 0) + (sheet.find(".window-content").height() ?? 0)
@@ -1051,15 +1054,10 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 
 	getData(options?: Partial<ActorSheet.Options> | undefined): any {
 		const data = super.getData(options)
-		if (!this.noPrepare) this.actor.prepareData()
-		else this.noPrepare = false
+		this.actor.prepareData()
+		// if (!this.noPrepare) this.actor.prepareData()
+		// else this.noPrepare = false
 		const actorData = this.actor.toObject(false) as any
-		// const items = deepClone(
-		// 	(this.actor.items as EmbeddedCollection<any, any>)
-		// 		.filter(e => !e.getFlag(SYSTEM_NAME, ItemFlags.Container))
-		// 		.map(item => item)
-		// 		.sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0))
-		// )
 		const [primary_attributes, secondary_attributes, point_pools] = this._prepareAttributes(this.actor.attributes)
 		const resource_trackers = Array.from(this.actor.resource_trackers.values())
 		const move_types = Array.from(this.actor.move_types.values())
@@ -1074,10 +1072,8 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 
 		const sheetData = {
 			...data,
-			// ...super.getData(options),
 			...{
 				system: actorData.system,
-				// items,
 				settings: (actorData.system as any).settings,
 				editing: this.actor.editing,
 				primary_attributes,
@@ -1272,14 +1268,14 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		}
 		const buttons: Application.HeaderButton[] = this.actor.canUserModify(game.user!, "update")
 			? [
-				edit_button,
-				{
-					label: "",
-					class: "gmenu",
-					icon: "gcs-all-seeing-eye",
-					onclick: event => this._openGMenu(event),
-				},
-			]
+					edit_button,
+					{
+						label: "",
+						class: "gmenu",
+						icon: "gcs-all-seeing-eye",
+						onclick: event => this._openGMenu(event),
+					},
+				]
 			: []
 		const all_buttons = [...buttons, ...super._getHeaderButtons()]
 		return all_buttons

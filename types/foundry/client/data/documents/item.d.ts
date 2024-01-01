@@ -13,7 +13,6 @@ declare global {
 	 * @param context - The document context, see {@link foundry.abstract.Document}
 	 */
 	class Item extends ClientDocumentMixin(foundry.documents.BaseItem) {
-
 		sort: number
 
 		/**

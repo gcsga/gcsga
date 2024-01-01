@@ -318,7 +318,7 @@ type PropWithMinus<K> = K extends string ? `-=${K}` : never
 type DeleteByObjectKeys<T, U, M extends MergeObjectOptions> = M["performDeletions"] extends true
 	? RemoveNever<{
 			[K in keyof T]: PropWithMinus<K> extends keyof U ? (U[PropWithMinus<K>] extends null ? never : T[K]) : T[K]
-	  }>
+		}>
 	: T
 type RemoveDeletingObjectKeys<T, M extends MergeObjectOptions> = M["performDeletions"] extends true
 	? RemoveNever<{
@@ -329,13 +329,13 @@ type RemoveDeletingObjectKeys<T, M extends MergeObjectOptions> = M["performDelet
 						: T[K]
 					: T[K]
 				: T[K]
-	  }>
+		}>
 	: T
 
 type MergeObjectProperty<T, U, M extends MergeObjectOptions> = T extends Array<any>
 	? U
 	: T extends Record<string, any>
-	  ? U extends Record<string, any>
+		? U extends Record<string, any>
 			? M extends { recursive: false }
 				? U
 				: Result<
@@ -345,9 +345,9 @@ type MergeObjectProperty<T, U, M extends MergeObjectOptions> = T extends Array<a
 							insertKeys: M["insertValues"]
 							performDeletions: M["performDeletions"] extends true ? true : false
 						}
-				  >
+					>
 			: U
-	  : U
+		: U
 type UpdateKeys<T, U, M extends MergeObjectOptions> = M extends { overwrite: false }
 	? T
 	: { [K in keyof T]: K extends keyof U ? MergeObjectProperty<T[K], U[K], M> : T[K] }
@@ -364,8 +364,8 @@ type Result<T, U, M extends MergeObjectOptions> = UpdateInsert<
 type WithWidenedArrayTypes<T> = T extends Array<any>
 	? Array<any>
 	: T extends Record<string, any>
-	  ? { [K in keyof T]: WithWidenedArrayTypes<T[K]> }
-	  : T
+		? { [K in keyof T]: WithWidenedArrayTypes<T[K]> }
+		: T
 
 /**
  * Update a source object by replacing its keys and values with those from a target object.

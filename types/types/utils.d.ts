@@ -76,7 +76,7 @@ type Expanded<O> = O extends Record<string, unknown>
 			[KO in keyof O as KO extends `${infer A}.${string}` ? A : KO]: KO extends `${string}.${infer B}`
 				? Expanded<{ [EB in B]: O[KO] }>
 				: Expanded<O[KO]>
-	  }
+		}
 	: O
 
 /**
@@ -107,16 +107,16 @@ type Merge<T, U> = T extends object
 	? U extends Array<any> | ReadonlyArray<any>
 		? U
 		: U extends object
-		  ? {
+			? {
 					[Key in keyof T | keyof U]: Key extends keyof T
 						? Key extends keyof U
 							? Merge<T[Key], U[Key]>
 							: T[Key]
 						: Key extends keyof U
-						  ? U[Key]
-						  : never
-		    }
-		  : U
+							? U[Key]
+							: never
+				}
+			: U
 	: U
 
 /**

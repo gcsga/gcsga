@@ -181,8 +181,7 @@ async function _onRollClick(event: JQuery.ClickEvent) {
 		data.modifier = $(event.currentTarget).data("modifier")
 		data.comment = $(event.currentTarget).data("comment")
 	}
-	if (type === RollType.Generic)
-		data.formula = $(event.currentTarget).data("formula")
+	if (type === RollType.Generic) data.formula = $(event.currentTarget).data("formula")
 
 	return RollGURPS.handleRoll(game.user, actor, data)
 }

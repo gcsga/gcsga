@@ -432,9 +432,9 @@ interface ForeignDocumentField<T extends ForeignDocumentFieldOptions> extends Do
 		? true
 		: T extends {
 					nullable: false
-		    }
-		  ? false
-		  : boolean
+			  }
+			? false
+			: boolean
 	default: T extends {
 		default: infer U
 	}
