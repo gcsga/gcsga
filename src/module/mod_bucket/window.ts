@@ -43,13 +43,14 @@ export class ModifierBucketWindow extends Application {
 
 		// Get position
 		const button = $("#modifier-bucket-button")
-		const buttonTop = button.position()?.top ?? 0
+		const buttonTop = button.offset()?.top ?? 0
 		const buttonLeft = (button.position()?.left || 0) + 220 ?? 0
 		let buttonWidth = parseFloat(button.css("width").replace("px", ""))
 		const width = html.width() || 640
 		let height = parseFloat(html.css("height").replace("px", ""))
 		let left = Math.max(buttonLeft + buttonWidth / 2 - width / 2, 10)
 		html.css("left", `${left}px`)
+		console.log(buttonTop, height)
 		html.css("top", `${buttonTop - height - 10}px`)
 
 		// Focus the textbox on show
