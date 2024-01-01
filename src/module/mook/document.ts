@@ -480,7 +480,7 @@ export class Mook {
 			updateMap.push({ _id: item.id!, "system.points": item.getPointsForLevel(this.skills[index].level) })
 		});
 		(newActor.itemTypes[ItemType.Spell] as SpellGURPS[]).forEach((item: SpellGURPS, index: number) => {
-			updateMap.push({ _id: item.id!, "system.points": item.getPointsForLevel(this.skills[index].level) })
+			updateMap.push({ _id: item.id!, "system.points": item.getPointsForLevel(this.spells[index].level) })
 		})
 		await newActor.updateEmbeddedDocuments("Item", updateMap)
 		await newActor.sheet?.render(true)
