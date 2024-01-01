@@ -7,9 +7,6 @@ form {
 			grid-template-rows: 0fr;
 			grid-template-columns: max-content auto;
 		}
-		#stats {
-			grid-template: "hit-locations";
-		}
 	}
 
 	@import "personal", "stats", "embeds";

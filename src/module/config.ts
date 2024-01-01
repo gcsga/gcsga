@@ -50,6 +50,7 @@ import {
 	EquipmentModifierGURPS,
 	EquipmentModifierSystemData,
 	EquipmentSystemData,
+	MeleeWeaponData,
 	MeleeWeaponGURPS,
 	MeleeWeaponSystemData,
 	NoteContainerData,
@@ -58,6 +59,7 @@ import {
 	NoteData,
 	NoteGURPS,
 	NoteSystemData,
+	RangedWeaponData,
 	RangedWeaponGURPS,
 	RangedWeaponSystemData,
 	RitualMagicSpellData,
@@ -705,6 +707,8 @@ export type ItemDataGURPS =
 	| NoteContainerData
 	| EffectData
 	| ConditionData
+	| MeleeWeaponData
+	| RangedWeaponData
 
 export type ItemSourceGURPS = ItemDataGURPS["_source"]
 

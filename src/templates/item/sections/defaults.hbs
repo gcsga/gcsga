@@ -23,7 +23,7 @@
 				<input type="text" name="{{../sysPrefix}}defaults.{{@index}}.specialization" value="{{this.specialization}}" data-dtype="String" {{disabled (ne this.type "skill")}} />
 			</div>
 			<div class="field">
-				<input type="text" name="{{../sysPrefix}}defaults.{{@index}}modifier" value="{{signed this.modifier}}" data-dtype="String"/>
+				<input type="text" name="{{../sysPrefix}}defaults.{{@index}}.modifier" value="{{signed this.modifier}}" data-dtype="String"/>
 			</div>
 		</div>
 		{{/each}}

@@ -531,6 +531,7 @@ export const _defaultMookData: Partial<MookData> = {
 		weight: "",
 		SM: 0,
 		portrait: "icons/svg/mystery-man.svg",
+		userdesc: "",
 	},
 }
 

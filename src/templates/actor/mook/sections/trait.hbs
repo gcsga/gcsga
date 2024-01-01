@@ -1,0 +1,26 @@
+<div
+	class="desc item{{#if this.isContainer}} container{{/if}} other {{disabled (not this.enabled)}}"
+	data-item-id="{{ this.id }}"
+	{{{indent this.parents.length}}}
+>
+	<div class="dropdown">
+		{{#if (or this.isContainer this.children.size)}}
+		{{#if this.open}}
+		{{>actor/character/sections/dropdown-open}}
+		{{else}}
+		{{>actor/character/sections/dropdown-closed}}
+		{{/if}}
+		{{/if}}
+	</div>
+	<div class="name">
+		<div>{{this.formattedName}}</div>
+		<div class="container-type">
+{{#if (and this.isContainer (ne this.system.container_type "group"))}}{{localize (concat "gurps.character.traits.container_type." this.system.container_type)}}{{/if}}</div>
+	</div>
+	{{{this.secondaryText}}}
+</div>
+{{#if this.open}}
+{{#each (sort this.children "sort")}}
+{{>actor/character/sections/trait}}
+{{/each}}
+{{/if}}

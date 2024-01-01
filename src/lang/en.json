@@ -1233,8 +1233,9 @@
 		},
 		"system": {
 			"sheet": {
-				"character_gcs": "GURPS Dynamic Character Sheet",
-				"character": "GURPS Static Character Sheet",
+				"character_gcs": "GURPS Character Sheet",
+				"character": "GURPS Character Sheet (Legacy)",
+				"mook": "Mook Character Sheet",
 				"loot": "Loot Sheet",
 				"trait": "Trait Sheet",
 				"trait_container": "Trait Container Sheet",
@@ -1300,6 +1301,7 @@
 			"mook": {
 				"title": "Mook Generator",
 				"name": "Mook",
+				"attributes": "Attributes",
 				"traits": "Traits",
 				"skills": "Skills/Techniques",
 				"spells": "Spells",
@@ -1307,7 +1309,10 @@
 				"equipment": "Equipment",
 				"ranged": "Ranged Attacks",
 				"notes": "Notes",
-				"catchall": "Input"
+				"catchall": "Input",
+				"import": "Import Stat Block",
+				"test": "Test Mook",
+				"create": "Create Mook"
 			}
 		},
 		"token_modifier_window": {
@@ -1571,7 +1576,10 @@
 			},
 			"modifier_app_load_failed": "Failed to initialize the Modifier Stack App.",
 			"no_last_actor": "No actor selected!",
-			"no_last_token": "No token selected!"
+			"no_last_token": "No token selected!",
+			"mook": {
+				"name": "Name cannot be blank."
+			}
 		},
 		"token": {
 			"select": "Select Token"
@@ -1713,7 +1721,7 @@
 			"new_technique": "New Technique",
 			"new_spell": "New Spell",
 			"new_spell_container": "New Spell Container",
-			"new_ritual_magic_spell": "New RItual Magic Spell",
+			"new_ritual_magic_spell": "New Ritual Magic Spell",
 			"new_carried_equipment": "New Carried Equipment",
 			"new_carried_equipment_container": "New Carried Equipment Container",
 			"new_other_equipment": "New Other Equipment",
@@ -1725,7 +1733,9 @@
 			"new_trait_modifier": "New Trait Modifier",
 			"new_trait_modifier_container": "New Trait Modifier Container",
 			"new_melee_weapon": "New Melee Weapon",
-			"new_ranged_weapon": "New Ranged Weapon"
+			"new_ranged_weapon": "New Ranged Weapon",
+			"move_to_carried": "Move to Carried Equipment",
+			"move_to_other": "Move to Other Equipment"
 		},
 		"combat": {
 			"effect_expired": "Effect Expired: {effect}"
