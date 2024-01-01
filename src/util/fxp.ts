@@ -1,6 +1,7 @@
 const FourDecimalPlaces = 4
 
 export class Int {
+
 	static from(n: number, DP = FourDecimalPlaces): number {
 		return Math.round(n * 10 ** DP) / 10 ** DP
 	}

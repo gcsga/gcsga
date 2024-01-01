@@ -1,12 +1,13 @@
 import { PoolThreshold } from "./pool_threshold"
 import { DamageProgression } from "@module/data"
 import { VariableResolver, evaluateToNumber, sanitizeId } from "@util"
-import { AttributeDefObj, AttributeType, reserved_ids } from "./data"
+import { AttributeDefObj, reserved_ids } from "./data"
+import { attribute } from "@util/enum"
 
 export class AttributeDef {
 	private def_id!: string
 
-	type!: AttributeType
+	type!: attribute.Type
 
 	name!: string
 
@@ -54,7 +55,7 @@ export class AttributeDef {
 	}
 
 	get isPrimary(): boolean {
-		if (this.type === AttributeType.PrimarySeparator) return true
+		if (this.type === attribute.Type.PrimarySeparator) return true
 		if (this.type.includes("_separator")) return false
 		return !isNaN(parseInt(this.attribute_base))
 	}

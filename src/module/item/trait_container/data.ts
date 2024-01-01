@@ -1,5 +1,6 @@
 import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
-import { CRAdjustment, ItemType } from "@module/data"
+import { ItemType } from "@module/data"
+import { selfctrl } from "@util/enum"
 
 export type TraitContainerSource = ItemGCSSource<ItemType.TraitContainer, TraitContainerSystemData>
 
@@ -12,8 +13,8 @@ export interface TraitContainerData extends Omit<TraitContainerSource, "effects"
 export interface TraitContainerSystemData extends ItemGCSSystemData {
 	disabled: boolean
 	container_type: TraitContainerType
-	cr: 0 | 6 | 9 | 12 | 15
-	cr_adj: CRAdjustment
+	cr: selfctrl.Roll
+	cr_adj: selfctrl.Adjustment
 	calc?: TraitContainerCalcValues
 }
 

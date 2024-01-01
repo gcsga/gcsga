@@ -66,7 +66,7 @@ export class SpellGURPS extends ItemGCS<SpellSource> {
 
 	get rituals(): string {
 		if (!this.actor) return ""
-		const level = this.level.level
+		const level = this.level?.level ?? 0
 		switch (true) {
 			case level < 10:
 				return LocalizeGURPS.translations.gurps.ritual.sub_10

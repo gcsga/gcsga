@@ -1,4 +1,4 @@
-import { Attribute, AttributeDefObj, AttributeObj, AttributeType } from "@module/attribute"
+import { Attribute, AttributeDefObj, AttributeObj } from "@module/attribute"
 import { DamageProgression, gid, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { DiceGURPS } from "@module/dice"
 import { damageProgression } from "@util"
@@ -14,6 +14,7 @@ import {
 	MookTrait,
 } from "./data"
 import { MoveTypeDefObj } from "@module/move_type"
+import { attribute } from "@util/enum"
 
 export class Mook {
 	protected variableResolverExclusions: Map<string, boolean> = new Map()
@@ -103,9 +104,9 @@ export class Mook {
 			const attr = new Attribute(this, def.id, i)
 			if (
 				[
-					AttributeType.PrimarySeparator,
-					AttributeType.SecondarySeparator,
-					AttributeType.PoolSeparator,
+					attribute.Type.PrimarySeparator,
+					attribute.Type.SecondarySeparator,
+					attribute.Type.PoolSeparator,
 				].includes(def.type)
 			) {
 				atts.push({

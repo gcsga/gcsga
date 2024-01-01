@@ -1,9 +1,9 @@
 import { ConditionID } from "@item/condition/data"
-import { AttributeType } from "@module/attribute/data"
 import { EFFECT_ACTION, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { LocalizeGURPS, getNewAttributeId, prepareFormData } from "@util"
 import { DnD } from "@util/drag_drop"
 import { AttributeBaseSettings } from "./attribute_base"
+import { attribute } from "@util/enum"
 
 enum ListType {
 	Attribute = "attributes",
@@ -48,7 +48,7 @@ export class DefaultAttributeSettings extends AttributeBaseSettings {
 		switch (type) {
 			case ListType.Attribute:
 				attributes.push({
-					type: AttributeType.Integer,
+					type: attribute.Type.Integer,
 					id: new_id,
 					name: "",
 					attribute_base: "",

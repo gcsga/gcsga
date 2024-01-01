@@ -179,23 +179,23 @@ export enum gid {
 
 export const attrPrefix = "attr."
 
-export enum CR {
-	None = 0,
-	CR6 = 6,
-	CR9 = 9,
-	CR12 = 12,
-	CR15 = 15,
-}
+// export enum CR {
+// 	None = 0,
+// 	CR6 = 6,
+// 	CR9 = 9,
+// 	CR12 = 12,
+// 	CR15 = 15,
+// }
 
-export enum CRAdjustment {
-	None = "none",
-	ActionPenalty = "action_penalty",
-	ReactionPenalty = "reaction_penalty",
-	FrightCheckPenalty = "fright_check_penalty",
-	FrightCheckBonus = "fright_check_bonus",
-	MinorCostOfLivingIncrease = "minor_cost_of_living_increase",
-	MajorCostOfLivingIncrease = "major_cost_of_living_increase",
-}
+// export enum CRAdjustment {
+// 	None = "none",
+// 	ActionPenalty = "action_penalty",
+// 	ReactionPenalty = "reaction_penalty",
+// 	FrightCheckPenalty = "fright_check_penalty",
+// 	FrightCheckBonus = "fright_check_bonus",
+// 	MinorCostOfLivingIncrease = "minor_cost_of_living_increase",
+// 	MajorCostOfLivingIncrease = "major_cost_of_living_increase",
+// }
 
 export enum Difficulty {
 	Easy = "e",
