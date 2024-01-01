@@ -14,8 +14,9 @@ export namespace attribute {
 	}
 
 	export namespace Type {
-
-		export function LastType(): Type { return Type.PoolSeparator }
+		export function LastType(): Type {
+			return Type.PoolSeparator
+		}
 
 		function index(T: Type): number {
 			return Types.indexOf(T)
@@ -48,6 +49,4 @@ export namespace attribute {
 		Type.SecondarySeparator,
 		Type.PoolSeparator,
 	]
-
-
 }

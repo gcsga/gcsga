@@ -17,8 +17,4 @@ export namespace skillsel {
 	}
 }
 
-const Types: skillsel[] = [
-	skillsel.Name,
-	skillsel.ThisWeapon,
-	skillsel.WeaponsWithName
-]
+const Types: skillsel[] = [skillsel.Name, skillsel.ThisWeapon, skillsel.WeaponsWithName]

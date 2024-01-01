@@ -7,7 +7,7 @@ export namespace selfctrl {
 		CR6 = 6,
 		CR9 = 9,
 		CR12 = 12,
-		CR15 = 15
+		CR15 = 15,
 	}
 
 	export namespace Roll {
@@ -26,11 +26,16 @@ export namespace selfctrl {
 
 		export function multiplier(R: Roll): number {
 			switch (R) {
-				case Roll.NoCR: return 1
-				case Roll.CR6: return 2
-				case Roll.CR9: return 1.5
-				case Roll.CR12: return 1
-				case Roll.CR15: return 0.5
+				case Roll.NoCR:
+					return 1
+				case Roll.CR6:
+					return 2
+				case Roll.CR9:
+					return 1.5
+				case Roll.CR12:
+					return 1
+				case Roll.CR15:
+					return 0.5
 				default:
 					return Roll.multiplier(Roll.NoCR)
 			}
@@ -41,13 +46,7 @@ export namespace selfctrl {
 		}
 	}
 
-	const Rolls: Roll[] = [
-		Roll.NoCR,
-		Roll.CR6,
-		Roll.CR9,
-		Roll.CR12,
-		Roll.CR15
-	]
+	export const Rolls: Roll[] = [Roll.NoCR, Roll.CR6, Roll.CR9, Roll.CR12, Roll.CR15]
 
 	export enum Adjustment {
 		NoCRAdj = "none",
@@ -76,7 +75,8 @@ export namespace selfctrl {
 		export function adjustment(A: Adjustment, cr: Roll): number {
 			if (cr === Roll.NoCR) return 0
 			switch (A) {
-				case Adjustment.NoCRAdj: return 0
+				case Adjustment.NoCRAdj:
+					return 0
 				case Adjustment.ActionPenalty:
 				case Adjustment.ReactionPenalty:
 				case Adjustment.FrightCheckPenalty:
@@ -92,27 +92,28 @@ export namespace selfctrl {
 
 		export function description(A: Adjustment, cr: Roll): string {
 			switch (true) {
-				case (cr === Roll.NoCR): return ""
-				case (A === Adjustment.NoCRAdj): return Adjustment.altString(A)
+				case cr === Roll.NoCR:
+					return ""
+				case A === Adjustment.NoCRAdj:
+					return Adjustment.altString(A)
 				default:
 					return LocalizeGURPS.format(
 						LocalizeGURPS.translations.gurps.enum.selfctrl.adjustment.alt_string[A],
 						{
-							penalty: Adjustment.adjustment(A, cr)
+							penalty: Adjustment.adjustment(A, cr),
 						}
 					)
-
 			}
 		}
 	}
 
-	const Adjustments: Adjustment[] = [
+	export const Adjustments: Adjustment[] = [
 		Adjustment.NoCRAdj,
 		Adjustment.ActionPenalty,
 		Adjustment.ReactionPenalty,
 		Adjustment.FrightCheckPenalty,
 		Adjustment.FrightCheckBonus,
 		Adjustment.MinorCostOfLivingIncrease,
-		Adjustment.MajorCostOfLivingIncrease
+		Adjustment.MajorCostOfLivingIncrease,
 	]
 }

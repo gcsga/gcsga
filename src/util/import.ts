@@ -552,9 +552,8 @@ class ImportUtils {
 		for (const e of features) {
 			const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as FeatureType]
 			if (FeatureConstructor) {
-				const f = new FeatureConstructor()
-				Object.assign(f, e)
-				list.push(f)
+				const f = FeatureConstructor.fromObject(e)
+				list.push(f.toObject())
 			}
 		}
 		return list

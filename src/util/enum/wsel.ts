@@ -7,7 +7,6 @@ export enum wsel {
 }
 
 export namespace wsel {
-
 	export function ensureValid(T: wsel): wsel {
 		if (Types.includes(T)) return T
 		return Types[0]
@@ -18,8 +17,4 @@ export namespace wsel {
 	}
 }
 
-const Types: wsel[] = [
-	wsel.WithRequiredSkill,
-	wsel.ThisWeapon,
-	wsel.WithName
-]
+const Types: wsel[] = [wsel.WithRequiredSkill, wsel.ThisWeapon, wsel.WithName]

@@ -108,7 +108,7 @@ import {
 	SpellPrereq,
 	TraitPrereq,
 } from "@prereq"
-import { ActorType, EFFECT_ACTION, ItemType, PrereqType, StudyHoursNeeded, StudyType } from "./data"
+import { ActorType, EFFECT_ACTION, ItemType, PrereqType, StudyHoursNeeded, StudyType } from "@module/data"
 import { MoveTypeOverrideConditionType } from "./move_type"
 
 // Const GURPSCONFIG: any = CONFIG;
@@ -277,22 +277,22 @@ const GURPSCONFIG: CONFIG["GURPS"] = {
 		},
 	},
 	select: {
-		cr_level: {
-			0: "gurps.select.cr_level.0",
-			6: "gurps.select.cr_level.6",
-			9: "gurps.select.cr_level.9",
-			12: "gurps.select.cr_level.12",
-			15: "gurps.select.cr_level.15",
-		},
-		cr_adj: {
-			none: "gurps.select.cr_adj.none",
-			action_penalty: "gurps.select.cr_adj.action_penalty",
-			reaction_penalty: "gurps.select.cr_adj.reaction_penalty",
-			fright_check_penalty: "gurps.select.cr_adj.fright_check_penalty",
-			fright_check_bonus: "gurps.select.cr_adj.fright_check_bonus",
-			minor_cost_of_living_increase: "gurps.select.cr_adj.minor_cost_of_living_increase",
-			major_cost_of_living_increase: "gurps.select.cr_adj.major_cost_of_living_increase",
-		},
+		// cr_level: {
+		// 	0: "gurps.select.cr_level.0",
+		// 	6: "gurps.select.cr_level.6",
+		// 	9: "gurps.select.cr_level.9",
+		// 	12: "gurps.select.cr_level.12",
+		// 	15: "gurps.select.cr_level.15",
+		// },
+		// cr_adj: {
+		// 	none: "gurps.select.cr_adj.none",
+		// 	action_penalty: "gurps.select.cr_adj.action_penalty",
+		// 	reaction_penalty: "gurps.select.cr_adj.reaction_penalty",
+		// 	fright_check_penalty: "gurps.select.cr_adj.fright_check_penalty",
+		// 	fright_check_bonus: "gurps.select.cr_adj.fright_check_bonus",
+		// 	minor_cost_of_living_increase: "gurps.select.cr_adj.minor_cost_of_living_increase",
+		// 	major_cost_of_living_increase: "gurps.select.cr_adj.major_cost_of_living_increase",
+		// },
 		number_compare: {
 			none: "gurps.select.number_compare.none",
 			is: "gurps.select.number_compare.is",
