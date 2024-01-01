@@ -21,12 +21,10 @@ import {
 	ItemFlags,
 	MeleeWeaponSource,
 	RangedWeaponSource,
-	SkillGURPS,
 	SkillSource,
-	SpellGURPS,
 	SpellSource,
 	TraitModifierSource,
-} from "@item"
+} from "@item/data"
 
 export class Mook {
 	protected variableResolverExclusions: Map<string, boolean> = new Map()
@@ -299,11 +297,11 @@ export class Mook {
 			{ promptImport: false } as any
 		)) as CharacterGURPS
 		await newActor?.update(data)
-		const updateMap: Array<{ _id: string } & Record<string, any>> = [];
-		(newActor.itemTypes[ItemType.Skill] as SkillGURPS[]).forEach((item: SkillGURPS, index: number) => {
+		const updateMap: Array<{ _id: string } & Record<string, any>> = []
+		newActor.itemTypes[ItemType.Skill].forEach((item: any, index: number) => {
 			updateMap.push({ _id: item.id!, "system.points": item.getPointsForLevel(this.skills[index].level) })
-		});
-		(newActor.itemTypes[ItemType.Spell] as SpellGURPS[]).forEach((item: SpellGURPS, index: number) => {
+		})
+		newActor.itemTypes[ItemType.Spell].forEach((item: any, index: number) => {
 			updateMap.push({ _id: item.id!, "system.points": item.getPointsForLevel(this.spells[index].level) })
 		})
 		await newActor.updateEmbeddedDocuments("Item", updateMap)

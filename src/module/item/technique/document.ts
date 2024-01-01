@@ -226,7 +226,6 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 		}
 	}
 
-
 	setLevel(level: number) {
 		return this.update({ "system.points": this.getPointsForLevel(level) })
 	}

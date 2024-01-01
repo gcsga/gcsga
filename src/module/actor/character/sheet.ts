@@ -827,7 +827,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 				currentTable = $(event.target).closest(".item-list#other-equipment")
 			else currentTable = sheet.find(".item-list#equipment")
 		} else {
-			const idLookup = (function() {
+			const idLookup = (function () {
 				switch (type) {
 					case ItemType.Trait:
 					case ItemType.TraitContainer:
@@ -899,7 +899,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		})
 
 		const updateData = sortUpdates.map(u => {
-			return { ...u.update, _id: u.target._id } as { _id: string;[key: string]: any }
+			return { ...u.update, _id: u.target._id } as { _id: string; [key: string]: any }
 		})
 		await this.actor?.updateEmbeddedDocuments("Item", updateData)
 		return newItems
@@ -996,7 +996,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		})
 
 		const updateData = sortUpdates.map(u => {
-			return { ...u.update, _id: u.target._id } as { _id: string;[key: string]: any }
+			return { ...u.update, _id: u.target._id } as { _id: string; [key: string]: any }
 		})
 
 		// Set container flag if containers are not the same
@@ -1019,7 +1019,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		if (!itemData) return
 		const currentTable = this._getTargetTableFromItemType(event, itemData.type)
 
-		sheet.find(".item-list").each(function() {
+		sheet.find(".item-list").each(function () {
 			if ($(this) !== currentTable) {
 				$(this).removeClass("dragsection")
 				$(this).removeClass("dragindirect")
@@ -1039,7 +1039,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		)
 		currentTable[0].style.setProperty("--top", `${top}px`)
 		currentTable[0].style.setProperty("--left", `${currentTable.position().left + 1 ?? 0}px`)
-		const height = (function() {
+		const height = (function () {
 			const tableBottom = (currentTable.position().top ?? 0) + (currentTable.height() ?? 0)
 			const contentBottom =
 				(sheet.find(".window-content").position().top ?? 0) + (sheet.find(".window-content").height() ?? 0)
@@ -1307,14 +1307,14 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		}
 		const buttons: Application.HeaderButton[] = this.actor.canUserModify(game.user!, "update")
 			? [
-				edit_button,
-				{
-					label: "",
-					class: "gmenu",
-					icon: "gcs-all-seeing-eye",
-					onclick: event => this._openGMenu(event),
-				},
-			]
+					edit_button,
+					{
+						label: "",
+						class: "gmenu",
+						icon: "gcs-all-seeing-eye",
+						onclick: event => this._openGMenu(event),
+					},
+				]
 			: []
 		const all_buttons = [...buttons, ...super._getHeaderButtons()]
 		return all_buttons
