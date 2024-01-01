@@ -254,7 +254,6 @@ export class SpellGURPS extends ItemGCS<SpellSource> {
 		}
 	}
 
-
 	setLevel(level: number) {
 		return this.update({ "system.points": this.getPointsForLevel(level) })
 	}

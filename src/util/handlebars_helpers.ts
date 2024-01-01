@@ -552,8 +552,9 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 			const label = Handlebars.escapeExpression(option.label)
 			const isSelected = selected.includes(option.name)
 			const isDisabled = disabled.includes(option.name)
-			html += `<option value="${option.name}" ${isSelected ? "selected" : ""} ${isDisabled ? "disabled" : ""
-				}>${label}</option>`
+			html += `<option value="${option.name}" ${isSelected ? "selected" : ""} ${
+				isDisabled ? "disabled" : ""
+			}>${label}</option>`
 		}
 		return new Handlebars.SafeString(html)
 	}

@@ -16,7 +16,7 @@ export class MookGeneratorSheet extends FormApplication {
 	constructor(options?: Partial<ApplicationOptions>) {
 		super(options)
 		this.object = new Mook()
-			; (game as any).mook = this.object
+		;(game as any).mook = this.object
 	}
 
 	static get defaultOptions(): FormApplicationOptions {
@@ -116,8 +116,7 @@ export class MookGeneratorSheet extends FormApplication {
 	}
 
 	protected override _getHeaderButtons(): Application.HeaderButton[] {
-		const buttons: Application.HeaderButton[] = [
-		]
+		const buttons: Application.HeaderButton[] = []
 		const all_buttons = super._getHeaderButtons()
 		all_buttons.at(-1)!.label = ""
 		all_buttons.at(-1)!.icon = "gcs-circled-x"
