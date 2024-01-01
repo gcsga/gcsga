@@ -1,5 +1,5 @@
 import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
-import { ItemType, Study, StudyHoursNeeded } from "@module/data"
+import { Difficulty, ItemType, Study, StudyHoursNeeded } from "@module/data"
 import { PrereqList } from "@prereq"
 
 export type SpellSource = ItemGCSSource<ItemType.Spell, SpellSystemData>

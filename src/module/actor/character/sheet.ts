@@ -20,7 +20,17 @@ import { gid, ItemType, RollType, SYSTEM_NAME } from "@module/data"
 import { PDF } from "@module/pdf"
 import { ResourceTrackerObj } from "@module/resource_tracker"
 import { RollGURPS } from "@module/roll"
-import { dollarFormat, evaluateToNumber, isContainer, Length, LocalizeGURPS, newUUID, Weight, WeightUnits } from "@util"
+import {
+	dollarFormat,
+	dom,
+	evaluateToNumber,
+	isContainer,
+	Length,
+	LocalizeGURPS,
+	newUUID,
+	Weight,
+	WeightUnits,
+} from "@util"
 import { CharacterSheetConfig } from "./config_sheet"
 import { CharacterFlagDefaults, CharacterMove, Encumbrance } from "./data"
 import { PointRecordSheet } from "./points_sheet"
@@ -490,15 +500,23 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 				menuItems.push({
 					name: LocalizeGURPS.translations.gurps.context.move_to_carried,
 					icon: "<i class='fas fa-arrows-cross'></i>",
-					callback: () => item.toggleOther()
+					callback: () =>
+						(item as Item).setFlag(
+							SYSTEM_NAME,
+							ItemFlags.Other,
+							!item.getFlag(SYSTEM_NAME, ItemFlags.Other)
+						),
 				})
 			else
 				menuItems.push({
 					name: LocalizeGURPS.translations.gurps.context.move_to_other,
 					icon: "<i class='fas fa-arrows-cross'></i>",
 					callback: () =>
-						item.toggleOther()
-
+						(item as Item).setFlag(
+							SYSTEM_NAME,
+							ItemFlags.Other,
+							!item.getFlag(SYSTEM_NAME, ItemFlags.Other)
+						),
 				})
 		}
 		if (item instanceof TraitGURPS && item.isLeveled) {
@@ -871,7 +889,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		})
 
 		const siblingItems = (targetItemContainer?.items as any).filter(
-			(e: ItemGURPS) => e.id !== sourceItem.id && sourceItem.sameSection(e)
+			(e: Item) => e.id !== sourceItem.id && sourceItem.sameSection(e)
 		) as ItemGURPS[]
 
 		const sortUpdates = SortingHelpers.performIntegerSort(newItems[0], {
@@ -964,11 +982,11 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		}
 
 		const siblingItems = (targetItemContainer?.items as any).filter(
-			(e: ItemGURPS) => e.id !== sourceItem.id && sourceItem.sameSection(e)
+			(e: Item) => e.id !== sourceItem.id && sourceItem.sameSection(e)
 		) as ItemGURPS[]
 
 		// target item and source item are not in the same table
-		if (targetItem && !sourceItem.sameSection(targetItem)) return
+		if (targetItem && !sourceItem.sameSection(targetItem as Item)) return
 
 		// Sort updates sorts all items within the same container
 		const sortUpdates = SortingHelpers.performIntegerSort(sourceItem, {
@@ -1000,11 +1018,6 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		const itemData = $("#drag-ghost").data("item") as ItemDataGURPS
 		if (!itemData) return
 		const currentTable = this._getTargetTableFromItemType(event, itemData.type)
-
-		// Not an item
-		if (!itemData) return
-
-		const currentTable = this.getTargetTableFromItemType(event, itemData.type)
 
 		sheet.find(".item-list").each(function() {
 			if ($(this) !== currentTable) {
@@ -1079,8 +1092,8 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 	}
 
 	getData(options?: Partial<ActorSheet.Options> | undefined): any {
-		const data = super.getData(options)
 		this.actor.prepareData()
+		const data = super.getData(options)
 		// if (!this.noPrepare) this.actor.prepareData()
 		// else this.noPrepare = false
 		const actorData = this.actor.toObject(false) as any
@@ -1294,14 +1307,14 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		}
 		const buttons: Application.HeaderButton[] = this.actor.canUserModify(game.user!, "update")
 			? [
-					edit_button,
-					{
-						label: "",
-						class: "gmenu",
-						icon: "gcs-all-seeing-eye",
-						onclick: event => this._openGMenu(event),
-					},
-				]
+				edit_button,
+				{
+					label: "",
+					class: "gmenu",
+					icon: "gcs-all-seeing-eye",
+					onclick: event => this._openGMenu(event),
+				},
+			]
 			: []
 		const all_buttons = [...buttons, ...super._getHeaderButtons()]
 		return all_buttons

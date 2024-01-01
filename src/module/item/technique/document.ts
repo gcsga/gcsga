@@ -225,4 +225,32 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 			}
 		}
 	}
+
+
+	setLevel(level: number) {
+		return this.update({ "system.points": this.getPointsForLevel(level) })
+	}
+
+	getPointsForLevel(level: number): number {
+		const basePoints = this.points
+		const oldLevel = this.calculateLevel().level
+		if (oldLevel > level) {
+			for (let points = basePoints; points > 0; points--) {
+				this.system.points = points
+				if (this.calculateLevel().level === level) {
+					return points
+				}
+			}
+			return 0
+		} else {
+			// HACK: capped at 100 points, probably not a good idea
+			for (let points = basePoints; points < 100; points++) {
+				this.system.points = points
+				if (this.calculateLevel().level === level) {
+					return points
+				}
+			}
+			return 100
+		}
+	}
 }

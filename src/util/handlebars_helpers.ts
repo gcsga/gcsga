@@ -5,7 +5,6 @@ import { LocalizeGURPS } from "./localize"
 import { CharacterGURPS, StaticSpell } from "@actor"
 import { Static } from "@util"
 import { SafeString } from "handlebars"
-import { ItemData } from "types/foundry/common/data/module.mjs"
 
 class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 	static camelcase(s: string) {
@@ -154,8 +153,8 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 		return ""
 	}
 
-	static format(a: string): string {
-		return (a ? a : "").replace(/\n/g, "<br>")
+	static format(s: string): string {
+		return `${s}`.replace(/\n/g, "<br>")
 	}
 
 	static md(s: string): string {
@@ -553,9 +552,8 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 			const label = Handlebars.escapeExpression(option.label)
 			const isSelected = selected.includes(option.name)
 			const isDisabled = disabled.includes(option.name)
-			html += `<option value="${option.name}" ${isSelected ? "selected" : ""} ${
-				isDisabled ? "disabled" : ""
-			}>${label}</option>`
+			html += `<option value="${option.name}" ${isSelected ? "selected" : ""} ${isDisabled ? "disabled" : ""
+				}>${label}</option>`
 		}
 		return new Handlebars.SafeString(html)
 	}
