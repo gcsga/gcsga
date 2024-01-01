@@ -1,4 +1,4 @@
-import { FeatureType, SkillBonus, WeaponBonus, WeaponBonusType, } from "@feature"
+import { FeatureType, SkillBonus, WeaponBonus, WeaponBonusType } from "@feature"
 import { BaseItemGURPS } from "@item/base"
 import { ContainerGURPS } from "@item/container"
 import { Bonus, Feature } from "@module/config"
@@ -303,7 +303,7 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 				this.container?.type as ItemType
 			)
 		) {
-			; (this.container as any).modifiers.forEach((mod: any) => {
+			;(this.container as any).modifiers.forEach((mod: any) => {
 				let bonus: Bonus
 				for (const f of mod.features) {
 					bonus = f

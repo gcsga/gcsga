@@ -1,12 +1,7 @@
 import { ItemGCS } from "@item/gcs"
 import { TraitModifierGURPS } from "@item/trait_modifier"
 import { TraitModifierContainerGURPS } from "@item/trait_modifier_container"
-import {
-	inlineNote,
-	parseInlineNoteExpressions,
-	resolveStudyHours,
-	studyHoursProgressText,
-} from "@util"
+import { inlineNote, parseInlineNoteExpressions, resolveStudyHours, studyHoursProgressText } from "@util"
 import { TraitSource } from "./data"
 import { ItemType } from "@module/data"
 import { selfctrl } from "@util/enum"

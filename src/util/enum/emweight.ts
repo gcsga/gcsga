@@ -3,7 +3,6 @@ import { LocalizeGURPS } from "@util/localize"
 import { equalFold } from "@util/misc"
 
 export namespace emweight {
-
 	export enum Type {
 		Original = "to_original_weight",
 		Base = "to_base_weight",
@@ -12,14 +11,14 @@ export namespace emweight {
 	}
 
 	export namespace Type {
-
-		export function LastType(): Type { return Type.Final }
+		export function LastType(): Type {
+			return Type.Final
+		}
 
 		export function permitted(T: Type): Value[] {
 			if (Type.ensureValid(T) === Type.Original) return [Value.Addition, Value.PercentageAdder]
 			return [Value.Addition, Value.PercentageAdder, Value.Multiplier]
 		}
-
 
 		export function determineModifierWeightValueTypeFromString(T: Type, s: string): Value {
 			const mvt = Value.fromString(s)
@@ -63,7 +62,6 @@ export namespace emweight {
 			return Types[0]
 		}
 
-
 		export function extractType(s: string): Type {
 			for (const one of Types) {
 				if (equalFold(one, s)) return one
@@ -72,12 +70,7 @@ export namespace emweight {
 		}
 	}
 
-	export const Types: Type[] = [
-		Type.Original,
-		Type.Base,
-		Type.FinalBase,
-		Type.Final
-	]
+	export const Types: Type[] = [Type.Original, Type.Base, Type.FinalBase, Type.Final]
 
 	export enum Value {
 		Addition = "+",
@@ -87,8 +80,9 @@ export namespace emweight {
 	}
 
 	export namespace Value {
-
-		export function LastValue(): Value { return Value.Multiplier }
+		export function LastValue(): Value {
+			return Value.Multiplier
+		}
 
 		export function ensureValid(V: Value): Value {
 			if (Values.includes(V)) return V
@@ -128,7 +122,6 @@ export namespace emweight {
 			}
 		}
 
-
 		export function extractValue(s: string): Value {
 			for (const one of Values) {
 				if (equalFold(one, s)) return one
@@ -137,10 +130,5 @@ export namespace emweight {
 		}
 	}
 
-	export const Values: Value[] = [
-		Value.Addition,
-		Value.PercentageAdder,
-		Value.PercentageMultiplier,
-		Value.Multiplier
-	]
+	export const Values: Value[] = [Value.Addition, Value.PercentageAdder, Value.PercentageMultiplier, Value.Multiplier]
 }

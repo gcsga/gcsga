@@ -3,7 +3,6 @@ import { LocalizeGURPS } from "@util/localize"
 import { equalFold } from "@util/misc"
 
 export namespace emcost {
-
 	export enum Type {
 		Original = "to_original_cost",
 		Base = "to_base_cost",
@@ -12,8 +11,9 @@ export namespace emcost {
 	}
 
 	export namespace Type {
-
-		export function LastType(): Type { return Type.Final }
+		export function LastType(): Type {
+			return Type.Final
+		}
 
 		export function permitted(T: Type): Value[] {
 			if (Type.ensureValid(T) === Type.Base) return [Value.CostFactor, Value.Multiplier]
@@ -62,7 +62,6 @@ export namespace emcost {
 			return Types[0]
 		}
 
-
 		export function extractType(s: string): Type {
 			for (const one of Types) {
 				if (equalFold(one, s)) return one
@@ -80,13 +79,7 @@ export namespace emcost {
 		}
 	}
 
-	export const Types: Type[] = [
-		Type.Original,
-		Type.Base,
-		Type.FinalBase,
-		Type.Final
-	]
-
+	export const Types: Type[] = [Type.Original, Type.Base, Type.FinalBase, Type.Final]
 
 	export enum Value {
 		Addition = "+",
@@ -96,8 +89,9 @@ export namespace emcost {
 	}
 
 	export namespace Value {
-
-		export function LastValue(): Value { return Value.CostFactor }
+		export function LastValue(): Value {
+			return Value.CostFactor
+		}
 
 		export function ensureValid(V: Value): Value {
 			if (Values.includes(V)) return V
@@ -135,30 +129,23 @@ export namespace emcost {
 		export function fromString(s: string): Value {
 			s = s.trim().toLowerCase()
 			switch (true) {
-				case (s.endsWith(Value.CostFactor)):
+				case s.endsWith(Value.CostFactor):
 					return Value.CostFactor
-				case (s.endsWith(Value.Percentage)):
+				case s.endsWith(Value.Percentage):
 					return Value.Percentage
-				case (s.endsWith(Value.Multiplier) || s.startsWith(Value.Multiplier)):
+				case s.endsWith(Value.Multiplier) || s.startsWith(Value.Multiplier):
 					return Value.Multiplier
 				default:
 					return Value.Addition
 			}
 		}
 
-
 		export function extractValue(V: Value, s: string): number {
-			let [v,] = Int.extract(s.trim().replace(new RegExp(`^${Value.Multiplier}+`), ""))
-			if (Value.ensureValid(V) === Value.Multiplier && v <= 0)
-				v = 1
+			let [v] = Int.extract(s.trim().replace(new RegExp(`^${Value.Multiplier}+`), ""))
+			if (Value.ensureValid(V) === Value.Multiplier && v <= 0) v = 1
 			return v
 		}
 	}
 
-	export const Values: Value[] = [
-		Value.Addition,
-		Value.Percentage,
-		Value.Multiplier,
-		Value.CostFactor
-	]
+	export const Values: Value[] = [Value.Addition, Value.Percentage, Value.Multiplier, Value.CostFactor]
 }

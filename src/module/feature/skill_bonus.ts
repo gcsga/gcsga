@@ -1,4 +1,4 @@
-import { FeatureType, } from "./data"
+import { FeatureType } from "./data"
 import { BonusOwner } from "./bonus_owner"
 import { LeveledAmount, LeveledAmountKeys, LeveledAmountObj } from "./leveled_amount"
 import { StringComparisonType, StringCriteria } from "@module/data"

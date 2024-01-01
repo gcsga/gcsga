@@ -1,5 +1,5 @@
 import { CharacterSheetConfig } from "@actor/character/config_sheet"
-import { Attribute, AttributeObj, } from "@module/attribute"
+import { Attribute, AttributeObj } from "@module/attribute"
 import { SYSTEM_NAME } from "@module/data"
 import { DiceGURPS } from "@module/dice"
 import { LocalizeGURPS } from "@util"
@@ -14,7 +14,7 @@ export class MookGeneratorSheet extends FormApplication {
 	constructor(options?: Partial<ApplicationOptions>) {
 		super(options)
 		this.object = new Mook()
-			; (game as any).mook = this.object
+		;(game as any).mook = this.object
 	}
 
 	static get defaultOptions(): FormApplicationOptions {
