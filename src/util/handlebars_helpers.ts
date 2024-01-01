@@ -5,7 +5,6 @@ import { LocalizeGURPS } from "./localize"
 import { CharacterGURPS, StaticSpell } from "@actor"
 import { Static } from "@util"
 import { SafeString } from "handlebars"
-import { ItemData } from "types/foundry/common/data/module.mjs"
 
 class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 	static camelcase(s: string) {
@@ -505,6 +504,14 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 	// 	return html
 	// }
 
+	/**
+	 * This is a copy of Foundry's selectOptions helper enhanced to support taking a list of options to disable.
+	 * It's published as selectOptsGURPS to avoid conflicts with the original helper.
+	 *
+	 * @param choices
+	 * @param options
+	 * @returns
+	 */
 	static selectOptions(choices: Record<string, string>, options: any): SafeString {
 		let {
 			localize = false,
