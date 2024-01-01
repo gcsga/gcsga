@@ -471,13 +471,6 @@ export interface Stringer {
 	formattedName: string
 	// isLeveled: boolean
 	// currentLevel: number
-<<<<<<< HEAD
-}
-
-export enum HooksGURPS {
-	AddModifier = "addModifier",
-=======
->>>>>>> 621485e8 (Feature/damage calc (#117))
 }
 
 export interface WeaponOwner {
