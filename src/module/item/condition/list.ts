@@ -77,9 +77,7 @@ export function getConditionList(): Record<ConditionID, Partial<ConditionSystemD
 				current: 0,
 				max: 8,
 			},
-			modifiers: [
-				{ name: "shock test", modifier: -1 }
-			],
+			modifiers: [{ name: "shock test", modifier: -1 }],
 			duration: {
 				type: DurationType.Rounds,
 				rounds: 1,

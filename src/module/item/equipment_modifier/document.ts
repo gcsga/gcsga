@@ -1,6 +1,6 @@
 import { ItemGCS } from "@item/gcs"
 import { SETTINGS, SYSTEM_NAME } from "@module/data"
-import { Weight, WeightUnits, fxp } from "@util"
+import { LocalizeGURPS, Weight, WeightUnits, fxp } from "@util"
 import { EquipmentModifierSource } from "./data"
 import {
 	EquipmentModifierWeightType,
@@ -28,14 +28,45 @@ export class EquipmentModifierGURPS extends ItemGCS<EquipmentModifierSource> {
 		return this.system.cost_type
 	}
 
+	get weightType(): EquipmentModifierWeightType {
+		return this.system.weight_type
+	}
+
 	get costAmount(): string {
 		return this.system.cost
+	}
+
+	get weightAmount(): string {
+		return this.system.weight
 	}
 
 	get weightUnits(): WeightUnits {
 		if (this.actor) return this.actor.weightUnits
 		const default_settings = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
 		return default_settings.default_weight_units
+	}
+
+	get costDescription(): string {
+		if (
+			this.costType === EquipmentModifierCostType.Original &&
+			(this.costAmount === "" || this.costAmount === "+0")
+		)
+			return ""
+		return `${parseFloat(this.costAmount).signedString()} ${
+			LocalizeGURPS.translations.gurps.item.cost_type[this.costType]
+		}`
+	}
+
+	get weightDescription(): string {
+		if (
+			this.weightType === EquipmentModifierWeightType.Original &&
+			(this.weightAmount === "" || this.weightAmount.startsWith("+0"))
+		)
+			return ""
+		return `${
+			(Weight.fromString(this.weightUnits) >= 0 ? "+" : "") +
+			Weight.format(Weight.fromString(this.weightAmount), this.weightUnits)
+		} ${LocalizeGURPS.translations.gurps.item.weight_type[this.weightType]}`
 	}
 }
 
@@ -72,21 +103,24 @@ export function weightAdjustedForModifiers(
 function processMultiplyAddWeightStep(
 	type: EquipmentModifierWeightType,
 	weight: number,
-	_units: WeightUnits,
+	units: WeightUnits,
 	modifiers: Collection<EquipmentModifierGURPS>
 ): number {
-	let sum = 0
-	for (const mod of modifiers) {
-		if (mod.system.weight === type) {
-			const t = determineModifierWeightValueTypeFromString(type, mod.system.weight)
-			const f = extractFraction(t, mod.system.weight)
-			if (t === EquipmentModifierWeightValueType.Addition) sum += parseFloat(mod.system.weight)
+	let w = 0
+	modifiers.forEach(mod => {
+		if (!mod.enabled) return
+		if (mod.system.weight_type === type) {
+			let t = determineModifierWeightValueTypeFromString(type, mod.system.weight)
+			let amt = extractFraction(t, mod.system.weight)
+			if (t === EquipmentModifierWeightValueType.Addition)
+				w += Weight.toPounds(amt.value, Weight.trailingWeightUnitsFromString(mod.system.weight, units))
 			else if (t === EquipmentModifierWeightValueType.PercentageMultiplier)
-				weight = (weight * f.numerator) / (f.denominator * 100)
-			else if (t === EquipmentModifierWeightValueType.Multiplier) weight = (weight * f.numerator) / f.denominator
+				weight = (weight * amt.numerator) / (amt.denominator * 100)
+			else if (t === EquipmentModifierWeightValueType.Multiplier)
+				weight = (weight * amt.numerator) / amt.denominator
 		}
-	}
-	return weight + sum
+	})
+	return weight + w
 }
 
 export function valueAdjustedForModifiers(value: number, modifiers: Collection<EquipmentModifierGURPS>): number {
@@ -120,6 +154,7 @@ function processNonCFStep(
 	let [percentages, additions] = [0, 0]
 	let cost = value
 	modifiers.forEach(mod => {
+		if (!mod.enabled) return
 		if (mod.costType === costType) {
 			const t = determineModifierCostValueTypeFromString(costType, mod.costAmount)
 			const amt = extractValue(t, mod.costAmount)
@@ -137,5 +172,5 @@ function processNonCFStep(
 	})
 	cost += additions
 	if (percentages !== 0) cost += value * (percentages / 100)
-	return cost
+	return fxp.Int.from(cost)
 }

@@ -481,5 +481,5 @@ export interface WeaponOwner {
 }
 
 export enum HooksGURPS {
-	AddModifier = "addModifier"
+	AddModifier = "addModifier",
 }

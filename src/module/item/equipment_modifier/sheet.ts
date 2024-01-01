@@ -16,4 +16,12 @@ export class EquipmentModifierSheet extends ItemSheetGURPS<EquipmentModifierGURP
 
 		return super._updateObject(event, formData)
 	}
+
+	render(
+		force?: boolean | undefined,
+		options?: Application.RenderOptions<DocumentSheetOptions<Item>> | undefined
+	): this {
+		if (this.item.container?.sheet?.rendered) this.item.container.sheet.render()
+		return super.render(force, options)
+	}
 }

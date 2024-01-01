@@ -698,6 +698,18 @@
 				"weight_percentage_multiplier": "x{value}%",
 				"weight_multiplier": "x{value}"
 			},
+			"weight_type": {
+				"to_original_weight": "to original weight",
+				"to_base_weight": "to base weight",
+				"to_final_base_weight": "to_final base weight",
+				"to_final_weight": "to final weight"
+			},
+			"cost_type": {
+				"to_original_cost": "to original cost",
+				"to_base_cost": "to base cost",
+				"to_final_base_cost": "to_final base cost",
+				"to_final_cost": "to final cost"
+			},
 			"creation_dialog": {
 				"categories": {
 					"trait": "Traits",
