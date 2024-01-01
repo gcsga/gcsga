@@ -350,7 +350,7 @@ export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
 						icon: "gcs-all-seeing-eye",
 						onclick: event => this._onGMenu(event),
 					},
-			  ]
+				]
 			: []
 		const show_import = game.settings.get(SYSTEM_NAME, SETTINGS.SHOW_IMPORT_BUTTON) ?? false
 		const import_path = this.actor.system.additionalresources.importpath

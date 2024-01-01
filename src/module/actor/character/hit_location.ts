@@ -140,7 +140,7 @@ class HitLocation implements HitLocationData {
 					this.sub_table.locations,
 					this.actor,
 					`${this.keyPrefix}.sub_table`
-			  )
+				)
 			: undefined
 	}
 

@@ -12,7 +12,7 @@ export class Int {
 	}
 
 	static fromString(str: string): number {
-		str = str.match(/[\d.]+/) ? str.match(/[\d.]+/)![0] : "0"
+		str = str.match(/-?[\d.]+/) ? str.match(/-?[\d.]+/)![0] : "0"
 		return Int.from(parseFloat(str))
 	}
 

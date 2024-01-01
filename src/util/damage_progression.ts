@@ -63,11 +63,11 @@ export function thrustFor(p: DamageProgression, st: number): DiceGURPS {
 				multiplier: 1,
 			})
 		case DamageProgression.ThrustEqualsSwingMinus2:
-			return thrustFor(DamageProgression.BasicSet, st)
-		case DamageProgression.SwingEqualsThrustPlus2:
 			const dice = swingFor(DamageProgression.BasicSet, st)
 			dice.modifier -= 2
 			return dice
+		case DamageProgression.SwingEqualsThrustPlus2:
+			return thrustFor(DamageProgression.BasicSet, st)
 		case DamageProgression.PhoenixFlameD3:
 			if (st < 7) {
 				if (st < 1) st = 1

@@ -5,8 +5,6 @@ import { LocalizeGURPS } from "@util"
 import { UserGURPS } from "@module/user/document"
 
 export class ModifierBucketWindow extends Application {
-
-
 	refresh = foundry.utils.debounce(this.render, 100)
 
 	// Common mod categories currently open
@@ -33,17 +31,16 @@ export class ModifierBucketWindow extends Application {
 			minimiazable: false,
 			resizable: false,
 			id: "ModifierBucket",
-			scrollY: ["#categories .content"]
+			scrollY: ["#categories .content"],
 		})
 	}
-
 
 	activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 
 		// Get position
 		const button = $("#modifier-bucket-button")
-		const buttonTop = button.position()?.top ?? 0
+		const buttonTop = button.offset()?.top ?? 0
 		const buttonLeft = (button.position()?.left || 0) + 220 ?? 0
 		let buttonWidth = parseFloat(button.css("width").replace("px", ""))
 		const width = html.width() || 640
@@ -73,7 +70,6 @@ export class ModifierBucketWindow extends Application {
 		html.find("#stacks .delete").on("click", event => this._onDeleteStack(event))
 	}
 
-
 	_onClickModifier(event: JQuery.ClickEvent) {
 		event.preventDefault()
 		const modifier = $(event.currentTarget).data("modifier")
@@ -90,7 +86,7 @@ export class ModifierBucketWindow extends Application {
 	private async _onStackCollapseToggle(event: JQuery.ClickEvent): Promise<unknown> {
 		event.preventDefault()
 		console.log("what")
-		const savedStacks = game.user.getFlag(SYSTEM_NAME, UserFlags.SavedStacks) as RollModifierStack[] ?? []
+		const savedStacks = (game.user.getFlag(SYSTEM_NAME, UserFlags.SavedStacks) as RollModifierStack[]) ?? []
 		const stacks = this.stacksOpen
 		stacks.push(...Array(savedStacks.length - stacks.length).fill(false))
 		const index = parseInt(event.currentTarget.dataset.index)
@@ -115,13 +111,12 @@ export class ModifierBucketWindow extends Application {
 								const form = $(html).find("form")
 								let name = form.find("input").val()
 								if (!name || name === "")
-									name =
-										LocalizeGURPS.translations.gurps.system.modifier_bucket.untitled_stack
+									name = LocalizeGURPS.translations.gurps.system.modifier_bucket.untitled_stack
 								const savedStacks =
-									game.user.getFlag(SYSTEM_NAME, UserFlags.SavedStacks) as RollModifierStack[] ?? []
+									(game.user.getFlag(SYSTEM_NAME, UserFlags.SavedStacks) as RollModifierStack[]) ?? []
 								savedStacks.push({
 									title: name,
-									items: modStack
+									items: modStack,
 								})
 								await game.user.setFlag(SYSTEM_NAME, UserFlags.SavedStacks, savedStacks)
 								return Hooks.call(HooksGURPS.AddModifier)
@@ -144,7 +139,7 @@ export class ModifierBucketWindow extends Application {
 	private async _onApplyStack(event: JQuery.ClickEvent): Promise<boolean> {
 		event.preventDefault()
 		const index = event.currentTarget.dataset.index
-		const savedStacks = game.user.getFlag(SYSTEM_NAME, UserFlags.SavedStacks) as RollModifierStack[] ?? []
+		const savedStacks = (game.user.getFlag(SYSTEM_NAME, UserFlags.SavedStacks) as RollModifierStack[]) ?? []
 		await game.user.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, savedStacks[index].items)
 		return Hooks.call(HooksGURPS.AddModifier)
 	}
@@ -152,7 +147,7 @@ export class ModifierBucketWindow extends Application {
 	private async _onDeleteStack(event: JQuery.ClickEvent): Promise<boolean> {
 		event.preventDefault()
 		const index = event.currentTarget.dataset.index
-		const savedStacks = game.user.getFlag(SYSTEM_NAME, UserFlags.SavedStacks) as RollModifierStack[] ?? []
+		const savedStacks = (game.user.getFlag(SYSTEM_NAME, UserFlags.SavedStacks) as RollModifierStack[]) ?? []
 		savedStacks.splice(index, 1)
 		await game.user.setFlag(SYSTEM_NAME, UserFlags.SavedStacks, savedStacks)
 		return Hooks.call(HooksGURPS.AddModifier)
@@ -170,7 +165,7 @@ export class ModifierBucketWindow extends Application {
 
 	getData(options?: Partial<ApplicationOptions> | undefined): MaybePromise<object> {
 		const modStack = game.user.getFlag(SYSTEM_NAME, UserFlags.ModifierStack) ?? []
-		const savedStacks = game.user.getFlag(SYSTEM_NAME, UserFlags.SavedStacks) as RollModifierStack[] ?? []
+		const savedStacks = (game.user.getFlag(SYSTEM_NAME, UserFlags.SavedStacks) as RollModifierStack[]) ?? []
 
 		const commonMods = CONFIG.GURPS.commonMods
 

@@ -5,7 +5,6 @@ import { ModifierBucketWindow } from "./window"
 import { UserGURPS } from "@module/user/document"
 
 export class ModifierBucket extends Application {
-
 	window: ModifierBucketWindow
 
 	constructor() {
@@ -23,7 +22,6 @@ export class ModifierBucket extends Application {
 			classes: ["modifier-button"],
 		})
 	}
-
 
 	protected _injectHTML(html: JQuery<HTMLElement>): void {
 		if ($("body").find("#modifier-bucket-button").length === 0) {
@@ -48,8 +46,7 @@ export class ModifierBucket extends Application {
 	async getData(options?: Partial<ApplicationOptions> | undefined): Promise<object> {
 		// let total = (game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierTotal) as number) ?? 0
 		let total = (game.user as UserGURPS).modifierTotal
-		let buttonMagnet =
-			(game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierSticky) === true) ? "sticky" : ""
+		let buttonMagnet = game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierSticky) === true ? "sticky" : ""
 		let buttonColor = "total-white"
 		if (total > 0) buttonColor = "total-green"
 		if (total < 0) buttonColor = "total-red"
@@ -66,7 +63,6 @@ export class ModifierBucket extends Application {
 			currentActor: currentActor ? currentActor.name : null,
 		})
 	}
-
 
 	// Increase/Decrease modifier by 1 with the mouse wheel
 	async _onMouseWheel(event: WheelEvent) {

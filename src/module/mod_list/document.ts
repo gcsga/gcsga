@@ -92,7 +92,7 @@ class ModifierList extends Application {
 	}
 
 	addRangeMod() {
-		(game.user as UserGURPS).addModifier(this._tempRangeMod)
+		;(game.user as UserGURPS).addModifier(this._tempRangeMod)
 	}
 
 	// addModifier(mod: RollModifier) {

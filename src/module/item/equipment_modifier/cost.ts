@@ -1,4 +1,4 @@
-import { fxp } from "@util"
+import { Int } from "@util/fxp"
 
 export enum EquipmentModifierCostType {
 	Original = "to_original_cost",
@@ -61,7 +61,7 @@ export function determineModifierCostValueTypeFromString(
 }
 
 export function extractValue(type: EquipmentModifierCostValueType, s: string): number {
-	let v = fxp.Int.fromStringForced(s)
+	let [v] = Int.extract(s)
 	if (type === EquipmentModifierCostValueType.Multiplier && v <= 0) v = 1
 	return v
 }

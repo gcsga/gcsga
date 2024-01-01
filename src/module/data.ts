@@ -479,3 +479,7 @@ export interface WeaponOwner {
 	currentLevel: number
 	ratedStrength: number
 }
+
+export enum HooksGURPS {
+	AddModifier = "addModifier",
+}
