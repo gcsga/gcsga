@@ -20,8 +20,17 @@ import { gid, ItemType, RollType, SYSTEM_NAME } from "@module/data"
 import { PDF } from "@module/pdf"
 import { ResourceTrackerObj } from "@module/resource_tracker"
 import { RollGURPS } from "@module/roll"
-import { dollarFormat, dom, Length, LocalizeGURPS, newUUID, Weight, WeightUnits } from "@util"
-import EmbeddedCollection from "types/foundry/common/abstract/embedded-collection.mjs"
+import {
+	dollarFormat,
+	dom,
+	evaluateToNumber,
+	isContainer,
+	Length,
+	LocalizeGURPS,
+	newUUID,
+	Weight,
+	WeightUnits,
+} from "@util"
 import { CharacterSheetConfig } from "./config_sheet"
 import { CharacterFlagDefaults, CharacterMove, Encumbrance } from "./data"
 import { PointRecordSheet } from "./points_sheet"
@@ -588,15 +597,23 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 				menuItems.push({
 					name: LocalizeGURPS.translations.gurps.context.move_to_carried,
 					icon: "<i class='fas fa-arrows-cross'></i>",
-					callback: () => item.toggleOther()
+					callback: () =>
+						(item as Item).setFlag(
+							SYSTEM_NAME,
+							ItemFlags.Other,
+							!item.getFlag(SYSTEM_NAME, ItemFlags.Other)
+						),
 				})
 			else
 				menuItems.push({
 					name: LocalizeGURPS.translations.gurps.context.move_to_other,
 					icon: "<i class='fas fa-arrows-cross'></i>",
 					callback: () =>
-						item.toggleOther()
-
+						(item as Item).setFlag(
+							SYSTEM_NAME,
+							ItemFlags.Other,
+							!item.getFlag(SYSTEM_NAME, ItemFlags.Other)
+						),
 				})
 		}
 		if (item instanceof TraitGURPS && item.isLeveled) {
@@ -1096,11 +1113,6 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 	protected _onDragItem(event: DragEvent): void {
 		const sheet = $(this.element)
 		const itemData = $("#drag-ghost").data("item") as ItemDataGURPS
-
-		// Not an item
-		if (!itemData) return
-
-		const currentTable = this.getTargetTableFromItemType(event, itemData.type)
 
 		sheet.find(".item-list").each(function() {
 			if ($(this) !== currentTable) {

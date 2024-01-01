@@ -8,9 +8,7 @@ export class MookSheetGURPS extends CharacterSheetGURPS {
 		return `/systems/${SYSTEM_NAME}/templates/actor/mook/sheet.hbs`
 	}
 
-
 	static override get defaultOptions(): ActorSheet.Options {
-
 		let classes = super.defaultOptions.classes
 		classes.splice(super.defaultOptions.classes.indexOf("character", 1))
 		return mergeObject(super.defaultOptions, {

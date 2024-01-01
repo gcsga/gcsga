@@ -1,4 +1,4 @@
-import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
+import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
 import { Difficulty, ItemType, Study, StudyHoursNeeded } from "@module/data"
 import { PrereqList } from "@prereq"
 

@@ -15,6 +15,7 @@ import { CharacterGURPS } from "@actor"
 import { WeaponStrength } from "./weapon_strength"
 
 export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSource> extends BaseItemGURPS<SourceType> {
+
 	get itemName(): string {
 		if (this.container instanceof Item) return this.container?.name ?? ""
 		return ""
@@ -77,7 +78,7 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 	}
 
 	skillLevel(tooltip?: TooltipGURPS): number {
-		const actor = this.actor || this.dummyActor
+		const actor = (this.actor || this.dummyActor) as unknown as CharacterGURPS
 		if (!actor) return 0
 		let primaryTooltip = new TooltipGURPS()
 		if (tooltip) primaryTooltip = tooltip
@@ -301,7 +302,7 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 				this.container?.type as ItemType
 			)
 		) {
-			;(this.container as any).modifiers.forEach((mod: any) => {
+			; (this.container as any).modifiers.forEach((mod: any) => {
 				let bonus: Bonus
 				for (const f of mod.features) {
 					bonus = f

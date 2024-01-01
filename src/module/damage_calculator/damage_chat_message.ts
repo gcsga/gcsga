@@ -92,7 +92,7 @@ export class DamageChat {
 			roll.toggleClass("expanded")
 			roll.animate({ "grid-auto-rows": 7, "padding-bottom": 25 }, 200, "linear")
 		} else {
-			roll.animate({ "grid-auto-rows": 35, "padding-bottom": 0 }, 200, "linear", function() {
+			roll.animate({ "grid-auto-rows": 35, "padding-bottom": 0 }, 200, "linear", function () {
 				roll.toggleClass("expanded")
 			})
 		}
