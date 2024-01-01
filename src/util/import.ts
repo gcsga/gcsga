@@ -22,12 +22,13 @@ import {
 	stdmg,
 } from "@item"
 import { Feature, ItemSystemDataGURPS } from "@module/config"
-import { CR, ItemType, SYSTEM_NAME } from "@module/data"
+import { ItemType, SYSTEM_NAME } from "@module/data"
 import { SkillDefault } from "@module/default"
 import { PrereqList } from "@prereq"
 import { LocalizeGURPS } from "./localize"
 import { newUUID } from "./misc"
 import { FeatureType } from "@feature"
+import { selfctrl } from "./enum"
 
 class ImportUtils {
 	static importItems(
@@ -173,8 +174,8 @@ class ImportUtils {
 			levels: data.levels ?? 0,
 			base_points: data.base_points ?? 0,
 			points_per_level: data.points_per_level ?? 0,
-			cr: data.cr ?? CR.None,
-			cr_adj: data.cr_adj ?? "none",
+			cr: data.cr ?? selfctrl.Roll.NoCR,
+			cr_adj: data.cr_adj ?? selfctrl.Adjustment.NoCRAdj,
 			features: data.features ? ImportUtils.importFeatures(data.features) : [],
 			vtt_notes: data.vtt_notes ?? "",
 			study: data.study ?? [],
@@ -194,8 +195,8 @@ class ImportUtils {
 			notes: data.notes ?? "",
 			tags: data.tags ?? [],
 			disabled: data.disabled ?? false,
-			cr: data.cr ?? CR.None,
-			cr_adj: data.cr_adj ?? "none",
+			cr: data.cr ?? selfctrl.Roll.NoCR,
+			cr_adj: data.cr_adj ?? selfctrl.Adjustment.NoCRAdj,
 			open: data.open ?? false,
 			vtt_notes: data.vtt_notes ?? "",
 		}

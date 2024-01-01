@@ -81,14 +81,14 @@ export enum spellmatch {
 }
 
 // Weapon Bonus Selection Type
-export enum wsel {
-	WithRequiredSkill = "weapons_with_required_skill",
-	WithName = "weapons_with_name",
-	ThisWeapon = "this_weapon",
-}
+// export enum wsel {
+// 	WithRequiredSkill = "weapons_with_required_skill",
+// 	WithName = "weapons_with_name",
+// 	ThisWeapon = "this_weapon",
+// }
 
-export enum skillsel {
-	Name = "skills_with_name",
-	ThisWeapon = "this_weapon",
-	WeaponsWithName = "weapons_with_name",
-}
+// export enum skillsel {
+// 	Name = "skills_with_name",
+// 	ThisWeapon = "this_weapon",
+// 	WeaponsWithName = "weapons_with_name",
+// }

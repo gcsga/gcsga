@@ -1,10 +1,11 @@
 import { BaseWeaponGURPS, wswitch } from "@item"
-import { FeatureType, WeaponBonusType, wsel } from "./data"
+import { FeatureType, WeaponBonusType } from "./data"
 import { NumericComparisonType, NumericCriteria, StringComparisonType, StringCriteria, WeaponOwner } from "@module/data"
 import { Int } from "@util/fxp"
 import { TooltipGURPS } from "@module/tooltip"
 import { LocalizeGURPS } from "@util"
 import { WeaponLeveledAmount, WeaponLeveledAmountKeys, WeaponLeveledAmountObj } from "./weapon_leveled_amount"
+import { wsel } from "@util/enum"
 
 export interface WeaponBonusObj extends WeaponLeveledAmountObj {
 	type: WeaponBonusType

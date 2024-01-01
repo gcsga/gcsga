@@ -1,16 +1,15 @@
 import { ItemGCS } from "@item/gcs"
 import { TraitModifierGURPS } from "@item/trait_modifier"
 import { TraitModifierContainerGURPS } from "@item/trait_modifier_container"
-import { CR, CRAdjustment, ItemType } from "@module/data"
 import {
 	inlineNote,
-	LocalizeGURPS,
 	parseInlineNoteExpressions,
 	resolveStudyHours,
-	SelfControl,
 	studyHoursProgressText,
 } from "@util"
 import { TraitSource } from "./data"
+import { ItemType } from "@module/data"
+import { selfctrl } from "@util/enum"
 
 export class TraitGURPS extends ItemGCS<TraitSource> {
 	unsatisfied_reason = ""
@@ -82,25 +81,15 @@ export class TraitGURPS extends ItemGCS<TraitSource> {
 	}
 
 	get skillLevel(): number {
-		return this.cr
+		return this.CR
 	}
 
-	get cr(): CR {
+	get CR(): selfctrl.Roll {
 		return this.system.cr
 	}
 
-	get crAdj(): CRAdjustment {
+	get CRAdj(): selfctrl.Adjustment {
 		return this.system.cr_adj
-	}
-
-	get formattedCR(): string {
-		let cr = ""
-		if (this.cr !== CR.None) cr += game.i18n.localize(`gurps.select.cr_level.${this.cr}`)
-		if (this.crAdj !== "none")
-			cr += `, ${game.i18n.format(`gurps.select.cr_adj.${this.crAdj}`, {
-				penalty: SelfControl.adjustment(this.cr, this.crAdj),
-			})}`
-		return cr
 	}
 
 	get roundCostDown(): boolean {
@@ -108,44 +97,20 @@ export class TraitGURPS extends ItemGCS<TraitSource> {
 	}
 
 	get modifierNotes(): string {
-		function adjustment(crAdj: CRAdjustment, cr: CR): number {
-			const allSelfControlRolls = [CR.None, CR.CR6, CR.CR9, CR.CR12, CR.CR15]
-			if (cr === CR.None) return 0
-			switch (crAdj) {
-				case CRAdjustment.None:
-					return 0
-				case CRAdjustment.ActionPenalty:
-				case CRAdjustment.ReactionPenalty:
-				case CRAdjustment.FrightCheckPenalty:
-					return allSelfControlRolls.indexOf(cr) - allSelfControlRolls.length
-				case CRAdjustment.FrightCheckBonus:
-					return allSelfControlRolls.length - allSelfControlRolls.indexOf(cr)
-				case CRAdjustment.MinorCostOfLivingIncrease:
-					return 5 * (allSelfControlRolls.length - allSelfControlRolls.indexOf(cr))
-				case CRAdjustment.MajorCostOfLivingIncrease:
-					return 10 * (1 << (allSelfControlRolls.length - (allSelfControlRolls.indexOf(cr) + 1)))
-				default:
-					return adjustment(CRAdjustment.None, cr)
+		let buffer = ""
+		if (this.CR !== selfctrl.Roll.NoCR) {
+			buffer += selfctrl.Roll.toString(this.CR)
+			if (this.CRAdj !== selfctrl.Adjustment.NoCRAdj) {
+				buffer += ", "
+				buffer += selfctrl.Adjustment.description(this.CRAdj, this.CR)
 			}
 		}
-		const buffer: string[] = []
-
-		if (this.cr !== CR.None) {
-			buffer.push(LocalizeGURPS.translations.gurps.select.cr_level[this.cr])
-			if (this.crAdj !== CRAdjustment.None) buffer.push(", ")
-			buffer.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.character.cr_adj_display[this.crAdj], {
-					penalty: adjustment(this.crAdj, this.cr),
-				})
-			)
-		}
-
 		this.deepModifiers.forEach(mod => {
 			if (!mod.enabled) return
-			if (buffer.length > 0) buffer.push("; ")
-			buffer.push(mod.fullDescription)
+			if (buffer.length !== 0) buffer += "; "
+			buffer += mod.fullDescription
 		})
-		return buffer.join("")
+		return buffer
 	}
 
 	adjustedPoints(): number {
@@ -156,7 +121,7 @@ export class TraitGURPS extends ItemGCS<TraitSource> {
 		let levelLim = 0
 		let basePoints = this.basePoints
 		let pointsPerLevel = this.pointsPerLevel
-		let multiplier = this.crMultiplier(this.cr)
+		let multiplier = selfctrl.Roll.multiplier(this.CR)
 		for (const mod of this.deepModifiers) {
 			if (!mod.enabled) continue
 			const modifier = mod.costModifier
@@ -257,22 +222,22 @@ export class TraitGURPS extends ItemGCS<TraitSource> {
 		return [ad, disad, race, quirk]
 	}
 
-	crMultiplier(cr: CR): number {
-		switch (cr) {
-			case CR.None:
-				return 1
-			case CR.CR6:
-				return 2
-			case CR.CR9:
-				return 1.5
-			case CR.CR12:
-				return 1
-			case CR.CR15:
-				return 0.5
-			default:
-				return this.crMultiplier(CR.None)
-		}
-	}
+	// crMultiplier(cr: CR): number {
+	// 	switch (cr) {
+	// 		case selfctrl.Roll.NoCR:
+	// 			return 1
+	// 		case selfctrl.Roll.CR6:
+	// 			return 2
+	// 		case selfctrl.Roll.CR9:
+	// 			return 1.5
+	// 		case selfctrl.Roll.CR12:
+	// 			return 1
+	// 		case selfctrl.Roll.CR15:
+	// 			return 0.5
+	// 		default:
+	// 			return this.crMultiplier(selfctrl.Roll.NoCR)
+	// 	}
+	// }
 
 	toggleState(): void {
 		this.enabled = !this.enabled

@@ -2,18 +2,7 @@ import { ItemGCS } from "@item/gcs"
 import { SETTINGS, SYSTEM_NAME } from "@module/data"
 import { LocalizeGURPS, Weight, WeightUnits, fxp } from "@util"
 import { EquipmentModifierSource } from "./data"
-import {
-	EquipmentModifierWeightType,
-	EquipmentModifierWeightValueType,
-	determineModifierWeightValueTypeFromString,
-	extractFraction,
-} from "./weight"
-import {
-	EquipmentModifierCostType,
-	EquipmentModifierCostValueType,
-	determineModifierCostValueTypeFromString,
-	extractValue,
-} from "./cost"
+import { emcost, emweight } from "@util/enum"
 
 export class EquipmentModifierGURPS extends ItemGCS<EquipmentModifierSource> {
 	get enabled(): boolean {
@@ -24,11 +13,11 @@ export class EquipmentModifierGURPS extends ItemGCS<EquipmentModifierSource> {
 		return this.system.tech_level
 	}
 
-	get costType(): EquipmentModifierCostType {
+	get costType(): emcost.Type {
 		return this.system.cost_type
 	}
 
-	get weightType(): EquipmentModifierWeightType {
+	get weightType(): emweight.Type {
 		return this.system.weight_type
 	}
 
@@ -48,25 +37,23 @@ export class EquipmentModifierGURPS extends ItemGCS<EquipmentModifierSource> {
 
 	get costDescription(): string {
 		if (
-			this.costType === EquipmentModifierCostType.Original &&
+			this.costType === emcost.Type.Original &&
 			(this.costAmount === "" || this.costAmount === "+0")
 		)
 			return ""
-		return `${parseFloat(this.costAmount).signedString()} ${
-			LocalizeGURPS.translations.gurps.item.cost_type[this.costType]
-		}`
+		return `${parseFloat(this.costAmount).signedString()} ${LocalizeGURPS.translations.gurps.item.cost_type[this.costType]
+			}`
 	}
 
 	get weightDescription(): string {
 		if (
-			this.weightType === EquipmentModifierWeightType.Original &&
+			this.weightType === emweight.Type.Original &&
 			(this.weightAmount === "" || this.weightAmount.startsWith("+0"))
 		)
 			return ""
-		return `${
-			(Weight.fromString(this.weightUnits) >= 0 ? "+" : "") +
+		return `${(Weight.fromString(this.weightUnits) >= 0 ? "+" : "") +
 			Weight.format(Weight.fromString(this.weightAmount), this.weightUnits)
-		} ${LocalizeGURPS.translations.gurps.item.weight_type[this.weightType]}`
+			} ${emweight.Type.toString(this.weightType)}`
 	}
 }
 
@@ -81,10 +68,11 @@ export function weightAdjustedForModifiers(
 	// apply all equipment.OriginalWeight
 	modifiers.forEach(mod => {
 		if (!mod.enabled) return
-		if (mod.system.weight_type === EquipmentModifierWeightType.Original) {
-			let t = determineModifierWeightValueTypeFromString(EquipmentModifierWeightType.Original, mod.system.weight)
-			let amt = extractFraction(t, mod.system.weight).value
-			if (t === EquipmentModifierWeightValueType.Addition) {
+		if (mod.system.weight_type === emweight.Type.Original) {
+			let t =
+				emweight.Type.determineModifierWeightValueTypeFromString(emweight.Type.Original, mod.system.weight)
+			let amt = emweight.Value.extractFraction(t, mod.system.weight).value
+			if (t === emweight.Value.Addition) {
 				w += Weight.toPounds(amt, Weight.trailingWeightUnitsFromString(mod.system.weight, defUnits))
 			} else {
 				percentages += amt
@@ -93,15 +81,15 @@ export function weightAdjustedForModifiers(
 	})
 	if (percentages !== 0) w += Number(weight) * (percentages / 100)
 
-	w = processMultiplyAddWeightStep(EquipmentModifierWeightType.Base, w, defUnits, modifiers)
-	w = processMultiplyAddWeightStep(EquipmentModifierWeightType.FinalBase, w, defUnits, modifiers)
-	w = processMultiplyAddWeightStep(EquipmentModifierWeightType.Final, w, defUnits, modifiers)
+	w = processMultiplyAddWeightStep(emweight.Type.Base, w, defUnits, modifiers)
+	w = processMultiplyAddWeightStep(emweight.Type.FinalBase, w, defUnits, modifiers)
+	w = processMultiplyAddWeightStep(emweight.Type.Final, w, defUnits, modifiers)
 
 	return Math.max(w, 0)
 }
 
 function processMultiplyAddWeightStep(
-	type: EquipmentModifierWeightType,
+	type: emweight.Type,
 	weight: number,
 	units: WeightUnits,
 	modifiers: Collection<EquipmentModifierGURPS>
@@ -110,13 +98,13 @@ function processMultiplyAddWeightStep(
 	modifiers.forEach(mod => {
 		if (!mod.enabled) return
 		if (mod.system.weight_type === type) {
-			let t = determineModifierWeightValueTypeFromString(type, mod.system.weight)
-			let amt = extractFraction(t, mod.system.weight)
-			if (t === EquipmentModifierWeightValueType.Addition)
+			let t = emweight.Type.determineModifierWeightValueTypeFromString(type, mod.system.weight)
+			let amt = emweight.Value.extractFraction(t, mod.system.weight)
+			if (t === emweight.Value.Addition)
 				w += Weight.toPounds(amt.value, Weight.trailingWeightUnitsFromString(mod.system.weight, units))
-			else if (t === EquipmentModifierWeightValueType.PercentageMultiplier)
+			else if (t === emweight.Value.PercentageMultiplier)
 				weight = (weight * amt.numerator) / (amt.denominator * 100)
-			else if (t === EquipmentModifierWeightValueType.Multiplier)
+			else if (t === emweight.Value.Multiplier)
 				weight = (weight * amt.numerator) / amt.denominator
 		}
 	})
@@ -124,30 +112,33 @@ function processMultiplyAddWeightStep(
 }
 
 export function valueAdjustedForModifiers(value: number, modifiers: Collection<EquipmentModifierGURPS>): number {
-	let cost = processNonCFStep(EquipmentModifierCostType.Original, value, modifiers)
+	let cost = processNonCFStep(emcost.Type.Original, value, modifiers)
 
 	let cf = 0
 	modifiers.forEach(mod => {
 		if (!mod.enabled) return
-		if (mod.costType === EquipmentModifierCostType.Base) {
-			let t = determineModifierCostValueTypeFromString(EquipmentModifierCostType.Base, mod.costAmount)
-			cf += extractValue(t, mod.costAmount)
-			if (t === EquipmentModifierCostValueType.Multiplier) cf--
+		if (mod.costType === emcost.Type.Base) {
+			const t = emcost.Type.fromString(emcost.Type.Base, mod.costAmount)
+			cf += emcost.Value.extractValue(t, mod.costAmount)
+			if (t === emcost.Value.Multiplier) {
+				cf -= 1
+			}
 		}
 	})
 	if (cf !== 0) {
 		cf = Math.max(cf, -0.8)
-		cost *= cf + 1
+		cost *= Math.max(cf, -0.8) + 1
 	}
 
-	cost = processNonCFStep(EquipmentModifierCostType.FinalBase, cost, modifiers)
-	cost = processNonCFStep(EquipmentModifierCostType.Final, cost, modifiers)
+	cost = processNonCFStep(emcost.Type.FinalBase, cost, modifiers)
+
+	cost = processNonCFStep(emcost.Type.Final, cost, modifiers)
 
 	return Math.max(cost, 0)
 }
 
 function processNonCFStep(
-	costType: EquipmentModifierCostType,
+	costType: emcost.Type,
 	value: number,
 	modifiers: Collection<EquipmentModifierGURPS>
 ): number {
@@ -156,21 +147,21 @@ function processNonCFStep(
 	modifiers.forEach(mod => {
 		if (!mod.enabled) return
 		if (mod.costType === costType) {
-			const t = determineModifierCostValueTypeFromString(costType, mod.costAmount)
-			const amt = extractValue(t, mod.costAmount)
+			const t = emcost.Type.fromString(costType, mod.costAmount)
+			const amt = emcost.Value.extractValue(t, mod.costAmount)
 			switch (t) {
-				case EquipmentModifierCostValueType.Addition:
+				case emcost.Value.Addition:
 					additions += amt
 					break
-				case EquipmentModifierCostValueType.Percentage:
+				case emcost.Value.Percentage:
 					percentages += amt
 					break
-				case EquipmentModifierCostValueType.Multiplier:
+				case emcost.Value.Multiplier:
 					cost *= amt
 			}
 		}
 	})
 	cost += additions
 	if (percentages !== 0) cost += value * (percentages / 100)
-	return fxp.Int.from(cost)
+	return cost
 }

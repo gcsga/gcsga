@@ -24,7 +24,6 @@ import {
 import { ConditionalModifier } from "@module/conditional_modifier"
 import {
 	attrPrefix,
-	CRAdjustment,
 	DamageProgression,
 	EFFECT_ACTION,
 	gid,
@@ -47,7 +46,6 @@ import {
 	LocalizeGURPS,
 	newUUID,
 	numberCompare,
-	SelfControl,
 	stringCompare,
 	urlToBase64,
 	Weight,
@@ -66,7 +64,7 @@ import { Feature, featureMap, WeaponGURPS } from "@module/config"
 import { ConditionID } from "@item/condition"
 import Document, { DocumentModificationOptions, Metadata } from "types/foundry/common/abstract/document.mjs"
 import { ActorDataConstructorData } from "types/foundry/common/data/data.mjs/actorData"
-import { Attribute, AttributeDef, AttributeObj, AttributeType, PoolThreshold, ThresholdOp } from "@module/attribute"
+import { Attribute, AttributeDef, AttributeObj, PoolThreshold, ThresholdOp } from "@module/attribute"
 import { ResourceTracker, ResourceTrackerDef, ResourceTrackerObj } from "@module/resource_tracker"
 import {
 	AttributeBonus,
@@ -81,12 +79,11 @@ import {
 	SpellPointBonus,
 	WeaponBonus,
 	WeaponBonusType,
-	skillsel,
 	stlimit,
-	wsel,
 } from "@feature"
 import { MoveType, MoveTypeDef, MoveTypeObj } from "@module/move_type"
 import { Int } from "@util/fxp"
+import { attribute, selfctrl, skillsel, wsel } from "@util/enum"
 
 export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	attributes: Map<string, Attribute> = new Map()
@@ -325,7 +322,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	primaryAttributes(includeSeparators = false): Map<string, Attribute> {
 		const atts = new Map([...this.attributes].filter(([_k, v]) => v.attribute_def.isPrimary))
 		if (includeSeparators) return atts
-		return new Map([...atts].filter(([_k, v]) => v.attribute_def.type !== AttributeType.PrimarySeparator))
+		return new Map([...atts].filter(([_k, v]) => v.attribute_def.type !== attribute.Type.PrimarySeparator))
 	}
 
 	secondaryAttributes(includeSeparators = false): Map<string, Attribute> {
@@ -335,13 +332,13 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 			)
 		)
 		if (includeSeparators) return atts
-		return new Map([...atts].filter(([_k, v]) => v.attribute_def.type !== AttributeType.SecondarySeparator))
+		return new Map([...atts].filter(([_k, v]) => v.attribute_def.type !== attribute.Type.SecondarySeparator))
 	}
 
 	poolAttributes(includeSeparators = false): Map<string, Attribute> {
-		const atts = new Map([...this.attributes].filter(([_k, v]) => v.attribute_def.type === AttributeType.Pool))
+		const atts = new Map([...this.attributes].filter(([_k, v]) => v.attribute_def.type === attribute.Type.Pool))
 		if (includeSeparators) return atts
-		return new Map([...atts].filter(([_k, v]) => v.attribute_def.type !== AttributeType.PoolSeparator))
+		return new Map([...atts].filter(([_k, v]) => v.attribute_def.type !== attribute.Type.PoolSeparator))
 	}
 
 	get attributePoints(): number {
@@ -723,7 +720,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	// Flat list of all hit locations
 	get HitLocations(): HitLocation[] {
-		const recurseLocations = function (table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
+		const recurseLocations = function(table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
 			table.locations.forEach(e => {
 				locations.push(e)
 				if (e.subTable) locations = recurseLocations(e.subTable, locations)
@@ -878,8 +875,8 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 			for (const mod of t.deepModifiers) {
 				this.reactionsFromFeatureList(source, mod.features, reactionMap)
 			}
-			if (t.cr !== 0 && t.crAdj === CRAdjustment.ReactionPenalty) {
-				let amount = SelfControl.adjustment(t.cr, t.crAdj)
+			if (t.CR !== 0 && t.CRAdj === selfctrl.Adjustment.ReactionPenalty) {
+				let amount = selfctrl.Adjustment.adjustment(t.CRAdj, t.CR)
 				let situation = LocalizeGURPS.format(LocalizeGURPS.translations.gurps.reaction.cr, {
 					trait: t.name ?? "",
 				})
@@ -983,9 +980,9 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 			const attr = new Attribute(this, def.id, i)
 			if (
 				[
-					AttributeType.PrimarySeparator,
-					AttributeType.SecondarySeparator,
-					AttributeType.PoolSeparator,
+					attribute.Type.PrimarySeparator,
+					attribute.Type.SecondarySeparator,
+					attribute.Type.PoolSeparator,
 				].includes(def.type)
 			) {
 				atts.push({
@@ -1118,7 +1115,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		super.prepareData()
 		const pools: any = {}
 		this.attributes.forEach(e => {
-			if (e.attribute_def.type === AttributeType.Pool) {
+			if (e.attribute_def.type === attribute.Type.Pool) {
 				pools[e.id] = { value: e.current, min: -Infinity, max: e.max }
 			}
 		})
@@ -1184,8 +1181,8 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 						this.processFeature(t, undefined, f, levels)
 					}
 			}
-			if (CR_Features.has(t.crAdj))
-				for (const f of CR_Features?.get(t.crAdj) || []) {
+			if (CR_Features.has(t.CRAdj))
+				for (const f of CR_Features?.get(t.CRAdj) || []) {
 					this.processFeature(t, undefined, f, levels)
 				}
 			for (const m of t.deepModifiers) {
@@ -1286,7 +1283,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		this._prevAttributes = this.attributes
 		this._prevAttributes = new Map()
 		this.attributes.forEach((e, k) => {
-			if (e.attribute_def.type === AttributeType.Pool) {
+			if (e.attribute_def.type === attribute.Type.Pool) {
 				e._overridenThreshold = new PoolThreshold({ ...e.currentThreshold } as any)
 			}
 			this._prevAttributes.set(k, e)
@@ -1791,7 +1788,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 			console.warn(`No such variable definition: $${variableName}`)
 			return ""
 		}
-		if ((def instanceof ResourceTrackerDef || def.type === AttributeType.Pool) && parts.length > 1) {
+		if ((def instanceof ResourceTrackerDef || def.type === attribute.Type.Pool) && parts.length > 1) {
 			switch (parts[1]) {
 				case "current":
 					return attr.current.toString()
@@ -1872,7 +1869,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 			f.id = e.id
 			delete f.id
 			delete f.order
-			if (f.type !== AttributeType.Pool) delete f.thresholds
+			if (f.type !== attribute.Type.Pool) delete f.thresholds
 			return f
 		})
 		system.attributes = system.attributes.map((e: Partial<AttributeObj>) => {

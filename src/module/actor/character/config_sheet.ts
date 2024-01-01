@@ -3,12 +3,13 @@ import { LocalizeGURPS, getNewAttributeId, prepareFormData } from "@util"
 import { gid, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { HitLocationTable } from "./hit_location"
 import { DnD } from "@util/drag_drop"
-import { AttributeDefObj, AttributeType } from "@module/attribute"
+import { AttributeDefObj } from "@module/attribute"
 import { CharacterSheetGURPS } from "./sheet"
 import { ResourceTrackerDefObj } from "@module/resource_tracker"
 import { PDF } from "@module/pdf"
 import { MoveTypeDefObj, MoveTypeOverrideConditionType } from "@module/move_type"
 import { CharacterGURPS } from "./document"
+import { attribute } from "@util/enum"
 
 enum ListType {
 	Attributes = "attributes",
@@ -99,7 +100,7 @@ export class CharacterSheetConfig extends FormApplication {
 	activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		html.find("textarea")
-			.each(function () {
+			.each(function() {
 				this.setAttribute("style", `height:${this.scrollHeight + 2}px;overflow-y:hidden;`)
 			})
 			.on("input", event => {
@@ -168,11 +169,11 @@ export class CharacterSheetConfig extends FormApplication {
 				if (files) {
 					readTextFromFile(files[0]).then(
 						text =>
-							(this.file = {
-								text: text,
-								name: files[0].name,
-								path: files[0].path,
-							})
+						(this.file = {
+							text: text,
+							name: files[0].name,
+							path: files[0].path,
+						})
 					)
 				}
 				this.render()
@@ -242,7 +243,7 @@ export class CharacterSheetConfig extends FormApplication {
 		switch (type) {
 			case ListType.Attributes:
 				this.attributes.push({
-					type: AttributeType.Integer,
+					type: attribute.Type.Integer,
 					id: new_id,
 					name: "",
 					attribute_base: "",
@@ -456,7 +457,7 @@ export class CharacterSheetConfig extends FormApplication {
 				parent_index: parent_index,
 			})
 		)
-		;(event as any).dragType = type
+			; (event as any).dragType = type
 	}
 
 	protected _onDragItem(event: JQuery.DragOverEvent): void {
@@ -543,7 +544,7 @@ export class CharacterSheetConfig extends FormApplication {
 	}
 
 	close(options?: FormApplication.CloseOptions | undefined): Promise<void> {
-		;(this.object.sheet as unknown as CharacterSheetGURPS).config = null
+		; (this.object.sheet as unknown as CharacterSheetGURPS).config = null
 		return super.close(options)
 	}
 }

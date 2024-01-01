@@ -395,15 +395,6 @@
 				"reimport": "Re-Import"
 			},
 			"cr_reaction": "from others when {trait} is triggered",
-			"cr_adj_display": {
-				"none": "",
-				"action_penalty": "{penalty} Action Penalty",
-				"reaction_penalty": "{penalty} Reaction Penalty",
-				"fright_check_penalty": "{penalty} Fright Check Penalty",
-				"fright_check_bonus": "+{penalty} Fright Check Bonus",
-				"minor_cost_of_living_increase": "+{penalty}% Cost of Living Increase",
-				"major_cost_of_living_increase": "+{penalty}% Cost of Living Increase"
-			},
 			"resource_trackers": {
 				"title": "Resource Trackers"
 			},
@@ -698,12 +689,6 @@
 				"weight_percentage_multiplier": "x{value}%",
 				"weight_multiplier": "x{value}"
 			},
-			"weight_type": {
-				"to_original_weight": "to original weight",
-				"to_base_weight": "to base weight",
-				"to_final_base_weight": "to_final base weight",
-				"to_final_weight": "to final weight"
-			},
 			"cost_type": {
 				"to_original_cost": "to original cost",
 				"to_base_cost": "to base cost",
@@ -907,22 +892,6 @@
 			"from_equipment": "from equipment {name}"
 		},
 		"select": {
-			"cr_level": {
-				"0": "None Required",
-				"6": "CR: 6 (Resist Rarely)",
-				"9": "CR: 9 (Resist Fairly Often)",
-				"12": "CR: 12 (Resist Quite Often)",
-				"15": "CR: 15 (Resist Almost All The Time)"
-			},
-			"cr_adj": {
-				"none": "None",
-				"action_penalty": "Includes an Action Penalty for Failure",
-				"reaction_penalty": "Includes a Reaction Penalty for Failure",
-				"fright_check_penalty": "Includes a Fright Check Penalty",
-				"fright_check_bonus": "Includes a Fright Check Bonus",
-				"minor_cost_of_living_increase": "Includes a Minor Cost of Living Increase",
-				"major_cost_of_living_increase": "Includes a Major Cost of Living Increase and Merchant Skill Penalty"
-			},
 			"number_compare": {
 				"none": "is anything",
 				"is": "is",
@@ -1017,11 +986,6 @@
 				"weapons_with_name": "to weapons with name",
 				"this_weapon": "to this weapon"
 			},
-			"weapon_bonus_selection_type": {
-				"weapons_with_required_skill": "to weapons whose required skill name",
-				"weapons_with_name": "to weapons whose name",
-				"this_weapon": "to this weapon"
-			},
 			"spell_match": {
 				"all_colleges": "to all colleges",
 				"college_name": "to the college whose name",
@@ -1064,12 +1028,6 @@
 				"to_base_cost": "to base cost (e.g. \"x2\", \"+2 CF\", \"-0.2 CF\")",
 				"to_final_base_cost": "to final base cost (e.g. \"+5\", \"-5\", \"+10%\", \"-10%\", \"x3.2\")",
 				"to_final_cost": "to final cost (e.g. \"+5\", \"-5\", \"+10%\", \"-10%\", \"x3.2\")"
-			},
-			"eqp_mod_weight_type": {
-				"to_original_weight": "to original weight (e.g. \"+5 lb\", \"-5 lb\", \"+10%\", \"-10%\")",
-				"to_base_weight": "to base weight (e.g. \"+5 lb\", \"-5 lb\", \"x10%\", \"x3\", \"x2/3\")",
-				"to_final_base_weight": "to final base weight (e.g. \"+5 lb\", \"-5 lb\", \"x10%\", \"x3\", \"x2/3\")",
-				"to_final_weight": "to final weight (e.g. \"+5 lb\", \"-5 lb\", \"x10%\", \"x3\", \"x2/3\")"
 			},
 			"difficulty": {
 				"easy": "E",
@@ -1122,16 +1080,6 @@
 				"t": "t",
 				"kg": "kg",
 				"g": "g"
-			},
-			"attribute_type": {
-				"integer": "Integer",
-				"integer_ref": "Integer (Display Only)",
-				"decimal": "Decimal",
-				"decimal_ref": "Decimal (Display Only)",
-				"pool": "Pool",
-				"primary_separator": "Primary Separator",
-				"secondary_separator": "Secondary Separator",
-				"pool_separator": "Pool Separator"
 			},
 			"study_type": {
 				"self": "Self-Taught",
@@ -1950,6 +1898,95 @@
 			"water": "Water Move",
 			"air": "Air Move",
 			"space": "Space Move"
+		},
+		"enum": {
+			"emcost": {
+				"type": {
+					"string": {
+						"to_original_cost": "to original cost",
+						"to_base_cost": "to base cost",
+						"to_final_base_cost": "to final base cost",
+						"to_final_cost": "to final cost"
+					},
+					"alt_string": {
+						"to_original_cost": "\"+5\", \"-5\", \"+10%\", \"-10%\", \"x3.2\"",
+						"to_base_cost": "\"+5\", \"-5\", \"+10%\", \"-10%\", \"x3.2\"",
+						"to_final_base_cost": "\"x2\", \"+2 CF\", \"-0.2 CF\"",
+						"to_final_cost": "\"+5\", \"-5\", \"+10%\", \"-10%\", \"x3.2\""
+					}
+				},
+				"value": {
+					"+": "+",
+					"%": "%",
+					"x": "x",
+					"cf": "CF"
+				}
+			},
+			"emweight": {
+				"type": {
+					"string": {
+						"to_original_weight": "to original weight",
+						"to_base_weight": "to base weight",
+						"to_final_base_weight": "to final base weight",
+						"to_final_weight": "to final weight"
+					},
+					"alt_string": {
+						"to_original_weight": "\"+5 lb\", \"-5 lb\", \"+10%\", \"-10%\"",
+						"to_base_weight": "\"+5 lb\", \"-5 lb\", \"x10%\", \"x3\", \"x2/3\"",
+						"to_final_base_weight": "\"+5 lb\", \"-5 lb\", \"x10%\", \"x3\", \"x2/3\"",
+						"to_final_weight": "\"+5 lb\", \"-5 lb\", \"x10%\", \"x3\", \"x2/3\""
+					}
+				}
+			},
+			"attribute": {
+				"integer": "Integer",
+				"integer_ref": "Integer (Display Only)",
+				"decimal": "Decimal",
+				"decimal_ref": "Decimal (Display Only)",
+				"pool": "Pool",
+				"primary_separator": "Primary Separator",
+				"secondary_separator": "Secondary Separator",
+				"pool_separator": "Pool Separator"
+			},
+			"wsel": {
+				"weapons_with_required_skill": "to weapons whose required skill name",
+				"this_weapon": "to this weapon",
+				"weapons_with_name": "to weapons whose name"
+			},
+			"skillsel": {
+				"skills_with_name": "to skills whose name",
+				"this_weapon": "to this weapon",
+				"weapons_with_name": "to weapons whose name"
+			},
+			"selfctrl": {
+				"roll": {
+					"0": "None Required",
+					"6": "CR: 6 (Resist Rarely)",
+					"9": "CR: 9 (Resist Fairly Often)",
+					"12": "CR: 12 (Resist Quite Often)",
+					"15": "CR: 15 (Resist Almost All The Time)"
+				},
+				"adjustment": {
+					"string": {
+						"none": "None",
+						"action_penalty": "Includes an Action Penalty for Failure",
+						"reaction_penalty": "Includes a Reaction Penalty for Failure",
+						"fright_check_penalty": "Includes a Fright Check Penalty",
+						"fright_check_bonus": "Includes a Fright Check Bonus",
+						"minor_cost_of_living_increase": "Includes a Minor Cost of Living Increase",
+						"major_cost_of_living_increase": "Includes a Major Cost of Living Increase and Merchant Skill Penalty"
+					},
+					"alt_string": {
+						"none": "None",
+						"action_penalty": "{penalty} Action Penalty",
+						"reaction_penalty": "{penalty} Reaction Penalty",
+						"fright_check_penalty": "{penalty} Fright Check Penalty",
+						"fright_check_bonus": "+{penalty} Fright Check Bonus",
+						"minor_cost_of_living_increase": "+{penalty}% Cost of Living Increase",
+						"major_cost_of_living_increase": "+{penalty}% Cost of Living Increase"
+					}
+				}
+			}
 		}
 	}
 }

@@ -2,9 +2,8 @@ import { ItemGCS } from "@item/gcs"
 import { TraitGURPS } from "@item/trait"
 import { TraitModifierGURPS } from "@item/trait_modifier"
 import { TraitModifierContainerGURPS } from "@item/trait_modifier_container"
-import { CR, CRAdjustment } from "@module/data"
-import { LocalizeGURPS, SelfControl } from "@util"
 import { TraitContainerSource, TraitContainerType } from "./data"
+import { selfctrl } from "@util/enum"
 
 export class TraitContainerGURPS extends ItemGCS<TraitContainerSource> {
 	unsatisfied_reason = ""
@@ -34,25 +33,15 @@ export class TraitContainerGURPS extends ItemGCS<TraitContainerSource> {
 	}
 
 	get skillLevel(): number {
-		return this.cr
+		return this.CR
 	}
 
-	get cr(): this["system"]["cr"] {
+	get CR(): selfctrl.Roll {
 		return this.system.cr
 	}
 
-	get crAdj(): CRAdjustment {
+	get CRAdj(): selfctrl.Adjustment {
 		return this.system.cr_adj
-	}
-
-	get formattedCR(): string {
-		let cr = ""
-		if (this.cr !== CR.None) cr += LocalizeGURPS.translations.gurps.select.cr_level[`${this.cr}`]
-		if (this.crAdj !== CRAdjustment.None)
-			cr += `, ${game.i18n.format(`gurps.select.cr_adj.${this.crAdj}`, {
-				penalty: SelfControl.adjustment(this.cr, this.crAdj),
-			})}`
-		return cr
 	}
 
 	get roundCostDown(): boolean {
@@ -60,20 +49,20 @@ export class TraitContainerGURPS extends ItemGCS<TraitContainerSource> {
 	}
 
 	get modifierNotes(): string {
-		let n = ""
-		if (this.cr !== CR.None) {
-			n += LocalizeGURPS.translations.gurps.select.cr_level[`${this.cr}`]
-			if (this.crAdj !== CRAdjustment.None) {
-				n += `, ${LocalizeGURPS.format(LocalizeGURPS.translations.gurps.character.cr_adj_display[this.crAdj], {
-					penalty: "TODO",
-				})}`
+		let buffer = ""
+		if (this.CR !== selfctrl.Roll.NoCR) {
+			buffer += selfctrl.Roll.toString(this.CR)
+			if (this.CRAdj !== selfctrl.Adjustment.NoCRAdj) {
+				buffer += ", "
+				buffer += selfctrl.Adjustment.description(this.CRAdj, this.CR)
 			}
 		}
-		for (const m of this.deepModifiers) {
-			if (n.length) n += ";"
-			n += m.fullDescription
-		}
-		return n
+		this.deepModifiers.forEach(mod => {
+			if (!mod.enabled) return
+			if (buffer.length !== 0) buffer += "; "
+			buffer += mod.fullDescription
+		})
+		return buffer
 	}
 
 	// Embedded Items
