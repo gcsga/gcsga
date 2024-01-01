@@ -6,6 +6,7 @@ import { ItemData } from "types/foundry/common/data/module.mjs"
 import { BaseItemSourceGURPS, ItemConstructionContextGURPS, ItemFlags } from "./data"
 import { ItemDataConstructorData } from "types/foundry/common/data/data.mjs/itemData"
 import { MergeObjectOptions } from "types/foundry/common/utils/helpers.mjs"
+import { VariableResolver } from "@util"
 
 export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSourceGURPS> extends Item {
 	_id!: string
@@ -16,7 +17,6 @@ export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSour
 	private _dummyActor: VariableResolver | null
 
 	system!: SourceType["system"]
-
 
 	constructor(data: ItemDataGURPS | any, context: Context<Actor> & ItemConstructionContextGURPS = {}) {
 		if (context.gurps?.ready) {
@@ -62,6 +62,14 @@ export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSour
 		else if (type === ItemType.Equipment) type = "equipment"
 		else if (type === ItemType.LegacyEquipment) type = "legacy_equipment"
 		return { img: `systems/${SYSTEM_NAME}/assets/icons/${type}.svg` }
+	}
+
+	get dummyActor(): VariableResolver | null {
+		return this._dummyActor
+	}
+
+	set dummyActor(actor: VariableResolver | null) {
+		this._dummyActor = actor
 	}
 
 	get container(): Actor | ContainerGURPS | null {

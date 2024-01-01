@@ -7,6 +7,7 @@ import { DamageProgression } from "@module/data"
 import { MookSkill, MookTrait } from "@module/mook"
 import { MoveTypeDefObj } from "@module/move_type"
 import { stlimit, MoveBonusType } from "@feature"
+import { Encumbrance } from "@actor"
 
 // VariableResolver is used to resolve variables in expressions into their values.
 export interface VariableResolver {
@@ -30,6 +31,7 @@ export interface VariableResolver {
 	strikingST: number
 	throwingST: number
 	liftingST: number
+	dodge: (enc: Encumbrance) => number
 	effectiveST: (initialST: number) => number
 	getFlag: (scope: any, key: string) => unknown
 	costReductionFor: (attributeID: string) => number

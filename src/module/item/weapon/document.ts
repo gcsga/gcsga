@@ -15,6 +15,7 @@ import { CharacterGURPS } from "@actor"
 import { WeaponStrength } from "./weapon_strength"
 
 export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSource> extends BaseItemGURPS<SourceType> {
+
 	get itemName(): string {
 		if (this.container instanceof Item) return this.container?.name ?? ""
 		return ""
@@ -42,7 +43,7 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 
 	get secondaryText(): string {
 		let outString = '<div class="item-notes">'
-		if (this.container) {
+		if (this.container && this.container instanceof Item) {
 			outString += HandlebarsHelpersGURPS.format((this.container as any).notes)
 			if (this.system.usage_notes) outString += "<br>"
 		}
@@ -77,7 +78,7 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 	}
 
 	skillLevel(tooltip?: TooltipGURPS): number {
-		const actor = this.actor || this.dummyActor
+		const actor = (this.actor || this.dummyActor) as unknown as CharacterGURPS
 		if (!actor) return 0
 		let primaryTooltip = new TooltipGURPS()
 		if (tooltip) primaryTooltip = tooltip
@@ -292,16 +293,16 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 		actor.addWeaponWithSkillBonusesFor(name, specialization, this.usage, tags, dieCount, tooltip, bonusSet, allowed)
 		const nameQualifier = this.formattedName
 		actor.addNamedWeaponBonusesFor(nameQualifier, this.usage, tags, dieCount, tooltip, bonusSet, allowed)
-		const container = this.container as ItemGCS
-		if (container)
-			for (const f of container.features)
+		const container = this.container
+		if (container && container instanceof Item)
+			for (const f of (container as ItemGCS).features)
 				this._extractWeaponBonus(f, bonusSet, allowed, Int.from(dieCount), tooltip)
 		if (
 			[ItemType.Trait, ItemType.TraitContainer, ItemType.Equipment, ItemType.EquipmentContainer].includes(
 				this.container?.type as ItemType
 			)
 		) {
-			;(this.container as any).modifiers.forEach((mod: any) => {
+			; (this.container as any).modifiers.forEach((mod: any) => {
 				let bonus: Bonus
 				for (const f of mod.features) {
 					bonus = f

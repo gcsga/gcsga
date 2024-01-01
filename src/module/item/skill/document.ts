@@ -4,6 +4,7 @@ import { SkillDefault } from "@module/default"
 import { TooltipGURPS } from "@module/tooltip"
 import { difficultyRelativeLevel, inlineNote, LocalizeGURPS, parseInlineNoteExpressions } from "@util"
 import { SkillLevel, SkillSource } from "./data"
+import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
 
 export class SkillGURPS extends ItemGCS<SkillSource> {
 	level: SkillLevel = { level: 0, relative_level: 0, tooltip: new TooltipGURPS() }
@@ -298,7 +299,34 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		return !hadOne
 	}
 
-	incrementSkillLevel() {
+	setLevel(level: number) {
+		return this.update({ "system.points": this.getPointsForLevel(level) })
+	}
+
+	getPointsForLevel(level: number): number {
+		const basePoints = this.points
+		const oldLevel = this.calculateLevel().level
+		if (oldLevel > level) {
+			for (let points = basePoints; points > 0; points--) {
+				this.system.points = points
+				if (this.calculateLevel().level === level) {
+					return points
+				}
+			}
+			return 0
+		} else {
+			// HACK: capped at 100 points, probably not a good idea
+			for (let points = basePoints; points < 100; points++) {
+				this.system.points = points
+				if (this.calculateLevel().level === level) {
+					return points
+				}
+			}
+			return 100
+		}
+	}
+
+	incrementSkillLevel(options?: DocumentModificationOptions) {
 		const basePoints = this.points + 1
 		let maxPoints = basePoints
 		if (this.difficulty === Difficulty.Wildcard) maxPoints += 12
@@ -308,12 +336,12 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		for (let points = basePoints; points < maxPoints; points++) {
 			this.system.points = points
 			if (this.calculateLevel().level > oldLevel) {
-				return this.update({ "system.points": points })
+				return this.update({ "system.points": points }, options)
 			}
 		}
 	}
 
-	decrementSkillLevel() {
+	decrementSkillLevel(options?: DocumentModificationOptions) {
 		if (this.points <= 0) return
 		const basePoints = this.points
 		let minPoints = basePoints
@@ -335,7 +363,7 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 				this.system.points = Math.max(this.points - 1, 0)
 				if (this.calculateLevel().level !== oldLevel) {
 					this.system.points++
-					return this.update({ "system.points": this.points })
+					return this.update({ "system.points": this.points }, options)
 				}
 			}
 		}

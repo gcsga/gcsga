@@ -50,7 +50,6 @@ export class MookGeneratorSheet extends FormApplication {
 	}
 
 	getData(options?: Partial<ApplicationOptions> | undefined): MaybePromise<object> {
-		console.log("refresh")
 		const [primary_attributes, secondary_attributes, point_pools] = this.prepareAttributes(this.object.attributes)
 
 		return mergeObject(super.getData(options), {
@@ -58,9 +57,9 @@ export class MookGeneratorSheet extends FormApplication {
 			primary_attributes,
 			secondary_attributes,
 			point_pools,
-			button_text: this.testing ?
-				LocalizeGURPS.translations.gurps.system.mook.test :
-				LocalizeGURPS.translations.gurps.system.mook.create,
+			button_text: this.testing
+				? LocalizeGURPS.translations.gurps.system.mook.test
+				: LocalizeGURPS.translations.gurps.system.mook.create,
 			text: {
 				traits: this.object.traits.toString(),
 				skills: this.object.skills.toString(),
@@ -68,8 +67,8 @@ export class MookGeneratorSheet extends FormApplication {
 				equipment: this.object.equipment.toString(),
 				melee: this.object.melee.toString(),
 				ranged: this.object.traits.toString(),
-				catchall: this.object.text.catchall
-			}
+				catchall: this.object.text.catchall,
+			},
 		})
 	}
 
@@ -89,9 +88,7 @@ export class MookGeneratorSheet extends FormApplication {
 
 	private _onImportText(event: JQuery.ClickEvent) {
 		event.preventDefault()
-		const data = MookParser.init(this.object.text.catchall, this.object)
-			.parseStatBlock(this.object.text.catchall)
-		console.log(data)
+		const data = MookParser.init(this.object.text.catchall, this.object).parseStatBlock(this.object.text.catchall)
 		this.object.update(data)
 		return this.render()
 	}
@@ -101,12 +98,10 @@ export class MookGeneratorSheet extends FormApplication {
 		if (this.testing) {
 			this.testing = !this.testMook()
 			return this.render()
-		}
-		else return this.createMook()
+		} else return this.createMook()
 	}
 
 	private testMook() {
-		console.log(this.object)
 		if (this.object.profile.name === "") {
 			ui.notifications?.error(LocalizeGURPS.translations.gurps.error.mook.name)
 			return false
@@ -122,28 +117,12 @@ export class MookGeneratorSheet extends FormApplication {
 
 	protected override _getHeaderButtons(): Application.HeaderButton[] {
 		const buttons: Application.HeaderButton[] = [
-			// {
-			// 	label: "",
-			// 	class: "gmenu",
-			// 	icon: "gcs-all-seeing-eye",
-			// 	onclick: event => this._openGMenu(event),
-			// },
 		]
 		const all_buttons = super._getHeaderButtons()
 		all_buttons.at(-1)!.label = ""
 		all_buttons.at(-1)!.icon = "gcs-circled-x"
 		return [...buttons, all_buttons.at(-1)!]
 	}
-
-	// protected async _openGMenu(event: JQuery.ClickEvent) {
-	// 	event.preventDefault()
-	// 	this.config ??= new CharacterSheetConfig(this.actor as CharacterGURPS, {
-	// 		top: this.position.top! + 40,
-	// 		left: this.position.left! + (this.position.width! - DocumentSheet.defaultOptions.width!) / 2,
-	// 	})
-	// 	this.config.render(true)
-	// }
-	//
 
 	protected async _updateObject(_event: Event, formData: any): Promise<unknown> {
 		for (const i of Object.keys(formData)) {
@@ -165,7 +144,6 @@ export class MookGeneratorSheet extends FormApplication {
 			if (i === "thrust") formData.thrust = new DiceGURPS(formData.thrust)
 			if (i === "swing") formData.swing = new DiceGURPS(formData.swing)
 		}
-		console.log("update", formData)
 		return this.object.update(formData)
 	}
 }
