@@ -50,7 +50,6 @@ export class ModifierBucketWindow extends Application {
 		let height = parseFloat(html.css("height").replace("px", ""))
 		let left = Math.max(buttonLeft + buttonWidth / 2 - width / 2, 10)
 		html.css("left", `${left}px`)
-		console.log(buttonTop, height)
 		html.css("top", `${buttonTop - height - 10}px`)
 
 		// Focus the textbox on show
