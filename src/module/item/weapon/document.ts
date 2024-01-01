@@ -42,7 +42,7 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 
 	get secondaryText(): string {
 		let outString = '<div class="item-notes">'
-		if (this.container) {
+		if (this.container && this.container instanceof Item) {
 			outString += HandlebarsHelpersGURPS.format((this.container as any).notes)
 			if (this.system.usage_notes) outString += "<br>"
 		}
@@ -77,7 +77,7 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 	}
 
 	skillLevel(tooltip?: TooltipGURPS): number {
-		const actor = this.actor
+		const actor = (this.actor || this.dummyActor) as unknown as CharacterGURPS
 		if (!actor) return 0
 		let primaryTooltip = new TooltipGURPS()
 		if (tooltip) primaryTooltip = tooltip
@@ -243,7 +243,6 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 
 	exportSystemData(_keepOther: boolean): any {
 		const system = this.system
-		console.log(system)
 		// system.damage.base = new DiceGURPS(this.damage.base).toString(false)
 		// system.damage.fragmentation = new DiceGURPS(this.damage.fragmentation).toString(false)
 		return system
@@ -293,9 +292,9 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 		actor.addWeaponWithSkillBonusesFor(name, specialization, this.usage, tags, dieCount, tooltip, bonusSet, allowed)
 		const nameQualifier = this.formattedName
 		actor.addNamedWeaponBonusesFor(nameQualifier, this.usage, tags, dieCount, tooltip, bonusSet, allowed)
-		const container = this.container as ItemGCS
-		if (container)
-			for (const f of container.features)
+		const container = this.container
+		if (container && container instanceof Item)
+			for (const f of (container as ItemGCS).features)
 				this._extractWeaponBonus(f, bonusSet, allowed, Int.from(dieCount), tooltip)
 		if (
 			[ItemType.Trait, ItemType.TraitContainer, ItemType.Equipment, ItemType.EquipmentContainer].includes(

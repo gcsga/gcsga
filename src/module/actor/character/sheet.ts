@@ -20,7 +20,17 @@ import { gid, ItemType, RollType, SYSTEM_NAME } from "@module/data"
 import { PDF } from "@module/pdf"
 import { ResourceTrackerObj } from "@module/resource_tracker"
 import { RollGURPS } from "@module/roll"
-import { dollarFormat, evaluateToNumber, isContainer, Length, LocalizeGURPS, newUUID, Weight, WeightUnits } from "@util"
+import {
+	dollarFormat,
+	dom,
+	evaluateToNumber,
+	isContainer,
+	Length,
+	LocalizeGURPS,
+	newUUID,
+	Weight,
+	WeightUnits,
+} from "@util"
 import { CharacterSheetConfig } from "./config_sheet"
 import { CharacterFlagDefaults, CharacterMove, Encumbrance } from "./data"
 import { PointRecordSheet } from "./points_sheet"
@@ -53,6 +63,13 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		if (!game.user.isGM && this.actor.limited)
 			return `/systems/${SYSTEM_NAME}/templates/actor/character/sheet-limited.hbs`
 		return `/systems/${SYSTEM_NAME}/templates/actor/character/sheet.hbs`
+	}
+
+	protected _onDrop(event: DragEvent): void {
+		super._onDrop(event)
+		const sheet = $(this.element)
+		sheet.find(".item-list.dragsection").removeClass("dragsection")
+		sheet.find(".item-list.dragindirect").removeClass("dragindirect")
 	}
 
 	protected async _onDropItem(event: DragEvent, data: ActorSheet.DropData.Item & { uuid: string }): Promise<unknown> {
@@ -155,7 +172,8 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 
 		// Hover Over
 		// html.find(".item").on("dragover", event => this._onDragItem(event))
-		html.on("dragover", event => this._onDragItem(event))
+		// html.on("dragover", event => this._onDragItem(event))
+		html[0].addEventListener("dragover", event => this._onDragItem(event))
 
 		// Points Record
 		html.find(".edit-points").on("click", event => this._openPointsRecord(event))
@@ -478,6 +496,28 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 					return item.update({ "system.equipped": !item.equipped })
 				},
 			})
+			if (item.other)
+				menuItems.push({
+					name: LocalizeGURPS.translations.gurps.context.move_to_carried,
+					icon: "<i class='fas fa-arrows-cross'></i>",
+					callback: () =>
+						(item as Item).setFlag(
+							SYSTEM_NAME,
+							ItemFlags.Other,
+							!item.getFlag(SYSTEM_NAME, ItemFlags.Other)
+						),
+				})
+			else
+				menuItems.push({
+					name: LocalizeGURPS.translations.gurps.context.move_to_other,
+					icon: "<i class='fas fa-arrows-cross'></i>",
+					callback: () =>
+						(item as Item).setFlag(
+							SYSTEM_NAME,
+							ItemFlags.Other,
+							!item.getFlag(SYSTEM_NAME, ItemFlags.Other)
+						),
+				})
 		}
 		if (item instanceof TraitGURPS && item.isLeveled) {
 			menuItems.push({
@@ -849,7 +889,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		})
 
 		const siblingItems = (targetItemContainer?.items as any).filter(
-			(e: ItemGURPS) => e.id !== sourceItem.id && sourceItem.sameSection(e)
+			(e: Item) => e.id !== sourceItem.id && sourceItem.sameSection(e)
 		) as ItemGURPS[]
 
 		const sortUpdates = SortingHelpers.performIntegerSort(newItems[0], {
@@ -942,11 +982,11 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		}
 
 		const siblingItems = (targetItemContainer?.items as any).filter(
-			(e: ItemGURPS) => e.id !== sourceItem.id && sourceItem.sameSection(e)
+			(e: Item) => e.id !== sourceItem.id && sourceItem.sameSection(e)
 		) as ItemGURPS[]
 
 		// target item and source item are not in the same table
-		if (targetItem && !sourceItem.sameSection(targetItem)) return
+		if (targetItem && !sourceItem.sameSection(targetItem as Item)) return
 
 		// Sort updates sorts all items within the same container
 		const sortUpdates = SortingHelpers.performIntegerSort(sourceItem, {
@@ -973,7 +1013,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		return this.actor.updateEmbeddedDocuments("Item", updateData) as Promise<ItemGURPS[]>
 	}
 
-	protected _onDragItem(event: JQuery.DragOverEvent): void {
+	protected _onDragItem(event: DragEvent): void {
 		const sheet = $(this.element)
 		const itemData = $("#drag-ghost").data("item") as ItemDataGURPS
 		if (!itemData) return
@@ -987,8 +1027,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		})
 
 		let direct = false
-		currentTable.addClass("dragsection")
-		if (![...$(event.target), ...$(event.target).parents()].includes(currentTable[0])) {
+		if (![event.target, ...dom.parents(event.target, "")].includes(currentTable[0])) {
 			currentTable.addClass("dragindirect")
 		} else {
 			direct = true
@@ -1053,8 +1092,8 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 	}
 
 	getData(options?: Partial<ActorSheet.Options> | undefined): any {
-		const data = super.getData(options)
 		this.actor.prepareData()
+		const data = super.getData(options)
 		// if (!this.noPrepare) this.actor.prepareData()
 		// else this.noPrepare = false
 		const actorData = this.actor.toObject(false) as any

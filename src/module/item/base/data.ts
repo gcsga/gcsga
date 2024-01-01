@@ -1,6 +1,8 @@
 import { ItemType, SYSTEM_NAME } from "@module/data"
 import { Context } from "types/foundry/common/abstract/document.mjs"
+import { ActiveEffectDataProperties } from "types/foundry/common/data/data.mjs/activeEffectData"
 import { ItemDataSource } from "types/foundry/common/data/data.mjs/itemData"
+import { PropertiesToSource } from "types/types/helperTypes"
 
 export interface BaseItemSourceGURPS<TItemType extends ItemType = ItemType, TSystemData extends object = object>
 	extends ItemDataSource {
@@ -8,6 +10,7 @@ export interface BaseItemSourceGURPS<TItemType extends ItemType = ItemType, TSys
 	type: TItemType
 	system: TSystemData
 	flags: DeepPartial<ItemFlagsGURPS>
+	effects: PropertiesToSource<ActiveEffectDataProperties>[]
 }
 
 export enum ItemFlags {

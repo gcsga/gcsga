@@ -11,7 +11,7 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 
 	unsatisfied_reason = ""
 
-	private _dummyActor: (typeof CONFIG.GURPS.Actor.documentClasses)[ActorType.Character] | null = null
+	// private _dummyActor: (typeof CONFIG.GURPS.Actor.documentClasses)[ActorType.Character] | null = null
 
 	// Static get schema(): typeof TechniqueData {
 	// 	return TechniqueData;
@@ -135,14 +135,14 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 		return this.calculateLevel().level
 	}
 
-	// Used for defaults
-	get dummyActor(): (typeof CONFIG.GURPS.Actor.documentClasses)[ActorType.Character] | null {
-		return this._dummyActor
-	}
+	// // Used for defaults
+	// get dummyActor(): (typeof CONFIG.GURPS.Actor.documentClasses)[ActorType.Character] | null {
+	// 	return this._dummyActor
+	// }
 
-	set dummyActor(actor: (typeof CONFIG.GURPS.Actor.documentClasses)[ActorType.Character] | null) {
-		this._dummyActor = actor
-	}
+	// set dummyActor(actor: (typeof CONFIG.GURPS.Actor.documentClasses)[ActorType.Character] | null) {
+	// 	this._dummyActor = actor
+	// }
 
 	calculateLevel(): SkillLevel {
 		const actor = this.actor || this.dummyActor
@@ -223,6 +223,33 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 					return this.update({ "system.points": this.points })
 				}
 			}
+		}
+	}
+
+	setLevel(level: number) {
+		return this.update({ "system.points": this.getPointsForLevel(level) })
+	}
+
+	getPointsForLevel(level: number): number {
+		const basePoints = this.points
+		const oldLevel = this.calculateLevel().level
+		if (oldLevel > level) {
+			for (let points = basePoints; points > 0; points--) {
+				this.system.points = points
+				if (this.calculateLevel().level === level) {
+					return points
+				}
+			}
+			return 0
+		} else {
+			// HACK: capped at 100 points, probably not a good idea
+			for (let points = basePoints; points < 100; points++) {
+				this.system.points = points
+				if (this.calculateLevel().level === level) {
+					return points
+				}
+			}
+			return 100
 		}
 	}
 }

@@ -153,8 +153,8 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 		return ""
 	}
 
-	static format(a: string): string {
-		return (a ? a : "").replace(/\n/g, "<br>")
+	static format(s: string): string {
+		return `${s}`.replace(/\n/g, "<br>")
 	}
 
 	static md(s: string): string {

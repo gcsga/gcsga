@@ -6,17 +6,22 @@ import { ItemData } from "types/foundry/common/data/module.mjs"
 import { BaseItemSourceGURPS, ItemConstructionContextGURPS, ItemFlags } from "./data"
 import { ItemDataConstructorData } from "types/foundry/common/data/data.mjs/itemData"
 import { MergeObjectOptions } from "types/foundry/common/utils/helpers.mjs"
+import { VariableResolver } from "@util"
 
 export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSourceGURPS> extends Item {
 	_id!: string
 
 	_source!: SourceType
 
+	// @ts-expect-error this is in fact always defined
+	private _dummyActor: VariableResolver | null
+
 	system!: SourceType["system"]
 
 	constructor(data: ItemDataGURPS | any, context: Context<Actor> & ItemConstructionContextGURPS = {}) {
 		if (context.gurps?.ready) {
 			super(data, context)
+			this._dummyActor = null
 		} else {
 			mergeObject(context, {
 				gurps: {
@@ -57,6 +62,14 @@ export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSour
 		else if (type === ItemType.Equipment) type = "equipment"
 		else if (type === ItemType.LegacyEquipment) type = "legacy_equipment"
 		return { img: `systems/${SYSTEM_NAME}/assets/icons/${type}.svg` }
+	}
+
+	get dummyActor(): VariableResolver | null {
+		return this._dummyActor
+	}
+
+	set dummyActor(actor: VariableResolver | null) {
+		this._dummyActor = actor
 	}
 
 	get container(): Actor | ContainerGURPS | null {

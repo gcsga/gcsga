@@ -5,7 +5,7 @@ import { AttributeDefObj, AttributeObj, PoolThreshold } from "@module/attribute"
 import { ResourceTrackerDefObj, ResourceTrackerObj } from "@module/resource_tracker"
 import { LengthUnits, Weight, WeightUnits } from "@util"
 import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
-import { MoveType, MoveTypeDefObj, MoveTypeObj } from "@module/move_type"
+import { MoveTypeDefObj, MoveTypeObj } from "@module/move_type"
 
 export interface DocumentModificationOptionsGURPS extends DocumentModificationOptions {
 	temporary: boolean
@@ -63,7 +63,6 @@ export interface CharacterSystemData extends ActorSystemData {
 	// TODO: check if this fits
 	pools: Record<string, any>
 	third_party?: any
-	move_type: "ground" | "air" | "water" | "space"
 }
 
 export interface CharacterMove {
