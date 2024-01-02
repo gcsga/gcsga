@@ -1,10 +1,10 @@
 import { WeaponGURPS } from "@module/config"
 import { TooltipGURPS } from "@module/tooltip"
 import { wswitch } from "./data"
-import { FeatureType } from "@feature"
 import { Int } from "@util/fxp"
 import { gid } from "@module/data"
 import { WeaponField } from "./weapon_field"
+import { feature } from "@util/enum"
 
 export class WeaponBlock extends WeaponField {
 	no = false
@@ -44,7 +44,7 @@ export class WeaponBlock extends WeaponField {
 				if (best !== -Infinity) {
 					if (primaryTooltip !== null) tooltip?.push("\n", primaryTooltip)
 					result.modifier += 3 + best + actor.parryBonus
-					for (const bonus of w.collectWeaponBonuses(1, tooltip, FeatureType.WeaponBlockBonus)) {
+					for (const bonus of w.collectWeaponBonuses(1, tooltip, feature.Type.WeaponBlockBonus)) {
 						result.modifier += bonus.adjustedAmountForWeapon(w)
 					}
 					result.modifier = Math.trunc(Math.max(result.modifier, 0))

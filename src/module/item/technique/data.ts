@@ -4,6 +4,7 @@ import { Feature } from "@module/config"
 import { ItemType, Study, StudyHoursNeeded } from "@module/data"
 import { SkillDefault } from "@module/default"
 import { PrereqList } from "@prereq"
+import { difficulty } from "@util/enum"
 
 export type TechniqueSource = ItemGCSSource<ItemType.Technique, TechniqueSystemData>
 
@@ -20,7 +21,7 @@ export interface TechniqueSystemData extends ItemGCSSystemData {
 	prereqs: PrereqList
 	tech_level: string
 	encumbrance_penalty_multiplier: EncumbrancePenaltyMultiplier
-	difficulty: string
+	difficulty: typeof difficulty.TechiqueLevels[number]
 	points: number
 	defaulted_from?: SkillDefault
 	defaults: SkillDefault[]

@@ -1,4 +1,3 @@
-import { FeatureType, SkillBonus, WeaponBonus, WeaponBonusType } from "@feature"
 import { BaseItemGURPS } from "@item/base"
 import { ContainerGURPS } from "@item/container"
 import { Bonus, Feature } from "@module/config"
@@ -13,7 +12,8 @@ import { Int } from "@util/fxp"
 import { ItemGCS } from "@item/gcs"
 import { CharacterGURPS } from "@actor"
 import { WeaponStrength } from "./weapon_strength"
-import { skillsel, wsel } from "@util/enum"
+import { feature, skillsel, wsel } from "@util/enum"
+import { SkillBonus, WeaponBonus } from "@feature"
 
 export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSource> extends BaseItemGURPS<SourceType> {
 	get itemName(): string {
@@ -160,7 +160,7 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 
 	extractSkillBonusForThisWeapon(f: Feature, tooltip: TooltipGURPS | null): number {
 		if (f instanceof SkillBonus) {
-			if (f.selection_type === skillsel.ThisWeapon) {
+			if (f.selection_type === skillsel.Type.ThisWeapon) {
 				if (stringCompare(this.usage, f.specialization)) {
 					f.addToTooltip(tooltip)
 					return f.adjustedAmount
@@ -254,7 +254,7 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 		if (!actor) return initial
 		let t = 0
 		let f = 0
-		for (const bonus of this.collectWeaponBonuses(1, null, FeatureType.WeaponSwitch)) {
+		for (const bonus of this.collectWeaponBonuses(1, null, feature.Type.WeaponSwitch)) {
 			if (bonus.switch_type === switchType) t++
 			else f++
 		}
@@ -266,11 +266,11 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 	collectWeaponBonuses(
 		dieCount: number,
 		tooltip: TooltipGURPS | null,
-		...allowedFeatureTypes: WeaponBonusType[]
+		...allowedFeatureTypes: feature.WeaponBonusType[]
 	): WeaponBonus[] {
 		const actor = this.actor as CharacterGURPS
 		if (!actor) return []
-		const allowed: Map<WeaponBonusType, boolean> = new Map()
+		const allowed: Map<feature.WeaponBonusType, boolean> = new Map()
 		for (const one of allowedFeatureTypes) allowed.set(one, true)
 		let bestDef = new SkillDefault()
 		let best = -Infinity
@@ -302,7 +302,7 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 				this.container?.type as ItemType
 			)
 		) {
-			;(this.container as any).modifiers.forEach((mod: any) => {
+			; (this.container as any).modifiers.forEach((mod: any) => {
 				let bonus: Bonus
 				for (const f of mod.features) {
 					bonus = f
@@ -318,7 +318,7 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 	private _extractWeaponBonus(
 		f: Feature,
 		set: Map<WeaponBonus, boolean>,
-		allowedFeatureTypes: Map<FeatureType, boolean>,
+		allowedFeatureTypes: Map<feature.Type, boolean>,
 		dieCount: number,
 		tooltip: TooltipGURPS | null
 	): void {
@@ -329,9 +329,9 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 			f.leveledAmount.level = f.derivedLevel
 			f.leveledAmount.dieCount = dieCount
 			switch (f.selection_type) {
-				case wsel.WithRequiredSkill:
+				case wsel.Type.WithRequiredSkill:
 					break
-				case wsel.ThisWeapon:
+				case wsel.Type.ThisWeapon:
 					if (stringCompare(this.usage, f.specialization)) {
 						if (!set.has(f)) {
 							set.set(f, true)
@@ -339,7 +339,7 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 						}
 					}
 					break
-				case wsel.WithName:
+				case wsel.Type.WithName:
 					if (
 						stringCompare(this.formattedName, f.name) &&
 						stringCompare(this.usage, f.specialization) &&

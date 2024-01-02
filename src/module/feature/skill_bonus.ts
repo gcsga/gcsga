@@ -1,18 +1,17 @@
-import { FeatureType } from "./data"
+import { StringCompareType, StringCriteria } from "@util"
 import { BonusOwner } from "./bonus_owner"
 import { LeveledAmount, LeveledAmountKeys, LeveledAmountObj } from "./leveled_amount"
-import { StringComparisonType, StringCriteria } from "@module/data"
-import { skillsel } from "@util/enum"
+import { feature, skillsel } from "@util/enum"
 
 export interface SkillBonusObj extends LeveledAmountObj {
-	selection_type: skillsel
+	selection_type: skillsel.Type
 	name?: StringCriteria
 	specialization?: StringCriteria
 	tags?: StringCriteria
 }
 
 export class SkillBonus extends BonusOwner {
-	selection_type: skillsel
+	selection_type: skillsel.Type
 
 	name?: StringCriteria
 
@@ -24,17 +23,11 @@ export class SkillBonus extends BonusOwner {
 
 	constructor() {
 		super()
-		this.type = FeatureType.SkillBonus
-		this.selection_type = skillsel.Name
-		this.name = {
-			compare: StringComparisonType.IsString,
-		}
-		this.specialization = {
-			compare: StringComparisonType.AnyString,
-		}
-		this.tags = {
-			compare: StringComparisonType.AnyString,
-		}
+		this.type = feature.Type.SkillBonus
+		this.selection_type = skillsel.Type.Name
+		this.name = new StringCriteria(StringCompareType.IsString)
+		this.specialization = new StringCriteria(StringCompareType.AnyString)
+		this.tags = new StringCriteria(StringCompareType.AnyString)
 		this.leveledAmount = new LeveledAmount({ amount: 1 })
 	}
 

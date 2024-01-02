@@ -6,7 +6,6 @@ import { LocalizeGURPS } from "@util"
 import { Mook } from "./document"
 import { attribute } from "@util/enum"
 import { MookParser } from "./parse"
-import { attribute } from "@util/enum"
 
 export class MookGeneratorSheet extends FormApplication {
 	config: CharacterSheetConfig | null = null
@@ -18,7 +17,7 @@ export class MookGeneratorSheet extends FormApplication {
 	constructor(options?: Partial<ApplicationOptions>) {
 		super(options)
 		this.object = new Mook()
-		;(game as any).mook = this.object
+			; (game as any).mook = this.object
 	}
 
 	static get defaultOptions(): FormApplicationOptions {

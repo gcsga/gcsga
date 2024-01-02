@@ -9,7 +9,8 @@ import { CombatData } from "types/foundry/common/data/module.mjs"
 import { BaseUser } from "types/foundry/common/documents.mjs"
 import { PropertiesToSource } from "types/types/helperTypes"
 import { DurationType, EffectModificationOptions, EffectSource } from "./data"
-import { AttributeBonus, FeatureType } from "@feature"
+import { feature } from "@util/enum"
+import { AttributeBonus } from "@feature"
 
 export class EffectGURPS<SourceType extends EffectSource = EffectSource> extends BaseItemGURPS<SourceType> {
 	_statusId: string | null = null
@@ -17,7 +18,7 @@ export class EffectGURPS<SourceType extends EffectSource = EffectSource> extends
 	get features(): Feature[] {
 		if (this.system.hasOwnProperty("features")) {
 			return (this.system as any).features.map((e: Partial<Feature>) => {
-				const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as FeatureType]
+				const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as feature.Type]
 				if (FeatureConstructor) {
 					const f = new FeatureConstructor()
 					Object.assign(f, e)
@@ -164,15 +165,15 @@ export class EffectGURPS<SourceType extends EffectSource = EffectSource> extends
 		if (this.canLevel && this.level) label += ` ${this.level}`
 		for (let t of tokens) {
 			if (!t.visible || !t.renderable) continue
-			;(canvas as any).interface.createScrollingText(t.center, label, {
-				anchor: CONST.TEXT_ANCHOR_POINTS.CENTER,
-				direction: enabled ? CONST.TEXT_ANCHOR_POINTS.TOP : CONST.TEXT_ANCHOR_POINTS.BOTTOM,
-				distance: 2 * t.h,
-				fontSize: 28,
-				stroke: 0x000000,
-				strokeThickness: 4,
-				jitter: 0.25,
-			})
+				; (canvas as any).interface.createScrollingText(t.center, label, {
+					anchor: CONST.TEXT_ANCHOR_POINTS.CENTER,
+					direction: enabled ? CONST.TEXT_ANCHOR_POINTS.TOP : CONST.TEXT_ANCHOR_POINTS.BOTTOM,
+					distance: 2 * t.h,
+					fontSize: 28,
+					stroke: 0x000000,
+					strokeThickness: 4,
+					jitter: 0.25,
+				})
 		}
 	}
 

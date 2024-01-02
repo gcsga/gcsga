@@ -1,29 +1,38 @@
 import { ActorGURPS } from "@module/config"
 import { TooltipGURPS } from "@module/tooltip"
-import { LocalizeGURPS, numberCompare, stringCompare } from "@util"
+import { LocalizeGURPS, StringCompareType, StringCriteria, numberCompare } from "@util"
 import { BasePrereq, PrereqConstructionContext } from "./base"
-import { NumericComparisonType, NumericCriteria, PrereqType, StringComparisonType, StringCriteria } from "@module/data"
+import { NumericComparisonType, NumericCriteria, PrereqType, } from "@module/data"
 
 export class TraitPrereq extends BasePrereq {
+	type = PrereqType.Trait
+
 	name?: StringCriteria
 
 	level?: NumericCriteria
 
 	notes?: StringCriteria
 
-	constructor(data: TraitPrereq | any, context: PrereqConstructionContext = {}) {
-		data = mergeObject(TraitPrereq.defaults, data)
-		super(data, context)
+	// constructor(data: TraitPrereq | any, context: PrereqConstructionContext = {}) {
+	// 	data = mergeObject(TraitPrereq.defaults, data)
+	// 	super(data, context)
+	// }
+
+	constructor() {
+		super()
+		this.name = new StringCriteria(StringCompareType.IsString)
+		this.notes = new StringCriteria(StringCompareType.AnyString)
+		this.level = new StringCriteria(StringCompareType.IsString)
 	}
 
-	static get defaults(): Record<string, any> {
-		return mergeObject(super.defaults, {
-			type: PrereqType.Trait,
-			name: { compare: StringComparisonType.IsString, qualifier: "" },
-			notes: { compare: StringComparisonType.AnyString, qualifier: "" },
-			level: { compare: NumericComparisonType.AnyNumber, qualifier: 0 },
-		})
-	}
+	// static get defaults(): Record<string, any> {
+	// 	return mergeObject(super.defaults, {
+	// 		type: PrereqType.Trait,
+	// 		name: { compare: StringComparisonType.IsString, qualifier: "" },
+	// 		notes: { compare: StringComparisonType.AnyString, qualifier: "" },
+	// 		level: { compare: NumericComparisonType.AnyNumber, qualifier: 0 },
+	// 	})
+	// }
 
 	satisfied(actor: ActorGURPS, exclude: any, tooltip: TooltipGURPS): [boolean, boolean] {
 		let satisfied = false

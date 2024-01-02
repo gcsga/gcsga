@@ -1,20 +1,25 @@
 import { LocalizeGURPS } from "@util/localize"
 
-export enum skillsel {
-	Name = "skills_with_name",
-	ThisWeapon = "this_weapon",
-	WeaponsWithName = "weapons_with_name",
-}
 
 export namespace skillsel {
-	export function ensureValid(T: skillsel): skillsel {
-		if (Types.includes(T)) return T
-		return Types[0]
+
+	export enum Type {
+		Name = "skills_with_name",
+		ThisWeapon = "this_weapon",
+		WeaponsWithName = "weapons_with_name",
 	}
 
-	export function toString(T: skillsel): string {
-		return LocalizeGURPS.translations.gurps.enum.skillsel[T]
+	export namespace Type {
+		export function ensureValid(T: Type): Type {
+			if (Types.includes(T)) return T
+			return Types[0]
+		}
+
+		export function toString(T: Type): string {
+			return LocalizeGURPS.translations.gurps.enum.skillsel[T]
+		}
 	}
+
+	const Types: Type[] = [Type.Name, Type.ThisWeapon, Type.WeaponsWithName]
 }
 
-const Types: skillsel[] = [skillsel.Name, skillsel.ThisWeapon, skillsel.WeaponsWithName]

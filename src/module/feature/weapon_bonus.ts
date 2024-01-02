@@ -1,17 +1,16 @@
 import { BaseWeaponGURPS, wswitch } from "@item"
-import { FeatureType, WeaponBonusType } from "./data"
 import { NumericComparisonType, NumericCriteria, StringComparisonType, StringCriteria, WeaponOwner } from "@module/data"
 import { Int } from "@util/fxp"
 import { TooltipGURPS } from "@module/tooltip"
 import { LocalizeGURPS } from "@util"
 import { WeaponLeveledAmount, WeaponLeveledAmountKeys, WeaponLeveledAmountObj } from "./weapon_leveled_amount"
-import { wsel } from "@util/enum"
+import { feature, wsel } from "@util/enum"
 
 export interface WeaponBonusObj extends WeaponLeveledAmountObj {
-	type: WeaponBonusType
+	type: feature.WeaponBonusType
 	percent?: boolean
 	switch_type_value?: boolean
-	selection_type: wsel
+	selection_type: wsel.Type
 	switch_type?: wswitch
 	name?: StringCriteria
 	specialization?: StringCriteria
@@ -21,7 +20,7 @@ export interface WeaponBonusObj extends WeaponLeveledAmountObj {
 }
 
 export class WeaponBonus {
-	type: WeaponBonusType
+	type: feature.WeaponBonusType
 
 	private _owner?: WeaponOwner
 
@@ -31,7 +30,7 @@ export class WeaponBonus {
 
 	switch_type_value?: boolean
 
-	selection_type: wsel
+	selection_type: wsel.Type
 
 	switch_type?: wswitch
 
@@ -49,9 +48,9 @@ export class WeaponBonus {
 
 	effective?: boolean // If true, bonus is applied later as part of effect bonuses
 
-	constructor(type: WeaponBonusType) {
+	constructor(type: feature.WeaponBonusType) {
 		this.type = type
-		this.selection_type = wsel.WithRequiredSkill
+		this.selection_type = wsel.Type.WithRequiredSkill
 		this.name = {
 			compare: StringComparisonType.IsString,
 		}
@@ -120,7 +119,7 @@ export class WeaponBonus {
 		buf.push("\n")
 		buf.push(this.parentName)
 		buf.push(" [")
-		if (this.type === FeatureType.WeaponSwitch) {
+		if (this.type === feature.Type.WeaponSwitch) {
 			buf.push(
 				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.feature.weapon_bonus.switch, {
 					type: this.switch_type!,
@@ -129,7 +128,8 @@ export class WeaponBonus {
 			)
 		} else {
 			buf.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.feature.weapon_bonus[this.type], {
+				LocalizeGURPS.format(
+					LocalizeGURPS.translations.gurps.feature.weapon_bonus[this.type], {
 					level: this.leveledAmount.format(this.percent ?? false),
 				})
 			)

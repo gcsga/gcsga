@@ -1,9 +1,9 @@
 import { TooltipGURPS } from "@module/tooltip"
 import { Int } from "@util/fxp"
 import { wswitch } from "./data"
-import { FeatureType } from "@feature"
 import { BaseWeaponGURPS } from "./document"
 import { WeaponField } from "./weapon_field"
+import { feature } from "@util/enum"
 
 export class WeaponStrength extends WeaponField {
 	min?: number
@@ -28,7 +28,7 @@ export class WeaponStrength extends WeaponField {
 			ws.musketRest = s.includes("r")
 			ws.twoHanded = s.includes("†") || s.includes("*")
 			ws.twoHandedUnready = s.includes("‡")
-			;[ws.min] = Int.extract(s)
+				;[ws.min] = Int.extract(s)
 			ws.validate()
 		}
 		return ws
@@ -52,7 +52,7 @@ export class WeaponStrength extends WeaponField {
 			result.twoHandedUnready ?? false
 		)
 		result.min ??= 0
-		for (const bonus of w.collectWeaponBonuses(1, tooltip, FeatureType.WeaponMinSTBonus))
+		for (const bonus of w.collectWeaponBonuses(1, tooltip, feature.Type.WeaponMinSTBonus))
 			result.min += bonus.adjustedAmountForWeapon(w)
 		result.validate()
 

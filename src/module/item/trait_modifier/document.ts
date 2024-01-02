@@ -1,5 +1,6 @@
 import { ItemGCS } from "@item/gcs"
-import { TraitModifierAffects, TraitModifierCostType, TraitModifierSource } from "./data"
+import { TraitModifierSource } from "./data"
+import { affects, tmcost } from "@util/enum"
 
 export class TraitModifierGURPS extends ItemGCS<TraitModifierSource> {
 	prepareBaseData() {
@@ -35,11 +36,11 @@ export class TraitModifierGURPS extends ItemGCS<TraitModifierSource> {
 		return !this.system.disabled
 	}
 
-	get costType(): TraitModifierCostType {
+	get costType(): tmcost.Type {
 		return this.system.cost_type
 	}
 
-	get affects(): TraitModifierAffects {
+	get affects(): affects.Option {
 		return this.system.affects
 	}
 

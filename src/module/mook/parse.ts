@@ -1,9 +1,10 @@
-import { Difficulty, gid, SETTINGS, SYSTEM_NAME } from "@module/data"
+import { gid, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { sanitize } from "@util"
 import { MookData, MookMelee, MookRanged, MookSkill, MookSpell, MookTrait, MookTraitModifier } from "./data"
 import { Mook } from "./document"
 import { stdmg, WeaponDamageObj } from "@item/weapon/data"
 import { DiceGURPS } from "@module/dice"
+import { difficulty } from "@util/enum"
 
 const regex_points = /\[(-?\d+)\]/
 const damage_type_matches: Map<string, string> = new Map([
@@ -330,9 +331,9 @@ export class MookParser {
 			// Capture difficulty
 			let attribute: string = gid.Dexterity
 			// let rsl = level - 10
-			let difficulty = Difficulty.Average
+			let diff = difficulty.Level.Average
 			if (t.match(regex_difficulty)) {
-				difficulty = t.match(regex_difficulty)![1].toLowerCase() as Difficulty
+				diff = t.match(regex_difficulty)![1].toLowerCase() as difficulty.Level
 				t = t.replace(regex_difficulty, "").trim()
 			}
 
@@ -362,7 +363,7 @@ export class MookParser {
 
 			const skill: MookSkill = {
 				name: t,
-				difficulty: `${attribute}/${difficulty}`,
+				difficulty: `${attribute}/${diff}`,
 				points,
 				level,
 				specialization,
@@ -423,9 +424,9 @@ export class MookParser {
 
 			// Capture difficulty
 			let attribute: string = gid.Intelligence
-			let difficulty = Difficulty.Hard
+			let diff = difficulty.Level.Hard
 			if (t.match(regex_difficulty)) {
-				difficulty = t.match(regex_difficulty)![1].toLowerCase() as Difficulty
+				diff = t.match(regex_difficulty)![1].toLowerCase() as difficulty.Level
 				t = t.replace(regex_difficulty, "").trim()
 			}
 
@@ -449,7 +450,7 @@ export class MookParser {
 			const spell: MookSpell = {
 				name: t,
 				college: [],
-				difficulty: `${attribute}/${difficulty}`,
+				difficulty: `${attribute}/${diff}`,
 				points,
 				level,
 				tech_level: tl,
@@ -701,8 +702,8 @@ export class MookParser {
 				modifier_per_die: 0,
 			}
 
-			// capture damage
-			;[damage, t] = this.parseDamage(t)
+				// capture damage
+				;[damage, t] = this.parseDamage(t)
 
 			// if damage parser captures anything after the name, add it as a note
 			if (t.match(/\{\{.*\}\}/)) {

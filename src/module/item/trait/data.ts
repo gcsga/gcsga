@@ -39,7 +39,7 @@ const CR_Features = new Map()
 
 const merchantPenalty = new SkillBonus()
 Object.assign(merchantPenalty, {
-	selection_type: skillsel.Name,
+	selection_type: skillsel.Type.Name,
 	name: { compare: StringComparisonType.IsString, qualifier: "Merchant" },
 	specialization: { compare: StringComparisonType.AnyString },
 	tags: { compare: StringComparisonType.AnyString },

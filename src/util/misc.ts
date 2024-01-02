@@ -1,19 +1,19 @@
 import { CharacterGURPS } from "@actor"
 import {
 	DEFAULT_INITIATIVE_FORMULA,
-	Difficulty,
 	DisplayMode,
 	ItemType,
 	NumericComparisonType,
 	NumericCriteria,
 	SETTINGS,
-	StringComparisonType,
-	StringCriteria,
+	// StringComparisonType,
+	// StringCriteria,
 	Study,
 	StudyType,
 	SYSTEM_NAME,
 } from "@module/data"
 import { v4 as uuidv4 } from "uuid"
+import { difficulty } from "./enum"
 
 export function sanitizeId(id: string, permit_leading_digits: boolean, reserved: string[]): string {
 	const buffer: string[] = []
@@ -76,64 +76,64 @@ export function getCurrentTime(): string {
  * @param value
  * @param base
  */
-export function stringCompare(value?: string | string[] | null, base?: StringCriteria): boolean {
-	if (!base) return true
-	if (!value) value = ""
-	if (typeof value === "string") value = [value]
-	value = value.map(e => {
-		return e.toLowerCase()
-	})
-	base.qualifier = base.qualifier?.toLowerCase()
-	switch (base.compare) {
-		case StringComparisonType.AnyString:
-			return true
-		case StringComparisonType.IsString:
-			return base.qualifier !== undefined && value.includes(base.qualifier)
-		case StringComparisonType.IsNotString:
-			return base.qualifier !== undefined && !value.includes(base.qualifier)
-		case StringComparisonType.ContainsString:
-			for (const v of value) if (base.qualifier && v.includes(base.qualifier)) return true
-			return false
-		case StringComparisonType.DoesNotContainString:
-			for (const v of value) if (base.qualifier && v.includes(base.qualifier)) return false
-			return true
-		case StringComparisonType.StartsWithString:
-			for (const v of value) if (base.qualifier && v.startsWith(base.qualifier)) return true
-			return false
-		case StringComparisonType.DoesNotStartWithString:
-			for (const v of value) if (base.qualifier && v.startsWith(base.qualifier)) return false
-			return true
-		case StringComparisonType.EndsWithString:
-			for (const v of value) if (base.qualifier && v.endsWith(base.qualifier)) return true
-			return false
-		case StringComparisonType.DoesNotEndWithString:
-			for (const v of value) if (base.qualifier && v.endsWith(base.qualifier)) return false
-			return true
-	}
-}
+// export function stringCompare(value?: string | string[] | null, base?: StringCriteria): boolean {
+// 	if (!base) return true
+// 	if (!value) value = ""
+// 	if (typeof value === "string") value = [value]
+// 	value = value.map(e => {
+// 		return e.toLowerCase()
+// 	})
+// 	base.qualifier = base.qualifier?.toLowerCase()
+// 	switch (base.compare) {
+// 		case StringComparisonType.AnyString:
+// 			return true
+// 		case StringComparisonType.IsString:
+// 			return base.qualifier !== undefined && value.includes(base.qualifier)
+// 		case StringComparisonType.IsNotString:
+// 			return base.qualifier !== undefined && !value.includes(base.qualifier)
+// 		case StringComparisonType.ContainsString:
+// 			for (const v of value) if (base.qualifier && v.includes(base.qualifier)) return true
+// 			return false
+// 		case StringComparisonType.DoesNotContainString:
+// 			for (const v of value) if (base.qualifier && v.includes(base.qualifier)) return false
+// 			return true
+// 		case StringComparisonType.StartsWithString:
+// 			for (const v of value) if (base.qualifier && v.startsWith(base.qualifier)) return true
+// 			return false
+// 		case StringComparisonType.DoesNotStartWithString:
+// 			for (const v of value) if (base.qualifier && v.startsWith(base.qualifier)) return false
+// 			return true
+// 		case StringComparisonType.EndsWithString:
+// 			for (const v of value) if (base.qualifier && v.endsWith(base.qualifier)) return true
+// 			return false
+// 		case StringComparisonType.DoesNotEndWithString:
+// 			for (const v of value) if (base.qualifier && v.endsWith(base.qualifier)) return false
+// 			return true
+// 	}
+// }
 
 /**
  *
  * @param value
  * @param base
  */
-export function numberCompare(value: number, base?: NumericCriteria): boolean {
-	if (!base) return true
-	switch (base.compare) {
-		case NumericComparisonType.AnyNumber:
-			return true
-		case NumericComparisonType.EqualsNumber:
-			return value === base.qualifier
-		case NumericComparisonType.NotEqualsNumber:
-			return value !== base.qualifier
-		case NumericComparisonType.AtMostNumber:
-			return value <= base.qualifier!
-		case NumericComparisonType.AtLeastNumber:
-			return value >= base.qualifier!
-		default:
-			return true
-	}
-}
+// export function numberCompare(value: number, base?: NumericCriteria): boolean {
+// 	if (!base) return true
+// 	switch (base.compare) {
+// 		case NumericComparisonType.AnyNumber:
+// 			return true
+// 		case NumericComparisonType.EqualsNumber:
+// 			return value === base.qualifier
+// 		case NumericComparisonType.NotEqualsNumber:
+// 			return value !== base.qualifier
+// 		case NumericComparisonType.AtMostNumber:
+// 			return value <= base.qualifier!
+// 		case NumericComparisonType.AtLeastNumber:
+// 			return value >= base.qualifier!
+// 		default:
+// 			return true
+// 	}
+// }
 
 export function extractTechLevel(str: string): number {
 	return Math.min(Math.max(0, parseInt(str)), 12)
@@ -267,19 +267,19 @@ export function d6ify(str: string, flavor: string | null = ""): string {
 	return w.replace(/d$/g, `d6${flavor || ""}`) // And do the same for the end of the line.
 }
 
-export function difficultyRelativeLevel(d: Difficulty): number {
+export function difficultyRelativeLevel(d: difficulty.Level): number {
 	switch (d) {
-		case Difficulty.Easy:
+		case difficulty.Level.Easy:
 			return 0
-		case Difficulty.Average:
+		case difficulty.Level.Average:
 			return -1
-		case Difficulty.Hard:
+		case difficulty.Level.Hard:
 			return -2
-		case Difficulty.VeryHard:
-		case Difficulty.Wildcard:
+		case difficulty.Level.VeryHard:
+		case difficulty.Level.Wildcard:
 			return -3
 		default:
-			return difficultyRelativeLevel(Difficulty.Easy)
+			return difficultyRelativeLevel(difficulty.Level.Easy)
 	}
 }
 
@@ -330,9 +330,9 @@ export async function getDefaultSkills() {
 	for (const s in skillPacks)
 		if (skillPacks[s].skillDefault) {
 			const pack = game.packs.get(s) as CompendiumCollection<any>
-			;(await pack.getDocuments()).forEach(e => {
-				skills.push(e)
-			})
+				; (await pack.getDocuments()).forEach(e => {
+					skills.push(e)
+				})
 		}
 	CONFIG.GURPS.skillDefaults = skills
 }

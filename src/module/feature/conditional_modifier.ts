@@ -1,14 +1,14 @@
 import { LocalizeGURPS } from "@util"
 import { BonusOwner } from "./bonus_owner"
-import { FeatureType } from "./data"
 import { LeveledAmount, LeveledAmountKeys, LeveledAmountObj } from "./leveled_amount"
+import { feature } from "@util/enum"
 
 export interface ConditionalModifierBonusObj extends LeveledAmountObj {
 	situation: string
 }
 
 export class ConditionalModifierBonus extends BonusOwner {
-	type = FeatureType.ConditionalModifierBonus
+	type = feature.Type.ConditionalModifierBonus
 
 	situation = LocalizeGURPS.translations.gurps.feature.conditional_modifier
 

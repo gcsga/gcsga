@@ -2,8 +2,8 @@ import { WeaponGURPS } from "@module/config"
 import { TooltipGURPS } from "@module/tooltip"
 import { Int } from "@util/fxp"
 import { wswitch } from "./data"
-import { FeatureType } from "@feature"
 import { WeaponField } from "./weapon_field"
+import { feature } from "@util/enum"
 
 export class WeaponShots extends WeaponField {
 	count = 0
@@ -44,22 +44,22 @@ export class WeaponShots extends WeaponField {
 		for (const bonus of w.collectWeaponBonuses(
 			1,
 			tooltip,
-			FeatureType.WeaponNonChamberShotsBonus,
-			FeatureType.WeaponChamberShotsBonus,
-			FeatureType.WeaponShotDurationBonus,
-			FeatureType.WeaponReloadTimeBonus
+			feature.Type.WeaponNonChamberShotsBonus,
+			feature.Type.WeaponChamberShotsBonus,
+			feature.Type.WeaponShotDurationBonus,
+			feature.Type.WeaponReloadTimeBonus
 		)) {
 			switch (bonus.type) {
-				case FeatureType.WeaponNonChamberShotsBonus:
+				case feature.Type.WeaponNonChamberShotsBonus:
 					result.count += bonus.adjustedAmountForWeapon(w)
 					break
-				case FeatureType.WeaponChamberShotsBonus:
+				case feature.Type.WeaponChamberShotsBonus:
 					result.inChamber += bonus.adjustedAmountForWeapon(w)
 					break
-				case FeatureType.WeaponShotDurationBonus:
+				case feature.Type.WeaponShotDurationBonus:
 					result.duration += bonus.adjustedAmountForWeapon(w)
 					break
-				case FeatureType.WeaponReloadTimeBonus:
+				case feature.Type.WeaponReloadTimeBonus:
 					result.reloadTime += bonus.adjustedAmountForWeapon(w)
 					break
 				default:

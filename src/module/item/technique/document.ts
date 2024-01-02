@@ -1,10 +1,11 @@
 import { ItemGCS } from "@item/gcs"
 import { SkillLevel } from "@item/skill/data"
-import { ActorType, Difficulty, gid } from "@module/data"
+import { gid } from "@module/data"
 import { SkillDefault } from "@module/default"
 import { TooltipGURPS } from "@module/tooltip"
 import { inlineNote, LocalizeGURPS } from "@util"
 import { TechniqueSource } from "./data"
+import { difficulty } from "@util/enum"
 
 export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 	level: SkillLevel = { level: 0, relative_level: 0, tooltip: new TooltipGURPS() }
@@ -21,7 +22,7 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 	get secondaryText(): string {
 		const out: string[] = []
 		if (inlineNote(this.actor, "modifiers_display")) {
-			if (this.difficulty !== Difficulty.Wildcard && this.default) {
+			if (this.difficulty !== difficulty.Level.Wildcard && this.default) {
 				out.push(
 					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.item.default, {
 						skill: `${this.default.name}`,
@@ -160,7 +161,7 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 			if (level !== -Infinity) {
 				const base_level = level
 				level += this.default.modifier
-				if (this.difficulty === Difficulty.Hard) points -= 1
+				if (this.difficulty === difficulty.Level.Hard) points -= 1
 				if (points > 0) relative_level = points
 				if (level !== -Infinity) {
 					relative_level += actor.skillBonusFor(this.name!, this.specialization, this.tags, tooltip)
@@ -186,7 +187,7 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 	incrementSkillLevel() {
 		const basePoints = this.points + 1
 		let maxPoints = basePoints
-		if (this.difficulty === Difficulty.Wildcard) maxPoints += 12
+		if (this.difficulty === difficulty.Level.Wildcard) maxPoints += 12
 		else maxPoints += 4
 
 		const oldLevel = this.calculateLevel().level
@@ -202,7 +203,7 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 		if (this.points <= 0) return
 		const basePoints = this.points
 		let minPoints = basePoints
-		if (this.difficulty === Difficulty.Wildcard) minPoints -= 12
+		if (this.difficulty === difficulty.Level.Wildcard) minPoints -= 12
 		else minPoints -= 4
 		minPoints = Math.max(minPoints, 0)
 

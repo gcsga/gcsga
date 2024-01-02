@@ -27,8 +27,7 @@ import { SkillDefault } from "@module/default"
 import { PrereqList } from "@prereq"
 import { LocalizeGURPS } from "./localize"
 import { newUUID } from "./misc"
-import { FeatureType } from "@feature"
-import { selfctrl } from "./enum"
+import { feature, selfctrl } from "./enum"
 
 class ImportUtils {
 	static importItems(
@@ -550,7 +549,7 @@ class ImportUtils {
 	private static importFeatures(features: Feature[]): Feature[] {
 		const list: Feature[] = []
 		for (const e of features) {
-			const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as FeatureType]
+			const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as feature.Type]
 			if (FeatureConstructor) {
 				const f = FeatureConstructor.fromObject(e)
 				list.push(f.toObject())

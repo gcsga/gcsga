@@ -1,14 +1,14 @@
 import { LocalizeGURPS } from "@util"
 import { BonusOwner } from "./bonus_owner"
-import { FeatureType } from "./data"
 import { LeveledAmount, LeveledAmountKeys, LeveledAmountObj } from "./leveled_amount"
+import { feature } from "@util/enum"
 
 export interface ReactionBonusObj extends LeveledAmountObj {
 	situation: string
 }
 
 export class ReactionBonus extends BonusOwner {
-	type = FeatureType.ReactionBonus
+	type = feature.Type.ReactionBonus
 
 	situation = LocalizeGURPS.translations.gurps.feature.reaction_bonus
 

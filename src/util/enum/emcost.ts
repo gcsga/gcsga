@@ -30,15 +30,7 @@ export namespace emcost {
 		}
 
 		export function toString(T: Type): string {
-			switch (T) {
-				case Type.Original:
-				case Type.Base:
-				case Type.FinalBase:
-				case Type.Final:
-					return LocalizeGURPS.translations.gurps.enum.emcost.type.string[T]
-				default:
-					return Types[0].toString()
-			}
+			return LocalizeGURPS.translations.gurps.enum.emcost.type.string[T]
 		}
 
 		export function altString(T: Type): string {

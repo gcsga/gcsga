@@ -1,9 +1,9 @@
 import { gid } from "@module/data"
 import { BonusOwner } from "./bonus_owner"
-import { FeatureType } from "./data"
 import { LeveledAmount, LeveledAmountKeys, LeveledAmountObj } from "./leveled_amount"
 import { TooltipGURPS } from "@module/tooltip"
 import { LocalizeGURPS, equalFold } from "@util"
+import { feature } from "@util/enum"
 
 export interface DRBonusObj extends LeveledAmountObj {
 	location: string
@@ -11,7 +11,7 @@ export interface DRBonusObj extends LeveledAmountObj {
 }
 
 export class DRBonus extends BonusOwner {
-	type = FeatureType.DRBonus
+	type = feature.Type.DRBonus
 
 	location: string = gid.Torso
 

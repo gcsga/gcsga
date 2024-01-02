@@ -1,7 +1,7 @@
 import { WeaponGURPS } from "@module/config"
 import { TooltipGURPS } from "@module/tooltip"
-import { FeatureType } from "@feature"
 import { WeaponField } from "./weapon_field"
+import { feature } from "@util/enum"
 
 export class WeaponBulk extends WeaponField {
 	normal = 0
@@ -24,7 +24,7 @@ export class WeaponBulk extends WeaponField {
 	resolve(w: WeaponGURPS, tooltip: TooltipGURPS): WeaponBulk {
 		const result = new WeaponBulk()
 		Object.assign(result, this)
-		for (const bonus of w.collectWeaponBonuses(1, tooltip, FeatureType.WeaponBulkBonus)) {
+		for (const bonus of w.collectWeaponBonuses(1, tooltip, feature.Type.WeaponBulkBonus)) {
 			const amt = bonus.adjustedAmountForWeapon(w)
 			result.normal += amt
 			result.giant += amt

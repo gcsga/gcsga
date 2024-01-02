@@ -6,8 +6,9 @@ import { AttributeDefObj } from "@module/attribute"
 import { DamageProgression } from "@module/data"
 import { MookSkill, MookTrait } from "@module/mook"
 import { MoveTypeDefObj } from "@module/move_type"
-import { stlimit, MoveBonusType } from "@feature"
 import { Encumbrance } from "@actor"
+import { stlimit } from "./enum"
+import { MoveBonusType } from "@feature"
 
 // VariableResolver is used to resolve variables in expressions into their values.
 export interface VariableResolver {
@@ -23,7 +24,7 @@ export interface VariableResolver {
 	conditions: Collection<ConditionGURPS> | ConditionGURPS[]
 	attributeBonusFor: (
 		attributeId: string,
-		limitation: stlimit,
+		limitation: stlimit.Option,
 		effective?: boolean,
 		tooltip?: TooltipGURPS | null
 	) => number
@@ -207,7 +208,7 @@ class Evaluator {
 			;[index, op] = this.processFunction(expression, index)
 			index += op?.symbol.length || 0
 			let tmp: number
-			;[tmp, op] = this.nextOperator(expression, index, null)
+				;[tmp, op] = this.nextOperator(expression, index, null)
 			if (!op) return index
 			index = tmp
 		}

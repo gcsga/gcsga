@@ -932,48 +932,6 @@
 				"skill_prereq": "a skill",
 				"spell_prereq": "spell(s)"
 			},
-			"features": {
-				"attribute_bonus": "Gives an attribute modifier of",
-				"conditional_modifier": "Gives a conditional modifier of",
-				"dr_bonus": "Gives a DR bonus of",
-				"reaction_bonus": "Gives a reaction modifier of",
-				"skill_bonus": "Gives a skill level modifier of",
-				"skill_point_bonus": "Gives a skill point modifier of",
-				"spell_bonus": "Gives a spell level modifier of",
-				"spell_point_bonus": "Gives a spell point modifier of",
-				"weapon_bonus": "Gives a weapon damage modifier of",
-				"weapon_acc_bonus": "Gives a weapon accuracy modifier of",
-				"weapon_scope_acc_bonus": "Gives a weapon scope accuracy modifier of",
-				"weapon_dr_divisor_bonus": "Gives a weapon DR divisor modifier of",
-				"weapon_min_st_bonus": "Gives a weapon minimum ST modifier of",
-				"weapon_min_reach_bonus": "Gives a weapon minimum reach modifier of",
-				"weapon_max_reach_bonus": "Gives a weapon maximum reach modifier of",
-				"weapon_half_damage_range_bonus": "Gives a weapon half-damage range modifier of",
-				"weapon_min_range_bonus": "Gives a weapon minimum reach modifier of",
-				"weapon_max_range_bonus": "Gives a weapon maximum range modifier of",
-				"weapon_recoil_bonus": "Gives a weapon recoil modifier of",
-				"weapon_bulk_bonus": "Gives a weapon bulk modifier of",
-				"weapon_parry_bonus": "Gives a weapon parry modifier of",
-				"weapon_block_bonus": "Gives a weapon block modifier of",
-				"weapon_rof_mode_1_shots_bonus": "Gives a weapon shots per attack (mode 1) modifier of",
-				"weapon_rof_mode_1_secondary_bonus": "Gives a weapon seconary projectiles (mode 1) modifier of",
-				"weapon_rof_mode_2_shots_bonus": "Gives a weapon shots per attack (mode 2) modifier of",
-				"weapon_rof_mode_2_secondary_bonus": "Gives a weapon seconary projectiles (mode 2) modifier of",
-				"weapon_non_chamber_shots_bonus": "Gives a weapon non-chambered shots modifier of",
-				"weapon_chamber_shots_bonus": "Gives a weapon chamber shots modifier of",
-				"weapon_shot_duration_bonus": "Gives a weapon shot duration modifier of",
-				"weapon_reload_time_bonus": "Gives a weapon reload time modifier of",
-				"weapon_switch": "Set the weapon flag",
-				"cost_reduction": "Reduces the attribute cost of",
-				"contained_weight_reduction": "Reduces the contained weight by",
-				"move_bonus": "Gives a move bonus of"
-			},
-			"st_limitation": {
-				"none": "",
-				"striking_only": "for striking only",
-				"lifting_only": "for lifting only",
-				"throwing_only": "for throwing only"
-			},
 			"spell_sub_type": {
 				"name": "whose name",
 				"tag": "with a tag which",
@@ -1017,11 +975,6 @@
 				"percentage": "%",
 				"points": "points",
 				"multiplier": "×"
-			},
-			"trait_mod_affects": {
-				"total": "to cost",
-				"base_only": "to base cost only",
-				"levels_only": "to leveled cost only"
 			},
 			"eqp_mod_cost_type": {
 				"to_original_cost": "to original cost (e.g. \"+5\", \"-5\", \"+10%\", \"-10%\", \"x3.2\")",
@@ -1900,6 +1853,41 @@
 			"space": "Space Move"
 		},
 		"enum": {
+			"affects": {
+				"string": {
+					"total": "to cost",
+					"base_only": "to base cost only",
+					"levels_only": "to leveled cost only"
+				},
+				"alt_string": {
+					"total": "",
+					"base_only": "(base only)",
+					"levels_only": "(levels only)"
+				}
+			},
+			"container": {
+				"string": {
+					"group": "Group",
+					"alternative_abilities": "Alternative Abilities",
+					"ancestry": "Ancestry",
+					"attributes": "Attribute",
+					"meta_trait": "Meta-Trait"
+				},
+				"tag": {
+					"group": "",
+					"alternative_abilities": "Alternate",
+					"meta_trait": "Meta",
+					"attributes": "Attribute",
+					"ancestry": "Ancestry"
+				}
+			},
+			"difficulty": {
+				"e": "E",
+				"a": "A",
+				"h": "H",
+				"vh": "VH",
+				"w": "W"
+			},
 			"emcost": {
 				"type": {
 					"string": {
@@ -1948,10 +1936,72 @@
 				"secondary_separator": "Secondary Separator",
 				"pool_separator": "Pool Separator"
 			},
+			"spellmatch": {
+				"all_colleges": "to all colleges",
+				"college_name": "to the college whose name",
+				"power_source_name": "to the power source whose name",
+				"spell_name": "to the spell whose name"
+			},
+			"feature": {
+				"attribute_bonus": "Gives an attribute modifier of",
+				"conditional_modifier": "Gives a conditional modifier of",
+				"dr_bonus": "Gives a DR bonus of",
+				"reaction_bonus": "Gives a reaction modifier of",
+				"skill_bonus": "Gives a skill level modifier of",
+				"skill_point_bonus": "Gives a skill point modifier of",
+				"spell_bonus": "Gives a spell level modifier of",
+				"spell_point_bonus": "Gives a spell point modifier of",
+				"weapon_bonus": "Gives a weapon damage modifier of",
+				"weapon_acc_bonus": "Gives a weapon accuracy modifier of",
+				"weapon_scope_acc_bonus": "Gives a weapon scope accuracy modifier of",
+				"weapon_dr_divisor_bonus": "Gives a weapon DR divisor modifier of",
+				"weapon_min_st_bonus": "Gives a weapon minimum ST modifier of",
+				"weapon_min_reach_bonus": "Gives a weapon minimum reach modifier of",
+				"weapon_max_reach_bonus": "Gives a weapon maximum reach modifier of",
+				"weapon_half_damage_range_bonus": "Gives a weapon half-damage range modifier of",
+				"weapon_min_range_bonus": "Gives a weapon minimum reach modifier of",
+				"weapon_max_range_bonus": "Gives a weapon maximum range modifier of",
+				"weapon_recoil_bonus": "Gives a weapon recoil modifier of",
+				"weapon_bulk_bonus": "Gives a weapon bulk modifier of",
+				"weapon_parry_bonus": "Gives a weapon parry modifier of",
+				"weapon_block_bonus": "Gives a weapon block modifier of",
+				"weapon_rof_mode_1_shots_bonus": "Gives a weapon shots per attack (mode 1) modifier of",
+				"weapon_rof_mode_1_secondary_bonus": "Gives a weapon seconary projectiles (mode 1) modifier of",
+				"weapon_rof_mode_2_shots_bonus": "Gives a weapon shots per attack (mode 2) modifier of",
+				"weapon_rof_mode_2_secondary_bonus": "Gives a weapon seconary projectiles (mode 2) modifier of",
+				"weapon_non_chamber_shots_bonus": "Gives a weapon non-chambered shots modifier of",
+				"weapon_chamber_shots_bonus": "Gives a weapon chamber shots modifier of",
+				"weapon_shot_duration_bonus": "Gives a weapon shot duration modifier of",
+				"weapon_reload_time_bonus": "Gives a weapon reload time modifier of",
+				"weapon_switch": "Set the weapon flag",
+				"cost_reduction": "Reduces the attribute cost of",
+				"contained_weight_reduction": "Reduces the contained weight by",
+				"move_bonus": "Gives a move bonus of"
+			},
+			"stlimit": {
+				"none": "",
+				"striking_only": "for striking only",
+				"lifting_only": "for lifting only",
+				"throwing_only": "for throwing only"
+			},
 			"wsel": {
 				"weapons_with_required_skill": "to weapons whose required skill name",
 				"this_weapon": "to this weapon",
 				"weapons_with_name": "to weapons whose name"
+			},
+			"threshold": {
+				"string": {
+					"unknown": "Unknown",
+					"halve_move": "Halve Move",
+					"halve_dodge": "Halve Dodge",
+					"halve_st": "Halve Strength"
+				},
+				"alt_string": {
+					"unknown": "Unknown",
+					"halve_move": "Halve Move (round up)",
+					"halve_dodge": "Halve Dodge (round up)",
+					"halve_st": "Halve Strength (round up; does not affect HP and damage)"
+				}
 			},
 			"skillsel": {
 				"skills_with_name": "to skills whose name",
@@ -1986,6 +2036,30 @@
 						"major_cost_of_living_increase": "+{penalty}% Cost of Living Increase"
 					}
 				}
+			},
+			"tmcost": {
+				"percentage": "%",
+				"points": "points",
+				"multiplier": "×"
+			}
+		},
+		"string_criteria": {
+			"string": {
+				"none": "is anything",
+				"is": "is",
+				"is_not": "is not",
+				"contains": "contains",
+				"does_not_contain": "does not contain",
+				"starts_with": "starts with",
+				"does_not_start_with": "does not start with",
+				"ends_with": "ends with",
+				"does_not_end_with": "does not end with"
+			},
+			"alt_string": {
+				"is_not": "are not",
+				"does_not_contain": "do not contain",
+				"does_not_start_with": "do not start with",
+				"does_not_end_with": "do not end with"
 			}
 		}
 	}

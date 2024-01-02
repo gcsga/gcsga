@@ -1,8 +1,9 @@
 import { WeaponDamageObj } from "@item/weapon/data"
 import { Attribute, AttributeDefObj, AttributeObj } from "@module/attribute"
-import { DamageProgression, Difficulty } from "@module/data"
+import { DamageProgression } from "@module/data"
 import { DiceGURPS } from "@module/dice"
 import { MoveTypeDefObj } from "@module/move_type"
+import { difficulty } from "@util/enum"
 
 export interface MookData {
 	settings: {
@@ -59,7 +60,7 @@ export interface MookTraitModifier extends _MookItem {
 export interface MookSkill extends _MookItem {
 	specialization: string
 	tech_level: string
-	difficulty: `${string}/${Difficulty}`
+	difficulty: `${string}/${difficulty.Level}`
 	points: number
 	level: number
 }
@@ -67,7 +68,7 @@ export interface MookSkill extends _MookItem {
 export interface MookSpell extends _MookItem {
 	// specialization: string
 	tech_level: string
-	difficulty: `${string}/${Difficulty}`
+	difficulty: `${string}/${difficulty.Level}`
 	points: number
 	level: number
 	college: Array<string>

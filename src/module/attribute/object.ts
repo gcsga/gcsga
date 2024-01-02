@@ -4,8 +4,7 @@ import { sanitizeId, VariableResolver } from "@util"
 import { AttributeDef } from "./attribute_def"
 import { AttributeObj, reserved_ids } from "./data"
 import { PoolThreshold } from "./pool_threshold"
-import { stlimit } from "@feature"
-import { attribute } from "@util/enum"
+import { attribute, stlimit } from "@util/enum"
 
 // interface Mook {
 // 	resolveVariable: (variableName: string) => string
@@ -50,12 +49,12 @@ export class Attribute {
 
 	get bonus(): number {
 		if (!this.actor) return 0
-		return this.actor.attributeBonusFor(this.id, stlimit.None)
+		return this.actor.attributeBonusFor(this.id, stlimit.Option.None)
 	}
 
 	get effectiveBonus(): number {
 		if (!this.actor) return 0
-		return this.actor.attributeBonusFor(this.id, stlimit.None, true, null)
+		return this.actor.attributeBonusFor(this.id, stlimit.Option.None, true, null)
 	}
 
 	get cost_reduction(): number {

@@ -1,14 +1,14 @@
 import { Weight, WeightUnits } from "@util"
 import { BonusOwner } from "./bonus_owner"
-import { FeatureType } from "./data"
 import { Int } from "@util/fxp"
+import { feature } from "@util/enum"
 
 export interface ContainedWeightReductionObj {
 	reduction: string
 }
 
 export class ContainedWeightReduction extends BonusOwner {
-	type = FeatureType.ContainedWeightReduction
+	type = feature.Type.ContainedWeightReduction
 
 	reduction: string
 
@@ -34,7 +34,7 @@ export class ContainedWeightReduction extends BonusOwner {
 	static fromObject(data: ContainedWeightReductionObj): ContainedWeightReduction {
 		const bonus = new ContainedWeightReduction()
 		for (const key of Object.keys(data)) {
-			;(bonus as any)[key] = data[key as keyof ContainedWeightReductionObj]
+			; (bonus as any)[key] = data[key as keyof ContainedWeightReductionObj]
 		}
 		return bonus
 	}

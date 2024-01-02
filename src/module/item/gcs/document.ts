@@ -12,7 +12,8 @@ import { ItemDataConstructorData } from "types/foundry/common/data/data.mjs/item
 import { BaseUser } from "types/foundry/common/documents.mjs"
 import { MergeObjectOptions } from "types/foundry/common/utils/helpers.mjs"
 import { ItemGCSSource } from "./data"
-import { AttributeBonus, FeatureType } from "@feature"
+import { feature } from "@util/enum"
+import { AttributeBonus } from "@feature"
 
 export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> extends ContainerGURPS<SourceType> {
 	unsatisfied_reason = ""
@@ -31,7 +32,7 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 			this._source.img = data.img = `systems/${SYSTEM_NAME}/assets/icons/${type}.svg`
 		let gcs_type: string = data.type
 		if (gcs_type === ItemType.Equipment) gcs_type = "equipment"
-		;(this._source.system as any).type = gcs_type
+			; (this._source.system as any).type = gcs_type
 		await super._preCreate(data, options, user)
 	}
 
@@ -88,7 +89,7 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 	get features(): Feature[] {
 		if (this.system.hasOwnProperty("features")) {
 			return (this.system as any).features.map((e: Partial<Feature>) => {
-				const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as FeatureType]
+				const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as feature.Type]
 				if (FeatureConstructor) {
 					const f = FeatureConstructor.fromObject(e)
 					return f

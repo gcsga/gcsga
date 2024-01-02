@@ -1,12 +1,12 @@
 import { Stringer, WeaponOwner } from "@module/data"
 import { LocalizeGURPS } from "@util"
-import { FeatureType } from "./data"
 import { LeveledAmount, LeveledAmountObj } from "./leveled_amount"
 import { TooltipGURPS } from "@module/tooltip"
 import { WeaponLeveledAmount } from "./weapon_leveled_amount"
+import { feature } from "@util/enum"
 
 export abstract class BonusOwner {
-	type: FeatureType = FeatureType.AttributeBonus
+	type: feature.Type = feature.Type.AttributeBonus
 
 	private _owner?: Stringer | WeaponOwner
 

@@ -1,45 +1,44 @@
 import { CharacterGURPS } from "@actor"
-import { FeatureType } from "@feature"
 import { AttributeDefObj } from "@module/attribute"
 import {
 	gid,
 	NumericComparisonType,
 	PrereqType,
 	SETTINGS,
-	StringComparisonType,
 	StudyType,
 	SYSTEM_NAME,
 } from "@module/data"
 import { PDF } from "@module/pdf"
-import { LocalizeGURPS, prepareFormData } from "@util"
+import { LocalizeGURPS, prepareFormData, StringCompareType } from "@util"
 import { BaseItemGURPS } from "."
 import { FeatureObj } from "@module/config"
+import { feature } from "@util/enum"
 
-const weaponFeatures = [
-	FeatureType.WeaponBonus,
-	FeatureType.WeaponAccBonus,
-	FeatureType.WeaponScopeAccBonus,
-	FeatureType.WeaponDRDivisorBonus,
-	FeatureType.WeaponMinSTBonus,
-	FeatureType.WeaponMinReachBonus,
-	FeatureType.WeaponMaxReachBonus,
-	FeatureType.WeaponHalfDamageRangeBonus,
-	FeatureType.WeaponMinRangeBonus,
-	FeatureType.WeaponMaxRangeBonus,
-	FeatureType.WeaponRecoilBonus,
-	FeatureType.WeaponBulkBonus,
-	FeatureType.WeaponParryBonus,
-	FeatureType.WeaponBlockBonus,
-	FeatureType.WeaponRofMode1ShotsBonus,
-	FeatureType.WeaponRofMode1SecondaryBonus,
-	FeatureType.WeaponRofMode2ShotsBonus,
-	FeatureType.WeaponRofMode2SecondaryBonus,
-	FeatureType.WeaponNonChamberShotsBonus,
-	FeatureType.WeaponChamberShotsBonus,
-	FeatureType.WeaponShotDurationBonus,
-	FeatureType.WeaponReloadTimeBonus,
-	FeatureType.WeaponSwitch,
-]
+// const weaponFeatures = [
+// 	FeatureType.WeaponBonus,
+// 	FeatureType.WeaponAccBonus,
+// 	FeatureType.WeaponScopeAccBonus,
+// 	FeatureType.WeaponDRDivisorBonus,
+// 	FeatureType.WeaponMinSTBonus,
+// 	FeatureType.WeaponMinReachBonus,
+// 	FeatureType.WeaponMaxReachBonus,
+// 	FeatureType.WeaponHalfDamageRangeBonus,
+// 	FeatureType.WeaponMinRangeBonus,
+// 	FeatureType.WeaponMaxRangeBonus,
+// 	FeatureType.WeaponRecoilBonus,
+// 	FeatureType.WeaponBulkBonus,
+// 	FeatureType.WeaponParryBonus,
+// 	FeatureType.WeaponBlockBonus,
+// 	FeatureType.WeaponRofMode1ShotsBonus,
+// 	FeatureType.WeaponRofMode1SecondaryBonus,
+// 	FeatureType.WeaponRofMode2ShotsBonus,
+// 	FeatureType.WeaponRofMode2SecondaryBonus,
+// 	FeatureType.WeaponNonChamberShotsBonus,
+// 	FeatureType.WeaponChamberShotsBonus,
+// 	FeatureType.WeaponShotDurationBonus,
+// 	FeatureType.WeaponReloadTimeBonus,
+// 	FeatureType.WeaponSwitch,
+// ]
 
 export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends ItemSheet {
 	declare object: IType
@@ -105,7 +104,7 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 				config: CONFIG.GURPS,
 				attributes: attributes,
 				locations: locations,
-				weaponFeatures,
+				weaponFeatures: feature.WeaponBonusTypes,
 				sysPrefix: "array.system.",
 			},
 		}
@@ -120,7 +119,7 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		html.find("textarea")
-			.each(function () {
+			.each(function() {
 				this.setAttribute("style", `height:${this.scrollHeight + 2}px;overflow-y:hidden;`)
 			})
 			.on("input", event => {
@@ -165,8 +164,8 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 		const prereqs = getProperty(this.item, `${path}.prereqs`)
 		prereqs.push({
 			type: PrereqType.Trait,
-			name: { compare: StringComparisonType.IsString, qualifier: "" },
-			notes: { compare: StringComparisonType.AnyString, qualifier: "" },
+			name: { compare: StringCompareType.IsString, qualifier: "" },
+			notes: { compare: StringCompareType.AnyString, qualifier: "" },
 			level: { compare: NumericComparisonType.AtLeastNumber, qualifier: 0 },
 			has: true,
 		})
@@ -228,7 +227,7 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 		if (!this.isEditable) return
 		const features = (this.item.system as any).features
 		features.push({
-			type: FeatureType.AttributeBonus,
+			type: feature.Type.AttributeBonus,
 			attribute: "st",
 			limitation: "none",
 			amount: 1,
@@ -305,10 +304,10 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 		if (!this.isEditable) return
 		const value = event.currentTarget.value
 		const index = parseInt($(event.currentTarget).data("index"))
-		const FeatureConstructor = CONFIG.GURPS.Feature.classes[value as FeatureType]
+		const FeatureConstructor = CONFIG.GURPS.Feature.classes[value as feature.Type]
 		let features = duplicate((this.item.system as any).features as FeatureObj[])
 		let feature = new FeatureConstructor().toObject()
-		if (weaponFeatures.includes(value)) feature = new FeatureConstructor(value).toObject()
+		if (feature.WeaponBonusTypes.includes(value)) feature = new FeatureConstructor(value).toObject()
 		features.splice(index, 1, feature)
 		const update: any = {}
 		await this.item.update(

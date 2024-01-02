@@ -1,5 +1,4 @@
 import { RollType } from "../data"
-import { format } from "../../util/enums/emweight/value"
 
 function getFormatFunction() {
 	const format = (globalThis as any).game

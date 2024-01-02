@@ -4,8 +4,8 @@ import { LocalizeGURPS } from "@util"
 import { Int } from "@util/fxp"
 import { TooltipGURPS } from "@module/tooltip"
 import { DamageProgression, ItemType } from "@module/data"
-import { FeatureType } from "@feature"
 import { BaseWeaponGURPS } from "./document"
+import { feature } from "@util/enum"
 
 export class WeaponDamage {
 	owner: BaseWeaponGURPS<any>
@@ -52,9 +52,8 @@ export class WeaponDamage {
 			if (this.armor_divisor !== 1) buffer += `(${this.armor_divisor})`
 			if (this.modifier_per_die !== 0) {
 				if (buffer.length !== 0) buffer += " "
-				buffer += `(${this.modifier_per_die?.signedString()} ${
-					LocalizeGURPS.translations.gurps.feature.per_die
-				})`
+				buffer += `(${this.modifier_per_die?.signedString()} ${LocalizeGURPS.translations.gurps.feature.per_die
+					})`
 			}
 			const t = this.type.trim()
 			if (t !== "") buffer += ` ${t}`
@@ -118,10 +117,10 @@ export class WeaponDamage {
 		for (const bonus of this.owner.collectWeaponBonuses(
 			base.count,
 			tooltip,
-			FeatureType.WeaponBonus,
-			FeatureType.WeaponDRDivisorBonus
+			feature.Type.WeaponBonus,
+			feature.Type.WeaponDRDivisorBonus
 		)) {
-			if (bonus.type === FeatureType.WeaponBonus) {
+			if (bonus.type === feature.Type.WeaponBonus) {
 				bonus.leveledAmount.dieCount = Int.from(base.count)
 				let amt = bonus.adjustedAmountForWeapon(this.owner)
 				if (bonus.percent) percentDamageBonus += amt
@@ -132,7 +131,7 @@ export class WeaponDamage {
 					}
 					base.modifier += Int.from(amt)
 				}
-			} else if (bonus.type === FeatureType.WeaponDRDivisorBonus) {
+			} else if (bonus.type === feature.Type.WeaponDRDivisorBonus) {
 				let amt = bonus.adjustedAmountForWeapon(this.owner)
 				if (bonus.percent) percentDRDivisorBonus += amt
 				else armorDivisor += amt

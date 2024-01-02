@@ -2,8 +2,8 @@ import { WeaponGURPS } from "@module/config"
 import { TooltipGURPS } from "@module/tooltip"
 import { Int } from "@util/fxp"
 import { wswitch } from "./data"
-import { FeatureType } from "@feature"
 import { WeaponField } from "./weapon_field"
+import { feature } from "@util/enum"
 
 export class WeaponAccuracy extends WeaponField {
 	base = 0
@@ -19,7 +19,7 @@ export class WeaponAccuracy extends WeaponField {
 		else {
 			s = s.replace(/^\+/, "")
 			const parts = s.split("+")
-			;[wa.base, parts[0]] = Int.extract(parts[0])
+				;[wa.base, parts[0]] = Int.extract(parts[0])
 			if (parts.length > 1) wa.scope = Int.fromString(parts[1])
 		}
 		wa.validate()
@@ -34,14 +34,14 @@ export class WeaponAccuracy extends WeaponField {
 				for (const bonus of w.collectWeaponBonuses(
 					1,
 					tooltip,
-					FeatureType.WeaponAccBonus,
-					FeatureType.WeaponScopeAccBonus
+					feature.Type.WeaponAccBonus,
+					feature.Type.WeaponScopeAccBonus
 				)) {
 					switch (bonus.type) {
-						case FeatureType.WeaponAccBonus:
+						case feature.Type.WeaponAccBonus:
 							result.base += bonus.adjustedAmountForWeapon(w)
 							break
-						case FeatureType.WeaponScopeAccBonus:
+						case feature.Type.WeaponScopeAccBonus:
 							result.scope += bonus.adjustedAmountForWeapon(w)
 							break
 						default:

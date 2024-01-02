@@ -29,7 +29,7 @@ import {
 	gid,
 	ItemType,
 	SETTINGS,
-	StringComparisonType,
+	// StringCompareType,
 	Stringer,
 	SYSTEM_NAME,
 } from "@module/data"
@@ -46,7 +46,9 @@ import {
 	LocalizeGURPS,
 	newUUID,
 	numberCompare,
-	stringCompare,
+	StringCompareType,
+	StringCriteria,
+	// stringCompare,
 	urlToBase64,
 	Weight,
 	WeightUnits,
@@ -78,12 +80,10 @@ import {
 	SpellBonus,
 	SpellPointBonus,
 	WeaponBonus,
-	WeaponBonusType,
-	stlimit,
 } from "@feature"
 import { MoveType, MoveTypeDef, MoveTypeObj } from "@module/move_type"
 import { Int } from "@util/fxp"
-import { attribute, selfctrl, skillsel, wsel } from "@util/enum"
+import { attribute, feature, selfctrl, skillsel, stlimit, wsel } from "@util/enum"
 
 export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	attributes: Map<string, Attribute> = new Map()
@@ -670,7 +670,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	// Bonuses
 	get size_modifier_bonus(): number {
-		return this.attributeBonusFor(attrPrefix + gid.SizeModifier, stlimit.None)
+		return this.attributeBonusFor(attrPrefix + gid.SizeModifier, stlimit.Option.None)
 	}
 
 	get striking_st_bonus(): number {
@@ -720,7 +720,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	// Flat list of all hit locations
 	get HitLocations(): HitLocation[] {
-		const recurseLocations = function (table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
+		const recurseLocations = function(table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
 			table.locations.forEach(e => {
 				locations.push(e)
 				if (e.subTable) locations = recurseLocations(e.subTable, locations)
@@ -1218,9 +1218,9 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		}
 
 		this.calc ??= {}
-		this.calc.lifting_st_bonus = this.attributeBonusFor(gid.Strength, stlimit.LiftingOnly)
-		this.calc.striking_st_bonus = this.attributeBonusFor(gid.Strength, stlimit.StrikingOnly)
-		this.calc.throwing_st_bonus = this.attributeBonusFor(gid.Strength, stlimit.ThrowingOnly)
+		this.calc.lifting_st_bonus = this.attributeBonusFor(gid.Strength, stlimit.Option.LiftingOnly)
+		this.calc.striking_st_bonus = this.attributeBonusFor(gid.Strength, stlimit.Option.StrikingOnly)
+		this.calc.throwing_st_bonus = this.attributeBonusFor(gid.Strength, stlimit.Option.ThrowingOnly)
 
 		this.attributes = this.getAttributes()
 		this.processThresholds()
@@ -1228,9 +1228,9 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		this.resource_trackers = this.getResourceTrackers()
 		this.move_types = this.getMoveTypes()
 
-		this.calc.dodge_bonus = this.attributeBonusFor(gid.Dodge, stlimit.None)
-		this.calc.parry_bonus = this.attributeBonusFor(gid.Parry, stlimit.None)
-		this.calc.block_bonus = this.attributeBonusFor(gid.Block, stlimit.None)
+		this.calc.dodge_bonus = this.attributeBonusFor(gid.Dodge, stlimit.Option.None)
+		this.calc.parry_bonus = this.attributeBonusFor(gid.Parry, stlimit.Option.None)
+		this.calc.block_bonus = this.attributeBonusFor(gid.Block, stlimit.Option.None)
 	}
 
 	processThresholds() {
@@ -1349,13 +1349,13 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 			if (satisfied && k instanceof TechniqueGURPS) satisfied = k.satisfied(tooltip)
 			if (eqpPenalty) {
 				const penalty = new SkillBonus()
-				penalty.selection_type = skillsel.Name
-				penalty.name = {
-					compare: StringComparisonType.IsString,
+				penalty.selection_type = skillsel.Type.Name
+				penalty.name = <StringCriteria>{
+					compare: StringCompareType.IsString,
 					qualifier: k.name!,
 				}
-				penalty.specialization = {
-					compare: StringComparisonType.IsString,
+				penalty.specialization = <StringCriteria>{
+					compare: StringCompareType.IsString,
 					qualifier: k.specialization,
 				}
 				penalty.amount = k.techLevel && k.techLevel !== "" ? -10 : -5
@@ -1525,7 +1525,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	attributeBonusFor(
 		attributeId: string,
-		limitation: stlimit,
+		limitation: stlimit.Option,
 		effective = false,
 		tooltip: TooltipGURPS | null = null
 	): number {
@@ -1548,9 +1548,9 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		if (this.features)
 			for (const f of this.features.skillBonuses) {
 				if (
-					stringCompare(name, f.name) &&
-					stringCompare(specialization, f.specialization) &&
-					stringCompare(tags, f.tags)
+					f.name?.matches(name) &&
+					f.specialization?.matches(specialization) &&
+					f.tags?.matchesList(...tags)
 				) {
 					total += f.adjustedAmount
 					f.addToTooltip(tooltip)
@@ -1569,9 +1569,9 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		if (this.features)
 			for (const f of this.features.skillPointBonuses) {
 				if (
-					stringCompare(name, f.name) &&
-					stringCompare(specialization, f.specialization) &&
-					stringCompare(tags, f.tags)
+					f.name?.matches(name) &&
+					f.specialization?.matches(specialization) &&
+					f.tags?.matchesList(...tags)
 				) {
 					total += f.adjustedAmount
 					f.addToTooltip(tooltip)
@@ -1590,7 +1590,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		let total = 0
 		if (this.features)
 			for (const f of this.features.spellBonuses) {
-				if (stringCompare(tags, f.tags)) {
+				if (f.tags.matchesList(...tags)) {
 					if (f.matchForType(name, powerSource, colleges)) {
 						total += f.adjustedAmount
 						f.addToTooltip(tooltip)
@@ -1610,7 +1610,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		let total = 0
 		if (this.features)
 			for (const f of this.features.spellPointBonuses) {
-				if (stringCompare(tags, f.tags)) {
+				if (f.tags.matchesList(...tags)) {
 					if (f.matchForType(name, powerSource, colleges)) {
 						total += f.adjustedAmount
 						f.addToTooltip(tooltip)
@@ -1628,7 +1628,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		dieCount: number,
 		tooltip: TooltipGURPS | null = null,
 		m: Map<WeaponBonus, boolean> | null = null,
-		allowedFeatureTypes: Map<WeaponBonusType, boolean> = new Map()
+		allowedFeatureTypes: Map<feature.Type, boolean> = new Map()
 	): Map<WeaponBonus, boolean> {
 		if (m === null) m = new Map()
 		let rsl = -Infinity
@@ -1639,12 +1639,12 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		for (const f of this.features.weaponBonuses) {
 			if (
 				allowedFeatureTypes.get(f.type) &&
-				f.selection_type === wsel.WithRequiredSkill &&
-				stringCompare(name, f.name) &&
-				stringCompare(specialization, f.specialization) &&
+				f.selection_type === wsel.Type.WithRequiredSkill &&
+				f.name?.matches(name) &&
+				f.specialization.matches(specialization) &&
 				numberCompare(rsl, f.level) &&
-				stringCompare(usage, f.usage) &&
-				stringCompare(tags, f.tags)
+				f.usage.match(usage) &&
+				f.tags.match(...tags)
 			) {
 				addWeaponBonusToMap(f, dieCount, tooltip, m)
 			}
@@ -1659,15 +1659,15 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		dieCount: number,
 		tooltip: TooltipGURPS | null = null,
 		m: Map<WeaponBonus, boolean> = new Map(),
-		allowedFeatureTypes: Map<WeaponBonusType, boolean> = new Map()
+		allowedFeatureTypes: Map<feature.Type, boolean> = new Map()
 	): Map<WeaponBonus, boolean> {
 		for (const f of this.features.weaponBonuses) {
 			if (
 				allowedFeatureTypes.get(f.type) &&
-				f.selection_type === wsel.WithName &&
-				stringCompare(name, f.name) &&
-				stringCompare(usage, f.usage) &&
-				stringCompare(tags, f.tags)
+				f.selection_type === wsel.Type.WithName &&
+				f.name.match(name) &&
+				f.usage.match(usage) &&
+				f.tags.matchesList(...tags)
 			) {
 				addWeaponBonusToMap(f, dieCount, tooltip, m)
 			}
@@ -1684,10 +1684,10 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		const bonuses: SkillBonus[] = []
 		for (const f of this.features.skillBonuses) {
 			if (
-				f.selection_type === skillsel.WeaponsWithName &&
-				stringCompare(name, f.name) &&
-				stringCompare(usage, f.specialization) &&
-				stringCompare(tags, f.tags)
+				f.selection_type === skillsel.Type.WeaponsWithName &&
+				f.name?.matches(name) &&
+				f.specialization?.matches(usage) &&
+				f.tags?.matchesList(...tags)
 			) {
 				bonuses.push(f)
 				f.addToTooltip(tooltip)

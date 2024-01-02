@@ -96,40 +96,40 @@ export enum DamageProgression {
 	Tbone2Clean = "tbone_2_clean",
 }
 
-export interface StringCriteria {
-	compare: StringComparisonType
-	qualifier?: string
-}
+// export interface StringCriteria {
+// 	compare: StringCompareType
+// 	qualifier?: string
+// }
 
-export enum StringComparisonType {
-	AnyString = "none",
-	IsString = "is",
-	IsNotString = "is_not",
-	ContainsString = "contains",
-	DoesNotContainString = "does_not_contain",
-	StartsWithString = "starts_with",
-	DoesNotStartWithString = "does_not_start_with",
-	EndsWithString = "ends_with",
-	DoesNotEndWithString = "does_not_end_with",
-}
+// export enum StringCompareType {
+// 	AnyString = "none",
+// 	IsString = "is",
+// 	IsNotString = "is_not",
+// 	ContainsString = "contains",
+// 	DoesNotContainString = "does_not_contain",
+// 	StartsWithString = "starts_with",
+// 	DoesNotStartWithString = "does_not_start_with",
+// 	EndsWithString = "ends_with",
+// 	DoesNotEndWithString = "does_not_end_with",
+// }
 
-export interface NumericCriteria {
-	compare: NumericComparisonType
-	qualifier?: number
-}
+// export interface NumericCriteria {
+// 	compare: NumericComparisonType
+// 	qualifier?: number
+// }
 
-export interface WeightCriteria {
-	compare: NumericComparisonType
-	qualifier?: string
-}
+// export interface WeightCriteria {
+// 	compare: NumericComparisonType
+// 	qualifier?: string
+// }
 
-export enum NumericComparisonType {
-	AnyNumber = "none",
-	EqualsNumber = "is",
-	NotEqualsNumber = "is_not",
-	AtLeastNumber = "at_least",
-	AtMostNumber = "at_most",
-}
+// export enum NumericComparisonType {
+// 	AnyNumber = "none",
+// 	EqualsNumber = "is",
+// 	NotEqualsNumber = "is_not",
+// 	AtLeastNumber = "at_least",
+// 	AtMostNumber = "at_most",
+// }
 
 // Standard attribute related ids
 export enum gid {
@@ -197,13 +197,13 @@ export const attrPrefix = "attr."
 // 	MajorCostOfLivingIncrease = "major_cost_of_living_increase",
 // }
 
-export enum Difficulty {
-	Easy = "e",
-	Average = "a",
-	Hard = "h",
-	VeryHard = "vh",
-	Wildcard = "w",
-}
+// export enum Difficulty {
+// 	Easy = "e",
+// 	Average = "a",
+// 	Hard = "h",
+// 	VeryHard = "vh",
+// 	Wildcard = "w",
+// }
 
 export interface Study {
 	type: StudyType
