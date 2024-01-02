@@ -100,7 +100,9 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			result = this._onDropNewItem(event, item, { top, inContainer, other })
 		}
 
-		result = this._onDropNewItem(event, item, { top, inContainer, other })
+		const sheet = $(this.element)
+		sheet.find(".item-list.dragsection").removeClass("dragsection")
+		sheet.find(".item-list.dragindirect").removeClass("dragindirect")
 		return result
 	}
 
@@ -245,107 +247,8 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 
 	_onItemHeaderContext(element: HTMLElement) {
 		const type = $(element).parent(".item-list")[0].id
-		const menuItems = (function(self: CharacterSheetGURPS): ContextMenuEntry[] {
-			switch (type) {
-				case "traits":
-					return [
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_trait,
-							icon: "<i class='gcs-trait'></i>",
-							callback: () => self._newItem(ItemType.Trait),
-						},
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_trait_container,
-							icon: "<i class='gcs-trait'></i>",
-							callback: () => self._newItem(ItemType.TraitContainer),
-						},
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_natural_attacks,
-							icon: "<i class='gcs-melee-weapon'></i>",
-							callback: () => self._newNaturalAttacks(),
-						},
-					]
-				case "skills":
-					return [
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_skill,
-							icon: "<i class='gcs-skill'></i>",
-							callback: () => self._newItem(ItemType.Skill),
-						},
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_skill_container,
-							icon: "<i class='gcs-skill'></i>",
-							callback: () => self._newItem(ItemType.SkillContainer),
-						},
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_technique,
-							icon: "<i class='gcs-skill'></i>",
-							callback: () => self._newItem(ItemType.Technique),
-						},
-					]
-				case "spells":
-					return [
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_spell,
-							icon: "<i class='gcs-spell'></i>",
-							callback: () => self._newItem(ItemType.Spell),
-						},
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_spell_container,
-							icon: "<i class='gcs-spell'></i>",
-							callback: () => self._newItem(ItemType.SpellContainer),
-						},
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_ritual_magic_spell,
-							icon: "<i class='gcs-spell'></i>",
-							callback: () => self._newItem(ItemType.RitualMagicSpell),
-						},
-					]
-				case "equipment":
-					return [
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_carried_equipment,
-							icon: "<i class='gcs-equipment'></i>",
-							callback: () => self._newItem(ItemType.Equipment),
-						},
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_carried_equipment_container,
-							icon: "<i class='gcs-equipment'></i>",
-							callback: () => self._newItem(ItemType.EquipmentContainer),
-						},
-					]
-				case "other-equipment":
-					return [
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_other_equipment,
-							icon: "<i class='gcs-equipment'></i>",
-							callback: () => self._newItem(ItemType.Equipment, true),
-						},
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_other_equipment_container,
-							icon: "<i class='gcs-equipment'></i>",
-							callback: () => self._newItem(ItemType.EquipmentContainer, true),
-						},
-					]
-				case "notes":
-					return [
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_note,
-							icon: "<i class='gcs-note'></i>",
-							callback: () => self._newItem(ItemType.Note),
-						},
-						{
-							name: LocalizeGURPS.translations.gurps.context.new_note_container,
-							icon: "<i class='gcs-note'></i>",
-							callback: () => self._newItem(ItemType.NoteContainer),
-						},
-					]
-				default:
-					return []
-			}
-		})(this)
-
-		ContextMenu.create(this, $(element), "*", menuItems)
+		if (!type) return
+		ui.context!.menuItems = this._getHeaderContextOptions(type)
 	}
 
 	private _getHeaderContextOptions(type: string): ContextMenuEntry[] {
@@ -1113,6 +1016,8 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 	protected _onDragItem(event: DragEvent): void {
 		const sheet = $(this.element)
 		const itemData = $("#drag-ghost").data("item") as ItemDataGURPS
+		if (!itemData) return
+		const currentTable = this._getTargetTableFromItemType(event, itemData.type)
 
 		sheet.find(".item-list").each(function () {
 			if ($(this) !== currentTable) {

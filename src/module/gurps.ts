@@ -591,9 +591,9 @@ Hooks.on("renderPlayerList", function (_hotbar: any, element: JQuery<HTMLElement
 })
 
 Hooks.on("renderHotbar", function (_hotbar: any, element: JQuery<HTMLElement>, _options: any) {
-	if (!game.ModifierButton) return
-	game.ModifierButton._injectHTML(element.parent("#ui-bottom"))
-	game.ModifierButton.render()
+	if (!game.ModifierBucket) return
+	game.ModifierBucket._injectHTML(element.parent("#ui-bottom"))
+	game.ModifierBucket.render()
 })
 
 Hooks.on("chatMessage", function (_chatlog: ChatLog, message: string, _data: any) {
