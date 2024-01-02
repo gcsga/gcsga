@@ -15,6 +15,7 @@ import {
 	MookTraitModifier,
 } from "./data"
 import { MoveTypeDefObj } from "@module/move_type"
+import { attribute } from "@util/enum"
 import { CharacterGURPS, CharacterSource, Encumbrance } from "@actor"
 import {
 	BaseItemSourceGURPS,

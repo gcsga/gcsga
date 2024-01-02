@@ -4,6 +4,7 @@ import { SYSTEM_NAME } from "@module/data"
 import { DiceGURPS } from "@module/dice"
 import { LocalizeGURPS } from "@util"
 import { Mook } from "./document"
+import { attribute } from "@util/enum"
 import { MookParser } from "./parse"
 import { attribute } from "@util/enum"
 
