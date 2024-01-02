@@ -32,8 +32,8 @@
 			<div class="field">
 			<input type="text" name="array.system.features.{{@index}}.amount" value="{{signed this.amount}}" data-dtype="Number" />
 			</div>
-			{{#if (in ../weaponFeatures this.type)}}
 			<div class="field">
+			{{#if (in ../weaponFeatures this.type)}}
 				<label class="checkbox-label">
 					<input
 						type="checkbox"
@@ -43,25 +43,23 @@
 					/>
 					{{localize "gurps.feature.per_level"}}
 				</label>
+				{{#unless (eq this.type "weapon_min_st_bonus")}}
 				<label class="checkbox-label">
 					<input type="checkbox" data-dtype="Boolean" name="array.system.features.{{@index}}.per_die" {{checked this.per_die}} />
 					{{localize "gurps.feature.per_die"}}
 				</label>
-			</div>
-			<div class="field">
+				{{/unless}}
 				<label class="checkbox-label">
 					<input type="checkbox" data-dtype="Boolean" name="array.system.features.{{@index}}.percent" {{checked this.percent}} />
 					{{localize "gurps.feature.percent"}}
 				</label>
-			</div>
 			{{else}}
-				<div class="field">
-					<label class="checkbox-label">
-						<input type="checkbox" data-dtype="Boolean" name="array.system.features.{{@index}}.per_level" {{checked this.per_level}} />
-						{{localize "gurps.feature.per_level"}}
-					</label>
-				</div>
+				<label class="checkbox-label">
+					<input type="checkbox" data-dtype="Boolean" name="array.system.features.{{@index}}.per_level" {{checked this.per_level}} />
+					{{localize "gurps.feature.per_level"}}
+				</label>
 			{{/if}}
+			</div>
 		{{/if}}
 		</div>
 		{{#if (eq this.type "attribute_bonus") }}
