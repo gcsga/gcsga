@@ -20,6 +20,7 @@ import {
 	InjuryEffectType,
 	KnockdownCheck,
 	RollModifier,
+	ShockInjuryEffect,
 } from "./injury_effect"
 import { HitLocation, HitLocationTable } from "@actor"
 import { TokenDocumentGURPS } from "@module/token"
@@ -91,6 +92,7 @@ export interface IDamageCalculator {
 }
 
 interface LocationDamage {
+	toggleEffect(index: number): unknown
 	hitLocation: HitLocation | undefined
 
 	readonly isOverridden: boolean
@@ -626,11 +628,11 @@ class DamageCalculator implements IDamageCalculator {
 			)
 		)
 
-		results.knockback = this.knockback(results)
-		results.addEffects(this.knockbackEffects(results.knockback))
+		// results.knockback = this.knockback(results)
+		// results.addEffects(this.knockbackEffects(results.knockback))
 		results.addEffects(this.shockEffects(results, locationDamage.locationName))
-		results.addEffects(this.majorWoundEffects(results, locationDamage.locationName))
-		results.addEffects(this.miscellaneousEffects(results, locationDamage.locationName))
+		// results.addEffects(this.majorWoundEffects(results, locationDamage.locationName))
+		// results.addEffects(this.miscellaneousEffects(results, locationDamage.locationName))
 		return results
 	}
 
@@ -1117,10 +1119,7 @@ class DamageCalculator implements IDamageCalculator {
 			// if (this.damageType === DamageTypes.cr && location?.id === "groin" && !this.target.hasTrait("No Vitals"))
 			// 	modifier *= 2
 
-			const shockEffect = new InjuryEffect(InjuryEffectType.shock, [
-				new RollModifier("dx", RollType.Attribute, modifier),
-				new RollModifier("iq", RollType.Attribute, modifier),
-			])
+			const shockEffect = new ShockInjuryEffect(modifier)
 			return [shockEffect]
 		}
 		return []
@@ -1238,6 +1237,7 @@ class HitLocationDamage implements LocationDamage {
 		locationName: undefined,
 		rawDR: undefined,
 		woundingModifier: undefined,
+		effects: undefined,
 	}
 
 	resetOverrides() {
@@ -1253,6 +1253,21 @@ class HitLocationDamage implements LocationDamage {
 
 	get results(): DamageResults {
 		return this.calculator.getDamageResults(this)
+	}
+
+	toggleEffect(index: number): void {
+		if (this.overrides.effects === undefined) this.overrides.effects = []
+
+		if (this.overrides.effects.includes(index)) {
+			this.overrides.effects.splice(this.overrides.effects.indexOf(index), 1)
+			if (this.overrides.effects.length === 0) this.overrides.effects = undefined
+		} else {
+			this.overrides.effects.push(index)
+		}
+	}
+
+	isEffectActive(index: number): boolean {
+		return this.overrides.effects?.includes(index) ?? false
 	}
 
 	// --- Basic Damage ---
@@ -1571,6 +1586,7 @@ export class DamageResults {
 type Overrides = {
 	locationName: string | undefined
 	basicDamage: number | undefined
+	effects: number[] | undefined
 	flexible: boolean | undefined
 	hardenedDR: number | undefined
 	rawDR: number | undefined

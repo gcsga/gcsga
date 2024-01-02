@@ -162,7 +162,7 @@ class ApplyDamageDialog extends Application {
 		event.preventDefault()
 
 		const intValue = parseInt(target.value)
-		const floatValue = parseFloat(target.value)
+		// const floatValue = parseFloat(target.value)
 		const index = parseInt(target.dataset.index)
 		const locationDamage = this.calculator.hits[index]
 
@@ -205,6 +205,11 @@ class ApplyDamageDialog extends Application {
 
 			case "override-isShotgunCloseRange":
 				this.calculator.isShotgunCloseRangeOverride = target.checked
+				break
+
+			case "injury-effect":
+				const parentIndex = parseInt(target.dataset.effectIndex)
+				locationDamage.toggleEffect(parentIndex)
 				break
 		}
 

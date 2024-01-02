@@ -8,4 +8,12 @@ module.exports = {
 	endOfLine: "lf",
 	arrowParens: "avoid",
 	printWidth: 120,
+	overrides: [
+		{
+			files: "*.hbs",
+			options: {
+				proseWrap: "never",
+			},
+		},
+	],
 }

@@ -235,5 +235,11 @@ module.exports = {
 				"@typescript-eslint/no-var-requires": "off",
 			},
 		},
+		{
+			files: ["./*.hbs"],
+			rules: {
+				"glimmer/no-dot-dot-in-path-expression": "off",
+			},
+		},
 	],
 }

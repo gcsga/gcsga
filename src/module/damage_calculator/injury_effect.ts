@@ -1,4 +1,15 @@
 import { RollType } from "../data"
+import { format } from "../../util/enums/emweight/value"
+
+function getFormatFunction() {
+	const format = (globalThis as any).game
+		? game.i18n.format.bind(game.i18n)
+		: (stringId: string, data?: any) => `${stringId}${data ? `:${JSON.stringify(data)}` : ""}`
+
+	return format
+}
+
+const asDisplayString = (n: number) => `${n < 0 ? "–" : ""}${Math.abs(n)}`
 
 /**
  * InjuryEffect represents some effect of sudden injury.
@@ -15,10 +26,32 @@ class InjuryEffect {
 	/* An array of EffectChecks. */
 	checks: EffectCheck[]
 
+	displayName: string = ""
+
+	description: string = ""
+
+	level: number | undefined
+
+	disabled: boolean = false
+
+	format = getFormatFunction()
+
 	constructor(id: InjuryEffectType, modifiers: RollModifier[] = [], checks: EffectCheck[] = []) {
 		this.id = id
 		this.modifiers = modifiers
 		this.checks = checks
+	}
+}
+
+export class ShockInjuryEffect extends InjuryEffect {
+	constructor(level: number) {
+		super(InjuryEffectType.shock)
+
+		this.level = level
+		this.displayName = this.format("gurps.dmgcalc.effect_types.shock")
+		this.description = this.format("gurps.dmgcalc.effect_descriptions.shock", {
+			level: asDisplayString(this.level),
+		})
 	}
 }
 

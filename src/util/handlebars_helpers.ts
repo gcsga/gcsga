@@ -148,7 +148,7 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 		return length
 	}
 
-	static print(a: any): any {
+	static print(a: any, options: any): any {
 		console.log(a)
 		return ""
 	}
@@ -413,8 +413,12 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 		)
 	}
 
-	static overridden(check: any): string {
-		return check ? "overridden" : ""
+	static define(name: string, value: any, options: any) {
+		options.data.root[name] = value
+	}
+
+	static conditionalText(condition: boolean, ifTrue: string = "", ifFalse: string = ""): string {
+		return condition ? ifTrue : ifFalse
 	}
 
 	static studyinfo(type: StudyType) {
@@ -570,44 +574,45 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 
 export function registerHandlebarsHelpers() {
 	Handlebars.registerHelper({
-		camelcase: HandlebarsHelpersGURPS.camelcase,
-		signed: HandlebarsHelpersGURPS.signed,
-		modifierString: HandlebarsHelpersGURPS.modifierString,
-		abs: HandlebarsHelpersGURPS.abs,
-		ror: HandlebarsHelpersGURPS.ror,
-		sum: HandlebarsHelpersGURPS.sum,
-		enabledList: HandlebarsHelpersGURPS.enabledList,
-		notEmpty: HandlebarsHelpersGURPS.notEmpty,
-		blockLayout: HandlebarsHelpersGURPS.blockLayout,
-		json: HandlebarsHelpersGURPS.json,
-		concat: HandlebarsHelpersGURPS.cc,
-		join: HandlebarsHelpersGURPS.join,
-		arr: HandlebarsHelpersGURPS.arr,
-		indent: HandlebarsHelpersGURPS.indent,
-		// spellValues: HandlebarsHelpersGURPS.spellValues,
-		date: HandlebarsHelpersGURPS.date,
-		length: HandlebarsHelpersGURPS.len,
-		print: HandlebarsHelpersGURPS.print,
-		format: HandlebarsHelpersGURPS.format,
-		md: HandlebarsHelpersGURPS.md,
-		ref: HandlebarsHelpersGURPS.ref,
-		in: HandlebarsHelpersGURPS.in,
-		diceString: HandlebarsHelpersGURPS.diceString,
-		sort: HandlebarsHelpersGURPS.sort,
-		textareaFormat: HandlebarsHelpersGURPS.textareaFormat,
-		overspent: HandlebarsHelpersGURPS.overspent,
-		modifierCost: HandlebarsHelpersGURPS.modifierCost,
-		effective: HandlebarsHelpersGURPS.effective,
-		unsatisfied: HandlebarsHelpersGURPS.unsatisfied,
-		overridden: HandlebarsHelpersGURPS.overridden,
-		flatlist: HandlebarsHelpersGURPS.flatlist,
-		staticSpellValues: HandlebarsHelpersGURPS.staticSpellValues,
-		adjustedStudyHours: HandlebarsHelpersGURPS.adjustedStudyHours,
-		studyinfo: HandlebarsHelpersGURPS.studyinfo,
-		isContainer: HandlebarsHelpersGURPS.isContainer,
-		diff: (v1, v2) => v1 - v2,
 		// Multiselect: HandlebarsHelpersGURPS.multiselect
+		// spellValues: HandlebarsHelpersGURPS.spellValues,
+		abs: HandlebarsHelpersGURPS.abs,
+		adjustedStudyHours: HandlebarsHelpersGURPS.adjustedStudyHours,
+		arr: HandlebarsHelpersGURPS.arr,
+		blockLayout: HandlebarsHelpersGURPS.blockLayout,
+		camelcase: HandlebarsHelpersGURPS.camelcase,
+		concat: HandlebarsHelpersGURPS.cc,
+		date: HandlebarsHelpersGURPS.date,
+		define: HandlebarsHelpersGURPS.define,
+		diceString: HandlebarsHelpersGURPS.diceString,
+		diff: (v1, v2) => v1 - v2,
+		effective: HandlebarsHelpersGURPS.effective,
+		enabledList: HandlebarsHelpersGURPS.enabledList,
+		flatlist: HandlebarsHelpersGURPS.flatlist,
+		format: HandlebarsHelpersGURPS.format,
+		ifText: HandlebarsHelpersGURPS.conditionalText,
+		in: HandlebarsHelpersGURPS.in,
+		indent: HandlebarsHelpersGURPS.indent,
+		isContainer: HandlebarsHelpersGURPS.isContainer,
+		join: HandlebarsHelpersGURPS.join,
+		json: HandlebarsHelpersGURPS.json,
+		length: HandlebarsHelpersGURPS.len,
+		md: HandlebarsHelpersGURPS.md,
+		modifierCost: HandlebarsHelpersGURPS.modifierCost,
+		modifierString: HandlebarsHelpersGURPS.modifierString,
+		notEmpty: HandlebarsHelpersGURPS.notEmpty,
+		overspent: HandlebarsHelpersGURPS.overspent,
+		print: HandlebarsHelpersGURPS.print,
+		ref: HandlebarsHelpersGURPS.ref,
+		ror: HandlebarsHelpersGURPS.ror,
 		selectOptsGURPS: HandlebarsHelpersGURPS.selectOptions,
+		signed: HandlebarsHelpersGURPS.signed,
+		sort: HandlebarsHelpersGURPS.sort,
+		staticSpellValues: HandlebarsHelpersGURPS.staticSpellValues,
+		studyinfo: HandlebarsHelpersGURPS.studyinfo,
+		sum: HandlebarsHelpersGURPS.sum,
+		textareaFormat: HandlebarsHelpersGURPS.textareaFormat,
+		unsatisfied: HandlebarsHelpersGURPS.unsatisfied,
 	})
 }
 
