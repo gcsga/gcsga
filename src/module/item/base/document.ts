@@ -34,18 +34,6 @@ export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSour
 		}
 	}
 
-
-	// Used for defaults
-	// get dummyActor(): (typeof CONFIG.GURPS.Actor.documentClasses)[ActorType.Character] | null {
-	get dummyActor(): VariableResolver | null {
-		return this._dummyActor
-	}
-
-	// set dummyActor(actor: (typeof CONFIG.GURPS.Actor.documentClasses)[ActorType.Character] | null) {
-	set dummyActor(actor: VariableResolver) {
-		this._dummyActor = actor
-	}
-
 	static override async createDialog(
 		data: { folder?: string } = {},
 		options: Partial<FormApplicationOptions> = {}

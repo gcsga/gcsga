@@ -6,7 +6,6 @@ import { TooltipGURPS } from "@module/tooltip"
 import { DamageProgression, ItemType } from "@module/data"
 import { FeatureType } from "@feature"
 import { BaseWeaponGURPS } from "./document"
-import { SkillDefault } from "@module/default"
 
 export class WeaponDamage {
 	owner: BaseWeaponGURPS<any>
@@ -53,8 +52,9 @@ export class WeaponDamage {
 			if (this.armor_divisor !== 1) buffer += `(${this.armor_divisor})`
 			if (this.modifier_per_die !== 0) {
 				if (buffer.length !== 0) buffer += " "
-				buffer += `(${this.modifier_per_die.signedString()} ${LocalizeGURPS.translations.gurps.feature.per_die
-					})`
+				buffer += `(${this.modifier_per_die?.signedString()} ${
+					LocalizeGURPS.translations.gurps.feature.per_die
+				})`
 			}
 			const t = this.type.trim()
 			if (t !== "") buffer += ` ${t}`
@@ -81,16 +81,9 @@ export class WeaponDamage {
 		if (maxST > 0 && maxST < st) st = maxST
 		let base = new DiceGURPS({ sides: 6, multiplier: 1 })
 		if (this.base) base = this.base
-		const container = this.parent.container
-		let levels = 0
-		const tOk = container?.type === ItemType.Trait || false
-		if (tOk && (container as any).isLeveled) {
-			levels = (container as any).levels
-			multiplyDice((container as any).levels, base)
-		}
-		let intST = Math.trunc(st)
-		let thrust: DiceGURPS
-		let swing: DiceGURPS
+		if (this.owner.container?.type === ItemType.Trait && (this.owner.container as any).isLeveled)
+			multiplyDice(Int.from((this.owner.container as any).levels), base)
+		let intST = Int.from(st)
 		switch (this.st) {
 			case stdmg.Thrust:
 				base = addDice(base, actor.thrustFor(intST))
@@ -114,43 +107,10 @@ export class WeaponDamage {
 		return base
 	}
 
-		let bestDef: SkillDefault | null = null
-		let best = -Infinity
-		for (const one of this.parent.defaults) {
-			if (one.skillBased) {
-				let level = one.skillLevelFast(actor, false, null, true)
-				if (best < level) {
-					best = level
-					bestDef = one
-				}
-			}
-		}
-		const bonusSet: Map<WeaponDamageBonus | WeaponDRDivisorBonus, boolean> = new Map()
-		const tags = (container as any)?.tags
-		if (bestDef !== null) {
-			actor.addWeaponWithSkillBonusesFor(
-				bestDef.name || "",
-				bestDef.specialization || "",
-				tags,
-				base.count,
-				levels,
-				tooltip,
-				bonusSet
-			)
-		}
-		const nameQualifier = this.parent.name || ""
-		actor.addNamedWeaponBonusesFor(nameQualifier, this.parent.usage, tags, base.count, levels, tooltip, bonusSet)
-		if (container instanceof Item)
-			for (const f of (container as any).features) {
-				this.extractWeaponBonus(f, bonusSet, base.count, levels, tooltip)
-			}
-		if ([ItemType.Trait, ItemType.Equipment, ItemType.EquipmentContainer].includes(container?.type as any)) {
-			for (const mod of (container as any).modifiers) {
-				for (const f of mod.features) {
-					this.extractWeaponBonus(f, bonusSet, base.count, levels, tooltip)
-				}
-			}
-		}
+	resolvedDamage(tooltip: TooltipGURPS | null): string {
+		let base = this.baseDamageDice
+		if (base.count === 0 && base.modifier === 0) return this.toString()
+		const actor = this.owner.actor
 		const adjustForPhoenixFlame =
 			actor?.settings.damage_progression === DamageProgression.PhoenixFlameD3 && base.sides === 3
 		let [percentDamageBonus, percentDRDivisorBonus] = [0, 0]
