@@ -157,7 +157,7 @@
 		#results {
 			grid-column: span 3;
 			display: grid;
-			grid-template-columns: 1fr 1fr;
+			grid-template-columns: max-content 1fr;
 			row-gap: 4px;
 			column-gap: 9px;
 			vertical-align: middle;
@@ -195,6 +195,12 @@
 					color: rgb(var(--color-on-control));
 					display: grid;
 					grid-template-columns: min-content 1fr;
+					text-align: left;
+
+					&.disabled {
+						background-color: rgb(var(--color-control));
+						color: rgba(var(--color-on-control), 0.5);
+					}
 
 					.enable {
 						grid-row: span 2;

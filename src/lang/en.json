@@ -1642,13 +1642,13 @@
 			"unknown": "Unknown"
 		},
 		"dmgcalc": {
-			"apply_damage": "Apply Damage",
+			"apply_checked": "Apply Checked",
 			"armor_divisor": {
 				"ignores_dr": "Ignores DR",
 				"no_divisor": "No Divisor"
 			},
 			"attacker": "Attacker",
-			"calculation": "Damage Calculation",
+			"calculation": "Injury Calculation",
 			"damage": "Damage",
 			"damage_reduction": "Damage Reduction",
 			"damage_pool": {
@@ -1682,7 +1682,7 @@
 			"effect_descriptions": {
 				"shock": "{level} to IQ/DX checks"
 			},
-			"effects_table": "Damage Effects",
+			"effects_table": "Injury Effects",
 			"effect_types": {
 				"majorWound": "Major Wound",
 				"shock": "Shock"
