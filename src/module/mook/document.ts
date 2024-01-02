@@ -1,5 +1,5 @@
 import { Attribute, AttributeDefObj, AttributeObj } from "@module/attribute"
-import { DamageProgression, gid, SETTINGS, SYSTEM_NAME } from "@module/data"
+import { ActorType, DamageProgression, gid, ItemType, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { DiceGURPS } from "@module/dice"
 import { damageProgression } from "@util"
 import {
