@@ -354,7 +354,6 @@
 									{{#each this.results.effects}}
 										{{define "hit-index" @../index}}
 										{{define "hit" ../this}}
-										{{print @root.hit}}
 										<button
 											type="button"
 											class="effect {{ifText (in @root.hit.overrides.effects @index) 'disabled'}}"
@@ -381,6 +380,7 @@
 										type="button"
 										class="apply-button gcs-checkmark"
 										data-action="apply-effects"
+										data-index="{{@root.hit-index}}"
 									>{{localize "gurps.dmgcalc.apply_checked"}}</button>
 								</div>
 							</div>

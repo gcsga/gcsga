@@ -35,6 +35,7 @@ import { Attribute } from "@module/attribute"
 import { ActorDataConstructorData } from "types/foundry/common/data/data.mjs/actorData"
 import { MergeObjectOptions } from "types/foundry/common/utils/helpers.mjs"
 import { CharacterGURPS } from "@actor/character"
+import { InjuryEffect, ShockInjuryEffect } from "@module/damage_calculator/injury_effect"
 
 export class BaseActorGURPS<SourceType extends BaseActorSourceGURPS = BaseActorSourceGURPS> extends Actor {
 	_source!: SourceType
@@ -421,6 +422,15 @@ class DamageTargetActor implements DamageTarget {
 
 	constructor(actor: BaseActorGURPS) {
 		this.actor = actor
+	}
+
+	// TODO implement
+	applyEffects(activeEffects: InjuryEffect[]): void {
+		activeEffects.forEach(it => {
+			if (it instanceof ShockInjuryEffect) {
+				this.actor.addConditions([ConditionID.Shock])
+			}
+		})
 	}
 
 	get tokenId(): string {

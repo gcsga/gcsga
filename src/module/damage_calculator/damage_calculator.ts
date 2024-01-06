@@ -92,7 +92,8 @@ export interface IDamageCalculator {
 }
 
 interface LocationDamage {
-	toggleEffect(index: number): unknown
+	applyEffects(): void
+	toggleEffect(index: number): void
 	hitLocation: HitLocation | undefined
 
 	readonly isOverridden: boolean
@@ -1267,7 +1268,13 @@ class HitLocationDamage implements LocationDamage {
 	}
 
 	isEffectActive(index: number): boolean {
-		return this.overrides.effects?.includes(index) ?? false
+		return this.overrides.effects?.includes(index) ?? true
+	}
+
+	applyEffects(): void {
+		// Get all "active" effects.
+		const activeEffects = this.results.effects.filter((_, index, __) => this.isEffectActive(index))
+		this.calculator.target.applyEffects(activeEffects)
 	}
 
 	// --- Basic Damage ---

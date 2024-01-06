@@ -10,6 +10,7 @@ import {
 } from "@module/damage_calculator"
 import { IDamageCalculator, createDamageCalculator } from "@module/damage_calculator/damage_calculator"
 import { DamageTypes } from "@module/damage_calculator/damage_type"
+import { InjuryEffect } from "@module/damage_calculator/injury_effect"
 import { DiceGURPS } from "@module/dice"
 import { TooltipGURPS } from "@module/tooltip"
 
@@ -20,6 +21,10 @@ export class _Attacker implements DamageAttacker {
 }
 
 export class _Target implements DamageTarget {
+	applyEffects(activeEffects: InjuryEffect[]): void {
+		throw new Error("Method not implemented.")
+	}
+
 	tokenId: string = ""
 
 	getTraits(name: string): TargetTrait[] {

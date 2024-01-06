@@ -211,6 +211,10 @@ class ApplyDamageDialog extends Application {
 				const parentIndex = parseInt(target.dataset.effectIndex)
 				locationDamage.toggleEffect(parentIndex)
 				break
+
+			case "apply-effects":
+				locationDamage.applyEffects()
+				break
 		}
 
 		this.render(true)

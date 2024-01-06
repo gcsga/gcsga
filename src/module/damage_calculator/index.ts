@@ -2,6 +2,7 @@ import { DiceGURPS } from "@module/dice"
 import { DamageType, DamageTypes } from "./damage_type"
 import { DamagePayload } from "./damage_chat_message"
 import { HitLocationTable } from "@actor/character/hit_location"
+import { InjuryEffect } from "./injury_effect"
 
 /**
  * The Damage Calculator needs three things: The DamageRoll, DamageHit, and DamageTarget.
@@ -190,6 +191,8 @@ export interface DamageTarget {
 	incrementDamage(delta: number, damagePoolId: string): void
 	// Get all pools.
 	pools: TargetPool[]
+
+	applyEffects(activeEffects: InjuryEffect[]): void
 }
 
 export interface TargetTrait {
