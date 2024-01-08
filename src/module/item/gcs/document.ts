@@ -3,16 +3,16 @@ import { MeleeWeaponGURPS } from "@item/melee_weapon"
 import { RangedWeaponGURPS } from "@item/ranged_weapon"
 import { BaseWeaponGURPS } from "@item/weapon"
 import { Feature, ItemDataGURPS } from "@module/config"
-import { ActorType, gid, ItemType, Study, SYSTEM_NAME } from "@module/data"
+import { ActorType, gid, ItemType, SYSTEM_NAME } from "@module/data"
 import { PrereqList } from "@prereq"
-import { getAdjustedStudyHours, LocalizeGURPS } from "@util"
+import { LocalizeGURPS, Study } from "@util"
 import { HandlebarsHelpersGURPS } from "@util/handlebars_helpers"
 import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
 import { ItemDataConstructorData } from "types/foundry/common/data/data.mjs/itemData"
 import { BaseUser } from "types/foundry/common/documents.mjs"
 import { MergeObjectOptions } from "types/foundry/common/utils/helpers.mjs"
 import { ItemGCSSource } from "./data"
-import { feature } from "@util/enum"
+import { feature, study } from "@util/enum"
 import { AttributeBonus } from "@feature"
 
 export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> extends ContainerGURPS<SourceType> {
@@ -142,7 +142,7 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 		)
 			return 0
 		return (this.system as any).study
-			.map((e: Study) => getAdjustedStudyHours(e))
+			.map((e: Study) => study.Type.multiplier(e.type))
 			.reduce((partialSum: number, a: number) => partialSum + a, 0)
 	}
 

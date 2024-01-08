@@ -205,26 +205,21 @@ export const attrPrefix = "attr."
 // 	Wildcard = "w",
 // }
 
-export interface Study {
-	type: StudyType
-	hours: number
-	note: string
-}
 
-export enum StudyHoursNeeded {
-	Standard = "200",
-	Level1 = "180",
-	Level2 = "160",
-	Level3 = "140",
-	Level4 = "120",
-}
+// export enum StudyHoursNeeded {
+// 	Standard = "200",
+// 	Level1 = "180",
+// 	Level2 = "160",
+// 	Level3 = "140",
+// 	Level4 = "120",
+// }
 
-export enum StudyType {
-	Self = "self",
-	Job = "job",
-	Teacher = "teacher",
-	Intensive = "intensive",
-}
+// export enum StudyType {
+// 	Self = "self",
+// 	Job = "job",
+// 	Teacher = "teacher",
+// 	Intensive = "intensive",
+// }
 
 export enum RollType {
 	Attribute = "attribute",
@@ -389,16 +384,16 @@ export enum UserFlags {
 	LastToken = "lastToken",
 }
 
-export enum PrereqType {
-	List = "prereq_list",
-	Trait = "trait_prereq",
-	Attribute = "attribute_prereq",
-	ContainedQuantity = "contained_quantity_prereq",
-	ContainedWeight = "contained_weight_prereq",
-	Skill = "skill_prereq",
-	Spell = "spell_prereq",
-	Equipment = "equipped_equipment_prereq",
-}
+// export enum PrereqType {
+// 	List = "prereq_list",
+// 	Trait = "trait_prereq",
+// 	Attribute = "attribute_prereq",
+// 	ContainedQuantity = "contained_quantity_prereq",
+// 	ContainedWeight = "contained_weight_prereq",
+// 	Skill = "skill_prereq",
+// 	Spell = "spell_prereq",
+// 	Equipment = "equipped_equipment_prereq",
+// }
 
 // Export type featureMap = {
 // 	attributeBonuses: AttributeBonus[]

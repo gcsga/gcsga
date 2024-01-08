@@ -32,14 +32,14 @@ export class TraitGURPS extends ItemGCS<TraitSource> {
 				if (buffer.length > 0) buffer.push("<br>")
 				buffer.push(this.system.notes.trim())
 			}
-			const study = studyHoursProgressText(
+			const studyEntry = studyHoursProgressText(
 				resolveStudyHours(this.system.study),
 				this.system.study_hours_needed,
 				false
 			)
-			if (study !== "") {
+			if (studyEntry !== "") {
 				if (buffer.length > 0) buffer.push("<br>")
-				buffer.push(study)
+				buffer.push(studyEntry)
 			}
 		}
 		let outString = buffer.join("")

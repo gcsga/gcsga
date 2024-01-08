@@ -72,7 +72,7 @@ export class StringCriteria {
 			case StringCompareType.AnyString:
 				return this._toString()
 			default:
-				return `${this._toString()} ""${this.qualifier}`
+				return `${this._toString()} "${this.qualifier}"`
 		}
 	}
 

@@ -1,10 +1,10 @@
 import { BaseWeaponGURPS, wswitch } from "@item"
-import { NumericComparisonType, NumericCriteria, StringComparisonType, StringCriteria, WeaponOwner } from "@module/data"
 import { Int } from "@util/fxp"
 import { TooltipGURPS } from "@module/tooltip"
-import { LocalizeGURPS } from "@util"
+import { LocalizeGURPS, NumericCompareType, NumericCriteria, StringCompareType, StringCriteria } from "@util"
 import { WeaponLeveledAmount, WeaponLeveledAmountKeys, WeaponLeveledAmountObj } from "./weapon_leveled_amount"
 import { feature, wsel } from "@util/enum"
+import { WeaponOwner } from "@module/data"
 
 export interface WeaponBonusObj extends WeaponLeveledAmountObj {
 	type: feature.WeaponBonusType
@@ -51,21 +51,11 @@ export class WeaponBonus {
 	constructor(type: feature.WeaponBonusType) {
 		this.type = type
 		this.selection_type = wsel.Type.WithRequiredSkill
-		this.name = {
-			compare: StringComparisonType.IsString,
-		}
-		this.specialization = {
-			compare: StringComparisonType.AnyString,
-		}
-		this.level = {
-			compare: NumericComparisonType.AtLeastNumber,
-		}
-		this.usage = {
-			compare: StringComparisonType.AnyString,
-		}
-		this.tags = {
-			compare: StringComparisonType.AnyString,
-		}
+		this.name = new StringCriteria(StringCompareType.IsString)
+		this.specialization = new StringCriteria(StringCompareType.AnyString)
+		this.level = new NumericCriteria(NumericCompareType.AtLeastNumber)
+		this.usage = new StringCriteria(StringCompareType.AnyString)
+		this.tags = new StringCriteria(StringCompareType.AnyString)
 		this.leveledAmount = new WeaponLeveledAmount({ amount: 1 })
 	}
 

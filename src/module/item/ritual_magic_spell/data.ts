@@ -1,8 +1,9 @@
 import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
 import { SpellCalcValues } from "@item/spell"
-import { ItemType, Study, StudyHoursNeeded } from "@module/data"
+import { ItemType, } from "@module/data"
 import { PrereqList } from "@prereq"
-import { difficulty } from "@util/enum"
+import { Study } from "@util"
+import { difficulty, study } from "@util/enum"
 
 export type RitualMagicSpellSource = ItemGCSSource<ItemType.RitualMagicSpell, RitualMagicSpellSystemData>
 
@@ -30,6 +31,6 @@ export interface RitualMagicSpellSystemData extends ItemGCSSystemData {
 	base_skill: string
 	prereq_count: number
 	study: Study[]
-	study_hours_needed: StudyHoursNeeded
+	study_hours_needed: study.Level
 	calc?: SpellCalcValues
 }

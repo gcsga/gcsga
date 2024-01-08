@@ -4,7 +4,7 @@ import { Bonus, Feature } from "@module/config"
 import { ActorType, gid, ItemType } from "@module/data"
 import { SkillDefault } from "@module/default"
 import { TooltipGURPS } from "@module/tooltip"
-import { LocalizeGURPS, stringCompare } from "@util"
+import { LocalizeGURPS } from "@util"
 import { HandlebarsHelpersGURPS } from "@util/handlebars_helpers"
 import { WeaponDamage } from "./damage"
 import { BaseWeaponSource, wswitch } from "./data"
@@ -161,7 +161,7 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 	extractSkillBonusForThisWeapon(f: Feature, tooltip: TooltipGURPS | null): number {
 		if (f instanceof SkillBonus) {
 			if (f.selection_type === skillsel.Type.ThisWeapon) {
-				if (stringCompare(this.usage, f.specialization)) {
+				if (f.specialization?.matches(this.usage)) {
 					f.addToTooltip(tooltip)
 					return f.adjustedAmount
 				}
@@ -332,7 +332,7 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 				case wsel.Type.WithRequiredSkill:
 					break
 				case wsel.Type.ThisWeapon:
-					if (stringCompare(this.usage, f.specialization)) {
+					if (f.specialization?.matches(this.usage)) {
 						if (!set.has(f)) {
 							set.set(f, true)
 							f.addToTooltip(tooltip)
@@ -341,9 +341,9 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 					break
 				case wsel.Type.WithName:
 					if (
-						stringCompare(this.formattedName, f.name) &&
-						stringCompare(this.usage, f.specialization) &&
-						stringCompare((this.container as ItemGCS).tags, f.tags)
+						f.name?.matches(this.formattedName) &&
+						f.specialization?.matches(this.usage) &&
+						f.tags?.matchesList(...(this.container as ItemGCS).tags)
 					) {
 						if (!set.has(f)) {
 							set.set(f, true)

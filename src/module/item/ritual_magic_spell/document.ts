@@ -1,10 +1,11 @@
 import { ItemGCS } from "@item/gcs"
 import { SkillLevel } from "@item/skill/data"
-import { Difficulty, gid } from "@module/data"
 import { SkillDefault } from "@module/default"
 import { TooltipGURPS } from "@module/tooltip"
 import { inlineNote, LocalizeGURPS } from "@util"
 import { RitualMagicSpellSource } from "./data"
+import { gid } from "@module/data"
+import { difficulty } from "@util/enum"
 
 export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 	level: SkillLevel = { level: 0, relative_level: 0, tooltip: new TooltipGURPS() }
@@ -72,7 +73,7 @@ export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 	}
 
 	get difficulty(): string {
-		return this.system.difficulty?.split("/")[1] ?? Difficulty.Hard
+		return this.system.difficulty?.split("/")[1] ?? difficulty.Level.Hard
 	}
 
 	get powerSource(): string {
@@ -243,7 +244,7 @@ export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 	incrementSkillLevel() {
 		const basePoints = this.points + 1
 		let maxPoints = basePoints
-		if (this.difficulty === Difficulty.Wildcard) maxPoints += 12
+		if (this.difficulty === difficulty.Level.Wildcard) maxPoints += 12
 		else maxPoints += 4
 
 		const oldLevel = this.calculateLevel().level
@@ -259,7 +260,7 @@ export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 		if (this.points <= 0) return
 		const basePoints = this.points
 		let minPoints = basePoints
-		if (this.difficulty === Difficulty.Wildcard) minPoints -= 12
+		if (this.difficulty === difficulty.Level.Wildcard) minPoints -= 12
 		else minPoints -= 4
 		minPoints = Math.max(minPoints, 0)
 

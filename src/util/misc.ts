@@ -3,13 +3,7 @@ import {
 	DEFAULT_INITIATIVE_FORMULA,
 	DisplayMode,
 	ItemType,
-	NumericComparisonType,
-	NumericCriteria,
 	SETTINGS,
-	// StringComparisonType,
-	// StringCriteria,
-	Study,
-	StudyType,
 	SYSTEM_NAME,
 } from "@module/data"
 import { v4 as uuidv4 } from "uuid"
@@ -179,18 +173,18 @@ export function capitalize(s: string): string {
 	return s.charAt(0).toUpperCase() + s.slice(1)
 }
 
-export function getAdjustedStudyHours(s: Study): number {
-	switch (s.type) {
-		case StudyType.Self:
-			return s.hours * 0.5
-		case StudyType.Job:
-			return s.hours * 0.25
-		case StudyType.Teacher:
-			return s.hours
-		case StudyType.Intensive:
-			return s.hours * 2
-	}
-}
+// export function getAdjustedStudyHours(s: Study): number {
+// 	switch (s.type) {
+// 		case StudyType.Self:
+// 			return s.hours * 0.5
+// 		case StudyType.Job:
+// 			return s.hours * 0.25
+// 		case StudyType.Teacher:
+// 			return s.hours
+// 		case StudyType.Intensive:
+// 			return s.hours * 2
+// 	}
+// }
 
 export function prepareFormData(formData: any, object: any): any {
 	for (let aKey of Object.keys(formData)) {

@@ -995,30 +995,6 @@
 				"water": "Water",
 				"space": "Space"
 			},
-			"damage_progression": {
-				"basic_set": "Basic Set",
-				"knowing_your_own_strength": "Knowing Your Own Strength",
-				"no_school_grognard_damage": "No School Grognard Damage",
-				"thrust_equals_swing_minus_2": "Thrust = Swing - 2",
-				"swing_equals_thrust_plus_2": "Swing = Thrust + 2",
-				"tbone_1": "T Bone's New Damage for ST (option 1)",
-				"tbone_1_clean": "T Bone's New Damage for ST (option 1, cleaned)",
-				"tbone_2": "T Bone's New Damage for ST (option 2)",
-				"tbone_2_clean": "T Bone's New Damage for ST (option 2, cleaned)",
-				"phoenix_flame_d3": "Phoenix Flame D3"
-			},
-			"damage_progression_comment": {
-				"basic_set": "The standard damage progression",
-				"knowing_your_own_strength": "From <span class='ref' data-pdf='PY83:16'>Pyramid 3-83, pages 16-19</span>",
-				"no_school_grognard_damage": "From <span class='ref' data-pdf='https://noschoolgrognard.blogspot.com/2013/04/adjusting-swing-damage-in-dungeon.html'>Adjusting Swing Damage in Dungeon Fantasy</span>",
-				"thrust_equals_swing_minus_2": "From <span class='ref' data-pdf='https://github.com/richardwilkes/gcs/issues/97'>Alternate Damage Scheme (Thr = Sw-2)</span>",
-				"swing_equals_thrust_plus_2": "From a <span class='ref' data-pdf='https://gamingballistic.com/2020/12/04/df-eastmarch-boss-fight-and-house-rules/'>house rule</span> originating with Kevin Smyth",
-				"tbone_1": "From <span class='ref' data-pdf='https://www.gamesdiner.com/2009/10/new-st-damage/'>T Bone's Games Diner</span>",
-				"tbone_1_clean": "From <span class='ref' data-pdf='https://www.gamesdiner.com/2009/10/new-st-damage/'>T Bone's Games Diner</span>",
-				"tbone_2": "From <span class='ref' data-pdf='https://www.gamesdiner.com/2009/10/new-st-damage/'>T Bone's Games Diner</span>",
-				"tbone_2_clean": "From <span class='ref' data-pdf='https://www.gamesdiner.com/2009/10/new-st-damage/'>T Bone's Games Diner</span>",
-				"phoenix_flame_d3": "From a <span class='ref' data-pdf='https://github.com/richardwilkes/gcs/pull/393'>house rule</span> that uses d3s instead of d6s for damage"
-			},
 			"display": {
 				"not_shown": "Not Shown",
 				"inline": "Inline",
@@ -1033,12 +1009,6 @@
 				"t": "t",
 				"kg": "kg",
 				"g": "g"
-			},
-			"study_type": {
-				"self": "Self-Taught",
-				"job": "On-the-Job Training",
-				"teacher": "Professional Teacher",
-				"intensive": "Intensive Training"
 			},
 			"color_mode_preference": {
 				"auto": "Automatic",
@@ -1072,13 +1042,6 @@
 				"skill": "Has a skill whose name is",
 				"condition": "Has a condition whose ID is"
 			},
-			"study_hours_needed": {
-				"200": "Standard",
-				"180": "Reduction for Talent level 1",
-				"160": "Reduction for Talent level 2",
-				"140": "Reduction for Talent level 3",
-				"120": "Reduction for Talent level 4"
-			},
 			"switch_type": {
 				"can_block": "Can Block",
 				"can_parry": "Can Parry",
@@ -1111,15 +1074,7 @@
 			"header": "Study",
 			"studied": "Studied {hours}/{total} hours",
 			"studied_alt": "Studied {hours} of {total} hours",
-			"for": "for 1 point",
-			"tooltip": {
-				"max": "Maximum of {hours} hours per day",
-				"max_no_job": "Maximum of {hours} hours per day with no job",
-				"max_part_time_job": "Maximum of {hours} hours per day with a part-time job",
-				"max_full_time_job": "Maximum of {hours} hours per day with a full-time job",
-				"teacher_teaching": "The teacher must have the Teaching skill at 12+",
-				"teacher_prereq": "The teacher must have the skill/spell/trait being taught at the same or higher level than you, or have as many or more points spent in it as you do"
-			}
+			"for": "for 1 point"
 		},
 		"field_prefix": {
 			"attribute": "to {att}",
@@ -2041,6 +1996,80 @@
 				"percentage": "%",
 				"points": "points",
 				"multiplier": "×"
+			},
+			"study": {
+				"type": {
+					"string": {
+						"self": "Self-Taught",
+						"job": "On-the-Job Training",
+						"teacher": "Professional Teacher",
+						"intensive": "Intensive Training"
+					},
+					"limitations": {
+						"self": [
+							"Maximum of 12 hours per day with no job",
+							"Maximum of 8 hours per day with a part-time job",
+							"Maximum of 4 hours per day with a full-time job"
+						],
+						"job": [
+							"Maximum of 8 hours per day with a full-time job",
+							"Maximum of 4 hours per day with a part-time job"
+						],
+						"teacher": [
+							"Maximum of 8 hours per day",
+							"The teacher must have the Teaching skill at 12+",
+							"The teacher must have the skill/spell/trait being taught at the same or higher level than you, or have as many or more points spent in it as you do"
+						],
+						"intensive": [
+							"Maximum of 16 hours per day",
+							"The teacher must have the Teaching skill at 12+",
+							"The teacher must have the skill/spell/trait being taught at a higher level than you and have more points spent in it than you do"
+						]
+					}
+				},
+				"level": {
+					"200": "Standard",
+					"180": "Reduction for Talent level 1",
+					"160": "Reduction for Talent level 2",
+					"140": "Reduction for Talent level 3",
+					"120": "Reduction for Talent level 4"
+				}
+			},
+			"prereq": {
+				"prereq_list": "a list",
+				"trait_prereq": "a trait",
+				"attribute_prereq": "the attribute",
+				"contained_quantity_prereq": "a contained quantity of",
+				"contained_weight_prereq": "a contained weight",
+				"equipped_equipment": "has equipped equipment",
+				"skill_prereq": "a skill",
+				"spell_prereq": "spell(s)"
+			},
+			"progression": {
+				"string": {
+					"basic_set": "Basic Set",
+					"knowing_your_own_strength": "Knowing Your Own Strength",
+					"no_school_grognard_damage": "No School Grognard Damage",
+					"thrust_equals_swing_minus_2": "Thrust = Swing-2",
+					"swing_equals_thrust_plus_2": "Swing = Thrust+2",
+					"tbone_1": "T Bone's New Damage for ST (option 1)",
+					"tbone_1_clean": "T Bone's New Damage for ST (option 1, cleaned)",
+					"tbone_2": "T Bone's New Damage for ST (option 2)",
+					"tbone_2_clean": "T Bone's New Damage for ST (option 2, cleaned)",
+					"phoenix_flame_d3": "Phoenix Flame D3"
+				},
+				"alt_string": {
+					"basic_set": "The standard damage progression",
+					"knowing_your_own_strength": "From <span class='ref' data-pdf='PY83:16'>Pyramid 3-83, pages 16-19</span>",
+					"no_school_grognard_damage": "From <span class='ref' data-pdf='https://noschoolgrognard.blogspot.com/2013/04/adjusting-swing-damage-in-dungeon.html'>Adjusting Swing Damage in Dungeon Fantasy</span>",
+					"thrust_equals_swing_minus_2": "From <span class='ref' data-pdf='https://github.com/richardwilkes/gcs/issues/97'>Alternate Damage Scheme (Thr = Sw-2)</span>",
+					"swing_equals_thrust_plus_2": "From a <span class='ref' data-pdf='https://gamingballistic.com/2020/12/04/df-eastmarch-boss-fight-and-house-rules/'>house rule</span> originating with Kevin Smyth",
+					"tbone_1": "From <span class='ref' data-pdf='https://www.gamesdiner.com/2009/10/new-st-damage/'>T Bone's Games Diner</span>",
+					"tbone_1_clean": "From <span class='ref' data-pdf='https://www.gamesdiner.com/2009/10/new-st-damage/'>T Bone's Games Diner</span>",
+					"tbone_2": "From <span class='ref' data-pdf='https://www.gamesdiner.com/2009/10/new-st-damage/'>T Bone's Games Diner</span>",
+					"tbone_2_clean": "From <span class='ref' data-pdf='https://www.gamesdiner.com/2009/10/new-st-damage/'>T Bone's Games Diner</span>",
+					"phoenix_flame_d3": "From a <span class='ref' data-pdf='https://github.com/richardwilkes/gcs/pull/393'>house rule</span> that uses d3s instead of d6s for damage"
+				}
 			}
 		},
 		"string_criteria": {
@@ -2060,6 +2089,22 @@
 				"does_not_contain": "do not contain",
 				"does_not_start_with": "do not start with",
 				"does_not_end_with": "do not end with"
+			}
+		},
+		"numeric_criteria": {
+			"string": {
+				"none": "is anything",
+				"is": "is",
+				"is_not": "is not",
+				"at_least": "is at least",
+				"at_most": "is at most"
+			},
+			"alt_string": {
+				"none": "anything",
+				"is": "",
+				"is_not": "not",
+				"at_least": "at least",
+				"at_most": "at most"
 			}
 		}
 	}

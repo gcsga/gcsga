@@ -45,7 +45,6 @@ import {
 	LengthUnits,
 	LocalizeGURPS,
 	newUUID,
-	numberCompare,
 	StringCompareType,
 	StringCriteria,
 	// stringCompare,
@@ -975,6 +974,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	newAttributes(defs = this.system.settings.attributes, prev: AttributeObj[] = []): AttributeObj[] {
 		const atts: AttributeObj[] = []
+		if (!defs) return atts
 		let i = 0
 		for (const def of defs) {
 			const attr = new Attribute(this, def.id, i)
@@ -1011,6 +1011,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	newTrackers(defs = this.system.settings.resource_trackers, prev: ResourceTrackerObj[] = []): ResourceTrackerObj[] {
 		const t: ResourceTrackerObj[] = []
+		if (!defs) return t
 		let i = 0
 		for (const tracker_def of defs) {
 			const tracker = new ResourceTracker(this, tracker_def.id, i)
@@ -1641,10 +1642,10 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 				allowedFeatureTypes.get(f.type) &&
 				f.selection_type === wsel.Type.WithRequiredSkill &&
 				f.name?.matches(name) &&
-				f.specialization.matches(specialization) &&
-				numberCompare(rsl, f.level) &&
-				f.usage.match(usage) &&
-				f.tags.match(...tags)
+				f.specialization?.matches(specialization) &&
+				f.level?.matches(rsl) &&
+				f.usage?.matches(usage) &&
+				f.tags?.matchesList(...tags)
 			) {
 				addWeaponBonusToMap(f, dieCount, tooltip, m)
 			}
@@ -1665,9 +1666,9 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 			if (
 				allowedFeatureTypes.get(f.type) &&
 				f.selection_type === wsel.Type.WithName &&
-				f.name.match(name) &&
-				f.usage.match(usage) &&
-				f.tags.matchesList(...tags)
+				f.name?.matches(name) &&
+				f.usage?.matches(usage) &&
+				f.tags?.matchesList(...tags)
 			) {
 				addWeaponBonusToMap(f, dieCount, tooltip, m)
 			}

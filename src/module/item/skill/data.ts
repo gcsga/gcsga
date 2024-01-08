@@ -1,10 +1,11 @@
 import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
 import { Feature } from "@module/config"
-import { ItemType, Study, StudyHoursNeeded } from "@module/data"
+import { ItemType, } from "@module/data"
 import { SkillDefault } from "@module/default"
 import { TooltipGURPS } from "@module/tooltip"
 import { PrereqList } from "@prereq"
-import { difficulty } from "@util/enum"
+import { Study } from "@util"
+import { difficulty, study } from "@util/enum"
 
 export type SkillSource = ItemGCSSource<ItemType.Skill, SkillSystemData>
 
@@ -33,7 +34,7 @@ export interface SkillSystemData extends ItemGCSSystemData {
 	defaults: SkillDefault[]
 	features: Feature[]
 	study: Study[]
-	study_hours_needed: StudyHoursNeeded
+	study_hours_needed: study.Level
 	calc?: SkillCalcValues
 }
 

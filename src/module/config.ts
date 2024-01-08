@@ -107,9 +107,9 @@ import {
 	SpellPrereq,
 	TraitPrereq,
 } from "@prereq"
-import { ActorType, EFFECT_ACTION, ItemType, PrereqType, StudyHoursNeeded, StudyType } from "@module/data"
+import { ActorType, EFFECT_ACTION, ItemType, } from "@module/data"
 import { MoveTypeOverrideConditionType } from "./move_type"
-import { feature } from "@util/enum"
+import { feature, prereq } from "@util/enum"
 
 // Const GURPSCONFIG: any = CONFIG;
 const GURPSCONFIG: CONFIG["GURPS"] = {
@@ -266,14 +266,14 @@ const GURPSCONFIG: CONFIG["GURPS"] = {
 	},
 	Prereq: {
 		classes: {
-			[PrereqType.List]: PrereqList,
-			[PrereqType.Trait]: TraitPrereq,
-			[PrereqType.Attribute]: AttributePrereq,
-			[PrereqType.ContainedQuantity]: ContainedQuantityPrereq,
-			[PrereqType.ContainedWeight]: ContainedWeightPrereq,
-			[PrereqType.Equipment]: EquippedEquipmentPrereq,
-			[PrereqType.Skill]: SkillPrereq,
-			[PrereqType.Spell]: SpellPrereq,
+			[prereq.Type.List]: PrereqList,
+			[prereq.Type.Trait]: TraitPrereq,
+			[prereq.Type.Attribute]: AttributePrereq,
+			[prereq.Type.ContainedQuantity]: ContainedQuantityPrereq,
+			[prereq.Type.ContainedWeight]: ContainedWeightPrereq,
+			[prereq.Type.EquippedEquipment]: EquippedEquipmentPrereq,
+			[prereq.Type.Skill]: SkillPrereq,
+			[prereq.Type.Spell]: SpellPrereq,
 		},
 	},
 	select: {
@@ -496,14 +496,14 @@ const GURPSCONFIG: CONFIG["GURPS"] = {
 			[ConditionID.PostureSit]: `gurps.status.${ConditionID.PostureSit}`,
 			[ConditionID.PostureCrawl]: `gurps.status.${ConditionID.PostureCrawl}`,
 		},
-		damage_progression: {
-			basic_set: "gurps.select.damage_progression.basic_set",
-			knowing_your_own_strength: "gurps.select.damage_progression.knowing_your_own_strength",
-			no_school_grognard_damage: "gurps.select.damage_progression.no_school_grognard_damage",
-			thrust_equals_swing_minus_2: "gurps.select.damage_progression.thrust_equals_swing_minus_2",
-			swing_equals_thrust_plus_2: "gurps.select.damage_progression.swing_equals_thrust_plus_2",
-			phoenix_flame_d3: "gurps.select.damage_progression.phoenix_flame_d3",
-		},
+		// damage_progression: {
+		// 	basic_set: "gurps.select.damage_progression.basic_set",
+		// 	knowing_your_own_strength: "gurps.select.damage_progression.knowing_your_own_strength",
+		// 	no_school_grognard_damage: "gurps.select.damage_progression.no_school_grognard_damage",
+		// 	thrust_equals_swing_minus_2: "gurps.select.damage_progression.thrust_equals_swing_minus_2",
+		// 	swing_equals_thrust_plus_2: "gurps.select.damage_progression.swing_equals_thrust_plus_2",
+		// 	phoenix_flame_d3: "gurps.select.damage_progression.phoenix_flame_d3",
+		// },
 		default_length_units: {
 			ft_in: "gurps.length_units.ft_in",
 			in: "gurps.length_units.in",
@@ -529,22 +529,22 @@ const GURPSCONFIG: CONFIG["GURPS"] = {
 			tooltip: "gurps.select.display.tooltip",
 			inline_and_tooltip: "gurps.select.display.inline_and_tooltip",
 		},
-		attribute_type: {
-			integer: "gurps.select.attribute_type.integer",
-			integer_ref: "gurps.select.attribute_type.integer_ref",
-			decimal: "gurps.select.attribute_type.decimal",
-			decimal_ref: "gurps.select.attribute_type.decimal_ref",
-			pool: "gurps.select.attribute_type.pool",
-			primary_separator: "gurps.select.attribute_type.primary_separator",
-			secondary_separator: "gurps.select.attribute_type.secondary_separator",
-			pool_separator: "gurps.select.attribute_type.pool_separator",
-		},
-		study_type: {
-			[StudyType.Self]: "gurps.select.study_type.self",
-			[StudyType.Job]: "gurps.select.study_type.job",
-			[StudyType.Teacher]: "gurps.select.study_type.teacher",
-			[StudyType.Intensive]: "gurps.select.study_type.intensive",
-		},
+		// attribute_type: {
+		// 	integer: "gurps.select.attribute_type.integer",
+		// 	integer_ref: "gurps.select.attribute_type.integer_ref",
+		// 	decimal: "gurps.select.attribute_type.decimal",
+		// 	decimal_ref: "gurps.select.attribute_type.decimal_ref",
+		// 	pool: "gurps.select.attribute_type.pool",
+		// 	primary_separator: "gurps.select.attribute_type.primary_separator",
+		// 	secondary_separator: "gurps.select.attribute_type.secondary_separator",
+		// 	pool_separator: "gurps.select.attribute_type.pool_separator",
+		// },
+		// study_type: {
+		// 	[StudyType.Self]: "gurps.select.study_type.self",
+		// 	[StudyType.Job]: "gurps.select.study_type.job",
+		// 	[StudyType.Teacher]: "gurps.select.study_type.teacher",
+		// 	[StudyType.Intensive]: "gurps.select.study_type.intensive",
+		// },
 		color_mode_preference: {
 			auto: "gurps.select.color_mode_preference.auto",
 			dark: "gurps.select.color_mode_preference.dark",
@@ -583,11 +583,11 @@ const GURPSCONFIG: CONFIG["GURPS"] = {
 				[c]: `gurps.status.${c}`,
 			})
 		}, {}),
-		study_hours_needed: Object.values(StudyHoursNeeded).reduce((acc, c) => {
-			return Object.assign(acc, {
-				[c]: `gurps.select.study_hours_needed.${c}`,
-			})
-		}, {}),
+		// study_hours_needed: Object.values(StudyHoursNeeded).reduce((acc, c) => {
+		// 	return Object.assign(acc, {
+		// 		[c]: `gurps.select.study_hours_needed.${c}`,
+		// 	})
+		// }, {}),
 		switch_type: Object.values(wswitch).reduce((acc, c) => {
 			return Object.assign(acc, {
 				[c]: `gurps.select.switch_type.${c}`,

@@ -2,17 +2,14 @@ import { CharacterGURPS } from "@actor"
 import { AttributeDefObj } from "@module/attribute"
 import {
 	gid,
-	NumericComparisonType,
-	PrereqType,
 	SETTINGS,
-	StudyType,
 	SYSTEM_NAME,
 } from "@module/data"
 import { PDF } from "@module/pdf"
-import { LocalizeGURPS, prepareFormData, StringCompareType } from "@util"
+import { LocalizeGURPS, NumericCompareType, prepareFormData, StringCompareType } from "@util"
 import { BaseItemGURPS } from "."
 import { FeatureObj } from "@module/config"
-import { feature } from "@util/enum"
+import { feature, prereq, study } from "@util/enum"
 
 // const weaponFeatures = [
 // 	FeatureType.WeaponBonus,
@@ -163,10 +160,10 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 		const path = $(event.currentTarget).data("path").replace("array.", "")
 		const prereqs = getProperty(this.item, `${path}.prereqs`)
 		prereqs.push({
-			type: PrereqType.Trait,
+			type: prereq.Type.Trait,
 			name: { compare: StringCompareType.IsString, qualifier: "" },
 			notes: { compare: StringCompareType.AnyString, qualifier: "" },
-			level: { compare: NumericComparisonType.AtLeastNumber, qualifier: 0 },
+			level: { compare: NumericCompareType.AtLeastNumber, qualifier: 0 },
 			has: true,
 		})
 		const formData: any = {}
@@ -182,7 +179,7 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 		prereqs.push({
 			type: "prereq_list",
 			prereqs: [],
-			when_tl: { compare: NumericComparisonType.AnyNumber },
+			when_tl: { compare: NumericCompareType.AnyNumber },
 		})
 		const formData: any = {}
 		formData[`array.${path}.prereqs`] = prereqs
@@ -206,7 +203,7 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 		event.preventDefault()
 		if (!this.isEditable) return
 		const value = event.currentTarget.value
-		const PrereqConstructor = CONFIG.GURPS.Prereq.classes[value as PrereqType]
+		const PrereqConstructor = CONFIG.GURPS.Prereq.classes[value as prereq.Type]
 		let path = $(event.currentTarget).data("path").replace("array.", "")
 		const items = path.split(".")
 		const index = items.pop()
@@ -279,24 +276,24 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 	protected async _addStudy(event: JQuery.ClickEvent): Promise<any> {
 		if (!this.isEditable) return
 		event.preventDefault()
-		const study = (this.item.system as any).study
-		study.push({
-			type: StudyType.Self,
+		const studyEntry = (this.item.system as any).study
+		studyEntry.push({
+			type: study.Type.Self,
 			hours: 0,
 			note: "",
 		})
 		const update: any = {}
-		update["system.study"] = study
+		update["system.study"] = studyEntry
 		return this.item.update(update)
 	}
 
 	protected async _removeStudy(event: JQuery.ClickEvent): Promise<any> {
 		if (!this.isEditable) return
 		const index = $(event.currentTarget).data("index")
-		const study = (this.item.system as any).study
-		study.splice(index, 1)
+		const studyEntry = (this.item.system as any).study
+		studyEntry.splice(index, 1)
 		const update: any = {}
-		update["system.study"] = study
+		update["system.study"] = studyEntry
 		return this.item.update(update)
 	}
 
