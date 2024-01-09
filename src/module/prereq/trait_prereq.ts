@@ -1,4 +1,4 @@
-import { NumericCompareType, NumericCriteria, StringCompareType, StringCriteria } from "@util"
+import { LocalizeGURPS, NumericCompareType, NumericCriteria, StringCompareType, StringCriteria } from "@util"
 import { BasePrereq, BasePrereqObj } from "./base"
 import { prereq } from "@util/enum"
 import { CharacterGURPS } from "@actor"
@@ -55,41 +55,23 @@ export class TraitPrereq extends BasePrereq {
 		}
 		if (!this.has) satisfied = !satisfied
 		if (!satisfied) {
-			// TODO: satisfied notes
+			tooltip.push(LocalizeGURPS.translations.gurps.prereq.prefix)
+			tooltip.push(LocalizeGURPS.translations.gurps.prereq.has[this.has ? "true" : "false"])
+			tooltip.push(
+				LocalizeGURPS.format(
+					LocalizeGURPS.translations.gurps.prereq.trait.name, { content: this.name.describe() }
+				))
+			if (this.notes.compare !== StringCompareType.AnyString) {
+				tooltip.push(
+					LocalizeGURPS.format(
+						LocalizeGURPS.translations.gurps.prereq.trait.notes, { content: this.notes.describe() }
+					))
+			}
+			tooltip.push(
+				LocalizeGURPS.format(
+					LocalizeGURPS.translations.gurps.prereq.trait.level, { content: this.level.describe() }
+				))
 		}
 		return satisfied
 	}
-
-
-	// satisfied(actor: ActorGURPS, exclude: any, tooltip: TooltipGURPS): [boolean, boolean] {
-	// 	let satisfied = false
-	// 	if (!actor.traits) return [true, false]
-	// 	actor.traits.forEach((t: any) => {
-	// 		if (exclude === t || !stringCompare(t.name, this.name)) return // [false, false]
-	// 		let notes = t.notes
-	// 		const mod_notes = t.modifierNotes
-	// 		if (mod_notes) notes += `\n${mod_notes}`
-	// 		if (!stringCompare(notes, this.notes)) return // [false, false]
-	// 		satisfied = numberCompare(Math.max(0, t.levels), this.level)
-	// 	})
-	// 	if (!this.has) satisfied = !satisfied
-	// 	if (!satisfied) {
-	// 		tooltip.push(LocalizeGURPS.translations.gurps.prereqs.has[this.has ? "true" : "false"])
-	// 		tooltip.push(LocalizeGURPS.translations.gurps.prereqs.trait.name)
-	// 		tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.name!.compare])
-	// 		if (this.name && this.name.compare !== StringComparisonType.AnyString)
-	// 			tooltip.push(`"${this.name!.qualifier}"`)
-	// 		if (this.notes!.compare !== StringComparisonType.AnyString) {
-	// 			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.trait.notes)
-	// 			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.notes!.compare])
-	// 			tooltip.push(`"${this.notes!.qualifier}"`)
-	// 		}
-
-	// 		tooltip.push(LocalizeGURPS.translations.gurps.prereqs.trait.level)
-	// 		tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.level!.compare])
-	// 		if (this.level!.compare !== NumericComparisonType.AnyNumber)
-	// 			tooltip.push(((this.level ? this.level.qualifier : 0) ?? 0).toString())
-	// 	}
-	// 	return [satisfied, false]
-	// }
 }

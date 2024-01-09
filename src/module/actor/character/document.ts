@@ -1330,7 +1330,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	}
 
 	processPrereqs(): void {
-		const not_met = LocalizeGURPS.translations.gurps.prereqs.not_met
+		const not_met = LocalizeGURPS.translations.gurps.prereq.not_met
 		for (const t of this.traits.filter(e => e instanceof TraitGURPS)) {
 			t.unsatisfied_reason = ""
 			if (t instanceof TraitGURPS && !t.prereqsEmpty) {

@@ -1739,60 +1739,6 @@
 				"mode2": "\n\nSecond mode:\n{content}"
 			}
 		},
-		"prereqs": {
-			"unsatisfied": "Unsatisfied Prerequisite(s)",
-			"header": "Prerequisites",
-			"not_met": "Prerequisites have not been met:<br>",
-			"requires_all": "• Requires all of:<br>",
-			"requires_one": "• Requires at least one of:<br>",
-			"quantity": "a contained quantity which ",
-			"weight": "a contained weight which ",
-			"has": {
-				"true": "• Has ",
-				"false": "• Does not have"
-			},
-			"trait": {
-				"name": "a trait whose name ",
-				"notes": ", notes ",
-				"level": " and level "
-			},
-			"attribute": {
-				"which": " which ",
-				"plus": "+"
-			},
-			"skill": {
-				"name": "a skill whose name ",
-				"specialization": ", specialization ",
-				"level": " and level ",
-				"tech_level": " and tech level matches"
-			},
-			"spell": {
-				"college_count": "college count which ",
-				"one": "spell ",
-				"many": "spells ",
-				"any": "of any kind",
-				"name": "whose name ",
-				"tag": "whose tag ",
-				"college": "whoe college ",
-				"at_least": "at least ",
-				"at_most": "at most ",
-				"is": ""
-			},
-			"equipment": "Has equipment which is equipped and whose name ",
-			"criteria": {
-				"none": "is anything ",
-				"is": "is ",
-				"is_not": "is not ",
-				"contains": "contains ",
-				"does_not_contain": "does not contain ",
-				"starts_with": "starts with ",
-				"does_not_start_with": "does not start with ",
-				"ends_with": "ends with ",
-				"does_not_end_with": "does not end with ",
-				"at_least": "is at least ",
-				"at_most": "is at most "
-			}
-		},
 		"ritual": {
 			"sub_10": "Ritual: need both hands and feet free and must speak; Time: 2x",
 			"sub_15": "Ritual: speak quietly and make a gesture",
@@ -1896,6 +1842,13 @@
 				"college_name": "to the college whose name",
 				"power_source_name": "to the power source whose name",
 				"spell_name": "to the spell whose name"
+			},
+			"spellcmp": {
+				"name": "whose name",
+				"tag": "with a tag which ",
+				"college": "whose college name",
+				"college_count": "from different colleges",
+				"any": " of any kind"
 			},
 			"feature": {
 				"attribute_bonus": "Gives an attribute modifier of",
@@ -2105,6 +2058,47 @@
 				"is_not": "not",
 				"at_least": "at least",
 				"at_most": "at most"
+			}
+		},
+		"prereq": {
+			"prefix": "• ",
+			"unsatisfied": "Unsatisfied Prerequisite(s)",
+			"not_met": "Prerequisites have not been met:<br>",
+			"requires_all": "Requires all of:<br>",
+			"requires_one": "Requires at least one of:<br>",
+			"has": {
+				"true": "Has",
+				"false": "Does not have"
+			},
+			"trait": {
+				"name": " a trait whose name {content}",
+				"notes": ", notes {content}",
+				"level": " and level {content}"
+			},
+			"attribute": {
+				"qualifier": " which {content}"
+			},
+			"skill": {
+				"name": "a skill whose name {content}",
+				"specialization": ", specialization {content},",
+				"level": " and level {content}",
+				"level_alt1": " level {content} and tech level matches",
+				"level_alt2": ", level {content} and tech level matches"
+			},
+			"spell": {
+				"college_count": " college count which ",
+				"singular": {
+					"name": " spell whose name ",
+					"tag": " spell whose tag ",
+					"college": " spell whose college",
+					"any": " spell of any kind"
+				},
+				"multiple": {
+					"name": " spells whose name ",
+					"tag": " spells whose tag ",
+					"college": " spells whose college",
+					"any": " spells of any kind"
+				}
 			}
 		}
 	}

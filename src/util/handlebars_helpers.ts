@@ -409,7 +409,7 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 	static unsatisfied(reason: string): string {
 		return (
 			`<div class='unsatisfied' data-tooltip='${reason}' data-tooltip-direction='DOWN'>` +
-			`<i class='gcs-triangle-exclamation'></i>${LocalizeGURPS.translations.gurps.prereqs.unsatisfied}` +
+			`<i class='gcs-triangle-exclamation'></i>${LocalizeGURPS.translations.gurps.prereq.unsatisfied}` +
 			"</div>"
 		)
 	}

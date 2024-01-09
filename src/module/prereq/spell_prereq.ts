@@ -1,103 +1,114 @@
+import { LocalizeGURPS, NumericCompareType, NumericCriteria, StringCompareType, StringCriteria } from "@util"
+import { BasePrereq, BasePrereqObj } from "./base"
+import { prereq, spellcmp } from "@util/enum"
 import { CharacterGURPS } from "@actor"
-import {
-	ItemType,
-	NumericCriteria,
-	NumericComparisonType,
-	PrereqType,
-	StringCriteria,
-	StringComparisonType,
-} from "@module/data"
 import { TooltipGURPS } from "@module/tooltip"
-import { LocalizeGURPS, numberCompare, stringCompare } from "@util"
-import { BasePrereq, PrereqConstructionContext } from "./base"
+import { ItemType } from "@module/data"
+import { SpellContainerGURPS } from "@item/spell_container"
 
-export enum SpellPrereqSubType {
-	Name = "name",
-	Any = "any",
-	College = "college",
-	CollegeCount = "college_count",
-	Tag = "tag",
+export interface SpellPrereqObj extends BasePrereqObj {
+	sub_type: spellcmp.Type
+	qualifier: StringCriteria
+	quantity: NumericCriteria
 }
 
 export class SpellPrereq extends BasePrereq {
-	quantity!: NumericCriteria
+	type = prereq.Type.Spell
 
-	sub_type!: SpellPrereqSubType
+	sub_type: spellcmp.Type
 
-	qualifier!: StringCriteria
+	qualifier: StringCriteria
 
-	constructor(data: SpellPrereq | any, context: PrereqConstructionContext = {}) {
-		data = mergeObject(SpellPrereq.defaults, data)
-		super(data, context)
+	quantity: NumericCriteria
+
+
+	constructor() {
+		super(prereq.Type.Spell)
+		this.sub_type = spellcmp.Type.Name
+		this.qualifier = new StringCriteria(StringCompareType.IsString)
+		this.quantity = new NumericCriteria(NumericCompareType.AtLeastNumber, 1)
 	}
 
-	static get defaults(): Record<string, any> {
-		return mergeObject(super.defaults, {
-			type: PrereqType.Spell,
-			quantity: { compare: NumericComparisonType.AtLeastNumber, qualifier: 1 },
-			sub_type: SpellPrereqSubType.Name,
-			qualifier: { compare: StringComparisonType.IsString, qualifier: "" },
-		})
+	static fromObject(data: SpellPrereqObj): SpellPrereq {
+		const prereq = new SpellPrereq()
+		if (data.sub_type)
+			prereq.sub_type = data.sub_type
+		if (data.qualifier)
+			prereq.qualifier = new StringCriteria(data.qualifier.compare, data.qualifier.qualifier)
+		if (data.quantity)
+			prereq.quantity = new NumericCriteria(data.quantity.compare, data.quantity.qualifier)
+		return prereq
 	}
 
-	satisfied(actor: CharacterGURPS, exclude: any, tooltip: TooltipGURPS): [boolean, boolean] {
-		let tech_level = ""
-		if ([ItemType.Spell, ItemType.RitualMagicSpell].includes(exclude.type)) tech_level = exclude.techLevel
+	satisfied(
+		character: CharacterGURPS,
+		exclude: any,
+		tooltip: TooltipGURPS
+	): boolean {
 		let count = 0
-		const colleges: Map<string, boolean> = new Map()
-		for (let sp of actor.spells) {
-			if (sp.type === ItemType.SpellContainer) continue
-			if (exclude === sp || sp.points === 0) continue
-			if (tech_level && (sp as any).techLevel && tech_level !== (sp as any).techLevel) continue
-			switch (this.sub_type) {
-				case SpellPrereqSubType.Name:
-					if (stringCompare(sp.name, this.qualifier)) count++
-					continue
-				case SpellPrereqSubType.Tag:
-					if (stringCompare(sp.tags, this.qualifier)) count++
-					break
-				case SpellPrereqSubType.College:
-					if (stringCompare((sp as any).college, this.qualifier)) count++
-					break
-				case SpellPrereqSubType.CollegeCount:
-					for (const c of (sp as any).college) colleges.set(c, true)
-					break
-				case SpellPrereqSubType.Any:
-					count++
-					break
-			}
+		const colleges: Set<string> = new Set()
+		let techLevel = ""
+		if (
+			exclude instanceof Item && (
+				exclude.type === ItemType.Spell ||
+				exclude.type === ItemType.RitualMagicSpell
+			)
+		) {
+			techLevel = (exclude as any).techLevel
 		}
-		if (this.sub_type === SpellPrereqSubType.CollegeCount) count = colleges.entries.length
-		let satisfied = numberCompare(count, this.quantity)
+		for (const sp of character.spells) {
+			if (sp instanceof SpellContainerGURPS) continue
+			if (exclude === sp || sp.points == 0) continue
+			if (techLevel !== "" && sp.techLevel !== "" && techLevel !== sp.techLevel)
+				continue
+			switch (this.sub_type) {
+				case spellcmp.Type.Name:
+					if (this.qualifier.matches(sp.name ?? "")) count++
+				case spellcmp.Type.Tag:
+					for (const one of sp.tags) {
+						if (this.qualifier.matches(one ?? "")) {
+							count++
+							break
+						}
+					}
+				case spellcmp.Type.College:
+					for (const one of sp.college) {
+						if (this.qualifier.matches(one ?? "")) {
+							count++
+							break
+						}
+					}
+				case spellcmp.Type.CollegeCount:
+					for (const one of sp.college)
+						colleges.add(one)
+				case spellcmp.Type.Any:
+					count++
+			}
+			if (this.sub_type === spellcmp.Type.CollegeCount) count = colleges.size
+		}
+		let satisfied = this.quantity.matches(count)
 		if (!this.has) satisfied = !satisfied
 		if (!satisfied) {
-			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.has[this.has ? "true" : "false"])
-			if (this.sub_type === SpellPrereqSubType.CollegeCount) {
-				tooltip.push(LocalizeGURPS.translations.gurps.prereqs.spell.college_count)
-				tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.quantity.compare])
-				tooltip.push(this.quantity.qualifier!.toString())
+			tooltip.push(LocalizeGURPS.translations.gurps.prereq.prefix)
+			tooltip.push(LocalizeGURPS.translations.gurps.prereq.has[this.has ? "true" : "false"])
+			if (this.sub_type === spellcmp.Type.CollegeCount) {
+				tooltip.push(LocalizeGURPS.format(
+					LocalizeGURPS.translations.gurps.prereq.spell[this.sub_type],
+					{ content: this.quantity.describe() }
+				))
 			} else {
-				if (this.sub_type === SpellPrereqSubType.Any)
-					tooltip.push(LocalizeGURPS.translations.gurps.prereqs.spell.any)
-				else tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.quantity.compare])
-				tooltip.push(`${this.quantity.qualifier} `)
-				if (this.quantity?.qualifier === 1) tooltip.push(LocalizeGURPS.translations.gurps.prereqs.spell.one)
-				else tooltip.push(LocalizeGURPS.translations.gurps.prereqs.spell.many)
-				if (this.sub_type === SpellPrereqSubType.Any)
-					tooltip.push(LocalizeGURPS.translations.gurps.prereqs.spell.any)
-				else {
-					if (this.sub_type === SpellPrereqSubType.Name)
-						tooltip.push(LocalizeGURPS.translations.gurps.prereqs.spell.name)
-					else if (this.sub_type === SpellPrereqSubType.Tag)
-						tooltip.push(LocalizeGURPS.translations.gurps.prereqs.spell.tag)
-					else if (this.sub_type === SpellPrereqSubType.College)
-						tooltip.push(LocalizeGURPS.translations.gurps.prereqs.spell.college)
-					tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.qualifier.compare])
-					if (this.qualifier?.compare !== StringComparisonType.AnyString)
-						tooltip.push(`"${this.qualifier.qualifier}"`)
-				}
+				tooltip.push(this.quantity.describe())
+				if (this.quantity.qualifier == 1)
+					tooltip.push(LocalizeGURPS.format(
+						LocalizeGURPS.translations.gurps.prereq.spell.singular[this.sub_type],
+						{ content: this.qualifier.describe() }
+					))
+				tooltip.push(LocalizeGURPS.format(
+					LocalizeGURPS.translations.gurps.prereq.spell.multiple[this.sub_type],
+					{ content: this.qualifier.describe() }
+				))
 			}
 		}
-		return [satisfied, false]
+		return satisfied
 	}
 }

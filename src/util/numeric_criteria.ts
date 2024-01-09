@@ -46,6 +46,7 @@ export class NumericCriteria {
 		if (this.compare === NumericCompareType.AnyNumber)
 			return result
 		return `${result} ${this.qualifier}`
+
 	}
 
 	altDescribe(): string {
@@ -55,6 +56,4 @@ export class NumericCriteria {
 		if (result !== "") result += " "
 		return result + this.qualifier.toString()
 	}
-
-
 }

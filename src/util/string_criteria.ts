@@ -67,16 +67,8 @@ export class StringCriteria {
 		}
 	}
 
-	toString(): string {
-		switch (this.compare) {
-			case StringCompareType.AnyString:
-				return this._toString()
-			default:
-				return `${this._toString()} "${this.qualifier}"`
-		}
-	}
 
-	_toString(): string {
+	toString(): string {
 		return LocalizeGURPS.translations.gurps.string_criteria.string[this.compare]
 	}
 
@@ -88,7 +80,14 @@ export class StringCriteria {
 			case StringCompareType.DoesNotEndWithString:
 				return LocalizeGURPS.translations.gurps.string_criteria.alt_string[this.compare]
 			default:
-				return this._toString()
+				return this.toString()
 		}
+	}
+
+	describe(): string {
+		const result = this.toString()
+		if (this.compare === StringCompareType.AnyString)
+			return result
+		return `${result} "${this.qualifier}"`
 	}
 }
