@@ -4,7 +4,6 @@ import { prereq, spellcmp } from "@util/enum"
 import { CharacterGURPS } from "@actor"
 import { TooltipGURPS } from "@module/tooltip"
 import { ItemType } from "@module/data"
-import { SpellContainerGURPS } from "@item/spell_container"
 
 export interface SpellPrereqObj extends BasePrereqObj {
 	sub_type: spellcmp.Type
@@ -56,8 +55,8 @@ export class SpellPrereq extends BasePrereq {
 		) {
 			techLevel = (exclude as any).techLevel
 		}
-		for (const sp of character.spells) {
-			if (sp instanceof SpellContainerGURPS) continue
+		for (const sp of character.spells as any) {
+			if (sp.type === ItemType.SpellContainer) continue
 			if (exclude === sp || sp.points == 0) continue
 			if (techLevel !== "" && sp.techLevel !== "" && techLevel !== sp.techLevel)
 				continue

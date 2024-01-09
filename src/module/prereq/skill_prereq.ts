@@ -4,7 +4,6 @@ import { prereq } from "@util/enum"
 import { CharacterGURPS } from "@actor"
 import { TooltipGURPS } from "@module/tooltip"
 import { ItemType } from "@module/data"
-import { SkillContainerGURPS } from "@item/skill_container"
 
 export interface SkillPrereqObj extends BasePrereqObj {
 	name: StringCriteria
@@ -55,8 +54,9 @@ export class SkillPrereq extends BasePrereq {
 		) {
 			techLevel = (exclude as any).techLevel
 		}
-		for (const sk of character.skills) {
-			if (sk instanceof SkillContainerGURPS) continue
+		for (let sk of character.skills as any) {
+			if (sk.type === ItemType.SkillContainer) continue
+
 			if (exclude === sk ||
 				!this.name.matches(sk.name ?? "") ||
 				!this.specialization.matches(sk.specialization ?? "")
@@ -83,13 +83,13 @@ export class SkillPrereq extends BasePrereq {
 					LocalizeGURPS.translations.gurps.prereq.skill.level, { content: this.level.describe() }
 				))
 			} else if (this.specialization.compare === StringCompareType.AnyString)
-					tooltip.push(LocalizeGURPS.format(
-						LocalizeGURPS.translations.gurps.prereq.skill.level_alt1, { content: this.level.describe() }
-					))
-				else
-					tooltip.push(LocalizeGURPS.format(
-						LocalizeGURPS.translations.gurps.prereq.skill.level_alt2, { content: this.level.describe() }
-					))
+				tooltip.push(LocalizeGURPS.format(
+					LocalizeGURPS.translations.gurps.prereq.skill.level_alt1, { content: this.level.describe() }
+				))
+			else
+				tooltip.push(LocalizeGURPS.format(
+					LocalizeGURPS.translations.gurps.prereq.skill.level_alt2, { content: this.level.describe() }
+				))
 		}
 		return satisfied
 	}

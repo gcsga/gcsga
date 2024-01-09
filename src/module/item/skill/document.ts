@@ -2,7 +2,7 @@ import { ItemGCS } from "@item/gcs"
 import { gid } from "@module/data"
 import { SkillDefault } from "@module/default"
 import { TooltipGURPS } from "@module/tooltip"
-import { difficultyRelativeLevel, inlineNote, LocalizeGURPS, parseInlineNoteExpressions } from "@util"
+import { inlineNote, LocalizeGURPS, parseInlineNoteExpressions } from "@util"
 import { SkillLevel, SkillSource } from "./data"
 import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
 import { difficulty } from "@util/enum"
@@ -127,7 +127,7 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		const none = { level: -Infinity, relative_level: 0, tooltip: new TooltipGURPS() }
 		const actor = this.actor || this.dummyActor
 		if (!actor) return none
-		let relative_level = difficultyRelativeLevel(this.difficulty)
+		let relativeLevel = difficulty.Level.baseRelativeLevel(this.difficulty)
 		let level = actor.resolveAttributeCurrent(this.attribute)
 		const tooltip = new TooltipGURPS()
 		let points = this.adjustedPoints(tooltip)
@@ -142,37 +142,37 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 
 		switch (true) {
 			case points === 1:
-				// Relative_level is preset to this point value
+				// relativeLevel is preset to this point value
 				break
 			case points > 1 && points < 4:
-				relative_level += 1
+				relativeLevel += 1
 				break
 			case points >= 4:
-				relative_level += 1 + Math.floor(points / 4)
+				relativeLevel += 1 + Math.floor(points / 4)
 				break
 			case this.difficulty !== difficulty.Level.Wildcard && def && def.points < 0:
-				relative_level = def!.adjustedLevel - level
+				relativeLevel = def!.adjustedLevel - level
 				break
 			default:
 				level = -Infinity
-				relative_level = 0
+				relativeLevel = 0
 		}
 
 		if (level === -Infinity) return none
-		level += relative_level
+		level += relativeLevel
 		if (this.difficulty !== difficulty.Level.Wildcard && def && level < def.adjustedLevel) {
 			level = def.adjustedLevel
 		}
 		let bonus = actor.skillBonusFor(this.name!, this.specialization, this.tags, tooltip)
 		const encumbrancePenalty = actor.encumbranceLevel(true).penalty * this.encumbrancePenaltyMultiplier
 		level += bonus + encumbrancePenalty
-		relative_level += bonus + encumbrancePenalty
+		relativeLevel += bonus + encumbrancePenalty
 		if (bonus !== 0) {
 			tooltip.push("TO DO")
 		}
 		return {
 			level: level,
-			relative_level: relative_level,
+			relative_level: relativeLevel,
 			tooltip: tooltip,
 		}
 	}
@@ -214,7 +214,8 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		if (!actor) return
 		const best = this.bestDefault()
 		if (best) {
-			const baseline = actor.resolveAttributeCurrent(this.attribute) + difficultyRelativeLevel(this.difficulty)
+			const baseline = actor.resolveAttributeCurrent(this.attribute) +
+				difficulty.Level.baseRelativeLevel(this.difficulty)
 			const level = best.level
 			best.adjusted_level = level
 			if (level === baseline) best.points = 1

@@ -7,7 +7,6 @@ import {
 	SYSTEM_NAME,
 } from "@module/data"
 import { v4 as uuidv4 } from "uuid"
-import { difficulty } from "./enum"
 
 export function sanitizeId(id: string, permit_leading_digits: boolean, reserved: string[]): string {
 	const buffer: string[] = []
@@ -259,22 +258,6 @@ export function equalFold(s: string, t: string): boolean {
 export function d6ify(str: string, flavor: string | null = ""): string {
 	let w = str.replace(/d([^6])/g, `d6${flavor || ""}$1`) // Find 'd's without a 6 behind it, and add it.
 	return w.replace(/d$/g, `d6${flavor || ""}`) // And do the same for the end of the line.
-}
-
-export function difficultyRelativeLevel(d: difficulty.Level): number {
-	switch (d) {
-		case difficulty.Level.Easy:
-			return 0
-		case difficulty.Level.Average:
-			return -1
-		case difficulty.Level.Hard:
-			return -2
-		case difficulty.Level.VeryHard:
-		case difficulty.Level.Wildcard:
-			return -3
-		default:
-			return difficultyRelativeLevel(difficulty.Level.Easy)
-	}
 }
 
 export async function urlToBase64(imageUrl: string) {

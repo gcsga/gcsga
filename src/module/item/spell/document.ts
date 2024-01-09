@@ -2,7 +2,7 @@ import { ItemGCS } from "@item/gcs"
 import { SkillLevel } from "@item/skill/data"
 import { gid } from "@module/data"
 import { TooltipGURPS } from "@module/tooltip"
-import { difficultyRelativeLevel, inlineNote, LocalizeGURPS, parseInlineNoteExpressions } from "@util"
+import { inlineNote, LocalizeGURPS, parseInlineNoteExpressions } from "@util"
 import { SpellSource } from "./data"
 import { difficulty } from "@util/enum"
 
@@ -167,7 +167,7 @@ export class SpellGURPS extends ItemGCS<SpellSource> {
 
 	calculateLevel(): SkillLevel {
 		const tooltip = new TooltipGURPS()
-		let relativeLevel = difficultyRelativeLevel(this.difficulty)
+		let relativeLevel = difficulty.Level.baseRelativeLevel(this.difficulty)
 		let level = -Infinity
 		if (this.actor) {
 			let points = Math.trunc(this.points)
