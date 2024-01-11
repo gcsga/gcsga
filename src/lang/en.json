@@ -2100,7 +2100,13 @@
 					"any": " spells of any kind"
 				}
 			},
-			"contained_quantity": " a contained quantity which {content}"
+			"contained_quantity": " a contained quantity which {content}",
+			"contained_weight": " a contained weight which {content}",
+			"equipped_equipment": "Has equipment which is equipped and whose name is {content}",
+			"list": {
+				"true": "Requires all of:",
+				"false": "Requires at least one of:"
+			}
 		}
 	}
 }

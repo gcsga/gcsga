@@ -57,5 +57,5 @@ export abstract class BasePrereq {
 	// 	})
 	// }
 
-	abstract satisfied(character: CharacterResolver, exclude: any, tooltip: TooltipGURPS): boolean
+	abstract satisfied(character: CharacterResolver, exclude: any, tooltip: TooltipGURPS, ...args: any[]): boolean
 }

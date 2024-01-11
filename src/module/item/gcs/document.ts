@@ -102,7 +102,7 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 
 	get prereqs() {
 		if (!(this.system as any).prereqs) return new PrereqList()
-		return new PrereqList((this.system as any).prereqs)
+		return PrereqList.fromObject((this.system as any).prereqs)
 	}
 
 	get prereqsEmpty(): boolean {

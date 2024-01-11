@@ -27,6 +27,7 @@ export class TraitPrereq extends BasePrereq {
 
 	static fromObject(data: TraitPrereqObj): TraitPrereq {
 		const prereq = new TraitPrereq()
+		prereq.has = data.has
 		if (data.name)
 			prereq.name = new StringCriteria(data.name.compare, data.name.qualifier)
 		if (data.level)

@@ -26,6 +26,7 @@ export class AttributePrereq extends BasePrereq {
 
 	static fromObject(data: AttributePrereqObj): AttributePrereq {
 		const prereq = new AttributePrereq()
+		prereq.has = data.has
 		if (data.which)
 			prereq.which = data.which
 		if (data.combined_with)

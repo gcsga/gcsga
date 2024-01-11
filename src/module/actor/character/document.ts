@@ -1335,7 +1335,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 			t.unsatisfied_reason = ""
 			if (t instanceof TraitGURPS && !t.prereqsEmpty) {
 				const tooltip = new TooltipGURPS()
-				if (!t.prereqs.satisfied(this, t, tooltip)[0]) {
+				if (!t.prereqs.satisfied(this, t, tooltip)) {
 					t.unsatisfied_reason = not_met + tooltip.toString()
 				}
 			}
@@ -1345,8 +1345,8 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 			k.unsatisfied_reason = ""
 			const tooltip = new TooltipGURPS()
 			let satisfied = true
-			let eqpPenalty = false
-			if (!k.prereqsEmpty) [satisfied, eqpPenalty] = k.prereqs.satisfied(this, k, tooltip)
+			let eqpPenalty = { value: false }
+			if (!k.prereqsEmpty) satisfied = k.prereqs.satisfied(this, k, tooltip, eqpPenalty)
 			if (satisfied && k instanceof TechniqueGURPS) satisfied = k.satisfied(tooltip)
 			if (eqpPenalty) {
 				const penalty = new SkillBonus()
@@ -1371,8 +1371,8 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 			b.unsatisfied_reason = ""
 			const tooltip = new TooltipGURPS()
 			let satisfied = true
-			let eqpPenalty = false
-			if (!b.prereqsEmpty) [satisfied, eqpPenalty] = b.prereqs.satisfied(this, b, tooltip)
+			let eqpPenalty = { value: false }
+			if (!b.prereqsEmpty) satisfied = b.prereqs.satisfied(this, b, tooltip, eqpPenalty)
 			if (satisfied && b instanceof RitualMagicSpellGURPS) satisfied = b.satisfied(tooltip)
 			if (eqpPenalty) {
 				const penalty = new SkillBonus()
@@ -1390,7 +1390,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 			e.unsatisfied_reason = ""
 			if (!e.prereqsEmpty) {
 				const tooltip = new TooltipGURPS()
-				if (!e.prereqs.satisfied(this, e, tooltip)[0]) {
+				if (!e.prereqs.satisfied(this, e, tooltip)) {
 					e.unsatisfied_reason = not_met + tooltip.toString()
 				}
 			}

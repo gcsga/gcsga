@@ -5,14 +5,15 @@ import { WeightUnits } from "./weight"
 import { TraitContainerSystemData, TraitContainerType } from "@item/trait_container/data"
 import { AttributeDefObj } from "@module/attribute"
 import { MoveTypeDefObj } from "@module/move_type"
-import { Encumbrance } from "@actor/character/data"
+import { CharacterProfile, Encumbrance } from "@actor/character/data"
 import { MoveBonusType } from "@feature/data"
 import { DurationType } from "@item/effect/data"
 import { ConditionID, ManeuverID } from "@item/condition/data"
 import { TraitSystemData } from "@item/trait/data"
 
 export interface CharacterResolver {
-	// Profile
+	// Profile && settings
+	profile: CharacterProfile
 	adjustedSizeModifier: number
 	settings: {
 		attributes: AttributeDefObj[]
@@ -172,6 +173,8 @@ export interface SkillDefaultResolver {
 }
 
 export interface EquipmentResolver extends ItemResolver {
+	equipped: boolean
+	quantity: number
 	ratedStrength: number
 	other: boolean
 	weight: number
@@ -187,6 +190,8 @@ export interface EquipmentResolver extends ItemResolver {
 }
 
 export interface EquipmentContainerResolver extends ContainerResolver<EquipmentResolver | EquipmentContainerResolver> {
+	equipped: boolean
+	quantity: number
 	ratedStrength: number
 	other: boolean
 	weight: number

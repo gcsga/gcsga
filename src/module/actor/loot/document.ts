@@ -119,7 +119,7 @@ export class LootGURPS extends BaseActorGURPS<LootSource> {
 			e.unsatisfied_reason = ""
 			if (!e.prereqsEmpty) {
 				const tooltip = new TooltipGURPS()
-				if (!e.prereqs.satisfied(this, e, tooltip)[0]) {
+				if (!e.prereqs.satisfied(this, e, tooltip)) {
 					e.unsatisfied_reason = not_met + tooltip.toString()
 				}
 			}

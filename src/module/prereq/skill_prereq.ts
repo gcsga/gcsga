@@ -29,6 +29,7 @@ export class SkillPrereq extends BasePrereq {
 
 	static fromObject(data: SkillPrereqObj): SkillPrereq {
 		const prereq = new SkillPrereq()
+		prereq.has = data.has
 		if (data.name)
 			prereq.name = new StringCriteria(data.name.compare, data.name.qualifier)
 		if (data.level)

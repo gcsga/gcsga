@@ -29,6 +29,7 @@ export class SpellPrereq extends BasePrereq {
 
 	static fromObject(data: SpellPrereqObj): SpellPrereq {
 		const prereq = new SpellPrereq()
+		prereq.has = data.has
 		if (data.sub_type)
 			prereq.sub_type = data.sub_type
 		if (data.qualifier)

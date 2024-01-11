@@ -18,6 +18,10 @@ export class EquipmentGURPS extends ItemGCS<EquipmentSource> {
 		return this.system.rated_strength
 	}
 
+	get quantity(): number {
+		return this.system.quantity
+	}
+
 	get secondaryText(): string {
 		let outString = '<div class="item-notes">'
 		let display_mode = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
