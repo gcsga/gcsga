@@ -1,8 +1,7 @@
-import { LocalizeGURPS, NumericCompareType, NumericCriteria } from "@util"
+import { CharacterResolver, LocalizeGURPS, NumericCompareType, NumericCriteria } from "@util"
 import { BasePrereq, BasePrereqObj } from "./base"
 import { prereq } from "@util/enum"
 import { gid } from "@module/data"
-import { CharacterGURPS } from "@actor"
 import { TooltipGURPS } from "@module/tooltip"
 
 export interface AttributePrereqObj extends BasePrereqObj {
@@ -36,7 +35,7 @@ export class AttributePrereq extends BasePrereq {
 		return prereq
 	}
 
-	satisfied(character: CharacterGURPS, _exclude: any, tooltip: TooltipGURPS): boolean {
+	satisfied(character: CharacterResolver, _exclude: any, tooltip: TooltipGURPS): boolean {
 		let value = character.resolveAttributeCurrent(this.which)
 		if (this.combined_with !== "")
 			value += character.resolveAttributeCurrent(this.combined_with)

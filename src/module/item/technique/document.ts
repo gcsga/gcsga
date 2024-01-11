@@ -76,15 +76,15 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 		return this.system.limit
 	}
 
-	get difficulty(): string {
+	get difficulty(): difficulty.Level {
 		return this.system.difficulty
 	}
 
-	get defaultedFrom(): SkillDefault | undefined {
-		return this.system.defaulted_from
+	get defaultedFrom(): SkillDefault | null {
+		return this.system.defaulted_from ?? null
 	}
 
-	set defaultedFrom(v: SkillDefault | undefined) {
+	set defaultedFrom(v: SkillDefault | null) {
 		this.system.defaulted_from = v
 	}
 

@@ -22,15 +22,11 @@ export interface SkillSystemData extends ItemGCSSystemData {
 	prereqs: PrereqList
 	specialization: string
 	tech_level: string
-	// Should not be needed
-	// TODO: find a way to remove
 	tech_level_required: boolean
 	encumbrance_penalty_multiplier: EncumbrancePenaltyMultiplier
-	// May change to object type
 	difficulty: `${string}/${difficulty.Level}`
 	points: number
-	// To change later
-	defaulted_from?: SkillDefault
+	defaulted_from: SkillDefault | null
 	defaults: SkillDefault[]
 	features: Feature[]
 	study: Study[]

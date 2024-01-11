@@ -20,6 +20,14 @@ export class NoteGURPS extends BaseItemGURPS<NoteSource> {
 		return converter.makeHtml(text)?.replace(/\s\+/g, "\r")
 	}
 
+	get enabled(): boolean {
+		return true
+	}
+
+	get secondaryText(): string {
+		return ""
+	}
+
 	get reference(): string {
 		return this.system.reference
 	}

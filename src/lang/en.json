@@ -2099,7 +2099,8 @@
 					"college": " spells whose college",
 					"any": " spells of any kind"
 				}
-			}
+			},
+			"contained_quantity": " a contained quantity which {content}"
 		}
 	}
 }

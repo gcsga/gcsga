@@ -1,13 +1,12 @@
 import { CharacterGURPS } from "@actor"
 import { SkillGURPS, TechniqueGURPS } from "@item"
-import { gid } from "@module/data"
+import { SkillDefaultType, gid } from "@module/data"
 
 const skill_based_default_types: Map<string, boolean> = new Map()
 skill_based_default_types.set(gid.Skill, true)
 skill_based_default_types.set(gid.Parry, true)
 skill_based_default_types.set(gid.Block, true)
 
-export type SkillDefaultType = gid.Block | gid.Parry | gid.Skill | gid.Ten | string
 
 export class SkillDefault {
 	type: SkillDefaultType = gid.Skill

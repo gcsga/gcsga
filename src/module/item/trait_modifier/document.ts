@@ -18,10 +18,10 @@ export class TraitModifierGURPS extends ItemGCS<TraitModifierSource> {
 		return this.system.notes
 	}
 
-	get costDescription() {
+	get costDescription(): string {
 		let base = ""
 		if (this.costType === "percentage") {
-			if (this.hasLevels) {
+			if (this.isLeveled) {
 				base = (this.cost * this.levels).signedString()
 			} else {
 				base = this.cost.signedString()
@@ -61,7 +61,7 @@ export class TraitModifierGURPS extends ItemGCS<TraitModifierSource> {
 		return d
 	}
 
-	get hasLevels(): boolean {
+	get isLeveled(): boolean {
 		return this.costType === "percentage" && this.levels > 0
 	}
 }

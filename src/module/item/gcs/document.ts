@@ -61,8 +61,8 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 		return this.name ?? ""
 	}
 
-	get enabled(): boolean | undefined {
-		return undefined
+	get enabled(): boolean {
+		return true
 	}
 
 	get tags(): string[] {

@@ -24,7 +24,7 @@ export interface TechniqueSystemData extends ItemGCSSystemData {
 	encumbrance_penalty_multiplier: EncumbrancePenaltyMultiplier
 	difficulty: typeof difficulty.TechiqueLevels[number]
 	points: number
-	defaulted_from?: SkillDefault
+	defaulted_from: SkillDefault | null
 	defaults: SkillDefault[]
 	features: Feature[]
 	default: SkillDefault

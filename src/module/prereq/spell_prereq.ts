@@ -1,7 +1,6 @@
-import { LocalizeGURPS, NumericCompareType, NumericCriteria, StringCompareType, StringCriteria } from "@util"
+import { CharacterResolver, LocalizeGURPS, NumericCompareType, NumericCriteria, StringCompareType, StringCriteria } from "@util"
 import { BasePrereq, BasePrereqObj } from "./base"
 import { prereq, spellcmp } from "@util/enum"
-import { CharacterGURPS } from "@actor"
 import { TooltipGURPS } from "@module/tooltip"
 import { ItemType } from "@module/data"
 
@@ -40,7 +39,7 @@ export class SpellPrereq extends BasePrereq {
 	}
 
 	satisfied(
-		character: CharacterGURPS,
+		character: CharacterResolver,
 		exclude: any,
 		tooltip: TooltipGURPS
 	): boolean {

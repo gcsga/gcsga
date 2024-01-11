@@ -1,6 +1,6 @@
 import { WeaponDamageObj } from "@item/weapon/data"
 import { Attribute, AttributeDefObj, AttributeObj } from "@module/attribute"
-import { DamageProgression } from "@module/data"
+import { DamageProgression, ItemType } from "@module/data"
 import { DiceGURPS } from "@module/dice"
 import { MoveTypeDefObj } from "@module/move_type"
 import { difficulty } from "@util/enum"

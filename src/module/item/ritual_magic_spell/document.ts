@@ -72,8 +72,8 @@ export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 		return this.system.difficulty?.split("/")[0] ?? gid.Intelligence
 	}
 
-	get difficulty(): string {
-		return this.system.difficulty?.split("/")[1] ?? difficulty.Level.Hard
+	get difficulty(): difficulty.Level {
+		return difficulty.Level.extractLevel(this.system.difficulty?.split("/")[1])
 	}
 
 	get powerSource(): string {
@@ -90,6 +90,10 @@ export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 
 	get prereqCount(): number {
 		return this.system.prereq_count
+	}
+
+	get defaultedFrom(): null {
+		return null
 	}
 
 	adjustedPoints(tooltip?: TooltipGURPS): number {

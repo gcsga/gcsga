@@ -1,8 +1,9 @@
 import { PoolThreshold } from "./pool_threshold"
 import { DamageProgression } from "@module/data"
-import { VariableResolver, evaluateToNumber, sanitizeId } from "@util"
+import { CharacterResolver, evaluateToNumber, sanitizeId } from "@util"
 import { AttributeDefObj, reserved_ids } from "./data"
 import { attribute } from "@util/enum"
+import { Mook } from "@module/mook"
 
 export class AttributeDef {
 	private def_id!: string
@@ -60,11 +61,11 @@ export class AttributeDef {
 		return !isNaN(parseInt(this.attribute_base))
 	}
 
-	baseValue(resolver: VariableResolver): number {
+	baseValue(resolver: CharacterResolver | Mook): number {
 		return evaluateToNumber(this.attribute_base, resolver)
 	}
 
-	computeCost(actor: VariableResolver, value: number, cost_reduction: number, size_modifier: number): number {
+	computeCost(actor: CharacterResolver | Mook, value: number, cost_reduction: number, size_modifier: number): number {
 		let cost = value * (this.cost_per_point || 0)
 		if (
 			size_modifier > 0 &&

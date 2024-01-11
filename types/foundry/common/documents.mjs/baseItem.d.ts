@@ -47,7 +47,8 @@ export declare class BaseItem extends Document<
 	/**
 	 * The sub-type of Item.
 	 */
-	get type(): this["data"]["type"]
+	get type(): string
+	// get type(): this["data"]["type"]
 
 	override canUserModify(user: BaseUser, action: "create" | "update" | "delete", data?: object): boolean
 

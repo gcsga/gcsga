@@ -1,42 +1,49 @@
-import { ItemType, NumericComparisonType, NumericCriteria, PrereqType } from "@module/data"
-import { TooltipGURPS } from "@module/tooltip"
-import { LocalizeGURPS, numberCompare } from "@util"
-import { BasePrereq, PrereqConstructionContext } from "./base"
+import { CharacterResolver, LocalizeGURPS, NumericCompareType, NumericCriteria } from "@util";
+import { BasePrereq, BasePrereqObj } from "./base";
+import { prereq } from "@util/enum";
+import { TooltipGURPS } from "@module/tooltip";
+import { ItemType } from "@module/data";
+import { ItemGCS } from "@item/gcs";
+
+export interface ContainedQuantityPrereqObj extends BasePrereqObj {
+	qualifier: NumericCriteria
+}
 
 export class ContainedQuantityPrereq extends BasePrereq {
-	qualifier!: NumericCriteria
+	qualifier: NumericCriteria
 
-	constructor(data: ContainedQuantityPrereq | any, context: PrereqConstructionContext = {}) {
-		data = mergeObject(ContainedQuantityPrereq.defaults, data)
-		super(data, context)
+	constructor() {
+		super(prereq.Type.ContainedQuantity)
+		this.qualifier = new NumericCriteria(NumericCompareType.AtMostNumber, 1)
 	}
 
-	static get defaults(): Record<string, any> {
-		return mergeObject(super.defaults, {
-			type: PrereqType.ContainedQuantity,
-			qualifier: { compare: NumericComparisonType.AtMostNumber, qualifier: 1 },
-		})
+	static fromObject(data: ContainedQuantityPrereqObj): ContainedQuantityPrereq {
+		const prereq = new ContainedQuantityPrereq()
+		prereq.has = data.has
+		if (data.qualifier)
+			prereq.qualifier = new NumericCriteria(data.qualifier.compare, data.qualifier.qualifier)
+		return prereq
 	}
 
-	satisfied(_actor: Actor, exclude: any, tooltip: TooltipGURPS): [boolean, boolean] {
+	satisfied(_character: CharacterResolver, exclude: any, tooltip: TooltipGURPS): boolean {
 		let satisfied = false
-		if (exclude) {
-			satisfied = exclude.type !== ItemType.EquipmentContainer
-			if (!satisfied) {
-				let quantity = 0
-				for (const ch of exclude.children) {
-					quantity += ch.system.quantity
-				}
-				satisfied = numberCompare(quantity, this.qualifier)
-			}
+		if (
+			exclude instanceof ItemGCS &&
+			exclude.type === ItemType.EquipmentContainer
+		) {
+			satisfied = this.qualifier.matches(exclude.children.size)
 		}
 		if (!this.has) satisfied = !satisfied
 		if (!satisfied) {
-			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.has[this.has ? "true" : "false"])
-			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.quantity)
-			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.qualifier?.compare])
-			tooltip.push((this.qualifier.qualifier ?? 0).toString())
+			tooltip.push(LocalizeGURPS.translations.gurps.prereq.prefix)
+			tooltip.push(LocalizeGURPS.translations.gurps.prereq.has[this.has ? "true" : "false"])
+			tooltip.push(
+				LocalizeGURPS.format(
+					LocalizeGURPS.translations.gurps.prereq.contained_quantity,
+					{ content: this.qualifier.describe() }
+				)
+			)
 		}
-		return [satisfied, false]
+		return satisfied
 	}
 }

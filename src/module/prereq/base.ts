@@ -1,9 +1,10 @@
-import { CharacterGURPS } from "@actor"
 import { TooltipGURPS } from "@module/tooltip"
+import { CharacterResolver } from "@util"
 import { prereq } from "@util/enum"
 
 export interface BasePrereqObj {
 	type: prereq.Type
+	has: boolean
 }
 
 export abstract class BasePrereq {
@@ -56,5 +57,5 @@ export abstract class BasePrereq {
 	// 	})
 	// }
 
-	abstract satisfied(character: CharacterGURPS, exclude: any, tooltip: TooltipGURPS): boolean
+	abstract satisfied(character: CharacterResolver, exclude: any, tooltip: TooltipGURPS): boolean
 }

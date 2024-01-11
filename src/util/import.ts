@@ -257,6 +257,7 @@ class ImportUtils {
 			vtt_notes: data.vtt_notes ?? "",
 			study: data.study ?? [],
 			study_hours_needed: data.study_hours_needed ?? "200",
+			defaulted_from: null
 		}
 	}
 
@@ -282,6 +283,7 @@ class ImportUtils {
 			vtt_notes: data.vtt_notes ?? "",
 			study: data.study ?? [],
 			study_hours_needed: data.study_hours_needed ?? "200",
+			defaulted_from: null
 		}
 	}
 

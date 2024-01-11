@@ -478,3 +478,5 @@ export interface WeaponOwner {
 export enum HooksGURPS {
 	AddModifier = "addModifier",
 }
+
+export type SkillDefaultType = gid.Block | gid.Parry | gid.Skill | gid.Ten | string

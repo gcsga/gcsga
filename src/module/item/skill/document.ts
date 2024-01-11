@@ -90,11 +90,11 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		return this.actor.baseSkill(this.defaultedFrom, true)
 	}
 
-	get defaultedFrom(): SkillDefault | undefined {
-		return this.system.defaulted_from
+	get defaultedFrom(): SkillDefault | null {
+		return this.system.defaulted_from ?? null
 	}
 
-	set defaultedFrom(v: SkillDefault | undefined) {
+	set defaultedFrom(v: SkillDefault | null) {
 		this.system.defaulted_from = v
 	}
 
@@ -209,9 +209,9 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		return saved.level !== this.level.level
 	}
 
-	bestDefaultWithPoints(_excluded?: SkillDefault): SkillDefault | undefined {
+	bestDefaultWithPoints(_excluded?: SkillDefault): SkillDefault | null {
 		const actor = this.actor || this.dummyActor
-		if (!actor) return
+		if (!actor) return null
 		const best = this.bestDefault()
 		if (best) {
 			const baseline = actor.resolveAttributeCurrent(this.attribute) +
@@ -223,7 +223,7 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 			else if (level > baseline + 1) best.points = 4 * (level - (baseline + 1))
 			else best.points = -Math.max(level, 0)
 		}
-		return best
+		return best ?? null
 	}
 
 	bestDefault(excluded?: SkillDefault): SkillDefault | undefined {
@@ -285,7 +285,7 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		)
 	}
 
-	inDefaultChain(def: SkillDefault | undefined, lookedAt: Map<string, boolean>): boolean {
+	inDefaultChain(def: SkillDefault | null, lookedAt: Map<string, boolean>): boolean {
 		if (!this.actor || !def || !def.name) return false
 		let hadOne = false
 		for (const one of (this.actor.skills as Collection<SkillGURPS>).filter(

@@ -1,10 +1,11 @@
 import { ActorFlags } from "@actor/base/data"
 import { gid, SYSTEM_NAME } from "@module/data"
-import { sanitizeId, VariableResolver } from "@util"
+import { CharacterResolver, sanitizeId } from "@util"
 import { AttributeDef } from "./attribute_def"
 import { AttributeObj, reserved_ids } from "./data"
 import { PoolThreshold } from "./pool_threshold"
 import { attribute, stlimit } from "@util/enum"
+import { Mook } from "@module/mook"
 
 // interface Mook {
 // 	resolveVariable: (variableName: string) => string
@@ -23,7 +24,7 @@ import { attribute, stlimit } from "@util/enum"
 // }
 
 export class Attribute {
-	actor: VariableResolver
+	actor: CharacterResolver | Mook
 
 	order: number
 
@@ -37,7 +38,7 @@ export class Attribute {
 
 	_overridenThreshold?: PoolThreshold | null = null
 
-	constructor(actor: VariableResolver, attr_id: string, order: number, data?: Partial<AttributeObj>) {
+	constructor(actor: CharacterResolver | Mook, attr_id: string, order: number, data?: Partial<AttributeObj>) {
 		if (data) Object.assign(this, data)
 		this.actor = actor
 		this.attr_id = attr_id

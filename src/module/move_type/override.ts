@@ -1,5 +1,5 @@
 import { MoveTypeOverrideConditionType, MoveTypeOverrideObj } from "./data"
-import { VariableResolver, evaluateToNumber } from "@util"
+import { CharacterResolver, evaluateToNumber } from "@util"
 
 export class MoveTypeOverride {
 	condition: { type: MoveTypeOverrideConditionType; qualifier: any }
@@ -11,7 +11,7 @@ export class MoveTypeOverride {
 		this.move_type_base = data.move_type_base
 	}
 
-	conditionMet(resolver: VariableResolver): boolean {
+	conditionMet(resolver: CharacterResolver): boolean {
 		switch (this.condition.type) {
 			case MoveTypeOverrideConditionType.Skill:
 				return resolver.skills.some(e => e.name === this.condition.qualifier)
@@ -22,7 +22,7 @@ export class MoveTypeOverride {
 		}
 	}
 
-	baseValue(resolver: VariableResolver): number {
+	baseValue(resolver: CharacterResolver): number {
 		return evaluateToNumber(this.move_type_base, resolver)
 	}
 }

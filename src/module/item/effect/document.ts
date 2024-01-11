@@ -34,6 +34,14 @@ export class EffectGURPS<SourceType extends EffectSource = EffectSource> extends
 		return this.name || ""
 	}
 
+	get secondaryText(): string {
+		return ""
+	}
+
+	get enabled(): boolean {
+		return true
+	}
+
 	get reference(): string {
 		return this.system.reference
 	}

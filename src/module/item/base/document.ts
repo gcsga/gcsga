@@ -6,7 +6,7 @@ import { ItemData } from "types/foundry/common/data/module.mjs"
 import { BaseItemSourceGURPS, ItemConstructionContextGURPS, ItemFlags } from "./data"
 import { ItemDataConstructorData } from "types/foundry/common/data/data.mjs/itemData"
 import { MergeObjectOptions } from "types/foundry/common/utils/helpers.mjs"
-import { VariableResolver } from "@util"
+import { CharacterResolver } from "@util"
 
 export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSourceGURPS> extends Item {
 	_id!: string
@@ -14,7 +14,7 @@ export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSour
 	_source!: SourceType
 
 	// @ts-expect-error this is in fact always defined
-	private _dummyActor: VariableResolver | null
+	private _dummyActor: CharacterResolver | null
 
 	system!: SourceType["system"]
 
@@ -32,6 +32,10 @@ export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSour
 			if (ItemConstructor) return new ItemConstructor(data, context)
 			throw Error(`Invalid Item Type "${data.type}"`)
 		}
+	}
+
+	get type(): ItemType {
+		return super.type as ItemType
 	}
 
 	override async update(
@@ -64,11 +68,11 @@ export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSour
 		return { img: `systems/${SYSTEM_NAME}/assets/icons/${type}.svg` }
 	}
 
-	get dummyActor(): VariableResolver | null {
+	get dummyActor(): CharacterResolver | null {
 		return this._dummyActor
 	}
 
-	set dummyActor(actor: VariableResolver | null) {
+	set dummyActor(actor: CharacterResolver | null) {
 		this._dummyActor = actor
 	}
 
