@@ -17,8 +17,9 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		const name: string = this.name ?? ""
 		const specialization = this.specialization
 		const TL = this.techLevel
-		return `${name}${this.system.tech_level_required ? `/TL${TL ?? ""}` : ""}${specialization ? ` (${specialization})` : ""
-			}`
+		return `${name}${this.system.tech_level_required ? `/TL${TL ?? ""}` : ""}${
+			specialization ? ` (${specialization})` : ""
+		}`
 	}
 
 	get secondaryText(): string {
@@ -214,8 +215,8 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		if (!actor) return null
 		const best = this.bestDefault()
 		if (best) {
-			const baseline = actor.resolveAttributeCurrent(this.attribute) +
-				difficulty.Level.baseRelativeLevel(this.difficulty)
+			const baseline =
+				actor.resolveAttributeCurrent(this.attribute) + difficulty.Level.baseRelativeLevel(this.difficulty)
 			const level = best.level
 			best.adjusted_level = level
 			if (level === baseline) best.points = 1

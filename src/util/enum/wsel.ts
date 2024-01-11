@@ -1,7 +1,6 @@
 import { LocalizeGURPS } from "@util/localize"
 
 export namespace wsel {
-
 	export enum Type {
 		WithRequiredSkill = "weapons_with_required_skill",
 		ThisWeapon = "this_weapon",
@@ -18,6 +17,5 @@ export namespace wsel {
 			return LocalizeGURPS.translations.gurps.enum.wsel[T]
 		}
 	}
-	const Types: Type[] = [Type.WithRequiredSkill, Type.ThisWeapon, Type.WithName]
+	export const Types: Type[] = [Type.WithRequiredSkill, Type.ThisWeapon, Type.WithName]
 }
-

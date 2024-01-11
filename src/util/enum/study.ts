@@ -5,7 +5,7 @@ export namespace study {
 		Self = "self",
 		Job = "job",
 		Teacher = "teacher",
-		Intensive = "intensive"
+		Intensive = "intensive",
 	}
 
 	export namespace Type {
@@ -15,45 +15,33 @@ export namespace study {
 
 		export function multiplier(T: Type): number {
 			switch (T) {
-				case Type.Self: return 1 / 2
-				case Type.Job: return 1 / 4
-				case Type.Teacher: return 1
-				case Type.Intensive: return 2
+				case Type.Self:
+					return 1 / 2
+				case Type.Job:
+					return 1 / 4
+				case Type.Teacher:
+					return 1
+				case Type.Intensive:
+					return 2
 			}
 		}
 
 		export function limitations(T: Type): string[] {
-			return [
-				...LocalizeGURPS.translations.gurps.enum.study.type.limitations[T]
-			]
+			return [...LocalizeGURPS.translations.gurps.enum.study.type.limitations[T]]
 		}
-
 	}
 
-	export const Types: Type[] = [
-		Type.Self,
-		Type.Job,
-		Type.Teacher,
-		Type.Intensive
-	]
+	export const Types: Type[] = [Type.Self, Type.Job, Type.Teacher, Type.Intensive]
 
 	export enum Level {
 		Standard = "",
 		Level1 = "180",
 		Level2 = "160",
 		Level3 = "140",
-		Level4 = "120"
+		Level4 = "120",
 	}
 
-	export namespace Level {
+	export namespace Level {}
 
-	}
-
-	export const Levels: Level[] = [
-		Level.Standard,
-		Level.Level1,
-		Level.Level2,
-		Level.Level3,
-		Level.Level4,
-	]
+	export const Levels: Level[] = [Level.Standard, Level.Level1, Level.Level2, Level.Level3, Level.Level4]
 }

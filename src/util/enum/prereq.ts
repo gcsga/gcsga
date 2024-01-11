@@ -9,7 +9,7 @@ export namespace prereq {
 		ContainedWeight = "contained_weight_prereq",
 		EquippedEquipment = "equipped_equipment",
 		Skill = "skill_prereq",
-		Spell = "spell_prereq"
+		Spell = "spell_prereq",
 	}
 
 	export namespace Type {
@@ -26,6 +26,6 @@ export namespace prereq {
 		Type.ContainedWeight,
 		Type.EquippedEquipment,
 		Type.Skill,
-		Type.Spell
+		Type.Spell,
 	]
 }

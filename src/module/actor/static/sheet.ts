@@ -63,9 +63,8 @@ export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
 			effects: this.actor.getEmbeddedCollection("ActiveEffect").contents,
 			// UseQN: game.settings.get(SYSTEM_NAME, settings.SETTING_USE_QUINTESSENCE),
 			current_year: new Date().getFullYear(),
-			maneuvers: CONFIG.GURPS.select.maneuvers,
-			postures: CONFIG.GURPS.select.postures,
-			move_types: CONFIG.GURPS.select.move_types,
+			maneuvers: CONFIG.GURPS.SELECT_OPTIONS.maneuvers,
+			postures: CONFIG.GURPS.SELECT_OPTIONS.postures,
 			deprecation: deprecation,
 			conditions: this._prepareTrackers(),
 		}
@@ -78,11 +77,8 @@ export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
 
 	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
-		// Html.find(".input").on("change", event => this._resizeInput(event))
 		html.find(".dropdown-toggle").on("click", event => this._onCollapseToggle(event))
 		html.find(".ref").on("click", event => PDF.handle(event))
-		// Html.find(".item").on("dblclick", event => this._openItemSheet(event))
-		// html.find(".equipped").on("click", event => this._onEquippedToggle(event))
 		html.find(".rollable").on("mouseover", event => this._onRollableHover(event, true))
 		html.find(".rollable").on("mouseout", event => this._onRollableHover(event, false))
 		html.find(".rollable").on("click", event => this._onClickRoll(event))
@@ -344,13 +340,13 @@ export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
 		}
 		const buttons: Application.HeaderButton[] = this.actor.canUserModify(game.user!, "update")
 			? [
-					{
-						label: "",
-						class: "gmenu",
-						icon: "gcs-all-seeing-eye",
-						onclick: event => this._onGMenu(event),
-					},
-				]
+				{
+					label: "",
+					class: "gmenu",
+					icon: "gcs-all-seeing-eye",
+					onclick: event => this._onGMenu(event),
+				},
+			]
 			: []
 		const show_import = game.settings.get(SYSTEM_NAME, SETTINGS.SHOW_IMPORT_BUTTON) ?? false
 		const import_path = this.actor.system.additionalresources.importpath

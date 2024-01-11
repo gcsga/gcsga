@@ -5,7 +5,7 @@ export namespace tmcost {
 	export enum Type {
 		Percentage = "percentage",
 		Points = "points",
-		Multiplier = "multiplier"
+		Multiplier = "multiplier",
 	}
 
 	export namespace Type {
@@ -28,12 +28,7 @@ export namespace tmcost {
 			}
 			return Types[0]
 		}
-
 	}
 
-	export const Types: Type[] = [
-		Type.Percentage,
-		Type.Points,
-		Type.Multiplier,
-	]
+	export const Types: Type[] = [Type.Percentage, Type.Points, Type.Multiplier]
 }

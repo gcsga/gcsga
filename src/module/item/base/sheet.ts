@@ -1,10 +1,6 @@
 import { CharacterGURPS } from "@actor"
 import { AttributeDefObj } from "@module/attribute"
-import {
-	gid,
-	SETTINGS,
-	SYSTEM_NAME,
-} from "@module/data"
+import { gid, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { PDF } from "@module/pdf"
 import { LocalizeGURPS, NumericCompareType, prepareFormData, StringCompareType } from "@util"
 import { BaseItemGURPS } from "."
@@ -116,7 +112,7 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		html.find("textarea")
-			.each(function() {
+			.each(function () {
 				this.setAttribute("style", `height:${this.scrollHeight + 2}px;overflow-y:hidden;`)
 			})
 			.on("input", event => {

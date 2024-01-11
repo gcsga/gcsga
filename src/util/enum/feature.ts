@@ -47,7 +47,6 @@ export namespace feature {
 		export function toString(T: Type): string {
 			return LocalizeGURPS.translations.gurps.enum.feature[T]
 		}
-
 	}
 
 	export const Types: Type[] = [
@@ -112,8 +111,8 @@ export namespace feature {
 		Type.WeaponChamberShotsBonus,
 		Type.WeaponShotDurationBonus,
 		Type.WeaponReloadTimeBonus,
-		Type.WeaponSwitch
+		Type.WeaponSwitch,
 	] as const
 
-	export type WeaponBonusType = typeof WeaponBonusTypes[number]
+	export type WeaponBonusType = (typeof WeaponBonusTypes)[number]
 }

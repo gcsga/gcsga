@@ -11,7 +11,7 @@ export namespace progression {
 		Tbone1Clean = "tbone_1_clean",
 		Tbone2 = "tbone_2",
 		Tbone2Clean = "tbone_2_clean",
-		PhoenixFlameD3 = "phoenix_flame_d3"
+		PhoenixFlameD3 = "phoenix_flame_d3",
 	}
 
 	export namespace Option {
@@ -33,6 +33,6 @@ export namespace progression {
 		Option.Tbone1Clean,
 		Option.Tbone2,
 		Option.Tbone2Clean,
-		Option.PhoenixFlameD3
+		Option.PhoenixFlameD3,
 	]
 }

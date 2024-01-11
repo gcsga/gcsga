@@ -19,7 +19,7 @@ export class WeaponAccuracy extends WeaponField {
 		else {
 			s = s.replace(/^\+/, "")
 			const parts = s.split("+")
-				;[wa.base, parts[0]] = Int.extract(parts[0])
+			;[wa.base, parts[0]] = Int.extract(parts[0])
 			if (parts.length > 1) wa.scope = Int.fromString(parts[1])
 		}
 		wa.validate()

@@ -1,8 +1,16 @@
-import { CharacterResolver, LocalizeGURPS, NumericCompareType, NumericCriteria, StringCompareType, StringCriteria } from "@util"
+import {
+	CharacterResolver,
+	LocalizeGURPS,
+	LootResolver,
+	NumericCompareType,
+	NumericCriteria,
+	StringCompareType,
+	StringCriteria,
+} from "@util"
 import { BasePrereq, BasePrereqObj } from "./base"
 import { prereq, spellcmp } from "@util/enum"
 import { TooltipGURPS } from "@module/tooltip"
-import { ItemType } from "@module/data"
+import { ActorType, ItemType } from "@module/data"
 
 export interface SpellPrereqObj extends BasePrereqObj {
 	sub_type: spellcmp.Type
@@ -19,7 +27,6 @@ export class SpellPrereq extends BasePrereq {
 
 	quantity: NumericCriteria
 
-
 	constructor() {
 		super(prereq.Type.Spell)
 		this.sub_type = spellcmp.Type.Name
@@ -30,36 +37,27 @@ export class SpellPrereq extends BasePrereq {
 	static fromObject(data: SpellPrereqObj): SpellPrereq {
 		const prereq = new SpellPrereq()
 		prereq.has = data.has
-		if (data.sub_type)
-			prereq.sub_type = data.sub_type
-		if (data.qualifier)
-			prereq.qualifier = new StringCriteria(data.qualifier.compare, data.qualifier.qualifier)
-		if (data.quantity)
-			prereq.quantity = new NumericCriteria(data.quantity.compare, data.quantity.qualifier)
+		if (data.sub_type) prereq.sub_type = data.sub_type
+		if (data.qualifier) prereq.qualifier = new StringCriteria(data.qualifier.compare, data.qualifier.qualifier)
+		if (data.quantity) prereq.quantity = new NumericCriteria(data.quantity.compare, data.quantity.qualifier)
 		return prereq
 	}
 
-	satisfied(
-		character: CharacterResolver,
-		exclude: any,
-		tooltip: TooltipGURPS
-	): boolean {
+	satisfied(actor: CharacterResolver | LootResolver, exclude: any, tooltip: TooltipGURPS): boolean {
+		if (actor.type === ActorType.Loot) return true
 		let count = 0
 		const colleges: Set<string> = new Set()
 		let techLevel = ""
 		if (
-			exclude instanceof Item && (
-				exclude.type === ItemType.Spell ||
-				exclude.type === ItemType.RitualMagicSpell
-			)
+			exclude instanceof Item &&
+			(exclude.type === ItemType.Spell || exclude.type === ItemType.RitualMagicSpell)
 		) {
 			techLevel = (exclude as any).techLevel
 		}
-		for (const sp of character.spells as any) {
+		for (const sp of actor.spells as any) {
 			if (sp.type === ItemType.SpellContainer) continue
-			if (exclude === sp || sp.points == 0) continue
-			if (techLevel !== "" && sp.techLevel !== "" && techLevel !== sp.techLevel)
-				continue
+			if (exclude === sp || sp.points === 0) continue
+			if (techLevel !== "" && sp.techLevel !== "" && techLevel !== sp.techLevel) continue
 			switch (this.sub_type) {
 				case spellcmp.Type.Name:
 					if (this.qualifier.matches(sp.name ?? "")) count++
@@ -78,8 +76,7 @@ export class SpellPrereq extends BasePrereq {
 						}
 					}
 				case spellcmp.Type.CollegeCount:
-					for (const one of sp.college)
-						colleges.add(one)
+					for (const one of sp.college) colleges.add(one)
 				case spellcmp.Type.Any:
 					count++
 			}
@@ -91,21 +88,24 @@ export class SpellPrereq extends BasePrereq {
 			tooltip.push(LocalizeGURPS.translations.gurps.prereq.prefix)
 			tooltip.push(LocalizeGURPS.translations.gurps.prereq.has[this.has ? "true" : "false"])
 			if (this.sub_type === spellcmp.Type.CollegeCount) {
-				tooltip.push(LocalizeGURPS.format(
-					LocalizeGURPS.translations.gurps.prereq.spell[this.sub_type],
-					{ content: this.quantity.describe() }
-				))
+				tooltip.push(
+					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.spell[this.sub_type], {
+						content: this.quantity.describe(),
+					})
+				)
 			} else {
 				tooltip.push(this.quantity.describe())
-				if (this.quantity.qualifier == 1)
-					tooltip.push(LocalizeGURPS.format(
-						LocalizeGURPS.translations.gurps.prereq.spell.singular[this.sub_type],
-						{ content: this.qualifier.describe() }
-					))
-				tooltip.push(LocalizeGURPS.format(
-					LocalizeGURPS.translations.gurps.prereq.spell.multiple[this.sub_type],
-					{ content: this.qualifier.describe() }
-				))
+				if (this.quantity.qualifier === 1)
+					tooltip.push(
+						LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.spell.singular[this.sub_type], {
+							content: this.qualifier.describe(),
+						})
+					)
+				tooltip.push(
+					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.spell.multiple[this.sub_type], {
+						content: this.qualifier.describe(),
+					})
+				)
 			}
 		}
 		return satisfied

@@ -1,7 +1,6 @@
 import { study } from "./enum"
 import { LocalizeGURPS } from "./localize"
 
-
 export interface Study {
 	type: study.Type
 	hours: number

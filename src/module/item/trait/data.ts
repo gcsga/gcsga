@@ -1,7 +1,7 @@
 import { SkillBonus } from "@feature/skill_bonus"
 import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
 import { Feature } from "@module/config"
-import { ItemType, } from "@module/data"
+import { ItemType } from "@module/data"
 import { PrereqList } from "@prereq"
 import { StringCompareType, Study } from "@util"
 import { selfctrl, skillsel, study } from "@util/enum"

@@ -1,11 +1,5 @@
 import { CharacterGURPS } from "@actor"
-import {
-	DEFAULT_INITIATIVE_FORMULA,
-	DisplayMode,
-	ItemType,
-	SETTINGS,
-	SYSTEM_NAME,
-} from "@module/data"
+import { DEFAULT_INITIATIVE_FORMULA, DisplayMode, ItemType, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { v4 as uuidv4 } from "uuid"
 
 export function sanitizeId(id: string, permit_leading_digits: boolean, reserved: string[]): string {
@@ -307,9 +301,9 @@ export async function getDefaultSkills() {
 	for (const s in skillPacks)
 		if (skillPacks[s].skillDefault) {
 			const pack = game.packs.get(s) as CompendiumCollection<any>
-				; (await pack.getDocuments()).forEach(e => {
-					skills.push(e)
-				})
+			;(await pack.getDocuments()).forEach(e => {
+				skills.push(e)
+			})
 		}
 	CONFIG.GURPS.skillDefaults = skills
 }

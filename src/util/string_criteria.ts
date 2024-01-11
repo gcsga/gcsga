@@ -13,6 +13,18 @@ export enum StringCompareType {
 	DoesNotEndWithString = "does_not_end_with",
 }
 
+export const AllStringCompareTypes: StringCompareType[] = [
+	StringCompareType.AnyString,
+	StringCompareType.IsString,
+	StringCompareType.IsNotString,
+	StringCompareType.ContainsString,
+	StringCompareType.DoesNotContainString,
+	StringCompareType.StartsWithString,
+	StringCompareType.DoesNotStartWithString,
+	StringCompareType.EndsWithString,
+	StringCompareType.DoesNotEndWithString,
+]
+
 export class StringCriteria {
 	compare: StringCompareType
 
@@ -63,10 +75,9 @@ export class StringCriteria {
 			case StringCompareType.DoesNotContainString:
 			case StringCompareType.DoesNotStartWithString:
 			case StringCompareType.DoesNotEndWithString:
-				return matches == s.length
+				return matches === s.length
 		}
 	}
-
 
 	toString(): string {
 		return LocalizeGURPS.translations.gurps.string_criteria.string[this.compare]
@@ -86,8 +97,7 @@ export class StringCriteria {
 
 	describe(): string {
 		const result = this.toString()
-		if (this.compare === StringCompareType.AnyString)
-			return result
+		if (this.compare === StringCompareType.AnyString) return result
 		return `${result} "${this.qualifier}"`
 	}
 }

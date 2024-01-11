@@ -77,7 +77,8 @@ declare global {
 			Prereq: {
 				classes: Record<string, Prereq.ConstructorOf>
 			}
-			select: Record<string, Record<string, string>>
+			SELECT_OPTIONS: Record<string, Record<string, string>>,
+			// select: Record<string, Record<string, string>>
 			meleeMods: Record<string, RollModifier>
 			rangedMods: Record<string, RollModifier>
 			defenseMods: Record<string, RollModifier>
@@ -1900,7 +1901,7 @@ declare global {
 		}
 		namespace Dice {
 			// eslint-disable-next-line @typescript-eslint/no-empty-interface
-			interface RollModes extends Record<foundry.CONST.DICE_ROLL_MODES, string> {}
+			interface RollModes extends Record<foundry.CONST.DICE_ROLL_MODES, string> { }
 		}
 	}
 
@@ -1909,13 +1910,13 @@ declare global {
 
 type ConfiguredDocumentClassOrDefault<Fallback extends DocumentConstructor> =
 	Fallback["metadata"]["name"] extends keyof DocumentClassConfig
-		? DocumentClassConfig[Fallback["metadata"]["name"]]
-		: Fallback
+	? DocumentClassConfig[Fallback["metadata"]["name"]]
+	: Fallback
 
 type ConfiguredObjectClassOrDefault<Fallback extends PlaceableObjectConstructor> =
 	Fallback["embeddedName"] extends keyof PlaceableObjectClassConfig
-		? PlaceableObjectClassConfig[Fallback["embeddedName"]]
-		: Fallback
+	? PlaceableObjectClassConfig[Fallback["embeddedName"]]
+	: Fallback
 
 type PixiContainerConstructor = typeof PIXI.Container
 interface CanvasGroup extends PIXI.Container {
@@ -1923,7 +1924,7 @@ interface CanvasGroup extends PIXI.Container {
 }
 
 interface CanvasGroupConstructor extends PixiContainerConstructor {
-	new (): CanvasGroup
+	new(): CanvasGroup
 
 	/**
 	 * The name of this canvas group

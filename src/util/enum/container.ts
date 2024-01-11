@@ -32,11 +32,5 @@ export namespace container {
 		}
 	}
 
-	export const Types: Type[] = [
-		Type.Group,
-		Type.AlternativeAbilities,
-		Type.Ancestry,
-		Type.Attributes,
-		Type.MetaTrait
-	]
+	export const Types: Type[] = [Type.Group, Type.AlternativeAbilities, Type.Ancestry, Type.Attributes, Type.MetaTrait]
 }

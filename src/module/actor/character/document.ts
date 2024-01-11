@@ -1293,6 +1293,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	}
 
 	processFeature(owner: Stringer, subOwner: Stringer | undefined, f: Feature, levels: number) {
+		// console.log(f.type, (f as any).name?.qualifier, owner, subOwner)
 		f.owner = owner
 		f.subOwner = subOwner
 		f.setLevel(levels)
@@ -1548,6 +1549,8 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		let total = 0
 		if (this.features)
 			for (const f of this.features.skillBonuses) {
+				// weird thing happening where phantom features appear and cause errors
+				if (!f.owner && !f.subOwner) continue
 				if (
 					f.name?.matches(name) &&
 					f.specialization?.matches(specialization) &&

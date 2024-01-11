@@ -28,7 +28,7 @@ export class WeaponStrength extends WeaponField {
 			ws.musketRest = s.includes("r")
 			ws.twoHanded = s.includes("†") || s.includes("*")
 			ws.twoHandedUnready = s.includes("‡")
-				;[ws.min] = Int.extract(s)
+			;[ws.min] = Int.extract(s)
 			ws.validate()
 		}
 		return ws

@@ -1,4 +1,4 @@
-import { ItemType, } from "@module/data"
+import { ItemType } from "@module/data"
 import { DiceGURPS } from "@module/dice"
 import { isContainer } from "./misc"
 import { LocalizeGURPS } from "./localize"
@@ -565,8 +565,9 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 			const label = Handlebars.escapeExpression(option.label)
 			const isSelected = selected.includes(option.name)
 			const isDisabled = disabled.includes(option.name)
-			html += `<option value="${option.name}" ${isSelected ? "selected" : ""} ${isDisabled ? "disabled" : ""
-				}>${label}</option>`
+			html += `<option value="${option.name}" ${isSelected ? "selected" : ""} ${
+				isDisabled ? "disabled" : ""
+			}>${label}</option>`
 		}
 		return new Handlebars.SafeString(html)
 	}

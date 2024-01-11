@@ -1,8 +1,6 @@
 import { LocalizeGURPS } from "@util/localize"
 
-
 export namespace skillsel {
-
 	export enum Type {
 		Name = "skills_with_name",
 		ThisWeapon = "this_weapon",
@@ -20,6 +18,5 @@ export namespace skillsel {
 		}
 	}
 
-	const Types: Type[] = [Type.Name, Type.ThisWeapon, Type.WeaponsWithName]
+	export const Types: Type[] = [Type.Name, Type.ThisWeapon, Type.WeaponsWithName]
 }
-

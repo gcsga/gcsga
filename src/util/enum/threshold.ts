@@ -5,7 +5,7 @@ export namespace threshold {
 		Unknown = "unknown",
 		HalveMove = "halve_move",
 		HalveDodge = "halve_dodge",
-		HalveST = "halve_st"
+		HalveST = "halve_st",
 	}
 
 	export namespace Op {
@@ -23,10 +23,5 @@ export namespace threshold {
 		}
 	}
 
-	export const Ops: Op[] = [
-		Op.Unknown,
-		Op.HalveMove,
-		Op.HalveDodge,
-		Op.HalveST,
-	]
+	export const Ops: Op[] = [Op.Unknown, Op.HalveMove, Op.HalveDodge, Op.HalveST]
 }

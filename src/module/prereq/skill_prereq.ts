@@ -1,8 +1,16 @@
-import { CharacterResolver, LocalizeGURPS, NumericCompareType, NumericCriteria, StringCompareType, StringCriteria } from "@util"
+import {
+	CharacterResolver,
+	LocalizeGURPS,
+	LootResolver,
+	NumericCompareType,
+	NumericCriteria,
+	StringCompareType,
+	StringCriteria,
+} from "@util"
 import { BasePrereq, BasePrereqObj } from "./base"
 import { prereq } from "@util/enum"
 import { TooltipGURPS } from "@module/tooltip"
-import { ItemType } from "@module/data"
+import { ActorType, ItemType } from "@module/data"
 
 export interface SkillPrereqObj extends BasePrereqObj {
 	name: StringCriteria
@@ -19,7 +27,6 @@ export class SkillPrereq extends BasePrereq {
 
 	specialization: StringCriteria
 
-
 	constructor() {
 		super(prereq.Type.Skill)
 		this.name = new StringCriteria(StringCompareType.IsString)
@@ -30,66 +37,66 @@ export class SkillPrereq extends BasePrereq {
 	static fromObject(data: SkillPrereqObj): SkillPrereq {
 		const prereq = new SkillPrereq()
 		prereq.has = data.has
-		if (data.name)
-			prereq.name = new StringCriteria(data.name.compare, data.name.qualifier)
-		if (data.level)
-			prereq.level = new NumericCriteria(data.level.compare, data.level.qualifier)
+		if (data.name) prereq.name = new StringCriteria(data.name.compare, data.name.qualifier)
+		if (data.level) prereq.level = new NumericCriteria(data.level.compare, data.level.qualifier)
 		if (data.specialization)
 			prereq.specialization = new StringCriteria(data.specialization.compare, data.specialization.qualifier)
 		return prereq
 	}
 
-	satisfied(
-		character: CharacterResolver,
-		exclude: any,
-		tooltip: TooltipGURPS
-	): boolean {
+	satisfied(actor: CharacterResolver | LootResolver, exclude: any, tooltip: TooltipGURPS): boolean {
+		if (actor.type === ActorType.Loot) return true
 		let satisfied = false
 		let techLevel = ""
-		if (
-			exclude instanceof Item && (
-				exclude.type === ItemType.Skill ||
-				exclude.type === ItemType.Technique
-			)
-		) {
+		if (exclude instanceof Item && (exclude.type === ItemType.Skill || exclude.type === ItemType.Technique)) {
 			techLevel = (exclude as any).techLevel
 		}
-		for (let sk of character.skills as any) {
+		for (let sk of actor.skills as any) {
 			if (sk.type === ItemType.SkillContainer) continue
 
-			if (exclude === sk ||
+			if (
+				exclude === sk ||
 				!this.name.matches(sk.name ?? "") ||
 				!this.specialization.matches(sk.specialization ?? "")
-			) continue
+			)
+				continue
 			satisfied = this.level.matches(sk.level.level)
-			if (satisfied && techLevel !== "")
-				satisfied = sk.techLevel === "" || techLevel === sk.techLevel
+			if (satisfied && techLevel !== "") satisfied = sk.techLevel === "" || techLevel === sk.techLevel
 		}
 		if (!this.has) satisfied = !satisfied
 		if (!satisfied) {
 			tooltip.push(LocalizeGURPS.translations.gurps.prereq.prefix)
 			tooltip.push(LocalizeGURPS.translations.gurps.prereq.has[this.has ? "true" : "false"])
 			tooltip.push(
-				LocalizeGURPS.format(
-					LocalizeGURPS.translations.gurps.prereq.skill.name, { content: this.name.describe() }
-				))
+				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.skill.name, {
+					content: this.name.describe(),
+				})
+			)
 			if (this.specialization.compare !== StringCompareType.AnyString) {
-				tooltip.push(LocalizeGURPS.format(
-					LocalizeGURPS.translations.gurps.prereq.skill.specialization, { content: this.specialization.describe() }
-				))
+				tooltip.push(
+					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.skill.specialization, {
+						content: this.specialization.describe(),
+					})
+				)
 			}
 			if (techLevel === "") {
-				tooltip.push(LocalizeGURPS.format(
-					LocalizeGURPS.translations.gurps.prereq.skill.level, { content: this.level.describe() }
-				))
+				tooltip.push(
+					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.skill.level, {
+						content: this.level.describe(),
+					})
+				)
 			} else if (this.specialization.compare === StringCompareType.AnyString)
-				tooltip.push(LocalizeGURPS.format(
-					LocalizeGURPS.translations.gurps.prereq.skill.level_alt1, { content: this.level.describe() }
-				))
+				tooltip.push(
+					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.skill.level_alt1, {
+						content: this.level.describe(),
+					})
+				)
 			else
-				tooltip.push(LocalizeGURPS.format(
-					LocalizeGURPS.translations.gurps.prereq.skill.level_alt2, { content: this.level.describe() }
-				))
+				tooltip.push(
+					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.skill.level_alt2, {
+						content: this.level.describe(),
+					})
+				)
 		}
 		return satisfied
 	}

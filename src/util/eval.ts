@@ -2,67 +2,6 @@ import { evalOperators, Operator } from "./operator"
 import { eFunction, evalFunctions } from "./function"
 import { CharacterResolver } from "./resolvers"
 import { Mook } from "@module/mook"
-// import { ConditionGURPS, SkillContainerGURPS, SkillGURPS, TechniqueGURPS, TraitContainerGURPS, TraitGURPS } from "@item"
-// import { TooltipGURPS } from "@module/tooltip"
-// import { AttributeDefObj } from "@module/attribute"
-// import { DamageProgression } from "@module/data"
-// import { MookSkill, MookTrait } from "@module/mook"
-// import { MoveTypeDefObj } from "@module/move_type"
-// import { Encumbrance } from "@actor"
-// import { stlimit } from "./enum"
-// import { MoveBonusType } from "@feature"
-
-// VariableResolver is used to resolve variables in expressions into their values.
-// export interface VariableResolver {
-// 	adjustedSizeModifier: number
-// 	settings: {
-// 		attributes: AttributeDefObj[]
-// 		damage_progression: DamageProgression
-// 		move_types: MoveTypeDefObj[]
-// 	}
-// 	resolveVariable: (variableName: string) => string
-// 	skills: Collection<SkillGURPS | TechniqueGURPS | SkillContainerGURPS> | MookSkill[]
-// 	traits: Collection<TraitGURPS | TraitContainerGURPS> | MookTrait[]
-// 	conditions: Collection<ConditionGURPS> | ConditionGURPS[]
-// 	attributeBonusFor: (
-// 		attributeId: string,
-// 		limitation: stlimit.Option,
-// 		effective?: boolean,
-// 		tooltip?: TooltipGURPS | null
-// 	) => number
-// 	moveBonusFor: (id: string, limitation: MoveBonusType, effective?: boolean, tooltip?: TooltipGURPS | null) => number
-// 	strikingST: number
-// 	throwingST: number
-// 	liftingST: number
-// 	dodge: (enc: Encumbrance) => number
-// 	effectiveST: (initialST: number) => number
-// 	getFlag: (scope: any, key: string) => unknown
-// 	costReductionFor: (attributeID: string) => number
-// 	isSkillLevelResolutionExcluded: (name: string, specialization: string) => boolean
-// 	registerSkillLevelResolutionExclusion: (name: string, specialization: string) => void
-// 	unregisterSkillLevelResolutionExclusion: (name: string, specialization: string) => void
-// 	encumbranceLevel: (forSkills: boolean) => {
-// 		level: number
-// 		maximum_carry: number
-// 		penalty: number
-// 		name: string
-// 	}
-// }
-
-// export interface VariableResolver {
-// 	resolveVariable: (variableName: string) => string
-// 	traits: Collection<Item | any> | MookTrait[]
-// 	skills: Collection<Item | any> | MookSkill[]
-// 	isSkillLevelResolutionExcluded: (name: string, specialization: string) => boolean
-// 	registerSkillLevelResolutionExclusion: (name: string, specialization: string) => void
-// 	unregisterSkillLevelResolutionExclusion: (name: string, specialization: string) => void
-// 	encumbranceLevel: (forSkills: boolean) => {
-// 		level: number
-// 		maximum_carry: number
-// 		penalty: number
-// 		name: string
-// 	}
-// }
 
 class expressionOperand {
 	value: string
@@ -225,7 +164,7 @@ class Evaluator {
 			;[index, op] = this.processFunction(expression, index)
 			index += op?.symbol.length || 0
 			let tmp: number
-				;[tmp, op] = this.nextOperator(expression, index, null)
+			;[tmp, op] = this.nextOperator(expression, index, null)
 			if (!op) return index
 			index = tmp
 		}

@@ -1,7 +1,16 @@
-import { CharacterResolver, LocalizeGURPS, NumericCompareType, NumericCriteria, StringCompareType, StringCriteria } from "@util"
+import {
+	CharacterResolver,
+	LocalizeGURPS,
+	LootResolver,
+	NumericCompareType,
+	NumericCriteria,
+	StringCompareType,
+	StringCriteria,
+} from "@util"
 import { BasePrereq, BasePrereqObj } from "./base"
 import { prereq } from "@util/enum"
 import { TooltipGURPS } from "@module/tooltip"
+import { ActorType } from "@module/data"
 
 export interface TraitPrereqObj extends BasePrereqObj {
 	name: StringCriteria
@@ -28,29 +37,22 @@ export class TraitPrereq extends BasePrereq {
 	static fromObject(data: TraitPrereqObj): TraitPrereq {
 		const prereq = new TraitPrereq()
 		prereq.has = data.has
-		if (data.name)
-			prereq.name = new StringCriteria(data.name.compare, data.name.qualifier)
-		if (data.level)
-			prereq.level = new NumericCriteria(data.level.compare, data.level.qualifier)
-		if (data.notes)
-			prereq.notes = new StringCriteria(data.notes.compare, data.notes.qualifier)
+		if (data.name) prereq.name = new StringCriteria(data.name.compare, data.name.qualifier)
+		if (data.level) prereq.level = new NumericCriteria(data.level.compare, data.level.qualifier)
+		if (data.notes) prereq.notes = new StringCriteria(data.notes.compare, data.notes.qualifier)
 		return prereq
 	}
 
-	satisfied(
-		character: CharacterResolver,
-		exclude: any,
-		tooltip: TooltipGURPS
-	): boolean {
+	satisfied(actor: CharacterResolver | LootResolver, exclude: any, tooltip: TooltipGURPS): boolean {
+		if (actor.type === ActorType.Loot) return true
 		let satisfied = false
-		for (const t of character.traits) {
+		for (const t of actor.traits) {
 			if (exclude === t || !this.name.matches(t.name ?? "")) continue
 			let notes = t.system.notes
 			if (t.modifierNotes !== "") notes += `\n${t.modifierNotes}`
 			if (!this.notes.matches(notes)) continue
 			let levels = 0
-			if (t.isLeveled)
-				levels = Math.max(t.levels, 0)
+			if (t.isLeveled) levels = Math.max(t.levels, 0)
 			satisfied = this.level.matches(levels)
 		}
 		if (!this.has) satisfied = !satisfied
@@ -58,19 +60,22 @@ export class TraitPrereq extends BasePrereq {
 			tooltip.push(LocalizeGURPS.translations.gurps.prereq.prefix)
 			tooltip.push(LocalizeGURPS.translations.gurps.prereq.has[this.has ? "true" : "false"])
 			tooltip.push(
-				LocalizeGURPS.format(
-					LocalizeGURPS.translations.gurps.prereq.trait.name, { content: this.name.describe() }
-				))
+				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.trait.name, {
+					content: this.name.describe(),
+				})
+			)
 			if (this.notes.compare !== StringCompareType.AnyString) {
 				tooltip.push(
-					LocalizeGURPS.format(
-						LocalizeGURPS.translations.gurps.prereq.trait.notes, { content: this.notes.describe() }
-					))
+					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.trait.notes, {
+						content: this.notes.describe(),
+					})
+				)
 			}
 			tooltip.push(
-				LocalizeGURPS.format(
-					LocalizeGURPS.translations.gurps.prereq.trait.level, { content: this.level.describe() }
-				))
+				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.trait.level, {
+					content: this.level.describe(),
+				})
+			)
 		}
 		return satisfied
 	}

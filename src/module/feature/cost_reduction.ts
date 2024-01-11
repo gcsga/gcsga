@@ -31,7 +31,7 @@ export class CostReduction extends BonusOwner {
 	static fromObject(data: CostReductionObj): CostReduction {
 		const bonus = new CostReduction(data.attribute)
 		for (const key of Object.keys(data)) {
-			; (bonus as any)[key as keyof CostReductionObj] = data[key as keyof CostReductionObj]
+			;(bonus as any)[key as keyof CostReductionObj] = data[key as keyof CostReductionObj]
 		}
 		return bonus
 	}

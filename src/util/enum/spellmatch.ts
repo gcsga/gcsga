@@ -9,7 +9,6 @@ export namespace spellmatch {
 	}
 
 	export namespace Type {
-
 		export interface Matcher {
 			matches: (s: string) => boolean
 			matchesList: (...s: string[]) => boolean
@@ -39,10 +38,5 @@ export namespace spellmatch {
 		}
 	}
 
-	export const Types: Type[] = [
-		Type.AllColleges,
-		Type.CollegeName,
-		Type.PowerSource,
-		Type.Name
-	]
+	export const Types: Type[] = [Type.AllColleges, Type.CollegeName, Type.PowerSource, Type.Name]
 }

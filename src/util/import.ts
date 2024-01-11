@@ -166,7 +166,7 @@ class ImportUtils {
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
 			tags: data.tags ?? [],
-			prereqs: PrereqList.fromObject(data.prereqs),
+			prereqs: data.prereqs ? PrereqList.fromObject(data.prereqs) : new PrereqList(),
 			round_down: data.round_down ?? false,
 			disabled: data.disabled ?? false,
 			can_level: data.can_level ?? false,
@@ -245,7 +245,7 @@ class ImportUtils {
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
 			tags: data.tags ?? [],
-			prereqs: PrereqList.fromObject(data.prereqs),
+			prereqs: data.prereqs ? PrereqList.fromObject(data.prereqs) : new PrereqList(),
 			points: data.points ?? 1,
 			specialization: data.specialization ?? "",
 			tech_level: data.tech_level ?? "",
@@ -257,7 +257,7 @@ class ImportUtils {
 			vtt_notes: data.vtt_notes ?? "",
 			study: data.study ?? [],
 			study_hours_needed: data.study_hours_needed ?? "200",
-			defaulted_from: null
+			defaulted_from: null,
 		}
 	}
 
@@ -270,7 +270,7 @@ class ImportUtils {
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
 			tags: data.tags ?? [],
-			prereqs: PrereqList.fromObject(data.prereqs),
+			prereqs: data.prereqs ? PrereqList.fromObject(data.prereqs) : new PrereqList(),
 			points: data.points ?? 1,
 			limit: data.limit ?? 0,
 			limited: !!data.limit ?? false,
@@ -283,7 +283,7 @@ class ImportUtils {
 			vtt_notes: data.vtt_notes ?? "",
 			study: data.study ?? [],
 			study_hours_needed: data.study_hours_needed ?? "200",
-			defaulted_from: null
+			defaulted_from: null,
 		}
 	}
 
@@ -310,7 +310,7 @@ class ImportUtils {
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
 			tags: data.tags ?? [],
-			prereqs: PrereqList.fromObject(data.prereqs),
+			prereqs: data.prereqs ? PrereqList.fromObject(data.prereqs) : new PrereqList(),
 			points: data.points ?? 1,
 			tech_level: data.tech_level ?? "",
 			tech_level_required: !!data.tech_level,
@@ -338,7 +338,7 @@ class ImportUtils {
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
 			tags: data.tags ?? [],
-			prereqs: PrereqList.fromObject(data.prereqs),
+			prereqs: data.prereqs ? PrereqList.fromObject(data.prereqs) : new PrereqList(),
 			points: data.points ?? 1,
 			tech_level: data.tech_level ?? "",
 			tech_level_required: !!data.tech_level,
@@ -383,7 +383,7 @@ class ImportUtils {
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
 			tags: data.tags ?? [],
-			prereqs: PrereqList.fromObject(data.prereqs),
+			prereqs: data.prereqs ? PrereqList.fromObject(data.prereqs) : new PrereqList(),
 			features: data.features ? ImportUtils.importFeatures(data.features) : [],
 			tech_level: data.tech_level ?? "",
 			value: data.value ?? 0,
@@ -413,7 +413,7 @@ class ImportUtils {
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
 			tags: data.tags ?? [],
-			prereqs: PrereqList.fromObject(data.prereqs),
+			prereqs: data.prereqs ? PrereqList.fromObject(data.prereqs) : new PrereqList(),
 			features: data.features ? ImportUtils.importFeatures(data.features) : [],
 			tech_level: data.tech_level ?? "",
 			value: data.value ?? 0,

@@ -2,15 +2,13 @@ import { LocalizeGURPS } from "@util/localize"
 import { equalFold } from "@util/misc"
 
 export namespace affects {
-
 	export enum Option {
 		Total = "total",
 		BaseOnly = "base_only",
-		LevelsOnly = "levels_only"
+		LevelsOnly = "levels_only",
 	}
 
 	export namespace Option {
-
 		export function ensureValid(O: Option): Option {
 			if (Options.includes(O)) return O
 			return Options[0]
@@ -30,14 +28,6 @@ export namespace affects {
 			}
 			return Options[0]
 		}
-
-
-		const Options: Option[] = [
-			Option.Total,
-			Option.BaseOnly,
-			Option.LevelsOnly
-		]
 	}
+	export const Options: Option[] = [Option.Total, Option.BaseOnly, Option.LevelsOnly]
 }
-
-

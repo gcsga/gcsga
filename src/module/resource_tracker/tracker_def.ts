@@ -1,5 +1,5 @@
 import { PoolThreshold, reserved_ids } from "@module/attribute"
-import { CharacterResolver, sanitizeId, } from "@util"
+import { CharacterResolver, sanitizeId } from "@util"
 import { ResourceTrackerDefObj } from "./data"
 
 export class ResourceTrackerDef {

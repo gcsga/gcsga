@@ -1,7 +1,9 @@
 # TO DO
 
 ## In Progress
-
+- Enum and general refactoring
+ - fix all selectboxes
+ - fix all feature fromObject functions
 - Finish "static" character (0.15 and older) compatibility
  - don't bother with editing features
 - mook generator

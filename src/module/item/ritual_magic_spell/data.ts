@@ -1,6 +1,6 @@
 import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
 import { SpellCalcValues } from "@item/spell"
-import { ItemType, } from "@module/data"
+import { ItemType } from "@module/data"
 import { PrereqList } from "@prereq"
 import { Study } from "@util"
 import { difficulty, study } from "@util/enum"

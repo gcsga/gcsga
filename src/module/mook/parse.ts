@@ -702,8 +702,8 @@ export class MookParser {
 				modifier_per_die: 0,
 			}
 
-				// capture damage
-				;[damage, t] = this.parseDamage(t)
+			// capture damage
+			;[damage, t] = this.parseDamage(t)
 
 			// if damage parser captures anything after the name, add it as a note
 			if (t.match(/\{\{.*\}\}/)) {

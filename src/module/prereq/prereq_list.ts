@@ -1,14 +1,15 @@
-import { prereq } from "@util/enum";
+import { prereq } from "@util/enum"
+import { BasePrereq, BasePrereqObj } from "./base"
 import {
-	BasePrereq,
-	BasePrereqObj
-} from "./base";
-import {
-	CharacterResolver, LocalizeGURPS, NumericCompareType,
+	CharacterResolver,
+	LocalizeGURPS,
+	LootResolver,
+	NumericCompareType,
 	NumericCriteria,
-	extractTechLevel
-} from "@util";
+	extractTechLevel,
+} from "@util"
 import { TooltipGURPS } from "@module/tooltip"
+import { ActorType } from "@module/data"
 
 export interface PrereqListObj {
 	type: prereq.Type
@@ -26,7 +27,6 @@ export class PrereqList {
 
 	prereqs: Array<BasePrereq | PrereqList>
 
-
 	constructor() {
 		this.type = prereq.Type.List
 		this.all = true
@@ -37,25 +37,29 @@ export class PrereqList {
 	static fromObject(data: PrereqListObj): PrereqList {
 		const prereq = new PrereqList()
 		prereq.all = data.all
-		if (data.when_tl)
-			prereq.when_tl = new NumericCriteria(data.when_tl.compare,
-				data.when_tl.qualifier)
+		if (data.when_tl) prereq.when_tl = new NumericCriteria(data.when_tl.compare, data.when_tl.qualifier)
 		if (data.prereqs.length)
-			prereq.prereqs = data.prereqs.map(e => {
-				const prereqConstructor = CONFIG.GURPS.Prereq.classes[e.type]
-				if (prereqConstructor) return prereqConstructor.fromObject(e)
-			})
+			prereq.prereqs = data.prereqs
+				.filter(e => !!CONFIG.GURPS.Prereq.classes[e.type])
+				.map(e => {
+					const prereqConstructor = CONFIG.GURPS.Prereq.classes[e.type]
+					return prereqConstructor.fromObject(e)
+				})
 		return prereq
 	}
 
 	satisfied(
-		character: CharacterResolver,
+		actor: CharacterResolver | LootResolver,
 		exclude: any,
 		tooltip: TooltipGURPS,
 		hasEquipmentPenalty: { value: boolean } = { value: false }
 	): boolean {
+		let actorTechLevel = "0"
+		if (actor.type === ActorType.Character) {
+			actorTechLevel = actor.profile.tech_level
+		}
 		if (this.when_tl.compare !== NumericCompareType.AnyNumber) {
-			let tl = extractTechLevel(character.profile.tech_level)
+			let tl = extractTechLevel(actorTechLevel)
 			if (tl < 0) tl = 0
 			if (!this.when_tl.matches(tl)) return true
 		}
@@ -63,12 +67,7 @@ export class PrereqList {
 		let local = new TooltipGURPS()
 		let eqpPenalty = { value: false }
 		for (const one of this.prereqs) {
-			if (one.satisfied(character, exclude, local, eqpPenalty)) count++
-		}
-		if (local.length !== 0) {
-			const indented = local.toString().replaceAll("\n", "\n  ")
-			local = new TooltipGURPS()
-			local.push(indented)
+			if (one.satisfied(actor, exclude, local, eqpPenalty)) count++
 		}
 		const satisfied = count === this.prereqs.length || (!this.all && count > 0)
 		if (!satisfied) {

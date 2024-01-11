@@ -5,7 +5,7 @@ import { BaseWeaponGURPS } from "@item/weapon"
 import { Feature, ItemDataGURPS } from "@module/config"
 import { ActorType, gid, ItemType, SYSTEM_NAME } from "@module/data"
 import { PrereqList } from "@prereq"
-import { LocalizeGURPS, Study } from "@util"
+import { ItemResolver, LocalizeGURPS, Study } from "@util"
 import { HandlebarsHelpersGURPS } from "@util/handlebars_helpers"
 import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
 import { ItemDataConstructorData } from "types/foundry/common/data/data.mjs/itemData"
@@ -87,17 +87,16 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 	}
 
 	get features(): Feature[] {
-		if (this.system.hasOwnProperty("features")) {
-			return (this.system as any).features.map((e: Partial<Feature>) => {
-				const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as feature.Type]
-				if (FeatureConstructor) {
-					const f = FeatureConstructor.fromObject(e)
-					return f
-				}
-				return new AttributeBonus(gid.Strength) // default
-			})
-		}
-		return []
+		if (!(this.system.hasOwnProperty("features"))) return []
+
+		return (this.system as any).features.map((e: Partial<Feature>) => {
+			if ((e as any).name?.qualifier === "Brawling") console.log(e, this)
+			// console.log(e)
+			const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as feature.Type]
+			const f = FeatureConstructor.fromObject(e)
+			// console.log(f)
+			return f
+		})
 	}
 
 	get prereqs() {

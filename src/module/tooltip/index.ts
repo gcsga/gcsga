@@ -31,4 +31,12 @@ export class TooltipGURPS {
 	get string(): string {
 		return this.toString()
 	}
+
+	replaceAll(searchValue: string | RegExp, replaceValue: string): TooltipGURPS {
+		const tooltip = new TooltipGURPS()
+		for (const one of this.list) {
+			tooltip.push(one.replaceAll(searchValue, replaceValue))
+		}
+		return tooltip
+	}
 }

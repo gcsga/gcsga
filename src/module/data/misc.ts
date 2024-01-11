@@ -205,7 +205,6 @@ export const attrPrefix = "attr."
 // 	Wildcard = "w",
 // }
 
-
 // export enum StudyHoursNeeded {
 // 	Standard = "200",
 // 	Level1 = "180",

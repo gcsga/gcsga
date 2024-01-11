@@ -16,6 +16,9 @@ export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSour
 	// @ts-expect-error this is in fact always defined
 	private _dummyActor: CharacterResolver | null
 
+	// @ts-expect-error improperly defined type but stuff breaks otherwise so idc
+	type: SourceType["type"]
+
 	system!: SourceType["system"]
 
 	constructor(data: ItemDataGURPS | any, context: Context<Actor> & ItemConstructionContextGURPS = {}) {
@@ -34,9 +37,9 @@ export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSour
 		}
 	}
 
-	get type(): ItemType {
-		return super.type as ItemType
-	}
+	// get type(): ItemType {
+	// 	return super.type as ItemType
+	// }
 
 	override async update(
 		data: DeepPartial<ItemDataConstructorData | Record<string, unknown>>,

@@ -1,26 +1,35 @@
-import { DamageProgression, ItemType, SkillDefaultType } from "@module/data"
+import { ActorType, ItemType, SkillDefaultType } from "@module/data"
 import { affects, difficulty, emcost, emweight, selfctrl, stlimit, tmcost } from "./enum"
 import { TooltipGURPS } from "@module/tooltip"
 import { WeightUnits } from "./weight"
 import { TraitContainerSystemData, TraitContainerType } from "@item/trait_container/data"
-import { AttributeDefObj } from "@module/attribute"
-import { MoveTypeDefObj } from "@module/move_type"
-import { CharacterProfile, Encumbrance } from "@actor/character/data"
+import { CharacterProfile, CharacterSettings, Encumbrance } from "@actor/character/data"
 import { MoveBonusType } from "@feature/data"
 import { DurationType } from "@item/effect/data"
 import { ConditionID, ManeuverID } from "@item/condition/data"
 import { TraitSystemData } from "@item/trait/data"
+import { LootSettings } from "@actor/loot/data"
 
-export interface CharacterResolver {
-	// Profile && settings
+export interface ActorResolver<T extends ActorType> {
+	type: T
+	equipment: Collection<EquipmentResolver | EquipmentContainerResolver>
+}
+
+export interface LootResolver extends ActorResolver<ActorType.Loot> {
+	settings: LootSettings
+}
+
+export interface CharacterResolver extends ActorResolver<ActorType.Character> {
+	// Profile & settings
 	profile: CharacterProfile
 	adjustedSizeModifier: number
-	settings: {
-		attributes: AttributeDefObj[]
-		damage_progression: DamageProgression
-		move_types: MoveTypeDefObj[]
-		default_weight_units: WeightUnits
-	}
+	settings: CharacterSettings
+	// settings: {
+	// 	attributes: AttributeDefObj[]
+	// 	damage_progression: DamageProgression
+	// 	move_types: MoveTypeDefObj[]
+	// 	default_weight_units: WeightUnits
+	// }
 	// Items
 	traits: Collection<TraitResolver | TraitContainerResovler>
 	skills: Collection<SkillResolver | TechniqueResolver | SkillContainerResolver>
@@ -41,12 +50,7 @@ export interface CharacterResolver {
 		effective?: boolean,
 		tooltip?: TooltipGURPS | null
 	) => number
-	moveBonusFor: (
-		id: string,
-		limitation: MoveBonusType,
-		effective?: boolean,
-		tooltip?: TooltipGURPS | null
-	) => number
+	moveBonusFor: (id: string, limitation: MoveBonusType, effective?: boolean, tooltip?: TooltipGURPS | null) => number
 	resolveVariable: (variableName: string) => string
 	resolveAttributeCurrent: (attr_id: string) => number
 	resolveAttributeName: (attr_id: string) => string
@@ -114,7 +118,8 @@ export interface TraitModifierResolver extends ItemResolver {
 	// Unused
 }
 
-export interface TraitModifierContainerResolver extends ContainerResolver<TraitModifierResolver | TraitModifierContainerResolver> { }
+export interface TraitModifierContainerResolver
+	extends ContainerResolver<TraitModifierResolver | TraitModifierContainerResolver> { }
 
 export interface LeveledItemResolver extends ItemResolver {
 	points: number
@@ -144,7 +149,8 @@ export interface TechniqueResolver extends LeveledItemResolver {
 	specialization: string
 }
 
-export interface SkillContainerResolver extends ContainerResolver<SkillResolver | TechniqueResolver | SkillContainerResolver> { }
+export interface SkillContainerResolver
+	extends ContainerResolver<SkillResolver | TechniqueResolver | SkillContainerResolver> { }
 
 export interface SpellResolver extends LeveledItemResolver {
 	rituals: string
@@ -217,7 +223,8 @@ export interface EquipmentModifierResolver extends ItemResolver {
 	weightDescription: string
 }
 
-export interface EquipmentModifierContainerResolver extends ContainerResolver<EquipmentModifierResolver | EquipmentModifierContainerResolver> { }
+export interface EquipmentModifierContainerResolver
+	extends ContainerResolver<EquipmentModifierResolver | EquipmentModifierContainerResolver> { }
 
 export interface NoteResolver extends ItemResolver {
 	formattedText: string

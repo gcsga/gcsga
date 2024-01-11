@@ -43,11 +43,18 @@ export class SkillBonus extends BonusOwner {
 
 	static fromObject(data: SkillBonusObj): SkillBonus {
 		const bonus = new SkillBonus()
+		bonus.selection_type = data.selection_type
+		if (data.name)
+			bonus.name = new StringCriteria(data.name.compare, data.name.qualifier)
+		if (data.specialization)
+			bonus.specialization = new StringCriteria(data.specialization.compare, data.specialization.qualifier)
+		if (data.tags)
+			bonus.tags = new StringCriteria(data.tags.compare, data.tags.qualifier)
 		const levelData: Partial<Record<keyof LeveledAmountObj, any>> = {}
 		for (const key of Object.keys(data)) {
 			if (LeveledAmountKeys.includes(key)) {
 				levelData[key as keyof LeveledAmountObj] = data[key as keyof SkillBonusObj]
-			} else (bonus as any)[key] = data[key as keyof SkillBonusObj]
+			}
 		}
 		bonus.leveledAmount = new LeveledAmount(levelData)
 		return bonus

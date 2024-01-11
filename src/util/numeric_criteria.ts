@@ -5,8 +5,16 @@ export enum NumericCompareType {
 	EqualsNumber = "is",
 	NotEqualsNumber = "is_not",
 	AtLeastNumber = "at_least",
-	AtMostNumber = "at_most"
+	AtMostNumber = "at_most",
 }
+
+export const AllNumericCompareTypes: NumericCompareType[] = [
+	NumericCompareType.AnyNumber,
+	NumericCompareType.EqualsNumber,
+	NumericCompareType.NotEqualsNumber,
+	NumericCompareType.AtLeastNumber,
+	NumericCompareType.AtMostNumber
+]
 
 export class NumericCriteria {
 	compare: NumericCompareType
@@ -43,16 +51,13 @@ export class NumericCriteria {
 
 	describe(): string {
 		const result = this.toString()
-		if (this.compare === NumericCompareType.AnyNumber)
-			return result
+		if (this.compare === NumericCompareType.AnyNumber) return result
 		return `${result} ${this.qualifier}`
-
 	}
 
 	altDescribe(): string {
 		let result = this.altString()
-		if (this.compare === NumericCompareType.AnyNumber)
-			return result
+		if (this.compare === NumericCompareType.AnyNumber) return result
 		if (result !== "") result += " "
 		return result + this.qualifier.toString()
 	}

@@ -118,8 +118,7 @@ export class WeaponBonus {
 			)
 		} else {
 			buf.push(
-				LocalizeGURPS.format(
-					LocalizeGURPS.translations.gurps.feature.weapon_bonus[this.type], {
+				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.feature.weapon_bonus[this.type], {
 					level: this.leveledAmount.format(this.percent ?? false),
 				})
 			)
@@ -157,11 +156,27 @@ export class WeaponBonus {
 
 	static fromObject(data: WeaponBonusObj): WeaponBonus {
 		const bonus = new WeaponBonus(data.type)
+		bonus.percent = data.percent
+		if (data.switch_type)
+			bonus.switch_type = data.switch_type
+		if (data.switch_type_value)
+			bonus.switch_type_value = data.switch_type_value
+		bonus.selection_type = data.selection_type
+		if (data.name)
+			bonus.name = new StringCriteria(data.name.compare, data.name.qualifier)
+		if (data.specialization)
+			bonus.specialization = new StringCriteria(data.specialization.compare, data.specialization.qualifier)
+		if (data.level)
+			bonus.level = new NumericCriteria(data.level.compare, data.level.qualifier)
+		if (data.name)
+			bonus.name = new StringCriteria(data.name.compare, data.name.qualifier)
+		if (data.tags)
+			bonus.tags = new StringCriteria(data.tags.compare, data.tags.qualifier)
 		const levelData: Partial<Record<keyof WeaponLeveledAmountObj, any>> = {}
 		for (const key of Object.keys(data)) {
 			if (WeaponLeveledAmountKeys.includes(key)) {
 				levelData[key as keyof WeaponLeveledAmountObj] = data[key as keyof WeaponBonusObj]
-			} else (bonus as any)[key] = data[key as keyof WeaponBonusObj]
+			}
 		}
 		bonus.leveledAmount = new WeaponLeveledAmount(levelData)
 		return bonus
