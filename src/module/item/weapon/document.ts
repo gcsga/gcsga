@@ -4,7 +4,7 @@ import { Bonus, Feature } from "@module/config"
 import { ActorType, gid, ItemType } from "@module/data"
 import { SkillDefault } from "@module/default"
 import { TooltipGURPS } from "@module/tooltip"
-import { LocalizeGURPS } from "@util"
+import { EquipmentResolver, LocalizeGURPS } from "@util"
 import { HandlebarsHelpersGURPS } from "@util/handlebars_helpers"
 import { WeaponDamage } from "./damage"
 import { BaseWeaponSource } from "./data"
@@ -59,9 +59,9 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 	get equipped(): boolean {
 		if (!this.actor) return false
 		if ([ItemType.Equipment, ItemType.EquipmentContainer].includes((this.container as any)?.type))
-			return (this.container as any).equipped
+			return (this.container as unknown as EquipmentResolver).equipped
 		if ([ItemType.Trait, ItemType.TraitContainer].includes((this.container as any)?.type))
-			return (this.container as any).enabled
+			return (this.container as unknown as EquipmentResolver).enabled
 		return true
 	}
 
