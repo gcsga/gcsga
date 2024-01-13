@@ -112,7 +112,7 @@ jobs:
 
             - name: Extract tag version number
               id: get_version
-              uses: dhkatz/get-version-action@v3
+              uses: dhkatz/get-version-action@v3.0.0
 
             - name: Substitute Manifest and Download Links For Versioned Ones
               id: sub_manifest_link_version
