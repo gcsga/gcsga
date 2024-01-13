@@ -1,12 +1,11 @@
 import { ContainerGURPS } from "@item/container"
-import { ItemDataGURPS } from "@module/config"
 import { ItemType, SYSTEM_NAME } from "@module/data"
-import { Context } from "types/foundry/common/abstract/document.mjs"
 import { ItemData } from "types/foundry/common/data/module.mjs"
-import { BaseItemSourceGURPS, ItemConstructionContextGURPS, ItemFlags } from "./data"
+import { BaseItemSourceGURPS, ItemFlags } from "./data"
 import { ItemDataConstructorData } from "types/foundry/common/data/data.mjs/itemData"
 import { MergeObjectOptions } from "types/foundry/common/utils/helpers.mjs"
 import { CharacterResolver } from "@util"
+import { BaseActorGURPS } from "@actor"
 
 export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSourceGURPS> extends Item {
 	_id!: string
@@ -21,21 +20,23 @@ export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSour
 
 	system!: SourceType["system"]
 
-	constructor(data: ItemDataGURPS | any, context: Context<Actor> & ItemConstructionContextGURPS = {}) {
-		if (context.gurps?.ready) {
-			super(data, context)
-			this._dummyActor = null
-		} else {
-			mergeObject(context, {
-				gurps: {
-					ready: true,
-				},
-			})
-			const ItemConstructor = CONFIG.GURPS.Item.documentClasses[data.type as ItemType]
-			if (ItemConstructor) return new ItemConstructor(data, context)
-			throw Error(`Invalid Item Type "${data.type}"`)
-		}
-	}
+	parent!: BaseActorGURPS | null
+
+	// constructor(data: ItemDataGURPS | any, context: Context<Actor> & ItemConstructionContextGURPS = {}) {
+	// 	if (context.gurps?.ready) {
+	// 		super(data, context)
+	// 		this._dummyActor = null
+	// 	} else {
+	// 		mergeObject(context, {
+	// 			gurps: {
+	// 				ready: true,
+	// 			},
+	// 		})
+	// 		const ItemConstructor = CONFIG.GURPS.Item.documentClasses[data.type as ItemType]
+	// 		if (ItemConstructor) return new ItemConstructor(data, context)
+	// 		throw Error(`Invalid Item Type "${data.type}"`)
+	// 	}
+	// }
 
 	// get type(): ItemType {
 	// 	return super.type as ItemType
@@ -100,6 +101,7 @@ export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSour
 	}
 
 	prepareData(): void {
+		if (this.parent && !this.parent.flags?.[SYSTEM_NAME]) return
 		super.prepareData()
 	}
 
@@ -116,3 +118,13 @@ export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSour
 		return false
 	}
 }
+
+export const ItemProxyGURPS = new Proxy(BaseItemGURPS, {
+	construct(
+		_target,
+		args: [source: any, context: any],
+	) {
+		const ItemClass = CONFIG.GURPS.Item.documentClasses[args[0]?.type] ?? BaseItemGURPS
+		return new ItemClass(...args)
+	}
+})
