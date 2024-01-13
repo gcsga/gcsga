@@ -30,7 +30,7 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 			this._source.img = data.img = `systems/${SYSTEM_NAME}/assets/icons/${type}.svg`
 		let gcs_type: string = data.type
 		if (gcs_type === ItemType.Equipment) gcs_type = "equipment"
-		;(this._source.system as any).type = gcs_type
+			; (this._source.system as any).type = gcs_type
 		await super._preCreate(data, options, user)
 	}
 
@@ -93,12 +93,21 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 		return this.system.reference
 	}
 
+	get isLeveled(): boolean {
+		return false
+	}
+
+	get levels(): number {
+		return 0
+	}
+
 	get features(): Feature[] {
 		if (!this.system.hasOwnProperty("features")) return []
 
 		return (this.system as any).features.map((e: Partial<Feature>) => {
 			const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as feature.Type]
 			const f = FeatureConstructor.fromObject(e)
+			if (this.isLeveled) f.setLevel(this.levels)
 			return f
 		})
 	}

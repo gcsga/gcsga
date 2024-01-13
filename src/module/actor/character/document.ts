@@ -875,6 +875,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 			})
 			this.reactionsFromFeatureList(source, t.features, reactionMap)
 			for (const mod of t.deepModifiers) {
+				if (!mod.enabled) continue
 				this.reactionsFromFeatureList(source, mod.features, reactionMap)
 			}
 			if (t.CR !== 0 && t.CRAdj === selfctrl.Adjustment.ReactionPenalty) {
@@ -907,7 +908,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 				})
 			this.reactionsFromFeatureList(source, sk.features, reactionMap)
 		}
-		let reactionList = Array.from(reactionMap.values())
+		let reactionList = Array.from(reactionMap.values()).sort((a, b) => (a.from < b.from) ? -1 : (a.from > b.from) ? 1 : 0)
 		return reactionList
 	}
 
