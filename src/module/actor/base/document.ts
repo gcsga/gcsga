@@ -312,11 +312,8 @@ export class BaseActorGURPS<SourceType extends BaseActorSourceGURPS = BaseActorS
 	// }
 
 	async addConditions(ids: ConditionID[]): Promise<ConditionGURPS[] | null> {
+		console.log("addConditions", game.user, ids)
 		ids = ids.filter(id => !this.hasCondition(id))
-		// if (ids.includes(ConditionID.Dead)) {
-		// 	ids = ids.filter(e => e !== ConditionID.Dead)
-		// 	this.toggleDefeated()
-		// }
 		return this.createEmbeddedDocuments(
 			"Item",
 			ids.map(id => duplicate(ConditionGURPS.getData(id)))
@@ -636,3 +633,13 @@ class DamageWeaponAdapter implements DamageWeapon {
 		return this.base?.fastResolvedDamage ?? ""
 	}
 }
+
+export const ActorProxyGURPS = new Proxy(BaseActorGURPS, {
+	construct(
+		_target,
+		args: [source: any, context: any],
+	) {
+		const ActorClass = CONFIG.GURPS.Actor.documentClasses[args[0]?.type] ?? BaseActorGURPS
+		return new ActorClass(...args)
+	}
+})

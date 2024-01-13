@@ -1173,16 +1173,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 	}
 
 	private _prepareLifts() {
-		const lifts = {
-			basic_lift: Weight.format(this.actor.basicLift, this.actor.weightUnits),
-			one_handed_lift: Weight.format(this.actor.oneHandedLift, this.actor.weightUnits),
-			two_handed_lift: Weight.format(this.actor.twoHandedLift, this.actor.weightUnits),
-			shove: Weight.format(this.actor.shove, this.actor.weightUnits),
-			running_shove: Weight.format(this.actor.runningShove, this.actor.weightUnits),
-			carry_on_back: Weight.format(this.actor.carryOnBack, this.actor.weightUnits),
-			shift_slightly: Weight.format(this.actor.shiftSlightly, this.actor.weightUnits),
-		}
-		return lifts
+		return this.actor.lifts
 	}
 
 	private _prepareMoveData(): CharacterMove {

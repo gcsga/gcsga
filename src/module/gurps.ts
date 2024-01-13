@@ -49,7 +49,6 @@ import { TokenHUDGURPS } from "./token/hud"
 import { TokenDocumentGURPS, TokenGURPS } from "@module/token"
 import { RulerGURPS } from "./ruler"
 import {
-	BaseItemGURPS,
 	EffectGURPS,
 	EffectPanel,
 	EffectSheet,
@@ -94,13 +93,15 @@ import { ModifierBucket } from "@module/mod_bucket"
 import { loadModifiers } from "@module/mod_bucket/data"
 import { prepareSelectOptions } from "./data/select"
 import { display } from "@util/enum"
+import { ItemProxyGURPS } from "@item/base/document"
+import { ActorProxyGURPS } from "@actor/base/document"
 
 Error.stackTraceLimit = Infinity
 
 // TODO: make GURPS type concrete
 export const GURPS: any = {}
 if (!(globalThis as any).GURPS) {
-	;(globalThis as any).GURPS = GURPS
+	; (globalThis as any).GURPS = GURPS
 	GURPS.DEBUG = true
 	GURPS.LEGAL =
 		"GURPS is a trademark of Steve Jackson Games, and its rules and art are copyrighted by Steve Jackson Games.\nAll rights are reserved by Steve Jackson Games.\nThis game aid is the original creation of Mikolaj Tomczynski and is released for free distribution, and not for resale, under the permissions granted by\nhttp://www.sjgames.com/general/online_policy.html"
@@ -135,8 +136,8 @@ Hooks.once("init", async () => {
 
 	// Assign custom classes and constants hereby
 	CONFIG.User.documentClass = UserGURPS
-	CONFIG.Item.documentClass = BaseItemGURPS
-	CONFIG.Actor.documentClass = BaseActorGURPS
+	CONFIG.Item.documentClass = ItemProxyGURPS
+	CONFIG.Actor.documentClass = ActorProxyGURPS
 	CONFIG.Token.documentClass = TokenDocumentGURPS
 	CONFIG.Token.objectClass = TokenGURPS
 	CONFIG.ActiveEffect.documentClass = ActiveEffectGURPS
@@ -500,12 +501,12 @@ Hooks.on("renderDialog", (_dialog: any, html: JQuery<HTMLElement>) => {
 	}
 })
 
-Hooks.on("updateToken", function () {
+Hooks.on("updateToken", function() {
 	game.ModifierList.render(true)
 })
 
-Hooks.once("item-piles-ready", async function () {
-	;(game as any).itempiles.API.addSystemIntegration({
+Hooks.once("item-piles-ready", async function() {
+	; (game as any).itempiles.API.addSystemIntegration({
 		VERSION: "1.0.0",
 
 		// The actor class type is the type of actor that will be used for the default
@@ -564,7 +565,7 @@ Hooks.once("item-piles-ready", async function () {
 	})
 })
 
-Hooks.on("dropCanvasData", async function (_canvas, data: any) {
+Hooks.on("dropCanvasData", async function(_canvas, data: any) {
 	const dropTarget = [...(canvas!.tokens!.placeables as TokenGURPS[])]
 		.sort((a, b) => b.document.sort - a.document.sort)
 		.find(token => {
@@ -580,23 +581,23 @@ Hooks.on("dropCanvasData", async function (_canvas, data: any) {
 	}
 })
 
-Hooks.on("renderPlayerList", function (_hotbar: any, element: JQuery<HTMLElement>, _options: any) {
+Hooks.on("renderPlayerList", function(_hotbar: any, element: JQuery<HTMLElement>, _options: any) {
 	if (!game.ModifierList) return
 	game.ModifierBucket._injectHTML(element.parent("#interface"))
 	game.ModifierList.render(true)
 })
 
-Hooks.on("renderHotbar", function (_hotbar: any, element: JQuery<HTMLElement>, _options: any) {
+Hooks.on("renderHotbar", function(_hotbar: any, element: JQuery<HTMLElement>, _options: any) {
 	if (!game.ModifierBucket) return
 	game.ModifierBucket._injectHTML(element.parent("#ui-bottom"))
 	game.ModifierBucket.render()
 })
 
-Hooks.on("chatMessage", function (_chatlog: ChatLog, message: string, _data: any) {
+Hooks.on("chatMessage", function(_chatlog: ChatLog, message: string, _data: any) {
 	return Chat.procesMessage(message)
 })
 
-Hooks.on(HooksGURPS.AddModifier, function () {
+Hooks.on(HooksGURPS.AddModifier, function() {
 	game.ModifierBucket.render()
 	game.ModifierList.render()
 	if (game.ModifierBucket.window.rendered) game.ModifierBucket.window.render()

@@ -55,7 +55,6 @@ export class ContainerSheetGURPS<IType extends ContainerGURPS = ContainerGURPS> 
 
 	getData(options?: Partial<DocumentSheetOptions<Item>>): any {
 		const data = super.getData(options)
-		this.object.prepareData()
 		const items = this.object.items
 		return mergeObject(data, {
 			settings: { notes_display: "inline" },
@@ -136,7 +135,7 @@ export class ContainerSheetGURPS<IType extends ContainerGURPS = ContainerGURPS> 
 		})
 		const updateData = sortUpdates.map(u => {
 			const update = u.update
-			;(update as any)._id = u.target!._id
+				; (update as any)._id = u.target!._id
 			return update
 		})
 

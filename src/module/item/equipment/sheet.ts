@@ -18,7 +18,6 @@ export class EquipmentSheet extends ItemSheetGCS<EquipmentGURPS | EquipmentConta
 	}
 
 	getData(options?: Partial<DocumentSheetOptions<Item>> | undefined) {
-		this.object.prepareData()
 		const data = super.getData(options)
 		return mergeObject(data, {
 			modifiers: this.object.modifiers,

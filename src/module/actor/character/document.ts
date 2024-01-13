@@ -521,6 +521,20 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		return this.system.created_date
 	}
 
+	get lifts(): Record<string, string> {
+		const bl = this.basicLift
+		const units = this.weightUnits
+		return {
+			basic_lift: Weight.format(bl, units),
+			one_handed_lift: Weight.format(this.oneHandedLift(bl), units),
+			two_handed_lift: Weight.format(this.twoHandedLift(bl), units),
+			shove: Weight.format(this.shove(bl), units),
+			running_shove: Weight.format(this.runningShove(bl), units),
+			carry_on_back: Weight.format(this.carryOnBack(bl), units),
+			shift_slightly: Weight.format(this.shiftSlightly(bl), units),
+		}
+	}
+
 	// Returns Basic Lift in pounds
 	get basicLift(): number {
 		const ST = this.attributes.get(gid.Strength)?._effective(this.calc?.lifting_st_bonus ?? 0) || 0
@@ -532,28 +546,28 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		return basicLift
 	}
 
-	get oneHandedLift(): number {
-		return fxp.Int.from(this.basicLift * 2, 4)
+	oneHandedLift(bl: number): number {
+		return fxp.Int.from(bl * 2, 4)
 	}
 
-	get twoHandedLift(): number {
-		return fxp.Int.from(this.basicLift * 8, 4)
+	twoHandedLift(bl: number): number {
+		return fxp.Int.from(bl * 8, 4)
 	}
 
-	get shove(): number {
-		return fxp.Int.from(this.basicLift * 12, 4)
+	shove(bl: number): number {
+		return fxp.Int.from(bl * 12, 4)
 	}
 
-	get runningShove(): number {
-		return fxp.Int.from(this.basicLift * 24, 4)
+	runningShove(bl: number): number {
+		return fxp.Int.from(bl * 24, 4)
 	}
 
-	get carryOnBack(): number {
-		return fxp.Int.from(this.basicLift * 15, 4)
+	carryOnBack(bl: number): number {
+		return fxp.Int.from(bl * 15, 4)
 	}
 
-	get shiftSlightly(): number {
-		return fxp.Int.from(this.basicLift * 50, 4)
+	shiftSlightly(bl: number): number {
+		return fxp.Int.from(bl * 50, 4)
 	}
 
 	get fastWealthCarried(): string {
@@ -1104,12 +1118,12 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	override prepareData(): void {
 		super.prepareData()
 		const pools: any = {}
-		this.attributes.forEach(e => {
+		this.attributes?.forEach(e => {
 			if (e.attribute_def.type === attribute.Type.Pool) {
 				pools[e.id] = { value: e.current, min: -Infinity, max: e.max }
 			}
 		})
-		this.resource_trackers.forEach(e => {
+		this.resource_trackers?.forEach(e => {
 			pools[e.id] = { value: e.current, min: e.min, max: e.max }
 		})
 		this.system.pools = pools
@@ -1223,6 +1237,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	}
 
 	processThresholds() {
+		if (!this.isOwner) return
 		if (this._processingThresholds || !this._prevAttributes || this.attributes === this._prevAttributes) return
 
 		this._processingThresholds = true
@@ -1626,20 +1641,20 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		for (const sk of this.skillNamed(name, specialization, true, null)) {
 			if (rsl < sk.level.relative_level) rsl = sk.level.relative_level
 		}
-		// if (rsl !== -Infinity)
-		for (const f of this.features.weaponBonuses) {
-			if (
-				allowedFeatureTypes.get(f.type) &&
-				f.selection_type === wsel.Type.WithRequiredSkill &&
-				f.name?.matches(name) &&
-				f.specialization?.matches(specialization) &&
-				f.level?.matches(rsl) &&
-				f.usage?.matches(usage) &&
-				f.tags?.matchesList(...tags)
-			) {
-				addWeaponBonusToMap(f, dieCount, tooltip, m)
+		if (this.features)
+			for (const f of this.features.weaponBonuses) {
+				if (
+					allowedFeatureTypes.get(f.type) &&
+					f.selection_type === wsel.Type.WithRequiredSkill &&
+					f.name?.matches(name) &&
+					f.specialization?.matches(specialization) &&
+					f.level?.matches(rsl) &&
+					f.usage?.matches(usage) &&
+					f.tags?.matchesList(...tags)
+				) {
+					addWeaponBonusToMap(f, dieCount, tooltip, m)
+				}
 			}
-		}
 		return m
 	}
 
@@ -1652,17 +1667,18 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		m: Map<WeaponBonus, boolean> = new Map(),
 		allowedFeatureTypes: Map<feature.Type, boolean> = new Map()
 	): Map<WeaponBonus, boolean> {
-		for (const f of this.features.weaponBonuses) {
-			if (
-				allowedFeatureTypes.get(f.type) &&
-				f.selection_type === wsel.Type.WithName &&
-				f.name?.matches(name) &&
-				f.usage?.matches(usage) &&
-				f.tags?.matchesList(...tags)
-			) {
-				addWeaponBonusToMap(f, dieCount, tooltip, m)
+		if (this.features)
+			for (const f of this.features.weaponBonuses) {
+				if (
+					allowedFeatureTypes.get(f.type) &&
+					f.selection_type === wsel.Type.WithName &&
+					f.name?.matches(name) &&
+					f.usage?.matches(usage) &&
+					f.tags?.matchesList(...tags)
+				) {
+					addWeaponBonusToMap(f, dieCount, tooltip, m)
+				}
 			}
-		}
 		return m
 	}
 
@@ -1673,17 +1689,18 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		tooltip: TooltipGURPS | null
 	): SkillBonus[] {
 		const bonuses: SkillBonus[] = []
-		for (const f of this.features.skillBonuses) {
-			if (
-				f.selection_type === skillsel.Type.WeaponsWithName &&
-				f.name?.matches(name) &&
-				f.specialization?.matches(usage) &&
-				f.tags?.matchesList(...tags)
-			) {
-				bonuses.push(f)
-				f.addToTooltip(tooltip)
+		if (this.features)
+			for (const f of this.features.skillBonuses) {
+				if (
+					f.selection_type === skillsel.Type.WeaponsWithName &&
+					f.name?.matches(name) &&
+					f.specialization?.matches(usage) &&
+					f.tags?.matchesList(...tags)
+				) {
+					bonuses.push(f)
+					f.addToTooltip(tooltip)
+				}
 			}
-		}
 		return bonuses
 	}
 
@@ -1711,13 +1728,14 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 				break
 			}
 		}
-		for (const f of this.features.drBonuses) {
-			if ((f.location === gid.All && isTopLevel) || equalFold(locationID, f.location)) {
-				const current = drMap.get(f.specialization!.toLowerCase()) ?? 0
-				drMap.set(f.specialization!.toLowerCase(), current + f.adjustedAmount)
-				f.addToTooltip(tooltip)
+		if (this.features)
+			for (const f of this.features.drBonuses) {
+				if ((f.location === gid.All && isTopLevel) || equalFold(locationID, f.location)) {
+					const current = drMap.get(f.specialization!.toLowerCase()) ?? 0
+					drMap.set(f.specialization!.toLowerCase(), current + f.adjustedAmount)
+					f.addToTooltip(tooltip)
+				}
 			}
-		}
 		return drMap
 	}
 
