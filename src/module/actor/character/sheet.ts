@@ -1243,8 +1243,8 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			[[], [], [], [], [], [], []]
 		)
 
-		const melee = items.filter(e => e.type === ItemType.MeleeWeapon && e.container.enabled)
-		const ranged = items.filter(e => e.type === ItemType.RangedWeapon && e.container.enabled)
+		const melee = items.filter(e => e.type === ItemType.MeleeWeapon && e.equipped)
+		const ranged = items.filter(e => e.type === ItemType.RangedWeapon && e.equipped)
 		const reactions: ConditionalModifier[] = this.actor.reactions
 		const conditionalModifiers: ConditionalModifier[] = this.actor.conditionalModifiers
 

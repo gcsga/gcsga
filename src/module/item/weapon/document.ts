@@ -302,7 +302,7 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 				this.container?.type as ItemType
 			)
 		) {
-			;(this.container as any).modifiers.forEach((mod: any) => {
+			; (this.container as any).modifiers.forEach((mod: any) => {
 				let bonus: Bonus
 				for (const f of mod.features) {
 					bonus = f
@@ -367,6 +367,7 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 			level: this.level,
 			damage: this.fastResolvedDamage,
 			strength: this.strength.current ?? this.system.strength,
+			equipped: this.equipped
 		}
 	}
 
