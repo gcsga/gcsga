@@ -94,12 +94,12 @@ export function prepareSelectOptions(): void {
 		}, {}),
 		emcost: emcost.Types.reduce((acc, c) => {
 			return Object.assign(acc, {
-				[c]: emcost.Type.toString(c),
+				[c]: emcost.Type.stringWithExample(c),
 			})
 		}, {}),
 		emweight: emweight.Types.reduce((acc, c) => {
 			return Object.assign(acc, {
-				[c]: emweight.Type.toString(c),
+				[c]: emweight.Type.stringWithExample(c),
 			})
 		}, {}),
 		wsel: wsel.Types.reduce((acc, c) => {

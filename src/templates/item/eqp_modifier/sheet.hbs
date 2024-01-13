@@ -40,7 +40,7 @@
 				<input type="text" name="system.cost" value="{{system.cost}}" data-dtype="String" />
 				<select name="system.cost_type" data-dtype="String">
 					{{#select system.cost_type}}
-						{{#each config.select.eqp_mod_cost_type as |v k|}}
+						{{#each config.select.emcost as |v k|}}
 							<option value="{{k}}">{{localize v}}</option>
 						{{/each}}
 					{{/select}}
@@ -51,7 +51,7 @@
 				<input type="text" name="system.weight" value="{{system.weight}}" data-dtype="String" />
 				<select name="system.weight_type" data-dtype="String">
 					{{#select system.weight_type}}
-						{{#each config.select.eqp_mod_weight_type as |v k|}}
+						{{#each config.select.emweight as |v k|}}
 							<option value="{{k}}">{{localize v}}</option>
 						{{/each}}
 					{{/select}}

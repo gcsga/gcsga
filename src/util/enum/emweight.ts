@@ -89,6 +89,29 @@ export namespace emweight {
 			return Values[0]
 		}
 
+		export function format(V: Value, fraction: Fraction): string {
+			switch (V) {
+				case Value.Addition:
+					return fraction.signedString()
+				case Value.PercentageAdder:
+					return fraction.signedString + V.toString()
+				case Value.PercentageMultiplier:
+					if (fraction.numerator <= 0) {
+						fraction.numerator = 100
+						fraction.denominator = 1
+					}
+					return Value.Multiplier.toString() + fraction.toString() + Value.PercentageAdder.toString()
+				case Value.Multiplier:
+					if (fraction.numerator <= 0) {
+						fraction.numerator = 1
+						fraction.denominator = 1
+					}
+					return V.toString() + fraction.toString()
+				default:
+					return Value.format(Value.Addition, fraction)
+			}
+		}
+
 		export function extractFraction(V: Value, s: string): Fraction {
 			s = s.trim().replace(/^x*/, "")
 			while (s.length > 0 && !s?.at(-1)?.match(/\d/)) {
