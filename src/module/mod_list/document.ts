@@ -6,8 +6,6 @@ import { LastActor } from "@util"
 class ModifierList extends Application {
 	_tempRangeMod: RollModifier = { name: "", modifier: 0, tags: [RollModifierTags.Range] }
 
-	// hover = false
-
 	static get defaultOptions(): ApplicationOptions {
 		return mergeObject(super.defaultOptions, {
 			popOut: false,
@@ -41,7 +39,6 @@ class ModifierList extends Application {
 		let actorMods = actor?.modifiers
 
 		return mergeObject(super.getData(options), {
-			// hover: this.hover ? "hover" : "",
 			currentMods,
 			targetMods,
 			actorMods,
@@ -51,17 +48,11 @@ class ModifierList extends Application {
 	}
 
 	activateListeners(html: JQuery<HTMLElement>): void {
-		// const bottom = Math.max($("body").height()! - $("#players").position().top, 64)
-		// if (!this.collapse) html.css("bottom", `${bottom}px`)
 
 		super.activateListeners(html)
 		html.find(".active").on("click", event => this.removeModifier(event))
 		html.find(".modifier").on("click", event => this._onClickModifier(event))
 		html.find(".collapse-toggle").on("click", event => this._onCollapseToggle(event))
-		// html.on("mouseleave", () => {
-		// 	this.hover = false
-		// 	this.render(true)
-		// })
 	}
 
 	protected _injectHTML(html: JQuery<HTMLElement>): void {
@@ -73,7 +64,6 @@ class ModifierList extends Application {
 
 	_onClickModifier(event: JQuery.ClickEvent) {
 		event.preventDefault()
-		// this.hover = true
 		const modifier: RollModifier = {
 			name: $(event.currentTarget).data("name"),
 			modifier: $(event.currentTarget).data("modifier"),
@@ -92,28 +82,8 @@ class ModifierList extends Application {
 	}
 
 	addRangeMod() {
-		;(game.user as UserGURPS).addModifier(this._tempRangeMod)
+		; (game.user as UserGURPS).addModifier(this._tempRangeMod)
 	}
-
-	// addModifier(mod: RollModifier) {
-	// 	const modList: RollModifier[] =
-	// 		(game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierStack) as RollModifier[]) ?? []
-	// 	if (mod.tags?.includes(RollModifierTags.Range)) {
-	// 		const oldMod = modList.find(e => e.tags?.includes(RollModifierTags.Range))
-	// 		if (oldMod) {
-	// 			oldMod.modifier = mod.modifier
-	// 			oldMod.name = mod.name
-	// 		} else modList.push(mod)
-	// 	} else {
-	// 		const oldMod = modList.find(e => e.name === mod.name)
-	// 		if (oldMod) oldMod.modifier += mod.modifier
-	// 		else modList.push(mod)
-	// 	}
-	// 	game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, modList)
-	// 	this.render()
-	// 	game.ModifierBucket.render()
-	// 	Hooks.call("addModifier")
-	// }
 
 	removeModifier(event: JQuery.ClickEvent) {
 		event.preventDefault()
@@ -125,16 +95,6 @@ class ModifierList extends Application {
 		this.render()
 		game.ModifierBucket.render()
 	}
-
-	// fadeIn() {
-	// 	this.hover = true
-	// 	this.render(true)
-	// }
-
-	// fadeOut() {
-	// 	this.hover = false
-	// 	this.render(true)
-	// }
 }
 
 export { ModifierList }

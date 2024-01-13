@@ -2,6 +2,7 @@ import { HooksGURPS, RollModifier, RollModifierTags, SYSTEM_NAME, UserFlags } fr
 import { DocumentDataType, DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
 
 class UserGURPS extends User {
+
 	override prepareData(): void {
 		super.prepareData()
 		if (canvas?.ready && canvas.tokens?.controlled && canvas.tokens?.controlled.length > 0) {
@@ -25,7 +26,7 @@ class UserGURPS extends User {
 
 	get modifierTotal(): number {
 		let total = 0
-		const modifierStack = this.getFlag(SYSTEM_NAME, UserFlags.ModifierStack) as RollModifier[]
+		const modifierStack = this.getFlag(SYSTEM_NAME, UserFlags.ModifierStack) as RollModifier[] ?? []
 		for (const m of modifierStack) {
 			total += m.modifier
 		}
@@ -34,7 +35,7 @@ class UserGURPS extends User {
 
 	get lastTotal(): number {
 		let total = 0
-		const modifierStack = this.getFlag(SYSTEM_NAME, UserFlags.LastStack) as RollModifier[]
+		const modifierStack = this.getFlag(SYSTEM_NAME, UserFlags.LastStack) as RollModifier[] ?? []
 		for (const m of modifierStack) {
 			total += m.modifier
 		}
@@ -42,7 +43,7 @@ class UserGURPS extends User {
 	}
 
 	addModifier(mod: RollModifier) {
-		const modList = this.getFlag(SYSTEM_NAME, UserFlags.ModifierStack) as RollModifier[]
+		const modList = this.getFlag(SYSTEM_NAME, UserFlags.ModifierStack) as RollModifier[] ?? []
 		if (mod.tags?.includes(RollModifierTags.Range)) {
 			const oldMod = modList.find(e => e.tags?.includes(RollModifierTags.Range))
 			if (oldMod) {
