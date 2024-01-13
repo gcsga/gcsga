@@ -8,8 +8,8 @@ import { DocumentConstructor } from "types/types/helperTypes"
 
 export abstract class ContainerGURPS<
 	SourceType extends BaseItemSourceGURPS = BaseItemSourceGURPS,
-	// SystemType extends BaseContainerSystemData = BaseContainerSystemData
-	// > extends BaseItemGURPS<SourceType, SystemType> {
+// SystemType extends BaseContainerSystemData = BaseContainerSystemData
+// > extends BaseItemGURPS<SourceType, SystemType> {
 > extends BaseItemGURPS<SourceType> {
 	items: foundry.utils.Collection<BaseItemGURPS> = new Collection()
 
@@ -101,7 +101,7 @@ export abstract class ContainerGURPS<
 				(e: BaseItemGURPS) => e.getFlag(SYSTEM_NAME, ItemFlags.Container) === this.id
 			)) {
 				if (this.type === ItemType.EquipmentContainer && item.type === ItemType.Equipment) {
-					;(item as any).system.other = (this.system as any).other
+					; (item as any).system.other = (this.system as any).other
 				}
 				this.items.set(item.id!, item)
 			}
