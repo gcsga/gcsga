@@ -99,7 +99,7 @@ export class WeaponBonus {
 	}
 
 	adjustedAmountForWeapon(wpn: BaseWeaponGURPS<any>): number {
-		if (this.type === FeatureType.WeaponMinSTBonus) {
+		if (this.type === feature.Type.WeaponMinSTBonus) {
 			this.leveledAmount.dieCount = 1
 		} else {
 			this.leveledAmount.dieCount = Int.from(wpn.damage.base!.count)

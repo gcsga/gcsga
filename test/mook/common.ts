@@ -1,8 +1,8 @@
 import { ConditionID } from "@item/condition/data"
 import { ThresholdOp } from "@module/attribute"
-import { DamageProgression, EFFECT_ACTION, SETTINGS, SYSTEM_NAME, gid } from "@module/data"
+import { EFFECT_ACTION, SETTINGS, SYSTEM_NAME, gid } from "@module/data"
 import { MookData } from "@module/mook"
-import { attribute } from "@util/enum"
+import { attribute, progression } from "@util/enum"
 
 export class FakeGame {
 	settings: FakeSettings
@@ -520,7 +520,7 @@ export const _defaultMookData: Partial<MookData> = {
 				],
 			},
 		],
-		damage_progression: DamageProgression.BasicSet,
+		damage_progression: progression.Option.BasicSet,
 		move_types: [],
 	},
 	profile: {
