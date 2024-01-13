@@ -1,12 +1,9 @@
 import { Int } from "./fxp"
 
 export class Weight {
-	// toString(radix?: number | undefined): string {
-	// 	return Weight.format(parseFloat(super.toString(radix)), WeightUnits.Pound)
-	// }
 
 	static format(pounds: number, unit: WeightUnits = WeightUnits.Pound): string {
-		return `${Weight.fromPounds(pounds, unit)} ${unit}`
+		return `${Int.from(Weight.fromPounds(pounds, unit))} ${unit}`
 	}
 
 	static fromString(text: string, defUnits: WeightUnits = WeightUnits.Pound): number {

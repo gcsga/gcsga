@@ -123,7 +123,7 @@ export class EquipmentGURPS extends ItemGCS<EquipmentSource> {
 	}
 
 	get adjustedValue(): number {
-		return valueAdjustedForModifiers(this.system.value, this.deepModifiers)
+		return fxp.Int.from(valueAdjustedForModifiers(this.system.value, this.deepModifiers))
 	}
 
 	// Value Calculator
