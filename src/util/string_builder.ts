@@ -10,7 +10,7 @@ export class StringBuilder {
 	}
 
 	toString(): string {
-		return this.buffer.join("")
+		return this.buffer.join("") ?? ""
 	}
 
 	get length(): number {

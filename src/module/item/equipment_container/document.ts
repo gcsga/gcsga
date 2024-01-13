@@ -2,10 +2,12 @@ import { EquipmentGURPS, extendedWeightAdjustedForModifiers } from "@item/equipm
 import { EquipmentModifierGURPS, valueAdjustedForModifiers, weightAdjustedForModifiers } from "@item/equipment_modifier"
 import { EquipmentModifierContainerGURPS } from "@item/equipment_modifier_container"
 import { ItemGCS } from "@item/gcs"
-import { ItemType, SETTINGS, SYSTEM_NAME } from "@module/data"
-import { fxp, Weight, WeightUnits } from "@util"
+import { ItemType, SETTINGS, SYSTEM_NAME, sheetSettingsFor } from "@module/data"
+import { fxp, LocalizeGURPS, Weight, WeightUnits } from "@util"
 import { EquipmentContainerSource } from "./data"
 import { ItemFlags } from "@item/base"
+import { display } from "@util/enum"
+import { StringBuilder } from "@util/string_builder"
 
 export class EquipmentContainerGURPS extends ItemGCS<EquipmentContainerSource> {
 	unsatisfied_reason = ""
@@ -19,7 +21,36 @@ export class EquipmentContainerGURPS extends ItemGCS<EquipmentContainerSource> {
 		return this.system.quantity
 	}
 
-	secondaryText = EquipmentGURPS.prototype.secondaryText
+	secondaryText(optionChecker: (option: display.Option) => boolean): string {
+		const buffer = new StringBuilder()
+		const settings = sheetSettingsFor(this.actor)
+		if (optionChecker(settings.modifiers_display)) {
+			buffer.appendToNewLine(this.modifierNotes)
+		}
+		if (optionChecker(settings.notes_display)) {
+			const localBuffer = new StringBuilder()
+			if (this.ratedStrength !== 0) {
+				localBuffer.push(LocalizeGURPS.translations.gurps.item.rated_strength)
+				localBuffer.push(" ")
+				localBuffer.push(this.ratedStrength.toString())
+			}
+			if (this.localNotes !== "") {
+				if (localBuffer.length !== 0) localBuffer.push("; ")
+				localBuffer.push(this.localNotes)
+			}
+			buffer.appendToNewLine(localBuffer.toString())
+		}
+		return buffer.toString()
+	}
+
+	get modifierNotes(): string {
+		const buffer = new StringBuilder()
+		for (const mod of this.deepModifiers.filter(e => e.enabled)) {
+			if (buffer.length !== 0) buffer.push("; ")
+			buffer.push(mod.fullDescription)
+		}
+		return buffer.toString()
+	}
 
 	get other(): boolean {
 		if (this.container instanceof Item) return (this.container as EquipmentContainerGURPS).other
