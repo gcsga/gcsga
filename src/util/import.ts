@@ -19,7 +19,6 @@ import {
 	TraitModifierContainerSystemData,
 	TraitModifierSystemData,
 	TraitSystemData,
-	stdmg,
 } from "@item"
 import { Feature, ItemSystemDataGURPS } from "@module/config"
 import { ItemType, SYSTEM_NAME } from "@module/data"
@@ -27,7 +26,7 @@ import { SkillDefault } from "@module/default"
 import { PrereqList } from "@prereq"
 import { LocalizeGURPS } from "./localize"
 import { newUUID } from "./misc"
-import { feature, selfctrl } from "./enum"
+import { feature, selfctrl, stdmg } from "./enum"
 
 class ImportUtils {
 	static importItems(
@@ -510,7 +509,7 @@ class ImportUtils {
 			block: data.block ?? "",
 			damage: {
 				type: data.damage.type ?? "",
-				st: data.damage.st ?? stdmg.None,
+				st: data.damage.st ?? stdmg.Option.None,
 				base: data.damage.base ?? "",
 				armor_divisor: data.damage.armor_divisor ?? 1,
 				fragmentation: data.damage.fragmentation ?? "",
@@ -537,7 +536,7 @@ class ImportUtils {
 			recoil: data.recoil ?? "",
 			damage: {
 				type: data.damage.type ?? "",
-				st: data.damage.st ?? stdmg.None,
+				st: data.damage.st ?? stdmg.Option.None,
 				base: data.damage.base ?? "",
 				armor_divisor: data.damage.armor_divisor ?? 1,
 				fragmentation: data.damage.fragmentation ?? "",

@@ -1,68 +1,45 @@
 import { ItemGCS } from "@item/gcs"
 import { SkillLevel } from "@item/skill/data"
-import { gid } from "@module/data"
+import { gid, sheetSettingsFor } from "@module/data"
 import { TooltipGURPS } from "@module/tooltip"
-import { inlineNote, LocalizeGURPS, parseInlineNoteExpressions } from "@util"
+import { LocalizeGURPS, NewLineRegex, resolveStudyHours, studyHoursProgressText } from "@util"
 import { SpellSource } from "./data"
-import { difficulty } from "@util/enum"
+import { difficulty, display } from "@util/enum"
+import { StringBuilder } from "@util/string_builder"
 
 export class SpellGURPS extends ItemGCS<SpellSource> {
 	level: SkillLevel = { level: 0, relative_level: 0, tooltip: new TooltipGURPS() }
 
 	unsatisfied_reason = ""
 
-	// Static get schema(): typeof SpellData {
-	// 	return SpellData;
-	// }
 	get formattedName(): string {
 		const name: string = this.name ?? ""
 		const TL = this.techLevel
 		return `${name}${this.system.tech_level_required ? `/TL${TL ?? ""}` : ""}`
 	}
 
-	get secondaryText(): string {
-		const out: string[] = []
-		if (inlineNote(this.actor, "notes_display")) {
-			if (this.system.notes.trim()) out.push(this.system.notes)
-			if (this.rituals) {
-				if (out.length) out.push("<br>")
-				out.push(this.rituals)
-			}
-			if (this.studyHours !== 0) {
-				if (out.length) out.push("<br>")
-				if (this.studyHours !== 0)
-					out.push(
-						LocalizeGURPS.format(LocalizeGURPS.translations.gurps.study.studied, {
-							hours: this.studyHours,
-							total: (this.system as any).study_hours_needed,
-						})
-					)
-			}
-			if (inlineNote(this.actor, "skill_level_adj_display")) {
-				if (this.level.tooltip.length) {
-					if (out.length) out.push("<br>")
-					out.push(this.level.tooltip.toString())
-				}
+	secondaryText(optionChecker: (option: display.Option) => boolean): string {
+		const buffer = new StringBuilder()
+		const settings = sheetSettingsFor(this.actor)
+		if (optionChecker(settings.notes_display)) {
+			buffer.appendToNewLine(this.notes.trim())
+			buffer.appendToNewLine(this.rituals)
+			buffer.appendToNewLine(
+				studyHoursProgressText(resolveStudyHours(this.system.study), this.system.study_hours_needed, false)
+			)
+		}
+		if (optionChecker(settings.skill_level_adj_display)) {
+			if (
+				this.level.tooltip.length !== 0 &&
+				!this.level.tooltip.includes(LocalizeGURPS.translations.gurps.common.no_additional_modifiers)
+			) {
+				let levelTooltip = this.level.tooltip.string.trim().replaceAll(NewLineRegex, ", ")
+				const msg = LocalizeGURPS.translations.gurps.common.includes_modifiers_from
+				if (levelTooltip.startsWith(`${msg},`)) levelTooltip = `${msg}:${levelTooltip.slice(msg.length + 1)}`
+				buffer.appendToNewLine(levelTooltip)
 			}
 		}
-		if (out.length) out.push("<br>")
-		const values = {
-			resist: this.system.resist,
-			spell_class: this.system.spell_class,
-			casting_cost: this.system.casting_cost,
-			maintenance_cost: this.system.maintenance_cost,
-			casting_time: this.system.casting_time,
-			duration: this.system.duration,
-			college: this.system.college.join(", "),
-		}
-		const list = []
-		for (const [k, v] of Object.entries(values)) {
-			if (v && v !== "" && v !== "-") list.push(`${game.i18n.localize(`gurps.character.spells.${k}`)}: ${v}`)
-		}
-		out.push(list.join("; "))
-		let outString = out.join("")
-		if (this.parent) outString = parseInlineNoteExpressions(out.join(""), this.parent as any)
-		return `<div class="item-notes">${outString}</div>`
+		return buffer.toString()
 	}
 
 	get rituals(): string {

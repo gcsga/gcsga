@@ -1,5 +1,4 @@
 import {
-
 	CharacterDataGURPS,
 	CharacterGURPS,
 	LootDataGURPS,
@@ -267,96 +266,7 @@ let GURPSCONFIG: CONFIG["GURPS"] = {
 			[prereq.Type.Spell]: SpellPrereq,
 		},
 	},
-	// select: {
-	// 	damage_st: {
-	// 		none: "gurps.select.damage_st.none",
-	// 		thr: "gurps.select.damage_st.thr",
-	// 		thr_leveled: "gurps.select.damage_st.thr_leveled",
-	// 		sw: "gurps.select.damage_st.sw",
-	// 		sw_leveled: "gurps.select.damage_st.sw_leveled",
-	// 	},
-	// 	postures: {
-	// 		standing: "gurps.status.posture_standing",
-	// 		[ConditionID.PostureProne]: `gurps.status.${ConditionID.PostureProne}`,
-	// 		[ConditionID.PostureCrouch]: `gurps.status.${ConditionID.PostureCrouch}`,
-	// 		[ConditionID.PostureKneel]: `gurps.status.${ConditionID.PostureKneel}`,
-	// 		[ConditionID.PostureSit]: `gurps.status.${ConditionID.PostureSit}`,
-	// 		[ConditionID.PostureCrawl]: `gurps.status.${ConditionID.PostureCrawl}`,
-	// 	},
-	// 	default_length_units: {
-	// 		ft_in: "gurps.length_units.ft_in",
-	// 		in: "gurps.length_units.in",
-	// 		ft: "gurps.length_units.ft",
-	// 		yd: "gurps.length_units.yd",
-	// 		mi: "gurps.length_units.mi",
-	// 		cm: "gurps.length_units.cm",
-	// 		km: "gurps.length_units.km",
-	// 		m: "gurps.length_units.m",
-	// 	},
-	// 	default_weight_units: {
-	// 		lb: "gurps.select.default_weight_units.lb",
-	// 		"#": "gurps.select.default_weight_units.#",
-	// 		oz: "gurps.select.default_weight_units.oz",
-	// 		tn: "gurps.select.default_weight_units.tn",
-	// 		t: "gurps.select.default_weight_units.t",
-	// 		kg: "gurps.select.default_weight_units.kg",
-	// 		g: "gurps.select.default_weight_units.g",
-	// 	},
-	// 	display: {
-	// 		not_shown: "gurps.select.display.not_shown",
-	// 		inline: "gurps.select.display.inline",
-	// 		tooltip: "gurps.select.display.tooltip",
-	// 		inline_and_tooltip: "gurps.select.display.inline_and_tooltip",
-	// 	},
-	// 	color_mode_preference: {
-	// 		auto: "gurps.select.color_mode_preference.auto",
-	// 		dark: "gurps.select.color_mode_preference.dark",
-	// 		light: "gurps.select.color_mode_preference.light",
-	// 	},
-	// 	// Srt = static_resource_tracker
-	// 	srt_comparison: {
-	// 		[StaticThresholdComparison.LessThan]: "gurps.select.srt_comparison.less_than",
-	// 		[StaticThresholdComparison.LessThanOrEqual]: "gurps.select.srt_comparison.less_than_or_equal",
-	// 		[StaticThresholdComparison.GreaterThan]: "gurps.select.srt_comparison.greater_than",
-	// 		[StaticThresholdComparison.GreaterThanOrEqual]: "gurps.select.srt_comparison.greater_than_or_equal",
-	// 	},
-	// 	srt_operator: {
-	// 		[StaticThresholdOperator.Add]: "gurps.select.srt_operator.add",
-	// 		[StaticThresholdOperator.Subtract]: "gurps.select.srt_operator.subtract",
-	// 		[StaticThresholdOperator.Multiply]: "gurps.select.srt_operator.multiply",
-	// 		[StaticThresholdOperator.Divide]: "gurps.select.srt_operator.divide",
-	// 	},
-	// 	duration_type: {
-	// 		[DurationType.None]: "gurps.select.duration_type.none",
-	// 		[DurationType.Turns]: "gurps.select.duration_type.turns",
-	// 		[DurationType.Rounds]: "gurps.select.duration_type.rounds",
-	// 		[DurationType.Seconds]: "gurps.select.duration_type.seconds",
-	// 	},
-	// 	effect_action: {
-	// 		[EFFECT_ACTION.ADD]: "gurps.select.effect_action.add",
-	// 		[EFFECT_ACTION.REMOVE]: "gurps.select.effect_action.remove",
-	// 	},
-	// 	move_condition_type: {
-	// 		[MoveTypeOverrideConditionType.Trait]: "gurps.select.move_condition_type.trait",
-	// 		[MoveTypeOverrideConditionType.Skill]: "gurps.select.move_condition_type.skill",
-	// 		[MoveTypeOverrideConditionType.Condition]: "gurps.select.move_condition_type.condition",
-	// 	},
-	// 	conditions: Object.values(ConditionID).reduce((acc, c) => {
-	// 		return Object.assign(acc, {
-	// 			[c]: `gurps.status.${c}`,
-	// 		})
-	// 	}, {}),
-	// 	switch_type: Object.values(wswitch).reduce((acc, c) => {
-	// 		return Object.assign(acc, {
-	// 			[c]: `gurps.select.switch_type.${c}`,
-	// 		})
-	// 	}, {}),
-	// 	switch_type_value: {
-	// 		true: "gurps.select.switch_type_value.true",
-	// 		false: "gurps.select.switch_type_value.false",
-	// 	},
-	// },
-	SELECT_OPTIONS: {},
+	select: {},
 	meleeMods: {},
 	rangedMods: {},
 	defenseMods: {},

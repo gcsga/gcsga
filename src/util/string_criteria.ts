@@ -1,5 +1,4 @@
 import { LocalizeGURPS } from "./localize"
-import { equalFold } from "./misc"
 
 export enum StringCompareType {
 	AnyString = "none",
@@ -100,4 +99,9 @@ export class StringCriteria {
 		if (this.compare === StringCompareType.AnyString) return result
 		return `${result} "${this.qualifier}"`
 	}
+}
+
+export function equalFold(s: string, t: string): boolean {
+	if (!s && !t) return false
+	return s.toLowerCase() === t.toLowerCase()
 }

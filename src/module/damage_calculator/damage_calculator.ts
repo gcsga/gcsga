@@ -1070,7 +1070,6 @@ class DamageCalculator implements IDamageCalculator {
 		if (this.isDamageTypeKnockbackEligible) {
 			if (this.damageType === DamageTypes.cut && results.penetratingDamage!.value > 0) return 0
 
-			// console.log(results)
 			return Math.floor(results.rawDamage!.value / (this.knockbackResistance - 2))
 		}
 		return 0

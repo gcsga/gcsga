@@ -28,4 +28,14 @@ export namespace prereq {
 		Type.Skill,
 		Type.Spell,
 	]
+
+	export const TypesWithoutList: Type[] = [
+		Type.Trait,
+		Type.Attribute,
+		Type.ContainedQuantity,
+		Type.ContainedWeight,
+		Type.EquippedEquipment,
+		Type.Skill,
+		Type.Spell,
+	]
 }

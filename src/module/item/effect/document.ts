@@ -11,6 +11,7 @@ import { PropertiesToSource } from "types/types/helperTypes"
 import { DurationType, EffectModificationOptions, EffectSource } from "./data"
 import { feature } from "@util/enum"
 import { AttributeBonus } from "@feature"
+import { ItemGCS } from "@item/gcs"
 
 export class EffectGURPS<SourceType extends EffectSource = EffectSource> extends BaseItemGURPS<SourceType> {
 	_statusId: string | null = null
@@ -34,9 +35,7 @@ export class EffectGURPS<SourceType extends EffectSource = EffectSource> extends
 		return this.name || ""
 	}
 
-	get secondaryText(): string {
-		return ""
-	}
+	secondaryText = ItemGCS.prototype.secondaryText
 
 	get enabled(): boolean {
 		return true

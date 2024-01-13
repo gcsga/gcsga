@@ -1,15 +1,3 @@
-// Import {
-// 	AttributeBonus,
-// 	CostReduction,
-// 	DRBonus,
-// 	SkillBonus,
-// 	SkillPointBonus,
-// 	SpellBonus,
-// 	SpellPointBonus,
-// 	WeaponDamageBonus,
-// 	WeaponDRDivisorBonus,
-// } from "@feature"
-
 /*
  * I had to move SETTINGS here as well, because it fixed the weird error that leads to the code not recognizing standard
  * foundry classes and methods.
@@ -76,25 +64,25 @@ export enum SOCKET {
 
 export const DEFAULT_INITIATIVE_FORMULA = "$basic_speed+($dx/10000)+(1d6/100000)"
 
-export enum DisplayMode {
-	NotShown = "not_shown",
-	Inline = "inline",
-	Tooltip = "tooltip",
-	InlineAndTooltip = "inline_and_tooltip",
-}
+// export enum DisplayMode {
+// 	NotShown = "not_shown",
+// 	Inline = "inline",
+// 	Tooltip = "tooltip",
+// 	InlineAndTooltip = "inline_and_tooltip",
+// }
 
-export enum DamageProgression {
-	BasicSet = "basic_set",
-	KnowingYourOwnStrength = "knowing_your_own_strength",
-	NoSchoolGrognardDamage = "no_school_grognard_damage",
-	ThrustEqualsSwingMinus2 = "thrust_equals_swing_minus_2",
-	SwingEqualsThrustPlus2 = "swing_equals_thrust_plus_2",
-	PhoenixFlameD3 = "phoenix_flame_d3",
-	Tbone1 = "tbone_1",
-	Tbone1Clean = "tbone_1_clean",
-	Tbone2 = "tbone_2",
-	Tbone2Clean = "tbone_2_clean",
-}
+// export enum DamageProgression {
+// 	BasicSet = "basic_set",
+// 	KnowingYourOwnStrength = "knowing_your_own_strength",
+// 	NoSchoolGrognardDamage = "no_school_grognard_damage",
+// 	ThrustEqualsSwingMinus2 = "thrust_equals_swing_minus_2",
+// 	SwingEqualsThrustPlus2 = "swing_equals_thrust_plus_2",
+// 	PhoenixFlameD3 = "phoenix_flame_d3",
+// 	Tbone1 = "tbone_1",
+// 	Tbone1Clean = "tbone_1_clean",
+// 	Tbone2 = "tbone_2",
+// 	Tbone2Clean = "tbone_2_clean",
+// }
 
 // export interface StringCriteria {
 // 	compare: StringCompareType
@@ -239,8 +227,6 @@ export type ModifierItem = RollModifier | ModifierHeader
 
 export interface RollModifierStack {
 	title: string
-	// editing: boolean
-	// open: boolean
 	items: RollModifier[]
 }
 
@@ -264,146 +250,19 @@ export interface ModifierHeader {
 	title: true
 }
 
-// Export const rollModifiers: RollModifier[] = [
-// 	{
-// 		name: "Eye",
-// 		modifier: -9,
-// 		tags: ["Hit Location"],
-// 	},
-// 	{
-// 		name: "Skull",
-// 		modifier: -7,
-// 		tags: ["Hit Location"],
-// 	},
-// 	{
-// 		name: "Face",
-// 		modifier: -5,
-// 		tags: ["Hit Location"],
-// 	},
-// 	{
-// 		name: "Right Leg",
-// 		modifier: -2,
-// 		tags: ["Hit Location"],
-// 	},
-// 	{
-// 		name: "Right Leg",
-// 		modifier: -2,
-// 		tags: ["Hit Location"],
-// 	},
-// 	{
-// 		name: "Torso",
-// 		modifier: 0,
-// 		tags: ["Hit Location"],
-// 	},
-// 	{
-// 		name: "Groin",
-// 		modifier: -3,
-// 		tags: ["Hit Location"],
-// 	},
-// 	{
-// 		name: "Left Arm",
-// 		modifier: -2,
-// 		tags: ["Hit Location"],
-// 	},
-// 	{
-// 		name: "Left Leg",
-// 		modifier: -2,
-// 		tags: ["Hit Location"],
-// 	},
-// 	{
-// 		name: "Hand",
-// 		modifier: -4,
-// 		tags: ["Hit Location"],
-// 	},
-// 	{
-// 		name: "Foot",
-// 		modifier: -4,
-// 		tags: ["Hit Location"],
-// 	},
-// 	{
-// 		name: "Neck",
-// 		modifier: -5,
-// 		tags: ["Hit Location"],
-// 	},
-// 	{
-// 		name: "Vitals",
-// 		modifier: -3,
-// 		tags: ["Hit Location"],
-// 	},
-// 	{
-// 		name: "Shooting through light cover",
-// 		modifier: -2,
-// 		tags: ["Ranged Combat"],
-// 	},
-// 	{
-// 		name: "Target behind someone else (per intervening figure)",
-// 		modifier: -4,
-// 		tags: ["Ranged Combat"],
-// 	},
-// 	{
-// 		name: "Target crouching, kneeling, sitting, or lying down",
-// 		modifier: -2,
-// 		tags: ["Ranged Combat"],
-// 	},
-// 	{
-// 		name: "Target only partly exposed",
-// 		modifier: -2,
-// 		tags: ["Ranged Combat"],
-// 	},
-// 	{
-// 		name: "Laser sight",
-// 		modifier: +1,
-// 		tags: ["Ranged Combat"],
-// 	},
-// 	{
-// 		name: "Scope (per second of Aim, Max: Scope Acc)",
-// 		modifier: +1,
-// 		tags: ["Ranged Combat"],
-// 	},
-// 	{
-// 		name: "Unfamiliar weapon or targeting system",
-// 		modifier: -2,
-// 		tags: ["Ranged Combat"],
-// 	},
-// ]
-
 export type ImagePath = `${string}.${ImageFileExtension}`
 type ImageFileExtension = "jpg" | "jpeg" | "png" | "svg" | "webp"
 
 export enum UserFlags {
 	Init = "init",
 	LastStack = "lastStack",
-	// LastTotal = "lastTotal",
 	ModifierStack = "modifierStack",
-	// ModifierTotal = "modifierTotal",
 	ModifierSticky = "modifierSticky",
 	SavedStacks = "savedStacks",
-	// ModifierPinned = "pinnedMods",
 	LastActor = "lastActor",
 	LastToken = "lastToken",
 }
 
-// export enum PrereqType {
-// 	List = "prereq_list",
-// 	Trait = "trait_prereq",
-// 	Attribute = "attribute_prereq",
-// 	ContainedQuantity = "contained_quantity_prereq",
-// 	ContainedWeight = "contained_weight_prereq",
-// 	Skill = "skill_prereq",
-// 	Spell = "spell_prereq",
-// 	Equipment = "equipped_equipment_prereq",
-// }
-
-// Export type featureMap = {
-// 	attributeBonuses: AttributeBonus[]
-// 	costReductions: CostReduction[]
-// 	drBonuses: DRBonus[]
-// 	skillBonuses: SkillBonus[]
-// 	skillPointBonuses: SkillPointBonus[]
-// 	spellBonuses: SpellBonus[]
-// 	spellPointBonuses: SpellPointBonus[]
-// 	weaponBonuses: Array<WeaponDamageBonus | WeaponDRDivisorBonus>
-// }
 export enum ItemType {
 	Trait = "trait",
 	TraitContainer = "trait_container",
@@ -438,13 +297,6 @@ export enum ActorType {
 	// Merchant = "merchant",
 }
 
-// export enum MoveType {
-// 	Ground = "ground",
-// 	Air = "air",
-// 	Water = "water",
-// 	Space = "space",
-// }
-
 export enum SpellSubType {
 	NAME = "name",
 	TAG = "tag",
@@ -454,7 +306,6 @@ export enum SpellSubType {
 }
 
 export const GURPS_COMMANDS = (() => {
-	// const dice = "([^#]+)(?:#(.*))?";       // Dice expression with appended flavor text
 	const any = "([^]*)" // Any character, including new lines
 	return {
 		mook: new RegExp(`^\\/mook ?${any}`, "i"),
@@ -463,8 +314,6 @@ export const GURPS_COMMANDS = (() => {
 
 export interface Stringer {
 	formattedName: string
-	// isLeveled: boolean
-	// currentLevel: number
 }
 
 export interface WeaponOwner {

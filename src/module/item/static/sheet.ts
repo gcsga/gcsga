@@ -26,7 +26,6 @@ export class StaticItemSheet extends ItemSheet {
 
 	getData(options?: Partial<DocumentSheetOptions<Item>> | undefined) {
 		let deprecation: string = this.item.getFlag(SYSTEM_NAME, ItemFlags.Deprecation) ? "acknowledged" : "manual"
-		console.log(this.item)
 		const sheetData = {
 			...(super.getData(options) as any),
 			traits: Object.entries(this.item.system.ads).map(([k, v]) => {

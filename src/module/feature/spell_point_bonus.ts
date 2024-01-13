@@ -1,5 +1,5 @@
 import { BonusOwner } from "./bonus_owner"
-import { LeveledAmount, LeveledAmountKeys, LeveledAmountObj } from "./leveled_amount"
+import { LeveledAmount, LeveledAmountObj } from "./leveled_amount"
 import { StringCompareType, StringCriteria } from "@util"
 import { feature, spellmatch } from "@util/enum"
 
@@ -42,13 +42,10 @@ export class SpellPointBonus extends BonusOwner {
 
 	static fromObject(data: SpellPointBonusObj): SpellPointBonus {
 		const bonus = new SpellPointBonus()
-		const levelData: Partial<Record<keyof LeveledAmountObj, any>> = {}
-		for (const key of Object.keys(data)) {
-			if (LeveledAmountKeys.includes(key)) {
-				levelData[key as keyof LeveledAmountObj] = data[key as keyof SpellPointBonusObj]
-			} else (bonus as any)[key] = data[key as keyof SpellPointBonusObj]
-		}
-		bonus.leveledAmount = new LeveledAmount(levelData)
+		bonus.match = data.match
+		if (data.name) bonus.name = new StringCriteria(data.name.compare, data.name.qualifier)
+		if (data.tags) bonus.tags = new StringCriteria(data.tags.compare, data.tags.qualifier)
+		bonus.leveledAmount = LeveledAmount.fromObject(data)
 		return bonus
 	}
 }

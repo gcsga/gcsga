@@ -11,13 +11,14 @@ import { TechniqueSystemData } from "@item/technique/data"
 import { TraitSystemData } from "@item/trait/data"
 import { TraitContainerSystemData } from "@item/trait_container/data"
 import { AttributeObj } from "@module/attribute"
-import { ActorType, DamageProgression, DisplayMode, SETTINGS, SYSTEM_NAME } from "@module/data"
+import { ActorType, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { LengthUnits, LocalizeGURPS, WeightUnits } from "@util"
 import { CharacterSystemData } from "./data"
 import { CharacterSheetGURPS } from "./sheet"
 import { ItemGURPS } from "@module/config"
 import { ImportUtils } from "@util/import"
 import { ActorFlags, BaseActorGURPS } from "@actor/base"
+import { display, progression } from "@util/enum"
 
 export interface CharacterImportedData extends Omit<CharacterSystemData, "attributes"> {
 	traits: Array<TraitSystemData | TraitContainerSystemData>
@@ -335,13 +336,13 @@ export class CharacterImporter {
 		return {
 			"system.settings.default_length_units": settings.default_length_units ?? LengthUnits.FeetAndInches,
 			"system.settings.default_weight_units": settings.default_weight_units ?? WeightUnits.Pound,
-			"system.settings.user_description_display": settings.user_description_display ?? DisplayMode.Tooltip,
-			"system.settings.modifiers_display": settings.modifiers_display ?? DisplayMode.Inline,
-			"system.settings.notes_display": settings.notes_display ?? DisplayMode.Inline,
-			"system.settings.skill_level_adj_display": settings.skill_level_adj_display ?? DisplayMode.Tooltip,
+			"system.settings.user_description_display": settings.user_description_display ?? display.Option.Tooltip,
+			"system.settings.modifiers_display": settings.modifiers_display ?? display.Option.Inline,
+			"system.settings.notes_display": settings.notes_display ?? display.Option.Inline,
+			"system.settings.skill_level_adj_display": settings.skill_level_adj_display ?? display.Option.Tooltip,
 			"system.settings.use_multiplicative_modifiers": settings.use_multiplicative_modifiers ?? false,
 			"system.settings.use_modifying_dice_plus_adds": settings.use_modifying_dice_plus_adds ?? false,
-			"system.settings.damage_progression": settings.damage_progression ?? DamageProgression.BasicSet,
+			"system.settings.damage_progression": settings.damage_progression ?? progression.Option.BasicSet,
 			"system.settings.show_trait_modifier_adj": settings.show_trait_modifier_adj ?? false,
 			"system.settings.show_equipment_modifier_adj": settings.show_equipment_modifier_adj ?? false,
 			"system.settings.show_spell_adj": settings.show_spell_adj ?? false,

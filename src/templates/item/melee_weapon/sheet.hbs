@@ -75,8 +75,8 @@
 			<div class="field no-stretch">
 				<select name="system.damage.st" data-dtype="String">
 					{{#select system.damage.st}}
-						{{#each config.select.damage_st as |v k|}}
-							<option value="{{k}}">{{localize v}}</option>
+						{{#each config.select.stdmg as |v k|}}
+							<option value="{{k}}">{{v}}</option>
 						{{/each}}
 					{{/select}}
 				</select>

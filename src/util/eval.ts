@@ -363,10 +363,10 @@ export function evaluateToNumber(expression: string, resolver: CharacterResolver
 	return 0
 }
 
-export function parseInlineNoteExpressions(inString: string, resolver: CharacterResolver): string {
-	const regex_eval = /\|\|[^|]+\|\|/g
-	inString.match(regex_eval)?.forEach(e => {
-		inString = inString.replaceAll(e, new Evaluator({ resolver }).evaluate(e.replaceAll("||", "")))
-	})
-	return inString
-}
+// export function parseInlineNoteExpressions(inString: string, resolver: CharacterResolver): string {
+// 	const regex_eval = /\|\|[^|]+\|\|/g
+// 	inString.match(regex_eval)?.forEach(e => {
+// 		inString = inString.replaceAll(e, new Evaluator({ resolver }).evaluate(e.replaceAll("||", "")))
+// 	})
+// 	return inString
+// }

@@ -163,8 +163,8 @@ export class BaseActorGURPS<SourceType extends BaseActorSourceGURPS = BaseActorS
 		const effects = this.gEffects.map(e => {
 			const overlay = e instanceof ConditionGURPS && e.cid === ConditionID.Dead
 			const a = new ActiveEffect({ name: e.name, icon: e.img || "" } as any)
-				// a.setFlag("core", "overlay", overlay)
-				; (a as any).flags = { core: { overlay: overlay } }
+			// a.setFlag("core", "overlay", overlay)
+			;(a as any).flags = { core: { overlay: overlay } }
 			return a
 		})
 		return super.temporaryEffects.concat(effects)

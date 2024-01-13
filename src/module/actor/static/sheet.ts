@@ -63,8 +63,8 @@ export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
 			effects: this.actor.getEmbeddedCollection("ActiveEffect").contents,
 			// UseQN: game.settings.get(SYSTEM_NAME, settings.SETTING_USE_QUINTESSENCE),
 			current_year: new Date().getFullYear(),
-			maneuvers: CONFIG.GURPS.SELECT_OPTIONS.maneuvers,
-			postures: CONFIG.GURPS.SELECT_OPTIONS.postures,
+			maneuvers: CONFIG.GURPS.select.maneuvers,
+			postures: CONFIG.GURPS.select.postures,
 			deprecation: deprecation,
 			conditions: this._prepareTrackers(),
 		}
@@ -340,13 +340,13 @@ export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
 		}
 		const buttons: Application.HeaderButton[] = this.actor.canUserModify(game.user!, "update")
 			? [
-				{
-					label: "",
-					class: "gmenu",
-					icon: "gcs-all-seeing-eye",
-					onclick: event => this._onGMenu(event),
-				},
-			]
+					{
+						label: "",
+						class: "gmenu",
+						icon: "gcs-all-seeing-eye",
+						onclick: event => this._onGMenu(event),
+					},
+				]
 			: []
 		const show_import = game.settings.get(SYSTEM_NAME, SETTINGS.SHOW_IMPORT_BUTTON) ?? false
 		const import_path = this.actor.system.additionalresources.importpath

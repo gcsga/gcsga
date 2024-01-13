@@ -1,9 +1,8 @@
 import { WeaponGURPS } from "@module/config"
 import { TooltipGURPS } from "@module/tooltip"
 import { Int } from "@util/fxp"
-import { wswitch } from "./data"
 import { WeaponField } from "./weapon_field"
-import { feature } from "@util/enum"
+import { feature, wswitch } from "@util/enum"
 
 export class WeaponShots extends WeaponField {
 	count = 0
@@ -39,8 +38,8 @@ export class WeaponShots extends WeaponField {
 
 	resolve(w: WeaponGURPS, tooltip: TooltipGURPS): WeaponShots {
 		const result = WeaponShots.parse(this.toString())
-		result.reloadTimeIsPerShot = w.resolveBoolFlag(wswitch.ReloadTimeIsPerShot, result.reloadTimeIsPerShot)
-		result.thrown = w.resolveBoolFlag(wswitch.Thrown, result.thrown)
+		result.reloadTimeIsPerShot = w.resolveBoolFlag(wswitch.Type.ReloadTimeIsPerShot, result.reloadTimeIsPerShot)
+		result.thrown = w.resolveBoolFlag(wswitch.Type.Thrown, result.thrown)
 		for (const bonus of w.collectWeaponBonuses(
 			1,
 			tooltip,

@@ -7,12 +7,12 @@ import { TooltipGURPS } from "@module/tooltip"
 import { LocalizeGURPS } from "@util"
 import { HandlebarsHelpersGURPS } from "@util/handlebars_helpers"
 import { WeaponDamage } from "./damage"
-import { BaseWeaponSource, wswitch } from "./data"
+import { BaseWeaponSource } from "./data"
 import { Int } from "@util/fxp"
 import { ItemGCS } from "@item/gcs"
 import { CharacterGURPS } from "@actor"
 import { WeaponStrength } from "./weapon_strength"
-import { feature, skillsel, wsel } from "@util/enum"
+import { feature, skillsel, wsel, wswitch } from "@util/enum"
 import { SkillBonus, WeaponBonus } from "@feature"
 
 export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSource> extends BaseItemGURPS<SourceType> {
@@ -44,7 +44,7 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 	get secondaryText(): string {
 		let outString = '<div class="item-notes">'
 		if (this.container && this.container instanceof Item) {
-			outString += HandlebarsHelpersGURPS.format((this.container as any).notes)
+			outString += HandlebarsHelpersGURPS.format((this.container as any).notes ?? "")
 			if (this.system.usage_notes) outString += "<br>"
 		}
 		if (this.system.usage_notes) outString += HandlebarsHelpersGURPS.format(this.system.usage_notes)
@@ -249,7 +249,7 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 		return system
 	}
 
-	resolveBoolFlag(switchType: wswitch, initial: boolean): boolean {
+	resolveBoolFlag(switchType: wswitch.Type, initial: boolean): boolean {
 		const actor = this.actor
 		if (!actor) return initial
 		let t = 0

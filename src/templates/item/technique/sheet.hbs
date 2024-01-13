@@ -39,6 +39,7 @@
 			<div class="field no-stretch">
 				<select name="system.default.type" data-dtype="String">
 					{{#select system.default.type}}
+						<option value="10">10</option>
 					{{#each attributes as |v k|}}
 					<option value="{{k}}">{{localize v}}</option>
 					{{/each}}

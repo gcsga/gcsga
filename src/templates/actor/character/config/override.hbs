@@ -11,7 +11,7 @@
 				data-dtype="String"
 				>
 				{{#select this.condition.type}}
-					{{#each @root.config.select.move_condition_type as |v k|}}
+					{{#each @root.config.select.move_override as |v k|}}
 						<option value="{{k}}">
 							{{localize v}}
 						</option>

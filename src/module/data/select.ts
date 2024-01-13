@@ -1,22 +1,35 @@
 import { AllManeuverIDs, AllPostures } from "@item/condition/data"
-import { AllNumericCompareTypes, AllStringCompareTypes, LocalizeGURPS, NumericCompareType } from "@util"
+import { allMoveTypeOverrideConditions } from "@module/move_type"
+import {
+	AllNumericCompareTypes,
+	AllStringCompareTypes,
+	ContainedQuantityNumericCompareTypes,
+	LocalizeGURPS,
+	allLengthUnits,
+	allWeightUnits,
+} from "@util"
 import {
 	affects,
 	attribute,
 	container,
 	difficulty,
+	display,
 	emcost,
 	emweight,
 	feature,
+	movelimit,
 	prereq,
 	progression,
 	selfctrl,
 	skillsel,
 	spellcmp,
+	spellmatch,
 	stlimit,
+	stdmg,
 	study,
 	tmcost,
 	wsel,
+	wswitch,
 } from "@util/enum"
 
 export function prepareSelectOptions(): void {
@@ -36,6 +49,11 @@ export function prepareSelectOptions(): void {
 				[c]: study.Type.toString(c),
 			})
 		}, {}),
+		study_level: study.Levels.reduce((acc, c) => {
+			return Object.assign(acc, {
+				[c]: study.Level.toString(c),
+			})
+		}, {}),
 		attribute: attribute.Types.reduce((acc, c) => {
 			return Object.assign(acc, {
 				[c]: attribute.Type.toString(c),
@@ -51,9 +69,9 @@ export function prepareSelectOptions(): void {
 				[c]: LocalizeGURPS.translations.gurps.numeric_criteria.string[c],
 			})
 		}, {}),
-		numeric_criteria_strict: AllNumericCompareTypes.filter(c => c !== NumericCompareType.AnyNumber).reduce((acc, c) => {
+		numeric_criteria_strict: ContainedQuantityNumericCompareTypes.reduce((acc, c) => {
 			return Object.assign(acc, {
-				[c]: LocalizeGURPS.translations.gurps.numeric_criteria.string[c],
+				[c]: LocalizeGURPS.translations.gurps.numeric_criteria.quantity[c],
 			})
 		}, {}),
 		string_criteria: AllStringCompareTypes.reduce((acc, c) => {
@@ -62,12 +80,12 @@ export function prepareSelectOptions(): void {
 			})
 		}, {}),
 		has: {
-			true: LocalizeGURPS.translations.gurps.select.has.true,
-			false: LocalizeGURPS.translations.gurps.select.has.false,
+			true: LocalizeGURPS.translations.gurps.enum.has.true,
+			false: LocalizeGURPS.translations.gurps.enum.has.false,
 		},
 		all: {
-			true: LocalizeGURPS.translations.gurps.select.all.true,
-			false: LocalizeGURPS.translations.gurps.select.all.false,
+			true: LocalizeGURPS.translations.gurps.prereq.list.true,
+			false: LocalizeGURPS.translations.gurps.prereq.list.false,
 		},
 		tmcost: tmcost.Types.reduce((acc, c) => {
 			return Object.assign(acc, {
@@ -99,9 +117,24 @@ export function prepareSelectOptions(): void {
 				[c]: spellcmp.Type.toString(c),
 			})
 		}, {}),
+		spellmatch: spellmatch.Types.reduce((acc, c) => {
+			return Object.assign(acc, {
+				[c]: spellmatch.Type.toString(c),
+			})
+		}, {}),
 		stlimit: stlimit.Options.reduce((acc, c) => {
 			return Object.assign(acc, {
 				[c]: stlimit.Option.toString(c),
+			})
+		}, {}),
+		stdmg: stdmg.Options.reduce((acc, c) => {
+			return Object.assign(acc, {
+				[c]: stdmg.Option.toString(c),
+			})
+		}, {}),
+		movelimit: movelimit.Options.reduce((acc, c) => {
+			return Object.assign(acc, {
+				[c]: movelimit.Option.toString(c),
 			})
 		}, {}),
 		feature: feature.Types.reduce((acc, c) => {
@@ -115,6 +148,11 @@ export function prepareSelectOptions(): void {
 			})
 		}, {}),
 		prereq: prereq.Types.reduce((acc, c) => {
+			return Object.assign(acc, {
+				[c]: prereq.Type.toString(c),
+			})
+		}, {}),
+		prereq_strict: prereq.TypesWithoutList.reduce((acc, c) => {
 			return Object.assign(acc, {
 				[c]: prereq.Type.toString(c),
 			})
@@ -155,6 +193,40 @@ export function prepareSelectOptions(): void {
 			},
 			{ none: LocalizeGURPS.translations.gurps.maneuver.none }
 		),
+		display: display.Options.reduce((acc, c) => {
+			return Object.assign(acc, {
+				[c]: display.Option.toString(c),
+			})
+		}, {}),
+		length_units: allLengthUnits.reduce((acc, c) => {
+			return Object.assign(acc, {
+				[c]: LocalizeGURPS.translations.gurps.length_units[c],
+			})
+		}, {}),
+		weight_units: allWeightUnits.reduce((acc, c) => {
+			return Object.assign(acc, {
+				[c]: LocalizeGURPS.translations.gurps.weight_units[c],
+			})
+		}, {}),
+		move_override: allMoveTypeOverrideConditions.reduce((acc, c) => {
+			return Object.assign(acc, {
+				[c]: LocalizeGURPS.translations.gurps.enum.move_override[c],
+			})
+		}, {}),
+		wswitch: wswitch.Types.reduce((acc, c) => {
+			return Object.assign(acc, {
+				[c]: wswitch.Type.toString(c),
+			})
+		}, {}),
+		wswitch_value: {
+			true: LocalizeGURPS.translations.gurps.enum.wswitch_value.true,
+			false: LocalizeGURPS.translations.gurps.enum.wswitch_value.false,
+		},
+		color: {
+			auto: LocalizeGURPS.translations.gurps.enum.color.auto,
+			dark: LocalizeGURPS.translations.gurps.enum.color.dark,
+			light: LocalizeGURPS.translations.gurps.enum.color.light,
+		},
 	}
-	CONFIG.GURPS.SELECT_OPTIONS = SELECT_OPTIONS
+	CONFIG.GURPS.select = SELECT_OPTIONS
 }

@@ -27,7 +27,7 @@
 				<div class="field">
 					<select name="array.system.settings.attributes.{{@index}}.type" data-dtype="String">
 						{{#select this.type}}
-							{{#each @root.config.select.attribute_type as |v k|}}
+							{{#each @root.config.select.attribute as |v k|}}
 								<option value="{{k}}">
 									{{localize v}}
 								</option>
@@ -53,7 +53,7 @@
 				<div class="field">
 					<select name="array.system.settings.attributes.{{@index}}.type" data-dtype="String">
 						{{#select this.type}}
-							{{#each @root.config.select.attribute_type as |v k|}}
+							{{#each @root.config.select.attribute as |v k|}}
 								<option value="{{k}}">
 									{{localize v}}
 								</option>

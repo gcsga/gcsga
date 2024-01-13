@@ -1,5 +1,5 @@
 import { Attribute, AttributeDefObj, AttributeObj } from "@module/attribute"
-import { ActorType, DamageProgression, gid, ItemType, SETTINGS, SYSTEM_NAME } from "@module/data"
+import { ActorType, gid, ItemType, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { DiceGURPS } from "@module/dice"
 import { damageProgression } from "@util"
 import {
@@ -25,14 +25,14 @@ import {
 	SpellSource,
 	TraitModifierSource,
 } from "@item/data"
-import { attribute } from "@util/enum"
+import { attribute, progression } from "@util/enum"
 
 export class Mook {
 	protected variableResolverExclusions: Map<string, boolean> = new Map()
 
 	settings: {
 		attributes: AttributeDefObj[]
-		damage_progression: DamageProgression
+		damage_progression: progression.Option
 		move_types: MoveTypeDefObj[]
 	}
 

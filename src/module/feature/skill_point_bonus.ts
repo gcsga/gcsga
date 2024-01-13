@@ -1,6 +1,6 @@
 import { feature } from "@util/enum"
 import { BonusOwner } from "./bonus_owner"
-import { LeveledAmount, LeveledAmountKeys, LeveledAmountObj } from "./leveled_amount"
+import { LeveledAmount, LeveledAmountObj } from "./leveled_amount"
 import { StringCompareType, StringCriteria } from "@util"
 
 export interface SkillPointBonusObj extends LeveledAmountObj {
@@ -38,13 +38,11 @@ export class SkillPointBonus extends BonusOwner {
 
 	static fromObject(data: SkillPointBonusObj): SkillPointBonus {
 		const bonus = new SkillPointBonus()
-		const levelData: Partial<Record<keyof LeveledAmountObj, any>> = {}
-		for (const key of Object.keys(data)) {
-			if (LeveledAmountKeys.includes(key)) {
-				levelData[key as keyof LeveledAmountObj] = data[key as keyof SkillPointBonusObj]
-			} else (bonus as any)[key] = data[key as keyof SkillPointBonusObj]
-		}
-		bonus.leveledAmount = new LeveledAmount(levelData)
+		if (data.name) bonus.name = new StringCriteria(data.name.compare, data.name.qualifier)
+		if (data.specialization)
+			bonus.specialization = new StringCriteria(data.specialization.compare, data.specialization.qualifier)
+		if (data.tags) bonus.tags = new StringCriteria(data.tags.compare, data.tags.qualifier)
+		bonus.leveledAmount = LeveledAmount.fromObject(data)
 		return bonus
 	}
 }

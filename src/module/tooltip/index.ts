@@ -15,6 +15,13 @@ export class TooltipGURPS {
 		return this.list.length
 	}
 
+	includes(searchElement: string | TooltipGURPS, fromIndex?: number): boolean {
+		for (const one of this.list) {
+			if (one instanceof TooltipGURPS && one.includes(searchElement, fromIndex)) return true
+		}
+		return this.list.includes(searchElement, fromIndex)
+	}
+
 	toString(nl = "<br>", tab = 1): string {
 		let final = ""
 		for (const i of this.list) {

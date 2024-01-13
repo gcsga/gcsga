@@ -1,9 +1,9 @@
 // Import { SkillContainerGURPS, SkillGURPS, TechniqueGURPS, TraitGURPS } from "@item"
 import { DiceGURPS } from "@module/dice"
-import { equalFold } from "./misc"
 import { ItemType } from "@module/data"
 import { Length } from "./length"
 import { CharacterResolver, SkillResolver } from "./resolvers"
+import { equalFold } from "./string_criteria"
 
 // export interface CharacterResolver {
 // 	resolveVariable: (variableName: string) => string

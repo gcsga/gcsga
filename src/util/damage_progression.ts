@@ -1,16 +1,16 @@
-import { DamageProgression } from "@module/data"
 import { DiceGURPS } from "@module/dice"
+import { progression } from "./enum"
 
 /**
  *
  * @param p
  * @param st
  */
-export function thrustFor(p: DamageProgression, st: number): DiceGURPS {
+export function thrustFor(p: progression.Option, st: number): DiceGURPS {
 	let d = new DiceGURPS()
 	let r = 0
 	switch (p) {
-		case DamageProgression.BasicSet:
+		case progression.Option.BasicSet:
 			if (st < 19)
 				return new DiceGURPS({
 					count: 1,
@@ -31,7 +31,7 @@ export function thrustFor(p: DamageProgression, st: number): DiceGURPS {
 				modifier: (value % 8) / 2 - 1,
 				multiplier: 1,
 			})
-		case DamageProgression.KnowingYourOwnStrength:
+		case progression.Option.KnowingYourOwnStrength:
 			if (st < 12) {
 				return new DiceGURPS({
 					count: 1,
@@ -46,7 +46,7 @@ export function thrustFor(p: DamageProgression, st: number): DiceGURPS {
 				modifier: ((st + 1) % 4) - 1,
 				multiplier: 1,
 			})
-		case DamageProgression.NoSchoolGrognardDamage:
+		case progression.Option.NoSchoolGrognardDamage:
 			if (st < 11) {
 				return new DiceGURPS({
 					count: 1,
@@ -62,13 +62,13 @@ export function thrustFor(p: DamageProgression, st: number): DiceGURPS {
 				modifier: (st % 8) / 2 - 1,
 				multiplier: 1,
 			})
-		case DamageProgression.ThrustEqualsSwingMinus2:
-			const dice = swingFor(DamageProgression.BasicSet, st)
+		case progression.Option.ThrustEqualsSwingMinus2:
+			const dice = swingFor(progression.Option.BasicSet, st)
 			dice.modifier -= 2
 			return dice
-		case DamageProgression.SwingEqualsThrustPlus2:
-			return thrustFor(DamageProgression.BasicSet, st)
-		case DamageProgression.PhoenixFlameD3:
+		case progression.Option.SwingEqualsThrustPlus2:
+			return thrustFor(progression.Option.BasicSet, st)
+		case progression.Option.PhoenixFlameD3:
 			if (st < 7) {
 				if (st < 1) st = 1
 				return new DiceGURPS({
@@ -92,7 +92,7 @@ export function thrustFor(p: DamageProgression, st: number): DiceGURPS {
 				modifier: st % 2,
 				multiplier: 1,
 			})
-		case DamageProgression.Tbone1:
+		case progression.Option.Tbone1:
 			if (st < 10)
 				return new DiceGURPS({
 					count: 1,
@@ -117,8 +117,8 @@ export function thrustFor(p: DamageProgression, st: number): DiceGURPS {
 			} else if (r === 8 || r === 9) d.modifier = 3
 
 			return d
-		case DamageProgression.Tbone1Clean:
-			if (st < 10) return thrustFor(DamageProgression.Tbone1, st)
+		case progression.Option.Tbone1Clean:
+			if (st < 10) return thrustFor(progression.Option.Tbone1, st)
 			d = new DiceGURPS({
 				count: Math.floor(st / 10),
 				sides: 6,
@@ -132,12 +132,12 @@ export function thrustFor(p: DamageProgression, st: number): DiceGURPS {
 			}
 
 			return d
-		case DamageProgression.Tbone2:
-			return swingFor(DamageProgression.Tbone2, Math.ceil((st * 2) / 3))
-		case DamageProgression.Tbone2Clean:
-			return swingFor(DamageProgression.Tbone2Clean, Math.ceil((st * 2) / 3))
+		case progression.Option.Tbone2:
+			return swingFor(progression.Option.Tbone2, Math.ceil((st * 2) / 3))
+		case progression.Option.Tbone2Clean:
+			return swingFor(progression.Option.Tbone2Clean, Math.ceil((st * 2) / 3))
 		default:
-			return thrustFor(DamageProgression.BasicSet, st)
+			return thrustFor(progression.Option.BasicSet, st)
 	}
 }
 
@@ -146,9 +146,9 @@ export function thrustFor(p: DamageProgression, st: number): DiceGURPS {
  * @param p
  * @param st
  */
-export function swingFor(p: DamageProgression, st: number): DiceGURPS {
+export function swingFor(p: progression.Option, st: number): DiceGURPS {
 	switch (p) {
-		case DamageProgression.BasicSet:
+		case progression.Option.BasicSet:
 			if (st < 10)
 				return new DiceGURPS({
 					count: 1,
@@ -175,7 +175,7 @@ export function swingFor(p: DamageProgression, st: number): DiceGURPS {
 				modifier: (value % 8) / 2 - 1,
 				multiplier: 1,
 			})
-		case DamageProgression.KnowingYourOwnStrength:
+		case progression.Option.KnowingYourOwnStrength:
 			if (st < 10) {
 				return new DiceGURPS({
 					count: 1,
@@ -190,25 +190,25 @@ export function swingFor(p: DamageProgression, st: number): DiceGURPS {
 				modifier: ((st - 1) % 4) - 1,
 				multiplier: 1,
 			})
-		case DamageProgression.NoSchoolGrognardDamage:
-			return thrustFor(DamageProgression.NoSchoolGrognardDamage, st + 3)
-		case DamageProgression.ThrustEqualsSwingMinus2:
-			return swingFor(DamageProgression.BasicSet, st)
-		case DamageProgression.SwingEqualsThrustPlus2:
-			const dice = thrustFor(DamageProgression.BasicSet, st)
+		case progression.Option.NoSchoolGrognardDamage:
+			return thrustFor(progression.Option.NoSchoolGrognardDamage, st + 3)
+		case progression.Option.ThrustEqualsSwingMinus2:
+			return swingFor(progression.Option.BasicSet, st)
+		case progression.Option.SwingEqualsThrustPlus2:
+			const dice = thrustFor(progression.Option.BasicSet, st)
 			dice.modifier += 2
 			return dice
-		case DamageProgression.PhoenixFlameD3:
-			return thrustFor(DamageProgression.PhoenixFlameD3, st)
-		case DamageProgression.Tbone1:
-			return thrustFor(DamageProgression.Tbone1, Math.ceil(st) * 1.5)
-		case DamageProgression.Tbone1Clean:
-			return thrustFor(DamageProgression.Tbone1Clean, Math.ceil(st) * 1.5)
-		case DamageProgression.Tbone2:
-			return thrustFor(DamageProgression.Tbone1, st)
-		case DamageProgression.Tbone2Clean:
-			return thrustFor(DamageProgression.Tbone1Clean, st)
+		case progression.Option.PhoenixFlameD3:
+			return thrustFor(progression.Option.PhoenixFlameD3, st)
+		case progression.Option.Tbone1:
+			return thrustFor(progression.Option.Tbone1, Math.ceil(st) * 1.5)
+		case progression.Option.Tbone1Clean:
+			return thrustFor(progression.Option.Tbone1Clean, Math.ceil(st) * 1.5)
+		case progression.Option.Tbone2:
+			return thrustFor(progression.Option.Tbone1, st)
+		case progression.Option.Tbone2Clean:
+			return thrustFor(progression.Option.Tbone1Clean, st)
 		default:
-			return swingFor(DamageProgression.BasicSet, st)
+			return swingFor(progression.Option.BasicSet, st)
 	}
 }

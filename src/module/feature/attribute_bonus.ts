@@ -1,6 +1,6 @@
 import { gid } from "@module/data"
 import { BonusOwner } from "./bonus_owner"
-import { LeveledAmount, LeveledAmountKeys, LeveledAmountObj } from "./leveled_amount"
+import { LeveledAmount, LeveledAmountObj } from "./leveled_amount"
 import { feature, stlimit } from "@util/enum"
 
 export interface AttributeBonusObj extends LeveledAmountObj {
@@ -33,18 +33,14 @@ export class AttributeBonus extends BonusOwner {
 			...super.toObject(),
 			type: this.type,
 			attribute: this.attribute,
+			limitation: this.limitation,
 		}
 	}
 
 	static fromObject(data: AttributeBonusObj): AttributeBonus {
 		const bonus = new AttributeBonus(data.attribute)
-		const levelData: Partial<Record<keyof LeveledAmountObj, any>> = {}
-		for (const key of Object.keys(data)) {
-			if (LeveledAmountKeys.includes(key)) {
-				levelData[key as keyof LeveledAmountObj] = data[key as keyof AttributeBonusObj]
-			} else (bonus as any)[key] = data[key as keyof AttributeBonusObj]
-		}
-		bonus.leveledAmount = new LeveledAmount(levelData)
+		bonus.limitation = data.limitation || stlimit.Option.None
+		bonus.leveledAmount = LeveledAmount.fromObject(data)
 		return bonus
 	}
 }

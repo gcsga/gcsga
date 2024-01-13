@@ -1,14 +1,15 @@
-import { ActorType, ItemType, SkillDefaultType } from "@module/data"
-import { affects, difficulty, emcost, emweight, selfctrl, stlimit, tmcost } from "./enum"
+import { ActorType, ItemType, SheetSettings, SkillDefaultType } from "@module/data"
+import { affects, difficulty, display, emcost, emweight, selfctrl, stlimit, tmcost } from "./enum"
 import { TooltipGURPS } from "@module/tooltip"
 import { WeightUnits } from "./weight"
 import { TraitContainerSystemData, TraitContainerType } from "@item/trait_container/data"
-import { CharacterProfile, CharacterSettings, Encumbrance } from "@actor/character/data"
+import { CharacterProfile, Encumbrance } from "@actor/character/data"
 import { MoveBonusType } from "@feature/data"
 import { DurationType } from "@item/effect/data"
 import { ConditionID, ManeuverID } from "@item/condition/data"
 import { TraitSystemData } from "@item/trait/data"
 import { LootSettings } from "@actor/loot/data"
+import { FeatureObj } from "@module/config"
 
 export interface ActorResolver<T extends ActorType> {
 	type: T
@@ -23,13 +24,7 @@ export interface CharacterResolver extends ActorResolver<ActorType.Character> {
 	// Profile & settings
 	profile: CharacterProfile
 	adjustedSizeModifier: number
-	settings: CharacterSettings
-	// settings: {
-	// 	attributes: AttributeDefObj[]
-	// 	damage_progression: DamageProgression
-	// 	move_types: MoveTypeDefObj[]
-	// 	default_weight_units: WeightUnits
-	// }
+	settings: SheetSettings
 	// Items
 	traits: Collection<TraitResolver | TraitContainerResovler>
 	skills: Collection<SkillResolver | TechniqueResolver | SkillContainerResolver>
@@ -65,13 +60,14 @@ export interface CharacterResolver extends ActorResolver<ActorType.Character> {
 		penalty: number
 		name: string
 	}
+	embeddedEval: (s: string) => string
 }
 
 export interface ItemResolver {
 	name: string | null
 	type: ItemType
 	formattedName: string
-	secondaryText: string
+	secondaryText: (optionChecker: (option: display.Option) => boolean) => string
 	enabled: boolean
 }
 
@@ -119,7 +115,7 @@ export interface TraitModifierResolver extends ItemResolver {
 }
 
 export interface TraitModifierContainerResolver
-	extends ContainerResolver<TraitModifierResolver | TraitModifierContainerResolver> { }
+	extends ContainerResolver<TraitModifierResolver | TraitModifierContainerResolver> {}
 
 export interface LeveledItemResolver extends ItemResolver {
 	points: number
@@ -150,7 +146,7 @@ export interface TechniqueResolver extends LeveledItemResolver {
 }
 
 export interface SkillContainerResolver
-	extends ContainerResolver<SkillResolver | TechniqueResolver | SkillContainerResolver> { }
+	extends ContainerResolver<SkillResolver | TechniqueResolver | SkillContainerResolver> {}
 
 export interface SpellResolver extends LeveledItemResolver {
 	rituals: string
@@ -160,7 +156,7 @@ export interface SpellResolver extends LeveledItemResolver {
 	college: string[]
 }
 
-export interface SpellContainerResolver extends ContainerResolver<SpellResolver | SpellContainerResolver> { }
+export interface SpellContainerResolver extends ContainerResolver<SpellResolver | SpellContainerResolver> {}
 
 export interface SkillLevelResolver {
 	level: number
@@ -224,7 +220,7 @@ export interface EquipmentModifierResolver extends ItemResolver {
 }
 
 export interface EquipmentModifierContainerResolver
-	extends ContainerResolver<EquipmentModifierResolver | EquipmentModifierContainerResolver> { }
+	extends ContainerResolver<EquipmentModifierResolver | EquipmentModifierContainerResolver> {}
 
 export interface NoteResolver extends ItemResolver {
 	formattedText: string

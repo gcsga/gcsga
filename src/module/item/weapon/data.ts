@@ -1,6 +1,7 @@
 import { BaseItemSourceGURPS } from "@item/base"
 import { ItemType } from "@module/data"
 import { SkillDefault } from "@module/default"
+import { stdmg } from "@util/enum"
 
 export type BaseWeaponSource<
 	TItemType extends ItemType = ItemType,
@@ -9,7 +10,7 @@ export type BaseWeaponSource<
 
 export interface WeaponDamageObj {
 	type: string
-	st?: stdmg
+	st?: stdmg.Option
 	base?: string
 	armor_divisor?: number
 	fragmentation?: string
@@ -39,35 +40,3 @@ export interface BaseWeaonCalcValues {
 }
 
 export type WeaponType = ItemType.MeleeWeapon | ItemType.RangedWeapon
-
-export enum stdmg {
-	None = "none",
-	Thrust = "thr",
-	LeveledThrust = "thr_leveled",
-	Swing = "sw",
-	LeveledSwing = "sw_leveled",
-}
-
-export enum wswitch {
-	CanBlock = "can_block",
-	CanParry = "can_parry",
-	CloseCombat = "close_combat",
-	Fencing = "fencing",
-	FullAuto1 = "full_auto_1",
-	FullAuto2 = "full_auto_2",
-	Bipod = "bipod",
-	ControlledBursts1 = "controlled_bursts_1",
-	ControlledBursts2 = "controlled_bursts_2",
-	Jet = "jet",
-	Mounted = "mounted",
-	MusclePowered = "muscle_powered",
-	RangeInMiles = "range_in_miles",
-	ReachChangeRequiresReady = "change_requires_ready",
-	ReloadTimeIsPerShot = "reload_time_is_per_shot",
-	RetractingStock = "retracting_stock",
-	TwoHanded = "two_handed",
-	Thrown = "thrown",
-	Unbalanced = "unbalanced",
-	TwoHandedAndUnreadyAfterAttack = "two_handed_unready",
-	MusketRest = "musket_rest",
-}

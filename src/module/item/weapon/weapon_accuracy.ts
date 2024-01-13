@@ -1,9 +1,8 @@
 import { WeaponGURPS } from "@module/config"
 import { TooltipGURPS } from "@module/tooltip"
 import { Int } from "@util/fxp"
-import { wswitch } from "./data"
 import { WeaponField } from "./weapon_field"
-import { feature } from "@util/enum"
+import { feature, wswitch } from "@util/enum"
 
 export class WeaponAccuracy extends WeaponField {
 	base = 0
@@ -28,7 +27,7 @@ export class WeaponAccuracy extends WeaponField {
 
 	resolve(w: WeaponGURPS, tooltip: TooltipGURPS): WeaponAccuracy {
 		const result = WeaponAccuracy.parse(this.toString())
-		result.jet = w.resolveBoolFlag(wswitch.Jet, result.jet)
+		result.jet = w.resolveBoolFlag(wswitch.Type.Jet, result.jet)
 		if (!result.jet) {
 			if (w.actor) {
 				for (const bonus of w.collectWeaponBonuses(

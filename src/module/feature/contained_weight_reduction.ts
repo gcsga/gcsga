@@ -33,9 +33,7 @@ export class ContainedWeightReduction extends BonusOwner {
 
 	static fromObject(data: ContainedWeightReductionObj): ContainedWeightReduction {
 		const bonus = new ContainedWeightReduction()
-		for (const key of Object.keys(data)) {
-			;(bonus as any)[key] = data[key as keyof ContainedWeightReductionObj]
-		}
+		bonus.reduction = data.reduction
 		return bonus
 	}
 }

@@ -1,12 +1,6 @@
 import { LocalizeGURPS } from "@util"
 import { feature } from "@util/enum"
 
-export const LeveledAmountKeys = [
-	"amount",
-	"per_level",
-	// "effective"
-]
-
 export interface LeveledAmountObj {
 	type: feature.Type
 	// level: number
@@ -49,5 +43,9 @@ export class LeveledAmount {
 				base: amt,
 			})
 		return amt
+	}
+
+	static fromObject(data: LeveledAmountObj): LeveledAmount {
+		return new LeveledAmount({ amount: data.amount, per_level: data.per_level })
 	}
 }

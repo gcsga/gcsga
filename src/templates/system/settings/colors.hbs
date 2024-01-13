@@ -4,7 +4,7 @@
 			<div class="label">{{localize "gurps.settings.colors.modePreference"}}</div>
 			<select name="modePreference" data-dtype="String">
 				{{#select modePreference}}
-					{{#each config.select.color_mode_preference as |v k|}}
+					{{#each config.select.color as |v k|}}
 						<option value="{{k}}">{{localize v}}</option>
 					{{/each}}
 				{{/select}}

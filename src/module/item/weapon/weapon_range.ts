@@ -1,9 +1,8 @@
 import { WeaponGURPS } from "@module/config"
 import { TooltipGURPS } from "@module/tooltip"
 import { Int } from "@util/fxp"
-import { wswitch } from "./data"
 import { WeaponField } from "./weapon_field"
-import { feature } from "@util/enum"
+import { feature, wswitch } from "@util/enum"
 
 export class WeaponRange extends WeaponField {
 	halfDamage = 0
@@ -58,8 +57,8 @@ export class WeaponRange extends WeaponField {
 	resolve(w: WeaponGURPS, tooltip: TooltipGURPS): WeaponRange {
 		const result = new WeaponRange()
 		Object.assign(result, this)
-		result.musclePowered = w.resolveBoolFlag(wswitch.MusclePowered, result.musclePowered)
-		result.inMiles = w.resolveBoolFlag(wswitch.RangeInMiles, result.inMiles)
+		result.musclePowered = w.resolveBoolFlag(wswitch.Type.MusclePowered, result.musclePowered)
+		result.inMiles = w.resolveBoolFlag(wswitch.Type.RangeInMiles, result.inMiles)
 		if (result.musclePowered) {
 			let st = 0
 			if (w.container instanceof Item) st = (w.container as any).ratedStrength

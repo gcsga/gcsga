@@ -183,7 +183,7 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 	}
 
 	static adjustedStudyHours(entry: Study): number {
-		return study.Type.multiplier(entry.type)
+		return entry.hours * study.Type.multiplier(entry.type)
 	}
 
 	static in(total: string | any[] | any, sub: string): boolean {
@@ -422,92 +422,9 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 		return condition ? ifTrue : ifFalse
 	}
 
-	// static studyinfo(type: study.Type) {
-	// 	const b = "• "
-	// 	const nl = "<br>"
-	// 	switch (type) {
-	// 		case study.Type.Self:
-	// 			return [
-	// 				b,
-	// 				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.study.tooltip.max_no_job, { hours: 12 }),
-	// 				nl,
-	// 				b,
-	// 				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.study.tooltip.max_part_time_job, {
-	// 					hours: 8,
-	// 				}),
-	// 				nl,
-	// 				b,
-	// 				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.study.tooltip.max_full_time_job, {
-	// 					hours: 4,
-	// 				}),
-	// 			].join("")
-	// 		case study.Type.Job:
-	// 			return [
-	// 				b,
-	// 				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.study.tooltip.max_full_time_job, {
-	// 					hours: 8,
-	// 				}),
-	// 				nl,
-	// 				b,
-	// 				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.study.tooltip.max_part_time_job, {
-	// 					hours: 4,
-	// 				}),
-	// 			].join("")
-	// 		case study.Type.Teacher:
-	// 			return [
-	// 				b,
-	// 				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.study.tooltip.max, { hours: 8 }),
-	// 				nl,
-	// 				b,
-	// 				LocalizeGURPS.translations.gurps.study.tooltip.teacher_prereq,
-	// 				nl,
-	// 				b,
-	// 				LocalizeGURPS.translations.gurps.study.tooltip.teacher_teaching,
-	// 			].join("")
-	// 		case study.Type.Intensive:
-	// 			return [
-	// 				b,
-	// 				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.study.tooltip.max, { hours: 12 }),
-	// 				nl,
-	// 				b,
-	// 				LocalizeGURPS.translations.gurps.study.tooltip.teacher_prereq,
-	// 				nl,
-	// 				b,
-	// 				LocalizeGURPS.translations.gurps.study.tooltip.teacher_teaching,
-	// 			].join("")
-	// 	}
-	// }
-
-	// Static multiselect(selected: string[], options: any) {
-	// 	let html = options.fn(this)
-	// 	if (selected.length === 0) {
-	// 		const escapedValue = RegExp.escape(Handlebars.escapeExpression(
-	// 			"all"
-	// 		))
-	// 		const rgx = new RegExp(' value=[\"\']' + escapedValue + '[\"\']')
-	// 		html = html.replace(rgx, "$& selected")
-	// 		return html
-	// 	}
-	// 	// if (selected.length > 1) {
-	// 	// 	const escapedValue = RegExp.escape(Handlebars.escapeExpression(
-	// 	// 		"multiple"
-	// 	// 	))
-	// 	// 	const rgx = new RegExp(' value=[\"\']' + escapedValue + '[\"\']')
-	// 	// 	html = html.replace(rgx, "$& selected")
-	// 	// 	for (const s of selected) {
-	// 	// 		const escapedValue = RegExp.escape(Handlebars.escapeExpression(s))
-	// 	// 		const rgx = new RegExp(' value=[\"\']' + escapedValue + '[\"\']')
-	// 	// 		html = html.replace(rgx, "$& class='selected'")
-	// 	// 	}
-	// 	// 	return html
-	// 	// }
-	// 	for (const s of selected) {
-	// 		const escapedValue = RegExp.escape(Handlebars.escapeExpression(s))
-	// 		const rgx = new RegExp(' value=[\"\']' + escapedValue + '[\"\']')
-	// 		html = html.replace(rgx, "$& class='selected'")
-	// 	}
-	// 	return html
-	// }
+	static studyInfo(type: study.Type): string {
+		return study.Type.info(type)
+	}
 
 	/**
 	 * This is a copy of Foundry's selectOptions helper enhanced to support taking a list of options to disable.
@@ -610,7 +527,7 @@ export function registerHandlebarsHelpers() {
 		signed: HandlebarsHelpersGURPS.signed,
 		sort: HandlebarsHelpersGURPS.sort,
 		staticSpellValues: HandlebarsHelpersGURPS.staticSpellValues,
-		// studyinfo: HandlebarsHelpersGURPS.studyinfo,
+		studyInfo: HandlebarsHelpersGURPS.studyInfo,
 		sum: HandlebarsHelpersGURPS.sum,
 		textareaFormat: HandlebarsHelpersGURPS.textareaFormat,
 		unsatisfied: HandlebarsHelpersGURPS.unsatisfied,

@@ -1,10 +1,9 @@
 import { WeaponGURPS } from "@module/config"
 import { TooltipGURPS } from "@module/tooltip"
-import { wswitch } from "./data"
 import { Int } from "@util/fxp"
 import { gid } from "@module/data"
 import { WeaponField } from "./weapon_field"
-import { feature } from "@util/enum"
+import { feature, wswitch } from "@util/enum"
 
 export class WeaponBlock extends WeaponField {
 	no = false
@@ -24,7 +23,7 @@ export class WeaponBlock extends WeaponField {
 
 	resolve(w: WeaponGURPS, tooltip: TooltipGURPS | null): WeaponBlock {
 		const result = WeaponBlock.parse(this.toString())
-		result.no = !w.resolveBoolFlag(wswitch.CanBlock, !result.no)
+		result.no = !w.resolveBoolFlag(wswitch.Type.CanBlock, !result.no)
 		if (!result.no) {
 			const actor = w.actor
 			if (actor !== null) {

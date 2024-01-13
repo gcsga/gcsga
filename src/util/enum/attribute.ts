@@ -1,5 +1,5 @@
 import { LocalizeGURPS } from "@util/localize"
-import { equalFold } from "@util/misc"
+import { equalFold } from "@util/string_criteria"
 
 export namespace attribute {
 	export enum Type {

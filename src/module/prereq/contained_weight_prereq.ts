@@ -24,10 +24,7 @@ export class ContainedWeightPrereq extends BasePrereq {
 		let units = WeightUnits.Pound
 		if (character) units = character.settings.default_weight_units
 		super(prereq.Type.ContainedWeight)
-		this.qualifier = new WeightCriteria(
-			NumericCompareType.AtMostNumber,
-			Weight.toPounds(5, units)
-		)
+		this.qualifier = new WeightCriteria(NumericCompareType.AtMostNumber, Weight.toPounds(5, units))
 	}
 
 	static fromObject(data: ContainedWeightPrereqObj, character: CharacterResolver): ContainedWeightPrereq {

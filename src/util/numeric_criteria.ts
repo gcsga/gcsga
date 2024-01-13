@@ -13,7 +13,13 @@ export const AllNumericCompareTypes: NumericCompareType[] = [
 	NumericCompareType.EqualsNumber,
 	NumericCompareType.NotEqualsNumber,
 	NumericCompareType.AtLeastNumber,
-	NumericCompareType.AtMostNumber
+	NumericCompareType.AtMostNumber,
+]
+
+export const ContainedQuantityNumericCompareTypes: NumericCompareType[] = [
+	NumericCompareType.EqualsNumber,
+	NumericCompareType.AtLeastNumber,
+	NumericCompareType.AtMostNumber,
 ]
 
 export class NumericCriteria {

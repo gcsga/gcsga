@@ -29,3 +29,9 @@ export enum MoveTypeOverrideConditionType {
 	Skill = "skill",
 	Condition = "condition",
 }
+
+export const allMoveTypeOverrideConditions: MoveTypeOverrideConditionType[] = [
+	MoveTypeOverrideConditionType.Trait,
+	MoveTypeOverrideConditionType.Skill,
+	MoveTypeOverrideConditionType.Condition,
+]

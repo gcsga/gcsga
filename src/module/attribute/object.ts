@@ -38,6 +38,7 @@ export class Attribute {
 
 	_overridenThreshold?: PoolThreshold | null = null
 
+	// constructor(actor: CharacterResolver, attr_id: string, order: number, data?: Partial<AttributeObj>) {
 	constructor(actor: CharacterResolver | Mook, attr_id: string, order: number, data?: Partial<AttributeObj>) {
 		if (data) Object.assign(this, data)
 		this.actor = actor

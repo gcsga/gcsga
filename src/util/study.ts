@@ -12,11 +12,9 @@ export function studyHoursProgressText(hours: number, needed: study.Level, force
 		hours = 0
 		if (!force) return ""
 	}
-	let studyNeeded = "200"
-	if (needed !== studyNeeded) studyNeeded = needed
 	return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.study.studied_alt, {
 		hours: hours,
-		total: studyNeeded,
+		total: needed,
 	})
 }
 

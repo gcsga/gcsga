@@ -1,6 +1,8 @@
 import { ItemGCS } from "@item/gcs"
 import { TraitModifierSource } from "./data"
-import { affects, tmcost } from "@util/enum"
+import { affects, display, tmcost } from "@util/enum"
+import { sheetSettingsFor } from "@module/data"
+import { StringBuilder } from "@util/string_builder"
 
 export class TraitModifierGURPS extends ItemGCS<TraitModifierSource> {
 	prepareBaseData() {
@@ -14,8 +16,9 @@ export class TraitModifierGURPS extends ItemGCS<TraitModifierSource> {
 		return this.system.levels
 	}
 
-	get secondaryText(): string {
-		return this.system.notes
+	secondaryText(optionChecker: (option: display.Option) => boolean): string {
+		if (optionChecker(sheetSettingsFor(this.actor).notes_display)) return this.localNotes
+		return ""
 	}
 
 	get costDescription(): string {
@@ -54,11 +57,11 @@ export class TraitModifierGURPS extends ItemGCS<TraitModifierSource> {
 	}
 
 	get fullDescription(): string {
-		let d = ""
-		d += this.name
-		if (this.secondaryText) d += ` (${this.secondaryText})`
-		if (this.actor && this.actor.settings.show_trait_modifier_adj) d += ` [${this.costDescription}]`
-		return d
+		const buffer = new StringBuilder()
+		buffer.push(this.formattedName)
+		if (this.localNotes !== "") buffer.push(` (${this.localNotes})`)
+		if (sheetSettingsFor(this.actor).show_trait_modifier_adj) buffer.push(` [${this.costDescription}]`)
+		return buffer.toString()
 	}
 
 	get isLeveled(): boolean {

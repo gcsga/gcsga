@@ -891,185 +891,6 @@
 			"from_technique": "from technique {name}",
 			"from_equipment": "from equipment {name}"
 		},
-		"select": {
-			"number_compare": {
-				"none": "is anything",
-				"is": "is",
-				"is_not": "is not",
-				"at_least": "is at least",
-				"at_most": "is at most"
-			},
-			"number_compare_strict": {
-				"is": "exactly",
-				"at_least": "at least",
-				"at_most": "at most"
-			},
-			"string_compare": {
-				"none": "is anything",
-				"is": "is",
-				"is_not": "is not",
-				"contains": "contains",
-				"does_not_contain": "does not contain",
-				"starts_with": "starts with",
-				"does_not_start_with": "does not start with",
-				"ends_with": "ends with",
-				"does_not_end_with": "does not end with"
-			},
-			"has": {
-				"true": "has",
-				"false": "doesn't have"
-			},
-			"all": {
-				"true": "requires all of:",
-				"false": "requires at least one of:"
-			},
-			"prereqs": {
-				"trait_prereq": "a trait",
-				"attribute_prereq": "the attribute",
-				"contained_quantity_prereq": "a contained quantity of",
-				"contained_weight_prereq": "a contained weight",
-				"equipped_equipment_prereq": "has equipped equipment",
-				"skill_prereq": "a skill",
-				"spell_prereq": "spell(s)"
-			},
-			"spell_sub_type": {
-				"name": "whose name",
-				"tag": "with a tag which",
-				"college": "whose college name",
-				"college_count": "from different colleges",
-				"any": "of any kind"
-			},
-			"skill_bonus_selection_type": {
-				"skills_with_name": "to skills with name",
-				"weapons_with_name": "to weapons with name",
-				"this_weapon": "to this weapon"
-			},
-			"spell_match": {
-				"all_colleges": "to all colleges",
-				"college_name": "to the college whose name",
-				"power_source_name": "to the power source whose name",
-				"spell_name": "to the spell whose name"
-			},
-			"damage_st": {
-				"none": "None",
-				"thr": "Thrust",
-				"thr_leveled": "Thrust (leveled)",
-				"sw": "Swing",
-				"sw_leveled": "Swing (leveled)"
-			},
-			"defaults": {
-				"ten": "10",
-				"parry": "Parry",
-				"block": "Block",
-				"skill": "Skill"
-			},
-			"container_type": {
-				"group": "Group",
-				"meta_trait": "Meta-Trait",
-				"attributes": "Attributes",
-				"ancestry": "Ancestry",
-				"alternative_abilities": "Alternative Abilities"
-			},
-			"trait_mod_cost_type": {
-				"percentage_leveled": "% per level",
-				"percentage": "%",
-				"points": "points",
-				"multiplier": "×"
-			},
-			"eqp_mod_cost_type": {
-				"to_original_cost": "to original cost (e.g. \"+5\", \"-5\", \"+10%\", \"-10%\", \"x3.2\")",
-				"to_base_cost": "to base cost (e.g. \"x2\", \"+2 CF\", \"-0.2 CF\")",
-				"to_final_base_cost": "to final base cost (e.g. \"+5\", \"-5\", \"+10%\", \"-10%\", \"x3.2\")",
-				"to_final_cost": "to final cost (e.g. \"+5\", \"-5\", \"+10%\", \"-10%\", \"x3.2\")"
-			},
-			"difficulty": {
-				"easy": "E",
-				"average": "A",
-				"hard": "H",
-				"very_hard": "VH",
-				"wildcard": "W"
-			},
-			"move_type": {
-				"ground": "Ground",
-				"air": "Air",
-				"water": "Water",
-				"space": "Space"
-			},
-			"display": {
-				"not_shown": "Not Shown",
-				"inline": "Inline",
-				"tooltip": "Tooltip",
-				"inline_and_tooltip": "Inline & Tooltip"
-			},
-			"default_weight_units": {
-				"lb": "lb",
-				"#": "#",
-				"oz": "oz",
-				"tn": "tn",
-				"t": "t",
-				"kg": "kg",
-				"g": "g"
-			},
-			"color_mode_preference": {
-				"auto": "Automatic",
-				"dark": "Dark",
-				"light": "Light"
-			},
-			"srt_comparison": {
-				"less_than": "<",
-				"less_than_or_equal": "≤",
-				"greater_than": ">",
-				"greater_than_or_equal": "≥"
-			},
-			"srt_operator": {
-				"add": "Max +",
-				"subtract": "Max -",
-				"multiply": "Max ×",
-				"divide": "Max ÷"
-			},
-			"duration_type": {
-				"none": "None",
-				"turns": "Turns",
-				"rounds": "Rounds",
-				"seconds": "Seconds"
-			},
-			"effect_action": {
-				"add": "Add",
-				"remove": "Remove"
-			},
-			"move_condition_type": {
-				"trait": "Has a trait whose name is",
-				"skill": "Has a skill whose name is",
-				"condition": "Has a condition whose ID is"
-			},
-			"switch_type": {
-				"can_block": "Can Block",
-				"can_parry": "Can Parry",
-				"close_combat": "Close Combat",
-				"fencing": "Fencing",
-				"full_auto_1": "Fully Automatic (Mode 1)",
-				"full_auto_2": "Fully Automatic (Mode 2)",
-				"bipod": "Has Bipod",
-				"controlled_bursts_1": "High-cyclic Controlled Bursts (Mode 1)",
-				"controlled_bursts_2": "High-cyclic Controlled Bursts (Mode 2)",
-				"jet": "Jet",
-				"mounted": "Mounted",
-				"muscle_powered": "Muscle Powered",
-				"range_in_miles": "Range In Miles",
-				"change_requires_ready": "Reach Change Requires Ready",
-				"reload_time_is_per_shot": "Reload Time Is Per Shot",
-				"retracting_stock": "Retracting Stock",
-				"two_handed": "Two-handed",
-				"thrown": "Thrown",
-				"unbalanced": "Unbalanced",
-				"two_handed_unready": "Two-handed and Unready After Attack",
-				"musket_rest": "Uses a Musket Rest"
-			},
-			"switch_type_value": {
-				"true": "to true",
-				"false": "to false"
-			}
-		},
 		"study": {
 			"header": "Study",
 			"studied": "Studied {hours}/{total} hours",
@@ -1079,6 +900,8 @@
 		"field_prefix": {
 			"attribute": "to {att}",
 			"attribute_unknown": "to the unrecognized key ({att})",
+			"move_type": "to {type}",
+			"move_type_unknown": "to the unrecognized key ({type})",
 			"tech_level": "When the Tech Level",
 			"name": "whose name",
 			"combined_with": "combined with",
@@ -1243,6 +1066,15 @@
 			"au": "AU",
 			"ly": "ly",
 			"pc": "pc"
+		},
+		"weight_units": {
+			"lb": "lb",
+			"#": "#",
+			"oz": "oz",
+			"tn": "tn",
+			"t": "t",
+			"kg": "kg",
+			"g": "g"
 		},
 		"placeholder": {
 			"hit_location": {
@@ -1754,6 +1586,60 @@
 			"space": "Space Move"
 		},
 		"enum": {
+			"color": {
+				"auto": "Automatic",
+				"dark": "Dark",
+				"light": "Light"
+			},
+			"defaults": {
+				"ten": "10",
+				"parry": "Parry",
+				"block": "Block",
+				"skill": "Skill"
+			},
+			"stdmg": {
+				"none": "None",
+				"thr": "Thrust",
+				"thr_leveled": "Thrust (leveled)",
+				"sw": "Swing",
+				"sw_leveled": "Swing (leveled)"
+			},
+			"wswitch": {
+				"can_block": "Can Block",
+				"can_parry": "Can Parry",
+				"close_combat": "Close Combat",
+				"fencing": "Fencing",
+				"full_auto_1": "Fully Automatic (Mode 1)",
+				"full_auto_2": "Fully Automatic (Mode 2)",
+				"bipod": "Has Bipod",
+				"controlled_bursts_1": "High-cyclic Controlled Bursts (Mode 1)",
+				"controlled_bursts_2": "High-cyclic Controlled Bursts (Mode 2)",
+				"jet": "Jet",
+				"mounted": "Mounted",
+				"muscle_powered": "Muscle Powered",
+				"range_in_miles": "Range In Miles",
+				"change_requires_ready": "Reach Change Requires Ready",
+				"reload_time_is_per_shot": "Reload Time Is Per Shot",
+				"retracting_stock": "Retracting Stock",
+				"two_handed": "Two-handed",
+				"thrown": "Thrown",
+				"unbalanced": "Unbalanced",
+				"two_handed_unready": "Two-handed and Unready After Attack",
+				"musket_rest": "Uses a Musket Rest"
+			},
+			"wswitch_value": {
+				"true": "to true",
+				"false": "to false"
+			},
+			"has": {
+				"true": "Has",
+				"false": "Does not have"
+			},
+			"move_override": {
+				"trait": "Has a trait whose name is",
+				"skill": "Has a skill whose name is",
+				"condition": "Has a condition whose ID is"
+			},
 			"affects": {
 				"string": {
 					"total": "to cost",
@@ -1782,12 +1668,32 @@
 					"ancestry": "Ancestry"
 				}
 			},
+			"display": {
+				"not_shown": "Not Shown",
+				"inline": "Inline",
+				"tooltip": "Tooltip",
+				"inline_and_tooltip": "Inline & Tooltip"
+			},
 			"difficulty": {
 				"e": "E",
 				"a": "A",
 				"h": "H",
 				"vh": "VH",
 				"w": "W"
+			},
+			"paper": {
+				"size": {
+					"letter": "Letter",
+					"legal": "Legal",
+					"tabloid": "Tabloid",
+					"a0": "A0",
+					"a1": "A1",
+					"a2": "A2",
+					"a3": "A3",
+					"a4": "A4",
+					"a5": "A5",
+					"a6": "A6"
+				}
 			},
 			"emcost": {
 				"type": {
@@ -1891,6 +1797,10 @@
 				"striking_only": "for striking only",
 				"lifting_only": "for lifting only",
 				"throwing_only": "for throwing only"
+			},
+			"movelimit": {
+				"base": "Base",
+				"enhanced": "Enhanced"
 			},
 			"wsel": {
 				"weapons_with_required_skill": "to weapons whose required skill name",
@@ -2058,9 +1968,17 @@
 				"is_not": "not",
 				"at_least": "at least",
 				"at_most": "at most"
+			},
+			"quantity": {
+				"none": "anything",
+				"is": "exactly",
+				"is_not": "not",
+				"at_least": "at least",
+				"at_most": "at most"
 			}
 		},
 		"prereq": {
+			"header": "Prerequisites",
 			"prefix": "• ",
 			"unsatisfied": "Unsatisfied Prerequisite(s)",
 			"not_met": "Prerequisites have not been met:<br>",
@@ -2107,6 +2025,10 @@
 				"true": "Requires all of:",
 				"false": "Requires at least one of:"
 			}
+		},
+		"common": {
+			"no_additional_modifiers": "No additional modifiers",
+			"includes_modifiers_from": "Includes modifiers from"
 		}
 	}
 }

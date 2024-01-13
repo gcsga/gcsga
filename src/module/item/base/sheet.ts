@@ -51,6 +51,7 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 		const itemData = this.object.toObject(false)
 		const attributes: Record<string, string> = {}
 		const locations: Record<string, string> = {}
+		const move_types: Record<string, string> = {}
 		locations[gid.All] = LocalizeGURPS.translations.gurps.feature.all_locations
 		const default_attributes = game.settings.get(
 			SYSTEM_NAME,
@@ -72,6 +73,9 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 					location: e.choice_name,
 				})
 			}
+			actor.move_types.forEach(e => {
+				move_types[e.id] = e.move_type_def.name
+			})
 		} else {
 			default_attributes.forEach(e => {
 				if (e.type.includes("_separator")) return
@@ -97,6 +101,7 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 				config: CONFIG.GURPS,
 				attributes: attributes,
 				locations: locations,
+				move_types: move_types,
 				weaponFeatures: feature.WeaponBonusTypes,
 				sysPrefix: "array.system.",
 			},
@@ -299,9 +304,9 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 		const index = parseInt($(event.currentTarget).data("index"))
 		const FeatureConstructor = CONFIG.GURPS.Feature.classes[value as feature.Type]
 		let features = duplicate((this.item.system as any).features as FeatureObj[])
-		let feature = new FeatureConstructor().toObject()
-		if (feature.WeaponBonusTypes.includes(value)) feature = new FeatureConstructor(value).toObject()
-		features.splice(index, 1, feature)
+		let f = new FeatureConstructor().toObject()
+		if (feature.WeaponBonusTypes.includes(value)) f = new FeatureConstructor(value).toObject()
+		features.splice(index, 1, f)
 		const update: any = {}
 		await this.item.update(
 			{ "system.-=features": null },

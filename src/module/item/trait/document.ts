@@ -1,10 +1,11 @@
 import { ItemGCS } from "@item/gcs"
 import { TraitModifierGURPS } from "@item/trait_modifier"
 import { TraitModifierContainerGURPS } from "@item/trait_modifier_container"
-import { inlineNote, parseInlineNoteExpressions, resolveStudyHours, studyHoursProgressText } from "@util"
+import { resolveStudyHours, studyHoursProgressText } from "@util"
 import { TraitSource } from "./data"
-import { ItemType } from "@module/data"
-import { selfctrl } from "@util/enum"
+import { ItemType, sheetSettingsFor } from "@module/data"
+import { display, selfctrl } from "@util/enum"
+import { StringBuilder } from "@util/string_builder"
 
 export class TraitGURPS extends ItemGCS<TraitSource> {
 	unsatisfied_reason = ""
@@ -16,35 +17,20 @@ export class TraitGURPS extends ItemGCS<TraitSource> {
 		return `${name}${levels ? ` ${levels}` : ""}`
 	}
 
-	get secondaryText(): string {
-		const buffer: string[] = []
-		if (inlineNote(this.actor, "user_description_display") && this.system.userdesc !== "") {
+	secondaryText(optionChecker: (option: display.Option) => boolean): string {
+		const buffer = new StringBuilder()
+		const settings = sheetSettingsFor(this.actor)
+		if (this.system.userdesc !== "" && optionChecker(settings.user_description_display)) {
 			buffer.push(this.system.userdesc)
 		}
-		if (inlineNote(this.actor, "modifiers_display")) {
-			if (this.modifierNotes !== "") {
-				if (buffer.length > 0) buffer.push("<br>")
-				buffer.push(this.modifierNotes)
-			}
-		}
-		if (inlineNote(this.actor, "notes_display")) {
-			if (this.system.notes.trim() !== "") {
-				if (buffer.length > 0) buffer.push("<br>")
-				buffer.push(this.system.notes.trim())
-			}
-			const studyEntry = studyHoursProgressText(
-				resolveStudyHours(this.system.study),
-				this.system.study_hours_needed,
-				false
+		if (optionChecker(settings.modifiers_display)) buffer.appendToNewLine(this.modifierNotes)
+		if (optionChecker(settings.notes_display)) {
+			buffer.appendToNewLine(this.notes.trim())
+			buffer.appendToNewLine(
+				studyHoursProgressText(resolveStudyHours(this.system.study), this.system.study_hours_needed, false)
 			)
-			if (studyEntry !== "") {
-				if (buffer.length > 0) buffer.push("<br>")
-				buffer.push(studyEntry)
-			}
 		}
-		let outString = buffer.join("")
-		if (this.parent) outString = parseInlineNoteExpressions(buffer.join(""), this.parent as any)
-		return `<div class="item-notes">${outString}</div>`
+		return buffer.toString()
 	}
 
 	get enabled(): boolean {
@@ -92,20 +78,20 @@ export class TraitGURPS extends ItemGCS<TraitSource> {
 	}
 
 	get modifierNotes(): string {
-		let buffer = ""
+		const buffer = new StringBuilder()
 		if (this.CR !== selfctrl.Roll.NoCR) {
-			buffer += selfctrl.Roll.toString(this.CR)
+			buffer.push(selfctrl.Roll.toString(this.CR))
 			if (this.CRAdj !== selfctrl.Adjustment.NoCRAdj) {
-				buffer += ", "
-				buffer += selfctrl.Adjustment.description(this.CRAdj, this.CR)
+				buffer.push(", ")
+				buffer.push(selfctrl.Adjustment.description(this.CRAdj, this.CR))
 			}
 		}
 		this.deepModifiers.forEach(mod => {
 			if (!mod.enabled) return
-			if (buffer.length !== 0) buffer += "; "
-			buffer += mod.fullDescription
+			if (buffer.length !== 0) buffer.push("; ")
+			buffer.push(mod.fullDescription)
 		})
-		return buffer
+		return buffer.toString()
 	}
 
 	adjustedPoints(): number {

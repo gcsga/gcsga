@@ -1,8 +1,7 @@
 import { WeaponGURPS } from "@module/config"
 import { TooltipGURPS } from "@module/tooltip"
-import { wswitch } from "./data"
 import { Int } from "@util/fxp"
-import { feature } from "@util/enum"
+import { feature, wswitch } from "@util/enum"
 
 export class WeaponROFMode {
 	shotsPerAttack = 0
@@ -35,17 +34,17 @@ export class WeaponROFMode {
 			feature.Type.WeaponRofMode1SecondaryBonus,
 		]
 		if (firstMode) {
-			result.fullAutoOnly = w.resolveBoolFlag(wswitch.FullAuto1, result.fullAutoOnly)
+			result.fullAutoOnly = w.resolveBoolFlag(wswitch.Type.FullAuto1, result.fullAutoOnly)
 			result.highCyclicControlledBursts = w.resolveBoolFlag(
-				wswitch.ControlledBursts1,
+				wswitch.Type.ControlledBursts1,
 				result.highCyclicControlledBursts
 			)
 		} else {
 			shotsFeature = feature.Type.WeaponRofMode2ShotsBonus
 			secondaryFeature = feature.Type.WeaponRofMode2SecondaryBonus
-			result.fullAutoOnly = w.resolveBoolFlag(wswitch.FullAuto2, result.fullAutoOnly)
+			result.fullAutoOnly = w.resolveBoolFlag(wswitch.Type.FullAuto2, result.fullAutoOnly)
 			result.highCyclicControlledBursts = w.resolveBoolFlag(
-				wswitch.ControlledBursts2,
+				wswitch.Type.ControlledBursts2,
 				result.highCyclicControlledBursts
 			)
 		}

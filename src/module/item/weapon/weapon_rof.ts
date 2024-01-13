@@ -1,9 +1,9 @@
 import { WeaponGURPS } from "@module/config"
 import { TooltipGURPS } from "@module/tooltip"
-import { wswitch } from "./data"
 import { LocalizeGURPS } from "@util"
 import { WeaponROFMode } from "./weapon_rof_mode"
 import { WeaponField } from "./weapon_field"
+import { wswitch } from "@util/enum"
 
 export class WeaponROF extends WeaponField {
 	mode1: WeaponROFMode = new WeaponROFMode()
@@ -28,7 +28,7 @@ export class WeaponROF extends WeaponField {
 
 	resolve(w: WeaponGURPS, tooltip: TooltipGURPS): WeaponROF {
 		const result = WeaponROF.parse(this.toString())
-		result.jet = w.resolveBoolFlag(wswitch.Jet, result.jet)
+		result.jet = w.resolveBoolFlag(wswitch.Type.Jet, result.jet)
 		if (!result.jet) {
 			let [buf1, buf2] = [new TooltipGURPS(), new TooltipGURPS()]
 			result.mode1 = result.mode1.resolve(w, buf1, true)

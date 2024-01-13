@@ -12,13 +12,13 @@
 						data-index="{{@index}}"
 				>
 				{{#select this.type}}
-					{{#each ../config.select.features as |v k| }}
+					{{#each ../config.select.feature_strict as |v k| }}
 					<option value="{{k}}">
 						{{localize v}}
 					</option>
 					{{/each}}
 				{{#if (eq ../this.type "equipment_container") }}
-					{{#each ../config.select.features as |v k| }}
+					{{#each ../config.select.feature as |v k| }}
 					<option value="{{k}}">
 						{{localize v}}
 					</option>
@@ -97,6 +97,10 @@
 		{{#if (eq this.type "spell_point_bonus") }}
 			{{>item/sections/feature/spell-point-bonus
 			config=../config}}
+		{{/if}}
+		{{#if (eq this.type "move_bonus") }}
+			{{>item/sections/feature/move-bonus config=../config
+			move_types=../move_types}}
 		{{/if}}
 	</div>
 		{{/each}}

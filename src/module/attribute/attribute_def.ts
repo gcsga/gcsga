@@ -1,8 +1,7 @@
 import { PoolThreshold } from "./pool_threshold"
-import { DamageProgression } from "@module/data"
 import { CharacterResolver, evaluateToNumber, sanitizeId } from "@util"
 import { AttributeDefObj, reserved_ids } from "./data"
-import { attribute } from "@util/enum"
+import { attribute, progression } from "@util/enum"
 import { Mook } from "@module/mook"
 
 export class AttributeDef {
@@ -70,7 +69,7 @@ export class AttributeDef {
 		if (
 			size_modifier > 0 &&
 			(this.cost_adj_percent_per_sm ?? 0) > 0 &&
-			!(this.def_id === "hp" && actor.settings.damage_progression === DamageProgression.KnowingYourOwnStrength)
+			!(this.def_id === "hp" && actor.settings.damage_progression === progression.Option.KnowingYourOwnStrength)
 		)
 			cost_reduction = size_modifier * (this.cost_adj_percent_per_sm ?? 0)
 		if (cost_reduction > 0) {

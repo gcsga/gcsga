@@ -1,6 +1,6 @@
 import { LocalizeGURPS } from "@util"
 import { BonusOwner } from "./bonus_owner"
-import { LeveledAmount, LeveledAmountKeys, LeveledAmountObj } from "./leveled_amount"
+import { LeveledAmount, LeveledAmountObj } from "./leveled_amount"
 import { feature } from "@util/enum"
 
 export interface ConditionalModifierBonusObj extends LeveledAmountObj {
@@ -29,13 +29,8 @@ export class ConditionalModifierBonus extends BonusOwner {
 
 	static fromObject(data: ConditionalModifierBonusObj): ConditionalModifierBonus {
 		const bonus = new ConditionalModifierBonus()
-		const levelData: Partial<Record<keyof LeveledAmountObj, any>> = {}
-		for (const key of Object.keys(data)) {
-			if (LeveledAmountKeys.includes(key)) {
-				levelData[key as keyof LeveledAmountObj] = data[key as keyof ConditionalModifierBonusObj]
-			} else (bonus as any)[key] = data[key as keyof ConditionalModifierBonusObj]
-		}
-		bonus.leveledAmount = new LeveledAmount(levelData)
+		bonus.situation = data.situation
+		bonus.leveledAmount = LeveledAmount.fromObject(data)
 		return bonus
 	}
 }

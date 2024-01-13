@@ -1,8 +1,9 @@
 import { ItemGCS } from "@item/gcs"
-import { SETTINGS, SYSTEM_NAME } from "@module/data"
+import { SETTINGS, SYSTEM_NAME, sheetSettingsFor } from "@module/data"
 import { LocalizeGURPS, Weight, WeightUnits, fxp } from "@util"
 import { EquipmentModifierSource } from "./data"
 import { emcost, emweight } from "@util/enum"
+import { StringBuilder } from "@util/string_builder"
 
 export class EquipmentModifierGURPS extends ItemGCS<EquipmentModifierSource> {
 	get enabled(): boolean {
@@ -52,6 +53,28 @@ export class EquipmentModifierGURPS extends ItemGCS<EquipmentModifierSource> {
 			(Weight.fromString(this.weightUnits) >= 0 ? "+" : "") +
 			Weight.format(Weight.fromString(this.weightAmount), this.weightUnits)
 		} ${emweight.Type.toString(this.weightType)}`
+	}
+
+	get fullDescription(): string {
+		const buffer = new StringBuilder()
+		buffer.push(this.formattedName)
+		if (this.localNotes !== "") {
+			buffer.push(` (${this.localNotes})`)
+		}
+		if (sheetSettingsFor(this.actor).show_equipment_modifier_adj) {
+			const costDesc = this.costDescription
+			const weightDesc = this.weightDescription
+			if (costDesc !== "" || weightDesc !== "") {
+				buffer.push(" [")
+				buffer.push(costDesc)
+				if (weightDesc !== "") {
+					if (costDesc !== "") buffer.push("; ")
+					buffer.push(weightDesc)
+				}
+				buffer.push("]")
+			}
+		}
+		return buffer.toString()
 	}
 }
 
