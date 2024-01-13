@@ -1,19 +1,7 @@
 import { CharacterGURPS } from "@actor"
-import {
-	DEFAULT_INITIATIVE_FORMULA,
-	Difficulty,
-	DisplayMode,
-	ItemType,
-	NumericComparisonType,
-	NumericCriteria,
-	SETTINGS,
-	StringComparisonType,
-	StringCriteria,
-	Study,
-	StudyType,
-	SYSTEM_NAME,
-} from "@module/data"
+import { DEFAULT_INITIATIVE_FORMULA, ItemType, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { v4 as uuidv4 } from "uuid"
+import { display } from "./enum"
 
 export function sanitizeId(id: string, permit_leading_digits: boolean, reserved: string[]): string {
 	const buffer: string[] = []
@@ -76,64 +64,64 @@ export function getCurrentTime(): string {
  * @param value
  * @param base
  */
-export function stringCompare(value?: string | string[] | null, base?: StringCriteria): boolean {
-	if (!base) return true
-	if (!value) value = ""
-	if (typeof value === "string") value = [value]
-	value = value.map(e => {
-		return e.toLowerCase()
-	})
-	base.qualifier = base.qualifier?.toLowerCase()
-	switch (base.compare) {
-		case StringComparisonType.AnyString:
-			return true
-		case StringComparisonType.IsString:
-			return base.qualifier !== undefined && value.includes(base.qualifier)
-		case StringComparisonType.IsNotString:
-			return base.qualifier !== undefined && !value.includes(base.qualifier)
-		case StringComparisonType.ContainsString:
-			for (const v of value) if (base.qualifier && v.includes(base.qualifier)) return true
-			return false
-		case StringComparisonType.DoesNotContainString:
-			for (const v of value) if (base.qualifier && v.includes(base.qualifier)) return false
-			return true
-		case StringComparisonType.StartsWithString:
-			for (const v of value) if (base.qualifier && v.startsWith(base.qualifier)) return true
-			return false
-		case StringComparisonType.DoesNotStartWithString:
-			for (const v of value) if (base.qualifier && v.startsWith(base.qualifier)) return false
-			return true
-		case StringComparisonType.EndsWithString:
-			for (const v of value) if (base.qualifier && v.endsWith(base.qualifier)) return true
-			return false
-		case StringComparisonType.DoesNotEndWithString:
-			for (const v of value) if (base.qualifier && v.endsWith(base.qualifier)) return false
-			return true
-	}
-}
+// export function stringCompare(value?: string | string[] | null, base?: StringCriteria): boolean {
+// 	if (!base) return true
+// 	if (!value) value = ""
+// 	if (typeof value === "string") value = [value]
+// 	value = value.map(e => {
+// 		return e.toLowerCase()
+// 	})
+// 	base.qualifier = base.qualifier?.toLowerCase()
+// 	switch (base.compare) {
+// 		case StringComparisonType.AnyString:
+// 			return true
+// 		case StringComparisonType.IsString:
+// 			return base.qualifier !== undefined && value.includes(base.qualifier)
+// 		case StringComparisonType.IsNotString:
+// 			return base.qualifier !== undefined && !value.includes(base.qualifier)
+// 		case StringComparisonType.ContainsString:
+// 			for (const v of value) if (base.qualifier && v.includes(base.qualifier)) return true
+// 			return false
+// 		case StringComparisonType.DoesNotContainString:
+// 			for (const v of value) if (base.qualifier && v.includes(base.qualifier)) return false
+// 			return true
+// 		case StringComparisonType.StartsWithString:
+// 			for (const v of value) if (base.qualifier && v.startsWith(base.qualifier)) return true
+// 			return false
+// 		case StringComparisonType.DoesNotStartWithString:
+// 			for (const v of value) if (base.qualifier && v.startsWith(base.qualifier)) return false
+// 			return true
+// 		case StringComparisonType.EndsWithString:
+// 			for (const v of value) if (base.qualifier && v.endsWith(base.qualifier)) return true
+// 			return false
+// 		case StringComparisonType.DoesNotEndWithString:
+// 			for (const v of value) if (base.qualifier && v.endsWith(base.qualifier)) return false
+// 			return true
+// 	}
+// }
 
 /**
  *
  * @param value
  * @param base
  */
-export function numberCompare(value: number, base?: NumericCriteria): boolean {
-	if (!base) return true
-	switch (base.compare) {
-		case NumericComparisonType.AnyNumber:
-			return true
-		case NumericComparisonType.EqualsNumber:
-			return value === base.qualifier
-		case NumericComparisonType.NotEqualsNumber:
-			return value !== base.qualifier
-		case NumericComparisonType.AtMostNumber:
-			return value <= base.qualifier!
-		case NumericComparisonType.AtLeastNumber:
-			return value >= base.qualifier!
-		default:
-			return true
-	}
-}
+// export function numberCompare(value: number, base?: NumericCriteria): boolean {
+// 	if (!base) return true
+// 	switch (base.compare) {
+// 		case NumericComparisonType.AnyNumber:
+// 			return true
+// 		case NumericComparisonType.EqualsNumber:
+// 			return value === base.qualifier
+// 		case NumericComparisonType.NotEqualsNumber:
+// 			return value !== base.qualifier
+// 		case NumericComparisonType.AtMostNumber:
+// 			return value <= base.qualifier!
+// 		case NumericComparisonType.AtLeastNumber:
+// 			return value >= base.qualifier!
+// 		default:
+// 			return true
+// 	}
+// }
 
 export function extractTechLevel(str: string): number {
 	return Math.min(Math.max(0, parseInt(str)), 12)
@@ -179,18 +167,18 @@ export function capitalize(s: string): string {
 	return s.charAt(0).toUpperCase() + s.slice(1)
 }
 
-export function getAdjustedStudyHours(s: Study): number {
-	switch (s.type) {
-		case StudyType.Self:
-			return s.hours * 0.5
-		case StudyType.Job:
-			return s.hours * 0.25
-		case StudyType.Teacher:
-			return s.hours
-		case StudyType.Intensive:
-			return s.hours * 2
-	}
-}
+// export function getAdjustedStudyHours(s: Study): number {
+// 	switch (s.type) {
+// 		case StudyType.Self:
+// 			return s.hours * 0.5
+// 		case StudyType.Job:
+// 			return s.hours * 0.25
+// 		case StudyType.Teacher:
+// 			return s.hours
+// 		case StudyType.Intensive:
+// 			return s.hours * 2
+// 	}
+// }
 
 export function prepareFormData(formData: any, object: any): any {
 	for (let aKey of Object.keys(formData)) {
@@ -251,11 +239,6 @@ function setArrayProperty(a: any[], index: number, prop: string, value: any): an
 	return a
 }
 
-export function equalFold(s: string, t: string): boolean {
-	if (!s && !t) return false
-	return s.toLowerCase() === t.toLowerCase()
-}
-
 /**
  * Prounounced "dee six if eye" Convert a GURPS dice roll to Foundry dice roll (e.g. 1d => 1d6, 2d-1 => 2d6-1)
  * @param {string} str
@@ -265,22 +248,6 @@ export function equalFold(s: string, t: string): boolean {
 export function d6ify(str: string, flavor: string | null = ""): string {
 	let w = str.replace(/d([^6])/g, `d6${flavor || ""}$1`) // Find 'd's without a 6 behind it, and add it.
 	return w.replace(/d$/g, `d6${flavor || ""}`) // And do the same for the end of the line.
-}
-
-export function difficultyRelativeLevel(d: Difficulty): number {
-	switch (d) {
-		case Difficulty.Easy:
-			return 0
-		case Difficulty.Average:
-			return -1
-		case Difficulty.Hard:
-			return -2
-		case Difficulty.VeryHard:
-		case Difficulty.Wildcard:
-			return -3
-		default:
-			return difficultyRelativeLevel(Difficulty.Easy)
-	}
 }
 
 export async function urlToBase64(imageUrl: string) {
@@ -353,8 +320,8 @@ export function inlineNote(
 	actor: CharacterGURPS,
 	option: "user_description_display" | "modifiers_display" | "notes_display" | "skill_level_adj_display"
 ): boolean {
-	if (actor) return [DisplayMode.Inline, DisplayMode.InlineAndTooltip].includes(actor.settings[option])
-	return [DisplayMode.Inline, DisplayMode.InlineAndTooltip].includes(
+	if (actor) return [display.Option.Inline, display.Option.InlineAndTooltip].includes(actor.settings[option])
+	return [display.Option.Inline, display.Option.InlineAndTooltip].includes(
 		game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)[option]
 	)
 }
@@ -383,3 +350,7 @@ export function isContainer(item: { type: ItemType }): boolean {
 		ItemType.NoteContainer,
 	].includes(item.type as any)
 }
+
+// export function sheetSettingsFor(actor: CharacterResolver): SheetSettings {
+// 	if (!actor) return
+// }

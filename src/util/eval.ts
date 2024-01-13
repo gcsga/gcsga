@@ -1,50 +1,7 @@
 import { evalOperators, Operator } from "./operator"
 import { eFunction, evalFunctions } from "./function"
-import { ConditionGURPS, SkillContainerGURPS, SkillGURPS, TechniqueGURPS, TraitContainerGURPS, TraitGURPS } from "@item"
-import { TooltipGURPS } from "@module/tooltip"
-import { AttributeDefObj } from "@module/attribute"
-import { DamageProgression } from "@module/data"
-import { MookSkill, MookTrait } from "@module/mook"
-import { MoveTypeDefObj } from "@module/move_type"
-import { stlimit, MoveBonusType } from "@feature"
-import { Encumbrance } from "@actor"
-
-// VariableResolver is used to resolve variables in expressions into their values.
-export interface VariableResolver {
-	adjustedSizeModifier: number
-	settings: {
-		attributes: AttributeDefObj[]
-		damage_progression: DamageProgression
-		move_types: MoveTypeDefObj[]
-	}
-	resolveVariable: (variableName: string) => string
-	skills: Collection<SkillGURPS | TechniqueGURPS | SkillContainerGURPS> | MookSkill[]
-	traits: Collection<TraitGURPS | TraitContainerGURPS> | MookTrait[]
-	conditions: Collection<ConditionGURPS> | ConditionGURPS[]
-	attributeBonusFor: (
-		attributeId: string,
-		limitation: stlimit,
-		effective?: boolean,
-		tooltip?: TooltipGURPS | null
-	) => number
-	moveBonusFor: (id: string, limitation: MoveBonusType, effective?: boolean, tooltip?: TooltipGURPS | null) => number
-	strikingST: number
-	throwingST: number
-	liftingST: number
-	dodge: (enc: Encumbrance) => number
-	effectiveST: (initialST: number) => number
-	getFlag: (scope: any, key: string) => unknown
-	costReductionFor: (attributeID: string) => number
-	isSkillLevelResolutionExcluded: (name: string, specialization: string) => boolean
-	registerSkillLevelResolutionExclusion: (name: string, specialization: string) => void
-	unregisterSkillLevelResolutionExclusion: (name: string, specialization: string) => void
-	encumbranceLevel: (forSkills: boolean) => {
-		level: number
-		maximum_carry: number
-		penalty: number
-		name: string
-	}
-}
+import { CharacterResolver } from "./resolvers"
+import { Mook } from "@module/mook"
 
 class expressionOperand {
 	value: string
@@ -105,7 +62,7 @@ class parsedFunction {
 // Evaluator is used to evaluate an expression. If you do not have any variables that will be resolved, you can leave
 // Resolver unset.
 class Evaluator {
-	resolver: VariableResolver
+	resolver: CharacterResolver
 
 	operators: Operator[] = evalOperators(true)
 
@@ -391,7 +348,7 @@ export { Evaluator }
  * @param expression
  * @param resolver
  */
-export function evaluateToNumber(expression: string, resolver: VariableResolver): number {
+export function evaluateToNumber(expression: string, resolver: CharacterResolver | Mook): number {
 	let result: any = 0
 	try {
 		result = new Evaluator({ resolver: resolver }).evaluate(expression)
@@ -406,10 +363,10 @@ export function evaluateToNumber(expression: string, resolver: VariableResolver)
 	return 0
 }
 
-export function parseInlineNoteExpressions(inString: string, resolver: VariableResolver): string {
-	const regex_eval = /\|\|[^|]+\|\|/g
-	inString.match(regex_eval)?.forEach(e => {
-		inString = inString.replaceAll(e, new Evaluator({ resolver }).evaluate(e.replaceAll("||", "")))
-	})
-	return inString
-}
+// export function parseInlineNoteExpressions(inString: string, resolver: CharacterResolver): string {
+// 	const regex_eval = /\|\|[^|]+\|\|/g
+// 	inString.match(regex_eval)?.forEach(e => {
+// 		inString = inString.replaceAll(e, new Evaluator({ resolver }).evaluate(e.replaceAll("||", "")))
+// 	})
+// 	return inString
+// }

@@ -3,12 +3,13 @@ import { EquipmentContainerGURPS } from "@item/equipment_container"
 import { EquipmentModifierGURPS, valueAdjustedForModifiers, weightAdjustedForModifiers } from "@item/equipment_modifier"
 import { EquipmentModifierContainerGURPS } from "@item/equipment_modifier_container"
 import { ItemGCS } from "@item/gcs"
-import { DisplayMode, ItemType, SETTINGS, SYSTEM_NAME } from "@module/data"
-import { Weight, WeightUnits, fxp, parseInlineNoteExpressions } from "@util"
-import { HandlebarsHelpersGURPS } from "@util/handlebars_helpers"
+import { ItemType, SETTINGS, SYSTEM_NAME, sheetSettingsFor } from "@module/data"
+import { LocalizeGURPS, Weight, WeightUnits, fxp } from "@util"
 import { Feature } from "@module/config"
 import { EquipmentSource } from "./data"
 import { ItemFlags } from "@item/base"
+import { display } from "@util/enum"
+import { StringBuilder } from "@util/string_builder"
 
 export class EquipmentGURPS extends ItemGCS<EquipmentSource> {
 	unsatisfied_reason = ""
@@ -18,25 +19,39 @@ export class EquipmentGURPS extends ItemGCS<EquipmentSource> {
 		return this.system.rated_strength
 	}
 
-	get secondaryText(): string {
-		let outString = '<div class="item-notes">'
-		let display_mode = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
-			.modifiers_display as DisplayMode
-		if (this.actor) display_mode = this.actor.settings.modifiers_display
-		if ([DisplayMode.Inline, DisplayMode.InlineAndTooltip].includes(display_mode)) {
-			this.modifiers
-				.filter(e => e.enabled)
-				.forEach((mod, i) => {
-					if (i !== 0) outString += "; "
-					outString += mod.name + (mod.system.notes ? ` (${mod.system.notes})` : "")
-				})
+	get quantity(): number {
+		return this.system.quantity
+	}
+
+	secondaryText(optionChecker: (option: display.Option) => boolean): string {
+		const buffer = new StringBuilder()
+		const settings = sheetSettingsFor(this.actor)
+		if (optionChecker(settings.modifiers_display)) {
+			buffer.appendToNewLine(this.modifierNotes)
 		}
-		if (this.modifiers.some(e => e.enabled)) outString += "<br>"
-		if (this.system.notes) outString += HandlebarsHelpersGURPS.format(this.system.notes)
-		if (this.unsatisfied_reason) outString += HandlebarsHelpersGURPS.unsatisfied(this.unsatisfied_reason)
-		outString += "</div>"
-		if (this.parent) outString = parseInlineNoteExpressions(outString, this.parent as any)
-		return outString
+		if (optionChecker(settings.notes_display)) {
+			const localBuffer = new StringBuilder()
+			if (this.ratedStrength !== 0) {
+				localBuffer.push(LocalizeGURPS.translations.gurps.item.rated_strength)
+				localBuffer.push(" ")
+				localBuffer.push(this.ratedStrength.toString())
+			}
+			if (this.localNotes !== "") {
+				if (localBuffer.length !== 0) localBuffer.push("; ")
+				localBuffer.push(this.localNotes)
+			}
+			buffer.appendToNewLine(localBuffer.toString())
+		}
+		return buffer.toString()
+	}
+
+	get modifierNotes(): string {
+		const buffer = new StringBuilder()
+		for (const mod of this.deepModifiers.filter(e => e.enabled)) {
+			if (buffer.length !== 0) buffer.push("; ")
+			buffer.push(mod.fullDescription)
+		}
+		return buffer.toString()
 	}
 
 	get other(): boolean {

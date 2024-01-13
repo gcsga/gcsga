@@ -1,6 +1,7 @@
 import { ActorFlagsGURPS, ActorSystemData, BaseActorSourceGURPS } from "@actor/base"
-import { ActorType, DisplayMode } from "@module/data"
+import { ActorType } from "@module/data"
 import { WeightUnits } from "@util"
+import { display } from "@util/enum"
 
 export interface LootSource extends BaseActorSourceGURPS<ActorType.Loot, LootSystemData> {
 	flags: DeepPartial<LootFlags>
@@ -25,8 +26,8 @@ export interface LootSystemData extends ActorSystemData {
 
 export interface LootSettings {
 	default_weight_units: WeightUnits
-	user_description_display: DisplayMode
-	modifiers_display: DisplayMode
-	notes_display: DisplayMode
+	user_description_display: display.Option
+	modifiers_display: display.Option
+	notes_display: display.Option
 	show_equipment_modifier_adj: boolean
 }

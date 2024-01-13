@@ -1,48 +1,57 @@
-import { ActorGURPS } from "@module/config"
-import { ActorType, ItemType, NumericComparisonType, PrereqType, WeightCriteria } from "@module/data"
+import { WeightCriteria } from "@util/weight_criteria"
+import { BasePrereq, BasePrereqObj } from "./base"
+import { prereq } from "@util/enum"
+import {
+	CharacterResolver,
+	EquipmentContainerResolver,
+	LocalizeGURPS,
+	LootResolver,
+	NumericCompareType,
+	Weight,
+	WeightUnits,
+} from "@util"
 import { TooltipGURPS } from "@module/tooltip"
-import { LocalizeGURPS, numberCompare, Weight } from "@util"
-import { BasePrereq, PrereqConstructionContext } from "./base"
+import { ItemType } from "@module/data"
+
+export interface ContainedWeightPrereqObj extends BasePrereqObj {
+	qualifier: WeightCriteria
+}
 
 export class ContainedWeightPrereq extends BasePrereq {
 	qualifier: WeightCriteria
 
-	constructor(data: ContainedWeightPrereq | any, context: PrereqConstructionContext = {}) {
-		data = mergeObject(ContainedWeightPrereq.defaults, data)
-		super(data, context)
-		this.qualifier ??= { compare: NumericComparisonType.AnyNumber, qualifier: "5 lb" }
+	constructor(character?: CharacterResolver) {
+		let units = WeightUnits.Pound
+		if (character) units = character.settings.default_weight_units
+		super(prereq.Type.ContainedWeight)
+		this.qualifier = new WeightCriteria(NumericCompareType.AtMostNumber, Weight.toPounds(5, units))
 	}
 
-	static get defaults(): Record<string, any> {
-		return mergeObject(super.defaults, {
-			type: PrereqType.ContainedWeight,
-			qualifier: { compare: NumericComparisonType.AtMostNumber, qualifier: "5 lb" },
-		})
+	static fromObject(data: ContainedWeightPrereqObj, character: CharacterResolver): ContainedWeightPrereq {
+		const prereq = new ContainedWeightPrereq(character)
+		if (data.qualifier) prereq.qualifier = new WeightCriteria(data.qualifier.compare, data.qualifier.qualifier)
+		return prereq
 	}
 
-	satisfied(actor: ActorGURPS, exclude: any, tooltip: TooltipGURPS): [boolean, boolean] {
-		if (actor.type === ActorType.LegacyCharacter) return [true, false]
+	satisfied(actor: CharacterResolver | LootResolver, exclude: any, tooltip: TooltipGURPS): boolean {
+		const units = actor.settings.default_weight_units
 		let satisfied = false
-		const eqp = exclude
-		if (eqp) {
-			satisfied = eqp.type !== ItemType.EquipmentContainer
-			if (!satisfied) {
-				const units = (actor as any).settings.default_weight_units
-				const weight = eqp.extendedWeight(false, units) - eqp.adjustedWeight(false, units)
-				const qualifier = {
-					compare: this.qualifier.compare,
-					qualifier: Weight.fromString(this.qualifier.qualifier ?? ""),
-				}
-				satisfied = numberCompare(weight, qualifier)
-			}
+		if (!(exclude instanceof Item && exclude.type === ItemType.EquipmentContainer)) satisfied = true
+		else {
+			const eqp = exclude as unknown as EquipmentContainerResolver
+			const weight = eqp.extendedWeight(false, units) - eqp.adjustedWeight(false, units)
+			satisfied = this.qualifier.matches(weight)
 		}
 		if (!this.has) satisfied = !satisfied
 		if (!satisfied) {
-			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.has[this.has ? "true" : "false"])
-			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.weight)
-			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.qualifier?.compare])
-			tooltip.push((this.qualifier ? this.qualifier.qualifier ?? 0 : 0).toString())
+			tooltip.push(LocalizeGURPS.translations.gurps.prereq.prefix)
+			tooltip.push(LocalizeGURPS.translations.gurps.prereq.has[this.has ? "true" : "false"])
+			tooltip.push(
+				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.contained_weight, {
+					content: this.qualifier.describe(),
+				})
+			)
 		}
-		return [satisfied, false]
+		return satisfied
 	}
 }

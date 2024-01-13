@@ -1,6 +1,7 @@
-import { DamageProgression, DisplayMode, SYSTEM_NAME } from "@module/data"
+import { SYSTEM_NAME } from "@module/data"
 import { LengthUnits, WeightUnits } from "@util"
 import { SettingsMenuGURPS } from "./menu"
+import { display, progression } from "@util/enum"
 
 export class DefaultSheetSettings extends SettingsMenuGURPS {
 	static override readonly namespace = "default_sheet_settings"
@@ -33,13 +34,13 @@ export class DefaultSheetSettings extends SettingsMenuGURPS {
 				default: {
 					default_length_units: LengthUnits.FeetAndInches,
 					default_weight_units: WeightUnits.Pound,
-					user_description_display: DisplayMode.Tooltip,
-					modifiers_display: DisplayMode.Inline,
-					notes_display: DisplayMode.Inline,
-					skill_level_adj_display: DisplayMode.Tooltip,
+					user_description_display: display.Option.Tooltip,
+					modifiers_display: display.Option.Inline,
+					notes_display: display.Option.Inline,
+					skill_level_adj_display: display.Option.Tooltip,
 					use_multiplicative_modifiers: false,
 					use_modifying_dice_plus_adds: false,
-					damage_progression: DamageProgression.BasicSet,
+					damage_progression: progression.Option.BasicSet,
 					show_trait_modifier_adj: false,
 					show_equipment_modifier_adj: false,
 					show_spell_adj: true,

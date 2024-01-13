@@ -1,11 +1,10 @@
-import { ActorType, DamageProgression, DisplayMode, RollModifier, SYSTEM_NAME, gid } from "@module/data"
+import { ActorType, RollModifier, SYSTEM_NAME, SheetSettings, gid } from "@module/data"
 import { ActorFlags, ActorFlagsGURPS, ActorSystemData, BaseActorSourceGURPS } from "@actor/base/data"
-import { HitLocationTableData } from "./hit_location"
-import { AttributeDefObj, AttributeObj, PoolThreshold } from "@module/attribute"
-import { ResourceTrackerDefObj, ResourceTrackerObj } from "@module/resource_tracker"
-import { LengthUnits, Weight, WeightUnits } from "@util"
+import { AttributeObj, PoolThreshold } from "@module/attribute"
+import { ResourceTrackerObj } from "@module/resource_tracker"
+import { Weight } from "@util"
 import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
-import { MoveTypeDefObj, MoveTypeObj } from "@module/move_type"
+import { MoveTypeObj } from "@module/move_type"
 
 export interface DocumentModificationOptionsGURPS extends DocumentModificationOptions {
 	temporary: boolean
@@ -49,7 +48,7 @@ export interface CharacterSystemData extends ActorSystemData {
 	version: number
 	move: CharacterMove
 	import: { name: string; path: string; last_import: string }
-	settings: CharacterSettings
+	settings: SheetSettings
 	created_date: string
 	modified_date: string
 	profile: CharacterProfile
@@ -71,36 +70,36 @@ export interface CharacterMove {
 	type: string
 }
 
-export interface CharacterSettings {
-	default_length_units: LengthUnits
-	default_weight_units: WeightUnits
-	user_description_display: DisplayMode
-	modifiers_display: DisplayMode
-	notes_display: DisplayMode
-	skill_level_adj_display: DisplayMode
-	use_multiplicative_modifiers: boolean
-	use_modifying_dice_plus_adds: boolean
-	use_half_stat_defaults: boolean
-	damage_progression: DamageProgression
-	show_trait_modifier_adj: boolean
-	show_equipment_modifier_adj: boolean
-	show_spell_adj: boolean
-	use_title_in_footer: boolean
-	exclude_unspent_points_from_total: boolean
-	page: {
-		paper_size: string
-		top_margin: string
-		left_margin: string
-		bottom_margin: string
-		right_margin: string
-		orientation: string
-	}
-	block_layout: Array<string>
-	body_type: HitLocationTableData
-	attributes: AttributeDefObj[]
-	resource_trackers: ResourceTrackerDefObj[]
-	move_types: MoveTypeDefObj[]
-}
+// export interface CharacterSettings {
+// 	default_length_units: LengthUnits
+// 	default_weight_units: WeightUnits
+// 	user_description_display: DisplayMode
+// 	modifiers_display: DisplayMode
+// 	notes_display: DisplayMode
+// 	skill_level_adj_display: DisplayMode
+// 	use_multiplicative_modifiers: boolean
+// 	use_modifying_dice_plus_adds: boolean
+// 	use_half_stat_defaults: boolean
+// 	damage_progression: DamageProgression
+// 	show_trait_modifier_adj: boolean
+// 	show_equipment_modifier_adj: boolean
+// 	show_spell_adj: boolean
+// 	use_title_in_footer: boolean
+// 	exclude_unspent_points_from_total: boolean
+// 	page: {
+// 		paper_size: string
+// 		top_margin: string
+// 		left_margin: string
+// 		bottom_margin: string
+// 		right_margin: string
+// 		orientation: string
+// 	}
+// 	block_layout: Array<string>
+// 	body_type: HitLocationTableData
+// 	attributes: AttributeDefObj[]
+// 	resource_trackers: ResourceTrackerDefObj[]
+// 	move_types: MoveTypeDefObj[]
+// }
 
 export interface CharacterProfile {
 	player_name: string

@@ -55,7 +55,6 @@ export const HitLocationUtil = {
 		for (const location of hitLocationTable.locations) {
 			const x: number[] = convertRollStringToArrayOfInt(location.roll_range)
 			if (x.includes(rollTotal)) {
-				// console.log(`Roll = ${rollTotal}, location id = ${location.id}`)
 				result = location
 			}
 		}

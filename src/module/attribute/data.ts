@@ -1,4 +1,5 @@
 import { gid } from "@module/data"
+import { attribute } from "@util/enum"
 
 export interface AttributeObj {
 	// Bonus?: number
@@ -19,7 +20,7 @@ export interface AttributeObj {
 
 export interface AttributeDefObj {
 	id: string
-	type: AttributeType
+	type: attribute.Type
 	name: string
 	full_name?: string
 	attribute_base: string
@@ -27,17 +28,6 @@ export interface AttributeDefObj {
 	cost_adj_percent_per_sm?: number
 	thresholds?: PoolThresholdDef[]
 	order?: number
-}
-
-export enum AttributeType {
-	Integer = "integer",
-	IntegerRef = "integer_ref",
-	Decimal = "decimal",
-	DecimalRef = "decimal_ref",
-	Pool = "pool",
-	PrimarySeparator = "primary_separator",
-	SecondarySeparator = "secondary_separator",
-	PoolSeparator = "pool_separator",
 }
 
 export enum ThresholdOp {

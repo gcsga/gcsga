@@ -1,7 +1,6 @@
 import { CharacterGURPS, CharacterSystemData } from "@actor/character"
 import { StaticCharacterGURPS } from "./document"
 import { SETTINGS, SYSTEM_NAME } from "@module/data"
-import { AttributeDef } from "@module/attribute"
 import { StaticResourceThreshold, StaticThresholdComparison } from "./data"
 
 export class CharacterConverter {
@@ -39,6 +38,7 @@ export class CharacterConverter {
 					}),
 				}
 			}),
+			move_types: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`),
 		}
 
 		return new CharacterGURPS({} as any)

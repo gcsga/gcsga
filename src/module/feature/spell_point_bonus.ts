@@ -1,17 +1,16 @@
-import { StringComparisonType, StringCriteria } from "@module/data"
 import { BonusOwner } from "./bonus_owner"
-import { FeatureType, spellmatch } from "./data"
-import { LeveledAmount, LeveledAmountKeys, LeveledAmountObj } from "./leveled_amount"
-import { stringCompare } from "@util"
+import { LeveledAmount, LeveledAmountObj } from "./leveled_amount"
+import { StringCompareType, StringCriteria } from "@util"
+import { feature, spellmatch } from "@util/enum"
 
 export interface SpellPointBonusObj extends LeveledAmountObj {
-	match: spellmatch
+	match: spellmatch.Type
 	name: StringCriteria
 	tags: StringCriteria
 }
 
 export class SpellPointBonus extends BonusOwner {
-	match: spellmatch
+	match: spellmatch.Type
 
 	name: StringCriteria
 
@@ -21,28 +20,15 @@ export class SpellPointBonus extends BonusOwner {
 
 	constructor() {
 		super()
-		this.type = FeatureType.SpellBonus
-		this.match = spellmatch.AllColleges
-		this.name = {
-			compare: StringComparisonType.IsString,
-		}
-		this.tags = {
-			compare: StringComparisonType.AnyString,
-		}
+		this.type = feature.Type.SpellBonus
+		this.match = spellmatch.Type.AllColleges
+		this.name = new StringCriteria(StringCompareType.IsString)
+		this.tags = new StringCriteria(StringCompareType.AnyString)
 		this.leveledAmount = new LeveledAmount({ amount: 1 })
 	}
 
 	matchForType(name: string, powerSource: string, colleges: string[]): boolean {
-		switch (this.match) {
-			case spellmatch.AllColleges:
-				return true
-			case spellmatch.Name:
-				return stringCompare(name, this.name)
-			case spellmatch.CollegeName:
-				return stringCompare(colleges, this.name)
-			case spellmatch.PowerSource:
-				return stringCompare(powerSource, this.name)
-		}
+		return spellmatch.Type.matchForType(this.match, this.name, name, powerSource, colleges)
 	}
 
 	toObject(): SpellPointBonusObj {
@@ -56,13 +42,10 @@ export class SpellPointBonus extends BonusOwner {
 
 	static fromObject(data: SpellPointBonusObj): SpellPointBonus {
 		const bonus = new SpellPointBonus()
-		const levelData: Partial<Record<keyof LeveledAmountObj, any>> = {}
-		for (const key of Object.keys(data)) {
-			if (LeveledAmountKeys.includes(key)) {
-				levelData[key as keyof LeveledAmountObj] = data[key as keyof SpellPointBonusObj]
-			} else (bonus as any)[key] = data[key as keyof SpellPointBonusObj]
-		}
-		bonus.leveledAmount = new LeveledAmount(levelData)
+		bonus.match = data.match
+		if (data.name) bonus.name = new StringCriteria(data.name.compare, data.name.qualifier)
+		if (data.tags) bonus.tags = new StringCriteria(data.tags.compare, data.tags.qualifier)
+		bonus.leveledAmount = LeveledAmount.fromObject(data)
 		return bonus
 	}
 }

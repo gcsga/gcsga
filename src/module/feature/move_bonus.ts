@@ -1,7 +1,8 @@
 import { gid } from "@module/data"
 import { BonusOwner } from "./bonus_owner"
 import { MoveBonusType } from "./data"
-import { LeveledAmount, LeveledAmountKeys, LeveledAmountObj } from "./leveled_amount"
+import { LeveledAmount, LeveledAmountObj } from "./leveled_amount"
+import { feature } from "@util/enum"
 
 export interface MoveBonusObj extends LeveledAmountObj {
 	move_type: string
@@ -9,6 +10,8 @@ export interface MoveBonusObj extends LeveledAmountObj {
 }
 
 export class MoveBonus extends BonusOwner {
+	type = feature.Type.MoveBonus
+
 	move_type: string
 
 	limitation: MoveBonusType
@@ -22,15 +25,20 @@ export class MoveBonus extends BonusOwner {
 		this.leveledAmount = new LeveledAmount({ amount: 1 })
 	}
 
+	toObject(): MoveBonusObj {
+		return {
+			...super.toObject(),
+			type: this.type,
+			move_type: this.move_type,
+			limitation: this.limitation,
+		}
+	}
+
 	static fromObject(data: MoveBonusObj): MoveBonus {
 		const bonus = new MoveBonus()
-		const levelData: Partial<Record<keyof LeveledAmountObj, any>> = {}
-		for (const key of Object.keys(data)) {
-			if (LeveledAmountKeys.includes(key)) {
-				levelData[key as keyof LeveledAmountObj] = data[key as keyof MoveBonusObj]
-			} else (bonus as any)[key] = data[key as keyof MoveBonusObj]
-		}
-		bonus.leveledAmount = new LeveledAmount(levelData)
+		bonus.move_type = data.move_type
+		bonus.limitation = data.limitation
+		bonus.leveledAmount = LeveledAmount.fromObject(data)
 		return bonus
 	}
 }

@@ -2,10 +2,9 @@ import { EquipmentGURPS, extendedWeightAdjustedForModifiers } from "@item/equipm
 import { EquipmentModifierGURPS, valueAdjustedForModifiers, weightAdjustedForModifiers } from "@item/equipment_modifier"
 import { EquipmentModifierContainerGURPS } from "@item/equipment_modifier_container"
 import { ItemGCS } from "@item/gcs"
-import { DisplayMode, ItemType, SETTINGS, SYSTEM_NAME } from "@module/data"
-import { fxp, parseInlineNoteExpressions, Weight, WeightUnits } from "@util"
+import { ItemType, SETTINGS, SYSTEM_NAME } from "@module/data"
+import { fxp, Weight, WeightUnits } from "@util"
 import { EquipmentContainerSource } from "./data"
-import { HandlebarsHelpersGURPS } from "@util/handlebars_helpers"
 import { ItemFlags } from "@item/base"
 
 export class EquipmentContainerGURPS extends ItemGCS<EquipmentContainerSource> {
@@ -16,26 +15,11 @@ export class EquipmentContainerGURPS extends ItemGCS<EquipmentContainerSource> {
 		return this.system.rated_strength ?? 0
 	}
 
-	get secondaryText(): string {
-		let outString = '<div class="item-notes">'
-		let display_mode = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
-			.modifiers_display as DisplayMode
-		if (this.actor) display_mode = this.actor.settings.modifiers_display
-		if ([DisplayMode.Inline, DisplayMode.InlineAndTooltip].includes(display_mode)) {
-			this.modifiers
-				.filter(e => e.enabled)
-				.forEach((mod, i) => {
-					if (i !== 0) outString += "; "
-					outString += mod.name + (mod.system.notes ? ` (${mod.system.notes})` : "")
-				})
-		}
-		if (this.modifiers.some(e => e.enabled)) outString += "<br>"
-		if (this.system.notes) outString += HandlebarsHelpersGURPS.format(this.system.notes)
-		if (this.unsatisfied_reason) outString += HandlebarsHelpersGURPS.unsatisfied(this.unsatisfied_reason)
-		outString += "</div>"
-		if (this.parent) outString = parseInlineNoteExpressions(outString, this.parent as any)
-		return outString
+	get quantity(): number {
+		return this.system.quantity
 	}
+
+	secondaryText = EquipmentGURPS.prototype.secondaryText
 
 	get other(): boolean {
 		if (this.container instanceof Item) return (this.container as EquipmentContainerGURPS).other

@@ -3,12 +3,13 @@ import { LocalizeGURPS, getNewAttributeId, prepareFormData } from "@util"
 import { gid, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { HitLocationTable } from "./hit_location"
 import { DnD } from "@util/drag_drop"
-import { AttributeDefObj, AttributeType } from "@module/attribute"
+import { AttributeDefObj } from "@module/attribute"
 import { CharacterSheetGURPS } from "./sheet"
 import { ResourceTrackerDefObj } from "@module/resource_tracker"
 import { PDF } from "@module/pdf"
 import { MoveTypeDefObj, MoveTypeOverrideConditionType } from "@module/move_type"
 import { CharacterGURPS } from "./document"
+import { attribute } from "@util/enum"
 
 enum ListType {
 	Attributes = "attributes",
@@ -242,7 +243,7 @@ export class CharacterSheetConfig extends FormApplication {
 		switch (type) {
 			case ListType.Attributes:
 				this.attributes.push({
-					type: AttributeType.Integer,
+					type: attribute.Type.Integer,
 					id: new_id,
 					name: "",
 					attribute_base: "",

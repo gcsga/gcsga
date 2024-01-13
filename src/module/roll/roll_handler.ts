@@ -443,12 +443,12 @@ class AttackRollTypeHandler extends RollTypeHandler {
 		if (data.item.type === ItemType.RangedWeapon) {
 			const item = data.item
 			if (this.validRateOfFire(item.rate_of_fire) && data.margin_number > 0 && parseInt(item.recoil) > 0) {
-				const effectiveRof = this.effectiveRateOfFire(item.rate_of_fire)
+				const effectiveRof = this.effectiveRateOfFire(item.rate_of_fire.current)
 				let numberOfShots = Math.min(Math.floor(data.margin_number / parseInt(item.recoil)) + 1, effectiveRof)
 				if (numberOfShots > 1)
 					mergeObject(extra, {
 						ranged: {
-							rate_of_fire: item.rate_of_fire,
+							rate_of_fire: item.rate_of_fire.current,
 							recoil: item.recoil,
 							potential_hits: numberOfShots,
 						},
@@ -478,9 +478,11 @@ class AttackRollTypeHandler extends RollTypeHandler {
 	}
 
 	private validRateOfFire(rof: string): boolean {
-		if (rof.match(AttackRollTypeHandler.SHOTGUN_ROF)) return true
-		if (parseInt(rof) > 0) return true
-		return false
+		// validated externally
+		return true
+		// if (rof.match(AttackRollTypeHandler.SHOTGUN_ROF)) return true
+		// if (parseInt(rof) > 0) return true
+		// return false
 	}
 }
 
@@ -490,7 +492,7 @@ class ParryRollTypeHandler extends RollTypeHandler {
 	}
 
 	override getLevel(data: any): number {
-		return data.item.parry
+		return parseInt(data.item.parry.current)
 	}
 
 	override getName(data: any): string {
@@ -513,7 +515,7 @@ class BlockRollTypeHandler extends RollTypeHandler {
 	}
 
 	override getLevel(data: RollTypeData): number {
-		return data.item.block
+		return parseInt(data.item.block.current)
 	}
 
 	override getName(data: RollTypeData): string {

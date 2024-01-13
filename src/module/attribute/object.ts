@@ -1,10 +1,11 @@
 import { ActorFlags } from "@actor/base/data"
 import { gid, SYSTEM_NAME } from "@module/data"
-import { sanitizeId, VariableResolver } from "@util"
+import { CharacterResolver, sanitizeId } from "@util"
 import { AttributeDef } from "./attribute_def"
-import { AttributeObj, AttributeType, reserved_ids } from "./data"
+import { AttributeObj, reserved_ids } from "./data"
 import { PoolThreshold } from "./pool_threshold"
-import { stlimit } from "@feature"
+import { attribute, stlimit } from "@util/enum"
+import { Mook } from "@module/mook"
 
 // interface Mook {
 // 	resolveVariable: (variableName: string) => string
@@ -23,7 +24,7 @@ import { stlimit } from "@feature"
 // }
 
 export class Attribute {
-	actor: VariableResolver
+	actor: CharacterResolver | Mook
 
 	order: number
 
@@ -37,24 +38,25 @@ export class Attribute {
 
 	_overridenThreshold?: PoolThreshold | null = null
 
-	constructor(actor: VariableResolver, attr_id: string, order: number, data?: Partial<AttributeObj>) {
+	// constructor(actor: CharacterResolver, attr_id: string, order: number, data?: Partial<AttributeObj>) {
+	constructor(actor: CharacterResolver | Mook, attr_id: string, order: number, data?: Partial<AttributeObj>) {
 		if (data) Object.assign(this, data)
 		this.actor = actor
 		this.attr_id = attr_id
 		this.order = order
-		if (this.attribute_def.type === AttributeType.Pool) {
+		if (this.attribute_def.type === attribute.Type.Pool) {
 			this.apply_ops ??= true
 		}
 	}
 
 	get bonus(): number {
 		if (!this.actor) return 0
-		return this.actor.attributeBonusFor(this.id, stlimit.None)
+		return this.actor.attributeBonusFor(this.id, stlimit.Option.None)
 	}
 
 	get effectiveBonus(): number {
 		if (!this.actor) return 0
-		return this.actor.attributeBonusFor(this.id, stlimit.None, true, null)
+		return this.actor.attributeBonusFor(this.id, stlimit.Option.None, true, null)
 	}
 
 	get cost_reduction(): number {
@@ -78,7 +80,7 @@ export class Attribute {
 		const def = this.attribute_def
 		if (!def) return 0
 		let max = def.baseValue(this.actor) + this.adj + this.bonus
-		if (![AttributeType.Decimal, AttributeType.DecimalRef].includes(def.type)) {
+		if (![attribute.Type.Decimal, attribute.Type.DecimalRef].includes(def.type)) {
 			return Math.floor(max)
 		}
 		return max
@@ -98,7 +100,7 @@ export class Attribute {
 		const def = this.attribute_def
 		if (!def) return 0
 		let effective = this.max + this.effectiveBonus + bonus
-		if (![AttributeType.Decimal, AttributeType.DecimalRef].includes(def.type)) {
+		if (![attribute.Type.Decimal, attribute.Type.DecimalRef].includes(def.type)) {
 			effective = Math.floor(effective)
 		}
 		if (this.id === gid.Strength) return this.actor.effectiveST(effective)
@@ -108,7 +110,7 @@ export class Attribute {
 	get current(): number {
 		const max = this.max
 		const def = this.attribute_def
-		if (!def || def.type !== AttributeType.Pool) {
+		if (!def || def.type !== attribute.Type.Pool) {
 			return max
 		}
 		return max - (this.damage ?? 0)
@@ -126,7 +128,7 @@ export class Attribute {
 		const def = this.attribute_def
 		if (!def) return null
 		if (
-			[AttributeType.PrimarySeparator, AttributeType.SecondarySeparator, AttributeType.PoolSeparator].includes(
+			[attribute.Type.PrimarySeparator, attribute.Type.SecondarySeparator, attribute.Type.PoolSeparator].includes(
 				def.type
 			)
 		)

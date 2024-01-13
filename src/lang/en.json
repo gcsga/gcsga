@@ -395,15 +395,6 @@
 				"reimport": "Re-Import"
 			},
 			"cr_reaction": "from others when {trait} is triggered",
-			"cr_adj_display": {
-				"none": "",
-				"action_penalty": "{penalty} Action Penalty",
-				"reaction_penalty": "{penalty} Reaction Penalty",
-				"fright_check_penalty": "{penalty} Fright Check Penalty",
-				"fright_check_bonus": "+{penalty} Fright Check Bonus",
-				"minor_cost_of_living_increase": "+{penalty}% Cost of Living Increase",
-				"major_cost_of_living_increase": "+{penalty}% Cost of Living Increase"
-			},
 			"resource_trackers": {
 				"title": "Resource Trackers"
 			},
@@ -698,12 +689,6 @@
 				"weight_percentage_multiplier": "x{value}%",
 				"weight_multiplier": "x{value}"
 			},
-			"weight_type": {
-				"to_original_weight": "to original weight",
-				"to_base_weight": "to base weight",
-				"to_final_base_weight": "to_final base weight",
-				"to_final_weight": "to final weight"
-			},
 			"cost_type": {
 				"to_original_cost": "to original cost",
 				"to_base_cost": "to base cost",
@@ -906,323 +891,17 @@
 			"from_technique": "from technique {name}",
 			"from_equipment": "from equipment {name}"
 		},
-		"select": {
-			"cr_level": {
-				"0": "None Required",
-				"6": "CR: 6 (Resist Rarely)",
-				"9": "CR: 9 (Resist Fairly Often)",
-				"12": "CR: 12 (Resist Quite Often)",
-				"15": "CR: 15 (Resist Almost All The Time)"
-			},
-			"cr_adj": {
-				"none": "None",
-				"action_penalty": "Includes an Action Penalty for Failure",
-				"reaction_penalty": "Includes a Reaction Penalty for Failure",
-				"fright_check_penalty": "Includes a Fright Check Penalty",
-				"fright_check_bonus": "Includes a Fright Check Bonus",
-				"minor_cost_of_living_increase": "Includes a Minor Cost of Living Increase",
-				"major_cost_of_living_increase": "Includes a Major Cost of Living Increase and Merchant Skill Penalty"
-			},
-			"number_compare": {
-				"none": "is anything",
-				"is": "is",
-				"is_not": "is not",
-				"at_least": "is at least",
-				"at_most": "is at most"
-			},
-			"number_compare_strict": {
-				"is": "exactly",
-				"at_least": "at least",
-				"at_most": "at most"
-			},
-			"string_compare": {
-				"none": "is anything",
-				"is": "is",
-				"is_not": "is not",
-				"contains": "contains",
-				"does_not_contain": "does not contain",
-				"starts_with": "starts with",
-				"does_not_start_with": "does not start with",
-				"ends_with": "ends with",
-				"does_not_end_with": "does not end with"
-			},
-			"has": {
-				"true": "has",
-				"false": "doesn't have"
-			},
-			"all": {
-				"true": "requires all of:",
-				"false": "requires at least one of:"
-			},
-			"prereqs": {
-				"trait_prereq": "a trait",
-				"attribute_prereq": "the attribute",
-				"contained_quantity_prereq": "a contained quantity of",
-				"contained_weight_prereq": "a contained weight",
-				"equipped_equipment_prereq": "has equipped equipment",
-				"skill_prereq": "a skill",
-				"spell_prereq": "spell(s)"
-			},
-			"features": {
-				"attribute_bonus": "Gives an attribute modifier of",
-				"conditional_modifier": "Gives a conditional modifier of",
-				"dr_bonus": "Gives a DR bonus of",
-				"reaction_bonus": "Gives a reaction modifier of",
-				"skill_bonus": "Gives a skill level modifier of",
-				"skill_point_bonus": "Gives a skill point modifier of",
-				"spell_bonus": "Gives a spell level modifier of",
-				"spell_point_bonus": "Gives a spell point modifier of",
-				"weapon_bonus": "Gives a weapon damage modifier of",
-				"weapon_acc_bonus": "Gives a weapon accuracy modifier of",
-				"weapon_scope_acc_bonus": "Gives a weapon scope accuracy modifier of",
-				"weapon_dr_divisor_bonus": "Gives a weapon DR divisor modifier of",
-				"weapon_min_st_bonus": "Gives a weapon minimum ST modifier of",
-				"weapon_min_reach_bonus": "Gives a weapon minimum reach modifier of",
-				"weapon_max_reach_bonus": "Gives a weapon maximum reach modifier of",
-				"weapon_half_damage_range_bonus": "Gives a weapon half-damage range modifier of",
-				"weapon_min_range_bonus": "Gives a weapon minimum reach modifier of",
-				"weapon_max_range_bonus": "Gives a weapon maximum range modifier of",
-				"weapon_recoil_bonus": "Gives a weapon recoil modifier of",
-				"weapon_bulk_bonus": "Gives a weapon bulk modifier of",
-				"weapon_parry_bonus": "Gives a weapon parry modifier of",
-				"weapon_block_bonus": "Gives a weapon block modifier of",
-				"weapon_rof_mode_1_shots_bonus": "Gives a weapon shots per attack (mode 1) modifier of",
-				"weapon_rof_mode_1_secondary_bonus": "Gives a weapon seconary projectiles (mode 1) modifier of",
-				"weapon_rof_mode_2_shots_bonus": "Gives a weapon shots per attack (mode 2) modifier of",
-				"weapon_rof_mode_2_secondary_bonus": "Gives a weapon seconary projectiles (mode 2) modifier of",
-				"weapon_non_chamber_shots_bonus": "Gives a weapon non-chambered shots modifier of",
-				"weapon_chamber_shots_bonus": "Gives a weapon chamber shots modifier of",
-				"weapon_shot_duration_bonus": "Gives a weapon shot duration modifier of",
-				"weapon_reload_time_bonus": "Gives a weapon reload time modifier of",
-				"weapon_switch": "Set the weapon flag",
-				"cost_reduction": "Reduces the attribute cost of",
-				"contained_weight_reduction": "Reduces the contained weight by",
-				"move_bonus": "Gives a move bonus of"
-			},
-			"st_limitation": {
-				"none": "",
-				"striking_only": "for striking only",
-				"lifting_only": "for lifting only",
-				"throwing_only": "for throwing only"
-			},
-			"spell_sub_type": {
-				"name": "whose name",
-				"tag": "with a tag which",
-				"college": "whose college name",
-				"college_count": "from different colleges",
-				"any": "of any kind"
-			},
-			"skill_bonus_selection_type": {
-				"skills_with_name": "to skills with name",
-				"weapons_with_name": "to weapons with name",
-				"this_weapon": "to this weapon"
-			},
-			"weapon_bonus_selection_type": {
-				"weapons_with_required_skill": "to weapons whose required skill name",
-				"weapons_with_name": "to weapons whose name",
-				"this_weapon": "to this weapon"
-			},
-			"spell_match": {
-				"all_colleges": "to all colleges",
-				"college_name": "to the college whose name",
-				"power_source_name": "to the power source whose name",
-				"spell_name": "to the spell whose name"
-			},
-			"damage_st": {
-				"none": "None",
-				"thr": "Thrust",
-				"thr_leveled": "Thrust (leveled)",
-				"sw": "Swing",
-				"sw_leveled": "Swing (leveled)"
-			},
-			"defaults": {
-				"ten": "10",
-				"parry": "Parry",
-				"block": "Block",
-				"skill": "Skill"
-			},
-			"container_type": {
-				"group": "Group",
-				"meta_trait": "Meta-Trait",
-				"attributes": "Attributes",
-				"ancestry": "Ancestry",
-				"alternative_abilities": "Alternative Abilities"
-			},
-			"trait_mod_cost_type": {
-				"percentage_leveled": "% per level",
-				"percentage": "%",
-				"points": "points",
-				"multiplier": "×"
-			},
-			"trait_mod_affects": {
-				"total": "to cost",
-				"base_only": "to base cost only",
-				"levels_only": "to leveled cost only"
-			},
-			"eqp_mod_cost_type": {
-				"to_original_cost": "to original cost (e.g. \"+5\", \"-5\", \"+10%\", \"-10%\", \"x3.2\")",
-				"to_base_cost": "to base cost (e.g. \"x2\", \"+2 CF\", \"-0.2 CF\")",
-				"to_final_base_cost": "to final base cost (e.g. \"+5\", \"-5\", \"+10%\", \"-10%\", \"x3.2\")",
-				"to_final_cost": "to final cost (e.g. \"+5\", \"-5\", \"+10%\", \"-10%\", \"x3.2\")"
-			},
-			"eqp_mod_weight_type": {
-				"to_original_weight": "to original weight (e.g. \"+5 lb\", \"-5 lb\", \"+10%\", \"-10%\")",
-				"to_base_weight": "to base weight (e.g. \"+5 lb\", \"-5 lb\", \"x10%\", \"x3\", \"x2/3\")",
-				"to_final_base_weight": "to final base weight (e.g. \"+5 lb\", \"-5 lb\", \"x10%\", \"x3\", \"x2/3\")",
-				"to_final_weight": "to final weight (e.g. \"+5 lb\", \"-5 lb\", \"x10%\", \"x3\", \"x2/3\")"
-			},
-			"difficulty": {
-				"easy": "E",
-				"average": "A",
-				"hard": "H",
-				"very_hard": "VH",
-				"wildcard": "W"
-			},
-			"move_type": {
-				"ground": "Ground",
-				"air": "Air",
-				"water": "Water",
-				"space": "Space"
-			},
-			"damage_progression": {
-				"basic_set": "Basic Set",
-				"knowing_your_own_strength": "Knowing Your Own Strength",
-				"no_school_grognard_damage": "No School Grognard Damage",
-				"thrust_equals_swing_minus_2": "Thrust = Swing - 2",
-				"swing_equals_thrust_plus_2": "Swing = Thrust + 2",
-				"tbone_1": "T Bone's New Damage for ST (option 1)",
-				"tbone_1_clean": "T Bone's New Damage for ST (option 1, cleaned)",
-				"tbone_2": "T Bone's New Damage for ST (option 2)",
-				"tbone_2_clean": "T Bone's New Damage for ST (option 2, cleaned)",
-				"phoenix_flame_d3": "Phoenix Flame D3"
-			},
-			"damage_progression_comment": {
-				"basic_set": "The standard damage progression",
-				"knowing_your_own_strength": "From <span class='ref' data-pdf='PY83:16'>Pyramid 3-83, pages 16-19</span>",
-				"no_school_grognard_damage": "From <span class='ref' data-pdf='https://noschoolgrognard.blogspot.com/2013/04/adjusting-swing-damage-in-dungeon.html'>Adjusting Swing Damage in Dungeon Fantasy</span>",
-				"thrust_equals_swing_minus_2": "From <span class='ref' data-pdf='https://github.com/richardwilkes/gcs/issues/97'>Alternate Damage Scheme (Thr = Sw-2)</span>",
-				"swing_equals_thrust_plus_2": "From a <span class='ref' data-pdf='https://gamingballistic.com/2020/12/04/df-eastmarch-boss-fight-and-house-rules/'>house rule</span> originating with Kevin Smyth",
-				"tbone_1": "From <span class='ref' data-pdf='https://www.gamesdiner.com/2009/10/new-st-damage/'>T Bone's Games Diner</span>",
-				"tbone_1_clean": "From <span class='ref' data-pdf='https://www.gamesdiner.com/2009/10/new-st-damage/'>T Bone's Games Diner</span>",
-				"tbone_2": "From <span class='ref' data-pdf='https://www.gamesdiner.com/2009/10/new-st-damage/'>T Bone's Games Diner</span>",
-				"tbone_2_clean": "From <span class='ref' data-pdf='https://www.gamesdiner.com/2009/10/new-st-damage/'>T Bone's Games Diner</span>",
-				"phoenix_flame_d3": "From a <span class='ref' data-pdf='https://github.com/richardwilkes/gcs/pull/393'>house rule</span> that uses d3s instead of d6s for damage"
-			},
-			"display": {
-				"not_shown": "Not Shown",
-				"inline": "Inline",
-				"tooltip": "Tooltip",
-				"inline_and_tooltip": "Inline & Tooltip"
-			},
-			"default_weight_units": {
-				"lb": "lb",
-				"#": "#",
-				"oz": "oz",
-				"tn": "tn",
-				"t": "t",
-				"kg": "kg",
-				"g": "g"
-			},
-			"attribute_type": {
-				"integer": "Integer",
-				"integer_ref": "Integer (Display Only)",
-				"decimal": "Decimal",
-				"decimal_ref": "Decimal (Display Only)",
-				"pool": "Pool",
-				"primary_separator": "Primary Separator",
-				"secondary_separator": "Secondary Separator",
-				"pool_separator": "Pool Separator"
-			},
-			"study_type": {
-				"self": "Self-Taught",
-				"job": "On-the-Job Training",
-				"teacher": "Professional Teacher",
-				"intensive": "Intensive Training"
-			},
-			"color_mode_preference": {
-				"auto": "Automatic",
-				"dark": "Dark",
-				"light": "Light"
-			},
-			"srt_comparison": {
-				"less_than": "<",
-				"less_than_or_equal": "≤",
-				"greater_than": ">",
-				"greater_than_or_equal": "≥"
-			},
-			"srt_operator": {
-				"add": "Max +",
-				"subtract": "Max -",
-				"multiply": "Max ×",
-				"divide": "Max ÷"
-			},
-			"duration_type": {
-				"none": "None",
-				"turns": "Turns",
-				"rounds": "Rounds",
-				"seconds": "Seconds"
-			},
-			"effect_action": {
-				"add": "Add",
-				"remove": "Remove"
-			},
-			"move_condition_type": {
-				"trait": "Has a trait whose name is",
-				"skill": "Has a skill whose name is",
-				"condition": "Has a condition whose ID is"
-			},
-			"study_hours_needed": {
-				"200": "Standard",
-				"180": "Reduction for Talent level 1",
-				"160": "Reduction for Talent level 2",
-				"140": "Reduction for Talent level 3",
-				"120": "Reduction for Talent level 4"
-			},
-			"switch_type": {
-				"can_block": "Can Block",
-				"can_parry": "Can Parry",
-				"close_combat": "Close Combat",
-				"fencing": "Fencing",
-				"full_auto_1": "Fully Automatic (Mode 1)",
-				"full_auto_2": "Fully Automatic (Mode 2)",
-				"bipod": "Has Bipod",
-				"controlled_bursts_1": "High-cyclic Controlled Bursts (Mode 1)",
-				"controlled_bursts_2": "High-cyclic Controlled Bursts (Mode 2)",
-				"jet": "Jet",
-				"mounted": "Mounted",
-				"muscle_powered": "Muscle Powered",
-				"range_in_miles": "Range In Miles",
-				"change_requires_ready": "Reach Change Requires Ready",
-				"reload_time_is_per_shot": "Reload Time Is Per Shot",
-				"retracting_stock": "Retracting Stock",
-				"two_handed": "Two-handed",
-				"thrown": "Thrown",
-				"unbalanced": "Unbalanced",
-				"two_handed_unready": "Two-handed and Unready After Attack",
-				"musket_rest": "Uses a Musket Rest"
-			},
-			"switch_type_value": {
-				"true": "to true",
-				"false": "to false"
-			}
-		},
 		"study": {
 			"header": "Study",
 			"studied": "Studied {hours}/{total} hours",
 			"studied_alt": "Studied {hours} of {total} hours",
-			"for": "for 1 point",
-			"tooltip": {
-				"max": "Maximum of {hours} hours per day",
-				"max_no_job": "Maximum of {hours} hours per day with no job",
-				"max_part_time_job": "Maximum of {hours} hours per day with a part-time job",
-				"max_full_time_job": "Maximum of {hours} hours per day with a full-time job",
-				"teacher_teaching": "The teacher must have the Teaching skill at 12+",
-				"teacher_prereq": "The teacher must have the skill/spell/trait being taught at the same or higher level than you, or have as many or more points spent in it as you do"
-			}
+			"for": "for 1 point"
 		},
 		"field_prefix": {
 			"attribute": "to {att}",
 			"attribute_unknown": "to the unrecognized key ({att})",
+			"move_type": "to {type}",
+			"move_type_unknown": "to the unrecognized key ({type})",
 			"tech_level": "When the Tech Level",
 			"name": "whose name",
 			"combined_with": "combined with",
@@ -1387,6 +1066,15 @@
 			"au": "AU",
 			"ly": "ly",
 			"pc": "pc"
+		},
+		"weight_units": {
+			"lb": "lb",
+			"#": "#",
+			"oz": "oz",
+			"tn": "tn",
+			"t": "t",
+			"kg": "kg",
+			"g": "g"
 		},
 		"placeholder": {
 			"hit_location": {
@@ -1883,60 +1571,6 @@
 				"mode2": "\n\nSecond mode:\n{content}"
 			}
 		},
-		"prereqs": {
-			"unsatisfied": "Unsatisfied Prerequisite(s)",
-			"header": "Prerequisites",
-			"not_met": "Prerequisites have not been met:<br>",
-			"requires_all": "• Requires all of:<br>",
-			"requires_one": "• Requires at least one of:<br>",
-			"quantity": "a contained quantity which ",
-			"weight": "a contained weight which ",
-			"has": {
-				"true": "• Has ",
-				"false": "• Does not have"
-			},
-			"trait": {
-				"name": "a trait whose name ",
-				"notes": ", notes ",
-				"level": " and level "
-			},
-			"attribute": {
-				"which": " which ",
-				"plus": "+"
-			},
-			"skill": {
-				"name": "a skill whose name ",
-				"specialization": ", specialization ",
-				"level": " and level ",
-				"tech_level": " and tech level matches"
-			},
-			"spell": {
-				"college_count": "college count which ",
-				"one": "spell ",
-				"many": "spells ",
-				"any": "of any kind",
-				"name": "whose name ",
-				"tag": "whose tag ",
-				"college": "whoe college ",
-				"at_least": "at least ",
-				"at_most": "at most ",
-				"is": ""
-			},
-			"equipment": "Has equipment which is equipped and whose name ",
-			"criteria": {
-				"none": "is anything ",
-				"is": "is ",
-				"is_not": "is not ",
-				"contains": "contains ",
-				"does_not_contain": "does not contain ",
-				"starts_with": "starts with ",
-				"does_not_start_with": "does not start with ",
-				"ends_with": "ends with ",
-				"does_not_end_with": "does not end with ",
-				"at_least": "is at least ",
-				"at_most": "is at most "
-			}
-		},
 		"ritual": {
 			"sub_10": "Ritual: need both hands and feet free and must speak; Time: 2x",
 			"sub_15": "Ritual: speak quietly and make a gesture",
@@ -1950,6 +1584,451 @@
 			"water": "Water Move",
 			"air": "Air Move",
 			"space": "Space Move"
+		},
+		"enum": {
+			"color": {
+				"auto": "Automatic",
+				"dark": "Dark",
+				"light": "Light"
+			},
+			"defaults": {
+				"ten": "10",
+				"parry": "Parry",
+				"block": "Block",
+				"skill": "Skill"
+			},
+			"stdmg": {
+				"none": "None",
+				"thr": "Thrust",
+				"thr_leveled": "Thrust (leveled)",
+				"sw": "Swing",
+				"sw_leveled": "Swing (leveled)"
+			},
+			"wswitch": {
+				"can_block": "Can Block",
+				"can_parry": "Can Parry",
+				"close_combat": "Close Combat",
+				"fencing": "Fencing",
+				"full_auto_1": "Fully Automatic (Mode 1)",
+				"full_auto_2": "Fully Automatic (Mode 2)",
+				"bipod": "Has Bipod",
+				"controlled_bursts_1": "High-cyclic Controlled Bursts (Mode 1)",
+				"controlled_bursts_2": "High-cyclic Controlled Bursts (Mode 2)",
+				"jet": "Jet",
+				"mounted": "Mounted",
+				"muscle_powered": "Muscle Powered",
+				"range_in_miles": "Range In Miles",
+				"change_requires_ready": "Reach Change Requires Ready",
+				"reload_time_is_per_shot": "Reload Time Is Per Shot",
+				"retracting_stock": "Retracting Stock",
+				"two_handed": "Two-handed",
+				"thrown": "Thrown",
+				"unbalanced": "Unbalanced",
+				"two_handed_unready": "Two-handed and Unready After Attack",
+				"musket_rest": "Uses a Musket Rest"
+			},
+			"wswitch_value": {
+				"true": "to true",
+				"false": "to false"
+			},
+			"has": {
+				"true": "Has",
+				"false": "Does not have"
+			},
+			"move_override": {
+				"trait": "Has a trait whose name is",
+				"skill": "Has a skill whose name is",
+				"condition": "Has a condition whose ID is"
+			},
+			"affects": {
+				"string": {
+					"total": "to cost",
+					"base_only": "to base cost only",
+					"levels_only": "to leveled cost only"
+				},
+				"alt_string": {
+					"total": "",
+					"base_only": "(base only)",
+					"levels_only": "(levels only)"
+				}
+			},
+			"container": {
+				"string": {
+					"group": "Group",
+					"alternative_abilities": "Alternative Abilities",
+					"ancestry": "Ancestry",
+					"attributes": "Attribute",
+					"meta_trait": "Meta-Trait"
+				},
+				"tag": {
+					"group": "",
+					"alternative_abilities": "Alternate",
+					"meta_trait": "Meta",
+					"attributes": "Attribute",
+					"ancestry": "Ancestry"
+				}
+			},
+			"display": {
+				"not_shown": "Not Shown",
+				"inline": "Inline",
+				"tooltip": "Tooltip",
+				"inline_and_tooltip": "Inline & Tooltip"
+			},
+			"difficulty": {
+				"e": "E",
+				"a": "A",
+				"h": "H",
+				"vh": "VH",
+				"w": "W"
+			},
+			"paper": {
+				"size": {
+					"letter": "Letter",
+					"legal": "Legal",
+					"tabloid": "Tabloid",
+					"a0": "A0",
+					"a1": "A1",
+					"a2": "A2",
+					"a3": "A3",
+					"a4": "A4",
+					"a5": "A5",
+					"a6": "A6"
+				}
+			},
+			"emcost": {
+				"type": {
+					"string": {
+						"to_original_cost": "to original cost",
+						"to_base_cost": "to base cost",
+						"to_final_base_cost": "to final base cost",
+						"to_final_cost": "to final cost"
+					},
+					"alt_string": {
+						"to_original_cost": "\"+5\", \"-5\", \"+10%\", \"-10%\", \"x3.2\"",
+						"to_base_cost": "\"+5\", \"-5\", \"+10%\", \"-10%\", \"x3.2\"",
+						"to_final_base_cost": "\"x2\", \"+2 CF\", \"-0.2 CF\"",
+						"to_final_cost": "\"+5\", \"-5\", \"+10%\", \"-10%\", \"x3.2\""
+					}
+				},
+				"value": {
+					"+": "+",
+					"%": "%",
+					"x": "x",
+					"cf": "CF"
+				}
+			},
+			"emweight": {
+				"type": {
+					"string": {
+						"to_original_weight": "to original weight",
+						"to_base_weight": "to base weight",
+						"to_final_base_weight": "to final base weight",
+						"to_final_weight": "to final weight"
+					},
+					"alt_string": {
+						"to_original_weight": "\"+5 lb\", \"-5 lb\", \"+10%\", \"-10%\"",
+						"to_base_weight": "\"+5 lb\", \"-5 lb\", \"x10%\", \"x3\", \"x2/3\"",
+						"to_final_base_weight": "\"+5 lb\", \"-5 lb\", \"x10%\", \"x3\", \"x2/3\"",
+						"to_final_weight": "\"+5 lb\", \"-5 lb\", \"x10%\", \"x3\", \"x2/3\""
+					}
+				}
+			},
+			"attribute": {
+				"integer": "Integer",
+				"integer_ref": "Integer (Display Only)",
+				"decimal": "Decimal",
+				"decimal_ref": "Decimal (Display Only)",
+				"pool": "Pool",
+				"primary_separator": "Primary Separator",
+				"secondary_separator": "Secondary Separator",
+				"pool_separator": "Pool Separator"
+			},
+			"spellmatch": {
+				"all_colleges": "to all colleges",
+				"college_name": "to the college whose name",
+				"power_source_name": "to the power source whose name",
+				"spell_name": "to the spell whose name"
+			},
+			"spellcmp": {
+				"name": "whose name",
+				"tag": "with a tag which ",
+				"college": "whose college name",
+				"college_count": "from different colleges",
+				"any": " of any kind"
+			},
+			"feature": {
+				"attribute_bonus": "Gives an attribute modifier of",
+				"conditional_modifier": "Gives a conditional modifier of",
+				"dr_bonus": "Gives a DR bonus of",
+				"reaction_bonus": "Gives a reaction modifier of",
+				"skill_bonus": "Gives a skill level modifier of",
+				"skill_point_bonus": "Gives a skill point modifier of",
+				"spell_bonus": "Gives a spell level modifier of",
+				"spell_point_bonus": "Gives a spell point modifier of",
+				"weapon_bonus": "Gives a weapon damage modifier of",
+				"weapon_acc_bonus": "Gives a weapon accuracy modifier of",
+				"weapon_scope_acc_bonus": "Gives a weapon scope accuracy modifier of",
+				"weapon_dr_divisor_bonus": "Gives a weapon DR divisor modifier of",
+				"weapon_min_st_bonus": "Gives a weapon minimum ST modifier of",
+				"weapon_min_reach_bonus": "Gives a weapon minimum reach modifier of",
+				"weapon_max_reach_bonus": "Gives a weapon maximum reach modifier of",
+				"weapon_half_damage_range_bonus": "Gives a weapon half-damage range modifier of",
+				"weapon_min_range_bonus": "Gives a weapon minimum reach modifier of",
+				"weapon_max_range_bonus": "Gives a weapon maximum range modifier of",
+				"weapon_recoil_bonus": "Gives a weapon recoil modifier of",
+				"weapon_bulk_bonus": "Gives a weapon bulk modifier of",
+				"weapon_parry_bonus": "Gives a weapon parry modifier of",
+				"weapon_block_bonus": "Gives a weapon block modifier of",
+				"weapon_rof_mode_1_shots_bonus": "Gives a weapon shots per attack (mode 1) modifier of",
+				"weapon_rof_mode_1_secondary_bonus": "Gives a weapon seconary projectiles (mode 1) modifier of",
+				"weapon_rof_mode_2_shots_bonus": "Gives a weapon shots per attack (mode 2) modifier of",
+				"weapon_rof_mode_2_secondary_bonus": "Gives a weapon seconary projectiles (mode 2) modifier of",
+				"weapon_non_chamber_shots_bonus": "Gives a weapon non-chambered shots modifier of",
+				"weapon_chamber_shots_bonus": "Gives a weapon chamber shots modifier of",
+				"weapon_shot_duration_bonus": "Gives a weapon shot duration modifier of",
+				"weapon_reload_time_bonus": "Gives a weapon reload time modifier of",
+				"weapon_switch": "Set the weapon flag",
+				"cost_reduction": "Reduces the attribute cost of",
+				"contained_weight_reduction": "Reduces the contained weight by",
+				"move_bonus": "Gives a move bonus of"
+			},
+			"stlimit": {
+				"none": "",
+				"striking_only": "for striking only",
+				"lifting_only": "for lifting only",
+				"throwing_only": "for throwing only"
+			},
+			"movelimit": {
+				"base": "Base",
+				"enhanced": "Enhanced"
+			},
+			"wsel": {
+				"weapons_with_required_skill": "to weapons whose required skill name",
+				"this_weapon": "to this weapon",
+				"weapons_with_name": "to weapons whose name"
+			},
+			"threshold": {
+				"string": {
+					"unknown": "Unknown",
+					"halve_move": "Halve Move",
+					"halve_dodge": "Halve Dodge",
+					"halve_st": "Halve Strength"
+				},
+				"alt_string": {
+					"unknown": "Unknown",
+					"halve_move": "Halve Move (round up)",
+					"halve_dodge": "Halve Dodge (round up)",
+					"halve_st": "Halve Strength (round up; does not affect HP and damage)"
+				}
+			},
+			"skillsel": {
+				"skills_with_name": "to skills whose name",
+				"this_weapon": "to this weapon",
+				"weapons_with_name": "to weapons whose name"
+			},
+			"selfctrl": {
+				"roll": {
+					"0": "None Required",
+					"6": "CR: 6 (Resist Rarely)",
+					"9": "CR: 9 (Resist Fairly Often)",
+					"12": "CR: 12 (Resist Quite Often)",
+					"15": "CR: 15 (Resist Almost All The Time)"
+				},
+				"adjustment": {
+					"string": {
+						"none": "None",
+						"action_penalty": "Includes an Action Penalty for Failure",
+						"reaction_penalty": "Includes a Reaction Penalty for Failure",
+						"fright_check_penalty": "Includes a Fright Check Penalty",
+						"fright_check_bonus": "Includes a Fright Check Bonus",
+						"minor_cost_of_living_increase": "Includes a Minor Cost of Living Increase",
+						"major_cost_of_living_increase": "Includes a Major Cost of Living Increase and Merchant Skill Penalty"
+					},
+					"alt_string": {
+						"none": "None",
+						"action_penalty": "{penalty} Action Penalty",
+						"reaction_penalty": "{penalty} Reaction Penalty",
+						"fright_check_penalty": "{penalty} Fright Check Penalty",
+						"fright_check_bonus": "+{penalty} Fright Check Bonus",
+						"minor_cost_of_living_increase": "+{penalty}% Cost of Living Increase",
+						"major_cost_of_living_increase": "+{penalty}% Cost of Living Increase"
+					}
+				}
+			},
+			"tmcost": {
+				"percentage": "%",
+				"points": "points",
+				"multiplier": "×"
+			},
+			"study": {
+				"type": {
+					"string": {
+						"self": "Self-Taught",
+						"job": "On-the-Job Training",
+						"teacher": "Professional Teacher",
+						"intensive": "Intensive Training"
+					},
+					"limitations": {
+						"self": [
+							"Maximum of 12 hours per day with no job",
+							"Maximum of 8 hours per day with a part-time job",
+							"Maximum of 4 hours per day with a full-time job"
+						],
+						"job": [
+							"Maximum of 8 hours per day with a full-time job",
+							"Maximum of 4 hours per day with a part-time job"
+						],
+						"teacher": [
+							"Maximum of 8 hours per day",
+							"The teacher must have the Teaching skill at 12+",
+							"The teacher must have the skill/spell/trait being taught at the same or higher level than you, or have as many or more points spent in it as you do"
+						],
+						"intensive": [
+							"Maximum of 16 hours per day",
+							"The teacher must have the Teaching skill at 12+",
+							"The teacher must have the skill/spell/trait being taught at a higher level than you and have more points spent in it than you do"
+						]
+					}
+				},
+				"level": {
+					"200": "Standard",
+					"180": "Reduction for Talent level 1",
+					"160": "Reduction for Talent level 2",
+					"140": "Reduction for Talent level 3",
+					"120": "Reduction for Talent level 4"
+				}
+			},
+			"prereq": {
+				"prereq_list": "a list",
+				"trait_prereq": "a trait",
+				"attribute_prereq": "the attribute",
+				"contained_quantity_prereq": "a contained quantity of",
+				"contained_weight_prereq": "a contained weight",
+				"equipped_equipment": "has equipped equipment",
+				"skill_prereq": "a skill",
+				"spell_prereq": "spell(s)"
+			},
+			"progression": {
+				"string": {
+					"basic_set": "Basic Set",
+					"knowing_your_own_strength": "Knowing Your Own Strength",
+					"no_school_grognard_damage": "No School Grognard Damage",
+					"thrust_equals_swing_minus_2": "Thrust = Swing-2",
+					"swing_equals_thrust_plus_2": "Swing = Thrust+2",
+					"tbone_1": "T Bone's New Damage for ST (option 1)",
+					"tbone_1_clean": "T Bone's New Damage for ST (option 1, cleaned)",
+					"tbone_2": "T Bone's New Damage for ST (option 2)",
+					"tbone_2_clean": "T Bone's New Damage for ST (option 2, cleaned)",
+					"phoenix_flame_d3": "Phoenix Flame D3"
+				},
+				"alt_string": {
+					"basic_set": "The standard damage progression",
+					"knowing_your_own_strength": "From <span class='ref' data-pdf='PY83:16'>Pyramid 3-83, pages 16-19</span>",
+					"no_school_grognard_damage": "From <span class='ref' data-pdf='https://noschoolgrognard.blogspot.com/2013/04/adjusting-swing-damage-in-dungeon.html'>Adjusting Swing Damage in Dungeon Fantasy</span>",
+					"thrust_equals_swing_minus_2": "From <span class='ref' data-pdf='https://github.com/richardwilkes/gcs/issues/97'>Alternate Damage Scheme (Thr = Sw-2)</span>",
+					"swing_equals_thrust_plus_2": "From a <span class='ref' data-pdf='https://gamingballistic.com/2020/12/04/df-eastmarch-boss-fight-and-house-rules/'>house rule</span> originating with Kevin Smyth",
+					"tbone_1": "From <span class='ref' data-pdf='https://www.gamesdiner.com/2009/10/new-st-damage/'>T Bone's Games Diner</span>",
+					"tbone_1_clean": "From <span class='ref' data-pdf='https://www.gamesdiner.com/2009/10/new-st-damage/'>T Bone's Games Diner</span>",
+					"tbone_2": "From <span class='ref' data-pdf='https://www.gamesdiner.com/2009/10/new-st-damage/'>T Bone's Games Diner</span>",
+					"tbone_2_clean": "From <span class='ref' data-pdf='https://www.gamesdiner.com/2009/10/new-st-damage/'>T Bone's Games Diner</span>",
+					"phoenix_flame_d3": "From a <span class='ref' data-pdf='https://github.com/richardwilkes/gcs/pull/393'>house rule</span> that uses d3s instead of d6s for damage"
+				}
+			}
+		},
+		"string_criteria": {
+			"string": {
+				"none": "is anything",
+				"is": "is",
+				"is_not": "is not",
+				"contains": "contains",
+				"does_not_contain": "does not contain",
+				"starts_with": "starts with",
+				"does_not_start_with": "does not start with",
+				"ends_with": "ends with",
+				"does_not_end_with": "does not end with"
+			},
+			"alt_string": {
+				"is_not": "are not",
+				"does_not_contain": "do not contain",
+				"does_not_start_with": "do not start with",
+				"does_not_end_with": "do not end with"
+			}
+		},
+		"numeric_criteria": {
+			"string": {
+				"none": "is anything",
+				"is": "is",
+				"is_not": "is not",
+				"at_least": "is at least",
+				"at_most": "is at most"
+			},
+			"alt_string": {
+				"none": "anything",
+				"is": "",
+				"is_not": "not",
+				"at_least": "at least",
+				"at_most": "at most"
+			},
+			"quantity": {
+				"none": "anything",
+				"is": "exactly",
+				"is_not": "not",
+				"at_least": "at least",
+				"at_most": "at most"
+			}
+		},
+		"prereq": {
+			"header": "Prerequisites",
+			"prefix": "• ",
+			"unsatisfied": "Unsatisfied Prerequisite(s)",
+			"not_met": "Prerequisites have not been met:<br>",
+			"requires_all": "Requires all of:<br>",
+			"requires_one": "Requires at least one of:<br>",
+			"has": {
+				"true": "Has",
+				"false": "Does not have"
+			},
+			"trait": {
+				"name": " a trait whose name {content}",
+				"notes": ", notes {content}",
+				"level": " and level {content}"
+			},
+			"attribute": {
+				"qualifier": " which {content}"
+			},
+			"skill": {
+				"name": "a skill whose name {content}",
+				"specialization": ", specialization {content},",
+				"level": " and level {content}",
+				"level_alt1": " level {content} and tech level matches",
+				"level_alt2": ", level {content} and tech level matches"
+			},
+			"spell": {
+				"college_count": " college count which ",
+				"singular": {
+					"name": " spell whose name ",
+					"tag": " spell whose tag ",
+					"college": " spell whose college",
+					"any": " spell of any kind"
+				},
+				"multiple": {
+					"name": " spells whose name ",
+					"tag": " spells whose tag ",
+					"college": " spells whose college",
+					"any": " spells of any kind"
+				}
+			},
+			"contained_quantity": " a contained quantity which {content}",
+			"contained_weight": " a contained weight which {content}",
+			"equipped_equipment": "Has equipment which is equipped and whose name is {content}",
+			"list": {
+				"true": "Requires all of:",
+				"false": "Requires at least one of:"
+			}
+		},
+		"common": {
+			"no_additional_modifiers": "No additional modifiers",
+			"includes_modifiers_from": "Includes modifiers from"
 		}
 	}
 }

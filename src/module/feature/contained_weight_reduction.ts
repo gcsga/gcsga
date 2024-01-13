@@ -1,18 +1,16 @@
 import { Weight, WeightUnits } from "@util"
 import { BonusOwner } from "./bonus_owner"
-import { FeatureType } from "./data"
 import { Int } from "@util/fxp"
+import { feature } from "@util/enum"
 
 export interface ContainedWeightReductionObj {
 	reduction: string
 }
 
 export class ContainedWeightReduction extends BonusOwner {
-	type = FeatureType.ContainedWeightReduction
+	type = feature.Type.ContainedWeightReduction
 
 	reduction: string
-
-	effective?: boolean // If true, bonus is applied later as part of effect bonuses
 
 	constructor() {
 		super()
@@ -35,9 +33,7 @@ export class ContainedWeightReduction extends BonusOwner {
 
 	static fromObject(data: ContainedWeightReductionObj): ContainedWeightReduction {
 		const bonus = new ContainedWeightReduction()
-		for (const key of Object.keys(data)) {
-			;(bonus as any)[key] = data[key as keyof ContainedWeightReductionObj]
-		}
+		bonus.reduction = data.reduction
 		return bonus
 	}
 }

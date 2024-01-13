@@ -1,11 +1,11 @@
-import { VariableResolver, sanitizeId } from "@util"
+import { CharacterResolver, sanitizeId } from "@util"
 import { MoveTypeObj } from "./data"
 import { reserved_ids } from "@module/attribute"
 import { MoveBonusType } from "@feature"
 import { MoveTypeDef } from "./move_type_def"
 
 export class MoveType {
-	actor: VariableResolver
+	actor: CharacterResolver
 
 	order: number
 
@@ -13,7 +13,7 @@ export class MoveType {
 
 	adj = 0
 
-	constructor(actor: VariableResolver, move_type_id: string, order: number, data?: Partial<MoveTypeObj>) {
+	constructor(actor: CharacterResolver, move_type_id: string, order: number, data?: Partial<MoveTypeObj>) {
 		if (data) Object.assign(this, data)
 		this.actor = actor
 		this.move_type_id = move_type_id

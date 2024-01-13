@@ -1,10 +1,9 @@
 import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
 import { Feature } from "@module/config"
 import { ItemType } from "@module/data"
+import { affects, tmcost } from "@util/enum"
 
 export type TraitModifierSource = ItemGCSSource<ItemType.TraitModifier, TraitModifierSystemData>
-
-// Export class TraitModifierData extends BaseItemDataGURPS<TraitModifierGURPS> {}
 
 export interface TraitModifierData extends Omit<TraitModifierSource, "effects">, TraitModifierSystemData {
 	readonly type: TraitModifierSource["type"]
@@ -15,12 +14,9 @@ export interface TraitModifierData extends Omit<TraitModifierSource, "effects">,
 
 export interface TraitModifierSystemData extends ItemGCSSystemData {
 	disabled: boolean
-	cost_type: TraitModifierCostType
+	cost_type: tmcost.Type
 	cost: number
 	levels: number
-	affects: TraitModifierAffects
+	affects: affects.Option
 	features: Feature[]
 }
-
-export type TraitModifierCostType = "percentage" | "points" | "multiplier"
-export type TraitModifierAffects = "total" | "base_only" | "levels_only"

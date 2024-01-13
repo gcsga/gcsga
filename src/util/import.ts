@@ -19,15 +19,14 @@ import {
 	TraitModifierContainerSystemData,
 	TraitModifierSystemData,
 	TraitSystemData,
-	stdmg,
 } from "@item"
 import { Feature, ItemSystemDataGURPS } from "@module/config"
-import { CR, ItemType, SYSTEM_NAME } from "@module/data"
+import { ItemType, SYSTEM_NAME } from "@module/data"
 import { SkillDefault } from "@module/default"
 import { PrereqList } from "@prereq"
 import { LocalizeGURPS } from "./localize"
 import { newUUID } from "./misc"
-import { FeatureType } from "@feature"
+import { feature, selfctrl, stdmg } from "./enum"
 
 class ImportUtils {
 	static importItems(
@@ -166,15 +165,15 @@ class ImportUtils {
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
 			tags: data.tags ?? [],
-			prereqs: data.prereqs ? new PrereqList(data.prereqs) : new PrereqList(),
+			prereqs: data.prereqs ? PrereqList.fromObject(data.prereqs) : new PrereqList(),
 			round_down: data.round_down ?? false,
 			disabled: data.disabled ?? false,
 			can_level: data.can_level ?? false,
 			levels: data.levels ?? 0,
 			base_points: data.base_points ?? 0,
 			points_per_level: data.points_per_level ?? 0,
-			cr: data.cr ?? CR.None,
-			cr_adj: data.cr_adj ?? "none",
+			cr: data.cr ?? selfctrl.Roll.NoCR,
+			cr_adj: data.cr_adj ?? selfctrl.Adjustment.NoCRAdj,
 			features: data.features ? ImportUtils.importFeatures(data.features) : [],
 			vtt_notes: data.vtt_notes ?? "",
 			study: data.study ?? [],
@@ -194,8 +193,8 @@ class ImportUtils {
 			notes: data.notes ?? "",
 			tags: data.tags ?? [],
 			disabled: data.disabled ?? false,
-			cr: data.cr ?? CR.None,
-			cr_adj: data.cr_adj ?? "none",
+			cr: data.cr ?? selfctrl.Roll.NoCR,
+			cr_adj: data.cr_adj ?? selfctrl.Adjustment.NoCRAdj,
 			open: data.open ?? false,
 			vtt_notes: data.vtt_notes ?? "",
 		}
@@ -245,7 +244,7 @@ class ImportUtils {
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
 			tags: data.tags ?? [],
-			prereqs: data.prereqs ? new PrereqList(data.prereqs) : new PrereqList(),
+			prereqs: data.prereqs ? PrereqList.fromObject(data.prereqs) : new PrereqList(),
 			points: data.points ?? 1,
 			specialization: data.specialization ?? "",
 			tech_level: data.tech_level ?? "",
@@ -257,6 +256,7 @@ class ImportUtils {
 			vtt_notes: data.vtt_notes ?? "",
 			study: data.study ?? [],
 			study_hours_needed: data.study_hours_needed ?? "200",
+			defaulted_from: null,
 		}
 	}
 
@@ -269,7 +269,7 @@ class ImportUtils {
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
 			tags: data.tags ?? [],
-			prereqs: data.prereqs ? new PrereqList(data.prereqs) : new PrereqList(),
+			prereqs: data.prereqs ? PrereqList.fromObject(data.prereqs) : new PrereqList(),
 			points: data.points ?? 1,
 			limit: data.limit ?? 0,
 			limited: !!data.limit ?? false,
@@ -282,6 +282,7 @@ class ImportUtils {
 			vtt_notes: data.vtt_notes ?? "",
 			study: data.study ?? [],
 			study_hours_needed: data.study_hours_needed ?? "200",
+			defaulted_from: null,
 		}
 	}
 
@@ -308,7 +309,7 @@ class ImportUtils {
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
 			tags: data.tags ?? [],
-			prereqs: data.prereqs ? new PrereqList(data.prereqs) : new PrereqList(),
+			prereqs: data.prereqs ? PrereqList.fromObject(data.prereqs) : new PrereqList(),
 			points: data.points ?? 1,
 			tech_level: data.tech_level ?? "",
 			tech_level_required: !!data.tech_level,
@@ -336,7 +337,7 @@ class ImportUtils {
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
 			tags: data.tags ?? [],
-			prereqs: data.prereqs ? new PrereqList(data.prereqs) : new PrereqList(),
+			prereqs: data.prereqs ? PrereqList.fromObject(data.prereqs) : new PrereqList(),
 			points: data.points ?? 1,
 			tech_level: data.tech_level ?? "",
 			tech_level_required: !!data.tech_level,
@@ -381,7 +382,7 @@ class ImportUtils {
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
 			tags: data.tags ?? [],
-			prereqs: data.prereqs ? new PrereqList(data.prereqs) : new PrereqList(),
+			prereqs: data.prereqs ? PrereqList.fromObject(data.prereqs) : new PrereqList(),
 			features: data.features ? ImportUtils.importFeatures(data.features) : [],
 			tech_level: data.tech_level ?? "",
 			value: data.value ?? 0,
@@ -411,7 +412,7 @@ class ImportUtils {
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
 			tags: data.tags ?? [],
-			prereqs: data.prereqs ? new PrereqList(data.prereqs) : new PrereqList(),
+			prereqs: data.prereqs ? PrereqList.fromObject(data.prereqs) : new PrereqList(),
 			features: data.features ? ImportUtils.importFeatures(data.features) : [],
 			tech_level: data.tech_level ?? "",
 			value: data.value ?? 0,
@@ -508,7 +509,7 @@ class ImportUtils {
 			block: data.block ?? "",
 			damage: {
 				type: data.damage.type ?? "",
-				st: data.damage.st ?? stdmg.None,
+				st: data.damage.st ?? stdmg.Option.None,
 				base: data.damage.base ?? "",
 				armor_divisor: data.damage.armor_divisor ?? 1,
 				fragmentation: data.damage.fragmentation ?? "",
@@ -535,7 +536,7 @@ class ImportUtils {
 			recoil: data.recoil ?? "",
 			damage: {
 				type: data.damage.type ?? "",
-				st: data.damage.st ?? stdmg.None,
+				st: data.damage.st ?? stdmg.Option.None,
 				base: data.damage.base ?? "",
 				armor_divisor: data.damage.armor_divisor ?? 1,
 				fragmentation: data.damage.fragmentation ?? "",
@@ -549,11 +550,10 @@ class ImportUtils {
 	private static importFeatures(features: Feature[]): Feature[] {
 		const list: Feature[] = []
 		for (const e of features) {
-			const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as FeatureType]
+			const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as feature.Type]
 			if (FeatureConstructor) {
-				const f = new FeatureConstructor()
-				Object.assign(f, e)
-				list.push(f)
+				const f = FeatureConstructor.fromObject(e)
+				list.push(f.toObject())
 			}
 		}
 		return list

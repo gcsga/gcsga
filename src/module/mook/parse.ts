@@ -1,9 +1,10 @@
-import { Difficulty, gid, SETTINGS, SYSTEM_NAME } from "@module/data"
+import { gid, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { sanitize } from "@util"
 import { MookData, MookMelee, MookRanged, MookSkill, MookSpell, MookTrait, MookTraitModifier } from "./data"
 import { Mook } from "./document"
-import { stdmg, WeaponDamageObj } from "@item/weapon/data"
+import { WeaponDamageObj } from "@item/weapon/data"
 import { DiceGURPS } from "@module/dice"
+import { difficulty, stdmg } from "@util/enum"
 
 const regex_points = /\[(-?\d+)\]/
 const damage_type_matches: Map<string, string> = new Map([
@@ -67,8 +68,6 @@ export class MookParser {
 	parseStatBlock(text: string): any {
 		this._object = this.resetObject
 		this.text = this.sanitizeStatBlock(text)
-		// this._text = this.text
-		// console.log(this._text)
 		this.parseAttacks()
 		this.parseAttributes()
 		this.parseTraits()
@@ -77,10 +76,6 @@ export class MookParser {
 		// this.parseEquipment()
 		this.parseAttacks(true)
 		this.object.text.catchall = this.text
-		// console.log("Leftover:")
-		// console.log(this.text)
-		// console.log(JSON.stringify(this.object.melee, null, "\t"))
-		// console.log(JSON.stringify(this.object.ranged, null, "\t"))
 		return this.object
 	}
 
@@ -199,11 +194,6 @@ export class MookParser {
 		const regex_cr = /\((CR:?)?\s*(\d+)\)/
 
 		this._object.traits = []
-		// const start = this.findInText(["Advantages", "Advantages/Disadvantages", "Traits"])
-		// if (start === -1) return console.log("Traits not found")
-		// const end = this.findInText(["Skills", "Spells"], start) + start
-		// if (end === -1) return console.log("Skills/Spells not found")
-		// let text = this.text.substring(start, end)
 		let text = this.extractText(["Advantages:", "Advantages/Disadvantages:", "Traits:"], ["Skills:", "Spells:"])
 
 		if (text.includes(";")) text = text.replace(/\n/g, " ") // if ; separated, remove newlines
@@ -294,11 +284,6 @@ export class MookParser {
 		const regex_tl = /\/TL(\d+\^?)/
 
 		this._object.skills = []
-		// const start = this.findInText(["Skills"])
-		// if (start === -1) return console.log("Skills not found")
-		// const end = this.findInText(["Spells", "Equipment", "Languages", "Weapons"], start) + start
-		// if (end === -1) return console.log("Spells/Equipment not found")
-		// let text = this.text.substring(start, end)
 		let text = this.extractText(
 			["Skills:"],
 			["Spells:", "Equipment:", "Language:", "Languages:", "Weapons:", "Class:", "Notes:", "*"]
@@ -330,16 +315,14 @@ export class MookParser {
 			// Capture difficulty
 			let attribute: string = gid.Dexterity
 			// let rsl = level - 10
-			let difficulty = Difficulty.Average
+			let diff = difficulty.Level.Average
 			if (t.match(regex_difficulty)) {
-				difficulty = t.match(regex_difficulty)![1].toLowerCase() as Difficulty
+				diff = t.match(regex_difficulty)![1].toLowerCase() as difficulty.Level
 				t = t.replace(regex_difficulty, "").trim()
 			}
 
 			if (t.match(regex_rsl)) {
 				const match = t.match(regex_rsl)!
-				// if (match[2]) rsl = parseInt(match[2])
-				// else rsl = 0
 				attribute = attributes.find(e => e.name === match[1])?.id ?? gid.Dexterity
 				t = t.replace(regex_rsl, "").trim()
 			}
@@ -362,7 +345,7 @@ export class MookParser {
 
 			const skill: MookSkill = {
 				name: t,
-				difficulty: `${attribute}/${difficulty}`,
+				difficulty: `${attribute}/${diff}`,
 				points,
 				level,
 				specialization,
@@ -387,11 +370,6 @@ export class MookParser {
 		const regex_tl = /\/TL(\d+\^?)/
 
 		this._object.spells = []
-		// const start = this.findInText(["Spells"])
-		// if (start === -1) return console.log("Spells not found")
-		// const end = this.findInText(["Equipment", "Languages", "Weapons"], start) + start
-		// if (end === -1) return console.log("Equipment not found")
-		// let text = this.text.substring(start, end)
 		let text = this.extractText(
 			["Spells:"],
 			["Equipment:", "Language:", "Languages:", "Weapons:", "Class:", "Notes:"]
@@ -423,16 +401,14 @@ export class MookParser {
 
 			// Capture difficulty
 			let attribute: string = gid.Intelligence
-			let difficulty = Difficulty.Hard
+			let diff = difficulty.Level.Hard
 			if (t.match(regex_difficulty)) {
-				difficulty = t.match(regex_difficulty)![1].toLowerCase() as Difficulty
+				diff = t.match(regex_difficulty)![1].toLowerCase() as difficulty.Level
 				t = t.replace(regex_difficulty, "").trim()
 			}
 
 			if (t.match(regex_rsl)) {
 				const match = t.match(regex_rsl)!
-				// if (match[2]) rsl = parseInt(match[2])
-				// else rsl = 0
 				attribute = attributes.find(e => e.name === match[1])?.id ?? gid.Intelligence
 				t = t.replace(regex_rsl, "").trim()
 			}
@@ -449,7 +425,7 @@ export class MookParser {
 			const spell: MookSpell = {
 				name: t,
 				college: [],
-				difficulty: `${attribute}/${difficulty}`,
+				difficulty: `${attribute}/${diff}`,
 				points,
 				level,
 				tech_level: tl,
@@ -466,7 +442,7 @@ export class MookParser {
 
 		const damage: WeaponDamageObj = {
 			type: "",
-			st: stdmg.None,
+			st: stdmg.Option.None,
 			base: "",
 			armor_divisor: 1,
 			fragmentation: "",
@@ -524,13 +500,6 @@ export class MookParser {
 		if (oldFormat) text = this.text
 		else {
 			text = this.extractText([], ["Traits:"])
-			// text = this.extractText(["Traits:"], ["Advantages/Disadvantages:", "Advantages:"], false)
-			// if (text === "") {
-			// 	if (this.findInText(["Skills:"]) !== -1) text = this.extractText(["Skills:"], [])
-			// 	else if (this.findInText(["Weapons:"]) !== -1)
-			// 		text = this.extractText(["Weapons:"], [])
-			// 	else console.log("No attacks found")
-			// }
 		}
 
 		let weapons = ""
@@ -591,7 +560,6 @@ export class MookParser {
 
 		weapons.split(";").forEach(t => {
 			const reference = ""
-			// const reference_highlight = ""
 			let notes = ""
 			const parry = "0"
 			const block = "0"
@@ -692,7 +660,7 @@ export class MookParser {
 
 			let damage: WeaponDamageObj = {
 				type: "",
-				st: stdmg.None,
+				st: stdmg.Option.None,
 				base: "",
 				armor_divisor: 1,
 				fragmentation: "",

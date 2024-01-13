@@ -1,7 +1,8 @@
 import { ConditionID } from "@item/condition/data"
-import { AttributeType, ThresholdOp } from "@module/attribute"
+import { ThresholdOp } from "@module/attribute"
 import { DamageProgression, EFFECT_ACTION, SETTINGS, SYSTEM_NAME, gid } from "@module/data"
 import { MookData } from "@module/mook"
+import { attribute } from "@util/enum"
 
 export class FakeGame {
 	settings: FakeSettings
@@ -90,7 +91,7 @@ class FakeSettings {
 			[`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`]: [
 				{
 					id: "st",
-					type: AttributeType.Integer,
+					type: attribute.Type.Integer,
 					name: "ST",
 					full_name: "Strength",
 					attribute_base: "10",
@@ -99,7 +100,7 @@ class FakeSettings {
 				},
 				{
 					id: "dx",
-					type: AttributeType.Integer,
+					type: attribute.Type.Integer,
 					name: "DX",
 					full_name: "Dexterity",
 					attribute_base: "10",
@@ -108,7 +109,7 @@ class FakeSettings {
 				},
 				{
 					id: "iq",
-					type: AttributeType.Integer,
+					type: attribute.Type.Integer,
 					name: "IQ",
 					full_name: "Intelligence",
 					attribute_base: "10",
@@ -117,7 +118,7 @@ class FakeSettings {
 				},
 				{
 					id: "ht",
-					type: AttributeType.Integer,
+					type: attribute.Type.Integer,
 					name: "HT",
 					full_name: "Health",
 					attribute_base: "10",
@@ -126,7 +127,7 @@ class FakeSettings {
 				},
 				{
 					id: "will",
-					type: AttributeType.Integer,
+					type: attribute.Type.Integer,
 					name: "Will",
 					attribute_base: "$iq",
 					cost_per_point: 5,
@@ -134,7 +135,7 @@ class FakeSettings {
 				},
 				{
 					id: "fright_check",
-					type: AttributeType.Integer,
+					type: attribute.Type.Integer,
 					name: "Fright Check",
 					attribute_base: "$will",
 					cost_per_point: 2,
@@ -142,7 +143,7 @@ class FakeSettings {
 				},
 				{
 					id: "per",
-					type: AttributeType.Integer,
+					type: attribute.Type.Integer,
 					name: "Per",
 					full_name: "Perception",
 					attribute_base: "$iq",
@@ -151,7 +152,7 @@ class FakeSettings {
 				},
 				{
 					id: "vision",
-					type: AttributeType.Integer,
+					type: attribute.Type.Integer,
 					name: "Vision",
 					attribute_base: "$per",
 					cost_per_point: 2,
@@ -159,7 +160,7 @@ class FakeSettings {
 				},
 				{
 					id: "hearing",
-					type: AttributeType.Integer,
+					type: attribute.Type.Integer,
 					name: "Hearing",
 					attribute_base: "$per",
 					cost_per_point: 2,
@@ -167,7 +168,7 @@ class FakeSettings {
 				},
 				{
 					id: "taste_smell",
-					type: AttributeType.Integer,
+					type: attribute.Type.Integer,
 					name: "Taste \u0026 Smell",
 					attribute_base: "$per",
 					cost_per_point: 2,
@@ -175,7 +176,7 @@ class FakeSettings {
 				},
 				{
 					id: "touch",
-					type: AttributeType.Integer,
+					type: attribute.Type.Integer,
 					name: "Touch",
 					attribute_base: "$per",
 					cost_per_point: 2,
@@ -183,7 +184,7 @@ class FakeSettings {
 				},
 				{
 					id: "basic_speed",
-					type: AttributeType.Decimal,
+					type: attribute.Type.Decimal,
 					name: "Basic Speed",
 					attribute_base: "($dx+$ht)/4",
 					cost_per_point: 20,
@@ -191,7 +192,7 @@ class FakeSettings {
 				},
 				{
 					id: "basic_move",
-					type: AttributeType.Integer,
+					type: attribute.Type.Integer,
 					name: "Basic Move",
 					attribute_base: "floor($basic_speed)",
 					cost_per_point: 5,
@@ -199,7 +200,7 @@ class FakeSettings {
 				},
 				{
 					id: gid.FatiguePoints,
-					type: AttributeType.Pool,
+					type: attribute.Type.Pool,
 					name: gid.FatiguePoints,
 					full_name: "Fatigue Points",
 					attribute_base: "$ht",
@@ -236,7 +237,7 @@ class FakeSettings {
 				},
 				{
 					id: gid.HitPoints,
-					type: AttributeType.Pool,
+					type: attribute.Type.Pool,
 					name: gid.HitPoints,
 					full_name: "Hit Points",
 					attribute_base: "$st",
@@ -309,7 +310,7 @@ export const _defaultMookData: Partial<MookData> = {
 		attributes: [
 			{
 				id: "st",
-				type: AttributeType.Integer,
+				type: attribute.Type.Integer,
 				name: "ST",
 				full_name: "Strength",
 				attribute_base: "10",
@@ -318,7 +319,7 @@ export const _defaultMookData: Partial<MookData> = {
 			},
 			{
 				id: "dx",
-				type: AttributeType.Integer,
+				type: attribute.Type.Integer,
 				name: "DX",
 				full_name: "Dexterity",
 				attribute_base: "10",
@@ -327,7 +328,7 @@ export const _defaultMookData: Partial<MookData> = {
 			},
 			{
 				id: "iq",
-				type: AttributeType.Integer,
+				type: attribute.Type.Integer,
 				name: "IQ",
 				full_name: "Intelligence",
 				attribute_base: "10",
@@ -336,7 +337,7 @@ export const _defaultMookData: Partial<MookData> = {
 			},
 			{
 				id: "ht",
-				type: AttributeType.Integer,
+				type: attribute.Type.Integer,
 				name: "HT",
 				full_name: "Health",
 				attribute_base: "10",
@@ -345,7 +346,7 @@ export const _defaultMookData: Partial<MookData> = {
 			},
 			{
 				id: "will",
-				type: AttributeType.Integer,
+				type: attribute.Type.Integer,
 				name: "Will",
 				attribute_base: "$iq",
 				cost_per_point: 5,
@@ -353,7 +354,7 @@ export const _defaultMookData: Partial<MookData> = {
 			},
 			{
 				id: "fright_check",
-				type: AttributeType.Integer,
+				type: attribute.Type.Integer,
 				name: "Fright Check",
 				attribute_base: "$will",
 				cost_per_point: 2,
@@ -361,7 +362,7 @@ export const _defaultMookData: Partial<MookData> = {
 			},
 			{
 				id: "per",
-				type: AttributeType.Integer,
+				type: attribute.Type.Integer,
 				name: "Per",
 				full_name: "Perception",
 				attribute_base: "$iq",
@@ -370,7 +371,7 @@ export const _defaultMookData: Partial<MookData> = {
 			},
 			{
 				id: "vision",
-				type: AttributeType.Integer,
+				type: attribute.Type.Integer,
 				name: "Vision",
 				attribute_base: "$per",
 				cost_per_point: 2,
@@ -378,7 +379,7 @@ export const _defaultMookData: Partial<MookData> = {
 			},
 			{
 				id: "hearing",
-				type: AttributeType.Integer,
+				type: attribute.Type.Integer,
 				name: "Hearing",
 				attribute_base: "$per",
 				cost_per_point: 2,
@@ -386,7 +387,7 @@ export const _defaultMookData: Partial<MookData> = {
 			},
 			{
 				id: "taste_smell",
-				type: AttributeType.Integer,
+				type: attribute.Type.Integer,
 				name: "Taste \u0026 Smell",
 				attribute_base: "$per",
 				cost_per_point: 2,
@@ -394,7 +395,7 @@ export const _defaultMookData: Partial<MookData> = {
 			},
 			{
 				id: "touch",
-				type: AttributeType.Integer,
+				type: attribute.Type.Integer,
 				name: "Touch",
 				attribute_base: "$per",
 				cost_per_point: 2,
@@ -402,7 +403,7 @@ export const _defaultMookData: Partial<MookData> = {
 			},
 			{
 				id: "basic_speed",
-				type: AttributeType.Decimal,
+				type: attribute.Type.Decimal,
 				name: "Basic Speed",
 				attribute_base: "($dx+$ht)/4",
 				cost_per_point: 20,
@@ -410,7 +411,7 @@ export const _defaultMookData: Partial<MookData> = {
 			},
 			{
 				id: "basic_move",
-				type: AttributeType.Integer,
+				type: attribute.Type.Integer,
 				name: "Basic Move",
 				attribute_base: "floor($basic_speed)",
 				cost_per_point: 5,
@@ -418,7 +419,7 @@ export const _defaultMookData: Partial<MookData> = {
 			},
 			{
 				id: "fp",
-				type: AttributeType.Pool,
+				type: attribute.Type.Pool,
 				name: "FP",
 				full_name: "Fatigue Points",
 				attribute_base: "$ht",
@@ -455,7 +456,7 @@ export const _defaultMookData: Partial<MookData> = {
 			},
 			{
 				id: "hp",
-				type: AttributeType.Pool,
+				type: attribute.Type.Pool,
 				name: "HP",
 				full_name: "Hit Points",
 				attribute_base: "$st",

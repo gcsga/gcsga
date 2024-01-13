@@ -114,12 +114,12 @@ export class LootGURPS extends BaseActorGURPS<LootSource> {
 	}
 
 	processPrereqs(): void {
-		const not_met = LocalizeGURPS.translations.gurps.prereqs.not_met
+		const not_met = LocalizeGURPS.translations.gurps.prereq.not_met
 		for (const e of this.equipment) {
 			e.unsatisfied_reason = ""
 			if (!e.prereqsEmpty) {
 				const tooltip = new TooltipGURPS()
-				if (!e.prereqs.satisfied(this, e, tooltip)[0]) {
+				if (!e.prereqs.satisfied(this, e, tooltip)) {
 					e.unsatisfied_reason = not_met + tooltip.toString()
 				}
 			}

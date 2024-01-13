@@ -1,18 +1,18 @@
 import { DiceGURPS } from "@module/dice"
-import { WeaponDamageObj, stdmg } from "./data"
+import { WeaponDamageObj } from "./data"
 import { LocalizeGURPS } from "@util"
 import { Int } from "@util/fxp"
 import { TooltipGURPS } from "@module/tooltip"
-import { DamageProgression, ItemType } from "@module/data"
-import { FeatureType } from "@feature"
+import { ItemType } from "@module/data"
 import { BaseWeaponGURPS } from "./document"
+import { feature, progression, stdmg } from "@util/enum"
 
 export class WeaponDamage {
 	owner: BaseWeaponGURPS<any>
 
 	type: string
 
-	st: stdmg
+	st: stdmg.Option
 
 	base?: DiceGURPS
 
@@ -29,7 +29,7 @@ export class WeaponDamage {
 	constructor(data: WeaponDamageObj & { owner: BaseWeaponGURPS<any> }) {
 		this.owner = data.owner
 		this.type = data.type
-		this.st = data.st ?? stdmg.None
+		this.st = data.st ?? stdmg.Option.None
 		this.base = new DiceGURPS(data.base)
 		this.armor_divisor = data.armor_divisor
 		this.fragmentation = new DiceGURPS(data.fragmentation)
@@ -40,7 +40,7 @@ export class WeaponDamage {
 
 	toString(): string {
 		let buffer = ""
-		if (this.st !== stdmg.None) buffer += LocalizeGURPS.translations.gurps.weapon.damage_display[this.st]
+		if (this.st !== stdmg.Option.None) buffer += LocalizeGURPS.translations.gurps.weapon.damage_display[this.st]
 		let convertMods = false
 		if (this.owner && this.owner.actor) convertMods = this.owner.actor.settings.use_modifying_dice_plus_adds
 		if (this.base) {
@@ -85,19 +85,19 @@ export class WeaponDamage {
 			multiplyDice(Int.from((this.owner.container as any).levels), base)
 		let intST = Int.from(st)
 		switch (this.st) {
-			case stdmg.Thrust:
+			case stdmg.Option.Thrust:
 				base = addDice(base, actor.thrustFor(intST))
 				break
-			case stdmg.LeveledThrust:
+			case stdmg.Option.LeveledThrust:
 				const thrust = actor.thrustFor(intST)
 				if (this.owner.container?.type === ItemType.Trait && (this.owner.container as any).isLeveled)
 					multiplyDice(Int.from((this.owner.container as any).levels), base)
 				base = addDice(base, thrust)
 				break
-			case stdmg.Swing:
+			case stdmg.Option.Swing:
 				base = addDice(base, actor.swingFor(intST))
 				break
-			case stdmg.LeveledSwing:
+			case stdmg.Option.LeveledSwing:
 				const swing = actor.swingFor(intST)
 				if (this.owner.container?.type === ItemType.Trait && (this.owner.container as any).isLeveled)
 					multiplyDice(Int.from((this.owner.container as any).levels), swing)
@@ -112,16 +112,16 @@ export class WeaponDamage {
 		if (base.count === 0 && base.modifier === 0) return this.toString()
 		const actor = this.owner.actor
 		const adjustForPhoenixFlame =
-			actor?.settings.damage_progression === DamageProgression.PhoenixFlameD3 && base.sides === 3
+			actor?.settings.damage_progression === progression.Option.PhoenixFlameD3 && base.sides === 3
 		let [percentDamageBonus, percentDRDivisorBonus] = [0, 0]
 		let armorDivisor = this.armor_divisor ?? 1
 		for (const bonus of this.owner.collectWeaponBonuses(
 			base.count,
 			tooltip,
-			FeatureType.WeaponBonus,
-			FeatureType.WeaponDRDivisorBonus
+			feature.Type.WeaponBonus,
+			feature.Type.WeaponDRDivisorBonus
 		)) {
-			if (bonus.type === FeatureType.WeaponBonus) {
+			if (bonus.type === feature.Type.WeaponBonus) {
 				bonus.leveledAmount.dieCount = Int.from(base.count)
 				let amt = bonus.adjustedAmountForWeapon(this.owner)
 				if (bonus.percent) percentDamageBonus += amt
@@ -132,7 +132,7 @@ export class WeaponDamage {
 					}
 					base.modifier += Int.from(amt)
 				}
-			} else if (bonus.type === FeatureType.WeaponDRDivisorBonus) {
+			} else if (bonus.type === feature.Type.WeaponDRDivisorBonus) {
 				let amt = bonus.adjustedAmountForWeapon(this.owner)
 				if (bonus.percent) percentDRDivisorBonus += amt
 				else armorDivisor += amt

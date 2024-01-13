@@ -22,6 +22,7 @@ module.exports = {
 
 	rules: {
 		// Specify any specific ESLint rules.
+		"@typescript-eslint/no-namespace": "off",
 		"@typescript-eslint/ban-ts-comment": "warn",
 		"@typescript-eslint/no-unused-vars": "off",
 		"@typescript-eslint/no-explicit-any": "off",

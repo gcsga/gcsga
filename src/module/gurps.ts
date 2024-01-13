@@ -32,7 +32,7 @@
 import "../styles/gurps.scss"
 import { registerSettings } from "./settings"
 import { preloadTemplates } from "./preload_templates"
-import { evaluateToNumber, getDefaultSkills, LastActor, LocalizeGURPS, setInitiative, Weight } from "@util"
+import { getDefaultSkills, LastActor, LocalizeGURPS, setInitiative } from "@util"
 import { registerHandlebarsHelpers } from "@util/handlebars_helpers"
 import { GURPSCONFIG } from "./config"
 import * as Chat from "@module/chat"
@@ -85,14 +85,15 @@ import { ActiveEffectGURPS } from "@module/effect"
 import { ModifierList } from "./mod_list"
 import { PDF } from "@module/pdf"
 import { UserGURPS } from "./user/document"
-import { parselink } from "./otf"
 import { CombatTrackerGURPS } from "@ui"
-import { MookGeneratorSheet, MookParser } from "./mook"
+import { MookGeneratorSheet } from "./mook"
 import { CharacterImporter } from "@actor/character/import"
 import { ItemDirectoryGURPS } from "@ui/item_directory"
 import { CombatantGURPS } from "./combatant"
 import { ModifierBucket } from "@module/mod_bucket"
 import { loadModifiers } from "@module/mod_bucket/data"
+import { prepareSelectOptions } from "./data/select"
+import { display } from "@util/enum"
 
 Error.stackTraceLimit = Infinity
 
@@ -116,17 +117,12 @@ if (!(globalThis as any).GURPS) {
     7#@@&P?!~&@@G    !&@@@#GPP@@@#    5@@@.    !@@@P.  .&@@Y          .5@@@B5JYG@@@&~
       .^?5GBBBGG5.     .~?JYY5YJJJ^  .JJJJ~     :JJY7  ~JJJJ.           .~YB#&&BP7:
                                                                                        `
-	GURPS.pdf = PDF.PDFViewerSheet
-	GURPS.parseLink = parselink
-	GURPS.chat = Chat
-	GURPS.mook = MookParser
-	GURPS.Weight = Weight
-	GURPS.eval = evaluateToNumber
+	GURPS.isInline = display.Option.isInline
 }
 
 // Initialize system
 Hooks.once("init", async () => {
-	// CONFIG.debug.hooks = true
+	CONFIG.debug.hooks = false
 	console.log(`${SYSTEM_NAME} | Initializing ${SYSTEM_NAME}`)
 	console.log(`%c${GURPS.BANNER}`, "color:limegreen")
 	console.log(`%c${GURPS.LEGAL}`, "color:yellow")
@@ -309,8 +305,8 @@ Hooks.once("init", async () => {
 
 // Setup system
 Hooks.once("setup", async () => {
-	// LocalizeGURPS.ready = true
 	// Do anything after initialization but before ready
+	prepareSelectOptions()
 
 	game.ModifierBucket = new ModifierBucket()
 	game.ModifierBucket.render(true)

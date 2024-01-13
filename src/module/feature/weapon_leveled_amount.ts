@@ -1,7 +1,5 @@
 import { LocalizeGURPS } from "@util"
 
-export const WeaponLeveledAmountKeys = ["amount", "leveled", "effective"]
-
 export interface WeaponLeveledAmountObj {
 	amount: number
 	leveled: boolean
@@ -62,5 +60,9 @@ export class WeaponLeveledAmount {
 			default:
 				return amt
 		}
+	}
+
+	static fromObject(data: WeaponLeveledAmountObj): WeaponLeveledAmount {
+		return new WeaponLeveledAmount({ amount: data.amount, leveled: data.leveled, per_die: data.per_die })
 	}
 }

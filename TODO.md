@@ -1,7 +1,6 @@
 # TO DO
 
 ## In Progress
-
 - Finish "static" character (0.15 and older) compatibility
  - don't bother with editing features
 - mook generator
@@ -109,3 +108,4 @@
  - There is a checkbox allowing you to toggle a "hex frame" for your token, which may be rendered as part of the token image. - Color red beyond limit
  - Weapon Robustness secret rolls Pyramid #3-87:6
  - Add option to hide current PC HP from player, showing only condition.
+ - When having multiple tokens selected, applying a status effect to one applies it to all selected

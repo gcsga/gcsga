@@ -1,6 +1,3 @@
 export { EquipmentModifierGURPS, weightAdjustedForModifiers, valueAdjustedForModifiers } from "./document"
 export { EquipmentModifierSheet } from "./sheet"
 export * from "./data"
-export * from "./weight"
-export { EquipmentModifierWeightType, EquipmentModifierWeightValueType } from "./weight"
-export { EquipmentModifierCostType, EquipmentModifierCostValueType } from "./cost"

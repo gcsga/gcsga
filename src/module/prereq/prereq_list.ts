@@ -1,61 +1,81 @@
-import { ActorGURPS, Prereq } from "@module/config"
-import { ActorType, NumericComparisonType, NumericCriteria, PrereqType } from "@module/data"
+import { prereq } from "@util/enum"
+import { BasePrereq, BasePrereqObj } from "./base"
+import {
+	CharacterResolver,
+	LocalizeGURPS,
+	LootResolver,
+	NumericCompareType,
+	NumericCriteria,
+	extractTechLevel,
+} from "@util"
 import { TooltipGURPS } from "@module/tooltip"
-import { extractTechLevel, LocalizeGURPS, numberCompare } from "@util"
-import { BasePrereq, PrereqConstructionContext } from "./base"
+import { ActorType } from "@module/data"
 
-export class PrereqList extends BasePrereq {
-	prereqs!: Prereq[]
+export interface PrereqListObj {
+	type: prereq.Type
+	all: boolean
+	when_tl: NumericCriteria
+	prereqs: Array<BasePrereqObj | PrereqListObj>
+}
 
-	all!: boolean
+export class PrereqList {
+	type: prereq.Type
 
-	when_tl!: NumericCriteria
+	all: boolean
 
-	constructor(data?: PrereqList | any, context: PrereqConstructionContext = {}) {
-		data = mergeObject(PrereqList.defaults, data)
-		super(data, context)
-		if ((data as PrereqList).prereqs) {
-			const list = (data as PrereqList).prereqs
-			this.prereqs = []
-			for (const e of list) {
-				const PrereqConstructor = CONFIG.GURPS.Prereq.classes[e.type as PrereqType]
-				if (PrereqConstructor) this.prereqs.push(new PrereqConstructor(e as any, context))
-			}
-		}
+	when_tl: NumericCriteria
+
+	prereqs: Array<BasePrereq | PrereqList>
+
+	constructor() {
+		this.type = prereq.Type.List
+		this.all = true
+		this.when_tl = new NumericCriteria(NumericCompareType.AnyNumber)
+		this.prereqs = []
 	}
 
-	static get defaults(): Record<string, any> {
-		return {
-			type: "prereq_list",
-			prereqs: [],
-			all: true,
-			when_tl: { compare: NumericComparisonType.AnyNumber },
-		}
+	static fromObject(data: PrereqListObj): PrereqList {
+		const prereq = new PrereqList()
+		prereq.all = data.all
+		if (data.when_tl) prereq.when_tl = new NumericCriteria(data.when_tl.compare, data.when_tl.qualifier)
+		if (data.prereqs.length)
+			prereq.prereqs = data.prereqs
+				.filter(e => !!CONFIG.GURPS.Prereq.classes[e.type])
+				.map(e => {
+					const prereqConstructor = CONFIG.GURPS.Prereq.classes[e.type]
+					return prereqConstructor.fromObject(e)
+				})
+		return prereq
 	}
 
-	satisfied(actor: ActorGURPS, exclude: any, tooltip: TooltipGURPS): [boolean, boolean] {
-		if (actor.type !== ActorType.Character) return [true, false]
-		if (this.when_tl?.compare !== "none") {
-			let tl = extractTechLevel((actor as any).profile?.tech_level)
+	satisfied(
+		actor: CharacterResolver | LootResolver,
+		exclude: any,
+		tooltip: TooltipGURPS,
+		hasEquipmentPenalty: { value: boolean } = { value: false }
+	): boolean {
+		let actorTechLevel = "0"
+		if (actor.type === ActorType.Character) {
+			actorTechLevel = actor.profile.tech_level
+		}
+		if (this.when_tl.compare !== NumericCompareType.AnyNumber) {
+			let tl = extractTechLevel(actorTechLevel)
 			if (tl < 0) tl = 0
-			if (!numberCompare(tl, this.when_tl)) return [true, false]
+			if (!this.when_tl.matches(tl)) return true
 		}
 		let count = 0
-		let eqpPenalty = false
-		const local = new TooltipGURPS()
-		if (this.prereqs.length)
-			for (const p of this.prereqs) {
-				const ps = (p as any).satisfied(actor, exclude, local)
-				if (ps[0]) count++
-				eqpPenalty = eqpPenalty || ps[1]
-			}
+		let local = new TooltipGURPS()
+		let eqpPenalty = { value: false }
+		for (const one of this.prereqs) {
+			if (one.satisfied(actor, exclude, local, eqpPenalty)) count++
+		}
 		const satisfied = count === this.prereqs.length || (!this.all && count > 0)
 		if (!satisfied) {
-			if (this.all) tooltip.push(LocalizeGURPS.translations.gurps.prereqs.requires_all)
-			else tooltip.push(LocalizeGURPS.translations.gurps.prereqs.requires_one)
-
+			if (eqpPenalty.value) hasEquipmentPenalty.value = true
+			tooltip.push(LocalizeGURPS.translations.gurps.prereq.prefix)
+			tooltip.push(LocalizeGURPS.translations.gurps.prereq.list[this.all ? "true" : "false"])
 			tooltip.push(local)
 		}
-		return [satisfied, eqpPenalty]
+		return satisfied
 	}
 }

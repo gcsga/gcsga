@@ -39,6 +39,9 @@ import { CharacterGURPS } from "@actor/character"
 export class BaseActorGURPS<SourceType extends BaseActorSourceGURPS = BaseActorSourceGURPS> extends Actor {
 	_source!: SourceType
 
+	// @ts-expect-error improperly defined type but stuff breaks otherwise so idc
+	type: SourceType["type"]
+
 	system!: SourceType["system"]
 
 	flags!: ActorFlagsGURPS
@@ -62,6 +65,10 @@ export class BaseActorGURPS<SourceType extends BaseActorSourceGURPS = BaseActorS
 			throw Error(`Invalid Actor Type "${data.type}"`)
 		}
 	}
+
+	// get type(): SourceType["type"] | string {
+	// 	return super.type as SourceType["type"]
+	// }
 
 	get traits(): Collection<TraitGURPS | TraitContainerGURPS> {
 		return new Collection()

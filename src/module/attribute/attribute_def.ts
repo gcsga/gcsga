@@ -1,12 +1,13 @@
 import { PoolThreshold } from "./pool_threshold"
-import { DamageProgression } from "@module/data"
-import { VariableResolver, evaluateToNumber, sanitizeId } from "@util"
-import { AttributeDefObj, AttributeType, reserved_ids } from "./data"
+import { CharacterResolver, evaluateToNumber, sanitizeId } from "@util"
+import { AttributeDefObj, reserved_ids } from "./data"
+import { attribute, progression } from "@util/enum"
+import { Mook } from "@module/mook"
 
 export class AttributeDef {
 	private def_id!: string
 
-	type!: AttributeType
+	type!: attribute.Type
 
 	name!: string
 
@@ -54,21 +55,21 @@ export class AttributeDef {
 	}
 
 	get isPrimary(): boolean {
-		if (this.type === AttributeType.PrimarySeparator) return true
+		if (this.type === attribute.Type.PrimarySeparator) return true
 		if (this.type.includes("_separator")) return false
 		return !isNaN(parseInt(this.attribute_base))
 	}
 
-	baseValue(resolver: VariableResolver): number {
+	baseValue(resolver: CharacterResolver | Mook): number {
 		return evaluateToNumber(this.attribute_base, resolver)
 	}
 
-	computeCost(actor: VariableResolver, value: number, cost_reduction: number, size_modifier: number): number {
+	computeCost(actor: CharacterResolver | Mook, value: number, cost_reduction: number, size_modifier: number): number {
 		let cost = value * (this.cost_per_point || 0)
 		if (
 			size_modifier > 0 &&
 			(this.cost_adj_percent_per_sm ?? 0) > 0 &&
-			!(this.def_id === "hp" && actor.settings.damage_progression === DamageProgression.KnowingYourOwnStrength)
+			!(this.def_id === "hp" && actor.settings.damage_progression === progression.Option.KnowingYourOwnStrength)
 		)
 			cost_reduction = size_modifier * (this.cost_adj_percent_per_sm ?? 0)
 		if (cost_reduction > 0) {

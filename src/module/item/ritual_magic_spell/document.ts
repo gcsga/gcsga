@@ -1,10 +1,11 @@
 import { ItemGCS } from "@item/gcs"
 import { SkillLevel } from "@item/skill/data"
-import { Difficulty, gid } from "@module/data"
 import { SkillDefault } from "@module/default"
 import { TooltipGURPS } from "@module/tooltip"
-import { inlineNote, LocalizeGURPS } from "@util"
 import { RitualMagicSpellSource } from "./data"
+import { gid } from "@module/data"
+import { difficulty } from "@util/enum"
+import { SpellGURPS } from "@item/spell"
 
 export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 	level: SkillLevel = { level: 0, relative_level: 0, tooltip: new TooltipGURPS() }
@@ -12,48 +13,7 @@ export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 	unsatisfied_reason = ""
 
 	// Getters
-	get secondaryText(): string {
-		const out: string[] = []
-		if (inlineNote(this.actor, "notes_display")) {
-			if (this.system.notes.trim()) out.push(this.system.notes)
-			if (this.rituals) {
-				if (out.length) out.push("<br>")
-				out.push(this.rituals)
-			}
-			if (this.studyHours !== 0) {
-				if (out.length) out.push("<br>")
-				if (this.studyHours !== 0)
-					out.push(
-						LocalizeGURPS.format(LocalizeGURPS.translations.gurps.study.studied, {
-							hours: this.studyHours,
-							total: (this.system as any).study_hours_needed,
-						})
-					)
-			}
-			if (inlineNote(this.actor, "skill_level_adj_display")) {
-				if (this.level.tooltip.length) {
-					if (out.length) out.push("<br>")
-					out.push(this.level.tooltip.toString())
-				}
-			}
-		}
-		if (out.length) out.push("<br>")
-		const values = {
-			resist: this.system.resist,
-			spell_class: this.system.spell_class,
-			casting_cost: this.system.casting_cost,
-			maintenance_cost: this.system.maintenance_cost,
-			casting_time: this.system.casting_time,
-			duration: this.system.duration,
-			college: this.system.college,
-		}
-		const list = []
-		for (const [k, v] of Object.entries(values)) {
-			if (v && v !== "-") list.push(`${game.i18n.localize(`gurps.character.spells.${k}`)}: ${v}`)
-		}
-		out.push(list.join("; "))
-		return `<div class="item-notes">${out.join("")}</div>`
-	}
+	secondaryText = SpellGURPS.prototype.secondaryText
 
 	get rituals(): string {
 		return ""
@@ -71,8 +31,8 @@ export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 		return this.system.difficulty?.split("/")[0] ?? gid.Intelligence
 	}
 
-	get difficulty(): string {
-		return this.system.difficulty?.split("/")[1] ?? Difficulty.Hard
+	get difficulty(): difficulty.Level {
+		return difficulty.Level.extractLevel(this.system.difficulty?.split("/")[1])
 	}
 
 	get powerSource(): string {
@@ -89,6 +49,10 @@ export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 
 	get prereqCount(): number {
 		return this.system.prereq_count
+	}
+
+	get defaultedFrom(): null {
+		return null
 	}
 
 	adjustedPoints(tooltip?: TooltipGURPS): number {
@@ -243,7 +207,7 @@ export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 	incrementSkillLevel() {
 		const basePoints = this.points + 1
 		let maxPoints = basePoints
-		if (this.difficulty === Difficulty.Wildcard) maxPoints += 12
+		if (this.difficulty === difficulty.Level.Wildcard) maxPoints += 12
 		else maxPoints += 4
 
 		const oldLevel = this.calculateLevel().level
@@ -259,7 +223,7 @@ export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 		if (this.points <= 0) return
 		const basePoints = this.points
 		let minPoints = basePoints
-		if (this.difficulty === Difficulty.Wildcard) minPoints -= 12
+		if (this.difficulty === difficulty.Level.Wildcard) minPoints -= 12
 		else minPoints -= 4
 		minPoints = Math.max(minPoints, 0)
 

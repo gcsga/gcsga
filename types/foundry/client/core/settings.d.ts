@@ -2,6 +2,7 @@ import { CharacterSettings } from "@actor"
 import type { DocumentSubTypes, DocumentType } from "../../../types/helperTypes"
 
 import type { TokenDataSource } from "../../common/data/data.mjs/tokenData"
+import { SheetSettings } from "@module/data"
 
 declare global {
 	/**
@@ -226,7 +227,10 @@ declare global {
 			// start GCSGA specific
 			"gcsga.initiative_formula": string
 			"gcsga.compendium_browser_packs": Omit<TabData<Record<string, PackInfo | undefined>>, "settings">
-			"gcsga.default_sheet_settings.settings": CharacterSettings
+			"gcsga.default_sheet_settings.settings": Omit<
+				SheetSettings,
+				"attributes" | "body_type" | "resource_trackers" | "move_types"
+			>
 			"gcsga.ssrt": SSRT_SETTING
 			"gcsga.default_damage_location": "torso" | "random"
 			"gcsga.default_attributes.attributes": AttributeDefObj[]

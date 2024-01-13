@@ -1,17 +1,17 @@
-import { FeatureType, skillsel } from "./data"
+import { StringCompareType, StringCriteria } from "@util"
 import { BonusOwner } from "./bonus_owner"
-import { LeveledAmount, LeveledAmountKeys, LeveledAmountObj } from "./leveled_amount"
-import { StringComparisonType, StringCriteria } from "@module/data"
+import { LeveledAmount, LeveledAmountObj } from "./leveled_amount"
+import { feature, skillsel } from "@util/enum"
 
 export interface SkillBonusObj extends LeveledAmountObj {
-	selection_type: skillsel
+	selection_type: skillsel.Type
 	name?: StringCriteria
 	specialization?: StringCriteria
 	tags?: StringCriteria
 }
 
 export class SkillBonus extends BonusOwner {
-	selection_type: skillsel
+	selection_type: skillsel.Type
 
 	name?: StringCriteria
 
@@ -23,17 +23,11 @@ export class SkillBonus extends BonusOwner {
 
 	constructor() {
 		super()
-		this.type = FeatureType.SkillBonus
-		this.selection_type = skillsel.Name
-		this.name = {
-			compare: StringComparisonType.IsString,
-		}
-		this.specialization = {
-			compare: StringComparisonType.AnyString,
-		}
-		this.tags = {
-			compare: StringComparisonType.AnyString,
-		}
+		this.type = feature.Type.SkillBonus
+		this.selection_type = skillsel.Type.Name
+		this.name = new StringCriteria(StringCompareType.IsString)
+		this.specialization = new StringCriteria(StringCompareType.AnyString)
+		this.tags = new StringCriteria(StringCompareType.AnyString)
 		this.leveledAmount = new LeveledAmount({ amount: 1 })
 	}
 
@@ -49,13 +43,12 @@ export class SkillBonus extends BonusOwner {
 
 	static fromObject(data: SkillBonusObj): SkillBonus {
 		const bonus = new SkillBonus()
-		const levelData: Partial<Record<keyof LeveledAmountObj, any>> = {}
-		for (const key of Object.keys(data)) {
-			if (LeveledAmountKeys.includes(key)) {
-				levelData[key as keyof LeveledAmountObj] = data[key as keyof SkillBonusObj]
-			} else (bonus as any)[key] = data[key as keyof SkillBonusObj]
-		}
-		bonus.leveledAmount = new LeveledAmount(levelData)
+		bonus.selection_type = data.selection_type
+		if (data.name) bonus.name = new StringCriteria(data.name.compare, data.name.qualifier)
+		if (data.specialization)
+			bonus.specialization = new StringCriteria(data.specialization.compare, data.specialization.qualifier)
+		if (data.tags) bonus.tags = new StringCriteria(data.tags.compare, data.tags.qualifier)
+		bonus.leveledAmount = LeveledAmount.fromObject(data)
 		return bonus
 	}
 }

@@ -3,16 +3,15 @@ import { MeleeWeaponGURPS } from "@item/melee_weapon"
 import { RangedWeaponGURPS } from "@item/ranged_weapon"
 import { BaseWeaponGURPS } from "@item/weapon"
 import { Feature, ItemDataGURPS } from "@module/config"
-import { ActorType, gid, ItemType, Study, SYSTEM_NAME } from "@module/data"
+import { ActorType, ItemType, SYSTEM_NAME } from "@module/data"
 import { PrereqList } from "@prereq"
-import { getAdjustedStudyHours, LocalizeGURPS } from "@util"
-import { HandlebarsHelpersGURPS } from "@util/handlebars_helpers"
+import { EvalEmbeddedRegex, replaceAllStringFunc, resolveStudyHours } from "@util"
 import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
 import { ItemDataConstructorData } from "types/foundry/common/data/data.mjs/itemData"
 import { BaseUser } from "types/foundry/common/documents.mjs"
 import { MergeObjectOptions } from "types/foundry/common/utils/helpers.mjs"
 import { ItemGCSSource } from "./data"
-import { AttributeBonus, FeatureType } from "@feature"
+import { display, feature, study } from "@util/enum"
 
 export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> extends ContainerGURPS<SourceType> {
 	unsatisfied_reason = ""
@@ -52,6 +51,24 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 		return null
 	}
 
+	get studyHours(): number {
+		return resolveStudyHours((this.system as any).study ?? [])
+	}
+
+	get studyHoursNeeded(): string {
+		const system = this.system as any
+		if (system.study_hours_needed === "") return study.Level.Standard
+		return system.study_hours_needed
+	}
+
+	get localNotes(): string {
+		return this.system.notes ?? ""
+	}
+
+	get notes(): string {
+		return replaceAllStringFunc(EvalEmbeddedRegex, this.localNotes, this.actor)
+	}
+
 	get ratedStrength(): number {
 		return 0
 	}
@@ -60,25 +77,16 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 		return this.name ?? ""
 	}
 
-	get enabled(): boolean | undefined {
-		return undefined
+	get enabled(): boolean {
+		return true
 	}
 
 	get tags(): string[] {
 		return this.system.tags
 	}
 
-	get secondaryText(): string {
-		let outString = '<div class="item-notes">'
-		if (this.system.notes) outString += HandlebarsHelpersGURPS.format(this.system.notes)
-		if (this.studyHours !== 0)
-			outString += LocalizeGURPS.format(LocalizeGURPS.translations.gurps.study.studied, {
-				hours: this.studyHours,
-				total: (this.system as any).study_hours_needed,
-			})
-		if (this.unsatisfied_reason) outString += HandlebarsHelpersGURPS.unsatisfied(this.unsatisfied_reason)
-		outString += "</div>"
-		return outString
+	secondaryText(_optionChecker: (option: display.Option) => boolean): string {
+		return ""
 	}
 
 	get reference(): string {
@@ -86,22 +94,18 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 	}
 
 	get features(): Feature[] {
-		if (this.system.hasOwnProperty("features")) {
-			return (this.system as any).features.map((e: Partial<Feature>) => {
-				const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as FeatureType]
-				if (FeatureConstructor) {
-					const f = FeatureConstructor.fromObject(e)
-					return f
-				}
-				return new AttributeBonus(gid.Strength) // default
-			})
-		}
-		return []
+		if (!this.system.hasOwnProperty("features")) return []
+
+		return (this.system as any).features.map((e: Partial<Feature>) => {
+			const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as feature.Type]
+			const f = FeatureConstructor.fromObject(e)
+			return f
+		})
 	}
 
 	get prereqs() {
 		if (!(this.system as any).prereqs) return new PrereqList()
-		return new PrereqList((this.system as any).prereqs)
+		return PrereqList.fromObject((this.system as any).prereqs)
 	}
 
 	get prereqsEmpty(): boolean {
@@ -133,18 +137,6 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 		return weapons
 	}
 
-	get studyHours(): number {
-		if (
-			![ItemType.Trait, ItemType.Skill, ItemType.Technique, ItemType.Spell, ItemType.RitualMagicSpell].includes(
-				this.type as ItemType
-			)
-		)
-			return 0
-		return (this.system as any).study
-			.map((e: Study) => getAdjustedStudyHours(e))
-			.reduce((partialSum: number, a: number) => partialSum + a, 0)
-	}
-
 	exportSystemData(_keepOther: boolean): any {
 		const system: any = this.system
 		system.name = this.name
@@ -167,11 +159,15 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 		return {
 			name: this.formattedName,
 			indent: this.parents.length,
-			resolved_notes: this.secondaryText,
+			resolved_notes: sheetDisplayNotes(this.secondaryText(display.Option.isInline)),
 		}
 	}
 
 	prepareDerivedData(): void {
 		this.system.calc = this._getCalcValues()
 	}
+}
+
+function sheetDisplayNotes(s: string): string {
+	return `<div class="item-notes">${s}</div>`
 }

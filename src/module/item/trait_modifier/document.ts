@@ -1,5 +1,8 @@
 import { ItemGCS } from "@item/gcs"
-import { TraitModifierAffects, TraitModifierCostType, TraitModifierSource } from "./data"
+import { TraitModifierSource } from "./data"
+import { affects, display, tmcost } from "@util/enum"
+import { sheetSettingsFor } from "@module/data"
+import { StringBuilder } from "@util/string_builder"
 
 export class TraitModifierGURPS extends ItemGCS<TraitModifierSource> {
 	prepareBaseData() {
@@ -13,14 +16,15 @@ export class TraitModifierGURPS extends ItemGCS<TraitModifierSource> {
 		return this.system.levels
 	}
 
-	get secondaryText(): string {
-		return this.system.notes
+	secondaryText(optionChecker: (option: display.Option) => boolean): string {
+		if (optionChecker(sheetSettingsFor(this.actor).notes_display)) return this.localNotes
+		return ""
 	}
 
-	get costDescription() {
+	get costDescription(): string {
 		let base = ""
 		if (this.costType === "percentage") {
-			if (this.hasLevels) {
+			if (this.isLeveled) {
 				base = (this.cost * this.levels).signedString()
 			} else {
 				base = this.cost.signedString()
@@ -35,11 +39,11 @@ export class TraitModifierGURPS extends ItemGCS<TraitModifierSource> {
 		return !this.system.disabled
 	}
 
-	get costType(): TraitModifierCostType {
+	get costType(): tmcost.Type {
 		return this.system.cost_type
 	}
 
-	get affects(): TraitModifierAffects {
+	get affects(): affects.Option {
 		return this.system.affects
 	}
 
@@ -53,14 +57,14 @@ export class TraitModifierGURPS extends ItemGCS<TraitModifierSource> {
 	}
 
 	get fullDescription(): string {
-		let d = ""
-		d += this.name
-		if (this.secondaryText) d += ` (${this.secondaryText})`
-		if (this.actor && this.actor.settings.show_trait_modifier_adj) d += ` [${this.costDescription}]`
-		return d
+		const buffer = new StringBuilder()
+		buffer.push(this.formattedName)
+		if (this.localNotes !== "") buffer.push(` (${this.localNotes})`)
+		if (sheetSettingsFor(this.actor).show_trait_modifier_adj) buffer.push(` [${this.costDescription}]`)
+		return buffer.toString()
 	}
 
-	get hasLevels(): boolean {
+	get isLeveled(): boolean {
 		return this.costType === "percentage" && this.levels > 0
 	}
 }

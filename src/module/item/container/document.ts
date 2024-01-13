@@ -5,7 +5,6 @@ import { AnyDocumentData } from "types/foundry/common/abstract/data.mjs"
 import Document, { Metadata } from "types/foundry/common/abstract/document.mjs"
 import EmbeddedCollection from "types/foundry/common/abstract/embedded-collection.mjs"
 import { DocumentConstructor } from "types/types/helperTypes"
-import { BaseContainerSystemData } from "./data"
 
 export abstract class ContainerGURPS<
 	SourceType extends BaseItemSourceGURPS = BaseItemSourceGURPS,

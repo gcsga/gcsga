@@ -1,9 +1,10 @@
 import { CharacterSheetConfig } from "@actor/character/config_sheet"
-import { Attribute, AttributeObj, AttributeType } from "@module/attribute"
+import { Attribute, AttributeObj } from "@module/attribute"
 import { SYSTEM_NAME } from "@module/data"
 import { DiceGURPS } from "@module/dice"
 import { LocalizeGURPS } from "@util"
 import { Mook } from "./document"
+import { attribute } from "@util/enum"
 import { MookParser } from "./parse"
 
 export class MookGeneratorSheet extends FormApplication {
@@ -78,7 +79,7 @@ export class MookGeneratorSheet extends FormApplication {
 		const point_pools: Attribute[] = []
 		if (attributes)
 			attributes.forEach(a => {
-				if ([AttributeType.Pool, AttributeType.PoolSeparator].includes(a.attribute_def?.type))
+				if ([attribute.Type.Pool, attribute.Type.PoolSeparator].includes(a.attribute_def?.type))
 					point_pools.push(a)
 				else if (a.attribute_def?.isPrimary) primary_attributes.push(a)
 				else secondary_attributes.push(a)

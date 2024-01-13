@@ -1,5 +1,5 @@
 import { PoolThreshold, reserved_ids } from "@module/attribute"
-import { sanitizeId, VariableResolver } from "@util"
+import { CharacterResolver, sanitizeId } from "@util"
 import { ResourceTrackerDefObj } from "./data"
 
 export class ResourceTrackerDef {
@@ -52,7 +52,7 @@ export class ResourceTrackerDef {
 		return `${this.full_name} (${this.name})`
 	}
 
-	baseValue(_resolver: VariableResolver): number {
+	baseValue(_resolver: CharacterResolver): number {
 		return this.max
 		// Return evaluateToNumber(this.tracker_base, resolver)
 	}

@@ -1,17 +1,17 @@
-import { BaseWeaponGURPS, wswitch } from "@item"
-import { FeatureType, WeaponBonusType, wsel } from "./data"
-import { NumericComparisonType, NumericCriteria, StringComparisonType, StringCriteria, WeaponOwner } from "@module/data"
+import { BaseWeaponGURPS } from "@item"
 import { Int } from "@util/fxp"
 import { TooltipGURPS } from "@module/tooltip"
-import { LocalizeGURPS } from "@util"
-import { WeaponLeveledAmount, WeaponLeveledAmountKeys, WeaponLeveledAmountObj } from "./weapon_leveled_amount"
+import { LocalizeGURPS, NumericCompareType, NumericCriteria, StringCompareType, StringCriteria } from "@util"
+import { WeaponLeveledAmount, WeaponLeveledAmountObj } from "./weapon_leveled_amount"
+import { feature, wsel, wswitch } from "@util/enum"
+import { WeaponOwner } from "@module/data"
 
 export interface WeaponBonusObj extends WeaponLeveledAmountObj {
-	type: WeaponBonusType
+	type: feature.WeaponBonusType
 	percent?: boolean
 	switch_type_value?: boolean
-	selection_type: wsel
-	switch_type?: wswitch
+	selection_type: wsel.Type
+	switch_type?: wswitch.Type
 	name?: StringCriteria
 	specialization?: StringCriteria
 	level?: NumericCriteria
@@ -20,7 +20,7 @@ export interface WeaponBonusObj extends WeaponLeveledAmountObj {
 }
 
 export class WeaponBonus {
-	type: WeaponBonusType
+	type: feature.WeaponBonusType
 
 	private _owner?: WeaponOwner
 
@@ -30,9 +30,9 @@ export class WeaponBonus {
 
 	switch_type_value?: boolean
 
-	selection_type: wsel
+	selection_type: wsel.Type
 
-	switch_type?: wswitch
+	switch_type?: wswitch.Type
 
 	name?: StringCriteria
 
@@ -48,24 +48,14 @@ export class WeaponBonus {
 
 	effective?: boolean // If true, bonus is applied later as part of effect bonuses
 
-	constructor(type: WeaponBonusType) {
+	constructor(type: feature.WeaponBonusType) {
 		this.type = type
-		this.selection_type = wsel.WithRequiredSkill
-		this.name = {
-			compare: StringComparisonType.IsString,
-		}
-		this.specialization = {
-			compare: StringComparisonType.AnyString,
-		}
-		this.level = {
-			compare: NumericComparisonType.AtLeastNumber,
-		}
-		this.usage = {
-			compare: StringComparisonType.AnyString,
-		}
-		this.tags = {
-			compare: StringComparisonType.AnyString,
-		}
+		this.selection_type = wsel.Type.WithRequiredSkill
+		this.name = new StringCriteria(StringCompareType.IsString)
+		this.specialization = new StringCriteria(StringCompareType.AnyString)
+		this.level = new NumericCriteria(NumericCompareType.AtLeastNumber)
+		this.usage = new StringCriteria(StringCompareType.AnyString)
+		this.tags = new StringCriteria(StringCompareType.AnyString)
 		this.leveledAmount = new WeaponLeveledAmount({ amount: 1 })
 	}
 
@@ -123,7 +113,7 @@ export class WeaponBonus {
 		buf.push("\n")
 		buf.push(this.parentName)
 		buf.push(" [")
-		if (this.type === FeatureType.WeaponSwitch) {
+		if (this.type === feature.Type.WeaponSwitch) {
 			buf.push(
 				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.feature.weapon_bonus.switch, {
 					type: this.switch_type!,
@@ -170,13 +160,17 @@ export class WeaponBonus {
 
 	static fromObject(data: WeaponBonusObj): WeaponBonus {
 		const bonus = new WeaponBonus(data.type)
-		const levelData: Partial<Record<keyof WeaponLeveledAmountObj, any>> = {}
-		for (const key of Object.keys(data)) {
-			if (WeaponLeveledAmountKeys.includes(key)) {
-				levelData[key as keyof WeaponLeveledAmountObj] = data[key as keyof WeaponBonusObj]
-			} else (bonus as any)[key] = data[key as keyof WeaponBonusObj]
-		}
-		bonus.leveledAmount = new WeaponLeveledAmount(levelData)
+		bonus.percent = data.percent
+		if (data.switch_type) bonus.switch_type = data.switch_type
+		if (data.switch_type_value) bonus.switch_type_value = data.switch_type_value
+		bonus.selection_type = data.selection_type
+		if (data.name) bonus.name = new StringCriteria(data.name.compare, data.name.qualifier)
+		if (data.specialization)
+			bonus.specialization = new StringCriteria(data.specialization.compare, data.specialization.qualifier)
+		if (data.level) bonus.level = new NumericCriteria(data.level.compare, data.level.qualifier)
+		if (data.name) bonus.name = new StringCriteria(data.name.compare, data.name.qualifier)
+		if (data.tags) bonus.tags = new StringCriteria(data.tags.compare, data.tags.qualifier)
+		bonus.leveledAmount = WeaponLeveledAmount.fromObject(data)
 		return bonus
 	}
 }

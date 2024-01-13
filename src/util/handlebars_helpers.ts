@@ -1,10 +1,11 @@
-import { ItemType, Study, StudyType } from "@module/data"
+import { ItemType } from "@module/data"
 import { DiceGURPS } from "@module/dice"
-import { getAdjustedStudyHours, isContainer } from "./misc"
+import { isContainer } from "./misc"
 import { LocalizeGURPS } from "./localize"
 import { CharacterGURPS, StaticSpell } from "@actor"
-import { Static } from "@util"
+import { Static, Study } from "@util"
 import { SafeString } from "handlebars"
+import { study } from "./enum"
 
 class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 	static camelcase(s: string) {
@@ -148,7 +149,7 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 		return length
 	}
 
-	static print(a: any, options: any): any {
+	static print(a: any, _options: any): any {
 		console.log(a)
 		return ""
 	}
@@ -182,7 +183,7 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 	}
 
 	static adjustedStudyHours(entry: Study): number {
-		return getAdjustedStudyHours(entry)
+		return entry.hours * study.Type.multiplier(entry.type)
 	}
 
 	static in(total: string | any[] | any, sub: string): boolean {
@@ -408,7 +409,7 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 	static unsatisfied(reason: string): string {
 		return (
 			`<div class='unsatisfied' data-tooltip='${reason}' data-tooltip-direction='DOWN'>` +
-			`<i class='gcs-triangle-exclamation'></i>${LocalizeGURPS.translations.gurps.prereqs.unsatisfied}` +
+			`<i class='gcs-triangle-exclamation'></i>${LocalizeGURPS.translations.gurps.prereq.unsatisfied}` +
 			"</div>"
 		)
 	}
@@ -421,92 +422,9 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 		return condition ? ifTrue : ifFalse
 	}
 
-	static studyinfo(type: StudyType) {
-		const b = "• "
-		const nl = "<br>"
-		switch (type) {
-			case StudyType.Self:
-				return [
-					b,
-					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.study.tooltip.max_no_job, { hours: 12 }),
-					nl,
-					b,
-					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.study.tooltip.max_part_time_job, {
-						hours: 8,
-					}),
-					nl,
-					b,
-					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.study.tooltip.max_full_time_job, {
-						hours: 4,
-					}),
-				].join("")
-			case StudyType.Job:
-				return [
-					b,
-					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.study.tooltip.max_full_time_job, {
-						hours: 8,
-					}),
-					nl,
-					b,
-					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.study.tooltip.max_part_time_job, {
-						hours: 4,
-					}),
-				].join("")
-			case StudyType.Teacher:
-				return [
-					b,
-					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.study.tooltip.max, { hours: 8 }),
-					nl,
-					b,
-					LocalizeGURPS.translations.gurps.study.tooltip.teacher_prereq,
-					nl,
-					b,
-					LocalizeGURPS.translations.gurps.study.tooltip.teacher_teaching,
-				].join("")
-			case StudyType.Intensive:
-				return [
-					b,
-					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.study.tooltip.max, { hours: 12 }),
-					nl,
-					b,
-					LocalizeGURPS.translations.gurps.study.tooltip.teacher_prereq,
-					nl,
-					b,
-					LocalizeGURPS.translations.gurps.study.tooltip.teacher_teaching,
-				].join("")
-		}
+	static studyInfo(type: study.Type): string {
+		return study.Type.info(type)
 	}
-
-	// Static multiselect(selected: string[], options: any) {
-	// 	let html = options.fn(this)
-	// 	if (selected.length === 0) {
-	// 		const escapedValue = RegExp.escape(Handlebars.escapeExpression(
-	// 			"all"
-	// 		))
-	// 		const rgx = new RegExp(' value=[\"\']' + escapedValue + '[\"\']')
-	// 		html = html.replace(rgx, "$& selected")
-	// 		return html
-	// 	}
-	// 	// if (selected.length > 1) {
-	// 	// 	const escapedValue = RegExp.escape(Handlebars.escapeExpression(
-	// 	// 		"multiple"
-	// 	// 	))
-	// 	// 	const rgx = new RegExp(' value=[\"\']' + escapedValue + '[\"\']')
-	// 	// 	html = html.replace(rgx, "$& selected")
-	// 	// 	for (const s of selected) {
-	// 	// 		const escapedValue = RegExp.escape(Handlebars.escapeExpression(s))
-	// 	// 		const rgx = new RegExp(' value=[\"\']' + escapedValue + '[\"\']')
-	// 	// 		html = html.replace(rgx, "$& class='selected'")
-	// 	// 	}
-	// 	// 	return html
-	// 	// }
-	// 	for (const s of selected) {
-	// 		const escapedValue = RegExp.escape(Handlebars.escapeExpression(s))
-	// 		const rgx = new RegExp(' value=[\"\']' + escapedValue + '[\"\']')
-	// 		html = html.replace(rgx, "$& class='selected'")
-	// 	}
-	// 	return html
-	// }
 
 	/**
 	 * This is a copy of Foundry's selectOptions helper enhanced to support taking a list of options to disable.
@@ -609,7 +527,7 @@ export function registerHandlebarsHelpers() {
 		signed: HandlebarsHelpersGURPS.signed,
 		sort: HandlebarsHelpersGURPS.sort,
 		staticSpellValues: HandlebarsHelpersGURPS.staticSpellValues,
-		studyinfo: HandlebarsHelpersGURPS.studyinfo,
+		studyInfo: HandlebarsHelpersGURPS.studyInfo,
 		sum: HandlebarsHelpersGURPS.sum,
 		textareaFormat: HandlebarsHelpersGURPS.textareaFormat,
 		unsatisfied: HandlebarsHelpersGURPS.unsatisfied,

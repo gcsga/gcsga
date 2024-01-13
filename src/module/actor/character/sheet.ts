@@ -13,7 +13,7 @@ import {
 	TraitContainerGURPS,
 	TraitGURPS,
 } from "@item"
-import { Attribute, AttributeObj, AttributeType } from "@module/attribute"
+import { Attribute, AttributeObj } from "@module/attribute"
 import { ConditionalModifier } from "@module/conditional_modifier"
 import { ItemDataGURPS, ItemGURPS, ItemSourceGURPS } from "@module/config"
 import { gid, ItemType, RollType, SYSTEM_NAME } from "@module/data"
@@ -37,6 +37,7 @@ import { PointRecordSheet } from "./points_sheet"
 import { PropertiesToSource } from "types/types/helperTypes"
 import { ItemDataBaseProperties } from "types/foundry/common/data/data.mjs/itemData"
 import { CharacterGURPS } from "./document"
+import { attribute } from "@util/enum"
 
 export class CharacterSheetGURPS extends ActorSheetGURPS {
 	declare object: CharacterGURPS
@@ -1094,8 +1095,6 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 	getData(options?: Partial<ActorSheet.Options> | undefined): any {
 		this.actor.prepareData()
 		const data = super.getData(options)
-		// if (!this.noPrepare) this.actor.prepareData()
-		// else this.noPrepare = false
 		const actorData = this.actor.toObject(false) as any
 		const [primary_attributes, secondary_attributes, point_pools] = this._prepareAttributes(this.actor.attributes)
 		const resource_trackers = Array.from(this.actor.resource_trackers.values())
@@ -1145,7 +1144,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		const point_pools: Attribute[] = []
 		if (attributes)
 			attributes.forEach(a => {
-				if ([AttributeType.Pool, AttributeType.PoolSeparator].includes(a.attribute_def?.type))
+				if ([attribute.Type.Pool, attribute.Type.PoolSeparator].includes(a.attribute_def?.type))
 					point_pools.push(a)
 				else if (a.attribute_def?.isPrimary) primary_attributes.push(a)
 				else secondary_attributes.push(a)
@@ -1244,19 +1243,14 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			[[], [], [], [], [], [], []]
 		)
 
-		// const melee: WeaponGURPS[] = this.actor.equippedWeapons(ItemType.MeleeWeapon)
-		// const ranged: WeaponGURPS[] = this.actor.equippedWeapons(ItemType.RangedWeapon)
 		const melee = items.filter(e => e.type === ItemType.MeleeWeapon)
 		const ranged = items.filter(e => e.type === ItemType.RangedWeapon)
-		// const melee: WeaponGURPS[] = []
-		// const ranged: WeaponGURPS[] = []
 		const reactions: ConditionalModifier[] = this.actor.reactions
 		const conditionalModifiers: ConditionalModifier[] = this.actor.conditionalModifiers
 
 		const carried_value = this.actor.wealthCarried()
 		let carried_weight = this.actor.weightCarried(true)
 
-		// Data.carried_weight = `${carried_weight} lb`
 		data.carried_weight = Weight.format(carried_weight, this.actor.settings.default_weight_units)
 		data.carried_value = dollarFormat(carried_value)
 

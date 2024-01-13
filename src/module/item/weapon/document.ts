@@ -1,18 +1,19 @@
-import { FeatureType, SkillBonus, WeaponBonus, WeaponBonusType, skillsel, wsel } from "@feature"
 import { BaseItemGURPS } from "@item/base"
 import { ContainerGURPS } from "@item/container"
 import { Bonus, Feature } from "@module/config"
 import { ActorType, gid, ItemType } from "@module/data"
 import { SkillDefault } from "@module/default"
 import { TooltipGURPS } from "@module/tooltip"
-import { LocalizeGURPS, stringCompare } from "@util"
+import { LocalizeGURPS } from "@util"
 import { HandlebarsHelpersGURPS } from "@util/handlebars_helpers"
 import { WeaponDamage } from "./damage"
-import { BaseWeaponSource, wswitch } from "./data"
+import { BaseWeaponSource } from "./data"
 import { Int } from "@util/fxp"
 import { ItemGCS } from "@item/gcs"
 import { CharacterGURPS } from "@actor"
 import { WeaponStrength } from "./weapon_strength"
+import { feature, skillsel, wsel, wswitch } from "@util/enum"
+import { SkillBonus, WeaponBonus } from "@feature"
 
 export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSource> extends BaseItemGURPS<SourceType> {
 	get itemName(): string {
@@ -43,7 +44,7 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 	get secondaryText(): string {
 		let outString = '<div class="item-notes">'
 		if (this.container && this.container instanceof Item) {
-			outString += HandlebarsHelpersGURPS.format((this.container as any).notes)
+			outString += HandlebarsHelpersGURPS.format((this.container as any).notes ?? "")
 			if (this.system.usage_notes) outString += "<br>"
 		}
 		if (this.system.usage_notes) outString += HandlebarsHelpersGURPS.format(this.system.usage_notes)
@@ -159,8 +160,8 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 
 	extractSkillBonusForThisWeapon(f: Feature, tooltip: TooltipGURPS | null): number {
 		if (f instanceof SkillBonus) {
-			if (f.selection_type === skillsel.ThisWeapon) {
-				if (stringCompare(this.usage, f.specialization)) {
+			if (f.selection_type === skillsel.Type.ThisWeapon) {
+				if (f.specialization?.matches(this.usage)) {
 					f.addToTooltip(tooltip)
 					return f.adjustedAmount
 				}
@@ -248,12 +249,12 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 		return system
 	}
 
-	resolveBoolFlag(switchType: wswitch, initial: boolean): boolean {
+	resolveBoolFlag(switchType: wswitch.Type, initial: boolean): boolean {
 		const actor = this.actor
 		if (!actor) return initial
 		let t = 0
 		let f = 0
-		for (const bonus of this.collectWeaponBonuses(1, null, FeatureType.WeaponSwitch)) {
+		for (const bonus of this.collectWeaponBonuses(1, null, feature.Type.WeaponSwitch)) {
 			if (bonus.switch_type === switchType) t++
 			else f++
 		}
@@ -265,11 +266,11 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 	collectWeaponBonuses(
 		dieCount: number,
 		tooltip: TooltipGURPS | null,
-		...allowedFeatureTypes: WeaponBonusType[]
+		...allowedFeatureTypes: feature.WeaponBonusType[]
 	): WeaponBonus[] {
 		const actor = this.actor as CharacterGURPS
 		if (!actor) return []
-		const allowed: Map<WeaponBonusType, boolean> = new Map()
+		const allowed: Map<feature.WeaponBonusType, boolean> = new Map()
 		for (const one of allowedFeatureTypes) allowed.set(one, true)
 		let bestDef = new SkillDefault()
 		let best = -Infinity
@@ -317,7 +318,7 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 	private _extractWeaponBonus(
 		f: Feature,
 		set: Map<WeaponBonus, boolean>,
-		allowedFeatureTypes: Map<FeatureType, boolean>,
+		allowedFeatureTypes: Map<feature.Type, boolean>,
 		dieCount: number,
 		tooltip: TooltipGURPS | null
 	): void {
@@ -328,21 +329,21 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 			f.leveledAmount.level = f.derivedLevel
 			f.leveledAmount.dieCount = dieCount
 			switch (f.selection_type) {
-				case wsel.WithRequiredSkill:
+				case wsel.Type.WithRequiredSkill:
 					break
-				case wsel.ThisWeapon:
-					if (stringCompare(this.usage, f.specialization)) {
+				case wsel.Type.ThisWeapon:
+					if (f.specialization?.matches(this.usage)) {
 						if (!set.has(f)) {
 							set.set(f, true)
 							f.addToTooltip(tooltip)
 						}
 					}
 					break
-				case wsel.WithName:
+				case wsel.Type.WithName:
 					if (
-						stringCompare(this.formattedName, f.name) &&
-						stringCompare(this.usage, f.specialization) &&
-						stringCompare((this.container as ItemGCS).tags, f.tags)
+						f.name?.matches(this.formattedName) &&
+						f.specialization?.matches(this.usage) &&
+						f.tags?.matchesList(...(this.container as ItemGCS).tags)
 					) {
 						if (!set.has(f)) {
 							set.set(f, true)

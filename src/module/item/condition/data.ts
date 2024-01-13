@@ -102,6 +102,39 @@ export enum ManeuverID {
 	BLANK_2 = "blank_2",
 }
 
+export const AllManeuverIDs: ManeuverID[] = [
+	ManeuverID.DoNothing,
+	ManeuverID.Attack,
+	ManeuverID.AOA,
+	ManeuverID.AOD,
+	ManeuverID.Move,
+	ManeuverID.MoveAndAttack,
+	ManeuverID.AOADouble,
+	ManeuverID.AODDouble,
+	ManeuverID.ChangePosture,
+	ManeuverID.Feint,
+	ManeuverID.AOAFeint,
+	ManeuverID.AODDodge,
+	ManeuverID.Ready,
+	ManeuverID.Evaluate,
+	ManeuverID.AOADetermined,
+	ManeuverID.AODParry,
+	ManeuverID.Concentrate,
+	ManeuverID.Aiming,
+	ManeuverID.AOAStrong,
+	ManeuverID.AODBlock,
+	ManeuverID.Wait,
+	ManeuverID.AOASF,
+]
+
+export const AllPostures = [
+	ConditionID.PostureProne,
+	ConditionID.PostureCrouch,
+	ConditionID.PostureKneel,
+	ConditionID.PostureSit,
+	ConditionID.PostureCrawl,
+] as const
+
 export type EffectID = ConditionID | ManeuverID
 
 export type ConditionSource = BaseItemSourceGURPS<ItemType.Condition, ConditionSystemData>

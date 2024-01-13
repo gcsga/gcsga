@@ -2,7 +2,7 @@
 	<div class="placeholder"> </div>
 	<select name="{{path}}.sub_type">
 		{{#select this.sub_type}}
-			{{#each config.select.spell_sub_type as |v k|}}
+			{{#each config.select.spellcmp as |v k|}}
 				<option value="{{k}}">{{localize v}}</option>
 			{{/each}}
 		{{/select}}
@@ -12,7 +12,7 @@
 		{{disabled (or (eq this.sub_type "college_count") (eq this.sub_type "any"))}}
 	>
 		{{#select this.qualifier.compare}}
-			{{#each config.select.string_compare as |v k|}}
+			{{#each config.select.string_criteria as |v k|}}
 				<option value="{{k}}">{{localize v}}</option>
 			{{/each}}
 		{{/select}}

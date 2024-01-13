@@ -13,10 +13,7 @@ export class SkillSheet extends ItemSheetGCS<SkillGURPS> {
 	getData(options?: Partial<DocumentSheetOptions<Item>> | undefined) {
 		const data = super.getData(options)
 		return mergeObject(data, {
-			attributes: {
-				...{ 10: "10" },
-				...super.getData(options).attributes,
-			},
+			attributes: super.getData(options).attributes,
 			defaults: (this.item as any).defaults,
 		})
 	}

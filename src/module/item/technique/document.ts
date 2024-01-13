@@ -1,10 +1,11 @@
 import { ItemGCS } from "@item/gcs"
 import { SkillLevel } from "@item/skill/data"
-import { ActorType, Difficulty, gid } from "@module/data"
+import { gid } from "@module/data"
 import { SkillDefault } from "@module/default"
 import { TooltipGURPS } from "@module/tooltip"
-import { inlineNote, LocalizeGURPS } from "@util"
 import { TechniqueSource } from "./data"
+import { difficulty } from "@util/enum"
+import { SkillGURPS } from "@item/skill"
 
 export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 	level: SkillLevel = { level: 0, relative_level: 0, tooltip: new TooltipGURPS() }
@@ -18,50 +19,16 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 	// }
 
 	// Getters
-	get secondaryText(): string {
-		const out: string[] = []
-		if (inlineNote(this.actor, "modifiers_display")) {
-			if (this.difficulty !== Difficulty.Wildcard && this.default) {
-				out.push(
-					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.item.default, {
-						skill: `${this.default.name}`,
-						modifier: `${this.default.modifier}`,
-					})
-				)
-			}
-		}
-		if (inlineNote(this.actor, "notes_display")) {
-			if (this.system.notes.trim()) {
-				if (out.length) out.push("<br>")
-				out.push(this.system.notes)
-			}
-			if (this.studyHours !== 0) {
-				if (out.length) out.push("<br>")
-				if (this.studyHours !== 0)
-					out.push(
-						LocalizeGURPS.format(LocalizeGURPS.translations.gurps.study.studied, {
-							hours: this.studyHours,
-							total: (this.system as any).study_hours_needed,
-						})
-					)
-			}
-		}
-		if (inlineNote(this.actor, "skill_level_adj_display")) {
-			if (this.level.tooltip.length) {
-				if (out.length) out.push("<br>")
-				out.push(this.level.tooltip.toString())
-			}
-		}
-		return `<div class="item-notes">${out.join("")}</div>`
-	}
+	secondaryText = SkillGURPS.prototype.secondaryText
 
-	get points(): number {
-		return this.system.points
-	}
+	points = SkillGURPS.prototype.points
+	// get points(): number {
+	// 	return this.system.points
+	// }
 
-	set points(n: number) {
-		this.system.points = n
-	}
+	// set points(n: number) {
+	// 	this.system.points = n
+	// }
 
 	get techLevel(): string {
 		return this.system.tech_level
@@ -75,15 +42,15 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 		return this.system.limit
 	}
 
-	get difficulty(): string {
+	get difficulty(): difficulty.Level {
 		return this.system.difficulty
 	}
 
-	get defaultedFrom(): SkillDefault | undefined {
-		return this.system.defaulted_from
+	get defaultedFrom(): SkillDefault | null {
+		return this.system.defaulted_from ?? null
 	}
 
-	set defaultedFrom(v: SkillDefault | undefined) {
+	set defaultedFrom(v: SkillDefault | null) {
 		this.system.defaulted_from = v
 	}
 
@@ -160,7 +127,7 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 			if (level !== -Infinity) {
 				const base_level = level
 				level += this.default.modifier
-				if (this.difficulty === Difficulty.Hard) points -= 1
+				if (this.difficulty === difficulty.Level.Hard) points -= 1
 				if (points > 0) relative_level = points
 				if (level !== -Infinity) {
 					relative_level += actor.skillBonusFor(this.name!, this.specialization, this.tags, tooltip)
@@ -186,7 +153,7 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 	incrementSkillLevel() {
 		const basePoints = this.points + 1
 		let maxPoints = basePoints
-		if (this.difficulty === Difficulty.Wildcard) maxPoints += 12
+		if (this.difficulty === difficulty.Level.Wildcard) maxPoints += 12
 		else maxPoints += 4
 
 		const oldLevel = this.calculateLevel().level
@@ -202,7 +169,7 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 		if (this.points <= 0) return
 		const basePoints = this.points
 		let minPoints = basePoints
-		if (this.difficulty === Difficulty.Wildcard) minPoints -= 12
+		if (this.difficulty === difficulty.Level.Wildcard) minPoints -= 12
 		else minPoints -= 4
 		minPoints = Math.max(minPoints, 0)
 

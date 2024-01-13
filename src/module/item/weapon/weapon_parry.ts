@@ -1,10 +1,9 @@
 import { WeaponGURPS } from "@module/config"
 import { TooltipGURPS } from "@module/tooltip"
-import { wswitch } from "./data"
-import { FeatureType } from "@feature"
 import { Int } from "@util/fxp"
 import { gid } from "@module/data"
 import { WeaponField } from "./weapon_field"
+import { feature, wswitch } from "@util/enum"
 
 export class WeaponParry extends WeaponField {
 	no = false
@@ -30,9 +29,9 @@ export class WeaponParry extends WeaponField {
 
 	resolve(w: WeaponGURPS, tooltip: TooltipGURPS | null): WeaponParry {
 		const result = WeaponParry.parse(this.toString())
-		result.no = !w.resolveBoolFlag(wswitch.CanParry, !result.no)
-		result.fencing = w.resolveBoolFlag(wswitch.Fencing, result.fencing)
-		result.unbalanced = w.resolveBoolFlag(wswitch.Unbalanced, result.unbalanced)
+		result.no = !w.resolveBoolFlag(wswitch.Type.CanParry, !result.no)
+		result.fencing = w.resolveBoolFlag(wswitch.Type.Fencing, result.fencing)
+		result.unbalanced = w.resolveBoolFlag(wswitch.Type.Unbalanced, result.unbalanced)
 		if (!result.no) {
 			const actor = w.actor
 			if (actor !== null) {
@@ -52,7 +51,7 @@ export class WeaponParry extends WeaponField {
 				if (best !== -Infinity) {
 					if (primaryTooltip !== null) tooltip?.push("\n", primaryTooltip)
 					result.modifier += 3 + best + actor.parryBonus
-					for (const bonus of w.collectWeaponBonuses(1, tooltip, FeatureType.WeaponParryBonus)) {
+					for (const bonus of w.collectWeaponBonuses(1, tooltip, feature.Type.WeaponParryBonus)) {
 						result.modifier += bonus.adjustedAmountForWeapon(w)
 					}
 					result.modifier = Math.trunc(Math.max(result.modifier, 0))

@@ -1,4 +1,4 @@
-import { VariableResolver, evaluateToNumber, sanitizeId } from "@util"
+import { CharacterResolver, evaluateToNumber, sanitizeId } from "@util"
 import { MoveTypeDefObj } from "./data"
 import { reserved_ids } from "@module/attribute"
 import { MoveTypeOverride } from "./override"
@@ -32,7 +32,7 @@ export class MoveTypeDef {
 		this.def_id = sanitizeId(v, false, reserved_ids)
 	}
 
-	baseValue(resolver: VariableResolver): number {
+	baseValue(resolver: CharacterResolver): number {
 		return evaluateToNumber(this.move_type_base, resolver)
 	}
 }

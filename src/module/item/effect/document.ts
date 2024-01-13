@@ -9,7 +9,9 @@ import { CombatData } from "types/foundry/common/data/module.mjs"
 import { BaseUser } from "types/foundry/common/documents.mjs"
 import { PropertiesToSource } from "types/types/helperTypes"
 import { DurationType, EffectModificationOptions, EffectSource } from "./data"
-import { AttributeBonus, FeatureType } from "@feature"
+import { feature } from "@util/enum"
+import { AttributeBonus } from "@feature"
+import { ItemGCS } from "@item/gcs"
 
 export class EffectGURPS<SourceType extends EffectSource = EffectSource> extends BaseItemGURPS<SourceType> {
 	_statusId: string | null = null
@@ -17,7 +19,7 @@ export class EffectGURPS<SourceType extends EffectSource = EffectSource> extends
 	get features(): Feature[] {
 		if (this.system.hasOwnProperty("features")) {
 			return (this.system as any).features.map((e: Partial<Feature>) => {
-				const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as FeatureType]
+				const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as feature.Type]
 				if (FeatureConstructor) {
 					const f = new FeatureConstructor()
 					Object.assign(f, e)
@@ -31,6 +33,12 @@ export class EffectGURPS<SourceType extends EffectSource = EffectSource> extends
 
 	get formattedName(): string {
 		return this.name || ""
+	}
+
+	secondaryText = ItemGCS.prototype.secondaryText
+
+	get enabled(): boolean {
+		return true
 	}
 
 	get reference(): string {

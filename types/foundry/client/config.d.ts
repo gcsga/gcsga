@@ -78,6 +78,7 @@ declare global {
 				classes: Record<string, Prereq.ConstructorOf>
 			}
 			select: Record<string, Record<string, string>>
+			// select: Record<string, Record<string, string>>
 			meleeMods: Record<string, RollModifier>
 			rangedMods: Record<string, RollModifier>
 			defenseMods: Record<string, RollModifier>

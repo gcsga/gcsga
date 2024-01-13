@@ -1,10 +1,9 @@
-import { stlimit, FeatureType } from "@feature"
 import { DurationType } from "@item/effect"
-// import { ThresholdOp } from "@module/attribute"
 import { gid, SYSTEM_NAME } from "@module/data"
 import { LocalizeGURPS } from "@util"
 import { StatusEffect } from "types/foundry/client/data/documents/token"
 import { ConditionID, ConditionSystemData, ManeuverID } from "./data"
+import { feature, stlimit } from "@util/enum"
 
 export function getConditionList(): Record<ConditionID, Partial<ConditionSystemData>> {
 	const ConditionList: Record<ConditionID, Partial<ConditionSystemData>> = {
@@ -48,7 +47,7 @@ export function getConditionList(): Record<ConditionID, Partial<ConditionSystemD
 			reference: "B419",
 			features: [
 				// {
-				// 	type: FeatureType.ThresholdBonus,
+				// 	type: feature.Type.ThresholdBonus,
 				// 	ops: [ThresholdOp.HalveMove, ThresholdOp.HalveDodge],
 				// },
 			],
@@ -58,7 +57,7 @@ export function getConditionList(): Record<ConditionID, Partial<ConditionSystemD
 			reference: "B426",
 			features: [
 				// {
-				// 	type: FeatureType.ThresholdBonus,
+				// 	type: feature.Type.ThresholdBonus,
 				// 	ops: [ThresholdOp.HalveMove, ThresholdOp.HalveDodge, ThresholdOp.HalveST],
 				// },
 			],
@@ -84,17 +83,17 @@ export function getConditionList(): Record<ConditionID, Partial<ConditionSystemD
 			},
 			features: [
 				{
-					type: FeatureType.AttributeBonus,
+					type: feature.Type.AttributeBonus,
 					attribute: gid.Dexterity,
-					limitation: stlimit.None,
+					limitation: stlimit.Option.None,
 					effective: true,
 					per_level: true,
 					amount: -1,
 				},
 				{
-					type: FeatureType.AttributeBonus,
+					type: feature.Type.AttributeBonus,
 					attribute: gid.Intelligence,
-					limitation: stlimit.None,
+					limitation: stlimit.Option.None,
 					effective: true,
 					per_level: true,
 					amount: -1,
@@ -125,10 +124,10 @@ export function getConditionList(): Record<ConditionID, Partial<ConditionSystemD
 			reference: "B371",
 			features: [
 				{
-					type: FeatureType.AttributeBonus,
+					type: feature.Type.AttributeBonus,
 					amount: -4,
 					attribute: "dx",
-					limitation: stlimit.None,
+					limitation: stlimit.Option.None,
 					per_level: false,
 				},
 			],

@@ -1,8 +1,17 @@
 import { ContainerGURPS } from "@item/container"
 import { NoteContainerSource } from "./data"
-import { parseInlineNoteExpressions } from "@util"
+import { EvalEmbeddedRegex, replaceAllStringFunc } from "@util"
+import { ActorType } from "@module/data"
+import { NoteGURPS } from "@item/note/document"
+import { ItemGCS } from "@item/gcs"
 
 export class NoteContainerGURPS extends ContainerGURPS<NoteContainerSource> {
+	override get actor(): (typeof CONFIG.GURPS.Actor.documentClasses)[ActorType.Character] | null {
+		const actor = super.actor
+		if (actor?.type === ActorType.Character) return actor
+		return null
+	}
+
 	get formattedName(): string {
 		return this.formattedText
 	}
@@ -15,9 +24,19 @@ export class NoteContainerGURPS extends ContainerGURPS<NoteContainerSource> {
 		Object.entries(showdown_options).forEach(([k, v]) => showdown.setOption(k, v))
 		// @ts-expect-error Showdown not properly declared yet
 		const converter = new showdown.Converter()
-		let text = this.system.text
-		if (this.parent) text = parseInlineNoteExpressions(text ?? "", this.parent as any)
+		let text = this.system.text || this.name || ""
+		text = replaceAllStringFunc(EvalEmbeddedRegex, text, this.actor)
 		return converter.makeHtml(text)?.replace(/\s\+/g, "\r")
+	}
+
+	get children(): Collection<NoteGURPS | NoteContainerGURPS> {
+		return super.children as Collection<NoteGURPS | NoteContainerGURPS>
+	}
+
+	secondaryText = ItemGCS.prototype.secondaryText
+
+	get enabled(): boolean {
+		return true
 	}
 
 	get reference(): string {

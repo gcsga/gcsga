@@ -1,9 +1,8 @@
 import { TooltipGURPS } from "@module/tooltip"
 import { Int } from "@util/fxp"
-import { wswitch } from "./data"
-import { FeatureType } from "@feature"
 import { BaseWeaponGURPS } from "./document"
 import { WeaponField } from "./weapon_field"
+import { feature, wswitch } from "@util/enum"
 
 export class WeaponStrength extends WeaponField {
 	min?: number
@@ -43,16 +42,16 @@ export class WeaponStrength extends WeaponField {
 				if (st !== 0) result.min = st
 			}
 		}
-		result.bipod = w.resolveBoolFlag(wswitch.Bipod, result.bipod ?? false)
-		result.mounted = w.resolveBoolFlag(wswitch.Mounted, result.mounted ?? false)
-		result.musketRest = w.resolveBoolFlag(wswitch.MusketRest, result.musketRest ?? false)
-		result.twoHanded = w.resolveBoolFlag(wswitch.TwoHanded, result.twoHanded ?? false)
+		result.bipod = w.resolveBoolFlag(wswitch.Type.Bipod, result.bipod ?? false)
+		result.mounted = w.resolveBoolFlag(wswitch.Type.Mounted, result.mounted ?? false)
+		result.musketRest = w.resolveBoolFlag(wswitch.Type.MusketRest, result.musketRest ?? false)
+		result.twoHanded = w.resolveBoolFlag(wswitch.Type.TwoHanded, result.twoHanded ?? false)
 		result.twoHandedUnready = w.resolveBoolFlag(
-			wswitch.TwoHandedAndUnreadyAfterAttack,
+			wswitch.Type.TwoHandedAndUnreadyAfterAttack,
 			result.twoHandedUnready ?? false
 		)
 		result.min ??= 0
-		for (const bonus of w.collectWeaponBonuses(1, tooltip, FeatureType.WeaponMinSTBonus))
+		for (const bonus of w.collectWeaponBonuses(1, tooltip, feature.Type.WeaponMinSTBonus))
 			result.min += bonus.adjustedAmountForWeapon(w)
 		result.validate()
 

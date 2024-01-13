@@ -1,39 +1,46 @@
-import { ActorGURPS } from "@module/config"
-import { ActorType, PrereqType, StringComparisonType, StringCriteria } from "@module/data"
+import { CharacterResolver, LocalizeGURPS, LootResolver, StringCompareType, StringCriteria } from "@util"
+import { BasePrereq, BasePrereqObj } from "./base"
+import { prereq } from "@util/enum"
 import { TooltipGURPS } from "@module/tooltip"
-import { LocalizeGURPS, stringCompare } from "@util"
-import { BasePrereq, PrereqConstructionContext } from "./base"
 
-class EquippedEquipmentPrereq extends BasePrereq {
+export interface EquippedEquipmentPrereqObj extends BasePrereqObj {
 	name: StringCriteria
-
-	constructor(data: EquippedEquipmentPrereq | any, context: PrereqConstructionContext = {}) {
-		data = mergeObject(EquippedEquipmentPrereq.defaults, data)
-		super(data, context)
-		this.name ??= { compare: StringComparisonType.AnyString, qualifier: "" }
-	}
-
-	static get defaults(): Record<string, any> {
-		return mergeObject(super.defaults, {
-			type: PrereqType.Equipment,
-			name: { compare: StringComparisonType.IsString, qualifier: "" },
-		})
-	}
-
-	satisfied(actor: ActorGURPS, exclude: any, tooltip: TooltipGURPS): [boolean, boolean] {
-		if (actor.type === ActorType.LegacyCharacter) return [true, false]
-		let satisfied = false
-		for (let eqp of (actor as any).carried_equipment) {
-			satisfied = exclude !== eqp && eqp.equipped && eqp.quantity > 0 && stringCompare(eqp.name, this.name)
-		}
-		if (!satisfied) {
-			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.equipment)
-			tooltip.push(LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereqs.criteria[this.name.compare]))
-			if (this.name.compare !== StringComparisonType.AnyString) tooltip.push(this.name.qualifier!)
-			return [satisfied, true]
-		}
-		return [satisfied, false]
-	}
 }
 
-export { EquippedEquipmentPrereq }
+export class EquippedEquipmentPrereq extends BasePrereq {
+	name: StringCriteria
+
+	constructor() {
+		super(prereq.Type.EquippedEquipment)
+		this.name = new StringCriteria(StringCompareType.IsString)
+	}
+
+	static fromObject(data: EquippedEquipmentPrereqObj): EquippedEquipmentPrereq {
+		const prereq = new EquippedEquipmentPrereq()
+		prereq.has = data.has
+		if (data.name) prereq.name = new StringCriteria(data.name.compare, data.name.qualifier)
+		return prereq
+	}
+
+	satisfied(
+		actor: CharacterResolver | LootResolver,
+		_exclude: any,
+		tooltip: TooltipGURPS,
+		hasEquipmentPenalty: { value: boolean }
+	): boolean {
+		let satisfied = actor.equipment.some(
+			eqp => eqp.equipped && this.name.matches(eqp.name ?? "") && eqp.quantity > 0
+		)
+		if (!this.has) satisfied = !satisfied
+		if (!satisfied) {
+			hasEquipmentPenalty.value = true
+			tooltip.push(LocalizeGURPS.translations.gurps.prereq.prefix)
+			tooltip.push(
+				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.equipped_equipment, {
+					content: this.name.describe(),
+				})
+			)
+		}
+		return satisfied
+	}
+}

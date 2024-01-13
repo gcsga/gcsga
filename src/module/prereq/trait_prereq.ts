@@ -1,59 +1,82 @@
-import { ActorGURPS } from "@module/config"
+import {
+	CharacterResolver,
+	LocalizeGURPS,
+	LootResolver,
+	NumericCompareType,
+	NumericCriteria,
+	StringCompareType,
+	StringCriteria,
+} from "@util"
+import { BasePrereq, BasePrereqObj } from "./base"
+import { prereq } from "@util/enum"
 import { TooltipGURPS } from "@module/tooltip"
-import { LocalizeGURPS, numberCompare, stringCompare } from "@util"
-import { BasePrereq, PrereqConstructionContext } from "./base"
-import { NumericComparisonType, NumericCriteria, PrereqType, StringComparisonType, StringCriteria } from "@module/data"
+import { ActorType } from "@module/data"
+
+export interface TraitPrereqObj extends BasePrereqObj {
+	name: StringCriteria
+	level: NumericCriteria
+	notes: StringCriteria
+}
 
 export class TraitPrereq extends BasePrereq {
-	name?: StringCriteria
+	type = prereq.Type.Trait
 
-	level?: NumericCriteria
+	name: StringCriteria
 
-	notes?: StringCriteria
+	level: NumericCriteria
 
-	constructor(data: TraitPrereq | any, context: PrereqConstructionContext = {}) {
-		data = mergeObject(TraitPrereq.defaults, data)
-		super(data, context)
+	notes: StringCriteria
+
+	constructor() {
+		super(prereq.Type.Trait)
+		this.name = new StringCriteria(StringCompareType.IsString)
+		this.notes = new StringCriteria(StringCompareType.AnyString)
+		this.level = new NumericCriteria(NumericCompareType.AtLeastNumber)
 	}
 
-	static get defaults(): Record<string, any> {
-		return mergeObject(super.defaults, {
-			type: PrereqType.Trait,
-			name: { compare: StringComparisonType.IsString, qualifier: "" },
-			notes: { compare: StringComparisonType.AnyString, qualifier: "" },
-			level: { compare: NumericComparisonType.AnyNumber, qualifier: 0 },
-		})
+	static fromObject(data: TraitPrereqObj): TraitPrereq {
+		const prereq = new TraitPrereq()
+		prereq.has = data.has
+		if (data.name) prereq.name = new StringCriteria(data.name.compare, data.name.qualifier)
+		if (data.level) prereq.level = new NumericCriteria(data.level.compare, data.level.qualifier)
+		if (data.notes) prereq.notes = new StringCriteria(data.notes.compare, data.notes.qualifier)
+		return prereq
 	}
 
-	satisfied(actor: ActorGURPS, exclude: any, tooltip: TooltipGURPS): [boolean, boolean] {
+	satisfied(actor: CharacterResolver | LootResolver, exclude: any, tooltip: TooltipGURPS): boolean {
+		if (actor.type === ActorType.Loot) return true
 		let satisfied = false
-		if (!actor.traits) return [true, false]
-		actor.traits.forEach((t: any) => {
-			if (exclude === t || !stringCompare(t.name, this.name)) return // [false, false]
-			let notes = t.notes
-			const mod_notes = t.modifierNotes
-			if (mod_notes) notes += `\n${mod_notes}`
-			if (!stringCompare(notes, this.notes)) return // [false, false]
-			satisfied = numberCompare(Math.max(0, t.levels), this.level)
-		})
+		for (const t of actor.traits) {
+			if (exclude === t || !this.name.matches(t.name ?? "")) continue
+			let notes = t.system.notes
+			if (t.modifierNotes !== "") notes += `\n${t.modifierNotes}`
+			if (!this.notes.matches(notes)) continue
+			let levels = 0
+			if (t.isLeveled) levels = Math.max(t.levels, 0)
+			satisfied = this.level.matches(levels)
+		}
 		if (!this.has) satisfied = !satisfied
 		if (!satisfied) {
-			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.has[this.has ? "true" : "false"])
-			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.trait.name)
-			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.name!.compare])
-			if (this.name && this.name.compare !== StringComparisonType.AnyString)
-				tooltip.push(`"${this.name!.qualifier}"`)
-			if (this.notes!.compare !== StringComparisonType.AnyString) {
-				tooltip.push(LocalizeGURPS.translations.gurps.prereqs.trait.notes)
-				tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.notes!.compare])
-				tooltip.push(`"${this.notes!.qualifier}"`)
+			tooltip.push(LocalizeGURPS.translations.gurps.prereq.prefix)
+			tooltip.push(LocalizeGURPS.translations.gurps.prereq.has[this.has ? "true" : "false"])
+			tooltip.push(
+				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.trait.name, {
+					content: this.name.describe(),
+				})
+			)
+			if (this.notes.compare !== StringCompareType.AnyString) {
+				tooltip.push(
+					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.trait.notes, {
+						content: this.notes.describe(),
+					})
+				)
 			}
-
-			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.trait.level)
-			tooltip.push(LocalizeGURPS.translations.gurps.prereqs.criteria[this.level!.compare])
-			if (this.level!.compare !== NumericComparisonType.AnyNumber)
-				tooltip.push(((this.level ? this.level.qualifier : 0) ?? 0).toString())
+			tooltip.push(
+				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.trait.level, {
+					content: this.level.describe(),
+				})
+			)
 		}
-		return [satisfied, false]
+		return satisfied
 	}
 }

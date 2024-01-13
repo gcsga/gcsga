@@ -1,9 +1,8 @@
 import { WeaponGURPS } from "@module/config"
 import { TooltipGURPS } from "@module/tooltip"
 import { Int } from "@util/fxp"
-import { wswitch } from "./data"
-import { FeatureType } from "@feature"
 import { WeaponField } from "./weapon_field"
+import { feature, wswitch } from "@util/enum"
 
 export class WeaponRange extends WeaponField {
 	halfDamage = 0
@@ -58,8 +57,8 @@ export class WeaponRange extends WeaponField {
 	resolve(w: WeaponGURPS, tooltip: TooltipGURPS): WeaponRange {
 		const result = new WeaponRange()
 		Object.assign(result, this)
-		result.musclePowered = w.resolveBoolFlag(wswitch.MusclePowered, result.musclePowered)
-		result.inMiles = w.resolveBoolFlag(wswitch.RangeInMiles, result.inMiles)
+		result.musclePowered = w.resolveBoolFlag(wswitch.Type.MusclePowered, result.musclePowered)
+		result.inMiles = w.resolveBoolFlag(wswitch.Type.RangeInMiles, result.inMiles)
 		if (result.musclePowered) {
 			let st = 0
 			if (w.container instanceof Item) st = (w.container as any).ratedStrength
@@ -75,18 +74,18 @@ export class WeaponRange extends WeaponField {
 		for (const bonus of w.collectWeaponBonuses(
 			1,
 			tooltip,
-			FeatureType.WeaponHalfDamageRangeBonus,
-			FeatureType.WeaponMinRangeBonus,
-			FeatureType.WeaponMaxRangeBonus
+			feature.Type.WeaponHalfDamageRangeBonus,
+			feature.Type.WeaponMinRangeBonus,
+			feature.Type.WeaponMaxRangeBonus
 		)) {
 			switch (bonus.type) {
-				case FeatureType.WeaponHalfDamageRangeBonus:
+				case feature.Type.WeaponHalfDamageRangeBonus:
 					result.halfDamage += bonus.adjustedAmountForWeapon(w)
 					break
-				case FeatureType.WeaponMinRangeBonus:
+				case feature.Type.WeaponMinRangeBonus:
 					result.min += bonus.adjustedAmountForWeapon(w)
 					break
-				case FeatureType.WeaponMaxRangeBonus:
+				case feature.Type.WeaponMaxRangeBonus:
 					result.max += bonus.adjustedAmountForWeapon(w)
 					break
 				default:

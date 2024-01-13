@@ -1,9 +1,8 @@
 import { WeaponGURPS } from "@module/config"
 import { TooltipGURPS } from "@module/tooltip"
 import { Int } from "@util/fxp"
-import { wswitch } from "./data"
-import { FeatureType } from "@feature"
 import { WeaponField } from "./weapon_field"
+import { feature, wswitch } from "@util/enum"
 
 export class WeaponReach extends WeaponField {
 	min = 0
@@ -39,16 +38,19 @@ export class WeaponReach extends WeaponField {
 
 	resolve(w: WeaponGURPS, tooltip: TooltipGURPS): WeaponReach {
 		const result = WeaponReach.parse(this.toString())
-		result.closeCombat = w.resolveBoolFlag(wswitch.CloseCombat, result.closeCombat)
-		result.changeRequiresReady = w.resolveBoolFlag(wswitch.ReachChangeRequiresReady, result.changeRequiresReady)
+		result.closeCombat = w.resolveBoolFlag(wswitch.Type.CloseCombat, result.closeCombat)
+		result.changeRequiresReady = w.resolveBoolFlag(
+			wswitch.Type.ReachChangeRequiresReady,
+			result.changeRequiresReady
+		)
 		for (const bonus of w.collectWeaponBonuses(
 			1,
 			tooltip,
-			FeatureType.WeaponMinReachBonus,
-			FeatureType.WeaponMaxReachBonus
+			feature.Type.WeaponMinReachBonus,
+			feature.Type.WeaponMaxReachBonus
 		)) {
-			if (bonus.type === FeatureType.WeaponMinReachBonus) result.min += bonus.adjustedAmountForWeapon(w)
-			if (bonus.type === FeatureType.WeaponMaxReachBonus) result.max += bonus.adjustedAmountForWeapon(w)
+			if (bonus.type === feature.Type.WeaponMinReachBonus) result.min += bonus.adjustedAmountForWeapon(w)
+			if (bonus.type === feature.Type.WeaponMaxReachBonus) result.max += bonus.adjustedAmountForWeapon(w)
 		}
 		result.validate()
 		return result

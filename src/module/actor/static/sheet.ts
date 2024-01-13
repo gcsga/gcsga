@@ -65,7 +65,6 @@ export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
 			current_year: new Date().getFullYear(),
 			maneuvers: CONFIG.GURPS.select.maneuvers,
 			postures: CONFIG.GURPS.select.postures,
-			move_types: CONFIG.GURPS.select.move_types,
 			deprecation: deprecation,
 			conditions: this._prepareTrackers(),
 		}
@@ -78,11 +77,8 @@ export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
 
 	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
-		// Html.find(".input").on("change", event => this._resizeInput(event))
 		html.find(".dropdown-toggle").on("click", event => this._onCollapseToggle(event))
 		html.find(".ref").on("click", event => PDF.handle(event))
-		// Html.find(".item").on("dblclick", event => this._openItemSheet(event))
-		// html.find(".equipped").on("click", event => this._onEquippedToggle(event))
 		html.find(".rollable").on("mouseover", event => this._onRollableHover(event, true))
 		html.find(".rollable").on("mouseout", event => this._onRollableHover(event, false))
 		html.find(".rollable").on("click", event => this._onClickRoll(event))

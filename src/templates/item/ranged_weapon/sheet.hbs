@@ -51,8 +51,8 @@
 			<div class="field no-stretch">
 				<select name="system.damage.st" data-dtype="String">
 					{{#select system.damage.st}}
-						{{#each config.select.damage_st as |v k|}}
-							<option value="{{k}}">{{localize v}}</option>
+						{{#each config.select.stdmg as |v k|}}
+							<option value="{{k}}">{{v}}</option>
 						{{/each}}
 					{{/select}}
 				</select>
@@ -154,14 +154,14 @@
 				<input
 					type="text"
 					name="weapon.rate_of_fire.mode1.shotsPerAttack"
-					value="{{document.range.mode1.shotsPerAttack}}"
+					value="{{document.rate_of_fire.mode1.shotsPerAttack}}"
 					data-dtype="Number"
 				/>
 				<div class="label">{{localize "gurps.weapon.shots_per_attack"}}</div>
 				<input
 					type="text"
 					name="weapon.rate_of_fire.mode1.secondaryProjectiles"
-					value="{{document.range.mode1.secondaryProjectiles}}"
+					value="{{document.rate_of_fire.mode1.secondaryProjectiles}}"
 					data-dtype="Number"
 				/>
 				<div class="label">{{localize "gurps.weapon.secondary_projectiles"}}</div>
@@ -193,14 +193,14 @@
 				<input
 					type="text"
 					name="weapon.rate_of_fire.mode2.shotsPerAttack"
-					value="{{document.range.mode2.shotsPerAttack}}"
+					value="{{document.rate_of_fire.mode2.shotsPerAttack}}"
 					data-dtype="Number"
 				/>
 				<div class="label">{{localize "gurps.weapon.shots_per_attack"}}</div>
 				<input
 					type="text"
 					name="weapon.rate_of_fire.mode2.secondaryProjectiles"
-					value="{{document.range.mode2.secondaryProjectiles}}"
+					value="{{document.rate_of_fire.mode2.secondaryProjectiles}}"
 					data-dtype="Number"
 				/>
 				<div class="label">{{localize "gurps.weapon.secondary_projectiles"}}</div>

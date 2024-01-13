@@ -13,7 +13,7 @@ export class TraitModifierSheet extends ItemSheetGCS {
 	getData(options?: Partial<DocumentSheetOptions<Item>> | undefined) {
 		const adjustedCostType =
 			(this.item as TraitModifierGURPS).system.cost_type === "percentage" &&
-			(this.item as TraitModifierGURPS).hasLevels
+			(this.item as TraitModifierGURPS).isLeveled
 				? "percentage_leveled"
 				: (this.item as TraitModifierGURPS).system.cost_type
 		const sheetData = {

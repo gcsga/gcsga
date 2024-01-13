@@ -1,45 +1,37 @@
 import { CharacterGURPS } from "@actor"
-import { FeatureType } from "@feature"
 import { AttributeDefObj } from "@module/attribute"
-import {
-	gid,
-	NumericComparisonType,
-	PrereqType,
-	SETTINGS,
-	StringComparisonType,
-	StudyType,
-	SYSTEM_NAME,
-} from "@module/data"
+import { gid, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { PDF } from "@module/pdf"
-import { LocalizeGURPS, prepareFormData } from "@util"
+import { LocalizeGURPS, NumericCompareType, prepareFormData, StringCompareType } from "@util"
 import { BaseItemGURPS } from "."
 import { FeatureObj } from "@module/config"
+import { feature, prereq, study } from "@util/enum"
 
-const weaponFeatures = [
-	FeatureType.WeaponBonus,
-	FeatureType.WeaponAccBonus,
-	FeatureType.WeaponScopeAccBonus,
-	FeatureType.WeaponDRDivisorBonus,
-	FeatureType.WeaponMinSTBonus,
-	FeatureType.WeaponMinReachBonus,
-	FeatureType.WeaponMaxReachBonus,
-	FeatureType.WeaponHalfDamageRangeBonus,
-	FeatureType.WeaponMinRangeBonus,
-	FeatureType.WeaponMaxRangeBonus,
-	FeatureType.WeaponRecoilBonus,
-	FeatureType.WeaponBulkBonus,
-	FeatureType.WeaponParryBonus,
-	FeatureType.WeaponBlockBonus,
-	FeatureType.WeaponRofMode1ShotsBonus,
-	FeatureType.WeaponRofMode1SecondaryBonus,
-	FeatureType.WeaponRofMode2ShotsBonus,
-	FeatureType.WeaponRofMode2SecondaryBonus,
-	FeatureType.WeaponNonChamberShotsBonus,
-	FeatureType.WeaponChamberShotsBonus,
-	FeatureType.WeaponShotDurationBonus,
-	FeatureType.WeaponReloadTimeBonus,
-	FeatureType.WeaponSwitch,
-]
+// const weaponFeatures = [
+// 	FeatureType.WeaponBonus,
+// 	FeatureType.WeaponAccBonus,
+// 	FeatureType.WeaponScopeAccBonus,
+// 	FeatureType.WeaponDRDivisorBonus,
+// 	FeatureType.WeaponMinSTBonus,
+// 	FeatureType.WeaponMinReachBonus,
+// 	FeatureType.WeaponMaxReachBonus,
+// 	FeatureType.WeaponHalfDamageRangeBonus,
+// 	FeatureType.WeaponMinRangeBonus,
+// 	FeatureType.WeaponMaxRangeBonus,
+// 	FeatureType.WeaponRecoilBonus,
+// 	FeatureType.WeaponBulkBonus,
+// 	FeatureType.WeaponParryBonus,
+// 	FeatureType.WeaponBlockBonus,
+// 	FeatureType.WeaponRofMode1ShotsBonus,
+// 	FeatureType.WeaponRofMode1SecondaryBonus,
+// 	FeatureType.WeaponRofMode2ShotsBonus,
+// 	FeatureType.WeaponRofMode2SecondaryBonus,
+// 	FeatureType.WeaponNonChamberShotsBonus,
+// 	FeatureType.WeaponChamberShotsBonus,
+// 	FeatureType.WeaponShotDurationBonus,
+// 	FeatureType.WeaponReloadTimeBonus,
+// 	FeatureType.WeaponSwitch,
+// ]
 
 export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends ItemSheet {
 	declare object: IType
@@ -59,6 +51,7 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 		const itemData = this.object.toObject(false)
 		const attributes: Record<string, string> = {}
 		const locations: Record<string, string> = {}
+		const move_types: Record<string, string> = {}
 		locations[gid.All] = LocalizeGURPS.translations.gurps.feature.all_locations
 		const default_attributes = game.settings.get(
 			SYSTEM_NAME,
@@ -80,6 +73,9 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 					location: e.choice_name,
 				})
 			}
+			actor.move_types.forEach(e => {
+				move_types[e.id] = e.move_type_def.name
+			})
 		} else {
 			default_attributes.forEach(e => {
 				if (e.type.includes("_separator")) return
@@ -105,7 +101,8 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 				config: CONFIG.GURPS,
 				attributes: attributes,
 				locations: locations,
-				weaponFeatures,
+				move_types: move_types,
+				weaponFeatures: feature.WeaponBonusTypes,
 				sysPrefix: "array.system.",
 			},
 		}
@@ -164,10 +161,10 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 		const path = $(event.currentTarget).data("path").replace("array.", "")
 		const prereqs = getProperty(this.item, `${path}.prereqs`)
 		prereqs.push({
-			type: PrereqType.Trait,
-			name: { compare: StringComparisonType.IsString, qualifier: "" },
-			notes: { compare: StringComparisonType.AnyString, qualifier: "" },
-			level: { compare: NumericComparisonType.AtLeastNumber, qualifier: 0 },
+			type: prereq.Type.Trait,
+			name: { compare: StringCompareType.IsString, qualifier: "" },
+			notes: { compare: StringCompareType.AnyString, qualifier: "" },
+			level: { compare: NumericCompareType.AtLeastNumber, qualifier: 0 },
 			has: true,
 		})
 		const formData: any = {}
@@ -183,7 +180,7 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 		prereqs.push({
 			type: "prereq_list",
 			prereqs: [],
-			when_tl: { compare: NumericComparisonType.AnyNumber },
+			when_tl: { compare: NumericCompareType.AnyNumber },
 		})
 		const formData: any = {}
 		formData[`array.${path}.prereqs`] = prereqs
@@ -207,7 +204,7 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 		event.preventDefault()
 		if (!this.isEditable) return
 		const value = event.currentTarget.value
-		const PrereqConstructor = CONFIG.GURPS.Prereq.classes[value as PrereqType]
+		const PrereqConstructor = CONFIG.GURPS.Prereq.classes[value as prereq.Type]
 		let path = $(event.currentTarget).data("path").replace("array.", "")
 		const items = path.split(".")
 		const index = items.pop()
@@ -228,7 +225,7 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 		if (!this.isEditable) return
 		const features = (this.item.system as any).features
 		features.push({
-			type: FeatureType.AttributeBonus,
+			type: feature.Type.AttributeBonus,
 			attribute: "st",
 			limitation: "none",
 			amount: 1,
@@ -280,24 +277,24 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 	protected async _addStudy(event: JQuery.ClickEvent): Promise<any> {
 		if (!this.isEditable) return
 		event.preventDefault()
-		const study = (this.item.system as any).study
-		study.push({
-			type: StudyType.Self,
+		const studyEntry = (this.item.system as any).study
+		studyEntry.push({
+			type: study.Type.Self,
 			hours: 0,
 			note: "",
 		})
 		const update: any = {}
-		update["system.study"] = study
+		update["system.study"] = studyEntry
 		return this.item.update(update)
 	}
 
 	protected async _removeStudy(event: JQuery.ClickEvent): Promise<any> {
 		if (!this.isEditable) return
 		const index = $(event.currentTarget).data("index")
-		const study = (this.item.system as any).study
-		study.splice(index, 1)
+		const studyEntry = (this.item.system as any).study
+		studyEntry.splice(index, 1)
 		const update: any = {}
-		update["system.study"] = study
+		update["system.study"] = studyEntry
 		return this.item.update(update)
 	}
 
@@ -305,11 +302,11 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 		if (!this.isEditable) return
 		const value = event.currentTarget.value
 		const index = parseInt($(event.currentTarget).data("index"))
-		const FeatureConstructor = CONFIG.GURPS.Feature.classes[value as FeatureType]
+		const FeatureConstructor = CONFIG.GURPS.Feature.classes[value as feature.Type]
 		let features = duplicate((this.item.system as any).features as FeatureObj[])
-		let feature = new FeatureConstructor().toObject()
-		if (weaponFeatures.includes(value)) feature = new FeatureConstructor(value).toObject()
-		features.splice(index, 1, feature)
+		let f = new FeatureConstructor().toObject()
+		if (feature.WeaponBonusTypes.includes(value)) f = new FeatureConstructor(value).toObject()
+		features.splice(index, 1, f)
 		const update: any = {}
 		await this.item.update(
 			{ "system.-=features": null },

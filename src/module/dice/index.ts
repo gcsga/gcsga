@@ -132,7 +132,6 @@ class DiceGURPS {
 		modifier = this.modifier
 		if (applyExtractDiceFromModifiers && modifier > 0) {
 			let average = (this.sides + 1) / 2
-			// console.log(this.sides, count, modifier, average)
 			if (this.sides % 2 === 1) {
 				// Odd number of sides, so average is a whole number
 				count += modifier / average
