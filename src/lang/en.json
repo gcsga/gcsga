@@ -1526,7 +1526,8 @@
 			"hallucinating": "Hallucinating",
 			"drunk": "Drunk",
 			"drowsy": "Drowsy",
-			"daze": "Dazed"
+			"daze": "Dazed",
+			"trigger": "Trigger"
 		},
 		"maneuver": {
 			"none": "None",
@@ -1897,6 +1898,10 @@
 					"140": "Reduction for Talent level 3",
 					"120": "Reduction for Talent level 4"
 				}
+			},
+			"effect_action": {
+				"add": "Add",
+				"remove": "Remove"
 			},
 			"prereq": {
 				"prereq_list": "a list",

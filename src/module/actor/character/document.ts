@@ -94,7 +94,17 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	skillResolverExclusions: Map<string, boolean> = new Map()
 
-	features: featureMap
+	features: featureMap = {
+		attributeBonuses: [],
+		costReductions: [],
+		drBonuses: [],
+		skillBonuses: [],
+		skillPointBonuses: [],
+		spellBonuses: [],
+		spellPointBonuses: [],
+		weaponBonuses: [],
+		moveBonuses: [],
+	}
 
 	constructor(data: CharacterSource, context: ActorConstructorContextGURPS = {}) {
 		super(data, context)
@@ -719,7 +729,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	// Flat list of all hit locations
 	get HitLocations(): HitLocation[] {
-		const recurseLocations = function (table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
+		const recurseLocations = function(table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
 			table.locations.forEach(e => {
 				locations.push(e)
 				if (e.subTable) locations = recurseLocations(e.subTable, locations)

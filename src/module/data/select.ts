@@ -1,4 +1,4 @@
-import { AllManeuverIDs, AllPostures } from "@item/condition/data"
+import { AllManeuverIDs, AllPostures, ApplicableConditions } from "@item/condition/data"
 import { allMoveTypeOverrideConditions } from "@module/move_type"
 import {
 	AllNumericCompareTypes,
@@ -31,6 +31,7 @@ import {
 	wsel,
 	wswitch,
 } from "@util/enum"
+import { EFFECT_ACTION } from "./misc"
 
 export function prepareSelectOptions(): void {
 	const SELECT_OPTIONS: Record<string, Record<string, string>> = {
@@ -227,6 +228,15 @@ export function prepareSelectOptions(): void {
 			dark: LocalizeGURPS.translations.gurps.enum.color.dark,
 			light: LocalizeGURPS.translations.gurps.enum.color.light,
 		},
+		effect_action: {
+			[EFFECT_ACTION.ADD]: LocalizeGURPS.translations.gurps.enum.effect_action.add,
+			[EFFECT_ACTION.REMOVE]: LocalizeGURPS.translations.gurps.enum.effect_action.remove,
+		},
+		conditions: ApplicableConditions.reduce((acc, c) => {
+			return Object.assign(acc, {
+				[c]: LocalizeGURPS.translations.gurps.status[c],
+			})
+		}, {})
 	}
 	CONFIG.GURPS.select = SELECT_OPTIONS
 }
