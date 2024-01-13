@@ -6,6 +6,7 @@ import { attribute } from "@util/enum"
 
 export const defaultSettings = {
 	[SYSTEM_NAME]: {
+		[`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`]: [],
 		[`${SETTINGS.DEFAULT_ATTRIBUTES}.effects`]: [
 			{
 				attribute: gid.FatiguePoints,
