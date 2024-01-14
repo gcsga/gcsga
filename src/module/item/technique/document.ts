@@ -21,14 +21,14 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 	// Getters
 	secondaryText = SkillGURPS.prototype.secondaryText
 
-	points = SkillGURPS.prototype.points
-	// get points(): number {
-	// 	return this.system.points
-	// }
+	// points = SkillGURPS.prototype.points
+	get points(): number {
+		return this.system.points
+	}
 
-	// set points(n: number) {
-	// 	this.system.points = n
-	// }
+	set points(n: number) {
+		this.system.points = n
+	}
 
 	get techLevel(): string {
 		return this.system.tech_level
@@ -217,6 +217,16 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 				}
 			}
 			return 100
+		}
+	}
+
+	protected _getCalcValues(): this["system"]["calc"] {
+		return {
+			...super._getCalcValues(),
+			level: this.level?.level ?? 0,
+			rsl: this.relativeLevel ?? "",
+			points: this.adjustedPoints(),
+			tooltip: this.level?.tooltip.toString() ?? "",
 		}
 	}
 }

@@ -192,15 +192,12 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		]
 		sd.settings = default_settings
 		sd.settings.attributes = default_attributes
-		if (typeof sd.settings.attributes !== "object")
-			sd.settings.attributes = []
+		if (typeof sd.settings.attributes !== "object") sd.settings.attributes = []
 		sd.settings.body_type = default_hit_locations
 		sd.settings.resource_trackers = default_resource_trackers
-		if (typeof sd.settings.resource_trackers !== "object")
-			sd.settings.resource_trackers = []
+		if (typeof sd.settings.resource_trackers !== "object") sd.settings.resource_trackers = []
 		sd.settings.move_types = default_move_types
-		if (typeof sd.settings.move_types !== "object")
-			sd.settings.move_types = []
+		if (typeof sd.settings.move_types !== "object") sd.settings.move_types = []
 		sd.modified_date = sd.created_date
 		if (populate_description) sd.profile = SETTINGS_TEMP.general.auto_fill
 		sd.profile!.tech_level = default_tech_level
@@ -749,7 +746,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	// Flat list of all hit locations
 	get HitLocations(): HitLocation[] {
-		const recurseLocations = function(table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
+		const recurseLocations = function (table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
 			table.locations.forEach(e => {
 				locations.push(e)
 				if (e.subTable) locations = recurseLocations(e.subTable, locations)
@@ -914,7 +911,9 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 				})
 			this.reactionsFromFeatureList(source, sk.features, reactionMap)
 		}
-		let reactionList = Array.from(reactionMap.values()).sort((a, b) => (a.from < b.from) ? -1 : (a.from > b.from) ? 1 : 0)
+		let reactionList = Array.from(reactionMap.values()).sort((a, b) =>
+			a.from < b.from ? -1 : a.from > b.from ? 1 : 0
+		)
 		return reactionList
 	}
 

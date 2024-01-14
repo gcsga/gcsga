@@ -28,7 +28,7 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		const settings = sheetSettingsFor(this.actor)
 		if (optionChecker(settings.modifiers_display)) {
 			const text = this.modifierNotes
-			if (text.trim() !== "") buffer.push(text)
+			if ((text?.trim() ?? "") !== "") buffer.push(text)
 		}
 		if (optionChecker(settings.notes_display)) {
 			buffer.appendToNewLine(this.notes.trim())
@@ -64,6 +64,7 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 	}
 
 	get points(): number {
+		// console.log(this)
 		return this.system.points
 	}
 
