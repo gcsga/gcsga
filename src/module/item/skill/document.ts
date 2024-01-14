@@ -64,7 +64,6 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 	}
 
 	get points(): number {
-		// console.log(this)
 		return this.system.points
 	}
 

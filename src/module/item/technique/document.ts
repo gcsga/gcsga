@@ -114,32 +114,32 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 	calculateLevel(): SkillLevel {
 		const actor = this.actor || this.dummyActor
 		const tooltip = new TooltipGURPS()
-		let relative_level = 0
-		let points = this.adjustedPoints()
-		let level = -Infinity
-		if (actor) {
-			if (this.default.type === gid.Skill) {
-				const sk = actor.baseSkill(this.default, true)
-				if (sk) level = sk.calculateLevel().level
-			} else if (this.default) {
-				level = (this.default?.skillLevelFast(actor, true, null, false) ?? 0) - (this.default?.modifier ?? 0)
-			}
-			if (level !== -Infinity) {
-				const base_level = level
-				level += this.default.modifier
-				if (this.difficulty === difficulty.Level.Hard) points -= 1
-				if (points > 0) relative_level = points
-				if (level !== -Infinity) {
-					relative_level += actor.skillBonusFor(this.name!, this.specialization, this.tags, tooltip)
-					level += relative_level
-				}
-				if (this.limit) {
-					const max = base_level + this.limit
-					if (level > max) {
-						relative_level -= level - max
-						level = max
-					}
-				}
+		const points = this.adjustedPoints()
+
+		if (!actor) return { level: -Infinity, relative_level: -Infinity, tooltip: tooltip }
+
+		// Level of defaulting skill.
+		const default_skill_level = getDefaultSkillLevel(this)
+
+		// Any modifiers to the default skill level based on conditions or other factors.
+		const skill_bonus = actor.skillBonusFor(this.name!, this.specialization, this.tags, tooltip)
+
+		// The effective skill level is the base level plus the skill bonus.
+		let effective_skill_level = default_skill_level + skill_bonus
+
+		// The base level of the technique (the default skill level plus the technique's modifier).
+		const base_technique_level = this.default.modifier + effective_skill_level
+
+		// Bonus to the technique's base level.
+		const relative_technique_level = getRelativeTechniqueLevel(this)
+
+		let level = base_technique_level + relative_technique_level
+		let relative_level = this.default.modifier + relative_technique_level
+		if (this.limit) {
+			const max = base_technique_level + this.limit
+			if (level > max) {
+				relative_level = relative_level - (level - max)
+				level = max
 			}
 		}
 
@@ -148,6 +148,28 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 			relative_level: relative_level,
 			tooltip: tooltip,
 		}
+
+		function getRelativeTechniqueLevel(technique: TechniqueGURPS): number {
+			const relative_level = technique.isHardDifficulty() ? points - 1 : points
+			return relative_level < 0 ? 0 : relative_level
+		}
+
+		function getDefaultSkillLevel(technique: TechniqueGURPS): number {
+			if (technique.default.type === gid.Skill) {
+				const sk = actor.baseSkill(technique.default, true)
+				return sk ? sk.calculateLevel().level : 0
+			} else if (technique.default) {
+				return (
+					(technique.default?.skillLevelFast(actor, true, null, false) ?? 0) -
+					(technique.default?.modifier ?? 0)
+				)
+			}
+			return 0
+		}
+	}
+
+	private isHardDifficulty() {
+		return this.difficulty === difficulty.Level.Hard
 	}
 
 	incrementSkillLevel() {
