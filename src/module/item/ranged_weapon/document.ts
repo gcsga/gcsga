@@ -7,6 +7,9 @@ import { WeaponROF } from "@item/weapon/weapon_rof"
 import { WeaponShots } from "@item/weapon/weapon_shots"
 import { WeaponRecoil } from "@item/weapon/weapon_recoil"
 import { TooltipGURPS } from "@module/tooltip"
+import { RollType, SETTINGS, SYSTEM_NAME } from "@module/data"
+import { includesFold } from "@util"
+import { ItemFlags } from "@item/data"
 
 export class RangedWeaponGURPS extends BaseWeaponGURPS<RangedWeaponSource> {
 	get resolvedRange(): string {
@@ -95,5 +98,32 @@ export class RangedWeaponGURPS extends BaseWeaponGURPS<RangedWeaponSource> {
 			bulk: this.bulk.current ?? this.system.bulk,
 			recoil: this.recoil.current ?? this.system.recoil,
 		}
+	}
+
+	checkUnready(type: RollType): void {
+		const check = game.settings.get(SYSTEM_NAME, SETTINGS.AUTOMATIC_UNREADY) as boolean
+		if (!check) return
+		if (!this.actor) return
+		let unready = false
+		if (type === RollType.Attack) {
+			let twoHanded = false
+			if (
+				includesFold(this.usage, "two-handed") ||
+				includesFold(this.usage, "two handed") ||
+				includesFold(this.usage, "2-handed") ||
+				includesFold(this.system.usage_notes, "two-handed") ||
+				includesFold(this.system.usage_notes, "two handed") ||
+				includesFold(this.system.usage_notes, "2-handed")
+			) twoHanded = true
+			const st = this.strength.min ?? 0
+			const actorST = this.actor.strengthOrZero
+			if (twoHanded) {
+				if (this.strength.twoHandedUnready && actorST < st * 1.5) unready = true
+			} else {
+				if (this.strength.twoHandedUnready && actorST < st * 3) unready = true
+				if (this.strength.twoHanded && actorST < st * 2) unready = true
+			}
+		}
+		this.setFlag(SYSTEM_NAME, ItemFlags.Unready, unready)
 	}
 }

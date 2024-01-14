@@ -17,6 +17,7 @@ export enum ItemFlags {
 	Deprecation = "deprecation",
 	Container = "container",
 	Other = "other", // used for equipment only
+	Unready = "unready"
 	// Contents = "contentsData",
 }
 
@@ -25,6 +26,7 @@ export interface ItemFlagsGURPS extends Record<string, unknown> {
 		// contentsData?: Array<any>
 		[ItemFlags.Container]?: string | null
 		[ItemFlags.Other]?: boolean
+		[ItemFlags.Unready]?: boolean
 	}
 }
 

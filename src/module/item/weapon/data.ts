@@ -38,6 +38,7 @@ export interface BaseWeaonCalcValues {
 	damage: string
 	strength: string
 	equipped: boolean
+	unready: boolean
 }
 
 export type WeaponType = ItemType.MeleeWeapon | ItemType.RangedWeapon

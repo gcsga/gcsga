@@ -255,6 +255,16 @@ export function registerSettings(): void {
 		onChange: (value: string) => console.log(`Default Damage Location : ${value}`),
 	})
 
+	game.settings.register(SYSTEM_NAME, SETTINGS.AUTOMATIC_UNREADY, {
+		name: "gurps.settings.automatic_unready.name",
+		hint: "gurps.settings.automatic_unready.hint",
+		scope: "world",
+		config: true,
+		type: Boolean,
+		default: true,
+		onChange: (value: boolean) => console.log(`Automatic Unready : ${value}`)
+	})
+
 	game.settings.register(SYSTEM_NAME, SETTINGS.MODIFIER_LIST_COLLAPSE, {
 		name: "",
 		hint: "",

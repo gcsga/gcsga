@@ -406,13 +406,13 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 		return ""
 	}
 
-	static unsatisfied(reason: string): string {
-		return (
-			`<div class='unsatisfied' data-tooltip='${reason}' data-tooltip-direction='DOWN'>` +
-			`<i class='gcs-triangle-exclamation'></i>${LocalizeGURPS.translations.gurps.prereq.unsatisfied}` +
-			"</div>"
-		)
-	}
+	// static unsatisfied(reason: string): string {
+	// 	return (
+	// 		`<div class='unsatisfied' data-tooltip='${reason}' data-tooltip-direction='DOWN'>` +
+	// 		`<i class='gcs-triangle-exclamation'></i>${LocalizeGURPS.translations.gurps.prereq.unsatisfied}` +
+	// 		"</div>"
+	// 	)
+	// }
 
 	static define(name: string, value: any, options: any) {
 		options.data.root[name] = value
@@ -482,9 +482,8 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 			const label = Handlebars.escapeExpression(option.label)
 			const isSelected = selected.includes(option.name)
 			const isDisabled = disabled.includes(option.name)
-			html += `<option value="${option.name}" ${isSelected ? "selected" : ""} ${
-				isDisabled ? "disabled" : ""
-			}>${label}</option>`
+			html += `<option value="${option.name}" ${isSelected ? "selected" : ""} ${isDisabled ? "disabled" : ""
+				}>${label}</option>`
 		}
 		return new Handlebars.SafeString(html)
 	}
@@ -530,7 +529,7 @@ export function registerHandlebarsHelpers() {
 		studyInfo: HandlebarsHelpersGURPS.studyInfo,
 		sum: HandlebarsHelpersGURPS.sum,
 		textareaFormat: HandlebarsHelpersGURPS.textareaFormat,
-		unsatisfied: HandlebarsHelpersGURPS.unsatisfied,
+		// unsatisfied: HandlebarsHelpersGURPS.unsatisfied,
 	})
 }
 

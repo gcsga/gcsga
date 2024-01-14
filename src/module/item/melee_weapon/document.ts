@@ -1,10 +1,12 @@
 import { BaseWeaponGURPS } from "@item/weapon"
-import { gid } from "@module/data"
+import { RollType, SETTINGS, SYSTEM_NAME, gid } from "@module/data"
 import { TooltipGURPS } from "@module/tooltip"
 import { MeleeWeaponSource } from "./data"
 import { WeaponReach } from "@item/weapon/weapon_reach"
 import { WeaponBlock } from "@item/weapon/weapon_block"
 import { WeaponParry } from "@item/weapon/weapon_parry"
+import { includesFold } from "@util"
+import { ItemFlags } from "@item/data"
 
 export class MeleeWeaponGURPS extends BaseWeaponGURPS<MeleeWeaponSource> {
 	get fastResolvedParry(): string {
@@ -48,5 +50,33 @@ export class MeleeWeaponGURPS extends BaseWeaponGURPS<MeleeWeaponSource> {
 			parry: this.parry.current ?? this.system.parry,
 			block: this.block.current ?? this.system.block,
 		}
+	}
+
+	checkUnready(type: RollType): void {
+		const check = game.settings.get(SYSTEM_NAME, SETTINGS.AUTOMATIC_UNREADY) as boolean
+		if (!check) return
+		if (!this.actor) return
+		let unready = false
+		if (this.parry.unbalanced) unready = true
+		if (type === RollType.Attack) {
+			let twoHanded = false
+			if (
+				includesFold(this.usage, "two-handed") ||
+				includesFold(this.usage, "two handed") ||
+				includesFold(this.usage, "2-handed") ||
+				includesFold(this.system.usage_notes, "two-handed") ||
+				includesFold(this.system.usage_notes, "two handed") ||
+				includesFold(this.system.usage_notes, "2-handed")
+			) twoHanded = true
+			const st = this.strength.min ?? 0
+			const actorST = this.actor.strengthOrZero
+			if (twoHanded) {
+				if (this.strength.twoHandedUnready && actorST < st * 1.5) unready = true
+			} else {
+				if (this.strength.twoHandedUnready && actorST < st * 3) unready = true
+				if (this.strength.twoHanded && actorST < st * 2) unready = true
+			}
+		}
+		this.setFlag(SYSTEM_NAME, ItemFlags.Unready, unready)
 	}
 }
