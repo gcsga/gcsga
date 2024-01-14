@@ -225,7 +225,7 @@ export class SpellGURPS extends ItemGCS<SpellSource> {
 	protected _getCalcValues(): this["system"]["calc"] {
 		return {
 			...super._getCalcValues(),
-			level: this.level?.level ?? 0,
+			level: this.skillLevel ?? 0,
 			rsl: this.relativeLevel ?? "",
 			points: this.adjustedPoints(),
 			tooltip: this.level?.tooltip.toString() ?? "",

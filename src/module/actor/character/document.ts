@@ -43,6 +43,7 @@ import {
 	WeightUnits,
 } from "@util"
 import {
+	CharacterDataGURPS,
 	CharacterFlagDefaults,
 	CharacterSource,
 	CharacterSystemData,
@@ -54,7 +55,6 @@ import { HitLocation, HitLocationTable } from "./hit_location"
 import { Feature, featureMap, WeaponGURPS } from "@module/config"
 import { ConditionID } from "@item/condition"
 import Document, { DocumentModificationOptions, Metadata } from "types/foundry/common/abstract/document.mjs"
-import { ActorDataConstructorData } from "types/foundry/common/data/data.mjs/actorData"
 import { Attribute, AttributeDef, AttributeDefObj, AttributeObj, PoolThreshold, ThresholdOp } from "@module/attribute"
 import {
 	ResourceTracker,
@@ -78,6 +78,7 @@ import {
 import { MoveType, MoveTypeDef, MoveTypeDefObj, MoveTypeObj } from "@module/move_type"
 import { Int } from "@util/fxp"
 import { attribute, feature, progression, selfctrl, skillsel, stlimit, wsel } from "@util/enum"
+import { BaseUser } from "types/foundry/common/documents.mjs"
 
 export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	attributes: Map<string, Attribute> = new Map()
@@ -168,19 +169,19 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 				portrait: "",
 			},
 			editing: false,
-			calc: {
-				swing: "",
-				thrust: "",
-				basic_lift: 0,
-				lifting_st_bonus: 0,
-				striking_st_bonus: 0,
-				throwing_st_bonus: 0,
-				move: [0, 0, 0, 0, 0],
-				dodge: [0, 0, 0, 0, 0],
-				dodge_bonus: 0,
-				block_bonus: 0,
-				parry_bonus: 0,
-			},
+			// calc: {
+			// 	swing: "",
+			// 	thrust: "",
+			// 	basic_lift: 0,
+			// 	lifting_st_bonus: 0,
+			// 	striking_st_bonus: 0,
+			// 	throwing_st_bonus: 0,
+			// 	move: [0, 0, 0, 0, 0],
+			// 	dodge: [0, 0, 0, 0, 0],
+			// 	dodge_bonus: 0,
+			// 	block_bonus: 0,
+			// 	parry_bonus: 0,
+			// },
 		}
 		sd.total_points = initial_points
 		sd.points_record = [
@@ -212,57 +213,79 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		}
 	}
 
-	override update(
-		data?: DeepPartial<ActorDataConstructorData | (ActorDataConstructorData & Record<string, unknown>)>,
-		context?: DocumentModificationContext & foundry.utils.MergeObjectOptions & { noPrepare?: boolean }
-	): Promise<this | undefined> {
-		if (context?.noPrepare) this.noPrepare = true
-		this.updateAttributes(data)
-		this.checkImport(data)
-		return super.update(data, context)
+	protected _preUpdate(changed: DeepPartial<CharacterDataGURPS>, options: DocumentModificationOptions, user: BaseUser): Promise<void> {
+		// console.log(changed, options)
+		changed = mergeObject(changed, {
+			...this._updateAttributes(changed),
+			...this._checkImport(changed)
+		})
+		return super._preUpdate(changed, options, user)
 	}
 
-	checkImport(data?: any) {
-		for (const i in data) {
-			if (i.includes("system.import")) return
-			if (i.includes("ownership")) return
-		}
-		data["system.modified_date"] = new Date().toISOString()
+	// override update(
+	// 	data?: DeepPartial<ActorDataConstructorData | (ActorDataConstructorData & Record<string, unknown>)>,
+	// 	context?: DocumentModificationContext & foundry.utils.MergeObjectOptions & { noPrepare?: boolean }
+	// ): Promise<this | undefined> {
+	// 	if (context?.noPrepare) this.noPrepare = true
+	// 	// this.updateAttributes(data)
+	// 	// this.checkImport(data)
+	// 	return super.update(data, context)
+	// }
+
+	private _checkImport(data?: any): DeepPartial<CharacterDataGURPS> {
+		if (hasProperty(data, "system.import")) return {}
+		if (Object.keys(data).some(e => e.includes("ownership"))) return {}
+		const additionalData: DeepPartial<CharacterDataGURPS> = {}
+		setProperty(additionalData, "system.modified_date", new Date().toISOString())
+		return additionalData
 	}
 
-	updateAttributes(data?: any) {
-		for (const i in data) {
-			if (i.includes("system.import")) return
+	private _updateAttributes(data?: any): DeepPartial<CharacterDataGURPS> {
+		if (Object.keys(data).some(e => e.includes("ownership"))) return {}
+		const additionalData: DeepPartial<CharacterDataGURPS> = {}
+		if (this.system.attributes.length === 0)
+			setProperty(additionalData, "system.attributes", this.newAttributes())
+		if (hasProperty(data, "system.setings.attributes")) {
+			const atts = getProperty(data, "system.settings.attributes")
+			setProperty(additionalData, "system.attributes", this.newAttributes(atts, this.system.attributes))
 		}
-		if (this.system.attributes.length === 0) data["system.attributes"] = this.newAttributes()
-		for (const i in data) {
-			if (i === "system.settings.attributes") {
-				data["system.attributes"] = this.newAttributes(
-					data["system.settings.attributes"],
-					this.system.attributes
-				)
-			}
-			if (i === "system.settings.resource_trackers") {
-				data["system.resource_trackers"] = this.newTrackers(
-					data["system.settings.resource_trackers"],
-					this.system.resource_trackers
-				)
-			}
-			if (i === "system.settings.move_types") {
-				data["system.move_types"] = this.newMoveTypes(
-					data["system.settings.move_types"],
-					this.system.move_types
-				)
-			}
-			if (i.startsWith("system.attributes.")) {
-				const att = this.attributes.get(i.split("attributes.")[1].split(".")[0])
-				const type = i.split("attributes.")[1].split(".")[1]
-				if (att) {
-					if (type === "adj") data[i] -= att.max - att.adj
-					else if (type === "damage") data[i] = Math.max(att.max - data[i], 0)
-				}
-			}
+		if (hasProperty(data, "system.setings.resource_trackers")) {
+			const atts = getProperty(data, "system.settings.resource_trackers")
+			setProperty(additionalData, "system.resource_trackers", this.newTrackers(atts, this.system.resource_trackers))
 		}
+		if (hasProperty(data, "system.setings.move_types")) {
+			const atts = getProperty(data, "system.settings.move_types")
+			setProperty(additionalData, "system.move_types", this.newMoveTypes(atts, this.system.move_types))
+		}
+		return additionalData
+		// for (const i in data) {
+		// 	if (i === "system.settings.attributes") {
+		// 		data["system.attributes"] = this.newAttributes(
+		// 			data["system.settings.attributes"],
+		// 			this.system.attributes
+		// 		)
+		// 	}
+		// 	if (i === "system.settings.resource_trackers") {
+		// 		data["system.resource_trackers"] = this.newTrackers(
+		// 			data["system.settings.resource_trackers"],
+		// 			this.system.resource_trackers
+		// 		)
+		// 	}
+		// 	if (i === "system.settings.move_types") {
+		// 		data["system.move_types"] = this.newMoveTypes(
+		// 			data["system.settings.move_types"],
+		// 			this.system.move_types
+		// 		)
+		// 	}
+		// 	if (i.startsWith("system.attributes.")) {
+		// 		const att = this.attributes.get(i.split("attributes.")[1].split(".")[0])
+		// 		const type = i.split("attributes.")[1].split(".")[1]
+		// 		if (att) {
+		// 			if (type === "adj") data[i] -= att.max - att.adj
+		// 			else if (type === "damage") data[i] = Math.max(att.max - data[i], 0)
+		// 		}
+		// 	}
+		// }
 	}
 
 	// Getters
@@ -630,15 +653,15 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	}
 
 	get strikingST(): number {
-		return this.strengthOrZero + this.striking_st_bonus
+		return this.strengthOrZero + this.attributeBonusFor(gid.Strength, stlimit.Option.StrikingOnly)
 	}
 
 	get liftingST(): number {
-		return this.strengthOrZero + this.lifting_st_bonus
+		return this.strengthOrZero + this.attributeBonusFor(gid.Strength, stlimit.Option.LiftingOnly)
 	}
 
 	get throwingST(): number {
-		return this.strengthOrZero + this.throwing_st_bonus
+		return this.strengthOrZero + this.attributeBonusFor(gid.Strength, stlimit.Option.ThrowingOnly)
 	}
 
 	get thrust(): DiceGURPS {
@@ -699,40 +722,43 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		return this.attributeBonusFor(attrPrefix + gid.SizeModifier, stlimit.Option.None)
 	}
 
-	get striking_st_bonus(): number {
-		return this.system.calc?.striking_st_bonus ?? 0
-	}
+	// get striking_st_bonus(): number {
+	// 	return this.system.calc?.striking_st_bonus ?? 0
+	// }
 
-	set striking_st_bonus(v: number) {
-		this.system.calc.striking_st_bonus = v
-	}
+	// set striking_st_bonus(v: number) {
+	// 	this.system.calc.striking_st_bonus = v
+	// }
 
-	get lifting_st_bonus(): number {
-		return this.calc?.lifting_st_bonus ?? 0
-	}
+	// get lifting_st_bonus(): number {
+	// 	return this.calc?.lifting_st_bonus ?? 0
+	// }
 
-	set lifting_st_bonus(v: number) {
-		this.system.calc.lifting_st_bonus = v
-	}
+	// set lifting_st_bonus(v: number) {
+	// 	this.system.calc.lifting_st_bonus = v
+	// }
 
-	get throwing_st_bonus(): number {
-		return this.system?.calc?.throwing_st_bonus ?? 0
-	}
+	// get throwing_st_bonus(): number {
+	// 	return this.system?.calc?.throwing_st_bonus ?? 0
+	// }
 
-	set throwing_st_bonus(v: number) {
-		this.system.calc.throwing_st_bonus = v
-	}
+	// set throwing_st_bonus(v: number) {
+	// 	this.system.calc.throwing_st_bonus = v
+	// }
 
 	get parryBonus(): number {
-		return this.calc?.parry_bonus ?? 0
+		// return this.calc?.parry_bonus ?? 0
+		return this.attributeBonusFor(gid.Parry, stlimit.Option.None) ?? 0
 	}
 
 	get blockBonus(): number {
-		return this.calc?.block_bonus ?? 0
+		// return this.calc?.block_bonus ?? 0
+		return this.attributeBonusFor(gid.Block, stlimit.Option.None) ?? 0
 	}
 
 	get dodgeBonus(): number {
-		return this.calc?.dodge_bonus ?? 0
+		return this.attributeBonusFor(gid.Dodge, stlimit.Option.None) ?? 0
+		// return this.calc?.dodge_bonus ?? 0
 	}
 
 	override get sizeMod(): number {
@@ -1156,19 +1182,21 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	override prepareEmbeddedDocuments(): void {
 		super.prepareEmbeddedDocuments()
-		if (this.noPrepare) {
-			this.noPrepare = false
-			return
-		}
-		this.updateSkills()
-		this.updateSpells()
-		for (let i = 0; i < 5; i++) {
-			this.processFeatures()
-			this.processPrereqs()
-			let skillsChanged = this.updateSkills()
-			let spellsChanged = this.updateSpells()
-			if (!skillsChanged && !spellsChanged) break
-		}
+		// if (this.noPrepare) {
+		// 	this.noPrepare = false
+		// 	return
+		// }
+		// this.updateSkills()
+		// this.updateSpells()
+		this.processFeatures()
+		this.processPrereqs()
+		// for (let i = 0; i < 5; i++) {
+		// 	this.processFeatures()
+		// 	this.processPrereqs()
+		// 	// let skillsChanged = this.updateSkills()
+		// 	// let spellsChanged = this.updateSpells()
+		// 	if (!skillsChanged && !spellsChanged) break
+		// }
 	}
 
 	processFeatures() {
@@ -1228,20 +1256,11 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 			}
 		}
 
-		this.calc ??= {}
-		this.lifting_st_bonus = this.attributeBonusFor(gid.Strength, stlimit.Option.LiftingOnly)
-		this.striking_st_bonus = this.attributeBonusFor(gid.Strength, stlimit.Option.StrikingOnly)
-		this.throwing_st_bonus = this.attributeBonusFor(gid.Strength, stlimit.Option.ThrowingOnly)
-
 		this.attributes = this.getAttributes()
 		this.processThresholds()
 
 		this.resource_trackers = this.getResourceTrackers()
 		this.move_types = this.getMoveTypes()
-
-		this.calc.dodge_bonus = this.attributeBonusFor(gid.Dodge, stlimit.Option.None)
-		this.calc.parry_bonus = this.attributeBonusFor(gid.Parry, stlimit.Option.None)
-		this.calc.block_bonus = this.attributeBonusFor(gid.Block, stlimit.Option.None)
 	}
 
 	processThresholds() {
@@ -1408,21 +1427,21 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		}
 	}
 
-	updateSkills(): boolean {
-		let changed = false
-		for (const k of [...this.itemTypes[ItemType.Skill], ...this.itemTypes[ItemType.Technique]]) {
-			if ((k as SkillGURPS).updateLevel()) changed = true
-		}
-		return changed
-	}
+	// updateSkills(): boolean {
+	// 	let changed = false
+	// 	for (const k of [...this.itemTypes[ItemType.Skill], ...this.itemTypes[ItemType.Technique]]) {
+	// 		if ((k as SkillGURPS).updateLevel()) changed = true
+	// 	}
+	// 	return changed
+	// }
 
-	updateSpells(): boolean {
-		let changed = false
-		for (const b of [...this.itemTypes[ItemType.Spell], ...this.itemTypes[ItemType.RitualMagicSpell]]) {
-			if ((b as SpellGURPS).updateLevel()) changed = true
-		}
-		return changed
-	}
+	// updateSpells(): boolean {
+	// 	let changed = false
+	// 	for (const b of [...this.itemTypes[ItemType.Spell], ...this.itemTypes[ItemType.RitualMagicSpell]]) {
+	// 		if ((b as SpellGURPS).updateLevel()) changed = true
+	// 	}
+	// 	return changed
+	// }
 
 	// Directed Skill Getters
 	baseSkill(def: SkillDefault, require_points: boolean): SkillGURPS | TechniqueGURPS | null {
@@ -1526,12 +1545,13 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		tooltip: TooltipGURPS | null = null
 	): number {
 		let total = 0
-		for (const feature of this.features.moveBonuses) {
-			if (feature.limitation === limitation && feature.move_type === id && feature.effective === effective) {
-				total += feature.adjustedAmount
-				feature.addToTooltip(tooltip)
+		if (this.features)
+			for (const feature of this.features.moveBonuses) {
+				if (feature.limitation === limitation && feature.move_type === id && feature.effective === effective) {
+					total += feature.adjustedAmount
+					feature.addToTooltip(tooltip)
+				}
 			}
-		}
 		return total
 	}
 
@@ -1542,16 +1562,17 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		tooltip: TooltipGURPS | null = null
 	): number {
 		let total = 0
-		for (const feature of this.features.attributeBonuses) {
-			if (
-				feature.limitation === limitation &&
-				feature.attribute === attributeId &&
-				feature.effective === effective
-			) {
-				total += feature.adjustedAmount
-				feature.addToTooltip(tooltip)
+		if (this.features)
+			for (const feature of this.features.attributeBonuses) {
+				if (
+					feature.limitation === limitation &&
+					feature.attribute === attributeId &&
+					feature.effective === effective
+				) {
+					total += feature.adjustedAmount
+					feature.addToTooltip(tooltip)
+				}
 			}
-		}
 		return total
 	}
 
@@ -1836,16 +1857,16 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	protected async exportSystemData(): Promise<[any, string]> {
 		const system: any = duplicate(this.system)
 		system.type = "character"
-		system.calc = {
-			thrust: this.thrust.string,
-			swing: this.swing.string,
-			basic_lift: Weight.format(this.basicLift, this.settings.default_weight_units),
-			dodge: [0, 1, 2, 3, 4].map(e => this.dodge(this.allEncumbrance[e])),
-			move: [0, 1, 2, 3, 4].map(e => this.move(this.allEncumbrance[e])),
-			parry_bonus: this.parryBonus,
-			block_bous: this.blockBonus,
-			dodge_bonus: this.dodgeBonus,
-		}
+		// system.calc = {
+		// 	thrust: this.thrust.string,
+		// 	swing: this.swing.string,
+		// 	basic_lift: Weight.format(this.basicLift, this.settings.default_weight_units),
+		// 	dodge: [0, 1, 2, 3, 4].map(e => this.dodge(this.allEncumbrance[e])),
+		// 	move: [0, 1, 2, 3, 4].map(e => this.move(this.allEncumbrance[e])),
+		// 	parry_bonus: this.parryBonus,
+		// 	block_bous: this.blockBonus,
+		// 	dodge_bonus: this.dodgeBonus,
+		// }
 		const items = (this.items as unknown as Collection<BaseItemGURPS>)
 			.filter(e => !e.getFlag(SYSTEM_NAME, ItemFlags.Container))
 			.map((e: BaseItemGURPS) => e.exportSystemData(true))

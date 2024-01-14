@@ -15,7 +15,7 @@ export class RangedWeaponGURPS extends BaseWeaponGURPS<RangedWeaponSource> {
 	get resolvedRange(): string {
 		const actor = this.actor
 		if (!actor) return this.system.range
-		const st = Math.trunc(actor.strengthOrZero + actor.throwing_st_bonus)
+		const st = Math.trunc(actor.throwingST)
 		let savedRange = ""
 		let calcRange = this.system.range
 		while (calcRange !== savedRange) {

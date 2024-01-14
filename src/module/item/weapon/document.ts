@@ -108,7 +108,7 @@ export abstract class BaseWeaponGURPS<SourceType extends BaseWeaponSource = Base
 		if (!actor) return 0
 		let adj = 0
 		if (!(this.container instanceof ContainerGURPS)) return 0
-		const minST = this.resolvedMinimumStrength - (actor.strengthOrZero + actor.striking_st_bonus)
+		const minST = this.resolvedMinimumStrength - (actor.strikingST)
 		if (minST > 0) adj -= minST
 		const nameQualifier = this.container?.name
 		for (const bonus of actor.namedWeaponSkillBonusesFor(

@@ -8,12 +8,21 @@ import { DocumentConstructor } from "types/types/helperTypes"
 
 export abstract class ContainerGURPS<
 	SourceType extends BaseItemSourceGURPS = BaseItemSourceGURPS,
-// SystemType extends BaseContainerSystemData = BaseContainerSystemData
-// > extends BaseItemGURPS<SourceType, SystemType> {
 > extends BaseItemGURPS<SourceType> {
-	items: foundry.utils.Collection<BaseItemGURPS> = new Collection()
+	items: Collection<BaseItemGURPS> = new Collection()
 
 	// Getters
+	// get items(): Collection<Item> {
+	// 	if (!this.actor) return new Collection()
+	// 	const items: Collection<Item> = new Collection()
+	// 	for (const one of this.actor.items.filter(e =>
+	// 		(e as BaseItemGURPS).flags[SYSTEM_NAME]?.[ItemFlags.Container] === this._id)
+	// 	) {
+	// 		items.set(one.id!, one)
+	// 	}
+	// 	return items
+	// }
+
 	get deepItems(): Collection<Item> {
 		const deepItems: Item[] = []
 		if (this.items)

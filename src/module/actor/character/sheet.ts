@@ -17,7 +17,7 @@ import {
 import { Attribute, AttributeObj } from "@module/attribute"
 import { ConditionalModifier } from "@module/conditional_modifier"
 import { ItemDataGURPS, ItemGURPS, ItemSourceGURPS } from "@module/config"
-import { gid, ItemType, RollType, SYSTEM_NAME } from "@module/data"
+import { gid, ItemType, RollType, sheetSettingsFor, SYSTEM_NAME } from "@module/data"
 import { PDF } from "@module/pdf"
 import { ResourceTrackerObj } from "@module/resource_tracker"
 import { RollGURPS } from "@module/roll"
@@ -697,7 +697,6 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		const id = $(event.currentTarget).data("item-id")
 		const open = !!$(event.currentTarget).attr("class")?.includes("closed")
 		const item = this.actor.items.get(id) as ItemGURPS
-		this.noPrepare = true
 		item?.update({ _id: id, "system.open": open }, { noPrepare: true })
 	}
 
@@ -1112,9 +1111,10 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 	}
 
 	getData(options?: Partial<ActorSheet.Options> | undefined): any {
-		this.actor.prepareData()
+		this.actor.noPrepare = false
+		// this.actor.prepareData()
 		const data = super.getData(options)
-		const actorData = this.actor.toObject(false) as any
+		// const actorData = this.actor.toObject(false) as any
 		const [primary_attributes, secondary_attributes, point_pools] = this._prepareAttributes(this.actor.attributes)
 		const resource_trackers = Array.from(this.actor.resource_trackers.values())
 		const move_types = Array.from(this.actor.move_types.values())
@@ -1130,8 +1130,9 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		const sheetData = {
 			...data,
 			...{
-				system: actorData.system,
-				settings: (actorData.system as any).settings,
+				// system: actorData.system,
+				// settings: (actorData.system as any).settings,
+				settings: sheetSettingsFor(this.actor),
 				editing: this.actor.editing,
 				primary_attributes,
 				secondary_attributes,
