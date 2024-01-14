@@ -1,4 +1,4 @@
-import { ActorType, ItemType, SheetSettings, SkillDefaultType } from "@module/data"
+import { ActorType, ItemType, RollType, SheetSettings, SkillDefaultType } from "@module/data"
 import { affects, difficulty, display, emcost, emweight, selfctrl, stlimit, tmcost } from "./enum"
 import { TooltipGURPS } from "@module/tooltip"
 import { WeightUnits } from "./weight"
@@ -9,7 +9,18 @@ import { DurationType } from "@item/effect/data"
 import { ConditionID, ManeuverID } from "@item/condition/data"
 import { TraitSystemData } from "@item/trait/data"
 import { LootSettings } from "@actor/loot/data"
-import { FeatureObj } from "@module/config"
+import { WeaponStrength } from "@item/weapon/weapon_strength"
+import { WeaponDamage, WeaponType } from "@item"
+import { SkillDefault } from "@module/default"
+import { WeaponParry } from "@item/weapon/weapon_parry"
+import { WeaponBlock } from "@item/weapon/weapon_block"
+import { WeaponReach } from "@item/weapon/weapon_reach"
+import { WeaponAccuracy } from "@item/weapon/weapon_accuracy"
+import { WeaponRange } from "@item/weapon/weapon_range"
+import { WeaponROF } from "@item/weapon/weapon_rof"
+import { WeaponShots } from "@item/weapon/weapon_shots"
+import { WeaponBulk } from "@item/weapon/weapon_bulk"
+import { WeaponRecoil } from "@item/weapon/weapon_recoil"
 
 export interface ActorResolver<T extends ActorType> {
 	type: T
@@ -115,7 +126,7 @@ export interface TraitModifierResolver extends ItemResolver {
 }
 
 export interface TraitModifierContainerResolver
-	extends ContainerResolver<TraitModifierResolver | TraitModifierContainerResolver> {}
+	extends ContainerResolver<TraitModifierResolver | TraitModifierContainerResolver> { }
 
 export interface LeveledItemResolver extends ItemResolver {
 	points: number
@@ -146,7 +157,7 @@ export interface TechniqueResolver extends LeveledItemResolver {
 }
 
 export interface SkillContainerResolver
-	extends ContainerResolver<SkillResolver | TechniqueResolver | SkillContainerResolver> {}
+	extends ContainerResolver<SkillResolver | TechniqueResolver | SkillContainerResolver> { }
 
 export interface SpellResolver extends LeveledItemResolver {
 	rituals: string
@@ -156,7 +167,7 @@ export interface SpellResolver extends LeveledItemResolver {
 	college: string[]
 }
 
-export interface SpellContainerResolver extends ContainerResolver<SpellResolver | SpellContainerResolver> {}
+export interface SpellContainerResolver extends ContainerResolver<SpellResolver | SpellContainerResolver> { }
 
 export interface SkillLevelResolver {
 	level: number
@@ -220,7 +231,7 @@ export interface EquipmentModifierResolver extends ItemResolver {
 }
 
 export interface EquipmentModifierContainerResolver
-	extends ContainerResolver<EquipmentModifierResolver | EquipmentModifierContainerResolver> {}
+	extends ContainerResolver<EquipmentModifierResolver | EquipmentModifierContainerResolver> { }
 
 export interface NoteResolver extends ItemResolver {
 	formattedText: string
@@ -228,6 +239,32 @@ export interface NoteResolver extends ItemResolver {
 
 export interface NoteContainerResolver extends ContainerResolver<NoteResolver | NoteContainerResolver> {
 	formattedText: string
+}
+
+export interface WeaponResolver<T extends WeaponType> extends ItemResolver {
+	type: T
+	strength: WeaponStrength
+	damage: WeaponDamage
+	level: number
+	equipped: boolean
+	defaults: SkillDefault[]
+	resolvedMinimumStrength: number
+	checkUnready: (type: RollType) => void
+}
+
+export interface MeleeWeaponResolver extends WeaponResolver<ItemType.MeleeWeapon> {
+	parry: WeaponParry
+	block: WeaponBlock
+	reach: WeaponReach
+}
+
+export interface RangedWeaponResolver extends WeaponResolver<ItemType.RangedWeapon> {
+	accuracy: WeaponAccuracy
+	range: WeaponRange
+	rate_of_fire: WeaponROF
+	shots: WeaponShots
+	bulk: WeaponBulk
+	recoil: WeaponRecoil
 }
 
 export interface ConditionResolver extends ItemResolver {

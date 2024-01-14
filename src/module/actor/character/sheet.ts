@@ -1,5 +1,6 @@
 import { ActorFlags, ActorSheetGURPS } from "@actor/base"
 import {
+	BaseWeaponGURPS,
 	ContainerGURPS,
 	EquipmentContainerGURPS,
 	EquipmentGURPS,
@@ -28,6 +29,7 @@ import {
 	Length,
 	LocalizeGURPS,
 	newUUID,
+	WeaponResolver,
 	Weight,
 	WeightUnits,
 } from "@util"
@@ -666,6 +668,21 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 					await item.container?.createEmbeddedDocuments("Item", [itemData], { keepId: true })
 				},
 			})
+		if (
+			item instanceof BaseWeaponGURPS
+		) {
+			menuItems.push({
+				name: LocalizeGURPS.translations.gurps.context.toggle_ready,
+				icon: "",
+				callback: () => {
+					(item as Item).setFlag(
+						SYSTEM_NAME,
+						ItemFlags.Unready,
+						!item.getFlag(SYSTEM_NAME, ItemFlags.Unready)
+					)
+				}
+			})
+		}
 		return menuItems
 	}
 
@@ -817,6 +834,8 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			data.comment = event.currentTarget.dataset.comment
 			if (event.type === "contextmenu") data.modifier = -data.modifier
 		}
+		if ([RollType.Attack, RollType.Parry].includes(type))
+			(data.item as WeaponResolver<any>).checkUnready(type)
 		return RollGURPS.handleRoll(game.user, this.actor, data)
 	}
 

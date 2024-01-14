@@ -850,7 +850,8 @@
 				"thr_leveled": "thr",
 				"sw": "sw",
 				"sw_leveled": "sw"
-			}
+			},
+			"unready": "Unready"
 		},
 		"roll": {
 			"default": "Default: {default}",
@@ -1085,6 +1086,10 @@
 		},
 		"settings": {
 			"reset_all": "Reset All",
+			"automatic_unready": {
+				"name": "Automatic Unready",
+				"hint": "Automatically unready appropraitely marked weapons when attacking or parrying."
+			},
 			"show_token_modifiers": {
 				"name": "Show Token Modifiers",
 				"hint": "Enable the Token Effect Modifiers pop-up window."
@@ -1443,6 +1448,7 @@
 		},
 		"context": {
 			"toggle_state": "Toggle State",
+			"toggle_ready": "Toggle Readiness",
 			"duplicate": "Duplicate",
 			"delete": "Delete",
 			"increment": "Increment",

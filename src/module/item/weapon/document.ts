@@ -1,21 +1,21 @@
-import { BaseItemGURPS } from "@item/base"
+import { BaseItemGURPS, ItemFlags } from "@item/base"
 import { ContainerGURPS } from "@item/container"
 import { Bonus, Feature } from "@module/config"
-import { ActorType, gid, ItemType } from "@module/data"
+import { ActorType, gid, ItemType, RollType, SYSTEM_NAME } from "@module/data"
 import { SkillDefault } from "@module/default"
 import { TooltipGURPS } from "@module/tooltip"
-import { EquipmentResolver, LocalizeGURPS } from "@util"
-import { HandlebarsHelpersGURPS } from "@util/handlebars_helpers"
+import { EquipmentResolver, LocalizeGURPS, sheetDisplayNotes } from "@util"
 import { WeaponDamage } from "./damage"
 import { BaseWeaponSource } from "./data"
 import { Int } from "@util/fxp"
 import { ItemGCS } from "@item/gcs"
 import { CharacterGURPS } from "@actor"
 import { WeaponStrength } from "./weapon_strength"
-import { feature, skillsel, wsel, wswitch } from "@util/enum"
+import { display, feature, skillsel, wsel, wswitch } from "@util/enum"
 import { SkillBonus, WeaponBonus } from "@feature"
+import { StringBuilder } from "@util/string_builder"
 
-export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSource> extends BaseItemGURPS<SourceType> {
+export abstract class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSource> extends BaseItemGURPS<SourceType> {
 	get itemName(): string {
 		if (this.container instanceof Item) return this.container?.name ?? ""
 		return ""
@@ -41,15 +41,18 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 		return null
 	}
 
-	get secondaryText(): string {
-		let outString = '<div class="item-notes">'
-		if (this.container && this.container instanceof Item) {
-			outString += HandlebarsHelpersGURPS.format((this.container as any).notes ?? "")
-			if (this.system.usage_notes) outString += "<br>"
-		}
-		if (this.system.usage_notes) outString += HandlebarsHelpersGURPS.format(this.system.usage_notes)
-		outString += "</div>"
-		return outString
+	get unready(): boolean {
+		return this.getFlag(SYSTEM_NAME, ItemFlags.Unready) as boolean ?? false
+	}
+
+	secondaryText(_optionChecker: (option: display.Option) => boolean): string {
+		const buffer = new StringBuilder()
+		if (this.getFlag(SYSTEM_NAME, ItemFlags.Unready))
+			if (this.container instanceof Item) {
+				buffer.appendToNewLine((this.container as any).notes)
+			}
+		buffer.appendToNewLine(this.system.usage_notes)
+		return buffer.toString()
 	}
 
 	get level(): number {
@@ -362,16 +365,19 @@ export class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSou
 	protected _getCalcValues(): this["system"]["calc"] {
 		return {
 			name: this.itemName,
-			resolved_notes: this.secondaryText,
+			resolved_notes: sheetDisplayNotes(this.secondaryText(display.Option.isInline), { unready: this.unready }),
 			usage: this.usage,
 			level: this.level,
 			damage: this.fastResolvedDamage,
 			strength: this.strength.current ?? this.system.strength,
-			equipped: this.equipped
+			equipped: this.equipped,
+			unready: this.unready
 		}
 	}
 
 	prepareDerivedData(): void {
 		this.system.calc = this._getCalcValues()
 	}
+
+	abstract checkUnready(type: RollType): void
 }

@@ -5,7 +5,7 @@ import { BaseWeaponGURPS } from "@item/weapon"
 import { Feature, ItemDataGURPS } from "@module/config"
 import { ActorType, ItemType, SYSTEM_NAME } from "@module/data"
 import { PrereqList } from "@prereq"
-import { EvalEmbeddedRegex, replaceAllStringFunc, resolveStudyHours } from "@util"
+import { EvalEmbeddedRegex, replaceAllStringFunc, resolveStudyHours, sheetDisplayNotes } from "@util"
 import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
 import { ItemDataConstructorData } from "types/foundry/common/data/data.mjs/itemData"
 import { BaseUser } from "types/foundry/common/documents.mjs"
@@ -49,6 +49,10 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 		const actor = super.actor
 		if (actor?.type === ActorType.Character) return actor
 		return null
+	}
+
+	get unsatisfiedReason(): string {
+		return ""
 	}
 
 	get studyHours(): number {
@@ -168,15 +172,11 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 		return {
 			name: this.formattedName,
 			indent: this.parents.length,
-			resolved_notes: sheetDisplayNotes(this.secondaryText(display.Option.isInline)),
+			resolved_notes: sheetDisplayNotes(this.secondaryText(display.Option.isInline), { unsatisfied: this.unsatisfied_reason }),
 		}
 	}
 
 	prepareDerivedData(): void {
 		this.system.calc = this._getCalcValues()
 	}
-}
-
-function sheetDisplayNotes(s: string): string {
-	return `<div class="item-notes">${s}</div>`
 }
