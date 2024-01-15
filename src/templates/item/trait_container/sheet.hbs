@@ -62,7 +62,7 @@
     <div class="field">
         <select name="system.container_type" data-dtype="String">
             {{#select system.container_type }}
-            {{#each config.select.container_type as |v k | }}
+            {{#each config.select.container as |v k | }}
                 <option value="{{k}}">
                     {{ localize v }}
                 </option>

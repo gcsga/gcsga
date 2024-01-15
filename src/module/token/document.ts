@@ -1,5 +1,8 @@
 import { BaseActorGURPS, CharacterGURPS } from "@actor"
 import { ConditionID } from "@item/condition"
+import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
+import { TokenDataProperties } from "types/foundry/common/data/data.mjs/tokenData"
+import { PropertiesToSource } from "types/types/helperTypes"
 
 export class TokenDocumentGURPS extends TokenDocument {
 	sort!: number
@@ -8,6 +11,11 @@ export class TokenDocumentGURPS extends TokenDocument {
 
 	get actor(): BaseActorGURPS | null {
 		return super.actor as BaseActorGURPS | null
+	}
+
+	protected _onCreate(data: PropertiesToSource<TokenDataProperties>, options: DocumentModificationOptions, userId: string): void {
+		super._onCreate(data, options, userId)
+		this.actor?.prepareData()
 	}
 
 	hasStatusEffect(statusId: ConditionID): boolean {

@@ -38,11 +38,18 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 		data: DeepPartial<ItemDataConstructorData | (ItemDataConstructorData & Record<string, unknown>)>,
 		context?: DocumentModificationContext & MergeObjectOptions & { noPrepare?: boolean }
 	): Promise<this | undefined> {
-		if (!(this.parent instanceof Item)) return super.update(data, context)
-		data._id = this.id
-		await this.container?.updateEmbeddedDocuments("Item", [data])
-		// @ts-expect-error type not properly declared, to do later
-		this.render(false, { action: "update", data: data })
+		if (this.parent instanceof Actor && context?.noPrepare)
+			this.parent.noPrepare = true
+		return super.update(data, context)
+		// if (!(this.parent instanceof Item)) {
+		// 	// if (this.parent instanceof Actor)
+		// 	// 	this.parent.noPrepare = context?.noPrepare ?? false
+		// 	return super.update(data, context)
+		// }
+		// data._id = this.id
+		// await this.container?.updateEmbeddedDocuments("Item", [data])
+		// // @ts-expect-error type not properly declared, to do later
+		// this.render(false, { action: "update", data: data })
 	}
 
 	override get actor(): (typeof CONFIG.GURPS.Actor.documentClasses)[ActorType.Character] | null {
@@ -164,8 +171,12 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 			system.modifiers = (this as any).modifiers.map((e: ItemGCS) => e.exportSystemData(false))
 		if ((this as any).weapons)
 			system.weapons = (this as any).weapons.map((e: BaseWeaponGURPS) => e.exportSystemData(false))
-		// if (!keepOther) delete system.other
 		return system
+	}
+
+	prepareData(): void {
+		if (this.parent?.noPrepare) return
+		super.prepareData()
 	}
 
 	protected _getCalcValues(): this["system"]["calc"] {
@@ -178,5 +189,6 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 
 	prepareDerivedData(): void {
 		this.system.calc = this._getCalcValues()
+		this._source.system.calc = this._getCalcValues()
 	}
 }

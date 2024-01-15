@@ -18,9 +18,8 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		const name: string = this.name ?? ""
 		const specialization = this.specialization
 		const TL = this.techLevel
-		return `${name}${this.system.tech_level_required ? `/TL${TL ?? ""}` : ""}${
-			specialization ? ` (${specialization})` : ""
-		}`
+		return `${name}${this.system.tech_level_required ? `/TL${TL ?? ""}` : ""}${specialization ? ` (${specialization})` : ""
+			}`
 	}
 
 	secondaryText(optionChecker: (option: display.Option) => boolean): string {
@@ -191,17 +190,16 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 	}
 
 	get skillLevel(): string {
-		// if (this.calculateLevel().level === -Infinity) return "-"
-		// return this.calculateLevel().level.toString()
 		if (this.effectiveLevel === -Infinity) return "-"
 		return this.effectiveLevel.toString()
 	}
 
 	get relativeLevel(): string {
-		if (this.calculateLevel().level === -Infinity) return "-"
+		const level = this.calculateLevel()
+		if (level.level === -Infinity) return "-"
 		return (
 			(this.actor?.attributes?.get(this.attribute)?.attribute_def.name ?? "") +
-			this.calculateLevel().relative_level.signedString()
+			level.relative_level.signedString()
 		)
 	}
 
@@ -377,7 +375,7 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 	protected _getCalcValues(): this["system"]["calc"] {
 		return {
 			...super._getCalcValues(),
-			level: this.level?.level ?? 0,
+			level: this.skillLevel ?? 0,
 			rsl: this.relativeLevel ?? "",
 			points: this.adjustedPoints(),
 			tooltip: this.level?.tooltip.toString() ?? "",

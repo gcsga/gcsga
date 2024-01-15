@@ -1,7 +1,7 @@
 import { ContainerGURPS } from "@item/container"
 import { ItemType, SYSTEM_NAME } from "@module/data"
 import { ItemData } from "types/foundry/common/data/module.mjs"
-import { BaseItemSourceGURPS, ItemFlags } from "./data"
+import { BaseItemSourceGURPS, ItemFlags, ItemFlagsGURPS } from "./data"
 import { ItemDataConstructorData } from "types/foundry/common/data/data.mjs/itemData"
 import { MergeObjectOptions } from "types/foundry/common/utils/helpers.mjs"
 import { CharacterResolver } from "@util"
@@ -19,6 +19,8 @@ export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSour
 	type: SourceType["type"]
 
 	system!: SourceType["system"]
+
+	flags!: ItemFlagsGURPS
 
 	parent!: BaseActorGURPS | null
 
@@ -42,12 +44,13 @@ export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSour
 	// 	return super.type as ItemType
 	// }
 
-	override async update(
-		data: DeepPartial<ItemDataConstructorData | Record<string, unknown>>,
-		context?: DocumentModificationContext & MergeObjectOptions & { noPrepare?: boolean }
-	): Promise<this | undefined> {
-		return super.update(data, context)
-	}
+	// override async update(
+	// 	data: DeepPartial<ItemDataConstructorData | Record<string, unknown>>,
+	// 	context?: DocumentModificationContext & MergeObjectOptions & { noPrepare?: boolean }
+	// ): Promise<this | undefined> {
+	// 	console.trace("update", this.name)
+	// 	return super.update(data, context)
+	// }
 
 	static override async createDialog(
 		data: { folder?: string } = {},
