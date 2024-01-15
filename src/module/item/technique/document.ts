@@ -197,18 +197,6 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 		return this.update({ "system.points": this.getPointsForLevel(level) })
 	}
 
-
-	protected _getCalcValues(): this["system"]["calc"] {
-		return {
-			...super._getCalcValues(),
-			level: this.skillLevel ?? 0,
-			rsl: this.relativeLevel ?? "",
-			points: this.adjustedPoints(),
-			tooltip: this.level?.tooltip.toString() ?? "",
-			difficulty: this.difficulty.toUpperCase(),
-		}
-	}
-
 	getPointsForLevel(level: number): number {
 		const basePoints = this.points
 		const oldLevel = this.calculateLevel().level
@@ -235,10 +223,11 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 	protected _getCalcValues(): this["system"]["calc"] {
 		return {
 			...super._getCalcValues(),
-			level: this.level?.level ?? 0,
+			level: this.skillLevel ?? 0,
 			rsl: this.relativeLevel ?? "",
 			points: this.adjustedPoints(),
-			tooltip: this.level?.tooltip.toString() ?? "",
+			tooltip: this.calculateLevel()?.tooltip.toString() ?? "",
+			difficulty: this.difficulty.toUpperCase(),
 		}
 	}
 }
