@@ -68,6 +68,7 @@ export class MookParser {
 	parseStatBlock(text: string): any {
 		this._object = this.resetObject
 		this.text = this.sanitizeStatBlock(text)
+		this.parseName()
 		this.parseAttacks()
 		this.parseAttributes()
 		this.parseTraits()
@@ -76,6 +77,7 @@ export class MookParser {
 		// this.parseEquipment()
 		this.parseAttacks(true)
 		this.object.text.catchall = this.text
+		console.log(this.object)
 		return this.object
 	}
 
@@ -120,6 +122,13 @@ export class MookParser {
 		if (pat.includes(text[text.length - 1])) text = text.substring(0, text.length - 1)
 		text = text.trim()
 		return start === text ? text : this.cleanLine(text)
+	}
+
+	private parseName(): void {
+		this.text = this.cleanLine(this.text)
+		const name = this.text.split("\n")[0]
+		console.log(name)
+		this.object.profile.name = name
 	}
 
 	private parseAttributes(): void {
@@ -492,6 +501,8 @@ export class MookParser {
 		const regex_reach = /\s?[Rr]each\s*((?:[C1-9]+\s*)(?:,\s*[C1-9]+\s*)*)/
 		const regex_range = /\s?[Rr]ange ([0-9/]+)\s*,?/
 		const regex_level = /\((\d+)\):/
+		const regex_parry = /\s?[Pp]arry:? (No|[0-9]+[FfUu]*)/
+		const regex_block = /\s?[Bb]lock:? (No|[0-9]+)/
 
 		this._object.melee = []
 		this._object.ranged = []
@@ -561,8 +572,6 @@ export class MookParser {
 		weapons.split(";").forEach(t => {
 			const reference = ""
 			let notes = ""
-			const parry = "0"
-			const block = "0"
 
 			t = this.cleanLine(t).trim()
 			if (!t) return
@@ -656,6 +665,23 @@ export class MookParser {
 				t = t.replace(regex_reach, "").trim()
 			}
 
+			// Capture parry
+			let parry = "No"
+			if (t.match(regex_parry)) {
+				// trim required here as regex grabs whitespace at end
+				reach = t.match(regex_parry)![1].trim()
+				t = t.replace(regex_parry, "").trim()
+			}
+
+			// Capture block
+			let block = "No"
+			if (t.match(regex_block)) {
+				// trim required here as regex grabs whitespace at end
+				reach = t.match(regex_block)![1].trim()
+				t = t.replace(regex_block, "").trim()
+			}
+
+
 			t = t.trim()
 
 			let damage: WeaponDamageObj = {
@@ -669,8 +695,8 @@ export class MookParser {
 				modifier_per_die: 0,
 			}
 
-			// capture damage
-			;[damage, t] = this.parseDamage(t)
+				// capture damage
+				;[damage, t] = this.parseDamage(t)
 
 			// if damage parser captures anything after the name, add it as a note
 			if (t.match(/\{\{.*\}\}/)) {

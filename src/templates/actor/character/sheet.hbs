@@ -39,7 +39,7 @@
 		<div id="move">{{>actor/character/sections/move }}</div>
 	</div>
 	<div id="embeds" style="grid-template: {{ blockLayout settings.block_layout blocks }};">
-	 {{#if reactions.length }}
+		{{#if reactions.length }}
 		<div id="reactions">
 			<div class="header modifier">{{ localize "gurps.character.reactions.modifier" }}</div>
 			<div class="header condition">{{ localize "gurps.character.reactions.reaction" }}</div>
@@ -48,7 +48,7 @@
 			{{/each }}
 		</div>
 		{{/if }}
-	 {{#if conditionalModifiers.length }}
+		{{#if conditionalModifiers.length }}
 		<div id="conditional-modifiers">
 			<div class="header modifier">{{ localize "gurps.character.conditional_modifiers.modifier" }}</div>
 			<div class="header condition">{{ localize "gurps.character.conditional_modifiers.reaction" }}</div>
@@ -107,26 +107,26 @@
 			<div class="header reference"><i class="gcs-bookmark"></i></div>
 			{{#each traits }}
 			{{>actor/character/sections/trait }}
-				{{else}}
+			{{else}}
 
-<div class ="desc item placeholder">
-	<div class="dropdown"></div>
-	<div class="name"></div>
-</div>
-<div class="points"></div>
-<div class="reference"></div>
+			<div class="desc item placeholder">
+				<div class="dropdown"></div>
+				<div class="name"></div>
+			</div>
+			<div class="points"></div>
+			<div class="reference"></div>
 			{{/each }}
 		</div>
 		{{!-- {{/if }} --}}
 		{{!-- {{#if skills.length }} --}}
 		<div id="skills" class="item-list">
 			<div class="header desc">
-	{{#if skillDefaultsOpen}}
-	<input type="text" class="defaults" />
-	{{else}}
+				{{#if skillDefaultsOpen}}
+				<input type="text" class="defaults" />
+				{{else}}
 				{{ localize "gurps.character.skills.desc" }}
-	<!-- <a class="gcs-skill defaults"></a> -->
-	{{/if}}
+				<!-- <a class="gcs-skill defaults"></a> -->
+				{{/if}}
 			</div>
 			<div class="header level">
 				{{ localize "gurps.character.skills.level" }}
@@ -142,12 +142,12 @@
 			</div>
 			{{#each skills }}
 			{{>actor/character/sections/skill }}
-				{{else}}
-<div class ="desc item placeholder"></div>
-<div class="level placeholder"></div>
-<div class="rsl placeholder"></div>
-<div class="points placeholder"></div>
-<div class="reference placeholder"></div>
+			{{else}}
+			<div class="desc item placeholder"></div>
+			<div class="level placeholder"></div>
+			<div class="rsl placeholder"></div>
+			<div class="points placeholder"></div>
+			<div class="reference placeholder"></div>
 			{{/each }}
 		</div>
 		{{!-- {{/if }} --}}
@@ -170,12 +170,12 @@
 			</div>
 			{{#each spells }}
 			{{>actor/character/sections/spell }}
-				{{else}}
-				<div class="desc item placeholder"></div>
-				<div class="level placeholder"></div>
-				<div class="rsl placeholder"></div>
-				<div class="points placeholder"></div>
-				<div class="reference placeholder"></div>
+			{{else}}
+			<div class="desc item placeholder"></div>
+			<div class="level placeholder"></div>
+			<div class="rsl placeholder"></div>
+			<div class="points placeholder"></div>
+			<div class="reference placeholder"></div>
 			{{/each }}
 		</div>
 		{{!-- {{/if }} --}}
@@ -217,18 +217,18 @@
 			</div>
 			{{#each equipment }}
 			{{>actor/character/sections/equipment }}
-				{{else}}
-				<div class="equipped"></div>
-<div class="quantity placeholder"></div>
-<div class ="desc item placeholder placeholder"></div>
-<div class="uses placeholder"></div>
-<div class="tech-level placeholder"></div>
-<div class="legality-class placeholder"></div>
-<div class="value placeholder"></div>
-<div class="weight placeholder"></div>
-<div class="extended-value placeholder"></div>
-<div class="extended-weight placeholder"></div>
-<div class="reference placeholder"></div>
+			{{else}}
+			<div class="equipped"></div>
+			<div class="quantity placeholder"></div>
+			<div class="desc item placeholder placeholder"></div>
+			<div class="uses placeholder"></div>
+			<div class="tech-level placeholder"></div>
+			<div class="legality-class placeholder"></div>
+			<div class="value placeholder"></div>
+			<div class="weight placeholder"></div>
+			<div class="extended-value placeholder"></div>
+			<div class="extended-weight placeholder"></div>
+			<div class="reference placeholder"></div>
 			{{/each }}
 		</div>
 		{{!-- {{/if }} --}}
@@ -266,17 +266,17 @@
 			</div>
 			{{#each other_equipment }}
 			{{>actor/character/sections/other-equipment }}
-				{{else}}
-<div class="quantity"></div>
-<div class ="desc item placeholder"></div>
-<div class="uses placeholder"></div>
-<div class="tech-level placeholder"></div>
-<div class="legality-class placeholder"></div>
-<div class="value placeholder"></div>
-<div class="weight placeholder"></div>
-<div class="extended-value placeholder"></div>
-<div class="extended-weight placeholder"></div>
-<div class="reference placeholder"></div>
+			{{else}}
+			<div class="quantity"></div>
+			<div class="desc item placeholder"></div>
+			<div class="uses placeholder"></div>
+			<div class="tech-level placeholder"></div>
+			<div class="legality-class placeholder"></div>
+			<div class="value placeholder"></div>
+			<div class="weight placeholder"></div>
+			<div class="extended-value placeholder"></div>
+			<div class="extended-weight placeholder"></div>
+			<div class="reference placeholder"></div>
 			{{/each }}
 		</div>
 		{{!-- {{/if }} --}}
@@ -290,9 +290,9 @@
 			</div>
 			{{#each notes }}
 			{{>actor/character/sections/note }}
-				{{else}}
-<div class ="desc item placeholder"></div>
-<div class="reference placeholder"></div>
+			{{else}}
+			<div class="desc item placeholder"></div>
+			<div class="reference placeholder"></div>
 			{{/each }}
 		</div>
 		{{!-- {{/if }} --}}
