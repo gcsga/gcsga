@@ -6,6 +6,7 @@ import { LocalizeGURPS } from "@util"
 import { Mook } from "./document"
 import { attribute } from "@util/enum"
 import { MookParser } from "./parse"
+import { DialogGURPS } from "@ui"
 
 export class MookGeneratorSheet extends FormApplication {
 	config: CharacterSheetConfig | null = null
@@ -89,7 +90,7 @@ export class MookGeneratorSheet extends FormApplication {
 
 	private async _onImportText(event: JQuery.ClickEvent) {
 		event.preventDefault()
-		const dialog = new Dialog({
+		const dialog = new DialogGURPS({
 			title: "Import Stat Block",
 			content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/mook-generator/import.hbs`, { block: "" }),
 			buttons: {
@@ -108,7 +109,7 @@ export class MookGeneratorSheet extends FormApplication {
 					}
 				},
 				cancel: {
-					icon: "i class='fas fa-times'></i>",
+					icon: "<i class='fas fa-times'></i>",
 					label: "Cancel"
 				},
 			},
