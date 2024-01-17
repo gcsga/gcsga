@@ -643,6 +643,7 @@
 			"tech_level_required": "Required",
 			"epm_before": "Encumbrance Penalty",
 			"epm_after": "times the current encumbrance level",
+			"encumbrance": "<br>Encumbrance [{amount}]",
 			"points": "Points",
 			"difficulty": "Difficulty",
 			"defaults_to": "Default To",
@@ -788,7 +789,9 @@
 			},
 			"dr_bonus": " [{level} against {type} attacks]",
 			"conditional_modifier": "triggering condition",
-			"reaction_bonus": "from others"
+			"reaction_bonus": "from others",
+			"points_one": "{source} [{amount} pt]",
+			"points_multiple": "{source} [{amount} pts]"
 		},
 		"default": {
 			"header": "Defaults"
@@ -1226,6 +1229,7 @@
 				"colorLinkPressed": "Pressed Link",
 				"colorLinkRollover": "Rollover Link",
 				"colorAccent": "Accent",
+				"colorTooltipMarker": "Tooltip Marker",
 				"colorButtonRoll": "Button Roll",
 				"colorOnButtonRoll": "On Button Roll",
 				"colorButtonRollRollover": "Button Roll Rollover",

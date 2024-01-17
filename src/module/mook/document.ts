@@ -28,6 +28,8 @@ import {
 import { attribute, progression } from "@util/enum"
 
 export class Mook {
+	type = "mook"
+
 	protected variableResolverExclusions: Map<string, boolean> = new Map()
 
 	settings: {

@@ -201,7 +201,7 @@ class FakeSettings {
 				{
 					id: gid.FatiguePoints,
 					type: attribute.Type.Pool,
-					name: gid.FatiguePoints,
+					name: "FP",
 					full_name: "Fatigue Points",
 					attribute_base: "$ht",
 					cost_per_point: 3,
@@ -238,7 +238,7 @@ class FakeSettings {
 				{
 					id: gid.HitPoints,
 					type: attribute.Type.Pool,
-					name: gid.HitPoints,
+					name: "HP",
 					full_name: "Hit Points",
 					attribute_base: "$st",
 					cost_per_point: 2,

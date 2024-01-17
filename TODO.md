@@ -24,6 +24,7 @@
  - add interface for accessing old bonuses
 - fix GURPS.LastActor setting,
 - Convert over module compatibility
+ - Token Action HUD
 - Convert the modifier bucket over
   - modifier bucket journals (waiting for OTFs)
 - Add makeshift static to dynamic character conversion

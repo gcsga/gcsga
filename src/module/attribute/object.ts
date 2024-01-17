@@ -125,6 +125,7 @@ export class Attribute {
 	}
 
 	get currentThreshold(): Partial<PoolThreshold> | null {
+		const actor = this.actor as CharacterResolver
 		const def = this.attribute_def
 		if (!def) return null
 		if (
@@ -134,7 +135,8 @@ export class Attribute {
 		)
 			return null
 		if (this._overridenThreshold) return this._overridenThreshold
-		if (!(this.actor.getFlag(SYSTEM_NAME, ActorFlags.AutoThreshold) as any).active) return this._manualThreshold
+		if (actor.flags[SYSTEM_NAME][ActorFlags.AutoThreshold].active === false) return this._manualThreshold
+		// if (!(this.actor.getFlag(SYSTEM_NAME, ActorFlags.AutoThreshold) as any).active) return this._manualThreshold
 		const cur = this.current
 		if (def.thresholds) {
 			for (const t of def.thresholds) {

@@ -89,17 +89,15 @@ export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 	}
 
 	get skillLevel(): string {
-		// if (this.calculateLevel().level === -Infinity) return "-"
-		// return this.calculateLevel().level.toString()
 		if (this.effectiveLevel === -Infinity) return "-"
 		return this.effectiveLevel.toString()
 	}
 
 	get relativeLevel(): string {
-		if (this.calculateLevel().level === -Infinity) return "-"
+		if (this.level.level === -Infinity) return "-"
 		return (
 			(this.actor?.attributes?.get(this.attribute)?.attribute_def.name ?? "") +
-			this.calculateLevel().relative_level.signedString()
+			this.level.relative_level.signedString()
 		)
 	}
 
@@ -111,10 +109,11 @@ export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 	}
 
 	get effectiveLevel(): number {
-		if (!this.actor) return -Infinity
-		let att = this.actor.resolveAttributeCurrent(this.attribute)
-		let effectiveAtt = this.actor.resolveAttributeEffective(this.attribute)
-		return this.calculateLevel().level - att + effectiveAtt
+		const actor = this.actor || this.dummyActor
+		if (!actor) return -Infinity
+		let att = actor.resolveAttributeCurrent(this.attribute)
+		let effectiveAtt = actor.resolveAttributeEffective(this.attribute)
+		return this.level.level - att + effectiveAtt
 	}
 
 	calculateLevel(): SkillLevel {
@@ -174,7 +173,7 @@ export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 		if (this.actor) {
 			if (def?.type === gid.Skill) {
 				const sk = this.actor.baseSkill(def!, true)
-				if (sk) level = sk.calculateLevel.level
+				if (sk) level = sk.level.level
 			} else if (def) {
 				level = (def?.skillLevelFast(this.actor, true, null, false) || 0) - (def?.modifier || 0)
 			}
@@ -210,7 +209,7 @@ export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 		if (this.difficulty === difficulty.Level.Wildcard) maxPoints += 12
 		else maxPoints += 4
 
-		const oldLevel = this.calculateLevel().level
+		const oldLevel = this.level.level
 		for (let points = basePoints; points < maxPoints; points++) {
 			this.system.points = points
 			if (this.calculateLevel().level > oldLevel) {
@@ -227,7 +226,7 @@ export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 		else minPoints -= 4
 		minPoints = Math.max(minPoints, 0)
 
-		let oldLevel = this.calculateLevel().level
+		let oldLevel = this.level.level
 		for (let points = basePoints; points >= minPoints; points--) {
 			this.system.points = points
 			if (this.calculateLevel().level < oldLevel) {
@@ -247,23 +246,13 @@ export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 		}
 	}
 
-	protected _getCalcValues(): this["system"]["calc"] {
-		return {
-			...super._getCalcValues(),
-			level: this.skillLevel ?? 0,
-			rsl: this.relativeLevel ?? "",
-			points: this.adjustedPoints(),
-			tooltip: this.level?.tooltip.toString() ?? "",
-		}
-	}
-
 	setLevel(level: number) {
 		return this.update({ "system.points": this.getPointsForLevel(level) })
 	}
 
 	getPointsForLevel(level: number): number {
 		const basePoints = this.points
-		const oldLevel = this.calculateLevel().level
+		const oldLevel = this.level.level
 		if (oldLevel > level) {
 			for (let points = basePoints; points > 0; points--) {
 				this.system.points = points
@@ -283,4 +272,5 @@ export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 			return 100
 		}
 	}
+
 }

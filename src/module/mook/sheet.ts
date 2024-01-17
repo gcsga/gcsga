@@ -6,6 +6,7 @@ import { LocalizeGURPS } from "@util"
 import { Mook } from "./document"
 import { attribute } from "@util/enum"
 import { MookParser } from "./parse"
+import { DialogGURPS } from "@ui"
 
 export class MookGeneratorSheet extends FormApplication {
 	config: CharacterSheetConfig | null = null
@@ -17,7 +18,7 @@ export class MookGeneratorSheet extends FormApplication {
 	constructor(options?: Partial<ApplicationOptions>) {
 		super(options)
 		this.object = new Mook()
-		;(game as any).mook = this.object
+			; (game as any).mook = this.object
 	}
 
 	static get defaultOptions(): FormApplicationOptions {
@@ -87,11 +88,35 @@ export class MookGeneratorSheet extends FormApplication {
 		return [primary_attributes, secondary_attributes, point_pools]
 	}
 
-	private _onImportText(event: JQuery.ClickEvent) {
+	private async _onImportText(event: JQuery.ClickEvent) {
 		event.preventDefault()
-		const data = MookParser.init(this.object.text.catchall, this.object).parseStatBlock(this.object.text.catchall)
-		this.object.update(data)
-		return this.render()
+		const dialog = new DialogGURPS({
+			title: "Import Stat Block",
+			content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/mook-generator/import.hbs`, { block: "" }),
+			buttons: {
+				import: {
+					icon: "<i class='fas fa-file-import'></i>",
+					label: "Import",
+					callback: (html: HTMLElement | JQuery<HTMLElement>) => {
+						if (html instanceof HTMLElement) html = $(html)
+						const textArray = html.find("textarea")[0]
+						const text = textArray.value
+						if (text.trim()) {
+							const data = MookParser.init(text, this.object).parseStatBlock(text)
+							this.object.update(data)
+						}
+						return this.render()
+					}
+				},
+				cancel: {
+					icon: "<i class='fas fa-times'></i>",
+					label: "Cancel"
+				},
+			},
+			default: "import",
+		},
+			{ width: 800, height: 800 })
+		dialog.render(true)
 	}
 
 	private _onCreateMook(event: JQuery.ClickEvent) {

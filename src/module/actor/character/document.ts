@@ -213,7 +213,11 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		}
 	}
 
-	protected _preUpdate(changed: DeepPartial<CharacterDataGURPS>, options: DocumentModificationOptions, user: BaseUser): Promise<void> {
+	protected _preUpdate(
+		changed: DeepPartial<CharacterDataGURPS>,
+		options: DocumentModificationOptions,
+		user: BaseUser
+	): Promise<void> {
 		// console.log(changed, options)
 		changed = mergeObject(changed, {
 			...this._updateAttributes(changed),
@@ -465,8 +469,12 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		return ST
 	}
 
-	move(enc: Encumbrance): number {
-		let initialMove = Math.max(0, this.resolveAttributeCurrent(gid.BasicMove))
+	move(
+		enc: Encumbrance,
+		initialMove = this.resolveAttributeCurrent(gid.BasicMove)
+	): number {
+		// let initialMove = Math.max(0, this.resolveAttributeCurrent(gid.BasicMove))
+		initialMove = Math.max(0, this.resolveAttributeCurrent(gid.BasicMove))
 		const move = Math.trunc((initialMove * (10 + 2 * enc.penalty)) / 10)
 		if (move < 1) {
 			if (initialMove > 0) return 1
@@ -476,10 +484,15 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	}
 
 	// Move accounting for pool thresholds
-	eMove(enc: Encumbrance): number {
+	// eMove(enc: Encumbrance): number {
+	eMove(
+		enc: Encumbrance,
+		initialMove = this.resolveAttributeCurrent(gid.BasicMove),
+		ops = this.countThresholdOpMet(ThresholdOp.HalveMove)
+	): number {
 		// Let initialMove = this.moveByType(Math.max(0, this.resolveAttributeCurrent(gid.BasicMove)))
-		let initialMove = this.resolveMove(this.moveType)
-		let divisor = 2 * Math.min(this.countThresholdOpMet(ThresholdOp.HalveMove), 2)
+		// let initialMove = this.resolveMove(this.moveType)
+		let divisor = 2 * Math.min(ops, 2)
 		if (divisor === 0) divisor = 1
 		if (divisor > 0) initialMove = Math.ceil(initialMove / divisor)
 		const move = Math.trunc((initialMove * (10 + 2 * enc.penalty)) / 10)
@@ -507,9 +520,12 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	}
 
 	// Dodge accounting for pool thresholds
-	eDodge(enc: Encumbrance): number {
+	eDodge(
+		enc: Encumbrance,
+		ops = this.countThresholdOpMet(ThresholdOp.HalveDodge)
+	): number {
 		let dodge = 3 + (this.calc?.dodge_bonus ?? 0) + Math.max(this.resolveAttributeCurrent(gid.BasicSpeed), 0)
-		const divisor = 2 * Math.min(this.countThresholdOpMet(ThresholdOp.HalveDodge), 2)
+		const divisor = 2 * Math.min(ops, 2)
 		if (divisor > 0) {
 			dodge = Math.ceil(dodge / divisor)
 		}
@@ -562,7 +578,9 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	}
 
 	// Returns Basic Lift in pounds
-	get basicLift(): number {
+	basicLift = 0
+
+	getBasicLift(): number {
 		const ST = this.attributes.get(gid.Strength)?._effective(this.calc?.lifting_st_bonus ?? 0) || 0
 		let basicLift = ST ** 2 / 5
 		if (this.settings.damage_progression === progression.Option.KnowingYourOwnStrength)
@@ -605,13 +623,9 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	}
 
 	encumbranceLevel(forSkills = true, carried = this.weightCarried(forSkills)): Encumbrance {
-		const autoEncumbrance = this.getFlag(SYSTEM_NAME, ActorFlags.AutoEncumbrance) as {
-			active: boolean
-			manual: number
-		}
+		const autoEncumbrance = this.flags[SYSTEM_NAME][ActorFlags.AutoEncumbrance]
 		const allEncumbrance = this.allEncumbrance
 		if (autoEncumbrance && !autoEncumbrance.active) return allEncumbrance[autoEncumbrance?.manual || 0]
-		// Const carried = this.weightCarried(forSkills)
 		for (const e of allEncumbrance) {
 			if (carried <= e.maximum_carry) return e
 		}
@@ -620,11 +634,11 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	weightCarried(forSkills: boolean): number {
 		let total = 0
-		this.carriedEquipment.forEach(e => {
-			if (e.container === this) {
-				total += e.extendedWeight(forSkills, this.settings.default_weight_units)
-			}
-		})
+		this.carriedEquipment.reduce((n, e) => {
+			if (e.container === this)
+				return n + e.extendedWeight(forSkills, this.system.settings.default_weight_units)
+			return n
+		}, 0)
 		return fxp.Int.from(total, 4)
 	}
 
@@ -772,7 +786,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	// Flat list of all hit locations
 	get HitLocations(): HitLocation[] {
-		const recurseLocations = function (table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
+		const recurseLocations = function(table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
 			table.locations.forEach(e => {
 				locations.push(e)
 				if (e.subTable) locations = recurseLocations(e.subTable, locations)
@@ -1258,6 +1272,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 		this.attributes = this.getAttributes()
 		this.processThresholds()
+		this.basicLift = this.getBasicLift()
 
 		this.resource_trackers = this.getResourceTrackers()
 		this.move_types = this.getMoveTypes()
@@ -1548,10 +1563,10 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		if (this.features)
 			for (const feature of this.features.moveBonuses) {
 				if (
-				feature.limitation === limitation &&
+					feature.limitation === limitation &&
 					feature.move_type === id &&
-					(!effective||feature.effective === effective)
-			) {
+					(!effective || feature.effective === effective)
+				) {
 					total += feature.adjustedAmount
 					feature.addToTooltip(tooltip)
 				}
@@ -1571,7 +1586,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 				if (
 					feature.limitation === limitation &&
 					feature.attribute === attributeId &&
-					(!effective||feature.effective === effective)
+					(!effective || feature.effective === effective)
 				) {
 					total += feature.adjustedAmount
 					feature.addToTooltip(tooltip)

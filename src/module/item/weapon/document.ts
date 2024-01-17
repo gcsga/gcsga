@@ -15,7 +15,9 @@ import { display, feature, skillsel, wsel, wswitch } from "@util/enum"
 import { SkillBonus, WeaponBonus } from "@feature"
 import { StringBuilder } from "@util/string_builder"
 
-export abstract class BaseWeaponGURPS<SourceType extends BaseWeaponSource = BaseWeaponSource> extends BaseItemGURPS<SourceType> {
+export abstract class BaseWeaponGURPS<
+	SourceType extends BaseWeaponSource = BaseWeaponSource
+> extends BaseItemGURPS<SourceType> {
 	get itemName(): string {
 		if (this.container instanceof Item) return this.container?.name ?? ""
 		return ""
@@ -23,6 +25,10 @@ export abstract class BaseWeaponGURPS<SourceType extends BaseWeaponSource = Base
 
 	get formattedName(): string {
 		return this.system.usage
+	}
+
+	get resolvedNotes(): string {
+		return sheetDisplayNotes(this.secondaryText(display.Option.isInline), { unready: this.unready })
 	}
 
 	get usage(): string {
@@ -360,23 +366,6 @@ export abstract class BaseWeaponGURPS<SourceType extends BaseWeaponSource = Base
 			f.leveledAmount.level = savedLevel
 			f.leveledAmount.dieCount = savedDieCount
 		}
-	}
-
-	protected _getCalcValues(): this["system"]["calc"] {
-		return {
-			name: this.itemName,
-			resolved_notes: sheetDisplayNotes(this.secondaryText(display.Option.isInline), { unready: this.unready }),
-			usage: this.usage,
-			level: this.level,
-			damage: this.fastResolvedDamage,
-			strength: this.strength.current ?? this.system.strength,
-			equipped: this.equipped,
-			unready: this.unready
-		}
-	}
-
-	prepareDerivedData(): void {
-		this.system.calc = this._getCalcValues()
 	}
 
 	abstract checkUnready(type: RollType): void

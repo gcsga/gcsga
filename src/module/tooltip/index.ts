@@ -22,13 +22,18 @@ export class TooltipGURPS {
 		return this.list.includes(searchElement, fromIndex)
 	}
 
-	toString(nl = "<br>", tab = 1): string {
+	toString(nl = "<br>", tab = 0): string {
+		if (this.list.length === 0) return ""
 		let final = ""
 		for (const i of this.list) {
 			if (i instanceof TooltipGURPS) final += i.toString(nl, tab + 1) + nl
 			else final += i
 		}
-		return "&nbsp;&nbsp;&nbsp;&nbsp;".repeat(tab) + final
+		// return "&nbsp;&nbsp;&nbsp;&nbsp;".repeat(tab) + final
+		// return "&nbsp;&nbsp;&nbsp;&nbsp;".repeat(tab) + final
+		// return "".repeat(tab) + final
+		// return "pen".repeat(tab) + final
+		return final.replace(/(?:\n|<br>)/g, nl)
 	}
 
 	get length(): number {

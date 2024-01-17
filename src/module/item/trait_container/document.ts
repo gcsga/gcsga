@@ -146,12 +146,4 @@ export class TraitContainerGURPS extends ItemGCS<TraitContainerSource> {
 	toggleState(): void {
 		this.enabled = !this.enabled
 	}
-
-	protected _getCalcValues(): this["system"]["calc"] {
-		return {
-			...super._getCalcValues(),
-			enabled: this.enabled,
-			points: this.adjustedPoints(),
-		}
-	}
 }

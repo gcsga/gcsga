@@ -1,8 +1,5 @@
-<div
-	class="desc item{{#if (isContainer this)}} container{{/if}} other"
-	data-item-id="{{ this._id }}"
-	{{{indent this.system.calc.indent}}}
->
+<div class="desc item{{#if (isContainer this)}} container{{/if}} other" data-item-id="{{ this._id }}" {{{indent
+	this.parents.lengtht}}}>
 	<div class="dropdown">
 		{{#if (isContainer this)}}
 		{{#if this.system.open }}
@@ -12,7 +9,7 @@
 		{{/if }}
 		{{/if }}
 	</div>
-	<div class="md">{{{this.system.calc.name}}}</div>
+	<div class="md">{{{this.formattedName}}}</div>
 </div>
 <div class="reference">{{{ref this.system.reference}}}</div>
 {{#if this.system.open }}

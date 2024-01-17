@@ -203,23 +203,6 @@ export class TraitGURPS extends ItemGCS<TraitSource> {
 		return [ad, disad, race, quirk]
 	}
 
-	// crMultiplier(cr: CR): number {
-	// 	switch (cr) {
-	// 		case selfctrl.Roll.NoCR:
-	// 			return 1
-	// 		case selfctrl.Roll.CR6:
-	// 			return 2
-	// 		case selfctrl.Roll.CR9:
-	// 			return 1.5
-	// 		case selfctrl.Roll.CR12:
-	// 			return 1
-	// 		case selfctrl.Roll.CR15:
-	// 			return 0.5
-	// 		default:
-	// 			return this.crMultiplier(selfctrl.Roll.NoCR)
-	// 	}
-	// }
-
 	toggleState(): void {
 		this.enabled = !this.enabled
 	}
@@ -232,11 +215,4 @@ export class TraitGURPS extends ItemGCS<TraitSource> {
 		return (points * modifier) / 100
 	}
 
-	protected _getCalcValues(): this["system"]["calc"] {
-		return {
-			...super._getCalcValues(),
-			enabled: this.enabled,
-			points: this.adjustedPoints(),
-		}
-	}
 }

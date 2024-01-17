@@ -1,10 +1,7 @@
-<div
-	class="desc item{{#if (isContainer this)}} container{{/if}} other"
-	data-item-id="{{ this._id }}"
-	{{{indent this.system.calc.indent}}}
->
+<div class="desc item{{#if (isContainer this)}} container{{/if}} other" data-item-id="{{ this._id }}"
+	data-tooltip-direction="DOWN" data-tooltip="{{this.resolvedTooltip}}" {{{indent this.parents.length}}}>
 	<div class="dropdown">
-		{{#if (eq this.type "spell_container")}}
+		{{#if (isContainer this)}}
 		{{#if this.system.open}}
 		{{>actor/character/sections/dropdown-open}}
 		{{else}}
@@ -12,11 +9,10 @@
 		{{/if}}
 		{{/if}}
 	</div>
-	{{!-- {{this.name_formatted}} --}}
 	<div class="name">
-		{{this.system.calc.name}}
+		{{this.formattedName}}
 	</div>
-	{{{this.system.calc.resolved_notes}}}
+	{{{this.resolvedNotes}}}
 </div>
 {{#if @root/inCompendium}}
 <div class="college">{{join this.college ", "}}</div>
@@ -33,14 +29,17 @@
 <div class="level"></div>
 <div class="rsl"></div>
 {{else}}
-<div data-item-id="{{this._id}}" data-type="spell" class="level rollable {{effective this}}">{{this.system.calc.level}}</div>
-<div data-item-id="{{this._id}}" data-type="spell_rsl" class="rsl rollable {{effective this}}">{{this.system.calc.rsl}}</div>
+<div data-item-id="{{this._id}}" data-type="spell" class="level rollable {{effective this}}" data-html="true"
+	data-tooltip-direction="DOWN" data-tooltip="{{this.levelTooltip}}">{{this.skillLevel}}</div>
+<div data-item-id="{{this._id}}" data-type="spell_rsl" class="rsl rollable {{effective this}}"
+	data-tooltip-direction="DOWN" data-tooltip="{{this.levelTooltip}}">{{this.relativeLevel}}
+</div>
 {{/if}}
-<div class="points">{{this.system.calc.points}}</div>
+<div class="points" data-tooltip="{{this.pointsTooltip}}" data-tooltip-direction="DOWN">{{this.adjustedPoints}}</div>
 {{/if}}
 <div class="reference">{{{ref this.system.reference}}}</div>
 {{#if this.system.open}}
-{{#each (sort this.children "sort")}}
+{{#each this.children}}
 {{>actor/character/sections/spell}}
 {{/each}}
 {{/if}}
