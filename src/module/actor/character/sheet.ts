@@ -14,9 +14,9 @@ import {
 	TraitContainerGURPS,
 	TraitGURPS,
 } from "@item"
-import { Attribute, AttributeObj } from "@module/attribute"
+import { Attribute, AttributeObj, ThresholdOp } from "@module/attribute"
 import { ConditionalModifier } from "@module/conditional_modifier"
-import { ItemDataGURPS, ItemGURPS, ItemSourceGURPS } from "@module/config"
+import { ItemDataGURPS, ItemGURPS } from "@module/config"
 import { gid, ItemType, RollType, sheetSettingsFor, SYSTEM_NAME } from "@module/data"
 import { PDF } from "@module/pdf"
 import { ResourceTrackerObj } from "@module/resource_tracker"
@@ -25,7 +25,6 @@ import {
 	dollarFormat,
 	dom,
 	evaluateToNumber,
-	isContainer,
 	Length,
 	LocalizeGURPS,
 	newUUID,
@@ -40,6 +39,7 @@ import { PropertiesToSource } from "types/types/helperTypes"
 import { ItemDataBaseProperties } from "types/foundry/common/data/data.mjs/itemData"
 import { CharacterGURPS } from "./document"
 import { attribute } from "@util/enum"
+import EmbeddedCollection from "types/foundry/common/abstract/embedded-collection.mjs"
 
 export class CharacterSheetGURPS extends ActorSheetGURPS {
 	declare object: CharacterGURPS
@@ -1112,7 +1112,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 
 	getData(options?: Partial<ActorSheet.Options> | undefined): any {
 		this.actor.noPrepare = false
-		// this.actor.prepareData()
+		this.actor.prepareData()
 		const data = super.getData(options)
 		// const actorData = this.actor.toObject(false) as any
 		const [primary_attributes, secondary_attributes, point_pools] = this._prepareAttributes(this.actor.attributes)
@@ -1177,16 +1177,20 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			...this.actor.allEncumbrance,
 		]
 		const current = this.actor.encumbranceLevel(true).level
+
+		const move = Math.max(0, this.actor.resolveMove(this.actor.moveType))
+		const moveOps = this.actor.countThresholdOpMet(ThresholdOp.HalveMove)
+		const dodgeOps = this.actor.countThresholdOpMet(ThresholdOp.HalveDodge)
 		for (const e of encumbrance) {
 			if (e.level === current) e.active = true
 			e.carry = Weight.format(e.maximum_carry, this.actor.weightUnits)
 			e.move = {
-				current: this.actor.move(e),
-				effective: this.actor.eMove(e),
+				current: this.actor.move(e, move),
+				effective: this.actor.eMove(e, move, moveOps),
 			}
 			e.dodge = {
 				current: this.actor.dodge(e),
-				effective: this.actor.eDodge(e),
+				effective: this.actor.eDodge(e, dodgeOps),
 			}
 		}
 		return encumbrance
@@ -1212,34 +1216,38 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		}
 	}
 
-	private _addItemChildren(items: any[], item: any): any {
-		const children: any[] = []
-		for (const i of items.filter(e =>
-
-			!!e.flags[SYSTEM_NAME] &&
-			!!e.flags[SYSTEM_NAME][ItemFlags.Container] &&
-			e.flags[SYSTEM_NAME][ItemFlags.Container] === item._id
-		)) {
-			if ([ItemType.MeleeWeapon, ItemType.RangedWeapon].includes(i.type)) continue
-			children.push(this._addItemChildren(items, i))
-		}
-		if (isContainer(item)) item.children = children
-		return item
-	}
+	// private _addItemChildren(items: any[], item: any): any {
+	// 	const children: any[] = []
+	// 	for (const i of items.filter(e =>
+	//
+	// 		!!e.flags[SYSTEM_NAME] &&
+	// 		!!e.flags[SYSTEM_NAME][ItemFlags.Container] &&
+	// 		e.flags[SYSTEM_NAME][ItemFlags.Container] === item._id
+	// 	)) {
+	// 		if ([ItemType.MeleeWeapon, ItemType.RangedWeapon].includes(i.type)) continue
+	// 		children.push(this._addItemChildren(items, i))
+	// 	}
+	// 	if (isContainer(item)) item.children = children
+	// 	return item
+	// }
 
 	private _prepareItems(data: any) {
-		const items = data.items as any[]
+		// const items = data.items as any[]
+		const items = this.object.items as EmbeddedCollection<any, any>
 		const processedItems: any[] = []
 		for (const item of items.filter(e =>
 			!e.flags[SYSTEM_NAME] ||
 			!e.flags[SYSTEM_NAME][ItemFlags.Container] ||
 			e.flags[SYSTEM_NAME][ItemFlags.Container] === null
 		)) {
-			processedItems.push(this._addItemChildren(items, item))
+			// processedItems.push(this._addItemChildren(items, item))
+			processedItems.push(item)
 		}
 
 		const [traits, skills, spells, equipment, other_equipment, notes, effects] = processedItems.reduce(
-			(arr: ItemSourceGURPS[][], item: ItemSourceGURPS) => {
+			// (arr: ItemSourceGURPS[][], item: ItemSourceGURPS) => {
+			// const [traits, skills, spells, equipment, other_equipment, notes, effects] = items.reduce(
+			(arr: ItemGURPS[][], item: ItemGURPS) => {
 				if (item.type === ItemType.Trait || item.type === ItemType.TraitContainer) arr[0].push(item)
 				else if (
 					item.type === ItemType.Skill ||
@@ -1263,8 +1271,10 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			[[], [], [], [], [], [], []]
 		)
 
-		const melee = items.filter(e => e.type === ItemType.MeleeWeapon && e.system.calc.equipped)
-		const ranged = items.filter(e => e.type === ItemType.RangedWeapon && e.system.calc.equipped)
+		// const melee = items.filter(e => e.type === ItemType.MeleeWeapon && e.system.calc.equipped)
+		// const ranged = items.filter(e => e.type === ItemType.RangedWeapon && e.system.calc.equipped)
+		const melee = items.filter(e => e.type === ItemType.MeleeWeapon && e.equipped)
+		const ranged = items.filter(e => e.type === ItemType.RangedWeapon && e.equipped)
 		const reactions: ConditionalModifier[] = this.actor.reactions
 		const conditionalModifiers: ConditionalModifier[] = this.actor.conditionalModifiers
 

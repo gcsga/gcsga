@@ -1,11 +1,9 @@
 {{#unless @root/inCompendium}}
 <div class="quantity">{{ this.system.quantity }}</div>
 {{/unless}}
-<div
-	class="desc item{{#if (isContainer this)}} container{{/if}} other {{disabled this.system.calc.disabled}}"
-	data-item-id="{{ this._id }}"
-	{{{indent this.system.calc.indent}}}
->
+<div class="desc item{{#if (isContainer this)}} container{{/if}} other {{disabled this.system.calc.disabled}}"
+	data-item-id="{{ this._id }}" data-tooltip-direction="DOWN" data-tooltip="{{this.resolvedTooltip}}" {{{indent
+	this.parents.length}}}>
 	<div class="dropdown">
 		{{#if (eq this.type "equipment_container") }}
 		{{#if this.open }}
@@ -16,7 +14,7 @@
 		{{/if }}
 	</div>
 	<div class="name">{{ this.name }}</div>
-	{{{this.secondaryText}}}
+	{{{this.resolvedNotes}}}
 </div>
 {{#if @root/inCompendium}}
 <div class="uses {{disabled this.system.calc.disabled}}">{{ this.system.max_uses }}</div>

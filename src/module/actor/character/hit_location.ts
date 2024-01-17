@@ -101,7 +101,7 @@ class HitLocation implements HitLocationData {
 
 	dr_bonus!: number
 
-	description!: string
+	description: string = ""
 
 	sub_table?: HitLocationTableData
 
@@ -135,12 +135,12 @@ class HitLocation implements HitLocationData {
 	get subTable(): HitLocationTable | undefined {
 		return this.sub_table
 			? new HitLocationTable(
-					this.sub_table.name,
-					this.sub_table.roll,
-					this.sub_table.locations,
-					this.actor,
-					`${this.keyPrefix}.sub_table`
-				)
+				this.sub_table.name,
+				this.sub_table.roll,
+				this.sub_table.locations,
+				this.actor,
+				`${this.keyPrefix}.sub_table`
+			)
 			: undefined
 	}
 
@@ -151,6 +151,10 @@ class HitLocation implements HitLocationData {
 			result = result[path[i]]
 		}
 		return result
+	}
+
+	get descriptionTooltip(): string {
+		return this.description.replace(/\n/g, "<br>")
 	}
 
 	get tooltip(): string {
@@ -195,7 +199,7 @@ class HitLocation implements HitLocationData {
 			if (k === gid.All) continue
 			drMap.set(k, drMap.get(k)! + (drMap.get(gid.All) ?? 0))
 		}
-		if (drMap.size !== 0) tooltip?.unshift("<br><br>")
+		if (drMap.size !== 0) tooltip?.unshift("<br>")
 		for (const k of drMap.keys()) {
 			if (k === gid.All) continue
 			tooltip?.unshift(
@@ -219,12 +223,6 @@ class HitLocation implements HitLocationData {
 			LocalizeGURPS.format(LocalizeGURPS.translations.gurps.tooltip.dr_name, { name: this.table_name })
 		)
 
-		// If (tooltip && drMap?.entries.length !== 0) {
-		// 	drMap?.forEach(e => {
-		// 		tooltip.push(`TODO: ${e}`)
-		// 	})
-		// }
-		// this.calc.dr = Object.fromEntries(drMap)
 		return drMap
 	}
 

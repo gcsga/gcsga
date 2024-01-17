@@ -21,10 +21,12 @@ import { WeaponROF } from "@item/weapon/weapon_rof"
 import { WeaponShots } from "@item/weapon/weapon_shots"
 import { WeaponBulk } from "@item/weapon/weapon_bulk"
 import { WeaponRecoil } from "@item/weapon/weapon_recoil"
+import { ActorFlagsGURPS } from "@actor"
 
 export interface ActorResolver<T extends ActorType> {
 	type: T
 	equipment: Collection<EquipmentResolver | EquipmentContainerResolver>
+	flags: ActorFlagsGURPS
 }
 
 export interface LootResolver extends ActorResolver<ActorType.Loot> {
@@ -138,6 +140,7 @@ export interface LeveledItemResolver extends ItemResolver {
 	level: SkillLevelResolver
 	calculateLevel: () => SkillLevelResolver
 	updateLevel: () => boolean
+	adjustedPoints: (tooltip?: TooltipGURPS) => number
 }
 
 export interface SkillResolver extends LeveledItemResolver {

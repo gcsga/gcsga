@@ -61,7 +61,7 @@ export abstract class BonusOwner {
 
 	basicAddToTooltip(amt: LeveledAmount | WeaponLeveledAmount, tooltip: TooltipGURPS | null): void {
 		if (tooltip !== null) {
-			tooltip.push("\n")
+			// tooltip.push("\n")
 			tooltip.push(this.parentName)
 			tooltip.push(" [")
 			tooltip.push(amt.format(false))

@@ -9,7 +9,7 @@ import { difficulty, display } from "@util/enum"
 import { StringBuilder } from "@util/string_builder"
 
 export class SkillGURPS extends ItemGCS<SkillSource> {
-	level: SkillLevel = { level: 0, relative_level: 0, tooltip: new TooltipGURPS() }
+	level: SkillLevel = { level: -Infinity, relative_level: 0, tooltip: new TooltipGURPS() }
 
 	unsatisfied_reason = ""
 
@@ -121,24 +121,24 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		if (!actor) return -Infinity
 		let att = actor.resolveAttributeCurrent(this.attribute)
 		let effectiveAtt = actor.resolveAttributeEffective(this.attribute)
-		return this.calculateLevel().level - att + effectiveAtt
+		return this.level.level - att + effectiveAtt
 	}
 
 	// Point & Level Manipulation
 	calculateLevel(): SkillLevel {
 		const none = { level: -Infinity, relative_level: 0, tooltip: new TooltipGURPS() }
 		const actor = this.actor || this.dummyActor
-		if (!actor) return none
 		let relativeLevel = difficulty.Level.baseRelativeLevel(this.difficulty)
 		let level = actor.resolveAttributeCurrent(this.attribute)
 		const tooltip = new TooltipGURPS()
-		let points = this.adjustedPoints(tooltip)
+		let points = this.adjustedPoints()
 		const def = this.defaultedFrom
+		const diff = this.difficulty
 		if (level === -Infinity) return none
 		if (actor.settings.use_half_stat_defaults) {
 			level = Math.trunc(level / 2) + 5
 		}
-		if (this.difficulty === difficulty.Level.Wildcard) points /= 3
+		if (diff === difficulty.Level.Wildcard) points /= 3
 		else if (def && def.points > 0) points += def.points
 		points = Math.trunc(points)
 
@@ -152,7 +152,7 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 			case points >= 4:
 				relativeLevel += 1 + Math.floor(points / 4)
 				break
-			case this.difficulty !== difficulty.Level.Wildcard && def && def.points < 0:
+			case diff !== difficulty.Level.Wildcard && def && def.points < 0:
 				relativeLevel = def!.adjustedLevel - level
 				break
 			default:
@@ -162,15 +162,18 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 
 		if (level === -Infinity) return none
 		level += relativeLevel
-		if (this.difficulty !== difficulty.Level.Wildcard && def && level < def.adjustedLevel) {
+		if (diff !== difficulty.Level.Wildcard && def && level < def.adjustedLevel) {
 			level = def.adjustedLevel
 		}
 		let bonus = actor.skillBonusFor(this.name!, this.specialization, this.tags, tooltip)
-		const encumbrancePenalty = actor.encumbranceLevel(true).penalty * this.encumbrancePenaltyMultiplier
-		level += bonus + encumbrancePenalty
-		relativeLevel += bonus + encumbrancePenalty
+		level += bonus
+		relativeLevel += bonus
+		bonus = actor.encumbranceLevel(true).penalty * this.encumbrancePenaltyMultiplier
+		level += bonus
 		if (bonus !== 0) {
-			tooltip.push("TO DO")
+			tooltip.push(LocalizeGURPS.format(LocalizeGURPS.translations.gurps.item.encumbrance, {
+				amount: bonus.signedString()
+			}))
 		}
 		return {
 			level: level,
@@ -183,7 +186,6 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		let points = this.points
 		if (this.actor) {
 			points += this.actor.skillPointBonusFor(this.name!, this.specialization, this.tags, tooltip)
-			// Points += this.actor.bonusFor(`skills.points/${this.name}`, tooltip)
 			points = Math.max(points, 0)
 		}
 		return points
@@ -195,7 +197,7 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 	}
 
 	get relativeLevel(): string {
-		const level = this.calculateLevel()
+		const level = this.level
 		if (level.level === -Infinity) return "-"
 		return (
 			(this.actor?.attributes?.get(this.attribute)?.attribute_def.name ?? "") +
@@ -203,11 +205,14 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		)
 	}
 
+
 	updateLevel(): boolean {
 		const saved = this.level
 		this.defaultedFrom = this.bestDefaultWithPoints()
 		this.level = this.calculateLevel()
-		return saved.level !== this.level.level
+		if (saved)
+			return saved.level !== this.level.level
+		return true
 	}
 
 	bestDefaultWithPoints(_excluded?: SkillDefault): SkillDefault | null {
@@ -308,7 +313,7 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 
 	getPointsForLevel(level: number): number {
 		const basePoints = this.points
-		const oldLevel = this.calculateLevel().level
+		const oldLevel = this.level.level
 		if (oldLevel > level) {
 			for (let points = basePoints; points > 0; points--) {
 				this.system.points = points
@@ -335,7 +340,7 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		if (this.difficulty === difficulty.Level.Wildcard) maxPoints += 12
 		else maxPoints += 4
 
-		const oldLevel = this.calculateLevel().level
+		const oldLevel = this.level.level
 		for (let points = basePoints; points < maxPoints; points++) {
 			this.system.points = points
 			if (this.calculateLevel().level > oldLevel) {
@@ -352,7 +357,7 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		else minPoints -= 4
 		minPoints = Math.max(minPoints, 0)
 
-		let oldLevel = this.calculateLevel().level
+		let oldLevel = this.level.level
 		for (let points = basePoints; points >= minPoints; points--) {
 			this.system.points = points
 			if (this.calculateLevel().level < oldLevel) {
@@ -369,17 +374,6 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 					return this.update({ "system.points": this.points }, options)
 				}
 			}
-		}
-	}
-
-	protected _getCalcValues(): this["system"]["calc"] {
-		return {
-			...super._getCalcValues(),
-			level: this.skillLevel ?? 0,
-			rsl: this.relativeLevel ?? "",
-			points: this.adjustedPoints(),
-			tooltip: this.level?.tooltip.toString() ?? "",
-			difficulty: `${this.attribute.toUpperCase()}/${this.difficulty.toUpperCase()}`,
 		}
 	}
 }

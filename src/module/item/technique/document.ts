@@ -87,8 +87,8 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 	}
 
 	get relativeLevel(): string {
-		if (this.calculateLevel().level === -Infinity) return "-"
-		return this.calculateLevel().relative_level.signedString()
+		if (this.level.level === -Infinity) return "-"
+		return this.level.relative_level.signedString()
 	}
 
 	// Point & Level Manipulation
@@ -99,7 +99,7 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 	}
 
 	get effectiveLevel(): number {
-		return this.calculateLevel().level
+		return this.level.level
 	}
 
 	// // Used for defaults
@@ -157,7 +157,7 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 		function getDefaultSkillLevel(technique: TechniqueGURPS): number {
 			if (technique.default.type === gid.Skill) {
 				const sk = actor.baseSkill(technique.default, true)
-				return sk ? sk.calculateLevel().level : 0
+				return sk ? sk.level.level : 0
 			} else if (technique.default) {
 				return (
 					(technique.default?.skillLevelFast(actor, true, null, false) ?? 0) -
@@ -178,7 +178,7 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 		if (this.difficulty === difficulty.Level.Wildcard) maxPoints += 12
 		else maxPoints += 4
 
-		const oldLevel = this.calculateLevel().level
+		const oldLevel = this.level.level
 		for (let points = basePoints; points < maxPoints; points++) {
 			this.system.points = points
 			if (this.calculateLevel().level > oldLevel) {
@@ -195,7 +195,7 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 		else minPoints -= 4
 		minPoints = Math.max(minPoints, 0)
 
-		let oldLevel = this.calculateLevel().level
+		let oldLevel = this.level.level
 		for (let points = basePoints; points >= minPoints; points--) {
 			this.system.points = points
 			if (this.calculateLevel().level < oldLevel) {
@@ -221,7 +221,7 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 
 	getPointsForLevel(level: number): number {
 		const basePoints = this.points
-		const oldLevel = this.calculateLevel().level
+		const oldLevel = this.level.level
 		if (oldLevel > level) {
 			for (let points = basePoints; points > 0; points--) {
 				this.system.points = points
@@ -239,17 +239,6 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 				}
 			}
 			return 100
-		}
-	}
-
-	protected _getCalcValues(): this["system"]["calc"] {
-		return {
-			...super._getCalcValues(),
-			level: this.skillLevel ?? 0,
-			rsl: this.relativeLevel ?? "",
-			points: this.adjustedPoints(),
-			tooltip: this.calculateLevel()?.tooltip.toString() ?? "",
-			difficulty: this.difficulty.toUpperCase(),
 		}
 	}
 }

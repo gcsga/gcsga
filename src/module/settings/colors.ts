@@ -97,6 +97,7 @@ export class ColorSettings extends SettingsMenuGURPS {
 					colorLinkPressed: { light: "#0080FF", dark: "#0060A0" },
 					colorLinkRollover: { light: "#00C000", dark: "#00B300" },
 					colorAccent: { light: "#006666", dark: "#649999" },
+					colorTooltipMarker: { light: "#804080", dark: "#996499" },
 					colorButtonRoll: { light: "#fff973", dark: "#55b6b9" },
 					colorOnButtonRoll: { light: "#000000", dark: "#dddddd" },
 					colorButtonRollRollover: { light: "#fff426", dark: "#48999c" },

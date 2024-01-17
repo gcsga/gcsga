@@ -88,18 +88,6 @@ export class RangedWeaponGURPS extends BaseWeaponGURPS<RangedWeaponSource> {
 		return wr
 	}
 
-	protected _getCalcValues(): this["system"]["calc"] {
-		return {
-			...super._getCalcValues(),
-			accuracy: this.accuracy.current ?? this.system.accuracy,
-			range: this.range.current ?? this.system.range,
-			rate_of_fire: this.rate_of_fire.current ?? this.system.rate_of_fire,
-			shots: this.shots.current ?? this.system.shots,
-			bulk: this.bulk.current ?? this.system.bulk,
-			recoil: this.recoil.current ?? this.system.recoil,
-		}
-	}
-
 	checkUnready(type: RollType): void {
 		const check = game.settings.get(SYSTEM_NAME, SETTINGS.AUTOMATIC_UNREADY) as boolean
 		if (!check) return

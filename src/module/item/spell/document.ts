@@ -6,6 +6,7 @@ import { LocalizeGURPS, NewLineRegex, resolveStudyHours, studyHoursProgressText 
 import { SpellSource } from "./data"
 import { difficulty, display } from "@util/enum"
 import { StringBuilder } from "@util/string_builder"
+import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
 
 export class SpellGURPS extends ItemGCS<SpellSource> {
 	level: SkillLevel = { level: 0, relative_level: 0, tooltip: new TooltipGURPS() }
@@ -114,17 +115,15 @@ export class SpellGURPS extends ItemGCS<SpellSource> {
 	}
 
 	get skillLevel(): string {
-		// if (this.calculateLevel().level === -Infinity) return "-"
-		// return this.calculateLevel().level.toString()
 		if (this.effectiveLevel === -Infinity) return "-"
 		return this.effectiveLevel.toString()
 	}
 
 	get relativeLevel(): string {
-		if (this.calculateLevel().level === -Infinity) return "-"
+		if (this.level.level === -Infinity) return "-"
 		return (
 			(this.actor?.attributes?.get(this.attribute)?.attribute_def.name ?? "") +
-			this.calculateLevel().relative_level.signedString()
+			this.level.relative_level.signedString()
 		)
 	}
 
@@ -136,10 +135,11 @@ export class SpellGURPS extends ItemGCS<SpellSource> {
 	}
 
 	get effectiveLevel(): number {
-		if (!this.actor) return -Infinity
-		let att = this.actor.resolveAttributeCurrent(this.attribute)
-		let effectiveAtt = this.actor.resolveAttributeEffective(this.attribute)
-		return this.calculateLevel().level - att + effectiveAtt
+		const actor = this.actor || this.dummyActor
+		if (!actor) return -Infinity
+		let att = actor.resolveAttributeCurrent(this.attribute)
+		let effectiveAtt = actor.resolveAttributeEffective(this.attribute)
+		return this.level.level - att + effectiveAtt
 	}
 
 	calculateLevel(): SkillLevel {
@@ -150,15 +150,19 @@ export class SpellGURPS extends ItemGCS<SpellSource> {
 			let points = Math.trunc(this.points)
 			level = this.actor.resolveAttributeCurrent(this.attribute)
 			if (this.difficulty === difficulty.Level.Wildcard) points = Math.trunc(points / 3)
-			if (points < 1) {
-				level = -Infinity
-				relativeLevel = 0
-			} else if (points === 0) {
-				// Do nothing
-			} else if (points < 4) {
-				relativeLevel += 1
-			} else {
-				relativeLevel += 1 + Math.trunc(points / 4)
+			switch (true) {
+				case points === 1:
+					// relativeLevel is preset to this point value
+					break
+				case points > 1 && points < 4:
+					relativeLevel += 1
+					break
+				case points >= 4:
+					relativeLevel += 1 + Math.floor(points / 4)
+					break
+				default:
+					level = -Infinity
+					relativeLevel = 0
 			}
 			if (level !== -Infinity) {
 				relativeLevel += this.actor.spellBonusFor(
@@ -179,22 +183,22 @@ export class SpellGURPS extends ItemGCS<SpellSource> {
 		}
 	}
 
-	incrementSkillLevel() {
+	incrementSkillLevel(options?: DocumentModificationOptions) {
 		const basePoints = this.points + 1
 		let maxPoints = basePoints
 		if (this.difficulty === difficulty.Level.Wildcard) maxPoints += 12
 		else maxPoints += 4
 
-		const oldLevel = this.calculateLevel().level
+		const oldLevel = this.level.level
 		for (let points = basePoints; points < maxPoints; points++) {
 			this.system.points = points
 			if (this.calculateLevel().level > oldLevel) {
-				return this.update({ "system.points": points })
+				return this.update({ "system.points": points }, options)
 			}
 		}
 	}
 
-	decrementSkillLevel() {
+	decrementSkillLevel(options?: DocumentModificationOptions) {
 		if (this.points <= 0) return
 		const basePoints = this.points
 		let minPoints = basePoints
@@ -202,7 +206,7 @@ export class SpellGURPS extends ItemGCS<SpellSource> {
 		else minPoints -= 4
 		minPoints = Math.max(minPoints, 0)
 
-		let oldLevel = this.calculateLevel().level
+		let oldLevel = this.level.level
 		for (let points = basePoints; points >= minPoints; points--) {
 			this.system.points = points
 			if (this.calculateLevel().level < oldLevel) {
@@ -216,19 +220,9 @@ export class SpellGURPS extends ItemGCS<SpellSource> {
 				this.system.points = Math.max(this.points - 1, 0)
 				if (this.calculateLevel().level !== oldLevel) {
 					this.system.points++
-					return this.update({ "system.points": this.points })
+					return this.update({ "system.points": this.points }, options)
 				}
 			}
-		}
-	}
-
-	protected _getCalcValues(): this["system"]["calc"] {
-		return {
-			...super._getCalcValues(),
-			level: this.skillLevel ?? 0,
-			rsl: this.relativeLevel ?? "",
-			points: this.adjustedPoints(),
-			tooltip: this.level?.tooltip.toString() ?? "",
 		}
 	}
 
@@ -238,7 +232,7 @@ export class SpellGURPS extends ItemGCS<SpellSource> {
 
 	getPointsForLevel(level: number): number {
 		const basePoints = this.points
-		const oldLevel = this.calculateLevel().level
+		const oldLevel = this.level.level
 		if (oldLevel > level) {
 			for (let points = basePoints; points > 0; points--) {
 				this.system.points = points

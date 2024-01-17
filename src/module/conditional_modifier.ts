@@ -1,3 +1,5 @@
+import { StringBuilder } from "@util/string_builder"
+
 export class ConditionalModifier {
 	from: string
 
@@ -18,5 +20,14 @@ export class ConditionalModifier {
 
 	get total(): number {
 		return this.amounts.reduce((partialSum, a) => partialSum + a, 0)
+	}
+
+	get tooltip(): string {
+		const buffer = new StringBuilder()
+		this.sources.forEach((value, index) => {
+			if (buffer.length !== 0) buffer.push("<br>")
+			buffer.push(`${this.amounts[index].signedString()} ${value}`)
+		})
+		return buffer.toString()
 	}
 }

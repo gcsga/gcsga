@@ -1,8 +1,6 @@
-<div
-	class="desc item{{#if (isContainer this)}} container{{/if}} other {{disabled (not this.system.calc.enabled)}}"
-	data-item-id="{{ this._id }}"
-	{{{indent this.system.calc.indent}}}
->
+<div class="desc item{{#if (isContainer this)}} container{{/if}} other {{disabled (not this.enabled)}}"
+	data-tooltip-direction="DOWN" data-tooltip="{{this.resolvedTooltip}}" data-item-id="{{ this._id }}" {{{indent
+	this.parents.length}}}>
 	<div class="dropdown">
 		{{#if (or (isContainer this) this.children.size)}}
 		{{#if this.system.open}}
@@ -13,11 +11,12 @@
 		{{/if}}
 	</div>
 	<div class="name">
-		{{this.system.calc.name}}
+		{{this.formattedName}}
 		<div class="container-type">
-{{#if (and (isContainer this) (ne this.system.container_type "group"))}}{{localize (concat "gurps.character.traits.container_type." this.system.container_type)}}{{/if}}</div>
+			{{#if (and (isContainer this) (ne this.system.container_type "group"))}}{{localize (concat
+			"gurps.character.traits.container_type." this.system.container_type)}}{{/if}}</div>
 	</div>
-	{{{this.system.calc.resolved_notes}}}
+	{{{this.resolvedNotes}}}
 </div>
 <div class="points {{disabled (not this.enabled)}}">{{this.adjustedPoints}}</div>
 {{#if @root/inCompendium}}

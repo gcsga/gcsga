@@ -18,11 +18,4 @@ export class SpellContainerGURPS extends ItemGCS<SpellContainerSource> {
 		for (const child of this.children) points += child.adjustedPoints()
 		return points
 	}
-
-	protected _getCalcValues(): this["system"]["calc"] {
-		return {
-			...super._getCalcValues(),
-			points: this.adjustedPoints(),
-		}
-	}
 }

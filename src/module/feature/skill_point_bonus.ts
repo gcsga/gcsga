@@ -1,7 +1,8 @@
 import { feature } from "@util/enum"
 import { BonusOwner } from "./bonus_owner"
 import { LeveledAmount, LeveledAmountObj } from "./leveled_amount"
-import { StringCompareType, StringCriteria } from "@util"
+import { LocalizeGURPS, StringCompareType, StringCriteria } from "@util"
+import { TooltipGURPS } from "@module/tooltip"
 
 export interface SkillPointBonusObj extends LeveledAmountObj {
 	name?: StringCriteria
@@ -33,6 +34,21 @@ export class SkillPointBonus extends BonusOwner {
 			name: this.name,
 			specialization: this.specialization,
 			tags: this.tags,
+		}
+	}
+
+	addToTooltip(tooltip: TooltipGURPS | null): void {
+		if (tooltip !== null) {
+			let lang = LocalizeGURPS.translations.gurps.feature.points_multiple
+			if (this.adjustedAmount === 1)
+				lang = LocalizeGURPS.translations.gurps.feature.points_one
+			if (tooltip.length !== 0) tooltip.push("<br>")
+			tooltip.push(LocalizeGURPS.format(
+				lang, {
+				source: this.parentName,
+				amount: this.leveledAmount.format(false)
+			}
+			))
 		}
 	}
 

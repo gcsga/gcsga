@@ -43,15 +43,6 @@ export class MeleeWeaponGURPS extends BaseWeaponGURPS<MeleeWeaponSource> {
 		return wr
 	}
 
-	protected _getCalcValues(): this["system"]["calc"] {
-		return {
-			...super._getCalcValues(),
-			reach: this.reach.current ?? this.system.reach,
-			parry: this.parry.current ?? this.system.parry,
-			block: this.block.current ?? this.system.block,
-		}
-	}
-
 	checkUnready(type: RollType): void {
 		const check = game.settings.get(SYSTEM_NAME, SETTINGS.AUTOMATIC_UNREADY) as boolean
 		if (!check) return

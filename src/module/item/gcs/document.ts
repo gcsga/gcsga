@@ -5,13 +5,14 @@ import { BaseWeaponGURPS } from "@item/weapon"
 import { Feature, ItemDataGURPS } from "@module/config"
 import { ActorType, ItemType, SYSTEM_NAME } from "@module/data"
 import { PrereqList } from "@prereq"
-import { EvalEmbeddedRegex, replaceAllStringFunc, resolveStudyHours, sheetDisplayNotes } from "@util"
+import { EvalEmbeddedRegex, LocalizeGURPS, SkillResolver, replaceAllStringFunc, resolveStudyHours, sheetDisplayNotes } from "@util"
 import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
 import { ItemDataConstructorData } from "types/foundry/common/data/data.mjs/itemData"
 import { BaseUser } from "types/foundry/common/documents.mjs"
 import { MergeObjectOptions } from "types/foundry/common/utils/helpers.mjs"
 import { ItemGCSSource } from "./data"
 import { display, feature, study } from "@util/enum"
+import { TooltipGURPS } from "@module/tooltip"
 
 export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> extends ContainerGURPS<SourceType> {
 	unsatisfied_reason = ""
@@ -41,15 +42,6 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 		if (this.parent instanceof Actor && context?.noPrepare)
 			this.parent.noPrepare = true
 		return super.update(data, context)
-		// if (!(this.parent instanceof Item)) {
-		// 	// if (this.parent instanceof Actor)
-		// 	// 	this.parent.noPrepare = context?.noPrepare ?? false
-		// 	return super.update(data, context)
-		// }
-		// data._id = this.id
-		// await this.container?.updateEmbeddedDocuments("Item", [data])
-		// // @ts-expect-error type not properly declared, to do later
-		// this.render(false, { action: "update", data: data })
 	}
 
 	override get actor(): (typeof CONFIG.GURPS.Actor.documentClasses)[ActorType.Character] | null {
@@ -97,6 +89,48 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 	}
 
 	secondaryText(_optionChecker: (option: display.Option) => boolean): string {
+		return ""
+	}
+
+	get resolvedNotes(): string {
+		return sheetDisplayNotes(this.secondaryText(display.Option.isInline))
+	}
+
+	get resolvedTooltip(): string {
+		return this.secondaryText(display.Option.isTooltip)
+	}
+
+	get levelTooltip(): string {
+		if ([
+			ItemType.Skill,
+			ItemType.Technique,
+			ItemType.Spell,
+			ItemType.RitualMagicSpell
+		].includes(this.type)) {
+			const sk = this as unknown as SkillResolver
+			if (sk.level.tooltip.length === 0) return ""
+			const tooltip = new TooltipGURPS()
+			tooltip.push(`${LocalizeGURPS.translations.gurps.common.includes_modifiers_from}:<br>`)
+			tooltip.push(sk.level.tooltip)
+			return tooltip.toString()
+		}
+		return ""
+	}
+
+	get pointsTooltip(): string {
+		if ([
+			ItemType.Skill,
+			ItemType.Technique,
+			ItemType.Spell,
+			ItemType.RitualMagicSpell
+		].includes(this.type)) {
+			const sk = this as unknown as SkillResolver
+			const tooltip = new TooltipGURPS()
+			sk.adjustedPoints(tooltip)
+			if (tooltip.length)
+				tooltip.unshift(`${LocalizeGURPS.translations.gurps.common.includes_modifiers_from}:<br>`)
+			return tooltip.toString()
+		}
 		return ""
 	}
 
@@ -176,19 +210,19 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 
 	prepareData(): void {
 		if (this.parent?.noPrepare) return
+		if ([
+			ItemType.Skill,
+			ItemType.Technique,
+			ItemType.Spell,
+			ItemType.RitualMagicSpell
+		].includes(this.type)) {
+			const sk = this as unknown as SkillResolver
+			sk.level = sk.calculateLevel()
+		}
 		super.prepareData()
 	}
 
-	protected _getCalcValues(): this["system"]["calc"] {
-		return {
-			name: this.formattedName,
-			indent: this.parents.length,
-			resolved_notes: sheetDisplayNotes(this.secondaryText(display.Option.isInline), { unsatisfied: this.unsatisfied_reason }),
-		}
+	prepareDerivedData(): void {
 	}
 
-	prepareDerivedData(): void {
-		this.system.calc = this._getCalcValues()
-		this._source.system.calc = this._getCalcValues()
-	}
 }

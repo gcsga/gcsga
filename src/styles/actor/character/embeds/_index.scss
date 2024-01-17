@@ -45,6 +45,7 @@
 	.item-list.dragindirect::before {
 		background-color: rgba(var(--color-drop-area), 0.5);
 	}
+
 	/* :not(.header) { */
 	/* 	&.desc, */
 	/* 	&.points, */
@@ -79,16 +80,19 @@
 			"dropdown name"
 			"blank notes";
 		grid-template-columns: min-content auto;
+
 		.dropdown {
 			min-width: 0.75em;
 			margin-right: 6px;
 		}
+
 		.name {
 			font: inherit;
 			background: transparent;
 			color: inherit;
 			grid-area: name;
 		}
+
 		.item-notes {
 			grid-area: notes;
 		}
@@ -111,33 +115,43 @@
 
 	> div > :not(.header) {
 		padding: var(--padding-standard);
+
 		&.quantity {
 			min-width: 1em; //possibly unnecessary
 		}
+
 		&.border-top {
 			border-top: 2px dashed rgb(var(--color-drop-area));
+
 			&.desc {
 				border-top: none;
+
 				.name {
 					border-top: 2px dashed rgb(var(--color-drop-area));
 				}
 			}
 		}
+
 		&.border-bottom {
 			border-bottom: 2px dashed rgb(var(--color-drop-area));
+
 			&.desc {
 				border-bottom: none;
+
 				.item-notes {
 					border-bottom: 2px dashed rgb(var(--color-drop-area));
 				}
 			}
 		}
+
 		&.border-in {
 			border-top: 2px dashed rgb(var(--color-drop-area));
 			border-bottom: 2px dashed rgb(var(--color-drop-area));
+
 			&.desc {
 				border-left: 2px dashed rgb(var(--color-drop-area));
 			}
+
 			&.reference {
 				border-right: 2px dashed rgb(var(--color-drop-area));
 			}
@@ -184,11 +198,13 @@
 		color: rgba(var(--color-on-content), 1);
 		font: var(--font-page-primary-fields);
 	}
+
 	.item-notes,
 	.item-notes > div {
 		font: var(--font-page-secondary-fields);
 		background-color: transparent;
 		overflow-x: hidden;
+
 		&.unsatisfied {
 			display: flex;
 			gap: 5px;
@@ -198,16 +214,20 @@
 			padding: 0 5px;
 		}
 	}
+
 	.reference:not(.header) {
 		display: flex;
 		flex-direction: row;
 		color: rgba(var(--color-link), 1) !important;
+
 		.ref {
 			background-color: transparent;
 			cursor: pointer;
+
 			&:hover {
 				color: rgba(var(--color-link-rollover), 1) !important;
 			}
+
 			&:active {
 				color: rgba(var(--color-link-pressed), 1) !important;
 			}
@@ -216,6 +236,7 @@
 
 	.dropdown a {
 		background-color: inherit;
+
 		svg {
 			background-color: inherit;
 			fill: rgba(var(--color-on-content), 1);
