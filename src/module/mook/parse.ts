@@ -248,7 +248,7 @@ export class MookParser {
 
 			t = this.cleanLine(t)
 
-			const trait: MookTrait = {
+			const trait = new MookTrait({
 				name: t,
 				points,
 				cr,
@@ -256,7 +256,7 @@ export class MookParser {
 				notes: "",
 				reference: "",
 				modifiers,
-			}
+			})
 			this.object.traits.push(trait)
 		})
 	}
@@ -268,12 +268,12 @@ export class MookParser {
 			if (m.split(",").length === 2) {
 				// assumes common format for modifier notation
 				const mod = m.split(",")
-				modifiers.push({
+				modifiers.push(new MookTraitModifier({
 					name: mod[0].trim(),
 					cost: mod[1].trim(),
 					notes: "",
 					reference: "",
-				})
+				}))
 			}
 		})
 		return modifiers
@@ -306,6 +306,7 @@ export class MookParser {
 		text.split(";").forEach(t => {
 			t = this.cleanLine(t).trim().replace("\n", "")
 			if (!t) return
+			console.log(t)
 
 			// Capture points
 			let points = 0
@@ -352,7 +353,7 @@ export class MookParser {
 
 			t = this.cleanLine(t)
 
-			const skill: MookSkill = {
+			const skill = new MookSkill({
 				name: t,
 				difficulty: `${attribute}/${diff}`,
 				points,
@@ -361,7 +362,7 @@ export class MookParser {
 				tech_level: tl,
 				notes: "",
 				reference: "",
-			}
+			})
 			this.object.skills.push(skill)
 		})
 	}
@@ -431,7 +432,7 @@ export class MookParser {
 
 			t = this.cleanLine(t)
 
-			const spell: MookSpell = {
+			const spell = new MookSpell({
 				name: t,
 				college: [],
 				difficulty: `${attribute}/${diff}`,
@@ -440,7 +441,7 @@ export class MookParser {
 				tech_level: tl,
 				notes: "",
 				reference: "",
-			}
+			})
 			this.object.spells.push(spell)
 		})
 	}
@@ -708,7 +709,7 @@ export class MookParser {
 			notes = this.cleanLine(notes)
 
 			if (isRanged) {
-				const rangedWeapon: MookRanged = {
+				const rangedWeapon = new MookRanged({
 					name,
 					accuracy,
 					range: half_damage > 0 && max_range > 0 ? `${half_damage}/${max_range}` : range,
@@ -721,10 +722,10 @@ export class MookParser {
 					strength: ST,
 					notes,
 					damage,
-				}
+				})
 				this.object.ranged.push(rangedWeapon)
 			} else {
-				const meleeWeapon: MookMelee = {
+				const meleeWeapon = new MookMelee({
 					name,
 					reach,
 					strength: ST,
@@ -734,7 +735,7 @@ export class MookParser {
 					block,
 					notes,
 					reference,
-				}
+				})
 				this.object.melee.push(meleeWeapon)
 			}
 		})

@@ -7,6 +7,7 @@ import { Mook } from "./document"
 import { attribute } from "@util/enum"
 import { MookParser } from "./parse"
 import { DialogGURPS } from "@ui"
+import { MookTrait } from "./data"
 
 export class MookGeneratorSheet extends FormApplication {
 	config: CharacterSheetConfig | null = null
@@ -63,12 +64,12 @@ export class MookGeneratorSheet extends FormApplication {
 				? LocalizeGURPS.translations.gurps.system.mook.test
 				: LocalizeGURPS.translations.gurps.system.mook.create,
 			text: {
-				traits: this.object.traits.toString(),
-				skills: this.object.skills.toString(),
-				spells: this.object.spells.toString(),
-				equipment: this.object.equipment.toString(),
-				melee: this.object.melee.toString(),
-				ranged: this.object.traits.toString(),
+				traits: this.object.traits.reduce((acc, e) => { if (acc !== "") acc += "\n"; acc += e.toString(); return acc }, ""),
+				skills: this.object.skills.reduce((acc, e) => { if (acc !== "") acc += "\n"; acc += e.toString(); return acc }, ""),
+				spells: this.object.spells.reduce((acc, e) => { if (acc !== "") acc += "\n"; acc += e.toString(); return acc }, ""),
+				equipment: this.object.equipment.reduce((acc, e) => { if (acc !== "") acc += "\n"; acc += e.toString(); return acc }, ""),
+				melee: this.object.melee.reduce((acc, e) => { if (acc !== "") acc += "\n"; acc += e.toString(); return acc }, ""),
+				ranged: this.object.ranged.reduce((acc, e) => { if (acc !== "") acc += "\n"; acc += e.toString(); return acc }, ""),
 				catchall: this.object.text.catchall,
 			},
 		})
