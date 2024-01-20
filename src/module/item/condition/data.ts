@@ -180,7 +180,7 @@ export const ApplicableConditions = [
 	ConditionID.Hallucinating,
 	ConditionID.Drunk,
 	ConditionID.Drowsy,
-	ConditionID.Daze
+	ConditionID.Daze,
 ]
 
 export type EffectID = ConditionID | ManeuverID

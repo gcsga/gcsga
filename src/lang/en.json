@@ -1032,23 +1032,23 @@
 				"cancel": "Cancel",
 				"start": "Importing library: {name}",
 				"finished": "Finished importing {number} items."
-			},
-			"mook": {
-				"title": "Mook Generator",
-				"name": "Mook",
-				"attributes": "Attributes",
-				"traits": "Traits",
-				"skills": "Skills/Techniques",
-				"spells": "Spells",
-				"melee": "Melee Attacks",
-				"equipment": "Equipment",
-				"ranged": "Ranged Attacks",
-				"notes": "Notes",
-				"catchall": "Input",
-				"import": "Import Stat Block",
-				"test": "Test Mook",
-				"create": "Create Mook"
 			}
+		},
+		"mook": {
+			"title": "Mook Generator",
+			"name": "Mook",
+			"attributes": "Attributes",
+			"traits": "Traits",
+			"skills": "Skills/Techniques",
+			"spells": "Spells",
+			"melee": "Melee Attacks",
+			"equipment": "Equipment",
+			"ranged": "Ranged Attacks",
+			"notes": "Notes",
+			"catchall": "Input",
+			"import": "Import Stat Block",
+			"test": "Test Mook",
+			"create": "Create Mook"
 		},
 		"token_modifier_window": {
 			"button": "Token Modifiers",

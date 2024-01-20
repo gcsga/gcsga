@@ -1,8 +1,7 @@
 export class DialogGURPS extends Dialog {
-
 	static get defaultOptions(): DialogOptions {
 		return mergeObject(super.defaultOptions, {
-			classes: [...super.defaultOptions.classes, "gurps"]
+			classes: [...super.defaultOptions.classes, "gurps"],
 		})
 	}
 

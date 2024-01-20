@@ -1,25 +1,18 @@
 #portrait {
 	// Layout
-	grid-area: portrait;
 	display: grid;
 	grid-template:
 		"header"
 		"portrait";
 	grid-template-rows: 0fr auto;
-	width: fit-content;
 	border: var(--standard-border);
 
 	// Image displayed as background-image
 	.img-display {
-		// background-position: center;
-		// background-repeat: no-repeat;
-		// background-size: cover;
-		// height: 100%;
 		background-position: center;
 		background-repeat: no-repeat;
 		background-size: cover;
-		/* width: 7.6875rem; */
-		max-width: 140px;
+		max-width: 158px;
 		aspect-ratio: 1/1;
 
 		// Actual portait element (invisible)

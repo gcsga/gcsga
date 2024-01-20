@@ -26,6 +26,7 @@ import {
 	TraitModifierSource,
 } from "@item/data"
 import { attribute, progression } from "@util/enum"
+import { NoteSource } from "@item"
 
 export class Mook {
 	type = "mook"
@@ -135,7 +136,7 @@ export class Mook {
 		}
 	}
 
-	private newAttributes(defs: AttributeDefObj[]): AttributeObj[] {
+	newAttributes(defs: AttributeDefObj[]): AttributeObj[] {
 		const atts: AttributeObj[] = []
 		let i = 0
 		for (const def of defs) {
@@ -279,6 +280,7 @@ export class Mook {
 	}
 
 	async createActor(): Promise<CharacterGURPS> {
+		const date = new Date().toISOString()
 		const data: DeepPartial<CharacterSource> = {
 			system: {
 				settings: mergeObject(game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`), {
@@ -287,6 +289,8 @@ export class Mook {
 				}),
 				attributes: this.system.attributes,
 				profile: this.profile,
+				created_date: date,
+				modified_date: date,
 			},
 			items: await this._createItemData(),
 		}
@@ -319,7 +323,9 @@ export class Mook {
 		for (const spell of this.spells) items.push(await this._getSpellItemData(spell))
 		for (const melee of this.melee) items.push(this._getMeleeItemData(melee))
 		for (const ranged of this.ranged) items.push(this._getRangedItemData(ranged))
+		items.push(this._getNoteItemData(this.text.catchall))
 
+		console.log(items)
 		return items
 	}
 
@@ -342,7 +348,6 @@ export class Mook {
 			},
 		}
 		items.push(data)
-		// @ts-expect-error not sure why this is complaining
 		items.push(...trait.modifiers.map(m => this._getTraitModifierItemData(m, id)))
 		return items
 	}
@@ -350,9 +355,9 @@ export class Mook {
 	private _getTraitModifierItemData(
 		modifier: MookTraitModifier,
 		container_id: string
-	): DeepPartial<TraitModifierSource>[] {
-		const items: DeepPartial<TraitModifierSource>[] = []
+	): DeepPartial<TraitModifierSource> {
 		const id = randomID()
+		console.log(modifier)
 		const data: DeepPartial<TraitModifierSource> = {
 			name: modifier.name,
 			type: ItemType.TraitModifier,
@@ -366,11 +371,10 @@ export class Mook {
 				name: modifier.name,
 				notes: modifier.notes,
 				reference: modifier.reference,
-				cost: parseInt(modifier.cost),
+				cost: parseInt(modifier.cost) || 0,
 			},
 		}
-		items.push(data)
-		return items
+		return data
 	}
 
 	private async _getSkillItemData(skill: MookSkill): Promise<DeepPartial<SkillSource>> {
@@ -382,22 +386,14 @@ export class Mook {
 			flags: { [SYSTEM_NAME]: { [ItemFlags.Container]: null } },
 			system: {
 				name: skill.name,
+				specialization: skill.specialization,
 				notes: skill.notes,
 				reference: skill.reference,
 				tech_level: skill.tech_level,
-				difficulty: skill.difficulty,
+				difficulty: `${skill.attribute}/${skill.difficulty}`,
 				points: skill.points,
 			},
 		}
-		// const tempSkill =
-		// 	await SkillGURPS.create(data as SkillSource, { temporary: true }) as SkillGURPS
-		// tempSkill.dummyActor = this
-		// tempSkill.updateLevel()
-		// while (tempSkill.level.level !== skill.level) {
-		// 	tempSkill.incrementSkillLevel(true)
-		// 	tempSkill.updateLevel()
-		// }
-		// data.system!.points = tempSkill.points
 		return data
 	}
 
@@ -413,20 +409,11 @@ export class Mook {
 				notes: spell.notes,
 				reference: spell.reference,
 				tech_level: spell.tech_level,
-				difficulty: spell.difficulty,
+				difficulty: `${spell.attribute}/${spell.difficulty}`,
 				points: spell.points,
 				college: spell.college,
 			},
 		}
-		// const tempSpell =
-		// 	await SpellGURPS.create(data as SpellSource, { temporary: true }) as SpellGURPS
-		// tempSpell.dummyActor = this
-		// tempSpell.updateLevel()
-		// while (tempSpell.level.level !== spell.level) {
-		// 	tempSpell.incrementSkillLevel()
-		// 	tempSpell.updateLevel()
-		// }
-		// data.system!.points = tempSpell.points
 		return data
 	}
 
@@ -480,6 +467,19 @@ export class Mook {
 						modifier: ranged.level - 10,
 					},
 				],
+			},
+		}
+		return data
+	}
+
+	private _getNoteItemData(note: string): DeepPartial<NoteSource> {
+		const id = randomID()
+		const data: DeepPartial<NoteSource> = {
+			name: "Note",
+			type: ItemType.Note,
+			_id: id,
+			system: {
+				text: note,
 			},
 		}
 		return data
