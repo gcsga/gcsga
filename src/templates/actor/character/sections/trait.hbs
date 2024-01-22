@@ -1,8 +1,9 @@
-<div class="desc item {{#if (in this.type '_container')}}container {{/if}}{{disabled (not this.enabled)}}" data-uuid="{{this.uuid}}" {{{indent this.parents.length}}}>
+<div class="desc item{{#if (isContainer this)}} container{{/if}} other {{disabled (not this.enabled)}}"
+	data-tooltip-direction="DOWN" data-tooltip="{{this.resolvedTooltip}}" data-item-id="{{ this._id }}" {{{indent
+	this.parents.length}}}>
 	<div class="dropdown">
-		{{!-- {{#if (eq this.type "trait_container")}} --}}
-		{{#if (or (eq this.type "trait_container") this.children.size)}}
-		{{#if this.open}}
+		{{#if (or (isContainer this) this.children.size)}}
+		{{#if this.system.open}}
 		{{>actor/character/sections/dropdown-open}}
 		{{else}}
 		{{>actor/character/sections/dropdown-closed}}
@@ -11,12 +12,18 @@
 	</div>
 	<div class="name">
 		{{this.formattedName}}
+		<div class="container-type">
+			{{#if (and (isContainer this) (ne this.system.container_type "group"))}}{{localize (concat
+			"gurps.character.traits.container_type." this.system.container_type)}}{{/if}}</div>
 	</div>
-	{{>actor/character/sections/item-notes}}
+	{{{this.resolvedNotes}}}
 </div>
 <div class="points {{disabled (not this.enabled)}}">{{this.adjustedPoints}}</div>
-<div class="reference" data-pdf="{{this.reference}}" {{disabled (not this.enabled)}}>{{ref this.reference}}</div>
-{{#if this.open}}
+{{#if @root/inCompendium}}
+<div class="tags">{{join this.tags ", "}}</div>
+{{/if}}
+<div class="reference" {{disabled (not this.enabled)}}>{{{ref this.system.reference}}}</div>
+{{#if this.system.open}}
 {{#each (sort this.children "sort")}}
 {{>actor/character/sections/trait}}
 {{/each}}

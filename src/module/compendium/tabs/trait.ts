@@ -1,5 +1,6 @@
-import { SYSTEM_NAME } from "@module/data"
-import { CompendiumBrowser, CompendiumIndexData } from ".."
+import { ItemType, SYSTEM_NAME } from "@module/data"
+import { CompendiumBrowser } from "../browser"
+import { CompendiumIndexData, TabName } from "../data"
 import { CompendiumTab } from "./base"
 
 export class CompendiumTraitTab extends CompendiumTab {
@@ -10,7 +11,7 @@ export class CompendiumTraitTab extends CompendiumTab {
 	}
 
 	constructor(browser: CompendiumBrowser) {
-		super(browser, "trait")
+		super(browser, TabName.Trait)
 	}
 
 	protected override async loadData(): Promise<void> {
@@ -19,14 +20,14 @@ export class CompendiumTraitTab extends CompendiumTab {
 
 		for await (const { pack, index } of this.browser.packLoader.loadPacks(
 			"Item",
-			this.browser.loadedPacks("trait"),
+			this.browser.loadedPacks(TabName.Trait),
 			indexFields
 		)) {
-			const collection = (game as Game).packs.get(pack.collection)
+			const collection = game.packs.get(pack.collection)
 			;((await collection?.getDocuments()) as any).forEach((trait: any) => {
-				if (!["trait", "trait_container"].includes(trait.type)) return
+				if (![ItemType.Trait, ItemType.TraitContainer].includes(trait.type)) return
 				trait.prepareData()
-				const children = trait.type === "trait_container" ? trait.children : []
+				const children = trait.type === ItemType.TraitContainer ? trait.children : []
 				children.forEach((c: Item) => c.prepareData())
 				// TODO: hasAllIndexFields
 				trait_list.push({
@@ -40,15 +41,18 @@ export class CompendiumTraitTab extends CompendiumTab {
 					open: trait.open,
 					id: trait._id,
 					uuid: trait.uuid,
-					children: trait.type === "trait_container" ? children : [],
+					children: trait.type === ItemType.TraitContainer ? children : [],
 					adjustedPoints: trait.adjustedPoints,
 					tags: trait.tags,
 					reference: trait.reference,
+					reference_highlight: trait.reference_highlight,
 					enabled: true,
 					parents: trait.parents,
+					indent: trait.indent,
 					modifiers: trait.modifiers,
 					cr: trait.cr,
 					formattedCR: trait.formattedCR,
+					flags: trait.flags,
 				})
 			})
 

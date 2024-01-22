@@ -2,7 +2,7 @@
 	<div class="placeholder"> </div>
 	<select name="{{path}}.name.compare">
 		{{#select this.name.compare}}
-			{{#each config.select.string_compare as |v k|}}
+			{{#each config.select.string_criteria as |v k|}}
 				<option value="{{k}}">{{localize "gurps.field_prefix.name"}} {{localize v}}</option>
 			{{/each}}
 		{{/select}}
@@ -13,7 +13,7 @@
 			name="{{path}}.name.qualifier"
 			value="{{this.name.qualifier}}"
 			data-dtype="String"
-			{{input_lock (neq this.name.compare "none")}}
+			{{disabled (eq this.name.compare "none")}}
 		/>
 	</div>
 </div>
@@ -21,7 +21,7 @@
 	<div class="placeholder"> </div>
 	<select name="{{path}}.specialization.compare">
 		{{#select this.specialization.compare}}
-			{{#each config.select.string_compare as |v k|}}
+			{{#each config.select.string_criteria as |v k|}}
 				<option value="{{k}}">{{localize "gurps.field_prefix.specialization"}} {{localize v}}</option>
 			{{/each}}
 		{{/select}}
@@ -32,7 +32,7 @@
 			name="{{path}}.specialization.qualifier"
 			value="{{this.specialization.qualifier}}"
 			data-dtype="String"
-			{{input_lock (neq this.specialization.compare "none")}}
+			{{disabled (eq this.specialization.compare "none")}}
 		/>
 	</div>
 </div>
@@ -40,7 +40,7 @@
 	<div class="placeholder"> </div>
 	<select name="{{path}}.level.compare">
 		{{#select this.level.compare}}
-			{{#each config.select.number_compare as |v k|}}
+			{{#each config.select.numeric_criteria as |v k|}}
 				<option value="{{k}}">{{localize "gurps.field_prefix.level"}} {{localize v}}</option>
 			{{/each}}
 		{{/select}}
@@ -51,7 +51,7 @@
 			name="{{path}}.level.qualifier"
 			value="{{this.level.qualifier}}"
 			data-dtype="Number"
-			{{input_lock (neq this.level.compare "none")}}
+			{{disabled (eq this.level.compare "none")}}
 		/>
 	</div>
 </div>

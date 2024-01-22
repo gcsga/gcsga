@@ -1,31 +1,5 @@
 <div id="modifier-bucket-window" class="gurps">
 	<div class="column">
-		<div id="current-effects" class="section">
-			<div class="header">{{localize "gurps.system.modifier_bucket.current_effects"}}</div>
-			<div class="content">
-				{{#each currentEffects}}
-				{{>modifier-bucket/modifier}}
-				{{/each}}
-			</div>
-		</div>
-		<div id="send-modifiers" class="section">
-			<div class="header">{{localize "gurps.system.modifier_bucket.send"}}</div>
-			<div class="content">
-				{{#each players}}
-				{{>modifier-bucket/player}}
-				{{/each}}
-			</div>
-		</div>
-		<div id="current-modifiers" class="section">
-			<div class="header">{{localize "gurps.system.modifier_bucket.current_mods"}}</div>
-			<div class="content">
-				{{#each currentMods}}
-				{{>modifier-bucket/active}}
-				{{/each}}
-			</div>
-		</div>
-	</div>
-	<div class="column">
 		<div id="melee" class="section">
 			<div class="header">{{localize "gurps.system.modifier_bucket.melee"}}</div>
 			<div class="content">
@@ -60,6 +34,14 @@
 				{{/each}}
 			</div>
 		</div>
+		<div id="send-modifiers" class="section">
+			<div class="header">{{localize "gurps.system.modifier_bucket.send"}}</div>
+			<div class="content">
+				{{#each players}}
+				{{>modifier-bucket/player}}
+				{{/each}}
+			</div>
+		</div>
 		<div id="custom" class="section">
 			<div class="header">{{localize "gurps.system.modifier_bucket.custom"}}</div>
 			<div class="content">
@@ -69,6 +51,20 @@
 					{{/each}}
 				</div>
 				<input class="searchbar" type="text"/>
+			</div>
+		</div>
+	</div>
+	<div class="column">
+		<div id="stacks" class="section">
+			<div class="header">{{localize "gurps.system.modifier_bucket.saved_stacks"}}</div>
+			<div class="content" style="gap: 0;" autocomplete="off">
+				<button id="save-current">
+					<i class="fas fa-save"></i>
+					{{localize "gurps.system.modifier_bucket.save_current"}}
+					</button>
+				{{#each savedStacks}}
+				{{>modifier-bucket/stack}}
+				{{/each}}
 			</div>
 		</div>
 	</div>

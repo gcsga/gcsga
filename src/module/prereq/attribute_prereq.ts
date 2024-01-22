@@ -1,48 +1,61 @@
-import { CharacterGURPS } from "@actor"
-import { NumberCompare, NumberComparison } from "@module/data"
+import { CharacterResolver, LocalizeGURPS, LootResolver, NumericCompareType, NumericCriteria } from "@util"
+import { BasePrereq, BasePrereqObj } from "./base"
+import { prereq } from "@util/enum"
+import { ActorType, gid } from "@module/data"
 import { TooltipGURPS } from "@module/tooltip"
-import { i18n, numberCompare } from "@util"
-import { BasePrereq, PrereqConstructionContext } from "./base"
 
-export class AttributePrereq extends BasePrereq {
-	constructor(data: AttributePrereq, context: PrereqConstructionContext = {}) {
-		super(data, context)
-		Object.assign(this, mergeObject(AttributePrereq.defaults, data))
-	}
-
-	static get defaults(): Record<string, any> {
-		return mergeObject(super.defaults, {
-			type: "attribute_prereq",
-			which: "st",
-			combined_with: "",
-			qualifier: { compare: NumberComparison.AtLeast, qualifier: 10 },
-		})
-	}
-
-	satisfied(character: CharacterGURPS, _: any, tooltip: TooltipGURPS, prefix: string): [boolean, boolean] {
-		let value = character.resolveAttributeCurrent(this.which)
-		if (this.combined_with !== "") value += character.resolveAttributeCurrent(this.combined_with)
-		let satisfied = numberCompare(value, this.qualifier)
-		if (!this.has) satisfied = !satisfied
-		if (!satisfied) {
-			tooltip.push(prefix)
-			tooltip.push(i18n(`gurps.prerqs.has.${this.has}`))
-			tooltip.push(" ")
-			tooltip.push(character.resolveAttributeName(this.which))
-			if (this.combined_with !== "") {
-				tooltip.push(i18n("gurps.prereqs.attribute.plus"))
-				tooltip.push(character.resolveAttributeName(this.combined_with))
-			}
-			tooltip.push(i18n("gurps.prereqs.attribute.which"))
-			tooltip.push(i18n(`gurps.prereqs.criteria.${this.qualifier?.compare}`))
-			tooltip.push((this.qualifier ? this.qualifier.qualifier : 0).toString())
-		}
-		return [satisfied, false]
-	}
-}
-
-export interface AttributePrereq extends BasePrereq {
+export interface AttributePrereqObj extends BasePrereqObj {
 	which: string
 	combined_with: string
-	qualifier: NumberCompare
+	qualifier: NumericCriteria
+}
+
+type NewType = LootResolver
+
+export class AttributePrereq extends BasePrereq {
+	which: string
+
+	combined_with: string
+
+	qualifier: NumericCriteria
+
+	constructor() {
+		super(prereq.Type.Attribute)
+		this.which = gid.Strength
+		this.combined_with = ""
+		this.qualifier = new NumericCriteria(NumericCompareType.AtLeastNumber, 10)
+	}
+
+	static fromObject(data: AttributePrereqObj): AttributePrereq {
+		const prereq = new AttributePrereq()
+		prereq.has = data.has
+		if (data.which) prereq.which = data.which
+		if (data.combined_with) prereq.combined_with = data.combined_with
+		if (data.qualifier) prereq.qualifier = new NumericCriteria(data.qualifier.compare, data.qualifier.qualifier)
+		return prereq
+	}
+
+	satisfied(actor: CharacterResolver | NewType, _exclude: any, tooltip: TooltipGURPS): boolean {
+		if (actor.type === ActorType.Loot) return true
+		let value = actor.resolveAttributeCurrent(this.which)
+		if (this.combined_with !== "") value += actor.resolveAttributeCurrent(this.combined_with)
+		let satisfied = this.qualifier.matches(value)
+		if (!this.has) satisfied = !satisfied
+		if (!satisfied) {
+			tooltip.push(LocalizeGURPS.translations.gurps.prereq.prefix)
+			tooltip.push(LocalizeGURPS.translations.gurps.prereq.has[this.has ? "true" : "false"])
+			tooltip.push(" ")
+			tooltip.push(actor.resolveAttributeName(this.which))
+			if (this.combined_with !== "") {
+				tooltip.push("+")
+				tooltip.push(actor.resolveAttributeName(this.combined_with))
+			}
+			tooltip.push(
+				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.attribute.qualifier, {
+					content: this.qualifier.describe(),
+				})
+			)
+		}
+		return satisfied
+	}
 }

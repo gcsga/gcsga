@@ -1,35 +1,22 @@
-import { DiceGURPS } from "../dice"
-import { DamageType } from "./damage_type"
-import { HitLocationTable } from "@actor/character/hit_location"
+import { DiceGURPS } from "@module/dice"
+import { DamageType, DamageTypes } from "./damage_type"
 import { DamagePayload } from "./damage_chat_message"
-import { SETTINGS, SYSTEM_NAME } from "../data"
+import { HitLocationTable } from "@actor/character/hit_location"
 
 /**
- * DamageRoll is the parameter that is sent in (along with DamageTarget) to the DamageCalculator.
+ * The Damage Calculator needs three things: The DamageRoll, DamageHit, and DamageTarget.
+ *
+ * DamageRoll contains the information about the attacker and his weapon, including
  */
 interface DamageRoll {
-	/**
-	 * The body_plan location id, or "Default" or "Random". The DamageCalculator will resolve "Default" or "Random" to
-	 * a real location id.
-	 */
-	locationId: string | DefaultHitLocations
-
-	attacker: DamageAttacker
+	attacker: DamageAttacker | undefined
 	dice: DiceGURPS
-	basicDamage: number
+	readonly damageText: string
 	damageType: DamageType
-	applyTo: "HP" | "FP" | string
-
-	/**
-	 * Currently, the DamageCalculator only cares about "tbb" (tight beam burning).
-	 */
+	readonly applyTo: "HP" | "FP" | string
+	readonly hits: DamageHit[]
 	damageModifier: string
-
-	/**
-	 * A reference to the weapon used in the attack. Might be used to determine 1/2D for Ranged weapons, for example.
-	 * Or DamageType, damageModifier, armorDivisor, rofMultiplier, ...
-	 */
-	weapon: DamageWeapon | null
+	readonly weapon: DamageWeapon | undefined
 
 	/**
 	 * Value 1 = no Armor Divisor, 0 = Ignores DR; otherwise, it takes any non-negative value.
@@ -58,26 +45,31 @@ interface DamageRoll {
 	 * A weapon with a RoF multipler (such as RoF 3x9) is within 10% of 1/2D range.
 	 */
 	isShotgunCloseRange: boolean
-
-	/**
-	 * If greater than 1, this represents the level of the Vulnerability disadvantage to apply to the target of this
-	 * attack. This value should always be greater than or equal to 1.
-	 */
-	vulnerability: number
-
 	internalExplosion: boolean
 }
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface DamageHit {
+	/**
+	 * The body_plan location table_name, or "Default" or "Random". The DamageCalculator will resolve "Default" or
+	 * "Random" to a real location id.
+	 */
+	locationId: string | DefaultHitLocations
+	basicDamage: number
+}
+
 interface DamageAttacker {
-	name: string
+	tokenId: string
+	name: string | null
 }
 
 /**
  * An adapter on BaseWeapon and its subclasses that gives the DamageCalculator an easy interface to use.
  */
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface DamageWeapon {}
+interface DamageWeapon {
+	name: string
+
+	damageDice: string
+}
 
 enum DefaultHitLocations {
 	Default = "Default",
@@ -86,81 +78,82 @@ enum DefaultHitLocations {
 }
 
 class DamageRollAdapter implements DamageRoll {
-	private _payload: DamagePayload
-
-	private _locationId: string
-
-	private _game = game as Game
-
-	constructor(payload: DamagePayload) {
+	/**
+	 * Constructor.
+	 * @param payload
+	 * @param attacker
+	 * @param weapon
+	 */
+	constructor(payload: DamagePayload, attacker: DamageAttacker | undefined, weapon: DamageWeapon | undefined) {
 		this._payload = payload
 
-		this._locationId = payload.hitlocation
-		console.log(`location = ${this._locationId}`)
+		if (this._payload.index === -1) {
+			this._payload.damageRoll.forEach(it => {
+				this.hits.push({
+					locationId: it.hitlocation,
+					basicDamage: it.total,
+				})
+			})
+		} else {
+			this.hits.push({
+				locationId: this._payload.damageRoll[this._payload.index].hitlocation,
+				basicDamage: this._payload.damageRoll[this._payload.index].total,
+			})
+		}
+
+		this.attacker = attacker
+		this.weapon = weapon
 		this.internalExplosion = false
-		this.basicDamage = 0
-		this.damageType = DamageType.cr
 		this.applyTo = ""
-		this.damageModifier = ""
-		this.weapon = null
-		this.armorDivisor = 1
 		this.rofMultiplier = 1
 		this.range = null
 		this.isHalfDamage = false
 		this.isShotgunCloseRange = false
-		this.vulnerability = 1
-		this.dice = new DiceGURPS()
-		this.attacker = new DamageAttackerAdapter()
 	}
 
-	get locationId(): string {
-		switch (this._locationId) {
-			case undefined:
-			case DefaultHitLocations.Default:
-				// Set to default value from world settings.
-				this._locationId =
-					(this._game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_DAMAGE_LOCATION) as string) ?? "torso"
-				break
-		}
+	private _payload: DamagePayload
 
-		return this._locationId
+	readonly attacker: DamageAttacker | undefined
+
+	get dice(): DiceGURPS {
+		return this._payload.dice
 	}
 
-	set locationId(id: string) {
-		this._locationId = id
+	get damageText(): string {
+		return this._payload.damage
 	}
 
-	attacker: DamageAttacker
+	get basicDamage(): number {
+		return this._payload.damageRoll[this._payload.index].total
+	}
 
-	dice: DiceGURPS
+	get armorDivisor(): number {
+		return this._payload.armorDivisor ?? 1
+	}
 
-	basicDamage: number
+	get damageType(): DamageType {
+		return (DamageTypes as any)[this._payload.damageType]
+	}
 
-	damageType: DamageType
+	readonly applyTo: string
 
-	applyTo: string
+	readonly hits: DamageHit[] = []
 
-	damageModifier: string
+	get damageModifier(): string {
+		return this._payload.damageModifier
+	}
 
-	weapon: DamageWeapon | null
+	readonly weapon: DamageWeapon | undefined
 
-	armorDivisor: number
+	readonly rofMultiplier: number
 
-	rofMultiplier: number
+	readonly range: number | null
 
-	range: number | null
+	readonly isHalfDamage: boolean
 
-	isHalfDamage: boolean
+	readonly isShotgunCloseRange: boolean
 
-	isShotgunCloseRange: boolean
-
-	vulnerability: number
-
-	internalExplosion: boolean
-}
-
-class DamageAttackerAdapter implements DamageAttacker {
-	name = ""
+	readonly internalExplosion: boolean
 }
 
 /**
@@ -172,28 +165,34 @@ class DamageAttackerAdapter implements DamageAttacker {
  */
 
 export type HitPointsCalc = { value: number; current: number }
+export type Vulnerability = { name: string; value: number; apply: boolean }
+export type TargetPool = { id: string; name: string; fullName: string }
 
 export interface DamageTarget {
+	tokenId: string
 	name: string
-	// CharacterGURPS.attributes.get(gid.ST).calc.value
+	// CharacterGURPS.attributes.get(gid.ST).calc.value.
 	ST: number
-	// CharacterGURPS.attributes.get(gid.HitPoints).calc
+	// CharacterGURPS.attributes.get(gid.HitPoints).calc.
 	hitPoints: HitPointsCalc
-	// CharacterGURPS.system.settings.body_type
+	// CharacterGURPS.BodyType.
 	hitLocationTable: HitLocationTable
-	// CharacterGURPS.traits.contents.filter(it => it instanceof TraitGURPS)
+	// CharacterGURPS.traits.contents.filter(it => it instanceof TraitGURPS).
 	getTrait(name: string): TargetTrait | undefined
+	// CharacterGURPS.traits.contents.filter(it => it instanceof TraitGURPS).
+	getTraits(name: string): TargetTrait[]
 	//
 	hasTrait(name: string): boolean
-	// This.hasTrait("Injury Tolerance (Unliving)").
-	isUnliving: boolean
-	// This.hasTrait("Injury Tolerance (Homogenous)").
-	isHomogenous: boolean
-	// This.hasTrait("Injury Tolerance (Diffuse)").
-	isDiffuse: boolean
+	// Return None, Unliving, Homogenous, or Diffuse.
+	injuryTolerance: "None" | "Unliving" | "Homogenous" | "Diffuse"
+	// Subtract value from HitPoints.
+	incrementDamage(delta: number, damagePoolId: string): void
+	// Get all pools.
+	pools: TargetPool[]
 }
 
 export interface TargetTrait {
+	// TODO change this method to accept a Regex expression for advanced searching.
 	getModifier(name: string): TargetTraitModifier | undefined
 	levels: number
 	name: string | null
@@ -205,4 +204,4 @@ export interface TargetTraitModifier {
 	name: string
 }
 
-export { DamageRoll, DamageRollAdapter, DamageAttacker, DefaultHitLocations, DamageWeapon }
+export { DamageRoll, DamageHit, DamageRollAdapter, DamageAttacker, DefaultHitLocations, DamageWeapon }

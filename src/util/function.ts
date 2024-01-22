@@ -1,25 +1,28 @@
 // Import { SkillContainerGURPS, SkillGURPS, TechniqueGURPS, TraitGURPS } from "@item"
 import { DiceGURPS } from "@module/dice"
-import { equalFold } from "./misc"
-import * as Measure from "./measure"
+import { ItemType } from "@module/data"
+import { Length } from "./length"
+import { CharacterResolver, SkillResolver } from "./resolvers"
+import { equalFold } from "./string_criteria"
 
-export interface VariableResolver {
-	resolveVariable: (variableName: string) => string
-	skills: Collection<Item | any>
-	isSkillLevelResolutionExcluded: (name: string, specialization: string) => boolean
-	registerSkillLevelResolutionExclusion: (name: string, specialization: string) => void
-	unregisterSkillLevelResolutionExclusion: (name: string, specialization: string) => void
-	encumbranceLevel: (forSkills: boolean) => {
-		level: number
-		maximum_carry: number
-		penalty: number
-		name: string
-	}
-}
+// export interface CharacterResolver {
+// 	resolveVariable: (variableName: string) => string
+// 	traits: Collection<Item | any> | MookTrait[]
+// 	skills: Collection<Item | any> | MookSkill[]
+// 	isSkillLevelResolutionExcluded: (name: string, specialization: string) => boolean
+// 	registerSkillLevelResolutionExclusion: (name: string, specialization: string) => void
+// 	unregisterSkillLevelResolutionExclusion: (name: string, specialization: string) => void
+// 	encumbranceLevel: (forSkills: boolean) => {
+// 		level: number
+// 		maximum_carry: number
+// 		penalty: number
+// 		name: string
+// 	}
+// }
 
 export interface Evaluator {
 	evaluateNew: (expression: string) => any
-	resolver: VariableResolver
+	resolver: CharacterResolver
 }
 
 export type eFunction = (e: Evaluator, a: string) => any
@@ -48,6 +51,9 @@ export function evalFunctions(): Map<string, eFunction> {
 	m.set("advantage_level", evalTraitLevel)
 	m.set("trait_level", evalTraitLevel)
 	m.set("dice", evalDice)
+	m.set("has_trait", evalHasTrait)
+	m.set("random_height", evalRandomHeight)
+	m.set("random_weight", evalRandomWeight)
 	m.set("roll", evalRoll)
 	m.set("signed", evalSigned)
 	m.set("skill_level", evalSkillLevel)
@@ -312,6 +318,7 @@ function evalSkillLevel(e: Evaluator, arg: string): any {
 	let level = -Infinity
 	entity.skills.forEach(s => {
 		if (s.type === "skill_container") return
+		else s = s as SkillResolver
 		if (level !== -Infinity) return
 		if (equalFold(s.name || "", name) && equalFold(s.specialization, specialization)) {
 			s.updateLevel()
@@ -348,11 +355,6 @@ export function evalToString(e: Evaluator, a: string): string {
 	return String(evaluated)
 }
 
-/**
- *
- * @param e
- * @param a
- */
 export function evalEncumbrance(e: Evaluator, a: string): any {
 	let [arg, remaining] = nextArg(a)
 	const forSkills = evalToBool(e, arg)
@@ -368,18 +370,20 @@ export function evalEncumbrance(e: Evaluator, a: string): any {
 	return level
 }
 
-/**
- *
- * @param e
- * @param a
- */
+export function evalHasTrait(e: Evaluator, a: string): any {
+	const entity: CharacterResolver | undefined = e.resolver
+	if (!entity) return false
+	const arg = a.replaceAll(/^['"]|[']$/g, "")
+	return entity.traits.some(t => equalFold(t.name ?? "", arg))
+}
+
 export function evalTraitLevel(e: Evaluator, a: string): any {
-	const entity: VariableResolver | undefined = e.resolver
+	const entity: CharacterResolver | undefined = e.resolver
 	if (!entity) return -1
 	const arg = a.replaceAll(/^['"]|[']$/g, "")
 	let levels = -1
 	;(entity as any).traits
-		.filter((t: Item) => t.name === arg && t.type === "trait")
+		.filter((t: Item) => t.name === arg && t.type === ItemType.Trait)
 		.every((t: Item | any) => {
 			if (t.isLeveled) levels = t.levels
 			return true
@@ -387,11 +391,6 @@ export function evalTraitLevel(e: Evaluator, a: string): any {
 	return levels
 }
 
-/**
- *
- * @param e
- * @param a
- */
 export function evalSSRT(e: Evaluator, a: string): any {
 	let arg: string
 	;[arg, a] = nextArg(a)
@@ -400,7 +399,7 @@ export function evalSSRT(e: Evaluator, a: string): any {
 	const units = evalToString(e, arg)
 	;[arg, a] = nextArg(a)
 	const wantSize = evalToBool(e, arg)
-	const length = Measure.lengthFromString(`${n} ${units}`, Measure.LengthUnits.Yard)
+	const length = Length.fromString(`${n} ${units}`)
 	let result = yardsToValue(length, wantSize)
 	if (!wantSize) {
 		result = -result
@@ -408,22 +407,12 @@ export function evalSSRT(e: Evaluator, a: string): any {
 	return result
 }
 
-/**
- *
- * @param e
- * @param a
- */
 export function evalSSRTYards(e: Evaluator, a: string): any {
 	const v = evalToNumber(e, a)
 	return valueToYards(v)
 }
 
-/**
- *
- * @param length
- * @param allowNegative
- */
-function yardsToValue(length: Measure.Length, allowNegative: boolean): number {
+function yardsToValue(length: number, allowNegative: boolean): number {
 	const inches = Number(length)
 	const feet = inches / 12
 	let yards = inches / 36
@@ -525,10 +514,245 @@ function valueToYards(value: number): number {
 	return v * multiplier
 }
 
-/**
- *
- * @param arg
- */
+export function evalRandomHeight(e: Evaluator, a: string): any {
+	const entity: CharacterResolver | undefined = e.resolver
+	if (!entity) return -1
+	const stDecimal = evalToNumber(e, a)
+	let base: number
+	const st = Math.round(stDecimal)
+	if (st < 7) base = 52
+	else if (st > 13) base = 74
+	else {
+		switch (st) {
+			case 7:
+				base = 55
+				break
+			case 8:
+				base = 58
+				break
+			case 9:
+				base = 61
+				break
+			case 10:
+				base = 63
+				break
+			case 11:
+				base = 65
+				break
+			case 12:
+				base = 68
+				break
+			case 13:
+				base = 71
+				break
+			// this should never happen
+			default:
+				base = 0
+				break
+		}
+	}
+	return base + Math.round(Math.random() * 10)
+}
+
+export function evalRandomWeight(e: Evaluator, a: string): any {
+	const entity: CharacterResolver | undefined = e.resolver
+	if (!entity) return -1
+	let arg: string
+	;[arg, a] = nextArg(a)
+	let stDecimal = evalToNumber(e, arg)
+	let shift = 0
+	if (arg !== "") shift = evalToNumber(e, a)
+	if (isNaN(shift)) return null
+	let st = Math.round(stDecimal)
+	let skinny = false
+	let overweight = false
+	let fat = false
+	let veryFat = false
+	entity.traits.forEach(t => {
+		if (t.type === ItemType.TraitContainer) return
+		if (!t.enabled) return
+		if (equalFold(t.name ?? "", "skinny")) skinny = true
+		else if (equalFold(t.name ?? "", "overweight")) overweight = true
+		else if (equalFold(t.name ?? "", "fat")) fat = true
+		else if (equalFold(t.name ?? "", "very fat")) veryFat = true
+	})
+	let shiftAmt = Math.round(shift)
+	if (shiftAmt !== 0) {
+		if (skinny) shiftAmt -= 1
+		else if (overweight) shiftAmt += 1
+		else if (fat) shiftAmt += 2
+		else if (veryFat) shiftAmt += 3
+		skinny = false
+		overweight = false
+		fat = false
+		veryFat = false
+		switch (shiftAmt) {
+			case 0:
+				break
+			case 1:
+				overweight = true
+				break
+			case 2:
+				fat = true
+				break
+			case 3:
+				veryFat = true
+				break
+			default:
+				if (shiftAmt < 0) skinny = true
+				else veryFat = true
+		}
+	}
+	let [lower, upper] = [0, 0]
+	switch (true) {
+		case skinny:
+			if (st < 7) [lower, upper] = [40, 80]
+			else if (st > 13) [lower, upper] = [115, 180]
+			else
+				switch (st) {
+					case 7:
+						;[lower, upper] = [50, 90]
+						break
+					case 8:
+						;[lower, upper] = [60, 100]
+						break
+					case 9:
+						;[lower, upper] = [70, 110]
+						break
+					case 10:
+						;[lower, upper] = [80, 120]
+						break
+					case 11:
+						;[lower, upper] = [85, 130]
+						break
+					case 12:
+						;[lower, upper] = [95, 150]
+						break
+					case 13:
+						;[lower, upper] = [105, 165]
+						break
+				}
+			break
+		case overweight:
+			if (st < 7) [lower, upper] = [80, 160]
+			else if (st > 13) [lower, upper] = [225, 355]
+			else
+				switch (st) {
+					case 7:
+						;[lower, upper] = [100, 175]
+						break
+					case 8:
+						;[lower, upper] = [120, 195]
+						break
+					case 9:
+						;[lower, upper] = [140, 215]
+						break
+					case 10:
+						;[lower, upper] = [150, 230]
+						break
+					case 11:
+						;[lower, upper] = [165, 255]
+						break
+					case 12:
+						;[lower, upper] = [185, 290]
+						break
+					case 13:
+						;[lower, upper] = [205, 320]
+						break
+				}
+			break
+		case fat:
+			if (st < 7) [lower, upper] = [90, 180]
+			else if (st > 13) [lower, upper] = [255, 405]
+			else
+				switch (st) {
+					case 7:
+						;[lower, upper] = [115, 205]
+						break
+					case 8:
+						;[lower, upper] = [135, 225]
+						break
+					case 9:
+						;[lower, upper] = [160, 250]
+						break
+					case 10:
+						;[lower, upper] = [175, 265]
+						break
+					case 11:
+						;[lower, upper] = [190, 295]
+						break
+					case 12:
+						;[lower, upper] = [210, 330]
+						break
+					case 13:
+						;[lower, upper] = [235, 370]
+						break
+				}
+			break
+		case veryFat:
+			if (st < 7) [lower, upper] = [120, 240]
+			else if (st > 13) [lower, upper] = [340, 540]
+			else
+				switch (st) {
+					case 7:
+						;[lower, upper] = [150, 270]
+						break
+					case 8:
+						;[lower, upper] = [180, 300]
+						break
+					case 9:
+						;[lower, upper] = [210, 330]
+						break
+					case 10:
+						;[lower, upper] = [230, 350]
+						break
+					case 11:
+						;[lower, upper] = [250, 390]
+						break
+					case 12:
+						;[lower, upper] = [280, 440]
+						break
+					case 13:
+						;[lower, upper] = [310, 490]
+						break
+				}
+			if (shiftAmt > 3) {
+				const delta = (upper - lower) * (2 / 3)
+				lower += delta
+				upper += delta
+			}
+			break
+		default:
+			if (st < 7) [lower, upper] = [60, 120]
+			else if (st > 13) [lower, upper] = [170, 270]
+			else
+				switch (st) {
+					case 7:
+						;[lower, upper] = [75, 135]
+						break
+					case 8:
+						;[lower, upper] = [90, 150]
+						break
+					case 9:
+						;[lower, upper] = [105, 165]
+						break
+					case 10:
+						;[lower, upper] = [115, 175]
+						break
+					case 11:
+						;[lower, upper] = [125, 195]
+						break
+					case 12:
+						;[lower, upper] = [140, 220]
+						break
+					case 13:
+						;[lower, upper] = [155, 245]
+						break
+				}
+	}
+	return lower + Math.round(Math.random() * (1 + upper - lower))
+}
+
 function evalFrom(arg: any): number {
 	const a = typeof arg
 	switch (a) {

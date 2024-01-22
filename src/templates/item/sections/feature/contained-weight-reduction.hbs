@@ -18,7 +18,7 @@
 	</select>
 	<select name="array.system.features.{{@index}}.qualifier.compare">
 		{{#select this.qualifier.compare}}
-			{{#each config.select.number_compare as |v k|}}
+			{{#each config.select.numeric_criteria as |v k|}}
 				<option value="{{k}}">{{localize "gurps.field_prefix.attribute_level"}} {{localize v}}</option>
 			{{/each}}
 		{{/select}}
@@ -29,7 +29,7 @@
 			name="array.system.features.{{@index}}.qualifier.qualifier"
 			value="{{this.qualifier.qualifier}}"
 			data-dtype="String"
-			{{input_lock (neq this.qualifier.compare "none")}}
+			{{disabled (eq this.qualifier.compare "none")}}
 		/>
 	</div>
 </div>

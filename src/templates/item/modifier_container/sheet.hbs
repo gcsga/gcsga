@@ -1,6 +1,12 @@
 <form class="{{cssClass}}" autocomplete="off">
 	<div id="sheet">
 		<div id="details">
+			<div class="label">{{localize "gurps.item.img"}}</div>
+			<div class="field">
+				<div class="img-display" style="background-image: url({{document.img}});">
+					<img src="{{document.img}}" data-edit="img" title="{{document.name}}" />
+				</div>
+			</div>
 			<div class="label">{{localize "gurps.item.name"}}</div>
 			<div class="field">
 				<input type="text" name="name" value="{{item.name}}" data-dtype="String" />
@@ -13,17 +19,21 @@
 			<div class="field">
 				<input type="text" name="system.vtt_notes" value="{{system.vtt_notes}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.user_description"}}</div>
+			<div class="label">{{localize "gurps.item.userdesc"}}</div>
 			<div class="field">
-				<input type="text" name="system.user_description" value="{{system.user_description}}" data-dtype="String" />
+				<input type="text" name="system.userdesc" value="{{system.userdesc}}" data-dtype="String" />
 			</div>
 			<div class="label">{{localize "gurps.item.tags"}}</div>
 			<div class="field">
-				<input type="text" name="system.tags" value="{{(join system.tags ', '}}" data-dtype="String" />
+				<input type="text" name="system.tags" value="{{join system.tags ', '}}" data-dtype="String" />
 			</div>
 			<div class="label">{{localize "gurps.item.reference"}}</div>
 			<div class="field">
 				<input type="text" name="system.reference" value="{{system.reference}}" data-dtype="String" />
+			</div>
+			<div class="label">{{localize "gurps.item.reference_highlight"}}</div>
+			<div class="field">
+					<input type="text" name="system.reference_highlight" value="{{system.reference_highlight}}" data-dtype="String" />
 			</div>
 		</div>
 	</div>

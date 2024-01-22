@@ -1,27 +1,29 @@
-// Import { BaseActorGURPS } from "@actor";
-import { ActorDataSource } from "@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/actorData"
-
-export enum ActorType {
-	Character = "character_gcs",
-	StaticCharacter = "character",
-	// MassCombatElement = "element",
-	// Vehicle = "vehicle",
-	// Merchant = "merchant",
-}
+import { ActorType, SYSTEM_NAME } from "@module/data"
+import { Context } from "types/foundry/common/abstract/document.mjs"
+import { ActorDataSource } from "types/foundry/common/data/data.mjs/actorData"
 
 export interface ActorFlagsGURPS extends Record<string, unknown> {
-	gurps?: Record<ActorFlags, unknown>
+	[SYSTEM_NAME]: {
+		// [ActorFlags.TargetModifiers]: RollModifier[]
+		// [ActorFlags.SelfModifiers]: RollModifier[]
+		[ActorFlags.Deprecation]?: string
+	} & Record<string, any>
 }
 
 export enum ActorFlags {
 	TargetModifiers = "targetModifiers",
 	SelfModifiers = "selfModifiers",
+	Deprecation = "deprecation",
+	MoveType = "move_type",
+	AutoEncumbrance = "auto_encumbrance",
+	AutoThreshold = "auto_threshold",
 }
 
 export interface BaseActorSourceGURPS<
 	TActorType extends ActorType = ActorType,
-	TSystemData extends ActorSystemData = ActorSystemData
+	TSystemData extends ActorSystemData = ActorSystemData,
 > extends ActorDataSource {
+	name: string
 	type: TActorType
 	system: TSystemData
 	flags: DeepPartial<ActorFlagsGURPS>
@@ -30,4 +32,11 @@ export interface BaseActorSourceGURPS<
 export interface ActorSystemData {
 	id: string
 	type: ActorType
+}
+
+export interface ActorConstructorContextGURPS extends Context<TokenDocument> {
+	gurps?: {
+		ready?: boolean
+		imported?: boolean
+	}
 }

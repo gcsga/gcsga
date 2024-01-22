@@ -6,11 +6,9 @@
 		{{else}}
 		<a class="gcs-trash delete" data-path="{{path}}" data-index="{{@index}}" data-type="locations"></a>
 		{{/if}}
-		{{#if this.sub_table}}
-			<a class="gcs-circled-add disabled"></a>
-		{{else}}
+		{{#unless this.sub_table}}
 			<a class="gcs-circled-add add" data-path="{{path}}" data-index="{{@index}}" data-type="sub_table"></a>
-		{{/if}}
+		{{/unless}}
 	</div>
 	<div class="fieldblock">
 		<div class="label">{{localize "gurps.character.settings.body_type.id"}}</div>
@@ -87,7 +85,7 @@
 			{{#with this.sub_table}}
 			<div class="item-list">
 			{{#each this.locations}}
-			{{>actor/character/config/location path=(concat ../../path "." @index ".sub_table.locations") l=../this.locations.length}}
+				{{>actor/character/config/location path=(concat ../../path "." @../index ".sub_table.locations") l=../this.locations.length}}
 			{{/each}}
 			</div>
 			{{/with}}

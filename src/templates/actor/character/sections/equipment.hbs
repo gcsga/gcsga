@@ -1,9 +1,12 @@
-<div class="equipped" data-uuid="{{this.uuid}}">{{#if this.equipped}}<i class="gcs-checkmark"></i>{{/if}}</div>
-<div class="quantity">{{this.quantity}}</div>
-<div class="desc item" data-uuid="{{this.uuid}}" {{{indent this.parents.length}}}>
+<div class="equipped" data-item-id="{{this._id}}">{{#if this.equipped}}<i class="gcs-checkmark"></i>{{/if}}
+</div>
+<div class="quantity">{{this.system.quantity}}</div>
+<div class="desc item{{#if (isContainer this)}} container{{/if}} other {{disabled (not this.enabled)}}"
+	data-item-id="{{ this._id }}" data-tooltip-direction="DOWN" data-tooltip="{{this.resolvedTooltip}}" {{{indent
+	this.parents.length}}}>
 	<div class="dropdown">
-		{{#if (eq this.type "equipment_container")}}
-		{{#if this.open}}
+		{{#if (isContainer this)}}
+		{{#if this.system.open}}
 		{{>actor/character/sections/dropdown-open}}
 		{{else}}
 		{{>actor/character/sections/dropdown-closed}}
@@ -11,19 +14,20 @@
 		{{/if}}
 	</div>
 	<div class="name">
-		{{this.name}}
+		{{this.formattedName}}
 	</div>
-	{{>actor/character/sections/item-notes}}
+	{{{this.resolvedNotes}}}
 </div>
-<div class="uses">{{#if (and this.uses this.maxUses)}}{{this.uses}}{{/if}}</div>
-<div class="tech-level">{{this.techLevel}}</div>
-<div class="legality-class">{{this.legalityClass}}</div>
-<div class="value">{{this.adjustedValue}}</div>
-<div class="weight">{{this.adjustedWeightFast}}</div>
-<div class="extended-value">{{this.extendedValue}}</div>
-<div class="extended-weight">{{this.extendedWeightFast}}</div>
-<div class="reference" data-pdf="{{this.reference}}">{{ref this.reference}}</div>
-{{#if this.open}}
+<div class="uses {{disabled (not this.enabled)}}">{{#if (and this.system.uses
+	this.system.max_uses)}}{{this.system.uses}}{{/if}}</div>
+<div class="tech-level {{disabled (not this.enabled)}}">{{this.system.tech_level}}</div>
+<div class="legality-class {{disabled (not this.enabled)}}">{{this.system.legality_class}}</div>
+<div class="value {{disabled (not this.enabled)}}">{{this.adjustedValue}}</div>
+<div class="weight {{disabled (not this.enabled)}}">{{this.adjustedWeightFat}}</div>
+<div class="extended-value {{disabled (not this.enabled)}}">{{this.extendedValue}}</div>
+<div class="extended-weight {{disabled (not this.enabled)}}">{{this.extendedWeightFast}}</div>
+<div class="reference {{disabled (not this.enabled)}}">{{{ref this.system.reference}}}</div>
+{{#if this.system.open}}
 {{#each (sort this.children "sort")}}
 {{>actor/character/sections/equipment}}
 {{/each}}

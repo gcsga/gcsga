@@ -18,56 +18,60 @@ class DiceGURPS {
 		this.modifier = 0
 		this.multiplier = 0
 		if (data) {
-			if (typeof data === "string") Object.assign(this, this.fromString(data))
+			if (typeof data === "string") Object.assign(this, DiceGURPS.fromString(data))
 			else Object.assign(this, data)
 			this.sides = Math.floor(this.sides)
 			this.count = Math.floor(this.count)
 			this.modifier = Math.floor(this.modifier)
 			this.multiplier = Math.floor(this.multiplier)
-			this.normalize()
+			DiceGURPS.normalize(this)
 		}
 	}
 
-	fromString(str: string): DiceGURPSDef {
+	static fromString(str: string): DiceGURPSDef {
 		str = str.trim()
 		let dice: DiceGURPSDef = {
-			sides: 6,
-			count: 1,
+			sides: 0,
+			count: 0,
 			modifier: 0,
-			multiplier: 1,
+			multiplier: 0,
 		}
 		let i = 0
 		let ch: string
 		;[dice.count, i] = extractValue(str, 0)
-		const hadCount = i !== 0
+		let hadCount = i !== 0
 		;[ch, i] = nextChar(str, i)
 		let hadSides = false
 		let hadD = false
 		if (ch.toLowerCase() === "d") {
 			hadD = true
 			const j = i
-			;[dice.sides] = extractValue(str, i)
+			;[dice.sides, i] = extractValue(str, i)
 			hadSides = i !== j
 			;[ch, i] = nextChar(str, i)
 		}
-		if (hadSides && !hadCount) {
-			dice.count = 1
-		} else if (hadD && !hadSides && hadCount) {
-			dice.sides = 6
-		}
+		if (hadSides && !hadCount) dice.count = 1
+		else if (hadD && !hadSides && hadCount) dice.sides = 6
+
 		if (["+", ...negative].includes(ch)) {
 			const neg = negative.includes(ch)
 			;[dice.modifier, i] = extractValue(str, i)
 			if (neg) dice.modifier = -dice.modifier
 			;[ch, i] = nextChar(str, i)
 		}
+
 		if (!hadD) {
-			dice.modifier! += dice.count
+			dice.modifier ??= 0
+			dice.modifier += dice.count
 			dice.count = 0
 		}
+
 		if (times.includes(ch.toLowerCase())) [dice.multiplier] = extractValue(str, i)
+
 		if (dice.multiplier === 0) dice.multiplier = 1
-		dice = normalize(dice)
+
+		dice = DiceGURPS.normalize(dice)
+
 		return dice
 	}
 
@@ -89,7 +93,7 @@ class DiceGURPS {
 		str += "d"
 		if (this.sides !== 6 || keepSix) str += this.sides
 		if (this.modifier) {
-			str += this.modifier > 0 ? "+" : "–"
+			str += this.modifier > 0 ? "+" : "-"
 			str += Math.abs(this.modifier)
 		}
 		if (this.multiplier !== 1) str += `×${this.multiplier}`
@@ -113,24 +117,28 @@ class DiceGURPS {
 		return buffer
 	}
 
-	normalize() {
-		if (this.count! < 0) this.count = 0
-		if (this.sides! < 0) this.sides = 0
-		if (this.multiplier! < 1) this.multiplier = 1
+	static normalize(dice: DiceGURPS | DiceGURPSDef) {
+		if (dice.count! < 0) dice.count = 0
+		if (dice.sides! < 0) dice.sides = 0
+		if (dice.multiplier! < 1) dice.multiplier = 1
+		return dice
 	}
 
 	adjustedCountAndModifier(applyExtractDiceFromModifiers: boolean): [number, number] {
 		let [count, modifier] = [0, 0]
-		this.normalize()
+		DiceGURPS.normalize(this)
 		if (this.sides === 0) return [this.count, this.modifier]
 		count = this.count
 		modifier = this.modifier
 		if (applyExtractDiceFromModifiers && modifier > 0) {
 			let average = (this.sides + 1) / 2
-			if (this.sides % 2 !== 1) {
+			if (this.sides % 2 === 1) {
+				// Odd number of sides, so average is a whole number
 				count += modifier / average
 				modifier %= average
 			} else {
+				// Even number of sides, so average has an extra half, which means
+				// we alternate
 				while (modifier > average) {
 					if (modifier > 2 * average) {
 						modifier -= 2 * average + 1
@@ -143,7 +151,9 @@ class DiceGURPS {
 			}
 		}
 		if (count < 0) count = 0
-		return [count, modifier]
+		// HACK: not sure if this is the actual way to do it, maybe it doesn't work out
+		// like it should because JS doesn't have an explicit int type but Go does. Oh well.
+		return [count, Math.round(modifier)]
 	}
 
 	roll(extraDiceFromModifiers: boolean): number {
@@ -164,11 +174,6 @@ interface DiceGURPSDef {
 	multiplier?: number
 }
 
-/**
- *
- * @param str
- * @param i
- */
 function extractValue(str: string, i: number): [number, number] {
 	let value = 0
 	while (i < str.length) {
@@ -181,25 +186,9 @@ function extractValue(str: string, i: number): [number, number] {
 	return [value, i]
 }
 
-/**
- *
- * @param str
- * @param i
- */
 function nextChar(str: string, i: number): [string, number] {
 	if (i < str.length) return [str[i], i + 1]
 	return ["", i]
-}
-
-/**
- *
- * @param dice
- */
-function normalize(dice: DiceGURPSDef): DiceGURPSDef {
-	if (dice.count! < 0) dice.count = 0
-	if (dice.sides! < 0) dice.sides = 0
-	if (dice.multiplier! < 1) dice.multiplier = 1
-	return dice
 }
 
 export { DiceGURPS }

@@ -1,74 +1,103 @@
-import { CharacterGURPS } from "@actor"
-import { SkillContainerGURPS, SkillGURPS, TechniqueGURPS } from "@item"
-import { NumberCompare, NumberComparison, StringCompare, StringComparison } from "@module/data"
+import {
+	CharacterResolver,
+	LocalizeGURPS,
+	LootResolver,
+	NumericCompareType,
+	NumericCriteria,
+	StringCompareType,
+	StringCriteria,
+} from "@util"
+import { BasePrereq, BasePrereqObj } from "./base"
+import { prereq } from "@util/enum"
 import { TooltipGURPS } from "@module/tooltip"
-import { i18n, numberCompare, stringCompare } from "@util"
-import { BasePrereq, PrereqConstructionContext } from "./base"
+import { ActorType, ItemType } from "@module/data"
+
+export interface SkillPrereqObj extends BasePrereqObj {
+	name: StringCriteria
+	level: NumericCriteria
+	specialization: StringCriteria
+}
 
 export class SkillPrereq extends BasePrereq {
-	constructor(data: SkillPrereq, context: PrereqConstructionContext = {}) {
-		super(data, context)
-		Object.assign(this, mergeObject(SkillPrereq.defaults, data))
+	type = prereq.Type.Skill
+
+	name: StringCriteria
+
+	level: NumericCriteria
+
+	specialization: StringCriteria
+
+	constructor() {
+		super(prereq.Type.Skill)
+		this.name = new StringCriteria(StringCompareType.IsString)
+		this.level = new NumericCriteria(NumericCompareType.AtLeastNumber)
+		this.specialization = new StringCriteria(StringCompareType.AnyString)
 	}
 
-	static get defaults(): Record<string, any> {
-		return mergeObject(super.defaults, {
-			type: "skill_prereq",
-			name: { compare: StringComparison.Is, qualifier: "" },
-			specialization: { compare: StringComparison.None, qualifier: "" },
-			level: { compare: NumberComparison.AtLeast, qualifier: 0 },
-		})
+	static fromObject(data: SkillPrereqObj): SkillPrereq {
+		const prereq = new SkillPrereq()
+		prereq.has = data.has
+		if (data.name) prereq.name = new StringCriteria(data.name.compare, data.name.qualifier)
+		if (data.level) prereq.level = new NumericCriteria(data.level.compare, data.level.qualifier)
+		if (data.specialization)
+			prereq.specialization = new StringCriteria(data.specialization.compare, data.specialization.qualifier)
+		return prereq
 	}
 
-	satisfied(actor: CharacterGURPS, exclude: any, tooltip: TooltipGURPS, prefix: string): [boolean, boolean] {
+	satisfied(actor: CharacterResolver | LootResolver, exclude: any, tooltip: TooltipGURPS): boolean {
+		if (actor.type === ActorType.Loot) return true
 		let satisfied = false
-		let tech_level = ""
-		if (exclude instanceof SkillGURPS) tech_level = exclude.techLevel
-		for (let sk of actor.skills) {
-			if (sk instanceof SkillContainerGURPS) continue
-			sk = sk as SkillGURPS | TechniqueGURPS
+		let techLevel = ""
+		if (exclude instanceof Item && (exclude.type === ItemType.Skill || exclude.type === ItemType.Technique)) {
+			techLevel = (exclude as any).techLevel
+		}
+		for (let sk of actor.skills as any) {
+			if (sk.type === ItemType.SkillContainer) continue
+
 			if (
 				exclude === sk ||
-				!stringCompare(sk.name, this.name) ||
-				!stringCompare(sk.specialization, this.specialization)
+				!this.name.matches(sk.name ?? "") ||
+				!this.specialization.matches(sk.specialization ?? "")
 			)
-				return [false, false]
-			satisfied = numberCompare(sk.level.level, this.level)
-			if (satisfied && tech_level) satisfied = !sk.techLevel || tech_level === sk.techLevel
+				continue
+			satisfied = this.level.matches(sk.level.level)
+			if (satisfied && techLevel !== "") satisfied = sk.techLevel === "" || techLevel === sk.techLevel
 		}
 		if (!this.has) satisfied = !satisfied
 		if (!satisfied) {
-			tooltip.push(prefix)
-			tooltip.push(i18n(`gurps.prereqs.has.${this.has}`))
-			tooltip.push(i18n("gurps.prereqs.skill.name"))
-			tooltip.push(i18n(`gurps.prereqs.criteria.${this.name?.compare}`))
-			tooltip.push(this.name.qualifier!)
-			if (this.specialization.compare !== "none") {
-				tooltip.push(i18n("gurps.prereqs.skill.specialization"))
-				tooltip.push(i18n(`gurps.prereqs.criteria.${this.specialization.compare}`))
-				tooltip.push(this.specialization.qualifier!)
-				tooltip.push(",")
+			tooltip.push(LocalizeGURPS.translations.gurps.prereq.prefix)
+			tooltip.push(LocalizeGURPS.translations.gurps.prereq.has[this.has ? "true" : "false"])
+			tooltip.push(
+				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.skill.name, {
+					content: this.name.describe(),
+				})
+			)
+			if (this.specialization.compare !== StringCompareType.AnyString) {
+				tooltip.push(
+					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.skill.specialization, {
+						content: this.specialization.describe(),
+					})
+				)
 			}
-			if (!tech_level) {
-				tooltip.push(i18n("gurps.prereqs.skill.level"))
-				tooltip.push(i18n(`gurps.prereqs.criteria.${this.level.compare}`))
-				tooltip.push(this.level.qualifier.toString())
-			} else {
-				if (this.specialization.compare !== "none") {
-					tooltip.push(",")
-				}
-				tooltip.push(i18n("gurps.prereqs.skill.level"))
-				tooltip.push(i18n(`gurps.prereqs.criteria.${this.level.compare}`))
-				tooltip.push(this.level.qualifier.toString())
-				tooltip.push(i18n("gurps.prereqs.skill.tech_level"))
-			}
+			if (techLevel === "") {
+				tooltip.push(
+					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.skill.level, {
+						content: this.level.describe(),
+					})
+				)
+			} else if (this.specialization.compare === StringCompareType.AnyString)
+				tooltip.push(
+					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.skill.level_alt1, {
+						content: this.level.describe(),
+					})
+				)
+			else
+				tooltip.push(
+					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.skill.level_alt2, {
+						content: this.level.describe(),
+					})
+				)
 		}
-		return [satisfied, false]
+		return satisfied
 	}
-}
-
-export interface SkillPrereq extends BasePrereq {
-	name: StringCompare
-	specialization: StringCompare
-	level: NumberCompare
 }

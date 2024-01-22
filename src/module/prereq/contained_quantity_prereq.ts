@@ -1,48 +1,44 @@
-import { EquipmentContainerGURPS, EquipmentGURPS } from "@item"
-import { NumberCompare, NumberComparison } from "@module/data"
+import { ActorResolver, EquipmentContainerResolver, LocalizeGURPS, NumericCompareType, NumericCriteria } from "@util"
+import { BasePrereq, BasePrereqObj } from "./base"
+import { prereq } from "@util/enum"
 import { TooltipGURPS } from "@module/tooltip"
-import { i18n, numberCompare } from "@util"
-import { BasePrereq, PrereqConstructionContext } from "./base"
+import { ItemType } from "@module/data"
 
-export interface ContainedQuantityPrereq extends BasePrereq {
-	quantity: NumberCompare
+export interface ContainedQuantityPrereqObj extends BasePrereqObj {
+	qualifier: NumericCriteria
 }
 
 export class ContainedQuantityPrereq extends BasePrereq {
-	constructor(data: ContainedQuantityPrereq, context: PrereqConstructionContext = {}) {
-		super(data, context)
-		Object.assign(this, mergeObject(ContainedQuantityPrereq.defaults, data))
+	qualifier: NumericCriteria
+
+	constructor() {
+		super(prereq.Type.ContainedQuantity)
+		this.qualifier = new NumericCriteria(NumericCompareType.AtMostNumber, 1)
 	}
 
-	static get defaults(): Record<string, any> {
-		return mergeObject(super.defaults, {
-			type: "contained_quantity_prereq",
-			quantity: { compare: NumberComparison.AtMost, qualifier: 1 },
-		})
+	static fromObject(data: ContainedQuantityPrereqObj): ContainedQuantityPrereq {
+		const prereq = new ContainedQuantityPrereq()
+		prereq.has = data.has
+		if (data.qualifier) prereq.qualifier = new NumericCriteria(data.qualifier.compare, data.qualifier.qualifier)
+		return prereq
 	}
 
-	satisfied(_actor: Actor, exclude: any, tooltip: TooltipGURPS, prefix: string): [boolean, boolean] {
+	satisfied(_actor: ActorResolver<any>, exclude: any, tooltip: TooltipGURPS): boolean {
 		let satisfied = false
-		const eqp = exclude instanceof EquipmentGURPS || exclude instanceof EquipmentContainerGURPS ? exclude : null
-		if (eqp) {
-			satisfied = !(eqp instanceof EquipmentContainerGURPS)
-			if (!satisfied) {
-				let quantity = 0
-				for (const ch of (eqp as EquipmentContainerGURPS).children) {
-					quantity += ch.quantity
-				}
-				satisfied = numberCompare(quantity, this.quantity)
-			}
+		if (exclude instanceof Item && exclude.type === ItemType.EquipmentContainer) {
+			const eqp = exclude as unknown as EquipmentContainerResolver
+			satisfied = this.qualifier.matches(eqp.children.size)
 		}
 		if (!this.has) satisfied = !satisfied
-
 		if (!satisfied) {
-			tooltip.push(prefix)
-			tooltip.push(i18n(`gurps.prereqs.has.${this.has}`))
-			tooltip.push(i18n("gurps.prereqs.quantity"))
-			tooltip.push(i18n(`gurps.prereqs.criteria.${this.quantity?.compare}`))
-			tooltip.push(this.quantity.qualifier.toString())
+			tooltip.push(LocalizeGURPS.translations.gurps.prereq.prefix)
+			tooltip.push(LocalizeGURPS.translations.gurps.prereq.has[this.has ? "true" : "false"])
+			tooltip.push(
+				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.contained_quantity, {
+					content: this.qualifier.describe(),
+				})
+			)
 		}
-		return [satisfied, false]
+		return satisfied
 	}
 }

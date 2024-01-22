@@ -1,31 +1,44 @@
-<div class="quantity">{{ this.quantity }}</div>
-<div class="desc item{{#if (in this.type '_container')}} container{{/if}}" data-uuid="{{ this.uuid }}" {{{ indent this.parents.length }}}>
-    <div class="dropdown">
-        {{#if (eq this.type "equipment_container") }}
-            {{#if this.open }}
-                {{>actor/character/sections/dropdown-open }}
-            {{ else }}
-                {{>actor/character/sections/dropdown-closed }}
-            {{/if }}
-        {{/if }}
-    </div>
-    <div class="name">{{ this.name }}</div>
-    {{>actor/character/sections/item-notes }}
+{{#unless @root/inCompendium}}
+<div class="quantity">{{ this.system.quantity }}</div>
+{{/unless}}
+<div class="desc item{{#if (isContainer this)}} container{{/if}} other {{disabled this.system.calc.disabled}}"
+	data-item-id="{{ this._id }}" data-tooltip-direction="DOWN" data-tooltip="{{this.resolvedTooltip}}" {{{indent
+	this.parents.length}}}>
+	<div class="dropdown">
+		{{#if (eq this.type "equipment_container") }}
+		{{#if this.open }}
+		{{>actor/character/sections/dropdown-open }}
+		{{ else }}
+		{{>actor/character/sections/dropdown-closed }}
+		{{/if }}
+		{{/if }}
+	</div>
+	<div class="name">{{ this.name }}</div>
+	{{{this.resolvedNotes}}}
 </div>
+{{#if @root/inCompendium}}
+<div class="uses {{disabled this.system.calc.disabled}}">{{ this.system.max_uses }}</div>
+<div class="tech-level {{disabled this.system.calc.disabled}}">{{ this.system.tech_level }}</div>
+<div class="legality-class {{disabled this.system.calc.disabled}}">{{ this.system.legality_class }}</div>
+<div class="value {{disabled this.system.calc.disabled}}">{{ this.system.calc.value }}</div>
+<div class="weight {{disabled this.system.calc.disabled}}">{{ this.system.calc.weight }}</div>
+<div class="tags {{disabled this.system.calc.disabled}}">{{join this.system.tags ", "}}</div>
+{{else}}
 <div class="uses">
-    {{#if (and this.uses this.maxUses) }}
-        {{ this.uses }}
-    {{/if }}
+	{{#if (and this.system.uses this.system.max_uses) }}
+	{{ this.system.uses }}
+	{{/if }}
 </div>
-<div class="tech-level">{{ this.techLevel }}</div>
-<div class="legality-class">{{ this.legalityClass }}</div>
-<div class="value">{{ this.adjustedValue }}</div>
-<div class="weight">{{ this.adjustedWeightFast }}</div>
-<div class="extended-value">{{ this.extendedValue }}</div>
-<div class="extended-weight">{{ this.extendedWeightFast }}</div>
-<div class="reference">{{ this.reference }}</div>
-{{#if this.open }}
-    {{#each (sort this.children "sort") }}
-        {{>actor/character/sections/other-equipment }}
-    {{/each }}
+<div class="tech-level {{disabled this.system.calc.disabled}}">{{ this.system.tech_level }}</div>
+<div class="legality-class {{disabled this.system.calc.disabled}}">{{ this.system.legality_class }}</div>
+<div class="value {{disabled this.system.calc.disabled}}">{{ this.system.calc.value }}</div>
+<div class="weight {{disabled this.system.calc.disabled}}">{{ this.system.calc.weight }}</div>
+<div class="extended-value {{disabled this.system.calc.disabled}}">{{ this.system.calc.extended_value }}</div>
+<div class="extended-weight {{disabled this.system.calc.disabled}}">{{ this.system.calc.extended_weight }}</div>
+{{/if}}
+<div class="reference {{disabled this.system.calc.disabled}}">{{{ref this.system.reference}}}</div>
+{{#if this.system.open }}
+{{#each (sort this.children "sort") }}
+{{>actor/character/sections/other-equipment }}
+{{/each }}
 {{/if }}

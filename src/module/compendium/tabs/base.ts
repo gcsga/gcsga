@@ -1,5 +1,5 @@
-import { CompendiumBrowser, CompendiumIndexData } from ".."
-import { TabName } from "../data"
+import { CompendiumBrowser } from "../browser"
+import { CompendiumIndexData, TabName } from "../data"
 import { FilterData } from "./data"
 
 export abstract class CompendiumTab {
@@ -62,7 +62,7 @@ export abstract class CompendiumTab {
 				direction: "asc",
 				options: {},
 			},
-			tagFilter: "any_tag",
+			tagFilter: [],
 		}
 	}
 
@@ -74,18 +74,18 @@ export abstract class CompendiumTab {
 		const { searchQuery, tagFilter } = this.filterData
 
 		// Tag Filter
-		if (tagFilter !== "any_tag") {
-			if (!entry.tags.includes(tagFilter)) return false
+		if (tagFilter.length > 0) {
+			let hasTags = false
+			tagFilter.forEach(e => {
+				if (entry.tags.includes(e)) hasTags = true
+			})
+			if (!hasTags) return false
 		}
 		// Name
 		if (searchQuery) {
 			for (const i of this.searchFields) {
 				const term = String(getProperty(entry, i))
-				if (
-					term
-						.toLocaleLowerCase((game as Game).i18n.lang)
-						.includes(searchQuery.toLocaleLowerCase((game as Game).i18n.lang))
-				)
+				if (term.toLocaleLowerCase(game.i18n.lang).includes(searchQuery.toLocaleLowerCase(game.i18n.lang)))
 					return true
 			}
 			return false
@@ -95,14 +95,14 @@ export abstract class CompendiumTab {
 
 	getIndexData(start: number): CompendiumIndexData[] {
 		const currentIndex = this.sortResult(this.indexData.filter(this.filterIndexData.bind(this)))
+
 		this.totalItemCount = currentIndex.length
-		// Return currentIndex.slice(start, this.scrollLimit);
-		return currentIndex
+		return currentIndex.slice(start, this.scrollLimit)
 	}
 
 	protected sortResult(result: CompendiumIndexData[]): CompendiumIndexData[] {
 		const { order } = this.filterData
-		const lang = (game as Game).i18n.lang
+		const lang = game.i18n.lang
 		const sorted = result.sort((entryA, entryB) => {
 			switch (order.by) {
 				case "name":

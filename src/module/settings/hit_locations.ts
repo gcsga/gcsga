@@ -1,6 +1,6 @@
-import { HitLocation, HitLocationTable } from "@actor/character/hit_location"
-import { SYSTEM_NAME } from "@module/data"
-import { i18n, prepareFormData } from "@util"
+import { HitLocationTableData } from "@actor"
+import { SETTINGS, SYSTEM_NAME } from "@module/data"
+import { LocalizeGURPS, prepareFormData } from "@util"
 import { DnD } from "@util/drag_drop"
 import { SettingsMenuGURPS } from "./menu"
 
@@ -241,9 +241,9 @@ export class DefaultHitLocationSettings extends SettingsMenuGURPS {
 	}
 
 	override async getData(): Promise<any> {
-		const name = (game as Game).settings.get(SYSTEM_NAME, `${this.namespace}.name`)
-		const roll = (game as Game).settings.get(SYSTEM_NAME, `${this.namespace}.roll`)
-		const locations = (game as Game).settings.get(SYSTEM_NAME, `${this.namespace}.locations`)
+		const name = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`)
+		const roll = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`)
+		const locations = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`)
 		return {
 			body_type: {
 				name: name,
@@ -252,7 +252,7 @@ export class DefaultHitLocationSettings extends SettingsMenuGURPS {
 			},
 			actor: null,
 			path: "array.body_type",
-			config: (CONFIG as any).GURPS,
+			config: CONFIG.GURPS,
 		}
 	}
 
@@ -263,20 +263,41 @@ export class DefaultHitLocationSettings extends SettingsMenuGURPS {
 		html.find(".delete").on("click", event => this._onDeleteItem(event))
 	}
 
+	_onDataImport(event: JQuery.ClickEvent) {
+		event.preventDefault()
+	}
+
+	_onDataExport(event: JQuery.ClickEvent) {
+		event.preventDefault()
+		const extension = "body"
+		const data = {
+			type: "body_type",
+			version: 4,
+			name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
+			roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
+			locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
+		}
+		return saveDataToFile(
+			JSON.stringify(data, null, "\t"),
+			extension,
+			`${LocalizeGURPS.translations.gurps.settings.default_hit_locations.name}.${extension}`
+		)
+	}
+
 	async _onAddItem(event: JQuery.ClickEvent) {
 		event.preventDefault()
 		event.stopPropagation()
 		let path = ""
-		let locations = (game as Game).settings.get(SYSTEM_NAME, `${this.namespace}.locations`) as any[]
+		let locations = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`)
 		const type: "locations" | "sub_table" = $(event.currentTarget).data("type")
 		let formData: any = {}
 		switch (type) {
 			case "locations":
 				path = $(event.currentTarget).data("path").replace("array.", "")
 				locations.push({
-					id: i18n("gurps.placeholder.hit_location.id"),
-					choice_name: i18n("gurps.placeholder.hit_location.choice_name"),
-					table_name: i18n("gurps.placeholder.hit_location.table_name"),
+					id: LocalizeGURPS.translations.gurps.placeholder.hit_location.id,
+					choice_name: LocalizeGURPS.translations.gurps.placeholder.hit_location.choice_name,
+					table_name: LocalizeGURPS.translations.gurps.placeholder.hit_location.table_name,
 					slots: 0,
 					hit_penalty: 0,
 					dr_bonus: 0,
@@ -295,9 +316,9 @@ export class DefaultHitLocationSettings extends SettingsMenuGURPS {
 					roll: "1d",
 					locations: [
 						{
-							id: i18n("gurps.placeholder.hit_location.id"),
-							choice_name: i18n("gurps.placeholder.hit_location.choice_name"),
-							table_name: i18n("gurps.placeholder.hit_location.table_name"),
+							id: LocalizeGURPS.translations.gurps.placeholder.hit_location.id,
+							choice_name: LocalizeGURPS.translations.gurps.placeholder.hit_location.choice_name,
+							table_name: LocalizeGURPS.translations.gurps.placeholder.hit_location.table_name,
 							slots: 0,
 							hit_penalty: 0,
 							dr_bonus: 0,
@@ -316,7 +337,7 @@ export class DefaultHitLocationSettings extends SettingsMenuGURPS {
 		event.preventDefault()
 		event.stopPropagation()
 		const path = $(event.currentTarget).data("path")?.replace("array.", "")
-		let locations = (game as Game).settings.get(SYSTEM_NAME, `${this.namespace}.locations`) as HitLocation[]
+		let locations = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`)
 		let formData: any = {}
 		const type: "locations" | "sub_table" = $(event.currentTarget).data("type")
 		const index = Number($(event.currentTarget).data("index")) || 0
@@ -393,11 +414,11 @@ export class DefaultHitLocationSettings extends SettingsMenuGURPS {
 
 	protected override async _updateObject(event: Event, formData: any): Promise<void> {
 		const body_type = {
-			name: (game as Game).settings.get(SYSTEM_NAME, `${this.namespace}.name`),
-			roll: (game as Game).settings.get(SYSTEM_NAME, `${this.namespace}.roll`),
-			locations: (game as Game).settings.get(SYSTEM_NAME, `${this.namespace}.locations`),
-		} as HitLocationTable
-		formData = prepareFormData(event, formData, { body_type: body_type })
+			name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
+			roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
+			locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
+		} as HitLocationTableData
+		formData = prepareFormData(formData, { body_type: body_type })
 		Object.keys(formData).forEach(k => {
 			formData[k.replace("body_type.", "")] = formData[k]
 			delete formData[k]

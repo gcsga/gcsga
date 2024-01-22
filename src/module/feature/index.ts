@@ -1,42 +1,16 @@
-import { BaseFeature } from "./base"
-import { AttributeBonus } from "./attribute_bonus"
-import { ConditionalModifier } from "./conditional_modifier"
-import { ContainedWeightReduction } from "./contained_weight_reduction"
-import { CostReduction } from "./cost_reduction"
-import { DRBonus } from "./dr_bonus"
-import { ReactionBonus } from "./reaction_bonus"
-import { SkillBonus } from "./skill_bonus"
-import { SkillPointBonus } from "./skill_point_bonus"
-import { SpellBonus } from "./spell_bonus"
-import { SpellPointBonus } from "./spell_point_bonus"
-import { WeaponDamageBonus } from "./weapon_bonus"
-import { WeaponDRDivisorBonus } from "./weapon_dr_divisor_bonus"
-
-export type Feature =
-	| BaseFeature
-	| AttributeBonus
-	| ConditionalModifier
-	| DRBonus
-	| ReactionBonus
-	| SkillBonus
-	| SkillPointBonus
-	| SpellBonus
-	| SpellPointBonus
-	| WeaponDamageBonus
-	| WeaponDRDivisorBonus
-	| CostReduction
-	| ContainedWeightReduction
-
-export { BaseFeature } from "./base"
-export { AttributeBonus } from "./attribute_bonus"
-export { ConditionalModifier } from "./conditional_modifier"
-export { ContainedWeightReduction } from "./contained_weight_reduction"
-export { CostReduction } from "./cost_reduction"
-export { DRBonus } from "./dr_bonus"
-export { ReactionBonus } from "./reaction_bonus"
-export { SkillBonus } from "./skill_bonus"
-export { SkillPointBonus } from "./skill_point_bonus"
-export { SpellBonus } from "./spell_bonus"
-export { SpellPointBonus } from "./spell_point_bonus"
-export { WeaponDamageBonus } from "./weapon_bonus"
-export { WeaponDRDivisorBonus } from "./weapon_dr_divisor_bonus"
+// export { BaseFeature } from "./base"
+export { AttributeBonus, AttributeBonusObj } from "./attribute_bonus"
+export { MoveBonus, MoveBonusObj } from "./move_bonus"
+export { ConditionalModifierBonus, ConditionalModifierBonusObj } from "./conditional_modifier"
+export { ContainedWeightReduction, ContainedWeightReductionObj } from "./contained_weight_reduction"
+export { CostReduction, CostReductionObj } from "./cost_reduction"
+export { DRBonus, DRBonusObj } from "./dr_bonus"
+export { ReactionBonus, ReactionBonusObj } from "./reaction_bonus"
+export { SkillBonus, SkillBonusObj } from "./skill_bonus"
+export { SkillPointBonus, SkillPointBonusObj } from "./skill_point_bonus"
+export { SpellBonus, SpellBonusObj } from "./spell_bonus"
+export { SpellPointBonus, SpellPointBonusObj } from "./spell_point_bonus"
+export { WeaponBonus, WeaponBonusObj } from "./weapon_bonus"
+// export { WeaponDRDivisorBonus } from "./weapon_dr_divisor_bonus"
+// export { ThresholdBonus } from "./threshold_bonus"
+export * from "./data"

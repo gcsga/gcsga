@@ -1,4 +1,4 @@
-import { SYSTEM_NAME } from "@module/data"
+import { SETTINGS, SYSTEM_NAME } from "@module/data"
 import { SettingsMenuGURPS } from "./menu"
 
 export class ColorSettings extends SettingsMenuGURPS {
@@ -12,9 +12,9 @@ export class ColorSettings extends SettingsMenuGURPS {
 		options.classes.push("settings-menu")
 
 		return mergeObject(options, {
-			title: `gurps.settings.${this.namespace}.name`,
-			id: `${this.namespace}-settings`,
-			template: `systems/${SYSTEM_NAME}/templates/system/settings/${this.namespace}.hbs`,
+			title: `gurps.settings.${SETTINGS.COLORS}.name`,
+			id: `${SETTINGS.COLORS}-settings`,
+			template: `systems/${SYSTEM_NAME}/templates/system/settings/${SETTINGS.COLORS}.hbs`,
 			width: 480,
 			height: "auto",
 			submitOnClose: true,
@@ -53,7 +53,7 @@ export class ColorSettings extends SettingsMenuGURPS {
 					colorOnFocusedTab: { light: "#000000", dark: "#dddddd" },
 					colorCurrentTab: { light: "#d3cfc5", dark: "#293d00" },
 					colorOnCurrentTab: { light: "#000000", dark: "#dddddd" },
-					colorEditable: { light: "#ffffff", dark: "#202020" },
+					colorEditable: { light: "#ffffff", dark: "#101010" },
 					colorOnEditable: { light: "#0000a0", dark: "#649999" },
 					colorSelection: { light: "#0060a0", dark: "#0060a0" },
 					colorOnSelection: { light: "#ffffff", dark: "#ffffff" },
@@ -93,10 +93,11 @@ export class ColorSettings extends SettingsMenuGURPS {
 					colorOnPageStandout: { light: "#404040", dark: "#a0a0a0" },
 					colorPageVoid: { light: "#808080", dark: "#000000" },
 					colorDropArea: { light: "#cc0033", dark: "#ff0000" },
-					colorLink: { light: "#739925", dark: "#008000" },
+					colorLink: { light: "#739925", dark: "#00cc66" },
 					colorLinkPressed: { light: "#0080FF", dark: "#0060A0" },
 					colorLinkRollover: { light: "#00C000", dark: "#00B300" },
 					colorAccent: { light: "#006666", dark: "#649999" },
+					colorTooltipMarker: { light: "#804080", dark: "#996499" },
 					colorButtonRoll: { light: "#fff973", dark: "#55b6b9" },
 					colorOnButtonRoll: { light: "#000000", dark: "#dddddd" },
 					colorButtonRollRollover: { light: "#fff426", dark: "#48999c" },
@@ -110,6 +111,9 @@ export class ColorSettings extends SettingsMenuGURPS {
 					colorFailure: { light: "#a02010", dark: "#a02010" },
 					colorCriticalSuccess: { light: "#00a010", dark: "#00a010" },
 					colorCriticalFailure: { light: "#a01000", dark: "#a01000" },
+					colorChatPublic: { light: "#ffffff", dark: "#202020" },
+					colorChatWhisper: { light: "#e8e8ef", dark: "#6e6e7e" },
+					colorChatBlind: { light: "#f5eaf5", dark: "#846c84" },
 				},
 			},
 		}
@@ -121,24 +125,34 @@ export class ColorSettings extends SettingsMenuGURPS {
 		// Html.find(".reset-all").on("click", event => this._onResetAll(event))
 	}
 
+	_onDataImport(event: JQuery.ClickEvent) {
+		event.preventDefault()
+	}
+
+	_onDataExport(event: JQuery.ClickEvent) {
+		event.preventDefault()
+	}
+
 	async _onReset(event: JQuery.ClickEvent) {
 		event.preventDefault()
 		const id = $(event.currentTarget).data("id")
-		const colors = (game as Game).settings.get(SYSTEM_NAME, `${this.namespace}.colors`) as any
-		const defaults = (game as Game).settings.settings.get(`${SYSTEM_NAME}.${this.namespace}.colors`)?.default as any
+		const colors = game.settings.get(SYSTEM_NAME, `${SETTINGS.COLORS}.colors`)
+		const defaults = game.settings.settings.get(`${SYSTEM_NAME}.${SETTINGS.COLORS}.colors`)?.default as Record<
+			string,
+			{ light: string; dark: string }
+		>
 		colors[id] = defaults[id]
-		await (game as Game).settings.set(SYSTEM_NAME, `${this.namespace}.colors`, colors)
+		await game.settings.set(SYSTEM_NAME, `${SETTINGS.COLORS}.colors`, colors)
 		ColorSettings.applyColors()
 		this.render()
 	}
 
 	override async _onResetAll(event: JQuery.ClickEvent) {
 		event.preventDefault()
-		const constructor = this.constructor
+		const constructor = this.constructor as typeof SettingsMenuGURPS
 		for (const setting of constructor.SETTINGS) {
-			const defaults = (game as Game).settings.settings.get(`${SYSTEM_NAME}.${this.namespace}.${setting}`)
-				?.default as any
-			await (game as Game).settings.set(SYSTEM_NAME, `${this.namespace}.${setting}`, defaults)
+			const defaults = game.settings.settings.get(`${SYSTEM_NAME}.${SETTINGS.COLORS}.${setting}`)?.default
+			await game.settings.set(SYSTEM_NAME, `${SETTINGS.COLORS}.${setting}`, defaults)
 		}
 		ColorSettings.applyColors()
 		this.render()
@@ -146,8 +160,8 @@ export class ColorSettings extends SettingsMenuGURPS {
 
 	override async getData(): Promise<any> {
 		const options = await super.getData()
-		const modePreference = (game as Game).settings.get(SYSTEM_NAME, `${this.namespace}.modePreference`)
-		const colors = (game as Game).settings.get(SYSTEM_NAME, `${this.namespace}.colors`) as any
+		const modePreference = game.settings.get(SYSTEM_NAME, `${SETTINGS.COLORS}.modePreference`)
+		const colors = game.settings.get(SYSTEM_NAME, `${SETTINGS.COLORS}.colors`)
 		const colorSettings: any = {}
 		for (const e of Object.keys(colors)) {
 			colorSettings[e] = {
@@ -158,7 +172,7 @@ export class ColorSettings extends SettingsMenuGURPS {
 		return mergeObject(options, {
 			modePreference: modePreference,
 			colorSettings: colorSettings,
-			config: (CONFIG as any).GURPS,
+			config: CONFIG.GURPS,
 		})
 	}
 
@@ -173,25 +187,23 @@ export class ColorSettings extends SettingsMenuGURPS {
 			delete formData[k]
 		}
 		for await (const key of (this.constructor as typeof SettingsMenuGURPS).SETTINGS) {
-			const settingKey = `${this.namespace}.${key}`
-			await (game as Game).settings.set(SYSTEM_NAME, settingKey, formData[key])
+			const settingKey = `${SETTINGS.COLORS}.${key}`
+			await game.settings.set(SYSTEM_NAME, settingKey, formData[key])
 		}
 		ColorSettings.applyColors()
 	}
 
 	static applyColors() {
-		const modePreference = (game as Game).settings.get(SYSTEM_NAME, "colors.modePreference")
-		const colors: any = (game as Game).settings.get(SYSTEM_NAME, "colors.colors")
+		const modePreference = game.settings.get(SYSTEM_NAME, "colors.modePreference")
+		const colors: any = game.settings.get(SYSTEM_NAME, "colors.colors")
 		Object.keys(colors).forEach(e => {
 			if (!e.startsWith("color")) return
 			const name = `--${e.replace(/(\w)([A-Z])/g, "$1-$2").toLowerCase()}`
 			const value = colors[e]
-			// @ts-ignore until types v10
-			value.light = Color.fromString(value.light)
+			value.light = foundry.utils.Color.fromString(value.light)
 				.rgb.map((i: number) => i * 255)
 				.join(", ")
-			// @ts-ignore until types v10
-			value.dark = Color.fromString(value.dark)
+			value.dark = foundry.utils.Color.fromString(value.dark)
 				.rgb.map((i: number) => i * 255)
 				.join(", ")
 			if (modePreference === "light") $(":root").css(name, value.light)

@@ -38,3 +38,7 @@ test-report.html
 # Eclipse information
 .settings
 .project
+
+# history
+**/.history
+debug/*

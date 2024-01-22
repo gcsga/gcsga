@@ -1,0 +1,20 @@
+#mod-choice-sheet,
+#sub-sheet {
+	.fieldblock {
+		background: rgb(var(--color-content));
+		color: rgb(var(--color-on-content));
+		border: 2px solid rgb(var(--color-control-edge));
+		display: grid;
+		gap: 5px;
+		grid-template-columns: min-content auto;
+		padding: 5px;
+		margin: 10px;
+	}
+
+	.buttons {
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		gap: 5px;
+	}
+}

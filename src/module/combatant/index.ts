@@ -1,0 +1,1 @@
+export { CombatantGURPS } from "./document"

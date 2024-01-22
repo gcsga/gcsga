@@ -1,6 +1,12 @@
 <form class="{{cssClass}}" autocomplete="off">
     <div id="sheet">
         <div id="details">
+			<div class="label">{{localize "gurps.item.img"}}</div>
+			<div class="field">
+				<div class="img-display" style="background-image: url({{document.img}});">
+					<img src="{{document.img}}" data-edit="img" title="{{document.name}}" />
+				</div>
+			</div>
             <div class="label">{{localize "gurps.item.name"}}</div>
             <div class="field">
                 <input type="text" name="name" value="{{item.name}}" data-dtype="String" />
@@ -13,14 +19,15 @@
             <div class="field">
                 <input type="text" name="system.vtt_notes" value="{{system.vtt_notes}}" data-dtype="String" />
             </div>
-            <div class="label">{{localize "gurps.item.user_description"}}</div>
+            <div class="label">{{localize "gurps.item.userdesc"}}</div>
             <div class="field">
-                <input type="text" name="system.user_description" value="{{system.user_description}}"
-                    data-dtype="String" />
+				<textarea type="text" name="system.userdesc" data-dtype="String">{{textareaFormat
+						system.userdesc
+					}}</textarea>
             </div>
             <div class="label">{{localize "gurps.item.tags"}}</div>
             <div class="field">
-                <input type="text" name="system.tags" value="{{join system.tags " , "}}" data-dtype="String" />
+				<input type="text" name="system.tags" value="{{join system.tags ', '}}" data-dtype="String" />
             </div>
             <label class="label"></label>
             <div class="field">
@@ -45,10 +52,10 @@
                 {{ localize "gurps.item.levels" }}
             </div>
             <div class="field no-stretch">
-                <input type="text" name="system.levels" value="{{system.levels}}" data-dtype="String" {{input_lock system.can_level}} />
+                <input type="text" name="system.levels" value="{{system.levels}}" data-dtype="Number" {{disabled (not system.can_level)}} />
                 <div class="label">{{ localize "gurps.item.points_per_level" }}</div>
                 <input type="text" name="system.points_per_level" value="{{system.points_per_level}}"
-                    data-dtype="String" {{input_lock system.can_level}} />
+                    data-dtype="Number" {{disabled (not system.can_level)}} />
             </div>
             <div class="label">{{ localize "gurps.item.cr" }}</div>
             <div class="field">
@@ -64,7 +71,7 @@
             </div>
             <div class="label">{{ localize "gurps.item.cr_adj" }}</div>
             <div class="field">
-                <select name="system.cr_adj" data-dtype="String" {{ input_lock (neq system.cr 0 )}}>
+                <select name="system.cr_adj" data-dtype="String" {{ disabled (eq system.cr 0 )}}>
                     {{#select system.cr_adj }}
                     {{#each config.select.cr_adj as |v k| }}
                     <option value="{{k}}">
@@ -77,6 +84,10 @@
             <div class="label">{{localize "gurps.item.reference"}}</div>
             <div class="field">
                 <input type="text" name="system.reference" value="{{system.reference}}" data-dtype="String" />
+            </div>
+            <div class="label">{{localize "gurps.item.reference_highlight"}}</div>
+            <div class="field">
+                <input type="text" name="system.reference_highlight" value="{{system.reference_highlight}}" data-dtype="String" />
             </div>
         </div>
     </div>

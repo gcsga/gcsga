@@ -8,17 +8,17 @@
 		<a class="add-list button gcs-circled-vertical-ellipsis" data-path="{{path}}"></a>
 		<select name="{{path}}.when_tl.compare" data-dtype="String">
 			{{#select this.when_tl.compare}}
-			{{#each config.select.number_compare as |v k|}}
+			{{#each config.select.numeric_criteria as |v k|}}
 			<option value="{{k}}">{{localize "gurps.field_prefix.tech_level"}} {{localize v}}</option>
 			{{/each}}
 			{{/select}}
 		</select>
 		<div class="field">
-			<input type="text" name="{{path}}.when_tl.qualifier" data="{{this.when_tl.qualifier}}" data-dtype="String" {{disabled (eq this.when_tl.compare "none")}}/>
+			<input type="text" name="{{path}}.when_tl.qualifier" value="{{this.when_tl.qualifier}}" data-dtype="String" {{disabled (eq this.when_tl.compare "none")}}/>
 		</div>
 		<select name="{{path}}.all" data-dtype="Boolean">
 			{{#select this.all}}
-			{{#each config.select.has as |v k|}}
+			{{#each config.select.all as |v k|}}
 			<option value="{{k}}">{{localize v}}</option>
 			{{/each}}
 			{{/select}}
@@ -26,7 +26,7 @@
 		{{else}}
 		<a class="remove button gcs-trash" data-path="{{path}}"></a>
 		{{#unless (eq this.type "equipped_equipment_prereq")}}
-		<select name="{{path}}.has" data-dtype="String">
+		<select name="{{path}}.has" data-dtype="Boolean">
 			{{#select this.has}}
 			{{#each config.select.has as |v k|}}
 			<option value="{{k}}">{{localize v}}</option>
@@ -37,27 +37,31 @@
 		{{#unless (eq this.type "spell_prereq")}}
 		<select class="type" name="{{path}}.type" data-path="{{path}}">
 			{{#select this.type}}
-			{{#each config.select.prereqs as |v k|}}
+			{{#each config.select.prereq_strict as |v k|}}
 			<option value="{{k}}">{{localize v}}</option>
 			{{/each}}
 			{{/select}}
 		</select>
 		{{#if (eq this.type "contained_quantity_prereq")}}{{>item/sections/prereq/contained-quantity-prereq}}{{/if}}
-		{{#if (eq this.type "contained_weight_prereq")}}{{>item/sections/prereq/contained-weight-prereq}}{{/if}}
 		{{else}}
 		<select name="{{path}}.quantity.compare">
 			{{#select this.quantity.compare}}
-			{{#each config.select.number_compare_strict as |v k|}}
+			{{#each config.select.numeric_criteria_strict as |v k|}}
 			<option value="{{k}}">{{localize v}}</option>
 			{{/each}}
 			{{/select}}
 		</select>
 		<div class="field">
-			<input type="text" name="{{path}}.quantity.qualifier" data="{{this.quantity.qualifier}}" data-dtype="String"/>
+			<input
+				type="text"
+				name="{{path}}.quantity.qualifier"
+				value="{{this.quantity.qualifier}}"
+				data-dtype="Number"
+			/>
 		</div>
 		<select class="type" name="{{path}}.type" data-path="{{path}}">
 			{{#select this.type}}
-			{{#each config.select.prereqs as |v k|}}
+			{{#each config.select.prereq_strict as |v k|}}
 			<option value="{{k}}">{{localize v}}</option>
 			{{/each}}
 			{{/select}}
@@ -70,6 +74,7 @@
 	{{#if (eq this.type "attribute_prereq")}}{{>item/sections/prereq/attribute-prereq}}{{/if}}
 	{{#if (eq this.type "skill_prereq")}}{{>item/sections/prereq/skill-prereq}}{{/if}}
 	{{#if (eq this.type "spell_prereq")}}{{>item/sections/prereq/spell-prereq}}{{/if}}
+	{{#if (eq this.type "contained_weight_prereq")}}{{>item/sections/prereq/contained-weight-prereq}}{{/if}}
 </div>
 {{#if (eq this.type "prereq_list")}}
 {{#each this.prereqs}}

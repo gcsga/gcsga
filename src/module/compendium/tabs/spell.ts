@@ -1,5 +1,6 @@
-import { SYSTEM_NAME } from "@module/data"
-import { CompendiumBrowser, CompendiumIndexData } from ".."
+import { ItemType, SYSTEM_NAME } from "@module/data"
+import { CompendiumBrowser } from "../browser"
+import { CompendiumIndexData, TabName } from "../data"
 import { CompendiumTab } from "./base"
 
 export class CompendiumSpellTab extends CompendiumTab {
@@ -19,7 +20,7 @@ export class CompendiumSpellTab extends CompendiumTab {
 	}
 
 	constructor(browser: CompendiumBrowser) {
-		super(browser, "spell")
+		super(browser, TabName.Spell)
 	}
 
 	protected override async loadData(): Promise<void> {
@@ -28,12 +29,12 @@ export class CompendiumSpellTab extends CompendiumTab {
 
 		for await (const { pack, index } of this.browser.packLoader.loadPacks(
 			"Item",
-			this.browser.loadedPacks("spell"),
+			this.browser.loadedPacks(TabName.Spell),
 			indexFields
 		)) {
-			const collection = (game as Game).packs.get(pack.collection)
+			const collection = game.packs.get(pack.collection)
 			;((await collection?.getDocuments()) as any).forEach((spell: any) => {
-				if (!["spell", "spell_container"].includes(spell.type)) return
+				if (![ItemType.Spell, ItemType.RitualMagicSpell, ItemType.SpellContainer].includes(spell.type)) return
 				spell.prepareData()
 				// TODO: hasAllIndexFields
 				spell_list.push({
@@ -47,11 +48,12 @@ export class CompendiumSpellTab extends CompendiumTab {
 					open: spell.open,
 					uuid: spell.uuid,
 					id: spell._id,
-					children: spell.type === "spell_container" ? spell.children : [],
+					children: spell.type === ItemType.SpellContainer ? spell.children : [],
 					adjustedPoints: spell.adjustedPoints,
 					tags: spell.tags,
 					reference: spell.reference,
 					parents: spell.parents,
+					indent: spell.indent,
 					college: spell.system.college,
 					resist: spell.system.resist,
 					spell_class: spell.system.spell_class,
@@ -60,6 +62,7 @@ export class CompendiumSpellTab extends CompendiumTab {
 					casting_time: spell.system.casting_time,
 					duration: spell.system.duration,
 					difficulty: `${spell.attribute.toUpperCase()}/${spell.difficulty.toUpperCase()}`,
+					flags: spell.flags,
 				})
 			})
 

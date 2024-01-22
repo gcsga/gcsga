@@ -33,6 +33,17 @@
 			overflow-y: scroll;
 		}
 	}
+	span.ref {
+		padding: 0;
+		text-decoration: underline;
+		color: rgb(var(--color-link));
+		&:hover {
+			color: rgb(var(--color-link-rollover));
+		}
+		&:active {
+			color: rgb(var(--color-link-pressed));
+		}
+	}
 	#details,
 	.fieldblock {
 		display: grid;
@@ -89,7 +100,8 @@
 	}
 	.tab[data-tab="attributes"],
 	.tab[data-tab="body-type"],
-	.tab[data-tab="resource-trackers"] {
+	.tab[data-tab="resource-trackers"],
+	.tab[data-tab="move-types"] {
 		div.add {
 			display: grid;
 			grid-auto-flow: column;
@@ -99,7 +111,8 @@
 			color: rgb(var(--color-icon-button));
 			align-items: center;
 		}
-		.thresholds {
+		.thresholds,
+		.overrides {
 			grid-column: 1 / span 2;
 			border: 1px solid rgb(var(--color-divider));
 		}

@@ -1,11 +1,15 @@
-import { DamageProgression, DisplayMode } from "@module/data"
-import { ActorFlagsGURPS, ActorSystemData, ActorType, BaseActorSourceGURPS } from "@actor/base/data"
-import { AttributeDefObj } from "@module/attribute/attribute_def"
-import { Attribute, AttributeObj } from "@module/attribute"
+import { ActorType, RollModifier, SYSTEM_NAME, SheetSettings, gid } from "@module/data"
+import { ActorFlags, ActorFlagsGURPS, ActorSystemData, BaseActorSourceGURPS } from "@actor/base/data"
+import { AttributeObj, PoolThreshold } from "@module/attribute"
 import { ResourceTrackerObj } from "@module/resource_tracker"
-import { ResourceTrackerDefObj } from "@module/resource_tracker/tracker_def"
-import { Length, LengthUnits, Weight, WeightUnits } from "@util/measure"
-import { HitLocationTable } from "./hit_location"
+import { Weight } from "@util"
+import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
+import { MoveTypeObj } from "@module/move_type"
+
+export interface DocumentModificationOptionsGURPS extends DocumentModificationOptions {
+	temporary: boolean
+	substitutions: boolean
+}
 
 export interface CharacterSource extends BaseActorSourceGURPS<ActorType.Character, CharacterSystemData> {
 	flags: DeepPartial<CharacterFlags>
@@ -20,28 +24,43 @@ export interface CharacterDataGURPS
 	readonly _source: CharacterSource
 }
 
-type CharacterFlags = ActorFlagsGURPS & {
-	gurps: {
-		// Empty
+export interface CharacterFlags extends ActorFlagsGURPS {
+	[SYSTEM_NAME]: {
+		[ActorFlags.TargetModifiers]: RollModifier[]
+		[ActorFlags.SelfModifiers]: RollModifier[]
+		[ActorFlags.MoveType]: string
+		[ActorFlags.AutoEncumbrance]: { active: boolean; manual: number }
+		[ActorFlags.AutoThreshold]: { active: boolean; manual: Record<string, PoolThreshold | null> }
 	}
+}
+
+export const CharacterFlagDefaults: CharacterFlags = {
+	[SYSTEM_NAME]: {
+		[ActorFlags.TargetModifiers]: [],
+		[ActorFlags.SelfModifiers]: [],
+		[ActorFlags.MoveType]: gid.Ground,
+		[ActorFlags.AutoEncumbrance]: { active: true, manual: 0 },
+		[ActorFlags.AutoThreshold]: { active: true, manual: {} },
+	},
 }
 
 export interface CharacterSystemData extends ActorSystemData {
 	version: number
 	move: CharacterMove
 	import: { name: string; path: string; last_import: string }
-	settings: CharacterSettings
+	settings: SheetSettings
 	created_date: string
 	modified_date: string
 	profile: CharacterProfile
 	attributes: AttributeObj[]
 	resource_trackers: ResourceTrackerObj[]
+	move_types: MoveTypeObj[]
 	total_points: number
 	points_record: PointsRecord[]
 	calc: CharacterCalc
 	editing: boolean
 	// TODO: check if this fits
-	pools: { [key: string]: Partial<Attribute> }
+	pools: Record<string, any>
 	third_party?: any
 }
 
@@ -51,34 +70,36 @@ export interface CharacterMove {
 	type: string
 }
 
-export interface CharacterSettings {
-	default_length_units: LengthUnits
-	default_weight_units: WeightUnits
-	user_description_display: DisplayMode
-	modifiers_display: DisplayMode
-	notes_display: DisplayMode
-	skill_level_adj_display: DisplayMode
-	use_multiplicative_modifiers: boolean
-	use_modifying_dice_plus_adds: boolean
-	damage_progression: DamageProgression
-	show_trait_modifier_adj: boolean
-	show_equipment_modifier_adj: boolean
-	show_spell_adj: boolean
-	use_title_in_footer: boolean
-	exclude_unspent_points_from_total: boolean
-	page: {
-		paper_size: string
-		top_margin: string
-		left_margin: string
-		bottom_margin: string
-		right_margin: string
-		orientation: string
-	}
-	block_layout: Array<string>
-	body_type: HitLocationTable
-	attributes: AttributeDefObj[]
-	resource_trackers: ResourceTrackerDefObj[]
-}
+// export interface CharacterSettings {
+// 	default_length_units: LengthUnits
+// 	default_weight_units: WeightUnits
+// 	user_description_display: DisplayMode
+// 	modifiers_display: DisplayMode
+// 	notes_display: DisplayMode
+// 	skill_level_adj_display: DisplayMode
+// 	use_multiplicative_modifiers: boolean
+// 	use_modifying_dice_plus_adds: boolean
+// 	use_half_stat_defaults: boolean
+// 	damage_progression: DamageProgression
+// 	show_trait_modifier_adj: boolean
+// 	show_equipment_modifier_adj: boolean
+// 	show_spell_adj: boolean
+// 	use_title_in_footer: boolean
+// 	exclude_unspent_points_from_total: boolean
+// 	page: {
+// 		paper_size: string
+// 		top_margin: string
+// 		left_margin: string
+// 		bottom_margin: string
+// 		right_margin: string
+// 		orientation: string
+// 	}
+// 	block_layout: Array<string>
+// 	body_type: HitLocationTableData
+// 	attributes: AttributeDefObj[]
+// 	resource_trackers: ResourceTrackerDefObj[]
+// 	move_types: MoveTypeDefObj[]
+// }
 
 export interface CharacterProfile {
 	player_name: string
@@ -91,8 +112,8 @@ export interface CharacterProfile {
 	hair: string
 	skin: string
 	handedness: string
-	height: Length
-	weight: Weight
+	height: string
+	weight: string
 	SM: number
 	gender: string
 	tech_level: string
@@ -127,4 +148,40 @@ export interface Encumbrance {
 	maximum_carry: number
 	penalty: number
 	name: string
+}
+
+export const CharacterDefaultData: Partial<CharacterSystemData> = {
+	profile: {
+		player_name: "",
+		name: "",
+		title: "",
+		organization: "",
+		age: "",
+		birthday: "",
+		eyes: "",
+		hair: "",
+		skin: "",
+		handedness: "",
+		height: "6'",
+		weight: "0 lb",
+		SM: 0,
+		gender: "",
+		tech_level: "",
+		religion: "",
+		portrait: "",
+	},
+	editing: true,
+	calc: {
+		swing: "",
+		thrust: "",
+		basic_lift: 0,
+		lifting_st_bonus: 0,
+		striking_st_bonus: 0,
+		throwing_st_bonus: 0,
+		move: [0, 0, 0, 0, 0],
+		dodge: [0, 0, 0, 0, 0],
+		dodge_bonus: 0,
+		block_bonus: 0,
+		parry_bonus: 0,
+	},
 }

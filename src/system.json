@@ -1,29 +1,29 @@
 {
 	"id": "gcsga",
-	"title": "GCSGA 4e Game Aid (Unofficial)",
-	"description": "A game aid to help play GURPS 4e for FoundryVTT",
-	"version": "1.0.0",
+	"title": "GURPS 4e (EXPERIMENTAL)",
+	"description": "GURPS 4th Edition, unofficial game aid for FoundryVTT.",
+	"version": "1.0.0-alpha.5",
 	"authors": [
 		{
 			"name": "Chris Normand",
 			"email": "nose66@bellsouth.net",
-			"discord": "Nose66#6689"
+			"discord": "nose66"
 		},
 		{
 			"name": "M. Jeff Wilson",
-			"email": "",
+			"email": "geek.macbeer@gmail.com",
 			"discord": "Nick Coffin, PI#8616"
 		},
 		{
 			"name": "Mikolaj Tomczynski",
 			"email": "mikolajtomczynski@gmail.com",
-			"discord": "neck#0001"
+			"discord": "sasiedny"
 		}
 	],
 	"compatibility": {
-		"minimum": 10,
-		"verified": "10.291",
-		"maximum": 10
+		"minimum": 11,
+		"verified": "11.315",
+		"maximum": 11
 	},
 	"scripts": [],
 	"esmodules": ["module/gurps.js"],
@@ -37,18 +37,16 @@
 			"path": "lang/en.json"
 		}
 	],
-	"socket": false,
-	"url": "https://github.com/crnormand/gurps",
+	"url": "https://github.com/gcsga/gcsga",
 	"manifest": "this is autoreplaced",
 	"download": "this is autoreplaced",
 	"license": "MIT",
 	"readme": "README.md",
-	"bugs": "https://github.com/crnormand/gurps/issues",
+	"bugs": "https://github.com/gcsga/gcsga/issues",
 	"changelog": "",
-	"initiative": "",
 	"gridDistance": 1,
 	"gridUnits": "yd",
-	"primaryTokenAttribute": "pools.HP",
+	"primaryTokenAttribute": "pools.hp",
 	"socket": true,
-	"secondaryTokenAttribute": "pools.FP"
+	"secondaryTokenAttribute": "pools.fp"
 }

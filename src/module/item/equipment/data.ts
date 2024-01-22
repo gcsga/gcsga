@@ -1,11 +1,11 @@
-import { Feature } from "@feature"
-import { BaseContainerSource, BaseContainerSystemData } from "@item/container/data"
-import { Weapon } from "@module/weapon"
+import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
+import { Feature } from "@module/config"
+import { ItemType } from "@module/data"
 import { PrereqList } from "@prereq"
 
-export type EquipmentSource = BaseContainerSource<"equipment", EquipmentSystemData>
+export type EquipmentSource = ItemGCSSource<ItemType.Equipment, EquipmentSystemData>
 
-// Export class EquipmentData extends BaseContainerData<EquipmentGURPS> {}
+export type CostValueType = "addition" | "percentage" | "multiplier"
 
 export interface EquipmentData extends Omit<EquipmentSource, "effects" | "items">, EquipmentSystemData {
 	readonly type: EquipmentSource["type"]
@@ -14,7 +14,7 @@ export interface EquipmentData extends Omit<EquipmentSource, "effects" | "items"
 	readonly _source: EquipmentSource
 }
 
-export interface EquipmentSystemData extends Omit<BaseContainerSystemData, "open"> {
+export interface EquipmentSystemData extends Omit<ItemGCSSystemData, "open"> {
 	description: string
 	prereqs: PrereqList
 	equipped: boolean
@@ -26,13 +26,15 @@ export interface EquipmentSystemData extends Omit<BaseContainerSystemData, "open
 	weight: string
 	uses: number
 	max_uses: number
-	weapons: Weapon[]
 	features: Feature[]
-	// Calc: {
-	// 	extended_value: string;
-	// 	extended_weight: string;
-	// 	extended_weight_for_skills: string;
-	// };
-	// modifiers: Array<any>;
-	other: boolean
+	// other: boolean
+	rated_strength: number
+	calc?: EquipmentCalcValues
+}
+
+export interface EquipmentCalcValues extends ItemGCSCalcValues {
+	weight: string
+	extended_weight: string
+	value: string
+	extended_value: string
 }

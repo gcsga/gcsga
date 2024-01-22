@@ -1,6 +1,6 @@
 #embeds {
 	@import "reactions", "conditional_modifiers", "melee", "ranged", "traits", "skills", "spells", "equipment",
-		"other_equipment", "notes";
+		"other_equipment", "notes", "effects";
 
 	display: grid;
 	grid-auto-columns: 1fr 1fr;
@@ -8,6 +8,11 @@
 
 	.item-list.hover {
 		border: 1px solid red !important;
+	}
+
+	.placeholder {
+		height: 16px;
+		border-bottom: none;
 	}
 
 	> div {
@@ -20,22 +25,74 @@
 		content: "";
 	}
 
+	.item-list.dragsection::before,
+	.item-list.dragindirect::before {
+		content: "";
+		display: block;
+		position: absolute;
+		top: var(--top);
+		left: var(--left);
+		width: var(--width);
+		height: var(--height);
+		pointer-events: none;
+	}
+
+	.item-list.dragsection::before {
+		border: 2px solid red;
+		box-sizing: border-box;
+	}
+
+	.item-list.dragindirect::before {
+		background-color: rgba(var(--color-drop-area), 0.5);
+	}
+
+	/* :not(.header) { */
+	/* 	&.desc, */
+	/* 	&.points, */
+	/* 	&.level, */
+	/* 	&.rsl, */
+	/* 	&.reference, */
+	/* 	&.equipped, */
+	/* 	&.quantity, */
+	/* 	&.uses, */
+	/* 	&.tech-level, */
+	/* 	&.legality-class, */
+	/* 	&.value, */
+	/* 	&.weight, */
+	/* 	&.extended-value, */
+	/* 	&.extended-weight { */
+	/* 		&::before { */
+	/* 			content: ""; */
+	/* 			display: block; */
+	/* 			position: absolute; */
+	/* 			top: var(--top); */
+	/* 			left: var(--left); */
+	/* 			width: var(--width); */
+	/* 			height: var(--height); */
+	/* background-color: rgba(var(--color-drop-area), 0.5); /* Change the color and opacity as needed */
+	/* 		} */
+	/* 	} */
+	/* } */
+
 	> div > .desc {
 		display: grid;
 		grid-template:
 			"dropdown name"
 			"blank notes";
 		grid-template-columns: min-content auto;
+
 		.dropdown {
 			min-width: 0.75em;
 			margin-right: 6px;
 		}
+
 		.name {
 			font: inherit;
 			background: transparent;
 			color: inherit;
 			grid-area: name;
 		}
+
 		.item-notes {
 			grid-area: notes;
 		}
@@ -58,25 +115,45 @@
 
 	> div > :not(.header) {
 		padding: var(--padding-standard);
+
 		&.quantity {
 			min-width: 1em; //possibly unnecessary
 		}
+
 		&.border-top {
 			border-top: 2px dashed rgb(var(--color-drop-area));
+
 			&.desc {
 				border-top: none;
+
 				.name {
 					border-top: 2px dashed rgb(var(--color-drop-area));
 				}
 			}
 		}
+
 		&.border-bottom {
 			border-bottom: 2px dashed rgb(var(--color-drop-area));
+
 			&.desc {
 				border-bottom: none;
+
 				.item-notes {
 					border-bottom: 2px dashed rgb(var(--color-drop-area));
 				}
+			}
+		}
+
+		&.border-in {
+			border-top: 2px dashed rgb(var(--color-drop-area));
+			border-bottom: 2px dashed rgb(var(--color-drop-area));
+
+			&.desc {
+				border-left: 2px dashed rgb(var(--color-drop-area));
+			}
+
+			&.reference {
+				border-right: 2px dashed rgb(var(--color-drop-area));
 			}
 		}
 	}
@@ -121,25 +198,45 @@
 		color: rgba(var(--color-on-content), 1);
 		font: var(--font-page-primary-fields);
 	}
+
 	.item-notes,
 	.item-notes > div {
 		font: var(--font-page-secondary-fields);
 		background-color: transparent;
 		overflow-x: hidden;
-	}
-	.reference:not(.header):not([data-pdf=""]) {
-		color: rgba(var(--color-link), 1) !important;
-		cursor: pointer;
-		&:hover {
-			color: rgba(var(--color-link-rollover), 1) !important;
+
+		&.unsatisfied {
+			display: flex;
+			gap: 5px;
+			background-color: rgb(var(--color-error));
+			color: rgb(var(--color-on-error));
+			width: fit-content;
+			padding: 0 5px;
 		}
-		&:active {
-			color: rgba(var(--color-link-pressed), 1) !important;
+	}
+
+	.reference:not(.header) {
+		display: flex;
+		flex-direction: row;
+		color: rgba(var(--color-link), 1) !important;
+
+		.ref {
+			background-color: transparent;
+			cursor: pointer;
+
+			&:hover {
+				color: rgba(var(--color-link-rollover), 1) !important;
+			}
+
+			&:active {
+				color: rgba(var(--color-link-pressed), 1) !important;
+			}
 		}
 	}
 
 	.dropdown a {
 		background-color: inherit;
+
 		svg {
 			background-color: inherit;
 			fill: rgba(var(--color-on-content), 1);

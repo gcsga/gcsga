@@ -1,291 +1,63 @@
-import { AttributeType } from "@module/attribute/attribute_def"
-import { SYSTEM_NAME } from "@module/data"
-import { prepareFormData } from "@util"
+import { ConditionID } from "@item/condition/data"
+import { EFFECT_ACTION, SETTINGS, SYSTEM_NAME } from "@module/data"
+import { LocalizeGURPS, getNewAttributeId, prepareFormData } from "@util"
 import { DnD } from "@util/drag_drop"
-import { SettingsMenuGURPS } from "./menu"
+import { AttributeBaseSettings } from "./attribute_base"
+import { attribute } from "@util/enum"
 
-export class DefaultAttributeSettings extends SettingsMenuGURPS {
-	static override readonly namespace = "default_attributes"
+enum ListType {
+	Attribute = "attributes",
+	Thresholds = "attribute_thresholds",
+	Effect = "effects",
+	Enter = "enter",
+	Leave = "leave",
+}
 
-	static override readonly SETTINGS = ["attributes"] as const
+export class DefaultAttributeSettings extends AttributeBaseSettings {
+	static override readonly namespace = SETTINGS.DEFAULT_ATTRIBUTES
 
-	static override get defaultOptions(): FormApplicationOptions {
-		const options = super.defaultOptions
-		options.classes.push("gurps")
-		options.classes.push("settings-menu")
+	static override readonly SETTINGS = ["attributes", "effects"] as const
 
-		return mergeObject(options, {
-			title: `gurps.settings.${this.namespace}.name`,
-			id: `${this.namespace}-settings`,
-			template: `systems/${SYSTEM_NAME}/templates/system/settings/${this.namespace}.hbs`,
-			width: 480,
-			height: 600,
-			submitOnClose: true,
-			submitOnChange: true,
-			closeOnSubmit: false,
-			resizable: true,
-		} as FormApplicationOptions)
+	_onDataImport(event: JQuery.ClickEvent) {
+		event.preventDefault()
 	}
 
-	protected static override get settings(): Record<string, any> {
-		return {
-			attributes: {
-				name: "",
-				hint: "",
-				type: Array,
-				default: [
-					{
-						id: "st",
-						type: AttributeType.Integer,
-						name: "ST",
-						full_name: "Strength",
-						attribute_base: "10",
-						cost_per_point: 10,
-						cost_adj_percent_per_sm: 10,
-					},
-					{
-						id: "dx",
-						type: AttributeType.Integer,
-						name: "DX",
-						full_name: "Dexterity",
-						attribute_base: "10",
-						cost_per_point: 20,
-						cost_adj_percent_per_sm: 0,
-					},
-					{
-						id: "iq",
-						type: AttributeType.Integer,
-						name: "IQ",
-						full_name: "Intelligence",
-						attribute_base: "10",
-						cost_per_point: 20,
-						cost_adj_percent_per_sm: 0,
-					},
-					{
-						id: "ht",
-						type: AttributeType.Integer,
-						name: "HT",
-						full_name: "Health",
-						attribute_base: "10",
-						cost_per_point: 10,
-						cost_adj_percent_per_sm: 0,
-					},
-					{
-						id: "will",
-						type: AttributeType.Integer,
-						name: "Will",
-						attribute_base: "$iq",
-						cost_per_point: 5,
-						cost_adj_percent_per_sm: 0,
-					},
-					{
-						id: "fright_check",
-						type: AttributeType.Integer,
-						name: "Fright Check",
-						attribute_base: "$will",
-						cost_per_point: 2,
-						cost_adj_percent_per_sm: 0,
-					},
-					{
-						id: "per",
-						type: AttributeType.Integer,
-						name: "Per",
-						full_name: "Perception",
-						attribute_base: "$iq",
-						cost_per_point: 5,
-						cost_adj_percent_per_sm: 0,
-					},
-					{
-						id: "vision",
-						type: AttributeType.Integer,
-						name: "Vision",
-						attribute_base: "$per",
-						cost_per_point: 2,
-						cost_adj_percent_per_sm: 0,
-					},
-					{
-						id: "hearing",
-						type: AttributeType.Integer,
-						name: "Hearing",
-						attribute_base: "$per",
-						cost_per_point: 2,
-						cost_adj_percent_per_sm: 0,
-					},
-					{
-						id: "taste_smell",
-						type: AttributeType.Integer,
-						name: "Taste \u0026 Smell",
-						attribute_base: "$per",
-						cost_per_point: 2,
-						cost_adj_percent_per_sm: 0,
-					},
-					{
-						id: "touch",
-						type: AttributeType.Integer,
-						name: "Touch",
-						attribute_base: "$per",
-						cost_per_point: 2,
-						cost_adj_percent_per_sm: 0,
-					},
-					{
-						id: "basic_speed",
-						type: AttributeType.Decimal,
-						name: "Basic Speed",
-						attribute_base: "($dx+$ht)/4",
-						cost_per_point: 20,
-						cost_adj_percent_per_sm: 0,
-					},
-					{
-						id: "basic_move",
-						type: AttributeType.Integer,
-						name: "Basic Move",
-						attribute_base: "floor($basic_speed)",
-						cost_per_point: 5,
-						cost_adj_percent_per_sm: 0,
-					},
-					{
-						id: "fp",
-						type: AttributeType.Pool,
-						name: "FP",
-						full_name: "Fatigue Points",
-						attribute_base: "$ht",
-						cost_per_point: 3,
-						cost_adj_percent_per_sm: 0,
-						thresholds: [
-							{
-								state: "Unconscious",
-								expression: "-$fp",
-								ops: ["halve_move", "halve_dodge", "halve_st"],
-							},
-							{
-								state: "Collapse",
-								explanation:
-									"Roll vs. Will to do anything besides talk or rest; failure causes unconsciousness\nEach FP you lose below 0 also causes 1 HP of injury\nMove, Dodge and ST are halved (B426)",
-								expression: "0",
-								ops: ["halve_move", "halve_dodge", "halve_st"],
-							},
-							{
-								state: "Tired",
-								explanation: "Move, Dodge and ST are halved (B426)",
-								expression: "round($fp/3)",
-								ops: ["halve_move", "halve_dodge", "halve_st"],
-							},
-							{
-								state: "Tiring",
-								expression: "$fp-1",
-							},
-							{
-								state: "Rested",
-								expression: "$fp",
-							},
-						],
-					},
-					{
-						id: "hp",
-						type: AttributeType.Pool,
-						name: "HP",
-						full_name: "Hit Points",
-						attribute_base: "$st",
-						cost_per_point: 2,
-						cost_adj_percent_per_sm: 10,
-						thresholds: [
-							{
-								state: "Dead",
-								expression: "round(-$hp*5)",
-								ops: ["halve_move", "halve_dodge"],
-							},
-							{
-								state: "Dying #4",
-								explanation:
-									"Roll vs. HT to avoid death\nRoll vs. HT-4 every second to avoid falling unconscious\nMove and Dodge are halved (B419)",
-								expression: "round(-$hp*4)",
-								ops: ["halve_move", "halve_dodge"],
-							},
-							{
-								state: "Dying #3",
-								explanation:
-									"Roll vs. HT to avoid death\nRoll vs. HT-3 every second to avoid falling unconscious\nMove and Dodge are halved (B419)",
-								expression: "round(-$hp*3)",
-								ops: ["halve_move", "halve_dodge"],
-							},
-							{
-								state: "Dying #2",
-								explanation:
-									"Roll vs. HT to avoid death\nRoll vs. HT-2 every second to avoid falling unconscious\nMove and Dodge are halved (B419)",
-								expression: "round(-$hp*2)",
-								ops: ["halve_move", "halve_dodge"],
-							},
-							{
-								state: "Dying #1",
-								explanation:
-									"Roll vs. HT to avoid death\nRoll vs. HT-1 every second to avoid falling unconscious\nMove and Dodge are halved (B419)",
-								expression: "-$hp",
-								ops: ["halve_move", "halve_dodge"],
-							},
-							{
-								state: "Collapse",
-								explanation:
-									"Roll vs. HT every second to avoid falling unconscious\nMove and Dodge are halved (B419)",
-								expression: "round($hp/3)",
-								ops: ["halve_move", "halve_dodge"],
-							},
-							{
-								state: "Reeling",
-								explanation: "Move and Dodge are halved (B419)",
-								expression: "round($hp/3)",
-								ops: ["halve_move", "halve_dodge"],
-							},
-							{
-								state: "Wounded",
-								expression: "$hp-1",
-							},
-							{
-								state: "Healthy",
-								expression: "$hp",
-							},
-						],
-					},
-				],
-			},
+	_onDataExport(event: JQuery.ClickEvent) {
+		event.preventDefault()
+		const extension = "attr"
+		const data = {
+			type: "attribute_settings",
+			version: 4,
+			rows: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`),
 		}
-	}
-
-	activateListeners(html: JQuery<HTMLElement>): void {
-		super.activateListeners(html)
-		// Html.find(".reset-all").on("click", event => this._onResetAll(event))
-		html.find(".item").on("dragover", event => this._onDragItem(event))
-		html.find(".add").on("click", event => this._onAddItem(event))
-		html.find(".delete").on("click", event => this._onDeleteItem(event))
+		return saveDataToFile(
+			JSON.stringify(data, null, "\t"),
+			extension,
+			`${LocalizeGURPS.translations.gurps.settings.default_attributes.name}.${extension}`
+		)
 	}
 
 	async _onAddItem(event: JQuery.ClickEvent) {
 		event.preventDefault()
 		event.stopPropagation()
-		const attributes: any[] = (game as Game).settings.get(SYSTEM_NAME, `${this.namespace}.attributes`) as any[]
-		const type: "attributes" | "attribute_thresholds" = $(event.currentTarget).data("type")
+		const attributes: any[] = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
+		const effects: any[] = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`)
+		const type: ListType = $(event.currentTarget).data("type")
 		let new_id = ""
-		if (type === "attributes")
-			for (let n = 0; n < 26; n++) {
-				const char = String.fromCharCode(97 + n)
-				if (![...attributes].find(e => e.id === char)) {
-					new_id = char
-					break
-				}
-			}
+		if (type === ListType.Attribute) new_id = getNewAttributeId(attributes)
 		switch (type) {
-			case "attributes":
-				// TODO: account for possibility of all letters being taken
+			case ListType.Attribute:
 				attributes.push({
-					type: AttributeType.Integer,
+					type: attribute.Type.Integer,
 					id: new_id,
 					name: "",
 					attribute_base: "",
 					cost_per_point: 0,
 					cost_adj_percent_per_sm: 0,
 				})
-				await (game as Game).settings.set(SYSTEM_NAME, `${this.namespace}.attributes`, attributes)
+				await game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`, attributes)
 				return this.render()
-			case "attribute_thresholds":
+			case ListType.Thresholds:
 				attributes[$(event.currentTarget).data("id")].thresholds ??= []
 				attributes[$(event.currentTarget).data("id")].thresholds!.push({
 					state: "",
@@ -293,57 +65,55 @@ export class DefaultAttributeSettings extends SettingsMenuGURPS {
 					expression: "",
 					ops: [],
 				})
-				await (game as Game).settings.set(SYSTEM_NAME, `${this.namespace}.attributes`, attributes)
+				await game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`, attributes)
+				return this.render()
+			case ListType.Effect:
+				effects.push({
+					attribute: "",
+					state: "",
+					enter: [],
+					leave: [],
+				})
+				await game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`, effects)
+				return this.render()
+			case ListType.Enter:
+			case ListType.Leave:
+				effects[$(event.currentTarget).data("id")][type] ??= []
+				effects[$(event.currentTarget).data("id")][type].push({
+					id: ConditionID.Reeling,
+					action: EFFECT_ACTION.ADD,
+				})
+				await game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`, effects)
 				return this.render()
 		}
 	}
 
-	private async _onDeleteItem(event: JQuery.ClickEvent) {
+	async _onDeleteItem(event: JQuery.ClickEvent): Promise<unknown> {
 		event.preventDefault()
 		event.stopPropagation()
-		const attributes: any[] = (game as Game).settings.get(SYSTEM_NAME, `${this.namespace}.attributes`) as any[]
-		const type: "attributes" | "attribute_thresholds" = $(event.currentTarget).data("type")
+		const attributes = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
+		const effects = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`)
+		const type: ListType = $(event.currentTarget).data("type")
 		const index = Number($(event.currentTarget).data("index")) || 0
 		const parent_index = Number($(event.currentTarget).data("pindex")) || 0
 		switch (type) {
-			case "attributes":
+			case ListType.Attribute:
 				attributes.splice(index, 1)
-				await (game as Game).settings.set(SYSTEM_NAME, `${this.namespace}.attributes`, attributes)
+				await game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`, attributes)
 				return this.render()
-			case "attribute_thresholds":
+			case ListType.Thresholds:
 				attributes[parent_index].thresholds?.splice(index, 1)
-				await (game as Game).settings.set(SYSTEM_NAME, `${this.namespace}.attributes`, attributes)
+				await game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`, attributes)
 				return this.render()
-		}
-	}
-
-	async _onDragStart(event: DragEvent) {
-		// TODO:update
-		const item = $(event.currentTarget!)
-		const type: "attributes" | "attribute_thresholds" = item.data("type")
-		const index = Number(item.data("index"))
-		const parent_index = Number(item.data("pindex")) || 0
-		event.dataTransfer?.setData(
-			"text/plain",
-			JSON.stringify({
-				type: type,
-				index: index,
-				parent_index: parent_index,
-			})
-		)
-		;(event as any).dragType = type
-	}
-
-	protected _onDragItem(event: JQuery.DragOverEvent): void {
-		const element = $(event.currentTarget!)
-		const heightAcross = (event.pageY! - element.offset()!.top) / element.height()!
-		element.siblings(".item").removeClass("border-top").removeClass("border-bottom")
-		if (heightAcross > 0.5) {
-			element.removeClass("border-top")
-			element.addClass("border-bottom")
-		} else {
-			element.removeClass("border-bottom")
-			element.addClass("border-top")
+			case ListType.Effect:
+				effects.splice(index, 1)
+				await game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`, effects)
+				return this.render()
+			case ListType.Enter:
+			case ListType.Leave:
+				effects[parent_index][type]?.splice(index, 1)
+				await game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`, effects)
+				return this.render()
 		}
 	}
 
@@ -352,7 +122,8 @@ export class DefaultAttributeSettings extends SettingsMenuGURPS {
 		let element = $(event.target!)
 		if (!element.hasClass("item")) element = element.parent(".item")
 
-		const attributes = (game as Game).settings.get(SYSTEM_NAME, `${this.namespace}.attributes`) as any[]
+		const attributes = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
+		const effects = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`)
 		const target_index = element.data("index")
 		const above = element.hasClass("border-top")
 		if (dragData.order === target_index) return this.render()
@@ -360,12 +131,13 @@ export class DefaultAttributeSettings extends SettingsMenuGURPS {
 		if (!above && dragData.order === target_index + 1) return this.render()
 
 		let container: any[] = []
-		if (dragData.type === "attributes") container = attributes
-		else if (dragData.type === "attribute_thresholds") container = attributes
+		if (dragData.type === ListType.Attribute) container = attributes
+		else if (dragData.type === ListType.Thresholds) container = attributes
+		else if (dragData.type === ListType.Effect) container = effects
 		if (!container) return
 
 		let item
-		if (dragData.type.includes("_thresholds")) {
+		if (dragData.type === ListType.Thresholds) {
 			item = container[dragData.parent_index].thresholds.splice(dragData.index, 1)[0]
 			container[dragData.parent_index].thresholds.splice(target_index, 0, item as any)
 		} else {
@@ -376,26 +148,20 @@ export class DefaultAttributeSettings extends SettingsMenuGURPS {
 			v.order = k
 		})
 
-		await (game as Game).settings.set(SYSTEM_NAME, `${this.namespace}.attributes`, attributes)
+		await game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`, attributes)
+		await game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`, effects)
 		return this.render()
 	}
 
-	override async getData(): Promise<any> {
-		const attributes = (game as Game).settings.get(SYSTEM_NAME, `${this.namespace}.attributes`)
-		return {
-			attributes: attributes,
-			actor: null,
-			config: (CONFIG as any).GURPS,
-		}
-	}
-
 	protected override async _updateObject(_event: Event, formData: any): Promise<void> {
-		const attributes = await (game as Game).settings.get(SYSTEM_NAME, `${this.namespace}.attributes`)
-		formData = prepareFormData(_event, formData, { system: { settings: { attributes } } })
-		await (game as Game).settings.set(
+		const attributes = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
+		const effects = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`)
+		formData = prepareFormData(formData, { system: { settings: { attributes } }, effects })
+		await game.settings.set(
 			SYSTEM_NAME,
-			`${this.namespace}.attributes`,
+			`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`,
 			formData["system.settings.attributes"]
 		)
+		await game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`, formData.effects)
 	}
 }

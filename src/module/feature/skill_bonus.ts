@@ -1,48 +1,54 @@
-import { StringCompare, StringComparison } from "@module/data"
-import { BaseFeature, FeatureType } from "./base"
+import { StringCompareType, StringCriteria } from "@util"
+import { BonusOwner } from "./bonus_owner"
+import { LeveledAmount, LeveledAmountObj } from "./leveled_amount"
+import { feature, skillsel } from "@util/enum"
 
-export class SkillBonus extends BaseFeature {
-	static get defaults(): Record<string, any> {
-		return mergeObject(super.defaults, {
-			type: FeatureType.SkillBonus,
-			selection_type: "skills_with_name",
-			name: { compare: StringComparison.Is, qualifier: "" },
-			specialization: { compare: StringComparison.None, qualifier: "" },
-			tags: { compare: StringComparison.None, qualifier: "" },
-		})
+export interface SkillBonusObj extends LeveledAmountObj {
+	selection_type: skillsel.Type
+	name?: StringCriteria
+	specialization?: StringCriteria
+	tags?: StringCriteria
+}
+
+export class SkillBonus extends BonusOwner {
+	selection_type: skillsel.Type
+
+	name?: StringCriteria
+
+	specialization?: StringCriteria
+
+	tags?: StringCriteria
+
+	leveledAmount: LeveledAmount
+
+	constructor() {
+		super()
+		this.type = feature.Type.SkillBonus
+		this.selection_type = skillsel.Type.Name
+		this.name = new StringCriteria(StringCompareType.IsString)
+		this.specialization = new StringCriteria(StringCompareType.AnyString)
+		this.tags = new StringCriteria(StringCompareType.AnyString)
+		this.leveledAmount = new LeveledAmount({ amount: 1 })
 	}
 
-	get featureMapKey(): string {
-		switch (this.selection_type) {
-			case "skills_with_name":
-				return this.buildKey("skill.name")
-			case "this_weapon":
-				return "\u0001"
-			case "weapons_with_name":
-				return this.buildKey("weapon_named.")
-			default:
-				console.error("Invalid selection type: ", this.selection_type)
-				return ""
+	toObject(): SkillBonusObj {
+		return {
+			...super.toObject(),
+			selection_type: this.selection_type,
+			name: this.name,
+			specialization: this.specialization,
+			tags: this.tags,
 		}
 	}
 
-	buildKey(prefix: string): string {
-		if (
-			this.name?.compare === StringComparison.Is &&
-			this.specialization?.compare === StringComparison.None &&
-			this.tags?.compare === StringComparison.None
-		) {
-			return `${prefix}/${this.name?.qualifier}`
-		}
-		return `${prefix}*`
+	static fromObject(data: SkillBonusObj): SkillBonus {
+		const bonus = new SkillBonus()
+		bonus.selection_type = data.selection_type
+		if (data.name) bonus.name = new StringCriteria(data.name.compare, data.name.qualifier)
+		if (data.specialization)
+			bonus.specialization = new StringCriteria(data.specialization.compare, data.specialization.qualifier)
+		if (data.tags) bonus.tags = new StringCriteria(data.tags.compare, data.tags.qualifier)
+		bonus.leveledAmount = LeveledAmount.fromObject(data)
+		return bonus
 	}
 }
-
-export interface SkillBonus extends BaseFeature {
-	selection_type: SkillBonusSelectionType
-	name?: StringCompare
-	specialization?: StringCompare
-	tags?: StringCompare
-}
-
-export type SkillBonusSelectionType = "skills_with_name" | "weapons_with_name" | "this_weapon"

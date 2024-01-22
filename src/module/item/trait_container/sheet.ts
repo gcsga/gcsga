@@ -1,8 +1,10 @@
-import { ItemGURPS } from "@item"
-import { ContainerSheetGURPS } from "@item/container/sheet"
+import { ItemSheetGCS } from "@item/gcs"
+import { TraitContainerGURPS } from "./document"
 
-export class TraitContainerSheet extends ContainerSheetGURPS {
-	static get defaultOptions(): DocumentSheetOptions {
+export class TraitContainerSheet extends ItemSheetGCS {
+	declare object: TraitContainerGURPS
+
+	static get defaultOptions(): DocumentSheetOptions<Item> {
 		const options = super.defaultOptions
 		mergeObject(options, {
 			classes: options.classes.concat(["trait_container"]),
@@ -10,27 +12,12 @@ export class TraitContainerSheet extends ContainerSheetGURPS {
 		return options
 	}
 
-	getData(options?: Partial<DocumentSheetOptions> | undefined) {
-		const items = this.items
-		const sheetData = {
-			...super.getData(options),
-			...{
-				modifiers: items.filter(e => e.type.includes("modifier")),
-			},
-		}
-		return sheetData
-	}
-
-	activateListeners(html: JQuery<HTMLElement>): void {
-		super.activateListeners(html)
-		html.find(".item").on("dblclick", event => this._openItemSheet(event))
-	}
-
-	protected async _openItemSheet(event: JQuery.DoubleClickEvent) {
-		event.preventDefault()
-		const uuid = $(event.currentTarget).data("uuid")
-		const item = (await fromUuid(uuid)) as ItemGURPS
-		item?.sheet?.render(true)
+	getData(options?: Partial<DocumentSheetOptions<Item>> | undefined) {
+		const data = super.getData(options)
+		const modifiers = this.object.modifiers
+		return mergeObject(data, {
+			modifiers,
+		})
 	}
 
 	protected _updateObject(event: Event, formData: Record<string, unknown>): Promise<unknown> {

@@ -1,8 +1,200 @@
 {
 	"Actor": {
-		"types": ["character_gcs", "character"],
+		"types": ["character_gcs", "character", "enemy", "loot"],
 		"templates": {
-			"common": {}
+			"legacy": {
+				"attributes": {
+					"ST": {
+						"import": 10,
+						"value": 10,
+						"points": 0,
+						"dtype": "Number"
+					},
+					"DX": {
+						"import": 10,
+						"value": 10,
+						"points": 0,
+						"dtype": "Number"
+					},
+					"IQ": {
+						"import": 10,
+						"value": 10,
+						"points": 0,
+						"dtype": "Number"
+					},
+					"HT": {
+						"import": 10,
+						"value": 10,
+						"points": 0,
+						"dtype": "Number"
+					},
+					"WILL": {
+						"import": 10,
+						"value": 10,
+						"points": 0,
+						"dtype": "Number"
+					},
+					"PER": {
+						"import": 10,
+						"value": 10,
+						"points": 0,
+						"dtype": "Number"
+					},
+					"QN": {
+						"import": 10,
+						"value": 10,
+						"points": 0,
+						"dtype": "Number"
+					}
+				},
+				"HP": {
+					"value": 0,
+					"min": 0,
+					"max": 0,
+					"points": 0
+				},
+				"FP": {
+					"value": 0,
+					"min": 0,
+					"max": 0,
+					"points": 0
+				},
+				"QP": {
+					"value": 0,
+					"min": 0,
+					"max": 0,
+					"points": 0
+				},
+				"dodge": {
+					"value": 0,
+					"enc_level": 0
+				},
+				"basicmove": {
+					"value": "0",
+					"points": 0
+				},
+				"basicspeed": {
+					"value": "0",
+					"points": 0
+				},
+				"parry": 0,
+				"currentmove": 0,
+				"thrust": "",
+				"swing": "",
+				"frightcheck": 0,
+				"hearing": 0,
+				"tastesmell": 0,
+				"vision": 0,
+				"touch": 0,
+				"ads": {},
+				"languages": {},
+				"skills": {},
+				"spells": {},
+				"money": {},
+				"traits": {
+					"title": "",
+					"race": "",
+					"height": "",
+					"weight": "",
+					"age": "",
+					"birthday": "",
+					"religion": "",
+					"gender": "",
+					"eyes": "",
+					"hair": "",
+					"hand": "",
+					"skin": "",
+					"sizemod": "+0",
+					"techlevel": "",
+					"createdon": "",
+					"modifiedon": "",
+					"player": ""
+				},
+				"totalpoints": {
+					"attributes": 0,
+					"ads": 0,
+					"disads": 0,
+					"quirks": 0,
+					"skills": 0,
+					"spells": 0,
+					"total": 150,
+					"unspent": 0,
+					"race": 0
+				},
+				"melee": {},
+				"ranged": {},
+				"conditionalmods": {},
+				"hitlocations": {},
+				"encumbrance": {
+					"00000": {
+						"key": "enc0",
+						"level": 0,
+						"dodge": 0,
+						"weight": 0,
+						"move": 0
+					},
+					"00001": {
+						"key": "enc1",
+						"level": 1,
+						"dodge": 0,
+						"weight": 0,
+						"move": 0
+					},
+					"00002": {
+						"key": "enc2",
+						"level": 2,
+						"dodge": 0,
+						"weight": 0,
+						"move": 0
+					},
+					"00003": {
+						"key": "enc3",
+						"level": 3,
+						"dodge": 0,
+						"weight": 0,
+						"move": 0
+					},
+					"00004": {
+						"key": "enc4",
+						"level": 4,
+						"dodge": 0,
+						"weight": 0,
+						"move": 0
+					}
+				},
+				"notes": {},
+				"equipment": {
+					"carried": {},
+					"other": {}
+				},
+				"liftingmoving": {
+					"basiclift": "",
+					"carryonback": "",
+					"onehandedlift": "",
+					"runningshove": "",
+					"shiftslightly": "",
+					"shove": "",
+					"twohandedlift": ""
+				},
+				"reactions": {},
+				"additionalresources": {
+					"bodyplan": "humanoid",
+					"tracker": {},
+					"importpath": "",
+					"importname": ""
+				},
+				"conditions": {},
+				"conditionalinjury": {
+					"RT": {
+						"value": 4,
+						"points": 0
+					},
+					"injury": {
+						"severity": "",
+						"daystoheal": 0
+					}
+				}
+			}
 		},
 		"character_gcs": {
 			"version": 4,
@@ -16,10 +208,12 @@
 			"points_record": [],
 			"settings": {
 				"resource_trackers": [],
-				"attributes": []
+				"attributes": [],
+				"move_types": []
 			},
 			"resource_trackers": [],
 			"attributes": [],
+			"move_types": [],
 			"calc": {
 				"swing": "",
 				"thrust": "",
@@ -34,198 +228,20 @@
 				"parry_bonus": 0
 			}
 		},
+		"loot": {
+			"description": "",
+			"import": {
+				"name": "",
+				"path": "",
+				"last_import": ""
+			},
+			"settings": {}
+		},
 		"character": {
-			"attributes": {
-				"ST": {
-					"import": 10,
-					"value": 10,
-					"points": 0,
-					"dtype": "Number"
-				},
-				"DX": {
-					"import": 10,
-					"value": 10,
-					"points": 0,
-					"dtype": "Number"
-				},
-				"IQ": {
-					"import": 10,
-					"value": 10,
-					"points": 0,
-					"dtype": "Number"
-				},
-				"HT": {
-					"import": 10,
-					"value": 10,
-					"points": 0,
-					"dtype": "Number"
-				},
-				"WILL": {
-					"import": 10,
-					"value": 10,
-					"points": 0,
-					"dtype": "Number"
-				},
-				"PER": {
-					"import": 10,
-					"value": 10,
-					"points": 0,
-					"dtype": "Number"
-				},
-				"QN": {
-					"import": 10,
-					"value": 10,
-					"points": 0,
-					"dtype": "Number"
-				}
-			},
-			"HP": {
-				"value": 0,
-				"min": 0,
-				"max": 0,
-				"points": 0
-			},
-			"FP": {
-				"value": 0,
-				"min": 0,
-				"max": 0,
-				"points": 0
-			},
-			"QP": {
-				"value": 0,
-				"min": 0,
-				"max": 0,
-				"points": 0
-			},
-			"dodge": {
-				"value": 0,
-				"enc_level": 0
-			},
-			"basicmove": {
-				"value": "0",
-				"points": 0
-			},
-			"basicspeed": {
-				"value": "0",
-				"points": 0
-			},
-			"parry": 0,
-			"currentmove": 0,
-			"thrust": "",
-			"swing": "",
-			"frightcheck": 0,
-			"hearing": 0,
-			"tastesmell": 0,
-			"vision": 0,
-			"touch": 0,
-			"ads": {},
-			"languages": {},
-			"skills": {},
-			"spells": {},
-			"money": {},
-			"traits": {
-				"title": "",
-				"race": "",
-				"height": "",
-				"weight": "",
-				"age": "",
-				"birthday": "",
-				"religion": "",
-				"gender": "",
-				"eyes": "",
-				"hair": "",
-				"hand": "",
-				"skin": "",
-				"sizemod": "+0",
-				"techlevel": "",
-				"createdon": "",
-				"modifiedon": "",
-				"player": ""
-			},
-			"totalpoints": {
-				"attributes": 0,
-				"ads": 0,
-				"disads": 0,
-				"quirks": 0,
-				"skills": 0,
-				"spells": 0,
-				"total": 150,
-				"unspent": 0,
-				"race": 0
-			},
-			"melee": {},
-			"ranged": {},
-			"conditionalmods": {},
-			"hitlocations": {},
-			"encumbrance": {
-				"00000": {
-					"key": "enc0",
-					"level": 0,
-					"dodge": 0,
-					"weight": 0,
-					"move": 0
-				},
-				"00001": {
-					"key": "enc1",
-					"level": 1,
-					"dodge": 0,
-					"weight": 0,
-					"move": 0
-				},
-				"00002": {
-					"key": "enc2",
-					"level": 2,
-					"dodge": 0,
-					"weight": 0,
-					"move": 0
-				},
-				"00003": {
-					"key": "enc3",
-					"level": 3,
-					"dodge": 0,
-					"weight": 0,
-					"move": 0
-				},
-				"00004": {
-					"key": "enc4",
-					"level": 4,
-					"dodge": 0,
-					"weight": 0,
-					"move": 0
-				}
-			},
-			"notes": {},
-			"equipment": {
-				"carried": {},
-				"other": {}
-			},
-			"liftingmoving": {
-				"basiclift": "",
-				"carryonback": "",
-				"onehandedlift": "",
-				"runningshove": "",
-				"shiftslightly": "",
-				"shove": "",
-				"twohandedlift": ""
-			},
-			"reactions": {},
-			"additionalresources": {
-				"bodyplan": "humanoid",
-				"tracker": {},
-				"importpath": "",
-				"importname": ""
-			},
-			"conditions": {},
-			"conditionalinjury": {
-				"RT": {
-					"value": 4,
-					"points": 0
-				},
-				"injury": {
-					"severity": "",
-					"daystoheal": 0
-				}
-			}
+			"templates": ["legacy"]
+		},
+		"enemy": {
+			"templates": ["legacy"]
 		}
 	},
 	"Item": {
@@ -240,18 +256,23 @@
 			"spell",
 			"ritual_magic_spell",
 			"spell_container",
-			"equipment",
+			"equipment_gcs",
 			"equipment_container",
 			"eqp_modifier",
 			"eqp_modifier_container",
 			"note",
 			"note_container",
-			"static_equipment"
+			"melee_weapon",
+			"ranged_weapon",
+			"effect",
+			"condition",
+			"equipment"
 		],
 		"templates": {
 			"common": {
 				"id": "",
 				"reference": "",
+				"reference_highlight": "",
 				"notes": "",
 				"tags": []
 			},
@@ -264,10 +285,32 @@
 					},
 					"prereqs": []
 				}
+			},
+			"weapon": {
+				"id": "",
+				"strength": "",
+				"usage": "",
+				"usage_notes": "",
+				"defaults": [],
+				"damage": {
+					"type": "",
+					"st": "none",
+					"base": "",
+					"armor_divisor": 1,
+					"fragmentation": "",
+					"fragmentation_armor_divisor": 1,
+					"fragmentation_type": "",
+					"modifier_per_die": 0
+				}
+			},
+			"study": {
+				"study": [],
+				"study_hours_needed": "200"
 			}
 		},
 		"trait": {
-			"templates": ["common", "prereqs"],
+			"templates": ["common", "prereqs", "study"],
+			"userdesc": "",
 			"round_down": false,
 			"disabled": false,
 			"can_level": false,
@@ -277,8 +320,7 @@
 			"cr": 0,
 			"cr_adj": "none",
 			"features": [],
-			"weapons": [],
-			"study": []
+			"weapons": []
 		},
 		"trait_container": {
 			"templates": ["common"],
@@ -300,16 +342,15 @@
 			"open": false
 		},
 		"skill": {
-			"templates": ["common", "prereqs"],
+			"templates": ["common", "prereqs", "study"],
 			"difficulty": "dx/a",
 			"points": 1,
 			"encumbrance_penalty_multiplier": 0,
 			"features": [],
-			"weapons": [],
-			"study": []
+			"weapons": []
 		},
 		"technique": {
-			"templates": ["common", "prereqs"],
+			"templates": ["common", "prereqs", "study"],
 			"difficulty": "a",
 			"points": 1,
 			"default": {
@@ -319,15 +360,14 @@
 				"modifier": 0
 			},
 			"features": [],
-			"weapons": [],
-			"study": []
+			"weapons": []
 		},
 		"skill_container": {
 			"templates": ["common"],
 			"open": false
 		},
 		"spell": {
-			"templates": ["common", "prereqs"],
+			"templates": ["common", "prereqs", "study"],
 			"spell_class": "Regular",
 			"power_source": "Arcane",
 			"points": 1,
@@ -338,11 +378,10 @@
 			"casting_time": "1 sec",
 			"duration": "Instant",
 			"weapons": [],
-			"college": [],
-			"study": []
+			"college": []
 		},
 		"ritual_magic_spell": {
-			"templates": ["common", "prereqs"],
+			"templates": ["common", "prereqs", "study"],
 			"spell_class": "Regular",
 			"power_source": "Arcane",
 			"points": 1,
@@ -354,14 +393,13 @@
 			"base_skill": "Ritual Magic",
 			"prereq_count": 0,
 			"weapons": [],
-			"college": [],
-			"study": []
+			"college": []
 		},
 		"spell_container": {
 			"templates": ["common"],
 			"open": false
 		},
-		"equipment": {
+		"equipment_gcs": {
 			"templates": ["common", "prereqs"],
 			"weight": "0 lb",
 			"value": 0,
@@ -369,6 +407,7 @@
 			"uses": 0,
 			"max_uses": 0,
 			"legality_class": "4",
+			"rated_strenght": 0,
 			"features": [],
 			"weapons": []
 		},
@@ -380,6 +419,7 @@
 			"uses": 0,
 			"max_uses": 0,
 			"legality_class": "4",
+			"rated_strenght": 0,
 			"features": [],
 			"weapons": [],
 			"open": false
@@ -404,7 +444,42 @@
 			"templates": ["common"],
 			"open": false
 		},
-		"static_equipment": {
+		"melee_weapon": {
+			"templates": ["weapon"],
+			"reach": "",
+			"parry": "",
+			"block": ""
+		},
+		"ranged_weapon": {
+			"templates": ["weapon"],
+			"accuracy": "",
+			"range": "",
+			"rate_of_fire": "",
+			"shots": "",
+			"bulk": "",
+			"recoil": ""
+		},
+		"effect": {
+			"features": [],
+			"modifiers": [],
+			"can_level": false,
+			"duration": {
+				"type": "none",
+				"startRound": 0,
+				"startTime": 0,
+				"startTurn": 0,
+				"rounds": 0,
+				"seconds": 0,
+				"turns": 0,
+				"combat": null
+			}
+		},
+		"condition": {
+			"features": [],
+			"modifiers": [],
+			"can_level": false
+		},
+		"equipment": {
 			"eqt": {
 				"name": "",
 				"notes": "",

@@ -1,11 +1,11 @@
-import { BaseItemSourceGURPS, ItemSystemData } from "@item/base/data"
-import { Difficulty, Study } from "@module/data"
-import { Weapon } from "@module/weapon"
+import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
+import { SpellCalcValues } from "@item/spell"
+import { ItemType } from "@module/data"
 import { PrereqList } from "@prereq"
+import { Study } from "@util"
+import { difficulty, study } from "@util/enum"
 
-export type RitualMagicSpellSource = BaseItemSourceGURPS<"ritual_magic_spell", RitualMagicSpellSystemData>
-
-// Export class RitualMagicSpellData extends BaseItemDataGURPS<RitualMagicSpellGURPS> {}
+export type RitualMagicSpellSource = ItemGCSSource<ItemType.RitualMagicSpell, RitualMagicSpellSystemData>
 
 export interface RitualMagicSpellData extends Omit<RitualMagicSpellSource, "effects">, RitualMagicSpellSystemData {
 	readonly type: RitualMagicSpellSource["type"]
@@ -14,10 +14,11 @@ export interface RitualMagicSpellData extends Omit<RitualMagicSpellSource, "effe
 	readonly _source: RitualMagicSpellSource
 }
 
-export interface RitualMagicSpellSystemData extends ItemSystemData {
+export interface RitualMagicSpellSystemData extends ItemGCSSystemData {
 	prereqs: PrereqList
-	difficulty: Difficulty
+	difficulty: difficulty.Level
 	tech_level: string
+	tech_level_required: boolean
 	college: Array<string>
 	power_source: string
 	spell_class: string
@@ -27,12 +28,9 @@ export interface RitualMagicSpellSystemData extends ItemSystemData {
 	casting_time: string
 	duration: string
 	points: number
-	weapons: Weapon[]
-	// Calc: {
-	// 	level: number;
-	// 	rsl: string;
-	// };
 	base_skill: string
 	prereq_count: number
 	study: Study[]
+	study_hours_needed: study.Level
+	calc?: SpellCalcValues
 }

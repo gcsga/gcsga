@@ -1,7 +1,9 @@
 {
 	"extends": "../tsconfig.json",
 	"compilerOptions": {
-		"types": ["jest", "node", "@league-of-foundry-developers/foundry-vtt-types"]
+		"types": ["jest", "node", "jquery"],
+		"baseUrl": "..",
+		"typeRoots": ["../node_modules/@types", "../node_modules/handlebars/types", "../types"]
 	},
 	"include": ["../src", "./", "**/*.d.ts"]
 }

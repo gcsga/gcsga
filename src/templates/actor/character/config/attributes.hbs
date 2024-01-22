@@ -1,9 +1,11 @@
 <div class="add">
 	<a class="gcs-circled-add add" data-type="attributes"></a>
 	{{#if actor}}
-	<a class="gcs-reset reset-all" data-type="attributes"></a>
-	<div>{{localize "gurps.settings.reset_all"}}</div>
+		<a class="gcs-reset reset-all" data-type="attributes"></a>
+		<div>{{localize "gurps.settings.reset_all"}}</div>
 	{{/if}}
+	<a class="data-import fas fa-file-import" data-type="attributes"></a>
+	<a class="data-export fas fa-file-export" data-type="attributes"></a>
 </div>
 <div class="item-list">
 	{{#each attributes}}
@@ -13,8 +15,6 @@
 				<a class="gcs-trash delete" data-index="{{@index}}" data-type="attributes"></a>
 				{{#if (eq this.type "pool")}}
 					<a class="gcs-circled-add add" data-id="{{@index}}" data-type="attribute_thresholds"></a>
-				{{else}}
-					<a class="gcs-circled-add disabled"></a>
 				{{/if}}
 			</div>
 			<div class="fieldblock">
@@ -27,7 +27,7 @@
 				<div class="field">
 					<select name="array.system.settings.attributes.{{@index}}.type" data-dtype="String">
 						{{#select this.type}}
-							{{#each @root.config.select.attribute_type as |v k|}}
+							{{#each @root.config.select.attribute as |v k|}}
 								<option value="{{k}}">
 									{{localize v}}
 								</option>
@@ -53,7 +53,7 @@
 				<div class="field">
 					<select name="array.system.settings.attributes.{{@index}}.type" data-dtype="String">
 						{{#select this.type}}
-							{{#each @root.config.select.attribute_type as |v k|}}
+							{{#each @root.config.select.attribute as |v k|}}
 								<option value="{{k}}">
 									{{localize v}}
 								</option>

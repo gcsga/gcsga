@@ -1,9 +1,9 @@
-import { Feature } from "@feature"
-import { BaseItemSourceGURPS, ItemSystemData } from "@item/base/data"
+import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
+import { Feature } from "@module/config"
+import { ItemType } from "@module/data"
+import { emcost, emweight } from "@util/enum"
 
-export type EquipmentModifierSource = BaseItemSourceGURPS<"eqp_modifier", EquipmentModifierSystemData>
-
-// Export class EquipmentModifierData extends BaseItemDataGURPS<EquipmentModifierGURPS> {}
+export type EquipmentModifierSource = ItemGCSSource<ItemType.EquipmentModifier, EquipmentModifierSystemData>
 
 export interface EquipmentModifierData extends Omit<EquipmentModifierSource, "effects">, EquipmentModifierSystemData {
 	readonly type: EquipmentModifierSource["type"]
@@ -12,15 +12,12 @@ export interface EquipmentModifierData extends Omit<EquipmentModifierSource, "ef
 	readonly _source: EquipmentModifierSource
 }
 
-export interface EquipmentModifierSystemData extends ItemSystemData {
-	cost_type: EquipmentCostType
+export interface EquipmentModifierSystemData extends ItemGCSSystemData {
+	cost_type: emcost.Type
 	cost: string
-	weight_type: EquipmentWeightType
+	weight_type: emweight.Type
 	weight: string
 	tech_level: string
 	features: Feature[]
 	disabled: boolean
 }
-
-export type EquipmentCostType = "to_original_cost" | "to_base_cost" | "to_final_base_cost" | "to_final_cost"
-export type EquipmentWeightType = "to_original_weight" | "to_base_weight" | "to_final_base_weight" | "to_final_weight"

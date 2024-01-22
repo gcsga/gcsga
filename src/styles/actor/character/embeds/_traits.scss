@@ -1,6 +1,5 @@
 #traits {
 	grid-area: traits;
-
 	grid-template-columns: 1fr repeat(2, auto);
 	.header {
 		grid-area: auto;
@@ -28,6 +27,21 @@
 				}
 			}
 		}
+	}
+
+	.name {
+		display: flex;
+		gap: 5px;
+	}
+	.container-type {
+		background-color: rgb(var(--color-on-content));
+		color: rgb(var(--color-content));
+		height: min-content;
+		padding: 0px 5px;
+		border-radius: 5px;
+		margin-top: 2px;
+		font-size: 80%;
+		white-space: nowrap;
 	}
 
 	.disabled {

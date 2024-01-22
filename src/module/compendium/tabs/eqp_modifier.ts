@@ -1,5 +1,6 @@
-import { SYSTEM_NAME } from "@module/data"
-import { CompendiumBrowser, CompendiumIndexData } from ".."
+import { ItemType, SYSTEM_NAME } from "@module/data"
+import { CompendiumBrowser } from "../browser"
+import { CompendiumIndexData, TabName } from "../data"
 import { CompendiumTab } from "./base"
 
 export class CompendiumEquipmentModifierTab extends CompendiumTab {
@@ -10,7 +11,7 @@ export class CompendiumEquipmentModifierTab extends CompendiumTab {
 	}
 
 	constructor(browser: CompendiumBrowser) {
-		super(browser, "eqp_modifier")
+		super(browser, TabName.EquipmentModifier)
 	}
 
 	protected override async loadData(): Promise<void> {
@@ -19,14 +20,14 @@ export class CompendiumEquipmentModifierTab extends CompendiumTab {
 
 		for await (const { pack, index } of this.browser.packLoader.loadPacks(
 			"Item",
-			this.browser.loadedPacks("eqp_modifier"),
+			this.browser.loadedPacks(TabName.EquipmentModifier),
 			indexFields
 		)) {
-			const collection = (game as Game).packs.get(pack.collection)
+			const collection = game.packs.get(pack.collection)
 			;((await collection?.getDocuments()) as any).forEach((modifier: any) => {
-				if (!["eqp_modifier", "eqp_modifier_container"].includes(modifier.type)) return
+				if (![ItemType.EquipmentModifier, ItemType.EquipmentModifierContainer].includes(modifier.type)) return
 				modifier.prepareData()
-				const children = modifier.type === "eqp_modifier_container" ? modifier.children : []
+				const children = modifier.type === ItemType.EquipmentModifierContainer ? modifier.children : []
 				children.forEach((c: Item) => c.prepareData())
 				// TODO: hasAllIndexFields
 				modifier_list.push({
@@ -41,13 +42,15 @@ export class CompendiumEquipmentModifierTab extends CompendiumTab {
 					uuid: modifier.uuid,
 					id: modifier._id,
 					parents: modifier.parents,
-					children: modifier.type === "eqp_modifier_container" ? children : [],
+					indent: modifier.indent,
+					children: modifier.type === ItemType.EquipmentModifierContainer ? children : [],
 					adjustedPoints: modifier.adjustedPoints,
 					tags: modifier.tags,
 					reference: modifier.reference,
 					techLevel: modifier.techLevel,
 					value: modifier.costDescription,
 					weight: modifier.weightDescription,
+					flags: modifier.flags,
 				})
 			})
 

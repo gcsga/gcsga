@@ -18,9 +18,14 @@
 			font: var(--font-label);
 			text-align: right;
 			display: inline-flex;
-			flex-flow: column nowrap;
-			justify-content: center;
+			flex-flow: row nowrap;
+			justify-content: right;
+			align-items: center;
 			height: 100%;
+
+			> * {
+				margin-left: 3px;
+			}
 		}
 
 		.field {
@@ -33,18 +38,72 @@
 				flex-flow: row nowrap;
 			}
 
-			button {
-				height: 100%;
+			&.no-ref {
+				grid-column: span 2;
+
+				:last-child {
+					justify-self: right;
+				}
+			}
+
+			&.no-stretch {
+				.checkbox-label + .checkbox-label {
+					margin: 0;
+				}
+			}
+
+			* {
+				align-self: center;
 			}
 		}
 
-		input[name="basicDamage"],
-		input[name="rofMultiplier"],
-		input[name="range"],
-		input[name="woundMod"],
+		input[type="number"] {
+			text-align: center;
+		}
+
+		input[data-action="override-basic"],
+		input[data-action="override-rofMultiplier"],
+		input[data-action="override-range"],
+		input[data-action="override-woundingmod"],
+		input[data-action="override-vulnerability"],
 		input[name="injury"],
-		input[name="dr"] {
-			width: 6em;
+		input[data-action="override-dr"],
+		input[data-action="override-reduction"] {
+			width: 4em;
+		}
+
+		// input[name="injury"] {
+		// 	text-align: right;
+		// }
+
+		.input-wrapper {
+			border: 1px solid rgba(var(--color-control-edge));
+			padding-left: 3px;
+			display: inline-block;
+			border-radius: 3px 0 0 3px;
+			background-color: rgb(var(--color-control));
+		}
+
+		.input-wrapper.multiply:before {
+			content: "×";
+		}
+
+		.input-wrapper.divide:before {
+			content: "÷";
+		}
+
+		.input-wrapper > input {
+			border: 0;
+			margin: 0;
+			padding: 0;
+			outline: none;
+			border-left: 1px solid rgb(var(--color-control-edge));
+		}
+
+		select[data-action="override-reduction"],
+		select[data-action="armordivisor-select"],
+		select[data-action="hardened-select"] {
+			text-align: center;
 		}
 
 		.header {
@@ -52,55 +111,115 @@
 			grid-column: span 3;
 		}
 
-		.pdf {
-			color: rgba(var(--color-text-dark-inactive), 1);
-			text-decoration: none;
+		.ref {
 			font-size: 80%;
-			text-align: left;
+			text-align: right;
+			text-decoration: none;
+			color: rgba(var(--color-link), 1) !important;
+			cursor: pointer;
 
 			&:hover {
-				color: blue;
-				text-decoration: underline;
-				font-weight: 500;
+				color: rgba(var(--color-link-rollover), 1) !important;
 			}
+
+			&:active {
+				color: rgba(var(--color-link-pressed), 1) !important;
+			}
+		}
+
+		.overridden {
+			background-color: rgb(var(--color-overloaded)) !important;
+			color: rgb(var(--color-on-overloaded)) !important;
 		}
 
 		#target {
 			padding: 2px 16px;
 
-			.content {
+			.fieldblock {
 				border: 1px solid rgb(var(--color-header));
-				padding: 2px 16px;
-				color: rgba(var(--color-on-content), 1);
 				background-color: rgb(var(--color-content));
-				display: grid;
-				grid-template-columns: max-content 1fr min-content;
-				row-gap: 4px;
-				column-gap: 9px;
-				vertical-align: middle;
-				overflow: hidden;
+			}
+
+			#vulnerability {
+				display: flex;
+				flex-flow: column nowrap;
+				width: max-content;
+
+				div {
+					display: flex;
+					flex-flow: row nowrap;
+					width: 100%;
+					column-gap: 9px;
+				}
 			}
 		}
 
 		#results {
+			grid-column: span 3;
 			display: grid;
-			grid-template-columns: 1fr 1fr;
+			grid-template-columns: max-content 1fr;
 			row-gap: 4px;
 			column-gap: 9px;
 			vertical-align: middle;
 			overflow: hidden;
 		}
 
+		#effects,
 		#calc {
 			display: flex;
 			flex-flow: column nowrap;
 			justify-content: space-between;
-			margin: 2px 16px;
+			margin: 2px 0px;
+			row-gap: 4px;
 
 			.table {
 				border: 1px solid rgb(var(--color-header));
+			}
+		}
+
+		#effects {
+			.table {
+				display: flex;
+				flex-flow: column nowrap;
+				row-gap: 2px;
+				height: 100%;
+
+				.effect {
+					font: var(--font-field);
+					padding: 1px 3px;
+					width: calc(100% - 2px);
+					margin: 0px 1px;
+					border: 1px solid rgb(var(--color-control-edge));
+					border-radius: 3px;
+					background-color: rgb(var(--color-control));
+					color: rgb(var(--color-on-control));
+					display: grid;
+					grid-template-columns: min-content 1fr;
+					text-align: left;
+
+					&.disabled {
+						background-color: rgb(var(--color-control));
+						color: rgba(var(--color-on-control), 0.5);
+					}
+
+					.enable {
+						grid-row: span 2;
+						align-self: center;
+						padding-right: 3px;
+					}
+
+					.descr {
+						grid-column: 2;
+						font: var(--font-secondary-fields);
+					}
+				}
+			}
+		}
+
+		#calc {
+			.table {
 				display: grid;
-				grid-template-columns: max-content min-content 1fr;
+				grid-template-columns: auto min-content auto;
 
 				> div:not(.header) {
 					background-color: rgb(var(--color-content));
@@ -118,6 +237,11 @@
 					font: var(--font-label);
 					font-size: 80%;
 					text-align: right;
+				}
+
+				.step,
+				.descr,
+				.value {
 					display: inline-flex;
 					flex-flow: column nowrap;
 					justify-content: center;
@@ -143,9 +267,21 @@
 			.apply {
 				display: flex;
 				flex-flow: row nowrap;
-				justify-content: space-between;
-				margin-top: 2px;
+				justify-content: end;
+				align-items: center;
+
+				* {
+					margin-left: 3px;
+				}
 			}
+		}
+
+		#effects {
+			display: flex;
+			flex-flow: column nowrap;
+			justify-content: space-between;
+			margin: 2px 0px;
+			row-gap: 4px;
 		}
 	}
 }

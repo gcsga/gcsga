@@ -1,46 +1,50 @@
-import { BaseItemSourceGURPS, ItemSystemData } from "@item/base/data"
+import { StaticEquipment, StaticMelee, StaticRanged, StaticSkill, StaticSpell, StaticTrait } from "@actor"
+import { BaseItemSourceGURPS } from "@item/base/data"
+import { ItemType } from "@module/data"
 
-export type StaticItemSource = BaseItemSourceGURPS<"static_equipment", StaticItemSystemData>
+export type StaticItemSource = BaseItemSourceGURPS<ItemType.LegacyEquipment, StaticItemSystemData>
 
 // Export class StaticItemData extends BaseItemDataGURPS<StaticItemGURPS> {}
 
-export interface StaticItemData extends Omit<StaticItemSource, "effects">, StaticItemSystemData {
+export interface StaticItemData extends StaticItemSource, StaticItemSystemData {
 	readonly type: StaticItemSource["type"]
 	data: StaticItemSystemData
 
 	readonly _source: StaticItemSource
 }
 
-export interface StaticItemSystemData extends ItemSystemData {
-	eqt: {
-		name: string
-		notes: string
-		pageref: string
-		count: number
-		weight: number
-		cost: number
-		location: string
-		carried: boolean
-		equipped: boolean
-		techlevel: string
-		categories: string
-		legalityclass: string
-		costsum: number
-		weightsum: number
-		uses: number
-		maxuses: number
-		parentuuid: string
-		uuid: string
-		itemid: string
-		gloablid: string
-		contains: any
-		img: string | null
-	}
-	melee: any
-	ranged: any
-	ads: any
-	skills: any
-	spells: any
+export interface StaticItemSystemData {
+	eqt: StaticEquipment
+	// eqt: {
+	// 	name: string
+	// 	notes: string
+	// 	pageref: string
+	// 	count: number
+	// 	weight: number
+	// 	cost: number
+	// 	location: string
+	// 	carried: boolean
+	// 	equipped: boolean
+	// 	techlevel: string
+	// 	categories: string
+	// 	legalityclass: string
+	// 	costsum: number
+	// 	weightsum: number
+	// 	uses: number
+	// 	maxuses: number
+	// 	parentuuid: string
+	// 	uuid: string
+	// 	itemid: string
+	// 	gloablid: string
+	// 	contains: any
+	// 	img: string | null
+	// }
+	ads: { [key: string]: StaticTrait }
+	skills: { [key: string]: StaticSkill }
+	spells: { [key: string]: StaticSpell }
+	eqtsummary: number
+	melee: { [key: string]: StaticMelee }
+	ranged: { [key: string]: StaticRanged }
 	bonuses: string
 	equipped: boolean
 	carried: boolean

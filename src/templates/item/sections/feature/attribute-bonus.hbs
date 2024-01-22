@@ -4,7 +4,7 @@
 		{{#select this.attribute}}
 			{{#unless (in attributes this.attribute)}}
 				<option value="{{this.attribute}}">{{localize
-						"gurps.field_prefix.attribute_unkown"
+						"gurps.field_prefix.attribute_unknown"
 						att=this.attribute
 					}}</option>
 			{{/unless}}
@@ -13,9 +13,9 @@
 			{{/each}}
 		{{/select}}
 	</select>
-	<select name="array.system.features.{{@index}}.limitation" {{input_lock (eq this.attribute "st")}}>
+	<select name="array.system.features.{{@index}}.limitation" {{disabled (ne this.attribute "st")}}>
 		{{#select this.limitation}}
-			{{#each config.select.st_limitation as |v k|}}
+			{{#each config.select.stlimit as |v k|}}
 				<option value="{{k}}">{{localize v}}</option>
 			{{/each}}
 		{{/select}}

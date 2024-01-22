@@ -1,48 +1,11 @@
-import { HitLocation, HitLocationTable } from "@actor/character/hit_location"
-import {
-	Difficulty,
-	NumberCompare,
-	NumberComparison,
-	StringCompare,
-	StringComparison,
-	Study,
-	StudyType,
-} from "@module/data"
-import { DiceGURPS } from "@module/dice"
+import { CharacterGURPS } from "@actor"
+import { DEFAULT_INITIATIVE_FORMULA, ItemType, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { v4 as uuidv4 } from "uuid"
+import { display } from "./enum"
+import { StringBuilder } from "./string_builder"
+import { LocalizeGURPS } from "./localize"
 
-/**
- *
- * @param value
- * @param fallback
- */
-export function i18n(value: string, fallback?: string): string {
-	const result = (game as Game).i18n.localize(value)
-	if (fallback) return value === result ? fallback : result
-	return result
-}
-
-/**
- * @param value
- * @param data
- * @param fallback
- * @returns {string}
- */
-export function i18n_f(value: string, data: Record<string, unknown>, fallback?: string): string {
-	const template = (game as Game).i18n.has(value) ? value : fallback
-	if (!template) return value
-	const result = (game as Game).i18n.format(template, data)
-	if (fallback) return value === result ? fallback : result
-	return result
-}
-
-/**
- *
- * @param id
- * @param permit_leading_digits
- * @param reserved
- */
-export function sanitize(id: string, permit_leading_digits: boolean, reserved: string[]): string {
+export function sanitizeId(id: string, permit_leading_digits: boolean, reserved: string[]): string {
 	const buffer: string[] = []
 	for (let ch of id.split("")) {
 		if (ch.match("[A-Z]")) ch = ch.toLowerCase()
@@ -67,6 +30,23 @@ export function sanitize(id: string, permit_leading_digits: boolean, reserved: s
 	return ""
 }
 
+export function sanitize(text: string): string {
+	text = text.replace(/%(?![0-9][0-9a-fA-F]+)/g, "%25")
+	text = decodeURIComponent(text) // convert % (not followed by 2 digit hex) to %25, unicode characters into html format
+	text = text.replace(/&nbsp;/g, " ") // we need to convert non-breaking spaces into regular spaces for parsing
+	text = text.replace(/&amp;/g, "&") // we need to convert to & for easier parsing
+	text = text.replace(/&minus;/g, "-") // we need to convert to - for easier parsing
+	text = text.replace(/&plus;/g, "+") // we need to convert to - for easier parsing
+	text = text.replace(/(&#215;|&#xD7;|&times)/g, "x") // we need to convert the multiplication symbol to x for easier parsing
+	text = text.replace(/(<([^>]+)>)/gi, "") // remove <html> tags
+	text = text.replace(/(\u201c|\u201d)/g, '"') // double quotes
+	text = text.replace(/&quot;/g, '"') // double quotes
+	text = text.replace(/&#x27;/g, "'") // single quotes
+	text = text.replace(/\u2011/g, "-") // replace non-breaking hyphon with a minus sign
+	text = text.replace(/\u2212/g, "-") // unicode minus to minus
+	return text
+}
+
 /**
  *
  */
@@ -86,130 +66,69 @@ export function getCurrentTime(): string {
  * @param value
  * @param base
  */
-export function stringCompare(value?: string | string[] | null, base?: StringCompare): boolean {
-	if (!base) return true
-	if (!value) return false
-	if (typeof value === "string") value = [value]
-	value = value.map(e => {
-		return e.toLowerCase()
-	})
-	base.qualifier = base.qualifier?.toLowerCase()
-	switch (base.compare) {
-		case StringComparison.None:
-			return true
-		case StringComparison.Is:
-			return !!base.qualifier && value.includes(base.qualifier)
-		case StringComparison.IsNot:
-			return !!base.qualifier && !value.includes(base.qualifier)
-		case StringComparison.Contains:
-			for (const v of value) if (base.qualifier && v.includes(base.qualifier)) return true
-			return false
-		case StringComparison.DoesNotContain:
-			for (const v of value) if (base.qualifier && v.includes(base.qualifier)) return false
-			return true
-		case StringComparison.StartsWith:
-			for (const v of value) if (base.qualifier && v.startsWith(base.qualifier)) return true
-			return false
-		case StringComparison.DoesNotStartWith:
-			for (const v of value) if (base.qualifier && v.startsWith(base.qualifier)) return false
-			return true
-		case StringComparison.EndsWith:
-			for (const v of value) if (base.qualifier && v.endsWith(base.qualifier)) return true
-			return false
-		case StringComparison.DoesNotEndWith:
-			for (const v of value) if (base.qualifier && v.endsWith(base.qualifier)) return false
-			return true
-	}
-}
+// export function stringCompare(value?: string | string[] | null, base?: StringCriteria): boolean {
+// 	if (!base) return true
+// 	if (!value) value = ""
+// 	if (typeof value === "string") value = [value]
+// 	value = value.map(e => {
+// 		return e.toLowerCase()
+// 	})
+// 	base.qualifier = base.qualifier?.toLowerCase()
+// 	switch (base.compare) {
+// 		case StringComparisonType.AnyString:
+// 			return true
+// 		case StringComparisonType.IsString:
+// 			return base.qualifier !== undefined && value.includes(base.qualifier)
+// 		case StringComparisonType.IsNotString:
+// 			return base.qualifier !== undefined && !value.includes(base.qualifier)
+// 		case StringComparisonType.ContainsString:
+// 			for (const v of value) if (base.qualifier && v.includes(base.qualifier)) return true
+// 			return false
+// 		case StringComparisonType.DoesNotContainString:
+// 			for (const v of value) if (base.qualifier && v.includes(base.qualifier)) return false
+// 			return true
+// 		case StringComparisonType.StartsWithString:
+// 			for (const v of value) if (base.qualifier && v.startsWith(base.qualifier)) return true
+// 			return false
+// 		case StringComparisonType.DoesNotStartWithString:
+// 			for (const v of value) if (base.qualifier && v.startsWith(base.qualifier)) return false
+// 			return true
+// 		case StringComparisonType.EndsWithString:
+// 			for (const v of value) if (base.qualifier && v.endsWith(base.qualifier)) return true
+// 			return false
+// 		case StringComparisonType.DoesNotEndWithString:
+// 			for (const v of value) if (base.qualifier && v.endsWith(base.qualifier)) return false
+// 			return true
+// 	}
+// }
 
 /**
  *
  * @param value
  * @param base
  */
-export function numberCompare(value: number, base?: NumberCompare): boolean {
-	if (!base) return true
-	switch (base.compare) {
-		case NumberComparison.None:
-			return true
-		case NumberComparison.Is:
-			return value === base.qualifier
-		case NumberComparison.IsNot:
-			return value !== base.qualifier
-		case NumberComparison.AtMost:
-			return value <= base.qualifier
-		case NumberComparison.AtLeast:
-			return value >= base.qualifier
-	}
-}
+// export function numberCompare(value: number, base?: NumericCriteria): boolean {
+// 	if (!base) return true
+// 	switch (base.compare) {
+// 		case NumericComparisonType.AnyNumber:
+// 			return true
+// 		case NumericComparisonType.EqualsNumber:
+// 			return value === base.qualifier
+// 		case NumericComparisonType.NotEqualsNumber:
+// 			return value !== base.qualifier
+// 		case NumericComparisonType.AtMostNumber:
+// 			return value <= base.qualifier!
+// 		case NumericComparisonType.AtLeastNumber:
+// 			return value >= base.qualifier!
+// 		default:
+// 			return true
+// 	}
+// }
 
-/**
- *
- * @param str
- */
 export function extractTechLevel(str: string): number {
 	return Math.min(Math.max(0, parseInt(str)), 12)
 }
 
-export type WeightValueType =
-	| "weight_addition"
-	| "weight_percentage_addition"
-	| "weight_percentage_multiplier"
-	| "weight_multiplier"
-
-/**
- *
- * @param s
- */
-export function determineModWeightValueTypeFromString(s: string): WeightValueType {
-	if (typeof s !== "string") s = `${s}`
-	s = s.toLowerCase().trim()
-	if (s.endsWith("%")) {
-		if (s.startsWith("x")) return "weight_percentage_multiplier"
-		return "weight_percentage_addition"
-	} else if (s.endsWith("x") || s.startsWith("x")) return "weight_multiplier"
-	return "weight_addition"
-}
-
-export interface Fraction {
-	numerator: number
-	denominator: number
-}
-
-/**
- *
- * @param s
- */
-export function extractFraction(s: string): Fraction {
-	if (typeof s !== "string") s = `${s}`
-	let v = s.trim()
-	while (v.length > 0 && v.at(-1)?.match("[0-9]")) {
-		v = v.substring(0, v.length - 1)
-	}
-	const f = v.split("/")
-	const fraction: Fraction = {
-		numerator: parseInt(f[0]) || 0,
-		denominator: parseInt(f[1]) || 1,
-	}
-	const revised = determineModWeightValueTypeFromString(s)
-	if (revised === "weight_percentage_multiplier") {
-		if (fraction.numerator <= 0) {
-			fraction.numerator = 100
-			fraction.denominator = 1
-		}
-	} else if (revised === "weight_multiplier") {
-		if (fraction.numerator <= 0) {
-			fraction.numerator = 1
-			fraction.denominator = 1
-		}
-	}
-	return fraction
-}
-
-/**
- *
- * @param i
- */
 export function dollarFormat(i: number): string {
 	const formatter = new Intl.NumberFormat("en-US", {
 		style: "currency",
@@ -218,25 +137,6 @@ export function dollarFormat(i: number): string {
 	return formatter.format(i)
 }
 
-/**
- *
- * @param {...any} args
- */
-export function floatingMul(...args: number[]): number {
-	let multiplier = 100
-	let x = args.length
-	let result = multiplier
-	for (const arg of args) {
-		const newArg = arg * multiplier
-		result *= newArg
-	}
-	return parseFloat((result / multiplier ** (x + 1)).toPrecision(12))
-}
-
-/**
- *
- * @param n
- */
 export function toWord(n: number): string {
 	switch (n) {
 		case 1:
@@ -256,10 +156,6 @@ export function toWord(n: number): string {
 	}
 }
 
-/**
- *
- * @param str
- */
 export function removeAccents(str: string): string {
 	return str
 		.normalize("NFD")
@@ -269,45 +165,24 @@ export function removeAccents(str: string): string {
 		.replace(/(^-+|-+$)/g, "")
 }
 
-/**
- *
- * @param s
- */
 export function capitalize(s: string): string {
 	return s.charAt(0).toUpperCase() + s.slice(1)
 }
 
-// Object.defineProperty(String.prototype, 'capitalize', {
-// 	value: function() {
-// 		return this.charAt(0).toUpperCase() + this.slice(1);
-// 	},
-// 	enumerable: false
-// });
+// export function getAdjustedStudyHours(s: Study): number {
+// 	switch (s.type) {
+// 		case StudyType.Self:
+// 			return s.hours * 0.5
+// 		case StudyType.Job:
+// 			return s.hours * 0.25
+// 		case StudyType.Teacher:
+// 			return s.hours
+// 		case StudyType.Intensive:
+// 			return s.hours * 2
+// 	}
+// }
 
-/**
- *
- * @param s
- */
-export function getAdjustedStudyHours(s: Study): number {
-	switch (s.type) {
-		case StudyType.Self:
-			return s.hours * 0.5
-		case StudyType.Job:
-			return s.hours * 0.25
-		case StudyType.Teacher:
-			return s.hours
-		case StudyType.Intensive:
-			return s.hours * 2
-	}
-}
-
-/**
- *
- * @param _event
- * @param formData
- * @param object
- */
-export function prepareFormData(_event: Event, formData: any, object: any): any {
+export function prepareFormData(formData: any, object: any): any {
 	for (let aKey of Object.keys(formData)) {
 		if (formData[aKey] === null) formData[aKey] = "0"
 		if (aKey.includes(".halve_")) {
@@ -321,15 +196,11 @@ export function prepareFormData(_event: Event, formData: any, object: any): any 
 	for (let aKey of Object.keys(formData)) {
 		if (aKey.startsWith("array.") && aKey.match(/\d/)) {
 			const key = aKey.replace(/^array./g, "")
-			// Console.log(key)
 			const arrayKey = key.split(/.\d+./)[0]
-			const array: any[] = getProperty(object, arrayKey)
-			// Console.log(object, arrayKey, array)
+			let array: any[] = formData[arrayKey] || getProperty(object, arrayKey)
 			const index = parseInt(key.match(/.(\d+)./)![1])
-			// Console.log(index)
 			const prop = key.replace(new RegExp(`^${arrayKey}.${index}.`), "")
-			// Console.log(prop)
-			setArrayProperty(array, index, prop, formData[aKey])
+			array = setArrayProperty(array, index, prop, formData[aKey])
 			formData[arrayKey] = array
 			delete formData[aKey]
 		} else if (aKey.startsWith("array.")) {
@@ -358,7 +229,6 @@ export function prepareFormData(_event: Event, formData: any, object: any): any 
  * @param value
  */
 function setArrayProperty(a: any[], index: number, prop: string, value: any): any[] {
-	// Console.log(a, index, prop, value)
 	if (prop.match(/.\d+./)) {
 		const inArrayKey = prop.split(/.\d+./)[0]
 		const inArrayArray = getProperty(a[index], inArrayKey)
@@ -372,80 +242,135 @@ function setArrayProperty(a: any[], index: number, prop: string, value: any): an
 }
 
 /**
- *
- * @param s
- * @param t
- */
-export function equalFold(s: string, t: string): boolean {
-	return s.toLowerCase() === t.toLowerCase()
-}
-
-/**
  * Prounounced "dee six if eye" Convert a GURPS dice roll to Foundry dice roll (e.g. 1d => 1d6, 2d-1 => 2d6-1)
  * @param {string} str
  * @param {string | null} flavor
  * @returns {string}
  */
-export function d6ify(str: string, flavor = ""): string {
+export function d6ify(str: string, flavor: string | null = ""): string {
 	let w = str.replace(/d([^6])/g, `d6${flavor || ""}$1`) // Find 'd's without a 6 behind it, and add it.
 	return w.replace(/d$/g, `d6${flavor || ""}`) // And do the same for the end of the line.
 }
 
-/**
- *
- * @param body
- */
-export function getHitLocations(body: HitLocationTable): HitLocation[] {
-	/**
-	 *
-	 * @param b
-	 */
-	function updateRollRanges(b: HitLocationTable) {
-		let start = new DiceGURPS(b.roll).minimum(false)
-		for (const i of b.locations) {
-			start = updateRollRange(i, start)
-		}
+export async function urlToBase64(imageUrl: string) {
+	const format = imageUrl.split(".").at(-1) || ""
+	if (!["png", "webp", "jpg", "jpeg"].includes(format)) return ""
+	let img: any = await fetch(imageUrl)
+	img = await img.blob()
+	let bitmap = await createImageBitmap(img)
+	let canvas = document.createElement("canvas")
+	let ctx = canvas.getContext("2d")
+	canvas.width = bitmap.width
+	canvas.height = bitmap.height
+	ctx?.drawImage(bitmap, 0, 0, bitmap.width, bitmap.height)
+	switch (format) {
+		case "webp":
+			return canvas.toDataURL("image/webp").replace("data:image/webp;base64,", "")
+		case "png":
+			return canvas.toDataURL("image/png").replace("data:image/png;base64,", "")
+		case "jpeg":
+		case "jpg":
+			return canvas.toDataURL("image/jpeg").replace("data:image/png;base64,", "")
 	}
-	/**
-	 *
-	 * @param h
-	 * @param start
-	 */
-	function updateRollRange(h: HitLocation, start: number): number {
-		h.calc ??= { roll_range: "", dr: {} }
-		h.slots ??= 0
-		if (h.slots === 0) h.calc.roll_range = "-"
-		else if (h.slots === 1) h.calc.roll_range = start.toString()
-		else {
-			h.calc.roll_range = `${start}-${start + h.slots - 1}`
-		}
-		if (h.sub_table) {
-			updateRollRanges(h.sub_table)
-		}
-		return start + h.slots
-	}
-
-	if (!body) return []
-	updateRollRanges(body)
-	return body.locations
 }
 
-/**
- *
- * @param d
- */
-export function difficultyRelativeLevel(d: Difficulty): number {
-	switch (d) {
-		case Difficulty.Easy:
-			return 0
-		case Difficulty.Average:
-			return -1
-		case Difficulty.Hard:
-			return -2
-		case Difficulty.VeryHard:
-		case Difficulty.Wildcard:
-			return -3
-		default:
-			return difficultyRelativeLevel(Difficulty.Easy)
+export function setInitiative() {
+	let formula = game.settings.get(SYSTEM_NAME, SETTINGS.INITIATIVE_FORMULA)
+	if (!formula) formula = DEFAULT_INITIATIVE_FORMULA
+	if (game.user?.isGM) game.settings.set(SYSTEM_NAME, SETTINGS.INITIATIVE_FORMULA, formula)
+	CONFIG.Combat.initiative.formula = formula
+}
+
+export function pick<T extends object, K extends keyof T>(obj: T, keys: Iterable<K>): Pick<T, K> {
+	return [...keys].reduce(
+		(result, key) => {
+			if (key in obj) {
+				result[key] = obj[key]
+			}
+			return result
+		},
+		{} as Pick<T, K>
+	)
+}
+
+export async function getDefaultSkills() {
+	const skills: Item[] = []
+	const skillPacks = game.settings.get(SYSTEM_NAME, SETTINGS.COMPENDIUM_BROWSER_PACKS).skill
+	for (const s in skillPacks)
+		if (skillPacks[s].skillDefault) {
+			const pack = game.packs.get(s) as CompendiumCollection<any>
+				; (await pack.getDocuments()).forEach(e => {
+					skills.push(e)
+				})
+		}
+	CONFIG.GURPS.skillDefaults = skills
+}
+
+export function flatten(obj: any, flatObj: Record<string, any> = {}, key = ""): Record<string, any> | null {
+	if (obj === null) return null
+	for (const k of Object.keys(obj)) {
+		let valKey = key === "" ? k : `${key}.${k}`
+		if (typeof obj[k] === "object") {
+			if (Array.isArray(obj[k]) && !valKey.startsWith("array.")) valKey = `array.${valKey}`
+			flatten(obj[k], flatObj, valKey)
+		} else flatObj[valKey] = obj[k]
 	}
+	return flatObj
+}
+
+export function inlineNote(
+	actor: CharacterGURPS,
+	option: "user_description_display" | "modifiers_display" | "notes_display" | "skill_level_adj_display"
+): boolean {
+	if (actor) return [display.Option.Inline, display.Option.InlineAndTooltip].includes(actor.settings[option])
+	return [display.Option.Inline, display.Option.InlineAndTooltip].includes(
+		game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)[option]
+	)
+}
+
+export function getNewAttributeId(list: { id: string }[]): string {
+	let base = ""
+	for (let i = 0; i < 5; i++) {
+		for (let n = 0; n < 26; n++) {
+			let attempt = `${base}${String.fromCharCode(97 + n)}`
+			if (!list.some(e => e.id === attempt)) return attempt
+		}
+		base += "a"
+	}
+	ui.notifications?.error("Ran out of valid IDs. How did you manage this?")
+	throw new Error("Error generating new attribute ID, ran out of possible auto-generated IDs.")
+}
+
+export function isContainer(item: { type: ItemType }): boolean {
+	return [
+		ItemType.TraitContainer,
+		ItemType.SkillContainer,
+		ItemType.SpellContainer,
+		ItemType.EquipmentContainer,
+		ItemType.TraitModifierContainer,
+		ItemType.EquipmentModifierContainer,
+		ItemType.NoteContainer,
+	].includes(item.type as any)
+}
+
+// export function sheetSettingsFor(actor: CharacterResolver): SheetSettings {
+// 	if (!actor) return
+// }
+
+export function sheetDisplayNotes(s: string, options: { unsatisfied?: string, unready?: boolean } = { unsatisfied: "", unready: false }): string {
+	const buffer = new StringBuilder()
+	if (options.unsatisfied && options.unsatisfied !== "")
+		buffer.push(
+			`<div class='unsatisfied' data-tooltip='${options.unsatisfied}' data-tooltip-direction='DOWN'>` +
+			`<i class='gcs-triangle-exclamation'></i>${LocalizeGURPS.translations.gurps.prereq.unsatisfied}` +
+			"</div>"
+		)
+	if (options.unready)
+		buffer.push(
+			"<div class='unsatisfied'>" +
+			`<i class='gcs-triangle-exclamation'></i>${LocalizeGURPS.translations.gurps.weapon.unready}` +
+			"</div>"
+		)
+	buffer.appendToNewLine(s)
+	return `<div class="item-notes">${buffer.toString()}</div>`
 }

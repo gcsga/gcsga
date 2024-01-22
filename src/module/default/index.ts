@@ -1,13 +1,11 @@
 import { CharacterGURPS } from "@actor"
 import { SkillGURPS, TechniqueGURPS } from "@item"
-import { gid } from "@module/data"
+import { SkillDefaultType, gid } from "@module/data"
 
 const skill_based_default_types: Map<string, boolean> = new Map()
 skill_based_default_types.set(gid.Skill, true)
 skill_based_default_types.set(gid.Parry, true)
 skill_based_default_types.set(gid.Block, true)
-
-export type SkillDefaultType = gid.Block | gid.Parry | gid.Skill | gid.Ten | string
 
 export class SkillDefault {
 	type: SkillDefaultType = gid.Skill
@@ -79,14 +77,14 @@ export class SkillDefault {
 			case gid.Skill:
 				return this.finalLevel(this.best(actor, require_points, excludes))
 			default:
-				return this.skillLevelFast(actor, require_points, rule_of_20, excludes)
+				return this.skillLevelFast(actor, require_points, excludes, rule_of_20)
 		}
 	}
 
 	best(actor: CharacterGURPS, require_points: boolean, excludes: Map<string, boolean>): number {
 		let best = -Infinity
 		for (const s of actor.skillNamed(this.name!, this.specialization || "", require_points, excludes)) {
-			const level = s.calculateLevel.level
+			const level = s.calculateLevel().level
 			if (best < level) best = level
 		}
 		return best
@@ -95,8 +93,8 @@ export class SkillDefault {
 	skillLevelFast(
 		actor: CharacterGURPS,
 		require_points: boolean,
-		rule_of_20: boolean,
-		excludes: Map<string, boolean> | null = new Map()
+		excludes: Map<string, boolean> | null = new Map(),
+		rule_of_20 = false
 	): number {
 		let level = 0
 		let best = 0
@@ -115,6 +113,8 @@ export class SkillDefault {
 				return this.finalLevel(best)
 			case gid.Skill:
 				return this.finalLevel(this.bestFast(actor, require_points, excludes))
+			case gid.Ten:
+				return this.finalLevel(10)
 			default:
 				level = actor.resolveAttributeCurrent(this.type)
 				if (rule_of_20) level = Math.min(level, 20)

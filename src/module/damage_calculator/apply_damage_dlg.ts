@@ -1,23 +1,21 @@
-import { HitLocation } from "@actor/character/hit_location"
-import { SYSTEM_NAME } from "@module/data"
+import { SETTINGS, SYSTEM_NAME } from "@module/data"
+import { PDF } from "@module/pdf"
 import { toWord } from "@util/misc"
 import { DamageRoll, DamageTarget } from "."
-import { DamageCalculator } from "./damage_calculator"
-import { DamageType } from "./damage_type"
+import { IDamageCalculator, createDamageCalculator } from "./damage_calculator"
+import { DamageTypes } from "./damage_type"
 import { HitLocationUtil } from "./hitlocation_utils"
 
 class ApplyDamageDialog extends Application {
 	static async create(roll: DamageRoll, target: DamageTarget, options = {}): Promise<ApplyDamageDialog> {
-		const dialog = new ApplyDamageDialog(roll, target, options)
+		roll.hits.forEach(async it => {
+			if (it.locationId === "Random") {
+				it.locationId = await new ApplyDamageDialog(roll, target, options)._rollRandomLocation()
+			}
+		})
 
-		if (dialog.calculator.damageRoll.locationId === "Random") {
-			dialog.calculator.damageRoll.locationId = await dialog._rollRandomLocation()
-		}
-
-		return dialog
+		return new ApplyDamageDialog(roll, target, options)
 	}
-
-	private calculator: DamageCalculator
 
 	/**
 	 * Use the static create() method, above, so that we can properly defer returning an instance until after we resolve
@@ -27,11 +25,21 @@ class ApplyDamageDialog extends Application {
 	 * @param target
 	 * @param options
 	 */
-	private constructor(roll: DamageRoll, target: DamageTarget, options = {}) {
+	private constructor(roll: DamageRoll, target: DamageTarget, options: any = {}) {
+		options.tabs = [
+			{
+				navSelector: ".nav-tabs",
+				contentSelector: ".content",
+				initial: "0",
+			},
+		]
+
 		super(options)
 
-		this.calculator = new DamageCalculator(roll, target)
+		this.calculator = createDamageCalculator(roll, target, game.i18n.format.bind(game.i18n))
 	}
+
+	private calculator: IDamageCalculator
 
 	static get defaultOptions(): ApplicationOptions {
 		return mergeObject(super.defaultOptions, {
@@ -39,6 +47,7 @@ class ApplyDamageDialog extends Application {
 			minimizable: false,
 			resizable: true,
 			width: 0,
+			height: "auto",
 			id: "ApplyDamageDialog",
 			template: `systems/${SYSTEM_NAME}/templates/damage_calculator/apply-damage.hbs`,
 			classes: ["apply-damage", "gurps"],
@@ -46,67 +55,104 @@ class ApplyDamageDialog extends Application {
 	}
 
 	get title() {
-		return "Apply Damage"
+		return game.i18n.localize("Apply Damage")
 	}
 
 	getData(options?: Partial<ApplicationOptions> | undefined): object {
+		const books = game.settings.get(SYSTEM_NAME, SETTINGS.BASE_BOOKS)
+
 		const data = mergeObject(super.getData(options), {
-			roll: this.roll,
-			target: this.target,
 			calculator: this.calculator,
-			source: this.damageRollText,
-			type: this.damageTypeAbbreviation,
-			isExplosion: this.isExplosion,
-			armorDivisorSelect: this.armorDivisorSelect,
-			damageTypeChoices: DamageType,
-			hitLocation: this.hitLocation,
-			hitLocationChoices: this.hitLocationChoice,
-			hardenedChoices: hardenedChoices,
-			vulnerabilityChoices: vulnerabilityChoices,
-			injuryToleranceChoices: injuryToleranceChoices,
-			damageReductionChoices: damageReductionChoices,
-			poolChoices: poolChoices,
+			choices: this.choices,
+			books,
 		})
 		return data
 	}
 
-	activateListeners(html: JQuery<HTMLElement>): void {
+	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 
-		html.find(".apply-control").on("change", "click", this._onApplyControl.bind(this))
+		html.find("[data-control]").on("change click", event => this._onApplyControl(event))
+		html.find("[data-action]").on("change click", event => this._onApplyControl(event))
+		html.find(".ref").on("click", event => PDF.handle(event))
 	}
 
-	async _onApplyControl(event: JQuery.ChangeEvent | JQuery.ClickEvent): Promise<void> {
-		const target = event.currentTarget
-
-		if (event.type === "click" && ["button", "checkbox"].includes(target.type)) {
-			this._onApplyControlClick(event, target)
+	_onApplyControl(event: JQuery.Event) {
+		if (event.type === "click") {
+			const e = event as JQuery.ClickEvent
+			if (["button", "checkbox"].includes(e.currentTarget.type)) {
+				this._onApplyControlClick(e, e.currentTarget)
+			}
 		}
 
-		if (event.type === "change" && ["number", "select-one"].includes(target.type)) {
-			this._onApplyControlChange(event, target)
+		if (event.type === "change") {
+			const e = event as JQuery.ChangeEvent
+			if (["number", "select-one"].includes(e.currentTarget.type)) {
+				this._onApplyControlChange(e, e.currentTarget)
+			}
 		}
 	}
 
 	async _onApplyControlChange(event: JQuery.ChangeEvent, target: any): Promise<void> {
 		event.preventDefault()
 
+		const intValue = parseInt(target.value)
+		const floatValue = parseFloat(target.value)
+		const index = parseInt(target.dataset.index)
+		const locationDamage = this.calculator.hits[index]
+
 		switch (target.dataset.action) {
-			case "location-select": {
-				this.calculator.damageRoll.locationId = target.value
+			case "override-woundingmod":
+				locationDamage.woundingModifierOverride = isNaN(floatValue) ? undefined : floatValue
 				break
-			}
 
-			case "hardened-select": {
-				this.calculator.overrideHardenedDR(target.value)
+			case "location-select":
+				locationDamage.locationNameOverride = target.value
 				break
-			}
 
-			case "location-dr": {
-				// Need to override target.dr in the calculator.
-				this.calculator.overrideRawDr(target.value)
+			case "hardened-select":
+				locationDamage.hardenedDROverride = intValue
 				break
-			}
+
+			case "override-dr":
+				locationDamage.damageResistanceOverride = isNaN(intValue) ? undefined : intValue
+				break
+
+			case "override-basic":
+				locationDamage.basicDamageOverride = isNaN(intValue) ? undefined : intValue
+				break
+
+			case "armordivisor-select":
+				this.calculator.armorDivisorOverride = isNaN(floatValue) ? undefined : floatValue
+				break
+
+			case "damagetype-select":
+				this.calculator.damageTypeOverride = target.value
+				break
+
+			case "damagepool-select":
+				this.calculator.damagePoolOverride = target.value
+				break
+
+			case "override-vulnerability":
+				this.calculator.vulnerabilityOverride = isNaN(intValue) ? undefined : intValue
+				break
+
+			case "tolerance-select":
+				this.calculator.injuryToleranceOverride = target.value
+				break
+
+			case "override-reduction":
+				this.calculator.damageReductionOverride = isNaN(floatValue) ? undefined : floatValue
+				break
+
+			case "override-range":
+				this.calculator.rangeOverride = isNaN(intValue) ? undefined : intValue
+				break
+
+			case "override-rofMultiplier":
+				this.calculator.rofMultiplierOverride = isNaN(intValue) ? undefined : intValue
+				break
 		}
 
 		this.render(true)
@@ -115,16 +161,56 @@ class ApplyDamageDialog extends Application {
 	async _onApplyControlClick(event: JQuery.ClickEvent, target: any): Promise<void> {
 		event.preventDefault()
 
-		switch (target.dataset.action) {
-			case "location-random": {
-				this.calculator.damageRoll.locationId = await this._rollRandomLocation()
-				break
-			}
+		const intValue = parseInt(target.value)
+		// const floatValue = parseFloat(target.value)
+		const index = parseInt(target.dataset.index)
+		const locationDamage = this.calculator.hits[index]
 
-			case "location-flexible": {
-				this.calculator.overrideFlexible(!this.calculator.isFlexibleArmor)
+		switch (target.dataset.action) {
+			case "location-random":
+				locationDamage.locationNameOverride = await this._rollRandomLocation()
 				break
-			}
+
+			case "location-flexible":
+				locationDamage.flexibleArmorOverride = target.checked
+				break
+
+			case "apply-basic":
+				this.calculator.applyBasicDamage(intValue)
+				break
+
+			case "apply-injury":
+				this.calculator.applyTotalDamage()
+				break
+
+			case "reset-form":
+				this.calculator.resetOverrides()
+				break
+
+			case "apply-vulnerability":
+				this.calculator.applyVulnerability(intValue, target.checked)
+				break
+
+			case "override-isExplosion":
+				this.calculator.isExplosionOverride = target.checked
+				break
+
+			case "override-internal":
+				this.calculator.isInternalOverride = target.checked
+				break
+
+			case "override-isHalfDamage":
+				this.calculator.isHalfDamageOverride = target.checked
+				break
+
+			case "override-isShotgunCloseRange":
+				this.calculator.isShotgunCloseRangeOverride = target.checked
+				break
+
+			case "injury-effect":
+				const parentIndex = parseInt(target.dataset.effectIndex)
+				locationDamage.toggleEffect(parentIndex)
+				break
 		}
 
 		this.render(true)
@@ -148,7 +234,7 @@ class ApplyDamageDialog extends Application {
 		})
 
 		let messageData = {
-			user: (game as Game).user,
+			user: game.user,
 			type: CONST.CHAT_MESSAGE_TYPES.ROLL,
 			content: message,
 			roll: JSON.stringify(result.roll),
@@ -164,39 +250,18 @@ class ApplyDamageDialog extends Application {
 		return this.calculator.target
 	}
 
-	private get roll(): DamageRoll {
-		return this.calculator.damageRoll
+	private get choices() {
+		return {
+			hardened: hardenedChoices,
+			damageType: this.damageTypeChoice,
+			vulnerability: vulnerabilityChoices,
+		}
 	}
 
-	private get damageRollText(): string {
-		return `${this.roll.dice}${this.roll.armorDivisor ? ` (${this.roll.armorDivisor})` : ""}`
-	}
-
-	private get damageTypeAbbreviation(): string {
-		let index = Object.values(DamageType).indexOf(this.roll.damageType)
-		return Object.keys(DamageType)[index]
-	}
-
-	private get isExplosion(): boolean {
-		return this.roll.damageModifier === "ex"
-	}
-
-	private get armorDivisorSelect(): string {
-		return this.roll.armorDivisor.toString()
-	}
-
-	private get hitLocation(): HitLocation | undefined {
-		return HitLocationUtil.getHitLocation(this.target.hitLocationTable, this.calculator.damageRoll.locationId)
-	}
-
-	private overrideDR(dr: number | undefined) {
-		this.calculator.overrideRawDr(dr)
-	}
-
-	private get hitLocationChoice(): Record<string, string> {
-		const choice: Record<string, string> = {}
-		this.target.hitLocationTable.locations.forEach(it => (choice[it.id] = it.choice_name))
-		return choice
+	private get damageTypeChoice(): Record<string, string> {
+		let results: Record<string, string> = {}
+		Object.entries(DamageTypes).map(e => (results[e[0]] = e[1].full_name))
+		return results
 	}
 }
 
@@ -215,26 +280,6 @@ const vulnerabilityChoices = {
 	2: "×2",
 	3: "×3",
 	4: "×4",
-}
-
-const damageReductionChoices = {
-	1: "None",
-	2: "2",
-	3: "3",
-	4: "4",
-}
-
-const injuryToleranceChoices = {
-	0: "None",
-	1: "Unliving",
-	2: "Homogenous",
-	3: "Diffuse",
-}
-
-const poolChoices = {
-	hp: "Hit Points",
-	fp: "Fatigue Points",
-	cp: "Control Points",
 }
 
 export { ApplyDamageDialog }

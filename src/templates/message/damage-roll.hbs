@@ -1,29 +1,38 @@
-<div class="message-roll damage">
-	<div data-uuid="{{data.item.uuid}}" data-weapon="{{data.weapon.id}}" data-type="damage" class="name rollable">
+<div class="dice-roll damage">
+	<div
+		data-uuid="{{uuid}}"
+		data-weapon="{{weaponID}}"
+		data-actor="{{attacker}}"
+		data-type="damage"
+		class="name damage rollable"
+	>
 		{{name}}
-		({{diceString dice}})
+		({{damage}})
 	</div>
-	<div class="modifiers">
-		{{#each modifiers}}
-			<div class="mod mod-{{this.class}}" data-mod="{{json this}}">{{signed this.modifier}}{{#if this.name}}:
-					{{this.name}}{{/if}}</div>
-		{{/each}}
-	</div>
-	<div class="result failure" draggable="true">{{total}}
-		points of
-		{{damageType}}
-		damage</div>
+	{{#if modifiers.length}}
+		<div class="modifiers">
+			{{#each modifiers}}
+				<div class="mod mod-{{this.class}}" data-mod="{{json this}}">{{signed this.modifier}}{{#if this.name}}:
+						{{this.name}}{{/if}}</div>
+			{{/each}}
+		</div>
+	{{/if}}
 	<hr />
-	<div class="total">{{#each rolls}}
-			{{#unless (eq @index 0)}} + {{/unless}}
-			<i data-result={{this.result}} class="rollable fas fa-dice-{{this.word}}"></i>
+	{{#if (gt damageRoll.length 1)}}
+		<div class="dice-result">
+	{{else}}
+		<div class="dice-result">
+	{{/if}}
+		{{#if (gt damageRoll.length 1)}}
+		  <div class="dice-total failure" draggable="true" data-index="-1" style="z-index: {{sum 1 damageRoll.length}}">All Damage ({{damageRoll.length}})</div>
+		{{/if}}
+		{{#each damageRoll}}
+			<div class="dice-total failure" draggable="true" data-index="{{@index}}" style="z-index: {{diff ../damageRoll.length @index}};">{{localize
+					"gurps.roll.damage"
+					total=total
+					type=../damageType
+				}}</div>
+			{{{tooltip}}}
 		{{/each}}
-		{{#if dice.modifier}}
-			{{modifierString dice.modifier}}
-		{{/if}}
-		{{#if modifierTotal}}
-			{{modifierString modifierTotal}}
-		{{/if}}
-		=
-		{{total}}
-	</div></div>
+	</div>
+</div>

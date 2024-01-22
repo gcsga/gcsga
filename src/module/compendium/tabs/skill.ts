@@ -1,5 +1,6 @@
-import { SYSTEM_NAME } from "@module/data"
-import { CompendiumBrowser, CompendiumIndexData } from ".."
+import { ItemType, SYSTEM_NAME } from "@module/data"
+import { CompendiumBrowser } from "../browser"
+import { CompendiumIndexData, TabName } from "../data"
 import { CompendiumTab } from "./base"
 
 export class CompendiumSkillTab extends CompendiumTab {
@@ -10,7 +11,7 @@ export class CompendiumSkillTab extends CompendiumTab {
 	}
 
 	constructor(browser: CompendiumBrowser) {
-		super(browser, "skill")
+		super(browser, TabName.Skill)
 	}
 
 	protected override async loadData(): Promise<void> {
@@ -19,16 +20,16 @@ export class CompendiumSkillTab extends CompendiumTab {
 
 		for await (const { pack, index } of this.browser.packLoader.loadPacks(
 			"Item",
-			this.browser.loadedPacks("skill"),
+			this.browser.loadedPacks(TabName.Skill),
 			indexFields
 		)) {
-			const collection = (game as Game).packs.get(pack.collection)
+			const collection = game.packs.get(pack.collection)
 			;((await collection?.getDocuments()) as any).forEach((skill: any) => {
-				if (!["skill", "technique", "skill_container"].includes(skill.type)) return
+				if (![ItemType.Skill, ItemType.Technique, ItemType.SkillContainer].includes(skill.type)) return
 				let difficulty = ""
-				if (skill.type === "skill")
+				if (skill.type === ItemType.Skill)
 					difficulty = `${skill.attribute.toUpperCase()}/${skill.difficulty.toUpperCase()}`
-				if (skill.type === "technique") difficulty = `Tech/${skill.difficulty.toUpperCase()}`
+				if (skill.type === ItemType.Technique) difficulty = `Tech/${skill.difficulty.toUpperCase()}`
 				skill.prepareData()
 				skill_list.push({
 					_id: skill._id,
@@ -41,11 +42,14 @@ export class CompendiumSkillTab extends CompendiumTab {
 					open: skill.open,
 					uuid: skill.uuid,
 					id: skill._id,
-					children: skill.type === "skill_container" ? skill.children : [],
+					children: skill.type === ItemType.SkillContainer ? skill.children : [],
 					tags: skill.tags,
 					reference: skill.reference,
+					reference_highlight: skill.reference_highlight,
 					parents: skill.parents,
+					indent: skill.indent,
 					difficulty: difficulty,
+					flags: skill.flags,
 				})
 			})
 		}

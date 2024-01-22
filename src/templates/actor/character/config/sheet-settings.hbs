@@ -13,7 +13,7 @@
 <div id="details">
 	{{#if actor}}
 		<div>
-			{{#if (neq system.import.name "")}}
+			{{#if (ne system.import.name "")}}
 				<button class="quick-import">
 					<i class="fas fa-arrows-rotate"></i>
 					{{localize "gurps.character.settings.import.reimport" file=system.import.name}}
@@ -34,7 +34,7 @@
 				{{localize "gurps.character.settings.import.file"}}
 				<input id="file-upload" type="file" accept=".gcs" style="display: none;" />
 			</label>
-			{{#if (neq filename "")}}
+			{{#if (ne filename "")}}
 				<button class="import-confirm">
 					<i class="fas fa-file-import"></i>
 					{{localize "gurps.character.settings.import.import" file=filename}}
@@ -60,7 +60,7 @@
 		<div class="label">{{localize "gurps.character.settings.damage_progression"}}</div>
 		<select name="system.settings.damage_progression" data-dtype="String">
 			{{#select system.settings.damage_progression}}
-				{{#each config.select.damage_progression as |v k|}}
+				{{#each config.select.progression as |v k|}}
 					<option value="{{k}}">
 						{{localize v}}
 					</option>
@@ -68,6 +68,8 @@
 			{{/select}}
 		</select>
 	</div>
+	<div><i>{{{localize (concat "gurps.enum.progression.alt_string." system.settings.damage_progression)}}}</i></div>
+	<hr />
 	{{#unless actor}}
 		<label class="label checkbox-label">
 			<input type="checkbox" name="populate_description" data-dtype="Boolean" {{checked populate_description}} />
@@ -148,7 +150,7 @@
 	<div class="field">
 		<select name="system.settings.default_length_units" data-dtype="String">
 			{{#select system.settings.default_length_units}}
-				{{#each config.select.default_length_units as |v k|}}
+				{{#each config.select.length_units as |v k|}}
 					<option value="{{k}}">
 						{{localize v}}
 					</option>
@@ -160,7 +162,7 @@
 	<div class="field">
 		<select name="system.settings.default_weight_units" data-dtype="String">
 			{{#select system.settings.default_weight_units}}
-				{{#each config.select.default_weight_units as |v k|}}
+				{{#each config.select.weight_units as |v k|}}
 					<option value="{{k}}">
 						{{localize v}}
 					</option>
@@ -170,7 +172,7 @@
 	</div>
 	<div class="title">{{localize "gurps.character.settings.display.title"}}</div>
 	<hr />
-	<div class="label">{{localize "gurps.character.settings.display.user_description"}}</div>
+	<div class="label">{{localize "gurps.character.settings.display.userdesc"}}</div>
 	<div class="field">
 		<select name="system.settings.user_description_display" data-dtype="String">
 			{{#select system.settings.user_description_display}}

@@ -1,9 +1,8 @@
-import { BaseContainerSource, BaseContainerSystemData } from "@item/container/data"
-import { CRAdjustment } from "@module/data"
+import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
+import { ItemType } from "@module/data"
+import { selfctrl } from "@util/enum"
 
-export type TraitContainerSource = BaseContainerSource<"trait_container", TraitContainerSystemData>
-
-// Export class TraitContainerData extends BaseContainerData<TraitContainerGURPS> {}
+export type TraitContainerSource = ItemGCSSource<ItemType.TraitContainer, TraitContainerSystemData>
 
 export interface TraitContainerData extends Omit<TraitContainerSource, "effects" | "items">, TraitContainerSystemData {
 	readonly type: TraitContainerSource["type"]
@@ -11,15 +10,23 @@ export interface TraitContainerData extends Omit<TraitContainerSource, "effects"
 	readonly _source: TraitContainerSource
 }
 
-export interface TraitContainerSystemData extends BaseContainerSystemData {
-	// Modifiers: Array<any>;
+export interface TraitContainerSystemData extends ItemGCSSystemData {
 	disabled: boolean
 	container_type: TraitContainerType
-	// Calc: {
-	// 	points: number;
-	// };
-	cr: number
-	cr_adj: CRAdjustment
+	cr: selfctrl.Roll
+	cr_adj: selfctrl.Adjustment
+	calc?: TraitContainerCalcValues
 }
 
-export type TraitContainerType = "group" | "meta_trait" | "race" | "alternative_abilities"
+export interface TraitContainerCalcValues extends ItemGCSCalcValues {
+	enabled: boolean
+	points: number
+}
+
+export enum TraitContainerType {
+	Group = "group",
+	MetaTrait = "meta_trait",
+	Ancestry = "ancestry",
+	Attributes = "attributes",
+	AlternativeAbilities = "alternative_abilities",
+}

@@ -1,6 +1,6 @@
 import { SYSTEM_NAME } from "@module/data"
 
-export class PDFViewerSheet extends DocumentSheet {
+export class PDFViewerSheet extends DocumentSheet<DocumentSheetOptions<JournalEntry>, JournalEntry> {
 	pageNumber = 1
 
 	constructor(object: any, options: any = { pageNumber: 1 }) {
@@ -25,14 +25,14 @@ export class PDFViewerSheet extends DocumentSheet {
 	private _getPDFData(): URLSearchParams {
 		const params = new URLSearchParams()
 		if ((this.object as any).src) {
-			// @ts-ignore
+			// @ts-expect-error type not properly declared
 			const src = URL.parseSafe(this.object.src) ? this.object.src : foundry.utils.getRoute(this.object.src)
 			params.append("file", src)
 		}
 		return params
 	}
 
-	getData(options?: Partial<DocumentSheetOptions> | undefined): any {
+	getData(options?: DocumentSheetOptions<JournalEntry>): any {
 		return mergeObject(super.getData(options), {
 			pageNumber: this.pageNumber,
 			params: this._getPDFData(),

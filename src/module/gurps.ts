@@ -1,7 +1,7 @@
 /**
  * MIT License
  *
- * Copyright (c) 2022 Chris Normand
+ * Copyright (c) 2023 Chris Normand
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,53 +29,79 @@
  */
 
 // Import TypeScript modules
+import "../styles/gurps.scss"
 import { registerSettings } from "./settings"
-import { preloadTemplates } from "./preload-templates"
-import { evaluateToNumber, i18n, LastActor, registerHandlebarsHelpers, Static } from "@util"
-import { CharacterSheetGURPS } from "@actor/sheet"
-import { BaseActorGURPS } from "@actor/base"
-import { BaseItemGURPS } from "@item"
+import { preloadTemplates } from "./preload_templates"
+import { getDefaultSkills, LastActor, LocalizeGURPS, setInitiative } from "@util"
+import { registerHandlebarsHelpers } from "@util/handlebars_helpers"
 import { GURPSCONFIG } from "./config"
-import { TraitSheet } from "@item/trait/sheet"
-import { fSearch } from "@util/fuse"
-import { DiceGURPS } from "./dice"
 import * as Chat from "@module/chat"
-import { TraitContainerSheet } from "@item/trait_container/sheet"
-import { SkillSheet } from "@item/skill/sheet"
-import { TraitModifierSheet } from "@item/trait_modifier/sheet"
-import { TraitModifierContainerSheet } from "@item/trait_modifier_container/sheet"
-import { EquipmentModifierContainerSheet } from "@item/equipment_modifier_container/sheet"
-import { SpellContainerSheet } from "@item/spell_container/sheet"
-import { SkillContainerSheet } from "@item/skill_container/sheet"
-import { NoteContainerSheet } from "@item/note_container/sheet"
-import { NoteSheet } from "@item/note/sheet"
-import { TechniqueSheet } from "@item/technique/sheet"
-import { EquipmentSheet } from "@item/equipment/sheet"
-import { RitualMagicSpellSheet } from "@item/ritual_magic_spell/sheet"
-import { SpellSheet } from "@item/spell/sheet"
-import { EquipmentModifierSheet } from "@item/equipment_modifier/sheet"
-import { ModifierButton } from "./mod_prompt/button"
 import { ItemImporter } from "@item/import"
 import { CompendiumBrowser } from "./compendium"
-import { PDFViewerSheet } from "@module/pdf/sheet"
-import { JournalEntryPageGURPS } from "./pdf"
-import { PDFEditorSheet } from "./pdf/edit"
-import { SYSTEM_NAME, UserFlags } from "./data"
-import { StaticCharacterSheetGURPS } from "@actor/static_character/sheet"
-import { TokenModifierControl } from "./token_modifier"
-import { StaticHitLocation } from "@actor/static_character/hit_location"
-import { StaticItemSheet } from "@item/static/sheet"
+import { ActorType, HooksGURPS, ItemType, SOCKET, SYSTEM_NAME, UserFlags } from "./data"
+import { StaticHitLocation } from "@actor/static/hit_location"
+import * as SpeedProviderGURPS from "./modules/drag_ruler"
 import { ColorSettings } from "./settings/colors"
 import { DamageChat } from "./damage_calculator/damage_chat_message"
-// Import { XMLtoJS } from "@util/xml_js";
-// import { GCAImporter } from "@actor/character/import_GCA";
+import { RollGURPS } from "@module/roll"
+import { CombatGURPS } from "@module/combat"
+import { TokenHUDGURPS } from "./token/hud"
+import { TokenDocumentGURPS, TokenGURPS } from "@module/token"
+import { RulerGURPS } from "./ruler"
+import {
+	EffectGURPS,
+	EffectPanel,
+	EffectSheet,
+	EquipmentModifierContainerSheet,
+	EquipmentModifierSheet,
+	EquipmentSheet,
+	MeleeWeaponSheet,
+	NoteContainerSheet,
+	NoteSheet,
+	RangedWeaponSheet,
+	RitualMagicSpellSheet,
+	SkillContainerSheet,
+	SkillSheet,
+	SpellContainerSheet,
+	SpellSheet,
+	StaticItemSheet,
+	StatusEffectsGURPS,
+	TechniqueSheet,
+	TraitContainerSheet,
+	TraitModifierContainerSheet,
+	TraitModifierSheet,
+	TraitSheet,
+} from "@item"
+import {
+	ActorSheetGURPS,
+	BaseActorGURPS,
+	CharacterSheetGURPS,
+	LootSheetGURPS,
+	MookSheetGURPS,
+	StaticCharacterSheetGURPS,
+} from "@actor"
+import { ActiveEffectGURPS } from "@module/effect"
+import { ModifierList } from "./mod_list"
+import { PDF } from "@module/pdf"
+import { UserGURPS } from "./user/document"
+import { CombatTrackerGURPS } from "@ui"
+import { MookGeneratorSheet } from "./mook"
+import { CharacterImporter } from "@actor/character/import"
+import { ItemDirectoryGURPS } from "@ui/item_directory"
+import { CombatantGURPS } from "./combatant"
+import { ModifierBucket } from "@module/mod_bucket"
+import { loadModifiers } from "@module/mod_bucket/data"
+import { prepareSelectOptions } from "./data/select"
+import { display } from "@util/enum"
+import { ItemProxyGURPS } from "@item/base/document"
+import { ActorProxyGURPS } from "@actor/base/document"
 
 Error.stackTraceLimit = Infinity
 
 // TODO: make GURPS type concrete
 export const GURPS: any = {}
 if (!(globalThis as any).GURPS) {
-	;(globalThis as any).GURPS = GURPS
+	; (globalThis as any).GURPS = GURPS
 	GURPS.DEBUG = true
 	GURPS.LEGAL =
 		"GURPS is a trademark of Steve Jackson Games, and its rules and art are copyrighted by Steve Jackson Games.\nAll rights are reserved by Steve Jackson Games.\nThis game aid is the original creation of Mikolaj Tomczynski and is released for free distribution, and not for resale, under the permissions granted by\nhttp://www.sjgames.com/general/online_policy.html"
@@ -92,22 +118,12 @@ if (!(globalThis as any).GURPS) {
     7#@@&P?!~&@@G    !&@@@#GPP@@@#    5@@@.    !@@@P.  .&@@Y          .5@@@B5JYG@@@&~
       .^?5GBBBGG5.     .~?JYY5YJJJ^  .JJJJ~     :JJY7  ~JJJJ.           .~YB#&&BP7:
                                                                                        `
-	GURPS.eval = evaluateToNumber
-	GURPS.search = fSearch
-	GURPS.dice = DiceGURPS
-	GURPS.pdf = PDFViewerSheet
-	GURPS.TokenModifierControl = new TokenModifierControl()
-	GURPS.recurseList = Static.recurseList
-	GURPS.LastActor = null
-	GURPS.LastToken = null
-	GURPS.setLastActor = LastActor.set
+	GURPS.isInline = display.Option.isInline
 }
-// GURPS.XMLtoJS = XMLtoJS;
-// GURPS.GCAImport = GCAImporter;
 
 // Initialize system
 Hooks.once("init", async () => {
-	// CONFIG.debug.hooks = true;
+	CONFIG.debug.hooks = false
 	console.log(`${SYSTEM_NAME} | Initializing ${SYSTEM_NAME}`)
 	console.log(`%c${GURPS.BANNER}`, "color:limegreen")
 	console.log(`%c${GURPS.LEGAL}`, "color:yellow")
@@ -115,14 +131,30 @@ Hooks.once("init", async () => {
 	const src = `systems/${SYSTEM_NAME}/assets/gurps4e.svg`
 	$("#logo").attr("src", src)
 	// $("#logo").attr("width", "100px");
+	//
+	CONFIG.GURPS = GURPSCONFIG
 
 	// Assign custom classes and constants hereby
-	;(CONFIG as any).GURPS = GURPSCONFIG
-	;(CONFIG.Item.documentClass as any) = BaseItemGURPS
-	CONFIG.Actor.documentClass = BaseActorGURPS
-	;(CONFIG as any).JournalEntryPage.documentClass = JournalEntryPageGURPS
+	CONFIG.User.documentClass = UserGURPS
+	CONFIG.Item.documentClass = ItemProxyGURPS
+	CONFIG.Actor.documentClass = ActorProxyGURPS
+	CONFIG.Token.documentClass = TokenDocumentGURPS
+	CONFIG.Token.objectClass = TokenGURPS
+	CONFIG.ActiveEffect.documentClass = ActiveEffectGURPS
+	CONFIG.JournalEntryPage.documentClass = PDF.JournalEntryPageGURPS
+	CONFIG.Combat.documentClass = CombatGURPS
+	CONFIG.statusEffects = StatusEffectsGURPS
+	CONFIG.Canvas.rulerClass = RulerGURPS
+	CONFIG.ui.combat = CombatTrackerGURPS
+	CONFIG.ui.items = ItemDirectoryGURPS
+	CONFIG.Combatant.documentClass = CombatantGURPS
+
+	CONFIG.Dice.rolls.unshift(RollGURPS)
+
+	CONFIG.Item.compendiumIndexFields = ["flags"]
 
 	StaticHitLocation.init()
+	SpeedProviderGURPS.init()
 
 	// Register custom system settings
 	registerSettings()
@@ -131,130 +163,166 @@ Hooks.once("init", async () => {
 	await preloadTemplates()
 	registerHandlebarsHelpers()
 
+	game.EffectPanel = new EffectPanel()
+
 	// Register custom sheets (if any)
 	Items.unregisterSheet("core", ItemSheet)
 	Actors.unregisterSheet("core", ActorSheet)
 
-	// @ts-ignore
+	// @ts-expect-error type not properly declared
 	DocumentSheetConfig.unregisterSheet(JournalEntryPage, "core", JournalPDFPageSheet)
 
 	Items.registerSheet(SYSTEM_NAME, TraitSheet, {
-		types: ["trait"],
+		types: [ItemType.Trait],
 		makeDefault: true,
-		label: i18n("gurps.system.sheet.trait"),
+		label: game.i18n.localize("gurps.system.sheet.trait"),
 	})
 	Items.registerSheet(SYSTEM_NAME, TraitContainerSheet, {
-		types: ["trait_container"],
+		types: [ItemType.TraitContainer],
 		makeDefault: true,
-		label: i18n("gurps.system.sheet.trait_container"),
+		label: game.i18n.localize("gurps.system.sheet.trait_container"),
 	})
 	Items.registerSheet(SYSTEM_NAME, TraitModifierSheet, {
-		types: ["modifier"],
+		types: [ItemType.TraitModifier],
 		makeDefault: true,
-		label: i18n("gurps.system.sheet.modifier"),
+		label: game.i18n.localize("gurps.system.sheet.modifier"),
 	})
 	Items.registerSheet(SYSTEM_NAME, TraitModifierContainerSheet, {
-		types: ["modifier_container"],
+		types: [ItemType.TraitModifierContainer],
 		makeDefault: true,
-		label: i18n("gurps.system.sheet.modifier_container"),
+		label: game.i18n.localize("gurps.system.sheet.modifier_container"),
 	})
 	Items.registerSheet(SYSTEM_NAME, SkillSheet, {
-		types: ["skill"],
+		types: [ItemType.Skill],
 		makeDefault: true,
-		label: i18n("gurps.system.sheet.skill"),
+		label: game.i18n.localize("gurps.system.sheet.skill"),
 	})
 	Items.registerSheet(SYSTEM_NAME, TechniqueSheet, {
-		types: ["technique"],
+		types: [ItemType.Technique],
 		makeDefault: true,
-		label: i18n("gurps.system.sheet.technique"),
+		label: game.i18n.localize("gurps.system.sheet.technique"),
 	})
 	Items.registerSheet(SYSTEM_NAME, SkillContainerSheet, {
-		types: ["skill_container"],
+		types: [ItemType.SkillContainer],
 		makeDefault: true,
-		label: i18n("gurps.system.sheet.skill_container"),
+		label: game.i18n.localize("gurps.system.sheet.skill_container"),
 	})
 	Items.registerSheet(SYSTEM_NAME, SpellSheet, {
-		types: ["spell"],
+		types: [ItemType.Spell],
 		makeDefault: true,
-		label: i18n("gurps.system.sheet.spell"),
+		label: game.i18n.localize("gurps.system.sheet.spell"),
 	})
 	Items.registerSheet(SYSTEM_NAME, RitualMagicSpellSheet, {
-		types: ["ritual_magic_spell"],
+		types: [ItemType.RitualMagicSpell],
 		makeDefault: true,
-		label: i18n("gurps.system.sheet.ritual_magic_spell"),
+		label: game.i18n.localize("gurps.system.sheet.ritual_magic_spell"),
 	})
 	Items.registerSheet(SYSTEM_NAME, SpellContainerSheet, {
-		types: ["spell_container"],
+		types: [ItemType.SpellContainer],
 		makeDefault: true,
-		label: i18n("gurps.system.sheet.spell_container"),
+		label: game.i18n.localize("gurps.system.sheet.spell_container"),
 	})
 	Items.registerSheet(SYSTEM_NAME, EquipmentSheet, {
-		types: ["equipment", "equipment_container"],
+		types: [ItemType.Equipment, ItemType.EquipmentContainer],
 		makeDefault: true,
-		label: i18n("gurps.system.sheet.equipment"),
+		label: game.i18n.localize("gurps.system.sheet.equipment"),
 	})
 	Items.registerSheet(SYSTEM_NAME, EquipmentModifierSheet, {
-		types: ["eqp_modifier"],
+		types: [ItemType.EquipmentModifier],
 		makeDefault: true,
-		label: i18n("gurps.system.sheet.eqp_modifier"),
+		label: game.i18n.localize("gurps.system.sheet.eqp_modifier"),
 	})
 	Items.registerSheet(SYSTEM_NAME, EquipmentModifierContainerSheet, {
-		types: ["eqp_modifier_container"],
+		types: [ItemType.EquipmentModifierContainer],
 		makeDefault: true,
-		label: i18n("gurps.system.sheet.eqp_modifier_container"),
+		label: game.i18n.localize("gurps.system.sheet.eqp_modifier_container"),
 	})
 	Items.registerSheet(SYSTEM_NAME, NoteSheet, {
-		types: ["note"],
+		types: [ItemType.Note],
 		makeDefault: true,
-		label: i18n("gurps.system.sheet.note"),
+		label: game.i18n.localize("gurps.system.sheet.note"),
 	})
 	Items.registerSheet(SYSTEM_NAME, NoteContainerSheet, {
-		types: ["note_container"],
+		types: [ItemType.NoteContainer],
 		makeDefault: true,
-		label: i18n("gurps.system.sheet.note_container"),
+		label: game.i18n.localize("gurps.system.sheet.note_container"),
+	})
+	Items.registerSheet(SYSTEM_NAME, MeleeWeaponSheet, {
+		types: [ItemType.MeleeWeapon],
+		makeDefault: true,
+		label: game.i18n.localize("gurps.system.sheet.melee_weapon"),
+	})
+	Items.registerSheet(SYSTEM_NAME, RangedWeaponSheet, {
+		types: [ItemType.RangedWeapon],
+		makeDefault: true,
+		label: game.i18n.localize("gurps.system.sheet.ranged_weapon"),
+	})
+	Items.registerSheet(SYSTEM_NAME, EffectSheet, {
+		types: [ItemType.Effect, ItemType.Condition],
+		makeDefault: true,
+		label: game.i18n.localize("gurps.system.sheet.effect"),
 	})
 	Items.registerSheet(SYSTEM_NAME, StaticItemSheet, {
-		types: ["static_equipment"],
+		types: [ItemType.LegacyEquipment],
 		makeDefault: true,
-		label: i18n("gurps.system.sheet.static_equipment"),
+		label: game.i18n.localize("gurps.system.sheet.static_equipment"),
 	})
 
 	Actors.registerSheet(SYSTEM_NAME, CharacterSheetGURPS, {
-		types: ["character_gcs"],
+		types: [ActorType.Character],
 		makeDefault: true,
-		label: i18n("gurps.system.sheet.character"),
+		label: game.i18n.localize("gurps.system.sheet.character_gcs"),
 	})
-
+	Actors.registerSheet(SYSTEM_NAME, MookSheetGURPS, {
+		types: [ActorType.Character],
+		makeDefault: false,
+		label: game.i18n.localize("gurps.system.sheet.mook"),
+	})
+	Actors.registerSheet(SYSTEM_NAME, MookGeneratorSheet, {
+		types: [ActorType.Character],
+		makeDefault: false,
+		label: "", // should not be displayed
+	})
+	Actors.registerSheet(SYSTEM_NAME, LootSheetGURPS, {
+		types: [ActorType.Loot],
+		makeDefault: true,
+		label: game.i18n.localize("gurps.system.sheet.loot"),
+	})
 	Actors.registerSheet(SYSTEM_NAME, StaticCharacterSheetGURPS, {
-		types: ["character"],
+		types: [ActorType.LegacyCharacter, ActorType.LegacyEnemy],
 		makeDefault: true,
-		label: i18n("gurps.system.sheet.static_character"),
+		label: game.i18n.localize("gurps.system.sheet.character"),
 	})
 
-	// //@ts-ignore
-	// DocumentSheetConfig.registerSheet(JournalEntryPage, SYSTEM_NAME, PDFViewerSheet, {
-	// 	types: ["pdf"],
-	// 	makeDefault: true,
-	// 	label: i18n("gurps.system.sheet.pdf"),
-	// })
-
-	// @ts-ignore
-	DocumentSheetConfig.registerSheet(JournalEntryPage, SYSTEM_NAME, PDFEditorSheet, {
+	// @ts-expect-error type not properly declared
+	DocumentSheetConfig.registerSheet(JournalEntryPage, SYSTEM_NAME, PDF.PDFEditorSheet, {
 		types: ["pdf"],
 		makeDefault: true,
-		label: i18n("gurps.system.sheet.pdf_edit"),
+		label: game.i18n.localize("gurps.system.sheet.pdf_edit"),
 	})
+
+	LocalizeGURPS.ready = true
 })
 
 // Setup system
 Hooks.once("setup", async () => {
 	// Do anything after initialization but before ready
+	prepareSelectOptions()
+
+	game.ModifierBucket = new ModifierBucket()
+	game.ModifierBucket.render(true)
+	game.ModifierList = new ModifierList()
+	game.ModifierList.render(true)
+	game.CompendiumBrowser = new CompendiumBrowser()
 })
 
 // When ready
 Hooks.once("ready", async () => {
 	// Do anything once the system is ready
 	ColorSettings.applyColors()
+	loadModifiers()
+	getDefaultSkills()
+
 	// ApplyDiceCSS()
 
 	// Enable drag image
@@ -265,22 +333,35 @@ Hooks.once("ready", async () => {
 	})
 	DRAG_IMAGE.id = "drag-ghost"
 	document.body.appendChild(DRAG_IMAGE)
-	;(game as Game).user?.setFlag(SYSTEM_NAME, UserFlags.Init, true)
-	;(game as any).ModifierButton = new ModifierButton()
-	;(game as any).ModifierButton.render(true)
-	;(game as any).CompendiumBrowser = new CompendiumBrowser()
 
-	await Promise.all(
-		(game as Game).actors!.map(async actor => {
-			actor.prepareData()
-		})
-	)
-	;(game as Game).socket?.on("system.gcsga", async response => {
-		console.log("receive socket")
-		switch (response.type) {
-			case "updateBucket":
-				console.log("test?")
-				return (game as any).ModifierButton.render(true)
+	// Set default user flag state
+	if (!game.user?.getFlag(SYSTEM_NAME, UserFlags.Init)) {
+		game.user?.setFlag(SYSTEM_NAME, UserFlags.LastStack, [])
+		game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, [])
+		game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierSticky, false)
+		game.user?.setFlag(SYSTEM_NAME, UserFlags.Init, true)
+		game.user?.setFlag(SYSTEM_NAME, UserFlags.SavedStacks, [])
+	}
+	if (canvas && canvas.hud) {
+		canvas.hud.token = new TokenHUDGURPS()
+	}
+
+	// Set initial LastActor values
+	GURPS.clearLastActor = await LastActor.clear()
+	GURPS.LastActor = await LastActor.get()
+	GURPS.LastToken = await LastActor.getToken()
+
+	CONFIG.Combat.initiative.decimals = 5
+	setInitiative()
+
+	game.socket?.on("system.gcsga", async (response: any) => {
+		switch (response.type as SOCKET) {
+			case SOCKET.UPDATE_BUCKET:
+				// Ui.notifications?.info(response.users)
+				await game.ModifierList.render()
+				return game.ModifierBucket.render()
+			case SOCKET.INITIATIVE_CHANGED:
+				CONFIG.Combat.initiative.formula = response.formula
 			default:
 				return console.error("Unknown socket:", response.type)
 		}
@@ -294,60 +375,230 @@ Hooks.on("renderChatMessage", (_app, html, _data) => Chat.addChatListeners(html)
 Hooks.on("renderChatMessage", DamageChat.renderChatMessage)
 Hooks.on("dropCanvasData", DamageChat.handleDropOnCanvas)
 
+Hooks.on("canvasReady", () => {
+	game.EffectPanel.render(true)
+})
+
 Hooks.on("renderSidebarTab", async (app: SidebarTab, html: JQuery<HTMLElement>) => {
 	if (app.options.id === "compendium") {
-		const importButton = $(
-			`<button><i class='fas fa-file-import'></i>${i18n("gurps.system.library_import.button")}</button>`
+		const itemImportButton = $(
+			`<button><i class='fas fa-file-import'></i>${LocalizeGURPS.translations.gurps.system.library_import.button_item}</button>`
 		)
-		importButton.on("click", _event => ItemImporter.showDialog())
-		html.find(".directory-footer").append(importButton)
+		itemImportButton.on("click", _event => ItemImporter.showDialog())
+		html.find(".directory-footer").append(itemImportButton)
+		const characterImportButton = $(
+			`<button><i class='fas fa-file-import'></i>${LocalizeGURPS.translations.gurps.system.library_import.button_character}</button>`
+		)
+		characterImportButton.on("click", _event => CharacterImporter.showDialog())
+		html.find(".directory-footer").append(characterImportButton)
 
 		const browseButton = $(
-			`<button><i class='fas fa-book-open-cover'></i>${i18n("gurps.compendium_browser.button")}</button>`
+			`<button><i class='fas fa-book-open-cover'></i>${LocalizeGURPS.translations.gurps.compendium_browser.button}</button>`
 		)
-		browseButton.on("click", _event => (game as any).CompendiumBrowser.render(true))
+		browseButton.on("click", _event => game.CompendiumBrowser.render(true))
 		html.find(".directory-footer").append(browseButton)
 	}
 })
 
 Hooks.on("updateCompendium", async (pack, _documents, _options, _userId) => {
-	const cb = (game as any).CompendiumBrowser
+	const cb = game.CompendiumBrowser
 	if (cb.rendered && cb.loadedPacks(cb.activeTab).includes(pack.collection)) {
 		await cb.tabs[cb.activeTab].init()
 		cb.render()
 	}
 })
 
-Hooks.on("controlToken", (...args: any[]) => {
+Hooks.on("controlToken", async (...args: any[]) => {
 	if (args.length > 1) {
-		let a = args[0]?.actor
+		const a = args[0]?.actor
 		if (a) {
-			if (args[1]) LastActor.set(a, args[0].document)
-			else LastActor.clear(a)
-			GURPS.LastActor = LastActor.get()
-			GURPS.LastToken = LastActor.getToken()
+			if (args[1]) await LastActor.set(a, args[0])
+			else await LastActor.clear()
+			GURPS.LastActor = await LastActor.get()
+			GURPS.LastToken = await LastActor.getToken()
 		}
 	}
 })
 
-Hooks.on("renderActorSheetGURPS", (...args: any[]) => {
-	/**
-	 *
-	 */
-	async function updateLastActor() {
-		GURPS.LastActor = await LastActor.get()
-		GURPS.LastToken = await LastActor.getToken()
-	}
+Hooks.on("renderActorSheetGURPS", async (...args: any[]) => {
 	if (args.length) {
 		let a = args[0]?.actor
 		if (a) {
-			LastActor.set(a, args[0])
-			updateLastActor()
+			await LastActor.set(a, args[0])
+			GURPS.LastActor = await LastActor.get()
+			GURPS.LastToken = await LastActor.getToken()
 		}
 	}
 })
 
-// Hooks.on("renderChatMessage", () => {
-// 	console.log("lag?")
-// 	applyDiceCSS()
-// })
+Hooks.on("targetToken", async () => {
+	if (game.ModifierList) await game.ModifierList?.render(true)
+})
+Hooks.on("userConnected", async () => {
+	if (game.ModifierList) await game.ModifierList?.render(true)
+})
+
+Hooks.on("updateCombat", EffectGURPS.updateCombat)
+
+// Hook for updating damageMap when combat ends
+Hooks.on("deleteCombat", CombatGURPS.deleteCombat)
+
+// Hook for updating damageMap when an actor is removed from combat
+Hooks.on("updateCombat", CombatGURPS.updateCombat)
+
+Hooks.on("renderTokenHUD", (_app: any, $html: JQuery<HTMLElement>, data: any) => {
+	TokenHUDGURPS.onRenderTokenHUD($html[0]!, data)
+})
+
+Hooks.on("renderDialog", (_dialog: any, html: JQuery<HTMLElement>) => {
+	const element = html[0]
+	function extractOptGroup(select: HTMLSelectElement, label: string, types?: string[]): HTMLOptGroupElement {
+		const options = select.querySelectorAll<HTMLOptionElement>(":scope > option")
+		const filtered = [...options.values()].filter(option => !types || types.includes(option.value))
+		const optgroup = document.createElement("optgroup")
+		optgroup.label = label
+		for (const element of filtered) {
+			optgroup.appendChild(element)
+		}
+
+		return optgroup
+	}
+	if (element.classList.contains("dialog-item-create")) {
+		const select = element.querySelector<HTMLSelectElement>("select[name=type]")
+		const categories = LocalizeGURPS.translations.gurps.item.creation_dialog.categories
+		if (select) {
+			select.append(
+				extractOptGroup(select, categories.trait, [
+					ItemType.Trait,
+					ItemType.TraitContainer,
+					ItemType.TraitModifier,
+					ItemType.TraitModifierContainer,
+				])
+			)
+			select.append(
+				extractOptGroup(select, categories.skill, [ItemType.Skill, ItemType.Technique, ItemType.SkillContainer])
+			)
+			select.append(
+				extractOptGroup(select, categories.spell, [
+					ItemType.Spell,
+					ItemType.RitualMagicSpell,
+					ItemType.SpellContainer,
+				])
+			)
+			select.append(
+				extractOptGroup(select, categories.equipment, [
+					ItemType.Equipment,
+					ItemType.EquipmentContainer,
+					ItemType.EquipmentModifier,
+					ItemType.EquipmentModifierContainer,
+				])
+			)
+			select.append(extractOptGroup(select, categories.note, [ItemType.Note, ItemType.NoteContainer]))
+			select.append(extractOptGroup(select, categories.weapon, [ItemType.MeleeWeapon, ItemType.RangedWeapon]))
+			select.append(extractOptGroup(select, categories.effect, [ItemType.Effect]))
+			select.append(extractOptGroup(select, categories.legacy, [ItemType.LegacyEquipment]))
+		}
+	}
+})
+
+Hooks.on("updateToken", function() {
+	game.ModifierList.render(true)
+})
+
+Hooks.once("item-piles-ready", async function() {
+	; (game as any).itempiles.API.addSystemIntegration({
+		VERSION: "1.0.0",
+
+		// The actor class type is the type of actor that will be used for the default
+		// item pile actor that is created on first item drop.
+		ACTOR_CLASS_TYPE: ActorType.Loot,
+
+		// The item quantity attribute is the path to the attribute
+		// on items that denote how many of that item that exists
+		ITEM_QUANTITY_ATTRIBUTE: "system.quantity",
+
+		// The item price attribute is the path to the attribute
+		// on each item that determine how much it costs
+		ITEM_PRICE_ATTRIBUTE: "system.value",
+
+		// Item types and the filters actively remove items from the item
+		// pile inventory UI that users cannot loot, such as spells, feats, and classes
+		ITEM_FILTERS: [
+			{
+				path: "type",
+				filters: [
+					ItemType.Trait,
+					ItemType.TraitContainer,
+					ItemType.TraitModifier,
+					ItemType.TraitModifierContainer,
+					ItemType.Skill,
+					ItemType.Technique,
+					ItemType.SkillContainer,
+					ItemType.Spell,
+					ItemType.RitualMagicSpell,
+					ItemType.SpellContainer,
+					ItemType.EquipmentModifier,
+					ItemType.EquipmentModifierContainer,
+					ItemType.Note,
+					ItemType.NoteContainer,
+					ItemType.LegacyEquipment,
+					ItemType.Effect,
+					ItemType.Condition,
+					ItemType.MeleeWeapon,
+					ItemType.RangedWeapon,
+				].join(","),
+			},
+		],
+
+		UNSTACKABLE_ITEM_TYPES: [ItemType.EquipmentContainer],
+
+		// Item similarities determines how item piles detect similarities and differences in the system
+		ITEM_SIMILARITIES: ["name", "type"],
+
+		// Currencies in item piles is a versatile system that can
+		// accept actor attributes (a number field on the actor's sheet)
+		// or items (actual items in their inventory)
+		// In the case of attributes, the path is relative to the "actor.system"
+		// In the case of items, it is recommended you export the item
+		// with `.toObject()` and strip out any module data
+		CURRENCIES: [],
+	})
+})
+
+Hooks.on("dropCanvasData", async function(_canvas, data: any) {
+	const dropTarget = [...(canvas!.tokens!.placeables as TokenGURPS[])]
+		.sort((a, b) => b.document.sort - a.document.sort)
+		.find(token => {
+			const maximumX = token.x + (token.hitArea?.right ?? 0)
+			const maximumY = token.y + (token.hitArea?.bottom ?? 0)
+			return data.x >= token.x && data.y >= token.y && data.x <= maximumX && data.y <= maximumY
+		})
+
+	const actor = dropTarget?.actor
+	if (actor && data.type === "Item") {
+		await (actor.sheet as ActorSheetGURPS).emulateItemDrop(data as any)
+		return false
+	}
+})
+
+Hooks.on("renderPlayerList", function(_hotbar: any, element: JQuery<HTMLElement>, _options: any) {
+	if (!game.ModifierList) return
+	game.ModifierBucket._injectHTML(element.parent("#interface"))
+	game.ModifierList.render(true)
+})
+
+Hooks.on("renderHotbar", function(_hotbar: any, element: JQuery<HTMLElement>, _options: any) {
+	if (!game.ModifierBucket) return
+	game.ModifierBucket._injectHTML(element.parent("#ui-bottom"))
+	game.ModifierBucket.render()
+})
+
+Hooks.on("chatMessage", function(_chatlog: ChatLog, message: string, _data: any) {
+	return Chat.procesMessage(message)
+})
+
+Hooks.on(HooksGURPS.AddModifier, function() {
+	game.ModifierBucket.render()
+	game.ModifierList.render()
+	if (game.ModifierBucket.window.rendered) game.ModifierBucket.window.render()
+})

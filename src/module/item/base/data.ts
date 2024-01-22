@@ -1,37 +1,37 @@
-// Import { ItemType } from "@item/data";
-import { ItemFlagsGURPS, ItemType } from "@item/data"
-import { ItemDataSource } from "@league-of-foundry-developers/foundry-vtt-types/src/foundry/common/data/data.mjs/itemData"
-// Import { BaseItemGURPS } from ".";
+import { ItemType, SYSTEM_NAME } from "@module/data"
+import { Context } from "types/foundry/common/abstract/document.mjs"
+import { ActiveEffectDataProperties } from "types/foundry/common/data/data.mjs/activeEffectData"
+import { ItemDataSource } from "types/foundry/common/data/data.mjs/itemData"
+import { PropertiesToSource } from "types/types/helperTypes"
 
-export interface BaseItemSourceGURPS<
-	TItemType extends ItemType = ItemType,
-	TSystemData extends ItemSystemData = ItemSystemData
-> extends ItemDataSource {
+export interface BaseItemSourceGURPS<TItemType extends ItemType = ItemType, TSystemData extends object = object>
+	extends ItemDataSource {
+	_id: string | null
 	type: TItemType
 	system: TSystemData
 	flags: DeepPartial<ItemFlagsGURPS>
+	effects: PropertiesToSource<ActiveEffectDataProperties>[]
 }
 
-// Export abstract class BaseItemDataGURPS<TItem extends BaseItemGURPS = BaseItemGURPS> extends foundry.data.ItemData {
-// 	enabled?: boolean;
-// }
+export enum ItemFlags {
+	Deprecation = "deprecation",
+	Container = "container",
+	Other = "other", // used for equipment only
+	Unready = "unready"
+	// Contents = "contentsData",
+}
 
-// export interface BaseItemDataGURPS extends Omit<BaseItemSourceGURPS, "effects" g>, ItemSystemData {
-// 	type: ItemType;
-// 	// data: ItemSystemData;
-// 	// flags: ItemFlagsGURPS;
-// 	//this should not be here
-// 	// modifiers: any;
+export interface ItemFlagsGURPS extends Record<string, unknown> {
+	[SYSTEM_NAME]?: {
+		// contentsData?: Array<any>
+		[ItemFlags.Container]?: string | null
+		[ItemFlags.Other]?: boolean
+		[ItemFlags.Unready]?: boolean
+	}
+}
 
-// 	readonly _source: BaseItemSourceGURPS;
-// }
-
-export interface ItemSystemData {
-	id: string
-	name: string
-	reference: string
-	notes: string
-	vtt_notes: string
-	tags: Array<string>
-	type: ItemType
+export interface ItemConstructionContextGURPS extends Context<Actor | Item> {
+	gurps?: {
+		ready?: boolean
+	}
 }

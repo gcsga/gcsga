@@ -1,9 +1,10 @@
-import { BaseItemSourceGURPS, ItemSystemData } from "@item/base/data"
-import { Difficulty, Study } from "@module/data"
-import { Weapon } from "@module/weapon"
+import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
+import { ItemType } from "@module/data"
 import { PrereqList } from "@prereq"
+import { Study } from "@util"
+import { difficulty, study } from "@util/enum"
 
-export type SpellSource = BaseItemSourceGURPS<"spell", SpellSystemData>
+export type SpellSource = ItemGCSSource<ItemType.Spell, SpellSystemData>
 
 // Export class SpellData extends BaseItemDataGURPS<SpellGURPS> {}
 
@@ -14,10 +15,11 @@ export interface SpellData extends Omit<SpellSource, "effects">, SpellSystemData
 	readonly _source: SpellSource
 }
 
-export interface SpellSystemData extends ItemSystemData {
+export interface SpellSystemData extends ItemGCSSystemData {
 	prereqs: PrereqList
-	difficulty: Difficulty
+	difficulty: `${string}/${difficulty.Level}`
 	tech_level: string
+	tech_level_required: boolean
 	college: Array<string>
 	power_source: string
 	spell_class: string
@@ -27,11 +29,13 @@ export interface SpellSystemData extends ItemSystemData {
 	casting_time: string
 	duration: string
 	points: number
-	weapons: Weapon[]
 	study: Study[]
-	// Calc: {
-	// 	level: number;
-	// 	rsl: string;
-	// 	points: number;
-	// };
+	study_hours_needed: study.Level
+	calc?: SpellCalcValues
+}
+
+export interface SpellCalcValues extends ItemGCSCalcValues {
+	level: number
+	rsl: string
+	points?: number
 }

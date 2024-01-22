@@ -1,21 +1,7 @@
 import { evalOperators, Operator } from "./operator"
 import { eFunction, evalFunctions } from "./function"
-import { SkillContainerGURPS, SkillGURPS, TechniqueGURPS } from "@item"
-
-// VariableResolver is used to resolve variables in expressions into their values.
-export interface VariableResolver {
-	resolveVariable: (variableName: string) => string
-	skills: Collection<SkillGURPS | TechniqueGURPS | SkillContainerGURPS>
-	isSkillLevelResolutionExcluded: (name: string, specialization: string) => boolean
-	registerSkillLevelResolutionExclusion: (name: string, specialization: string) => void
-	unregisterSkillLevelResolutionExclusion: (name: string, specialization: string) => void
-	encumbranceLevel: (forSkills: boolean) => {
-		level: number
-		maximum_carry: number
-		penalty: number
-		name: string
-	}
-}
+import { CharacterResolver } from "./resolvers"
+import { Mook } from "@module/mook"
 
 class expressionOperand {
 	value: string
@@ -76,7 +62,7 @@ class parsedFunction {
 // Evaluator is used to evaluate an expression. If you do not have any variables that will be resolved, you can leave
 // Resolver unset.
 class Evaluator {
-	resolver: VariableResolver
+	resolver: CharacterResolver
 
 	operators: Operator[] = evalOperators(true)
 
@@ -362,7 +348,7 @@ export { Evaluator }
  * @param expression
  * @param resolver
  */
-export function evaluateToNumber(expression: string, resolver: VariableResolver): number {
+export function evaluateToNumber(expression: string, resolver: CharacterResolver | Mook): number {
 	let result: any = 0
 	try {
 		result = new Evaluator({ resolver: resolver }).evaluate(expression)
@@ -376,3 +362,11 @@ export function evaluateToNumber(expression: string, resolver: VariableResolver)
 	console.error(`Unable to resolve ${expression} to a number`)
 	return 0
 }
+
+// export function parseInlineNoteExpressions(inString: string, resolver: CharacterResolver): string {
+// 	const regex_eval = /\|\|[^|]+\|\|/g
+// 	inString.match(regex_eval)?.forEach(e => {
+// 		inString = inString.replaceAll(e, new Evaluator({ resolver }).evaluate(e.replaceAll("||", "")))
+// 	})
+// 	return inString
+// }

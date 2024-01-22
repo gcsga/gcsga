@@ -1,16 +1,18 @@
-<div class="desc">
+<div class="item desc" data-item-id="{{this._id}}">
 	<div class="name">
-		{{this.name}}
+		{{this.itemName}}
 	</div>
-	{{>actor/character/sections/item-notes}}
+	{{{this.resolvedNotes}}}
 </div>
-<div data-uuid="{{this.parent.uuid}}" data-attack-id="{{this.id}}" data-type="attack" class="usage rollable">
-	{{this.usage}}</div>
-<div data-uuid="{{this.parent.uuid}}" data-attack-id="{{this.id}}" data-type="attack" class="level rollable">
-	{{this.level}}</div>
-<div class="parry rollable">{{this.fastResolvedParry}}</div>
-<div class="block rollable">{{this.fastResolvedBlock}}</div>
-<div data-uuid="{{this.parent.uuid}}" data-attack-id="{{this.id}}" data-type="damage" class="damage rollable">
+<div data-item-id="{{this._id}}" data-type="attack" class="usage rollable">
+	{{this.system.usage}}</div>
+<div data-item-id="{{this._id}}" data-type="attack" class="level rollable">
+	{{this.skillLevel}}</div>
+<div data-item-id="{{this._id}}" data-type="parry" class="parry rollable">
+	{{this.parry.current}}</div>
+<div data-item-id="{{this._id}}" data-type="block" class="block rollable">
+	{{this.block.current}}</div>
+<div data-item-id="{{this._id}}" data-type="damage" class="damage rollable">
 	{{this.fastResolvedDamage}}</div>
-<div class="reach">{{this.reach}}</div>
-<div class="st">{{this.strength}}</div>
+<div class="reach">{{this.reach.current}}</div>
+<div class="st">{{this.strength.current}}</div>

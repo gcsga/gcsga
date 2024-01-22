@@ -1,5 +1,6 @@
 #features,
 #defaults,
+#modifiers,
 #study {
 	margin: 2px 16px;
 	.content {
@@ -19,10 +20,16 @@
 		background-color: transparent;
 		color: rgba(var(--color-on-content), 0.5);
 	}
+
+	.gcs-info {
+		color: rgb(var(--color-icon-button));
+		align-self: center;
+	}
 }
 
 .feature,
 .default,
+.modifier,
 .study-entry {
 	a {
 		align-self: center;
@@ -59,7 +66,7 @@
 		}
 	}
 	select[disabled] {
-		color: transparent;
+		/* color: transparent; */
 		opacity: 1;
 	}
 }
@@ -74,4 +81,32 @@
 	display: grid;
 	grid-gap: 5px;
 	grid-template-columns: 0fr 0fr 0fr 0fr 0fr 1fr;
+}
+
+.modifier {
+	display: grid;
+	grid-auto-flow: rows;
+	grid-gap: 5px;
+	> div {
+		display: flex;
+		gap: 5px;
+		// grid-template-columns: 0fr 0fr 1fr;
+		&:not(.top) {
+			padding-left: 19px;
+		}
+		// &.top {
+		// 	grid-template-columns: 0fr;
+		// 	grid-auto-columns: 0fr;
+		// }
+	}
+	select[disabled] {
+		color: transparent;
+		opacity: 1;
+	}
+	input[data-dtype="Number"] {
+		max-width: 12px;
+	}
+	input[data-dtype="String"] {
+		width: max-content;
+	}
 }

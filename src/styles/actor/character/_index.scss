@@ -1,12 +1,24 @@
-#sheet {
+form {
+	&.limited {
+		#personal {
+			grid-template:
+				"portrait identity miscellaneous"
+				"portrait description description";
+			grid-template-rows: 0fr;
+			grid-template-columns: max-content auto;
+		}
+	}
+
 	@import "personal", "stats", "embeds";
 
 	div {
 		background-color: rgba(var(--color-content), 1);
 	}
+
 	> div {
 		background-color: rgb(var(--color-page));
 	}
+
 	.dropdown {
 		background-color: transparent;
 		font-size: var(--font-size-10);
@@ -51,6 +63,7 @@
 		white-space: nowrap;
 		background-color: rgba(var(--color-content), 1);
 		color: rgba(var(--color-on-content), 1);
+
 		> * {
 			padding: var(--padding-standard);
 		}
@@ -62,6 +75,7 @@
 		white-space: nowrap;
 		background-color: rgba(var(--color-content), 1);
 		color: rgba(var(--color-on-content), 1);
+
 		> * {
 			padding: var(--padding-standard);
 		}
@@ -87,28 +101,50 @@
 	.rollable:not([data-type="modifier"]):not(.noroll) {
 		background: var(--background-roll);
 		color: rgb(var(--color-on-button-roll)) !important;
+
 		&.hover {
 			background: rgb(var(--color-button-roll-rollover)) !important;
 			color: rgb(var(--color-on-button-roll-rollover)) !important;
 		}
+
 		input {
 			color: inherit;
+		}
+
+		&.neg {
+			background: var(--background-roll-neg) !important;
+
+			&.hover {
+				background: rgb(var(--color-failure)) !important;
+				color: rgb(var(--color-on-button-roll-rollover)) !important;
+			}
+		}
+
+		&.pos {
+			background: var(--background-roll-pos) !important;
+
+			&.hover {
+				background: rgb(var(--color-success)) !important;
+				color: rgb(var(--color-on-button-roll-rollover)) !important;
+			}
 		}
 	}
 
 	.rollable[data-type="modifier"]:not(.noroll) {
 		background: var(--background-mod);
 		color: rgb(var(--color-on-button-mod)) !important;
+
 		&.hover {
 			background: rgb(var(--color-button-mod-rollover)) !important;
 			color: rgb(var(--color-on-button-mod-rollover)) !important;
 		}
+
 		input {
 			color: inherit;
 		}
 	}
 
-	.rollable.hover {
+	.rollable:not(.noroll) {
 		cursor: pointer;
 	}
 
@@ -122,10 +158,12 @@
 		height: 100%;
 		min-width: 20px;
 		width: calc(100% - 2px);
+
 		&:focus {
 			box-shadow: none;
 			border-bottom-color: rgba(var(--color-accent), 1);
 		}
+
 		&:disabled {
 			border-bottom-color: transparent;
 			background-color: transparent;
@@ -152,12 +190,14 @@
 		// height: 24px;
 		width: max-content;
 		align-items: self-end;
+
 		option {
 			font: var(--font-system);
 			background-color: rgb(var(--color-control));
 			color: rgb(var(--color-on-control));
 			border: 1px solid rgb(var(--color-control-edge));
 		}
+
 		&:focus {
 			box-shadow: none;
 			// border-width: 2px;
@@ -173,6 +213,7 @@
 			border: var(--standard-border);
 		}
 	}
+
 	#footer {
 		font: var(--font-page-secondary-footer);
 		background-color: rgb(var(--color-page));
@@ -180,18 +221,24 @@
 		text-align: left;
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
+		padding: var(--padding-standard);
+
 		div {
 			background-color: inherit;
 		}
+
 		.centre {
 			font: var(--font-page-primary-footer);
 			text-align: center;
 		}
+
 		.right {
 			text-align: right;
+
 			a {
 				color: inherit;
 				text-decoration: inherit;
+
 				&:hover {
 					text-shadow: none;
 				}
@@ -207,10 +254,16 @@
 	background-color: rgb(var(--color-warning));
 	color: rgb(var(--color-on-warning));
 	font-weight: bold;
+
 	a {
 		align-self: center;
+
 		&:hover {
 			text-shadow: none;
 		}
 	}
+}
+
+:not(a)[data-tooltip]:not([data-tooltip=""]) {
+	box-shadow: inset 0px -1px 0px 0px rgb(var(--color-tooltip-marker));
 }

@@ -1,6 +1,7 @@
-import { DamageProgression, DisplayMode, SYSTEM_NAME } from "@module/data"
-import { LengthUnits, WeightUnits } from "@util/measure"
+import { SYSTEM_NAME } from "@module/data"
+import { LengthUnits, WeightUnits } from "@util"
 import { SettingsMenuGURPS } from "./menu"
+import { display, progression } from "@util/enum"
 
 export class DefaultSheetSettings extends SettingsMenuGURPS {
 	static override readonly namespace = "default_sheet_settings"
@@ -33,13 +34,13 @@ export class DefaultSheetSettings extends SettingsMenuGURPS {
 				default: {
 					default_length_units: LengthUnits.FeetAndInches,
 					default_weight_units: WeightUnits.Pound,
-					user_description_display: DisplayMode.Tooltip,
-					modifiers_display: DisplayMode.Inline,
-					notes_display: DisplayMode.Inline,
-					skill_level_adj_display: DisplayMode.Tooltip,
+					user_description_display: display.Option.Tooltip,
+					modifiers_display: display.Option.Inline,
+					notes_display: display.Option.Inline,
+					skill_level_adj_display: display.Option.Tooltip,
 					use_multiplicative_modifiers: false,
 					use_modifying_dice_plus_adds: false,
-					damage_progression: DamageProgression.BasicSet,
+					damage_progression: progression.Option.BasicSet,
 					show_trait_modifier_adj: false,
 					show_equipment_modifier_adj: false,
 					show_spell_adj: true,
@@ -83,34 +84,42 @@ export class DefaultSheetSettings extends SettingsMenuGURPS {
 		html.find(".reset-all").on("click", event => this._onResetAll(event))
 	}
 
+	_onDataImport(event: JQuery.ClickEvent) {
+		event.preventDefault()
+	}
+
+	_onDataExport(event: JQuery.ClickEvent) {
+		event.preventDefault()
+	}
+
 	async _onResetAll(event: JQuery.ClickEvent) {
 		event.preventDefault()
 		for (const k of DefaultSheetSettings.SETTINGS) {
-			const defaults = (game as Game).settings.settings.get(`${SYSTEM_NAME}.${this.namespace}.${k}`)?.default
-			await (game as Game).settings.set(SYSTEM_NAME, `${this.namespace}.${k}`, defaults)
+			const defaults = game.settings.settings.get(`${SYSTEM_NAME}.${this.namespace}.${k}`)?.default
+			await game.settings.set(SYSTEM_NAME, `${this.namespace}.${k}`, defaults)
 		}
 		this.render()
 	}
 
 	override async getData(): Promise<any> {
-		const settings = (game as Game).settings.get(SYSTEM_NAME, `${this.namespace}.settings`)
-		const initial_points = (game as Game).settings.get(SYSTEM_NAME, `${this.namespace}.initial_points`)
-		const tech_level = (game as Game).settings.get(SYSTEM_NAME, `${this.namespace}.tech_level`)
-		const populate_description = (game as Game).settings.get(SYSTEM_NAME, `${this.namespace}.populate_description`)
+		const settings = game.settings.get(SYSTEM_NAME, `${this.namespace}.settings`)
+		const initial_points = game.settings.get(SYSTEM_NAME, `${this.namespace}.initial_points`)
+		const tech_level = game.settings.get(SYSTEM_NAME, `${this.namespace}.tech_level`)
+		const populate_description = game.settings.get(SYSTEM_NAME, `${this.namespace}.populate_description`)
 		return {
 			system: { settings: settings },
 			initial_points: initial_points,
 			tech_level: tech_level,
 			populate_description: populate_description,
 			actor: null,
-			config: (CONFIG as any).GURPS,
+			config: CONFIG.GURPS,
 		}
 	}
 
 	protected override async _updateObject(_event: Event, formData: any): Promise<void> {
 		const settings: any = {}
 		for (const k of ["initial_points", "tech_level", "populate_description"]) {
-			await (game as Game).settings.set(SYSTEM_NAME, `${this.namespace}.${k}`, formData[k])
+			await game.settings.set(SYSTEM_NAME, `${this.namespace}.${k}`, formData[k])
 			delete formData[k]
 		}
 		if (formData["system.settings.block_layout"])
@@ -118,6 +127,6 @@ export class DefaultSheetSettings extends SettingsMenuGURPS {
 		for (const k of Object.keys(formData)) {
 			settings[k.replace(/^system\.settings\./g, "")] = formData[k]
 		}
-		await (game as Game).settings.set(SYSTEM_NAME, `${this.namespace}.settings`, settings)
+		await game.settings.set(SYSTEM_NAME, `${this.namespace}.settings`, settings)
 	}
 }

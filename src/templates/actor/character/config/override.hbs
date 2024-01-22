@@ -1,0 +1,41 @@
+<div class="item" data-index="{{@index}}" data-type="override">
+	<div class="controls">
+		<a class="gcs-grip drag" data-pindex="{{id}}" data-index="{{@index}}" data-type="override"></a>
+		<a class="gcs-trash delete" data-pindex="{{id}}" data-index="{{@index}}" data-type="override"></a>
+	</div>
+	<div class="fieldblock">
+		<div class="label">{{localize "gurps.move_type_def.condition_type"}}</div>
+		<div class="field">
+			<select
+				name="array.system.settings.move_types.{{id}}.overrides.{{@index}}.condition.type"
+				data-dtype="String"
+				>
+				{{#select this.condition.type}}
+					{{#each @root.config.select.move_override as |v k|}}
+						<option value="{{k}}">
+							{{localize v}}
+						</option>
+					{{/each}}
+				{{/select}}
+			</select>
+		</div>
+		<div class="label">{{localize "gurps.move_type_def.condition_qualifier"}}</div>
+		<div class="field">
+			<input
+				type="text"
+				name="{{parent}}.{{id}}.overrides.{{@index}}.condition.qualifier"
+				value="{{this.condition.qualifier}}"
+				data-dtype="String"
+			/>
+		</div>
+		<div class="label">{{localize "gurps.move_type_def.move_type_base"}}</div>
+		<div class="field">
+			<input
+				type="text"
+				name="{{parent}}.{{id}}.overrides.{{@index}}.move_type_base"
+				value="{{this.move_type_base}}"
+				data-dtype="String"
+			/>
+		</div>
+	</div>
+</div>

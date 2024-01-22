@@ -27,6 +27,7 @@
 	--font-page-primary-footer: 500 var(--font-size-12) var(--font-primary), sans-serif;
 	--font-page-secondary-footer: 400 var(--font-size-11) var(--font-primary), sans-serif;
 
+	--font-size-8: 0.5rem;
 	--font-size-10: 0.625rem;
 
 	// Colors
@@ -116,6 +117,7 @@
 	--color-pdf-marker-highlight: 255, 255, 0;
 
 	--color-accent: 0, 102, 102;
+	--color-tooltip-marker: 153, 100, 153;
 
 	--color-critical-success: 0, 160, 16;
 	--color-critical-failure: 160, 16, 0;
@@ -139,10 +141,19 @@
 	--color-button-mod-rollover: 245, 108, 0;
 	--color-on-button-mod-rollover: 0, 0, 0;
 
+	--color-chat-public: 255, 255, 255;
+	--color-chat-whisper: 232, 232, 239;
+	--color-chat-blind: 245, 234, 245;
+
 	--background-roll: linear-gradient(rgba(var(--color-button-roll), 0.3), rgba(var(--color-button-roll), 0.3)),
 		linear-gradient(rgb(var(--color-content)), rgb(var(--color-content)));
 	--background-roll-banding: linear-gradient(rgba(var(--color-button-roll), 0.3), rgba(var(--color-button-roll), 0.3)),
 		linear-gradient(rgb(var(--color-banding)), rgb(var(--color-banding)));
+
+	--background-roll-neg: linear-gradient(rgba(var(--color-failure), 0.3), rgba(var(--color-failure), 0.3)),
+		linear-gradient(rgb(var(--color-content)), rgb(var(--color-content)));
+	--background-roll-pos: linear-gradient(rgba(var(--color-success), 0.3), rgba(var(--color-success), 0.3)),
+		linear-gradient(rgb(var(--color-content)), rgb(var(--color-content)));
 
 	--background-mod: linear-gradient(rgba(var(--color-button-mod), 0.3), rgba(var(--color-button-mod), 0.3)),
 		linear-gradient(rgb(var(--color-content)), rgb(var(--color-content)));
@@ -168,7 +179,7 @@
 		--color-current-tab: 41, 61, 0;
 		--color-on-current-tab: 221, 221, 221;
 
-		--color-editable: 32, 32, 32;
+		--color-editable: 16, 16, 16;
 		--color-on-editable: 100, 153, 153;
 
 		--color-selection: 0, 96, 160;
@@ -228,7 +239,7 @@
 		--color-page-void: 0, 0, 0;
 		--color-drop-area: 255, 0, 0;
 
-		--color-link: 0, 128, 0;
+		--color-link: 0, 204, 102;
 		--color-link-pressed: 0, 96, 160;
 		--color-link-rollover: 0, 179, 0;
 
@@ -236,6 +247,7 @@
 		--color-pdf-marker-highlight: 255, 255, 0;
 
 		--color-accent: 100, 153, 153;
+		--color-tooltip-marker: 128, 64, 128;
 
 		--color-button-roll: 85, 182, 185;
 		--color-on-button-roll: 221, 221, 221;
@@ -246,5 +258,9 @@
 		--color-on-button-mod: 221, 221, 221;
 		--color-button-mod-rollover: 94, 166, 0;
 		--color-on-button-mod-rollover: 221, 221, 221;
+
+		--color-chat-public: 32, 32, 32;
+		--color-chat-whisper: 110, 110, 126;
+		--color-chat-blind: 132, 108, 132;
 	}
 }

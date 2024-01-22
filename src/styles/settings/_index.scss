@@ -1,3 +1,8 @@
+.button-parent {
+	display: grid;
+	grid-auto-flow: column;
+}
+
 .window-app.settings-menu {
 	&#colors-settings,
 	&#default_sheet_settings-settings {
@@ -8,28 +13,34 @@
 			color: rgb(var(--color-on-background));
 		}
 	}
+
 	.window-header .reset-all {
 		display: grid;
 		grid-auto-flow: column;
 		gap: 5px;
 	}
+
 	.window-content a {
 		width: 17px;
 		margin: 2px;
 		padding: 0px 2px;
 		color: rgb(var(--color-icon-button));
+
 		&:hover {
 			color: rgb(var(--color-icon-button-rollover));
 			text-shadow: none;
 		}
+
 		&:active {
 			color: rgb(var(--color-icon-button-rollover));
 			border-radius: 4px;
 		}
 	}
+
 	.top-bar {
 		display: flex;
 		justify-content: space-evenly;
+
 		.field {
 			flex-grow: 0;
 			display: grid;
@@ -37,9 +48,11 @@
 			grid-gap: 5px;
 		}
 	}
+
 	&#colors-settings {
 		@import "colors";
 	}
+
 	.window-content {
 		background: rgb(var(--color-background));
 	}
@@ -53,20 +66,24 @@
 			column-gap: 9px;
 			vertical-align: middle;
 			padding: 2px 16px;
+
 			hr,
 			.title {
 				font: var(--font-system);
 				grid-column: 1 / span 2;
 			}
+
 			.label {
 				white-space: nowrap;
 				text-align: right;
 			}
 		}
+
 		.field {
 			display: grid;
 			grid-auto-flow: column;
 		}
+
 		div.add {
 			display: grid;
 			grid-auto-flow: column;
@@ -76,23 +93,30 @@
 			color: rgb(var(--color-icon-button));
 			align-items: center;
 		}
+
+		.overrides,
 		.thresholds {
 			grid-column: 1 / span 2;
 			border: 1px solid rgb(var(--color-divider));
 		}
+
 		.item-list {
 			grid-column: 1 / span 2;
 			border: 1px solid rgb(var(--color-divider));
+
 			.item {
 				background-color: rgb(var(--color-content));
 				display: grid;
 				grid-template-columns: 0fr 1fr;
+
 				&.border-top {
 					border-top: 1px solid rgb(var(--color-drop-area));
 				}
+
 				&.border-bottom {
 					border-bottom: 1px solid rgb(var(--color-drop-area));
 				}
+
 				.controls {
 					display: grid;
 					gap: 5px;
@@ -101,33 +125,41 @@
 					grid-template:
 						"drag trash"
 						"empty add";
+
 					> :not(.disabled) {
 						color: rgb(var(--color-icon-button));
+
 						&:hover {
 							color: rgb(var(--color-icon-button-rollover));
 							text-shadow: none;
 						}
+
 						&:active {
 							color: rgb(var(--color-icon-button-rollover));
 							text-shadow: none;
 						}
 					}
+
 					> .disabled {
 						color: rgba(var(--color-icon-button), 0.6);
 						cursor: default;
 						pointer-events: none;
 					}
+
 					.gcs-grip {
 						grid-area: drag;
 					}
+
 					.gcs-trash {
 						grid-area: trash;
 					}
+
 					.gcs-circled-add {
 						grid-area: add;
 					}
 				}
 			}
+
 			.item:nth-child(2n) {
 				background-color: rgb(var(--color-banding));
 			}
@@ -138,9 +170,11 @@
 		form {
 			overflow: hidden;
 		}
+
 		.fieldblock {
 			grid-template-columns: auto auto;
 		}
+
 		#details,
 		.fieldblock {
 			display: grid;
@@ -149,52 +183,66 @@
 			column-gap: 9px;
 			vertical-align: middle;
 			padding: 5px 16px;
+
 			hr,
 			.title {
 				font: var(--font-system);
 				grid-column: 1 / span 2;
 			}
+
 			.label {
 				white-space: nowrap;
 				text-align: right;
 			}
 		}
+
 		.field {
 			display: grid;
 			grid-auto-flow: column;
 		}
+
 		hr {
 			border: 1px solid rgb(var(--color-divider));
 			width: 100%;
 			margin: 0;
 		}
+
 		textarea {
 			grid-column: 1 / span 2;
 			width: 100%;
 			line-height: 16px;
 			margin-bottom: 5px;
 		}
+
 		.tab a {
 			width: 17px;
 			margin: 2px;
 			padding: 0px 2px;
 			color: rgb(var(--color-icon-button));
+
 			&:hover {
 				color: rgb(var(--color-icon-button-rollover));
 				text-shadow: none;
 			}
+
 			&:active {
 				color: rgb(var(--color-icon-button-rollover));
 				border-radius: 4px;
 			}
 		}
 	}
+
 	&#default_attributes-settings,
-	&#default_resource_trackers-settings {
+	&#damage_types-settings,
+	&#default_resource_trackers-settings,
+	&#default_move_types-settings {
 		.label {
 			white-space: nowrap;
+			display: grid;
+			align-items: end;
 			text-align: right;
 		}
+
 		.fieldblock {
 			display: grid;
 			grid-auto-flow: row;
@@ -204,26 +252,39 @@
 			padding: 2px 16px;
 			grid-template-columns: min-content auto;
 		}
+
 		div.add {
 			display: grid;
-			height: 20px;
+			grid-auto-flow: column;
+			white-space: nowrap;
+			gap: 5px;
+			justify-content: start;
+			color: rgb(var(--color-icon-button));
 			align-items: center;
 		}
+
+		.enter,
+		.leave,
+		.overrides,
 		.thresholds {
 			grid-column: 1 / span 2;
 			border: 1px solid rgb(var(--color-divider));
 		}
+
 		.item-list {
 			.item {
 				background-color: rgb(var(--color-content));
 				display: grid;
 				grid-template-columns: 0fr 1fr;
+
 				&.border-top {
 					border-top: 1px solid rgb(var(--color-drop-area));
 				}
+
 				&.border-bottom {
 					border-bottom: 1px solid rgb(var(--color-drop-area));
 				}
+
 				.controls {
 					display: grid;
 					gap: 5px;
@@ -232,33 +293,41 @@
 					grid-template:
 						"drag trash"
 						"empty add";
+
 					> :not(.disabled) {
 						color: rgb(var(--color-icon-button));
+
 						&:hover {
 							color: rgb(var(--color-icon-button-rollover));
 							text-shadow: none;
 						}
+
 						&:active {
 							color: rgb(var(--color-icon-button-rollover));
 							text-shadow: none;
 						}
 					}
+
 					> .disabled {
 						color: rgba(var(--color-icon-button), 0.6);
 						cursor: default;
 						pointer-events: none;
 					}
+
 					.gcs-grip {
 						grid-area: drag;
 					}
+
 					.gcs-trash {
 						grid-area: trash;
 					}
+
 					.gcs-circled-add {
 						grid-area: add;
 					}
 				}
 			}
+
 			.item:nth-child(2n) {
 				background-color: rgb(var(--color-banding));
 			}

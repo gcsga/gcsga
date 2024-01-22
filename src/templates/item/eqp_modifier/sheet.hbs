@@ -1,6 +1,12 @@
 <form class="{{cssClass}}" autocomplete="off">
 	<div id="sheet">
 		<div id="details">
+			<div class="label">{{localize "gurps.item.img"}}</div>
+			<div class="field">
+				<div class="img-display" style="background-image: url({{document.img}});">
+					<img src="{{document.img}}" data-edit="img" title="{{document.name}}" />
+				</div>
+			</div>
 			<label class="label"></label>
 			<div class="field">
 				<label class="checkbox-label">
@@ -34,7 +40,7 @@
 				<input type="text" name="system.cost" value="{{system.cost}}" data-dtype="String" />
 				<select name="system.cost_type" data-dtype="String">
 					{{#select system.cost_type}}
-						{{#each config.select.eqp_mod_cost_type as |v k|}}
+						{{#each config.select.emcost as |v k|}}
 							<option value="{{k}}">{{localize v}}</option>
 						{{/each}}
 					{{/select}}
@@ -45,7 +51,7 @@
 				<input type="text" name="system.weight" value="{{system.weight}}" data-dtype="String" />
 				<select name="system.weight_type" data-dtype="String">
 					{{#select system.weight_type}}
-						{{#each config.select.eqp_mod_weight_type as |v k|}}
+						{{#each config.select.emweight as |v k|}}
 							<option value="{{k}}">{{localize v}}</option>
 						{{/each}}
 					{{/select}}
@@ -58,6 +64,10 @@
 			<div class="label">{{localize "gurps.item.reference"}}</div>
 			<div class="field">
 				<input type="text" name="system.reference" value="{{system.reference}}" data-dtype="String" />
+			</div>
+			<div class="label">{{localize "gurps.item.reference_highlight"}}</div>
+			<div class="field">
+					<input type="text" name="system.reference_highlight" value="{{system.reference_highlight}}" data-dtype="String" />
 			</div>
 		</div>
 		{{>item/sections/features}}
