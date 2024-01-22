@@ -1,6 +1,6 @@
 import { gid, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { sanitize } from "@util"
-import { MookData, MookMelee, MookRanged, MookSkill, MookSpell, MookTrait, MookTraitModifier } from "./data"
+import { MookMelee, MookRanged, MookSkill, MookSpell, MookTrait, MookTraitModifier } from "./data"
 import { Mook } from "./document"
 import { WeaponDamageObj } from "@item/weapon/data"
 import { DiceGURPS } from "@module/dice"
@@ -42,21 +42,17 @@ const regex_damage_type = new RegExp(
 		.map(e => e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
 		.join("|")})\\b`
 )
+const regex_difficulty = /\((?:[A-z]+\/)?([EAHVeahv][Hh]?)\)/
 
 export class MookParser {
 	text: string
 
 	object: Mook
 
-	// private _text: string
-
-	private _object: MookData
 
 	constructor(text: string, object: Mook) {
 		this.text = text
 		this.object = object
-		this._object = this.resetObject
-		// this._text = ""
 	}
 
 	static init(text?: string, object?: Mook) {
@@ -66,18 +62,18 @@ export class MookParser {
 	}
 
 	parseStatBlock(text: string): any {
-		this._object = this.resetObject
 		this.text = this.sanitizeStatBlock(text)
-		this.parseName()
-		this.parseAttacks()
+		this.object.profile.name = this.parseName(this.text)
+			;[this.object.melee, this.object.ranged] = this.parseAttacks(this.text)
 		this.parseAttributes()
-		this.parseTraits()
-		this.parseSkills()
-		this.parseSpells()
+		this.object.traits = this.parseTraits()
+		this.object.skills = this.parseSkills()
+		this.object.spells = this.parseSpells()
 		// this.parseEquipment()
-		this.parseAttacks(true)
+		const [moreMelee, moreRanged] = this.parseAttacks(this.text, true)
+		this.object.melee.push(...moreMelee)
+		this.object.ranged.push(...moreRanged)
 		this.object.text.catchall = this.text
-		console.log(this.object)
 		return this.object
 	}
 
@@ -124,11 +120,10 @@ export class MookParser {
 		return start === text ? text : this.cleanLine(text)
 	}
 
-	private parseName(): void {
-		this.text = this.cleanLine(this.text)
-		const name = this.text.split("\n")[0]
-		console.log(name)
-		this.object.profile.name = name
+	private parseName(input = this.text): string {
+		input = this.cleanLine(input)
+		const name = input.split("\n")[0]
+		return name
 	}
 
 	private parseAttributes(): void {
@@ -198,24 +193,28 @@ export class MookParser {
 		}
 	}
 
-	private parseTraits(): void {
+	parseTraits(input = this.text, skipSeparation = false): MookTrait[] {
 		const regex_levels = /\s(\d+)$/
 		const regex_cr = /\((CR:?)?\s*(\d+)\)/
 
-		this._object.traits = []
-		let text = this.extractText(["Advantages:", "Advantages/Disadvantages:", "Traits:"], ["Skills:", "Spells:"])
+		let text = ""
+		if (skipSeparation) {
+			text = input
+		} else {
+			text = this.extractText(["Advantages:", "Advantages/Disadvantages:", "Traits:"], ["Skills:", "Spells:"])
+			if (text.includes(";")) text = text.replace(/\n/g, " ") // if ; separated, remove newlines
+			else if (text.split(",").length > 2) text = text.replace(/,/g, " ") // if , separated, replace with ;
+			text = text.replace(/advantages\/disadvantages:?/gi, ";")
+			text = text.replace(/disadvantages:?/gi, ";")
+			text = text.replace(/advantages:?/gi, ";")
+			text = text.replace(/perks:?/gi, ";")
+			text = text.replace(/quirks:?/gi, ";")
+			text = text.replace(/traits:?/gi, ";")
+			text = text.trim()
+		}
 
-		if (text.includes(";"))
-			text = text.replace(/\n/g, " ") // if ; separated, remove newlines
-		else if (text.split(",").length > 2) text = text.replace(/,/g, " ") // if , separated, replace with ;
+		const traits: MookTrait[] = []
 
-		text = text.replace(/advantages\/disadvantages:?/gi, ";")
-		text = text.replace(/disadvantages:?/gi, ";")
-		text = text.replace(/advantages:?/gi, ";")
-		text = text.replace(/perks:?/gi, ";")
-		text = text.replace(/quirks:?/gi, ";")
-		text = text.replace(/traits:?/gi, ";")
-		text = text.trim()
 		text.split(";").forEach(t => {
 			if (!t.trim()) return
 
@@ -249,7 +248,7 @@ export class MookParser {
 
 			t = this.cleanLine(t)
 
-			const trait: MookTrait = {
+			const trait = new MookTrait({
 				name: t,
 				points,
 				cr,
@@ -257,52 +256,62 @@ export class MookParser {
 				notes: "",
 				reference: "",
 				modifiers,
-			}
-			this.object.traits.push(trait)
+			})
+			traits.push(trait)
 		})
+		return traits
 	}
 
 	private parseTraitModifiers(text: string): MookTraitModifier[] {
 		const modifiers: MookTraitModifier[] = []
 		const textmods = text.split(";")
 		textmods.forEach(m => {
-			if (m.split(",").length === 2) {
+			if (m.split(",").length === 2 && m.split(",")[1].match(/[+-]?\d+%?/)) {
 				// assumes common format for modifier notation
 				const mod = m.split(",")
-				modifiers.push({
-					name: mod[0].trim(),
-					cost: mod[1].trim(),
-					notes: "",
-					reference: "",
-				})
+				modifiers.push(
+					new MookTraitModifier({
+						name: mod[0].trim(),
+						cost: mod[1].trim(),
+						notes: "",
+						reference: "",
+					})
+				)
 			}
 		})
 		return modifiers
 	}
 
-	private parseSkills(): void {
-		const attributes: { name: string; id: string }[] = game.settings
-			.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
-			.map((e: any) => {
+	parseSkills(input = this.text, skipSeparation = false): MookSkill[] {
+		const attributes: { name: string; id: string }[] = [
+			...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`).map((e: any) => {
 				return { id: e.id, name: e.name }
-			})
+			}),
+			...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`).map((e: any) => {
+				return { id: e.id, name: e.id }
+			}),
+		]
 
 		const regex_level = /\s?-(\d+)/
-		const regex_difficulty = /\(([EAHV][H]?)\)/
-		const regex_rsl = new RegExp(`(${attributes.map(e => e.name).join("|")})([-+]\\d+)?`)
-		const regex_specialization = /\((.*)\)/
+		const regex_difficulty_att = new RegExp(`\\((${attributes.map(e => e.name).join("|")})/([EAHVeahv][Hh]?)\\)`)
+		const regex_rsl = new RegExp(`[\\(|\\s](${attributes.map(e => e.name).join("|")})([-+]\\d+)?[\\)|\\s]?`)
+		const regex_specialization = /^(?:[A-z-\s]+) \(([A-z-\s]+)\)/
 		const regex_tl = /\/TL(\d+\^?)/
 
-		this._object.skills = []
-		let text = this.extractText(
-			["Skills:"],
-			["Spells:", "Equipment:", "Language:", "Languages:", "Weapons:", "Class:", "Notes:", "*"]
-		)
+		let text = ""
+		if (skipSeparation) text = input
+		else
+			text = this.extractText(
+				["Skills:"],
+				["Spells:", "Equipment:", "Language:", "Languages:", "Weapons:", "Class:", "Notes:", "*"]
+			)
 
 		text = text.replace(/skills:?/gi, " ")
 		text = this.cleanLine(text)
 		text = text.replaceAll(/\.\n/g, ";").replaceAll(",", ";")
 		text = text.trim()
+
+		const skills: MookSkill[] = []
 
 		text.split(";").forEach(t => {
 			t = this.cleanLine(t).trim().replace("\n", "")
@@ -323,17 +332,22 @@ export class MookParser {
 			}
 
 			// Capture difficulty
-			let attribute: string = gid.Dexterity
-			// let rsl = level - 10
-			let diff = difficulty.Level.Average
-			if (t.match(regex_difficulty)) {
+			let attribute: string = gid.Dexterity.toUpperCase()
+			let diff = difficulty.Level.Average.toUpperCase()
+			if (t.match(regex_difficulty_att)) {
+				const match = t.match(regex_difficulty_att)
+				attribute = attributes.find(e => e.name === match![1])?.id ?? gid.Intelligence.toUpperCase()
+				diff = match![2].toLowerCase() as difficulty.Level
+				t = t.replace(regex_difficulty, "").trim()
+			} else if (t.match(regex_difficulty)) {
 				diff = t.match(regex_difficulty)![1].toLowerCase() as difficulty.Level
 				t = t.replace(regex_difficulty, "").trim()
 			}
 
+			// Capture RSL
 			if (t.match(regex_rsl)) {
 				const match = t.match(regex_rsl)!
-				attribute = attributes.find(e => e.name === match[1])?.id ?? gid.Dexterity
+				attribute = attributes.find(e => e.name === match[1])?.id ?? gid.Dexterity.toUpperCase()
 				t = t.replace(regex_rsl, "").trim()
 			}
 
@@ -341,8 +355,9 @@ export class MookParser {
 			let specialization = ""
 			if (t.match(regex_specialization)) {
 				specialization = t.match(regex_specialization)![1]
-				t = t.replace(regex_specialization, "").trim()
+				t = t.replace(new RegExp(`\\s*\\(${specialization}\\)`), "").trim()
 			}
+
 
 			// Capture TL
 			let tl = ""
@@ -353,43 +368,52 @@ export class MookParser {
 
 			t = this.cleanLine(t)
 
-			const skill: MookSkill = {
+			const skill = new MookSkill({
 				name: t,
-				difficulty: `${attribute}/${diff}`,
+				attribute: attribute,
+				difficulty: diff,
 				points,
 				level,
 				specialization,
 				tech_level: tl,
 				notes: "",
 				reference: "",
-			}
-			this.object.skills.push(skill)
+			})
+			skills.push(skill)
 		})
+		return skills
 	}
 
-	private parseSpells(): void {
-		const attributes: { name: string; id: string }[] = game.settings
-			.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
-			.map((e: any) => {
+	parseSpells(input = this.text, skipSeparation = false): MookSpell[] {
+		const attributes: { name: string; id: string }[] = [
+			...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`).map((e: any) => {
 				return { id: e.id, name: e.name }
-			})
+			}),
+			...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`).map((e: any) => {
+				return { id: e.id, name: e.id }
+			}),
+		]
 
 		const regex_level = /\s?-(\d+)/
-		const regex_difficulty = /\(([EAHV][H]?)\)/
-		const regex_rsl = new RegExp(`(${attributes.map(e => e.name).join("|")})([-+]\\d+)?`)
+		const regex_difficulty_att = new RegExp(`\\((${attributes.map(e => e.name).join("|")})/([EAHVeahv][Hh]?)\\)`)
+		const regex_rsl = new RegExp(`[\\(|\\s](${attributes.map(e => e.name).join("|")})([-+]\\d+)?[\\)|\\s]?`)
 		const regex_tl = /\/TL(\d+\^?)/
 
-		this._object.spells = []
-		let text = this.extractText(
-			["Spells:"],
-			["Equipment:", "Language:", "Languages:", "Weapons:", "Class:", "Notes:"]
-		)
+		let text = ""
+		if (skipSeparation) text = input
+		else
+			text = this.extractText(
+				["Spells:"],
+				["Equipment:", "Language:", "Languages:", "Weapons:", "Class:", "Notes:"]
+			)
 
 		text = text.replace(/spells:?/gi, ";")
 		text = text.replace(/^.*:\n/, ";")
 		text = this.cleanLine(text)
 		text = text.replaceAll(/\.\n/g, ";").replaceAll(",", ";")
 		text = text.trim()
+
+		const spells: MookSpell[] = []
 
 		text.split(";").forEach(t => {
 			t = this.cleanLine(t).trim().replace("\n", "")
@@ -410,16 +434,21 @@ export class MookParser {
 			}
 
 			// Capture difficulty
-			let attribute: string = gid.Intelligence
-			let diff = difficulty.Level.Hard
-			if (t.match(regex_difficulty)) {
+			let attribute: string = gid.Intelligence.toUpperCase()
+			let diff = difficulty.Level.Hard.toUpperCase()
+			if (t.match(regex_difficulty_att)) {
+				const match = t.match(regex_difficulty_att)
+				attribute = attributes.find(e => e.name === match![1])?.id ?? gid.Intelligence.toUpperCase()
+				diff = match![2].toLowerCase() as difficulty.Level
+				t = t.replace(regex_difficulty, "").trim()
+			} else if (t.match(regex_difficulty)) {
 				diff = t.match(regex_difficulty)![1].toLowerCase() as difficulty.Level
 				t = t.replace(regex_difficulty, "").trim()
 			}
 
 			if (t.match(regex_rsl)) {
 				const match = t.match(regex_rsl)!
-				attribute = attributes.find(e => e.name === match[1])?.id ?? gid.Intelligence
+				attribute = attributes.find(e => e.name === match[1])?.id ?? gid.Intelligence.toUpperCase()
 				t = t.replace(regex_rsl, "").trim()
 			}
 
@@ -432,18 +461,20 @@ export class MookParser {
 
 			t = this.cleanLine(t)
 
-			const spell: MookSpell = {
+			const spell = new MookSpell({
 				name: t,
 				college: [],
-				difficulty: `${attribute}/${diff}`,
+				attribute: attribute,
+				difficulty: diff,
 				points,
 				level,
 				tech_level: tl,
 				notes: "",
 				reference: "",
-			}
-			this.object.spells.push(spell)
+			})
+			spells.push(spell)
 		})
+		return spells
 	}
 
 	parseDamage(input: string): [WeaponDamageObj, string] {
@@ -490,86 +521,89 @@ export class MookParser {
 		return [damage, input]
 	}
 
-	parseAttacks(oldFormat = false) {
-		const regex_acc = /\s?[Aa]cc *(\d+)\s?,?/
-		const regex_rof = /\s?[Rr]o[Ff] *(\d+)\s?,?/
-		const regex_recoil = /\s?[Rr]cl *(\d+)\s?,?/
-		const regex_half_damage = /\s?1\/2[Dd] *(\d+)\s?,?/
-		const regex_max_range = /\s?[Mm]ax *(\d+) ?,?/
-		const regex_shots = /\s?[Ss]hots *([\dT)(]+)\s?,?/
-		const regex_bulk = /\s?[Bb]ulk\s*(-\d+)\s?,?/
-		const regex_ST = / ?[Ss][Tt] *(\d+)\s?,?/
-		const regex_reach = /\s?[Rr]each\s*((?:[C1-9]+\s*)(?:,\s*[C1-9]+\s*)*)/
-		const regex_range = /\s?[Rr]ange ([0-9/]+)\s*,?/
+	parseAttacks(input = this.text, oldFormat = false, skipSeparation = false): [MookMelee[], MookRanged[]] {
+		const regex_acc = /\s?[Aa]cc:?\s*(\d+)\s?,?/
+		const regex_rof = /\s?[Rr]o[Ff]:?\s*(\d+)\s?,?/
+		const regex_recoil = /\s?[Rr]cl:?\s*(\d+)\s?,?/
+		const regex_half_damage = /\s?1\/2[Dd]:?\s*(\d+)\s?,?/
+		const regex_max_range = /\s?[Mm]ax:?\s*(\d+) ?,?/
+		const regex_shots = /\s?[Ss]hots:?\s*([\dT)(]+)\s?,?/
+		const regex_bulk = /\s?[Bb]ulk:?\s*(-\d+)\s?,?/
+		const regex_ST = / ?[Ss][Tt]:? *(\d+)\s?,?/
+		const regex_reach = /\s?[Rr]each:?\s*((?:[C1-9]+\s*)(?:,\s*[C1-9]+\s*)*)/
+		const regex_range = /\s?[Rr]ange:?\s*([0-9/]+)\s*,?/
 		const regex_level = /\((\d+)\):/
-		const regex_parry = /\s?[Pp]arry:? (No|[0-9]+[FfUu]*)/
-		const regex_block = /\s?[Bb]lock:? (No|[0-9]+)/
-
-		this._object.melee = []
-		this._object.ranged = []
+		const regex_parry = /\s?[Pp]arry:?\s*(No|[0-9]+[FfUu]*)/
+		const regex_block = /\s?[Bb]lock:?\s*(No|[0-9]+)/
 
 		let text = ""
-		if (oldFormat) text = this.text
+		let weapons = ""
+		if (skipSeparation) weapons = input
 		else {
-			text = this.extractText([], ["Traits:"])
+			if (oldFormat) text = input
+			else {
+				text = this.extractText([], ["Traits:"])
+			}
+
+			weapons = ""
+			let beforeText = ""
+			let afterText = ""
+
+			// if we come across a line which isn't accepted, don't bother with the rest
+			let last_matched = 0
+			let at_least_one_level = false
+			text.split("\n").forEach(e => {
+				if (last_matched > 1 && weapons.length !== 0) {
+					afterText += `${e}\n`
+					return
+				}
+				if (e.match(/^(\w+\s+)*\(\d+\):?/)) {
+					weapons += `${e}\n`
+					at_least_one_level = true
+					last_matched = 0
+				} else if (
+					at_least_one_level &&
+					(e.match(regex_acc) ||
+						e.match(regex_rof) ||
+						e.match(regex_recoil) ||
+						e.match(regex_half_damage) ||
+						e.match(regex_max_range) ||
+						e.match(regex_shots) ||
+						e.match(regex_bulk) ||
+						e.match(regex_ST) ||
+						e.match(regex_reach) ||
+						e.match(regex_range))
+				) {
+					weapons += `${e}\n`
+					last_matched = 0
+				} else if (weapons.length !== 0) {
+					weapons += `${e}\n`
+					last_matched++
+				} else {
+					beforeText += `${e}\n`
+				}
+			})
+
+			if (oldFormat) this.text = beforeText + afterText
+			else this.text = `${beforeText + this.text}\n${afterText}`.replace(weapons, "")
+
+			if (weapons.includes(".\n")) weapons = weapons.replace(/\.\n/g, ";")
+
+			weapons = (() => {
+				let final = ""
+				const list = weapons.split(";")
+				for (let line of list) {
+					line = line.replace(/\n/, " ")
+					if (line.match(/^(\w+\s+)*\(\d+\):?/)) final += `; ${this.cleanLine(line).trim()}`
+					else final += ` ${this.cleanLine(line).trim()}`
+				}
+
+				return final
+			})()
 		}
 
-		let weapons = ""
-		let beforeText = ""
-		let afterText = ""
-
-		// if we come across a line which isn't accepted, don't bother with the rest
-		let last_matched = 0
-		let at_least_one_level = false
-		text.split("\n").forEach(e => {
-			if (last_matched > 1 && weapons.length !== 0) {
-				afterText += `${e}\n`
-				return
-			}
-			if (e.match(/^(\w+\s+)*\(\d+\):?/)) {
-				weapons += `${e}\n`
-				at_least_one_level = true
-				last_matched = 0
-			} else if (
-				at_least_one_level &&
-				(e.match(regex_acc) ||
-					e.match(regex_rof) ||
-					e.match(regex_recoil) ||
-					e.match(regex_half_damage) ||
-					e.match(regex_max_range) ||
-					e.match(regex_shots) ||
-					e.match(regex_bulk) ||
-					e.match(regex_ST) ||
-					e.match(regex_reach) ||
-					e.match(regex_range))
-			) {
-				weapons += `${e}\n`
-				last_matched = 0
-			} else if (weapons.length !== 0) {
-				weapons += `${e}\n`
-				last_matched++
-			} else {
-				beforeText += `${e}\n`
-			}
-		})
-
-		if (oldFormat) this.text = beforeText + afterText
-		else this.text = `${beforeText + this.text}\n${afterText}`.replace(weapons, "")
-
-		if (weapons.includes(".\n")) weapons = weapons.replace(/\.\n/g, ";")
-
-		weapons = (() => {
-			let final = ""
-			const list = weapons.split(";")
-			for (let line of list) {
-				line = line.replace(/\n/, " ")
-				if (line.match(/^(\w+\s+)*\(\d+\):?/)) final += `; ${this.cleanLine(line).trim()}`
-				else final += ` ${this.cleanLine(line).trim()}`
-			}
-
-			return final
-		})()
-
+		const melee: MookMelee[] = []
+		const ranged: MookRanged[] = []
 		weapons.split(";").forEach(t => {
 			const reference = ""
 			let notes = ""
@@ -654,7 +688,7 @@ export class MookParser {
 			let range = "0"
 			if (t.match(regex_range)) {
 				isRanged = true
-				range = String(parseInt(t.match(regex_range)![1]))
+				range = t.match(regex_range)![1]
 				t = t.replace(regex_range, "").trim()
 			}
 
@@ -708,7 +742,7 @@ export class MookParser {
 			notes = this.cleanLine(notes)
 
 			if (isRanged) {
-				const rangedWeapon: MookRanged = {
+				const rangedWeapon = new MookRanged({
 					name,
 					accuracy,
 					range: half_damage > 0 && max_range > 0 ? `${half_damage}/${max_range}` : range,
@@ -721,10 +755,10 @@ export class MookParser {
 					strength: ST,
 					notes,
 					damage,
-				}
-				this.object.ranged.push(rangedWeapon)
+				})
+				ranged.push(rangedWeapon)
 			} else {
-				const meleeWeapon: MookMelee = {
+				const meleeWeapon = new MookMelee({
 					name,
 					reach,
 					strength: ST,
@@ -734,43 +768,44 @@ export class MookParser {
 					block,
 					notes,
 					reference,
-				}
-				this.object.melee.push(meleeWeapon)
+				})
+				melee.push(meleeWeapon)
 			}
 		})
+		return [melee, ranged]
 	}
 
-	private get resetObject(): MookData {
-		return {
-			settings: {
-				attributes: [],
-				damage_progression: this.object.settings.damage_progression,
-				move_types: this.object.settings.move_types,
-			},
-			system: {
-				attributes: this.object.system.attributes,
-			},
-			attributes: this.object.attributes,
-			traits: [],
-			skills: [],
-			spells: [],
-			melee: [],
-			ranged: [],
-			equipment: [],
-			other_equipment: [],
-			notes: [],
-			profile: {
-				name: "",
-				description: "",
-				title: "",
-				height: "",
-				weight: "",
-				SM: 0,
-				portrait: "icons/svg/mystery-man.svg",
-				userdesc: "",
-			},
-			thrust: this.object.thrust,
-			swing: this.object.swing,
-		}
-	}
+	// private get resetObject(): MookData {
+	// 	return {
+	// 		settings: {
+	// 			attributes: [],
+	// 			damage_progression: this.object.settings.damage_progression,
+	// 			move_types: this.object.settings.move_types,
+	// 		},
+	// 		system: {
+	// 			attributes: this.object.system.attributes,
+	// 		},
+	// 		attributes: this.object.attributes,
+	// 		traits: [],
+	// 		skills: [],
+	// 		spells: [],
+	// 		melee: [],
+	// 		ranged: [],
+	// 		equipment: [],
+	// 		other_equipment: [],
+	// 		notes: [],
+	// 		profile: {
+	// 			name: "",
+	// 			description: "",
+	// 			title: "",
+	// 			height: "",
+	// 			weight: "",
+	// 			SM: 0,
+	// 			portrait: "icons/svg/mystery-man.svg",
+	// 			userdesc: "",
+	// 		},
+	// 		thrust: this.object.thrust,
+	// 		swing: this.object.swing,
+	// 	}
+	// }
 }

@@ -23,15 +23,15 @@ export class TraitModifierGURPS extends ItemGCS<TraitModifierSource> {
 
 	get costDescription(): string {
 		let base = ""
-		if (this.costType === "percentage") {
+		if (this.costType === tmcost.Type.Percentage) {
 			if (this.isLeveled) {
 				base = (this.cost * this.levels).signedString()
 			} else {
 				base = this.cost.signedString()
 			}
 			base += "%"
-		} else if (this.costType === "points") base = this.cost.signedString()
-		else if (this.costType === "multiplier") return `×${this.cost}`
+		} else if (this.costType === tmcost.Type.Points) base = this.cost.signedString()
+		else if (this.costType === tmcost.Type.Multiplier) return `×${this.cost}`
 		return base
 	}
 
@@ -65,6 +65,6 @@ export class TraitModifierGURPS extends ItemGCS<TraitModifierSource> {
 	}
 
 	get isLeveled(): boolean {
-		return this.costType === "percentage" && this.levels > 0
+		return this.costType === tmcost.Type.Percentage && this.levels > 0
 	}
 }

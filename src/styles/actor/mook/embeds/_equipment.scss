@@ -1,9 +1,6 @@
 #equipment {
 	grid-area: equipment;
 	grid-template-columns: auto auto 1fr repeat(7, auto);
-	.header {
-		grid-area: auto;
-	}
 
 	.equipped {
 		min-height: 16px;
@@ -23,6 +20,7 @@
 			background-color: rgba(var(--color-banding), 1);
 			color: rgba(var(--color-on-banding), 1);
 			@import "roll_banding";
+
 			&.disabled {
 				.name,
 				.item-notes,
