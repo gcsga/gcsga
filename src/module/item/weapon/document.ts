@@ -16,7 +16,7 @@ import { SkillBonus, WeaponBonus } from "@feature"
 import { StringBuilder } from "@util/string_builder"
 
 export abstract class BaseWeaponGURPS<
-	SourceType extends BaseWeaponSource = BaseWeaponSource
+	SourceType extends BaseWeaponSource = BaseWeaponSource,
 > extends BaseItemGURPS<SourceType> {
 	get itemName(): string {
 		if (this.container instanceof Item) return this.container?.name ?? ""
@@ -48,7 +48,7 @@ export abstract class BaseWeaponGURPS<
 	}
 
 	get unready(): boolean {
-		return this.getFlag(SYSTEM_NAME, ItemFlags.Unready) as boolean ?? false
+		return (this.getFlag(SYSTEM_NAME, ItemFlags.Unready) as boolean) ?? false
 	}
 
 	secondaryText(_optionChecker: (option: display.Option) => boolean): string {
@@ -114,7 +114,7 @@ export abstract class BaseWeaponGURPS<
 		if (!actor) return 0
 		let adj = 0
 		if (!(this.container instanceof ContainerGURPS)) return 0
-		const minST = this.resolvedMinimumStrength - (actor.strikingST)
+		const minST = this.resolvedMinimumStrength - actor.strikingST
 		if (minST > 0) adj -= minST
 		const nameQualifier = this.container?.name
 		for (const bonus of actor.namedWeaponSkillBonusesFor(
@@ -311,7 +311,7 @@ export abstract class BaseWeaponGURPS<
 				this.container?.type as ItemType
 			)
 		) {
-			; (this.container as any).modifiers.forEach((mod: any) => {
+			;(this.container as any).modifiers.forEach((mod: any) => {
 				let bonus: Bonus
 				for (const f of mod.features) {
 					bonus = f

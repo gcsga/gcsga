@@ -162,8 +162,8 @@ export class BaseActorGURPS<SourceType extends BaseActorSourceGURPS = BaseActorS
 		const effects = this.gEffects.map(e => {
 			const overlay = e instanceof ConditionGURPS && e.cid === ConditionID.Dead
 			const a = new ActiveEffect({ name: e.name, icon: e.img || "" } as any)
-				// a.setFlag("core", "overlay", overlay)
-				; (a as any).flags = { core: { overlay: overlay } }
+			// a.setFlag("core", "overlay", overlay)
+			;(a as any).flags = { core: { overlay: overlay } }
 			return a
 		})
 		return super.temporaryEffects.concat(effects)
@@ -635,11 +635,8 @@ class DamageWeaponAdapter implements DamageWeapon {
 }
 
 export const ActorProxyGURPS = new Proxy(BaseActorGURPS, {
-	construct(
-		_target,
-		args: [source: any, context: any],
-	) {
+	construct(_target, args: [source: any, context: any]) {
 		const ActorClass = CONFIG.GURPS.Actor.documentClasses[args[0]?.type] ?? BaseActorGURPS
 		return new ActorClass(...args)
-	}
+	},
 })

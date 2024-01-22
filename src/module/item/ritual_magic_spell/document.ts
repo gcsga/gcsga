@@ -272,5 +272,4 @@ export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 			return 100
 		}
 	}
-
 }

@@ -5,7 +5,14 @@ import { BaseWeaponGURPS } from "@item/weapon"
 import { Feature, ItemDataGURPS } from "@module/config"
 import { ActorType, ItemType, SYSTEM_NAME } from "@module/data"
 import { PrereqList } from "@prereq"
-import { EvalEmbeddedRegex, LocalizeGURPS, SkillResolver, replaceAllStringFunc, resolveStudyHours, sheetDisplayNotes } from "@util"
+import {
+	EvalEmbeddedRegex,
+	LocalizeGURPS,
+	SkillResolver,
+	replaceAllStringFunc,
+	resolveStudyHours,
+	sheetDisplayNotes,
+} from "@util"
 import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
 import { ItemDataConstructorData } from "types/foundry/common/data/data.mjs/itemData"
 import { BaseUser } from "types/foundry/common/documents.mjs"
@@ -31,7 +38,7 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 			this._source.img = data.img = `systems/${SYSTEM_NAME}/assets/icons/${type}.svg`
 		let gcs_type: string = data.type
 		if (gcs_type === ItemType.Equipment) gcs_type = "equipment"
-			; (this._source.system as any).type = gcs_type
+		;(this._source.system as any).type = gcs_type
 		await super._preCreate(data, options, user)
 	}
 
@@ -39,8 +46,7 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 		data: DeepPartial<ItemDataConstructorData | (ItemDataConstructorData & Record<string, unknown>)>,
 		context?: DocumentModificationContext & MergeObjectOptions & { noPrepare?: boolean }
 	): Promise<this | undefined> {
-		if (this.parent instanceof Actor && context?.noPrepare)
-			this.parent.noPrepare = true
+		if (this.parent instanceof Actor && context?.noPrepare) this.parent.noPrepare = true
 		return super.update(data, context)
 	}
 
@@ -101,12 +107,7 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 	}
 
 	get levelTooltip(): string {
-		if ([
-			ItemType.Skill,
-			ItemType.Technique,
-			ItemType.Spell,
-			ItemType.RitualMagicSpell
-		].includes(this.type)) {
+		if ([ItemType.Skill, ItemType.Technique, ItemType.Spell, ItemType.RitualMagicSpell].includes(this.type)) {
 			const sk = this as unknown as SkillResolver
 			if (sk.level.tooltip.length === 0) return ""
 			const tooltip = new TooltipGURPS()
@@ -118,12 +119,7 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 	}
 
 	get pointsTooltip(): string {
-		if ([
-			ItemType.Skill,
-			ItemType.Technique,
-			ItemType.Spell,
-			ItemType.RitualMagicSpell
-		].includes(this.type)) {
+		if ([ItemType.Skill, ItemType.Technique, ItemType.Spell, ItemType.RitualMagicSpell].includes(this.type)) {
 			const sk = this as unknown as SkillResolver
 			const tooltip = new TooltipGURPS()
 			sk.adjustedPoints(tooltip)
@@ -210,19 +206,12 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 
 	prepareData(): void {
 		if (this.parent?.noPrepare) return
-		if ([
-			ItemType.Skill,
-			ItemType.Technique,
-			ItemType.Spell,
-			ItemType.RitualMagicSpell
-		].includes(this.type)) {
+		if ([ItemType.Skill, ItemType.Technique, ItemType.Spell, ItemType.RitualMagicSpell].includes(this.type)) {
 			const sk = this as unknown as SkillResolver
 			sk.level = sk.calculateLevel()
 		}
 		super.prepareData()
 	}
 
-	prepareDerivedData(): void {
-	}
-
+	prepareDerivedData(): void {}
 }

@@ -299,9 +299,9 @@ export async function getDefaultSkills() {
 	for (const s in skillPacks)
 		if (skillPacks[s].skillDefault) {
 			const pack = game.packs.get(s) as CompendiumCollection<any>
-				; (await pack.getDocuments()).forEach(e => {
-					skills.push(e)
-				})
+			;(await pack.getDocuments()).forEach(e => {
+				skills.push(e)
+			})
 		}
 	CONFIG.GURPS.skillDefaults = skills
 }
@@ -357,19 +357,22 @@ export function isContainer(item: { type: ItemType }): boolean {
 // 	if (!actor) return
 // }
 
-export function sheetDisplayNotes(s: string, options: { unsatisfied?: string, unready?: boolean } = { unsatisfied: "", unready: false }): string {
+export function sheetDisplayNotes(
+	s: string,
+	options: { unsatisfied?: string; unready?: boolean } = { unsatisfied: "", unready: false }
+): string {
 	const buffer = new StringBuilder()
 	if (options.unsatisfied && options.unsatisfied !== "")
 		buffer.push(
 			`<div class='unsatisfied' data-tooltip='${options.unsatisfied}' data-tooltip-direction='DOWN'>` +
-			`<i class='gcs-triangle-exclamation'></i>${LocalizeGURPS.translations.gurps.prereq.unsatisfied}` +
-			"</div>"
+				`<i class='gcs-triangle-exclamation'></i>${LocalizeGURPS.translations.gurps.prereq.unsatisfied}` +
+				"</div>"
 		)
 	if (options.unready)
 		buffer.push(
 			"<div class='unsatisfied'>" +
-			`<i class='gcs-triangle-exclamation'></i>${LocalizeGURPS.translations.gurps.weapon.unready}` +
-			"</div>"
+				`<i class='gcs-triangle-exclamation'></i>${LocalizeGURPS.translations.gurps.weapon.unready}` +
+				"</div>"
 		)
 	buffer.appendToNewLine(s)
 	return `<div class="item-notes">${buffer.toString()}</div>`

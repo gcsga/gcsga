@@ -128,7 +128,7 @@ export interface TraitModifierResolver extends ItemResolver {
 }
 
 export interface TraitModifierContainerResolver
-	extends ContainerResolver<TraitModifierResolver | TraitModifierContainerResolver> { }
+	extends ContainerResolver<TraitModifierResolver | TraitModifierContainerResolver> {}
 
 export interface LeveledItemResolver extends ItemResolver {
 	points: number
@@ -160,7 +160,7 @@ export interface TechniqueResolver extends LeveledItemResolver {
 }
 
 export interface SkillContainerResolver
-	extends ContainerResolver<SkillResolver | TechniqueResolver | SkillContainerResolver> { }
+	extends ContainerResolver<SkillResolver | TechniqueResolver | SkillContainerResolver> {}
 
 export interface SpellResolver extends LeveledItemResolver {
 	rituals: string
@@ -170,7 +170,7 @@ export interface SpellResolver extends LeveledItemResolver {
 	college: string[]
 }
 
-export interface SpellContainerResolver extends ContainerResolver<SpellResolver | SpellContainerResolver> { }
+export interface SpellContainerResolver extends ContainerResolver<SpellResolver | SpellContainerResolver> {}
 
 export interface SkillLevelResolver {
 	level: number
@@ -234,7 +234,7 @@ export interface EquipmentModifierResolver extends ItemResolver {
 }
 
 export interface EquipmentModifierContainerResolver
-	extends ContainerResolver<EquipmentModifierResolver | EquipmentModifierContainerResolver> { }
+	extends ContainerResolver<EquipmentModifierResolver | EquipmentModifierContainerResolver> {}
 
 export interface NoteResolver extends ItemResolver {
 	formattedText: string
