@@ -215,11 +215,10 @@ class CompendiumBrowser extends Application {
 		if (tab) {
 			const indexData = tab.getIndexData(0)
 			const tagSet: Set<string> = new Set()
-			tab.indexData.map(
-				e =>
-					e.tags?.forEach((t: string) => {
-						tagSet.add(t)
-					})
+			tab.indexData.map(e =>
+				e.tags?.forEach((t: string) => {
+					tagSet.add(t)
+				})
 			)
 			const tagList = Array.from(tagSet).sort()
 			let tags = tab.filterData.tagFilter[0]

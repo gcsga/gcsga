@@ -71,13 +71,14 @@ type OmitNotAssignableFromType<T extends object, U> = { [k in keyof T as U exten
  * Expand an object that contains keys in dotted notation
  * @internal
  */
-type Expanded<O> = O extends Record<string, unknown>
-	? {
-			[KO in keyof O as KO extends `${infer A}.${string}` ? A : KO]: KO extends `${string}.${infer B}`
-				? Expanded<{ [EB in B]: O[KO] }>
-				: Expanded<O[KO]>
-		}
-	: O
+type Expanded<O> =
+	O extends Record<string, unknown>
+		? {
+				[KO in keyof O as KO extends `${infer A}.${string}` ? A : KO]: KO extends `${string}.${infer B}`
+					? Expanded<{ [EB in B]: O[KO] }>
+					: Expanded<O[KO]>
+			}
+		: O
 
 /**
  * Union type of the types of the values in `T`
