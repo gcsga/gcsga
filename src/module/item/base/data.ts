@@ -17,7 +17,7 @@ export enum ItemFlags {
 	Deprecation = "deprecation",
 	Container = "container",
 	Other = "other", // used for equipment only
-	Unready = "unready"
+	Unready = "unready",
 	// Contents = "contentsData",
 }
 

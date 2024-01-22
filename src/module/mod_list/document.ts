@@ -48,7 +48,6 @@ class ModifierList extends Application {
 	}
 
 	activateListeners(html: JQuery<HTMLElement>): void {
-
 		super.activateListeners(html)
 		html.find(".active").on("click", event => this.removeModifier(event))
 		html.find(".modifier").on("click", event => this._onClickModifier(event))
@@ -82,7 +81,7 @@ class ModifierList extends Application {
 	}
 
 	addRangeMod() {
-		; (game.user as UserGURPS).addModifier(this._tempRangeMod)
+		;(game.user as UserGURPS).addModifier(this._tempRangeMod)
 	}
 
 	removeModifier(event: JQuery.ClickEvent) {

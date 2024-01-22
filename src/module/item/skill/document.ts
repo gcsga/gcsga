@@ -18,8 +18,9 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		const name: string = this.name ?? ""
 		const specialization = this.specialization
 		const TL = this.techLevel
-		return `${name}${this.system.tech_level_required ? `/TL${TL ?? ""}` : ""}${specialization ? ` (${specialization})` : ""
-			}`
+		return `${name}${this.system.tech_level_required ? `/TL${TL ?? ""}` : ""}${
+			specialization ? ` (${specialization})` : ""
+		}`
 	}
 
 	secondaryText(optionChecker: (option: display.Option) => boolean): string {
@@ -171,9 +172,11 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		bonus = actor.encumbranceLevel(true).penalty * this.encumbrancePenaltyMultiplier
 		level += bonus
 		if (bonus !== 0) {
-			tooltip.push(LocalizeGURPS.format(LocalizeGURPS.translations.gurps.item.encumbrance, {
-				amount: bonus.signedString()
-			}))
+			tooltip.push(
+				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.item.encumbrance, {
+					amount: bonus.signedString(),
+				})
+			)
 		}
 		return {
 			level: level,
@@ -205,13 +208,11 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		)
 	}
 
-
 	updateLevel(): boolean {
 		const saved = this.level
 		this.defaultedFrom = this.bestDefaultWithPoints()
 		this.level = this.calculateLevel()
-		if (saved)
-			return saved.level !== this.level.level
+		if (saved) return saved.level !== this.level.level
 		return true
 	}
 

@@ -2,40 +2,32 @@ import DocumentData, { AnyDocumentData } from "../foundry/common/abstract/data.m
 import Document from "../foundry/common/abstract/document.mjs"
 import EmbeddedCollection from "../foundry/common/abstract/embedded-collection.mjs"
 
-export type PropertiesDataType<T extends Document<any, any> | AnyDocumentData> = T extends DocumentData<
-	any,
-	infer U,
-	any,
-	any
->
-	? U
-	: T extends Document<infer U, any>
-		? PropertiesDataType<U>
-		: never
+export type PropertiesDataType<T extends Document<any, any> | AnyDocumentData> =
+	T extends DocumentData<any, infer U, any, any>
+		? U
+		: T extends Document<infer U, any>
+			? PropertiesDataType<U>
+			: never
 
-type PropertyTypeToSourceType<T> = T extends EmbeddedCollection<infer U, any>
-	? SourceDataType<InstanceType<U>>[]
-	: T extends Array<infer U>
-		? Array<PropertyTypeToSourceType<U>>
-		: T extends AnyDocumentData
-			? SourceDataType<T>
-			: T
+type PropertyTypeToSourceType<T> =
+	T extends EmbeddedCollection<infer U, any>
+		? SourceDataType<InstanceType<U>>[]
+		: T extends Array<infer U>
+			? Array<PropertyTypeToSourceType<U>>
+			: T extends AnyDocumentData
+				? SourceDataType<T>
+				: T
 
 export type PropertiesToSource<T extends object> = {
 	[Key in keyof T]: PropertyTypeToSourceType<T[Key]>
 }
 
-type SourceDataType<T extends Document<any, any> | AnyDocumentData> = T extends DocumentData<
-	any,
-	any,
-	infer U,
-	any,
-	any
->
-	? U
-	: T extends Document<infer U, any>
-		? SourceDataType<U>
-		: never
+type SourceDataType<T extends Document<any, any> | AnyDocumentData> =
+	T extends DocumentData<any, any, infer U, any, any>
+		? U
+		: T extends Document<infer U, any>
+			? SourceDataType<U>
+			: never
 
 /**
  * Returns the type of the constructor data for the given {@link DocumentData}.
@@ -124,13 +116,14 @@ export type ModuleRequiredOrOptional<Name extends string> = Name extends keyof R
 
 export type ConfiguredModuleData<Name extends string> = Name extends keyof ModuleConfig ? ModuleConfig[Name] : {}
 
-export type ConfiguredModule<Name extends string> = ModuleRequiredOrOptional<Name> extends never
-	? ConfiguredModuleData<Name>
-	:
-			| (ConfiguredModuleData<Name> & { active: true })
-			// Flawed, can't use `key in module` this way, but omitting the Partial Record type kills nullish
-			// collocating, which is probably the better DX.
-			| ({ active: false } & Record<keyof ConfiguredModuleData<Name>, undefined>)
+export type ConfiguredModule<Name extends string> =
+	ModuleRequiredOrOptional<Name> extends never
+		? ConfiguredModuleData<Name>
+		:
+				| (ConfiguredModuleData<Name> & { active: true })
+				// Flawed, can't use `key in module` this way, but omitting the Partial Record type kills nullish
+				// collocating, which is probably the better DX.
+				| ({ active: false } & Record<keyof ConfiguredModuleData<Name>, undefined>)
 
 export type ToObjectFalseType<T> = T extends {
 	toObject: (source: false) => infer U
@@ -156,8 +149,5 @@ export type LayerClass<T extends DocumentConstructor> = T["metadata"]["name"] ex
 		: never
 	: T
 
-export type DataSourceForPlaceable<P extends PlaceableObject> = P extends PlaceableObject<infer Doc>
-	? Doc extends Document<infer D, any>
-		? D["_source"]
-		: never
-	: never
+export type DataSourceForPlaceable<P extends PlaceableObject> =
+	P extends PlaceableObject<infer Doc> ? (Doc extends Document<infer D, any> ? D["_source"] : never) : never

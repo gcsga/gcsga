@@ -135,12 +135,12 @@ class HitLocation implements HitLocationData {
 	get subTable(): HitLocationTable | undefined {
 		return this.sub_table
 			? new HitLocationTable(
-				this.sub_table.name,
-				this.sub_table.roll,
-				this.sub_table.locations,
-				this.actor,
-				`${this.keyPrefix}.sub_table`
-			)
+					this.sub_table.name,
+					this.sub_table.roll,
+					this.sub_table.locations,
+					this.actor,
+					`${this.keyPrefix}.sub_table`
+				)
 			: undefined
 	}
 

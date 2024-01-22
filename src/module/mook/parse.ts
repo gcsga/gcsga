@@ -205,7 +205,8 @@ export class MookParser {
 		this._object.traits = []
 		let text = this.extractText(["Advantages:", "Advantages/Disadvantages:", "Traits:"], ["Skills:", "Spells:"])
 
-		if (text.includes(";")) text = text.replace(/\n/g, " ") // if ; separated, remove newlines
+		if (text.includes(";"))
+			text = text.replace(/\n/g, " ") // if ; separated, remove newlines
 		else if (text.split(",").length > 2) text = text.replace(/,/g, " ") // if , separated, replace with ;
 
 		text = text.replace(/advantages\/disadvantages:?/gi, ";")
@@ -681,7 +682,6 @@ export class MookParser {
 				t = t.replace(regex_block, "").trim()
 			}
 
-
 			t = t.trim()
 
 			let damage: WeaponDamageObj = {
@@ -695,8 +695,8 @@ export class MookParser {
 				modifier_per_die: 0,
 			}
 
-				// capture damage
-				;[damage, t] = this.parseDamage(t)
+			// capture damage
+			;[damage, t] = this.parseDamage(t)
 
 			// if damage parser captures anything after the name, add it as a note
 			if (t.match(/\{\{.*\}\}/)) {

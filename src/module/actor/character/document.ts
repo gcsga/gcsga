@@ -221,7 +221,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		// console.log(changed, options)
 		changed = mergeObject(changed, {
 			...this._updateAttributes(changed),
-			...this._checkImport(changed)
+			...this._checkImport(changed),
 		})
 		return super._preUpdate(changed, options, user)
 	}
@@ -247,15 +247,18 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	private _updateAttributes(data?: any): DeepPartial<CharacterDataGURPS> {
 		if (Object.keys(data).some(e => e.includes("ownership"))) return {}
 		const additionalData: DeepPartial<CharacterDataGURPS> = {}
-		if (this.system.attributes.length === 0)
-			setProperty(additionalData, "system.attributes", this.newAttributes())
+		if (this.system.attributes.length === 0) setProperty(additionalData, "system.attributes", this.newAttributes())
 		if (hasProperty(data, "system.setings.attributes")) {
 			const atts = getProperty(data, "system.settings.attributes")
 			setProperty(additionalData, "system.attributes", this.newAttributes(atts, this.system.attributes))
 		}
 		if (hasProperty(data, "system.setings.resource_trackers")) {
 			const atts = getProperty(data, "system.settings.resource_trackers")
-			setProperty(additionalData, "system.resource_trackers", this.newTrackers(atts, this.system.resource_trackers))
+			setProperty(
+				additionalData,
+				"system.resource_trackers",
+				this.newTrackers(atts, this.system.resource_trackers)
+			)
 		}
 		if (hasProperty(data, "system.setings.move_types")) {
 			const atts = getProperty(data, "system.settings.move_types")
@@ -469,10 +472,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 		return ST
 	}
 
-	move(
-		enc: Encumbrance,
-		initialMove = this.resolveAttributeCurrent(gid.BasicMove)
-	): number {
+	move(enc: Encumbrance, initialMove = this.resolveAttributeCurrent(gid.BasicMove)): number {
 		// let initialMove = Math.max(0, this.resolveAttributeCurrent(gid.BasicMove))
 		initialMove = Math.max(0, this.resolveAttributeCurrent(gid.BasicMove))
 		const move = Math.trunc((initialMove * (10 + 2 * enc.penalty)) / 10)
@@ -520,10 +520,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	}
 
 	// Dodge accounting for pool thresholds
-	eDodge(
-		enc: Encumbrance,
-		ops = this.countThresholdOpMet(ThresholdOp.HalveDodge)
-	): number {
+	eDodge(enc: Encumbrance, ops = this.countThresholdOpMet(ThresholdOp.HalveDodge)): number {
 		let dodge = 3 + (this.calc?.dodge_bonus ?? 0) + Math.max(this.resolveAttributeCurrent(gid.BasicSpeed), 0)
 		const divisor = 2 * Math.min(ops, 2)
 		if (divisor > 0) {
@@ -635,8 +632,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	weightCarried(forSkills: boolean): number {
 		let total = 0
 		this.carriedEquipment.reduce((n, e) => {
-			if (e.container === this)
-				return n + e.extendedWeight(forSkills, this.system.settings.default_weight_units)
+			if (e.container === this) return n + e.extendedWeight(forSkills, this.system.settings.default_weight_units)
 			return n
 		}, 0)
 		return fxp.Int.from(total, 4)
@@ -786,7 +782,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	// Flat list of all hit locations
 	get HitLocations(): HitLocation[] {
-		const recurseLocations = function(table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
+		const recurseLocations = function (table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
 			table.locations.forEach(e => {
 				locations.push(e)
 				if (e.subTable) locations = recurseLocations(e.subTable, locations)

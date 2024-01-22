@@ -16,12 +16,18 @@ export class EquipmentModifierSheet extends ItemSheetGURPS<EquipmentModifierGURP
 		if (Object.keys(formData).includes("system.disabled"))
 			formData["system.disabled"] = !formData["system.disabled"]
 		const costType: emcost.Type = formData["system.cost_type"]
-		const costValueType: emcost.Value = emcost.Type.determineModifierCostValueTypeFromString(costType, formData["system.cost"])
+		const costValueType: emcost.Value = emcost.Type.determineModifierCostValueTypeFromString(
+			costType,
+			formData["system.cost"]
+		)
 		const costValue = emcost.Value.extractValue(costValueType, formData["system.cost"])
 		formData["system.cost"] = emcost.Value.format(costValueType, costValue)
 
 		const weightType: emweight.Type = formData["system.weight_type"]
-		const weightValueType: emweight.Value = emweight.Type.determineModifierWeightValueTypeFromString(weightType, formData["system.weight"])
+		const weightValueType: emweight.Value = emweight.Type.determineModifierWeightValueTypeFromString(
+			weightType,
+			formData["system.weight"]
+		)
 		const fraction = emweight.Value.extractFraction(weightValueType, formData["system.weight"])
 		formData["system.weight"] = emweight.Value.format(weightValueType, fraction)
 

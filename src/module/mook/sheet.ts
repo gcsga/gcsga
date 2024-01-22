@@ -18,7 +18,7 @@ export class MookGeneratorSheet extends FormApplication {
 	constructor(options?: Partial<ApplicationOptions>) {
 		super(options)
 		this.object = new Mook()
-			; (game as any).mook = this.object
+		;(game as any).mook = this.object
 	}
 
 	static get defaultOptions(): FormApplicationOptions {
@@ -90,32 +90,36 @@ export class MookGeneratorSheet extends FormApplication {
 
 	private async _onImportText(event: JQuery.ClickEvent) {
 		event.preventDefault()
-		const dialog = new DialogGURPS({
-			title: "Import Stat Block",
-			content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/mook-generator/import.hbs`, { block: "" }),
-			buttons: {
-				import: {
-					icon: "<i class='fas fa-file-import'></i>",
-					label: "Import",
-					callback: (html: HTMLElement | JQuery<HTMLElement>) => {
-						if (html instanceof HTMLElement) html = $(html)
-						const textArray = html.find("textarea")[0]
-						const text = textArray.value
-						if (text.trim()) {
-							const data = MookParser.init(text, this.object).parseStatBlock(text)
-							this.object.update(data)
-						}
-						return this.render()
-					}
+		const dialog = new DialogGURPS(
+			{
+				title: "Import Stat Block",
+				content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/mook-generator/import.hbs`, {
+					block: "",
+				}),
+				buttons: {
+					import: {
+						icon: "<i class='fas fa-file-import'></i>",
+						label: "Import",
+						callback: (html: HTMLElement | JQuery<HTMLElement>) => {
+							if (html instanceof HTMLElement) html = $(html)
+							const textArray = html.find("textarea")[0]
+							const text = textArray.value
+							if (text.trim()) {
+								const data = MookParser.init(text, this.object).parseStatBlock(text)
+								this.object.update(data)
+							}
+							return this.render()
+						},
+					},
+					cancel: {
+						icon: "<i class='fas fa-times'></i>",
+						label: "Cancel",
+					},
 				},
-				cancel: {
-					icon: "<i class='fas fa-times'></i>",
-					label: "Cancel"
-				},
+				default: "import",
 			},
-			default: "import",
-		},
-			{ width: 800, height: 800 })
+			{ width: 800, height: 800 }
+		)
 		dialog.render(true)
 	}
 

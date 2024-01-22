@@ -40,15 +40,14 @@ export class SkillPointBonus extends BonusOwner {
 	addToTooltip(tooltip: TooltipGURPS | null): void {
 		if (tooltip !== null) {
 			let lang = LocalizeGURPS.translations.gurps.feature.points_multiple
-			if (this.adjustedAmount === 1)
-				lang = LocalizeGURPS.translations.gurps.feature.points_one
+			if (this.adjustedAmount === 1) lang = LocalizeGURPS.translations.gurps.feature.points_one
 			if (tooltip.length !== 0) tooltip.push("<br>")
-			tooltip.push(LocalizeGURPS.format(
-				lang, {
-				source: this.parentName,
-				amount: this.leveledAmount.format(false)
-			}
-			))
+			tooltip.push(
+				LocalizeGURPS.format(lang, {
+					source: this.parentName,
+					amount: this.leveledAmount.format(false),
+				})
+			)
 		}
 	}
 

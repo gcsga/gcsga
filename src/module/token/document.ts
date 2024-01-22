@@ -13,7 +13,11 @@ export class TokenDocumentGURPS extends TokenDocument {
 		return super.actor as BaseActorGURPS | null
 	}
 
-	protected _onCreate(data: PropertiesToSource<TokenDataProperties>, options: DocumentModificationOptions, userId: string): void {
+	protected _onCreate(
+		data: PropertiesToSource<TokenDataProperties>,
+		options: DocumentModificationOptions,
+		userId: string
+	): void {
 		super._onCreate(data, options, userId)
 		this.actor?.prepareData()
 	}
