@@ -45,9 +45,10 @@ export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
 
 		let deprecation: string = this.actor.getFlag(SYSTEM_NAME, ActorFlags.Deprecation) ? "acknowledged" : "manual"
 		// Don't show deprecation warning if character is not imported
+		const importpath = this.actor.system.additionalresources.importpath
 		if (deprecation === "manual") {
-			if (this.actor.system.additionalresources.importpath.includes(".gcs")) deprecation = "easy"
-			if (this.actor.system.additionalresources.importpath.includes(".gca5")) deprecation = "easy"
+			if (importpath.includes(".gcs")) deprecation = "easy"
+			if (importpath.includes(".gca5")) deprecation = "easy"
 		}
 
 		const sheetData = {
@@ -83,7 +84,7 @@ export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
 		html.find(".rollable").on("mouseout", event => this._onRollableHover(event, false))
 		html.find(".rollable").on("click", event => this._onClickRoll(event))
 		html.find(".rollable").on("contextmenu", event => this._onClickRoll(event))
-		html.find(".equipped").on("click", event => this._onClickEquip(event))
+		// html.find(".equipped").on("click", event => this._onClickEquip(event))
 		html.find(".deprecation a").on("click", event => {
 			event.preventDefault()
 			this.actor.setFlag(SYSTEM_NAME, ActorFlags.Deprecation, true)
@@ -219,20 +220,20 @@ export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
 		this.actor.toggleExpand(path)
 	}
 
-	async _onClickEquip(event: JQuery.ClickEvent) {
-		event.preventDefault()
-		const key = $(event.currentTarget).data("key")
-		let eqt = duplicate(Static.decode(this.actor, key))
-		eqt.equipped = !eqt.equipped
-		await this.actor.update({ [key]: eqt })
-		await this.actor.updateItemAdditionsBasedOn(eqt, key)
-		let p = this.actor.getEquippedParry()
-		let b = this.actor.getEquippedBlock()
-		await this.actor.update({
-			"system.equippedparry": p,
-			"system.equippedblock": b,
-		})
-	}
+	// async _onClickEquip(event: JQuery.ClickEvent) {
+	// 	event.preventDefault()
+	// 	const key = $(event.currentTarget).data("key")
+	// 	let eqt = duplicate(Static.decode(this.actor, key))
+	// 	eqt.equipped = !eqt.equipped
+	// 	await this.actor.update({ [key]: eqt })
+	// 	await this.actor.updateItemAdditionsBasedOn(eqt, key)
+	// 	let p = this.actor.getEquippedParry()
+	// 	let b = this.actor.getEquippedBlock()
+	// 	await this.actor.update({
+	// 		"system.equippedparry": p,
+	// 		"system.equippedblock": b,
+	// 	})
+	// }
 
 	protected async _onClickRoll(event: JQuery.ClickEvent | JQuery.ContextMenuEvent) {
 		event.preventDefault()
@@ -340,13 +341,13 @@ export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
 		}
 		const buttons: Application.HeaderButton[] = this.actor.canUserModify(game.user!, "update")
 			? [
-					{
-						label: "",
-						class: "gmenu",
-						icon: "gcs-all-seeing-eye",
-						onclick: event => this._onGMenu(event),
-					},
-				]
+				{
+					label: "",
+					class: "gmenu",
+					icon: "gcs-all-seeing-eye",
+					onclick: event => this._onGMenu(event),
+				},
+			]
 			: []
 		const show_import = game.settings.get(SYSTEM_NAME, SETTINGS.SHOW_IMPORT_BUTTON) ?? false
 		const import_path = this.actor.system.additionalresources.importpath

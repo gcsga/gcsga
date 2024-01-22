@@ -4,11 +4,7 @@
 - Finish "static" character (0.15 and older) compatibility
  - don't bother with editing features
 - mook generator
- - keep simple textbox parsing as for previous version
  - implement name matching from imported libraries
- - warning tag on simplified mook items as not having full functionality
-  - option to suppress
- - weapon damage parsing
 
 ## Jeff and Chris
 
@@ -32,7 +28,6 @@
 - style cleanup
 - test coverage
  - dice generation
-- manual thrust and swing (?)
 - Globally visible modifier for rough terrain, darkness, etc.
 
 ## 1.1.0 and beyond
