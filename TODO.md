@@ -29,12 +29,9 @@
   - modifier bucket journals (waiting for OTFs)
 - Add makeshift static to dynamic character conversion
 - Delete compendium pack entries in settings when compendium pack is removed
-- Move type editor (in triangle settings)
 - style cleanup
 - test coverage
- - attribute resolution (?)
  - dice generation
- - mook generator
 - manual thrust and swing (?)
 - Globally visible modifier for rough terrain, darkness, etc.
 

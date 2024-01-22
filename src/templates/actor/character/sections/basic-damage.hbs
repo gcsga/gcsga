@@ -1,5 +1,19 @@
 <div id="basic-damage">
-	<div class="header">{{localize "gurps.character.basic_damage"}}</div>
+	<div class="header">{{localize "gurps.character.basic_damage"}}
+		{{#if autoDamage}}
+		<a
+			class="damage-toggle fas fa-toggle-on"
+			data-tooltip="{{localize 'gurps.tooltip.auto_damage'}}"
+			data-tooltip-direction="DOWN"
+		></a>
+		{{else}}
+		<a
+			class="damage-toggle fas fa-toggle-off"
+			data-tooltip="{{localize 'gurps.tooltip.auto_damage'}}"
+			data-tooltip-direction="DOWN"
+		></a>
+		{{/if}}
+	</div>
 	<div class="fieldblock3" style="grid-template-columns: 0 0fr 1fr;">
 		<div class="points" readonly stlye=""></div>
 		<div
@@ -7,7 +21,7 @@
 			data-type="damage"
 			data-item-id="thrust"
 		>
-			<input type="text" value="{{actor.thrust.string}}" disabled
+			<input type="text" name="thrust" value="{{actor.thrust.string}}" {{disabled (not (and autoDamage ../editing))}}
 			stlye="min-width: {{length actor.thrust.string}}ch;"
 		/>
 		</div>
@@ -18,7 +32,7 @@
 			data-type="damage"
 			data-item-id="swing"
 		>
-			<input type="text" value="{{actor.swing.string}}" disabled
+			<input type="text" name="swing" value="{{actor.swing.string}}" {{disabled (not (and autoDamage ../editing))}}
 			stlye="min-width: {{length actor.swing.string}}ch;"
 		/>
 		</div>
