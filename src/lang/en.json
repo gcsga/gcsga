@@ -872,6 +872,7 @@
 			"damage": "{total} {type} damage",
 			"parry": "{name} - Parry",
 			"block": "{name} - Block",
+			"location": "Random Hit Location: {name}",
 			"success": {
 				"success": "Success!",
 				"failure": "Failure!",
