@@ -224,7 +224,7 @@ class ApplyDamageDialog extends Application {
 		const message = await renderTemplate(`systems/${SYSTEM_NAME}/templates/message/random-location-roll.hbs`, {
 			actor: this.target,
 			location: location,
-			tooltip: await result.roll.getTooltip()
+			tooltip: await result.roll.getTooltip(),
 		})
 
 		let messageData = {

@@ -24,36 +24,21 @@ describe("Mook generator", () => {
 			_parser.parseStatBlock(_parser.text)
 
 			_mook.getAttributes()
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.Strength)?.adj).toBe(1)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.Dexterity)?.adj).toBe(1)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.Intelligence)?.adj).toBe(-1)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.Health)?.adj).toBe(1)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.Will)?.adj).toBe(1)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.FrightCheck)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.Perception)?.adj).toBe(1)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.Vision)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.Hearing)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.TasteSmell)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.Touch)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.BasicSpeed)?.adj).toBe(0.5)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.BasicMove)?.adj).toBe(-2)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.FatiguePoints)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.HitPoints)?.adj).toBe(1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Strength)?.adj).toBe(1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Dexterity)?.adj).toBe(1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Intelligence)?.adj).toBe(-1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Health)?.adj).toBe(1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Will)?.adj).toBe(1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.FrightCheck)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Perception)?.adj).toBe(1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Vision)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Hearing)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.TasteSmell)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Touch)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.BasicSpeed)?.adj).toBe(0.5)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.BasicMove)?.adj).toBe(-2)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.FatiguePoints)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.HitPoints)?.adj).toBe(1)
 		})
 
 		it("Attributes separated by ; and newlines", () => {
@@ -61,36 +46,21 @@ describe("Mook generator", () => {
 			_parser.parseStatBlock(_parser.text)
 
 			_mook.getAttributes()
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.Strength)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.Dexterity)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.Intelligence)?.adj).toBe(-1)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.Health)?.adj).toBe(1)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.Will)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.FrightCheck)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.Perception)?.adj).toBe(1)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.Vision)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.Hearing)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.TasteSmell)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.Touch)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.BasicSpeed)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.BasicMove)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.FatiguePoints)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.HitPoints)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Strength)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Dexterity)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Intelligence)?.adj).toBe(-1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Health)?.adj).toBe(1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Will)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.FrightCheck)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Perception)?.adj).toBe(1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Vision)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Hearing)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.TasteSmell)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Touch)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.BasicSpeed)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.BasicMove)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.FatiguePoints)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.HitPoints)?.adj).toBe(0)
 		})
 
 		it("Attributes separated by , and newlines, points added", () => {
@@ -98,36 +68,21 @@ describe("Mook generator", () => {
 			_parser.parseStatBlock(_parser.text)
 
 			_mook.getAttributes()
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.Strength)?.adj).toBe(3)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.Dexterity)?.adj).toBe(4)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.Intelligence)?.adj).toBe(3)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.Health)?.adj).toBe(2)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.Will)?.adj).toBe(-1)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.FrightCheck)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.Perception)?.adj).toBe(1)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.Vision)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.Hearing)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.TasteSmell)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.Touch)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.BasicSpeed)?.adj).toBe(0.25)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.BasicMove)?.adj).toBe(1)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.FatiguePoints)?.adj).toBe(1)
-			expect(_mook.system.attributes.find(e =>
-				e.attr_id === gid.HitPoints)?.adj).toBe(-1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Strength)?.adj).toBe(3)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Dexterity)?.adj).toBe(4)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Intelligence)?.adj).toBe(3)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Health)?.adj).toBe(2)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Will)?.adj).toBe(-1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.FrightCheck)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Perception)?.adj).toBe(1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Vision)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Hearing)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.TasteSmell)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.Touch)?.adj).toBe(0)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.BasicSpeed)?.adj).toBe(0.25)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.BasicMove)?.adj).toBe(1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.FatiguePoints)?.adj).toBe(1)
+			expect(_mook.system.attributes.find(e => e.attr_id === gid.HitPoints)?.adj).toBe(-1)
 		})
 	})
 
@@ -136,34 +91,17 @@ describe("Mook generator", () => {
 			_parser.text = EXAMPLE_STATBLOCKS[0]
 			_parser.parseStatBlock(_parser.text)
 
-			expect(_mook.traits.some(t =>
-				t.name === "Appearance (Ugly)" &&
-				t.points === 0)).toBe(true)
-			expect(_mook.traits.some(t =>
-				t.name === "Cowardice" &&
-				t.cr === 12 &&
-				t.points === 0)).toBe(true)
-			expect(_mook.traits.some(t =>
-				t.name === "Infravision" &&
-				t.points === 0)).toBe(true)
-			expect(_mook.traits.some(t =>
-				t.name === "Rapid Healing" &&
-				t.points === 0)).toBe(true)
-			expect(_mook.traits.some(t =>
-				t.name === "Resistant to Disease" &&
-				t.levels === 5 &&
-				t.points === 0)).toBe(
-					true
-				)
-			expect(_mook.traits.some(t =>
-				t.name === "Resistant to Poison" &&
-				t.levels === 5 &&
-				t.points === 0)).toBe(
-					true
-				)
-			expect(_mook.traits.some(t =>
-				t.name === "Social Stigma (Savage)" &&
-				t.points === 0)).toBe(true)
+			expect(_mook.traits.some(t => t.name === "Appearance (Ugly)" && t.points === 0)).toBe(true)
+			expect(_mook.traits.some(t => t.name === "Cowardice" && t.cr === 12 && t.points === 0)).toBe(true)
+			expect(_mook.traits.some(t => t.name === "Infravision" && t.points === 0)).toBe(true)
+			expect(_mook.traits.some(t => t.name === "Rapid Healing" && t.points === 0)).toBe(true)
+			expect(_mook.traits.some(t => t.name === "Resistant to Disease" && t.levels === 5 && t.points === 0)).toBe(
+				true
+			)
+			expect(_mook.traits.some(t => t.name === "Resistant to Poison" && t.levels === 5 && t.points === 0)).toBe(
+				true
+			)
+			expect(_mook.traits.some(t => t.name === "Social Stigma (Savage)" && t.points === 0)).toBe(true)
 		})
 
 		it("Traits with modifiers, points, levels, CR", () => {
@@ -180,43 +118,22 @@ describe("Mook generator", () => {
 						t.points === 3
 				)
 			).toBe(true)
-			expect(_mook.traits.some(t =>
-				t.name === "Wealth (Wealthy)" &&
-				t.points === 20)).toBe(true)
-			expect(_mook.traits.some(t =>
-				t.name === "Miserly" &&
-				t.cr === 12 &&
-				t.points === -10)).toBe(true)
-			expect(_mook.traits.some(t =>
-				t.name === "Sense of Duty (Halmaro and Guild)" &&
-				t.points === -10)).toBe(
-					true
-				)
-			expect(_mook.traits.some(t =>
-				t.name === "Stubborn" &&
-				t.points === -5)).toBe(true)
-			expect(_mook.traits.some(t =>
-				t.name === "Dotes on Halmaros daughters" &&
-				t.points === 0)).toBe(true)
-			expect(_mook.traits.some(t =>
-				t.name === "Dislikes clerics" &&
-				t.points === 0)).toBe(true)
+			expect(_mook.traits.some(t => t.name === "Wealth (Wealthy)" && t.points === 20)).toBe(true)
+			expect(_mook.traits.some(t => t.name === "Miserly" && t.cr === 12 && t.points === -10)).toBe(true)
+			expect(_mook.traits.some(t => t.name === "Sense of Duty (Halmaro and Guild)" && t.points === -10)).toBe(
+				true
+			)
+			expect(_mook.traits.some(t => t.name === "Stubborn" && t.points === -5)).toBe(true)
+			expect(_mook.traits.some(t => t.name === "Dotes on Halmaros daughters" && t.points === 0)).toBe(true)
+			expect(_mook.traits.some(t => t.name === "Dislikes clerics" && t.points === 0)).toBe(true)
 			expect(
 				_mook.traits.some(
-					t =>
-						t.name === "will always wear the minimum for comfort and propriety" &&
-						t.points === 0
+					t => t.name === "will always wear the minimum for comfort and propriety" && t.points === 0
 				)
 			).toBe(true)
-			expect(_mook.traits.some(t =>
-				t.name === "Enjoys embarrassing his inferiors" &&
-				t.points === 0)).toBe(true)
-			expect(_mook.traits.some(t =>
-				t.name === "Likes open spaces" &&
-				t.points === 0)).toBe(true)
-			expect(_mook.traits.some(t =>
-				t.name === "Very cold to strangers" &&
-				t.points === -5)).toBe(true)
+			expect(_mook.traits.some(t => t.name === "Enjoys embarrassing his inferiors" && t.points === 0)).toBe(true)
+			expect(_mook.traits.some(t => t.name === "Likes open spaces" && t.points === 0)).toBe(true)
+			expect(_mook.traits.some(t => t.name === "Very cold to strangers" && t.points === -5)).toBe(true)
 		})
 	})
 
@@ -226,12 +143,14 @@ describe("Mook generator", () => {
 			_parser.parseStatBlock(_parser.text)
 
 			expect(
-				_mook.skills.some(s =>
-					s.name === "Bow" &&
-					s.level === 13 &&
-					s.attribute.toLowerCase() === gid.Dexterity &&
-					s.difficulty.toLowerCase() === difficulty.Level.Average &&
-					s.points === 0)
+				_mook.skills.some(
+					s =>
+						s.name === "Bow" &&
+						s.level === 13 &&
+						s.attribute.toLowerCase() === gid.Dexterity &&
+						s.difficulty.toLowerCase() === difficulty.Level.Average &&
+						s.points === 0
+				)
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -667,28 +586,34 @@ describe("Mook generator", () => {
 				)
 			).toBe(true)
 			expect(
-				_mook.spells.some(s =>
-					s.name === "Fear" &&
-					s.level === 15 &&
-					s.attribute.toLowerCase() === gid.Intelligence &&
-					s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-					s.points === 0)
+				_mook.spells.some(
+					s =>
+						s.name === "Fear" &&
+						s.level === 15 &&
+						s.attribute.toLowerCase() === gid.Intelligence &&
+						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
+						s.points === 0
+				)
 			).toBe(true)
 			expect(
-				_mook.spells.some(s =>
-					s.name === "Itch" &&
-					s.level === 15 &&
-					s.attribute.toLowerCase() === gid.Intelligence &&
-					s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-					s.points === 0)
+				_mook.spells.some(
+					s =>
+						s.name === "Itch" &&
+						s.level === 15 &&
+						s.attribute.toLowerCase() === gid.Intelligence &&
+						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
+						s.points === 0
+				)
 			).toBe(true)
 			expect(
-				_mook.spells.some(s =>
-					s.name === "Pain" &&
-					s.level === 15 &&
-					s.attribute.toLowerCase() === gid.Intelligence &&
-					s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-					s.points === 0)
+				_mook.spells.some(
+					s =>
+						s.name === "Pain" &&
+						s.level === 15 &&
+						s.attribute.toLowerCase() === gid.Intelligence &&
+						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
+						s.points === 0
+				)
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -791,12 +716,14 @@ describe("Mook generator", () => {
 				)
 			).toBe(true)
 			expect(
-				_mook.spells.some(s =>
-					s.name === "Blur" &&
-					s.level === 15 &&
-					s.attribute.toLowerCase() === gid.Intelligence &&
-					s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-					s.points === 0)
+				_mook.spells.some(
+					s =>
+						s.name === "Blur" &&
+						s.level === 15 &&
+						s.attribute.toLowerCase() === gid.Intelligence &&
+						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
+						s.points === 0
+				)
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -829,12 +756,14 @@ describe("Mook generator", () => {
 				)
 			).toBe(true)
 			expect(
-				_mook.spells.some(s =>
-					s.name === "Hide" &&
-					s.level === 15 &&
-					s.attribute.toLowerCase() === gid.Intelligence &&
-					s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-					s.points === 0)
+				_mook.spells.some(
+					s =>
+						s.name === "Hide" &&
+						s.level === 15 &&
+						s.attribute.toLowerCase() === gid.Intelligence &&
+						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
+						s.points === 0
+				)
 			).toBe(true)
 			expect(
 				_mook.spells.some(

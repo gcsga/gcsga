@@ -786,7 +786,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	// Flat list of all hit locations
 	get HitLocations(): HitLocation[] {
-		const recurseLocations = function(table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
+		const recurseLocations = function (table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
 			table.locations.forEach(e => {
 				locations.push(e)
 				if (e.subTable) locations = recurseLocations(e.subTable, locations)

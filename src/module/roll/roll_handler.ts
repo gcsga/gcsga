@@ -635,11 +635,10 @@ class LocationRollTypeHandler extends RollTypeHandler {
 		// Get localized version of the location id, if necessary.
 		const location = result.location?.choice_name ?? "Torso"
 
-
 		const message = await renderTemplate(`systems/${SYSTEM_NAME}/templates/message/random-location-roll.hbs`, {
 			actor: { name: actor.name, actor: { id: actor.id } },
 			location: location,
-			tooltip: await result.roll.getTooltip()
+			tooltip: await result.roll.getTooltip(),
 		})
 
 		const messageData: any = {
