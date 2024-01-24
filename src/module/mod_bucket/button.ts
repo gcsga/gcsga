@@ -41,6 +41,8 @@ export class ModifierBucket extends Application {
 
 		html.find("#dice-roller").on("click", event => this._onDiceClick(event))
 		html.find("#dice-roller").on("contextmenu", event => this._onDiceContextMenu(event))
+
+		html.find("#current-actor").on("click", event => this._OnCurrentActorClick(event))
 	}
 
 	async getData(options?: Partial<ApplicationOptions> | undefined): Promise<object> {
@@ -113,6 +115,11 @@ export class ModifierBucket extends Application {
 			formula: "1d6",
 			hidden: event.ctrlKey,
 		})
+	}
+
+	async _OnCurrentActorClick(event: JQuery.ClickEvent): Promise<unknown> {
+		event.preventDefault()
+		return LastActor.get().then(actor => actor?.sheet?.render(true))
 	}
 
 	_onTrashClick(event: JQuery.ClickEvent): unknown {

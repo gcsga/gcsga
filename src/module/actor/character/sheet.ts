@@ -1137,7 +1137,6 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		this.actor.noPrepare = false
 		this.actor.prepareData()
 		const data = super.getData(options)
-		// const actorData = this.actor.toObject(false) as any
 		const [primary_attributes, secondary_attributes, point_pools] = this._prepareAttributes(this.actor.attributes)
 		const resource_trackers = Array.from(this.actor.resource_trackers.values())
 		const move_types = Array.from(this.actor.move_types.values())
@@ -1153,8 +1152,6 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		const sheetData = {
 			...data,
 			...{
-				// system: actorData.system,
-				// settings: (actorData.system as any).settings,
 				settings: sheetSettingsFor(this.actor),
 				editing: this.actor.editing,
 				primary_attributes,
