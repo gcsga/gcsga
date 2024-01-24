@@ -65,10 +65,6 @@ export class BaseActorGURPS<SourceType extends BaseActorSourceGURPS = BaseActorS
 		}
 	}
 
-	// get type(): SourceType["type"] | string {
-	// 	return super.type as SourceType["type"]
-	// }
-
 	get traits(): Collection<TraitGURPS | TraitContainerGURPS> {
 		return new Collection()
 	}
@@ -162,8 +158,8 @@ export class BaseActorGURPS<SourceType extends BaseActorSourceGURPS = BaseActorS
 		const effects = this.gEffects.map(e => {
 			const overlay = e instanceof ConditionGURPS && e.cid === ConditionID.Dead
 			const a = new ActiveEffect({ name: e.name, icon: e.img || "" } as any)
-			// a.setFlag("core", "overlay", overlay)
-			;(a as any).flags = { core: { overlay: overlay } }
+				// a.setFlag("core", "overlay", overlay)
+				; (a as any).flags = { core: { overlay: overlay } }
 			return a
 		})
 		return super.temporaryEffects.concat(effects)
@@ -295,24 +291,10 @@ export class BaseActorGURPS<SourceType extends BaseActorSourceGURPS = BaseActorS
 
 	hasCondition(id: ConditionID | ConditionID[]): boolean {
 		if (!Array.isArray(id)) id = [id]
-		// if (id.includes(ConditionID.Dead)) return this.effects.some(e => e.getFlag("core", "statusId") === "dead")
 		return this.conditions.some(e => id.includes(e.cid as any))
 	}
 
-	// toggleDefeated() {
-	// 	const token = this.token?.object as TokenGURPS
-	// 	const isDefeated = !this.hasCondition(ConditionID.Dead)
-	// 	const effect = CONFIG.specialStatusEffects.DEFEATED
-	// 	// if (token) token.toggleEffect(effect, { overlay: true, active: isDefeated })
-	// 	if (token) {
-	// 		token.document.overlayEffect = isDefeated ? effect : undefined
-	// 		// const combatant = token.combatant
-	// 		// if (combatant) combatant.update(defea)
-	// 	}
-	// }
-
 	async addConditions(ids: ConditionID[]): Promise<ConditionGURPS[] | null> {
-		console.log("addConditions", game.user, ids)
 		ids = ids.filter(id => !this.hasCondition(id))
 		return this.createEmbeddedDocuments(
 			"Item",
@@ -322,10 +304,6 @@ export class BaseActorGURPS<SourceType extends BaseActorSourceGURPS = BaseActorS
 
 	async removeConditions(ids: ConditionID[]): Promise<Document<any, this, Metadata<any>>[] | null> {
 		const items: string[] = this.conditions.filter(e => ids.includes(e.cid as any)).map(e => e._id)
-		// if (ids.includes(ConditionID.Dead)) {
-		// 	ids = ids.filter(e => e !== ConditionID.Dead)
-		// 	await this.toggleDefeated()
-		// }
 		return this.deleteEmbeddedDocuments("Item", items)
 	}
 
