@@ -128,7 +128,7 @@ async function _onRollClick(event: JQuery.ClickEvent) {
 	event.stopPropagation()
 	const type: RollType = $(event.currentTarget).data("type")
 	const data: Record<string, any> = { type: type, hidden: event.ctrlKey }
-	const actor: ActorGURPS | null = await LastActor.get()
+	let actor: ActorGURPS | null = await LastActor.get()
 	if (actor instanceof LootGURPS) return
 
 	if (type === RollType.Attribute) {
@@ -181,6 +181,9 @@ async function _onRollClick(event: JQuery.ClickEvent) {
 	if (type === RollType.Modifier) {
 		data.modifier = $(event.currentTarget).data("modifier")
 		data.comment = $(event.currentTarget).data("comment")
+	}
+	if (type === RollType.Location) {
+		actor = game.actors?.get($(event.currentTarget).data("actorId")) as ActorGURPS
 	}
 	if (type === RollType.Generic) data.formula = $(event.currentTarget).data("formula")
 

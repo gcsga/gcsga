@@ -11,16 +11,15 @@ export class LastActor {
 	}
 
 	static async get(): Promise<ActorGURPS | null> {
-		const uuid: string = String(game.user?.getFlag(SYSTEM_NAME, UserFlags.LastActor)) || ""
-		let actor: any = await fromUuid(uuid)
-		if (actor instanceof TokenDocument) actor = actor.actor
+		const uuid: string = game.user?.flags[SYSTEM_NAME][UserFlags.LastActor] || ""
+		let actor = (await fromUuid(uuid)) as ActorGURPS | TokenDocument
+		if (actor instanceof TokenDocument) actor = actor.actor as ActorGURPS
 		if (actor) return actor
-		// Ui.notifications?.error(LocalizeGURPS.translations.gurps.error.no_last_actor);
 		return null
 	}
 
 	static async getToken(): Promise<TokenDocument | null> {
-		const uuid: string = String(game.user?.getFlag(SYSTEM_NAME, UserFlags.LastToken)) || ""
+		const uuid: string = game.user?.flags[SYSTEM_NAME][UserFlags.LastToken] || ""
 		const token: any = await fromUuid(uuid)
 		if (token) return token
 		return null

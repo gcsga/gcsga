@@ -49,7 +49,6 @@ export class MookParser {
 
 	object: Mook
 
-
 	constructor(text: string, object: Mook) {
 		this.text = text
 		this.object = object
@@ -64,7 +63,7 @@ export class MookParser {
 	parseStatBlock(text: string): any {
 		this.text = this.sanitizeStatBlock(text)
 		this.object.profile.name = this.parseName(this.text)
-			;[this.object.melee, this.object.ranged] = this.parseAttacks(this.text)
+		;[this.object.melee, this.object.ranged] = this.parseAttacks(this.text)
 		this.parseAttributes()
 		this.object.traits = this.parseTraits()
 		this.object.skills = this.parseSkills()
@@ -202,7 +201,8 @@ export class MookParser {
 			text = input
 		} else {
 			text = this.extractText(["Advantages:", "Advantages/Disadvantages:", "Traits:"], ["Skills:", "Spells:"])
-			if (text.includes(";")) text = text.replace(/\n/g, " ") // if ; separated, remove newlines
+			if (text.includes(";"))
+				text = text.replace(/\n/g, " ") // if ; separated, remove newlines
 			else if (text.split(",").length > 2) text = text.replace(/,/g, " ") // if , separated, replace with ;
 			text = text.replace(/advantages\/disadvantages:?/gi, ";")
 			text = text.replace(/disadvantages:?/gi, ";")
@@ -357,7 +357,6 @@ export class MookParser {
 				specialization = t.match(regex_specialization)![1]
 				t = t.replace(new RegExp(`\\s*\\(${specialization}\\)`), "").trim()
 			}
-
 
 			// Capture TL
 			let tl = ""

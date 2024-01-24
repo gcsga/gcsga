@@ -46,6 +46,8 @@ declare global {
 			context?: ConstructorParameters<ConstructorOf<foundry.documents.BaseUser>>[1]
 		)
 
+		flags: Record<string, any>
+
 		/**
 		 * Track whether the user is currently active in the game
 		 * @defaultValue `false`

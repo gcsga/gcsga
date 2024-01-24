@@ -630,8 +630,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	}
 
 	weightCarried(forSkills: boolean): number {
-		let total = 0
-		this.carriedEquipment.reduce((n, e) => {
+		const total = this.carriedEquipment.reduce((n, e) => {
 			if (e.container === this) return n + e.extendedWeight(forSkills, this.system.settings.default_weight_units)
 			return n
 		}, 0)

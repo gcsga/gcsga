@@ -221,6 +221,7 @@ export enum RollType {
 	Damage = "damage",
 	Modifier = "modifier",
 	ControlRoll = "control_roll",
+	Location = "location",
 	Generic = "generic",
 }
 

@@ -8,69 +8,69 @@ import { MoveTypeObj } from "@module/move_type"
 import { DiceGURPS } from "@module/dice"
 
 export interface DocumentModificationOptionsGURPS extends DocumentModificationOptions {
-  temporary: boolean
-  substitutions: boolean
+	temporary: boolean
+	substitutions: boolean
 }
 
 export interface CharacterSource extends BaseActorSourceGURPS<ActorType.Character, CharacterSystemData> {
-  flags: DeepPartial<CharacterFlags>
+	flags: DeepPartial<CharacterFlags>
 }
 export interface CharacterDataGURPS
-  extends Omit<CharacterSource, "effects" | "flags" | "items" | "token">,
-  CharacterSystemData {
-  readonly type: CharacterSource["type"]
-  data: CharacterSystemData
-  flags: CharacterFlags
+	extends Omit<CharacterSource, "effects" | "flags" | "items" | "token">,
+	CharacterSystemData {
+	readonly type: CharacterSource["type"]
+	data: CharacterSystemData
+	flags: CharacterFlags
 
-  readonly _source: CharacterSource
+	readonly _source: CharacterSource
 }
 
 export interface CharacterFlags extends ActorFlagsGURPS {
-  [SYSTEM_NAME]: {
-    [ActorFlags.TargetModifiers]: RollModifier[]
-    [ActorFlags.SelfModifiers]: RollModifier[]
-    [ActorFlags.MoveType]: string
-    [ActorFlags.AutoEncumbrance]: { active: boolean; manual: number }
-    [ActorFlags.AutoThreshold]: { active: boolean; manual: Record<string, PoolThreshold | null> }
-    [ActorFlags.AutoDamage]: { active: boolean; thrust: DiceGURPS; swing: DiceGURPS }
-  }
+	[SYSTEM_NAME]: {
+		[ActorFlags.TargetModifiers]: RollModifier[]
+		[ActorFlags.SelfModifiers]: RollModifier[]
+		[ActorFlags.MoveType]: string
+		[ActorFlags.AutoEncumbrance]: { active: boolean; manual: number }
+		[ActorFlags.AutoThreshold]: { active: boolean; manual: Record<string, PoolThreshold | null> }
+		[ActorFlags.AutoDamage]: { active: boolean; thrust: DiceGURPS; swing: DiceGURPS }
+	}
 }
 
 export const CharacterFlagDefaults: CharacterFlags = {
-  [SYSTEM_NAME]: {
-    [ActorFlags.TargetModifiers]: [],
-    [ActorFlags.SelfModifiers]: [],
-    [ActorFlags.MoveType]: gid.Ground,
-    [ActorFlags.AutoEncumbrance]: { active: true, manual: 0 },
-    [ActorFlags.AutoThreshold]: { active: true, manual: {} },
-    [ActorFlags.AutoDamage]: { active: true, thrust: new DiceGURPS(), swing: new DiceGURPS() }
-  },
+	[SYSTEM_NAME]: {
+		[ActorFlags.TargetModifiers]: [],
+		[ActorFlags.SelfModifiers]: [],
+		[ActorFlags.MoveType]: gid.Ground,
+		[ActorFlags.AutoEncumbrance]: { active: true, manual: 0 },
+		[ActorFlags.AutoThreshold]: { active: true, manual: {} },
+		[ActorFlags.AutoDamage]: { active: true, thrust: new DiceGURPS(), swing: new DiceGURPS() },
+	},
 }
 
 export interface CharacterSystemData extends ActorSystemData {
-  version: number
-  move: CharacterMove
-  import: { name: string; path: string; last_import: string }
-  settings: SheetSettings
-  created_date: string
-  modified_date: string
-  profile: CharacterProfile
-  attributes: AttributeObj[]
-  resource_trackers: ResourceTrackerObj[]
-  move_types: MoveTypeObj[]
-  total_points: number
-  points_record: PointsRecord[]
-  calc: CharacterCalc
-  editing: boolean
-  // TODO: check if this fits
-  pools: Record<string, any>
-  third_party?: any
+	version: number
+	move: CharacterMove
+	import: { name: string; path: string; last_import: string }
+	settings: SheetSettings
+	created_date: string
+	modified_date: string
+	profile: CharacterProfile
+	attributes: AttributeObj[]
+	resource_trackers: ResourceTrackerObj[]
+	move_types: MoveTypeObj[]
+	total_points: number
+	points_record: PointsRecord[]
+	calc: CharacterCalc
+	editing: boolean
+	// TODO: check if this fits
+	pools: Record<string, any>
+	third_party?: any
 }
 
 export interface CharacterMove {
-  maneuver: string
-  posture: string
-  type: string
+	maneuver: string
+	posture: string
+	type: string
 }
 
 // export interface CharacterSettings {
@@ -105,86 +105,86 @@ export interface CharacterMove {
 // }
 
 export interface CharacterProfile {
-  player_name: string
-  name: string
-  title: string
-  organization: string
-  age: string
-  birthday: string
-  eyes: string
-  hair: string
-  skin: string
-  handedness: string
-  height: string
-  weight: string
-  SM: number
-  gender: string
-  tech_level: string
-  religion: string
-  portrait: string
+	player_name: string
+	name: string
+	title: string
+	organization: string
+	age: string
+	birthday: string
+	eyes: string
+	hair: string
+	skin: string
+	handedness: string
+	height: string
+	weight: string
+	SM: number
+	gender: string
+	tech_level: string
+	religion: string
+	portrait: string
 }
 
 export interface CharacterCalc {
-  // Swing: RollGURPS;
-  // thrust: RollGURPS;
-  swing: string
-  thrust: string
-  basic_lift: Weight
-  lifting_st_bonus: number
-  striking_st_bonus: number
-  throwing_st_bonus: number
-  move: Array<number>
-  dodge: Array<number>
-  dodge_bonus: number
-  block_bonus: number
-  parry_bonus: number
+	// Swing: RollGURPS;
+	// thrust: RollGURPS;
+	swing: string
+	thrust: string
+	basic_lift: Weight
+	lifting_st_bonus: number
+	striking_st_bonus: number
+	throwing_st_bonus: number
+	move: Array<number>
+	dodge: Array<number>
+	dodge_bonus: number
+	block_bonus: number
+	parry_bonus: number
 }
 
 export interface PointsRecord {
-  when: string
-  points: number
-  reason: string
+	when: string
+	points: number
+	reason: string
 }
 
 export interface Encumbrance {
-  level: number
-  maximum_carry: number
-  penalty: number
-  name: string
+	level: number
+	maximum_carry: number
+	penalty: number
+	name: string
 }
 
 export const CharacterDefaultData: Partial<CharacterSystemData> = {
-  profile: {
-    player_name: "",
-    name: "",
-    title: "",
-    organization: "",
-    age: "",
-    birthday: "",
-    eyes: "",
-    hair: "",
-    skin: "",
-    handedness: "",
-    height: "6'",
-    weight: "0 lb",
-    SM: 0,
-    gender: "",
-    tech_level: "",
-    religion: "",
-    portrait: "",
-  },
-  editing: true,
-  calc: {
-    swing: "",
-    thrust: "",
-    basic_lift: 0,
-    lifting_st_bonus: 0,
-    striking_st_bonus: 0,
-    throwing_st_bonus: 0,
-    move: [0, 0, 0, 0, 0],
-    dodge: [0, 0, 0, 0, 0],
-    dodge_bonus: 0,
-    block_bonus: 0,
-    parry_bonus: 0,
-  },
+	profile: {
+		player_name: "",
+		name: "",
+		title: "",
+		organization: "",
+		age: "",
+		birthday: "",
+		eyes: "",
+		hair: "",
+		skin: "",
+		handedness: "",
+		height: "6'",
+		weight: "0 lb",
+		SM: 0,
+		gender: "",
+		tech_level: "",
+		religion: "",
+		portrait: "",
+	},
+	editing: true,
+	calc: {
+		swing: "",
+		thrust: "",
+		basic_lift: 0,
+		lifting_st_bonus: 0,
+		striking_st_bonus: 0,
+		throwing_st_bonus: 0,
+		move: [0, 0, 0, 0, 0],
+		dodge: [0, 0, 0, 0, 0],
+		dodge_bonus: 0,
+		block_bonus: 0,
+		parry_bonus: 0,
+	},
 }

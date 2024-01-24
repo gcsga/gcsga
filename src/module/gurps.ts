@@ -72,14 +72,7 @@ import {
 	TraitModifierSheet,
 	TraitSheet,
 } from "@item"
-import {
-	ActorSheetGURPS,
-	BaseActorGURPS,
-	CharacterSheetGURPS,
-	LootSheetGURPS,
-	MookSheetGURPS,
-	StaticCharacterSheetGURPS,
-} from "@actor"
+import { ActorSheetGURPS, CharacterSheetGURPS, LootSheetGURPS, MookSheetGURPS, StaticCharacterSheetGURPS } from "@actor"
 import { ActiveEffectGURPS } from "@module/effect"
 import { ModifierList } from "./mod_list"
 import { PDF } from "@module/pdf"
@@ -347,7 +340,7 @@ Hooks.once("ready", async () => {
 	}
 
 	// Set initial LastActor values
-	GURPS.clearLastActor = await LastActor.clear()
+	GURPS.clearLastActor = LastActor.clear
 	GURPS.LastActor = await LastActor.get()
 	GURPS.LastToken = await LastActor.getToken()
 
