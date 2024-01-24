@@ -262,7 +262,7 @@ export function registerSettings(): void {
 		config: true,
 		type: Boolean,
 		default: true,
-		onChange: (value: boolean) => console.log(`Automatic Unready : ${value}`)
+		onChange: (value: boolean) => console.log(`Automatic Unready : ${value}`),
 	})
 
 	game.settings.register(SYSTEM_NAME, SETTINGS.MODIFIER_LIST_COLLAPSE, {

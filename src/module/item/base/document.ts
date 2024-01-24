@@ -123,11 +123,8 @@ export class BaseItemGURPS<SourceType extends BaseItemSourceGURPS = BaseItemSour
 }
 
 export const ItemProxyGURPS = new Proxy(BaseItemGURPS, {
-	construct(
-		_target,
-		args: [source: any, context: any],
-	) {
+	construct(_target, args: [source: any, context: any]) {
 		const ItemClass = CONFIG.GURPS.Item.documentClasses[args[0]?.type] ?? BaseItemGURPS
 		return new ItemClass(...args)
-	}
+	},
 })

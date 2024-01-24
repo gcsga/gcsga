@@ -7,18 +7,29 @@ import { Mook } from "./document"
 import { attribute } from "@util/enum"
 import { MookParser } from "./parse"
 import { DialogGURPS } from "@ui"
+import { EXAMPLE_STATBLOCKS } from "./data"
 
 export class MookGeneratorSheet extends FormApplication {
 	config: CharacterSheetConfig | null = null
 
 	object: Mook
 
+	// text = {
+	// 	traits: "",
+	// 	skills: "",
+	// 	spells: "",
+	// 	equipment: "",
+	// 	melee: "",
+	// 	ranged: "",
+	// 	catchall: ""
+	// }
+
 	testing = true
 
 	constructor(options?: Partial<ApplicationOptions>) {
 		super(options)
 		this.object = new Mook()
-			; (game as any).mook = this.object
+		;(game as any).mook = this.object
 	}
 
 	static get defaultOptions(): FormApplicationOptions {
@@ -37,13 +48,20 @@ export class MookGeneratorSheet extends FormApplication {
 	}
 
 	get title(): string {
-		return LocalizeGURPS.translations.gurps.system.mook.title
+		return LocalizeGURPS.translations.gurps.mook.title
 	}
 
 	activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		html.find("#import").on("click", event => this._onImportText(event))
 		html.find("#create").on("click", event => this._onCreateMook(event))
+		html.find("textarea").on("input propertychange", _ => {
+			if (!this.testing) {
+				this.testing = true
+				const button = $(html).find("button#create span")
+				button.text(LocalizeGURPS.translations.gurps.mook.test)
+			}
+		})
 	}
 
 	static async init(): Promise<unknown> {
@@ -60,18 +78,49 @@ export class MookGeneratorSheet extends FormApplication {
 			secondary_attributes,
 			point_pools,
 			button_text: this.testing
-				? LocalizeGURPS.translations.gurps.system.mook.test
-				: LocalizeGURPS.translations.gurps.system.mook.create,
-			text: {
-				traits: this.object.traits.toString(),
-				skills: this.object.skills.toString(),
-				spells: this.object.spells.toString(),
-				equipment: this.object.equipment.toString(),
-				melee: this.object.melee.toString(),
-				ranged: this.object.traits.toString(),
-				catchall: this.object.text.catchall,
-			},
+				? LocalizeGURPS.translations.gurps.mook.test
+				: LocalizeGURPS.translations.gurps.mook.create,
+			text: this.object.text,
 		})
+	}
+
+	private _prepareText(): Record<
+		"traits" | "skills" | "spells" | "equipment" | "melee" | "ranged" | "catchall",
+		string
+	> {
+		return {
+			traits: this.object.traits.reduce((acc, e) => {
+				if (acc !== "") acc += "\n"
+				acc += e.toString()
+				return acc
+			}, ""),
+			skills: this.object.skills.reduce((acc, e) => {
+				if (acc !== "") acc += "\n"
+				acc += e.toString()
+				return acc
+			}, ""),
+			spells: this.object.spells.reduce((acc, e) => {
+				if (acc !== "") acc += "\n"
+				acc += e.toString()
+				return acc
+			}, ""),
+			equipment: this.object.equipment.reduce((acc, e) => {
+				if (acc !== "") acc += "\n"
+				acc += e.toString()
+				return acc
+			}, ""),
+			melee: this.object.melee.reduce((acc, e) => {
+				if (acc !== "") acc += "\n"
+				acc += e.toString()
+				return acc
+			}, ""),
+			ranged: this.object.ranged.reduce((acc, e) => {
+				if (acc !== "") acc += "\n"
+				acc += e.toString()
+				return acc
+			}, ""),
+			catchall: this.object.text.catchall,
+		}
 	}
 
 	prepareAttributes(attributes: Map<string, Attribute>): [Attribute[], Attribute[], Attribute[]] {
@@ -90,32 +139,39 @@ export class MookGeneratorSheet extends FormApplication {
 
 	private async _onImportText(event: JQuery.ClickEvent) {
 		event.preventDefault()
-		const dialog = new DialogGURPS({
-			title: "Import Stat Block",
-			content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/mook-generator/import.hbs`, { block: "" }),
-			buttons: {
-				import: {
-					icon: "<i class='fas fa-file-import'></i>",
-					label: "Import",
-					callback: (html: HTMLElement | JQuery<HTMLElement>) => {
-						if (html instanceof HTMLElement) html = $(html)
-						const textArray = html.find("textarea")[0]
-						const text = textArray.value
-						if (text.trim()) {
-							const data = MookParser.init(text, this.object).parseStatBlock(text)
-							this.object.update(data)
-						}
-						return this.render()
-					}
+		const dialog = new DialogGURPS(
+			{
+				title: "Import Stat Block",
+				content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/mook-generator/import.hbs`, {
+					block: "",
+				}),
+				buttons: {
+					import: {
+						icon: "<i class='fas fa-file-import'></i>",
+						label: "Import",
+						callback: (html: HTMLElement | JQuery<HTMLElement>) => {
+							if (html instanceof HTMLElement) html = $(html)
+							const textArray = html.find("textarea")[0]
+							let text = textArray.value
+							if (text.length < 3) text = EXAMPLE_STATBLOCKS[parseInt(text)]
+							if (text.trim()) {
+								const data = MookParser.init(text, this.object).parseStatBlock(text)
+								this.object.update(data)
+							}
+							this.testing = true
+							this.object.text = this._prepareText()
+							return this.render()
+						},
+					},
+					cancel: {
+						icon: "<i class='fas fa-times'></i>",
+						label: "Cancel",
+					},
 				},
-				cancel: {
-					icon: "<i class='fas fa-times'></i>",
-					label: "Cancel"
-				},
+				default: "import",
 			},
-			default: "import",
-		},
-			{ width: 800, height: 800 })
+			{ width: 800, height: 800 }
+		)
 		dialog.render(true)
 	}
 
@@ -132,6 +188,15 @@ export class MookGeneratorSheet extends FormApplication {
 			ui.notifications?.error(LocalizeGURPS.translations.gurps.error.mook.name)
 			return false
 		}
+		const parser = new MookParser("", this.object)
+		const text = this.object.text
+		console.log(text.traits)
+		this.object.traits = parser.parseTraits(text.traits.replace(/\n/g, ";"), true)
+		this.object.skills = parser.parseSkills(text.skills.replace(/\n/g, ";"), true)
+		this.object.spells = parser.parseSpells(text.spells.replace(/\n/g, ";"), true)
+		;[this.object.melee] = parser.parseAttacks(text.melee.replace(/\n/g, ";"), true, true)
+		;[, this.object.ranged] = parser.parseAttacks(text.ranged.replace(/\n/g, ";"), true, true)
+		console.log(this.object)
 		return true
 	}
 
@@ -169,6 +234,7 @@ export class MookGeneratorSheet extends FormApplication {
 			if (i === "thrust") formData.thrust = new DiceGURPS(formData.thrust)
 			if (i === "swing") formData.swing = new DiceGURPS(formData.swing)
 		}
+		console.log(formData)
 		return this.object.update(formData)
 	}
 }

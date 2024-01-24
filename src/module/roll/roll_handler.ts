@@ -14,8 +14,7 @@ import { DamageRollGURPS } from "./damage_roll"
 import { DamageChat, DamagePayload } from "@module/damage_calculator/damage_chat_message"
 import { ActorGURPS } from "@module/config"
 import { UserGURPS } from "@module/user/document"
-
-// // vscode-fold=1
+import { HitLocationUtil } from "@module/damage_calculator/hitlocation_utils"
 
 enum RollSuccess {
 	Success = "success",
@@ -90,7 +89,7 @@ abstract class RollTypeHandler {
 		return data.type
 	}
 
-	getExtras(data: RollTypeData): any {
+	getExtras(_data: RollTypeData): any {
 		return {}
 	}
 
@@ -121,7 +120,7 @@ abstract class RollTypeHandler {
 		formula: string,
 		name: string,
 		type: RollType,
-		extras: any
+		_extras: any
 	): Promise<Record<string, any>> {
 		// Create an array of Modifiers suitable for display.
 		const modifiers: Array<RollModifier & { class?: string }> = this.getModifiers(user)
@@ -190,7 +189,7 @@ abstract class RollTypeHandler {
 	 * @param level - The current level.
 	 * @returns The modified level.
 	 */
-	modifyForEncumbrance(item: any, encumbrance: any, modifiers: any, level: number): number {
+	modifyForEncumbrance(_item: any, _encumbrance: any, _modifiers: any, level: number): number {
 		return level
 	}
 
@@ -206,7 +205,7 @@ abstract class RollTypeHandler {
 	 * @param actor
 	 * @returns Additional data to be included in the chat message.
 	 */
-	getItemData(item: any, actor: CharacterGURPS): any {
+	getItemData(_item: any, _actor: CharacterGURPS): any {
 		return {}
 	}
 
@@ -299,10 +298,10 @@ abstract class RollTypeHandler {
 class ModifierRollTypeHandler extends RollTypeHandler {
 	async handleRollType(
 		user: StoredDocument<User> | null,
-		actor: CharacterGURPS,
+		_actor: CharacterGURPS,
 		data: RollTypeData,
-		raFormula?: string,
-		hidden?: boolean
+		_raFormula?: string,
+		_hidden?: boolean
 	): Promise<void> {
 		if (!user) return
 		const mod: RollModifier = {
@@ -332,7 +331,7 @@ class AttributeRollTypeHandler extends RollTypeHandler {
 		return LocalizeGURPS.translations.gurps.roll.effective_skill
 	}
 
-	override getItemData(item: any, actor: CharacterGURPS) {
+	override getItemData(item: any, _actor: CharacterGURPS) {
 		return { id: item.id }
 	}
 }
@@ -414,7 +413,7 @@ class AttackRollTypeHandler extends RollTypeHandler {
 		return `systems/${SYSTEM_NAME}/templates/message/roll-against-weapon.hbs`
 	}
 
-	override getItemData(item: any, actor: CharacterGURPS): any {
+	override getItemData(item: any, _actor: CharacterGURPS): any {
 		let itemData = {} as any
 		if (item instanceof MeleeWeaponGURPS || item instanceof RangedWeaponGURPS) {
 			itemData = {
@@ -477,7 +476,7 @@ class AttackRollTypeHandler extends RollTypeHandler {
 		return parseInt(rate_of_fire)
 	}
 
-	private validRateOfFire(rof: string): boolean {
+	private validRateOfFire(_rof: string): boolean {
 		// validated externally
 		return true
 		// if (rof.match(AttackRollTypeHandler.SHOTGUN_ROF)) return true
@@ -501,7 +500,7 @@ class ParryRollTypeHandler extends RollTypeHandler {
 		})
 	}
 
-	override getType(data: any): RollType {
+	override getType(_data: any): RollType {
 		return RollType.Attack
 	}
 }
@@ -524,7 +523,7 @@ class BlockRollTypeHandler extends RollTypeHandler {
 		})
 	}
 
-	override getType(data: RollTypeData): RollType {
+	override getType(_data: RollTypeData): RollType {
 		return RollType.Attack
 	}
 }
@@ -536,7 +535,7 @@ class DamageRollTypeHandler extends RollTypeHandler {
 			: `${data.item.formattedName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
 	}
 
-	override getLevel(data: RollTypeData): number {
+	override getLevel(_data: RollTypeData): number {
 		return 0
 	}
 
@@ -623,6 +622,40 @@ class DamageRollTypeHandler extends RollTypeHandler {
 	}
 }
 
+class LocationRollTypeHandler extends RollTypeHandler {
+	async handleRollType(
+		user: StoredDocument<User> | null,
+		actor: CharacterGURPS,
+		_data: RollTypeData,
+		_formula: string,
+		hidden: boolean
+	): Promise<void> {
+		let result = await HitLocationUtil.rollRandomLocation(actor.hitLocationTable)
+
+		// Get localized version of the location id, if necessary.
+		const location = result.location?.choice_name ?? "Torso"
+
+		const message = await renderTemplate(`systems/${SYSTEM_NAME}/templates/message/random-location-roll.hbs`, {
+			actor: { name: actor.name, actor: { id: actor.id } },
+			location: location,
+			tooltip: await result.roll.getTooltip(),
+		})
+
+		const messageData: any = {
+			user: user,
+			type: CONST.CHAT_MESSAGE_TYPES.ROLL,
+			content: message,
+			roll: JSON.stringify(result.roll),
+			sound: CONFIG.sounds.dice,
+		}
+
+		if (hidden) messageData.rollMode = CONST.DICE_ROLL_MODES.PRIVATE
+
+		await ChatMessage.create(messageData, {})
+		await this.resetMods(user)
+	}
+}
+
 class GenericRollTypeHandler extends RollTypeHandler {
 	async handleRollType(
 		user: StoredDocument<User> | null,
@@ -692,5 +725,6 @@ export const rollTypeHandlers: Record<RollType, RollTypeHandler> = {
 	[RollType.Parry]: new ParryRollTypeHandler(),
 	[RollType.Block]: new BlockRollTypeHandler(),
 	[RollType.Damage]: new DamageRollTypeHandler(),
+	[RollType.Location]: new LocationRollTypeHandler(),
 	[RollType.Generic]: new GenericRollTypeHandler(),
 }

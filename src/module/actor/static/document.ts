@@ -1,5 +1,4 @@
 import { BaseActorGURPS } from "@actor/base"
-import { ConditionGURPS, EffectID, ManeuverID, Postures } from "@item"
 import { StaticItemGURPS } from "@item/static"
 import { StaticItemSystemData } from "@item/static/data"
 import { SETTINGS, SYSTEM_NAME } from "@module/data"
@@ -339,242 +338,242 @@ export class StaticCharacterGURPS extends BaseActorGURPS<StaticCharacterSource> 
 		return this.getEquipped("block")[1]
 	}
 
-	// Called when equipment is being moved
-	/**
-	 * @param {Equipment} eqt
-	 * @param {string} targetPath
-	 */
-	async updateItemAdditionsBasedOn(eqt: StaticEquipment, targetPath: string) {
-		await this._updateEqtStatus(eqt, targetPath, targetPath.includes(".carried"))
-	}
+	// // Called when equipment is being moved
+	// /**
+	//  * @param {Equipment} eqt
+	//  * @param {string} targetPath
+	//  */
+	// async updateItemAdditionsBasedOn(eqt: StaticEquipment, targetPath: string) {
+	// 	await this._updateEqtStatus(eqt, targetPath, targetPath.includes(".carried"))
+	// }
 
-	// Equipment may carry other eqt, so we must adjust the carried status all the way down.
-	/**
-	 * @param {Equipment} eqt
-	 * @param {string} eqtkey
-	 * @param {boolean} carried
-	 */
-	async _updateEqtStatus(eqt: StaticEquipment, eqtkey: string, carried: boolean) {
-		eqt.carried = carried
-		if (eqt.itemid) {
-			let item: StaticItemGURPS | undefined = this.items.get(eqt.itemid) as StaticItemGURPS
-			await this.updateEmbeddedDocuments("Item", [
-				{ _id: item.id, "system.equipped": eqt.equipped, "system.carried": carried },
-			])
-			if (!carried || !eqt.equipped) await this._removeItemAdditions(eqt.itemid)
-			if (carried && eqt.equipped) await this._addItemAdditions(item, eqtkey)
-		}
-		for (const k in eqt.contains) await this._updateEqtStatus(eqt.contains[k], `${eqtkey}.contains.${k}`, carried)
-		for (const k in eqt.collapsed)
-			await this._updateEqtStatus(eqt.collapsed[k], `${eqtkey}.collapsed.${k}`, carried)
-	}
+	// // Equipment may carry other eqt, so we must adjust the carried status all the way down.
+	// /**
+	//  * @param {Equipment} eqt
+	//  * @param {string} eqtkey
+	//  * @param {boolean} carried
+	//  */
+	// async _updateEqtStatus(eqt: StaticEquipment, eqtkey: string, carried: boolean) {
+	// 	eqt.carried = carried
+	// 	if (eqt.itemid) {
+	// 		let item: StaticItemGURPS | undefined = this.items.get(eqt.itemid) as StaticItemGURPS
+	// 		await this.updateEmbeddedDocuments("Item", [
+	// 			{ _id: item.id, "system.equipped": eqt.equipped, "system.carried": carried },
+	// 		])
+	// 		if (!carried || !eqt.equipped) await this._removeItemAdditions(eqt.itemid)
+	// 		if (carried && eqt.equipped) await this._addItemAdditions(item, eqtkey)
+	// 	}
+	// 	for (const k in eqt.contains) await this._updateEqtStatus(eqt.contains[k], `${eqtkey}.contains.${k}`, carried)
+	// 	for (const k in eqt.collapsed)
+	// 		await this._updateEqtStatus(eqt.collapsed[k], `${eqtkey}.collapsed.${k}`, carried)
+	// }
 
-	/**
-	 * @param {string} itemid
-	 */
-	async _removeItemAdditions(itemid: string) {
-		await this._removeItemElement(itemid, "melee")
-		await this._removeItemElement(itemid, "ranged")
-		await this._removeItemElement(itemid, "ads")
-		await this._removeItemElement(itemid, "skills")
-		await this._removeItemElement(itemid, "spells")
-	}
+	// /**
+	//  * @param {string} itemid
+	//  */
+	// async _removeItemAdditions(itemid: string) {
+	// 	await this._removeItemElement(itemid, "melee")
+	// 	await this._removeItemElement(itemid, "ranged")
+	// 	await this._removeItemElement(itemid, "ads")
+	// 	await this._removeItemElement(itemid, "skills")
+	// 	await this._removeItemElement(itemid, "spells")
+	// }
 
-	// We have to remove matching items after we searched through the list
-	// because we cannot safely modify the list why iterating over it
-	// and as such, we can only remove 1 key at a time and must use thw while loop to check again
-	/**
-	 * @param {string} itemid
-	 * @param {string} key
-	 */
-	async _removeItemElement(itemid: string, key: string) {
-		let found = "ERROR"
-		let any = false
-		if (!key.startsWith("system.")) key = `system.${key}`
-		while (found !== "") {
-			found = ""
-			let list = getProperty(this, key)
-			Static.recurseList(list, (e, k, _d) => {
-				if (e.itemid === itemid) found = k
-			})
-			if (found) {
-				any = true
-				await Static.removeKey(this, `${key}.${found}`)
-			}
-		}
-		return any
-	}
+	// // We have to remove matching items after we searched through the list
+	// // because we cannot safely modify the list why iterating over it
+	// // and as such, we can only remove 1 key at a time and must use thw while loop to check again
+	// /**
+	//  * @param {string} itemid
+	//  * @param {string} key
+	//  */
+	// async _removeItemElement(itemid: string, key: string) {
+	// 	let found = "ERROR"
+	// 	let any = false
+	// 	if (!key.startsWith("system.")) key = `system.${key}`
+	// 	while (found !== "") {
+	// 		found = ""
+	// 		let list = getProperty(this, key)
+	// 		Static.recurseList(list, (e, k, _d) => {
+	// 			if (e.itemid === itemid) found = k
+	// 		})
+	// 		if (found) {
+	// 			any = true
+	// 			await Static.removeKey(this, `${key}.${found}`)
+	// 		}
+	// 	}
+	// 	return any
+	// }
 
-	/**
-	 * @param {string} srckey
-	 * @param {string} targetkey
-	 * @param {boolean} shiftkey
-	 */
-	async moveEquipment(srckey: string, targetkey: string, shiftkey: boolean) {
-		if (srckey === targetkey) return
-		if (shiftkey && (await this._splitEquipment(srckey, targetkey))) return
-		// Because we may be modifing the same list, we have to check the order of the keys and
-		// apply the operation that occurs later in the list, first (to keep the indexes the same)
-		let srca = srckey.split(".")
-		srca.splice(0, 3)
-		let tara = targetkey.split(".")
-		tara.splice(0, 3)
-		let max = Math.min(srca.length, tara.length)
-		let isSrcFirst = max === 0 ? srca.length > tara.length : false
-		for (let i = 0; i < max; i++) {
-			if (parseInt(srca[i]) < parseInt(tara[i])) isSrcFirst = true
-		}
-		let object = getProperty(this, srckey)
-		if (targetkey.match(/^system\.equipment\.\w+$/)) {
-			object.parentuuid = ""
-			if (object.itemid) {
-				let item = /** @type {Item} */ this.items.get(object.itemid)
-				await this.updateEmbeddedDocuments("Item", [{ _id: item?.id, "system.eqt.parentuuid": "" }])
-			}
-			let target = { ...Static.decode(this, targetkey) } // Shallow copy the list
-			if (!isSrcFirst) await Static.removeKey(this, srckey)
-			let eqtkey = Static.put(target, object)
-			await this.updateItemAdditionsBasedOn(object, `${targetkey}.${eqtkey}`)
-			await this.update({ [targetkey]: target })
-			if (isSrcFirst) await Static.removeKey(this, srckey)
-		}
-		if (await this._checkForMerging(srckey, targetkey)) return
-		if (srckey.includes(targetkey) || targetkey.includes(srckey)) {
-			ui.notifications?.error(
-				"Unable to drag and drop withing the same hierarchy. Try moving it elsewhere first."
-			)
-			return
-		}
-		this.toggleExpand(targetkey, true)
-		let d = new Dialog({
-			title: object.name,
-			content: "<p>Where do you want to place this?</p>",
-			buttons: {
-				one: {
-					icon: '<i class="fas fa-level-up-alt"></i>',
-					label: "Before",
-					callback: async () => {
-						if (!isSrcFirst) {
-							await Static.removeKey(this, srckey)
-							await this.updateParentOf(srckey, false)
-						}
-						await this.updateItemAdditionsBasedOn(object, targetkey)
-						await Static.insertBeforeKey(this, targetkey, object)
-						await this.updateParentOf(targetkey, true)
-						if (isSrcFirst) {
-							await Static.removeKey(this, srckey)
-							await this.updateParentOf(srckey, false)
-						}
-						this.render()
-					},
-				},
-				two: {
-					icon: '<i class="fas fa-sign-in-alt"></i>',
-					label: "In",
-					callback: async () => {
-						if (!isSrcFirst) {
-							await Static.removeKey(this, srckey)
-							await this.updateParentOf(srckey, false)
-						}
-						let k = `${targetkey}.contains.${Static.zeroFill(0)}`
-						await this.updateItemAdditionsBasedOn(object, targetkey)
-						await Static.insertBeforeKey(this, k, object)
-						await this.updateParentOf(k, true)
-						if (isSrcFirst) {
-							await Static.removeKey(this, srckey)
-							await this.updateParentOf(srckey, false)
-						}
-						this.render()
-					},
-				},
-			},
-			default: "one",
-		})
-		d.render(true)
-	}
+	// /**
+	//  * @param {string} srckey
+	//  * @param {string} targetkey
+	//  * @param {boolean} shiftkey
+	//  */
+	// async moveEquipment(srckey: string, targetkey: string, shiftkey: boolean) {
+	// 	if (srckey === targetkey) return
+	// 	if (shiftkey && (await this._splitEquipment(srckey, targetkey))) return
+	// 	// Because we may be modifing the same list, we have to check the order of the keys and
+	// 	// apply the operation that occurs later in the list, first (to keep the indexes the same)
+	// 	let srca = srckey.split(".")
+	// 	srca.splice(0, 3)
+	// 	let tara = targetkey.split(".")
+	// 	tara.splice(0, 3)
+	// 	let max = Math.min(srca.length, tara.length)
+	// 	let isSrcFirst = max === 0 ? srca.length > tara.length : false
+	// 	for (let i = 0; i < max; i++) {
+	// 		if (parseInt(srca[i]) < parseInt(tara[i])) isSrcFirst = true
+	// 	}
+	// 	let object = getProperty(this, srckey)
+	// 	if (targetkey.match(/^system\.equipment\.\w+$/)) {
+	// 		object.parentuuid = ""
+	// 		if (object.itemid) {
+	// 			let item = /** @type {Item} */ this.items.get(object.itemid)
+	// 			await this.updateEmbeddedDocuments("Item", [{ _id: item?.id, "system.eqt.parentuuid": "" }])
+	// 		}
+	// 		let target = { ...Static.decode(this, targetkey) } // Shallow copy the list
+	// 		if (!isSrcFirst) await Static.removeKey(this, srckey)
+	// 		let eqtkey = Static.put(target, object)
+	// 		await this.updateItemAdditionsBasedOn(object, `${targetkey}.${eqtkey}`)
+	// 		await this.update({ [targetkey]: target })
+	// 		if (isSrcFirst) await Static.removeKey(this, srckey)
+	// 	}
+	// 	if (await this._checkForMerging(srckey, targetkey)) return
+	// 	if (srckey.includes(targetkey) || targetkey.includes(srckey)) {
+	// 		ui.notifications?.error(
+	// 			"Unable to drag and drop withing the same hierarchy. Try moving it elsewhere first."
+	// 		)
+	// 		return
+	// 	}
+	// 	this.toggleExpand(targetkey, true)
+	// 	let d = new Dialog({
+	// 		title: object.name,
+	// 		content: "<p>Where do you want to place this?</p>",
+	// 		buttons: {
+	// 			one: {
+	// 				icon: '<i class="fas fa-level-up-alt"></i>',
+	// 				label: "Before",
+	// 				callback: async () => {
+	// 					if (!isSrcFirst) {
+	// 						await Static.removeKey(this, srckey)
+	// 						await this.updateParentOf(srckey, false)
+	// 					}
+	// 					await this.updateItemAdditionsBasedOn(object, targetkey)
+	// 					await Static.insertBeforeKey(this, targetkey, object)
+	// 					await this.updateParentOf(targetkey, true)
+	// 					if (isSrcFirst) {
+	// 						await Static.removeKey(this, srckey)
+	// 						await this.updateParentOf(srckey, false)
+	// 					}
+	// 					this.render()
+	// 				},
+	// 			},
+	// 			two: {
+	// 				icon: '<i class="fas fa-sign-in-alt"></i>',
+	// 				label: "In",
+	// 				callback: async () => {
+	// 					if (!isSrcFirst) {
+	// 						await Static.removeKey(this, srckey)
+	// 						await this.updateParentOf(srckey, false)
+	// 					}
+	// 					let k = `${targetkey}.contains.${Static.zeroFill(0)}`
+	// 					await this.updateItemAdditionsBasedOn(object, targetkey)
+	// 					await Static.insertBeforeKey(this, k, object)
+	// 					await this.updateParentOf(k, true)
+	// 					if (isSrcFirst) {
+	// 						await Static.removeKey(this, srckey)
+	// 						await this.updateParentOf(srckey, false)
+	// 					}
+	// 					this.render()
+	// 				},
+	// 			},
+	// 		},
+	// 		default: "one",
+	// 	})
+	// 	d.render(true)
+	// }
 
-	/**
-	 * @param {string} srckey
-	 * @param {string} targetkey
-	 */
-	async _splitEquipment(srckey: string, targetkey: string) {
-		let srceqt = getProperty(this, srckey)
-		if (srceqt.count <= 1) return false // Nothing to split
-		let content = await renderTemplate("systems/gurps/templates/transfer-equipment.html", { eqt: srceqt })
-		let count = 0
-		let callback = async (html: JQuery<HTMLElement>) =>
-			(count = parseInt(html.find("#qty").val()?.toString() || "0"))
-		await Dialog.prompt({
-			title: "Split stack",
-			label: LocalizeGURPS.translations.gurps.static.ok,
-			content: content,
-			callback: callback,
-		})
-		if (count <= 0) return true // Didn't want to split
-		if (count >= srceqt.count) return false // Not a split, but a move
-		if (targetkey.match(/^data\.equipment\.\w+$/)) targetkey += `.${Static.zeroFill(0)}`
-		if (srceqt.globalid) {
-			await this.updateEqtCount(srckey, srceqt.count - count)
-			const item = this.items.get(srceqt.itemid) as StaticItemGURPS
-			item.system.eqt.count = count
-			await this.addNewItemData(item, targetkey)
-			await this.updateParentOf(targetkey, true)
-			this.render()
-			return true
-		} else {
-			// Simple eqt
-			let neqt = duplicate(srceqt)
-			neqt.count = count
-			await this.updateEqtCount(srckey, srceqt.count - count)
-			await Static.insertBeforeKey(this, targetkey, neqt)
-			await this.updateParentOf(targetkey, true)
-			this.render()
-			return true
-		}
-	}
+	// /**
+	//  * @param {string} srckey
+	//  * @param {string} targetkey
+	//  */
+	// async _splitEquipment(srckey: string, targetkey: string) {
+	// 	let srceqt = getProperty(this, srckey)
+	// 	if (srceqt.count <= 1) return false // Nothing to split
+	// 	let content = await renderTemplate("systems/gurps/templates/transfer-equipment.html", { eqt: srceqt })
+	// 	let count = 0
+	// 	let callback = async (html: JQuery<HTMLElement>) =>
+	// 		(count = parseInt(html.find("#qty").val()?.toString() || "0"))
+	// 	await Dialog.prompt({
+	// 		title: "Split stack",
+	// 		label: LocalizeGURPS.translations.gurps.static.ok,
+	// 		content: content,
+	// 		callback: callback,
+	// 	})
+	// 	if (count <= 0) return true // Didn't want to split
+	// 	if (count >= srceqt.count) return false // Not a split, but a move
+	// 	if (targetkey.match(/^data\.equipment\.\w+$/)) targetkey += `.${Static.zeroFill(0)}`
+	// 	if (srceqt.globalid) {
+	// 		await this.updateEqtCount(srckey, srceqt.count - count)
+	// 		const item = this.items.get(srceqt.itemid) as StaticItemGURPS
+	// 		item.system.eqt.count = count
+	// 		await this.addNewItemData(item, targetkey)
+	// 		await this.updateParentOf(targetkey, true)
+	// 		this.render()
+	// 		return true
+	// 	} else {
+	// 		// Simple eqt
+	// 		let neqt = duplicate(srceqt)
+	// 		neqt.count = count
+	// 		await this.updateEqtCount(srckey, srceqt.count - count)
+	// 		await Static.insertBeforeKey(this, targetkey, neqt)
+	// 		await this.updateParentOf(targetkey, true)
+	// 		this.render()
+	// 		return true
+	// 	}
+	// }
 
-	// Set the equipment count to 'count' and then recalc sums
-	/**
-	 * @param {string} eqtkey
-	 * @param {number} count
-	 */
-	async updateEqtCount(eqtkey: string, count: number) {
-		let update: { [key: string]: any } = { [`${eqtkey}.count`]: count }
-		if (game.settings.get(SYSTEM_NAME, SETTINGS.STATIC_AUTOMATICALLY_SET_IGNOREQTY))
-			update[`${eqtkey}.ignoreImportQty`] = true
-		await this.update(update)
-		let eqt = getProperty(this, eqtkey)
-		await this.updateParentOf(eqtkey, false)
-		if (eqt.itemid) {
-			let item = this.items.get(eqt.itemid)
-			if (item) await this.updateEmbeddedDocuments("Item", [{ _id: item.id, "system.eqt.count": count }])
-			else {
-				ui.notifications?.warn("Invalid Item in Actor... removing all features")
-				this._removeItemAdditions(eqt.itemid)
-			}
-		}
-	}
+	// // Set the equipment count to 'count' and then recalc sums
+	// /**
+	//  * @param {string} eqtkey
+	//  * @param {number} count
+	//  */
+	// async updateEqtCount(eqtkey: string, count: number) {
+	// 	let update: { [key: string]: any } = { [`${eqtkey}.count`]: count }
+	// 	if (game.settings.get(SYSTEM_NAME, SETTINGS.STATIC_AUTOMATICALLY_SET_IGNOREQTY))
+	// 		update[`${eqtkey}.ignoreImportQty`] = true
+	// 	await this.update(update)
+	// 	let eqt = getProperty(this, eqtkey)
+	// 	await this.updateParentOf(eqtkey, false)
+	// 	if (eqt.itemid) {
+	// 		let item = this.items.get(eqt.itemid)
+	// 		if (item) await this.updateEmbeddedDocuments("Item", [{ _id: item.id, "system.eqt.count": count }])
+	// 		else {
+	// 			ui.notifications?.warn("Invalid Item in Actor... removing all features")
+	// 			this._removeItemAdditions(eqt.itemid)
+	// 		}
+	// 	}
+	// }
 
-	/**
-	 * @param {string} srckey
-	 * @param {string} targetkey
-	 */
-	async _checkForMerging(srckey: string, targetkey: string) {
-		let srceqt = getProperty(this, srckey)
-		let desteqt = getProperty(this, targetkey)
-		if (
-			(srceqt.globalid && srceqt.globalid === desteqt.globalid) ||
-			(!srceqt.globalid && srceqt.name === desteqt.name)
-		) {
-			await this.updateEqtCount(targetkey, parseInt(srceqt.count) + parseInt(desteqt.count))
-			// If (srckey.includes('.carried') && targetkey.includes('.other'))
-			// 	 await this._removeItemAdditionsBasedOn(desteqt)
-			await this.deleteEquipment(srckey)
-			this.render()
-			return true
-		}
-		return false
-	}
+	// /**
+	//  * @param {string} srckey
+	//  * @param {string} targetkey
+	//  */
+	// async _checkForMerging(srckey: string, targetkey: string) {
+	// 	let srceqt = getProperty(this, srckey)
+	// 	let desteqt = getProperty(this, targetkey)
+	// 	if (
+	// 		(srceqt.globalid && srceqt.globalid === desteqt.globalid) ||
+	// 		(!srceqt.globalid && srceqt.name === desteqt.name)
+	// 	) {
+	// 		await this.updateEqtCount(targetkey, parseInt(srceqt.count) + parseInt(desteqt.count))
+	// 		// If (srckey.includes('.carried') && targetkey.includes('.other'))
+	// 		// 	 await this._removeItemAdditionsBasedOn(desteqt)
+	// 		await this.deleteEquipment(srckey)
+	// 		this.render()
+	// 		return true
+	// 	}
+	// 	return false
+	// }
 
 	// Initialize the attribute starting values/levels.
 	// The code is expecting 'value' or 'level' for many things, and instead of changing all of the GUIs and OTF logic
@@ -1045,56 +1044,56 @@ export class StaticCharacterGURPS extends BaseActorGURPS<StaticCharacterSource> 
 		await this.addItemData(localItem, targetkey) // Only created 1 item
 	}
 
-	// Return the item data that was deleted (since it might be transferred)
-	/**
-	 * @param {string} path
-	 * @param depth
-	 */
-	async deleteEquipment(path: string, depth = 0) {
-		let eqt = getProperty(this, path)
-		if (!eqt) return eqt
+	// // Return the item data that was deleted (since it might be transferred)
+	// /**
+	//  * @param {string} path
+	//  * @param depth
+	//  */
+	// async deleteEquipment(path: string, depth = 0) {
+	// 	let eqt = getProperty(this, path)
+	// 	if (!eqt) return eqt
+	//
+	// 	// Delete in reverse order so the keys don't get messed up
+	// 	if (eqt.contains)
+	// 		for (const k of Object.keys(eqt.contains).sort().reverse())
+	// 			await this.deleteEquipment(`${path}.contains.${k}`, depth + 1)
+	// 	if (eqt.collpased)
+	// 		for (const k of Object.keys(eqt.collapsed).sort().reverse())
+	// 			await this.deleteEquipment(`${path}.collapsed.${k}`, depth + 1)
+	//
+	// 	let item
+	// 	if (eqt.itemid) {
+	// 		item = this.items.get(eqt.itemid)
+	// 		if (item) await item.delete() // Data protect for messed up mooks
+	// 		await this._removeItemAdditions(eqt.itemid)
+	// 	}
+	// 	await Static.removeKey(this, path)
+	// 	if (depth === 0) this.render()
+	// 	return item
+	// }
 
-		// Delete in reverse order so the keys don't get messed up
-		if (eqt.contains)
-			for (const k of Object.keys(eqt.contains).sort().reverse())
-				await this.deleteEquipment(`${path}.contains.${k}`, depth + 1)
-		if (eqt.collpased)
-			for (const k of Object.keys(eqt.collapsed).sort().reverse())
-				await this.deleteEquipment(`${path}.collapsed.${k}`, depth + 1)
-
-		let item
-		if (eqt.itemid) {
-			item = this.items.get(eqt.itemid)
-			if (item) await item.delete() // Data protect for messed up mooks
-			await this._removeItemAdditions(eqt.itemid)
-		}
-		await Static.removeKey(this, path)
-		if (depth === 0) this.render()
-		return item
-	}
-
-	async increaseCondition(id: EffectID): Promise<ConditionGURPS | null> {
-		if (Postures.includes(id as any)) {
-			if (this.hasCondition(id as any)) await this.update({ "system.move.posture": "standing" })
-			else await this.update({ "system.move.posture": id })
-		}
-		return super.increaseCondition(id)
-	}
-
-	async decreaseCondition(id: EffectID, { forceRemove } = { forceRemove: false }): Promise<void> {
-		if (Postures.includes(id as any)) await this.update({ "system.move.posture": "standing" })
-		return super.decreaseCondition(id, { forceRemove })
-	}
-
-	async changeManeuver(id: ManeuverID | "none"): Promise<ConditionGURPS | null> {
-		await this.update({ "system.move.maneuver": id })
-		return super.changeManeuver(id)
-	}
-
-	async resetManeuvers(): Promise<null> {
-		await this.update({ "system.move.maneuver": "none" })
-		return super.resetManeuvers()
-	}
+	// async increaseCondition(id: EffectID): Promise<ConditionGURPS | null> {
+	// 	if (Postures.includes(id as any)) {
+	// 		if (this.hasCondition(id as any)) await this.update({ "system.move.posture": "standing" })
+	// 		else await this.update({ "system.move.posture": id })
+	// 	}
+	// 	return super.increaseCondition(id)
+	// }
+	//
+	// async decreaseCondition(id: EffectID, { forceRemove } = { forceRemove: false }): Promise<void> {
+	// 	if (Postures.includes(id as any)) await this.update({ "system.move.posture": "standing" })
+	// 	return super.decreaseCondition(id, { forceRemove })
+	// }
+	//
+	// async changeManeuver(id: ManeuverID | "none"): Promise<ConditionGURPS | null> {
+	// 	await this.update({ "system.move.maneuver": id })
+	// 	return super.changeManeuver(id)
+	// }
+	//
+	// async resetManeuvers(): Promise<null> {
+	// 	await this.update({ "system.move.maneuver": "none" })
+	// 	return super.resetManeuvers()
+	// }
 
 	// All this changes is allowing delta values to decrease the bar below 0
 	override async modifyTokenAttribute(attribute: string, value: number, isDelta = false, isBar = true) {

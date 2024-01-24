@@ -3,11 +3,7 @@ import { Context } from "types/foundry/common/abstract/document.mjs"
 import { ActorDataSource } from "types/foundry/common/data/data.mjs/actorData"
 
 export interface ActorFlagsGURPS extends Record<string, unknown> {
-	[SYSTEM_NAME]: {
-		// [ActorFlags.TargetModifiers]: RollModifier[]
-		// [ActorFlags.SelfModifiers]: RollModifier[]
-		[ActorFlags.Deprecation]?: string
-	} & Record<string, any>
+	[SYSTEM_NAME]: Partial<Record<ActorFlags, any>>
 }
 
 export enum ActorFlags {
@@ -17,6 +13,7 @@ export enum ActorFlags {
 	MoveType = "move_type",
 	AutoEncumbrance = "auto_encumbrance",
 	AutoThreshold = "auto_threshold",
+	AutoDamage = "auto_damage",
 }
 
 export interface BaseActorSourceGURPS<

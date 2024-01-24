@@ -102,7 +102,8 @@ export class RangedWeaponGURPS extends BaseWeaponGURPS<RangedWeaponSource> {
 				includesFold(this.system.usage_notes, "two-handed") ||
 				includesFold(this.system.usage_notes, "two handed") ||
 				includesFold(this.system.usage_notes, "2-handed")
-			) twoHanded = true
+			)
+				twoHanded = true
 			const st = this.strength.min ?? 0
 			const actorST = this.actor.strengthOrZero
 			if (twoHanded) {

@@ -4,7 +4,7 @@ import { d6ify } from "@util/misc"
 import { StaticHitLocation } from "../actor/static/hit_location"
 // Import { GURPS } from "../gurps"
 let GURPS: any = {}
-// Let StaticHitLocation: any = {}
+// let StaticHitLocation: any = {}
 
 /* Here is where we do all the work to try to parse the text inbetween [ ].
  Supported formats:

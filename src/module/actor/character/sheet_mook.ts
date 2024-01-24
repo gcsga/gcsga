@@ -12,7 +12,10 @@ export class MookSheetGURPS extends CharacterSheetGURPS {
 		let classes = super.defaultOptions.classes
 		classes.splice(super.defaultOptions.classes.indexOf("character", 1))
 		return mergeObject(super.defaultOptions, {
+			height: 600,
+			width: 700,
 			classes: classes.concat(["mook"]),
+			scrollY: ["#main"],
 		})
 	}
 }

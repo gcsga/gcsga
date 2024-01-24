@@ -26,7 +26,6 @@ form {
 	}
 
 	background-color: rgb(var(--color-page));
-	// padding: var(--padding-header);
 
 	// Sheet Layout
 	display: flex;
@@ -46,39 +45,29 @@ form {
 		height: min-content;
 	}
 
-	.fieldblock {
-		display: grid;
-		grid-template-columns: 0fr 1fr;
-		align-items: end;
-		text-align: left;
-		white-space: nowrap;
-		align-self: stretch;
-		background-color: rgba(var(--color-content), 1);
-		color: rgba(var(--color-on-content), 1);
-	}
-
-	.fieldblock3 {
-		display: grid;
-		grid-template-columns: 0fr 0fr 1fr;
-		white-space: nowrap;
-		background-color: rgba(var(--color-content), 1);
-		color: rgba(var(--color-on-content), 1);
-
-		> * {
-			padding: var(--padding-standard);
-		}
-	}
-
+	.fieldblock,
+	.fieldblock3,
 	.fieldblock6,
 	.fieldblock7 {
 		display: grid;
 		white-space: nowrap;
-		background-color: rgba(var(--color-content), 1);
-		color: rgba(var(--color-on-content), 1);
+		background-color: rgb(var(--color-content));
+		color: rgb(var(--color-on-content));
 
 		> * {
 			padding: var(--padding-standard);
 		}
+	}
+
+	.fieldblock {
+		grid-template-columns: 0fr 1fr;
+		align-items: end;
+		text-align: left;
+		align-self: stretch;
+	}
+
+	.fieldblock3 {
+		grid-template-columns: 0fr 0fr 1fr;
 	}
 
 	.fieldblock6 {
@@ -98,54 +87,50 @@ form {
 		font: var(--font-page-primary-fields);
 	}
 
-	.rollable:not([data-type="modifier"]):not(.noroll) {
-		background: var(--background-roll);
-		color: rgb(var(--color-on-button-roll)) !important;
-
-		&.hover {
-			background: rgb(var(--color-button-roll-rollover)) !important;
-			color: rgb(var(--color-on-button-roll-rollover)) !important;
-		}
-
-		input {
-			color: inherit;
-		}
-
-		&.neg {
-			background: var(--background-roll-neg) !important;
-
-			&.hover {
-				background: rgb(var(--color-failure)) !important;
-				color: rgb(var(--color-on-button-roll-rollover)) !important;
-			}
-		}
-
-		&.pos {
-			background: var(--background-roll-pos) !important;
-
-			&.hover {
-				background: rgb(var(--color-success)) !important;
-				color: rgb(var(--color-on-button-roll-rollover)) !important;
-			}
-		}
-	}
-
-	.rollable[data-type="modifier"]:not(.noroll) {
-		background: var(--background-mod);
-		color: rgb(var(--color-on-button-mod)) !important;
-
-		&.hover {
-			background: rgb(var(--color-button-mod-rollover)) !important;
-			color: rgb(var(--color-on-button-mod-rollover)) !important;
-		}
-
-		input {
-			color: inherit;
-		}
-	}
-
 	.rollable:not(.noroll) {
 		cursor: pointer;
+
+		input {
+			color: inherit;
+		}
+
+		&[data-type="modifier"] {
+			background: var(--background-mod);
+			color: rgb(var(--color-on-button-mod)) !important;
+
+			&.hover {
+				background: rgb(var(--color-button-mod-rollover)) !important;
+				color: rgb(var(--color-on-button-mod-rollover)) !important;
+			}
+		}
+
+		&:not([data-type="modifier"]) {
+			background: var(--background-roll);
+			color: rgb(var(--color-on-button-roll)) !important;
+
+			&.hover {
+				background: rgb(var(--color-button-roll-rollover)) !important;
+				color: rgb(var(--color-on-button-roll-rollover)) !important;
+			}
+
+			&.neg {
+				background: var(--background-roll-neg) !important;
+
+				&.hover {
+					background: rgb(var(--color-failure)) !important;
+					color: rgb(var(--color-on-button-roll-rollover)) !important;
+				}
+			}
+
+			&.pos {
+				background: var(--background-roll-pos) !important;
+
+				&.hover {
+					background: rgb(var(--color-success)) !important;
+					color: rgb(var(--color-on-button-roll-rollover)) !important;
+				}
+			}
+		}
 	}
 
 	input {
@@ -167,27 +152,19 @@ form {
 		&:disabled {
 			border-bottom-color: transparent;
 			background-color: transparent;
-			// color: rgba(var(--color-on-editable), 0.6);
 		}
 	}
 
 	select {
 		appearance: none;
-		// align-self: center;
 		font: var(--font-field);
-		// background-color: rgb(var(--color-control));
 		background-color: rgb(var(--color-editable));
 		color: rgb(var(--color-on-editable));
-		// color: rgb(var(--color-on-control));
 		border: none;
 		border-bottom: 1px solid rgb(var(--color-control-edge));
 		border-radius: 0;
 		padding: 0;
 		height: 17px;
-		// border: 1px solid rgb(var(--color-control-edge));
-		// padding: 1px 3px;
-		// border-radius: 3px;
-		// height: 24px;
 		width: max-content;
 		align-items: self-end;
 
@@ -200,8 +177,6 @@ form {
 
 		&:focus {
 			box-shadow: none;
-			// border-width: 2px;
-			// padding: 0px 2px;
 		}
 	}
 

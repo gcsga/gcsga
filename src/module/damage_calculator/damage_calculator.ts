@@ -403,6 +403,7 @@ class DamageCalculator implements IDamageCalculator {
 				elevation: number
 			}
 
+			if (!token1 || !token2) return undefined
 			const ruler = new Ruler() as Ruler & { totalDistance: number }
 			ruler.waypoints = [{ x: token1.x, y: token1.y }]
 			ruler.measure({ x: token2.x, y: token2.y }, { gridSpaces: true })

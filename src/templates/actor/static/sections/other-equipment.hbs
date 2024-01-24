@@ -3,10 +3,10 @@
 <div class="desc item" data-item-id="{{ this.itemid }}" style="padding-left: calc({{ this.indent }} * 12px + 6px)">
 	<div class="dropdown">
 		{{#if this.hasContains }}
-		<i class="dropdown-toggle open gcs-circled-chevron-down" data-key="system.equipment.other.{{this.uuid}}"></i>
+		<i class="dropdown-toggle open gcs-circled-chevron-down" data-key="system.equipment.other.{{@key}}"></i>
 		{{/if}}
 		{{#if this.hasCollapsed }}
-		<i class="dropdown-toggle closed gcs-circled-chevron-right" data-key="system.equipment.other.{{this.uuid}}"></i>
+		<i class="dropdown-toggle closed gcs-circled-chevron-right" data-key="system.equipment.other.{{@key}}"></i>
 		{{/if}}
 	</div>
 	<div class="name">{{ this.name }}</div>

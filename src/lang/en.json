@@ -263,11 +263,11 @@
 				"unconscious": "Unconscious"
 			},
 			"encumbrance": {
-				"enc0": "None",
-				"enc1": "Light",
-				"enc2": "Medium",
-				"enc3": "Heavy",
-				"enc4": "X-Heavy"
+				"00000": "None",
+				"00001": "Light",
+				"00002": "Medium",
+				"00003": "Heavy",
+				"00004": "X-Heavy"
 			},
 			"body_plan": {
 				"arachnoid": "Arachnoid",
@@ -872,6 +872,7 @@
 			"damage": "{total} {type} damage",
 			"parry": "{name} - Parry",
 			"block": "{name} - Block",
+			"location": "Random Hit Location: {name}",
 			"success": {
 				"success": "Success!",
 				"failure": "Failure!",
@@ -1032,23 +1033,23 @@
 				"cancel": "Cancel",
 				"start": "Importing library: {name}",
 				"finished": "Finished importing {number} items."
-			},
-			"mook": {
-				"title": "Mook Generator",
-				"name": "Mook",
-				"attributes": "Attributes",
-				"traits": "Traits",
-				"skills": "Skills/Techniques",
-				"spells": "Spells",
-				"melee": "Melee Attacks",
-				"equipment": "Equipment",
-				"ranged": "Ranged Attacks",
-				"notes": "Notes",
-				"catchall": "Input",
-				"import": "Import Stat Block",
-				"test": "Test Mook",
-				"create": "Create Mook"
 			}
+		},
+		"mook": {
+			"title": "Mook Generator",
+			"name": "Mook",
+			"attributes": "Attributes",
+			"traits": "Traits",
+			"skills": "Skills/Techniques",
+			"spells": "Spells",
+			"melee": "Melee Attacks",
+			"equipment": "Equipment",
+			"ranged": "Ranged Attacks",
+			"notes": "Notes",
+			"catchall": "Input",
+			"import": "Import Stat Block",
+			"test": "Test Mook",
+			"create": "Create Mook"
 		},
 		"token_modifier_window": {
 			"button": "Token Modifiers",
@@ -1575,6 +1576,7 @@
 			"dr_bonus": "{item} [{bonus} against {type} attacks]",
 			"dr_bonus_leveled": "{item} [{bonus} ({per_level} per level) against {type} attacks]",
 			"encumbrance": "Encumbrance [{bonus}]",
+			"auto_damage": "Toggle automatic basic damage calculation",
 			"auto_encumbrance": "Toggle automatic encumbrance calculation",
 			"auto_threshold": "Toggle automatic attribute threshold calculation",
 			"weapon_rof": {

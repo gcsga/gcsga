@@ -214,5 +214,4 @@ export class TraitGURPS extends ItemGCS<TraitSource> {
 	static calculateModifierPoints(points: number, modifier: number): number {
 		return (points * modifier) / 100
 	}
-
 }

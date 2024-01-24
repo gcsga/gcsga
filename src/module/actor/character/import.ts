@@ -251,6 +251,7 @@ export class CharacterImporter {
 							[ActorFlags.AutoThreshold]: { active: true },
 							[ActorFlags.AutoEncumbrance]: { active: true },
 							[ActorFlags.MoveType]: this.document?.getFlag(SYSTEM_NAME, ActorFlags.MoveType),
+							[ActorFlags.AutoDamage]: { active: true }
 						},
 					},
 				},

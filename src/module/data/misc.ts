@@ -44,7 +44,7 @@ export enum SETTINGS {
 	INITIATIVE_FORMULA = "initiative_formula",
 	MODIFIER_LIST_COLLAPSE = "modifier_list_collapse",
 	BASE_BOOKS = "base_books",
-	AUTOMATIC_UNREADY = "automatic_unready"
+	AUTOMATIC_UNREADY = "automatic_unready",
 }
 
 export enum SSRT_SETTING {
@@ -221,6 +221,7 @@ export enum RollType {
 	Damage = "damage",
 	Modifier = "modifier",
 	ControlRoll = "control_roll",
+	Location = "location",
 	Generic = "generic",
 }
 

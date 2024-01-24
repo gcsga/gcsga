@@ -5,6 +5,7 @@ import { ResourceTrackerObj } from "@module/resource_tracker"
 import { Weight } from "@util"
 import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
 import { MoveTypeObj } from "@module/move_type"
+import { DiceGURPS } from "@module/dice"
 
 export interface DocumentModificationOptionsGURPS extends DocumentModificationOptions {
 	temporary: boolean
@@ -16,7 +17,7 @@ export interface CharacterSource extends BaseActorSourceGURPS<ActorType.Characte
 }
 export interface CharacterDataGURPS
 	extends Omit<CharacterSource, "effects" | "flags" | "items" | "token">,
-		CharacterSystemData {
+	CharacterSystemData {
 	readonly type: CharacterSource["type"]
 	data: CharacterSystemData
 	flags: CharacterFlags
@@ -31,6 +32,7 @@ export interface CharacterFlags extends ActorFlagsGURPS {
 		[ActorFlags.MoveType]: string
 		[ActorFlags.AutoEncumbrance]: { active: boolean; manual: number }
 		[ActorFlags.AutoThreshold]: { active: boolean; manual: Record<string, PoolThreshold | null> }
+		[ActorFlags.AutoDamage]: { active: boolean; thrust: DiceGURPS; swing: DiceGURPS }
 	}
 }
 
@@ -41,6 +43,7 @@ export const CharacterFlagDefaults: CharacterFlags = {
 		[ActorFlags.MoveType]: gid.Ground,
 		[ActorFlags.AutoEncumbrance]: { active: true, manual: 0 },
 		[ActorFlags.AutoThreshold]: { active: true, manual: {} },
+		[ActorFlags.AutoDamage]: { active: true, thrust: new DiceGURPS(), swing: new DiceGURPS() },
 	},
 }
 

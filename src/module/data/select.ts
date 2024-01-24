@@ -236,7 +236,7 @@ export function prepareSelectOptions(): void {
 			return Object.assign(acc, {
 				[c]: LocalizeGURPS.translations.gurps.status[c],
 			})
-		}, {})
+		}, {}),
 	}
 	CONFIG.GURPS.select = SELECT_OPTIONS
 }

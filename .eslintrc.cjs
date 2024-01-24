@@ -6,7 +6,7 @@ module.exports = {
 		extraFileExtensions: [".cjs", ".mjs"],
 		sourceType: "module",
 		project: "./tsconfig.eslint.json",
-		tsconfigRootDir: __dirname
+		tsconfigRootDir: __dirname,
 	},
 
 	env: {

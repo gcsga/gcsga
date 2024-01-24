@@ -2,126 +2,80 @@
 	<div id="identity" class="fieldblock">
 		<div class="label">{{localize "gurps.character.name"}}</div>
 		<div class="field">
-			<input
-				type="text"
-				name="profile.name"
-				value="{{actor.profile.name}}"
-				data-dtype="String"
-			/>
+			<input type="text" name="profile.name" value="{{actor.profile.name}}" data-dtype="String" />
 		</div>
 		<div class="label">{{localize "gurps.character.title"}}</div>
 		<div class="field">
-			<input
-				type="text"
-				name="profile.title"
-				value="{{actor.profile.title}}"
-				data-dtype="String"
-			/>
+			<input type="text" name="profile.title" value="{{actor.profile.title}}" data-dtype="String" />
 		</div>
 		<div class="label">{{localize "gurps.character.appearance"}}</div>
 		<div class="field">
-			<textarea
-				type="text"
-				name="profile.userdesc"
-				data-dtype="String"
-			>{{textareaFormat actor.profile.appearance }}</textarea>
+			<textarea type="text" name="profile.userdesc" data-dtype="String">{{textareaFormat actor.profile.appearance
+				}}</textarea>
 		</div>
 	</div>
 	<div class="fieldblock">
 		<div id="attributes">
-			<div class="header">{{localize "gurps.system.mook.attributes"}}</div>
+			<div class="header">{{localize "gurps.mook.attributes"}}</div>
 			<div class="content">
 				<div id="primary-attributes" class="fieldblock">
-				{{#each primary_attributes}}
+					{{#each primary_attributes}}
 					{{>mook-generator/attribute}}
-				{{/each}}
-				{{#each point_pools}}
+					{{/each}}
+					{{#each point_pools}}
 					{{>mook-generator/attribute}}
-				{{/each}}
+					{{/each}}
 					<div class="label">{{localize "gurps.character.basic_thrust"}}</div>
 					<div class="field">
-						<input
-							name="thrust"
-							class="input number"
-							type="text"
-							data-dtype="String"
-							value="{{actor.thrust.string}}"
-							style="min-width: {{length basic_thrust}}ch;"
-						/>
+						<input name="thrust" class="input number" type="text" data-dtype="String" value="{{actor.thrust.string}}"
+							style="min-width: {{length basic_thrust}}ch;" />
 					</div>
 					<div class="label">{{localize "gurps.character.basic_swing"}}</div>
 					<div class="field">
-						<input
-							name="swing"
-							class="input number"
-							type="text"
-							data-dtype="String"
-							value="{{actor.swing.string}}"
-							style="min-width: {{length basic_swing}}ch;"
-						/>
+						<input name="swing" class="input number" type="text" data-dtype="String" value="{{actor.swing.string}}"
+							style="min-width: {{length basic_swing}}ch;" />
 					</div>
 				</div>
 				<div id="secondary-attributes" class="fieldblock">
-				{{#each secondary_attributes}}
+					{{#each secondary_attributes}}
 					{{>mook-generator/attribute}}
-				{{/each}}
+					{{/each}}
 				</div>
 			</div>
 		</div>
 		<div id="catchall">
-			<div class="header">{{localize "gurps.system.mook.notes"}}</div>
-			<textarea
-				name="text.catchall"
-				type="text"
-				>{{text.catchall}}</textarea>
+			<div class="header">{{localize "gurps.mook.notes"}}</div>
+			<textarea name="text.catchall" type="text">{{text.catchall}}</textarea>
 		</div>
 	</div>
 	<div id="embeds">
 		<div id="melee">
-			<div class="header">{{localize "gurps.system.mook.melee"}}</div>
-			<textarea
-				name="text.melee"
-				type="text"
-				>{{text.melee}}</textarea>
+			<div class="header">{{localize "gurps.mook.melee"}}</div>
+			<textarea name="text.melee" type="text">{{text.melee}}</textarea>
 		</div>
 		<div id="ranged">
-			<div class="header">{{localize "gurps.system.mook.ranged"}}</div>
-			<textarea
-				name="text.ranged"
-				type="text"
-				>{{text.ranged}}</textarea>
+			<div class="header">{{localize "gurps.mook.ranged"}}</div>
+			<textarea name="text.ranged" type="text">{{text.ranged}}</textarea>
 		</div>
 		<div id="traits">
-			<div class="header">{{localize "gurps.system.mook.traits"}}</div>
-			<textarea
-				name="text.traits"
-				type="text"
-				>{{text.traits}}</textarea>
+			<div class="header">{{localize "gurps.mook.traits"}}</div>
+			<textarea name="text.traits" type="text">{{text.traits}}</textarea>
 		</div>
 		<div id="skills">
-			<div class="header">{{localize "gurps.system.mook.skills"}}</div>
-			<textarea
-				name="text.skills"
-				type="text"
-				>{{text.skills}}</textarea>
+			<div class="header">{{localize "gurps.mook.skills"}}</div>
+			<textarea name="text.skills" type="text">{{text.skills}}</textarea>
 		</div>
 		<div id="equipment">
-			<div class="header">{{localize "gurps.system.mook.equipment"}}</div>
-			<textarea
-				name="text.equipment"
-				type="text"
-				>{{text.equipment}}</textarea>
+			<div class="header">{{localize "gurps.mook.equipment"}}</div>
+			<textarea name="text.equipment" type="text">{{text.equipment}}</textarea>
 		</div>
 		<div id="spells">
-			<div class="header">{{localize "gurps.system.mook.spells"}}</div>
-			<textarea
-				name="text.spells"
-				type="text"
-				>{{text.spells}}</textarea>
+			<div class="header">{{localize "gurps.mook.spells"}}</div>
+			<textarea name="text.spells" type="text">{{text.spells}}</textarea>
 		</div>
 	</div>
 	<div id="buttons">
-	<button id="import"><i class="fas fa-pen-to-square"></i>{{localize "gurps.system.mook.import"}}</button>
-		<button id="create"><i class="fas fa-arrow-turn-down-left"></i>{{button_text}}</button>
+		<button id="import"><i class="fas fa-pen-to-square"></i><span>{{localize "gurps.mook.import"}}</span></button>
+		<button id="create"><i class="fas fa-arrow-turn-down-left"></i><span>{{button_text}}</span></button>
 	</div>
 </form>

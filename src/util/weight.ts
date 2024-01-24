@@ -1,7 +1,6 @@
 import { Int } from "./fxp"
 
 export class Weight {
-
 	static format(pounds: number, unit: WeightUnits = WeightUnits.Pound): string {
 		return `${Int.from(Weight.fromPounds(pounds, unit))} ${unit}`
 	}

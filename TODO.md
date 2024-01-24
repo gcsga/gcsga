@@ -4,11 +4,7 @@
 - Finish "static" character (0.15 and older) compatibility
  - don't bother with editing features
 - mook generator
- - keep simple textbox parsing as for previous version
  - implement name matching from imported libraries
- - warning tag on simplified mook items as not having full functionality
-  - option to suppress
- - weapon damage parsing
 
 ## Jeff and Chris
 
@@ -29,13 +25,9 @@
   - modifier bucket journals (waiting for OTFs)
 - Add makeshift static to dynamic character conversion
 - Delete compendium pack entries in settings when compendium pack is removed
-- Move type editor (in triangle settings)
 - style cleanup
 - test coverage
- - attribute resolution (?)
  - dice generation
- - mook generator
-- manual thrust and swing (?)
 - Globally visible modifier for rough terrain, darkness, etc.
 
 ## 1.1.0 and beyond

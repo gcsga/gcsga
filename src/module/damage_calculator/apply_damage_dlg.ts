@@ -1,6 +1,5 @@
-import { SETTINGS, SYSTEM_NAME } from "@module/data"
+import { SETTINGS, SYSTEM_NAME, gid } from "@module/data"
 import { PDF } from "@module/pdf"
-import { toWord } from "@util/misc"
 import { DamageRoll, DamageTarget } from "."
 import { IDamageCalculator, createDamageCalculator } from "./damage_calculator"
 import { DamageTypes } from "./damage_type"
@@ -222,15 +221,10 @@ class ApplyDamageDialog extends Application {
 		// Get localized version of the location id, if necessary.
 		const location = result.location?.choice_name ?? "Torso"
 
-		// Create an array suitable for drawing the dice on the ChatMessage.
-		const rolls = result.roll.dice[0].results.map(e => {
-			return { result: e.result, word: toWord(e.result) }
-		})
-
 		const message = await renderTemplate(`systems/${SYSTEM_NAME}/templates/message/random-location-roll.hbs`, {
+			actor: this.target,
 			location: location,
-			rolls: rolls,
-			total: result.roll.total,
+			tooltip: await result.roll.getTooltip(),
 		})
 
 		let messageData = {
@@ -243,7 +237,7 @@ class ApplyDamageDialog extends Application {
 
 		ChatMessage.create(messageData, {})
 
-		return result.location?.id ?? "torso"
+		return result.location?.id ?? gid.Torso
 	}
 
 	private get target(): DamageTarget {
