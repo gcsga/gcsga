@@ -1,6 +1,6 @@
-import { SETTINGS, SYSTEM_NAME } from "@module/data"
-import { SettingsMenuGURPS } from "./menu"
-import { defaultSettings } from "./defaults"
+import { SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
+import { SettingsMenuGURPS } from "./menu.ts"
+import { mergeObject } from "types/foundry/common/utils/helpers.js"
 
 type AttributeBaseSettingField = {
 	name: string
@@ -52,11 +52,11 @@ export abstract class AttributeBaseSettings extends SettingsMenuGURPS {
 					default: defaultSettings[SYSTEM_NAME][`${this.namespace}.${value}`],
 				},
 			}),
-			{}
+			{},
 		)
 	}
 
-	activateListeners(html: JQuery<HTMLElement>): void {
+	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		html.find(".item").on("dragover", event => this._onDragItem(event))
 		html.find(".add").on("click", event => this._onAddItem(event))
@@ -71,7 +71,7 @@ export abstract class AttributeBaseSettings extends SettingsMenuGURPS {
 
 	abstract _onDeleteItem(event: JQuery.ClickEvent): Promise<unknown>
 
-	async _onDragStart(event: DragEvent) {
+	override async _onDragStart(event: DragEvent) {
 		const item = $(event.currentTarget!)
 		const type = item.data("type")
 		const index = Number(item.data("index"))
@@ -82,7 +82,7 @@ export abstract class AttributeBaseSettings extends SettingsMenuGURPS {
 				type: type,
 				index: index,
 				parent_index: parent_index,
-			})
+			}),
 		)
 		;(event as any).dragType = type
 		console.log(event.dataTransfer?.getData("text/plain"))
@@ -103,18 +103,18 @@ export abstract class AttributeBaseSettings extends SettingsMenuGURPS {
 	}
 
 	override async getData(): Promise<any> {
-		return (<typeof AttributeBaseSettings> this.constructor).SETTINGS.reduce(
+		return (<typeof AttributeBaseSettings>this.constructor).SETTINGS.reduce(
 			(array, value) => ({
 				...array,
 				[value]: game.settings.get(
 					SYSTEM_NAME,
-					`${(<typeof AttributeBaseSettings> this.constructor).namespace}.${value}` as any
+					`${(<typeof AttributeBaseSettings>this.constructor).namespace}.${value}` as any,
 				),
 			}),
 			{
 				actor: null,
 				config: CONFIG.GURPS,
-			}
+			},
 		)
 	}
 }

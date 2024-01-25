@@ -1,7 +1,7 @@
-import { BaseItemSourceGURPS } from "@item/base"
-import { ItemType } from "@module/data"
-import { SkillDefault } from "@module/default"
-import { stdmg } from "@util/enum"
+import { BaseItemSourceGURPS } from "@item/data.ts"
+import { ItemType } from "@module/data/misc.ts"
+import { SkillDefault } from "@sytem/default/index.ts"
+import { stdmg } from "@util/enum/stdmg.ts"
 
 export type BaseWeaponSource<
 	TItemType extends ItemType = ItemType,

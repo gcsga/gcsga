@@ -1,6 +1,6 @@
-import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
-import { ItemType } from "@module/data"
-import { selfctrl } from "@util/enum"
+import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
+import { ItemType } from "@module/data/misc.ts"
+import { selfctrl } from "@util/enum/selfctrl.ts"
 
 export type TraitContainerSource = ItemGCSSource<ItemType.TraitContainer, TraitContainerSystemData>
 

@@ -1,136 +1,114 @@
-interface ContextMenuEntry {
-	/**
-	 * The context menu label. Can be localized.
-	 */
-	name: string
+export {};
 
-	/**
-	 * A string containing an HTML icon element for the menu item
-	 */
-	icon: string
+declare global {
+    /**
+     * Display a right-click activated Context Menu which provides a dropdown menu of options
+     * A ContextMenu is constructed by designating a parent HTML container and a target selector
+     * An Array of menuItems defines the entries of the menu which is displayed
+     *
+     * @param element            The containing HTML element within which the menu is positioned
+     * @param selector           A CSS selector which activates the context menu.
+     * @param menuItems          An Array of entries to display in the menu
+     * @param eventName          Optionally override the triggering event which can spawn the menu
+     *
+     * @param menuItem           Menu items in the array can have the following properties
+     * @param menuItem.name      The displayed item name
+     * @param menuItem.icon      An icon glyph HTML string
+     * @param menuItem.condition A function which returns a Boolean for whether or not to display the item
+     * @param menuItem.callback  A callback function to trigger when the entry of the menu is clicked
+     */
+    class ContextMenu {
+        constructor(
+            element: HTMLElement | JQuery,
+            selector: string,
+            menuItems: ContextMenuEntry[],
+            { eventName }?: { eventName?: string },
+        );
 
-	/**
-	 * The function to call when the menu item is clicked. Receives the HTML element of the SidebarTab entry that this context menu is for.
-	 */
-	callback: (target: JQuery) => void
+        /** The target HTMLElement being selected */
+        element: HTMLElement;
 
-	/**
-	 * A function to call to determine if this item appears in the menu. Receives the HTML element of the SidebarTab entry that this context menu is for.
-	 */
-	condition?: boolean | ((target: JQuery) => boolean)
-}
+        /** The target CSS selector which activates the menu */
+        selector: string;
 
-/**
- * Display a right-click activated Context Menu which provides a dropdown menu of options
- * A ContextMenu is constructed by designating a parent HTML container and a target selector
- * An Array of menuItems defines the entries of the menu which is displayed
- */
-declare class ContextMenu {
-	/**
-	 * @param element   - The containing HTML element within which the menu is positioned
-	 * @param selector  - A CSS selector which activates the context menu.
-	 * @param menuItems - An Array of entries to display in the menu
-	 * @param eventName - Optionally override the triggering event which can spawn the menu
-	 *                    (default: `"contextmenu"`)
-	 */
-	constructor(
-		element: JQuery,
-		selector: string | null | undefined,
-		menuItems: ContextMenuEntry[],
-		{ eventName }?: { eventName?: string }
-	)
+        /** An interaction event name which activates the menu */
+        eventName: string;
 
-	/**
-	 * The target HTMLElement being selected
-	 */
-	element: JQuery
+        /** The array of menu items being rendered */
+        menuItems: ContextMenuEntry[];
 
-	/**
-	 * The target CSS selector which activates the menu
-	 * @defaultValue `element.attr("id")`
-	 */
-	selector: string
+        /** Track which direction the menu is expanded in */
+        protected _expandUp: boolean;
 
-	/**
-	 * An interaction event name which activates the menu
-	 */
-	eventName: string
+        /** A convenience accessor to the context menu HTML object */
+        get menu(): JQuery;
 
-	/**
-	 * The array of menu items being rendered
-	 */
-	menuItems: ContextMenuEntry[]
+        /**
+         * Create a ContextMenu for this Application and dispatch hooks.
+         * @param app       The Application this ContextMenu belongs to.
+         * @param html      The Application's rendered HTML.
+         * @param selector  The target CSS selector which activates the menu.
+         * @param menuItems The array of menu items being rendered.
+         * @param [options] Additional options to configure context menu initialization.
+         * @param [options.hookName="EntryContext"]  The name of the hook to call.
+         */
+        static create(
+            app: Application,
+            html: JQuery,
+            selector: string,
+            menuItems: ContextMenuEntry[],
+            options?: { eventName?: string; hookName?: string },
+        ): ContextMenu | void;
 
-	/**
-	 * Track which direction the menu is expanded in
-	 * @defaultValue `false`
-	 */
-	protected _expandUp: boolean
+        /** Attach a ContextMenu instance to an HTML selector */
+        bind(): void;
 
-	/**
-	 * A convenience accessor to the context menu HTML object
-	 */
-	get menu(): JQuery
+        /**
+         * Closes the menu and removes it from the DOM.
+         * @param [options]              Options to configure the closing behavior.
+         * @param [options.animate=true] Animate the context menu closing.
+         */
+        close(options?: { animate?: boolean }): Promise<void>;
 
-	/**
-	 * Create a ContextMenu for this Application and dispatch hooks.
-	 * @param app       - The Application this ContextMenu belongs to.
-	 * @param html      - The Application's rendered HTML.
-	 * @param selector  - The target CSS selector which activates the menu.
-	 * @param menuItems - The array of menu items being rendered.
-	 * @param hookName  - The name of the hook to call.
-	 *                    (default: `"EntryContext"`)
-	 */
-	static create(
-		app: Application,
-		html: JQuery,
-		selector: string,
-		menuItems: ContextMenuEntry[],
-		hookName?: string
-	): ContextMenu
+        protected _close(): void;
 
-	/**
-	 * Attach a ContextMenu instance to an HTML selector
-	 */
-	bind(): void
+        protected _animateOpen(menu: JQuery): Promise<void>;
 
-	/**
-	 * Closes the menu and removes it from the DOM.
-	 * @param options - Options to configure the closing behavior.
-	 */
-	close(options?: ContextMenu.CloseOptions | undefined): Promise<void>
+        protected _animateClose(menu: JQuery): Promise<void>;
 
-	/** @internal */
-	protected _close(): void
+        /**
+         * Render the Context Menu by iterating over the menuItems it contains
+         * Check the visibility of each menu item, and only render ones which are allowed by the item's logical condition
+         * Attach a click handler to each item which is rendered
+         */
+        render(target: JQuery): Promise<void>;
 
-	/** @internal */
-	protected _animateOpen(menu: JQuery): Promise<void>
+        /**
+         * Set the position of the context menu, taking into consideration whether the menu should expand upward or downward
+         */
+        protected _setPosition(html: JQuery, target: JQuery): void;
 
-	/** @internal */
-	protected _animateClose(menu: JQuery): Promise<void>
+        /** Local listeners which apply to each ContextMenu instance which is created. */
+        activateListeners(html: JQuery): void;
 
-	/**
-	 * Render the Context Menu by iterating over the menuItems it contains
-	 * Check the visibility of each menu item, and only render ones which are allowed by the item's logical condition
-	 * Attach a click handler to each item which is rendered
-	 * @param target - The target element to which the context menu is attached
-	 */
-	render(target: JQuery): void | Promise<void>
+        /** Global listeners which apply once only to the document. */
+        static eventListeners(): void;
+    }
 
-	/**
-	 * Set the position of the context menu, taking into consideration whether the menu should expand upward or downward
-	 */
-	protected _setPosition(html: JQuery, target: JQuery): void
-
-	static eventListeners(): void
-}
-
-declare namespace ContextMenu {
-	interface CloseOptions {
-		/**
-		 * Animate the context menu closing.
-		 * @defaultValue `true`
-		 */
-		animate?: boolean
-	}
+    interface ContextMenuEntry {
+        /** The context menu label. Can be localized. */
+        name: string;
+        /** A string containing an HTML icon element for the menu item */
+        icon: string;
+        /**
+         * The function to call when the menu item is clicked. Receives the HTML element
+         * of the entry that this context menu is for.
+         */
+        callback: (target: JQuery) => void;
+        /**
+         * A function to call to determine if this item appears in the menu.
+         * Receives the HTML element of the entry that this context menu is for.
+         */
+        condition?: (target: JQuery) => boolean;
+    }
 }

@@ -1,3 +1,3 @@
-export { NoteContainerGURPS } from "./document"
-export { NoteContainerSheet } from "./sheet"
-export * from "./data"
+export { NoteContainerGURPS } from "./document.ts"
+export { NoteContainerSheet } from "./sheet.ts"
+export * from "./data.ts"

@@ -1,236 +1,226 @@
-import {
-	ConfiguredDocumentClass,
-	ConfiguredObjectClassForName,
-	DocumentConstructor,
-} from "../../../../types/helperTypes"
-import { DocumentModificationOptions } from "../../../common/abstract/document.mjs"
-import EmbeddedCollection from "../../../common/abstract/embedded-collection.mjs"
-import type { ActorDataConstructorData } from "../../../common/data/data.mjs/actorData.js"
+import type { ClientBaseActor } from "./client-base-mixes.d.ts";
 
 declare global {
-	/**
-	 * The client-side Actor document which extends the common BaseActor model.
-	 * Each Actor document contains ActorData which defines its data schema.
-	 *
-	 * @see {@link data.ActorData}              The Actor data schema
-	 * @see {@link documents.Actors}            The world-level collection of Actor documents
-	 * @see {@link applications.ActorSheet}     The Actor configuration application
-	 *
-	 * @example <caption>Create a new Actor</caption>
-	 * ```typescript
-	 * let actor = await Actor.create({
-	 *   name: "New Test Actor",
-	 *   type: "character",
-	 *   img: "artwork/character-profile.jpg"
-	 * });
-	 * ```
-	 *
-	 * @example <caption>Retrieve an existing Actor</caption>
-	 * ```typescript
-	 * let actor = game.actors.get(actorId);
-	 * ```
-	 */
-	class Actor extends ClientDocumentMixin(foundry.documents.BaseActor) {
-		/**
-		 * @param data    - Initial data provided to construct the Actor document
-		 * @param context - The document context, see {@link foundry.abstract.Document}
-		 */
-		constructor(
-			data: ConstructorParameters<typeof foundry.documents.BaseActor>[0],
-			context?: ConstructorParameters<typeof foundry.documents.BaseActor>[1]
-		)
+    /**
+     * The client-side Actor document which extends the common BaseActor model.
+     *
+     * @category - Documents
+     *
+     * @see {@link documents.Actors}            The world-level collection of Actor documents
+     * @see {@link applications.ActorSheet}     The Actor configuration application
+     *
+     * @example Create a new Actor
+     * ```js
+     * let actor = await Actor.create({
+     *   name: "New Test Actor",
+     *   type: "character",
+     *   img: "artwork/character-profile.jpg"
+     * });
+     * ```
+     *
+     * @example Retrieve an existing Actor
+     * ```js
+     * let actor = game.actors.get(actorId);
+     * ```
+     */
+    class Actor<TParent extends TokenDocument | null = TokenDocument | null> extends ClientBaseActor<TParent> {
+        /** An object that tracks which tracks the changes to the data model which were applied by active effects */
+        overrides: Omit<DeepPartial<this["_source"]>, "prototypeToken">;
 
-		/**
-		 * An object that tracks which tracks the changes to the data model which were applied by active effects
-		 * @defaultValue `{}`
-		 */
-		overrides: Record<string, unknown>
+        /** The statuses that are applied to this actor by active effects */
+        statuses: Set<string>;
 
-		/**
-		 * A cached array of image paths which can be used for this Actor's token.
-		 * Null if the list has not yet been populated.
-		 * @defaultValue `null`
-		 */
-		protected _tokenImages: string[] | null
+        /**
+         * A cached array of image paths which can be used for this Actor's token.
+         * Null if the list has not yet been populated.
+         */
+        protected _tokenImages: string[] | null;
 
-		/**
-		 * Cache the last drawn wildcard token to avoid repeat draws
-		 * @defaultValue `null`
-		 */
-		protected _lastWildcard: string | null
+        /** Cache the last drawn wildcard token to avoid repeat draws */
+        protected _lastWildcard: string | null;
 
-		/**
-		 * A convenient reference to the file path of the Actor's profile image
-		 */
-		get img(): this["data"]["img"]
+        /* -------------------------------------------- */
+        /*  Properties                                  */
+        /* -------------------------------------------- */
 
-		/**
-		 * Provide a thumbnail image path used to represent this document.
-		 */
-		get thumbnail(): this["data"]["img"]
+        /** Provide a thumbnail image path used to represent this document. */
+        get thumbnail(): this["img"];
 
-		/**
-		 * Provide an object which organizes all embedded Item instances by their type
-		 */
-		get itemTypes(): Record<
-			foundry.documents.BaseItem["data"]["type"],
-			Array<InstanceType<ConfiguredDocumentClass<typeof foundry.documents.BaseItem>>>
-		>
-		/**
-		 * Test whether an Actor document is a synthetic representation of a Token (if true) or a full Document (if false)
-		 */
-		get isToken(): boolean
+        /** Provide an object which organizes all embedded Item instances by their type */
+        get itemTypes(): object;
 
-		/**
-		 * An array of ActiveEffect instances which are present on the Actor which have a limited duration.
-		 */
-		get temporaryEffects(): ReturnType<this["effects"]["filter"]>
+        /** Test whether an Actor is a synthetic representation of a Token (if true) or a full Document (if false) */
+        get isToken(): boolean;
 
-		/**
-		 * Return a reference to the TokenDocument which owns this Actor as a synthetic override
-		 */
-		get token(): InstanceType<ConfiguredDocumentClass<typeof foundry.documents.BaseToken>> | null
+        /** Retrieve the list of ActiveEffects that are currently applied to this Actor. */
+        get appliedEffects(): ActiveEffect<this>[];
 
-		override get uuid(): string
+        /** An array of ActiveEffect instances which are present on the Actor which have a limited duration. */
+        get temporaryEffects(): TemporaryEffect[];
 
-		/**
-		 * Apply any transformations to the Actor data which are caused by ActiveEffects.
-		 */
-		applyActiveEffects(): void
+        /** Return a reference to the TokenDocument which owns this Actor as a synthetic override */
+        get token(): TParent;
 
-		/**
-		 * Retrieve an Array of active tokens which represent this Actor in the current canvas Scene.
-		 * If the canvas is not currently active, or there are no linked actors, the returned Array will be empty.
-		 * If the Actor is a synthetic token actor, only the exact Token which it represents will be returned.
-		 *
-		 * @param linked   - Limit results to Tokens which are linked to the Actor. Otherwise return all Tokens even those which are not linked. (default: `false`)
-		 * @param document - Return the Document instance rather than the PlaceableObject (default: `false`)
-		 * @returns An array of Token instances in the current Scene which reference this Actor.
-		 */
-		getActiveTokens(
-			linked: boolean,
-			document: true
-		): InstanceType<ConfiguredDocumentClass<typeof foundry.documents.BaseToken>>[]
-		getActiveTokens(linked?: boolean, document?: false): InstanceType<ConfiguredObjectClassForName<"Token">>[]
-		getActiveTokens(
-			linked: boolean,
-			document: boolean
-		):
-			| InstanceType<ConfiguredObjectClassForName<"Token">>[]
-			| InstanceType<ConfiguredDocumentClass<typeof foundry.documents.BaseToken>>[]
+        /** Whether the Actor has at least one Combatant in the active Combat that represents it. */
+        get inCombat(): boolean;
 
-		/**
-		 * Prepare a data object which defines the data schema used by dice roll commands against this Actor
-		 */
-		getRollData(): object
+        /* -------------------------------------------- */
+        /*  Methods                                     */
+        /* -------------------------------------------- */
 
-		/**
-		 * Create a new TokenData object which can be used to create a Token representation of the Actor.
-		 * @param data - Additional data, such as x, y, rotation, etc. for the created token data (default: `{}`)
-		 * @returns The created TokenData instance
-		 */
-		getTokenData(data?: object): Promise<foundry.data.TokenData>
+        /** Apply any transformations to the Actor data which are caused by ActiveEffects. */
+        applyActiveEffects(): void;
 
-		/**
-		 * Get an Array of Token images which could represent this Actor
-		 */
-		getTokenImages(): Promise<string[]>
+        /**
+         * Retrieve an Array of active tokens which represent this Actor in the current canvas Scene.
+         * If the canvas is not currently active, or there are no linked actors, the returned Array will be empty.
+         * If the Actor is a synthetic token actor, only the exact Token which it represents will be returned.
+         *
+         * @param [linked=false]   Limit results to Tokens which are linked to the Actor. Otherwise return all Tokens,
+                                   even those which are not linked.
+         * @param [document=false] Return the Document instance rather than the PlaceableObject
+         * @return An array of Token instances in the current Scene which reference this Actor.
+         */
+        getActiveTokens(linked: boolean | undefined, document: true): TokenDocument<Scene>[];
+        getActiveTokens(linked?: boolean | undefined, document?: false): Token<TokenDocument<Scene>>[];
+        getActiveTokens(linked?: boolean, document?: boolean): TokenDocument<Scene>[] | Token<TokenDocument<Scene>>[];
 
-		/**
-		 * Handle how changes to a Token attribute bar are applied to the Actor.
-		 * This allows for game systems to override this behavior and deploy special logic.
-		 * @param attribute - The attribute path
-		 * @param value     - The target attribute value
-		 * @param isDelta   - Whether the number represents a relative change (true) or an absolute change (false) (default: `false`)
-		 * @param isBar     - Whether the new value is part of an attribute bar, or just a direct value (default: `true`)
-		 * @returns The updated Actor document
-		 */
-		modifyTokenAttribute(
-			attribute: string,
-			value: number,
-			isDelta: boolean,
-			isBar: boolean
-		): Promise<this | undefined>
+        /**
+         * Get all ActiveEffects that may apply to this Actor.
+         * If CONFIG.ActiveEffect.legacyTransferral is true, this is equivalent to actor.effects.contents.
+         * If CONFIG.ActiveEffect.legacyTransferral is false, this will also return all the transferred ActiveEffects on any
+         * of the Actor's owned Items.
+         */
+        allApplicableEffects(): Generator<ActiveEffect<this>, void, void>;
 
-		override prepareDescendantDocuments(): void
+        /** Prepare a data object which defines the data schema used by dice roll commands against this Actor */
+        getRollData(): Record<string, unknown>;
 
-		/**
-		 * Roll initiative for all Combatants in the currently active Combat encounter which are associated with this Actor.
-		 * If viewing a full Actor document, all Tokens which map to that actor will be targeted for initiative rolls.
-		 * If viewing a synthetic Token actor, only that particular Token will be targeted for an initiative roll.
-		 *
-		 * @param options - Configuration for how initiative for this Actor is rolled.
-		 * @returns A promise which resolves to the Combat document once rolls are complete.
-		 */
-		rollInitiative(options?: Actor.RollInitiativeOptions): Promise<void>
+        /**
+         * Create a new Token document, not yet saved to the database, which represents the Actor.
+         * @param [data={}] Additional data, such as x, y, rotation, etc. for the created token data
+         * @returns The created TokenDocument instance
+         */
+        getTokenDocument(data?: DeepPartial<foundry.documents.TokenSource>): Promise<NonNullable<TParent>>;
 
-		override getEmbeddedCollection(
-			embeddedName: string
-		): EmbeddedCollection<DocumentConstructor, foundry.data.ActorData>
+        /** Get an Array of Token images which could represent this Actor */
+        getTokenImages(): Promise<(ImageFilePath | VideoFilePath)[]>;
 
-		protected override _preCreate(
-			data: ActorDataConstructorData,
-			options: DocumentModificationOptions,
-			user: foundry.documents.BaseUser
-		): Promise<void>
+        /**
+         * Handle how changes to a Token attribute bar are applied to the Actor.
+         * This allows for game systems to override this behavior and deploy special logic.
+         * @param attribute The attribute path
+         * @param value     The target attribute value
+         * @param isDelta   Whether the number represents a relative change (true) or an absolute change (false)
+         * @param isBar     Whether the new value is part of an attribute bar, or just a direct value
+         * @return The updated Actor document
+         */
+        modifyTokenAttribute(attribute: string, value: number, isDelta?: boolean, isBar?: boolean): Promise<this>;
 
-		protected override _onUpdate(
-			changed: DeepPartial<foundry.data.ActorData["_source"]>,
-			options: DocumentModificationOptions,
-			user: string
-		): void
+        override prepareEmbeddedDocuments(): void;
 
-		protected override _onCreateDescendantDocuments(
-			embeddedName: string,
-			documents: foundry.abstract.Document<any, any>[],
-			result: Record<string, unknown>[],
-			options: DocumentModificationOptions,
-			userId: string
-		): void
+        /**
+         * Roll initiative for all Combatants in the currently active Combat encounter which are associated with this Actor.
+         * If viewing a full Actor entity, all Tokens which map to that actor will be targeted for initiative rolls.
+         * If viewing a synthetic Token actor, only that particular Token will be targeted for an initiative roll.
+         *
+         * @param options Configuration for how initiative for this Actor is rolled.
+         * @param [options.createCombatants=false] Create new Combatant entries for Tokens associated with this actor.
+         * @param [options.rerollInitiative=false] Re-roll the initiative for this Actor if it has already been rolled.
+         * @param [options.initiativeOptions={}]   Additional options passed to the Combat#rollInitiative method.
+         * @return A promise which resolves to the Combat entity once rolls are complete.
+         */
+        rollInitiative(options?: {
+            createCombatants?: boolean;
+            rerollInitiative?: boolean;
+            initiativeOptions?: object;
+        }): Promise<Combat | null>;
 
-		protected override _onUpdateDescendantDocuments(
-			embeddedName: string,
-			documents: foundry.abstract.Document<any, any>[],
-			result: Record<string, unknown>[],
-			options: DocumentModificationOptions,
-			userId: string
-		): void
+        /**
+         * Request wildcard token images from the server and return them.
+         * @param actorId   The actor whose prototype token contains the wildcard image path.
+         * @param [options]
+         * @param [options.pack] The name of the compendium the actor is in.
+         */
+        protected static _requestTokenImages(
+            actorId: string,
+            options?: { pack?: string },
+        ): Promise<(ImageFilePath | VideoFilePath)[]>;
 
-		protected override _onDeleteDescendantDocuments(
-			embeddedName: string,
-			documents: foundry.abstract.Document<any, any>[],
-			result: string[],
-			options: DocumentModificationContext,
-			userId: string
-		): void
+        /* -------------------------------------------- */
+        /*  Event Handlers                              */
+        /* -------------------------------------------- */
 
-		/**
-		 * Perform various actions on active tokens if embedded documents were changed.
-		 * @param embeddedName - The type of embedded document that was modified.
-		 * @internal
-		 */
-		protected _onEmbeddedDocumentChange(embeddedName: string): void
-	}
-	namespace Actor {
-		interface RollInitiativeOptions {
-			/**
-			 * Create new Combatant entries for Tokens associated with this actor.
-			 * @defaultValue `false`
-			 */
-			createCombatants?: boolean
+        protected override _preCreate(
+            data: this["_source"],
+            options: DocumentModificationContext<TParent>,
+            user: User,
+        ): Promise<boolean | void>;
 
-			/**
-			 * Re-roll the initiative for this Actor if it has already been rolled.
-			 * @defaultValue `false`
-			 */
-			rerollInitiative?: boolean
+        /**
+         * When an Actor is being created, apply default token configuration settings to its prototype token.
+         * @param data    Data explicitly provided to the creation workflow
+         * @param options Options which configure creation
+         * @param [options.fromCompendium] Does this creation workflow originate via compendium import?
+         */
+        protected _applyDefaultTokenSettings(
+            data: this["_source"],
+            options?: { fromCompendium?: boolean },
+        ): DeepPartial<this["_source"]>;
 
-			/**
-			 * Additional options passed to the Combat#rollInitiative method.
-			 * @defaultValue `{}`
-			 * TODO: Solve once Combat is more fleshed out. @see Combat#rollInitiative
-			 */
-			initiativeOptions?: object
-		}
-	}
+        protected override _onUpdate(
+            changed: DeepPartial<this["_source"]>,
+            options: DocumentUpdateContext<TParent>,
+            userId: string,
+        ): void;
+
+        protected override _onCreateDescendantDocuments(
+            parent: this,
+            collection: "effects" | "items",
+            documents: ActiveEffect<this>[] | Item<this>[],
+            result: ActiveEffect<this>["_source"][] | Item<this>["_source"][],
+            options: DocumentModificationContext<this>,
+            userId: string,
+        ): void;
+
+        protected override _onUpdateDescendantDocuments(
+            parent: this,
+            collection: "effects" | "items",
+            documents: ActiveEffect<this>[] | Item<this>[],
+            changes: ActiveEffect<this>["_source"][] | Item<this>["_source"][],
+            options: DocumentModificationContext<this>,
+            userId: string,
+        ): void;
+
+        /** Additional workflows to perform when any descendant document within this Actor changes. */
+        protected _onEmbeddedDocumentChange(): void;
+
+        /**
+         * Update the active TokenDocument instances which represent this Actor.
+         * @param [update]  The update delta.
+         * @param [options] The update context.
+         */
+        protected _updateDependentTokens(
+            update?: Record<string, unknown>,
+            options?: DocumentModificationContext<TParent>,
+        ): void;
+    }
+
+    interface Actor<TParent extends TokenDocument | null = TokenDocument | null> extends ClientBaseActor<TParent> {
+        readonly effects: foundry.abstract.EmbeddedCollection<ActiveEffect<this>>;
+        readonly items: foundry.abstract.EmbeddedCollection<Item<this>>;
+
+        get sheet(): ActorSheet<Actor>;
+
+        get uuid(): ActorUUID;
+
+        get folder(): Folder<Actor<null>> | null;
+    }
+
+    namespace Actor {
+        const implementation: typeof Actor;
+    }
+
+    type CompendiumActorUUID = `Compendium.${string}.Actor.${string}`;
+    type ActorUUID = `Actor.${string}` | `${TokenDocumentUUID}.Actor.${string}` | CompendiumActorUUID;
 }

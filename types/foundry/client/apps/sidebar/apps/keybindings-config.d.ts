@@ -1,236 +1,83 @@
-/**
- * Allows for viewing and editing of Keybinding Actions
- */
-declare class KeybindingsConfig<
-	Options extends FormApplicationOptions = FormApplicationOptions,
-> extends FormApplication<Options> {
-	/**
-	 * A cached copy of the Categories
-	 */
-	protected _cachedData: KeybindingsConfig.CategoryData | null
+export {};
 
-	/**
-	 * The category being filtered for
-	 */
-	protected _category: string
+declare global {
+    /** Allows for viewing and editing of Keybinding Actions */
+    class KeybindingsConfig extends PackageConfiguration {
+        static override get defaultOptions(): FormApplicationOptions;
 
-	/**
-	 * A Map of pending Edits. The Keys are bindingIds
-	 * @internal
-	 */
-	protected _pendingEdits: Map<string, KeybindingsConfig.PendingBinding[]>
+        static override get categoryOrder(): string[];
 
-	/**
-	 * @defaultValue
-	 * ```typescript
-	 * foundry.utils.mergeObject(super.defaultOptions, {
-	 *   title: game.i18n.localize("SETTINGS.Keybindings"),
-	 *   id: "keybindings",
-	 *   template: "templates/sidebar/apps/keybindings-config.html",
-	 *   width: 750,
-	 *   height: 600,
-	 *   resizable: true,
-	 *   scrollY: [".filters", ".category-list"],
-	 *   filters: [{inputSelector: 'input[name="filter"]', contentSelector: ".category-list"}]
-	 * })
-	 * ```
-	 */
-	static override get defaultOptions(): FormApplicationOptions
+        protected _categorizeEntry(namespace: string): { id: string; title: string };
 
-	override getData(options?: Partial<Options>): MaybePromise<object>
+        protected _prepareCategoryData(): { categories: object[]; total: number };
 
-	/**
-	 * Builds the set of Bindings into a form usable for display and configuration
-	 * @internal
-	 */
-	protected _getCategoryData(): KeybindingsConfig.CategoryData
+        /**
+         * Add faux-keybind actions that represent the possible Mouse Controls
+         * @param categories The current Map of Categories to add to
+         * @returns The number of Actions added
+         */
+        protected _addMouseControlsReference(categories: Map<string, object>): number;
 
-	/**
-	 * Add faux-keybind actions that represent the possible Mouse Controls
-	 * @param categories - The current Map of Categories to add to
-	 * @returns The number of Actions added
-	 * @internal
-	 */
-	protected _addMouseControlsReference(categories: Map<string, KeybindingsConfig.Category>): number
+        /** Given an Binding and its parent Action, detects other Actions that might conflict with that binding */
+        _detectConflictingActions(
+            actionId: string,
+            action: KeybindingActionConfig,
+            binding: KeybindingAction,
+        ): KeybindingAction[];
 
-	/**
-	 * Given an Binding and its parent Action, detects other Actions that might conflict with that binding
-	 * @param actionId - The namespaced Action ID the Binding belongs to
-	 * @param action   - The Action config
-	 * @param binding  - The Binding
-	 * @internal
-	 */
-	protected _detectConflictingActions(
-		actionId: string,
-		action: KeybindingActionConfig,
-		binding: KeybindingActionBinding
-	): KeybindingAction[]
+        /** Transforms a Binding into a human-readable string representation */
+        static _humanizeBinding(binding: KeybindingActionBinding): string;
 
-	/**
-	 * Transforms a Binding into a human readable string representation
-	 * @param binding - The Binding
-	 * @returns A human readable string
-	 * @internal
-	 */
-	protected static _humanizeBinding(binding: KeybindingActionBinding): string
+        /* -------------------------------------------- */
+        /*  Event Listeners and Handlers                */
+        /* -------------------------------------------- */
 
-	/**
-	 * Compares two Category Filters for rendering
-	 * This method ignores cases of equality because we know our categories are unique
-	 * @param a - The first Category
-	 * @param b - The second Category
-	 * @returns A number for usage in the Sort method
-	 * @internal
-	 */
-	protected static _sortCategories(a: KeybindingsConfig.Category, b: KeybindingsConfig.Category): number
+        override activateListeners(html: JQuery): void;
 
-	/**
-	 * Classify what Category an Action belongs to
-	 * @param action - The Action to classify
-	 * @returns The category the Action belongs to
-	 * @internal
-	 */
-	protected _categorizeAction(action: KeybindingsConfig): KeybindingsConfig.BaseCategory
+        protected override _onResetDefaults(event: Event): Promise<void>;
 
-	override activateListeners(html: JQuery): void
+        /** Handle Control clicks */
+        protected _onClickBindingControl(event: MouseEvent): void;
 
-	/**
-	 * Handle left-click events to filter to a certain category
-	 * @internal
-	 */
-	protected _onClickCategoryFilter(event: MouseEvent): void
+        /** Handle left-click events to show / hide a certain category */
+        protected _onClickAdd(event: MouseEvent): Promise<void>;
 
-	/**
-	 * Handle left-click events to show / hide a certain category
-	 * @internal
-	 */
-	protected _onClickCategoryCollapse(event: MouseEvent): void
+        /** Handle left-click events to show / hide a certain category */
+        protected _onClickDelete(event: MouseEvent): Promise<void>;
 
-	/**
-	 * Handle left-click events to reset all Actions to Default
-	 * @internal
-	 */
-	protected _onClickResetActions(event: MouseEvent): Promise<void>
+        /** Inserts a Binding into the Pending Edits object, creating a new Map entry as needed */
+        protected _addPendingEdit(
+            namespace: string,
+            action: string,
+            bindingIndex: number,
+            binding: KeybindingActionBinding,
+        ): void;
 
-	/**
-	 * Handle Control clicks
-	 * @internal
-	 */
-	protected _onClickBindingControl(event: MouseEvent): void
+        /** Toggle visibility of the Edit / Save UI */
+        protected _onClickEditableBinding(event: MouseEvent): void;
 
-	/**
-	 * Handle left-click events to show / hide a certain category
-	 * @internal
-	 */
-	protected _onClickAdd(event: MouseEvent): Promise<void>
+        /** Toggle visibility of the Edit UI */
+        protected _onDoubleClickKey(event: MouseEvent): void;
 
-	/**
-	 * Handle left-click events to show / hide a certain category
-	 * @internal
-	 */
-	protected _onClickDelete(event: MouseEvent): Promise<void>
+        /** Save the new Binding value and update the display of the UI */
+        protected _onClickSaveBinding(event: MouseEvent): Promise<void>;
 
-	/**
-	 * Inserts a Binding into the Pending Edits object, creating a new Map entry as needed
-	 * @internal
-	 */
-	protected _addPendingEdit(
-		namespace: string,
-		action: string,
-		bindingIndex: number,
-		binding: KeybindingsConfig.PendingBinding
-	): void
+        /** Given a clicked Action element, finds the parent Action */
+        protected _getParentAction(event: MouseEvent | KeyboardEvent): object;
 
-	/**
-	 * Toggle visibility of the Edit / Save UI
-	 * @internal
-	 */
-	protected _onClickEditableBinding(event: MouseEvent): void
+        /** Given a Clicked binding control element, finds the parent Binding */
+        protected _getParentBinding(event: MouseEvent | KeyboardEvent): {
+            bindingHTML: HTMLElement | null;
+            bindingId: string | undefined;
+        };
 
-	/**
-	 * Toggle visibility of the Edit UI
-	 * @internal
-	 */
-	protected _onDoubleClickKey(event: MouseEvent): void
+        /** Iterates over all Pending edits, merging them in with unedited Bindings and then saving and resetting the UI */
+        protected _savePendingEdits(): Promise<void>;
 
-	/**
-	 * Save the new Binding value and update the display of the UI
-	 * @internal
-	 */
-	protected _onClickSaveBinding(event: MouseEvent): Promise<void>
+        /** Processes input from the keyboard to form a list of pending Binding edits */
+        protected _onKeydownBindingInput(event: KeyboardEvent): void;
 
-	/**
-	 * Given a clicked Action element, finds the parent Action
-	 * @internal
-	 */
-	protected _getParentAction(event: KeyboardEvent | MouseEvent): {
-		namespace: string
-		action: string
-		actionHtml: HTMLElement
-	}
-
-	/**
-	 * Given a Clicked binding control element, finds the parent Binding
-	 * @internal
-	 */
-	protected _getParentBinding(event: KeyboardEvent | MouseEvent): { bindingHtml: HTMLElement; bindingId: string }
-
-	/**
-	 * Iterates over all Pending edits, merging them in with unedited Bindings and then saving and resetting the UI
-	 * @internal
-	 */
-	protected _savePendingEdits(): Promise<void>
-
-	/**
-	 * Processes input from the keyboard to form a list of pending Binding edits
-	 * @param event - The keyboard event
-	 * @internal
-	 */
-	protected _onKeydownBindingInput(event: KeyboardEvent): void
-
-	protected override _onSearchFilter(event: KeyboardEvent, query: string, rgx: RegExp, html: HTMLElement): void
-
-	/** @remarks KeybindingsConfig does not implement this method. */
-	protected _updateObject(event?: unknown, formData?: unknown): Promise<never>
-}
-
-declare namespace KeybindingsConfig {
-	interface CategoryData {
-		categories: Category[]
-		totalActions: number
-	}
-
-	interface BaseCategory {
-		id: string
-		title: string
-	}
-
-	interface Category extends BaseCategory {
-		actions: ActionData[]
-		count: number
-	}
-
-	interface ActionData extends KeybindingActionConfig {
-		category: string
-		bindings: DisplayBinding[]
-		id: string
-		name: string
-		hint?: string
-		cssClass?: string
-		notes: string
-	}
-
-	interface DisplayBinding extends Partial<KeybindingActionBinding> {
-		id: string
-		display: string
-		cssClasses: string
-		isEditable: boolean
-		isFirst: boolean
-		conflicts: string
-		hasConflicts: boolean
-	}
-
-	interface PendingBinding extends KeybindingActionBinding {
-		index: number
-	}
+        // Not actually implemented but requires by `FormApplication`
+        protected override _updateObject(event: Event, formData: Record<string, unknown>): Promise<unknown>;
+    }
 }

@@ -1,13 +1,19 @@
-import { DurationType, EffectGURPS, EffectModificationOptions } from "@item/effect"
-import { ItemType, SYSTEM_NAME } from "@module/data"
-import { ItemDataBaseProperties, ItemDataConstructorData } from "types/foundry/common/data/data.mjs/itemData"
-import { BaseUser } from "types/foundry/common/documents.mjs"
-import { PropertiesToSource } from "types/types/helperTypes"
-import { ConditionID, ConditionSource, ConditionSystemData, ManeuverID } from "./data"
-import { getConditionList } from "./list"
-import { getManeuverList } from "./maneuver"
+import { ActorGURPS } from "@actor/document.ts"
+import { EffectGURPS } from "@item/effect/document.ts"
+import { ConditionID, ConditionSource, ConditionSystemData, ManeuverID } from "./data.ts"
+import { ItemType, SYSTEM_NAME } from "@module/data/misc.ts"
+import { getConditionList } from "./list.ts"
+import { getManeuverList } from "./maneuver.ts"
+import { mergeObject } from "types/foundry/common/utils/helpers.js"
+import { DurationType, EffectModificationContext } from "@item/effect/data.ts"
+import { BaseUser } from "types/foundry/common/documents/module.js"
 
-export class ConditionGURPS extends EffectGURPS<ConditionSource> {
+export interface ConditionGURPS<TParent extends ActorGURPS = ActorGURPS> extends EffectGURPS<TParent> {
+	system: ConditionSystemData
+	type: ItemType.Condition
+}
+
+export class ConditionGURPS<TParent extends ActorGURPS = ActorGURPS> extends EffectGURPS<TParent> {
 	static getData(id: ConditionID | ManeuverID): Partial<ConditionSource> {
 		const [data, folder] = Object.values(ConditionID).includes(id as any)
 			? [getConditionList()[id as ConditionID], "status"]
@@ -41,22 +47,22 @@ export class ConditionGURPS extends EffectGURPS<ConditionSource> {
 		}
 	}
 
-	protected _preUpdate(
-		changed: DeepPartial<ItemDataConstructorData>,
-		options: EffectModificationOptions,
-		user: BaseUser
-	): Promise<void> {
+	protected override _preUpdate(
+		changed: DeepPartial<this["_source"]>,
+		options: EffectModificationContext<TParent>,
+		user: BaseUser,
+	): Promise<boolean | void> {
 		options.previousID = this.cid
 		if ((changed as any).system?.id !== this.cid) this._displayScrollingStatus(false)
 		return super._preUpdate(changed, options, user)
 	}
 
-	protected _onUpdate(
-		changed: DeepPartial<PropertiesToSource<ItemDataBaseProperties>>,
-		options: EffectModificationOptions,
-		userId: string
+	protected override _onUpdate(
+		data: DeepPartial<this["_source"]>,
+		options: EffectModificationContext<TParent>,
+		userId: string,
 	): void {
-		super._onUpdate(changed, options, userId)
+		super._onUpdate(data, options, userId)
 		const [priorID, newID] = [options.previousID, this.cid]
 		const idChanged = !!priorID && !!newID && priorID !== newID
 		if (idChanged) {

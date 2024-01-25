@@ -1,11 +1,13 @@
-import { ItemGCS } from "@item/gcs"
-import { RitualMagicSpellGURPS } from "@item/ritual_magic_spell"
-import { SpellGURPS } from "@item/spell"
-import { SpellContainerSource } from "./data"
+import { ActorGURPS } from "@actor/document.ts"
+import { SpellContainerSystemData } from "./data.ts"
+import { ItemGCS, RitualMagicSpellGURPS, SpellGURPS } from "@item/index.ts"
 
-export class SpellContainerGURPS extends ItemGCS<SpellContainerSource> {
+export interface SpellContainerGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+	system: SpellContainerSystemData
+}
+export class SpellContainerGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
 	// Embedded Items
-	get children(): Collection<SpellGURPS | RitualMagicSpellGURPS | SpellContainerGURPS> {
+	override get children(): Collection<SpellGURPS | RitualMagicSpellGURPS | SpellContainerGURPS> {
 		return super.children as Collection<SpellGURPS | RitualMagicSpellGURPS | SpellContainerGURPS>
 	}
 

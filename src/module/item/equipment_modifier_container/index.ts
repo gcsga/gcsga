@@ -1,3 +1,3 @@
-export { EquipmentModifierContainerGURPS } from "./document"
-export { EquipmentModifierContainerSheet } from "./sheet"
-export * from "./data"
+export { EquipmentModifierContainerGURPS } from "./document.ts"
+export { EquipmentModifierContainerSheet } from "./sheet.ts"
+export * from "./data.ts"

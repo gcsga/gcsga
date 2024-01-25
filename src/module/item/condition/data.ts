@@ -1,6 +1,6 @@
-import { BaseItemSourceGURPS } from "@item/base/data"
-import { EffectSystemData } from "@item/effect"
-import { ItemType, RollModifier } from "@module/data"
+import { BaseItemSourceGURPS } from "@item/data.ts"
+import { EffectSystemData } from "@item/effect/data.ts"
+import { ItemType, RollModifier } from "@module/data/misc.ts"
 
 export enum ConditionID {
 	// Posture

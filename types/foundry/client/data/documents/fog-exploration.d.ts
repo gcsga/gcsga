@@ -1,64 +1,35 @@
-import { ConfiguredDocumentClass } from "../../../../types/helperTypes"
-import { RequestOptions } from "../../../common/abstract/backend.mjs"
+import type { ClientBaseFogExploration } from "./client-base-mixes.d.ts";
 
 declare global {
-	/**
-	 * The client-side FogExploration document which extends the common BaseFogExploration model.
-	 * Each FogExploration document contains FogExplorationData which defines its data schema.
-	 *
-	 * @see {@link data.FogExplorationData} The FogExploration data schema
-	 */
-	class FogExploration extends ClientDocumentMixin(foundry.documents.BaseFogExploration) {
-		/**
-		 * @param data - Initial data provided to construct the FogExploration document
-		 *               (default: `{}`)
-		 */
-		constructor(
-			data?: ConstructorParameters<ConstructorOf<foundry.documents.BaseFogExploration>>[0],
-			context?: ConstructorParameters<ConstructorOf<foundry.documents.BaseFogExploration>>[1]
-		)
+    /** The client-side FogExploration document which extends the common BaseFogExploration model. */
+    class FogExploration extends ClientBaseFogExploration {
+        /**
+         * Obtain the fog of war exploration progress for a specific Scene and User.
+         * @param [query] Parameters for which FogExploration document is retrieved
+         * @param [query.scene] A certain Scene ID
+         * @param [query.user]  A certain User ID
+         * @param [options={}]  Additional options passed to DatabaseBackend#get
+         */
+        static get(
+            query?: { scene?: string; user?: string },
+            options?: Record<string, unknown>,
+        ): Promise<FogExploration | null>;
 
-		/**
-		 * Explore fog of war for a new point source position.
-		 * @param source - The candidate source of exploration
-		 * @param force  - Force the position to be re-explored
-		 *                 (default: `false`)
-		 * @returns Is the source position newly explored?
-		 */
-		explore(source: PointSource, force?: boolean): boolean
+        /** Transform the explored base64 data into a PIXI.Texture object */
+        getTexture(): PIXI.Texture | null;
 
-		/**
-		 * Obtain the fog of war exploration progress for a specific Scene and User.
-		 * @param options - (default: `{}`)
-		 */
-		static get(
-			{
-				scene,
-				user,
-			}?: {
-				scene?: InstanceType<ConfiguredDocumentClass<typeof Scene>>
-				user?: InstanceType<ConfiguredDocumentClass<typeof User>>
-			},
-			options?: RequestOptions
-		): Promise<StoredDocument<InstanceType<ConfiguredDocumentClass<typeof FogExploration>>> | null>
+        protected override _onCreate(
+            data: this["_source"],
+            options: DocumentModificationContext<null>,
+            userId: string,
+        ): void;
 
-		/**
-		 * Transform the explored base64 data into a PIXI.Texture object
-		 */
-		getTexture(): PIXI.Texture | null
+        protected override _onUpdate(
+            data: DeepPartial<this["_source"]>,
+            options: DocumentModificationContext<null>,
+            userId: string,
+        ): void;
 
-		/**
-		 * Open Socket listeners which transact JournalEntry data
-		 * @internal
-		 */
-		static _activateSocketListeners(socket: io.Socket): void
-
-		/**
-		 * Handle a request from the server to reset fog of war for a particular scene.
-		 * @internal
-		 */
-		protected static _onResetFog(sceneId: string): void | Promise<void>
-	}
+        protected override _onDelete(options: DocumentModificationContext<null>, userId: string): void;
+    }
 }
-
-export {}

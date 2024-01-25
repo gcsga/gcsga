@@ -1,3 +1,3 @@
-export { SpellGURPS } from "./document"
-export { SpellSheet } from "./sheet"
-export * from "./data"
+export { SpellGURPS } from "./document.ts.ts"
+export { SpellSheet } from "./sheet.ts.ts"
+export * from "./data.ts.ts"

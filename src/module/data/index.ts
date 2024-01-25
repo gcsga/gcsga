@@ -1,2 +1,2 @@
-export * from "./misc"
-export * from "./sheet_settings"
+export * from "./misc.ts"
+export * from "./sheet_settings.ts"

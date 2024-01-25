@@ -1,268 +1,155 @@
-import type {
-	ConfiguredDocumentClass,
-	ConfiguredDocumentClassForName,
-	ConfiguredObjectClassForName,
-} from "../../../../types/helperTypes"
-import type { DocumentModificationOptions } from "../../../common/abstract/document.mjs"
-import type { LineIntersection } from "../../../common/utils/geometry.mjs"
-import type { HoverInOptions } from "../placeable"
+/**
+ * A Wall is an implementation of PlaceableObject which represents a physical or visual barrier within the Scene.
+ * Walls are used to restrict Token movement or visibility as well as to define the areas of effect for ambient lights
+ * and sounds.
+ */
+declare class Wall<TDocument extends WallDocument<Scene | null>> extends PlaceableObject<TDocument> {
+    constructor(document?: TDocument);
 
-declare global {
-	/**
-	 * A Wall is an implementation of PlaceableObject which represents a physical or visual barrier within the Scene.
-	 * Walls are used to restrict Token movement or visibility as well as to define the areas of effect for ambient lights
-	 * and sounds.
-	 *
-	 * @see {@link WallDocument}
-	 * @see {@link WallsLayer}
-	 * @see {@link WallConfig}
-	 */
-	class Wall extends PlaceableObject<ConcreteWallDocument> {
-		/**
-		 * @remarks Not used for `Wall`
-		 */
-		controlIcon: null
+    /** An reference the Door Control icon associated with this Wall, if any */
+    protected doorControl: DoorControl | null;
 
-		/**
-		 * An reference the Door Control icon associated with this Wall, if any
-		 * @internal
-		 * @defaultValue `undefined`
-		 */
-		doorControl: DoorControl | undefined | null
+    /** A reference to an overhead Tile that is a roof, interior to which this wall is contained */
+    roof: Tile;
 
-		/**
-		 * A reference to an overhead Tile that is a roof, interior to which this wall is contained
-		 * @defaultValue `undefined`
-		 */
-		roof: InstanceType<ConfiguredObjectClassForName<"Tile">> | undefined
+    static embeddedName: "Wall";
 
-		/**
-		 * A set which tracks other Wall instances that this Wall intersects with (excluding shared endpoints)
-		 */
-		intersectsWith: Map<InstanceType<ConfiguredObjectClassForName<"Wall">>, LineIntersection>
+    /* -------------------------------------------- */
+    /*  Properties                                  */
+    /* -------------------------------------------- */
 
-		/**
-		 * Cached representation of this wall's endpoints as {@link PolygonVertex}es.
-		 * @defaultValue `null`
-		 * @internal
-		 */
-		protected _vertices: { a: PolygonVertex; b: PolygonVertex } | null
+    /** A convenience reference to the coordinates Array for the Wall endpoints, [x0,y0,x1,y1]. */
+    get coords(): number[];
 
-		/**
-		 * Cached representation of the set of this wall's vertices.
-		 * @defaultValue `null`
-		 * @internal
-		 */
-		protected _wallKeys: Set<string> | null
+    get bounds(): PIXI.Rectangle;
 
-		static override embeddedName: "Wall"
+    /** Return the coordinates [x,y] at the midpoint of the wall segment */
+    get midpoint(): number[];
 
-		/**
-		 * A convenience reference to the coordinates Array for the Wall endpoints, [x0,y0,x1,y1].
-		 */
-		get coords(): Wall["data"]["c"]
+    get center(): PIXI.Point;
 
-		/**
-		 * The initial endpoint of the Wall
-		 */
-		get A(): Point
+    /**
+     * Get the direction of effect for a directional Wall
+     * @return The angle of wall effect
+     */
+    get direction(): number | null;
 
-		/**
-		 * The second endpoint of the Wall
-		 */
-		get B(): Point
+    /* -------------------------------------------- */
+    /*  Methods                                     */
+    /* -------------------------------------------- */
 
-		/**
-		 * The endpoints of the wall as {@link PolygonVertex}es.
-		 */
-		get vertices(): { a: PolygonVertex; b: PolygonVertex }
+    /**
+     * This helper converts the wall segment to a Ray
+     * @return The wall in Ray representation
+     */
+    toRay(): Ray;
 
-		/**
-		 * The set of keys for this wall's endpoints.
-		 */
-		get wallKeys(): Set<string>
+    protected _draw(): Promise<void>;
 
-		override get bounds(): NormalizedRectangle
+    protected _createInteractionManager(): MouseInteractionManager;
 
-		/**
-		 * A boolean for whether this wall contains a door
-		 */
-		get isDoor(): boolean
+    activateListeners(): void;
 
-		/**
-		 * A boolean for whether the wall contains an open door
-		 */
-		get isOpen(): boolean
+    /**
+     * Draw a directional prompt icon for one-way walls to illustrate their direction of effect.
+     * @return The drawn icon
+     */
+    protected _drawDirection(): PIXI.Sprite | null;
 
-		/**
-		 * Is this Wall interior to a non-occluded roof Tile?
-		 */
-		get hasActiveRoof(): boolean
+    refresh(): this;
 
-		/**
-		 * Return the coordinates [x,y] at the midpoint of the wall segment
-		 */
-		get midpoint(): PointArray
+    /**
+     * Compute an approximate Polygon which encloses the line segment providing a specific hitArea for the line
+     * @param coords The original wall coordinates
+     * @param pad    The amount of padding to apply
+     * @return A constructed Polygon for the line
+     */
+    protected _getWallHitPolygon(coords: [number, number], pad: number): PIXI.Polygon;
 
-		override get center(): PIXI.Point
+    /** Given the properties of the wall - decide upon a color to render the wall for display on the WallsLayer */
+    protected _getWallColor(): number;
 
-		/**
-		 * Get the direction of effect for a directional Wall
-		 * @returns The angle of wall effect
-		 */
-		get direction(): number | null
+    protected _onControl(options?: { releaseOthers?: boolean; chain?: number }): void;
 
-		/**
-		 * This helper converts the wall segment to a Ray
-		 * @returns The wall in Ray representation
-		 */
-		toRay(): Ray
+    protected _onRelease(options: Record<string, unknown>): void;
 
-		override draw(): Promise<this>
+    destroy(options: Record<string, unknown>): void;
 
-		/**
-		 * Draw a control icon that is used to manipulate the door's open/closed state
-		 */
-		createDoorControl(): DoorControl
+    /**
+     * Test whether the Wall direction lies between two provided angles
+     * This test is used for collision and vision checks against one-directional walls
+     * @param lower The lower-bound limiting angle in radians
+     * @param upper The upper-bound limiting angle in radians
+     */
+    isDirectionBetweenAngles(lower: number, upper: number): boolean;
 
-		/**
-		 * Determine the orientation of this wall with respect to a reference point
-		 * @param point - Some reference point, relative to which orientation is determined
-		 * @returns An orientation in CONST.WALL_DIRECTIONS which indicates whether the Point is left,
-		 *          right, or collinear (both) with the Wall
-		 */
-		orientPoint(point: Point): number
+    /**
+     * A simple test for whether a Ray can intersect a directional wall
+     * @param ray The ray to test
+     * @return Can an intersection occur?
+     */
+    canRayIntersect(ray: Ray): boolean;
 
-		protected override _createInteractionManager(): NonNullable<this["mouseInteractionManager"]>
+    /**
+     * Get an Array of Wall objects which are linked by a common coordinate
+     * @returns An object reporting ids and endpoints of the linked segments
+     */
+    getLinkedSegments(): {
+        ids: string[];
+        walls: Wall<TDocument>[];
+        endpoints: number[];
+    };
 
-		override activateListeners(): void
+    /* -------------------------------------------- */
+    /*  Socket Listeners and Handlers               */
+    /* -------------------------------------------- */
 
-		/**
-		 * Draw a directional prompt icon for one-way walls to illustrate their direction of effect.
-		 * @returns The drawn icon
-		 * @internal
-		 */
-		protected _drawDirection(): PIXI.Sprite | null
+    protected override _onCreate(
+        data: TDocument["_source"],
+        options: DocumentModificationContext<TDocument["parent"]>,
+        userId: string,
+    ): void;
 
-		override refresh(): this
+    protected override _onUpdate(
+        changed: DeepPartial<TDocument["_source"]>,
+        options: DocumentModificationContext<TDocument["parent"]>,
+        userId: string,
+    ): void;
 
-		/**
-		 * Compute an approximate Polygon which encloses the line segment providing a specific hitArea for the line
-		 * @param coords - The original wall coordinates
-		 * @param pad    - The amount of padding to apply
-		 * @returns A constructed Polygon for the line
-		 * @internal
-		 */
-		protected _getWallHitPolygon(coords: [number, number, number, number], pad: number): PIXI.Polygon
+    protected override _onDelete(options: DocumentModificationContext<TDocument["parent"]>, userId: string): void;
 
-		/**
-		 * Given the properties of the wall - decide upon a color to render the wall for display on the WallsLayer
-		 * @internal
-		 */
-		protected _getWallColor(): number
+    /**
+     * Callback actions when a wall that contains a door is moved or its state is changed
+     * @param doorChange Update vision and sound restrictions
+     */
+    protected _onModifyWall(doorChange?: boolean): void;
 
-		/**
-		 * @param chain - (default: `false`)
-		 */
-		protected override _onControl({ chain }?: PlaceableObject.ControlOptions & { chain?: boolean }): void
+    /* -------------------------------------------- */
+    /*  Interaction Event Callbacks                 */
+    /* -------------------------------------------- */
 
-		protected override _onRelease(options?: PlaceableObject.ReleaseOptions): void
+    protected override _canControl(user: User, event?: PIXI.FederatedEvent): boolean;
 
-		override destroy(options?: Parameters<PlaceableObject["destroy"]>[0]): void
+    protected override _onHoverIn(event: PIXI.FederatedPointerEvent, options?: { hoverOutOthers?: boolean }): boolean;
 
-		/**
-		 * Test whether the Wall direction lies between two provided angles
-		 * This test is used for collision and vision checks against one-directional walls
-		 * @param lower - The lower-bound limiting angle in radians
-		 * @param upper - The upper-bound limiting angle in radians
-		 */
-		isDirectionBetweenAngles(lower: number, upper: number): boolean
+    protected override _onHoverOut(event: PIXI.FederatedPointerEvent): boolean;
 
-		/**
-		 * A simple test for whether a Ray can intersect a directional wall
-		 * @param ray - The ray to test
-		 * @returns Can an intersection occur?
-		 */
-		canRayIntersect(ray: Ray): boolean
+    /** Handle mouse-hover events on the line segment itself, pulling the Wall to the front of the container stack */
+    protected _onMouseOverLine(event: PIXI.FederatedPointerEvent): void;
 
-		/**
-		 * Get an Array of Wall objects which are linked by a common coordinate
-		 * @returns An object reporting ids and endpoints of the linked segments
-		 */
-		getLinkedSegments(): {
-			ids: string[]
-			walls: WallsLayer["placeables"]
-			endpoints: Array<[x: number, y: number]>
-		}
+    protected override _onClickLeft(event: PIXI.FederatedPointerEvent): boolean;
 
-		/**
-		 * Determine whether this wall is beneath a roof tile, and is considered "interior", or not.
-		 */
-		identifyInteriorState(): void
+    protected override _onClickLeft2(event: PIXI.FederatedPointerEvent): boolean;
 
-		/**
-		 * Update any intersections with this wall.
-		 */
-		updateIntersections(): void
+    protected override _onClickRight2(event: PIXI.FederatedPointerEvent): boolean;
 
-		/**
-		 * Record the intersection points between this wall and another, if any.
-		 * @param other - The other wall.
-		 */
-		protected _identifyIntersectionsWith(other: InstanceType<ConfiguredDocumentClassForName<"Wall">>): void
+    protected override _onDragLeftStart(event: PIXI.FederatedPointerEvent): boolean;
 
-		/**
-		 * Remove this wall's intersections.
-		 * @internal
-		 */
-		protected _removeIntersections(): void
+    protected _onDragLeftMove(event: PIXI.FederatedPointerEvent): void;
 
-		protected override _onCreate(
-			data: foundry.data.WallData["_source"],
-			options: DocumentModificationOptions,
-			userId: string
-		): void
-
-		protected override _onUpdate(
-			changed: DeepPartial<foundry.data.WallData["_source"]>,
-			options?: DocumentModificationOptions,
-			userId?: string
-		): void
-
-		protected override _onDelete(options: DocumentModificationOptions, userId: string): void
-
-		/**
-		 * Callback actions when a wall that contains a door is moved or its state is changed
-		 * @param doorChange - Update vision and sound restrictions
-		 *                     (default: `false`)
-		 * @internal
-		 */
-		protected _onModifyWall(doorChange?: boolean): Promise<void>
-
-		protected override _canControl(user: InstanceType<ConfiguredDocumentClass<typeof User>>, event?: any): boolean
-
-		protected override _onHoverIn(event: PIXI.InteractionEvent, options?: HoverInOptions): false | void
-
-		protected override _onHoverOut(event: PIXI.InteractionEvent): false | void
-
-		/**
-		 * Handle mouse-hover events on the line segment itself, pulling the Wall to the front of the container stack
-		 * @internal
-		 */
-		protected _onMouseOverLine(event: PIXI.InteractionEvent): void
-
-		protected override _onClickLeft(event: PIXI.InteractionEvent): boolean
-
-		protected override _onClickLeft2(event: PIXI.InteractionEvent): void
-
-		protected override _onClickRight2(event: PIXI.InteractionEvent): void
-
-		protected override _onDragLeftStart(event: PIXI.InteractionEvent): void
-
-		protected override _onDragLeftMove(event: PIXI.InteractionEvent): void
-
-		protected override _onDragLeftDrop(event: PIXI.InteractionEvent): Promise<any>
-	}
+    protected _onDragLeftDrop(event: PIXI.FederatedPointerEvent): Promise<TDocument[]>;
 }
 
-type ConcreteWallDocument = InstanceType<ConfiguredDocumentClass<typeof WallDocument>>
+declare interface Wall<TDocument extends WallDocument<Scene | null>> extends PlaceableObject<TDocument> {
+    get layer(): WallsLayer<this>;
+}

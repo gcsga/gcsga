@@ -1,8 +1,8 @@
-import { WeaponGURPS } from "@module/config"
-import { TooltipGURPS } from "@module/tooltip"
-import { Int } from "@util/fxp"
-import { WeaponField } from "./weapon_field"
-import { feature } from "@util/enum"
+import { Int } from "@util/fxp.ts"
+import { WeaponField } from "./weapon_field.ts"
+import { BaseWeaponGURPS } from "./document.ts"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { feature } from "@util/enum/feature.ts"
 
 export class WeaponRecoil extends WeaponField {
 	shot = 0
@@ -19,7 +19,7 @@ export class WeaponRecoil extends WeaponField {
 		return wr
 	}
 
-	resolve(w: WeaponGURPS, tooltip: TooltipGURPS): WeaponRecoil {
+	resolve(w: BaseWeaponGURPS, tooltip: TooltipGURPS): WeaponRecoil {
 		const result = WeaponRecoil.parse(this.toString())
 		if (this.shot > 0 || this.slug > 0) {
 			for (const bonus of w.collectWeaponBonuses(1, tooltip, feature.Type.WeaponRecoilBonus)) {
@@ -36,7 +36,7 @@ export class WeaponRecoil extends WeaponField {
 		return result
 	}
 
-	toString(): string {
+	override toString(): string {
 		if (this.shot === 0 && this.slug === 0) return ""
 		let buffer = ""
 		buffer += this.shot.toString()

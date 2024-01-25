@@ -1,3 +1,3 @@
-export { ContainerGURPS } from "./document"
-export { ContainerSheetGURPS } from "./sheet"
-export * from "./data"
+export { ContainerGURPS } from "./document.ts"
+export { ContainerSheetGURPS } from "./sheet.ts"
+export * from "./data.ts"

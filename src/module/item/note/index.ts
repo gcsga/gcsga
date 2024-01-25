@@ -1,3 +1,3 @@
-export { NoteGURPS } from "./document"
-export { NoteSheet } from "./sheet"
-export * from "./data"
+export { NoteGURPS } from "./document.ts"
+export { NoteSheet } from "./sheet.ts"
+export * from "./data.ts"

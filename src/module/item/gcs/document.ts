@@ -1,33 +1,35 @@
-import { ContainerGURPS } from "@item/container"
-import { MeleeWeaponGURPS } from "@item/melee_weapon"
-import { RangedWeaponGURPS } from "@item/ranged_weapon"
-import { BaseWeaponGURPS } from "@item/weapon"
-import { Feature, ItemDataGURPS } from "@module/config"
-import { ActorType, ItemType, SYSTEM_NAME } from "@module/data"
-import { PrereqList } from "@prereq"
-import {
-	EvalEmbeddedRegex,
-	LocalizeGURPS,
-	SkillResolver,
-	replaceAllStringFunc,
-	resolveStudyHours,
-	sheetDisplayNotes,
-} from "@util"
-import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
-import { ItemDataConstructorData } from "types/foundry/common/data/data.mjs/itemData"
-import { BaseUser } from "types/foundry/common/documents.mjs"
-import { MergeObjectOptions } from "types/foundry/common/utils/helpers.mjs"
-import { ItemGCSSource } from "./data"
-import { display, feature, study } from "@util/enum"
-import { TooltipGURPS } from "@module/tooltip"
+import { ActorGURPS } from "@actor/base.ts"
+import { ContainerGURPS } from "@item/container/document.ts"
+import { ItemType, SYSTEM_NAME } from "@module/data/misc.ts"
+import { UserGURPS } from "@module/user/document.ts"
+import { study } from "@util/enum/study.ts"
+import { resolveStudyHours } from "@util/study.ts"
+import { ItemGCSSystemData } from "./data.ts"
+import { EvalEmbeddedRegex, replaceAllStringFunc } from "@util/regexp.ts"
+import { display } from "@util/enum/display.ts"
+import { sheetDisplayNotes } from "@util/misc.ts"
+import { CharacterResolver, SkillResolver } from "@util/resolvers.ts"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { LocalizeGURPS } from "@util/localize.ts"
+import { Feature, FeatureObj } from "@feature/index.ts"
+import { feature } from "@util/enum/feature.ts"
+import { PrereqList } from "@prereq/index.ts"
+import { MeleeWeaponGURPS } from "@item/melee_weapon/index.ts"
+import { RangedWeaponGURPS } from "@item/ranged_weapon/index.ts"
+import { BaseWeaponGURPS } from "@item/weapon/index.ts"
 
-export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> extends ContainerGURPS<SourceType> {
-	unsatisfied_reason = ""
+export interface ItemGCS<TParent extends ActorGURPS = ActorGURPS> extends ContainerGURPS<TParent> {
+	system: ItemGCSSystemData
+}
 
-	protected async _preCreate(
-		data: ItemDataGURPS,
-		options: DocumentModificationOptions,
-		user: BaseUser
+export abstract class ItemGCS<TParent extends ActorGURPS = ActorGURPS> extends ContainerGURPS<TParent> {
+	declare unsatisfiedReason: string
+	// unsatisfied_reason = ""
+
+	protected override async _preCreate(
+		data: this["_source"],
+		options: DocumentModificationContext<TParent>,
+		user: UserGURPS,
 	): Promise<void> {
 		let type = data.type.replace("_container", "")
 		if (type === ItemType.Technique) type = ItemType.Skill
@@ -43,22 +45,16 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 	}
 
 	override async update(
-		data: DeepPartial<ItemDataConstructorData | (ItemDataConstructorData & Record<string, unknown>)>,
-		context?: DocumentModificationContext & MergeObjectOptions & { noPrepare?: boolean }
+		data: Record<string, unknown>,
+		context?: DocumentModificationContext<TParent>,
 	): Promise<this | undefined> {
-		if (this.parent instanceof Actor && context?.noPrepare) this.parent.noPrepare = true
+		// if (this.parent instanceof Actor && context?.noPrepare) this.parent.noPrepare = true
 		return super.update(data, context)
 	}
 
-	override get actor(): (typeof CONFIG.GURPS.Actor.documentClasses)[ActorType.Character] | null {
-		const actor = super.actor
-		if (actor?.type === ActorType.Character) return actor
-		return null
-	}
-
-	get unsatisfiedReason(): string {
-		return ""
-	}
+	// get unsatisfiedReason(): string {
+	// 	return ""
+	// }
 
 	get studyHours(): number {
 		return resolveStudyHours((this.system as any).study ?? [])
@@ -75,7 +71,7 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 	}
 
 	get notes(): string {
-		return replaceAllStringFunc(EvalEmbeddedRegex, this.localNotes, this.actor)
+		return replaceAllStringFunc(EvalEmbeddedRegex, this.localNotes, this.actor as unknown as CharacterResolver)
 	}
 
 	get ratedStrength(): number {
@@ -145,9 +141,9 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 	get features(): Feature[] {
 		if (!this.system.hasOwnProperty("features")) return []
 
-		return (this.system as any).features.map((e: Partial<Feature>) => {
+		return (this.system as any).features.map((e: Partial<FeatureObj>) => {
 			const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as feature.Type]
-			const f = FeatureConstructor.fromObject(e)
+			const f = FeatureConstructor.fromObject(e as any)
 			if (this.isLeveled) f.setLevel(this.levels)
 			return f
 		})
@@ -166,7 +162,7 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 	get meleeWeapons(): Collection<MeleeWeaponGURPS> {
 		const meleeWeapons: Collection<MeleeWeaponGURPS> = new Collection()
 		for (const item of this.items) {
-			if (item instanceof MeleeWeaponGURPS) meleeWeapons.set(item._id, item)
+			if (item instanceof MeleeWeaponGURPS) meleeWeapons.set(item.id, item)
 		}
 		return meleeWeapons
 	}
@@ -174,7 +170,7 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 	get rangedWeapons(): Collection<RangedWeaponGURPS> {
 		const rangedWeapons: Collection<RangedWeaponGURPS> = new Collection()
 		for (const item of this.items) {
-			if (item instanceof RangedWeaponGURPS) rangedWeapons.set(item._id, item)
+			if (item instanceof RangedWeaponGURPS) rangedWeapons.set(item.id, item)
 		}
 		return rangedWeapons
 	}
@@ -182,12 +178,12 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 	get weapons(): Collection<BaseWeaponGURPS> {
 		const weapons: Collection<BaseWeaponGURPS> = new Collection()
 		for (const item of this.items) {
-			if (item instanceof BaseWeaponGURPS) weapons.set(item._id, item)
+			if (item instanceof BaseWeaponGURPS) weapons.set(item.id, item)
 		}
 		return weapons
 	}
 
-	exportSystemData(_keepOther: boolean): any {
+	override exportSystemData(_keepOther: boolean): any {
 		const system: any = this.system
 		system.name = this.name
 		if (system.features)
@@ -204,7 +200,7 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 		return system
 	}
 
-	prepareData(): void {
+	override prepareData(): void {
 		if (this.parent?.noPrepare) return
 		if ([ItemType.Skill, ItemType.Technique, ItemType.Spell, ItemType.RitualMagicSpell].includes(this.type)) {
 			const sk = this as unknown as SkillResolver
@@ -212,6 +208,4 @@ export abstract class ItemGCS<SourceType extends ItemGCSSource = ItemGCSSource> 
 		}
 		super.prepareData()
 	}
-
-	prepareDerivedData(): void {}
 }

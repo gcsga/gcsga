@@ -1,81 +1,42 @@
-export {}
+export {};
 
 declare global {
-	/** An application for configuring data across all installed and active packages. */
-	abstract class PackageConfiguration<
-		Options extends PackageConfiguration.Options = PackageConfiguration.Options,
-	> extends FormApplication<Options, object> {
-		static get categoryOrder(): string[]
+    /** An application for configuring data across all installed and active packages. */
+    abstract class PackageConfiguration extends FormApplication {
+        static get categoryOrder(): string[];
 
-		/**
-		 * @defaultValue
-		 * ```typescript
-		 * foundry.utils.mergeObject(super.defaultOptions, {
-		 *   classes: ["package-configuration"],
-		 *   template: "templates/sidebar/apps/package-configuration.html",
-		 *   categoryTemplate: undefined,
-		 *   width: 780,
-		 *   height: 680,
-		 *   resizable: true,
-		 *   scrollY: [".filters", ".categories"],
-		 *   filters: [{inputSelector: 'input[name="filter"]', contentSelector: ".categories"}],
-		 *   submitButton: false
-		 * });
-		 * ```
-		 */
-		static override get defaultOptions(): PackageConfiguration.Options
+        /** The name of the currently active tab. */
+        get activeCategory(): string;
 
-		override getData(): MaybePromise<object>
+        static override get defaultOptions(): FormApplicationOptions;
 
-		abstract _prepareCategoryData(): PackageConfiguration.Category
+        override getData(options?: FormApplicationOptions): FormApplicationData;
 
-		/**
-		 * Classify what Category an Action belongs to
-		 * @param namespace - The entry to classify
-		 * @returns The category the entry belongs to
-		 */
-		protected _categorizeEntry(namespace: string): PackageConfiguration.Category
+        /** Prepare the structure of category data which is rendered in this configuration form. */
+        protected abstract _prepareCategoryData(): { categories: object[]; total: number };
 
-		/** Reusable logic for how categories are sorted in relation to each other. */
-		protected _sortCategories(a: PackageConfiguration.Category, b: PackageConfiguration.Category): number
+        /**
+         * Classify what Category an Action belongs to
+         * @param namespace The entry to classify
+         * @returns The category the entry belongs to
+         */
+        protected _categorizeEntry(namespace: string): { id: string; title: string };
 
-		protected override _render(
-			force?: boolean | undefined,
-			options?: Application.RenderOptions<Options> | undefined
-		): Promise<void>
+        /** Reusable logic for how categories are sorted in relation to each other. */
+        protected _sortCategories(a: object, b: object): number;
 
-		override activateListeners(html: JQuery<HTMLElement>): void
+        protected override _render(force?: boolean, options?: RenderOptions): Promise<void>;
 
-		/**
-		 * Handle left-click events to filter to a certain category
-		 * @internal
-		 */
-		protected _onClickCategoryFilter(event: JQuery.ClickEvent): void
+        override activateListeners(html: JQuery): void;
 
-		protected override _onSearchFilter(event: KeyboardEvent, query: string, rgx: RegExp, html: HTMLElement): void
+        protected override _onChangeTab(event: MouseEvent | null, tabs: Tabs, active: string): void;
 
-		/**
-		 * Handle left-click events to show / hide a certain category
-		 * @internal
-		 */
-		protected _onClickCategoryCollapse(event: JQuery.ClickEvent): void
+        protected override _onSearchFilter(event: KeyboardEvent, query: string, rgx: RegExp, html: HTMLElement): void;
 
-		/**
-		 * Handle button click to reset default settings
-		 * @param event - The initial button click event
-		 */
-		protected _onResetDefaults(event: JQuery.ClickEvent): void
-	}
-
-	namespace PackageConfiguration {
-		interface Options extends FormApplicationOptions {
-			categoryTemplate: string | undefined
-			submitButton: boolean
-		}
-
-		interface Category {
-			id: string
-			title: string
-		}
-	}
+        /**
+         * Handle button click to reset default settings
+         * @param event The initial button click event
+         */
+        protected abstract _onResetDefaults(event: Event): void;
+    }
 }

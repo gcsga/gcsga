@@ -1,157 +1,105 @@
-import { ConfiguredDocumentClass } from "../../../../types/helperTypes"
-import { DocumentDataType, DocumentModificationOptions } from "../../../common/abstract/document.mjs"
+import type { ClientBaseUser } from "./client-base-mixes.d.ts";
 
 declare global {
-	interface ActivityData {
-		/** The ID of the scene that the user is viewing. */
-		sceneId?: string | null | undefined
+    /**
+     * The client-side User document which extends the common BaseUser model.
+     * Each User document contains UserData which defines its data schema.
+     *
+     * @see {@link Users}       The world-level collection of User documents
+     * @see {@link UserConfig} The User configuration application
+     */
+    class User<TCharacter extends Actor<null> = Actor<null>> extends ClientBaseUser<TCharacter> {
+        constructor(data: PreCreate<foundry.documents.UserSource>, context?: DocumentConstructionContext<null>);
 
-		/** The position of the user's cursor. */
-		cursor?: { x: number; y: number } | null | undefined
+        /** Track whether the user is currently active in the game */
+        active: boolean;
 
-		/** The state of the user's ruler, if they are currently using one. */
-		ruler?: RulerData | null | undefined
+        /** Track references to the current set of Tokens which are targeted by the User */
+        targets: Set<Token>;
 
-		/** The IDs of the tokens the user has targeted in the currently viewed */
-		targets?: string[] | undefined
+        /** Track the ID of the Scene that is currently being viewed by the User */
+        viewedScene: string | null;
 
-		/** Whether the user has an open WS connection to the server or not. */
-		active?: boolean | undefined
+        /* ---------------------------------------- */
+        /*  User Properties                         */
+        /* ---------------------------------------- */
 
-		/** Is the user pulling focus to the cursor coordinates? */
-		focus?: boolean | undefined
+        /** A flag for whether the current User is a Trusted Player */
+        get isTrusted(): boolean;
 
-		/** Is the user emitting a ping at the cursor coordinates? */
-		ping?: boolean | undefined
+        /** A flag for whether this User is the connected client */
+        get isSelf(): boolean;
 
-		/** The state of the user's AV settings. */
-		av?: AVSettingsData | undefined
-	}
+        override prepareDerivedData(): void;
 
-	/**
-	 * The client-side User document which extends the common BaseUser model.
-	 * Each User document contains UserData which defines its data schema.
-	 *
-	 * @see {@link data.UserData}               The User data schema
-	 * @see {@link documents.Users}             The world-level collection of User documents
-	 * @see {@link applications.UserConfig}     The User configuration application
-	 */
-	class User extends ClientDocumentMixin(foundry.documents.BaseUser) {
-		/**
-		 * @param data - Initial data provided to construct the User document
-		 *               (default: `{}`)
-		 */
-		constructor(
-			data?: ConstructorParameters<ConstructorOf<foundry.documents.BaseUser>>[0],
-			context?: ConstructorParameters<ConstructorOf<foundry.documents.BaseUser>>[1]
-		)
+        /**
+         * Assign a Macro to a numbered hotbar slot between 1 and 50
+         * @param macro      The Macro entity to assign
+         * @param [slot]     A specific numbered hotbar slot to fill
+         * @param [fromSlot] An optional origin slot from which the Macro is being shifted
+         * @return A Promise which resolves once the User update is complete
+         */
+        assignHotbarMacro(
+            macro: Macro | null,
+            slot?: number | string,
+            { fromSlot }?: { fromSlot?: number | undefined },
+        ): Promise<this>;
 
-		flags: Record<string, any>
+        /**
+         * Assign a specific boolean permission to this user.
+         * Modifies the user permissions to grant or restrict access to a feature.
+         *
+         * @param permission The permission name from USER_PERMISSIONS
+         * @param allowed    Whether to allow or restrict the permission
+         */
+        assignPermission(permission: UserPermission, allowed: boolean): Promise<this | undefined>;
 
-		/**
-		 * Track whether the user is currently active in the game
-		 * @defaultValue `false`
-		 */
-		active: boolean
+        /**
+         * Submit User activity data to the server for broadcast to other players.
+         * This type of data is transient, persisting only for the duration of the session and not saved to any database.
+         *
+         * @param activityData An object of User activity data to submit to the server for broadcast.
+         * @param activityData.cursor  The coordinates of the user's cursor
+         * @param activityData.focus   Is the user pulling focus to the cursor coordinates?
+         * @param activityData.ping    Is the user emitting a ping at the cursor coordinates?
+         * @param activityData.ruler   Serialized Ruler coordinate data in JSON format
+         * @param activityData.sceneId The id of the Scene currently being viewed by the User
+         * @param activityData.targets An id of Token ids which are targeted by the User
+         */
+        broadcastActivity(activityData?: UserActivity): void;
 
-		/**
-		 * Track references to the current set of Tokens which are targeted by the User
-		 */
-		targets: UserTargets
+        /**
+         * Get an Array of Macro Entities on this User's Hotbar by page
+         * @param page The hotbar page number
+         */
+        getHotbarMacros(page?: number): object[];
 
-		/**
-		 * Track the ID of the Scene that is currently being viewed by the User
-		 * @defaultValue `null`
-		 */
-		viewedScene: string | null
+        /**
+         * Update the set of Token targets for the user given an array of provided Token ids.
+         * @param targetIds An array of Token ids which represents the new target set
+         */
+        updateTokenTargets(targetIds?: string[]): void;
 
-		/**
-		 * Return the User avatar icon or the controlled actor's image
-		 */
-		get avatar(): string
+        protected override _onUpdate(
+            changed: DeepPartial<foundry.documents.UserSource>,
+            options: DocumentModificationContext<null>,
+            userId: string,
+        ): void;
 
-		/**
-		 * Return the Actor instance of the user's impersonated character (or undefined)
-		 */
-		get character(): ReturnType<Exclude<Game["actors"], undefined>["get"]>
+        protected override _onDelete(options: DocumentModificationContext<null>, userId: string): void;
+    }
 
-		/**
-		 * A convenience shortcut for the permissions object of the current User
-		 */
-		get permissions(): foundry.data.UserData["permissions"]
+    interface UserActivity {
+        cursor?: object;
+        focus?: boolean;
+        ping?: boolean;
+        ruler?: string;
+        sceneId?: string;
+        target?: string[];
+    }
 
-		/**
-		 * A flag for whether the current User is a Trusted Player
-		 */
-		get isTrusted(): boolean
-
-		/**
-		 * A flag for whether this User is the connected client
-		 */
-		get isSelf(): boolean
-
-		/**
-		 * Assign a Macro to a numbered hotbar slot between 1 and 50
-		 * @param macro    - The Macro document to assign
-		 * @param slot     - A specific numbered hotbar slot to fill
-		 * @param fromSlot - An optional origin slot from which the Macro is being shifted
-		 * @returns A Promise which resolves once the User update is complete
-		 */
-		assignHotbarMacro(
-			macro: InstanceType<ConfiguredDocumentClass<typeof Macro>> | null,
-			slot: string | number,
-			{ fromSlot }?: { fromSlot: number }
-		): Promise<this>
-
-		/**
-		 * Assign a specific boolean permission to this user.
-		 * Modifies the user permissions to grant or restrict access to a feature.
-		 *
-		 * @param permission - The permission name from USER_PERMISSIONS
-		 * @param allowed    - Whether to allow or restrict the permission
-		 */
-		assignPermission(permission: keyof typeof CONST.USER_PERMISSIONS, allowed: boolean): Promise<this>
-
-		/**
-		 * Submit User activity data to the server for broadcast to other players.
-		 * This type of data is transient, persisting only for the duration of the session and not saved to any database.
-		 *
-		 * @param activityData - An object of User activity data to submit to the server for broadcast.
-		 *                       (default: `{}`)
-		 */
-		broadcastActivity(activityData?: ActivityData): void
-
-		/**
-		 * Get an Array of Macro Documents on this User's Hotbar by page
-		 * @param page - The hotbar page number
-		 *               (default: `1`)
-		 */
-		getHotbarMacros(
-			page?: number
-		): Array<{ slot: number; macro: InstanceType<ConfiguredDocumentClass<typeof Macro>> | null }>
-
-		/**
-		 * Update the set of Token targets for the user given an array of provided Token ids.
-		 * @param targetIds - An array of Token ids which represents the new target set
-		 *                    (default: `[]`)
-		 */
-		updateTokenTargets(targetIds?: string[]): void
-
-		override _onUpdate(
-			data: DeepPartial<DocumentDataType<foundry.documents.BaseUser>>,
-			options: DocumentModificationOptions,
-			userId: string
-		): void
-
-		override _onDelete(options: DocumentModificationOptions, userId: string): void
-
-		/** @remarks This property is set by PlayerList.getData() */
-		charname?: string
-
-		/** @remarks This property is set by PlayerList.getData() */
-		color?: string
-
-		/** @remarks This property is set by PlayerList.getData() */
-		border?: string
-	}
+    type Active<TUser extends User<Actor<null>>> = TUser & {
+        color: HexColorString;
+        border: HexColorString;
+    };
 }

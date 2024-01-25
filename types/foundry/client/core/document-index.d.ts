@@ -1,196 +1,154 @@
-import type { AnyDocumentData } from "../../common/abstract/data.mjs"
+export {};
 
 declare global {
-	/**
-	 * A data structure for quickly retrieving objects by a string prefix.
-	 * Note that this works well for languages with alphabets (latin, cyrillic, korean, etc.), but may need more nuanced
-	 * handling for languages that compose characters and letters.
-	 */
-	class WordTree {
-		/**
-		 * Create a new node.
-		 */
-		get node(): WordTree.Node
+    /**
+     * A leaf entry in the tree.
+     * @typedef WordTreeEntry
+     * @property entry        An object that this entry represents.
+     * @property documentName The document type.
+     * @property uuid         The document's UUID.
+     * @property [pack]       The pack ID.
+     */
+    interface WordTreeEntry {
+        entry: foundry.abstract.Document | object;
+        documentName: WorldDocument["documentName"];
+        uuid: string;
+        pack?: string;
+    }
 
-		/**
-		 * Insert an entry into the tree.
-		 * @param string - The string key for the entry.
-		 * @param entry  - The entry to store.
-		 * @returns The node the entry was added to.
-		 */
-		addLeaf(string: string, entry: WordTree.Entry): WordTree.Node
+    /**
+     * A word tree node consists of zero or more 1-character keys, and a leaves property that contains any objects that
+     * terminate at the current string prefix.
+     * @typedef WordTreeNode
+     * @property leaves Any leaves at this node.
+     */
+    interface WordTreeNode {
+        leaves: WordTreeEntry[];
+    }
 
-		/**
-		 * Return entries that match the given string prefix.
-		 * @param prefix  - The prefix.
-		 * @param options - Additional options to configure behaviour.
-		 * @returns A number of entries that have the given prefix.
-		 */
-		lookup(
-			prefix: string,
-			options?: {
-				/**
-				 * The maximum number of items to retrieve. It is important to set this value as
-				 * very short prefixes will naturally match large numbers of entries. (default: `10`)
-				 */
-				limit: number
-			}
-		): WordTree.Entry[]
+    /**
+     * A data structure for quickly retrieving objects by a string prefix.
+     * Note that this works well for languages with alphabets (latin, cyrillic, korean, etc.), but may need more nuanced
+     * handling for languages that compose characters and letters.
+     */
+    class WordTree {
+        /** Create a new node. */
+        get node(): WordTreeNode;
 
-		/**
-		 * Returns the node at the given prefix.
-		 * @param prefix - The prefix.
-		 */
-		nodeAtPrefix(prefix: string): WordTree.Node
+        /**
+         * Insert an entry into the tree.
+         * @param string The string key for the entry.
+         * @param entry  The entry to store.
+         * @returns The node the entry was added to.
+         */
+        addLeaf(string: string, entry: WordTreeEntry): WordTreeNode;
 
-		/**
-		 * Perform a breadth-first search starting from the given node and retrieving any entries along the way, until we
-		 * reach the limit.
-		 * @param node    - The starting node.
-		 * @param entries - The accumulated entries.
-		 * @param queue   - The working queue of nodes to search.
-		 * @param options - Additional options for the search.
-		 * @internal
-		 */
-		protected _breadthFirstSearch(
-			node: WordTree.Node,
-			entries: WordTree.Entry[],
-			queue: WordTree.Node[],
-			options?: {
-				/** The maximum number of entries to retrieve before stopping. (default: `10`) */
-				limit: 10
-			}
-		): void
-	}
-	export namespace WordTree {
-		/**
-		 * A leaf entry in the tree.
-		 */
-		interface Entry {
-			/** An object that this entry represents. */
-			entry: Document | object
+        /**
+         * Return entries that match the given string prefix.
+         * @param prefix             The prefix.
+         * @param [options]          Additional options to configure behaviour.
+         * @param [options.limit=10] The maximum number of items to retrieve. It is important to set this value as
+         *                           very short prefixes will naturally match large numbers of entries.
+         * @returns A number of entries that have the given prefix.
+         */
+        lookup(prefix: string, options?: { limit?: number }): WordTreeEntry;
 
-			/** The document type. */
-			documentName: string
+        /**
+         * Returns the node at the given prefix.
+         * @param prefix The prefix.
+         */
+        nodeAtPrefix(prefix: string): WordTreeNode | void;
 
-			/** The document's UUID. */
-			uuid: string
+        /**
+         * Perform a breadth-first search starting from the given node and retrieving any entries along the way, until we
+         * reach the limit.
+         * @param node      The starting node.
+         * @param entries   The accumulated entries.
+         * @param queue     The working queue of nodes to search.
+         * @param [options] Additional options for the search.
+         * @param [options.limit=10] The maximum number of entries to retrieve before stopping.
+         */
+        protected _breadthFirstSearch(
+            node: WordTreeNode,
+            entries: WordTreeEntry[],
+            queue: WordTreeNode[],
+            options?: { limit?: number },
+        ): void;
+    }
 
-			/** The pack ID. */
-			pack?: string
-		}
+    /**
+     * This class is responsible for indexing all documents available in the world and storing them in a word tree
+     * structure that allows for fast searching.
+     */
+    class DocumentIndex {
+        constructor();
+        /** A collection of WordTree structures for each document type. */
+        trees: Record<string, WordTree>;
 
-		/**
-		 * A word tree node consists of zero or more 1-character keys, and a leaves property that contains any objects that
-		 * terminate at the current string prefix.
-		 */
-		interface Node {
-			/** Any leaves at this node. */
-			leaves: Entry[]
-		}
-	}
+        /** A reverse-lookup of a document's UUID to its parent node in the word tree. */
+        uuids: Record<string, WordTreeNode>;
 
-	/**
-	 * This class is responsible for indexing all documents available in the world and storing them in a word tree structure
-	 * that allows for fast searching.
-	 */
-	class DocumentIndex {
-		constructor()
-		/**
-		 * A collection of WordTree structures for each document type.
-		 * @defaultValue `{}`
-		 */
-		trees: Record<string, WordTree>
+        /** Returns a Promise that resolves when the indexing process is complete. */
+        get ready(): void | null;
 
-		/**
-		 * A reverse-lookup of a document's UUID to its parent node in the word tree.
-		 * @defaultValue `{}`
-		 */
-		uuids: Record<string, WordTree.Node>
+        /** Index all available documents in the world and store them in a word tree. */
+        index(): Promise<void>;
 
-		/**
-		 * Returns a Promise that resolves when the indexing process is complete.
-		 */
-		get ready(): Promise<void> | null
+        /**
+         * Return entries that match the given string prefix.
+         * @param prefix                  The prefix.
+         * @param [options]               Additional options to configure behaviour.
+         * @param [options.documentTypes] Optionally provide an array of document types. Only entries of that type
+         *                                will be searched for.
+         * @param [options.limit=10]      The maximum number of items per document type to retrieve. It is
+         *                                important to set this value as very short prefixes will naturally match
+         *                                large numbers of entries.
+         * @returns A number of entries that have the given prefix, grouped by document type.
+         */
+        lookup(prefix: string, options?: { limit?: number; documentTypes?: string[] }): Record<string, WordTreeEntry[]>;
 
-		/**
-		 * Index all available documents in the world and store them in a word tree.
-		 */
-		index(): Promise<void>
+        /**
+         * Add an entry to the index.
+         * @param doc The document entry.
+         */
+        addDocument(doc: foundry.abstract.Document): void;
 
-		/**
-		 * Return entries that match the given string prefix.
-		 * @param prefix  - The prefix.
-		 * @param options - Additional options to configure behaviour.
-		 * A number of entries that have the given prefix, grouped by document type.
-		 */
-		lookup(
-			prefix: string,
-			options?: {
-				/**
-				 * The maximum number of items per document type to retrieve. It is important to set this
-				 * value as very short prefixes will naturally match large numbers of entries. (default: `10`)
-				 */
-				limit?: number
-				/**
-				 * Optionally provide an array of document types. Only entries of that type
-				 * will be searched for. (default: `[]`)
-				 */
-				documentTypes?: string[]
-			}
-		): Record<string, WordTree.Entry[]>
+        /**
+         * Remove an entry from the index.
+         * @param doc The document entry.
+         */
+        removeDocument(doc: foundry.abstract.Document): void;
 
-		/**
-		 * Add an entry to the index.
-		 * @param doc - The document entry.
-		 */
-		addDocument(doc: foundry.abstract.Document<any, any>): void
+        /**
+         * Replace an entry in the index with an updated one.
+         * @param doc The document entry.
+         */
+        replaceDocument(doc: foundry.abstract.Document): void;
 
-		/**
-		 * Remove an entry from the index.
-		 * @param doc - The document entry.
-		 */
-		removeDocument(doc: foundry.abstract.Document<any, any>): void
+        /**
+         * Add a leaf node to the word tree index.
+         * @param doc            The document or compendium index entry to add.
+         * @param [options]      Additional information for indexing.
+         * @param [options.pack] The compendium that the index belongs to.
+         */
+        protected _addLeaf(doc: WorldDocument | object, options?: { pack?: CompendiumCollection }): void;
 
-		/**
-		 * Replace an entry in the index with an updated one.
-		 * @param doc - The document entry.
-		 */
-		replaceDocument(doc: foundry.abstract.Document<any, any>): void
+        /**
+         * Aggregate the compendium index and add it to the word tree index.
+         * @param pack The compendium pack.
+         */
+        protected _indexCompendium(pack: CompendiumCollection): void;
 
-		/**
-		 * Add a leaf node to the word tree index.
-		 * @param doc     - The document or compendium index entry to add.
-		 * @param options - Additional information for indexing.
-		 * @internal
-		 */
-		protected _addLeaf(
-			doc: foundry.abstract.Document<any, any> | AnyDocumentData,
-			options?: {
-				/** The compendium that the index belongs to. */
-				pack?: CompendiumCollection<any>
-			}
-		): void
+        /**
+         * Add all of a parent document's embedded documents to the index.
+         * @param parent The parent document.
+         */
+        protected _indexEmbeddedDocuments(parent: WorldDocument): void;
 
-		/**
-		 * Aggregate the compendium index and add it to the word tree index.
-		 * @param pack - The compendium pack.
-		 * @internal
-		 */
-		protected _indexCompendium(pack: CompendiumCollection<any>): void
-
-		/**
-		 * Add all of a parent document's embedded documents to the index.
-		 * @param parent - The parent document.
-		 * @internal
-		 */
-		protected _indexEmbeddedDocuments(parent: foundry.abstract.Document<any, any>): void
-
-		/**
-		 * Aggregate all documents and embedded documents in a world collection and add them to the index.
-		 * @param documentName - The name of the documents to index.
-		 * @internal
-		 */
-		protected _indexWorldCollection(documentName: string): void
-	}
+        /**
+         * Aggregate all documents and embedded documents in a world collection and add them to the index.
+         * @param documentName  The name of the documents to index.
+         */
+        protected _indexWorldCollection(documentName: WorldDocument["documentName"]): void;
+    }
 }

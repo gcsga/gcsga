@@ -1,40 +1,20 @@
 /**
- * A cached container group which renders the primary visible contents of a Scene.
+ * The primary Canvas group which generally contains tangible physical objects which exist within the Scene.
+ * This group is a {@link CachedContainer} which is rendered to the Scene as a {@link SpriteMesh}.
+ * This allows the rendered result of the Primary Canvas Group to be affected by a {@link BaseSamplerShader}.
+ * @category - Canvas
+ * @todo Fill in
  */
 declare class PrimaryCanvasGroup extends CachedContainer {
-	constructor()
+    tokens: Collection<TokenMesh>;
 
-	background: BackgroundLayer
+    /**
+     * Render all tokens in their own render texture.
+     * @param renderer The renderer to use.
+     */
+    protected _renderTokens(renderer: PIXI.Renderer): void;
+}
 
-	drawings: DrawingsLayer
-
-	grid: GridLayer
-
-	templates: TemplateLayer
-
-	tokens: TokenLayer
-
-	foreground: ForegroundLayer
-
-	/** @defaultValue `true` */
-	sortableChildren: boolean
-
-	/**
-	 * The name of this canvas group
-	 * @defaultValue `"primary"`
-	 */
-	static groupName: string
-
-	/**
-	 * @defaultValue `[0, 0, 0, 0]`
-	 */
-	override clearColor: [r: number, g: number, b: number, a: number]
-
-	/**
-	 * Create the member layers of the scene container
-	 * @internal
-	 */
-	protected _createLayers(): void
-
-	override render(renderer: Parameters<PIXI.Container["render"]>[0]): void
+declare interface PrimaryCanvasGroup extends CachedContainer {
+    readonly children: PIXI.Container[];
 }

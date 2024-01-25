@@ -1,22 +1,27 @@
-import { ItemGCS } from "@item/gcs"
-import { TraitGURPS } from "@item/trait"
-import { TraitModifierGURPS } from "@item/trait_modifier"
-import { TraitModifierContainerGURPS } from "@item/trait_modifier_container"
-import { TraitContainerSource, TraitContainerType } from "./data"
-import { selfctrl } from "@util/enum"
+import { ActorGURPS } from "@actor/document.ts"
+import { ItemGCS } from "@item/gcs/document.ts"
+import { TraitContainerSystemData, TraitContainerType } from "./data.ts"
+import { selfctrl } from "@util/enum/selfctrl.ts"
+import { TraitGURPS } from "@item/trait/document.ts"
+import { TraitModifierGURPS } from "@item/trait_modifier/document.ts"
+import { TraitModifierContainerGURPS } from "@item/trait_modifier_container/document.ts"
 
-export class TraitContainerGURPS extends ItemGCS<TraitContainerSource> {
-	unsatisfied_reason = ""
+export interface TraitContainerGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+	system: TraitContainerSystemData
+}
+
+export class TraitContainerGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+	// unsatisfied_reason = ""
 
 	// Getters
-	get enabled(): boolean {
+	override get enabled(): boolean {
 		if (this.system.disabled) return false
 		let enabled = !this.system.disabled
 		if (this.container instanceof TraitContainerGURPS) enabled = enabled && this.container.enabled
 		return enabled
 	}
 
-	set enabled(enabled: boolean) {
+	override set enabled(enabled: boolean) {
 		this.system.disabled = !enabled
 	}
 
@@ -24,11 +29,11 @@ export class TraitContainerGURPS extends ItemGCS<TraitContainerSource> {
 		return this.system.container_type
 	}
 
-	get isLeveled(): boolean {
+	override get isLeveled(): boolean {
 		return false
 	}
 
-	get levels(): number {
+	override get levels(): number {
 		return 0
 	}
 
@@ -66,7 +71,7 @@ export class TraitContainerGURPS extends ItemGCS<TraitContainerSource> {
 	}
 
 	// Embedded Items
-	get children(): Collection<TraitGURPS | TraitContainerGURPS> {
+	override get children(): Collection<TraitGURPS | TraitContainerGURPS> {
 		return super.children as Collection<TraitGURPS | TraitContainerGURPS>
 	}
 
@@ -76,7 +81,7 @@ export class TraitContainerGURPS extends ItemGCS<TraitContainerSource> {
 				.filter(item => item instanceof TraitModifierGURPS)
 				.map(item => {
 					return [item.id!, item]
-				})
+				}),
 		) as Collection<TraitModifierGURPS>
 	}
 
@@ -92,7 +97,7 @@ export class TraitContainerGURPS extends ItemGCS<TraitContainerSource> {
 		return new Collection(
 			deepModifiers.map(item => {
 				return [item.id!, item]
-			})
+			}),
 		)
 	}
 

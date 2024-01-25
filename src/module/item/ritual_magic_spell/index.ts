@@ -1,3 +1,3 @@
-export { RitualMagicSpellGURPS } from "./document"
-export { RitualMagicSpellSheet } from "./sheet"
-export * from "./data"
+export { RitualMagicSpellGURPS } from "./document.ts"
+export { RitualMagicSpellSheet } from "./sheet.ts"
+export * from "./data.ts"

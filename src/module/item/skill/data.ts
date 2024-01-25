@@ -1,11 +1,12 @@
-import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
-import { Feature } from "@module/config"
-import { ItemType } from "@module/data"
-import { SkillDefault } from "@module/default"
-import { TooltipGURPS } from "@module/tooltip"
-import { PrereqList } from "@prereq"
-import { Study } from "@util"
-import { difficulty, study } from "@util/enum"
+import { Feature } from "@feature/index.ts"
+import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
+import { ItemType } from "@module/data/misc.ts"
+import { PrereqList } from "@prereq/prereq_list.ts"
+import { SkillDefault } from "@sytem/default/index.ts"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { difficulty } from "@util/enum/difficulty.ts"
+import { study } from "@util/enum/study.ts"
+import { Study } from "@util/study.ts"
 
 export type SkillSource = ItemGCSSource<ItemType.Skill, SkillSystemData>
 

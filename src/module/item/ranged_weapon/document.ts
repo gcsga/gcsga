@@ -1,20 +1,25 @@
-import { BaseWeaponGURPS } from "@item/weapon"
-import { RangedWeaponSource } from "./data"
-import { WeaponAccuracy } from "@item/weapon/weapon_accuracy"
-import { WeaponRange } from "@item/weapon/weapon_range"
-import { WeaponBulk } from "@item/weapon/weapon_bulk"
-import { WeaponROF } from "@item/weapon/weapon_rof"
-import { WeaponShots } from "@item/weapon/weapon_shots"
-import { WeaponRecoil } from "@item/weapon/weapon_recoil"
-import { TooltipGURPS } from "@module/tooltip"
-import { RollType, SETTINGS, SYSTEM_NAME } from "@module/data"
-import { includesFold } from "@util"
-import { ItemFlags } from "@item/data"
+import { ActorGURPS, CharacterGURPS } from "@actor/document.ts"
+import { RangedWeaponSystemData } from "./data.ts"
+import { BaseWeaponGURPS } from "@item/index.ts"
+import { WeaponAccuracy } from "@item/weapon/weapon_accuracy.ts"
+import { WeaponRange } from "@item/weapon/weapon_range.ts"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { WeaponROF } from "@item/weapon/weapon_rof.ts"
+import { WeaponShots } from "@item/weapon/weapon_shots.ts"
+import { WeaponBulk } from "@item/weapon/weapon_bulk.ts"
+import { RollType, SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
+import { WeaponRecoil } from "@item/weapon/weapon_recoil.ts"
+import { includesFold } from "@util/string_criteria.ts"
+import { ItemFlags } from "@item/data.ts"
 
-export class RangedWeaponGURPS extends BaseWeaponGURPS<RangedWeaponSource> {
+export interface RangedWeaponGURPS<TParent extends ActorGURPS> extends BaseWeaponGURPS<TParent> {
+	system: RangedWeaponSystemData
+}
+
+export class RangedWeaponGURPS<TParent extends ActorGURPS = ActorGURPS> extends BaseWeaponGURPS<TParent> {
 	get resolvedRange(): string {
 		const actor = this.actor
-		if (!actor) return this.system.range
+		if (!(actor instanceof CharacterGURPS)) return this.system.range
 		const st = Math.trunc(actor.throwingST)
 		let savedRange = ""
 		let calcRange = this.system.range
@@ -89,7 +94,7 @@ export class RangedWeaponGURPS extends BaseWeaponGURPS<RangedWeaponSource> {
 	}
 
 	checkUnready(type: RollType): void {
-		const check = game.settings.get(SYSTEM_NAME, SETTINGS.AUTOMATIC_UNREADY) as boolean
+		const check = game.settings.get(SYSTEM_NAME, SETTINGS.AUTOMATIC_UNREADY)
 		if (!check) return
 		if (!this.actor) return
 		let unready = false

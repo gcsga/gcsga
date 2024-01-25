@@ -1,4 +1,4 @@
-import { LocalizeGURPS } from "@util/localize"
+import { LocalizeGURPS } from "@util/localize.ts"
 
 export namespace progression {
 	export enum Option {

@@ -1,3 +1,3 @@
-export { BaseActorGURPS } from "./base"
-export { CharacterGURPS } from "./character"
-export { StaticCharacterGURPS } from "./static"
+export { ActorGURPS } from "./base.ts"
+export { CharacterGURPS } from "./character/index.ts"
+export { StaticCharacterGURPS } from "./static/index.ts"

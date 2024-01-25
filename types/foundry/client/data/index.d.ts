@@ -1,3 +1,3 @@
-import "./abstract"
-import "./collections"
-import "./documents"
+import "./abstract/index.d.ts";
+import "./collections/index.d.ts";
+import "./documents/index.d.ts";

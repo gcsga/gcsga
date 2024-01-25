@@ -1,8 +1,8 @@
-import { WeaponGURPS } from "@module/config"
-import { TooltipGURPS } from "@module/tooltip"
-import { WeaponField } from "./weapon_field"
-import { feature } from "@util/enum"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { BaseWeaponGURPS } from "./document.ts"
+import { feature } from "@util/enum/feature.ts"
 
+import { WeaponField } from "./weapon_field.ts"
 export class WeaponBulk extends WeaponField {
 	normal = 0
 
@@ -21,7 +21,7 @@ export class WeaponBulk extends WeaponField {
 		return wb
 	}
 
-	resolve(w: WeaponGURPS, tooltip: TooltipGURPS): WeaponBulk {
+	resolve(w: BaseWeaponGURPS, tooltip: TooltipGURPS): WeaponBulk {
 		const result = new WeaponBulk()
 		Object.assign(result, this)
 		for (const bonus of w.collectWeaponBonuses(1, tooltip, feature.Type.WeaponBulkBonus)) {
@@ -33,7 +33,7 @@ export class WeaponBulk extends WeaponField {
 		return result
 	}
 
-	toString(): string {
+	override toString(): string {
 		if (this.normal >= 0 && this.giant >= 0) return ""
 		let buffer = ""
 		buffer += this.normal.toString()

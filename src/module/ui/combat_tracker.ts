@@ -1,9 +1,11 @@
-import { CharacterGURPS } from "@actor"
-import { ConditionGURPS, ConditionID } from "@item"
-import { CombatantGURPS } from "@module/combatant"
-import { ActorType } from "@module/data"
+import { CharacterGURPS } from "@actor/document.ts"
+import { ConditionID } from "@item/condition/data.ts"
+import { ConditionGURPS } from "@item/condition/document.ts"
+import { CombatGURPS } from "@module/combat/document.ts"
+import { CombatantGURPS } from "@module/combatant/document.ts"
+import { ActorType } from "@module/data/misc.ts"
 
-class CombatTrackerGURPS extends CombatTracker {
+export class CombatTrackerGURPS<TCombat extends CombatGURPS | null> extends CombatTracker<TCombat> {
 	override async _onToggleDefeatedStatus(combatant: CombatantGURPS) {
 		if (!(combatant.actor?.type === ActorType.Character)) return super._onToggleDefeatedStatus(combatant)
 
@@ -16,8 +18,8 @@ class CombatTrackerGURPS extends CombatTracker {
 		else await actor.removeConditions([ConditionID.Dead])
 	}
 
-	async getData(options = {}) {
-		const data = (await super.getData(options)) as any
+	override getData(options: CombatTrackerOptions): CombatTrackerData {
+		const data = super.getData(options)
 		const turns = data.turns
 		turns?.forEach((t: any) => {
 			t.effects = t.effects.filter((e: string) => e !== ConditionGURPS.getData(ConditionID.Dead).img)
@@ -26,5 +28,3 @@ class CombatTrackerGURPS extends CombatTracker {
 		return data
 	}
 }
-
-export { CombatTrackerGURPS }

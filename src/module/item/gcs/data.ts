@@ -1,6 +1,7 @@
-import { MeleeWeaponSystemData, RangedWeaponSystemData } from "@item"
-import { BaseContainerSource, BaseContainerSystemData } from "@item/container"
-import { ItemType } from "@module/data"
+import { BaseContainerSource, BaseContainerSystemData } from "@item/container/data.ts"
+import { MeleeWeaponSystemData } from "@item/melee_weapon/data.ts"
+import { RangedWeaponSystemData } from "@item/ranged_weapon/data.ts"
+import { ItemType } from "@module/data/misc.ts"
 
 export type ItemGCSSource<
 	TItemType extends ItemType = ItemType,

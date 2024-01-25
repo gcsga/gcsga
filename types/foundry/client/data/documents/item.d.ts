@@ -1,61 +1,69 @@
-import { ConfiguredDocumentClass } from "../../../../types/helperTypes"
+import type { ClientBaseItem } from "./client-base-mixes.d.ts";
 
 declare global {
-	/**
-	 * The client-side Item document which extends the common BaseItem abstraction.
-	 * Each Item document contains ItemData which defines its data schema.
-	 *
-	 * @see {@link data.ItemData}              The Item data schema
-	 * @see {@link documents.Items}            The world-level collection of Item documents
-	 * @see {@link applications.ItemSheet}     The Item configuration application
-	 *
-	 * @param data    - Initial data provided to construct the Item document
-	 * @param context - The document context, see {@link foundry.abstract.Document}
-	 */
-	class Item extends ClientDocumentMixin(foundry.documents.BaseItem) {
-		sort: number
+    /**
+     * The client-side Item document which extends the common BaseItem model.
+     *
+     * @see {@link documents.Items}            The world-level collection of Item documents
+     * @see {@link applications.ItemSheet}     The Item configuration application
+     */
+    class Item<TParent extends Actor | null = Actor | null> extends ClientBaseItem<TParent> {
+        /** A convenience alias of Item#parent which is more semantically intuitive */
+        get actor(): TParent;
 
-		/**
-		 * A convenience alias of Item#parent which is more semantically intuitive
-		 */
-		get actor(): this["parent"]
+        /** Provide a thumbnail image path used to represent this document. */
+        get thumbnail(): this["img"];
 
-		/**
-		 * A convenience reference to the image path (data.img) used to represent this Item
-		 */
-		get img(): this["data"]["img"]
+        /** A convenience alias of Item#isEmbedded which is preserves legacy support */
+        get isOwned(): boolean;
 
-		/**
-		 * Provide a thumbnail image path used to represent this document.
-		 */
-		get thumbnail(): this["data"]["img"]
+        /**
+         * Return an array of the Active Effect instances which originated from this Item.
+         * The returned instances are the ActiveEffect instances which exist on the Item itself.
+         */
+        get transferredEffects(): CollectionValue<this["effects"]>[];
 
-		/**
-		 * A convenience alias of Item#isEmbedded which is preserves legacy support
-		 */
-		get isOwned(): this["isEmbedded"]
+        /* -------------------------------------------- */
+        /*  Methods                                     */
+        /* -------------------------------------------- */
 
-		/**
-		 * Return an array of the Active Effect instances which originated from this Item.
-		 * The returned instances are the ActiveEffect instances which exist on the Item itself.
-		 */
-		get transferredEffects(): ReturnType<this["effects"]["filter"]>
+        /** Prepare a data object which defines the data schema used by dice roll commands against this Item */
+        getRollData(): object;
 
-		/**
-		 * Prepare a data object which defines the data schema used by dice roll commands against this Item
-		 */
-		getRollData(): object
+        /* -------------------------------------------- */
+        /*  Event Handlers                              */
+        /* -------------------------------------------- */
 
-		// @ts-expect-error For some reason, proctected static methods from Document are lost, so ts complains that this isn't actually an override
-		protected static override _onCreateDocuments(
-			items: Array<InstanceType<ConfiguredDocumentClass<typeof Item>>>,
-			context: DocumentModificationContext
-		): Promise<unknown>
+        protected override _preCreate(
+            data: this["_source"],
+            options: DocumentModificationContext<TParent>,
+            user: User,
+        ): Promise<boolean | void>;
 
-		// @ts-expect-error For some reason, proctected static methods from Document are lost, so ts complains that this isn't actually an override
-		protected static override _onDeleteDocuments(
-			items: Array<InstanceType<ConfiguredDocumentClass<typeof Item>>>,
-			context: DocumentModificationContext
-		): Promise<unknown>
-	}
+        protected static override _onCreateDocuments<TDocument extends foundry.abstract.Document>(
+            this: ConstructorOf<TDocument>,
+            items: TDocument[],
+            context: DocumentModificationContext<TDocument["parent"]>,
+        ): void;
+
+        protected static override _onDeleteDocuments<TDocument extends foundry.abstract.Document>(
+            this: ConstructorOf<TDocument>,
+            items: TDocument[],
+            context: DocumentModificationContext<TDocument["parent"]>,
+        ): void;
+    }
+
+    interface Item<TParent extends Actor | null = Actor | null> extends ClientBaseItem<TParent> {
+        get uuid(): ItemUUID;
+        get sheet(): ItemSheet<this, DocumentSheetOptions>;
+    }
+
+    namespace Item {
+        const implementation: typeof Item;
+    }
+
+    type EmbeddedItemUUID = `Actor.${string}.Item.${string}`;
+    type WorldItemUUID = WorldDocumentUUID<Item<null>>;
+    type CompendiumItemUUID = `Compendium.${string}.Item.${string}`;
+    type ItemUUID = WorldItemUUID | EmbeddedItemUUID | CompendiumItemUUID;
 }

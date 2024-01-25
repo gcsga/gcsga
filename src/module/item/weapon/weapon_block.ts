@@ -1,9 +1,10 @@
-import { WeaponGURPS } from "@module/config"
-import { TooltipGURPS } from "@module/tooltip"
-import { Int } from "@util/fxp"
-import { gid } from "@module/data"
-import { WeaponField } from "./weapon_field"
-import { feature, wswitch } from "@util/enum"
+import { Int } from "@util/fxp.ts"
+import { WeaponField } from "./weapon_field.ts"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { wswitch } from "@util/enum/wswitch.ts"
+import { gid } from "@module/data/misc.ts"
+import { feature } from "@util/enum/feature.ts"
+import { BaseWeaponGURPS } from "./document.ts"
 
 export class WeaponBlock extends WeaponField {
 	no = false
@@ -21,7 +22,7 @@ export class WeaponBlock extends WeaponField {
 		return wp
 	}
 
-	resolve(w: WeaponGURPS, tooltip: TooltipGURPS | null): WeaponBlock {
+	resolve(w: BaseWeaponGURPS, tooltip: TooltipGURPS | null): WeaponBlock {
 		const result = WeaponBlock.parse(this.toString())
 		result.no = !w.resolveBoolFlag(wswitch.Type.CanBlock, !result.no)
 		if (!result.no) {
@@ -54,7 +55,7 @@ export class WeaponBlock extends WeaponField {
 		return result
 	}
 
-	toString(): string {
+	override toString(): string {
 		if (this.no) return "No" // not localized
 		if (this.modifier === 0) return ""
 		let buffer = ""

@@ -1,7 +1,8 @@
-import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
-import { Feature } from "@module/config"
-import { ItemType } from "@module/data"
-import { emcost, emweight } from "@util/enum"
+import { Feature } from "@feature/index.ts"
+import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
+import { ItemType } from "@module/data/misc.ts"
+import { emcost } from "@util/enum/emcost.ts"
+import { emweight } from "@util/enum/emweight.ts"
 
 export type EquipmentModifierSource = ItemGCSSource<ItemType.EquipmentModifier, EquipmentModifierSystemData>
 

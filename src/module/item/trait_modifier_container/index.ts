@@ -1,3 +1,3 @@
-export { TraitModifierContainerGURPS } from "./document"
-export { TraitModifierContainerSheet } from "./sheet"
-export * from "./data"
+export { TraitModifierContainerGURPS } from "./document.ts"
+export { TraitModifierContainerSheet } from "./sheet.ts"
+export * from "./data.ts"

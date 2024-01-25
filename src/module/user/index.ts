@@ -1,1 +1,1 @@
-import { UserGURPS } from "./document"
+export { UserGURPS } from "./document.ts"

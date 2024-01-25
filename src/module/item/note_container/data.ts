@@ -1,6 +1,6 @@
-import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
-import { NoteCalcValues } from "@item/note/data"
-import { ItemType } from "@module/data"
+import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
+import { NoteCalcValues } from "@item/note/data.ts"
+import { ItemType } from "@module/data/misc.ts"
 
 export type NoteContainerSource = ItemGCSSource<ItemType.NoteContainer, NoteContainerSystemData>
 

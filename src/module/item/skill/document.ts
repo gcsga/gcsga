@@ -1,20 +1,31 @@
-import { ItemGCS } from "@item/gcs"
-import { gid, sheetSettingsFor } from "@module/data"
-import { SkillDefault } from "@module/default"
-import { TooltipGURPS } from "@module/tooltip"
-import { LocalizeGURPS, NewLineRegex, resolveStudyHours, studyHoursProgressText } from "@util"
-import { SkillLevel, SkillSource } from "./data"
-import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
-import { difficulty, display } from "@util/enum"
-import { StringBuilder } from "@util/string_builder"
+import { ActorGURPS } from "@actor/base.ts"
+import { SkillLevel, SkillSystemData } from "./data.ts"
+import { ItemGCS } from "@item/gcs/document.ts"
+import { display } from "@util/enum/display.ts"
+import { StringBuilder } from "@util/string_builder.ts"
+import { sheetSettingsFor } from "@module/data/sheet_settings.ts"
+import { resolveStudyHours, studyHoursProgressText } from "@util/study.ts"
+import { LocalizeGURPS } from "@util/localize.ts"
+import { NewLineRegex } from "@util/regexp.ts"
+import { difficulty } from "@util/enum/difficulty.ts"
+import { gid } from "@module/data/misc.ts"
+import { SkillDefault } from "@sytem/default/index.ts"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { duplicate } from "types/foundry/common/utils/helpers.js"
+import { CharacterGURPS } from "@actor/document.ts"
 
-export class SkillGURPS extends ItemGCS<SkillSource> {
-	level: SkillLevel = { level: -Infinity, relative_level: 0, tooltip: new TooltipGURPS() }
+export interface SkillGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+	system: SkillSystemData
+}
+export class SkillGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+	declare level: SkillLevel
 
-	unsatisfied_reason = ""
+	// level: SkillLevel = { level: -Infinity, relative_level: 0, tooltip: new TooltipGURPS() }
+
+	// unsatisfied_reason = ""
 
 	// Getters
-	get formattedName(): string {
+	override get formattedName(): string {
 		const name: string = this.name ?? ""
 		const specialization = this.specialization
 		const TL = this.techLevel
@@ -23,7 +34,7 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		}`
 	}
 
-	secondaryText(optionChecker: (option: display.Option) => boolean): string {
+	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
 		const buffer = new StringBuilder()
 		const settings = sheetSettingsFor(this.actor)
 		if (optionChecker(settings.modifiers_display)) {
@@ -33,7 +44,7 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		if (optionChecker(settings.notes_display)) {
 			buffer.appendToNewLine(this.notes.trim())
 			buffer.appendToNewLine(
-				studyHoursProgressText(resolveStudyHours(this.system.study), this.system.study_hours_needed, false)
+				studyHoursProgressText(resolveStudyHours(this.system.study), this.system.study_hours_needed, false),
 			)
 		}
 		if (optionChecker(settings.skill_level_adj_display)) {
@@ -87,9 +98,8 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		return this.system.specialization
 	}
 
-	get defaultSkill(): SkillGURPS | undefined {
-		if (!this.actor) return undefined
-		// console.log(this)
+	get defaultSkill(): SkillGURPS | null {
+		if (!(this.actor instanceof CharacterGURPS)) return null
 		return this.actor.baseSkill(this.defaultedFrom, true)
 	}
 
@@ -119,7 +129,7 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 
 	get effectiveLevel(): number {
 		const actor = this.actor || this.dummyActor
-		if (!actor) return -Infinity
+		if (!(actor instanceof CharacterGURPS)) return -Infinity
 		let att = actor.resolveAttributeCurrent(this.attribute)
 		let effectiveAtt = actor.resolveAttributeEffective(this.attribute)
 		return this.level.level - att + effectiveAtt
@@ -129,6 +139,7 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 	calculateLevel(): SkillLevel {
 		const none = { level: -Infinity, relative_level: 0, tooltip: new TooltipGURPS() }
 		const actor = this.actor || this.dummyActor
+		if (!(actor instanceof CharacterGURPS)) return none
 		let relativeLevel = difficulty.Level.baseRelativeLevel(this.difficulty)
 		let level = actor.resolveAttributeCurrent(this.attribute)
 		const tooltip = new TooltipGURPS()
@@ -175,7 +186,7 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 			tooltip.push(
 				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.item.encumbrance, {
 					amount: bonus.signedString(),
-				})
+				}),
 			)
 		}
 		return {
@@ -187,7 +198,7 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 
 	adjustedPoints(tooltip?: TooltipGURPS): number {
 		let points = this.points
-		if (this.actor) {
+		if (this.actor instanceof CharacterGURPS) {
 			points += this.actor.skillPointBonusFor(this.name!, this.specialization, this.tags, tooltip)
 			points = Math.max(points, 0)
 		}
@@ -218,7 +229,7 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 
 	bestDefaultWithPoints(_excluded?: SkillDefault): SkillDefault | null {
 		const actor = this.actor || this.dummyActor
-		if (!actor) return null
+		if (!(actor instanceof CharacterGURPS)) return null
 		const best = this.bestDefault()
 		if (best) {
 			const baseline =
@@ -254,6 +265,7 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 
 	calcSkillDefaultLevel(def: SkillDefault, excludes: Map<string, boolean>): number {
 		const actor = this.actor || this.dummyActor
+		if (!(actor instanceof CharacterGURPS)) return 0
 		let level = def.skillLevel(actor!, true, excludes, this.type.startsWith("skill"))
 		if (def.skillBased) {
 			const other = actor?.bestSkillNamed(def.name!, def.specialization!, true, excludes)
@@ -265,6 +277,7 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 	}
 
 	resolveToSpecificDefaults(): SkillDefault[] {
+		if (!(this.actor instanceof CharacterGURPS)) return []
 		const result: SkillDefault[] = []
 		for (const def of this.defaults) {
 			if (!this.actor || !def || !def.skillBased) {
@@ -293,10 +306,10 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 	}
 
 	inDefaultChain(def: SkillDefault | null, lookedAt: Map<string, boolean>): boolean {
-		if (!this.actor || !def || !def.name) return false
+		if (!(this.actor instanceof CharacterGURPS) || !def || !def.name) return false
 		let hadOne = false
 		for (const one of (this.actor.skills as Collection<SkillGURPS>).filter(
-			s => s.name === def.name && s.specialization === def.specialization
+			s => s.name === def.name && s.specialization === def.specialization,
 		)) {
 			if (one === this) return true
 			if (typeof one.id === "string" && lookedAt.get(one.id)) {
@@ -335,7 +348,7 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		}
 	}
 
-	incrementSkillLevel(options?: DocumentModificationOptions) {
+	incrementSkillLevel(options?: DocumentModificationContext<TParent>): void {
 		const basePoints = this.points + 1
 		let maxPoints = basePoints
 		if (this.difficulty === difficulty.Level.Wildcard) maxPoints += 12
@@ -345,12 +358,12 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 		for (let points = basePoints; points < maxPoints; points++) {
 			this.system.points = points
 			if (this.calculateLevel().level > oldLevel) {
-				return this.update({ "system.points": points }, options)
+				this.update({ "system.points": points }, options)
 			}
 		}
 	}
 
-	decrementSkillLevel(options?: DocumentModificationOptions) {
+	decrementSkillLevel(options?: DocumentModificationContext<TParent>): void {
 		if (this.points <= 0) return
 		const basePoints = this.points
 		let minPoints = basePoints
@@ -372,7 +385,7 @@ export class SkillGURPS extends ItemGCS<SkillSource> {
 				this.system.points = Math.max(this.points - 1, 0)
 				if (this.calculateLevel().level !== oldLevel) {
 					this.system.points++
-					return this.update({ "system.points": this.points }, options)
+					this.update({ "system.points": this.points }, options)
 				}
 			}
 		}

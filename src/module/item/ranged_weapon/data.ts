@@ -1,5 +1,5 @@
-import { BaseWeaonCalcValues, BaseWeaponSource, BaseWeaponSystemData } from "@item/weapon"
-import { ItemType } from "@module/data"
+import { BaseWeaonCalcValues, BaseWeaponSource, BaseWeaponSystemData } from "@item/index.ts"
+import { ItemType } from "@module/data/misc.ts"
 
 export type RangedWeaponSource = BaseWeaponSource<ItemType.RangedWeapon, RangedWeaponSystemData>
 

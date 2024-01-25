@@ -1,3 +1,3 @@
-export { TokenGURPS } from "./object"
-export { TokenDocumentGURPS } from "./document"
-export * from "./hud"
+export { TokenGURPS } from "./object.ts"
+export { TokenDocumentGURPS } from "./document.ts"
+export * from "./hud.ts"

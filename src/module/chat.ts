@@ -1,10 +1,15 @@
-import { LastActor, LocalizeGURPS } from "@util"
-import { gid, GURPS_COMMANDS, RollModifier, RollType } from "./data"
-import { RollGURPS } from "@module/roll"
-import { ActorGURPS } from "./config"
-import { CharacterGURPS, LootGURPS } from "@actor"
-import { MookGeneratorSheet } from "./mook"
-import { UserGURPS } from "./user/document"
+import { MookGeneratorSheet } from "@sytem/mook/sheet.ts"
+import { GURPS_COMMANDS, RollModifier, RollType, gid } from "./data/misc.ts"
+import { UserGURPS } from "./user/document.ts"
+import { duplicate } from "types/foundry/common/utils/helpers.js"
+import { ActorGURPS } from "@actor/base.ts"
+import { LastActor } from "@util/last_actor.ts"
+import { LootGURPS } from "@actor/loot/document.ts"
+import { LocalizeGURPS } from "@util/localize.ts"
+import { CharacterGURPS } from "@actor/character/index.ts"
+import { BaseWeaponGURPS } from "@item/weapon/document.ts"
+import { RollGURPS } from "./roll/index.ts"
+import { SpellGURPS } from "@item/spell/document.ts"
 
 export function parse(message: string): [string, string[]] {
 	for (const [rule, rgx] of Object.entries(GURPS_COMMANDS)) {
@@ -37,7 +42,7 @@ export async function _processDiceCommand(
 	command: string,
 	matches: RegExpMatchArray[],
 	chatData: any,
-	createOptions: any
+	createOptions: any,
 ): Promise<void> {
 	const actor = ChatMessage.getSpeakerActor(chatData.speaker) || game.user?.character
 	const rollData: any = actor ? actor.getRollData() : {}
@@ -128,24 +133,14 @@ async function _onRollClick(event: JQuery.ClickEvent) {
 	event.stopPropagation()
 	const type: RollType = $(event.currentTarget).data("type")
 	const data: Record<string, any> = { type: type, hidden: event.ctrlKey }
-	let actor: ActorGURPS | null = await LastActor.get()
+	let actor: CharacterGURPS | null = await LastActor.get()
 	if (actor instanceof LootGURPS) return
 
 	if (type === RollType.Attribute) {
 		const id = $(event.currentTarget).data("json").id
 		if (id === gid.Dodge) data.attribute = actor?.dodgeAttribute
 		else data.attribute = actor?.attributes.get(id)
-	} else if (
-		[
-			// RollType.Damage,
-			// RollType.Attack,
-			RollType.Skill,
-			RollType.SkillRelative,
-			// RollType.Spell,
-			// RollType.SpellRelative,
-			// RollType.ControlRoll,
-		].includes(type)
-	) {
+	} else if ([RollType.Skill, RollType.SkillRelative].includes(type)) {
 		if (actor instanceof CharacterGURPS) {
 			const itemData = $(event.currentTarget).data("json")
 
@@ -162,7 +157,7 @@ async function _onRollClick(event: JQuery.ClickEvent) {
 	} else if ([RollType.Spell, RollType.SpellRelative].includes(type)) {
 		if (actor instanceof CharacterGURPS) {
 			const itemData = $(event.currentTarget).data("json")
-			data.item = actor.spells.find(e => e.name === itemData.name)
+			data.item = actor.spells.find((e: SpellGURPS) => e.name === itemData.name)
 		}
 		if (!data.item || data.item.effectiveLevel === -Infinity) {
 			ui.notifications?.warn(LocalizeGURPS.translations.gurps.notification.no_default_skill)
@@ -171,7 +166,9 @@ async function _onRollClick(event: JQuery.ClickEvent) {
 	} else if ([RollType.Attack].includes(type)) {
 		if (actor instanceof CharacterGURPS) {
 			const itemData = $(event.currentTarget).data("json")
-			data.item = actor.weapons.find(e => e.itemName === itemData.itemName && e.usage === itemData.usage)
+			data.item = actor.weapons.find(
+				(e: BaseWeaponGURPS) => e.itemName === itemData.itemName && e.usage === itemData.usage,
+			)
 		}
 		if (!data.item || data.item.effectiveLevel === -Infinity) {
 			ui.notifications?.warn(LocalizeGURPS.translations.gurps.notification.no_default_skill)

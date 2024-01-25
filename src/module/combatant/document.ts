@@ -1,11 +1,15 @@
-import { BaseActorGURPS } from "@actor"
-import { ActorType } from "@module/data"
-import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
-import { BaseUser } from "types/foundry/common/documents.mjs"
+import { ActorGURPS } from "@actor/base.ts"
+import { CombatGURPS } from "@module/combat/index.ts"
+import { ActorType } from "@module/data/misc.ts"
+import { TokenDocumentGURPS } from "@module/token/document.ts"
+import { UserGURPS } from "@module/user/document.ts"
 
-class CombatantGURPS extends Combatant {
-	get actor(): BaseActorGURPS | null {
-		return super.actor as BaseActorGURPS | null
+class CombatantGURPS<
+	TParent extends CombatGURPS = CombatGURPS,
+	TTokenDocument extends TokenDocumentGURPS = TokenDocumentGURPS,
+> extends Combatant<TParent, TTokenDocument> {
+	override get actor(): ActorGURPS | null {
+		return super.actor as ActorGURPS | null
 	}
 
 	override get isDefeated(): boolean {
@@ -13,9 +17,12 @@ class CombatantGURPS extends Combatant {
 		return super.isDefeated
 	}
 
-	protected async _preDelete(options: DocumentModificationOptions, user: BaseUser): Promise<void> {
+	protected override async _preDelete(
+		options: DocumentModificationContext<CombatGURPS>,
+		user: UserGURPS,
+	): Promise<void> {
 		await this.actor?.resetManeuvers()
-		return super._preDelete(options, user)
+		super._preDelete(options, user)
 	}
 }
 

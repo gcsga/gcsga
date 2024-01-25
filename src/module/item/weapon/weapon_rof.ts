@@ -1,10 +1,9 @@
-import { WeaponGURPS } from "@module/config"
-import { TooltipGURPS } from "@module/tooltip"
-import { LocalizeGURPS } from "@util"
-import { WeaponROFMode } from "./weapon_rof_mode"
-import { WeaponField } from "./weapon_field"
-import { wswitch } from "@util/enum"
-
+import { WeaponField } from "./weapon_field.ts"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { wswitch } from "@util/enum/wswitch.ts"
+import { WeaponROFMode } from "./weapon_rof_mode.ts"
+import { BaseWeaponGURPS } from "./document.ts"
+import { LocalizeGURPS } from "@util/localize.ts"
 export class WeaponROF extends WeaponField {
 	mode1: WeaponROFMode = new WeaponROFMode()
 
@@ -26,7 +25,7 @@ export class WeaponROF extends WeaponField {
 		return wr
 	}
 
-	resolve(w: WeaponGURPS, tooltip: TooltipGURPS): WeaponROF {
+	resolve(w: BaseWeaponGURPS, tooltip: TooltipGURPS): WeaponROF {
 		const result = WeaponROF.parse(this.toString())
 		result.jet = w.resolveBoolFlag(wswitch.Type.Jet, result.jet)
 		if (!result.jet) {
@@ -37,20 +36,20 @@ export class WeaponROF extends WeaponField {
 				tooltip.push(
 					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.tooltip.weapon_rof.mode1, {
 						content: buf1.toString(),
-					})
+					}),
 				)
 			if (buf2.length !== 0)
 				tooltip.push(
 					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.tooltip.weapon_rof.mode2, {
 						content: buf2.toString(),
-					})
+					}),
 				)
 		}
 		result.validate()
 		return result
 	}
 
-	toString(): string {
+	override toString(): string {
 		if (this.jet) return "Jet"
 		const s1 = this.mode1.toString()
 		const s2 = this.mode2.toString()

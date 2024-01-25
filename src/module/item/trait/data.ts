@@ -1,10 +1,12 @@
-import { SkillBonus } from "@feature/skill_bonus"
-import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
-import { Feature } from "@module/config"
-import { ItemType } from "@module/data"
-import { PrereqList } from "@prereq"
-import { StringCompareType, Study } from "@util"
-import { selfctrl, skillsel, study } from "@util/enum"
+import { Feature, SkillBonus } from "@feature/index.ts"
+import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
+import { ItemType } from "@module/data/misc.ts"
+import { PrereqList } from "@prereq/prereq_list.ts"
+import { selfctrl } from "@util/enum/selfctrl.ts"
+import { skillsel } from "@util/enum/skillsel.ts"
+import { study } from "@util/enum/study.ts"
+import { StringCompareType } from "@util/string_criteria.ts"
+import { Study } from "@util/study.ts"
 
 export type TraitSource = ItemGCSSource<ItemType.Trait, TraitSystemData>
 

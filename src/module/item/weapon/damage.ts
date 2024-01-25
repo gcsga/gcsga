@@ -1,11 +1,13 @@
-import { DiceGURPS } from "@module/dice"
-import { WeaponDamageObj } from "./data"
-import { LocalizeGURPS } from "@util"
-import { Int } from "@util/fxp"
-import { TooltipGURPS } from "@module/tooltip"
-import { ItemType } from "@module/data"
-import { BaseWeaponGURPS } from "./document"
-import { feature, progression, stdmg } from "@util/enum"
+import { Int } from "@util/fxp.ts"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { feature } from "@util/enum/feature.ts"
+import { BaseWeaponGURPS } from "./document.ts"
+import { stdmg } from "@util/enum/stdmg.ts"
+import { DiceGURPS } from "@module/dice/index.ts"
+import { WeaponDamageObj } from "./data.ts"
+import { LocalizeGURPS } from "@util/localize.ts"
+import { ItemType } from "@module/data/misc.ts"
+import { progression } from "@util/enum/progression.ts"
 
 export class WeaponDamage {
 	owner: BaseWeaponGURPS<any>
@@ -81,7 +83,11 @@ export class WeaponDamage {
 		if (maxST > 0 && maxST < st) st = maxST
 		let base = new DiceGURPS({ sides: 6, multiplier: 1 })
 		if (this.base) base = this.base
-		if (this.owner.container?.type === ItemType.Trait && (this.owner.container as any).isLeveled)
+		if (
+			!(this.owner.container instanceof CompendiumCollection) &&
+			this.owner.container?.type === ItemType.Trait &&
+			(this.owner.container as any).isLeveled
+		)
 			multiplyDice(Int.from((this.owner.container as any).levels), base)
 		let intST = Int.from(st)
 		switch (this.st) {
@@ -90,7 +96,11 @@ export class WeaponDamage {
 				break
 			case stdmg.Option.LeveledThrust:
 				const thrust = actor.thrustFor(intST)
-				if (this.owner.container?.type === ItemType.Trait && (this.owner.container as any).isLeveled)
+				if (
+					!(this.owner.container instanceof CompendiumCollection) &&
+					this.owner.container?.type === ItemType.Trait &&
+					(this.owner.container as any).isLeveled
+				)
 					multiplyDice(Int.from((this.owner.container as any).levels), base)
 				base = addDice(base, thrust)
 				break
@@ -99,7 +109,11 @@ export class WeaponDamage {
 				break
 			case stdmg.Option.LeveledSwing:
 				const swing = actor.swingFor(intST)
-				if (this.owner.container?.type === ItemType.Trait && (this.owner.container as any).isLeveled)
+				if (
+					!(this.owner.container instanceof CompendiumCollection) &&
+					this.owner.container?.type === ItemType.Trait &&
+					(this.owner.container as any).isLeveled
+				)
 					multiplyDice(Int.from((this.owner.container as any).levels), swing)
 				base = addDice(base, swing)
 				break
@@ -119,7 +133,7 @@ export class WeaponDamage {
 			base.count,
 			tooltip,
 			feature.Type.WeaponBonus,
-			feature.Type.WeaponDRDivisorBonus
+			feature.Type.WeaponDRDivisorBonus,
 		)) {
 			if (bonus.type === feature.Type.WeaponBonus) {
 				bonus.leveledAmount.dieCount = Int.from(base.count)

@@ -1,2 +1,2 @@
-export { EquipmentContainerGURPS } from "./document"
-export * from "./data"
+export { EquipmentContainerGURPS } from "./document.ts"
+export * from "./data.ts"

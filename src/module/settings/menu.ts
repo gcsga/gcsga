@@ -1,5 +1,6 @@
-import { SYSTEM_NAME } from "@module/data"
-import { LocalizeGURPS } from "@util"
+import { SYSTEM_NAME } from "@module/data/misc.ts"
+import { LocalizeGURPS } from "@util/localize.ts"
+import { mergeObject } from "types/foundry/common/utils/helpers.js"
 
 export abstract class SettingsMenuGURPS extends FormApplication {
 	static readonly namespace: string
@@ -34,7 +35,7 @@ export abstract class SettingsMenuGURPS extends FormApplication {
 		return {}
 	}
 
-	activateListeners(html: JQuery<HTMLElement>): void {
+	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		html.find(".data-import").on("click", event => this._onDataImport(event))
 		html.find(".data-export").on("click", event => this._onDataExport(event))
@@ -79,18 +80,18 @@ export abstract class SettingsMenuGURPS extends FormApplication {
 		}
 	}
 
-	async _onResetAll(event: JQuery.ClickEvent) {
+	async _onResetAll(event: Event) {
 		event.preventDefault()
 		const constructor = this.constructor
 		for (const setting of (constructor as typeof SettingsMenuGURPS).SETTINGS) {
-			const defaults = game.settings.settings.get(`${SYSTEM_NAME}.${this.namespace}.${setting}`)?.default as any
+			const defaults = game.settings.settings.get(`${SYSTEM_NAME}.${this.namespace}.${setting}`)?.default
 			await game.settings.set(SYSTEM_NAME, `${this.namespace}.${setting}`, defaults)
 		}
 		this.render()
 	}
 
-	protected override _getHeaderButtons(): Application.HeaderButton[] {
-		const buttons: Application.HeaderButton[] = [
+	protected override _getHeaderButtons(): ApplicationHeaderButton[] {
+		const buttons: ApplicationHeaderButton[] = [
 			{
 				label: LocalizeGURPS.translations.gurps.settings.reset_all,
 				icon: "gcs-reset",

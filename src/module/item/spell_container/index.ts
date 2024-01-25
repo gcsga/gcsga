@@ -1,3 +1,3 @@
-export { SpellContainerGURPS } from "./document"
-export { SpellContainerSheet } from "./sheet"
-export * from "./data"
+export { SpellContainerGURPS } from "./document.ts"
+export { SpellContainerSheet } from "./sheet.ts"
+export * from "./data.ts"

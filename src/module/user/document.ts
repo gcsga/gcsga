@@ -1,7 +1,8 @@
-import { HooksGURPS, RollModifier, RollModifierTags, SYSTEM_NAME, UserFlags } from "@module/data"
-import { DocumentDataType, DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
+import { ActorGURPS } from "@actor/document.ts"
+import { HooksGURPS, RollModifier, RollModifierTags, SYSTEM_NAME, UserFlags } from "@module/data/index.ts"
+import { flattenObject } from "types/foundry/common/utils/helpers.js"
 
-class UserGURPS extends User {
+export class UserGURPS<TCharacter extends ActorGURPS<null> = ActorGURPS<null>> extends User<TCharacter> {
 	override prepareData(): void {
 		super.prepareData()
 		if (canvas?.ready && canvas.tokens?.controlled && canvas.tokens?.controlled.length > 0) {
@@ -9,11 +10,7 @@ class UserGURPS extends User {
 		}
 	}
 
-	override _onUpdate(
-		data: DeepPartial<DocumentDataType<foundry.documents.BaseUser>>,
-		options: DocumentModificationOptions,
-		userId: string
-	): void {
+	override _onUpdate(data: DeepPartial<this["_source"]>, options: DocumentUpdateContext<null>, userId: string): void {
 		super._onUpdate(data, options, userId)
 		if (game.user?.id !== userId) return
 
@@ -58,5 +55,3 @@ class UserGURPS extends User {
 		Hooks.call(HooksGURPS.AddModifier)
 	}
 }
-
-export { UserGURPS }

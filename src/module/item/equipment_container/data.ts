@@ -1,8 +1,8 @@
-import { EquipmentCalcValues } from "@item/equipment/data"
-import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
-import { Feature } from "@module/config"
-import { ItemType } from "@module/data"
-import { PrereqList } from "@prereq"
+import { Feature } from "@feature/index.ts"
+import { EquipmentCalcValues } from "@item/equipment/data.ts"
+import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
+import { ItemType } from "@module/data/misc.ts"
+import { PrereqList } from "@prereq/prereq_list.ts"
 
 export type EquipmentContainerSource = ItemGCSSource<ItemType.EquipmentContainer, EquipmentContainerSystemData>
 

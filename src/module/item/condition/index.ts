@@ -1,4 +1,4 @@
-export { ConditionGURPS } from "./document"
-export * from "./data"
-export * from "./list"
-export * from "./maneuver"
+export { ConditionGURPS } from "./document.ts"
+export * from "./data.ts"
+export * from "./list.ts"
+export * from "./maneuver.ts"

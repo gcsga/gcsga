@@ -1,3 +1,3 @@
-export { StaticItemGURPS } from "./document"
-export { StaticItemSheet } from "./sheet"
-export * from "./data"
+export { StaticItemGURPS } from "./document.ts"
+export { StaticItemSheet } from "./sheet.ts"
+export * from "./data.ts"

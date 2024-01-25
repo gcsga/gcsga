@@ -1,12 +1,23 @@
-import { ItemGCS } from "@item/gcs"
-import { SETTINGS, SYSTEM_NAME, sheetSettingsFor } from "@module/data"
-import { LocalizeGURPS, Weight, WeightUnits, fxp } from "@util"
-import { EquipmentModifierSource } from "./data"
-import { emcost, emweight } from "@util/enum"
-import { StringBuilder } from "@util/string_builder"
+import { ActorGURPS } from "@actor/base.ts"
+import { ItemGCS } from "@item/gcs/document.ts"
+import { EquipmentModifierSystemData } from "./data.ts"
+import { emcost } from "@util/enum/emcost.ts"
+import { emweight } from "@util/enum/emweight.ts"
+import { Weight, WeightUnits } from "@util/weight.ts"
+import { ItemType, SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
+import { LocalizeGURPS } from "@util/localize.ts"
+import { StringBuilder } from "@util/string_builder.ts"
+import { sheetSettingsFor } from "@module/data/sheet_settings.ts"
+import { Int } from "@util/fxp.ts"
+import { CharacterGURPS } from "@actor/document.ts"
 
-export class EquipmentModifierGURPS extends ItemGCS<EquipmentModifierSource> {
-	get enabled(): boolean {
+export interface EquipmentModifierGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+	system: EquipmentModifierSystemData
+	type: ItemType.EquipmentModifier
+}
+
+export class EquipmentModifierGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+	override get enabled(): boolean {
 		return !this.system.disabled
 	}
 
@@ -31,7 +42,7 @@ export class EquipmentModifierGURPS extends ItemGCS<EquipmentModifierSource> {
 	}
 
 	get weightUnits(): WeightUnits {
-		if (this.actor) return this.actor.weightUnits
+		if (this.actor instanceof CharacterGURPS) return this.actor.weightUnits
 		const default_settings = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
 		return default_settings.default_weight_units
 	}
@@ -81,10 +92,10 @@ export class EquipmentModifierGURPS extends ItemGCS<EquipmentModifierSource> {
 export function weightAdjustedForModifiers(
 	weight: number,
 	modifiers: Collection<EquipmentModifierGURPS>,
-	defUnits: WeightUnits
+	defUnits: WeightUnits,
 ): number {
 	let percentages = 0
-	let w = fxp.Int.from(weight)
+	let w = Int.from(weight)
 
 	// apply all equipment.OriginalWeight
 	modifiers.forEach(mod => {
@@ -112,7 +123,7 @@ function processMultiplyAddWeightStep(
 	type: emweight.Type,
 	weight: number,
 	units: WeightUnits,
-	modifiers: Collection<EquipmentModifierGURPS>
+	modifiers: Collection<EquipmentModifierGURPS>,
 ): number {
 	let w = 0
 	modifiers.forEach(mod => {

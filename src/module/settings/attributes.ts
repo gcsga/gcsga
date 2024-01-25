@@ -1,9 +1,10 @@
-import { ConditionID } from "@item/condition/data"
-import { EFFECT_ACTION, SETTINGS, SYSTEM_NAME } from "@module/data"
-import { LocalizeGURPS, getNewAttributeId, prepareFormData } from "@util"
-import { DnD } from "@util/drag_drop"
-import { AttributeBaseSettings } from "./attribute_base"
-import { attribute } from "@util/enum"
+import { EFFECT_ACTION, SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
+import { AttributeBaseSettings } from "./attribute_base.ts"
+import { LocalizeGURPS } from "@util/localize.ts"
+import { getNewAttributeId, prepareFormData } from "@util/misc.ts"
+import { attribute } from "@util/enum/attribute.ts"
+import { ConditionID } from "@item/index.ts"
+import { DnD } from "@util/drag_drop.ts"
 
 enum ListType {
 	Attribute = "attributes",
@@ -18,7 +19,7 @@ export class DefaultAttributeSettings extends AttributeBaseSettings {
 
 	static override readonly SETTINGS = ["attributes", "effects"] as const
 
-	_onDataImport(event: JQuery.ClickEvent) {
+	override _onDataImport(event: JQuery.ClickEvent) {
 		event.preventDefault()
 	}
 
@@ -33,7 +34,7 @@ export class DefaultAttributeSettings extends AttributeBaseSettings {
 		return saveDataToFile(
 			JSON.stringify(data, null, "\t"),
 			extension,
-			`${LocalizeGURPS.translations.gurps.settings.default_attributes.name}.${extension}`
+			`${LocalizeGURPS.translations.gurps.settings.default_attributes.name}.${extension}`,
 		)
 	}
 
@@ -117,7 +118,7 @@ export class DefaultAttributeSettings extends AttributeBaseSettings {
 		}
 	}
 
-	protected async _onDrop(event: DragEvent): Promise<unknown> {
+	protected override async _onDrop(event: DragEvent): Promise<unknown> {
 		let dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
 		let element = $(event.target!)
 		if (!element.hasClass("item")) element = element.parent(".item")
@@ -160,7 +161,7 @@ export class DefaultAttributeSettings extends AttributeBaseSettings {
 		await game.settings.set(
 			SYSTEM_NAME,
 			`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`,
-			formData["system.settings.attributes"]
+			formData["system.settings.attributes"],
 		)
 		await game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`, formData.effects)
 	}

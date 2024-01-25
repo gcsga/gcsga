@@ -1,19 +1,27 @@
-import { EquipmentGURPS, extendedWeightAdjustedForModifiers } from "@item/equipment"
-import { EquipmentModifierGURPS, valueAdjustedForModifiers, weightAdjustedForModifiers } from "@item/equipment_modifier"
-import { EquipmentModifierContainerGURPS } from "@item/equipment_modifier_container"
-import { ItemGCS } from "@item/gcs"
-import { ItemType, SETTINGS, SYSTEM_NAME, sheetSettingsFor } from "@module/data"
-import { fxp, LocalizeGURPS, Weight, WeightUnits } from "@util"
-import { EquipmentContainerSource } from "./data"
-import { ItemFlags } from "@item/base"
-import { display } from "@util/enum"
-import { StringBuilder } from "@util/string_builder"
+import { ActorGURPS } from "@actor/base.ts"
+import { ItemGCS } from "@item/gcs/document.ts"
+import { EquipmentContainerSystemData } from "./data.ts"
+import { display } from "@util/enum/display.ts"
+import { StringBuilder } from "@util/string_builder.ts"
+import { sheetSettingsFor } from "@module/data/sheet_settings.ts"
+import { LocalizeGURPS } from "@util/localize.ts"
+import { ItemType, SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
+import { ItemFlags } from "@item/data.ts"
+import { Weight, WeightUnits } from "@util/weight.ts"
+import { EquipmentGURPS } from "@item/equipment/document.ts"
+import { EquipmentModifierGURPS, valueAdjustedForModifiers } from "@item/equipment_modifier/document.ts"
+import { EquipmentModifierContainerGURPS } from "@item/equipment_modifier_container/document.ts"
+import { Int } from "@util/fxp.ts"
 
-export class EquipmentContainerGURPS extends ItemGCS<EquipmentContainerSource> {
-	unsatisfied_reason = ""
+export interface EquipmentContainerGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+	system: EquipmentContainerSystemData
+}
+
+export class EquipmentContainerGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+	// unsatisfied_reason = ""
 
 	// Getters
-	get ratedStrength(): number {
+	override get ratedStrength(): number {
 		return this.system.rated_strength ?? 0
 	}
 
@@ -21,7 +29,7 @@ export class EquipmentContainerGURPS extends ItemGCS<EquipmentContainerSource> {
 		return this.system.quantity
 	}
 
-	secondaryText(optionChecker: (option: display.Option) => boolean): string {
+	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
 		const buffer = new StringBuilder()
 		const settings = sheetSettingsFor(this.actor)
 		if (optionChecker(settings.modifiers_display)) {
@@ -75,11 +83,12 @@ export class EquipmentContainerGURPS extends ItemGCS<EquipmentContainerSource> {
 	get isGreyedOut(): boolean {
 		return !(
 			this.system.quantity > 0 &&
+			!(this.container instanceof CompendiumCollection) &&
 			(this.container?.type === ItemType.EquipmentContainer ? !(this.container as any).isGreyedOut : true)
 		)
 	}
 
-	get enabled(): boolean {
+	override get enabled(): boolean {
 		return this.equipped
 	}
 
@@ -92,7 +101,7 @@ export class EquipmentContainerGURPS extends ItemGCS<EquipmentContainerSource> {
 	}
 
 	// Embedded Items
-	get children(): Collection<EquipmentGURPS | EquipmentContainerGURPS> {
+	override get children(): Collection<EquipmentGURPS | EquipmentContainerGURPS> {
 		return super.children as Collection<EquipmentGURPS | EquipmentContainerGURPS>
 	}
 
@@ -116,7 +125,7 @@ export class EquipmentContainerGURPS extends ItemGCS<EquipmentContainerSource> {
 		return new Collection(
 			deepModifiers.map(item => {
 				return [item.id!, item]
-			})
+			}),
 		)
 	}
 
@@ -130,7 +139,7 @@ export class EquipmentContainerGURPS extends ItemGCS<EquipmentContainerSource> {
 		for (const ch of this.children) {
 			value += ch.extendedValue
 		}
-		return fxp.Int.from(value * this.system.quantity, 4)
+		return Int.from(value * this.system.quantity, 4)
 	}
 
 	adjustedWeight(forSkills: boolean, defUnits: WeightUnits): number {
@@ -151,7 +160,7 @@ export class EquipmentContainerGURPS extends ItemGCS<EquipmentContainerSource> {
 			this.features,
 			this.children,
 			forSkills,
-			this.system.ignore_weight_for_skills && this.equipped
+			this.system.ignore_weight_for_skills && this.equipped,
 		)
 	}
 

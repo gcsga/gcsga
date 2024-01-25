@@ -1,32 +1,39 @@
-import { ItemGCS } from "@item/gcs"
-import { SkillLevel } from "@item/skill/data"
-import { gid, sheetSettingsFor } from "@module/data"
-import { TooltipGURPS } from "@module/tooltip"
-import { LocalizeGURPS, NewLineRegex, resolveStudyHours, studyHoursProgressText } from "@util"
-import { SpellSource } from "./data"
-import { difficulty, display } from "@util/enum"
-import { StringBuilder } from "@util/string_builder"
-import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
+import { ActorGURPS } from "@actor/base.ts"
+import { ItemGCS } from "@item/gcs/document.ts"
+import { SkillLevel } from "@item/skill/data.ts"
+import { SpellSystemData } from "./data.ts"
+import { display } from "@util/enum/display.ts"
+import { StringBuilder } from "@util/string_builder.ts"
+import { sheetSettingsFor } from "@module/data/sheet_settings.ts"
+import { resolveStudyHours, studyHoursProgressText } from "@util/study.ts"
+import { LocalizeGURPS } from "@util/localize.ts"
+import { NewLineRegex } from "@util/regexp.ts"
+import { gid } from "@module/data/misc.ts"
+import { difficulty } from "@util/enum/difficulty.ts"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 
-export class SpellGURPS extends ItemGCS<SpellSource> {
-	level: SkillLevel = { level: 0, relative_level: 0, tooltip: new TooltipGURPS() }
+export interface SpellGURPS<TParent extends ActorGURPS> extends ItemGCS<TParent> {
+	system: SpellSystemData
+}
 
-	unsatisfied_reason = ""
+export class SpellGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+	declare level: SkillLevel
+	// level: SkillLevel = { level: 0, relative_level: 0, tooltip: new TooltipGURPS() }
 
-	get formattedName(): string {
+	override get formattedName(): string {
 		const name: string = this.name ?? ""
 		const TL = this.techLevel
 		return `${name}${this.system.tech_level_required ? `/TL${TL ?? ""}` : ""}`
 	}
 
-	secondaryText(optionChecker: (option: display.Option) => boolean): string {
+	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
 		const buffer = new StringBuilder()
 		const settings = sheetSettingsFor(this.actor)
 		if (optionChecker(settings.notes_display)) {
 			buffer.appendToNewLine(this.notes.trim())
 			buffer.appendToNewLine(this.rituals)
 			buffer.appendToNewLine(
-				studyHoursProgressText(resolveStudyHours(this.system.study), this.system.study_hours_needed, false)
+				studyHoursProgressText(resolveStudyHours(this.system.study), this.system.study_hours_needed, false),
 			)
 		}
 		if (optionChecker(settings.skill_level_adj_display)) {
@@ -170,7 +177,7 @@ export class SpellGURPS extends ItemGCS<SpellSource> {
 					this.powerSource,
 					this.college,
 					this.tags,
-					tooltip
+					tooltip,
 				)
 				relativeLevel = Math.trunc(relativeLevel)
 				level += relativeLevel
@@ -183,7 +190,7 @@ export class SpellGURPS extends ItemGCS<SpellSource> {
 		}
 	}
 
-	incrementSkillLevel(options?: DocumentModificationOptions) {
+	incrementSkillLevel(options?: DocumentModificationContext<TParent>): void {
 		const basePoints = this.points + 1
 		let maxPoints = basePoints
 		if (this.difficulty === difficulty.Level.Wildcard) maxPoints += 12
@@ -193,12 +200,12 @@ export class SpellGURPS extends ItemGCS<SpellSource> {
 		for (let points = basePoints; points < maxPoints; points++) {
 			this.system.points = points
 			if (this.calculateLevel().level > oldLevel) {
-				return this.update({ "system.points": points }, options)
+				this.update({ "system.points": points }, options)
 			}
 		}
 	}
 
-	decrementSkillLevel(options?: DocumentModificationOptions) {
+	decrementSkillLevel(options?: DocumentModificationContext<TParent>): void {
 		if (this.points <= 0) return
 		const basePoints = this.points
 		let minPoints = basePoints
@@ -220,7 +227,7 @@ export class SpellGURPS extends ItemGCS<SpellSource> {
 				this.system.points = Math.max(this.points - 1, 0)
 				if (this.calculateLevel().level !== oldLevel) {
 					this.system.points++
-					return this.update({ "system.points": this.points }, options)
+					this.update({ "system.points": this.points }, options)
 				}
 			}
 		}

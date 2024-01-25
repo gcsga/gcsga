@@ -1,3 +1,3 @@
-export { RangedWeaponGURPS } from "./document"
-export { RangedWeaponSheet } from "./sheet"
-export * from "./data"
+export { RangedWeaponGURPS } from "./document.ts"
+export { RangedWeaponSheet } from "./sheet.ts"
+export * from "./data.ts"

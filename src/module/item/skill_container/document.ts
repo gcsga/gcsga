@@ -1,11 +1,13 @@
-import { ItemGCS } from "@item/gcs"
-import { SkillGURPS } from "@item/skill"
-import { TechniqueGURPS } from "@item/technique"
-import { SkillContainerSource } from "./data"
+import { ActorGURPS } from "@actor/document.ts"
+import { SkillContainerSystemData } from "./data.ts"
+import { ItemGCS, SkillGURPS, TechniqueGURPS } from "@item/index.ts"
 
-export class SkillContainerGURPS extends ItemGCS<SkillContainerSource> {
+export interface SkillContainerGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+	system: SkillContainerSystemData
+}
+export class SkillContainerGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
 	// Embedded Items
-	get children(): Collection<SkillGURPS | TechniqueGURPS | SkillContainerGURPS> {
+	override get children(): Collection<SkillGURPS | TechniqueGURPS | SkillContainerGURPS> {
 		return super.children as Collection<SkillGURPS | TechniqueGURPS | SkillContainerGURPS>
 	}
 

@@ -1,7 +1,8 @@
-import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
-import { Feature } from "@module/config"
-import { ItemType } from "@module/data"
-import { affects, tmcost } from "@util/enum"
+import { Feature } from "@feature/index.ts"
+import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
+import { ItemType } from "@module/data/misc.ts"
+import { affects } from "@util/enum/affects.ts"
+import { tmcost } from "@util/enum/tmcost.ts"
 
 export type TraitModifierSource = ItemGCSSource<ItemType.TraitModifier, TraitModifierSystemData>
 

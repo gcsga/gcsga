@@ -1,8 +1,16 @@
-import { ItemGCS } from "@item/gcs"
-import { NoteSource } from "./data"
-import { EvalEmbeddedRegex, replaceAllStringFunc } from "@util"
-export class NoteGURPS extends ItemGCS<NoteSource> {
-	get formattedName(): string {
+import { ActorGURPS } from "@actor/document.ts"
+import { ItemGCS } from "@item/gcs/document.ts"
+import { NoteSystemData } from "./data.ts"
+import { ItemType } from "@module/data/misc.ts"
+import { EvalEmbeddedRegex, replaceAllStringFunc } from "@util/regexp.ts"
+
+export interface NoteGURPS<TParent extends ActorGURPS> extends ItemGCS<TParent> {
+	system: NoteSystemData
+	type: ItemType.Note
+}
+
+export class NoteGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+	override get formattedName(): string {
 		return this.formattedText
 	}
 
@@ -19,13 +27,13 @@ export class NoteGURPS extends ItemGCS<NoteSource> {
 		return converter.makeHtml(text)?.replace(/\s\+/g, "\r")
 	}
 
-	get enabled(): boolean {
+	override get enabled(): boolean {
 		return true
 	}
 
-	secondaryText = ItemGCS.prototype.secondaryText
+	override secondaryText = ItemGCS.prototype.secondaryText
 
-	get reference(): string {
+	override get reference(): string {
 		return this.system.reference
 	}
 }

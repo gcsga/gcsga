@@ -1,3 +1,5 @@
+import { ConditionID } from "@item/condition/data.ts"
+
 /*
  * I had to move SETTINGS here as well, because it fixed the weird error that leads to the code not recognizing standard
  * foundry classes and methods.
@@ -330,3 +332,10 @@ export enum HooksGURPS {
 }
 
 export type SkillDefaultType = gid.Block | gid.Parry | gid.Skill | gid.Ten | string
+
+export interface AttributeEffect {
+	attribute: string
+	state: string
+	enter: Array<{ id: ConditionID; action: EFFECT_ACTION }>
+	leave: Array<{ id: ConditionID; action: EFFECT_ACTION }>
+}

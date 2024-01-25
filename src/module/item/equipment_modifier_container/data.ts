@@ -1,5 +1,5 @@
-import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
-import { ItemType } from "@module/data"
+import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
+import { ItemType } from "@module/data/misc.ts"
 
 export type EquipmentModifierContainerSource = ItemGCSSource<
 	ItemType.EquipmentModifierContainer,

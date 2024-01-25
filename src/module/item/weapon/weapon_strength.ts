@@ -1,8 +1,9 @@
-import { TooltipGURPS } from "@module/tooltip"
-import { Int } from "@util/fxp"
-import { BaseWeaponGURPS } from "./document"
-import { WeaponField } from "./weapon_field"
-import { feature, wswitch } from "@util/enum"
+import { Int } from "@util/fxp.ts"
+import { WeaponField } from "./weapon_field.ts"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { wswitch } from "@util/enum/wswitch.ts"
+import { feature } from "@util/enum/feature.ts"
+import { BaseWeaponGURPS } from "./document.ts"
 
 export class WeaponStrength extends WeaponField {
 	min?: number
@@ -48,7 +49,7 @@ export class WeaponStrength extends WeaponField {
 		result.twoHanded = w.resolveBoolFlag(wswitch.Type.TwoHanded, result.twoHanded ?? false)
 		result.twoHandedUnready = w.resolveBoolFlag(
 			wswitch.Type.TwoHandedAndUnreadyAfterAttack,
-			result.twoHandedUnready ?? false
+			result.twoHandedUnready ?? false,
 		)
 		result.min ??= 0
 		for (const bonus of w.collectWeaponBonuses(1, tooltip, feature.Type.WeaponMinSTBonus))
@@ -58,7 +59,7 @@ export class WeaponStrength extends WeaponField {
 		return result
 	}
 
-	toString(): string {
+	override toString(): string {
 		let buffer = ""
 		if (this.min && this.min > 0) buffer += this.min.toString()
 		if (this.bipod) buffer += "B"

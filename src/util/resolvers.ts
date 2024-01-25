@@ -1,30 +1,40 @@
-import { ActorType, ItemType, RollType, SheetSettings, SkillDefaultType } from "@module/data"
-import { affects, difficulty, display, emcost, emweight, selfctrl, stlimit, tmcost } from "./enum"
-import { TooltipGURPS } from "@module/tooltip"
-import { WeightUnits } from "./weight"
-import { TraitContainerSystemData, TraitContainerType } from "@item/trait_container/data"
-import { CharacterProfile, Encumbrance } from "@actor/character/data"
-import { MoveBonusType } from "@feature/data"
-import { DurationType } from "@item/effect/data"
-import { ConditionID, ManeuverID } from "@item/condition/data"
-import { TraitSystemData } from "@item/trait/data"
-import { LootSettings } from "@actor/loot/data"
-import { WeaponStrength } from "@item/weapon/weapon_strength"
-import { WeaponDamage, WeaponType } from "@item"
-import { SkillDefault } from "@module/default"
-import { WeaponParry } from "@item/weapon/weapon_parry"
-import { WeaponBlock } from "@item/weapon/weapon_block"
-import { WeaponReach } from "@item/weapon/weapon_reach"
-import { WeaponAccuracy } from "@item/weapon/weapon_accuracy"
-import { WeaponRange } from "@item/weapon/weapon_range"
-import { WeaponROF } from "@item/weapon/weapon_rof"
-import { WeaponShots } from "@item/weapon/weapon_shots"
-import { WeaponBulk } from "@item/weapon/weapon_bulk"
-import { WeaponRecoil } from "@item/weapon/weapon_recoil"
-import { ActorFlagsGURPS } from "@actor"
+import { ActorFlagsGURPS } from "@actor/base/data.ts"
+import { CharacterProfile, Encumbrance } from "@actor/character/data.ts"
+import { LootSettings } from "@actor/loot/data.ts"
+import { ActorType, ItemType, RollType, SkillDefaultType } from "@module/data/misc.ts"
+import { SheetSettings } from "@module/data/sheet_settings.ts"
+import { stlimit } from "./enum/stlimit.ts"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { MoveBonusType } from "@feature/data.ts"
+import { display } from "./enum/display.ts"
+import { selfctrl } from "./enum/selfctrl.ts"
+import { TraitSystemData } from "@item/trait/data.ts"
+import { TraitContainerSystemData, TraitContainerType } from "@item/trait_container/data.ts"
+import { affects } from "./enum/affects.ts"
+import { difficulty } from "./enum/difficulty.ts"
+import { WeightUnits } from "./weight.ts"
+import { emweight } from "./enum/emweight.ts"
+import { WeaponType } from "@item/weapon/data.ts"
+import { WeaponStrength } from "@item/weapon/weapon_strength.ts"
+import { WeaponDamage } from "@item/weapon/index.ts"
+import { SkillDefault } from "@sytem/default/index.ts"
+import { WeaponParry } from "@item/weapon/weapon_parry.ts"
+import { WeaponBlock } from "@item/weapon/weapon_block.ts"
+import { WeaponReach } from "@item/weapon/weapon_reach.ts"
+import { WeaponAccuracy } from "@item/weapon/weapon_accuracy.ts"
+import { WeaponRange } from "@item/weapon/weapon_range.ts"
+import { WeaponROF } from "@item/weapon/weapon_rof.ts"
+import { WeaponShots } from "@item/weapon/weapon_shots.ts"
+import { WeaponBulk } from "@item/weapon/weapon_bulk.ts"
+import { DurationType } from "@item/effect/data.ts"
+import { ConditionID, ManeuverID } from "@item/condition/data.ts"
+import { tmcost } from "./enum/tmcost.ts"
+import { emcost } from "./enum/emcost.ts"
+import { WeaponRecoil } from "@item/weapon/weapon_recoil.ts"
 
 export interface ActorResolver<T extends ActorType> {
 	type: T
+	// equipment: Collection<EquipmentResolver | EquipmentContainerResolver>
 	equipment: Collection<EquipmentResolver | EquipmentContainerResolver>
 	flags: ActorFlagsGURPS
 }
@@ -56,7 +66,7 @@ export interface CharacterResolver extends ActorResolver<ActorType.Character> {
 		attributeId: string,
 		limitation: stlimit.Option,
 		effective?: boolean,
-		tooltip?: TooltipGURPS | null
+		tooltip?: TooltipGURPS | null,
 	) => number
 	moveBonusFor: (id: string, limitation: MoveBonusType, effective?: boolean, tooltip?: TooltipGURPS | null) => number
 	resolveVariable: (variableName: string) => string
@@ -76,19 +86,19 @@ export interface CharacterResolver extends ActorResolver<ActorType.Character> {
 	embeddedEval: (s: string) => string
 }
 
-export interface ItemResolver {
+export interface ItemResolver<T extends ItemType> {
+	type: T
 	name: string | null
-	type: ItemType
 	formattedName: string
 	secondaryText: (optionChecker: (option: display.Option) => boolean) => string
 	enabled: boolean
 }
 
-export interface ContainerResolver<C extends ItemResolver> extends ItemResolver {
+export interface ContainerResolver<C extends ItemResolver<ItemType>> extends ItemResolver<ItemType> {
 	children: Collection<C>
 }
 
-export interface TraitResolver extends ItemResolver {
+export interface TraitResolver extends ItemResolver<ItemType.Trait> {
 	isLeveled: boolean
 	levels: number
 	basePoints: number
@@ -98,7 +108,7 @@ export interface TraitResolver extends ItemResolver {
 	modifierNotes: string
 	modifiers: Collection<TraitModifierResolver | TraitModifierContainerResolver>
 	deepModifiers: Collection<TraitModifierResolver>
-	unsatisfied_reason: string
+	unsatisfiedReason: string
 	system: TraitSystemData
 }
 
@@ -111,11 +121,11 @@ export interface TraitContainerResovler extends ContainerResolver<TraitResolver 
 	modifierNotes: string
 	modifiers: Collection<TraitModifierResolver | TraitModifierContainerResolver>
 	deepModifiers: Collection<TraitModifierResolver>
-	unsatisfied_reason: string
+	unsatisfiedReason: string
 	system: TraitContainerSystemData
 }
 
-export interface TraitModifierResolver extends ItemResolver {
+export interface TraitModifierResolver extends ItemResolver<ItemType.TraitModifier> {
 	isLeveled: boolean
 	levels: number
 	costDescription: string
@@ -130,7 +140,7 @@ export interface TraitModifierResolver extends ItemResolver {
 export interface TraitModifierContainerResolver
 	extends ContainerResolver<TraitModifierResolver | TraitModifierContainerResolver> {}
 
-export interface LeveledItemResolver extends ItemResolver {
+export interface LeveledItemResolver extends ItemResolver<ItemType> {
 	points: number
 	difficulty: difficulty.Level
 	defaultedFrom: SkillDefaultResolver | null
@@ -147,7 +157,7 @@ export interface SkillResolver extends LeveledItemResolver {
 	techLevel: string
 	attribute: string
 	specialization: string
-	defaultSkill?: SkillResolver
+	defaultSkill: SkillResolver | null
 	defaults: SkillDefaultResolver[]
 	encumbrancePenaltyMultiplier: number
 }
@@ -188,7 +198,7 @@ export interface SkillDefaultResolver {
 	points: number
 }
 
-export interface EquipmentResolver extends ItemResolver {
+export interface EquipmentResolver extends ItemResolver<ItemType.Equipment> {
 	equipped: boolean
 	quantity: number
 	ratedStrength: number
@@ -222,7 +232,7 @@ export interface EquipmentContainerResolver extends ContainerResolver<EquipmentR
 	extendedWeightFast: string
 }
 
-export interface EquipmentModifierResolver extends ItemResolver {
+export interface EquipmentModifierResolver extends ItemResolver<ItemType.EquipmentModifier> {
 	techLevel: string
 	costType: emcost.Type
 	weightType: emweight.Type
@@ -236,7 +246,7 @@ export interface EquipmentModifierResolver extends ItemResolver {
 export interface EquipmentModifierContainerResolver
 	extends ContainerResolver<EquipmentModifierResolver | EquipmentModifierContainerResolver> {}
 
-export interface NoteResolver extends ItemResolver {
+export interface NoteResolver extends ItemResolver<ItemType.Note> {
 	formattedText: string
 }
 
@@ -244,7 +254,7 @@ export interface NoteContainerResolver extends ContainerResolver<NoteResolver | 
 	formattedText: string
 }
 
-export interface WeaponResolver<T extends WeaponType> extends ItemResolver {
+export interface WeaponResolver<T extends WeaponType> extends ItemResolver<WeaponType> {
 	type: T
 	strength: WeaponStrength
 	damage: WeaponDamage
@@ -270,7 +280,7 @@ export interface RangedWeaponResolver extends WeaponResolver<ItemType.RangedWeap
 	recoil: WeaponRecoil
 }
 
-export interface ConditionResolver extends ItemResolver {
+export interface ConditionResolver extends ItemResolver<ItemType.Condition> {
 	duration: {
 		remaining: number
 		type: DurationType

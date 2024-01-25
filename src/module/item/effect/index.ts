@@ -1,4 +1,4 @@
-export { EffectGURPS } from "./document"
-export { EffectSheet } from "./sheet"
-export * from "./data"
-export { EffectPanel } from "./panel"
+export { EffectGURPS } from "./document.ts"
+export { EffectSheet } from "./sheet.ts"
+export * from "./data.ts"
+export { EffectPanel } from "./panel.ts"

@@ -1,37 +1,32 @@
-import { AllManeuverIDs, AllPostures, ApplicableConditions } from "@item/condition/data"
-import { allMoveTypeOverrideConditions } from "@module/move_type"
-import {
-	AllNumericCompareTypes,
-	AllStringCompareTypes,
-	ContainedQuantityNumericCompareTypes,
-	LocalizeGURPS,
-	allLengthUnits,
-	allWeightUnits,
-} from "@util"
-import {
-	affects,
-	attribute,
-	container,
-	difficulty,
-	display,
-	emcost,
-	emweight,
-	feature,
-	movelimit,
-	prereq,
-	progression,
-	selfctrl,
-	skillsel,
-	spellcmp,
-	spellmatch,
-	stlimit,
-	stdmg,
-	study,
-	tmcost,
-	wsel,
-	wswitch,
-} from "@util/enum"
-import { EFFECT_ACTION } from "./misc"
+import { AllManeuverIDs, AllPostures, ApplicableConditions } from "@item/condition/data.ts"
+import { allMoveTypeOverrideConditions } from "@sytem/move_type/data.ts"
+import { affects } from "@util/enum/affects.ts"
+import { attribute } from "@util/enum/attribute.ts"
+import { container } from "@util/enum/container.ts"
+import { difficulty } from "@util/enum/difficulty.ts"
+import { display } from "@util/enum/display.ts"
+import { emcost } from "@util/enum/emcost.ts"
+import { emweight } from "@util/enum/emweight.ts"
+import { feature } from "@util/enum/feature.ts"
+import { movelimit } from "@util/enum/movelimit.ts"
+import { prereq } from "@util/enum/prereq.ts"
+import { progression } from "@util/enum/progression.ts"
+import { selfctrl } from "@util/enum/selfctrl.ts"
+import { skillsel } from "@util/enum/skillsel.ts"
+import { spellcmp } from "@util/enum/spellcmp.ts"
+import { spellmatch } from "@util/enum/spellmatch.ts"
+import { stdmg } from "@util/enum/stdmg.ts"
+import { stlimit } from "@util/enum/stlimit.ts"
+import { study } from "@util/enum/study.ts"
+import { tmcost } from "@util/enum/tmcost.ts"
+import { wsel } from "@util/enum/wsel.ts"
+import { wswitch } from "@util/enum/wswitch.ts"
+import { allLengthUnits } from "@util/length.ts"
+import { LocalizeGURPS } from "@util/localize.ts"
+import { allWeightUnits } from "@util/weight.ts"
+import { EFFECT_ACTION } from "./misc.ts"
+import { AllNumericCompareTypes, ContainedQuantityNumericCompareTypes } from "@util/numeric_criteria.ts"
+import { AllStringCompareTypes } from "@util/string_criteria.ts"
 
 export function prepareSelectOptions(): void {
 	const SELECT_OPTIONS: Record<string, Record<string, string>> = {
@@ -184,7 +179,7 @@ export function prepareSelectOptions(): void {
 					[c]: LocalizeGURPS.translations.gurps.maneuver[c],
 				})
 			},
-			{ none: LocalizeGURPS.translations.gurps.maneuver.none }
+			{ none: LocalizeGURPS.translations.gurps.maneuver.none },
 		),
 		postures: AllPostures.reduce(
 			(acc, c) => {
@@ -192,7 +187,7 @@ export function prepareSelectOptions(): void {
 					[c]: LocalizeGURPS.translations.gurps.status[c],
 				})
 			},
-			{ none: LocalizeGURPS.translations.gurps.maneuver.none }
+			{ none: LocalizeGURPS.translations.gurps.maneuver.none },
 		),
 		display: display.Options.reduce((acc, c) => {
 			return Object.assign(acc, {

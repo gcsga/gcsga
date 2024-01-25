@@ -1,23 +1,31 @@
-import { ItemGCS } from "@item/gcs"
-import { TraitModifierGURPS } from "@item/trait_modifier"
-import { TraitModifierContainerGURPS } from "@item/trait_modifier_container"
-import { resolveStudyHours, studyHoursProgressText } from "@util"
-import { TraitSource } from "./data"
-import { ItemType, sheetSettingsFor } from "@module/data"
-import { display, selfctrl } from "@util/enum"
-import { StringBuilder } from "@util/string_builder"
+import { ActorGURPS } from "@actor/base.ts"
+import { ItemGCS } from "@item/gcs/document.ts"
+import { TraitSystemData } from "./data.ts"
+import { display } from "@util/enum/display.ts"
+import { StringBuilder } from "@util/string_builder.ts"
+import { sheetSettingsFor } from "@module/data/sheet_settings.ts"
+import { resolveStudyHours, studyHoursProgressText } from "@util/study.ts"
+import { ItemType } from "@module/data/misc.ts"
+import { selfctrl } from "@util/enum/selfctrl.ts"
+import { TraitModifierGURPS } from "@item/trait_modifier/document.ts"
+import { TraitModifierContainerGURPS } from "@item/trait_modifier_container/document.ts"
 
-export class TraitGURPS extends ItemGCS<TraitSource> {
-	unsatisfied_reason = ""
+export interface TraitGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+	system: TraitSystemData
+	type: ItemType.Trait
+}
+
+export class TraitGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+	// unsatisfied_reason = ""
 
 	// Getters
-	get formattedName(): string {
+	override get formattedName(): string {
 		const name: string = this.name ?? ""
 		const levels = this.levels
 		return `${name}${levels ? ` ${levels}` : ""}`
 	}
 
-	secondaryText(optionChecker: (option: display.Option) => boolean): string {
+	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
 		const buffer = new StringBuilder()
 		const settings = sheetSettingsFor(this.actor)
 		if (this.system.userdesc !== "" && optionChecker(settings.user_description_display)) {
@@ -27,29 +35,33 @@ export class TraitGURPS extends ItemGCS<TraitSource> {
 		if (optionChecker(settings.notes_display)) {
 			buffer.appendToNewLine(this.notes.trim())
 			buffer.appendToNewLine(
-				studyHoursProgressText(resolveStudyHours(this.system.study), this.system.study_hours_needed, false)
+				studyHoursProgressText(resolveStudyHours(this.system.study), this.system.study_hours_needed, false),
 			)
 		}
 		return buffer.toString()
 	}
 
-	get enabled(): boolean {
+	override get enabled(): boolean {
 		if (this.system.disabled) return false
 		let enabled = !this.system.disabled
-		if (this.container && this.container.type === ItemType.TraitContainer)
+		if (
+			this.container &&
+			!(this.container instanceof CompendiumCollection) &&
+			this.container.type === ItemType.TraitContainer
+		)
 			enabled = enabled && (this.container as any).enabled
 		return enabled
 	}
 
-	set enabled(enabled: boolean) {
+	override set enabled(enabled: boolean) {
 		this.system.disabled = !enabled
 	}
 
-	get isLeveled(): boolean {
+	override get isLeveled(): boolean {
 		return this.system.can_level
 	}
 
-	get levels(): number {
+	override get levels(): number {
 		return this.system.levels ?? 0
 	}
 
@@ -112,14 +124,15 @@ export class TraitGURPS extends ItemGCS<TraitSource> {
 						case "total":
 							baseLim += modifier
 							levelLim += modifier
-							continue
+							break
 						case "base_only":
 							baseLim += modifier
-							continue
+							break
 						case "levels_only":
 							levelLim += modifier
-							continue
+							break
 					}
+					break
 				case "points":
 					if (mod.affects === "levels_only") pointsPerLevel += modifier
 					else basePoints += modifier
@@ -135,17 +148,17 @@ export class TraitGURPS extends ItemGCS<TraitSource> {
 				if (baseEnh === levelEnh && baseLim === levelLim) {
 					modifiedBasePoints = TraitGURPS.modifyPoints(
 						TraitGURPS.modifyPoints(modifiedBasePoints + leveledPoints, baseEnh),
-						Math.max(-80, baseLim)
+						Math.max(-80, baseLim),
 					)
 				} else {
 					modifiedBasePoints =
 						TraitGURPS.modifyPoints(
 							TraitGURPS.modifyPoints(modifiedBasePoints, baseEnh),
-							Math.max(-80, baseLim)
+							Math.max(-80, baseLim),
 						) +
 						TraitGURPS.modifyPoints(
 							TraitGURPS.modifyPoints(leveledPoints, levelEnh),
-							Math.max(-80, levelLim)
+							Math.max(-80, levelLim),
 						)
 				}
 			} else {
@@ -173,7 +186,7 @@ export class TraitGURPS extends ItemGCS<TraitSource> {
 				.filter(item => item instanceof TraitModifierGURPS || item instanceof TraitModifierContainerGURPS)
 				.map(item => {
 					return [item.id!, item]
-				})
+				}),
 		) as Collection<TraitModifierGURPS>
 	}
 
@@ -189,7 +202,7 @@ export class TraitGURPS extends ItemGCS<TraitSource> {
 		return new Collection(
 			deepModifiers.map(item => {
 				return [item.id!, item]
-			})
+			}),
 		)
 	}
 

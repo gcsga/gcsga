@@ -1,22 +1,31 @@
-import { ItemGCS } from "@item/gcs"
-import { TraitModifierSource } from "./data"
-import { affects, display, tmcost } from "@util/enum"
-import { sheetSettingsFor } from "@module/data"
-import { StringBuilder } from "@util/string_builder"
+import { ActorGURPS } from "@actor/base.ts"
+import { ItemGCS } from "@item/gcs/document.ts"
+import { TraitModifierSystemData } from "./data.ts"
+import { display } from "@util/enum/display.ts"
+import { sheetSettingsFor } from "@module/data/sheet_settings.ts"
+import { tmcost } from "@util/enum/tmcost.ts"
+import { affects } from "@util/enum/affects.ts"
+import { StringBuilder } from "@util/string_builder.ts"
+import { ItemType } from "@module/data/misc.ts"
 
-export class TraitModifierGURPS extends ItemGCS<TraitModifierSource> {
-	prepareBaseData() {
+export interface TraitModifierGURPS<TParent extends ActorGURPS> extends ItemGCS<TParent> {
+	type: ItemType.TraitModifier
+	system: TraitModifierSystemData
+}
+
+export class TraitModifierGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+	override prepareBaseData() {
 		super.prepareBaseData()
 		// HACK: find a way to avoid this
 		if (typeof this.system.levels === "string") this.system.levels = parseInt(this.system.levels)
 	}
 
 	// Getters
-	get levels(): number {
+	override get levels(): number {
 		return this.system.levels
 	}
 
-	secondaryText(optionChecker: (option: display.Option) => boolean): string {
+	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
 		if (optionChecker(sheetSettingsFor(this.actor).notes_display)) return this.localNotes
 		return ""
 	}
@@ -35,7 +44,7 @@ export class TraitModifierGURPS extends ItemGCS<TraitModifierSource> {
 		return base
 	}
 
-	get enabled(): boolean {
+	override get enabled(): boolean {
 		return !this.system.disabled
 	}
 
@@ -64,7 +73,7 @@ export class TraitModifierGURPS extends ItemGCS<TraitModifierSource> {
 		return buffer.toString()
 	}
 
-	get isLeveled(): boolean {
+	override get isLeveled(): boolean {
 		return this.costType === tmcost.Type.Percentage && this.levels > 0
 	}
 }

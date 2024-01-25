@@ -1,3 +1,3 @@
-export { BaseActorGURPS } from "./document"
-export { ActorSheetGURPS } from "./sheet"
-export * from "./data"
+export { BaseActorGURPS } from "./document.ts"
+export { ActorSheetGURPS } from "./sheet.ts"
+export * from "./data.ts"

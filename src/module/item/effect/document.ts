@@ -1,19 +1,20 @@
-import { BaseItemGURPS } from "@item/base"
-import { Feature } from "@module/config"
-import { RollModifier, gid } from "@module/data"
-import { TokenGURPS } from "@module/token"
-import { LocalizeGURPS } from "@util"
-import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
-import { ItemDataBaseProperties, ItemDataConstructorData } from "types/foundry/common/data/data.mjs/itemData"
-import { CombatData } from "types/foundry/common/data/module.mjs"
-import { BaseUser } from "types/foundry/common/documents.mjs"
-import { PropertiesToSource } from "types/types/helperTypes"
-import { DurationType, EffectModificationOptions, EffectSource } from "./data"
-import { feature } from "@util/enum"
-import { AttributeBonus } from "@feature"
-import { ItemGCS } from "@item/gcs"
+import { ActorGURPS } from "@actor/document.ts"
+import { ItemGURPS } from "@item/base/document.ts"
+import { DurationType, EffectModificationContext, EffectSystemData } from "./data.ts"
+import { AttributeBonus, Feature } from "@feature/index.ts"
+import { feature } from "@util/enum/feature.ts"
+import { RollModifier, gid } from "@module/data/misc.ts"
+import { ItemGCS } from "@item/gcs/document.ts"
+import { BaseUser } from "types/foundry/common/documents/module.js"
+import { TokenGURPS } from "@module/token/object.ts"
+import { TokenDocumentGURPS } from "@module/token/document.ts"
+import { LocalizeGURPS } from "@util/localize.ts"
 
-export class EffectGURPS<SourceType extends EffectSource = EffectSource> extends BaseItemGURPS<SourceType> {
+export interface EffectGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGURPS<TParent> {
+	system: EffectSystemData
+}
+
+export class EffectGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGURPS<TParent> {
 	_statusId: string | null = null
 
 	get features(): Feature[] {
@@ -21,7 +22,7 @@ export class EffectGURPS<SourceType extends EffectSource = EffectSource> extends
 			return (this.system as any).features.map((e: Partial<Feature>) => {
 				const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as feature.Type]
 				if (FeatureConstructor) {
-					const f = new FeatureConstructor()
+					const f = new FeatureConstructor(e as any)
 					Object.assign(f, e)
 					return f
 				}
@@ -107,7 +108,11 @@ export class EffectGURPS<SourceType extends EffectSource = EffectSource> extends
 		return this.update({ "system.levels.current": level })
 	}
 
-	protected async _preCreate(data: any, options: DocumentModificationOptions, user: BaseUser): Promise<void> {
+	protected override async _preCreate(
+		data: any,
+		options: DocumentModificationContext<TParent>,
+		user: User,
+	): Promise<boolean | void> {
 		if (!data.system) return super._preCreate(data, options, user)
 		if (!data.system?.duration?.combat && game.combat) data.system.duration.combat = game.combat!.id
 		const combat = game.combat
@@ -120,40 +125,44 @@ export class EffectGURPS<SourceType extends EffectSource = EffectSource> extends
 		super._preCreate(data, options, user)
 	}
 
-	protected override _onCreate(data: this["_source"], options: DocumentModificationContext, userId: string): void {
+	protected override _onCreate(
+		data: this["_source"],
+		options: DocumentModificationContext<TParent>,
+		userId: string,
+	): void {
 		super._onCreate(data, options, userId)
 		this._displayScrollingStatus(true)
 		this._statusId = Object.values(CONFIG.specialStatusEffects).includes(this.system.id ?? "")
 			? this.system.id
 			: null
 		if (this._statusId) this.#dispatchTokenStatusChange(this._statusId, true)
-		game.EffectPanel.refresh()
+		game.gurps.effectPanel.refresh()
 	}
 
-	protected override _onDelete(options: DocumentModificationContext, userId: string): void {
+	protected override _onDelete(options: DocumentModificationContext<TParent>, userId: string): void {
 		super._onDelete(options, userId)
 		// If (game.combat?.started) {
 		if (this.canLevel) this.system.levels!.current = 0
 		this._displayScrollingStatus(false)
 		if (this._statusId) this.#dispatchTokenStatusChange(this._statusId, false)
-		game.EffectPanel.refresh()
+		game.gurps.effectPanel.refresh()
 	}
 
-	protected _preUpdate(
-		changed: DeepPartial<ItemDataConstructorData>,
-		options: EffectModificationOptions,
-		user: BaseUser
-	): Promise<void> {
+	protected override _preUpdate(
+		changed: DeepPartial<this["_source"]>,
+		options: EffectModificationContext<TParent>,
+		user: BaseUser,
+	): Promise<boolean | void> {
 		options.previousLevel = this.level
 		return super._preUpdate(changed, options, user)
 	}
 
-	protected _onUpdate(
-		changed: DeepPartial<PropertiesToSource<ItemDataBaseProperties>>,
-		options: EffectModificationOptions,
-		userId: string
+	protected override _onUpdate(
+		data: DeepPartial<this["_source"]>,
+		options: EffectModificationContext<TParent>,
+		userId: string,
 	): void {
-		super._onUpdate(changed, options, userId)
+		super._onUpdate(data, options, userId)
 		const [priorValue, newValue] = [options.previousLevel, this.level]
 		const valueChanged = !!priorValue && !!newValue && priorValue !== newValue
 		if (valueChanged) {
@@ -161,7 +170,7 @@ export class EffectGURPS<SourceType extends EffectSource = EffectSource> extends
 			this._displayScrollingStatus(change)
 			// If (this._statusId) this.#dispatchTokenStatusChange(this._statusId, false);
 		}
-		game.EffectPanel.refresh()
+		game.gurps.effectPanel.refresh()
 	}
 
 	_displayScrollingStatus(enabled: boolean) {
@@ -189,10 +198,10 @@ export class EffectGURPS<SourceType extends EffectSource = EffectSource> extends
 		for (const token of tokens) token._onApplyStatusEffect(statusId, active)
 	}
 
-	static async updateCombat(combat: Combat, _data: CombatData, _options: any, _userId: string) {
+	static async updateCombat(combat: Combat, _data: any, _options: any, _userId: string) {
 		const previous = combat.previous
 		if (!previous.tokenId) return
-		const token = canvas?.tokens?.get(previous.tokenId) as TokenGURPS
+		const token = canvas?.tokens?.get(previous.tokenId) as TokenGURPS<TokenDocumentGURPS>
 		if (token?.actor) {
 			for (const effect of token.actor.gEffects) {
 				if (effect.isExpired) {
@@ -200,7 +209,7 @@ export class EffectGURPS<SourceType extends EffectSource = EffectSource> extends
 					ui?.notifications?.info(
 						LocalizeGURPS.format(LocalizeGURPS.translations.gurps.combat.effect_expired, {
 							effect: effect.name!,
-						})
+						}),
 					)
 				}
 			}

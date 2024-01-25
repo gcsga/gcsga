@@ -1,3 +1,3 @@
-export { EquipmentGURPS, extendedWeightAdjustedForModifiers } from "./document"
-export { EquipmentSheet } from "./sheet"
-export * from "./data"
+export { EquipmentGURPS, extendedWeightAdjustedForModifiers } from "./document.ts"
+export { EquipmentSheet } from "./sheet.ts"
+export * from "./data.ts"

@@ -1,23 +1,30 @@
-import { BaseItemGURPS, ItemFlags } from "@item/base"
-import { ContainerGURPS } from "@item/container"
-import { Bonus, Feature } from "@module/config"
-import { ActorType, gid, ItemType, RollType, SYSTEM_NAME } from "@module/data"
-import { SkillDefault } from "@module/default"
-import { TooltipGURPS } from "@module/tooltip"
-import { EquipmentResolver, LocalizeGURPS, sheetDisplayNotes } from "@util"
-import { WeaponDamage } from "./damage"
-import { BaseWeaponSource } from "./data"
-import { Int } from "@util/fxp"
-import { ItemGCS } from "@item/gcs"
-import { CharacterGURPS } from "@actor"
-import { WeaponStrength } from "./weapon_strength"
-import { display, feature, skillsel, wsel, wswitch } from "@util/enum"
-import { SkillBonus, WeaponBonus } from "@feature"
-import { StringBuilder } from "@util/string_builder"
+import { ActorGURPS, CharacterGURPS } from "@actor/document.ts"
+import { ItemGURPS } from "@item/base/document.ts"
+import { BaseWeaponSystemData } from "./data.ts"
+import { sheetDisplayNotes } from "@util/misc.ts"
+import { display } from "@util/enum/display.ts"
+import { WeaponStrength } from "./weapon_strength.ts"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { ItemType, RollType, SYSTEM_NAME, gid } from "@module/data/misc.ts"
+import { ItemFlags } from "@item/data.ts"
+import { StringBuilder } from "@util/string_builder.ts"
+import { EquipmentResolver } from "@util/resolvers.ts"
+import { SkillDefault } from "@sytem/default/index.ts"
+import { ContainerGURPS, ItemGCS, WeaponDamage } from "@item/index.ts"
+import { LocalizeGURPS } from "@util/localize.ts"
+import { SkillBonus } from "@feature/skill_bonus.ts"
+import { skillsel } from "@util/enum/skillsel.ts"
+import { Feature, WeaponBonus } from "@feature/index.ts"
+import { wswitch } from "@util/enum/wswitch.ts"
+import { feature } from "@util/enum/feature.ts"
+import { Int } from "@util/fxp.ts"
+import { wsel } from "@util/enum/wsel.ts"
 
-export abstract class BaseWeaponGURPS<
-	SourceType extends BaseWeaponSource = BaseWeaponSource,
-> extends BaseItemGURPS<SourceType> {
+export interface BaseWeaponGURPS<TParent extends ActorGURPS> extends ItemGURPS<TParent> {
+	system: BaseWeaponSystemData
+}
+
+export abstract class BaseWeaponGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGURPS<TParent> {
 	get itemName(): string {
 		if (this.container instanceof Item) return this.container?.name ?? ""
 		return ""
@@ -39,12 +46,6 @@ export abstract class BaseWeaponGURPS<
 		const ws = WeaponStrength.parse(this.system.strength)
 		ws.current = ws.resolve(this, new TooltipGURPS()).toString()
 		return ws
-	}
-
-	override get actor(): CharacterGURPS | null {
-		const actor = super.actor
-		if (actor?.type === ActorType.Character) return actor as CharacterGURPS
-		return null
 	}
 
 	get unready(): boolean {
@@ -87,7 +88,7 @@ export abstract class BaseWeaponGURPS<
 	}
 
 	skillLevel(tooltip?: TooltipGURPS): number {
-		const actor = (this.actor || this.dummyActor) as unknown as CharacterGURPS
+		const actor = this.actor || this.dummyActor
 		if (!actor) return 0
 		let primaryTooltip = new TooltipGURPS()
 		if (tooltip) primaryTooltip = tooltip
@@ -112,6 +113,7 @@ export abstract class BaseWeaponGURPS<
 
 	skillLevelBaseAdjustment(actor: this["actor"], tooltip: TooltipGURPS | null): number {
 		if (!actor) return 0
+		if (!(actor instanceof CharacterGURPS)) return 0
 		let adj = 0
 		if (!(this.container instanceof ContainerGURPS)) return 0
 		const minST = this.resolvedMinimumStrength - actor.strikingST
@@ -121,7 +123,7 @@ export abstract class BaseWeaponGURPS<
 			nameQualifier!,
 			this.usage,
 			(this.container as any)?.tags,
-			tooltip
+			tooltip,
 		)) {
 			adj += bonus.adjustedAmount
 		}
@@ -129,7 +131,7 @@ export abstract class BaseWeaponGURPS<
 			nameQualifier!,
 			this.usage,
 			(this.container as any)?.tags,
-			tooltip
+			tooltip,
 		)) {
 			adj += bonus.adjustedAmount
 		}
@@ -155,13 +157,14 @@ export abstract class BaseWeaponGURPS<
 
 	encumbrancePenalty(actor: this["actor"], tooltip: TooltipGURPS | null): number {
 		if (!actor) return 0
+		if (!(actor instanceof CharacterGURPS)) return 0
 		const penalty = actor.encumbranceLevel(true).penalty
 		if (penalty !== 0 && tooltip) {
 			tooltip.push("\n")
 			tooltip.push(
 				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.tooltip.encumbrance, {
 					bonus: penalty.signedString(),
-				})
+				}),
 			)
 		}
 		return penalty
@@ -202,6 +205,7 @@ export abstract class BaseWeaponGURPS<
 
 	resolvedValue(input: string, baseDefaultType: string, tooltip?: TooltipGURPS): string {
 		const actor = this.actor
+		if (!(actor instanceof CharacterGURPS)) return ""
 		input ??= ""
 		input = input.trim()
 		if (!input.match(/^[+-]?[0-9]+/)) return input
@@ -216,8 +220,8 @@ export abstract class BaseWeaponGURPS<
 			let preAdj = this.skillLevelBaseAdjustment(actor, primaryTooltip)
 			let postAdj = this.skillLevelPostAdjustment(actor, primaryTooltip)
 			let adj = 3
-			if (baseDefaultType === gid.Parry) adj += this.actor.parryBonus
-			else adj += this.actor.blockBonus
+			if (baseDefaultType === gid.Parry) adj += actor.parryBonus
+			else adj += actor.blockBonus
 			let best = -Infinity
 			for (const def of this.defaults) {
 				let level = def.skillLevelFast(actor, false, null, true)
@@ -251,7 +255,7 @@ export abstract class BaseWeaponGURPS<
 		return buffer
 	}
 
-	exportSystemData(_keepOther: boolean): any {
+	override exportSystemData(_keepOther: boolean): any {
 		const system = this.system
 		// system.damage.base = new DiceGURPS(this.damage.base).toString(false)
 		// system.damage.fragmentation = new DiceGURPS(this.damage.fragmentation).toString(false)
@@ -277,8 +281,8 @@ export abstract class BaseWeaponGURPS<
 		tooltip: TooltipGURPS | null,
 		...allowedFeatureTypes: feature.WeaponBonusType[]
 	): WeaponBonus[] {
-		const actor = this.actor as CharacterGURPS
-		if (!actor) return []
+		const actor = this.actor
+		if (!actor || !(actor instanceof CharacterGURPS)) return []
 		const allowed: Map<feature.WeaponBonusType, boolean> = new Map()
 		for (const one of allowedFeatureTypes) allowed.set(one, true)
 		let bestDef = new SkillDefault()
@@ -307,12 +311,13 @@ export abstract class BaseWeaponGURPS<
 			for (const f of (container as ItemGCS).features)
 				this._extractWeaponBonus(f, bonusSet, allowed, Int.from(dieCount), tooltip)
 		if (
+			!(this.container instanceof CompendiumCollection) &&
 			[ItemType.Trait, ItemType.TraitContainer, ItemType.Equipment, ItemType.EquipmentContainer].includes(
-				this.container?.type as ItemType
+				this.container?.type as ItemType,
 			)
 		) {
 			;(this.container as any).modifiers.forEach((mod: any) => {
-				let bonus: Bonus
+				let bonus: Feature
 				for (const f of mod.features) {
 					bonus = f
 					bonus.subOwner = mod
@@ -329,7 +334,7 @@ export abstract class BaseWeaponGURPS<
 		set: Map<WeaponBonus, boolean>,
 		allowedFeatureTypes: Map<feature.Type, boolean>,
 		dieCount: number,
-		tooltip: TooltipGURPS | null
+		tooltip: TooltipGURPS | null,
 	): void {
 		if (!allowedFeatureTypes.get(f.type)) return
 		if (f instanceof WeaponBonus) {

@@ -1,8 +1,8 @@
-import { ConditionID } from "@item/condition/data"
-import { ThresholdOp } from "@module/attribute/data"
-import { EFFECT_ACTION, SETTINGS, SYSTEM_NAME, gid } from "@module/data"
-import { MoveTypeOverrideConditionType } from "@module/move_type"
-import { attribute } from "@util/enum"
+import { ConditionID } from "@item/index.ts"
+import { EFFECT_ACTION, SETTINGS, SYSTEM_NAME, gid } from "@module/data/misc.ts"
+import { ThresholdOp } from "@sytem/attribute/data.ts"
+import { MoveTypeOverrideConditionType } from "@sytem/move_type/data.ts"
+import { attribute } from "@util/enum/attribute.ts"
 
 export const defaultSettings = {
 	[SYSTEM_NAME]: {
