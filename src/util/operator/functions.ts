@@ -1,6 +1,9 @@
 import {
+	Operator,
+	ParsableType,
 	add,
 	closeParen,
+	divide,
 	equal,
 	greaterThan,
 	greaterThanOrEqual,
@@ -8,17 +11,15 @@ import {
 	lessThanOrEqual,
 	logicalAnd,
 	logicalOr,
+	modulo,
 	multiply,
 	not,
-	divide,
-	modulo,
 	notEqual,
-	openParen,
-	Operator,
 	opFunction,
+	openParen,
 	power,
 	subtract,
-} from "./types"
+} from "./types.ts"
 
 /**
  *
@@ -60,7 +61,7 @@ export function evalOperators(dbzrz: boolean): Operator[] {
  *
  * @param arg
  */
-function Not(arg: any): any {
+function Not(arg: ParsableType): boolean {
 	const b = Boolean(arg)
 	if (typeof b === "boolean") return !b
 	const v = From(arg)
@@ -73,7 +74,7 @@ function Not(arg: any): any {
  * @param left
  * @param right
  */
-function LogicalOr(left: any, right: any): any {
+function LogicalOr(left: ParsableType, right: ParsableType): boolean {
 	const l = From(left)
 	if (l !== 0) return true
 	let r = 0
@@ -86,7 +87,7 @@ function LogicalOr(left: any, right: any): any {
  * @param left
  * @param right
  */
-function LogicalAnd(left: any, right: any): any {
+function LogicalAnd(left: ParsableType, right: ParsableType): boolean {
 	const l = From(left)
 	if (l === 0) return false
 	let r = 0
@@ -99,7 +100,7 @@ function LogicalAnd(left: any, right: any): any {
  * @param left
  * @param right
  */
-function Equal(left: any, right: any): any {
+function Equal(left: ParsableType, right: ParsableType): boolean {
 	let l
 	let r
 	try {
@@ -107,7 +108,7 @@ function Equal(left: any, right: any): any {
 		r = From(right)
 	} catch (err) {
 		console.error(err)
-		return left.toString() === right.toString()
+		return left?.toString() === right?.toString()
 	}
 	return l === r
 }
@@ -117,7 +118,7 @@ function Equal(left: any, right: any): any {
  * @param left
  * @param right
  */
-function NotEqual(left: any, right: any): any {
+function NotEqual(left: ParsableType, right: ParsableType): boolean {
 	let l
 	let r
 	try {
@@ -125,7 +126,7 @@ function NotEqual(left: any, right: any): any {
 		r = From(right)
 	} catch (err) {
 		console.error(err)
-		return left.toString() !== right.toString()
+		return left?.toString() !== right?.toString()
 	}
 	return l !== r
 }
@@ -135,7 +136,7 @@ function NotEqual(left: any, right: any): any {
  * @param left
  * @param right
  */
-function GreaterThan(left: any, right: any): any {
+function GreaterThan(left: ParsableType, right: ParsableType): boolean {
 	let l
 	let r
 	try {
@@ -143,7 +144,7 @@ function GreaterThan(left: any, right: any): any {
 		r = From(right)
 	} catch (err) {
 		console.error(err)
-		return left.toString() > right.toString()
+		return (left?.toString() ?? "") > (right?.toString() ?? "")
 	}
 	return l > r
 }
@@ -153,7 +154,7 @@ function GreaterThan(left: any, right: any): any {
  * @param left
  * @param right
  */
-function GreaterThanOrEqual(left: any, right: any): any {
+function GreaterThanOrEqual(left: ParsableType, right: ParsableType): boolean {
 	let l
 	let r
 	try {
@@ -161,7 +162,7 @@ function GreaterThanOrEqual(left: any, right: any): any {
 		r = From(right)
 	} catch (err) {
 		console.error(err)
-		return left.toString() >= right.toString()
+		return (left?.toString() ?? "") >= (right?.toString() ?? "")
 	}
 	return l >= r
 }
@@ -171,7 +172,7 @@ function GreaterThanOrEqual(left: any, right: any): any {
  * @param left
  * @param right
  */
-function LessThan(left: any, right: any): any {
+function LessThan(left: ParsableType, right: ParsableType): boolean {
 	let l
 	let r
 	try {
@@ -179,7 +180,7 @@ function LessThan(left: any, right: any): any {
 		r = From(right)
 	} catch (err) {
 		console.error(err)
-		return left.toString() < right.toString()
+		return (left?.toString() ?? "") < (right?.toString() ?? "")
 	}
 	return l < r
 }
@@ -189,7 +190,7 @@ function LessThan(left: any, right: any): any {
  * @param left
  * @param right
  */
-function LessThanOrEqual(left: any, right: any): any {
+function LessThanOrEqual(left: ParsableType, right: ParsableType): boolean {
 	let l
 	let r
 	try {
@@ -197,7 +198,7 @@ function LessThanOrEqual(left: any, right: any): any {
 		r = From(right)
 	} catch (err) {
 		console.error(err)
-		return left.toString() <= right.toString()
+		return (left?.toString() ?? "") <= (right?.toString() ?? "")
 	}
 	return l <= r
 }
@@ -207,7 +208,7 @@ function LessThanOrEqual(left: any, right: any): any {
  * @param left
  * @param right
  */
-function Add(left: any, right: any): any {
+function Add(left: ParsableType, right: ParsableType): ParsableType {
 	let l
 	let r
 	try {
@@ -215,7 +216,7 @@ function Add(left: any, right: any): any {
 		r = From(right)
 	} catch (err) {
 		console.error(err)
-		return left.toString() + right.toString()
+		return (left?.toString() ?? "") + (right?.toString() ?? "")
 	}
 	return l + r
 }
@@ -224,7 +225,7 @@ function Add(left: any, right: any): any {
  *
  * @param arg
  */
-function AddUnary(arg: any): any {
+function AddUnary(arg: ParsableType): ParsableType {
 	return From(arg)
 }
 
@@ -233,7 +234,7 @@ function AddUnary(arg: any): any {
  * @param left
  * @param right
  */
-function Subtract(left: any, right: any): any {
+function Subtract(left: ParsableType, right: ParsableType): number {
 	const l = From(left)
 	let r = 0
 	r = From(right)
@@ -244,7 +245,7 @@ function Subtract(left: any, right: any): any {
  *
  * @param arg
  */
-function SubtractUnary(arg: any): any {
+function SubtractUnary(arg: ParsableType): number {
 	const v = From(arg)
 	return -v
 }
@@ -254,7 +255,7 @@ function SubtractUnary(arg: any): any {
  * @param left
  * @param right
  */
-function Multiply(left: any, right: any): any {
+function Multiply(left: ParsableType, right: ParsableType): number {
 	const l = From(left)
 	let r = 0
 	r = From(right)
@@ -266,7 +267,7 @@ function Multiply(left: any, right: any): any {
  * @param left
  * @param right
  */
-function Divide(left: any, right: any): any {
+function Divide(left: ParsableType, right: ParsableType): number {
 	const l = From(left)
 	let r = 0
 	r = From(right)
@@ -279,7 +280,7 @@ function Divide(left: any, right: any): any {
  * @param left
  * @param right
  */
-function DivideAllowDivideByZero(left: any, right: any): any {
+function DivideAllowDivideByZero(left: ParsableType, right: ParsableType): number {
 	const l = From(left)
 	let r = 0
 	r = From(right)
@@ -292,7 +293,7 @@ function DivideAllowDivideByZero(left: any, right: any): any {
  * @param left
  * @param right
  */
-function Modulo(left: any, right: any): any {
+function Modulo(left: ParsableType, right: ParsableType): number {
 	const l = From(left)
 	let r = 0
 	r = From(right)
@@ -305,7 +306,7 @@ function Modulo(left: any, right: any): any {
  * @param left
  * @param right
  */
-function ModuloAllowDivideByZero(left: any, right: any): any {
+function ModuloAllowDivideByZero(left: ParsableType, right: ParsableType): number {
 	const l = From(left)
 	let r = 0
 	r = From(right)
@@ -318,7 +319,7 @@ function ModuloAllowDivideByZero(left: any, right: any): any {
  * @param left
  * @param right
  */
-function Power(left: any, right: any): any {
+function Power(left: ParsableType, right: ParsableType): number {
 	const l = From(left)
 	let r = 0
 	r = From(right)
@@ -329,15 +330,14 @@ function Power(left: any, right: any): any {
  *
  * @param arg
  */
-function From(arg: any): number {
-	const a = typeof arg
-	switch (a) {
-		case "boolean":
+function From(arg: ParsableType): number {
+	switch (true) {
+		case typeof arg === "boolean":
 			if (arg) return 1
 			return 0
-		case "number":
+		case typeof arg === "number":
 			return arg
-		case "string":
+		case typeof arg === "string":
 			return parseFloat(arg)
 		default:
 			console.error(`Not a number: ${arg}`)

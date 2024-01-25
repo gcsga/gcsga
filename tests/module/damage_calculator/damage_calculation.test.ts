@@ -1,10 +1,6 @@
 /* eslint-disable jest/no-disabled-tests */
-import { DamageAttacker, DamageRoll, DefaultHitLocations } from "@module/damage_calculator"
-import { DamageTypes, AnyPiercingType } from "@module/damage_calculator/damage_type"
-import { InjuryEffectType, ShockInjuryEffect } from "@module/damage_calculator/injury_effect"
-import { RollType } from "@module/data"
-import { DiceGURPS } from "@module/dice"
-import { Vulnerability } from "../../src/module/damage_calculator/index"
+
+import { DamageAttacker, DamageRoll, DefaultHitLocations, Vulnerability } from "@module/apps/damage_calculator/index.ts"
 import {
 	DamageHitLocation,
 	DamageShock,
@@ -15,12 +11,16 @@ import {
 	_TargetTrait,
 	_TargetTraitModifier,
 	_create,
-} from "./common"
+} from "./common.ts"
+import { AnyPiercingType, DamageTypes } from "@module/apps/damage_calculator/damage_type.ts"
+import { DiceGURPS } from "@module/dice/index.ts"
+import { RollType } from "@module/data/index.ts"
+import { InjuryEffectType, ShockInjuryEffect } from "@module/apps/damage_calculator/injury_effect.ts"
 
 const Head = ["Skull", "Eye", "Face"]
 const Limb = ["Arm", "Leg"]
 const Extremity = ["Hand", "Foot"]
-const Torso = "Torso"
+// const Torso = "Torso"
 
 // Add real tests here.
 describe("Damage calculator", () => {
@@ -484,7 +484,7 @@ describe("Damage calculator", () => {
 			_torso._map.set("all", 2)
 		})
 
-		const verify: any = function (hp: number, noShockValues: number[], shockValues: DamageShock[]) {
+		const verify = function (hp: number, noShockValues: number[], shockValues: DamageShock[]) {
 			_target.hitPoints.value = hp
 
 			for (const damage of noShockValues) {

@@ -1,4 +1,4 @@
-import { Feature } from "@feature/index.ts"
+import { FeatureObj } from "@feature/index.ts"
 import { EquipmentCalcValues } from "@item/equipment/data.ts"
 import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
 import { ItemType } from "@module/data/misc.ts"
@@ -27,7 +27,7 @@ export interface EquipmentContainerSystemData extends ItemGCSSystemData {
 	weight: string
 	uses: number
 	max_uses: number
-	features: Feature[]
+	features: FeatureObj[]
 	// other: boolean
 	rated_strength: number
 	calc?: EquipmentCalcValues

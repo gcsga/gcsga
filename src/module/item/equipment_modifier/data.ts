@@ -1,4 +1,4 @@
-import { Feature } from "@feature/index.ts"
+import { FeatureObj } from "@feature/index.ts"
 import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
 import { ItemType } from "@module/data/misc.ts"
 import { emcost } from "@util/enum/emcost.ts"
@@ -19,6 +19,6 @@ export interface EquipmentModifierSystemData extends ItemGCSSystemData {
 	weight_type: emweight.Type
 	weight: string
 	tech_level: string
-	features: Feature[]
+	features: FeatureObj[]
 	disabled: boolean
 }

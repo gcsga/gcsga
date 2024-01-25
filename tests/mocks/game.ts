@@ -1,19 +1,20 @@
-import { ConditionID } from "@item/condition/data"
-import { ThresholdOp } from "@module/attribute"
-import { EFFECT_ACTION, SETTINGS, SYSTEM_NAME, gid } from "@module/data"
-import { MookData } from "@module/mook"
-import { attribute, progression } from "@util/enum"
+import { ConditionID } from "@item/index.ts"
+import { EFFECT_ACTION, SETTINGS, SYSTEM_NAME, gid } from "@module/data/index.ts"
+import { ThresholdOp } from "@sytem/attribute/data.ts"
+import { MookData } from "@sytem/mook/data.ts"
+import { attribute } from "@util/enum/attribute.ts"
+import { progression } from "@util/enum/progression.ts"
 
-export class FakeGame {
-	settings: FakeSettings
+export class MockGame {
+	settings: MockSettings
 
 	constructor() {
-		this.settings = new FakeSettings()
+		this.settings = new MockSettings()
 	}
 }
 
-class FakeSettings {
-	get<N extends string, K extends string>(namespace: N, key: K): ClientSettings.Values[`${N}.${K}`] {
+class MockSettings {
+	get<N extends string, K extends string>(namespace: N, key: K): unknown {
 		return this.getDefault(namespace, key)
 	}
 

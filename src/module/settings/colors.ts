@@ -1,5 +1,6 @@
-import { SETTINGS, SYSTEM_NAME } from "@module/data"
-import { SettingsMenuGURPS } from "./menu"
+import { mergeObject } from "types/foundry/common/utils/helpers.js"
+import { SettingsMenuGURPS } from "./menu.ts"
+import { SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
 
 export class ColorSettings extends SettingsMenuGURPS {
 	static override readonly namespace = "colors"
@@ -119,7 +120,7 @@ export class ColorSettings extends SettingsMenuGURPS {
 		}
 	}
 
-	activateListeners(html: JQuery<HTMLElement>): void {
+	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		html.find(".reset").on("click", event => this._onReset(event))
 		// Html.find(".reset-all").on("click", event => this._onResetAll(event))

@@ -1,4 +1,4 @@
-import { Feature } from "@feature/index.ts"
+import { FeatureObj } from "@feature/index.ts"
 import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
 import { ItemType } from "@module/data/misc.ts"
 import { PrereqList } from "@prereq/prereq_list.ts"
@@ -26,7 +26,7 @@ export interface EquipmentSystemData extends Omit<ItemGCSSystemData, "open"> {
 	weight: string
 	uses: number
 	max_uses: number
-	features: Feature[]
+	features: FeatureObj[]
 	// other: boolean
 	rated_strength: number
 	calc?: EquipmentCalcValues

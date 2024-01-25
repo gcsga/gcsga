@@ -1,10 +1,9 @@
-/* eslint-disable jest/no-disabled-tests */
-import { Mook } from "@module/mook/document"
-import { MookParser } from "@module/mook/parse"
-import { FakeGame, _defaultMookData } from "./common"
-import { gid } from "@module/data"
-import { EXAMPLE_STATBLOCKS } from "@module/mook/data"
-import { difficulty } from "@util/enum"
+import { gid } from "@module/data/index.ts"
+import { EXAMPLE_STATBLOCKS } from "@sytem/mook/data.ts"
+import { Mook } from "@sytem/mook/document.ts"
+import { MookParser } from "@sytem/mook/parse.ts"
+import { difficulty } from "@util/enum/difficulty.ts"
+import { MockGame, _defaultMookData } from "tests/mocks/game.ts"
 
 // Add real tests here.
 describe("Mook generator", () => {
@@ -15,7 +14,7 @@ describe("Mook generator", () => {
 		_mook = new Mook(_defaultMookData)
 		_parser = new MookParser("", _mook)
 		// @ts-expect-error game does not exist on globalThis type
-		global.game = new FakeGame()
+		global.game = new MockGame()
 	})
 
 	describe("Attribute Parsing", () => {

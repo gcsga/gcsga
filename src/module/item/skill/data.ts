@@ -1,4 +1,4 @@
-import { Feature } from "@feature/index.ts"
+import { FeatureObj } from "@feature/index.ts"
 import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
 import { ItemType } from "@module/data/misc.ts"
 import { PrereqList } from "@prereq/prereq_list.ts"
@@ -29,7 +29,7 @@ export interface SkillSystemData extends ItemGCSSystemData {
 	points: number
 	defaulted_from: SkillDefault | null
 	defaults: SkillDefault[]
-	features: Feature[]
+	features: FeatureObj[]
 	study: Study[]
 	study_hours_needed: study.Level
 	calc?: SkillCalcValues

@@ -1,8 +1,8 @@
-import { SYSTEM_NAME } from "@module/data"
+import { SYSTEM_NAME } from "@module/data/index.ts"
 
 export const TokenUtil = {
 	askWhichToken: async function (tokens: Token[]): Promise<Token | undefined> {
-		const d = await new Promise<Token | undefined>(async (resolve, reject) => {
+		const d = await new Promise<Token | undefined>(async (resolve, _reject) => {
 			new Dialog(
 				{
 					title: game.i18n.localize("gurps.token.select"),

@@ -4,6 +4,7 @@ import {
 	AttributeBonusObj,
 	CostReductionObj,
 	DRBonusObj,
+	LeveledAmountObj,
 	MoveBonusObj,
 	SkillBonusObj,
 	SkillPointBonusObj,
@@ -45,6 +46,7 @@ export type Feature =
 	| WeaponBonus
 
 export type FeatureObj =
+	| LeveledAmountObj
 	| AttributeBonusObj
 	| CostReductionObj
 	| DRBonusObj

@@ -1,6 +1,8 @@
-export type opFunction = (left: any, right: any) => any
+export type ParsableType = number | string | boolean
 
-export type unaryOpFunction = (arg: any) => any
+export type opFunction = (left: ParsableType, right: ParsableType) => ParsableType
+
+export type unaryOpFunction = (arg: ParsableType) => ParsableType
 
 export interface OperatorDef {
 	symbol: string
