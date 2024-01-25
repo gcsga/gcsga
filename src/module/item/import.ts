@@ -7,7 +7,7 @@ import { BaseItemGURPS } from "./base"
 interface ItemLibraryData {
 	type: ItemLibraryType
 	version: number
-	rows: Array<ItemSystemDataGURPS>
+	rows: ItemSystemDataGURPS[]
 }
 
 enum ItemLibraryType {
@@ -42,7 +42,7 @@ export class ItemImporter {
 								const files = form.data.files
 								if (!files.length)
 									return ui.notifications?.error(
-										LocalizeGURPS.translations.gurps.error.import.no_file
+										LocalizeGURPS.translations.gurps.error.import.no_file,
 									)
 								else {
 									const file = files[0]
@@ -51,7 +51,7 @@ export class ItemImporter {
 											text: text,
 											name: file.name,
 											path: file.path,
-										})
+										}),
 									)
 								}
 							},
@@ -65,7 +65,7 @@ export class ItemImporter {
 				},
 				{
 					width: 400,
-				}
+				},
 			).render(true)
 		}, 200)
 	}
@@ -92,14 +92,14 @@ export class ItemImporter {
 		try {
 			if (r.version < this.version)
 				return this.throwImportError(
-					errorMessages.concat(LocalizeGURPS.translations.gurps.error.import.format_old)
+					errorMessages.concat(LocalizeGURPS.translations.gurps.error.import.format_old),
 				)
 			if (r.version > this.version)
 				return this.throwImportError(
-					errorMessages.concat(LocalizeGURPS.translations.gurps.error.import.format_new)
+					errorMessages.concat(LocalizeGURPS.translations.gurps.error.import.format_new),
 				)
 
-			const items: Array<ItemSystemDataGURPS> = []
+			const items: ItemSystemDataGURPS[] = []
 			items.push(...ImportUtils.importItems(r.rows))
 
 			let pack = game.packs.find(p => p.metadata.name === name.toLowerCase().replaceAll(" ", "-"))
@@ -114,9 +114,9 @@ export class ItemImporter {
 				})
 			}
 			ui.notifications?.info(
-				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.system.library_import.start, { name: name })
+				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.system.library_import.start, { name: name }),
 			)
-			let counter = items.length
+			const counter = items.length
 			await BaseItemGURPS.createDocuments(items as any[], {
 				pack: pack.collection,
 				keepId: true,
@@ -124,7 +124,7 @@ export class ItemImporter {
 			ui.notifications?.info(
 				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.system.library_import.finished, {
 					number: counter,
-				})
+				}),
 			)
 			const cb = game.CompendiumBrowser
 			if (cb.rendered) cb.render(true)
@@ -134,7 +134,7 @@ export class ItemImporter {
 				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.error.import.generic, {
 					name: name,
 					message: (err as Error).message,
-				})
+				}),
 			)
 			return this.throwImportError(errorMessages)
 		}

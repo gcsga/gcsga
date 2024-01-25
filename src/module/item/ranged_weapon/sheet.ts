@@ -12,18 +12,18 @@ export class RangedWeaponSheet extends WeaponSheet {
 					obj[key] = data[key]
 					return obj
 				},
-				<Record<string, any>>{}
+				<Record<string, any>>{},
 			)
 		for (const key of Object.keys(weaponData)) delete data[key]
 		const groupedWeaponData: DeepPartial<Record<keyof RangedWeaponGURPS, Record<string, any>>> = Object.keys(
-			weaponData
+			weaponData,
 		).reduce((obj: DeepPartial<Record<keyof RangedWeaponGURPS, Record<string, any>>>, key: string) => {
 			const [type, ...property] = key.split(".").slice(1) as [keyof RangedWeaponGURPS, string[]]
 			obj[type] ??= {}
 			obj[type]![property.join(".")] = weaponData[key]
 			return obj
 		}, {})
-		for (const key of Object.keys(groupedWeaponData) as Array<keyof RangedWeaponGURPS>) {
+		for (const key of Object.keys(groupedWeaponData) as (keyof RangedWeaponGURPS)[]) {
 			const property = this.object[key]
 			if (key === "rate_of_fire") {
 				const parts = key.split(".")

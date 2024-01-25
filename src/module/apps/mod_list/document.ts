@@ -36,7 +36,7 @@ class ModifierList extends Application {
 		game.user?.targets.forEach(e => {
 			targetMods = targetMods.concat((e.actor as ActorGURPS).modifiers)
 		})
-		let actorMods = actor?.modifiers
+		const actorMods = actor?.modifiers
 
 		return mergeObject(super.getData(options), {
 			currentMods,

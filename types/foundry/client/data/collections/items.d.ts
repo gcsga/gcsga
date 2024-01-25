@@ -6,5 +6,5 @@
  * @see {@link ItemDirectory} The ItemDirectory sidebar directory
  */
 declare class Items<TItem extends Item<null>> extends WorldCollection<TItem> {
-    static override documentName: "Item";
+	static override documentName: "Item"
 }

@@ -42,10 +42,10 @@ export class ModifierBucketWindow extends Application {
 		const button = $("#modifier-bucket-button")
 		const buttonTop = button.offset()?.top ?? 0
 		const buttonLeft = (button.position()?.left || 0) + 220 ?? 0
-		let buttonWidth = parseFloat(button.css("width").replace("px", ""))
+		const buttonWidth = parseFloat(button.css("width").replace("px", ""))
 		const width = html.width() || 640
-		let height = parseFloat(html.css("height").replace("px", ""))
-		let left = Math.max(buttonLeft + buttonWidth / 2 - width / 2, 10)
+		const height = parseFloat(html.css("height").replace("px", ""))
+		const left = Math.max(buttonLeft + buttonWidth / 2 - width / 2, 10)
 		html.css("left", `${left}px`)
 		html.css("top", `${buttonTop - height - 10}px`)
 
@@ -131,7 +131,7 @@ export class ModifierBucketWindow extends Application {
 				},
 				{
 					width: 400,
-				}
+				},
 			).render(true)
 		}, 200)
 	}

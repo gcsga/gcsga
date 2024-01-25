@@ -20,7 +20,7 @@ class HitLocationTable implements Omit<HitLocationTableData, "roll"> {
 		roll: DiceGURPS | string,
 		locations: HitLocationData[],
 		actor: CharacterGURPS | any,
-		keyPrefix: string
+		keyPrefix: string,
 	) {
 		this.name = name
 		this.roll = roll instanceof DiceGURPS ? roll : new DiceGURPS(roll)
@@ -139,7 +139,7 @@ class HitLocation implements HitLocationData {
 					this.sub_table.roll,
 					this.sub_table.locations,
 					this.actor,
-					`${this.keyPrefix}.sub_table`
+					`${this.keyPrefix}.sub_table`,
 				)
 			: undefined
 	}
@@ -188,7 +188,7 @@ class HitLocation implements HitLocationData {
 					bonus: this.dr_bonus.signedString(),
 					type: gid.All,
 				}),
-				"<br>"
+				"<br>",
 			)
 		}
 		if (this.actor.type === ActorType.Character) drMap = this.actor.addDRBonusesFor(this.id, tooltip, drMap)
@@ -207,7 +207,7 @@ class HitLocation implements HitLocationData {
 					amount: String(drMap.get(k)),
 					type: k,
 				}),
-				"<br>"
+				"<br>",
 			)
 		}
 		if (drMap.has(gid.All))
@@ -216,11 +216,11 @@ class HitLocation implements HitLocationData {
 					amount: String(drMap.get(gid.All)),
 					type: gid.All,
 				}),
-				"<br>"
+				"<br>",
 			)
 		if (drMap.size !== 0) tooltip?.unshift("<br>")
 		tooltip?.unshift(
-			LocalizeGURPS.format(LocalizeGURPS.translations.gurps.tooltip.dr_name, { name: this.table_name })
+			LocalizeGURPS.format(LocalizeGURPS.translations.gurps.tooltip.dr_name, { name: this.table_name }),
 		)
 
 		return drMap

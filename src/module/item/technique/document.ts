@@ -129,7 +129,7 @@ export class TechniqueGURPS<TParent extends ActorGURPS = ActorGURPS> extends Ite
 		const skill_bonus = actor.skillBonusFor(this.name!, this.specialization, this.tags, tooltip)
 
 		// The effective skill level is the base level plus the skill bonus.
-		let effective_skill_level = default_skill_level + skill_bonus
+		const effective_skill_level = default_skill_level + skill_bonus
 
 		// The base level of the technique (the default skill level plus the technique's modifier).
 		const base_technique_level = this.default.modifier + effective_skill_level
@@ -199,7 +199,7 @@ export class TechniqueGURPS<TParent extends ActorGURPS = ActorGURPS> extends Ite
 		else minPoints -= 4
 		minPoints = Math.max(minPoints, 0)
 
-		let oldLevel = this.level.level
+		const oldLevel = this.level.level
 		for (let points = basePoints; points >= minPoints; points--) {
 			this.system.points = points
 			if (this.calculateLevel().level < oldLevel) {
@@ -208,7 +208,7 @@ export class TechniqueGURPS<TParent extends ActorGURPS = ActorGURPS> extends Ite
 		}
 
 		if (this.points > 0) {
-			let oldLevel = this.calculateLevel().level
+			const oldLevel = this.calculateLevel().level
 			while (this.points > 0) {
 				this.system.points = Math.max(this.points - 1, 0)
 				if (this.calculateLevel().level !== oldLevel) {

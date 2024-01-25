@@ -362,7 +362,7 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 	// }
 
 	static flatlist(context: any) {
-		let data = {}
+		const data = {}
 		Static.flatList(context, 0, "", data, false)
 		return data
 	}

@@ -336,6 +336,6 @@ export type SkillDefaultType = gid.Block | gid.Parry | gid.Skill | gid.Ten | str
 export interface AttributeEffect {
 	attribute: string
 	state: string
-	enter: Array<{ id: ConditionID; action: EFFECT_ACTION }>
-	leave: Array<{ id: ConditionID; action: EFFECT_ACTION }>
+	enter: { id: ConditionID; action: EFFECT_ACTION }[]
+	leave: { id: ConditionID; action: EFFECT_ACTION }[]
 }

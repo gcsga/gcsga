@@ -4,13 +4,13 @@
  * @param id  An ID to register the partial with.
  * @returns A Promise which resolves to the compiled Handlebars template
  */
-declare function getTemplate(path: string, id?: string): Promise<(context: object, options?: object) => string>;
+declare function getTemplate(path: string, id?: string): Promise<(context: object, options?: object) => string>
 
 /**
  * Load and cache a set of templates by providing an Array of paths
  * @param paths
  */
-declare function loadTemplates(paths: string[]): Promise<void>;
+declare function loadTemplates(paths: string[]): Promise<void>
 
 /**
  * Get and render a template using provided data and handle the returned HTML
@@ -21,4 +21,4 @@ declare function loadTemplates(paths: string[]): Promise<void>;
  *
  * @return      Returns the rendered HTML
  */
-declare function renderTemplate(path: string, data?: object): Promise<string>;
+declare function renderTemplate(path: string, data?: object): Promise<string>

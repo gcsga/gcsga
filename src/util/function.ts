@@ -559,11 +559,11 @@ export function evalRandomWeight(e: Evaluator, a: string): any {
 	if (!entity) return -1
 	let arg: string
 	;[arg, a] = nextArg(a)
-	let stDecimal = evalToNumber(e, arg)
+	const stDecimal = evalToNumber(e, arg)
 	let shift = 0
 	if (arg !== "") shift = evalToNumber(e, a)
 	if (isNaN(shift)) return null
-	let st = Math.round(stDecimal)
+	const st = Math.round(stDecimal)
 	let skinny = false
 	let overweight = false
 	let fat = false

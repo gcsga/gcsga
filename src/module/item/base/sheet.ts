@@ -55,7 +55,7 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 		locations[gid.All] = LocalizeGURPS.translations.gurps.feature.all_locations
 		const default_attributes = game.settings.get(
 			SYSTEM_NAME,
-			`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`
+			`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`,
 		) as AttributeDefObj[]
 		const default_hit_locations = {
 			name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
@@ -303,7 +303,7 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 		const value = event.currentTarget.value
 		const index = parseInt($(event.currentTarget).data("index"))
 		const FeatureConstructor = CONFIG.GURPS.Feature.classes[value as feature.Type]
-		let features = duplicate((this.item.system as any).features as FeatureObj[])
+		const features = duplicate((this.item.system as any).features as FeatureObj[])
 		let f = new FeatureConstructor().toObject()
 		if (feature.WeaponBonusTypes.includes(value)) f = new FeatureConstructor(value).toObject()
 		features.splice(index, 1, f)
@@ -311,7 +311,7 @@ export class ItemSheetGURPS<IType extends BaseItemGURPS = BaseItemGURPS> extends
 		await this.item.update(
 			{ "system.-=features": null },
 			// { render: false, performDeletions: true, noPrepare: true }
-			{ render: false, performDeletions: true }
+			{ render: false, performDeletions: true },
 		)
 		update["system.features"] = features
 		return this.item.update(update, { render: true })

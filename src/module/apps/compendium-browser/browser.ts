@@ -114,7 +114,7 @@ class CompendiumBrowser extends Application {
 	}
 
 	protected _onDragItem(event: JQuery.DragOverEvent): void {
-		let element = $(event.currentTarget!).closest(".item.desc")
+		const element = $(event.currentTarget!).closest(".item.desc")
 		if (!element.length) return
 		const heightAcross = (event.pageY! - element.offset()!.top) / element.height()!
 		const widthAcross = (event.pageX! - element.offset()!.left) / element.width()!
@@ -215,10 +215,11 @@ class CompendiumBrowser extends Application {
 		if (tab) {
 			const indexData = tab.getIndexData(0)
 			const tagSet: Set<string> = new Set()
-			tab.indexData.map(e =>
-				e.tags?.forEach((t: string) => {
-					tagSet.add(t)
-				})
+			tab.indexData.map(
+				e =>
+					e.tags?.forEach((t: string) => {
+						tagSet.add(t)
+					}),
 			)
 			const tagList = Array.from(tagSet).sort()
 			let tags = tab.filterData.tagFilter[0]
@@ -331,7 +332,7 @@ class CompendiumBrowser extends Application {
 			settings[tab] = Object.fromEntries(
 				Object.entries(settings[tab]!).sort(([_collectionA, dataA], [_collectionB, dataB]) => {
 					return (dataA?.name ?? "") > (dataB?.name ?? "") ? 1 : -1
-				})
+				}),
 			)
 		}
 
@@ -408,7 +409,7 @@ class CompendiumBrowser extends Application {
 			JSON.stringify({
 				type: type,
 				uuid: item?.uuid,
-			})
+			}),
 		)
 
 		const dragImage = document.createElement("div")

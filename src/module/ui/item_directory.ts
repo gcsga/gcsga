@@ -10,7 +10,7 @@ export class ItemDirectoryGURPS extends ItemDirectory {
 			JSON.stringify({
 				type: "Item",
 				uuid: item?.uuid,
-			})
+			}),
 		)
 
 		const dragImage = document.createElement("div")

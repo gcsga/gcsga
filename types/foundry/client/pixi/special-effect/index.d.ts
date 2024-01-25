@@ -1,1 +1,1 @@
-import "./base.d.ts";
+import "./base.d.ts"

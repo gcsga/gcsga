@@ -18,7 +18,7 @@ export class EquipmentModifierSheet extends ItemSheetGURPS<EquipmentModifierGURP
 		const costType: emcost.Type = formData["system.cost_type"]
 		const costValueType: emcost.Value = emcost.Type.determineModifierCostValueTypeFromString(
 			costType,
-			formData["system.cost"]
+			formData["system.cost"],
 		)
 		const costValue = emcost.Value.extractValue(costValueType, formData["system.cost"])
 		formData["system.cost"] = emcost.Value.format(costValueType, costValue)
@@ -26,7 +26,7 @@ export class EquipmentModifierSheet extends ItemSheetGURPS<EquipmentModifierGURP
 		const weightType: emweight.Type = formData["system.weight_type"]
 		const weightValueType: emweight.Value = emweight.Type.determineModifierWeightValueTypeFromString(
 			weightType,
-			formData["system.weight"]
+			formData["system.weight"],
 		)
 		const fraction = emweight.Value.extractFraction(weightValueType, formData["system.weight"])
 		formData["system.weight"] = emweight.Value.format(weightValueType, fraction)
@@ -36,7 +36,7 @@ export class EquipmentModifierSheet extends ItemSheetGURPS<EquipmentModifierGURP
 
 	render(
 		force?: boolean | undefined,
-		options?: Application.RenderOptions<DocumentSheetOptions<Item>> | undefined
+		options?: Application.RenderOptions<DocumentSheetOptions<Item>> | undefined,
 	): this {
 		if (this.item.container?.sheet?.rendered) this.item.container.sheet.render()
 		return super.render(force, options)

@@ -21,7 +21,7 @@ export interface SpellSystemData extends ItemGCSSystemData {
 	difficulty: `${string}/${difficulty.Level}`
 	tech_level: string
 	tech_level_required: boolean
-	college: Array<string>
+	college: string[]
 	power_source: string
 	spell_class: string
 	resist: string

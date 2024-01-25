@@ -39,7 +39,7 @@ class DiceGURPS {
 		let i = 0
 		let ch: string
 		;[dice.count, i] = extractValue(str, 0)
-		let hadCount = i !== 0
+		const hadCount = i !== 0
 		;[ch, i] = nextChar(str, i)
 		let hadSides = false
 		let hadD = false
@@ -101,7 +101,7 @@ class DiceGURPS {
 	}
 
 	stringExtra(extraDiceFromModifiers: boolean): string {
-		let [count, modifier] = this.adjustedCountAndModifier(extraDiceFromModifiers)
+		const [count, modifier] = this.adjustedCountAndModifier(extraDiceFromModifiers)
 		let buffer = ""
 		if (count > 0) {
 			if (GURPSFormat || count > 1) buffer += count.toString()
@@ -131,7 +131,7 @@ class DiceGURPS {
 		count = this.count
 		modifier = this.modifier
 		if (applyExtractDiceFromModifiers && modifier > 0) {
-			let average = (this.sides + 1) / 2
+			const average = (this.sides + 1) / 2
 			if (this.sides % 2 === 1) {
 				// Odd number of sides, so average is a whole number
 				count += modifier / average

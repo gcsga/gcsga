@@ -21,13 +21,13 @@ import { ActorFlags, BaseActorGURPS } from "@actor/base"
 import { display, progression } from "@util/enum"
 
 export interface CharacterImportedData extends Omit<CharacterSystemData, "attributes"> {
-	traits: Array<TraitSystemData | TraitContainerSystemData>
-	skills: Array<SkillSystemData | TechniqueSystemData | SkillContainerSystemData>
-	spells: Array<SpellSystemData | RitualMagicSpellSystemData | SpellContainerSystemData>
-	equipment: Array<EquipmentSystemData | EquipmentContainerSystemData>
-	other_equipment: Array<EquipmentSystemData | EquipmentContainerSystemData>
-	notes: Array<NoteSystemData | NoteContainerSystemData>
-	attributes: Array<AttributeObj>
+	traits: (TraitSystemData | TraitContainerSystemData)[]
+	skills: (SkillSystemData | TechniqueSystemData | SkillContainerSystemData)[]
+	spells: (SpellSystemData | RitualMagicSpellSystemData | SpellContainerSystemData)[]
+	equipment: (EquipmentSystemData | EquipmentContainerSystemData)[]
+	other_equipment: (EquipmentSystemData | EquipmentContainerSystemData)[]
+	notes: (NoteSystemData | NoteContainerSystemData)[]
+	attributes: AttributeObj[]
 	third_party: any
 }
 
@@ -56,7 +56,7 @@ export class CharacterImporter {
 								const files = form.data.files as FileList
 								if (!files.length)
 									return ui.notifications?.error(
-										LocalizeGURPS.translations.gurps.error.import.no_file
+										LocalizeGURPS.translations.gurps.error.import.no_file,
 									)
 								else {
 									const actors: any[] = []
@@ -82,7 +82,7 @@ export class CharacterImporter {
 				},
 				{
 					width: 400,
-				}
+				},
 			).render(true)
 		}, 200)
 	}
@@ -103,7 +103,7 @@ export class CharacterImporter {
 			})
 		}
 		ui.notifications?.info(
-			LocalizeGURPS.format(LocalizeGURPS.translations.gurps.system.library_import.start, { name: name })
+			LocalizeGURPS.format(LocalizeGURPS.translations.gurps.system.library_import.start, { name: name }),
 		)
 		const importer = new CharacterImporter()
 		const actors: Partial<CharacterSystemData>[] = []
@@ -111,7 +111,7 @@ export class CharacterImporter {
 			await importer.importData(file).then(actor => actors.push(actor))
 		})
 
-		let counter = files.length
+		const counter = files.length
 		await BaseActorGURPS.createDocuments(actors as any[], {
 			pack: pack.collection,
 			keepId: true,
@@ -119,7 +119,7 @@ export class CharacterImporter {
 		ui.notifications?.info(
 			LocalizeGURPS.format(LocalizeGURPS.translations.gurps.system.library_import.finished, {
 				number: counter,
-			})
+			}),
 		)
 	}
 
@@ -140,7 +140,7 @@ export class CharacterImporter {
 		// 	errorMessages.push(LocalizeGURPS.translations.gurps.error.import.no_json_detected)
 		// 	return this.throwImportError(errorMessages)
 		// }
-		let commit: Partial<CharacterSystemData> = await this.importData(file, this.document)
+		const commit: Partial<CharacterSystemData> = await this.importData(file, this.document)
 
 		// let commit: Partial<CharacterSystemData> = {}
 		// const imp = (document as any).importData
@@ -198,7 +198,7 @@ export class CharacterImporter {
 				recursive: false,
 			})
 			if ((this.document?.sheet as unknown as CharacterSheetGURPS)?.config !== null) {
-				; (this.document?.sheet as unknown as CharacterSheetGURPS)?.config?.render(true)
+				;(this.document?.sheet as unknown as CharacterSheetGURPS)?.config?.render(true)
 			}
 		} catch (err) {
 			console.error(err)
@@ -206,7 +206,7 @@ export class CharacterImporter {
 				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.error.import.generic, {
 					name: commit.profile?.name || LocalizeGURPS.translations.TYPES.Actor.character_gcs,
 					message: (err as Error).message,
-				})
+				}),
 			)
 			return this.throwImportError(errorMessages)
 		}
@@ -215,7 +215,7 @@ export class CharacterImporter {
 
 	async importData(
 		file: { text: string; name: string; path: string },
-		document?: Actor
+		document?: Actor,
 	): Promise<Partial<CharacterSystemData>> {
 		const json = file.text
 		let r: CharacterImportedData
@@ -251,7 +251,7 @@ export class CharacterImporter {
 							[ActorFlags.AutoThreshold]: { active: true },
 							[ActorFlags.AutoEncumbrance]: { active: true },
 							[ActorFlags.MoveType]: this.document?.getFlag(SYSTEM_NAME, ActorFlags.MoveType),
-							[ActorFlags.AutoDamage]: { active: true }
+							[ActorFlags.AutoDamage]: { active: true },
 						},
 					},
 				},
@@ -270,7 +270,7 @@ export class CharacterImporter {
 			commit = { ...commit, ...this.importThirdPartyData(r.third_party) }
 
 			// Begin item import
-			const items: Array<ItemGURPS> = []
+			const items: ItemGURPS[] = []
 			items.push(...ImportUtils.importItems(r.traits))
 			items.push(...ImportUtils.importItems(r.skills))
 			items.push(...ImportUtils.importItems(r.spells))
@@ -284,7 +284,7 @@ export class CharacterImporter {
 				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.error.import.generic, {
 					name: r.profile.name,
 					message: (err as Error).message,
-				})
+				}),
 			)
 			return this.throwImportError(errorMessages)
 		}
@@ -381,7 +381,7 @@ export class CharacterImporter {
 		else {
 			const tracker_defs = game.settings.get(
 				SYSTEM_NAME,
-				`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`
+				`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`,
 			)
 			data = {
 				...data,

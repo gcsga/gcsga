@@ -1,14 +1,14 @@
 export class TooltipGURPS {
-	list: Array<string | TooltipGURPS> = []
+	list: (string | TooltipGURPS)[] = []
 
-	unshift(...args: Array<string | TooltipGURPS>): number {
+	unshift(...args: (string | TooltipGURPS)[]): number {
 		for (const a of args) {
 			this.list.unshift(a)
 		}
 		return this.list.length
 	}
 
-	push(...args: Array<string | TooltipGURPS>): number {
+	push(...args: (string | TooltipGURPS)[]): number {
 		for (const a of args) {
 			this.list.push(a)
 		}

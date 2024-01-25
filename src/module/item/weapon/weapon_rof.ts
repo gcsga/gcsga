@@ -29,7 +29,7 @@ export class WeaponROF extends WeaponField {
 		const result = WeaponROF.parse(this.toString())
 		result.jet = w.resolveBoolFlag(wswitch.Type.Jet, result.jet)
 		if (!result.jet) {
-			let [buf1, buf2] = [new TooltipGURPS(), new TooltipGURPS()]
+			const [buf1, buf2] = [new TooltipGURPS(), new TooltipGURPS()]
 			result.mode1 = result.mode1.resolve(w, buf1, true)
 			result.mode2 = result.mode2.resolve(w, buf2, false)
 			if (buf1.length !== 0)

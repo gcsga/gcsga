@@ -196,7 +196,7 @@ export class TokenHUDGURPS extends TokenHUD {
 	_onToggleEffect(event: JQuery.ClickEvent | JQuery.ContextMenuEvent, { overlay = false } = {}): Promise<boolean> {
 		event.preventDefault()
 		event.stopPropagation()
-		let img = event.currentTarget
+		const img = event.currentTarget
 		const effect =
 			img.dataset.statusId && this.object?.actor
 				? CONFIG.statusEffects.find(e => e.id === img.dataset.statusId)

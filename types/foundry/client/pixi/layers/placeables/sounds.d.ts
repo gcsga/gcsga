@@ -3,5 +3,5 @@
  * @todo fill in
  */
 declare class SoundsLayer extends PlaceablesLayer<AmbientSound> {
-    override quadtree: CanvasQuadtree<AmbientSound>;
+	override quadtree: CanvasQuadtree<AmbientSound>
 }

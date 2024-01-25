@@ -40,7 +40,7 @@ export class SkillPrereq extends BasePrereq {
 		if (exclude instanceof Item && (exclude.type === ItemType.Skill || exclude.type === ItemType.Technique)) {
 			techLevel = (exclude as any).techLevel
 		}
-		for (let sk of actor.skills as any) {
+		for (const sk of actor.skills as any) {
 			if (sk.type === ItemType.SkillContainer) continue
 
 			if (

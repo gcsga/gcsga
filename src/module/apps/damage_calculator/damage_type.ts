@@ -142,6 +142,6 @@ const DamageTypes = {
 	},
 }
 
-const AnyPiercingType: Array<DamageType> = [DamageTypes.pi, DamageTypes["pi-"], DamageTypes["pi+"], DamageTypes["pi++"]]
+const AnyPiercingType: DamageType[] = [DamageTypes.pi, DamageTypes["pi-"], DamageTypes["pi+"], DamageTypes["pi++"]]
 
 export { DamageType, DamageTypes, AnyPiercingType }

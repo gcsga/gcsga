@@ -130,8 +130,8 @@ export class SkillGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS
 	get effectiveLevel(): number {
 		const actor = this.actor || this.dummyActor
 		if (!(actor instanceof CharacterGURPS)) return -Infinity
-		let att = actor.resolveAttributeCurrent(this.attribute)
-		let effectiveAtt = actor.resolveAttributeEffective(this.attribute)
+		const att = actor.resolveAttributeCurrent(this.attribute)
+		const effectiveAtt = actor.resolveAttributeEffective(this.attribute)
 		return this.level.level - att + effectiveAtt
 	}
 
@@ -253,7 +253,7 @@ export class SkillGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS
 		let best = -Infinity
 		for (const def of this.resolveToSpecificDefaults()) {
 			if (def.equivalent(excluded) || this.inDefaultChain(def, new Map())) continue
-			let level = this.calcSkillDefaultLevel(def, excludes)
+			const level = this.calcSkillDefaultLevel(def, excludes)
 			if (best < level) {
 				best = level
 				bestDef = def.noLevelOrPoints
@@ -371,7 +371,7 @@ export class SkillGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS
 		else minPoints -= 4
 		minPoints = Math.max(minPoints, 0)
 
-		let oldLevel = this.level.level
+		const oldLevel = this.level.level
 		for (let points = basePoints; points >= minPoints; points--) {
 			this.system.points = points
 			if (this.calculateLevel().level < oldLevel) {
@@ -380,7 +380,7 @@ export class SkillGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS
 		}
 
 		if (this.points > 0) {
-			let oldLevel = this.calculateLevel().level
+			const oldLevel = this.calculateLevel().level
 			while (this.points > 0) {
 				this.system.points = Math.max(this.points - 1, 0)
 				if (this.calculateLevel().level !== oldLevel) {

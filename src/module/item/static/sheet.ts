@@ -25,7 +25,7 @@ export class StaticItemSheet extends ItemSheet {
 	}
 
 	getData(options?: Partial<DocumentSheetOptions<Item>> | undefined) {
-		let deprecation: string = this.item.getFlag(SYSTEM_NAME, ItemFlags.Deprecation) ? "acknowledged" : "manual"
+		const deprecation: string = this.item.getFlag(SYSTEM_NAME, ItemFlags.Deprecation) ? "acknowledged" : "manual"
 		const sheetData = {
 			...(super.getData(options) as any),
 			traits: Object.entries(this.item.system.ads).map(([k, v]) => {
@@ -263,7 +263,7 @@ export class StaticItemSheet extends ItemSheet {
 	// }
 
 	_addToList(key: keyof StaticItemSystemData, data: any) {
-		let list = this.item.system[key] || {}
+		const list = this.item.system[key] || {}
 		Static.put(list, data)
 		this.item.update({ [`system.${key}`]: list })
 	}

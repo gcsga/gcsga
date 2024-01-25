@@ -36,9 +36,9 @@ export class _BaseComponent {
 
 	setNotes(n: string) {
 		if (n) {
-			let v = Static.extractP(n)
-			let k = "Page Ref: "
-			let i = v.indexOf(k)
+			const v = Static.extractP(n)
+			const k = "Page Ref: "
+			const i = v.indexOf(k)
 			if (i >= 0) {
 				this.notes = v.substring(0, i).trim()
 				// Find the "Page Ref" and store it separately (to hopefully someday be used with PDF Foundry)
@@ -62,8 +62,8 @@ export class NamedComponent extends _BaseComponent {
 
 	setName(name?: string) {
 		if (name) {
-			let k = "Page Ref: "
-			let i = name.indexOf(k)
+			const k = "Page Ref: "
+			const i = name.indexOf(k)
 			if (i >= 0) {
 				this.name = name.substring(0, i).trim()
 				this.setPageRef(name.substring(i + k.length).trim())
@@ -346,16 +346,16 @@ export class StaticEquipment extends NamedComponent {
 		let cs = eqt.count * eqt.cost
 		let ws = eqt.count * eqt.weight
 		if (eqt.contains) {
-			for (let k in eqt.contains) {
-				let e = eqt.contains[k]
+			for (const k in eqt.contains) {
+				const e = eqt.contains[k]
 				await StaticEquipment.calcUpdate(actor, e, `${objkey}.contains.${k}`)
 				cs += e.costsum
 				ws += e.weightsum
 			}
 		}
 		if (eqt.collapsed) {
-			for (let k in eqt.collapsed) {
-				let e = eqt.collapsed[k]
+			for (const k in eqt.collapsed) {
+				const e = eqt.collapsed[k]
 				await StaticEquipment.calcUpdate(actor, e, `${objkey}.collapsed.${k}`)
 				cs += e.costsum
 				ws += e.weightsum
@@ -464,7 +464,7 @@ export class StaticHitLocationEntry {
 		let lowestDR = Number.POSITIVE_INFINITY
 		let torsoDR = 0
 
-		for (let value of entries.filter(it => it.roll.length > 0)) {
+		for (const value of entries.filter(it => it.roll.length > 0)) {
 			if (value.dr < lowestDR) lowestDR = value.dr
 			if (value.where === "Torso") torsoDR = value.dr
 		}

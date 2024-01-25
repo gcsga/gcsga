@@ -21,7 +21,7 @@ export class CompendiumSkillTab extends CompendiumTab {
 		for await (const { pack, index } of this.browser.packLoader.loadPacks(
 			"Item",
 			this.browser.loadedPacks(TabName.Skill),
-			indexFields
+			indexFields,
 		)) {
 			const collection = game.packs.get(pack.collection)
 			;((await collection?.getDocuments()) as any).forEach((skill: any) => {

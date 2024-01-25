@@ -39,13 +39,13 @@ function parseXml(xml: string, arrayTags: string[]) {
 	 */
 	function parseNode(xmlNode: any, result: any, parent = "") {
 		if (xmlNode.nodeName === "#text") {
-			let v = xmlNode.nodeValue
+			const v = xmlNode.nodeValue
 			if (v.trim()) result["#text"] = v
 			return
 		}
 
-		let jsonNode: any = {}
-		let existing = result[xmlNode.nodeName]
+		const jsonNode: any = {}
+		const existing = result[xmlNode.nodeName]
 		if (existing) {
 			if (!Array.isArray(existing)) result[xmlNode.nodeName] = [existing, jsonNode]
 			else result[xmlNode.nodeName].push(jsonNode)
@@ -55,20 +55,20 @@ function parseXml(xml: string, arrayTags: string[]) {
 		}
 
 		if (xmlNode.attributes)
-			for (let attribute of xmlNode.attributes) {
+			for (const attribute of xmlNode.attributes) {
 				jsonNode[`@${attribute.nodeName}`] = attribute.nodeValue
 			}
 
 		if (xmlNode.childNodes.length === 0 && parent !== "traits") result[xmlNode.nodeName] = ""
-		for (let node of xmlNode.childNodes) {
+		for (const node of xmlNode.childNodes) {
 			if (node.nodeName === "#text" && node.nodeValue.trim()) result[xmlNode.nodeName] = node.nodeValue.trim()
 			else if (node.nodeName === "#cdata-section") result[xmlNode.nodeName] = node.nodeValue
 			else parseNode(node, jsonNode, xmlNode.nodeName)
 		}
 	}
 
-	let result: any = {}
-	if (dom !== null) for (let node of dom.childNodes) parseNode(node, result)
+	const result: any = {}
+	if (dom !== null) for (const node of dom.childNodes) parseNode(node, result)
 
 	return result
 }

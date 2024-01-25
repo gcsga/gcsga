@@ -5,7 +5,7 @@
  * @param delay An amount of time in milliseconds to delay
  * @return A wrapped function which can be called to debounce execution
  */
-export function debounce<T extends unknown[]>(callback: (...args: T) => unknown, delay: number): (...args: T) => void;
+export function debounce<T extends unknown[]>(callback: (...args: T) => unknown, delay: number): (...args: T) => void
 
 /**
  * Quickly clone a simple piece of data, returning a copy which can be mutated safely.
@@ -14,21 +14,21 @@ export function debounce<T extends unknown[]>(callback: (...args: T) => unknown,
  * @param original Some sort of data
  * @return The clone of that data
  */
-export function deepClone<T>(original: T): T;
+export function deepClone<T>(original: T): T
 
 /**
  * A cheap data duplication trick which is relatively robust.
  * For a subset of cases the deepClone function will offer better performance.
  * @param original Some sort of data
  */
-export function duplicate<T>(original: T): T;
+export function duplicate<T>(original: T): T
 
 /**
  * Test whether a value is empty-like; either undefined or a content-less object.
  * @param value The value to test
  * @returns Is the value empty-like?
  */
-export function isEmpty(value: unknown): boolean;
+export function isEmpty(value: unknown): boolean
 
 /**
  * Update a source object by replacing its keys and values with those from a target object.
@@ -65,25 +65,25 @@ export function isEmpty(value: unknown): boolean;
  * ```
  */
 export function mergeObject<T extends object, U extends object = T>(
-    original: T,
-    other?: U | undefined,
-    options?: MergeObjectOptions,
-    _d?: number,
-): T & U;
+	original: T,
+	other?: U | undefined,
+	options?: MergeObjectOptions,
+	_d?: number,
+): T & U
 
 /**
  * Learn the named type of a token - extending the functionality of typeof to recognize some core Object types
  * @param token Some passed token
  * @return      The named type of the token
  */
-export function getType(token: unknown): string;
+export function getType(token: unknown): string
 
 /**
  * A temporary shim to invert an object, flipping keys and values
  * @param obj    Some object where the values are unique
  * @return       An inverted object where the values of the original object are the keys of the new object
  */
-export function invertObject(obj: object): object;
+export function invertObject(obj: object): object
 
 /**
  * Filter the contents of some source object using the structure of a template object.
@@ -100,7 +100,7 @@ export function invertObject(obj: object): object;
  * filterObject(source, template); // {foo: {number: 1, name: "Tim"}};
  * filterObject(source, template, {templateValues: true}); // {foo: {number: 0, name: "Mit"}};
  */
-export function filterObject(source: object, template: object, keepSpecial?: boolean, templateValues?: boolean): object;
+export function filterObject(source: object, template: object, keepSpecial?: boolean, templateValues?: boolean): object
 
 /**
  * Flatten a possibly multi-dimensional object to a one-dimensional one by converting all nested keys to dot notation
@@ -108,7 +108,7 @@ export function filterObject(source: object, template: object, keepSpecial?: boo
  * @param _d   Recursion depth, to prevent overflow
  * @return     A flattened object
  */
-export function flattenObject(obj: object, _d?: number): Record<string, unknown>;
+export function flattenObject(obj: object, _d?: number): Record<string, unknown>
 
 /**
  * Expand a flattened object to be a standard multi-dimensional nested Object by converting all dot-notation keys to
@@ -118,14 +118,14 @@ export function flattenObject(obj: object, _d?: number): Record<string, unknown>
  * @param _d   Recursion depth, to prevent overflow
  * @return     An expanded object
  */
-export function expandObject<T extends Record<string, unknown>>(obj: object, _d?: number): T;
+export function expandObject<T extends Record<string, unknown>>(obj: object, _d?: number): T
 
 /**
  * A simple function to test whether or not an Object is empty
  * @param obj    The object to test
  * @return       Is the object empty?
  */
-export function isObjectEmpty(obj: object): boolean;
+export function isObjectEmpty(obj: object): boolean
 
 /**
  * Deeply difference an object against some other, returning the update keys and values
@@ -134,9 +134,9 @@ export function isObjectEmpty(obj: object): boolean;
  * @return
  */
 export function diffObject<T extends Record<string, unknown> = Record<string, unknown>>(
-    original: object,
-    other: object,
-): T;
+	original: object,
+	other: object,
+): T
 
 /**
  * A helper function which tests whether an object has a property or nested property given a string key.
@@ -146,7 +146,7 @@ export function diffObject<T extends Record<string, unknown> = Record<string, un
  *
  * @return         An indicator for whether the property exists
  */
-export function hasProperty(object: object, key: string): boolean;
+export function hasProperty(object: object, key: string): boolean
 
 /**
  * A helper function which searches through an object to retrieve a value by a string key.
@@ -156,7 +156,7 @@ export function hasProperty(object: object, key: string): boolean;
  *
  * @return         The value of the found property
  */
-export function getProperty(object: object, key: string): unknown;
+export function getProperty(object: object, key: string): unknown
 
 /**
  * A helper function which searches through an object to assign a value using a string key
@@ -168,21 +168,21 @@ export function getProperty(object: object, key: string): unknown;
  *
  * @return A flag for whether or not the object was updated
  */
-export function setProperty(object: object, key: string, value: unknown): boolean;
+export function setProperty(object: object, key: string, value: unknown): boolean
 
 /**
  * Encode a url-like string by replacing any characters which need encoding
  * @param path     A fully-qualified URL or url component (like a relative path)
  * @return         An encoded URL string
  */
-export function encodeURL(path: string): string;
+export function encodeURL(path: string): string
 
 /**
  * Express a timestamp as a relative string
  * @param timeStamp
  * @return
  */
-export function timeSince(timeStamp: Date): string;
+export function timeSince(timeStamp: Date): string
 
 /**
  * Converts an RGB color value to HSV. Conversion formula
@@ -195,7 +195,7 @@ export function timeSince(timeStamp: Date): string;
  * @param  b       The blue color value
  * @return         The HSV representation
  */
-export function rgbToHsv(r: number, g: number, b: number): number[];
+export function rgbToHsv(r: number, g: number, b: number): number[]
 
 /**
  * Converts an HSV color value to RGB. Conversion formula
@@ -208,21 +208,21 @@ export function rgbToHsv(r: number, g: number, b: number): number[];
  * @param  v       The value
  * @return         The RGB representation
  */
-export function hsvToRgb(h: number, s: number, v: number): [number, number, number];
+export function hsvToRgb(h: number, s: number, v: number): [number, number, number]
 
 /**
  * Converts a color as an [R, G, B] array of normalized floats to a hexadecimal number.
  * @param rgb - Array of numbers where all values are normalized floats from 0.0 to 1.0.
  * @return      Number in hexadecimal.
  */
-export function rgbToHex(rgb: [number, number, number]): number;
+export function rgbToHex(rgb: [number, number, number]): number
 
 /**
  * Convert a hex color code to an RGB array
  * @param hex    A hex color number
  * @return       An array of [r,g,b] colors normalized on the range of [0,1]
  */
-export function hexToRGB(hex: number): [number, number, number];
+export function hexToRGB(hex: number): [number, number, number]
 
 /**
  * Convert a hex color code to an RGBA color string which can be used for CSS styling
@@ -230,14 +230,14 @@ export function hexToRGB(hex: number): [number, number, number];
  * @param alpha  A level of transparency
  * @return       An rgba style string
  */
-export function hexToRGBAString(hex: number, alpha?: number): string;
+export function hexToRGBAString(hex: number, alpha?: number): string
 
 /**
  * Convert a string color to a hex integer
  * @param color    The string color
  * @return         The hexidecimal color code
  */
-export function colorStringToHex(color: string): number;
+export function colorStringToHex(color: string): number
 
 /**
  * Return whether or not a version (v1) is more advanced than some other version (v0)
@@ -246,7 +246,7 @@ export function colorStringToHex(color: string): number;
  * @param v1
  * @return
  */
-export function isNewerVersion(v1: number | string | null, v0: number | string): boolean;
+export function isNewerVersion(v1: number | string | null, v0: number | string): boolean
 
 /**
  * Generate a random ID
@@ -257,7 +257,7 @@ export function isNewerVersion(v1: number | string | null, v0: number | string):
  * @param length    The length of the random ID to generate
  * @return          Return a string containing random letters and numbers
  */
-export function randomID(length?: number): string;
+export function randomID(length?: number): string
 
 /**
  * Parse a UUID into its constituent parts.
@@ -267,7 +267,7 @@ export function randomID(length?: number): string;
  * @returns Returns the Collection, Document Type, and Document ID to resolve the parent
  *          document, as well as the remaining Embedded Document parts, if any.
  */
-export function parseUuid(uuid: Maybe<string>, options?: { relative?: Maybe<ClientDocument> }): ResolvedUUID;
+export function parseUuid(uuid: Maybe<string>, options?: { relative?: Maybe<ClientDocument> }): ResolvedUUID
 
 /**
  * Log a compatibility warning which is filtered based on the client's defined compatibility settings.
@@ -281,52 +281,52 @@ export function parseUuid(uuid: Maybe<string>, options?: { relative?: Maybe<Clie
  * @throws An Error if the mode is ERROR
  */
 export function logCompatibilityWarning(
-    message: string,
-    options?: {
-        mode?: CompatibilityMode;
-        since?: number | string;
-        until?: number | string;
-        details?: string;
-        stack?: boolean;
-    },
-): void;
+	message: string,
+	options?: {
+		mode?: CompatibilityMode
+		since?: number | string
+		until?: number | string
+		details?: string
+		stack?: boolean
+	},
+): void
 
-export * from "./http.ts";
+export * from "./http.ts"
 
 declare global {
-    interface MergeObjectOptions {
-        /**
-         * Control whether to insert new top-level objects into the resulting structure which do not previously exist
-         * in the original object.
-         */
-        insertKeys?: boolean;
-        /**
-         * Control whether to insert new nested values into child objects in the resulting structure which did not
-         * previously exist in the original object. */
-        insertValues?: boolean;
-        /**
-         * Control whether to replace existing values in the source, or only merge values which do not already exist
-         * in the original object.
-         */
-        overwrite?: boolean;
-        /**
-         * Control whether to merge inner-objects recursively (if true), or whether to simply replace inner objects
-         * with a provided new value.
-         */
-        recursive?: boolean;
-        /**
-         * Control whether to apply updates to the original object in-place (if true), otherwise the original object is
-         * duplicated and the copy is merged.
-         */
-        inplace?: boolean;
-        /**
-         * Control whether strict type checking requires that the value of a key in the other object must match the
-         * data type in the original data to be merged.
-         */
-        enforceTypes?: boolean;
-        /**
-         * Control whether to perform deletions on the original object if deletion keys are present in the other object.
-         */
-        performDeletions?: boolean;
-    }
+	interface MergeObjectOptions {
+		/**
+		 * Control whether to insert new top-level objects into the resulting structure which do not previously exist
+		 * in the original object.
+		 */
+		insertKeys?: boolean
+		/**
+		 * Control whether to insert new nested values into child objects in the resulting structure which did not
+		 * previously exist in the original object. */
+		insertValues?: boolean
+		/**
+		 * Control whether to replace existing values in the source, or only merge values which do not already exist
+		 * in the original object.
+		 */
+		overwrite?: boolean
+		/**
+		 * Control whether to merge inner-objects recursively (if true), or whether to simply replace inner objects
+		 * with a provided new value.
+		 */
+		recursive?: boolean
+		/**
+		 * Control whether to apply updates to the original object in-place (if true), otherwise the original object is
+		 * duplicated and the copy is merged.
+		 */
+		inplace?: boolean
+		/**
+		 * Control whether strict type checking requires that the value of a key in the other object must match the
+		 * data type in the original data to be merged.
+		 */
+		enforceTypes?: boolean
+		/**
+		 * Control whether to perform deletions on the original object if deletion keys are present in the other object.
+		 */
+		performDeletions?: boolean
+	}
 }

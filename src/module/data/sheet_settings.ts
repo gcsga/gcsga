@@ -28,7 +28,7 @@ export enum BlockLayoutKey {
 	BlockLayoutNotesKey = "notes",
 }
 
-export type BlockLayout = Array<BlockLayoutKey>
+export type BlockLayout = BlockLayoutKey[]
 
 export interface SheetSettings {
 	page: PageSettings

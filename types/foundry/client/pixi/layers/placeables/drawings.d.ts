@@ -5,5 +5,5 @@
  * @todo: fill in
  */
 declare class DrawingsLayer<TDrawing extends Drawing = Drawing> extends PlaceablesLayer<TDrawing> {
-    override quadtree: CanvasQuadtree<TDrawing>;
+	override quadtree: CanvasQuadtree<TDrawing>
 }

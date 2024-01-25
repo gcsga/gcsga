@@ -42,7 +42,7 @@ export abstract class ContainerGURPS<TParent extends ActorGURPS = ActorGURPS> ex
 
 	override async createEmbeddedDocuments(
 		embeddedName: string,
-		data: Array<Record<string, any>>,
+		data: Record<string, any>[],
 		context?: DocumentModificationContext<any>,
 	): Promise<Document[]> {
 		if (embeddedName !== "Item")

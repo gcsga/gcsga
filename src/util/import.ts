@@ -30,11 +30,11 @@ import { feature, selfctrl, stdmg } from "./enum"
 
 class ImportUtils {
 	static importItems(
-		list: Array<ItemSystemDataGURPS | any>,
-		context: { container: string | null; other?: boolean; sort: number } = { container: null, sort: 0 }
-	): Array<any> {
+		list: (ItemSystemDataGURPS | any)[],
+		context: { container: string | null; other?: boolean; sort: number } = { container: null, sort: 0 },
+	): any[] {
 		if (!list) return []
-		let items: Array<any> = []
+		let items: any[] = []
 
 		for (const item of list) {
 			item.name ??= (item as any).description ?? (item as any).text ?? (item as any).usage
@@ -66,13 +66,13 @@ class ImportUtils {
 	private static getItemData(
 		item: ItemSystemDataGURPS,
 		context: { container: string | null; other?: boolean; sort: number },
-		id: string
-	): [ItemSystemDataGURPS, ItemFlagsGURPS, Array<any>, string] {
+		id: string,
+	): [ItemSystemDataGURPS, ItemFlagsGURPS, any[], string] {
 		// const flags: ItemFlagsGURPS = { [SYSTEM_NAME]: { [ItemFlags.Container]: null } }
 		const flags: ItemFlagsGURPS = { [SYSTEM_NAME]: { [ItemFlags.Container]: context.container } }
 		if (["equipment", "equipment_container"].includes(item.type))
 			flags[SYSTEM_NAME]![ItemFlags.Other] = context.other || false
-		let items: Array<any> = []
+		let items: any[] = []
 		switch (item.type) {
 			case "trait":
 				items = [
@@ -151,7 +151,7 @@ class ImportUtils {
 				throw new Error(
 					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.error.import.invalid_item_type, {
 						type: item.type,
-					})
+					}),
 				)
 		}
 	}
@@ -220,7 +220,7 @@ class ImportUtils {
 	}
 
 	private static getTraitModifierContainerData(
-		data: TraitModifierContainerSystemData
+		data: TraitModifierContainerSystemData,
 	): TraitModifierContainerSystemData {
 		return {
 			name: data.name ?? "Trait Modifier Container",
@@ -401,7 +401,7 @@ class ImportUtils {
 	}
 
 	private static getEquipmentContainerData(
-		data: EquipmentContainerSystemData
+		data: EquipmentContainerSystemData,
 		// other = false
 	): EquipmentContainerSystemData {
 		return {
@@ -452,7 +452,7 @@ class ImportUtils {
 	}
 
 	private static getEquipmentModifierContainerData(
-		data: EquipmentModifierContainerSystemData
+		data: EquipmentModifierContainerSystemData,
 	): EquipmentModifierContainerSystemData {
 		return {
 			name: data.name ?? "Equipment Modifier Container",

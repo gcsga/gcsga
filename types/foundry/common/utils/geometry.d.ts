@@ -13,7 +13,7 @@
  *          A negative value if the points are in clockwise order (C lies to the right of AB)
  *          Zero if the points A, B, and C are collinear.
  */
-export function orient2dFast(a: Point, b: Point, c: Point): number;
+export function orient2dFast(a: Point, b: Point, c: Point): number
 
 /**
  * Quickly test whether the line segment AB intersects with the line segment CD.
@@ -26,7 +26,7 @@ export function orient2dFast(a: Point, b: Point, c: Point): number;
  *
  * @returns Do the line segments intersect?
  */
-export function lineSegmentIntersects(a: Point, b: Point, c: Point, d: Point): boolean;
+export function lineSegmentIntersects(a: Point, b: Point, c: Point, d: Point): boolean
 
 /**
  * An internal helper method for computing the intersection between two infinite-length lines.
@@ -39,7 +39,7 @@ export function lineSegmentIntersects(a: Point, b: Point, c: Point, d: Point): b
  *
  * @returns An intersection point, or null if no intersection occurred
  */
-export function lineLineIntersection(a: Point, b: Point, c: Point, d: Point): LineIntersection | null;
+export function lineLineIntersection(a: Point, b: Point, c: Point, d: Point): LineIntersection | null
 
 /**
  * An internal helper method for computing the intersection between two finite line segments.
@@ -54,12 +54,12 @@ export function lineLineIntersection(a: Point, b: Point, c: Point, d: Point): Li
  * @returns An intersection point, or null if no intersection occurred
  */
 export function lineSegmentIntersection(
-    a: Point,
-    b: Point,
-    c: Point,
-    d: Point,
-    epsilon?: number,
-): LineIntersection | null;
+	a: Point,
+	b: Point,
+	c: Point,
+	d: Point,
+	epsilon?: number,
+): LineIntersection | null
 
 /**
  * Determine the intersection between a candidate wall and the circular radius of the polygon.
@@ -72,12 +72,12 @@ export function lineSegmentIntersection(
  * @returns The intersection of the segment AB with the circle
  */
 export function lineCircleIntersection(
-    a: Point,
-    b: Point,
-    center: Point,
-    radius: number,
-    epsilon?: number,
-): LineCircleIntersection;
+	a: Point,
+	b: Point,
+	center: Point,
+	radius: number,
+	epsilon?: number,
+): LineCircleIntersection
 
 /**
  * Identify the point closest to C on segment AB
@@ -87,7 +87,7 @@ export function lineCircleIntersection(
  *
  * @returns The closest point to C on segment AB
  */
-export function closestPointToSegment(c: Point, a: Point, b: Point): Point;
+export function closestPointToSegment(c: Point, a: Point, b: Point): Point
 
 /**
  * Determine the points of intersection between a line segment (p0,p1) and a circle.
@@ -100,52 +100,52 @@ export function closestPointToSegment(c: Point, a: Point, b: Point): Point;
  * @param radius      The radius of the circle
  * @param [epsilon=0] A small tolerance for floating point precision
  */
-export function quadraticIntersection(p0: Point, p1: Point, center: Point, radius: number, epsilon?: number): Point[];
+export function quadraticIntersection(p0: Point, p1: Point, center: Point, radius: number, epsilon?: number): Point[]
 
 declare global {
-    /**
-     * @property x  The x-coordinate of intersection
-     * @property y  The y-coordinate of intersection
-     * @property t0 The proximity to the Ray origin, as a ratio of distance
-     * @property t1 The proximity to the Ray destination, as a ratio of distance
-     */
-    interface RayIntersection {
-        x: number;
-        y: number;
-        t0: number;
-        t1: number;
-    }
+	/**
+	 * @property x  The x-coordinate of intersection
+	 * @property y  The y-coordinate of intersection
+	 * @property t0 The proximity to the Ray origin, as a ratio of distance
+	 * @property t1 The proximity to the Ray destination, as a ratio of distance
+	 */
+	interface RayIntersection {
+		x: number
+		y: number
+		t0: number
+		t1: number
+	}
 
-    interface Vector2 {
-        x: number;
-        y: number;
-        t0: number;
-        t1: number;
-    }
+	interface Vector2 {
+		x: number
+		y: number
+		t0: number
+		t1: number
+	}
 
-    interface LineIntersection {
-        /** The x-coordinate of intersection */
-        x: number;
-        /** The y-coordinate of intersection */
-        y: number;
-        /** The vector distance from A to B on segment AB  */
-        t0: number;
-        /** The vector distance from C to D on segment CD */
-        t1: number;
-    }
+	interface LineIntersection {
+		/** The x-coordinate of intersection */
+		x: number
+		/** The y-coordinate of intersection */
+		y: number
+		/** The vector distance from A to B on segment AB  */
+		t0: number
+		/** The vector distance from C to D on segment CD */
+		t1: number
+	}
 
-    interface LineCircleIntersection {
-        /** Is point A inside the circle? */
-        aInside: boolean;
-        /** Is point B inside the circle? */
-        bInside: boolean;
-        /** Is the segment AB contained within the circle? */
-        contained: boolean;
-        /** Is the segment AB fully outside the circle? */
-        outside: boolean;
-        /** Is the segment AB tangent to the circle? */
-        tangent: boolean;
-        /** Intersection points: zero, one, or two */
-        intersections: Point[];
-    }
+	interface LineCircleIntersection {
+		/** Is point A inside the circle? */
+		aInside: boolean
+		/** Is point B inside the circle? */
+		bInside: boolean
+		/** Is the segment AB contained within the circle? */
+		contained: boolean
+		/** Is the segment AB fully outside the circle? */
+		outside: boolean
+		/** Is the segment AB tangent to the circle? */
+		tangent: boolean
+		/** Intersection points: zero, one, or two */
+		intersections: Point[]
+	}
 }

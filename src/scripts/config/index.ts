@@ -38,9 +38,10 @@ import {
 } from "@item/index.ts"
 import { ActorType, ItemType } from "@module/data/misc.ts"
 import { feature } from "@util/enum/feature.ts"
+import { SkillResolver } from "@util/resolvers.ts"
 
 export const GURPSCONFIG = {
-	skillDefaults: [] as Array<SkillGURPS | TechniqueGURPS>,
+	skillDefaults: [] as SkillResolver[],
 
 	Actor: {
 		documentClasses: {

@@ -12,7 +12,7 @@ export function recurseList(
 	list: { [key: string]: any },
 	fn: (value: any, key: string, depth: number) => boolean | void | Promise<boolean | void>,
 	parentKey = "",
-	depth = 0
+	depth = 0,
 ) {
 	if (list)
 		for (const [key, value] of Object.entries(list)) {
@@ -32,7 +32,7 @@ export function findAdDisad(actor: StaticCharacterGURPS, sname: string): StaticT
 	let t: StaticTrait | null = null
 	if (!actor) return t
 	sname = makeRegexPatternFrom(sname, false)
-	let regex = new RegExp(sname, "i")
+	const regex = new RegExp(sname, "i")
 	recurseList(actor.system.ads, s => {
 		if (s.name.match(regex)) {
 			t = s
@@ -49,7 +49,7 @@ export function findAdDisad(actor: StaticCharacterGURPS, sname: string): StaticT
  */
 export function makeRegexPatternFrom(text: string, end = true, start = true) {
 	// Defaults to exact match
-	let pattern = text
+	const pattern = text
 		.split("*")
 		.join(".*?")
 		.replaceAll(/\(/g, "\\(")
@@ -66,7 +66,7 @@ export function makeRegexPatternFrom(text: string, end = true, start = true) {
 export function extractP(string: string) {
 	let v = ""
 	if (string) {
-		let s = string.split("\n")
+		const s = string.split("\n")
 		for (let b of s) {
 			if (b) {
 				if (b.startsWith("@@@@")) {
@@ -90,8 +90,8 @@ export function extractP(string: string) {
  * @param text
  */
 export function convertRollStringToArrayOfInt(text: string) {
-	let elements = text.split("-")
-	let range = elements.map(it => parseInt(it))
+	const elements = text.split("-")
+	const range = elements.map(it => parseInt(it))
 
 	if (range.length === 0) return []
 
@@ -99,7 +99,7 @@ export function convertRollStringToArrayOfInt(text: string) {
 		if (typeof range[i] === "undefined" || isNaN(range[i])) return []
 	}
 
-	let results = []
+	const results = []
 	for (let i = range[0]; i <= range[range.length - 1]; i++) results.push(i)
 
 	return results
@@ -116,7 +116,7 @@ export function put(obj: any, value: any, index = -1): string {
 		index = 0
 		while (obj.hasOwnProperty(zeroFill(index))) index++
 	}
-	let k = zeroFill(index)
+	const k = zeroFill(index)
 	obj[k] = value
 	return k
 }
@@ -149,12 +149,12 @@ export function flatList(
 	parentkey: string,
 	data: any,
 	isCollapsed: boolean,
-	actorToCheckEquipment?: StaticCharacterGURPS
+	actorToCheckEquipment?: StaticCharacterGURPS,
 ) {
 	if (!context) return data
 
-	for (let key in context) {
-		let item = context[key]
+	for (const key in context) {
+		const item = context[key]
 		let display = true
 		if (actorToCheckEquipment) {
 			// If we have been given an actor,
@@ -173,10 +173,10 @@ export function flatList(
 				})
 		}
 		if (display) {
-			let newKey = parentkey + key
+			const newKey = parentkey + key
 
-			let newItem: any = { indent: level }
-			for (let propertyKey in item) {
+			const newItem: any = { indent: level }
+			for (const propertyKey in item) {
 				if (!["contains", "collapsed", "indent"].includes(propertyKey)) {
 					newItem[propertyKey] = item[propertyKey]
 				}
@@ -202,15 +202,15 @@ export function flatList(
  */
 export async function insertBeforeKey(actor: StaticCharacterGURPS, path: string, newobj: any) {
 	let i = path.lastIndexOf(".")
-	let objpath = path.substring(0, i)
-	let key = path.substring(i + 1)
+	const objpath = path.substring(0, i)
+	const key = path.substring(i + 1)
 	i = objpath.lastIndexOf(".")
-	let parentpath = objpath.substring(0, i)
-	let objkey = objpath.substring(i + 1)
-	let object = getProperty(actor, objpath)
-	let t = `${parentpath}.-=${objkey}`
+	const parentpath = objpath.substring(0, i)
+	const objkey = objpath.substring(i + 1)
+	const object = getProperty(actor, objpath)
+	const t = `${parentpath}.-=${objkey}`
 	await actor.update({ [t]: null }) // Delete the whole object
-	let start = parseInt(key)
+	const start = parseInt(key)
 
 	i = start + 1
 	while (object.hasOwnProperty(zeroFill(i))) i++
@@ -219,7 +219,7 @@ export async function insertBeforeKey(actor: StaticCharacterGURPS, path: string,
 		object[zeroFill(z + 1)] = object[zeroFill(z)]
 	}
 	object[key] = newobj
-	let sorted = Object.keys(object)
+	const sorted = Object.keys(object)
 		.sort()
 		.reduce((a: any, v) => {
 			a[v] = object[v]
@@ -236,26 +236,26 @@ export async function insertBeforeKey(actor: StaticCharacterGURPS, path: string,
  */
 export async function removeKey(actor: StaticCharacterGURPS | StaticItemGURPS, path: string) {
 	let i = path.lastIndexOf(".")
-	let objpath = path.substring(0, i)
+	const objpath = path.substring(0, i)
 	let key = path.substring(i + 1)
 	i = objpath.lastIndexOf(".")
-	let parentpath = objpath.substring(0, i)
-	let objkey = objpath.substring(i + 1)
-	let object = decode(actor, objpath)
-	let t = `${parentpath}.-=${objkey}`
+	const parentpath = objpath.substring(0, i)
+	const objkey = objpath.substring(i + 1)
+	const object = decode(actor, objpath)
+	const t = `${parentpath}.-=${objkey}`
 	await actor.update({ [t]: null }, { render: false }) // Delete the whole object
 	delete object[key]
 	i = parseInt(key)
 
 	i = i + 1
 	while (object.hasOwnProperty(zeroFill(i))) {
-		let k = zeroFill(i)
+		const k = zeroFill(i)
 		object[key] = object[k]
 		delete object[k]
 		key = k
 		i++
 	}
-	let sorted = Object.keys(object)
+	const sorted = Object.keys(object)
 		.sort()
 		.reduce((a: any, v) => {
 			a[v] = object[v]
@@ -271,11 +271,11 @@ export async function removeKey(actor: StaticCharacterGURPS | StaticItemGURPS, p
  * @param all
  */
 export function decode(obj: any, path: string, all = true) {
-	let p = path.split(".")
+	const p = path.split(".")
 	let end = p.length
 	if (!all) end = end - 1
 	for (let i = 0; i < end; i++) {
-		let q = p[i]
+		const q = p[i]
 		obj = obj[q]
 	}
 	return obj

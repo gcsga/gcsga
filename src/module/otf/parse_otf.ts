@@ -33,7 +33,7 @@ import { checkForSelfControl } from "./self_control"
 export interface OtFChecker {
 	(str: string, opt: OptionalCheckParameters): ParsedOtF | undefined
 }
-const checkFunctions: Array<OtFChecker> = []
+const checkFunctions: OtFChecker[] = []
 // CheckFunctions.push(parseForRollOrDamage)   // This should be first!
 checkFunctions.push(checkForModifier)
 checkFunctions.push(checkForChat)
@@ -61,7 +61,7 @@ export function parselink(originalStr: string, htmldesc: string | null = "", clr
 		blindrollPrefix: blindrollPrefix,
 	}
 
-	for (let checkFunc of checkFunctions) {
+	for (const checkFunc of checkFunctions) {
 		const result = checkFunc(finalStr, opts)
 		if (result) return result
 	}
@@ -71,8 +71,8 @@ export function parselink(originalStr: string, htmldesc: string | null = "", clr
 export function checkForModifier(str: string, opts: OptionalCheckParameters): ParsedOtF | undefined {
 	let m = str.match(/^(?<mod>[+-]\d+)(?<and>[^&]*)(?<remain>&.*)?/)
 	if (m?.groups) {
-		let mod = m.groups.mod
-		let sign = mod[0]
+		const mod = m.groups.mod
+		const sign = mod[0]
 		let desc = m.groups.and.trim()
 		if (!desc) desc = opts.htmldesc || "" // Htmldesc is for things like ACC columns, or to hitlocations, where the mod's description is really the column name
 		let spantext = `${mod} ${desc}`
@@ -83,7 +83,7 @@ export function checkForModifier(str: string, opts: OptionalCheckParameters): Pa
 			if (remaining.action?.type === "modifier") spantext += ` & ${remaining.action.spantext}`
 		}
 
-		let action: OtFCostsAction = {
+		const action: OtFCostsAction = {
 			orig: str,
 			spantext: spantext,
 			type: "modifier",
@@ -98,9 +98,9 @@ export function checkForModifier(str: string, opts: OptionalCheckParameters): Pa
 	}
 	m = str.match(/^(?<sign>[+-])@margin *(?<and>[^&]*)(?<remain>&.*)?/i)
 	if (m?.groups) {
-		let sign = m.groups.sign
-		let mod = `${sign}@margin`
-		let desc = `${mod} ${m.groups.and.trim()}`
+		const sign = m.groups.sign
+		const mod = `${sign}@margin`
+		const desc = `${mod} ${m.groups.and.trim()}`
 		let spantext = desc
 		let remaining: ParsedOtF | undefined
 
@@ -108,7 +108,7 @@ export function checkForModifier(str: string, opts: OptionalCheckParameters): Pa
 			remaining = parselink(m.groups.remain.substring(1).trim()) // Remove the leading &
 			if (remaining.action?.type === "modifier") spantext += ` & ${remaining.action.spantext}`
 		}
-		let action: OtFCostsAction = {
+		const action: OtFCostsAction = {
 			orig: str,
 			spantext: spantext,
 			type: "modifier",

@@ -452,7 +452,7 @@ export class StaticHitLocation {
 		if (!bodyplan) {
 			bodyplan = StaticHitLocation.HUMANOID
 		}
-		let table = StaticHitLocationDictionary[bodyplan]
+		const table = StaticHitLocationDictionary[bodyplan]
 		return table ? table : StaticHitLocationDictionary[StaticHitLocation.HUMANOID]
 	}
 
@@ -468,13 +468,13 @@ export class StaticHitLocation {
 			return [StaticHitLocation.BRAIN, table[StaticHitLocation.BRAIN]]
 		let lbl
 		let entry
-		let re = /^([A-Za-z]+) *(\d+)/
-		let m: any = where.match(re)
+		const re = /^([A-Za-z]+) *(\d+)/
+		const m: any = where.match(re)
 		if (m) {
-			let t = parseInt(m[2])
+			const t = parseInt(m[2])
 			Object.keys(table).forEach(e => {
 				if (e.startsWith(m[1])) {
-					let indexes = Static.convertRollStringToArrayOfInt(e.split(" ")[1])
+					const indexes = Static.convertRollStringToArrayOfInt(e.split(" ")[1])
 					if (indexes.includes(t)) {
 						lbl = e
 						entry = table[e]
@@ -486,7 +486,7 @@ export class StaticHitLocation {
 	}
 
 	setEquipment(frmttext: string) {
-		let e = Static.extractP(frmttext)
+		const e = Static.extractP(frmttext)
 		this.equipment = e.trim().replace("\n", ", ")
 	}
 
@@ -498,7 +498,7 @@ export class StaticHitLocation {
 	 * @returns {StaticHitLocation[]}
 	 */
 	locations(includeself = false): StaticHitLocation[] {
-		let entry = hitLocationAlias[this.where]
+		const entry = hitLocationAlias[this.where]
 		if (!entry) {
 			return [this]
 		}
@@ -506,11 +506,11 @@ export class StaticHitLocation {
 		// Replace non-RAW name with RAW name
 		this.where = entry.RAW
 
-		let locations = []
+		const locations = []
 		if (entry.prefix) {
 			if (includeself) locations.push(this)
 			entry.prefix.forEach((it: any) => {
-				let location = new StaticHitLocation()
+				const location = new StaticHitLocation()
 				location.import = this.import
 				location.dr = this.dr
 				location.equipment = this.equipment
@@ -522,11 +522,11 @@ export class StaticHitLocation {
 	}
 }
 
-export let getHitLocationTableNames = function () {
-	let keys: any[] = []
+export const getHitLocationTableNames = function () {
+	const keys: any[] = []
 	let last: string
 	Object.keys(StaticHitLocationDictionary).forEach(e => {
-		let t = StaticHitLocationDictionary[e]
+		const t = StaticHitLocationDictionary[e]
 		if (t !== last) keys.push(e)
 		last = t
 	})
@@ -552,4 +552,4 @@ let ichthyoidHitLocations = null
 let arachnoidHitLocations = null
 let tailedHumanoidHitLocations = null
 let mermenHitLocations = null
-let translations: any = {}
+const translations: any = {}

@@ -395,7 +395,7 @@ export function loadModifiers() {
 			} else {
 				size = `${Length.format(l, LengthUnits.Yard)}/${Length.format(l, LengthUnits.Feet)} (${Length.format(
 					l,
-					LengthUnits.Meter
+					LengthUnits.Meter,
 				)})`
 			}
 			return {

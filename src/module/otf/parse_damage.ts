@@ -3,7 +3,7 @@ import { gspan } from "./utils"
 import { d6ify } from "@util/misc"
 import { StaticHitLocation } from "../actor/static/hit_location"
 // Import { GURPS } from "../gurps"
-let GURPS: any = {}
+const GURPS: any = {}
 // let StaticHitLocation: any = {}
 
 /* Here is where we do all the work to try to parse the text inbetween [ ].
@@ -79,9 +79,9 @@ export function parseForRollOrDamage(str: string, opts: OptionalCheckParameters)
 
 		if (!woundingModifier) {
 			// Not one of the recognized damage types. Ignore Armor divisor, but allow multiplier.
-			let dice = D === "d" ? d6ify(D) : D
+			const dice = D === "d" ? d6ify(D) : D
 			if (!dice) return undefined // If no damage type and no dice, not a roll, ex: [70]
-			let action: OtFDamageAction = {
+			const action: OtFDamageAction = {
 				orig: str,
 				type: "roll",
 				displayformula: a.groups.roll + D + adds + multiplier + bang,
@@ -100,7 +100,7 @@ export function parseForRollOrDamage(str: string, opts: OptionalCheckParameters)
 			}
 		} else {
 			// Damage roll 1d+2 cut.
-			let action: OtFDamageAction = {
+			const action: OtFDamageAction = {
 				orig: str,
 				type: "damage",
 				formula: a.groups.roll + D + adds + multiplier + divisor + bang,
@@ -131,7 +131,7 @@ export function parseForRollOrDamage(str: string, opts: OptionalCheckParameters)
 
 		if (!woundingModifier) {
 			// Not one of the recognized damage types. Ignore Armor divisor, but allow multiplier.
-			let action: OtFDamageAction = {
+			const action: OtFDamageAction = {
 				orig: str,
 				type: "derivedroll",
 				derivedformula: basic,
@@ -148,7 +148,7 @@ export function parseForRollOrDamage(str: string, opts: OptionalCheckParameters)
 				action: action,
 			}
 		} else {
-			let action: OtFDamageAction = {
+			const action: OtFDamageAction = {
 				orig: str,
 				type: "deriveddamage",
 				derivedformula: basic,
@@ -197,7 +197,7 @@ function _parseOtherForTypeModiferAndLocation(other: string): [string, string | 
  */
 function _getFormulaComponents(groups: { [key: string]: string }): [string, string, string, string] {
 	let adds = (groups.adds || "").replace("–", "-")
-	let m = groups.other.match(/([+-]@margin)/i)
+	const m = groups.other.match(/([+-]@margin)/i)
 	if (!adds && m) {
 		adds = m[1]
 	}

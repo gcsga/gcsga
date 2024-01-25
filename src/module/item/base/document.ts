@@ -75,7 +75,7 @@ export class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> ex
 		return null
 	}
 
-	get parents(): Array<any> {
+	get parents(): any[] {
 		if (!this.container && !this.compendium) return []
 		const grandparents = this.container instanceof ItemGURPS ? this.container.parents : []
 		if (!this.container) return [this.compendium, ...grandparents]

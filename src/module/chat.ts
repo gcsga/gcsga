@@ -21,7 +21,7 @@ export function parse(message: string): [string, string[]] {
 }
 
 export function procesMessage(message: string): boolean {
-	let [command, _match] = parse(message)
+	const [command, _match] = parse(message)
 	if (command === "none") return true
 	switch (command) {
 		case "mook":
@@ -234,7 +234,7 @@ async function _onMultiDamageRoll(event: JQuery.ClickEvent): Promise<void> {
 	// const damageHits = $(damageButtons).find(".damage.hits")
 	// let times = parseInt($(damageHits).data("times"))
 
-	let times = parseInt(event.currentTarget.innerText)
+	const times = parseInt(event.currentTarget.innerText)
 	data.data.times = times
 	await RollGURPS.handleRoll(game.user, data.actor, data.data)
 }

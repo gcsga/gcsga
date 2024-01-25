@@ -40,7 +40,7 @@ const damage_type_matches: Map<string, string> = new Map([
 const regex_damage_type = new RegExp(
 	`\\s+\\b(${Array.from(damage_type_matches.keys())
 		.map(e => e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
-		.join("|")})\\b`
+		.join("|")})\\b`,
 )
 const regex_difficulty = /\((?:[A-z]+\/)?([EAHVeahv][Hh]?)\)/
 
@@ -112,7 +112,7 @@ export class MookParser {
 	private cleanLine(text: string): string {
 		const start = text
 		if (!text) return text
-		let pat = "*,.:" // things that just clutter up the text
+		const pat = "*,.:" // things that just clutter up the text
 		if (pat.includes(text[0])) text = text.substring(1)
 		if (pat.includes(text[text.length - 1])) text = text.substring(0, text.length - 1)
 		text = text.trim()
@@ -141,7 +141,7 @@ export class MookParser {
 		const regex_att = new RegExp(`(${attribute_names.map(e => e.match).join("|")}):?[\\n\\s]*(\\d+.?\\d*)`, "g")
 
 		let text = ""
-		let leftOverText = ""
+		const leftOverText = ""
 		preText
 			.replaceAll("\n", " ")
 			.toLowerCase()
@@ -201,8 +201,7 @@ export class MookParser {
 			text = input
 		} else {
 			text = this.extractText(["Advantages:", "Advantages/Disadvantages:", "Traits:"], ["Skills:", "Spells:"])
-			if (text.includes(";"))
-				text = text.replace(/\n/g, " ") // if ; separated, remove newlines
+			if (text.includes(";")) text = text.replace(/\n/g, " ") // if ; separated, remove newlines
 			else if (text.split(",").length > 2) text = text.replace(/,/g, " ") // if , separated, replace with ;
 			text = text.replace(/advantages\/disadvantages:?/gi, ";")
 			text = text.replace(/disadvantages:?/gi, ";")
@@ -275,7 +274,7 @@ export class MookParser {
 						cost: mod[1].trim(),
 						notes: "",
 						reference: "",
-					})
+					}),
 				)
 			}
 		})
@@ -303,7 +302,7 @@ export class MookParser {
 		else
 			text = this.extractText(
 				["Skills:"],
-				["Spells:", "Equipment:", "Language:", "Languages:", "Weapons:", "Class:", "Notes:", "*"]
+				["Spells:", "Equipment:", "Language:", "Languages:", "Weapons:", "Class:", "Notes:", "*"],
 			)
 
 		text = text.replace(/skills:?/gi, " ")
@@ -403,7 +402,7 @@ export class MookParser {
 		else
 			text = this.extractText(
 				["Spells:"],
-				["Equipment:", "Language:", "Languages:", "Weapons:", "Class:", "Notes:"]
+				["Equipment:", "Language:", "Languages:", "Weapons:", "Class:", "Notes:"],
 			)
 
 		text = text.replace(/spells:?/gi, ";")
@@ -700,7 +699,7 @@ export class MookParser {
 			}
 
 			// Capture parry
-			let parry = "No"
+			const parry = "No"
 			if (t.match(regex_parry)) {
 				// trim required here as regex grabs whitespace at end
 				reach = t.match(regex_parry)![1].trim()
@@ -708,7 +707,7 @@ export class MookParser {
 			}
 
 			// Capture block
-			let block = "No"
+			const block = "No"
 			if (t.match(regex_block)) {
 				// trim required here as regex grabs whitespace at end
 				reach = t.match(regex_block)![1].trim()

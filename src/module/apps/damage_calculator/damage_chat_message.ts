@@ -29,7 +29,7 @@ export type DamagePayload = {
 	armorDivisor: number
 	damageModifier: string
 	damageRoll: DamageRoll[]
-	modifiers: Array<RollModifier & { class?: string }>
+	modifiers: (RollModifier & { class?: string })[]
 	modifierTotal: number
 }
 
@@ -48,8 +48,8 @@ export class DamageChat {
 		// TODO Find a way to identify elements not tied to their appearance (data attributes, for example).
 		if (!html.find(".dice-roll.damage").length) return true
 
-		let transfer = JSON.parse(DamageChat.getTransferFlag(app))
-		let payload = transfer.payload as DamagePayload
+		const transfer = JSON.parse(DamageChat.getTransferFlag(app))
+		const payload = transfer.payload as DamagePayload
 
 		payload.damageType = payload.damageType ?? "injury"
 
@@ -69,7 +69,7 @@ export class DamageChat {
 	}
 
 	static setTransferFlag(object: any, payload: Partial<DamagePayload>, userTarget: string) {
-		let transfer = JSON.stringify({ type: DamageChat.TYPE, payload: payload, userTarget: userTarget })
+		const transfer = JSON.stringify({ type: DamageChat.TYPE, payload: payload, userTarget: userTarget })
 		setProperty(object, `flags.${SYSTEM_NAME}.${DamageChatFlags.Transfer}`, transfer)
 		return object
 	}
@@ -89,7 +89,7 @@ export class DamageChat {
 		event.stopPropagation()
 
 		// Toggle the message flag
-		let roll = $(event.currentTarget)
+		const roll = $(event.currentTarget)
 		if (roll.hasClass("expanded")) {
 			roll.toggleClass("expanded")
 			roll.animate({ "grid-auto-rows": 7, "padding-bottom": 25 }, 200, "linear")

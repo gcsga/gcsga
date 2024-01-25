@@ -98,7 +98,7 @@ export class StaticCharacterSheetConfig extends FormApplication {
 								text: text,
 								name: files[0].name,
 								path: files[0].path,
-							})
+							}),
 					)
 				}
 				this.render()
@@ -156,7 +156,7 @@ export class StaticCharacterSheetConfig extends FormApplication {
 				type: ActorType.Character,
 				img: this.object.img,
 			},
-			{ promptImport: false } as any
+			{ promptImport: false } as any,
 		)) as CharacterGURPS
 		await new_actor?.update({ ownership: (this.object as any).ownership })
 		new Promise(resolve => {
@@ -178,7 +178,7 @@ export class StaticCharacterSheetConfig extends FormApplication {
 		return ui.notifications?.info(
 			LocalizeGURPS.format(LocalizeGURPS.translations.gurps.character.settings.import.success, {
 				actor: this.object.name!,
-			})
+			}),
 		)
 	}
 
@@ -217,7 +217,7 @@ export class StaticCharacterSheetConfig extends FormApplication {
 						// [String(k).padStart(5, "0")]: v,
 						[k]: v,
 					}),
-					{}
+					{},
 				)
 				await this.object.update({ "system.additionalresources.-=tracker": null }, { render: false })
 				await this.object.update({ "system.additionalresources.tracker": updated_trackers })
@@ -237,7 +237,7 @@ export class StaticCharacterSheetConfig extends FormApplication {
 						// [String(k).padStart(5, "0")]: v,
 						[k]: v,
 					}),
-					{}
+					{},
 				)
 				await this.object.update({ "system.additionalresources.-=tracker": null }, { render: false })
 				await this.object.update({ "system.additionalresources.tracker": updated_trackers })
@@ -261,7 +261,7 @@ export class StaticCharacterSheetConfig extends FormApplication {
 						// [String(k).padStart(5, "0")]: v,
 						[k]: v,
 					}),
-					{}
+					{},
 				)
 				await this.object.update({ "system.additionalresources.-=tracker": null }, { render: false })
 				await this.object.update({ "system.additionalresources.tracker": updated_trackers })
@@ -274,7 +274,7 @@ export class StaticCharacterSheetConfig extends FormApplication {
 						// [String(k).padStart(5, "0")]: v,
 						[k]: v,
 					}),
-					{}
+					{},
 				)
 				await this.object.update({ "system.additionalresources.-=tracker": null }, { render: false })
 				await this.object.update({ "system.additionalresources.tracker": this.resource_trackers })
@@ -294,7 +294,7 @@ export class StaticCharacterSheetConfig extends FormApplication {
 				type: type,
 				index: index,
 				parent_index: parent_index,
-			})
+			}),
 		)
 		;(event as any).dragType = type
 	}
@@ -313,7 +313,7 @@ export class StaticCharacterSheetConfig extends FormApplication {
 	}
 
 	protected async _onDrop(event: DragEvent): Promise<unknown> {
-		let dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
+		const dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
 
 		const index = Number(dragData.index)
 		let element = $(event.target!)
@@ -342,7 +342,7 @@ export class StaticCharacterSheetConfig extends FormApplication {
 				// [String(k).padStart(5, "0")]: v,
 				[k]: v,
 			}),
-			{}
+			{},
 		)
 		await this.object.update({ "system.additionalresources.tracker": updated_trackers })
 		return this.render()

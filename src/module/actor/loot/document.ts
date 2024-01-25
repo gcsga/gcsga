@@ -16,7 +16,7 @@ export class LootGURPS extends BaseActorGURPS<LootSource> {
 
 	override update(
 		data?: DeepPartial<ActorDataConstructorData | (ActorDataConstructorData & Record<string, unknown>)>,
-		context?: DocumentModificationContext & foundry.utils.MergeObjectOptions & { noPrepare?: boolean }
+		context?: DocumentModificationContext & foundry.utils.MergeObjectOptions & { noPrepare?: boolean },
 	): Promise<this | undefined> {
 		if (context?.noPrepare) this.noPrepare = true
 		this.checkImport(data)
@@ -94,7 +94,7 @@ export class LootGURPS extends BaseActorGURPS<LootSource> {
 		documents: Document<any, any, Metadata<any>>[],
 		result: Record<string, unknown>[],
 		options: DocumentModificationOptionsGURPS,
-		userId: string
+		userId: string,
 	): void {
 		super._onCreateDescendantDocuments(embeddedName, documents, result, options, userId)
 
@@ -145,7 +145,7 @@ export class LootGURPS extends BaseActorGURPS<LootSource> {
 		system.equipment =
 			items
 				.filter(
-					e => [ItemType.Equipment, "equipment", ItemType.EquipmentContainer].includes(e.type) && !e.other
+					e => [ItemType.Equipment, "equipment", ItemType.EquipmentContainer].includes(e.type) && !e.other,
 				)
 				.map(e => {
 					delete e.other
@@ -158,7 +158,7 @@ export class LootGURPS extends BaseActorGURPS<LootSource> {
 	}
 
 	async promptImport() {
-		let dialog = new Dialog({
+		const dialog = new Dialog({
 			title: LocalizeGURPS.translations.gurps.character.import_prompt.title,
 			content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/actor/import-prompt.hbs`, { object: this }),
 			buttons: {

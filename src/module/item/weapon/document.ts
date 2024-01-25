@@ -211,14 +211,14 @@ export abstract class BaseWeaponGURPS<TParent extends ActorGURPS = ActorGURPS> e
 		if (!input.match(/^[+-]?[0-9]+/)) return input
 		if (!actor) return input
 		let skillLevel = -Infinity
-		let modifier = parseInt(input) || 0
+		const modifier = parseInt(input) || 0
 		const re = new RegExp(`^${modifier >= 0 ? "\\+?" : ""}${modifier}`)
 		let buffer = input.replace(re, "")
 		while (skillLevel === -Infinity) {
-			let primaryTooltip = new TooltipGURPS()
+			const primaryTooltip = new TooltipGURPS()
 			let secondaryTooltip = new TooltipGURPS()
-			let preAdj = this.skillLevelBaseAdjustment(actor, primaryTooltip)
-			let postAdj = this.skillLevelPostAdjustment(actor, primaryTooltip)
+			const preAdj = this.skillLevelBaseAdjustment(actor, primaryTooltip)
+			const postAdj = this.skillLevelPostAdjustment(actor, primaryTooltip)
 			let adj = 3
 			if (baseDefaultType === gid.Parry) adj += actor.parryBonus
 			else adj += actor.blockBonus
@@ -229,7 +229,7 @@ export abstract class BaseWeaponGURPS<TParent extends ActorGURPS = ActorGURPS> e
 				level += preAdj
 				if (baseDefaultType !== def.type) level = Math.trunc(level / 2 + adj)
 				level += postAdj
-				let possibleTooltip = new TooltipGURPS()
+				const possibleTooltip = new TooltipGURPS()
 				// TODO: localization
 				if (def.type === gid.Skill && def.name === "Karate")
 					level += this.encumbrancePenalty(actor, possibleTooltip)

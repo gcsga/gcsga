@@ -108,8 +108,8 @@ export class TraitGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS
 
 	adjustedPoints(): number {
 		if (!this.enabled) return 0
-		let baseEnh = 0
-		let levelEnh = 0
+		const baseEnh = 0
+		const levelEnh = 0
 		let baseLim = 0
 		let levelLim = 0
 		let basePoints = this.basePoints
@@ -142,7 +142,7 @@ export class TraitGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS
 			}
 		}
 		let modifiedBasePoints = basePoints
-		let leveledPoints = pointsPerLevel * this.levels
+		const leveledPoints = pointsPerLevel * this.levels
 		if (baseEnh !== 0 || baseLim !== 0 || levelEnh !== 0 || levelLim !== 0) {
 			if (this.actor?.settings.use_multiplicative_modifiers) {
 				if (baseEnh === levelEnh && baseLim === levelLim) {
@@ -162,8 +162,8 @@ export class TraitGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS
 						)
 				}
 			} else {
-				let baseMod = Math.max(-80, baseEnh + baseLim)
-				let levelMod = Math.max(-80, levelEnh + levelLim)
+				const baseMod = Math.max(-80, baseEnh + baseLim)
+				const levelMod = Math.max(-80, levelEnh + levelLim)
 				if (baseMod === levelMod) {
 					modifiedBasePoints = TraitGURPS.modifyPoints(modifiedBasePoints + leveledPoints, baseMod)
 				} else {
@@ -191,7 +191,7 @@ export class TraitGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS
 	}
 
 	get deepModifiers(): Collection<TraitModifierGURPS> {
-		const deepModifiers: Array<TraitModifierGURPS> = []
+		const deepModifiers: TraitModifierGURPS[] = []
 		for (const mod of this.modifiers) {
 			if (mod instanceof TraitModifierGURPS) deepModifiers.push(mod)
 			else
@@ -209,7 +209,7 @@ export class TraitGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS
 	calculatePoints(): [number, number, number, number] {
 		if (!this.enabled) return [0, 0, 0, 0]
 		let [ad, disad, race, quirk] = [0, 0, 0, 0]
-		let pts = this.adjustedPoints()
+		const pts = this.adjustedPoints()
 		if (pts === -1) quirk += pts
 		else if (pts > 0) ad += pts
 		else if (pts < 0) disad += pts

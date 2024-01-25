@@ -254,9 +254,9 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 
 	override createEmbeddedDocuments(
 		embeddedName: string,
-		data: Array<Record<string, unknown>>,
+		data: Record<string, unknown>[],
 		context: DocumentModificationContext<any>,
-	): Promise<Array<any>> {
+	): Promise<any[]> {
 		if (embeddedName === "Item")
 			data = data.filter(
 				(e: any) =>
@@ -326,8 +326,8 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 			weapon = new DamageWeaponAdapter(temp)
 		}
 
-		let roll: DamageRollAdapter = new DamageRollAdapter(payload, attacker, weapon)
-		let target: DamageTarget = new DamageTargetActor(this)
+		const roll: DamageRollAdapter = new DamageRollAdapter(payload, attacker, weapon)
+		const target: DamageTarget = new DamageTargetActor(this)
 		ApplyDamageDialog.create(roll as any, target).then(dialog => dialog.render(true))
 	}
 
@@ -510,8 +510,8 @@ class DamageTargetActor implements DamageTarget {
 	 */
 	getTrait(name: string): TargetTrait | undefined {
 		if (this.actor instanceof BaseActorGURPS) {
-			let traits = this.actor.traits.contents.filter((it: Item) => it instanceof TraitGURPS)
-			let found = traits.find((it: TraitGURPS) => it.name === name)
+			const traits = this.actor.traits.contents.filter((it: Item) => it instanceof TraitGURPS)
+			const found = traits.find((it: TraitGURPS) => it.name === name)
 			return found ? new TraitAdapter(found as TraitGURPS) : undefined
 		}
 		return undefined
@@ -524,7 +524,7 @@ class DamageTargetActor implements DamageTarget {
 	 */
 	getTraits(name: string): TargetTrait[] {
 		if (this.actor instanceof BaseActorGURPS) {
-			let traits = this.actor.traits.contents.filter((it: Item) => it instanceof TraitGURPS)
+			const traits = this.actor.traits.contents.filter((it: Item) => it instanceof TraitGURPS)
 			return traits.filter((it: TraitGURPS) => it.name === name).map((it: TraitGURPS) => new TraitAdapter(it))
 		}
 		return []
@@ -538,21 +538,21 @@ class DamageTargetActor implements DamageTarget {
 		// Try "Injury Tolerance (Unliving)" and "Unliving"
 		if (this.hasTrait("Unliving")) return true
 		if (!this.hasTrait("Injury Tolerance")) return false
-		let trait = this.getTrait("Injury Tolerance")
+		const trait = this.getTrait("Injury Tolerance")
 		return !!trait?.getModifier("Unliving")
 	}
 
 	private get isHomogenous(): boolean {
 		if (this.hasTrait("Homogenous")) return true
 		if (!this.hasTrait("Injury Tolerance")) return false
-		let trait = this.getTrait("Injury Tolerance")
+		const trait = this.getTrait("Injury Tolerance")
 		return !!trait?.getModifier("Homogenous")
 	}
 
 	private get isDiffuse(): boolean {
 		if (this.hasTrait("Diffuse")) return true
 		if (!this.hasTrait("Injury Tolerance")) return false
-		let trait = this.getTrait("Injury Tolerance")
+		const trait = this.getTrait("Injury Tolerance")
 		return !!trait?.getModifier("Diffuse")
 	}
 

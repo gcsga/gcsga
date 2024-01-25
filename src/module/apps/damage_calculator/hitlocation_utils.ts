@@ -13,8 +13,8 @@ export type HitLocationRollResult = {
  * @param text
  */
 function convertRollStringToArrayOfInt(text: string) {
-	let elements = text.split("-")
-	let range = elements.map(it => parseInt(it))
+	const elements = text.split("-")
+	const range = elements.map(it => parseInt(it))
 
 	if (range.length === 0) return []
 
@@ -22,7 +22,7 @@ function convertRollStringToArrayOfInt(text: string) {
 		if (typeof range[i] === "undefined" || isNaN(range[i])) return []
 	}
 
-	let results = []
+	const results = []
 	for (let i = range[0]; i <= range[range.length - 1]; i++) results.push(i)
 
 	return results

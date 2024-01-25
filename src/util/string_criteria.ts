@@ -1,4 +1,4 @@
-import { LocalizeGURPS } from "./localize"
+import { LocalizeGURPS } from "./localize.ts"
 
 export enum StringCompareType {
 	AnyString = "none",
@@ -61,7 +61,7 @@ export class StringCriteria {
 		if (s.length === 0) return this.matches("")
 		let matches = 0
 		for (const one of s) {
-			if (this.matches(one)) matches++
+			if (this.matches(one)) matches += 1
 		}
 		switch (this.compare) {
 			case StringCompareType.AnyString:

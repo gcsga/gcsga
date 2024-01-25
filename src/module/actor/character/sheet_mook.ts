@@ -9,7 +9,7 @@ export class MookSheetGURPS extends CharacterSheetGURPS {
 	}
 
 	static override get defaultOptions(): ActorSheet.Options {
-		let classes = super.defaultOptions.classes
+		const classes = super.defaultOptions.classes
 		classes.splice(super.defaultOptions.classes.indexOf("character", 1))
 		return mergeObject(super.defaultOptions, {
 			height: 600,

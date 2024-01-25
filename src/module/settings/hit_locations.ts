@@ -280,7 +280,7 @@ export class DefaultHitLocationSettings extends SettingsMenuGURPS {
 		return saveDataToFile(
 			JSON.stringify(data, null, "\t"),
 			extension,
-			`${LocalizeGURPS.translations.gurps.settings.default_hit_locations.name}.${extension}`
+			`${LocalizeGURPS.translations.gurps.settings.default_hit_locations.name}.${extension}`,
 		)
 	}
 
@@ -337,7 +337,7 @@ export class DefaultHitLocationSettings extends SettingsMenuGURPS {
 		event.preventDefault()
 		event.stopPropagation()
 		const path = $(event.currentTarget).data("path")?.replace("array.", "")
-		let locations = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`)
+		const locations = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`)
 		let formData: any = {}
 		const type: "locations" | "sub_table" = $(event.currentTarget).data("type")
 		const index = Number($(event.currentTarget).data("index")) || 0
@@ -369,7 +369,7 @@ export class DefaultHitLocationSettings extends SettingsMenuGURPS {
 			JSON.stringify({
 				type: type,
 				index: index,
-			})
+			}),
 		)
 		;(event as any).dragType = type
 	}
@@ -388,7 +388,7 @@ export class DefaultHitLocationSettings extends SettingsMenuGURPS {
 	}
 
 	protected async _onDrop(event: DragEvent): Promise<unknown> {
-		let dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
+		const dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
 		let element = $(event.target!)
 		if (!element.hasClass("item")) element = element.parent(".item")
 

@@ -218,7 +218,7 @@ export class ApplyDamageDialog extends Application {
 	}
 
 	async _rollRandomLocation(): Promise<string> {
-		let result = await HitLocationUtil.rollRandomLocation(this.target.hitLocationTable)
+		const result = await HitLocationUtil.rollRandomLocation(this.target.hitLocationTable)
 
 		// Get localized version of the location id, if necessary.
 		const location = result.location?.choice_name ?? "Torso"
@@ -256,7 +256,7 @@ export class ApplyDamageDialog extends Application {
 	}
 
 	private get damageTypeChoice(): Record<string, string> {
-		let results: Record<string, string> = {}
+		const results: Record<string, string> = {}
 		Object.entries(DamageTypes).map(e => (results[e[0]] = e[1].full_name))
 		return results
 	}

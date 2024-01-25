@@ -1,22 +1,14 @@
-import { ActorFlagsGURPS, ActorSystemData, BaseActorSourceGURPS } from "@actor/base"
-import { ActorType } from "@module/data"
-import { WeightUnits } from "@util"
-import { display } from "@util/enum"
+import { ActorFlagsGURPS, ActorSystemSource, BaseActorSourceGURPS } from "@actor/index.ts"
+import { ActorType } from "@module/data/index.ts"
+import { display } from "@util/enum/display.ts"
+import { WeightUnits } from "@util/weight.ts"
 
-export interface LootSource extends BaseActorSourceGURPS<ActorType.Loot, LootSystemData> {
+export interface LootSource extends BaseActorSourceGURPS<ActorType.Loot, LootSystemSource> {
 	flags: DeepPartial<LootFlags>
 }
-export interface LootDataGURPS extends Omit<LootSource, "effects" | "flags" | "items" | "token">, LootSystemData {
-	readonly type: LootSource["type"]
-	data: LootSystemData
-	flags: LootFlags
-
-	readonly _source: LootSource
-}
-
 export type LootFlags = ActorFlagsGURPS
 
-export interface LootSystemData extends ActorSystemData {
+export interface LootSystemSource extends ActorSystemSource {
 	description: string
 	import: { name: string; path: string; last_import: string }
 	settings: LootSettings

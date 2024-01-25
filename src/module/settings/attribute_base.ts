@@ -6,7 +6,7 @@ type AttributeBaseSettingField = {
 	name: string
 	hint: string
 	type: typeof Array
-	default: Array<any>
+	default: any[]
 }
 
 export abstract class AttributeBaseSettings extends SettingsMenuGURPS {

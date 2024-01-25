@@ -7,8 +7,8 @@ export class Length {
 	static format(inches: number, unit: LengthUnits): string {
 		switch (unit) {
 			case LengthUnits.FeetAndInches:
-				let oneFoot = 12
-				let feet = Math.trunc(inches / oneFoot)
+				const oneFoot = 12
+				const feet = Math.trunc(inches / oneFoot)
 				inches -= feet * oneFoot
 				if (feet === 0 && inches === 0) {
 					return "0'"

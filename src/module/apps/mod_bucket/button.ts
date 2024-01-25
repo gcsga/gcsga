@@ -47,8 +47,8 @@ export class ModifierBucket extends Application {
 
 	async getData(options?: Partial<ApplicationOptions> | undefined): Promise<object> {
 		// let total = (game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierTotal) as number) ?? 0
-		let total = (game.user as UserGURPS).modifierTotal
-		let buttonMagnet = game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierSticky) === true ? "sticky" : ""
+		const total = (game.user as UserGURPS).modifierTotal
+		const buttonMagnet = game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierSticky) === true ? "sticky" : ""
 		let buttonColor = "total-white"
 		if (total > 0) buttonColor = "total-green"
 		if (total < 0) buttonColor = "total-red"

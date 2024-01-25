@@ -29,7 +29,7 @@ class RulerGURPS extends Ruler {
 	}
 
 	protected override _endMeasurement(): void {
-		let addRangeMod = !(this as any).draggedEntity
+		const addRangeMod = !(this as any).draggedEntity
 		super._endMeasurement()
 		if (addRangeMod) {
 			game.ModifierList.addRangeMod()

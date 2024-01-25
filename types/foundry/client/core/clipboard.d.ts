@@ -3,11 +3,11 @@
  * clipboard.
  */
 declare class ClipboardHelper {
-    constructor();
+	constructor()
 
-    /**
-     * Copies plain text to the clipboard in a cross-browser compatible way.
-     * @param text The text to copy.
-     */
-    copyPlainText(text: string): Promise<void>;
+	/**
+	 * Copies plain text to the clipboard in a cross-browser compatible way.
+	 * @param text The text to copy.
+	 */
+	copyPlainText(text: string): Promise<void>
 }

@@ -143,7 +143,7 @@ export class MookSpell extends _MookItem {
 
 	level: number
 
-	college: Array<string> = []
+	college: string[] = []
 
 	constructor(data: Record<keyof MookSpell, any>) {
 		super(data)

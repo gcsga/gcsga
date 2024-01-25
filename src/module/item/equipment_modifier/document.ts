@@ -101,8 +101,11 @@ export function weightAdjustedForModifiers(
 	modifiers.forEach(mod => {
 		if (!mod.enabled) return
 		if (mod.system.weight_type === emweight.Type.Original) {
-			let t = emweight.Type.determineModifierWeightValueTypeFromString(emweight.Type.Original, mod.system.weight)
-			let amt = emweight.Value.extractFraction(t, mod.system.weight).value
+			const t = emweight.Type.determineModifierWeightValueTypeFromString(
+				emweight.Type.Original,
+				mod.system.weight,
+			)
+			const amt = emweight.Value.extractFraction(t, mod.system.weight).value
 			if (t === emweight.Value.Addition) {
 				w += Weight.toPounds(amt, Weight.trailingWeightUnitsFromString(mod.system.weight, defUnits))
 			} else {
@@ -129,8 +132,8 @@ function processMultiplyAddWeightStep(
 	modifiers.forEach(mod => {
 		if (!mod.enabled) return
 		if (mod.system.weight_type === type) {
-			let t = emweight.Type.determineModifierWeightValueTypeFromString(type, mod.system.weight)
-			let amt = emweight.Value.extractFraction(t, mod.system.weight)
+			const t = emweight.Type.determineModifierWeightValueTypeFromString(type, mod.system.weight)
+			const amt = emweight.Value.extractFraction(t, mod.system.weight)
 			if (t === emweight.Value.Addition)
 				w += Weight.toPounds(amt.value, Weight.trailingWeightUnitsFromString(mod.system.weight, units))
 			else if (t === emweight.Value.PercentageMultiplier)

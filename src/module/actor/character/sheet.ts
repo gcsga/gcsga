@@ -522,7 +522,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 						(item as Item).setFlag(
 							SYSTEM_NAME,
 							ItemFlags.Other,
-							!item.getFlag(SYSTEM_NAME, ItemFlags.Other)
+							!item.getFlag(SYSTEM_NAME, ItemFlags.Other),
 						),
 				})
 			else
@@ -533,7 +533,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 						(item as Item).setFlag(
 							SYSTEM_NAME,
 							ItemFlags.Other,
-							!item.getFlag(SYSTEM_NAME, ItemFlags.Other)
+							!item.getFlag(SYSTEM_NAME, ItemFlags.Other),
 						),
 				})
 		}
@@ -623,7 +623,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 				icon: "<i class='fas fa-gear'></i><i class='fas fa-up'></i>",
 				callback: () => {
 					let tl = item.system.tech_level
-					let tlNumber = tl.match(/\d+/)?.[0]
+					const tlNumber = tl.match(/\d+/)?.[0]
 					if (!tlNumber) return
 					const newTLNumber = parseInt(tlNumber) + 1
 					tl = tl.replace(tlNumber, `${newTLNumber} `)
@@ -636,7 +636,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 					icon: "<i class='fas fa-gear'></i><i class='fas fa-down'></i>",
 					callback: () => {
 						let tl = item.system.tech_level
-						let tlNumber = tl.match(/\d+/)?.[0]
+						const tlNumber = tl.match(/\d+/)?.[0]
 						if (!tlNumber) return
 						const newTLNumber = parseInt(tlNumber) - 1
 						tl = tl.replace(tlNumber, `${newTLNumber} `)
@@ -691,7 +691,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 					;(item as Item).setFlag(
 						SYSTEM_NAME,
 						ItemFlags.Unready,
-						!item.getFlag(SYSTEM_NAME, ItemFlags.Unready)
+						!item.getFlag(SYSTEM_NAME, ItemFlags.Unready),
 					)
 				},
 			})
@@ -904,7 +904,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			top: false,
 			inContainer: false,
 			other: false,
-		}
+		},
 	): Promise<ItemGURPS[] | undefined> {
 		// The table element where the dragged item was dropped
 		let targetTableEl = [...$(event.target!).filter(".item-list"), ...$(event.target!).parents(".item-list")][0]
@@ -931,7 +931,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		})
 
 		const siblingItems = (targetItemContainer?.items ?? ([] as any)).filter(
-			(e: Item) => e.id !== sourceItem.id && sourceItem.sameSection(e)
+			(e: Item) => e.id !== sourceItem.id && sourceItem.sameSection(e),
 		) as ItemGURPS[]
 
 		const sortUpdates = SortingHelpers.performIntegerSort(newItems[0], {
@@ -994,7 +994,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			top: false,
 			inContainer: false,
 			other: false,
-		}
+		},
 	): Promise<Item[]> | undefined {
 		// Dragged item
 		const sourceItem = this.actor.items.get(itemData._id!) as ItemGURPS
@@ -1024,7 +1024,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		}
 
 		const siblingItems = (targetItemContainer?.items as any).filter(
-			(e: Item) => e.id !== sourceItem.id && sourceItem.sameSection(e)
+			(e: Item) => e.id !== sourceItem.id && sourceItem.sameSection(e),
 		) as ItemGURPS[]
 
 		// target item and source item are not in the same table
@@ -1078,7 +1078,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 
 		const top = Math.max(
 			(currentTable.position().top ?? 0) + (currentTable.children(".header.reference").outerHeight() ?? 0),
-			sheet.find(".window-content").position().top
+			sheet.find(".window-content").position().top,
 		)
 		currentTable[0].style.setProperty("--top", `${top} px`)
 		currentTable[0].style.setProperty("--left", `${currentTable.position().left + 1 ?? 0} px`)
@@ -1195,7 +1195,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 	}
 
 	private _prepareEncumbrance() {
-		const encumbrance: Array<Encumbrance & { active?: boolean; carry?: string; move?: any; dodge?: any }> = [
+		const encumbrance: (Encumbrance & { active?: boolean; carry?: string; move?: any; dodge?: any })[] = [
 			...this.actor.allEncumbrance,
 		]
 		const current = this.actor.encumbranceLevel(true).level
@@ -1261,7 +1261,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 			e =>
 				!e.flags[SYSTEM_NAME] ||
 				!e.flags[SYSTEM_NAME][ItemFlags.Container] ||
-				e.flags[SYSTEM_NAME][ItemFlags.Container] === null
+				e.flags[SYSTEM_NAME][ItemFlags.Container] === null,
 		)) {
 			// processedItems.push(this._addItemChildren(items, item))
 			processedItems.push(item)
@@ -1291,7 +1291,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 				else if (item.type === ItemType.Effect) arr[6].push(item)
 				return arr
 			},
-			[[], [], [], [], [], [], []]
+			[[], [], [], [], [], [], []],
 		)
 
 		// const melee = items.filter(e => e.type === ItemType.MeleeWeapon && e.system.calc.equipped)
@@ -1302,7 +1302,7 @@ export class CharacterSheetGURPS extends ActorSheetGURPS {
 		const conditionalModifiers: ConditionalModifier[] = this.actor.conditionalModifiers
 
 		const carried_value = this.actor.wealthCarried()
-		let carried_weight = this.actor.weightCarried(true)
+		const carried_weight = this.actor.weightCarried(true)
 
 		data.carried_weight = Weight.format(carried_weight, this.actor.settings.default_weight_units)
 		data.carried_value = dollarFormat(carried_value)

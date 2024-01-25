@@ -27,7 +27,7 @@ export class DefaultResourceTrackerSettings extends AttributeBaseSettings {
 		event.stopPropagation()
 		const resource_trackers: ResourceTrackerDefObj[] = game.settings.get(
 			SYSTEM_NAME,
-			`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`
+			`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`,
 		)
 		const type: ListType = $(event.currentTarget).data("type")
 		let new_id = ""
@@ -64,7 +64,7 @@ export class DefaultResourceTrackerSettings extends AttributeBaseSettings {
 		event.stopPropagation()
 		const resource_trackers: ResourceTrackerDefObj[] = game.settings.get(
 			SYSTEM_NAME,
-			`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`
+			`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`,
 		)
 		const type: "resource_trackers" | "tracker_thresholds" = $(event.currentTarget).data("type")
 		const index = Number($(event.currentTarget).data("index")) || 0
@@ -82,13 +82,13 @@ export class DefaultResourceTrackerSettings extends AttributeBaseSettings {
 	}
 
 	protected async _onDrop(event: DragEvent): Promise<unknown> {
-		let dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
+		const dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
 		let element = $(event.target!)
 		if (!element.hasClass("item")) element = element.parent(".item")
 
 		const resource_trackers: ResourceTrackerDefObj[] = game.settings.get(
 			SYSTEM_NAME,
-			`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`
+			`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`,
 		)
 		const target_index = element.data("index")
 		const above = element.hasClass("border-top")
@@ -123,7 +123,7 @@ export class DefaultResourceTrackerSettings extends AttributeBaseSettings {
 		await game.settings.set(
 			SYSTEM_NAME,
 			`${this.namespace}.resource_trackers`,
-			formData["system.settings.resource_trackers"]
+			formData["system.settings.resource_trackers"],
 		)
 	}
 }

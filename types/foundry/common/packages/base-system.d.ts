@@ -1,5 +1,5 @@
-import type * as fields from "../data/fields.d.ts";
-import type * as packages from "./module.d.ts";
+import type * as fields from "../data/fields.d.ts"
+import type * as packages from "./module.d.ts"
 
 /**
  * The data schema used to define System manifest files.
@@ -13,32 +13,32 @@ import type * as packages from "./module.d.ts";
  * @property {string} [primaryTokenAttribute] An Actor data attribute path to use for Token secondary resource bars
  */
 export default class BaseSystem extends packages.BasePackage<BaseSystemSchema> {
-    static override type: "system";
+	static override type: "system"
 
-    /** The default icon used for this type of Package. */
-    static icon: string;
+	/** The default icon used for this type of Package. */
+	static icon: string
 
-    /** An alias for the document types available in the currently active World. */
-    get documentTypes(): Record<string, string[]>;
+	/** An alias for the document types available in the currently active World. */
+	get documentTypes(): Record<string, string[]>
 
-    /** An alias for the raw template JSON loaded from the game System. */
-    get template(): object;
+	/** An alias for the raw template JSON loaded from the game System. */
+	get template(): object
 
-    /** An alias for the structured data model organized by document class and type. */
-    get model(): Record<"Actor" | "Card" | "Cards" | "Item" | "JournalEntryPage", object>;
+	/** An alias for the structured data model organized by document class and type. */
+	get model(): Record<"Actor" | "Card" | "Cards" | "Item" | "JournalEntryPage", object>
 }
 
 export default interface BaseSystem
-    extends packages.BasePackage<BaseSystemSchema>,
-        ModelPropsFromSchema<BaseSystemSchema> {
-    version: string;
+	extends packages.BasePackage<BaseSystemSchema>,
+		ModelPropsFromSchema<BaseSystemSchema> {
+	version: string
 }
 
 type BaseSystemSchema = packages.BasePackageSchema & {
-    background: fields.StringField<string, string, false, false, false>;
-    initiative: fields.StringField;
-    gridDistance: fields.NumberField;
-    gridUnits: fields.StringField;
-    primaryTokenAttribute: fields.StringField;
-    secondaryTokenAttribute: fields.StringField;
-};
+	background: fields.StringField<string, string, false, false, false>
+	initiative: fields.StringField
+	gridDistance: fields.NumberField
+	gridUnits: fields.StringField
+	primaryTokenAttribute: fields.StringField
+	secondaryTokenAttribute: fields.StringField
+}

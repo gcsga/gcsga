@@ -1,6 +1,6 @@
-import type * as fields from "../data/fields.d.ts";
-import type * as packages from "./module.d.ts";
-import type AdditionalTypesField from "./sub-types.d.ts";
+import type * as fields from "../data/fields.d.ts"
+import type * as packages from "./module.d.ts"
+import type AdditionalTypesField from "./sub-types.d.ts"
 
 /**
  * The data schema used to define Module manifest files.
@@ -11,18 +11,18 @@ import type AdditionalTypesField from "./sub-types.d.ts";
  * @property [documentTypes] Additional document sub-types provided by this module.
  */
 export default class BaseModule extends packages.BasePackage<ModuleSchema> {
-    static override defineSchema(): ModuleSchema;
+	static override defineSchema(): ModuleSchema
 
-    static override type: "module";
+	static override type: "module"
 
-    /** The default icon used for this type of Package. */
-    static icon: string;
+	/** The default icon used for this type of Package. */
+	static icon: string
 }
 
 export default interface BaseModule extends packages.BasePackage<ModuleSchema>, ModelPropsFromSchema<ModuleSchema> {}
 
 type ModuleSchema = packages.BasePackageSchema & {
-    coreTranslation: fields.BooleanField;
-    library: fields.BooleanField;
-    documentTypes: AdditionalTypesField;
-};
+	coreTranslation: fields.BooleanField
+	library: fields.BooleanField
+	documentTypes: AdditionalTypesField
+}

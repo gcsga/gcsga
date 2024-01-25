@@ -93,7 +93,7 @@ export class Mook {
 		this.settings = data?.settings ?? {
 			attributes: game.settings.get(
 				SYSTEM_NAME,
-				`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`
+				`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`,
 			) as AttributeDefObj[],
 			damage_progression: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
 				.damage_progression,
@@ -224,7 +224,7 @@ export class Mook {
 		this.variableResolverExclusions.set(variableName, true)
 		if (gid.SizeModifier === variableName) return this.profile.SM.signedString()
 		const parts = variableName.split(".") // TODO: check
-		let attr: Attribute | undefined = this.attributes.get(parts[0])
+		const attr: Attribute | undefined = this.attributes.get(parts[0])
 		if (!attr) {
 			console.warn(`No such variable: $${variableName}`)
 			return ""
@@ -301,10 +301,10 @@ export class Mook {
 				type: ActorType.Character,
 				img: this.profile.portrait,
 			},
-			{ promptImport: false } as any
+			{ promptImport: false } as any,
 		)) as CharacterGURPS
 		await newActor?.update(data)
-		const updateMap: Array<{ _id: string } & Record<string, any>> = []
+		const updateMap: ({ _id: string } & Record<string, any>)[] = []
 		newActor.itemTypes[ItemType.Skill].forEach((item: any, index: number) => {
 			updateMap.push({ _id: item.id!, "system.points": item.getPointsForLevel(this.skills[index].level) })
 		})
@@ -354,7 +354,7 @@ export class Mook {
 
 	private _getTraitModifierItemData(
 		modifier: MookTraitModifier,
-		container_id: string
+		container_id: string,
 	): DeepPartial<TraitModifierSource> {
 		const id = randomID()
 		console.log(modifier)

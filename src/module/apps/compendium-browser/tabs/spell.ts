@@ -30,7 +30,7 @@ export class CompendiumSpellTab extends CompendiumTab {
 		for await (const { pack, index } of this.browser.packLoader.loadPacks(
 			"Item",
 			this.browser.loadedPacks(TabName.Spell),
-			indexFields
+			indexFields,
 		)) {
 			const collection = game.packs.get(pack.collection)
 			;((await collection?.getDocuments()) as any).forEach((spell: any) => {

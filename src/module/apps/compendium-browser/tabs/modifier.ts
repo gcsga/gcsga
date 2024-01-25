@@ -21,7 +21,7 @@ export class CompendiumTraitModifierTab extends CompendiumTab {
 		for await (const { pack, index } of this.browser.packLoader.loadPacks(
 			"Item",
 			this.browser.loadedPacks(TabName.TraitModifier),
-			indexFields
+			indexFields,
 		)) {
 			const collection = game.packs.get(pack.collection)
 			;((await collection?.getDocuments()) as any).forEach((modifier: any) => {

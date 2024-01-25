@@ -52,7 +52,7 @@ export class StaticCharacterImporter {
 		imp.importpath = file.path ?? imp.importpath
 		commit = { ...commit, ...{ "system.lastImport": new Date().toString().split(" ").splice(1, 4).join(" ") } }
 		try {
-			let nm = r.profile.name
+			const nm = r.profile.name
 			if (!game.settings.get(SYSTEM_NAME, SETTINGS.IGNORE_IMPORT_NAME)) {
 				commit = { ...commit, ...{ name: nm, "token.name": nm } }
 			}
@@ -84,7 +84,7 @@ export class StaticCharacterImporter {
 				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.error.import.generic, {
 					name: r.profile.name,
 					message: (err as Error).message,
-				})
+				}),
 			)
 			return this.throwImportError(errorMessages)
 		}
@@ -102,7 +102,7 @@ export class StaticCharacterImporter {
 				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.error.import.generic, {
 					name: r.profile.name,
 					message: (err as Error).message,
-				})
+				}),
 			)
 			return this.throwImportError(errorMessages)
 		}
@@ -112,11 +112,11 @@ export class StaticCharacterImporter {
 	async importAttributes(
 		atts: CharacterImportedData["attributes"],
 		eqp: CharacterImportedData["equipment"],
-		calc: CharacterImportedData["calc"]
+		calc: CharacterImportedData["calc"],
 	) {
 		if (!atts) return
-		let data: any = this.document.system
-		let att: any = data.attributes
+		const data: any = this.document.system
+		const att: any = data.attributes
 		if (!att.QN) {
 			// Upgrade older actors to include Q
 			att.QN = {}
@@ -144,20 +144,20 @@ export class StaticCharacterImporter {
 		data.FP.points = atts.find(e => e.attr_id === "fp")?.calc?.points || 0
 		data.QP.max = atts.find(e => e.attr_id === "qp")?.calc?.value || 0
 		data.QP.points = atts.find(e => e.attr_id === "qp")?.calc?.points || 0
-		let hp = atts.find(e => e.attr_id === "hp")?.calc?.current || 0
-		let fp = atts.find(e => e.attr_id === "fp")?.calc?.current || 0
-		let qp = atts.find(e => e.attr_id === "qp")?.calc?.current || 0
+		const hp = atts.find(e => e.attr_id === "hp")?.calc?.current || 0
+		const fp = atts.find(e => e.attr_id === "fp")?.calc?.current || 0
+		const qp = atts.find(e => e.attr_id === "qp")?.calc?.current || 0
 
 		let saveCurrent = false
 
 		if (data.lastImport && (data.HP.value !== hp || data.FP.value !== fp)) {
-			let option = game.settings.get(SYSTEM_NAME, SETTINGS.STATIC_IMPORT_HP_FP)
+			const option = game.settings.get(SYSTEM_NAME, SETTINGS.STATIC_IMPORT_HP_FP)
 			if (option === 0) {
 				saveCurrent = true
 			}
 			if (option === 2) {
 				saveCurrent = await new Promise((resolve, _reject) => {
-					let d = new Dialog({
+					const d = new Dialog({
 						title: "Current HP & FP",
 						content: `Do you want to <br><br><b>Save</b> the current HP (${data.HP.value}) & FP (${data.FP.value}) values or <br><br><b>Overwrite</b> it with the import data, HP (${hp}) & FP (${fp})?<br><br>&nbsp;`,
 						buttons: {
@@ -185,10 +185,10 @@ export class StaticCharacterImporter {
 		}
 		data.QP.value = qp
 
-		let bl_value = parseFloat(calc.basic_lift.toString().match(/[\d.]+/g)?.[0] || "")
-		let bl_unit = calc.basic_lift.toString().replace(`${bl_value} `, "")
+		const bl_value = parseFloat(calc.basic_lift.toString().match(/[\d.]+/g)?.[0] || "")
+		const bl_unit = calc.basic_lift.toString().replace(`${bl_value} `, "")
 
-		let lm: Partial<StaticCharacterSystemData["liftingmoving"]> = {}
+		const lm: Partial<StaticCharacterSystemData["liftingmoving"]> = {}
 		lm.basiclift = `${Number(bl_value).toString()} ${bl_unit}`
 		lm.carryonback = `${(bl_value * 15).toString()} ${bl_unit}`
 		lm.onehandedlift = `${(bl_value * 2).toString()} ${bl_unit}`
@@ -197,10 +197,10 @@ export class StaticCharacterImporter {
 		lm.shove = `${(bl_value * 12).toString()} ${bl_unit}`
 		lm.twohandedlift = `${(bl_value * 8).toString()} ${bl_unit}`
 
-		let bm = atts.find(e => e.attr_id === "basic_move")?.calc?.value || 0
+		const bm = atts.find(e => e.attr_id === "basic_move")?.calc?.value || 0
 		data.basicmove.value = bm.toString()
 		data.basicmove.points = atts.find(e => e.attr_id === "basic_move")?.calc?.points || 0
-		let bs = atts.find(e => e.attr_id === "basic_speed")?.calc?.value || 0
+		const bs = atts.find(e => e.attr_id === "basic_speed")?.calc?.value || 0
 		data.basicspeed.value = bs.toString()
 		data.basicspeed.points = atts.find(e => e.attr_id === "basic_speed")?.calc?.points || 0
 
@@ -216,16 +216,16 @@ export class StaticCharacterImporter {
 
 		let cm = 0
 		let cd = 0
-		let es = {}
-		let ew = [1, 2, 3, 6, 10]
+		const es = {}
+		const ew = [1, 2, 3, 6, 10]
 		let index = 0
-		let total_carried = this.calcTotalCarried(eqp)
+		const total_carried = this.calcTotalCarried(eqp)
 		for (let i = 0; i <= 4; i++) {
-			let e = new StaticEncumbrance()
+			const e = new StaticEncumbrance()
 			e.level = i
 			e.current = false
 			e.key = `enc${i}`
-			let weight_value = bl_value * ew[i]
+			const weight_value = bl_value * ew[i]
 			// E.current = total_carried <= weight_value && (i === 4 || total_carried < bl_value*ew[i+1]);
 			e.current =
 				(total_carried < weight_value || i === 4 || bl_value === 0) &&
@@ -266,7 +266,7 @@ export class StaticCharacterImporter {
 	calcTotalCarried(eqp: (EquipmentSystemData | EquipmentContainerSystemData)[]) {
 		let t = 0
 		if (!eqp) return t
-		for (let i of eqp) {
+		for (const i of eqp) {
 			let w = 0
 			w += parseFloat(i.weight || "0") * (i.type === ItemType.EquipmentContainer ? 1 : i.quantity || 0)
 			// @ts-expect-error children doesn't exist here but I don't care
@@ -278,7 +278,7 @@ export class StaticCharacterImporter {
 
 	async importMisc(p: Partial<StaticCharacterTraits> | any, cd: string, md: string) {
 		if (!p) return
-		let ts: Partial<StaticCharacterTraits> = {}
+		const ts: Partial<StaticCharacterTraits> = {}
 		ts.race = ""
 		ts.height = p.height || ""
 		ts.weight = p.weight || ""
@@ -320,18 +320,18 @@ export class StaticCharacterImporter {
 		profile: CharacterImportedData["profile"],
 		ads: CharacterImportedData["traits"],
 		skills: CharacterImportedData["skills"],
-		equipment: CharacterImportedData["equipment"]
+		equipment: CharacterImportedData["equipment"],
 	) {
-		let ts = commit["system.traits"]
+		const ts = commit["system.traits"]
 		let final = profile.SM || 0
-		let temp = [...(ads || []), ...(skills || []), ...(equipment || [])]
+		const temp = [...(ads || []), ...(skills || []), ...(equipment || [])]
 		let all: any[] = []
-		for (let i of temp) {
+		for (const i of temp) {
 			all = all.concat(this.recursiveGet(i))
 		}
-		for (let i of all) {
+		for (const i of all) {
 			if (i.features?.length)
-				for (let f of i.features) {
+				for (const f of i.features) {
 					if (f.type === "attribute_bonus" && f.attribute === "sm")
 						final += f.amount * (i.levels ? parseFloat(i.levels) : 1)
 				}
@@ -346,7 +346,7 @@ export class StaticCharacterImporter {
 	importTraits(ads: any[]) {
 		let temp: any[] = []
 		if (ads)
-			for (let i of ads) {
+			for (const i of ads) {
 				temp = temp.concat(this.importTrait(i, ""))
 			}
 		return {
@@ -356,7 +356,7 @@ export class StaticCharacterImporter {
 	}
 
 	importTrait(i: TraitSystemData | TraitContainerSystemData | any, p: string) {
-		let a = new StaticTrait()
+		const a = new StaticTrait()
 		a.name = i.name + (i.levels ? ` ${i.levels.toString()}` : "") || "Trait"
 		a.points = i.calc?.points
 		a.note = i.notes
@@ -367,7 +367,7 @@ export class StaticCharacterImporter {
 			a.notes = `[${game.i18n.localize(`gurps.select.cr_level.${i.cr}`)}: ${a.name}]`
 		}
 		if (i.modifiers?.length) {
-			for (let j of i.modifiers)
+			for (const j of i.modifiers)
 				if (!j.disabled) a.notes += `${a.notes ? "; " : ""}${j.name}${j.notes ? ` (${j.notes})` : ""}`
 		}
 		if (a.note) a.notes += (a.notes ? "\n" : "") + a.note
@@ -376,12 +376,12 @@ export class StaticCharacterImporter {
 		a.uuid = i.id
 		a.parentuuid = p
 
-		let old = this.document._findElementIn("ads", a.uuid)
+		const old = this.document._findElementIn("ads", a.uuid)
 		this.document._migrateOtfsAndNotes(old, a, i.vtt_notes)
 
 		let ch: any[] = []
 		if (i.children?.length) {
-			for (let j of i.children) ch = ch.concat(this.importTrait(j, i.id))
+			for (const j of i.children) ch = ch.concat(this.importTrait(j, i.id))
 		}
 		return [a].concat(ch)
 	}
@@ -389,7 +389,7 @@ export class StaticCharacterImporter {
 	importSkills(sks: any[]) {
 		if (!sks) return
 		let temp: any[] = []
-		for (let i of sks) {
+		for (const i of sks) {
 			temp = temp.concat(this.importSk(i, ""))
 		}
 		return {
@@ -410,7 +410,7 @@ export class StaticCharacterImporter {
 			}
 			name += `${addition})`
 		}
-		let s = new StaticSkill(name, 0)
+		const s = new StaticSkill(name, 0)
 		s.pageref = i.reference || ""
 		s.uuid = i.id
 		s.parentuuid = p
@@ -425,12 +425,12 @@ export class StaticCharacterImporter {
 			// Usually containers
 			s.level = 0
 		}
-		let old = this.document._findElementIn("skills", s.uuid)
+		const old = this.document._findElementIn("skills", s.uuid)
 		this.document._migrateOtfsAndNotes(old, s, i.vtt_notes)
 
 		let ch: any[] = []
 		if (i.children?.length) {
-			for (let j of i.children) ch = ch.concat(this.importSk(j, i.id))
+			for (const j of i.children) ch = ch.concat(this.importSk(j, i.id))
 		}
 		return [s].concat(ch)
 	}
@@ -438,7 +438,7 @@ export class StaticCharacterImporter {
 	importSpells(sps: any[]) {
 		if (!sps) return
 		let temp: any[] = []
-		for (let i of sps) {
+		for (const i of sps) {
 			temp = temp.concat(this.importSp(i, ""))
 		}
 		return {
@@ -448,7 +448,7 @@ export class StaticCharacterImporter {
 	}
 
 	importSp(i: any, p: string): any {
-		let s = new StaticSpell()
+		const s = new StaticSpell()
 		s.name = i.name || "Spell"
 		s.uuid = i.id
 		s.parentuuid = p
@@ -467,12 +467,12 @@ export class StaticCharacterImporter {
 			s.import = i.calc?.level || 0
 		}
 
-		let old = this.document._findElementIn("spells", s.uuid)
+		const old = this.document._findElementIn("spells", s.uuid)
 		this.document._migrateOtfsAndNotes(old, s, i.vtt_notes)
 
 		let ch: any[] = []
 		if (i.children?.length) {
-			for (let j of i.children) ch = ch.concat(this.importSp(j, i.id))
+			for (const j of i.children) ch = ch.concat(this.importSp(j, i.id))
 		}
 		return [s].concat(ch)
 	}
@@ -481,11 +481,11 @@ export class StaticCharacterImporter {
 		if (!eq && !oeq) return
 		let temp: any[] = []
 		if (eq)
-			for (let i of eq) {
+			for (const i of eq) {
 				temp = [...temp, ...this.importEq(i, "", true)]
 			}
 		if (oeq)
-			for (let i of oeq) {
+			for (const i of oeq) {
 				temp = [...temp, ...this.importEq(i, "", false)]
 			}
 
@@ -512,7 +512,7 @@ export class StaticCharacterImporter {
 			}
 		})
 
-		let equipment = {
+		const equipment = {
 			carried: {},
 			other: {},
 		}
@@ -534,7 +534,7 @@ export class StaticCharacterImporter {
 	}
 
 	importEq(i: any, p: string, carried: boolean): any {
-		let e = new StaticEquipment()
+		const e = new StaticEquipment()
 		e.name = i.description || "Equipment"
 		e.count = i.type === "equipment_container" ? "1" : i.quantity || "0"
 		e.cost = fxp.Int.from(parseFloat(i.calc.extended_value) ?? 0) / (i.quantity || 1, 4)
@@ -550,7 +550,7 @@ export class StaticCharacterImporter {
 		e.notes = ""
 		e.note = i.notes || ""
 		if (i.modifiers?.length) {
-			for (let j of i.modifiers)
+			for (const j of i.modifiers)
 				if (!j.disabled) e.notes += `${e.notes ? "; " : ""}${j.name}${j.notes ? ` (${j.notes})` : ""}`
 		}
 		if (e.note) e.notes += (e.notes ? "\n" : "") + e.note
@@ -572,8 +572,8 @@ export class StaticCharacterImporter {
 		}
 		let ch: any[] = []
 		if (i.children?.length) {
-			for (let j of i.children) ch = ch.concat(this.importEq(j, i.id, carried))
-			for (let j of ch) {
+			for (const j of i.children) ch = ch.concat(this.importEq(j, i.id, carried))
+			for (const j of ch) {
 				e.cost -= j.cost * j.count
 				e.weight -= j.weight * j.count
 			}
@@ -584,7 +584,7 @@ export class StaticCharacterImporter {
 	importNotes(notes: any[]) {
 		if (!notes) return
 		let temp: any[] = []
-		for (let i of notes) {
+		for (const i of notes) {
 			temp = [...temp, ...this.importNote(i, "")]
 		}
 		Static.recurseList(this.document.system.notes, t => {
@@ -597,32 +597,32 @@ export class StaticCharacterImporter {
 	}
 
 	importNote(i: any, p: string): any {
-		let n = new StaticNote()
+		const n = new StaticNote()
 		n.notes = i.text || ""
 		n.uuid = i.id
 		n.parentuuid = p
 		n.pageref = i.reference || ""
-		let old = this.document._findElementIn("notes", n.uuid)
+		const old = this.document._findElementIn("notes", n.uuid)
 		this.document._migrateOtfsAndNotes(old, n)
 		let ch: any[] = []
 		if (i.children?.length) {
-			for (let j of i.children) ch = ch.concat(this.importNote(j, i.id))
+			for (const j of i.children) ch = ch.concat(this.importNote(j, i.id))
 		}
 		return [n].concat(ch)
 	}
 
 	async importBodyType(hls: any) {
 		if (!hls) return
-		let data = this.document.system
+		const data = this.document.system
 		if (data.additionalresources.ignoreinputbodyplan) return
 
 		let locations: StaticHitLocation[] = []
-		for (let i of hls.locations) {
-			let l = new StaticHitLocation(i.table_name)
+		for (const i of hls.locations) {
+			const l = new StaticHitLocation(i.table_name)
 			l.import = i.calc?.dr.all?.toString() || "0"
-			for (let [key, value] of Object.entries(i.calc?.dr))
+			for (const [key, value] of Object.entries(i.calc?.dr))
 				if (key !== "all") {
-					let damtype = key
+					const damtype = key
 					if (!l.split) l.split = {}
 					l.split[damtype] = Number(l.import) + (value as any)
 				}
@@ -632,9 +632,9 @@ export class StaticCharacterImporter {
 			}
 			locations.push(l)
 		}
-		let vitals = locations.filter(value => value.where === StaticHitLocation.VITALS)
+		const vitals = locations.filter(value => value.where === StaticHitLocation.VITALS)
 		if (vitals.length === 0) {
-			let hl = new StaticHitLocation(StaticHitLocation.VITALS)
+			const hl = new StaticHitLocation(StaticHitLocation.VITALS)
 			hl.penalty = StaticHitLocationRolls[StaticHitLocation.VITALS].penalty
 			hl.roll = StaticHitLocationRolls[StaticHitLocation.VITALS].roll
 			hl.import = "0"
@@ -671,7 +671,7 @@ export class StaticCharacterImporter {
 
 		if (table) {
 			Object.values(locations).forEach(it => {
-				let [lbl, entry] = StaticHitLocation.findTableEntry(table, it.where)
+				const [lbl, entry] = StaticHitLocation.findTableEntry(table, it.where)
 				if (entry) {
 					it.where = lbl // It might be renamed (ex: Skull -> Brain)
 					if (!it.penalty) it.penalty = entry.penalty
@@ -682,9 +682,9 @@ export class StaticCharacterImporter {
 
 		// Write the hit locations out in bodyplan hit location table order. If there are
 		// other entries, append them at the end.
-		let temp: StaticHitLocation[] = []
+		const temp: StaticHitLocation[] = []
 		Object.keys(table).forEach(key => {
-			let results = Object.values(locations).filter(loc => loc.where === key)
+			const results = Object.values(locations).filter(loc => loc.where === key)
 			if (results.length > 0) {
 				if (results.length > 1) {
 					// If multiple locs have same where, concat the DRs.   Leg 7 & Leg 8 both map to "Leg 7-8"
@@ -710,7 +710,7 @@ export class StaticCharacterImporter {
 		})
 		locations.forEach(it => temp.push(it))
 
-		let prot = {}
+		const prot = {}
 		let index = 0
 		temp.forEach(it => Static.put(prot, it, index++))
 
@@ -725,14 +725,14 @@ export class StaticCharacterImporter {
 			}
 			if (option === "ask") {
 				saveprot = await new Promise((resolve, _reject) => {
-					let d = new Dialog({
+					const d = new Dialog({
 						title: "Hit Location Body Plan",
 						content:
 							`Do you want to <br><br><b>Save</b> the current Body Plan (${game.i18n.localize(
-								`gurps.static.body_plan.${data.additionalresources.bodyplan}`
+								`gurps.static.body_plan.${data.additionalresources.bodyplan}`,
 							)}) or ` +
 							`<br><br><b>Overwrite</b> it with the Body Plan from the import: (${game.i18n.localize(
-								`gurps.static.body_plan.${data.additionalresources.bodyplan}`
+								`gurps.static.body_plan.${data.additionalresources.bodyplan}`,
 							)})?<br><br>&nbsp;`,
 						buttons: {
 							save: {
@@ -773,13 +773,13 @@ export class StaticCharacterImporter {
 		let p_skills = 0
 		let p_spells = 0
 		let p_unspent = total
-		let p_total = total
+		const p_total = total
 		let p_race = 0
-		for (let i of atts) p_atts += i.calc?.points || 0
-		for (let i of ads)
+		for (const i of atts) p_atts += i.calc?.points || 0
+		for (const i of ads)
 			[p_ads, p_disads, p_quirks, p_race] = this.adPointCount(i, p_ads, p_disads, p_quirks, p_race, true)
-		for (let i of skills) p_skills = this.skPointCount(i, p_skills)
-		for (let i of spells) p_spells = this.skPointCount(i, p_spells)
+		for (const i of skills) p_skills = this.skPointCount(i, p_skills)
+		for (const i of spells) p_spells = this.skPointCount(i, p_spells)
 		p_unspent -= p_atts + p_ads + p_disads + p_quirks + p_skills + p_spells + p_race
 		return {
 			"system.totalpoints.attributes": p_atts,
@@ -800,7 +800,7 @@ export class StaticCharacterImporter {
 			ads += i.calc?.points || 0
 		else if (i.type === "advantage_container" && i.children?.length) {
 			let [a, d] = [0, 0]
-			for (let j of i.children) [a, d, quirks, race] = this.adPointCount(j, a, d, quirks, race)
+			for (const j of i.children) [a, d, quirks, race] = this.adPointCount(j, a, d, quirks, race)
 			if (toplevel) {
 				if (a > 0) ads += a
 				else disads += a
@@ -813,26 +813,26 @@ export class StaticCharacterImporter {
 
 	skPointCount(i: any, skills: number) {
 		if (i.type === ("skill_container" || "spell_container") && i.children?.length)
-			for (let j of i.children) skills = this.skPointCount(j, skills)
+			for (const j of i.children) skills = this.skPointCount(j, skills)
 		else skills += i.points
 		return skills
 	}
 
 	importReactions(ads: any[], skills: any[], equipment: any[]) {
-		let rs = {}
-		let cs = {}
+		const rs = {}
+		const cs = {}
 		let index_r = 0
 		let index_c = 0
-		let temp = [...(ads || []), ...(skills || []), ...(equipment || [])]
+		const temp = [...(ads || []), ...(skills || []), ...(equipment || [])]
 		let all: any[] = []
-		for (let i of temp) {
+		for (const i of temp) {
 			all = all.concat(this.recursiveGet(i))
 		}
-		let temp_r = []
-		let temp_c = []
-		for (let i of all) {
+		const temp_r = []
+		const temp_c = []
+		for (const i of all) {
 			if (i.features?.length)
-				for (let f of i.features) {
+				for (const f of i.features) {
 					if (f.type === "reaction_bonus") {
 						temp_r.push({
 							modifier: f.amount * (f.per_level && i.levels ? parseInt(i.levels) : 1),
@@ -846,26 +846,26 @@ export class StaticCharacterImporter {
 					}
 				}
 		}
-		let temp_r2 = []
-		let temp_c2 = []
-		for (let i of temp_r) {
-			let existing_condition = temp_r2.find(e => e.situation === i.situation)
+		const temp_r2 = []
+		const temp_c2 = []
+		for (const i of temp_r) {
+			const existing_condition = temp_r2.find(e => e.situation === i.situation)
 			if (existing_condition) existing_condition.modifier += i.modifier
 			else temp_r2.push(i)
 		}
-		for (let i of temp_c) {
-			let existing_condition = temp_c2.find(e => e.situation === i.situation)
+		for (const i of temp_c) {
+			const existing_condition = temp_c2.find(e => e.situation === i.situation)
 			if (existing_condition) existing_condition.modifier += i.modifier
 			else temp_c2.push(i)
 		}
-		for (let i of temp_r2) {
-			let r = new StaticReaction()
+		for (const i of temp_r2) {
+			const r = new StaticReaction()
 			r.modifier = i.modifier.toString()
 			r.situation = i.situation
 			Static.put(rs, r, index_r++)
 		}
-		for (let i of temp_c2) {
-			let c = new StaticModifier()
+		for (const i of temp_c2) {
+			const c = new StaticModifier()
 			c.modifier = i.modifier.toString()
 			c.situation = i.situation
 			Static.put(cs, c, index_c++)
@@ -879,20 +879,20 @@ export class StaticCharacterImporter {
 	}
 
 	importCombat(ads: any[], skills: any[], spells: any[], equipment: any[]) {
-		let melee = {}
-		let ranged = {}
+		const melee = {}
+		const ranged = {}
 		let m_index = 0
 		let r_index = 0
-		let temp = [...(ads || []), ...(skills || []), ...(spells || []), ...(equipment || [])]
+		const temp = [...(ads || []), ...(skills || []), ...(spells || []), ...(equipment || [])]
 		let all: any[] = []
-		for (let i of temp) {
+		for (const i of temp) {
 			all = all.concat(this.recursiveGet(i))
 		}
-		for (let i of all) {
+		for (const i of all) {
 			if (i.weapons?.length)
-				for (let w of i.weapons) {
+				for (const w of i.weapons) {
 					if (w.type === "melee_weapon") {
-						let m = new StaticMelee()
+						const m = new StaticMelee()
 						m.name = i.name || i.description || ""
 						m.st = w.strength || ""
 						m.weight = i.weight || ""
@@ -907,12 +907,12 @@ export class StaticCharacterImporter {
 						m.reach = w.reach || ""
 						m.parry = w.calc?.parry || ""
 						m.block = w.calc?.block || ""
-						let old = this.document._findElementIn("melee", "", m.name, m.mode)
+						const old = this.document._findElementIn("melee", "", m.name, m.mode)
 						this.document._migrateOtfsAndNotes(old, m, i.vtt_notes)
 
 						Static.put(melee, m, m_index++)
 					} else if (w.type === "ranged_weapon") {
-						let r = new StaticRanged()
+						const r = new StaticRanged()
 						r.name = i.name || i.description || ""
 						r.st = w.strength || ""
 						r.bulk = w.bulk || ""
@@ -929,7 +929,7 @@ export class StaticCharacterImporter {
 						r.shots = w.shots || ""
 						r.rcl = w.recoil || ""
 						r.range = w.calc?.range || ""
-						let old = this.document._findElementIn("ranged", "", r.name, r.mode)
+						const old = this.document._findElementIn("ranged", "", r.name, r.mode)
 						this.document._migrateOtfsAndNotes(old, r, i.vtt_notes)
 
 						Static.put(ranged, r, r_index++)
@@ -947,8 +947,8 @@ export class StaticCharacterImporter {
 	recursiveGet(i: any) {
 		if (!i) return []
 		let ch: any[] = []
-		if (i.children?.length) for (let j of i.children) ch = ch.concat(this.recursiveGet(j))
-		if (i.modifiers?.length) for (let j of i.modifiers) ch = ch.concat(this.recursiveGet(j))
+		if (i.children?.length) for (const j of i.children) ch = ch.concat(this.recursiveGet(j))
+		if (i.modifiers?.length) for (const j of i.modifiers) ch = ch.concat(this.recursiveGet(j))
 		if (i.disabled || (i.equipped !== null && i.equipped === false)) return []
 		return [i].concat(ch)
 	}
@@ -995,10 +995,10 @@ export class StaticCharacterImporter {
 
 	_getBodyPlan(locations: StaticHitLocation[]) {
 		// Each key is a "body plan" name like "humanoid" or "quadruped"
-		let tableNames = Object.keys(StaticHitLocationDictionary)
+		const tableNames = Object.keys(StaticHitLocationDictionary)
 
 		// Create a map of tableName:count
-		let tableScores: Record<string, number> = {}
+		const tableScores: Record<string, number> = {}
 		tableNames.forEach(it => (tableScores[it] = 0))
 
 		// Increment the count for a tableScore if it contains the same hit location as "prot"
@@ -1022,12 +1022,12 @@ export class StaticCharacterImporter {
 
 		// In the case of a tie, select the one whose score is closest to the number of entries
 		// in the table.
-		let results = Object.keys(tableScores).filter(it => tableScores[it] === match)
+		const results = Object.keys(tableScores).filter(it => tableScores[it] === match)
 		if (results.length > 1) {
 			let diff = Number.MAX_SAFE_INTEGER
 			results.forEach(key => {
 				// Find the smallest difference
-				let table = StaticHitLocationDictionary[key]
+				const table = StaticHitLocationDictionary[key]
 				if (Object.keys(table).length - match < diff) {
 					diff = Object.keys(table).length - match
 					name = key

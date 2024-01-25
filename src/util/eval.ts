@@ -95,7 +95,7 @@ class Evaluator {
 	parse(expression: string) {
 		let unaryOp: Operator | null = null
 		let haveOperand = false
-		let haveOperator = false
+		const haveOperator = false
 		this.operandStack = []
 		this.operatorStack = []
 		let i = 0
@@ -158,7 +158,7 @@ class Evaluator {
 		index: number,
 		op: Operator | null,
 		haveOperand: boolean,
-		unaryOp: Operator | null
+		unaryOp: Operator | null,
 	): number {
 		if (haveOperand && op && op.symbol === "(") {
 			;[index, op] = this.processFunction(expression, index)
@@ -192,7 +192,7 @@ class Evaluator {
 							evaluator: this,
 							left: left,
 							unaryOp: stackOp?.unaryOp,
-						})
+						}),
 					)
 				}
 				break
@@ -238,7 +238,7 @@ class Evaluator {
 					function: f,
 					args: expression.substring(opIndex + 1, next),
 					unaryOp: operand.unaryOp,
-				})
+				}),
 			)
 		return [next, op]
 	}
@@ -254,7 +254,7 @@ class Evaluator {
 				left: left,
 				right: right,
 				op: op?.op,
-			})
+			}),
 		)
 	}
 

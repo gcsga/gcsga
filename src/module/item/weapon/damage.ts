@@ -46,7 +46,7 @@ export class WeaponDamage {
 		let convertMods = false
 		if (this.owner && this.owner.actor) convertMods = this.owner.actor.settings.use_modifying_dice_plus_adds
 		if (this.base) {
-			let base = this.base.stringExtra(convertMods)
+			const base = this.base.stringExtra(convertMods)
 			if (base !== "0") {
 				if (buffer.length !== 0 && base[0] !== "+" && base[0] !== "-") buffer += "+"
 				buffer += base
@@ -89,7 +89,7 @@ export class WeaponDamage {
 			(this.owner.container as any).isLeveled
 		)
 			multiplyDice(Int.from((this.owner.container as any).levels), base)
-		let intST = Int.from(st)
+		const intST = Int.from(st)
 		switch (this.st) {
 			case stdmg.Option.Thrust:
 				base = addDice(base, actor.thrustFor(intST))
@@ -147,7 +147,7 @@ export class WeaponDamage {
 					base.modifier += Int.from(amt)
 				}
 			} else if (bonus.type === feature.Type.WeaponDRDivisorBonus) {
-				let amt = bonus.adjustedAmountForWeapon(this.owner)
+				const amt = bonus.adjustedAmountForWeapon(this.owner)
 				if (bonus.percent) percentDRDivisorBonus += amt
 				else armorDivisor += amt
 			}

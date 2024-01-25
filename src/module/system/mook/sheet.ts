@@ -142,7 +142,7 @@ export class MookGeneratorSheet extends FormApplication {
 						callback: (html: JQuery<HTMLElement>) => {
 							if (html instanceof HTMLElement) html = $(html)
 							const textArray = html.find("textarea")[0]
-							let text = textArray.value
+							const text = textArray.value
 							// if (text.length < 3) text = EXAMPLE_STATBLOCKS[parseInt(text)]
 							if (text.trim()) {
 								const data = MookParser.init(text, this.object).parseStatBlock(text)

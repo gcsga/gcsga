@@ -74,7 +74,7 @@ export class DefaultMoveSettings extends AttributeBaseSettings {
 	}
 
 	protected async _onDrop(event: DragEvent): Promise<unknown> {
-		let dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
+		const dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
 		let element = $(event.target!)
 		if (!element.hasClass("item")) element = element.parent(".item")
 
@@ -107,7 +107,7 @@ export class DefaultMoveSettings extends AttributeBaseSettings {
 		await game.settings.set(
 			SYSTEM_NAME,
 			`${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`,
-			formData["system.settings.move_types"]
+			formData["system.settings.move_types"],
 		)
 	}
 }

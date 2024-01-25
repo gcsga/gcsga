@@ -1,5 +1,6 @@
 import { ItemSourceGURPS } from "@item/data/index.ts"
 import { ActorType, SYSTEM_NAME } from "@module/data/misc.ts"
+import { PrototypeTokenSource } from "types/foundry/common/data/data.js"
 
 export interface ActorFlagsGURPS extends DocumentFlags {
 	[SYSTEM_NAME]: Partial<Record<ActorFlags, any>>
@@ -20,6 +21,7 @@ export type BaseActorSourceGURPS<
 	TSystemSource extends ActorSystemSource = ActorSystemSource,
 > = foundry.documents.ActorSource<TType, TSystemSource, ItemSourceGURPS> & {
 	flags: DeepPartial<ActorFlagsGURPS>
+	prototypeToken: PrototypeTokenSource
 }
 // export interface BaseActorSourceGURPS<
 // 	TActorType extends ActorType = ActorType,

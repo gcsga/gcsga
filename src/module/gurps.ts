@@ -375,18 +375,18 @@ Hooks.on("canvasReady", () => {
 Hooks.on("renderSidebarTab", async (app: SidebarTab, html: JQuery<HTMLElement>) => {
 	if (app.options.id === "compendium") {
 		const itemImportButton = $(
-			`<button><i class='fas fa-file-import'></i>${LocalizeGURPS.translations.gurps.system.library_import.button_item}</button>`
+			`<button><i class='fas fa-file-import'></i>${LocalizeGURPS.translations.gurps.system.library_import.button_item}</button>`,
 		)
 		itemImportButton.on("click", _event => ItemImporter.showDialog())
 		html.find(".directory-footer").append(itemImportButton)
 		const characterImportButton = $(
-			`<button><i class='fas fa-file-import'></i>${LocalizeGURPS.translations.gurps.system.library_import.button_character}</button>`
+			`<button><i class='fas fa-file-import'></i>${LocalizeGURPS.translations.gurps.system.library_import.button_character}</button>`,
 		)
 		characterImportButton.on("click", _event => CharacterImporter.showDialog())
 		html.find(".directory-footer").append(characterImportButton)
 
 		const browseButton = $(
-			`<button><i class='fas fa-book-open-cover'></i>${LocalizeGURPS.translations.gurps.compendium_browser.button}</button>`
+			`<button><i class='fas fa-book-open-cover'></i>${LocalizeGURPS.translations.gurps.compendium_browser.button}</button>`,
 		)
 		browseButton.on("click", _event => game.CompendiumBrowser.render(true))
 		html.find(".directory-footer").append(browseButton)
@@ -415,7 +415,7 @@ Hooks.on("controlToken", async (...args: any[]) => {
 
 Hooks.on("renderActorSheetGURPS", async (...args: any[]) => {
 	if (args.length) {
-		let a = args[0]?.actor
+		const a = args[0]?.actor
 		if (a) {
 			await LastActor.set(a, args[0])
 			GURPS.LastActor = await LastActor.get()
@@ -466,17 +466,21 @@ Hooks.on("renderDialog", (_dialog: any, html: JQuery<HTMLElement>) => {
 					ItemType.TraitContainer,
 					ItemType.TraitModifier,
 					ItemType.TraitModifierContainer,
-				])
+				]),
 			)
 			select.append(
-				extractOptGroup(select, categories.skill, [ItemType.Skill, ItemType.Technique, ItemType.SkillContainer])
+				extractOptGroup(select, categories.skill, [
+					ItemType.Skill,
+					ItemType.Technique,
+					ItemType.SkillContainer,
+				]),
 			)
 			select.append(
 				extractOptGroup(select, categories.spell, [
 					ItemType.Spell,
 					ItemType.RitualMagicSpell,
 					ItemType.SpellContainer,
-				])
+				]),
 			)
 			select.append(
 				extractOptGroup(select, categories.equipment, [
@@ -484,7 +488,7 @@ Hooks.on("renderDialog", (_dialog: any, html: JQuery<HTMLElement>) => {
 					ItemType.EquipmentContainer,
 					ItemType.EquipmentModifier,
 					ItemType.EquipmentModifierContainer,
-				])
+				]),
 			)
 			select.append(extractOptGroup(select, categories.note, [ItemType.Note, ItemType.NoteContainer]))
 			select.append(extractOptGroup(select, categories.weapon, [ItemType.MeleeWeapon, ItemType.RangedWeapon]))

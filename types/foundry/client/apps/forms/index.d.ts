@@ -1,2 +1,2 @@
-import "./fonts.d.ts";
-import "./journal-sheet.d.ts";
+import "./fonts.d.ts"
+import "./journal-sheet.d.ts"

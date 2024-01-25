@@ -133,7 +133,7 @@ const formatFraction = (value: number) => {
 export function createDamageCalculator(
 	damageRoll: DamageRoll,
 	defender: DamageTarget,
-	localize: (stringId: string, data?: any) => string
+	localize: (stringId: string, data?: any) => string,
 ): IDamageCalculator {
 	return new DamageCalculator(damageRoll, defender, localize)
 }
@@ -349,7 +349,7 @@ class DamageCalculator implements IDamageCalculator {
 	}
 
 	private effectiveArmorDivisor(hardenedDRLevel: number): ExplainedValue {
-		let ad = this.armorDivisor
+		const ad = this.armorDivisor
 		if (isArmorDivisorLimitation())
 			return { value: ad, explanation: this.format("gurps.dmgcalc.description.armor_divisor", { divisor: ad }) }
 
@@ -531,7 +531,7 @@ class DamageCalculator implements IDamageCalculator {
 			this.overrides.vulnerability ??
 			Math.max(
 				1,
-				this.vulnerabilities.filter(it => it.apply).reduce((acc, cur) => acc * cur.value, 1)
+				this.vulnerabilities.filter(it => it.apply).reduce((acc, cur) => acc * cur.value, 1),
 			)
 		)
 	}
@@ -556,7 +556,7 @@ class DamageCalculator implements IDamageCalculator {
 					name: it.modifiers.map(it => it.name).join("; "),
 					value: this._vulnerabilityLevel(it),
 					apply: false,
-				}
+				},
 		)
 	}
 
@@ -581,7 +581,7 @@ class DamageCalculator implements IDamageCalculator {
 	}
 
 	private get damageReductionValue() {
-		let trait = this.target.getTrait("Damage Reduction")
+		const trait = this.target.getTrait("Damage Reduction")
 		return trait ? trait.levels : 1
 	}
 
@@ -625,8 +625,8 @@ class DamageCalculator implements IDamageCalculator {
 				results.basicDamage!.value,
 				results.woundingModifier!.value,
 				results.penetratingDamage!.value,
-				locationDamage
-			)
+				locationDamage,
+			),
 		)
 
 		// results.knockback = this.knockback(results)
@@ -662,7 +662,7 @@ class DamageCalculator implements IDamageCalculator {
 			} else {
 				return new AdjustedBasicDamageStep(
 					Math.floor(basicDamage / (3 * range!)),
-					this.format("gurps.dmgcalc.description.explosion_range", { range: range })
+					this.format("gurps.dmgcalc.description.explosion_range", { range: range }),
 				)
 			}
 		}
@@ -675,7 +675,7 @@ class DamageCalculator implements IDamageCalculator {
 		if (this.isHalfDamage) {
 			return new AdjustedBasicDamageStep(
 				Math.floor(basicDamage * 0.5),
-				this.format("gurps.dmgcalc.description.half_damage")
+				this.format("gurps.dmgcalc.description.half_damage"),
 			)
 		}
 
@@ -686,7 +686,7 @@ class DamageCalculator implements IDamageCalculator {
 				basicDamage * this.multiplierForShotgun,
 				this.format("gurps.dmgcalc.description.shotgun", {
 					multiplier: this.multiplierForShotgun,
-				})
+				}),
 			)
 		}
 
@@ -726,7 +726,7 @@ class DamageCalculator implements IDamageCalculator {
 			const averageDR = Math.floor(
 				(torsoDR(this.hitLocationTable, this.damageType) +
 					leastProtectedLocationDR(this.hitLocationTable, this.damageType)) /
-					2
+					2,
 			)
 			return { explanation: this.format("gurps.dmgcalc.description.large_area_injury"), value: averageDR }
 		}
@@ -776,7 +776,7 @@ class DamageCalculator implements IDamageCalculator {
 		if (this.multiplierForShotgun > 1) {
 			return new EffectiveDamageResistanceStep(
 				dr * this.multiplierForShotgun,
-				this.format("gurps.dmgcalc.description.shotgun", { multiplier: this.multiplierForShotgun })
+				this.format("gurps.dmgcalc.description.shotgun", { multiplier: this.multiplierForShotgun }),
 			)
 		}
 
@@ -784,7 +784,7 @@ class DamageCalculator implements IDamageCalculator {
 			// There are two cases: Armor Divisor WITH and WITHOUT Hardened Armor.
 			return new EffectiveDamageResistanceStep(
 				this.getEffectiveDR(dr, effectiveArmorDivisor.value),
-				effectiveArmorDivisor.explanation
+				effectiveArmorDivisor.explanation,
 			)
 		}
 
@@ -792,7 +792,7 @@ class DamageCalculator implements IDamageCalculator {
 	}
 
 	private getEffectiveDR(dr: number, effectiveArmorDivisor: number) {
-		let result = Math.floor(dr / effectiveArmorDivisor)
+		const result = Math.floor(dr / effectiveArmorDivisor)
 		// B110: In addition, if you have any level of (Armor Divisor as a limitation), targets that have DR 0 (e.g.,
 		// bare flesh) get DR 1 against your attack.
 		return isArmorDivisorLimitation() ? Math.max(result, 1) : result
@@ -804,7 +804,7 @@ class DamageCalculator implements IDamageCalculator {
 
 	getPenetratingDamageSteps(
 		basicDamage: CalculatorStep,
-		damageResistance: CalculatorStep
+		damageResistance: CalculatorStep,
 	): (CalculatorStep | undefined)[] {
 		const penetrating = basicDamage!.value - damageResistance!.value
 		return [
@@ -875,7 +875,7 @@ class DamageCalculator implements IDamageCalculator {
 	 */
 	private adjustWoundingModifierForInjuryTolerance(
 		woundingModifier: number,
-		locationDamage: LocationDamage
+		locationDamage: LocationDamage,
 	): CalculatorStep | undefined {
 		let mod = undefined
 
@@ -993,7 +993,7 @@ class DamageCalculator implements IDamageCalculator {
 				this.format("gurps.dmgcalc.description.vulnerability", {
 					modifier: formatFraction(woundingModifier),
 					vulnerability: this.vulnerabilityLevel,
-				})
+				}),
 			)
 		}
 
@@ -1004,7 +1004,7 @@ class DamageCalculator implements IDamageCalculator {
 		basicDamage: number,
 		woundingModifier: number,
 		penetratingDamage: number,
-		locationDamage: HitLocationDamage
+		locationDamage: HitLocationDamage,
 	): (CalculatorStep | undefined)[] {
 		let injury = Math.floor(woundingModifier * penetratingDamage)
 
@@ -1035,8 +1035,8 @@ class DamageCalculator implements IDamageCalculator {
 					this.format("gurps.dmgcalc.description.damage_reduction", {
 						injury: getCurrentValue(results),
 						reduction: this.damageReduction,
-					})
-				)
+					}),
+				),
 			)
 		}
 
@@ -1101,17 +1101,17 @@ class DamageCalculator implements IDamageCalculator {
 						new RollModifier("Acrobatics", RollType.Skill, penalty),
 						new RollModifier("Judo", RollType.Skill, penalty),
 					],
-					[new CheckFailureConsequence("fall prone", 0)]
+					[new CheckFailureConsequence("fall prone", 0)],
 				),
-			]
+			],
 		)
 		return [knockbackEffect]
 	}
 
 	private shockEffects(results: DamageResults, locationName: string): InjuryEffect[] {
-		let rawModifier = Math.floor(results.injury!.value / this.shockFactor)
+		const rawModifier = Math.floor(results.injury!.value / this.shockFactor)
 		if (rawModifier > 0) {
-			let modifier = Math.min(4, rawModifier) * -1
+			const modifier = Math.min(4, rawModifier) * -1
 
 			// TODO In RAW, this doubling only occurs if the target is physiologically male and does not have the
 			// 	 "No Vitals" Injury Tolerance trait.
@@ -1143,7 +1143,8 @@ class DamageCalculator implements IDamageCalculator {
 				case "skull":
 				case "eye":
 					if (results.shockEffects.length > 0 || this.isMajorWound(results, locationName)) {
-						let penalty = this.damageType !== DamageTypes.tox && !this.target.hasTrait("No Brain") ? -10 : 0
+						const penalty =
+							this.damageType !== DamageTypes.tox && !this.target.hasTrait("No Brain") ? -10 : 0
 						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck(penalty)]))
 					}
 					break
@@ -1178,7 +1179,7 @@ class DamageCalculator implements IDamageCalculator {
 
 	private isMajorWound(results: DamageResults, locationName: string): boolean {
 		const location = this.hitLocationTable.locations.find(it => it.table_name === locationName)
-		let divisor = location && Extremity.includes(location.id) ? 3 : 2
+		const divisor = location && Extremity.includes(location.id) ? 3 : 2
 		return results.injury!.value > this.target.hitPoints.value / divisor
 	}
 
@@ -1488,7 +1489,7 @@ class EffectiveWoundingModifieStep extends CalculatorStep {
 			"gurps.dmgcalc.substep.effective_modifier",
 			value,
 			`×${formatFraction(value)}`,
-			notes
+			notes,
 		)
 	}
 }
@@ -1518,11 +1519,11 @@ class MaxForLocationStep extends CalculatorStep {
 }
 
 export class DamageResults {
-	steps = <Array<CalculatorStep>>[]
+	steps = <CalculatorStep[]>[]
 
 	knockback = 0
 
-	effects = <Array<InjuryEffect>>[]
+	effects = <InjuryEffect[]>[]
 
 	addResult(result: CalculatorStep | undefined) {
 		if (result) this.steps.push(result)
@@ -1562,7 +1563,7 @@ export class DamageResults {
 
 	get miscellaneousEffects(): InjuryEffect[] {
 		return this.effects.filter(
-			it => ![InjuryEffectType.knockback, InjuryEffectType.majorWound, InjuryEffectType.shock].includes(it.id)
+			it => ![InjuryEffectType.knockback, InjuryEffectType.majorWound, InjuryEffectType.shock].includes(it.id),
 		)
 	}
 

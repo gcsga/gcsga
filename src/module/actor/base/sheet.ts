@@ -29,7 +29,7 @@ export class ActorSheetGURPS extends ActorSheet {
 	protected override _onDrop(event: DragEvent): void {
 		if (!event?.dataTransfer) return
 
-		let dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
+		const dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
 
 		if (this.dropDispatch[dragData.type]) this.dropDispatch[dragData.type](dragData.payload)
 

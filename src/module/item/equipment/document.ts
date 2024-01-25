@@ -118,7 +118,7 @@ export class EquipmentGURPS<TParent extends ActorGURPS = ActorGURPS> extends Ite
 	}
 
 	get deepModifiers(): Collection<EquipmentModifierGURPS> {
-		const deepModifiers: Array<EquipmentModifierGURPS> = []
+		const deepModifiers: EquipmentModifierGURPS[] = []
 		for (const mod of this.modifiers) {
 			if (mod instanceof EquipmentModifierGURPS) deepModifiers.push(mod)
 			else

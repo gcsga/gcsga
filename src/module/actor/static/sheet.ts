@@ -40,7 +40,7 @@ export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
 		const items = deepClone(
 			(this.actor.items as EmbeddedCollection<any, any>)
 				.map(item => item)
-				.sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0))
+				.sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0)),
 		)
 
 		let deprecation: string = this.actor.getFlag(SYSTEM_NAME, ActorFlags.Deprecation) ? "acknowledged" : "manual"
@@ -108,11 +108,11 @@ export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
 			return found
 		}
 		function hpCondition(HP: any, member: string) {
-			let key = _getConditionKey(HP, staticHpConditions)
+			const key = _getConditionKey(HP, staticHpConditions)
 			return (staticHpConditions as any)[key][member]
 		}
 		function fpCondition(FP: any, member: string) {
-			let key = _getConditionKey(FP, staticFpConditions)
+			const key = _getConditionKey(FP, staticFpConditions)
 			return (staticFpConditions as any)[key][member]
 		}
 
@@ -161,7 +161,7 @@ export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
 			spells: Object.fromEntries(tempItems.spells.map((v, k) => [k.toString().padStart(5, "0"), v])),
 			equipment: Object.fromEntries(tempItems.equipment.map((v, k) => [k.toString().padStart(5, "0"), v])),
 			other_equipment: Object.fromEntries(
-				tempItems.other_equipment.map((v, k) => [k.toString().padStart(5, "0"), v])
+				tempItems.other_equipment.map((v, k) => [k.toString().padStart(5, "0"), v]),
 			),
 		}
 	}
@@ -259,7 +259,7 @@ export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
 					this.actor.system.attributes[element.data("id") as StaticAttributeName].value
 			}
 			attribute.attribute_def.combinedName = game.i18n.localize(
-				`gurps.static.${element.data("id").toLowerCase()}`
+				`gurps.static.${element.data("id").toLowerCase()}`,
 			)
 			attribute.attr_id = element.data("id").toLowerCase()
 			data.attribute = attribute

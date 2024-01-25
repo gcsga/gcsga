@@ -34,13 +34,13 @@ export class RangedWeaponGURPS<TParent extends ActorGURPS = ActorGURPS> extends 
 		const where = inRange.indexOf("x")
 		if (where === -1) return inRange
 		let last = where + 1
-		let max = inRange.length
+		const max = inRange.length
 		if (last < max && inRange[last] === " ") last++
 		if (last >= max) return inRange
 		let ch = inRange[last]
 		let found = false
 		let decimal = false
-		let started = last
+		const started = last
 		while ((!decimal && ch === ".") || ch.match("[0-9]")) {
 			found = true
 			if (ch === ".") decimal = true
@@ -49,7 +49,7 @@ export class RangedWeaponGURPS<TParent extends ActorGURPS = ActorGURPS> extends 
 			ch = inRange[last]
 		}
 		if (!found) return inRange
-		let value = parseFloat(inRange.substring(started, last))
+		const value = parseFloat(inRange.substring(started, last))
 		let buffer = ""
 		if (where > 0) buffer += inRange.substring(0, where)
 		buffer += Math.trunc(value * st).toString()

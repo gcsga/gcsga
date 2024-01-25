@@ -86,7 +86,7 @@ export class TraitContainerGURPS<TParent extends ActorGURPS = ActorGURPS> extend
 	}
 
 	get deepModifiers(): Collection<TraitModifierGURPS> {
-		const deepModifiers: Array<TraitModifierGURPS> = []
+		const deepModifiers: TraitModifierGURPS[] = []
 		for (const mod of this.modifiers) {
 			if (mod instanceof TraitModifierGURPS) deepModifiers.push(mod)
 			else
@@ -105,14 +105,14 @@ export class TraitContainerGURPS<TParent extends ActorGURPS = ActorGURPS> extend
 		if (!this.enabled) return 0
 		let points = 0
 		if (this.containerType === TraitContainerType.AlternativeAbilities) {
-			let values: number[] = []
+			const values: number[] = []
 			for (const child of this.children) {
 				values.push(child.adjustedPoints())
 				if (values[values.length - 1] > points) points = values[values.length - 1]
 			}
-			let max = points
+			const max = points
 			let found = false
-			for (let v of values) {
+			for (const v of values) {
 				if (!found && max === v) found = true
 				else if (this.roundCostDown) points += Math.floor(TraitGURPS.calculateModifierPoints(v, 20))
 				else points += Math.ceil(TraitGURPS.calculateModifierPoints(v, 20))
@@ -141,7 +141,7 @@ export class TraitContainerGURPS<TParent extends ActorGURPS = ActorGURPS> extend
 				return [0, 0, this.adjustedPoints(), 0]
 			}
 		}
-		let pts = this.adjustedPoints()
+		const pts = this.adjustedPoints()
 		if (pts === -1) quirk += pts
 		else if (pts > 0) ad += pts
 		else if (pts < 0) disad += pts

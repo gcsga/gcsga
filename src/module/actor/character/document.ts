@@ -399,7 +399,7 @@ export class CharacterGURPS<
 		let [advantages, disadvantages, ancestry, quirks] = [0, 0, 0, 0]
 		for (const t of this.traits) {
 			if (t.container !== t.actor) continue
-			let [a, d, r, q] = t.calculatePoints()
+			const [a, d, r, q] = t.calculatePoints()
 			advantages += a
 			disadvantages += d
 			ancestry += r
@@ -410,9 +410,10 @@ export class CharacterGURPS<
 
 	get skillPoints(): number {
 		let total = 0
-		for (const s of this.skills.filter(e => e instanceof SkillGURPS || e instanceof TechniqueGURPS) as Array<
-			SkillGURPS | TechniqueGURPS
-		>) {
+		for (const s of this.skills.filter(e => e instanceof SkillGURPS || e instanceof TechniqueGURPS) as (
+			| SkillGURPS
+			| TechniqueGURPS
+		)[]) {
 			total += s.points ?? 0
 		}
 		return total
@@ -420,9 +421,10 @@ export class CharacterGURPS<
 
 	get spellPoints(): number {
 		let total = 0
-		for (const s of this.spells.filter(e => e instanceof SpellGURPS || e instanceof RitualMagicSpellGURPS) as Array<
-			SpellGURPS | RitualMagicSpellGURPS
-		>) {
+		for (const s of this.spells.filter(e => e instanceof SpellGURPS || e instanceof RitualMagicSpellGURPS) as (
+			| SpellGURPS
+			| RitualMagicSpellGURPS
+		)[]) {
 			total += s.points ?? 0
 		}
 		return total
@@ -519,7 +521,7 @@ export class CharacterGURPS<
 	}
 
 	dodge(enc: Encumbrance): number {
-		let dodge = 3 + (this.calc?.dodge_bonus ?? 0) + Math.max(this.resolveAttributeCurrent(gid.BasicSpeed), 0)
+		const dodge = 3 + (this.calc?.dodge_bonus ?? 0) + Math.max(this.resolveAttributeCurrent(gid.BasicSpeed), 0)
 		return Math.floor(Math.max(dodge + enc.penalty, 1))
 	}
 
@@ -801,9 +803,10 @@ export class CharacterGURPS<
 	}
 
 	// Item Types
-	override get itemTypes(): Record<ItemType, Array<ItemGURPS>> {
-		return super.itemTypes as Record<ItemType, Array<ItemGURPS>>
+	override get itemTypes(): Record<ItemType, ItemGURPS[]> {
+		return super.itemTypes as Record<ItemType, ItemGURPS[]>
 	}
+
 	override get traits(): Collection<TraitGURPS | TraitContainerGURPS> {
 		// const traits: Collection<TraitGURPS | TraitContainerGURPS> = new Collection()
 		// for (const item of this.items) {
@@ -915,9 +918,9 @@ export class CharacterGURPS<
 	}
 
 	get reactions(): ConditionalModifier[] {
-		let reactionMap: Map<string, ConditionalModifier> = new Map()
+		const reactionMap: Map<string, ConditionalModifier> = new Map()
 		for (const t of this.traits) {
-			let source = LocalizeGURPS.format(LocalizeGURPS.translations.gurps.reaction.from_trait, {
+			const source = LocalizeGURPS.format(LocalizeGURPS.translations.gurps.reaction.from_trait, {
 				name: t.name ?? "",
 			})
 			this.reactionsFromFeatureList(source, t.features, reactionMap)
@@ -926,8 +929,8 @@ export class CharacterGURPS<
 				this.reactionsFromFeatureList(source, mod.features, reactionMap)
 			}
 			if (t.CR !== 0 && t.CRAdj === selfctrl.Adjustment.ReactionPenalty) {
-				let amount = selfctrl.Adjustment.adjustment(t.CRAdj, t.CR)
-				let situation = LocalizeGURPS.format(LocalizeGURPS.translations.gurps.reaction.cr, {
+				const amount = selfctrl.Adjustment.adjustment(t.CRAdj, t.CR)
+				const situation = LocalizeGURPS.format(LocalizeGURPS.translations.gurps.reaction.cr, {
 					trait: t.name ?? "",
 				})
 				if (reactionMap.has(situation)) reactionMap.get(situation)!.add(source, amount)
@@ -936,7 +939,7 @@ export class CharacterGURPS<
 		}
 		for (const e of this.carriedEquipment) {
 			if (e.equipped && e.system.quantity > 0) {
-				let source = LocalizeGURPS.format(LocalizeGURPS.translations.gurps.reaction.from_equipment, {
+				const source = LocalizeGURPS.format(LocalizeGURPS.translations.gurps.reaction.from_equipment, {
 					name: e.name ?? "",
 				})
 				this.reactionsFromFeatureList(source, e.features, reactionMap)
@@ -955,7 +958,7 @@ export class CharacterGURPS<
 				})
 			this.reactionsFromFeatureList(source, sk.features, reactionMap)
 		}
-		let reactionList = Array.from(reactionMap.values()).sort((a, b) =>
+		const reactionList = Array.from(reactionMap.values()).sort((a, b) =>
 			a.from < b.from ? -1 : a.from > b.from ? 1 : 0,
 		)
 		return reactionList
@@ -972,9 +975,9 @@ export class CharacterGURPS<
 	}
 
 	get conditionalModifiers(): ConditionalModifier[] {
-		let reactionMap: Map<string, ConditionalModifier> = new Map()
+		const reactionMap: Map<string, ConditionalModifier> = new Map()
 		this.traits.forEach(t => {
-			let source = LocalizeGURPS.format(LocalizeGURPS.translations.gurps.reaction.from_trait, {
+			const source = LocalizeGURPS.format(LocalizeGURPS.translations.gurps.reaction.from_trait, {
 				name: t.name ?? "",
 			})
 			this.conditionalModifiersFromFeatureList(source, t.features, reactionMap)
@@ -984,7 +987,7 @@ export class CharacterGURPS<
 		})
 		for (const e of this.carriedEquipment) {
 			if (e.equipped && e.system.quantity > 0) {
-				let source = LocalizeGURPS.format(LocalizeGURPS.translations.gurps.reaction.from_equipment, {
+				const source = LocalizeGURPS.format(LocalizeGURPS.translations.gurps.reaction.from_equipment, {
 					name: e.name ?? "",
 				})
 				this.conditionalModifiersFromFeatureList(source, e.features, reactionMap)
@@ -1003,7 +1006,7 @@ export class CharacterGURPS<
 				})
 			this.conditionalModifiersFromFeatureList(source, sk.features, reactionMap)
 		}
-		let reactionList = Array.from(reactionMap.values())
+		const reactionList = Array.from(reactionMap.values())
 		return reactionList
 	}
 
@@ -1107,7 +1110,7 @@ export class CharacterGURPS<
 	}
 
 	get BodyType(): HitLocationTable {
-		let b = this.system.settings.body_type
+		const b = this.system.settings.body_type
 		if (!b) return new HitLocationTable("", new DiceGURPS(), [], this, "")
 		return new HitLocationTable(b.name, b.roll, b.locations, this, "")
 	}
@@ -1415,7 +1418,7 @@ export class CharacterGURPS<
 			k.unsatisfiedReason = ""
 			const tooltip = new TooltipGURPS()
 			let satisfied = true
-			let eqpPenalty = { value: false }
+			const eqpPenalty = { value: false }
 			if (!k.prereqsEmpty) satisfied = k.prereqs.satisfied(this, k, tooltip, eqpPenalty)
 			if (satisfied && k instanceof TechniqueGURPS) satisfied = k.satisfied(tooltip)
 			if (eqpPenalty) {
@@ -1441,7 +1444,7 @@ export class CharacterGURPS<
 			b.unsatisfied_reason = ""
 			const tooltip = new TooltipGURPS()
 			let satisfied = true
-			let eqpPenalty = { value: false }
+			const eqpPenalty = { value: false }
 			if (!b.prereqsEmpty) satisfied = b.prereqs.satisfied(this, b, tooltip, eqpPenalty)
 			if (satisfied && b instanceof RitualMagicSpellGURPS) satisfied = b.satisfied(tooltip)
 			if (eqpPenalty) {
@@ -1964,7 +1967,7 @@ export class CharacterGURPS<
 	}
 
 	async promptImport() {
-		let dialog = new Dialog({
+		const dialog = new Dialog({
 			title: LocalizeGURPS.translations.gurps.character.import_prompt.title,
 			content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/actor/import-prompt.hbs`, { object: this }),
 			buttons: {

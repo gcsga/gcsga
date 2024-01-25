@@ -230,7 +230,7 @@ export class ItemSheetGCS<IType extends ItemGCS = ItemGCS> extends ContainerShee
 
 	render(
 		force?: boolean | undefined,
-		options?: Application.RenderOptions<DocumentSheetOptions<Item>> | undefined
+		options?: Application.RenderOptions<DocumentSheetOptions<Item>> | undefined,
 	): this {
 		if (this.object.container instanceof Item && this.object.container.sheet?.rendered)
 			this.object.container.sheet.render(true)

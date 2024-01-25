@@ -37,117 +37,117 @@
  *      action: dragRightCancel
  */
 declare class MouseInteractionManager {
-    object: PlaceableObject;
-    layer: PlaceablesLayer;
-    permissions: object;
-    callbacks: object;
-    options: object;
+	object: PlaceableObject
+	layer: PlaceablesLayer
+	permissions: object
+	callbacks: object
+	options: object
 
-    /**
-     * The current interaction state
-     */
-    state: number;
+	/**
+	 * The current interaction state
+	 */
+	state: number
 
-    /**
-     * Bound handlers which can be added and removed
-     */
-    handlers: Record<string, Function>;
+	/**
+	 * Bound handlers which can be added and removed
+	 */
+	handlers: Record<string, Function>
 
-    /**
-     * The drag handling time
-     */
-    dragTime: number;
+	/**
+	 * The drag handling time
+	 */
+	dragTime: number
 
-    /**
-     * The time of the last left-click event
-     */
-    lcTime: number;
+	/**
+	 * The time of the last left-click event
+	 */
+	lcTime: number
 
-    /**
-     * The time of the last right-click event
-     */
-    rcTime: number;
+	/**
+	 * The time of the last right-click event
+	 */
+	rcTime: number
 
-    /**
-     * A flag for whether we are right-click dragging
-     */
-    protected _dragRight: boolean;
+	/**
+	 * A flag for whether we are right-click dragging
+	 */
+	protected _dragRight: boolean
 
-    constructor(
-        object: PlaceableObject,
-        layer: PlaceablesLayer,
-        permissions?: object,
-        callbacks?: object,
-        options?: object,
-    );
+	constructor(
+		object: PlaceableObject,
+		layer: PlaceablesLayer,
+		permissions?: object,
+		callbacks?: object,
+		options?: object,
+	)
 
-    /** Get the target */
-    get target(): PlaceableObject;
+	/** Get the target */
+	get target(): PlaceableObject
 
-    /** Activate interactivity for the handled object */
-    activate(): MouseInteractionManager;
+	/** Activate interactivity for the handled object */
+	activate(): MouseInteractionManager
 
-    /**
-     * Test whether the current user has permission to perform a step of the workflow
-     * @param action    The action being attempted
-     * @param event     The event being handled
-     * @return          Can the action be performed?
-     */
-    can(action: string, event: Event): boolean;
+	/**
+	 * Test whether the current user has permission to perform a step of the workflow
+	 * @param action    The action being attempted
+	 * @param event     The event being handled
+	 * @return          Can the action be performed?
+	 */
+	can(action: string, event: Event): boolean
 
-    /**
-     * Execute a callback function associated with a certain action in the workflow
-     * @param action    The action being attempted
-     * @param event     The event being handled
-     */
-    callback(action: string, event: Event): unknown;
+	/**
+	 * Execute a callback function associated with a certain action in the workflow
+	 * @param action    The action being attempted
+	 * @param event     The event being handled
+	 */
+	callback(action: string, event: Event): unknown
 
-    /** A reference to the possible interaction states which can be observed */
-    get states(): {
-        NONE: 0;
-        HOVER: 1;
-        CLICKED: 2;
-        DRAG: 3;
-        DROP: 4;
-    };
+	/** A reference to the possible interaction states which can be observed */
+	get states(): {
+		NONE: 0
+		HOVER: 1
+		CLICKED: 2
+		DRAG: 3
+		DROP: 4
+	}
 
-    /* -------------------------------------------- */
-    /*  Listener Activation and Deactivation        */
-    /* -------------------------------------------- */
+	/* -------------------------------------------- */
+	/*  Listener Activation and Deactivation        */
+	/* -------------------------------------------- */
 
-    /**
-     * Activate a set of listeners which handle hover events on the target object
-     */
-    protected _activateHoverEvents(): void;
+	/**
+	 * Activate a set of listeners which handle hover events on the target object
+	 */
+	protected _activateHoverEvents(): void
 
-    /**
-     * Activate a new set of listeners for click events on the target object
-     */
-    protected _activateClickEvents(): void;
+	/**
+	 * Activate a new set of listeners for click events on the target object
+	 */
+	protected _activateClickEvents(): void
 
-    /**
-     * Deactivate event listeners for click events on the target object
-     */
-    protected _deactivateClickEvents(): void;
+	/**
+	 * Deactivate event listeners for click events on the target object
+	 */
+	protected _deactivateClickEvents(): void
 
-    /**
-     * Activate events required for handling a drag-and-drop workflow
-     */
-    protected _activateDragEvents(): void;
+	/**
+	 * Activate events required for handling a drag-and-drop workflow
+	 */
+	protected _activateDragEvents(): void
 
-    /**
-     * Deactivate events required for handling drag-and-drop workflow.
-     */
-    protected _deactivateDragEvents(): void;
+	/**
+	 * Deactivate events required for handling drag-and-drop workflow.
+	 */
+	protected _deactivateDragEvents(): void
 
-    /* -------------------------------------------- */
-    /*  Drag and Drop                               */
-    /* -------------------------------------------- */
+	/* -------------------------------------------- */
+	/*  Drag and Drop                               */
+	/* -------------------------------------------- */
 
-    /**
-     * A public method to handle directly an event into this manager, according to its type.
-     * Note: drag events are not handled.
-     * @returns Has the event been processed?
-     */
-    handleEvent(event: PIXI.FederatedEvent): boolean;
+	/**
+	 * A public method to handle directly an event into this manager, according to its type.
+	 * Note: drag events are not handled.
+	 * @returns Has the event been processed?
+	 */
+	handleEvent(event: PIXI.FederatedEvent): boolean
 }

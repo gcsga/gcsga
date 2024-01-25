@@ -21,7 +21,7 @@ export class CompendiumEquipmentModifierTab extends CompendiumTab {
 		for await (const { pack, index } of this.browser.packLoader.loadPacks(
 			"Item",
 			this.browser.loadedPacks(TabName.EquipmentModifier),
-			indexFields
+			indexFields,
 		)) {
 			const collection = game.packs.get(pack.collection)
 			;((await collection?.getDocuments()) as any).forEach((modifier: any) => {

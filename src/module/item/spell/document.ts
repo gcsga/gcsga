@@ -144,8 +144,8 @@ export class SpellGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS
 	get effectiveLevel(): number {
 		const actor = this.actor || this.dummyActor
 		if (!actor) return -Infinity
-		let att = actor.resolveAttributeCurrent(this.attribute)
-		let effectiveAtt = actor.resolveAttributeEffective(this.attribute)
+		const att = actor.resolveAttributeCurrent(this.attribute)
+		const effectiveAtt = actor.resolveAttributeEffective(this.attribute)
 		return this.level.level - att + effectiveAtt
 	}
 
@@ -213,7 +213,7 @@ export class SpellGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS
 		else minPoints -= 4
 		minPoints = Math.max(minPoints, 0)
 
-		let oldLevel = this.level.level
+		const oldLevel = this.level.level
 		for (let points = basePoints; points >= minPoints; points--) {
 			this.system.points = points
 			if (this.calculateLevel().level < oldLevel) {
@@ -222,7 +222,7 @@ export class SpellGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS
 		}
 
 		if (this.points > 0) {
-			let oldLevel = this.calculateLevel().level
+			const oldLevel = this.calculateLevel().level
 			while (this.points > 0) {
 				this.system.points = Math.max(this.points - 1, 0)
 				if (this.calculateLevel().level !== oldLevel) {

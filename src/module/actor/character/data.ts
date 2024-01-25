@@ -134,8 +134,8 @@ export interface CharacterCalc {
 	lifting_st_bonus: number
 	striking_st_bonus: number
 	throwing_st_bonus: number
-	move: Array<number>
-	dodge: Array<number>
+	move: number[]
+	dodge: number[]
 	dodge_bonus: number
 	block_bonus: number
 	parry_bonus: number

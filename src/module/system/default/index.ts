@@ -62,7 +62,7 @@ export class SkillDefault {
 		actor: CharacterGURPS,
 		require_points: boolean,
 		excludes: Map<string, boolean>,
-		rule_of_20: boolean
+		rule_of_20: boolean,
 	): number {
 		let best = -Infinity
 		switch (this.type) {
@@ -94,7 +94,7 @@ export class SkillDefault {
 		actor: CharacterGURPS,
 		require_points: boolean,
 		excludes: Map<string, boolean> | null = new Map(),
-		rule_of_20 = false
+		rule_of_20 = false,
 	): number {
 		let level = 0
 		let best = 0

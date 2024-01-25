@@ -13,7 +13,7 @@ export class PrereqList {
 
 	when_tl: NumericCriteria
 
-	prereqs: Array<BasePrereq | PrereqList>
+	prereqs: (BasePrereq | PrereqList)[]
 
 	constructor() {
 		this.type = prereq.Type.List
@@ -52,8 +52,8 @@ export class PrereqList {
 			if (!this.when_tl.matches(tl)) return true
 		}
 		let count = 0
-		let local = new TooltipGURPS()
-		let eqpPenalty = { value: false }
+		const local = new TooltipGURPS()
+		const eqpPenalty = { value: false }
 		for (const one of this.prereqs) {
 			if (one.satisfied(actor, exclude, local, eqpPenalty)) count++
 		}

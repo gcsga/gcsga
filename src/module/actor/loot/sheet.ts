@@ -216,7 +216,7 @@ export class LootSheetGURPS extends ActorSheetGURPS {
 			icon: "<i class='fas fa-gear'></i><i class='fas fa-up'></i>",
 			callback: () => {
 				let tl = item.system.tech_level
-				let tlNumber = tl.match(/\d+/)?.[0]
+				const tlNumber = tl.match(/\d+/)?.[0]
 				if (!tlNumber) return
 				const newTLNumber = parseInt(tlNumber) + 1
 				tl = tl.replace(tlNumber, `${newTLNumber}`)
@@ -229,7 +229,7 @@ export class LootSheetGURPS extends ActorSheetGURPS {
 				icon: "<i class='fas fa-gear'></i><i class='fas fa-down'></i>",
 				callback: () => {
 					let tl = item.system.tech_level
-					let tlNumber = tl.match(/\d+/)?.[0]
+					const tlNumber = tl.match(/\d+/)?.[0]
 					if (!tlNumber) return
 					const newTLNumber = parseInt(tlNumber) - 1
 					tl = tl.replace(tlNumber, `${newTLNumber}`)
@@ -304,7 +304,7 @@ export class LootSheetGURPS extends ActorSheetGURPS {
 	}
 
 	protected _onDragItem(event: JQuery.DragOverEvent): void {
-		let element = $(event.currentTarget!).closest(".item.desc")
+		const element = $(event.currentTarget!).closest(".item.desc")
 		if (!element.length) return
 		const heightAcross = (event.pageY! - element.offset()!.top) / element.height()!
 		const widthAcross = (event.pageX! - element.offset()!.left) / element.width()!
@@ -345,7 +345,7 @@ export class LootSheetGURPS extends ActorSheetGURPS {
 		const items = deepClone(
 			(this.actor.items as EmbeddedCollection<any, any>)
 				.map(item => item)
-				.sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0))
+				.sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0)),
 		)
 
 		const sheetData = {
@@ -371,11 +371,11 @@ export class LootSheetGURPS extends ActorSheetGURPS {
 				}
 				return arr
 			},
-			[[], []]
+			[[], []],
 		)
 
 		const carried_value = this.actor.wealthCarried()
-		let carried_weight = this.actor.weightCarried(true)
+		const carried_weight = this.actor.weightCarried(true)
 
 		// Data.carried_weight = `${carried_weight} lb`
 		data.carried_weight = Weight.format(carried_weight, this.actor.settings.default_weight_units)

@@ -38,12 +38,12 @@ export class RollGURPS extends Roll {
 		options?: {
 			missing: string
 			warn: boolean
-		}
+		},
 	): string {
-		let dataRgx = new RegExp(/\$([a-z.0-9_-]+)/gi)
+		const dataRgx = new RegExp(/\$([a-z.0-9_-]+)/gi)
 		const newFormula = formula.replace(dataRgx, (match, term) => {
 			if (data.actor) {
-				let value: any = data.actor.resolveVariable(term.replace("$", "")) ?? null
+				const value: any = data.actor.resolveVariable(term.replace("$", "")) ?? null
 				if (value === null) {
 					if (options?.warn && ui.notifications)
 						ui.notifications.warn(game.i18n.format("DICE.WarnMissingData", { match }))
@@ -57,7 +57,7 @@ export class RollGURPS extends Roll {
 	}
 
 	override _prepareData(data: any) {
-		let d: any = super._prepareData(data) ?? {}
+		const d: any = super._prepareData(data) ?? {}
 		// d.gmod = game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierTotal)
 		d.gmod = (game.user as UserGURPS)?.modifierTotal
 		if (!d.hasOwnProperty("gmodc"))
@@ -90,7 +90,7 @@ export class RollGURPS extends Roll {
 			actor,
 			data as RollTypeData,
 			game.settings.get(SYSTEM_NAME, SETTINGS.ROLL_FORMULA) || "3d6",
-			data.hidden
+			data.hidden,
 		)
 	}
 }

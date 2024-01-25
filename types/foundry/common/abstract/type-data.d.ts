@@ -1,5 +1,5 @@
-import type * as abstract from "./module.d.ts";
-import type * as packages from "../packages/module.d.ts";
+import type * as abstract from "./module.d.ts"
+import type * as packages from "../packages/module.d.ts"
 /**
  * A specialized subclass of DataModel, intended to represent a Document's type-specific data.
  * Systems or Modules that provide DataModel implementations for sub-types of Documents (such as Actors or Items)
@@ -60,17 +60,17 @@ import type * as packages from "../packages/module.d.ts";
  * ```
  */
 export default class TypeDataModel extends abstract.DataModel {
-    /** The package that is providing this DataModel for the given sub-type. */
-    readonly modelProvider: packages.BaseSystem | packages.BaseModule | null;
+	/** The package that is providing this DataModel for the given sub-type. */
+	readonly modelProvider: packages.BaseSystem | packages.BaseModule | null
 
-    constructor(data?: object, options?: DataModelConstructionOptions<abstract.Document | null>);
+	constructor(data?: object, options?: DataModelConstructionOptions<abstract.Document | null>)
 
-    /** Prepare data related to this DataModel itself, before any derived data is computed. */
-    prepareBaseData(): void;
+	/** Prepare data related to this DataModel itself, before any derived data is computed. */
+	prepareBaseData(): void
 
-    /**
-     * Apply transformations of derivations to the values of the source data object.
-     * Compute data fields whose values are not stored to the database.
-     */
-    prepareDerivedData(): void;
+	/**
+	 * Apply transformations of derivations to the values of the source data object.
+	 * Compute data fields whose values are not stored to the database.
+	 */
+	prepareDerivedData(): void
 }

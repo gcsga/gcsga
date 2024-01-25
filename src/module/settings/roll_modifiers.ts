@@ -57,7 +57,7 @@ export class RollModifierSettings extends SettingsMenuGURPS {
 		event.stopPropagation()
 		const modifiers: RollModifier[] = game.settings.get(
 			SYSTEM_NAME,
-			`${this.namespace}.modifiers`
+			`${this.namespace}.modifiers`,
 		) as RollModifier[]
 		modifiers.push({
 			name: LocalizeGURPS.translations.gurps.settings.roll_modifiers.default,
@@ -72,7 +72,7 @@ export class RollModifierSettings extends SettingsMenuGURPS {
 		event.stopPropagation()
 		const modifiers: RollModifier[] = game.settings.get(
 			SYSTEM_NAME,
-			`${this.namespace}.modifiers`
+			`${this.namespace}.modifiers`,
 		) as RollModifier[]
 		const index = Number($(event.currentTarget).data("index")) || 0
 		modifiers.splice(index, 1)
@@ -88,7 +88,7 @@ export class RollModifierSettings extends SettingsMenuGURPS {
 			"text/plain",
 			JSON.stringify({
 				index: index,
-			})
+			}),
 		)
 	}
 
@@ -106,13 +106,13 @@ export class RollModifierSettings extends SettingsMenuGURPS {
 	}
 
 	protected async _onDrop(event: DragEvent): Promise<unknown> {
-		let dragData = JSON.parse(event.dataTransfer!.getData("text/plain"))
+		const dragData = JSON.parse(event.dataTransfer!.getData("text/plain"))
 		let element = $(event.target!)
 		if (!element.hasClass("item")) element = element.parent(".item")
 
 		const modifiers: RollModifier[] = game.settings.get(
 			SYSTEM_NAME,
-			`${this.namespace}.modifiers`
+			`${this.namespace}.modifiers`,
 		) as RollModifier[]
 		const target_index = element.data("index")
 		const above = element.hasClass("border-top")
@@ -130,7 +130,7 @@ export class RollModifierSettings extends SettingsMenuGURPS {
 	override async getData(): Promise<any> {
 		const modifiers: RollModifier[] = game.settings.get(
 			SYSTEM_NAME,
-			`${this.namespace}.modifiers`
+			`${this.namespace}.modifiers`,
 		) as RollModifier[]
 		return {
 			modifiers: modifiers,
@@ -141,7 +141,7 @@ export class RollModifierSettings extends SettingsMenuGURPS {
 	protected override async _updateObject(_event: Event, formData: any): Promise<void> {
 		const modifiers: RollModifier[] = game.settings.get(
 			SYSTEM_NAME,
-			`${this.namespace}.modifiers`
+			`${this.namespace}.modifiers`,
 		) as RollModifier[]
 		formData = prepareFormData(formData, { modifiers: modifiers })
 		await game.settings.set(SYSTEM_NAME, `${this.namespace}.modifiers`, formData.modifiers)

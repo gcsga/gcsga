@@ -29,7 +29,7 @@ export interface PrereqListObj {
 	type: prereq.Type
 	all: boolean
 	when_tl: NumericCriteria
-	prereqs: Array<BasePrereqObj | PrereqListObj>
+	prereqs: (BasePrereqObj | PrereqListObj)[]
 }
 export interface SkillPrereqObj extends BasePrereqObj {
 	name: StringCriteria

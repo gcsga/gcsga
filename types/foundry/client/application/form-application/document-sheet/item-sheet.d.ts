@@ -10,33 +10,33 @@
  * @param [options] Additional options which modify the rendering of the item.
  */
 declare class ItemSheet<TItem extends Item, TOptions extends DocumentSheetOptions> extends DocumentSheet<
-    TItem,
-    TOptions
+	TItem,
+	TOptions
 > {
-    constructor(item: TItem, options?: Partial<TOptions>);
+	constructor(item: TItem, options?: Partial<TOptions>)
 
-    static override get defaultOptions(): DocumentSheetOptions;
+	static override get defaultOptions(): DocumentSheetOptions
 
-    override get id(): string;
+	override get id(): string
 
-    /**
-     * A convenience reference to the Item entity
-     */
-    get item(): TItem;
+	/**
+	 * A convenience reference to the Item entity
+	 */
+	get item(): TItem
 
-    /** The Actor instance which owns this item. This may be null if the item is unowned. */
-    get actor(): TItem["parent"];
+	/** The Actor instance which owns this item. This may be null if the item is unowned. */
+	get actor(): TItem["parent"]
 
-    override getData(option?: Partial<TOptions>): ItemSheetData<TItem> | Promise<ItemSheetData<TItem>>;
+	override getData(option?: Partial<TOptions>): ItemSheetData<TItem> | Promise<ItemSheetData<TItem>>
 
-    /**
-     * Activate listeners which provide interactivity for item sheet events
-     * @param html The HTML object returned by template rendering
-     */
-    override activateListeners(html: JQuery): void;
+	/**
+	 * Activate listeners which provide interactivity for item sheet events
+	 * @param html The HTML object returned by template rendering
+	 */
+	override activateListeners(html: JQuery): void
 }
 
 declare interface ItemSheetData<TItem extends Item> extends DocumentSheetData<TItem> {
-    item: TItem;
-    data: object;
+	item: TItem
+	data: object
 }

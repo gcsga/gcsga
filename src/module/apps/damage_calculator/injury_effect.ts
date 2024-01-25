@@ -135,7 +135,7 @@ class KnockdownCheck extends EffectCheck {
 				new CheckFailureConsequence("stun", 0),
 				new CheckFailureConsequence("fall prone", 0),
 				new CheckFailureConsequence("unconscious", 5),
-			]
+			],
 		)
 	}
 }

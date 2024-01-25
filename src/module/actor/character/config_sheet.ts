@@ -173,7 +173,7 @@ export class CharacterSheetConfig extends FormApplication {
 								text: text,
 								name: files[0].name,
 								path: files[0].path,
-							})
+							}),
 					)
 				}
 				this.render()
@@ -194,7 +194,7 @@ export class CharacterSheetConfig extends FormApplication {
 		const default_attributes = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
 		const default_resource_trackers = game.settings.get(
 			SYSTEM_NAME,
-			`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`
+			`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`,
 		)
 		const default_hit_locations = {
 			name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
@@ -455,7 +455,7 @@ export class CharacterSheetConfig extends FormApplication {
 				type: type,
 				index: index,
 				parent_index: parent_index,
-			})
+			}),
 		)
 		;(event as any).dragType = type
 	}
@@ -474,7 +474,7 @@ export class CharacterSheetConfig extends FormApplication {
 	}
 
 	protected async _onDrop(event: DragEvent): Promise<unknown> {
-		let dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
+		const dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
 		const type: ListType = dragData.type
 
 		let element = $(event.target!)

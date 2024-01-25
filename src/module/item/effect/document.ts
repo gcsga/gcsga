@@ -179,7 +179,7 @@ export class EffectGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGU
 		const tokens = actor.isToken ? [actor.token?.object] : (actor.getActiveTokens(true) as any[])
 		let label = `${enabled ? "+" : "-"} ${this.name}`
 		if (this.canLevel && this.level) label += ` ${this.level}`
-		for (let t of tokens) {
+		for (const t of tokens) {
 			if (!t.visible || !t.renderable) continue
 			;(canvas as any).interface.createScrollingText(t.center, label, {
 				anchor: CONST.TEXT_ANCHOR_POINTS.CENTER,

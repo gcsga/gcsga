@@ -31,7 +31,7 @@ type ChatData = {
 	name: string
 	actor: string | null
 	displayName: string
-	modifiers: Array<RollModifier & { class?: string }>
+	modifiers: (RollModifier & { class?: string })[]
 	success: RollSuccess
 	margin: string
 	margin_number: number
@@ -49,11 +49,11 @@ abstract class RollTypeHandler {
 		actor: CharacterGURPS,
 		data: RollTypeData,
 		formula: string,
-		hidden: boolean
+		hidden: boolean,
 	): Promise<void> {
 		if (!this.isValid(data)) return
 
-		let messageData = await this.getMessageData(
+		const messageData = await this.getMessageData(
 			actor,
 			user,
 			this.getItem(data),
@@ -61,7 +61,7 @@ abstract class RollTypeHandler {
 			formula,
 			this.getName(data),
 			this.getType(data),
-			this.getExtras(data)
+			this.getExtras(data),
 		)
 		if (hidden) messageData.rollMode = CONST.DICE_ROLL_MODES.PRIVATE
 
@@ -120,10 +120,10 @@ abstract class RollTypeHandler {
 		formula: string,
 		name: string,
 		type: RollType,
-		_extras: any
+		_extras: any,
 	): Promise<Record<string, any>> {
 		// Create an array of Modifiers suitable for display.
-		const modifiers: Array<RollModifier & { class?: string }> = this.getModifiers(user)
+		const modifiers: (RollModifier & { class?: string })[] = this.getModifiers(user)
 
 		// Determine the encumbrance penalty, if any, and add it to the modifiers.
 		const encumbrance = actor.encumbranceLevel(true)
@@ -285,7 +285,7 @@ abstract class RollTypeHandler {
 		}
 	}
 
-	addModsDisplayClass(modifiers: Array<RollModifier & { class?: string }>): Array<RollModifier & { class?: string }> {
+	addModsDisplayClass(modifiers: (RollModifier & { class?: string })[]): (RollModifier & { class?: string })[] {
 		modifiers.forEach(m => {
 			m.class = MODIFIER_CLASS_ZERO
 			if (m.modifier > 0) m.class = MODIFIER_CLASS_POSITIVE
@@ -301,7 +301,7 @@ class ModifierRollTypeHandler extends RollTypeHandler {
 		_actor: CharacterGURPS,
 		data: RollTypeData,
 		_raFormula?: string,
-		_hidden?: boolean
+		_hidden?: boolean,
 	): Promise<void> {
 		if (!user) return
 		const mod: RollModifier = {
@@ -436,14 +436,14 @@ class AttackRollTypeHandler extends RollTypeHandler {
 	}
 
 	override getExtraData(data: ChatData): any {
-		let extra = {}
+		const extra = {}
 
 		// If Ranged, add number of potential hits if greater than one.
 		if (data.item.type === ItemType.RangedWeapon) {
 			const item = data.item
 			if (this.validRateOfFire(item.rate_of_fire) && data.margin_number > 0 && parseInt(item.recoil) > 0) {
 				const effectiveRof = this.effectiveRateOfFire(item.rate_of_fire.current)
-				let numberOfShots = Math.min(Math.floor(data.margin_number / parseInt(item.recoil)) + 1, effectiveRof)
+				const numberOfShots = Math.min(Math.floor(data.margin_number / parseInt(item.recoil)) + 1, effectiveRof)
 				if (numberOfShots > 1)
 					mergeObject(extra, {
 						ranged: {
@@ -551,7 +551,7 @@ class DamageRollTypeHandler extends RollTypeHandler {
 		__: string,
 		name: string,
 		___: RollType,
-		extras: any
+		extras: any,
 	): Promise<Record<string, any>> {
 		const modifierTotal = this.applyMods(0, this.getModifiers(user))
 
@@ -628,9 +628,9 @@ class LocationRollTypeHandler extends RollTypeHandler {
 		actor: CharacterGURPS,
 		_data: RollTypeData,
 		_formula: string,
-		hidden: boolean
+		hidden: boolean,
 	): Promise<void> {
-		let result = await HitLocationUtil.rollRandomLocation(actor.hitLocationTable)
+		const result = await HitLocationUtil.rollRandomLocation(actor.hitLocationTable)
 
 		// Get localized version of the location id, if necessary.
 		const location = result.location?.choice_name ?? "Torso"
@@ -662,13 +662,13 @@ class GenericRollTypeHandler extends RollTypeHandler {
 		actor: Actor,
 		data: RollTypeData,
 		formula: string,
-		hidden: boolean
+		hidden: boolean,
 	): Promise<void> {
 		const type = data.type
 		formula = data.formula
 
 		// Create an array of Modifiers suitable for display.
-		const modifiers: Array<RollModifier & { class?: string }> = this.getModifiers(user)
+		const modifiers: (RollModifier & { class?: string })[] = this.getModifiers(user)
 		this.addModsDisplayClass(modifiers)
 
 		const roll = Roll.create(formula) as RollGURPS

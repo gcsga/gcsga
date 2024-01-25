@@ -6,15 +6,15 @@
  * @todo Fill in
  */
 declare class PrimaryCanvasGroup extends CachedContainer {
-    tokens: Collection<TokenMesh>;
+	tokens: Collection<TokenMesh>
 
-    /**
-     * Render all tokens in their own render texture.
-     * @param renderer The renderer to use.
-     */
-    protected _renderTokens(renderer: PIXI.Renderer): void;
+	/**
+	 * Render all tokens in their own render texture.
+	 * @param renderer The renderer to use.
+	 */
+	protected _renderTokens(renderer: PIXI.Renderer): void
 }
 
 declare interface PrimaryCanvasGroup extends CachedContainer {
-    readonly children: PIXI.Container[];
+	readonly children: PIXI.Container[]
 }

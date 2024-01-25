@@ -111,10 +111,19 @@ declare global {
 		get(module: "gcsga", key: "default_resource_trackers.resource_trackers"): ResourceTrackerDefObj[]
 		get(module: "gcsga", key: "default_move_types.move_types"): MoveTypeDefObj[]
 		get(module: "gcsga", key: "automatic_unready"): boolean
+		get(
+			module: "gcsga",
+			key: "compendium_browser_packs",
+		): {
+			trait: Record<string, { load: boolean; name: string; skillDefault: boolean }>[]
+			skill: Record<string, { load: boolean; name: string; skillDefault: boolean }>[]
+			spell: Record<string, { load: boolean; name: string; skillDefault: boolean }>[]
+			equipment: Record<string, { load: boolean; name: string; skillDefault: boolean }>[]
+		}
 	}
 
 	interface ClientSettingsMap {
-		get(key: "pf2e.worldClock.worldCreatedOn"): SettingConfig & { default: string }
+		// get(key: "gcsga.worldClock.worldCreatedOn"): SettingConfig & { default: string }
 	}
 
 	interface RollMathProxy {

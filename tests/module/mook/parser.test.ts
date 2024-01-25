@@ -96,10 +96,10 @@ describe("Mook generator", () => {
 			expect(_mook.traits.some(t => t.name === "Infravision" && t.points === 0)).toBe(true)
 			expect(_mook.traits.some(t => t.name === "Rapid Healing" && t.points === 0)).toBe(true)
 			expect(_mook.traits.some(t => t.name === "Resistant to Disease" && t.levels === 5 && t.points === 0)).toBe(
-				true
+				true,
 			)
 			expect(_mook.traits.some(t => t.name === "Resistant to Poison" && t.levels === 5 && t.points === 0)).toBe(
-				true
+				true,
 			)
 			expect(_mook.traits.some(t => t.name === "Social Stigma (Savage)" && t.points === 0)).toBe(true)
 		})
@@ -115,21 +115,21 @@ describe("Mook generator", () => {
 						t.levels === 1 &&
 						t.modifiers[0].name === "Tough Skin" &&
 						t.modifiers[0].cost === "-40%" &&
-						t.points === 3
-				)
+						t.points === 3,
+				),
 			).toBe(true)
 			expect(_mook.traits.some(t => t.name === "Wealth (Wealthy)" && t.points === 20)).toBe(true)
 			expect(_mook.traits.some(t => t.name === "Miserly" && t.cr === 12 && t.points === -10)).toBe(true)
 			expect(_mook.traits.some(t => t.name === "Sense of Duty (Halmaro and Guild)" && t.points === -10)).toBe(
-				true
+				true,
 			)
 			expect(_mook.traits.some(t => t.name === "Stubborn" && t.points === -5)).toBe(true)
 			expect(_mook.traits.some(t => t.name === "Dotes on Halmaros daughters" && t.points === 0)).toBe(true)
 			expect(_mook.traits.some(t => t.name === "Dislikes clerics" && t.points === 0)).toBe(true)
 			expect(
 				_mook.traits.some(
-					t => t.name === "will always wear the minimum for comfort and propriety" && t.points === 0
-				)
+					t => t.name === "will always wear the minimum for comfort and propriety" && t.points === 0,
+				),
 			).toBe(true)
 			expect(_mook.traits.some(t => t.name === "Enjoys embarrassing his inferiors" && t.points === 0)).toBe(true)
 			expect(_mook.traits.some(t => t.name === "Likes open spaces" && t.points === 0)).toBe(true)
@@ -149,8 +149,8 @@ describe("Mook generator", () => {
 						s.level === 13 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -159,8 +159,8 @@ describe("Mook generator", () => {
 						s.level === 13 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -169,8 +169,8 @@ describe("Mook generator", () => {
 						s.level === 13 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -179,8 +179,8 @@ describe("Mook generator", () => {
 						s.level === 12 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -189,8 +189,8 @@ describe("Mook generator", () => {
 						s.level === 12 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 		})
 
@@ -205,8 +205,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -215,8 +215,8 @@ describe("Mook generator", () => {
 						s.level === 18 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -225,8 +225,8 @@ describe("Mook generator", () => {
 						s.level === 18 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -235,8 +235,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -245,8 +245,8 @@ describe("Mook generator", () => {
 						s.level === 16 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -255,8 +255,8 @@ describe("Mook generator", () => {
 						s.level === 16 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -265,8 +265,8 @@ describe("Mook generator", () => {
 						s.level === 17 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -275,8 +275,8 @@ describe("Mook generator", () => {
 						s.level === 18 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -285,8 +285,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -295,8 +295,8 @@ describe("Mook generator", () => {
 						s.level === 18 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -305,8 +305,8 @@ describe("Mook generator", () => {
 						s.level === 16 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -315,8 +315,8 @@ describe("Mook generator", () => {
 						s.level === 16 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -325,8 +325,8 @@ describe("Mook generator", () => {
 						s.level === 16 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -335,8 +335,8 @@ describe("Mook generator", () => {
 						s.level === 17 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -345,8 +345,8 @@ describe("Mook generator", () => {
 						s.level === 14 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -355,8 +355,8 @@ describe("Mook generator", () => {
 						s.level === 16 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -365,8 +365,8 @@ describe("Mook generator", () => {
 						s.level === 16 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -375,8 +375,8 @@ describe("Mook generator", () => {
 						s.level === 18 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -385,8 +385,8 @@ describe("Mook generator", () => {
 						s.level === 12 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -395,8 +395,8 @@ describe("Mook generator", () => {
 						s.level === 14 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 		})
 
@@ -411,8 +411,8 @@ describe("Mook generator", () => {
 						s.level === 16 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 8
-				)
+						s.points === 8,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -421,8 +421,8 @@ describe("Mook generator", () => {
 						s.level === 16 &&
 						s.attribute.toLowerCase() === gid.Perception &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 12
-				)
+						s.points === 12,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -432,8 +432,8 @@ describe("Mook generator", () => {
 						s.level === 14 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Easy &&
-						s.points === 1
-				)
+						s.points === 1,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -443,8 +443,8 @@ describe("Mook generator", () => {
 						s.level === 14 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Easy &&
-						s.points === 1
-				)
+						s.points === 1,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -453,8 +453,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 8
-				)
+						s.points === 8,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -463,8 +463,8 @@ describe("Mook generator", () => {
 						s.level === 17 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Easy &&
-						s.points === 8
-				)
+						s.points === 8,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -474,8 +474,8 @@ describe("Mook generator", () => {
 						s.level === 14 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 8
-				)
+						s.points === 8,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -484,8 +484,8 @@ describe("Mook generator", () => {
 						s.level === 16 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 12
-				)
+						s.points === 12,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -494,8 +494,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Perception &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 8
-				)
+						s.points === 8,
+				),
 			).toBe(true)
 			expect(
 				_mook.skills.some(
@@ -504,8 +504,8 @@ describe("Mook generator", () => {
 						s.level === 17 &&
 						s.attribute.toLowerCase() === gid.Dexterity &&
 						s.difficulty.toLowerCase() === difficulty.Level.Average &&
-						s.points === 12
-				)
+						s.points === 12,
+				),
 			).toBe(true)
 		})
 	})
@@ -522,8 +522,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -532,8 +532,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -542,8 +542,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -552,8 +552,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -562,8 +562,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -572,8 +572,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -582,8 +582,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -592,8 +592,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -602,8 +602,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -612,8 +612,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -622,8 +622,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -632,8 +632,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -642,8 +642,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -652,8 +652,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -662,8 +662,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -672,8 +672,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -682,8 +682,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -692,8 +692,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -702,8 +702,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -712,8 +712,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -722,8 +722,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -732,8 +732,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -742,8 +742,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -752,8 +752,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -762,8 +762,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -772,8 +772,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 			expect(
 				_mook.spells.some(
@@ -782,8 +782,8 @@ describe("Mook generator", () => {
 						s.level === 15 &&
 						s.attribute.toLowerCase() === gid.Intelligence &&
 						s.difficulty.toLowerCase() === difficulty.Level.Hard &&
-						s.points === 0
-				)
+						s.points === 0,
+				),
 			).toBe(true)
 		})
 	})
@@ -800,8 +800,8 @@ describe("Mook generator", () => {
 						w.level === 13 &&
 						w.reach === "C" &&
 						w.damage.type === "cut" &&
-						w.damage.base === "1d-1"
-				)
+						w.damage.base === "1d-1",
+				),
 			).toBe(true)
 			expect(
 				_mook.melee.some(
@@ -810,8 +810,8 @@ describe("Mook generator", () => {
 						w.level === 11 &&
 						w.reach === "C, 1" &&
 						w.damage.type === "cr" &&
-						w.damage.base === "1d+1"
-				)
+						w.damage.base === "1d+1",
+				),
 			).toBe(true)
 			expect(
 				_mook.melee.some(
@@ -820,8 +820,8 @@ describe("Mook generator", () => {
 						w.level === 13 &&
 						w.reach === "C, 1" &&
 						w.damage.type === "cut" &&
-						w.damage.base === "1d"
-				)
+						w.damage.base === "1d",
+				),
 			).toBe(true)
 			expect(
 				_mook.melee.some(
@@ -830,8 +830,8 @@ describe("Mook generator", () => {
 						w.level === 13 &&
 						w.reach === "C" &&
 						w.damage.type === "cr" &&
-						w.damage.base === "1d-1"
-				)
+						w.damage.base === "1d-1",
+				),
 			).toBe(true)
 			expect(
 				_mook.melee.some(
@@ -840,8 +840,8 @@ describe("Mook generator", () => {
 						w.level === 12 &&
 						w.reach === "1" &&
 						w.damage.type === "cr" &&
-						w.damage.base === "1d-1"
-				)
+						w.damage.base === "1d-1",
+				),
 			).toBe(true)
 			expect(
 				_mook.ranged.some(
@@ -854,8 +854,8 @@ describe("Mook generator", () => {
 						w.accuracy === "1" &&
 						w.range === "110/165" &&
 						w.shots === "1(2)" &&
-						w.bulk === "-6"
-				)
+						w.bulk === "-6",
+				),
 			).toBe(true)
 		})
 
@@ -870,8 +870,8 @@ describe("Mook generator", () => {
 						w.level === 12 &&
 						w.reach === "C, 1" &&
 						w.damage.type === "burn" &&
-						w.damage.base === "1d"
-				)
+						w.damage.base === "1d",
+				),
 			).toBe(true)
 			expect(
 				_mook.ranged.some(
@@ -881,8 +881,8 @@ describe("Mook generator", () => {
 						w.damage.type === "burn" &&
 						w.damage.base === "2d" &&
 						w.accuracy === "3" &&
-						w.range === "10/100"
-				)
+						w.range === "10/100",
+				),
 			).toBe(true)
 		})
 	})

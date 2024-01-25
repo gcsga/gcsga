@@ -8,10 +8,10 @@
  * @throws {HttpError}
  */
 export function fetchWithTimeout(
-    url: string,
-    data?: RequestInit,
-    options?: { timeoutMs?: number | null; onTimeout?: () => unknown | void },
-): Promise<Response>;
+	url: string,
+	data?: RequestInit,
+	options?: { timeoutMs?: number | null; onTimeout?: () => unknown | void },
+): Promise<Response>
 
 /**
  * A small wrapper that automatically asks for JSON with a Timeout
@@ -21,17 +21,17 @@ export function fetchWithTimeout(
  * @param onTimeout A method to invoke if and when the timeout is reached
  */
 export function fetchJsonWithTimeout(
-    url: string,
-    data?: RequestInit,
-    options?: { timeoutMs?: number | null; onTimeout?: () => unknown | void },
-): Promise<JSONValue>;
+	url: string,
+	data?: RequestInit,
+	options?: { timeoutMs?: number | null; onTimeout?: () => unknown | void },
+): Promise<JSONValue>
 
 /**
  * Represents an HTTP Error when a non-OK response is returned by Fetch
  * @extends {Error}
  */
 export class HttpError extends Error {
-    constructor(statusText: string, code: number, displayMessage?: string);
+	constructor(statusText: string, code: number, displayMessage?: string)
 
-    override toString(): string;
+	override toString(): string
 }

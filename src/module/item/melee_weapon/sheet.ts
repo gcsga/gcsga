@@ -12,11 +12,11 @@ export class MeleeWeaponSheet extends WeaponSheet {
 					obj[key] = data[key]
 					return obj
 				},
-				<Record<string, any>>{}
+				<Record<string, any>>{},
 			)
 		for (const key of Object.keys(weaponData)) delete data[key]
 		const groupedWeaponData: DeepPartial<Record<keyof MeleeWeaponGURPS, Record<string, any>>> = Object.keys(
-			weaponData
+			weaponData,
 		).reduce((obj: DeepPartial<Record<keyof MeleeWeaponGURPS, Record<string, any>>>, key: string) => {
 			const [type, ...property] = key.split(".").slice(1) as [keyof MeleeWeaponGURPS, string[]]
 			obj[type] ??= {}
@@ -24,7 +24,7 @@ export class MeleeWeaponSheet extends WeaponSheet {
 			else obj[type]![property.join(".")] = weaponData[key]
 			return obj
 		}, {})
-		for (const key of Object.keys(groupedWeaponData) as Array<keyof MeleeWeaponGURPS>) {
+		for (const key of Object.keys(groupedWeaponData) as (keyof MeleeWeaponGURPS)[]) {
 			const property = this.object[key]
 			Object.assign(property, groupedWeaponData[key])
 			data[`system.${key}`] = property.toString(false)

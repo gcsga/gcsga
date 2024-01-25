@@ -105,7 +105,7 @@ export class DamageTypeSettings extends SettingsMenuGURPS {
 				await game.settings.set(
 					SYSTEM_NAME,
 					`${SETTINGS.DAMAGE_TYPES}.${DamageTypeSettings.TYPES}`,
-					damagetypes
+					damagetypes,
 				)
 				break
 		}
@@ -116,7 +116,7 @@ export class DamageTypeSettings extends SettingsMenuGURPS {
 	override async getData(): Promise<any> {
 		const types = game.settings.get(
 			SYSTEM_NAME,
-			`${SETTINGS.DAMAGE_TYPES}.${DamageTypeSettings.TYPES}`
+			`${SETTINGS.DAMAGE_TYPES}.${DamageTypeSettings.TYPES}`,
 		) as CustomDamageType[]
 		return {
 			types: types,

@@ -111,20 +111,20 @@ export class ContainerSheetGURPS<IType extends ContainerGURPS = ContainerGURPS> 
 	protected async _onSortItem(
 		event: DragEvent,
 		itemData: PropertiesToSource<ItemDataBaseProperties>,
-		options: { top: boolean; in: boolean } = { top: false, in: false }
+		options: { top: boolean; in: boolean } = { top: false, in: false },
 	): Promise<Item[]> {
 		const source: any = this.object.deepItems.get(itemData._id!)
-		let dropTarget = $(event.target!).closest(".desc[data-item-id]")
+		const dropTarget = $(event.target!).closest(".desc[data-item-id]")
 		let target: any = this.object.deepItems.get(dropTarget?.data("item-id"))
 		if (!target) return []
 		let parent: any = target?.parent
-		let parents = target?.parents
+		const parents = target?.parents
 		if (options.in) {
 			parent = target
 			target = parent.children.contents[0] ?? null
 		}
 		const siblings = (parent!.items as Collection<Item>).filter(
-			i => i.id !== source!.id && (source as any)!.sameSection(i)
+			i => i.id !== source!.id && (source as any)!.sameSection(i),
 		)
 		if (target && !(source as any)?.sameSection(target)) return []
 
@@ -153,7 +153,7 @@ export class ContainerSheetGURPS<IType extends ContainerGURPS = ContainerGURPS> 
 						sort: updateData[0].sort,
 					},
 				],
-				{ temporary: false }
+				{ temporary: false },
 			)
 		}
 		return parent!.updateEmbeddedDocuments("Item", updateData) as unknown as Item[]
