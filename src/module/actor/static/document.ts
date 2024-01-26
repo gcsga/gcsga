@@ -1,5 +1,5 @@
 import { ActorGURPS } from "@actor/base.ts"
-import { ActorType, gid } from "@module/data/index.ts"
+import { ActorType, SETTINGS, SYSTEM_NAME, gid } from "@module/data/index.ts"
 import { TokenDocumentGURPS } from "@module/token/document.ts"
 import {
 	MoveMode,
@@ -14,9 +14,11 @@ import {
 } from "./data.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { getProperty, mergeObject, setProperty } from "types/foundry/common/utils/helpers.js"
-import { StaticItemGURPS } from "@item/index.ts"
+import { StaticItemGURPS, StaticItemSystemData } from "@item/index.ts"
 import { Static } from "@util/index.ts"
 import { StaticEquipment, StaticTrait } from "./components.ts"
+import { StaticCharacterImporter } from "./import.ts"
+import { string } from "yargs"
 
 Hooks.on("createActor", async function (actor: StaticCharacterGURPS) {
 	if (actor.type === "character")
@@ -793,10 +795,10 @@ export class StaticCharacterGURPS<
 				let puuid = ""
 				if (paths.length >= 6) {
 					sp = paths.slice(0, -2).join(".")
-					puuid = (getProperty(this, sp).uuid
+					puuid = (getProperty(this, sp) as StaticEquipment).uuid
 				}
 				await this.update({ [`${srcKey}.parentuuid`]: puuid })
-				const eqt = getProperty(this, srcKey)
+				const eqt = getProperty(this, srcKey) as StaticEquipment
 				if (eqt.itemid) {
 					const item = this.items.get(eqt.itemid)
 					if (item)
@@ -831,7 +833,6 @@ export class StaticCharacterGURPS<
 		// @ts-expect-error variable type ambiguity...
 		const list = { ...this.system[key] }
 		let i = 0
-		// @ts-expect-error variable type ambiguity...
 		for (const k in itemData.system[key]) {
 			// @ts-expect-error variable type ambiguity...
 			const e = duplicate(itemData.system[key][k])
@@ -873,6 +874,23 @@ export class StaticCharacterGURPS<
 		let file: any = null
 		if (game.settings.get(SYSTEM_NAME, SETTINGS.SERVER_SIDE_FILE_DIALOG)) {
 			const filepicker = new FilePicker({
+				baseApplication: null,
+				width: null,
+				height: null,
+				top: null,
+				left: null,
+				popOut: true,
+				minimizable: false,
+				resizable: null,
+				id: "",
+				classes: [],
+				dragDrop: [],
+				title: "Test",
+				type: "text",
+				scrollY: [],
+				template: null,
+				filters: [],
+				tabs: [],
 				callback: (path: string) => {
 					const request = new XMLHttpRequest()
 					request.open("GET", path)
@@ -893,7 +911,7 @@ export class StaticCharacterGURPS<
 					request.send(null)
 				},
 			})
-			filepicker.extensions = [".gcs", ".xml", ".gca5"]
+			filepicker.extension = [".gcs", ".xml", ".gca5"]
 			filepicker.render(true)
 		} else {
 			const inputEl = document.createElement("input")
