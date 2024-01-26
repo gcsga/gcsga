@@ -22,7 +22,7 @@ class MockSettings {
 		return this.defaultSettings[namespace]?.[key] ?? null
 	}
 
-	private defaultSettings: any = {
+	private defaultSettings: Record<string, Record<string, unknown>> = {
 		[SYSTEM_NAME]: {
 			[`${SETTINGS.DEFAULT_ATTRIBUTES}.settings`]: [
 				{

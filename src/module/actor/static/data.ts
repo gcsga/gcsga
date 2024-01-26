@@ -1,7 +1,6 @@
-import { ActorFlagsGURPS, ActorSystemData, BaseActorSourceGURPS } from "@actor/base/data"
-import { ActorType } from "@module/data"
+import { ActorFlagsGURPS, ActorSystemSource, BaseActorSourceGURPS } from "@actor/base/data.ts"
+import { ActorType } from "@module/data/index.ts"
 import {
-	StaticTrait,
 	StaticEquipment,
 	StaticMelee,
 	StaticNote,
@@ -9,7 +8,8 @@ import {
 	StaticReaction,
 	StaticSkill,
 	StaticSpell,
-} from "./components"
+	StaticTrait,
+} from "./components.ts"
 
 export const MoveModeTypes = {
 	Ground: "gurps.character.move_modes.ground",
@@ -56,7 +56,7 @@ type StaticCharacterFlags = ActorFlagsGURPS & {
 
 export type StaticCharacterItems = StaticTrait | StaticSkill | StaticSpell | StaticEquipment | StaticNote
 
-export interface StaticCharacterSystemData extends ActorSystemData {
+export interface StaticCharacterSystemData extends ActorSystemSource {
 	editing: boolean
 	additionalresources: {
 		bodyplan: string

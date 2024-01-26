@@ -1,5 +1,6 @@
-import { StaticCharacterGURPS, StaticTrait } from "@actor"
-import { StaticItemGURPS } from "@item"
+import { StaticCharacterGURPS, StaticTrait } from "@actor/index.ts"
+import { StaticItemGURPS } from "@item/index.ts"
+import { getProperty } from "types/foundry/common/utils/helpers.js"
 
 /**
  *
@@ -207,7 +208,7 @@ export async function insertBeforeKey(actor: StaticCharacterGURPS, path: string,
 	i = objpath.lastIndexOf(".")
 	const parentpath = objpath.substring(0, i)
 	const objkey = objpath.substring(i + 1)
-	const object = getProperty(actor, objpath)
+	const object = getProperty(actor, objpath) as any
 	const t = `${parentpath}.-=${objkey}`
 	await actor.update({ [t]: null }) // Delete the whole object
 	const start = parseInt(key)

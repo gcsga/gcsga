@@ -111,7 +111,7 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 
 	get dodgeAttribute() {
 		return {
-			id: gid.Dodge,
+			id: gid.Dodge as string,
 			attribute_def: {
 				combinedName: LocalizeGURPS.translations.gurps.attributes.dodge,
 			},
