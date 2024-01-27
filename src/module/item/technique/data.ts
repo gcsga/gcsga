@@ -1,4 +1,4 @@
-import { Feature } from "@feature/index.ts"
+import { FeatureObj } from "@feature/index.ts"
 import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
 import { EncumbrancePenaltyMultiplier } from "@item/skill/data.ts"
 import { ItemType } from "@module/data/misc.ts"
@@ -27,7 +27,7 @@ export interface TechniqueSystemData extends ItemGCSSystemData {
 	points: number
 	defaulted_from: SkillDefault | null
 	defaults: SkillDefault[]
-	features: Feature[]
+	features: FeatureObj[]
 	default: SkillDefault
 	limit: number
 	limited: boolean

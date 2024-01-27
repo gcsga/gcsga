@@ -72,7 +72,7 @@ export interface CharacterResolver extends ActorResolver<ActorType.Character> {
 	resolveVariable: (variableName: string) => string
 	resolveAttributeCurrent: (attr_id: string) => number
 	resolveAttributeName: (attr_id: string) => string
-	getFlag: (scope: any, key: string) => unknown
+	getFlag: (scope: string, key: string) => unknown
 	costReductionFor: (attributeID: string) => number
 	isSkillLevelResolutionExcluded: (name: string, specialization: string) => boolean
 	registerSkillLevelResolutionExclusion: (name: string, specialization: string) => void

@@ -1,15 +1,14 @@
-import { CharacterProfile } from "@actor/character/data"
-import { DEFAULT_INITIATIVE_FORMULA, SETTINGS, SSRT_SETTING, SYSTEM_NAME } from "@module/data"
-import { getDefaultSkills, setInitiative } from "@util"
-import { DefaultAttributeSettings } from "./attributes"
-import { ColorSettings } from "./colors"
-import { DefaultHitLocationSettings } from "./hit_locations"
-import { DefaultResourceTrackerSettings } from "./resource_trackers"
-import { RollModifierSettings } from "./roll_modifiers"
-import { DefaultSheetSettings } from "./sheet_settings"
-import { DamageTypeSettings } from "@module/settings/damage_type"
-import { DefaultMoveSettings } from "./move_type"
-import { loadModifiers } from "@module/mod_bucket/data"
+import { DEFAULT_INITIATIVE_FORMULA, SETTINGS, SSRT_SETTING, SYSTEM_NAME } from "@module/data/index.ts"
+import { ColorSettings } from "./colors.ts"
+import { DefaultAttributeSettings } from "./attributes.ts"
+import { DefaultResourceTrackerSettings } from "./resource_trackers.ts"
+import { DefaultMoveSettings } from "./move_type.ts"
+import { DefaultHitLocationSettings } from "./hit_locations.ts"
+import { DefaultSheetSettings } from "./sheet_settings.ts"
+import { RollModifierSettings } from "./roll_modifiers.ts"
+import { DamageTypeSettings } from "./damage_type.ts"
+import { getDefaultSkills, setInitiative } from "@util/misc.ts"
+import { CharacterProfile } from "@actor/index.ts"
 
 /**
  *
@@ -262,7 +261,7 @@ export function registerSettings(): void {
 		config: true,
 		type: Boolean,
 		default: true,
-		onChange: (value: boolean) => console.log(`Automatic Unready : ${value}`),
+		onChange: (value: unknown) => console.log(`Automatic Unready : ${value}`),
 	})
 
 	game.settings.register(SYSTEM_NAME, SETTINGS.MODIFIER_LIST_COLLAPSE, {

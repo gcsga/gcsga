@@ -1,4 +1,4 @@
-import { Feature } from "@feature/index.ts"
+import { FeatureObj } from "@feature/index.ts"
 import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
 import { ItemType } from "@module/data/misc.ts"
 import { affects } from "@util/enum/affects.ts"
@@ -19,5 +19,5 @@ export interface TraitModifierSystemData extends ItemGCSSystemData {
 	cost: number
 	levels: number
 	affects: affects.Option
-	features: Feature[]
+	features: FeatureObj[]
 }

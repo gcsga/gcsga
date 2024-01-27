@@ -1,6 +1,6 @@
-import { SETTINGS, SYSTEM_NAME } from "@module/data"
-import { SettingsMenuGURPS } from "@module/settings/menu"
-import { prepareFormData } from "@util"
+import { mergeObject } from "types/foundry/common/utils/helpers.js"
+import { SettingsMenuGURPS } from "./menu.ts"
+import { SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
 
 type CustomDamageType = {
 	id: string

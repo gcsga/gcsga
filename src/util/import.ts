@@ -1,10 +1,10 @@
+import { ItemFlags, ItemFlagsGURPS } from "@item/base/data/values.ts"
+import { ItemSourceGURPS } from "@item/data/index.ts"
 import {
 	EquipmentContainerSystemData,
 	EquipmentModifierContainerSystemData,
 	EquipmentModifierSystemData,
 	EquipmentSystemData,
-	ItemFlags,
-	ItemFlagsGURPS,
 	MeleeWeaponSystemData,
 	NoteContainerSystemData,
 	NoteSystemData,
@@ -13,24 +13,25 @@ import {
 	SkillContainerSystemData,
 	SkillSystemData,
 	SpellContainerSystemData,
-	SpellSystemData,
 	TechniqueSystemData,
 	TraitContainerSystemData,
 	TraitModifierContainerSystemData,
 	TraitModifierSystemData,
 	TraitSystemData,
-} from "@item"
-import { Feature, ItemSystemDataGURPS } from "@module/config"
-import { ItemType, SYSTEM_NAME } from "@module/data"
-import { SkillDefault } from "@module/default"
-import { PrereqList } from "@prereq"
-import { LocalizeGURPS } from "./localize"
-import { newUUID } from "./misc"
-import { feature, selfctrl, stdmg } from "./enum"
+} from "@item/index.ts"
+import { SpellSystemData } from "@item/spell/data.ts"
+import { ItemType, SYSTEM_NAME } from "@module/data/index.ts"
+import { randomID } from "types/foundry/common/utils/helpers.js"
+import { LocalizeGURPS } from "./localize.ts"
+import { PrereqList } from "@prereq/prereq_list.ts"
+import { selfctrl } from "./enum/selfctrl.ts"
+import { SkillDefault } from "@sytem/default/index.ts"
+import { stdmg } from "./enum/stdmg.ts"
+import { FeatureObj } from "@feature/index.ts"
 
 class ImportUtils {
 	static importItems(
-		list: (ItemSystemDataGURPS | any)[],
+		list: (ItemSourceGURPS["system"] | any)[],
 		context: { container: string | null; other?: boolean; sort: number } = { container: null, sort: 0 },
 	): any[] {
 		if (!list) return []
@@ -64,10 +65,10 @@ class ImportUtils {
 	}
 
 	private static getItemData(
-		item: ItemSystemDataGURPS,
+		item: ItemSourceGURPS["system"],
 		context: { container: string | null; other?: boolean; sort: number },
 		id: string,
-	): [ItemSystemDataGURPS, ItemFlagsGURPS, any[], string] {
+	): [ItemSourceGURPS["system"], ItemFlagsGURPS, any[], string] {
 		// const flags: ItemFlagsGURPS = { [SYSTEM_NAME]: { [ItemFlags.Container]: null } }
 		const flags: ItemFlagsGURPS = { [SYSTEM_NAME]: { [ItemFlags.Container]: context.container } }
 		if (["equipment", "equipment_container"].includes(item.type))
@@ -160,7 +161,8 @@ class ImportUtils {
 		return {
 			name: data.name ?? "Trait",
 			type: ItemType.Trait,
-			id: data.id ?? newUUID(),
+			// id: data.id ?? newUUID(),
+			id: data.id ?? "",
 			reference: data.reference ?? "",
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
@@ -187,7 +189,7 @@ class ImportUtils {
 			name: data.name ?? "Trait Container",
 			type: ItemType.TraitContainer,
 			container_type: data.container_type ?? "group",
-			id: data.id ?? newUUID(),
+			id: data.id ?? "",
 			reference: data.reference ?? "",
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
@@ -204,7 +206,7 @@ class ImportUtils {
 		return {
 			name: data.name ?? "Trait Modifier",
 			type: ItemType.TraitModifier,
-			id: data.id ?? newUUID(),
+			id: data.id ?? "",
 			reference: data.reference ?? "",
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
@@ -225,7 +227,7 @@ class ImportUtils {
 		return {
 			name: data.name ?? "Trait Modifier Container",
 			type: ItemType.TraitModifierContainer,
-			id: data.id ?? newUUID(),
+			id: data.id ?? "",
 			reference: data.reference ?? "",
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
@@ -239,7 +241,7 @@ class ImportUtils {
 		return {
 			name: data.name ?? "Skill",
 			type: ItemType.Skill,
-			id: data.id ?? newUUID(),
+			id: data.id ?? "",
 			reference: data.reference ?? "",
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
@@ -264,7 +266,7 @@ class ImportUtils {
 		return {
 			name: data.name ?? "Technique",
 			type: ItemType.Technique,
-			id: data.id ?? newUUID(),
+			id: data.id ?? "",
 			reference: data.reference ?? "",
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
@@ -290,7 +292,7 @@ class ImportUtils {
 		return {
 			name: data.name ?? "Skill Container",
 			type: ItemType.SkillContainer,
-			id: data.id ?? newUUID(),
+			id: data.id ?? "",
 			reference: data.reference ?? "",
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
@@ -304,7 +306,7 @@ class ImportUtils {
 		return {
 			name: data.name ?? "Spell",
 			type: ItemType.Spell,
-			id: data.id ?? newUUID(),
+			id: data.id ?? "",
 			reference: data.reference ?? "",
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
@@ -332,7 +334,7 @@ class ImportUtils {
 		return {
 			name: data.name ?? "Spell",
 			type: ItemType.RitualMagicSpell,
-			id: data.id ?? newUUID(),
+			id: data.id ?? "",
 			reference: data.reference ?? "",
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
@@ -362,7 +364,7 @@ class ImportUtils {
 		return {
 			name: data.name ?? "Spell Container",
 			type: ItemType.SpellContainer,
-			id: data.id ?? newUUID(),
+			id: data.id ?? "",
 			reference: data.reference ?? "",
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
@@ -377,7 +379,7 @@ class ImportUtils {
 		return {
 			name: data.name ?? "Equipment",
 			type: ItemType.Equipment,
-			id: data.id ?? newUUID(),
+			id: data.id ?? "",
 			reference: data.reference ?? "",
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
@@ -407,7 +409,7 @@ class ImportUtils {
 		return {
 			name: data.name ?? "Equipment",
 			type: ItemType.EquipmentContainer,
-			id: data.id ?? newUUID(),
+			id: data.id ?? "",
 			reference: data.reference ?? "",
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
@@ -435,7 +437,7 @@ class ImportUtils {
 		return {
 			name: data.name ?? "Equipment Modifier",
 			type: ItemType.EquipmentModifier,
-			id: data.id ?? newUUID(),
+			id: data.id ?? "",
 			reference: data.reference ?? "",
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
@@ -457,7 +459,7 @@ class ImportUtils {
 		return {
 			name: data.name ?? "Equipment Modifier Container",
 			type: ItemType.EquipmentModifierContainer,
-			id: data.id ?? newUUID(),
+			id: data.id ?? "",
 			reference: data.reference ?? "",
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
@@ -471,7 +473,7 @@ class ImportUtils {
 		return {
 			name: data.text ?? "Note",
 			type: ItemType.Note,
-			id: data.id ?? newUUID(),
+			id: data.id ?? "",
 			reference: data.reference ?? "",
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
@@ -485,7 +487,7 @@ class ImportUtils {
 		return {
 			name: data.name ?? "Note",
 			type: ItemType.NoteContainer,
-			id: data.id ?? newUUID(),
+			id: data.id ?? "",
 			reference: data.reference ?? "",
 			reference_highlight: data.reference_highlight ?? "",
 			notes: data.notes ?? "",
@@ -498,7 +500,7 @@ class ImportUtils {
 
 	private static getMeleeWeaponData(data: MeleeWeaponSystemData): MeleeWeaponSystemData {
 		return {
-			id: data.id ?? newUUID(),
+			id: data.id ?? "",
 			type: ItemType.MeleeWeapon,
 			strength: data.strength ?? "",
 			usage: data.usage ?? "",
@@ -522,7 +524,7 @@ class ImportUtils {
 
 	private static getRangedWeaponData(data: RangedWeaponSystemData): RangedWeaponSystemData {
 		return {
-			id: data.id ?? newUUID(),
+			id: data.id ?? "",
 			type: ItemType.RangedWeapon,
 			strength: data.strength ?? "",
 			usage: data.usage ?? "",
@@ -547,16 +549,18 @@ class ImportUtils {
 		}
 	}
 
-	private static importFeatures(features: Feature[]): Feature[] {
-		const list: Feature[] = []
-		for (const e of features) {
-			const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as feature.Type]
-			if (FeatureConstructor) {
-				const f = FeatureConstructor.fromObject(e)
-				list.push(f.toObject())
-			}
-		}
-		return list
+	private static importFeatures(features: FeatureObj[]): FeatureObj[] {
+		return features
+		// const list: Feature[] = []
+		// for (const e of features) {
+		// 	list.push(e)
+		// 	// const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as feature.Type]
+		// 	// if (FeatureConstructor) {
+		// 	// 	const f = FeatureConstructor.fromObject(e)
+		// 	// 	list.push(f.toObject())
+		// 	// }
+		// }
+		// return list
 	}
 
 	private static importDefaults(features: SkillDefault[]): SkillDefault[] {

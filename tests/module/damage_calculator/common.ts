@@ -1,4 +1,6 @@
-import { HitLocation } from "@actor/character/hit_location"
+import { HitLocation } from "@actor/index.ts"
+import { IDamageCalculator, createDamageCalculator } from "@module/apps/damage_calculator/damage_calculator.ts"
+import { DamageTypes } from "@module/apps/damage_calculator/damage_type.ts"
 import {
 	DamageAttacker,
 	DamageHit,
@@ -7,11 +9,9 @@ import {
 	TargetPool,
 	TargetTrait,
 	TargetTraitModifier,
-} from "@module/damage_calculator"
-import { IDamageCalculator, createDamageCalculator } from "@module/damage_calculator/damage_calculator"
-import { DamageTypes } from "@module/damage_calculator/damage_type"
-import { DiceGURPS } from "@module/dice"
-import { TooltipGURPS } from "@module/tooltip"
+} from "@module/apps/damage_calculator/index.ts"
+import { DiceGURPS } from "@module/dice/index.ts"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 
 export class _Attacker implements DamageAttacker {
 	tokenId: string = ""
@@ -56,7 +56,7 @@ export class _Target implements DamageTarget {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	incrementDamage(delta: number): void {}
+	incrementDamage(_delta: number): void {}
 
 	pools: TargetPool[] = [
 		{ id: "hp", name: "HP", fullName: "Hit Points" },
@@ -145,7 +145,7 @@ export class _TargetTraitModifier implements TargetTraitModifier {
 export class DamageHitLocation extends HitLocation {
 	_map: Map<string, number> = new Map()
 
-	_DR(_tooltip?: TooltipGURPS, _drMap: Map<string, number> = new Map()): Map<string, number> {
+	override _DR(_tooltip?: TooltipGURPS, _drMap: Map<string, number> = new Map()): Map<string, number> {
 		return this._map
 	}
 }

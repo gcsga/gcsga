@@ -8,7 +8,6 @@ import { TraitContainerGURPS } from "@item/trait_container/document.ts"
 import { duplicate, mergeObject, setProperty } from "types/foundry/common/utils/helpers.js"
 import { HitLocationTable } from "./character/hit_location.ts"
 import { CharacterGURPS } from "./document.ts"
-import { BaseActorGURPS } from "./base/index.ts"
 import { EffectGURPS } from "@item/effect/document.ts"
 import { ConditionGURPS } from "@item/condition/document.ts"
 import {
@@ -36,6 +35,7 @@ import {
 } from "@module/apps/damage_calculator/index.ts"
 import { ApplyDamageDialog } from "@module/apps/damage_calculator/apply_damage_dlg.ts"
 import { ItemSourceGURPS } from "@item/data/index.ts"
+import { ActorSourceGURPS } from "./data/index.ts"
 
 export interface ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null>
 	extends Actor<TParent> {
@@ -75,7 +75,7 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 
 	get dodgeAttribute(): DeepPartial<Attribute> {
 		return {
-			id: gid.Dodge,
+			id: gid.Dodge as string,
 			attribute_def: {
 				combinedName: LocalizeGURPS.translations.gurps.attributes.dodge,
 			},
@@ -274,7 +274,7 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 	handleDamageDrop(payload: DamagePayload): void {
 		let attacker = undefined
 		if (payload.attacker) {
-			const actor = game.actors?.get(payload.attacker) as BaseActorGURPS | undefined
+			const actor = game.actors?.get(payload.attacker) as ActorGURPS | undefined
 			if (actor) {
 				attacker = new DamageAttackerAdapter(actor)
 			}
@@ -405,9 +405,9 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 class DamageTargetActor implements DamageTarget {
 	static DamageReduction = "Damage Reduction"
 
-	private actor: BaseActorGURPS
+	private actor: ActorGURPS
 
-	constructor(actor: BaseActorGURPS) {
+	constructor(actor: ActorGURPS) {
 		this.actor = actor
 	}
 
@@ -469,8 +469,8 @@ class DamageTargetActor implements DamageTarget {
 	 * @param name
 	 */
 	getTrait(name: string): TargetTrait | undefined {
-		if (this.actor instanceof BaseActorGURPS) {
-			const traits = this.actor.traits.contents.filter((it: Item) => it instanceof TraitGURPS)
+		if (this.actor instanceof ActorGURPS) {
+			const traits = this.actor.traits.filter((it: Item) => it instanceof TraitGURPS) as TraitGURPS[]
 			const found = traits.find((it: TraitGURPS) => it.name === name)
 			return found ? new TraitAdapter(found as TraitGURPS) : undefined
 		}
@@ -483,8 +483,8 @@ class DamageTargetActor implements DamageTarget {
 	 * @returns all traits with the given name.
 	 */
 	getTraits(name: string): TargetTrait[] {
-		if (this.actor instanceof BaseActorGURPS) {
-			const traits = this.actor.traits.contents.filter((it: Item) => it instanceof TraitGURPS)
+		if (this.actor instanceof ActorGURPS) {
+			const traits = this.actor.traits.contents.filter((it: Item) => it instanceof TraitGURPS) as TraitGURPS[]
 			return traits.filter((it: TraitGURPS) => it.name === name).map((it: TraitGURPS) => new TraitAdapter(it))
 		}
 		return []
@@ -584,9 +584,9 @@ class TraitModifierAdapter implements TargetTraitModifier {
 }
 
 class DamageAttackerAdapter implements DamageAttacker {
-	private actor: BaseActorGURPS
+	private actor: ActorGURPS
 
-	constructor(actor: BaseActorGURPS) {
+	constructor(actor: ActorGURPS) {
 		this.actor = actor
 	}
 
@@ -619,9 +619,9 @@ class DamageWeaponAdapter implements DamageWeapon {
 	}
 }
 
-export const ActorProxyGURPS = new Proxy(BaseActorGURPS, {
-	construct(_target, args: [source: any, context: any]) {
-		const ActorClass = CONFIG.GURPS.Actor.documentClasses[args[0]?.type as ActorType] ?? BaseActorGURPS
+export const ActorProxyGURPS = new Proxy(ActorGURPS, {
+	construct(_target, args: [source: ActorSourceGURPS, context: DocumentModificationContext<any>]) {
+		const ActorClass = CONFIG.GURPS.Actor.documentClasses[args[0]?.type as ActorType] ?? ActorGURPS
 		return new ActorClass(...args)
 	},
 })

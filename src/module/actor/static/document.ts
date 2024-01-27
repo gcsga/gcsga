@@ -1,24 +1,24 @@
-import { BaseActorGURPS } from "@actor/base"
-import { StaticItemGURPS } from "@item/static"
-import { StaticItemSystemData } from "@item/static/data"
-import { SETTINGS, SYSTEM_NAME } from "@module/data"
-import { LocalizeGURPS, newUUID, Static } from "@util"
-import { ActorDataConstructorData } from "types/foundry/common/data/data.mjs/actorData"
-import { MergeObjectOptions } from "types/foundry/common/utils/helpers.mjs"
-import { StaticTrait, StaticEquipment } from "./components"
+import { ActorGURPS } from "@actor/base.ts"
+import { ActorType, SETTINGS, SYSTEM_NAME, gid } from "@module/data/index.ts"
+import { TokenDocumentGURPS } from "@module/token/document.ts"
 import {
 	MoveMode,
 	MoveModeTypes,
 	Posture,
 	StaticAttributeName,
-	StaticCharacterSource,
 	StaticCharacterSystemData,
 	StaticResourceThreshold,
 	StaticResourceTracker,
 	StaticThresholdComparison,
 	StaticThresholdOperator,
-} from "./data"
-import { StaticCharacterImporter } from "./import"
+} from "./data.ts"
+import { LocalizeGURPS } from "@util/localize.ts"
+import { getProperty, mergeObject, setProperty } from "types/foundry/common/utils/helpers.js"
+import { StaticItemGURPS, StaticItemSystemData } from "@item/index.ts"
+import { Static } from "@util/index.ts"
+import { StaticEquipment, StaticTrait } from "./components.ts"
+import { StaticCharacterImporter } from "./import.ts"
+import { string } from "yargs"
 
 Hooks.on("createActor", async function (actor: StaticCharacterGURPS) {
 	if (actor.type === "character")
@@ -27,14 +27,14 @@ Hooks.on("createActor", async function (actor: StaticCharacterGURPS) {
 		})
 })
 
-export class StaticCharacterGURPS extends BaseActorGURPS<StaticCharacterSource> {
-	update(
-		data?: DeepPartial<ActorDataConstructorData | (ActorDataConstructorData & Record<string, unknown>)> | undefined,
-		context?: (DocumentModificationContext & MergeObjectOptions) | undefined,
-	): Promise<this | undefined> {
-		return super.update(data, context)
-	}
+export interface StaticCharacterGURPS<TParent extends TokenDocumentGURPS | null> extends ActorGURPS<TParent> {
+	type: ActorType.LegacyCharacter | ActorType.LegacyEnemy
+	system: StaticCharacterSystemData
+}
 
+export class StaticCharacterGURPS<
+	TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null,
+> extends ActorGURPS<TParent> {
 	getOwners() {
 		return game.users?.contents.filter(u => this.getUserLevel(u) ?? 0 >= CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER)
 	}
@@ -52,13 +52,14 @@ export class StaticCharacterGURPS extends BaseActorGURPS<StaticCharacterSource> 
 		}
 	}
 
-	get dodgeAttribute() {
+	override get dodgeAttribute() {
 		return {
+			id: gid.Dodge as string,
 			attribute_def: {
 				combinedName: LocalizeGURPS.translations.gurps.attributes.dodge,
 			},
-			effective: this.system.dodge,
-			current: this.system.dodge,
+			effective: this.system.dodge.value,
+			current: this.system.dodge.value,
 		}
 	}
 
@@ -139,7 +140,7 @@ export class StaticCharacterGURPS extends BaseActorGURPS<StaticCharacterSource> 
 		this.system.conditions.reeling = false
 	}
 
-	prepareDerivedData(): void {
+	override prepareDerivedData(): void {
 		super.prepareDerivedData()
 
 		// Handle new move data -- if system.move exists, use the default value in that object to set the move
@@ -219,6 +220,18 @@ export class StaticCharacterGURPS extends BaseActorGURPS<StaticCharacterSource> 
 		// let templates = ResourceTrackerManager.getAllTemplates().filter(it => !!it.slot)
 	}
 
+	findTrait(sname: string): StaticTrait | null {
+		let t: StaticTrait | null = null
+		sname = Static.makeRegexPatternFrom(sname, false)
+		const regex = new RegExp(sname, "i")
+		Static.recurseList(this.system.ads, s => {
+			if (s.name.match(regex)) {
+				t = s
+			}
+		})
+		return t
+	}
+
 	async syncLanguages() {
 		if (this.system.languages) {
 			let updated = false
@@ -226,7 +239,7 @@ export class StaticCharacterGURPS extends BaseActorGURPS<StaticCharacterSource> 
 			const langn = /Language:?/i
 			const langt = new RegExp(LocalizeGURPS.translations.gurps.language.language)
 			Static.recurseList(this.system.languages, (e, _k, _d) => {
-				const a = Static.findAdDisad(this, `*${e.name}`)
+				const a = this.findTrait(`*${e.name}`)
 				if (a) {
 					if (!a.name.match(langn) && !a.name.match(langt)) {
 						// GCA4 / GCS style
@@ -718,7 +731,7 @@ export class StaticCharacterGURPS extends BaseActorGURPS<StaticCharacterSource> 
 	async _addNewItemEquipment(itemData: StaticItemGURPS, targetKey: string | null): Promise<[string, boolean]> {
 		const existing = this._findEqtKeyForId("uuid", itemData._id)
 		if (existing) {
-			const eqt = getProperty(this, existing)
+			const eqt = getProperty(this, existing) as StaticEquipment
 			return [existing, eqt.carried && eqt.equipped]
 		}
 		const _data = itemData.system
@@ -737,7 +750,7 @@ export class StaticCharacterGURPS extends BaseActorGURPS<StaticCharacterSource> 
 			if (_data.carried) {
 				targetKey = "system.equipment.carried"
 				let index = 0
-				const list = getProperty(this, targetKey)
+				const list = getProperty(this, targetKey) as StaticEquipment
 				while (list.hasOwnProperty(Static.zeroFill(index))) index++
 				targetKey += `.${Static.zeroFill(index)}`
 			} else targetKey = "system.equipment.other"
@@ -775,17 +788,17 @@ export class StaticCharacterGURPS extends BaseActorGURPS<StaticCharacterSource> 
 		const pindex = 4
 		const paths = srcKey.split(".")
 		let sp = paths.slice(0, pindex).join(".")
-		const parent = getProperty(this, sp)
+		const parent = getProperty(this, sp) as StaticEquipment
 		if (parent) {
 			await StaticEquipment.calcUpdate(this, parent, sp)
 			if (updatePuuid) {
 				let puuid = ""
 				if (paths.length >= 6) {
 					sp = paths.slice(0, -2).join(".")
-					puuid = getProperty(this, sp).uuid
+					puuid = (getProperty(this, sp) as StaticEquipment).uuid
 				}
 				await this.update({ [`${srcKey}.parentuuid`]: puuid })
-				const eqt = getProperty(this, srcKey)
+				const eqt = getProperty(this, srcKey) as StaticEquipment
 				if (eqt.itemid) {
 					const item = this.items.get(eqt.itemid)
 					if (item)
@@ -820,7 +833,6 @@ export class StaticCharacterGURPS extends BaseActorGURPS<StaticCharacterSource> 
 		// @ts-expect-error variable type ambiguity...
 		const list = { ...this.system[key] }
 		let i = 0
-		// @ts-expect-error variable type ambiguity...
 		for (const k in itemData.system[key]) {
 			// @ts-expect-error variable type ambiguity...
 			const e = duplicate(itemData.system[key][k])
@@ -862,6 +874,23 @@ export class StaticCharacterGURPS extends BaseActorGURPS<StaticCharacterSource> 
 		let file: any = null
 		if (game.settings.get(SYSTEM_NAME, SETTINGS.SERVER_SIDE_FILE_DIALOG)) {
 			const filepicker = new FilePicker({
+				baseApplication: null,
+				width: null,
+				height: null,
+				top: null,
+				left: null,
+				popOut: true,
+				minimizable: false,
+				resizable: null,
+				id: "",
+				classes: [],
+				dragDrop: [],
+				title: "Test",
+				type: "text",
+				scrollY: [],
+				template: null,
+				filters: [],
+				tabs: [],
 				callback: (path: string) => {
 					const request = new XMLHttpRequest()
 					request.open("GET", path)
@@ -882,7 +911,7 @@ export class StaticCharacterGURPS extends BaseActorGURPS<StaticCharacterSource> 
 					request.send(null)
 				},
 			})
-			filepicker.extensions = [".gcs", ".xml", ".gca5"]
+			filepicker.extension = [".gcs", ".xml", ".gca5"]
 			filepicker.render(true)
 		} else {
 			const inputEl = document.createElement("input")
@@ -1096,8 +1125,8 @@ export class StaticCharacterGURPS extends BaseActorGURPS<StaticCharacterSource> 
 	// }
 
 	// All this changes is allowing delta values to decrease the bar below 0
-	override async modifyTokenAttribute(attribute: string, value: number, isDelta = false, isBar = true) {
-		const current = foundry.utils.getProperty(this.system, attribute)
+	override async modifyTokenAttribute(attribute: string, value: number, isDelta?: boolean, isBar?: boolean) {
+		const current = foundry.utils.getProperty(this.system, attribute) as { value: number; max: number; min: number }
 
 		// Determine the updates to make to the actor data
 		let updates
@@ -1110,6 +1139,7 @@ export class StaticCharacterGURPS extends BaseActorGURPS<StaticCharacterSource> 
 		}
 
 		const allowed = Hooks.call("modifyTokenAttribute", { attribute, value, isDelta, isBar }, updates)
-		return allowed !== false ? this.update(updates) : this
+		if (allowed !== false) this.update(updates)
+		return this
 	}
 }

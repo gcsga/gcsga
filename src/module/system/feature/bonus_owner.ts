@@ -3,8 +3,9 @@ import { feature } from "@util/enum/feature.ts"
 import { LeveledAmount } from "./leveled_amount.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
-import { WeaponLeveledAmount } from "./WeaponLeveledAmount.ts"
 import { LeveledAmountObj } from "./data.ts"
+import { WeaponLeveledAmount } from "./weapon_leveled_amount.ts"
+import { AttributeBonus, FeatureObj } from "./index.ts"
 
 export abstract class BonusOwner {
 	type: feature.Type = feature.Type.AttributeBonus

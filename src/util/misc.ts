@@ -180,14 +180,17 @@ export function capitalize(s: string): string {
 // 	}
 // }
 
-export function prepareFormData(formData: any, object: any): any {
+export function prepareFormData(
+	formData: Record<string, string | number | boolean | object[] | object>,
+	object: object,
+): object {
 	for (const aKey of Object.keys(formData)) {
 		if (formData[aKey] === null) formData[aKey] = "0"
 		if (aKey.includes(".halve_")) {
 			const tKey = aKey.replace(/\.halve_.*$/, "")
 			const tOp = aKey.split(".").at(-1)
 			formData[`${tKey}.ops`] ??= []
-			if (formData[aKey]) formData[`${tKey}.ops`].push(tOp)
+			if (formData[aKey]) (formData[`${tKey}.ops`] as unknown[]).push(tOp)
 			delete formData[aKey]
 		}
 	}
@@ -226,7 +229,7 @@ export function prepareFormData(formData: any, object: any): any {
  * @param prop
  * @param value
  */
-function setArrayProperty(a: any[], index: number, prop: string, value: any): any[] {
+function setArrayProperty(a: object[], index: number, prop: string, value: unknown): object[] {
 	if (prop.match(/.\d+./)) {
 		const inArrayKey = prop.split(/.\d+./)[0]
 		const inArrayArray = foundry.utils.getProperty(a[index], inArrayKey) as any[]
@@ -257,8 +260,7 @@ export function d6ify(str: string, flavor: string | null = ""): string {
 export async function urlToBase64(imageUrl: string): Promise<string> {
 	const format = imageUrl.split(".").at(-1) || ""
 	if (!["png", "webp", "jpg", "jpeg"].includes(format)) return ""
-	let img: any = await fetch(imageUrl)
-	img = await img.blob()
+	const img: Blob = await fetch(imageUrl).then(v => v.blob())
 	const bitmap = await createImageBitmap(img)
 	const canvas = document.createElement("canvas")
 	const ctx = canvas.getContext("2d")
@@ -278,8 +280,8 @@ export async function urlToBase64(imageUrl: string): Promise<string> {
 }
 
 export function setInitiative() {
-	let formula = game.settings.get(SYSTEM_NAME, SETTINGS.INITIATIVE_FORMULA) as any
-	if (!formula) formula = DEFAULT_INITIATIVE_FORMULA as any
+	let formula = game.settings.get(SYSTEM_NAME, SETTINGS.INITIATIVE_FORMULA)
+	if (!formula) formula = DEFAULT_INITIATIVE_FORMULA
 	if (game.user?.isGM) game.settings.set(SYSTEM_NAME, SETTINGS.INITIATIVE_FORMULA, formula)
 	CONFIG.Combat.initiative.formula = formula
 }
@@ -301,25 +303,25 @@ export async function getDefaultSkills() {
 	const skillPacks = game.settings.get(SYSTEM_NAME, SETTINGS.COMPENDIUM_BROWSER_PACKS).skill
 	for (const s in skillPacks)
 		if (skillPacks[s].skillDefault) {
-			const pack = game.packs.get(s) as CompendiumCollection<any>
+			const pack = game.packs.get(s) as CompendiumCollection<Item<null>>
 			;(await pack.getDocuments()).forEach(e => {
-				skills.push(e)
+				skills.push(e as unknown as SkillResolver)
 			})
 		}
 	CONFIG.GURPS.skillDefaults = skills
 }
 
-export function flatten(obj: any, flatObj: Record<string, any> = {}, key = ""): Record<string, any> | null {
-	if (obj === null) return null
-	for (const k of Object.keys(obj)) {
-		let valKey = key === "" ? k : `${key}.${k}`
-		if (typeof obj[k] === "object") {
-			if (Array.isArray(obj[k]) && !valKey.startsWith("array.")) valKey = `array.${valKey}`
-			flatten(obj[k], flatObj, valKey)
-		} else flatObj[valKey] = obj[k]
-	}
-	return flatObj
-}
+// export function flatten(obj: object, flatObj: Record<string, object> = {}, key = ""): Record<string, object> | null {
+//   if (obj === null) return null
+//   for (const k of Object.keys(obj)) {
+//     let valKey = key === "" ? k : `${key}.${k}`
+//     if (typeof obj[k] === "object") {
+//       if (Array.isArray(obj[k]) && !valKey.startsWith("array.")) valKey = `array.${valKey}`
+//       flatten(obj[k], flatObj, valKey)
+//     } else flatObj[valKey] = obj[k]
+//   }
+//   return flatObj
+// }
 
 export function getNewAttributeId(list: { id: string }[]): string {
 	let base = ""
@@ -343,7 +345,7 @@ export function isContainer(item: { type: ItemType }): boolean {
 		ItemType.TraitModifierContainer,
 		ItemType.EquipmentModifierContainer,
 		ItemType.NoteContainer,
-	].includes(item.type as any)
+	].includes(item.type as ItemType)
 }
 
 // export function sheetSettingsFor(actor: CharacterResolver): SheetSettings {

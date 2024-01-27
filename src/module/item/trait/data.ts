@@ -1,4 +1,4 @@
-import { Feature, SkillBonus } from "@feature/index.ts"
+import { FeatureObj, SkillBonus } from "@feature/index.ts"
 import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
 import { ItemType } from "@module/data/misc.ts"
 import { PrereqList } from "@prereq/prereq_list.ts"
@@ -25,7 +25,7 @@ export interface TraitSystemData extends ItemGCSSystemData {
 	points_per_level: number
 	cr: selfctrl.Roll
 	cr_adj: selfctrl.Adjustment
-	features?: Feature[]
+	features?: FeatureObj[]
 	study: Study[]
 	study_hours_needed: study.Level
 	userdesc: string
