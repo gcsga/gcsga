@@ -1,6 +1,6 @@
 import { ActorGURPS } from "@actor/document.ts"
 import { EffectGURPS } from "@item/effect/document.ts"
-import { ConditionID, ConditionSource, ConditionSystemData, ManeuverID } from "./data.ts"
+import { ConditionID, ConditionSource, ConditionSytemSource, ManeuverID } from "./data.ts"
 import { ItemType, SYSTEM_NAME } from "@module/data/misc.ts"
 import { getConditionList } from "./list.ts"
 import { getManeuverList } from "./maneuver.ts"
@@ -9,7 +9,7 @@ import { DurationType, EffectModificationContext } from "@item/effect/data.ts"
 import { BaseUser } from "types/foundry/common/documents/module.js"
 
 export interface ConditionGURPS<TParent extends ActorGURPS = ActorGURPS> extends EffectGURPS<TParent> {
-	system: ConditionSystemData
+	system: ConditionSytemSource
 	type: ItemType.Condition
 }
 
@@ -22,11 +22,11 @@ export class ConditionGURPS<TParent extends ActorGURPS = ActorGURPS> extends Eff
 			name: game.i18n.localize(`gurps.${folder}.${id}`),
 			type: ItemType.Condition,
 			img: `systems/${SYSTEM_NAME}/assets/${folder}/${id}.webp`,
-			system: mergeObject(ConditionGURPS.defaults, data) as ConditionSystemData,
+			system: mergeObject(ConditionGURPS.defaults, data) as ConditionSytemSource,
 		}
 	}
 
-	static get defaults(): ConditionSystemData {
+	static get defaults(): ConditionSytemSource {
 		return {
 			id: null,
 			can_level: false,

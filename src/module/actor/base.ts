@@ -1,40 +1,3 @@
-// import {
-// 	BaseWeaponGURPS,
-// 	ConditionGURPS,
-// 	ConditionID,
-// 	ContainerGURPS,
-// 	EffectGURPS,
-// 	EffectID,
-// 	ItemFlags,
-// 	ManeuverID,
-// 	Postures,
-// 	TraitContainerGURPS,
-// 	TraitGURPS,
-// 	TraitModifierGURPS,
-// } from "@item"
-// import { ActorConstructorContextGURPS, ActorFlags, ActorFlagsGURPS, BaseActorSourceGURPS } from "./data"
-// import { HitLocationTable } from "@actor/character/hit_location"
-// import {
-// 	DamageAttacker,
-// 	DamageRoll,
-// 	DamageRollAdapter,
-// 	DamageTarget,
-// 	DamageWeapon,
-// 	HitPointsCalc,
-// 	TargetPool,
-// 	TargetTrait,
-// 	TargetTraitModifier,
-// } from "@module/damage_calculator"
-// import { ApplyDamageDialog } from "@module/damage_calculator/apply_damage_dlg"
-// import { DamagePayload } from "@module/damage_calculator/damage_chat_message"
-// import { ActorDataGURPS, ActorSourceGURPS, ItemGURPS } from "@module/config"
-// import Document, { DocumentModificationOptions, Metadata } from "types/foundry/common/abstract/document.mjs"
-// import { BaseUser } from "types/foundry/common/documents.mjs"
-// import { Attribute } from "@module/attribute"
-// import { ActorDataConstructorData } from "types/foundry/common/data/data.mjs/actorData"
-// import { MergeObjectOptions } from "types/foundry/common/utils/helpers.mjs"
-// import { CharacterGURPS } from "@actor/character"
-
 import { ActorType, ItemType, RollModifier, SYSTEM_NAME, gid } from "@module/data/misc.ts"
 import { TokenDocumentGURPS } from "@module/token/document.ts"
 import { ActorFlags, ActorFlagsGURPS } from "./base/data.ts"
@@ -60,7 +23,7 @@ import {
 import { ItemGURPS } from "@item/base/document.ts"
 import { ItemFlags } from "@item/data.ts"
 import { Document } from "types/foundry/common/abstract/module.js"
-import { DamagePayload } from "@module/apps/damage_calculator/damage_chat_message.ts"
+import { DamagePayload, DamageRoll } from "@module/apps/damage_calculator/damage_chat_message.ts"
 import {
 	DamageAttacker,
 	DamageRollAdapter,
@@ -72,6 +35,7 @@ import {
 	TargetTraitModifier,
 } from "@module/apps/damage_calculator/index.ts"
 import { ApplyDamageDialog } from "@module/apps/damage_calculator/apply_damage_dlg.ts"
+import { ItemSourceGURPS } from "@item/data/index.ts"
 
 export interface ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null>
 	extends Actor<TParent> {
@@ -109,7 +73,7 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 	// 	}
 	// }
 
-	get dodgeAttribute() {
+	get dodgeAttribute(): DeepPartial<Attribute> {
 		return {
 			id: gid.Dodge,
 			attribute_def: {
@@ -129,7 +93,7 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 	}
 
 	protected override async _preCreate(
-		data: any,
+		data: this["_source"],
 		options: DocumentModificationContext<TParent>,
 		user: User,
 	): Promise<void> {
@@ -144,14 +108,11 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 		user: foundry.documents.BaseUser,
 	): Promise<void> {
 		const defaultToken = `systems/${SYSTEM_NAME}/assets/icons/${this.type}.svg`
-		if (changed.img && !(changed as any).prototypeToken?.texture?.src) {
-			if (
-				!(this as any).prototypeToken.texture.src ||
-				(this as any).prototypeToken.texture.src === defaultToken
-			) {
+		if (changed.img && !changed.prototypeToken?.texture?.src) {
+			if (!this.prototypeToken.texture.src || this.prototypeToken.texture.src === defaultToken) {
 				setProperty(changed, "prototypeToken.texture.src", changed.img)
 			} else {
-				setProperty(changed, "prototypeToken.texture.src", (this as any).prototypeToken.texture.src)
+				setProperty(changed, "prototypeToken.texture.src", this.prototypeToken.texture.src)
 			}
 		}
 		super._preUpdate(changed, options, user)
@@ -161,16 +122,22 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 		return new HitLocationTable("", "3d", [], this as unknown as CharacterGURPS, "")
 	}
 
-	static override async createDialog(
-		data: { folder?: string } = {},
-		options: Partial<FormApplicationOptions> = {},
-	): Promise<any | undefined> {
+	static override createDialog<TDocument extends BaseActorGURPS>(
+		this: ConstructorOf<TDocument>,
+		data?: Record<string, unknown>,
+		context?: {
+			parent?: TDocument["parent"]
+			pack?: Collection<TDocument> | null
+		} & Partial<FormApplicationOptions>,
+	): Promise<TDocument | null> {
+		super.createDialog()
 		const original = game.system.documentTypes.Actor
 		game.system.documentTypes.Actor = original.filter(
-			(actorType: string) => ![ActorType.LegacyEnemy].includes(actorType as any),
+			(actorType: string) => ![ActorType.LegacyEnemy].includes(actorType as ActorType),
 		)
-		options = { ...options, classes: [...(options.classes ?? []), "dialog-actor-create"] }
-		const newActor = super.createDialog(data, options) as Promise<BaseActorGURPS | undefined>
+		context ??= {}
+		context.classes = [...(context.classes ?? []), "dialog-actor-create"]
+		const newActor = super.createDialog(data, context) as Promise<TDocument | null>
 		game.system.documentTypes.Actor = original
 		return newActor
 	}
@@ -199,18 +166,11 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 		return modifiers
 	}
 
-	// override get temporaryEffects(): any {
-	// 	const effects = this.gEffects
-	// 		// .filter(e => !(e instanceof ConditionGURPS && e.cid === ConditionID.Dead))
-	// 		.map(e => new ActiveEffect({ name: e.name, icon: e.img || "" } as any))
-	// 	return super.temporaryEffects.concat(effects)
-	// }
-	override get temporaryEffects(): any {
+	override get temporaryEffects(): TemporaryEffect[] {
 		const effects = this.gEffects.map(e => {
 			const overlay = e instanceof ConditionGURPS && e.cid === ConditionID.Dead
-			const a = new ActiveEffect({ name: e.name, icon: e.img || "" } as any)
-			// a.setFlag("core", "overlay", overlay)
-			;(a as any).flags = { core: { overlay: overlay } }
+			const a = new ActiveEffect({ name: e.name, icon: e.img || "" })
+			a.flags = { core: { overlay: overlay } }
 			return a
 		})
 		return super.temporaryEffects.concat(effects)
@@ -225,7 +185,7 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 		options: { id: string | null; other: boolean } = { id: null, other: false },
 	): Promise<ItemGURPS[]> {
 		const itemData = items.map(e => {
-			if ([ItemType.Equipment, ItemType.EquipmentContainer].includes(e.type as ItemType))
+			if ([, ItemType.Equipment, ItemType.EquipmentContainer].includes(e.type as ItemType))
 				return mergeObject(e.toObject(), {
 					[`flags.${SYSTEM_NAME}.${ItemFlags.Container}`]: options.id,
 					[`flags.${SYSTEM_NAME}.${ItemFlags.Other}`]: options.other,
@@ -238,7 +198,7 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 			temporary: false,
 		})
 
-		let totalItems = newItems
+		let totalItems = newItems as ItemGURPS[]
 		for (let i = 0; i < items.length; i++) {
 			if (items[i] instanceof ContainerGURPS && (items[i] as ContainerGURPS).items.size) {
 				const parent = items[i] as ContainerGURPS
@@ -255,11 +215,11 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 	override createEmbeddedDocuments(
 		embeddedName: string,
 		data: Record<string, unknown>[],
-		context: DocumentModificationContext<any>,
-	): Promise<any[]> {
+		context: DocumentModificationContext<this>,
+	): Promise<Document[]> {
 		if (embeddedName === "Item")
 			data = data.filter(
-				(e: any) =>
+				(e: DeepPartial<ItemSourceGURPS>) =>
 					e.flags?.[SYSTEM_NAME]?.[ItemFlags.Container] !== this.id ||
 					CONFIG.GURPS.Actor.allowedContents[this.type].includes(e.type),
 			)
@@ -270,7 +230,7 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 		embeddedName: string,
 		updateData: EmbeddedDocumentUpdateData[],
 		context?: DocumentUpdateContext<this>,
-	): Promise<any[]> {
+	): Promise<Document[]> {
 		return super.updateEmbeddedDocuments(embeddedName, updateData, context)
 	}
 
@@ -328,7 +288,7 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 
 		const roll: DamageRollAdapter = new DamageRollAdapter(payload, attacker, weapon)
 		const target: DamageTarget = new DamageTargetActor(this)
-		ApplyDamageDialog.create(roll as any, target).then(dialog => dialog.render(true))
+		ApplyDamageDialog.create(roll as unknown as DamageRoll, target).then(dialog => dialog.render(true))
 	}
 
 	createDamageTargetAdapter(): DamageTarget {
@@ -337,7 +297,7 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 
 	hasCondition(id: ConditionID | ConditionID[]): boolean {
 		if (!Array.isArray(id)) id = [id]
-		return this.conditions.some(e => id.includes(e.cid as any))
+		return this.conditions.some(e => id.includes(e.cid as ConditionID))
 	}
 
 	async addConditions(ids: ConditionID[]): Promise<ConditionGURPS[] | null> {
@@ -346,16 +306,16 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 			"Item",
 			ids.map(id => duplicate(ConditionGURPS.getData(id))),
 			{},
-		)
+		) as Promise<ConditionGURPS[] | null>
 	}
 
 	async removeConditions(ids: ConditionID[]): Promise<Document<this>[]> {
-		const items: string[] = this.conditions.filter(e => ids.includes(e.cid as any)).map(e => e.id)
+		const items: string[] = this.conditions.filter(e => ids.includes(e.cid as ConditionID)).map(e => e.id)
 		return this.deleteEmbeddedDocuments("Item", items)
 	}
 
 	async increaseCondition(id: EffectID): Promise<ConditionGURPS | null> {
-		if (Object.values(ManeuverID).includes(id as any)) return this.changeManeuver(id as ManeuverID)
+		if (Object.values(ManeuverID).includes(id as ManeuverID)) return this.changeManeuver(id as ManeuverID)
 		const existing = this.conditions.find(e => e.cid === id)
 		if (existing) {
 			if (existing.canLevel) {

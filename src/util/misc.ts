@@ -1,5 +1,4 @@
 import { DEFAULT_INITIATIVE_FORMULA, ItemType, SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
-import { getProperty, setProperty } from "types/foundry/common/utils/helpers.js"
 import { SkillResolver } from "./resolvers.ts"
 import { StringBuilder } from "./string_builder.ts"
 import { LocalizeGURPS } from "./localize.ts"
@@ -196,7 +195,7 @@ export function prepareFormData(formData: any, object: any): any {
 		if (aKey.startsWith("array.") && aKey.match(/\d/)) {
 			const key = aKey.replace(/^array./g, "")
 			const arrayKey = key.split(/.\d+./)[0]
-			let array: any[] = formData[arrayKey] || getProperty(object, arrayKey)
+			let array: any[] = formData[arrayKey] || foundry.utils.getProperty(object, arrayKey)
 			const index = parseInt(key.match(/.(\d+)./)![1])
 			const prop = key.replace(new RegExp(`^${arrayKey}.${index}.`), "")
 			array = setArrayProperty(array, index, prop, formData[aKey])
@@ -209,7 +208,7 @@ export function prepareFormData(formData: any, object: any): any {
 		} else if (aKey.startsWith("sarray.") && aKey.match(/\d/)) {
 			const key = aKey.replace(/^sarray./g, "")
 			const arrayKey = `${key.split(/thresholds.\d+./)[0]}thresholds`
-			const array: any[] = getProperty(object, arrayKey) as any[]
+			const array: any[] = foundry.utils.getProperty(object, arrayKey) as any[]
 			const index = parseInt(key.match(/thresholds.(\d+)./)![1])
 			const prop = key.replace(new RegExp(`^${arrayKey}.${index}.`), "")
 			setArrayProperty(array, index, prop, formData[aKey])
@@ -230,13 +229,17 @@ export function prepareFormData(formData: any, object: any): any {
 function setArrayProperty(a: any[], index: number, prop: string, value: any): any[] {
 	if (prop.match(/.\d+./)) {
 		const inArrayKey = prop.split(/.\d+./)[0]
-		const inArrayArray = getProperty(a[index], inArrayKey) as any[]
+		const inArrayArray = foundry.utils.getProperty(a[index], inArrayKey) as any[]
 		const inArrayIndex = parseInt(prop.match(/.(\d+)./)![1])
 		const inArrayProp = prop.replace(`${inArrayKey}.${inArrayIndex}.`, "")
-		setProperty(a[index], inArrayKey, setArrayProperty(inArrayArray, inArrayIndex, inArrayProp, value))
+		foundry.utils.setProperty(
+			a[index],
+			inArrayKey,
+			setArrayProperty(inArrayArray, inArrayIndex, inArrayProp, value),
+		)
 		return a
 	}
-	setProperty(a[index], prop, value)
+	foundry.utils.setProperty(a[index], prop, value)
 	return a
 }
 

@@ -43,7 +43,7 @@
 			"@scripts/*": ["src/scripts/*"],
 			"@util": ["src/util"],
 			"@util/*": ["src/util/*"],
-			"@lang/*": ["src/lang/*"]
+			"@lang/*": ["static/lang/*"]
 		},
 		"types": ["jest", "jquery", "node"],
 		"typeRoots": ["node_modules/@types", "types/foundry"]

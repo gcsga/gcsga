@@ -185,9 +185,9 @@ export const ApplicableConditions = [
 
 export type EffectID = ConditionID | ManeuverID
 
-export type ConditionSource = BaseItemSourceGURPS<ItemType.Condition, ConditionSystemData>
+export type ConditionSource = BaseItemSourceGURPS<ItemType.Condition, ConditionSytemSource>
 
-export interface ConditionData extends Omit<ConditionSource, "effects">, ConditionSystemData {
+export interface ConditionData extends Omit<ConditionSource, "effects">, ConditionSytemSource {
 	readonly type: ConditionSource["type"]
 	readonly _source: ConditionSource
 }
@@ -197,7 +197,7 @@ export interface Consequence {
 	margin: number
 }
 
-export interface ConditionSystemData extends EffectSystemData {
+export interface ConditionSytemSource extends EffectSystemData {
 	id: ConditionID | ManeuverID | null
 	checks: RollModifier[]
 	consequences: Consequence[]

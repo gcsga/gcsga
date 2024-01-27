@@ -1,7 +1,8 @@
 import fs from "fs"
 import path from "path"
 import url from "url"
-import { CompendiumPack, PackError } from "./lib/compendium-pack.ts"
+import { CompendiumPack } from "./lib/compendium-pack.ts"
+// import { CompendiumPack, PackError } from "./lib/compendium-pack.ts"
 
 const asJson = process.argv[2]?.toLowerCase() === "json"
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url))
@@ -16,5 +17,6 @@ const total = documentCounts.reduce((total, c) => total + c, 0)
 if (documentCounts.length > 0) {
 	console.log(`Created ${documentCounts.length} packs with ${total} documents.`)
 } else {
-	throw PackError("No data available to build packs.")
+	// continue as normal
+	// throw PackError("No data available to build packs.")
 }
