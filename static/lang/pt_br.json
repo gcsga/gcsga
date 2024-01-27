@@ -1,0 +1,31 @@
+{
+	"gurps": {
+		"static": {
+			"hit_location": {
+				"Torso": "Tronco",
+				"Random": "Aleatório"
+			}
+		},
+		"settings": {
+			"default_damage_location": {
+				"name": "Dano: Ponto de impacto padrão",
+				"hint": "Configura o ponto de impacto padrão a ser utilizada nas avaliações de dano."
+			}
+		},
+		"token": {
+			"select": "Selecionar Miniatura"
+		},
+		"misc": {
+			"apply": "Aplicar",
+			"apply-to": "Aplicar em"
+		},
+		"damage": {
+			"flexible": "Armadura Flexível",
+			"hardened_dr": "RD Endurecido",
+			"hit_location": "Ponto de Impacto",
+			"injury": "Lesão",
+			"location": "Ponto",
+			"target": "Alvo"
+		}
+	}
+}
