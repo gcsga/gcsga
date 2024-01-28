@@ -276,11 +276,13 @@ class DamageCalculator implements IDamageCalculator {
 
 	// --- Damage Type ---
 	get damageType(): DamageType {
-		return this.overrides.damageType ?? this.damageRoll.damageType
+		return this.overrides.damageType ?? this.damageRoll?.damageType ?? DamageTypes.cr
 	}
 
 	get damageTypeKey(): string {
-		return this.overrides.damageType ? this.overrides.damageType.id : this.damageRoll.damageType.id
+		return this.overrides.damageType
+			? this.overrides.damageType.id
+			: this.damageRoll.damageType?.id ?? DamageTypes.cr
 	}
 
 	set damageTypeOverride(key: string | undefined) {
