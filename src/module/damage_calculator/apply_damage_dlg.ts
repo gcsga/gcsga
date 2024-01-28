@@ -141,6 +141,10 @@ class ApplyDamageDialog extends Application {
 				this.calculator.injuryToleranceOverride = target.value
 				break
 
+			case "override-armordivisor":
+				this.calculator.armorDivisorOverride = isNaN(floatValue) ? undefined : floatValue
+				break
+
 			case "override-reduction":
 				this.calculator.damageReductionOverride = isNaN(floatValue) ? undefined : floatValue
 				break

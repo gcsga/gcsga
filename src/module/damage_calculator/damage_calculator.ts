@@ -363,6 +363,14 @@ class DamageCalculator implements IDamageCalculator {
 		const armorDivisors = [0, 100, 10, 5, 3, 2, 1]
 		let index = armorDivisors.indexOf(ad)
 
+		if (index === -1) {
+			// Not a standard armor divisor. Return the value unmodified by Hardened DR and explanation.
+			return {
+				value: ad,
+				explanation: this.format("gurps.dmgcalc.description.armor_divisor", { divisor: ad }),
+			}
+		}
+
 		// B47: Each level of Hardened reduces the armor divisor of an attack by one step
 		index += hardenedDRLevel
 		if (index > armorDivisors.length - 1) index = armorDivisors.length - 1
