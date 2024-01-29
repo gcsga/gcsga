@@ -1,6 +1,6 @@
 import { FeatureObj, SkillBonus } from "@feature/index.ts"
 import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
-import { ItemType } from "@module/data/misc.ts"
+import { ItemType } from "@item/types.ts"
 import { PrereqList } from "@prereq/prereq_list.ts"
 import { selfctrl } from "@util/enum/selfctrl.ts"
 import { skillsel } from "@util/enum/skillsel.ts"

@@ -1,7 +1,7 @@
 import { FeatureObj } from "@feature/index.ts"
 import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
 import { EncumbrancePenaltyMultiplier } from "@item/skill/data.ts"
-import { ItemType } from "@module/data/misc.ts"
+import { ItemType } from "@item/types.ts"
 import { PrereqList } from "@prereq/prereq_list.ts"
 import { SkillDefault } from "@sytem/default/index.ts"
 import { difficulty } from "@util/enum/difficulty.ts"

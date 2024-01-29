@@ -1,11 +1,19 @@
-import { EffectID, ManeuverID } from "@item"
-import { SOCKET, SYSTEM_NAME } from "@module/data"
-import { TokenGURPS } from "./object"
+import { SYSTEM_NAME } from "@module/data/misc.ts"
+import { TokenGURPS } from "./object.ts"
+import { ManeuverID } from "@item"
+
+export interface TokenHUDDataGURPS extends TokenHUDData {
+	maneuvers: Record<string, TokenHUDStatusEffectChoice | undefined>
+}
+
+export interface TokenHUDGURPS extends TokenHUD {
+	object: TokenGURPS
+}
 
 export class TokenHUDGURPS extends TokenHUD {
 	_maneuvers = false
 
-	get template(): string {
+	override get template(): string {
 		return `systems/${SYSTEM_NAME}/templates/hud/token.hbs`
 	}
 
@@ -29,24 +37,24 @@ export class TokenHUDGURPS extends TokenHUD {
 		}
 	}
 
-	activateListeners(html: JQuery<HTMLElement>) {
+	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		this._toggleManeuvers(this._maneuvers)
 	}
 
-	getData(options?: Partial<ApplicationOptions> | undefined): MaybePromise<object> {
-		const data: any = mergeObject(super.getData(options), {
+	override getData(options: ApplicationOptions): TokenHUDDataGURPS {
+		const data = fu.mergeObject(super.getData(options), {
 			inCombat: this.object?.inCombat,
-		})
-		data.maneuvers = this._getManeuverChoices()
+			maneuvers: this._getManeuverChoices(),
+		}) as TokenHUDDataGURPS
 		return data
 	}
 
-	_getManeuverChoices() {
+	_getManeuverChoices(): Record<string, TokenHUDStatusEffectChoice | undefined> {
 		const effects = super._getStatusEffectChoices()
 		const filteredEffects = Object.keys(effects)
 			.filter((key: string) => key.includes("/maneuver/"))
-			.reduce((obj: any, key: string) => {
+			.reduce((obj, key: string) => {
 				return Object.assign(obj, {
 					[key]: effects[key],
 				})
@@ -54,11 +62,11 @@ export class TokenHUDGURPS extends TokenHUD {
 		return filteredEffects
 	}
 
-	override _getStatusEffectChoices() {
+	override _getStatusEffectChoices(): Record<string, TokenHUDStatusEffectChoice | undefined> {
 		const effects = super._getStatusEffectChoices()
 		const filteredEffects = Object.keys(effects)
 			.filter((key: string) => key.includes("/status/"))
-			.reduce((obj: any, key: string) => {
+			.reduce((obj, key: string) => {
 				return Object.assign(obj, {
 					[key]: effects[key],
 				})
@@ -66,10 +74,10 @@ export class TokenHUDGURPS extends TokenHUD {
 		return filteredEffects
 	}
 
-	protected async _onToggleCombat(event: JQuery.ClickEvent<any, any, any, any>): Promise<void> {
+	protected async _onToggleCombat(event: JQuery.ClickEvent): Promise<void> {
 		event.preventDefault()
-		await super._onToggleCombat(event)
-		const { actor } = this.object as TokenGURPS
+		// await super._onToggleCombat(event)
+		const { actor } = this.object
 		if (actor) {
 			if (this.object?.inCombat) await actor.changeManeuver(ManeuverID.DoNothing)
 			else actor.resetManeuvers()

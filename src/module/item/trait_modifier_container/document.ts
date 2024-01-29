@@ -1,8 +1,18 @@
 import { ActorGURPS } from "@actor/base.ts"
 import { ItemGCS } from "@item/gcs/document.ts"
 import { TraitModifierGURPS } from "@item/trait_modifier/document.ts"
+import { TraitModifierContainerSystemData } from "./data.ts"
+import { ItemType } from "@item/types.ts"
 
-export class TraitModifierContainerGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+export interface TraitModifierContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null>
+	extends ItemGCS<TParent> {
+	system: TraitModifierContainerSystemData
+	type: ItemType.TraitModifierContainer
+}
+
+export class TraitModifierContainerGURPS<
+	TParent extends ActorGURPS | null = ActorGURPS | null,
+> extends ItemGCS<TParent> {
 	// Embedded Items
 	override get children(): Collection<TraitModifierGURPS | TraitModifierContainerGURPS> {
 		return super.children as Collection<TraitModifierGURPS | TraitModifierContainerGURPS>

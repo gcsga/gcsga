@@ -14,9 +14,9 @@ const genClientBase = (
 		.map(p => (p.hasParents ? `ClientBase${p.name}<any>` : `ClientBase${p.name}`))
 		.join(" | ")
 	const typeParams = typeParamName ? `<TParent extends ${typeParamName} | null>` : ""
-	const tParentOrBlank = typeParamName ? "<TParent>" : ""
-	const tParentOrNull = typeParamName ? "TParent" : "null"
-	console.log(String.raw`${declareOrExportClientBase} class ${clientBaseName}${typeParams} extends foundry.documents.Base${className}${tParentOrBlank} {
+	const TParentOrBlank = typeParamName ? "<TParent>" : ""
+	const TParentOrNull = typeParamName ? "TParent" : "null"
+	console.log(String.raw`${declareOrExportClientBase} class ${clientBaseName}${typeParams} extends foundry.documents.Base${className}${TParentOrBlank} {
     protected _sheet: FormApplication<this> | null;
 
     /**
@@ -27,7 +27,7 @@ const genClientBase = (
      */
     apps: { [K in number]?: Application };
 
-    constructor(data: object, context?: DocumentConstructionContext<${tParentOrNull}>);
+    constructor(data: object, context?: DocumentConstructionContext<${TParentOrNull}>);
 
     static override name: string;
 
@@ -150,17 +150,17 @@ const genClientBase = (
 
     protected override _onCreate(
         data: this["_source"],
-        options: DocumentModificationContext<${tParentOrNull}>,
+        options: DocumentModificationContext<${TParentOrNull}>,
         userId: string
     ): void;
 
     protected override _onUpdate(
         data: DeepPartial<this["_source"]>,
-        options: DocumentModificationContext<${tParentOrNull}>,
+        options: DocumentModificationContext<${TParentOrNull}>,
         userId: string
     ): void;
 
-    protected override _onDelete(options: DocumentModificationContext<${tParentOrNull}>, userId: string): void;
+    protected override _onDelete(options: DocumentModificationContext<${TParentOrNull}>, userId: string): void;
 
     /**
      * Actions taken after descendant documents have been created, but before changes are applied to the client data.

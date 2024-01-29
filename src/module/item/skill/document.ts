@@ -13,11 +13,15 @@ import { SkillDefault } from "@sytem/default/index.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { duplicate } from "types/foundry/common/utils/helpers.js"
 import { CharacterGURPS } from "@actor/document.ts"
+import { CharacterResolver } from "@util"
+import { ItemType } from "@item/types.ts"
+import { study } from "@util/enum/study.ts"
 
-export interface SkillGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+export interface SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	system: SkillSystemData
+	type: ItemType.Skill
 }
-export class SkillGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+export class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	declare level: SkillLevel
 
 	// level: SkillLevel = { level: -Infinity, relative_level: 0, tooltip: new TooltipGURPS() }
@@ -36,7 +40,7 @@ export class SkillGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS
 
 	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
 		const buffer = new StringBuilder()
-		const settings = sheetSettingsFor(this.actor)
+		const settings = sheetSettingsFor(this.actor as unknown as CharacterResolver)
 		if (optionChecker(settings.modifiers_display)) {
 			const text = this.modifierNotes
 			if ((text?.trim() ?? "") !== "") buffer.push(text)
@@ -112,9 +116,9 @@ export class SkillGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS
 	}
 
 	get defaults(): SkillDefault[] {
-		if (this.system.hasOwnProperty("defaults")) {
+		if (this.system.defaults) {
 			const defaults: SkillDefault[] = []
-			const list = (this.system as any).defaults
+			const list = this.system.defaults
 			for (const f of list ?? []) {
 				defaults.push(new SkillDefault(f))
 			}
@@ -270,7 +274,7 @@ export class SkillGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS
 		if (def.skillBased) {
 			const other = actor?.bestSkillNamed(def.name!, def.specialization!, true, excludes)
 			if (other) {
-				level -= actor!.skillBonusFor(def.name!, def.specialization!, this.tags, undefined)
+				level -= actor.skillBonusFor(def.name!, def.specialization!, this.tags, undefined)
 			}
 		}
 		return level
@@ -321,7 +325,7 @@ export class SkillGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS
 		return !hadOne
 	}
 
-	setLevel(level: number) {
+	setLevel(level: number): Promise<this | undefined> {
 		return this.update({ "system.points": this.getPointsForLevel(level) })
 	}
 
@@ -384,10 +388,20 @@ export class SkillGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS
 			while (this.points > 0) {
 				this.system.points = Math.max(this.points - 1, 0)
 				if (this.calculateLevel().level !== oldLevel) {
-					this.system.points++
+					this.system.points += 1
 					this.update({ "system.points": this.points }, options)
 				}
 			}
 		}
+	}
+
+	get studyHours(): number {
+		return resolveStudyHours(this.system.study ?? [])
+	}
+
+	get studyHoursNeeded(): string {
+		const system = this.system
+		if ((system.study_hours_needed as string) === "") return study.Level.Standard
+		return system.study_hours_needed
 	}
 }

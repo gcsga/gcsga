@@ -1,5 +1,5 @@
-import { gid } from "@module/data"
-import { attribute } from "@util/enum"
+import { gid } from "@module/data/index.ts"
+import { attribute } from "@util/enum/attribute.ts"
 
 export interface AttributeObj {
 	// Bonus?: number

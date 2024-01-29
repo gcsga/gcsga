@@ -1,10 +1,12 @@
-import { HitLocationTableData } from "@actor/character/hit_location"
-import { AttributeDefObj } from "@module/attribute"
-import { MoveTypeDefObj } from "@module/move_type"
-import { ResourceTrackerDefObj } from "@module/resource_tracker"
+import { HitLocationTableData } from "@actor/character/hit_location.ts"
+import { AttributeDefObj } from "@sytem/attribute/data.ts"
+import { MoveTypeDefObj } from "@sytem/move_type/data.ts"
+import { ResourceTrackerDefObj } from "@sytem/resource_tracker/data.ts"
 import { CharacterResolver, LengthUnits, WeightUnits } from "@util"
-import { display, paper, progression } from "@util/enum"
-import { SETTINGS, SYSTEM_NAME } from "./misc"
+import { display } from "@util/enum/display.ts"
+import { paper } from "@util/enum/paper.ts"
+import { progression } from "@util/enum/progression.ts"
+import { SETTINGS, SYSTEM_NAME } from "./misc.ts"
 
 export interface PageSettings {
 	paper_size: paper.Size
@@ -68,7 +70,7 @@ export function defaultSheetSettings(): SheetSettings {
 	}
 }
 
-export function sheetSettingsFor(actor: CharacterResolver): SheetSettings {
+export function sheetSettingsFor(actor: CharacterResolver | null): SheetSettings {
 	if (!actor) return defaultSheetSettings()
 	return actor.settings
 }

@@ -1,5 +1,3 @@
-import { ConditionID } from "@item/condition/data.ts"
-
 /*
  * I had to move SETTINGS here as well, because it fixed the weird error that leads to the code not recognizing standard
  * foundry classes and methods.
@@ -65,7 +63,9 @@ export enum SOCKET {
 	UPDATE_BUCKET = "update_bucket",
 }
 
-export const DEFAULT_INITIATIVE_FORMULA = "$basic_speed+($dx/10000)+(1d6/100000)"
+export const DEFAULT_INITIATIVE_FORMULA = (): string => {
+	return "$basic_speed+($dx/10000)+(1d6/100000)"
+}
 
 // export enum DisplayMode {
 // 	NotShown = "not_shown",
@@ -257,50 +257,6 @@ export interface ModifierHeader {
 export type ImagePath = `${string}.${ImageFileExtension}`
 type ImageFileExtension = "jpg" | "jpeg" | "png" | "svg" | "webp"
 
-export enum UserFlags {
-	Init = "init",
-	LastStack = "lastStack",
-	ModifierStack = "modifierStack",
-	ModifierSticky = "modifierSticky",
-	SavedStacks = "savedStacks",
-	LastActor = "lastActor",
-	LastToken = "lastToken",
-}
-
-export enum ItemType {
-	Trait = "trait",
-	TraitContainer = "trait_container",
-	TraitModifier = "modifier",
-	TraitModifierContainer = "modifier_container",
-	Skill = "skill",
-	Technique = "technique",
-	SkillContainer = "skill_container",
-	Spell = "spell",
-	RitualMagicSpell = "ritual_magic_spell",
-	SpellContainer = "spell_container",
-	Equipment = "equipment_gcs",
-	EquipmentContainer = "equipment_container",
-	EquipmentModifier = "eqp_modifier",
-	EquipmentModifierContainer = "eqp_modifier_container",
-	Note = "note",
-	NoteContainer = "note_container",
-	LegacyEquipment = "equipment",
-	Effect = "effect",
-	Condition = "condition",
-	MeleeWeapon = "melee_weapon",
-	RangedWeapon = "ranged_weapon",
-}
-
-export enum ActorType {
-	Character = "character_gcs",
-	LegacyCharacter = "character",
-	LegacyEnemy = "enemy",
-	Loot = "loot",
-	// MassCombatElement = "element",
-	// Vehicle = "vehicle",
-	// Merchant = "merchant",
-}
-
 export enum SpellSubType {
 	NAME = "name",
 	TAG = "tag",
@@ -336,6 +292,17 @@ export type SkillDefaultType = gid.Block | gid.Parry | gid.Skill | gid.Ten | str
 export interface AttributeEffect {
 	attribute: string
 	state: string
-	enter: { id: ConditionID; action: EFFECT_ACTION }[]
-	leave: { id: ConditionID; action: EFFECT_ACTION }[]
+	enter: ConditionEffect[]
+	leave: ConditionEffect[]
+}
+
+export interface ConditionEffect {
+	id: ConditionID
+	action: EFFECT_ACTION
+}
+
+export interface TokenPool {
+	value: number
+	max: number
+	min: number
 }

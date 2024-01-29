@@ -3,9 +3,10 @@ import { RollModifier } from "./injury_effect.ts"
 import { SYSTEM_NAME } from "@module/data/misc.ts"
 import { DnD } from "@util/drag_drop.ts"
 import { CanvasUtil } from "@util/canvas.ts"
-import { BaseActorGURPS } from "@actor/index.ts"
 import { TokenUtil } from "@util/token_utils.ts"
 import { setProperty } from "types/foundry/common/utils/helpers.js"
+import { ChatMessageGURPS } from "@module/chat-message/index.ts"
+import { ActorGURPS } from "@actor"
 
 export enum DamageChatFlags {
 	Transfer = "transfer",
@@ -13,7 +14,7 @@ export enum DamageChatFlags {
 
 export type DamageRoll = {
 	total: number
-	tooltip: any
+	tooltip: string
 	hitlocation: string
 }
 
@@ -33,18 +34,23 @@ export type DamagePayload = {
 	modifierTotal: number
 }
 
-type DropData = { type: string; x: number; y: number; payload: DamagePayload }
+export enum DropDataType {
+	Damage = "damage",
+	Item = "Item",
+}
+
+export type DropData =
+	| { type: DropDataType.Damage; x: number; y: number; payload: DamagePayload }
+	| { type: DropDataType.Item; x: number; y: number; uuid: ItemUUID }
 
 export class DamageChat {
-	static TYPE = "damage"
-
 	/*
 	 * ChatMessage will contain a user flag named "flags.gurps.transfer". Convert that to an object and retrieve
 	 * the "payload" property. This is the data that will be used to construct a DamageRoll and DamageTarget needed
 	 * by the Damage Calculator. When the dragSection is dragged, attach the payload to the event's dataTransfer
 	 * object.
 	 */
-	static async renderChatMessage(app: ChatMessage, html: JQuery<HTMLElement>, _msg: any) {
+	static async renderChatMessage(app: ChatMessageGURPS, html: JQuery<HTMLElement>, _msg: object): Promise<boolean> {
 		// TODO Find a way to identify elements not tied to their appearance (data attributes, for example).
 		if (!html.find(".dice-roll.damage").length) return true
 
@@ -64,27 +70,32 @@ export class DamageChat {
 		return false
 	}
 
-	static getTransferFlag(object: any): string {
+	static getTransferFlag(object: ChatMessageGURPS): string {
 		return object.flags?.[SYSTEM_NAME]?.[DamageChatFlags.Transfer] ?? ""
 	}
 
-	static setTransferFlag(object: any, payload: Partial<DamagePayload>, userTarget: string) {
-		const transfer = JSON.stringify({ type: DamageChat.TYPE, payload: payload, userTarget: userTarget })
+	static setTransferFlag(
+		object: ChatMessageGURPS,
+		payload: Partial<DamagePayload>,
+		userTarget: string,
+	): ChatMessageGURPS {
+		const transfer = JSON.stringify({ type: DropDataType.Damage, payload: payload, userTarget: userTarget })
 		setProperty(object, `flags.${SYSTEM_NAME}.${DamageChatFlags.Transfer}`, transfer)
 		return object
 	}
 
-	static async _dragStart(payload: DamagePayload, event: DragEvent) {
-		payload.index = parseInt((event.currentTarget! as any).dataset.index)
-		DnD.setDragData(event, DamageChat.TYPE, payload, DnD.TEXT_PLAIN)
+	static async _dragStart(payload: DamagePayload, event: DragEvent): Promise<void> {
+		payload.index = $(event.currentTarget!).data("index")
+		// payload.index = parseInt((event.currentTarget!).dataset.index)
+		DnD.setDragData(event, DropDataType.Damage, payload, DnD.TEXT_PLAIN)
 	}
 
-	static async _dragEnd(_ev: DragEvent) {
+	static async _dragEnd(_ev: DragEvent): Promise<void> {
 		// Add any handling code here.
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	static async _clickOnDiceResults(event: JQuery.ClickEvent) {
+	static async _clickOnDiceResults(event: JQuery.ClickEvent): Promise<void> {
 		event.preventDefault()
 		event.stopPropagation()
 
@@ -101,7 +112,7 @@ export class DamageChat {
 	}
 
 	static async handleDropOnCanvas(_canvas: Canvas, dropData: DropData): Promise<void> {
-		if (dropData.type !== DamageChat.TYPE) return
+		if (dropData.type !== DropDataType.Damage) return
 
 		if (dropData.payload.index === -1) {
 			ui.notifications?.warn("Multiple damage rolls are not yet supported.")
@@ -114,15 +125,15 @@ export class DamageChat {
 		if (tokens.length === 0) return
 
 		// Define the handler function for damage.
-		const handleDamageDrop = (actor: BaseActorGURPS) => actor.handleDamageDrop(dropData.payload)
+		const handleDamageDrop = (actor: ActorGURPS) => actor.handleDamageDrop(dropData.payload)
 
 		// If only one token in the targets array, use that one.
 		if (tokens.length === 1) {
-			handleDamageDrop(tokens[0].actor as BaseActorGURPS)
+			handleDamageDrop(tokens[0].actor as ActorGURPS)
 			return
 		}
 
 		const token = await TokenUtil.askWhichToken(tokens)
-		if (token?.actor) handleDamageDrop(token.actor as BaseActorGURPS)
+		if (token?.actor) handleDamageDrop(token.actor as ActorGURPS)
 	}
 }

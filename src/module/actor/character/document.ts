@@ -15,12 +15,12 @@ import {
 	WeaponBonus,
 } from "@feature/index.ts"
 import {
-	ActorType,
+	ConditionEffect,
 	EFFECT_ACTION,
-	ItemType,
 	SETTINGS,
 	SYSTEM_NAME,
 	Stringer,
+	TokenPool,
 	attrPrefix,
 	gid,
 } from "@module/data/misc.ts"
@@ -34,7 +34,7 @@ import {
 import { TokenDocumentGURPS } from "@module/token/document.ts"
 import { Attribute } from "@sytem/attribute/object.ts"
 import { attribute } from "@util/enum/attribute.ts"
-import { CharacterFlagDefaults, CharacterSource, CharacterSystemSource, Encumbrance } from "./data.ts"
+import { CharacterFlagDefaults, CharacterFlags, CharacterSource, CharacterSystemSource, Encumbrance } from "./data.ts"
 import { getCurrentTime, urlToBase64 } from "@util/misc.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { SETTINGS_TEMP } from "@module/settings/index.ts"
@@ -51,10 +51,18 @@ import { ActorFlags } from "@actor/base/data.ts"
 import { SheetSettings } from "@module/data/sheet_settings.ts"
 import { AttributeDef } from "@sytem/attribute/attribute_def.ts"
 import { progression } from "@util/enum/progression.ts"
-import { CharacterResolver, StringCompareType, StringCriteria, damageProgression, equalFold, fxp } from "@util/index.ts"
+import {
+	CharacterResolver,
+	FilePickerGURPS,
+	StringCompareType,
+	StringCriteria,
+	damageProgression,
+	equalFold,
+	fxp,
+} from "@util/index.ts"
 import { stlimit } from "@util/enum/stlimit.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
-import { HitLocation, HitLocationTable } from "./hit_location.ts"
+import { HitLocationTable } from "./hit_location.ts"
 import { ConditionalModifier } from "@module/conditional_modifier.ts"
 import { selfctrl } from "@util/enum/selfctrl.ts"
 import {
@@ -85,9 +93,13 @@ import { skillsel } from "@util/enum/skillsel.ts"
 import { PoolThreshold } from "@sytem/attribute/pool_threshold.ts"
 import { ItemFlags } from "@item/data.ts"
 import { CharacterImporter } from "./import.ts"
+import { ActorType } from "@actor"
+import { ItemType } from "@item/types.ts"
+import { ItemSourceGURPS } from "@item/data/index.ts"
 
 export interface CharacterGURPS<TParent extends TokenDocumentGURPS | null> extends ActorGURPS<TParent> {
 	type: ActorType.Character
+	flags: CharacterFlags
 	features: FeatureMap
 	attributes: Map<string, Attribute>
 	resourceTrackers: Map<string, ResourceTracker>
@@ -145,7 +157,11 @@ export class CharacterGURPS<
 	// 	}
 	// }
 
-	protected override _onCreate(data: any, options: DocumentModificationContext<Actor> | any, userId: string): void {
+	protected override _onCreate(
+		data: this["_source"],
+		options: DocumentModificationContext<TParent> & { promptImport: boolean },
+		userId: string,
+	): void {
 		const default_settings = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
 		const default_attributes = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
 		const default_resource_trackers = game.settings.get(
@@ -222,7 +238,6 @@ export class CharacterGURPS<
 		options: DocumentModificationContext<TParent>,
 		user: foundry.documents.BaseUser,
 	): Promise<void> {
-		// console.log(changed, options)
 		changed = mergeObject(changed, {
 			...this._updateAttributes(changed),
 			...this._checkImport(changed),
@@ -232,7 +247,7 @@ export class CharacterGURPS<
 
 	// override update(
 	// 	data?: DeepPartial<ActorDataConstructorData | (ActorDataConstructorData & Record<string, unknown>)>,
-	// 	context?: DocumentModificationContext & foundry.utils.MergeObjectOptions & { noPrepare?: boolean }
+	// 	context?: DocumentModificationContext & fu.MergeObjectOptions & { noPrepare?: boolean }
 	// ): Promise<this | undefined> {
 	// 	if (context?.noPrepare) this.noPrepare = true
 	// 	// this.updateAttributes(data)
@@ -240,7 +255,7 @@ export class CharacterGURPS<
 	// 	return super.update(data, context)
 	// }
 
-	private _checkImport(data?: any): DeepPartial<CharacterSource> {
+	private _checkImport(data: DeepPartial<this["_source"]>): DeepPartial<CharacterSource> {
 		if (hasProperty(data, "system.import")) return {}
 		if (Object.keys(data).some(e => e.includes("ownership"))) return {}
 		const additionalData: DeepPartial<CharacterSource> = {}
@@ -248,8 +263,8 @@ export class CharacterGURPS<
 		return additionalData
 	}
 
-	private _updateAttributes(data?: any): DeepPartial<CharacterSource> {
-		if (Object.keys(data).some(e => e.includes("ownership"))) return {}
+	private _updateAttributes(data: DeepPartial<this["_source"]>): DeepPartial<this["_source"]> {
+		if (Object.keys(data).some(e => e.includes("ownership"))) return data
 		const additionalData: DeepPartial<CharacterSource> = {}
 		if (this.system.attributes.length === 0) setProperty(additionalData, "system.attributes", this.newAttributes())
 		if (hasProperty(data, "system.setings.attributes")) {
@@ -269,34 +284,6 @@ export class CharacterGURPS<
 			setProperty(additionalData, "system.move_types", this.newMoveTypes(atts, this.system.move_types))
 		}
 		return additionalData
-		// for (const i in data) {
-		// 	if (i === "system.settings.attributes") {
-		// 		data["system.attributes"] = this.newAttributes(
-		// 			data["system.settings.attributes"],
-		// 			this.system.attributes
-		// 		)
-		// 	}
-		// 	if (i === "system.settings.resource_trackers") {
-		// 		data["system.resource_trackers"] = this.newTrackers(
-		// 			data["system.settings.resource_trackers"],
-		// 			this.system.resource_trackers
-		// 		)
-		// 	}
-		// 	if (i === "system.settings.move_types") {
-		// 		data["system.move_types"] = this.newMoveTypes(
-		// 			data["system.settings.move_types"],
-		// 			this.system.move_types
-		// 		)
-		// 	}
-		// 	if (i.startsWith("system.attributes.")) {
-		// 		const att = this.attributes.get(i.split("attributes.")[1].split(".")[0])
-		// 		const type = i.split("attributes.")[1].split(".")[1]
-		// 		if (att) {
-		// 			if (type === "adj") data[i] -= att.max - att.adj
-		// 			else if (type === "damage") data[i] = Math.max(att.max - data[i], 0)
-		// 		}
-		// 	}
-		// }
 	}
 
 	// Getters
@@ -312,7 +299,7 @@ export class CharacterGURPS<
 		return this.settings.default_length_units
 	}
 
-	get editing() {
+	get editing(): boolean {
 		return this.system.editing
 	}
 
@@ -324,13 +311,13 @@ export class CharacterGURPS<
 		return this.system.import
 	}
 
-	get calc() {
-		return this.system.calc
-	}
-
-	set calc(v: any) {
-		this.system.calc = v
-	}
+	// get calc() {
+	// 	return this.system.calc
+	// }
+	//
+	// set calc(v: any) {
+	// 	this.system.calc = v
+	// }
 
 	embeddedEval(s: string): string {
 		const ev = new Evaluator({ resolver: this })
@@ -430,27 +417,27 @@ export class CharacterGURPS<
 		return total
 	}
 
-	get currentMove() {
+	get currentMove(): number {
 		return this.move(this.encumbranceLevel(true))
 	}
 
-	get effectiveMove() {
+	get effectiveMove(): number {
 		return this.eMove(this.encumbranceLevel(true))
 	}
 
-	get effectiveSprint() {
+	get effectiveSprint(): number {
 		return Math.max(this.currentMove * 1.2, this.currentMove + 1)
 	}
 
-	get currentDodge() {
+	get currentDodge(): number {
 		return this.dodge(this.encumbranceLevel(true))
 	}
 
-	get effectiveDodge() {
+	get effectiveDodge(): number {
 		return this.eDodge(this.encumbranceLevel(true))
 	}
 
-	override get dodgeAttribute() {
+	override get dodgeAttribute(): DeepPartial<Attribute> {
 		return {
 			id: gid.Dodge,
 			attribute_def: {
@@ -461,7 +448,7 @@ export class CharacterGURPS<
 		}
 	}
 
-	get sizeModAttribute() {
+	get sizeModAttribute(): DeepPartial<Attribute> {
 		return {
 			attribute_def: {
 				combinedName: LocalizeGURPS.translations.gurps.character.sm,
@@ -517,17 +504,18 @@ export class CharacterGURPS<
 	}
 
 	get moveType(): string {
-		return this.getFlag(SYSTEM_NAME, ActorFlags.MoveType) as string
+		return this.flags[SYSTEM_NAME][ActorFlags.MoveType]
 	}
 
 	dodge(enc: Encumbrance): number {
-		const dodge = 3 + (this.calc?.dodge_bonus ?? 0) + Math.max(this.resolveAttributeCurrent(gid.BasicSpeed), 0)
+		const dodge =
+			3 + (this.system.calc?.dodge_bonus ?? 0) + Math.max(this.resolveAttributeCurrent(gid.BasicSpeed), 0)
 		return Math.floor(Math.max(dodge + enc.penalty, 1))
 	}
 
 	// Dodge accounting for pool thresholds
 	eDodge(enc: Encumbrance, ops = this.countThresholdOpMet(ThresholdOp.HalveDodge)): number {
-		let dodge = 3 + (this.calc?.dodge_bonus ?? 0) + Math.max(this.resolveAttributeCurrent(gid.BasicSpeed), 0)
+		let dodge = 3 + (this.system.calc?.dodge_bonus ?? 0) + Math.max(this.resolveAttributeCurrent(gid.BasicSpeed), 0)
 		const divisor = 2 * Math.min(ops, 2)
 		if (divisor > 0) {
 			dodge = Math.ceil(dodge / divisor)
@@ -535,12 +523,12 @@ export class CharacterGURPS<
 		return Math.floor(Math.max(dodge + enc.penalty, 1))
 	}
 
-	countThresholdOpMet(op: ThresholdOp) {
+	countThresholdOpMet(op: ThresholdOp): number {
 		let total = 0
 		this.poolAttributes().forEach((a: Attribute) => {
 			if (!a.apply_ops) return
 			const threshold = a.currentThreshold
-			if (threshold && threshold.ops?.includes(op)) total++
+			if (threshold && threshold.ops?.includes(op)) total += 1
 		})
 		return total
 	}
@@ -584,7 +572,7 @@ export class CharacterGURPS<
 	basicLift = 0
 
 	getBasicLift(): number {
-		const ST = this.attributes.get(gid.Strength)?._effective(this.calc?.lifting_st_bonus ?? 0) || 0
+		const ST = this.attributes.get(gid.Strength)?._effective(this.system.calc?.lifting_st_bonus ?? 0) || 0
 		let basicLift = ST ** 2 / 5
 		if (this.settings.damage_progression === progression.Option.KnowingYourOwnStrength)
 			basicLift = Int.from(2 * 10 ** (ST / 10), 1)
@@ -790,17 +778,17 @@ export class CharacterGURPS<
 	}
 
 	// Flat list of all hit locations
-	get HitLocations(): HitLocation[] {
-		const recurseLocations = function (table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
-			table.locations.forEach(e => {
-				locations.push(e)
-				if (e.subTable) locations = recurseLocations(e.subTable, locations)
-			})
-			return locations
-		}
-
-		return recurseLocations(this.BodyType, [])
-	}
+	// get HitLocations(): HitLocation[] {
+	// 	const recurseLocations = function (table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
+	// 		table.locations.forEach(e => {
+	// 			locations.push(e)
+	// 			if (e.subTable) locations = recurseLocations(e.subTable, locations)
+	// 		})
+	// 		return locations
+	// 	}
+	//
+	// 	return recurseLocations(this.BodyType, [])
+	// }
 
 	// Item Types
 	override get itemTypes(): Record<ItemType, ItemGURPS[]> {
@@ -1053,7 +1041,7 @@ export class CharacterGURPS<
 				})
 			}
 			if (attr.damage) atts[i].damage = attr.damage
-			i++
+			i += 1
 		}
 		if (prev.length !== 0) {
 			atts.forEach(attr => {
@@ -1078,7 +1066,7 @@ export class CharacterGURPS<
 				tracker_id: tracker.tracker_id,
 				damage: tracker.damage,
 			})
-			i++
+			i += 1
 		}
 		if (prev.length !== 0) {
 			t.forEach(tracker => {
@@ -1098,7 +1086,7 @@ export class CharacterGURPS<
 				move_type_id: move_type.id,
 				adj: move_type.adj,
 			})
-			i++
+			i += 1
 		}
 		if (prev.length !== 0) {
 			m.forEach(type => {
@@ -1148,7 +1136,8 @@ export class CharacterGURPS<
 		collection: "effects" | "items",
 		documents: ActiveEffect<this>[] | Item<this>[],
 		result: ActiveEffect<this>["_source"][] | Item<this>["_source"][],
-		options: DocumentModificationContext<this> & { substitutions: any },
+		// @ts-expect-error type instantiation excessively deep (but it isn't)
+		options: DocumentModificationContext<this> & { substitutions: boolean },
 		userId: string,
 	): void {
 		super._onCreateDescendantDocuments(parent, collection, documents, result, options, userId)
@@ -1173,7 +1162,7 @@ export class CharacterGURPS<
 	// Prepare data
 	override prepareData(): void {
 		super.prepareData()
-		const pools: any = {}
+		const pools: Record<string, TokenPool> = {}
 		this.attributes?.forEach(e => {
 			if (e.attribute_def.type === attribute.Type.Pool) {
 				pools[e.id] = { value: e.current, min: -Infinity, max: e.max }
@@ -1240,7 +1229,7 @@ export class CharacterGURPS<
 		// }
 	}
 
-	processFeatures() {
+	processFeatures(): void {
 		this.features = {
 			attributeBonuses: [],
 			costReductions: [],
@@ -1305,7 +1294,7 @@ export class CharacterGURPS<
 		this.moveTypes = this.prepareMoveTypes()
 	}
 
-	processThresholds() {
+	processThresholds(): void {
 		if (!this.isOwner) return
 		if (this._processingThresholds || !this._prevAttributes || this.attributes === this._prevAttributes) return
 
@@ -1321,14 +1310,14 @@ export class CharacterGURPS<
 
 			if (prevState === currentState) return
 
-			const enterActions = effects
+			const enterActions: ConditionEffect[] = effects
 				.filter((f: { attribute: string; state: string }) => f.attribute === e.id && f.state === currentState)
-				.reduce((acc: any[], e: any) => {
+				.reduce((acc: ConditionEffect[], e: { enter: ConditionEffect[]; leave: ConditionEffect[] }) => {
 					return [...acc, ...e.enter]
 				}, [])
 			const leaveActions = effects
 				.filter((f: { attribute: string; state: string }) => f.attribute === e.id && f.state === prevState)
-				.reduce((acc: any[], e: any) => {
+				.reduce((acc: ConditionEffect[], e: { enter: ConditionEffect[]; leave: ConditionEffect[] }) => {
 					return [...acc, ...e.leave]
 				}, [])
 
@@ -1357,7 +1346,7 @@ export class CharacterGURPS<
 		this._prevAttributes = new Map()
 		this.attributes.forEach((e, k) => {
 			if (e.attribute_def.type === attribute.Type.Pool) {
-				e._overridenThreshold = new PoolThreshold({ ...e.currentThreshold } as any)
+				e._overridenThreshold = new PoolThreshold({ ...e.currentThreshold })
 			}
 			this._prevAttributes.set(k, e)
 		})
@@ -1487,7 +1476,7 @@ export class CharacterGURPS<
 	// }
 
 	// Directed Skill Getters
-	baseSkill(def: SkillDefault | null, require_points: boolean): SkillGURPS | TechniqueGURPS | null {
+	baseSkill(def: SkillDefault | null, require_points: boolean): SkillGURPS | null {
 		if (!def) return null
 		if (!def.skillBased) return null
 		return this.bestSkillNamed(def.name ?? "", def.specialization ?? "", require_points, null)
@@ -1535,10 +1524,11 @@ export class CharacterGURPS<
 		specialization: string,
 		require_points: boolean,
 		excludes: Map<string, boolean> | null,
-	): SkillGURPS | TechniqueGURPS | null {
-		let best: SkillGURPS | TechniqueGURPS | null = null
+	): SkillGURPS | null {
+		let best: SkillGURPS | null = null
 		let level = -Infinity
 		for (const sk of this.skillNamed(name, specialization, require_points, excludes)) {
+			if (sk instanceof TechniqueGURPS) continue
 			const skill_level = sk.calculateLevel().level
 			if (!best || level < skill_level) {
 				best = sk
@@ -1890,70 +1880,84 @@ export class CharacterGURPS<
 
 	async saveLocal(path = "", extension = "gcs"): Promise<void> {
 		const [system, name] = await this.exportSystemData()
-		let data: any
+		let data: Record<string, unknown>
 		if (path === "") {
 			data = system
 		} else {
-			data = getProperty(system, path)
+			data = getProperty(system, path) as Record<string, unknown>
 			data.version = 4
 			if (path === "settings.attributes") data.type = "attribute_settings"
 			else if (path === "settings.body_type") data.type = "body_type"
 		}
-		return saveDataToFile(JSON.stringify(data, null, "\t"), extension, `${name}.${extension}`)
+		// return saveDataToFile(JSON.stringify(data, null, "\t"), extension, `${name}.${extension}`)
+		fu.saveDataToFile(JSON.stringify(data, null, "\t"), extension, `${name}.${extension}`)
 	}
 
-	protected async exportSystemData(): Promise<[any, string]> {
-		const system: any = duplicate(this.system)
-		system.type = "character"
+	protected async exportSystemData(): Promise<[DeepPartial<CharacterSystemSource>, string]> {
+		const system: DeepPartial<CharacterSystemSource> & Record<string, unknown> = { ...duplicate(this.system) }
+		system.type = "character" as ActorType
 		const items = (this.items as unknown as Collection<ItemGURPS>)
 			.filter(e => !e.getFlag(SYSTEM_NAME, ItemFlags.Container))
 			.map((e: ItemGURPS) => e.exportSystemData(true))
-		const third_party: any = {}
+		const third_party: Record<string, unknown> = {}
 
-		third_party.settings = { resource_trackers: system.settings.resource_trackers }
+		third_party.settings = { resource_trackers: system.settings?.resource_trackers }
 		third_party.resource_trackers = system.resource_trackers
 		third_party.import = system.import
 		third_party.move = system.move
 		system.third_party = third_party
-		system.traits = items.filter(e => [ItemType.Trait, ItemType.TraitContainer].includes(e.type)) ?? []
+		system.traits =
+			items.filter((e: ItemSourceGURPS) => [ItemType.Trait, ItemType.TraitContainer].includes(e.type)) ?? []
 		system.skills =
-			items.filter(e => [ItemType.Skill, ItemType.SkillContainer, ItemType.Technique].includes(e.type)) ?? []
+			items.filter((e: ItemSourceGURPS) =>
+				[ItemType.Skill, ItemType.SkillContainer, ItemType.Technique].includes(e.type),
+			) ?? []
 		system.spells =
-			items.filter(e => [ItemType.Spell, ItemType.SpellContainer, ItemType.RitualMagicSpell].includes(e.type)) ??
-			[]
+			items.filter((e: ItemSourceGURPS) =>
+				[ItemType.Spell, ItemType.SpellContainer, ItemType.RitualMagicSpell].includes(e.type),
+			) ?? []
 		system.equipment =
 			items
 				.filter(
-					e => [ItemType.Equipment, "equipment", ItemType.EquipmentContainer].includes(e.type) && !e.other,
+					(e: ItemSourceGURPS) =>
+						[ItemType.Equipment, "equipment", ItemType.EquipmentContainer].includes(e.type) && !e.other,
 				)
-				.map(e => {
+				.map((e: ItemSourceGURPS) => {
 					delete e.other
 					return e
 				}) ?? []
 		system.other_equipment =
 			items
-				.filter(e => [ItemType.Equipment, "equipment", ItemType.EquipmentContainer].includes(e.type) && e.other)
-				.map(e => {
+				.filter(
+					(e: ItemSourceGURPS) =>
+						[ItemType.Equipment, "equipment", ItemType.EquipmentContainer].includes(e.type) && e.other,
+				)
+				.map((e: ItemSourceGURPS) => {
 					delete e.other
 					return e
 				}) ?? []
-		system.notes = items.filter(e => [ItemType.Note, ItemType.NoteContainer].includes(e.type)) ?? []
-		system.settings.attributes = system.settings.attributes.map((e: Partial<AttributeDef>) => {
-			const f = { ...e }
-			f.id = e.id
-			delete f.id
-			delete f.order
-			if (f.type !== attribute.Type.Pool) delete f.thresholds
-			return f
+		system.notes =
+			items.filter((e: ItemSourceGURPS) => [ItemType.Note, ItemType.NoteContainer].includes(e.type)) ?? []
+		if (system.settings)
+			system.settings.attributes = system.settings.attributes?.map(
+				(e: DeepPartial<AttributeDefObj> | undefined) => {
+					if (!e) return
+					const f = { ...e }
+					f.id = e.id
+					delete f.id
+					delete f.order
+					if (f.type !== attribute.Type.Pool) delete f.thresholds
+					return f as AttributeDefObj
+				},
+			)
+		system.attributes = system.attributes?.map((e: Partial<AttributeObj> | undefined) => {
+			return { ...e } as AttributeObj
 		})
-		system.attributes = system.attributes.map((e: Partial<AttributeObj>) => {
-			const f = { ...e }
-			return f
-		})
-		if (this.img && !this.img.endsWith(".svg")) system.profile.portrait = await urlToBase64(this.img)
+		if (system.profile && this.img && !this.img.endsWith(".svg"))
+			system.profile.portrait = await urlToBase64(this.img)
 
 		delete system.resource_trackers
-		delete system.settings.resource_trackers
+		delete system.settings?.resource_trackers
 		delete system.import
 		delete system.move
 		delete system.pools
@@ -1966,7 +1970,7 @@ export class CharacterGURPS<
 		return [system, filename]
 	}
 
-	async promptImport() {
+	async promptImport(): Promise<void> {
 		const dialog = new Dialog({
 			title: LocalizeGURPS.translations.gurps.character.import_prompt.title,
 			content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/actor/import-prompt.hbs`, { object: this }),
@@ -1975,9 +1979,9 @@ export class CharacterGURPS<
 					icon: '<i class="fas fa-file-import"></i>',
 					label: LocalizeGURPS.translations.gurps.character.import_prompt.import,
 					callback: _html => {
-						let file: any = null
+						let file: { text: string; name: string; path: string } | null = null
 						if (game.settings.get(SYSTEM_NAME, SETTINGS.SERVER_SIDE_FILE_DIALOG)) {
-							const filepicker = new FilePicker({
+							const filepicker = new FilePickerGURPS({
 								callback: (path: string) => {
 									const request = new XMLHttpRequest()
 									request.open("GET", path)
@@ -1997,7 +2001,7 @@ export class CharacterGURPS<
 									})
 									request.send(null)
 								},
-							} as any)
+							})
 							filepicker.extension = [".gcs", ".xml", ".gca5"]
 							filepicker.render(true)
 						} else {
@@ -2010,7 +2014,7 @@ export class CharacterGURPS<
 									name: rawFile.name,
 									path: rawFile.path,
 								}
-								readTextFromFile(rawFile).then(text => {
+								fu.readTextFromFile(rawFile).then((text: string) => {
 									CharacterImporter.import(this, {
 										text: text,
 										name: rawFile.name,
@@ -2036,12 +2040,12 @@ export class CharacterGURPS<
 		return false
 	}
 
-	registerSkillLevelResolutionExclusion(name: string, specialization: string) {
+	registerSkillLevelResolutionExclusion(name: string, specialization: string): void {
 		this.skillResolverExclusions ??= new Map()
 		this.skillResolverExclusions.set(this.skillLevelResolutionKey(name, specialization), true)
 	}
 
-	unregisterSkillLevelResolutionExclusion(name: string, specialization: string) {
+	unregisterSkillLevelResolutionExclusion(name: string, specialization: string): void {
 		this.skillResolverExclusions.delete(this.skillLevelResolutionKey(name, specialization))
 	}
 
@@ -2079,11 +2083,10 @@ export class CharacterGURPS<
 		const id = attribute.replace("pools.", "")
 		const index = this.system.attributes.findIndex(e => e.attr_id === id)
 		if (index === -1) return this
-		let updates
 		if (isDelta) value = Math.clamped(current.min, Number(current.value) + value, current.max)
 		const attributes = this.system.attributes
 		attributes[index].damage = Math.max(this.attributes.get(id)!.max - value, 0)
-		updates = { "system.attributes": attributes }
+		const updates = { "system.attributes": attributes }
 
 		const allowed = Hooks.call("modifyTokenAttribute", { attribute, value, isDelta, isBar }, updates)
 		return <this>(allowed !== false ? this.update(updates) : this)
@@ -2095,7 +2098,7 @@ export function addWeaponBonusToMap(
 	dieCount: number,
 	tooltip: TooltipGURPS | null = null,
 	m: Map<WeaponBonus, boolean> = new Map(),
-) {
+): void {
 	const savedLevel = bonus.leveledAmount.level
 	const savedDieCount = bonus.leveledAmount.dieCount
 	bonus.leveledAmount.dieCount = Int.from(dieCount)

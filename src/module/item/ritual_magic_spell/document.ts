@@ -13,7 +13,7 @@ export interface RitualMagicSpellGURPS<TParent extends ActorGURPS> extends ItemG
 	type: ItemType.RitualMagicSpell
 }
 
-export class RitualMagicSpellGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+export class RitualMagicSpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	declare level: SkillLevel
 
 	// unsatisfied_reason = ""

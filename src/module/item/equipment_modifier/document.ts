@@ -4,19 +4,21 @@ import { EquipmentModifierSystemData } from "./data.ts"
 import { emcost } from "@util/enum/emcost.ts"
 import { emweight } from "@util/enum/emweight.ts"
 import { Weight, WeightUnits } from "@util/weight.ts"
-import { ItemType, SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
+import { SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { StringBuilder } from "@util/string_builder.ts"
 import { sheetSettingsFor } from "@module/data/sheet_settings.ts"
 import { Int } from "@util/fxp.ts"
 import { CharacterGURPS } from "@actor/document.ts"
+import { ItemType } from "@item/types.ts"
 
-export interface EquipmentModifierGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+export interface EquipmentModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null>
+	extends ItemGCS<TParent> {
 	system: EquipmentModifierSystemData
 	type: ItemType.EquipmentModifier
 }
 
-export class EquipmentModifierGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+export class EquipmentModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	override get enabled(): boolean {
 		return !this.system.disabled
 	}

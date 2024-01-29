@@ -1,4 +1,3 @@
-import { Mook } from "@sytem/mook/document.ts"
 import { CharacterResolver } from "@util/resolvers.ts"
 import { PoolThreshold } from "./pool_threshold.ts"
 import { AttributeDefObj, AttributeObj, reserved_ids } from "./data.ts"
@@ -8,6 +7,7 @@ import { sanitizeId } from "@util/misc.ts"
 import { AttributeDef } from "./attribute_def.ts"
 import { SYSTEM_NAME, gid } from "@module/data/misc.ts"
 import { ActorFlags } from "@actor/base/data.ts"
+import { Mook } from "@sytem/mook/document.ts"
 
 export class Attribute {
 	actor: CharacterResolver | Mook
@@ -107,10 +107,11 @@ export class Attribute {
 	}
 
 	private get _manualThreshold(): PoolThreshold | null {
-		return (this.actor.getFlag(SYSTEM_NAME, ActorFlags.AutoThreshold) as any).manual[this.id] || null
+		if (this.actor instanceof Mook) return null
+		return this.actor.flags?.[SYSTEM_NAME][ActorFlags.AutoThreshold].manual[this.id] || null
 	}
 
-	get currentThreshold(): Partial<PoolThreshold> | null {
+	get currentThreshold(): PoolThreshold | null {
 		const actor = this.actor as CharacterResolver
 		const def = this.attribute_def
 		if (!def) return null

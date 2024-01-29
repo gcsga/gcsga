@@ -1,15 +1,16 @@
-import { ActorType, gid } from "@module/data"
-import { DiceGURPS } from "@module/dice"
-import { TooltipGURPS } from "@module/tooltip"
-import { LocalizeGURPS } from "@util"
-import { CharacterGURPS } from "./document"
+import { DiceGURPS } from "@module/dice/index.ts"
+import { CharacterGURPS } from "./document.ts"
+import { HitLocationTableOwner } from "@util/resolvers.ts"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { gid } from "@module/data/index.ts"
+import { LocalizeGURPS } from "@util/localize.ts"
 
 class HitLocationTable implements Omit<HitLocationTableData, "roll"> {
 	name: string
 
 	roll: DiceGURPS
 
-	actor: CharacterGURPS
+	actor: HitLocationTableOwner
 
 	locations: HitLocation[]
 
@@ -19,7 +20,7 @@ class HitLocationTable implements Omit<HitLocationTableData, "roll"> {
 		name: string,
 		roll: DiceGURPS | string,
 		locations: HitLocationData[],
-		actor: CharacterGURPS | any,
+		actor: HitLocationTableOwner,
 		keyPrefix: string,
 	) {
 		this.name = name
@@ -48,13 +49,14 @@ class HitLocationTable implements Omit<HitLocationTableData, "roll"> {
 	}
 
 	get owningLocation(): HitLocation | undefined {
-		const path = this.keyPrefix.replaceAll("sub_table", "subTable").split(".").slice(1, -1)
+		const path = this.keyPrefix.replaceAll("sub_table", "subTable").split(".").slice(1, -1).join(".")
 		if (path.length === 0) return undefined
-		let result: any = this.actor.BodyType
-		for (let i = 0; i < path.length; i++) {
-			result = result[path[i]]
-		}
-		return result
+		return fu.getProperty(this, path) as HitLocation | undefined
+		// let result = this.actor.BodyType
+		// for (let i = 0; i < path.length; i++) {
+		// 	result = result[path[i]]
+		// }
+		// return result
 	}
 
 	toObject(): HitLocationTableData {
@@ -84,7 +86,7 @@ interface HitLocationData {
 	calc?: {
 		roll_range: string
 		dr: Record<string, number>
-		[key: string]: any
+		[key: string]: unknown
 	}
 }
 
@@ -108,17 +110,17 @@ class HitLocation implements HitLocationData {
 	calc?: {
 		roll_range: string
 		dr: Record<string, number>
-		[key: string]: any
+		[key: string]: unknown
 	}
 
-	actor: CharacterGURPS
+	actor: HitLocationTableOwner
 
 	keyPrefix: string
 
 	roll_range: string
 	// owningTable?: HitLocationTable
 
-	constructor(actor: CharacterGURPS | any, keyPrefix: string, data?: HitLocationData) {
+	constructor(actor: HitLocationTableOwner, keyPrefix: string, data?: HitLocationData) {
 		this.actor = actor
 		this.keyPrefix = keyPrefix
 		this.roll_range = ""
@@ -145,12 +147,13 @@ class HitLocation implements HitLocationData {
 	}
 
 	get owningTable(): HitLocationTable {
-		const path = this.keyPrefix.replaceAll("sub_table", "subTable").split(".").slice(1, -2)
-		let result: any = this.actor.BodyType
-		for (let i = 0; i < path.length; i++) {
-			result = result[path[i]]
-		}
-		return result
+		const path = this.keyPrefix.replaceAll("sub_table", "subTable").split(".").slice(1, -2).join(".")
+		return fu.getProperty(this.actor.hitLocationTable, path) as HitLocationTable
+		// let result: i = this.actor.BodyType
+		// for (let i = 0; i < path.length; i++) {
+		// 	result = result[path[i]]
+		// }
+		// return result
 	}
 
 	get descriptionTooltip(): string {
@@ -191,7 +194,7 @@ class HitLocation implements HitLocationData {
 				"<br>",
 			)
 		}
-		if (this.actor.type === ActorType.Character) drMap = this.actor.addDRBonusesFor(this.id, tooltip, drMap)
+		if (this.actor instanceof CharacterGURPS) drMap = this.actor.addDRBonusesFor(this.id, tooltip, drMap)
 		if (this.owningTable.owningLocation) {
 			drMap = this.owningTable.owningLocation._DR(tooltip, drMap)
 		}
@@ -263,4 +266,5 @@ class HitLocation implements HitLocationData {
 		}
 	}
 }
-export { HitLocation, HitLocationTable, HitLocationData, HitLocationTableData }
+export { HitLocation, HitLocationTable }
+export type { HitLocationData, HitLocationTableData }

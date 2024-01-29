@@ -18,7 +18,7 @@ export namespace attribute {
 			return Type.PoolSeparator
 		}
 
-		function index(T: Type): number {
+		export function index(T: Type): number {
 			return Types.indexOf(T)
 		}
 

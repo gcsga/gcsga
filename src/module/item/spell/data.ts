@@ -1,5 +1,5 @@
 import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
-import { ItemType } from "@module/data/misc.ts"
+import { ItemType } from "@item/types.ts"
 import { PrereqList } from "@prereq/prereq_list.ts"
 import { difficulty } from "@util/enum/difficulty.ts"
 import { study } from "@util/enum/study.ts"

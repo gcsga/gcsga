@@ -5,7 +5,7 @@ import { prereq } from "@util/enum/prereq.ts"
 import { TraitPrereqObj } from "./data.ts"
 import { CharacterResolver, LocalizeGURPS, LootResolver } from "@util/index.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
-import { ActorType } from "@module/data/misc.ts"
+import { ActorType } from "@actor"
 
 export class TraitPrereq extends BasePrereq {
 	override type = prereq.Type.Trait
@@ -32,7 +32,7 @@ export class TraitPrereq extends BasePrereq {
 		return prereq
 	}
 
-	satisfied(actor: CharacterResolver | LootResolver, exclude: any, tooltip: TooltipGURPS): boolean {
+	satisfied(actor: CharacterResolver | LootResolver, exclude: unknown, tooltip: TooltipGURPS): boolean {
 		if (actor.type === ActorType.Loot) return true
 		let satisfied = false
 		for (const t of actor.traits) {

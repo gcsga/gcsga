@@ -8,12 +8,12 @@ import { mergeObject } from "types/foundry/common/utils/helpers.js"
 import { DurationType, EffectModificationContext } from "@item/effect/data.ts"
 import { BaseUser } from "types/foundry/common/documents/module.js"
 
-export interface ConditionGURPS<TParent extends ActorGURPS = ActorGURPS> extends EffectGURPS<TParent> {
+export interface ConditionGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends EffectGURPS<TParent> {
 	system: ConditionSytemSource
 	type: ItemType.Condition
 }
 
-export class ConditionGURPS<TParent extends ActorGURPS = ActorGURPS> extends EffectGURPS<TParent> {
+export class ConditionGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends EffectGURPS<TParent> {
 	static getData(id: ConditionID | ManeuverID): Partial<ConditionSource> {
 		const [data, folder] = Object.values(ConditionID).includes(id as any)
 			? [getConditionList()[id as ConditionID], "status"]

@@ -10,11 +10,11 @@ import { TokenGURPS } from "@module/token/object.ts"
 import { TokenDocumentGURPS } from "@module/token/document.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 
-export interface EffectGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGURPS<TParent> {
+export interface EffectGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
 	system: EffectSystemData
 }
 
-export class EffectGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGURPS<TParent> {
+export class EffectGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
 	_statusId: string | null = null
 
 	get features(): Feature[] {

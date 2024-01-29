@@ -12,7 +12,7 @@ export interface MeleeWeaponGURPS<TParent extends ActorGURPS> extends BaseWeapon
 	system: MeleeWeaponSystemData
 }
 
-export class MeleeWeaponGURPS<TParent extends ActorGURPS = ActorGURPS> extends BaseWeaponGURPS<TParent> {
+export class MeleeWeaponGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends BaseWeaponGURPS<TParent> {
 	get fastResolvedParry(): string {
 		return this.resolvedParry()
 	}

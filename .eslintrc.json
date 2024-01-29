@@ -71,6 +71,12 @@
 			"rules": {
 				"global-require": "off"
 			}
+		},
+		{
+			"files": "src/util/enum/*",
+			"rules": {
+				"@typescript-eslint/no-namespace": ["off"]
+			}
 		}
 	],
 	"parser": "@typescript-eslint/parser"

@@ -4,7 +4,7 @@
 // }
 
 import { ActorFlags, ActorFlagsGURPS, ActorSystemSource, BaseActorSourceGURPS } from "@actor/base/data.ts"
-import { ActorType, RollModifier, SYSTEM_NAME, gid } from "@module/data/misc.ts"
+import { ActorType, RollModifier, SYSTEM_NAME, TokenPool, gid } from "@module/data/misc.ts"
 import { SheetSettings } from "@module/data/sheet_settings.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { AttributeObj } from "@sytem/attribute/data.ts"
@@ -13,7 +13,7 @@ import { MoveTypeObj } from "@sytem/move_type/data.ts"
 import { ResourceTrackerObj } from "@sytem/resource_tracker/data.ts"
 import { Weight } from "@util/weight.ts"
 
-export interface CharacterSource extends BaseActorSourceGURPS<ActorType.Character, CharacterSystemSource> {
+export type CharacterSource = BaseActorSourceGURPS<ActorType.Character, CharacterSystemSource> & {
 	flags: DeepPartial<CharacterFlags>
 }
 // export interface CharacterDataGURPS
@@ -64,8 +64,8 @@ export interface CharacterSystemSource extends ActorSystemSource {
 	calc: CharacterCalc
 	editing: boolean
 	// TODO: check if this fits
-	pools: Record<string, any>
-	third_party?: any
+	pools: Record<string, TokenPool>
+	third_party?: Record<string, unknown>
 }
 
 export interface CharacterMove {

@@ -1,7 +1,6 @@
-import { Attribute, AttributeDefObj, AttributeObj } from "@module/attribute"
-import { ActorType, gid, ItemType, SETTINGS, SYSTEM_NAME } from "@module/data"
-import { DiceGURPS } from "@module/dice"
-import { damageProgression } from "@util"
+import { AttributeDefObj, AttributeObj } from "@sytem/attribute/data.ts"
+import { MoveTypeDefObj } from "@sytem/move_type/data.ts"
+import { progression } from "@util/enum/progression.ts"
 import {
 	MookData,
 	MookEquipment,
@@ -12,21 +11,14 @@ import {
 	MookSkill,
 	MookSpell,
 	MookTrait,
-	MookTraitModifier,
-} from "./data"
-import { MoveTypeDefObj } from "@module/move_type"
-import { CharacterGURPS, CharacterSource, Encumbrance } from "@actor"
-import {
-	BaseItemSourceGURPS,
-	ItemFlags,
-	MeleeWeaponSource,
-	RangedWeaponSource,
-	SkillSource,
-	SpellSource,
-	TraitModifierSource,
-} from "@item/data"
-import { attribute, progression } from "@util/enum"
-import { NoteSource } from "@item"
+} from "./data.ts"
+import { DiceGURPS } from "@module/dice/index.ts"
+import { CharacterSource, Encumbrance } from "@actor/character/data.ts"
+import { ActorType, ItemType, SETTINGS, SYSTEM_NAME, gid } from "@module/data/index.ts"
+import { damageProgression } from "@util/index.ts"
+import { Attribute } from "@sytem/attribute/object.ts"
+import { attribute } from "@util/enum/attribute.ts"
+import { CharacterGURPS } from "@actor/index.ts"
 
 export class Mook {
 	type = "mook"
@@ -79,8 +71,8 @@ export class Mook {
 		catchall: string
 	}
 
-	update(data: any): void {
-		Object.assign(this, mergeObject(this, data))
+	update(data: Record<string, unknown>): void {
+		Object.assign(this, fu.mergeObject(this, data))
 		this.attributes = this.getAttributes()
 	}
 
@@ -91,13 +83,10 @@ export class Mook {
 
 	constructor(data?: Partial<MookData>) {
 		this.settings = data?.settings ?? {
-			attributes: game.settings.get(
-				SYSTEM_NAME,
-				`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`,
-			) as AttributeDefObj[],
+			attributes: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`),
 			damage_progression: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
 				.damage_progression,
-			move_types: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`) as MoveTypeDefObj[],
+			move_types: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`),
 		}
 		this.system = data?.system ?? {
 			attributes: this.newAttributes(this.settings.attributes),
@@ -159,7 +148,7 @@ export class Mook {
 				})
 			}
 			if (attr.damage) atts[i].damage = attr.damage
-			i++
+			i += 1
 		}
 		return atts
 	}
@@ -179,19 +168,19 @@ export class Mook {
 		return -Infinity
 	}
 
-	skillBonusFor(..._args: any[]): number {
+	skillBonusFor(..._args: unknown[]): number {
 		return 0
 	}
 
-	skillPointBonusFor(..._args: any[]): number {
+	skillPointBonusFor(..._args: unknown[]): number {
 		return 0
 	}
 
-	spellBonusFor(..._args: any[]): number {
+	spellBonusFor(..._args: unknown[]): number {
 		return 0
 	}
 
-	spellPointBonusFor(..._args: any[]): number {
+	spellPointBonusFor(..._args: unknown[]): number {
 		return 0
 	}
 
@@ -199,19 +188,19 @@ export class Mook {
 		return this.profile.SM
 	}
 
-	getFlag(..._args: any[]): unknown {
+	getFlag(..._args: unknown[]): unknown {
 		return null
 	}
 
-	attributeBonusFor(..._args: any[]): number {
+	attributeBonusFor(..._args: unknown[]): number {
 		return 0
 	}
 
-	moveBonusFor(..._args: any[]): number {
+	moveBonusFor(..._args: unknown[]): number {
 		return 0
 	}
 
-	costReductionFor(..._args: any[]): number {
+	costReductionFor(..._args: unknown[]): number {
 		return 0
 	}
 
@@ -242,19 +231,19 @@ export class Mook {
 		return attr?.max.toString()
 	}
 
-	isSkillLevelResolutionExcluded(..._args: any[]) {
+	isSkillLevelResolutionExcluded(..._args: never[]): boolean {
 		return false
 	}
 
-	registerSkillLevelResolutionExclusion(..._args: any[]): void {
+	registerSkillLevelResolutionExclusion(..._args: never[]): void {
 		// do nothing}
 	}
 
-	unregisterSkillLevelResolutionExclusion(..._args: any[]): void {
+	unregisterSkillLevelResolutionExclusion(..._args: never[]): void {
 		// do nothing}
 	}
 
-	encumbranceLevel(_forSkills: boolean) {
+	encumbranceLevel(_forSkills: boolean): Encumbrance {
 		return {
 			level: 0,
 			maximum_carry: 0,
@@ -279,14 +268,17 @@ export class Mook {
 		return this.attributes.get(gid.Strength)?.max ?? 0
 	}
 
-	async createActor(): Promise<CharacterGURPS> {
+	async createActor(): Promise<CharacterGURPS | null> {
 		const date = new Date().toISOString()
 		const data: DeepPartial<CharacterSource> = {
 			system: {
-				settings: mergeObject(game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`), {
-					...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`),
-					...this.settings,
-				}),
+				settings: fu.mergeObject(
+					game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`),
+					{
+						...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`),
+						...this.settings,
+					},
+				),
 				attributes: this.system.attributes,
 				profile: this.profile,
 				created_date: date,
@@ -295,14 +287,16 @@ export class Mook {
 			items: await this._createItemData(),
 		}
 
-		const newActor = (await Actor.create(
+		const newActor = await Actor.create(
+			CharacterGURPS,
 			{
 				name: this.profile.name,
 				type: ActorType.Character,
 				img: this.profile.portrait,
 			},
-			{ promptImport: false } as any,
-		)) as CharacterGURPS
+			{ promptImport: false },
+		)
+		if (!newActor) return null
 		await newActor?.update(data)
 		const updateMap: ({ _id: string } & Record<string, any>)[] = []
 		newActor.itemTypes[ItemType.Skill].forEach((item: any, index: number) => {
@@ -483,5 +477,17 @@ export class Mook {
 			},
 		}
 		return data
+	}
+
+	resolveAttributeName(attr_id: string): string {
+		const def = this.resolveAttributeDef(attr_id)
+		if (def) return def.name
+		return "unknown"
+	}
+
+	resolveAttributeDef(attr_id: string): AttributeDef | null {
+		const a = this.attributes?.get(attr_id)
+		if (a) return a.attribute_def
+		return null
 	}
 }

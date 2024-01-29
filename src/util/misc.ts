@@ -48,9 +48,9 @@ export function sanitize(text: string): string {
 /**
  *
  */
-// export function newUUID(): string {
-// 	return uuidv4()
-// }
+export function newUUID(): string {
+	return uuidv4()
+}
 
 /**
  *
@@ -180,10 +180,7 @@ export function capitalize(s: string): string {
 // 	}
 // }
 
-export function prepareFormData(
-	formData: Record<string, string | number | boolean | object[] | object>,
-	object: object,
-): object {
+export function prepareFormData(formData: Record<string, unknown>, object: object): Record<string, unknown> {
 	for (const aKey of Object.keys(formData)) {
 		if (formData[aKey] === null) formData[aKey] = "0"
 		if (aKey.includes(".halve_")) {
@@ -198,7 +195,7 @@ export function prepareFormData(
 		if (aKey.startsWith("array.") && aKey.match(/\d/)) {
 			const key = aKey.replace(/^array./g, "")
 			const arrayKey = key.split(/.\d+./)[0]
-			let array: any[] = formData[arrayKey] || foundry.utils.getProperty(object, arrayKey)
+			let array: object[] = (formData[arrayKey] as object[]) || (fu.getProperty(object, arrayKey) as object[])
 			const index = parseInt(key.match(/.(\d+)./)![1])
 			const prop = key.replace(new RegExp(`^${arrayKey}.${index}.`), "")
 			array = setArrayProperty(array, index, prop, formData[aKey])
@@ -211,7 +208,7 @@ export function prepareFormData(
 		} else if (aKey.startsWith("sarray.") && aKey.match(/\d/)) {
 			const key = aKey.replace(/^sarray./g, "")
 			const arrayKey = `${key.split(/thresholds.\d+./)[0]}thresholds`
-			const array: any[] = foundry.utils.getProperty(object, arrayKey) as any[]
+			const array: object[] = fu.getProperty(object, arrayKey) as object[]
 			const index = parseInt(key.match(/thresholds.(\d+)./)![1])
 			const prop = key.replace(new RegExp(`^${arrayKey}.${index}.`), "")
 			setArrayProperty(array, index, prop, formData[aKey])
@@ -232,17 +229,13 @@ export function prepareFormData(
 function setArrayProperty(a: object[], index: number, prop: string, value: unknown): object[] {
 	if (prop.match(/.\d+./)) {
 		const inArrayKey = prop.split(/.\d+./)[0]
-		const inArrayArray = foundry.utils.getProperty(a[index], inArrayKey) as any[]
+		const inArrayArray = fu.getProperty(a[index], inArrayKey) as object[]
 		const inArrayIndex = parseInt(prop.match(/.(\d+)./)![1])
 		const inArrayProp = prop.replace(`${inArrayKey}.${inArrayIndex}.`, "")
-		foundry.utils.setProperty(
-			a[index],
-			inArrayKey,
-			setArrayProperty(inArrayArray, inArrayIndex, inArrayProp, value),
-		)
+		fu.setProperty(a[index], inArrayKey, setArrayProperty(inArrayArray, inArrayIndex, inArrayProp, value))
 		return a
 	}
-	foundry.utils.setProperty(a[index], prop, value)
+	fu.setProperty(a[index], prop, value)
 	return a
 }
 
@@ -279,7 +272,7 @@ export async function urlToBase64(imageUrl: string): Promise<string> {
 	return ""
 }
 
-export function setInitiative() {
+export function setInitiative(): void {
 	let formula = game.settings.get(SYSTEM_NAME, SETTINGS.INITIATIVE_FORMULA)
 	if (!formula) formula = DEFAULT_INITIATIVE_FORMULA
 	if (game.user?.isGM) game.settings.set(SYSTEM_NAME, SETTINGS.INITIATIVE_FORMULA, formula)
@@ -298,7 +291,7 @@ export function pick<T extends object, K extends keyof T>(obj: T, keys: Iterable
 	)
 }
 
-export async function getDefaultSkills() {
+export async function getDefaultSkills(): Promise<void> {
 	const skills: SkillResolver[] = []
 	const skillPacks = game.settings.get(SYSTEM_NAME, SETTINGS.COMPENDIUM_BROWSER_PACKS).skill
 	for (const s in skillPacks)

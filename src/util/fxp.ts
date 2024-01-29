@@ -22,7 +22,7 @@ export class Int {
 		// return [num, str]
 		let last = 0
 		const maximum = str.length
-		if (last < maximum && str[last] === " ") last++
+		if (last < maximum && str[last] === " ") last += 1
 		if (last >= maximum) return [0, str]
 		let ch = str[last]
 		let found = false
@@ -31,7 +31,7 @@ export class Int {
 		while ((start === last && (ch === "-" || ch === "+")) || (!decimal && ch === ".") || ch.match(/[0-9]/)) {
 			if (ch.match(/[0-9]/)) found = true
 			if (ch === ".") decimal = true
-			last++
+			last += 1
 			if (last >= maximum) break
 			ch = str[last]
 		}

@@ -1,22 +1,17 @@
 import { ActorGURPS } from "@actor/document.ts"
 import { NoteContainerSystemData } from "./data.ts"
-import { ActorType } from "@module/data/misc.ts"
 import { ContainerGURPS } from "@item/container/document.ts"
 import { EvalEmbeddedRegex, replaceAllStringFunc } from "@util/regexp.ts"
 import { NoteGURPS } from "@item/note/document.ts"
 import { ItemGCS } from "@item/gcs/document.ts"
+import { ItemType } from "@item/types.ts"
 
-export interface NoteContainerGURPS<TParent extends ActorGURPS> extends ContainerGURPS<TParent> {
+export interface NoteContainerGURPS<TParent extends ActorGURPS | null> extends ContainerGURPS<TParent> {
 	system: NoteContainerSystemData
+	type: ItemType.NoteContainer
 }
 
-export class NoteContainerGURPS<TParent extends ActorGURPS = ActorGURPS> extends ContainerGURPS<TParent> {
-	override get actor(): (typeof CONFIG.GURPS.Actor.documentClasses)[ActorType.Character] | null {
-		const actor = super.actor
-		if (actor?.type === ActorType.Character) return actor
-		return null
-	}
-
+export class NoteContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ContainerGURPS<TParent> {
 	get formattedName(): string {
 		return this.formattedText
 	}

@@ -1,20 +1,14 @@
-// import { ContainerGURPS } from "@item/container"
-// import { ItemType, SYSTEM_NAME } from "@module/data"
-// import { ItemData } from "types/foundry/common/data/module.mjs"
-// import { ItemDataConstructorData } from "types/foundry/common/data/data.mjs/itemData"
-// import { MergeObjectOptions } from "types/foundry/common/utils/helpers.mjs"
-// import { CharacterResolver } from "@util"
-// import { BaseActorGURPS } from "@actor"
-
 import { ActorGURPS } from "@actor/base.ts"
 import { ContainerGURPS } from "@item/container/document.ts"
-import { ItemType, SYSTEM_NAME } from "@module/data/index.ts"
+import { SYSTEM_NAME } from "@module/data/index.ts"
 import { CharacterResolver } from "@util/resolvers.ts"
 import { ItemFlags } from "./data/values.ts"
 import { ItemSourceGURPS } from "@item/data/index.ts"
+import { ItemModificationContextGURPS, ItemType } from "@item/types.ts"
 
 export interface ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends Item<TParent> {
 	type: ItemType
+	system: ItemSourceGURPS["system"]
 }
 
 export class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends Item<TParent> {
@@ -33,17 +27,25 @@ export class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> ex
 	// flags!: ItemFlagsGURPS
 	//
 	// parent!: BaseActorGURPS | null
+	//
 
-	static override async createDialog(
+	override update(
+		data: Record<string, unknown>,
+		context?: ItemModificationContextGURPS<TParent> | undefined,
+	): Promise<this | undefined> {
+		return super.update(data, context)
+	}
+
+	static override async createDialog<ItemGURPS>(
 		data: { folder?: string } = {},
 		options: Partial<FormApplicationOptions> = {},
-	): Promise<any | undefined> {
+	): Promise<ItemGURPS | null> {
 		const original = game.system.documentTypes.Item
 		game.system.documentTypes.Item = original.filter(
-			(itemType: string) => ![ItemType.Condition].includes(itemType as any),
+			(itemType: string) => ![ItemType.Condition].includes(itemType as ItemType),
 		)
 		options = { ...options, classes: [...(options.classes ?? []), "dialog-item-create"] }
-		const newItem = super.createDialog(data, options) as Promise<ItemGURPS | undefined>
+		const newItem = super.createDialog(data, options) as Promise<ItemGURPS | null>
 		game.system.documentTypes.Item = original
 		return newItem
 	}
@@ -75,14 +77,15 @@ export class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> ex
 		return null
 	}
 
-	get parents(): any[] {
+	get parents(): (CompendiumCollection<CompendiumDocument> | Item | Actor)[] {
 		if (!this.container && !this.compendium) return []
 		const grandparents = this.container instanceof ItemGURPS ? this.container.parents : []
-		if (!this.container) return [this.compendium, ...grandparents]
-		return [this.container, ...grandparents]
+		if (!this.container && this.compendium) return [this.compendium, ...grandparents]
+		if (this.container) return [this.container, ...grandparents]
+		return [...grandparents]
 	}
 
-	exportSystemData(_keepOther: boolean): any {
+	exportSystemData(_keepOther: boolean): object {
 		return {}
 	}
 
@@ -91,7 +94,7 @@ export class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> ex
 		super.prepareData()
 	}
 
-	sameSection(compare: Item): boolean {
+	sameSection(compare: ItemGURPS): boolean {
 		const traits = [ItemType.Trait, ItemType.TraitContainer]
 		const skills = [ItemType.Skill, ItemType.Technique, ItemType.SkillContainer]
 		const spells = [ItemType.Spell, ItemType.RitualMagicSpell, ItemType.SpellContainer]
@@ -99,14 +102,14 @@ export class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> ex
 		const notes = [ItemType.Note, ItemType.NoteContainer]
 		const sections = [traits, skills, spells, equipment, notes]
 		for (const i of sections) {
-			if (i.includes(this.type as any) && i.includes(compare.type as any)) return true
+			if (i.includes(this.type) && i.includes(compare.type)) return true
 		}
 		return false
 	}
 }
 
 export const ItemProxyGURPS = new Proxy(ItemGURPS, {
-	construct(_target, args: [source: ItemSourceGURPS, context: any]) {
+	construct(_target, args: [source: ItemSourceGURPS, context: DocumentConstructionContext<ActorGURPS | null>]) {
 		const ItemClass = CONFIG.GURPS.Item.documentClasses[args[0]?.type as ItemType] ?? ItemGURPS
 		return new ItemClass(...args)
 	},

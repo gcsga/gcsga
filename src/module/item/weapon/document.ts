@@ -24,7 +24,9 @@ export interface BaseWeaponGURPS<TParent extends ActorGURPS> extends ItemGURPS<T
 	system: BaseWeaponSystemData
 }
 
-export abstract class BaseWeaponGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGURPS<TParent> {
+export abstract class BaseWeaponGURPS<
+	TParent extends ActorGURPS | null = ActorGURPS | null,
+> extends ItemGURPS<TParent> {
 	get itemName(): string {
 		if (this.container instanceof Item) return this.container?.name ?? ""
 		return ""

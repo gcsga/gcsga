@@ -1,6 +1,7 @@
 import { BaseItemSourceGURPS } from "@item/data.ts"
 import { EffectSystemData } from "@item/effect/data.ts"
-import { ItemType, RollModifier } from "@module/data/misc.ts"
+import { ItemType } from "@item/types.ts"
+import { RollModifier } from "@module/data/misc.ts"
 
 export enum ConditionID {
 	// Posture
@@ -60,6 +61,14 @@ export enum ConditionID {
 	// ConditionTrigger -- this is a special condition that is used to trigger other effects.
 	Trigger = "trigger",
 }
+
+export type Posture =
+	| "standing"
+	| ConditionID.PostureCrouch
+	| ConditionID.PostureSit
+	| ConditionID.PostureKneel
+	| ConditionID.PostureProne
+	| ConditionID.PostureCrawl
 
 export const Postures = [
 	ConditionID.PostureCrouch,

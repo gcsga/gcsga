@@ -1,4 +1,4 @@
-import { CharacterGURPS, LootGURPS, StaticCharacterGURPS } from "@actor/index.ts"
+import { ActorType, CharacterGURPS, LootGURPS, StaticCharacterGURPS } from "@actor"
 import {
 	AttributeBonus,
 	ConditionalModifierBonus,
@@ -36,8 +36,19 @@ import {
 	TraitModifierContainerGURPS,
 	TraitModifierGURPS,
 } from "@item/index.ts"
-import { ActorType, ItemType } from "@module/data/misc.ts"
+import { ItemType } from "@item/types.ts"
+import {
+	AttributePrereq,
+	ContainedQuantityPrereq,
+	ContainedWeightPrereq,
+	EquippedEquipmentPrereq,
+	PrereqList,
+	SkillPrereq,
+	SpellPrereq,
+	TraitPrereq,
+} from "@prereq"
 import { feature } from "@util/enum/feature.ts"
+import { prereq } from "@util/enum/prereq.ts"
 import { SkillResolver } from "@util/resolvers.ts"
 
 export const GURPSCONFIG = {
@@ -99,6 +110,53 @@ export const GURPSCONFIG = {
 			[ItemType.MeleeWeapon]: MeleeWeaponGURPS,
 			[ItemType.RangedWeapon]: RangedWeaponGURPS,
 		},
+		childTypes: {
+			[ItemType.Trait]: [
+				ItemType.TraitModifier,
+				ItemType.TraitModifierContainer,
+				ItemType.MeleeWeapon,
+				ItemType.RangedWeapon,
+			],
+			[ItemType.TraitContainer]: [
+				ItemType.Trait,
+				ItemType.TraitContainer,
+				ItemType.TraitModifier,
+				ItemType.TraitModifierContainer,
+				ItemType.MeleeWeapon,
+				ItemType.RangedWeapon,
+			],
+			[ItemType.TraitModifier]: [],
+			[ItemType.TraitModifierContainer]: [ItemType.TraitModifierContainer, ItemType.TraitModifier],
+			[ItemType.Skill]: [ItemType.MeleeWeapon, ItemType.RangedWeapon],
+			[ItemType.Technique]: [ItemType.MeleeWeapon, ItemType.RangedWeapon],
+			[ItemType.SkillContainer]: [ItemType.Skill, ItemType.Technique, ItemType.SkillContainer],
+			[ItemType.Spell]: [ItemType.MeleeWeapon, ItemType.RangedWeapon],
+			[ItemType.RitualMagicSpell]: [ItemType.MeleeWeapon, ItemType.RangedWeapon],
+			[ItemType.SpellContainer]: [ItemType.Spell, ItemType.RitualMagicSpell, ItemType.SpellContainer],
+			[ItemType.Equipment]: [
+				ItemType.EquipmentModifier,
+				ItemType.EquipmentModifierContainer,
+				ItemType.MeleeWeapon,
+				ItemType.RangedWeapon,
+			],
+			[ItemType.EquipmentContainer]: [
+				ItemType.Equipment,
+				ItemType.EquipmentContainer,
+				ItemType.EquipmentModifier,
+				ItemType.EquipmentModifierContainer,
+				ItemType.MeleeWeapon,
+				ItemType.RangedWeapon,
+			],
+			[ItemType.EquipmentModifier]: [],
+			[ItemType.EquipmentModifierContainer]: [ItemType.EquipmentModifier, ItemType.EquipmentModifierContainer],
+			[ItemType.Note]: [],
+			[ItemType.NoteContainer]: [ItemType.Note, ItemType.NoteContainer],
+			[ItemType.LegacyEquipment]: [],
+			[ItemType.Effect]: [],
+			[ItemType.Condition]: [],
+			[ItemType.MeleeWeapon]: [],
+			[ItemType.RangedWeapon]: [],
+		},
 	},
 
 	Feature: {
@@ -139,4 +197,60 @@ export const GURPSCONFIG = {
 			[feature.Type.MoveBonus]: MoveBonus,
 		},
 	},
+
+	Prereq: {
+		classes: {
+			[prereq.Type.List]: PrereqList,
+			[prereq.Type.Trait]: TraitPrereq,
+			[prereq.Type.Attribute]: AttributePrereq,
+			[prereq.Type.ContainedQuantity]: ContainedQuantityPrereq,
+			[prereq.Type.ContainedWeight]: ContainedWeightPrereq,
+			[prereq.Type.EquippedEquipment]: EquippedEquipmentPrereq,
+			[prereq.Type.Skill]: SkillPrereq,
+			[prereq.Type.Spell]: SpellPrereq,
+		},
+	},
+
+	select: {
+		cr_level: {},
+		cr_adj: {},
+		study: {},
+		study_level: {},
+		attribute: {},
+		progression: {},
+		numeric_criteria: {},
+		numeric_criteria_strict: {},
+		string_criteria: {},
+		has: {},
+		all: {},
+		tmcost: {},
+		emcost: {},
+		emweight: {},
+		wsel: {},
+		skillsel: {},
+		spellcmp: {},
+		spellmatch: {},
+		stlimit: {},
+		stdmg: {},
+		movelimit: {},
+		feature: {},
+		feature_strict: {},
+		prereq: {},
+		prereq_strict: {},
+		difficulty: {},
+		container: {},
+		affects: {},
+		percentage: {},
+		maneuvers: {},
+		postures: {},
+		display: {},
+		length_units: {},
+		weight_units: {},
+		move_override: {},
+		wswitch: {},
+		wswitch_value: {},
+		color: {},
+		effect_action: {},
+		conditions: {},
+	} as Record<string, Record<string, string>>,
 }

@@ -64,7 +64,7 @@ export default abstract class Document<
 	 * Determine the collection this Document exists in on its parent, if any.
 	 * @param [parentCollection]  An explicitly provided parent collection name.
 	 */
-	protected _getParentCollection(parentCollection: string): string | null
+	protected _geTParentCollection(parentCollection: string): string | null
 
 	/** The canonical identifier for this Document. */
 	get id(): string

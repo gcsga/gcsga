@@ -247,7 +247,7 @@ declare global {
 		 * @param _formula      The raw formula to split
 		 * @returns An array of terms, split on parenthetical terms
 		 */
-		protected static _splitParentheses(_formula: string): string[]
+		protected static _spliTParentheses(_formula: string): string[]
 
 		/** Handle closing of a parenthetical term to create a MathTerm expression with a function and arguments */
 		protected static _splitMathArgs(expression: string): MathTerm[]

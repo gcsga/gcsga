@@ -1,84 +1,43 @@
-import { evalOperators, Operator } from "./operator"
-import { eFunction, evalFunctions } from "./function"
-import { CharacterResolver } from "./resolvers"
-import { Mook } from "@module/mook"
+import { Mook } from "@sytem/mook/document.ts"
+import { eFunction, evalFunctions } from "./function.ts"
+import { evalOperators } from "./operator/functions.ts"
+import {
+	Operand,
+	Operator,
+	expressionOperand,
+	expressionOperator,
+	expressionTree,
+	parsedFunction,
+} from "./operator/types.ts"
+import { CharacterResolver } from "./resolvers.ts"
 
-class expressionOperand {
-	value: string
-
-	unaryOp: Operator | null
-
-	constructor(data: expressionOperand) {
-		this.value = data.value
-		this.unaryOp = data.unaryOp
-	}
-}
-
-class expressionOperator {
-	op: Operator | null
-
-	unaryOp: Operator | null
-
-	constructor(data: expressionOperator) {
-		this.op = data.op
-		this.unaryOp = data.unaryOp
-	}
-}
-
-class expressionTree {
-	evaluator: Evaluator
-
-	left: any
-
-	right: any
-
-	op: Operator | null
-
-	unaryOp: Operator | null
-
-	constructor(data: Partial<expressionTree> & { evaluator: Evaluator }) {
-		this.evaluator = data.evaluator
-		this.left = data.left
-		this.right = data.right
-		this.op = data.op ?? null
-		this.unaryOp = data.unaryOp ?? null
-	}
-}
-
-class parsedFunction {
-	function: eFunction
-
-	args: string
-
-	unaryOp: Operator | null
-
-	constructor(data: parsedFunction) {
-		this.function = data.function
-		this.args = data.args
-		this.unaryOp = data.unaryOp
-	}
-}
+type NewType = Operand
 
 // Evaluator is used to evaluate an expression. If you do not have any variables that will be resolved, you can leave
 // Resolver unset.
 class Evaluator {
-	resolver: CharacterResolver
+	resolver: CharacterResolver | Mook
 
 	operators: Operator[] = evalOperators(true)
 
 	functions: Map<string, eFunction> = evalFunctions()
 
-	operandStack: any[] = []
+	operandStack: NewType[] = []
 
 	operatorStack: expressionOperator[] = []
 
-	constructor(data?: any) {
-		this.resolver = data?.resolver
-		this.operators = data?.operators ?? evalOperators(true)
-		this.functions = data?.functions ?? evalFunctions()
+	constructor(data: {
+		// resolver: CharacterResolver | Mook
+		resolver: CharacterResolver
+		operators?: Operator[]
+		functions?: Map<string, eFunction>
+	}) {
+		this.resolver = data.resolver
+		this.operators = data.operators ?? evalOperators(true)
+		this.functions = data.functions ?? evalFunctions()
 	}
 
-	evaluate(expression: string): any {
+	evaluate(expression: string): Operand {
 		this.parse(expression)
 		while (this.operatorStack.length !== 0) {
 			this.processTree()
@@ -87,12 +46,12 @@ class Evaluator {
 		return this.evaluateOperand(this.operandStack[this.operandStack.length - 1])
 	}
 
-	evaluateNew(expression: string): any {
+	evaluateNew(expression: string): Operand {
 		const other = new Evaluator({ resolver: this.resolver, operators: this.operators, functions: this.functions })
 		return other.evaluate(expression)
 	}
 
-	parse(expression: string) {
+	parse(expression: string): void {
 		let unaryOp: Operator | null = null
 		let haveOperand = false
 		const haveOperator = false
@@ -102,7 +61,7 @@ class Evaluator {
 		while (i < expression.length) {
 			const ch = expression[i]
 			if ([" ", "\t", "\n", "\r"].includes(ch)) {
-				i++
+				i += 1
 				continue
 			}
 			const [opIndex, op] = this.nextOperator(expression, i, null)
@@ -219,10 +178,10 @@ class Evaluator {
 			if (!op) console.error(`Function not closed at index ${opIndex}`)
 			switch (op?.symbol) {
 				case "(":
-					parens++
+					parens += 1
 					break
 				case ")":
-					parens--
+					parens -= 1
 					break
 			}
 		}
@@ -243,8 +202,8 @@ class Evaluator {
 		return [next, op]
 	}
 
-	processTree() {
-		let [left, right]: any = [null, null]
+	processTree(): void {
+		let [left, right]: Operand[] = [null, null]
 		if (this.operandStack.length > 0) right = this.operandStack.pop()
 		if (this.operandStack.length > 0) left = this.operandStack.pop()
 		const op = this.operatorStack.pop()
@@ -258,7 +217,7 @@ class Evaluator {
 		)
 	}
 
-	evaluateOperand(operand: any): any {
+	evaluateOperand(operand: Operand): Operand {
 		if (operand instanceof expressionTree) {
 			let left
 			let right
@@ -271,7 +230,7 @@ class Evaluator {
 			}
 			if (operand.left && operand.right) {
 				if (!operand.op?.evaluate) console.error("Operator does ot have Evaluate function defined")
-				let v: any
+				let v: Operand
 				try {
 					v = operand.op?.evaluate!(left, right)
 				} catch (err) {
@@ -281,7 +240,7 @@ class Evaluator {
 				if (operand.unaryOp && operand.unaryOp.evaluateUnary) return operand.unaryOp.evaluateUnary(v)
 				return v
 			}
-			let v: any
+			let v: Operand
 			if (operand.right === undefined) v = left
 			else v = right
 			if (v) {
@@ -349,7 +308,7 @@ export { Evaluator }
  * @param resolver
  */
 export function evaluateToNumber(expression: string, resolver: CharacterResolver | Mook): number {
-	let result: any = 0
+	let result: Operand = 0
 	try {
 		result = new Evaluator({ resolver: resolver }).evaluate(expression)
 	} catch (err) {

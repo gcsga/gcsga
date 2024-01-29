@@ -6,15 +6,16 @@ import { sheetSettingsFor } from "@module/data/sheet_settings.ts"
 import { tmcost } from "@util/enum/tmcost.ts"
 import { affects } from "@util/enum/affects.ts"
 import { StringBuilder } from "@util/string_builder.ts"
-import { ItemType } from "@module/data/misc.ts"
+import { ItemType } from "@item/types.ts"
+import { CharacterResolver } from "@util"
 
-export interface TraitModifierGURPS<TParent extends ActorGURPS> extends ItemGCS<TParent> {
-	type: ItemType.TraitModifier
+export interface TraitModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	system: TraitModifierSystemData
+	type: ItemType.TraitModifier
 }
 
-export class TraitModifierGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
-	override prepareBaseData() {
+export class TraitModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
+	override prepareBaseData(): void {
 		super.prepareBaseData()
 		// HACK: find a way to avoid this
 		if (typeof this.system.levels === "string") this.system.levels = parseInt(this.system.levels)
@@ -26,7 +27,8 @@ export class TraitModifierGURPS<TParent extends ActorGURPS = ActorGURPS> extends
 	}
 
 	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
-		if (optionChecker(sheetSettingsFor(this.actor).notes_display)) return this.localNotes
+		if (optionChecker(sheetSettingsFor(this.actor as unknown as CharacterResolver).notes_display))
+			return this.localNotes
 		return ""
 	}
 
@@ -69,7 +71,8 @@ export class TraitModifierGURPS<TParent extends ActorGURPS = ActorGURPS> extends
 		const buffer = new StringBuilder()
 		buffer.push(this.formattedName)
 		if (this.localNotes !== "") buffer.push(` (${this.localNotes})`)
-		if (sheetSettingsFor(this.actor).show_trait_modifier_adj) buffer.push(` [${this.costDescription}]`)
+		if (sheetSettingsFor(this.actor as unknown as CharacterResolver).show_trait_modifier_adj)
+			buffer.push(` [${this.costDescription}]`)
 		return buffer.toString()
 	}
 

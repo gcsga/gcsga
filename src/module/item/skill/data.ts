@@ -1,6 +1,6 @@
 import { FeatureObj } from "@feature/index.ts"
 import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
-import { ItemType } from "@module/data/misc.ts"
+import { ItemType } from "@item/types.ts"
 import { PrereqList } from "@prereq/prereq_list.ts"
 import { SkillDefault } from "@sytem/default/index.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"

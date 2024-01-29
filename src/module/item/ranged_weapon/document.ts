@@ -16,7 +16,7 @@ export interface RangedWeaponGURPS<TParent extends ActorGURPS> extends BaseWeapo
 	system: RangedWeaponSystemData
 }
 
-export class RangedWeaponGURPS<TParent extends ActorGURPS = ActorGURPS> extends BaseWeaponGURPS<TParent> {
+export class RangedWeaponGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends BaseWeaponGURPS<TParent> {
 	get resolvedRange(): string {
 		const actor = this.actor
 		if (!(actor instanceof CharacterGURPS)) return this.system.range

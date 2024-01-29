@@ -1,5 +1,5 @@
 import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/index.ts"
-import { ItemType } from "@module/data/misc.ts"
+import { ItemType } from "@item/types.ts"
 
 export type SkillContainerSource = ItemGCSSource<ItemType.SkillContainer, SkillContainerSystemData>
 

@@ -1,12 +1,12 @@
 import { ActorGURPS } from "@actor/base.ts"
 import { ItemGURPS } from "@item/base/document.ts"
 import { ItemFlags } from "@item/data.ts"
-import { ItemType, SYSTEM_NAME } from "@module/data/misc.ts"
+import { SYSTEM_NAME } from "@module/data/misc.ts"
 import Document from "types/foundry/common/abstract/document.js"
 import EmbeddedCollection from "types/foundry/common/abstract/embedded-collection.js"
 import { setProperty } from "types/foundry/common/utils/helpers.js"
 
-export abstract class ContainerGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGURPS<TParent> {
+export abstract class ContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
 	declare items: Collection<ItemGURPS>
 	// items: Collection<ItemGURPS> = new Collection()
 

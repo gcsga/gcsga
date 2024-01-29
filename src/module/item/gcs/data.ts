@@ -1,7 +1,9 @@
+import { FeatureObj } from "@feature"
 import { BaseContainerSource, BaseContainerSystemData } from "@item/container/data.ts"
 import { MeleeWeaponSystemData } from "@item/melee_weapon/data.ts"
 import { RangedWeaponSystemData } from "@item/ranged_weapon/data.ts"
-import { ItemType } from "@module/data/misc.ts"
+import { ItemType } from "@item/types.ts"
+import { PrereqListObj } from "@prereq/data.ts"
 
 export type ItemGCSSource<
 	TItemType extends ItemType = ItemType,
@@ -19,6 +21,8 @@ export interface ItemGCSSystemData extends BaseContainerSystemData {
 	type: ItemType
 	weapons?: (MeleeWeaponSystemData | RangedWeaponSystemData)[]
 	calc?: ItemGCSCalcValues
+	features?: FeatureObj[]
+	prereqs?: PrereqListObj
 }
 
 export interface ItemGCSCalcValues {

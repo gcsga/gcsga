@@ -1,4 +1,5 @@
-import { ActorType, ItemType, RollModifier, SYSTEM_NAME, gid } from "@module/data/misc.ts"
+import { RollModifier, SYSTEM_NAME, gid } from "@module/data/misc.ts"
+import * as R from "remeda"
 import { TokenDocumentGURPS } from "@module/token/document.ts"
 import { ActorFlags, ActorFlagsGURPS } from "./base/data.ts"
 import { Attribute } from "@sytem/attribute/object.ts"
@@ -6,7 +7,7 @@ import { LocalizeGURPS } from "@util/localize.ts"
 import { TraitGURPS } from "@item/trait/document.ts"
 import { TraitContainerGURPS } from "@item/trait_container/document.ts"
 import { duplicate, mergeObject, setProperty } from "types/foundry/common/utils/helpers.js"
-import { HitLocationTable } from "./character/hit_location.ts"
+import { HitLocation, HitLocationTable } from "./character/hit_location.ts"
 import { CharacterGURPS } from "./document.ts"
 import { EffectGURPS } from "@item/effect/document.ts"
 import { ConditionGURPS } from "@item/condition/document.ts"
@@ -36,42 +37,59 @@ import {
 import { ApplyDamageDialog } from "@module/apps/damage_calculator/apply_damage_dlg.ts"
 import { ItemSourceGURPS } from "@item/data/index.ts"
 import { ActorSourceGURPS } from "./data/index.ts"
+import { MoveType } from "@sytem/move_type/object.ts"
+import { ActorModificationContextGURPS, ActorType } from "./types.ts"
+import { ItemType } from "@item/types.ts"
 
 export interface ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null>
 	extends Actor<TParent> {
+	noPrepare: boolean
+	flags: ActorFlagsGURPS
 	type: ActorType
+	attributes: Map<string, Attribute>
+	moveTypes: Map<string, MoveType>
 }
 
 export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null> extends Actor<TParent> {
-	// export class BaseActorGURPS<SourceType extends BaseActorSourceGURPS = BaseActorSourceGURPS> extends Actor {
-	// _source!: SourceType
+	declare attributes: Map<string, Attribute>
+	declare moveTypes: Map<string, MoveType>
 
-	// system!: SourceType["system"]
+	/** Don't allow the user to create in development actor types. */
+	static override createDialog<TDocument extends foundry.abstract.Document>(
+		this: ConstructorOf<TDocument>,
+		data?: Record<string, unknown>,
+		context?: {
+			parent?: TDocument["parent"]
+			pack?: Collection<TDocument> | null
+			types?: ActorType[]
+		} & Partial<FormApplicationOptions>,
+	): Promise<TDocument | null>
+	static override async createDialog(
+		data: { folder?: string | undefined } = {},
+		context: {
+			parent?: TokenDocumentGURPS | null
+			pack?: Collection<ActorGURPS<null>> | null
+			types?: (ActorType | "creature")[]
+			[key: string]: unknown
+		} = {},
+	): Promise<Actor<TokenDocument<Scene | null> | null> | null> {
+		const omittedTypes: ActorType[] = []
+		omittedTypes.push(ActorType.LegacyEnemy)
+		const original = game.system.documentTypes.Actor
+		try {
+			game.system.documentTypes.Actor = R.difference(original, omittedTypes)
 
-	override flags!: ActorFlagsGURPS
+			context.classes = [...((context.classes ?? []) as string[]), "dialog-actor-create"]
 
-	noPrepare!: boolean
-
-	attributes!: Map<string, Attribute>
+			return super.createDialog(data, context)
+		} finally {
+			game.system.documentTypes.Actor = original
+		}
+	}
 
 	get strengthOrZero(): number {
 		return 0
 	}
-
-	// _id!: string
-
-	// constructor(data: BaseActorSourceGURPS, context: ActorCons = {}) {
-	// 	if (context.gurps?.ready) {
-	// 		super(data, context)
-	// 		this.noPrepare = false
-	// 	} else {
-	// 		mergeObject(context, { gurps: { ready: true } })
-	// 		const ActorConstructor = CONFIG.GURPS.Actor.documentClasses[data.type]
-	// 		// eslint-disable-next-line no-constructor-return
-	// 		if (ActorConstructor) return new ActorConstructor(data, context)
-	// 		throw Error(`Invalid Actor Type "${data.type}"`)
-	// 	}
-	// }
 
 	get dodgeAttribute(): DeepPartial<Attribute> {
 		return {
@@ -122,25 +140,37 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 		return new HitLocationTable("", "3d", [], this as unknown as CharacterGURPS, "")
 	}
 
-	static override createDialog<TDocument extends BaseActorGURPS>(
-		this: ConstructorOf<TDocument>,
-		data?: Record<string, unknown>,
-		context?: {
-			parent?: TDocument["parent"]
-			pack?: Collection<TDocument> | null
-		} & Partial<FormApplicationOptions>,
-	): Promise<TDocument | null> {
-		super.createDialog()
-		const original = game.system.documentTypes.Actor
-		game.system.documentTypes.Actor = original.filter(
-			(actorType: string) => ![ActorType.LegacyEnemy].includes(actorType as ActorType),
-		)
-		context ??= {}
-		context.classes = [...(context.classes ?? []), "dialog-actor-create"]
-		const newActor = super.createDialog(data, context) as Promise<TDocument | null>
-		game.system.documentTypes.Actor = original
-		return newActor
+	get HitLocations(): HitLocation[] {
+		const recurseLocations = function (table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
+			table.locations.forEach(e => {
+				locations.push(e)
+				if (e.subTable) locations = recurseLocations(e.subTable, locations)
+			})
+			return locations
+		}
+
+		return recurseLocations(this.hitLocationTable, [])
 	}
+
+	// static override createDialog<TDocument extends ActorGURPS>(
+	// 	this: ConstructorOf<TDocument>,
+	// 	data?: Record<string, unknown>,
+	// 	context?: {
+	// 		parent?: TDocument["parent"]
+	// 		pack?: Collection<TDocument> | null
+	// 	} & Partial<FormApplicationOptions>,
+	// ): Promise<TDocument | null> {
+	// 	super.createDialog()
+	// 	const original = game.system.documentTypes.Actor
+	// 	game.system.documentTypes.Actor = original.filter(
+	// 		(actorType: string) => ![ActorType.LegacyEnemy].includes(actorType as ActorType),
+	// 	)
+	// 	context ??= {}
+	// 	context.classes = [...(context.classes ?? []), "dialog-actor-create"]
+	// 	const newActor = super.createDialog(data, context) as Promise<TDocument | null>
+	// 	game.system.documentTypes.Actor = original
+	// 	return newActor
+	// }
 
 	get gEffects(): Collection<EffectGURPS> {
 		const effects: Collection<EffectGURPS> = new Collection()
@@ -185,7 +215,7 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 		options: { id: string | null; other: boolean } = { id: null, other: false },
 	): Promise<ItemGURPS[]> {
 		const itemData = items.map(e => {
-			if ([, ItemType.Equipment, ItemType.EquipmentContainer].includes(e.type as ItemType))
+			if ([ItemType.Equipment, ItemType.EquipmentContainer].includes(e.type as ItemType))
 				return mergeObject(e.toObject(), {
 					[`flags.${SYSTEM_NAME}.${ItemFlags.Container}`]: options.id,
 					[`flags.${SYSTEM_NAME}.${ItemFlags.Other}`]: options.other,
@@ -215,7 +245,7 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 	override createEmbeddedDocuments(
 		embeddedName: string,
 		data: Record<string, unknown>[],
-		context: DocumentModificationContext<this>,
+		context: ActorModificationContextGURPS<this>,
 	): Promise<Document[]> {
 		if (embeddedName === "Item")
 			data = data.filter(
@@ -351,8 +381,8 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 		const existing = this.conditions.find(e => e.cid === id)
 		if (existing) return null
 		if (id === "none") return this.resetManeuvers()
-		if ([ManeuverID.BLANK_1, ManeuverID.BLANK_2].includes(id as any)) return null
-		const maneuvers = this.conditions.filter(e => Object.values(ManeuverID).includes(e.cid as any))
+		if ([ManeuverID.BLANK_1, ManeuverID.BLANK_2].includes(id as ManeuverID)) return null
+		const maneuvers = this.conditions.filter(e => Object.values(ManeuverID).includes(e.cid as ManeuverID))
 		const newCondition = duplicate(ConditionGURPS.getData(id))
 		if (maneuvers.length) {
 			const items = (await this.updateEmbeddedDocuments("Item", [
@@ -365,7 +395,7 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 	}
 
 	async resetManeuvers(): Promise<null> {
-		const maneuvers = this.conditions.filter(e => Object.values(ManeuverID).includes(e.cid as any))
+		const maneuvers = this.conditions.filter(e => Object.values(ManeuverID).includes(e.cid as ManeuverID))
 		await this.deleteEmbeddedDocuments(
 			"Item",
 			maneuvers.map(e => e.id!),
@@ -377,7 +407,7 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 		const existing = this.conditions.find(e => e.cid === id)
 		if (existing) return null
 		if (id === "standing") return this.resetPosture()
-		const postures = this.conditions.filter(e => Postures.includes(e.cid as any))
+		const postures = this.conditions.filter(e => Postures.includes(e.cid as ConditionID))
 		const newCondition = duplicate(ConditionGURPS.getData(id))
 		if (postures.length) {
 			const items = this.updateEmbeddedDocuments("Item", [
@@ -390,12 +420,16 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 	}
 
 	async resetPosture(): Promise<null> {
-		const maneuvers = this.conditions.filter(e => Object.values(Postures).includes(e.cid as any))
+		const maneuvers = this.conditions.filter(e => Object.values(Postures).includes(e.cid as ConditionID))
 		await this.deleteEmbeddedDocuments(
 			"Item",
 			maneuvers.map(e => e.id!),
 		)
 		return null
+	}
+
+	embeddedEval(_s: string): string {
+		return ""
 	}
 }
 
@@ -414,7 +448,7 @@ class DamageTargetActor implements DamageTarget {
 	get tokenId(): string {
 		let result = ""
 		if (game.scenes?.active?.tokens) {
-			result = game.scenes.active.tokens.find(it => (it as any).actorId === this.actor.id)?.id ?? ""
+			result = game.scenes.active.tokens.find(it => it.actorId === this.actor.id)?.id ?? ""
 		}
 		return result as string
 	}
@@ -451,8 +485,10 @@ class DamageTargetActor implements DamageTarget {
 	 * @param name
 	 * @returns an object with a calc property containing the current and max values.
 	 */
-	private getSyntheticAttribute(name: string): any | undefined {
-		const attr = this.actor.attributes.get(name) as any
+	private getSyntheticAttribute(
+		name: string,
+	): (Attribute & { calc: { value: number; current: number } }) | undefined {
+		const attr = this.actor.attributes.get(name) as Attribute & { calc: { value: number; current: number } }
 		if (attr && !attr?.calc) {
 			attr.calc = { value: attr?.max, current: attr?.current }
 		}
@@ -593,7 +629,7 @@ class DamageAttackerAdapter implements DamageAttacker {
 	get tokenId(): string {
 		let result = ""
 		if (game.scenes?.active?.tokens) {
-			result = game.scenes.active.tokens.find(it => (it as any).actorId === this.actor.id)?.id ?? ""
+			result = game.scenes.active.tokens.find(it => it.actorId === this.actor.id)?.id ?? ""
 		}
 		return result as string
 	}
@@ -620,7 +656,10 @@ class DamageWeaponAdapter implements DamageWeapon {
 }
 
 export const ActorProxyGURPS = new Proxy(ActorGURPS, {
-	construct(_target, args: [source: ActorSourceGURPS, context: DocumentModificationContext<any>]) {
+	construct(
+		_target,
+		args: [source: ActorSourceGURPS, context: DocumentModificationContext<TokenDocumentGURPS | null>],
+	) {
 		const ActorClass = CONFIG.GURPS.Actor.documentClasses[args[0]?.type as ActorType] ?? ActorGURPS
 		return new ActorClass(...args)
 	},

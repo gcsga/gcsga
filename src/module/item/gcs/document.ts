@@ -1,14 +1,12 @@
 import { ActorGURPS } from "@actor/base.ts"
 import { ContainerGURPS } from "@item/container/document.ts"
-import { ItemType, SYSTEM_NAME } from "@module/data/misc.ts"
+import { SYSTEM_NAME } from "@module/data/misc.ts"
 import { UserGURPS } from "@module/user/document.ts"
-import { study } from "@util/enum/study.ts"
-import { resolveStudyHours } from "@util/study.ts"
-import { ItemGCSSystemData } from "./data.ts"
+import { ItemGCSSource, ItemGCSSystemData } from "./data.ts"
 import { EvalEmbeddedRegex, replaceAllStringFunc } from "@util/regexp.ts"
 import { display } from "@util/enum/display.ts"
 import { sheetDisplayNotes } from "@util/misc.ts"
-import { CharacterResolver, SkillResolver } from "@util/resolvers.ts"
+import { SkillResolver } from "@util/resolvers.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { Feature, FeatureObj } from "@feature/index.ts"
@@ -17,12 +15,14 @@ import { PrereqList } from "@prereq/index.ts"
 import { MeleeWeaponGURPS } from "@item/melee_weapon/index.ts"
 import { RangedWeaponGURPS } from "@item/ranged_weapon/index.ts"
 import { BaseWeaponGURPS } from "@item/weapon/index.ts"
+import { ItemType } from "@item/types.ts"
 
-export interface ItemGCS<TParent extends ActorGURPS = ActorGURPS> extends ContainerGURPS<TParent> {
+export interface ItemGCS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ContainerGURPS<TParent> {
+	_source: ItemGCSSource
 	system: ItemGCSSystemData
 }
 
-export abstract class ItemGCS<TParent extends ActorGURPS = ActorGURPS> extends ContainerGURPS<TParent> {
+export abstract class ItemGCS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ContainerGURPS<TParent> {
 	declare unsatisfiedReason: string
 	// unsatisfied_reason = ""
 
@@ -36,11 +36,11 @@ export abstract class ItemGCS<TParent extends ActorGURPS = ActorGURPS> extends C
 		else if (type === ItemType.RitualMagicSpell) type = ItemType.Spell
 		else if (type === ItemType.Equipment) type = "equipment"
 		else if (type === ItemType.LegacyEquipment) type = "legacy_equipment"
-		if (this._source.img === (foundry.documents.BaseItem as any).DEFAULT_ICON)
+		if (this._source.img === foundry.documents.BaseItem.DEFAULT_ICON)
 			this._source.img = data.img = `systems/${SYSTEM_NAME}/assets/icons/${type}.svg`
 		let gcs_type: string = data.type
 		if (gcs_type === ItemType.Equipment) gcs_type = "equipment"
-		;(this._source.system as any).type = gcs_type
+		this._source.system.type = gcs_type
 		await super._preCreate(data, options, user)
 	}
 
@@ -56,22 +56,12 @@ export abstract class ItemGCS<TParent extends ActorGURPS = ActorGURPS> extends C
 	// 	return ""
 	// }
 
-	get studyHours(): number {
-		return resolveStudyHours((this.system as any).study ?? [])
-	}
-
-	get studyHoursNeeded(): string {
-		const system = this.system as any
-		if (system.study_hours_needed === "") return study.Level.Standard
-		return system.study_hours_needed
-	}
-
 	get localNotes(): string {
 		return this.system.notes ?? ""
 	}
 
 	get notes(): string {
-		return replaceAllStringFunc(EvalEmbeddedRegex, this.localNotes, this.actor as unknown as CharacterResolver)
+		return replaceAllStringFunc(EvalEmbeddedRegex, this.localNotes, this.actor)
 	}
 
 	get ratedStrength(): number {
@@ -139,23 +129,23 @@ export abstract class ItemGCS<TParent extends ActorGURPS = ActorGURPS> extends C
 	}
 
 	get features(): Feature[] {
-		if (!this.system.hasOwnProperty("features")) return []
-
-		return (this.system as any).features.map((e: Partial<FeatureObj>) => {
+		if (!this.system.features) return []
+		return this.system.features.map((e: Partial<FeatureObj>) => {
 			const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as feature.Type]
-			const f = FeatureConstructor.fromObject(e as any)
+			// @ts-expect-error conflicting types in constructors
+			const f = FeatureConstructor.fromObject(e as FeatureObj)
 			if (this.isLeveled) f.setLevel(this.levels)
 			return f
 		})
 	}
 
-	get prereqs() {
-		if (!(this.system as any).prereqs) return new PrereqList()
-		return PrereqList.fromObject((this.system as any).prereqs)
+	get prereqs(): PrereqList {
+		if (!this.system.prereqs) return new PrereqList()
+		return PrereqList.fromObject(this.system.prereqs)
 	}
 
 	get prereqsEmpty(): boolean {
-		if (!(this.system as any).prereqs.prereqs) return true
+		if (!this.system.prereqs || !this.system.prereqs.prereqs) return true
 		return this.prereqs?.prereqs.length === 0
 	}
 
@@ -175,6 +165,10 @@ export abstract class ItemGCS<TParent extends ActorGURPS = ActorGURPS> extends C
 		return rangedWeapons
 	}
 
+	override get children(): Collection<ItemGCS> {
+		return super.children as Collection<ItemGCS>
+	}
+
 	get weapons(): Collection<BaseWeaponGURPS> {
 		const weapons: Collection<BaseWeaponGURPS> = new Collection()
 		for (const item of this.items) {
@@ -183,20 +177,21 @@ export abstract class ItemGCS<TParent extends ActorGURPS = ActorGURPS> extends C
 		return weapons
 	}
 
-	override exportSystemData(_keepOther: boolean): any {
-		const system: any = this.system
+	get modifiers(): Collection<ItemGCS> {
+		return new Collection()
+	}
+
+	override exportSystemData(_keepOther: boolean): Record<string, unknown> {
+		const system = { ...this.system } as Record<string, unknown>
 		system.name = this.name
-		if (system.features)
-			system.features = system.features.map((e: Feature) => {
+		if (this.features)
+			system.features = this.features.map((e: Feature) => {
 				const { effective: _, ...rest } = e
 				return rest
 			})
-		if ((this as any).children)
-			system.children = (this as any).children.map((e: ItemGCS) => e.exportSystemData(false))
-		if ((this as any).modifiers)
-			system.modifiers = (this as any).modifiers.map((e: ItemGCS) => e.exportSystemData(false))
-		if ((this as any).weapons)
-			system.weapons = (this as any).weapons.map((e: BaseWeaponGURPS) => e.exportSystemData(false))
+		if (this.children) system.children = this.children.map((e: ItemGCS) => e.exportSystemData(false))
+		if (this.modifiers) system.modifiers = this.modifiers.map((e: ItemGCS) => e.exportSystemData(false))
+		if (this.weapons) system.weapons = this.weapons.map((e: BaseWeaponGURPS) => e.exportSystemData(false))
 		return system
 	}
 

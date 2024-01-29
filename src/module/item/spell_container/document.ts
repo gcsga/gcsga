@@ -2,10 +2,10 @@ import { ActorGURPS } from "@actor/document.ts"
 import { SpellContainerSystemData } from "./data.ts"
 import { ItemGCS, RitualMagicSpellGURPS, SpellGURPS } from "@item/index.ts"
 
-export interface SpellContainerGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+export interface SpellContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	system: SpellContainerSystemData
 }
-export class SpellContainerGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+export class SpellContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	// Embedded Items
 	override get children(): Collection<SpellGURPS | RitualMagicSpellGURPS | SpellContainerGURPS> {
 		return super.children as Collection<SpellGURPS | RitualMagicSpellGURPS | SpellContainerGURPS>

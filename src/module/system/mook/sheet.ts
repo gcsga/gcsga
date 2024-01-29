@@ -1,5 +1,4 @@
 import { CharacterSheetConfig } from "@actor/character/config_sheet.ts"
-import { Mook } from "./document.ts"
 import { duplicate, mergeObject, setProperty } from "types/foundry/common/utils/helpers.js"
 import { SYSTEM_NAME } from "@module/data/misc.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
@@ -8,6 +7,7 @@ import { attribute } from "@util/enum/attribute.ts"
 import { DialogGURPS } from "@ui/dialog.ts"
 import { MookParser } from "./parse.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
+import { Mook } from "./document.ts"
 
 export class MookGeneratorSheet extends FormApplication {
 	config: CharacterSheetConfig | null = null
@@ -19,7 +19,6 @@ export class MookGeneratorSheet extends FormApplication {
 	constructor(options?: Partial<ApplicationOptions>) {
 		super(options)
 		this.object = new Mook()
-		;(game as any).mook = this.object
 	}
 
 	static override get defaultOptions(): FormApplicationOptions {
@@ -204,7 +203,7 @@ export class MookGeneratorSheet extends FormApplication {
 		return [...buttons, all_buttons.at(-1)!]
 	}
 
-	protected async _updateObject(_event: Event, formData: any): Promise<unknown> {
+	protected async _updateObject(_event: Event, formData: Record<string, unknown>): Promise<unknown> {
 		for (const i of Object.keys(formData)) {
 			if (i.startsWith("attributes.")) {
 				const attributes: AttributeObj[] =
@@ -221,8 +220,8 @@ export class MookGeneratorSheet extends FormApplication {
 				formData["system.attributes"] = attributes
 				delete formData[i]
 			}
-			if (i === "thrust") formData.thrust = new DiceGURPS(formData.thrust)
-			if (i === "swing") formData.swing = new DiceGURPS(formData.swing)
+			if (i === "thrust") formData.thrust = new DiceGURPS(formData.thrust as string)
+			if (i === "swing") formData.swing = new DiceGURPS(formData.swing as string)
 		}
 		console.log(formData)
 		return this.object.update(formData)

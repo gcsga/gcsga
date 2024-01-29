@@ -5,19 +5,22 @@ import { display } from "@util/enum/display.ts"
 import { StringBuilder } from "@util/string_builder.ts"
 import { sheetSettingsFor } from "@module/data/sheet_settings.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { ItemType, SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
+import { SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
 import { ItemFlags } from "@item/data.ts"
 import { Weight, WeightUnits } from "@util/weight.ts"
 import { EquipmentGURPS } from "@item/equipment/document.ts"
 import { EquipmentModifierGURPS, valueAdjustedForModifiers } from "@item/equipment_modifier/document.ts"
 import { EquipmentModifierContainerGURPS } from "@item/equipment_modifier_container/document.ts"
 import { Int } from "@util/fxp.ts"
+import { ItemType } from "@item/types.ts"
 
-export interface EquipmentContainerGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+export interface EquipmentContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null>
+	extends ItemGCS<TParent> {
 	system: EquipmentContainerSystemData
+	type: ItemType.EquipmentContainer
 }
 
-export class EquipmentContainerGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+export class EquipmentContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	// unsatisfied_reason = ""
 
 	// Getters

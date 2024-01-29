@@ -1,31 +1,28 @@
-import { CharacterGURPS } from "@actor/character"
-import { CharacterImporter } from "@actor/character/import"
-import { ActorType, SETTINGS, SYSTEM_NAME } from "@module/data"
-import { LocalizeGURPS, prepareFormData } from "@util"
-import { DnD } from "@util/drag_drop"
-import { StaticCharacterGURPS } from "."
-import { StaticResourceTracker, StaticThresholdComparison, StaticThresholdOperator } from "./data"
-import { StaticCharacterImporter } from "./import"
-import { CharacterConverter } from "./convert"
+import { SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
+import { StaticResourceTracker } from "./data.ts"
+import { StaticCharacterGURPS } from "./document.ts"
+import { FilePickerGURPS, LocalizeGURPS } from "@util"
 
-export class StaticCharacterSheetConfig extends FormApplication {
-	object: StaticCharacterGURPS
+export interface StaticCharacterSheetConfig<TActor extends StaticCharacterGURPS> extends FormApplication<TActor> {
+	object: TActor
+}
 
+export class StaticCharacterSheetConfig<TActor extends StaticCharacterGURPS> extends FormApplication<TActor> {
 	filename: string
 
 	file?: { text: string; name: string; path: string }
 
 	resource_trackers: StaticResourceTracker[]
 
-	constructor(object: StaticCharacterGURPS, options?: any) {
+	constructor(object: TActor, options?: Record<string, unknown>) {
 		super(object, options)
 		this.object = object
 		this.filename = ""
 		this.resource_trackers = this.object.trackers
 	}
 
-	static get defaultOptions(): FormApplicationOptions {
-		return mergeObject(super.defaultOptions, {
+	static override get defaultOptions(): FormApplicationOptions {
+		return fu.mergeObject(super.defaultOptions, {
 			classes: ["form", "character-config", "gurps"],
 			template: `systems/${SYSTEM_NAME}/templates/actor/static/config/config.hbs`,
 			width: 560,
@@ -46,13 +43,13 @@ export class StaticCharacterSheetConfig extends FormApplication {
 		})
 	}
 
-	get title() {
+	override get title(): string {
 		return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.character.settings.header, {
 			name: this.object.name,
 		})
 	}
 
-	activateListeners(html: JQuery<HTMLElement>): void {
+	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		html.find(".item").on("dragover", event => this._onDragItem(event))
 		html.find(".add").on("click", event => this._onAddItem(event))
@@ -61,7 +58,7 @@ export class StaticCharacterSheetConfig extends FormApplication {
 		if (game.settings.get(SYSTEM_NAME, SETTINGS.SERVER_SIDE_FILE_DIALOG)) {
 			html.find("input[type='file']").on("click", event => {
 				event.preventDefault()
-				const filepicker = new FilePicker({
+				const filepicker = new FilePickerGURPS({
 					callback: (path: string) => {
 						const request = new XMLHttpRequest()
 						request.open("GET", path)
@@ -83,7 +80,7 @@ export class StaticCharacterSheetConfig extends FormApplication {
 						request.send(null)
 					},
 				})
-				filepicker.extensions = [".gcs", ".xml", ".gca5"]
+				filepicker.extension = [".gcs", ".xml", ".gca5"]
 				filepicker.render(true)
 			})
 		} else {
@@ -92,7 +89,7 @@ export class StaticCharacterSheetConfig extends FormApplication {
 				const files = $(event.currentTarget).prop("files")
 				this.filename = filename
 				if (files) {
-					readTextFromFile(files[0]).then(
+					fu.readTextFromFile(files[0]).then(
 						text =>
 							(this.file = {
 								text: text,

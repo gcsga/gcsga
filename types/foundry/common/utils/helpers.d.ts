@@ -291,6 +291,21 @@ export function logCompatibilityWarning(
 	},
 ): void
 
+/**
+ * Export data content to be saved to a local file
+ * @param {string} data       Data content converted to a string
+ * @param {string} type       The type of
+ * @param {string} filename   The filename of the resulting download
+ */
+export function saveDataToFile(data: string, type: string, filename: string): void
+
+/**
+ * Read text data from a user provided File object
+ * @param {File} file           A File object
+ * @return {Promise.<string>}   A Promise which resolves to the loaded text data
+ */
+export function readTextFromFile(file: File): Promise<string>
+
 export * from "./http.ts"
 
 declare global {

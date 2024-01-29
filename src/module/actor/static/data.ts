@@ -1,5 +1,4 @@
 import { ActorFlagsGURPS, ActorSystemSource, BaseActorSourceGURPS } from "@actor/base/data.ts"
-import { ActorType } from "@module/data/index.ts"
 import {
 	StaticEquipment,
 	StaticMelee,
@@ -10,6 +9,7 @@ import {
 	StaticSpell,
 	StaticTrait,
 } from "./components.ts"
+import { ActorType } from "@actor"
 
 export const MoveModeTypes = {
 	Ground: "gurps.character.move_modes.ground",
@@ -18,7 +18,7 @@ export const MoveModeTypes = {
 	Space: "gurps.character.move_modes.space",
 }
 
-export enum Posture {
+export enum StaticPosture {
 	Standing = "standing",
 	Prone = "prone",
 	Kneeling = "kneeling",

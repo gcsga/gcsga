@@ -1,8 +1,8 @@
 import { CharacterResolver, sanitizeId } from "@util"
 import { MoveTypeObj } from "./data.ts"
-import { reserved_ids } from "@module/attribute"
 import { MoveBonusType } from "@feature"
 import { MoveTypeDef } from "./move_type_def.ts"
+import { reserved_ids } from "@sytem/attribute/data.ts"
 
 export class MoveType {
 	actor: CharacterResolver

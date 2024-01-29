@@ -1,5 +1,5 @@
 import { BaseItemSourceGURPS } from "@item/data.ts"
-import { ItemType } from "@module/data/misc.ts"
+import { ItemType } from "@item/types.ts"
 import { SkillDefault } from "@sytem/default/index.ts"
 import { stdmg } from "@util/enum/stdmg.ts"
 

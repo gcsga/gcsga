@@ -4,13 +4,15 @@ import { TraitContainerSystemData, TraitContainerType } from "./data.ts"
 import { selfctrl } from "@util/enum/selfctrl.ts"
 import { TraitGURPS } from "@item/trait/document.ts"
 import { TraitModifierGURPS } from "@item/trait_modifier/document.ts"
-import { TraitModifierContainerGURPS } from "@item/trait_modifier_container/document.ts"
+import { ItemType } from "@item/types.ts"
+import { TraitModifierContainerGURPS } from "@item"
 
-export interface TraitContainerGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+export interface TraitContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	system: TraitContainerSystemData
+	type: ItemType.TraitContainer
 }
 
-export class TraitContainerGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+export class TraitContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	// unsatisfied_reason = ""
 
 	// Getters
@@ -82,7 +84,7 @@ export class TraitContainerGURPS<TParent extends ActorGURPS = ActorGURPS> extend
 				.map(item => {
 					return [item.id!, item]
 				}),
-		) as Collection<TraitModifierGURPS>
+		) as Collection<TraitModifierGURPS | TraitModifierContainerGURPS>
 	}
 
 	get deepModifiers(): Collection<TraitModifierGURPS> {

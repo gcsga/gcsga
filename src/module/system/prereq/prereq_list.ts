@@ -4,7 +4,7 @@ import { BasePrereq } from "./base.ts"
 import { PrereqListObj } from "./data.ts"
 import { CharacterResolver, LocalizeGURPS, LootResolver, extractTechLevel } from "@util/index.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
-import { ActorType } from "@module/data/misc.ts"
+import { ActorType } from "@actor"
 
 export class PrereqList {
 	type: prereq.Type
@@ -38,13 +38,13 @@ export class PrereqList {
 
 	satisfied(
 		actor: CharacterResolver | LootResolver,
-		exclude: any,
+		exclude: unknown,
 		tooltip: TooltipGURPS,
 		hasEquipmentPenalty: { value: boolean } = { value: false },
 	): boolean {
 		let actorTechLevel = "0"
 		if (actor.type === ActorType.Character) {
-			actorTechLevel = actor.profile.tech_level
+			actorTechLevel = (actor as CharacterResolver).profile.tech_level
 		}
 		if (this.when_tl.compare !== NumericCompareType.AnyNumber) {
 			let tl = extractTechLevel(actorTechLevel)
@@ -55,7 +55,7 @@ export class PrereqList {
 		const local = new TooltipGURPS()
 		const eqpPenalty = { value: false }
 		for (const one of this.prereqs) {
-			if (one.satisfied(actor, exclude, local, eqpPenalty)) count++
+			if (one.satisfied(actor, exclude, local, eqpPenalty)) count += 1
 		}
 		const satisfied = count === this.prereqs.length || (!this.all && count > 0)
 		if (!satisfied) {

@@ -1,7 +1,7 @@
 import { ActorFlagsGURPS } from "@actor/base/data.ts"
-import { CharacterProfile, Encumbrance } from "@actor/character/data.ts"
+import { CharacterFlags, CharacterProfile, Encumbrance } from "@actor/character/data.ts"
 import { LootSettings } from "@actor/loot/data.ts"
-import { ActorType, ItemType, RollType, SkillDefaultType } from "@module/data/misc.ts"
+import { RollType, SkillDefaultType } from "@module/data/misc.ts"
 import { SheetSettings } from "@module/data/sheet_settings.ts"
 import { stlimit } from "./enum/stlimit.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
@@ -31,6 +31,9 @@ import { ConditionID, ManeuverID } from "@item/condition/data.ts"
 import { tmcost } from "./enum/tmcost.ts"
 import { emcost } from "./enum/emcost.ts"
 import { WeaponRecoil } from "@item/weapon/weapon_recoil.ts"
+import { HitLocationTable } from "@actor/character/hit_location.ts"
+import { ActorType } from "@actor"
+import { ItemType } from "@item/types.ts"
 
 export interface ActorResolver<T extends ActorType> {
 	type: T
@@ -43,11 +46,16 @@ export interface LootResolver extends ActorResolver<ActorType.Loot> {
 	settings: LootSettings
 }
 
+export interface HitLocationTableOwner {
+	hitLocationTable: HitLocationTable
+}
+
 export interface CharacterResolver extends ActorResolver<ActorType.Character> {
 	// Profile & settings
 	profile: CharacterProfile
 	adjustedSizeModifier: number
 	settings: SheetSettings
+	flags: CharacterFlags
 	// Items
 	traits: Collection<TraitResolver | TraitContainerResovler>
 	skills: Collection<SkillResolver | TechniqueResolver | SkillContainerResolver>
@@ -61,6 +69,8 @@ export interface CharacterResolver extends ActorResolver<ActorType.Character> {
 	strikingST: number
 	throwingST: number
 	liftingST: number
+	// Hit Locations
+	hitLocationTable: HitLocationTable
 	// functions
 	attributeBonusFor: (
 		attributeId: string,
@@ -68,6 +78,7 @@ export interface CharacterResolver extends ActorResolver<ActorType.Character> {
 		effective?: boolean,
 		tooltip?: TooltipGURPS | null,
 	) => number
+	skillBonusFor: (name: string, specialization: string, tags: string[], tooltip: TooltipGURPS | null) => number
 	moveBonusFor: (id: string, limitation: MoveBonusType, effective?: boolean, tooltip?: TooltipGURPS | null) => number
 	resolveVariable: (variableName: string) => string
 	resolveAttributeCurrent: (attr_id: string) => number
@@ -94,7 +105,9 @@ export interface ItemResolver<T extends ItemType> {
 	enabled: boolean
 }
 
-export interface ContainerResolver<C extends ItemResolver<ItemType>> extends ItemResolver<ItemType> {
+export interface ContainerResolver<T extends ItemType, C extends ItemResolver<ItemType>>
+	extends ItemResolver<ItemType> {
+	type: T
 	children: Collection<C>
 }
 
@@ -112,7 +125,8 @@ export interface TraitResolver extends ItemResolver<ItemType.Trait> {
 	system: TraitSystemData
 }
 
-export interface TraitContainerResovler extends ContainerResolver<TraitResolver | TraitContainerResovler> {
+export interface TraitContainerResovler
+	extends ContainerResolver<ItemType.TraitContainer, TraitResolver | TraitContainerResovler> {
 	containerType: TraitContainerType
 	isLeveled: boolean
 	levels: number
@@ -138,7 +152,10 @@ export interface TraitModifierResolver extends ItemResolver<ItemType.TraitModifi
 }
 
 export interface TraitModifierContainerResolver
-	extends ContainerResolver<TraitModifierResolver | TraitModifierContainerResolver> {}
+	extends ContainerResolver<
+		ItemType.TraitModifierContainer,
+		TraitModifierResolver | TraitModifierContainerResolver
+	> {}
 
 export interface LeveledItemResolver extends ItemResolver<ItemType> {
 	points: number
@@ -170,7 +187,7 @@ export interface TechniqueResolver extends LeveledItemResolver {
 }
 
 export interface SkillContainerResolver
-	extends ContainerResolver<SkillResolver | TechniqueResolver | SkillContainerResolver> {}
+	extends ContainerResolver<ItemType.SkillContainer, SkillResolver | TechniqueResolver | SkillContainerResolver> {}
 
 export interface SpellResolver extends LeveledItemResolver {
 	rituals: string
@@ -180,7 +197,8 @@ export interface SpellResolver extends LeveledItemResolver {
 	college: string[]
 }
 
-export interface SpellContainerResolver extends ContainerResolver<SpellResolver | SpellContainerResolver> {}
+export interface SpellContainerResolver
+	extends ContainerResolver<ItemType.SpellContainer, SpellResolver | SpellContainerResolver> {}
 
 export interface SkillLevelResolver {
 	level: number
@@ -215,7 +233,8 @@ export interface EquipmentResolver extends ItemResolver<ItemType.Equipment> {
 	extendedWeightFast: string
 }
 
-export interface EquipmentContainerResolver extends ContainerResolver<EquipmentResolver | EquipmentContainerResolver> {
+export interface EquipmentContainerResolver
+	extends ContainerResolver<ItemType.EquipmentContainer, EquipmentResolver | EquipmentContainerResolver> {
 	equipped: boolean
 	quantity: number
 	ratedStrength: number
@@ -244,13 +263,17 @@ export interface EquipmentModifierResolver extends ItemResolver<ItemType.Equipme
 }
 
 export interface EquipmentModifierContainerResolver
-	extends ContainerResolver<EquipmentModifierResolver | EquipmentModifierContainerResolver> {}
+	extends ContainerResolver<
+		ItemType.EquipmentModifierContainer,
+		EquipmentModifierResolver | EquipmentModifierContainerResolver
+	> {}
 
 export interface NoteResolver extends ItemResolver<ItemType.Note> {
 	formattedText: string
 }
 
-export interface NoteContainerResolver extends ContainerResolver<NoteResolver | NoteContainerResolver> {
+export interface NoteContainerResolver
+	extends ContainerResolver<ItemType.NoteContainer, NoteResolver | NoteContainerResolver> {
 	formattedText: string
 }
 

@@ -1,4 +1,4 @@
-import { HitLocation } from "@actor/index.ts"
+import { HitLocation, HitLocationTable } from "@actor/index.ts"
 import { IDamageCalculator, createDamageCalculator } from "@module/apps/damage_calculator/damage_calculator.ts"
 import { DamageTypes } from "@module/apps/damage_calculator/damage_type.ts"
 import {
@@ -36,7 +36,7 @@ export class _Target implements DamageTarget {
 
 	_traits: TargetTrait[] = []
 
-	getTrait(name: string) {
+	getTrait(name: string): TargetTrait | undefined {
 		return this._traits.find(it => it.name === name)
 	}
 
@@ -47,12 +47,18 @@ export class _Target implements DamageTarget {
 	_dummyHitLocationTable = {
 		name: "humanoid",
 		roll: "3d",
-		// eslint-disable-next-line no-array-constructor
-		locations: new Array<HitLocation>(),
+		locations: <HitLocation[]>[],
 	}
 
-	get hitLocationTable(): any {
-		return this._dummyHitLocationTable
+	get hitLocationTable(): HitLocationTable {
+		// return new HitLocationTable(...this._dummyHitLocationTable
+		return new HitLocationTable(
+			this._dummyHitLocationTable.name,
+			this._dummyHitLocationTable.roll,
+			this._dummyHitLocationTable.locations,
+			this,
+			"",
+		)
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -106,7 +112,7 @@ export const Knockdown = [
 
 export type DamageShock = { damage: number; shock: number }
 
-const dummyLocalize = (stringId: string, data?: any) => {
+const dummyLocalize = (stringId: string, data?: Record<string, unknown>) => {
 	return `${stringId}${data ? `:${JSON.stringify(data)}` : ""}`
 }
 

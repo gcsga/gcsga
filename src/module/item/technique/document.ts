@@ -7,11 +7,13 @@ import { difficulty } from "@util/enum/difficulty.ts"
 import { SkillDefault } from "@sytem/default/index.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { gid } from "@module/data/misc.ts"
+import { ItemType } from "@item/types.ts"
 
-export interface TechniqueGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+export interface TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	system: TechniqueSystemData
+	type: ItemType.Technique
 }
-export class TechniqueGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+export class TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	declare level: SkillLevel
 
 	unsatisfied_reason = ""
@@ -65,7 +67,7 @@ export class TechniqueGURPS<TParent extends ActorGURPS = ActorGURPS> extends Ite
 	adjustedPoints(tooltip?: TooltipGURPS): number {
 		let points = this.points
 		if (this.actor) {
-			points += this.actor.skillPointBonusFor(this.name!, "", this.tags, tooltip)
+			points += (this.actor.skillPointBonusFor(this.name!, "", this.tags, tooltip)
 			// Points += this.actor.bonusFor(`skills.points/${this.name}`, tooltip)
 			points = Math.max(points, 0)
 		}

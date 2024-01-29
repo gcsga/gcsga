@@ -1,13 +1,33 @@
 import { ActorGURPS } from "@actor/document.ts"
-import { HooksGURPS, RollModifier, RollModifierTags, SYSTEM_NAME, UserFlags } from "@module/data/index.ts"
+import { HooksGURPS, RollModifier, RollModifierTags, SYSTEM_NAME } from "@module/data/index.ts"
+import { TokenDocumentGURPS } from "@module/token/document.ts"
+import { TokenGURPS } from "@module/token/object.ts"
 import { flattenObject } from "types/foundry/common/utils/helpers.js"
+import { UserFlags, UserFlagsGURPS, UserSourceGURPS } from "./data.ts"
 
-export class UserGURPS<TCharacter extends ActorGURPS<null> = ActorGURPS<null>> extends User<TCharacter> {
+class UserGURPS extends User<ActorGURPS<null>> {
 	override prepareData(): void {
 		super.prepareData()
 		if (canvas?.ready && canvas.tokens?.controlled && canvas.tokens?.controlled.length > 0) {
-			game.EffectPanel.refresh()
+			game.gurps.effectPanel.refresh()
 		}
+	}
+
+	override prepareBaseData(): void {
+		super.prepareBaseData()
+		this.flags = fu.mergeObject(
+			{
+				[SYSTEM_NAME]: {
+					[UserFlags.Init]: true,
+					[UserFlags.LastStack]: [],
+					[UserFlags.ModifierStack]: [],
+					[UserFlags.ModifierSticky]: false,
+					[UserFlags.LastActor]: null,
+					[UserFlags.LastToken]: null,
+				},
+			},
+			this.flags,
+		)
 	}
 
 	override _onUpdate(data: DeepPartial<this["_source"]>, options: DocumentUpdateContext<null>, userId: string): void {
@@ -16,7 +36,7 @@ export class UserGURPS<TCharacter extends ActorGURPS<null> = ActorGURPS<null>> e
 
 		const keys = Object.keys(flattenObject(data))
 		if (keys.includes(`flags.${SYSTEM_NAME}.settings.showEffectPanel`)) {
-			game.EffectPanel.refresh()
+			game.gurps.effectPanel.refresh()
 		}
 	}
 
@@ -38,7 +58,7 @@ export class UserGURPS<TCharacter extends ActorGURPS<null> = ActorGURPS<null>> e
 		return total
 	}
 
-	addModifier(mod: RollModifier) {
+	addModifier(mod: RollModifier): void {
 		const modList = (this.getFlag(SYSTEM_NAME, UserFlags.ModifierStack) as RollModifier[]) ?? []
 		if (mod.tags?.includes(RollModifierTags.Range)) {
 			const oldMod = modList.find(e => e.tags?.includes(RollModifierTags.Range))
@@ -55,3 +75,11 @@ export class UserGURPS<TCharacter extends ActorGURPS<null> = ActorGURPS<null>> e
 		Hooks.call(HooksGURPS.AddModifier)
 	}
 }
+
+interface UserGURPS extends User<ActorGURPS<null>> {
+	targets: Set<TokenGURPS<TokenDocumentGURPS<Scene>>>
+	flags: UserFlagsGURPS
+	readonly _source: UserSourceGURPS
+}
+
+export { UserGURPS }

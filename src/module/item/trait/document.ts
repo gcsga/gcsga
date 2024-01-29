@@ -5,17 +5,19 @@ import { display } from "@util/enum/display.ts"
 import { StringBuilder } from "@util/string_builder.ts"
 import { sheetSettingsFor } from "@module/data/sheet_settings.ts"
 import { resolveStudyHours, studyHoursProgressText } from "@util/study.ts"
-import { ItemType } from "@module/data/misc.ts"
 import { selfctrl } from "@util/enum/selfctrl.ts"
 import { TraitModifierGURPS } from "@item/trait_modifier/document.ts"
 import { TraitModifierContainerGURPS } from "@item/trait_modifier_container/document.ts"
+import { ItemType } from "@item/types.ts"
+import { CharacterGURPS } from "@actor"
+import { CharacterResolver } from "@util"
 
-export interface TraitGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+export interface TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	system: TraitSystemData
 	type: ItemType.Trait
 }
 
-export class TraitGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+export class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	// unsatisfied_reason = ""
 
 	// Getters
@@ -27,7 +29,7 @@ export class TraitGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS
 
 	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
 		const buffer = new StringBuilder()
-		const settings = sheetSettingsFor(this.actor)
+		const settings = sheetSettingsFor(this.actor as CharacterGURPS)
 		if (this.system.userdesc !== "" && optionChecker(settings.user_description_display)) {
 			buffer.push(this.system.userdesc)
 		}
@@ -44,12 +46,8 @@ export class TraitGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS
 	override get enabled(): boolean {
 		if (this.system.disabled) return false
 		let enabled = !this.system.disabled
-		if (
-			this.container &&
-			!(this.container instanceof CompendiumCollection) &&
-			this.container.type === ItemType.TraitContainer
-		)
-			enabled = enabled && (this.container as any).enabled
+		if (this.container instanceof ItemGCS && this.container.type === ItemType.TraitContainer)
+			enabled = enabled && this.container.enabled
 		return enabled
 	}
 
@@ -144,7 +142,7 @@ export class TraitGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS
 		let modifiedBasePoints = basePoints
 		const leveledPoints = pointsPerLevel * this.levels
 		if (baseEnh !== 0 || baseLim !== 0 || levelEnh !== 0 || levelLim !== 0) {
-			if (this.actor?.settings.use_multiplicative_modifiers) {
+			if ((this.actor as unknown as CharacterResolver).settings.use_multiplicative_modifiers) {
 				if (baseEnh === levelEnh && baseLim === levelLim) {
 					modifiedBasePoints = TraitGURPS.modifyPoints(
 						TraitGURPS.modifyPoints(modifiedBasePoints + leveledPoints, baseEnh),
@@ -187,7 +185,7 @@ export class TraitGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS
 				.map(item => {
 					return [item.id!, item]
 				}),
-		) as Collection<TraitModifierGURPS>
+		) as Collection<TraitModifierGURPS | TraitModifierContainerGURPS>
 	}
 
 	get deepModifiers(): Collection<TraitModifierGURPS> {
@@ -208,6 +206,7 @@ export class TraitGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS
 
 	calculatePoints(): [number, number, number, number] {
 		if (!this.enabled) return [0, 0, 0, 0]
+		// eslint-disable-next-line prefer-const
 		let [ad, disad, race, quirk] = [0, 0, 0, 0]
 		const pts = this.adjustedPoints()
 		if (pts === -1) quirk += pts
@@ -226,5 +225,15 @@ export class TraitGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS
 
 	static calculateModifierPoints(points: number, modifier: number): number {
 		return (points * modifier) / 100
+	}
+
+	get studyHours(): number {
+		return resolveStudyHours(this.system.study ?? [])
+	}
+
+	get studyHoursNeeded(): string {
+		const system = this.system
+		if (system.study_hours_needed === "") return study.Level.Standard
+		return system.study_hours_needed
 	}
 }

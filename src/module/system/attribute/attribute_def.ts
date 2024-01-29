@@ -1,8 +1,11 @@
-import { PoolThreshold } from "./pool_threshold"
-import { CharacterResolver, evaluateToNumber, sanitizeId } from "@util"
-import { AttributeDefObj, reserved_ids } from "./data"
-import { attribute, progression } from "@util/enum"
-import { Mook } from "@module/mook"
+import { attribute } from "@util/enum/attribute.ts"
+import { PoolThreshold } from "./pool_threshold.ts"
+import { AttributeDefObj, reserved_ids } from "./data.ts"
+import { sanitizeId } from "@util/misc.ts"
+import { CharacterResolver } from "@util/resolvers.ts"
+import { evaluateToNumber } from "@util/eval.ts"
+import { progression } from "@util/enum/progression.ts"
+import { Mook } from "@sytem/mook/document.ts"
 
 export class AttributeDef {
 	private def_id!: string

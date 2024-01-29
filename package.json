@@ -58,7 +58,6 @@
 		"@types/prompts": "^2.4.9",
 		"@types/sortablejs": "^1.15.7",
 		"@types/tooltipster": "^0.0.35",
-		"@types/uuid": "^9.0.7",
 		"@types/yaireo__tagify": "4.17.0",
 		"@typescript-eslint/eslint-plugin": "^6.19.1",
 		"@typescript-eslint/parser": "^6.19.1",
@@ -70,6 +69,7 @@
 		"eslint-plugin-json": "^3.1.0",
 		"eslint-plugin-prettier": "5.1.2",
 		"fs-extra": "^11.2.0",
+		"fuse.js": "^7.0.0",
 		"gsap": "3.11.5",
 		"handlebars": "4.7.7",
 		"jest": "^29.7.0",
@@ -87,6 +87,8 @@
 		"tsconfig-paths": "^4.2.0",
 		"tsx": "^4.7.0",
 		"typescript": "^5.3.3",
+		"uuid": "^9.0.1",
+		"uuidv4": "^6.2.13",
 		"vite": "^5.0.11",
 		"vite-plugin-checker": "^0.6.2",
 		"vite-plugin-static-copy": "^1.0.0",
@@ -102,7 +104,6 @@
 		"minisearch": "^6.3.0",
 		"nouislider": "^15.7.1",
 		"remeda": "^1.33.0",
-		"sortablejs": "^1.15.1",
-		"uuid": "^9.0.1"
+		"sortablejs": "^1.15.1"
 	}
 }

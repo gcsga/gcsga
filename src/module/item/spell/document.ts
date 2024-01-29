@@ -16,7 +16,7 @@ export interface SpellGURPS<TParent extends ActorGURPS> extends ItemGCS<TParent>
 	system: SpellSystemData
 }
 
-export class SpellGURPS<TParent extends ActorGURPS = ActorGURPS> extends ItemGCS<TParent> {
+export class SpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	declare level: SkillLevel
 	// level: SkillLevel = { level: 0, relative_level: 0, tooltip: new TooltipGURPS() }
 
