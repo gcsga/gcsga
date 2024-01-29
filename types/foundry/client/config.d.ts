@@ -72,7 +72,7 @@ declare global {
 				allowedContents: Record<string, string[]>
 			}
 			Feature: {
-				classes: Record<string, Feature.ConstructorOf>
+				classes: Record<FeatureType, Feature.ConstructorOf>
 			}
 			Prereq: {
 				classes: Record<string, Prereq.ConstructorOf>

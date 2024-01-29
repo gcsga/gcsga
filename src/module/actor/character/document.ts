@@ -65,6 +65,7 @@ import {
 import {
 	AttributeBonus,
 	ConditionalModifierBonus,
+	ContainedWeightReduction,
 	CostReduction,
 	DRBonus,
 	MoveBonusType,
@@ -785,7 +786,7 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 
 	// Flat list of all hit locations
 	get HitLocations(): HitLocation[] {
-		const recurseLocations = function(table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
+		const recurseLocations = function (table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
 			table.locations.forEach(e => {
 				locations.push(e)
 				if (e.subTable) locations = recurseLocations(e.subTable, locations)
@@ -1337,9 +1338,11 @@ export class CharacterGURPS extends BaseActorGURPS<CharacterSource> {
 	}
 
 	processFeature(owner: Stringer, subOwner: Stringer | undefined, f: Feature, levels: number) {
-		f.owner = owner
-		f.subOwner = subOwner
-		f.setLevel(levels)
+		if (!(f instanceof ContainedWeightReduction)) {
+			f.owner = owner
+			f.subOwner = subOwner
+			f.setLevel(levels)
+		}
 
 		if (f instanceof AttributeBonus) return this.features.attributeBonuses.push(f)
 		else if (f instanceof CostReduction) return this.features.costReductions.push(f)

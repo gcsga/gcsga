@@ -1,24 +1,25 @@
 import { Weight, WeightUnits } from "@util"
-import { BonusOwner } from "./bonus_owner"
 import { Int } from "@util/fxp"
 import { feature } from "@util/enum"
 
 export interface ContainedWeightReductionObj {
+	type: feature.Type
 	reduction: string
 }
 
-export class ContainedWeightReduction extends BonusOwner {
+export class ContainedWeightReduction {
 	type = feature.Type.ContainedWeightReduction
 
 	reduction: string
 
+	effective: boolean = false
+
 	constructor() {
-		super()
 		this.reduction = "0%"
 	}
 
 	get isPercentageReduction(): boolean {
-		return this.reduction.endsWith("%")
+		return this.reduction?.endsWith("%")
 	}
 
 	get percentageReduction(): number {
@@ -29,6 +30,13 @@ export class ContainedWeightReduction extends BonusOwner {
 	fixedReduction(defUnits: WeightUnits): number {
 		if (this.isPercentageReduction) return 0
 		return Weight.fromString(this.reduction, defUnits)
+	}
+
+	toObject(): ContainedWeightReductionObj {
+		return {
+			type: this.type,
+			reduction: this.reduction,
+		}
 	}
 
 	static fromObject(data: ContainedWeightReductionObj): ContainedWeightReduction {

@@ -12,7 +12,7 @@ import { ItemGCS } from "@item/gcs"
 import { CharacterGURPS } from "@actor"
 import { WeaponStrength } from "./weapon_strength"
 import { display, feature, skillsel, wsel, wswitch } from "@util/enum"
-import { SkillBonus, WeaponBonus } from "@feature"
+import { ContainedWeightReduction, SkillBonus, WeaponBonus } from "@feature"
 import { StringBuilder } from "@util/string_builder"
 
 export abstract class BaseWeaponGURPS<
@@ -315,7 +315,7 @@ export abstract class BaseWeaponGURPS<
 				let bonus: Bonus
 				for (const f of mod.features) {
 					bonus = f
-					bonus.subOwner = mod
+					if (!(bonus instanceof ContainedWeightReduction)) bonus.subOwner = mod
 					this._extractWeaponBonus(f, bonusSet, allowed, Int.from(dieCount), tooltip)
 				}
 			})
