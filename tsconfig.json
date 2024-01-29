@@ -27,8 +27,8 @@
 			"@scripts/*": ["src/scripts/*"],
 			"@util": ["src/util"],
 			"@util/*": ["src/util/*"],
-			"@lang/*": ["src/lang/*"],
-		},
+			"@lang/*": ["src/lang/*"]
+		}
 	},
-	"include": ["src"],
+	"include": ["src"]
 }

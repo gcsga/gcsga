@@ -276,11 +276,13 @@ class DamageCalculator implements IDamageCalculator {
 
 	// --- Damage Type ---
 	get damageType(): DamageType {
-		return this.overrides.damageType ?? this.damageRoll.damageType
+		return this.overrides.damageType ?? this.damageRoll?.damageType ?? DamageTypes.cr
 	}
 
 	get damageTypeKey(): string {
-		return this.overrides.damageType ? this.overrides.damageType.id : this.damageRoll.damageType.id
+		return this.overrides.damageType
+			? this.overrides.damageType.id
+			: this.damageRoll.damageType?.id ?? DamageTypes.cr
 	}
 
 	set damageTypeOverride(key: string | undefined) {
@@ -360,6 +362,14 @@ class DamageCalculator implements IDamageCalculator {
 
 		const armorDivisors = [0, 100, 10, 5, 3, 2, 1]
 		let index = armorDivisors.indexOf(ad)
+
+		if (index === -1) {
+			// Not a standard armor divisor. Return the value unmodified by Hardened DR and explanation.
+			return {
+				value: ad,
+				explanation: this.format("gurps.dmgcalc.description.armor_divisor", { divisor: ad }),
+			}
+		}
 
 		// B47: Each level of Hardened reduces the armor divisor of an attack by one step
 		index += hardenedDRLevel
