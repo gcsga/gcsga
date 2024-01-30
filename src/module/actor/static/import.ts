@@ -1,25 +1,28 @@
-import { HitLocationTable } from "@actor/character/hit_location"
-import { CharacterImportedData } from "@actor/character/import"
-import { EquipmentContainerSystemData, EquipmentSystemData } from "@item"
-import { TraitSystemData } from "@item/trait/data"
-import { TraitContainerSystemData } from "@item/trait_container/data"
-import { SYSTEM_NAME, SETTINGS, ItemType } from "@module/data"
-import { LocalizeGURPS, fxp, Static } from "@util"
-import { StaticCharacterGURPS } from "."
+import { CharacterImportedData } from "@actor/character/import.ts"
+import { StaticCharacterGURPS } from "./document.ts"
+import { StaticEncumbrance, StaticEquipment, StaticSkill, StaticSpell, StaticTrait } from "./components.ts"
+import { HitLocationTable } from "@actor/character/hit_location.ts"
+import { LocalizeGURPS, Static } from "@util"
+import { StaticCharacterSystemData, StaticCharacterTraits } from "./data.ts"
+import { SETTINGS, SYSTEM_NAME, gid } from "@module/data/misc.ts"
 import {
-	StaticTrait,
-	StaticEquipment,
-	StaticMelee,
-	StaticModifier,
-	StaticNote,
-	StaticRanged,
-	StaticReaction,
-	StaticSkill,
-	StaticSpell,
-	StaticEncumbrance,
-} from "./components"
-import { StaticCharacterSystemData, StaticCharacterTraits } from "./data"
-import { StaticHitLocation, StaticHitLocationDictionary, StaticHitLocationRolls } from "./hit_location"
+	EquipmentContainerSystemData,
+	EquipmentSystemData,
+	ItemGCSSystemData,
+	SkillContainerSystemData,
+	SkillSystemData,
+	SpellContainerSystemData,
+	TechniqueSystemData,
+	TraitContainerSystemData,
+	TraitGURPS,
+	TraitSystemData,
+} from "@item"
+import { ItemType } from "@item/types.ts"
+import { USER_PERMISSIONS } from "types/foundry/common/constants.js"
+import { feature } from "@util/enum/feature.ts"
+import { AttributeBonus, AttributeBonusObj } from "@feature"
+import { SpellSystemData } from "@item/spell/data.ts"
+import { Int } from "@util/fxp.ts"
 
 export class StaticCharacterImporter {
 	document: StaticCharacterGURPS
@@ -28,15 +31,21 @@ export class StaticCharacterImporter {
 		this.document = document
 	}
 
-	static import(document: StaticCharacterGURPS, file: { text: string; name: string; path: string }) {
+	static import(document: StaticCharacterGURPS, file: { text: string; name: string; path: string }): void {
 		// If (file.name.includes(".xml")) return StaticGCAImporter.import(document, file)
 		const importer = new StaticCharacterImporter(document)
 		importer._import(document, file)
 	}
 
-	async _import(document: StaticCharacterGURPS, file: { text: string; name: string; path: string }) {
+	async _import(
+		document: StaticCharacterGURPS,
+		file: { text: string; name: string; path: string },
+	): Promise<boolean | void> {
 		const json = file.text
-		let r: CharacterImportedData & { advantages?: any[]; settings: { hit_locations?: HitLocationTable } }
+		let r: CharacterImportedData & {
+			advantages?: StaticTrait[]
+			settings: { hit_locations?: HitLocationTable; body_type: string }
+		}
 		const errorMessages: string[] = []
 		try {
 			r = JSON.parse(json)
@@ -78,8 +87,8 @@ export class StaticCharacterImporter {
 			}
 			commit = { ...commit, ...this.importReactions(r.traits || r.advantages, r.skills, r.equipment) }
 			commit = { ...commit, ...this.importCombat(r.traits || r.advantages, r.skills, r.spells, r.equipment) }
-		} catch (err: any) {
-			console.error(err.stack)
+		} catch (err) {
+			console.error((err as Error).stack)
 			errorMessages.push(
 				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.error.import.generic, {
 					name: r.profile.name,
@@ -113,13 +122,14 @@ export class StaticCharacterImporter {
 		atts: CharacterImportedData["attributes"],
 		eqp: CharacterImportedData["equipment"],
 		calc: CharacterImportedData["calc"],
-	) {
-		if (!atts) return
-		const data: any = this.document.system
-		const att: any = data.attributes
+	): Promise<Record<string, unknown>> {
+		if (!atts) return {}
+		const data: StaticCharacterSystemData = this.document.system
+		const att: StaticCharacterSystemData["attributes"] = data.attributes ?? {}
 		if (!att.QN) {
-			// Upgrade older actors to include Q
+			// @ts-expect-error old types, won't update
 			att.QN = {}
+			// @ts-expect-error old types, won't update
 			data.QP = {}
 		}
 
@@ -206,7 +216,7 @@ export class StaticCharacterImporter {
 
 		data.thrust = calc?.thrust
 		data.swing = calc?.swing
-		data.currentmove = data.basicmove.value
+		data.currentmove = parseInt(data.basicmove.value)
 		data.frightcheck = atts.find(e => e.attr_id === "fright_check")?.calc?.value || 0
 
 		data.hearing = atts.find(e => e.attr_id === "hearing")?.calc?.value || 0
@@ -237,7 +247,7 @@ export class StaticCharacterImporter {
 				cm = e.move
 				cd = e.dodge
 			}
-			Static.put(es, e, index++)
+			Static.put(es, e, (index += 1))
 		}
 
 		return {
@@ -263,7 +273,7 @@ export class StaticCharacterImporter {
 		}
 	}
 
-	calcTotalCarried(eqp: (EquipmentSystemData | EquipmentContainerSystemData)[]) {
+	calcTotalCarried(eqp: (EquipmentSystemData | EquipmentContainerSystemData)[]): number {
 		let t = 0
 		if (!eqp) return t
 		for (const i of eqp) {
@@ -276,8 +286,8 @@ export class StaticCharacterImporter {
 		return t
 	}
 
-	async importMisc(p: Partial<StaticCharacterTraits> | any, cd: string, md: string) {
-		if (!p) return
+	async importMisc(p: Partial<StaticCharacterTraits>, cd: string, md: string): Promise<Record<string, unknown>> {
+		if (!p) return {}
 		const ts: Partial<StaticCharacterTraits> = {}
 		ts.race = ""
 		ts.height = p.height || ""
@@ -299,13 +309,13 @@ export class StaticCharacterImporter {
 		ts.hair = p.hair || ""
 		ts.skin = p.skin || ""
 
-		const r: any = {
+		const r: Record<string, unknown> = {
 			"system.-=traits": null,
 			"system.traits": ts,
 		}
 
 		if (p.portrait) {
-			if (game.user?.hasPermission("FILES_UPLOAD")) {
+			if (game.user?.hasPermission(USER_PERMISSIONS.FILES_UPLOAD)) {
 				r.img = `data:image/png;base64,${p.portrait}.png`
 			} else {
 				console.error(LocalizeGURPS.translations.gurps.error.import.portrait_permissions)
@@ -316,24 +326,34 @@ export class StaticCharacterImporter {
 	}
 
 	importSize(
-		commit: any,
+		commit: Record<string, unknown | Record<string, unknown>>,
 		profile: CharacterImportedData["profile"],
 		ads: CharacterImportedData["traits"],
 		skills: CharacterImportedData["skills"],
 		equipment: CharacterImportedData["equipment"],
-	) {
-		const ts = commit["system.traits"]
+	): Record<string, unknown> {
+		const ts = commit["system.traits"] as Record<string, StaticTrait>
 		let final = profile.SM || 0
 		const temp = [...(ads || []), ...(skills || []), ...(equipment || [])]
-		let all: any[] = []
+		let all: ItemGCSSystemData[] = []
 		for (const i of temp) {
 			all = all.concat(this.recursiveGet(i))
 		}
 		for (const i of all) {
 			if (i.features?.length)
 				for (const f of i.features) {
-					if (f.type === "attribute_bonus" && f.attribute === "sm")
-						final += f.amount * (i.levels ? parseFloat(i.levels) : 1)
+					if (
+						f.type === feature.Type.AttributeBonus &&
+						(f as AttributeBonusObj).attribute === gid.SizeModifier
+					) {
+						const att_bonus = AttributeBonus.fromObject(f as AttributeBonusObj)
+						if ([ItemType.Trait].includes(i.type)) {
+							const t = new TraitGURPS(i)
+							final += att_bonus.amount * t.levels
+						} else {
+							final += att_bonus.amount
+						}
+					}
 				}
 		}
 		ts.sizemod = final
@@ -343,8 +363,8 @@ export class StaticCharacterImporter {
 		}
 	}
 
-	importTraits(ads: any[]) {
-		let temp: any[] = []
+	importTraits(ads: (TraitSystemData | TraitContainerSystemData)[]): Record<string, unknown> {
+		let temp: StaticTrait[] = []
 		if (ads)
 			for (const i of ads) {
 				temp = temp.concat(this.importTrait(i, ""))
@@ -355,7 +375,8 @@ export class StaticCharacterImporter {
 		}
 	}
 
-	importTrait(i: TraitSystemData | TraitContainerSystemData | any, p: string) {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	importTrait(i: TraitSystemData | TraitContainerSystemData | any, p: string): StaticTrait[] {
 		const a = new StaticTrait()
 		a.name = i.name + (i.levels ? ` ${i.levels.toString()}` : "") || "Trait"
 		a.points = i.calc?.points
@@ -379,6 +400,7 @@ export class StaticCharacterImporter {
 		const old = this.document._findElementIn("ads", a.uuid)
 		this.document._migrateOtfsAndNotes(old, a, i.vtt_notes)
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		let ch: any[] = []
 		if (i.children?.length) {
 			for (const j of i.children) ch = ch.concat(this.importTrait(j, i.id))
@@ -386,9 +408,9 @@ export class StaticCharacterImporter {
 		return [a].concat(ch)
 	}
 
-	importSkills(sks: any[]) {
-		if (!sks) return
-		let temp: any[] = []
+	importSkills(sks: (SkillSystemData | TechniqueSystemData)[]): Record<string, unknown> {
+		if (!sks) return {}
+		let temp: StaticSkill[] = []
 		for (const i of sks) {
 			temp = temp.concat(this.importSk(i, ""))
 		}
@@ -398,7 +420,8 @@ export class StaticCharacterImporter {
 		}
 	}
 
-	importSk(i: any, p: string): any {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	importSk(i: SkillSystemData | TechniqueSystemData | SkillContainerSystemData | any, p: string): StaticSkill[] {
 		let name =
 			i.name + (i.tech_level ? `/TL${i.tech_level}` : "") + (i.specialization ? ` (${i.specialization})` : "") ||
 			"Skill"
@@ -428,6 +451,7 @@ export class StaticCharacterImporter {
 		const old = this.document._findElementIn("skills", s.uuid)
 		this.document._migrateOtfsAndNotes(old, s, i.vtt_notes)
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		let ch: any[] = []
 		if (i.children?.length) {
 			for (const j of i.children) ch = ch.concat(this.importSk(j, i.id))
@@ -435,9 +459,9 @@ export class StaticCharacterImporter {
 		return [s].concat(ch)
 	}
 
-	importSpells(sps: any[]) {
-		if (!sps) return
-		let temp: any[] = []
+	importSpells(sps: SpellSystemData[]): Record<string, unknown> {
+		if (!sps) return {}
+		let temp: StaticSpell[] = []
 		for (const i of sps) {
 			temp = temp.concat(this.importSp(i, ""))
 		}
@@ -447,7 +471,8 @@ export class StaticCharacterImporter {
 		}
 	}
 
-	importSp(i: any, p: string): any {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	importSp(i: SpellSystemData | SpellContainerSystemData | any, p: string): StaticSpell[] {
 		const s = new StaticSpell()
 		s.name = i.name || "Spell"
 		s.uuid = i.id
@@ -455,14 +480,14 @@ export class StaticCharacterImporter {
 		s.pageref = i.reference || ""
 		if (["spell", "ritual_magic_spell"].includes(i.type)) {
 			s.class = i.spell_class || ""
-			s.college = i.college || ""
+			s.college = i.college.join(", ") || ""
 			s.cost = i.casting_cost || ""
 			s.maintain = i.maintenance_cost || ""
 			s.difficulty = i.difficulty.toUpperCase()
-			s.relativelevel = i.calc?.rsl
+			s.relativelevel = i.calc?.rsl || ""
 			s.notes = i.notes || ""
 			s.duration = i.duration || ""
-			s.points = i.points || ""
+			s.points = i.points
 			s.casttime = i.casting_time || ""
 			s.import = i.calc?.level || 0
 		}
@@ -470,6 +495,7 @@ export class StaticCharacterImporter {
 		const old = this.document._findElementIn("spells", s.uuid)
 		this.document._migrateOtfsAndNotes(old, s, i.vtt_notes)
 
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		let ch: any[] = []
 		if (i.children?.length) {
 			for (const j of i.children) ch = ch.concat(this.importSp(j, i.id))
@@ -477,9 +503,12 @@ export class StaticCharacterImporter {
 		return [s].concat(ch)
 	}
 
-	importEquipment(eq: any[], oeq: any[]) {
-		if (!eq && !oeq) return
-		let temp: any[] = []
+	importEquipment(
+		eq: (EquipmentSystemData | EquipmentContainerSystemData)[],
+		oeq: (EquipmentSystemData | EquipmentContainerSystemData)[],
+	): Record<string, unknown> {
+		if (!eq && !oeq) return {}
+		let temp: StaticEquipment[] = []
 		if (eq)
 			for (const i of eq) {
 				temp = [...temp, ...this.importEq(i, "", true)]
@@ -522,8 +551,8 @@ export class StaticCharacterImporter {
 		temp.forEach(eqt => {
 			StaticEquipment.calc(eqt)
 			if (!eqt.parentuuid) {
-				if (eqt.carried) Static.put(equipment.carried, eqt, cindex++)
-				else Static.put(equipment.other, eqt, oindex++)
+				if (eqt.carried) Static.put(equipment.carried, eqt, (cindex += 1))
+				else Static.put(equipment.other, eqt, (oindex += 1))
 			}
 		})
 
@@ -533,16 +562,16 @@ export class StaticCharacterImporter {
 		}
 	}
 
-	importEq(i: any, p: string, carried: boolean): any {
+	importEq(i: EquipmentSystemData | EquipmentContainerSystemData, p: string, carried: boolean): StaticEquipment[] {
 		const e = new StaticEquipment()
 		e.name = i.description || "Equipment"
-		e.count = i.type === "equipment_container" ? "1" : i.quantity || "0"
-		e.cost = fxp.Int.from(parseFloat(i.calc.extended_value) ?? 0) / (i.quantity || 1, 4)
+		e.count = i.quantity
+		e.cost = Int.from(parseFloat(i.calc?.extended_value ?? "0") ?? 0) / (i.quantity || 1, 4)
 		e.carried = carried
 		e.equipped = i.equipped
 		e.techlevel = i.tech_level || ""
 		e.legalityclass = i.legality_class || "4"
-		e.categories = i.categories?.join(", ") || ""
+		e.categories = i.tags?.join(", ") || ""
 		e.uses = i.uses || 0
 		e.maxuses = i.max_uses || 0
 		e.uuid = i.id

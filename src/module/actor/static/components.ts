@@ -1,7 +1,7 @@
-import { ItemType } from "@module/data"
-import { LocalizeGURPS, Static, fxp } from "@util"
-import { convertRollStringToArrayOfInt } from "@util/static"
-import { StaticCharacterGURPS } from "."
+import { LocalizeGURPS, Static } from "@util"
+import { StaticCharacterGURPS } from "./document.ts"
+import { Int } from "@util/fxp.ts"
+import { ItemType } from "@item/types.ts"
 
 export class _BaseComponent {
 	notes: string
@@ -26,7 +26,7 @@ export class _BaseComponent {
 		this.parentuuid = ""
 	}
 
-	setPageRef(r: string) {
+	setPageRef(r: string): void {
 		this.pageref = r
 		if (r && r.match(/https?:\/\//i)) {
 			this.pageref = "*Link"
@@ -34,7 +34,7 @@ export class _BaseComponent {
 		}
 	}
 
-	setNotes(n: string) {
+	setNotes(n: string): void {
 		if (n) {
 			const v = Static.extractP(n)
 			const k = "Page Ref: "
@@ -60,7 +60,7 @@ export class NamedComponent extends _BaseComponent {
 		this.setName(name)
 	}
 
-	setName(name?: string) {
+	setName(name?: string): void {
 		if (name) {
 			const k = "Page Ref: "
 			const i = name.indexOf(k)
@@ -98,7 +98,7 @@ export class LeveledComponent extends NamedCostComponent {
 		Object.assign(LeveledComponent.prototype, _AnimationMixin)
 	}
 
-	get animationData() {
+	get animationData(): LeveledComponent {
 		return this
 	}
 }
@@ -151,7 +151,7 @@ export class StaticSpell extends LeveledComponent {
 export class StaticTrait extends NamedCostComponent {
 	userdesc: string
 
-	note: string
+	// note: string
 
 	spoken?: string
 
@@ -186,7 +186,7 @@ export class StaticAttack extends NamedComponent {
 		Object.assign(StaticAttack.prototype, _AnimationMixin)
 	}
 
-	get animationData() {
+	get animationData(): StaticAttack {
 		return this
 	}
 }
@@ -283,21 +283,17 @@ export class StaticEquipment extends NamedComponent {
 
 	weightsum: number
 
-	uses: string
+	uses: number
 
-	maxuses: string
+	maxuses: number
 
 	ignoreImportQty = false
 
-	uuid: string
-
-	parentuuid: string
-
 	itemid: string
 
-	collapsed: { [key: string]: any }
+	collapsed: { [key: string]: StaticEquipment }
 
-	contains: { [key: string]: any }
+	override contains: { [key: string]: StaticEquipment }
 
 	globalid?: string
 
@@ -317,8 +313,8 @@ export class StaticEquipment extends NamedComponent {
 		this.categories = ""
 		this.costsum = 0
 		this.weightsum = 0
-		this.uses = ""
-		this.maxuses = ""
+		this.uses = 0
+		this.maxuses = 0
 		this.ignoreImportQty = false
 		this.uuid = ""
 		this.parentuuid = ""
@@ -327,11 +323,11 @@ export class StaticEquipment extends NamedComponent {
 		this.contains = {}
 	}
 
-	static calc(eqt: StaticEquipment) {
+	static calc(eqt: StaticEquipment): void {
 		StaticEquipment.calcUpdate(null, eqt, "")
 	}
 
-	static async calcUpdate(actor: StaticCharacterGURPS | null, eqt: StaticEquipment, objkey: string) {
+	static async calcUpdate(actor: StaticCharacterGURPS | null, eqt: StaticEquipment, objkey: string): Promise<void> {
 		if (!eqt) return
 		const num = (s: number | string) => {
 			return Number(s) || 0
@@ -341,8 +337,8 @@ export class StaticEquipment extends NamedComponent {
 		}
 
 		eqt.count = cln(eqt.count)
-		eqt.cost = fxp.Int.from(cln(eqt.cost), 4)
-		eqt.weight = fxp.Int.from(cln(eqt.weight), 4)
+		eqt.cost = Int.from(cln(eqt.cost), 4)
+		eqt.weight = Int.from(cln(eqt.weight), 4)
 		let cs = eqt.count * eqt.cost
 		let ws = eqt.count * eqt.weight
 		if (eqt.contains) {
@@ -363,17 +359,17 @@ export class StaticEquipment extends NamedComponent {
 		}
 		if (actor)
 			await actor.update({
-				[`${objkey}.costsum`]: fxp.Int.from(cs, 4),
-				[`${objkey}.weightsum`]: fxp.Int.from(ws, 4),
+				[`${objkey}.costsum`]: Int.from(cs, 4),
+				[`${objkey}.weightsum`]: Int.from(ws, 4),
 			})
 		// The local values 'should' be updated... but I need to force them anyway
-		eqt.costsum = fxp.Int.from(cs, 4)
-		eqt.weightsum = fxp.Int.from(ws, 4)
+		eqt.costsum = Int.from(cs, 4)
+		eqt.weightsum = Int.from(ws, 4)
 	}
 }
 
 export class StaticNote extends _BaseComponent {
-	notes: string
+	// notes: string
 
 	save: boolean
 
@@ -460,7 +456,7 @@ export class StaticHitLocationEntry {
 
 	split: { [key: string]: number }
 
-	static getLargeAreaDR(entries: StaticHitLocationEntry[]) {
+	static getLargeAreaDR(entries: StaticHitLocationEntry[]): number {
 		let lowestDR = Number.POSITIVE_INFINITY
 		let torsoDR = 0
 
@@ -472,7 +468,7 @@ export class StaticHitLocationEntry {
 		return Math.ceil((lowestDR + torsoDR) / 2)
 	}
 
-	static findLocation(entries: StaticHitLocationEntry[], where: string) {
+	static findLocation(entries: StaticHitLocationEntry[], where: string): StaticHitLocationEntry | undefined {
 		return entries.find(it => it.where === where)
 	}
 
@@ -481,7 +477,7 @@ export class StaticHitLocationEntry {
 		this._dr = dr
 		this._damageType = null
 		this.rollText = rollText
-		this.roll = convertRollStringToArrayOfInt(rollText)
+		this.roll = Static.convertRollStringToArrayOfInt(rollText)
 		this.split = split
 	}
 

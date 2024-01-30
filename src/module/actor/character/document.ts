@@ -39,13 +39,11 @@ import { getCurrentTime, urlToBase64 } from "@util/misc.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { SETTINGS_TEMP } from "@module/settings/index.ts"
 import { AttributeDefObj, AttributeObj, ThresholdOp } from "@sytem/attribute/data.ts"
-import { duplicate, getProperty, hasProperty, mergeObject, setProperty } from "types/foundry/common/utils/helpers.js"
 import { ConditionID } from "@item/condition/data.ts"
 import { Weight, WeightUnits } from "@util/weight.ts"
 import { LengthUnits } from "@util/length.ts"
 import { Evaluator } from "@util/eval.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
-import { Int } from "@util/fxp.ts"
 import { ModifierChoiceSheet } from "@item/gcs/mod_sheet.ts"
 import { ActorFlags } from "@actor/base/data.ts"
 import { SheetSettings } from "@module/data/sheet_settings.ts"
@@ -58,7 +56,6 @@ import {
 	StringCriteria,
 	damageProgression,
 	equalFold,
-	fxp,
 } from "@util/index.ts"
 import { stlimit } from "@util/enum/stlimit.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
@@ -96,6 +93,8 @@ import { CharacterImporter } from "./import.ts"
 import { ActorType } from "@actor"
 import { ItemType } from "@item/types.ts"
 import { ItemSourceGURPS } from "@item/data/index.ts"
+import { CharacterSheetGURPS } from "./sheet.ts"
+import { Int } from "@util/fxp.ts"
 
 export interface CharacterGURPS<TParent extends TokenDocumentGURPS | null> extends ActorGURPS<TParent> {
 	type: ActorType.Character
@@ -125,6 +124,10 @@ export class CharacterGURPS<
 	declare skillResolverExclusions: Map<string, boolean>
 
 	private _processingThresholds = false
+
+	override get sheet(): CharacterSheetGURPS {
+		return super.sheet as CharacterSheetGURPS
+	}
 
 	// attributes: Map<string, Attribute> = new Map()
 	//
@@ -238,50 +241,41 @@ export class CharacterGURPS<
 		options: DocumentModificationContext<TParent>,
 		user: foundry.documents.BaseUser,
 	): Promise<void> {
-		changed = mergeObject(changed, {
+		changed = fu.mergeObject(changed, {
 			...this._updateAttributes(changed),
 			...this._checkImport(changed),
 		})
 		return super._preUpdate(changed, options, user)
 	}
 
-	// override update(
-	// 	data?: DeepPartial<ActorDataConstructorData | (ActorDataConstructorData & Record<string, unknown>)>,
-	// 	context?: DocumentModificationContext & fu.MergeObjectOptions & { noPrepare?: boolean }
-	// ): Promise<this | undefined> {
-	// 	if (context?.noPrepare) this.noPrepare = true
-	// 	// this.updateAttributes(data)
-	// 	// this.checkImport(data)
-	// 	return super.update(data, context)
-	// }
-
 	private _checkImport(data: DeepPartial<this["_source"]>): DeepPartial<CharacterSource> {
-		if (hasProperty(data, "system.import")) return {}
+		if (fu.hasProperty(data, "system.import")) return {}
 		if (Object.keys(data).some(e => e.includes("ownership"))) return {}
 		const additionalData: DeepPartial<CharacterSource> = {}
-		setProperty(additionalData, "system.modified_date", new Date().toISOString())
+		fu.setProperty(additionalData, "system.modified_date", new Date().toISOString())
 		return additionalData
 	}
 
 	private _updateAttributes(data: DeepPartial<this["_source"]>): DeepPartial<this["_source"]> {
 		if (Object.keys(data).some(e => e.includes("ownership"))) return data
 		const additionalData: DeepPartial<CharacterSource> = {}
-		if (this.system.attributes.length === 0) setProperty(additionalData, "system.attributes", this.newAttributes())
-		if (hasProperty(data, "system.setings.attributes")) {
-			const atts = getProperty(data, "system.settings.attributes") as AttributeDefObj[]
-			setProperty(additionalData, "system.attributes", this.newAttributes(atts, this.system.attributes))
+		if (this.system.attributes.length === 0)
+			fu.setProperty(additionalData, "system.attributes", this.newAttributes())
+		if (fu.hasProperty(data, "system.setings.attributes")) {
+			const atts = fu.getProperty(data, "system.settings.attributes") as AttributeDefObj[]
+			fu.setProperty(additionalData, "system.attributes", this.newAttributes(atts, this.system.attributes))
 		}
-		if (hasProperty(data, "system.setings.resource_trackers")) {
-			const atts = getProperty(data, "system.settings.resource_trackers") as ResourceTrackerDefObj[]
-			setProperty(
+		if (fu.hasProperty(data, "system.setings.resource_trackers")) {
+			const atts = fu.getProperty(data, "system.settings.resource_trackers") as ResourceTrackerDefObj[]
+			fu.setProperty(
 				additionalData,
 				"system.resource_trackers",
 				this.newTrackers(atts, this.system.resource_trackers),
 			)
 		}
-		if (hasProperty(data, "system.setings.move_types")) {
-			const atts = getProperty(data, "system.settings.move_types") as MoveTypeDefObj[]
-			setProperty(additionalData, "system.move_types", this.newMoveTypes(atts, this.system.move_types))
+		if (fu.hasProperty(data, "system.setings.move_types")) {
+			const atts = fu.getProperty(data, "system.settings.move_types") as MoveTypeDefObj[]
+			fu.setProperty(additionalData, "system.move_types", this.newMoveTypes(atts, this.system.move_types))
 		}
 		return additionalData
 	}
@@ -319,7 +313,7 @@ export class CharacterGURPS<
 	// 	this.system.calc = v
 	// }
 
-	embeddedEval(s: string): string {
+	override embeddedEval(s: string): string {
 		const ev = new Evaluator({ resolver: this })
 		const exp = s.slice(2, s.length - 2)
 		const result = ev.evaluate(exp)
@@ -582,27 +576,27 @@ export class CharacterGURPS<
 	}
 
 	oneHandedLift(bl: number): number {
-		return fxp.Int.from(bl * 2, 4)
+		return Int.from(bl * 2, 4)
 	}
 
 	twoHandedLift(bl: number): number {
-		return fxp.Int.from(bl * 8, 4)
+		return Int.from(bl * 8, 4)
 	}
 
 	shove(bl: number): number {
-		return fxp.Int.from(bl * 12, 4)
+		return Int.from(bl * 12, 4)
 	}
 
 	runningShove(bl: number): number {
-		return fxp.Int.from(bl * 24, 4)
+		return Int.from(bl * 24, 4)
 	}
 
 	carryOnBack(bl: number): number {
-		return fxp.Int.from(bl * 15, 4)
+		return Int.from(bl * 15, 4)
 	}
 
 	shiftSlightly(bl: number): number {
-		return fxp.Int.from(bl * 50, 4)
+		return Int.from(bl * 50, 4)
 	}
 
 	get fastWealthCarried(): string {
@@ -628,7 +622,7 @@ export class CharacterGURPS<
 			if (e.container === this) return n + e.extendedWeight(forSkills, this.system.settings.default_weight_units)
 			return n
 		}, 0)
-		return fxp.Int.from(total, 4)
+		return Int.from(total, 4)
 	}
 
 	wealthCarried(): number {
@@ -636,7 +630,7 @@ export class CharacterGURPS<
 		for (const e of this.carriedEquipment) {
 			if (e.container === this) value += e.extendedValue
 		}
-		return fxp.Int.from(value, 4)
+		return Int.from(value, 4)
 	}
 
 	get fastWealthNotCarried(): string {
@@ -645,10 +639,10 @@ export class CharacterGURPS<
 
 	wealthNotCarried(): number {
 		let value = 0
-		this.other_equipment.forEach(e => {
+		this.otherEquipment.forEach(e => {
 			if (e.container === this) value += e.extendedValue
 		})
-		return fxp.Int.from(value, 4)
+		return Int.from(value, 4)
 	}
 
 	override get strengthOrZero(): number {
@@ -692,31 +686,31 @@ export class CharacterGURPS<
 		const ae: Encumbrance[] = [
 			{
 				level: 0,
-				maximum_carry: fxp.Int.from(bl, 4),
+				maximum_carry: Int.from(bl, 4),
 				penalty: 0,
 				name: LocalizeGURPS.translations.gurps.character.encumbrance[0],
 			},
 			{
 				level: 1,
-				maximum_carry: fxp.Int.from(bl * 2, 4),
+				maximum_carry: Int.from(bl * 2, 4),
 				penalty: -1,
 				name: LocalizeGURPS.translations.gurps.character.encumbrance[1],
 			},
 			{
 				level: 2,
-				maximum_carry: fxp.Int.from(bl * 3, 4),
+				maximum_carry: Int.from(bl * 3, 4),
 				penalty: -2,
 				name: LocalizeGURPS.translations.gurps.character.encumbrance[2],
 			},
 			{
 				level: 3,
-				maximum_carry: fxp.Int.from(bl * 6, 4),
+				maximum_carry: Int.from(bl * 6, 4),
 				penalty: -3,
 				name: LocalizeGURPS.translations.gurps.character.encumbrance[3],
 			},
 			{
 				level: 4,
-				maximum_carry: fxp.Int.from(bl * 10, 4),
+				maximum_carry: Int.from(bl * 10, 4),
 				penalty: -4,
 				name: LocalizeGURPS.translations.gurps.character.encumbrance[4],
 			},
@@ -848,7 +842,7 @@ export class CharacterGURPS<
 		)
 	}
 
-	get other_equipment(): Collection<EquipmentGURPS | EquipmentContainerGURPS> {
+	get otherEquipment(): Collection<EquipmentGURPS | EquipmentContainerGURPS> {
 		return new Collection(
 			this.equipment
 				.filter(item => item.other)
@@ -1884,7 +1878,7 @@ export class CharacterGURPS<
 		if (path === "") {
 			data = system
 		} else {
-			data = getProperty(system, path) as Record<string, unknown>
+			data = fu.getProperty(system, path) as Record<string, unknown>
 			data.version = 4
 			if (path === "settings.attributes") data.type = "attribute_settings"
 			else if (path === "settings.body_type") data.type = "body_type"
@@ -1894,7 +1888,7 @@ export class CharacterGURPS<
 	}
 
 	protected async exportSystemData(): Promise<[DeepPartial<CharacterSystemSource>, string]> {
-		const system: DeepPartial<CharacterSystemSource> & Record<string, unknown> = { ...duplicate(this.system) }
+		const system: DeepPartial<CharacterSystemSource> & Record<string, unknown> = { ...fu.duplicate(this.system) }
 		system.type = "character" as ActorType
 		const items = (this.items as unknown as Collection<ItemGURPS>)
 			.filter(e => !e.getFlag(SYSTEM_NAME, ItemFlags.Container))
@@ -2079,7 +2073,7 @@ export class CharacterGURPS<
 	): Promise<this> {
 		if (!attribute.startsWith("pools")) return super.modifyTokenAttribute(attribute, value, isDelta, isBar)
 
-		const current = getProperty(this.system, attribute) as { min: number; max: number; value: number }
+		const current = fu.getProperty(this.system, attribute) as { min: number; max: number; value: number }
 		const id = attribute.replace("pools.", "")
 		const index = this.system.attributes.findIndex(e => e.attr_id === id)
 		if (index === -1) return this

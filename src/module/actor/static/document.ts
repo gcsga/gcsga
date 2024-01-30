@@ -1,12 +1,12 @@
 import { ActorGURPS } from "@actor/base.ts"
-import { ActorType, SETTINGS, SYSTEM_NAME, gid } from "@module/data/index.ts"
+import { SETTINGS, SYSTEM_NAME, gid } from "@module/data/index.ts"
 import { TokenDocumentGURPS } from "@module/token/document.ts"
 import {
 	MoveMode,
 	MoveModeTypes,
-	Posture,
 	StaticAttributeName,
 	StaticCharacterSystemData,
+	StaticPosture,
 	StaticResourceThreshold,
 	StaticResourceTracker,
 	StaticThresholdComparison,
@@ -16,9 +16,12 @@ import { LocalizeGURPS } from "@util/localize.ts"
 import { getProperty, mergeObject, setProperty } from "types/foundry/common/utils/helpers.js"
 import { StaticItemGURPS, StaticItemSystemData } from "@item/index.ts"
 import { Static } from "@util/index.ts"
-import { StaticEquipment, StaticTrait } from "./components.ts"
+import { StaticEncumbrance, StaticEquipment, StaticMelee, StaticTrait } from "./components.ts"
 import { StaticCharacterImporter } from "./import.ts"
-import { string } from "yargs"
+import { UserGURPS } from "@module/user/document.ts"
+import { ActorType } from "@actor"
+import { Attribute } from "@sytem/attribute/object.ts"
+import { Encumbrance } from "@actor/character/data.ts"
 
 Hooks.on("createActor", async function (actor: StaticCharacterGURPS) {
 	if (actor.type === "character")
@@ -35,12 +38,12 @@ export interface StaticCharacterGURPS<TParent extends TokenDocumentGURPS | null>
 export class StaticCharacterGURPS<
 	TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null,
 > extends ActorGURPS<TParent> {
-	getOwners() {
+	getOwners(): UserGURPS[] {
 		return game.users?.contents.filter(u => this.getUserLevel(u) ?? 0 >= CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER)
 	}
 
 	// Getters
-	get editing() {
+	get editing(): boolean {
 		return this.system.editing
 	}
 
@@ -52,7 +55,7 @@ export class StaticCharacterGURPS<
 		}
 	}
 
-	override get dodgeAttribute() {
+	override get dodgeAttribute(): DeepPartial<Attribute> {
 		return {
 			id: gid.Dodge as string,
 			attribute_def: {
@@ -63,11 +66,11 @@ export class StaticCharacterGURPS<
 		}
 	}
 
-	get effectiveMove() {
+	get effectiveMove(): number {
 		return this.system.currentmove
 	}
 
-	get effectiveSprint() {
+	get effectiveSprint(): number {
 		return this.system.currentmove * 1.2
 	}
 
@@ -114,7 +117,7 @@ export class StaticCharacterGURPS<
 		return this.system.traits?.sizemod ?? 0
 	}
 
-	encumbranceLevel(_: any) {
+	encumbranceLevel(): Encumbrance {
 		for (const e of Object.values(this.system.encumbrance)) {
 			if (e.current)
 				return {
@@ -135,7 +138,7 @@ export class StaticCharacterGURPS<
 	override prepareBaseData(): void {
 		// NOTE: why not set flags after sizemod calculation?
 		super.prepareBaseData()
-		this.system.conditions.posture = Posture.Standing
+		this.system.conditions.posture = StaticPosture.Standing
 		this.system.conditions.exhausted = false
 		this.system.conditions.reeling = false
 	}
@@ -168,7 +171,7 @@ export class StaticCharacterGURPS<
 		this.prepareAttributes()
 	}
 
-	prepareAttributes() {
+	prepareAttributes(): void {
 		const atts = new Map()
 		for (const [key, value] of Object.entries(this.system.attributes)) {
 			atts.set(key.toLowerCase(), {
@@ -184,7 +187,7 @@ export class StaticCharacterGURPS<
 	}
 
 	// Execute after every import
-	async postImport() {
+	async postImport(): Promise<void> {
 		// This.calculateDerivedValues()
 
 		// Convoluted code to add Items (and features) into the equipment list
@@ -215,7 +218,7 @@ export class StaticCharacterGURPS<
 		await this.syncLanguages()
 	}
 
-	async setResourceTrackers() {
+	async setResourceTrackers(): Promise<void> {
 		// TODO: implement this
 		// let templates = ResourceTrackerManager.getAllTemplates().filter(it => !!it.slot)
 	}
@@ -232,7 +235,7 @@ export class StaticCharacterGURPS<
 		return t
 	}
 
-	async syncLanguages() {
+	async syncLanguages(): Promise<void> {
 		if (this.system.languages) {
 			let updated = false
 			const newads = { ...this.system.ads }
@@ -269,7 +272,7 @@ export class StaticCharacterGURPS<
 
 	// This will ensure that every characater at least starts
 	// with these new data values.  actor-sheet.js may change them.
-	calculateDerivedValues() {
+	calculateDerivedValues(): void {
 		// Let saved = !!this.ignoreRender
 		// this.ignoreRender = true
 		this._initializeStartingValues()
@@ -298,7 +301,7 @@ export class StaticCharacterGURPS<
 	 * we are just going to switch the rug out from underneath.
 	 * "Import" data will be in the 'import' key and then we will calculate value/level when the actor is loaded.
 	 */
-	_initializeStartingValues() {
+	_initializeStartingValues(): void {
 		const data = this.system
 		data.currentdodge = 0
 		data.equipment ??= { carried: {}, other: {} }
@@ -323,13 +326,13 @@ export class StaticCharacterGURPS<
 		let val = 0
 		let txt = ""
 		if (this.system.melee && this.system.equipment?.carried)
-			Object.values(this.system.melee).forEach((melee: any) => {
-				Static.recurseList(this.system.equipment.carried, (e: any, _k, _d) => {
+			Object.values(this.system.melee).forEach((melee: StaticMelee) => {
+				Static.recurseList(this.system.equipment.carried, (e: StaticEquipment, _k, _d) => {
 					if (e && !val && e.equipped && melee.name.match(Static.makeRegexPatternFrom(e.name, false))) {
-						const t = parseInt(melee[key])
+						const t = parseInt(melee[key as keyof StaticMelee] as string)
 						if (!isNaN(t)) {
 							val = t
-							txt = `${melee[key]}`
+							txt = `${melee[key as keyof StaticMelee]}`
 						}
 					}
 				})
@@ -341,13 +344,13 @@ export class StaticCharacterGURPS<
 		return [txt, val]
 	}
 
-	getEquippedParry() {
+	getEquippedParry(): number {
 		const [txt, val] = this.getEquipped("parry")
 		this.system.equippedparryisfencing = Boolean(txt && txt.match(/f$/i))
 		return val
 	}
 
-	getEquippedBlock() {
+	getEquippedBlock(): number {
 		return this.getEquipped("block")[1]
 	}
 
@@ -723,7 +726,7 @@ export class StaticCharacterGURPS<
 	// 	}
 	// }
 
-	async addItemData(itemData: StaticItemGURPS, targetKey: string | null = null) {
+	async addItemData(itemData: StaticItemGURPS, targetKey: string | null = null): Promise<void> {
 		const [eqtKey, addFeatures] = await this._addNewItemEquipment(itemData, targetKey)
 		if (addFeatures) await this._addItemAdditions(itemData, eqtKey)
 	}
@@ -751,7 +754,7 @@ export class StaticCharacterGURPS<
 				targetKey = "system.equipment.carried"
 				let index = 0
 				const list = getProperty(this, targetKey) as StaticEquipment
-				while (list.hasOwnProperty(Static.zeroFill(index))) index++
+				while (Object.prototype.hasOwnProperty.call(list, Static.zeroFill(index))) index += 1
 				targetKey += `.${Static.zeroFill(index)}`
 			} else targetKey = "system.equipment.other"
 		}
@@ -771,8 +774,8 @@ export class StaticCharacterGURPS<
 		return [targetKey, eqt.carried && eqt.equipped]
 	}
 
-	_findEqtKeyForId(key: string, id: string) {
-		let eqtkey
+	_findEqtKeyForId(key: string, id: string): string | undefined {
+		let eqtkey: string | undefined
 		const data = this.system
 		Static.recurseList(data.equipment.carried, (e, k, _d) => {
 			if (e[key] === id) eqtkey = `system.equipment.carried${k}`
@@ -784,7 +787,7 @@ export class StaticCharacterGURPS<
 		return eqtkey
 	}
 
-	async updateParentOf(srcKey: string, updatePuuid = true) {
+	async updateParentOf(srcKey: string, updatePuuid = true): Promise<void> {
 		const pindex = 4
 		const paths = srcKey.split(".")
 		let sp = paths.slice(0, pindex).join(".")
@@ -808,7 +811,7 @@ export class StaticCharacterGURPS<
 		}
 	}
 
-	async _addItemAdditions(itemData: StaticItemGURPS, eqtkey: string) {
+	async _addItemAdditions(itemData: StaticItemGURPS, eqtkey: string): Promise<void> {
 		let commit = {}
 		commit = { ...commit, ...(await this._addItemElement(itemData, eqtkey, "melee")) }
 		commit = { ...commit, ...(await this._addItemElement(itemData, eqtkey, "ranged")) }
@@ -823,13 +826,13 @@ export class StaticCharacterGURPS<
 		itemData: StaticItemGURPS,
 		eqtKey: string,
 		key: keyof StaticCharacterSystemData & keyof StaticItemSystemData,
-	) {
+	): Promise<Record<string, unknown>> {
 		let found = false
 		// @ts-expect-error variable type ambiguity...
 		Static.recurseList(this.system[key], (e, _k, _d) => {
 			if (e.itemid === itemData._id) found = true
 		})
-		if (found) return
+		if (found) return {}
 		// @ts-expect-error variable type ambiguity...
 		const list = { ...this.system[key] }
 		let i = 0
@@ -837,7 +840,7 @@ export class StaticCharacterGURPS<
 			// @ts-expect-error variable type ambiguity...
 			const e = duplicate(itemData.system[key][k])
 			e.itemid = itemData._id
-			e.uuid = `${key}-${i++}-${e.itemid}`
+			e.uuid = `${key}-${(i += 1)}-${e.itemid}`
 			e.eqtkey = eqtKey
 			e.imd = itemData.img
 			Static.put(list, e)
@@ -845,7 +848,7 @@ export class StaticCharacterGURPS<
 		return i === 0 ? {} : { [`system.${key}`]: list }
 	}
 
-	async importCharacter() {
+	async importCharacter(): Promise<void> {
 		const import_path = this.system.additionalresources.importpath
 		const import_name = import_path.match(/.*[/\\]Data[/\\](.*)/)
 		if (import_name) {
@@ -870,8 +873,8 @@ export class StaticCharacterGURPS<
 		} else this._openImportDialog()
 	}
 
-	_openImportDialog() {
-		let file: any = null
+	_openImportDialog(): void {
+		let file: File | null = null
 		if (game.settings.get(SYSTEM_NAME, SETTINGS.SERVER_SIDE_FILE_DIALOG)) {
 			const filepicker = new FilePicker({
 				baseApplication: null,

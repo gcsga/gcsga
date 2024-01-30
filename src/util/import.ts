@@ -20,7 +20,7 @@ import {
 	TraitSystemData,
 } from "@item/index.ts"
 import { SpellSystemData } from "@item/spell/data.ts"
-import { ItemType, SYSTEM_NAME } from "@module/data/index.ts"
+import { SYSTEM_NAME } from "@module/data/index.ts"
 import { randomID } from "types/foundry/common/utils/helpers.js"
 import { LocalizeGURPS } from "./localize.ts"
 import { PrereqList } from "@prereq/prereq_list.ts"
@@ -28,6 +28,7 @@ import { selfctrl } from "./enum/selfctrl.ts"
 import { SkillDefault } from "@sytem/default/index.ts"
 import { stdmg } from "./enum/stdmg.ts"
 import { FeatureObj } from "@feature/index.ts"
+import { ItemType } from "@item/types.ts"
 
 class ImportUtils {
 	static importItems(
@@ -156,7 +157,7 @@ class ImportUtils {
 		}
 	}
 
-	private static getTraitData(data: TraitSystemData): TraitSystemData {
+	static getTraitData(data: TraitSystemData): TraitSystemData {
 		return {
 			name: data.name ?? "Trait",
 			type: ItemType.Trait,

@@ -37,11 +37,42 @@ export type DamagePayload = {
 export enum DropDataType {
 	Damage = "damage",
 	Item = "Item",
+	Attributes = "attributes",
+	ResourceTrackers = "resource_trackers",
+	AttributeThresholds = "attribute_thresholds",
+	TrackerThresholds = "tracker_thresholds",
+	Locations = "locations",
+	SubTable = "sub_table",
+	MoveType = "move_types",
+	Overrides = "override",
 }
 
 export type DropData =
 	| { type: DropDataType.Damage; x: number; y: number; payload: DamagePayload }
 	| { type: DropDataType.Item; x: number; y: number; uuid: ItemUUID }
+	| { type: DropDataType.Attributes; x: number; y: number; order: number; index: number; parent_index: number }
+	| { type: DropDataType.ResourceTrackers; x: number; y: number; order: number; index: number; parent_index: number }
+	| {
+			type: DropDataType.AttributeThresholds
+			x: number
+			y: number
+			order: number
+			index: number
+			parent_index: number
+	  }
+	| { type: DropDataType.TrackerThresholds; x: number; y: number; order: number; index: number; parent_index: number }
+	| { type: DropDataType.Locations; x: number; y: number; order: number; index: number }
+	| { type: DropDataType.SubTable; x: number; y: number; order: number; index: number }
+	| {
+			type: DropDataType.MoveType
+			x: number
+			y: number
+			order: number
+
+			index: number
+			parent_index: number
+	  }
+	| { type: DropDataType.Overrides; x: number; y: number; order: number; index: number; parent_index: number }
 
 export class DamageChat {
 	/*

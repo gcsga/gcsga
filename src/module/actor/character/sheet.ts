@@ -44,6 +44,7 @@ import { ConditionalModifier } from "@module/conditional_modifier.ts"
 import { ResourceTracker } from "@sytem/resource_tracker/object.ts"
 import { MoveType } from "@sytem/move_type/object.ts"
 import { HitLocation } from "./hit_location.ts"
+import { htmlQuery } from "@util/dom.ts"
 
 class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extends ActorSheetGURPS<TActor> {
 	config: CharacterSheetConfig | null = null
@@ -1160,34 +1161,7 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 
 		this.actor.BodyType.updateRollRanges()
 
-		// const sheetData = {
-		// 	...data,
-		// 	...{
-		// 		settings: sheetSettingsFor(this.actor),
-		// 		editing: this.actor.editing,
-		// 		primary_attributes,
-		// 		secondary_attributes,
-		// 		point_pools,
-		// 		resource_trackers,
-		// 		move_types,
-		// 		encumbrance,
-		// 		lifting,
-		// 		moveData,
-		// 		height,
-		// 		weight,
-		// 		current_year: new Date().getFullYear(),
-		// 		maneuvers: CONFIG.GURPS.select.maneuvers,
-		// 		postures: CONFIG.GURPS.select.postures,
-		// 		autoEncumbrance: this.actor.flags[SYSTEM_NAME][ActorFlags.AutoEncumbrance]?.active,
-		// 		autoThreshold: this.actor.flags[SYSTEM_NAME][ActorFlags.AutoThreshold]?.active,
-		// 		autoDamage: this.actor.flags[SYSTEM_NAME][ActorFlags.AutoDamage]?.active,
-		// 		overencumbered,
-		// 		skillDefaultsOpen: this.skillDefaultsOpen,
-		// 	},
-		// }
-		// this._prepareItems(data)
-		// this._prepareHitLocations(sheetData)
-		const data: CharacterSheetData<TActor> = {
+		return {
 			...(super.getData() as ActorSheetData<TActor>),
 			...this._prepareItems(),
 			actor: this.actor,
@@ -1213,8 +1187,6 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 			overencumbered,
 			skillDefaultsOpen: this.skillDefaultsOpen,
 		}
-
-		return data
 	}
 
 	private _prepareAttributes(attributes: Map<string, Attribute>): [Attribute[], Attribute[], Attribute[]] {
@@ -1374,15 +1346,9 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 		}
 	}
 
-	private _prepareHitLocations(data: any): void {
-		this.actor.BodyType.updateRollRanges()
-		data.hit_locations = this.actor.HitLocations
-	}
-
 	// Events
-	async _onEditToggle(event: JQuery.ClickEvent): Promise<void> {
-		event.preventDefault()
-		$(event.currentTarget).find("i").toggleClass("fa-unlock fa-lock")
+	async _onEditToggle(event: Event): Promise<void> {
+		htmlQuery(event.target, "i")?.classList.toggle("fa-unlock fa-lock")
 		await this.actor.update({ "system.editing": !this.actor.editing })
 	}
 
@@ -1393,13 +1359,13 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 						label: "",
 						class: "edit-toggle",
 						icon: `fas fa-${this.actor.editing ? "unlock" : "lock"}`,
-						onclick: (event: JQuery.ClickEvent) => this._onEditToggle(event),
+						onclick: (event: Event) => this._onEditToggle(event),
 					},
 					{
 						label: "",
 						class: "gmenu",
 						icon: "gcs-all-seeing-eye",
-						onclick: (event: JQuery.ClickEvent) => this._openGMenu(event),
+						onclick: (event: Event) => this._openGMenu(event),
 					},
 				]
 			: []
@@ -1407,8 +1373,7 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 		return all_buttons
 	}
 
-	protected async _openGMenu(event: JQuery.ClickEvent): Promise<void> {
-		event.preventDefault()
+	protected async _openGMenu(event: Event): Promise<void> {
 		this.config ??= new CharacterSheetConfig(this.object, {
 			top: this.position.top! + 40,
 			left: ((this.position.left ?? 0) - (Number(DocumentSheet.defaultOptions.width) ?? 0)) / 2,

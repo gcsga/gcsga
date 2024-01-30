@@ -3,14 +3,15 @@
 // 	substitutions: boolean
 // }
 
+import { ActorType } from "@actor"
 import { ActorFlags, ActorFlagsGURPS, ActorSystemSource, BaseActorSourceGURPS } from "@actor/base/data.ts"
-import { ActorType, RollModifier, SYSTEM_NAME, TokenPool, gid } from "@module/data/misc.ts"
+import { RollModifier, SYSTEM_NAME, TokenPool, gid } from "@module/data/misc.ts"
 import { SheetSettings } from "@module/data/sheet_settings.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { AttributeObj } from "@sytem/attribute/data.ts"
 import { PoolThreshold } from "@sytem/attribute/pool_threshold.ts"
-import { MoveTypeObj } from "@sytem/move_type/data.ts"
-import { ResourceTrackerObj } from "@sytem/resource_tracker/data.ts"
+import { MoveTypeDefObj, MoveTypeObj } from "@sytem/move_type/data.ts"
+import { ResourceTrackerDefObj, ResourceTrackerObj } from "@sytem/resource_tracker/data.ts"
 import { Weight } from "@util/weight.ts"
 
 export type CharacterSource = BaseActorSourceGURPS<ActorType.Character, CharacterSystemSource> & {
@@ -65,8 +66,17 @@ export interface CharacterSystemSource extends ActorSystemSource {
 	editing: boolean
 	// TODO: check if this fits
 	pools: Record<string, TokenPool>
-	third_party?: Record<string, unknown>
+	third_party: DeepPartial<CharacterThirdPartyData>
 }
+
+export type CharacterThirdPartyData = {
+	settings: {
+		resource_trackers: ResourceTrackerDefObj[]
+		move_types: MoveTypeDefObj[]
+	}
+	resource_trackers: ResourceTrackerObj[]
+	move_types: MoveTypeObj[]
+} & Record<string, unknown>
 
 export interface CharacterMove {
 	maneuver: string

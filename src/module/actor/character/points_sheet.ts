@@ -1,18 +1,30 @@
-import { SYSTEM_NAME } from "@module/data"
+import { SYSTEM_NAME } from "@module/data/misc.ts"
+import { CharacterGURPS } from "./document.ts"
 import { LocalizeGURPS } from "@util"
-import { CharacterGURPS } from "."
-import { PointsRecord } from "./data"
+import { PointsRecord } from "./data.ts"
+import { DateTimeFormatOptions } from "luxon"
 
-export class PointRecordSheet extends FormApplication {
-	object: CharacterGURPS
+interface PointsRecordSheetData<TActor extends CharacterGURPS> extends FormApplicationData<TActor> {
+	actor: TActor["_source"]
+	system: TActor["system"]
+}
 
-	constructor(object: CharacterGURPS, options?: any) {
+interface PointRecordSheet<TActor extends CharacterGURPS, TOptions extends FormApplicationOptions>
+	extends FormApplication<TActor> {
+	object: TActor
+}
+
+class PointRecordSheet<
+	TActor extends CharacterGURPS,
+	TOptions extends FormApplicationOptions,
+> extends FormApplication<TActor> {
+	constructor(object: TActor, options?: Partial<TOptions>) {
 		super(object, options)
 		this.object = object
 	}
 
-	static get defaultOptions(): FormApplicationOptions {
-		return mergeObject(super.defaultOptions, {
+	static override get defaultOptions(): FormApplicationOptions {
+		return fu.mergeObject(super.defaultOptions, {
 			classes: ["form", "points-sheet", "gurps"],
 			template: `systems/${SYSTEM_NAME}/templates/actor/character/points-record.hbs`,
 			width: 520,
@@ -23,23 +35,24 @@ export class PointRecordSheet extends FormApplication {
 		})
 	}
 
-	get title() {
+	override get title(): string {
 		return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.character.points_record.title, {
 			name: this.object.name,
 		})
 	}
 
-	getData(options?: Partial<FormApplicationOptions> | undefined): any {
+	override getData(options: Partial<TOptions>): PointsRecordSheetData<TActor> {
+		super.getData(options)
 		const actor = this.object
 
 		return {
-			optoins: options,
+			options: options,
 			actor: actor.toObject(),
 			system: actor.system,
 		}
 	}
 
-	activateListeners(html: JQuery<HTMLElement>): void {
+	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		html.find(".add").on("click", event => this._onAdd(event))
 		html.find(".delete").on("click", event => this._onDelete(event))
@@ -70,25 +83,24 @@ export class PointRecordSheet extends FormApplication {
 		return deleted[0]
 	}
 
-	protected async _updateObject(_event: Event, formData?: any | undefined): Promise<unknown> {
-		// FormData = await FormApplicationGURPS.updateObject(event, formData)
+	protected async _updateObject(_event: Event, formData: Record<string, unknown>): Promise<unknown> {
 		if (!this.object.id) return
-		const data: any = {}
-		const record: any[] = this.object.system.points_record
+		const data: Record<string, unknown> = {}
+		const record: PointsRecord[] = this.object.system.points_record
 		for (const k of Object.keys(formData)) {
 			const index: number = parseInt(k.split(".")[0])
 			const field: keyof PointsRecord = k.split(".")[1] as keyof PointsRecord
-			let value: string | number = formData[k]
+			let value = formData[k] as string | number
 			if (field === "when") {
 				const date = new Date(value)
-				const options: any = {
+				const options: DateTimeFormatOptions = {
 					dateStyle: "medium",
 					timeStyle: "short",
 				}
 				options.timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
 				value = date.toLocaleString("en-US", options).replace(" at", ",")
 			}
-			record[index][field] = value
+			if (record[index]) record[index] = { ...record[index], [field]: value }
 		}
 		data["system.points_record"] = record
 		data["system.total_points"] = record.reduce((partialSum, a) => partialSum + a.points, 0)
@@ -97,13 +109,13 @@ export class PointRecordSheet extends FormApplication {
 		return this.render()
 	}
 
-	protected _getHeaderButtons(): Application.HeaderButton[] {
-		const all_buttons = [
+	protected override _getHeaderButtons(): ApplicationHeaderButton[] {
+		const all_buttons: ApplicationHeaderButton[] = [
 			{
 				label: "",
 				class: "apply",
 				icon: "gcs-checkmark",
-				onclick: (event: any) => this._onSubmit(event),
+				onclick: (event: Event) => this._onSubmit(event),
 			},
 			...super._getHeaderButtons(),
 		]
@@ -112,3 +124,5 @@ export class PointRecordSheet extends FormApplication {
 		return all_buttons
 	}
 }
+
+export { PointRecordSheet }

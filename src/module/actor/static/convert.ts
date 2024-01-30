@@ -1,7 +1,8 @@
-import { CharacterGURPS, CharacterSystemData } from "@actor/character"
-import { StaticCharacterGURPS } from "./document"
-import { SETTINGS, SYSTEM_NAME } from "@module/data"
-import { StaticResourceThreshold, StaticThresholdComparison } from "./data"
+import { CharacterGURPS } from "@actor"
+import { StaticCharacterGURPS } from "./document.ts"
+import { CharacterSystemSource } from "@actor/character/data.ts"
+import { SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
+import { StaticResourceThreshold, StaticThresholdComparison } from "./data.ts"
 
 export class CharacterConverter {
 	public static update(actor: StaticCharacterGURPS): CharacterGURPS {
@@ -10,7 +11,7 @@ export class CharacterConverter {
 	}
 
 	private _update(actor: StaticCharacterGURPS): CharacterGURPS {
-		const newData: Partial<CharacterSystemData> = {}
+		const newData: Partial<CharacterSystemSource> = {}
 		newData.settings = {
 			...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`),
 			body_type: {
@@ -41,7 +42,7 @@ export class CharacterConverter {
 			move_types: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`),
 		}
 
-		return new CharacterGURPS({} as any)
+		return new CharacterGURPS(newData)
 	}
 
 	private _getThresholdExpression(comparison: StaticResourceThreshold): string {

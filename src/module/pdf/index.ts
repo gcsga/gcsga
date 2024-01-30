@@ -1,16 +1,11 @@
-import { Context } from "types/foundry/common/abstract/document.mjs"
-import { SETTINGS, SYSTEM_NAME } from "@module/data"
-import { PDFViewerSheet } from "./sheet"
-import { PDFEditorSheet } from "./edit"
+import { SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
 
-// @ts-expect-error type not properly declared
 interface EntryPageConstructorContextGURPS extends Context<JournalEntryPage> {
 	gurps?: {
 		ready?: boolean
 	}
 }
 
-// @ts-expect-error type not properly declared
 export class JournalEntryPageGURPS extends JournalEntryPage {
 	system!: {
 		offset: number
@@ -23,15 +18,14 @@ export class JournalEntryPageGURPS extends JournalEntryPage {
 			this.system.code ??= ""
 			this.system.offset ??= 0
 		} else {
-			mergeObject(context, { gurps: { ready: true } })
+			fu.mergeObject(context, { gurps: { ready: true } })
 			if (data.type === "pdf") return new JournalEntryPageGURPS(data, context)
-			// @ts-expect-error type not properly declared
 			else return new JournalEntryPage(data, context)
 		}
 	}
 }
 
-const SJG_links = {
+const SJG_links: Record<string, string> = {
 	ACT1: "https://warehouse23.com/products/gurps-action-1-heroes",
 	ACT3: "https://warehouse23.com/products/gurps-action-3-furious-fists",
 	B: "https://warehouse23.com/products/gurps-basic-set-characters-and-campaigns",
@@ -86,15 +80,15 @@ const SJG_links = {
 	TSOR: "https://warehouse23.com/products/gurps-thaumatology-sorcery",
 	UT: "https://warehouse23.com/products/gurps-ultra-tech",
 	VOR: "https://warehouse23.com/products/vorkosigan-saga-sourcebook-and-roleplaying-game",
-}
+} as const
 
-function handle(event: JQuery.MouseEventBase) {
+function handle(event: JQuery.MouseEventBase): void {
 	event.preventDefault()
 	const pdf = $(event.currentTarget).data("pdf")
 	if (pdf) return open(pdf)
 }
 
-function open(pdfs: string) {
+function open(pdfs: string): void {
 	for (let link of pdfs.split(",")) {
 		link = link.trim()
 		const colonIndex = link.indexOf(":")
@@ -121,26 +115,28 @@ function open(pdfs: string) {
 			if (s === "combined") book = "B"
 		}
 
-		let url = (SJG_links as any)[book]
-		if (!url) {
-			if (pdfs.includes("http")) url = pdfs
-			else url = "https://warehouse23.com/collections/gurps"
-		}
-		// Window.open(url, "_blank")
-		const pdfPages: any[] = []
-		game.journal?.forEach(j => {
-			;(j as any).pages.forEach((p: any) => {
-				if (p.type === "pdf") pdfPages.push(p)
+		if (Object.keys(SJG_links).includes(book)) {
+			let url = SJG_links[book]
+			if (!url) {
+				if (pdfs.includes("http")) url = pdfs
+				else url = "https://warehouse23.com/collections/gurps"
+			}
+			// Window.open(url, "_blank")
+			const pdfPages: JournalEntryPage<JournalEntry>[] = []
+			game.journal?.forEach(j => {
+				j.pages.forEach(p => {
+					if (p.type === "pdf") pdfPages.push(p)
+				})
 			})
-		})
-		let journalPage
-		if (pdfPages.length) journalPage = pdfPages.find((e: any) => e.type === "pdf" && e.system.code === book)
-		if (journalPage) {
-			console.log(journalPage, page)
-			const viewer = new PDFViewerSheet(journalPage, { pageNumber: page, highlight: "Language" })
-			viewer.render(true)
-		} else {
-			window.open(url, "_blank")
+			let journalPage
+			if (pdfPages.length) journalPage = pdfPages.find(e => e.type === "pdf" && e.system.code === book)
+			if (journalPage) {
+				console.log(journalPage, page)
+				const viewer = new PDFViewerSheet(journalPage, { pageNumber: page, highlight: "Language" })
+				viewer.render(true)
+			} else {
+				window.open(url, "_blank")
+			}
 		}
 	}
 }

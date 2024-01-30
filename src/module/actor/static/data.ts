@@ -69,9 +69,7 @@ export interface StaticCharacterSystemData extends ActorSystemSource {
 	}
 	hitlocations: any
 	lastImport: string
-	attributes: {
-		[key in StaticAttributeName]: StaticAttribute
-	}
+	attributes: Record<StaticAttributeName, StaticAttribute>
 	HP: StaticPoolValue
 	FP: StaticPoolValue
 	QP: StaticPoolValue
@@ -79,6 +77,7 @@ export interface StaticCharacterSystemData extends ActorSystemSource {
 		value: number
 		enc_level: number
 	}
+	basiclift: string
 	basicmove: {
 		value: string
 		points: number
@@ -150,12 +149,16 @@ export interface StaticCharacterTraits {
 	eyes: string
 	hair: string
 	hand: string
+	handedness?: string
 	skin: string
 	sizemod: number
 	techlevel: string
+	tech_level?: string
 	createdon: string
 	modifiedon: string
 	player: string
+	player_name?: string
+	portrait?: string
 }
 
 export enum StaticAttributeName {
