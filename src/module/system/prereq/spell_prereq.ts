@@ -6,7 +6,10 @@ import { NumericCompareType, NumericCriteria } from "@util/numeric_criteria.ts"
 import { SpellPrereqObj } from "./data.ts"
 import { CharacterResolver, LocalizeGURPS, LootResolver } from "@util/index.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
-import { ActorType, ItemType } from "@module/data/misc.ts"
+import { SpellGURPS } from "@item/spell/document.ts"
+import { RitualMagicSpellGURPS } from "@item"
+import { ActorType } from "@actor"
+import { ItemType } from "@item/types.ts"
 
 export class SpellPrereq extends BasePrereq {
 	override type = prereq.Type.Spell
@@ -33,7 +36,11 @@ export class SpellPrereq extends BasePrereq {
 		return prereq
 	}
 
-	satisfied(actor: CharacterResolver | LootResolver, exclude: any, tooltip: TooltipGURPS): boolean {
+	satisfied(
+		actor: CharacterResolver | LootResolver,
+		exclude: SpellGURPS | RitualMagicSpellGURPS,
+		tooltip: TooltipGURPS,
+	): boolean {
 		if (actor.type === ActorType.Loot) return true
 		let count = 0
 		const colleges: Set<string> = new Set()
@@ -42,20 +49,20 @@ export class SpellPrereq extends BasePrereq {
 			exclude instanceof Item &&
 			(exclude.type === ItemType.Spell || exclude.type === ItemType.RitualMagicSpell)
 		) {
-			techLevel = (exclude as any).techLevel
+			techLevel = exclude.techLevel
 		}
-		for (const sp of actor.spells as any) {
+		for (const sp of actor.spells) {
 			if (sp.type === ItemType.SpellContainer) continue
 			if (exclude === sp || sp.points === 0) continue
 			if (techLevel !== "" && sp.techLevel !== "" && techLevel !== sp.techLevel) continue
 			switch (this.sub_type) {
 				case spellcmp.Type.Name:
-					if (this.qualifier.matches(sp.name ?? "")) count++
+					if (this.qualifier.matches(sp.name ?? "")) count += 1
 					break
 				case spellcmp.Type.Tag:
 					for (const one of sp.tags) {
 						if (this.qualifier.matches(one ?? "")) {
-							count++
+							count += 1
 							break
 						}
 					}
@@ -63,7 +70,7 @@ export class SpellPrereq extends BasePrereq {
 				case spellcmp.Type.College:
 					for (const one of sp.college) {
 						if (this.qualifier.matches(one ?? "")) {
-							count++
+							count += 1
 							break
 						}
 					}
@@ -72,7 +79,7 @@ export class SpellPrereq extends BasePrereq {
 					for (const one of sp.college) colleges.add(one)
 					break
 				case spellcmp.Type.Any:
-					count++
+					count += 1
 			}
 			if (this.sub_type === spellcmp.Type.CollegeCount) count = colleges.size
 		}

@@ -1,20 +1,16 @@
-import { ItemType, SYSTEM_NAME } from "@module/data"
-import { DnD } from "@util/drag_drop"
-import { PropertiesToSource } from "types/types/helperTypes"
-import { ItemDataBaseProperties } from "types/foundry/common/data/data.mjs/itemData"
-import { ItemSheetGURPS } from "@item/base"
-import { TraitModifierGURPS } from "@item/trait_modifier"
-import { ContainerGURPS } from "./document"
+import { ItemSheetGURPS, ItemSheetOptions } from "@item/base/sheet.ts"
+import { ContainerGURPS } from "./document.ts"
+import { SYSTEM_NAME } from "@module/data/misc.ts"
 
 export class ContainerSheetGURPS<IType extends ContainerGURPS = ContainerGURPS> extends ItemSheetGURPS<IType> {
-	static get defaultOptions(): DocumentSheetOptions<Item> {
-		return mergeObject(ItemSheetGURPS.defaultOptions, {
+	static override get defaultOptions(): ItemSheetOptions {
+		return fu.mergeObject(ItemSheetGURPS.defaultOptions, {
 			template: `/systems/${SYSTEM_NAME}/templates/item/container-sheet.hbs`,
 			dragDrop: [{ dragSelector: ".item-list .item", dropSelector: null }],
 		})
 	}
 
-	activateListeners(html: JQuery<HTMLElement>): void {
+	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		html.find(".dropdown-toggle").on("click", event => this._onCollapseToggle(event))
 		html.find(".enabled").on("click", event => this._onEnabledToggle(event))
@@ -23,7 +19,7 @@ export class ContainerSheetGURPS<IType extends ContainerGURPS = ContainerGURPS> 
 	protected override async _onDragStart(event: DragEvent): Promise<void> {
 		const list = event.currentTarget
 
-		let dragData: any
+		let dragData
 
 		// Owned Items
 		if ((list as HTMLElement).dataset.itemId) {

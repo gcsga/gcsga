@@ -1,10 +1,10 @@
 import { ActorSourceGURPS } from "@actor/data/index.ts"
 import { MockCollection } from "./collection.ts"
 import { MockItem } from "./item.ts"
-import { TokenDocumentGURPS } from "@module/token/document.ts"
+import { TokenDocumentGURPS } from "@module/canvas/token/document.ts"
 import { ItemGURPS } from "@item/base/document.ts"
 import { ActorGURPS } from "@actor/base.ts"
-import { ActiveEffectGURPS } from "@module/effect/document.ts"
+import { ActiveEffectGURPS } from "@module/active-effect/document.ts"
 import { ActorSystemSource } from "@actor/index.ts"
 import { ItemSourceGURPS } from "@item/data/index.ts"
 

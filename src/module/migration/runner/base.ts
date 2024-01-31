@@ -2,7 +2,7 @@ import { ItemSourceGURPS } from "@item/data/index.ts"
 import { MigrationBase } from "../base.ts"
 import { ActorSourceGURPS } from "@actor/data/index.ts"
 import { itemIsOfType } from "@item/helpers.ts"
-import { TokenDocumentGURPS } from "@module/token/document.ts"
+import { TokenDocumentGURPS } from "@module/canvas/token/document.ts"
 
 interface CollectionDiff<T extends foundry.documents.ActiveEffectSource | ItemSourceGURPS> {
 	inserted: T[]

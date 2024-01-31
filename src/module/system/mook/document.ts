@@ -11,14 +11,29 @@ import {
 	MookSkill,
 	MookSpell,
 	MookTrait,
+	MookTraitModifier,
 } from "./data.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { CharacterSource, Encumbrance } from "@actor/character/data.ts"
-import { ActorType, ItemType, SETTINGS, SYSTEM_NAME, gid } from "@module/data/index.ts"
+import { SETTINGS, SYSTEM_NAME, gid } from "@module/data/index.ts"
 import { damageProgression } from "@util/index.ts"
 import { Attribute } from "@sytem/attribute/object.ts"
 import { attribute } from "@util/enum/attribute.ts"
 import { CharacterGURPS } from "@actor/index.ts"
+import { ItemType } from "@item/types.ts"
+import { NoteSource, SkillGURPS } from "@item"
+import { SpellGURPS } from "@item/spell/document.ts"
+import {
+	BaseItemSourceGURPS,
+	ItemFlags,
+	MeleeWeaponSource,
+	RangedWeaponSource,
+	SkillSource,
+	SpellSource,
+	TraitModifierSource,
+} from "@item/data.ts"
+import { randomID } from "types/foundry/common/utils/helpers.js"
+import { AttributeDef } from "@sytem/attribute/attribute_def.ts"
 
 export class Mook {
 	type = "mook"
@@ -287,23 +302,27 @@ export class Mook {
 			items: await this._createItemData(),
 		}
 
-		const newActor = await Actor.create(
-			CharacterGURPS,
+		const newActor = (await CharacterGURPS.create(
 			{
 				name: this.profile.name,
-				type: ActorType.Character,
 				img: this.profile.portrait,
-			},
-			{ promptImport: false },
-		)
+			} as PreCreate<CharacterGURPS["_source"]>,
+			{ promptImport: false } as DocumentModificationContext<CharacterGURPS["parent"]>,
+		)) as CharacterGURPS
 		if (!newActor) return null
 		await newActor?.update(data)
-		const updateMap: ({ _id: string } & Record<string, any>)[] = []
-		newActor.itemTypes[ItemType.Skill].forEach((item: any, index: number) => {
-			updateMap.push({ _id: item.id!, "system.points": item.getPointsForLevel(this.skills[index].level) })
+		const updateMap: ({ _id: string } & Record<string, unknown>)[] = []
+		newActor.itemTypes[ItemType.Skill].forEach((item, index: number) => {
+			updateMap.push({
+				_id: item.id!,
+				"system.points": (item as SkillGURPS).getPointsForLevel(this.skills[index].level),
+			})
 		})
-		newActor.itemTypes[ItemType.Spell].forEach((item: any, index: number) => {
-			updateMap.push({ _id: item.id!, "system.points": item.getPointsForLevel(this.spells[index].level) })
+		newActor.itemTypes[ItemType.Spell].forEach((item, index: number) => {
+			updateMap.push({
+				_id: item.id!,
+				"system.points": (item as SpellGURPS).getPointsForLevel(this.spells[index].level),
+			})
 		})
 		await newActor.updateEmbeddedDocuments("Item", updateMap)
 		await newActor.sheet?.render(true)
@@ -323,10 +342,10 @@ export class Mook {
 		return items
 	}
 
-	private _getTraitItemData(trait: MookTrait): DeepPartial<BaseItemSourceGURPS<any>>[] {
-		const items: DeepPartial<BaseItemSourceGURPS<any>>[] = []
+	private _getTraitItemData(trait: MookTrait): DeepPartial<BaseItemSourceGURPS<ItemType.Trait>>[] {
+		const items: DeepPartial<BaseItemSourceGURPS<ItemType.Trait>>[] = []
 		const id = randomID()
-		const data = {
+		const data: DeepPartial<BaseItemSourceGURPS<ItemType.Trait>> = {
 			name: trait.name,
 			type: ItemType.Trait,
 			_id: id,

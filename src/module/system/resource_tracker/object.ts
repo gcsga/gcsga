@@ -1,10 +1,11 @@
-import { CharacterGURPS } from "@actor"
-import { PoolThreshold, reserved_ids } from "@module/attribute"
-import { sanitizeId } from "@util"
+import { CharacterResolver, sanitizeId } from "@util"
+import { ResourceTrackerObj } from "./data.ts"
+import { reserved_ids } from "@sytem/attribute/data.ts"
 import { ResourceTrackerDef } from "./tracker_def.ts"
+import { PoolThreshold } from "@sytem/attribute/pool_threshold.ts"
 
 export class ResourceTracker {
-	actor: CharacterGURPS
+	actor: CharacterResolver
 
 	order: number
 
@@ -12,7 +13,7 @@ export class ResourceTracker {
 
 	damage: number
 
-	constructor(actor: CharacterGURPS, tracker_id: string, order: number, data?: any) {
+	constructor(actor: CharacterResolver, tracker_id: string, order: number, data?: Partial<ResourceTrackerObj>) {
 		if (data) Object.assign(this, data)
 		this.actor = actor
 		this.tracker_id = tracker_id
@@ -48,7 +49,7 @@ export class ResourceTracker {
 		this.tracker_def.min = v
 	}
 
-	get current() {
+	get current(): number {
 		return this.max - this.damage
 	}
 

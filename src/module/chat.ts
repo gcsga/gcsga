@@ -7,7 +7,6 @@ import { LastActor } from "@util/last_actor.ts"
 import { LootGURPS } from "@actor/loot/document.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { CharacterGURPS } from "@actor/character/index.ts"
-import { BaseWeaponGURPS } from "@item/weapon/document.ts"
 import { RollGURPS } from "./roll/index.ts"
 import { SpellGURPS } from "@item/spell/document.ts"
 

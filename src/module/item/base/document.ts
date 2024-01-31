@@ -14,6 +14,10 @@ export interface ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null
 export class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends Item<TParent> {
 	declare _dummyActor: CharacterResolver | null
 
+	override get actor(): TParent {
+		return this.actor as TParent
+	}
+
 	// _source!: SourceType
 
 	// // @ts-expect-error this is in fact always defined

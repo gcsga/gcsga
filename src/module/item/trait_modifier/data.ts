@@ -1,6 +1,6 @@
 import { FeatureObj } from "@feature/index.ts"
 import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
-import { ItemType } from "@module/data/misc.ts"
+import { ItemType } from "@item/types.ts"
 import { affects } from "@util/enum/affects.ts"
 import { tmcost } from "@util/enum/tmcost.ts"
 

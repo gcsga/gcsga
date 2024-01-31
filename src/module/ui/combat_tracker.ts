@@ -1,12 +1,12 @@
+import { ActorType } from "@actor"
 import { CharacterGURPS } from "@actor/document.ts"
 import { ConditionID } from "@item/condition/data.ts"
 import { ConditionGURPS } from "@item/condition/document.ts"
 import { CombatGURPS } from "@module/combat/document.ts"
 import { CombatantGURPS } from "@module/combatant/document.ts"
-import { ActorType } from "@module/data/misc.ts"
 
 export class CombatTrackerGURPS<TCombat extends CombatGURPS | null> extends CombatTracker<TCombat> {
-	override async _onToggleDefeatedStatus(combatant: CombatantGURPS) {
+	override async _onToggleDefeatedStatus(combatant: CombatantGURPS): Promise<void> {
 		if (!(combatant.actor?.type === ActorType.Character)) return super._onToggleDefeatedStatus(combatant)
 
 		const isDefeated = !combatant.isDefeated
@@ -21,7 +21,7 @@ export class CombatTrackerGURPS<TCombat extends CombatGURPS | null> extends Comb
 	override getData(options: CombatTrackerOptions): CombatTrackerData {
 		const data = super.getData(options)
 		const turns = data.turns
-		turns?.forEach((t: any) => {
+		turns?.forEach(t => {
 			t.effects = t.effects.filter((e: string) => e !== ConditionGURPS.getData(ConditionID.Dead).img)
 		})
 		data.turns = turns

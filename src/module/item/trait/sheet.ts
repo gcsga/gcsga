@@ -1,5 +1,5 @@
-import { ItemSheetGCS } from "@item/gcs"
-import { TraitGURPS } from "./document"
+import { ItemSheetGCS } from "@item/gcs/sheet.ts"
+import { TraitGURPS } from "./document.ts"
 
 export class TraitSheet extends ItemSheetGCS<TraitGURPS> {
 	static get defaultOptions(): DocumentSheetOptions<Item> {

@@ -1,12 +1,12 @@
-import { DurationType } from "@item/effect"
-import { gid, SYSTEM_NAME } from "@module/data"
 import { LocalizeGURPS } from "@util"
-import { StatusEffect } from "types/foundry/client/data/documents/token"
-import { ConditionID, ConditionSystemData, ManeuverID } from "./data"
-import { feature, stlimit } from "@util/enum"
+import { ConditionID, ConditionSystemSource, ManeuverID } from "./index.ts"
+import { DurationType } from "@item"
+import { feature } from "@util/enum/feature.ts"
+import { SYSTEM_NAME, gid } from "@module/data/misc.ts"
+import { stlimit } from "@util/enum/stlimit.ts"
 
-export function getConditionList(): Record<ConditionID, Partial<ConditionSystemData>> {
-	const ConditionList: Record<ConditionID, Partial<ConditionSystemData>> = {
+export function getConditionList(): Record<ConditionID, Partial<ConditionSystemSource>> {
+	const ConditionList: Record<ConditionID, Partial<ConditionSystemSource>> = {
 		[ConditionID.PostureCrouch]: {
 			id: ConditionID.PostureCrouch,
 			modifiers: [

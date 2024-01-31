@@ -6,7 +6,7 @@ interface EntryPageConstructorContextGURPS extends Context<JournalEntryPage> {
 	}
 }
 
-export class JournalEntryPageGURPS extends JournalEntryPage {
+export class JournalEntryPageGURPS<TParent extends JournalEntry | null> extends JournalEntryPage<TParent> {
 	system!: {
 		offset: number
 		code: string

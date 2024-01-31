@@ -5,7 +5,9 @@ import { NumericCompareType, NumericCriteria } from "@util/numeric_criteria.ts"
 import { SkillPrereqObj } from "./data.ts"
 import { CharacterResolver, LocalizeGURPS, LootResolver } from "@util/index.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
-import { ActorType, ItemType } from "@module/data/misc.ts"
+import { SkillGURPS, TechniqueGURPS } from "@item"
+import { ActorType } from "@actor"
+import { ItemType } from "@item/types.ts"
 
 export class SkillPrereq extends BasePrereq {
 	override type = prereq.Type.Skill
@@ -33,14 +35,18 @@ export class SkillPrereq extends BasePrereq {
 		return prereq
 	}
 
-	satisfied(actor: CharacterResolver | LootResolver, exclude: any, tooltip: TooltipGURPS): boolean {
+	satisfied(
+		actor: CharacterResolver | LootResolver,
+		exclude: SkillGURPS | TechniqueGURPS,
+		tooltip: TooltipGURPS,
+	): boolean {
 		if (actor.type === ActorType.Loot) return true
 		let satisfied = false
 		let techLevel = ""
 		if (exclude instanceof Item && (exclude.type === ItemType.Skill || exclude.type === ItemType.Technique)) {
-			techLevel = (exclude as any).techLevel
+			techLevel = exclude.techLevel
 		}
-		for (const sk of actor.skills as any) {
+		for (const sk of actor.skills) {
 			if (sk.type === ItemType.SkillContainer) continue
 
 			if (

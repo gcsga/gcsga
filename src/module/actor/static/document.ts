@@ -1,6 +1,6 @@
 import { ActorGURPS } from "@actor/base.ts"
 import { SETTINGS, SYSTEM_NAME, gid } from "@module/data/index.ts"
-import { TokenDocumentGURPS } from "@module/token/document.ts"
+import { TokenDocumentGURPS } from "@module/canvas/token/document.ts"
 import {
 	MoveMode,
 	MoveModeTypes,

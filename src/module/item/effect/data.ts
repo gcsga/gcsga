@@ -4,7 +4,7 @@ import { BaseItemSourceGURPS } from "@item/data.ts"
 import { ItemType } from "@item/types.ts"
 import { RollModifier } from "@module/data/misc.ts"
 
-export type EffectSource = BaseItemSourceGURPS<ItemType.Effect | ItemType.Condition, EffectSystemData>
+export type EffectSource = BaseItemSourceGURPS<ItemType.Effect | ItemType.Condition, EffectSystemSource>
 
 // Export interface EffectFlags extends ItemFlagsGURPS {
 // 	aura: boolean
@@ -17,12 +17,12 @@ export enum DurationType {
 	None = "none",
 }
 
-export interface EffectData extends Omit<EffectSource, "effects">, EffectSystemData {
+export interface EffectData extends Omit<EffectSource, "effects">, EffectSystemSource {
 	readonly type: EffectSource["type"]
 	readonly _source: EffectSource
 }
 
-export interface EffectSystemData {
+export interface EffectSystemSource {
 	id: string | null
 	features?: FeatureObj[]
 	modifiers?: RollModifier[]
@@ -34,9 +34,9 @@ export interface EffectSystemData {
 	overlay?: boolean
 	duration: {
 		type: DurationType
-		startRound?: number
-		startTime?: number
-		startTurn?: number
+		startRound: number | null
+		startTime: number | null
+		startTurn: number | null
 		rounds?: number
 		seconds?: number
 		turns?: number
@@ -46,7 +46,8 @@ export interface EffectSystemData {
 	reference_highlight: string
 }
 
-export interface EffectModificationContext<TParent extends ActorGURPS> extends DocumentModificationContext<TParent> {
+export interface EffectModificationContext<TParent extends ActorGURPS | null>
+	extends DocumentModificationContext<TParent> {
 	previousLevel: number
 	previousID?: string
 }

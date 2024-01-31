@@ -1,7 +1,8 @@
 import { ActorGURPS } from "@actor/base.ts"
-import { ActorType, SYSTEM_NAME } from "@module/data/index.ts"
-import { TokenDocumentGURPS } from "@module/token/document.ts"
+import { SYSTEM_NAME } from "@module/data/index.ts"
+import { TokenDocumentGURPS } from "@module/canvas/token/document.ts"
 import { UserFlags } from "@module/user/data.ts"
+import { ActorType } from "@actor"
 
 export class LastActor {
 	static async set(actor: ActorGURPS, token?: TokenDocument): Promise<void> {

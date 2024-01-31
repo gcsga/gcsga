@@ -2,9 +2,10 @@ import { Int } from "@util/fxp.ts"
 import { WeaponField } from "./weapon_field.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { wswitch } from "@util/enum/wswitch.ts"
-import { BaseWeaponGURPS } from "./document.ts"
 import { feature } from "@util/enum/feature.ts"
 import { CharacterGURPS } from "@actor/document.ts"
+import { BaseWeaponGURPS } from "./document.ts"
+import { EquipmentContainerGURPS, EquipmentGURPS } from "@item"
 export class WeaponRange extends WeaponField {
 	halfDamage = 0
 
@@ -62,7 +63,7 @@ export class WeaponRange extends WeaponField {
 		result.inMiles = w.resolveBoolFlag(wswitch.Type.RangeInMiles, result.inMiles)
 		if (result.musclePowered) {
 			let st = 0
-			if (w.container instanceof Item) st = (w.container as any).ratedStrength
+			if (w.container instanceof (EquipmentGURPS || EquipmentContainerGURPS)) st = w.container.ratedStrength
 			if (st === 0) {
 				if (w.actor instanceof CharacterGURPS) st = w.actor.throwingST
 			}
@@ -120,7 +121,7 @@ export class WeaponRange extends WeaponField {
 		return buffer
 	}
 
-	validate() {
+	validate(): void {
 		this.halfDamage = Math.max(this.halfDamage, 0)
 		this.min = Math.max(this.min, 0)
 		this.max = Math.max(this.max, 0)

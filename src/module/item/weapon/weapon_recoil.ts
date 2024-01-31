@@ -1,8 +1,8 @@
 import { Int } from "@util/fxp.ts"
 import { WeaponField } from "./weapon_field.ts"
-import { BaseWeaponGURPS } from "./document.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { feature } from "@util/enum/feature.ts"
+import { BaseWeaponGURPS } from "./document.ts"
 
 export class WeaponRecoil extends WeaponField {
 	shot = 0
@@ -44,7 +44,7 @@ export class WeaponRecoil extends WeaponField {
 		return buffer
 	}
 
-	validate() {
+	validate(): void {
 		this.shot = Math.max(this.shot, 0)
 		this.slug = Math.max(this.slug, 0)
 	}

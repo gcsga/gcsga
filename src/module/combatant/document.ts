@@ -1,7 +1,7 @@
 import { ActorGURPS } from "@actor/base.ts"
 import { CombatGURPS } from "@module/combat/index.ts"
 import { ActorType } from "@module/data/misc.ts"
-import { TokenDocumentGURPS } from "@module/token/document.ts"
+import { TokenDocumentGURPS } from "@module/canvas/token/document.ts"
 import { UserGURPS } from "@module/user/document.ts"
 
 class CombatantGURPS<

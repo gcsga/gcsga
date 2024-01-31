@@ -11,15 +11,11 @@ import { PDF } from "@module/pdf/index.ts"
 import {
 	BaseWeaponGURPS,
 	ConditionGURPS,
-	ConditionID,
 	ContainerGURPS,
 	EquipmentContainerGURPS,
 	EquipmentGURPS,
 	ItemGCS,
-	ManeuverID,
 	MeleeWeaponGURPS,
-	Posture,
-	Postures,
 	RangedWeaponGURPS,
 	RitualMagicSpellGURPS,
 	SkillGURPS,
@@ -45,6 +41,7 @@ import { ResourceTracker } from "@sytem/resource_tracker/object.ts"
 import { MoveType } from "@sytem/move_type/object.ts"
 import { HitLocation } from "./hit_location.ts"
 import { htmlQuery } from "@util/dom.ts"
+import { ConditionID, ManeuverID, Posture, Postures } from "@item/condition/data.ts"
 
 class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extends ActorSheetGURPS<TActor> {
 	config: CharacterSheetConfig | null = null

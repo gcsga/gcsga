@@ -13,8 +13,8 @@ import { GURPSCONFIG } from "@scripts/config/index.ts"
 type StaticCharacterSheetConfigOptions = FormApplicationOptions & {}
 
 export interface StaticCharacterSheetConfig<
-	TActor extends StaticCharacterGURPS,
-	TOptions extends StaticCharacterSheetConfigOptions,
+	TActor extends StaticCharacterGURPS = StaticCharacterGURPS,
+	TOptions extends StaticCharacterSheetConfigOptions = StaticCharacterSheetConfigOptions,
 > extends FormApplication<TActor, TOptions> {
 	object: TActor
 }

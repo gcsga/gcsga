@@ -1,16 +1,17 @@
 import { Int } from "@util/fxp.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { feature } from "@util/enum/feature.ts"
-import { BaseWeaponGURPS } from "./document.ts"
 import { stdmg } from "@util/enum/stdmg.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { WeaponDamageObj } from "./data.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { ItemType } from "@module/data/misc.ts"
 import { progression } from "@util/enum/progression.ts"
+import { BaseWeaponGURPS } from "./document.ts"
+import { CharacterGURPS } from "@actor"
+import { EquipmentContainerGURPS, EquipmentGURPS, TraitGURPS } from "@item"
 
 export class WeaponDamage {
-	owner: BaseWeaponGURPS<any>
+	owner?: BaseWeaponGURPS
 
 	type: string
 
@@ -28,7 +29,7 @@ export class WeaponDamage {
 
 	modifier_per_die?: number
 
-	constructor(data: WeaponDamageObj & { owner: BaseWeaponGURPS<any> }) {
+	constructor(data: WeaponDamageObj & { owner?: BaseWeaponGURPS }) {
 		this.owner = data.owner
 		this.type = data.type
 		this.st = data.st ?? stdmg.Option.None
@@ -44,7 +45,8 @@ export class WeaponDamage {
 		let buffer = ""
 		if (this.st !== stdmg.Option.None) buffer += LocalizeGURPS.translations.gurps.weapon.damage_display[this.st]
 		let convertMods = false
-		if (this.owner && this.owner.actor) convertMods = this.owner.actor.settings.use_modifying_dice_plus_adds
+		if (this.owner && this.owner.actor instanceof CharacterGURPS)
+			convertMods = this.owner.actor.settings.use_modifying_dice_plus_adds
 		if (this.base) {
 			const base = this.base.stringExtra(convertMods)
 			if (base !== "0") {
@@ -74,57 +76,62 @@ export class WeaponDamage {
 
 	get baseDamageDice(): DiceGURPS {
 		if (!this.owner) return new DiceGURPS({ sides: 6, multiplier: 1 })
-		const actor = this.owner.actor
+		const actor = this.owner.actor as CharacterGURPS
 		if (!actor) return new DiceGURPS({ sides: 6, multiplier: 1 })
 		const maxST = (this.owner.strength.resolve(this.owner, null).min ?? 0) * 3
 		let st = 0
-		if (this.owner.container instanceof Item) st = (this.owner.container as any).ratedStrength
+		if (this.owner.container instanceof EquipmentGURPS || this.owner.container instanceof EquipmentContainerGURPS)
+			st = this.owner.container.ratedStrength
 		if (st === 0) st = actor.strikingST
 		if (maxST > 0 && maxST < st) st = maxST
 		let base = new DiceGURPS({ sides: 6, multiplier: 1 })
 		if (this.base) base = this.base
 		if (
 			!(this.owner.container instanceof CompendiumCollection) &&
-			this.owner.container?.type === ItemType.Trait &&
-			(this.owner.container as any).isLeveled
+			this.owner.container instanceof TraitGURPS &&
+			this.owner.container.isLeveled
 		)
-			multiplyDice(Int.from((this.owner.container as any).levels), base)
+			multiplyDice(Int.from(this.owner.container.levels), base)
 		const intST = Int.from(st)
 		switch (this.st) {
 			case stdmg.Option.Thrust:
 				base = addDice(base, actor.thrustFor(intST))
 				break
-			case stdmg.Option.LeveledThrust:
+			case stdmg.Option.LeveledThrust: {
 				const thrust = actor.thrustFor(intST)
 				if (
 					!(this.owner.container instanceof CompendiumCollection) &&
-					this.owner.container?.type === ItemType.Trait &&
-					(this.owner.container as any).isLeveled
+					this.owner.container instanceof TraitGURPS &&
+					this.owner.container.isLeveled
 				)
-					multiplyDice(Int.from((this.owner.container as any).levels), base)
+					multiplyDice(Int.from(this.owner.container.levels), base)
 				base = addDice(base, thrust)
 				break
+			}
 			case stdmg.Option.Swing:
 				base = addDice(base, actor.swingFor(intST))
 				break
-			case stdmg.Option.LeveledSwing:
+			case stdmg.Option.LeveledSwing: {
 				const swing = actor.swingFor(intST)
 				if (
 					!(this.owner.container instanceof CompendiumCollection) &&
-					this.owner.container?.type === ItemType.Trait &&
-					(this.owner.container as any).isLeveled
+					this.owner.container instanceof TraitGURPS &&
+					this.owner.container.isLeveled
 				)
-					multiplyDice(Int.from((this.owner.container as any).levels), swing)
+					multiplyDice(Int.from(this.owner.container.levels), swing)
 				base = addDice(base, swing)
 				break
+			}
 		}
 		return base
 	}
 
 	resolvedDamage(tooltip: TooltipGURPS | null): string {
+		// TODO: change
+		if (!this.owner) return ""
 		let base = this.baseDamageDice
 		if (base.count === 0 && base.modifier === 0) return this.toString()
-		const actor = this.owner.actor
+		const actor = this.owner.actor as CharacterGURPS
 		const adjustForPhoenixFlame =
 			actor?.settings.damage_progression === progression.Option.PhoenixFlameD3 && base.sides === 3
 		let [percentDamageBonus, percentDRDivisorBonus] = [0, 0]

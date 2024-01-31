@@ -1,10 +1,11 @@
-import { gid, SETTINGS, SYSTEM_NAME } from "@module/data"
 import { sanitize } from "@util"
-import { MookMelee, MookRanged, MookSkill, MookSpell, MookTrait, MookTraitModifier } from "./data"
-import { Mook } from "./document"
-import { WeaponDamageObj } from "@item/weapon/data"
-import { DiceGURPS } from "@module/dice"
-import { difficulty, stdmg } from "@util/enum"
+import { MookData, MookMelee, MookRanged, MookSkill, MookSpell, MookTrait, MookTraitModifier } from "./data.ts"
+import { Mook } from "./document.ts"
+import { SETTINGS, SYSTEM_NAME, gid } from "@module/data/misc.ts"
+import { difficulty } from "@util/enum/difficulty.ts"
+import { WeaponDamageObj } from "@item"
+import { stdmg } from "@util/enum/stdmg.ts"
+import { DiceGURPS } from "@module/dice/index.ts"
 
 const regex_points = /\[(-?\d+)\]/
 const damage_type_matches: Map<string, string> = new Map([
@@ -54,13 +55,13 @@ export class MookParser {
 		this.object = object
 	}
 
-	static init(text?: string, object?: Mook) {
+	static init(text?: string, object?: Mook): MookParser {
 		text ??= ""
 		object ??= new Mook()
 		return new MookParser(text, object)
 	}
 
-	parseStatBlock(text: string): any {
+	parseStatBlock(text: string): MookData {
 		this.text = this.sanitizeStatBlock(text)
 		this.object.profile.name = this.parseName(this.text)
 		;[this.object.melee, this.object.ranged] = this.parseAttacks(this.text)
@@ -283,10 +284,10 @@ export class MookParser {
 
 	parseSkills(input = this.text, skipSeparation = false): MookSkill[] {
 		const attributes: { name: string; id: string }[] = [
-			...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`).map((e: any) => {
+			...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`).map(e => {
 				return { id: e.id, name: e.name }
 			}),
-			...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`).map((e: any) => {
+			...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`).map(e => {
 				return { id: e.id, name: e.id }
 			}),
 		]
@@ -384,10 +385,10 @@ export class MookParser {
 
 	parseSpells(input = this.text, skipSeparation = false): MookSpell[] {
 		const attributes: { name: string; id: string }[] = [
-			...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`).map((e: any) => {
+			...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`).map(e => {
 				return { id: e.id, name: e.name }
 			}),
-			...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`).map((e: any) => {
+			...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`).map(e => {
 				return { id: e.id, name: e.id }
 			}),
 		]
@@ -576,7 +577,7 @@ export class MookParser {
 					last_matched = 0
 				} else if (weapons.length !== 0) {
 					weapons += `${e}\n`
-					last_matched++
+					last_matched += 1
 				} else {
 					beforeText += `${e}\n`
 				}

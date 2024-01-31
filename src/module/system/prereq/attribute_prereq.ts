@@ -1,11 +1,13 @@
 import { NumericCompareType, NumericCriteria } from "@util/numeric_criteria.ts"
 import { BasePrereq } from "./base.ts"
 import { prereq } from "@util/enum/prereq.ts"
-import { ActorType, gid } from "@module/data/misc.ts"
 import { AttributePrereqObj } from "./data.ts"
 import { CharacterResolver, LootResolver } from "@util/resolvers.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
+import { gid } from "@module/data/misc.ts"
+import { Attribute } from "@sytem/attribute/index.ts"
+import { ActorType } from "@actor"
 
 export class AttributePrereq extends BasePrereq {
 	which: string
@@ -30,7 +32,7 @@ export class AttributePrereq extends BasePrereq {
 		return prereq
 	}
 
-	satisfied(actor: CharacterResolver | LootResolver, _exclude: any, tooltip: TooltipGURPS): boolean {
+	satisfied(actor: CharacterResolver | LootResolver, _exclude: Attribute, tooltip: TooltipGURPS): boolean {
 		if (actor.type === ActorType.Loot) return true
 		let value = actor.resolveAttributeCurrent(this.which)
 		if (this.combined_with !== "") value += actor.resolveAttributeCurrent(this.combined_with)

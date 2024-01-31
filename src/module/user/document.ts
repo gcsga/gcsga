@@ -1,7 +1,7 @@
 import { ActorGURPS } from "@actor/document.ts"
 import { HooksGURPS, RollModifier, RollModifierTags, SYSTEM_NAME } from "@module/data/index.ts"
-import { TokenDocumentGURPS } from "@module/token/document.ts"
-import { TokenGURPS } from "@module/token/object.ts"
+import { TokenDocumentGURPS } from "@module/canvas/token/document.ts"
+import { TokenGURPS } from "@module/canvas/token/object.ts"
 import { flattenObject } from "types/foundry/common/utils/helpers.js"
 import { UserFlags, UserFlagsGURPS, UserSourceGURPS } from "./data.ts"
 

@@ -1,8 +1,7 @@
-import { ContainerSheetGURPS } from "@item/container"
-import { ItemGURPS } from "@module/config"
-import { ItemType, SETTINGS, SYSTEM_NAME } from "@module/data"
-import { LocalizeGURPS, Weight } from "@util"
-import { ItemGCS } from "./document"
+import { ContainerSheetGURPS } from "@item/container/sheet.ts"
+import { ItemGCS } from "./document.ts"
+import { LocalizeGURPS } from "@util"
+import { ItemType } from "@item/types.ts"
 
 export class ItemSheetGCS<IType extends ItemGCS = ItemGCS> extends ContainerSheetGURPS<IType> {
 	override activateListeners(html: JQuery<HTMLElement>): void {
@@ -15,7 +14,7 @@ export class ItemSheetGCS<IType extends ItemGCS = ItemGCS> extends ContainerShee
 		html.find(".item-list .header.desc").each((_index, element) => this._addItemHeaderContextMenu(element))
 	}
 
-	protected _addItemHeaderContextMenu(element: HTMLElement) {
+	protected _addItemHeaderContextMenu(element: HTMLElement): void {
 		const type = $(element).parent(".item-list")[0].id
 		// const ctx = new ContextMenu(html, ".menu", [])
 		const menuItems = (function (self: ItemSheetGCS): ContextMenuEntry[] {
@@ -70,9 +69,9 @@ export class ItemSheetGCS<IType extends ItemGCS = ItemGCS> extends ContainerShee
 		// await ctx.render(element)
 	}
 
-	protected _addItemContextMenu(element: HTMLElement) {
+	protected _addItemContextMenu(element: HTMLElement): void {
 		const id = $(element).data("item-id")
-		const item = this.item.deepItems.get(id) as ItemGURPS
+		const item = this.object.deepItems.get(id) as ItemGURPS
 		if (!item) return
 		// const ctx = new ContextMenu(html, ".menu", [])
 		const menuItems = [
@@ -100,7 +99,6 @@ export class ItemSheetGCS<IType extends ItemGCS = ItemGCS> extends ContainerShee
 			},
 		]
 		ContextMenu.create(this, $(element), "*", menuItems)
-		// await ctx.render($(event.currentTarget))
 	}
 
 	// async _getItemContextMenu(event: JQuery.ContextMenuEvent, html: JQuery<HTMLElement>) {

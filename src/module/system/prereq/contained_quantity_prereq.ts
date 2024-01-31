@@ -2,9 +2,9 @@ import { NumericCompareType, NumericCriteria } from "@util/numeric_criteria.ts"
 import { BasePrereq } from "./base.ts"
 import { prereq } from "@util/enum/prereq.ts"
 import { ContainedQuantityPrereqObj } from "./data.ts"
-import { ActorResolver, EquipmentContainerResolver, LocalizeGURPS } from "@util/index.ts"
+import { CharacterResolver, EquipmentContainerResolver, LocalizeGURPS, LootResolver } from "@util/index.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
-import { ItemType } from "@module/data/misc.ts"
+import { EquipmentContainerGURPS } from "@item"
 
 export class ContainedQuantityPrereq extends BasePrereq {
 	qualifier: NumericCriteria
@@ -21,9 +21,13 @@ export class ContainedQuantityPrereq extends BasePrereq {
 		return prereq
 	}
 
-	satisfied(_actor: ActorResolver<any>, exclude: any, tooltip: TooltipGURPS): boolean {
+	satisfied(
+		_actor: CharacterResolver | LootResolver,
+		exclude: EquipmentContainerGURPS,
+		tooltip: TooltipGURPS,
+	): boolean {
 		let satisfied = false
-		if (exclude instanceof Item && exclude.type === ItemType.EquipmentContainer) {
+		if (exclude instanceof EquipmentContainerGURPS) {
 			const eqp = exclude as unknown as EquipmentContainerResolver
 			satisfied = this.qualifier.matches(eqp.children.size)
 		}

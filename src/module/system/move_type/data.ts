@@ -19,7 +19,7 @@ export interface MoveTypeDefObj {
 export interface MoveTypeOverrideObj {
 	condition: {
 		type: MoveTypeOverrideConditionType
-		qualifier: any
+		qualifier: string
 	}
 	move_type_base: string
 }

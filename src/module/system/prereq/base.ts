@@ -13,8 +13,8 @@ export abstract class BasePrereq {
 
 	abstract satisfied(
 		character: CharacterResolver | LootResolver,
-		exclude: any,
+		exclude: unknown,
 		tooltip: TooltipGURPS,
-		...args: any[]
+		...args: unknown[]
 	): boolean
 }

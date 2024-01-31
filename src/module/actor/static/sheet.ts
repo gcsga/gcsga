@@ -1,23 +1,17 @@
-import { ActorFlags, ActorSheetGURPS } from "@actor/base"
-import { StaticItemGURPS } from "@item"
-import { RollType, SETTINGS, SYSTEM_NAME } from "@module/data"
-import { PDF } from "@module/pdf"
-import { RollGURPS } from "@module/roll"
-import { LocalizeGURPS, Static } from "@util"
-import EmbeddedCollection from "types/foundry/common/abstract/embedded-collection.mjs"
-import { StaticCharacterSheetConfig } from "./config_sheet"
-import { StaticAttributeName, staticFpConditions, staticHpConditions, StaticSecondaryAttributeName } from "./data"
-import { StaticCharacterGURPS } from "./document"
+import { ActorSheetGURPS } from "@actor/base/sheet.ts"
+import { StaticCharacterGURPS } from "./document.ts"
+import { StaticCharacterSheetConfig } from "./config_sheet.ts"
+import { SYSTEM_NAME } from "@module/data/index.ts"
 
-export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
-	config: StaticCharacterSheetConfig | null = null
+class StaticCharacterSheetGURPS<
+	TActor extends StaticCharacterGURPS = StaticCharacterGURPS,
+> extends ActorSheetGURPS<TActor> {
+	config: StaticCharacterSheetConfig<TActor> | null = null
 
 	editing!: boolean
 
-	declare object: StaticCharacterGURPS
-
-	static get defaultOptions(): ActorSheet.Options {
-		return mergeObject(super.defaultOptions, {
+	static get defaultOptions(): ActorSheetOptions {
+		return fu.mergeObject(super.defaultOptions, {
 			classes: super.defaultOptions.classes.concat(["character", "static"]),
 			width: 800,
 			height: 800,
@@ -29,13 +23,13 @@ export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
 		})
 	}
 
-	get template(): string {
+	override get template(): string {
 		if (!game.user?.isGM && this.actor.limited)
 			return `systems${SYSTEM_NAME}/templates/actor/static/sheet_limited.hbs`
 		return `/systems/${SYSTEM_NAME}/templates/actor/static/sheet.hbs`
 	}
 
-	getData(options?: Partial<ActorSheet.Options> | undefined): any {
+	override getData(options?: Partial<ActorSheetOptions> | undefined) {
 		const actorData = this.actor.toObject(false) as any
 		const items = deepClone(
 			(this.actor.items as EmbeddedCollection<any, any>)
@@ -411,3 +405,5 @@ export class StaticCharacterSheetGURPS extends ActorSheetGURPS {
 		return item?.sheet?.render(true)
 	}
 }
+
+export { StaticCharacterSheetGURPS }

@@ -1,10 +1,12 @@
-import { WeaponDamage } from "@item/weapon/damage"
-import { WeaponDamageObj } from "@item/weapon/data"
-import { Attribute, AttributeDefObj, AttributeObj } from "@module/attribute"
-import { DiceGURPS } from "@module/dice"
-import { MoveTypeDefObj } from "@module/move_type"
-import { difficulty, progression, selfctrl } from "@util/enum"
-import { StringBuilder } from "@util/string_builder"
+import { WeaponDamage, WeaponDamageObj } from "@item"
+import { DiceGURPS } from "@module/dice/index.ts"
+import { AttributeDefObj, AttributeObj } from "@sytem/attribute/data.ts"
+import { MoveTypeDefObj } from "@sytem/move_type/data.ts"
+import { difficulty } from "@util/enum/difficulty.ts"
+import { progression } from "@util/enum/progression.ts"
+import { selfctrl } from "@util/enum/selfctrl.ts"
+import { StringBuilder } from "@util/string_builder.ts"
+import { Attribute } from "pixi.js"
 
 export interface MookData {
 	settings: {
@@ -47,7 +49,7 @@ class _MookItem {
 
 	reference: string
 
-	constructor(data: Record<keyof _MookItem, any>) {
+	constructor(data: _MookItem) {
 		this.name = data.name
 		this.notes = data.notes
 		this.reference = data.reference
@@ -63,7 +65,7 @@ export class MookTrait extends _MookItem {
 
 	modifiers: MookTraitModifier[] = []
 
-	constructor(data: Record<keyof MookTrait, any>) {
+	constructor(data: MookTrait) {
 		super(data)
 		this.cr = data.cr
 		this.points = data.points
@@ -71,7 +73,7 @@ export class MookTrait extends _MookItem {
 		this.modifiers = data.modifiers
 	}
 
-	toString(): string {
+	override toString(): string {
 		const buffer = new StringBuilder()
 		buffer.push(this.name)
 		if (this.levels !== 0) buffer.push(` ${this.levels}`)
@@ -92,7 +94,7 @@ export class MookTrait extends _MookItem {
 export class MookTraitModifier extends _MookItem {
 	cost: string
 
-	constructor(data: Record<keyof MookTraitModifier, any>) {
+	constructor(data: MookTraitModifier) {
 		super(data)
 		this.cost = data.cost
 	}
@@ -111,7 +113,7 @@ export class MookSkill extends _MookItem {
 
 	level: number
 
-	constructor(data: Record<keyof MookSkill, any>) {
+	constructor(data: MookSkill) {
 		super(data)
 		this.specialization = data.specialization
 		this.tech_level = data.tech_level
@@ -121,7 +123,7 @@ export class MookSkill extends _MookItem {
 		this.level = data.level
 	}
 
-	toString(): string {
+	override toString(): string {
 		const buffer = new StringBuilder()
 		buffer.push(this.name)
 		if (this.specialization !== "") buffer.push(` (${this.specialization})`)
@@ -145,7 +147,7 @@ export class MookSpell extends _MookItem {
 
 	college: string[] = []
 
-	constructor(data: Record<keyof MookSpell, any>) {
+	constructor(data: MookSpell) {
 		super(data)
 		this.tech_level = data.tech_level
 		this.attribute = data.attribute
@@ -154,7 +156,7 @@ export class MookSpell extends _MookItem {
 		this.level = data.level
 	}
 
-	toString(): string {
+	override toString(): string {
 		const buffer = new StringBuilder()
 		buffer.push(this.name)
 		if (this.tech_level !== "") buffer.push(`/TL${this.tech_level}`)
@@ -171,7 +173,7 @@ export class MookWeapon extends _MookItem {
 
 	level: number
 
-	constructor(data: Record<keyof MookWeapon, any>) {
+	constructor(data: MookWeapon) {
 		super(data)
 		this.strength = data.strength
 		this.damage = data.damage
@@ -186,18 +188,18 @@ export class MookMelee extends MookWeapon {
 
 	block: string
 
-	constructor(data: Record<keyof MookMelee, any>) {
+	constructor(data: MookMelee) {
 		super(data)
 		this.reach = data.reach
 		this.parry = data.parry
 		this.block = data.block
 	}
 
-	toString(): string {
+	override toString(): string {
 		const buffer = new StringBuilder()
 		buffer.push(this.name)
 		buffer.push(` (${this.level}):`)
-		buffer.push(` ${new WeaponDamage(this.damage as any).toString()}`)
+		buffer.push(` ${new WeaponDamage(this.damage).toString()}`)
 		if (this.strength !== "0") buffer.push(` ST:${this.strength}`)
 		if (this.reach !== "No") buffer.push(` Reach: ${this.reach}`)
 		if (this.parry !== "No") buffer.push(` Parry: ${this.parry}`)
@@ -219,7 +221,7 @@ export class MookRanged extends MookWeapon {
 
 	recoil: string
 
-	constructor(data: Record<keyof MookRanged, any>) {
+	constructor(data: MookRanged) {
 		super(data)
 		this.accuracy = data.accuracy
 		this.range = data.range
@@ -229,11 +231,11 @@ export class MookRanged extends MookWeapon {
 		this.recoil = data.recoil
 	}
 
-	toString(): string {
+	override toString(): string {
 		const buffer = new StringBuilder()
 		buffer.push(this.name)
 		buffer.push(` (${this.level}):`)
-		buffer.push(` ${new WeaponDamage(this.damage as any).toString()}`)
+		buffer.push(` ${new WeaponDamage(this.damage).toString()}`)
 		if (this.strength !== "0") buffer.push(` ST:${this.strength}`)
 		if (this.accuracy !== "") buffer.push(` Acc: ${this.accuracy}`)
 		if (this.range !== "") buffer.push(` Range: ${this.range}`)
@@ -260,7 +262,7 @@ export class MookEquipment extends _MookItem {
 
 	max_uses: number
 
-	constructor(data: Record<keyof MookEquipment, any>) {
+	constructor(data: MookEquipment) {
 		super(data)
 		this.quantity = data.quantity
 		this.tech_level = data.tech_level
@@ -271,7 +273,7 @@ export class MookEquipment extends _MookItem {
 		this.max_uses = data.max_uses
 	}
 
-	toString(): string {
+	override toString(): string {
 		const buffer = new StringBuilder()
 		buffer.push(this.name)
 		return buffer.toString()

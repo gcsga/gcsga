@@ -14,6 +14,7 @@ declare interface CombatTrackerTurn {
 	hasRolled: boolean
 	hasResource: boolean
 	resource: object | null
+	effects: Set<ImageFilePath | VideoFilePath>
 }
 
 declare interface CombatTrackerData {

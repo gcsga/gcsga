@@ -2,7 +2,7 @@ import { MoveTypeOverrideConditionType, MoveTypeOverrideObj } from "./data.ts"
 import { CharacterResolver, evaluateToNumber } from "@util"
 
 export class MoveTypeOverride {
-	condition: { type: MoveTypeOverrideConditionType; qualifier: any }
+	condition: { type: MoveTypeOverrideConditionType; qualifier: string }
 
 	move_type_base: string
 

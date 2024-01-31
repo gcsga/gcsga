@@ -31,7 +31,7 @@ import {
 	ResourceTrackerDefObj,
 	ResourceTrackerObj,
 } from "@module/system/resource_tracker/index.ts"
-import { TokenDocumentGURPS } from "@module/token/document.ts"
+import { TokenDocumentGURPS } from "@module/canvas/token/document.ts"
 import { Attribute } from "@sytem/attribute/object.ts"
 import { attribute } from "@util/enum/attribute.ts"
 import { CharacterFlagDefaults, CharacterFlags, CharacterSource, CharacterSystemSource, Encumbrance } from "./data.ts"
@@ -64,7 +64,6 @@ import { ConditionalModifier } from "@module/conditional_modifier.ts"
 import { selfctrl } from "@util/enum/selfctrl.ts"
 import {
 	BaseWeaponGURPS,
-	CR_Features,
 	EquipmentContainerGURPS,
 	EquipmentGURPS,
 	ItemGCS,
@@ -80,7 +79,6 @@ import {
 	TechniqueGURPS,
 	TraitContainerGURPS,
 	TraitGURPS,
-	WeaponType,
 } from "@item/index.ts"
 import { ItemGURPS } from "@item/base/document.ts"
 import { SkillDefault } from "@sytem/default/index.ts"
@@ -95,6 +93,8 @@ import { ItemType } from "@item/types.ts"
 import { ItemSourceGURPS } from "@item/data/index.ts"
 import { CharacterSheetGURPS } from "./sheet.ts"
 import { Int } from "@util/fxp.ts"
+import { WeaponType } from "@item/weapon/index.ts"
+import { CR_Features } from "@item/trait/data.ts"
 
 export interface CharacterGURPS<TParent extends TokenDocumentGURPS | null> extends ActorGURPS<TParent> {
 	type: ActorType.Character
@@ -1424,7 +1424,7 @@ export class CharacterGURPS<
 		}
 		for (let b of this.spells.filter(e => !(e instanceof SpellContainerGURPS))) {
 			b = b as SpellGURPS | RitualMagicSpellGURPS
-			b.unsatisfied_reason = ""
+			b.unsatisfiedReason = ""
 			const tooltip = new TooltipGURPS()
 			let satisfied = true
 			const eqpPenalty = { value: false }
@@ -1440,7 +1440,7 @@ export class CharacterGURPS<
 				}
 				this.features.skillBonuses.push(penalty)
 			}
-			if (!satisfied) b.unsatisfied_reason = not_met + tooltip.toString()
+			if (!satisfied) b.unsatisfiedReason = not_met + tooltip.toString()
 		}
 		for (const e of this.equipment) {
 			e.unsatisfiedReason = ""

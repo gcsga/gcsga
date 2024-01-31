@@ -1,8 +1,8 @@
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
-import { BaseWeaponGURPS } from "./document.ts"
 import { feature } from "@util/enum/feature.ts"
 
 import { WeaponField } from "./weapon_field.ts"
+import { BaseWeaponGURPS } from "./document.ts"
 export class WeaponBulk extends WeaponField {
 	normal = 0
 
@@ -45,7 +45,7 @@ export class WeaponBulk extends WeaponField {
 		return buffer
 	}
 
-	validate() {
+	validate(): void {
 		this.normal = Math.min(this.normal, 0)
 		this.giant = Math.min(this.giant, 0)
 	}

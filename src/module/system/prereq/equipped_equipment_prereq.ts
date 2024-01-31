@@ -4,6 +4,7 @@ import { prereq } from "@util/enum/prereq.ts"
 import { EquippedEquipmentPrereqObj } from "./data.ts"
 import { CharacterResolver, LocalizeGURPS, LootResolver } from "@util/index.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { EquipmentContainerGURPS, EquipmentGURPS } from "@item"
 
 export class EquippedEquipmentPrereq extends BasePrereq {
 	name: StringCriteria
@@ -22,7 +23,7 @@ export class EquippedEquipmentPrereq extends BasePrereq {
 
 	satisfied(
 		actor: CharacterResolver | LootResolver,
-		_exclude: any,
+		_exclude: EquipmentGURPS | EquipmentContainerGURPS,
 		tooltip: TooltipGURPS,
 		hasEquipmentPenalty: { value: boolean },
 	): boolean {

@@ -5,7 +5,7 @@ import { sheetDisplayNotes } from "@util/misc.ts"
 import { display } from "@util/enum/display.ts"
 import { WeaponStrength } from "./weapon_strength.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
-import { ItemType, RollType, SYSTEM_NAME, gid } from "@module/data/misc.ts"
+import { RollType, SYSTEM_NAME, gid } from "@module/data/misc.ts"
 import { ItemFlags } from "@item/data.ts"
 import { StringBuilder } from "@util/string_builder.ts"
 import { EquipmentResolver } from "@util/resolvers.ts"
@@ -19,8 +19,9 @@ import { wswitch } from "@util/enum/wswitch.ts"
 import { feature } from "@util/enum/feature.ts"
 import { Int } from "@util/fxp.ts"
 import { wsel } from "@util/enum/wsel.ts"
+import { ItemType } from "@item/types.ts"
 
-export interface BaseWeaponGURPS<TParent extends ActorGURPS> extends ItemGURPS<TParent> {
+export interface BaseWeaponGURPS<TParent extends ActorGURPS | null> extends ItemGURPS<TParent> {
 	system: BaseWeaponSystemData
 }
 
@@ -57,8 +58,8 @@ export abstract class BaseWeaponGURPS<
 	secondaryText(_optionChecker: (option: display.Option) => boolean): string {
 		const buffer = new StringBuilder()
 		if (this.getFlag(SYSTEM_NAME, ItemFlags.Unready))
-			if (this.container instanceof Item) {
-				buffer.appendToNewLine((this.container as any).notes)
+			if (this.container instanceof ItemGCS) {
+				buffer.appendToNewLine(this.container.notes)
 			}
 		buffer.appendToNewLine(this.system.usage_notes)
 		return buffer.toString()
@@ -70,17 +71,20 @@ export abstract class BaseWeaponGURPS<
 
 	get equipped(): boolean {
 		if (!this.actor) return false
-		if ([ItemType.Equipment, ItemType.EquipmentContainer].includes((this.container as any)?.type))
-			return (this.container as unknown as EquipmentResolver).equipped
-		if ([ItemType.Trait, ItemType.TraitContainer].includes((this.container as any)?.type))
-			return (this.container as unknown as EquipmentResolver).enabled
+		if (this.container instanceof CompendiumCollection) return false
+		if (this.container instanceof ItemGCS) {
+			if ([ItemType.Equipment, ItemType.EquipmentContainer].includes(this.container.type))
+				return (this.container as unknown as EquipmentResolver).equipped
+			if ([ItemType.Trait, ItemType.TraitContainer].includes(this.container.type))
+				return (this.container as unknown as EquipmentResolver).enabled
+		}
 		return true
 	}
 
 	get defaults(): SkillDefault[] {
-		if (this.system.hasOwnProperty("defaults")) {
+		if (Object.prototype.hasOwnProperty.call(this.system, "defaults")) {
 			const defaults: SkillDefault[] = []
-			const list = (this.system as any).defaults
+			const list = this.system.defaults
 			for (const f of list ?? []) {
 				defaults.push(new SkillDefault(f))
 			}

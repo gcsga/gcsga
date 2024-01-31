@@ -1,5 +1,5 @@
 import { ActorGURPS, ActorType } from "@actor"
-import { TokenDocumentGURPS } from "@module/token/document.ts"
+import { TokenDocumentGURPS } from "@module/canvas/token/document.ts"
 import { LootSettings, LootSource, LootSystemSource } from "./data.ts"
 import { FilePickerGURPS, LocalizeGURPS, Weight, WeightUnits } from "@util"
 import { Int } from "@util/fxp.ts"

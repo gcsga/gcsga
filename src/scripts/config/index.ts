@@ -37,6 +37,7 @@ import {
 	TraitModifierGURPS,
 } from "@item/index.ts"
 import { ItemType } from "@item/types.ts"
+import { JournalEntryPageGURPS, JournalEntryPagePDF } from "@module/journal-entry/page.ts"
 import {
 	AttributePrereq,
 	ContainedQuantityPrereq,
@@ -208,6 +209,15 @@ export const GURPSCONFIG = {
 			[prereq.Type.EquippedEquipment]: EquippedEquipmentPrereq,
 			[prereq.Type.Skill]: SkillPrereq,
 			[prereq.Type.Spell]: SpellPrereq,
+		},
+	},
+
+	JournalEntryPage: {
+		documentClasses: {
+			pdf: JournalEntryPagePDF,
+			image: JournalEntryPageGURPS,
+			text: JournalEntryPageGURPS,
+			video: JournalEntryPageGURPS,
 		},
 	},
 

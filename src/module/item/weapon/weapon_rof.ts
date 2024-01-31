@@ -2,8 +2,8 @@ import { WeaponField } from "./weapon_field.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { wswitch } from "@util/enum/wswitch.ts"
 import { WeaponROFMode } from "./weapon_rof_mode.ts"
-import { BaseWeaponGURPS } from "./document.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
+import { BaseWeaponGURPS } from "./document.ts"
 export class WeaponROF extends WeaponField {
 	mode1: WeaponROFMode = new WeaponROFMode()
 

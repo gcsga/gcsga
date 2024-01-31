@@ -5,11 +5,11 @@ import { wswitch } from "@util/enum/wswitch.ts"
 import { NumericCompareType, NumericCriteria } from "@util/numeric_criteria.ts"
 import { StringCompareType, StringCriteria } from "@util/string_criteria.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { BaseWeaponGURPS } from "@item/weapon/document.ts"
 import { Int } from "@util/fxp.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { WeaponBonusObj } from "./data.ts"
 import { WeaponLeveledAmount } from "./weapon_leveled_amount.ts"
+import { BaseWeaponGURPS } from "@item"
 
 export class WeaponBonus {
 	type: feature.WeaponBonusType
@@ -90,7 +90,7 @@ export class WeaponBonus {
 		this.leveledAmount.amount = amt
 	}
 
-	adjustedAmountForWeapon(wpn: BaseWeaponGURPS<any>): number {
+	adjustedAmountForWeapon(wpn: BaseWeaponGURPS): number {
 		if (this.type === feature.Type.WeaponMinSTBonus) {
 			this.leveledAmount.dieCount = 1
 		} else {
@@ -99,7 +99,7 @@ export class WeaponBonus {
 		return this.leveledAmount.adjustedAmount
 	}
 
-	addToTooltip(tooltip: TooltipGURPS | null) {
+	addToTooltip(tooltip: TooltipGURPS | null): void {
 		if (tooltip === null) return
 		const buf = new TooltipGURPS()
 		buf.push("\n")

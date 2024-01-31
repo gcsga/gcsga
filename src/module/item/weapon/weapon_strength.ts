@@ -4,6 +4,7 @@ import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { wswitch } from "@util/enum/wswitch.ts"
 import { feature } from "@util/enum/feature.ts"
 import { BaseWeaponGURPS } from "./document.ts"
+import { EquipmentContainerGURPS, EquipmentGURPS } from "@item"
 
 export class WeaponStrength extends WeaponField {
 	min?: number
@@ -34,12 +35,12 @@ export class WeaponStrength extends WeaponField {
 		return ws
 	}
 
-	resolve(w: BaseWeaponGURPS<any>, tooltip: TooltipGURPS | null): WeaponStrength {
+	resolve(w: BaseWeaponGURPS, tooltip: TooltipGURPS | null): WeaponStrength {
 		const result = new WeaponStrength()
 		Object.assign(result, this)
 		if (w.actor) {
-			if (w.container instanceof Item) {
-				const st = Math.max((w.container as any).ratedStrength, 0)
+			if (w.container instanceof (EquipmentGURPS || EquipmentContainerGURPS)) {
+				const st = Math.max(w.container.ratedStrength, 0)
 				if (st !== 0) result.min = st
 			}
 		}
@@ -73,7 +74,7 @@ export class WeaponStrength extends WeaponField {
 		return buffer
 	}
 
-	validate() {
+	validate(): void {
 		if (this.twoHandedUnready) this.twoHanded = false
 	}
 }

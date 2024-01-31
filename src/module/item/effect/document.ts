@@ -1,34 +1,37 @@
 import { ActorGURPS } from "@actor/document.ts"
 import { ItemGURPS } from "@item/base/document.ts"
-import { DurationType, EffectModificationContext, EffectSystemData } from "./data.ts"
+import { DurationType, EffectModificationContext, EffectSource, EffectSystemSource } from "./data.ts"
 import { AttributeBonus, Feature } from "@feature/index.ts"
 import { feature } from "@util/enum/feature.ts"
 import { RollModifier, gid } from "@module/data/misc.ts"
 import { ItemGCS } from "@item/gcs/document.ts"
 import { BaseUser } from "types/foundry/common/documents/module.js"
-import { TokenGURPS } from "@module/token/object.ts"
-import { TokenDocumentGURPS } from "@module/token/document.ts"
+import { TokenGURPS } from "@module/canvas/token/object.ts"
+import { TokenDocumentGURPS } from "@module/canvas/token/document.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 
 export interface EffectGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
-	system: EffectSystemData
+	_source: EffectSource
+	system: EffectSystemSource
 }
 
 export class EffectGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
 	_statusId: string | null = null
 
 	get features(): Feature[] {
-		if (this.system.hasOwnProperty("features")) {
-			return (this.system as any).features.map((e: Partial<Feature>) => {
+		if (this.system.features) {
+			return this.system.features.map(e => {
 				const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as feature.Type]
 				if (FeatureConstructor) {
-					const f = new FeatureConstructor(e as any)
+					// @ts-expect-error contradicting types
+					const f = new FeatureConstructor(e)
 					Object.assign(f, e)
 					return f
 				}
 				return new AttributeBonus(gid.Strength) // default
 			})
 		}
+
 		return []
 	}
 
@@ -109,7 +112,7 @@ export class EffectGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> 
 	}
 
 	protected override async _preCreate(
-		data: any,
+		data: this["_source"],
 		options: DocumentModificationContext<TParent>,
 		user: User,
 	): Promise<boolean | void> {
@@ -118,8 +121,8 @@ export class EffectGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> 
 		const combat = game.combat
 		if (data.system?.duration?.combat) {
 			if (data.system.duration.combat !== DurationType.None) {
-				data.system.duration.startRound = combat?.round
-				data.system.duration.startTurn = combat?.turn
+				data.system.duration.startRound = combat?.round ?? null
+				data.system.duration.startTurn = combat?.turn ?? null
 			}
 		}
 		super._preCreate(data, options, user)
@@ -127,7 +130,7 @@ export class EffectGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> 
 
 	protected override _onCreate(
 		data: this["_source"],
-		options: DocumentModificationContext<TParent>,
+		options: EffectModificationContext<TParent>,
 		userId: string,
 	): void {
 		super._onCreate(data, options, userId)
@@ -173,15 +176,15 @@ export class EffectGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> 
 		game.gurps.effectPanel.refresh()
 	}
 
-	_displayScrollingStatus(enabled: boolean) {
+	_displayScrollingStatus(enabled: boolean): void {
 		const actor = this.parent
 		if (!actor) return
-		const tokens = actor.isToken ? [actor.token?.object] : (actor.getActiveTokens(true) as any[])
+		const tokens = actor.isToken ? [actor.token?.object] : actor.getActiveTokens(true)
 		let label = `${enabled ? "+" : "-"} ${this.name}`
 		if (this.canLevel && this.level) label += ` ${this.level}`
 		for (const t of tokens) {
-			if (!t.visible || !t.renderable) continue
-			;(canvas as any).interface.createScrollingText(t.center, label, {
+			if (!t || !t.visible || !t.renderable) continue
+			canvas.interface.createScrollingText(t.center, label, {
 				anchor: CONST.TEXT_ANCHOR_POINTS.CENTER,
 				direction: enabled ? CONST.TEXT_ANCHOR_POINTS.TOP : CONST.TEXT_ANCHOR_POINTS.BOTTOM,
 				distance: 2 * t.h,
@@ -194,11 +197,11 @@ export class EffectGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> 
 	}
 
 	#dispatchTokenStatusChange(statusId: string, active: boolean) {
-		const tokens = this.parent?.getActiveTokens() as any[]
-		for (const token of tokens) token._onApplyStatusEffect(statusId, active)
+		const tokens = this.parent?.getActiveTokens()
+		if (tokens) for (const token of tokens) token._onApplyStatusEffect(statusId, active)
 	}
 
-	static async updateCombat(combat: Combat, _data: any, _options: any, _userId: string) {
+	static async updateCombat(combat: Combat, _data: unknown, _options: unknown, _userId: string): Promise<void> {
 		const previous = combat.previous
 		if (!previous.tokenId) return
 		const token = canvas?.tokens?.get(previous.tokenId) as TokenGURPS<TokenDocumentGURPS>

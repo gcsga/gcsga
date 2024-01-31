@@ -1,8 +1,8 @@
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { wswitch } from "@util/enum/wswitch.ts"
-import { BaseWeaponGURPS } from "./document.ts"
 import { Int } from "@util/fxp.ts"
 import { feature } from "@util/enum/feature.ts"
+import { BaseWeaponGURPS } from "./document.ts"
 
 export class WeaponROFMode {
 	shotsPerAttack = 0

@@ -59,7 +59,8 @@ export interface CharacterResolver extends ActorResolver<ActorType.Character> {
 	// Items
 	traits: Collection<TraitResolver | TraitContainerResovler>
 	skills: Collection<SkillResolver | TechniqueResolver | SkillContainerResolver>
-	spells: Collection<SpellResolver | SpellContainerResolver>
+	// spells: Collection<SpellResolver | SpellContainerResolver>
+	spells: Collection<SpellContainerResolver>
 	equipment: Collection<EquipmentResolver | EquipmentContainerResolver>
 	notes: Collection<NoteResolver | NoteContainerResolver>
 	conditions: Collection<ConditionResolver>
@@ -103,6 +104,7 @@ export interface ItemResolver<T extends ItemType> {
 	formattedName: string
 	secondaryText: (optionChecker: (option: display.Option) => boolean) => string
 	enabled: boolean
+	tags: string[]
 }
 
 export interface ContainerResolver<T extends ItemType, C extends ItemResolver<ItemType>>
@@ -303,7 +305,7 @@ export interface RangedWeaponResolver extends WeaponResolver<ItemType.RangedWeap
 	recoil: WeaponRecoil
 }
 
-export interface ConditionResolver extends ItemResolver<ItemType.Condition> {
+export interface ConditionResolver extends Omit<ItemResolver<ItemType.Condition>, "tags"> {
 	duration: {
 		remaining: number
 		type: DurationType

@@ -12,7 +12,7 @@ import {
 import { prereq } from "@util/enum/prereq.ts"
 import { ContainedWeightPrereqObj } from "./data.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
-import { ItemType } from "@module/data/misc.ts"
+import { EquipmentContainerGURPS } from "@item"
 
 export class ContainedWeightPrereq extends BasePrereq {
 	qualifier: WeightCriteria
@@ -30,10 +30,14 @@ export class ContainedWeightPrereq extends BasePrereq {
 		return prereq
 	}
 
-	satisfied(actor: CharacterResolver | LootResolver, exclude: any, tooltip: TooltipGURPS): boolean {
+	satisfied(
+		actor: CharacterResolver | LootResolver,
+		exclude: EquipmentContainerGURPS,
+		tooltip: TooltipGURPS,
+	): boolean {
 		const units = actor.settings.default_weight_units
 		let satisfied = false
-		if (!(exclude instanceof Item && exclude.type === ItemType.EquipmentContainer)) satisfied = true
+		if (!(exclude instanceof EquipmentContainerGURPS)) satisfied = true
 		else {
 			const eqp = exclude as unknown as EquipmentContainerResolver
 			const weight = eqp.extendedWeight(false, units) - eqp.adjustedWeight(false, units)

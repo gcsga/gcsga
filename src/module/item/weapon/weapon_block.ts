@@ -5,6 +5,7 @@ import { wswitch } from "@util/enum/wswitch.ts"
 import { gid } from "@module/data/misc.ts"
 import { feature } from "@util/enum/feature.ts"
 import { BaseWeaponGURPS } from "./document.ts"
+import { CharacterGURPS } from "@actor"
 
 export class WeaponBlock extends WeaponField {
 	no = false
@@ -26,7 +27,7 @@ export class WeaponBlock extends WeaponField {
 		const result = WeaponBlock.parse(this.toString())
 		result.no = !w.resolveBoolFlag(wswitch.Type.CanBlock, !result.no)
 		if (!result.no) {
-			const actor = w.actor
+			const actor = w.actor as CharacterGURPS
 			if (actor !== null) {
 				let primaryTooltip: TooltipGURPS | null = null
 				if (tooltip !== null) primaryTooltip = new TooltipGURPS()
@@ -63,7 +64,7 @@ export class WeaponBlock extends WeaponField {
 		return buffer
 	}
 
-	validate() {
+	validate(): void {
 		if (this.no) {
 			this.modifier = 0
 		}

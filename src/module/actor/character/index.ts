@@ -1,5 +1,0 @@
-export { CharacterGURPS } from "./document.ts"
-export { CharacterSheetGURPS } from "./sheet.ts"
-export { MookSheetGURPS } from "./sheet_mook.ts"
-export * from "./data.ts"
-export * from "./hit_location.ts"

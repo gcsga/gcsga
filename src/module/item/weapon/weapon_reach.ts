@@ -69,7 +69,7 @@ export class WeaponReach extends WeaponField {
 		return buffer
 	}
 
-	validate() {
+	validate(): void {
 		this.min = Math.max(this.min, 0)
 		this.max = Math.max(this.max, 0)
 		if (this.min === 0 && this.max !== 0) this.min = 1

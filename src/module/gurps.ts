@@ -27,72 +27,16 @@
  * and not for resale, under the permissions granted by
  * http://www.sjgames.com/general/online_policy.html
  */
-
-// Import TypeScript modules
-import "../styles/gurps.scss"
-import { registerSettings } from "./settings"
-import { preloadTemplates } from "./preload_templates"
-import { getDefaultSkills, LastActor, LocalizeGURPS, setInitiative } from "@util"
-import { registerHandlebarsHelpers } from "@util/handlebars_helpers"
-import { GURPSCONFIG } from "./config"
-import * as Chat from "@module/chat"
-import { ItemImporter } from "@item/import"
-import { CompendiumBrowser } from "./compendium"
-import { ActorType, HooksGURPS, ItemType, SOCKET, SYSTEM_NAME, UserFlags } from "./data"
-import { StaticHitLocation } from "@actor/static/hit_location"
-import * as SpeedProviderGURPS from "./modules/drag_ruler"
-import { ColorSettings } from "./settings/colors"
-import { DamageChat } from "./damage_calculator/damage_chat_message"
-import { RollGURPS } from "@module/roll"
-import { CombatGURPS } from "@module/combat"
-import { TokenHUDGURPS } from "./token/hud"
-import { TokenDocumentGURPS, TokenGURPS } from "@module/token"
-import { RulerGURPS } from "./ruler"
-import {
-	EffectGURPS,
-	EffectPanel,
-	EffectSheet,
-	EquipmentModifierContainerSheet,
-	EquipmentModifierSheet,
-	EquipmentSheet,
-	MeleeWeaponSheet,
-	NoteContainerSheet,
-	NoteSheet,
-	RangedWeaponSheet,
-	RitualMagicSpellSheet,
-	SkillContainerSheet,
-	SkillSheet,
-	SpellContainerSheet,
-	SpellSheet,
-	StaticItemSheet,
-	StatusEffectsGURPS,
-	TechniqueSheet,
-	TraitContainerSheet,
-	TraitModifierContainerSheet,
-	TraitModifierSheet,
-	TraitSheet,
-} from "@item"
-import { ActorSheetGURPS, CharacterSheetGURPS, LootSheetGURPS, MookSheetGURPS, StaticCharacterSheetGURPS } from "@actor"
-import { ActiveEffectGURPS } from "@module/effect"
-import { ModifierList } from "./mod_list"
-import { PDF } from "@module/pdf"
-import { UserGURPS } from "./user/document"
-import { CombatTrackerGURPS } from "@ui"
-import { MookGeneratorSheet } from "./mook"
-import { CharacterImporter } from "@actor/character/import"
-import { ItemDirectoryGURPS } from "@ui/item_directory"
-import { CombatantGURPS } from "./combatant"
-import { ModifierBucket } from "@module/mod_bucket"
-import { loadModifiers } from "@module/mod_bucket/data"
-import { prepareSelectOptions } from "./data/select"
-import { display } from "@util/enum"
-import { ItemProxyGURPS } from "@item/base/document"
-import { ActorProxyGURPS } from "@actor/base/document"
+import { HooksGURPS } from "@scripts/hooks/index.ts"
+import "./styles/main.scss"
 
 Error.stackTraceLimit = Infinity
 
+HooksGURPS.listen()
+
 // TODO: make GURPS type concrete
-export const GURPS: any = {}
+export const GURPS: Record<string, unknown> = {}
+if ()
 if (!(globalThis as any).GURPS) {
 	;(globalThis as any).GURPS = GURPS
 	GURPS.DEBUG = true
@@ -134,7 +78,8 @@ Hooks.once("init", async () => {
 	CONFIG.Token.documentClass = TokenDocumentGURPS
 	CONFIG.Token.objectClass = TokenGURPS
 	CONFIG.ActiveEffect.documentClass = ActiveEffectGURPS
-	CONFIG.JournalEntryPage.documentClass = PDF.JournalEntryPageGURPS
+	CONFIG.JournalEntry.
+	// CONFIG.JournalEntryPage.documentClass = PDF.JournalEntryPageGURPS
 	CONFIG.Combat.documentClass = CombatGURPS
 	CONFIG.statusEffects = StatusEffectsGURPS
 	CONFIG.Canvas.rulerClass = RulerGURPS
@@ -164,6 +109,12 @@ Hooks.once("init", async () => {
 
 	// @ts-expect-error type not properly declared
 	DocumentSheetConfig.unregisterSheet(JournalEntryPage, "core", JournalPDFPageSheet)
+
+	Journal.registerSheet(SYSTEM_NAME, JournalEntrySheetGURPS, {
+		types: ["pdf"],
+		makeDefault: true,
+		label:
+	})
 
 	Items.registerSheet(SYSTEM_NAME, TraitSheet, {
 		types: [ItemType.Trait],

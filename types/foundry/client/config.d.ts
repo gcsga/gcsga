@@ -142,10 +142,6 @@ declare global {
 		/** Configuration for the JournalEntry entity */
 		JournalEntry: {
 			documentClass: typeof JournalEntry
-			noteIcons: {
-				Anchor: string
-				[key: string]: string
-			}
 			sheetClasses: Record<
 				string,
 				Record<
@@ -153,6 +149,29 @@ declare global {
 					{
 						id: string
 						cls: typeof JournalSheet
+						default: boolean
+						label: string
+						canConfigure: boolean
+						canBeDefault: boolean
+					}
+				>
+			>
+			typeIcons: Record<string, string>
+			typeLabels: Record<string, string | undefined>
+			sidebarIcon: string
+		}
+
+		/** Configuration for the JournalEntry entity */
+		JournalEntryPage: {
+			documentClass: typeof JournalEntryPage
+			defaultType: string
+			sheetClasses: Record<
+				string,
+				Record<
+					string,
+					{
+						id: string
+						cls: typeof JournalPageSheet
 						default: boolean
 						label: string
 						canConfigure: boolean
@@ -276,6 +295,7 @@ declare global {
 
 		/** Configuration settings for the Canvas and its contained layers and objects */
 		Canvas: {
+			rulerClass: typeof Ruler
 			blurStrength: number
 			darknessColor: number
 			darknessLightPenalty: number

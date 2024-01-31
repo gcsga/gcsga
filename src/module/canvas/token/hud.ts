@@ -1,16 +1,16 @@
-import { SYSTEM_NAME } from "@module/data/misc.ts"
+import { SOCKET, SYSTEM_NAME } from "@module/data/misc.ts"
 import { TokenGURPS } from "./object.ts"
-import { ManeuverID } from "@item"
+import { EffectID, ManeuverID } from "@item"
 
 export interface TokenHUDDataGURPS extends TokenHUDData {
 	maneuvers: Record<string, TokenHUDStatusEffectChoice | undefined>
 }
 
-export interface TokenHUDGURPS extends TokenHUD {
-	object: TokenGURPS
+export interface TokenHUDGURPS<TToken extends TokenGURPS> extends TokenHUD<TToken> {
+	object: TToken
 }
 
-export class TokenHUDGURPS extends TokenHUD {
+export class TokenHUDGURPS<TToken extends TokenGURPS> extends TokenHUD<TToken> {
 	_maneuvers = false
 
 	override get template(): string {
@@ -85,8 +85,8 @@ export class TokenHUDGURPS extends TokenHUD {
 		await this.render(true)
 	}
 
-	protected _onClickControl(event: JQuery.ClickEvent) {
-		super._onClickControl(event)
+	protected _onClickControl(event: JQuery.ClickEvent): void {
+		// super._onClickControl(event)
 		const button = event.currentTarget
 		switch (button.dataset.action) {
 			case "maneuvers":
@@ -94,20 +94,20 @@ export class TokenHUDGURPS extends TokenHUD {
 		}
 	}
 
-	protected _onToggleStatusEffects(event: JQuery.ClickEvent) {
+	protected _onToggleStatusEffects(event: JQuery.ClickEvent): void {
 		event.preventDefault()
 		this._toggleManeuvers(false)
 		this._toggleStatusEffects(!this._statusEffects)
 	}
 
-	protected _onToggleManeuvers(event: JQuery.ClickEvent) {
+	protected _onToggleManeuvers(event: JQuery.ClickEvent): void {
 		event.preventDefault()
 		this._maneuvers = $(event.currentTarget).hasClass("active")
 		this._toggleStatusEffects(false)
 		this._toggleManeuvers(!this._maneuvers)
 	}
 
-	_toggleManeuvers(active: boolean) {
+	_toggleManeuvers(active: boolean): void {
 		this._maneuvers = active
 		const button = this.element.find('.control-icon[data-action="maneuvers"]')[0]
 		if (!button) return
@@ -133,7 +133,7 @@ export class TokenHUDGURPS extends TokenHUD {
 		const id: EffectID = icon.dataset.statusId as EffectID
 		const { actor } = token
 		if (!(actor && id)) return
-		const combatant = token.combatant
+		// const combatant = token.combatant
 
 		if (event.type === "click") {
 			await actor?.increaseCondition(id)
@@ -142,7 +142,7 @@ export class TokenHUDGURPS extends TokenHUD {
 			else await actor?.decreaseCondition(id)
 		}
 		game.socket?.emit(`system.${SYSTEM_NAME}`, { type: SOCKET.UPDATE_BUCKET, users: [] })
-		game.EffectPanel.refresh()
+		game.gurps.effectPanel.refresh()
 	}
 
 	static async #setActiveEffects(token: TokenGURPS, icons: NodeListOf<HTMLImageElement>) {

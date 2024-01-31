@@ -1,6 +1,6 @@
 import { RollModifier, SYSTEM_NAME, gid } from "@module/data/misc.ts"
 import * as R from "remeda"
-import { TokenDocumentGURPS } from "@module/token/document.ts"
+import { TokenDocumentGURPS } from "@module/canvas/token/document.ts"
 import { ActorFlags, ActorFlagsGURPS } from "./base/data.ts"
 import { Attribute } from "@sytem/attribute/object.ts"
 import { LocalizeGURPS } from "@util/localize.ts"

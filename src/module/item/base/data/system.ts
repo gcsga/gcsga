@@ -1,4 +1,4 @@
-import { ItemType } from "@module/data/misc.ts"
+import { ItemType } from "@item/types.ts"
 import { ItemFlagsGURPS } from "./values.ts"
 
 export type BaseItemSourceGURPS<

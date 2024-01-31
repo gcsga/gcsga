@@ -2,7 +2,7 @@ import { Int } from "@util/fxp.ts"
 import { WeaponField } from "./weapon_field.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { wswitch } from "@util/enum/wswitch.ts"
-import { BaseWeaponGURPS } from "./document.ts"
+import { BaseWeaponGURPS } from "./BaseWeaponGURPS.ts"
 import { feature } from "@util/enum/feature.ts"
 
 export class WeaponAccuracy extends WeaponField {
@@ -59,7 +59,7 @@ export class WeaponAccuracy extends WeaponField {
 		return this.base.toString()
 	}
 
-	validate() {
+	validate(): void {
 		if (this.jet) {
 			this.base = 0
 			this.scope = 0
