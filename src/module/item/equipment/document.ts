@@ -1,5 +1,5 @@
 import { ActorGURPS } from "@actor/base.ts"
-import { EquipmentSystemData } from "./data.ts"
+import { EquipmentSystemSource } from "./data.ts"
 import { ItemGCS } from "@item/gcs/document.ts"
 import { display } from "@util/enum/display.ts"
 import { StringBuilder } from "@util/string_builder.ts"
@@ -20,7 +20,7 @@ import { EquipmentContainerGURPS } from "@item/index.ts"
 import { ItemType } from "@item/types.ts"
 
 export interface EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
-	system: EquipmentSystemData
+	system: EquipmentSystemSource
 	type: ItemType.Equipment
 }
 export class EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {

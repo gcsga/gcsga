@@ -6,20 +6,11 @@ import { RollModifier } from "@module/data/misc.ts"
 
 export type EffectSource = BaseItemSourceGURPS<ItemType.Effect | ItemType.Condition, EffectSystemSource>
 
-// Export interface EffectFlags extends ItemFlagsGURPS {
-// 	aura: boolean
-// }
-
 export enum DurationType {
 	Seconds = "seconds",
 	Turns = "turns",
 	Rounds = "rounds",
 	None = "none",
-}
-
-export interface EffectData extends Omit<EffectSource, "effects">, EffectSystemSource {
-	readonly type: EffectSource["type"]
-	readonly _source: EffectSource
 }
 
 export interface EffectSystemSource {

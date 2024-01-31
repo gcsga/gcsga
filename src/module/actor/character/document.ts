@@ -31,7 +31,6 @@ import {
 	ResourceTrackerDefObj,
 	ResourceTrackerObj,
 } from "@module/system/resource_tracker/index.ts"
-import { TokenDocumentGURPS } from "@module/canvas/token/document.ts"
 import { Attribute } from "@sytem/attribute/object.ts"
 import { attribute } from "@util/enum/attribute.ts"
 import { CharacterFlagDefaults, CharacterFlags, CharacterSource, CharacterSystemSource, Encumbrance } from "./data.ts"
@@ -86,17 +85,19 @@ import { feature } from "@util/enum/feature.ts"
 import { wsel } from "@util/enum/wsel.ts"
 import { skillsel } from "@util/enum/skillsel.ts"
 import { PoolThreshold } from "@sytem/attribute/pool_threshold.ts"
-import { ItemFlags } from "@item/data.ts"
 import { CharacterImporter } from "./import.ts"
 import { ActorType } from "@actor"
 import { ItemType } from "@item/types.ts"
-import { ItemSourceGURPS } from "@item/data/index.ts"
 import { CharacterSheetGURPS } from "./sheet.ts"
 import { Int } from "@util/fxp.ts"
-import { WeaponType } from "@item/weapon/index.ts"
 import { CR_Features } from "@item/trait/data.ts"
+import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
+import { WeaponType } from "@item/weapon/data.ts"
+import { ItemFlags } from "@item/base/data/system.ts"
+import { ItemSourceGURPS } from "@item/base/data/index.ts"
 
-export interface CharacterGURPS<TParent extends TokenDocumentGURPS | null> extends ActorGURPS<TParent> {
+interface CharacterGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null>
+	extends ActorGURPS<TParent> {
 	type: ActorType.Character
 	flags: CharacterFlags
 	features: FeatureMap
@@ -107,7 +108,7 @@ export interface CharacterGURPS<TParent extends TokenDocumentGURPS | null> exten
 	system: CharacterSystemSource
 }
 
-export class CharacterGURPS<
+class CharacterGURPS<
 	TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null,
 > extends ActorGURPS<TParent> {
 	declare features: FeatureMap
@@ -2102,3 +2103,5 @@ export function addWeaponBonusToMap(
 	bonus.leveledAmount.dieCount = savedDieCount
 	m.set(bonus, true)
 }
+
+export { CharacterGURPS }

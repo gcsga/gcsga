@@ -1,20 +1,11 @@
 import { FeatureObj } from "@feature/index.ts"
-import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
+import { ItemGCSSource, ItemGCSSystemSource } from "@item/gcs/data.ts"
 import { ItemType } from "@item/types.ts"
 import { PrereqList } from "@prereq/prereq_list.ts"
 
-export type EquipmentSource = ItemGCSSource<ItemType.Equipment, EquipmentSystemData>
+export type EquipmentSource = ItemGCSSource<ItemType.Equipment, EquipmentSystemSource>
 
-export type CostValueType = "addition" | "percentage" | "multiplier"
-
-export interface EquipmentData extends Omit<EquipmentSource, "effects" | "items">, EquipmentSystemData {
-	readonly type: EquipmentSource["type"]
-	data: EquipmentSystemData
-
-	readonly _source: EquipmentSource
-}
-
-export interface EquipmentSystemData extends Omit<ItemGCSSystemData, "open"> {
+export interface EquipmentSystemSource extends Omit<ItemGCSSystemSource, "open"> {
 	description: string
 	prereqs: PrereqList
 	equipped: boolean
@@ -27,14 +18,5 @@ export interface EquipmentSystemData extends Omit<ItemGCSSystemData, "open"> {
 	uses: number
 	max_uses: number
 	features: FeatureObj[]
-	// other: boolean
 	rated_strength: number
-	calc?: EquipmentCalcValues
-}
-
-export interface EquipmentCalcValues extends ItemGCSCalcValues {
-	weight: string
-	extended_weight: string
-	value: string
-	extended_value: string
 }

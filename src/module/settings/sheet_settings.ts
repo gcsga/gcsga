@@ -1,7 +1,10 @@
-import { SYSTEM_NAME } from "@module/data"
+import { SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
+import { PartialSettingsData, SettingsMenuGURPS } from "./menu.ts"
 import { LengthUnits, WeightUnits } from "@util"
-import { SettingsMenuGURPS } from "./menu"
-import { display, progression } from "@util/enum"
+import { display } from "@util/enum/display.ts"
+import { progression } from "@util/enum/progression.ts"
+
+type ConfigGURPSListName = (typeof DefaultSheetSettings.SETTINGS)[number]
 
 export class DefaultSheetSettings extends SettingsMenuGURPS {
 	static override readonly namespace = "default_sheet_settings"
@@ -13,7 +16,7 @@ export class DefaultSheetSettings extends SettingsMenuGURPS {
 		options.classes.push("gurps")
 		options.classes.push("settings-menu")
 
-		return mergeObject(options, {
+		return fu.mergeObject(options, {
 			title: `gurps.settings.${this.namespace}.name`,
 			id: `${this.namespace}-settings`,
 			template: `systems/${SYSTEM_NAME}/templates/system/settings/${this.namespace}.hbs`,
@@ -26,11 +29,13 @@ export class DefaultSheetSettings extends SettingsMenuGURPS {
 		} as FormApplicationOptions)
 	}
 
-	protected static override get settings(): Record<string, any> {
+	protected static override get settings(): Record<ConfigGURPSListName, PartialSettingsData> {
 		return {
 			settings: {
+				prefix: SETTINGS.DEFAULT_SHEET_SETTINGS,
 				name: "",
 				hint: "",
+				type: Object,
 				default: {
 					default_length_units: LengthUnits.FeetAndInches,
 					default_weight_units: WeightUnits.Pound,
@@ -79,20 +84,16 @@ export class DefaultSheetSettings extends SettingsMenuGURPS {
 		}
 	}
 
-	activateListeners(html: JQuery<HTMLElement>): void {
+	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		html.find(".reset-all").on("click", event => this._onResetAll(event))
 	}
 
-	_onDataImport(event: JQuery.ClickEvent) {
-		event.preventDefault()
-	}
+	protected _onDataImport(_event: MouseEvent): void {}
 
-	_onDataExport(event: JQuery.ClickEvent) {
-		event.preventDefault()
-	}
+	protected _onDataExport(_event: MouseEvent): void {}
 
-	async _onResetAll(event: JQuery.ClickEvent) {
+	async _onResetAll(event: JQuery.ClickEvent): Promise<void> {
 		event.preventDefault()
 		for (const k of DefaultSheetSettings.SETTINGS) {
 			const defaults = game.settings.settings.get(`${SYSTEM_NAME}.${this.namespace}.${k}`)?.default
@@ -101,28 +102,28 @@ export class DefaultSheetSettings extends SettingsMenuGURPS {
 		this.render()
 	}
 
-	override async getData(): Promise<any> {
-		const settings = game.settings.get(SYSTEM_NAME, `${this.namespace}.settings`)
-		const initial_points = game.settings.get(SYSTEM_NAME, `${this.namespace}.initial_points`)
-		const tech_level = game.settings.get(SYSTEM_NAME, `${this.namespace}.tech_level`)
-		const populate_description = game.settings.get(SYSTEM_NAME, `${this.namespace}.populate_description`)
-		return {
-			system: { settings: settings },
-			initial_points: initial_points,
-			tech_level: tech_level,
-			populate_description: populate_description,
-			actor: null,
-			config: CONFIG.GURPS,
-		}
-	}
+	// override async getData(): Promise<any> {
+	// 	const settings = game.settings.get(SYSTEM_NAME, `${this.namespace}.settings`)
+	// 	const initial_points = game.settings.get(SYSTEM_NAME, `${this.namespace}.initial_points`)
+	// 	const tech_level = game.settings.get(SYSTEM_NAME, `${this.namespace}.tech_level`)
+	// 	const populate_description = game.settings.get(SYSTEM_NAME, `${this.namespace}.populate_description`)
+	// 	return {
+	// 		system: { settings: settings },
+	// 		initial_points: initial_points,
+	// 		tech_level: tech_level,
+	// 		populate_description: populate_description,
+	// 		actor: null,
+	// 		config: CONFIG.GURPS,
+	// 	}
+	// }
 
-	protected override async _updateObject(_event: Event, formData: any): Promise<void> {
-		const settings: any = {}
+	protected override async _updateObject(_event: Event, formData: Record<string, unknown>): Promise<void> {
+		const settings: Record<string, unknown> = {}
 		for (const k of ["initial_points", "tech_level", "populate_description"]) {
 			await game.settings.set(SYSTEM_NAME, `${this.namespace}.${k}`, formData[k])
 			delete formData[k]
 		}
-		if (formData["system.settings.block_layout"])
+		if (typeof formData["system.settings.block_layout"] === "string")
 			formData["system.settings.block_layout"] = formData["system.settings.block_layout"].split("\n")
 		for (const k of Object.keys(formData)) {
 			settings[k.replace(/^system\.settings\./g, "")] = formData[k]

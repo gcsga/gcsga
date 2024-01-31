@@ -1,12 +1,12 @@
 import { ActorGURPS } from "@actor/base.ts"
 import { ItemGCS } from "@item/gcs/document.ts"
 import { TraitModifierGURPS } from "@item/trait_modifier/document.ts"
-import { TraitModifierContainerSystemData } from "./data.ts"
+import { TraitModifierContainerSystemSource } from "./data.ts"
 import { ItemType } from "@item/types.ts"
 
 export interface TraitModifierContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null>
 	extends ItemGCS<TParent> {
-	system: TraitModifierContainerSystemData
+	system: TraitModifierContainerSystemSource
 	type: ItemType.TraitModifierContainer
 }
 

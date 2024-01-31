@@ -12,6 +12,7 @@ enum UserFlags {
 	SavedStacks = "savedStacks",
 	LastActor = "lastActor",
 	LastToken = "lastToken",
+	SearchPackContents = "searchPackContents",
 }
 
 type UserFlagsGURPS = DocumentFlags & {
@@ -23,6 +24,7 @@ type UserFlagsGURPS = DocumentFlags & {
 		[UserFlags.SavedStacks]: RollModifierStack[]
 		[UserFlags.LastActor]: string | null
 		[UserFlags.LastToken]: string | null
+		[UserFlags.SearchPackContents]: boolean
 	}
 }
 

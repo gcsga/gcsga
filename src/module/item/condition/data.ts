@@ -1,5 +1,5 @@
 import { BaseItemSourceGURPS } from "@item/data.ts"
-import { EffectSystemData } from "@item/effect/data.ts"
+import { EffectSystemSource } from "@item/effect/data.ts"
 import { ItemType } from "@item/types.ts"
 import { RollModifier } from "@module/data/misc.ts"
 
@@ -196,17 +196,12 @@ export type EffectID = ConditionID | ManeuverID
 
 export type ConditionSource = BaseItemSourceGURPS<ItemType.Condition, ConditionSystemSource>
 
-export interface ConditionData extends Omit<ConditionSource, "effects">, ConditionSystemSource {
-	readonly type: ConditionSource["type"]
-	readonly _source: ConditionSource
-}
-
 export interface Consequence {
 	id: ConditionID
 	margin: number
 }
 
-export interface ConditionSystemSource extends EffectSystemData {
+export interface ConditionSystemSource extends EffectSystemSource {
 	id: ConditionID | ManeuverID | null
 	checks: RollModifier[]
 	consequences: Consequence[]

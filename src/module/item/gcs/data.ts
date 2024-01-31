@@ -1,16 +1,16 @@
 import { FeatureObj } from "@feature"
 import { BaseContainerSource, BaseContainerSystemData } from "@item/container/data.ts"
-import { MeleeWeaponSystemData } from "@item/melee_weapon/data.ts"
-import { RangedWeaponSystemData } from "@item/ranged_weapon/data.ts"
+import { MeleeWeaponSystemSource } from "@item/melee_weapon/data.ts"
+import { RangedWeaponSystemSource } from "@item/ranged_weapon/data.ts"
 import { ItemType } from "@item/types.ts"
 import { PrereqListObj } from "@prereq/data.ts"
 
 export type ItemGCSSource<
 	TItemType extends ItemType = ItemType,
-	TSystemData extends ItemGCSSystemData = ItemGCSSystemData,
+	TSystemData extends ItemGCSSystemSource = ItemGCSSystemSource,
 > = BaseContainerSource<TItemType, TSystemData>
 
-export interface ItemGCSSystemData extends BaseContainerSystemData {
+export interface ItemGCSSystemSource extends BaseContainerSystemData {
 	id: string
 	name: string
 	reference: string
@@ -19,14 +19,7 @@ export interface ItemGCSSystemData extends BaseContainerSystemData {
 	vtt_notes: string
 	tags: string[]
 	type: ItemType
-	weapons?: (MeleeWeaponSystemData | RangedWeaponSystemData)[]
-	calc?: ItemGCSCalcValues
+	weapons?: (MeleeWeaponSystemSource | RangedWeaponSystemSource)[]
 	features?: FeatureObj[]
 	prereqs?: PrereqListObj
-}
-
-export interface ItemGCSCalcValues {
-	name: string
-	indent: number
-	resolved_notes?: string
 }

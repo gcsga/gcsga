@@ -1,6 +1,6 @@
 import { ActorGURPS } from "@actor/base.ts"
 import { ItemGCS } from "@item/gcs/document.ts"
-import { TraitModifierSystemData } from "./data.ts"
+import { TraitModifierSystemSource } from "./data.ts"
 import { display } from "@util/enum/display.ts"
 import { sheetSettingsFor } from "@module/data/sheet_settings.ts"
 import { tmcost } from "@util/enum/tmcost.ts"
@@ -10,7 +10,7 @@ import { ItemType } from "@item/types.ts"
 import { CharacterResolver } from "@util"
 
 export interface TraitModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
-	system: TraitModifierSystemData
+	system: TraitModifierSystemSource
 	type: ItemType.TraitModifier
 }
 

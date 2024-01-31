@@ -1,6 +1,5 @@
 import { RollModifier, SYSTEM_NAME, gid } from "@module/data/misc.ts"
 import * as R from "remeda"
-import { TokenDocumentGURPS } from "@module/canvas/token/document.ts"
 import { ActorFlags, ActorFlagsGURPS } from "./base/data.ts"
 import { Attribute } from "@sytem/attribute/object.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
@@ -11,17 +10,7 @@ import { HitLocation, HitLocationTable } from "./character/hit_location.ts"
 import { CharacterGURPS } from "./document.ts"
 import { EffectGURPS } from "@item/effect/document.ts"
 import { ConditionGURPS } from "@item/condition/document.ts"
-import {
-	BaseWeaponGURPS,
-	ConditionID,
-	ContainerGURPS,
-	EffectID,
-	ManeuverID,
-	Postures,
-	TraitModifierGURPS,
-} from "@item/index.ts"
 import { ItemGURPS } from "@item/base/document.ts"
-import { ItemFlags } from "@item/data.ts"
 import { Document } from "types/foundry/common/abstract/module.js"
 import { DamagePayload, DamageRoll } from "@module/apps/damage_calculator/damage_chat_message.ts"
 import {
@@ -35,14 +24,17 @@ import {
 	TargetTraitModifier,
 } from "@module/apps/damage_calculator/index.ts"
 import { ApplyDamageDialog } from "@module/apps/damage_calculator/apply_damage_dlg.ts"
-import { ItemSourceGURPS } from "@item/data/index.ts"
 import { ActorSourceGURPS } from "./data/index.ts"
 import { MoveType } from "@sytem/move_type/object.ts"
 import { ActorModificationContextGURPS, ActorType } from "./types.ts"
 import { ItemType } from "@item/types.ts"
+import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
+import { ConditionID, EffectID, ManeuverID, Postures } from "@item/condition/index.ts"
+import { ItemFlags } from "@item/base/data/system.ts"
+import { BaseWeaponGURPS, ContainerGURPS, TraitModifierGURPS } from "@item"
+import { ItemSourceGURPS } from "@item/base/data/index.ts"
 
-export interface ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null>
-	extends Actor<TParent> {
+export interface ActorGURPS<TParent extends TokenDocumentGURPS | null> extends Actor<TParent> {
 	noPrepare: boolean
 	flags: ActorFlagsGURPS
 	type: ActorType
@@ -661,6 +653,6 @@ export const ActorProxyGURPS = new Proxy(ActorGURPS, {
 		args: [source: ActorSourceGURPS, context: DocumentModificationContext<TokenDocumentGURPS | null>],
 	) {
 		const ActorClass = CONFIG.GURPS.Actor.documentClasses[args[0]?.type as ActorType] ?? ActorGURPS
-		return new ActorClass(...args)
+		return new ActorClass(args)
 	},
 })

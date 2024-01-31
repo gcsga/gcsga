@@ -1,13 +1,29 @@
-import { ImagePath } from "@module/data"
-import * as browserTabs from "./tabs"
+import * as browserTabs from "./tabs/index.ts"
 
-export interface PackInfo {
+interface PackInfo {
 	load: boolean
-	skillDefault?: boolean
+	name: string
+	package: string
+}
+
+interface SourceInfo {
+	load: boolean
 	name: string
 }
 
-// Export type TabName = "trait" | "modifier" | "skill" | "spell" | "equipment" | "eqp_modifier" | "note" | "settings"
+interface BrowserTabs {
+	[TabName.Trait]: browserTabs.Trait
+	[TabName.TraitModifier]: browserTabs.TraitModifier
+	[TabName.Trait]: browserTabs.Trait
+	[TabName.TraitModifier]: browserTabs.TraitModifier
+	[TabName.Skill]: browserTabs.Skill
+	[TabName.Spell]: browserTabs.Spell
+	[TabName.Equipment]: browserTabs.Equipment
+	[TabName.EquipmentModifier]: browserTabs.EquipmentModifier
+	[TabName.Note]: browserTabs.Note
+	[TabName.Effect]: browserTabs.Effect
+}
+
 export enum TabName {
 	Trait = "trait",
 	TraitModifier = "modifier",
@@ -16,27 +32,27 @@ export enum TabName {
 	Equipment = "equipment",
 	EquipmentModifier = "eqp_modifier",
 	Note = "note",
+	Effect = "effect",
 	Settings = "settings",
 }
 
-export type ItemTabName =
-	| TabName.Trait
-	| TabName.TraitModifier
-	| TabName.Skill
-	| TabName.Spell
-	| TabName.Equipment
-	| TabName.EquipmentModifier
-	| TabName.Note
-export type BrowserTab = InstanceType<(typeof browserTabs)[keyof typeof browserTabs]>
-export type TabData<T> = Record<TabName, T | null>
+// type TabName = "action" | "bestiary" | "campaignFeature" | "equipment" | "feat" | "hazard" | "spell" | "settings";
+type ContentTabName = Exclude<TabName, TabName.Settings>
+type BrowserTab = InstanceType<(typeof browserTabs)[keyof typeof browserTabs]>
+type TabData<T> = Record<TabName, T | null>
 
-export interface CompendiumIndexData {
-	_id: string
-	type: string
-	name: string
-	img: ImagePath
-	// Img?: string | null;
-	[key: string]: any
+type CommonSortByOption = "name" | "level"
+type SortByOption = CommonSortByOption | "price"
+type SortDirection = "asc" | "desc"
+
+export type {
+	BrowserTab,
+	BrowserTabs,
+	CommonSortByOption,
+	ContentTabName,
+	PackInfo,
+	SortByOption,
+	SortDirection,
+	SourceInfo,
+	TabData,
 }
-
-export type CompendiumIndex = Collection<CompendiumIndexData>

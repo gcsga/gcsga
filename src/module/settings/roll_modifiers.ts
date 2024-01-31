@@ -1,9 +1,11 @@
-import { RollModifier, SYSTEM_NAME } from "@module/data"
+import { RollModifier, SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
+import { PartialSettingsData, SettingsMenuGURPS } from "./menu.ts"
 import { LocalizeGURPS, prepareFormData } from "@util"
-import { SettingsMenuGURPS } from "./menu"
+
+type ConfigGURPSListName = (typeof RollModifierSettings.SETTINGS)[number]
 
 export class RollModifierSettings extends SettingsMenuGURPS {
-	static override readonly namespace = "roll_modifiers"
+	static override readonly namespace = SETTINGS.DEFAULT_ATTRIBUTES
 
 	static override readonly SETTINGS = ["modifiers"]
 
@@ -12,7 +14,7 @@ export class RollModifierSettings extends SettingsMenuGURPS {
 		options.classes.push("gurps")
 		options.classes.push("settings-menu")
 
-		return mergeObject(options, {
+		return fu.mergeObject(options, {
 			title: `gurps.settings.${this.namespace}.name`,
 			id: `${this.namespace}-settings`,
 			template: `systems/${SYSTEM_NAME}/templates/system/settings/${this.namespace}.hbs`,
@@ -25,7 +27,7 @@ export class RollModifierSettings extends SettingsMenuGURPS {
 		} as FormApplicationOptions)
 	}
 
-	protected static override get settings(): Record<string, any> {
+	protected static override get settings(): Record<ConfigGURPSListName, PartialSettingsData> {
 		return {
 			modifiers: {
 				name: "",
@@ -36,23 +38,18 @@ export class RollModifierSettings extends SettingsMenuGURPS {
 		}
 	}
 
-	activateListeners(html: JQuery<HTMLElement>): void {
+	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
-		// Html.find(".reset-all").on("click", event => this._onResetAll(event))
 		html.find(".item").on("dragover", event => this._onDragItem(event))
 		html.find(".add").on("click", event => this._onAddItem(event))
 		html.find(".delete").on("click", event => this._onDeleteItem(event))
 	}
 
-	_onDataImport(event: JQuery.ClickEvent) {
-		event.preventDefault()
-	}
+	protected _onDataImport(_event: MouseEvent): void {}
 
-	_onDataExport(event: JQuery.ClickEvent) {
-		event.preventDefault()
-	}
+	protected _onDataExport(_event: MouseEvent): void {}
 
-	async _onAddItem(event: JQuery.ClickEvent) {
+	protected _onAddItem(event: JQuery.ClickEvent): void {
 		event.preventDefault()
 		event.stopPropagation()
 		const modifiers: RollModifier[] = game.settings.get(
@@ -63,8 +60,8 @@ export class RollModifierSettings extends SettingsMenuGURPS {
 			name: LocalizeGURPS.translations.gurps.settings.roll_modifiers.default,
 			modifier: 0,
 		})
-		await game.settings.set(SYSTEM_NAME, `${this.namespace}.modifiers`, modifiers)
-		return this.render()
+		game.settings.set(SYSTEM_NAME, `${this.namespace}.modifiers`, modifiers)
+		this.render()
 	}
 
 	private async _onDeleteItem(event: JQuery.ClickEvent) {
@@ -80,8 +77,7 @@ export class RollModifierSettings extends SettingsMenuGURPS {
 		return this.render()
 	}
 
-	async _onDragStart(event: DragEvent) {
-		// TODO:update
+	override _onDragStart(event: DragEvent): void {
 		const item = $(event.currentTarget!)
 		const index = Number(item.data("index"))
 		event.dataTransfer?.setData(
@@ -105,7 +101,7 @@ export class RollModifierSettings extends SettingsMenuGURPS {
 		}
 	}
 
-	protected async _onDrop(event: DragEvent): Promise<unknown> {
+	protected override async _onDrop(event: DragEvent): Promise<unknown> {
 		const dragData = JSON.parse(event.dataTransfer!.getData("text/plain"))
 		let element = $(event.target!)
 		if (!element.hasClass("item")) element = element.parent(".item")
@@ -120,25 +116,13 @@ export class RollModifierSettings extends SettingsMenuGURPS {
 		if (above && dragData.order === target_index - 1) return this.render()
 		if (!above && dragData.order === target_index + 1) return this.render()
 
-		let item
-		item = modifiers.splice(dragData.index, 1)[0]
+		const item = modifiers.splice(dragData.index, 1)[0]
 		modifiers.splice(target_index, 0, item)
 		await game.settings.set(SYSTEM_NAME, `${this.namespace}.modifiers`, modifiers)
 		return this.render()
 	}
 
-	override async getData(): Promise<any> {
-		const modifiers: RollModifier[] = game.settings.get(
-			SYSTEM_NAME,
-			`${this.namespace}.modifiers`,
-		) as RollModifier[]
-		return {
-			modifiers: modifiers,
-			config: CONFIG.GURPS,
-		}
-	}
-
-	protected override async _updateObject(_event: Event, formData: any): Promise<void> {
+	protected override async _updateObject(_event: Event, formData: Record<string, unknown>): Promise<void> {
 		const modifiers: RollModifier[] = game.settings.get(
 			SYSTEM_NAME,
 			`${this.namespace}.modifiers`,

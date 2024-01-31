@@ -1,26 +1,14 @@
-import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
+import { ItemGCSSource, ItemGCSSystemSource } from "@item/gcs/data.ts"
 import { ItemType } from "@item/types.ts"
 import { selfctrl } from "@util/enum/selfctrl.ts"
 
-export type TraitContainerSource = ItemGCSSource<ItemType.TraitContainer, TraitContainerSystemData>
+export type TraitContainerSource = ItemGCSSource<ItemType.TraitContainer, TraitContainerSystemSource>
 
-export interface TraitContainerData extends Omit<TraitContainerSource, "effects" | "items">, TraitContainerSystemData {
-	readonly type: TraitContainerSource["type"]
-	data: TraitContainerSystemData
-	readonly _source: TraitContainerSource
-}
-
-export interface TraitContainerSystemData extends ItemGCSSystemData {
+export interface TraitContainerSystemSource extends ItemGCSSystemSource {
 	disabled: boolean
 	container_type: TraitContainerType
 	cr: selfctrl.Roll
 	cr_adj: selfctrl.Adjustment
-	calc?: TraitContainerCalcValues
-}
-
-export interface TraitContainerCalcValues extends ItemGCSCalcValues {
-	enabled: boolean
-	points: number
 }
 
 export enum TraitContainerType {

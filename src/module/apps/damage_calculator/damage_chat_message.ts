@@ -38,6 +38,7 @@ export enum DropDataType {
 	Damage = "damage",
 	Item = "Item",
 	Attributes = "attributes",
+	Effects = "effects",
 	ResourceTrackers = "resource_trackers",
 	AttributeThresholds = "attribute_thresholds",
 	TrackerThresholds = "tracker_thresholds",
@@ -51,6 +52,7 @@ export type DropData =
 	| { type: DropDataType.Damage; x: number; y: number; payload: DamagePayload }
 	| { type: DropDataType.Item; x: number; y: number; uuid: ItemUUID }
 	| { type: DropDataType.Attributes; x: number; y: number; order: number; index: number; parent_index: number }
+	| { type: DropDataType.Effects; x: number; y: number; order: number; index: number }
 	| { type: DropDataType.ResourceTrackers; x: number; y: number; order: number; index: number; parent_index: number }
 	| {
 			type: DropDataType.AttributeThresholds

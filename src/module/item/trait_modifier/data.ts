@@ -1,19 +1,12 @@
 import { FeatureObj } from "@feature/index.ts"
-import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
+import { ItemGCSSource, ItemGCSSystemSource } from "@item/gcs/data.ts"
 import { ItemType } from "@item/types.ts"
 import { affects } from "@util/enum/affects.ts"
 import { tmcost } from "@util/enum/tmcost.ts"
 
-export type TraitModifierSource = ItemGCSSource<ItemType.TraitModifier, TraitModifierSystemData>
+export type TraitModifierSource = ItemGCSSource<ItemType.TraitModifier, TraitModifierSystemSource>
 
-export interface TraitModifierData extends Omit<TraitModifierSource, "effects">, TraitModifierSystemData {
-	readonly type: TraitModifierSource["type"]
-	data: TraitModifierSystemData
-
-	readonly _source: TraitModifierSource
-}
-
-export interface TraitModifierSystemData extends ItemGCSSystemData {
+export interface TraitModifierSystemSource extends ItemGCSSystemSource {
 	disabled: boolean
 	cost_type: tmcost.Type
 	cost: number

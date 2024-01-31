@@ -1,8 +1,8 @@
-import { SETTINGS, SYSTEM_NAME } from "@module/data"
-import { PDF } from "@module/pdf"
-import { getDefaultSkills, LocalizeGURPS } from "@util"
-import { BrowserTab, CompendiumIndex, CompendiumIndexData, ItemTabName, PackInfo, TabData, TabName } from "./data"
-import * as browserTabs from "./tabs"
+import { LocalizeGURPS, getDefaultSkills } from "@util"
+import { BrowserTab, ItemTabName, PackInfo, TabName } from "./data.ts"
+import * as browserTabs from "./tabs/index.ts"
+import { SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
+import { PDF } from "@module/pdf/index.ts"
 
 class CompendiumBrowser extends Application {
 	settings!: CompendiumBrowserSettings
@@ -13,11 +13,11 @@ class CompendiumBrowser extends Application {
 
 	packLoader = new PackLoader()
 
-	activeTab!: TabName
+	declare activeTab: TabName
 
 	navigationTab!: Tabs
 
-	initialFilter: any = {}
+	initialFilter: Record<string, string> = {}
 
 	constructor(options = {}) {
 		super(options)
@@ -48,7 +48,7 @@ class CompendiumBrowser extends Application {
 	}
 
 	static override get defaultOptions(): ApplicationOptions {
-		return mergeObject(super.defaultOptions, {
+		return fu.mergeObject(super.defaultOptions, {
 			id: "compendium-browser",
 			classes: ["gurps"],
 			template: `systems/${SYSTEM_NAME}/templates/compendium-browser/compendium-browser.hbs`,
@@ -155,7 +155,7 @@ class CompendiumBrowser extends Application {
 		event.preventDefault()
 		const id: string = $(event.currentTarget).data("item-id")
 		const open = !!$(event.currentTarget).attr("class")?.includes("closed")
-		const item = this.tabs[this.activeTab as ItemTabName]?.indexData.find(e => e._id === id)
+		const item = this.tabs[this.activeTab as ItemTabName].indexData.find(e => e._id === id)
 		await item?.update({ _id: id, "system.open": open })
 		if (this.activeTab !== "settings") await this.tabs[this.activeTab].init()
 		return this.render()

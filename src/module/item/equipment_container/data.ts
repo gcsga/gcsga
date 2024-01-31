@@ -1,21 +1,11 @@
 import { FeatureObj } from "@feature/index.ts"
-import { EquipmentCalcValues } from "@item/equipment/data.ts"
-import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
+import { ItemGCSSource, ItemGCSSystemSource } from "@item/gcs/data.ts"
 import { ItemType } from "@item/types.ts"
 import { PrereqList } from "@prereq/prereq_list.ts"
 
-export type EquipmentContainerSource = ItemGCSSource<ItemType.EquipmentContainer, EquipmentContainerSystemData>
+export type EquipmentContainerSource = ItemGCSSource<ItemType.EquipmentContainer, EquipmentContainerSystemSource>
 
-export interface EquipmentContainerData
-	extends Omit<EquipmentContainerSource, "effects" | "items">,
-		EquipmentContainerSystemData {
-	readonly type: EquipmentContainerSource["type"]
-	data: EquipmentContainerSystemData
-
-	readonly _source: EquipmentContainerSource
-}
-
-export interface EquipmentContainerSystemData extends ItemGCSSystemData {
+export interface EquipmentContainerSystemSource extends ItemGCSSystemSource {
 	description: string
 	prereqs: PrereqList
 	equipped: boolean
@@ -28,7 +18,5 @@ export interface EquipmentContainerSystemData extends ItemGCSSystemData {
 	uses: number
 	max_uses: number
 	features: FeatureObj[]
-	// other: boolean
 	rated_strength: number
-	calc?: EquipmentCalcValues
 }

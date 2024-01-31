@@ -1,6 +1,7 @@
 import { SYSTEM_NAME } from "@module/data/misc.ts"
 import { htmlClosest, htmlQuery } from "@util/dom.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
+import * as R from "remeda"
 
 abstract class SettingsMenuGURPS extends FormApplication {
 	static readonly namespace: string
@@ -65,6 +66,18 @@ abstract class SettingsMenuGURPS extends FormApplication {
 	override close(options?: { force?: boolean }): Promise<void> {
 		this.cache.clear()
 		return super.close(options)
+	}
+
+	static registerSettings(): void {
+		const settings = this.settings
+		for (const key of this.SETTINGS) {
+			const setting = settings[key]
+			game.settings.register(SYSTEM_NAME, `${setting.prefix ?? ""}${key}`, {
+				...R.omit(setting, ["prefix"]),
+				scope: "world",
+				config: false,
+			})
+		}
 	}
 
 	/* -------------------------------------------- */

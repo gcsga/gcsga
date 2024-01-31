@@ -1,5 +1,5 @@
 import { FeatureObj } from "@feature/index.ts"
-import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
+import { ItemGCSSource, ItemGCSSystemSource } from "@item/gcs/data.ts"
 import { ItemType } from "@item/types.ts"
 import { PrereqList } from "@prereq/prereq_list.ts"
 import { SkillDefault } from "@sytem/default/index.ts"
@@ -8,18 +8,9 @@ import { difficulty } from "@util/enum/difficulty.ts"
 import { study } from "@util/enum/study.ts"
 import { Study } from "@util/study.ts"
 
-export type SkillSource = ItemGCSSource<ItemType.Skill, SkillSystemData>
+export type SkillSource = ItemGCSSource<ItemType.Skill, SkillSystemSource>
 
-// Export class SkillData extends BaseItemDataGURPS<SkillGURPS> {}
-
-export interface SkillData extends Omit<SkillSource, "effects">, SkillSystemData {
-	readonly type: SkillSource["type"]
-	data: SkillSystemData
-
-	readonly _source: SkillSource
-}
-
-export interface SkillSystemData extends ItemGCSSystemData {
+export interface SkillSystemSource extends ItemGCSSystemSource {
 	prereqs: PrereqList
 	specialization: string
 	tech_level: string
@@ -32,16 +23,6 @@ export interface SkillSystemData extends ItemGCSSystemData {
 	features: FeatureObj[]
 	study: Study[]
 	study_hours_needed: study.Level
-	calc?: SkillCalcValues
-}
-
-export interface SkillCalcValues extends ItemGCSCalcValues {
-	level: number
-	rsl: string
-	points: number
-	resolved_notes?: string
-	tooltip: string
-	difficulty: string
 }
 
 export type EncumbrancePenaltyMultiplier = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9

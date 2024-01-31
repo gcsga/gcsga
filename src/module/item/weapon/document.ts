@@ -1,6 +1,6 @@
 import { ActorGURPS, CharacterGURPS } from "@actor/document.ts"
 import { ItemGURPS } from "@item/base/document.ts"
-import { BaseWeaponSystemData } from "./data.ts"
+import { BaseWeaponSystemSource } from "./data.ts"
 import { sheetDisplayNotes } from "@util/misc.ts"
 import { display } from "@util/enum/display.ts"
 import { WeaponStrength } from "./weapon_strength.ts"
@@ -22,7 +22,7 @@ import { wsel } from "@util/enum/wsel.ts"
 import { ItemType } from "@item/types.ts"
 
 export interface BaseWeaponGURPS<TParent extends ActorGURPS | null> extends ItemGURPS<TParent> {
-	system: BaseWeaponSystemData
+	system: BaseWeaponSystemSource
 }
 
 export abstract class BaseWeaponGURPS<

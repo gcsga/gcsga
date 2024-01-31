@@ -1,8 +1,0 @@
-export type { BaseItemSourceGURPS } from "./base/data/system.ts"
-export { ItemFlags } from "./base/data/values.ts"
-export type { ItemFlagsGURPS } from "./base/data/values.ts"
-export type { MeleeWeaponSource } from "./melee_weapon/data.ts"
-export type { RangedWeaponSource } from "./ranged_weapon/data.ts"
-export type { SkillSource } from "./skill/data.ts"
-export type { SpellSource } from "./spell/data.ts"
-export type { TraitModifierSource } from "./trait_modifier/data.ts"

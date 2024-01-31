@@ -1,15 +1,16 @@
-import { ActorGURPS } from "@actor/document.ts"
-import { ItemFlags } from "@item/data.ts"
-import { BaseWeaponGURPS, MeleeWeaponSystemData } from "@item/index.ts"
+import { ActorGURPS } from "@actor"
+import { BaseWeaponGURPS } from "@item"
 import { WeaponBlock } from "@item/weapon/weapon_block.ts"
 import { WeaponParry } from "@item/weapon/weapon_parry.ts"
 import { WeaponReach } from "@item/weapon/weapon_reach.ts"
 import { RollType, SETTINGS, SYSTEM_NAME, gid } from "@module/data/misc.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { includesFold } from "@util/string_criteria.ts"
+import { MeleeWeaponSystemSource } from "./data.ts"
+import { ItemFlags } from "@item/base/data/system.ts"
 
-export interface MeleeWeaponGURPS<TParent extends ActorGURPS> extends BaseWeaponGURPS<TParent> {
-	system: MeleeWeaponSystemData
+export interface MeleeWeaponGURPS<TParent extends ActorGURPS | null> extends BaseWeaponGURPS<TParent> {
+	system: MeleeWeaponSystemSource
 }
 
 export class MeleeWeaponGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends BaseWeaponGURPS<TParent> {

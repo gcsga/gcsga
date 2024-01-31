@@ -1,6 +1,6 @@
 import { ActorGURPS } from "@actor/document.ts"
 import { ItemGCS } from "@item/gcs/document.ts"
-import { TechniqueSystemData } from "./data.ts"
+import { TechniqueSystemSource } from "./data.ts"
 import { SkillLevel } from "@item/skill/data.ts"
 import { SkillGURPS } from "@item/skill/document.ts"
 import { difficulty } from "@util/enum/difficulty.ts"
@@ -10,7 +10,7 @@ import { gid } from "@module/data/misc.ts"
 import { ItemType } from "@item/types.ts"
 
 export interface TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
-	system: TechniqueSystemData
+	system: TechniqueSystemSource
 	type: ItemType.Technique
 }
 export class TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {

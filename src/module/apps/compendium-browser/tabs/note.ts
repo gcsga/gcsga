@@ -1,9 +1,9 @@
 import { ItemType, SYSTEM_NAME } from "@module/data"
 import { CompendiumBrowser } from "../browser"
 import { CompendiumIndexData, TabName } from "../data"
-import { CompendiumTab } from "./base"
+import { CompendiumBrowserTab } from "./base"
 
-export class CompendiumNoteTab extends CompendiumTab {
+export class CompendiumBrowserNoteTab extends CompendiumBrowserTab {
 	override templatePath = `systems/${SYSTEM_NAME}/templates/compendium-browser/note.hbs`
 
 	constructor(browser: CompendiumBrowser) {

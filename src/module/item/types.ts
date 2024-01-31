@@ -1,29 +1,6 @@
 import * as ItemInstance from "@item"
 import { ActorGURPS } from "@actor"
-
-enum ItemType {
-	Trait = "trait",
-	TraitContainer = "trait_container",
-	TraitModifier = "modifier",
-	TraitModifierContainer = "modifier_container",
-	Skill = "skill",
-	Technique = "technique",
-	SkillContainer = "skill_container",
-	Spell = "spell",
-	RitualMagicSpell = "ritual_magic_spell",
-	SpellContainer = "spell_container",
-	Equipment = "equipment_gcs",
-	EquipmentContainer = "equipment_container",
-	EquipmentModifier = "eqp_modifier",
-	EquipmentModifierContainer = "eqp_modifier_container",
-	Note = "note",
-	NoteContainer = "note_container",
-	LegacyEquipment = "equipment",
-	Effect = "effect",
-	Condition = "condition",
-	MeleeWeapon = "melee_weapon",
-	RangedWeapon = "ranged_weapon",
-}
+import { ItemType } from "./base/data/index.ts"
 
 interface ItemInstances<TParent extends ActorGURPS | null> {
 	[ItemType.Trait]: ItemInstance.TraitGURPS<TParent>
@@ -42,7 +19,7 @@ interface ItemInstances<TParent extends ActorGURPS | null> {
 	[ItemType.EquipmentModifierContainer]: ItemInstance.EquipmentModifierContainerGURPS<TParent>
 	[ItemType.Note]: ItemInstance.NoteGURPS<TParent>
 	[ItemType.NoteContainer]: ItemInstance.NoteContainerGURPS<TParent>
-	[ItemType.LegacyEquipment]: ItemInstance.LegacyEquipmentGURPS<TParent>
+	[ItemType.LegacyEquipment]: ItemInstance.StaticItemGURPS<TParent>
 	[ItemType.Effect]: ItemInstance.EffectGURPS<TParent>
 	[ItemType.Condition]: ItemInstance.ConditionGURPS<TParent>
 	[ItemType.MeleeWeapon]: ItemInstance.MeleeWeaponGURPS<TParent>

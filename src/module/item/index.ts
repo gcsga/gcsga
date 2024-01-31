@@ -42,3 +42,5 @@ export { ConditionGURPS } from "./condition/document.ts"
 
 // Legacy
 export { StaticItemGURPS } from "./static/document.ts"
+
+export { ItemType } from "./types.ts"

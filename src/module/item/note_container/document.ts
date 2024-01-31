@@ -1,5 +1,5 @@
 import { ActorGURPS } from "@actor/document.ts"
-import { NoteContainerSystemData } from "./data.ts"
+import { NoteContainerSystemSource } from "./data.ts"
 import { ContainerGURPS } from "@item/container/document.ts"
 import { EvalEmbeddedRegex, replaceAllStringFunc } from "@util/regexp.ts"
 import { NoteGURPS } from "@item/note/document.ts"
@@ -7,7 +7,7 @@ import { ItemGCS } from "@item/gcs/document.ts"
 import { ItemType } from "@item/types.ts"
 
 export interface NoteContainerGURPS<TParent extends ActorGURPS | null> extends ContainerGURPS<TParent> {
-	system: NoteContainerSystemData
+	system: NoteContainerSystemSource
 	type: ItemType.NoteContainer
 }
 

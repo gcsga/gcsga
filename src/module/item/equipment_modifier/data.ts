@@ -1,19 +1,19 @@
 import { FeatureObj } from "@feature/index.ts"
-import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
+import { ItemGCSSource, ItemGCSSystemSource } from "@item/gcs/data.ts"
 import { ItemType } from "@module/data/misc.ts"
 import { emcost } from "@util/enum/emcost.ts"
 import { emweight } from "@util/enum/emweight.ts"
 
-export type EquipmentModifierSource = ItemGCSSource<ItemType.EquipmentModifier, EquipmentModifierSystemData>
+export type EquipmentModifierSource = ItemGCSSource<ItemType.EquipmentModifier, EquipmentModifierSystemSource>
 
-export interface EquipmentModifierData extends Omit<EquipmentModifierSource, "effects">, EquipmentModifierSystemData {
+export interface EquipmentModifierData extends Omit<EquipmentModifierSource, "effects">, EquipmentModifierSystemSource {
 	readonly type: EquipmentModifierSource["type"]
-	data: EquipmentModifierSystemData
+	data: EquipmentModifierSystemSource
 
 	readonly _source: EquipmentModifierSource
 }
 
-export interface EquipmentModifierSystemData extends ItemGCSSystemData {
+export interface EquipmentModifierSystemSource extends ItemGCSSystemSource {
 	cost_type: emcost.Type
 	cost: string
 	weight_type: emweight.Type

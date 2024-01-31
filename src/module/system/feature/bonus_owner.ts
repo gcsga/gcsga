@@ -5,7 +5,6 @@ import { LocalizeGURPS } from "@util/localize.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { LeveledAmountObj } from "./data.ts"
 import { WeaponLeveledAmount } from "./weapon_leveled_amount.ts"
-import { AttributeBonus, FeatureObj } from "./index.ts"
 
 export abstract class BonusOwner {
 	type: feature.Type = feature.Type.AttributeBonus
@@ -57,7 +56,7 @@ export abstract class BonusOwner {
 		this.leveledAmount.amount = amt
 	}
 
-	addToTooltip(tooltip: TooltipGURPS | null) {
+	addToTooltip(tooltip: TooltipGURPS | null): void {
 		return this.basicAddToTooltip(this.leveledAmount, tooltip)
 	}
 

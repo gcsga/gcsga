@@ -1,6 +1,7 @@
-import { ActorGURPS } from "@actor/base.ts"
+import { ActorGURPS } from "@actor"
 import { ActorSourceGURPS } from "@actor/data/index.ts"
-import { ItemSourceGURPS } from "@item/data/index.ts"
+import { ItemSourceGURPS } from "@item/base/data/index.ts"
+import { SceneGURPS } from "@scene/index.ts"
 
 /**
  * This is the base class for a migration.
@@ -76,7 +77,7 @@ interface MigrationBase {
 	updateToken?(
 		tokenData: foundry.documents.TokenSource,
 		actor: Readonly<ActorGURPS | null>,
-		scene: Readonly<Scene | null>,
+		scene: Readonly<SceneGURPS | null>,
 	): Promise<void>
 
 	/**

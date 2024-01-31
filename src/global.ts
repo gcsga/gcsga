@@ -116,6 +116,7 @@ declare global {
 		get(module: "gcsga", key: "default_hit_locations.name"): string
 		get(module: "gcsga", key: "default_hit_locations.roll"): string
 		get(module: "gcsga", key: "default_hit_locations.locations"): HitLocationData[]
+		get(module: "gcsga", key: "colors.colors"): Record<string, { light: string; dark: string }>
 		get(module: "gcsga", key: "automatic_unready"): boolean
 		get(module: "gcsga", key: "initiative_formula"): ((combatant: CombatGURPS["turns"][number]) => string) | null
 		get(

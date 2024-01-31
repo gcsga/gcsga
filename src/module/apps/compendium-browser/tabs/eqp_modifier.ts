@@ -1,9 +1,9 @@
 import { ItemType, SYSTEM_NAME } from "@module/data"
 import { CompendiumBrowser } from "../browser"
 import { CompendiumIndexData, TabName } from "../data"
-import { CompendiumTab } from "./base"
+import { CompendiumBrowserTab } from "./base"
 
-export class CompendiumEquipmentModifierTab extends CompendiumTab {
+export class CompendiumBrowserEquipmentModifierTab extends CompendiumBrowserTab {
 	override templatePath = `systems/${SYSTEM_NAME}/templates/compendium-browser/eqp_modifier.hbs`
 
 	override get searchFields(): string[] {

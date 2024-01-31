@@ -1,21 +1,13 @@
-import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
-import { SpellCalcValues } from "@item/spell/data.ts"
+import { ItemGCSSource, ItemGCSSystemSource } from "@item/gcs/data.ts"
 import { ItemType } from "@item/types.ts"
 import { PrereqList } from "@prereq/prereq_list.ts"
 import { difficulty } from "@util/enum/difficulty.ts"
 import { study } from "@util/enum/study.ts"
 import { Study } from "@util/study.ts"
 
-export type RitualMagicSpellSource = ItemGCSSource<ItemType.RitualMagicSpell, RitualMagicSpellSystemData>
+export type RitualMagicSpellSource = ItemGCSSource<ItemType.RitualMagicSpell, RitualMagicSpellSystemSource>
 
-export interface RitualMagicSpellData extends Omit<RitualMagicSpellSource, "effects">, RitualMagicSpellSystemData {
-	readonly type: RitualMagicSpellSource["type"]
-	data: RitualMagicSpellSystemData
-
-	readonly _source: RitualMagicSpellSource
-}
-
-export interface RitualMagicSpellSystemData extends ItemGCSSystemData {
+export interface RitualMagicSpellSystemSource extends ItemGCSSystemSource {
 	prereqs: PrereqList
 	difficulty: difficulty.Level
 	tech_level: string
@@ -33,5 +25,4 @@ export interface RitualMagicSpellSystemData extends ItemGCSSystemData {
 	prereq_count: number
 	study: Study[]
 	study_hours_needed: study.Level
-	calc?: SpellCalcValues
 }

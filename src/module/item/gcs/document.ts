@@ -2,7 +2,7 @@ import { ActorGURPS } from "@actor/base.ts"
 import { ContainerGURPS } from "@item/container/document.ts"
 import { SYSTEM_NAME } from "@module/data/misc.ts"
 import { UserGURPS } from "@module/user/document.ts"
-import { ItemGCSSource, ItemGCSSystemData } from "./data.ts"
+import { ItemGCSSource, ItemGCSSystemSource } from "./data.ts"
 import { EvalEmbeddedRegex, replaceAllStringFunc } from "@util/regexp.ts"
 import { display } from "@util/enum/display.ts"
 import { sheetDisplayNotes } from "@util/misc.ts"
@@ -14,12 +14,12 @@ import { feature } from "@util/enum/feature.ts"
 import { PrereqList } from "@prereq/index.ts"
 import { MeleeWeaponGURPS } from "@item/melee_weapon/index.ts"
 import { RangedWeaponGURPS } from "@item/ranged_weapon/index.ts"
-import { BaseWeaponGURPS } from "@item/weapon/index.ts"
 import { ItemType } from "@item/types.ts"
+import { BaseWeaponGURPS } from "@item"
 
 export interface ItemGCS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ContainerGURPS<TParent> {
 	_source: ItemGCSSource
-	system: ItemGCSSystemData
+	system: ItemGCSSystemSource
 }
 
 export abstract class ItemGCS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ContainerGURPS<TParent> {

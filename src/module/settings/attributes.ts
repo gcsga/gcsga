@@ -4,9 +4,10 @@ import { LocalizeGURPS } from "@util/localize.ts"
 import { htmlClosest, htmlQuery } from "@util/dom.ts"
 import { getNewAttributeId, prepareFormData } from "@util/misc.ts"
 import { attribute } from "@util/enum/attribute.ts"
-import { ConditionID } from "@item/index.ts"
 import { DnD } from "@util/drag_drop.ts"
 import { defaultSettings } from "./defaults.ts"
+import { ConditionID } from "@item/condition/data.ts"
+import { DropDataType } from "@module/apps/damage_calculator/damage_chat_message.ts"
 
 enum ListType {
 	Attribute = "attributes",
@@ -188,26 +189,27 @@ export class AttributeSettings extends SettingsMenuGURPS {
 		if (index === -1) return
 		const above = element.classList.contains("border-top")
 
+		if (dragData.type === DropDataType.Item || dragData.type === DropDataType.Damage) return
 		if (dragData.order === index) return
 		if (above && dragData.order === index - 1) return
 		if (!above && dragData.order === index + 1) return
 
 		switch (dragData.type) {
-			case ListType.Attribute: {
+			case DropDataType.Attributes: {
 				const item = attributes.splice(dragData.index, 1)[0]
 				attributes.splice(index, 0, item)
 				attributes.forEach((v, k) => (v.order = k))
 				break
 			}
-			case ListType.Effect: {
+			case DropDataType.Effects: {
 				const item = effects.splice(dragData.index, 1)[0]
 				effects.splice(index, 0, item)
 				break
 			}
-			case ListType.Thresholds: {
-				const item = attributes[dragData.pindex].thresholds?.splice(dragData.index, 1)[0]
+			case DropDataType.AttributeThresholds: {
+				const item = attributes[dragData.parent_index].thresholds?.splice(dragData.index, 1)[0]
 				if (!item) break
-				attributes[dragData.pindex].thresholds?.splice(index, 0, item)
+				attributes[dragData.parent_index].thresholds?.splice(index, 0, item)
 				break
 			}
 		}

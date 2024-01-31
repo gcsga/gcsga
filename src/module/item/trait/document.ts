@@ -1,6 +1,6 @@
 import { ActorGURPS } from "@actor/base.ts"
 import { ItemGCS } from "@item/gcs/document.ts"
-import { TraitSystemData } from "./data.ts"
+import { TraitSystemSource } from "./data.ts"
 import { display } from "@util/enum/display.ts"
 import { StringBuilder } from "@util/string_builder.ts"
 import { sheetSettingsFor } from "@module/data/sheet_settings.ts"
@@ -11,9 +11,10 @@ import { TraitModifierContainerGURPS } from "@item/trait_modifier_container/docu
 import { ItemType } from "@item/types.ts"
 import { CharacterGURPS } from "@actor"
 import { CharacterResolver } from "@util"
+import { study } from "@util/enum/study.ts"
 
 export interface TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
-	system: TraitSystemData
+	system: TraitSystemSource
 	type: ItemType.Trait
 }
 
@@ -178,7 +179,7 @@ export class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> e
 	}
 
 	// Embedded Items
-	get modifiers(): Collection<TraitModifierGURPS | TraitModifierContainerGURPS> {
+	override get modifiers(): Collection<TraitModifierGURPS | TraitModifierContainerGURPS> {
 		return new Collection(
 			this.items
 				.filter(item => item instanceof TraitModifierGURPS || item instanceof TraitModifierContainerGURPS)

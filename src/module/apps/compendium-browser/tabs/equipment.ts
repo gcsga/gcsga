@@ -2,9 +2,9 @@ import { EquipmentContainerGURPS } from "@item"
 import { ItemType, SYSTEM_NAME } from "@module/data"
 import { CompendiumBrowser } from "../browser"
 import { CompendiumIndexData, TabName } from "../data"
-import { CompendiumTab } from "./base"
+import { CompendiumBrowserTab } from "./base"
 
-export class CompendiumEquipmentTab extends CompendiumTab {
+export class CompendiumBrowserEquipmentTab extends CompendiumBrowserTab {
 	override templatePath = `systems/${SYSTEM_NAME}/templates/compendium-browser/equipment.hbs`
 
 	override get searchFields(): string[] {

@@ -1,14 +1,12 @@
 import { DEFAULT_INITIATIVE_FORMULA, SETTINGS, SSRT_SETTING, SYSTEM_NAME } from "@module/data/index.ts"
 import { ColorSettings } from "./colors.ts"
-import { DefaultAttributeSettings } from "./attributes.ts"
-import { DefaultResourceTrackerSettings } from "./resource_trackers.ts"
-import { DefaultMoveSettings } from "./move_type.ts"
-import { DefaultHitLocationSettings } from "./hit_locations.ts"
 import { DefaultSheetSettings } from "./sheet_settings.ts"
 import { RollModifierSettings } from "./roll_modifiers.ts"
 import { DamageTypeSettings } from "./damage_type.ts"
 import { getDefaultSkills, setInitiative } from "@util/misc.ts"
-import { CharacterProfile } from "@actor/index.ts"
+import { AttributeSettings } from "./attributes.ts"
+import { ResourceTrackerSettings } from "./resource_trackers.ts"
+import { MoveSettings } from "./move_type.ts"
 
 /**
  *
@@ -31,10 +29,10 @@ export function registerSettings(): void {
 		label: "gurps.settings.default_attributes.label",
 		hint: "gurps.settings.default_attributes.hint",
 		icon: "gcs-attribute",
-		type: DefaultAttributeSettings,
+		type: AttributeSettings,
 		restricted: false,
 	})
-	DefaultAttributeSettings.registerSettings()
+	AttributeSettings.registerSettings()
 
 	game.settings.registerMenu(SYSTEM_NAME, SETTINGS.DAMAGE_TYPES, {
 		name: "gurps.settings.damage_types.name",
@@ -51,20 +49,20 @@ export function registerSettings(): void {
 		label: "gurps.settings.default_resource_trackers.label",
 		hint: "gurps.settings.default_resource_trackers.hint",
 		icon: "gcs-coins",
-		type: DefaultResourceTrackerSettings,
+		type: ResourceTrackerSettings,
 		restricted: true,
 	})
-	DefaultResourceTrackerSettings.registerSettings()
+	ResourceTrackerSettings.registerSettings()
 
 	game.settings.registerMenu(SYSTEM_NAME, SETTINGS.DEFAULT_MOVE_TYPES, {
 		name: "gurps.settings.default_move_types.name",
 		label: "gurps.settings.default_move_types.label",
 		hint: "gurps.settings.default_move_types.hint",
 		icon: "fas fa-person-running",
-		type: DefaultMoveSettings,
+		type: MoveSettings,
 		restricted: false,
 	})
-	DefaultMoveSettings.registerSettings()
+	MoveSettings.registerSettings()
 
 	game.settings.registerMenu(SYSTEM_NAME, SETTINGS.DEFAULT_HIT_LOCATIONS, {
 		name: "gurps.settings.default_hit_locations.name",

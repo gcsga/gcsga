@@ -1,16 +1,16 @@
-import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
-import { ItemType } from "@module/data"
+import { ItemGCSSource, ItemGCSSystemSource } from "@item/gcs/data.ts"
+import { ItemType } from "@item/types.ts"
 
 export type TraitModifierContainerSource = ItemGCSSource<
 	ItemType.TraitModifierContainer,
-	TraitModifierContainerSystemData
+	TraitModifierContainerSystemSource
 >
 
 export interface TraitModifierContainerData
 	extends Omit<TraitModifierContainerSource, "effects" | "items">,
-		TraitModifierContainerSystemData {
+		TraitModifierContainerSystemSource {
 	readonly type: TraitModifierContainerSource["type"]
 	readonly _source: TraitModifierContainerSource
 }
 
-export type TraitModifierContainerSystemData = ItemGCSSystemData
+export type TraitModifierContainerSystemSource = ItemGCSSystemSource

@@ -6,7 +6,6 @@
 -   don't bother with editing features
 -   mook generator
 -   implement name matching from imported libraries
--   Add default file picker options in new class FilePickerGURPS
 
 ## Jeff and Chris
 

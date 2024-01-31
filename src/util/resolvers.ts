@@ -8,32 +8,33 @@ import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { MoveBonusType } from "@feature/data.ts"
 import { display } from "./enum/display.ts"
 import { selfctrl } from "./enum/selfctrl.ts"
-import { TraitSystemData } from "@item/trait/data.ts"
-import { TraitContainerSystemData, TraitContainerType } from "@item/trait_container/data.ts"
 import { affects } from "./enum/affects.ts"
 import { difficulty } from "./enum/difficulty.ts"
 import { WeightUnits } from "./weight.ts"
 import { emweight } from "./enum/emweight.ts"
-import { WeaponType } from "@item/weapon/data.ts"
-import { WeaponStrength } from "@item/weapon/weapon_strength.ts"
-import { WeaponDamage } from "@item/weapon/index.ts"
 import { SkillDefault } from "@sytem/default/index.ts"
-import { WeaponParry } from "@item/weapon/weapon_parry.ts"
-import { WeaponBlock } from "@item/weapon/weapon_block.ts"
-import { WeaponReach } from "@item/weapon/weapon_reach.ts"
-import { WeaponAccuracy } from "@item/weapon/weapon_accuracy.ts"
-import { WeaponRange } from "@item/weapon/weapon_range.ts"
-import { WeaponROF } from "@item/weapon/weapon_rof.ts"
-import { WeaponShots } from "@item/weapon/weapon_shots.ts"
-import { WeaponBulk } from "@item/weapon/weapon_bulk.ts"
 import { DurationType } from "@item/effect/data.ts"
 import { ConditionID, ManeuverID } from "@item/condition/data.ts"
 import { tmcost } from "./enum/tmcost.ts"
 import { emcost } from "./enum/emcost.ts"
-import { WeaponRecoil } from "@item/weapon/weapon_recoil.ts"
 import { HitLocationTable } from "@actor/character/hit_location.ts"
 import { ActorType } from "@actor"
 import { ItemType } from "@item/types.ts"
+import { TraitSystemSource, WeaponType } from "@item/data.ts"
+import { TraitContainerSystemSource, TraitContainerType } from "@item/trait_container/data.ts"
+import {
+	WeaponAccuracy,
+	WeaponBlock,
+	WeaponBulk,
+	WeaponDamage,
+	WeaponParry,
+	WeaponROF,
+	WeaponRange,
+	WeaponReach,
+	WeaponRecoil,
+	WeaponShots,
+	WeaponStrength,
+} from "@item/weapon/index.ts"
 
 export interface ActorResolver<T extends ActorType> {
 	type: T
@@ -124,7 +125,7 @@ export interface TraitResolver extends ItemResolver<ItemType.Trait> {
 	modifiers: Collection<TraitModifierResolver | TraitModifierContainerResolver>
 	deepModifiers: Collection<TraitModifierResolver>
 	unsatisfiedReason: string
-	system: TraitSystemData
+	system: TraitSystemSource
 }
 
 export interface TraitContainerResovler
@@ -138,7 +139,7 @@ export interface TraitContainerResovler
 	modifiers: Collection<TraitModifierResolver | TraitModifierContainerResolver>
 	deepModifiers: Collection<TraitModifierResolver>
 	unsatisfiedReason: string
-	system: TraitContainerSystemData
+	system: TraitContainerSystemSource
 }
 
 export interface TraitModifierResolver extends ItemResolver<ItemType.TraitModifier> {

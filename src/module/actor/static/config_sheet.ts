@@ -2,7 +2,7 @@ import { SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
 import { StaticResourceTracker, StaticThresholdComparison, StaticThresholdOperator } from "./data.ts"
 import { StaticCharacterGURPS } from "./document.ts"
 import { FilePickerGURPS, LocalizeGURPS, prepareFormData } from "@util"
-import { StaticCharacterImporter } from "./import.ts"
+// import { StaticCharacterImporter } from "./import.ts"
 import { ActorType, CharacterGURPS } from "@actor"
 import { CharacterImporter } from "@actor/character/import.ts"
 import { CharacterConverter } from "./convert.ts"
@@ -40,7 +40,7 @@ export class StaticCharacterSheetConfig<
 		super(object, options)
 		this.object = object
 		this.filename = ""
-		this.resourceTrackers = this.object.trackers
+		this.resourceTrackers = this.actor.trackers
 	}
 
 	static override get defaultOptions(): FormApplicationOptions {

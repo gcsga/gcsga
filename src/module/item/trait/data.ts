@@ -1,5 +1,5 @@
 import { FeatureObj, SkillBonus } from "@feature/index.ts"
-import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs/data.ts"
+import { ItemGCSSource, ItemGCSSystemSource } from "@item/gcs/data.ts"
 import { ItemType } from "@item/types.ts"
 import { PrereqList } from "@prereq/prereq_list.ts"
 import { selfctrl } from "@util/enum/selfctrl.ts"
@@ -8,14 +8,14 @@ import { study } from "@util/enum/study.ts"
 import { StringCompareType } from "@util/string_criteria.ts"
 import { Study } from "@util/study.ts"
 
-export type TraitSource = ItemGCSSource<ItemType.Trait, TraitSystemData>
+export type TraitSource = ItemGCSSource<ItemType.Trait, TraitSystemSource>
 
-export interface TraitData extends Omit<TraitSource, "effects" | "items">, TraitSystemData {
+export interface TraitData extends Omit<TraitSource, "effects" | "items">, TraitSystemSource {
 	readonly type: TraitSource["type"]
 	readonly _source: TraitSource
 }
 
-export interface TraitSystemData extends ItemGCSSystemData {
+export interface TraitSystemSource extends ItemGCSSystemSource {
 	prereqs: PrereqList
 	round_down: boolean
 	disabled: boolean
@@ -27,15 +27,9 @@ export interface TraitSystemData extends ItemGCSSystemData {
 	cr_adj: selfctrl.Adjustment
 	features?: FeatureObj[]
 	study: Study[]
-	study_hours_needed: study.Level
+	study_hours_needed: study.Level | ""
 	userdesc: string
 	type: ItemType.Trait
-	calc?: TraitCalcValues
-}
-
-export interface TraitCalcValues extends ItemGCSCalcValues {
-	enabled: boolean
-	points: number
 }
 
 const CR_Features = new Map()

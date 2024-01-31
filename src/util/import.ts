@@ -1,25 +1,25 @@
 import { ItemFlags, ItemFlagsGURPS } from "@item/base/data/values.ts"
 import { ItemSourceGURPS } from "@item/data/index.ts"
 import {
-	EquipmentContainerSystemData,
-	EquipmentModifierContainerSystemData,
-	EquipmentModifierSystemData,
-	EquipmentSystemData,
-	MeleeWeaponSystemData,
-	NoteContainerSystemData,
-	NoteSystemData,
-	RangedWeaponSystemData,
-	RitualMagicSpellSystemData,
-	SkillContainerSystemData,
-	SkillSystemData,
-	SpellContainerSystemData,
-	TechniqueSystemData,
-	TraitContainerSystemData,
-	TraitModifierContainerSystemData,
-	TraitModifierSystemData,
-	TraitSystemData,
-} from "@item/index.ts"
-import { SpellSystemData } from "@item/spell/data.ts"
+	EquipmentContainerSystemSource,
+	EquipmentModifierContainerSystemSource,
+	EquipmentModifierSystemSource,
+	EquipmentSystemSource,
+	MeleeWeaponSystemSource,
+	NoteContainerSystemSource,
+	NoteSystemSource,
+	RangedWeaponSystemSource,
+	RitualMagicSpellSystemSource,
+	SkillContainerSystemSource,
+	SkillSystemSource,
+	SpellContainerSystemSource,
+	SpellSystemSource,
+	TechniqueSystemSource,
+	TraitContainerSystemSource,
+	TraitModifierContainerSystemSource,
+	TraitModifierSystemSource,
+	TraitSystemSource,
+} from "@item/data.ts"
 import { SYSTEM_NAME } from "@module/data/index.ts"
 import { randomID } from "types/foundry/common/utils/helpers.js"
 import { LocalizeGURPS } from "./localize.ts"
@@ -80,67 +80,67 @@ class ImportUtils {
 					...ImportUtils.importItems(item.modifiers, { container: id, sort: context.sort }),
 					...ImportUtils.importItems(item.weapons, { container: id, sort: context.sort }),
 				]
-				return [ImportUtils.getTraitData(item as TraitSystemData), flags, items, id]
+				return [ImportUtils.getTraitData(item as TraitSystemSource), flags, items, id]
 			case "trait_container":
 				items = [
 					...ImportUtils.importItems(item.children, { container: id, sort: context.sort }),
 					...ImportUtils.importItems(item.modifiers, { container: id, sort: context.sort }),
 					...ImportUtils.importItems(item.weapons, { container: id, sort: context.sort }),
 				]
-				return [ImportUtils.getTraitContainerData(item as TraitContainerSystemData), flags, items, id]
+				return [ImportUtils.getTraitContainerSource(item as TraitContainerSystemSource), flags, items, id]
 			case "modifier":
-				return [ImportUtils.getTraitModifierData(item as TraitModifierSystemData), flags, items, id]
+				return [ImportUtils.getTraitModifierData(item as TraitModifierSystemSource), flags, items, id]
 			case "modifier_container":
 				items = [...ImportUtils.importItems(item.children, { container: id, sort: context.sort })]
 				return [
-					ImportUtils.getTraitModifierContainerData(item as TraitModifierContainerSystemData),
+					ImportUtils.getTraitModifierContainerData(item as TraitModifierContainerSystemSource),
 					flags,
 					items,
 					id,
 				]
 			case "skill":
 				items = [...ImportUtils.importItems(item.weapons, { container: id, sort: context.sort })]
-				return [ImportUtils.getSkillData(item as SkillSystemData), flags, items, id]
+				return [ImportUtils.getSkillData(item as SkillSystemSource), flags, items, id]
 			case "technique":
 				items = [...ImportUtils.importItems(item.weapons, { container: id, sort: context.sort })]
-				return [ImportUtils.getTechniqueData(item as TechniqueSystemData), flags, items, id]
+				return [ImportUtils.getTechniqueData(item as TechniqueSystemSource), flags, items, id]
 			case "skill_container":
 				items = [...ImportUtils.importItems(item.children, { container: id, sort: context.sort })]
-				return [ImportUtils.getSkillContainerData(item as SkillContainerSystemData), flags, items, id]
+				return [ImportUtils.getSkillContainerData(item as SkillContainerSystemSource), flags, items, id]
 			case "spell":
 				items = [...ImportUtils.importItems(item.weapons, { container: id, sort: context.sort })]
-				return [ImportUtils.getSpellData(item as SpellSystemData), flags, items, id]
+				return [ImportUtils.getSpellData(item as SpellSystemSource), flags, items, id]
 			case "ritual_magic_spell":
 				items = [...ImportUtils.importItems(item.weapons, { container: id, sort: context.sort })]
-				return [ImportUtils.getRitualMagicSpellData(item as RitualMagicSpellSystemData), flags, items, id]
+				return [ImportUtils.getRitualMagicSpellData(item as RitualMagicSpellSystemSource), flags, items, id]
 			case "spell_container":
 				items = [...ImportUtils.importItems(item.children, { container: id, sort: context.sort })]
-				return [ImportUtils.getSpellContainerData(item as SpellContainerSystemData), flags, items, id]
+				return [ImportUtils.getSpellContainerData(item as SpellContainerSystemSource), flags, items, id]
 			case "equipment":
 				items = [
 					...ImportUtils.importItems(item.modifiers, { container: id, sort: context.sort }),
 					...ImportUtils.importItems(item.weapons, { container: id, sort: context.sort }),
 				]
-				return [ImportUtils.getEquipmentData(item as EquipmentSystemData), flags, items, id]
+				return [ImportUtils.getEquipmentData(item as EquipmentSystemSource), flags, items, id]
 			case "equipment_container":
 				items = [
 					...ImportUtils.importItems(item.children, { container: id, sort: context.sort }),
 					...ImportUtils.importItems(item.modifiers, { container: id, sort: context.sort }),
 					...ImportUtils.importItems(item.weapons, { container: id, sort: context.sort }),
 				]
-				return [ImportUtils.getEquipmentContainerData(item as EquipmentContainerSystemData), flags, items, id]
+				return [ImportUtils.getEquipmentContainerData(item as EquipmentContainerSystemSource), flags, items, id]
 			case "eqp_modifier":
-				return [ImportUtils.getEquipmentModifierData(item as EquipmentModifierSystemData), flags, items, id]
+				return [ImportUtils.getEquipmentModifierData(item as EquipmentModifierSystemSource), flags, items, id]
 			case "eqp_modifier_container":
 				items = [...ImportUtils.importItems(item.children, { container: id, sort: context.sort })]
 				return [
-					ImportUtils.getEquipmentModifierContainerData(item as EquipmentModifierContainerSystemData),
+					ImportUtils.getEquipmentModifierContainerData(item as EquipmentModifierContainerSystemSource),
 					flags,
 					items,
 					id,
 				]
 			case "note":
-				return [ImportUtils.getNoteData(item as NoteSystemData), flags, items, id]
+				return [ImportUtils.getNoteData(item as NoteSystemSource), flags, items, id]
 			case "note_container":
 				items = [...ImportUtils.importItems(item.children, { container: id, sort: context.sort })]
 				return [ImportUtils.getNoteContainerData(item), flags, items, id]
@@ -157,7 +157,7 @@ class ImportUtils {
 		}
 	}
 
-	static getTraitData(data: TraitSystemData): TraitSystemData {
+	static getTraitData(data: TraitSystemSource): TraitSystemSource {
 		return {
 			name: data.name ?? "Trait",
 			type: ItemType.Trait,
@@ -184,7 +184,7 @@ class ImportUtils {
 		}
 	}
 
-	private static getTraitContainerData(data: TraitContainerSystemData): TraitContainerSystemData {
+	private static getTraitContainerSource(data: TraitContainerSystemSource): TraitContainerSystemSource {
 		return {
 			name: data.name ?? "Trait Container",
 			type: ItemType.TraitContainer,
@@ -202,7 +202,7 @@ class ImportUtils {
 		}
 	}
 
-	private static getTraitModifierData(data: TraitModifierSystemData): TraitModifierSystemData {
+	private static getTraitModifierData(data: TraitModifierSystemSource): TraitModifierSystemSource {
 		return {
 			name: data.name ?? "Trait Modifier",
 			type: ItemType.TraitModifier,
@@ -222,8 +222,8 @@ class ImportUtils {
 	}
 
 	private static getTraitModifierContainerData(
-		data: TraitModifierContainerSystemData,
-	): TraitModifierContainerSystemData {
+		data: TraitModifierContainerSystemSource,
+	): TraitModifierContainerSystemSource {
 		return {
 			name: data.name ?? "Trait Modifier Container",
 			type: ItemType.TraitModifierContainer,
@@ -237,7 +237,7 @@ class ImportUtils {
 		}
 	}
 
-	private static getSkillData(data: SkillSystemData): SkillSystemData {
+	private static getSkillData(data: SkillSystemSource): SkillSystemSource {
 		return {
 			name: data.name ?? "Skill",
 			type: ItemType.Skill,
@@ -262,7 +262,7 @@ class ImportUtils {
 		}
 	}
 
-	private static getTechniqueData(data: TechniqueSystemData): TechniqueSystemData {
+	private static getTechniqueData(data: TechniqueSystemSource): TechniqueSystemSource {
 		return {
 			name: data.name ?? "Technique",
 			type: ItemType.Technique,
@@ -288,7 +288,7 @@ class ImportUtils {
 		}
 	}
 
-	private static getSkillContainerData(data: SkillContainerSystemData): SkillContainerSystemData {
+	private static getSkillContainerData(data: SkillContainerSystemSource): SkillContainerSystemSource {
 		return {
 			name: data.name ?? "Skill Container",
 			type: ItemType.SkillContainer,
@@ -302,7 +302,7 @@ class ImportUtils {
 		}
 	}
 
-	private static getSpellData(data: SpellSystemData): SpellSystemData {
+	private static getSpellData(data: SpellSystemSource): SpellSystemSource {
 		return {
 			name: data.name ?? "Spell",
 			type: ItemType.Spell,
@@ -330,7 +330,7 @@ class ImportUtils {
 		}
 	}
 
-	private static getRitualMagicSpellData(data: RitualMagicSpellSystemData): RitualMagicSpellSystemData {
+	private static getRitualMagicSpellData(data: RitualMagicSpellSystemSource): RitualMagicSpellSystemSource {
 		return {
 			name: data.name ?? "Spell",
 			type: ItemType.RitualMagicSpell,
@@ -360,7 +360,7 @@ class ImportUtils {
 		}
 	}
 
-	private static getSpellContainerData(data: SpellContainerSystemData): SpellContainerSystemData {
+	private static getSpellContainerData(data: SpellContainerSystemSource): SpellContainerSystemSource {
 		return {
 			name: data.name ?? "Spell Container",
 			type: ItemType.SpellContainer,
@@ -374,8 +374,8 @@ class ImportUtils {
 		}
 	}
 
-	// private static getEquipmentData(data: EquipmentSystemData, other = false): EquipmentSystemData {
-	private static getEquipmentData(data: EquipmentSystemData): EquipmentSystemData {
+	// private static getEquipmentData(data: EquipmentSystemSource, other = false): EquipmentSystemSource {
+	private static getEquipmentData(data: EquipmentSystemSource): EquipmentSystemSource {
 		return {
 			name: data.name ?? "Equipment",
 			type: ItemType.Equipment,
@@ -403,9 +403,9 @@ class ImportUtils {
 	}
 
 	private static getEquipmentContainerData(
-		data: EquipmentContainerSystemData,
+		data: EquipmentContainerSystemSource,
 		// other = false
-	): EquipmentContainerSystemData {
+	): EquipmentContainerSystemSource {
 		return {
 			name: data.name ?? "Equipment",
 			type: ItemType.EquipmentContainer,
@@ -433,7 +433,7 @@ class ImportUtils {
 		}
 	}
 
-	private static getEquipmentModifierData(data: EquipmentModifierSystemData): EquipmentModifierSystemData {
+	private static getEquipmentModifierData(data: EquipmentModifierSystemSource): EquipmentModifierSystemSource {
 		return {
 			name: data.name ?? "Equipment Modifier",
 			type: ItemType.EquipmentModifier,
@@ -454,8 +454,8 @@ class ImportUtils {
 	}
 
 	private static getEquipmentModifierContainerData(
-		data: EquipmentModifierContainerSystemData,
-	): EquipmentModifierContainerSystemData {
+		data: EquipmentModifierContainerSystemSource,
+	): EquipmentModifierContainerSystemSource {
 		return {
 			name: data.name ?? "Equipment Modifier Container",
 			type: ItemType.EquipmentModifierContainer,
@@ -469,7 +469,7 @@ class ImportUtils {
 		}
 	}
 
-	private static getNoteData(data: NoteSystemData): NoteSystemData {
+	private static getNoteData(data: NoteSystemSource): NoteSystemSource {
 		return {
 			name: data.text ?? "Note",
 			type: ItemType.Note,
@@ -483,7 +483,7 @@ class ImportUtils {
 		}
 	}
 
-	private static getNoteContainerData(data: NoteContainerSystemData): NoteContainerSystemData {
+	private static getNoteContainerData(data: NoteContainerSystemSource): NoteContainerSystemSource {
 		return {
 			name: data.name ?? "Note",
 			type: ItemType.NoteContainer,
@@ -498,7 +498,7 @@ class ImportUtils {
 		}
 	}
 
-	private static getMeleeWeaponData(data: MeleeWeaponSystemData): MeleeWeaponSystemData {
+	private static getMeleeWeaponData(data: MeleeWeaponSystemSource): MeleeWeaponSystemSource {
 		return {
 			id: data.id ?? "",
 			type: ItemType.MeleeWeapon,
@@ -522,7 +522,7 @@ class ImportUtils {
 		}
 	}
 
-	private static getRangedWeaponData(data: RangedWeaponSystemData): RangedWeaponSystemData {
+	private static getRangedWeaponData(data: RangedWeaponSystemSource): RangedWeaponSystemSource {
 		return {
 			id: data.id ?? "",
 			type: ItemType.RangedWeapon,

@@ -1,19 +1,6 @@
-import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/index.ts"
+import { ItemGCSSource, ItemGCSSystemSource } from "@item/gcs/data.ts"
 import { ItemType } from "@item/types.ts"
 
-export type SpellContainerSource = ItemGCSSource<ItemType.SpellContainer, SpellContainerSystemData>
+export type SpellContainerSource = ItemGCSSource<ItemType.SpellContainer, SpellContainerSystemSource>
 
-export interface SpellContainerData extends Omit<SpellContainerSource, "effects" | "items">, SpellContainerSystemData {
-	readonly type: SpellContainerSource["type"]
-	data: SpellContainerSystemData
-
-	readonly _source: SpellContainerSource
-}
-
-export interface SpellContainerSystemData extends ItemGCSSystemData {
-	calc?: SpellContainerCalcValues
-}
-
-export interface SpellContainerCalcValues extends ItemGCSCalcValues {
-	points: number
-}
+export interface SpellContainerSystemSource extends ItemGCSSystemSource {}

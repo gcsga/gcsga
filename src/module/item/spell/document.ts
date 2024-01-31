@@ -1,7 +1,7 @@
 import { ActorGURPS } from "@actor/base.ts"
 import { ItemGCS } from "@item/gcs/document.ts"
 import { SkillLevel } from "@item/skill/data.ts"
-import { SpellSystemData } from "./data.ts"
+import { SpellSystemSource } from "./data.ts"
 import { display } from "@util/enum/display.ts"
 import { StringBuilder } from "@util/string_builder.ts"
 import { sheetSettingsFor } from "@module/data/sheet_settings.ts"
@@ -11,9 +11,11 @@ import { NewLineRegex } from "@util/regexp.ts"
 import { gid } from "@module/data/misc.ts"
 import { difficulty } from "@util/enum/difficulty.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { CharacterGURPS } from "@actor"
+import { CharacterResolver } from "@util"
 
-export interface SpellGURPS<TParent extends ActorGURPS> extends ItemGCS<TParent> {
-	system: SpellSystemData
+export interface SpellGURPS<TParent extends ActorGURPS | null> extends ItemGCS<TParent> {
+	system: SpellSystemSource
 }
 
 export class SpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
@@ -28,7 +30,7 @@ export class SpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> e
 
 	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
 		const buffer = new StringBuilder()
-		const settings = sheetSettingsFor(this.actor)
+		const settings = sheetSettingsFor(this.actor as unknown as CharacterResolver)
 		if (optionChecker(settings.notes_display)) {
 			buffer.appendToNewLine(this.notes.trim())
 			buffer.appendToNewLine(this.rituals)
@@ -58,7 +60,7 @@ export class SpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> e
 				return LocalizeGURPS.translations.gurps.ritual.sub_10
 			case level < 15:
 				return LocalizeGURPS.translations.gurps.ritual.sub_15
-			case level < 20:
+			case level < 20: {
 				let ritual = LocalizeGURPS.translations.gurps.ritual.sub_20
 				// TODO:
 				if (this.system.spell_class.toLowerCase() === "blocking") return ritual
@@ -66,7 +68,8 @@ export class SpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> e
 					adj: 1,
 				})
 				return ritual
-			default:
+			}
+			default: {
 				const adj = Math.trunc((level - 15) / 5)
 				const spell_class = this.system.spell_class.toLowerCase()
 				let time = ""
@@ -81,6 +84,7 @@ export class SpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> e
 					})
 				}
 				return LocalizeGURPS.translations.gurps.ritual.none + time + cost
+			}
 		}
 	}
 
@@ -114,7 +118,7 @@ export class SpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> e
 
 	adjustedPoints(tooltip?: TooltipGURPS): number {
 		let points = this.points
-		if (this.actor) {
+		if (this.actor instanceof CharacterGURPS) {
 			points += this.actor.spellPointBonusesFor(this.name!, this.powerSource, this.college, this.tags, tooltip)
 			points = Math.max(points, 0)
 		}
@@ -144,6 +148,7 @@ export class SpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> e
 	get effectiveLevel(): number {
 		const actor = this.actor || this.dummyActor
 		if (!actor) return -Infinity
+		if (!(actor instanceof CharacterGURPS)) return -Infinity
 		const att = actor.resolveAttributeCurrent(this.attribute)
 		const effectiveAtt = actor.resolveAttributeEffective(this.attribute)
 		return this.level.level - att + effectiveAtt
@@ -153,7 +158,7 @@ export class SpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> e
 		const tooltip = new TooltipGURPS()
 		let relativeLevel = difficulty.Level.baseRelativeLevel(this.difficulty)
 		let level = -Infinity
-		if (this.actor) {
+		if (this.actor instanceof CharacterGURPS) {
 			let points = Math.trunc(this.points)
 			level = this.actor.resolveAttributeCurrent(this.attribute)
 			if (this.difficulty === difficulty.Level.Wildcard) points = Math.trunc(points / 3)
@@ -226,14 +231,14 @@ export class SpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> e
 			while (this.points > 0) {
 				this.system.points = Math.max(this.points - 1, 0)
 				if (this.calculateLevel().level !== oldLevel) {
-					this.system.points++
+					this.system.points += 1
 					this.update({ "system.points": this.points }, options)
 				}
 			}
 		}
 	}
 
-	setLevel(level: number) {
+	setLevel(level: number): Promise<this | undefined> {
 		return this.update({ "system.points": this.getPointsForLevel(level) })
 	}
 

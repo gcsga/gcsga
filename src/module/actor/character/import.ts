@@ -1,18 +1,18 @@
 import {
-	EquipmentContainerSystemData,
-	EquipmentSystemData,
-	NoteContainerSystemData,
-	NoteSystemData,
-	RitualMagicSpellSystemData,
-	SkillContainerSystemData,
-	SkillSystemData,
-	SpellContainerSystemData,
-	TechniqueSystemData,
-	TraitContainerSystemData,
-	TraitSystemData,
-} from "@item"
+	EquipmentContainerSystemSource,
+	EquipmentSystemSource,
+	NoteContainerSystemSource,
+	NoteSystemSource,
+	RitualMagicSpellSystemSource,
+	SkillContainerSystemSource,
+	SkillSystemSource,
+	SpellContainerSystemSource,
+	TechniqueSystemSource,
+	TraitContainerSystemSource,
+	TraitSystemSource,
+} from "@item/data.ts"
 import { CharacterSystemSource, CharacterThirdPartyData } from "./data.ts"
-import { SpellSystemData } from "@item/spell/data.ts"
+import { SpellSystemSource } from "@item/spell/data.ts"
 import { AttributeObj } from "@sytem/attribute/data.ts"
 import { LengthUnits, LocalizeGURPS, WeightUnits } from "@util"
 import { SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
@@ -27,12 +27,12 @@ import { display } from "@util/enum/display.ts"
 import { progression } from "@util/enum/progression.ts"
 
 export interface CharacterImportedData extends Omit<CharacterSystemSource, "attributes"> {
-	traits: (TraitSystemData | TraitContainerSystemData)[]
-	skills: (SkillSystemData | TechniqueSystemData | SkillContainerSystemData)[]
-	spells: (SpellSystemData | RitualMagicSpellSystemData | SpellContainerSystemData)[]
-	equipment: (EquipmentSystemData | EquipmentContainerSystemData)[]
-	other_equipment: (EquipmentSystemData | EquipmentContainerSystemData)[]
-	notes: (NoteSystemData | NoteContainerSystemData)[]
+	traits: (TraitSystemSource | TraitContainerSystemSource)[]
+	skills: (SkillSystemSource | TechniqueSystemSource | SkillContainerSystemSource)[]
+	spells: (SpellSystemSource | RitualMagicSpellSystemSource | SpellContainerSystemSource)[]
+	equipment: (EquipmentSystemSource | EquipmentContainerSystemSource)[]
+	other_equipment: (EquipmentSystemSource | EquipmentContainerSystemSource)[]
+	notes: (NoteSystemSource | NoteContainerSystemSource)[]
 	attributes: AttributeObj[]
 	third_party: Partial<CharacterThirdPartyData>
 }

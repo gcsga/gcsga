@@ -1,6 +1,6 @@
 import { ActorGURPS } from "@actor/base.ts"
 import { ItemGCS } from "@item/gcs/document.ts"
-import { EquipmentContainerSystemData } from "./data.ts"
+import { EquipmentContainerSystemSource } from "./data.ts"
 import { display } from "@util/enum/display.ts"
 import { StringBuilder } from "@util/string_builder.ts"
 import { sheetSettingsFor } from "@module/data/sheet_settings.ts"
@@ -16,7 +16,7 @@ import { ItemType } from "@item/types.ts"
 
 export interface EquipmentContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null>
 	extends ItemGCS<TParent> {
-	system: EquipmentContainerSystemData
+	system: EquipmentContainerSystemSource
 	type: ItemType.EquipmentContainer
 }
 

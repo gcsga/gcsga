@@ -5,7 +5,7 @@ import { stdmg } from "@util/enum/stdmg.ts"
 
 export type BaseWeaponSource<
 	TItemType extends ItemType = ItemType,
-	TSystemData extends BaseWeaponSystemData = BaseWeaponSystemData,
+	TSystemData extends BaseWeaponSystemSource = BaseWeaponSystemSource,
 > = BaseItemSourceGURPS<TItemType, TSystemData>
 
 export interface WeaponDamageObj {
@@ -19,7 +19,7 @@ export interface WeaponDamageObj {
 	modifier_per_die?: number
 }
 
-export interface BaseWeaponSystemData {
+export interface BaseWeaponSystemSource {
 	id: string
 	type: WeaponType
 	strength: string
@@ -27,18 +27,5 @@ export interface BaseWeaponSystemData {
 	usage_notes: string
 	defaults: SkillDefault[]
 	damage: WeaponDamageObj
-	calc?: BaseWeaonCalcValues
 }
-
-export interface BaseWeaonCalcValues {
-	name: string
-	usage: string
-	resolved_notes: string
-	level: number
-	damage: string
-	strength: string
-	equipped: boolean
-	unready: boolean
-}
-
 export type WeaponType = ItemType.MeleeWeapon | ItemType.RangedWeapon

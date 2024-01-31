@@ -1,7 +1,9 @@
-import { DEFAULT_INITIATIVE_FORMULA, ItemType, SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
+import { DEFAULT_INITIATIVE_FORMULA, SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
 import { SkillResolver } from "./resolvers.ts"
 import { StringBuilder } from "./string_builder.ts"
 import { LocalizeGURPS } from "./localize.ts"
+import { ItemType } from "@item/types.ts"
+// import uuid from "uuidv4"
 
 export function sanitizeId(id: string, permit_leading_digits: boolean, reserved: string[]): string {
 	const buffer: string[] = []
@@ -49,7 +51,9 @@ export function sanitize(text: string): string {
  *
  */
 export function newUUID(): string {
-	return uuidv4()
+	// TODO: fix
+	return ""
+	// return uuid()
 }
 
 /**
@@ -424,4 +428,24 @@ type SlugCamel = "dromedary" | "bactrian" | null
 
 export function isObject(value: unknown): boolean {
 	return typeof value === "object" && value !== null
+}
+
+export function ErrorGURPS(message: string): Error {
+	return Error(`GURPS | ${message}`)
+}
+
+/** Generate and return an HTML element for a FontAwesome icon */
+type FontAwesomeStyle = "solid" | "regular" | "duotone"
+
+export function fontAwesomeIcon(
+	glyph: string,
+	{ style = "solid", fixedWidth = false }: { style?: FontAwesomeStyle; fixedWidth?: boolean } = {},
+): HTMLElement {
+	const styleClass = `fa-${style}`
+	const glyphClass = glyph.startsWith("fa-") ? glyph : `fa-${glyph}`
+	const icon = document.createElement("i")
+	icon.classList.add(styleClass, glyphClass)
+	if (fixedWidth) icon.classList.add("fa-fw")
+
+	return icon
 }

@@ -35,6 +35,8 @@
 			"@feature/*": ["src/module/system/feature/*"],
 			"@prereq": ["src/module/system/prereq/index.ts"],
 			"@prereq/*": ["src/module/system/prereq/*"],
+			"@scene": ["src/module/scene/index.ts"],
+			"@scene/*": ["src/module/scene/*"],
 			"@system": ["src/module/system/index.ts"],
 			"@sytem/*": ["src/module/system/*"],
 			"@ui": ["src/module/ui/index.ts"],

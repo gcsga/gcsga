@@ -1,5 +1,5 @@
 import { ActorGURPS, CharacterGURPS } from "@actor/document.ts"
-import { RangedWeaponSystemData } from "./data.ts"
+import { RangedWeaponSystemSource } from "./data.ts"
 import { BaseWeaponGURPS } from "@item/index.ts"
 import { WeaponAccuracy } from "@item/weapon/weapon_accuracy.ts"
 import { WeaponRange } from "@item/weapon/weapon_range.ts"
@@ -10,15 +10,16 @@ import { WeaponBulk } from "@item/weapon/weapon_bulk.ts"
 import { RollType, SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
 import { WeaponRecoil } from "@item/weapon/weapon_recoil.ts"
 import { includesFold } from "@util/string_criteria.ts"
-import { ItemFlags } from "@item/data.ts"
+import { ItemFlags } from "@item/base/data/system.ts"
+import { CharacterResolver } from "@util"
 
-export interface RangedWeaponGURPS<TParent extends ActorGURPS> extends BaseWeaponGURPS<TParent> {
-	system: RangedWeaponSystemData
+export interface RangedWeaponGURPS<TParent extends ActorGURPS | null> extends BaseWeaponGURPS<TParent> {
+	system: RangedWeaponSystemSource
 }
 
 export class RangedWeaponGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends BaseWeaponGURPS<TParent> {
 	get resolvedRange(): string {
-		const actor = this.actor
+		const actor = this.actor as unknown as CharacterResolver
 		if (!(actor instanceof CharacterGURPS)) return this.system.range
 		const st = Math.trunc(actor.throwingST)
 		let savedRange = ""
@@ -35,7 +36,7 @@ export class RangedWeaponGURPS<TParent extends ActorGURPS | null = ActorGURPS | 
 		if (where === -1) return inRange
 		let last = where + 1
 		const max = inRange.length
-		if (last < max && inRange[last] === " ") last++
+		if (last < max && inRange[last] === " ") last += 1
 		if (last >= max) return inRange
 		let ch = inRange[last]
 		let found = false
@@ -44,7 +45,7 @@ export class RangedWeaponGURPS<TParent extends ActorGURPS | null = ActorGURPS | 
 		while ((!decimal && ch === ".") || ch.match("[0-9]")) {
 			found = true
 			if (ch === ".") decimal = true
-			last++
+			last += 1
 			if (last >= max) break
 			ch = inRange[last]
 		}

@@ -1,5 +1,5 @@
 import { ActorGURPS } from "@actor/base.ts"
-import { SkillLevel, SkillSystemData } from "./data.ts"
+import { SkillLevel, SkillSystemSource } from "./data.ts"
 import { ItemGCS } from "@item/gcs/document.ts"
 import { display } from "@util/enum/display.ts"
 import { StringBuilder } from "@util/string_builder.ts"
@@ -17,11 +17,11 @@ import { CharacterResolver } from "@util"
 import { ItemType } from "@item/types.ts"
 import { study } from "@util/enum/study.ts"
 
-export interface SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
-	system: SkillSystemData
+interface SkillGURPS<TParent extends ActorGURPS | null> extends ItemGCS<TParent> {
+	system: SkillSystemSource
 	type: ItemType.Skill
 }
-export class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
+class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	declare level: SkillLevel
 
 	// level: SkillLevel = { level: -Infinity, relative_level: 0, tooltip: new TooltipGURPS() }
@@ -103,8 +103,10 @@ export class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> e
 	}
 
 	get defaultSkill(): SkillGURPS | null {
-		if (!(this.actor instanceof CharacterGURPS)) return null
-		return this.actor.baseSkill(this.defaultedFrom, true)
+		if (this.actor instanceof CharacterGURPS) {
+			return this.actor.baseSkill(this.defaultedFrom, true)
+		}
+		return null
 	}
 
 	get defaultedFrom(): SkillDefault | null {
@@ -405,3 +407,5 @@ export class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> e
 		return system.study_hours_needed
 	}
 }
+
+export { SkillGURPS }

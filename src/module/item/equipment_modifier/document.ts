@@ -1,6 +1,6 @@
 import { ActorGURPS } from "@actor/base.ts"
 import { ItemGCS } from "@item/gcs/document.ts"
-import { EquipmentModifierSystemData } from "./data.ts"
+import { EquipmentModifierSystemSource } from "./data.ts"
 import { emcost } from "@util/enum/emcost.ts"
 import { emweight } from "@util/enum/emweight.ts"
 import { Weight, WeightUnits } from "@util/weight.ts"
@@ -14,7 +14,7 @@ import { ItemType } from "@item/types.ts"
 
 export interface EquipmentModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null>
 	extends ItemGCS<TParent> {
-	system: EquipmentModifierSystemData
+	system: EquipmentModifierSystemSource
 	type: ItemType.EquipmentModifier
 }
 

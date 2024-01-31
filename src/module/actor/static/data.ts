@@ -67,7 +67,7 @@ export interface StaticCharacterSystemData extends ActorSystemSource {
 			[key: string]: StaticResourceTracker
 		}
 	}
-	hitlocations: any
+	hitlocations: Record<string, StaticHitLocation>
 	lastImport: string
 	attributes: Record<StaticAttributeName, StaticAttribute>
 	HP: StaticPoolValue
@@ -95,8 +95,13 @@ export interface StaticCharacterSystemData extends ActorSystemSource {
 	tastesmell: number
 	vision: number
 	touch: number
-	// TODO: change
-	conditions: any
+	conditions: {
+		exhausted: boolean
+		maneuver: string
+		move: string
+		posture: StaticPosture
+		reeling: boolean
+	}
 	traits: StaticCharacterTraits
 	encumbrance: {
 		[key: string]: {
@@ -108,7 +113,7 @@ export interface StaticCharacterSystemData extends ActorSystemSource {
 			current: boolean
 		}
 	}
-	move: any
+	move: Record<string, StaticMove>
 	reactions: { [key: string]: StaticReaction }
 	conditionalmods: { [key: string]: StaticReaction }
 	ads: { [key: string]: StaticTrait }
@@ -121,8 +126,8 @@ export interface StaticCharacterSystemData extends ActorSystemSource {
 	eqtsummary: number
 	melee: { [key: string]: StaticMelee }
 	ranged: { [key: string]: StaticRanged }
-	currentdodge: any
-	languages: any
+	currentdodge: number
+	languages: Record<string, unknown>
 	liftingmoving: {
 		basiclift: string
 		carryonback: string
@@ -135,6 +140,20 @@ export interface StaticCharacterSystemData extends ActorSystemSource {
 	notes: { [key: string]: StaticNote }
 	equippedparryisfencing?: boolean
 	block?: number
+}
+
+export interface StaticHitLocation {
+	where: string
+	import: number
+	equipmnet: number
+	penalty: number
+	roll: string
+}
+
+export interface StaticMove {
+	basic: number
+	default: boolean
+	mode: string
 }
 
 export interface StaticCharacterTraits {
@@ -234,58 +253,58 @@ export enum StaticThresholdOperator {
 
 export const staticHpConditions = {
 	NORMAL: {
-		breakpoint: (_: any) => Number.MAX_SAFE_INTEGER,
+		breakpoint: (): number => Number.MAX_SAFE_INTEGER,
 		label: "gurps.static.status.normal",
 	},
 	REELING: {
-		breakpoint: (HP: StaticCharacterSystemData["HP"]) => Math.ceil(HP.max / 3) - 1,
+		breakpoint: (HP: StaticCharacterSystemData["HP"]): number => Math.ceil(HP.max / 3) - 1,
 		label: "gurps.static.status.reeling",
 	},
 	COLLAPSE: {
-		breakpoint: (_: StaticCharacterSystemData["HP"]) => 0,
+		breakpoint: (_: StaticCharacterSystemData["HP"]): number => 0,
 		label: "gurps.static.status.collapse",
 	},
 	CHECK1: {
-		breakpoint: (HP: StaticCharacterSystemData["HP"]) => -1 * HP.max,
+		breakpoint: (HP: StaticCharacterSystemData["HP"]): number => -1 * HP.max,
 		label: "gurps.static.status.check1",
 	},
 	CHECK2: {
-		breakpoint: (HP: StaticCharacterSystemData["HP"]) => -2 * HP.max,
+		breakpoint: (HP: StaticCharacterSystemData["HP"]): number => -2 * HP.max,
 		label: "gurps.static.status.check2",
 	},
 	CHECK3: {
-		breakpoint: (HP: StaticCharacterSystemData["HP"]) => -3 * HP.max,
+		breakpoint: (HP: StaticCharacterSystemData["HP"]): number => -3 * HP.max,
 		label: "gurps.static.status.check3",
 	},
 	CHECK4: {
-		breakpoint: (HP: StaticCharacterSystemData["HP"]) => -4 * HP.max,
+		breakpoint: (HP: StaticCharacterSystemData["HP"]): number => -4 * HP.max,
 		label: "gurps.static.status.check4",
 	},
 	DEAD: {
-		breakpoint: (HP: StaticCharacterSystemData["HP"]) => -5 * HP.max,
+		breakpoint: (HP: StaticCharacterSystemData["HP"]): number => -5 * HP.max,
 		label: "gurps.static.status.dead",
 	},
 	DESTROYED: {
-		breakpoint: (HP: StaticCharacterSystemData["HP"]) => -10 * HP.max,
+		breakpoint: (HP: StaticCharacterSystemData["HP"]): number => -10 * HP.max,
 		label: "gurps.static.status.destroyed",
 	},
 }
 
 export const staticFpConditions = {
 	NORMAL: {
-		breakpoint: (_: any) => Number.MAX_SAFE_INTEGER,
+		breakpoint: (): number => Number.MAX_SAFE_INTEGER,
 		label: "gurps.static.status.normal",
 	},
 	REELING: {
-		breakpoint: (FP: StaticCharacterSystemData["FP"]) => Math.ceil(FP.max / 3) - 1,
+		breakpoint: (FP: StaticCharacterSystemData["FP"]): number => Math.ceil(FP.max / 3) - 1,
 		label: "gurps.static.status.tired",
 	},
 	COLLAPSE: {
-		breakpoint: (_: any) => 0,
+		breakpoint: (): number => 0,
 		label: "gurps.static.status.collapse",
 	},
 	UNCONSCIOUS: {
-		breakpoint: (FP: StaticCharacterSystemData["FP"]) => -1 * FP.max,
+		breakpoint: (FP: StaticCharacterSystemData["FP"]): number => -1 * FP.max,
 		label: "gurps.static.status.unconscious",
 	},
 }

@@ -1,15 +1,17 @@
 import { ActorGURPS } from "@actor/document.ts"
 import { ItemGCS } from "@item/gcs/document.ts"
-import { RitualMagicSpellSystemData } from "./data.ts"
+import { RitualMagicSpellSystemSource } from "./data.ts"
 import { SkillLevel } from "@item/skill/data.ts"
 import { SpellGURPS } from "@item/spell/document.ts"
-import { ItemType, gid } from "@module/data/misc.ts"
 import { difficulty } from "@util/enum/difficulty.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { SkillDefault } from "@sytem/default/index.ts"
+import { ItemType } from "@item"
+import { gid } from "@module/data/misc.ts"
+import { CharacterGURPS } from "@actor"
 
-export interface RitualMagicSpellGURPS<TParent extends ActorGURPS> extends ItemGCS<TParent> {
-	system: RitualMagicSpellSystemData
+export interface RitualMagicSpellGURPS<TParent extends ActorGURPS | null> extends ItemGCS<TParent> {
+	system: RitualMagicSpellSystemSource
 	type: ItemType.RitualMagicSpell
 }
 
@@ -63,7 +65,7 @@ export class RitualMagicSpellGURPS<TParent extends ActorGURPS | null = ActorGURP
 
 	adjustedPoints(tooltip?: TooltipGURPS): number {
 		let points = this.points
-		if (this.actor) {
+		if (this.actor instanceof CharacterGURPS) {
 			points += this.actor.spellPointBonusesFor(this.name!, this.powerSource, this.college, this.tags, tooltip)
 			points = Math.max(points, 0)
 		}
@@ -71,6 +73,7 @@ export class RitualMagicSpellGURPS<TParent extends ActorGURPS | null = ActorGURP
 	}
 
 	satisfied(tooltip: TooltipGURPS): boolean {
+		if (!(this.actor instanceof CharacterGURPS)) return true
 		if (this.college.length === 0) {
 			// Tooltip.push(prefix)
 			tooltip.push("gurps.ritual_magic_spell.must_assign_college")
@@ -116,7 +119,7 @@ export class RitualMagicSpellGURPS<TParent extends ActorGURPS | null = ActorGURP
 
 	get effectiveLevel(): number {
 		const actor = this.actor || this.dummyActor
-		if (!actor) return -Infinity
+		if (!(actor instanceof CharacterGURPS)) return -Infinity
 		const att = actor.resolveAttributeCurrent(this.attribute)
 		const effectiveAtt = actor.resolveAttributeEffective(this.attribute)
 		return this.level.level - att + effectiveAtt
@@ -135,7 +138,7 @@ export class RitualMagicSpellGURPS<TParent extends ActorGURPS | null = ActorGURP
 				if (skillLevel.level < possible.level) skillLevel = possible
 			}
 		}
-		if (this.actor) {
+		if (this.actor instanceof CharacterGURPS) {
 			const tooltip = new TooltipGURPS()
 			tooltip.push(skillLevel.tooltip)
 			const levels = Math.trunc(
@@ -176,7 +179,7 @@ export class RitualMagicSpellGURPS<TParent extends ActorGURPS | null = ActorGURP
 		let relative_level = 0
 		let points = this.adjustedPoints()
 		let level = -Infinity
-		if (this.actor) {
+		if (this.actor instanceof CharacterGURPS) {
 			if (def?.type === gid.Skill) {
 				const sk = this.actor.baseSkill(def!, true)
 				if (sk) level = sk.level.level
@@ -245,14 +248,14 @@ export class RitualMagicSpellGURPS<TParent extends ActorGURPS | null = ActorGURP
 			while (this.points > 0) {
 				this.system.points = Math.max(this.points - 1, 0)
 				if (this.calculateLevel().level !== oldLevel) {
-					this.system.points++
+					this.system.points += 1
 					this.update({ "system.points": this.points })
 				}
 			}
 		}
 	}
 
-	setLevel(level: number) {
+	setLevel(level: number): Promise<this | undefined> {
 		return this.update({ "system.points": this.getPointsForLevel(level) })
 	}
 
