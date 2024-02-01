@@ -6,9 +6,10 @@ import { ActorGURPS } from "@actor/base.ts"
 import { LastActor } from "@util/last_actor.ts"
 import { LootGURPS } from "@actor/loot/document.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { CharacterGURPS } from "@actor/character/index.ts"
 import { RollGURPS } from "./roll/index.ts"
 import { SpellGURPS } from "@item/spell/document.ts"
+import { CharacterGURPS } from "@actor"
+import { BaseWeaponGURPS, RitualMagicSpellGURPS } from "@item"
 
 export function parse(message: string): [string, string[]] {
 	for (const [rule, rgx] of Object.entries(GURPS_COMMANDS)) {
@@ -30,36 +31,37 @@ export function procesMessage(message: string): boolean {
 	return true
 }
 
-/**
- *
- * @param command
- * @param matches
- * @param chatData
- * @param createOptions
- */
-export async function _processDiceCommand(
-	command: string,
-	matches: RegExpMatchArray[],
-	chatData: any,
-	createOptions: any,
-): Promise<void> {
-	const actor = ChatMessage.getSpeakerActor(chatData.speaker) || game.user?.character
-	const rollData: any = actor ? actor.getRollData() : {}
-	const rolls = []
-	for (const match of matches) {
-		if (!match) continue
-		const [formula, flavor] = match.slice(2, 4)
-		if (flavor && !chatData.flavor) chatData.flavor = flavor
-		const roll = Roll.create(formula, rollData)
-		await roll.evaluate({ async: true })
-		rolls.push(roll)
-	}
-	chatData.type = CONST.CHAT_MESSAGE_TYPES.ROLL
-	chatData.rolls = rolls
-	chatData.sound = CONFIG.sounds.dice
-	chatData.content = rolls.reduce((t, r) => t + r.total!, 0)
-	createOptions.rollMode = command
-}
+// /**
+//  *
+//  * @param command
+//  * @param matches
+//  * @param chatData
+//  * @param createOptions
+//  */
+// export async function _processDiceCommand(
+// 	command: string,
+// 	matches: RegExpMatchArray[],
+// 	chatData: DeepPartial<foundry.documents.ChatMessageSource>,
+// 	createOptions: ChatMessageModificationContext,
+// ): Promise<void> {
+// 	let actor = game.user.character
+// 	if (chatData.speaker) actor = ChatMessage.getSpeakerActor(chatData.speaker) as ActorGURPS<null>
+// 	const rollData: Record<string, unknown> = actor ? actor.getRollData() : {}
+// 	const rolls = []
+// 	for (const match of matches) {
+// 		if (!match) continue
+// 		const [formula, flavor] = match.slice(2, 4)
+// 		if (flavor && !chatData.flavor) chatData.flavor = flavor
+// 		const roll = Roll.create(formula, rollData)
+// 		await roll.evaluate({ async: true })
+// 		rolls.push(roll)
+// 	}
+// 	chatData.type = CONST.CHAT_MESSAGE_TYPES.ROLL
+// 	chatData.rolls = rolls
+// 	chatData.sound = CONFIG.sounds.dice
+// 	chatData.content = rolls.reduce((t, r) => t + r.total!, 0)
+// 	createOptions.rollMode = command
+// }
 
 /**
  *
@@ -131,8 +133,9 @@ async function _onRollClick(event: JQuery.ClickEvent) {
 	event.preventDefault()
 	event.stopPropagation()
 	const type: RollType = $(event.currentTarget).data("type")
-	const data: Record<string, any> = { type: type, hidden: event.ctrlKey }
-	let actor: CharacterGURPS | null = await LastActor.get()
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	const data: any = { type: type, hidden: event.ctrlKey }
+	let actor: ActorGURPS | null = await LastActor.get()
 	if (actor instanceof LootGURPS) return
 
 	if (type === RollType.Attribute) {
@@ -147,7 +150,7 @@ async function _onRollClick(event: JQuery.ClickEvent) {
 			data.item = actor.bestSkillNamed(itemData.name!, itemData.specialization || "", false, null)
 
 			// Update level at least once to calculate default level
-			data.item?.updateLevel()
+			data.item.updateLevel()
 			if (!data.item || data.item.effectiveLevel === -Infinity) {
 				ui.notifications?.warn(LocalizeGURPS.translations.gurps.notification.no_default_skill)
 				return
@@ -156,7 +159,8 @@ async function _onRollClick(event: JQuery.ClickEvent) {
 	} else if ([RollType.Spell, RollType.SpellRelative].includes(type)) {
 		if (actor instanceof CharacterGURPS) {
 			const itemData = $(event.currentTarget).data("json")
-			data.item = actor.spells.find((e: SpellGURPS) => e.name === itemData.name)
+			// @ts-expect-error idk
+			data.item = actor.spells.find((e: SpellGURPS | RitualMagicSpellGURPS) => e.name === itemData.name)
 		}
 		if (!data.item || data.item.effectiveLevel === -Infinity) {
 			ui.notifications?.warn(LocalizeGURPS.translations.gurps.notification.no_default_skill)
@@ -195,7 +199,7 @@ async function _onDamageRoll(event: JQuery.ClickEvent) {
 	event.stopPropagation()
 	event.stopImmediatePropagation()
 
-	const eventData = $(event.currentTarget).data()
+	const eventData = $(event.currentTarget).data() as DamageRollEventData
 
 	const rollData = getDamageRollData(eventData)
 	const { actor, data } = rollData ?? {}
@@ -203,7 +207,15 @@ async function _onDamageRoll(event: JQuery.ClickEvent) {
 	return RollGURPS.handleRoll(game.user, actor, data)
 }
 
-function getDamageRollData(eventData: any): { actor: ActorGURPS; data: any } | undefined {
+type DamageRollEventData = {
+	type: RollType
+	actor: string
+	weapon: string
+}
+
+function getDamageRollData(
+	eventData: DamageRollEventData,
+): { actor: ActorGURPS; data: Record<string, unknown> } | undefined {
 	const type: RollType = eventData.type
 
 	if (type !== RollType.Damage) {
@@ -212,7 +224,7 @@ function getDamageRollData(eventData: any): { actor: ActorGURPS; data: any } | u
 	}
 
 	const actor = game.actors!.get(eventData.actor) as ActorGURPS
-	const data: { [key: string]: any } = { type: type }
+	const data: { [key: string]: unknown } = { type: type }
 	data.item = actor.items.get(eventData.weapon)
 	data.times = 1
 
@@ -226,7 +238,7 @@ async function _onMultiDamageRoll(event: JQuery.ClickEvent): Promise<void> {
 	const damageButtons = $(event.currentTarget).closest(".damage-buttons")
 
 	const damageRoll = $(damageButtons).find(".damage.rollable")
-	const eventData = $(damageRoll).data()
+	const eventData = $(damageRoll).data() as DamageRollEventData
 	const data = getDamageRollData(eventData)
 	if (!data) return
 

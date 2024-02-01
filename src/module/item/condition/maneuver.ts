@@ -1,6 +1,6 @@
-import { ConditionSystemSource, ManeuverID } from "./data"
+import { ConditionSystemSource, ManeuverID } from "./index.ts"
 
-export function getManeuverList() {
+export function getManeuverList(): Record<ManeuverID, Partial<ConditionSystemSource>> {
 	const ConditionList: Record<ManeuverID, Partial<ConditionSystemSource>> = {
 		[ManeuverID.DoNothing]: { id: ManeuverID.DoNothing },
 		[ManeuverID.Attack]: { id: ManeuverID.Attack },

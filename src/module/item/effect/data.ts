@@ -1,6 +1,6 @@
 import { ActorGURPS } from "@actor/document.ts"
 import { FeatureObj } from "@feature/index.ts"
-import { BaseItemSourceGURPS } from "@item/data.ts"
+import { BaseItemSourceGURPS } from "@item/base/data/system.ts"
 import { ItemType } from "@item/types.ts"
 import { RollModifier } from "@module/data/misc.ts"
 
@@ -40,5 +40,5 @@ export interface EffectSystemSource {
 export interface EffectModificationContext<TParent extends ActorGURPS | null>
 	extends DocumentModificationContext<TParent> {
 	previousLevel: number
-	previousID?: string
+	previousID?: string | null
 }

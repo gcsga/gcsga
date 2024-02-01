@@ -13,9 +13,11 @@ import { difficulty } from "@util/enum/difficulty.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { CharacterGURPS } from "@actor"
 import { CharacterResolver } from "@util"
+import { ItemType } from "@item"
 
 export interface SpellGURPS<TParent extends ActorGURPS | null> extends ItemGCS<TParent> {
 	system: SpellSystemSource
+	type: ItemType.Spell
 }
 
 export class SpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {

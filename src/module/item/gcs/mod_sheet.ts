@@ -1,10 +1,7 @@
-import { SYSTEM_NAME } from "@module/data"
-import { LocalizeGURPS } from "@util"
-import { ItemGCS } from "./document"
-import { ItemSubstitutionSheet } from "./sub_sheet"
+import { ItemGCS } from "./document.ts"
 
 export class ModifierChoiceSheet extends FormApplication {
-	object: ItemGCS & { modifiers?: Collection<ItemGCS & { enabled: boolean }> }
+	override object: ItemGCS & { modifiers?: Collection<ItemGCS & { enabled: boolean }> }
 
 	nextObjects: ItemGCS[]
 
@@ -12,7 +9,7 @@ export class ModifierChoiceSheet extends FormApplication {
 
 	choices: Record<string, boolean> = {}
 
-	constructor(items: ItemGCS[], options?: any) {
+	constructor(items: ItemGCS[], options?: { puuid?: string }) {
 		const item = items.shift()!
 		super(item, options)
 		this.object = item

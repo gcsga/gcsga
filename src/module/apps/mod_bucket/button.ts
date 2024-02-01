@@ -1,8 +1,8 @@
-import { RollType, SYSTEM_NAME, UserFlags } from "@module/data"
-import { RollGURPS } from "@module/roll"
+import { RollType, SYSTEM_NAME } from "@module/data/misc.ts"
+import { ModifierBucketWindow } from "./window.ts"
+import { UserFlags, UserGURPS } from "@module/user/index.ts"
 import { LastActor } from "@util"
-import { ModifierBucketWindow } from "./window"
-import { UserGURPS } from "@module/user/document"
+import { RollGURPS } from "@module/roll/index.ts"
 
 export class ModifierBucket extends Application {
 	window: ModifierBucketWindow
@@ -12,25 +12,26 @@ export class ModifierBucket extends Application {
 		this.window = new ModifierBucketWindow(this)
 	}
 
-	static get defaultOptions(): ApplicationOptions {
-		return mergeObject(super.defaultOptions, {
+	static override get defaultOptions(): ApplicationOptions {
+		return {
+			...super.defaultOptions,
 			popOut: false,
 			minimizable: false,
 			resizable: false,
 			id: "modifier-bucket-button",
 			template: `systems/${SYSTEM_NAME}/templates/modifier-bucket/button.hbs`,
 			classes: ["modifier-button"],
-		})
+		}
 	}
 
-	protected _injectHTML(html: JQuery<HTMLElement>): void {
+	protected override _injectHTML(html: JQuery<HTMLElement>): void {
 		if ($("body").find("#modifier-bucket-button").length === 0) {
 			html.insertAfter($("body").find("#hotbar-page-controls"))
 			this._element = html
 		}
 	}
 
-	activateListeners(html: JQuery<HTMLElement>): void {
+	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 
 		html[0].addEventListener("wheel", event => this._onMouseWheel(event), { passive: true })
@@ -45,7 +46,7 @@ export class ModifierBucket extends Application {
 		html.find("#current-actor").on("click", event => this._OnCurrentActorClick(event))
 	}
 
-	async getData(options?: Partial<ApplicationOptions> | undefined): Promise<object> {
+	override async getData(options?: Partial<ApplicationOptions> | undefined): Promise<object> {
 		// let total = (game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierTotal) as number) ?? 0
 		const total = (game.user as UserGURPS).modifierTotal
 		const buttonMagnet = game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierSticky) === true ? "sticky" : ""
@@ -55,7 +56,7 @@ export class ModifierBucket extends Application {
 		const showDice = true
 		const currentActor = game.user?.isGM ? await LastActor.get() : null
 
-		return mergeObject(super.getData(options), {
+		return fu.mergeObject(super.getData(options), {
 			id: this.id,
 			total,
 			buttonColor,
@@ -67,7 +68,7 @@ export class ModifierBucket extends Application {
 	}
 
 	// Increase/Decrease modifier by 1 with the mouse wheel
-	async _onMouseWheel(event: WheelEvent) {
+	async _onMouseWheel(event: WheelEvent): Promise<void> {
 		const delta = Math.round(event.deltaY / -100)
 		return (game.user as UserGURPS).addModifier({
 			name: "",
@@ -132,7 +133,7 @@ export class ModifierBucket extends Application {
 	async clear(): Promise<unknown> {
 		await game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, [])
 		// await game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierTotal, 0)
-		game.ModifierList.render()
+		game.gurps.modifierList.render()
 		return this.render(true)
 	}
 }

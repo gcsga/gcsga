@@ -25,9 +25,11 @@ interface BaseFilterData {
 }
 
 type TraitFilters = BaseFilterData
+type TraitModifierFilters = BaseFilterData
 type SkillFilters = BaseFilterData
 type SpellFilters = BaseFilterData
 type EquipmentFilters = BaseFilterData
+type EquipmentModifierFilters = BaseFilterData
 type NoteFilters = BaseFilterData
 type EffectFilters = BaseFilterData
 
@@ -35,14 +37,23 @@ type BrowserFilter = TraitFilters | SkillFilters | SpellFilters | EquipmentFilte
 
 type CompendiumBrowserIndexData = Omit<CompendiumIndexData, "_id"> & Partial<SearchResult>
 
+interface RenderResultListOptions {
+	list?: HTMLUListElement
+	start?: number
+	replace?: boolean
+}
+
 export type {
 	BrowserFilter,
 	CompendiumBrowserIndexData,
 	EffectFilters,
 	EquipmentFilters,
+	EquipmentModifierFilters,
+	MultiselectData,
 	NoteFilters,
+	RenderResultListOptions,
 	SkillFilters,
 	SpellFilters,
-	MultiselectData,
 	TraitFilters,
+	TraitModifierFilters,
 }

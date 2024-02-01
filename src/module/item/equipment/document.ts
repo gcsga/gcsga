@@ -6,7 +6,6 @@ import { StringBuilder } from "@util/string_builder.ts"
 import { sheetSettingsFor } from "@module/data/sheet_settings.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
-import { ItemFlags } from "@item/data.ts"
 import { Weight, WeightUnits } from "@util/weight.ts"
 import {
 	EquipmentModifierGURPS,
@@ -18,6 +17,9 @@ import { Int } from "@util/fxp.ts"
 import { ContainedWeightReduction, Feature } from "@feature/index.ts"
 import { EquipmentContainerGURPS } from "@item/index.ts"
 import { ItemType } from "@item/types.ts"
+import { ItemFlags } from "@item/base/data/system.ts"
+import { CharacterResolver } from "@util"
+import { CharacterGURPS } from "@actor"
 
 export interface EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	system: EquipmentSystemSource
@@ -37,7 +39,7 @@ export class EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | nul
 
 	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
 		const buffer = new StringBuilder()
-		const settings = sheetSettingsFor(this.actor)
+		const settings = sheetSettingsFor(this.actor as unknown as CharacterResolver)
 		if (optionChecker(settings.modifiers_display)) {
 			buffer.appendToNewLine(this.modifierNotes)
 		}
@@ -77,7 +79,7 @@ export class EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | nul
 	}
 
 	get weightUnits(): WeightUnits {
-		if (this.actor) return this.actor.weightUnits
+		if (this.actor instanceof CharacterGURPS) return this.actor.weightUnits
 		const default_settings = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
 		return default_settings.default_weight_units
 	}
@@ -90,7 +92,7 @@ export class EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | nul
 		return !(
 			this.system.quantity > 0 &&
 			!(this.container instanceof CompendiumCollection) &&
-			(this.container?.type === ItemType.EquipmentContainer ? !(this.container as any).isGreyedOut : true)
+			(this.container instanceof EquipmentContainerGURPS ? !this.container.isGreyedOut : true)
 		)
 	}
 
@@ -111,7 +113,7 @@ export class EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | nul
 		return super.children as Collection<EquipmentGURPS | EquipmentContainerGURPS>
 	}
 
-	get modifiers(): Collection<EquipmentModifierGURPS | EquipmentModifierContainerGURPS> {
+	override get modifiers(): Collection<EquipmentModifierGURPS | EquipmentModifierContainerGURPS> {
 		const modifiers: Collection<EquipmentModifierGURPS> = new Collection()
 		for (const item of this.items) {
 			if (item instanceof EquipmentModifierGURPS) modifiers.set(item.id!, item)
@@ -180,8 +182,8 @@ export class EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | nul
 		super.prepareBaseData()
 	}
 
-	override exportSystemData(keepOther: boolean): any {
-		const system: any = super.exportSystemData(keepOther)
+	override exportSystemData(keepOther: boolean): Record<string, unknown> {
+		const system = super.exportSystemData(keepOther)
 		system.type = "equipment"
 		system.description = this.name
 		delete system.name

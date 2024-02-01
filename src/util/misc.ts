@@ -1,11 +1,11 @@
+import { ItemType } from "@item/types.ts"
 import { DEFAULT_INITIATIVE_FORMULA, SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
+import { LocalizeGURPS } from "./localize.ts"
 import { SkillResolver } from "./resolvers.ts"
 import { StringBuilder } from "./string_builder.ts"
-import { LocalizeGURPS } from "./localize.ts"
-import { ItemType } from "@item/types.ts"
 // import uuid from "uuidv4"
 
-export function sanitizeId(id: string, permit_leading_digits: boolean, reserved: string[]): string {
+function sanitizeId(id: string, permit_leading_digits: boolean, reserved: string[]): string {
 	const buffer: string[] = []
 	for (let ch of id.split("")) {
 		if (ch.match("[A-Z]")) ch = ch.toLowerCase()
@@ -30,7 +30,7 @@ export function sanitizeId(id: string, permit_leading_digits: boolean, reserved:
 	return ""
 }
 
-export function sanitize(text: string): string {
+function sanitize(text: string): string {
 	text = text.replace(/%(?![0-9][0-9a-fA-F]+)/g, "%25")
 	text = decodeURIComponent(text) // convert % (not followed by 2 digit hex) to %25, unicode characters into html format
 	text = text.replace(/&nbsp;/g, " ") // we need to convert non-breaking spaces into regular spaces for parsing
@@ -50,7 +50,7 @@ export function sanitize(text: string): string {
 /**
  *
  */
-export function newUUID(): string {
+function newUUID(): string {
 	// TODO: fix
 	return ""
 	// return uuid()
@@ -59,7 +59,7 @@ export function newUUID(): string {
 /**
  *
  */
-export function getCurrentTime(): string {
+function getCurrentTime(): string {
 	return new Date().toISOString()
 }
 
@@ -68,7 +68,7 @@ export function getCurrentTime(): string {
  * @param value
  * @param base
  */
-// export function stringCompare(value?: string | string[] | null, base?: StringCriteria): boolean {
+// function stringCompare(value?: string | string[] | null, base?: StringCriteria): boolean {
 // 	if (!base) return true
 // 	if (!value) value = ""
 // 	if (typeof value === "string") value = [value]
@@ -109,7 +109,7 @@ export function getCurrentTime(): string {
  * @param value
  * @param base
  */
-// export function numberCompare(value: number, base?: NumericCriteria): boolean {
+// function numberCompare(value: number, base?: NumericCriteria): boolean {
 // 	if (!base) return true
 // 	switch (base.compare) {
 // 		case NumericComparisonType.AnyNumber:
@@ -127,11 +127,11 @@ export function getCurrentTime(): string {
 // 	}
 // }
 
-export function extractTechLevel(str: string): number {
+function extractTechLevel(str: string): number {
 	return Math.min(Math.max(0, parseInt(str)), 12)
 }
 
-export function dollarFormat(i: number): string {
+function dollarFormat(i: number): string {
 	const formatter = new Intl.NumberFormat("en-US", {
 		style: "currency",
 		currency: "USD",
@@ -139,7 +139,7 @@ export function dollarFormat(i: number): string {
 	return formatter.format(i)
 }
 
-export function toWord(n: number): string {
+function toWord(n: number): string {
 	switch (n) {
 		case 1:
 			return "one"
@@ -158,7 +158,7 @@ export function toWord(n: number): string {
 	}
 }
 
-export function removeAccents(str: string): string {
+function removeAccents(str: string): string {
 	return str
 		.normalize("NFD")
 		.replace(/[\u0300-\u036f]/g, "") // Remove accents
@@ -167,11 +167,11 @@ export function removeAccents(str: string): string {
 		.replace(/(^-+|-+$)/g, "")
 }
 
-export function capitalize(s: string): string {
+function capitalize(s: string): string {
 	return s.charAt(0).toUpperCase() + s.slice(1)
 }
 
-// export function getAdjustedStudyHours(s: Study): number {
+// function getAdjustedStudyHours(s: Study): number {
 // 	switch (s.type) {
 // 		case StudyType.Self:
 // 			return s.hours * 0.5
@@ -184,7 +184,7 @@ export function capitalize(s: string): string {
 // 	}
 // }
 
-export function prepareFormData(formData: Record<string, unknown>, object: object): Record<string, unknown> {
+function prepareFormData(formData: Record<string, unknown>, object: object): Record<string, unknown> {
 	for (const aKey of Object.keys(formData)) {
 		if (formData[aKey] === null) formData[aKey] = "0"
 		if (aKey.includes(".halve_")) {
@@ -249,12 +249,12 @@ function setArrayProperty(a: object[], index: number, prop: string, value: unkno
  * @param {string | null} flavor
  * @returns {string}
  */
-export function d6ify(str: string, flavor: string | null = ""): string {
+function d6ify(str: string, flavor: string | null = ""): string {
 	const w = str.replace(/d([^6])/g, `d6${flavor || ""}$1`) // Find 'd's without a 6 behind it, and add it.
 	return w.replace(/d$/g, `d6${flavor || ""}`) // And do the same for the end of the line.
 }
 
-export async function urlToBase64(imageUrl: string): Promise<string> {
+async function urlToBase64(imageUrl: string): Promise<string> {
 	const format = imageUrl.split(".").at(-1) || ""
 	if (!["png", "webp", "jpg", "jpeg"].includes(format)) return ""
 	const img: Blob = await fetch(imageUrl).then(v => v.blob())
@@ -276,14 +276,14 @@ export async function urlToBase64(imageUrl: string): Promise<string> {
 	return ""
 }
 
-export function setInitiative(): void {
+function setInitiative(): void {
 	let formula = game.settings.get(SYSTEM_NAME, SETTINGS.INITIATIVE_FORMULA)
 	if (!formula) formula = DEFAULT_INITIATIVE_FORMULA
 	if (game.user?.isGM) game.settings.set(SYSTEM_NAME, SETTINGS.INITIATIVE_FORMULA, formula)
 	CONFIG.Combat.initiative.formula = formula
 }
 
-export function pick<T extends object, K extends keyof T>(obj: T, keys: Iterable<K>): Pick<T, K> {
+function pick<T extends object, K extends keyof T>(obj: T, keys: Iterable<K>): Pick<T, K> {
 	return [...keys].reduce(
 		(result, key) => {
 			if (key in obj) {
@@ -295,7 +295,7 @@ export function pick<T extends object, K extends keyof T>(obj: T, keys: Iterable
 	)
 }
 
-export async function getDefaultSkills(): Promise<void> {
+async function getDefaultSkills(): Promise<void> {
 	const skills: SkillResolver[] = []
 	const skillPacks = game.settings.get(SYSTEM_NAME, SETTINGS.COMPENDIUM_BROWSER_PACKS).skill
 	for (const s in skillPacks)
@@ -308,7 +308,7 @@ export async function getDefaultSkills(): Promise<void> {
 	CONFIG.GURPS.skillDefaults = skills
 }
 
-// export function flatten(obj: object, flatObj: Record<string, object> = {}, key = ""): Record<string, object> | null {
+// function flatten(obj: object, flatObj: Record<string, object> = {}, key = ""): Record<string, object> | null {
 //   if (obj === null) return null
 //   for (const k of Object.keys(obj)) {
 //     let valKey = key === "" ? k : `${key}.${k}`
@@ -320,7 +320,7 @@ export async function getDefaultSkills(): Promise<void> {
 //   return flatObj
 // }
 
-export function getNewAttributeId(list: { id: string }[]): string {
+function getNewAttributeId(list: { id: string }[]): string {
 	let base = ""
 	for (let i = 0; i < 5; i++) {
 		for (let n = 0; n < 26; n++) {
@@ -333,7 +333,7 @@ export function getNewAttributeId(list: { id: string }[]): string {
 	throw new Error("Error generating new attribute ID, ran out of possible auto-generated IDs.")
 }
 
-export function isContainer(item: { type: ItemType }): boolean {
+function isContainer(item: { type: ItemType }): boolean {
 	return [
 		ItemType.TraitContainer,
 		ItemType.SkillContainer,
@@ -345,11 +345,11 @@ export function isContainer(item: { type: ItemType }): boolean {
 	].includes(item.type as ItemType)
 }
 
-// export function sheetSettingsFor(actor: CharacterResolver): SheetSettings {
+// function sheetSettingsFor(actor: CharacterResolver): SheetSettings {
 // 	if (!actor) return
 // }
 
-export function sheetDisplayNotes(
+function sheetDisplayNotes(
 	s: string,
 	options: { unsatisfied?: string; unready?: boolean } = { unsatisfied: "", unready: false },
 ): string {
@@ -388,7 +388,7 @@ const upperOrWordBoundariedLowerRE = new RegExp(`${upperCaseLetter}|(?:${wordBou
  * @param text The text to sluggify
  * @param [options.camel=null] The sluggification style to use
  */
-export function sluggify(text: string, { camel = null }: { camel?: SlugCamel } = {}): string {
+function sluggify(text: string, { camel = null }: { camel?: SlugCamel } = {}): string {
 	// Sanity check
 	if (typeof text !== "string") {
 		console.warn("Non-string argument passed to `sluggify`")
@@ -426,18 +426,14 @@ export function sluggify(text: string, { camel = null }: { camel?: SlugCamel } =
 
 type SlugCamel = "dromedary" | "bactrian" | null
 
-export function isObject(value: unknown): boolean {
-	return typeof value === "object" && value !== null
-}
-
-export function ErrorGURPS(message: string): Error {
+function ErrorGURPS(message: string): Error {
 	return Error(`GURPS | ${message}`)
 }
 
 /** Generate and return an HTML element for a FontAwesome icon */
 type FontAwesomeStyle = "solid" | "regular" | "duotone"
 
-export function fontAwesomeIcon(
+function fontAwesomeIcon(
 	glyph: string,
 	{ style = "solid", fixedWidth = false }: { style?: FontAwesomeStyle; fixedWidth?: boolean } = {},
 ): HTMLElement {
@@ -448,4 +444,59 @@ export function fontAwesomeIcon(
 	if (fixedWidth) icon.classList.add("fa-fw")
 
 	return icon
+}
+
+/** Check if a value is present in the provided array. Especially useful for checking against literal tuples */
+function tupleHasValue<const A extends readonly unknown[]>(array: A, value: unknown): value is A[number] {
+	return array.includes(value)
+}
+
+/** Check if an element is present in the provided set. Especially useful for checking against literal sets */
+function setHasElement<T extends Set<unknown>>(set: T, value: unknown): value is SetElement<T> {
+	return set.has(value)
+}
+/**
+ * Check if a key is present in a given object in a type safe way
+ *
+ * @param obj The object to check
+ * @param key The key to check
+ */
+function objectHasKey<O extends object>(obj: O, key: unknown): key is keyof O {
+	return (typeof key === "string" || typeof key === "number") && key in obj
+}
+
+/** Short form of type and non-null check */
+function isObject<T extends object>(value: unknown): value is DeepPartial<T>
+function isObject<T extends string>(value: unknown): value is { [K in T]?: unknown }
+function isObject(value: unknown): boolean {
+	return typeof value === "object" && value !== null
+}
+
+export {
+	ErrorGURPS,
+	capitalize,
+	d6ify,
+	dollarFormat,
+	extractTechLevel,
+	fontAwesomeIcon,
+	getCurrentTime,
+	getDefaultSkills,
+	getNewAttributeId,
+	isContainer,
+	isObject,
+	newUUID,
+	objectHasKey,
+	pick,
+	prepareFormData,
+	removeAccents,
+	sanitize,
+	sanitizeId,
+	setArrayProperty,
+	setHasElement,
+	setInitiative,
+	sheetDisplayNotes,
+	sluggify,
+	toWord,
+	tupleHasValue,
+	urlToBase64,
 }

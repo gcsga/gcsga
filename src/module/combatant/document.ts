@@ -1,8 +1,8 @@
+import { CharacterGURPS } from "@actor"
 import { ActorGURPS } from "@actor/base.ts"
 import { CombatGURPS } from "@module/combat/index.ts"
-import { ActorType } from "@module/data/misc.ts"
-import { TokenDocumentGURPS } from "@module/canvas/token/document.ts"
 import { UserGURPS } from "@module/user/document.ts"
+import { TokenDocumentGURPS } from "@scene/token-document/document.ts"
 
 class CombatantGURPS<
 	TParent extends CombatGURPS = CombatGURPS,
@@ -13,7 +13,7 @@ class CombatantGURPS<
 	}
 
 	override get isDefeated(): boolean {
-		if (this.actor?.type === ActorType.Character) return (this.actor as any).isDefeated
+		if (this.actor instanceof CharacterGURPS) return this.actor.isDefeated
 		return super.isDefeated
 	}
 

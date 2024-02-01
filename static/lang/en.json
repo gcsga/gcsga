@@ -926,6 +926,12 @@
 			"percentage": "by {value}%"
 		},
 		"compendium_browser": {
+			"added_item": "Added {item} to the selected actor(s).",
+			"added_item_to_character": "Added {item} to {character}.",
+			"bought_item_with_all_characters": "Purchased {item} with all selected actor(s).",
+			"bought_item_with_character": "Purchased {item} with {character}.",
+			"failed_to_buy_item_with_character": "Could not purchase {item} with {character}.",
+			"failed_to_buy_item_with_some_characters": "Could not purchase {item} with some of the selected actor(s).",
 			"button": "Open Library Browser",
 			"title": "GCS Library Browser",
 			"hint": "Use the tabs above to select a library.",
@@ -941,6 +947,12 @@
 			"any_tag": "Any Tag",
 			"multi_tag": "Multiple",
 			"settings": "Settings",
+			"settings_saved": "Settings saved.",
+			"sources": {
+				"delete_all_title": "Reset Settings",
+				"delete_all_info": "All compendium documents will become browseable, including those with empty sources.",
+				"delete_all_question": "Are you sure you want to reset all settings for included sources?"
+			},
 			"item": {
 				"trait": "Trait",
 				"modifier": "Trait Modifier",
@@ -1326,7 +1338,7 @@
 			},
 			"modifier_app_load_failed": "Failed to initialize the Modifier Stack App.",
 			"no_last_actor": "No actor selected!",
-			"no_last_token": "No token selected!",
+			"no_token_selected": "No token selected!",
 			"mook": {
 				"name": "Name cannot be blank."
 			}
@@ -2046,6 +2058,13 @@
 		"common": {
 			"no_additional_modifiers": "No additional modifiers",
 			"includes_modifiers_from": "Includes modifiers from"
+		},
+		"progress_bar": {
+			"loading_complete": "Loading complete",
+			"loading_pack": "Loading {pack}"
+		},
+		"apply_damage_dialog": {
+			"title": "Apply Damage"
 		}
 	}
 }

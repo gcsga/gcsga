@@ -1,9 +1,9 @@
-import { RollType } from "../data"
+import { RollType } from "@module/data/index.ts"
 
 function getFormatFunction() {
-	const format = (globalThis as any).game
+	const format = game
 		? game.i18n.format.bind(game.i18n)
-		: (stringId: string, data?: any) => `${stringId}${data ? `:${JSON.stringify(data)}` : ""}`
+		: (stringId: string, data?: Record<string, unknown>) => `${stringId}${data ? `:${JSON.stringify(data)}` : ""}`
 
 	return format
 }

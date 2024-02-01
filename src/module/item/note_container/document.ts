@@ -1,18 +1,17 @@
 import { ActorGURPS } from "@actor/document.ts"
 import { NoteContainerSystemSource } from "./data.ts"
-import { ContainerGURPS } from "@item/container/document.ts"
 import { EvalEmbeddedRegex, replaceAllStringFunc } from "@util/regexp.ts"
 import { NoteGURPS } from "@item/note/document.ts"
 import { ItemGCS } from "@item/gcs/document.ts"
 import { ItemType } from "@item/types.ts"
 
-export interface NoteContainerGURPS<TParent extends ActorGURPS | null> extends ContainerGURPS<TParent> {
+export interface NoteContainerGURPS<TParent extends ActorGURPS | null> extends ItemGCS<TParent> {
 	system: NoteContainerSystemSource
 	type: ItemType.NoteContainer
 }
 
-export class NoteContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ContainerGURPS<TParent> {
-	get formattedName(): string {
+export class NoteContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
+	override get formattedName(): string {
 		return this.formattedText
 	}
 
@@ -33,13 +32,11 @@ export class NoteContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS |
 		return super.children as Collection<NoteGURPS | NoteContainerGURPS>
 	}
 
-	secondaryText = ItemGCS.prototype.secondaryText
-
-	get enabled(): boolean {
+	override get enabled(): boolean {
 		return true
 	}
 
-	get reference(): string {
+	override get reference(): string {
 		return this.system.reference
 	}
 }

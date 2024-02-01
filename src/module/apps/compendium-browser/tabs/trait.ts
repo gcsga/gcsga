@@ -1,9 +1,9 @@
-import { CompendiumBrowser } from "../index.ts"
+import { ItemType } from "@item/types.ts"
+import { SYSTEM_NAME } from "@module/data/index.ts"
 import { ContentTabName, TabName } from "../data.ts"
+import { CompendiumBrowser } from "../index.ts"
 import { CompendiumBrowserTab } from "./base.ts"
 import { CompendiumBrowserIndexData, TraitFilters } from "./data.ts"
-import { SYSTEM_NAME } from "@module/data/index.ts"
-import { ItemType } from "@item/types.ts"
 
 export class CompendiumBrowserTraitTab extends CompendiumBrowserTab {
 	tabName: ContentTabName = TabName.Trait
@@ -21,7 +21,7 @@ export class CompendiumBrowserTraitTab extends CompendiumBrowserTab {
 		console.debug("GURPS | Compendium Browser | Started loading traits")
 
 		const traits: CompendiumBrowserIndexData[] = []
-		const indexFields = ["img", "formattedName", "resolvedNotes", "adjustedPoits", "system.reference"]
+		const indexFields = ["img", "formattedName", "resolvedNotes", "adjustedPoints", "system.reference"]
 		const tags = new Set<string>()
 
 		for await (const { pack, index } of this.browser.packLoader.loadPacks(

@@ -1,32 +1,33 @@
 import { ActorGURPS } from "@actor/document.ts"
 import { EffectGURPS } from "@item/effect/document.ts"
-import { ConditionID, ConditionSource, ConditionSytemSource, ManeuverID } from "./data.ts"
-import { ItemType, SYSTEM_NAME } from "@module/data/misc.ts"
 import { getConditionList } from "./list.ts"
 import { getManeuverList } from "./maneuver.ts"
 import { mergeObject } from "types/foundry/common/utils/helpers.js"
 import { DurationType, EffectModificationContext } from "@item/effect/data.ts"
 import { BaseUser } from "types/foundry/common/documents/module.js"
+import { ItemType } from "@item"
+import { ConditionID, ConditionSource, ConditionSystemSource, ManeuverID } from "./data.ts"
+import { SYSTEM_NAME } from "@module/data/index.ts"
 
 export interface ConditionGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends EffectGURPS<TParent> {
-	system: ConditionSytemSource
+	system: ConditionSystemSource
 	type: ItemType.Condition
 }
 
 export class ConditionGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends EffectGURPS<TParent> {
 	static getData(id: ConditionID | ManeuverID): Partial<ConditionSource> {
-		const [data, folder] = Object.values(ConditionID).includes(id as any)
+		const [data, folder] = Object.values(ConditionID).includes(id as ConditionID)
 			? [getConditionList()[id as ConditionID], "status"]
 			: [getManeuverList()[id as ManeuverID], "maneuver"]
 		return {
 			name: game.i18n.localize(`gurps.${folder}.${id}`),
 			type: ItemType.Condition,
 			img: `systems/${SYSTEM_NAME}/assets/${folder}/${id}.webp`,
-			system: mergeObject(ConditionGURPS.defaults, data) as ConditionSytemSource,
+			system: mergeObject(ConditionGURPS.defaults, data) as ConditionSystemSource,
 		}
 	}
 
-	static get defaults(): ConditionSytemSource {
+	static get defaults(): ConditionSystemSource {
 		return {
 			id: null,
 			can_level: false,
@@ -53,7 +54,7 @@ export class ConditionGURPS<TParent extends ActorGURPS | null = ActorGURPS | nul
 		user: BaseUser,
 	): Promise<boolean | void> {
 		options.previousID = this.cid
-		if ((changed as any).system?.id !== this.cid) this._displayScrollingStatus(false)
+		if (changed.system?.id !== this.cid) this._displayScrollingStatus(false)
 		return super._preUpdate(changed, options, user)
 	}
 

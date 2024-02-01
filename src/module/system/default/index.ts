@@ -1,6 +1,6 @@
 import { CharacterGURPS } from "@actor"
-import { SkillGURPS, TechniqueGURPS } from "@item"
-import { SkillDefaultType, gid } from "@module/data"
+import { SkillDefaultType, gid } from "@module/data/index.ts"
+import { CharacterResolver } from "@util"
 
 const skill_based_default_types: Map<string, boolean> = new Map()
 skill_based_default_types.set(gid.Skill, true)
@@ -59,7 +59,7 @@ export class SkillDefault {
 	}
 
 	skillLevel(
-		actor: CharacterGURPS,
+		actor: CharacterResolver,
 		require_points: boolean,
 		excludes: Map<string, boolean>,
 		rule_of_20: boolean,
@@ -68,11 +68,11 @@ export class SkillDefault {
 		switch (this.type) {
 			case gid.Parry:
 				best = this.best(actor, require_points, excludes)
-				if (best !== -Infinity) best = best / 2 + 3 + actor.calc.parry_bonus
+				if (best !== -Infinity) best = best / 2 + 3 + actor.parryBonus
 				return this.finalLevel(best)
 			case gid.Block:
 				best = this.best(actor, require_points, excludes)
-				if (best !== -Infinity) best = best / 2 + 3 + actor.calc.block_bonus
+				if (best !== -Infinity) best = best / 2 + 3 + actor.blockBonus
 				return this.finalLevel(best)
 			case gid.Skill:
 				return this.finalLevel(this.best(actor, require_points, excludes))
@@ -81,7 +81,7 @@ export class SkillDefault {
 		}
 	}
 
-	best(actor: CharacterGURPS, require_points: boolean, excludes: Map<string, boolean>): number {
+	best(actor: CharacterResolver, require_points: boolean, excludes: Map<string, boolean>): number {
 		let best = -Infinity
 		for (const s of actor.skillNamed(this.name!, this.specialization || "", require_points, excludes)) {
 			const level = s.calculateLevel().level
@@ -91,7 +91,7 @@ export class SkillDefault {
 	}
 
 	skillLevelFast(
-		actor: CharacterGURPS,
+		actor: CharacterResolver,
 		require_points: boolean,
 		excludes: Map<string, boolean> | null = new Map(),
 		rule_of_20 = false,
@@ -105,11 +105,11 @@ export class SkillDefault {
 				return this.finalLevel(level)
 			case gid.Parry:
 				best = this.bestFast(actor, require_points, excludes)
-				if (best !== -Infinity) best = Math.floor(best / 2) + 3 + actor.calc.parry_bonus
+				if (best !== -Infinity) best = Math.floor(best / 2) + 3 + actor.parryBonus
 				return this.finalLevel(best)
 			case gid.Block:
 				best = this.bestFast(actor, require_points, excludes)
-				if (best !== -Infinity) best = Math.floor(best / 2) + 3 + actor.calc.block_bonus
+				if (best !== -Infinity) best = Math.floor(best / 2) + 3 + actor.blockBonus
 				return this.finalLevel(best)
 			case gid.Skill:
 				return this.finalLevel(this.bestFast(actor, require_points, excludes))
@@ -122,10 +122,9 @@ export class SkillDefault {
 		}
 	}
 
-	bestFast(actor: CharacterGURPS, require_points: boolean, excludes: Map<string, boolean> | null): number {
+	bestFast(actor: CharacterResolver, require_points: boolean, excludes: Map<string, boolean> | null): number {
 		let best = -Infinity
-		for (let sk of actor.skillNamed(this.name!, this.specialization || "", require_points, excludes)) {
-			sk = sk as SkillGURPS | TechniqueGURPS
+		for (const sk of actor.skillNamed(this.name!, this.specialization || "", require_points, excludes)) {
 			if (best < sk.level.level) best = sk.level.level
 		}
 		return best

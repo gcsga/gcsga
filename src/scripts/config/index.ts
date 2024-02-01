@@ -37,6 +37,7 @@ import {
 	TraitModifierGURPS,
 } from "@item/index.ts"
 import { ItemType } from "@item/types.ts"
+import { ModifierItem } from "@module/data/misc.ts"
 import { JournalEntryPageGURPS, JournalEntryPagePDF } from "@module/journal-entry/page.ts"
 import {
 	AttributePrereq,
@@ -111,7 +112,7 @@ export const GURPSCONFIG = {
 			[ItemType.MeleeWeapon]: MeleeWeaponGURPS,
 			[ItemType.RangedWeapon]: RangedWeaponGURPS,
 		},
-		childTypes: {
+		allowedContents: {
 			[ItemType.Trait]: [
 				ItemType.TraitModifier,
 				ItemType.TraitModifierContainer,
@@ -157,7 +158,30 @@ export const GURPSCONFIG = {
 			[ItemType.Condition]: [],
 			[ItemType.MeleeWeapon]: [],
 			[ItemType.RangedWeapon]: [],
-		},
+		} as Record<ItemType, ItemType[]>,
+		childTypes: {
+			[ItemType.Trait]: [],
+			[ItemType.TraitContainer]: [ItemType.Trait, ItemType.TraitContainer],
+			[ItemType.TraitModifier]: [],
+			[ItemType.TraitModifierContainer]: [ItemType.TraitModifierContainer, ItemType.TraitModifier],
+			[ItemType.Skill]: [],
+			[ItemType.Technique]: [],
+			[ItemType.SkillContainer]: [ItemType.Skill, ItemType.Technique, ItemType.SkillContainer],
+			[ItemType.Spell]: [],
+			[ItemType.RitualMagicSpell]: [],
+			[ItemType.SpellContainer]: [ItemType.Spell, ItemType.RitualMagicSpell, ItemType.SpellContainer],
+			[ItemType.Equipment]: [],
+			[ItemType.EquipmentContainer]: [ItemType.Equipment, ItemType.EquipmentContainer],
+			[ItemType.EquipmentModifier]: [],
+			[ItemType.EquipmentModifierContainer]: [ItemType.EquipmentModifier, ItemType.EquipmentModifierContainer],
+			[ItemType.Note]: [],
+			[ItemType.NoteContainer]: [ItemType.Note, ItemType.NoteContainer],
+			[ItemType.LegacyEquipment]: [],
+			[ItemType.Effect]: [],
+			[ItemType.Condition]: [],
+			[ItemType.MeleeWeapon]: [],
+			[ItemType.RangedWeapon]: [],
+		} as Record<ItemType, ItemType[]>,
 	},
 
 	Feature: {
@@ -263,4 +287,10 @@ export const GURPSCONFIG = {
 		effect_action: {},
 		conditions: {},
 	} as Record<string, Record<string, string>>,
+
+	meleeMods: [] as ModifierItem[],
+	rangedMods: [] as ModifierItem[],
+	defenseMods: [] as ModifierItem[],
+	commonMods: [] as { title: string; items: ModifierItem[]; open?: boolean }[],
+	allMods: [] as ModifierItem[],
 }

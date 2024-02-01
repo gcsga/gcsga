@@ -1,7 +1,8 @@
-import { ManeuverID } from "@item/condition/data"
-import { ActorGURPS } from "@module/config"
-import { ItemType, SYSTEM_NAME } from "@module/data"
-import { EffectGURPS } from "./document"
+import { ActorGURPS } from "@actor"
+import { CharacterGURPS } from "@actor/document.ts"
+import { EffectGURPS } from "@item"
+import { ManeuverID } from "@item/condition/index.ts"
+import { SYSTEM_NAME } from "@module/data/index.ts"
 
 export class EffectPanel extends Application {
 	/**
@@ -14,7 +15,7 @@ export class EffectPanel extends Application {
 		return (canvas?.tokens?.controlled[0]?.actor as ActorGURPS) ?? (game.user?.character as ActorGURPS) ?? null
 	}
 
-	protected _injectHTML(html: JQuery<HTMLElement>): void {
+	protected override _injectHTML(html: JQuery<HTMLElement>): void {
 		html.insertBefore($("#ui-middle").find("#ui-bottom"))
 		this._element = html
 	}
@@ -31,7 +32,7 @@ export class EffectPanel extends Application {
 	override async getData(options?: Partial<ApplicationOptions> | undefined): Promise<object> {
 		const { actor } = this
 
-		if (!actor)
+		if (!actor || !(actor instanceof CharacterGURPS))
 			return {
 				conditions: [],
 				effects: [],
@@ -39,13 +40,13 @@ export class EffectPanel extends Application {
 				user: { isGM: false },
 			}
 
-		const effects = (actor.itemTypes[ItemType.Effect] as any).map((effect: EffectGURPS) => {
+		const effects = actor.gEffects.map((effect: EffectGURPS) => {
 			// const duration = effect.duration.total
 			// const { system } = effect
 			return effect
 		})
 
-		const conditions = (actor as any).conditions.filter((e: any) => !Object.values(ManeuverID).includes(e.cid))
+		const conditions = actor.conditions.filter(e => !Object.values(ManeuverID).includes(e.cid as ManeuverID))
 
 		return {
 			...(await super.getData(options)),
@@ -63,14 +64,15 @@ export class EffectPanel extends Application {
 		html.find(".effect-item[data-item-id]").on("contextmenu", event => this._onEffectContextMenu(event))
 	}
 
-	private async _onEffectClick(event: JQuery.ClickEvent): Promise<any> {
+	private async _onEffectClick(event: JQuery.ClickEvent): Promise<EffectGURPS | undefined> {
 		const effect = this.actor?.gEffects.get($(event.currentTarget).data("item-id"))
-		if (!effect) return
+		if (!effect) return undefined
 
 		if (effect.canLevel) return effect.increaseLevel()
+		return
 	}
 
-	private async _onEffectContextMenu(event: JQuery.ContextMenuEvent): Promise<any> {
+	private async _onEffectContextMenu(event: JQuery.ContextMenuEvent): Promise<EffectGURPS | undefined> {
 		const effect = this.actor?.gEffects.get($(event.currentTarget).data("item-id"))
 		if (!effect) return
 		if (effect.canLevel) return effect.decreaseLevel()

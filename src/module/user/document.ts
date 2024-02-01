@@ -1,9 +1,10 @@
 import { ActorGURPS } from "@actor/document.ts"
-import { HooksGURPS, RollModifier, RollModifierTags, SYSTEM_NAME } from "@module/data/index.ts"
-import { TokenDocumentGURPS } from "@module/canvas/token/document.ts"
+import { HOOKS_GURPS, RollModifier, RollModifierTags, SYSTEM_NAME } from "@module/data/index.ts"
 import { TokenGURPS } from "@module/canvas/token/object.ts"
 import { flattenObject } from "types/foundry/common/utils/helpers.js"
 import { UserFlags, UserFlagsGURPS, UserSourceGURPS } from "./data.ts"
+import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
+import { SceneGURPS } from "@scene"
 
 class UserGURPS extends User<ActorGURPS<null>> {
 	override prepareData(): void {
@@ -72,12 +73,12 @@ class UserGURPS extends User<ActorGURPS<null>> {
 			else modList.push(mod)
 		}
 		this.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, modList)
-		Hooks.call(HooksGURPS.AddModifier)
+		Hooks.call(HOOKS_GURPS.AddModifier)
 	}
 }
 
 interface UserGURPS extends User<ActorGURPS<null>> {
-	targets: Set<TokenGURPS<TokenDocumentGURPS<Scene>>>
+	targets: Set<TokenGURPS<TokenDocumentGURPS<SceneGURPS>>>
 	flags: UserFlagsGURPS
 	readonly _source: UserSourceGURPS
 }

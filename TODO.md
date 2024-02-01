@@ -19,7 +19,7 @@
 
 -   Implement "static" items (0.15 and older) compatibility
 -   add interface for accessing old bonuses
--   fix GURPS.LastActor setting,
+-   fix GURPS.LastActor metting,
 -   Convert over module compatibility
 -   Token Action HUD
 -   Convert the modifier bucket over

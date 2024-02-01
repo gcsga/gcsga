@@ -1,6 +1,6 @@
 import { SOCKET, SYSTEM_NAME } from "@module/data/misc.ts"
 import { TokenGURPS } from "./object.ts"
-import { EffectID, ManeuverID } from "@item"
+import { EffectID, ManeuverID } from "@item/condition/index.ts"
 
 export interface TokenHUDDataGURPS extends TokenHUDData {
 	maneuvers: Record<string, TokenHUDStatusEffectChoice | undefined>
@@ -182,7 +182,7 @@ export class TokenHUDGURPS<TToken extends TokenGURPS> extends TokenHUD<TToken> {
 		}
 	}
 
-	static async onRenderTokenHUD(html: HTMLElement, tokenData: any): Promise<void> {
+	static async onRenderTokenHUD(html: HTMLElement, tokenData: Record<string, string>): Promise<void> {
 		const token = canvas?.tokens?.get(tokenData._id) as TokenGURPS
 		if (!token) return
 

@@ -1,75 +1,114 @@
-import { ItemType, SYSTEM_NAME } from "@module/data"
-import { CompendiumBrowser } from "../browser"
-import { CompendiumIndexData, TabName } from "../data"
-import { CompendiumBrowserTab } from "./base"
+import { ContentTabName, TabName } from "../data.ts"
+import { CompendiumBrowserTab } from "./base.ts"
+import { CompendiumBrowserIndexData, SpellFilters } from "./data.ts"
+import { SYSTEM_NAME } from "@module/data/index.ts"
+import { ItemType } from "@item/types.ts"
+import { LocalizeGURPS } from "@util"
+import { CompendiumBrowser } from "../index.ts"
 
 export class CompendiumBrowserSpellTab extends CompendiumBrowserTab {
-	override templatePath = `systems/${SYSTEM_NAME}/templates/compendium-browser/spell.hbs`
-
-	override get searchFields(): string[] {
-		return [
-			...super.searchFields,
-			"system.difficulty",
-			"system.resist",
-			"system.spell_class",
-			"system.casting_cost",
-			"system.maintenance_cost",
-			"system.casting_time",
-			"system.duration",
-		]
-	}
+	tabName: ContentTabName = TabName.Spell
+	filterData: SpellFilters
+	templatePath = `systems/${SYSTEM_NAME}/templates/compendium-browser/partials/spell.hbs`
 
 	constructor(browser: CompendiumBrowser) {
-		super(browser, TabName.Spell)
+		super(browser)
+
+		// Set the filterData object of this tab
+		this.filterData = this.prepareFilterData()
 	}
 
 	protected override async loadData(): Promise<void> {
-		const spell_list: CompendiumIndexData[] = []
-		const indexFields = ["img", "name", "system", "flags"]
+		console.debug("GURPS | Compendium Browser | Started loading spells")
+
+		const spells: CompendiumBrowserIndexData[] = []
+		const indexFields = ["img", "formattedName", "resolvedNotes", "adjustedPoints", "system.reference"]
+		const tags = new Set<string>()
 
 		for await (const { pack, index } of this.browser.packLoader.loadPacks(
 			"Item",
 			this.browser.loadedPacks(TabName.Spell),
 			indexFields,
 		)) {
-			const collection = game.packs.get(pack.collection)
-			;((await collection?.getDocuments()) as any).forEach((spell: any) => {
-				if (![ItemType.Spell, ItemType.RitualMagicSpell, ItemType.SpellContainer].includes(spell.type)) return
-				spell.prepareData()
-				// TODO: hasAllIndexFields
-				spell_list.push({
-					_id: spell._id,
-					type: spell.type,
-					name: spell.name,
-					formattedName: spell.formattedName,
-					notes: spell.notes,
-					img: spell.img,
-					compendium: pack,
-					open: spell.open,
-					uuid: spell.uuid,
-					id: spell._id,
-					children: spell.type === ItemType.SpellContainer ? spell.children : [],
-					adjustedPoints: spell.adjustedPoints,
-					tags: spell.tags,
-					reference: spell.reference,
-					parents: spell.parents,
-					indent: spell.indent,
-					college: spell.system.college,
-					resist: spell.system.resist,
-					spell_class: spell.system.spell_class,
-					casting_cost: spell.system.casting_cost,
-					maintenance_cost: spell.system.maintenance_cost,
-					casting_time: spell.system.casting_time,
-					duration: spell.system.duration,
-					difficulty: `${spell.attribute.toUpperCase()}/${spell.difficulty.toUpperCase()}`,
-					flags: spell.flags,
-				})
-			})
+			console.debug(`GURPS | Compendium Browser | ${pack.metadata.label} - Loading`)
+			for (const spellData of index) {
+				if (
+					spellData.type === ItemType.Spell ||
+					spellData.type === ItemType.RitualMagicSpell ||
+					spellData.type === ItemType.SpellContainer
+				) {
+					if (!this.hasAllIndexFields(spellData, indexFields)) {
+						console.warn(
+							`${LocalizeGURPS.translations.TYPES.Item[spellData.type]} '${
+								spellData.name
+							}' does not have all required data fields. Consider unselecting pack '${
+								pack.metadata.label
+							}' in the compendium browser settings.`,
+						)
+						continue
+					}
 
-			// TODO: get rid of
-			spell_list.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0))
+					const { system } = spellData
+					for (const tag of system.tags) tags.add(tag)
+
+					spells.push({
+						type: spellData.type,
+						name: spellData.name,
+						img: spellData.img,
+						uuid: `Compendium.${pack.collection}.${spellData._id}`,
+						formattedName: spellData.formattedName,
+						resolvedNotes: spellData.resolvedNotes,
+						level: spellData.level,
+						points: spellData.adjustedPoints,
+						reference: spellData.reference,
+					})
+				}
+			}
 		}
 
-		this.indexData = spell_list
+		// Set indexData
+		this.indexData = spells
+
+		// Set Filters
+		this.filterData.multiselects.tags.options = this.generateMultiselectOptions(
+			tags.reduce((acc: Record<string, string>, c) => {
+				acc[c] = c
+				return acc
+			}, {}),
+		)
+
+		console.debug("GURPS | Compendium Browser | Finished loading spells")
+	}
+
+	protected override filterIndexData(entry: CompendiumBrowserIndexData): boolean {
+		const { multiselects } = this.filterData
+
+		// Tags
+		if (!this.filterTraits(entry.traits, multiselects.tags.selected)) return false
+		return true
+	}
+
+	protected override prepareFilterData(): SpellFilters {
+		return {
+			multiselects: {
+				tags: {
+					label: "tags",
+					options: [],
+					selected: [],
+				},
+			},
+			order: {
+				by: "name",
+				direction: "asc",
+				options: {
+					name: "name",
+					points: "points",
+					reference: "reference",
+				},
+			},
+			search: {
+				text: "",
+			},
+		}
 	}
 }

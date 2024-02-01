@@ -2,11 +2,13 @@ import { DEFAULT_INITIATIVE_FORMULA, SETTINGS, SSRT_SETTING, SYSTEM_NAME } from 
 import { ColorSettings } from "./colors.ts"
 import { DefaultSheetSettings } from "./sheet_settings.ts"
 import { RollModifierSettings } from "./roll_modifiers.ts"
-import { DamageTypeSettings } from "./damage_type.ts"
 import { getDefaultSkills, setInitiative } from "@util/misc.ts"
 import { AttributeSettings } from "./attributes.ts"
 import { ResourceTrackerSettings } from "./resource_trackers.ts"
 import { MoveSettings } from "./move_type.ts"
+import { HitLocationSettings } from "./hit_locations.ts"
+import { loadModifiers } from "@module/apps/mod_bucket/data.ts"
+import { CharacterProfile } from "@actor/character/data.ts"
 
 /**
  *
@@ -34,16 +36,6 @@ export function registerSettings(): void {
 	})
 	AttributeSettings.registerSettings()
 
-	game.settings.registerMenu(SYSTEM_NAME, SETTINGS.DAMAGE_TYPES, {
-		name: "gurps.settings.damage_types.name",
-		label: "gurps.settings.damage_types.label",
-		hint: "gurps.settings.damage_types.hint",
-		icon: "gcs-melee-weapon",
-		type: DamageTypeSettings,
-		restricted: false,
-	})
-	DamageTypeSettings.registerSettings()
-
 	game.settings.registerMenu(SYSTEM_NAME, SETTINGS.DEFAULT_RESOURCE_TRACKERS, {
 		name: "gurps.settings.default_resource_trackers.name",
 		label: "gurps.settings.default_resource_trackers.label",
@@ -69,10 +61,10 @@ export function registerSettings(): void {
 		label: "gurps.settings.default_hit_locations.label",
 		hint: "gurps.settings.default_hit_locations.hint",
 		icon: "gcs-body-type",
-		type: DefaultHitLocationSettings,
+		type: HitLocationSettings,
 		restricted: true,
 	})
-	DefaultHitLocationSettings.registerSettings()
+	HitLocationSettings.registerSettings()
 
 	game.settings.registerMenu(SYSTEM_NAME, SETTINGS.DEFAULT_SHEET_SETTINGS, {
 		name: "gurps.settings.default_sheet_settings.name",
@@ -88,6 +80,7 @@ export function registerSettings(): void {
 		name: "gurps.settings.roll_modifiers.name",
 		label: "gurps.settings.roll_modifiers.label",
 		hint: "gurps.settings.roll_modifiers.hint",
+		icon: "gcs-settings",
 		type: RollModifierSettings,
 		restricted: false,
 	})
@@ -158,7 +151,7 @@ export function registerSettings(): void {
 		type: Object,
 		scope: "world",
 		onChange: () => {
-			game.CompendiumBrowser.loadSettings()
+			game.gurps.compendiumBrowser.initCompendiumList()
 			getDefaultSkills()
 		},
 	})
@@ -170,7 +163,7 @@ export function registerSettings(): void {
 		config: true,
 		type: String,
 		default: "3d6",
-		onChange: (value: string) => console.log(`Roll Formula : ${value}`),
+		onChange: (value: unknown) => console.log(`Roll Formula : ${value}`),
 	})
 
 	game.settings.register(SYSTEM_NAME, SETTINGS.SSRT, {
@@ -276,20 +269,25 @@ export function registerSettings(): void {
  *
  */
 function autoFillProfile(): CharacterProfile {
-	const p: CharacterProfile | any = {}
-	p.tech_level = "3"
-	p.player_name = ""
-	p.gender = "Male"
-	p.age = "25"
-	p.eyes = "Blue"
-	p.hair = "Brown"
-	p.skin = "Fair"
-	p.handedness = "Right"
-	p.height = "6'"
-	p.weight = "180 lb"
-	p.name = "John Doe"
-	p.birthday = "January 1"
-	return p
+	return {
+		tech_level: "3",
+		title: "",
+		organization: "",
+		SM: 0,
+		religion: "",
+		portrait: "",
+		player_name: "",
+		gender: "Male",
+		age: "25",
+		eyes: "Blue",
+		hair: "Brown",
+		skin: "Fair",
+		handedness: "Right",
+		height: "6'",
+		weight: "180 lb",
+		name: "John Doe",
+		birthday: "January 1",
+	}
 }
 
 interface provider {

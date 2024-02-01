@@ -9,8 +9,9 @@ import { LocalizeGURPS } from "@util/localize.ts"
 import { StringBuilder } from "@util/string_builder.ts"
 import { sheetSettingsFor } from "@module/data/sheet_settings.ts"
 import { Int } from "@util/fxp.ts"
-import { CharacterGURPS } from "@actor/document.ts"
 import { ItemType } from "@item/types.ts"
+import { CharacterGURPS } from "@actor"
+import { CharacterResolver } from "@util"
 
 export interface EquipmentModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null>
 	extends ItemGCS<TParent> {
@@ -74,7 +75,7 @@ export class EquipmentModifierGURPS<TParent extends ActorGURPS | null = ActorGUR
 		if (this.localNotes !== "") {
 			buffer.push(` (${this.localNotes})`)
 		}
-		if (sheetSettingsFor(this.actor).show_equipment_modifier_adj) {
+		if (sheetSettingsFor(this.actor as unknown as CharacterResolver).show_equipment_modifier_adj) {
 			const costDesc = this.costDescription
 			const weightDesc = this.weightDescription
 			if (costDesc !== "" || weightDesc !== "") {

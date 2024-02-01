@@ -7,6 +7,7 @@ import { TokenUtil } from "@util/token_utils.ts"
 import { setProperty } from "types/foundry/common/utils/helpers.js"
 import { ChatMessageGURPS } from "@module/chat-message/index.ts"
 import { ActorGURPS } from "@actor"
+import { DAMAGE_TYPE } from "./damage_type.ts"
 
 export enum DamageChatFlags {
 	Transfer = "transfer",
@@ -26,7 +27,7 @@ export type DamagePayload = {
 	weaponID: string
 	damage: string
 	dice: DiceGURPS
-	damageType: string
+	damageType: DAMAGE_TYPE
 	armorDivisor: number
 	damageModifier: string
 	damageRoll: DamageRoll[]

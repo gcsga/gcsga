@@ -6,13 +6,19 @@ import { StringBuilder } from "@util/string_builder.ts"
 import { sheetSettingsFor } from "@module/data/sheet_settings.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
-import { ItemFlags } from "@item/data.ts"
 import { Weight, WeightUnits } from "@util/weight.ts"
-import { EquipmentGURPS } from "@item/equipment/document.ts"
-import { EquipmentModifierGURPS, valueAdjustedForModifiers } from "@item/equipment_modifier/document.ts"
+import { EquipmentGURPS, extendedWeightAdjustedForModifiers } from "@item/equipment/document.ts"
+import {
+	EquipmentModifierGURPS,
+	valueAdjustedForModifiers,
+	weightAdjustedForModifiers,
+} from "@item/equipment_modifier/document.ts"
 import { EquipmentModifierContainerGURPS } from "@item/equipment_modifier_container/document.ts"
 import { Int } from "@util/fxp.ts"
 import { ItemType } from "@item/types.ts"
+import { CharacterResolver } from "@util"
+import { ItemFlags } from "@item/base/data/system.ts"
+import { CharacterGURPS } from "@actor"
 
 export interface EquipmentContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null>
 	extends ItemGCS<TParent> {
@@ -34,7 +40,7 @@ export class EquipmentContainerGURPS<TParent extends ActorGURPS | null = ActorGU
 
 	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
 		const buffer = new StringBuilder()
-		const settings = sheetSettingsFor(this.actor)
+		const settings = sheetSettingsFor(this.actor as unknown as CharacterResolver)
 		if (optionChecker(settings.modifiers_display)) {
 			buffer.appendToNewLine(this.modifierNotes)
 		}
@@ -74,7 +80,7 @@ export class EquipmentContainerGURPS<TParent extends ActorGURPS | null = ActorGU
 	}
 
 	get weightUnits(): WeightUnits {
-		if (this.actor) return this.actor.weightUnits
+		if (this.actor instanceof CharacterGURPS) return this.actor.weightUnits
 		const default_settings = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
 		return default_settings.default_weight_units
 	}
@@ -87,7 +93,7 @@ export class EquipmentContainerGURPS<TParent extends ActorGURPS | null = ActorGU
 		return !(
 			this.system.quantity > 0 &&
 			!(this.container instanceof CompendiumCollection) &&
-			(this.container?.type === ItemType.EquipmentContainer ? !(this.container as any).isGreyedOut : true)
+			(this.container instanceof EquipmentContainerGURPS ? !this.container.isGreyedOut : true)
 		)
 	}
 
@@ -108,7 +114,7 @@ export class EquipmentContainerGURPS<TParent extends ActorGURPS | null = ActorGU
 		return super.children as Collection<EquipmentGURPS | EquipmentContainerGURPS>
 	}
 
-	get modifiers(): Collection<EquipmentModifierGURPS | EquipmentModifierContainerGURPS> {
+	override get modifiers(): Collection<EquipmentModifierGURPS | EquipmentModifierContainerGURPS> {
 		const modifiers: Collection<EquipmentModifierGURPS> = new Collection()
 		for (const item of this.items) {
 			if (item instanceof EquipmentModifierGURPS) modifiers.set(item.id!, item)
@@ -171,13 +177,13 @@ export class EquipmentContainerGURPS<TParent extends ActorGURPS | null = ActorGU
 		return Weight.format(this.extendedWeight(false, this.weightUnits), this.weightUnits)
 	}
 
-	prepareBaseData(): void {
+	override prepareBaseData(): void {
 		this.system.weight = this.weightString
 		super.prepareBaseData()
 	}
 
-	override exportSystemData(keepOther: boolean): any {
-		const system: any = super.exportSystemData(keepOther)
+	override exportSystemData(keepOther: boolean): Record<string, unknown> {
+		const system = super.exportSystemData(keepOther)
 		system.description = this.name
 		delete system.name
 		system.calc = {

@@ -1,7 +1,7 @@
 import { DiceGURPS } from "@module/dice/index.ts"
 import { DamageType, DamageTypes } from "./damage_type.ts"
 import { DamagePayload } from "./damage_chat_message.ts"
-import { HitLocationTable } from "@actor/index.ts"
+import { HitLocationTable } from "@actor/character/hit_location.ts"
 
 /**
  * The Damage Calculator needs three things: The DamageRoll, DamageHit, and DamageTarget.
@@ -132,7 +132,7 @@ class DamageRollAdapter implements DamageRoll {
 	}
 
 	get damageType(): DamageType {
-		return (DamageTypes as any)[this._payload.damageType]
+		return DamageTypes[this._payload.damageType]
 	}
 
 	readonly applyTo: string

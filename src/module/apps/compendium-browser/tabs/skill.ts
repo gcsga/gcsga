@@ -1,72 +1,12 @@
-// import { ItemType, SYSTEM_NAME } from "@module/data"
-// import { CompendiumBrowser } from "../browser"
-// import { CompendiumIndexData, TabName } from "../data"
-// import { CompendiumBrowserTab } from "./base"
-//
-// export class CompendiumBrowserSkillTab extends CompendiumBrowserTab {
-// 	override templatePath = `systems/${SYSTEM_NAME}/templates/compendium-browser/skill.hbs`
-//
-// 	override get searchFields(): string[] {
-// 		return [...super.searchFields, "system.difficulty"]
-// 	}
-//
-// 	constructor(browser: CompendiumBrowser) {
-// 		super(browser, TabName.Skill)
-// 	}
-//
-// 	protected override async loadData(): Promise<void> {
-// 		const skill_list: CompendiumIndexData[] = []
-// 		const indexFields = ["name", "system", "flags"]
-//
-// 		for await (const { pack, index } of this.browser.packLoader.loadPacks(
-// 			"Item",
-// 			this.browser.loadedPacks(TabName.Skill),
-// 			indexFields,
-// 		)) {
-// 			const collection = game.packs.get(pack.collection)
-// 			;((await collection?.getDocuments()) as any).forEach((skill: any) => {
-// 				if (![ItemType.Skill, ItemType.Technique, ItemType.SkillContainer].includes(skill.type)) return
-// 				let difficulty = ""
-// 				if (skill.type === ItemType.Skill)
-// 					difficulty = `${skill.attribute.toUpperCase()}/${skill.difficulty.toUpperCase()}`
-// 				if (skill.type === ItemType.Technique) difficulty = `Tech/${skill.difficulty.toUpperCase()}`
-// 				skill.prepareData()
-// 				skill_list.push({
-// 					_id: skill._id,
-// 					type: skill.type,
-// 					name: skill.name,
-// 					formattedName: skill.formattedName,
-// 					notes: skill.notes,
-// 					img: skill.img,
-// 					compendium: pack,
-// 					open: skill.open,
-// 					uuid: skill.uuid,
-// 					id: skill._id,
-// 					children: skill.type === ItemType.SkillContainer ? skill.children : [],
-// 					tags: skill.tags,
-// 					reference: skill.reference,
-// 					reference_highlight: skill.reference_highlight,
-// 					parents: skill.parents,
-// 					indent: skill.indent,
-// 					difficulty: difficulty,
-// 					flags: skill.flags,
-// 				})
-// 			})
-// 		}
-// 		skill_list.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0))
-//
-// 		this.indexData = skill_list
-// 	}
-// }
-//
-import { CompendiumBrowser } from "../index.ts"
 import { ContentTabName, TabName } from "../data.ts"
 import { CompendiumBrowserTab } from "./base.ts"
 import { CompendiumBrowserIndexData, SkillFilters } from "./data.ts"
 import { SYSTEM_NAME } from "@module/data/index.ts"
 import { ItemType } from "@item/types.ts"
+import { LocalizeGURPS } from "@util"
+import { CompendiumBrowser } from "../index.ts"
 
-export class CompendiumBrowserTraitTab extends CompendiumBrowserTab {
+export class CompendiumBrowserSkillTab extends CompendiumBrowserTab {
 	tabName: ContentTabName = TabName.Skill
 	filterData: SkillFilters
 	templatePath = `systems/${SYSTEM_NAME}/templates/compendium-browser/partials/skill.hbs`
@@ -82,7 +22,7 @@ export class CompendiumBrowserTraitTab extends CompendiumBrowserTab {
 		console.debug("GURPS | Compendium Browser | Started loading skills")
 
 		const skills: CompendiumBrowserIndexData[] = []
-		const indexFields = ["img", "formattedName", "resolvedNotes", "adjustedPoits", "system.reference"]
+		const indexFields = ["img", "formattedName", "resolvedNotes", "adjustedPoints", "system.reference"]
 		const tags = new Set<string>()
 
 		for await (const { pack, index } of this.browser.packLoader.loadPacks(
@@ -92,10 +32,18 @@ export class CompendiumBrowserTraitTab extends CompendiumBrowserTab {
 		)) {
 			console.debug(`GURPS | Compendium Browser | ${pack.metadata.label} - Loading`)
 			for (const skillData of index) {
-				if (skillData.type === ItemType.Skill || skillData.type === ItemType.Technique) {
+				if (
+					skillData.type === ItemType.Skill ||
+					skillData.type === ItemType.Technique ||
+					skillData.type === ItemType.SkillContainer
+				) {
 					if (!this.hasAllIndexFields(skillData, indexFields)) {
 						console.warn(
-							`Trait '${skillData.name}' does not have all required data fields. Consider unselecting pack '${pack.metadata.label}' in the compendium browser settings.`,
+							`${LocalizeGURPS.translations.TYPES.Item[skillData.type]} '${
+								skillData.name
+							}' does not have all required data fields. Consider unselecting pack '${
+								pack.metadata.label
+							}' in the compendium browser settings.`,
 						)
 						continue
 					}
@@ -119,7 +67,7 @@ export class CompendiumBrowserTraitTab extends CompendiumBrowserTab {
 		}
 
 		// Set indexData
-		this.indexData = traits
+		this.indexData = skills
 
 		// Set Filters
 		this.filterData.multiselects.tags.options = this.generateMultiselectOptions(
@@ -129,7 +77,7 @@ export class CompendiumBrowserTraitTab extends CompendiumBrowserTab {
 			}, {}),
 		)
 
-		console.debug("GURPS | Compendium Browser | Finished loading traits")
+		console.debug("GURPS | Compendium Browser | Finished loading skills")
 	}
 
 	protected override filterIndexData(entry: CompendiumBrowserIndexData): boolean {
@@ -140,7 +88,7 @@ export class CompendiumBrowserTraitTab extends CompendiumBrowserTab {
 		return true
 	}
 
-	protected override prepareFilterData(): TraitFilters {
+	protected override prepareFilterData(): SkillFilters {
 		return {
 			multiselects: {
 				tags: {

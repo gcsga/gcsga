@@ -1,10 +1,9 @@
 import { ActorGURPS } from "@actor/base.ts"
 import { ContainerGURPS } from "@item/container/document.ts"
 import { SYSTEM_NAME } from "@module/data/index.ts"
-import { CharacterResolver } from "@util/resolvers.ts"
-import { ItemFlags } from "./data/values.ts"
-import { ItemSourceGURPS } from "@item/data/index.ts"
 import { ItemModificationContextGURPS, ItemType } from "@item/types.ts"
+import { ItemFlags, ItemSourceGURPS } from "./data/index.ts"
+import { CharacterResolver } from "@util"
 
 export interface ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends Item<TParent> {
 	type: ItemType

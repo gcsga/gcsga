@@ -32,8 +32,6 @@ export class NoteGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> ex
 		return true
 	}
 
-	override secondaryText = ItemGCS.prototype.secondaryText
-
 	override get reference(): string {
 		return this.system.reference
 	}

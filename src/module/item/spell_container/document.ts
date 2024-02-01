@@ -5,7 +5,7 @@ import { ItemType } from "@item/types.ts"
 
 export interface SpellContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	system: SpellContainerSystemSource
-	item: ItemType.SpellContainer
+	type: ItemType.SpellContainer
 }
 export class SpellContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	// Embedded Items

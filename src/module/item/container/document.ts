@@ -1,10 +1,15 @@
 import { ActorGURPS } from "@actor/base.ts"
+import { ItemType } from "@item"
+import { ItemFlags } from "@item/base/data/system.ts"
 import { ItemGURPS } from "@item/base/document.ts"
-import { ItemFlags } from "@item/data.ts"
 import { SYSTEM_NAME } from "@module/data/misc.ts"
 import Document from "types/foundry/common/abstract/document.js"
 import EmbeddedCollection from "types/foundry/common/abstract/embedded-collection.js"
 import { setProperty } from "types/foundry/common/utils/helpers.js"
+
+export type ContainerModificationContext<T extends ItemGURPS> = DocumentModificationContext<T> & {
+	substitutions?: boolean
+}
 
 export abstract class ContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
 	declare items: Collection<ItemGURPS>
@@ -37,28 +42,31 @@ export abstract class ContainerGURPS<TParent extends ActorGURPS | null = ActorGU
 	}
 
 	get open(): boolean {
-		return (this.system as any).open
+		return this.system.open
 	}
 
 	override async createEmbeddedDocuments(
 		embeddedName: string,
-		data: Record<string, any>[],
-		context?: DocumentModificationContext<any>,
+		data: object[],
+		context?: ContainerModificationContext<this>,
 	): Promise<Document[]> {
 		if (embeddedName !== "Item")
 			return super.createEmbeddedDocuments(embeddedName, data, context) as unknown as Document[]
 		if (!Array.isArray(data)) data = [data]
 
-		// Prevent creating embeded documents which this type of container shouldn't contain
-		data = data.filter(e => CONFIG.GURPS.Item.allowedContents[this.type].includes(e.type))
+		let items = data as unknown as ItemGURPS["_source"][]
 
-		if (data.length)
-			for (const itemData of data) {
+		// Prevent creating embeded documents which this type of container shouldn't contain
+		items = items.filter(e => CONFIG.GURPS.Item.allowedContents[this.type].includes(e.type as ItemType))
+
+		if (items.length)
+			for (const itemData of items) {
 				itemData.flags ??= {}
 				setProperty(itemData.flags, `${SYSTEM_NAME}.${ItemFlags.Container}`, this.id)
 			}
 
-		return this.actor?.createEmbeddedDocuments("Item", data)
+		if (this.actor) return this.actor.createEmbeddedDocuments("Item", items, {})
+		return []
 	}
 
 	override getEmbeddedDocument(embeddedName: string, id: string, { strict }: { strict: boolean }): Document {
@@ -69,19 +77,20 @@ export abstract class ContainerGURPS<TParent extends ActorGURPS | null = ActorGU
 	override async deleteEmbeddedDocuments(
 		embeddedName: string,
 		ids: string[],
-		context?: DocumentModificationContext<any> | undefined,
-	): Promise<any> {
+		context?: ContainerModificationContext<this>,
+		// @ts-expect-error bad type?
+	): Promise<Document<this>[]> {
 		if (embeddedName !== "Item") return super.deleteEmbeddedDocuments(embeddedName, ids, context)
 
 		const deletedItems = this.items.filter(e => ids.includes(e.id!))
-		await this.parent?.deleteEmbeddedDocuments(embeddedName, ids, context)
-		return deletedItems
+		await this.parent?.deleteEmbeddedDocuments(embeddedName, ids, {})
+		return deletedItems as unknown as Document<this>[]
 	}
 
-	override getEmbeddedCollection(embeddedName: string): EmbeddedCollection<Document<Document>> {
-		if (embeddedName === "Item") return this.items as any
-		return super.getEmbeddedCollection(embeddedName)
-	}
+	// override getEmbeddedCollection(embeddedName: string): EmbeddedCollection<Document<Document>> {
+	// 	if (embeddedName === "Item") return this.items
+	// 	return super.getEmbeddedCollection(embeddedName)
+	// }
 
 	override prepareEmbeddedDocuments(): void {
 		super.prepareEmbeddedDocuments()
@@ -96,7 +105,7 @@ export abstract class ContainerGURPS<TParent extends ActorGURPS | null = ActorGU
 					e.flags[SYSTEM_NAME][ItemFlags.Container] === this.id,
 			)) {
 				if (this.type === ItemType.EquipmentContainer && item.type === ItemType.Equipment) {
-					;(item as any).system.other = (this.system as any).other
+					item.setFlag(SYSTEM_NAME, ItemFlags.Other, this.flags[SYSTEM_NAME]?.[ItemFlags.Other])
 				}
 				this.items.set(item.id!, item)
 			}
@@ -105,7 +114,7 @@ export abstract class ContainerGURPS<TParent extends ActorGURPS | null = ActorGU
 			container = this.compendium?.index
 			if (container)
 				for (const i of container.filter(
-					(e: any) =>
+					e =>
 						!!e.flags?.[SYSTEM_NAME]?.[ItemFlags.Container] &&
 						e.flags[SYSTEM_NAME][ItemFlags.Container] === this.id,
 				)) {

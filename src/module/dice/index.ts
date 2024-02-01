@@ -80,6 +80,7 @@ class DiceGURPS {
 	}
 
 	minimum(extraDiceFromModifiers: boolean): number {
+		// eslint-disable-next-line prefer-const
 		let [count, result] = this.adjustedCountAndModifier(extraDiceFromModifiers)
 		if (this.sides > 0) {
 			result += count
@@ -117,7 +118,7 @@ class DiceGURPS {
 		return buffer
 	}
 
-	static normalize(dice: DiceGURPS | DiceGURPSDef) {
+	static normalize(dice: DiceGURPS | DiceGURPSDef): DiceGURPS | DiceGURPSDef {
 		if (dice.count! < 0) dice.count = 0
 		if (dice.sides! < 0) dice.sides = 0
 		if (dice.multiplier! < 1) dice.multiplier = 1
@@ -145,7 +146,7 @@ class DiceGURPS {
 						count += 2
 					} else {
 						modifier -= average + 1
-						count++
+						count += 1
 					}
 				}
 			}
@@ -157,6 +158,7 @@ class DiceGURPS {
 	}
 
 	roll(extraDiceFromModifiers: boolean): number {
+		// eslint-disable-next-line prefer-const
 		let [count, result] = this.adjustedCountAndModifier(extraDiceFromModifiers)
 		if (this.sides > 1) {
 			for (let i = 0; i < count; i++) {
@@ -181,7 +183,7 @@ function extractValue(str: string, i: number): [number, number] {
 		if (!ch.match("[0-9]")) return [value, i]
 		value *= 10
 		value += parseInt(ch)
-		i++
+		i += 1
 	}
 	return [value, i]
 }

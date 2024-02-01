@@ -4,7 +4,6 @@ import { ActorGURPS } from "@actor/base.ts"
 import { HitLocationData } from "@actor/character/hit_location.ts"
 import { ItemGURPS } from "@item/base/document.ts"
 import { EffectPanel } from "@item/effect/index.ts"
-import { CompendiumBrowser } from "@module/apps/compendium-browser/index.ts"
 import { ModifierBucket } from "@module/apps/mod_bucket/button.ts"
 import { CombatGURPS } from "@module/combat/document.ts"
 import { CombatantGURPS } from "@module/combatant/document.ts"
@@ -19,6 +18,12 @@ import { AttributeDefObj } from "@sytem/attribute/data.ts"
 import { MoveTypeDefObj } from "@sytem/move_type/data.ts"
 import { ResourceTrackerDefObj } from "@sytem/resource_tracker/data.ts"
 import { CombatTrackerGURPS } from "@ui/combat_tracker.ts"
+import { ModifierList } from "@module/apps/mod_list/document.ts"
+import {
+	CompendiumBrowser,
+	CompendiumBrowserSettings,
+	CompendiumBrowserSources,
+} from "@module/apps/compendium-browser/index.ts"
 interface GameGURPS
 	extends Game<
 		ActorGURPS<null>,
@@ -33,6 +38,7 @@ interface GameGURPS
 	gurps: {
 		compendiumBrowser: CompendiumBrowser
 		modifierBucket: ModifierBucket
+		modifierList: ModifierList
 		effectPanel: EffectPanel
 		Dice: typeof DiceGURPS
 	}
@@ -119,15 +125,8 @@ declare global {
 		get(module: "gcsga", key: "colors.colors"): Record<string, { light: string; dark: string }>
 		get(module: "gcsga", key: "automatic_unready"): boolean
 		get(module: "gcsga", key: "initiative_formula"): ((combatant: CombatGURPS["turns"][number]) => string) | null
-		get(
-			module: "gcsga",
-			key: "compendium_browser_packs",
-		): {
-			trait: Record<string, { load: boolean; name: string; skillDefault: boolean }>[]
-			skill: Record<string, { load: boolean; name: string; skillDefault: boolean }>[]
-			spell: Record<string, { load: boolean; name: string; skillDefault: boolean }>[]
-			equipment: Record<string, { load: boolean; name: string; skillDefault: boolean }>[]
-		}
+		get(module: "gcsga", setting: "compendium_browser_packs"): CompendiumBrowserSettings
+		get(module: "gcsga", setting: "compendium_browser_sources"): CompendiumBrowserSources
 	}
 
 	interface ClientSettingsMap {

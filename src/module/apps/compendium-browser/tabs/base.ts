@@ -3,8 +3,8 @@ import { ErrorGURPS, htmlQuery } from "@util"
 import MiniSearch from "minisearch"
 import type { TableResultSource } from "types/foundry/common/documents/table-result.d.ts"
 import { BrowserTabs, ContentTabName } from "../data.ts"
-import { CompendiumBrowser } from "../index.ts"
 import { BrowserFilter, CompendiumBrowserIndexData, MultiselectData } from "./data.ts"
+import { CompendiumBrowser } from "../index.ts"
 
 export abstract class CompendiumBrowserTab {
 	/** A reference to the parent CompendiumBrowser */

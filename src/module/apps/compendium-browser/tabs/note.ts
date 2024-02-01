@@ -1,57 +1,104 @@
-import { ItemType, SYSTEM_NAME } from "@module/data"
-import { CompendiumBrowser } from "../browser"
-import { CompendiumIndexData, TabName } from "../data"
-import { CompendiumBrowserTab } from "./base"
+import { ItemType } from "@item/types.ts"
+import { SYSTEM_NAME } from "@module/data/index.ts"
+import { ContentTabName, TabName } from "../data.ts"
+import { CompendiumBrowser } from "../index.ts"
+import { CompendiumBrowserTab } from "./base.ts"
+import { CompendiumBrowserIndexData, NoteFilters } from "./data.ts"
 
 export class CompendiumBrowserNoteTab extends CompendiumBrowserTab {
-	override templatePath = `systems/${SYSTEM_NAME}/templates/compendium-browser/note.hbs`
+	tabName: ContentTabName = TabName.Note
+	filterData: NoteFilters
+	templatePath = `systems/${SYSTEM_NAME}/templates/compendium-browser/partials/note.hbs`
 
 	constructor(browser: CompendiumBrowser) {
-		super(browser, TabName.Note)
+		super(browser)
+
+		// Set the filterData object of this tab
+		this.filterData = this.prepareFilterData()
 	}
 
-	// Override get searchFields(): string[] {
-	// 	return [...super.searchFields, "formattedText"]
-	// }
-
 	protected override async loadData(): Promise<void> {
-		const note_list: CompendiumIndexData[] = []
-		const indexFields = ["img", "name", "system", "flags"]
+		console.debug("GURPS | Compendium Browser | Started loading notes")
+
+		const notes: CompendiumBrowserIndexData[] = []
+		const indexFields = ["img", "formattedName", "resolvedNotes", "system.reference"]
+		const tags = new Set<string>()
 
 		for await (const { pack, index } of this.browser.packLoader.loadPacks(
 			"Item",
 			this.browser.loadedPacks(TabName.Note),
 			indexFields,
 		)) {
-			const collection = game.packs.get(pack.collection)
-			;((await collection?.getDocuments()) as any).forEach((note: any) => {
-				if (![ItemType.Note, ItemType.NoteContainer].includes(note.type)) return
-				note.prepareData()
-				const children = note.type === ItemType.NoteContainer ? note.children : []
-				children.forEach((c: Item) => c.prepareData())
-				// TODO: hasAllIndexFields
-				note_list.push({
-					_id: note._id,
-					type: note.type,
-					name: note.name,
-					notes: note.notes,
-					formattedText: note.formattedText,
-					img: note.img,
-					compendium: pack,
-					open: note.open,
-					id: note._id,
-					uuid: note.uuid,
-					children: note.type === ItemType.NoteContainer ? children : [],
-					reference: note.reference,
-					parents: note.parents,
-					indent: note.indent,
-					flags: note.flags,
-				})
-			})
+			console.debug(`GURPS | Compendium Browser | ${pack.metadata.label} - Loading`)
+			for (const noteData of index) {
+				if (noteData.type === ItemType.Note || noteData.type === ItemType.NoteContainer) {
+					if (!this.hasAllIndexFields(noteData, indexFields)) {
+						console.warn(
+							`Note '${noteData.name}' does not have all required data fields. Consider unselecting pack '${pack.metadata.label}' in the compendium browser settings.`,
+						)
+						continue
+					}
 
-			// TODO: get rid of
-			note_list.sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0))
+					const { system } = noteData
+					for (const tag of system.tags) tags.add(tag)
+
+					notes.push({
+						type: noteData.type,
+						name: noteData.name,
+						img: noteData.img,
+						uuid: `Compendium.${pack.collection}.${noteData._id}`,
+						formattedName: noteData.formattedName,
+						resolvedNotes: noteData.resolvedNotes,
+						points: noteData.adjustedPoints,
+						reference: noteData.reference,
+					})
+				}
+			}
 		}
-		this.indexData = note_list
+
+		// Set indexData
+		this.indexData = notes
+
+		// Set Filters
+		this.filterData.multiselects.tags.options = this.generateMultiselectOptions(
+			tags.reduce((acc: Record<string, string>, c) => {
+				acc[c] = c
+				return acc
+			}, {}),
+		)
+
+		console.debug("GURPS | Compendium Browser | Finished loading notes")
+	}
+
+	protected override filterIndexData(entry: CompendiumBrowserIndexData): boolean {
+		const { multiselects } = this.filterData
+
+		// Tags
+		if (!this.filterTraits(entry.notes, multiselects.tags.selected)) return false
+		return true
+	}
+
+	protected override prepareFilterData(): NoteFilters {
+		return {
+			multiselects: {
+				tags: {
+					label: "tags",
+					options: [],
+					selected: [],
+				},
+			},
+			order: {
+				by: "name",
+				direction: "asc",
+				options: {
+					name: "name",
+					points: "points",
+					reference: "reference",
+				},
+			},
+			search: {
+				text: "",
+			},
+		}
 	}
 }

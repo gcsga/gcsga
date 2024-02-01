@@ -1,4 +1,4 @@
-import { BaseItemSourceGURPS } from "@item/data.ts"
+import { BaseItemSourceGURPS } from "@item/base/data/system.ts"
 import { EffectSystemSource } from "@item/effect/data.ts"
 import { ItemType } from "@item/types.ts"
 import { RollModifier } from "@module/data/misc.ts"

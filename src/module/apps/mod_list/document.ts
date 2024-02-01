@@ -1,13 +1,13 @@
-import { ActorGURPS } from "@module/config"
-import { RollModifier, RollModifierTags, SETTINGS, SYSTEM_NAME, UserFlags } from "@module/data"
-import { UserGURPS } from "@module/user/document"
+import { ActorGURPS } from "@actor"
+import { RollModifier, RollModifierTags, SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
+import { UserFlags, UserGURPS } from "@module/user/index.ts"
 import { LastActor } from "@util"
 
 class ModifierList extends Application {
 	_tempRangeMod: RollModifier = { name: "", modifier: 0, tags: [RollModifierTags.Range] }
 
-	static get defaultOptions(): ApplicationOptions {
-		return mergeObject(super.defaultOptions, {
+	static override get defaultOptions(): ApplicationOptions {
+		return fu.mergeObject(super.defaultOptions, {
 			popOut: false,
 			minimizable: false,
 			resizable: false,
@@ -19,7 +19,7 @@ class ModifierList extends Application {
 
 	get collapse(): boolean {
 		const collapse = game.settings.get(SYSTEM_NAME, SETTINGS.MODIFIER_LIST_COLLAPSE)
-		const button_open = game.ModifierBucket.window.rendered
+		const button_open = game.gurps.modifierBucket.window.rendered
 		if (collapse && !button_open) return true
 		return false
 	}
@@ -29,7 +29,7 @@ class ModifierList extends Application {
 		return `bottom: ${bottom}px`
 	}
 
-	async getData(options?: Partial<ApplicationOptions> | undefined): Promise<object> {
+	override async getData(options?: Partial<ApplicationOptions> | undefined): Promise<object> {
 		const currentMods = game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierStack)
 		let targetMods: RollModifier[] = []
 		const actor = (game.user?.isGM ? await LastActor.get() : game.user?.character) as ActorGURPS
@@ -38,7 +38,7 @@ class ModifierList extends Application {
 		})
 		const actorMods = actor?.modifiers
 
-		return mergeObject(super.getData(options), {
+		return fu.mergeObject(super.getData(options), {
 			currentMods,
 			targetMods,
 			actorMods,
@@ -47,21 +47,21 @@ class ModifierList extends Application {
 		})
 	}
 
-	activateListeners(html: JQuery<HTMLElement>): void {
+	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		html.find(".active").on("click", event => this.removeModifier(event))
 		html.find(".modifier").on("click", event => this._onClickModifier(event))
 		html.find(".collapse-toggle").on("click", event => this._onCollapseToggle(event))
 	}
 
-	protected _injectHTML(html: JQuery<HTMLElement>): void {
+	protected override _injectHTML(html: JQuery<HTMLElement>): void {
 		if ($("body").find("#modifier-list").length === 0) {
 			html.insertBefore($("body").find("#players"))
 			this._element = html
 		}
 	}
 
-	_onClickModifier(event: JQuery.ClickEvent) {
+	_onClickModifier(event: JQuery.ClickEvent): void {
 		event.preventDefault()
 		const modifier: RollModifier = {
 			name: $(event.currentTarget).data("name"),
@@ -70,21 +70,21 @@ class ModifierList extends Application {
 		return (game.user as UserGURPS).addModifier(modifier)
 	}
 
-	_onCollapseToggle(event: JQuery.ClickEvent) {
+	_onCollapseToggle(event: JQuery.ClickEvent): this | Promise<this> {
 		event.preventDefault()
 		game.settings.set(SYSTEM_NAME, SETTINGS.MODIFIER_LIST_COLLAPSE, !this.collapse)
 		return this.render(true)
 	}
 
-	setRangeMod(mod: RollModifier) {
+	setRangeMod(mod: RollModifier): void {
 		this._tempRangeMod = mod
 	}
 
-	addRangeMod() {
-		;(game.user as UserGURPS).addModifier(this._tempRangeMod)
+	addRangeMod(): void {
+		return game.user.addModifier(this._tempRangeMod)
 	}
 
-	removeModifier(event: JQuery.ClickEvent) {
+	removeModifier(event: JQuery.ClickEvent): void {
 		event.preventDefault()
 		const modList: RollModifier[] =
 			(game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierStack) as RollModifier[]) ?? []
@@ -92,7 +92,7 @@ class ModifierList extends Application {
 		modList.splice(index, 1)
 		game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, modList)
 		this.render()
-		game.ModifierBucket.render()
+		game.gurps.modifierBucket.render()
 	}
 }
 

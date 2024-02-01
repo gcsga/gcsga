@@ -1,11 +1,11 @@
 import { mergeObject } from "types/foundry/common/utils/helpers.js"
 import { IDamageCalculator, createDamageCalculator } from "./damage_calculator.ts"
-import { DamageRoll } from "./damage_chat_message.ts"
-import { DamageTarget } from "./index.ts"
+import { DamageRoll, DamageTarget } from "./index.ts"
 import { SETTINGS, SYSTEM_NAME, gid } from "@module/data/misc.ts"
 import { PDF } from "@module/pdf/index.ts"
 import { HitLocationUtil } from "./hitlocation_utils.ts"
 import { DamageTypes } from "./damage_type.ts"
+import { LocalizeGURPS } from "@util"
 
 export class ApplyDamageDialog extends Application {
 	static async create(roll: DamageRoll, target: DamageTarget, options = {}): Promise<ApplyDamageDialog> {
@@ -26,7 +26,7 @@ export class ApplyDamageDialog extends Application {
 	 * @param target
 	 * @param options
 	 */
-	private constructor(roll: DamageRoll, target: DamageTarget, options: any = {}) {
+	private constructor(roll: DamageRoll, target: DamageTarget, options: Record<string, unknown> = {}) {
 		options.tabs = [
 			{
 				navSelector: ".nav-tabs",
@@ -37,7 +37,7 @@ export class ApplyDamageDialog extends Application {
 
 		super(options)
 
-		this.calculator = createDamageCalculator(roll, target, game.i18n.format.bind(game.i18n))
+		this.calculator = createDamageCalculator(roll, target, LocalizeGURPS.format)
 	}
 
 	private calculator: IDamageCalculator
@@ -55,8 +55,8 @@ export class ApplyDamageDialog extends Application {
 		})
 	}
 
-	override get title() {
-		return game.i18n.localize("Apply Damage")
+	override get title(): string {
+		return LocalizeGURPS.translations.gurps.apply_damage_dialog.title
 	}
 
 	override getData(options?: Partial<ApplicationOptions> | undefined): object {
@@ -78,7 +78,7 @@ export class ApplyDamageDialog extends Application {
 		html.find(".ref").on("click", event => PDF.handle(event))
 	}
 
-	_onApplyControl(event: JQuery.Event) {
+	_onApplyControl(event: JQuery.Event): void {
 		if (event.type === "click") {
 			const e = event as JQuery.ClickEvent
 			if (["button", "checkbox"].includes(e.currentTarget.type)) {
@@ -94,7 +94,10 @@ export class ApplyDamageDialog extends Application {
 		}
 	}
 
-	async _onApplyControlChange(event: JQuery.ChangeEvent, target: any): Promise<void> {
+	async _onApplyControlChange(
+		event: JQuery.ChangeEvent,
+		target: JQuery.TriggeredEvent["currentTarget"],
+	): Promise<void> {
 		event.preventDefault()
 
 		const intValue = parseInt(target.value)
@@ -159,7 +162,10 @@ export class ApplyDamageDialog extends Application {
 		this.render(true)
 	}
 
-	async _onApplyControlClick(event: JQuery.ClickEvent, target: any): Promise<void> {
+	async _onApplyControlClick(
+		event: JQuery.ClickEvent,
+		target: JQuery.TriggeredEvent["currentTarget"],
+	): Promise<void> {
 		event.preventDefault()
 
 		const intValue = parseInt(target.value)
@@ -208,10 +214,11 @@ export class ApplyDamageDialog extends Application {
 				this.calculator.isShotgunCloseRangeOverride = target.checked
 				break
 
-			case "injury-effect":
+			case "injury-effect": {
 				const parentIndex = parseInt(target.dataset.effectIndex)
 				locationDamage.toggleEffect(parentIndex)
 				break
+			}
 		}
 
 		this.render(true)
@@ -229,16 +236,13 @@ export class ApplyDamageDialog extends Application {
 			tooltip: await result.roll.getTooltip(),
 		})
 
-		ChatMessage.create(
-			{
-				user: game.user,
-				type: CONST.CHAT_MESSAGE_TYPES.ROLL,
-				content: message,
-				roll: JSON.stringify(result.roll),
-				sound: CONFIG.sounds.dice,
-			} as any,
-			{},
-		)
+		ChatMessage.create({
+			user: game.user.id,
+			type: CONST.CHAT_MESSAGE_TYPES.ROLL,
+			content: message,
+			rolls: [JSON.stringify(result.roll)],
+			sound: CONFIG.sounds.dice,
+		})
 
 		return result.location?.id ?? gid.Torso
 	}

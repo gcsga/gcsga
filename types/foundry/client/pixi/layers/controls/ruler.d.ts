@@ -33,6 +33,9 @@ declare global {
 		/** The array of most recently computed ruler measurement segments */
 		segments: RulerMeasurementSegment[]
 
+		/** The array of most recently computed ruler measurement segments */
+		totalDistance: number
+
 		/** An enumeration of the possible Ruler measurement states. */
 		static STATES: {
 			INACTIVE: 0

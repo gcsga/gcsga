@@ -1,3 +1,5 @@
+import { ConditionID } from "@item/condition/index.ts"
+
 /*
  * I had to move SETTINGS here as well, because it fixed the weird error that leads to the code not recognizing standard
  * foundry classes and methods.
@@ -22,6 +24,7 @@ export enum SETTINGS {
 	SERVER_SIDE_FILE_DIALOG = "server_side_file_dialog",
 	PORTRAIT_OVERWRITE = "portrait_overwrite",
 	COMPENDIUM_BROWSER_PACKS = "compendium_browser_packs",
+	COMPENDIUM_BROWSER_SOURCES = "compendium_browser_sources",
 	COMPENDIUM_SKILL_DEFAULTS = "compendium_skill_defaults",
 	SHOW_TOKEN_MODIFIERS = "enable_token_modifier_window",
 	IGNORE_IMPORT_NAME = "ignore_import_name",
@@ -232,6 +235,8 @@ export type ModifierItem = RollModifier | ModifierHeader
 export interface RollModifierStack {
 	title: string
 	items: RollModifier[]
+	editing?: boolean
+	open?: boolean
 }
 
 export interface RollModifier {
@@ -283,7 +288,7 @@ export interface WeaponOwner {
 	ratedStrength: number
 }
 
-export enum HooksGURPS {
+export enum HOOKS_GURPS {
 	AddModifier = "addModifier",
 }
 

@@ -27,8 +27,7 @@ class Evaluator {
 	operatorStack: expressionOperator[] = []
 
 	constructor(data: {
-		// resolver: CharacterResolver | Mook
-		resolver: CharacterResolver
+		resolver: CharacterResolver | Mook
 		operators?: Operator[]
 		functions?: Map<string, eFunction>
 	}) {

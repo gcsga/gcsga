@@ -1,4 +1,31 @@
-import { DiceGURPS } from "@module/dice"
+// import { DiceGURPS } from "@module/dice"
+// import {
+// 	DamageAttacker,
+// 	DamageHit,
+// 	DamageRoll,
+// 	DamageTarget,
+// 	DamageWeapon,
+// 	DefaultHitLocations,
+// 	TargetPool,
+// 	TargetTrait,
+// 	Vulnerability,
+// } from "."
+// import { RollType } from "../data"
+// import { AnyPiercingType, DamageType, DamageTypes } from "./damage_type"
+// import { HitLocationUtil } from "./hitlocation_utils"
+// import {
+// 	CheckFailureConsequence,
+// 	EffectCheck,
+// 	InjuryEffect,
+// 	InjuryEffectType,
+// 	KnockdownCheck,
+// 	RollModifier,
+// 	ShockInjuryEffect,
+// } from "./injury_effect"
+// import { HitLocation, HitLocationTable } from "@actor"
+// import { TokenDocumentGURPS } from "@module/token"
+
+import { DiceGURPS } from "@module/dice/index.ts"
 import {
 	DamageAttacker,
 	DamageHit,
@@ -9,10 +36,13 @@ import {
 	TargetPool,
 	TargetTrait,
 	Vulnerability,
-} from "."
-import { RollType } from "../data"
-import { AnyPiercingType, DamageType, DamageTypes } from "./damage_type"
-import { HitLocationUtil } from "./hitlocation_utils"
+} from "./index.ts"
+import { HitLocation, HitLocationTable } from "@actor/character/hit_location.ts"
+import { AnyPiercingType, DamageType, DamageTypes } from "./damage_type.ts"
+import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
+import { RulerGURPS } from "@module/ruler/document.ts"
+import { Point } from "pixi.js"
+import { HitLocationUtil } from "./hitlocation_utils.ts"
 import {
 	CheckFailureConsequence,
 	EffectCheck,
@@ -21,9 +51,8 @@ import {
 	KnockdownCheck,
 	RollModifier,
 	ShockInjuryEffect,
-} from "./injury_effect"
-import { HitLocation, HitLocationTable } from "@actor"
-import { TokenDocumentGURPS } from "@module/token"
+} from "./injury_effect.ts"
+import { RollType } from "@module/data/index.ts"
 
 export const Head = ["skull", "eye", "face"]
 export const Limb = ["arm", "leg"]
@@ -133,7 +162,7 @@ const formatFraction = (value: number) => {
 export function createDamageCalculator(
 	damageRoll: DamageRoll,
 	defender: DamageTarget,
-	localize: (stringId: string, data?: any) => string,
+	localize: (stringId: string, data?: Record<string, string | number | boolean | null>) => string,
 ): IDamageCalculator {
 	return new DamageCalculator(damageRoll, defender, localize)
 }
@@ -147,7 +176,11 @@ const NoDamageReduction = 1
  * The Damage Calculator is responsible for calculating the damage done to a target.
  */
 class DamageCalculator implements IDamageCalculator {
-	constructor(damageRoll: DamageRoll, defender: DamageTarget, localize: (stringId: string, data?: any) => string) {
+	constructor(
+		damageRoll: DamageRoll,
+		defender: DamageTarget,
+		localize: (stringId: string, data?: Record<string, string | number | boolean | null>) => string,
+	) {
 		if (damageRoll.armorDivisor < 0) throw new Error(`Invalid Armor Divisor value: [${damageRoll.armorDivisor}]`)
 
 		this.target = defender
@@ -199,7 +232,7 @@ class DamageCalculator implements IDamageCalculator {
 
 	private damageRoll: DamageRoll
 
-	format: (stringId: string, data?: any) => string
+	format: (stringId: string, data?: Record<string, string | number | boolean | null>) => string
 
 	target: DamageTarget
 
@@ -286,7 +319,7 @@ class DamageCalculator implements IDamageCalculator {
 	set damageTypeOverride(key: string | undefined) {
 		if (key === undefined) this.overrides.damageType = undefined
 		else {
-			const value = getProperty(DamageTypes, key) as DamageType
+			const value = fu.getProperty(DamageTypes, key) as DamageType
 			this.overrides.damageType = this.damageRoll.damageType === value ? undefined : value
 		}
 	}
@@ -387,7 +420,7 @@ class DamageCalculator implements IDamageCalculator {
 	}
 
 	private _calculateRange(): number | undefined {
-		const scenes = (globalThis as any).game?.scenes
+		const scenes = game.scenes
 		if (scenes) {
 			const canvas = scenes.active
 			const token1 = canvas!.tokens.get(this.attacker!.tokenId) as TokenDocumentGURPS & {
@@ -402,9 +435,10 @@ class DamageCalculator implements IDamageCalculator {
 			}
 
 			if (!token1 || !token2) return undefined
-			const ruler = new Ruler() as Ruler & { totalDistance: number }
-			ruler.waypoints = [{ x: token1.x, y: token1.y }]
-			ruler.measure({ x: token2.x, y: token2.y }, { gridSpaces: true })
+			// const ruler = new Ruler() as Ruler & { totalDistance: number }
+			const ruler = new RulerGURPS(game.user)
+			ruler.waypoints = [new Point(token1.x, token1.y)]
+			ruler.measure(new Point(token2.x, token2.y), { gridSpaces: true })
 			const horizontalDistance = ruler.totalDistance
 			const verticalDistance = Math.abs(token1.elevation - token2.elevation)
 			ruler.clear()
@@ -599,7 +633,7 @@ class DamageCalculator implements IDamageCalculator {
 	}
 
 	private get isAtRange(): boolean {
-		return this.range != null && this.range > 0
+		return Boolean(this.range && this.range > 0)
 	}
 
 	// === Step Calculations ===
@@ -852,7 +886,7 @@ class DamageCalculator implements IDamageCalculator {
 				location:
 					locationDamage.locationName === DefaultHitLocations.LargeArea
 						? this.format("gurps.dmgcalc.description.large_area_injury")
-						: location?.table_name,
+						: location?.table_name ?? "",
 			}),
 		}
 	}
@@ -924,7 +958,7 @@ class DamageCalculator implements IDamageCalculator {
 			location:
 				locationName === DefaultHitLocations.LargeArea
 					? this.format("gurps.dmgcalc.description.large_area_injury")
-					: location?.table_name,
+					: location?.table_name ?? "",
 		})
 
 		if (!location) return undefined
@@ -1067,6 +1101,7 @@ class DamageCalculator implements IDamageCalculator {
 	/**
 	 * @returns {number} yards of knockback, if any.
 	 */
+	// @ts-expect-error unused
 	private knockback(results: DamageResults): number {
 		if (this.isDamageTypeKnockbackEligible) {
 			if (this.damageType === DamageTypes.cut && results.penetratingDamage!.value > 0) return 0
@@ -1084,6 +1119,7 @@ class DamageCalculator implements IDamageCalculator {
 		return this.target.ST
 	}
 
+	// @ts-expect-error unused
 	private knockbackEffects(knockback: number): InjuryEffect[] {
 		if (knockback === 0) return []
 
@@ -1108,6 +1144,7 @@ class DamageCalculator implements IDamageCalculator {
 		return [knockbackEffect]
 	}
 
+	// @ts-expect-error unused
 	private shockEffects(results: DamageResults, locationName: string): InjuryEffect[] {
 		const rawModifier = Math.floor(results.injury!.value / this.shockFactor)
 		if (rawModifier > 0) {
@@ -1125,6 +1162,7 @@ class DamageCalculator implements IDamageCalculator {
 		return []
 	}
 
+	// @ts-expect-error unused
 	private majorWoundEffects(results: DamageResults, locationName: string): InjuryEffect[] {
 		const wounds = []
 
@@ -1183,6 +1221,7 @@ class DamageCalculator implements IDamageCalculator {
 		return results.injury!.value > this.target.hitPoints.value / divisor
 	}
 
+	// @ts-expect-error unused
 	private miscellaneousEffects(results: DamageResults, locationName: string): InjuryEffect[] {
 		const location = this.hitLocationTable.locations.find(it => it.table_name === locationName)
 
@@ -1216,7 +1255,7 @@ class HitLocationDamage implements LocationDamage {
 		this.calculator = calculator
 	}
 
-	private format(arg0: string, data?: any): string {
+	private format(arg0: string, data?: Record<string, string | number | boolean | null>): string {
 		return this.calculator.format(arg0, data)
 	}
 
@@ -1525,39 +1564,39 @@ export class DamageResults {
 
 	effects = <InjuryEffect[]>[]
 
-	addResult(result: CalculatorStep | undefined) {
+	addResult(result: CalculatorStep | undefined): void {
 		if (result) this.steps.push(result)
 	}
 
-	addResults(results: (CalculatorStep | undefined)[]) {
+	addResults(results: (CalculatorStep | undefined)[]): void {
 		results.forEach(it => this.addResult(it))
 	}
 
-	addEffects(effects: InjuryEffect[]) {
+	addEffects(effects: InjuryEffect[]): void {
 		if (effects) this.effects.push(...effects)
 	}
 
-	get injury() {
+	get injury(): CalculatorStep | undefined {
 		return this.reverseList.find(it => it.name === "Injury")
 	}
 
-	get woundingModifier() {
+	get woundingModifier(): CalculatorStep | undefined {
 		return this.reverseList.find(it => it.name === "Wounding Modifier")
 	}
 
-	get penetratingDamage() {
+	get penetratingDamage(): CalculatorStep | undefined {
 		return this.reverseList.find(it => it.name === "Penetrating Damage")
 	}
 
-	get damageResistance() {
+	get damageResistance(): CalculatorStep | undefined {
 		return this.reverseList.find(it => it.name === "Damage Resistance")
 	}
 
-	get basicDamage() {
+	get basicDamage(): CalculatorStep | undefined {
 		return this.reverseList.find(it => it.name === "Basic Damage")
 	}
 
-	get rawDamage() {
+	get rawDamage(): CalculatorStep | undefined {
 		return this.steps.find(it => it.name === "Basic Damage" && it.substep === "gurps.dmgcalc.substep.basic_damage")
 	}
 

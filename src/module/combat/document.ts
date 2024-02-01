@@ -27,23 +27,23 @@ export class CombatGURPS extends Combat {
 		}
 	}
 
-	static async deleteCombat(combat: CombatGURPS) {
-		// const tokenIds = combat.combatants.map(combatant => combatant.token?.id ?? undefined).filter(it => !!it)
-		const tokens = combat.combatants.map(combatant => combatant.token) as TokenDocumentGURPS[]
-		tokens.forEach(async token => await token.actor?.resetManeuvers())
-		await CombatGURPS.updateDamageMapForTokens(tokens.map(t => t?.id) as string[])
-	}
-
-	static async updateCombat(combat: Combat, updateData: CombatData) {
-		if (!updateData.combatants) return
-
-		const previousCombatants = combat.data.combatants
-		const updatedCombatants = updateData.combatants
-		const removedCombatants = previousCombatants.filter(
-			prevCombatant => !updatedCombatants.some(updatedCombatant => updatedCombatant.id === prevCombatant.id),
-		)
-
-		const tokenIds = removedCombatants.map(combatant => combatant.token?.id ?? undefined)
-		await CombatGURPS.updateDamageMapForTokens(tokenIds)
-	}
+	// static async deleteCombat(combat: CombatGURPS) {
+	// 	// const tokenIds = combat.combatants.map(combatant => combatant.token?.id ?? undefined).filter(it => !!it)
+	// 	const tokens = combat.combatants.map(combatant => combatant.token) as TokenDocumentGURPS[]
+	// 	tokens.forEach(async token => await token.actor?.resetManeuvers())
+	// 	await CombatGURPS.updateDamageMapForTokens(tokens.map(t => t?.id) as string[])
+	// }
+	//
+	// static async updateCombat(combat: Combat, updateData: CombatData) {
+	// 	if (!updateData.combatants) return
+	//
+	// 	const previousCombatants = combat.data.combatants
+	// 	const updatedCombatants = updateData.combatants
+	// 	const removedCombatants = previousCombatants.filter(
+	// 		prevCombatant => !updatedCombatants.some(updatedCombatant => updatedCombatant.id === prevCombatant.id),
+	// 	)
+	//
+	// 	const tokenIds = removedCombatants.map(combatant => combatant.token?.id ?? undefined)
+	// 	await CombatGURPS.updateDamageMapForTokens(tokenIds)
+	// }
 }

@@ -1,7 +1,7 @@
-import { ModifierItem, RollModifierTags, SETTINGS, SYSTEM_NAME } from "@module/data"
-import { Length, LengthUnits, LocalizeGURPS } from "@util"
+import { ModifierItem, RollModifierTags, SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
+import { Length, LengthUnits, LocalizeGURPS, objectHasKey } from "@util"
 
-export function loadModifiers() {
+export function loadModifiers(): void {
 	const books = game.settings.get(SYSTEM_NAME, SETTINGS.BASE_BOOKS)
 	let meleeMods: ModifierItem[] = []
 	let rangedMods: ModifierItem[] = []
@@ -651,5 +651,5 @@ export function loadModifiers() {
 		...modifiersQuality,
 		...modifiersLighting,
 		...modifiersRof,
-	].filter(e => !(e as any).title)
+	].filter(e => objectHasKey(e, "title"))
 }

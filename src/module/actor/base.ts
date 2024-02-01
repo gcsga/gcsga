@@ -12,7 +12,7 @@ import { EffectGURPS } from "@item/effect/document.ts"
 import { ConditionGURPS } from "@item/condition/document.ts"
 import { ItemGURPS } from "@item/base/document.ts"
 import { Document } from "types/foundry/common/abstract/module.js"
-import { DamagePayload, DamageRoll } from "@module/apps/damage_calculator/damage_chat_message.ts"
+import { DamagePayload } from "@module/apps/damage_calculator/damage_chat_message.ts"
 import {
 	DamageAttacker,
 	DamageRollAdapter,
@@ -26,7 +26,7 @@ import {
 import { ApplyDamageDialog } from "@module/apps/damage_calculator/apply_damage_dlg.ts"
 import { ActorSourceGURPS } from "./data/index.ts"
 import { MoveType } from "@sytem/move_type/object.ts"
-import { ActorModificationContextGURPS, ActorType } from "./types.ts"
+import { ActorInstances, ActorModificationContextGURPS, ActorType } from "./types.ts"
 import { ItemType } from "@item/types.ts"
 import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
 import { ConditionID, EffectID, ManeuverID, Postures } from "@item/condition/index.ts"
@@ -34,7 +34,7 @@ import { ItemFlags } from "@item/base/data/system.ts"
 import { BaseWeaponGURPS, ContainerGURPS, TraitModifierGURPS } from "@item"
 import { ItemSourceGURPS } from "@item/base/data/index.ts"
 
-export interface ActorGURPS<TParent extends TokenDocumentGURPS | null> extends Actor<TParent> {
+interface ActorGURPS<TParent extends TokenDocumentGURPS | null> extends Actor<TParent> {
 	noPrepare: boolean
 	flags: ActorFlagsGURPS
 	type: ActorType
@@ -42,7 +42,7 @@ export interface ActorGURPS<TParent extends TokenDocumentGURPS | null> extends A
 	moveTypes: Map<string, MoveType>
 }
 
-export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null> extends Actor<TParent> {
+class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null> extends Actor<TParent> {
 	declare attributes: Map<string, Attribute>
 	declare moveTypes: Map<string, MoveType>
 
@@ -236,7 +236,7 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 
 	override createEmbeddedDocuments(
 		embeddedName: string,
-		data: Record<string, unknown>[],
+		data: object[],
 		context: ActorModificationContextGURPS<this>,
 	): Promise<Document[]> {
 		if (embeddedName === "Item")
@@ -310,7 +310,7 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 
 		const roll: DamageRollAdapter = new DamageRollAdapter(payload, attacker, weapon)
 		const target: DamageTarget = new DamageTargetActor(this)
-		ApplyDamageDialog.create(roll as unknown as DamageRoll, target).then(dialog => dialog.render(true))
+		ApplyDamageDialog.create(roll, target).then(dialog => dialog.render(true))
 	}
 
 	createDamageTargetAdapter(): DamageTarget {
@@ -378,7 +378,7 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 		const newCondition = duplicate(ConditionGURPS.getData(id))
 		if (maneuvers.length) {
 			const items = (await this.updateEmbeddedDocuments("Item", [
-				{ _id: maneuvers[0]._id, ...newCondition },
+				{ ...newCondition, _id: maneuvers[0].id },
 			])) as unknown as ConditionGURPS[]
 			return items[0]
 		}
@@ -403,7 +403,7 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 		const newCondition = duplicate(ConditionGURPS.getData(id))
 		if (postures.length) {
 			const items = this.updateEmbeddedDocuments("Item", [
-				{ _id: postures[0]._id, ...newCondition },
+				{ ...newCondition, _id: postures[0].id },
 			]) as unknown as ConditionGURPS[]
 			return items[0]
 		}
@@ -422,6 +422,12 @@ export class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumen
 
 	embeddedEval(_s: string): string {
 		return ""
+	}
+
+	/** A means of checking this actor's type without risk of circular import references */
+	isOfType<T extends ActorType>(...types: T[]): this is ActorInstances<TParent>[T]
+	isOfType(...types: string[]): boolean {
+		return types.some(t => this.type === t)
 	}
 }
 
@@ -647,12 +653,14 @@ class DamageWeaponAdapter implements DamageWeapon {
 	}
 }
 
-export const ActorProxyGURPS = new Proxy(ActorGURPS, {
+/** A `Proxy` to to get Foundry to construct `ActorPF2e` subclasses */
+const ActorProxyGURPS = new Proxy(ActorGURPS, {
 	construct(
 		_target,
-		args: [source: ActorSourceGURPS, context: DocumentModificationContext<TokenDocumentGURPS | null>],
+		args: [source: PreCreate<ActorSourceGURPS>, context?: DocumentConstructionContext<ActorGURPS["parent"]>],
 	) {
-		const ActorClass = CONFIG.GURPS.Actor.documentClasses[args[0]?.type as ActorType] ?? ActorGURPS
-		return new ActorClass(args)
+		return new CONFIG.GURPS.Actor.documentClasses[args[0].type](...args)
 	},
 })
+
+export { ActorGURPS, ActorProxyGURPS }

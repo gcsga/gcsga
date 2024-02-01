@@ -20,8 +20,6 @@ import { emcost } from "./enum/emcost.ts"
 import { HitLocationTable } from "@actor/character/hit_location.ts"
 import { ActorType } from "@actor"
 import { ItemType } from "@item/types.ts"
-import { TraitSystemSource, WeaponType } from "@item/data.ts"
-import { TraitContainerSystemSource, TraitContainerType } from "@item/trait_container/data.ts"
 import {
 	WeaponAccuracy,
 	WeaponBlock,
@@ -35,6 +33,11 @@ import {
 	WeaponShots,
 	WeaponStrength,
 } from "@item/weapon/index.ts"
+import { TraitSystemSource } from "@item/trait/index.ts"
+import { TraitContainerSystemSource, TraitContainerType } from "@item/trait_container/index.ts"
+import { WeaponType } from "@item/weapon/data.ts"
+import { SkillBonus, WeaponBonus } from "@feature"
+import { feature } from "./enum/feature.ts"
 
 export interface ActorResolver<T extends ActorType> {
 	type: T
@@ -60,8 +63,7 @@ export interface CharacterResolver extends ActorResolver<ActorType.Character> {
 	// Items
 	traits: Collection<TraitResolver | TraitContainerResovler>
 	skills: Collection<SkillResolver | TechniqueResolver | SkillContainerResolver>
-	// spells: Collection<SpellResolver | SpellContainerResolver>
-	spells: Collection<SpellContainerResolver>
+	spells: Collection<SpellResolver | SpellContainerResolver>
 	equipment: Collection<EquipmentResolver | EquipmentContainerResolver>
 	notes: Collection<NoteResolver | NoteContainerResolver>
 	conditions: Collection<ConditionResolver>
@@ -71,9 +73,18 @@ export interface CharacterResolver extends ActorResolver<ActorType.Character> {
 	strikingST: number
 	throwingST: number
 	liftingST: number
+	parryBonus: number
+	blockBonus: number
+	dodgeBonus: number
 	// Hit Locations
 	hitLocationTable: HitLocationTable
 	// functions
+	skillNamed: (
+		name: string,
+		specialization: string,
+		require_points: boolean,
+		excludes: Map<string, boolean> | null,
+	) => Collection<SkillResolver | TechniqueResolver>
 	attributeBonusFor: (
 		attributeId: string,
 		limitation: stlimit.Option,
@@ -81,6 +92,31 @@ export interface CharacterResolver extends ActorResolver<ActorType.Character> {
 		tooltip?: TooltipGURPS | null,
 	) => number
 	skillBonusFor: (name: string, specialization: string, tags: string[], tooltip: TooltipGURPS | null) => number
+	namedWeaponSkillBonusesFor: (
+		name: string,
+		usage: string,
+		tags: string[],
+		tooltip: TooltipGURPS | null,
+	) => SkillBonus[]
+	addWeaponWithSkillBonusesFor: (
+		name: string,
+		specialization: string,
+		usage: string,
+		tags: string[],
+		dieCount: number,
+		tooltip: TooltipGURPS | null,
+		m: Map<WeaponBonus, boolean> | null,
+		allowedFeatureTypes: Map<feature.Type, boolean>,
+	) => Map<WeaponBonus, boolean>
+	addNamedWeaponBonusesFor: (
+		name: string,
+		usage: string,
+		tags: string[],
+		dieCount: number,
+		tooltip: TooltipGURPS | null,
+		m: Map<WeaponBonus, boolean>,
+		allowedFeatureTypes: Map<feature.Type, boolean>,
+	) => Map<WeaponBonus, boolean>
 	moveBonusFor: (id: string, limitation: MoveBonusType, effective?: boolean, tooltip?: TooltipGURPS | null) => number
 	resolveVariable: (variableName: string) => string
 	resolveAttributeCurrent: (attr_id: string) => number

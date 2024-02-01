@@ -1,13 +1,14 @@
-import { ItemSystemDataGURPS } from "@module/config"
-import { SYSTEM_NAME } from "@module/data"
 import { LocalizeGURPS } from "@util"
-import { ImportUtils } from "@util/import"
-import { BaseItemGURPS } from "./base"
+import { ItemSourceGURPS } from "./base/data/index.ts"
+import { SYSTEM_NAME } from "@module/data/index.ts"
+import { DialogGURPS } from "@ui"
+import { ImportUtils } from "@util/import.ts"
+import { ItemProxyGURPS } from "./base/document.ts"
 
 interface ItemLibraryData {
 	type: ItemLibraryType
 	version: number
-	rows: ItemSystemDataGURPS[]
+	rows: ItemSourceGURPS["system"][]
 }
 
 enum ItemLibraryType {
@@ -27,9 +28,9 @@ export class ItemImporter {
 		this.version = 4
 	}
 
-	static showDialog() {
+	static showDialog(): void {
 		setTimeout(async () => {
-			new Dialog(
+			new DialogGURPS(
 				{
 					title: LocalizeGURPS.translations.gurps.system.library_import.title_item,
 					content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/item-library-import.hbs`, {}),
@@ -37,16 +38,14 @@ export class ItemImporter {
 						import: {
 							icon: '<i class="fas fa-file-import"></i>',
 							label: LocalizeGURPS.translations.gurps.system.library_import.import,
-							callback: (html: HTMLElement | JQuery<HTMLElement>) => {
+							callback: (html: HTMLElement | JQuery<HTMLElement>): void => {
 								const form = $(html).find("form")[0]
 								const files = form.data.files
 								if (!files.length)
-									return ui.notifications?.error(
-										LocalizeGURPS.translations.gurps.error.import.no_file,
-									)
+									ui.notifications?.error(LocalizeGURPS.translations.gurps.error.import.no_file)
 								else {
 									const file = files[0]
-									readTextFromFile(file).then(text =>
+									fu.readTextFromFile(file).then(text =>
 										ItemImporter.import({
 											text: text,
 											name: file.name,
@@ -70,16 +69,16 @@ export class ItemImporter {
 		}, 200)
 	}
 
-	static import(file: { text: string; name: string; path: string }) {
+	static import(file: { text: string; name: string; path: string }): void {
 		const importer = new ItemImporter()
 		importer._import(file)
 	}
 
-	private async _import(file: { text: string; name: string; path: string }) {
+	private async _import(file: { text: string; name: string; path: string }): Promise<void> {
 		const json = file.text
 		const label = file.name.split(".")[0]
 		const name = label.slugify()
-		let r: ItemLibraryData | any
+		let r: ItemLibraryData
 		const errorMessages: string[] = []
 		try {
 			r = JSON.parse(json)
@@ -99,7 +98,7 @@ export class ItemImporter {
 					errorMessages.concat(LocalizeGURPS.translations.gurps.error.import.format_new),
 				)
 
-			const items: ItemSystemDataGURPS[] = []
+			const items: ItemSourceGURPS["system"][] = []
 			items.push(...ImportUtils.importItems(r.rows))
 
 			let pack = game.packs.find(p => p.metadata.name === name.toLowerCase().replaceAll(" ", "-"))
@@ -107,17 +106,21 @@ export class ItemImporter {
 				pack = await CompendiumCollection.createCompendium({
 					type: "Item",
 					label: label,
+					id: name,
 					name: name,
+					packageName: name,
+					packageType: "world",
 					package: "world",
 					path: "",
-					private: true,
+					private: "true",
+					system: SYSTEM_NAME,
 				})
 			}
 			ui.notifications?.info(
 				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.system.library_import.start, { name: name }),
 			)
 			const counter = items.length
-			await BaseItemGURPS.createDocuments(items as any[], {
+			await ItemProxyGURPS.createDocuments(items, {
 				pack: pack.collection,
 				keepId: true,
 			})
@@ -126,7 +129,7 @@ export class ItemImporter {
 					number: counter,
 				}),
 			)
-			const cb = game.CompendiumBrowser
+			const cb = game.gurps.compendiumBrowser
 			if (cb.rendered) cb.render(true)
 		} catch (err) {
 			console.error(err)
@@ -140,7 +143,7 @@ export class ItemImporter {
 		}
 	}
 
-	async throwImportError(msg: string[]) {
+	async throwImportError(msg: string[]): Promise<void> {
 		ui.notifications?.error(msg.join("<br>"))
 
 		await ChatMessage.create({
@@ -151,6 +154,5 @@ export class ItemImporter {
 			type: CONST.CHAT_MESSAGE_TYPES.WHISPER,
 			whisper: [game.user!.id],
 		})
-		return false
 	}
 }

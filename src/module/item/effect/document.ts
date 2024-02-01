@@ -7,8 +7,8 @@ import { RollModifier, gid } from "@module/data/misc.ts"
 import { ItemGCS } from "@item/gcs/document.ts"
 import { BaseUser } from "types/foundry/common/documents/module.js"
 import { TokenGURPS } from "@module/canvas/token/object.ts"
-import { TokenDocumentGURPS } from "@module/canvas/token/document.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
+import { TokenDocumentGURPS } from "@scene/token-document/document.ts"
 
 export interface EffectGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
 	_source: EffectSource

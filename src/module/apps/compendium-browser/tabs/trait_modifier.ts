@@ -1,15 +1,15 @@
 import { ContentTabName, TabName } from "../data.ts"
 import { CompendiumBrowserTab } from "./base.ts"
-import { CompendiumBrowserIndexData, EquipmentFilters } from "./data.ts"
+import { CompendiumBrowserIndexData, TraitModifierFilters } from "./data.ts"
 import { SYSTEM_NAME } from "@module/data/index.ts"
 import { ItemType } from "@item/types.ts"
 import { LocalizeGURPS } from "@util"
 import { CompendiumBrowser } from "../index.ts"
 
-export class CompendiumBrowserEquipmentTab extends CompendiumBrowserTab {
-	tabName: ContentTabName = TabName.Equipment
-	filterData: EquipmentFilters
-	templatePath = `systems/${SYSTEM_NAME}/templates/compendium-browser/partials/equipment.hbs`
+export class CompendiumBrowserTraitModifierTab extends CompendiumBrowserTab {
+	tabName: ContentTabName = TabName.TraitModifier
+	filterData: TraitModifierFilters
+	templatePath = `systems/${SYSTEM_NAME}/templates/compendium-browser/partials/trait-modifier.hbs`
 
 	constructor(browser: CompendiumBrowser) {
 		super(browser)
@@ -19,24 +19,27 @@ export class CompendiumBrowserEquipmentTab extends CompendiumBrowserTab {
 	}
 
 	protected override async loadData(): Promise<void> {
-		console.debug("GURPS | Compendium Browser | Started loading equipment")
+		console.debug("GURPS | Compendium Browser | Started loading trait modifiers")
 
-		const equipment: CompendiumBrowserIndexData[] = []
+		const modifiers: CompendiumBrowserIndexData[] = []
 		const indexFields = ["img", "formattedName", "resolvedNotes", "adjustedPoints", "system.reference"]
 		const tags = new Set<string>()
 
 		for await (const { pack, index } of this.browser.packLoader.loadPacks(
 			"Item",
-			this.browser.loadedPacks(TabName.Equipment),
+			this.browser.loadedPacks(TabName.TraitModifier),
 			indexFields,
 		)) {
 			console.debug(`GURPS | Compendium Browser | ${pack.metadata.label} - Loading`)
-			for (const equipmentData of index) {
-				if (equipmentData.type === ItemType.Equipment || equipmentData.type === ItemType.EquipmentContainer) {
-					if (!this.hasAllIndexFields(equipmentData, indexFields)) {
+			for (const modifierData of index) {
+				if (
+					modifierData.type === ItemType.EquipmentModifier ||
+					modifierData.type === ItemType.EquipmentModifierContainer
+				) {
+					if (!this.hasAllIndexFields(modifierData, indexFields)) {
 						console.warn(
-							`${LocalizeGURPS.translations.TYPES.Item[equipmentData.type]} '${
-								equipmentData.name
+							`${LocalizeGURPS.translations.TYPES.Item[modifierData.type]} '${
+								modifierData.name
 							}' does not have all required data fields. Consider unselecting pack '${
 								pack.metadata.label
 							}' in the compendium browser settings.`,
@@ -44,28 +47,25 @@ export class CompendiumBrowserEquipmentTab extends CompendiumBrowserTab {
 						continue
 					}
 
-					const { system } = equipmentData
+					const { system } = modifierData
 					for (const tag of system.tags) tags.add(tag)
 
-					equipment.push({
-						type: equipmentData.type,
-						name: equipmentData.name,
-						img: equipmentData.img,
-						uuid: `Compendium.${pack.collection}.${equipmentData._id}`,
-						formattedName: equipmentData.formattedName,
-						resolvedNotes: equipmentData.resolvedNotes,
-						value: equipmentData.adjustedValue,
-						weight: equipmentData.adjustedWeight,
-						extendedValue: equipmentData.extendedValue,
-						extendedWeight: equipmentData.extendedWeightFast,
-						reference: equipmentData.reference,
+					modifiers.push({
+						type: modifierData.type,
+						name: modifierData.name,
+						img: modifierData.img,
+						uuid: `Compendium.${pack.collection}.${modifierData._id}`,
+						formattedName: modifierData.formattedName,
+						resolvedNotes: modifierData.resolvedNotes,
+						costDescription: modifierData.costDescription,
+						reference: modifierData.reference,
 					})
 				}
 			}
 		}
 
 		// Set indexData
-		this.indexData = equipment
+		this.indexData = modifiers
 
 		// Set Filters
 		this.filterData.multiselects.tags.options = this.generateMultiselectOptions(
@@ -75,7 +75,7 @@ export class CompendiumBrowserEquipmentTab extends CompendiumBrowserTab {
 			}, {}),
 		)
 
-		console.debug("GURPS | Compendium Browser | Finished loading equipment")
+		console.debug("GURPS | Compendium Browser | Finished loading trait modifiers")
 	}
 
 	protected override filterIndexData(entry: CompendiumBrowserIndexData): boolean {
@@ -86,7 +86,7 @@ export class CompendiumBrowserEquipmentTab extends CompendiumBrowserTab {
 		return true
 	}
 
-	protected override prepareFilterData(): EquipmentFilters {
+	protected override prepareFilterData(): TraitModifierFilters {
 		return {
 			multiselects: {
 				tags: {

@@ -1,8 +1,9 @@
-import { HooksGURPS, RollModifier, RollModifierStack, SOCKET, SYSTEM_NAME, UserFlags } from "@module/data"
-import { ModifierBucket } from "./button"
-import { PDF } from "@module/pdf"
+import { HOOKS_GURPS, ModifierItem, RollModifier, RollModifierStack, SOCKET, SYSTEM_NAME } from "@module/data/index.ts"
+import { ModifierBucket } from "./button.ts"
+import { PDF } from "@module/pdf/index.ts"
+import { UserFlags } from "@module/user/data.ts"
 import { LocalizeGURPS } from "@util"
-import { UserGURPS } from "@module/user/document"
+import { DialogGURPS } from "@ui"
 
 export class ModifierBucketWindow extends Application {
 	refresh = foundry.utils.debounce(this.render, 100)
@@ -24,18 +25,19 @@ export class ModifierBucketWindow extends Application {
 		this.parent = parent
 	}
 
-	static get defaultOptions(): ApplicationOptions {
-		return mergeObject(super.defaultOptions, {
+	static override get defaultOptions(): ApplicationOptions {
+		return {
+			...super.defaultOptions,
 			template: `systems/${SYSTEM_NAME}/templates/modifier-bucket/window.hbs`,
 			popOut: false,
-			minimiazable: false,
+			minimizable: false,
 			resizable: false,
 			id: "ModifierBucket",
 			scrollY: ["#categories .content"],
-		})
+		}
 	}
 
-	activateListeners(html: JQuery<HTMLElement>): void {
+	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 
 		// Get position
@@ -70,10 +72,10 @@ export class ModifierBucketWindow extends Application {
 		html.find("#stacks .delete").on("click", event => this._onDeleteStack(event))
 	}
 
-	_onClickModifier(event: JQuery.ClickEvent) {
+	_onClickModifier(event: JQuery.ClickEvent): void {
 		event.preventDefault()
 		const modifier = $(event.currentTarget).data("modifier")
-		return (game.user as UserGURPS).addModifier(modifier)
+		return game.user.addModifier(modifier)
 	}
 
 	private async _onCollapseToggle(event: JQuery.ClickEvent): Promise<unknown> {
@@ -99,7 +101,7 @@ export class ModifierBucketWindow extends Application {
 		event.preventDefault()
 		const modStack = game.user.getFlag(SYSTEM_NAME, UserFlags.ModifierStack) as RollModifier[]
 		setTimeout(async () => {
-			new Dialog(
+			new DialogGURPS(
 				{
 					title: LocalizeGURPS.translations.gurps.system.modifier_bucket.save_current,
 					content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/modifier-bucket/name.hbs`, {}),
@@ -119,7 +121,7 @@ export class ModifierBucketWindow extends Application {
 									items: modStack,
 								})
 								await game.user.setFlag(SYSTEM_NAME, UserFlags.SavedStacks, savedStacks)
-								return Hooks.call(HooksGURPS.AddModifier)
+								return Hooks.call(HOOKS_GURPS.AddModifier)
 							},
 						},
 						no: {
@@ -141,7 +143,7 @@ export class ModifierBucketWindow extends Application {
 		const index = event.currentTarget.dataset.index
 		const savedStacks = (game.user.getFlag(SYSTEM_NAME, UserFlags.SavedStacks) as RollModifierStack[]) ?? []
 		await game.user.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, savedStacks[index].items)
-		return Hooks.call(HooksGURPS.AddModifier)
+		return Hooks.call(HOOKS_GURPS.AddModifier)
 	}
 
 	private async _onDeleteStack(event: JQuery.ClickEvent): Promise<boolean> {
@@ -150,7 +152,7 @@ export class ModifierBucketWindow extends Application {
 		const savedStacks = (game.user.getFlag(SYSTEM_NAME, UserFlags.SavedStacks) as RollModifierStack[]) ?? []
 		savedStacks.splice(index, 1)
 		await game.user.setFlag(SYSTEM_NAME, UserFlags.SavedStacks, savedStacks)
-		return Hooks.call(HooksGURPS.AddModifier)
+		return Hooks.call(HOOKS_GURPS.AddModifier)
 	}
 
 	private async _onSendToPlayer(event: JQuery.ClickEvent) {
@@ -163,17 +165,17 @@ export class ModifierBucketWindow extends Application {
 		game.socket?.emit(`system.${SYSTEM_NAME}`, { type: SOCKET.UPDATE_BUCKET, users: [player.id] })
 	}
 
-	getData(options?: Partial<ApplicationOptions> | undefined): MaybePromise<object> {
+	override getData(options?: Partial<ApplicationOptions> | undefined): object | Promise<object> {
 		const modStack = game.user.getFlag(SYSTEM_NAME, UserFlags.ModifierStack) ?? []
 		const savedStacks = (game.user.getFlag(SYSTEM_NAME, UserFlags.SavedStacks) as RollModifierStack[]) ?? []
 
 		const commonMods = CONFIG.GURPS.commonMods
 
-		commonMods.forEach((e: any, i: number) => {
+		commonMods.forEach((e: { title: string; items: ModifierItem[]; open?: boolean }, i: number) => {
 			e.open = this.categoriesOpen[i]
 		})
 
-		savedStacks.forEach((e: any, i: number) => {
+		savedStacks.forEach((e: RollModifierStack, i: number) => {
 			e.editing = this.stackEditing === i
 			e.open = this.stacksOpen[i]
 		})
@@ -184,7 +186,7 @@ export class ModifierBucketWindow extends Application {
 
 		const players = game.users ?? []
 
-		return mergeObject(super.getData(options), {
+		return fu.mergeObject(super.getData(options), {
 			value: this.value,
 			stackEditing: this.stackEditing,
 			players,
@@ -196,9 +198,5 @@ export class ModifierBucketWindow extends Application {
 			defenseMods: CONFIG.GURPS.defenseMods,
 			currentMods: modStack,
 		})
-	}
-
-	render(force?: boolean | undefined, options?: Application.RenderOptions<ApplicationOptions> | undefined): unknown {
-		return super.render(force, options)
 	}
 }
