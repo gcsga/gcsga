@@ -263,9 +263,8 @@
 			{{#each calculator.hits}}
 				<div class="tab browser" dagr-group="primary" data-tab="{{@index}}">
 					<div class="fieldblock">
-
 						<div class="label">{{localize "gurps.character.basic_damage"}}</div>
-						<div class="field no-ref">
+						<div class="field no-stretch no-ref">
 							<div>
 								<input
 									type="number"
@@ -284,7 +283,7 @@
 								>{{localize "gurps.misc.apply"}}</button>
 							</div>
 							<div>
-								<label class="label" for="override-woundingmod">Modifier
+								<label class="label" for="override-woundingmod">Wounding Modifier
 									<span class="input-wrapper multiply">
 										<input
 											id="override-woundingmod"
