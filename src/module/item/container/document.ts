@@ -5,10 +5,14 @@ import { ItemGURPS } from "@item/base/document.ts"
 import { SYSTEM_NAME } from "@module/data/misc.ts"
 import Document from "types/foundry/common/abstract/document.js"
 import EmbeddedCollection from "types/foundry/common/abstract/embedded-collection.js"
-import { setProperty } from "types/foundry/common/utils/helpers.js"
+import { BaseContainerSystemSource } from "./data.ts"
 
 export type ContainerModificationContext<T extends ItemGURPS> = DocumentModificationContext<T> & {
 	substitutions?: boolean
+}
+
+export interface ContainerGURPS<TParent extends ActorGURPS | null> extends ItemGURPS<TParent> {
+	system: BaseContainerSystemSource
 }
 
 export abstract class ContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
@@ -42,7 +46,7 @@ export abstract class ContainerGURPS<TParent extends ActorGURPS | null = ActorGU
 	}
 
 	get open(): boolean {
-		return this.system.open
+		return this.system.open ?? false
 	}
 
 	override async createEmbeddedDocuments(
@@ -62,7 +66,7 @@ export abstract class ContainerGURPS<TParent extends ActorGURPS | null = ActorGU
 		if (items.length)
 			for (const itemData of items) {
 				itemData.flags ??= {}
-				setProperty(itemData.flags, `${SYSTEM_NAME}.${ItemFlags.Container}`, this.id)
+				fu.setProperty(itemData.flags, `${SYSTEM_NAME}.${ItemFlags.Container}`, this.id)
 			}
 
 		if (this.actor) return this.actor.createEmbeddedDocuments("Item", items, {})

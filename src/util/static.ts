@@ -5,6 +5,8 @@
 
 import { StaticCharacterGURPS } from "@actor"
 import { StaticTrait } from "@actor/static/components.ts"
+import { StaticItemGURPS } from "@item"
+import { objectHasKey } from "./misc.ts"
 
 // /**
 //  *
@@ -241,35 +243,35 @@ export async function insertBeforeKey(actor: StaticCharacterGURPS, path: string,
 //  * @param {GurpsActor} actor
 //  * @param {string} path
 //  */
-// export async function removeKey(actor: StaticCharacterGURPS | StaticItemGURPS, path: string) {
-// 	let i = path.lastIndexOf(".")
-// 	const objpath = path.substring(0, i)
-// 	let key = path.substring(i + 1)
-// 	i = objpath.lastIndexOf(".")
-// 	const parentpath = objpath.substring(0, i)
-// 	const objkey = objpath.substring(i + 1)
-// 	const object = decode(actor, objpath)
-// 	const t = `${parentpath}.-=${objkey}`
-// 	await actor.update({ [t]: null }, { render: false }) // Delete the whole object
-// 	delete object[key]
-// 	i = parseInt(key)
-//
-// 	i = i + 1
-// 	while (object.hasOwnProperty(zeroFill(i))) {
-// 		const k = zeroFill(i)
-// 		object[key] = object[k]
-// 		delete object[k]
-// 		key = k
-// 		i++
-// 	}
-// 	const sorted = Object.keys(object)
-// 		.sort()
-// 		.reduce((a: any, v) => {
-// 			a[v] = object[v]
-// 			return a
-// 		}, {}) // Enforced key order
-// 	await actor.update({ [objpath]: sorted }, { diff: false, render: true })
-// }
+export async function removeKey(actor: StaticCharacterGURPS | StaticItemGURPS, path: string): Promise<void> {
+	let i = path.lastIndexOf(".")
+	const objpath = path.substring(0, i)
+	let key = path.substring(i + 1)
+	i = objpath.lastIndexOf(".")
+	const parentpath = objpath.substring(0, i)
+	const objkey = objpath.substring(i + 1)
+	const object = decode(actor, objpath)
+	const t = `${parentpath}.-=${objkey}`
+	await actor.update({ [t]: null }, { render: false }) // Delete the whole object
+	delete object[key]
+	i = parseInt(key)
+
+	i = i + 1
+	while (objectHasKey(object, zeroFill(i))) {
+		const k = zeroFill(i)
+		object[key] = object[k]
+		delete object[k]
+		key = k
+		i += 1
+	}
+	const sorted = Object.keys(object)
+		.sort()
+		.reduce((a: any, v) => {
+			a[v] = object[v]
+			return a
+		}, {}) // Enforced key order
+	await actor.update({ [objpath]: sorted }, { diff: false, render: true })
+}
 
 // /**
 //  *
@@ -277,13 +279,14 @@ export async function insertBeforeKey(actor: StaticCharacterGURPS, path: string,
 //  * @param path
 //  * @param all
 //  */
-// export function decode(obj: any, path: string, all = true) {
-// 	const p = path.split(".")
-// 	let end = p.length
-// 	if (!all) end = end - 1
-// 	for (let i = 0; i < end; i++) {
-// 		const q = p[i]
-// 		obj = obj[q]
-// 	}
-// 	return obj
-// }
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export function decode(obj: any, path: string, all = true): any {
+	const p = path.split(".")
+	let end = p.length
+	if (!all) end = end - 1
+	for (let i = 0; i < end; i++) {
+		const q = p[i]
+		obj = obj[q]
+	}
+	return obj
+}

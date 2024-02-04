@@ -146,7 +146,7 @@ export class TokenHUDGURPS<TToken extends TokenGURPS> extends TokenHUD<TToken> {
 	}
 
 	static async #setActiveEffects(token: TokenGURPS, icons: NodeListOf<HTMLImageElement>) {
-		const affectingConditions = token.actor?.conditions
+		const affectingConditions = token.actor.conditions
 
 		for (const icon of icons) {
 			const picture = document.createElement("picture")

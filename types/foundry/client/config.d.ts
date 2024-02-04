@@ -22,6 +22,8 @@ declare global {
 		TScene extends Scene,
 		TUser extends User<Actor<null>>,
 		TEffectsCanvasGroup extends EffectsCanvasGroup,
+		TJournalEntry extends JournalEntry,
+		TJournalEntryPage extends JournalEntryPage<TJournalEntry>,
 	> {
 		/** Configure debugging flags to display additional information */
 		debug: {
@@ -141,7 +143,12 @@ declare global {
 
 		/** Configuration for the JournalEntry entity */
 		JournalEntry: {
-			documentClass: typeof JournalEntry
+			documentClass: {
+				new (
+					data: PreCreate<TJournalEntry["_source"]>,
+					context?: DocumentConstructionContext<TJournalEntry["parent"]>,
+				): TJournalEntry
+			}
 			sheetClasses: Record<
 				string,
 				Record<
@@ -163,7 +170,12 @@ declare global {
 
 		/** Configuration for the JournalEntry entity */
 		JournalEntryPage: {
-			documentClass: typeof JournalEntryPage
+			documentClass: {
+				new (
+					data: PreCreate<TJournalEntryPage["_source"]>,
+					context?: DocumentConstructionContext<TJournalEntryPage["parent"]>,
+				): TJournalEntryPage
+			}
 			defaultType: string
 			sheetClasses: Record<
 				string,

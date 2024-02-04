@@ -27,7 +27,8 @@ class Evaluator {
 	operatorStack: expressionOperator[] = []
 
 	constructor(data: {
-		resolver: CharacterResolver | Mook
+		// resolver: CharacterResolver | Mook
+		resolver: CharacterResolver
 		operators?: Operator[]
 		functions?: Map<string, eFunction>
 	}) {
@@ -46,7 +47,11 @@ class Evaluator {
 	}
 
 	evaluateNew(expression: string): Operand {
-		const other = new Evaluator({ resolver: this.resolver, operators: this.operators, functions: this.functions })
+		const other = new Evaluator({
+			resolver: this.resolver as CharacterResolver,
+			operators: this.operators,
+			functions: this.functions,
+		})
 		return other.evaluate(expression)
 	}
 
@@ -306,7 +311,7 @@ export { Evaluator }
  * @param expression
  * @param resolver
  */
-export function evaluateToNumber(expression: string, resolver: CharacterResolver | Mook): number {
+export function evaluateToNumber(expression: string, resolver: CharacterResolver): number {
 	let result: Operand = 0
 	try {
 		result = new Evaluator({ resolver: resolver }).evaluate(expression)

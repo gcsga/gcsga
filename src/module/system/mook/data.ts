@@ -1,4 +1,6 @@
-import { WeaponDamage, WeaponDamageObj } from "@item"
+import { ItemType } from "@item"
+import { WeaponDamageObj } from "@item/weapon/data.ts"
+import { WeaponDamage } from "@item/weapon/weapon_damage.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { AttributeDefObj, AttributeObj } from "@sytem/attribute/data.ts"
 import { MoveTypeDefObj } from "@sytem/move_type/data.ts"
@@ -43,6 +45,8 @@ export interface MookProfile {
 }
 
 class _MookItem {
+	type: ItemType
+
 	name: string
 
 	notes: string
@@ -53,6 +57,7 @@ class _MookItem {
 		this.name = data.name
 		this.notes = data.notes
 		this.reference = data.reference
+		this.type = data.type
 	}
 }
 

@@ -38,7 +38,7 @@ import {
 } from "@item/index.ts"
 import { ItemType } from "@item/types.ts"
 import { ModifierItem } from "@module/data/misc.ts"
-import { JournalEntryPageGURPS, JournalEntryPagePDF } from "@module/journal-entry/page.ts"
+import { JournalEntryPageGURPS, JournalEntryPagePDF } from "@module/journal-entry/page/document.ts"
 import {
 	AttributePrereq,
 	ContainedQuantityPrereq,

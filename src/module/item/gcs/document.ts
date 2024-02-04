@@ -17,8 +17,8 @@ import { RangedWeaponGURPS } from "@item/ranged_weapon/index.ts"
 import { ItemType } from "@item/types.ts"
 import { BaseWeaponGURPS } from "@item"
 
-export interface ItemGCS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ContainerGURPS<TParent> {
-	_source: ItemGCSSource
+export interface ItemGCS<TParent extends ActorGURPS | null> extends ContainerGURPS<TParent> {
+	readonly _source: ItemGCSSource
 	system: ItemGCSSystemSource
 }
 
@@ -38,8 +38,8 @@ export abstract class ItemGCS<TParent extends ActorGURPS | null = ActorGURPS | n
 		else if (type === ItemType.LegacyEquipment) type = "legacy_equipment"
 		if (this._source.img === foundry.documents.BaseItem.DEFAULT_ICON)
 			this._source.img = data.img = `systems/${SYSTEM_NAME}/assets/icons/${type}.svg`
-		let gcs_type: string = data.type
-		if (gcs_type === ItemType.Equipment) gcs_type = "equipment"
+		let gcs_type = data.type
+		if (gcs_type === ItemType.Equipment) gcs_type = "equipment" as ItemType
 		this._source.system.type = gcs_type
 		await super._preCreate(data, options, user)
 	}

@@ -240,7 +240,7 @@ export interface RollModifierStack {
 }
 
 export interface RollModifier {
-	name: string
+	id: string
 	modifier: number
 	rollType?: RollType
 	max?: number
@@ -255,7 +255,7 @@ export enum RollModifierTags {
 }
 
 export interface ModifierHeader {
-	name: string
+	id: string
 	title: true
 }
 
@@ -311,3 +311,19 @@ export interface TokenPool {
 	max: number
 	min: number
 }
+
+/** The tracked schema data of actors and items */
+export interface NewDocumentMigrationRecord {
+	version: null
+	previous: null
+}
+
+export interface MigratedDocumentMigrationRecord {
+	version: number
+	previous: {
+		schema: number | null
+		system?: string
+		foundry?: string
+	} | null
+}
+export type MigrationRecord = NewDocumentMigrationRecord | MigratedDocumentMigrationRecord

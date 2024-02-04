@@ -7,7 +7,7 @@ import { DocumentSheetConfigGURPS } from "./config.ts"
 
 type DispatchFunctions = Record<string, (arg: DamagePayload) => void>
 
-abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TActor, ItemGURPS> {
+abstract class ActorSheetGURPS<TActor extends ActorGURPS = ActorGURPS> extends ActorSheet<TActor, ItemGURPS> {
 	readonly dropDispatch: DispatchFunctions = {
 		[DropDataType.Damage]: this.actor.handleDamageDrop.bind(this.actor),
 	}

@@ -1,30 +1,3 @@
-// import { DiceGURPS } from "@module/dice"
-// import {
-// 	DamageAttacker,
-// 	DamageHit,
-// 	DamageRoll,
-// 	DamageTarget,
-// 	DamageWeapon,
-// 	DefaultHitLocations,
-// 	TargetPool,
-// 	TargetTrait,
-// 	Vulnerability,
-// } from "."
-// import { RollType } from "../data"
-// import { AnyPiercingType, DamageType, DamageTypes } from "./damage_type"
-// import { HitLocationUtil } from "./hitlocation_utils"
-// import {
-// 	CheckFailureConsequence,
-// 	EffectCheck,
-// 	InjuryEffect,
-// 	InjuryEffectType,
-// 	KnockdownCheck,
-// 	RollModifier,
-// 	ShockInjuryEffect,
-// } from "./injury_effect"
-// import { HitLocation, HitLocationTable } from "@actor"
-// import { TokenDocumentGURPS } from "@module/token"
-
 import { DiceGURPS } from "@module/dice/index.ts"
 import {
 	DamageAttacker,
@@ -49,10 +22,9 @@ import {
 	InjuryEffect,
 	InjuryEffectType,
 	KnockdownCheck,
-	RollModifier,
 	ShockInjuryEffect,
 } from "./injury_effect.ts"
-import { RollType } from "@module/data/index.ts"
+import { RollModifier, RollType, gid } from "@module/data/index.ts"
 
 export const Head = ["skull", "eye", "face"]
 export const Limb = ["arm", "leg"]
@@ -1133,9 +1105,9 @@ class DamageCalculator implements IDamageCalculator {
 			[
 				new EffectCheck(
 					[
-						new RollModifier("dx", RollType.Attribute, penalty),
-						new RollModifier("Acrobatics", RollType.Skill, penalty),
-						new RollModifier("Judo", RollType.Skill, penalty),
+						<RollModifier>{ id: gid.Dexterity, rollType: RollType.Attribute, modifier: penalty },
+						<RollModifier>{ id: "Acrobatics", rollType: RollType.Skill, modifier: penalty },
+						<RollModifier>{ id: "Judo", rollType: RollType.Skill, modifier: penalty },
 					],
 					[new CheckFailureConsequence("fall prone", 0)],
 				),

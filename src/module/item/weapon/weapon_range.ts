@@ -3,9 +3,9 @@ import { WeaponField } from "./weapon_field.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { wswitch } from "@util/enum/wswitch.ts"
 import { feature } from "@util/enum/feature.ts"
-import { CharacterGURPS } from "@actor/document.ts"
 import { BaseWeaponGURPS } from "./document.ts"
 import { EquipmentContainerGURPS, EquipmentGURPS } from "@item"
+import { CharacterGURPS } from "@actor"
 export class WeaponRange extends WeaponField {
 	halfDamage = 0
 

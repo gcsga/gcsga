@@ -1,45 +1,45 @@
 import { LocalizeGURPS } from "@util"
 import { ConditionID, ConditionSystemSource, ManeuverID } from "./index.ts"
-import { DurationType } from "@item"
 import { feature } from "@util/enum/feature.ts"
 import { SYSTEM_NAME, gid } from "@module/data/misc.ts"
 import { stlimit } from "@util/enum/stlimit.ts"
+import { DurationType } from "@item/effect/data.ts"
 
 export function getConditionList(): Record<ConditionID, Partial<ConditionSystemSource>> {
 	const ConditionList: Record<ConditionID, Partial<ConditionSystemSource>> = {
 		[ConditionID.PostureCrouch]: {
 			id: ConditionID.PostureCrouch,
 			modifiers: [
-				{ name: LocalizeGURPS.translations.gurps.modifier.cover.crouching_no_cover, modifier: -2 },
-				{ name: LocalizeGURPS.translations.gurps.modifier.cover.melee_crouching, modifier: -2 },
-				{ name: LocalizeGURPS.translations.gurps.modifier.cover.ranged_crouching, modifier: -2 },
-				{ name: LocalizeGURPS.translations.gurps.modifier.cover.hit_ranged_crouching, modifier: -2 },
+				{ id: LocalizeGURPS.translations.gurps.modifier.cover.crouching_no_cover, modifier: -2 },
+				{ id: LocalizeGURPS.translations.gurps.modifier.cover.melee_crouching, modifier: -2 },
+				{ id: LocalizeGURPS.translations.gurps.modifier.cover.ranged_crouching, modifier: -2 },
+				{ id: LocalizeGURPS.translations.gurps.modifier.cover.hit_ranged_crouching, modifier: -2 },
 			],
 		},
 		[ConditionID.PostureKneel]: {
 			id: ConditionID.PostureKneel,
 			modifiers: [
-				{ name: LocalizeGURPS.translations.gurps.modifier.cover.melee_kneeling, modifier: -2 },
-				{ name: LocalizeGURPS.translations.gurps.modifier.cover.defense_kneeling, modifier: -2 },
+				{ id: LocalizeGURPS.translations.gurps.modifier.cover.melee_kneeling, modifier: -2 },
+				{ id: LocalizeGURPS.translations.gurps.modifier.cover.defense_kneeling, modifier: -2 },
 			],
 		},
 		[ConditionID.PostureSit]: {
 			id: ConditionID.PostureSit,
-			modifiers: [{ name: LocalizeGURPS.translations.gurps.modifier.cover.ranged_sitting, modifier: -2 }],
+			modifiers: [{ id: LocalizeGURPS.translations.gurps.modifier.cover.ranged_sitting, modifier: -2 }],
 		},
 		[ConditionID.PostureCrawl]: {
 			id: ConditionID.PostureCrawl,
 			modifiers: [
-				{ name: LocalizeGURPS.translations.gurps.modifier.cover.melee_crawling, modifier: -4 },
-				{ name: LocalizeGURPS.translations.gurps.modifier.cover.defense_crawling, modifier: -3 },
+				{ id: LocalizeGURPS.translations.gurps.modifier.cover.melee_crawling, modifier: -4 },
+				{ id: LocalizeGURPS.translations.gurps.modifier.cover.defense_crawling, modifier: -3 },
 			],
 		},
 		[ConditionID.PostureProne]: {
 			id: ConditionID.PostureProne,
 			modifiers: [
-				{ name: LocalizeGURPS.translations.gurps.modifier.cover.prone_no_cover, modifier: -4 },
-				{ name: LocalizeGURPS.translations.gurps.modifier.cover.prone_head_up, modifier: -5 },
-				{ name: LocalizeGURPS.translations.gurps.modifier.cover.prone_head_down, modifier: -7 },
+				{ id: LocalizeGURPS.translations.gurps.modifier.cover.prone_no_cover, modifier: -4 },
+				{ id: LocalizeGURPS.translations.gurps.modifier.cover.prone_head_up, modifier: -5 },
+				{ id: LocalizeGURPS.translations.gurps.modifier.cover.prone_head_down, modifier: -7 },
 			],
 		},
 		[ConditionID.Reeling]: {
@@ -76,7 +76,7 @@ export function getConditionList(): Record<ConditionID, Partial<ConditionSystemS
 				current: 0,
 				max: 8,
 			},
-			modifiers: [{ name: "shock test", modifier: -1 }],
+			modifiers: [{ id: "shock test", modifier: -1 }],
 			duration: {
 				type: DurationType.Rounds,
 				rounds: 1,
@@ -145,9 +145,9 @@ export function getConditionList(): Record<ConditionID, Partial<ConditionSystemS
 			id: ConditionID.Nausea,
 			reference: "B428",
 			modifiers: [
-				{ name: LocalizeGURPS.translations.gurps.modifier.attribute.all, modifier: -2 },
-				{ name: LocalizeGURPS.translations.gurps.modifier.skill.all, modifier: -2 },
-				{ name: LocalizeGURPS.translations.gurps.modifier.active_defense.all, modifier: -1 },
+				{ id: LocalizeGURPS.translations.gurps.modifier.attribute.all, modifier: -2 },
+				{ id: LocalizeGURPS.translations.gurps.modifier.skill.all, modifier: -2 },
+				{ id: LocalizeGURPS.translations.gurps.modifier.active_defense.all, modifier: -1 },
 			],
 		},
 		[ConditionID.Agony]: { id: ConditionID.Agony, reference: "B428" },

@@ -1,4 +1,4 @@
-import { LocalizeGURPS } from "./localize"
+import { LocalizeGURPS } from "./localize.ts"
 
 export enum NumericCompareType {
 	AnyNumber = "none",

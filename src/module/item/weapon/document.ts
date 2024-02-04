@@ -1,4 +1,3 @@
-import { ActorGURPS, CharacterGURPS } from "@actor/document.ts"
 import { ItemGURPS } from "@item/base/document.ts"
 import { BaseWeaponSystemSource } from "./data.ts"
 import { objectHasKey, sheetDisplayNotes } from "@util/misc.ts"
@@ -21,6 +20,7 @@ import { wsel } from "@util/enum/wsel.ts"
 import { ItemType } from "@item/types.ts"
 import { ItemFlags } from "@item/base/data/index.ts"
 import { WeaponDamage } from "./weapon_damage.ts"
+import { ActorGURPS, CharacterGURPS } from "@actor"
 
 export interface BaseWeaponGURPS<TParent extends ActorGURPS | null> extends ItemGURPS<TParent> {
 	system: BaseWeaponSystemSource
@@ -262,11 +262,8 @@ export abstract class BaseWeaponGURPS<
 		return buffer
 	}
 
-	override exportSystemData(_keepOther: boolean): BaseWeaponSystemSource {
-		const system = this.system
-		// system.damage.base = new DiceGURPS(this.damage.base).toString(false)
-		// system.damage.fragmentation = new DiceGURPS(this.damage.fragmentation).toString(false)
-		return system
+	override exportSystemData(_keepOther: boolean): Record<string, unknown> {
+		return this.system as unknown as Record<string, unknown>
 	}
 
 	resolveBoolFlag(switchType: wswitch.Type, initial: boolean): boolean {

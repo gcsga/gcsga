@@ -1,8 +1,7 @@
 import { HOOKS_GURPS, ModifierItem, RollModifier, RollModifierStack, SOCKET, SYSTEM_NAME } from "@module/data/index.ts"
 import { ModifierBucket } from "./button.ts"
-import { PDF } from "@module/pdf/index.ts"
 import { UserFlags } from "@module/user/data.ts"
-import { LocalizeGURPS } from "@util"
+import { LocalizeGURPS, PDF } from "@util"
 import { DialogGURPS } from "@ui"
 
 export class ModifierBucketWindow extends Application {

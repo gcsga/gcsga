@@ -1,5 +1,6 @@
-import { ItemSourceGURPS } from "@item/data/index.ts"
-import { ActorType, RollModifier, SYSTEM_NAME } from "@module/data/misc.ts"
+import { ActorType } from "@actor/types.ts"
+import { ItemSourceGURPS } from "@item/base/data/index.ts"
+import { MigrationRecord, RollModifier, SYSTEM_NAME } from "@module/data/misc.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { PoolThreshold } from "@sytem/attribute/pool_threshold.ts"
 import { PrototypeTokenSource } from "types/foundry/common/data/data.js"
@@ -44,6 +45,8 @@ export type BaseActorSourceGURPS<
 export interface ActorSystemSource {
 	id: string
 	type: ActorType
+	/** A record of this actor's current world schema version as well a log of the last migration to occur */
+	_migration: MigrationRecord
 }
 
 // export interface ActorConstructorContextGURPS extends Context<TokenDocument> {

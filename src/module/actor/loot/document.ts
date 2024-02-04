@@ -1,17 +1,19 @@
 import { ActorGURPS, ActorType } from "@actor"
-import { TokenDocumentGURPS } from "@module/canvas/token/document.ts"
 import { LootSettings, LootSource, LootSystemSource } from "./data.ts"
 import { FilePickerGURPS, LocalizeGURPS, Weight, WeightUnits } from "@util"
 import { Int } from "@util/fxp.ts"
-import { EquipmentContainerGURPS, EquipmentGURPS, ItemGCS, ModifierChoiceSheet } from "@item"
 import { ItemType } from "@item/types.ts"
 import { ItemGURPS } from "@item/base/document.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { CharacterThirdPartyData } from "@actor/character/data.ts"
 import { SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
-import { ItemFlags } from "@item/data.ts"
 import { DialogGURPS } from "@ui"
 import { CharacterImporter } from "@actor/character/import.ts"
+import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
+import { EquipmentContainerGURPS, EquipmentGURPS, ItemGCS } from "@item"
+import { EmbeddedItemInstances } from "@actor/types.ts"
+import { ModifierChoiceSheet } from "@item/gcs/mod_sheet.ts"
+import { ItemFlags } from "@item/base/data/system.ts"
 
 interface LootGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null> extends ActorGURPS<TParent> {
 	system: LootSystemSource
@@ -96,8 +98,8 @@ class LootGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS |
 		return Int.from(value, 4)
 	}
 
-	override get itemTypes(): Record<ItemType, ItemGURPS[]> {
-		return super.itemTypes as Record<ItemType, ItemGURPS[]>
+	override get itemTypes(): EmbeddedItemInstances<this> {
+		return super.itemTypes as EmbeddedItemInstances<this>
 	}
 
 	get equipment(): Collection<EquipmentGURPS | EquipmentContainerGURPS> {
@@ -172,7 +174,7 @@ class LootGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS |
 
 	protected async exportSystemData(): Promise<{ text: string; name: string }> {
 		const system: DeepPartial<LootSystemSource> & Record<string, unknown> = { ...fu.duplicate(this.system) }
-		system.type = "character"
+		system.type = "character" as ActorType
 		const items = (this.items as unknown as Collection<ItemGURPS>)
 			.filter(e => !e.getFlag(SYSTEM_NAME, ItemFlags.Container))
 			.map((e: ItemGURPS) => e.exportSystemData(true))

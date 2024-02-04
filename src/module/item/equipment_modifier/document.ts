@@ -1,6 +1,6 @@
 import { ActorGURPS } from "@actor/base.ts"
 import { ItemGCS } from "@item/gcs/document.ts"
-import { EquipmentModifierSystemSource } from "./data.ts"
+import { EquipmentModifierSource, EquipmentModifierSystemSource } from "./data.ts"
 import { emcost } from "@util/enum/emcost.ts"
 import { emweight } from "@util/enum/emweight.ts"
 import { Weight, WeightUnits } from "@util/weight.ts"
@@ -9,14 +9,13 @@ import { LocalizeGURPS } from "@util/localize.ts"
 import { StringBuilder } from "@util/string_builder.ts"
 import { sheetSettingsFor } from "@module/data/sheet_settings.ts"
 import { Int } from "@util/fxp.ts"
-import { ItemType } from "@item/types.ts"
 import { CharacterGURPS } from "@actor"
 import { CharacterResolver } from "@util"
 
 export interface EquipmentModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null>
 	extends ItemGCS<TParent> {
+	readonly _source: EquipmentModifierSource
 	system: EquipmentModifierSystemSource
-	type: ItemType.EquipmentModifier
 }
 
 export class EquipmentModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {

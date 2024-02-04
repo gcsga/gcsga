@@ -1,5 +1,5 @@
-import { study } from "./enum"
-import { LocalizeGURPS } from "./localize"
+import { study } from "./enum/study.ts"
+import { LocalizeGURPS } from "./localize.ts"
 
 export interface Study {
 	type: study.Type

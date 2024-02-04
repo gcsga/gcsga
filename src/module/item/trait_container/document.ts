@@ -1,20 +1,17 @@
 import { ActorGURPS } from "@actor/document.ts"
 import { ItemGCS } from "@item/gcs/document.ts"
-import { TraitContainerSystemSource, TraitContainerType } from "./data.ts"
+import { TraitContainerSource, TraitContainerSystemSource, TraitContainerType } from "./data.ts"
 import { selfctrl } from "@util/enum/selfctrl.ts"
 import { TraitGURPS } from "@item/trait/document.ts"
 import { TraitModifierGURPS } from "@item/trait_modifier/document.ts"
-import { ItemType } from "@item/types.ts"
 import { TraitModifierContainerGURPS } from "@item"
 
 export interface TraitContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
+	readonly _source: TraitContainerSource
 	system: TraitContainerSystemSource
-	type: ItemType.TraitContainer
 }
 
 export class TraitContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
-	// unsatisfied_reason = ""
-
 	// Getters
 	override get enabled(): boolean {
 		if (this.system.disabled) return false
@@ -77,7 +74,7 @@ export class TraitContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS 
 		return super.children as Collection<TraitGURPS | TraitContainerGURPS>
 	}
 
-	get modifiers(): Collection<TraitModifierGURPS | TraitModifierContainerGURPS> {
+	override get modifiers(): Collection<TraitModifierGURPS | TraitModifierContainerGURPS> {
 		return new Collection(
 			this.items
 				.filter(item => item instanceof TraitModifierGURPS)

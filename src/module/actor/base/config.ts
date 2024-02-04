@@ -5,9 +5,9 @@ class DocumentSheetConfigGURPS<TDocument extends Document> extends DocumentSheet
 	override getData(
 		options?: Partial<FormApplicationOptions> | undefined,
 	): DocumentSheetConfigData<TDocument> | Promise<DocumentSheetConfigData<TDocument>> {
-		const data = super.getData(options) as unknown as DocumentSheetConfig<TDocument>
+		const data = super.getData(options) as unknown as DocumentSheetConfigData<TDocument>
 		delete data.sheetClasses[`${SYSTEM_NAME}.MookGeneratorSheet`]
-		delete data.defaultClasses[`${SYSTEM_NAME}.MookGeneratorSheet`]
+		// delete data.defaultClass[`${SYSTEM_NAME}.MookGeneratorSheet`]
 		return data
 	}
 }

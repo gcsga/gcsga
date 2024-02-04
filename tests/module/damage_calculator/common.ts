@@ -1,4 +1,4 @@
-import { HitLocation, HitLocationTable } from "@actor/index.ts"
+import { HitLocation, HitLocationTable } from "@actor/character/hit_location.ts"
 import { IDamageCalculator, createDamageCalculator } from "@module/apps/damage_calculator/damage_calculator.ts"
 import { DamageTypes } from "@module/apps/damage_calculator/damage_type.ts"
 import {

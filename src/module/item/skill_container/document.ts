@@ -1,4 +1,4 @@
-import { ActorGURPS } from "@actor/document.ts"
+import { ActorGURPS } from "@actor"
 import { SkillContainerSystemSource } from "./data.ts"
 import { ItemGCS, SkillGURPS, TechniqueGURPS } from "@item/index.ts"
 import { ItemType } from "@item/types.ts"

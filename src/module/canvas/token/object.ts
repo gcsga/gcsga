@@ -1,5 +1,5 @@
-import { ActorGURPS } from "@actor/document.ts"
-import { TokenDocumentGURPS } from "./document.ts"
+import { ActorGURPS } from "@actor"
+import { TokenDocumentGURPS } from "@scene/token-document/document.ts"
 
 export class TokenGURPS<TDocument extends TokenDocumentGURPS = TokenDocumentGURPS> extends Token<TDocument> {
 	override get actor(): ActorGURPS {

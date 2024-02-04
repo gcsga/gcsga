@@ -1,7 +1,7 @@
 import { ActorGURPS } from "@actor/base.ts"
 import { ItemGCS } from "@item/gcs/document.ts"
 import { SkillLevel } from "@item/skill/data.ts"
-import { SpellSystemSource } from "./data.ts"
+import { SpellSource, SpellSystemSource } from "./data.ts"
 import { display } from "@util/enum/display.ts"
 import { StringBuilder } from "@util/string_builder.ts"
 import { sheetSettingsFor } from "@module/data/sheet_settings.ts"
@@ -13,11 +13,10 @@ import { difficulty } from "@util/enum/difficulty.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { CharacterGURPS } from "@actor"
 import { CharacterResolver } from "@util"
-import { ItemType } from "@item"
 
 export interface SpellGURPS<TParent extends ActorGURPS | null> extends ItemGCS<TParent> {
+	readonly _source: SpellSource
 	system: SpellSystemSource
-	type: ItemType.Spell
 }
 
 export class SpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {

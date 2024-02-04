@@ -1,4 +1,4 @@
-import { Int } from "./fxp"
+import { Int } from "./fxp.ts"
 
 export class Weight {
 	static format(pounds: number, unit: WeightUnits = WeightUnits.Pound): string {

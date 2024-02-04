@@ -1,9 +1,13 @@
-import { ContainerSheetGURPS } from "@item/container"
+import { ItemSheetGCS } from "@item/gcs/sheet.ts"
+import { TraitModifierContainerGURPS } from "./document.ts"
+import { ItemSheetOptions } from "@item/base/sheet.ts"
 
-export class TraitModifierContainerSheet extends ContainerSheetGURPS {
-	static get defaultOptions(): DocumentSheetOptions<Item> {
+export class TraitModifierContainerSheet<
+	IType extends TraitModifierContainerGURPS = TraitModifierContainerGURPS,
+> extends ItemSheetGCS<IType> {
+	static override get defaultOptions(): ItemSheetOptions {
 		const options = super.defaultOptions
-		mergeObject(options, {
+		fu.mergeObject(options, {
 			classes: options.classes.concat(["modifier_container"]),
 		})
 		return options

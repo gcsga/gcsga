@@ -418,7 +418,6 @@ class CompendiumBrowser extends Application {
 						},
 						whitelist: data.options,
 						transformTag(tagData) {
-							// @ts-expect-error to look at later
 							const selected = data.selected.find(s => s.value === tagData.value)
 							if (selected?.not) {
 								;(tagData as unknown as { class: string }).class = "conjunction-not"
@@ -432,7 +431,6 @@ class CompendiumBrowser extends Application {
 						const action = htmlClosest(target, "[data-action]")?.dataset?.action
 						if (action === "toggle-not") {
 							const value = event.detail.data.value
-							// @ts-expect-error to look at later
 							const selected = data.selected.find(s => s.value === value)
 							if (selected) {
 								selected.not = !selected.not
@@ -455,19 +453,6 @@ class CompendiumBrowser extends Application {
 							this.render()
 						}
 					})
-
-					for (const element of htmlQueryAll<HTMLInputElement>(
-						container,
-						`input[name=${filterName}-filter-conjunction]`,
-					)) {
-						element.addEventListener("change", () => {
-							const value = element.value
-							if (value === "and" || value === "or") {
-								data.conjunction = value
-								this.render()
-							}
-						})
-					}
 
 					for (const tag of htmlQueryAll(container, "tag")) {
 						const icon = fontAwesomeIcon("ban", { style: "solid" })

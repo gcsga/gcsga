@@ -23,7 +23,8 @@ import {
 } from "@item/sheet.ts"
 import { ItemType } from "@item/types.ts"
 import { SYSTEM_NAME } from "@module/data/index.ts"
-import { JournalEntryPagePDF, JournalEntryPageType } from "@module/journal-entry/page.ts"
+import { JournalEntryPageType } from "@module/journal-entry/page/document.ts"
+import { JournalPagePDFEditorSheet } from "@module/journal-entry/page/sheet.ts"
 
 export function registerSheets(): void {
 	// Actor
@@ -146,7 +147,7 @@ export function registerSheets(): void {
 	})
 
 	// Journal Entry Page
-	Journal.registerSheet(SYSTEM_NAME, JournalEntryPagePDF, {
+	Journal.registerSheet(SYSTEM_NAME, JournalPagePDFEditorSheet, {
 		types: [JournalEntryPageType.pdf],
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.pdf_edit"),

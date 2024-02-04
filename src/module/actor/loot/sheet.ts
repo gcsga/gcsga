@@ -1,14 +1,13 @@
 import { ActorSheetGURPS } from "@actor/base/sheet.ts"
 import { LootGURPS } from "./document.ts"
 import { SYSTEM_NAME } from "@module/data/misc.ts"
-import { PDF } from "@module/pdf/index.ts"
-import { LocalizeGURPS } from "@util"
+import { LocalizeGURPS, PDF } from "@util"
 import { ItemType } from "@item/types.ts"
 import { randomID } from "types/foundry/common/utils/helpers.js"
 import { ItemGURPS } from "@item/base/document.ts"
 import { EquipmentContainerGURPS, EquipmentGURPS } from "@item"
 import EmbeddedCollection from "types/foundry/common/abstract/embedded-collection.js"
-import { ItemFlags } from "@item/data.ts"
+import { ItemFlags } from "@item/base/data/system.ts"
 
 class LootSheetGURPS<TActor extends LootGURPS = LootGURPS> extends ActorSheetGURPS<TActor> {
 	editing!: boolean

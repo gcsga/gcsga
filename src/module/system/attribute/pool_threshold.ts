@@ -1,6 +1,5 @@
 import { CharacterResolver, evaluateToNumber } from "@util"
-import { PoolThresholdDef, ThresholdOp } from "./data"
-import { Mook } from "@module/mook"
+import { PoolThresholdDef, ThresholdOp } from "./data.ts"
 
 export class PoolThreshold {
 	state = ""
@@ -15,7 +14,7 @@ export class PoolThreshold {
 		Object.assign(this, data)
 	}
 
-	threshold(resolver: CharacterResolver | Mook): number {
+	threshold(resolver: CharacterResolver): number {
 		return evaluateToNumber(this.expression, resolver)
 	}
 }

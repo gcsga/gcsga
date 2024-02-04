@@ -40,7 +40,7 @@ export class StaticCharacterSheetConfig<
 		super(object, options)
 		this.object = object
 		this.filename = ""
-		this.resourceTrackers = this.actor.trackers
+		this.resourceTrackers = this.object.trackers
 	}
 
 	static override get defaultOptions(): FormApplicationOptions {
@@ -133,6 +133,7 @@ export class StaticCharacterSheetConfig<
 			const file = this.file
 			this.file = undefined
 			this.filename = ""
+			// @ts-expect-error to fix
 			StaticCharacterImporter.import(this.object, file)
 		}
 	}
@@ -149,6 +150,7 @@ export class StaticCharacterSheetConfig<
 			request.onload = () => {
 				if (request.status === 200) {
 					const text = request.response
+					// @ts-expect-error to fix
 					StaticCharacterImporter.import(this.object, {
 						text: text,
 						name: file_path,

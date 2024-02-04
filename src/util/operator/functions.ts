@@ -1,6 +1,6 @@
 import {
+	Operand,
 	Operator,
-	ParsableType,
 	add,
 	closeParen,
 	divide,
@@ -61,7 +61,7 @@ export function evalOperators(dbzrz: boolean): Operator[] {
  *
  * @param arg
  */
-function Not(arg: ParsableType): boolean {
+function Not(arg: Operand): boolean {
 	const b = Boolean(arg)
 	if (typeof b === "boolean") return !b
 	const v = From(arg)
@@ -74,7 +74,7 @@ function Not(arg: ParsableType): boolean {
  * @param left
  * @param right
  */
-function LogicalOr(left: ParsableType, right: ParsableType): boolean {
+function LogicalOr(left: Operand, right: Operand): boolean {
 	const l = From(left)
 	if (l !== 0) return true
 	let r = 0
@@ -87,7 +87,7 @@ function LogicalOr(left: ParsableType, right: ParsableType): boolean {
  * @param left
  * @param right
  */
-function LogicalAnd(left: ParsableType, right: ParsableType): boolean {
+function LogicalAnd(left: Operand, right: Operand): boolean {
 	const l = From(left)
 	if (l === 0) return false
 	let r = 0
@@ -100,7 +100,7 @@ function LogicalAnd(left: ParsableType, right: ParsableType): boolean {
  * @param left
  * @param right
  */
-function Equal(left: ParsableType, right: ParsableType): boolean {
+function Equal(left: Operand, right: Operand): boolean {
 	let l
 	let r
 	try {
@@ -118,7 +118,7 @@ function Equal(left: ParsableType, right: ParsableType): boolean {
  * @param left
  * @param right
  */
-function NotEqual(left: ParsableType, right: ParsableType): boolean {
+function NotEqual(left: Operand, right: Operand): boolean {
 	let l
 	let r
 	try {
@@ -136,7 +136,7 @@ function NotEqual(left: ParsableType, right: ParsableType): boolean {
  * @param left
  * @param right
  */
-function GreaterThan(left: ParsableType, right: ParsableType): boolean {
+function GreaterThan(left: Operand, right: Operand): boolean {
 	let l
 	let r
 	try {
@@ -154,7 +154,7 @@ function GreaterThan(left: ParsableType, right: ParsableType): boolean {
  * @param left
  * @param right
  */
-function GreaterThanOrEqual(left: ParsableType, right: ParsableType): boolean {
+function GreaterThanOrEqual(left: Operand, right: Operand): boolean {
 	let l
 	let r
 	try {
@@ -172,7 +172,7 @@ function GreaterThanOrEqual(left: ParsableType, right: ParsableType): boolean {
  * @param left
  * @param right
  */
-function LessThan(left: ParsableType, right: ParsableType): boolean {
+function LessThan(left: Operand, right: Operand): boolean {
 	let l
 	let r
 	try {
@@ -190,7 +190,7 @@ function LessThan(left: ParsableType, right: ParsableType): boolean {
  * @param left
  * @param right
  */
-function LessThanOrEqual(left: ParsableType, right: ParsableType): boolean {
+function LessThanOrEqual(left: Operand, right: Operand): boolean {
 	let l
 	let r
 	try {
@@ -208,7 +208,7 @@ function LessThanOrEqual(left: ParsableType, right: ParsableType): boolean {
  * @param left
  * @param right
  */
-function Add(left: ParsableType, right: ParsableType): ParsableType {
+function Add(left: Operand, right: Operand): Operand {
 	let l
 	let r
 	try {
@@ -225,7 +225,7 @@ function Add(left: ParsableType, right: ParsableType): ParsableType {
  *
  * @param arg
  */
-function AddUnary(arg: ParsableType): ParsableType {
+function AddUnary(arg: Operand): Operand {
 	return From(arg)
 }
 
@@ -234,7 +234,7 @@ function AddUnary(arg: ParsableType): ParsableType {
  * @param left
  * @param right
  */
-function Subtract(left: ParsableType, right: ParsableType): number {
+function Subtract(left: Operand, right: Operand): number {
 	const l = From(left)
 	let r = 0
 	r = From(right)
@@ -245,7 +245,7 @@ function Subtract(left: ParsableType, right: ParsableType): number {
  *
  * @param arg
  */
-function SubtractUnary(arg: ParsableType): number {
+function SubtractUnary(arg: Operand): number {
 	const v = From(arg)
 	return -v
 }
@@ -255,7 +255,7 @@ function SubtractUnary(arg: ParsableType): number {
  * @param left
  * @param right
  */
-function Multiply(left: ParsableType, right: ParsableType): number {
+function Multiply(left: Operand, right: Operand): number {
 	const l = From(left)
 	let r = 0
 	r = From(right)
@@ -267,7 +267,7 @@ function Multiply(left: ParsableType, right: ParsableType): number {
  * @param left
  * @param right
  */
-function Divide(left: ParsableType, right: ParsableType): number {
+function Divide(left: Operand, right: Operand): number {
 	const l = From(left)
 	let r = 0
 	r = From(right)
@@ -280,7 +280,7 @@ function Divide(left: ParsableType, right: ParsableType): number {
  * @param left
  * @param right
  */
-function DivideAllowDivideByZero(left: ParsableType, right: ParsableType): number {
+function DivideAllowDivideByZero(left: Operand, right: Operand): number {
 	const l = From(left)
 	let r = 0
 	r = From(right)
@@ -293,7 +293,7 @@ function DivideAllowDivideByZero(left: ParsableType, right: ParsableType): numbe
  * @param left
  * @param right
  */
-function Modulo(left: ParsableType, right: ParsableType): number {
+function Modulo(left: Operand, right: Operand): number {
 	const l = From(left)
 	let r = 0
 	r = From(right)
@@ -306,7 +306,7 @@ function Modulo(left: ParsableType, right: ParsableType): number {
  * @param left
  * @param right
  */
-function ModuloAllowDivideByZero(left: ParsableType, right: ParsableType): number {
+function ModuloAllowDivideByZero(left: Operand, right: Operand): number {
 	const l = From(left)
 	let r = 0
 	r = From(right)
@@ -319,7 +319,7 @@ function ModuloAllowDivideByZero(left: ParsableType, right: ParsableType): numbe
  * @param left
  * @param right
  */
-function Power(left: ParsableType, right: ParsableType): number {
+function Power(left: Operand, right: Operand): number {
 	const l = From(left)
 	let r = 0
 	r = From(right)
@@ -330,7 +330,7 @@ function Power(left: ParsableType, right: ParsableType): number {
  *
  * @param arg
  */
-function From(arg: ParsableType): number {
+function From(arg: Operand): number {
 	switch (true) {
 		case typeof arg === "boolean":
 			if (arg) return 1

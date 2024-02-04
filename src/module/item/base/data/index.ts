@@ -65,8 +65,8 @@ type ItemSourceGURPS =
 	| EffectSource
 	| ConditionSource
 
-export type { ItemFlagsGURPS } from "./system.ts"
 export { ItemFlags } from "./system.ts"
+export type { ItemFlagsGURPS } from "./system.ts"
 
 export { ItemType }
 

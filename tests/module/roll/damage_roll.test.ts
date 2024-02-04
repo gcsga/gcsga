@@ -1,4 +1,4 @@
-import { DamageRollGURPS } from "@module/roll/damage_roll"
+import { DamageRollGURPS } from "@module/roll/damage_roll.ts"
 
 describe("Damage Roll tests", () => {
 	describe("sanitize", () => {

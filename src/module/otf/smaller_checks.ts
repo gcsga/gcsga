@@ -1,5 +1,5 @@
-import { ParsedOtF, OtFAction, OtFTestAction, OtFLinkedAction, OptionalCheckParameters } from "./base"
-import { gspan } from "./utils"
+import { OptionalCheckParameters, OtFAction, OtFLinkedAction, OtFTestAction, ParsedOtF } from "./base.ts"
+import { gspan } from "./utils.ts"
 
 /**
  *
@@ -50,7 +50,7 @@ export function checkForHtml(str: string, opts: OptionalCheckParameters): Parsed
  * @param str
  * @param opts
  */
-export function checkForIf(str: string, opts: OptionalCheckParameters): ParsedOtF | undefined {
+export function checkForIf(str: string, _opts: OptionalCheckParameters): ParsedOtF | undefined {
 	const m = str.match(/^@(margin|isCritSuccess|IsCritFailure) *([=<>]+ *[+-]?[\d.]+)?$/i)
 	if (m) {
 		const action = <OtFTestAction>{
@@ -64,6 +64,7 @@ export function checkForIf(str: string, opts: OptionalCheckParameters): ParsedOt
 			action: action,
 		}
 	}
+	return
 }
 
 /**
@@ -88,6 +89,7 @@ export function checkForExists(str: string, opts: OptionalCheckParameters): Pars
 			action: action,
 		}
 	}
+	return
 }
 
 /**
@@ -135,4 +137,5 @@ export function checkForFoundryDrops(str: string, opts: OptionalCheckParameters)
 			}
 		}
 	}
+	return
 }

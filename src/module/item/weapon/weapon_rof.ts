@@ -25,7 +25,7 @@ export class WeaponROF extends WeaponField {
 		return wr
 	}
 
-	resolve(w: BaseWeaponGURPS, tooltip: TooltipGURPS): WeaponROF {
+	resolve(w: BaseWeaponGURPS, tooltip?: TooltipGURPS): WeaponROF {
 		const result = WeaponROF.parse(this.toString())
 		result.jet = w.resolveBoolFlag(wswitch.Type.Jet, result.jet)
 		if (!result.jet) {
@@ -33,13 +33,13 @@ export class WeaponROF extends WeaponField {
 			result.mode1 = result.mode1.resolve(w, buf1, true)
 			result.mode2 = result.mode2.resolve(w, buf2, false)
 			if (buf1.length !== 0)
-				tooltip.push(
+				tooltip?.push(
 					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.tooltip.weapon_rof.mode1, {
 						content: buf1.toString(),
 					}),
 				)
 			if (buf2.length !== 0)
-				tooltip.push(
+				tooltip?.push(
 					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.tooltip.weapon_rof.mode2, {
 						content: buf2.toString(),
 					}),

@@ -10,11 +10,6 @@ import { Study } from "@util/study.ts"
 
 export type TraitSource = ItemGCSSource<ItemType.Trait, TraitSystemSource>
 
-export interface TraitData extends Omit<TraitSource, "effects" | "items">, TraitSystemSource {
-	readonly type: TraitSource["type"]
-	readonly _source: TraitSource
-}
-
 export interface TraitSystemSource extends ItemGCSSystemSource {
 	prereqs: PrereqList
 	round_down: boolean

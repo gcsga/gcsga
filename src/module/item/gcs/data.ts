@@ -1,16 +1,16 @@
 import { FeatureObj } from "@feature"
-import { BaseContainerSource, BaseContainerSystemData } from "@item/container/data.ts"
+import { BaseContainerSource, BaseContainerSystemSource } from "@item/container/data.ts"
 import { MeleeWeaponSystemSource } from "@item/melee_weapon/data.ts"
 import { RangedWeaponSystemSource } from "@item/ranged_weapon/data.ts"
 import { ItemType } from "@item/types.ts"
 import { PrereqListObj } from "@prereq/data.ts"
 
 export type ItemGCSSource<
-	TItemType extends ItemType = ItemType,
+	TItemType extends IctemType = ItemType,
 	TSystemData extends ItemGCSSystemSource = ItemGCSSystemSource,
 > = BaseContainerSource<TItemType, TSystemData>
 
-export interface ItemGCSSystemSource extends BaseContainerSystemData {
+export interface ItemGCSSystemSource extends BaseContainerSystemSource {
 	id: string
 	name: string
 	reference: string

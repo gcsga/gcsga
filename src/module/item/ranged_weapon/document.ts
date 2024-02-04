@@ -1,5 +1,4 @@
-import { ActorGURPS, CharacterGURPS } from "@actor/document.ts"
-import { RangedWeaponSystemSource } from "./data.ts"
+import { RangedWeaponSource, RangedWeaponSystemSource } from "./data.ts"
 import { BaseWeaponGURPS } from "@item/index.ts"
 import { WeaponAccuracy } from "@item/weapon/weapon_accuracy.ts"
 import { WeaponRange } from "@item/weapon/weapon_range.ts"
@@ -12,8 +11,10 @@ import { WeaponRecoil } from "@item/weapon/weapon_recoil.ts"
 import { includesFold } from "@util/string_criteria.ts"
 import { ItemFlags } from "@item/base/data/system.ts"
 import { CharacterResolver } from "@util"
+import { ActorGURPS, CharacterGURPS } from "@actor"
 
 export interface RangedWeaponGURPS<TParent extends ActorGURPS | null> extends BaseWeaponGURPS<TParent> {
+	readonly _source: RangedWeaponSource
 	system: RangedWeaponSystemSource
 }
 

@@ -1,17 +1,15 @@
 import { RollModifier, SYSTEM_NAME, gid } from "@module/data/misc.ts"
 import * as R from "remeda"
-import { ActorFlags, ActorFlagsGURPS } from "./base/data.ts"
+import { ActorFlags, ActorFlagsGURPS, ActorSystemSource } from "./base/data.ts"
 import { Attribute } from "@sytem/attribute/object.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { TraitGURPS } from "@item/trait/document.ts"
 import { TraitContainerGURPS } from "@item/trait_container/document.ts"
-import { duplicate, mergeObject, setProperty } from "types/foundry/common/utils/helpers.js"
 import { HitLocation, HitLocationTable } from "./character/hit_location.ts"
-import { CharacterGURPS } from "./document.ts"
 import { EffectGURPS } from "@item/effect/document.ts"
 import { ConditionGURPS } from "@item/condition/document.ts"
 import { ItemGURPS } from "@item/base/document.ts"
-import { Document } from "types/foundry/common/abstract/module.js"
+import { Document, EmbeddedCollection } from "types/foundry/common/abstract/module.js"
 import { DamagePayload } from "@module/apps/damage_calculator/damage_chat_message.ts"
 import {
 	DamageAttacker,
@@ -33,6 +31,8 @@ import { ConditionID, EffectID, ManeuverID, Postures } from "@item/condition/ind
 import { ItemFlags } from "@item/base/data/system.ts"
 import { BaseWeaponGURPS, ContainerGURPS, TraitModifierGURPS } from "@item"
 import { ItemSourceGURPS } from "@item/base/data/index.ts"
+import { CharacterResolver } from "@util"
+import { CharacterGURPS } from "./character/document.ts"
 
 interface ActorGURPS<TParent extends TokenDocumentGURPS | null> extends Actor<TParent> {
 	noPrepare: boolean
@@ -40,6 +40,7 @@ interface ActorGURPS<TParent extends TokenDocumentGURPS | null> extends Actor<TP
 	type: ActorType
 	attributes: Map<string, Attribute>
 	moveTypes: Map<string, MoveType>
+	system: ActorSystemSource
 }
 
 class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null> extends Actor<TParent> {
@@ -120,16 +121,16 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 		const defaultToken = `systems/${SYSTEM_NAME}/assets/icons/${this.type}.svg`
 		if (changed.img && !changed.prototypeToken?.texture?.src) {
 			if (!this.prototypeToken.texture.src || this.prototypeToken.texture.src === defaultToken) {
-				setProperty(changed, "prototypeToken.texture.src", changed.img)
+				fu.setProperty(changed, "prototypeToken.texture.src", changed.img)
 			} else {
-				setProperty(changed, "prototypeToken.texture.src", this.prototypeToken.texture.src)
+				fu.setProperty(changed, "prototypeToken.texture.src", this.prototypeToken.texture.src)
 			}
 		}
 		super._preUpdate(changed, options, user)
 	}
 
 	get hitLocationTable(): HitLocationTable {
-		return new HitLocationTable("", "3d", [], this as unknown as CharacterGURPS, "")
+		return new HitLocationTable("", "3d", [], this as unknown as CharacterResolver, "")
 	}
 
 	get HitLocations(): HitLocation[] {
@@ -163,6 +164,14 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 	// 	game.system.documentTypes.Actor = original
 	// 	return newActor
 	// }
+	/** The recorded schema version of this actor, updated after each data migration */
+	get schemaVersion(): number | null {
+		return Number(this.system._migration?.version) || null
+	}
+
+	override get items(): EmbeddedCollection<ItemGURPS<this>> {
+		return super.items as EmbeddedCollection<ItemGURPS<this>>
+	}
 
 	get gEffects(): Collection<EffectGURPS> {
 		const effects: Collection<EffectGURPS> = new Collection()
@@ -208,11 +217,11 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 	): Promise<ItemGURPS[]> {
 		const itemData = items.map(e => {
 			if ([ItemType.Equipment, ItemType.EquipmentContainer].includes(e.type as ItemType))
-				return mergeObject(e.toObject(), {
+				return fu.mergeObject(e.toObject(), {
 					[`flags.${SYSTEM_NAME}.${ItemFlags.Container}`]: options.id,
 					[`flags.${SYSTEM_NAME}.${ItemFlags.Other}`]: options.other,
 				})
-			return mergeObject(e.toObject(), { [`flags.${SYSTEM_NAME}.${ItemFlags.Container}`]: options.id })
+			return fu.mergeObject(e.toObject(), { [`flags.${SYSTEM_NAME}.${ItemFlags.Container}`]: options.id })
 		})
 
 		const newItems = await this.createEmbeddedDocuments("Item", itemData, {
@@ -243,7 +252,7 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 			data = data.filter(
 				(e: DeepPartial<ItemSourceGURPS>) =>
 					e.flags?.[SYSTEM_NAME]?.[ItemFlags.Container] !== this.id ||
-					CONFIG.GURPS.Actor.allowedContents[this.type].includes(e.type),
+					CONFIG.GURPS.Actor.allowedContents[this.type].includes(e.type as ItemType),
 			)
 		return super.createEmbeddedDocuments(embeddedName, data, context)
 	}
@@ -280,13 +289,13 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 
 	override prepareDerivedData(): void {
 		super.prepareDerivedData()
-		setProperty(this.flags, `${SYSTEM_NAME}.${ActorFlags.SelfModifiers}`, [])
-		setProperty(this.flags, `${SYSTEM_NAME}.${ActorFlags.TargetModifiers}`, [])
+		fu.setProperty(this.flags, `${SYSTEM_NAME}.${ActorFlags.SelfModifiers}`, [])
+		fu.setProperty(this.flags, `${SYSTEM_NAME}.${ActorFlags.TargetModifiers}`, [])
 
 		const sizemod = this.sizeMod
 		if (sizemod !== 0) {
 			this.flags[SYSTEM_NAME][ActorFlags.TargetModifiers].push({
-				name: "for Size Modifier",
+				id: "for Size Modifier",
 				modifier: sizemod,
 				tags: [],
 			})
@@ -326,7 +335,7 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 		ids = ids.filter(id => !this.hasCondition(id))
 		return this.createEmbeddedDocuments(
 			"Item",
-			ids.map(id => duplicate(ConditionGURPS.getData(id))),
+			ids.map(id => fu.duplicate(ConditionGURPS.getData(id))),
 			{},
 		) as Promise<ConditionGURPS[] | null>
 	}
@@ -351,7 +360,7 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 				return null
 			}
 		}
-		const newCondition = duplicate(ConditionGURPS.getData(id))
+		const newCondition = fu.duplicate(ConditionGURPS.getData(id))
 		if (newCondition.system?.can_level) newCondition.system.levels!.current += 1
 		const items = (await this.createEmbeddedDocuments("Item", [newCondition], {})) as ConditionGURPS[]
 		return items[0]
@@ -375,7 +384,7 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 		if (id === "none") return this.resetManeuvers()
 		if ([ManeuverID.BLANK_1, ManeuverID.BLANK_2].includes(id as ManeuverID)) return null
 		const maneuvers = this.conditions.filter(e => Object.values(ManeuverID).includes(e.cid as ManeuverID))
-		const newCondition = duplicate(ConditionGURPS.getData(id))
+		const newCondition = fu.duplicate(ConditionGURPS.getData(id))
 		if (maneuvers.length) {
 			const items = (await this.updateEmbeddedDocuments("Item", [
 				{ ...newCondition, _id: maneuvers[0].id },
@@ -400,7 +409,7 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 		if (existing) return null
 		if (id === "standing") return this.resetPosture()
 		const postures = this.conditions.filter(e => Postures.includes(e.cid as ConditionID))
-		const newCondition = duplicate(ConditionGURPS.getData(id))
+		const newCondition = fu.duplicate(ConditionGURPS.getData(id))
 		if (postures.length) {
 			const items = this.updateEmbeddedDocuments("Item", [
 				{ ...newCondition, _id: postures[0].id },

@@ -1,12 +1,13 @@
-import { ItemSheetGURPS } from "@item/base"
-import { ItemType, SYSTEM_NAME } from "@module/data"
-import { DurationType } from "./data"
-import { EffectGURPS } from "./document"
+import { ItemSheetDataGURPS, ItemSheetGURPS, ItemSheetOptions } from "@item/base/sheet.ts"
+import { EffectGURPS } from "./document.ts"
+import { SYSTEM_NAME } from "@module/data/index.ts"
+import { ItemType } from "@item"
+import { DurationType } from "./data.ts"
 
-export class EffectSheet extends ItemSheetGURPS<EffectGURPS> {
-	static get defaultOptions(): DocumentSheetOptions<Item> {
+export class EffectSheet<IType extends EffectGURPS = EffectGURPS> extends ItemSheetGURPS<IType> {
+	static override get defaultOptions(): ItemSheetOptions {
 		const options = super.defaultOptions
-		mergeObject(options, {
+		fu.mergeObject(options, {
 			classes: options.classes.concat(["effect"]),
 		})
 		return options
@@ -21,51 +22,49 @@ export class EffectSheet extends ItemSheetGURPS<EffectGURPS> {
 		return super.isEditable
 	}
 
-	activateListeners(html: JQuery<HTMLElement>): void {
+	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		html.find("#modifiers .add").on("click", event => this._addModifier(event))
 		html.find(".modifier .remove").on("click", event => this._removeModifier(event))
 	}
 
-	protected async _addModifier(event: JQuery.ClickEvent): Promise<any> {
+	protected async _addModifier(event: JQuery.ClickEvent): Promise<IType | undefined> {
 		event.preventDefault()
 		if (!this.isEditable) return
 		const modifiers = this.item.system.modifiers ?? []
 		modifiers.push({
-			name: "",
+			id: "",
 			modifier: 0,
 			max: 0,
 			cost: { value: 0, id: "" },
 		})
-		const update: any = {}
-		update["system.modifiers"] = modifiers
-		return this.item.update(update)
+		return this.item.update({ "system.modifiers": modifiers })
 	}
 
-	protected async _removeModifier(event: JQuery.ClickEvent): Promise<any> {
+	protected async _removeModifier(event: JQuery.ClickEvent): Promise<IType | undefined> {
 		if (!this.isEditable) return
 		const index = $(event.currentTarget).data("index")
-		const modifiers = (this.item.system as any).modifiers
+		const modifiers = this.item.system.modifiers ?? []
 		modifiers.splice(index, 1)
-		const update: any = {}
-		update["system.modifiers"] = modifiers
-		return this.item.update(update)
+		return this.item.update({ "system.modifiers": modifiers })
 	}
 
-	getData(options?: Partial<DocumentSheetOptions<Item>> | undefined) {
-		const data = super.getData(options)
-		if (this.item.system.duration.type !== DurationType.None)
-			data.duration = this.item.system.duration[this.item.system.duration.type]
-		else data.duration = 0
-		return data
+	override async getData(options: Partial<ItemSheetOptions> = {}): Promise<ItemSheetDataGURPS<IType>> {
+		const data = await super.getData(options)
+		return fu.mergeObject(data, {
+			duration:
+				this.item.system.duration.type !== DurationType.None
+					? this.item.system.duration[this.item.system.duration.type]
+					: 0,
+		})
 	}
 
-	protected _updateObject(event: Event, formData: Record<string, any>): Promise<unknown> {
+	protected override async _updateObject(event: Event, formData: Record<string, unknown>): Promise<void> {
 		formData["system.duration.seconds"] = 0
 		formData["system.duration.turns"] = 0
 		formData["system.duration.rounds"] = 0
 		if (formData.duration) {
-			const type: DurationType = formData["system.duration.type"]
+			const type = formData["system.duration.type"] as DurationType
 			if (type !== DurationType.None) formData[`system.duration.${type}`] = formData.duration
 			delete formData.duration
 		}

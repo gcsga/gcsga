@@ -1,6 +1,6 @@
 import { ActorGURPS } from "@actor/base.ts"
 import { ItemGCS } from "@item/gcs/document.ts"
-import { EquipmentContainerSystemSource } from "./data.ts"
+import { EquipmentContainerSource, EquipmentContainerSystemSource } from "./data.ts"
 import { display } from "@util/enum/display.ts"
 import { StringBuilder } from "@util/string_builder.ts"
 import { sheetSettingsFor } from "@module/data/sheet_settings.ts"
@@ -15,15 +15,14 @@ import {
 } from "@item/equipment_modifier/document.ts"
 import { EquipmentModifierContainerGURPS } from "@item/equipment_modifier_container/document.ts"
 import { Int } from "@util/fxp.ts"
-import { ItemType } from "@item/types.ts"
 import { CharacterResolver } from "@util"
 import { ItemFlags } from "@item/base/data/system.ts"
 import { CharacterGURPS } from "@actor"
 
 export interface EquipmentContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null>
 	extends ItemGCS<TParent> {
+	readonly _source: EquipmentContainerSource
 	system: EquipmentContainerSystemSource
-	type: ItemType.EquipmentContainer
 }
 
 export class EquipmentContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {

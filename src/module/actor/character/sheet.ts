@@ -2,12 +2,10 @@ import { ActorSheetGURPS } from "@actor/base/sheet.ts"
 import { CharacterGURPS } from "./document.ts"
 import { CharacterSheetConfig } from "./config_sheet.ts"
 import { ItemGURPS } from "@item/base/document.ts"
-import { ItemSourceGURPS } from "@item/data/index.ts"
 import { ActorFlags } from "@actor/base/data.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { AttributeObj, ThresholdOp } from "@sytem/attribute/data.ts"
 import { ResourceTrackerObj } from "@sytem/resource_tracker/data.ts"
-import { PDF } from "@module/pdf/index.ts"
 import {
 	BaseWeaponGURPS,
 	ConditionGURPS,
@@ -24,9 +22,7 @@ import {
 	TraitContainerGURPS,
 	TraitGURPS,
 } from "@item"
-import { Length, LocalizeGURPS, WeaponResolver, Weight, WeightUnits, dom, evaluateToNumber, newUUID } from "@util"
-import { ItemType } from "@item/types.ts"
-import { ItemFlags } from "@item/data.ts"
+import { Length, LocalizeGURPS, PDF, WeaponResolver, Weight, WeightUnits, dom, evaluateToNumber, newUUID } from "@util"
 import EmbeddedCollection from "types/foundry/common/abstract/embedded-collection.js"
 import { RollType, SYSTEM_NAME, gid } from "@module/data/misc.ts"
 import { PointRecordSheet } from "./points_sheet.ts"
@@ -42,6 +38,9 @@ import { MoveType } from "@sytem/move_type/object.ts"
 import { HitLocation } from "./hit_location.ts"
 import { htmlQuery } from "@util/dom.ts"
 import { ConditionID, ManeuverID, Posture, Postures } from "@item/condition/data.ts"
+import { ItemFlags } from "@item/base/data/system.ts"
+import { ItemSourceGURPS, ItemType } from "@item/base/data/index.ts"
+import { RollTypeData } from "@module/roll/roll_handler.ts"
 
 class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extends ActorSheetGURPS<TActor> {
 	config: CharacterSheetConfig | null = null
@@ -97,7 +96,7 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 		}
 		const item = (await Item.implementation.fromDropData(importData)) as ItemGURPS
 		if (!item) return []
-		const itemData = item.toObject()
+		const itemData = item.toObject() as ItemSourceGURPS
 		let result: ItemGURPS[] = []
 
 		// Handle item sorting within the same Actor
@@ -364,7 +363,8 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 	}
 
 	private async _newItem(type: ItemType, other = false) {
-		const itemData: ItemSourceGURPS = {
+		let itemData: DeepPartial<ItemSourceGURPS> = {
+			// @ts-expect-error idgi
 			type,
 			name: LocalizeGURPS.translations.TYPES.Item[type],
 			system: { id: newUUID() },
@@ -374,7 +374,7 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 				},
 			},
 		}
-		if (other) itemData.system.other = true
+		if (other) itemData = fu.mergeObject({ flags: { [SYSTEM_NAME]: { [ItemFlags.Other]: true } } })
 		await this.actor.createEmbeddedDocuments("Item", [itemData], {
 			temporary: false,
 			renderSheet: true,
@@ -855,7 +855,7 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 		}
 		if ([RollType.Attack, RollType.Parry].includes(type))
 			(data.item as WeaponResolver<ItemType.MeleeWeapon>).checkUnready(type)
-		return RollGURPS.handleRoll(game.user, this.actor, data)
+		return RollGURPS.handleRoll(game.user, this.actor, data as RollTypeData)
 	}
 
 	private _getTargetTableFromItemType(event: JQuery.DragOverEvent | DragEvent, type: ItemType): JQuery<HTMLElement> {

@@ -1,5 +1,4 @@
 import { CharacterSheetConfig } from "@actor/character/config_sheet.ts"
-import { duplicate, mergeObject, setProperty } from "types/foundry/common/utils/helpers.js"
 import { SYSTEM_NAME } from "@module/data/misc.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { Attribute, AttributeObj } from "@sytem/attribute/index.ts"
@@ -22,7 +21,7 @@ export class MookGeneratorSheet extends FormApplication {
 	}
 
 	static override get defaultOptions(): FormApplicationOptions {
-		return mergeObject(super.defaultOptions, {
+		return fu.mergeObject(super.defaultOptions, {
 			popOut: true,
 			minimizable: true,
 			resizable: false,
@@ -61,7 +60,7 @@ export class MookGeneratorSheet extends FormApplication {
 	override getData(options?: Partial<ApplicationOptions>): Object | Promise<Object> {
 		const [primary_attributes, secondary_attributes, point_pools] = this.prepareAttributes(this.object.attributes)
 
-		return mergeObject(super.getData(options), {
+		return fu.mergeObject(super.getData(options), {
 			actor: this.object,
 			primary_attributes,
 			secondary_attributes,
@@ -207,7 +206,7 @@ export class MookGeneratorSheet extends FormApplication {
 		for (const i of Object.keys(formData)) {
 			if (i.startsWith("attributes.")) {
 				const attributes: AttributeObj[] =
-					(formData["system.attributes"] as AttributeObj[]) ?? duplicate(this.object.system.attributes)
+					(formData["system.attributes"] as AttributeObj[]) ?? fu.duplicate(this.object.system.attributes)
 				const id = i.split(".")[1]
 				const att = this.object.attributes.get(id)
 				if (att) {
@@ -216,7 +215,7 @@ export class MookGeneratorSheet extends FormApplication {
 				}
 				const key = i.replace(`attributes.${id}.`, "")
 				const index = attributes.findIndex(e => e.attr_id === id)
-				setProperty(attributes[index], key, formData[i])
+				fu.setProperty(attributes[index], key, formData[i])
 				formData["system.attributes"] = attributes
 				delete formData[i]
 			}

@@ -1,17 +1,20 @@
-import { StaticItem, _BaseComponent } from "@actor/static/components"
-import { ItemFlags } from "@item/base"
-import { ItemType, SYSTEM_NAME } from "@module/data"
+import { ItemSheetOptions } from "@item/base/sheet.ts"
+import { StaticItemGURPS } from "./document.ts"
+import { SYSTEM_NAME } from "@module/data/index.ts"
+import { ItemFlags } from "@item/base/data/system.ts"
+import { StaticPopout, StaticPopoutType } from "./popouts.ts"
 import { LocalizeGURPS, Static } from "@util"
-import { StaticItemGURPS } from "."
-import { StaticItemSystemData } from "./data"
-import { StaticPopout, StaticPopoutType } from "./popouts"
+import { StaticItem, _BaseComponent } from "@actor/static/components.ts"
+import { ItemType } from "@item"
+import { StaticItemSystemData } from "./data.ts"
 
-export class StaticItemSheet extends ItemSheet {
-	declare object: StaticItemGURPS
-
-	static get defaultOptions(): DocumentSheetOptions<Item> {
+export class StaticItemSheet<
+	TItem extends StaticItemGURPS = StaticItemGURPS,
+	TOptions extends ItemSheetOptions = ItemSheetOptions,
+> extends ItemSheet<TItem, TOptions> {
+	static override get defaultOptions(): DocumentSheetOptions {
 		const options = super.defaultOptions
-		mergeObject(options, {
+		fu.mergeObject(options, {
 			width: 620,
 			min_width: 620,
 			height: 800,
@@ -20,14 +23,15 @@ export class StaticItemSheet extends ItemSheet {
 		return options
 	}
 
-	get template(): string {
+	override get template(): string {
 		return `/systems/${SYSTEM_NAME}/templates/item/legacy_equipment/sheet.hbs`
 	}
 
-	getData(options?: Partial<DocumentSheetOptions<Item>> | undefined) {
+	override getData(options?: Partial<TOptions>): ItemSheetData<TItem> | Promise<ItemSheetData<TItem>> {
 		const deprecation: string = this.item.getFlag(SYSTEM_NAME, ItemFlags.Deprecation) ? "acknowledged" : "manual"
+		const data = super.getData(options)
 		const sheetData = {
-			...(super.getData(options) as any),
+			...data,
 			traits: Object.entries(this.item.system.ads).map(([k, v]) => {
 				return { key: k, data: v }
 			}),
@@ -43,18 +47,23 @@ export class StaticItemSheet extends ItemSheet {
 			ranged: Object.entries(this.item.system.ranged).map(([k, v]) => {
 				return { key: k, data: v }
 			}),
+			data: {
+				...this.item.system,
+				eqt: {
+					...this.item.system.eqt,
+					f_cont: this.item.system.eqt.count,
+				},
+			},
+			system: this.item.system,
+			name: this.item.name,
+			deprecation: deprecation,
 		}
-		sheetData.data = this.item.system
-		sheetData.system = this.item.system
-		sheetData.data.eqt.f_count = this.item.system.eqt.count // Hack for Furnace module
-		sheetData.name = this.item.name
-		sheetData.deprecation = deprecation
 		if (!this.item.system.globalid && !this.item.parent)
 			this.item.update({ "system.globalid": this.item.id, _id: this.item.id })
 		return sheetData
 	}
 
-	activateListeners(html: JQuery<HTMLElement>): void {
+	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		// html.find("#itemname").on("change", ev => {
 		// 	let nm = String($(ev.currentTarget).val) let commit = { "system.eqt.name": nm, name: nm }
@@ -126,7 +135,7 @@ export class StaticItemSheet extends ItemSheet {
 		html.find(".item").on("click", event => this._openPopout(event))
 	}
 
-	async _getItemContextMenu(event: JQuery.ContextMenuEvent, html: JQuery<HTMLElement>) {
+	async _getItemContextMenu(event: JQuery.ContextMenuEvent, html: JQuery<HTMLElement>): Promise<void> {
 		event.preventDefault()
 		const type = $(event.currentTarget).parent(".item-list")[0].id as StaticPopoutType
 		const id = $(event.currentTarget).data("item-id")
@@ -262,7 +271,7 @@ export class StaticItemSheet extends ItemSheet {
 	// 	this._addToList(dragData.type, srcData)
 	// }
 
-	_addToList(key: keyof StaticItemSystemData, data: any) {
+	_addToList(key: keyof StaticItemSystemData, data: unknown): void {
 		const list = this.item.system[key] || {}
 		Static.put(list, data)
 		this.item.update({ [`system.${key}`]: list })
@@ -273,7 +282,7 @@ export class StaticItemSheet extends ItemSheet {
 	// 	if ((this.object as any).editingActor) (this.object as any).editingActor.updateItem(this.object)
 	// }
 
-	protected async _updateObject(event: Event, formData: Record<string, any>): Promise<unknown> {
+	protected override _updateObject(event: Event, formData: Record<string, unknown>): Promise<void> {
 		if (formData.name) formData["system.eqt.name"] = formData.name
 		return super._updateObject(event, formData)
 	}

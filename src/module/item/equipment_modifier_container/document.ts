@@ -1,11 +1,12 @@
 import { ActorGURPS } from "@actor/base.ts"
 import { EquipmentModifierGURPS } from "@item/equipment_modifier/document.ts"
 import { ItemGCS } from "@item/gcs/document.ts"
-import { ItemType } from "@item/types.ts"
+import { EquipmentModifierContainerSource, EquipmentModifierContainerSystemSource } from "./data.ts"
 
 export interface EquipmentModifierContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null>
 	extends ItemGCS<TParent> {
-	type: ItemType.EquipmentModifierContainer
+	readonly _source: EquipmentModifierContainerSource
+	system: EquipmentModifierContainerSystemSource
 }
 
 export class EquipmentModifierContainerGURPS<

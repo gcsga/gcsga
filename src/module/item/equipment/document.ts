@@ -1,5 +1,5 @@
 import { ActorGURPS } from "@actor/base.ts"
-import { EquipmentSystemSource } from "./data.ts"
+import { EquipmentSource, EquipmentSystemSource } from "./data.ts"
 import { ItemGCS } from "@item/gcs/document.ts"
 import { display } from "@util/enum/display.ts"
 import { StringBuilder } from "@util/string_builder.ts"
@@ -16,14 +16,12 @@ import { EquipmentModifierContainerGURPS } from "@item/equipment_modifier_contai
 import { Int } from "@util/fxp.ts"
 import { ContainedWeightReduction, Feature } from "@feature/index.ts"
 import { EquipmentContainerGURPS } from "@item/index.ts"
-import { ItemType } from "@item/types.ts"
 import { ItemFlags } from "@item/base/data/system.ts"
-import { CharacterResolver } from "@util"
 import { CharacterGURPS } from "@actor"
 
 export interface EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
+	readonly _source: EquipmentSource
 	system: EquipmentSystemSource
-	type: ItemType.Equipment
 }
 export class EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	// unsatisfied_reason = ""
@@ -39,7 +37,7 @@ export class EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | nul
 
 	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
 		const buffer = new StringBuilder()
-		const settings = sheetSettingsFor(this.actor as unknown as CharacterResolver)
+		const settings = sheetSettingsFor(this.actor as CharacterGURPS)
 		if (optionChecker(settings.modifiers_display)) {
 			buffer.appendToNewLine(this.modifierNotes)
 		}

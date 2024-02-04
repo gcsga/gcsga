@@ -126,7 +126,7 @@ export class Attribute {
 		const cur = this.current
 		if (def.thresholds) {
 			for (const t of def.thresholds) {
-				if (cur <= t.threshold!(this.actor)) return t
+				if (cur <= t.threshold!(this.actor as CharacterResolver)) return t
 			}
 		}
 		return null

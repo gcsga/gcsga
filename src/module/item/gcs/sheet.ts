@@ -193,13 +193,16 @@ export class ItemSheetGCS<IType extends ItemGCS = ItemGCS> extends ContainerShee
 	}
 
 	async _newItem(type: ItemType, other = false): Promise<this> {
-		const itemData: Partial<ItemSourceGURPS> = {
+		const itemData: DeepPartial<ItemSourceGURPS> = {
+			// @ts-expect-error what
 			type,
 			name: LocalizeGURPS.translations.TYPES.Item[type],
 			system: {},
 		}
+		// @ts-expect-error what
 		if (other) itemData.system.other = true
 		if ([ItemType.MeleeWeapon, ItemType.RangedWeapon].includes(type))
+			// @ts-expect-error what
 			itemData.system.usage = LocalizeGURPS.translations.TYPES.Item[type]
 		await this.object.createEmbeddedDocuments("Item", [itemData], {
 			temporary: false,

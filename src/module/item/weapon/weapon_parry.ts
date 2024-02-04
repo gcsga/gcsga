@@ -4,8 +4,8 @@ import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { wswitch } from "@util/enum/wswitch.ts"
 import { gid } from "@module/data/misc.ts"
 import { feature } from "@util/enum/feature.ts"
-import { CharacterGURPS } from "@actor/document.ts"
 import { BaseWeaponGURPS } from "./document.ts"
+import { CharacterGURPS } from "@actor"
 
 export class WeaponParry extends WeaponField {
 	no = false

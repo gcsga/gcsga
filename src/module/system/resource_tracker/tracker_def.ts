@@ -1,6 +1,7 @@
-import { PoolThreshold, reserved_ids } from "@module/attribute"
 import { CharacterResolver, sanitizeId } from "@util"
 import { ResourceTrackerDefObj } from "./data.ts"
+import { PoolThreshold } from "@sytem/attribute/pool_threshold.ts"
+import { reserved_ids } from "@sytem/attribute/index.ts"
 
 export class ResourceTrackerDef {
 	_id = ""

@@ -84,6 +84,8 @@ declare global {
 		static on(...args: HookParamsRender<SceneControls, "SceneControls">): number
 		static on(...args: HookParamsRender<Settings, "Settings">): number
 		static on(...args: HookParamsRender<TokenHUD, "TokenHUD">): number
+		static on(...args: HookParamsRender<PlayerList, "PlayerList">): number
+		static on(...args: HookParamsRender<Hotbar, "Hotbar">): number
 		static on(
 			...args: HookParamsRender<JournalPageSheet<JournalEntryPage<JournalEntry | null>>, "JournalPageSheet">
 		): number

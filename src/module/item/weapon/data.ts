@@ -1,4 +1,4 @@
-import { BaseItemSourceGURPS } from "@item/data.ts"
+import { BaseItemSourceGURPS, ItemSystemSource } from "@item/base/data/system.ts"
 import { ItemType } from "@item/types.ts"
 import { SkillDefault } from "@sytem/default/index.ts"
 import { stdmg } from "@util/enum/stdmg.ts"
@@ -19,7 +19,7 @@ export interface WeaponDamageObj {
 	modifier_per_die?: number
 }
 
-export interface BaseWeaponSystemSource {
+export interface BaseWeaponSystemSource extends ItemSystemSource {
 	id: string
 	type: WeaponType
 	strength: string

@@ -4,10 +4,12 @@ import { SYSTEM_NAME } from "@module/data/index.ts"
 import { ItemModificationContextGURPS, ItemType } from "@item/types.ts"
 import { ItemFlags, ItemSourceGURPS } from "./data/index.ts"
 import { CharacterResolver } from "@util"
+import { BaseItemSourceGURPS, ItemSystemSource } from "./data/system.ts"
 
 export interface ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends Item<TParent> {
-	type: ItemType
-	system: ItemSourceGURPS["system"]
+	readonly _source: BaseItemSourceGURPS
+	system: ItemSystemSource
+	type: this["_source"]["type"]
 }
 
 export class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends Item<TParent> {
@@ -88,8 +90,12 @@ export class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> ex
 		return [...grandparents]
 	}
 
-	exportSystemData(_keepOther: boolean): object {
-		return {}
+	get schemaVersion(): number | null {
+		return Number(this.system._migration?.version) || null
+	}
+
+	exportSystemData(_keepOther: boolean): Record<string, unknown> {
+		return this.system as unknown as Record<string, unknown>
 	}
 
 	override prepareData(): void {
@@ -113,7 +119,6 @@ export class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> ex
 
 export const ItemProxyGURPS = new Proxy(ItemGURPS, {
 	construct(_target, args: [source: ItemSourceGURPS, context: DocumentConstructionContext<ActorGURPS | null>]) {
-		const ItemClass = CONFIG.GURPS.Item.documentClasses[args[0]?.type as ItemType] ?? ItemGURPS
-		return new ItemClass(...args)
+		return CONFIG.GURPS.Item.documentClasses[args[0]?.type as ItemType] ?? ItemGURPS
 	},
 })

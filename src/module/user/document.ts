@@ -1,10 +1,10 @@
-import { ActorGURPS } from "@actor/document.ts"
 import { HOOKS_GURPS, RollModifier, RollModifierTags, SYSTEM_NAME } from "@module/data/index.ts"
 import { TokenGURPS } from "@module/canvas/token/object.ts"
-import { flattenObject } from "types/foundry/common/utils/helpers.js"
 import { UserFlags, UserFlagsGURPS, UserSourceGURPS } from "./data.ts"
 import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
 import { SceneGURPS } from "@scene"
+import { ActorGURPS } from "@actor"
+import * as R from "remeda"
 
 class UserGURPS extends User<ActorGURPS<null>> {
 	override prepareData(): void {
@@ -35,7 +35,7 @@ class UserGURPS extends User<ActorGURPS<null>> {
 		super._onUpdate(data, options, userId)
 		if (game.user?.id !== userId) return
 
-		const keys = Object.keys(flattenObject(data))
+		const keys = Object.keys(fu.flattenObject(data))
 		if (keys.includes(`flags.${SYSTEM_NAME}.settings.showEffectPanel`)) {
 			game.gurps.effectPanel.refresh()
 		}
@@ -59,16 +59,23 @@ class UserGURPS extends User<ActorGURPS<null>> {
 		return total
 	}
 
+	getActiveTokens(): TokenDocumentGURPS[] {
+		if (!canvas.ready || canvas.tokens.controlled.length === 0) {
+			return R.compact([game.user.character?.getActiveTokens(true, true).shift()])
+		}
+		return canvas.tokens.controlled.filter(t => t.isOwner).map(t => t.document)
+	}
+
 	addModifier(mod: RollModifier): void {
 		const modList = (this.getFlag(SYSTEM_NAME, UserFlags.ModifierStack) as RollModifier[]) ?? []
 		if (mod.tags?.includes(RollModifierTags.Range)) {
 			const oldMod = modList.find(e => e.tags?.includes(RollModifierTags.Range))
 			if (oldMod) {
 				oldMod.modifier = mod.modifier
-				oldMod.name = mod.name
+				oldMod.id = mod.id
 			} else modList.push(mod)
 		} else {
-			const oldMod = modList.find(e => e.name === mod.name)
+			const oldMod = modList.find(e => e.id === mod.id)
 			if (oldMod) oldMod.modifier += mod.modifier
 			else modList.push(mod)
 		}

@@ -1,10 +1,10 @@
-import { ParsedOtF, OtFAction, OtFDamageAction, OptionalCheckParameters } from "./base"
-import { gspan } from "./utils"
-import { d6ify } from "@util/misc"
-import { StaticHitLocation } from "../actor/static/hit_location"
 // Import { GURPS } from "../gurps"
-const GURPS: any = {}
+// const GURPS: any = {}
 // let StaticHitLocation: any = {}
+
+import { d6ify } from "@util"
+import { OptionalCheckParameters, OtFAction, OtFDamageAction, ParsedOtF } from "./base.ts"
+import { gspan } from "./utils.ts"
 
 /* Here is where we do all the work to try to parse the text inbetween [ ].
  Supported formats:
@@ -59,15 +59,19 @@ export function parseForRollOrDamage(str: string, opts: OptionalCheckParameters)
 	if (a?.groups) {
 		const D = a.groups.D || "" // Can now support non-variable damage '2 cut' or '2x3(1) imp'
 		const other = a.groups?.other ? a.groups.other.trim() : ""
+		// eslint-disable-next-line prefer-const
 		let [actualType, extDamageType, hitLocation] = _parseOtherForTypeModiferAndLocation(other)
+		// @ts-expect-error TODO: get rid of global GURPS reference?
 		let dmap = GURPS.DamageTables.translate(actualType.toLowerCase())
 		if (!dmap && extDamageType) {
+			// @ts-expect-error TODO: get rid of global GURPS reference?
 			dmap = GURPS.DamageTables.translate(extDamageType.toLowerCase())
 			if (dmap) {
 				actualType = extDamageType
 				extDamageType = ""
 			}
 		}
+		// @ts-expect-error TODO: get rid of global GURPS reference?
 		const woundingModifier = GURPS.DamageTables.woundModifiers[dmap]
 		const [adds, multiplier, divisor, bang] = _getFormulaComponents(a.groups)
 
@@ -125,7 +129,9 @@ export function parseForRollOrDamage(str: string, opts: OptionalCheckParameters)
 		const basic = a.groups.att
 		const other = a.groups.other ? a.groups.other.trim() : ""
 		const [actualType, extDamageType, hitLocation] = _parseOtherForTypeModiferAndLocation(other)
+		// @ts-expect-error TODO: get rid of global GURPS reference?
 		const dmap = GURPS.DamageTables.translate(actualType.toLowerCase())
+		// @ts-expect-error TODO: get rid of global GURPS reference?
 		const woundingModifier = GURPS.DamageTables.woundModifiers[dmap]
 		const [adds, multiplier, divisor, bang] = _getFormulaComponents(a.groups)
 
@@ -185,6 +191,7 @@ function _parseOtherForTypeModiferAndLocation(other: string): [string, string | 
 		if (dmgTypeMatch[2].includes("@")) {
 			const [type, loc] = dmgTypeMatch[2].trim().split("@")
 			extDamageType = type.trim() ? type.trim() : undefined
+			// @ts-expect-error TODO: get rid of StaticHitLocation
 			hitLocation = loc.trim() ? StaticHitLocation.translate(loc.trim()) : undefined
 			// HitLocation = !!loc.trim() ? loc.trim() : undefined
 		} else extDamageType = dmgTypeMatch[2].trim() // 'ex' or 'inc' or more likely, undefined

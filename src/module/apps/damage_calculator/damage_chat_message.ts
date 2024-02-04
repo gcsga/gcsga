@@ -1,6 +1,5 @@
 import { DiceGURPS } from "@module/dice/index.ts"
-import { RollModifier } from "./injury_effect.ts"
-import { SYSTEM_NAME } from "@module/data/misc.ts"
+import { RollModifier, SYSTEM_NAME } from "@module/data/misc.ts"
 import { DnD } from "@util/drag_drop.ts"
 import { CanvasUtil } from "@util/canvas.ts"
 import { TokenUtil } from "@util/token_utils.ts"
@@ -8,6 +7,7 @@ import { setProperty } from "types/foundry/common/utils/helpers.js"
 import { ChatMessageGURPS } from "@module/chat-message/index.ts"
 import { ActorGURPS } from "@actor"
 import { DAMAGE_TYPE } from "./damage_type.ts"
+import { ChatMessageSource } from "types/foundry/common/documents/module.js"
 
 export enum DamageChatFlags {
 	Transfer = "transfer",
@@ -109,10 +109,10 @@ export class DamageChat {
 	}
 
 	static setTransferFlag(
-		object: ChatMessageGURPS,
+		object: Partial<ChatMessageSource>,
 		payload: Partial<DamagePayload>,
 		userTarget: string,
-	): ChatMessageGURPS {
+	): Partial<ChatMessageSource> {
 		const transfer = JSON.stringify({ type: DropDataType.Damage, payload: payload, userTarget: userTarget })
 		setProperty(object, `flags.${SYSTEM_NAME}.${DamageChatFlags.Transfer}`, transfer)
 		return object

@@ -1,7 +1,7 @@
 // Mostly disabled but left here just to get rid of the parentheses in labels
 // this makes it more consistent with our custom status effect messages
 
-import { ActorGURPS } from "@actor/document.ts"
+import { ActorGURPS } from "@actor"
 import { ItemGURPS } from "@item/base/document.ts"
 
 // the only time this is used is when you do anything with the "DEFEATED" special status effect

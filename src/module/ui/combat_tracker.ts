@@ -1,5 +1,4 @@
-import { ActorType } from "@actor"
-import { CharacterGURPS } from "@actor/document.ts"
+import { ActorType, CharacterGURPS } from "@actor"
 import { ConditionID } from "@item/condition/data.ts"
 import { ConditionGURPS } from "@item/condition/document.ts"
 import { CombatGURPS } from "@module/combat/document.ts"

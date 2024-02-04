@@ -1,5 +1,5 @@
+import { ItemSourceGURPS } from "./base/data/index.ts"
 import { ItemGURPS } from "./base/document.ts"
-import { ItemSourceGURPS } from "./data/index.ts"
 
 type ItemOrSource = PreCreate<ItemSourceGURPS> | ItemGURPS
 

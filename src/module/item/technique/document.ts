@@ -1,17 +1,16 @@
-import { ActorGURPS } from "@actor/document.ts"
 import { ItemGCS } from "@item/gcs/document.ts"
-import { TechniqueSystemSource } from "./data.ts"
+import { TechniqueSource, TechniqueSystemSource } from "./data.ts"
 import { SkillLevel } from "@item/skill/data.ts"
 import { SkillGURPS } from "@item/skill/document.ts"
 import { difficulty } from "@util/enum/difficulty.ts"
 import { SkillDefault } from "@sytem/default/index.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { gid } from "@module/data/misc.ts"
-import { ItemType } from "@item/types.ts"
+import { ActorGURPS, CharacterGURPS } from "@actor"
 
 export interface TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
+	readonly _source: TechniqueSource
 	system: TechniqueSystemSource
-	type: ItemType.Technique
 }
 export class TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	declare level: SkillLevel
@@ -66,9 +65,8 @@ export class TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | nul
 
 	adjustedPoints(tooltip?: TooltipGURPS): number {
 		let points = this.points
-		if (this.actor) {
-			points += (this.actor.skillPointBonusFor(this.name!, "", this.tags, tooltip)
-			// Points += this.actor.bonusFor(`skills.points/${this.name}`, tooltip)
+		if (this.actor instanceof CharacterGURPS) {
+			points += this.actor.skillPointBonusFor(this.name!, "", this.tags, tooltip)
 			points = Math.max(points, 0)
 		}
 		return points
@@ -76,10 +74,10 @@ export class TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | nul
 
 	satisfied(tooltip: TooltipGURPS): boolean {
 		if (this.default.type !== "skill") return true
-		const sk = this.actor?.bestSkillNamed(this.default.name ?? "", this.default.specialization ?? "", false, null)
-		const satisfied = (sk && (sk instanceof TechniqueGURPS || sk.points > 0)) || false
+		if (!(this.actor instanceof CharacterGURPS)) return true
+		const sk = this.actor.bestSkillNamed(this.default.name ?? "", this.default.specialization ?? "", false, null)
+		const satisfied = !!sk && (sk instanceof TechniqueGURPS || sk.points > 0)
 		if (!satisfied) {
-			// Tooltip.push(prefix)
 			if (!sk) tooltip.push("gurps.prereqs.technique.skill")
 			else tooltip.push("gurps.prereqs.technique.point")
 			tooltip.push(this.default.fullName(this.actor!))
@@ -122,7 +120,7 @@ export class TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | nul
 		const tooltip = new TooltipGURPS()
 		const points = this.adjustedPoints()
 
-		if (!actor) return { level: -Infinity, relative_level: -Infinity, tooltip: tooltip }
+		if (!(actor instanceof CharacterGURPS)) return { level: -Infinity, relative_level: -Infinity, tooltip: tooltip }
 
 		// Level of defaulting skill.
 		const default_skill_level = getDefaultSkillLevel(this)
@@ -161,6 +159,7 @@ export class TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | nul
 		}
 
 		function getDefaultSkillLevel(technique: TechniqueGURPS): number {
+			if (!(actor instanceof CharacterGURPS)) return 0
 			if (technique.default.type === gid.Skill) {
 				const sk = actor.baseSkill(technique.default, true)
 				return sk ? sk.level.level : 0
@@ -214,14 +213,14 @@ export class TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | nul
 			while (this.points > 0) {
 				this.system.points = Math.max(this.points - 1, 0)
 				if (this.calculateLevel().level !== oldLevel) {
-					this.system.points++
+					this.system.points += 1
 					this.update({ "system.points": this.points })
 				}
 			}
 		}
 	}
 
-	setLevel(level: number) {
+	setLevel(level: number): Promise<this | undefined> {
 		return this.update({ "system.points": this.getPointsForLevel(level) })
 	}
 

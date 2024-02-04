@@ -22,7 +22,7 @@ export class PrereqList {
 		this.prereqs = []
 	}
 
-	static fromObject(data: PrereqListObj): PrereqList {
+	static fromObject(data: PrereqListObj, character: CharacterResolver): PrereqList {
 		const prereq = new PrereqList()
 		prereq.all = data.all
 		if (data.when_tl) prereq.when_tl = new NumericCriteria(data.when_tl.compare, data.when_tl.qualifier)
@@ -30,8 +30,8 @@ export class PrereqList {
 			prereq.prereqs = data.prereqs
 				.filter(e => !!CONFIG.GURPS.Prereq.classes[e.type])
 				.map(e => {
-					const prereqConstructor = CONFIG.GURPS.Prereq.classes[e.type]
-					return prereqConstructor.fromObject(e)
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					return CONFIG.GURPS.Prereq.classes[e.type].fromObject(e as any, character)
 				})
 		return prereq
 	}

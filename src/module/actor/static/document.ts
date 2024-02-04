@@ -1,5 +1,11 @@
 import { ActorGURPS } from "@actor/base.ts"
-import { StaticCharacterSystemData } from "./data.ts"
+import {
+	StaticCharacterSystemData,
+	StaticResourceThreshold,
+	StaticResourceTracker,
+	StaticThresholdComparison,
+	StaticThresholdOperator,
+} from "./data.ts"
 import { UserGURPS } from "@module/user/document.ts"
 import { ActorType } from "@actor"
 import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
@@ -40,45 +46,45 @@ export class StaticCharacterGURPS<
 	// 	}
 	// }
 	//
-	// get effectiveMove(): number {
-	// 	return this.system.currentmove
-	// }
-	//
-	// get effectiveSprint(): number {
-	// 	return this.system.currentmove * 1.2
-	// }
-	//
-	// get trackers(): StaticResourceTracker[] {
-	// 	function getCurrentThreshold(v: StaticResourceTracker): StaticResourceThreshold | null {
-	// 		const thresholds = v.thresholds
-	// 		if (!thresholds?.length) return null
-	// 		const current = thresholds.at(-1)!
-	// 		for (const t of thresholds) {
-	// 			let compare = v.max
-	// 			if (t.operator === StaticThresholdOperator.Add) compare += t.value
-	// 			else if (t.operator === StaticThresholdOperator.Subtract) compare -= t.value
-	// 			else if (t.operator === StaticThresholdOperator.Multiply) compare *= t.value
-	// 			else if (t.operator === StaticThresholdOperator.Divide) compare /= t.value
-	//
-	// 			if (t.comparison === StaticThresholdComparison.LessThan && v.value < compare) return t
-	// 			else if (t.comparison === StaticThresholdComparison.LessThanOrEqual && v.value <= compare) return t
-	// 			else if (t.comparison === StaticThresholdComparison.GreaterThan && v.value > compare) return t
-	// 			else if (t.comparison === StaticThresholdComparison.GreaterThanOrEqual && v.value >= compare) return t
-	// 		}
-	// 		return current
-	// 	}
-	//
-	// 	if (!this.system.additionalresources.tracker) return []
-	// 	return Object.keys(this.system.additionalresources.tracker).map(k => {
-	// 		const v = this.system.additionalresources.tracker[k]
-	// 		const currentThreshold = getCurrentThreshold(v)
-	// 		return mergeObject(v, {
-	// 			index: k,
-	// 			currentThreshold: currentThreshold,
-	// 		})
-	// 	})
-	// }
-	//
+	get effectiveMove(): number {
+		return this.system.currentmove
+	}
+
+	get effectiveSprint(): number {
+		return this.system.currentmove * 1.2
+	}
+
+	get trackers(): StaticResourceTracker[] {
+		function getCurrentThreshold(v: StaticResourceTracker): StaticResourceThreshold | null {
+			const thresholds = v.thresholds
+			if (!thresholds?.length) return null
+			const current = thresholds.at(-1)!
+			for (const t of thresholds) {
+				let compare = v.max
+				if (t.operator === StaticThresholdOperator.Add) compare += t.value
+				else if (t.operator === StaticThresholdOperator.Subtract) compare -= t.value
+				else if (t.operator === StaticThresholdOperator.Multiply) compare *= t.value
+				else if (t.operator === StaticThresholdOperator.Divide) compare /= t.value
+
+				if (t.comparison === StaticThresholdComparison.LessThan && v.value < compare) return t
+				else if (t.comparison === StaticThresholdComparison.LessThanOrEqual && v.value <= compare) return t
+				else if (t.comparison === StaticThresholdComparison.GreaterThan && v.value > compare) return t
+				else if (t.comparison === StaticThresholdComparison.GreaterThanOrEqual && v.value >= compare) return t
+			}
+			return current
+		}
+
+		if (!this.system.additionalresources.tracker) return []
+		return Object.keys(this.system.additionalresources.tracker).map(k => {
+			const v = this.system.additionalresources.tracker[k]
+			const currentThreshold = getCurrentThreshold(v)
+			return fu.mergeObject(v, {
+				index: k,
+				currentThreshold: currentThreshold,
+			})
+		})
+	}
+
 	// get maxHP(): number {
 	// 	return this.system.HP.max
 	// }

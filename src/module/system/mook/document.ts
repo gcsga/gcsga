@@ -21,19 +21,18 @@ import { Attribute } from "@sytem/attribute/object.ts"
 import { attribute } from "@util/enum/attribute.ts"
 import { CharacterGURPS } from "@actor/index.ts"
 import { ItemType } from "@item/types.ts"
-import { NoteSource, SkillGURPS } from "@item"
+import { SkillGURPS } from "@item"
 import { SpellGURPS } from "@item/spell/document.ts"
-import {
-	BaseItemSourceGURPS,
-	ItemFlags,
-	MeleeWeaponSource,
-	RangedWeaponSource,
-	SkillSource,
-	SpellSource,
-	TraitModifierSource,
-} from "@item/data.ts"
 import { randomID } from "types/foundry/common/utils/helpers.js"
 import { AttributeDef } from "@sytem/attribute/attribute_def.ts"
+import { ItemFlags } from "@item/base/data/system.ts"
+import { TraitModifierSource } from "@item/trait_modifier/data.ts"
+import { SkillSource } from "@item/skill/data.ts"
+import { SpellSource } from "@item/spell/data.ts"
+import { MeleeWeaponSource } from "@item/melee_weapon/data.ts"
+import { RangedWeaponSource } from "@item/ranged_weapon/data.ts"
+import { NoteSource } from "@item/note/data.ts"
+import { ItemSourceGURPS, TraitSource } from "@item/base/data/index.ts"
 
 export class Mook {
 	type = "mook"
@@ -86,7 +85,7 @@ export class Mook {
 		catchall: string
 	}
 
-	update(data: Record<string, unknown>): void {
+	update(data: Partial<MookData>): void {
 		Object.assign(this, fu.mergeObject(this, data))
 		this.attributes = this.getAttributes()
 	}
@@ -246,15 +245,15 @@ export class Mook {
 		return attr?.max.toString()
 	}
 
-	isSkillLevelResolutionExcluded(..._args: never[]): boolean {
+	isSkillLevelResolutionExcluded(_name: string, _specialization: string): boolean {
 		return false
 	}
 
-	registerSkillLevelResolutionExclusion(..._args: never[]): void {
+	registerSkillLevelResolutionExclusion(_name: string, _specialization: string): void {
 		// do nothing}
 	}
 
-	unregisterSkillLevelResolutionExclusion(..._args: never[]): void {
+	unregisterSkillLevelResolutionExclusion(_name: string, _specialization: string): void {
 		// do nothing}
 	}
 
@@ -329,8 +328,8 @@ export class Mook {
 		return newActor
 	}
 
-	private async _createItemData(): Promise<DeepPartial<BaseItemSourceGURPS<ItemType, object>>[]> {
-		const items: DeepPartial<BaseItemSourceGURPS>[] = []
+	private async _createItemData(): Promise<DeepPartial<ItemSourceGURPS>[]> {
+		const items: DeepPartial<ItemSourceGURPS>[] = []
 		for (const trait of this.traits) items.push(...this._getTraitItemData(trait))
 		for (const skill of this.skills) items.push(await this._getSkillItemData(skill))
 		for (const spell of this.spells) items.push(await this._getSpellItemData(spell))
@@ -342,10 +341,10 @@ export class Mook {
 		return items
 	}
 
-	private _getTraitItemData(trait: MookTrait): DeepPartial<BaseItemSourceGURPS<ItemType.Trait>>[] {
-		const items: DeepPartial<BaseItemSourceGURPS<ItemType.Trait>>[] = []
+	private _getTraitItemData(trait: MookTrait): DeepPartial<TraitSource | TraitModifierSource>[] {
+		const items: DeepPartial<TraitSource | TraitModifierSource>[] = []
 		const id = randomID()
-		const data: DeepPartial<BaseItemSourceGURPS<ItemType.Trait>> = {
+		const data: DeepPartial<TraitSource> = {
 			name: trait.name,
 			type: ItemType.Trait,
 			_id: id,
@@ -353,8 +352,8 @@ export class Mook {
 			system: {
 				name: trait.name,
 				notes: trait.notes,
-				refererence: trait.reference,
-				points: trait.points,
+				reference: trait.reference,
+				base_points: trait.points,
 				cr: trait.cr,
 				can_level: trait.levels !== 0,
 				levels: trait.levels,

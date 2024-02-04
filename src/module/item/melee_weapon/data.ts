@@ -1,7 +1,8 @@
+import { BaseItemSourceGURPS } from "@item/base/data/system.ts"
 import { ItemType } from "@item/types.ts"
-import { BaseWeaponSource, BaseWeaponSystemSource } from "@item/weapon/data.ts"
+import { BaseWeaponSystemSource } from "@item/weapon/data.ts"
 
-export type MeleeWeaponSource = BaseWeaponSource<ItemType.MeleeWeapon, MeleeWeaponSystemSource>
+export type MeleeWeaponSource = BaseItemSourceGURPS<ItemType.MeleeWeapon, MeleeWeaponSystemSource>
 
 export interface MeleeWeaponSystemSource extends BaseWeaponSystemSource {
 	reach: string

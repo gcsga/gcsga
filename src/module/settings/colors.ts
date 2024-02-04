@@ -1,4 +1,3 @@
-import { mergeObject } from "types/foundry/common/utils/helpers.js"
 import { PartialSettingsData, SettingsMenuGURPS } from "./menu.ts"
 import { SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
 
@@ -14,7 +13,7 @@ export class ColorSettings extends SettingsMenuGURPS {
 		options.classes.push("gurps")
 		options.classes.push("settings-menu")
 
-		return mergeObject(options, {
+		return fu.mergeObject(options, {
 			title: `gurps.settings.${SETTINGS.COLORS}.name`,
 			id: `${SETTINGS.COLORS}-settings`,
 			template: `systems/${SYSTEM_NAME}/templates/system/settings/${SETTINGS.COLORS}.hbs`,

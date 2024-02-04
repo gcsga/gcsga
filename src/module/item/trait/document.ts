@@ -1,6 +1,6 @@
 import { ActorGURPS } from "@actor/base.ts"
 import { ItemGCS } from "@item/gcs/document.ts"
-import { TraitSystemSource } from "./data.ts"
+import { TraitSource, TraitSystemSource } from "./data.ts"
 import { display } from "@util/enum/display.ts"
 import { StringBuilder } from "@util/string_builder.ts"
 import { sheetSettingsFor } from "@module/data/sheet_settings.ts"
@@ -14,8 +14,8 @@ import { CharacterResolver } from "@util"
 import { study } from "@util/enum/study.ts"
 
 export interface TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
+	readonly _source: TraitSource
 	system: TraitSystemSource
-	type: ItemType.Trait
 }
 
 export class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {

@@ -299,7 +299,7 @@ async function getDefaultSkills(): Promise<void> {
 	const skills: SkillResolver[] = []
 	const skillPacks = game.settings.get(SYSTEM_NAME, SETTINGS.COMPENDIUM_BROWSER_PACKS).skill
 	for (const s in skillPacks)
-		if (skillPacks[s].skillDefault) {
+		if (skillPacks[s]?.skillDefault) {
 			const pack = game.packs.get(s) as CompendiumCollection<Item<null>>
 			;(await pack.getDocuments()).forEach(e => {
 				skills.push(e as unknown as SkillResolver)

@@ -1,5 +1,4 @@
-import { ActorGURPS } from "@actor"
-import { CharacterGURPS } from "@actor/document.ts"
+import { ActorGURPS, CharacterGURPS } from "@actor"
 import { EffectGURPS } from "@item"
 import { ManeuverID } from "@item/condition/index.ts"
 import { SYSTEM_NAME } from "@module/data/index.ts"

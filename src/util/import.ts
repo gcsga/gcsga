@@ -1,25 +1,3 @@
-import { ItemFlags, ItemFlagsGURPS } from "@item/base/data/values.ts"
-import { ItemSourceGURPS } from "@item/data/index.ts"
-import {
-	EquipmentContainerSystemSource,
-	EquipmentModifierContainerSystemSource,
-	EquipmentModifierSystemSource,
-	EquipmentSystemSource,
-	MeleeWeaponSystemSource,
-	NoteContainerSystemSource,
-	NoteSystemSource,
-	RangedWeaponSystemSource,
-	RitualMagicSpellSystemSource,
-	SkillContainerSystemSource,
-	SkillSystemSource,
-	SpellContainerSystemSource,
-	SpellSystemSource,
-	TechniqueSystemSource,
-	TraitContainerSystemSource,
-	TraitModifierContainerSystemSource,
-	TraitModifierSystemSource,
-	TraitSystemSource,
-} from "@item/data.ts"
 import { SYSTEM_NAME } from "@module/data/index.ts"
 import { randomID } from "types/foundry/common/utils/helpers.js"
 import { LocalizeGURPS } from "./localize.ts"
@@ -29,27 +7,139 @@ import { SkillDefault } from "@sytem/default/index.ts"
 import { stdmg } from "./enum/stdmg.ts"
 import { FeatureObj } from "@feature/index.ts"
 import { ItemType } from "@item/types.ts"
+import { ItemFlags, ItemFlagsGURPS, ItemSourceGURPS } from "@item/base/data/index.ts"
+import { TraitSystemSource } from "@item/trait/data.ts"
+import { TraitContainerSystemSource } from "@item/trait_container/data.ts"
+import { TraitModifierSystemSource } from "@item/trait_modifier/data.ts"
+import { TraitModifierContainerSystemSource } from "@item/trait_modifier_container/data.ts"
+import { SkillSystemSource } from "@item/skill/data.ts"
+import { TechniqueSystemSource } from "@item/technique/data.ts"
+import { SkillContainerSystemSource } from "@item/skill_container/data.ts"
+import { SpellSystemSource } from "@item/spell/data.ts"
+import { RitualMagicSpellSystemSource } from "@item/ritual_magic_spell/data.ts"
+import { SpellContainerSystemSource } from "@item/spell_container/data.ts"
+import { EquipmentSystemSource } from "@item/equipment/data.ts"
+import { EquipmentContainerSystemSource } from "@item/equipment_container/data.ts"
+import { EquipmentModifierSystemSource } from "@item/equipment_modifier/data.ts"
+import { EquipmentModifierContainerSystemSource } from "@item/equipment_modifier_container/data.ts"
+import { NoteSystemSource } from "@item/note/data.ts"
+import { NoteContainerSystemSource } from "@item/note_container/data.ts"
+import { MeleeWeaponSystemSource } from "@item/melee_weapon/data.ts"
+import { RangedWeaponSystemSource } from "@item/ranged_weapon/data.ts"
+
+type ImportedTraitSystemSource = TraitSystemSource & {
+	modifiers: (ImportedTraitModifierSystemSource | ImportedTraitModifierContainerSystemSource)[]
+	weapons: (ImportedMeleeWeaponSystemSource | ImportedRangedWeaponSystemSource)[]
+}
+
+type ImportedTraitContainerSystemSource = TraitContainerSystemSource & {
+	children: (ImportedTraitSystemSource | ImportedTraitContainerSystemSource)[]
+	modifiers: (ImportedTraitModifierSystemSource | ImportedTraitModifierContainerSystemSource)[]
+	weapons: (ImportedMeleeWeaponSystemSource | ImportedRangedWeaponSystemSource)[]
+}
+
+type ImportedTraitModifierSystemSource = TraitModifierSystemSource
+
+type ImportedTraitModifierContainerSystemSource = TraitModifierContainerSystemSource & {
+	children: (ImportedTraitModifierSystemSource | ImportedTraitModifierContainerSystemSource)[]
+}
+
+type ImportedSkillSystemSource = SkillSystemSource & {
+	weapons: (ImportedMeleeWeaponSystemSource | ImportedRangedWeaponSystemSource)[]
+}
+
+type ImportedTechniqueSystemSorce = TechniqueSystemSource & {
+	weapons: (ImportedMeleeWeaponSystemSource | ImportedRangedWeaponSystemSource)[]
+}
+
+type ImportedSkillContainerSystemSource = SkillContainerSystemSource & {
+	children: (ImportedSkillSystemSource | ImportedTechniqueSystemSorce | ImportedSkillContainerSystemSource)[]
+}
+
+type ImportedSpellSystemSource = SpellSystemSource & {
+	weapons: (ImportedMeleeWeaponSystemSource | ImportedRangedWeaponSystemSource)[]
+}
+
+type ImportedRitualMagicSpellSystemSource = RitualMagicSpellSystemSource & {
+	weapons: (ImportedMeleeWeaponSystemSource | ImportedRangedWeaponSystemSource)[]
+}
+
+type ImportedSpellContainerSystemSource = SpellContainerSystemSource & {
+	children: (ImportedSpellSystemSource | ImportedRitualMagicSpellSystemSource | ImportedSpellContainerSystemSource)[]
+}
+
+type ImportedEquipmentSystemSource = EquipmentSystemSource & {
+	modifiers: (ImportedEquipmentModifierSystemSource | ImportedEquipmentModifierContainerSystemSource)[]
+	weapons: (ImportedMeleeWeaponSystemSource | ImportedRangedWeaponSystemSource)[]
+}
+
+type ImportedEquipmentContainerSystemSource = EquipmentContainerSystemSource & {
+	children: (ImportedEquipmentSystemSource | ImportedEquipmentContainerSystemSource)[]
+	modifiers: (ImportedEquipmentModifierSystemSource | ImportedEquipmentModifierContainerSystemSource)[]
+	weapons: (ImportedMeleeWeaponSystemSource | ImportedRangedWeaponSystemSource)[]
+}
+
+type ImportedEquipmentModifierSystemSource = EquipmentModifierSystemSource
+
+type ImportedEquipmentModifierContainerSystemSource = EquipmentModifierContainerSystemSource & {
+	children: (ImportedEquipmentModifierSystemSource | ImportedEquipmentModifierContainerSystemSource)[]
+}
+
+type ImportedNoteSystemSource = NoteSystemSource
+
+type ImportedNoteContainerSystemSource = NoteContainerSystemSource & {
+	children: (ImportedNoteSystemSource | ImportedNoteContainerSystemSource)[]
+}
+
+type ImportedMeleeWeaponSystemSource = MeleeWeaponSystemSource
+type ImportedRangedWeaponSystemSource = RangedWeaponSystemSource
+
+export type ImportedSystemSource =
+	| ImportedTraitSystemSource
+	| ImportedTraitContainerSystemSource
+	| ImportedTraitModifierSystemSource
+	| ImportedTraitModifierContainerSystemSource
+	| ImportedSkillSystemSource
+	| ImportedTechniqueSystemSorce
+	| ImportedSkillContainerSystemSource
+	| ImportedSpellSystemSource
+	| ImportedRitualMagicSpellSystemSource
+	| ImportedSpellContainerSystemSource
+	| ImportedEquipmentSystemSource
+	| ImportedEquipmentContainerSystemSource
+	| ImportedEquipmentModifierSystemSource
+	| ImportedEquipmentModifierContainerSystemSource
+	| ImportedNoteSystemSource
+	| ImportedNoteContainerSystemSource
+	| ImportedMeleeWeaponSystemSource
+	| ImportedRangedWeaponSystemSource
+
+interface ItemImportConext {
+	container: string | null
+	other?: boolean
+	sort: number
+}
 
 class ImportUtils {
 	static importItems(
-		list: ItemSourceGURPS["system"][],
-		context: { container: string | null; other?: boolean; sort: number } = { container: null, sort: 0 },
-	): ItemSourceGURPS["system"][] {
+		list: ImportedSystemSource[],
+		context: ItemImportConext = { container: null, sort: 0 },
+	): ImportedSystemSource[] {
 		if (!list) return []
-		let items: ItemSourceGURPS["system"] = []
+
+		let items: Partial<ItemSourceGURPS>[] = []
 
 		for (const item of list) {
-			item.name ??= item.description ?? item.text ?? item.usage
 			const [itemData, itemFlags, children, id] = ImportUtils.getItemData(item, context, randomID())
 
-			let type = itemData.type.replace("_container", "")
+			let type = itemData.type?.replace("_container", "")
 			if (type === ItemType.Technique) type = ItemType.Skill
 			else if (type === ItemType.RitualMagicSpell) type = ItemType.Spell
 			else if (type === ItemType.Equipment) type = "equipment"
 			const newItem = {
-				name: item.name,
+				name: ImportUtils.getItemName(item),
 				img: `systems/${SYSTEM_NAME}/assets/icons/${type}.svg`,
-				type: itemData.type,
+				type: itemData.type as ItemType,
 				system: itemData,
 				flags: itemFlags,
 				sort: context.sort * 1000,
@@ -59,19 +149,36 @@ class ImportUtils {
 				newItem.name = game.i18n.localize(`TYPES.Item.${newItem.system.type}`)
 			}
 			items.push(newItem)
-			items = items.concat(children)
+			items = [...items, ...children]
 			context.sort += 1
 		}
 		return items
 	}
 
+	private static getItemName(item: ImportedSystemSource): string {
+		switch (item.type) {
+			case ItemType.MeleeWeapon:
+			case ItemType.RangedWeapon:
+				return (item as ImportedMeleeWeaponSystemSource).usage
+			case ItemType.Equipment:
+			case ItemType.EquipmentContainer:
+				return (item as ImportedEquipmentSystemSource).description
+			case ItemType.Note:
+			case ItemType.NoteContainer:
+				return (item as ImportedNoteSystemSource).text
+			default:
+				return (item as ImportedTraitSystemSource).name
+		}
+	}
+
 	private static getItemData(
-		item: ItemSourceGURPS["system"],
+		item: ImportedSystemSource,
 		context: { container: string | null; other?: boolean; sort: number },
 		id: string,
-	): [ItemSourceGURPS["system"], ItemFlagsGURPS, ItemSourceGURPS["system"][], string] {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	): [any, ItemFlagsGURPS, any[], string] {
 		const flags: ItemFlagsGURPS = { [SYSTEM_NAME]: { [ItemFlags.Container]: context.container } }
-		if (["equipment", "equipment_container"].includes(item.type))
+		if (["equipment", "equipment_container"].includes(item.type!))
 			flags[SYSTEM_NAME]![ItemFlags.Other] = context.other || false
 		let items: ItemSourceGURPS["system"][] = []
 		switch (item.type) {
@@ -151,7 +258,7 @@ class ImportUtils {
 			default:
 				throw new Error(
 					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.error.import.invalid_item_type, {
-						type: item.type,
+						type: item.type!,
 					}),
 				)
 		}
@@ -159,6 +266,7 @@ class ImportUtils {
 
 	static getTraitData(data: TraitSystemSource): TraitSystemSource {
 		return {
+			_migration: { version: null, previous: null },
 			name: data.name ?? "Trait",
 			type: ItemType.Trait,
 			// id: data.id ?? newUUID(),
@@ -186,6 +294,7 @@ class ImportUtils {
 
 	private static getTraitContainerSource(data: TraitContainerSystemSource): TraitContainerSystemSource {
 		return {
+			_migration: { version: null, previous: null },
 			name: data.name ?? "Trait Container",
 			type: ItemType.TraitContainer,
 			container_type: data.container_type ?? "group",
@@ -204,6 +313,7 @@ class ImportUtils {
 
 	private static getTraitModifierData(data: TraitModifierSystemSource): TraitModifierSystemSource {
 		return {
+			_migration: { version: null, previous: null },
 			name: data.name ?? "Trait Modifier",
 			type: ItemType.TraitModifier,
 			id: data.id ?? "",
@@ -225,6 +335,7 @@ class ImportUtils {
 		data: TraitModifierContainerSystemSource,
 	): TraitModifierContainerSystemSource {
 		return {
+			_migration: { version: null, previous: null },
 			name: data.name ?? "Trait Modifier Container",
 			type: ItemType.TraitModifierContainer,
 			id: data.id ?? "",
@@ -239,6 +350,7 @@ class ImportUtils {
 
 	private static getSkillData(data: SkillSystemSource): SkillSystemSource {
 		return {
+			_migration: { version: null, previous: null },
 			name: data.name ?? "Skill",
 			type: ItemType.Skill,
 			id: data.id ?? "",
@@ -264,6 +376,7 @@ class ImportUtils {
 
 	private static getTechniqueData(data: TechniqueSystemSource): TechniqueSystemSource {
 		return {
+			_migration: { version: null, previous: null },
 			name: data.name ?? "Technique",
 			type: ItemType.Technique,
 			id: data.id ?? "",
@@ -290,6 +403,7 @@ class ImportUtils {
 
 	private static getSkillContainerData(data: SkillContainerSystemSource): SkillContainerSystemSource {
 		return {
+			_migration: { version: null, previous: null },
 			name: data.name ?? "Skill Container",
 			type: ItemType.SkillContainer,
 			id: data.id ?? "",
@@ -304,6 +418,7 @@ class ImportUtils {
 
 	private static getSpellData(data: SpellSystemSource): SpellSystemSource {
 		return {
+			_migration: { version: null, previous: null },
 			name: data.name ?? "Spell",
 			type: ItemType.Spell,
 			id: data.id ?? "",
@@ -332,6 +447,7 @@ class ImportUtils {
 
 	private static getRitualMagicSpellData(data: RitualMagicSpellSystemSource): RitualMagicSpellSystemSource {
 		return {
+			_migration: { version: null, previous: null },
 			name: data.name ?? "Spell",
 			type: ItemType.RitualMagicSpell,
 			id: data.id ?? "",
@@ -362,6 +478,7 @@ class ImportUtils {
 
 	private static getSpellContainerData(data: SpellContainerSystemSource): SpellContainerSystemSource {
 		return {
+			_migration: { version: null, previous: null },
 			name: data.name ?? "Spell Container",
 			type: ItemType.SpellContainer,
 			id: data.id ?? "",
@@ -377,6 +494,7 @@ class ImportUtils {
 	// private static getEquipmentData(data: EquipmentSystemSource, other = false): EquipmentSystemSource {
 	private static getEquipmentData(data: EquipmentSystemSource): EquipmentSystemSource {
 		return {
+			_migration: { version: null, previous: null },
 			name: data.name ?? "Equipment",
 			type: ItemType.Equipment,
 			id: data.id ?? "",
@@ -407,6 +525,7 @@ class ImportUtils {
 		// other = false
 	): EquipmentContainerSystemSource {
 		return {
+			_migration: { version: null, previous: null },
 			name: data.name ?? "Equipment",
 			type: ItemType.EquipmentContainer,
 			id: data.id ?? "",
@@ -435,6 +554,7 @@ class ImportUtils {
 
 	private static getEquipmentModifierData(data: EquipmentModifierSystemSource): EquipmentModifierSystemSource {
 		return {
+			_migration: { version: null, previous: null },
 			name: data.name ?? "Equipment Modifier",
 			type: ItemType.EquipmentModifier,
 			id: data.id ?? "",
@@ -457,6 +577,7 @@ class ImportUtils {
 		data: EquipmentModifierContainerSystemSource,
 	): EquipmentModifierContainerSystemSource {
 		return {
+			_migration: { version: null, previous: null },
 			name: data.name ?? "Equipment Modifier Container",
 			type: ItemType.EquipmentModifierContainer,
 			id: data.id ?? "",
@@ -471,6 +592,7 @@ class ImportUtils {
 
 	private static getNoteData(data: NoteSystemSource): NoteSystemSource {
 		return {
+			_migration: { version: null, previous: null },
 			name: data.text ?? "Note",
 			type: ItemType.Note,
 			id: data.id ?? "",
@@ -500,6 +622,7 @@ class ImportUtils {
 
 	private static getMeleeWeaponData(data: MeleeWeaponSystemSource): MeleeWeaponSystemSource {
 		return {
+			_migration: { version: null, previous: null },
 			id: data.id ?? "",
 			type: ItemType.MeleeWeapon,
 			strength: data.strength ?? "",
@@ -524,6 +647,7 @@ class ImportUtils {
 
 	private static getRangedWeaponData(data: RangedWeaponSystemSource): RangedWeaponSystemSource {
 		return {
+			_migration: { version: null, previous: null },
 			id: data.id ?? "",
 			type: ItemType.RangedWeapon,
 			strength: data.strength ?? "",

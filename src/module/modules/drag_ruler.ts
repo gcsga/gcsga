@@ -1,9 +1,9 @@
 import { CharacterGURPS, StaticCharacterGURPS } from "@actor"
-import { SYSTEM_NAME } from "@module/data"
-import { TokenGURPS } from "@module/token"
+import { TokenGURPS } from "@module/canvas/index.ts"
 
-export const init = function () {
-	Hooks.once("dragRuler.ready", (SpeedProvider: any) => {
+export const init = function (): void {
+	Hooks.once("dragRuler.ready", SpeedProvider => {
+		// @ts-expect-error SpeedProvider not declared
 		class SpeedProviderGURPS extends SpeedProvider {
 			get colors() {
 				return [

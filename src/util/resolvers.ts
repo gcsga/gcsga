@@ -135,7 +135,7 @@ export interface CharacterResolver extends ActorResolver<ActorType.Character> {
 	embeddedEval: (s: string) => string
 }
 
-export interface ItemResolver<T extends ItemType> {
+export interface ItemResolver<T extends string> {
 	type: T
 	name: string | null
 	formattedName: string

@@ -4,7 +4,7 @@ import { UserFlags, UserGURPS } from "@module/user/index.ts"
 import { LastActor } from "@util"
 
 class ModifierList extends Application {
-	_tempRangeMod: RollModifier = { name: "", modifier: 0, tags: [RollModifierTags.Range] }
+	_tempRangeMod: RollModifier = { id: "", modifier: 0, tags: [RollModifierTags.Range] }
 
 	static override get defaultOptions(): ApplicationOptions {
 		return fu.mergeObject(super.defaultOptions, {
@@ -54,7 +54,7 @@ class ModifierList extends Application {
 		html.find(".collapse-toggle").on("click", event => this._onCollapseToggle(event))
 	}
 
-	protected override _injectHTML(html: JQuery<HTMLElement>): void {
+	override _injectHTML(html: JQuery<HTMLElement>): void {
 		if ($("body").find("#modifier-list").length === 0) {
 			html.insertBefore($("body").find("#players"))
 			this._element = html
@@ -64,7 +64,7 @@ class ModifierList extends Application {
 	_onClickModifier(event: JQuery.ClickEvent): void {
 		event.preventDefault()
 		const modifier: RollModifier = {
-			name: $(event.currentTarget).data("name"),
+			id: $(event.currentTarget).data("name"),
 			modifier: $(event.currentTarget).data("modifier"),
 		}
 		return (game.user as UserGURPS).addModifier(modifier)

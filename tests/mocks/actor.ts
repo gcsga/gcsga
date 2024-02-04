@@ -1,17 +1,18 @@
 import { ActorSourceGURPS } from "@actor/data/index.ts"
 import { MockCollection } from "./collection.ts"
 import { MockItem } from "./item.ts"
-import { TokenDocumentGURPS } from "@module/canvas/token/document.ts"
 import { ItemGURPS } from "@item/base/document.ts"
 import { ActorGURPS } from "@actor/base.ts"
 import { ActiveEffectGURPS } from "@module/active-effect/document.ts"
-import { ActorSystemSource } from "@actor/index.ts"
-import { ItemSourceGURPS } from "@item/data/index.ts"
+import { TokenDocumentGURPS } from "@scene/token-document/document.ts"
+import { SceneGURPS } from "@scene"
+import { ActorSystemSource } from "@actor/base/data.ts"
+import { ItemSourceGURPS } from "@item/base/data/index.ts"
 
 export class MockActor {
 	_source: ActorSourceGURPS
 
-	readonly parent: TokenDocumentGURPS<Scene | null> | null = null
+	readonly parent: TokenDocumentGURPS<SceneGURPS | null> | null = null
 
 	readonly items: MockCollection<ItemGURPS<ActorGURPS>> = new MockCollection()
 
@@ -73,7 +74,7 @@ export class MockActor {
 
 	static async updateDocuments(
 		updates: Record<string, unknown>[] = [],
-		_context: DocumentModificationContext<TokenDocumentGURPS<Scene | null>> = {},
+		_context: DocumentModificationContext<TokenDocumentGURPS<SceneGURPS | null>> = {},
 	): Promise<ActorGURPS[]> {
 		return updates.flatMap(update => {
 			const actor = game.actors.find(a => a.id === update._id)
@@ -85,6 +86,7 @@ export class MockActor {
 			for (const partial of itemUpdates) {
 				partial._id ??= "item1"
 				const source = actor._source.items.find(
+					// @ts-expect-error idk
 					(maybeSource: ItemSourceGURPS) => maybeSource._id === partial._id,
 				)
 				if (source) {

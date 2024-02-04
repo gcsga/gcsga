@@ -1,17 +1,16 @@
 import { ActorGURPS } from "@actor/base.ts"
 import { ItemGCS } from "@item/gcs/document.ts"
-import { TraitModifierSystemSource } from "./data.ts"
+import { TraitModifierSource, TraitModifierSystemSource } from "./data.ts"
 import { display } from "@util/enum/display.ts"
 import { sheetSettingsFor } from "@module/data/sheet_settings.ts"
 import { tmcost } from "@util/enum/tmcost.ts"
 import { affects } from "@util/enum/affects.ts"
 import { StringBuilder } from "@util/string_builder.ts"
-import { ItemType } from "@item/types.ts"
-import { CharacterResolver } from "@util"
+import { CharacterGURPS } from "@actor"
 
 export interface TraitModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
+	readonly _source: TraitModifierSource
 	system: TraitModifierSystemSource
-	type: ItemType.TraitModifier
 }
 
 export class TraitModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
@@ -27,8 +26,7 @@ export class TraitModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS |
 	}
 
 	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
-		if (optionChecker(sheetSettingsFor(this.actor as unknown as CharacterResolver).notes_display))
-			return this.localNotes
+		if (optionChecker(sheetSettingsFor(this.actor as CharacterGURPS).notes_display)) return this.localNotes
 		return ""
 	}
 
@@ -71,7 +69,7 @@ export class TraitModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS |
 		const buffer = new StringBuilder()
 		buffer.push(this.formattedName)
 		if (this.localNotes !== "") buffer.push(` (${this.localNotes})`)
-		if (sheetSettingsFor(this.actor as unknown as CharacterResolver).show_trait_modifier_adj)
+		if (sheetSettingsFor(this.actor as CharacterGURPS).show_trait_modifier_adj)
 			buffer.push(` [${this.costDescription}]`)
 		return buffer.toString()
 	}

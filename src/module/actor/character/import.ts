@@ -1,16 +1,3 @@
-import {
-	EquipmentContainerSystemSource,
-	EquipmentSystemSource,
-	NoteContainerSystemSource,
-	NoteSystemSource,
-	RitualMagicSpellSystemSource,
-	SkillContainerSystemSource,
-	SkillSystemSource,
-	SpellContainerSystemSource,
-	TechniqueSystemSource,
-	TraitContainerSystemSource,
-	TraitSystemSource,
-} from "@item/data.ts"
 import { CharacterSystemSource, CharacterThirdPartyData } from "./data.ts"
 import { SpellSystemSource } from "@item/spell/data.ts"
 import { AttributeObj } from "@sytem/attribute/data.ts"
@@ -21,10 +8,20 @@ import { ActorType, CharacterGURPS, LootGURPS } from "@actor"
 import { CharacterSheetGURPS } from "./sheet.ts"
 import { ActorFlags } from "@actor/base/data.ts"
 import { ItemGURPS } from "@item/base/document.ts"
-import { ImportUtils } from "@util/import.ts"
-import { USER_PERMISSIONS } from "types/foundry/common/constants.js"
 import { display } from "@util/enum/display.ts"
 import { progression } from "@util/enum/progression.ts"
+import { TraitSystemSource } from "@item/trait/data.ts"
+import { TraitContainerSystemSource } from "@item/trait_container/data.ts"
+import { SkillContainerSystemSource } from "@item/skill_container/data.ts"
+import { SkillSystemSource } from "@item/skill/data.ts"
+import { TechniqueSystemSource } from "@item/technique/data.ts"
+import { RitualMagicSpellSystemSource } from "@item/ritual_magic_spell/data.ts"
+import { SpellContainerSystemSource } from "@item/spell_container/data.ts"
+import { EquipmentSystemSource } from "@item/equipment/data.ts"
+import { EquipmentContainerSystemSource } from "@item/equipment_container/data.ts"
+import { NoteSystemSource } from "@item/note/data.ts"
+import { NoteContainerSystemSource } from "@item/note_container/data.ts"
+import { ImportUtils } from "@util/import.ts"
 
 export interface CharacterImportedData extends Omit<CharacterSystemSource, "attributes"> {
 	traits: (TraitSystemSource | TraitContainerSystemSource)[]

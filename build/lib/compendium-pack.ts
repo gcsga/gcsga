@@ -1,4 +1,3 @@
-import { itemIsOfType } from "@item/helpers.ts"
 import fs from "fs"
 import path from "path"
 import coreIconsJSON from "../core-icons.json" assert { type: "json" }
@@ -8,9 +7,9 @@ import { DBFolder, LevelDatabase } from "./level-database.ts"
 import { PackEntry } from "./types.ts"
 import { ActorSourceGURPS } from "@actor/data/index.ts"
 import { isObject, sluggify } from "@util/misc.ts"
-import { ItemSourceGURPS } from "@item/data/index.ts"
 import { MigrationRunnerBase } from "@module/migration/runner/base.ts"
 import { DataSchema } from "types/foundry/common/data/fields.js"
+import { ItemSourceGURPS } from "@item/base/data/index.ts"
 
 interface PackMetadata {
 	system: string
@@ -105,11 +104,11 @@ class CompendiumPack {
 
 		this.data = parsedData
 
-		const imagePathsFromItemSystemData = (item: ItemSourceGURPS): string[] => {
-			if (itemIsOfType(item, "ancestry", "background", "class", "kit")) {
-				const grants: Record<string, { img: ImageFilePath }> = item.system.items
-				return Object.values(grants).map(i => i.img)
-			}
+		const imagePathsFromItemSystemData = (_item: ItemSourceGURPS): string[] => {
+			// if (itemIsOfType(item, "ancestry", "background", "class", "kit")) {
+			// 	const grants: Record<string, { img: ImageFilePath }> = item.system.items
+			// 	return Object.values(grants).map(i => i.img)
+			// }
 			return []
 		}
 
@@ -238,7 +237,6 @@ class CompendiumPack {
 			docSource.effects = []
 			docSource.flags.core = { sourceId: this.#sourceIdOf(docSource._id ?? "", { docType: "Actor" }) }
 			this.#assertSizeValid(docSource)
-			// @ts-expect-error not implemented
 			docSource.system._migration = { version: MigrationRunnerBase.LATEST_SCHEMA_VERSION, previous: null }
 			for (const item of docSource.items) {
 				item.effects = []
@@ -251,7 +249,7 @@ class CompendiumPack {
 			const itemSource = docSource as ItemSourceGURPS
 			itemSource.effects = []
 			itemSource.flags.core = { sourceId: this.#sourceIdOf(itemSource._id ?? "", { docType: "Item" }) }
-			itemSource.system.slug = sluggify(itemSource.name)
+			// itemSource.system.slug = sluggify(itemSource.name)
 			itemSource.system._migration = { version: MigrationRunnerBase.LATEST_SCHEMA_VERSION, previous: null }
 
 			// Convert uuids with names in GrantItem REs to well-formedness

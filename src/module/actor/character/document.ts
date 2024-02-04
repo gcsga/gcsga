@@ -79,7 +79,6 @@ import {
 	TraitContainerGURPS,
 	TraitGURPS,
 } from "@item/index.ts"
-import { ItemGURPS } from "@item/base/document.ts"
 import { SkillDefault } from "@sytem/default/index.ts"
 import { feature } from "@util/enum/feature.ts"
 import { wsel } from "@util/enum/wsel.ts"
@@ -94,7 +93,7 @@ import { CR_Features } from "@item/trait/data.ts"
 import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
 import { WeaponType } from "@item/weapon/data.ts"
 import { ItemFlags } from "@item/base/data/system.ts"
-import { ItemSourceGURPS } from "@item/base/data/index.ts"
+import { EmbeddedItemInstances } from "@actor/types.ts"
 
 interface CharacterGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null>
 	extends ActorGURPS<TParent> {
@@ -129,6 +128,20 @@ class CharacterGURPS<
 	override get sheet(): CharacterSheetGURPS {
 		return super.sheet as CharacterSheetGURPS
 	}
+
+	// Items
+	// declare traits: Collection<TraitGURPS<this> | TraitContainerGURPS<this>>
+	// declare skills: Collection<SkillGURPS<this> | TechniqueGURPS<this> | SkillContainerGURPS<this>>
+	// declare spells: Collection<SpellGURPS<this> | RitualMagicSpellGURPS<this> | SpellContainerGURPS<this>>
+	// declare equipment: Collection<EquipmentGURPS<this> | EquipmentContainerGURPS<this>>
+	// declare carriedEquipment: Collection<EquipmentGURPS<this> | EquipmentContainerGURPS<this>>
+	// declare otherEquipment: Collection<EquipmentGURPS<this> | EquipmentContainerGURPS<this>>
+	// declare notes: Collection<NoteGURPS<this> | NoteContainerGURPS<this>>
+	// declare weapons: Collection<MeleeWeaponGURPS<this> | RangedWeaponGURPS<this>>
+	// declare meleeWeapons: Collection<MeleeWeaponGURPS<this>>
+	// declare rangedWeapons: Collection<RangedWeaponGURPS<this>>
+	// declare gEffects: Collection<EffectGURPS<this> | ConditionGURPS<this>>
+	// declare conditions: Collection<ConditionGURPS<this>>
 
 	// attributes: Map<string, Attribute> = new Map()
 	//
@@ -786,22 +799,14 @@ class CharacterGURPS<
 	// }
 
 	// Item Types
-	override get itemTypes(): Record<ItemType, ItemGURPS[]> {
-		return super.itemTypes as Record<ItemType, ItemGURPS[]>
+	override get itemTypes(): EmbeddedItemInstances<this> {
+		return super.itemTypes as EmbeddedItemInstances<this>
 	}
 
 	override get traits(): Collection<TraitGURPS | TraitContainerGURPS> {
-		// const traits: Collection<TraitGURPS | TraitContainerGURPS> = new Collection()
-		// for (const item of this.items) {
-		// 	if (item instanceof TraitGURPS || item instanceof TraitContainerGURPS) traits.set(item._id, item)
-		// }
-		// return traits
 		return new Collection(
-			[...this.itemTypes[ItemType.Trait], ...this.itemTypes[ItemType.TraitContainer]].map(e => [
-				e.id,
-				e,
-			]) as readonly [string, Item][],
-		) as Collection<TraitGURPS | TraitContainerGURPS>
+			[...this.itemTypes[ItemType.Trait], ...this.itemTypes[ItemType.TraitContainer]].map(e => [e.id, e]),
+		)
 	}
 
 	get skills(): Collection<SkillGURPS | TechniqueGURPS | SkillContainerGURPS> {
@@ -810,8 +815,8 @@ class CharacterGURPS<
 				...this.itemTypes[ItemType.Skill],
 				...this.itemTypes[ItemType.Technique],
 				...this.itemTypes[ItemType.SkillContainer],
-			].map(e => [e.id, e]) as readonly [string, Item][],
-		) as Collection<SkillGURPS | TechniqueGURPS | SkillContainerGURPS>
+			].map(e => [e.id, e]),
+		)
 	}
 
 	get spells(): Collection<SpellGURPS | RitualMagicSpellGURPS | SpellContainerGURPS> {
@@ -820,17 +825,14 @@ class CharacterGURPS<
 				...this.itemTypes[ItemType.Spell],
 				...this.itemTypes[ItemType.RitualMagicSpell],
 				...this.itemTypes[ItemType.SpellContainer],
-			].map(e => [e.id, e]) as readonly [string, Item][],
-		) as Collection<SpellGURPS | RitualMagicSpellGURPS | SpellContainerGURPS>
+			].map(e => [e.id, e]),
+		)
 	}
 
 	get equipment(): Collection<EquipmentGURPS | EquipmentContainerGURPS> {
 		return new Collection(
-			[...this.itemTypes[ItemType.Equipment], ...this.itemTypes[ItemType.EquipmentContainer]].map(e => [
-				e.id,
-				e,
-			]) as readonly [string, Item][],
-		) as Collection<EquipmentGURPS | EquipmentContainerGURPS>
+			[...this.itemTypes[ItemType.Equipment], ...this.itemTypes[ItemType.EquipmentContainer]].map(e => [e.id, e]),
+		)
 	}
 
 	get carriedEquipment(): Collection<EquipmentGURPS | EquipmentContainerGURPS> {
@@ -1207,21 +1209,9 @@ class CharacterGURPS<
 
 	override prepareEmbeddedDocuments(): void {
 		super.prepareEmbeddedDocuments()
-		// if (this.noPrepare) {
-		// 	this.noPrepare = false
-		// 	return
-		// }
-		// this.updateSkills()
-		// this.updateSpells()
+
 		this.processFeatures()
 		this.processPrereqs()
-		// for (let i = 0; i < 5; i++) {
-		// 	this.processFeatures()
-		// 	this.processPrereqs()
-		// 	// let skillsChanged = this.updateSkills()
-		// 	// let spellsChanged = this.updateSpells()
-		// 	if (!skillsChanged && !spellsChanged) break
-		// }
 	}
 
 	processFeatures(): void {
@@ -1545,6 +1535,7 @@ class CharacterGURPS<
 			if (
 				(excludes === null || !excludes.get(item.name!)) &&
 				(item instanceof SkillGURPS || item instanceof TechniqueGURPS) &&
+				// @ts-expect-error idk
 				item.name === name &&
 				(specialization === "" || specialization === item.specialization)
 			) {
@@ -1891,9 +1882,6 @@ class CharacterGURPS<
 	protected async exportSystemData(): Promise<[DeepPartial<CharacterSystemSource>, string]> {
 		const system: DeepPartial<CharacterSystemSource> & Record<string, unknown> = { ...fu.duplicate(this.system) }
 		system.type = "character" as ActorType
-		const items = (this.items as unknown as Collection<ItemGURPS>)
-			.filter(e => !e.getFlag(SYSTEM_NAME, ItemFlags.Container))
-			.map((e: ItemGURPS) => e.exportSystemData(true))
 		const third_party: Record<string, unknown> = {}
 
 		third_party.settings = { resource_trackers: system.settings?.resource_trackers }
@@ -1901,38 +1889,24 @@ class CharacterGURPS<
 		third_party.import = system.import
 		third_party.move = system.move
 		system.third_party = third_party
-		system.traits =
-			items.filter((e: ItemSourceGURPS) => [ItemType.Trait, ItemType.TraitContainer].includes(e.type)) ?? []
-		system.skills =
-			items.filter((e: ItemSourceGURPS) =>
-				[ItemType.Skill, ItemType.SkillContainer, ItemType.Technique].includes(e.type),
-			) ?? []
-		system.spells =
-			items.filter((e: ItemSourceGURPS) =>
-				[ItemType.Spell, ItemType.SpellContainer, ItemType.RitualMagicSpell].includes(e.type),
-			) ?? []
-		system.equipment =
-			items
-				.filter(
-					(e: ItemSourceGURPS) =>
-						[ItemType.Equipment, "equipment", ItemType.EquipmentContainer].includes(e.type) && !e.other,
-				)
-				.map((e: ItemSourceGURPS) => {
-					delete e.other
-					return e
-				}) ?? []
-		system.other_equipment =
-			items
-				.filter(
-					(e: ItemSourceGURPS) =>
-						[ItemType.Equipment, "equipment", ItemType.EquipmentContainer].includes(e.type) && e.other,
-				)
-				.map((e: ItemSourceGURPS) => {
-					delete e.other
-					return e
-				}) ?? []
-		system.notes =
-			items.filter((e: ItemSourceGURPS) => [ItemType.Note, ItemType.NoteContainer].includes(e.type)) ?? []
+		system.traits = this.traits
+			.filter(e => !e.flags[SYSTEM_NAME]?.[ItemFlags.Container])
+			.map(e => e.exportSystemData(false))
+		system.skills = this.skills
+			.filter(e => !e.flags[SYSTEM_NAME]?.[ItemFlags.Container])
+			.map(e => e.exportSystemData(false))
+		system.spells = this.spells
+			.filter(e => !e.flags[SYSTEM_NAME]?.[ItemFlags.Container])
+			.map(e => e.exportSystemData(false))
+		system.equipment = this.carriedEquipment
+			.filter(e => !e.flags[SYSTEM_NAME]?.[ItemFlags.Container])
+			.map(e => e.exportSystemData(false))
+		system.other_equipment = this.otherEquipment
+			.filter(e => !e.flags[SYSTEM_NAME]?.[ItemFlags.Container])
+			.map(e => e.exportSystemData(false))
+		system.notes = this.notes
+			.filter(e => !e.flags[SYSTEM_NAME]?.[ItemFlags.Container])
+			.map(e => e.exportSystemData(false))
 		if (system.settings)
 			system.settings.attributes = system.settings.attributes?.map(
 				(e: DeepPartial<AttributeDefObj> | undefined) => {

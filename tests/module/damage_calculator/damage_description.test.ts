@@ -1,8 +1,9 @@
 /* eslint-disable jest/no-disabled-tests */
-import { DamageAttacker, DamageRoll } from "@module/damage_calculator"
-import { DamageType, DamageTypes } from "@module/damage_calculator/damage_type"
-import { DiceGURPS } from "@module/dice"
-import { DamageHitLocation, _Attacker, _DamageRoll, _Target, _create } from "./common"
+
+import { DamageAttacker, DamageRoll } from "@module/apps/damage_calculator/index.ts"
+import { DamageHitLocation, _Attacker, _DamageRoll, _Target, _create } from "./common.ts"
+import { DamageType, DamageTypes } from "@module/apps/damage_calculator/damage_type.ts"
+import { DiceGURPS } from "@module/dice/index.ts"
 
 const Torso = "Torso"
 

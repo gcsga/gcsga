@@ -1,15 +1,12 @@
+import { ActorGURPS, CharacterGURPS, LootGURPS } from "@actor"
+import { BaseWeaponGURPS, MeleeWeaponGURPS, RangedWeaponGURPS } from "@item"
+import { GURPS_COMMANDS, RollModifier, RollType, gid } from "@module/data/index.ts"
+import { RollGURPS } from "@module/roll/index.ts"
+import { UserGURPS } from "@module/user/document.ts"
 import { MookGeneratorSheet } from "@sytem/mook/sheet.ts"
-import { GURPS_COMMANDS, RollModifier, RollType, gid } from "./data/misc.ts"
-import { UserGURPS } from "./user/document.ts"
-import { duplicate } from "types/foundry/common/utils/helpers.js"
-import { ActorGURPS } from "@actor/base.ts"
-import { LastActor } from "@util/last_actor.ts"
-import { LootGURPS } from "@actor/loot/document.ts"
-import { LocalizeGURPS } from "@util/localize.ts"
-import { RollGURPS } from "./roll/index.ts"
-import { SpellGURPS } from "@item/spell/document.ts"
-import { CharacterGURPS } from "@actor"
-import { BaseWeaponGURPS, RitualMagicSpellGURPS } from "@item"
+import { LastActor } from "./last_actor.ts"
+import { LocalizeGURPS } from "./localize.ts"
+import { RollTypeData } from "@module/roll/roll_handler.ts"
 
 export function parse(message: string): [string, string[]] {
 	for (const [rule, rgx] of Object.entries(GURPS_COMMANDS)) {
@@ -30,38 +27,6 @@ export function procesMessage(message: string): boolean {
 	}
 	return true
 }
-
-// /**
-//  *
-//  * @param command
-//  * @param matches
-//  * @param chatData
-//  * @param createOptions
-//  */
-// export async function _processDiceCommand(
-// 	command: string,
-// 	matches: RegExpMatchArray[],
-// 	chatData: DeepPartial<foundry.documents.ChatMessageSource>,
-// 	createOptions: ChatMessageModificationContext,
-// ): Promise<void> {
-// 	let actor = game.user.character
-// 	if (chatData.speaker) actor = ChatMessage.getSpeakerActor(chatData.speaker) as ActorGURPS<null>
-// 	const rollData: Record<string, unknown> = actor ? actor.getRollData() : {}
-// 	const rolls = []
-// 	for (const match of matches) {
-// 		if (!match) continue
-// 		const [formula, flavor] = match.slice(2, 4)
-// 		if (flavor && !chatData.flavor) chatData.flavor = flavor
-// 		const roll = Roll.create(formula, rollData)
-// 		await roll.evaluate({ async: true })
-// 		rolls.push(roll)
-// 	}
-// 	chatData.type = CONST.CHAT_MESSAGE_TYPES.ROLL
-// 	chatData.rolls = rolls
-// 	chatData.sound = CONFIG.sounds.dice
-// 	chatData.content = rolls.reduce((t, r) => t + r.total!, 0)
-// 	createOptions.rollMode = command
-// }
 
 /**
  *
@@ -108,8 +73,7 @@ async function _onModClick(event: JQuery.ClickEvent): Promise<void> {
 	event.preventDefault()
 	event.stopPropagation()
 	const mod: RollModifier = $(event.currentTarget).data("mod")
-	return (game.user as UserGURPS).addModifier(mod)
-	// return game.ModifierBucket.addModifier(mod)
+	return game.user.addModifier(mod)
 }
 
 /**
@@ -119,7 +83,7 @@ async function _onModClick(event: JQuery.ClickEvent): Promise<void> {
 async function _onModRClick(event: JQuery.ContextMenuEvent): Promise<void> {
 	event.preventDefault()
 	event.stopPropagation()
-	const mod: RollModifier = duplicate($(event.currentTarget).data("mod"))
+	const mod: RollModifier = fu.duplicate($(event.currentTarget).data("mod"))
 	mod.modifier = -mod.modifier
 	// return game.ModifierBucket.addModifier(mod)
 	return (game.user as UserGURPS).addModifier(mod)
@@ -187,7 +151,7 @@ async function _onRollClick(event: JQuery.ClickEvent) {
 	}
 	if (type === RollType.Generic) data.formula = $(event.currentTarget).data("formula")
 
-	return RollGURPS.handleRoll(game.user, actor, data)
+	return RollGURPS.handleRoll(game.user, actor as CharacterGURPS, data)
 }
 
 /**
@@ -204,7 +168,7 @@ async function _onDamageRoll(event: JQuery.ClickEvent) {
 	const rollData = getDamageRollData(eventData)
 	const { actor, data } = rollData ?? {}
 
-	return RollGURPS.handleRoll(game.user, actor, data)
+	return RollGURPS.handleRoll(game.user, actor as CharacterGURPS, data as RollTypeData)
 }
 
 type DamageRollEventData = {
@@ -215,7 +179,7 @@ type DamageRollEventData = {
 
 function getDamageRollData(
 	eventData: DamageRollEventData,
-): { actor: ActorGURPS; data: Record<string, unknown> } | undefined {
+): { actor: ActorGURPS; data: Partial<RollTypeData> } | undefined {
 	const type: RollType = eventData.type
 
 	if (type !== RollType.Damage) {
@@ -224,9 +188,11 @@ function getDamageRollData(
 	}
 
 	const actor = game.actors!.get(eventData.actor) as ActorGURPS
-	const data: { [key: string]: unknown } = { type: type }
-	data.item = actor.items.get(eventData.weapon)
-	data.times = 1
+	const data: Partial<RollTypeData> = {
+		type: RollType.Damage,
+		item: actor.items.get(eventData.weapon) as MeleeWeaponGURPS<ActorGURPS> | RangedWeaponGURPS<ActorGURPS>,
+		times: 1,
+	}
 
 	return { actor, data }
 }
@@ -247,7 +213,7 @@ async function _onMultiDamageRoll(event: JQuery.ClickEvent): Promise<void> {
 
 	const times = parseInt(event.currentTarget.innerText)
 	data.data.times = times
-	await RollGURPS.handleRoll(game.user, data.actor, data.data)
+	await RollGURPS.handleRoll(game.user, data.actor, data.data as RollTypeData)
 }
 
 /**

@@ -2,8 +2,8 @@ import { Int } from "@util/fxp.ts"
 import { WeaponField } from "./weapon_field.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { wswitch } from "@util/enum/wswitch.ts"
-import { BaseWeaponGURPS } from "./BaseWeaponGURPS.ts"
 import { feature } from "@util/enum/feature.ts"
+import { BaseWeaponGURPS } from "./document.ts"
 
 export class WeaponAccuracy extends WeaponField {
 	base = 0

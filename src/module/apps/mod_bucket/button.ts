@@ -24,7 +24,7 @@ export class ModifierBucket extends Application {
 		}
 	}
 
-	protected override _injectHTML(html: JQuery<HTMLElement>): void {
+	override _injectHTML(html: JQuery<HTMLElement>): void {
 		if ($("body").find("#modifier-bucket-button").length === 0) {
 			html.insertAfter($("body").find("#hotbar-page-controls"))
 			this._element = html
@@ -71,7 +71,7 @@ export class ModifierBucket extends Application {
 	async _onMouseWheel(event: WheelEvent): Promise<void> {
 		const delta = Math.round(event.deltaY / -100)
 		return (game.user as UserGURPS).addModifier({
-			name: "",
+			id: "",
 			modifier: delta,
 			tags: [],
 		})

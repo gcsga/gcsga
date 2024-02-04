@@ -1,16 +1,3 @@
-import { ParsedOtF, OptionalCheckParameters, OtFCostsAction } from "./base"
-import { gmspan, sanitizeOtF } from "./utils"
-import { parseOverrideText, parseBlindRoll, parseSourceId } from "./preparsers"
-import {
-	checkForChat,
-	checkForHtml,
-	checkForIf,
-	checkForExists,
-	checkForPDF,
-	checkForFoundryDrops,
-} from "./smaller_checks"
-import { checkForSelfControl } from "./self_control"
-
 /* Here is where we do all the work to try to parse the text inbetween [ ].
  Supported formats:
 	+N <desc>
@@ -29,6 +16,19 @@ import { checkForSelfControl } from "./self_control"
 
 	(\(-?[\.\d]+\))? == (-.#)
 */
+
+import { OptionalCheckParameters, OtFCostsAction, ParsedOtF } from "./base.ts"
+import { parseBlindRoll, parseOverrideText, parseSourceId } from "./preparsers.ts"
+import { checkForSelfControl } from "./self_control.ts"
+import {
+	checkForChat,
+	checkForExists,
+	checkForFoundryDrops,
+	checkForHtml,
+	checkForIf,
+	checkForPDF,
+} from "./smaller_checks.ts"
+import { gmspan, sanitizeOtF } from "./utils.ts"
 
 export interface OtFChecker {
 	(str: string, opt: OptionalCheckParameters): ParsedOtF | undefined

@@ -44,7 +44,7 @@ export class WeaponBlock extends WeaponField {
 				}
 				if (best !== -Infinity) {
 					if (primaryTooltip !== null) tooltip?.push("\n", primaryTooltip)
-					result.modifier += 3 + best + actor.parryBonus
+					result.modifier += 3 + best + actor.blockBonus
 					for (const bonus of w.collectWeaponBonuses(1, tooltip, feature.Type.WeaponBlockBonus)) {
 						result.modifier += bonus.adjustedAmountForWeapon(w)
 					}

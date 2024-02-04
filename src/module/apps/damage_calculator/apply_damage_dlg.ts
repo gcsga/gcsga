@@ -2,10 +2,9 @@ import { mergeObject } from "types/foundry/common/utils/helpers.js"
 import { IDamageCalculator, createDamageCalculator } from "./damage_calculator.ts"
 import { DamageRoll, DamageTarget } from "./index.ts"
 import { SETTINGS, SYSTEM_NAME, gid } from "@module/data/misc.ts"
-import { PDF } from "@module/pdf/index.ts"
 import { HitLocationUtil } from "./hitlocation_utils.ts"
 import { DamageTypes } from "./damage_type.ts"
-import { LocalizeGURPS } from "@util"
+import { LocalizeGURPS, PDF } from "@util"
 
 export class ApplyDamageDialog extends Application {
 	static async create(roll: DamageRoll, target: DamageTarget, options = {}): Promise<ApplyDamageDialog> {

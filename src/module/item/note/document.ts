@@ -1,13 +1,12 @@
-import { ActorGURPS } from "@actor/document.ts"
 import { ItemGCS } from "@item/gcs/document.ts"
-import { NoteSystemSource } from "./data.ts"
+import { NoteSource, NoteSystemSource } from "./data.ts"
 import { EvalEmbeddedRegex, replaceAllStringFunc } from "@util/regexp.ts"
-import { ItemType } from "@item/types.ts"
 import { CharacterResolver } from "@util"
+import { ActorGURPS } from "@actor"
 
 export interface NoteGURPS<TParent extends ActorGURPS | null> extends ItemGCS<TParent> {
+	readonly _source: NoteSource
 	system: NoteSystemSource
-	type: ItemType.Note
 }
 
 export class NoteGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {

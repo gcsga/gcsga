@@ -1,12 +1,13 @@
 import { ActorGURPS } from "@actor"
 import { ActorType } from "@actor/types.ts"
+import * as R from "remeda"
 
 const actorTypes: ActorType[] = [ActorType.Character, ActorType.Loot]
 
 /**
  * Collects every actor whose token is controlled on the canvas.
  * @param [options] Filter and fallback options
- * @returns An array of ActorPF2E instances filtered by the requested types.
+ * @returns An array of ActorGURPS instances filtered by the requested types.
  */
 function getSelectedActors(options: GetSelectedActorsOptions = {}): ActorGURPS[] {
 	const { include = actorTypes, exclude = [], assignedFallback = false } = options
@@ -20,7 +21,7 @@ function getSelectedActors(options: GetSelectedActorsOptions = {}): ActorGURPS[]
 					? t.actor
 					: [],
 			),
-	)
+	) as ActorGURPS[]
 	const assigned = game.user.character
 	if (actors.length > 0 || !assignedFallback || !assigned) {
 		return actors
@@ -38,9 +39,9 @@ function getSelectedActors(options: GetSelectedActorsOptions = {}): ActorGURPS[]
 
 interface GetSelectedActorsOptions {
 	/** Actor types that should be included (defaults to all) */
-	include?: (ActorType | "creature")[]
+	include?: ActorType[]
 	/** Actor types that should be excluded (defaults to none) */
-	exclude?: (ActorType | "creature")[]
+	exclude?: ActorType[]
 	/** Given no qualifying actor is selected, fall back to the user's assigned character if it also qualifies. */
 	assignedFallback?: boolean
 }

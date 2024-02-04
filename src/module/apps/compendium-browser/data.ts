@@ -1,6 +1,7 @@
 import * as browserTabs from "./tabs/index.ts"
 
 interface PackInfo {
+	skillDefault?: boolean
 	load: boolean
 	name: string
 	package: string

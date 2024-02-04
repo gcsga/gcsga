@@ -1,4 +1,4 @@
-import { RollType } from "@module/data/index.ts"
+import { RollModifier, RollType, gid } from "@module/data/index.ts"
 
 function getFormatFunction() {
 	const format = game
@@ -54,26 +54,26 @@ export class ShockInjuryEffect extends InjuryEffect {
 	}
 }
 
-/**
- * RollModifier represents a generic modifier to some kind of roll.
- *
- * modifier - the numeric value used to modify the roll or check.
- * rollType - the type of the roll/check modified.
- * id - either the id of an attribute or name of the thing (skill, spell, etc).
- */
-class RollModifier {
-	id: string
-
-	rollType: RollType
-
-	modifier: number
-
-	constructor(id: string, rollType: RollType, modifier: number) {
-		this.id = id
-		this.rollType = rollType
-		this.modifier = modifier
-	}
-}
+// /**
+//  * RollModifier represents a generic modifier to some kind of roll.
+//  *
+//  * modifier - the numeric value used to modify the roll or check.
+//  * rollType - the type of the roll/check modified.
+//  * id - either the id of an attribute or name of the thing (skill, spell, etc).
+//  */
+// class RollModifier {
+// 	id: string
+//
+// 	rollType: RollType
+//
+// 	modifier: number
+//
+// 	constructor(id: string, rollType: RollType, modifier: number) {
+// 		this.id = id
+// 		this.rollType = rollType
+// 		this.modifier = modifier
+// 	}
+// }
 
 /**
  * An Effect Check is a conditional injury effect that requires a check of some kind, with consequences if failed.
@@ -130,7 +130,7 @@ enum InjuryEffectType {
 class KnockdownCheck extends EffectCheck {
 	constructor(modifier = 0) {
 		super(
-			[new RollModifier("ht", RollType.Attribute, modifier)],
+			[<RollModifier>{ id: gid.Health, rollType: RollType.Attribute, modifier: modifier }],
 			[
 				new CheckFailureConsequence("stun", 0),
 				new CheckFailureConsequence("fall prone", 0),
@@ -140,4 +140,4 @@ class KnockdownCheck extends EffectCheck {
 	}
 }
 
-export { InjuryEffect, RollModifier, InjuryEffectType, CheckFailureConsequence, EffectCheck, KnockdownCheck }
+export { InjuryEffect, InjuryEffectType, CheckFailureConsequence, EffectCheck, KnockdownCheck }

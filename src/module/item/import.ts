@@ -2,13 +2,13 @@ import { LocalizeGURPS } from "@util"
 import { ItemSourceGURPS } from "./base/data/index.ts"
 import { SYSTEM_NAME } from "@module/data/index.ts"
 import { DialogGURPS } from "@ui"
-import { ImportUtils } from "@util/import.ts"
+import { ImportUtils, ImportedSystemSource } from "@util/import.ts"
 import { ItemProxyGURPS } from "./base/document.ts"
 
 interface ItemLibraryData {
 	type: ItemLibraryType
 	version: number
-	rows: ItemSourceGURPS["system"][]
+	rows: ImportedSystemSource[]
 }
 
 enum ItemLibraryType {
@@ -120,6 +120,7 @@ export class ItemImporter {
 				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.system.library_import.start, { name: name }),
 			)
 			const counter = items.length
+			// @ts-expect-error TODO: fix later
 			await ItemProxyGURPS.createDocuments(items, {
 				pack: pack.collection,
 				keepId: true,

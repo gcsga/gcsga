@@ -4,8 +4,7 @@ import { ResourceTrackerDefObj } from "@sytem/resource_tracker/data.ts"
 import { HitLocationData, HitLocationTable, HitLocationTableData } from "./hit_location.ts"
 import { MoveTypeDefObj, MoveTypeOverrideConditionType } from "@sytem/move_type/data.ts"
 import { SETTINGS, SYSTEM_NAME, gid } from "@module/data/misc.ts"
-import { FilePickerGURPS, LocalizeGURPS, getNewAttributeId, prepareFormData } from "@util"
-import { PDF } from "@module/pdf/index.ts"
+import { FilePickerGURPS, LocalizeGURPS, PDF, getNewAttributeId, prepareFormData } from "@util"
 import { GURPSCONFIG } from "@scripts/config/index.ts"
 import { attribute } from "@util/enum/attribute.ts"
 import { CharacterImporter } from "./import.ts"
@@ -562,6 +561,7 @@ export class CharacterSheetConfig<
 				return this._updateObject(event, formData)
 			}
 		}
+		return this.render()
 	}
 
 	override close(options?: { force?: boolean }): Promise<void> {

@@ -1,21 +1,9 @@
 import { DiceGURPS } from "@module/dice/index.ts"
-import {
-	CharacterResolver,
-	SimpleCharacterResolver,
-	SkillResolver,
-	TraitContainerResovler,
-	TraitResolver,
-} from "./resolvers.ts"
+import { CharacterResolver, SkillResolver, TraitContainerResovler, TraitResolver } from "./resolvers.ts"
 import { equalFold } from "./string_criteria.ts"
-import { ItemType } from "@module/data/index.ts"
 import { Length } from "./length.ts"
 import { Evaluator } from "./eval.ts"
-// import { Operand } from "./operator/types.ts"
-
-// export interface Evaluator {
-// 	evaluateNew: (expression: string) => Operand
-// 	resolver: CharacterResolver
-// }
+import { ItemType } from "@item"
 
 export type eFunction = (e: Evaluator, a: string) => unknown
 
@@ -312,7 +300,7 @@ function evalSkillLevel(e: Evaluator, arg: string): number {
 	entity.registerSkillLevelResolutionExclusion(name, specialization)
 	let level = -Infinity
 	entity.skills.forEach(s => {
-		if (s.type === "skill_container") return
+		if (s.type === ItemType.SkillContainer) return
 		else s = s as SkillResolver
 		if (level !== -Infinity) return
 		if (equalFold(s.name || "", name) && equalFold(s.specialization, specialization)) {
@@ -367,14 +355,14 @@ export function evalEncumbrance(e: Evaluator, a: string): number {
 }
 
 export function evalHasTrait(e: Evaluator, a: string): boolean {
-	const entity: SimpleCharacterResolver | undefined = e.resolver
+	const entity: CharacterResolver | undefined = e.resolver as CharacterResolver
 	if (!entity) return false
 	const arg = a.replaceAll(/^['"]|[']$/g, "")
 	return entity.traits.some(t => equalFold(t.name ?? "", arg))
 }
 
 export function evalTraitLevel(e: Evaluator, a: string): number {
-	const entity: CharacterResolver | undefined = e.resolver
+	const entity: CharacterResolver | undefined = e.resolver as CharacterResolver
 	if (!entity) return -1
 	const arg = a.replaceAll(/^['"]|[']$/g, "")
 	let levels = -1
@@ -516,7 +504,7 @@ function valueToYards(value: number): number {
 }
 
 export function evalRandomHeight(e: Evaluator, a: string): number {
-	const entity: CharacterResolver | undefined = e.resolver
+	const entity: CharacterResolver | undefined = e.resolver as CharacterResolver
 	if (!entity) return -1
 	const stDecimal = evalToNumber(e, a)
 	let base: number
@@ -556,7 +544,7 @@ export function evalRandomHeight(e: Evaluator, a: string): number {
 }
 
 export function evalRandomWeight(e: Evaluator, a: string): number | null {
-	const entity: CharacterResolver | undefined = e.resolver
+	const entity: CharacterResolver | undefined = e.resolver as CharacterResolver
 	if (!entity) return -1
 	let arg: string
 	;[arg, a] = nextArg(a)

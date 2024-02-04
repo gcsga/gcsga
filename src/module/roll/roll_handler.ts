@@ -1,4 +1,4 @@
-import { CharacterGURPS } from "@actor"
+import { ActorGURPS, CharacterGURPS } from "@actor"
 import { Encumbrance } from "@actor/character/data.ts"
 import {
 	BaseWeaponGURPS,
@@ -10,15 +10,19 @@ import {
 	SkillGURPS,
 	SpellGURPS,
 	TechniqueGURPS,
+	TraitGURPS,
 } from "@item"
-import { ItemSourceGURPS } from "@item/base/data/index.ts"
-import { DamagePayload } from "@module/apps/damage_calculator/damage_chat_message.ts"
-import { RollModifier, RollType, SYSTEM_NAME } from "@module/data/index.ts"
+import { DamageChat, DamagePayload } from "@module/apps/damage_calculator/damage_chat_message.ts"
+import { RollModifier, RollType, SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
 import { UserFlags } from "@module/user/data.ts"
 import { UserGURPS } from "@module/user/document.ts"
 import { Attribute } from "@sytem/attribute/index.ts"
 import { LocalizeGURPS } from "@util"
-
+import { DamageRollGURPS } from "./damage_roll.ts"
+import { HitLocationUtil } from "@module/apps/damage_calculator/hitlocation_utils.ts"
+import { RollGURPS } from "./index.ts"
+import { ChatMessageGURPS } from "@module/chat-message/document.ts"
+import { ChatMessageSource } from "types/foundry/common/documents/chat-message.js"
 enum RollSuccess {
 	Success = "success",
 	Failure = "failure",
@@ -39,7 +43,7 @@ type ChatData = {
 	margin: string
 	margin_number: number
 	type: RollType
-	item: ItemSourceGURPS | object
+	item: Partial<ItemGURPS>
 	total: string
 	tooltip: string
 	eff: string
@@ -72,20 +76,21 @@ abstract class RollTypeHandler {
 		this.resetMods(user)
 	}
 
-	isValid(_: RollTypeData): boolean {
+	isValid(_: RollTypeData<ItemGURPS>): boolean {
 		return true
 	}
 
-	getItem(data: RollTypeData): ItemSourceGURPS | Attribute | object {
+	getItem(data: RollTypeData): ItemGURPS {
 		return data.item
 	}
 
-	getLevel(data: RollTypeData): number {
-		return data.item.effective.level as number
+	getLevel(_data: RollTypeData): number {
+		return 0
+		// return data.item.effective.level as number
 	}
 
-	getName(data: RollTypeData): string {
-		return data.item.formattedName
+	getName(data: RollTypeData<ItemGURPS>): string {
+		return data.item.name
 	}
 
 	getType(data: RollTypeData): RollType {
@@ -118,7 +123,7 @@ abstract class RollTypeHandler {
 	async getMessageData(
 		actor: CharacterGURPS,
 		user: User | null,
-		item: ItemGURPS,
+		item: ItemGURPS | Attribute,
 		level: number,
 		formula: string,
 		name: string,
@@ -229,7 +234,7 @@ abstract class RollTypeHandler {
 		const success = this.getSuccess(level, roll)
 		const margin = Math.abs(level - roll)
 		const marginMod: Partial<RollModifier> = { modifier: margin }
-		marginMod.name = LocalizeGURPS.format(LocalizeGURPS.translations.gurps.roll.success_from, { from: name })
+		marginMod.id = LocalizeGURPS.format(LocalizeGURPS.translations.gurps.roll.success_from, { from: name })
 
 		let marginClass = MODIFIER_CLASS_ZERO
 		let marginTemplate = "gurps.roll.just_made_it"
@@ -237,7 +242,7 @@ abstract class RollTypeHandler {
 		if ([RollSuccess.Failure, RollSuccess.CriticalFailure].includes(success)) {
 			marginTemplate = "gurps.roll.failure_margin"
 			marginClass = MODIFIER_CLASS_NEGATIVE
-			marginMod.name = LocalizeGURPS.format(LocalizeGURPS.translations.gurps.roll.failure_from, { from: name })
+			marginMod.id = LocalizeGURPS.format(LocalizeGURPS.translations.gurps.roll.failure_from, { from: name })
 			marginMod.modifier = -margin
 		} else if (margin > 0) {
 			marginTemplate = "gurps.roll.success_margin"
@@ -308,7 +313,7 @@ class ModifierRollTypeHandler extends RollTypeHandler {
 	): Promise<void> {
 		if (!user) return
 		const mod: RollModifier = {
-			name: data.comment,
+			id: data.comment,
 			modifier: data.modifier,
 			tags: [],
 		}
@@ -318,9 +323,10 @@ class ModifierRollTypeHandler extends RollTypeHandler {
 }
 
 class AttributeRollTypeHandler extends RollTypeHandler {
-	override getItem(data: RollTypeData): Attribute {
-		return data.attribute
-	}
+	// override getItem(data: RollTypeData): Attribute {
+	// 	super.getItem(data)
+	// 	return data.attribute
+	// }
 
 	override getLevel(data: RollTypeData): number {
 		return data.attribute.effective as number
@@ -340,11 +346,11 @@ class AttributeRollTypeHandler extends RollTypeHandler {
 }
 
 class SkillRollTypeHandler extends RollTypeHandler {
-	override isValid(data: RollTypeData): boolean {
+	override isValid(data: RollTypeData<SkillGURPS<ActorGURPS>>): boolean {
 		return !isNaN(data.item.effectiveLevel)
 	}
 
-	override getLevel(data: RollTypeData): number {
+	override getLevel(data: RollTypeData<SkillGURPS>): number {
 		return data.item.effectiveLevel as number
 	}
 
@@ -361,7 +367,7 @@ class SkillRollTypeHandler extends RollTypeHandler {
 	): number {
 		if (item instanceof SkillGURPS && item.encumbrancePenaltyMultiplier && encumbrance.level > 0) {
 			modifiers.unshift({
-				name: LocalizeGURPS.format(LocalizeGURPS.translations.gurps.roll.encumbrance, {
+				id: LocalizeGURPS.format(LocalizeGURPS.translations.gurps.roll.encumbrance, {
 					name: encumbrance.name,
 				}),
 				modifier: encumbrance.penalty,
@@ -371,25 +377,36 @@ class SkillRollTypeHandler extends RollTypeHandler {
 		return level
 	}
 
-	override getItemData(item: ItemGURPS, actor: CharacterGURPS): ItemSourceGURPS {
-		let itemData: Record<string, unknown> = {}
-		if (item instanceof SkillGURPS || item instanceof TechniqueGURPS) {
-			itemData = { name: item.name, specialization: item.specialization }
-			if (item.dummyActor && item.defaultedFrom) {
-				itemData.default = `${item.defaultedFrom.fullName(actor)}`
-				const modifier =
-					(item.defaultedFrom.modifier < 0 ? " - " : " + ") + Math.abs(item.defaultedFrom.modifier)
-				itemData.default += modifier
-			}
-		} else if (item instanceof SpellGURPS || item instanceof RitualMagicSpellGURPS) {
-			itemData = { name: item.name, type: item.type }
+	override getItemData(
+		item: ItemGURPS,
+		_actor: CharacterGURPS,
+	): Partial<SkillGURPS | TechniqueGURPS | SpellGURPS | RitualMagicSpellGURPS> {
+		switch (true) {
+			case item instanceof SkillGURPS:
+				return {
+					name: item.name,
+					specialization: item.specialization,
+				}
+			case item instanceof TechniqueGURPS:
+				return {
+					name: item.name,
+					specialization: item.specialization,
+					default: item.defaultedFrom === null ? undefined : item.defaultedFrom,
+				}
+			case item instanceof SpellGURPS:
+			case item instanceof RitualMagicSpellGURPS:
+				return {
+					name: item.name,
+					type: item.type,
+				}
+			default:
+				return {}
 		}
-		return itemData
 	}
 }
 
 class ControlRollTypeHandler extends RollTypeHandler {
-	override getLevel(data: RollTypeData): number {
+	override getLevel(data: RollTypeData<TraitGURPS>): number {
 		return data.item.skillLevel as number
 	}
 
@@ -401,18 +418,19 @@ class ControlRollTypeHandler extends RollTypeHandler {
 class AttackRollTypeHandler extends RollTypeHandler {
 	static SHOTGUN_ROF = /(\d+)[×xX*](\d+)/ // 3x10, for example
 
-	override isValid(data: RollTypeData): boolean {
+	override isValid(data: RollTypeData<TraitGURPS>): boolean {
 		return !isNaN(this.getLevel(data))
 	}
 
-	override getLevel(data: RollTypeData): number {
+	override getLevel(data: RollTypeData<TraitGURPS>): number {
 		// TODO If data.item.skillLevel is a function, call it with null as the argument;
 		// otherwise, just return the value.
-		if (typeof data.item.skillLevel === "function") return data.item.skillLevel(null)
-		else return data.item.skillLevel
+		// if (typeof data.item.skillLevel === "function") return data.item.skillLevel(null)
+		// else return data.item.skillLevel
+		return data.item.skillLevel
 	}
 
-	override getName(data: RollTypeData): string {
+	override getName(data: RollTypeData<MeleeWeaponGURPS | RangedWeaponGURPS>): string {
 		if (data.item.itemName) return `${data.item.itemName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
 		return `${data.item.formattedName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
 	}
@@ -421,7 +439,7 @@ class AttackRollTypeHandler extends RollTypeHandler {
 		return `systems/${SYSTEM_NAME}/templates/message/roll-against-weapon.hbs`
 	}
 
-	override getItemData(item: BaseWeaponGURPS, _actor: CharacterGURPS): ItemSourceGURPS {
+	override getItemData(item: BaseWeaponGURPS, _actor: CharacterGURPS): Partial<MeleeWeaponGURPS | RangedWeaponGURPS> {
 		let itemData: Record<string, unknown> = {}
 		if (item instanceof MeleeWeaponGURPS || item instanceof RangedWeaponGURPS) {
 			itemData = {
@@ -448,62 +466,51 @@ class AttackRollTypeHandler extends RollTypeHandler {
 
 		// If Ranged, add number of potential hits if greater than one.
 		if (data.item.type === ItemType.RangedWeapon) {
-			const item = data.item
-			if (this.validRateOfFire(item.rate_of_fire) && data.margin_number > 0 && parseInt(item.recoil) > 0) {
-				const effectiveRof = this.effectiveRateOfFire(item.rate_of_fire.current)
-				const numberOfShots = Math.min(Math.floor(data.margin_number / parseInt(item.recoil)) + 1, effectiveRof)
-				if (numberOfShots > 1)
-					fu.mergeObject(extra, {
-						ranged: {
-							rate_of_fire: item.rate_of_fire.current,
-							recoil: item.recoil,
-							potential_hits: numberOfShots,
-						},
-					})
-			}
+			const item = data.item as RangedWeaponGURPS
+			const effectiveRof = this.effectiveRateOfFire(item)
+			const numberOfShots = Math.min(
+				Math.floor(data.margin_number / parseInt(item.recoil.current ?? "0")) + 1,
+				effectiveRof,
+			)
+			if (numberOfShots > 1)
+				fu.mergeObject(extra, {
+					ranged: {
+						rate_of_fire: item.rate_of_fire.current,
+						recoil: item.recoil,
+						potential_hits: numberOfShots,
+					},
+				})
 		}
 
 		// For any attack, add the damage data for easy access.
 		fu.mergeObject(extra, {
 			damage: {
 				uuid: data.item.uuid,
-				weaponID: data.item.weaponID,
+				weaponID: data.item.id,
 				attacker: data.actor,
-				damage: data.item.damage,
+				damage: (data.item as BaseWeaponGURPS).damage,
 			},
 		})
 
 		return Object.keys(extra).length ? extra : {}
 	}
 
-	private effectiveRateOfFire(rate_of_fire: string) {
-		if (rate_of_fire.match(AttackRollTypeHandler.SHOTGUN_ROF)) {
-			const match = rate_of_fire.match(AttackRollTypeHandler.SHOTGUN_ROF)
-			return parseInt(match![1]) * parseInt(match![2])
-		}
-		return parseInt(rate_of_fire)
-	}
-
-	private validRateOfFire(_rof: string): boolean {
-		// validated externally
-		return true
-		// if (rof.match(AttackRollTypeHandler.SHOTGUN_ROF)) return true
-		// if (parseInt(rof) > 0) return true
-		// return false
+	private effectiveRateOfFire(item: RangedWeaponGURPS) {
+		const rof = item.rate_of_fire.resolve(item)
+		return rof.mode1.shotsPerAttack + Math.max(rof.mode1.secondaryProjectiles, 1)
 	}
 }
 
 class ParryRollTypeHandler extends RollTypeHandler {
-	override isValid(data: RollTypeData): boolean {
-		return !isNaN(data.item.parry) && data.item.parry !== ""
+	override isValid(data: RollTypeData<MeleeWeaponGURPS>): boolean {
+		return !isNaN(parseInt(data.item.parry.current ?? "")) && data.item.parry.current !== ""
 	}
 
-	override getLevel(data: RollTypeData): number {
-		if (!(data.item instanceof MeleeWeaponGURPS)) return 0
-		return parseInt(data.item.parry.current ?? "0")
+	override getLevel(data: RollTypeData<MeleeWeaponGURPS>): number {
+		return parseInt(data.item.parry.resolve(data.item, null).toString())
 	}
 
-	override getName(data: RollTypeData): string {
+	override getName(data: RollTypeData<MeleeWeaponGURPS | RangedWeaponGURPS>): string {
 		return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.roll.parry, {
 			name: data.item.itemName ?? data.item.formattedName,
 		})
@@ -518,15 +525,15 @@ class ParryRollTypeHandler extends RollTypeHandler {
  * A RollTypeHandler for handling block rolls.
  */
 class BlockRollTypeHandler extends RollTypeHandler {
-	override isValid(data: RollTypeData): boolean {
-		return !isNaN(data.item.block) && data.item.block !== ""
+	override isValid(data: RollTypeData<MeleeWeaponGURPS>): boolean {
+		return !isNaN(parseInt(data.item.block.current ?? "")) && data.item.block.current !== ""
 	}
 
-	override getLevel(data: RollTypeData): number {
-		return parseInt(data.item.block.current)
+	override getLevel(data: RollTypeData<MeleeWeaponGURPS>): number {
+		return parseInt(data.item.block.resolve(data.item, null).toString())
 	}
 
-	override getName(data: RollTypeData): string {
+	override getName(data: RollTypeData<MeleeWeaponGURPS>): string {
 		return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.roll.block, {
 			name: data.item.itemName ?? data.item.formattedName,
 		})
@@ -538,7 +545,7 @@ class BlockRollTypeHandler extends RollTypeHandler {
 }
 
 class DamageRollTypeHandler extends RollTypeHandler {
-	override getName(data: RollTypeData): string {
+	override getName(data: RollTypeData<MeleeWeaponGURPS | RangedWeaponGURPS>): string {
 		return data.item.itemName
 			? `${data.item.itemName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
 			: `${data.item.formattedName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
@@ -560,7 +567,7 @@ class DamageRollTypeHandler extends RollTypeHandler {
 		__: string,
 		name: string,
 		___: RollType,
-		extras: Record<string, unknown>,
+		extras: { times: number } & Record<string, unknown>,
 	): Promise<Record<string, unknown>> {
 		const modifierTotal = this.applyMods(0, this.getModifiers(user))
 
@@ -576,8 +583,7 @@ class DamageRollTypeHandler extends RollTypeHandler {
 
 		let stringified = undefined
 
-		// eslint-disable-next-line no-plusplus
-		while (extras.times-- > 0) {
+		while (extras.times > 0) {
 			// Roll the damage for the attack.
 			const damageRoll = new DamageRollGURPS(item.fastResolvedDamage)
 			await damageRoll.evaluate()
@@ -596,18 +602,19 @@ class DamageRollTypeHandler extends RollTypeHandler {
 				tooltip: await damageRoll.getTooltip(),
 				hitlocation: DamageRollTypeHandler.getHitLocationFromLastAttackRoll(actor),
 			})
+			extras.times -= 0
 		}
 
 		const message = await renderTemplate(`systems/${SYSTEM_NAME}/templates/message/damage-roll.hbs`, chatData)
 
-		let messageData: any = {
-			user: user,
+		let messageData = {
+			user: user?.id,
 			speaker: chatData.attacker,
 			type: CONST.CHAT_MESSAGE_TYPES.ROLL,
 			content: message,
 			roll: stringified,
 			sound: CONFIG.sounds.dice,
-		}
+		} as Partial<ChatMessageSource>
 
 		let userTarget = ""
 		if (game.user?.targets.size) {
@@ -633,12 +640,12 @@ class DamageRollTypeHandler extends RollTypeHandler {
 }
 
 class LocationRollTypeHandler extends RollTypeHandler {
-	async handleRollType(
-		user: StoredDocument<User> | null,
+	override async handleRollType(
+		user: UserGURPS | null,
 		actor: CharacterGURPS,
 		_data: RollTypeData,
 		_formula: string,
-		hidden: boolean,
+		// hidden: boolean,
 	): Promise<void> {
 		const result = await HitLocationUtil.rollRandomLocation(actor.hitLocationTable)
 
@@ -651,15 +658,15 @@ class LocationRollTypeHandler extends RollTypeHandler {
 			tooltip: await result.roll.getTooltip(),
 		})
 
-		const messageData: any = {
-			user: user,
+		const messageData = {
+			user: user?.id,
 			type: CONST.CHAT_MESSAGE_TYPES.ROLL,
 			content: message,
-			roll: JSON.stringify(result.roll),
+			rolls: [JSON.stringify(result.roll)],
 			sound: CONFIG.sounds.dice,
-		}
+		} as ChatMessageSource
 
-		if (hidden) messageData.rollMode = CONST.DICE_ROLL_MODES.PRIVATE
+		// if (hidden) messageData.rollMode = CONST.DICE_ROLL_MODES.PRIVATE
 
 		await ChatMessage.create(messageData, {})
 		await this.resetMods(user)
@@ -667,12 +674,12 @@ class LocationRollTypeHandler extends RollTypeHandler {
 }
 
 class GenericRollTypeHandler extends RollTypeHandler {
-	async handleRollType(
-		user: StoredDocument<User> | null,
+	override async handleRollType(
+		user: UserGURPS | null,
 		actor: Actor,
 		data: RollTypeData,
 		formula: string,
-		hidden: boolean,
+		// hidden: boolean,
 	): Promise<void> {
 		const type = data.type
 		formula = data.formula
@@ -697,28 +704,29 @@ class GenericRollTypeHandler extends RollTypeHandler {
 
 		const message = await renderTemplate(`systems/${SYSTEM_NAME}/templates/message/generic-roll.hbs`, chatData)
 
-		const messageData: any = {
-			user: user,
+		const messageData: DeepPartial<ChatMessageGURPS["_source"]> = {
+			user: user?.id,
 			type: CONST.CHAT_MESSAGE_TYPES.ROLL,
 			content: message,
-			roll: JSON.stringify(roll),
+			rolls: [JSON.stringify(roll)],
 			sound: CONFIG.sounds.dice,
+			speaker: {},
 		}
-		if (actor) messageData.speaker.actor = actor
-		if (hidden) messageData.rollMode = CONST.DICE_ROLL_MODES.PRIVATE
+		if (actor && messageData.speaker) messageData.speaker.actor = actor.id
+		// if (hidden) messageData.rollMode = CONST.DICE_ROLL_MODES.PRIVATE
 
 		await ChatMessage.create(messageData, {})
 		await this.resetMods(user)
 	}
 }
 
-export type RollTypeData = {
+export type RollTypeData<TItem extends ItemGURPS = ItemGURPS> = {
 	times: number | undefined
 	type: RollType // RollTypeHandler
 	modifier: number // AddModifier
 	comment: string // AddModifier
-	attribute: any
-	item: any
+	attribute: Attribute
+	item: TItem
 	formula: string
 	hidden: boolean
 }

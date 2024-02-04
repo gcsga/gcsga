@@ -1,10 +1,10 @@
-import { ActorGURPS } from "@actor/document.ts"
+import { ActorGURPS } from "@actor"
 import { FeatureObj } from "@feature/index.ts"
-import { BaseItemSourceGURPS } from "@item/base/data/system.ts"
+import { BaseItemSourceGURPS, ItemSystemSource } from "@item/base/data/system.ts"
 import { ItemType } from "@item/types.ts"
 import { RollModifier } from "@module/data/misc.ts"
 
-export type EffectSource = BaseItemSourceGURPS<ItemType.Effect | ItemType.Condition, EffectSystemSource>
+export type EffectSource = BaseItemSourceGURPS<ItemType.Effect, EffectSystemSource>
 
 export enum DurationType {
 	Seconds = "seconds",
@@ -13,7 +13,7 @@ export enum DurationType {
 	None = "none",
 }
 
-export interface EffectSystemSource {
+export interface EffectSystemSource extends ItemSystemSource {
 	id: string | null
 	features?: FeatureObj[]
 	modifiers?: RollModifier[]
@@ -25,9 +25,9 @@ export interface EffectSystemSource {
 	overlay?: boolean
 	duration: {
 		type: DurationType
-		startRound: number | null
-		startTime: number | null
-		startTurn: number | null
+		startRound?: number | null
+		startTime?: number | null
+		startTurn?: number | null
 		rounds?: number
 		seconds?: number
 		turns?: number

@@ -11,7 +11,6 @@ import { AttributeEffect } from "@module/data/index.ts"
 import { SheetSettings } from "@module/data/sheet_settings.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { ActiveEffectGURPS } from "@module/active-effect/index.ts"
-import { TokenDocumentGURPS } from "@module/canvas/token/index.ts"
 import { UserGURPS } from "@module/user/document.ts"
 import { GURPSCONFIG } from "@scripts/config/index.ts"
 import { AttributeDefObj } from "@sytem/attribute/data.ts"
@@ -24,11 +23,17 @@ import {
 	CompendiumBrowserSettings,
 	CompendiumBrowserSources,
 } from "@module/apps/compendium-browser/index.ts"
+import { JournalEntryGURPS } from "@module/journal-entry/document.ts"
+import { JournalEntryPageGURPS } from "@module/journal-entry/page/document.ts"
+import { ChatMessageGURPS } from "@module/chat-message/document.ts"
+import { CanvasGURPS } from "@module/canvas/index.ts"
+import { SceneGURPS } from "@scene"
+import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
 interface GameGURPS
 	extends Game<
 		ActorGURPS<null>,
 		Actors<ActorGURPS<null>>,
-		ChatMessage,
+		ChatMessageGURPS,
 		CombatGURPS,
 		ItemGURPS<null>,
 		Macro,
@@ -45,7 +50,7 @@ interface GameGURPS
 }
 
 type ConfiguredConfig = Config<
-	AmbientLightDocument<Scene | null>,
+	AmbientLightDocument<SceneGURPS | null>,
 	ActiveEffectGURPS<ActorGURPS | ItemGURPS | null>,
 	ActorGURPS,
 	ActorDelta<TokenDocumentGURPS>,
@@ -58,13 +63,15 @@ type ConfiguredConfig = Config<
 	Hotbar,
 	ItemGURPS,
 	Macro,
-	MeasuredTemplateDocument<Scene | null>,
-	TileDocument<Scene | null>,
+	MeasuredTemplateDocument<SceneGURPS | null>,
+	TileDocument<SceneGURPS | null>,
 	TokenDocumentGURPS,
-	WallDocument<Scene | null>,
-	Scene,
+	WallDocument<SceneGURPS | null>,
+	SceneGURPS,
 	UserGURPS,
-	EffectsCanvasGroup
+	EffectsCanvasGroup,
+	JournalEntryGURPS,
+	JournalEntryPageGURPS<JournalEntryGURPS>
 >
 
 declare global {
@@ -79,7 +86,7 @@ declare global {
 	}
 
 	const CONFIG: ConfigGURPS
-	const canvas: Canvas
+	const canvas: CanvasGURPS
 
 	namespace globalThis {
 		// eslint-disable-next-line no-var
@@ -127,6 +134,7 @@ declare global {
 		get(module: "gcsga", key: "initiative_formula"): ((combatant: CombatGURPS["turns"][number]) => string) | null
 		get(module: "gcsga", setting: "compendium_browser_packs"): CompendiumBrowserSettings
 		get(module: "gcsga", setting: "compendium_browser_sources"): CompendiumBrowserSources
+		get(module: "gcsga", setting: "roll_formula"): string
 	}
 
 	interface ClientSettingsMap {

@@ -1,7 +1,7 @@
-import { HitLocation, HitLocationTable } from "@actor/character/hit_location"
-import { gid } from "@module/data"
-import { DiceGURPS } from "@module/dice"
-import { DamageType } from "./damage_type"
+import { HitLocation, HitLocationTable } from "@actor/character/hit_location.ts"
+import { DamageType } from "./damage_type.ts"
+import { gid } from "@module/data/misc.ts"
+import { DiceGURPS } from "@module/dice/index.ts"
 
 export type HitLocationRollResult = {
 	location: HitLocation | undefined
