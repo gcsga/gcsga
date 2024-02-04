@@ -163,6 +163,17 @@
 			column-gap: 9px;
 			vertical-align: middle;
 			overflow: hidden;
+
+			.apply {
+				display: flex;
+				flex-flow: row nowrap;
+				justify-content: end;
+				align-items: center;
+
+				* {
+					margin-left: 3px;
+				}
+			}
 		}
 
 		#effects,
@@ -262,17 +273,6 @@
 				.descr:nth-child(2n + 3):not(.header) {
 					background-color: rgb(var(--color-banding));
 					color: rgb(var(--color-on-banding));
-				}
-			}
-
-			.apply {
-				display: flex;
-				flex-flow: row nowrap;
-				justify-content: end;
-				align-items: center;
-
-				* {
-					margin-left: 3px;
 				}
 			}
 		}
