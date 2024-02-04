@@ -46,7 +46,7 @@
 		"@types/jest": "^29.5.11",
 		"@types/jquery": "^3.5.29",
 		"@types/showdown": "^2.0.6",
-		"@types/uuid": "^9.0.7",
+		"@types/uuid": "^9.0.8",
 		"@typescript-eslint/eslint-plugin": "^6.19.1",
 		"@typescript-eslint/parser": "^6.19.0",
 		"eslint": "^8.54.0",
