@@ -595,7 +595,7 @@ describe("Damage calculator", () => {
 	})
 
 	describe("B381: Major Wounds.", () => {
-		it.skip("Any single injury that inflicts a wound in excess of 1/2 your HP is a major wound.", () => {
+		it("Any single injury that inflicts a wound in excess of 1/2 your HP is a major wound.", () => {
 			_target.hitPoints.value = 12
 			_roll.hits[0].locationId = "any location"
 

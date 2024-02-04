@@ -122,10 +122,10 @@ interface LocationDamage {
 }
 
 const formatFraction = (value: number) => {
-	if (value === 0.5) return "1/2"
-	if (value === 1 / 3) return "1/3"
-	if (value === 2 / 3) return "2/3"
-	if (value === 0.2) return "1/5"
+	if (value === 0.5) return "&frac12;"
+	if (value === 1 / 3) return "&frac13;"
+	if (value === 2 / 3) return "&frac23;"
+	if (value === 0.2) return "&frac15;"
 	if (value === 0.1) return "1/10"
 	return `${value}`
 }
