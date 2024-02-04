@@ -6,6 +6,7 @@ import { CharacterGURPS, StaticSpell } from "@actor"
 import { Static, Study } from "@util"
 import { SafeString } from "handlebars"
 import { study } from "./enum"
+import { pageRef } from "./page_ref"
 
 class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 	static camelcase(s: string) {
@@ -538,6 +539,7 @@ export function registerHandlebarsHelpers() {
 		sum: HandlebarsHelpersGURPS.sum,
 		textareaFormat: HandlebarsHelpersGURPS.textareaFormat,
 		customArmorDivisorSelect: HandlebarsHelpersGURPS.customArmorDivisorSelect,
+		pageRef: pageRef,
 		// unsatisfied: HandlebarsHelpersGURPS.unsatisfied,
 	})
 }

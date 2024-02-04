@@ -129,8 +129,8 @@
 		}
 
 		.overridden {
-			background-color: rgb(var(--color-overloaded)) !important;
-			color: rgb(var(--color-on-overloaded)) !important;
+			background-color: rgb(var(--color-warning)) !important;
+			color: rgb(var(--color-on-warning)) !important;
 		}
 
 		#target {
