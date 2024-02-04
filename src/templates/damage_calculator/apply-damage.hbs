@@ -30,18 +30,13 @@
 			</select>
 		</div>
 		<div></div>
-
 		<div class="label">{{localize "gurps.weapon.damage_type"}}</div>
 		<div class="field no-stretch type">
 			<select data-action="damagetype-select" class="{{ifText calculator.damageTypeOverride 'overridden'}}">
 				{{selectOptions choices.damageType selected=calculator.damageTypeKey localize=true}}
 			</select>
 		</div>
-		{{#if (eq books "dfrpg")}}
-			<div class="label ref" data-pdf="DFX53">DFX53</div>
-		{{else}}
-			<div class="label ref" data-pdf="B268">B268</div>
-		{{/if}}
+		<div class="label ref" data-pdf="{{pageRef books 'damage_type'}}">{{pageRef books "damage_type"}}</div>
 
 		<div class="label"></div>
 		<div class="field no-stretch">
@@ -62,11 +57,7 @@
 					{{checked calculator.isInternalExplosion}}
 				/>{{localize "gurps.dmgcalc.internal"}}</label>
 		</div>
-		{{#if (eq books "dfrpg")}}
-			<div class="label ref" data-pdf="DFX46">DFX46</div>
-		{{else}}
-			<div class="label ref" data-pdf="B414">B414</div>
-		{{/if}}
+		<div class="label ref" data-pdf="{{pageRef books 'explosions'}}">{{pageRef books "explosions"}}</div>
 
 		<div class="label">{{localize "gurps.weapon.armor_divisor"}}</div>
 		<div class="field no-stretch">
@@ -106,11 +97,7 @@
 				</span>
 			</label> --}}
 		</div>
-		{{#if (eq books "dfrpg")}}
-			<div class="label ref" data-pdf="DFX52">DFX52</div>
-		{{else}}
-			<div class="label ref" data-pdf="B378">B378</div>
-		{{/if}}
+		<div class="label ref" data-pdf="{{pageRef books 'armor_divisor'}}">{{pageRef books "armor_divisor"}}</div>
 
 		<div class="label">{{localize "gurps.dmgcalc.range"}}</div>
 		<div class="field no-stretch range">
@@ -130,11 +117,8 @@
 					data-action="override-isHalfDamage"
 				/>{{localize "gurps.dmgcalc.half_d"}}</label>
 		</div>
-		{{#if (eq books "dfrpg")}}
-			<div class="label ref" data-pdf="DFX43">DFX43</div>
-		{{else}}
-			<div class="label ref" data-pdf="B378">B378</div>
-		{{/if}}
+		<div class="label ref" data-pdf="{{pageRef books 'ranged_half_damage'}}">
+			{{pageRef books "ranged_half_damage"}}</div>
 
 		<div class="label"></div>
 		<div class="field no-stretch">
@@ -161,7 +145,8 @@
 				</span>
 			</label>
 		</div>
-		<div class="label ref" data-pdf="B409">B409</div>
+		<div class="label ref" data-pdf="{{pageRef books 'shotguns_multiple_projectiles'}}">
+			{{pageRef	books "shotguns_multiple_projectiles"}}</div>
 	</div>
 
 	<div id="target">
@@ -182,7 +167,7 @@
 					{{/select}}
 				</select>
 			</div>
-			<div class="label ref" data-pdf="B60">B60</div>
+			<div class="label ref" data-pdf="{{pageRef books 'injury_tolerance'}}">{{pageRef books 'injury_tolerance'}}</div>
 
 			<div class="label">{{localize "gurps.dmgcalc.damage_reduction"}}</div>
 			<div class="field no-stretch">
@@ -212,7 +197,7 @@
 					</span>
 				</label>
 			</div>
-			<div class="label ref" data-pdf="P53">P53</div>
+			<div class="label ref" data-pdf="{{pageRef books 'damage_reduction'}}">{{pageRef books 'damage_reduction'}}</div>
 
 			<div class="label">{{localize "gurps.dmgcalc.vulnerability"}}</div>
 			<div id="vulnerability" class="field">
@@ -242,12 +227,7 @@
 						/></span>
 				</div>
 			</div>
-			{{#if (eq books "dfrpg")}}
-				<div class="label ref" data-pdf="DFX14">DFM14</div>
-			{{else}}
-				<div class="label ref" data-pdf="B161">B161</div>
-			{{/if}}
-
+			<div class="label ref" data-pdf="{{pageRef books 'vulnerability'}}">{{pageRef books 'vulnerability'}}</div>
 		</div>
 
 		<nav class="nav-tabs" data-group="primary">
@@ -331,11 +311,7 @@
 								/>
 							</label>
 						</div>
-						{{#if (eq books "dfrpg")}}
-							<div class="label ref" data-pdf="DFX53">DFX53</div>
-						{{else}}
-							<div class="label ref" data-pdf="B398">B398</div>
-						{{/if}}
+						<div class="label ref" data-pdf="{{pageRef books 'hit_location'}}">{{pageRef books 'hit_location'}}</div>
 
 						<div class="label"></div>
 						<div class="field">
@@ -349,7 +325,7 @@
 									{{checked this.flexibleArmorOverride}}
 								/>{{localize "gurps.dmgcalc.flexible"}}</label>
 						</div>
-						<div class="label ref" data-pdf="B378">B378</div>
+						<div class="label ref" data-pdf="{{pageRef books 'flexible_armor'}}">{{pageRef books 'flexible_armor'}}</div>
 
 						<div class="label">{{localize "gurps.dmgcalc.hardened_dr"}}</div>
 						<div class="field">
@@ -361,7 +337,7 @@
 								{{selectOptions @root.choices.hardened selected=this.hardenedDRLevel}}
 							</select>
 						</div>
-						<div class="label ref" data-pdf="B47">B47</div>
+						<div class="label ref" data-pdf="{{pageRef books 'hardened_dr'}}">{{pageRef books 'hardened_dr'}}</div>
 
 						<div id="results">
 							<div id="effects">

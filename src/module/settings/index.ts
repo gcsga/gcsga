@@ -118,6 +118,7 @@ export function registerSettings(): void {
 		type: String,
 		choices: {
 			gurps: "gurps.settings.base_books.choices.gurps",
+			lite: "gurps.settings.base_books.choices.lite",
 			dfrpg: "gurps.settings.base_books.choices.dfrpg",
 		},
 		default: "gurps",
