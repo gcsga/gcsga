@@ -1,10 +1,10 @@
-import { ActorGURPS } from "@actor/base.ts"
 import { ContainerGURPS } from "@item/container/document.ts"
 import { SYSTEM_NAME } from "@module/data/index.ts"
 import { ItemModificationContextGURPS, ItemType } from "@item/types.ts"
 import { ItemFlags, ItemSourceGURPS } from "./data/index.ts"
 import { CharacterResolver } from "@util"
 import { BaseItemSourceGURPS, ItemSystemSource } from "./data/system.ts"
+import { ActorGURPS } from "@actor"
 
 export interface ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends Item<TParent> {
 	readonly _source: BaseItemSourceGURPS

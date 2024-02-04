@@ -1,6 +1,6 @@
 import { RollModifier, SYSTEM_NAME, gid } from "@module/data/misc.ts"
 import * as R from "remeda"
-import { ActorFlags, ActorFlagsGURPS, ActorSystemSource } from "./base/data.ts"
+import { ActorFlags, ActorFlagsGURPS, ActorSystemSource, BaseActorSourceGURPS } from "./base/data.ts"
 import { Attribute } from "@sytem/attribute/object.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { TraitGURPS } from "@item/trait/document.ts"
@@ -27,14 +27,15 @@ import { MoveType } from "@sytem/move_type/object.ts"
 import { ActorInstances, ActorModificationContextGURPS, ActorType } from "./types.ts"
 import { ItemType } from "@item/types.ts"
 import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
-import { ConditionID, EffectID, ManeuverID, Postures } from "@item/condition/index.ts"
 import { ItemFlags } from "@item/base/data/system.ts"
 import { BaseWeaponGURPS, ContainerGURPS, TraitModifierGURPS } from "@item"
 import { ItemSourceGURPS } from "@item/base/data/index.ts"
 import { CharacterResolver } from "@util"
 import { CharacterGURPS } from "./character/document.ts"
+import { ConditionID, EffectID, ManeuverID, Postures } from "@item/condition/data.ts"
 
 interface ActorGURPS<TParent extends TokenDocumentGURPS | null> extends Actor<TParent> {
+	_source: BaseActorSourceGURPS
 	noPrepare: boolean
 	flags: ActorFlagsGURPS
 	type: ActorType

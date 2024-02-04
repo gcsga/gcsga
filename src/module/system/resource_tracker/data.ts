@@ -1,4 +1,4 @@
-import { PoolThresholdDef } from "@module/attribute"
+import { PoolThresholdDef } from "@sytem/attribute/data.ts"
 
 export interface ResourceTrackerObj {
 	// order: number

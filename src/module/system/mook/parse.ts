@@ -3,9 +3,10 @@ import { MookData, MookMelee, MookRanged, MookSkill, MookSpell, MookTrait, MookT
 import { Mook } from "./document.ts"
 import { SETTINGS, SYSTEM_NAME, gid } from "@module/data/misc.ts"
 import { difficulty } from "@util/enum/difficulty.ts"
-import { WeaponDamageObj } from "@item"
 import { stdmg } from "@util/enum/stdmg.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
+import { ItemType } from "@item"
+import { WeaponDamageObj } from "@item/weapon/data.ts"
 
 const regex_points = /\[(-?\d+)\]/
 const damage_type_matches: Map<string, string> = new Map([
@@ -249,6 +250,7 @@ export class MookParser {
 			t = this.cleanLine(t)
 
 			const trait = new MookTrait({
+				type: ItemType.Trait,
 				name: t,
 				points,
 				cr,
@@ -271,6 +273,7 @@ export class MookParser {
 				const mod = m.split(",")
 				modifiers.push(
 					new MookTraitModifier({
+						type: ItemType.TraitModifier,
 						name: mod[0].trim(),
 						cost: mod[1].trim(),
 						notes: "",
@@ -368,9 +371,10 @@ export class MookParser {
 			t = this.cleanLine(t)
 
 			const skill = new MookSkill({
+				type: ItemType.Skill,
 				name: t,
 				attribute: attribute,
-				difficulty: diff,
+				difficulty: diff as difficulty.Level,
 				points,
 				level,
 				specialization,
@@ -461,10 +465,11 @@ export class MookParser {
 			t = this.cleanLine(t)
 
 			const spell = new MookSpell({
+				type: ItemType.Spell,
 				name: t,
 				college: [],
 				attribute: attribute,
-				difficulty: diff,
+				difficulty: diff as difficulty.Level,
 				points,
 				level,
 				tech_level: tl,
@@ -742,6 +747,7 @@ export class MookParser {
 
 			if (isRanged) {
 				const rangedWeapon = new MookRanged({
+					type: ItemType.RangedWeapon,
 					name,
 					accuracy,
 					range: half_damage > 0 && max_range > 0 ? `${half_damage}/${max_range}` : range,
@@ -758,6 +764,7 @@ export class MookParser {
 				ranged.push(rangedWeapon)
 			} else {
 				const meleeWeapon = new MookMelee({
+					type: ItemType.MeleeWeapon,
 					name,
 					reach,
 					strength: ST,

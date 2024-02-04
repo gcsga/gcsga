@@ -1,4 +1,4 @@
-import { OtFAction } from "./base"
+import { OtFAction } from "./base.ts"
 
 /**
  *

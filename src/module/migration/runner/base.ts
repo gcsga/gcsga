@@ -1,11 +1,11 @@
-import { ActorSourcePF2e } from "@actor/data/index.ts"
-import { ItemSourcePF2e } from "@item/base/data/index.ts"
-import { itemIsOfType } from "@item/helpers.ts"
-import { MigrationRecord } from "@module/data.ts"
+import { ActorSourceGURPS } from "@actor/data/index.ts"
+import { ItemSourceGURPS } from "@item/base/data/index.ts"
+import { MigrationRecord } from "@module/data/misc.ts"
 import { MigrationBase } from "@module/migration/base.ts"
-import type { ScenePF2e, TokenDocumentPF2e } from "@scene"
+import { SceneGURPS } from "@scene"
+import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
 
-interface CollectionDiff<T extends foundry.documents.ActiveEffectSource | ItemSourcePF2e> {
+interface CollectionDiff<T extends foundry.documents.ActiveEffectSource | ItemSourceGURPS> {
 	inserted: T[]
 	deleted: string[]
 	updated: T[]
@@ -36,14 +36,14 @@ export class MigrationRunnerBase {
 		return currentVersion < (this.constructor as typeof MigrationRunnerBase).LATEST_SCHEMA_VERSION
 	}
 
-	diffCollection(orig: ItemSourcePF2e[], updated: ItemSourcePF2e[]): CollectionDiff<ItemSourcePF2e> {
-		const diffs: CollectionDiff<ItemSourcePF2e> = {
+	diffCollection(orig: ItemSourceGURPS[], updated: ItemSourceGURPS[]): CollectionDiff<ItemSourceGURPS> {
+		const diffs: CollectionDiff<ItemSourceGURPS> = {
 			inserted: [],
 			deleted: [],
 			updated: [],
 		}
 
-		const origSources: Map<string, ItemSourcePF2e> = new Map()
+		const origSources: Map<string, ItemSourceGURPS> = new Map()
 		for (const source of orig) {
 			origSources.set(source._id!, source)
 		}
@@ -70,20 +70,12 @@ export class MigrationRunnerBase {
 		return diffs
 	}
 
-	async getUpdatedActor(actor: ActorSourcePF2e, migrations: MigrationBase[]): Promise<ActorSourcePF2e> {
+	async getUpdatedActor(actor: ActorSourceGURPS, migrations: MigrationBase[]): Promise<ActorSourceGURPS> {
 		const currentActor = fu.deepClone(actor)
 
 		for (const migration of migrations) {
 			for (const currentItem of currentActor.items) {
 				await migration.preUpdateItem?.(currentItem, currentActor)
-				if (currentItem.type === "consumable" && currentItem.system.spell) {
-					await migration.preUpdateItem?.(currentItem.system.spell)
-				}
-				if (itemIsOfType(currentItem, "armor", "equipment", "shield", "weapon")) {
-					for (const subitem of currentItem.system.subitems) {
-						migration.preUpdateItem?.(subitem)
-					}
-				}
 			}
 		}
 
@@ -93,14 +85,6 @@ export class MigrationRunnerBase {
 			for (const currentItem of currentActor.items) {
 				await migration.updateItem?.(currentItem, currentActor)
 				// Handle embedded items
-				if (currentItem.type === "consumable" && currentItem.system.spell) {
-					await migration.updateItem?.(currentItem.system.spell, currentActor)
-				}
-				if (itemIsOfType(currentItem, "armor", "equipment", "shield", "weapon")) {
-					for (const subitem of currentItem.system.subitems) {
-						migration.updateItem?.(subitem)
-					}
-				}
 			}
 		}
 
@@ -118,32 +102,16 @@ export class MigrationRunnerBase {
 		return currentActor
 	}
 
-	async getUpdatedItem(item: ItemSourcePF2e, migrations: MigrationBase[]): Promise<ItemSourcePF2e> {
+	async getUpdatedItem(item: ItemSourceGURPS, migrations: MigrationBase[]): Promise<ItemSourceGURPS> {
 		const current = fu.deepClone(item)
 
 		for (const migration of migrations) {
 			await migration.preUpdateItem?.(current)
-			if (current.type === "consumable" && current.system.spell) {
-				await migration.preUpdateItem?.(current.system.spell)
-			}
-			if (itemIsOfType(current, "armor", "equipment", "shield", "weapon")) {
-				for (const subitem of current.system.subitems) {
-					migration.preUpdateItem?.(subitem)
-				}
-			}
 		}
 
 		for (const migration of migrations) {
 			await migration.updateItem?.(current)
 			// Handle embedded spells
-			if (current.type === "consumable" && current.system.spell) {
-				await migration.updateItem?.(current.system.spell)
-			}
-			if (itemIsOfType(current, "armor", "equipment", "shield", "weapon")) {
-				for (const subitem of current.system.subitems) {
-					migration.updateItem?.(subitem)
-				}
-			}
 		}
 
 		if (migrations.length > 0) this.#updateMigrationRecord(current.system._migration, migrations.slice(-1)[0])
@@ -203,7 +171,7 @@ export class MigrationRunnerBase {
 	}
 
 	async getUpdatedToken(
-		token: TokenDocumentPF2e<ScenePF2e>,
+		token: TokenDocumentGURPS<SceneGURPS>,
 		migrations: MigrationBase[],
 	): Promise<foundry.documents.TokenSource> {
 		const current = token.toObject()

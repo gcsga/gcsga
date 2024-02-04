@@ -20,10 +20,8 @@ import { damageProgression } from "@util/index.ts"
 import { Attribute } from "@sytem/attribute/object.ts"
 import { attribute } from "@util/enum/attribute.ts"
 import { CharacterGURPS } from "@actor/index.ts"
-import { ItemType } from "@item/types.ts"
 import { SkillGURPS } from "@item"
 import { SpellGURPS } from "@item/spell/document.ts"
-import { randomID } from "types/foundry/common/utils/helpers.js"
 import { AttributeDef } from "@sytem/attribute/attribute_def.ts"
 import { ItemFlags } from "@item/base/data/system.ts"
 import { TraitModifierSource } from "@item/trait_modifier/data.ts"
@@ -32,7 +30,7 @@ import { SpellSource } from "@item/spell/data.ts"
 import { MeleeWeaponSource } from "@item/melee_weapon/data.ts"
 import { RangedWeaponSource } from "@item/ranged_weapon/data.ts"
 import { NoteSource } from "@item/note/data.ts"
-import { ItemSourceGURPS, TraitSource } from "@item/base/data/index.ts"
+import { ItemSourceGURPS, ItemType, TraitSource } from "@item/base/data/index.ts"
 
 export class Mook {
 	type = "mook"
@@ -343,7 +341,7 @@ export class Mook {
 
 	private _getTraitItemData(trait: MookTrait): DeepPartial<TraitSource | TraitModifierSource>[] {
 		const items: DeepPartial<TraitSource | TraitModifierSource>[] = []
-		const id = randomID()
+		const id = fu.randomID()
 		const data: DeepPartial<TraitSource> = {
 			name: trait.name,
 			type: ItemType.Trait,
@@ -368,7 +366,7 @@ export class Mook {
 		modifier: MookTraitModifier,
 		container_id: string,
 	): DeepPartial<TraitModifierSource> {
-		const id = randomID()
+		const id = fu.randomID()
 		console.log(modifier)
 		const data: DeepPartial<TraitModifierSource> = {
 			name: modifier.name,
@@ -390,7 +388,7 @@ export class Mook {
 	}
 
 	private async _getSkillItemData(skill: MookSkill): Promise<DeepPartial<SkillSource>> {
-		const id = randomID()
+		const id = fu.randomID()
 		const data: DeepPartial<SkillSource> = {
 			name: skill.name,
 			type: ItemType.Skill,
@@ -410,7 +408,7 @@ export class Mook {
 	}
 
 	private async _getSpellItemData(spell: MookSpell): Promise<DeepPartial<SpellSource>> {
-		const id = randomID()
+		const id = fu.randomID()
 		const data: DeepPartial<SpellSource> = {
 			name: spell.name,
 			type: ItemType.Spell,
@@ -430,7 +428,7 @@ export class Mook {
 	}
 
 	private _getMeleeItemData(melee: MookMelee): DeepPartial<MeleeWeaponSource> {
-		const id = randomID()
+		const id = fu.randomID()
 		const data: DeepPartial<MeleeWeaponSource> = {
 			name: melee.name,
 			type: ItemType.MeleeWeapon,
@@ -456,7 +454,7 @@ export class Mook {
 	}
 
 	private _getRangedItemData(ranged: MookRanged): DeepPartial<RangedWeaponSource> {
-		const id = randomID()
+		const id = fu.randomID()
 		const data: DeepPartial<RangedWeaponSource> = {
 			name: ranged.name,
 			type: ItemType.RangedWeapon,
@@ -485,7 +483,7 @@ export class Mook {
 	}
 
 	private _getNoteItemData(note: string): DeepPartial<NoteSource> {
-		const id = randomID()
+		const id = fu.randomID()
 		const data: DeepPartial<NoteSource> = {
 			name: "Note",
 			type: ItemType.Note,

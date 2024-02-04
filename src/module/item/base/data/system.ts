@@ -1,12 +1,12 @@
 import { ItemType } from "@item/types.ts"
 import { MigrationRecord, SYSTEM_NAME } from "@module/data/misc.ts"
 
-type BaseItemSourceGURPS<
-	TType extends ItemType = ItemType,
-	TSystemSource extends object = object,
-> = foundry.documents.ItemSource<TType, TSystemSource> & {
+type BaseItemSourceGURPS<TType extends ItemType, TSystemSource extends object = object> = foundry.documents.ItemSource<
+	TType,
+	TSystemSource
+> & {
 	type: TType
-	flags: DeepPartial<ItemFlagsGURPS>
+	flags: ItemSourceFlagsGURPS
 }
 
 enum ItemFlags {
@@ -17,6 +17,14 @@ enum ItemFlags {
 }
 
 interface ItemFlagsGURPS extends Record<string, unknown> {
+	[SYSTEM_NAME]?: {
+		[ItemFlags.Container]?: string | null
+		[ItemFlags.Other]?: boolean
+		[ItemFlags.Unready]?: boolean
+	}
+}
+
+interface ItemSourceFlagsGURPS extends Record<string, unknown> {
 	[SYSTEM_NAME]?: {
 		[ItemFlags.Container]?: string | null
 		[ItemFlags.Other]?: boolean

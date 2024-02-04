@@ -1,5 +1,5 @@
 import MainTranslation from "@lang/en.json"
-type TranslationsGURPS = Record<string, Localization.Translations> & typeof MainTranslation
+type TranslationsGURPS = Record<string, TranslationDictionaryValue> & typeof MainTranslation
 
 export class LocalizeGURPS {
 	static ready = false
@@ -12,7 +12,7 @@ export class LocalizeGURPS {
 			throw Error("LocalizeGURPS instantiated too early")
 		}
 		if (this._translations === undefined) {
-			this._translations = mergeObject(game.i18n._fallback, game.i18n.translations, {
+			this._translations = fu.mergeObject(game.i18n._fallback, game.i18n.translations, {
 				enforceTypes: true,
 			}) as TranslationsGURPS
 		}

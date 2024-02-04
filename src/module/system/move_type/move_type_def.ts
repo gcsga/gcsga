@@ -1,7 +1,7 @@
 import { CharacterResolver, evaluateToNumber, sanitizeId } from "@util"
 import { MoveTypeDefObj } from "./data.ts"
-import { reserved_ids } from "@module/attribute"
 import { MoveTypeOverride } from "./override.ts"
+import { reserved_ids } from "@sytem/attribute/data.ts"
 
 export class MoveTypeDef {
 	private def_id!: string

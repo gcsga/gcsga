@@ -2,7 +2,10 @@ import { PartialSettingsData, SettingsMenuGURPS } from "./menu.ts"
 import { SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
 import { defaultSettings } from "./defaults.ts"
 import { HitLocationData } from "@actor/character/hit_location.ts"
-import { htmlQuery } from "@util/dom.ts"
+import { htmlClosest, htmlQuery } from "@util/dom.ts"
+import { LocalizeGURPS, prepareFormData } from "@util"
+import { DnD } from "@util/drag_drop.ts"
+import { DropDataType } from "@module/apps/damage_calculator/damage_chat_message.ts"
 
 enum ListType {
 	Locations = "locations",
@@ -66,95 +69,74 @@ export class HitLocationSettings extends SettingsMenuGURPS {
 		}
 	}
 
-	protected _onAddItem(event: MouseEvent): void {
-		const attributes = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
-		const effects = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`)
+	protected async _onAddItem(event: MouseEvent): Promise<this> {
+		const path = htmlQuery(event.target, "[data-path]")?.dataset.path?.replace("array.", "") ?? ""
+		let locations = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`)
 		const type: ListType = htmlQuery(event.target, "[data-type]")?.dataset.type as ListType
+		let formData: Record<string, unknown> = {}
 
-		let newID = ""
 		switch (type) {
-			case ListType.Attribute:
-				newID = getNewAttributeId(attributes)
-				attributes.push({
-					type: attribute.Type.Integer,
-					id: newID,
-					name: newID,
-					attribute_base: "10",
-					cost_per_point: 0,
-					cost_adj_percent_per_sm: 0,
+			case ListType.Locations:
+				locations.push({
+					id: LocalizeGURPS.translations.gurps.placeholder.hit_location.id,
+					choice_name: LocalizeGURPS.translations.gurps.placeholder.hit_location.choice_name,
+					table_name: LocalizeGURPS.translations.gurps.placeholder.hit_location.table_name,
+					slots: 0,
+					hit_penalty: 0,
+					dr_bonus: 0,
+					description: "",
 				})
-				game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`, attributes)
-				break
-			case ListType.Effect:
-				effects.push({
-					attribute: "",
-					state: "",
-					enter: [],
-					leave: [],
-				})
-				game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`, effects)
-				break
-			case ListType.Thresholds: {
-				const index = htmlQuery(event.target, "[data-id]")?.dataset.id
-				if (index) {
-					attributes[parseInt(index)].thresholds ??= []
-					attributes[parseInt(index)].thresholds?.push({
-						state: "",
-						explanation: "",
-						expression: "",
-						ops: [],
-					})
+				formData ??= {}
+				formData[`array.${path}.locations`] = locations
+				await this._updateObject(event as unknown as Event, formData)
+				return this.render()
+			case ListType.SubTable: {
+				const index = Number(htmlQuery(event.target, "[data-index]")?.dataset.index)
+				locations = (fu.getProperty(this.object, `${path}`) as HitLocationData[]) ?? []
+				locations[index].sub_table = {
+					name: "",
+					roll: "1d",
+					locations: [
+						{
+							id: LocalizeGURPS.translations.gurps.placeholder.hit_location.id,
+							choice_name: LocalizeGURPS.translations.gurps.placeholder.hit_location.choice_name,
+							table_name: LocalizeGURPS.translations.gurps.placeholder.hit_location.table_name,
+							slots: 0,
+							hit_penalty: 0,
+							dr_bonus: 0,
+							description: "",
+						},
+					],
 				}
-				game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`, attributes)
-				break
-			}
-			case ListType.Enter:
-			case ListType.Leave: {
-				const index = htmlQuery(event.target, "[data-id]")?.dataset.id
-				if (index) {
-					effects[parseInt(index)][type] ??= []
-					effects[parseInt(index)][type].push({
-						id: ConditionID.Reeling,
-						action: EFFECT_ACTION.ADD,
-					})
-					game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`, effects)
-					break
-				}
+				formData ??= {}
+				formData[`array.${path}.locations`] = locations
+				await this._updateObject(event as unknown as Event, formData)
+				return this.render()
 			}
 		}
-		this.render()
 	}
 
-	protected _onDeleteItem(event: MouseEvent): void {
-		const attributes = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
-		const effects = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`)
+	protected async _onDeleteItem(event: MouseEvent): Promise<this> {
+		const path = htmlQuery(event.target, "[data-path]")?.dataset.path?.replace("array.", "") ?? ""
+		const locations = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`)
+		let formData: Record<string, unknown> = {}
 		const type: ListType = htmlQuery(event.target, "[data-type]")?.dataset.type as ListType
-
-		const index = parseInt(htmlQuery(event.target, "[data-index]")?.dataset.index ?? "-1")
-		const pindex = parseInt(htmlQuery(event.target, "[data-pindex]")?.dataset.pindex ?? "-1")
-		if (index === -1 || pindex === 1) return
-
+		const index = Number(htmlQuery(event.target, "[data-index]")?.dataset.index)
 		switch (type) {
-			case ListType.Attribute:
-				attributes.splice(index, 1)
-				game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`, attributes)
-				break
-			case ListType.Thresholds:
-				attributes[pindex].thresholds?.splice(index, 1)
-				game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`, attributes)
-				break
-			case ListType.Effect:
-				effects.splice(index, 1)
-				game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`, effects)
-				break
-			case ListType.Enter:
-			case ListType.Leave:
-				effects[pindex][type]?.splice(index, 1)
-				game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`, effects)
-				break
+			case ListType.Locations:
+				locations.splice(index, 1)
+				formData ??= {}
+				formData[`array.${path}`] = locations
+				await this._updateObject(event as unknown as Event, formData)
+				return this.render()
+			case ListType.SubTable:
+				// Locations = getProperty(this.object, `${path}`) ?? []
+				delete locations[index].sub_table
+				formData ??= {}
+				formData[`array.${path}`] = locations
+				await this._updateObject(event as unknown as Event, formData)
+				return this.render()
 		}
-
-		this.render()
 	}
 
 	protected override _onDrop(event: DragEvent): void {
@@ -487,54 +469,54 @@ export class HitLocationSettings extends SettingsMenuGURPS {
 // 		)
 // 	}
 //
-// 	async _onAddItem(event: JQuery.ClickEvent) {
-// 		event.preventDefault()
-// 		event.stopPropagation()
-// 		let path = ""
-// 		let locations = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`)
-// 		const type: "locations" | "sub_table" = $(event.currentTarget).data("type")
-// 		let formData: any = {}
-// 		switch (type) {
-// 			case "locations":
-// 				path = $(event.currentTarget).data("path").replace("array.", "")
-// 				locations.push({
-// 					id: LocalizeGURPS.translations.gurps.placeholder.hit_location.id,
-// 					choice_name: LocalizeGURPS.translations.gurps.placeholder.hit_location.choice_name,
-// 					table_name: LocalizeGURPS.translations.gurps.placeholder.hit_location.table_name,
-// 					slots: 0,
-// 					hit_penalty: 0,
-// 					dr_bonus: 0,
-// 					description: "",
-// 				})
-// 				formData ??= {}
-// 				formData[`array.${path}.locations`] = locations
-// 				await this._updateObject(event as unknown as Event, formData)
-// 				return this.render()
-// 			case "sub_table":
-// 				path = $(event.currentTarget).data("path").replace("array.", "")
-// 				const index = Number($(event.currentTarget).data("index"))
-// 				locations = getProperty(this.object, `${path}`) ?? []
-// 				locations[index].sub_table = {
-// 					name: "",
-// 					roll: "1d",
-// 					locations: [
-// 						{
-// 							id: LocalizeGURPS.translations.gurps.placeholder.hit_location.id,
-// 							choice_name: LocalizeGURPS.translations.gurps.placeholder.hit_location.choice_name,
-// 							table_name: LocalizeGURPS.translations.gurps.placeholder.hit_location.table_name,
-// 							slots: 0,
-// 							hit_penalty: 0,
-// 							dr_bonus: 0,
-// 							description: "",
-// 						},
-// 					],
-// 				}
-// 				formData ??= {}
-// 				formData[`array.${path}.locations`] = locations
-// 				await this._updateObject(event as unknown as Event, formData)
-// 				return this.render()
-// 		}
+// async _onAddItem(event: JQuery.ClickEvent) {
+// 	event.preventDefault()
+// 	event.stopPropagation()
+// 	let path = ""
+// 	let locations = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`)
+// 	const type: "locations" | "sub_table" = $(event.currentTarget).data("type")
+// 	let formData: any = {}
+// 	switch (type) {
+// 		case "locations":
+// 			path = $(event.currentTarget).data("path").replace("array.", "")
+// 			locations.push({
+// 				id: LocalizeGURPS.translations.gurps.placeholder.hit_location.id,
+// 				choice_name: LocalizeGURPS.translations.gurps.placeholder.hit_location.choice_name,
+// 				table_name: LocalizeGURPS.translations.gurps.placeholder.hit_location.table_name,
+// 				slots: 0,
+// 				hit_penalty: 0,
+// 				dr_bonus: 0,
+// 				description: "",
+// 			})
+// 			formData ??= {}
+// 			formData[`array.${path}.locations`] = locations
+// 			await this._updateObject(event as unknown as Event, formData)
+// 			return this.render()
+// 		case "sub_table":
+// 			path = $(event.currentTarget).data("path").replace("array.", "")
+// 			const index = Number($(event.currentTarget).data("index"))
+// 			locations = getProperty(this.object, `${path}`) ?? []
+// 			locations[index].sub_table = {
+// 				name: "",
+// 				roll: "1d",
+// 				locations: [
+// 					{
+// 						id: LocalizeGURPS.translations.gurps.placeholder.hit_location.id,
+// 						choice_name: LocalizeGURPS.translations.gurps.placeholder.hit_location.choice_name,
+// 						table_name: LocalizeGURPS.translations.gurps.placeholder.hit_location.table_name,
+// 						slots: 0,
+// 						hit_penalty: 0,
+// 						dr_bonus: 0,
+// 						description: "",
+// 					},
+// 				],
+// 			}
+// 			formData ??= {}
+// 			formData[`array.${path}.locations`] = locations
+// 			await this._updateObject(event as unknown as Event, formData)
+// 			return this.render()
 // 	}
+// }
 //
 // 	private async _onDeleteItem(event: JQuery.ClickEvent) {
 // 		event.preventDefault()

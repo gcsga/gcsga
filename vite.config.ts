@@ -8,7 +8,7 @@ import checker from "vite-plugin-checker"
 import { viteStaticCopy } from "vite-plugin-static-copy"
 import tsconfigPaths from "vite-tsconfig-paths"
 import packageJSON from "./package.json" assert { type: "json" }
-import { ConditionSource } from "@item/condition/index.ts"
+import { ConditionSource } from "@item/condition/data.ts"
 
 const CONDITION_SOURCES = ((): ConditionSource[] => {
 	const output = execSync("npm run build:conditions", { encoding: "utf-8" })

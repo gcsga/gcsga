@@ -1,6 +1,6 @@
 import { ActorGURPS } from "@actor"
 import type { SceneGURPS } from "../document.ts"
-import { ConditionID } from "@item/condition/index.ts"
+import { ConditionID } from "@item/condition/data.ts"
 
 class TokenDocumentGURPS<TParent extends SceneGURPS | null = SceneGURPS | null> extends TokenDocument<TParent> {
 	// override overlayEffect: any
@@ -65,6 +65,10 @@ class TokenDocumentGURPS<TParent extends SceneGURPS | null = SceneGURPS | null> 
 		//
 		// // Otherwise null
 		// return null
+	}
+
+	get scene(): this["parent"] {
+		return this.parent
 	}
 }
 

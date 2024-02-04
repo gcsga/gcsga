@@ -57,7 +57,7 @@ export class RollModifierSettings extends SettingsMenuGURPS {
 			`${this.namespace}.modifiers`,
 		) as RollModifier[]
 		modifiers.push({
-			name: LocalizeGURPS.translations.gurps.settings.roll_modifiers.default,
+			id: LocalizeGURPS.translations.gurps.settings.roll_modifiers.default,
 			modifier: 0,
 		})
 		game.settings.set(SYSTEM_NAME, `${this.namespace}.modifiers`, modifiers)

@@ -3,7 +3,6 @@
 import { ActorGURPS } from "@actor/base.ts"
 import { HitLocationData } from "@actor/character/hit_location.ts"
 import { ItemGURPS } from "@item/base/document.ts"
-import { EffectPanel } from "@item/effect/index.ts"
 import { ModifierBucket } from "@module/apps/mod_bucket/button.ts"
 import { CombatGURPS } from "@module/combat/document.ts"
 import { CombatantGURPS } from "@module/combatant/document.ts"
@@ -29,6 +28,7 @@ import { ChatMessageGURPS } from "@module/chat-message/document.ts"
 import { CanvasGURPS } from "@module/canvas/index.ts"
 import { SceneGURPS } from "@scene"
 import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
+import { EffectPanel } from "@item/effect/panel.ts"
 interface GameGURPS
 	extends Game<
 		ActorGURPS<null>,
@@ -65,7 +65,7 @@ type ConfiguredConfig = Config<
 	Macro,
 	MeasuredTemplateDocument<SceneGURPS | null>,
 	TileDocument<SceneGURPS | null>,
-	TokenDocumentGURPS,
+	TokenDocumentGURPS<SceneGURPS | null>,
 	WallDocument<SceneGURPS | null>,
 	SceneGURPS,
 	UserGURPS,
@@ -135,6 +135,7 @@ declare global {
 		get(module: "gcsga", setting: "compendium_browser_packs"): CompendiumBrowserSettings
 		get(module: "gcsga", setting: "compendium_browser_sources"): CompendiumBrowserSources
 		get(module: "gcsga", setting: "roll_formula"): string
+		get(module: "gcsga", setting: "world_schema_version"): number
 	}
 
 	interface ClientSettingsMap {

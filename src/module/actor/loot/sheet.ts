@@ -3,10 +3,8 @@ import { LootGURPS } from "./document.ts"
 import { SYSTEM_NAME } from "@module/data/misc.ts"
 import { LocalizeGURPS, PDF } from "@util"
 import { ItemType } from "@item/types.ts"
-import { randomID } from "types/foundry/common/utils/helpers.js"
 import { ItemGURPS } from "@item/base/document.ts"
 import { EquipmentContainerGURPS, EquipmentGURPS } from "@item"
-import EmbeddedCollection from "types/foundry/common/abstract/embedded-collection.js"
 import { ItemFlags } from "@item/base/data/system.ts"
 
 class LootSheetGURPS<TActor extends LootGURPS = LootGURPS> extends ActorSheetGURPS<TActor> {
@@ -92,7 +90,7 @@ class LootSheetGURPS<TActor extends LootGURPS = LootGURPS> extends ActorSheetGUR
 						{
 							type: ItemType.MeleeWeapon,
 							name: "Bite",
-							_id: randomID(),
+							_id: fu.randomID(),
 							system: {
 								usage: "Bite",
 								reach: "C",
@@ -110,7 +108,7 @@ class LootSheetGURPS<TActor extends LootGURPS = LootGURPS> extends ActorSheetGUR
 						{
 							type: ItemType.MeleeWeapon,
 							name: "Punch",
-							_id: randomID(),
+							_id: fu.randomID(),
 							system: {
 								usage: "Punch",
 								reach: "C",
@@ -132,7 +130,7 @@ class LootSheetGURPS<TActor extends LootGURPS = LootGURPS> extends ActorSheetGUR
 						{
 							type: ItemType.MeleeWeapon,
 							name: "Kick",
-							_id: randomID(),
+							_id: fu.randomID(),
 							system: {
 								usage: "Kick",
 								reach: "C,1",
@@ -359,7 +357,7 @@ class LootSheetGURPS<TActor extends LootGURPS = LootGURPS> extends ActorSheetGUR
 		carriedValue: number
 		otherValue: number
 	} {
-		const items = this.object.items as EmbeddedCollection<ItemGURPS<TActor>>
+		const items = this.object.items
 		const processedItems: ItemGURPS[] = []
 		for (const item of items.filter(
 			e =>

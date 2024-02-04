@@ -1,5 +1,5 @@
+// TODO: come back to this later and fix the types
 import { SYSTEM_NAME } from "@module/data/index.ts"
-import { randomID } from "types/foundry/common/utils/helpers.js"
 import { LocalizeGURPS } from "./localize.ts"
 import { PrereqList } from "@prereq/prereq_list.ts"
 import { selfctrl } from "./enum/selfctrl.ts"
@@ -130,7 +130,7 @@ class ImportUtils {
 		let items: Partial<ItemSourceGURPS>[] = []
 
 		for (const item of list) {
-			const [itemData, itemFlags, children, id] = ImportUtils.getItemData(item, context, randomID())
+			const [itemData, itemFlags, children, id] = ImportUtils.getItemData(item, context, fu.randomID())
 
 			let type = itemData.type?.replace("_container", "")
 			if (type === ItemType.Technique) type = ItemType.Skill
@@ -267,6 +267,7 @@ class ImportUtils {
 	static getTraitData(data: TraitSystemSource): TraitSystemSource {
 		return {
 			_migration: { version: null, previous: null },
+			slug: "",
 			name: data.name ?? "Trait",
 			type: ItemType.Trait,
 			// id: data.id ?? newUUID(),
@@ -295,6 +296,7 @@ class ImportUtils {
 	private static getTraitContainerSource(data: TraitContainerSystemSource): TraitContainerSystemSource {
 		return {
 			_migration: { version: null, previous: null },
+			slug: "",
 			name: data.name ?? "Trait Container",
 			type: ItemType.TraitContainer,
 			container_type: data.container_type ?? "group",
@@ -314,6 +316,7 @@ class ImportUtils {
 	private static getTraitModifierData(data: TraitModifierSystemSource): TraitModifierSystemSource {
 		return {
 			_migration: { version: null, previous: null },
+			slug: "",
 			name: data.name ?? "Trait Modifier",
 			type: ItemType.TraitModifier,
 			id: data.id ?? "",
@@ -336,6 +339,7 @@ class ImportUtils {
 	): TraitModifierContainerSystemSource {
 		return {
 			_migration: { version: null, previous: null },
+			slug: "",
 			name: data.name ?? "Trait Modifier Container",
 			type: ItemType.TraitModifierContainer,
 			id: data.id ?? "",
@@ -351,6 +355,7 @@ class ImportUtils {
 	private static getSkillData(data: SkillSystemSource): SkillSystemSource {
 		return {
 			_migration: { version: null, previous: null },
+			slug: "",
 			name: data.name ?? "Skill",
 			type: ItemType.Skill,
 			id: data.id ?? "",
@@ -377,6 +382,7 @@ class ImportUtils {
 	private static getTechniqueData(data: TechniqueSystemSource): TechniqueSystemSource {
 		return {
 			_migration: { version: null, previous: null },
+			slug: "",
 			name: data.name ?? "Technique",
 			type: ItemType.Technique,
 			id: data.id ?? "",
@@ -404,6 +410,7 @@ class ImportUtils {
 	private static getSkillContainerData(data: SkillContainerSystemSource): SkillContainerSystemSource {
 		return {
 			_migration: { version: null, previous: null },
+			slug: "",
 			name: data.name ?? "Skill Container",
 			type: ItemType.SkillContainer,
 			id: data.id ?? "",
@@ -419,6 +426,7 @@ class ImportUtils {
 	private static getSpellData(data: SpellSystemSource): SpellSystemSource {
 		return {
 			_migration: { version: null, previous: null },
+			slug: "",
 			name: data.name ?? "Spell",
 			type: ItemType.Spell,
 			id: data.id ?? "",
@@ -448,6 +456,7 @@ class ImportUtils {
 	private static getRitualMagicSpellData(data: RitualMagicSpellSystemSource): RitualMagicSpellSystemSource {
 		return {
 			_migration: { version: null, previous: null },
+			slug: "",
 			name: data.name ?? "Spell",
 			type: ItemType.RitualMagicSpell,
 			id: data.id ?? "",
@@ -479,6 +488,7 @@ class ImportUtils {
 	private static getSpellContainerData(data: SpellContainerSystemSource): SpellContainerSystemSource {
 		return {
 			_migration: { version: null, previous: null },
+			slug: "",
 			name: data.name ?? "Spell Container",
 			type: ItemType.SpellContainer,
 			id: data.id ?? "",
@@ -495,6 +505,7 @@ class ImportUtils {
 	private static getEquipmentData(data: EquipmentSystemSource): EquipmentSystemSource {
 		return {
 			_migration: { version: null, previous: null },
+			slug: "",
 			name: data.name ?? "Equipment",
 			type: ItemType.Equipment,
 			id: data.id ?? "",
@@ -526,6 +537,7 @@ class ImportUtils {
 	): EquipmentContainerSystemSource {
 		return {
 			_migration: { version: null, previous: null },
+			slug: "",
 			name: data.name ?? "Equipment",
 			type: ItemType.EquipmentContainer,
 			id: data.id ?? "",
@@ -555,6 +567,7 @@ class ImportUtils {
 	private static getEquipmentModifierData(data: EquipmentModifierSystemSource): EquipmentModifierSystemSource {
 		return {
 			_migration: { version: null, previous: null },
+			slug: "",
 			name: data.name ?? "Equipment Modifier",
 			type: ItemType.EquipmentModifier,
 			id: data.id ?? "",
@@ -578,6 +591,7 @@ class ImportUtils {
 	): EquipmentModifierContainerSystemSource {
 		return {
 			_migration: { version: null, previous: null },
+			slug: "",
 			name: data.name ?? "Equipment Modifier Container",
 			type: ItemType.EquipmentModifierContainer,
 			id: data.id ?? "",
@@ -593,6 +607,7 @@ class ImportUtils {
 	private static getNoteData(data: NoteSystemSource): NoteSystemSource {
 		return {
 			_migration: { version: null, previous: null },
+			slug: "",
 			name: data.text ?? "Note",
 			type: ItemType.Note,
 			id: data.id ?? "",
@@ -623,6 +638,7 @@ class ImportUtils {
 	private static getMeleeWeaponData(data: MeleeWeaponSystemSource): MeleeWeaponSystemSource {
 		return {
 			_migration: { version: null, previous: null },
+			slug: "",
 			id: data.id ?? "",
 			type: ItemType.MeleeWeapon,
 			strength: data.strength ?? "",
@@ -648,6 +664,7 @@ class ImportUtils {
 	private static getRangedWeaponData(data: RangedWeaponSystemSource): RangedWeaponSystemSource {
 		return {
 			_migration: { version: null, previous: null },
+			slug: "",
 			id: data.id ?? "",
 			type: ItemType.RangedWeapon,
 			strength: data.strength ?? "",

@@ -6,7 +6,7 @@ import { ItemType } from "@item/types.ts"
 import { PrereqListObj } from "@prereq/data.ts"
 
 export type ItemGCSSource<
-	TItemType extends IctemType = ItemType,
+	TItemType extends ItemType = ItemType,
 	TSystemData extends ItemGCSSystemSource = ItemGCSSystemSource,
 > = BaseContainerSource<TItemType, TSystemData>
 

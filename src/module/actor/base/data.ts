@@ -15,6 +15,16 @@ export type ActorFlagsGURPS = foundry.documents.ActorFlags & {
 	} & Partial<Record<ActorFlags, unknown>>
 }
 
+export type ActorSourceFlagsGURPS = foundry.documents.ActorFlags & {
+	[SYSTEM_NAME]: {
+		[ActorFlags.TargetModifiers]: RollModifier[]
+		[ActorFlags.SelfModifiers]: RollModifier[]
+		[ActorFlags.AutoEncumbrance]?: { active: boolean; manual: number }
+		[ActorFlags.AutoThreshold]?: { active: boolean; manual: Record<string, PoolThreshold | null> }
+		[ActorFlags.AutoDamage]?: { active: boolean; thrust: DiceGURPS; swing: DiceGURPS }
+	} & Partial<Record<ActorFlags, unknown>>
+}
+
 export enum ActorFlags {
 	TargetModifiers = "targetModifiers",
 	SelfModifiers = "selfModifiers",
@@ -26,10 +36,10 @@ export enum ActorFlags {
 }
 
 export type BaseActorSourceGURPS<
-	TType extends ActorType,
+	TType extends ActorType = ActorType,
 	TSystemSource extends ActorSystemSource = ActorSystemSource,
 > = foundry.documents.ActorSource<TType, TSystemSource, ItemSourceGURPS> & {
-	flags: DeepPartial<ActorFlagsGURPS>
+	flags: ActorSourceFlagsGURPS
 	prototypeToken: PrototypeTokenSource
 }
 // export interface BaseActorSourceGURPS<

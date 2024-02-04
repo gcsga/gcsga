@@ -8,7 +8,6 @@ import { PackEntry } from "./types.ts"
 import { ActorSourceGURPS } from "@actor/data/index.ts"
 import { isObject, sluggify } from "@util/misc.ts"
 import { MigrationRunnerBase } from "@module/migration/runner/base.ts"
-import { DataSchema } from "types/foundry/common/data/fields.js"
 import { ItemSourceGURPS } from "@item/base/data/index.ts"
 
 interface PackMetadata {
@@ -95,12 +94,12 @@ class CompendiumPack {
 			throw PackError(`Compendium ${this.packId} (${packDir}) was not found.`)
 		}
 
-		parsedData.sort((a: SourceFromSchema<DataSchema>, b: SourceFromSchema<DataSchema>) => {
-			if (a._id === b._id) {
-				throw PackError(`_id collision in ${this.packId}: ${a._id}`)
-			}
-			return (a._id as string)?.localeCompare((b._id as string) ?? "") ?? 0
-		})
+		// parsedData.sort((a: any, b: any) => {
+		// 	if (a._id === b._id) {
+		// 		throw PackError(`_id collision in ${this.packId}: ${a._id}`)
+		// 	}
+		// 	return a._id?.localeCompare(b._id ?? "") ?? 0
+		// })
 
 		this.data = parsedData
 
@@ -246,11 +245,10 @@ class CompendiumPack {
 		}
 
 		if (isItemSource(docSource)) {
-			const itemSource = docSource as ItemSourceGURPS
-			itemSource.effects = []
-			itemSource.flags.core = { sourceId: this.#sourceIdOf(itemSource._id ?? "", { docType: "Item" }) }
-			// itemSource.system.slug = sluggify(itemSource.name)
-			itemSource.system._migration = { version: MigrationRunnerBase.LATEST_SCHEMA_VERSION, previous: null }
+			docSource.effects = []
+			docSource.flags.core = { sourceId: this.#sourceIdOf(docSource._id ?? "", { docType: "Item" }) }
+			docSource.system.slug = sluggify(docSource.name)
+			docSource.system._migration = { version: MigrationRunnerBase.LATEST_SCHEMA_VERSION, previous: null }
 
 			// Convert uuids with names in GrantItem REs to well-formedness
 			CompendiumPack.convertUUIDs(docSource, { to: "ids", map: CompendiumPack.#namesToIds.Item })
@@ -403,8 +401,7 @@ class CompendiumPack {
 		})
 
 		const failedChecks = checks
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			.map(([key, check]) => (check(maybeDocSource as any) ? null : key))
+			.map(([key, check]) => (check(maybeDocSource) ? null : key))
 			.filter(key => key !== null)
 
 		if (failedChecks.length > 0) {
@@ -420,8 +417,7 @@ class CompendiumPack {
 		return packData.every((maybeDocSource: unknown) => this.#isDocumentSource(maybeDocSource))
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	#isFolderSource(maybeFolderSource: any): maybeFolderSource is DBFolder {
+	#isFolderSource(maybeFolderSource: unknown): maybeFolderSource is DBFolder {
 		return isObject(maybeFolderSource) && "_id" in maybeFolderSource && "folder" in maybeFolderSource
 	}
 

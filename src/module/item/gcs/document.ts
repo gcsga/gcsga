@@ -12,10 +12,8 @@ import { LocalizeGURPS } from "@util/localize.ts"
 import { Feature, FeatureObj } from "@feature/index.ts"
 import { feature } from "@util/enum/feature.ts"
 import { PrereqList } from "@prereq/index.ts"
-import { MeleeWeaponGURPS } from "@item/melee_weapon/index.ts"
-import { RangedWeaponGURPS } from "@item/ranged_weapon/index.ts"
 import { ItemType } from "@item/types.ts"
-import { BaseWeaponGURPS } from "@item"
+import { BaseWeaponGURPS, MeleeWeaponGURPS, RangedWeaponGURPS } from "@item"
 
 export interface ItemGCS<TParent extends ActorGURPS | null> extends ContainerGURPS<TParent> {
 	readonly _source: ItemGCSSource

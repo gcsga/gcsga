@@ -1,4 +1,3 @@
-import { mergeObject } from "types/foundry/common/utils/helpers.js"
 import { IDamageCalculator, createDamageCalculator } from "./damage_calculator.ts"
 import { DamageRoll, DamageTarget } from "./index.ts"
 import { SETTINGS, SYSTEM_NAME, gid } from "@module/data/misc.ts"
@@ -42,7 +41,7 @@ export class ApplyDamageDialog extends Application {
 	private calculator: IDamageCalculator
 
 	static override get defaultOptions(): ApplicationOptions {
-		return mergeObject(super.defaultOptions, {
+		return fu.mergeObject(super.defaultOptions, {
 			popOut: true,
 			minimizable: false,
 			resizable: true,
@@ -61,7 +60,7 @@ export class ApplyDamageDialog extends Application {
 	override getData(options?: Partial<ApplicationOptions> | undefined): object {
 		const books = game.settings.get(SYSTEM_NAME, SETTINGS.BASE_BOOKS)
 
-		const data = mergeObject(super.getData(options), {
+		const data = fu.mergeObject(super.getData(options), {
 			calculator: this.calculator,
 			choices: this.choices,
 			books,

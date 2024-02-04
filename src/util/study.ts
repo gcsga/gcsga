@@ -7,7 +7,7 @@ export interface Study {
 	note: string
 }
 
-export function studyHoursProgressText(hours: number, needed: study.Level, force: boolean): string {
+export function studyHoursProgressText(hours: number, needed: study.Level | "", force: boolean): string {
 	if (hours <= 0) {
 		hours = 0
 		if (!force) return ""

@@ -1,21 +1,19 @@
-import type { ActorPF2e } from "@actor"
-import type { ActorSourcePF2e } from "@actor/data/index.ts"
-import type { ItemPF2e } from "@item"
-import type { ItemSourcePF2e } from "@item/base/data/index.ts"
-import type { MacroPF2e } from "@module/macro.ts"
+import type { ActorGURPS } from "@actor"
+import type { ActorSourceGURPS } from "@actor/data/index.ts"
+import type { ItemGURPS } from "@item"
+import type { ItemSourceGURPS } from "@item/base/data/index.ts"
+import { SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
 import type { MigrationBase } from "@module/migration/base.ts"
 import { MigrationRunnerBase } from "@module/migration/runner/base.ts"
-import type { UserPF2e } from "@module/user/index.ts"
-import type { ScenePF2e, TokenDocumentPF2e } from "@scene"
-import { Progress } from "@system/progress.ts"
+import type { UserGURPS } from "@module/user/index.ts"
 
 export class MigrationRunner extends MigrationRunnerBase {
 	override needsMigration(): boolean {
-		return super.needsMigration(game.settings.get("pf2e", "worldSchemaVersion"))
+		return super.needsMigration(game.settings.get(SYSTEM_NAME, SETTINGS.WORLD_SCHEMA_VERSION))
 	}
 
 	/** Ensure that an actor or item reflects the current data schema before it is created */
-	static async ensureSchemaVersion(document: ActorPF2e | ItemPF2e, migrations: MigrationBase[]): Promise<void> {
+	static async ensureSchemaVersion(document: ActorGURPS | ItemGURPS, migrations: MigrationBase[]): Promise<void> {
 		if (migrations.length === 0) return
 		const currentVersion = this.LATEST_SCHEMA_VERSION
 
@@ -46,7 +44,7 @@ export class MigrationRunner extends MigrationRunnerBase {
 	}
 
 	/** Migrate actor or item documents in batches of 50 */
-	async #migrateDocuments<TDocument extends ActorPF2e<null> | ItemPF2e<null>>(
+	async #migrateDocuments<TDocument extends ActorGURPS<null> | ItemGURPS<null>>(
 		collection: WorldCollection<TDocument> | CompendiumCollection<TDocument>,
 		migrations: MigrationBase[],
 		progress?: Progress,
@@ -82,7 +80,7 @@ export class MigrationRunner extends MigrationRunnerBase {
 		}
 	}
 
-	async #migrateItem(migrations: MigrationBase[], item: ItemPF2e): Promise<ItemSourcePF2e | null> {
+	async #migrateItem(migrations: MigrationBase[], item: ItemGURPS): Promise<ItemSourceGURPS | null> {
 		const baseItem = item.toObject()
 
 		try {
@@ -97,9 +95,9 @@ export class MigrationRunner extends MigrationRunnerBase {
 
 	async #migrateActor(
 		migrations: MigrationBase[],
-		actor: ActorPF2e,
+		actor: ActorGURPS,
 		options: { pack?: Maybe<string> } = {},
-	): Promise<ActorSourcePF2e | null> {
+	): Promise<ActorSourceGURPS | null> {
 		const pack = options.pack
 		const baseActor = actor.toObject()
 
@@ -156,7 +154,7 @@ export class MigrationRunner extends MigrationRunnerBase {
 		}
 	}
 
-	async #migrateWorldMacro(macro: MacroPF2e, migrations: MigrationBase[]): Promise<void> {
+	async #migrateWorldMacro(macro: MacroGURPS, migrations: MigrationBase[]): Promise<void> {
 		if (!migrations.some(migration => !!migration.updateMacro)) return
 
 		try {
@@ -185,7 +183,7 @@ export class MigrationRunner extends MigrationRunnerBase {
 	}
 
 	async #migrateSceneToken(
-		token: TokenDocumentPF2e<ScenePF2e>,
+		token: TokenDocumentGURPS<SceneGURPS>,
 		migrations: MigrationBase[],
 	): Promise<foundry.documents.TokenSource | null> {
 		if (!migrations.some(migration => !!migration.updateToken)) return token.toObject()
@@ -208,7 +206,7 @@ export class MigrationRunner extends MigrationRunnerBase {
 		}
 	}
 
-	async #migrateUser(user: UserPF2e, migrations: MigrationBase[]): Promise<void> {
+	async #migrateUser(user: UserGURPS, migrations: MigrationBase[]): Promise<void> {
 		if (!migrations.some(migration => !!migration.updateUser)) return
 
 		try {
@@ -224,7 +222,7 @@ export class MigrationRunner extends MigrationRunnerBase {
 	}
 
 	/** Migrates all documents in a compendium. Since getDocuments() already migrates, this merely loads and saves them */
-	async runCompendiumMigration<T extends ActorPF2e<null> | ItemPF2e<null>>(
+	async runCompendiumMigration<T extends ActorGURPS<null> | ItemGURPS<null>>(
 		compendium: CompendiumCollection<T>,
 	): Promise<void> {
 		const pack = compendium.metadata.id

@@ -5,7 +5,7 @@ import { CombatGURPS } from "@module/combat/document.ts"
 import { CombatantGURPS } from "@module/combatant/document.ts"
 
 export class CombatTrackerGURPS<TCombat extends CombatGURPS | null> extends CombatTracker<TCombat> {
-	override async _onToggleDefeatedStatus(combatant: CombatantGURPS): Promise<void> {
+	override async _onToggleDefeatedStatus(combatant: CombatantGURPS<TCombat>): Promise<void> {
 		if (!(combatant.actor?.type === ActorType.Character)) return super._onToggleDefeatedStatus(combatant)
 
 		const isDefeated = !combatant.isDefeated

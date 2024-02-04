@@ -1,5 +1,5 @@
-import { ParsedOtF, OtFNumberedAction, OptionalCheckParameters } from "./base"
-import { gspan } from "./utils"
+import { ParsedOtF, OtFNumberedAction, OptionalCheckParameters } from "./base.ts"
+import { gspan } from "./utils.ts"
 
 // Self control roll CR: N
 /**
@@ -26,4 +26,5 @@ export function checkForSelfControl(str: string, opts: OptionalCheckParameters):
 			action: action,
 		}
 	}
+	return
 }

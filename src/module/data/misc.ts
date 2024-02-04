@@ -1,4 +1,4 @@
-import { ConditionID } from "@item/condition/index.ts"
+import { ConditionID } from "@item/condition/data.ts"
 
 /*
  * I had to move SETTINGS here as well, because it fixed the weird error that leads to the code not recognizing standard
@@ -48,6 +48,7 @@ export enum SETTINGS {
 	MODIFIER_LIST_COLLAPSE = "modifier_list_collapse",
 	BASE_BOOKS = "base_books",
 	AUTOMATIC_UNREADY = "automatic_unready",
+	WORLD_SCHEMA_VERSION = "world_schema_version",
 }
 
 export enum SSRT_SETTING {

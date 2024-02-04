@@ -12,11 +12,11 @@ import "./lib/foundry-utils.ts"
 import { getFilesRecursively } from "./lib/helpers.ts"
 import { ActorSourceGURPS } from "@actor/data/index.ts"
 import { MigrationBase } from "@module/migration/base.ts"
-import { itemIsOfType } from "@item/helpers.ts"
+// import { itemIsOfType } from "@item/helpers.ts"
 import { sluggify } from "@util/misc.ts"
 import { ActorType } from "@actor"
-import { ItemGURPS, ItemType } from "@item"
-import { ItemSourceGURPS } from "@item/base/data/index.ts"
+// import { ItemGURPS, ItemType } from "@item"
+import { ItemSourceGURPS, ItemType } from "@item/base/data/index.ts"
 
 // import { Migration901ReorganizeBulkData } from "@module/migration/migrations/901-reorganize-bulk-data.ts"
 // import { Migration902DuskwoodDawnsilver } from "@module/migration/migrations/902-duskwood-dawnsilver.ts"
@@ -151,13 +151,13 @@ async function migrate() {
 				if (isActorData(source)) {
 					for (const embedded of source.items) {
 						embedded.flags ??= {}
-						if (itemIsOfType(embedded, "armor", "equipment", "shield", "weapon")) {
-							embedded.system.subitems ??= []
-						}
+						// if (itemIsOfType(embedded, "armor", "equipment", "shield", "weapon")) {
+						// 	embedded.system.subitems ??= []
+						// }
 					}
 
 					const update = await migrationRunner.getUpdatedActor(source, migrationRunner.migrations)
-					update.items = update.items.map((i: ItemGURPS) => fu.mergeObject({}, i, { performDeletions: true }))
+					// update.items = update.items.map((i: ItemGURPS) => fu.mergeObject({}, i, { performDeletions: true }))
 
 					pruneDefaults(source)
 					pruneDefaults(update)
@@ -165,9 +165,9 @@ async function migrate() {
 					return fu.mergeObject(source, update, { inplace: false, performDeletions: true })
 				} else if (isItemData(source)) {
 					source.system.slug = sluggify(source.name)
-					if (itemIsOfType(source, "armor", "equipment", "shield", "weapon")) {
-						source.system.subitems ??= []
-					}
+					// if (itemIsOfType(source, "armor", "equipment", "shield", "weapon")) {
+					// 	source.system.subitems ??= []
+					// }
 					const update = await migrationRunner.getUpdatedItem(source, migrationRunner.migrations)
 
 					pruneDefaults(source)

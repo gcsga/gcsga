@@ -120,7 +120,7 @@ export class ModifierBucketWindow extends Application {
 									items: modStack,
 								})
 								await game.user.setFlag(SYSTEM_NAME, UserFlags.SavedStacks, savedStacks)
-								return Hooks.call(HOOKS_GURPS.AddModifier)
+								Hooks.call(HOOKS_GURPS.AddModifier)
 							},
 						},
 						no: {

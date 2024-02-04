@@ -3,7 +3,6 @@ import { RollModifier, SYSTEM_NAME } from "@module/data/misc.ts"
 import { DnD } from "@util/drag_drop.ts"
 import { CanvasUtil } from "@util/canvas.ts"
 import { TokenUtil } from "@util/token_utils.ts"
-import { setProperty } from "types/foundry/common/utils/helpers.js"
 import { ChatMessageGURPS } from "@module/chat-message/index.ts"
 import { ActorGURPS } from "@actor"
 import { DAMAGE_TYPE } from "./damage_type.ts"
@@ -114,7 +113,7 @@ export class DamageChat {
 		userTarget: string,
 	): Partial<ChatMessageSource> {
 		const transfer = JSON.stringify({ type: DropDataType.Damage, payload: payload, userTarget: userTarget })
-		setProperty(object, `flags.${SYSTEM_NAME}.${DamageChatFlags.Transfer}`, transfer)
+		fu.setProperty(object, `flags.${SYSTEM_NAME}.${DamageChatFlags.Transfer}`, transfer)
 		return object
 	}
 

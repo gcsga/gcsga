@@ -8,8 +8,8 @@ import { BaseUser } from "types/foundry/common/documents/module.js"
 import { TokenGURPS } from "@module/canvas/token/object.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { TokenDocumentGURPS } from "@scene/token-document/document.ts"
-import { ConditionSource } from "@item/condition/index.ts"
 import { ActorGURPS } from "@actor"
+import { ConditionSource } from "@item/condition/data.ts"
 
 export interface EffectGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
 	_source: EffectSource | ConditionSource
