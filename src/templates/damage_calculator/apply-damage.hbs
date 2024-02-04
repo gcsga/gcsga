@@ -76,8 +76,8 @@
 				data-action="armordivisor-select"
 			>
 				{{#select calculator.armorDivisor}}
-				  {{#if (customArmorDivisorSelect calculator.armorDivisor)}}
-					<option value="-1" selected>Custom</option>
+					{{#if (customArmorDivisorSelect calculator.armorDivisor)}}
+						<option value="-1" selected>Custom</option>
 					{{/if}}
 					<option value="0">{{localize "gurps.dmgcalc.armor_divisor.ignores_dr"}}</option>
 					<option value="100">(100)</option>
@@ -392,13 +392,6 @@
 										</button>
 									{{/each}}
 								</div>
-								<div class="apply">
-									<button
-										type="button"
-										class="apply-button gcs-checkmark"
-										data-action="apply-effects"
-									>{{localize "gurps.dmgcalc.apply_checked"}}</button>
-								</div>
 							</div>
 
 							<div id="calc">
@@ -410,24 +403,33 @@
 										<div class="descr">{{{notes}}}</div>
 									{{/each}}
 								</div>
-								<div class="apply">
-									<div class="label">{{localize
-											"gurps.dmgcalc.injury"
-										}}&nbsp;({{calculator.damagePool.name}})</div>
-									<input
-										type="number"
-										class="{{ifText calculator.injuryOverride 'overridden'}}"
-										value="{{calculator.injury}}"
-										step="any"
-										name="injury"
-										size="4"
-									/>
-									<button
-										type="button"
-										class="apply-button gcs-checkmark"
-										data-action="apply-injury"
-									>{{localize "gurps.misc.apply"}}</button>
-								</div>
+							</div>
+
+							<div class="apply">
+								<button
+									type="button"
+									class="apply-button gcs-checkmark"
+									data-action="apply-effects"
+								>{{localize "gurps.dmgcalc.apply_checked"}}</button>
+							</div>
+
+							<div class="apply">
+								<div class="label">{{localize
+										"gurps.dmgcalc.injury"
+									}}&nbsp;({{calculator.damagePool.name}})</div>
+								<input
+									type="number"
+									class="{{ifText calculator.injuryOverride 'overridden'}}"
+									value="{{calculator.injury}}"
+									step="any"
+									name="injury"
+									size="4"
+								/>
+								<button
+									type="button"
+									class="apply-button gcs-checkmark"
+									data-action="apply-injury"
+								>{{localize "gurps.misc.apply"}}</button>
 							</div>
 						</div>
 
