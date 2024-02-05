@@ -32,7 +32,7 @@ export class SkillDefault {
 
 	points = 0
 
-	constructor(data?: SkillDefaultDef) {
+	constructor(data?: SkillDefaultObj) {
 		if (data) Object.assign(this, data)
 	}
 

@@ -1,6 +1,6 @@
 import { gid } from "@module/data/index.ts"
-import { EXAMPLE_STATBLOCKS } from "@sytem/mook/data.ts"
 import { Mook } from "@sytem/mook/document.ts"
+import { EXAMPLE_STATBLOCKS } from "@sytem/mook/index.ts"
 import { MookParser } from "@sytem/mook/parse.ts"
 import { difficulty } from "@util/enum/difficulty.ts"
 import { MockGame, _defaultMookData } from "tests/mocks/game.ts"

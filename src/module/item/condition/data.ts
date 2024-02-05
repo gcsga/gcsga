@@ -1,66 +1,7 @@
 import { BaseItemSourceGURPS } from "@item/base/data/system.ts"
 import { EffectSystemSource } from "@item/effect/data.ts"
 import { ItemType } from "@item/types.ts"
-import { RollModifier } from "@module/data/misc.ts"
-
-export enum ConditionID {
-	// Posture
-	PostureCrouch = "posture_crouch",
-	PostureKneel = "posture_kneel",
-	PostureSit = "posture_sit",
-	PostureCrawl = "posture_crawl",
-	PostureProne = "posture_prone",
-	// Serious Damage
-	Reeling = "reeling",
-	Fatigued = "fatigued",
-	Crippled = "crippled",
-	Bleeding = "bleeding",
-	Dead = "dead",
-	// Shock / Unconsciousness
-	Shock = "shock",
-	Pain = "pain",
-	Unconscious = "unconscious",
-	Sleeping = "sleeping",
-	Coma = "coma",
-	// Confusion ?
-	Stun = "stun",
-	MentalStun = "mental_stun",
-	Poisoned = "poisoned",
-	Burning = "burning",
-	Cold = "cold",
-	// Movement Bad
-	Disarmed = "disarmed",
-	Falling = "falling",
-	Grappled = "grappled",
-	Restrained = "restrained",
-	Pinned = "pinned",
-	// Stealth / Movement Good
-	Sprinting = "sprinting",
-	Flying = "flying",
-	Stealth = "stealth",
-	Waiting = "waiting",
-	Invisible = "invisible",
-	// Afflictions
-	Coughing = "coughing",
-	Retching = "retching",
-	Nausea = "nausea",
-	Agony = "agony",
-	Seizure = "seizure",
-	// Disabled Function
-	Blinded = "blind", // Inconsistency here between "blinded" and "blind" to match foundry default name
-	Deafened = "deafened",
-	Silenced = "silenced",
-	Choking = "choking",
-	HeartAttack = "heart_attack",
-	// Drunk-adjacent
-	Euphoria = "euphoria",
-	Hallucinating = "hallucinating",
-	Drunk = "drunk",
-	Drowsy = "drowsy",
-	Daze = "daze",
-	// ConditionTrigger -- this is a special condition that is used to trigger other effects.
-	Trigger = "trigger",
-}
+import { ConditionID, RollModifier } from "@module/data/misc.ts"
 
 export type Posture =
 	| "standing"

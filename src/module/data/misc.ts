@@ -1,5 +1,3 @@
-import { ConditionID } from "@item/condition/data.ts"
-
 /*
  * I had to move SETTINGS here as well, because it fixed the weird error that leads to the code not recognizing standard
  * foundry classes and methods.
@@ -69,6 +67,65 @@ export enum SOCKET {
 
 export const DEFAULT_INITIATIVE_FORMULA = (): string => {
 	return "$basic_speed+($dx/10000)+(1d6/100000)"
+}
+
+export enum ConditionID {
+	// Posture
+	PostureCrouch = "posture_crouch",
+	PostureKneel = "posture_kneel",
+	PostureSit = "posture_sit",
+	PostureCrawl = "posture_crawl",
+	PostureProne = "posture_prone",
+	// Serious Damage
+	Reeling = "reeling",
+	Fatigued = "fatigued",
+	Crippled = "crippled",
+	Bleeding = "bleeding",
+	Dead = "dead",
+	// Shock / Unconsciousness
+	Shock = "shock",
+	Pain = "pain",
+	Unconscious = "unconscious",
+	Sleeping = "sleeping",
+	Coma = "coma",
+	// Confusion ?
+	Stun = "stun",
+	MentalStun = "mental_stun",
+	Poisoned = "poisoned",
+	Burning = "burning",
+	Cold = "cold",
+	// Movement Bad
+	Disarmed = "disarmed",
+	Falling = "falling",
+	Grappled = "grappled",
+	Restrained = "restrained",
+	Pinned = "pinned",
+	// Stealth / Movement Good
+	Sprinting = "sprinting",
+	Flying = "flying",
+	Stealth = "stealth",
+	Waiting = "waiting",
+	Invisible = "invisible",
+	// Afflictions
+	Coughing = "coughing",
+	Retching = "retching",
+	Nausea = "nausea",
+	Agony = "agony",
+	Seizure = "seizure",
+	// Disabled Function
+	Blinded = "blind", // Inconsistency here between "blinded" and "blind" to match foundry default name
+	Deafened = "deafened",
+	Silenced = "silenced",
+	Choking = "choking",
+	HeartAttack = "heart_attack",
+	// Drunk-adjacent
+	Euphoria = "euphoria",
+	Hallucinating = "hallucinating",
+	Drunk = "drunk",
+	Drowsy = "drowsy",
+	Daze = "daze",
+	// ConditionTrigger -- this is a special condition that is used to trigger other effects.
+	Trigger = "trigger",
 }
 
 // export enum DisplayMode {

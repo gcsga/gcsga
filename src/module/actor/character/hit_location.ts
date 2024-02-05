@@ -1,9 +1,9 @@
 import { DiceGURPS } from "@module/dice/index.ts"
-import { CharacterGURPS } from "./document.ts"
 import { HitLocationTableOwner } from "@util/resolvers.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { gid } from "@module/data/index.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
+import { ActorGURPS } from "@actor"
 
 class HitLocationTable implements Omit<HitLocationTableData, "roll"> {
 	name: string
@@ -42,7 +42,7 @@ class HitLocationTable implements Omit<HitLocationTableData, "roll"> {
 		}
 	}
 
-	populateMap(actor: CharacterGURPS, m: Map<string, HitLocation>): void {
+	populateMap(actor: ActorGURPS, m: Map<string, HitLocation>): void {
 		for (const location of this.locations) {
 			location.populateMap(actor, m)
 		}
@@ -179,10 +179,10 @@ class HitLocation implements HitLocationData {
 	}
 
 	get DR(): Map<string, number> {
-		return this._DR()
+		return this._DR(null)
 	}
 
-	_DR(tooltip?: TooltipGURPS, drMap: Map<string, number> = new Map()): Map<string, number> {
+	_DR(tooltip: TooltipGURPS | null, drMap: Map<string, number> = new Map()): Map<string, number> {
 		if (this.dr_bonus && this.dr_bonus !== 0) {
 			drMap.set(gid.All, this.dr_bonus)
 			tooltip?.push(
@@ -194,7 +194,7 @@ class HitLocation implements HitLocationData {
 				"<br>",
 			)
 		}
-		if (this.actor instanceof CharacterGURPS) drMap = this.actor.addDRBonusesFor(this.id, tooltip, drMap)
+		drMap = this.actor.addDRBonusesFor(this.id, tooltip, drMap)
 		if (this.owningTable.owningLocation) {
 			drMap = this.owningTable.owningLocation._DR(tooltip, drMap)
 		}
@@ -229,7 +229,7 @@ class HitLocation implements HitLocationData {
 		return drMap
 	}
 
-	populateMap(actor: CharacterGURPS, m: Map<string, HitLocation>): void {
+	populateMap(actor: ActorGURPS, m: Map<string, HitLocation>): void {
 		this.actor = actor
 		m.set(this.id, this)
 		if (this.sub_table) {

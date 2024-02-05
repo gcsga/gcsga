@@ -5,10 +5,10 @@ import { HitLocationTable } from "@actor/character/hit_location.ts"
 import { LootSettings } from "@actor/loot/data.ts"
 import { SkillBonus, WeaponBonus } from "@feature"
 import { MoveBonusType } from "@feature/data.ts"
-import { ConditionID, ManeuverID } from "@item/condition/data.ts"
+import { ManeuverID } from "@item/condition/data.ts"
 import { DurationType } from "@item/effect/data.ts"
 import { TraitSystemSource } from "@item/trait/data.ts"
-import { TraitContainerSystemSource, TraitContainerType } from "@item/trait_container/data.ts"
+import { TraitContainerSystemSource } from "@item/trait_container/data.ts"
 import { ItemType } from "@item/types.ts"
 import { WeaponType } from "@item/weapon/data.ts"
 import {
@@ -24,20 +24,23 @@ import {
 	WeaponShots,
 	WeaponStrength,
 } from "@item/weapon/index.ts"
-import { RollType, SkillDefaultType } from "@module/data/misc.ts"
+import { ConditionID, RollType, SkillDefaultType } from "@module/data/misc.ts"
 import { SheetSettings } from "@module/data/sheet_settings.ts"
 import { SkillDefault } from "@sytem/default/index.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
-import { affects } from "./enum/affects.ts"
-import { difficulty } from "./enum/difficulty.ts"
-import { display } from "./enum/display.ts"
-import { emcost } from "./enum/emcost.ts"
-import { emweight } from "./enum/emweight.ts"
-import { feature } from "./enum/feature.ts"
-import { selfctrl } from "./enum/selfctrl.ts"
-import { stlimit } from "./enum/stlimit.ts"
-import { tmcost } from "./enum/tmcost.ts"
 import { WeightUnits } from "./weight.ts"
+import {
+	affects,
+	emcost,
+	container,
+	difficulty,
+	display,
+	feature,
+	selfctrl,
+	stlimit,
+	tmcost,
+	emweight,
+} from "./enum/index.ts"
 
 export interface ActorResolver<T extends ActorType> {
 	type: T
@@ -52,6 +55,11 @@ export interface LootResolver extends ActorResolver<ActorType.Loot> {
 
 export interface HitLocationTableOwner {
 	hitLocationTable: HitLocationTable
+	addDRBonusesFor: (
+		locationID: string,
+		tooltip: TooltipGURPS | null,
+		drMap: Map<string, number>,
+	) => Map<string, number>
 }
 
 export interface CharacterResolver extends ActorResolver<ActorType.Character> {
@@ -166,7 +174,7 @@ export interface TraitResolver extends ItemResolver<ItemType.Trait> {
 
 export interface TraitContainerResovler
 	extends ContainerResolver<ItemType.TraitContainer, TraitResolver | TraitContainerResovler> {
-	containerType: TraitContainerType
+	containerType: container.Type
 	isLeveled: boolean
 	levels: number
 	CR: selfctrl.Roll
