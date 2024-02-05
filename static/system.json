@@ -2,7 +2,7 @@
 	"id": "gcsga",
 	"title": "GURPS 4e (EXPERIMENTAL)",
 	"description": "GURPS 4th Edition, unofficial game aid for FoundryVTT.",
-	"version": "1.0.0-alpha.5",
+	"version": "1.0.0-alpha.8",
 	"authors": [
 		{
 			"name": "Chris Normand",
