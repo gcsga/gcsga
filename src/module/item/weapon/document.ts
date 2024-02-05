@@ -326,7 +326,7 @@ export abstract class BaseWeaponGURPS<
 				let bonus: Feature
 				for (const f of mod.features) {
 					bonus = f
-					bonus.subOwner = mod
+					if (!(bonus instanceof ContainedWeightReduction)) bonus.subOwner = mod
 					this._extractWeaponBonus(f, bonusSet, allowed, Int.from(dieCount), tooltip)
 				}
 			})

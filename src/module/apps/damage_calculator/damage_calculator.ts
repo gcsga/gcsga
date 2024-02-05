@@ -122,11 +122,17 @@ interface LocationDamage {
 	woundingModifierOverride: number | undefined
 }
 
-const formatFraction = (value: number) => {
-	if (value === 0.5) return "1/2"
-	if (value === 1 / 3) return "1/3"
-	if (value === 2 / 3) return "2/3"
-	if (value === 0.2) return "1/5"
+const formatFraction = (value: number): string => {
+	if (value >= 1) {
+		const whole = Math.floor(value)
+		const fraction = value - whole
+		if (fraction === 0) return `${whole}`
+		return `${whole}${formatFraction(fraction)}`
+	}
+	if (value === 0.5) return "&frac12;"
+	if (value === 1 / 3) return "&frac13;"
+	if (value === 2 / 3) return "&frac23;"
+	if (value === 0.2) return "&frac15;"
 	if (value === 0.1) return "1/10"
 	return `${value}`
 }
@@ -281,11 +287,13 @@ class DamageCalculator implements IDamageCalculator {
 
 	// --- Damage Type ---
 	get damageType(): DamageType {
-		return this.overrides.damageType ?? this.damageRoll.damageType
+		return this.overrides.damageType ?? this.damageRoll?.damageType ?? DamageTypes.cr
 	}
 
 	get damageTypeKey(): string {
-		return this.overrides.damageType ? this.overrides.damageType.id : this.damageRoll.damageType.id
+		return this.overrides.damageType
+			? this.overrides.damageType.id
+			: this.damageRoll.damageType?.id ?? DamageTypes.cr
 	}
 
 	set damageTypeOverride(key: string | undefined) {
@@ -365,6 +373,14 @@ class DamageCalculator implements IDamageCalculator {
 
 		const armorDivisors = [0, 100, 10, 5, 3, 2, 1]
 		let index = armorDivisors.indexOf(ad)
+
+		if (index === -1) {
+			// Not a standard armor divisor. Return the value unmodified by Hardened DR and explanation.
+			return {
+				value: ad,
+				explanation: this.format("gurps.dmgcalc.description.armor_divisor", { divisor: ad }),
+			}
+		}
 
 		// B47: Each level of Hardened reduces the armor divisor of an attack by one step
 		index += hardenedDRLevel

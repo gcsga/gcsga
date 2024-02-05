@@ -1320,6 +1320,7 @@
 				"hint": "Choose which base rulebooks are used for in-built references",
 				"choices": {
 					"gurps": "GURPS Basic Set (B/BX)",
+					"lite": "GURPS Lite",
 					"dfrpg": "The Dungeon Fantasy Roleplaying Game (DFA/DFX)"
 				}
 			}
