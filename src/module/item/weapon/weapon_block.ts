@@ -1,9 +1,11 @@
-import { WeaponGURPS } from "@module/config"
-import { TooltipGURPS } from "@module/tooltip"
-import { Int } from "@util/fxp"
-import { gid } from "@module/data"
-import { WeaponField } from "./weapon_field"
-import { feature, wswitch } from "@util/enum"
+import { Int } from "@util/fxp.ts"
+import { WeaponField } from "./weapon_field.ts"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { wswitch } from "@util/enum/wswitch.ts"
+import { feature } from "@util/enum/feature.ts"
+import { BaseWeaponGURPS } from "./document.ts"
+import { CharacterGURPS } from "@actor"
+import { gid } from "@data"
 
 export class WeaponBlock extends WeaponField {
 	no = false
@@ -21,11 +23,11 @@ export class WeaponBlock extends WeaponField {
 		return wp
 	}
 
-	resolve(w: WeaponGURPS, tooltip: TooltipGURPS | null): WeaponBlock {
+	resolve(w: BaseWeaponGURPS, tooltip: TooltipGURPS | null): WeaponBlock {
 		const result = WeaponBlock.parse(this.toString())
 		result.no = !w.resolveBoolFlag(wswitch.Type.CanBlock, !result.no)
 		if (!result.no) {
-			const actor = w.actor
+			const actor = w.actor as CharacterGURPS
 			if (actor !== null) {
 				let primaryTooltip: TooltipGURPS | null = null
 				if (tooltip !== null) primaryTooltip = new TooltipGURPS()
@@ -42,7 +44,7 @@ export class WeaponBlock extends WeaponField {
 				}
 				if (best !== -Infinity) {
 					if (primaryTooltip !== null) tooltip?.push("\n", primaryTooltip)
-					result.modifier += 3 + best + actor.parryBonus
+					result.modifier += 3 + best + actor.blockBonus
 					for (const bonus of w.collectWeaponBonuses(1, tooltip, feature.Type.WeaponBlockBonus)) {
 						result.modifier += bonus.adjustedAmountForWeapon(w)
 					}
@@ -54,7 +56,7 @@ export class WeaponBlock extends WeaponField {
 		return result
 	}
 
-	toString(): string {
+	override toString(): string {
 		if (this.no) return "No" // not localized
 		if (this.modifier === 0) return ""
 		let buffer = ""
@@ -62,7 +64,7 @@ export class WeaponBlock extends WeaponField {
 		return buffer
 	}
 
-	validate() {
+	validate(): void {
 		if (this.no) {
 			this.modifier = 0
 		}

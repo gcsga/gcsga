@@ -1,4 +1,4 @@
-// import { ItemFlags, ItemFlagsGURPS, ItemGCSSystemData, NoteData } from "@item"
+// import { ItemFlags, ItemFlagsGURPS, ItemGCSSystemSource, NoteData } from "@item"
 // import { ItemGURPS, ItemSystemDataGURPS } from "@module/config"
 // import { gid, ItemType, SETTINGS, SYSTEM_NAME } from "@module/data"
 // import { SkillDefault } from "@module/default"
@@ -320,7 +320,7 @@
 // }
 
 // getItemData(item: any, context: any = {}): [any, any, ItemType] {
-// 	let itemData: Partial<ItemGCSSystemData> = {}
+// 	let itemData: Partial<ItemGCSSystemSource> = {}
 // 	this.importFeatures(item, itemData, context)
 // 	this.importPrereqs(item, itemData, context)
 // 	const flags: ItemFlagsGURPS = { [SYSTEM_NAME]: { [ItemFlags.Container]: null } }

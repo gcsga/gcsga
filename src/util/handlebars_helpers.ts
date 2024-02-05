@@ -1,15 +1,15 @@
-import { ItemType } from "@module/data"
-import { DiceGURPS } from "@module/dice"
-import { isContainer } from "./misc"
-import { LocalizeGURPS } from "./localize"
-import { CharacterGURPS, StaticSpell } from "@actor"
-import { Static, Study } from "@util"
+import { isContainer } from "./misc.ts"
+import { LocalizeGURPS } from "./localize.ts"
+import { Study } from "./study.ts"
+import { study } from "./enum/study.ts"
+import { DiceGURPS } from "@module/dice/index.ts"
+import { SkillResolver } from "./resolvers.ts"
 import { SafeString } from "handlebars"
-import { study } from "./enum"
-import { pageRef } from "./page_ref"
+import { ItemType } from "@data"
+import { CharacterGURPS } from "@actor"
 
-class HandlebarsHelpersGURPS extends HandlebarsHelpers {
-	static camelcase(s: string) {
+class HandlebarsHelpersGURPS {
+	static camelcase(s: string): string {
 		let n = ""
 		for (const word of s.split(" ")) {
 			n = `${n}<span class="first-letter">${word.substring(0, 1)}</span>${word.substring(1)} `
@@ -21,7 +21,7 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 		return isContainer(item)
 	}
 
-	static signed(n: number, replaceMinus = true) {
+	static signed(n: number, replaceMinus = true): string {
 		if (replaceMinus) return n >= 0 ? `+${n}` : `${String(n).replace("-", "−")}`
 		return n >= 0 ? `+${n}` : `${String(n)}`
 	}
@@ -30,36 +30,32 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 		return `${n < 0 ? "-" : "+"} ${Math.abs(n)}`
 	}
 
-	static abs(n: number) {
+	static abs(n: number): number {
 		return Math.abs(n)
 	}
 
 	// Return first argument which has a value
-	static ror(...args: any[]) {
+	static ror(...args: unknown[]): unknown {
 		for (const arg of args) {
 			if (arg !== undefined) return arg
 		}
 		return ""
 	}
 
-	static sum(...args: any[]) {
+	static sum(...args: string[]): number {
 		const arr: number[] = []
 		for (const arg of args) {
-			if (parseInt(arg)) arr.push(arg)
+			if (parseInt(arg)) arr.push(parseInt(arg))
 		}
 		return arr.reduce((a, b) => a + b, 0)
 	}
 
-	static enabledList(a: any[]) {
-		return a.filter(e => !e.system.disabled)
-	}
-
-	static notEmpty(a: any[] | any) {
+	static notEmpty(a: unknown[] | unknown): boolean {
 		if (Array.isArray(a)) return !!a?.length
 		return a ? Object.values(a).length > 0 : false
 	}
 
-	static blockLayout(blocks: string[], items: Record<string, any[]>): string {
+	static blockLayout(blocks: string[], items: Record<string, unknown[]>): string {
 		if (!blocks) return ""
 
 		let outString = ""
@@ -79,22 +75,22 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 		return outString
 	}
 
-	static json(a: any) {
+	// Concat
+	static cc(...args: unknown[]): string {
+		return args.slice(0, -1).join("")
+	}
+
+	static json(a: object): string {
 		return JSON.stringify(a)
 	}
 
-	// Concat
-	static cc(...args: any[]): string {
-		return HandlebarsHelpers.concat(...(args as any)).toString()
-	}
-
-	static join(a: any[], s: string): string {
+	static join(a: unknown[], s: string): string {
 		if (!a || !a.length) return ""
 		return a.join(s)
 	}
 
-	static arr(...args: any[]) {
-		const outArr: any[] = []
+	static arr(...args: unknown[]): unknown[] {
+		const outArr: unknown[] = []
 		for (const arg of args) {
 			if (arg && typeof arg !== "object") outArr.push(arg)
 		}
@@ -133,7 +129,7 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 
 	static date(str: string): string {
 		const date = new Date(str)
-		const options: any = {
+		const options: Intl.DateTimeFormatOptions = {
 			dateStyle: "medium",
 			timeStyle: "short",
 		}
@@ -142,7 +138,7 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 	}
 
 	// Lenght
-	static len(...args: any[]): number {
+	static len(...args: unknown[]): number {
 		let length = 0
 		for (const a of args) {
 			if ((typeof a === "number" || typeof a === "string") && `${a}`.length > length) length = `${a}`.length
@@ -150,9 +146,8 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 		return length
 	}
 
-	static print(a: any, _options: any): any {
+	static print(a: unknown, _options: object): void {
 		console.log(a)
-		return ""
 	}
 
 	static format(s: string): string {
@@ -187,12 +182,11 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 		return entry.hours * study.Type.multiplier(entry.type)
 	}
 
-	static in(total: string | any[] | any, sub: string): boolean {
+	static in(total: string | unknown[], sub: string): boolean {
 		if (!total) total = ""
 		if (Array.isArray(total)) return total.includes(sub)
 		if (typeof total === "string") return total.includes(sub)
 		return Object.keys(total).includes(sub)
-		// Return total.includes(sub)
 	}
 
 	// May be temporary
@@ -200,8 +194,8 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 		return new DiceGURPS(d).stringExtra(false)
 	}
 
-	static sort(list: any[], key: string): any[] {
-		return list.map(e => e).sort((a: any, b: any) => a[key] - b[key])
+	static sort<K extends string>(list: Record<K, number>[], key: K): unknown[] {
+		return list.map(e => e).sort((a, b) => a[key] - b[key])
 	}
 
 	static textareaFormat(s: string | string[]): string {
@@ -328,7 +322,7 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 	// 	return data
 	// }
 
-	static overspent(actor: CharacterGURPS) {
+	static overspent(actor: CharacterGURPS): boolean {
 		return actor.unspentPoints < 0
 	}
 
@@ -367,28 +361,28 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 	// 	return `"${outAr.join('" "')}";`
 	// }
 
-	static flatlist(context: any) {
-		let data = {}
-		Static.flatList(context, 0, "", data, false)
-		return data
-	}
+	// static flatlist(context: any) {
+	// 	const data = {}
+	// 	Static.flatList(context, 0, "", data, false)
+	// 	return data
+	// }
 
-	static staticSpellValues(i: StaticSpell): string {
-		const values = {
-			resist: i.resist,
-			spell_class: i.class,
-			casting_cost: i.cost,
-			maintenance_cost: i.maintain,
-			casting_time: i.casttime,
-			duration: i.duration,
-			college: i.college,
-		}
-		const list = []
-		for (const [k, v] of Object.entries(values)) {
-			if (v && v !== "-") list.push(`${game.i18n.localize(`gurps.character.spells.${k}`)}: ${v}`)
-		}
-		return list.join("; ")
-	}
+	// static staticSpellValues(i: StaticSpell): string {
+	// 	const values = {
+	// 		resist: i.resist,
+	// 		spell_class: i.class,
+	// 		casting_cost: i.cost,
+	// 		maintenance_cost: i.maintain,
+	// 		casting_time: i.casttime,
+	// 		duration: i.duration,
+	// 		college: i.college,
+	// 	}
+	// 	const list = []
+	// 	for (const [k, v] of Object.entries(values)) {
+	// 		if (v && v !== "-") list.push(`${game.i18n.localize(`gurps.character.spells.${k}`)}: ${v}`)
+	// 	}
+	// 	return list.join("; ")
+	// }
 
 	static modifierCost(c: { id: string; value: number }): string {
 		return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.system.modifier_bucket.cost, {
@@ -397,19 +391,19 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 		})
 	}
 
-	static effective(a: Item | any): string {
+	static effective(a: SkillResolver | { effective: number; current: number }): string {
 		if (a instanceof Item) {
 			if (a.type === ItemType.Skill) {
-				const sk = a as any
+				const sk = a as SkillResolver
 				if (sk.effectiveLevel > sk.level.level) return "pos"
 				if (sk.effectiveLevel > sk.level.level) return "neg"
-				// if (sk.system.calc.effective > sk.system.calc.level) return "pos"
-				// if (sk.system.calc.effective < sk.system.calc.level) return "neg"
+				return ""
 			}
 		}
-		if (a.effective && a.current) {
-			if (a.effective > a.current) return "pos"
-			if (a.effective < a.current) return "neg"
+		const att = a as { effective: number; current: number }
+		if (att.effective && att.current) {
+			if (att.effective > att.current) return "pos"
+			if (att.effective < att.current) return "neg"
 		}
 		return ""
 	}
@@ -422,7 +416,7 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 	// 	)
 	// }
 
-	static define(name: string, value: any, options: any) {
+	static define<K extends string>(name: K, value: object, options: { data: { root: Record<K, object> } }): void {
 		options.data.root[name] = value
 	}
 
@@ -442,15 +436,26 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 	 * @param options
 	 * @returns
 	 */
-	static selectOptions(choices: Record<string, string>, options: any): SafeString {
+	static selectOptions(
+		choices: Record<string, string>,
+		options: { hash: Record<string, unknown> } & Record<string, unknown>,
+	): SafeString {
 		let {
+			// eslint-disable-next-line prefer-const
 			localize = false,
+			// eslint-disable-next-line prefer-const
 			selected = null,
+			// eslint-disable-next-line prefer-const
 			blank = null,
+			// eslint-disable-next-line prefer-const
 			sort = false,
+			// eslint-disable-next-line prefer-const
 			nameAttr,
+			// eslint-disable-next-line prefer-const
 			labelAttr,
+			// eslint-disable-next-line prefer-const
 			inverted,
+			// eslint-disable-next-line prefer-const
 			disabled = null,
 		} = options.hash
 		selected = selected instanceof Array ? selected.map(String) : [String(selected)]
@@ -460,17 +465,17 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 		const selectOptions = []
 		if (choices instanceof Array) {
 			for (const choice of choices) {
-				const name = String(choice[nameAttr])
-				let label = choice[labelAttr]
+				const name = String(choice[nameAttr as string])
+				let label = choice[labelAttr as string]
 				if (localize) label = game.i18n.localize(label)
 				selectOptions.push({ name, label })
 			}
 		} else {
 			for (const choice of Object.entries(choices)) {
 				const [key, value] = inverted ? choice.reverse() : choice
-				const name = String(nameAttr ? (value as any)[nameAttr] : key)
-				let label = labelAttr ? (value as any)[labelAttr] : value
-				if (localize) label = game.i18n.localize(label)
+				const name = String(nameAttr ? value[nameAttr as keyof String] : key)
+				let label = labelAttr ? value[labelAttr as keyof String] : value
+				if (localize) label = game.i18n.localize(label as string)
 				selectOptions.push({ name, label })
 			}
 		}
@@ -480,7 +485,7 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 
 		// Prepend a blank option
 		if (blank !== null) {
-			const label = localize ? game.i18n.localize(blank) : blank
+			const label = localize ? game.i18n.localize(blank as string) : blank
 			selectOptions.unshift({ name: "", label })
 		}
 
@@ -488,8 +493,8 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 		let html = ""
 		for (const option of selectOptions) {
 			const label = Handlebars.escapeExpression(option.label)
-			const isSelected = selected.includes(option.name)
-			const isDisabled = disabled.includes(option.name)
+			const isSelected = (selected as string | string[]).includes(option.name)
+			const isDisabled = (disabled as string | string[]).includes(option.name)
 			html += `<option value="${option.name}" ${isSelected ? "selected" : ""} ${
 				isDisabled ? "disabled" : ""
 			}>${label}</option>`
@@ -498,7 +503,7 @@ class HandlebarsHelpersGURPS extends HandlebarsHelpers {
 	}
 }
 
-export function registerHandlebarsHelpers() {
+export function registerHandlebarsHelpers(): void {
 	Handlebars.registerHelper({
 		// Multiselect: HandlebarsHelpersGURPS.multiselect
 		// spellValues: HandlebarsHelpersGURPS.spellValues,
@@ -513,8 +518,7 @@ export function registerHandlebarsHelpers() {
 		diceString: HandlebarsHelpersGURPS.diceString,
 		diff: (v1, v2) => v1 - v2,
 		effective: HandlebarsHelpersGURPS.effective,
-		enabledList: HandlebarsHelpersGURPS.enabledList,
-		flatlist: HandlebarsHelpersGURPS.flatlist,
+		// flatlist: HandlebarsHelpersGURPS.flatlist,
 		format: HandlebarsHelpersGURPS.format,
 		ifText: HandlebarsHelpersGURPS.conditionalText,
 		in: HandlebarsHelpersGURPS.in,
@@ -534,9 +538,9 @@ export function registerHandlebarsHelpers() {
 		selectOptsGURPS: HandlebarsHelpersGURPS.selectOptions,
 		signed: HandlebarsHelpersGURPS.signed,
 		sort: HandlebarsHelpersGURPS.sort,
-		staticSpellValues: HandlebarsHelpersGURPS.staticSpellValues,
+		// staticSpellValues: HandlebarsHelpersGURPS.staticSpellValues,
 		studyInfo: HandlebarsHelpersGURPS.studyInfo,
-		sum: HandlebarsHelpersGURPS.sum,
+		// sum: HandlebarsHelpersGURPS.sum,
 		textareaFormat: HandlebarsHelpersGURPS.textareaFormat,
 		customArmorDivisorSelect: HandlebarsHelpersGURPS.customArmorDivisorSelect,
 		pageRef: pageRef,

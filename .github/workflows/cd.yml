@@ -1,0 +1,57 @@
+name: PF2e System CD
+
+on:
+  workflow_dispatch:
+    branches: [release]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Build JSON packs
+        run: npm run build:packs:json
+
+      - name: Update Manifest
+        run: |
+          SYSTEM_VERSION=$(grep -oP '(?<="version": ")[^"]+' dist/system.json | tr -d '\n')
+          perl -pi -E "s|latest/download/pf2e\\.zip|download/$SYSTEM_VERSION/pf2e.zip|" dist/system.json
+          echo "systemVersion=$SYSTEM_VERSION" >> $GITHUB_ENV
+
+      - name: Zip Files
+        working-directory: ./dist
+        run: zip -r ./pf2e.zip ./*
+
+      - name: Zip JSON Assets
+        working-directory: ./json-assets
+        run: |
+          cp -r ../static/lang/ ./
+          zip -r ./json-assets.zip ./*
+
+      - name: Create Version Release
+        id: create_version_release
+        uses: ncipollo/release-action@v1
+        with:
+          name: ${{ env.systemVersion }}
+          allowUpdates: false
+          draft: false
+          prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
+          artifacts: "./dist/system.json,./dist/pf2e.zip,./json-assets/json-assets.zip"
+          tag: ${{ env.systemVersion }}

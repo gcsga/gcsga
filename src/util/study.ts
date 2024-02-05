@@ -1,13 +1,13 @@
-import { study } from "./enum"
-import { LocalizeGURPS } from "./localize"
+import { study } from "./enum/study.ts"
+import { LocalizeGURPS } from "./localize.ts"
 
 export interface Study {
 	type: study.Type
 	hours: number
-	note: string
+	note?: string
 }
 
-export function studyHoursProgressText(hours: number, needed: study.Level, force: boolean): string {
+export function studyHoursProgressText(hours: number, needed: study.Level | "", force: boolean): string {
 	if (hours <= 0) {
 		hours = 0
 		if (!force) return ""

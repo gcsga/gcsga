@@ -1,8 +1,9 @@
-import { WeaponGURPS } from "@module/config"
-import { TooltipGURPS } from "@module/tooltip"
-import { Int } from "@util/fxp"
-import { WeaponField } from "./weapon_field"
-import { feature, wswitch } from "@util/enum"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { wswitch } from "@util/enum/wswitch.ts"
+import { Int } from "@util/fxp.ts"
+import { feature } from "@util/enum/feature.ts"
+import { WeaponField } from "./weapon_field.ts"
+import { BaseWeaponGURPS } from "./document.ts"
 
 export class WeaponShots extends WeaponField {
 	count = 0
@@ -36,7 +37,7 @@ export class WeaponShots extends WeaponField {
 		return ws
 	}
 
-	resolve(w: WeaponGURPS, tooltip: TooltipGURPS): WeaponShots {
+	resolve(w: BaseWeaponGURPS, tooltip: TooltipGURPS): WeaponShots {
 		const result = WeaponShots.parse(this.toString())
 		result.reloadTimeIsPerShot = w.resolveBoolFlag(wswitch.Type.ReloadTimeIsPerShot, result.reloadTimeIsPerShot)
 		result.thrown = w.resolveBoolFlag(wswitch.Type.Thrown, result.thrown)
@@ -46,7 +47,7 @@ export class WeaponShots extends WeaponField {
 			feature.Type.WeaponNonChamberShotsBonus,
 			feature.Type.WeaponChamberShotsBonus,
 			feature.Type.WeaponShotDurationBonus,
-			feature.Type.WeaponReloadTimeBonus
+			feature.Type.WeaponReloadTimeBonus,
 		)) {
 			switch (bonus.type) {
 				case feature.Type.WeaponNonChamberShotsBonus:
@@ -68,7 +69,7 @@ export class WeaponShots extends WeaponField {
 		return result
 	}
 
-	toString(): string {
+	override toString(): string {
 		let buffer = ""
 		if (this.thrown) buffer += "T"
 		else {
@@ -83,7 +84,7 @@ export class WeaponShots extends WeaponField {
 		return buffer
 	}
 
-	validate() {
+	validate(): void {
 		this.reloadTime = Math.max(this.reloadTime, 0)
 		if (this.thrown) {
 			this.count = 0

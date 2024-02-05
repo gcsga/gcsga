@@ -1,32 +1,24 @@
-import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
-import { ItemType } from "@module/data"
-import { selfctrl } from "@util/enum"
+import { ItemType } from "@data"
+import { BaseContainerSource } from "@item/container/data.ts"
+import { ItemGCSSystemSource } from "@item/gcs/data.ts"
+import { TemplatePickerObj } from "@sytem/template_picker/document.ts"
+import { container, selfctrl } from "@util/enum/index.ts"
 
-export type TraitContainerSource = ItemGCSSource<ItemType.TraitContainer, TraitContainerSystemData>
+export type TraitContainerSource = BaseContainerSource<ItemType.TraitContainer, TraitContainerSystemSource>
 
-export interface TraitContainerData extends Omit<TraitContainerSource, "effects" | "items">, TraitContainerSystemData {
-	readonly type: TraitContainerSource["type"]
-	data: TraitContainerSystemData
-	readonly _source: TraitContainerSource
-}
-
-export interface TraitContainerSystemData extends ItemGCSSystemData {
-	disabled: boolean
-	container_type: TraitContainerType
+export interface TraitContainerSystemSource extends ItemGCSSystemSource {
+	type: ItemType.TraitContainer
+	name: string
+	reference: string
+	reference_highlight: string
+	notes: string
+	vtt_notes: string
+	ancestry: string
+	userdesc: string
+	tags: string[]
+	template_picker: TemplatePickerObj
 	cr: selfctrl.Roll
 	cr_adj: selfctrl.Adjustment
-	calc?: TraitContainerCalcValues
-}
-
-export interface TraitContainerCalcValues extends ItemGCSCalcValues {
-	enabled: boolean
-	points: number
-}
-
-export enum TraitContainerType {
-	Group = "group",
-	MetaTrait = "meta_trait",
-	Ancestry = "ancestry",
-	Attributes = "attributes",
-	AlternativeAbilities = "alternative_abilities",
+	container_type: container.Type
+	disabled: boolean
 }

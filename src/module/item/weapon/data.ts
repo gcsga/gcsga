@@ -1,11 +1,11 @@
-import { BaseItemSourceGURPS } from "@item/base"
-import { ItemType } from "@module/data"
-import { SkillDefault } from "@module/default"
-import { stdmg } from "@util/enum"
+import { ItemType } from "@data"
+import { BaseItemSourceGURPS, ItemSystemSource } from "@item/base/data/system.ts"
+import { SkillDefaultObj } from "@sytem/default/index.ts"
+import { stdmg } from "@util/enum/stdmg.ts"
 
 export type BaseWeaponSource<
 	TItemType extends ItemType = ItemType,
-	TSystemData extends BaseWeaponSystemData = BaseWeaponSystemData,
+	TSystemData extends BaseWeaponSystemSource = BaseWeaponSystemSource,
 > = BaseItemSourceGURPS<TItemType, TSystemData>
 
 export interface WeaponDamageObj {
@@ -19,26 +19,12 @@ export interface WeaponDamageObj {
 	modifier_per_die?: number
 }
 
-export interface BaseWeaponSystemData {
-	id: string
+export interface BaseWeaponSystemSource extends ItemSystemSource {
 	type: WeaponType
 	strength: string
 	usage: string
 	usage_notes: string
-	defaults: SkillDefault[]
+	defaults: SkillDefaultObj[]
 	damage: WeaponDamageObj
-	calc?: BaseWeaonCalcValues
 }
-
-export interface BaseWeaonCalcValues {
-	name: string
-	usage: string
-	resolved_notes: string
-	level: number
-	damage: string
-	strength: string
-	equipped: boolean
-	unready: boolean
-}
-
 export type WeaponType = ItemType.MeleeWeapon | ItemType.RangedWeapon

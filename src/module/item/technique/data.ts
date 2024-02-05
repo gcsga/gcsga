@@ -1,35 +1,31 @@
-import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
-import { EncumbrancePenaltyMultiplier } from "@item/skill"
-import { Feature } from "@module/config"
-import { ItemType } from "@module/data"
-import { SkillDefault } from "@module/default"
-import { PrereqList } from "@prereq"
-import { Study } from "@util"
-import { difficulty, study } from "@util/enum"
+import { ItemType } from "@data"
+import { FeatureObj } from "@feature/index.ts"
+import { BaseContainerSource } from "@item/container/data.ts"
+import { ItemGCSSystemSource } from "@item/gcs/data.ts"
+import { PrereqListObj } from "@prereq/data.ts"
+import { SkillDefaultObj } from "@sytem/default/index.ts"
+import { difficulty } from "@util/enum/difficulty.ts"
+import { study } from "@util/enum/study.ts"
+import { Study } from "@util/study.ts"
 
-export type TechniqueSource = ItemGCSSource<ItemType.Technique, TechniqueSystemData>
+export type TechniqueSource = BaseContainerSource<ItemType.Technique, TechniqueSystemSource>
 
-// Export class TechniqueData extends BaseItemDataGURPS<TechniqueGURPS> {}
-
-export interface TechniqueData extends Omit<TechniqueSource, "effects">, TechniqueSystemData {
-	readonly type: TechniqueSource["type"]
-	data: TechniqueSystemData
-
-	readonly _source: TechniqueSource
-}
-
-export interface TechniqueSystemData extends ItemGCSSystemData {
-	prereqs: PrereqList
+export interface TechniqueSystemSource extends ItemGCSSystemSource {
+	type: ItemType.Technique
+	name: string
+	reference: string
+	reference_highlight: string
+	notes: string
+	vtt_notes: string
+	tags: string[]
 	tech_level: string
-	encumbrance_penalty_multiplier: EncumbrancePenaltyMultiplier
-	difficulty: (typeof difficulty.TechiqueLevels)[number]
+	difficulty: difficulty.Level.Average | difficulty.Level.Hard
 	points: number
-	defaulted_from: SkillDefault | null
-	defaults: SkillDefault[]
-	features: Feature[]
-	default: SkillDefault
+	default: SkillDefaultObj
 	limit: number
 	limited: boolean
+	prereqs: PrereqListObj
+	features: FeatureObj[]
 	study: Study[]
-	study_hours_needed: study.Level
+	study_hours_needed: study.Level | ""
 }

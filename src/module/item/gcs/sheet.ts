@@ -1,8 +1,9 @@
-import { ContainerSheetGURPS } from "@item/container"
-import { ItemGURPS } from "@module/config"
-import { ItemType, SETTINGS, SYSTEM_NAME } from "@module/data"
-import { LocalizeGURPS, Weight } from "@util"
-import { ItemGCS } from "./document"
+import { ContainerSheetGURPS } from "@item/container/sheet.ts"
+import { ItemGCS } from "./document.ts"
+import { CharacterResolver, LocalizeGURPS, Weight } from "@util"
+import { ItemGURPS } from "@item"
+import { ItemSourceGURPS } from "@item/base/data/index.ts"
+import { ItemType, SETTINGS, SYSTEM_NAME } from "@data"
 
 export class ItemSheetGCS<IType extends ItemGCS = ItemGCS> extends ContainerSheetGURPS<IType> {
 	override activateListeners(html: JQuery<HTMLElement>): void {
@@ -15,7 +16,7 @@ export class ItemSheetGCS<IType extends ItemGCS = ItemGCS> extends ContainerShee
 		html.find(".item-list .header.desc").each((_index, element) => this._addItemHeaderContextMenu(element))
 	}
 
-	protected _addItemHeaderContextMenu(element: HTMLElement) {
+	protected _addItemHeaderContextMenu(element: HTMLElement): void {
 		const type = $(element).parent(".item-list")[0].id
 		// const ctx = new ContextMenu(html, ".menu", [])
 		const menuItems = (function (self: ItemSheetGCS): ContextMenuEntry[] {
@@ -70,9 +71,9 @@ export class ItemSheetGCS<IType extends ItemGCS = ItemGCS> extends ContainerShee
 		// await ctx.render(element)
 	}
 
-	protected _addItemContextMenu(element: HTMLElement) {
+	protected _addItemContextMenu(element: HTMLElement): void {
 		const id = $(element).data("item-id")
-		const item = this.item.deepItems.get(id) as ItemGURPS
+		const item = this.object.deepItems.get(id) as ItemGURPS
 		if (!item) return
 		// const ctx = new ContextMenu(html, ".menu", [])
 		const menuItems = [
@@ -84,10 +85,11 @@ export class ItemSheetGCS<IType extends ItemGCS = ItemGCS> extends ContainerShee
 						type: item.type,
 						name: item.name,
 						system: item.system,
-						flags: (item as any).flags,
-						sort: ((item as any).sort ?? 0) + 1,
+						flags: item.flags,
+						sort: (item.sort ?? 0) + 1,
 					}
-					await item.container?.createEmbeddedDocuments("Item", [itemData])
+					if (!(item.container instanceof CompendiumCollection))
+						await item.container?.createEmbeddedDocuments("Item", [itemData], {})
 				},
 			},
 			{
@@ -100,7 +102,6 @@ export class ItemSheetGCS<IType extends ItemGCS = ItemGCS> extends ContainerShee
 			},
 		]
 		ContextMenu.create(this, $(element), "*", menuItems)
-		// await ctx.render($(event.currentTarget))
 	}
 
 	// async _getItemContextMenu(event: JQuery.ContextMenuEvent, html: JQuery<HTMLElement>) {
@@ -134,7 +135,7 @@ export class ItemSheetGCS<IType extends ItemGCS = ItemGCS> extends ContainerShee
 	// 	await ctx.render($(event.currentTarget))
 	// }
 
-	async _getAddItemMenu(event: JQuery.ContextMenuEvent, html: JQuery<HTMLElement>) {
+	async _getAddItemMenu(event: JQuery.ContextMenuEvent, html: JQuery<HTMLElement>): Promise<void> {
 		event.preventDefault()
 		const element = $(event.currentTarget)
 		const type = element.parent(".item-list")[0].id
@@ -190,14 +191,17 @@ export class ItemSheetGCS<IType extends ItemGCS = ItemGCS> extends ContainerShee
 		await ctx.render(element)
 	}
 
-	async _newItem(type: ItemType, other = false) {
-		const itemData: any = {
+	async _newItem(type: ItemType, other = false): Promise<this> {
+		const itemData: DeepPartial<ItemSourceGURPS> = {
+			// @ts-expect-error what
 			type,
 			name: LocalizeGURPS.translations.TYPES.Item[type],
 			system: {},
 		}
+		// @ts-expect-error what
 		if (other) itemData.system.other = true
 		if ([ItemType.MeleeWeapon, ItemType.RangedWeapon].includes(type))
+			// @ts-expect-error what
 			itemData.system.usage = LocalizeGURPS.translations.TYPES.Item[type]
 		await this.object.createEmbeddedDocuments("Item", [itemData], {
 			temporary: false,
@@ -207,20 +211,21 @@ export class ItemSheetGCS<IType extends ItemGCS = ItemGCS> extends ContainerShee
 		return this.render()
 	}
 
-	protected async _openItemSheet(event: JQuery.DoubleClickEvent) {
+	protected async _openItemSheet(event: JQuery.DoubleClickEvent): Promise<void> {
 		event.preventDefault()
 		const id = $(event.currentTarget).data("item-id")
 		const item = this.item.deepItems.get(id)
 		item?.sheet?.render(true)
 	}
 
-	protected async _updateObject(event: Event, formData: Record<string, any>): Promise<unknown> {
+	protected override async _updateObject(event: Event, formData: Record<string, unknown>): Promise<void> {
 		for (const k in formData) {
 			if (k.endsWith("qualifier.qualifier_weight")) {
+				const actor = this.actor as unknown as CharacterResolver
 				const units =
-					this.item.actor.settings.default_weight_units ??
+					actor.settings.default_weight_units ??
 					game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`).default_weight_units
-				const weight = Weight.format(Weight.fromString(formData[k], units), units)
+				const weight = Weight.format(Weight.fromString(formData[k] as string, units), units)
 				formData[k.replace("_weight", "")] = weight
 				delete formData[k]
 			}
@@ -228,10 +233,7 @@ export class ItemSheetGCS<IType extends ItemGCS = ItemGCS> extends ContainerShee
 		return super._updateObject(event, formData)
 	}
 
-	render(
-		force?: boolean | undefined,
-		options?: Application.RenderOptions<DocumentSheetOptions<Item>> | undefined
-	): this {
+	override render(force?: boolean, options?: RenderOptions): this | Promise<this> {
 		if (this.object.container instanceof Item && this.object.container.sheet?.rendered)
 			this.object.container.sheet.render(true)
 		return super.render(force, options)

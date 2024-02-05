@@ -1,23 +1,15 @@
-import { ItemSheetGCS } from "@item/gcs"
-import { RitualMagicSpellGURPS } from "./document"
+import { ItemSheetGCS } from "@item/gcs/sheet.ts"
+import { RitualMagicSpellGURPS } from "./document.ts"
+import { ItemSheetOptions } from "@item/base/sheet.ts"
 
-export class RitualMagicSpellSheet extends ItemSheetGCS<RitualMagicSpellGURPS> {
-	static get defaultOptions(): DocumentSheetOptions<Item> {
+export class RitualMagicSpellSheet<
+	IType extends RitualMagicSpellGURPS = RitualMagicSpellGURPS,
+> extends ItemSheetGCS<IType> {
+	static override get defaultOptions(): ItemSheetOptions {
 		const options = super.defaultOptions
-		mergeObject(options, {
+		fu.mergeObject(options, {
 			classes: options.classes.concat(["ritual_magic_spell"]),
 		})
 		return options
-	}
-
-	getData(options?: Partial<DocumentSheetOptions<Item>> | undefined) {
-		const data = super.getData(options)
-		return mergeObject(data, {
-			attributes: {
-				...{ 10: "10" },
-				...super.getData(options).attributes,
-			},
-			defaults: (this.item as any).defaults,
-		})
 	}
 }

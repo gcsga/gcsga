@@ -1,7 +1,8 @@
-import { WeaponGURPS } from "@module/config"
-import { TooltipGURPS } from "@module/tooltip"
-import { Int } from "@util/fxp"
-import { feature, wswitch } from "@util/enum"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { wswitch } from "@util/enum/wswitch.ts"
+import { Int } from "@util/fxp.ts"
+import { feature } from "@util/enum/feature.ts"
+import { BaseWeaponGURPS } from "./document.ts"
 
 export class WeaponROFMode {
 	shotsPerAttack = 0
@@ -27,7 +28,7 @@ export class WeaponROFMode {
 		return wr
 	}
 
-	resolve(w: WeaponGURPS, tooltip: TooltipGURPS, firstMode: boolean): WeaponROFMode {
+	resolve(w: BaseWeaponGURPS, tooltip: TooltipGURPS, firstMode: boolean): WeaponROFMode {
 		const result = WeaponROFMode.parse(this.toString())
 		let [shotsFeature, secondaryFeature]: feature.WeaponBonusType[] = [
 			feature.Type.WeaponRofMode1ShotsBonus,
@@ -37,7 +38,7 @@ export class WeaponROFMode {
 			result.fullAutoOnly = w.resolveBoolFlag(wswitch.Type.FullAuto1, result.fullAutoOnly)
 			result.highCyclicControlledBursts = w.resolveBoolFlag(
 				wswitch.Type.ControlledBursts1,
-				result.highCyclicControlledBursts
+				result.highCyclicControlledBursts,
 			)
 		} else {
 			shotsFeature = feature.Type.WeaponRofMode2ShotsBonus
@@ -45,7 +46,7 @@ export class WeaponROFMode {
 			result.fullAutoOnly = w.resolveBoolFlag(wswitch.Type.FullAuto2, result.fullAutoOnly)
 			result.highCyclicControlledBursts = w.resolveBoolFlag(
 				wswitch.Type.ControlledBursts2,
-				result.highCyclicControlledBursts
+				result.highCyclicControlledBursts,
 			)
 		}
 		for (const bonus of w.collectWeaponBonuses(1, tooltip, shotsFeature, secondaryFeature)) {

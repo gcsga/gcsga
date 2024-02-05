@@ -1,5 +1,5 @@
-import { ParsedOtF, OtFNumberedAction, OptionalCheckParameters } from "./base"
-import { gspan } from "./utils"
+import { ParsedOtF, OtFNumberedAction, OptionalCheckParameters } from "./base.ts"
+import { gspan } from "./utils.ts"
 
 // Self control roll CR: N
 /**
@@ -8,12 +8,12 @@ import { gspan } from "./utils"
  * @param opts
  */
 export function checkForSelfControl(str: string, opts: OptionalCheckParameters): ParsedOtF | undefined {
-	let two = str.substring(0, 2)
+	const two = str.substring(0, 2)
 	if (two === "CR" && str.length > 2 && str[2] === ":") {
-		let rest = str.substring(3).trim()
-		let num = rest.replace(/([0-9]+).*/g, "$1")
-		let desc = rest.replace(/[0-9]+ *(.*)/g, "$1")
-		let action = <OtFNumberedAction>{
+		const rest = str.substring(3).trim()
+		const num = rest.replace(/([0-9]+).*/g, "$1")
+		const desc = rest.replace(/[0-9]+ *(.*)/g, "$1")
+		const action = <OtFNumberedAction>{
 			orig: str,
 			type: "controlroll",
 			num: parseInt(num),
@@ -26,4 +26,5 @@ export function checkForSelfControl(str: string, opts: OptionalCheckParameters):
 			action: action,
 		}
 	}
+	return
 }

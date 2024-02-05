@@ -10,7 +10,8 @@ export const CanvasUtil = {
 		const oldTargets = [...game.user!.targets]
 
 		// Create a rectangle the size of a grid element centered on the point.
-		const gridSize = (canvas!.scene as any).grid!.size
+		const gridSize = canvas.scene?.grid.size
+		if (!gridSize) return []
 		const rectangle = {
 			x: point.x - gridSize / 2,
 			y: point.y - gridSize / 2,

@@ -1,4 +1,4 @@
-import { LocalizeGURPS } from "./localize"
+import { LocalizeGURPS } from "./localize.ts"
 
 export enum StringCompareType {
 	AnyString = "none",
@@ -24,14 +24,19 @@ export const AllStringCompareTypes: StringCompareType[] = [
 	StringCompareType.DoesNotEndWithString,
 ]
 
+export interface StringCriteriaObj {
+	compare?: StringCompareType
+	qualifier?: string
+}
+
 export class StringCriteria {
 	compare: StringCompareType
 
 	qualifier: string
 
-	constructor(compare: StringCompareType, qualifier: string = "") {
-		this.compare = compare
-		this.qualifier = qualifier
+	constructor(data: StringCriteriaObj) {
+		this.compare = data.compare ?? StringCompareType.AnyString
+		this.qualifier = data.qualifier ?? ""
 	}
 
 	matches(s: string): boolean {
@@ -61,7 +66,7 @@ export class StringCriteria {
 		if (s.length === 0) return this.matches("")
 		let matches = 0
 		for (const one of s) {
-			if (this.matches(one)) matches++
+			if (this.matches(one)) matches += 1
 		}
 		switch (this.compare) {
 			case StringCompareType.AnyString:

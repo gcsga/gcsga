@@ -1,25 +1,27 @@
-import { ItemSheetGCS } from "@item/gcs"
-import { TraitModifierGURPS } from "."
+import { ItemSheetGCS } from "@item/gcs/sheet.ts"
+import { TraitModifierGURPS } from "./document.ts"
+import { ItemSheetDataGURPS, ItemSheetOptions } from "@item/base/sheet.ts"
 
-export class TraitModifierSheet extends ItemSheetGCS {
-	static get defaultOptions(): DocumentSheetOptions<Item> {
+export class TraitModifierSheet<IType extends TraitModifierGURPS = TraitModifierGURPS> extends ItemSheetGCS<IType> {
+	static override get defaultOptions(): DocumentSheetOptions {
 		const options = super.defaultOptions
-		mergeObject(options, {
+		fu.mergeObject(options, {
 			classes: options.classes.concat(["modifier"]),
 		})
 		return options
 	}
 
-	getData(options?: Partial<DocumentSheetOptions<Item>> | undefined) {
+	override async getData(options: Partial<ItemSheetOptions> = {}): Promise<ItemSheetDataGURPS<IType>> {
+		const data = await super.getData(options)
 		const adjustedCostType =
 			(this.item as TraitModifierGURPS).system.cost_type === "percentage" &&
 			(this.item as TraitModifierGURPS).isLeveled
 				? "percentage_leveled"
 				: (this.item as TraitModifierGURPS).system.cost_type
 		const sheetData = {
-			...super.getData(options),
-			system: {
-				...super.getData(options).system,
+			...data,
+			data: {
+				...data.data,
 				...{
 					cost_type: adjustedCostType,
 				},
@@ -28,11 +30,7 @@ export class TraitModifierSheet extends ItemSheetGCS {
 		return sheetData
 	}
 
-	activateListeners(html: JQuery<HTMLElement>): void {
-		super.activateListeners(html)
-	}
-
-	protected _updateObject(event: Event, formData: Record<string, any>): Promise<unknown> {
+	protected override async _updateObject(event: Event, formData: Record<string, unknown>): Promise<void> {
 		if (Object.keys(formData).includes("system.disabled"))
 			formData["system.disabled"] = !formData["system.disabled"]
 

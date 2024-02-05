@@ -1,20 +1,28 @@
-import { BaseWeaponGURPS } from "@item/weapon"
-import { RangedWeaponSource } from "./data"
-import { WeaponAccuracy } from "@item/weapon/weapon_accuracy"
-import { WeaponRange } from "@item/weapon/weapon_range"
-import { WeaponBulk } from "@item/weapon/weapon_bulk"
-import { WeaponROF } from "@item/weapon/weapon_rof"
-import { WeaponShots } from "@item/weapon/weapon_shots"
-import { WeaponRecoil } from "@item/weapon/weapon_recoil"
-import { TooltipGURPS } from "@module/tooltip"
-import { RollType, SETTINGS, SYSTEM_NAME } from "@module/data"
-import { includesFold } from "@util"
-import { ItemFlags } from "@item/data"
+import { RangedWeaponSource, RangedWeaponSystemSource } from "./data.ts"
+import { BaseWeaponGURPS } from "@item/index.ts"
+import { WeaponAccuracy } from "@item/weapon/weapon_accuracy.ts"
+import { WeaponRange } from "@item/weapon/weapon_range.ts"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { WeaponROF } from "@item/weapon/weapon_rof.ts"
+import { WeaponShots } from "@item/weapon/weapon_shots.ts"
+import { WeaponBulk } from "@item/weapon/weapon_bulk.ts"
+import { ItemFlags, ItemType, RollType, SETTINGS, SYSTEM_NAME } from "@data"
+import { WeaponRecoil } from "@item/weapon/weapon_recoil.ts"
+import { includesFold } from "@util/string_criteria.ts"
+import { CharacterResolver } from "@util"
+import { ActorGURPS, CharacterGURPS } from "@actor"
 
-export class RangedWeaponGURPS extends BaseWeaponGURPS<RangedWeaponSource> {
+export interface RangedWeaponGURPS<TParent extends ActorGURPS | null> extends BaseWeaponGURPS<TParent> {
+	readonly _source: RangedWeaponSource
+	system: RangedWeaponSystemSource
+
+	type: ItemType.RangedWeapon
+}
+
+export class RangedWeaponGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends BaseWeaponGURPS<TParent> {
 	get resolvedRange(): string {
-		const actor = this.actor
-		if (!actor) return this.system.range
+		const actor = this.actor as unknown as CharacterResolver
+		if (!(actor instanceof CharacterGURPS)) return this.system.range
 		const st = Math.trunc(actor.throwingST)
 		let savedRange = ""
 		let calcRange = this.system.range
@@ -29,22 +37,22 @@ export class RangedWeaponGURPS extends BaseWeaponGURPS<RangedWeaponSource> {
 		const where = inRange.indexOf("x")
 		if (where === -1) return inRange
 		let last = where + 1
-		let max = inRange.length
-		if (last < max && inRange[last] === " ") last++
+		const max = inRange.length
+		if (last < max && inRange[last] === " ") last += 1
 		if (last >= max) return inRange
 		let ch = inRange[last]
 		let found = false
 		let decimal = false
-		let started = last
+		const started = last
 		while ((!decimal && ch === ".") || ch.match("[0-9]")) {
 			found = true
 			if (ch === ".") decimal = true
-			last++
+			last += 1
 			if (last >= max) break
 			ch = inRange[last]
 		}
 		if (!found) return inRange
-		let value = parseFloat(inRange.substring(started, last))
+		const value = parseFloat(inRange.substring(started, last))
 		let buffer = ""
 		if (where > 0) buffer += inRange.substring(0, where)
 		buffer += Math.trunc(value * st).toString()
@@ -89,7 +97,7 @@ export class RangedWeaponGURPS extends BaseWeaponGURPS<RangedWeaponSource> {
 	}
 
 	checkUnready(type: RollType): void {
-		const check = game.settings.get(SYSTEM_NAME, SETTINGS.AUTOMATIC_UNREADY) as boolean
+		const check = game.settings.get(SYSTEM_NAME, SETTINGS.AUTOMATIC_UNREADY)
 		if (!check) return
 		if (!this.actor) return
 		let unready = false

@@ -1,5 +1,5 @@
-import { SYSTEM_NAME } from "@module/data"
-import { StaticItemGURPS } from "./document"
+import { SYSTEM_NAME } from "@module/data/index.ts"
+import { StaticItemGURPS } from "./document.ts"
 
 export enum StaticPopoutType {
 	Melee = "melee",
@@ -16,8 +16,8 @@ export class StaticPopout extends FormApplication {
 
 	uuid!: string
 
-	static get defaultOptions(): FormApplicationOptions {
-		return mergeObject(super.defaultOptions, {
+	static override get defaultOptions(): FormApplicationOptions {
+		return fu.mergeObject(super.defaultOptions, {
 			classes: ["form", "gurps", "item"],
 			width: 620,
 			min_width: 620,
@@ -29,7 +29,7 @@ export class StaticPopout extends FormApplication {
 		})
 	}
 
-	get title(): string {
+	override get title(): string {
 		switch (this.key) {
 			case StaticPopoutType.Melee:
 			case StaticPopoutType.Ranged:
@@ -43,7 +43,7 @@ export class StaticPopout extends FormApplication {
 		}
 	}
 
-	constructor(object: StaticItemGURPS, key: StaticPopoutType, uuid: string, options?: any) {
+	constructor(object: StaticItemGURPS, key: StaticPopoutType, uuid: string, options?: { ready?: boolean }) {
 		options ??= {}
 		if (options.ready && options.ready === true) {
 			super(object)
@@ -51,7 +51,7 @@ export class StaticPopout extends FormApplication {
 			this.key = key
 			this.uuid = uuid
 		} else {
-			mergeObject(options, { ready: true })
+			fu.mergeObject(options, { ready: true })
 			switch (key) {
 				case StaticPopoutType.Melee:
 					return new StaticMeleePopout(object, key, uuid, options)
@@ -69,15 +69,15 @@ export class StaticPopout extends FormApplication {
 		}
 	}
 
-	getData(options?: Partial<FormApplicationOptions> | undefined): MaybePromise<object> {
-		return mergeObject(super.getData(options), {
+	override getData(options?: Partial<FormApplicationOptions> | undefined): object | Promise<object> {
+		return fu.mergeObject(super.getData(options), {
 			list: this.key,
 			key: this.uuid,
-			data: (this.object.system[this.key] as any)[this.uuid],
+			data: this.object.system[this.key][this.uuid],
 		})
 	}
 
-	protected async _updateObject(_event: Event, formData?: any | undefined): Promise<unknown> {
+	protected async _updateObject(_event: Event, formData: Record<string, unknown>): Promise<unknown> {
 		if (!this.object.uuid) return
 		await this.object.update(formData)
 		return this.render()
@@ -85,27 +85,27 @@ export class StaticPopout extends FormApplication {
 }
 
 export class StaticMeleePopout extends StaticPopout {
-	get template(): string {
+	override get template(): string {
 		return `systems/${SYSTEM_NAME}/templates/item/legacy_equipment/popouts/melee.hbs`
 	}
 }
 export class StaticRangedPopout extends StaticPopout {
-	get template(): string {
+	override get template(): string {
 		return `systems/${SYSTEM_NAME}/templates/item/legacy_equipment/popouts/ranged.hbs`
 	}
 }
 export class StaticTraitPopout extends StaticPopout {
-	get template(): string {
+	override get template(): string {
 		return `systems/${SYSTEM_NAME}/templates/item/legacy_equipment/popouts/trait.hbs`
 	}
 }
 export class StaticSkillPopout extends StaticPopout {
-	get template(): string {
+	override get template(): string {
 		return `systems/${SYSTEM_NAME}/templates/item/legacy_equipment/popouts/skill.hbs`
 	}
 }
 export class StaticSpellPopout extends StaticPopout {
-	get template(): string {
+	override get template(): string {
 		return `systems/${SYSTEM_NAME}/templates/item/legacy_equipment/popouts/spell.hbs`
 	}
 }

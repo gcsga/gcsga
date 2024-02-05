@@ -1,185 +1,153 @@
-import { ConfiguredDocumentClass } from "../../../types/helperTypes"
-import { DocumentModificationOptions } from "../../common/abstract/document.mjs"
-import { Document } from "../../common/abstract/module.mjs"
-
 declare global {
 	/**
-	 * An Abstract Base Class which defines a Placeable Object which represents a Document placed on the Canvas
+	 * An Abstract Base Class which defines a Placeable Object which represents an Entity placed on the Canvas
+	 * @param document The Document instance which is represented by this object
 	 */
 	abstract class PlaceableObject<
-		D extends Document<any, InstanceType<ConfiguredDocumentClass<typeof Scene>>> = Document<
-			any,
-			InstanceType<ConfiguredDocumentClass<typeof Scene>>
-		>,
-	> extends PIXI.Container {
-		/**
-		 * @param document - The Document instance which is represented by this object
-		 */
-		constructor(document: D)
+		TDocument extends CanvasDocument = CanvasDocument,
+	> extends RenderFlagsContainer<TDocument> {
+		constructor(document: TDocument)
 
-		/** @internal */
-		protected _original?: this | undefined
+		static override RENDER_FLAGS: {
+			redraw: { propagate: string[] }
+			refresh: { propagate: string[]; alias: boolean }
+			refreshState: {}
+		}
 
-		/**
-		 * Retain a reference to the Scene within which this Placeable Object resides
-		 */
-		scene: InstanceType<ConfiguredDocumentClass<typeof Scene>>
+		/** Retain a reference to the Scene within which this Placeable Object resides */
+		scene: TDocument["parent"]
 
-		/**
-		 * A reference to the Scene embedded Document instance which this object represents
-		 */
-		document: D
-
-		/**
-		 * The underlying data object which provides the basis for this placeable object
-		 */
-		data: D["data"]
+		/** A reference to the Scene embedded Document instance which this object represents */
+		document: TDocument
 
 		/**
 		 * Track the field of vision for the placeable object.
 		 * This is necessary to determine whether a player has line-of-sight towards a placeable object or vice-versa
-		 * @defaultValue `{ fov: undefined, los: undefined }`
 		 */
-		vision: Vision
+		vision: { fov: unknown; shape: unknown }
 
-		/**
-		 * A control icon for interacting with the object
-		 * @defaultValue `null`
-		 * @remarks `undefined` is returned by subclasses only
-		 */
-		controlIcon: ControlIcon | null | undefined
+		/** A control icon for interacting with the object */
+		controlIcon: ControlIcon
 
-		/**
-		 * A mouse interaction manager instance which handles mouse workflows related to this object.
-		 * @defaultValue `null`
-		 */
-		mouseInteractionManager: MouseInteractionManager<this> | null
+		/** A mouse interaction manager instance which handles mouse workflows related to this object. */
+		mouseInteractionManager: MouseInteractionManager
 
-		/**
-		 * An indicator for whether the object is currently controlled
-		 * @defaultValue `false`
-		 */
-		protected _controlled: boolean
+		/* -------------------------------------------- */
+		/* Properties                                   */
+		/* -------------------------------------------- */
 
-		/**
-		 * An indicator for whether the object is currently a hover target
-		 * @defaultValue `false`
-		 */
-		protected _hover: boolean
-
-		/**
-		 * Identify the official Document name for this PlaceableObject class
-		 * @remarks This is abstract in {@link PlaceableObject}.
-		 */
+		/** Identify the official EmbeddedEntity name for this PlaceableObject class */
 		static embeddedName: string
+
+		/** Passthrough certain drag operations on locked objects. */
+		protected _dragPassthrough: boolean
+
+		/** Know if a placeable is in the hover-in state.  */
+		protected _isHoverIn: boolean
 
 		/**
 		 * The bounding box for this PlaceableObject.
 		 * This is required if the layer uses a Quadtree, otherwise it is optional
 		 */
-		abstract get bounds(): Rectangle
+		get bounds(): PIXI.Rectangle
 
-		/**
-		 * The central coordinate pair of the placeable object based on it's own width and height
-		 * @remarks `{ x: number, y: number }` has been added because of `Token.center`
-		 */
-		get center(): PIXI.Point | { x: number; y: number }
+		/** The central coordinate pair of the placeable object based on it's own width and height */
+		get center(): PIXI.Point
 
-		/**
-		 * The id of the corresponding Document which this PlaceableObject represents.
-		 */
+		/** The id of the corresponding Document which this PlaceableObject represents. */
 		get id(): string
 
-		/**
-		 * The field-of-vision polygon for the object, if it has been computed
-		 */
-		get fov(): this["vision"]["fov"]
+		/** A unique identifier which is used to uniquely identify elements on the canvas related to this object. */
+		get objectId(): string
 
 		/**
-		 * Provide a reference to the CanvasLayer which contains this PlaceableObject.
+		 * The named identified for the source object associated with this PlaceableObject.
+		 * This differs from the objectId because the sourceId is the same for preview objects as for the original.
 		 */
-		get layer(): "layer" extends keyof D ? D["layer"] : PIXI.Container
+		get sourceId(): string
+
+		/** Is this placeable object a temporary preview? */
+		get isPreview(): boolean
+
+		/** The field-of-vision polygon for the object, if it has been computed */
+		get fov(): PIXI.Polygon
+
+		/** Provide a reference to the CanvasLayer which contains this PlaceableObject. */
+		get layer(): PlaceablesLayer<this>
+
+		/** The line-of-sight polygon for the object, if it has been computed */
+		get los(): PIXI.Polygon | null
 
 		/**
-		 * The line-of-sight polygon for the object, if it has been computed
+		 * A Form Application which is used to configure the properties of this Placeable Object or the EmbeddedEntity
+		 * it represents.
 		 */
-		get los(): this["vision"]["los"]
+		get sheet(): TDocument["sheet"]
 
-		/**
-		 * A Form Application which is used to configure the properties of this Placeable Object or the Document it
-		 * represents.
-		 */
-		get sheet(): "sheet" extends keyof D ? D["sheet"] : FormApplication | null
+		/** An indicator for whether the object is currently controlled */
+		get controlled(): boolean
+
+		/** An indicator for whether the object is currently a hover target */
+		get hover(): boolean
+
+		/* -------------------------------------------- */
+		/*  Permission Controls                         */
+		/* -------------------------------------------- */
 
 		/**
 		 * Test whether a user can perform a certain interaction with regards to a Placeable Object
-		 * @param user   - The User performing the action
-		 * @param action - The named action being attempted
-		 * @returns Does the User have rights to perform the action?
+		 * @param user   The User performing the action
+		 * @param action The named action being attempted
+		 * @return Does the User have rights to perform the action?
 		 */
-		can(
-			user: InstanceType<ConfiguredDocumentClass<typeof User>>,
-			action:
-				| "HUD"
-				| "configure"
-				| "control"
-				| "view"
-				| "create"
-				| "drag"
-				| "hover"
-				| "update"
-				| "delete"
-				| string
-		): boolean
+		can(user: User, action: UserAction): boolean
+
+		/** Can the User access the HUD for this Placeable Object? */
+		protected _canHUD(user: User, event?: PIXI.FederatedEvent): boolean
+
+		/** Does the User have permission to configure the Placeable Object? */
+		protected _canConfigure(user: User, event?: PIXI.FederatedEvent): boolean
+
+		/** Does the User have permission to control the Placeable Object? */
+		protected _canControl(user: User, event?: PIXI.FederatedEvent): boolean
+
+		/** Does the User have permission to view details of the Placeable Object? */
+		protected _canView(user: User, event?: PIXI.FederatedEvent): boolean
+
+		/** Does the User have permission to create the underlying Embedded Entity? */
+		protected _canCreate(user: User, event?: PIXI.FederatedEvent): boolean
+
+		/** Does the User have permission to drag this Placeable Object? */
+		protected _canDrag(user: User, event?: PIXI.FederatedEvent): boolean
+
+		/** Does the User have permission to hover on this Placeable Object? */
+		protected _canHover(user: User, event?: PIXI.FederatedEvent): boolean
+
+		/** Does the User have permission to update the underlying Embedded Entity? */
+		protected _canUpdate(user: User, event?: PIXI.FederatedEvent): boolean
+
+		/** Does the User have permission to delete the underlying Embedded Entity? */
+		protected _canDelete(user: User, event?: PIXI.FederatedEvent): boolean
+
+		/* -------------------------------------------- */
+		/*  Rendering                                   */
+		/* -------------------------------------------- */
 
 		/**
-		 * Can the User access the HUD for this Placeable Object?
+		 * Apply any current render flags, clearing the renderFlags set.
+		 * Subclasses should override this method to define behavior.
 		 */
-		protected _canHUD(user: InstanceType<ConfiguredDocumentClass<typeof User>>, event?: any): boolean
+		applyRenderFlags(): void
 
 		/**
-		 * Does the User have permission to configure the Placeable Object?
+		 * Apply render flags before a render occurs.
+		 * @param flags  The render flags which must be applied
 		 */
-		protected _canConfigure(user: InstanceType<ConfiguredDocumentClass<typeof User>>, event?: any): boolean
-
-		/**
-		 * Does the User have permission to control the Placeable Object?
-		 */
-		protected _canControl(user: InstanceType<ConfiguredDocumentClass<typeof User>>, event?: any): boolean
-
-		/**
-		 * Does the User have permission to view details of the Placeable Object?
-		 */
-		protected _canView(user: InstanceType<ConfiguredDocumentClass<typeof User>>, event?: any): boolean
-
-		/**
-		 * Does the User have permission to create the underlying Document?
-		 */
-		protected _canCreate(user: InstanceType<ConfiguredDocumentClass<typeof User>>, event?: any): boolean
-
-		/**
-		 * Does the User have permission to drag this Placeable Object?
-		 */
-		protected _canDrag(user: InstanceType<ConfiguredDocumentClass<typeof User>>, event?: any): boolean
-
-		/**
-		 * Does the User have permission to hover on this Placeable Object?
-		 */
-		protected _canHover(user: InstanceType<ConfiguredDocumentClass<typeof User>>, event?: any): boolean
-
-		/**
-		 * Does the User have permission to update the underlying Document?
-		 */
-		protected _canUpdate(user: InstanceType<ConfiguredDocumentClass<typeof User>>, event?: any): boolean
-
-		/**
-		 * Does the User have permission to delete the underlying Document?
-		 */
-		protected _canDelete(user: InstanceType<ConfiguredDocumentClass<typeof User>>, event?: any): boolean
+		protected _applyRenderFlags(flags: Record<string, boolean>): void
 
 		/**
 		 * Clear the display of the existing object
-		 * @returns The cleared object
+		 * @return The cleared object
 		 */
 		clear(): this
 
@@ -188,237 +156,203 @@ declare global {
 		 * The returned object is non-interactive, and has no assigned ID
 		 * If you plan to use it permanently you should call the create method
 		 *
-		 * @returns A new object with identical data
+		 * @return A new object with identical data
 		 */
 		clone(): this
 
-		override destroy(options?: Parameters<PIXI.Container["destroy"]>[0]): void
+		override destroy(options?: boolean | PIXI.IDestroyOptions): void
 
 		/**
-		 * Draw the placeable object into its parent container
-		 * @returns The drawn object
+		 * The inner _destroy method which may optionally be defined by each PlaceableObject subclass.
+		 * @param [options] Options passed to the initial destroy call
 		 */
-		abstract draw(): Promise<this>
+		protected _destroy(options?: boolean | PIXI.IDestroyOptions): void
+
+		/** Draw the placeable object into its parent container */
+		draw(): Promise<this>
+
+		/** The inner _draw method which must be defined by each PlaceableObject subclass. */
+		protected abstract _draw(): Promise<void>
 
 		/**
 		 * Refresh the current display state of the Placeable Object
-		 * @returns The refreshed object
-		 * @remarks `void` has been added because of `Drawing.refresh`
+		 * @return The refreshed object
 		 */
-		abstract refresh(): this | void
+		refresh(): this
 
-		/**
-		 * Register pending canvas operations which should occur after a new PlaceableObject of this type is created
-		 */
-		protected _onCreate(data: D["data"]["_source"], options: DocumentModificationOptions, userId: string): void
+		/** Update the quadtree. */
+		protected _updateQuadtree(): void
 
-		/**
-		 * Define additional steps taken when an existing placeable object of this type is updated with new data
-		 * @remarks Called without options and userId in Drowing._onUpdate
-		 */
-		protected _onUpdate(
-			changed: DeepPartial<D["data"]["_source"]>,
-			options?: DocumentModificationOptions,
-			userId?: string
+		/** Get the target opacity that should be used for a Placeable Object depending on its preview state. */
+		protected _getTargetAlpha(): number
+
+		/** Register pending canvas operations which should occur after a new PlaceableObject of this type is created */
+		protected _onCreate(
+			data: TDocument["_source"],
+			options: DocumentModificationContext<TDocument["parent"]>,
+			userId: string,
 		): void
 
-		/**
-		 * Define additional steps taken when an existing placeable object of this type is deleted
-		 */
-		protected _onDelete(options: DocumentModificationOptions, userId: string): void
+		/** Define additional steps taken when an existing placeable object of this type is updated with new data */
+
+		protected _onUpdate(
+			changed: DeepPartial<TDocument["_source"]>,
+			options: DocumentUpdateContext<TDocument["parent"]>,
+			userId: string,
+		): void
+
+		/** Define additional steps taken when an existing placeable object of this type is deleted */
+
+		protected _onDelete(options: DocumentModificationContext<TDocument["parent"]>, userId: string): void
+
+		/* -------------------------------------------- */
+		/*  Methods                                     */
+		/* -------------------------------------------- */
 
 		/**
 		 * Assume control over a PlaceableObject, flagging it as controlled and enabling downstream behaviors
-		 * @param options - Additional options which modify the control request
-		 *                  (default: `{}`)
-		 * @returns A flag denoting whether or not control was successful
+		 * @param options               Additional options which modify the control request
+		 * @param options.releaseOthers Release any other controlled objects first
+		 * @return                      A flag denoting whether or not control was successful
 		 */
-		control(options?: PlaceableObject.ControlOptions): boolean
+		control(options?: { releaseOthers?: boolean }): boolean
 
 		/**
 		 * Additional events which trigger once control of the object is established
-		 * @param options - Optional parameters which apply for specific implementations
+		 * @param options Optional parameters which apply for specific implementations
 		 */
-		protected _onControl(options?: PlaceableObject.ControlOptions): void
+		protected _onControl(options?: { releaseOthers?: boolean }): void
 
 		/**
 		 * Release control over a PlaceableObject, removing it from the controlled set
-		 * @param options - Options which modify the releasing workflow
-		 *                  (default: `{}`)
-		 * @returns A Boolean flag confirming the object was released.
+		 * @return  A Boolean flag confirming the object was released.
 		 */
-		release(options?: PlaceableObject.ReleaseOptions): boolean
+		release(options?: object): boolean
 
 		/**
 		 * Additional events which trigger once control of the object is released
-		 * @param options - Options which modify the releasing workflow
+		 * @param options   Options which modify the releasing workflow
 		 */
-		protected _onRelease(options?: PlaceableObject.ReleaseOptions): void
+		protected _onRelease(options?: object): void
 
 		/**
 		 * Rotate the PlaceableObject to a certain angle of facing
-		 * @param angle - The desired angle of rotation
-		 * @param snap  - Snap the angle of rotation to a certain target degree increment
-		 * @returns A Promise which resolves once the rotation has completed
+		 * @param angle The desired angle of rotation
+		 * @param snap  Snap the angle of rotation to a certain target degree increment
+		 * @return The rotated object
 		 */
-		rotate(angle: number, snap: number): Promise<this>
+		rotate(angle: number, snap: number): Promise<this | TDocument | undefined>
 
 		/**
 		 * Determine a new angle of rotation for a PlaceableObject either from an explicit angle or from a delta offset.
-		 * @param options - An object which defines the rotation update parameters
-		 * @param angle - An explicit angle, either this or delta must be provided
-		 *                (default: `null`)
-		 * @param delta - A relative angle delta, either this or the angle must be provided
-		 *                (default: `0`)
-		 * @param snap  - A precision (in degrees) to which the resulting angle should snap.
-		 *                (default: `0`)
-		 * @returns The new rotation angle for the object
+		 * @param angle An explicit angle, either this or delta must be provided
+		 * @param delta A relative angle delta, either this or the angle must be provided
+		 * @param snap  A precision (in degrees) to which the resulting angle should snap. Default is 0.
+		 * @return      The new rotation angle for the object
 		 */
-		protected _updateRotation({ angle, delta, snap }?: RotationOptions): number
+		protected _updateRotation({ angle, delta, snap }?: { angle?: number; delta?: number; snap?: number }): number
 
 		/**
-		 * Obtain a shifted position for the Placeable Object
-		 * @param dx - The number of grid units to shift along the X-axis
-		 * @param dy - The number of grid units to shift along the Y-axis
-		 * @returns The shifted target coordinates
+		 * Obtain the shifted position for the Object
+		 * @param dx    The number of grid units to shift along the X-axis
+		 * @param dy    The number of grid units to shift along the Y-axis
+		 * @return      The target movement coordinates subject to some offset
 		 */
 		protected _getShiftedPosition(dx: number, dy: number): { x: number; y: number }
 
-		/**
-		 * Activate interactivity for the Placeable Object
-		 */
+		/* -------------------------------------------- */
+		/*  Interactivity                               */
+		/* -------------------------------------------- */
+
+		/** Activate interactivity for the Placeable Object */
 		activateListeners(): void
 
-		/**
-		 * Create a standard MouseInteractionManager for the PlaceableObject
-		 */
-		protected _createInteractionManager(): NonNullable<this["mouseInteractionManager"]>
+		/** Create a standard MouseInteractionManager for the PlaceableObject */
+		protected _createInteractionManager(): MouseInteractionManager
+
+		/** Actions that should be taken for this Placeable Object when a mouseover event occurs */
+		protected _onHoverIn(
+			event: PIXI.FederatedPointerEvent,
+			{ hoverOutOthers }?: { hoverOutOthers?: boolean },
+		): boolean | void
+
+		/** Actions that should be taken for this Placeable Object when a mouseout event occurs */
+		protected _onHoverOut(event: PIXI.FederatedPointerEvent): boolean | void
+
+		/** Should the placeable propagate left click downstream? */
+		protected _propagateLeftClick(event: PIXI.FederatedPointerEvent): boolean
+
+		/** Callback actions which occur on a single left-click event to assume control of the object */
+		protected _onClickLeft(event: PIXI.FederatedPointerEvent): boolean | void
+
+		/** Callback actions which occur on a double left-click event to activate */
+		protected _onClickLeft2(event: PIXI.FederatedPointerEvent): boolean | void
+
+		/** Callback actions which occur on a single right-click event to configure properties of the object */
+		protected _onClickRight(event: PIXI.FederatedPointerEvent): void
 
 		/**
-		 * Actions that should be taken for this Placeable Object when a mouseover event occurs
-		 * @see MouseInteractionManager#_handleMouseOver
-		 * @param event   - The triggering canvas interaction event
-		 * @param options - Options which customize event handling
-		 *                  (default: `{}`)
+		 * Handle mouse-wheel events at the PlaceableObjects layer level to rotate multiple objects at once.
+		 * This handler will rotate all controlled objects by some incremental angle.
+		 * @param event The mousewheel event which originated the request
 		 */
-		protected _onHoverIn(event: PIXI.InteractionEvent, options?: HoverInOptions): false | void
+		protected _onMouseWheel(event: WheelEvent): void
+
+		/** Callback actions which occur on a double right-click event to configure properties of the object */
+		protected _onClickRight2(event: PIXI.FederatedPointerEvent): void
+
+		/** Callback actions which occur when a mouse-drag action is first begun. */
+		protected _onDragLeftStart(event: PIXI.FederatedPointerEvent): void
 
 		/**
-		 * Actions that should be taken for this Placeable Object when a mouseout event occurs
-		 * @param event - The triggering canvas interaction event
+		 * Begin a drag operation from the perspective of the preview clone.
+		 * Modify the appearance of both the clone (this) and the original (_original) object.
 		 */
-		protected _onHoverOut(event: PIXI.InteractionEvent): false | void
+		protected _onDragStart(): void
 
 		/**
-		 * Callback actions which occur on a single left-click event to assume control of the object
-		 * @see MouseInteractionManager#_handleClickLeft
-		 * @param event - The triggering canvas interaction event
+		 * Conclude a drag operation from the perspective of the preview clone.
+		 * Modify the appearance of both the clone (this) and the original (_original) object.
 		 */
-		protected _onClickLeft(event: PIXI.InteractionEvent): boolean | void
+		protected _onDragEnd(): void
 
-		/**
-		 * Callback actions which occur on a double left-click event to activate
-		 * @see MouseInteractionManager#_handleClickLeft2
-		 * @param event - The triggering canvas interaction event
-		 */
-		protected _onClickLeft2(event: PIXI.InteractionEvent): void
+		/** Callback actions which occur on a mouse-move operation. */
+		protected _onDragLeftMove(event: PlaceablesLayerPointerEvent<this>): void
 
-		/**
-		 * Callback actions which occur on a single right-click event to configure properties of the object
-		 * @see MouseInteractionManager#_handleClickRight
-		 * @param event - The triggering canvas interaction event
-		 */
-		protected _onClickRight(event: PIXI.InteractionEvent): void
+		/** Callback actions which occur on a mouse-move operation. */
+		protected _onDragLeftDrop(event: PlaceablesLayerPointerEvent<this>): Promise<TDocument[] | void>
 
-		/**
-		 * Callback actions which occur on a double right-click event to configure properties of the object
-		 * @see MouseInteractionManager#_handleClickRight2
-		 * @param event - The triggering canvas interaction event
-		 */
-		protected _onClickRight2(event: PIXI.InteractionEvent): void
-
-		/**
-		 * Callback actions which occur when a mouse-drag action is first begun.
-		 * @see MouseInteractionManager#_handleDragStart
-		 * @param event - The triggering canvas interaction event
-		 */
-		protected _onDragLeftStart(event: PIXI.InteractionEvent): void
-
-		/**
-		 * Callback actions which occur on a mouse-move operation.
-		 * @see MouseInteractionManager#_handleDragMove
-		 * @param event - The triggering canvas interaction event
-		 */
-		protected _onDragLeftMove(event: PIXI.InteractionEvent): void
-
-		/**
-		 * Callback actions which occur on a mouse-move operation.
-		 * @see MouseInteractionManager#_handleDragDrop
-		 * @param event - The triggering canvas interaction event
-		 */
-		protected _onDragLeftDrop(event: PIXI.InteractionEvent): unknown
-
-		/**
-		 * Callback actions which occur on a mouse-move operation.
-		 * @see MouseInteractionManager#_handleDragCancel
-		 * @param event - The triggering mouse click event
-		 */
-		protected _onDragLeftCancel(event: MouseEvent): void
+		/** Callback actions which occur on a mouse-move operation. */
+		protected _onDragLeftCancel(event: PlaceablesLayerPointerEvent<this>): void
 	}
 
-	namespace PlaceableObject {
-		interface ControlOptions {
-			/**
-			 * Release any other controlled objects first
-			 */
-			releaseOthers?: boolean
-		}
-
-		interface ReleaseOptions {
-			trigger?: boolean
-		}
+	interface PlaceableObject<TDocument extends CanvasDocument = CanvasDocument>
+		extends RenderFlagsContainer<TDocument> {
+		hitArea: PIXI.Rectangle
 	}
 }
 
-interface Vision {
-	/**
-	 * @remarks
-	 * This is required but has been set to optional because of PointSource
-	 */
-	fov?: PIXI.Circle | undefined
+export class RenderFlagsContainer<TDocument extends CanvasDocument> extends PIXI.Container {
+	constructor(document: TDocument)
+
+	/** Configure the render flags used for this class. */
+	static RENDER_FLAGS: Record<string, Partial<RenderFlag>>
 
 	/**
-	 * @remarks
-	 * This is required but has been set to optional because of PointSource
+	 * The ticker priority when RenderFlags of this class are handled.
+	 * Valid values are OBJECTS or PERCEPTION.
 	 */
-	los?: PointSourcePolygon | undefined
-}
-
-interface RotationOptions {
-	/**
-	 * An explicit angle, either this or delta must be provided
-	 * @defaultValue `undefined`
-	 */
-	angle?: number
+	static RENDER_FLAG_PRIORITY: "OBJECTS"
 
 	/**
-	 * A relative angle delta, either this or the angle must be provided
-	 * @defaultValue `0`
+	 * Status flags which are applied at render-time to update the PlaceableObject.
+	 * If an object defines RenderFlags, it should at least include flags for "redraw" and "refresh".
 	 */
-	delta?: number
+	renderFlags: RenderFlags
 
 	/**
-	 * A precision (in degrees) to which the resulting angle should snap. Default is 0.
-	 * @defaultValue `0`
+	 * Apply any current render flags, clearing the renderFlags set.
+	 * Subclasses should override this method to define behavior.
 	 */
-	snap?: number
-}
-
-interface HoverInOptions {
-	/**
-	 * Trigger hover-out behavior on sibling objects
-	 *
-	 * @defaultValue `true`
-	 */
-	hoverOutOthers: boolean
+	applyRenderFlags(): void
 }

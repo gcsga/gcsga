@@ -1,9 +1,13 @@
-import { ContainerSheetGURPS } from "@item/container"
+import { EquipmentModifierContainerGURPS } from "./document.ts"
+import { ItemSheetOptions } from "@item/base/sheet.ts"
+import { ItemSheetGCS } from "@item/gcs/sheet.ts"
 
-export class EquipmentModifierContainerSheet extends ContainerSheetGURPS {
-	static get defaultOptions(): DocumentSheetOptions<Item> {
+export class EquipmentModifierContainerSheet<
+	IType extends EquipmentModifierContainerGURPS = EquipmentModifierContainerGURPS,
+> extends ItemSheetGCS<IType> {
+	static override get defaultOptions(): ItemSheetOptions {
 		const options = super.defaultOptions
-		mergeObject(options, {
+		fu.mergeObject(options, {
 			classes: options.classes.concat(["eqp_modifier_container"]),
 		})
 		return options

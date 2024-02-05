@@ -13,7 +13,7 @@ const defaultOptions = {
  * @param pattern
  * @param options
  */
-export function fSearch(list: any[], pattern: string, options: any = defaultOptions): any[] {
+export function fSearch(list: object[], pattern: string, options: object = defaultOptions): object[] {
 	const fuse = new Fuse(list, options)
 	return fuse.search(pattern)
 }

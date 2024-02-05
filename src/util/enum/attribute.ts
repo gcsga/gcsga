@@ -1,5 +1,5 @@
-import { LocalizeGURPS } from "@util/localize"
-import { equalFold } from "@util/string_criteria"
+import { LocalizeGURPS } from "@util/localize.ts"
+import { equalFold } from "@util/string_criteria.ts"
 
 export namespace attribute {
 	export enum Type {
@@ -18,7 +18,7 @@ export namespace attribute {
 			return Type.PoolSeparator
 		}
 
-		function index(T: Type): number {
+		export function index(T: Type): number {
 			return Types.indexOf(T)
 		}
 

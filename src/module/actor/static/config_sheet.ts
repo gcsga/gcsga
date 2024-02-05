@@ -1,31 +1,49 @@
-import { CharacterGURPS } from "@actor/character"
-import { CharacterImporter } from "@actor/character/import"
-import { ActorType, SETTINGS, SYSTEM_NAME } from "@module/data"
-import { LocalizeGURPS, prepareFormData } from "@util"
-import { DnD } from "@util/drag_drop"
-import { StaticCharacterGURPS } from "."
-import { StaticResourceTracker, StaticThresholdComparison, StaticThresholdOperator } from "./data"
-import { StaticCharacterImporter } from "./import"
-import { CharacterConverter } from "./convert"
+import { CharacterGURPS } from "@actor"
+import { ActorType, SETTINGS, SYSTEM_NAME } from "@data"
+import { DropDataType } from "@module/apps/damage_calculator/damage_chat_message.ts"
+import { GURPSCONFIG } from "@scripts/config/index.ts"
+import { FilePickerGURPS, LocalizeGURPS, prepareFormData } from "@util"
+import { DnD } from "@util/drag_drop.ts"
+import { CharacterImporter } from "@util/import/character.ts"
+import { CharacterConverter } from "./convert.ts"
+import { StaticResourceTracker, StaticThresholdComparison, StaticThresholdOperator } from "./data.ts"
+import { StaticCharacterGURPS } from "./document.ts"
 
-export class StaticCharacterSheetConfig extends FormApplication {
-	object: StaticCharacterGURPS
+type StaticCharacterSheetConfigOptions = FormApplicationOptions & {}
 
+export interface StaticCharacterSheetConfig<
+	TActor extends StaticCharacterGURPS = StaticCharacterGURPS,
+	TOptions extends StaticCharacterSheetConfigOptions = StaticCharacterSheetConfigOptions,
+> extends FormApplication<TActor, TOptions> {
+	object: TActor
+}
+interface StaticCharacterSheetConfigData<TActor extends StaticCharacterGURPS> extends FormApplicationData<TActor> {
+	actor: TActor["_source"]
+	system: TActor["system"]
+	filename: string
+	config: typeof GURPSCONFIG
+	resourceTrackers: StaticResourceTracker[]
+}
+
+export class StaticCharacterSheetConfig<
+	TActor extends StaticCharacterGURPS,
+	TOptions extends StaticCharacterSheetConfigOptions,
+> extends FormApplication<TActor, TOptions> {
 	filename: string
 
 	file?: { text: string; name: string; path: string }
 
-	resource_trackers: StaticResourceTracker[]
+	resourceTrackers: StaticResourceTracker[]
 
-	constructor(object: StaticCharacterGURPS, options?: any) {
+	constructor(object: TActor, options?: TOptions) {
 		super(object, options)
 		this.object = object
 		this.filename = ""
-		this.resource_trackers = this.object.trackers
+		this.resourceTrackers = this.object.trackers
 	}
 
-	static get defaultOptions(): FormApplicationOptions {
-		return mergeObject(super.defaultOptions, {
+	static override get defaultOptions(): FormApplicationOptions {
+		return fu.mergeObject(super.defaultOptions, {
 			classes: ["form", "character-config", "gurps"],
 			template: `systems/${SYSTEM_NAME}/templates/actor/static/config/config.hbs`,
 			width: 560,
@@ -46,13 +64,13 @@ export class StaticCharacterSheetConfig extends FormApplication {
 		})
 	}
 
-	get title() {
+	override get title(): string {
 		return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.character.settings.header, {
 			name: this.object.name,
 		})
 	}
 
-	activateListeners(html: JQuery<HTMLElement>): void {
+	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		html.find(".item").on("dragover", event => this._onDragItem(event))
 		html.find(".add").on("click", event => this._onAddItem(event))
@@ -61,7 +79,7 @@ export class StaticCharacterSheetConfig extends FormApplication {
 		if (game.settings.get(SYSTEM_NAME, SETTINGS.SERVER_SIDE_FILE_DIALOG)) {
 			html.find("input[type='file']").on("click", event => {
 				event.preventDefault()
-				const filepicker = new FilePicker({
+				const filepicker = new FilePickerGURPS({
 					callback: (path: string) => {
 						const request = new XMLHttpRequest()
 						request.open("GET", path)
@@ -83,7 +101,7 @@ export class StaticCharacterSheetConfig extends FormApplication {
 						request.send(null)
 					},
 				})
-				filepicker.extensions = [".gcs", ".xml", ".gca5"]
+				filepicker.extension = [".gcs", ".xml", ".gca5"]
 				filepicker.render(true)
 			})
 		} else {
@@ -92,13 +110,13 @@ export class StaticCharacterSheetConfig extends FormApplication {
 				const files = $(event.currentTarget).prop("files")
 				this.filename = filename
 				if (files) {
-					readTextFromFile(files[0]).then(
+					fu.readTextFromFile(files[0]).then(
 						text =>
 							(this.file = {
 								text: text,
 								name: files[0].name,
 								path: files[0].path,
-							})
+							}),
 					)
 				}
 				this.render()
@@ -108,17 +126,18 @@ export class StaticCharacterSheetConfig extends FormApplication {
 		html.find(".easy-update").on("click", event => this._easyUpdate(event))
 	}
 
-	protected async _import(event: JQuery.ClickEvent) {
+	protected async _import(event: JQuery.ClickEvent): Promise<void> {
 		event.preventDefault()
 		if (this.file) {
 			const file = this.file
 			this.file = undefined
 			this.filename = ""
+			// @ts-expect-error to fix
 			StaticCharacterImporter.import(this.object, file)
 		}
 	}
 
-	protected async _reimport(event: JQuery.ClickEvent) {
+	protected async _reimport(event: JQuery.ClickEvent): Promise<void> {
 		event.preventDefault()
 		const import_path = this.object.system.additionalresources.importpath
 		const import_name = import_path.match(/.*[/\\]Data[/\\](.*)/)
@@ -130,6 +149,7 @@ export class StaticCharacterSheetConfig extends FormApplication {
 			request.onload = () => {
 				if (request.status === 200) {
 					const text = request.response
+					// @ts-expect-error to fix
 					StaticCharacterImporter.import(this.object, {
 						text: text,
 						name: file_path,
@@ -142,7 +162,7 @@ export class StaticCharacterSheetConfig extends FormApplication {
 		request.send(null)
 	}
 
-	protected async _easyUpdate(event: JQuery.ClickEvent) {
+	protected async _easyUpdate(event: JQuery.ClickEvent): Promise<void> {
 		event.preventDefault()
 		const import_path = this.object.system.additionalresources.importpath
 		const import_name = import_path.match(/.*[/\\]Data[/\\](.*)/)
@@ -150,20 +170,21 @@ export class StaticCharacterSheetConfig extends FormApplication {
 		const request = new XMLHttpRequest()
 		request.open("GET", file_path)
 
-		const new_actor = (await Actor.create(
+		const new_actor = await CharacterGURPS.create(
 			{
 				name: this.object.name!,
 				type: ActorType.Character,
 				img: this.object.img,
 			},
-			{ promptImport: false } as any
-		)) as CharacterGURPS
-		await new_actor?.update({ ownership: (this.object as any).ownership })
+			{ promptImport: false } as DocumentModificationContext<CharacterGURPS["parent"]>,
+		)
+		if (!new_actor) return
+		await new_actor.update({ ownership: this.object.ownership })
 		new Promise(resolve => {
 			request.onload = () => {
 				if (request.status === 200) {
 					const text = request.response
-					CharacterImporter.import(new_actor, {
+					CharacterImporter.importCharacter(new_actor, {
 						text: text,
 						name: file_path,
 						path: import_path,
@@ -175,24 +196,24 @@ export class StaticCharacterSheetConfig extends FormApplication {
 		request.send(null)
 		await this.object.delete()
 		await new_actor.sheet?.render(true)
-		return ui.notifications?.info(
+		ui.notifications?.info(
 			LocalizeGURPS.format(LocalizeGURPS.translations.gurps.character.settings.import.success, {
 				actor: this.object.name!,
-			})
+			}),
 		)
 	}
 
-	protected async _forceConvert(event: JQuery.ClickEvent) {
+	protected async _forceConvert(event: JQuery.ClickEvent): Promise<void> {
 		event.preventDefault()
 		CharacterConverter.update(this.object)
 	}
 
-	async _onAddItem(event: JQuery.ClickEvent) {
+	async _onAddItem(event: JQuery.ClickEvent): Promise<this> {
 		event.preventDefault()
 		event.stopPropagation()
 		const type: "resource_trackers" | "tracker_thresholds" = $(event.currentTarget).data("type")
-		const resource_trackers = Object.values(this.resource_trackers)
-		let updated_trackers: any = {}
+		const resource_trackers = Object.values(this.resourceTrackers)
+		let updated_trackers: Record<string, StaticResourceTracker> = {}
 		switch (type) {
 			case "resource_trackers":
 				resource_trackers.push({
@@ -217,7 +238,7 @@ export class StaticCharacterSheetConfig extends FormApplication {
 						// [String(k).padStart(5, "0")]: v,
 						[k]: v,
 					}),
-					{}
+					{},
 				)
 				await this.object.update({ "system.additionalresources.-=tracker": null }, { render: false })
 				await this.object.update({ "system.additionalresources.tracker": updated_trackers })
@@ -237,7 +258,7 @@ export class StaticCharacterSheetConfig extends FormApplication {
 						// [String(k).padStart(5, "0")]: v,
 						[k]: v,
 					}),
-					{}
+					{},
 				)
 				await this.object.update({ "system.additionalresources.-=tracker": null }, { render: false })
 				await this.object.update({ "system.additionalresources.tracker": updated_trackers })
@@ -254,38 +275,37 @@ export class StaticCharacterSheetConfig extends FormApplication {
 		const parent_index = Number($(event.currentTarget).data("pindex")) || 0
 		switch (type) {
 			case "resource_trackers":
-				this.resource_trackers.splice(index, 1)
-				updated_trackers = this.resource_trackers.reduce(
+				this.resourceTrackers.splice(index, 1)
+				updated_trackers = this.resourceTrackers.reduce(
 					(a, v, k) => ({
 						...a,
 						// [String(k).padStart(5, "0")]: v,
 						[k]: v,
 					}),
-					{}
+					{},
 				)
 				await this.object.update({ "system.additionalresources.-=tracker": null }, { render: false })
 				await this.object.update({ "system.additionalresources.tracker": updated_trackers })
 				return this.render()
 			case "tracker_thresholds":
-				this.resource_trackers[parent_index].thresholds?.splice(index, 1)
-				updated_trackers = this.resource_trackers.reduce(
+				this.resourceTrackers[parent_index].thresholds?.splice(index, 1)
+				updated_trackers = this.resourceTrackers.reduce(
 					(a, v, k) => ({
 						...a,
 						// [String(k).padStart(5, "0")]: v,
 						[k]: v,
 					}),
-					{}
+					{},
 				)
 				await this.object.update({ "system.additionalresources.-=tracker": null }, { render: false })
-				await this.object.update({ "system.additionalresources.tracker": this.resource_trackers })
+				await this.object.update({ "system.additionalresources.tracker": this.resourceTrackers })
 				return this.render()
 		}
 	}
 
-	async _onDragStart(event: DragEvent) {
-		// TODO:update
+	override async _onDragStart(event: DragEvent): Promise<void> {
 		const item = $(event.currentTarget!)
-		const type: "resource_trackers" | "tracker_thresholds" = item.data("type")
+		const type = item.data("type")
 		const index = Number(item.data("index"))
 		const parent_index = Number(item.data("pindex")) || 0
 		event.dataTransfer?.setData(
@@ -294,9 +314,9 @@ export class StaticCharacterSheetConfig extends FormApplication {
 				type: type,
 				index: index,
 				parent_index: parent_index,
-			})
+			}),
 		)
-		;(event as any).dragType = type
+		// event.dragType = type
 	}
 
 	protected _onDragItem(event: JQuery.DragOverEvent): void {
@@ -312,8 +332,9 @@ export class StaticCharacterSheetConfig extends FormApplication {
 		}
 	}
 
-	protected async _onDrop(event: DragEvent): Promise<unknown> {
-		let dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
+	protected override async _onDrop(event: DragEvent): Promise<unknown> {
+		const dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
+		if (dragData.type !== DropDataType.ResourceTrackers && dragData.type !== DropDataType.TrackerThresholds) return
 
 		const index = Number(dragData.index)
 		let element = $(event.target!)
@@ -325,15 +346,15 @@ export class StaticCharacterSheetConfig extends FormApplication {
 		if (above && index === target_index - 1) return this.render()
 		if (!above && index === target_index + 1) return this.render()
 
-		const container = this.resource_trackers
+		const container = this.resourceTrackers
 
 		let item
-		if (dragData.type.includes("_thresholds")) {
+		if (dragData.type === DropDataType.TrackerThresholds) {
 			item = container[dragData.parent_index].thresholds.splice(dragData.index, 1)[0]
-			container[dragData.parent_index].thresholds.splice(target_index, 0, item as any)
+			container[dragData.parent_index].thresholds.splice(target_index, 0, item)
 		} else {
 			item = container.splice(dragData.index, 1)[0]
-			container.splice(target_index, 0, item as any)
+			container.splice(target_index, 0, item)
 		}
 
 		const updated_trackers = container.reduce(
@@ -342,15 +363,15 @@ export class StaticCharacterSheetConfig extends FormApplication {
 				// [String(k).padStart(5, "0")]: v,
 				[k]: v,
 			}),
-			{}
+			{},
 		)
 		await this.object.update({ "system.additionalresources.tracker": updated_trackers })
 		return this.render()
 	}
 
-	getData(options?: Partial<FormApplicationOptions> | undefined): any {
+	override getData(options?: Partial<FormApplicationOptions> | undefined): StaticCharacterSheetConfigData<TActor> {
 		const actor = this.object
-		this.resource_trackers = this.object.trackers
+		this.resourceTrackers = this.object.trackers
 		const resourceTrackers = actor.trackers
 		let deprecation: string = this.object.getFlag(SYSTEM_NAME, "deprecation_acknowledged")
 			? "acknowledged"
@@ -372,7 +393,7 @@ export class StaticCharacterSheetConfig extends FormApplication {
 		}
 	}
 
-	protected async _updateObject(_event: Event, formData?: any | undefined): Promise<unknown> {
+	protected async _updateObject(_event: Event, formData: Record<string, unknown>): Promise<unknown> {
 		formData = prepareFormData(formData, this.object)
 		await this.object.update({ "system.additionalresources.-=tracker": null }, { render: false })
 		await this.object.update(formData)

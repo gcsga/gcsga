@@ -1,4 +1,4 @@
-import { OtFAction } from "./base"
+import { OtFAction } from "./base.ts"
 
 /**
  *
@@ -51,13 +51,13 @@ export function gmspan(
 	str: string,
 	action: OtFAction,
 	plus = true,
-	clrdmods = false
+	clrdmods = false,
 ): string {
 	if (overridetxt) {
 		str = overridetxt
 		action.overridetxt = overridetxt
 	}
-	let a = action
+	const a = action
 		? ` data-action='${utoa(JSON.stringify(action))}' data-otf='${action.blindroll ? "!" : ""}${action.orig}'`
 		: ""
 	if (action.type === "modifier") {
@@ -83,7 +83,7 @@ export function gspan(
 	str: string,
 	action: OtFAction,
 	prefix = "",
-	comment = ""
+	comment = "",
 ): string {
 	if (overridetxt) {
 		str = overridetxt

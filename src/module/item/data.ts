@@ -1,6 +1,0 @@
-export { BaseItemSourceGURPS, ItemFlags } from "./base/data"
-export { MeleeWeaponSource } from "./melee_weapon/data"
-export { RangedWeaponSource } from "./ranged_weapon/data"
-export { SkillSource } from "./skill/data"
-export { SpellSource } from "./spell/data"
-export { TraitModifierSource } from "./trait_modifier/data"

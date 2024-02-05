@@ -1,21 +1,10 @@
-import { BaseWeaonCalcValues, BaseWeaponSource, BaseWeaponSystemData } from "@item/weapon"
-import { ItemType } from "@module/data"
+import { ItemType } from "@data"
+import { BaseItemSourceGURPS } from "@item/base/data/system.ts"
+import { BaseWeaponSystemSource } from "@item/weapon/data.ts"
 
-export type MeleeWeaponSource = BaseWeaponSource<ItemType.MeleeWeapon, MeleeWeaponSystemData>
+export type MeleeWeaponSource = BaseItemSourceGURPS<ItemType.MeleeWeapon, MeleeWeaponSystemSource>
 
-export interface MeleeWeaponData extends Omit<MeleeWeaponSource, "effects">, MeleeWeaponSystemData {
-	readonly type: MeleeWeaponSource["type"]
-	readonly _source: MeleeWeaponSource
-}
-
-export interface MeleeWeaponSystemData extends BaseWeaponSystemData {
-	reach: string
-	parry: string
-	block: string
-	calc?: MeleeWeaponCalcValues
-}
-
-export interface MeleeWeaponCalcValues extends BaseWeaonCalcValues {
+export interface MeleeWeaponSystemSource extends BaseWeaponSystemSource {
 	reach: string
 	parry: string
 	block: string

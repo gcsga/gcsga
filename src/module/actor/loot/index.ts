@@ -1,3 +1,3 @@
-export { LootGURPS } from "./document"
-export { LootSheetGURPS } from "./sheet"
-export * from "./data"
+export { LootGURPS } from "./document.ts"
+export { LootSheetGURPS } from "./sheet.ts"
+export * from "./data.ts"

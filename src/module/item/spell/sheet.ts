@@ -1,27 +1,17 @@
-import { ItemSheetGCS } from "@item/gcs"
-import { SpellGURPS } from "."
+import { ItemSheetGCS } from "@item/gcs/sheet.ts"
+import { SpellGURPS } from "./document.ts"
+import { ItemSheetOptions } from "@item/base/sheet.ts"
 
-export class SpellSheet extends ItemSheetGCS<SpellGURPS> {
-	static get defaultOptions(): DocumentSheetOptions<Item> {
+export class SpellSheet<IType extends SpellGURPS = SpellGURPS> extends ItemSheetGCS<IType> {
+	static override get defaultOptions(): ItemSheetOptions {
 		const options = super.defaultOptions
-		mergeObject(options, {
+		fu.mergeObject(options, {
 			classes: options.classes.concat(["spell"]),
 		})
 		return options
 	}
 
-	getData(options?: Partial<DocumentSheetOptions<Item>> | undefined) {
-		const data = super.getData(options)
-		return mergeObject(data, {
-			attributes: {
-				...{ 10: "10" },
-				...super.getData(options).attributes,
-			},
-			defaults: (this.item as any).defaults,
-		})
-	}
-
-	protected _updateObject(event: Event, formData: Record<string, unknown>): Promise<unknown> {
+	protected override async _updateObject(event: Event, formData: Record<string, unknown>): Promise<void> {
 		const attribute = formData.attribute ?? this.item.attribute
 		const difficulty = formData.difficulty ?? this.item.difficulty
 		formData["system.difficulty"] = `${attribute}/${difficulty}`

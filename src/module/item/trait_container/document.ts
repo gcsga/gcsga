@@ -1,34 +1,42 @@
-import { ItemGCS } from "@item/gcs"
-import { TraitGURPS } from "@item/trait"
-import { TraitModifierGURPS } from "@item/trait_modifier"
-import { TraitModifierContainerGURPS } from "@item/trait_modifier_container"
-import { TraitContainerSource, TraitContainerType } from "./data"
-import { selfctrl } from "@util/enum"
+import { ItemGCS } from "@item/gcs/document.ts"
+import { TraitContainerSource, TraitContainerSystemSource } from "./data.ts"
+import { selfctrl } from "@util/enum/selfctrl.ts"
+import { TraitGURPS } from "@item/trait/document.ts"
+import { TraitModifierGURPS } from "@item/trait_modifier/document.ts"
+import { TraitModifierContainerGURPS } from "@item"
+import { ActorGURPS } from "@actor"
+import { container } from "@util/enum/container.ts"
+import { ItemType } from "@data"
 
-export class TraitContainerGURPS extends ItemGCS<TraitContainerSource> {
-	unsatisfied_reason = ""
+export interface TraitContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
+	readonly _source: TraitContainerSource
+	system: TraitContainerSystemSource
 
+	type: ItemType.TraitContainer
+}
+
+export class TraitContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	// Getters
-	get enabled(): boolean {
+	override get enabled(): boolean {
 		if (this.system.disabled) return false
 		let enabled = !this.system.disabled
 		if (this.container instanceof TraitContainerGURPS) enabled = enabled && this.container.enabled
 		return enabled
 	}
 
-	set enabled(enabled: boolean) {
+	override set enabled(enabled: boolean) {
 		this.system.disabled = !enabled
 	}
 
-	get containerType(): TraitContainerType {
+	get containerType(): container.Type {
 		return this.system.container_type
 	}
 
-	get isLeveled(): boolean {
+	override get isLeveled(): boolean {
 		return false
 	}
 
-	get levels(): number {
+	override get levels(): number {
 		return 0
 	}
 
@@ -66,22 +74,22 @@ export class TraitContainerGURPS extends ItemGCS<TraitContainerSource> {
 	}
 
 	// Embedded Items
-	get children(): Collection<TraitGURPS | TraitContainerGURPS> {
+	override get children(): Collection<TraitGURPS | TraitContainerGURPS> {
 		return super.children as Collection<TraitGURPS | TraitContainerGURPS>
 	}
 
-	get modifiers(): Collection<TraitModifierGURPS | TraitModifierContainerGURPS> {
+	override get modifiers(): Collection<TraitModifierGURPS | TraitModifierContainerGURPS> {
 		return new Collection(
 			this.items
 				.filter(item => item instanceof TraitModifierGURPS)
 				.map(item => {
 					return [item.id!, item]
-				})
-		) as Collection<TraitModifierGURPS>
+				}),
+		) as Collection<TraitModifierGURPS | TraitModifierContainerGURPS>
 	}
 
 	get deepModifiers(): Collection<TraitModifierGURPS> {
-		const deepModifiers: Array<TraitModifierGURPS> = []
+		const deepModifiers: TraitModifierGURPS[] = []
 		for (const mod of this.modifiers) {
 			if (mod instanceof TraitModifierGURPS) deepModifiers.push(mod)
 			else
@@ -92,22 +100,22 @@ export class TraitContainerGURPS extends ItemGCS<TraitContainerSource> {
 		return new Collection(
 			deepModifiers.map(item => {
 				return [item.id!, item]
-			})
+			}),
 		)
 	}
 
 	adjustedPoints(): number {
 		if (!this.enabled) return 0
 		let points = 0
-		if (this.containerType === TraitContainerType.AlternativeAbilities) {
-			let values: number[] = []
+		if (this.containerType === container.Type.AlternativeAbilities) {
+			const values: number[] = []
 			for (const child of this.children) {
 				values.push(child.adjustedPoints())
 				if (values[values.length - 1] > points) points = values[values.length - 1]
 			}
-			let max = points
+			const max = points
 			let found = false
-			for (let v of values) {
+			for (const v of values) {
 				if (!found && max === v) found = true
 				else if (this.roundCostDown) points += Math.floor(TraitGURPS.calculateModifierPoints(v, 20))
 				else points += Math.ceil(TraitGURPS.calculateModifierPoints(v, 20))
@@ -123,7 +131,7 @@ export class TraitContainerGURPS extends ItemGCS<TraitContainerSource> {
 	calculatePoints(): [number, number, number, number] {
 		let [ad, disad, race, quirk] = [0, 0, 0, 0]
 		switch (this.containerType) {
-			case TraitContainerType.Group:
+			case container.Type.Group:
 				for (const child of this.children) {
 					const [a, d, r, q] = child.calculatePoints()
 					ad += a
@@ -132,11 +140,11 @@ export class TraitContainerGURPS extends ItemGCS<TraitContainerSource> {
 					quirk += q
 				}
 				return [ad, disad, race, quirk]
-			case TraitContainerType.Ancestry: {
+			case container.Type.Ancestry: {
 				return [0, 0, this.adjustedPoints(), 0]
 			}
 		}
-		let pts = this.adjustedPoints()
+		const pts = this.adjustedPoints()
 		if (pts === -1) quirk += pts
 		else if (pts > 0) ad += pts
 		else if (pts < 0) disad += pts

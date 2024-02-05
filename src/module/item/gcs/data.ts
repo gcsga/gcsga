@@ -1,27 +1,12 @@
-import { MeleeWeaponSystemData, RangedWeaponSystemData } from "@item"
-import { BaseContainerSource, BaseContainerSystemData } from "@item/container"
-import { ItemType } from "@module/data"
+import { ItemType } from "@data"
+import { FeatureObj } from "@feature"
+import { BaseContainerSystemSource } from "@item/container/data.ts"
+import { SkillDefaultObj } from "@sytem/default/index.ts"
+import { Study } from "@util"
 
-export type ItemGCSSource<
-	TItemType extends ItemType = ItemType,
-	TSystemData extends ItemGCSSystemData = ItemGCSSystemData,
-> = BaseContainerSource<TItemType, TSystemData>
-
-export interface ItemGCSSystemData extends BaseContainerSystemData {
-	id: string
-	name: string
-	reference: string
-	reference_highlight: string
-	notes: string
-	vtt_notes: string
-	tags: Array<string>
+export interface ItemGCSSystemSource extends BaseContainerSystemSource {
 	type: ItemType
-	weapons?: Array<MeleeWeaponSystemData | RangedWeaponSystemData>
-	calc?: ItemGCSCalcValues
-}
-
-export interface ItemGCSCalcValues {
-	name: string
-	indent: number
-	resolved_notes?: string
+	features?: FeatureObj[] // used for compatibility
+	defaults?: SkillDefaultObj[] // used for compatibility
+	study?: Study[] // used for compatibility
 }

@@ -1,19 +1,17 @@
-import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
-import { ItemType } from "@module/data"
+import { ItemType } from "@data"
+import { BaseContainerSource } from "@item/container/data.ts"
+import { ItemGCSSystemSource } from "@item/gcs/data.ts"
+import { TemplatePickerObj } from "@sytem/template_picker/document.ts"
 
-export type SpellContainerSource = ItemGCSSource<ItemType.SpellContainer, SpellContainerSystemData>
+export type SpellContainerSource = BaseContainerSource<ItemType.SpellContainer, SpellContainerSystemSource>
 
-export interface SpellContainerData extends Omit<SpellContainerSource, "effects" | "items">, SpellContainerSystemData {
-	readonly type: SpellContainerSource["type"]
-	data: SpellContainerSystemData
-
-	readonly _source: SpellContainerSource
-}
-
-export interface SpellContainerSystemData extends ItemGCSSystemData {
-	calc?: SpellContainerCalcValues
-}
-
-export interface SpellContainerCalcValues extends ItemGCSCalcValues {
-	points: number
+export interface SpellContainerSystemSource extends ItemGCSSystemSource {
+	type: ItemType.SpellContainer
+	name: string
+	reference: string
+	reference_highlight: string
+	notes: string
+	vtt_notes: string
+	tags: string[]
+	template_picker: TemplatePickerObj
 }

@@ -1,13 +1,3 @@
-import { AllManeuverIDs, AllPostures, ApplicableConditions } from "@item/condition/data"
-import { allMoveTypeOverrideConditions } from "@module/move_type"
-import {
-	AllNumericCompareTypes,
-	AllStringCompareTypes,
-	ContainedQuantityNumericCompareTypes,
-	LocalizeGURPS,
-	allLengthUnits,
-	allWeightUnits,
-} from "@util"
 import {
 	affects,
 	attribute,
@@ -24,14 +14,21 @@ import {
 	skillsel,
 	spellcmp,
 	spellmatch,
-	stlimit,
 	stdmg,
+	stlimit,
 	study,
 	tmcost,
 	wsel,
 	wswitch,
-} from "@util/enum"
-import { EFFECT_ACTION } from "./misc"
+} from "@util/enum/index.ts"
+import { LocalizeGURPS } from "@util/localize.ts"
+import { allLengthUnits } from "@util/length.ts"
+import { allWeightUnits } from "@util/weight.ts"
+import { AllNumericCompareTypes, ContainedQuantityNumericCompareTypes } from "@util/numeric_criteria.ts"
+import { AllStringCompareTypes } from "@util/string_criteria.ts"
+import { AllManeuverIDs, AllPostures, ApplicableConditions } from "./types.ts"
+import { EFFECT_ACTION } from "./constants.ts"
+import { allMoveTypeOverrideConditions } from "@sytem/move_type/data.ts"
 
 export function prepareSelectOptions(): void {
 	const SELECT_OPTIONS: Record<string, Record<string, string>> = {
@@ -184,7 +181,7 @@ export function prepareSelectOptions(): void {
 					[c]: LocalizeGURPS.translations.gurps.maneuver[c],
 				})
 			},
-			{ none: LocalizeGURPS.translations.gurps.maneuver.none }
+			{ none: LocalizeGURPS.translations.gurps.maneuver.none },
 		),
 		postures: AllPostures.reduce(
 			(acc, c) => {
@@ -192,7 +189,7 @@ export function prepareSelectOptions(): void {
 					[c]: LocalizeGURPS.translations.gurps.status[c],
 				})
 			},
-			{ none: LocalizeGURPS.translations.gurps.maneuver.none }
+			{ none: LocalizeGURPS.translations.gurps.maneuver.none },
 		),
 		display: display.Options.reduce((acc, c) => {
 			return Object.assign(acc, {

@@ -1,59 +1,69 @@
-import { DamageChat } from "@module/damage_calculator/damage_chat_message"
-import { DnD } from "@util/drag_drop"
-import { ActorGURPS } from "@module/config"
+import { ActorGURPS } from "@actor"
+import { ItemGURPS } from "@item/base/document.ts"
+import { DamagePayload, DropData, DropDataType } from "@module/apps/damage_calculator/damage_chat_message.ts"
 import { LastActor } from "@util"
-import { DocumentSheetConfigGURPS } from "./config"
+import { DnD } from "@util/drag_drop.ts"
+import { DocumentSheetConfigGURPS } from "./config.ts"
 
-type DispatchFunctions = Record<string, (arg: any) => void>
+type DispatchFunctions = Record<string, (arg: DamagePayload) => void>
 
-export class ActorSheetGURPS extends ActorSheet {
-	declare object: ActorGURPS
+interface ActorSheetGURPS<TActor extends ActorGURPS = ActorGURPS> extends ActorSheet<TActor, ItemGURPS> {
+	// config: CharacterSheetConfig | null
+}
+
+abstract class ActorSheetGURPS<TActor extends ActorGURPS = ActorGURPS> extends ActorSheet<TActor, ItemGURPS> {
+	// config: CharacterSheetConfig | null = null
 
 	readonly dropDispatch: DispatchFunctions = {
-		[DamageChat.TYPE]: this.actor.handleDamageDrop.bind(this.actor),
+		[DropDataType.Damage]: this.actor.handleDamageDrop.bind(this.actor),
 	}
 
-	static override get defaultOptions(): ActorSheet.Options {
+	static override get defaultOptions(): ActorSheetOptions {
 		const options = ActorSheet.defaultOptions
-		mergeObject(options, {
+		fu.mergeObject(options, {
 			classes: ["gurps", "actor"],
 		})
 		return options
 	}
 
-	activateListeners(html: JQuery<HTMLElement>): void {
+	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		html.on("click", () => LastActor.set(this.actor))
 	}
 
-	protected override _onDrop(event: DragEvent): void {
-		if (!event?.dataTransfer) return
+	protected override _onDrop(event: DragEvent): Promise<boolean | void> {
+		if (!event?.dataTransfer) return super._onDrop(event)
 
-		let dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
+		const dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
 
-		if (this.dropDispatch[dragData.type]) this.dropDispatch[dragData.type](dragData.payload)
+		if (dragData.type === DropDataType.Damage) this.dropDispatch[dragData.type](dragData.payload)
 
-		super._onDrop(event)
+		return super._onDrop(event)
 	}
 
-	async emulateItemDrop(data: any) {
+	async emulateItemDrop(data: DropData): Promise<Item[] | undefined> {
+		if (data.type !== DropDataType.Item) return undefined
 		const item = (await fromUuid(data.uuid)) as Item
 		if (!item) return
-		return this._onDropItemCreate({ ...item.toObject() } as any)
+		return this._onDropItemCreate({ ...item.toObject() })
 	}
 
-	protected _getHeaderButtons(): Application.HeaderButton[] {
+	protected override _getHeaderButtons(): ApplicationHeaderButton[] {
 		const all_buttons = super._getHeaderButtons()
 		all_buttons.at(-1)!.label = ""
 		all_buttons.at(-1)!.icon = "gcs-circled-x"
 		return all_buttons
 	}
 
-	protected override _onConfigureSheet(event: JQuery.ClickEvent<any, any, any, any>): void {
+	protected override _onConfigureSheet(event: Event): void {
 		event.preventDefault()
 		new DocumentSheetConfigGURPS(this.document, {
-			top: this.position.top! + 40,
-			left: this.position.left! + (this.position.width! - DocumentSheet.defaultOptions.width!) / 2,
+			top: (this.position.top ?? 0) + 40,
+			left:
+				(this.position.left ?? 0) +
+				((this.position.width ?? 0) - (Number(DocumentSheet.defaultOptions.width) ?? 0)) / 2,
 		}).render(true)
 	}
 }
+
+export { ActorSheetGURPS }

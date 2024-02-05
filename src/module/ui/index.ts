@@ -1,3 +1,3 @@
-export { CombatTrackerGURPS } from "./combat_tracker"
-export { ItemDirectoryGURPS } from "./item_directory"
-export { DialogGURPS } from "./dialog"
+export { CombatTrackerGURPS } from "./combat_tracker.ts"
+export { ItemDirectoryGURPS } from "./item_directory.ts"
+export { DialogGURPS } from "./dialog.ts"

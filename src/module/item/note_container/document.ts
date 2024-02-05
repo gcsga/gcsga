@@ -1,18 +1,19 @@
-import { ContainerGURPS } from "@item/container"
-import { NoteContainerSource } from "./data"
-import { EvalEmbeddedRegex, replaceAllStringFunc } from "@util"
-import { ActorType } from "@module/data"
-import { NoteGURPS } from "@item/note/document"
-import { ItemGCS } from "@item/gcs"
+import { NoteContainerSource, NoteContainerSystemSource } from "./data.ts"
+import { EvalEmbeddedRegex, replaceAllStringFunc } from "@util/regexp.ts"
+import { NoteGURPS } from "@item/note/document.ts"
+import { ItemGCS } from "@item/gcs/document.ts"
+import { ActorGURPS } from "@actor"
+import { ItemType } from "@data"
 
-export class NoteContainerGURPS extends ContainerGURPS<NoteContainerSource> {
-	override get actor(): (typeof CONFIG.GURPS.Actor.documentClasses)[ActorType.Character] | null {
-		const actor = super.actor
-		if (actor?.type === ActorType.Character) return actor
-		return null
-	}
+export interface NoteContainerGURPS<TParent extends ActorGURPS | null> extends ItemGCS<TParent> {
+	readonly _source: NoteContainerSource
+	system: NoteContainerSystemSource
 
-	get formattedName(): string {
+	type: ItemType.NoteContainer
+}
+
+export class NoteContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
+	override get formattedName(): string {
 		return this.formattedText
 	}
 
@@ -29,17 +30,15 @@ export class NoteContainerGURPS extends ContainerGURPS<NoteContainerSource> {
 		return converter.makeHtml(text)?.replace(/\s\+/g, "\r")
 	}
 
-	get children(): Collection<NoteGURPS | NoteContainerGURPS> {
+	override get children(): Collection<NoteGURPS | NoteContainerGURPS> {
 		return super.children as Collection<NoteGURPS | NoteContainerGURPS>
 	}
 
-	secondaryText = ItemGCS.prototype.secondaryText
-
-	get enabled(): boolean {
+	override get enabled(): boolean {
 		return true
 	}
 
-	get reference(): string {
+	override get reference(): string {
 		return this.system.reference
 	}
 }

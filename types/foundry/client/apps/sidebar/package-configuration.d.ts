@@ -2,80 +2,41 @@ export {}
 
 declare global {
 	/** An application for configuring data across all installed and active packages. */
-	abstract class PackageConfiguration<
-		Options extends PackageConfiguration.Options = PackageConfiguration.Options,
-	> extends FormApplication<Options, object> {
+	abstract class PackageConfiguration extends FormApplication {
 		static get categoryOrder(): string[]
 
-		/**
-		 * @defaultValue
-		 * ```typescript
-		 * foundry.utils.mergeObject(super.defaultOptions, {
-		 *   classes: ["package-configuration"],
-		 *   template: "templates/sidebar/apps/package-configuration.html",
-		 *   categoryTemplate: undefined,
-		 *   width: 780,
-		 *   height: 680,
-		 *   resizable: true,
-		 *   scrollY: [".filters", ".categories"],
-		 *   filters: [{inputSelector: 'input[name="filter"]', contentSelector: ".categories"}],
-		 *   submitButton: false
-		 * });
-		 * ```
-		 */
-		static override get defaultOptions(): PackageConfiguration.Options
+		/** The name of the currently active tab. */
+		get activeCategory(): string
 
-		override getData(): MaybePromise<object>
+		static override get defaultOptions(): FormApplicationOptions
 
-		abstract _prepareCategoryData(): PackageConfiguration.Category
+		override getData(options?: FormApplicationOptions): FormApplicationData
+
+		/** Prepare the structure of category data which is rendered in this configuration form. */
+		protected abstract _prepareCategoryData(): { categories: object[]; total: number }
 
 		/**
 		 * Classify what Category an Action belongs to
-		 * @param namespace - The entry to classify
+		 * @param namespace The entry to classify
 		 * @returns The category the entry belongs to
 		 */
-		protected _categorizeEntry(namespace: string): PackageConfiguration.Category
+		protected _categorizeEntry(namespace: string): { id: string; title: string }
 
 		/** Reusable logic for how categories are sorted in relation to each other. */
-		protected _sortCategories(a: PackageConfiguration.Category, b: PackageConfiguration.Category): number
+		protected _sortCategories(a: object, b: object): number
 
-		protected override _render(
-			force?: boolean | undefined,
-			options?: Application.RenderOptions<Options> | undefined
-		): Promise<void>
+		protected override _render(force?: boolean, options?: RenderOptions): Promise<void>
 
-		override activateListeners(html: JQuery<HTMLElement>): void
+		override activateListeners(html: JQuery): void
 
-		/**
-		 * Handle left-click events to filter to a certain category
-		 * @internal
-		 */
-		protected _onClickCategoryFilter(event: JQuery.ClickEvent): void
+		protected override _onChangeTab(event: MouseEvent | null, tabs: Tabs, active: string): void
 
 		protected override _onSearchFilter(event: KeyboardEvent, query: string, rgx: RegExp, html: HTMLElement): void
 
 		/**
-		 * Handle left-click events to show / hide a certain category
-		 * @internal
-		 */
-		protected _onClickCategoryCollapse(event: JQuery.ClickEvent): void
-
-		/**
 		 * Handle button click to reset default settings
-		 * @param event - The initial button click event
+		 * @param event The initial button click event
 		 */
-		protected _onResetDefaults(event: JQuery.ClickEvent): void
-	}
-
-	namespace PackageConfiguration {
-		interface Options extends FormApplicationOptions {
-			categoryTemplate: string | undefined
-			submitButton: boolean
-		}
-
-		interface Category {
-			id: string
-			title: string
-		}
+		protected abstract _onResetDefaults(event: Event): void
 	}
 }

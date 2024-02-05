@@ -1,6 +1,69 @@
-export type opFunction = (left: any, right: any) => any
+import { Evaluator } from "@util/eval.ts"
+import { eFunction } from "@util/function.ts"
 
-export type unaryOpFunction = (arg: any) => any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type Operand = any
+// export type Operand = string | boolean | number | expressionOperand | expressionTree | parsedFunction | null | undefined
+
+export class expressionOperand {
+	value: string
+
+	unaryOp: Operator | null
+
+	constructor(data: expressionOperand) {
+		this.value = data.value
+		this.unaryOp = data.unaryOp
+	}
+}
+
+export class expressionOperator {
+	op: Operator | null
+
+	unaryOp: Operator | null
+
+	constructor(data: expressionOperator) {
+		this.op = data.op
+		this.unaryOp = data.unaryOp
+	}
+}
+
+export class expressionTree {
+	evaluator: Evaluator
+
+	left?: Operand
+
+	right?: Operand
+
+	op: Operator | null
+
+	unaryOp: Operator | null
+
+	constructor(data: Partial<expressionTree> & { evaluator: Evaluator }) {
+		this.evaluator = data.evaluator
+		this.left = data.left
+		this.right = data.right
+		this.op = data.op ?? null
+		this.unaryOp = data.unaryOp ?? null
+	}
+}
+
+export class parsedFunction {
+	function: eFunction
+
+	args: string
+
+	unaryOp: Operator | null
+
+	constructor(data: parsedFunction) {
+		this.function = data.function
+		this.args = data.args
+		this.unaryOp = data.unaryOp
+	}
+}
+
+export type opFunction = (left: Operand, right: Operand) => Operand
+
+export type unaryOpFunction = (arg: Operand) => Operand
 
 export interface OperatorDef {
 	symbol: string

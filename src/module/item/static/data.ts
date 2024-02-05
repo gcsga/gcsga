@@ -1,6 +1,13 @@
-import { StaticEquipment, StaticMelee, StaticRanged, StaticSkill, StaticSpell, StaticTrait } from "@actor"
-import { BaseItemSourceGURPS } from "@item/base/data"
-import { ItemType } from "@module/data"
+import {
+	StaticEquipment,
+	StaticMelee,
+	StaticRanged,
+	StaticSkill,
+	StaticSpell,
+	StaticTrait,
+} from "@actor/static/components.ts"
+import { ItemType } from "@data"
+import { BaseItemSourceGURPS } from "@item/base/data/system.ts"
 
 export type StaticItemSource = BaseItemSourceGURPS<ItemType.LegacyEquipment, StaticItemSystemData>
 

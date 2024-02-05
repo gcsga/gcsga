@@ -1,117 +1,88 @@
-/**
- * A common framework for displaying notifications to the client.
- * Submitted notifications are added to a queue, and up to 3 notifications are displayed at once.
- * Each notification is displayed for 5 seconds at which point further notifications are pulled from the queue.
- *
- * @example Displaying Notification Messages
- * ```typescript
- * ui.notifications.info("This is an info message");
- * ui.notifications.warn("This is a warning message");
- * ui.notifications.error("This is an error message");
- * ui.notifications.info("This is a 4th message which will not be shown until the first info message is done");
- * ```
- *
- * @typeParam Options - the type of the options object
- */
-declare class Notifications<Options extends ApplicationOptions = ApplicationOptions> extends Application<Options> {
-	constructor(options?: Partial<Options>)
+export {}
 
+declare global {
 	/**
-	 * Submitted notifications which are queued for display
-	 * @defaultValue `[]`
+	 * A common framework for displaying notifications to the client.
+	 * Submitted notifications are added to a queue, and up to 3 notifications are displayed at once.
+	 * Each notification is displayed for 5 seconds at which point further notifications are pulled from the queue.
+	 *
+	 * @example
+	 * ui.notifications.info("This is an info message");
+	 * ui.notifications.warn("This is a warning message");
+	 * ui.notifications.error("This is an error message");
+	 * ui.notifications.info("This is a 4th message which will not be shown until the first info message is done");
 	 */
-	queue: Notifications.Notification[]
+	class Notifications extends Application {
+		/** Submitted notifications which are queued for display */
+		queue: NotificationData[]
 
-	/**
-	 * Notifications which are currently displayed
-	 * @defaultValue `[]`
-	 */
-	active: JQuery[]
+		/** Notifications which are currently displayed */
+		active: JQuery[]
 
-	/**
-	 * @defaultValue
-	 * ```typescript
-	 * mergeObject(super.defaultOptions, {
-	 *   popOut: false,
-	 *   id: "notifications",
-	 *   template: "templates/hud/notifications.html"
-	 * });
-	 * ```
-	 */
-	static override get defaultOptions(): ApplicationOptions
+		constructor(options: ApplicationOptions)
 
-	/**
-	 * Initialize the Notifications system by displaying any system-generated messages which were passed from the server.
-	 */
-	initialize(): void
+		/** Initialize the Notifications system by displaying any system-generated messages which were passed from the server. */
+		initialize(): void
 
-	protected override _renderInner(data: object): Promise<JQuery>
+		/**
+		 * Push a new notification into the queue
+		 * @param message The content of the notification message
+		 * @param type    The type of notification, "info", "warning", and "error" are supported
+		 * @param [options={}] Additional options which affect the notification
+		 * @returns The ID of the notification
+		 */
+		notify(message: string, type?: "info" | "warning" | "error", { localize, permanent }?: NotifyOptions): number
 
-	protected override _render(force?: boolean, options?: Application.RenderOptions<Options>): Promise<void>
+		/**
+		 * Display a notification with the "info" type
+		 * @param message   The content of the notification message
+		 * @param [options] Notification options passed to the notify function
+		 * @returns The ID of the notification
+		 */
+		info(message: string, options?: NotifyOptions): number
 
-	/**
-	 * Push a new notification into the queue
-	 * @param message   - The content of the notification message
-	 * @param type      - The type of notification, currently "info", "warning", and "error" are supported
-	 *                    (default: `"info"`)
-	 * @param options   - Additional options which affect the notification
-	 *                    (default: `{}`)
-	 */
-	notify(message: string, type?: "info" | "warning" | "error", options?: Notifications.NotifyOptions): void
+		/**
+		 * Display a notification with the "info" type
+		 * @param message   The content of the notification message
+		 * @param [options] Notification options passed to the notify function
+		 * @returns The ID of the notification
+		 */
+		warn(message: string, options?: NotifyOptions): number
 
-	/**
-	 * Display a notification with the "info" type
-	 * @param message - The content of the notification message
-	 * @param options - Notification options passed to the notify function
-	 */
-	info(message: string, options?: Notifications.NotifyOptions): void
+		/**
+		 * Display a notification with the "info" type
+		 * @param message   The content of the notification message
+		 * @param [options] Notification options passed to the notify function
+		 * @returns The ID of the notification
+		 */
+		error(message: string, options?: NotifyOptions): number
 
-	/**
-	 * Display a notification with the "warning" type
-	 * @param message - The content of the notification message
-	 * @param options - Notification options passed to the notify function
-	 */
-	warn(message: string, options?: Notifications.NotifyOptions): void
+		/**
+		 * Remove the notification linked to the ID.
+		 * @param id The ID of the notification
+		 */
+		remove(id: number): void
 
-	/**
-	 * Display a notification with the "error" type
-	 * @param message - The content of the notification message
-	 * @param options - Notification options passed to the notify function
-	 */
-	error(message: string, options?: Notifications.NotifyOptions): void
+		/** Clear all notifications. */
+		clear(): void
 
-	/**
-	 * Retrieve a pending notification from the queue and display it
-	 */
-	protected fetch(): void
+		/** Retrieve a pending notification from the queue and display it */
+		fetch(): void
+	}
 }
 
-declare namespace Notifications {
-	interface NotifyOptions {
-		/**
-		 * Whether the notification should be permanently displayed unless otherwise dismissed
-		 * @defaultValue `false`
-		 */
-		permanent?: boolean
+interface NotifyOptions {
+	/** Should the notification be permanently displayed until dismissed */
+	permanent?: boolean
+	/** to localize the message content before displaying it */
+	localize?: boolean
+	/** Whether to log the message to the console */
+	console?: boolean
+}
 
-		/**
-		 * Whether to localize the message content before displaying it
-		 * @defaultValue `false`
-		 */
-		localize?: boolean
-
-		/**
-		 * Whether to log the message to the console
-		 * @defaultValue `true`
-		 */
-		console?: boolean
-	}
-
-	interface Notification {
-		message: string
-		type: "info" | "warning" | "error"
-		timestamp: number
-		permanent: boolean
-		console: boolean
-	}
+interface NotificationData {
+	message: string
+	type: "info" | "warning" | "error"
+	timestamp: number
+	permanent: boolean
 }

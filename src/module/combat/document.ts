@@ -1,13 +1,9 @@
-import { TokenDocumentGURPS } from "@module/token"
-import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
-import { CombatData } from "types/foundry/common/data/module.mjs"
-
 // The whole point of this class is to not send messages when you roll initiative
 export class CombatGURPS extends Combat {
-	protected _onDelete(options: DocumentModificationOptions, userId: string): void {
+	protected override _onDelete(options: DocumentModificationContext<null>, userId: string): void {
 		game.messages
-			?.filter(e => Boolean(e.getFlag("core", "initiativeRoll")))
-			.forEach(e => {
+			?.filter((e: ChatMessage) => Boolean(e.getFlag("core", "initiativeRoll")))
+			.forEach((e: ChatMessage) => {
 				e.delete()
 			})
 		return super._onDelete(options, userId)
@@ -31,23 +27,23 @@ export class CombatGURPS extends Combat {
 		}
 	}
 
-	static async deleteCombat(combat: CombatGURPS) {
-		// const tokenIds = combat.combatants.map(combatant => combatant.token?.id ?? undefined).filter(it => !!it)
-		const tokens = combat.combatants.map(combatant => combatant.token) as TokenDocumentGURPS[]
-		tokens.forEach(async token => await token.actor?.resetManeuvers())
-		await CombatGURPS.updateDamageMapForTokens(tokens.map(t => t?.id) as string[])
-	}
-
-	static async updateCombat(combat: Combat, updateData: CombatData) {
-		if (!updateData.combatants) return
-
-		const previousCombatants = combat.data.combatants
-		const updatedCombatants = updateData.combatants
-		const removedCombatants = previousCombatants.filter(
-			prevCombatant => !updatedCombatants.some(updatedCombatant => updatedCombatant.id === prevCombatant.id)
-		)
-
-		const tokenIds = removedCombatants.map(combatant => combatant.token?.id ?? undefined)
-		await CombatGURPS.updateDamageMapForTokens(tokenIds)
-	}
+	// static async deleteCombat(combat: CombatGURPS) {
+	// 	// const tokenIds = combat.combatants.map(combatant => combatant.token?.id ?? undefined).filter(it => !!it)
+	// 	const tokens = combat.combatants.map(combatant => combatant.token) as TokenDocumentGURPS[]
+	// 	tokens.forEach(async token => await token.actor?.resetManeuvers())
+	// 	await CombatGURPS.updateDamageMapForTokens(tokens.map(t => t?.id) as string[])
+	// }
+	//
+	// static async updateCombat(combat: Combat, updateData: CombatData) {
+	// 	if (!updateData.combatants) return
+	//
+	// 	const previousCombatants = combat.data.combatants
+	// 	const updatedCombatants = updateData.combatants
+	// 	const removedCombatants = previousCombatants.filter(
+	// 		prevCombatant => !updatedCombatants.some(updatedCombatant => updatedCombatant.id === prevCombatant.id),
+	// 	)
+	//
+	// 	const tokenIds = removedCombatants.map(combatant => combatant.token?.id ?? undefined)
+	// 	await CombatGURPS.updateDamageMapForTokens(tokenIds)
+	// }
 }

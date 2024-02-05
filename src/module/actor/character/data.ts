@@ -1,38 +1,36 @@
-import { ActorType, RollModifier, SYSTEM_NAME, SheetSettings, gid } from "@module/data"
-import { ActorFlags, ActorFlagsGURPS, ActorSystemData, BaseActorSourceGURPS } from "@actor/base/data"
-import { AttributeObj, PoolThreshold } from "@module/attribute"
-import { ResourceTrackerObj } from "@module/resource_tracker"
-import { Weight } from "@util"
-import { DocumentModificationOptions } from "types/foundry/common/abstract/document.mjs"
-import { MoveTypeObj } from "@module/move_type"
-import { DiceGURPS } from "@module/dice"
+import { ActorFlagsGURPS, ActorSystemSource, BaseActorSourceGURPS } from "@actor/base/data.ts"
+import { ActorFlags, ActorType, RollModifier, SYSTEM_NAME, gid } from "@data"
+import { SheetSettings } from "@module/data/sheet_settings.ts"
+import { DiceGURPS } from "@module/dice/index.ts"
+import { AttributeObj } from "@sytem/attribute/data.ts"
+import { PoolThreshold } from "@sytem/attribute/pool_threshold.ts"
+import { MoveTypeObj } from "@sytem/move_type/data.ts"
+import { ResourceTrackerObj } from "@sytem/resource_tracker/data.ts"
+import { Weight } from "@util/weight.ts"
 
-export interface DocumentModificationOptionsGURPS extends DocumentModificationOptions {
-	temporary: boolean
-	substitutions: boolean
-}
-
-export interface CharacterSource extends BaseActorSourceGURPS<ActorType.Character, CharacterSystemData> {
+export type CharacterSource = BaseActorSourceGURPS<ActorType.Character, CharacterSystemSource> & {
 	flags: DeepPartial<CharacterFlags>
 }
-export interface CharacterDataGURPS
-	extends Omit<CharacterSource, "effects" | "flags" | "items" | "token">,
-	CharacterSystemData {
-	readonly type: CharacterSource["type"]
-	data: CharacterSystemData
-	flags: CharacterFlags
-
-	readonly _source: CharacterSource
-}
+// export interface CharacterDataGURPS
+// 	extends Omit<CharacterSource, "effects" | "flags" | "items" | "token">,
+// 		CharacterSystemSource {
+// 	readonly type: CharacterSource["type"]
+// 	data: CharacterSystemSource
+// 	flags: CharacterFlags
+//
+// 	readonly _source: CharacterSource
+// }
 
 export interface CharacterFlags extends ActorFlagsGURPS {
 	[SYSTEM_NAME]: {
 		[ActorFlags.TargetModifiers]: RollModifier[]
+
 		[ActorFlags.SelfModifiers]: RollModifier[]
 		[ActorFlags.MoveType]: string
 		[ActorFlags.AutoEncumbrance]: { active: boolean; manual: number }
 		[ActorFlags.AutoThreshold]: { active: boolean; manual: Record<string, PoolThreshold | null> }
 		[ActorFlags.AutoDamage]: { active: boolean; thrust: DiceGURPS; swing: DiceGURPS }
+		[ActorFlags.Import]: { name: string; path: string; last_import: string }
 	}
 }
 
@@ -44,13 +42,13 @@ export const CharacterFlagDefaults: CharacterFlags = {
 		[ActorFlags.AutoEncumbrance]: { active: true, manual: 0 },
 		[ActorFlags.AutoThreshold]: { active: true, manual: {} },
 		[ActorFlags.AutoDamage]: { active: true, thrust: new DiceGURPS(), swing: new DiceGURPS() },
+		[ActorFlags.Import]: { name: "", path: "", last_import: "" },
 	},
 }
 
-export interface CharacterSystemData extends ActorSystemData {
+export interface CharacterSystemSource extends ActorSystemSource {
+	type: "character"
 	version: number
-	move: CharacterMove
-	import: { name: string; path: string; last_import: string }
 	settings: SheetSettings
 	created_date: string
 	modified_date: string
@@ -58,14 +56,25 @@ export interface CharacterSystemData extends ActorSystemData {
 	attributes: AttributeObj[]
 	resource_trackers: ResourceTrackerObj[]
 	move_types: MoveTypeObj[]
+	move: CharacterMove
 	total_points: number
 	points_record: PointsRecord[]
-	calc: CharacterCalc
-	editing: boolean
+	// calc: CharacterCalc
+	// editing: boolean
 	// TODO: check if this fits
-	pools: Record<string, any>
-	third_party?: any
+	// pools: Record<string, TokenPool>
+	// import: { name: string; path: string; last_import: string }
+	// third_party: DeepPartial<CharacterThirdPartyData>
 }
+
+// export type CharacterThirdPartyData = {
+// 	settings: {
+// 		resource_trackers: ResourceTrackerDefObj[]
+// 		move_types: MoveTypeDefObj[]
+// 	}
+// 	resource_trackers: ResourceTrackerObj[]
+// 	move_types: MoveTypeObj[]
+// } & Record<string, unknown>
 
 export interface CharacterMove {
 	maneuver: string
@@ -133,8 +142,8 @@ export interface CharacterCalc {
 	lifting_st_bonus: number
 	striking_st_bonus: number
 	throwing_st_bonus: number
-	move: Array<number>
-	dodge: Array<number>
+	move: number[]
+	dodge: number[]
 	dodge_bonus: number
 	block_bonus: number
 	parry_bonus: number
@@ -153,7 +162,7 @@ export interface Encumbrance {
 	name: string
 }
 
-export const CharacterDefaultData: Partial<CharacterSystemData> = {
+export const CharacterDefaultData: Partial<CharacterSystemSource> = {
 	profile: {
 		player_name: "",
 		name: "",
@@ -173,18 +182,18 @@ export const CharacterDefaultData: Partial<CharacterSystemData> = {
 		religion: "",
 		portrait: "",
 	},
-	editing: true,
-	calc: {
-		swing: "",
-		thrust: "",
-		basic_lift: 0,
-		lifting_st_bonus: 0,
-		striking_st_bonus: 0,
-		throwing_st_bonus: 0,
-		move: [0, 0, 0, 0, 0],
-		dodge: [0, 0, 0, 0, 0],
-		dodge_bonus: 0,
-		block_bonus: 0,
-		parry_bonus: 0,
-	},
+	// editing: true,
+	// calc: {
+	// 	swing: "",
+	// 	thrust: "",
+	// 	basic_lift: 0,
+	// 	lifting_st_bonus: 0,
+	// 	striking_st_bonus: 0,
+	// 	throwing_st_bonus: 0,
+	// 	move: [0, 0, 0, 0, 0],
+	// 	dodge: [0, 0, 0, 0, 0],
+	// 	dodge_bonus: 0,
+	// 	block_bonus: 0,
+	// 	parry_bonus: 0,
+	// },
 }

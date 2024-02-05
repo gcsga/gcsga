@@ -1,5 +1,5 @@
-import { Int } from "@util/fxp"
-import { LocalizeGURPS } from "@util/localize"
+import { Int } from "@util/fxp.ts"
+import { LocalizeGURPS } from "@util/localize.ts"
 
 export namespace selfctrl {
 	export enum Roll {
@@ -101,7 +101,7 @@ export namespace selfctrl {
 						LocalizeGURPS.translations.gurps.enum.selfctrl.adjustment.alt_string[A],
 						{
 							penalty: Adjustment.adjustment(A, cr),
-						}
+						},
 					)
 			}
 		}

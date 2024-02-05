@@ -1,7 +1,5 @@
-import { ActorFlagsGURPS, ActorSystemData, BaseActorSourceGURPS } from "@actor/base/data"
-import { ActorType } from "@module/data"
+import { ActorFlagsGURPS, ActorSystemSource, BaseActorSourceGURPS } from "@actor/base/data.ts"
 import {
-	StaticTrait,
 	StaticEquipment,
 	StaticMelee,
 	StaticNote,
@@ -9,7 +7,9 @@ import {
 	StaticReaction,
 	StaticSkill,
 	StaticSpell,
-} from "./components"
+	StaticTrait,
+} from "./components.ts"
+import { ActorType } from "@data"
 
 export const MoveModeTypes = {
 	Ground: "gurps.character.move_modes.ground",
@@ -18,7 +18,7 @@ export const MoveModeTypes = {
 	Space: "gurps.character.move_modes.space",
 }
 
-export enum Posture {
+export enum StaticPosture {
 	Standing = "standing",
 	Prone = "prone",
 	Kneeling = "kneeling",
@@ -36,18 +36,8 @@ export interface MoveMode {
 
 export interface StaticCharacterSource
 	extends BaseActorSourceGURPS<ActorType.LegacyCharacter, StaticCharacterSystemData> {
-	flags: DeepPartial<StaticCharacterFlags>
-}
-export interface StaticCharacterDataGURPS
-	extends Omit<StaticCharacterSource, "effects" | "flags" | "items" | "token">,
-		StaticCharacterSystemData {
-	readonly type: StaticCharacterSource["type"]
-	data: StaticCharacterSystemData
 	flags: StaticCharacterFlags
-
-	readonly _source: StaticCharacterSource
 }
-
 type StaticCharacterFlags = ActorFlagsGURPS & {
 	gurps: {
 		// Empty
@@ -56,7 +46,7 @@ type StaticCharacterFlags = ActorFlagsGURPS & {
 
 export type StaticCharacterItems = StaticTrait | StaticSkill | StaticSpell | StaticEquipment | StaticNote
 
-export interface StaticCharacterSystemData extends ActorSystemData {
+export interface StaticCharacterSystemData extends ActorSystemSource {
 	editing: boolean
 	additionalresources: {
 		bodyplan: string
@@ -67,11 +57,9 @@ export interface StaticCharacterSystemData extends ActorSystemData {
 			[key: string]: StaticResourceTracker
 		}
 	}
-	hitlocations: any
+	hitlocations: Record<string, StaticHitLocation>
 	lastImport: string
-	attributes: {
-		[key in StaticAttributeName]: StaticAttribute
-	}
+	attributes: Record<StaticAttributeName, StaticAttribute>
 	HP: StaticPoolValue
 	FP: StaticPoolValue
 	QP: StaticPoolValue
@@ -79,6 +67,7 @@ export interface StaticCharacterSystemData extends ActorSystemData {
 		value: number
 		enc_level: number
 	}
+	basiclift: string
 	basicmove: {
 		value: string
 		points: number
@@ -96,8 +85,13 @@ export interface StaticCharacterSystemData extends ActorSystemData {
 	tastesmell: number
 	vision: number
 	touch: number
-	// TODO: change
-	conditions: any
+	conditions: {
+		exhausted: boolean
+		maneuver: string
+		move: string
+		posture: StaticPosture
+		reeling: boolean
+	}
 	traits: StaticCharacterTraits
 	encumbrance: {
 		[key: string]: {
@@ -109,7 +103,7 @@ export interface StaticCharacterSystemData extends ActorSystemData {
 			current: boolean
 		}
 	}
-	move: any
+	move: Record<string, StaticMove>
 	reactions: { [key: string]: StaticReaction }
 	conditionalmods: { [key: string]: StaticReaction }
 	ads: { [key: string]: StaticTrait }
@@ -122,8 +116,8 @@ export interface StaticCharacterSystemData extends ActorSystemData {
 	eqtsummary: number
 	melee: { [key: string]: StaticMelee }
 	ranged: { [key: string]: StaticRanged }
-	currentdodge: any
-	languages: any
+	currentdodge: number
+	languages: Record<string, unknown>
 	liftingmoving: {
 		basiclift: string
 		carryonback: string
@@ -138,6 +132,20 @@ export interface StaticCharacterSystemData extends ActorSystemData {
 	block?: number
 }
 
+export interface StaticHitLocation {
+	where: string
+	import: number
+	equipmnet: number
+	penalty: number
+	roll: string
+}
+
+export interface StaticMove {
+	basic: number
+	default: boolean
+	mode: string
+}
+
 export interface StaticCharacterTraits {
 	title: string
 	race: string
@@ -150,12 +158,16 @@ export interface StaticCharacterTraits {
 	eyes: string
 	hair: string
 	hand: string
+	handedness?: string
 	skin: string
 	sizemod: number
 	techlevel: string
+	tech_level?: string
 	createdon: string
 	modifiedon: string
 	player: string
+	player_name?: string
+	portrait?: string
 }
 
 export enum StaticAttributeName {
@@ -231,58 +243,58 @@ export enum StaticThresholdOperator {
 
 export const staticHpConditions = {
 	NORMAL: {
-		breakpoint: (_: any) => Number.MAX_SAFE_INTEGER,
+		breakpoint: (): number => Number.MAX_SAFE_INTEGER,
 		label: "gurps.static.status.normal",
 	},
 	REELING: {
-		breakpoint: (HP: StaticCharacterSystemData["HP"]) => Math.ceil(HP.max / 3) - 1,
+		breakpoint: (HP: StaticCharacterSystemData["HP"]): number => Math.ceil(HP.max / 3) - 1,
 		label: "gurps.static.status.reeling",
 	},
 	COLLAPSE: {
-		breakpoint: (_: StaticCharacterSystemData["HP"]) => 0,
+		breakpoint: (_: StaticCharacterSystemData["HP"]): number => 0,
 		label: "gurps.static.status.collapse",
 	},
 	CHECK1: {
-		breakpoint: (HP: StaticCharacterSystemData["HP"]) => -1 * HP.max,
+		breakpoint: (HP: StaticCharacterSystemData["HP"]): number => -1 * HP.max,
 		label: "gurps.static.status.check1",
 	},
 	CHECK2: {
-		breakpoint: (HP: StaticCharacterSystemData["HP"]) => -2 * HP.max,
+		breakpoint: (HP: StaticCharacterSystemData["HP"]): number => -2 * HP.max,
 		label: "gurps.static.status.check2",
 	},
 	CHECK3: {
-		breakpoint: (HP: StaticCharacterSystemData["HP"]) => -3 * HP.max,
+		breakpoint: (HP: StaticCharacterSystemData["HP"]): number => -3 * HP.max,
 		label: "gurps.static.status.check3",
 	},
 	CHECK4: {
-		breakpoint: (HP: StaticCharacterSystemData["HP"]) => -4 * HP.max,
+		breakpoint: (HP: StaticCharacterSystemData["HP"]): number => -4 * HP.max,
 		label: "gurps.static.status.check4",
 	},
 	DEAD: {
-		breakpoint: (HP: StaticCharacterSystemData["HP"]) => -5 * HP.max,
+		breakpoint: (HP: StaticCharacterSystemData["HP"]): number => -5 * HP.max,
 		label: "gurps.static.status.dead",
 	},
 	DESTROYED: {
-		breakpoint: (HP: StaticCharacterSystemData["HP"]) => -10 * HP.max,
+		breakpoint: (HP: StaticCharacterSystemData["HP"]): number => -10 * HP.max,
 		label: "gurps.static.status.destroyed",
 	},
 }
 
 export const staticFpConditions = {
 	NORMAL: {
-		breakpoint: (_: any) => Number.MAX_SAFE_INTEGER,
+		breakpoint: (): number => Number.MAX_SAFE_INTEGER,
 		label: "gurps.static.status.normal",
 	},
 	REELING: {
-		breakpoint: (FP: StaticCharacterSystemData["FP"]) => Math.ceil(FP.max / 3) - 1,
+		breakpoint: (FP: StaticCharacterSystemData["FP"]): number => Math.ceil(FP.max / 3) - 1,
 		label: "gurps.static.status.tired",
 	},
 	COLLAPSE: {
-		breakpoint: (_: any) => 0,
+		breakpoint: (): number => 0,
 		label: "gurps.static.status.collapse",
 	},
 	UNCONSCIOUS: {
-		breakpoint: (FP: StaticCharacterSystemData["FP"]) => -1 * FP.max,
+		breakpoint: (FP: StaticCharacterSystemData["FP"]): number => -1 * FP.max,
 		label: "gurps.static.status.unconscious",
 	},
 }
