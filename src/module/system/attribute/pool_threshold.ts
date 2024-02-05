@@ -1,5 +1,6 @@
 import { CharacterResolver, evaluateToNumber } from "@util"
 import { PoolThresholdDef, ThresholdOp } from "./data.ts"
+import { CharacterGURPS } from "@actor"
 
 export class PoolThreshold {
 	state = ""
@@ -14,7 +15,7 @@ export class PoolThreshold {
 		Object.assign(this, data)
 	}
 
-	threshold(resolver: CharacterResolver): number {
+	threshold(resolver: CharacterGURPS | CharacterResolver): number {
 		return evaluateToNumber(this.expression, resolver)
 	}
 }

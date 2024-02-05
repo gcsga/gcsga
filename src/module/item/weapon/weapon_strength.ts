@@ -4,7 +4,9 @@ import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { wswitch } from "@util/enum/wswitch.ts"
 import { feature } from "@util/enum/feature.ts"
 import { BaseWeaponGURPS } from "./document.ts"
-import { EquipmentContainerGURPS, EquipmentGURPS } from "@item"
+import { ItemType } from "@data"
+import { ItemGURPS } from "@item/base/document.ts"
+import { EquipmentResolver } from "@util/resolvers.ts"
 
 export class WeaponStrength extends WeaponField {
 	min?: number
@@ -39,8 +41,11 @@ export class WeaponStrength extends WeaponField {
 		const result = new WeaponStrength()
 		Object.assign(result, this)
 		if (w.actor) {
-			if (w.container instanceof (EquipmentGURPS || EquipmentContainerGURPS)) {
-				const st = Math.max(w.container.ratedStrength, 0)
+			if (
+				w.container instanceof ItemGURPS &&
+				(w.container.type === ItemType.Equipment || w.container.type === ItemType.EquipmentContainer)
+			) {
+				const st = Math.max((w.container as unknown as EquipmentResolver).ratedStrength, 0)
 				if (st !== 0) result.min = st
 			}
 		}

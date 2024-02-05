@@ -1,7 +1,6 @@
 import { ActorGURPS, CharacterGURPS } from "@actor"
 import { EffectGURPS } from "@item"
-import { ManeuverID } from "@item/condition/data.ts"
-import { SYSTEM_NAME } from "@module/data/index.ts"
+import { ManeuverID, SYSTEM_NAME } from "@data"
 
 export class EffectPanel extends Application {
 	/**

@@ -1,5 +1,5 @@
 import { ActorGURPS } from "@actor"
-import { ActorType } from "@actor/types.ts"
+import { ActorType } from "@data"
 import * as R from "remeda"
 
 const actorTypes: ActorType[] = [ActorType.Character, ActorType.Loot]

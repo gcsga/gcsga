@@ -1,4 +1,4 @@
-import { ItemType } from "@item"
+import { ItemType } from "@data"
 import { BaseItemSourceGURPS, ItemSystemSource } from "@item/base/data/system.ts"
 
 export type BaseContainerSource<

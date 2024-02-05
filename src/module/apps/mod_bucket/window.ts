@@ -1,4 +1,4 @@
-import { HOOKS_GURPS, ModifierItem, RollModifier, RollModifierStack, SOCKET, SYSTEM_NAME } from "@module/data/index.ts"
+import { HOOKS, ModifierItem, RollModifier, RollModifierStack, SOCKET, SYSTEM_NAME } from "@data"
 import { ModifierBucket } from "./button.ts"
 import { UserFlags } from "@module/user/data.ts"
 import { LocalizeGURPS, PDF } from "@util"
@@ -120,7 +120,7 @@ export class ModifierBucketWindow extends Application {
 									items: modStack,
 								})
 								await game.user.setFlag(SYSTEM_NAME, UserFlags.SavedStacks, savedStacks)
-								Hooks.call(HOOKS_GURPS.AddModifier)
+								Hooks.call(HOOKS.AddModifier)
 							},
 						},
 						no: {
@@ -142,7 +142,7 @@ export class ModifierBucketWindow extends Application {
 		const index = event.currentTarget.dataset.index
 		const savedStacks = (game.user.getFlag(SYSTEM_NAME, UserFlags.SavedStacks) as RollModifierStack[]) ?? []
 		await game.user.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, savedStacks[index].items)
-		return Hooks.call(HOOKS_GURPS.AddModifier)
+		return Hooks.call(HOOKS.AddModifier)
 	}
 
 	private async _onDeleteStack(event: JQuery.ClickEvent): Promise<boolean> {
@@ -151,7 +151,7 @@ export class ModifierBucketWindow extends Application {
 		const savedStacks = (game.user.getFlag(SYSTEM_NAME, UserFlags.SavedStacks) as RollModifierStack[]) ?? []
 		savedStacks.splice(index, 1)
 		await game.user.setFlag(SYSTEM_NAME, UserFlags.SavedStacks, savedStacks)
-		return Hooks.call(HOOKS_GURPS.AddModifier)
+		return Hooks.call(HOOKS.AddModifier)
 	}
 
 	private async _onSendToPlayer(event: JQuery.ClickEvent) {

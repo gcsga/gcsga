@@ -1,9 +1,4 @@
-enum ListType {
-	ResourceTracker = "resource_trackers",
-	Thresholds = "tracker_thresholds",
-}
-
-import { SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
+import { SETTINGS, SYSTEM_NAME } from "@data"
 import { PartialSettingsData, SettingsMenuGURPS } from "./menu.ts"
 import { htmlClosest, htmlQuery } from "@util/dom.ts"
 import { getNewAttributeId, prepareFormData } from "@util"
@@ -11,7 +6,11 @@ import { DnD } from "@util/drag_drop.ts"
 import { DropDataType } from "@module/apps/damage_calculator/damage_chat_message.ts"
 import { defaultSettings } from "./defaults.ts"
 
-//
+enum ListType {
+	ResourceTracker = "resource_trackers",
+	Thresholds = "tracker_thresholds",
+}
+
 type ConfigGURPSListName = (typeof ResourceTrackerSettings.SETTINGS)[number]
 
 export class ResourceTrackerSettings extends SettingsMenuGURPS {

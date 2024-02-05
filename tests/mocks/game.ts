@@ -1,5 +1,4 @@
-import { ConditionID } from "@item/condition/data.ts"
-import { EFFECT_ACTION, SETTINGS, SYSTEM_NAME, gid } from "@module/data/index.ts"
+import { ConditionID, EFFECT_ACTION, SETTINGS, SYSTEM_NAME, gid } from "@data"
 import { ThresholdOp } from "@sytem/attribute/data.ts"
 import { MookData } from "@sytem/mook/data.ts"
 import { attribute } from "@util/enum/attribute.ts"

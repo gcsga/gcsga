@@ -3,7 +3,6 @@ import { Encumbrance } from "@actor/character/data.ts"
 import {
 	BaseWeaponGURPS,
 	ItemGURPS,
-	ItemType,
 	MeleeWeaponGURPS,
 	RangedWeaponGURPS,
 	RitualMagicSpellGURPS,
@@ -13,16 +12,16 @@ import {
 	TraitGURPS,
 } from "@item"
 import { DamageChat, DamagePayload } from "@module/apps/damage_calculator/damage_chat_message.ts"
-import { RollModifier, RollType, SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
+import { ItemType, RollModifier, RollType, SETTINGS, SYSTEM_NAME } from "@data"
 import { UserFlags } from "@module/user/data.ts"
-import { UserGURPS } from "@module/user/document.ts"
 import { Attribute } from "@sytem/attribute/index.ts"
-import { LocalizeGURPS } from "@util"
+import { ErrorGURPS, LocalizeGURPS } from "@util"
 import { DamageRollGURPS } from "./damage_roll.ts"
 import { HitLocationUtil } from "@module/apps/damage_calculator/hitlocation_utils.ts"
 import { RollGURPS } from "./index.ts"
 import { ChatMessageGURPS } from "@module/chat-message/document.ts"
 import { ChatMessageSource } from "types/foundry/common/documents/chat-message.js"
+import { UserGURPS } from "@module/user/document.ts"
 enum RollSuccess {
 	Success = "success",
 	Failure = "failure",
@@ -53,7 +52,7 @@ type ChatData = {
 abstract class RollTypeHandler {
 	async handleRollType(
 		user: User | null,
-		actor: CharacterGURPS,
+		actor: ActorGURPS | null | null,
 		data: RollTypeData,
 		formula: string,
 		hidden: boolean,
@@ -121,7 +120,7 @@ abstract class RollTypeHandler {
 	 * @returns The chat message data.
 	 */
 	async getMessageData(
-		actor: CharacterGURPS,
+		actor: ActorGURPS | null,
 		user: User | null,
 		item: ItemGURPS | Attribute,
 		level: number,
@@ -134,7 +133,7 @@ abstract class RollTypeHandler {
 		const modifiers: (RollModifier & { class?: string })[] = this.getModifiers(user)
 
 		// Determine the encumbrance penalty, if any, and add it to the modifiers.
-		const encumbrance = actor.encumbranceLevel(true)
+		const encumbrance = (actor as CharacterGURPS).encumbranceLevel(true)
 		level = this.modifyForEncumbrance(item, encumbrance, modifiers, level)
 
 		// Calculate the effective level by applying all modifiers.
@@ -148,7 +147,7 @@ abstract class RollTypeHandler {
 
 		const chatData: ChatData = {
 			name,
-			actor: actor.id,
+			actor: actor?.id ?? null,
 			displayName: LocalizeGURPS.format(this.displayNameLocalizationKey, { name, level }),
 			modifiers,
 			success,
@@ -169,7 +168,7 @@ abstract class RollTypeHandler {
 		const message = await renderTemplate(this.chatMessageTemplate, chatData)
 		const messageData = {
 			user: user,
-			speaker: { actor: actor.id },
+			speaker: { actor: actor?.id },
 			type: CONST.CHAT_MESSAGE_TYPES.ROLL,
 			content: message,
 			roll: JSON.stringify(roll),
@@ -213,7 +212,7 @@ abstract class RollTypeHandler {
 	 * @param actor
 	 * @returns Additional data to be included in the chat message.
 	 */
-	getItemData(_item: object, _actor: CharacterGURPS): Record<string, unknown> {
+	getItemData(_item: object, _actor: ActorGURPS | null): Record<string, unknown> {
 		return {}
 	}
 
@@ -306,7 +305,7 @@ abstract class RollTypeHandler {
 class ModifierRollTypeHandler extends RollTypeHandler {
 	override async handleRollType(
 		user: User | null,
-		_actor: CharacterGURPS,
+		_actor: ActorGURPS | null,
 		data: RollTypeData,
 		_raFormula?: string,
 		_hidden?: boolean,
@@ -340,7 +339,7 @@ class AttributeRollTypeHandler extends RollTypeHandler {
 		return LocalizeGURPS.translations.gurps.roll.effective_skill
 	}
 
-	override getItemData(item: Attribute, _actor: CharacterGURPS) {
+	override getItemData(item: Attribute, _actor: ActorGURPS | null) {
 		return { id: item.id }
 	}
 }
@@ -379,7 +378,7 @@ class SkillRollTypeHandler extends RollTypeHandler {
 
 	override getItemData(
 		item: ItemGURPS,
-		_actor: CharacterGURPS,
+		_actor: ActorGURPS | null,
 	): Partial<SkillGURPS | TechniqueGURPS | SpellGURPS | RitualMagicSpellGURPS> {
 		switch (true) {
 			case item instanceof SkillGURPS:
@@ -391,7 +390,7 @@ class SkillRollTypeHandler extends RollTypeHandler {
 				return {
 					name: item.name,
 					specialization: item.specialization,
-					default: item.defaultedFrom === null ? undefined : item.defaultedFrom,
+					default: item.default === null ? undefined : item.default,
 				}
 			case item instanceof SpellGURPS:
 			case item instanceof RitualMagicSpellGURPS:
@@ -439,7 +438,10 @@ class AttackRollTypeHandler extends RollTypeHandler {
 		return `systems/${SYSTEM_NAME}/templates/message/roll-against-weapon.hbs`
 	}
 
-	override getItemData(item: BaseWeaponGURPS, _actor: CharacterGURPS): Partial<MeleeWeaponGURPS | RangedWeaponGURPS> {
+	override getItemData(
+		item: BaseWeaponGURPS,
+		_actor: ActorGURPS | null,
+	): Partial<MeleeWeaponGURPS | RangedWeaponGURPS> {
 		let itemData: Record<string, unknown> = {}
 		if (item instanceof MeleeWeaponGURPS || item instanceof RangedWeaponGURPS) {
 			itemData = {
@@ -560,7 +562,7 @@ class DamageRollTypeHandler extends RollTypeHandler {
 	}
 
 	override async getMessageData(
-		actor: CharacterGURPS,
+		actor: ActorGURPS | null,
 		user: User | null,
 		item: BaseWeaponGURPS,
 		_: number,
@@ -574,8 +576,8 @@ class DamageRollTypeHandler extends RollTypeHandler {
 		const chatData: Partial<DamagePayload> = {
 			name,
 			uuid: item.uuid,
-			attacker: actor.id ?? undefined,
-			weaponID: item.id ?? undefined,
+			attacker: actor?.id,
+			weaponID: item.id,
 			modifiers: this.addModsDisplayClass(this.getModifiers(user)),
 			modifierTotal: modifierTotal,
 			damageRoll: [],
@@ -632,9 +634,9 @@ class DamageRollTypeHandler extends RollTypeHandler {
 	 *
 	 * @param _actor
 	 */
-	private static getHitLocationFromLastAttackRoll(_actor: ActorGURPS): string {
+	private static getHitLocationFromLastAttackRoll(_actor: ActorGURPS | null): string {
 		const name = game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_DAMAGE_LOCATION)
-		const location = _actor.hitLocationTable.locations.find(l => l.id === name)
+		const location = _actor?.hitLocationTable.locations.find(l => l.id === name)
 		return location?.table_name ?? "Torso"
 	}
 }
@@ -642,18 +644,19 @@ class DamageRollTypeHandler extends RollTypeHandler {
 class LocationRollTypeHandler extends RollTypeHandler {
 	override async handleRollType(
 		user: UserGURPS | null,
-		actor: CharacterGURPS,
+		actor: ActorGURPS | null,
 		_data: RollTypeData,
 		_formula: string,
 		// hidden: boolean,
 	): Promise<void> {
+		if (actor === null) throw ErrorGURPS("No actor for hit location roll")
 		const result = await HitLocationUtil.rollRandomLocation(actor.hitLocationTable)
 
 		// Get localized version of the location id, if necessary.
 		const location = result.location?.choice_name ?? "Torso"
 
 		const message = await renderTemplate(`systems/${SYSTEM_NAME}/templates/message/random-location-roll.hbs`, {
-			actor: { name: actor.name, actor: { id: actor.id } },
+			actor: { name: actor?.name, actor: { id: actor?.id } },
 			location: location,
 			tooltip: await result.roll.getTooltip(),
 		})
@@ -676,7 +679,7 @@ class LocationRollTypeHandler extends RollTypeHandler {
 class GenericRollTypeHandler extends RollTypeHandler {
 	override async handleRollType(
 		user: UserGURPS | null,
-		actor: Actor,
+		actor: ActorGURPS | null,
 		data: RollTypeData,
 		formula: string,
 		// hidden: boolean,

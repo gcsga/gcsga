@@ -1,5 +1,4 @@
-import { ItemType } from "@item/types.ts"
-import { MigrationRecord, SYSTEM_NAME } from "@module/data/misc.ts"
+import { ItemFlags, ItemType, MigrationRecord, SYSTEM_NAME } from "@data"
 
 type BaseItemSourceGURPS<
 	TType extends ItemType = ItemType,
@@ -9,22 +8,15 @@ type BaseItemSourceGURPS<
 	flags: ItemSourceFlagsGURPS
 }
 
-enum ItemFlags {
-	Deprecation = "deprecation",
-	Container = "container",
-	Other = "other", // used for equipment only
-	Unready = "unready",
-}
-
-interface ItemFlagsGURPS extends Record<string, unknown> {
-	[SYSTEM_NAME]?: {
-		[ItemFlags.Container]?: string | null
-		[ItemFlags.Other]?: boolean
-		[ItemFlags.Unready]?: boolean
+interface ItemFlagsGURPS extends foundry.documents.ItemFlags {
+	[SYSTEM_NAME]: {
+		[ItemFlags.Container]: string | null
+		[ItemFlags.Other]: boolean
+		[ItemFlags.Unready]: boolean
 	}
 }
 
-interface ItemSourceFlagsGURPS extends Record<string, unknown> {
+interface ItemSourceFlagsGURPS extends DeepPartial<foundry.documents.ItemFlags> {
 	[SYSTEM_NAME]?: {
 		[ItemFlags.Container]?: string | null
 		[ItemFlags.Other]?: boolean
@@ -39,7 +31,5 @@ interface ItemSystemSource {
 	/** A non-unique but human-readable identifier for this item */
 	slug: string | null
 }
-
-export { ItemFlags }
 
 export type { BaseItemSourceGURPS, ItemFlagsGURPS, ItemSystemSource }

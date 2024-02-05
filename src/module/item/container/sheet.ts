@@ -1,12 +1,12 @@
 import { ItemSheetDataGURPS, ItemSheetGURPS, ItemSheetOptions } from "@item/base/sheet.ts"
 import { ContainerGURPS } from "./document.ts"
-import { SYSTEM_NAME } from "@module/data/misc.ts"
-import { ItemGURPS, ItemType, TraitModifierGURPS } from "@item"
+import { ItemGURPS, TraitModifierGURPS } from "@item"
 import { DnD } from "@util/drag_drop.ts"
 import { ActorGURPS } from "@actor"
 import { isContainer } from "@util"
+import { ItemType, SYSTEM_NAME } from "@data"
 
-export class ContainerSheetGURPS<IType extends ContainerGURPS = ContainerGURPS> extends ItemSheetGURPS<IType> {
+export abstract class ContainerSheetGURPS<IType extends ContainerGURPS = ContainerGURPS> extends ItemSheetGURPS<IType> {
 	static override get defaultOptions(): ItemSheetOptions {
 		return fu.mergeObject(ItemSheetGURPS.defaultOptions, {
 			template: `/systems/${SYSTEM_NAME}/templates/item/container-sheet.hbs`,
@@ -124,7 +124,7 @@ export class ContainerSheetGURPS<IType extends ContainerGURPS = ContainerGURPS> 
 		let parent = target?.parent as ContainerGURPS | ActorGURPS
 		const parents = target?.parents
 		if (options.in) {
-			parent = target as ContainerGURPS
+			parent = target as unknown as ContainerGURPS
 			target = parent.children.contents[0] ?? null
 		}
 		const siblings = (parent!.items as Collection<ItemGURPS>).filter(

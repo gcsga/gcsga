@@ -1,6 +1,6 @@
+import { SOCKET, SYSTEM_NAME } from "@data"
 import { loadModifiers } from "@module/apps/mod_bucket/data.ts"
 import { TokenHUDGURPS } from "@module/canvas/index.ts"
-import { SOCKET, SYSTEM_NAME } from "@module/data/index.ts"
 import { ColorSettings } from "@module/settings/colors.ts"
 import { getDefaultSkills, setInitiative } from "@util"
 

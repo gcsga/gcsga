@@ -6,7 +6,7 @@ import {
 	StaticSpell,
 	StaticTrait,
 } from "@actor/static/components.ts"
-import { ItemType } from "@item"
+import { ItemType } from "@data"
 import { BaseItemSourceGURPS } from "@item/base/data/system.ts"
 
 export type StaticItemSource = BaseItemSourceGURPS<ItemType.LegacyEquipment, StaticItemSystemData>

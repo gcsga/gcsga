@@ -5,7 +5,6 @@ import { display } from "@util/enum/display.ts"
 import { StringBuilder } from "@util/string_builder.ts"
 import { sheetSettingsFor } from "@module/data/sheet_settings.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
 import { Weight, WeightUnits } from "@util/weight.ts"
 import {
 	EquipmentModifierGURPS,
@@ -16,19 +15,21 @@ import { EquipmentModifierContainerGURPS } from "@item/equipment_modifier_contai
 import { Int } from "@util/fxp.ts"
 import { ContainedWeightReduction, Feature } from "@feature/index.ts"
 import { EquipmentContainerGURPS } from "@item/index.ts"
-import { ItemFlags } from "@item/base/data/system.ts"
 import { CharacterGURPS } from "@actor"
+import { ItemFlags, ItemType, SETTINGS, SYSTEM_NAME } from "@data"
 
 export interface EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	readonly _source: EquipmentSource
 	system: EquipmentSystemSource
+
+	type: ItemType.Equipment
 }
 export class EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	// unsatisfied_reason = ""
 
 	// Getters
 	override get ratedStrength(): number {
-		return this.system.rated_strength
+		return this.system.rated_strength ?? 0
 	}
 
 	get quantity(): number {

@@ -1,17 +1,17 @@
 import { ActorGURPS } from "@actor/base.ts"
-import { ItemType } from "@item"
-import { ItemFlags } from "@item/base/data/system.ts"
 import { ItemGURPS } from "@item/base/document.ts"
-import { SYSTEM_NAME } from "@module/data/misc.ts"
 import Document from "types/foundry/common/abstract/document.js"
 import EmbeddedCollection from "types/foundry/common/abstract/embedded-collection.js"
 import { BaseContainerSystemSource } from "./data.ts"
+import { ItemFlags, ItemType, SYSTEM_NAME } from "@data"
+import { ContainerSource } from "@item/base/data/index.ts"
 
 export type ContainerModificationContext<T extends ItemGURPS> = DocumentModificationContext<T> & {
 	substitutions?: boolean
 }
 
 export interface ContainerGURPS<TParent extends ActorGURPS | null> extends ItemGURPS<TParent> {
+	readonly _source: ContainerSource
 	system: BaseContainerSystemSource
 }
 

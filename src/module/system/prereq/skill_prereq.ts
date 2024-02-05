@@ -6,8 +6,7 @@ import { SkillPrereqObj } from "./data.ts"
 import { CharacterResolver, LocalizeGURPS, LootResolver } from "@util/index.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { SkillGURPS, TechniqueGURPS } from "@item"
-import { ActorType } from "@actor"
-import { ItemType } from "@item/types.ts"
+import { ActorType, ItemType } from "@data"
 
 export class SkillPrereq extends BasePrereq {
 	override type = prereq.Type.Skill
@@ -20,18 +19,17 @@ export class SkillPrereq extends BasePrereq {
 
 	constructor() {
 		super(prereq.Type.Skill)
-		this.name = new StringCriteria(StringCompareType.IsString)
-		this.level = new NumericCriteria(NumericCompareType.AtLeastNumber)
-		this.specialization = new StringCriteria(StringCompareType.AnyString)
+		this.name = new StringCriteria({ compare: StringCompareType.IsString })
+		this.level = new NumericCriteria({ compare: NumericCompareType.AtLeastNumber })
+		this.specialization = new StringCriteria({ compare: StringCompareType.AnyString })
 	}
 
 	static fromObject(data: SkillPrereqObj): SkillPrereq {
 		const prereq = new SkillPrereq()
 		prereq.has = data.has
-		if (data.name) prereq.name = new StringCriteria(data.name.compare, data.name.qualifier)
-		if (data.level) prereq.level = new NumericCriteria(data.level.compare, data.level.qualifier)
-		if (data.specialization)
-			prereq.specialization = new StringCriteria(data.specialization.compare, data.specialization.qualifier)
+		if (data.name) prereq.name = new StringCriteria(data.name)
+		if (data.level) prereq.level = new NumericCriteria(data.level)
+		if (data.specialization) prereq.specialization = new StringCriteria(data.specialization)
 		return prereq
 	}
 

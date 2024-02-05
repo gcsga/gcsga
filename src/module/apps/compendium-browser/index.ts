@@ -1,5 +1,5 @@
-import { EquipmentContainerGURPS, EquipmentGURPS, ItemType } from "@item"
-import { SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
+import { EquipmentContainerGURPS, EquipmentGURPS } from "@item"
+import { ActorType, ItemType, SETTINGS, SYSTEM_NAME } from "@data"
 import { UserGURPS } from "@module/user/document.ts"
 import {
 	ErrorGURPS,
@@ -29,7 +29,6 @@ import {
 } from "./tabs/data.ts"
 import * as browserTabs from "./tabs/index.ts"
 import { getSelectedActors } from "@util/token-actor-utils.ts"
-import { ActorType } from "@actor"
 import { PackLoader } from "./loader.ts"
 
 class CompendiumBrowser extends Application {

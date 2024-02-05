@@ -2,6 +2,7 @@ import "../build/lib/foundry-utils.ts"
 import { MockActor } from "./mocks/actor.ts"
 import { MockItem } from "./mocks/item.ts"
 import { MockToken } from "./mocks/token.ts"
+import { MockUser } from "./mocks/user.ts"
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -37,9 +38,12 @@ global.game = Object.freeze({
 	user: {},
 	i18n: {
 		localize: (path: string) => path,
+		format: (stringId: string, _data?: { [key: string]: string | number | boolean | null }) => stringId,
 	},
 })
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+;(global as any).User = MockUser
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ;(global as any).Actor = MockActor
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -52,6 +56,26 @@ global.game = Object.freeze({
 ;(global as any).Roll = class {}
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ;(global as any).Application = class {}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+;(global as any).Dialog = class {}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+;(global as any).ChatMessage = class {}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+;(global as any).Ruler = class {}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+;(global as any).FilePicker = class {}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+;(global as any).JournalEntryPage = class {}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+;(global as any).JournalPageSheet = class {}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+;(global as any).CombatTracker = class {}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+;(global as any).ItemDirectory = class {}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+;(global as any).Combat = class {}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+;(global as any).Combatant = class {}
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ;(global as any).Hooks = class {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any

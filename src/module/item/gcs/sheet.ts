@@ -1,10 +1,9 @@
 import { ContainerSheetGURPS } from "@item/container/sheet.ts"
 import { ItemGCS } from "./document.ts"
 import { CharacterResolver, LocalizeGURPS, Weight } from "@util"
-import { ItemType } from "@item/types.ts"
 import { ItemGURPS } from "@item"
 import { ItemSourceGURPS } from "@item/base/data/index.ts"
-import { SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
+import { ItemType, SETTINGS, SYSTEM_NAME } from "@data"
 
 export class ItemSheetGCS<IType extends ItemGCS = ItemGCS> extends ContainerSheetGURPS<IType> {
 	override activateListeners(html: JQuery<HTMLElement>): void {
@@ -90,7 +89,7 @@ export class ItemSheetGCS<IType extends ItemGCS = ItemGCS> extends ContainerShee
 						sort: (item.sort ?? 0) + 1,
 					}
 					if (!(item.container instanceof CompendiumCollection))
-						await item.container?.createEmbeddedDocuments("Item", [itemData])
+						await item.container?.createEmbeddedDocuments("Item", [itemData], {})
 				},
 			},
 			{

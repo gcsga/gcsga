@@ -18,8 +18,8 @@ export class SpellPointBonus extends BonusOwner {
 		super()
 		this.type = feature.Type.SpellBonus
 		this.match = spellmatch.Type.AllColleges
-		this.name = new StringCriteria(StringCompareType.IsString)
-		this.tags = new StringCriteria(StringCompareType.AnyString)
+		this.name = new StringCriteria({ compare: StringCompareType.IsString })
+		this.tags = new StringCriteria({ compare: StringCompareType.AnyString })
 		this.leveledAmount = new LeveledAmount({ amount: 1 })
 	}
 
@@ -39,8 +39,8 @@ export class SpellPointBonus extends BonusOwner {
 	static fromObject(data: SpellPointBonusObj): SpellPointBonus {
 		const bonus = new SpellPointBonus()
 		bonus.match = data.match
-		if (data.name) bonus.name = new StringCriteria(data.name.compare, data.name.qualifier)
-		if (data.tags) bonus.tags = new StringCriteria(data.tags.compare, data.tags.qualifier)
+		if (data.name) bonus.name = new StringCriteria(data.name)
+		if (data.tags) bonus.tags = new StringCriteria(data.tags)
 		bonus.leveledAmount = LeveledAmount.fromObject(data)
 		return bonus
 	}

@@ -3,10 +3,10 @@ import { LocalizeGURPS } from "./localize.ts"
 import { Study } from "./study.ts"
 import { study } from "./enum/study.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
-import { CharacterGURPS } from "@actor/index.ts"
 import { SkillResolver } from "./resolvers.ts"
 import { SafeString } from "handlebars"
-import { ItemType } from "@item"
+import { ItemType } from "@data"
+import { CharacterGURPS } from "@actor"
 
 class HandlebarsHelpersGURPS {
 	static camelcase(s: string): string {

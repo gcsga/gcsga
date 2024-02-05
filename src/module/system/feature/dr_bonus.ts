@@ -1,11 +1,11 @@
 import { feature } from "@util/enum/feature.ts"
 import { BonusOwner } from "./bonus_owner.ts"
 import { LeveledAmount } from "./leveled_amount.ts"
-import { gid } from "@module/data/misc.ts"
 import { equalFold } from "@util/string_criteria.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { DRBonusObj } from "./data.ts"
+import { gid } from "@data"
 
 export class DRBonus extends BonusOwner {
 	override type = feature.Type.DRBonus

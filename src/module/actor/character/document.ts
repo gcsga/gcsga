@@ -1,4 +1,19 @@
 import { ActorGURPS } from "@actor/base.ts"
+import { EmbeddedItemInstances } from "@actor/types.ts"
+import {
+	ActorFlags,
+	ActorType,
+	ConditionEffect,
+	ConditionID,
+	EFFECT_ACTION,
+	ItemFlags,
+	ItemType,
+	SETTINGS,
+	SYSTEM_NAME,
+	Stringer,
+	TokenPool,
+	gid,
+} from "@data"
 import {
 	AttributeBonus,
 	ConditionalModifierBonus,
@@ -14,53 +29,7 @@ import {
 	SpellPointBonus,
 	WeaponBonus,
 } from "@feature/index.ts"
-import {
-	ConditionEffect,
-	EFFECT_ACTION,
-	SETTINGS,
-	SYSTEM_NAME,
-	Stringer,
-	TokenPool,
-	attrPrefix,
-	gid,
-} from "@module/data/misc.ts"
-import { MoveType, MoveTypeDef, MoveTypeDefObj, MoveTypeObj } from "@module/system/move_type/index.ts"
-import {
-	ResourceTracker,
-	ResourceTrackerDef,
-	ResourceTrackerDefObj,
-	ResourceTrackerObj,
-} from "@module/system/resource_tracker/index.ts"
-import { Attribute } from "@sytem/attribute/object.ts"
-import { attribute } from "@util/enum/attribute.ts"
-import { CharacterFlagDefaults, CharacterFlags, CharacterSource, CharacterSystemSource, Encumbrance } from "./data.ts"
-import { getCurrentTime, urlToBase64 } from "@util/misc.ts"
-import { LocalizeGURPS } from "@util/localize.ts"
-import { SETTINGS_TEMP } from "@module/settings/index.ts"
-import { AttributeDefObj, AttributeObj, ThresholdOp } from "@sytem/attribute/data.ts"
-import { ConditionID } from "@item/condition/data.ts"
-import { Weight, WeightUnits } from "@util/weight.ts"
-import { LengthUnits } from "@util/length.ts"
-import { Evaluator } from "@util/eval.ts"
-import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { ModifierChoiceSheet } from "@item/gcs/mod_sheet.ts"
-import { ActorFlags } from "@actor/base/data.ts"
-import { SheetSettings } from "@module/data/sheet_settings.ts"
-import { AttributeDef } from "@sytem/attribute/attribute_def.ts"
-import { progression } from "@util/enum/progression.ts"
-import {
-	CharacterResolver,
-	FilePickerGURPS,
-	StringCompareType,
-	StringCriteria,
-	damageProgression,
-	equalFold,
-} from "@util/index.ts"
-import { stlimit } from "@util/enum/stlimit.ts"
-import { DiceGURPS } from "@module/dice/index.ts"
-import { HitLocationTable } from "./hit_location.ts"
-import { ConditionalModifier } from "@module/conditional_modifier.ts"
-import { selfctrl } from "@util/enum/selfctrl.ts"
 import {
 	BaseWeaponGURPS,
 	EquipmentContainerGURPS,
@@ -79,21 +48,51 @@ import {
 	TraitContainerGURPS,
 	TraitGURPS,
 } from "@item/index.ts"
-import { SkillDefault } from "@sytem/default/index.ts"
-import { feature } from "@util/enum/feature.ts"
-import { wsel } from "@util/enum/wsel.ts"
-import { skillsel } from "@util/enum/skillsel.ts"
-import { PoolThreshold } from "@sytem/attribute/pool_threshold.ts"
-import { ActorType } from "@actor"
-import { ItemType } from "@item/types.ts"
-import { CharacterSheetGURPS } from "./sheet.ts"
-import { Int } from "@util/fxp.ts"
 import { CR_Features } from "@item/trait/data.ts"
-import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
 import { WeaponType } from "@item/weapon/data.ts"
-import { ItemFlags } from "@item/base/data/system.ts"
-import { EmbeddedItemInstances } from "@actor/types.ts"
+import { ConditionalModifier } from "@module/conditional_modifier.ts"
+import { SheetSettings } from "@module/data/sheet_settings.ts"
+import { DiceGURPS } from "@module/dice/index.ts"
+import { SETTINGS_TEMP } from "@module/settings/index.ts"
+import { MoveType, MoveTypeDef, MoveTypeDefObj, MoveTypeObj } from "@module/system/move_type/index.ts"
+import {
+	ResourceTracker,
+	ResourceTrackerDef,
+	ResourceTrackerDefObj,
+	ResourceTrackerObj,
+} from "@module/system/resource_tracker/index.ts"
+import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
+import { AttributeDef } from "@sytem/attribute/attribute_def.ts"
+import { AttributeDefObj, AttributeObj, ThresholdOp } from "@sytem/attribute/data.ts"
+import { Attribute } from "@sytem/attribute/object.ts"
+import { PoolThreshold } from "@sytem/attribute/pool_threshold.ts"
+import { SkillDefault } from "@sytem/default/index.ts"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { getCurrentTime, urlToBase64 } from "@util"
+import { attribute } from "@util/enum/attribute.ts"
+import { feature } from "@util/enum/feature.ts"
+import { progression } from "@util/enum/progression.ts"
+import { selfctrl } from "@util/enum/selfctrl.ts"
+import { skillsel } from "@util/enum/skillsel.ts"
+import { stlimit } from "@util/enum/stlimit.ts"
+import { wsel } from "@util/enum/wsel.ts"
+import { Evaluator } from "@util/eval.ts"
+import { Int } from "@util/fxp.ts"
 import { CharacterImporter } from "@util/import/character.ts"
+import {
+	CharacterResolver,
+	FilePickerGURPS,
+	StringCompareType,
+	StringCriteria,
+	damageProgression,
+	equalFold,
+} from "@util/index.ts"
+import { LengthUnits } from "@util/length.ts"
+import { LocalizeGURPS } from "@util/localize.ts"
+import { Weight, WeightUnits } from "@util/weight.ts"
+import { CharacterFlagDefaults, CharacterFlags, CharacterSource, CharacterSystemSource, Encumbrance } from "./data.ts"
+import { HitLocationTable } from "./hit_location.ts"
+import { CharacterSheetGURPS } from "./sheet.ts"
 
 interface CharacterGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null>
 	extends ActorGURPS<TParent> {
@@ -736,7 +735,7 @@ class CharacterGURPS<
 
 	// Bonuses
 	get size_modifier_bonus(): number {
-		return this.attributeBonusFor(attrPrefix + gid.SizeModifier, stlimit.Option.None)
+		return this.attributeBonusFor(gid.SizeModifier, stlimit.Option.None)
 	}
 
 	// get striking_st_bonus(): number {
@@ -1537,7 +1536,6 @@ class CharacterGURPS<
 			if (
 				(excludes === null || !excludes.get(item.name!)) &&
 				(item instanceof SkillGURPS || item instanceof TechniqueGURPS) &&
-				// @ts-expect-error idk
 				item.name === name &&
 				(specialization === "" || specialization === item.specialization)
 			) {

@@ -1,5 +1,5 @@
-import { ActorType } from "@actor"
 import { CharacterSheetGURPS, LootSheetGURPS, MookSheetGURPS, StaticCharacterSheetGURPS } from "@actor/sheet.ts"
+import { ActorType, ItemType, SYSTEM_NAME } from "@data"
 import {
 	EffectSheet,
 	EquipmentModifierContainerSheet,
@@ -21,8 +21,6 @@ import {
 	TraitModifierSheet,
 	TraitSheet,
 } from "@item/sheet.ts"
-import { ItemType } from "@item/types.ts"
-import { SYSTEM_NAME } from "@module/data/index.ts"
 import { JournalEntryPageType } from "@module/journal-entry/page/document.ts"
 import { JournalPagePDFEditorSheet } from "@module/journal-entry/page/sheet.ts"
 

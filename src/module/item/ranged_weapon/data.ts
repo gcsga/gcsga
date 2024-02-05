@@ -1,4 +1,4 @@
-import { ItemType } from "@item/types.ts"
+import { ItemType } from "@data"
 import { BaseWeaponSource, BaseWeaponSystemSource } from "@item/weapon/data.ts"
 
 export type RangedWeaponSource = BaseWeaponSource<ItemType.RangedWeapon, RangedWeaponSystemSource>

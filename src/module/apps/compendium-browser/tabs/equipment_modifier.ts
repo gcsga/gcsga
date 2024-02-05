@@ -1,10 +1,9 @@
 import { ContentTabName, TabName } from "../data.ts"
 import { CompendiumBrowserTab } from "./base.ts"
 import { CompendiumBrowserIndexData, EquipmentModifierFilters } from "./data.ts"
-import { SYSTEM_NAME } from "@module/data/index.ts"
-import { ItemType } from "@item/types.ts"
 import { LocalizeGURPS } from "@util"
 import { CompendiumBrowser } from "../index.ts"
+import { ItemType, SYSTEM_NAME } from "@data"
 
 export class CompendiumBrowserEquipmentModifierTab extends CompendiumBrowserTab {
 	tabName: ContentTabName = TabName.EquipmentModifier

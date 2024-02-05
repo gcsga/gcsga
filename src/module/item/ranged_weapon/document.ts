@@ -6,16 +6,17 @@ import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { WeaponROF } from "@item/weapon/weapon_rof.ts"
 import { WeaponShots } from "@item/weapon/weapon_shots.ts"
 import { WeaponBulk } from "@item/weapon/weapon_bulk.ts"
-import { RollType, SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
+import { ItemFlags, ItemType, RollType, SETTINGS, SYSTEM_NAME } from "@data"
 import { WeaponRecoil } from "@item/weapon/weapon_recoil.ts"
 import { includesFold } from "@util/string_criteria.ts"
-import { ItemFlags } from "@item/base/data/system.ts"
 import { CharacterResolver } from "@util"
 import { ActorGURPS, CharacterGURPS } from "@actor"
 
 export interface RangedWeaponGURPS<TParent extends ActorGURPS | null> extends BaseWeaponGURPS<TParent> {
 	readonly _source: RangedWeaponSource
 	system: RangedWeaponSystemSource
+
+	type: ItemType.RangedWeapon
 }
 
 export class RangedWeaponGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends BaseWeaponGURPS<TParent> {

@@ -1,6 +1,7 @@
+import { ItemType } from "@data"
 import { FeatureObj, SkillBonus } from "@feature/index.ts"
-import { ItemGCSSource, ItemGCSSystemSource } from "@item/gcs/data.ts"
-import { ItemType } from "@item/types.ts"
+import { BaseContainerSource } from "@item/container/data.ts"
+import { ItemGCSSystemSource } from "@item/gcs/data.ts"
 import { PrereqListObj } from "@prereq/data.ts"
 import { selfctrl } from "@util/enum/selfctrl.ts"
 import { skillsel } from "@util/enum/skillsel.ts"
@@ -8,7 +9,7 @@ import { study } from "@util/enum/study.ts"
 import { StringCompareType } from "@util/string_criteria.ts"
 import { Study } from "@util/study.ts"
 
-export type TraitSource = ItemGCSSource<ItemType.Trait, TraitSystemSource>
+export type TraitSource = BaseContainerSource<ItemType.Trait, TraitSystemSource>
 
 export interface TraitSystemSource extends ItemGCSSystemSource {
 	type: ItemType.Trait

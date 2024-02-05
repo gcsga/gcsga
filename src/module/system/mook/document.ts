@@ -1,6 +1,23 @@
+import { CharacterSource, Encumbrance } from "@actor/character/data.ts"
+import { CharacterGURPS } from "@actor/index.ts"
+import { ItemFlags, ItemType, SETTINGS, SYSTEM_NAME, gid } from "@data"
+import { SkillGURPS } from "@item"
+import { ItemSourceGURPS, TraitSource } from "@item/base/data/index.ts"
+import { MeleeWeaponSource } from "@item/melee_weapon/data.ts"
+import { NoteSource } from "@item/note/data.ts"
+import { RangedWeaponSource } from "@item/ranged_weapon/data.ts"
+import { SkillSource } from "@item/skill/data.ts"
+import { SpellSource } from "@item/spell/data.ts"
+import { SpellGURPS } from "@item/spell/document.ts"
+import { TraitModifierSource } from "@item/trait_modifier/data.ts"
+import { DiceGURPS } from "@module/dice/index.ts"
+import { AttributeDef } from "@sytem/attribute/attribute_def.ts"
 import { AttributeDefObj, AttributeObj } from "@sytem/attribute/data.ts"
+import { Attribute } from "@sytem/attribute/object.ts"
 import { MoveTypeDefObj } from "@sytem/move_type/data.ts"
+import { attribute } from "@util/enum/attribute.ts"
 import { progression } from "@util/enum/progression.ts"
+import { damageProgression } from "@util/index.ts"
 import {
 	MookData,
 	MookEquipment,
@@ -13,24 +30,6 @@ import {
 	MookTrait,
 	MookTraitModifier,
 } from "./data.ts"
-import { DiceGURPS } from "@module/dice/index.ts"
-import { CharacterSource, Encumbrance } from "@actor/character/data.ts"
-import { SETTINGS, SYSTEM_NAME, gid } from "@module/data/index.ts"
-import { damageProgression } from "@util/index.ts"
-import { Attribute } from "@sytem/attribute/object.ts"
-import { attribute } from "@util/enum/attribute.ts"
-import { CharacterGURPS } from "@actor/index.ts"
-import { SkillGURPS } from "@item"
-import { SpellGURPS } from "@item/spell/document.ts"
-import { AttributeDef } from "@sytem/attribute/attribute_def.ts"
-import { ItemFlags } from "@item/base/data/system.ts"
-import { TraitModifierSource } from "@item/trait_modifier/data.ts"
-import { SkillSource } from "@item/skill/data.ts"
-import { SpellSource } from "@item/spell/data.ts"
-import { MeleeWeaponSource } from "@item/melee_weapon/data.ts"
-import { RangedWeaponSource } from "@item/ranged_weapon/data.ts"
-import { NoteSource } from "@item/note/data.ts"
-import { ItemSourceGURPS, ItemType, TraitSource } from "@item/base/data/index.ts"
 
 export class Mook {
 	type = "mook"

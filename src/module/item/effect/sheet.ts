@@ -1,8 +1,7 @@
 import { ItemSheetDataGURPS, ItemSheetGURPS, ItemSheetOptions } from "@item/base/sheet.ts"
 import { EffectGURPS } from "./document.ts"
-import { SYSTEM_NAME } from "@module/data/index.ts"
-import { ItemType } from "@item"
 import { DurationType } from "./data.ts"
+import { ItemType, SYSTEM_NAME } from "@data"
 
 export class EffectSheet<IType extends EffectGURPS = EffectGURPS> extends ItemSheetGURPS<IType> {
 	static override get defaultOptions(): ItemSheetOptions {

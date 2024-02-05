@@ -90,7 +90,7 @@ export class RollGURPS extends Roll {
 
 		return rollTypeHandlers[data.type as RollType].handleRollType(
 			user,
-			actor as CharacterGURPS,
+			actor,
 			data as RollTypeData,
 			game.settings.get(SYSTEM_NAME, SETTINGS.ROLL_FORMULA) || "3d6",
 			data.hidden ?? false,

@@ -1,6 +1,6 @@
 import { IDamageCalculator, createDamageCalculator } from "./damage_calculator.ts"
 import { DamageRoll, DamageTarget } from "./index.ts"
-import { SETTINGS, SYSTEM_NAME, gid } from "@module/data/misc.ts"
+import { SETTINGS, SYSTEM_NAME, gid } from "@data"
 import { HitLocationUtil } from "./hitlocation_utils.ts"
 import { DamageTypes } from "./damage_type.ts"
 import { LocalizeGURPS, PDF } from "@util"

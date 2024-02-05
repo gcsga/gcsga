@@ -1,11 +1,10 @@
 import { sanitize } from "@util"
 import { MookData, MookMelee, MookRanged, MookSkill, MookSpell, MookTrait, MookTraitModifier } from "./data.ts"
 import { Mook } from "./document.ts"
-import { SETTINGS, SYSTEM_NAME, gid } from "@module/data/misc.ts"
+import { ItemType, SETTINGS, SYSTEM_NAME, gid } from "@data"
 import { difficulty } from "@util/enum/difficulty.ts"
 import { stdmg } from "@util/enum/stdmg.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
-import { ItemType } from "@item"
 import { WeaponDamageObj } from "@item/weapon/data.ts"
 
 const regex_points = /\[(-?\d+)\]/

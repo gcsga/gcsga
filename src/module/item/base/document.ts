@@ -1,20 +1,26 @@
-import { ContainerGURPS } from "@item/container/document.ts"
-import { SYSTEM_NAME } from "@module/data/index.ts"
-import { ItemModificationContextGURPS, ItemType } from "@item/types.ts"
-import { ItemFlags, ItemSourceGURPS } from "./data/index.ts"
+import { ActorGURPS } from "@actor/base.ts"
+import { ItemFlagsGURPS, ItemSourceGURPS } from "./data/index.ts"
+import { ItemSystemSource } from "./data/system.ts"
 import { CharacterResolver } from "@util"
-import { BaseItemSourceGURPS, ItemSystemSource } from "./data/system.ts"
-import { ActorGURPS } from "@actor"
+import { ItemFlags, ItemType, SYSTEM_NAME } from "@data"
+import type { ContainerGURPS } from "@item/container/document.ts"
+import { ItemInstances } from "@item/types.ts"
 
-export interface ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends Item<TParent> {
-	readonly _source: BaseItemSourceGURPS
+interface ItemModificationContextGURPS<TParent extends ActorGURPS | null> extends DocumentModificationContext<TParent> {
+	noPrepare?: boolean
+}
+
+interface ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends Item<TParent> {
+	flags: ItemFlagsGURPS
+	readonly _source: ItemSourceGURPS
 	system: ItemSystemSource
-	type: this["_source"]["type"]
+
+	type: ItemType
 
 	get actor(): TParent
 }
 
-export class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends Item<TParent> {
+class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends Item<TParent> {
 	declare _dummyActor: CharacterResolver | null
 
 	// _source!: SourceType
@@ -44,9 +50,7 @@ export class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> ex
 		options: Partial<FormApplicationOptions> = {},
 	): Promise<ItemGURPS | null> {
 		const original = game.system.documentTypes.Item
-		game.system.documentTypes.Item = original.filter(
-			(itemType: string) => ![ItemType.Condition].includes(itemType as ItemType),
-		)
+		game.system.documentTypes.Item = original.filter((itemType: string) => !["condition"].includes(itemType))
 		options = { ...options, classes: [...(options.classes ?? []), "dialog-item-create"] }
 		const newItem = super.createDialog(data, options) as Promise<ItemGURPS | null>
 		game.system.documentTypes.Item = original
@@ -70,13 +74,15 @@ export class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> ex
 		this._dummyActor = actor
 	}
 
-	get container(): Actor | ContainerGURPS | CompendiumCollection<CompendiumDocument> | null {
+	get container(): ActorGURPS | ContainerGURPS | CompendiumCollection<CompendiumDocument> | null {
 		if (!this.actor && !this.pack) return null
-		const id = this.getFlag(SYSTEM_NAME, ItemFlags.Container) as string | null
+		const id = this.flags[SYSTEM_NAME][ItemFlags.Container]
 		if (id === null) return this.actor ?? this.compendium ?? null
-		if (this.actor) return (this.actor?.items.get(id) as unknown as ContainerGURPS) ?? null
-		if (this.compendium)
-			return (fromUuidSync(`Compendium.${this.pack}.Item.${id}`) as unknown as ContainerGURPS) ?? null
+		if (this.actor) {
+			// @ts-expect-error avoiding circular dependencies
+			return this.actor.items.get(id)
+		}
+		if (this.compendium) return (fromUuidSync(`Compendium.${this.pack}.Item.${id}`) as ContainerGURPS) ?? null
 		return null
 	}
 
@@ -101,22 +107,30 @@ export class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> ex
 		super.prepareData()
 	}
 
-	sameSection(compare: ItemGURPS): boolean {
-		const traits = [ItemType.Trait, ItemType.TraitContainer]
-		const skills = [ItemType.Skill, ItemType.Technique, ItemType.SkillContainer]
-		const spells = [ItemType.Spell, ItemType.RitualMagicSpell, ItemType.SpellContainer]
-		const equipment = [ItemType.Equipment, ItemType.EquipmentContainer]
-		const notes = [ItemType.Note, ItemType.NoteContainer]
-		const sections = [traits, skills, spells, equipment, notes]
-		for (const i of sections) {
-			if (i.includes(this.type) && i.includes(compare.type)) return true
-		}
+	sameSection(_compare: ItemGURPS): boolean {
+		// const traits = ["trait", "trait_container"]
+		// const skills = [ItemType.Skill, ItemType.Technique, ItemType.SkillContainer]
+		// const spells = [ItemType.Spell, ItemType.RitualMagicSpell, ItemType.SpellContainer]
+		// const equipment = [ItemType.Equipment, ItemType.EquipmentContainer]
+		// const notes = [ItemType.Note, ItemType.NoteContainer]
+		// const sections = [traits, skills, spells, equipment, notes]
+		// for (const i of sections) {
+		// 	if (i.includes(this.type) && i.includes(compare.type)) return true
+		// }
 		return false
+	}
+
+	/** A means of checking this actor's type without risk of circular import references */
+	isOfType<T extends ItemType>(...types: T[]): this is ItemInstances<TParent>[T]
+	isOfType(...types: string[]): boolean {
+		return types.some(t => this.type === t)
 	}
 }
 
-export const ItemProxyGURPS = new Proxy(ItemGURPS, {
+const ItemProxyGURPS = new Proxy(ItemGURPS, {
 	construct(_target, args: [source: ItemSourceGURPS, context: DocumentConstructionContext<ActorGURPS | null>]) {
-		return CONFIG.GURPS.Item.documentClasses[args[0]?.type as ItemType] ?? ItemGURPS
+		return CONFIG.GURPS.Item.documentClasses[args[0]?.type] ?? ItemGURPS
 	},
 })
+
+export { ItemGURPS, ItemProxyGURPS }

@@ -1,6 +1,6 @@
 import { ActorSourceGURPS } from "@actor/data/index.ts"
+import { MigrationRecord } from "@data"
 import { ItemSourceGURPS } from "@item/base/data/index.ts"
-import { MigrationRecord } from "@module/data/misc.ts"
 import { MigrationBase } from "@module/migration/base.ts"
 import { SceneGURPS } from "@scene"
 import { TokenDocumentGURPS } from "@scene/token-document/index.ts"

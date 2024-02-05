@@ -1,4 +1,4 @@
-import { SYSTEM_NAME } from "@module/data/misc.ts"
+import { SYSTEM_NAME } from "@data"
 import { htmlClosest, htmlQuery } from "@util/dom.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import * as R from "remeda"

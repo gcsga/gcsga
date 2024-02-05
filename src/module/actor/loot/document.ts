@@ -1,17 +1,15 @@
-import { ActorGURPS, ActorType } from "@actor"
+import { ActorGURPS } from "@actor"
 import { LootSettings, LootSource, LootSystemSource } from "./data.ts"
 import { FilePickerGURPS, LocalizeGURPS, Weight, WeightUnits } from "@util"
 import { Int } from "@util/fxp.ts"
-import { ItemType } from "@item/types.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
-import { SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
 import { DialogGURPS } from "@ui"
 import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
 import { EquipmentContainerGURPS, EquipmentGURPS, ItemGCS } from "@item"
 import { EmbeddedItemInstances } from "@actor/types.ts"
 import { ModifierChoiceSheet } from "@item/gcs/mod_sheet.ts"
-import { ItemFlags } from "@item/base/data/system.ts"
 import { CharacterImporter } from "@util/import/character.ts"
+import { ActorType, ItemFlags, ItemType, SETTINGS, SYSTEM_NAME } from "@data"
 
 interface LootGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null> extends ActorGURPS<TParent> {
 	system: LootSystemSource

@@ -1,4 +1,5 @@
-import { ActorType, CharacterGURPS, LootGURPS, StaticCharacterGURPS } from "@actor"
+import { CharacterGURPS, LootGURPS, StaticCharacterGURPS } from "@actor"
+import { ActorType, ItemType, ModifierItem } from "@data"
 import {
 	AttributeBonus,
 	ConditionalModifierBonus,
@@ -36,8 +37,6 @@ import {
 	TraitModifierContainerGURPS,
 	TraitModifierGURPS,
 } from "@item/index.ts"
-import { ItemType } from "@item/types.ts"
-import { ModifierItem } from "@module/data/misc.ts"
 import { JournalEntryPageGURPS, JournalEntryPagePDF } from "@module/journal-entry/page/document.ts"
 import {
 	AttributePrereq,

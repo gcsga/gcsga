@@ -1,5 +1,4 @@
-import { ItemType } from "@item/types.ts"
-import { SYSTEM_NAME } from "@module/data/index.ts"
+import { ItemType, SYSTEM_NAME } from "@data"
 import { ContentTabName, TabName } from "../data.ts"
 import { CompendiumBrowser } from "../index.ts"
 import { CompendiumBrowserTab } from "./base.ts"

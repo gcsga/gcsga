@@ -7,8 +7,8 @@ import {
 	StaticThresholdOperator,
 } from "./data.ts"
 import { UserGURPS } from "@module/user/document.ts"
-import { ActorType } from "@actor"
 import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
+import { ActorType } from "@data"
 
 export interface StaticCharacterGURPS<TParent extends TokenDocumentGURPS | null> extends ActorGURPS<TParent> {
 	type: ActorType.LegacyCharacter | ActorType.LegacyEnemy

@@ -37,7 +37,7 @@ interface GameGURPS
 		CombatGURPS,
 		ItemGURPS<null>,
 		Macro,
-		Scene,
+		SceneGURPS,
 		UserGURPS
 	> {
 	gurps: {

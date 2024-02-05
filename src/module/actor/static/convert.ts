@@ -1,8 +1,8 @@
 import { CharacterGURPS } from "@actor"
 import { StaticCharacterGURPS } from "./document.ts"
 import { CharacterSystemSource } from "@actor/character/data.ts"
-import { SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
 import { StaticResourceThreshold, StaticThresholdComparison } from "./data.ts"
+import { SETTINGS, SYSTEM_NAME } from "@data"
 
 export class CharacterConverter {
 	public static update(actor: StaticCharacterGURPS): CharacterGURPS {

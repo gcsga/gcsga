@@ -2,7 +2,7 @@
 // const GURPS: any = {}
 // let StaticHitLocation: any = {}
 
-import { d6ify } from "@util"
+import { d6ify } from "@util/misc.ts"
 import { OptionalCheckParameters, OtFAction, OtFDamageAction, ParsedOtF } from "./base.ts"
 import { gspan } from "./utils.ts"
 

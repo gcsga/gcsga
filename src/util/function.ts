@@ -3,7 +3,7 @@ import { CharacterResolver, SkillResolver, TraitContainerResovler, TraitResolver
 import { equalFold } from "./string_criteria.ts"
 import { Length } from "./length.ts"
 import { Evaluator } from "./eval.ts"
-import { ItemType } from "@item"
+import { ItemType } from "@data"
 
 export type eFunction = (e: Evaluator, a: string) => unknown
 

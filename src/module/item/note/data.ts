@@ -1,7 +1,8 @@
-import { ItemGCSSource, ItemGCSSystemSource } from "@item/gcs/data.ts"
-import { ItemType } from "@item/types.ts"
+import { ItemType } from "@data"
+import { BaseContainerSource } from "@item/container/data.ts"
+import { ItemGCSSystemSource } from "@item/gcs/data.ts"
 
-export type NoteSource = ItemGCSSource<ItemType.Note, NoteSystemSource>
+export type NoteSource = BaseContainerSource<ItemType.Note, NoteSystemSource>
 
 export interface NoteSystemSource extends ItemGCSSystemSource {
 	type: ItemType.Note

@@ -8,8 +8,7 @@ import { CharacterResolver, LocalizeGURPS, LootResolver } from "@util/index.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { SpellGURPS } from "@item/spell/document.ts"
 import { RitualMagicSpellGURPS } from "@item"
-import { ActorType } from "@actor"
-import { ItemType } from "@item/types.ts"
+import { ActorType, ItemType } from "@data"
 
 export class SpellPrereq extends BasePrereq {
 	override type = prereq.Type.Spell
@@ -23,16 +22,16 @@ export class SpellPrereq extends BasePrereq {
 	constructor() {
 		super(prereq.Type.Spell)
 		this.sub_type = spellcmp.Type.Name
-		this.qualifier = new StringCriteria(StringCompareType.IsString)
-		this.quantity = new NumericCriteria(NumericCompareType.AtLeastNumber, 1)
+		this.qualifier = new StringCriteria({ compare: StringCompareType.IsString })
+		this.quantity = new NumericCriteria({ compare: NumericCompareType.AtLeastNumber, qualifier: 1 })
 	}
 
 	static fromObject(data: SpellPrereqObj): SpellPrereq {
 		const prereq = new SpellPrereq()
 		prereq.has = data.has
 		if (data.sub_type) prereq.sub_type = data.sub_type
-		if (data.qualifier) prereq.qualifier = new StringCriteria(data.qualifier.compare, data.qualifier.qualifier)
-		if (data.quantity) prereq.quantity = new NumericCriteria(data.quantity.compare, data.quantity.qualifier)
+		if (data.qualifier) prereq.qualifier = new StringCriteria(data.qualifier)
+		if (data.quantity) prereq.quantity = new NumericCriteria(data.quantity)
 		return prereq
 	}
 

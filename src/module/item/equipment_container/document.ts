@@ -5,8 +5,7 @@ import { display } from "@util/enum/display.ts"
 import { StringBuilder } from "@util/string_builder.ts"
 import { sheetSettingsFor } from "@module/data/sheet_settings.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
-import { Weight, WeightUnits } from "@util/weight.ts"
+import { Weight, WeightString, WeightUnits } from "@util/weight.ts"
 import { EquipmentGURPS, extendedWeightAdjustedForModifiers } from "@item/equipment/document.ts"
 import {
 	EquipmentModifierGURPS,
@@ -16,13 +15,15 @@ import {
 import { EquipmentModifierContainerGURPS } from "@item/equipment_modifier_container/document.ts"
 import { Int } from "@util/fxp.ts"
 import { CharacterResolver } from "@util"
-import { ItemFlags } from "@item/base/data/system.ts"
 import { CharacterGURPS } from "@actor"
+import { ItemFlags, ItemType, SETTINGS, SYSTEM_NAME } from "@data"
 
 export interface EquipmentContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null>
 	extends ItemGCS<TParent> {
 	readonly _source: EquipmentContainerSource
 	system: EquipmentContainerSystemSource
+
+	type: ItemType.EquipmentContainer
 }
 
 export class EquipmentContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
@@ -84,7 +85,7 @@ export class EquipmentContainerGURPS<TParent extends ActorGURPS | null = ActorGU
 		return default_settings.default_weight_units
 	}
 
-	get weightString(): string {
+	get weightString(): WeightString {
 		return Weight.format(this.weight, this.weightUnits)
 	}
 

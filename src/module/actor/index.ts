@@ -9,5 +9,3 @@ export { StaticCharacterGURPS } from "./static/document.ts"
 
 // Loot
 export { LootGURPS } from "./loot/document.ts"
-
-export { ActorType } from "./types.ts"

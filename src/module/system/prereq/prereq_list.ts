@@ -2,9 +2,11 @@ import { prereq } from "@util/enum/prereq.ts"
 import { NumericCompareType, NumericCriteria } from "@util/numeric_criteria.ts"
 import { BasePrereq } from "./base.ts"
 import { PrereqListObj } from "./data.ts"
-import { CharacterResolver, LocalizeGURPS, LootResolver, extractTechLevel } from "@util/index.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
-import { ActorType } from "@actor"
+import { ActorType } from "@data"
+import { CharacterResolver, LootResolver } from "@util/resolvers.ts"
+import { extractTechLevel } from "@util/misc.ts"
+import { LocalizeGURPS } from "@util/localize.ts"
 
 export class PrereqList {
 	type: prereq.Type

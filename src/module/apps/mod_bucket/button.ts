@@ -1,4 +1,4 @@
-import { RollType, SYSTEM_NAME } from "@module/data/misc.ts"
+import { RollType, SYSTEM_NAME } from "@data"
 import { ModifierBucketWindow } from "./window.ts"
 import { UserFlags, UserGURPS } from "@module/user/index.ts"
 import { LastActor } from "@util"
@@ -101,7 +101,7 @@ export class ModifierBucket extends Application {
 	// Roll 3d6
 	private async _onDiceClick(event: JQuery.ClickEvent): Promise<void> {
 		event.preventDefault()
-		return RollGURPS.handleRoll(game.user, null, {
+		return RollGURPS.handleRoll(game.user, game.user.character, {
 			type: RollType.Generic,
 			formula: "3d6",
 			hidden: event.ctrlKey,

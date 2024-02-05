@@ -1,14 +1,13 @@
-import { SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
-import { StaticResourceTracker, StaticThresholdComparison, StaticThresholdOperator } from "./data.ts"
-import { StaticCharacterGURPS } from "./document.ts"
-import { FilePickerGURPS, LocalizeGURPS, prepareFormData } from "@util"
-// import { StaticCharacterImporter } from "./import.ts"
-import { ActorType, CharacterGURPS } from "@actor"
-import { CharacterImporter } from "@actor/character/import.ts"
-import { CharacterConverter } from "./convert.ts"
-import { DnD } from "@util/drag_drop.ts"
+import { CharacterGURPS } from "@actor"
+import { ActorType, SETTINGS, SYSTEM_NAME } from "@data"
 import { DropDataType } from "@module/apps/damage_calculator/damage_chat_message.ts"
 import { GURPSCONFIG } from "@scripts/config/index.ts"
+import { FilePickerGURPS, LocalizeGURPS, prepareFormData } from "@util"
+import { DnD } from "@util/drag_drop.ts"
+import { CharacterImporter } from "@util/import/character.ts"
+import { CharacterConverter } from "./convert.ts"
+import { StaticResourceTracker, StaticThresholdComparison, StaticThresholdOperator } from "./data.ts"
+import { StaticCharacterGURPS } from "./document.ts"
 
 type StaticCharacterSheetConfigOptions = FormApplicationOptions & {}
 
@@ -185,7 +184,7 @@ export class StaticCharacterSheetConfig<
 			request.onload = () => {
 				if (request.status === 200) {
 					const text = request.response
-					CharacterImporter.import(new_actor, {
+					CharacterImporter.importCharacter(new_actor, {
 						text: text,
 						name: file_path,
 						path: import_path,

@@ -10,13 +10,14 @@ import {
 	parsedFunction,
 } from "./operator/types.ts"
 import { CharacterResolver } from "./resolvers.ts"
+import { CharacterGURPS } from "@actor"
 
 type NewType = Operand
 
 // Evaluator is used to evaluate an expression. If you do not have any variables that will be resolved, you can leave
 // Resolver unset.
 class Evaluator {
-	resolver: CharacterResolver | Mook
+	resolver: CharacterGURPS | CharacterResolver | Mook
 
 	operators: Operator[] = evalOperators(true)
 
@@ -27,7 +28,7 @@ class Evaluator {
 	operatorStack: expressionOperator[] = []
 
 	constructor(data: {
-		resolver: CharacterResolver | Mook
+		resolver: CharacterGURPS | CharacterResolver | Mook
 		operators?: Operator[]
 		functions?: Map<string, eFunction>
 	}) {
@@ -310,7 +311,7 @@ export { Evaluator }
  * @param expression
  * @param resolver
  */
-export function evaluateToNumber(expression: string, resolver: CharacterResolver | Mook): number {
+export function evaluateToNumber(expression: string, resolver: CharacterGURPS | CharacterResolver | Mook): number {
 	let result: Operand = 0
 	try {
 		result = new Evaluator({ resolver: resolver }).evaluate(expression)

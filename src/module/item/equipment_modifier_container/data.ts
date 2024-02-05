@@ -1,7 +1,8 @@
-import { ItemGCSSource, ItemGCSSystemSource } from "@item/gcs/data.ts"
-import { ItemType } from "@item/types.ts"
+import { ItemType } from "@data"
+import { BaseContainerSource } from "@item/container/data.ts"
+import { ItemGCSSystemSource } from "@item/gcs/data.ts"
 
-export type EquipmentModifierContainerSource = ItemGCSSource<
+export type EquipmentModifierContainerSource = BaseContainerSource<
 	ItemType.EquipmentModifierContainer,
 	EquipmentModifierContainerSystemSource
 >

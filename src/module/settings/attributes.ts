@@ -1,4 +1,4 @@
-import { EFFECT_ACTION, SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
+import { ConditionID, EFFECT_ACTION, SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
 import { PartialSettingsData, SettingsMenuGURPS } from "./menu.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { htmlClosest, htmlQuery } from "@util/dom.ts"
@@ -6,7 +6,6 @@ import { getNewAttributeId, prepareFormData } from "@util/misc.ts"
 import { attribute } from "@util/enum/attribute.ts"
 import { DnD } from "@util/drag_drop.ts"
 import { defaultSettings } from "./defaults.ts"
-import { ConditionID } from "@item/condition/data.ts"
 import { DropDataType } from "@module/apps/damage_calculator/damage_chat_message.ts"
 
 enum ListType {

@@ -1,5 +1,5 @@
 import { PartialSettingsData, SettingsMenuGURPS } from "./menu.ts"
-import { SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
+import { SETTINGS, SYSTEM_NAME } from "@data"
 import { defaultSettings } from "./defaults.ts"
 import { HitLocationData } from "@actor/character/hit_location.ts"
 import { htmlClosest, htmlQuery } from "@util/dom.ts"

@@ -1,8 +1,8 @@
 import { feature } from "@util/enum/feature.ts"
 import { BonusOwner } from "./bonus_owner.ts"
 import { LeveledAmount } from "./leveled_amount.ts"
-import { gid } from "@module/data/misc.ts"
 import { MoveBonusObj, MoveBonusType } from "./data.ts"
+import { gid } from "@data"
 
 export class MoveBonus extends BonusOwner {
 	override type = feature.Type.MoveBonus

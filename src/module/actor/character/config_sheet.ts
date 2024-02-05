@@ -1,15 +1,15 @@
 import { AttributeDefObj } from "@sytem/attribute/data.ts"
-import { CharacterGURPS } from "./document.ts"
 import { ResourceTrackerDefObj } from "@sytem/resource_tracker/data.ts"
 import { HitLocationData, HitLocationTable, HitLocationTableData } from "./hit_location.ts"
 import { MoveTypeDefObj, MoveTypeOverrideConditionType } from "@sytem/move_type/data.ts"
-import { SETTINGS, SYSTEM_NAME, gid } from "@module/data/misc.ts"
+import { SETTINGS, SYSTEM_NAME, gid } from "@data"
 import { FilePickerGURPS, LocalizeGURPS, PDF, getNewAttributeId, prepareFormData } from "@util"
 import { GURPSCONFIG } from "@scripts/config/index.ts"
 import { attribute } from "@util/enum/attribute.ts"
-import { CharacterImporter } from "./import.ts"
 import { DnD } from "@util/drag_drop.ts"
 import { DropDataType } from "@module/apps/damage_calculator/damage_chat_message.ts"
+import { CharacterImporter } from "@util/import/character.ts"
+import { CharacterGURPS } from "@actor"
 
 type ListType =
 	| DropDataType.Attributes
@@ -34,10 +34,8 @@ interface CharacterSheetConfigData<TActor extends CharacterGURPS> extends FormAp
 	config: typeof GURPSCONFIG
 }
 
-export interface CharacterSheetConfig<
-	TActor extends CharacterGURPS = CharacterGURPS,
-	TOptions extends CharacterSheetConfigOptions = CharacterSheetConfigOptions,
-> extends FormApplication<TActor, TOptions> {
+export interface CharacterSheetConfig<TActor extends CharacterGURPS, TOptions extends CharacterSheetConfigOptions>
+	extends FormApplication<TActor, TOptions> {
 	object: TActor
 }
 
@@ -427,7 +425,7 @@ export class CharacterSheetConfig<
 			request.onload = () => {
 				if (request.status === 200) {
 					const text = request.response
-					CharacterImporter.import(this.object, {
+					CharacterImporter.importCharacter(this.object, {
 						text: text,
 						name: file_path,
 						path: import_path,
@@ -445,7 +443,7 @@ export class CharacterSheetConfig<
 			const file = this.file
 			this.file = undefined
 			this.filename = ""
-			CharacterImporter.import(this.object, file)
+			CharacterImporter.importCharacter(this.object, file)
 		}
 	}
 

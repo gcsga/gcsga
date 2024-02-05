@@ -1,6 +1,6 @@
-import * as ItemInstance from "@item"
 import { ActorGURPS } from "@actor"
-import { ItemType } from "./base/data/index.ts"
+import { ItemType } from "@data"
+import * as ItemInstance from "@item"
 
 interface ItemInstances<TParent extends ActorGURPS | null> {
 	[ItemType.Trait]: ItemInstance.TraitGURPS<TParent>
@@ -26,9 +26,4 @@ interface ItemInstances<TParent extends ActorGURPS | null> {
 	[ItemType.RangedWeapon]: ItemInstance.RangedWeaponGURPS<TParent>
 }
 
-interface ItemModificationContextGURPS<TParent extends ActorGURPS | null> extends DocumentModificationContext<TParent> {
-	noPrepare?: boolean
-}
-
-export { ItemType }
-export type { ItemInstances, ItemModificationContextGURPS }
+export type { ItemInstances }

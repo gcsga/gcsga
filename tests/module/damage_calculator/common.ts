@@ -151,7 +151,7 @@ export class _TargetTraitModifier implements TargetTraitModifier {
 export class DamageHitLocation extends HitLocation {
 	_map: Map<string, number> = new Map()
 
-	override _DR(_tooltip?: TooltipGURPS, _drMap: Map<string, number> = new Map()): Map<string, number> {
+	override _DR(_tooltip: TooltipGURPS | null, _drMap: Map<string, number> = new Map()): Map<string, number> {
 		return this._map
 	}
 }

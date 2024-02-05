@@ -1,4 +1,4 @@
-import { ActorGURPS, ActorType } from "@actor"
+import { ActorGURPS, CharacterGURPS } from "@actor"
 import {
 	CharacterFlagDefaults,
 	CharacterFlags,
@@ -35,11 +35,9 @@ import { ItemImporter, LengthUnits, LocalizeGURPS, WeightUnits, getCurrentTime }
 import { display } from "@util/enum/display.ts"
 import { ResourceTrackerDefObj, ResourceTrackerObj } from "@sytem/resource_tracker/data.ts"
 import { MoveTypeDefObj, MoveTypeObj, MoveTypeOverrideObj } from "@sytem/move_type/data.ts"
-import { ManeuverID } from "@item/condition/data.ts"
 import { ItemSourceGURPS } from "@item/base/data/index.ts"
-import { SYSTEM_NAME } from "@module/data/misc.ts"
-import { ActorFlags } from "@actor/base/data.ts"
 import { ChatMessageGURPS } from "@module/chat-message/document.ts"
+import { ActorFlags, ActorType, ManeuverID, SYSTEM_NAME } from "@data"
 
 const GCS_FILE_VERSION = 4
 
@@ -56,8 +54,8 @@ export class CharacterImporter {
 		})
 	}
 
-	static async importCharacter(
-		document: ActorGURPS,
+	static async importCharacter<TActor extends ActorGURPS>(
+		document: TActor,
 		file: { text: string; name: string; path: string },
 	): Promise<void> {
 		const data = JSON.parse(file.text) as ImportedCharacterSystemSource
@@ -118,7 +116,7 @@ export class CharacterImporter {
 		await document.update(actorData, { diff: false, recursive: false })
 
 		// Refresh the config sheet if it is rendered
-		if (document.sheet.config?.rendered) document.sheet.config.render(true)
+		if (document instanceof CharacterGURPS) if (document.sheet.config?.rendered) document.sheet.config.render(true)
 	}
 
 	static importPointsRecord(data: ImportedPointsRecord[]): PointsRecord[] {

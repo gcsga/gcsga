@@ -1,17 +1,17 @@
 import { ActorGURPS } from "@actor"
-import { SkillContainerSystemSource } from "./data.ts"
+import { SkillContainerSource, SkillContainerSystemSource } from "./data.ts"
 import { ItemGCS, SkillGURPS, TechniqueGURPS } from "@item/index.ts"
-import { ItemType } from "@item/types.ts"
+import { ItemType } from "@data"
 
 export interface SkillContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
+	readonly _source: SkillContainerSource
 	system: SkillContainerSystemSource
+
 	type: ItemType.SkillContainer
+	get children(): Collection<SkillGURPS | TechniqueGURPS | SkillContainerGURPS>
 }
 export class SkillContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	// Embedded Items
-	override get children(): Collection<SkillGURPS | TechniqueGURPS | SkillContainerGURPS> {
-		return super.children as Collection<SkillGURPS | TechniqueGURPS | SkillContainerGURPS>
-	}
 
 	adjustedPoints(): number {
 		return this.points

@@ -3,7 +3,7 @@ import { HitLocationTableOwner } from "@util/resolvers.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { gid } from "@module/data/index.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { ActorGURPS } from "@actor"
+import { ActorGURPS, CharacterGURPS } from "@actor"
 
 class HitLocationTable implements Omit<HitLocationTableData, "roll"> {
 	name: string
@@ -194,7 +194,7 @@ class HitLocation implements HitLocationData {
 				"<br>",
 			)
 		}
-		drMap = this.actor.addDRBonusesFor(this.id, tooltip, drMap)
+		if (this.actor instanceof CharacterGURPS) drMap = this.actor.addDRBonusesFor(this.id, tooltip, drMap)
 		if (this.owningTable.owningLocation) {
 			drMap = this.owningTable.owningLocation._DR(tooltip, drMap)
 		}

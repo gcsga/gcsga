@@ -1,5 +1,5 @@
-import { ActorType } from "@actor"
 import { ActorFlagsGURPS, ActorSystemSource, BaseActorSourceGURPS } from "@actor/base/data.ts"
+import { ActorType } from "@data"
 import { display } from "@util/enum/display.ts"
 import { WeightUnits } from "@util/weight.ts"
 

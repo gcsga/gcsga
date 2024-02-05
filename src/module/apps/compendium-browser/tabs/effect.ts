@@ -2,8 +2,7 @@ import { CompendiumBrowser } from "../index.ts"
 import { ContentTabName, TabName } from "../data.ts"
 import { CompendiumBrowserTab } from "./base.ts"
 import { CompendiumBrowserIndexData, EffectFilters } from "./data.ts"
-import { SYSTEM_NAME } from "@module/data/index.ts"
-import { ItemType } from "@item/types.ts"
+import { ItemType, SYSTEM_NAME } from "@data"
 
 export class CompendiumBrowserEffectTab extends CompendiumBrowserTab {
 	tabName: ContentTabName = TabName.Effect

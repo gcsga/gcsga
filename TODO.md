@@ -2,6 +2,7 @@
 
 ## In Progress
 
+-       Move all constants to module/data/misc.ts
 -   Finish "static" character (0.15 and older) compatibility
 -   don't bother with editing features
 -   mook generator

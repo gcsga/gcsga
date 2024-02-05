@@ -1,11 +1,8 @@
 import { ActorSheetGURPS } from "@actor/base/sheet.ts"
 import { LootGURPS } from "./document.ts"
-import { SYSTEM_NAME } from "@module/data/misc.ts"
 import { LocalizeGURPS, PDF } from "@util"
-import { ItemType } from "@item/types.ts"
-import { ItemGURPS } from "@item/base/document.ts"
-import { EquipmentContainerGURPS, EquipmentGURPS } from "@item"
-import { ItemFlags } from "@item/base/data/system.ts"
+import { EquipmentContainerGURPS, EquipmentGURPS, ItemGURPS } from "@item"
+import { ItemFlags, ItemType, SYSTEM_NAME } from "@data"
 
 class LootSheetGURPS<TActor extends LootGURPS = LootGURPS> extends ActorSheetGURPS<TActor> {
 	editing!: boolean
@@ -245,7 +242,7 @@ class LootSheetGURPS<TActor extends LootGURPS = LootGURPS> extends ActorSheetGUR
 					}
 					await item.delete()
 					if (!(item.container instanceof CompendiumCollection))
-						await item.container?.createEmbeddedDocuments("Item", [itemData])
+						await item.container?.createEmbeddedDocuments("Item", [itemData], {})
 				},
 			})
 		if (item instanceof EquipmentContainerGURPS && item.children.size === 0)
@@ -263,7 +260,7 @@ class LootSheetGURPS<TActor extends LootGURPS = LootGURPS> extends ActorSheetGUR
 					}
 					await item.delete()
 					if (!(item.container instanceof CompendiumCollection))
-						await item.container?.createEmbeddedDocuments("Item", [itemData])
+						await item.container?.createEmbeddedDocuments("Item", [itemData], {})
 				},
 			})
 		await ctx.render($(event.currentTarget))

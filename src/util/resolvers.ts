@@ -1,15 +1,12 @@
-import { ActorType } from "@actor"
 import { ActorFlagsGURPS } from "@actor/base/data.ts"
 import { CharacterFlags, CharacterProfile, Encumbrance } from "@actor/character/data.ts"
 import { HitLocationTable } from "@actor/character/hit_location.ts"
 import { LootSettings } from "@actor/loot/data.ts"
 import { SkillBonus, WeaponBonus } from "@feature"
 import { MoveBonusType } from "@feature/data.ts"
-import { ManeuverID } from "@item/condition/data.ts"
 import { DurationType } from "@item/effect/data.ts"
 import { TraitSystemSource } from "@item/trait/data.ts"
 import { TraitContainerSystemSource } from "@item/trait_container/data.ts"
-import { ItemType } from "@item/types.ts"
 import { WeaponType } from "@item/weapon/data.ts"
 import {
 	WeaponAccuracy,
@@ -24,9 +21,8 @@ import {
 	WeaponShots,
 	WeaponStrength,
 } from "@item/weapon/index.ts"
-import { ConditionID, RollType, SkillDefaultType } from "@module/data/misc.ts"
 import { SheetSettings } from "@module/data/sheet_settings.ts"
-import { SkillDefault } from "@sytem/default/index.ts"
+import { SkillDefault, SkillDefaultType } from "@sytem/default/index.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { WeightUnits } from "./weight.ts"
 import {
@@ -41,25 +37,23 @@ import {
 	tmcost,
 	emweight,
 } from "./enum/index.ts"
+import { ActorType, ConditionID, ItemType, ManeuverID, RollType } from "@data"
+import { SkillGURPS, TechniqueGURPS } from "@item"
 
 export interface ActorResolver<T extends ActorType> {
 	type: T
 	// equipment: Collection<EquipmentResolver | EquipmentContainerResolver>
-	equipment: Collection<EquipmentResolver | EquipmentContainerResolver>
+	// equipment: Collection<EquipmentResolver | EquipmentContainerResolver>
 	flags: ActorFlagsGURPS
 }
 
 export interface LootResolver extends ActorResolver<ActorType.Loot> {
 	settings: LootSettings
+	equipment: Collection<EquipmentResolver | EquipmentContainerResolver>
 }
 
 export interface HitLocationTableOwner {
 	hitLocationTable: HitLocationTable
-	addDRBonusesFor: (
-		locationID: string,
-		tooltip: TooltipGURPS | null,
-		drMap: Map<string, number>,
-	) => Map<string, number>
 }
 
 export interface CharacterResolver extends ActorResolver<ActorType.Character> {
@@ -73,7 +67,7 @@ export interface CharacterResolver extends ActorResolver<ActorType.Character> {
 	skills: Collection<SkillResolver | TechniqueResolver | SkillContainerResolver>
 	spells: Collection<SpellResolver | SpellContainerResolver>
 	equipment: Collection<EquipmentResolver | EquipmentContainerResolver>
-	notes: Collection<NoteResolver | NoteContainerResolver>
+	// notes: Collection<NoteResolver | NoteContainerResolver>
 	conditions: Collection<ConditionResolver>
 	// Attributes
 	dodge: (enc: Encumbrance) => number
@@ -92,7 +86,7 @@ export interface CharacterResolver extends ActorResolver<ActorType.Character> {
 		specialization: string,
 		require_points: boolean,
 		excludes: Map<string, boolean> | null,
-	) => Collection<SkillResolver | TechniqueResolver>
+	) => Collection<SkillGURPS | TechniqueGURPS>
 	attributeBonusFor: (
 		attributeId: string,
 		limitation: stlimit.Option,
@@ -143,7 +137,7 @@ export interface CharacterResolver extends ActorResolver<ActorType.Character> {
 	embeddedEval: (s: string) => string
 }
 
-export interface ItemResolver<T extends string> {
+export interface ItemResolver<T extends ItemType> {
 	type: T
 	name: string | null
 	formattedName: string
@@ -207,7 +201,6 @@ export interface TraitModifierContainerResolver
 export interface LeveledItemResolver extends ItemResolver<ItemType> {
 	points: number
 	difficulty: difficulty.Level
-	defaultedFrom: SkillDefaultResolver | null
 	effectiveLevel: number
 	skillLevel: string
 	relativeLevel: string
@@ -221,6 +214,7 @@ export interface SkillResolver extends LeveledItemResolver {
 	techLevel: string
 	attribute: string
 	specialization: string
+	defaultedFrom: SkillDefaultResolver | null
 	defaultSkill: SkillResolver | null
 	defaults: SkillDefaultResolver[]
 	encumbrancePenaltyMultiplier: number

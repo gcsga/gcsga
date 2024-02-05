@@ -1,23 +1,24 @@
-import { NumericCompareType, NumericCriteria } from "@util/numeric_criteria.ts"
-import { BasePrereq } from "./base.ts"
-import { prereq } from "@util/enum/prereq.ts"
-import { ContainedQuantityPrereqObj } from "./data.ts"
-import { CharacterResolver, EquipmentContainerResolver, LocalizeGURPS, LootResolver } from "@util/index.ts"
-import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { EquipmentContainerGURPS } from "@item"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { prereq } from "@util/enum/prereq.ts"
+import { LocalizeGURPS } from "@util/localize.ts"
+import { NumericCompareType, NumericCriteria } from "@util/numeric_criteria.ts"
+import { CharacterResolver, EquipmentContainerResolver, LootResolver } from "@util/resolvers.ts"
+import { BasePrereq } from "./base.ts"
+import { ContainedQuantityPrereqObj } from "./data.ts"
 
 export class ContainedQuantityPrereq extends BasePrereq {
 	qualifier: NumericCriteria
 
 	constructor() {
 		super(prereq.Type.ContainedQuantity)
-		this.qualifier = new NumericCriteria(NumericCompareType.AtMostNumber, 1)
+		this.qualifier = new NumericCriteria({ compare: NumericCompareType.AtMostNumber, qualifier: 1 })
 	}
 
 	static fromObject(data: ContainedQuantityPrereqObj): ContainedQuantityPrereq {
 		const prereq = new ContainedQuantityPrereq()
 		prereq.has = data.has
-		if (data.qualifier) prereq.qualifier = new NumericCriteria(data.qualifier.compare, data.qualifier.qualifier)
+		if (data.qualifier) prereq.qualifier = new NumericCriteria(data.qualifier)
 		return prereq
 	}
 

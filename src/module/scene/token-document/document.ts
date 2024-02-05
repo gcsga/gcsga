@@ -1,6 +1,6 @@
 import { ActorGURPS } from "@actor"
 import type { SceneGURPS } from "../document.ts"
-import { ConditionID } from "@item/condition/data.ts"
+import { ConditionID } from "@data"
 
 class TokenDocumentGURPS<TParent extends SceneGURPS | null = SceneGURPS | null> extends TokenDocument<TParent> {
 	// override overlayEffect: any

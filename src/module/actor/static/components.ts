@@ -1,7 +1,7 @@
 import { LocalizeGURPS, Static } from "@util"
 import { StaticCharacterGURPS } from "./document.ts"
 import { Int } from "@util/fxp.ts"
-import { ItemType } from "@item/types.ts"
+import { ItemType } from "@data"
 
 export class _BaseComponent {
 	notes: string

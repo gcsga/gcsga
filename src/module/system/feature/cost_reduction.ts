@@ -1,10 +1,10 @@
 import { feature } from "@util/enum/feature.ts"
 import { BonusOwner } from "./bonus_owner.ts"
-import { gid } from "@module/data/misc.ts"
 import { CostReductionObj } from "./data.ts"
+import { gid } from "@data"
 
 export class CostReduction extends BonusOwner {
-	override type = feature.Type.CostReduction
+	declare type: feature.Type.CostReduction
 
 	attribute: string
 
@@ -27,7 +27,7 @@ export class CostReduction extends BonusOwner {
 
 	static fromObject(data: CostReductionObj): CostReduction {
 		const bonus = new CostReduction(data.attribute)
-		bonus.attribute = data.attribute
+		bonus.attribute = data.attribute ?? gid.Strength
 		bonus.percentage = data.percentage
 		return bonus
 	}

@@ -1,10 +1,10 @@
-import { HOOKS_GURPS, RollModifier, RollModifierTags, SYSTEM_NAME } from "@module/data/index.ts"
 import { TokenGURPS } from "@module/canvas/token/object.ts"
 import { UserFlags, UserFlagsGURPS, UserSourceGURPS } from "./data.ts"
 import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
 import { SceneGURPS } from "@scene"
 import { ActorGURPS } from "@actor"
 import * as R from "remeda"
+import { HOOKS, RollModifier, RollModifierTags, SYSTEM_NAME } from "@data"
 
 class UserGURPS extends User<ActorGURPS<null>> {
 	override prepareData(): void {
@@ -80,7 +80,7 @@ class UserGURPS extends User<ActorGURPS<null>> {
 			else modList.push(mod)
 		}
 		this.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, modList)
-		Hooks.call(HOOKS_GURPS.AddModifier)
+		Hooks.call(HOOKS.AddModifier)
 	}
 }
 

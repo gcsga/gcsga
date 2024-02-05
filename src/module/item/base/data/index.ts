@@ -19,30 +19,6 @@ import type { TraitContainerSource } from "@item/trait_container/data.ts"
 import type { TraitModifierSource } from "@item/trait_modifier/data.ts"
 import type { TraitModifierContainerSource } from "@item/trait_modifier_container/data.ts"
 
-enum ItemType {
-	Trait = "trait",
-	TraitContainer = "trait_container",
-	TraitModifier = "modifier",
-	TraitModifierContainer = "modifier_container",
-	Skill = "skill",
-	Technique = "technique",
-	SkillContainer = "skill_container",
-	Spell = "spell",
-	RitualMagicSpell = "ritual_magic_spell",
-	SpellContainer = "spell_container",
-	Equipment = "equipment_gcs",
-	EquipmentContainer = "equipment_container",
-	EquipmentModifier = "eqp_modifier",
-	EquipmentModifierContainer = "eqp_modifier_container",
-	Note = "note",
-	NoteContainer = "note_container",
-	LegacyEquipment = "equipment",
-	Effect = "effect",
-	Condition = "condition",
-	MeleeWeapon = "melee_weapon",
-	RangedWeapon = "ranged_weapon",
-}
-
 type ItemSourceGURPS =
 	| TraitSource
 	| TraitContainerSource
@@ -65,13 +41,47 @@ type ItemSourceGURPS =
 	| EffectSource
 	| ConditionSource
 
-export { ItemFlags } from "./system.ts"
-export type { ItemFlagsGURPS } from "./system.ts"
+type ContainerSource =
+	| TraitSource
+	| TraitContainerSource
+	| TraitModifierSource
+	| TraitModifierContainerSource
+	| SkillSource
+	| TechniqueSource
+	| SkillContainerSource
+	| SpellSource
+	| RitualMagicSpellSource
+	| SpellContainerSource
+	| EquipmentSource
+	| EquipmentContainerSource
+	| EquipmentModifierSource
+	| EquipmentModifierContainerSource
+	| NoteSource
+	| NoteContainerSource
 
-export { ItemType }
+type ItemSourceGCS =
+	| TraitSource
+	| TraitContainerSource
+	| TraitModifierSource
+	| TraitModifierContainerSource
+	| SkillSource
+	| TechniqueSource
+	| SkillContainerSource
+	| SpellSource
+	| RitualMagicSpellSource
+	| SpellContainerSource
+	| EquipmentSource
+	| EquipmentContainerSource
+	| EquipmentModifierSource
+	| EquipmentModifierContainerSource
+	| NoteSource
+	| NoteContainerSource
+
+export type { ItemFlagsGURPS, ItemSystemSource } from "./system.ts"
 
 export type {
 	ConditionSource,
+	ContainerSource,
 	EffectSource,
 	EquipmentContainerSource,
 	EquipmentModifierContainerSource,
@@ -91,5 +101,6 @@ export type {
 	TraitContainerSource,
 	TraitModifierContainerSource,
 	TraitModifierSource,
+	ItemSourceGCS,
 	TraitSource,
 }

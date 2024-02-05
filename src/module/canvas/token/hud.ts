@@ -1,6 +1,5 @@
-import { SOCKET, SYSTEM_NAME } from "@module/data/misc.ts"
+import { EffectID, ManeuverID, SOCKET, SYSTEM_NAME } from "@data"
 import { TokenGURPS } from "./object.ts"
-import { EffectID, ManeuverID } from "@item/condition/data.ts"
 
 export interface TokenHUDDataGURPS extends TokenHUDData {
 	maneuvers: Record<string, TokenHUDStatusEffectChoice | undefined>

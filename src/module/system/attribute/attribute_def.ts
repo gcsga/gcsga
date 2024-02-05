@@ -6,6 +6,7 @@ import { CharacterResolver } from "@util/resolvers.ts"
 import { evaluateToNumber } from "@util/eval.ts"
 import { progression } from "@util/enum/progression.ts"
 import { Mook } from "@sytem/mook/document.ts"
+import { CharacterGURPS } from "@actor"
 
 export class AttributeDef {
 	private def_id!: string
@@ -63,7 +64,7 @@ export class AttributeDef {
 		return !isNaN(parseInt(this.attribute_base))
 	}
 
-	baseValue(resolver: CharacterResolver | Mook): number {
+	baseValue(resolver: CharacterGURPS | CharacterResolver | Mook): number {
 		return evaluateToNumber(this.attribute_base, resolver)
 	}
 

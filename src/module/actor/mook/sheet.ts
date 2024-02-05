@@ -1,5 +1,5 @@
 import { CharacterSheetGURPS } from "@actor/sheet.ts"
-import { SYSTEM_NAME } from "@module/data/misc.ts"
+import { SYSTEM_NAME } from "@data"
 
 class MookSheetGURPS extends CharacterSheetGURPS {
 	override get template(): string {

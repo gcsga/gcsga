@@ -5,12 +5,14 @@ import { SpellGURPS } from "@item/spell/document.ts"
 import { difficulty } from "@util/enum/difficulty.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { SkillDefault } from "@sytem/default/index.ts"
-import { gid } from "@module/data/misc.ts"
 import { ActorGURPS, CharacterGURPS } from "@actor"
+import { ItemType, gid } from "@data"
 
 export interface RitualMagicSpellGURPS<TParent extends ActorGURPS | null> extends ItemGCS<TParent> {
 	readonly _source: RitualMagicSpellSource
 	system: RitualMagicSpellSystemSource
+
+	type: ItemType.RitualMagicSpell
 }
 
 export class RitualMagicSpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {

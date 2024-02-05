@@ -30,7 +30,9 @@ export class ModifierChoiceSheet<
 
 	private _init() {
 		if (this.object.children) {
-			this.nextObjects = [...this.nextObjects, ...this.object.children]
+			this.nextObjects = [...this.nextObjects, ...this.object.children].filter(
+				e => e instanceof ItemGCS,
+			) as ItemGCS[]
 		}
 	}
 

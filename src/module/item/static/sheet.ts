@@ -1,11 +1,9 @@
 import { ItemSheetOptions } from "@item/base/sheet.ts"
 import { StaticItemGURPS } from "./document.ts"
-import { SYSTEM_NAME } from "@module/data/index.ts"
-import { ItemFlags } from "@item/base/data/system.ts"
+import { ItemFlags, ItemType, SYSTEM_NAME } from "@data"
 import { StaticPopout, StaticPopoutType } from "./popouts.ts"
 import { LocalizeGURPS, Static } from "@util"
 import { StaticItem, _BaseComponent } from "@actor/static/components.ts"
-import { ItemType } from "@item"
 import { StaticItemSystemData } from "./data.ts"
 
 export class StaticItemSheet<

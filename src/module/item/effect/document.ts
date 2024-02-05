@@ -2,7 +2,6 @@ import { ItemGURPS } from "@item/base/document.ts"
 import { DurationType, EffectModificationContext, EffectSource, EffectSystemSource } from "./data.ts"
 import { AttributeBonus, Feature } from "@feature/index.ts"
 import { feature } from "@util/enum/feature.ts"
-import { RollModifier, gid } from "@module/data/misc.ts"
 import { ItemGCS } from "@item/gcs/document.ts"
 import { BaseUser } from "types/foundry/common/documents/module.js"
 import { TokenGURPS } from "@module/canvas/token/object.ts"
@@ -10,6 +9,7 @@ import { LocalizeGURPS } from "@util/localize.ts"
 import { TokenDocumentGURPS } from "@scene/token-document/document.ts"
 import { ActorGURPS } from "@actor"
 import { ConditionSource } from "@item/condition/data.ts"
+import { RollModifier, gid } from "@data"
 
 export interface EffectGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
 	_source: EffectSource | ConditionSource

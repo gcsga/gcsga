@@ -5,9 +5,8 @@ import { AttributePrereqObj } from "./data.ts"
 import { CharacterResolver, LootResolver } from "@util/resolvers.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { gid } from "@module/data/misc.ts"
 import { Attribute } from "@sytem/attribute/index.ts"
-import { ActorType } from "@actor"
+import { ActorType, gid } from "@data"
 
 export class AttributePrereq extends BasePrereq {
 	which: string
@@ -20,7 +19,7 @@ export class AttributePrereq extends BasePrereq {
 		super(prereq.Type.Attribute)
 		this.which = gid.Strength
 		this.combined_with = ""
-		this.qualifier = new NumericCriteria(NumericCompareType.AtLeastNumber, 10)
+		this.qualifier = new NumericCriteria({ compare: NumericCompareType.AtLeastNumber, qualifier: 10 })
 	}
 
 	static fromObject(data: AttributePrereqObj): AttributePrereq {
@@ -28,7 +27,7 @@ export class AttributePrereq extends BasePrereq {
 		prereq.has = data.has
 		if (data.which) prereq.which = data.which
 		if (data.combined_with) prereq.combined_with = data.combined_with
-		if (data.qualifier) prereq.qualifier = new NumericCriteria(data.qualifier.compare, data.qualifier.qualifier)
+		if (data.qualifier) prereq.qualifier = new NumericCriteria(data.qualifier)
 		return prereq
 	}
 

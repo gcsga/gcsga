@@ -21,12 +21,15 @@ export class ContainedWeightPrereq extends BasePrereq {
 		let units = WeightUnits.Pound
 		if (character) units = character.settings.default_weight_units
 		super(prereq.Type.ContainedWeight)
-		this.qualifier = new WeightCriteria(NumericCompareType.AtMostNumber, Weight.toPounds(5, units))
+		this.qualifier = new WeightCriteria({
+			compare: NumericCompareType.AtMostNumber,
+			qualifier: Weight.format(5, units),
+		})
 	}
 
 	static fromObject(data: ContainedWeightPrereqObj, character: CharacterResolver): ContainedWeightPrereq {
 		const prereq = new ContainedWeightPrereq(character)
-		if (data.qualifier) prereq.qualifier = new WeightCriteria(data.qualifier.compare, data.qualifier.qualifier)
+		if (data.qualifier) prereq.qualifier = new WeightCriteria(data.qualifier)
 		return prereq
 	}
 
@@ -41,7 +44,7 @@ export class ContainedWeightPrereq extends BasePrereq {
 		else {
 			const eqp = exclude as unknown as EquipmentContainerResolver
 			const weight = eqp.extendedWeight(false, units) - eqp.adjustedWeight(false, units)
-			satisfied = this.qualifier.matches(weight)
+			satisfied = this.qualifier.matches(Weight.format(weight, units))
 		}
 		if (!this.has) satisfied = !satisfied
 		if (!satisfied) {

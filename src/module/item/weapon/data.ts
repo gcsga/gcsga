@@ -1,5 +1,5 @@
+import { ItemType } from "@data"
 import { BaseItemSourceGURPS, ItemSystemSource } from "@item/base/data/system.ts"
-import { ItemType } from "@item/types.ts"
 import { SkillDefaultObj } from "@sytem/default/index.ts"
 import { stdmg } from "@util/enum/stdmg.ts"
 

@@ -5,8 +5,7 @@ import { attribute } from "@util/enum/attribute.ts"
 import { stlimit } from "@util/enum/stlimit.ts"
 import { sanitizeId } from "@util/misc.ts"
 import { AttributeDef } from "./attribute_def.ts"
-import { SYSTEM_NAME, gid } from "@module/data/misc.ts"
-import { ActorFlags } from "@actor/base/data.ts"
+import { ActorFlags, SYSTEM_NAME, gid } from "@data"
 import { Mook } from "@sytem/mook/document.ts"
 
 export class Attribute {

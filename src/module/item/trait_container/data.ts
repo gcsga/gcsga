@@ -1,8 +1,10 @@
-import { ItemGCSSource, ItemGCSSystemSource } from "@item/gcs/data.ts"
-import { ItemType } from "@item/types.ts"
+import { ItemType } from "@data"
+import { BaseContainerSource } from "@item/container/data.ts"
+import { ItemGCSSystemSource } from "@item/gcs/data.ts"
+import { TemplatePickerObj } from "@sytem/template_picker/document.ts"
 import { container, selfctrl } from "@util/enum/index.ts"
 
-export type TraitContainerSource = ItemGCSSource<ItemType.TraitContainer, TraitContainerSystemSource>
+export type TraitContainerSource = BaseContainerSource<ItemType.TraitContainer, TraitContainerSystemSource>
 
 export interface TraitContainerSystemSource extends ItemGCSSystemSource {
 	type: ItemType.TraitContainer

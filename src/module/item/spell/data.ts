@@ -1,11 +1,12 @@
-import { ItemGCSSource, ItemGCSSystemSource } from "@item/gcs/data.ts"
-import { ItemType } from "@item/types.ts"
+import { ItemType } from "@data"
+import { BaseContainerSource } from "@item/container/data.ts"
+import { ItemGCSSystemSource } from "@item/gcs/data.ts"
 import { PrereqListObj } from "@prereq/data.ts"
 import { difficulty } from "@util/enum/difficulty.ts"
 import { study } from "@util/enum/study.ts"
 import { Study } from "@util/study.ts"
 
-export type SpellSource = ItemGCSSource<ItemType.Spell, SpellSystemSource>
+export type SpellSource = BaseContainerSource<ItemType.Spell, SpellSystemSource>
 
 export interface SpellSystemSource extends ItemGCSSystemSource {
 	type: ItemType.Spell

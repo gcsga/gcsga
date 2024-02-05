@@ -1,4 +1,4 @@
-import { SYSTEM_NAME } from "@module/data/misc.ts"
+import { SYSTEM_NAME } from "@data"
 
 export function registerTemplates(): void {
 	const templatePaths = [

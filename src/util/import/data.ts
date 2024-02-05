@@ -774,6 +774,7 @@ export type {
 	ImportedFeature,
 	ImportedHitLocation,
 	ImportedMeleeWeaponSystemSource,
+	ImportedMoveData,
 	ImportedMoveType,
 	ImportedMoveTypeDef,
 	ImportedMoveTypeOverride,
@@ -799,6 +800,7 @@ export type {
 	ImportedSpellSystemSource,
 	ImportedStudy,
 	ImportedTechniqueSystemSorce,
+	ImportedTemplatePicker,
 	ImportedThirdPartyData,
 	ImportedThreshold,
 	ImportedTraitContainerSystemSource,
@@ -807,5 +809,4 @@ export type {
 	ImportedTraitPrereq,
 	ImportedTraitSystemSource,
 	ImportedWeaponBonus,
-	ImportedMoveData,
 }

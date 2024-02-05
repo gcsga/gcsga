@@ -8,14 +8,15 @@ import { resolveStudyHours, studyHoursProgressText } from "@util/study.ts"
 import { selfctrl } from "@util/enum/selfctrl.ts"
 import { TraitModifierGURPS } from "@item/trait_modifier/document.ts"
 import { TraitModifierContainerGURPS } from "@item/trait_modifier_container/document.ts"
-import { ItemType } from "@item/types.ts"
-import { CharacterGURPS } from "@actor"
 import { CharacterResolver } from "@util"
 import { study } from "@util/enum/study.ts"
+import { ItemType } from "@data"
 
 export interface TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	readonly _source: TraitSource
 	system: TraitSystemSource
+
+	type: ItemType.Trait
 }
 
 export class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
@@ -30,7 +31,7 @@ export class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> e
 
 	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
 		const buffer = new StringBuilder()
-		const settings = sheetSettingsFor(this.actor as CharacterGURPS)
+		const settings = sheetSettingsFor(this.actor)
 		if (this.system.userdesc !== "" && optionChecker(settings.user_description_display)) {
 			buffer.push(this.system.userdesc)
 		}

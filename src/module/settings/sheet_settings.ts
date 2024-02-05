@@ -1,4 +1,4 @@
-import { SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
+import { SETTINGS, SYSTEM_NAME } from "@data"
 import { PartialSettingsData, SettingsMenuGURPS } from "./menu.ts"
 import { LengthUnits, WeightUnits } from "@util"
 import { display } from "@util/enum/display.ts"

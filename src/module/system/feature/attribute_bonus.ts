@@ -1,4 +1,4 @@
-import { gid } from "@module/data/misc.ts"
+import { gid } from "@data"
 import { BonusOwner } from "./bonus_owner.ts"
 import { LeveledAmount } from "./leveled_amount.ts"
 import { stlimit } from "@util/enum/stlimit.ts"

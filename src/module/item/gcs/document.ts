@@ -1,46 +1,28 @@
 import { ActorGURPS } from "@actor/base.ts"
-import { ContainerGURPS } from "@item/container/document.ts"
-import { SYSTEM_NAME } from "@module/data/misc.ts"
-import { UserGURPS } from "@module/user/document.ts"
-import { ItemGCSSource, ItemGCSSystemSource } from "./data.ts"
-import { EvalEmbeddedRegex, replaceAllStringFunc } from "@util/regexp.ts"
-import { display } from "@util/enum/display.ts"
-import { sheetDisplayNotes } from "@util/misc.ts"
-import { SkillResolver } from "@util/resolvers.ts"
-import { TooltipGURPS } from "@sytem/tooltip/index.ts"
-import { LocalizeGURPS } from "@util/localize.ts"
+import { ItemType } from "@data"
 import { Feature, FeatureObj } from "@feature/index.ts"
+import { ItemSourceGCS } from "@item/base/data/index.ts"
+import { ItemGURPS } from "@item/base/document.ts"
+import { ContainerGURPS } from "@item/container/document.ts"
+import { PrereqList } from "@prereq/prereq_list.ts"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { display } from "@util/enum/display.ts"
 import { feature } from "@util/enum/feature.ts"
-import { PrereqList } from "@prereq/index.ts"
-import { ItemType } from "@item/types.ts"
-import { BaseWeaponGURPS, MeleeWeaponGURPS, RangedWeaponGURPS } from "@item"
+import { LocalizeGURPS } from "@util/localize.ts"
+import { sheetDisplayNotes } from "@util/misc.ts"
+import { EvalEmbeddedRegex, replaceAllStringFunc } from "@util/regexp.ts"
+import { SkillResolver } from "@util/resolvers.ts"
+import { ItemGCSSystemSource } from "./data.ts"
+import { ItemInstances } from "@item/types.ts"
 
 export interface ItemGCS<TParent extends ActorGURPS | null> extends ContainerGURPS<TParent> {
-	readonly _source: ItemGCSSource
+	readonly _source: ItemSourceGCS
 	system: ItemGCSSystemSource
 }
 
 export abstract class ItemGCS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ContainerGURPS<TParent> {
 	declare unsatisfiedReason: string
 	// unsatisfied_reason = ""
-
-	protected override async _preCreate(
-		data: this["_source"],
-		options: DocumentModificationContext<TParent>,
-		user: UserGURPS,
-	): Promise<void> {
-		let type = data.type.replace("_container", "")
-		if (type === ItemType.Technique) type = ItemType.Skill
-		else if (type === ItemType.RitualMagicSpell) type = ItemType.Spell
-		else if (type === ItemType.Equipment) type = "equipment"
-		else if (type === ItemType.LegacyEquipment) type = "legacy_equipment"
-		if (this._source.img === foundry.documents.BaseItem.DEFAULT_ICON)
-			this._source.img = data.img = `systems/${SYSTEM_NAME}/assets/icons/${type}.svg`
-		let gcs_type = data.type
-		if (gcs_type === ItemType.Equipment) gcs_type = "equipment" as ItemType
-		this._source.system.type = gcs_type
-		await super._preCreate(data, options, user)
-	}
 
 	override async update(
 		data: Record<string, unknown>,
@@ -55,6 +37,7 @@ export abstract class ItemGCS<TParent extends ActorGURPS | null = ActorGURPS | n
 	// }
 
 	get localNotes(): string {
+		// @ts-expect-error doesn't exist here but does elsewhere
 		return this.system.notes ?? ""
 	}
 
@@ -75,6 +58,7 @@ export abstract class ItemGCS<TParent extends ActorGURPS | null = ActorGURPS | n
 	}
 
 	get tags(): string[] {
+		// @ts-expect-error doesn't exist here but does elsewhere
 		return this.system.tags
 	}
 
@@ -115,6 +99,7 @@ export abstract class ItemGCS<TParent extends ActorGURPS | null = ActorGURPS | n
 	}
 
 	get reference(): string {
+		// @ts-expect-error doesn't exist here but does elsewhere
 		return this.system.reference
 	}
 
@@ -138,41 +123,45 @@ export abstract class ItemGCS<TParent extends ActorGURPS | null = ActorGURPS | n
 	}
 
 	get prereqs(): PrereqList {
+		// @ts-expect-error doesn't exist here but does elsewhere
 		if (!this.system.prereqs) return new PrereqList()
+		// @ts-expect-error doesn't exist here but does elsewhere
 		return PrereqList.fromObject(this.system.prereqs)
 	}
 
 	get prereqsEmpty(): boolean {
+		// @ts-expect-error doesn't exist here but does elsewhere
 		if (!this.system.prereqs || !this.system.prereqs.prereqs) return true
 		return this.prereqs?.prereqs.length === 0
 	}
 
-	get meleeWeapons(): Collection<MeleeWeaponGURPS> {
-		const meleeWeapons: Collection<MeleeWeaponGURPS> = new Collection()
+	get meleeWeapons(): Collection<ItemInstances<TParent>[ItemType.MeleeWeapon]> {
+		const meleeWeapons: Collection<ItemGURPS> = new Collection()
 		for (const item of this.items) {
-			if (item instanceof MeleeWeaponGURPS) meleeWeapons.set(item.id, item)
+			if (item.isOfType(ItemType.MeleeWeapon)) meleeWeapons.set(item.id, item)
 		}
-		return meleeWeapons
+		return meleeWeapons as Collection<ItemInstances<TParent>[ItemType.MeleeWeapon]>
 	}
 
-	get rangedWeapons(): Collection<RangedWeaponGURPS> {
-		const rangedWeapons: Collection<RangedWeaponGURPS> = new Collection()
+	get rangedWeapons(): Collection<ItemInstances<TParent>[ItemType.RangedWeapon]> {
+		const rangedWeapons: Collection<ItemGURPS> = new Collection()
 		for (const item of this.items) {
-			if (item instanceof RangedWeaponGURPS) rangedWeapons.set(item.id, item)
+			if (item.isOfType(ItemType.RangedWeapon)) rangedWeapons.set(item.id, item)
 		}
-		return rangedWeapons
+		return rangedWeapons as Collection<ItemInstances<TParent>[ItemType.RangedWeapon]>
 	}
 
-	override get children(): Collection<ItemGCS> {
-		return super.children as Collection<ItemGCS>
-	}
-
-	get weapons(): Collection<BaseWeaponGURPS> {
-		const weapons: Collection<BaseWeaponGURPS> = new Collection()
+	get weapons(): Collection<
+		ItemInstances<TParent>[ItemType.MeleeWeapon] | ItemInstances<TParent>[ItemType.RangedWeapon]
+	> {
+		const weapons: Collection<ItemGURPS> = new Collection()
 		for (const item of this.items) {
-			if (item instanceof BaseWeaponGURPS) weapons.set(item.id, item)
+			if (item.isOfType(ItemType.MeleeWeapon)) weapons.set(item.id, item)
+			if (item.isOfType(ItemType.RangedWeapon)) weapons.set(item.id, item)
 		}
-		return weapons
+		return weapons as Collection<
+			ItemInstances<TParent>[ItemType.MeleeWeapon] | ItemInstances<TParent>[ItemType.RangedWeapon]
+		>
 	}
 
 	get modifiers(): Collection<ItemGCS> {
@@ -187,9 +176,9 @@ export abstract class ItemGCS<TParent extends ActorGURPS | null = ActorGURPS | n
 				const { effective: _, ...rest } = e
 				return rest
 			})
-		if (this.children) system.children = this.children.map((e: ItemGCS) => e.exportSystemData(false))
+		if (this.children) system.children = this.children.map((e: ItemGURPS) => e.exportSystemData(false))
 		if (this.modifiers) system.modifiers = this.modifiers.map((e: ItemGCS) => e.exportSystemData(false))
-		if (this.weapons) system.weapons = this.weapons.map((e: BaseWeaponGURPS) => e.exportSystemData(false))
+		if (this.weapons) system.weapons = this.weapons.map((e: ItemGURPS) => e.exportSystemData(false))
 		return system
 	}
 

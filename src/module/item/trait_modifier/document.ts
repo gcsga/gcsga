@@ -7,10 +7,13 @@ import { tmcost } from "@util/enum/tmcost.ts"
 import { affects } from "@util/enum/affects.ts"
 import { StringBuilder } from "@util/string_builder.ts"
 import { CharacterGURPS } from "@actor"
+import { ItemType } from "@data"
 
 export interface TraitModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	readonly _source: TraitModifierSource
 	system: TraitModifierSystemSource
+
+	type: ItemType.TraitModifier
 }
 
 export class TraitModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
@@ -26,7 +29,7 @@ export class TraitModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS |
 	}
 
 	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
-		if (optionChecker(sheetSettingsFor(this.actor as CharacterGURPS).notes_display)) return this.localNotes
+		if (optionChecker(sheetSettingsFor(this.actor).notes_display)) return this.localNotes
 		return ""
 	}
 

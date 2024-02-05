@@ -1,6 +1,5 @@
-import { RollModifier, SYSTEM_NAME, gid } from "@module/data/misc.ts"
 import * as R from "remeda"
-import { ActorFlags, ActorFlagsGURPS, ActorSystemSource, BaseActorSourceGURPS } from "./base/data.ts"
+import { ActorFlagsGURPS, ActorSystemSource } from "./base/data.ts"
 import { Attribute } from "@sytem/attribute/object.ts"
 import { TraitGURPS } from "@item/trait/document.ts"
 import { TraitContainerGURPS } from "@item/trait_container/document.ts"
@@ -23,19 +22,29 @@ import {
 import { ApplyDamageDialog } from "@module/apps/damage_calculator/apply_damage_dlg.ts"
 import { ActorSourceGURPS } from "./data/index.ts"
 import { MoveType } from "@sytem/move_type/object.ts"
-import { ActorInstances, ActorModificationContextGURPS, ActorType } from "./types.ts"
-import { ItemType } from "@item/types.ts"
+import { ActorInstances, ActorModificationContextGURPS } from "./types.ts"
 import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
-import { ItemFlags } from "@item/base/data/system.ts"
 import { BaseWeaponGURPS, ContainerGURPS, TraitModifierGURPS } from "@item"
 import { ItemSourceGURPS } from "@item/base/data/index.ts"
-import { CharacterResolver, LocalizeGURPS } from "@util"
+import { LocalizeGURPS } from "@util"
 import { CharacterGURPS } from "./character/document.ts"
-import { ConditionID, EffectID, ManeuverID, Postures } from "@item/condition/data.ts"
 import { ActorSheetGURPS } from "./base/sheet.ts"
+import {
+	ActorFlags,
+	ActorType,
+	ConditionID,
+	EffectID,
+	ItemFlags,
+	ItemType,
+	ManeuverID,
+	Postures,
+	RollModifier,
+	SYSTEM_NAME,
+	gid,
+} from "@data"
 
 interface ActorGURPS<TParent extends TokenDocumentGURPS | null> extends Actor<TParent> {
-	readonly _source: BaseActorSourceGURPS
+	readonly _source: ActorSourceGURPS
 	noPrepare: boolean
 	flags: ActorFlagsGURPS
 	type: ActorType
@@ -133,7 +142,7 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 	}
 
 	get hitLocationTable(): HitLocationTable {
-		return new HitLocationTable("", "3d", [], this as unknown as CharacterResolver, "")
+		return new HitLocationTable("", "3d", [], this, "")
 	}
 
 	get HitLocations(): HitLocation[] {
@@ -234,13 +243,18 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 
 		let totalItems = newItems as ItemGURPS[]
 		for (let i = 0; i < items.length; i++) {
-			if (items[i] instanceof ContainerGURPS && (items[i] as ContainerGURPS).items.size) {
-				const parent = items[i] as ContainerGURPS
-				const childItems = await this.createNestedEmbeddedDocuments(parent.items.contents as ItemGURPS[], {
-					id: newItems[i].id,
-					other: options.other,
-				})
-				totalItems = totalItems.concat(childItems)
+			if (items[i] instanceof ContainerGURPS) {
+				const container = items[i] as unknown as ContainerGURPS
+				if (container.items.size > 0) {
+					const childItems = await this.createNestedEmbeddedDocuments(
+						container.items.contents as ItemGURPS[],
+						{
+							id: newItems[i].id,
+							other: options.other,
+						},
+					)
+					totalItems = totalItems.concat(childItems)
+				}
 			}
 		}
 		return totalItems

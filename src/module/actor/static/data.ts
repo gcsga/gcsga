@@ -9,7 +9,7 @@ import {
 	StaticSpell,
 	StaticTrait,
 } from "./components.ts"
-import { ActorType } from "@actor"
+import { ActorType } from "@data"
 
 export const MoveModeTypes = {
 	Ground: "gurps.character.move_modes.ground",
@@ -36,18 +36,8 @@ export interface MoveMode {
 
 export interface StaticCharacterSource
 	extends BaseActorSourceGURPS<ActorType.LegacyCharacter, StaticCharacterSystemData> {
-	flags: DeepPartial<StaticCharacterFlags>
-}
-export interface StaticCharacterDataGURPS
-	extends Omit<StaticCharacterSource, "effects" | "flags" | "items" | "token">,
-		StaticCharacterSystemData {
-	readonly type: StaticCharacterSource["type"]
-	data: StaticCharacterSystemData
 	flags: StaticCharacterFlags
-
-	readonly _source: StaticCharacterSource
 }
-
 type StaticCharacterFlags = ActorFlagsGURPS & {
 	gurps: {
 		// Empty

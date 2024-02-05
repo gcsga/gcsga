@@ -1,4 +1,4 @@
-import { LocalizeGURPS } from "@util/index.ts"
+import { LocalizeGURPS } from "@util/localize.ts"
 
 export namespace wsel {
 	export enum Type {

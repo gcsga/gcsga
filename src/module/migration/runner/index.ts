@@ -1,11 +1,13 @@
 import type { ActorGURPS } from "@actor"
 import type { ActorSourceGURPS } from "@actor/data/index.ts"
+import { SETTINGS, SYSTEM_NAME } from "@data"
 import type { ItemGURPS } from "@item"
-import type { ItemSourceGURPS } from "@item/base/data/index.ts"
-import { SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
 import type { MigrationBase } from "@module/migration/base.ts"
 import { MigrationRunnerBase } from "@module/migration/runner/base.ts"
 import type { UserGURPS } from "@module/user/index.ts"
+import { SceneGURPS } from "@scene"
+import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
+import { Progress } from "@sytem/progress.ts"
 
 export class MigrationRunner extends MigrationRunnerBase {
 	override needsMigration(): boolean {
@@ -46,30 +48,12 @@ export class MigrationRunner extends MigrationRunnerBase {
 	/** Migrate actor or item documents in batches of 50 */
 	async #migrateDocuments<TDocument extends ActorGURPS<null> | ItemGURPS<null>>(
 		collection: WorldCollection<TDocument> | CompendiumCollection<TDocument>,
-		migrations: MigrationBase[],
+		_migrations: MigrationBase[],
 		progress?: Progress,
 	): Promise<void> {
 		const DocumentClass = collection.documentClass
 		const pack = "metadata" in collection ? collection.metadata.id : null
 		const updateGroup: TDocument["_source"][] = []
-		// Have familiars go last so that their data migration and re-preparation happen after their master's
-		for (const document of collection.contents.sort(a => (a.type === "familiar" ? 1 : -1))) {
-			if (updateGroup.length === 100) {
-				try {
-					await DocumentClass.updateDocuments(updateGroup, { noHook: true, pack })
-					progress?.advance({ by: updateGroup.length })
-				} catch (error) {
-					console.warn(error)
-				} finally {
-					updateGroup.length = 0
-				}
-			}
-			const updated =
-				"prototypeToken" in document
-					? await this.#migrateActor(migrations, document, { pack })
-					: await this.#migrateItem(migrations, document)
-			if (updated) updateGroup.push(updated)
-		}
 		if (updateGroup.length > 0) {
 			try {
 				await DocumentClass.updateDocuments(updateGroup, { noHook: true, pack })
@@ -80,18 +64,18 @@ export class MigrationRunner extends MigrationRunnerBase {
 		}
 	}
 
-	async #migrateItem(migrations: MigrationBase[], item: ItemGURPS): Promise<ItemSourceGURPS | null> {
-		const baseItem = item.toObject()
-
-		try {
-			return await this.getUpdatedItem(baseItem, migrations)
-		} catch (error) {
-			// Output the error, since this means a migration threw it
-			ui.notifications.error(`Error thrown while migrating ${item.name} (${item.uuid})`)
-			console.error(error)
-			return null
-		}
-	}
+	// async #migrateItem(migrations: MigrationBase[], item: ItemGURPS): Promise<ItemSourceGURPS | null> {
+	// 	const baseItem = item.toObject()
+	//
+	// 	try {
+	// 		return await this.getUpdatedItem(baseItem, migrations)
+	// 	} catch (error) {
+	// 		// Output the error, since this means a migration threw it
+	// 		ui.notifications.error(`Error thrown while migrating ${item.name} (${item.uuid})`)
+	// 		console.error(error)
+	// 		return null
+	// 	}
+	// }
 
 	async #migrateActor(
 		migrations: MigrationBase[],
@@ -154,7 +138,7 @@ export class MigrationRunner extends MigrationRunnerBase {
 		}
 	}
 
-	async #migrateWorldMacro(macro: MacroGURPS, migrations: MigrationBase[]): Promise<void> {
+	async #migrateWorldMacro(macro: Macro, migrations: MigrationBase[]): Promise<void> {
 		if (!migrations.some(migration => !!migration.updateMacro)) return
 
 		try {
@@ -320,7 +304,7 @@ export class MigrationRunner extends MigrationRunnerBase {
 	async runMigration(force = false): Promise<void> {
 		const schemaVersion = {
 			latest: MigrationRunner.LATEST_SCHEMA_VERSION,
-			current: game.settings.get("pf2e", "worldSchemaVersion"),
+			current: game.settings.get(SYSTEM_NAME, SETTINGS.WORLD_SCHEMA_VERSION),
 		}
 		const systemVersion = game.system.version
 

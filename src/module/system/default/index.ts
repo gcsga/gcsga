@@ -1,6 +1,8 @@
-import { CharacterGURPS } from "@actor"
-import { SkillDefaultType, gid } from "@module/data/index.ts"
+import { ActorGURPS, CharacterGURPS } from "@actor"
+import { gid } from "@data"
 import { CharacterResolver } from "@util"
+
+export type SkillDefaultType = gid.Block | gid.Parry | gid.Skill | gid.Ten | string
 
 const skill_based_default_types: Map<string, boolean> = new Map()
 skill_based_default_types.set(gid.Skill, true)
@@ -19,17 +21,11 @@ export interface SkillDefaultObj {
 
 export class SkillDefault {
 	type: SkillDefaultType = gid.Skill
-
 	name?: string
-
 	specialization?: string
-
 	modifier = 0
-
 	level = 0
-
 	adjusted_level = 0
-
 	points = 0
 
 	constructor(data?: SkillDefaultObj) {
@@ -55,7 +51,7 @@ export class SkillDefault {
 		)
 	}
 
-	fullName(actor: CharacterGURPS): string {
+	fullName(actor: CharacterResolver): string {
 		if (this.skillBased) {
 			let buffer = ""
 			buffer += this.name
@@ -101,13 +97,14 @@ export class SkillDefault {
 	}
 
 	skillLevelFast(
-		actor: CharacterResolver,
+		actor: ActorGURPS | CharacterResolver,
 		require_points: boolean,
 		excludes: Map<string, boolean> | null = new Map(),
 		rule_of_20 = false,
 	): number {
 		let level = 0
 		let best = 0
+		if (actor instanceof ActorGURPS && !(actor instanceof CharacterGURPS)) return 0
 		switch (this.type) {
 			case gid.Dodge:
 				level = actor.dodge(actor.encumbranceLevel(true))
@@ -143,6 +140,18 @@ export class SkillDefault {
 	finalLevel(level: number): number {
 		if (level !== -Infinity) level += this.modifier
 		return level
+	}
+
+	toObject(): SkillDefaultObj {
+		return {
+			type: this.type,
+			name: this.name,
+			specialization: this.specialization,
+			modifier: this.modifier,
+			level: this.level,
+			adjusted_level: this.adjustedLevel,
+			points: this.points,
+		}
 	}
 
 	get noLevelOrPoints(): SkillDefault {

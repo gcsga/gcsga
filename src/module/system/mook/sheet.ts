@@ -1,5 +1,5 @@
 import { CharacterSheetConfig } from "@actor/character/config_sheet.ts"
-import { SYSTEM_NAME } from "@module/data/misc.ts"
+import { SYSTEM_NAME } from "@data"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { Attribute, AttributeObj } from "@sytem/attribute/index.ts"
 import { attribute } from "@util/enum/attribute.ts"

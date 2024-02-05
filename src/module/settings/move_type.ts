@@ -1,4 +1,3 @@
-import { SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
 import { PartialSettingsData, SettingsMenuGURPS } from "./menu.ts"
 import { htmlClosest, htmlQuery } from "@util/dom.ts"
 import { getNewAttributeId, prepareFormData } from "@util"
@@ -6,6 +5,7 @@ import { MoveTypeOverrideConditionType } from "@sytem/move_type/data.ts"
 import { DnD } from "@util/drag_drop.ts"
 import { DropDataType } from "@module/apps/damage_calculator/damage_chat_message.ts"
 import { defaultSettings } from "./defaults.ts"
+import { SETTINGS, SYSTEM_NAME } from "@data"
 
 enum ListType {
 	MoveType = "move_types",

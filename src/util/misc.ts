@@ -1,8 +1,7 @@
-import { ItemType } from "@item/types.ts"
-import { DEFAULT_INITIATIVE_FORMULA, SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
+import { DEFAULT_INITIATIVE_FORMULA, ItemType, SETTINGS, SYSTEM_NAME } from "@data"
 import { LocalizeGURPS } from "./localize.ts"
-import { SkillResolver } from "./resolvers.ts"
 import { StringBuilder } from "./string_builder.ts"
+import { SkillResolver } from "./resolvers.ts"
 // import uuid from "uuidv4"
 
 function sanitizeId(id: string, permit_leading_digits: boolean, reserved: string[]): string {

@@ -1,5 +1,5 @@
 import { DiceGURPS } from "@module/dice/index.ts"
-import { RollModifier, SYSTEM_NAME } from "@module/data/misc.ts"
+import { RollModifier, SYSTEM_NAME } from "@data"
 import { DnD } from "@util/drag_drop.ts"
 import { CanvasUtil } from "@util/canvas.ts"
 import { TokenUtil } from "@util/token_utils.ts"

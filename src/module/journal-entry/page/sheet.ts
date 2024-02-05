@@ -1,5 +1,6 @@
-import { SYSTEM_NAME } from "@module/data/index.ts"
+import { SYSTEM_NAME } from "@data"
 import { JournalEntryPagePDF } from "./document.ts"
+import { URLSearchParams } from "url"
 
 export class JournalPagePDFEditorSheet<
 	TDocument extends JournalEntryPagePDF = JournalEntryPagePDF,
@@ -33,9 +34,10 @@ export class JournalEntryPagePDFViewerSheet<
 		return `systems/${SYSTEM_NAME}/templates/app/pdf.hbs`
 	}
 
-	private _getPDFData(): URLSearchParams {
+	_getViewerParams(): URLSearchParams {
 		const params = new URLSearchParams()
 		if (this.object.src) {
+			// @ts-expect-error no definitions yet
 			const src = URL.parseSafe(this.object.src) ? this.object.src : foundry.utils.getRoute(this.object.src)
 			params.append("file", src)
 		}
@@ -47,7 +49,7 @@ export class JournalEntryPagePDFViewerSheet<
 	): DocumentSheetData<TDocument> | Promise<DocumentSheetData<TDocument>> {
 		return fu.mergeObject(super.getData(options), {
 			pageNumber: this.pageNumber,
-			params: this._getPDFData(),
+			params: this._getViewerParams(),
 		})
 	}
 }

@@ -1,8 +1,6 @@
 import { FeatureObj } from "@feature"
 import {
-	ItemFlags,
 	ItemSourceGURPS,
-	ItemType,
 	TraitContainerSource,
 	TraitModifierContainerSource,
 	TraitSource,
@@ -12,10 +10,9 @@ import { TraitSystemSource } from "@item/trait/data.ts"
 import { TraitContainerSystemSource } from "@item/trait_container/data.ts"
 import { TraitModifierSource, TraitModifierSystemSource } from "@item/trait_modifier/data.ts"
 import { TraitModifierContainerSystemSource } from "@item/trait_modifier_container/data.ts"
-import { SYSTEM_NAME, gid } from "@module/data/misc.ts"
 import { PrereqListObj } from "@prereq/data.ts"
 import { LocalizeGURPS, Study } from "@util"
-import { affects, container, difficulty, emcost, emweight, prereq, selfctrl, tmcost } from "@util/enum/index.ts"
+import { affects, container, difficulty, emcost, emweight, picker, prereq, selfctrl, tmcost } from "@util/enum/index.ts"
 import {
 	ImportedEquipmentContainerSystemSource,
 	ImportedEquipmentModifierContainerSystemSource,
@@ -36,6 +33,7 @@ import {
 	ImportedSpellSystemSource,
 	ImportedStudy,
 	ImportedTechniqueSystemSorce,
+	ImportedTemplatePicker,
 	ImportedTraitContainerSystemSource,
 	ImportedTraitModifierContainerSystemSource,
 	ImportedTraitModifierSystemSource,
@@ -57,6 +55,8 @@ import { NoteContainerSource, NoteContainerSystemSource } from "@item/note_conta
 import { NoteSource, NoteSystemSource } from "@item/note/data.ts"
 import { MeleeWeaponSource, MeleeWeaponSystemSource } from "@item/melee_weapon/data.ts"
 import { RangedWeaponSource, RangedWeaponSystemSource } from "@item/ranged_weapon/data.ts"
+import { ItemFlags, ItemType, SYSTEM_NAME, gid } from "@data"
+import { TemplatePickerObj } from "@sytem/template_picker/document.ts"
 
 interface ItemImportContext {
 	parentId: string | null
@@ -100,6 +100,10 @@ abstract class ItemImporter {
 
 	static importStudy(studyList?: ImportedStudy[]): Study[] {
 		return studyList ?? []
+	}
+
+	static importTemplatePicker(templatePicker?: ImportedTemplatePicker): TemplatePickerObj {
+		return templatePicker ?? { type: picker.Type.NotApplicable, qualifier: {} }
 	}
 
 	static getStats(): DocumentStats {
@@ -207,13 +211,12 @@ class TraitContainerImporter extends ItemImporter {
 			userdesc: item.userdesc ?? "",
 			tags: item.tags ?? [],
 			// modifiers handled separately
-			// template_picker not implemented, TODO: implement
 			// weapons handled separately
 			cr: item.cr ?? selfctrl.Roll.NoCR,
 			cr_adj: item.cr_adj ?? selfctrl.Adjustment.NoCRAdj,
 			container_type: item.container_type ?? container.Type.Group,
 			disabled: item.disabled ?? false,
-			template_picker: item.template_picker,
+			template_picker: ItemImporter.importTemplatePicker(item.template_picker),
 		}
 
 		item.children?.reduce((acc, mod) => {
@@ -494,8 +497,7 @@ class SkillContainerImporter extends ItemImporter {
 			notes: item.notes ?? "",
 			vtt_notes: item.vtt_notes ?? "",
 			tags: item.tags ?? [],
-			template_picker: item.template_picker,
-			// template_picker not implemented, TODO: implement
+			template_picker: ItemImporter.importTemplatePicker(item.template_picker),
 		}
 
 		item.children?.reduce((acc, mod) => {
@@ -680,7 +682,7 @@ class SpellContainerImporter extends ItemImporter {
 			notes: item.notes ?? "",
 			vtt_notes: item.vtt_notes ?? "",
 			tags: item.tags ?? [],
-			template_picker: item.template_picker,
+			template_picker: ItemImporter.importTemplatePicker(item.template_picker),
 		}
 
 		item.children?.reduce((acc, mod) => {

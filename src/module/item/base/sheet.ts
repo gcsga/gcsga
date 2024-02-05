@@ -3,13 +3,14 @@ import { ItemGURPS } from "./document.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { SETTINGS, SYSTEM_NAME, gid } from "@module/data/index.ts"
 import { HitLocationData, HitLocationTableData } from "@actor/character/hit_location.ts"
-import { NumericCompareType, PDF, StringCompareType, prepareFormData } from "@util"
+import { NumericCompareType, PDF, StringCompareType, prepareFormData, stlimit } from "@util"
 import { prereq } from "@util/enum/prereq.ts"
-import { BasePrereqObj, PrereqListObj, TraitPrereqObj } from "@prereq/data.ts"
+import { PrereqListObj, PrereqObj, TraitPrereqObj } from "@prereq/data.ts"
 import { feature } from "@util/enum/feature.ts"
 import { study } from "@util/enum/study.ts"
 import { FeatureObj } from "@feature"
-import { ActorGURPS } from "@actor"
+import { CharacterGURPS } from "@actor"
+import { ItemGCS } from "@item"
 
 class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheetOptions> {
 	constructor(item: TItem, options: Partial<ItemSheetOptions> = {}) {
@@ -80,6 +81,9 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 			data: item.system,
 			title: this.title,
 			config: CONFIG.GURPS,
+			limited: game.user.limited,
+			owner: game.user.isOwner,
+			options,
 		}
 	}
 
@@ -228,7 +232,7 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 		event.preventDefault()
 		if (!this.isEditable) return
 		const path = $(event.currentTarget).data("path").replace("array.", "")
-		const prereqs = fu.getProperty(this.item, `${path}.prereqs`) as PrereqListObj["prereqs"]
+		const prereqs = (fu.getProperty(this.item, `${path}.prereqs`) as PrereqListObj["prereqs"]) ?? []
 		prereqs.push({
 			type: prereq.Type.Trait,
 			name: { compare: StringCompareType.IsString, qualifier: "" },
@@ -245,12 +249,12 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 		event.preventDefault()
 		if (!this.isEditable) return
 		const path = $(event.currentTarget).data("path").replace("array.", "")
-		const prereqs = fu.getProperty(this.item, `${path}.prereqs`) as PrereqListObj["prereqs"]
+		const prereqs = (fu.getProperty(this.item, `${path}.prereqs`) as PrereqListObj["prereqs"]) ?? []
 		prereqs.push({
 			type: prereq.Type.List,
 			all: true,
 			when_tl: { compare: NumericCompareType.AnyNumber },
-			prereqs: [] as BasePrereqObj[],
+			prereqs: [] as PrereqObj[],
 		} as PrereqListObj)
 		const formData: Record<string, unknown> = {}
 		formData[`array.${path}.prereqs`] = prereqs
@@ -263,7 +267,7 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 		const items = path.split(".")
 		const index = items.pop()
 		path = items.join(".")
-		const prereqs = fu.getProperty(this.item, `${path}`) as PrereqListObj["prereqs"]
+		const prereqs = (fu.getProperty(this.item, `${path}`) as PrereqListObj["prereqs"]) ?? []
 		prereqs.splice(index, 1)
 		const formData: Record<string, unknown> = {}
 		formData[`array.${path}`] = prereqs
@@ -273,17 +277,20 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 	protected async _onPrereqTypeChange(event: JQuery.ChangeEvent): Promise<void> {
 		event.preventDefault()
 		if (!this.isEditable) return
-		const value = event.currentTarget.value
+		if (!(this.actor instanceof CharacterGURPS)) return
+		const value = event.currentTarget.value as prereq.Type
 		// const PrereqConstructor = CONFIG.GURPS.Prereq.classes[value as prereq.Type]
 		let path = $(event.currentTarget).data("path").replace("array.", "")
 		const items = path.split(".")
 		const index = parseInt(items.pop())
 		path = items.join(".")
-		const prereqs = fu.getProperty(this.item, `${path}`) as PrereqListObj["prereqs"]
-		prereqs[index] = CONFIG.GURPS.Prereq.classes[value as prereq.Type].fromObject(
-			{ has: (prereqs[index] as BasePrereqObj).has },
-			this.actor,
-		)
+		const prereqs = (fu.getProperty(this.item, `${path}`) as PrereqListObj["prereqs"]) ?? []
+		if (!prereqs[index]) return
+		prereqs[index] = {
+			...CONFIG.GURPS.Prereq.classes[value]
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				.fromObject({} as any, this.actor),
+		} as PrereqObj
 		const formData: Record<string, unknown> = {}
 		formData[`array.${path}`] = prereqs
 		return this._updateObject(null as unknown as Event, formData)
@@ -292,14 +299,14 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 	protected async _addFeature(event: JQuery.ClickEvent): Promise<TItem | undefined> {
 		event.preventDefault()
 		if (!this.isEditable) return this.item
-		const features = this.item.system.features
-		features.push({
+		if (!(this.item instanceof ItemGCS)) return this.item
+		const features = this.item.system.features ?? []
+		features?.push({
 			type: feature.Type.AttributeBonus,
 			attribute: "st",
-			limitation: "none",
+			limitation: stlimit.Option.None,
 			amount: 1,
 			per_level: false,
-			levels: 0,
 		})
 		const update: Record<string, unknown> = {}
 		update["system.features"] = features
@@ -308,8 +315,9 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 
 	protected async _removeFeature(event: JQuery.ClickEvent): Promise<TItem | undefined> {
 		if (!this.isEditable) return this.item
+		if (!(this.item instanceof ItemGCS)) return this.item
 		const index = $(event.currentTarget).data("index")
-		const features = this.item.system.features
+		const features = this.item.system.features ?? []
 		features.splice(index, 1)
 		const update: Record<string, unknown> = {}
 		update["system.features"] = features
@@ -319,6 +327,7 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 	protected async _addDefault(event: JQuery.ClickEvent): Promise<TItem | undefined> {
 		event.preventDefault()
 		if (!this.isEditable) return this.item
+		if (!(this.item instanceof ItemGCS)) return this.item
 		const defaults = this.item.system.defaults ?? []
 		defaults.push({
 			type: gid.Skill,
@@ -333,6 +342,7 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 
 	protected async _removeDefault(event: JQuery.ClickEvent): Promise<TItem | undefined> {
 		if (!this.isEditable) return this.item
+		if (!(this.item instanceof ItemGCS)) return this.item
 		const index = $(event.currentTarget).data("index")
 		const defaults = this.item.system.defaults ?? []
 		defaults.splice(index, 1)
@@ -342,9 +352,10 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 	}
 
 	protected async _addStudy(event: JQuery.ClickEvent): Promise<TItem | undefined> {
-		if (!this.isEditable) return
 		event.preventDefault()
-		const studyEntry = this.item.system.study
+		if (!this.isEditable) return
+		if (!(this.item instanceof ItemGCS)) return
+		const studyEntry = this.item.system.study ?? []
 		studyEntry.push({
 			type: study.Type.Self,
 			hours: 0,
@@ -357,8 +368,9 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 
 	protected async _removeStudy(event: JQuery.ClickEvent): Promise<TItem | undefined> {
 		if (!this.isEditable) return
+		if (!(this.item instanceof ItemGCS)) return
 		const index = $(event.currentTarget).data("index")
-		const studyEntry = this.item.system.study
+		const studyEntry = this.item.system.study ?? []
 		studyEntry.splice(index, 1)
 		const update: Record<string, unknown> = {}
 		update["system.study"] = studyEntry
@@ -367,6 +379,7 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 
 	protected async _onFeatureTypeChange(event: JQuery.ChangeEvent): Promise<TItem | undefined> {
 		if (!this.isEditable) return
+		if (!(this.item instanceof ItemGCS)) return
 		const value = event.currentTarget.value
 		const index = parseInt($(event.currentTarget).data("index"))
 		const FeatureConstructor = CONFIG.GURPS.Feature.classes[value as feature.Type]
@@ -375,10 +388,10 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 		if (feature.WeaponBonusTypes.includes(value)) f = new FeatureConstructor(value).toObject()
 		features.splice(index, 1, f)
 		const update: Record<string, unknown> = {}
-		await this.item.update({ "system.-=features": null }, {
-			render: false,
-			performDeletions: true,
-		} as DocumentModificationContext<ActorGURPS>)
+		// await this.item.update({ "system.-=features": null }, {
+		// 	render: false,
+		// 	performDeletions: true,
+		// } as DocumentModificationContext<ActorGURPS>)
 		update["system.features"] = features
 		return this.item.update(update, { render: true })
 	}

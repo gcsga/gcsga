@@ -120,7 +120,8 @@ export function convertRollStringToArrayOfInt(text: string): number[] {
 //  * @param value
 //  * @param index
 //  */
-export function put(obj: Record<string, unknown>, value: unknown, index = -1): string {
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
+export function put(obj: any, value: unknown, index = -1): string {
 	if (index === -1) {
 		index = 0
 		while (obj[zeroFill(index)]) index += 1

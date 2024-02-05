@@ -1,11 +1,5 @@
-// export interface DocumentModificationOptionsGURPS extends DocumentModificationOptions {
-// 	temporary: boolean
-// 	substitutions: boolean
-// }
-
-import { ActorType } from "@actor"
-import { ActorFlags, ActorFlagsGURPS, ActorSystemSource, BaseActorSourceGURPS } from "@actor/base/data.ts"
-import { RollModifier, SYSTEM_NAME, gid } from "@module/data/misc.ts"
+import { ActorFlagsGURPS, ActorSystemSource, BaseActorSourceGURPS } from "@actor/base/data.ts"
+import { ActorFlags, ActorType, RollModifier, SYSTEM_NAME, gid } from "@data"
 import { SheetSettings } from "@module/data/sheet_settings.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { AttributeObj } from "@sytem/attribute/data.ts"

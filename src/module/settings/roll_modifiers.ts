@@ -1,4 +1,4 @@
-import { RollModifier, SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
+import { RollModifier, SETTINGS, SYSTEM_NAME } from "@data"
 import { PartialSettingsData, SettingsMenuGURPS } from "./menu.ts"
 import { LocalizeGURPS, prepareFormData } from "@util"
 

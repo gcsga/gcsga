@@ -1,6 +1,5 @@
-import { ActorType } from "@actor"
 import { ActorGURPS } from "@actor/base.ts"
-import { SYSTEM_NAME } from "@module/data/index.ts"
+import { ActorType, SYSTEM_NAME } from "@data"
 import { UserFlags } from "@module/user/data.ts"
 import { TokenDocumentGURPS } from "@scene/token-document/document.ts"
 

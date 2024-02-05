@@ -11,13 +11,12 @@ export class EquippedEquipmentPrereq extends BasePrereq {
 
 	constructor() {
 		super(prereq.Type.EquippedEquipment)
-		this.name = new StringCriteria(StringCompareType.IsString)
+		this.name = new StringCriteria({ compare: StringCompareType.IsString })
 	}
 
 	static fromObject(data: EquippedEquipmentPrereqObj): EquippedEquipmentPrereq {
 		const prereq = new EquippedEquipmentPrereq()
-		prereq.has = data.has
-		if (data.name) prereq.name = new StringCriteria(data.name.compare, data.name.qualifier)
+		if (data.name) prereq.name = new StringCriteria(data.name)
 		return prereq
 	}
 

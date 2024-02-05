@@ -5,12 +5,14 @@ import { SkillGURPS } from "@item/skill/document.ts"
 import { difficulty } from "@util/enum/difficulty.ts"
 import { SkillDefault } from "@sytem/default/index.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
-import { gid } from "@module/data/misc.ts"
 import { ActorGURPS, CharacterGURPS } from "@actor"
+import { ItemType, gid } from "@data"
 
 export interface TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	readonly _source: TechniqueSource
 	system: TechniqueSystemSource
+
+	type: ItemType.Technique
 }
 export class TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	declare level: SkillLevel
@@ -49,14 +51,6 @@ export class TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | nul
 
 	get difficulty(): difficulty.Level {
 		return this.system.difficulty
-	}
-
-	get defaultedFrom(): SkillDefault | null {
-		return this.system.defaulted_from ?? null
-	}
-
-	set defaultedFrom(v: SkillDefault | null) {
-		this.system.defaulted_from = v
 	}
 
 	get default(): SkillDefault {

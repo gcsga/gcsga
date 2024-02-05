@@ -6,7 +6,8 @@ import { CharacterResolver, LengthUnits, WeightUnits } from "@util"
 import { display } from "@util/enum/display.ts"
 import { paper } from "@util/enum/paper.ts"
 import { progression } from "@util/enum/progression.ts"
-import { SETTINGS, SYSTEM_NAME } from "./misc.ts"
+import { SETTINGS, SYSTEM_NAME } from "./constants.ts"
+import { ActorGURPS, CharacterGURPS } from "@actor"
 
 export interface PageSettings {
 	paper_size: paper.Size
@@ -70,7 +71,7 @@ export function defaultSheetSettings(): SheetSettings {
 	}
 }
 
-export function sheetSettingsFor(actor: CharacterResolver | null): SheetSettings {
-	if (!actor) return defaultSheetSettings()
+export function sheetSettingsFor(actor: ActorGURPS | CharacterResolver | null): SheetSettings {
+	if (!actor || !(actor instanceof CharacterGURPS)) return defaultSheetSettings()
 	return actor.settings
 }

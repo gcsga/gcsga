@@ -1,11 +1,11 @@
 import { ActorProxyGURPS } from "@actor"
+import { SYSTEM_NAME } from "@data"
 import { ItemProxyGURPS } from "@item"
 import { StatusEffectsGURPS } from "@item/condition/list.ts"
 import { ActiveEffectGURPS } from "@module/active-effect/index.ts"
 import { TokenGURPS } from "@module/canvas/token/index.ts"
 import { CombatGURPS } from "@module/combat/document.ts"
 import { CombatantGURPS } from "@module/combatant/document.ts"
-import { SYSTEM_NAME } from "@module/data/misc.ts"
 import { JournalEntryGURPS } from "@module/journal-entry/document.ts"
 import { JournalEntryPageProxyGURPS } from "@module/journal-entry/page/document.ts"
 import * as SpeedProviderGURPS from "@module/modules/drag_ruler.ts"
@@ -15,6 +15,7 @@ import { registerSettings } from "@module/settings/index.ts"
 import { UserGURPS } from "@module/user/index.ts"
 import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
 import { GURPSCONFIG } from "@scripts/config/index.ts"
+import { registerFonts } from "@scripts/register-fonts.ts"
 import { registerTemplates } from "@scripts/register-templates.ts"
 import { CombatTrackerGURPS, ItemDirectoryGURPS } from "@ui"
 import { registerHandlebarsHelpers } from "@util/handlebars_helpers.ts"
@@ -72,6 +73,7 @@ export const Init = {
 			// StaticHitLocation.init()
 			SpeedProviderGURPS.init()
 
+			registerFonts()
 			registerHandlebarsHelpers()
 			registerSettings()
 			registerTemplates()

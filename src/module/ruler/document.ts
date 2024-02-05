@@ -1,4 +1,4 @@
-import { RollModifierTags, SETTINGS, SSRT_SETTING, SYSTEM_NAME } from "@module/data/misc.ts"
+import { RollModifierTags, SETTINGS, SSRT_SETTING, SYSTEM_NAME } from "@data"
 import { allLengthUnits, Length, LengthSymbols, LengthUnits, LocalizeGURPS } from "@util"
 
 class RulerGURPS extends Ruler {

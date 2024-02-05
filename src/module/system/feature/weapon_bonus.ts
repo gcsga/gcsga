@@ -1,4 +1,3 @@
-import { WeaponOwner } from "@module/data/misc.ts"
 import { feature } from "@util/enum/feature.ts"
 import { wsel } from "@util/enum/wsel.ts"
 import { wswitch } from "@util/enum/wswitch.ts"
@@ -10,6 +9,7 @@ import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { WeaponBonusObj } from "./data.ts"
 import { WeaponLeveledAmount } from "./weapon_leveled_amount.ts"
 import { BaseWeaponGURPS } from "@item"
+import { WeaponOwner } from "@data"
 
 export class WeaponBonus {
 	type: feature.WeaponBonusType
@@ -43,11 +43,11 @@ export class WeaponBonus {
 	constructor(type: feature.WeaponBonusType) {
 		this.type = type
 		this.selection_type = wsel.Type.WithRequiredSkill
-		this.name = new StringCriteria(StringCompareType.IsString)
-		this.specialization = new StringCriteria(StringCompareType.AnyString)
-		this.level = new NumericCriteria(NumericCompareType.AtLeastNumber)
-		this.usage = new StringCriteria(StringCompareType.AnyString)
-		this.tags = new StringCriteria(StringCompareType.AnyString)
+		this.name = new StringCriteria({ compare: StringCompareType.IsString })
+		this.specialization = new StringCriteria({ compare: StringCompareType.AnyString })
+		this.level = new NumericCriteria({ compare: NumericCompareType.AtLeastNumber })
+		this.usage = new StringCriteria({ compare: StringCompareType.AnyString })
+		this.tags = new StringCriteria({ compare: StringCompareType.AnyString })
 		this.leveledAmount = new WeaponLeveledAmount({ amount: 1 })
 	}
 
@@ -156,12 +156,11 @@ export class WeaponBonus {
 		if (data.switch_type) bonus.switch_type = data.switch_type
 		if (data.switch_type_value) bonus.switch_type_value = data.switch_type_value
 		bonus.selection_type = data.selection_type
-		if (data.name) bonus.name = new StringCriteria(data.name.compare, data.name.qualifier)
-		if (data.specialization)
-			bonus.specialization = new StringCriteria(data.specialization.compare, data.specialization.qualifier)
-		if (data.level) bonus.level = new NumericCriteria(data.level.compare, data.level.qualifier)
-		if (data.name) bonus.name = new StringCriteria(data.name.compare, data.name.qualifier)
-		if (data.tags) bonus.tags = new StringCriteria(data.tags.compare, data.tags.qualifier)
+		if (data.name) bonus.name = new StringCriteria(data.name)
+		if (data.specialization) bonus.specialization = new StringCriteria(data.specialization)
+		if (data.level) bonus.level = new NumericCriteria(data.level)
+		if (data.name) bonus.name = new StringCriteria(data.name)
+		if (data.tags) bonus.tags = new StringCriteria(data.tags)
 		bonus.leveledAmount = WeaponLeveledAmount.fromObject(data)
 		return bonus
 	}

@@ -8,7 +8,8 @@ import { LocalizeGURPS } from "@util/localize.ts"
 import { progression } from "@util/enum/progression.ts"
 import { BaseWeaponGURPS } from "./document.ts"
 import { CharacterGURPS } from "@actor"
-import { EquipmentContainerGURPS, EquipmentGURPS, TraitGURPS } from "@item"
+import { ItemType } from "@data"
+import { TraitResolver } from "@util/resolvers.ts"
 
 export class WeaponDamage {
 	owner?: BaseWeaponGURPS
@@ -80,18 +81,19 @@ export class WeaponDamage {
 		if (!actor) return new DiceGURPS({ sides: 6, multiplier: 1 })
 		const maxST = (this.owner.strength.resolve(this.owner, null).min ?? 0) * 3
 		let st = 0
-		if (this.owner.container instanceof EquipmentGURPS || this.owner.container instanceof EquipmentContainerGURPS)
-			st = this.owner.container.ratedStrength
+		if (this.owner.container instanceof Item)
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			st = (this.owner.container as any).ratedStrength
 		if (st === 0) st = actor.strikingST
 		if (maxST > 0 && maxST < st) st = maxST
 		let base = new DiceGURPS({ sides: 6, multiplier: 1 })
 		if (this.base) base = this.base
 		if (
 			!(this.owner.container instanceof CompendiumCollection) &&
-			this.owner.container instanceof TraitGURPS &&
-			this.owner.container.isLeveled
+			this.owner.container?.type === ItemType.Trait &&
+			(this.owner.container as unknown as TraitResolver)?.isLeveled
 		)
-			multiplyDice(Int.from(this.owner.container.levels), base)
+			multiplyDice(Int.from((this.owner.container as unknown as TraitResolver).levels), base)
 		const intST = Int.from(st)
 		switch (this.st) {
 			case stdmg.Option.Thrust:
@@ -101,10 +103,10 @@ export class WeaponDamage {
 				const thrust = actor.thrustFor(intST)
 				if (
 					!(this.owner.container instanceof CompendiumCollection) &&
-					this.owner.container instanceof TraitGURPS &&
-					this.owner.container.isLeveled
+					this.owner.container?.type === ItemType.Trait &&
+					(this.owner.container as unknown as TraitResolver)?.isLeveled
 				)
-					multiplyDice(Int.from(this.owner.container.levels), base)
+					multiplyDice(Int.from((this.owner.container as unknown as TraitResolver).levels), base)
 				base = addDice(base, thrust)
 				break
 			}
@@ -115,10 +117,10 @@ export class WeaponDamage {
 				const swing = actor.swingFor(intST)
 				if (
 					!(this.owner.container instanceof CompendiumCollection) &&
-					this.owner.container instanceof TraitGURPS &&
-					this.owner.container.isLeveled
+					this.owner.container?.type === ItemType.Trait &&
+					(this.owner.container as unknown as TraitResolver)?.isLeveled
 				)
-					multiplyDice(Int.from(this.owner.container.levels), swing)
+					multiplyDice(Int.from((this.owner.container as unknown as TraitResolver).levels), base)
 				base = addDice(base, swing)
 				break
 			}

@@ -1,6 +1,6 @@
 import { ActorGURPS } from "@actor/base.ts"
 import { StaticItemSystemData } from "./data.ts"
-import { ItemType } from "@item/types.ts"
+import { ItemType } from "@data"
 
 export interface StaticItemGURPS<TParent extends ActorGURPS | null> extends Item<TParent> {
 	type: ItemType.LegacyEquipment

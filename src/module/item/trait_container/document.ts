@@ -6,10 +6,13 @@ import { TraitModifierGURPS } from "@item/trait_modifier/document.ts"
 import { TraitModifierContainerGURPS } from "@item"
 import { ActorGURPS } from "@actor"
 import { container } from "@util/enum/container.ts"
+import { ItemType } from "@data"
 
 export interface TraitContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	readonly _source: TraitContainerSource
 	system: TraitContainerSystemSource
+
+	type: ItemType.TraitContainer
 }
 
 export class TraitContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {

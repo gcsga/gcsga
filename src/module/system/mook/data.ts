@@ -1,4 +1,4 @@
-import { ItemType } from "@item"
+import { ItemType } from "@data"
 import { WeaponDamageObj } from "@item/weapon/data.ts"
 import { WeaponDamage } from "@item/weapon/weapon_damage.ts"
 import { DiceGURPS } from "@module/dice/index.ts"

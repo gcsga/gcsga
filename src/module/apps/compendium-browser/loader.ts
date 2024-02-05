@@ -2,7 +2,7 @@ import { LocalizeGURPS, sluggify } from "@util"
 import * as R from "remeda"
 import { CompendiumBrowserSources } from "./index.ts"
 import { Progress } from "@sytem/progress.ts"
-import { SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
+import { SETTINGS, SYSTEM_NAME } from "@data"
 
 class PackLoader {
 	loadedSources: string[] = []

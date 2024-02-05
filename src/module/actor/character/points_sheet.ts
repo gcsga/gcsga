@@ -1,4 +1,4 @@
-import { SYSTEM_NAME } from "@module/data/misc.ts"
+import { SYSTEM_NAME } from "@data"
 import { CharacterGURPS } from "./document.ts"
 import { LocalizeGURPS } from "@util"
 import { PointsRecord } from "./data.ts"

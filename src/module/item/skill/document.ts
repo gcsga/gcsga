@@ -7,16 +7,18 @@ import { resolveStudyHours, studyHoursProgressText } from "@util/study.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { NewLineRegex } from "@util/regexp.ts"
 import { difficulty } from "@util/enum/difficulty.ts"
-import { gid } from "@module/data/misc.ts"
 import { SkillDefault } from "@sytem/default/index.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { CharacterResolver } from "@util"
 import { study } from "@util/enum/study.ts"
 import { ActorGURPS, CharacterGURPS } from "@actor"
+import { ItemType, gid } from "@data"
 
 interface SkillGURPS<TParent extends ActorGURPS | null> extends ItemGCS<TParent> {
 	readonly _source: SkillSource
 	system: SkillSystemSource
+
+	type: ItemType.Skill
 }
 class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	declare level: SkillLevel
@@ -37,7 +39,7 @@ class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 
 	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
 		const buffer = new StringBuilder()
-		const settings = sheetSettingsFor(this.actor as CharacterGURPS)
+		const settings = sheetSettingsFor(this.actor)
 		if (optionChecker(settings.modifiers_display)) {
 			const text = this.modifierNotes
 			if ((text?.trim() ?? "") !== "") buffer.push(text)
@@ -107,11 +109,12 @@ class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 	}
 
 	get defaultedFrom(): SkillDefault | null {
-		return this.system.defaulted_from ?? null
+		if (this.system.defaulted_from === null) return null
+		return new SkillDefault(this.system.defaulted_from)
 	}
 
 	set defaultedFrom(v: SkillDefault | null) {
-		this.system.defaulted_from = v
+		this.system.defaulted_from = v?.toObject() ?? null
 	}
 
 	get defaults(): SkillDefault[] {

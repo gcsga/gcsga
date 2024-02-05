@@ -1,8 +1,7 @@
 import { ActorGURPS } from "@actor"
+import { ItemType, RollModifier } from "@data"
 import { FeatureObj } from "@feature/index.ts"
 import { BaseItemSourceGURPS, ItemSystemSource } from "@item/base/data/system.ts"
-import { ItemType } from "@item/types.ts"
-import { RollModifier } from "@module/data/misc.ts"
 
 export type EffectSource = BaseItemSourceGURPS<ItemType.Effect, EffectSystemSource>
 

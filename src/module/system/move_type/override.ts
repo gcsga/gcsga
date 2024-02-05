@@ -1,3 +1,4 @@
+import { CharacterGURPS } from "@actor"
 import { MoveTypeOverrideConditionType, MoveTypeOverrideObj } from "./data.ts"
 import { CharacterResolver, evaluateToNumber } from "@util"
 
@@ -11,7 +12,7 @@ export class MoveTypeOverride {
 		this.move_type_base = data.move_type_base
 	}
 
-	conditionMet(resolver: CharacterResolver): boolean {
+	conditionMet(resolver: CharacterGURPS | CharacterResolver): boolean {
 		switch (this.condition.type) {
 			case MoveTypeOverrideConditionType.Skill:
 				return resolver.skills.some(e => e.name === this.condition.qualifier)
@@ -22,7 +23,7 @@ export class MoveTypeOverride {
 		}
 	}
 
-	baseValue(resolver: CharacterResolver): number {
+	baseValue(resolver: CharacterGURPS | CharacterResolver): number {
 		return evaluateToNumber(this.move_type_base, resolver)
 	}
 }

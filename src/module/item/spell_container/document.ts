@@ -1,10 +1,13 @@
 import { ActorGURPS } from "@actor"
 import { SpellContainerSource, SpellContainerSystemSource } from "./data.ts"
 import { ItemGCS, RitualMagicSpellGURPS, SpellGURPS } from "@item/index.ts"
+import { ItemType } from "@data"
 
 export interface SpellContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	readonly _source: SpellContainerSource
 	system: SpellContainerSystemSource
+
+	type: ItemType.SpellContainer
 }
 export class SpellContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	// Embedded Items

@@ -1,10 +1,11 @@
+import { ItemType } from "@data"
 import { FeatureObj } from "@feature/index.ts"
-import { ItemType } from "@item"
-import { ItemGCSSource, ItemGCSSystemSource } from "@item/gcs/data.ts"
+import { BaseContainerSource } from "@item/container/data.ts"
+import { ItemGCSSystemSource } from "@item/gcs/data.ts"
 import { affects } from "@util/enum/affects.ts"
 import { tmcost } from "@util/enum/tmcost.ts"
 
-export type TraitModifierSource = ItemGCSSource<ItemType.TraitModifier, TraitModifierSystemSource>
+export type TraitModifierSource = BaseContainerSource<ItemType.TraitModifier, TraitModifierSystemSource>
 
 export interface TraitModifierSystemSource extends ItemGCSSystemSource {
 	type: ItemType.TraitModifier

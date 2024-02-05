@@ -1,20 +1,19 @@
 import { ActorGURPS, CharacterGURPS } from "@actor"
-import { ItemFlags } from "@item/base/data/index.ts"
 import { ItemGURPS } from "@item/base/document.ts"
-import { ContainerGURPS, ItemGCS, MeleeWeaponGURPS } from "@item/index.ts"
-import { ItemType } from "@item/types.ts"
-import { RollType, SYSTEM_NAME, gid } from "@module/data/misc.ts"
+import { ItemFlags, ItemType, RollType, SYSTEM_NAME, gid } from "@data"
 import { SkillDefault } from "@sytem/default/index.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
-import { display, feature, objectHasKey, sheetDisplayNotes, skillsel, wsel, wswitch } from "@util"
 import { Int } from "@util/fxp.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { CharacterResolver, EquipmentResolver } from "@util/resolvers.ts"
+import { CharacterResolver, EquipmentResolver, MeleeWeaponResolver } from "@util/resolvers.ts"
 import { StringBuilder } from "@util/string_builder.ts"
 import { BaseWeaponSystemSource } from "./data.ts"
 import { WeaponDamage } from "./weapon_damage.ts"
 import { WeaponStrength } from "./weapon_strength.ts"
 import { Feature, SkillBonus, WeaponBonus } from "@feature"
+import { ContainerGURPS } from "@item"
+import { objectHasKey, sheetDisplayNotes } from "@util/misc.ts"
+import { display, feature, skillsel, wsel, wswitch } from "@util/enum/index.ts"
 
 export interface BaseWeaponGURPS<TParent extends ActorGURPS | null> extends ItemGURPS<TParent> {
 	system: BaseWeaponSystemSource
@@ -53,8 +52,9 @@ export abstract class BaseWeaponGURPS<
 	secondaryText(_optionChecker: (option: display.Option) => boolean): string {
 		const buffer = new StringBuilder()
 		if (this.getFlag(SYSTEM_NAME, ItemFlags.Unready))
-			if (this.container instanceof ItemGCS) {
-				buffer.appendToNewLine(this.container.notes)
+			if (this.container instanceof ContainerGURPS) {
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				buffer.appendToNewLine((this.container as any).notes)
 			}
 		buffer.appendToNewLine(this.system.usage_notes)
 		return buffer.toString()
@@ -67,7 +67,8 @@ export abstract class BaseWeaponGURPS<
 	get equipped(): boolean {
 		if (!this.actor) return false
 		if (this.container instanceof CompendiumCollection) return false
-		if (this.container instanceof ItemGCS) {
+		if (this.container instanceof ContainerGURPS) {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			if ([ItemType.Equipment, ItemType.EquipmentContainer].includes(this.container.type))
 				return (this.container as unknown as EquipmentResolver).equipped
 			if ([ItemType.Trait, ItemType.TraitContainer].includes(this.container.type))
@@ -89,7 +90,7 @@ export abstract class BaseWeaponGURPS<
 	}
 
 	skillLevel(tooltip?: TooltipGURPS): number {
-		const actor = (this.actor as unknown as CharacterResolver) || (this.dummyActor as CharacterResolver)
+		const actor = this.actor || this.dummyActor
 		if (!actor) return 0
 		let primaryTooltip = new TooltipGURPS()
 		if (tooltip) primaryTooltip = tooltip
@@ -112,7 +113,7 @@ export abstract class BaseWeaponGURPS<
 		return best
 	}
 
-	skillLevelBaseAdjustment(actor: CharacterResolver, tooltip: TooltipGURPS | null): number {
+	skillLevelBaseAdjustment(actor: ActorGURPS | CharacterResolver, tooltip: TooltipGURPS | null): number {
 		if (!actor) return 0
 		if (!(actor instanceof CharacterGURPS)) return 0
 		let adj = 0
@@ -123,7 +124,8 @@ export abstract class BaseWeaponGURPS<
 		for (const bonus of actor.namedWeaponSkillBonusesFor(
 			nameQualifier!,
 			this.usage,
-			(this.container as ItemGCS).tags,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(this.container as any).tags,
 			tooltip,
 		)) {
 			adj += bonus.adjustedAmount
@@ -131,17 +133,20 @@ export abstract class BaseWeaponGURPS<
 		for (const bonus of actor.namedWeaponSkillBonusesFor(
 			nameQualifier!,
 			this.usage,
-			(this.container as ItemGCS).tags,
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(this.container as any).tags,
 			tooltip,
 		)) {
 			adj += bonus.adjustedAmount
 		}
 		if (this.container)
-			for (const f of (this.container as ItemGCS).features) {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			for (const f of (this.container as any).features) {
 				adj += this.extractSkillBonusForThisWeapon(f, tooltip)
 			}
 		if ([ItemType.Trait, ItemType.Equipment, ItemType.EquipmentContainer].includes(this.container?.type)) {
-			for (const mod of (this.container as ItemGCS).modifiers) {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			for (const mod of (this.container as any).modifiers) {
 				for (const f of mod.features) {
 					adj += this.extractSkillBonusForThisWeapon(f, tooltip)
 				}
@@ -150,13 +155,13 @@ export abstract class BaseWeaponGURPS<
 		return adj
 	}
 
-	skillLevelPostAdjustment(actor: CharacterResolver, tooltip: TooltipGURPS | null): number {
-		if (this instanceof MeleeWeaponGURPS)
-			if (this.system.parry?.includes("F")) return this.encumbrancePenalty(actor, tooltip)
+	skillLevelPostAdjustment(actor: ActorGURPS | CharacterResolver, tooltip: TooltipGURPS | null): number {
+		if (this.type === ItemType.MeleeWeapon)
+			if ((this as unknown as MeleeWeaponResolver).parry.fencing) return this.encumbrancePenalty(actor, tooltip)
 		return 0
 	}
 
-	encumbrancePenalty(actor: CharacterResolver, tooltip: TooltipGURPS | null): number {
+	encumbrancePenalty(actor: ActorGURPS | CharacterResolver, tooltip: TooltipGURPS | null): number {
 		if (!actor) return 0
 		if (!(actor instanceof CharacterGURPS)) return 0
 		const penalty = actor.encumbranceLevel(true).penalty
@@ -205,7 +210,7 @@ export abstract class BaseWeaponGURPS<
 	}
 
 	resolvedValue(input: string, baseDefaultType: string, tooltip?: TooltipGURPS): string {
-		const actor = this.actor as unknown as CharacterResolver
+		const actor = this.actor
 		if (!(actor instanceof CharacterGURPS)) return ""
 		input ??= ""
 		input = input.trim()
@@ -261,7 +266,7 @@ export abstract class BaseWeaponGURPS<
 	}
 
 	resolveBoolFlag(switchType: wswitch.Type, initial: boolean): boolean {
-		const actor = this.actor as unknown as CharacterResolver
+		const actor = this.actor as unknown as ActorGURPS
 		if (!actor) return initial
 		let t = 0
 		let f = 0
@@ -279,7 +284,7 @@ export abstract class BaseWeaponGURPS<
 		tooltip: TooltipGURPS | null,
 		...allowedFeatureTypes: feature.WeaponBonusType[]
 	): WeaponBonus[] {
-		const actor = this.actor as unknown as CharacterResolver
+		const actor = this.actor as unknown as ActorGURPS
 		if (!actor || !(actor instanceof CharacterGURPS)) return []
 		const allowed: Map<feature.WeaponBonusType, boolean> = new Map()
 		for (const one of allowedFeatureTypes) allowed.set(one, true)
@@ -295,7 +300,8 @@ export abstract class BaseWeaponGURPS<
 			}
 		}
 		const bonusSet: Map<WeaponBonus, boolean> = new Map()
-		const tags = (this.container as ItemGCS)?.tags
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const tags = (this.container as any)?.tags
 		let [name, specialization] = ["", ""]
 		if (bestDef) {
 			name = bestDef.name ?? ""
@@ -306,7 +312,8 @@ export abstract class BaseWeaponGURPS<
 		actor.addNamedWeaponBonusesFor(nameQualifier, this.usage, tags, dieCount, tooltip, bonusSet, allowed)
 		const container = this.container
 		if (container && container instanceof Item)
-			for (const f of (container as ItemGCS).features)
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			for (const f of (container as any).features)
 				this._extractWeaponBonus(f, bonusSet, allowed, Int.from(dieCount), tooltip)
 		if (
 			!(this.container instanceof CompendiumCollection) &&
@@ -314,7 +321,8 @@ export abstract class BaseWeaponGURPS<
 				this.container?.type as ItemType,
 			)
 		) {
-			;(this.container as ItemGCS).modifiers.forEach(mod => {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			;(this.container as any).modifiers.forEach((mod: any) => {
 				let bonus: Feature
 				for (const f of mod.features) {
 					bonus = f
@@ -355,7 +363,8 @@ export abstract class BaseWeaponGURPS<
 					if (
 						f.name?.matches(this.formattedName) &&
 						f.specialization?.matches(this.usage) &&
-						f.tags?.matchesList(...(this.container as ItemGCS).tags)
+						// eslint-disable-next-line @typescript-eslint/no-explicit-any
+						f.tags?.matchesList(...(this.container as any).tags)
 					) {
 						if (!set.has(f)) {
 							set.set(f, true)

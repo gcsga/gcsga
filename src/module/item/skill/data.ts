@@ -1,6 +1,7 @@
+import { ItemType } from "@data"
 import { FeatureObj } from "@feature/index.ts"
-import { ItemGCSSource, ItemGCSSystemSource } from "@item/gcs/data.ts"
-import { ItemType } from "@item/types.ts"
+import { BaseContainerSource } from "@item/container/data.ts"
+import { ItemGCSSystemSource } from "@item/gcs/data.ts"
 import { PrereqListObj } from "@prereq/data.ts"
 import { SkillDefaultObj } from "@sytem/default/index.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
@@ -8,7 +9,7 @@ import { difficulty } from "@util/enum/difficulty.ts"
 import { study } from "@util/enum/study.ts"
 import { Study } from "@util/study.ts"
 
-export type SkillSource = ItemGCSSource<ItemType.Skill, SkillSystemSource>
+export type SkillSource = BaseContainerSource<ItemType.Skill, SkillSystemSource>
 
 export interface SkillSystemSource extends ItemGCSSystemSource {
 	type: ItemType.Skill
@@ -24,7 +25,7 @@ export interface SkillSystemSource extends ItemGCSSystemSource {
 	difficulty: `${string}/${difficulty.Level}`
 	points: number
 	encumbrance_penalty_multiplier: number
-	defaulted_from: SkillDefaultObj
+	defaulted_from: SkillDefaultObj | null
 	defaults: SkillDefaultObj[]
 	prereqs: PrereqListObj
 	features: FeatureObj[]

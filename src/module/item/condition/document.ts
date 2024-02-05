@@ -2,14 +2,15 @@ import { EffectGURPS } from "@item/effect/document.ts"
 import { getConditionList } from "./list.ts"
 import { getManeuverList } from "./maneuver.ts"
 import { DurationType, EffectModificationContext } from "@item/effect/data.ts"
-import { ItemType } from "@item"
-import { ConditionID, ConditionSource, ConditionSystemSource, ManeuverID } from "./data.ts"
-import { SYSTEM_NAME } from "@module/data/index.ts"
+import { ConditionSource, ConditionSystemSource } from "./data.ts"
 import { ActorGURPS } from "@actor"
+import { ConditionID, ItemType, ManeuverID, SYSTEM_NAME } from "@data"
 
 export interface ConditionGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends EffectGURPS<TParent> {
 	readonly _source: ConditionSource
 	system: ConditionSystemSource
+
+	type: ItemType.Condition
 }
 
 export class ConditionGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends EffectGURPS<TParent> {
@@ -43,6 +44,7 @@ export class ConditionGURPS<TParent extends ActorGURPS | null = ActorGURPS | nul
 				startTime: 0,
 				combat: null,
 			},
+			slug: "",
 			_migration: { previous: null, version: null },
 		}
 	}

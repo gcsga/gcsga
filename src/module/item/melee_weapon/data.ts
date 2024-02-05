@@ -1,5 +1,5 @@
+import { ItemType } from "@data"
 import { BaseItemSourceGURPS } from "@item/base/data/system.ts"
-import { ItemType } from "@item/types.ts"
 import { BaseWeaponSystemSource } from "@item/weapon/data.ts"
 
 export type MeleeWeaponSource = BaseItemSourceGURPS<ItemType.MeleeWeapon, MeleeWeaponSystemSource>

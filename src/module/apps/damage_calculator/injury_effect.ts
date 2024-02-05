@@ -2,7 +2,7 @@ import { RollModifier, RollType, gid } from "@module/data/index.ts"
 
 function getFormatFunction() {
 	const format = game
-		? game.i18n.format.bind(game.i18n)
+		? game.i18n.format?.bind(game.i18n)
 		: (stringId: string, data?: Record<string, unknown>) => `${stringId}${data ? `:${JSON.stringify(data)}` : ""}`
 
 	return format

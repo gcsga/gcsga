@@ -1,12 +1,12 @@
 import { ActorGURPS, CharacterGURPS, LootGURPS } from "@actor"
 import { BaseWeaponGURPS, MeleeWeaponGURPS, RangedWeaponGURPS } from "@item"
-import { GURPS_COMMANDS, RollModifier, RollType, gid } from "@module/data/index.ts"
 import { RollGURPS } from "@module/roll/index.ts"
-import { UserGURPS } from "@module/user/document.ts"
 import { MookGeneratorSheet } from "@sytem/mook/sheet.ts"
 import { LastActor } from "./last_actor.ts"
 import { LocalizeGURPS } from "./localize.ts"
 import { RollTypeData } from "@module/roll/roll_handler.ts"
+import { GURPS_COMMANDS, RollModifier, RollType, gid } from "@data"
+import { UserGURPS } from "@module/user/document.ts"
 
 export function parse(message: string): [string, string[]] {
 	for (const [rule, rgx] of Object.entries(GURPS_COMMANDS)) {
@@ -147,11 +147,11 @@ async function _onRollClick(event: JQuery.ClickEvent) {
 		data.comment = $(event.currentTarget).data("comment")
 	}
 	if (type === RollType.Location) {
-		actor = game.actors?.get($(event.currentTarget).data("actorId")) as ActorGURPS
+		actor = (game.actors?.get($(event.currentTarget).data("actorId")) as ActorGURPS) ?? null
 	}
 	if (type === RollType.Generic) data.formula = $(event.currentTarget).data("formula")
 
-	return RollGURPS.handleRoll(game.user, actor as CharacterGURPS, data)
+	if (actor !== null) return RollGURPS.handleRoll(game.user, actor as ActorGURPS, data)
 }
 
 /**
@@ -166,9 +166,9 @@ async function _onDamageRoll(event: JQuery.ClickEvent) {
 	const eventData = $(event.currentTarget).data() as DamageRollEventData
 
 	const rollData = getDamageRollData(eventData)
-	const { actor, data } = rollData ?? {}
+	const { actor, data } = rollData ?? { actor: null }
 
-	return RollGURPS.handleRoll(game.user, actor as CharacterGURPS, data as RollTypeData)
+	if (actor !== null) return RollGURPS.handleRoll(game.user, actor, data as RollTypeData)
 }
 
 type DamageRollEventData = {

@@ -1,10 +1,11 @@
+import { ItemType } from "@data"
 import { FeatureObj } from "@feature/index.ts"
-import { ItemGCSSource, ItemGCSSystemSource } from "@item/gcs/data.ts"
-import { ItemType } from "@item/types.ts"
+import { BaseContainerSource } from "@item/container/data.ts"
+import { ItemGCSSystemSource } from "@item/gcs/data.ts"
 import { PrereqListObj } from "@prereq/data.ts"
 import { WeightString } from "@util/weight.ts"
 
-export type EquipmentContainerSource = ItemGCSSource<ItemType.EquipmentContainer, EquipmentContainerSystemSource>
+export type EquipmentContainerSource = BaseContainerSource<ItemType.EquipmentContainer, EquipmentContainerSystemSource>
 
 export interface EquipmentContainerSystemSource extends ItemGCSSystemSource {
 	type: ItemType.EquipmentContainer

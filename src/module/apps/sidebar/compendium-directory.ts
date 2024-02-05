@@ -1,10 +1,10 @@
 import { ActorGURPS } from "@actor"
 import { ItemGURPS } from "@item"
-import { SYSTEM_NAME } from "@module/data/misc.ts"
 import { UserFlags } from "@module/user/data.ts"
 import { ErrorGURPS, fontAwesomeIcon, htmlQuery } from "@util"
 import MiniSearch from "minisearch"
 import { CompendiumMigrationStatus } from "../compendium-migration-status.ts"
+import { SYSTEM_NAME } from "@data"
 
 class CompendiumDirectoryGURPS extends CompendiumDirectory {
 	static readonly STOP_WORDS = new Set(["of", "th", "the"])

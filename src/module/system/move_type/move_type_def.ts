@@ -2,6 +2,7 @@ import { CharacterResolver, evaluateToNumber, sanitizeId } from "@util"
 import { MoveTypeDefObj } from "./data.ts"
 import { MoveTypeOverride } from "./override.ts"
 import { reserved_ids } from "@sytem/attribute/data.ts"
+import { CharacterGURPS } from "@actor"
 
 export class MoveTypeDef {
 	private def_id!: string
@@ -32,7 +33,7 @@ export class MoveTypeDef {
 		this.def_id = sanitizeId(v, false, reserved_ids)
 	}
 
-	baseValue(resolver: CharacterResolver): number {
+	baseValue(resolver: CharacterGURPS | CharacterResolver): number {
 		return evaluateToNumber(this.move_type_base, resolver)
 	}
 }
