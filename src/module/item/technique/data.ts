@@ -1,9 +1,8 @@
 import { FeatureObj } from "@feature/index.ts"
 import { ItemGCSSource, ItemGCSSystemSource } from "@item/gcs/data.ts"
-import { EncumbrancePenaltyMultiplier } from "@item/skill/data.ts"
 import { ItemType } from "@item/types.ts"
-import { PrereqList } from "@prereq/prereq_list.ts"
-import { SkillDefault } from "@sytem/default/index.ts"
+import { PrereqListObj } from "@prereq/data.ts"
+import { SkillDefaultObj } from "@sytem/default/index.ts"
 import { difficulty } from "@util/enum/difficulty.ts"
 import { study } from "@util/enum/study.ts"
 import { Study } from "@util/study.ts"
@@ -11,17 +10,21 @@ import { Study } from "@util/study.ts"
 export type TechniqueSource = ItemGCSSource<ItemType.Technique, TechniqueSystemSource>
 
 export interface TechniqueSystemSource extends ItemGCSSystemSource {
-	prereqs: PrereqList
+	type: ItemType.Technique
+	name: string
+	reference: string
+	reference_highlight: string
+	notes: string
+	vtt_notes: string
+	tags: string[]
 	tech_level: string
-	encumbrance_penalty_multiplier: EncumbrancePenaltyMultiplier
-	difficulty: (typeof difficulty.TechiqueLevels)[number]
+	difficulty: difficulty.Level.Average | difficulty.Level.Hard
 	points: number
-	defaulted_from: SkillDefault | null
-	defaults: SkillDefault[]
-	features: FeatureObj[]
-	default: SkillDefault
+	default: SkillDefaultObj
 	limit: number
 	limited: boolean
+	prereqs: PrereqListObj
+	features: FeatureObj[]
 	study: Study[]
-	study_hours_needed: study.Level
+	study_hours_needed: study.Level | ""
 }

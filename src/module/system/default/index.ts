@@ -7,6 +7,16 @@ skill_based_default_types.set(gid.Skill, true)
 skill_based_default_types.set(gid.Parry, true)
 skill_based_default_types.set(gid.Block, true)
 
+export interface SkillDefaultObj {
+	type: SkillDefaultType
+	name?: string
+	specialization?: string
+	modifier?: number
+	level?: number
+	adjusted_level?: number
+	points?: number
+}
+
 export class SkillDefault {
 	type: SkillDefaultType = gid.Skill
 

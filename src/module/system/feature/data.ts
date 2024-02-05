@@ -21,8 +21,8 @@ export interface ContainedWeightReductionObj {
 }
 
 export interface CostReductionObj {
-	type: feature.Type
-	attribute: string
+	type: feature.Type.CostReduction
+	attribute?: string
 	percentage?: number
 }
 
@@ -34,8 +34,8 @@ export interface DRBonusObj extends LeveledAmountObj {
 export interface LeveledAmountObj {
 	type: feature.Type
 	amount: number
-	per_level: boolean
-	effective: boolean
+	per_level?: boolean
+	effective?: boolean
 }
 
 export enum MoveBonusType {

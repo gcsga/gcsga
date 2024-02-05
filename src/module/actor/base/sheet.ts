@@ -4,10 +4,17 @@ import { DamagePayload, DropData, DropDataType } from "@module/apps/damage_calcu
 import { LastActor } from "@util"
 import { DnD } from "@util/drag_drop.ts"
 import { DocumentSheetConfigGURPS } from "./config.ts"
+import { CharacterSheetConfig } from "@actor/character/config_sheet.ts"
 
 type DispatchFunctions = Record<string, (arg: DamagePayload) => void>
 
+interface ActorSheetGURPS<TActor extends ActorGURPS = ActorGURPS> extends ActorSheet<TActor, ItemGURPS> {
+	config: CharacterSheetConfig | null
+}
+
 abstract class ActorSheetGURPS<TActor extends ActorGURPS = ActorGURPS> extends ActorSheet<TActor, ItemGURPS> {
+	config: CharacterSheetConfig | null = null
+
 	readonly dropDispatch: DispatchFunctions = {
 		[DropDataType.Damage]: this.actor.handleDamageDrop.bind(this.actor),
 	}

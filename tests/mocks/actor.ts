@@ -86,7 +86,6 @@ export class MockActor {
 			for (const partial of itemUpdates) {
 				partial._id ??= "item1"
 				const source = actor._source.items.find(
-					// @ts-expect-error idk
 					(maybeSource: ItemSourceGURPS) => maybeSource._id === partial._id,
 				)
 				if (source) {

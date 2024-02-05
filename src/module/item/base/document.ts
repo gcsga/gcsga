@@ -10,14 +10,12 @@ export interface ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null
 	readonly _source: BaseItemSourceGURPS
 	system: ItemSystemSource
 	type: this["_source"]["type"]
+
+	get actor(): TParent
 }
 
 export class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends Item<TParent> {
 	declare _dummyActor: CharacterResolver | null
-
-	override get actor(): TParent {
-		return this.actor as TParent
-	}
 
 	// _source!: SourceType
 

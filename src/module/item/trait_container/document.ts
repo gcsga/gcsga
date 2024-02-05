@@ -1,10 +1,11 @@
 import { ItemGCS } from "@item/gcs/document.ts"
-import { TraitContainerSource, TraitContainerSystemSource, TraitContainerType } from "./data.ts"
+import { TraitContainerSource, TraitContainerSystemSource } from "./data.ts"
 import { selfctrl } from "@util/enum/selfctrl.ts"
 import { TraitGURPS } from "@item/trait/document.ts"
 import { TraitModifierGURPS } from "@item/trait_modifier/document.ts"
 import { TraitModifierContainerGURPS } from "@item"
 import { ActorGURPS } from "@actor"
+import { container } from "@util/enum/container.ts"
 
 export interface TraitContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
 	readonly _source: TraitContainerSource
@@ -24,7 +25,7 @@ export class TraitContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS 
 		this.system.disabled = !enabled
 	}
 
-	get containerType(): TraitContainerType {
+	get containerType(): container.Type {
 		return this.system.container_type
 	}
 
@@ -103,7 +104,7 @@ export class TraitContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS 
 	adjustedPoints(): number {
 		if (!this.enabled) return 0
 		let points = 0
-		if (this.containerType === TraitContainerType.AlternativeAbilities) {
+		if (this.containerType === container.Type.AlternativeAbilities) {
 			const values: number[] = []
 			for (const child of this.children) {
 				values.push(child.adjustedPoints())
@@ -127,7 +128,7 @@ export class TraitContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS 
 	calculatePoints(): [number, number, number, number] {
 		let [ad, disad, race, quirk] = [0, 0, 0, 0]
 		switch (this.containerType) {
-			case TraitContainerType.Group:
+			case container.Type.Group:
 				for (const child of this.children) {
 					const [a, d, r, q] = child.calculatePoints()
 					ad += a
@@ -136,7 +137,7 @@ export class TraitContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS 
 					quirk += q
 				}
 				return [ad, disad, race, quirk]
-			case TraitContainerType.Ancestry: {
+			case container.Type.Ancestry: {
 				return [0, 0, this.adjustedPoints(), 0]
 			}
 		}

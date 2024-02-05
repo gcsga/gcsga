@@ -6,19 +6,19 @@ import { emweight } from "@util/enum/emweight.ts"
 
 export type EquipmentModifierSource = ItemGCSSource<ItemType.EquipmentModifier, EquipmentModifierSystemSource>
 
-export interface EquipmentModifierData extends Omit<EquipmentModifierSource, "effects">, EquipmentModifierSystemSource {
-	readonly type: EquipmentModifierSource["type"]
-	data: EquipmentModifierSystemSource
-
-	readonly _source: EquipmentModifierSource
-}
-
 export interface EquipmentModifierSystemSource extends ItemGCSSystemSource {
-	cost_type: emcost.Type
-	cost: string
-	weight_type: emweight.Type
-	weight: string
-	tech_level: string
-	features: FeatureObj[]
-	disabled: boolean
+	type: ItemType.EquipmentModifier
+	name?: string
+	reference?: string
+	reference_highlight?: string
+	notes?: string
+	vtt_notes?: string
+	tags?: string[]
+	cost_type?: emcost.Type
+	weight_type?: emweight.Type
+	disabled?: boolean
+	tech_level?: string
+	cost?: string
+	weight?: string
+	features?: FeatureObj[]
 }

@@ -4,7 +4,7 @@ import { LocalizeGURPS } from "./localize.ts"
 export interface Study {
 	type: study.Type
 	hours: number
-	note: string
+	note?: string
 }
 
 export function studyHoursProgressText(hours: number, needed: study.Level | "", force: boolean): string {

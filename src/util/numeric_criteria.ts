@@ -22,14 +22,19 @@ export const ContainedQuantityNumericCompareTypes: NumericCompareType[] = [
 	NumericCompareType.AtMostNumber,
 ]
 
+export interface NumericCriteriaObj {
+	compare?: NumericCompareType
+	qualifier?: number
+}
+
 export class NumericCriteria {
-	compare: NumericCompareType
+	declare compare: NumericCompareType
 
-	qualifier: number
+	declare qualifier: number
 
-	constructor(compare: NumericCompareType, qualifier: number = 0) {
-		this.compare = compare
-		this.qualifier = qualifier
+	constructor(data: NumericCriteriaObj) {
+		this.compare = data.compare ?? NumericCompareType.AnyNumber
+		this.qualifier = data.qualifier ?? 0
 	}
 
 	matches(n: number): boolean {

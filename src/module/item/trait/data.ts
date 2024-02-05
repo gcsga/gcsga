@@ -1,7 +1,7 @@
 import { FeatureObj, SkillBonus } from "@feature/index.ts"
 import { ItemGCSSource, ItemGCSSystemSource } from "@item/gcs/data.ts"
 import { ItemType } from "@item/types.ts"
-import { PrereqList } from "@prereq/prereq_list.ts"
+import { PrereqListObj } from "@prereq/data.ts"
 import { selfctrl } from "@util/enum/selfctrl.ts"
 import { skillsel } from "@util/enum/skillsel.ts"
 import { study } from "@util/enum/study.ts"
@@ -11,20 +11,26 @@ import { Study } from "@util/study.ts"
 export type TraitSource = ItemGCSSource<ItemType.Trait, TraitSystemSource>
 
 export interface TraitSystemSource extends ItemGCSSystemSource {
-	prereqs: PrereqList
-	round_down: boolean
-	disabled: boolean
-	levels: number
-	can_level: boolean
+	type: ItemType.Trait
+	name: string
+	reference: string
+	reference_highlight: string
+	notes: string
+	vtt_notes: string
+	userdesc: string
+	tags: string[]
 	base_points: number
+	levels: number
 	points_per_level: number
+	prereqs: PrereqListObj
+	features: FeatureObj[]
+	study: Study[]
 	cr: selfctrl.Roll
 	cr_adj: selfctrl.Adjustment
-	features?: FeatureObj[]
-	study: Study[]
 	study_hours_needed: study.Level | ""
-	userdesc: string
-	type: ItemType.Trait
+	disabled: boolean
+	round_down: boolean
+	can_level: boolean
 }
 
 const CR_Features = new Map()

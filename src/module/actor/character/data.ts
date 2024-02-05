@@ -5,13 +5,13 @@
 
 import { ActorType } from "@actor"
 import { ActorFlags, ActorFlagsGURPS, ActorSystemSource, BaseActorSourceGURPS } from "@actor/base/data.ts"
-import { RollModifier, SYSTEM_NAME, TokenPool, gid } from "@module/data/misc.ts"
+import { RollModifier, SYSTEM_NAME, gid } from "@module/data/misc.ts"
 import { SheetSettings } from "@module/data/sheet_settings.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { AttributeObj } from "@sytem/attribute/data.ts"
 import { PoolThreshold } from "@sytem/attribute/pool_threshold.ts"
-import { MoveTypeDefObj, MoveTypeObj } from "@sytem/move_type/data.ts"
-import { ResourceTrackerDefObj, ResourceTrackerObj } from "@sytem/resource_tracker/data.ts"
+import { MoveTypeObj } from "@sytem/move_type/data.ts"
+import { ResourceTrackerObj } from "@sytem/resource_tracker/data.ts"
 import { Weight } from "@util/weight.ts"
 
 export type CharacterSource = BaseActorSourceGURPS<ActorType.Character, CharacterSystemSource> & {
@@ -30,11 +30,13 @@ export type CharacterSource = BaseActorSourceGURPS<ActorType.Character, Characte
 export interface CharacterFlags extends ActorFlagsGURPS {
 	[SYSTEM_NAME]: {
 		[ActorFlags.TargetModifiers]: RollModifier[]
+
 		[ActorFlags.SelfModifiers]: RollModifier[]
 		[ActorFlags.MoveType]: string
 		[ActorFlags.AutoEncumbrance]: { active: boolean; manual: number }
 		[ActorFlags.AutoThreshold]: { active: boolean; manual: Record<string, PoolThreshold | null> }
 		[ActorFlags.AutoDamage]: { active: boolean; thrust: DiceGURPS; swing: DiceGURPS }
+		[ActorFlags.Import]: { name: string; path: string; last_import: string }
 	}
 }
 
@@ -46,13 +48,13 @@ export const CharacterFlagDefaults: CharacterFlags = {
 		[ActorFlags.AutoEncumbrance]: { active: true, manual: 0 },
 		[ActorFlags.AutoThreshold]: { active: true, manual: {} },
 		[ActorFlags.AutoDamage]: { active: true, thrust: new DiceGURPS(), swing: new DiceGURPS() },
+		[ActorFlags.Import]: { name: "", path: "", last_import: "" },
 	},
 }
 
 export interface CharacterSystemSource extends ActorSystemSource {
+	type: "character"
 	version: number
-	move: CharacterMove
-	import: { name: string; path: string; last_import: string }
 	settings: SheetSettings
 	created_date: string
 	modified_date: string
@@ -60,23 +62,25 @@ export interface CharacterSystemSource extends ActorSystemSource {
 	attributes: AttributeObj[]
 	resource_trackers: ResourceTrackerObj[]
 	move_types: MoveTypeObj[]
+	move: CharacterMove
 	total_points: number
 	points_record: PointsRecord[]
-	calc: CharacterCalc
-	editing: boolean
+	// calc: CharacterCalc
+	// editing: boolean
 	// TODO: check if this fits
-	pools: Record<string, TokenPool>
-	third_party: DeepPartial<CharacterThirdPartyData>
+	// pools: Record<string, TokenPool>
+	// import: { name: string; path: string; last_import: string }
+	// third_party: DeepPartial<CharacterThirdPartyData>
 }
 
-export type CharacterThirdPartyData = {
-	settings: {
-		resource_trackers: ResourceTrackerDefObj[]
-		move_types: MoveTypeDefObj[]
-	}
-	resource_trackers: ResourceTrackerObj[]
-	move_types: MoveTypeObj[]
-} & Record<string, unknown>
+// export type CharacterThirdPartyData = {
+// 	settings: {
+// 		resource_trackers: ResourceTrackerDefObj[]
+// 		move_types: MoveTypeDefObj[]
+// 	}
+// 	resource_trackers: ResourceTrackerObj[]
+// 	move_types: MoveTypeObj[]
+// } & Record<string, unknown>
 
 export interface CharacterMove {
 	maneuver: string
@@ -184,18 +188,18 @@ export const CharacterDefaultData: Partial<CharacterSystemSource> = {
 		religion: "",
 		portrait: "",
 	},
-	editing: true,
-	calc: {
-		swing: "",
-		thrust: "",
-		basic_lift: 0,
-		lifting_st_bonus: 0,
-		striking_st_bonus: 0,
-		throwing_st_bonus: 0,
-		move: [0, 0, 0, 0, 0],
-		dodge: [0, 0, 0, 0, 0],
-		dodge_bonus: 0,
-		block_bonus: 0,
-		parry_bonus: 0,
-	},
+	// editing: true,
+	// calc: {
+	// 	swing: "",
+	// 	thrust: "",
+	// 	basic_lift: 0,
+	// 	lifting_st_bonus: 0,
+	// 	striking_st_bonus: 0,
+	// 	throwing_st_bonus: 0,
+	// 	move: [0, 0, 0, 0, 0],
+	// 	dodge: [0, 0, 0, 0, 0],
+	// 	dodge_bonus: 0,
+	// 	block_bonus: 0,
+	// 	parry_bonus: 0,
+	// },
 }

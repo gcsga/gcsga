@@ -4,6 +4,8 @@ import { ItemType } from "@item/types.ts"
 export type NoteSource = ItemGCSSource<ItemType.Note, NoteSystemSource>
 
 export interface NoteSystemSource extends ItemGCSSystemSource {
-	text: string
 	type: ItemType.Note
+	text: string
+	reference: string
+	reference_highlight: string
 }

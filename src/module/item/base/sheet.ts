@@ -274,13 +274,16 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 		event.preventDefault()
 		if (!this.isEditable) return
 		const value = event.currentTarget.value
-		const PrereqConstructor = CONFIG.GURPS.Prereq.classes[value as prereq.Type]
+		// const PrereqConstructor = CONFIG.GURPS.Prereq.classes[value as prereq.Type]
 		let path = $(event.currentTarget).data("path").replace("array.", "")
 		const items = path.split(".")
 		const index = parseInt(items.pop())
 		path = items.join(".")
 		const prereqs = fu.getProperty(this.item, `${path}`) as PrereqListObj["prereqs"]
-		prereqs[index] = PrereqConstructor.fromObject({ has: (prereqs[index] as BasePrereqObj).has })
+		prereqs[index] = CONFIG.GURPS.Prereq.classes[value as prereq.Type].fromObject(
+			{ has: (prereqs[index] as BasePrereqObj).has },
+			this.actor,
+		)
 		const formData: Record<string, unknown> = {}
 		formData[`array.${path}`] = prereqs
 		return this._updateObject(null as unknown as Event, formData)

@@ -7,6 +7,7 @@ import systemJSON from "../../static/system.json" assert { type: "json" }
 import { PackError } from "./helpers.ts"
 import { PackEntry } from "./types.ts"
 import { BaseItemSourceGURPS } from "@item/base/data/system.ts"
+import { tupleHasValue } from "@util"
 
 const DB_KEYS = ["actors", "items", "journal", "macros", "tables"] as const
 const EMBEDDED_KEYS = ["items", "pages", "results"] as const
@@ -104,6 +105,7 @@ class LevelDatabase extends ClassicLevel<string, DBEntry> {
 	}
 
 	#getDBKeys(packName: string): { dbKey: DBKey; embeddedKey: EmbeddedKey | null } {
+		// @ts-expect-error packs not yet implemented
 		const metadata = systemJSON.packs.find(p => p.path.endsWith(packName))
 		if (!metadata) {
 			throw PackError(
@@ -112,16 +114,19 @@ class LevelDatabase extends ClassicLevel<string, DBEntry> {
 		}
 
 		const dbKey = ((): DBKey => {
+			// @ts-expect-error packs not yet implemented
 			switch (metadata.type) {
 				case "JournalEntry":
 					return "journal"
 				case "RollTable":
 					return "tables"
 				default: {
+					// @ts-expect-error packs not yet implemented
 					const key = `${metadata.type.toLowerCase()}s`
 					if (tupleHasValue(DB_KEYS, key)) {
 						return key
 					}
+					// @ts-expect-error packs not yet implemented
 					throw PackError(`Unkown Document type: ${metadata.type}`)
 				}
 			}

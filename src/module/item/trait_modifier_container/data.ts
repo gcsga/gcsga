@@ -6,11 +6,12 @@ export type TraitModifierContainerSource = ItemGCSSource<
 	TraitModifierContainerSystemSource
 >
 
-export interface TraitModifierContainerData
-	extends Omit<TraitModifierContainerSource, "effects" | "items">,
-		TraitModifierContainerSystemSource {
-	readonly type: TraitModifierContainerSource["type"]
-	readonly _source: TraitModifierContainerSource
+export interface TraitModifierContainerSystemSource extends ItemGCSSystemSource {
+	type: ItemType.TraitModifierContainer
+	name: string
+	reference: string
+	reference_highlight: string
+	notes: string
+	vtt_notes: string
+	tags: string[]
 }
-
-export type TraitModifierContainerSystemSource = ItemGCSSystemSource

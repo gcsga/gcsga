@@ -1,48 +1,67 @@
 import { prereq } from "@util/enum/prereq.ts"
 import { spellcmp } from "@util/enum/spellcmp.ts"
-import { NumericCriteria } from "@util/numeric_criteria.ts"
-import { StringCriteria } from "@util/string_criteria.ts"
-import { WeightCriteria } from "@util/weight_criteria.ts"
+import { NumericCriteriaObj } from "@util/numeric_criteria.ts"
+import { StringCriteriaObj } from "@util/string_criteria.ts"
+import { WeightCriteriaObj } from "@util/weight_criteria.ts"
 
-export interface AttributePrereqObj extends BasePrereqObj {
-	which: string
-	combined_with: string
-	qualifier: NumericCriteria
-}
-export interface BasePrereqObj {
-	type: prereq.Type
+export interface AttributePrereqObj {
+	type: prereq.Type.Attribute
 	has: boolean
+	which: string
+	combined_with?: string
+	qualifier?: NumericCriteriaObj
 }
 
-export interface ContainedQuantityPrereqObj extends BasePrereqObj {
-	qualifier: NumericCriteria
+export interface ContainedQuantityPrereqObj {
+	type: prereq.Type.ContainedQuantity
+	has: boolean
+	qualifier?: NumericCriteriaObj
 }
 
-export interface ContainedWeightPrereqObj extends BasePrereqObj {
-	qualifier: WeightCriteria
+export interface ContainedWeightPrereqObj {
+	type: prereq.Type.ContainedWeight
+	has: boolean
+	qualifier?: WeightCriteriaObj
 }
-export interface EquippedEquipmentPrereqObj extends BasePrereqObj {
-	name: StringCriteria
+export interface EquippedEquipmentPrereqObj {
+	type: prereq.Type.EquippedEquipment
+	name?: StringCriteriaObj
 }
 
 export interface PrereqListObj {
-	type: prereq.Type
+	type: prereq.Type.List
 	all: boolean
-	when_tl: NumericCriteria
-	prereqs: (BasePrereqObj | PrereqListObj)[]
+	when_tl?: NumericCriteriaObj
+	prereqs?: PrereqObj[]
 }
-export interface SkillPrereqObj extends BasePrereqObj {
-	name: StringCriteria
-	level: NumericCriteria
-	specialization: StringCriteria
+export interface SkillPrereqObj {
+	type: prereq.Type.Skill
+	has: boolean
+	name?: StringCriteriaObj
+	level?: NumericCriteriaObj
+	specialization?: StringCriteriaObj
 }
-export interface SpellPrereqObj extends BasePrereqObj {
+export interface SpellPrereqObj {
+	type: prereq.Type.Spell
+	has: boolean
 	sub_type: spellcmp.Type
-	qualifier: StringCriteria
-	quantity: NumericCriteria
+	qualifier?: StringCriteriaObj
+	quantity?: NumericCriteriaObj
 }
-export interface TraitPrereqObj extends BasePrereqObj {
-	name: StringCriteria
-	level: NumericCriteria
-	notes: StringCriteria
+export interface TraitPrereqObj {
+	type: prereq.Type.Trait
+	has: boolean
+	name?: StringCriteriaObj
+	level?: NumericCriteriaObj
+	notes?: StringCriteriaObj
 }
+
+export type PrereqObj =
+	| PrereqListObj
+	| TraitPrereqObj
+	| AttributePrereqObj
+	| ContainedQuantityPrereqObj
+	| ContainedWeightPrereqObj
+	| EquippedEquipmentPrereqObj
+	| SkillPrereqObj
+	| SpellPrereqObj

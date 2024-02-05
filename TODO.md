@@ -48,7 +48,7 @@
 -   Skill Defaults from compendium
 -   account for any skill bonuses which should not apply to defaults
 -   Incorporate v10 tooltip API
--   Drag items to chat, get item chat entry with name, notes, rollables, etc.
+-   m Drag items to chat, get item chat entry with name, notes, rollables, etc.
 -   completely redo the way roll messages are handled
 -   default roll templates are re-rendered when opening the world, while ours are static
     changing this so the templates are dynamic would improve the way they are handled in the future

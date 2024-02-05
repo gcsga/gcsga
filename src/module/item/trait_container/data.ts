@@ -1,20 +1,22 @@
 import { ItemGCSSource, ItemGCSSystemSource } from "@item/gcs/data.ts"
 import { ItemType } from "@item/types.ts"
-import { selfctrl } from "@util/enum/selfctrl.ts"
+import { container, selfctrl } from "@util/enum/index.ts"
 
 export type TraitContainerSource = ItemGCSSource<ItemType.TraitContainer, TraitContainerSystemSource>
 
 export interface TraitContainerSystemSource extends ItemGCSSystemSource {
-	disabled: boolean
-	container_type: TraitContainerType
+	type: ItemType.TraitContainer
+	name: string
+	reference: string
+	reference_highlight: string
+	notes: string
+	vtt_notes: string
+	ancestry: string
+	userdesc: string
+	tags: string[]
+	template_picker: TemplatePickerObj
 	cr: selfctrl.Roll
 	cr_adj: selfctrl.Adjustment
-}
-
-export enum TraitContainerType {
-	Group = "group",
-	MetaTrait = "meta_trait",
-	Ancestry = "ancestry",
-	Attributes = "attributes",
-	AlternativeAbilities = "alternative_abilities",
+	container_type: container.Type
+	disabled: boolean
 }

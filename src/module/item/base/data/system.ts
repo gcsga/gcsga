@@ -1,10 +1,10 @@
 import { ItemType } from "@item/types.ts"
 import { MigrationRecord, SYSTEM_NAME } from "@module/data/misc.ts"
 
-type BaseItemSourceGURPS<TType extends ItemType, TSystemSource extends object = object> = foundry.documents.ItemSource<
-	TType,
-	TSystemSource
-> & {
+type BaseItemSourceGURPS<
+	TType extends ItemType = ItemType,
+	TSystemSource extends object = object,
+> = foundry.documents.ItemSource<TType, TSystemSource> & {
 	type: TType
 	flags: ItemSourceFlagsGURPS
 }
@@ -35,8 +35,6 @@ interface ItemSourceFlagsGURPS extends Record<string, unknown> {
 interface ItemSystemSource {
 	/** A record of this actor's current world schema version as well a log of the last migration to occur */
 	_migration: MigrationRecord
-	/** Legacy location of `MigrationRecord` */
-	schema?: Readonly<{ version: number | null; lastMigration: object | null }>
 
 	/** A non-unique but human-readable identifier for this item */
 	slug: string | null

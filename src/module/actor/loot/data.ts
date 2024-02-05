@@ -4,7 +4,7 @@ import { display } from "@util/enum/display.ts"
 import { WeightUnits } from "@util/weight.ts"
 
 export interface LootSource extends BaseActorSourceGURPS<ActorType.Loot, LootSystemSource> {
-	flags: DeepPartial<LootFlags>
+	flags: LootFlags
 }
 export type LootFlags = ActorFlagsGURPS
 

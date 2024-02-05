@@ -1611,6 +1611,11 @@
 			"space": "Space Move"
 		},
 		"enum": {
+			"picker": {
+				"not_applicable": "Not Applicable",
+				"count": "Count",
+				"points": "Points"
+			},
 			"color": {
 				"auto": "Automatic",
 				"dark": "Dark",

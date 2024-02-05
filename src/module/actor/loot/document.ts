@@ -3,17 +3,15 @@ import { LootSettings, LootSource, LootSystemSource } from "./data.ts"
 import { FilePickerGURPS, LocalizeGURPS, Weight, WeightUnits } from "@util"
 import { Int } from "@util/fxp.ts"
 import { ItemType } from "@item/types.ts"
-import { ItemGURPS } from "@item/base/document.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
-import { CharacterThirdPartyData } from "@actor/character/data.ts"
 import { SETTINGS, SYSTEM_NAME } from "@module/data/misc.ts"
 import { DialogGURPS } from "@ui"
-import { CharacterImporter } from "@actor/character/import.ts"
 import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
 import { EquipmentContainerGURPS, EquipmentGURPS, ItemGCS } from "@item"
 import { EmbeddedItemInstances } from "@actor/types.ts"
 import { ModifierChoiceSheet } from "@item/gcs/mod_sheet.ts"
 import { ItemFlags } from "@item/base/data/system.ts"
+import { CharacterImporter } from "@util/import/character.ts"
 
 interface LootGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null> extends ActorGURPS<TParent> {
 	system: LootSystemSource
@@ -167,27 +165,36 @@ class LootGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS |
 		}
 	}
 
-	async saveLocal(): Promise<void> {
-		const json = await this.exportSystemData()
-		return fu.saveDataToFile(json.text, "gcs", json.name)
+	async saveLocal(path = "", extension = "gcs"): Promise<void> {
+		const [system, name] = await this.exportSystemData()
+		let data: Record<string, unknown>
+		if (path === "") {
+			data = system
+		} else {
+			data = fu.getProperty(system, path) as Record<string, unknown>
+			data.version = 4
+			if (path === "settings.attributes") data.type = "attribute_settings"
+			else if (path === "settings.body_type") data.type = "body_type"
+		}
+		fu.saveDataToFile(JSON.stringify(data, null, "\t"), extension, `${name}.${extension}`)
 	}
 
-	protected async exportSystemData(): Promise<{ text: string; name: string }> {
+	protected async exportSystemData(): Promise<[DeepPartial<LootSystemSource>, string]> {
 		const system: DeepPartial<LootSystemSource> & Record<string, unknown> = { ...fu.duplicate(this.system) }
-		system.type = "character" as ActorType
-		const items = (this.items as unknown as Collection<ItemGURPS>)
-			.filter(e => !e.getFlag(SYSTEM_NAME, ItemFlags.Container))
-			.map((e: ItemGURPS) => e.exportSystemData(true))
-		const third_party: DeepPartial<CharacterThirdPartyData> = {}
+		system.type = "character"
+		const third_party: Record<string, unknown> = {}
 
 		third_party.import = system.import
-		third_party.move = system.move
 		system.third_party = third_party
-		system.equipment = items
-		const json = JSON.stringify(system, null, "\t")
-		const filename = `${this.name}.gcs`
+		system.traits = this.traits
+			.filter(e => !e.flags[SYSTEM_NAME]?.[ItemFlags.Container])
+			.map(e => e.exportSystemData(false))
 
-		return { text: json, name: filename }
+		// const json = JSON.stringify(system, null, "\t")
+		const filename = this.name ?? LocalizeGURPS.translations.TYPES.Actor.character_gcs
+
+		// return { text: json, name: filename }
+		return [system, filename]
 	}
 
 	async promptImport(): Promise<void> {
@@ -214,7 +221,7 @@ class LootGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS |
 													name: path,
 													path: request.responseURL,
 												}
-												CharacterImporter.import(this, file)
+												CharacterImporter.importCharacter(this, file)
 											}
 											resolve(this)
 										}
@@ -235,7 +242,7 @@ class LootGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS |
 									path: rawFile.path,
 								}
 								fu.readTextFromFile(rawFile).then(text => {
-									CharacterImporter.import(this, {
+									CharacterImporter.importCharacter(this, {
 										text: text,
 										name: rawFile.name,
 										path: rawFile.path,

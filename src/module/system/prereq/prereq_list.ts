@@ -18,16 +18,16 @@ export class PrereqList {
 	constructor() {
 		this.type = prereq.Type.List
 		this.all = true
-		this.when_tl = new NumericCriteria(NumericCompareType.AnyNumber)
+		this.when_tl = new NumericCriteria({ compare: NumericCompareType.AnyNumber })
 		this.prereqs = []
 	}
 
 	static fromObject(data: PrereqListObj): PrereqList {
 		const prereq = new PrereqList()
 		prereq.all = data.all
-		if (data.when_tl) prereq.when_tl = new NumericCriteria(data.when_tl.compare, data.when_tl.qualifier)
-		if (data.prereqs.length)
-			prereq.prereqs = data.prereqs
+		if (data.when_tl) prereq.when_tl = new NumericCriteria(data.when_tl)
+		if (data.prereqs?.length)
+			prereq.prereqs = (data.prereqs ?? [])
 				.filter(e => !!CONFIG.GURPS.Prereq.classes[e.type])
 				.map(e => {
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any

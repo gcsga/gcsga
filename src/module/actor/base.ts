@@ -33,15 +33,18 @@ import { ItemSourceGURPS } from "@item/base/data/index.ts"
 import { CharacterResolver } from "@util"
 import { CharacterGURPS } from "./character/document.ts"
 import { ConditionID, EffectID, ManeuverID, Postures } from "@item/condition/data.ts"
+import { ActorSheetGURPS } from "./base/sheet.ts"
 
 interface ActorGURPS<TParent extends TokenDocumentGURPS | null> extends Actor<TParent> {
-	_source: BaseActorSourceGURPS
+	readonly _source: BaseActorSourceGURPS
 	noPrepare: boolean
 	flags: ActorFlagsGURPS
 	type: ActorType
 	attributes: Map<string, Attribute>
 	moveTypes: Map<string, MoveType>
 	system: ActorSystemSource
+
+	get sheet(): ActorSheetGURPS<this>
 }
 
 class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null> extends Actor<TParent> {

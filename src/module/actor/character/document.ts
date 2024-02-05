@@ -84,7 +84,6 @@ import { feature } from "@util/enum/feature.ts"
 import { wsel } from "@util/enum/wsel.ts"
 import { skillsel } from "@util/enum/skillsel.ts"
 import { PoolThreshold } from "@sytem/attribute/pool_threshold.ts"
-import { CharacterImporter } from "./import.ts"
 import { ActorType } from "@actor"
 import { ItemType } from "@item/types.ts"
 import { CharacterSheetGURPS } from "./sheet.ts"
@@ -94,6 +93,7 @@ import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
 import { WeaponType } from "@item/weapon/data.ts"
 import { ItemFlags } from "@item/base/data/system.ts"
 import { EmbeddedItemInstances } from "@actor/types.ts"
+import { CharacterImporter } from "@util/import/character.ts"
 
 interface CharacterGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null>
 	extends ActorGURPS<TParent> {
@@ -105,6 +105,8 @@ interface CharacterGURPS<TParent extends TokenDocumentGURPS | null = TokenDocume
 	moveTypes: Map<string, MoveType>
 	SizeModBonus: number
 	system: CharacterSystemSource
+
+	get sheet(): CharacterSheetGURPS<this>
 }
 
 class CharacterGURPS<
@@ -124,10 +126,6 @@ class CharacterGURPS<
 	declare skillResolverExclusions: Map<string, boolean>
 
 	private _processingThresholds = false
-
-	override get sheet(): CharacterSheetGURPS {
-		return super.sheet as CharacterSheetGURPS
-	}
 
 	// Items
 	// declare traits: Collection<TraitGURPS<this> | TraitContainerGURPS<this>>
@@ -218,7 +216,6 @@ class CharacterGURPS<
 				religion: "",
 				portrait: "",
 			},
-			editing: false,
 		}
 		sd.total_points = initial_points
 		sd.points_record = [
@@ -307,16 +304,16 @@ class CharacterGURPS<
 		return this.settings.default_length_units
 	}
 
-	get editing(): boolean {
-		return this.system.editing
-	}
+	// get editing(): boolean {
+	// 	return this.system.editing
+	// }
 
 	get profile(): this["system"]["profile"] {
 		return this.system.profile
 	}
 
-	get importData(): this["system"]["import"] {
-		return this.system.import
+	get importData(): { name: string; path: string; last_import: string } {
+		return this.flags[SYSTEM_NAME][ActorFlags.Import]
 	}
 
 	// get calc() {
@@ -517,13 +514,18 @@ class CharacterGURPS<
 
 	dodge(enc: Encumbrance): number {
 		const dodge =
-			3 + (this.system.calc?.dodge_bonus ?? 0) + Math.max(this.resolveAttributeCurrent(gid.BasicSpeed), 0)
+			3 +
+			Math.max(this.resolveAttributeCurrent(gid.BasicSpeed), 0) +
+			Math.max(this.resolveAttributeCurrent(gid.Dodge), 0)
 		return Math.floor(Math.max(dodge + enc.penalty, 1))
 	}
 
 	// Dodge accounting for pool thresholds
 	eDodge(enc: Encumbrance, ops = this.countThresholdOpMet(ThresholdOp.HalveDodge)): number {
-		let dodge = 3 + (this.system.calc?.dodge_bonus ?? 0) + Math.max(this.resolveAttributeCurrent(gid.BasicSpeed), 0)
+		let dodge =
+			3 +
+			Math.max(this.resolveAttributeCurrent(gid.BasicSpeed), 0) +
+			Math.max(this.resolveAttributeCurrent(gid.Dodge), 0)
 		const divisor = 2 * Math.min(ops, 2)
 		if (divisor > 0) {
 			dodge = Math.ceil(dodge / divisor)
@@ -580,7 +582,7 @@ class CharacterGURPS<
 	basicLift = 0
 
 	getBasicLift(): number {
-		const ST = this.attributes.get(gid.Strength)?._effective(this.system.calc?.lifting_st_bonus ?? 0) || 0
+		const ST = this.liftingST
 		let basicLift = ST ** 2 / 5
 		if (this.settings.damage_progression === progression.Option.KnowingYourOwnStrength)
 			basicLift = Int.from(2 * 10 ** (ST / 10), 1)
@@ -1168,7 +1170,7 @@ class CharacterGURPS<
 		this.resourceTrackers?.forEach(e => {
 			pools[e.id] = { value: e.current, min: e.min, max: e.max }
 		})
-		this.system.pools = pools
+		// this.system.pools = pools
 	}
 
 	override prepareBaseData(): void {
@@ -1881,7 +1883,7 @@ class CharacterGURPS<
 
 	protected async exportSystemData(): Promise<[DeepPartial<CharacterSystemSource>, string]> {
 		const system: DeepPartial<CharacterSystemSource> & Record<string, unknown> = { ...fu.duplicate(this.system) }
-		system.type = "character" as ActorType
+		system.type = "character"
 		const third_party: Record<string, unknown> = {}
 
 		third_party.settings = { resource_trackers: system.settings?.resource_trackers }
@@ -1963,7 +1965,7 @@ class CharacterGURPS<
 													name: path,
 													path: request.responseURL,
 												}
-												CharacterImporter.import(this, file)
+												CharacterImporter.importCharacter(this, file)
 											}
 											resolve(this)
 										}
@@ -1984,7 +1986,7 @@ class CharacterGURPS<
 									path: rawFile.path,
 								}
 								fu.readTextFromFile(rawFile).then((text: string) => {
-									CharacterImporter.import(this, {
+									CharacterImporter.importCharacter(this, {
 										text: text,
 										name: rawFile.name,
 										path: rawFile.path,

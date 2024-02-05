@@ -272,7 +272,7 @@ function _mergeUpdate(
  *                                               original object has a corresponding key that could be deleted.
  * @return {object}               An object of the data in other which differs from that in original
  */
-function diffObject(original: object, other: object, { inner = false, deletionKeys = false } = {}) {
+function diffObject(original: object, other: object, { inner = false, deletionKeys = false } = {}): object {
 	function _difference(v0: unknown, v1: unknown) {
 		// Eliminate differences in types
 		const t0 = fu.getType(v0)

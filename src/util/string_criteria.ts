@@ -24,14 +24,19 @@ export const AllStringCompareTypes: StringCompareType[] = [
 	StringCompareType.DoesNotEndWithString,
 ]
 
+export interface StringCriteriaObj {
+	compare?: StringCompareType
+	qualifier?: string
+}
+
 export class StringCriteria {
 	compare: StringCompareType
 
 	qualifier: string
 
-	constructor(compare: StringCompareType, qualifier: string = "") {
-		this.compare = compare
-		this.qualifier = qualifier
+	constructor(data: StringCriteriaObj) {
+		this.compare = data.compare ?? StringCompareType.AnyString
+		this.qualifier = data.qualifier ?? ""
 	}
 
 	matches(s: string): boolean {

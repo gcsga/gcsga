@@ -1,4 +1,3 @@
-import { itemIsOfType } from "@item/helpers.ts"
 import { isObject, sluggify } from "@util/index.ts"
 import fs from "fs"
 import { JSDOM } from "jsdom"
@@ -10,7 +9,6 @@ import { CompendiumPack, isActorSource, isItemSource } from "./compendium-pack.t
 import { PackError, getFilesRecursively } from "./helpers.ts"
 import { DBFolder, LevelDatabase } from "./level-database.ts"
 import { PackEntry } from "./types.ts"
-import { ActorSourceGURPS } from "@actor/data/index.ts"
 
 declare global {
 	interface Global {
@@ -40,7 +38,7 @@ class PackExtractor {
 	readonly packsMetadata: CompendiumMetadata[]
 
 	/** The last actor inspected in `pruneTree` */
-	#lastActor: ActorSourceGURPS | null = null
+	// #lastActor: ActorSourceGURPS | null = null
 	readonly #newDocIdMap: Record<string, string> = {}
 
 	readonly #idsToNames: {
@@ -58,11 +56,11 @@ class PackExtractor {
 
 	#folderPathMap = new Map<string, string>()
 
-	#npcSystemKeys = new Set([
-		// ...Object.keys(templateJSON.Actor.templates.common),
-		// ...Object.keys(templateJSON.Actor.npc),
-		// "spellcasting",
-	])
+	// #npcSystemKeys = new Set([
+	// 	// ...Object.keys(templateJSON.Actor.templates.common),
+	// 	// ...Object.keys(templateJSON.Actor.npc),
+	// 	// "spellcasting",
+	// ])
 
 	disablePresort: boolean
 
@@ -167,9 +165,7 @@ class PackExtractor {
 		for (const source of packSources) {
 			// Remove or replace unwanted values from the document source
 			const preparedSource = this.#convertUUIDs(source, packDirectory)
-			if ("items" in preparedSource && preparedSource.type === "npc" && !this.disablePresort) {
-				preparedSource.items = this.#sortDataItems(preparedSource)
-			} else if (!this.#folderPathMap.get(preparedSource.folder ?? "")) {
+			if (!this.#folderPathMap.get(preparedSource.folder ?? "")) {
 				delete (preparedSource as { folder?: unknown }).folder
 			}
 			const outData = this.#prettyPrintJSON(preparedSource)
@@ -327,79 +323,6 @@ class PackExtractor {
 
 		this.#pruneTree(docSource, docSource)
 
-		// Clean up description HTML
-		const cleanDescription = (description: string): string => {
-			if (!description) {
-				return ""
-			}
-
-			const container = (() => {
-				try {
-					const div = document.createElement("div")
-					div.innerHTML =
-						description.startsWith("<p>") && /<\/(?:p|ol|ul|table)>$/.test(description)
-							? description
-							: `<p>${description}</p>`
-					return div
-				} catch (error) {
-					console.error(error)
-					throw PackError(
-						`Failed to parse description of ${docSource.name} (${docSource._id}):\n${description}`,
-					)
-				}
-			})()
-
-			const textNodes: Text[] = []
-			function pushTextNode(node: Node | null): void {
-				if (!node) return
-				if (node.nodeName === "#text" && node.nodeValue && node.nodeValue !== "\n") {
-					textNodes.push(node as Text)
-				}
-				node.childNodes.forEach(n => {
-					pushTextNode(n)
-				})
-			}
-
-			pushTextNode(container)
-
-			// Strip out span tags from AoN copypasta
-			const selectors = ["span#ctl00_MainContent_DetailedOutput", "span.fontstyle0"]
-			for (const selector of selectors) {
-				container.querySelectorAll(selector).forEach(span => {
-					span.replaceWith(span.innerHTML)
-				})
-			}
-
-			return container.innerHTML
-				.replace(/<([hb]r)>/g, "<$1 />") // Prefer self-closing tags
-				.replace(/<\/p> ?<p>/g, "</p>\n<p>")
-				.replace(/<p>[ \r\n]+/g, "<p>")
-				.replace(/[ \r\n]+<\/p>/g, "</p>")
-				.replace(/<(?:b|strong)>\s*/g, "<strong>")
-				.replace(/\s*<\/(?:b|strong)>/g, "</strong>")
-				.replace(/(<\/strong>)(\w)/g, "$1 $2")
-				.replace(/\bpf2-icon\b/g, "action-glyph")
-				.replace(/<p> *<\/p>/g, "")
-				.replace(/<div> *<\/div>/g, "")
-				.replace(/&nbsp;/g, " ")
-				.replace(/\u2011/g, "-")
-				.replace(/\s*\u2014\s*/g, "\u2014") // em dash
-				.replace(/ {2,}/g, " ")
-				.trim()
-				.replace(/^<hr \/>/, "")
-				.trim()
-		}
-
-		if ("system" in docSource) {
-			if ("description" in docSource.system) {
-				docSource.system.description.value = cleanDescription(docSource.system.description.value)
-			} else if ("details" in docSource.system && "publicNotes" in docSource.system.details) {
-				docSource.system.details.publicNotes = cleanDescription(docSource.system.details.publicNotes)
-			}
-		} else if ("content" in docSource && typeof docSource.content === "string") {
-			docSource.content = cleanDescription(docSource.content)
-		}
-
 		return docSource
 	}
 
@@ -438,7 +361,7 @@ class PackExtractor {
 					}
 
 					if (isActorSource(docSource)) {
-						this.#lastActor = docSource
+						// this.#lastActor = docSource
 
 						if (docSource.prototypeToken?.name === docSource.name) {
 							delete (docSource as { prototypeToken?: object }).prototypeToken
@@ -455,34 +378,8 @@ class PackExtractor {
 								}
 							}
 						}
-
-						if ("publication" in docSource.system.details) {
-							const publication: Partial<PublicationData> = docSource.system.details.publication
-							if (!publication.authors?.trim()) delete publication.authors
-						}
-
-						if (docSource.type === "character") {
-							delete (docSource.system.details.biography as { visibility?: unknown }).visibility
-						} else if (docSource.type === "npc") {
-							const speed: Partial<NPCAttributesSource["speed"]> = docSource.system.attributes.speed
-							if (!speed.details?.trim()) delete speed.details
-
-							for (const key of Object.keys(docSource.system)) {
-								if (!this.#npcSystemKeys.has(key)) {
-									delete (docSource.system as NPCSystemSource & { extraneous?: unknown })[
-										key as "extraneous"
-									]
-								}
-							}
-
-							if (docSource.system.perception.vision) {
-								delete (docSource.system.perception as { vision?: unknown }).vision
-							}
-						}
-					} else if (isItemSource(docSource)) {
-						this.#pruneItem(docSource)
-					} else if (docSource.type !== "script") {
-						delete (docSource as Partial<PackEntry>).ownership
+						// } else if (isItemSource(docSource)) {
+						// this.#pruneItem(docSource)
 					}
 				}
 			} else if (docSource[key as DocumentKey] instanceof Object) {
@@ -492,369 +389,364 @@ class PackExtractor {
 	}
 
 	/**  Prune several common item data defaults */
-	#pruneItem(source: ItemSourcePF2e): void {
-		source.system.description = {
-			gm: source.system.description.gm ?? "",
-			value: source.system.description.value,
-		}
+	// #pruneItem(source: ItemSourceGURPS): void {
+	// source.system.description = {
+	// 	gm: source.system.description.gm ?? "",
+	// 	value: source.system.description.value,
+	// }
+	// if (!source.system.description.gm.trim()) {
+	// 	delete (source.system.description as { gm?: unknown }).gm
+	// }
+	// if (source.system.traits?.otherTags?.length === 0) {
+	// 	delete (source.system.traits as { otherTags?: unknown }).otherTags
+	// }
+	// const publication: Partial<PublicationData> = source.system.publication
+	// if (!publication.authors?.trim()) delete publication.authors
+	// if (isPhysicalData(source)) {
+	// 	delete (source.system as { identification?: unknown }).identification
+	// 	if ("stackGroup" in source.system && !source.system.stackGroup) {
+	// 		delete (source.system as { stackGroup?: unknown }).stackGroup
+	// 	}
+	// 	if (source.type === "consumable" && !source.system.spell) {
+	// 		delete (source.system as { spell?: unknown }).spell
+	// 	}
+	//
+	// 	if (itemIsOfType(source, "armor", "shield", "weapon") && !source.system.specific) {
+	// 		delete (source.system as { specific?: unknown }).specific
+	// 	}
+	//
+	// 	if (source.system.subitems?.length === 0) {
+	// 		delete (source.system as { subitems?: unknown[] }).subitems
+	// 	}
+	//
+	// 	if (source.type === "weapon") {
+	// 		delete (source.system as { property1?: unknown }).property1
+	// 		if ("value" in source.system.damage) {
+	// 			delete source.system.damage.value
+	// 		}
+	// 		if (!source.system.damage.persistent) {
+	// 			delete (source.system.damage as { persistent?: unknown }).persistent
+	// 		}
+	// 	}
+	// } else if (source.type === "melee") {
+	// 	for (const formulaData of Object.values(source.system.damageRolls)) {
+	// 		if (!formulaData.category) {
+	// 			delete (formulaData as { category?: unknown }).category
+	// 		}
+	// 	}
+	// } else if (source.type === "action" && !source.system.deathNote) {
+	// 	delete (source.system as { deathNote?: boolean }).deathNote
+	// } else if (source.type === "effect") {
+	// 	delete (source.system as { context?: unknown }).context
+	// 	delete (source.system as { unidentified?: unknown }).unidentified
+	// 	if (!source.system.badge) {
+	// 		delete (source.system as { badge?: unknown }).badge
+	// 	}
+	// } else if (source.type === "feat") {
+	// 	const isFeat = !["ancestryfeature", "classfeature", "pfsboon", "deityboon", "curse"].includes(
+	// 		source.system.category,
+	// 	)
+	// 	if (isFeat && source.img === "systems/pf2e/icons/default-icons/feat.svg") {
+	// 		source.img = "systems/pf2e/icons/features/feats/feats.webp"
+	// 	}
+	//
+	// 	if (source.system.maxTakable === 1) {
+	// 		delete (source.system as { maxTakable?: number }).maxTakable
+	// 	}
+	// 	if (!source.system.onlyLevel1) {
+	// 		delete (source.system as { onlyLevel1?: boolean }).onlyLevel1
+	// 	}
+	// } else if (source.type === "spellcastingEntry" && this.#lastActor?.type === "npc") {
+	// 	delete (source.system as { ability?: unknown }).ability
+	// }
+	// for (const rule of source.system.rules) {
+	// 	this.#pruneRuleElement(rule)
+	// }
+	// }
 
-		if (!source.system.description.gm.trim()) {
-			delete (source.system.description as { gm?: unknown }).gm
-		}
+	// #pruneRuleElement(source: RuleElementSource): void {
+	// 	switch (source.key) {
+	// 		case "RollOption":
+	// 			if ("toggleable" in source && source.toggleable && !source.value) {
+	// 				delete source.value
+	// 			}
+	// 			return
+	// 	}
+	// }
 
-		if (source.system.traits?.otherTags?.length === 0) {
-			delete (source.system.traits as { otherTags?: unknown }).otherTags
-		}
+	// #sortDataItems(docSource: PackEntry): ItemSourceGURPS[] {
+	// 	const itemTypeList: string[] = [
+	// 		"spellcastingEntry",
+	// 		"spell",
+	// 		"weapon",
+	// 		"shield",
+	// 		"armor",
+	// 		"equipment",
+	// 		"consumable",
+	// 		"treasure",
+	// 		"backpack",
+	// 		"condition",
+	// 		"effect",
+	// 		"melee",
+	// 		"action",
+	// 		"lore",
+	// 	]
+	// 	if (!("items" in docSource)) {
+	// 		return []
+	// 	}
+	//
+	// 	const ownedItems = docSource.items
+	// 	const groupedItems: Map<string, Set<ItemSourceGURPS>> = new Map()
+	//
+	// 	// Separate the data items into type collections.
+	// 	for (const item of ownedItems) {
+	// 		if (!groupedItems.has(item.type)) {
+	// 			groupedItems.set(item.type, new Set<ItemSourceGURPS>())
+	// 		}
+	//
+	// 		const itemGroup = groupedItems.get(item.type)
+	// 		if (itemGroup) {
+	// 			itemGroup.add(item)
+	// 		}
+	// 	}
+	//
+	// 	// Create new array of items.
+	// 	const sortedItems: ItemSourceGURPS[] = Array(ownedItems.length)
+	// 	let itemIndex = 0
+	// 	for (const itemType of itemTypeList) {
+	// 		if (groupedItems.has(itemType) && groupedItems.size > 0) {
+	// 			const itemGroup = groupedItems.get(itemType)
+	// 			if (itemGroup) {
+	// 				let items: ItemSourceGURPS[]
+	// 				switch (itemType) {
+	// 					case "spellcastingEntry":
+	// 						items = this.#sortSpellcastingEntries(docSource.name, itemGroup)
+	// 						break
+	// 					case "spell":
+	// 						items = this.#sortSpells(itemGroup)
+	// 						break
+	// 					case "action":
+	// 						items = this.#sortAbilities(docSource.name, itemGroup)
+	// 						break
+	// 					case "lore":
+	// 						items = Array.from(itemGroup).sort((a, b) => a.name.localeCompare(b.name))
+	// 						break
+	// 					case "melee":
+	// 						items = this.#sortAttacks(docSource.name, itemGroup)
+	// 						break
+	// 					default:
+	// 						items = Array.from(itemGroup)
+	// 				}
+	//
+	// 				for (const item of items) {
+	// 					sortedItems[itemIndex] = item
+	// 					itemIndex += 1
+	// 					item.sort = 100000 * itemIndex
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	//
+	// 	// Make sure to add any items that are of a type not defined in the list.
+	// 	for (const [key, itemSet] of groupedItems) {
+	// 		if (!itemTypeList.includes(key)) {
+	// 			if (this.emitWarnings) {
+	// 				console.log(
+	// 					`Warning in ${docSource.name}: Item type '${key}' is currently unhandled in sortDataItems. Consider adding.`,
+	// 				)
+	// 			}
+	// 			for (const item of itemSet) {
+	// 				sortedItems[itemIndex] = item
+	// 				itemIndex += 1
+	// 				item.sort = 100000 * itemIndex
+	// 			}
+	// 		}
+	// 	}
+	//
+	// 	return sortedItems
+	// }
 
-		const publication: Partial<PublicationData> = source.system.publication
-		if (!publication.authors?.trim()) delete publication.authors
+	// #sortAttacks(docName: string, attacks: Set<ItemSourceGURPS>): ItemSourceGURPS[] {
+	// 	for (const attack of attacks) {
+	// 		const attackData = attack as MeleeSource
+	// 		if (!attackData.system.weaponType?.value && this.emitWarnings) {
+	// 			console.log(`Warning in ${docName}: Melee item '${attackData.name}' has no weaponType defined!`)
+	// 		}
+	// 	}
+	//
+	// 	return Array.from(attacks).sort((a, b) => {
+	// 		const attackA = a as MeleeSource
+	// 		const attackB = b as MeleeSource
+	// 		if (attackA.system.weaponType?.value) {
+	// 			if (!attackB.system.weaponType?.value) {
+	// 				return -1
+	// 			}
+	//
+	// 			return attackA.system.weaponType.value.localeCompare(attackB.system.weaponType.value)
+	// 		} else if (attackB.system.weaponType?.value) {
+	// 			return 1
+	// 		}
+	//
+	// 		return 0
+	// 	})
+	// }
 
-		if (isPhysicalData(source)) {
-			delete (source.system as { identification?: unknown }).identification
-			if ("stackGroup" in source.system && !source.system.stackGroup) {
-				delete (source.system as { stackGroup?: unknown }).stackGroup
-			}
-			if (source.type === "consumable" && !source.system.spell) {
-				delete (source.system as { spell?: unknown }).spell
-			}
+	// #sortSpellcastingEntries(docName: string, actions: Set<ItemSourceGURPS>): ItemSourceGURPS[] {
+	// 	const overrides: Map<RegExp, "top" | "bottom"> = new Map([
+	// 		[new RegExp("Prepared Spells"), "top"],
+	// 		[new RegExp("Spontaneous Spells"), "top"],
+	// 		[new RegExp("Innate Spells"), "top"],
+	// 		[new RegExp("Ritual Spells"), "top"],
+	// 	])
+	//
+	// 	return this.#sortItemsWithOverrides(docName, Array.from(actions), overrides)
+	// }
 
-			if (itemIsOfType(source, "armor", "shield", "weapon") && !source.system.specific) {
-				delete (source.system as { specific?: unknown }).specific
-			}
+	// #sortInteractions(docName: string, actions: ItemSourceGURPS[]): ItemSourceGURPS[] {
+	// 	const overrides = new Map<RegExp, "top" | "bottom">([
+	// 		[new RegExp("Low-Light Vision"), "top"],
+	// 		[new RegExp("^Darkvision"), "top"],
+	// 		[new RegExp("Greater Darkvision"), "top"],
+	// 		[new RegExp("Tremorsense"), "top"],
+	// 		[new RegExp("Scent"), "top"],
+	// 		[new RegExp("Telepathy"), "top"],
+	// 		[new RegExp("At-Will Spells"), "bottom"],
+	// 		[new RegExp("Constant Spells"), "bottom"],
+	// 	])
+	//
+	// 	return this.#sortItemsWithOverrides(docName, actions, overrides)
+	// }
 
-			if (source.system.subitems?.length === 0) {
-				delete (source.system as { subitems?: unknown[] }).subitems
-			}
+	// #sortDefensiveActions(docName: string, actions: ItemSourceGURPS[]): ItemSourceGURPS[] {
+	// 	const overrides: Map<RegExp, "top" | "bottom"> = new Map([
+	// 		[new RegExp("All-Around Vision"), "top"],
+	// 		[
+	// 			new RegExp(
+	// 				"(\\+|\\-)\\d+ (Status|Circumstance) (Bonus )?(to|on) ((All|Fortitude|Reflex|Will) )?Saves",
+	// 				"i",
+	// 			),
+	// 			"top",
+	// 		],
+	// 		[new RegExp("Fast Healing"), "top"],
+	// 		[new RegExp("Negative Healing"), "top"],
+	// 		[new RegExp("Regeneration"), "top"],
+	// 		[new RegExp("Swarm Mind"), "top"],
+	// 	])
+	//
+	// 	return this.#sortItemsWithOverrides(docName, actions, overrides)
+	// }
 
-			if (source.type === "weapon") {
-				delete (source.system as { property1?: unknown }).property1
-				if ("value" in source.system.damage) {
-					delete source.system.damage.value
-				}
-				if (!source.system.damage.persistent) {
-					delete (source.system.damage as { persistent?: unknown }).persistent
-				}
-			}
-		} else if (source.type === "melee") {
-			for (const formulaData of Object.values(source.system.damageRolls)) {
-				if (!formulaData.category) {
-					delete (formulaData as { category?: unknown }).category
-				}
-			}
-		} else if (source.type === "action" && !source.system.deathNote) {
-			delete (source.system as { deathNote?: boolean }).deathNote
-		} else if (source.type === "effect") {
-			delete (source.system as { context?: unknown }).context
-			delete (source.system as { unidentified?: unknown }).unidentified
-			if (!source.system.badge) {
-				delete (source.system as { badge?: unknown }).badge
-			}
-		} else if (source.type === "feat") {
-			const isFeat = !["ancestryfeature", "classfeature", "pfsboon", "deityboon", "curse"].includes(
-				source.system.category,
-			)
-			if (isFeat && source.img === "systems/pf2e/icons/default-icons/feat.svg") {
-				source.img = "systems/pf2e/icons/features/feats/feats.webp"
-			}
-
-			if (source.system.maxTakable === 1) {
-				delete (source.system as { maxTakable?: number }).maxTakable
-			}
-			if (!source.system.onlyLevel1) {
-				delete (source.system as { onlyLevel1?: boolean }).onlyLevel1
-			}
-		} else if (source.type === "spellcastingEntry" && this.#lastActor?.type === "npc") {
-			delete (source.system as { ability?: unknown }).ability
-		}
-
-		for (const rule of source.system.rules) {
-			this.#pruneRuleElement(rule)
-		}
-	}
-
-	#pruneRuleElement(source: RuleElementSource): void {
-		switch (source.key) {
-			case "RollOption":
-				if ("toggleable" in source && source.toggleable && !source.value) {
-					delete source.value
-				}
-				return
-		}
-	}
-
-	#sortDataItems(docSource: PackEntry): ItemSourcePF2e[] {
-		const itemTypeList: string[] = [
-			"spellcastingEntry",
-			"spell",
-			"weapon",
-			"shield",
-			"armor",
-			"equipment",
-			"consumable",
-			"treasure",
-			"backpack",
-			"condition",
-			"effect",
-			"melee",
-			"action",
-			"lore",
-		]
-		if (!("items" in docSource)) {
-			return []
-		}
-
-		const ownedItems = docSource.items
-		const groupedItems: Map<string, Set<ItemSourcePF2e>> = new Map()
-
-		// Separate the data items into type collections.
-		for (const item of ownedItems) {
-			if (!groupedItems.has(item.type)) {
-				groupedItems.set(item.type, new Set<ItemSourcePF2e>())
-			}
-
-			const itemGroup = groupedItems.get(item.type)
-			if (itemGroup) {
-				itemGroup.add(item)
-			}
-		}
-
-		// Create new array of items.
-		const sortedItems: ItemSourcePF2e[] = Array(ownedItems.length)
-		let itemIndex = 0
-		for (const itemType of itemTypeList) {
-			if (groupedItems.has(itemType) && groupedItems.size > 0) {
-				const itemGroup = groupedItems.get(itemType)
-				if (itemGroup) {
-					let items: ItemSourcePF2e[]
-					switch (itemType) {
-						case "spellcastingEntry":
-							items = this.#sortSpellcastingEntries(docSource.name, itemGroup)
-							break
-						case "spell":
-							items = this.#sortSpells(itemGroup)
-							break
-						case "action":
-							items = this.#sortAbilities(docSource.name, itemGroup)
-							break
-						case "lore":
-							items = Array.from(itemGroup).sort((a, b) => a.name.localeCompare(b.name))
-							break
-						case "melee":
-							items = this.#sortAttacks(docSource.name, itemGroup)
-							break
-						default:
-							items = Array.from(itemGroup)
-					}
-
-					for (const item of items) {
-						sortedItems[itemIndex] = item
-						itemIndex += 1
-						item.sort = 100000 * itemIndex
-					}
-				}
-			}
-		}
-
-		// Make sure to add any items that are of a type not defined in the list.
-		for (const [key, itemSet] of groupedItems) {
-			if (!itemTypeList.includes(key)) {
-				if (this.emitWarnings) {
-					console.log(
-						`Warning in ${docSource.name}: Item type '${key}' is currently unhandled in sortDataItems. Consider adding.`,
-					)
-				}
-				for (const item of itemSet) {
-					sortedItems[itemIndex] = item
-					itemIndex += 1
-					item.sort = 100000 * itemIndex
-				}
-			}
-		}
-
-		return sortedItems
-	}
-
-	#sortAttacks(docName: string, attacks: Set<ItemSourcePF2e>): ItemSourcePF2e[] {
-		for (const attack of attacks) {
-			const attackData = attack as MeleeSource
-			if (!attackData.system.weaponType?.value && this.emitWarnings) {
-				console.log(`Warning in ${docName}: Melee item '${attackData.name}' has no weaponType defined!`)
-			}
-		}
-
-		return Array.from(attacks).sort((a, b) => {
-			const attackA = a as MeleeSource
-			const attackB = b as MeleeSource
-			if (attackA.system.weaponType?.value) {
-				if (!attackB.system.weaponType?.value) {
-					return -1
-				}
-
-				return attackA.system.weaponType.value.localeCompare(attackB.system.weaponType.value)
-			} else if (attackB.system.weaponType?.value) {
-				return 1
-			}
-
-			return 0
-		})
-	}
-
-	#sortSpellcastingEntries(docName: string, actions: Set<ItemSourcePF2e>): ItemSourcePF2e[] {
-		const overrides: Map<RegExp, "top" | "bottom"> = new Map([
-			[new RegExp("Prepared Spells"), "top"],
-			[new RegExp("Spontaneous Spells"), "top"],
-			[new RegExp("Innate Spells"), "top"],
-			[new RegExp("Ritual Spells"), "top"],
-		])
-
-		return this.#sortItemsWithOverrides(docName, Array.from(actions), overrides)
-	}
-
-	#sortInteractions(docName: string, actions: ItemSourcePF2e[]): ItemSourcePF2e[] {
-		const overrides = new Map<RegExp, "top" | "bottom">([
-			[new RegExp("Low-Light Vision"), "top"],
-			[new RegExp("^Darkvision"), "top"],
-			[new RegExp("Greater Darkvision"), "top"],
-			[new RegExp("Tremorsense"), "top"],
-			[new RegExp("Scent"), "top"],
-			[new RegExp("Telepathy"), "top"],
-			[new RegExp("At-Will Spells"), "bottom"],
-			[new RegExp("Constant Spells"), "bottom"],
-		])
-
-		return this.#sortItemsWithOverrides(docName, actions, overrides)
-	}
-
-	#sortDefensiveActions(docName: string, actions: ItemSourcePF2e[]): ItemSourcePF2e[] {
-		const overrides: Map<RegExp, "top" | "bottom"> = new Map([
-			[new RegExp("All-Around Vision"), "top"],
-			[
-				new RegExp(
-					"(\\+|\\-)\\d+ (Status|Circumstance) (Bonus )?(to|on) ((All|Fortitude|Reflex|Will) )?Saves",
-					"i",
-				),
-				"top",
-			],
-			[new RegExp("Fast Healing"), "top"],
-			[new RegExp("Negative Healing"), "top"],
-			[new RegExp("Regeneration"), "top"],
-			[new RegExp("Swarm Mind"), "top"],
-		])
-
-		return this.#sortItemsWithOverrides(docName, actions, overrides)
-	}
-
-	#sortOffensiveActions(docName: string, actions: ItemSourcePF2e[]): ItemSourcePF2e[] {
-		const overrides: Map<RegExp, "top" | "bottom"> = new Map([
-			[new RegExp("^Grab"), "bottom"],
-			[new RegExp("Improved Grab"), "bottom"],
-			[new RegExp("^Knockdown"), "bottom"],
-			[new RegExp("Improved Knockdown"), "bottom"],
-			[new RegExp("^Push"), "bottom"],
-			[new RegExp("Improved Push"), "bottom"],
-		])
-
-		return this.#sortItemsWithOverrides(docName, actions, overrides)
-	}
+	// #sortOffensiveActions(docName: string, actions: ItemSourceGURPS[]): ItemSourceGURPS[] {
+	// 	const overrides: Map<RegExp, "top" | "bottom"> = new Map([
+	// 		[new RegExp("^Grab"), "bottom"],
+	// 		[new RegExp("Improved Grab"), "bottom"],
+	// 		[new RegExp("^Knockdown"), "bottom"],
+	// 		[new RegExp("Improved Knockdown"), "bottom"],
+	// 		[new RegExp("^Push"), "bottom"],
+	// 		[new RegExp("Improved Push"), "bottom"],
+	// 	])
+	//
+	// 	return this.#sortItemsWithOverrides(docName, actions, overrides)
+	// }
 
 	/** Sorts actions by category, only called for NPCs */
-	#sortAbilities(docName: string, items: Set<ItemSourcePF2e>): ItemSourcePF2e[] {
-		const notAbilities: [string, string][] = [
-			["Innate Spells", "spellcastingEntry"],
-			["Prepared Spells", "spellcastingEntry"],
-			["Ritual Spells", "spellcastingEntry"],
-			["Spontaneous Spells", "spellcastingEntry"],
-		]
-		const abilitiesMap: Map<string, ItemSourcePF2e[]> = new Map([
-			["interaction", []],
-			["defensive", []],
-			["offensive", []],
-			["other", []],
-		])
+	// #sortAbilities(docName: string, items: Set<ItemSourceGURPS>): ItemSourceGURPS[] {
+	// 	const notAbilities: [string, string][] = [
+	// 		["Innate Spells", "spellcastingEntry"],
+	// 		["Prepared Spells", "spellcastingEntry"],
+	// 		["Ritual Spells", "spellcastingEntry"],
+	// 		["Spontaneous Spells", "spellcastingEntry"],
+	// 	]
+	// 	const abilitiesMap: Map<string, ItemSourceGURPS[]> = new Map([
+	// 		["interaction", []],
+	// 		["defensive", []],
+	// 		["offensive", []],
+	// 		["other", []],
+	// 	])
+	//
+	// 	for (const ability of Array.from(items).sort((a, b) => a.name.localeCompare(b.name))) {
+	// 		const notAbilityMatch = notAbilities.find(naName => ability.name.match(naName[0]))
+	// 		if (notAbilityMatch) {
+	// 			console.log(
+	// 				`Error in ${docName}: ${notAbilityMatch[0]} has type action but should be type ${notAbilityMatch[1]}!`,
+	// 			)
+	// 		}
+	//
+	// 		if (ability.type !== "action") continue
+	//
+	// 		if (!ability.system.category) {
+	// 			if (this.emitWarnings) {
+	// 				console.log(`Warning in ${docName}: Ability item "${ability.name}" has no category defined!`)
+	// 			}
+	// 			abilitiesMap.get("other")!.push(ability)
+	// 		} else {
+	// 			const actionCategory = abilitiesMap.has(ability.system.category) ? ability.system.category : "other"
+	// 			abilitiesMap.get(actionCategory)!.push(ability)
+	// 		}
+	// 	}
+	//
+	// 	const sortedInteractions = this.#sortInteractions(docName, abilitiesMap.get("interaction")!)
+	// 	const sortedDefensive = this.#sortDefensiveActions(docName, abilitiesMap.get("defensive")!)
+	// 	const sortedOffensive = this.#sortOffensiveActions(docName, abilitiesMap.get("offensive")!)
+	//
+	// 	return sortedInteractions.concat(sortedDefensive, sortedOffensive, abilitiesMap.get("other")!)
+	// }
 
-		for (const ability of Array.from(items).sort((a, b) => a.name.localeCompare(b.name))) {
-			const notAbilityMatch = notAbilities.find(naName => ability.name.match(naName[0]))
-			if (notAbilityMatch) {
-				console.log(
-					`Error in ${docName}: ${notAbilityMatch[0]} has type action but should be type ${notAbilityMatch[1]}!`,
-				)
-			}
+	// #sortSpells(spells: Set<ItemSourceGURPS>): SpellSource[] {
+	// 	return Array.from(spells).sort((a, b) => {
+	// 		const spellA = a as SpellSource
+	// 		const spellB = b as SpellSource
+	// 		const aLevel = spellA.system.level
+	// 		const bLevel = spellB.system.level
+	// 		if (aLevel && !bLevel) {
+	// 			return -1
+	// 		} else if (!aLevel && bLevel) {
+	// 			return 1
+	// 		} else if (aLevel && bLevel) {
+	// 			const levelDiff = bLevel.value - aLevel.value
+	// 			if (levelDiff !== 0) {
+	// 				return levelDiff
+	// 			}
+	// 		}
+	//
+	// 		return a.name.localeCompare(b.name)
+	// 	}) as SpellSource[]
+	// }
 
-			if (ability.type !== "action") continue
-
-			if (!ability.system.category) {
-				if (this.emitWarnings) {
-					console.log(`Warning in ${docName}: Ability item "${ability.name}" has no category defined!`)
-				}
-				abilitiesMap.get("other")!.push(ability)
-			} else {
-				const actionCategory = abilitiesMap.has(ability.system.category) ? ability.system.category : "other"
-				abilitiesMap.get(actionCategory)!.push(ability)
-			}
-		}
-
-		const sortedInteractions = this.#sortInteractions(docName, abilitiesMap.get("interaction")!)
-		const sortedDefensive = this.#sortDefensiveActions(docName, abilitiesMap.get("defensive")!)
-		const sortedOffensive = this.#sortOffensiveActions(docName, abilitiesMap.get("offensive")!)
-
-		return sortedInteractions.concat(sortedDefensive, sortedOffensive, abilitiesMap.get("other")!)
-	}
-
-	#sortSpells(spells: Set<ItemSourcePF2e>): SpellSource[] {
-		return Array.from(spells).sort((a, b) => {
-			const spellA = a as SpellSource
-			const spellB = b as SpellSource
-			const aLevel = spellA.system.level
-			const bLevel = spellB.system.level
-			if (aLevel && !bLevel) {
-				return -1
-			} else if (!aLevel && bLevel) {
-				return 1
-			} else if (aLevel && bLevel) {
-				const levelDiff = bLevel.value - aLevel.value
-				if (levelDiff !== 0) {
-					return levelDiff
-				}
-			}
-
-			return a.name.localeCompare(b.name)
-		}) as SpellSource[]
-	}
-
-	#sortItemsWithOverrides(
-		docName: string,
-		actions: ItemSourcePF2e[],
-		overrides: Map<RegExp, "top" | "bottom">,
-	): ItemSourcePF2e[] {
-		const topActions: ItemSourcePF2e[] = []
-		const middleActions: ItemSourcePF2e[] = []
-		const bottomActions: ItemSourcePF2e[] = []
-
-		for (const [regexp, position] of overrides.entries()) {
-			const interaction = actions.find(action => regexp.exec(action.name))
-			if (interaction) {
-				if (position === "top") {
-					topActions.push(interaction)
-				} else if (position === "bottom") {
-					bottomActions.push(interaction)
-				} else {
-					if (this.emitWarnings) {
-						console.log(
-							`Warning in ${docName}: Override item '${regexp}' has undefined override section '${position}', should be top or bottom!`,
-						)
-					}
-				}
-			}
-		}
-
-		for (const interaction of actions) {
-			if (!topActions.includes(interaction) && !bottomActions.includes(interaction)) {
-				middleActions.push(interaction)
-			}
-		}
-
-		return topActions.concat(middleActions, bottomActions)
-	}
+	// #sortItemsWithOverrides(
+	// 	docName: string,
+	// 	actions: ItemSourceGURPS[],
+	// 	overrides: Map<RegExp, "top" | "bottom">,
+	// ): ItemSourceGURPS[] {
+	// 	const topActions: ItemSourceGURPS[] = []
+	// 	const middleActions: ItemSourceGURPS[] = []
+	// 	const bottomActions: ItemSourceGURPS[] = []
+	//
+	// 	for (const [regexp, position] of overrides.entries()) {
+	// 		const interaction = actions.find(action => regexp.exec(action.name))
+	// 		if (interaction) {
+	// 			if (position === "top") {
+	// 				topActions.push(interaction)
+	// 			} else if (position === "bottom") {
+	// 				bottomActions.push(interaction)
+	// 			} else {
+	// 				if (this.emitWarnings) {
+	// 					console.log(
+	// 						`Warning in ${docName}: Override item '${regexp}' has undefined override section '${position}', should be top or bottom!`,
+	// 					)
+	// 				}
+	// 			}
+	// 		}
+	// 	}
+	//
+	// 	for (const interaction of actions) {
+	// 		if (!topActions.includes(interaction) && !bottomActions.includes(interaction)) {
+	// 			middleActions.push(interaction)
+	// 		}
+	// 	}
+	//
+	// 	return topActions.concat(middleActions, bottomActions)
+	// }
 
 	#populateIdNameMap(): void {
 		const packDirs = fs.readdirSync(this.dataPath)

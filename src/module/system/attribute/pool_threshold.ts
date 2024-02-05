@@ -10,7 +10,7 @@ export class PoolThreshold {
 
 	ops: ThresholdOp[] = []
 
-	constructor(data: PoolThresholdDef) {
+	constructor(data: Partial<PoolThresholdDef>) {
 		Object.assign(this, data)
 	}
 

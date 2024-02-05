@@ -6,12 +6,12 @@ export type EquipmentModifierContainerSource = ItemGCSSource<
 	EquipmentModifierContainerSystemSource
 >
 
-export interface EquipmentModifierContainerData
-	extends Omit<EquipmentModifierContainerSource, "effects" | "items">,
-		EquipmentModifierContainerSystemSource {
-	readonly type: EquipmentModifierContainerSource["type"]
-	data: EquipmentModifierContainerSystemSource
-	readonly _source: EquipmentModifierContainerSource
+export interface EquipmentModifierContainerSystemSource extends ItemGCSSystemSource {
+	type: ItemType.EquipmentModifierContainer
+	name?: string
+	reference?: string
+	reference_highlight?: string
+	notes?: string
+	vtt_notes?: string
+	tags?: string[]
 }
-
-export type EquipmentModifierContainerSystemSource = ItemGCSSystemSource

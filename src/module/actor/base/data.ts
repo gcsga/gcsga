@@ -33,6 +33,7 @@ export enum ActorFlags {
 	AutoEncumbrance = "auto_encumbrance",
 	AutoThreshold = "auto_threshold",
 	AutoDamage = "auto_damage",
+	Import = "import",
 }
 
 export type BaseActorSourceGURPS<
@@ -53,8 +54,6 @@ export type BaseActorSourceGURPS<
 // }
 
 export interface ActorSystemSource {
-	id: string
-	type: ActorType
 	/** A record of this actor's current world schema version as well a log of the last migration to occur */
 	_migration: MigrationRecord
 }
