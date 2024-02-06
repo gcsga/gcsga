@@ -7,7 +7,7 @@ import { progression } from "@util/enum/progression.ts"
 type ConfigGURPSListName = (typeof DefaultSheetSettings.SETTINGS)[number]
 
 export class DefaultSheetSettings extends SettingsMenuGURPS {
-	static override readonly namespace = "default_sheet_settings"
+	static override readonly namespace = SETTINGS.DEFAULT_SHEET_SETTINGS
 
 	static override readonly SETTINGS = ["settings", "initial_points", "tech_level", "populate_description"]
 
@@ -32,7 +32,7 @@ export class DefaultSheetSettings extends SettingsMenuGURPS {
 	protected static override get settings(): Record<ConfigGURPSListName, PartialSettingsData> {
 		return {
 			settings: {
-				prefix: SETTINGS.DEFAULT_SHEET_SETTINGS,
+				prefix: this.namespace,
 				name: "",
 				hint: "",
 				type: Object,
@@ -64,18 +64,21 @@ export class DefaultSheetSettings extends SettingsMenuGURPS {
 				},
 			},
 			initial_points: {
+				prefix: this.namespace,
 				name: "",
 				hint: "",
 				type: Number,
 				default: 250,
 			},
 			tech_level: {
+				prefix: this.namespace,
 				name: "",
 				hint: "",
 				type: String,
 				default: "3",
 			},
 			populate_description: {
+				prefix: this.namespace,
 				name: "",
 				hint: "",
 				type: Boolean,

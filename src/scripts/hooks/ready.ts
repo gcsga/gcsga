@@ -2,7 +2,7 @@ import { SOCKET, SYSTEM_NAME } from "@data"
 import { loadModifiers } from "@module/apps/mod_bucket/data.ts"
 import { TokenHUDGURPS } from "@module/canvas/index.ts"
 import { ColorSettings } from "@module/settings/colors.ts"
-import { getDefaultSkills, setInitiative } from "@util"
+import { getDefaultSkills } from "@util"
 
 export const Ready = {
 	listen: (): void => {
@@ -34,7 +34,7 @@ export const Ready = {
 			// GURPS.LastToken = await LastActor.getToken()
 
 			CONFIG.Combat.initiative.decimals = 5
-			setInitiative()
+			// setInitiative()
 
 			game.socket?.on("system.gcsga", async (response: Record<string, unknown>) => {
 				switch (response.type as SOCKET) {

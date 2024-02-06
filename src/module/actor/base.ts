@@ -7,7 +7,7 @@ import { HitLocation, HitLocationTable } from "./character/hit_location.ts"
 import { EffectGURPS } from "@item/effect/document.ts"
 import { ConditionGURPS } from "@item/condition/document.ts"
 import { ItemGURPS } from "@item/base/document.ts"
-import { Document, EmbeddedCollection } from "types/foundry/common/abstract/module.js"
+import { Document } from "types/foundry/common/abstract/module.js"
 import { DamagePayload } from "@module/apps/damage_calculator/damage_chat_message.ts"
 import {
 	DamageAttacker,
@@ -43,9 +43,12 @@ import {
 	gid,
 } from "@data"
 import { itemIsOfType } from "@item/helpers.ts"
+import { ActiveEffectGURPS } from "@module/active-effect/document.ts"
 
 interface ActorGURPS<TParent extends TokenDocumentGURPS | null> extends Actor<TParent> {
 	readonly _source: ActorSourceGURPS
+	readonly effects: foundry.abstract.EmbeddedCollection<ActiveEffectGURPS<this>>
+	readonly items: foundry.abstract.EmbeddedCollection<ItemGURPS<this>>
 	noPrepare: boolean
 	flags: ActorFlagsGURPS
 	type: ActorType
@@ -180,10 +183,6 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 	/** The recorded schema version of this actor, updated after each data migration */
 	get schemaVersion(): number | null {
 		return Number(this.system._migration?.version) || null
-	}
-
-	override get items(): EmbeddedCollection<ItemGURPS<this>> {
-		return super.items as EmbeddedCollection<ItemGURPS<this>>
 	}
 
 	get gEffects(): Collection<EffectGURPS> {

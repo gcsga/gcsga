@@ -1,5 +1,6 @@
 import { CanvasReady } from "./canvas-ready.ts"
 import { DropCanvasData } from "./drop-canvas-data.ts"
+import { I18nInit } from "./i18n-init.ts"
 import { Init } from "./init.ts"
 import { Load } from "./load.ts"
 import { Ready } from "./ready.ts"
@@ -13,6 +14,7 @@ export const HooksGURPS = {
 		const listeners: { listen(): void }[] = [
 			Load,
 			CanvasReady,
+			I18nInit,
 			Init,
 			Ready,
 			Setup,

@@ -2,7 +2,7 @@ import { DEFAULT_INITIATIVE_FORMULA, SETTINGS, SSRT_SETTING, SYSTEM_NAME } from 
 import { ColorSettings } from "./colors.ts"
 import { DefaultSheetSettings } from "./sheet_settings.ts"
 import { RollModifierSettings } from "./roll_modifiers.ts"
-import { getDefaultSkills, setInitiative } from "@util/misc.ts"
+import { getDefaultSkills } from "@util/misc.ts"
 import { AttributeSettings } from "./attributes.ts"
 import { ResourceTrackerSettings } from "./resource_trackers.ts"
 import { MoveSettings } from "./move_type.ts"
@@ -228,8 +228,9 @@ export function registerSettings(): void {
 		scope: "world",
 		config: true,
 		type: String,
-		default: DEFAULT_INITIATIVE_FORMULA,
-		onChange: () => setInitiative(),
+		default: "$basic_speed+($dx/10000)+(1d6/100000)",
+		onChange: (value: unknown) => console.log(`Initiative Formula  : ${value}`),
+		// onChange: () => setInitiative(),
 	})
 
 	game.settings.register(SYSTEM_NAME, SETTINGS.DEFAULT_DAMAGE_LOCATION, {

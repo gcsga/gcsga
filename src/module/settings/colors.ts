@@ -4,7 +4,7 @@ import { SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
 type ConfigGURPSListName = (typeof ColorSettings.SETTINGS)[number]
 
 export class ColorSettings extends SettingsMenuGURPS {
-	static override readonly namespace = "colors"
+	static override readonly namespace = SETTINGS.COLORS
 
 	static override readonly SETTINGS = ["modePreference", "colors"] as const
 
@@ -29,6 +29,7 @@ export class ColorSettings extends SettingsMenuGURPS {
 	protected static override get settings(): Record<ConfigGURPSListName, PartialSettingsData> {
 		return {
 			modePreference: {
+				prefix: SETTINGS.COLORS,
 				name: "gurps.settings.colors.modePreference.name",
 				hint: "gurps.settings.colors.modePreference.hint",
 				default: "auto",
@@ -179,8 +180,8 @@ export class ColorSettings extends SettingsMenuGURPS {
 	}
 
 	static applyColors(): void {
-		const modePreference = game.settings.get(SYSTEM_NAME, "colors.modePreference")
-		const colors = game.settings.get(SYSTEM_NAME, "colors.colors")
+		const modePreference = game.settings.get(SYSTEM_NAME, `${SETTINGS.COLORS}.modePreference`)
+		const colors = game.settings.get(SYSTEM_NAME, `${SETTINGS.COLORS}.colors`)
 		Object.keys(colors).forEach(e => {
 			if (!e.startsWith("color")) return
 			const name = `--${e.replace(/(\w)([A-Z])/g, "$1-$2").toLowerCase()}`
