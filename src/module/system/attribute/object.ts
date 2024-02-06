@@ -1,6 +1,6 @@
 import { CharacterResolver } from "@util/resolvers.ts"
 import { PoolThreshold } from "./pool_threshold.ts"
-import { AttributeDefObj, AttributeObj, reserved_ids } from "./data.ts"
+import { AttributeObj, reserved_ids } from "./data.ts"
 import { attribute } from "@util/enum/attribute.ts"
 import { stlimit } from "@util/enum/stlimit.ts"
 import { sanitizeId } from "@util/misc.ts"
@@ -57,7 +57,7 @@ export class Attribute {
 	}
 
 	get attribute_def(): AttributeDef {
-		return new AttributeDef(this.actor.settings.attributes.find((e: AttributeDefObj) => e.id === this.attr_id))
+		return this.actor.settings.attributes.find(e => e.id === this.attr_id) as AttributeDef
 	}
 
 	get max(): number {

@@ -156,12 +156,12 @@ class TraitImporter extends ItemImporter {
 		}
 
 		item.modifiers?.reduce((acc, mod) => {
-			acc.push(...ItemImportHandlers[item.type].importItem(mod, { parentId: id }))
+			acc.push(...ItemImportHandlers[mod.type].importItem(mod, { parentId: id }))
 			return acc
 		}, results)
 
-		item.weapons?.reduce((acc, mod) => {
-			acc.push(...ItemImportHandlers[item.type].importItem(mod, { parentId: id }))
+		item.weapons?.reduce((acc, weapon) => {
+			acc.push(...ItemImportHandlers[weapon.type].importItem(weapon, { parentId: id }))
 			return acc
 		}, results)
 
@@ -219,13 +219,13 @@ class TraitContainerImporter extends ItemImporter {
 			template_picker: ItemImporter.importTemplatePicker(item.template_picker),
 		}
 
-		item.children?.reduce((acc, mod) => {
-			acc.push(...ItemImportHandlers[item.type].importItem(mod, { parentId: id }))
+		item.children?.reduce((acc, child) => {
+			acc.push(...ItemImportHandlers[child.type].importItem(child, { parentId: id }))
 			return acc
 		}, results)
 
 		item.modifiers?.reduce((acc, mod) => {
-			acc.push(...ItemImportHandlers[item.type].importItem(mod, { parentId: id }))
+			acc.push(...ItemImportHandlers[mod.type].importItem(mod, { parentId: id }))
 			return acc
 		}, results)
 
@@ -325,8 +325,8 @@ class TraitModifierContainerImporter extends ItemImporter {
 			tags: item.tags ?? [],
 		}
 
-		item.children?.reduce((acc, mod) => {
-			acc.push(...ItemImportHandlers[item.type].importItem(mod, { parentId: id }))
+		item.children?.reduce((acc, child) => {
+			acc.push(...ItemImportHandlers[child.type].importItem(child, { parentId: id }))
 			return acc
 		}, results)
 
@@ -388,8 +388,8 @@ class SkillImporter extends ItemImporter {
 			study_hours_needed: item.study_hours_needed ?? "",
 		}
 
-		item.weapons?.reduce((acc, mod) => {
-			acc.push(...ItemImportHandlers[item.type].importItem(mod, { parentId: id }))
+		item.weapons?.reduce((acc, weapon) => {
+			acc.push(...ItemImportHandlers[weapon.type].importItem(weapon, { parentId: id }))
 			return acc
 		}, results)
 
@@ -449,8 +449,8 @@ class TechniqueImporter extends ItemImporter {
 			study_hours_needed: item.study_hours_needed ?? "",
 		}
 
-		item.weapons?.reduce((acc, mod) => {
-			acc.push(...ItemImportHandlers[item.type].importItem(mod, { parentId: id }))
+		item.weapons?.reduce((acc, weapon) => {
+			acc.push(...ItemImportHandlers[weapon.type].importItem(weapon, { parentId: id }))
 			return acc
 		}, results)
 
@@ -500,8 +500,8 @@ class SkillContainerImporter extends ItemImporter {
 			template_picker: ItemImporter.importTemplatePicker(item.template_picker),
 		}
 
-		item.children?.reduce((acc, mod) => {
-			acc.push(...ItemImportHandlers[item.type].importItem(mod, { parentId: id }))
+		item.children?.reduce((acc, child) => {
+			acc.push(...ItemImportHandlers[child.type].importItem(child, { parentId: id }))
 			return acc
 		}, results)
 
@@ -566,8 +566,8 @@ class SpellImporter extends ItemImporter {
 			study_hours_needed: item.study_hours_needed ?? "",
 		}
 
-		item.weapons?.reduce((acc, mod) => {
-			acc.push(...ItemImportHandlers[item.type].importItem(mod, { parentId: id }))
+		item.weapons?.reduce((acc, weapon) => {
+			acc.push(...ItemImportHandlers[weapon.type].importItem(weapon, { parentId: id }))
 			return acc
 		}, results)
 
@@ -634,8 +634,8 @@ class RitualMagicSpellImporter extends ItemImporter {
 			study_hours_needed: item.study_hours_needed ?? "",
 		}
 
-		item.weapons?.reduce((acc, mod) => {
-			acc.push(...ItemImportHandlers[item.type].importItem(mod, { parentId: id }))
+		item.weapons?.reduce((acc, weapon) => {
+			acc.push(...ItemImportHandlers[weapon.type].importItem(weapon, { parentId: id }))
 			return acc
 		}, results)
 
@@ -750,12 +750,12 @@ class EquipmentImporter extends ItemImporter {
 		}
 
 		item.modifiers?.reduce((acc, mod) => {
-			acc.push(...ItemImportHandlers[item.type].importItem(mod, { parentId: id }))
+			acc.push(...ItemImportHandlers[mod.type].importItem(mod, { parentId: id }))
 			return acc
 		}, results)
 
-		item.weapons?.reduce((acc, mod) => {
-			acc.push(...ItemImportHandlers[item.type].importItem(mod, { parentId: id }))
+		item.weapons?.reduce((acc, weapon) => {
+			acc.push(...ItemImportHandlers[weapon.type].importItem(weapon, { parentId: id }))
 			return acc
 		}, results)
 
@@ -818,18 +818,18 @@ class EquipmentContainerImporter extends ItemImporter {
 			ignore_weight_for_skills: item.ignore_weight_for_skills ?? false,
 		}
 
-		item.children?.reduce((acc, mod) => {
-			acc.push(...ItemImportHandlers[item.type].importItem(mod, { parentId: id }))
+		item.children?.reduce((acc, child) => {
+			acc.push(...ItemImportHandlers[child.type].importItem(child, { parentId: id }))
 			return acc
 		}, results)
 
 		item.modifiers?.reduce((acc, mod) => {
-			acc.push(...ItemImportHandlers[item.type].importItem(mod, { parentId: id }))
+			acc.push(...ItemImportHandlers[mod.type].importItem(mod, { parentId: id }))
 			return acc
 		}, results)
 
-		item.weapons?.reduce((acc, mod) => {
-			acc.push(...ItemImportHandlers[item.type].importItem(mod, { parentId: id }))
+		item.weapons?.reduce((acc, weapon) => {
+			acc.push(...ItemImportHandlers[weapon.type].importItem(weapon, { parentId: id }))
 			return acc
 		}, results)
 
@@ -930,8 +930,8 @@ class EquipmentModifierContainerImporter extends ItemImporter {
 			tags: item.tags ?? [],
 		}
 
-		item.children?.reduce((acc, mod) => {
-			acc.push(...ItemImportHandlers[item.type].importItem(mod, { parentId: id }))
+		item.children?.reduce((acc, child) => {
+			acc.push(...ItemImportHandlers[child.type].importItem(child, { parentId: id }))
 			return acc
 		}, results)
 
@@ -1019,8 +1019,8 @@ class NoteContainerImporter extends ItemImporter {
 			reference_highlight: item.reference ?? "",
 		}
 
-		item.children?.reduce((acc, mod) => {
-			acc.push(...ItemImportHandlers[item.type].importItem(mod, { parentId: id }))
+		item.children?.reduce((acc, child) => {
+			acc.push(...ItemImportHandlers[child.type].importItem(child, { parentId: id }))
 			return acc
 		}, results)
 

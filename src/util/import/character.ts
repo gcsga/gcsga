@@ -94,6 +94,8 @@ export class CharacterImporter {
 		items.push(...ItemImporter.importItems(data.other_equipment, { other: true }))
 		items.push(...ItemImporter.importItems(data.notes))
 
+		console.log(items)
+
 		const name = data.profile?.name ?? document.name ?? LocalizeGURPS.translations.TYPES.Actor[ActorType.Character]
 
 		const actorData: DeepPartial<CharacterSource> = {

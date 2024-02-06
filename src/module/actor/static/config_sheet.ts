@@ -110,8 +110,9 @@ export class StaticCharacterSheetConfig<
 				const files = $(event.currentTarget).prop("files")
 				this.filename = filename
 				if (files) {
-					fu.readTextFromFile(files[0]).then(
-						text =>
+					// @ts-expect-error not defined
+					readTextFromFile(files[0]).then(
+						(text: string) =>
 							(this.file = {
 								text: text,
 								name: files[0].name,

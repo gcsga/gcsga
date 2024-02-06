@@ -1267,6 +1267,7 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 		ranged: RangedWeaponGURPS[]
 		reactions: ConditionalModifier[]
 		conditionalModifiers: ConditionalModifier[]
+		blocks: Record<string, (ItemGURPS | ConditionalModifier)[]>
 		carriedWeight: number
 		carriedValue: number
 		otherValue: number
@@ -1318,6 +1319,20 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 		const carriedWeight = this.actor.weightCarried(true)
 		const otherValue = this.actor.wealthNotCarried()
 
+		const blocks: Record<string, (ItemGURPS | ConditionalModifier)[]> = {
+			traits,
+			skills,
+			spells,
+			equipment: carriedEquipment,
+			other_equipment: otherEquipment,
+			notes,
+			melee,
+			ranged,
+			reactions,
+			conditional_modifiers: conditionalModifiers,
+			effects: conditions,
+		}
+
 		return {
 			traits,
 			skills,
@@ -1329,6 +1344,7 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 			melee,
 			ranged,
 			reactions,
+			blocks,
 			conditionalModifiers,
 			carriedValue,
 			carriedWeight,
@@ -1391,6 +1407,7 @@ interface CharacterSheetData<TActor extends CharacterGURPS> extends ActorSheetDa
 	ranged: ItemGURPS[]
 	reactions: ConditionalModifier[]
 	conditionalModifiers: ConditionalModifier[]
+	blocks: Record<string, (ItemGURPS | ConditionalModifier)[]>
 	// editing: boolean
 	carriedWeight: number
 	carriedValue: number

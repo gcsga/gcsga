@@ -1,7 +1,7 @@
 <div id="primary-attributes">
 	<div class="header">{{localize "gurps.character.primary_attributes"}}</div>
 	<div class="fieldblock3">
-		{{#each primary_attributes}}
+		{{#each primaryAttributes}}
 		{{#if (eq this.attribute_def.type "primary_separator")}}
 		<div class="separator_parent">
 			<div class="separator" data-text="{{this.attribute_def.name}}">{{this.attribute_def.name}}</div>

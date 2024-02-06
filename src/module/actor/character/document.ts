@@ -1983,7 +1983,8 @@ class CharacterGURPS<
 									name: rawFile.name,
 									path: rawFile.path,
 								}
-								fu.readTextFromFile(rawFile).then((text: string) => {
+								// @ts-expect-error not defined
+								readTextFromFile(rawFile).then((text: string) => {
 									CharacterImporter.importCharacter(this, {
 										text: text,
 										name: rawFile.name,

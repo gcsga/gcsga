@@ -5,7 +5,7 @@ import { SkillDefault } from "@sytem/default/index.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 import { Int } from "@util/fxp.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { CharacterResolver, EquipmentResolver, MeleeWeaponResolver } from "@util/resolvers.ts"
+import { CharacterResolver, EquipmentResolver } from "@util/resolvers.ts"
 import { StringBuilder } from "@util/string_builder.ts"
 import { BaseWeaponSystemSource } from "./data.ts"
 import { WeaponDamage } from "./weapon_damage.ts"
@@ -14,6 +14,8 @@ import { ContainedWeightReduction, Feature, SkillBonus, WeaponBonus } from "@fea
 import { ContainerGURPS } from "@item"
 import { objectHasKey, sheetDisplayNotes } from "@util/misc.ts"
 import { display, feature, skillsel, wsel, wswitch } from "@util/enum/index.ts"
+import { WeaponParry } from "./weapon_parry.ts"
+import { MeleeWeaponSystemSource } from "@item/melee_weapon/data.ts"
 
 export interface BaseWeaponGURPS<TParent extends ActorGURPS | null> extends ItemGURPS<TParent> {
 	system: BaseWeaponSystemSource
@@ -156,8 +158,10 @@ export abstract class BaseWeaponGURPS<
 	}
 
 	skillLevelPostAdjustment(actor: ActorGURPS | CharacterResolver, tooltip: TooltipGURPS | null): number {
-		if (this.type === ItemType.MeleeWeapon)
-			if ((this as unknown as MeleeWeaponResolver).parry.fencing) return this.encumbrancePenalty(actor, tooltip)
+		if (this.type === ItemType.MeleeWeapon) {
+			const baseParry = WeaponParry.parse((this.system as MeleeWeaponSystemSource).parry)
+			if (baseParry.fencing) return this.encumbrancePenalty(actor, tooltip)
+		}
 		return 0
 	}
 

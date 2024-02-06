@@ -910,7 +910,7 @@ describe("Damage calculator", () => {
 						},
 						{
 							substep: "gurps.dmgcalc.substep.injury",
-							text: `${Math.floor(95 * value)}`,
+							text: `${Math.floor(95 * type[1])}`,
 							notes: `= 95 × ${type[1]}`,
 						},
 						{

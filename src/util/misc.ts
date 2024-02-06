@@ -2,6 +2,8 @@ import { ItemType, SETTINGS, SYSTEM_NAME } from "@data"
 import { LocalizeGURPS } from "./localize.ts"
 import { StringBuilder } from "./string_builder.ts"
 import { SkillResolver } from "./resolvers.ts"
+import { itemIsOfType } from "@item/helpers.ts"
+import { ItemGURPS } from "@item"
 // import uuid from "uuidv4"
 
 function sanitizeId(id: string, permit_leading_digits: boolean, reserved: string[]): string {
@@ -332,16 +334,19 @@ function getNewAttributeId(list: { id: string }[]): string {
 	throw new Error("Error generating new attribute ID, ran out of possible auto-generated IDs.")
 }
 
-function isContainer(item: { type: ItemType }): boolean {
-	return [
-		ItemType.TraitContainer,
-		ItemType.SkillContainer,
-		ItemType.SpellContainer,
-		ItemType.EquipmentContainer,
-		ItemType.TraitModifierContainer,
-		ItemType.EquipmentModifierContainer,
-		ItemType.NoteContainer,
-	].includes(item.type as ItemType)
+function isContainer(item: ItemGURPS): boolean {
+	return itemIsOfType(
+		item,
+		...[
+			ItemType.TraitContainer,
+			ItemType.SkillContainer,
+			ItemType.SpellContainer,
+			ItemType.EquipmentContainer,
+			ItemType.TraitModifierContainer,
+			ItemType.EquipmentModifierContainer,
+			ItemType.NoteContainer,
+		],
+	)
 }
 
 // function sheetSettingsFor(actor: CharacterResolver): SheetSettings {

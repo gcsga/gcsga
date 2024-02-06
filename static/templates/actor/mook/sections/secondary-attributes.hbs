@@ -1,8 +1,7 @@
 <div id="secondary-attributes">
 	<div class="header">{{localize "gurps.character.secondary_attributes"}}</div>
 	<div class="fieldblock">
-		{{#each secondary_attributes}}
-		{{#if (eq this.attribute_def.type "secondary_separator")}}
+		{{#each secondaryAttributes}} {{#if (eq this.attribute_def.type "secondary_separator")}}
 		<div class="separator_parent">
 			<div class="separator" data-text="{{this.attribute_def.name}}">{{this.attribute_def.name}}</div>
 		</div>
@@ -16,7 +15,6 @@
 			{{this.effective}}
 		</div>
 		<div class="label">{{this.attribute_def.name}}</div>
-		{{/if}}
-		{{/each}}
+		{{/if}} {{/each}}
 	</div>
 </div>

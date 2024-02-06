@@ -1,4 +1,4 @@
-import { DEFAULT_INITIATIVE_FORMULA, SETTINGS, SSRT_SETTING, SYSTEM_NAME } from "@module/data/index.ts"
+import { SETTINGS, SSRT_SETTING, SYSTEM_NAME } from "@module/data/index.ts"
 import { ColorSettings } from "./colors.ts"
 import { DefaultSheetSettings } from "./sheet_settings.ts"
 import { RollModifierSettings } from "./roll_modifiers.ts"

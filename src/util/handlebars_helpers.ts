@@ -7,6 +7,7 @@ import { SkillResolver } from "./resolvers.ts"
 import { SafeString } from "handlebars"
 import { ItemType } from "@data"
 import { CharacterGURPS } from "@actor"
+import { ItemGURPS } from "@item"
 
 class HandlebarsHelpersGURPS {
 	static camelcase(s: string): string {
@@ -17,7 +18,7 @@ class HandlebarsHelpersGURPS {
 		return n
 	}
 
-	static isContainer(item: { type: ItemType }): boolean {
+	static isContainer(item: ItemGURPS): boolean {
 		return isContainer(item)
 	}
 
