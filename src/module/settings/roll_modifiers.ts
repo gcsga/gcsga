@@ -30,6 +30,7 @@ export class RollModifierSettings extends SettingsMenuGURPS {
 	protected static override get settings(): Record<ConfigGURPSListName, PartialSettingsData> {
 		return {
 			modifiers: {
+				prefix: SETTINGS.DEFAULT_ATTRIBUTES,
 				name: "",
 				hint: "",
 				type: Array,

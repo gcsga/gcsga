@@ -22,19 +22,21 @@ export class HitLocationSettings extends SettingsMenuGURPS {
 	protected static override get settings(): Record<ConfigGURPSListName, PartialSettingsData> {
 		return {
 			name: {
-				prefix: SETTINGS.DEFAULT_HIT_LOCATIONS,
+				prefix: this.namespace,
 				name: "bodytype name",
 				hint: "bodytype name hint",
 				default: "Humanoid",
 				type: String,
 			},
 			roll: {
+				prefix: this.namespace,
 				name: "bodytype roll",
 				hint: "bodytype roll hint",
 				default: "3d6",
 				type: String,
 			},
 			locations: {
+				prefix: this.namespace,
 				name: "bodtype locations ",
 				hint: "bodytype locations hint",
 				default: defaultSettings[SYSTEM_NAME][`${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`],

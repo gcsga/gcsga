@@ -53,10 +53,11 @@ abstract class SettingsMenuGURPS extends FormApplication {
 		// Ensure cache values are initialized
 		for (const [key, value] of Object.entries(settings)) {
 			if (!(key in this.cache)) {
-				this.cache[key] = game.settings.get(SYSTEM_NAME, `${value.prefix ?? ""}${key}`)
+				this.cache[key] = game.settings.get(SYSTEM_NAME, `${value.prefix ?? ""}.${key}`)
 			}
 		}
 
+		console.log(templateData)
 		return fu.mergeObject(await super.getData(), {
 			settings: templateData,
 			instructions: `gurps.settings.${this.namespace}.hint`,
@@ -72,7 +73,7 @@ abstract class SettingsMenuGURPS extends FormApplication {
 		const settings = this.settings
 		for (const key of this.SETTINGS) {
 			const setting = settings[key]
-			game.settings.register(SYSTEM_NAME, `${setting.prefix ?? ""}${key}`, {
+			game.settings.register(SYSTEM_NAME, `${setting.prefix ?? ""}.${key}`, {
 				...R.omit(setting, ["prefix"]),
 				scope: "world",
 				config: false,
@@ -106,7 +107,7 @@ abstract class SettingsMenuGURPS extends FormApplication {
 	protected override async _updateObject(event: Event, data: Record<string, unknown>): Promise<void> {
 		for (const key of this.constructor.SETTINGS) {
 			const setting = this.constructor.settings[key]
-			const settingKey = `${setting.prefix ?? ""}${key}`
+			const settingKey = `${setting.prefix ?? ""}.${key}`
 			const value = data[key]
 			this.cache[key] = value
 			if (event.type === "submit") {
@@ -183,7 +184,7 @@ function settingsToSheetData(
 	cache: Record<string, unknown>,
 ): Record<string, SettingsTemplateData> {
 	return Object.entries(settings).reduce((result: Record<string, SettingsTemplateData>, [key, setting]) => {
-		const lookupKey = `${setting.prefix ?? ""}${key}`
+		const lookupKey = `${setting.prefix ?? ""}.${key}`
 		const value = key in cache ? cache[key] : game.settings.get(SYSTEM_NAME, lookupKey)
 		result[key] = {
 			...setting,

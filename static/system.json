@@ -26,8 +26,8 @@
 		"maximum": 11
 	},
 	"scripts": [],
-	"esmodules": ["module/gurps.js"],
-	"styles": ["styles/gurps.css"],
+	"esmodules": ["gcsga.mjs"],
+	"styles": ["styles/gcsga.css"],
 	"packs": [],
 	"relatinships": {},
 	"languages": [

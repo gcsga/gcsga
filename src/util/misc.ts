@@ -1,4 +1,4 @@
-import { DEFAULT_INITIATIVE_FORMULA, ItemType, SETTINGS, SYSTEM_NAME } from "@data"
+import { ItemType, SETTINGS, SYSTEM_NAME } from "@data"
 import { LocalizeGURPS } from "./localize.ts"
 import { StringBuilder } from "./string_builder.ts"
 import { SkillResolver } from "./resolvers.ts"
@@ -275,12 +275,12 @@ async function urlToBase64(imageUrl: string): Promise<string> {
 	return ""
 }
 
-function setInitiative(): void {
-	let formula = game.settings.get(SYSTEM_NAME, SETTINGS.INITIATIVE_FORMULA)
-	if (!formula) formula = DEFAULT_INITIATIVE_FORMULA
-	if (game.user?.isGM) game.settings.set(SYSTEM_NAME, SETTINGS.INITIATIVE_FORMULA, formula)
-	CONFIG.Combat.initiative.formula = formula
-}
+// function setInitiative(): void {
+// 	let formula = game.settings.get(SYSTEM_NAME, SETTINGS.INITIATIVE_FORMULA)
+// 	if (!formula) formula = DEFAULT_INITIATIVE_FORMULA
+// 	if (game.user?.isGM) game.settings.set(SYSTEM_NAME, SETTINGS.INITIATIVE_FORMULA, formula)
+// 	CONFIG.Combat.initiative.formula = formula
+// }
 
 function pick<T extends object, K extends keyof T>(obj: T, keys: Iterable<K>): Pick<T, K> {
 	return [...keys].reduce(
@@ -492,7 +492,7 @@ export {
 	sanitizeId,
 	setArrayProperty,
 	setHasElement,
-	setInitiative,
+	// setInitiative,
 	sheetDisplayNotes,
 	sluggify,
 	toWord,

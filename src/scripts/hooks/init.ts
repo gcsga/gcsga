@@ -17,6 +17,7 @@ import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
 import { GURPSCONFIG } from "@scripts/config/index.ts"
 import { registerFonts } from "@scripts/register-fonts.ts"
 import { registerTemplates } from "@scripts/register-templates.ts"
+import { SetGameGURPS } from "@scripts/set-game-gurps.ts"
 import { CombatTrackerGURPS, ItemDirectoryGURPS } from "@ui"
 import { registerHandlebarsHelpers } from "@util/handlebars_helpers.ts"
 
@@ -77,6 +78,8 @@ export const Init = {
 			registerHandlebarsHelpers()
 			registerSettings()
 			registerTemplates()
+
+			SetGameGURPS.onInit()
 		})
 	},
 }
