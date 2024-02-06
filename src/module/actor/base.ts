@@ -42,6 +42,7 @@ import {
 	SYSTEM_NAME,
 	gid,
 } from "@data"
+import { itemIsOfType } from "@item/helpers.ts"
 
 interface ActorGURPS<TParent extends TokenDocumentGURPS | null> extends Actor<TParent> {
 	readonly _source: ActorSourceGURPS
@@ -258,6 +259,25 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 			}
 		}
 		return totalItems
+	}
+
+	get allowedItemTypes(): ItemType[] {
+		return CONFIG.GURPS.Actor.allowedContents[this.type]
+	}
+
+	/** Checks if the item can be added to this actor by checking the valid item types. */
+	checkItemValidity(source: PreCreate<ItemSourceGURPS>): boolean {
+		if (!itemIsOfType(source, ...this.allowedItemTypes)) {
+			ui.notifications.error(
+				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.error.cannot_add_type, {
+					type: LocalizeGURPS.translations.TYPES.Item[source.type],
+				}),
+			)
+
+			return false
+		}
+
+		return true
 	}
 
 	override createEmbeddedDocuments(

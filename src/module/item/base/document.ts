@@ -5,6 +5,7 @@ import { CharacterResolver } from "@util"
 import { ItemFlags, ItemType, SYSTEM_NAME } from "@data"
 import type { ContainerGURPS } from "@item/container/document.ts"
 import { ItemInstances } from "@item/types.ts"
+import { MigrationList, MigrationRunner } from "@module/migration/index.ts"
 
 interface ItemModificationContextGURPS<TParent extends ActorGURPS | null> extends DocumentModificationContext<TParent> {
 	noPrepare?: boolean
@@ -50,11 +51,47 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 		options: Partial<FormApplicationOptions> = {},
 	): Promise<ItemGURPS | null> {
 		const original = game.system.documentTypes.Item
-		game.system.documentTypes.Item = original.filter((itemType: string) => !["condition"].includes(itemType))
+		game.system.documentTypes.Item = original.filter(
+			itemType => ![ItemType.Condition].includes(itemType as ItemType),
+		)
 		options = { ...options, classes: [...(options.classes ?? []), "dialog-item-create"] }
 		const newItem = super.createDialog(data, options) as Promise<ItemGURPS | null>
 		game.system.documentTypes.Item = original
 		return newItem
+	}
+
+	static override async createDocuments<TDocument extends foundry.abstract.Document>(
+		this: ConstructorOf<TDocument>,
+		data?: (TDocument | PreCreate<TDocument["_source"]>)[],
+		context?: DocumentModificationContext<TDocument["parent"]>,
+	): Promise<TDocument[]>
+	static override async createDocuments(
+		data: (ItemGURPS | PreCreate<ItemSourceGURPS>)[] = [],
+		context: DocumentModificationContext<ActorGURPS | null> = {},
+	): Promise<foundry.abstract.Document[]> {
+		// Convert all `ItemGURPS`s to source objects
+		const sources: PreCreate<ItemSourceGURPS>[] = data.map(
+			(d): PreCreate<ItemSourceGURPS> => (d instanceof ItemGURPS ? d.toObject() : d),
+		)
+
+		// Migrate source in case of importing from an old compendium
+		for (const source of [...sources]) {
+			source.effects = [] // Never
+
+			const item = new CONFIG.Item.documentClass(source)
+			await MigrationRunner.ensureSchemaVersion(item, MigrationList.constructFromVersion(item.schemaVersion))
+			data.splice(data.indexOf(source), 1, item.toObject())
+		}
+
+		const actor = context.parent
+		if (!actor) return super.createDocuments(sources, context)
+
+		// Check if this item is valid for this actor
+		if (sources.some(s => !actor.checkItemValidity(s))) {
+			return []
+		}
+
+		return super.createDocuments(sources, context)
 	}
 
 	// static override getDefaultArtwork(itemData: ItemData): { img: string } {
@@ -102,10 +139,10 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 		return this.system as unknown as Record<string, unknown>
 	}
 
-	override prepareData(): void {
-		if (this.parent && !this.parent.flags?.[SYSTEM_NAME]) return
-		super.prepareData()
-	}
+	// override prepareData(): void {
+	// 	if (this.parent && !this.parent.flags?.[SYSTEM_NAME]) return
+	// 	super.prepareData()
+	// }
 
 	sameSection(_compare: ItemGURPS): boolean {
 		// const traits = ["trait", "trait_container"]
@@ -129,7 +166,10 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 
 const ItemProxyGURPS = new Proxy(ItemGURPS, {
 	construct(_target, args: [source: ItemSourceGURPS, context: DocumentConstructionContext<ActorGURPS | null>]) {
-		return CONFIG.GURPS.Item.documentClasses[args[0]?.type] ?? ItemGURPS
+		const source = args[0]
+		const type = source.type
+		const ItemClass: typeof ItemGURPS = CONFIG.GURPS.Item.documentClasses[type] ?? ItemGURPS
+		return new ItemClass(...args)
 	},
 })
 

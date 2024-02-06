@@ -1340,6 +1340,7 @@
 			"modifier_app_load_failed": "Failed to initialize the Modifier Stack App.",
 			"no_last_actor": "No actor selected!",
 			"no_token_selected": "No token selected!",
+			"cannot_add_type": "{type} items cannot be added to this actor.",
 			"mook": {
 				"name": "Name cannot be blank."
 			}
