@@ -5,6 +5,7 @@ import type { TableResultSource } from "types/foundry/common/documents/table-res
 import { BrowserTabs, ContentTabName } from "../data.ts"
 import { BrowserFilter, CompendiumBrowserIndexData, MultiselectData } from "./data.ts"
 import { CompendiumBrowser } from "../index.ts"
+import { SYSTEM_NAME } from "@data"
 
 export abstract class CompendiumBrowserTab {
 	/** A reference to the parent CompendiumBrowser */
@@ -204,7 +205,7 @@ export abstract class CompendiumBrowserTab {
 		return options
 	}
 
-	/** Provide a best-effort sort of an object (e.g. CONFIG.PF2E.monsterTraits) */
+	/** Provide a best-effort sort of an object (e.g. CONFIG.GURPS.monsterTraits) */
 	protected sortedConfig(obj: Record<string, string>): Record<string, string> {
 		return Object.fromEntries(
 			[...Object.entries(obj)].sort((entryA, entryB) => entryA[1].localeCompare(entryB[1], game.i18n.lang)),
@@ -249,7 +250,7 @@ export abstract class CompendiumBrowserTab {
 		if (!this.isInitialized) {
 			throw ErrorGURPS(`Compendium Browser Tab "${this.tabName}" is not initialized!`)
 		}
-		const content = await renderTemplate("systems/pf2e/templates/compendium-browser/roll-table-dialog.hbs", {
+		const content = await renderTemplate("systems/gcsga/templates/compendium-browser/roll-table-dialog.hbs", {
 			count: this.currentIndex.length,
 		})
 		Dialog.confirm({
@@ -276,10 +277,13 @@ export abstract class CompendiumBrowserTab {
 		if (!this.isInitialized) {
 			throw ErrorGURPS(`Compendium Browser Tab "${this.tabName}" is not initialized!`)
 		}
-		const content = await renderTemplate("systems/pf2e/templates/compendium-browser/roll-table-dialog.hbs", {
-			count: this.currentIndex.length,
-			rollTables: game.tables.contents,
-		})
+		const content = await renderTemplate(
+			`systems/${SYSTEM_NAME}/templates/compendium-browser/roll-table-dialog.hbs`,
+			{
+				count: this.currentIndex.length,
+				rollTables: game.tables.contents,
+			},
+		)
 		Dialog.confirm({
 			title: game.i18n.localize("PF2E.CompendiumBrowser.RollTable.SelectTableTitle"),
 			content,

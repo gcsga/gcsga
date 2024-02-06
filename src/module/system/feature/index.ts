@@ -1,7 +1,9 @@
 import { AttributeBonus } from "./attribute_bonus.ts"
+import { ContainedWeightReduction } from "./contained_weight_reduction.ts"
 import { CostReduction } from "./cost_reduction.ts"
 import {
 	AttributeBonusObj,
+	ContainedWeightReductionObj,
 	CostReductionObj,
 	DRBonusObj,
 	LeveledAmountObj,
@@ -36,6 +38,7 @@ export * from "./data.ts"
 
 export type Feature =
 	| AttributeBonus
+	| ContainedWeightReduction
 	| CostReduction
 	| DRBonus
 	| MoveBonus
@@ -47,6 +50,7 @@ export type Feature =
 
 export type FeatureObj =
 	| LeveledAmountObj
+	| ContainedWeightReductionObj
 	| AttributeBonusObj
 	| CostReductionObj
 	| DRBonusObj

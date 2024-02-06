@@ -889,7 +889,7 @@ describe("Damage calculator", () => {
 					[DamageTypes.burn, 1],
 					[DamageTypes.cor, 1],
 					[DamageTypes.cr, 1],
-					[DamageTypes.cut, "1&frac12;"],
+					[DamageTypes.cut, 1 / 2],
 					[DamageTypes.tox, 1],
 				]
 				for (const type of types) {

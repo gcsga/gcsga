@@ -1,4 +1,4 @@
-name: PF2e System CI
+name: GURPS System CI
 
 on:
   pull_request:

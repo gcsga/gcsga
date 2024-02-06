@@ -1,4 +1,5 @@
 import { ActorProxyGURPS } from "@actor"
+import { ActorType, ItemType } from "@data"
 import { ItemProxyGURPS } from "@item"
 import { ActiveEffectGURPS } from "@module/active-effect/index.ts"
 import { ChatMessageGURPS } from "@module/chat-message/document.ts"
@@ -51,31 +52,35 @@ export const Load = {
 		Math.ternary = (condition: boolean | number, ifTrue: number, ifFalse: number): number =>
 			condition ? ifTrue : ifFalse
 
-		// Mystery Man but with a drop shadow
-		Actor.DEFAULT_ICON = "systems/pf2e/icons/default-icons/mystery-man.svg"
-
 		// Inline link icons
 		CONFIG.Actor.typeIcons = {
-			familiar: "fa-solid fa-cat",
-			hazard: "fa-solid fa-hill-rockslide",
-			loot: "fa-solid fa-treasure-chest",
+			[ActorType.Character]: "gcs-character",
+			[ActorType.LegacyCharacter]: "gcs-character",
+			[ActorType.LegacyEnemy]: "gcs-character",
+			[ActorType.Loot]: "fa-solid fa-gem",
 		}
 		CONFIG.Item.typeIcons = {
-			action: "fa-solid fa-person-running-fast",
-			affliction: "fa-solid fa-biohazard",
-			armor: "fa-solid fa-shirt-long-sleeve",
-			backpack: "fa-solid fa-sack",
-			book: "fa-solid fa-book",
-			condition: "fa-solid fa-face-zany",
-			consumable: "fa-solid fa-flask-round-potion",
-			deity: "fa-solid fa-hamsa",
-			effect: "fa-solid fa-person-rays",
-			equipment: "fa-solid fa-hat-cowboy",
-			feat: "fa-solid fa-medal",
-			shield: "fa-solid fa-shield-halved",
-			spell: "fa-solid fa-sparkles",
-			treasure: "fa-solid fa-gem",
-			weapon: "fa-solid fa-sword",
+			[ItemType.Trait]: "gcs-trait",
+			[ItemType.TraitContainer]: "gcs-trait",
+			[ItemType.TraitModifier]: "gcs-modifier",
+			[ItemType.TraitModifierContainer]: "gcs-modifier",
+			[ItemType.Skill]: "gcs-skill",
+			[ItemType.Technique]: "gcs-technique",
+			[ItemType.SkillContainer]: "gcs-skill",
+			[ItemType.Spell]: "gcs-spell",
+			[ItemType.RitualMagicSpell]: "gcs-ritual-magic_spell",
+			[ItemType.SpellContainer]: "gcs-spell",
+			[ItemType.Equipment]: "gcs-equipment",
+			[ItemType.EquipmentContainer]: "gcs-equipment",
+			[ItemType.EquipmentModifier]: "gcs-eqp-modifier",
+			[ItemType.EquipmentModifierContainer]: "gcs-eqp-modifier",
+			[ItemType.Note]: "gcs-note",
+			[ItemType.NoteContainer]: "gcs-note",
+			[ItemType.LegacyEquipment]: "gcs-equipment",
+			[ItemType.Effect]: "gcs-effect",
+			[ItemType.Condition]: "gcs-condition",
+			[ItemType.MeleeWeapon]: "gcs-melee-weapon",
+			[ItemType.RangedWeapon]: "gcs-ranged-weapon",
 		}
 
 		// Make available immediately on load for module subclassing

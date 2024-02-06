@@ -17,6 +17,7 @@ export interface ConditionalModifierBonusObj extends LeveledAmountObj {
 }
 
 export interface ContainedWeightReductionObj {
+	type: feature.Type.ContainedWeightReduction
 	reduction: string
 }
 

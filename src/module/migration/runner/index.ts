@@ -211,10 +211,10 @@ export class MigrationRunner extends MigrationRunnerBase {
 	): Promise<void> {
 		const pack = compendium.metadata.id
 
-		ui.notifications.info(game.i18n.format("PF2E.Migrations.Starting", { version: game.system.version }))
+		ui.notifications.info(game.i18n.format("gurps.migrations.starting", { version: game.system.version }))
 		const documents = await compendium.getDocuments()
 		await compendium.documentClass.updateDocuments(documents, { diff: false, recursive: false, pack })
-		ui.notifications.info(game.i18n.format("PF2E.Migrations.Finished", { version: game.system.version }))
+		ui.notifications.info(game.i18n.format("gurps.migrations.starting", { version: game.system.version }))
 	}
 
 	async runMigrations(migrations: MigrationBase[]): Promise<void> {
@@ -222,7 +222,7 @@ export class MigrationRunner extends MigrationRunnerBase {
 
 		/** A roughly estimated "progress max" to reach, for display in the progress bar */
 		const progress = new Progress({
-			label: game.i18n.localize("PF2E.Migrations.Running"),
+			label: game.i18n.localize("gurps.migrations.running"),
 			max:
 				game.actors.size +
 				game.items.size +
@@ -277,7 +277,7 @@ export class MigrationRunner extends MigrationRunnerBase {
 				// Only migrate if the delta of the synthetic actor has migratable data
 				const deltaSource = token.delta?._source
 				const hasMigratableData =
-					(!!deltaSource && !!deltaSource.flags?.pf2e) ||
+					(!!deltaSource && !!deltaSource.flags?.[SYSTEM_NAME]) ||
 					((deltaSource ?? {}).items ?? []).length > 0 ||
 					Object.keys(deltaSource?.system ?? {}).length > 0
 
@@ -308,7 +308,7 @@ export class MigrationRunner extends MigrationRunnerBase {
 		}
 		const systemVersion = game.system.version
 
-		ui.notifications.info(game.i18n.format("PF2E.Migrations.Starting", { version: systemVersion }))
+		ui.notifications.info(game.i18n.format("gurps.migrations.starting", { version: systemVersion }))
 
 		const migrationsToRun = force ? this.migrations : this.migrations.filter(x => schemaVersion.current < x.version)
 
@@ -331,6 +331,6 @@ export class MigrationRunner extends MigrationRunnerBase {
 			}
 		}
 
-		await game.settings.set("pf2e", "worldSchemaVersion", schemaVersion.latest)
+		await game.settings.set(SYSTEM_NAME, SETTINGS.WORLD_SCHEMA_VERSION, schemaVersion.latest)
 	}
 }

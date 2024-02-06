@@ -11,7 +11,7 @@ class ClientDatabaseBackendGURPS extends ClientDatabaseBackend {
 		user: UserGURPS,
 	): Promise<(DeepPartial<ClientDocument["_source"]> & CompendiumIndexData)[] | foundry.abstract.Document[]> {
 		const type = documentClass.documentName
-		if (!["Actor", "Item"].includes(type) || context.pack?.startsWith("pf2e.") || context.options?.index) {
+		if (!["Actor", "Item"].includes(type) || context.pack?.startsWith("gcsga.") || context.options?.index) {
 			return super._getDocuments(documentClass, context, user)
 		}
 

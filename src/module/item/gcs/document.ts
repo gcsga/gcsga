@@ -1,6 +1,6 @@
 import { ActorGURPS } from "@actor/base.ts"
 import { ItemType } from "@data"
-import { Feature, FeatureObj } from "@feature/index.ts"
+import { ContainedWeightReduction, Feature, FeatureObj } from "@feature/index.ts"
 import { ItemSourceGCS } from "@item/base/data/index.ts"
 import { ItemGURPS } from "@item/base/document.ts"
 import { ContainerGURPS } from "@item/container/document.ts"
@@ -117,7 +117,7 @@ export abstract class ItemGCS<TParent extends ActorGURPS | null = ActorGURPS | n
 			const FeatureConstructor = CONFIG.GURPS.Feature.classes[e.type as feature.Type]
 			// @ts-expect-error conflicting types in constructors
 			const f = FeatureConstructor.fromObject(e as FeatureObj)
-			if (this.isLeveled) f.setLevel(this.levels)
+			if (this.isLeveled && !(f instanceof ContainedWeightReduction)) f.setLevel(this.levels)
 			return f
 		})
 	}

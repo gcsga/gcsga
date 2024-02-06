@@ -10,7 +10,7 @@ class CompendiumMigrationStatus extends Application {
 
 	static override get defaultOptions(): ApplicationOptions {
 		const options = super.defaultOptions
-		options.template = "systems/pf2e/templates/system/compendium-migration-status.hbs"
+		options.template = "systems/gcsga/templates/system/compendium-migration-status.hbs"
 		options.classes = ["compendium-migration-status"]
 		options.height = "auto"
 		options.title = game.i18n.localize("GURPS.CompendiumMigrationStatus.Title")

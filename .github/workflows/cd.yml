@@ -1,4 +1,4 @@
-name: PF2e System CD
+name: GURPS System CD
 
 on:
   workflow_dispatch:

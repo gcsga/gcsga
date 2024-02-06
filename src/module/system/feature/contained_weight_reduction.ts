@@ -1,15 +1,37 @@
 import { feature } from "@util/enum/feature.ts"
-import { BonusOwner } from "./bonus_owner.ts"
 import { Int } from "@util/fxp.ts"
 import { Weight, WeightUnits } from "@util/weight.ts"
 import { ContainedWeightReductionObj } from "./data.ts"
+import { Stringer } from "@data"
 
-export class ContainedWeightReduction extends BonusOwner {
-	override type = feature.Type.ContainedWeightReduction
+export class ContainedWeightReduction {
+	declare type: feature.Type.ContainedWeightReduction
+
+	private _owner?: Stringer
+
+	private _subOwner?: Stringer
 
 	reduction: string
 
 	effective: boolean = false
+
+	get owner(): Stringer | undefined {
+		return this._owner
+	}
+
+	set owner(owner: Stringer | undefined) {
+		this._owner = owner
+	}
+
+	get subOwner(): Stringer | undefined {
+		return this._subOwner
+	}
+
+	set subOwner(subOwner: Stringer | undefined) {
+		this._subOwner = subOwner
+	}
+
+	setLevel(_level: number): void {}
 
 	constructor() {
 		this.reduction = "0%"

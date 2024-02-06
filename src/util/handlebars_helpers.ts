@@ -205,7 +205,7 @@ class HandlebarsHelpersGURPS {
 		}
 	}
 
-	static customArmorDivisorSelect(divisor: number, options: any): number | undefined {
+	static customArmorDivisorSelect(divisor: number, _options: unknown): number | undefined {
 		const divisors = [0.1, 0.2, 0.5, 0, 1, 2, 3, 5, 10, 100]
 		return divisors.includes(divisor) ? undefined : divisor
 	}
@@ -543,7 +543,7 @@ export function registerHandlebarsHelpers(): void {
 		// sum: HandlebarsHelpersGURPS.sum,
 		textareaFormat: HandlebarsHelpersGURPS.textareaFormat,
 		customArmorDivisorSelect: HandlebarsHelpersGURPS.customArmorDivisorSelect,
-		pageRef: pageRef,
+		// pageRef: pageRef,
 		// unsatisfied: HandlebarsHelpersGURPS.unsatisfied,
 	})
 }

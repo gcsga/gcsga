@@ -679,7 +679,7 @@ class DamageWeaponAdapter implements DamageWeapon {
 	}
 }
 
-/** A `Proxy` to to get Foundry to construct `ActorPF2e` subclasses */
+/** A `Proxy` to to get Foundry to construct `ActorGURPS` subclasses */
 const ActorProxyGURPS = new Proxy(ActorGURPS, {
 	construct(
 		_target,
