@@ -476,12 +476,18 @@ function isObject(value: unknown): boolean {
 	return typeof value === "object" && value !== null
 }
 
+function rgbToHex(input: string): string {
+	const [r, g, b] = input.split(", ").map(e => parseInt(e))
+	return "#" + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1)
+}
+
 export {
 	ErrorGURPS,
 	capitalize,
 	d6ify,
 	dollarFormat,
 	extractTechLevel,
+	rgbToHex,
 	fontAwesomeIcon,
 	getCurrentTime,
 	getDefaultSkills,

@@ -1,3 +1,4 @@
+import { htmlClosest, htmlQuery } from "@util"
 import { PartialSettingsData, SettingsMenuGURPS } from "./menu.ts"
 import { SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
 
@@ -19,7 +20,7 @@ export class ColorSettings extends SettingsMenuGURPS {
 			template: `systems/${SYSTEM_NAME}/templates/system/settings/${SETTINGS.COLORS}.hbs`,
 			width: 480,
 			height: "auto",
-			submitOnClose: true,
+			submitOnClose: false,
 			submitOnChange: true,
 			closeOnSubmit: false,
 			resizable: true,
@@ -124,19 +125,22 @@ export class ColorSettings extends SettingsMenuGURPS {
 		}
 	}
 
-	override activateListeners(html: JQuery<HTMLElement>): void {
-		super.activateListeners(html)
-		html.find(".reset").on("click", event => this._onReset(event))
-		// Html.find(".reset-all").on("click", event => this._onResetAll(event))
+	override activateListeners($html: JQuery): void {
+		super.activateListeners($html)
+		const html = $html[0]
+
+		htmlQuery(html, "a.reset")?.addEventListener("click", event => {
+			this._onReset(event)
+		})
 	}
 
 	protected _onDataImport(_event: MouseEvent): void {}
 
 	protected _onDataExport(_event: MouseEvent): void {}
 
-	async _onReset(event: JQuery.ClickEvent): Promise<void> {
-		event.preventDefault()
-		const id = $(event.currentTarget).data("id")
+	async _onReset(event: MouseEvent): Promise<void> {
+		const id = htmlClosest(event.target, "[data-id]")?.dataset.id
+		if (!id) return
 		const colors = game.settings.get(SYSTEM_NAME, `${SETTINGS.COLORS}.colors`)
 		const defaults = game.settings.settings.get(`${SYSTEM_NAME}.${SETTINGS.COLORS}.colors`)?.default as Record<
 			string,
@@ -148,7 +152,7 @@ export class ColorSettings extends SettingsMenuGURPS {
 		this.render()
 	}
 
-	async _onResetAll(event: JQuery.ClickEvent): Promise<void> {
+	override async _onResetAll(event: Event): Promise<void> {
 		event.preventDefault()
 		const constructor = this.constructor as typeof SettingsMenuGURPS
 		for (const setting of constructor.SETTINGS) {
@@ -172,7 +176,7 @@ export class ColorSettings extends SettingsMenuGURPS {
 			if (k.includes("dark")) formData.colors[key].dark = formData[k]
 			delete formData[k]
 		}
-		for await (const key of (this.constructor as typeof SettingsMenuGURPS).SETTINGS) {
+		for await (const key of this.constructor.SETTINGS) {
 			const settingKey = `${SETTINGS.COLORS}.${key}`
 			await game.settings.set(SYSTEM_NAME, settingKey, formData[key])
 		}

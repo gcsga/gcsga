@@ -10,7 +10,6 @@ import {
 	TargetTrait,
 	Vulnerability,
 } from "./index.ts"
-import { HitLocation, HitLocationTable } from "@actor/character/hit_location.ts"
 import { AnyPiercingType, DamageType, DamageTypes } from "./damage_type.ts"
 import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
 import { RulerGURPS } from "@module/ruler/document.ts"
@@ -25,6 +24,7 @@ import {
 	ShockInjuryEffect,
 } from "./injury_effect.ts"
 import { RollModifier, RollType, gid } from "@module/data/index.ts"
+import { BodyGURPS, HitLocation } from "@sytem/hit_location/object.ts"
 
 export const Head = ["skull", "eye", "face"]
 export const Limb = ["arm", "leg"]
@@ -88,7 +88,7 @@ export interface IDamageCalculator {
 	readonly damageReduction: number
 	damageReductionOverride: number | undefined
 
-	readonly hitLocationTable: HitLocationTable
+	readonly hitLocationTable: BodyGURPS
 	readonly hitLocationChoice: Record<string, string>
 }
 
@@ -492,7 +492,7 @@ class DamageCalculator implements IDamageCalculator {
 
 	// === Target ===
 
-	get hitLocationTable(): HitLocationTable {
+	get hitLocationTable(): BodyGURPS {
 		return this.target.hitLocationTable
 	}
 
@@ -502,7 +502,7 @@ class DamageCalculator implements IDamageCalculator {
 
 	get hitLocationChoice(): Record<string, string> {
 		const choice: Record<string, string> = {}
-		this.hitLocationTable.locations.forEach(it => (choice[it.table_name] = it.table_name))
+		this.hitLocationTable.locations.forEach(it => (choice[it.tableName] = it.tableName))
 		choice.divider = "────────"
 		choice[DefaultHitLocations.LargeArea] = this.format("gurps.dmgcalc.description.large_area_injury")
 		return choice
@@ -755,14 +755,14 @@ class DamageCalculator implements IDamageCalculator {
 
 		return hitLocation.damageResistance
 
-		function leastProtectedLocationDR(hitLocationTable: HitLocationTable, damageType: DamageType) {
+		function leastProtectedLocationDR(hitLocationTable: BodyGURPS, damageType: DamageType) {
 			const allLocationsDR = hitLocationTable.locations
 				.map(it => HitLocationUtil.getHitLocationDR(it, damageType))
 				.filter(it => it !== -1)
 			return Math.min(...allLocationsDR)
 		}
 
-		function torsoDR(hitLocationTable: HitLocationTable, damageType: DamageType) {
+		function torsoDR(hitLocationTable: BodyGURPS, damageType: DamageType) {
 			const torso = HitLocationUtil.getHitLocation(hitLocationTable, Torso)
 			return HitLocationUtil.getHitLocationDR(torso, damageType)
 		}
@@ -866,7 +866,7 @@ class DamageCalculator implements IDamageCalculator {
 		const modifierAndReason = this.woundingModifierByHitLocation(locationDamage.locationName!)
 		if (modifierAndReason) return modifierAndReason
 
-		const location = this.hitLocationTable.locations.find(it => it.table_name === locationDamage.locationName)
+		const location = this.hitLocationTable.locations.find(it => it.tableName === locationDamage.locationName)
 		return {
 			value: this.damageType.woundingModifier,
 			explanation: this.format("gurps.dmgcalc.description.damage_location", {
@@ -874,7 +874,7 @@ class DamageCalculator implements IDamageCalculator {
 				location:
 					locationDamage.locationName === DefaultHitLocations.LargeArea
 						? this.format("gurps.dmgcalc.description.large_area_injury")
-						: location?.table_name ?? "",
+						: location?.tableName ?? "",
 			}),
 		}
 	}
@@ -906,7 +906,7 @@ class DamageCalculator implements IDamageCalculator {
 		if (this.isHomogenous)
 			mod = { value: this.damageType.homogenous, key: this.format("gurps.dmgcalc.tolerance.homogenous") }
 
-		const location = this.hitLocationTable.locations.find(it => it.table_name === locationDamage.locationName)
+		const location = this.hitLocationTable.locations.find(it => it.tableName === locationDamage.locationName)
 
 		// B380: Unliving: Machines and anyone with Injury Tolerance (Unliving) (p. 60), such as most corporeal
 		// undead, are less vulnerable to impaling and piercing damage.
@@ -939,14 +939,14 @@ class DamageCalculator implements IDamageCalculator {
 	 * @returns {number} wounding modifier only based on hit location.
 	 */
 	woundingModifierByHitLocation(locationName: string): ExplainedValue | undefined {
-		const location = this.hitLocationTable.locations.find(it => it.table_name === locationName)
+		const location = this.hitLocationTable.locations.find(it => it.tableName === locationName)
 
 		const standardMessage = this.format("gurps.dmgcalc.description.damage_location", {
 			type: this.format(`gurps.dmgcalc.type.${this.damageType.id}`),
 			location:
 				locationName === DefaultHitLocations.LargeArea
 					? this.format("gurps.dmgcalc.description.large_area_injury")
-					: location?.table_name ?? "",
+					: location?.tableName ?? "",
 		})
 
 		if (!location) return undefined
@@ -961,7 +961,7 @@ class DamageCalculator implements IDamageCalculator {
 					return {
 						value: 2,
 						explanation: this.format("gurps.dmgcalc.description.tight_beam_burn", {
-							location: location?.table_name,
+							location: location?.tableName,
 						}),
 					}
 				break
@@ -1140,7 +1140,7 @@ class DamageCalculator implements IDamageCalculator {
 
 			// TODO In RAW, this doubling only occurs if the target is physiologically male and does not have the
 			// 	 "No Vitals" Injury Tolerance trait.
-			// const location = this.hitLocationTable.locations.find(it => it.table_name === locationName)
+			// const location = this.hitLocationTable.locations.find(it => it.tableName === locationName)
 			// if (this.damageType === DamageTypes.cr && location?.id === "groin" && !this.target.hasTrait("No Vitals"))
 			// 	modifier *= 2
 
@@ -1159,7 +1159,7 @@ class DamageCalculator implements IDamageCalculator {
 			if (this.isMajorWound(results, locationName))
 				wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck()]))
 		} else {
-			const location = this.hitLocationTable.locations.find(it => it.table_name === locationName)
+			const location = this.hitLocationTable.locations.find(it => it.tableName === locationName)
 			switch (location?.id) {
 				case "torso":
 					if (this.isMajorWound(results, locationName))
@@ -1204,14 +1204,14 @@ class DamageCalculator implements IDamageCalculator {
 	}
 
 	private isMajorWound(results: DamageResults, locationName: string): boolean {
-		const location = this.hitLocationTable.locations.find(it => it.table_name === locationName)
+		const location = this.hitLocationTable.locations.find(it => it.tableName === locationName)
 		const divisor = location && Extremity.includes(location.id) ? 3 : 2
 		return results.injury!.value > this.target.hitPoints.value / divisor
 	}
 
 	// @ts-expect-error unused
 	private miscellaneousEffects(results: DamageResults, locationName: string): InjuryEffect[] {
-		const location = this.hitLocationTable.locations.find(it => it.table_name === locationName)
+		const location = this.hitLocationTable.locations.find(it => it.tableName === locationName)
 
 		if (location && location.id === "eye" && results.injury!.value > this.target.hitPoints.value / 10)
 			return [new InjuryEffect(InjuryEffectType.eyeBlinded)]
@@ -1352,7 +1352,7 @@ class HitLocationDamage implements LocationDamage {
 	}
 
 	get hitLocation(): HitLocation | undefined {
-		return this.calculator.hitLocationTable.locations.find(it => it.table_name === this.locationName)
+		return this.calculator.hitLocationTable.locations.find(it => it.tableName === this.locationName)
 	}
 
 	get isLargeAreaInjury(): boolean {
@@ -1362,7 +1362,7 @@ class HitLocationDamage implements LocationDamage {
 	// --- Damage Resistance ---
 	get damageResistance(): ExplainedValue {
 		return {
-			explanation: `${this.hitLocation?.table_name}`,
+			explanation: `${this.hitLocation?.tableName}`,
 			value:
 				this.overrides.rawDR ?? HitLocationUtil.getHitLocationDR(this.hitLocation, this.calculator.damageType),
 		}
@@ -1416,14 +1416,14 @@ class HitLocationDamage implements LocationDamage {
 	 * @returns the maximum injury based on hit location, or Infinity if none.
 	 */
 	maximumInjury(maxHitPoints: number): ExplainedValue {
-		const location = this.calculator.hitLocationTable.locations.find(it => it.table_name === this.locationName)
+		const location = this.calculator.hitLocationTable.locations.find(it => it.tableName === this.locationName)
 
 		if (location && Limb.includes(location.id)) {
 			const max = Math.floor(maxHitPoints / 2) + 1
 			return {
 				value: max,
 				explanation: this.format("gurps.dmgcalc.description.location_max", {
-					location: location?.table_name,
+					location: location?.tableName,
 				}),
 			}
 		}
@@ -1433,7 +1433,7 @@ class HitLocationDamage implements LocationDamage {
 			return {
 				value: max,
 				explanation: this.format("gurps.dmgcalc.description.location_max", {
-					location: location?.table_name,
+					location: location?.tableName,
 				}),
 			}
 		}

@@ -16,8 +16,8 @@ export interface ContainerGURPS<TParent extends ActorGURPS | null> extends ItemG
 }
 
 export abstract class ContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
-	declare items: Collection<ItemGURPS>
-	// items: Collection<ItemGURPS> = new Collection()
+	// declare items: Collection<ItemGURPS>
+	items: Collection<ItemGURPS> = new Collection()
 
 	get deepItems(): Collection<Item> {
 		const deepItems: Item[] = []
@@ -46,7 +46,7 @@ export abstract class ContainerGURPS<TParent extends ActorGURPS | null = ActorGU
 	}
 
 	get open(): boolean {
-		return this.system.open ?? false
+		return (this.system as unknown as { open: boolean }).open ?? false
 	}
 
 	override async createEmbeddedDocuments(

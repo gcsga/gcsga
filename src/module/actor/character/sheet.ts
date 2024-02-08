@@ -32,8 +32,8 @@ import EmbeddedCollection from "types/foundry/common/abstract/embedded-collectio
 import { CharacterSheetConfig } from "./config_sheet.ts"
 import { CharacterMove, Encumbrance } from "./data.ts"
 import { CharacterGURPS } from "./document.ts"
-import { HitLocation } from "./hit_location.ts"
 import { PointRecordSheet } from "./points_sheet.ts"
+import { BodyGURPS } from "@sytem/hit_location/object.ts"
 
 class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extends ActorSheetGURPS<TActor> {
 	config: CharacterSheetConfig | null = null
@@ -1149,7 +1149,8 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 		const height = Length.format(Length.fromString(this.actor.profile?.height || ""), heightUnits)
 		const weight = Weight.format(Weight.fromString(this.actor.profile?.weight || "", weightUnits), weightUnits)
 
-		this.actor.BodyType.updateRollRanges()
+		const body = this.actor.hitLocationTable
+		body.updateRollRanges()
 
 		return {
 			...(super.getData() as ActorSheetData<TActor>),
@@ -1159,7 +1160,7 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 			settings: sheetSettingsFor(this.actor),
 			// editing: this.actor.editing,
 			primaryAttributes,
-			hitLocations: this.actor.HitLocations,
+			body: body,
 			secondaryAttributes,
 			poolAttributes,
 			resourceTrackers,
@@ -1413,7 +1414,7 @@ interface CharacterSheetData<TActor extends CharacterGURPS> extends ActorSheetDa
 	carriedValue: number
 	otherValue: number
 	config: ConfigGURPS["GURPS"]
-	hitLocations: HitLocation[]
+	body: BodyGURPS
 	settings: SheetSettings
 	primaryAttributes: Attribute[]
 	secondaryAttributes: Attribute[]

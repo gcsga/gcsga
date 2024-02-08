@@ -1,6 +1,5 @@
 import { AttributeDefObj } from "@sytem/attribute/data.ts"
 import { ResourceTrackerDefObj } from "@sytem/resource_tracker/data.ts"
-import { HitLocationData, HitLocationTable, HitLocationTableData } from "./hit_location.ts"
 import { MoveTypeDefObj, MoveTypeOverrideConditionType } from "@sytem/move_type/data.ts"
 import { SETTINGS, SYSTEM_NAME, gid } from "@data"
 import { FilePickerGURPS, LocalizeGURPS, PDF, getNewAttributeId, prepareFormData } from "@util"
@@ -10,6 +9,7 @@ import { DnD } from "@util/drag_drop.ts"
 import { DropDataType } from "@module/apps/damage_calculator/damage_chat_message.ts"
 import { CharacterImporter } from "@util/import/character.ts"
 import { CharacterGURPS } from "@actor"
+import { BodyObj, HitLocationObj } from "@sytem/hit_location/data.ts"
 
 type ListType =
 	| DropDataType.Attributes
@@ -29,7 +29,7 @@ interface CharacterSheetConfigData<TActor extends CharacterGURPS> extends FormAp
 	attributes: AttributeDefObj[]
 	resource_trackers: ResourceTrackerDefObj[]
 	move_types: MoveTypeDefObj[]
-	locations: HitLocationTableData
+	locations: BodyObj
 	filename: string
 	config: typeof GURPSCONFIG
 }
@@ -51,7 +51,7 @@ export class CharacterSheetConfig<
 
 	resource_trackers: ResourceTrackerDefObj[]
 
-	bodyType: HitLocationTable
+	bodyType: BodyObj
 
 	move_types: MoveTypeDefObj[]
 
@@ -62,7 +62,7 @@ export class CharacterSheetConfig<
 		this.attributes = this.object.system.settings.attributes
 		this.resource_trackers = this.object.system.settings.resource_trackers
 		this.move_types = this.object.system.settings.move_types
-		this.bodyType = this.object.BodyType
+		this.bodyType = this.object.BodyType.toObject()
 	}
 
 	static override get defaultOptions(): FormApplicationOptions {
@@ -254,7 +254,7 @@ export class CharacterSheetConfig<
 		event.preventDefault()
 		event.stopPropagation()
 		let path = ""
-		let locations: HitLocationData[] = []
+		let locations: HitLocationObj[] = []
 		const type: ListType = $(event.currentTarget).data("type")
 		let new_id = ""
 		if ([DropDataType.Attributes, DropDataType.ResourceTrackers, DropDataType.MoveType].includes(type))
@@ -307,7 +307,7 @@ export class CharacterSheetConfig<
 				return this.render()
 			case DropDataType.Locations:
 				path = $(event.currentTarget).data("path").replace("array.", "")
-				locations = (fu.getProperty(this.object, `${path}.locations`) as HitLocationData[]) ?? []
+				locations = (fu.getProperty(this.object, `${path}.locations`) as HitLocationObj[]) ?? []
 				locations.push({
 					id: LocalizeGURPS.translations.gurps.placeholder.hit_location.id,
 					choice_name: LocalizeGURPS.translations.gurps.placeholder.hit_location.choice_name,
@@ -324,7 +324,7 @@ export class CharacterSheetConfig<
 			case DropDataType.SubTable: {
 				path = $(event.currentTarget).data("path").replace("array.", "")
 				const index = Number($(event.currentTarget).data("index"))
-				locations = (fu.getProperty(this.object, `${path}`) as HitLocationData[]) ?? []
+				locations = (fu.getProperty(this.object, `${path}`) as HitLocationObj[]) ?? []
 				locations[index].sub_table = {
 					name: "",
 					roll: "1d",
@@ -397,14 +397,14 @@ export class CharacterSheetConfig<
 				await this.object.update({ "system.settings.move_types": this.move_types })
 				return this.render()
 			case DropDataType.Locations:
-				locations = (fu.getProperty(this.object, `${path}`) as HitLocationData[]) ?? []
+				locations = (fu.getProperty(this.object, `${path}`) as HitLocationObj[]) ?? []
 				locations.splice($(event.currentTarget).data("index"), 1)
 				formData ??= {}
 				formData[`array.${path}`] = locations
 				await this._updateObject(event as unknown as Event, formData)
 				return this.render()
 			case DropDataType.SubTable: {
-				locations = (fu.getProperty(this.object, `${path}`) as HitLocationData[]) ?? []
+				locations = (fu.getProperty(this.object, `${path}`) as HitLocationObj[]) ?? []
 				delete locations[index].sub_table
 				formData ??= {}
 				formData[`array.${path}`] = locations
@@ -551,7 +551,7 @@ export class CharacterSheetConfig<
 			}
 			case DropDataType.Locations:
 			case DropDataType.SubTable: {
-				const container = fu.getProperty(this.object, path) as HitLocationData[]
+				const container = fu.getProperty(this.object, path) as HitLocationObj[]
 				const item = container.splice(dragData.index, 1)[0]
 				if (item) container.splice(target_index, 0, item)
 				const formData = {

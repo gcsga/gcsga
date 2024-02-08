@@ -27,4 +27,5 @@ export interface EquipmentContainerSystemSource extends ItemGCSSystemSource {
 	features: FeatureObj[]
 	equipped: boolean
 	ignore_weight_for_skills: boolean
+	open: boolean
 }

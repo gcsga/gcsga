@@ -1,4 +1,3 @@
-import { HitLocation, HitLocationTable } from "@actor/character/hit_location.ts"
 import { IDamageCalculator, createDamageCalculator } from "@module/apps/damage_calculator/damage_calculator.ts"
 import { DamageTypes } from "@module/apps/damage_calculator/damage_type.ts"
 import {
@@ -11,7 +10,10 @@ import {
 	TargetTraitModifier,
 } from "@module/apps/damage_calculator/index.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
+import { HitLocationObj } from "@sytem/hit_location/data.ts"
+import { BodyGURPS, HitLocation } from "@sytem/hit_location/object.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { BodyOwner } from "@util"
 
 export class _Attacker implements DamageAttacker {
 	tokenId: string = ""
@@ -47,18 +49,11 @@ export class _Target implements DamageTarget {
 	_dummyHitLocationTable = {
 		name: "humanoid",
 		roll: "3d",
-		locations: <HitLocation[]>[],
+		locations: <HitLocationObj[]>[],
 	}
 
-	get hitLocationTable(): HitLocationTable {
-		// return new HitLocationTable(...this._dummyHitLocationTable
-		return new HitLocationTable(
-			this._dummyHitLocationTable.name,
-			this._dummyHitLocationTable.roll,
-			this._dummyHitLocationTable.locations,
-			this,
-			"",
-		)
+	get hitLocationTable(): BodyGURPS {
+		return BodyGURPS.fromObject(this._dummyHitLocationTable, this)
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -68,6 +63,10 @@ export class _Target implements DamageTarget {
 		{ id: "hp", name: "HP", fullName: "Hit Points" },
 		{ id: "fp", name: "FP", fullName: "Fatigue Points" },
 	]
+
+	addDRBonusesFor(_id: string, _tooltip: TooltipGURPS | null, drMap: Map<string, number>): Map<string, number> {
+		return drMap
+	}
 }
 
 export class _DamageRoll implements DamageRoll {
@@ -153,5 +152,15 @@ export class DamageHitLocation extends HitLocation {
 
 	override _DR(_tooltip: TooltipGURPS | null, _drMap: Map<string, number> = new Map()): Map<string, number> {
 		return this._map
+	}
+
+	static override fromObject(
+		data: HitLocationObj,
+		actor: BodyOwner,
+		owningTable?: BodyGURPS | undefined,
+	): DamageHitLocation {
+		const location = super.fromObject(data, actor, owningTable) as DamageHitLocation
+		location._map = new Map()
+		return location
 	}
 }

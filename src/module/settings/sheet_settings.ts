@@ -87,16 +87,11 @@ export class DefaultSheetSettings extends SettingsMenuGURPS {
 		}
 	}
 
-	override activateListeners(html: JQuery<HTMLElement>): void {
-		super.activateListeners(html)
-		html.find(".reset-all").on("click", event => this._onResetAll(event))
-	}
-
 	protected _onDataImport(_event: MouseEvent): void {}
 
 	protected _onDataExport(_event: MouseEvent): void {}
 
-	async _onResetAll(event: JQuery.ClickEvent): Promise<void> {
+	override async _onResetAll(event: Event): Promise<void> {
 		event.preventDefault()
 		for (const k of DefaultSheetSettings.SETTINGS) {
 			const defaults = game.settings.settings.get(`${SYSTEM_NAME}.${this.namespace}.${k}`)?.default

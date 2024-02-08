@@ -17,7 +17,7 @@ import { EquipmentContainerGURPS } from "@item"
 export class ContainedWeightPrereq extends BasePrereq {
 	qualifier: WeightCriteria
 
-	constructor(character?: CharacterResolver) {
+	constructor(character: CharacterResolver | null) {
 		let units = WeightUnits.Pound
 		if (character) units = character.settings.default_weight_units
 		super(prereq.Type.ContainedWeight)
@@ -27,7 +27,7 @@ export class ContainedWeightPrereq extends BasePrereq {
 		})
 	}
 
-	static fromObject(data: ContainedWeightPrereqObj, character: CharacterResolver): ContainedWeightPrereq {
+	static fromObject(data: ContainedWeightPrereqObj, character: CharacterResolver | null): ContainedWeightPrereq {
 		const prereq = new ContainedWeightPrereq(character)
 		if (data.qualifier) prereq.qualifier = new WeightCriteria(data.qualifier)
 		return prereq

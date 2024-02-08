@@ -1,5 +1,5 @@
 export function pageRef(book: string, ref: string): string {
-	let value = basic[ref]
+	const value = basic[ref]
 	if (book === "dfrpg" && dfrpg[ref] !== undefined) return dfrpg[ref]
 	if (book === "lite" && lite[ref] !== undefined) return lite[ref]
 	return value ?? ""

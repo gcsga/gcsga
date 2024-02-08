@@ -1,6 +1,5 @@
 import { ActorFlagsGURPS } from "@actor/base/data.ts"
 import { CharacterFlags, CharacterProfile, Encumbrance } from "@actor/character/data.ts"
-import { HitLocationTable } from "@actor/character/hit_location.ts"
 import { LootSettings } from "@actor/loot/data.ts"
 import { SkillBonus, WeaponBonus } from "@feature"
 import { MoveBonusType } from "@feature/data.ts"
@@ -39,6 +38,7 @@ import {
 } from "./enum/index.ts"
 import { ActorType, ConditionID, ItemType, ManeuverID, RollType } from "@data"
 import { SkillGURPS, TechniqueGURPS } from "@item"
+import { BodyGURPS } from "@sytem/hit_location/object.ts"
 
 export interface ActorResolver<T extends ActorType> {
 	type: T
@@ -52,8 +52,13 @@ export interface LootResolver extends ActorResolver<ActorType.Loot> {
 	equipment: Collection<EquipmentResolver | EquipmentContainerResolver>
 }
 
-export interface HitLocationTableOwner {
-	hitLocationTable: HitLocationTable
+export interface BodyOwner {
+	hitLocationTable: BodyGURPS
+	addDRBonusesFor: (
+		locationID: string,
+		tooltip: TooltipGURPS | null,
+		drMap: Map<string, number>,
+	) => Map<string, number>
 }
 
 export interface CharacterResolver extends ActorResolver<ActorType.Character> {
@@ -79,7 +84,7 @@ export interface CharacterResolver extends ActorResolver<ActorType.Character> {
 	blockBonus: number
 	dodgeBonus: number
 	// Hit Locations
-	hitLocationTable: HitLocationTable
+	hitLocationTable: BodyGURPS
 	// functions
 	skillNamed: (
 		name: string,

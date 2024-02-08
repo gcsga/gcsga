@@ -2,7 +2,6 @@ import { attribute } from "@util/enum/attribute.ts"
 import { ItemGURPS } from "./document.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { SETTINGS, SYSTEM_NAME, gid } from "@module/data/index.ts"
-import { HitLocationData, HitLocationTableData } from "@actor/character/hit_location.ts"
 import { NumericCompareType, PDF, StringCompareType, prepareFormData, stlimit } from "@util"
 import { prereq } from "@util/enum/prereq.ts"
 import { PrereqListObj, PrereqObj, TraitPrereqObj } from "@prereq/data.ts"
@@ -11,6 +10,7 @@ import { study } from "@util/enum/study.ts"
 import { FeatureObj } from "@feature"
 import { CharacterGURPS } from "@actor"
 import { ItemGCS } from "@item"
+import { BodyObj, HitLocationObj } from "@sytem/hit_location/data.ts"
 
 class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheetOptions> {
 	constructor(item: TItem, options: Partial<ItemSheetOptions> = {}) {
@@ -91,16 +91,13 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 		if (this.item.actor)
 			return this.item.actor.HitLocations.reduce(
 				(acc, c) => {
-					return { ...acc, [c.id]: c.choice_name }
+					return { ...acc, [c.id]: c.choiceName }
 				},
 				{ [gid.All]: LocalizeGURPS.translations.gurps.feature.all_locations },
 			)
 
-		const recurseLocations = function (
-			table: HitLocationTableData,
-			locations: HitLocationData[] = [],
-		): HitLocationData[] {
-			table.locations.forEach(e => {
+		const recurseLocations = function (table: BodyObj, locations: HitLocationObj[] = []): HitLocationObj[] {
+			table.locations?.forEach(e => {
 				locations.push(e)
 				if (e.sub_table) locations = recurseLocations(e.sub_table, locations)
 			})

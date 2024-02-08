@@ -21,4 +21,5 @@ export interface TraitContainerSystemSource extends ItemGCSSystemSource {
 	cr_adj: selfctrl.Adjustment
 	container_type: container.Type
 	disabled: boolean
+	open: boolean
 }

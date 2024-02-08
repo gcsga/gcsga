@@ -1,5 +1,5 @@
 import { SYSTEM_NAME } from "@data"
-import { htmlClosest, htmlQuery } from "@util/dom.ts"
+import { htmlQuery } from "@util/dom.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import * as R from "remeda"
 
@@ -20,7 +20,7 @@ abstract class SettingsMenuGURPS extends FormApplication {
 
 	static override get defaultOptions(): FormApplicationOptions {
 		const options = super.defaultOptions
-		options.classes.push("settings-menu", "sheet")
+		options.classes.push("gurps", "settings-menu", "sheet")
 
 		return {
 			...options,
@@ -57,8 +57,8 @@ abstract class SettingsMenuGURPS extends FormApplication {
 			}
 		}
 
-		console.log(templateData)
 		return fu.mergeObject(await super.getData(), {
+			config: CONFIG.GURPS,
 			settings: templateData,
 			instructions: `gurps.settings.${this.namespace}.hint`,
 		})
@@ -96,12 +96,6 @@ abstract class SettingsMenuGURPS extends FormApplication {
 
 		htmlQuery(html, "button.data-import")?.addEventListener("click", event => this._onDataImport(event))
 		htmlQuery(html, "button.data-export")?.addEventListener("click", event => this._onDataExport(event))
-
-		const { highlightSetting } = this.options
-		if (highlightSetting) {
-			const formGroup = htmlClosest(htmlQuery(html, `label[for="${highlightSetting}"]`), ".form-group")
-			if (formGroup) formGroup.style.animation = "glow 0.75s infinite alternate"
-		}
 	}
 
 	protected override async _updateObject(event: Event, data: Record<string, unknown>): Promise<void> {
@@ -126,15 +120,15 @@ abstract class SettingsMenuGURPS extends FormApplication {
 
 	protected abstract _onDataExport(_event: MouseEvent): void
 
-	// async _onResetAll(event: Event) {
-	// 	event.preventDefault()
-	// 	const constructor = this.constructor
-	// 	for (const setting of (constructor as typeof SettingsMenuGURPS).SETTINGS) {
-	// 		const defaults = game.settings.settings.get(`${SYSTEM_NAME}.${this.namespace}.${setting}`)?.default
-	// 		await game.settings.set(SYSTEM_NAME, `${this.namespace}.${setting}`, defaults)
-	// 	}
-	// 	this.render()
-	// }
+	async _onResetAll(event: Event): Promise<void> {
+		event.preventDefault()
+		const constructor = this.constructor as typeof SettingsMenuGURPS
+		for (const setting of constructor.SETTINGS) {
+			const defaults = game.settings.settings.get(`${SYSTEM_NAME}.${this.namespace}.${setting}`)?.default
+			await game.settings.set(SYSTEM_NAME, `${this.namespace}.${setting}`, defaults)
+		}
+		this.render()
+	}
 
 	protected override _getHeaderButtons(): ApplicationHeaderButton[] {
 		const buttons: ApplicationHeaderButton[] = [
@@ -142,10 +136,7 @@ abstract class SettingsMenuGURPS extends FormApplication {
 				label: LocalizeGURPS.translations.gurps.settings.reset_all,
 				icon: "gcs-reset",
 				class: "reset-all",
-				onclick: () => {
-					this.cache.clear()
-					this.render()
-				},
+				onclick: event => this._onResetAll(event),
 			},
 		]
 		const all_buttons = [...buttons, ...super._getHeaderButtons()]

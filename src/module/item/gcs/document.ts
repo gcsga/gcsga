@@ -11,7 +11,7 @@ import { feature } from "@util/enum/feature.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { sheetDisplayNotes } from "@util/misc.ts"
 import { EvalEmbeddedRegex, replaceAllStringFunc } from "@util/regexp.ts"
-import { SkillResolver } from "@util/resolvers.ts"
+import { CharacterResolver, SkillResolver } from "@util/resolvers.ts"
 import { ItemGCSSystemSource } from "./data.ts"
 import { ItemInstances } from "@item/types.ts"
 
@@ -123,14 +123,11 @@ export abstract class ItemGCS<TParent extends ActorGURPS | null = ActorGURPS | n
 	}
 
 	get prereqs(): PrereqList {
-		// @ts-expect-error doesn't exist here but does elsewhere
 		if (!this.system.prereqs) return new PrereqList()
-		// @ts-expect-error doesn't exist here but does elsewhere
-		return PrereqList.fromObject(this.system.prereqs)
+		return PrereqList.fromObject(this.system.prereqs, this.actor as unknown as CharacterResolver)
 	}
 
 	get prereqsEmpty(): boolean {
-		// @ts-expect-error doesn't exist here but does elsewhere
 		if (!this.system.prereqs || !this.system.prereqs.prereqs) return true
 		return this.prereqs?.prereqs.length === 0
 	}

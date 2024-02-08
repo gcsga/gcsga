@@ -1,7 +1,8 @@
 import { DiceGURPS } from "@module/dice/index.ts"
 import { DamageType, DamageTypes } from "./damage_type.ts"
 import { DamagePayload } from "./damage_chat_message.ts"
-import { HitLocationTable } from "@actor/character/hit_location.ts"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { BodyGURPS } from "@sytem/hit_location/object.ts"
 
 /**
  * The Damage Calculator needs three things: The DamageRoll, DamageHit, and DamageTarget.
@@ -176,7 +177,7 @@ export interface DamageTarget {
 	// CharacterGURPS.attributes.get(gid.HitPoints).calc.
 	hitPoints: HitPointsCalc
 	// CharacterGURPS.BodyType.
-	hitLocationTable: HitLocationTable
+	hitLocationTable: BodyGURPS
 	// CharacterGURPS.traits.contents.filter(it => it instanceof TraitGURPS).
 	getTrait(name: string): TargetTrait | undefined
 	// CharacterGURPS.traits.contents.filter(it => it instanceof TraitGURPS).
@@ -189,6 +190,8 @@ export interface DamageTarget {
 	incrementDamage(delta: number, damagePoolId: string): void
 	// Get all pools.
 	pools: TargetPool[]
+
+	addDRBonusesFor: (id: string, tooltip: TooltipGURPS | null, drMap: Map<string, number>) => Map<string, number>
 }
 
 export interface TargetTrait {

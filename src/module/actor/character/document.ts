@@ -28,7 +28,7 @@ import {
 	SpellBonus,
 	SpellPointBonus,
 	WeaponBonus,
-} from "@feature/index.ts"
+} from "@feature"
 import { ModifierChoiceSheet } from "@item/gcs/mod_sheet.ts"
 import {
 	BaseWeaponGURPS,
@@ -47,13 +47,12 @@ import {
 	TechniqueGURPS,
 	TraitContainerGURPS,
 	TraitGURPS,
-} from "@item/index.ts"
+} from "@item"
 import { CR_Features } from "@item/trait/data.ts"
 import { WeaponType } from "@item/weapon/data.ts"
 import { ConditionalModifier } from "@module/conditional_modifier.ts"
-import { SheetSettings } from "@module/data/sheet_settings.ts"
+import { SheetSettings, SheetSettingsObj } from "@module/data/sheet_settings.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
-import { SETTINGS_TEMP } from "@module/settings/index.ts"
 import { MoveType, MoveTypeDef, MoveTypeDefObj, MoveTypeObj } from "@module/system/move_type/index.ts"
 import {
 	ResourceTracker,
@@ -67,8 +66,9 @@ import { AttributeDefObj, AttributeObj, ThresholdOp } from "@sytem/attribute/dat
 import { Attribute } from "@sytem/attribute/object.ts"
 import { PoolThreshold } from "@sytem/attribute/pool_threshold.ts"
 import { SkillDefault } from "@sytem/default/index.ts"
+import { BodyGURPS } from "@sytem/hit_location/object.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
-import { getCurrentTime, urlToBase64 } from "@util"
+import { urlToBase64 } from "@util"
 import { attribute } from "@util/enum/attribute.ts"
 import { feature } from "@util/enum/feature.ts"
 import { progression } from "@util/enum/progression.ts"
@@ -91,11 +91,12 @@ import { LengthUnits } from "@util/length.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { Weight, WeightUnits } from "@util/weight.ts"
 import { CharacterFlagDefaults, CharacterFlags, CharacterSource, CharacterSystemSource, Encumbrance } from "./data.ts"
-import { HitLocationTable } from "./hit_location.ts"
 import { CharacterSheetGURPS } from "./sheet.ts"
 
 interface CharacterGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null>
 	extends ActorGURPS<TParent> {
+	readonly _source: CharacterSource
+
 	type: ActorType.Character
 	flags: CharacterFlags
 	features: FeatureMap
@@ -126,125 +127,129 @@ class CharacterGURPS<
 
 	private _processingThresholds = false
 
-	// Items
-	// declare traits: Collection<TraitGURPS<this> | TraitContainerGURPS<this>>
-	// declare skills: Collection<SkillGURPS<this> | TechniqueGURPS<this> | SkillContainerGURPS<this>>
-	// declare spells: Collection<SpellGURPS<this> | RitualMagicSpellGURPS<this> | SpellContainerGURPS<this>>
-	// declare equipment: Collection<EquipmentGURPS<this> | EquipmentContainerGURPS<this>>
-	// declare carriedEquipment: Collection<EquipmentGURPS<this> | EquipmentContainerGURPS<this>>
-	// declare otherEquipment: Collection<EquipmentGURPS<this> | EquipmentContainerGURPS<this>>
-	// declare notes: Collection<NoteGURPS<this> | NoteContainerGURPS<this>>
-	// declare weapons: Collection<MeleeWeaponGURPS<this> | RangedWeaponGURPS<this>>
-	// declare meleeWeapons: Collection<MeleeWeaponGURPS<this>>
-	// declare rangedWeapons: Collection<RangedWeaponGURPS<this>>
-	// declare gEffects: Collection<EffectGURPS<this> | ConditionGURPS<this>>
-	// declare conditions: Collection<ConditionGURPS<this>>
+	private static getDefaultSettings(): SheetSettingsObj {
+		return {
+			...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`),
+			body_type: {
+				name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
+				roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
+				locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
+			},
+			attributes: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`),
+			resource_trackers: game.settings.get(
+				SYSTEM_NAME,
+				`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`,
+			),
+			move_types: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`),
+		}
+	}
 
-	// attributes: Map<string, Attribute> = new Map()
-	//
-	// private _prevAttributes: Map<string, Attribute> = new Map()
-	//
-	//
-	// resource_trackers: Map<string, ResourceTracker> = new Map()
-	//
-	// move_types: Map<string, MoveType> = new Map()
-	//
-	// variableResolverExclusions: Map<string, boolean> = new Map()
-	//
-	// skillResolverExclusions: Map<string, boolean> = new Map()
-
-	// constructor(data: CharacterSource, context: ActorConstructorContextGURPS = {}) {
-	// 	super(data, context)
-	// 	if (this.system.attributes) this.attributes = this.getAttributes()
-	// 	if (this.system.resource_trackers) this.resource_trackers = this.getResourceTrackers()
-	// 	if (this.system.move_types) this.move_types = this.getMoveTypes()
-	// 	this.features = {
-	// 		attributeBonuses: [],
-	// 		costReductions: [],
-	// 		drBonuses: [],
-	// 		skillBonuses: [],
-	// 		skillPointBonuses: [],
-	// 		spellBonuses: [],
-	// 		spellPointBonuses: [],
-	// 		weaponBonuses: [],
-	// 		moveBonuses: [],
-	// 	}
-	// }
+	protected override _preCreate(
+		data: this["_source"],
+		options: DocumentModificationContext<TParent>,
+		user: User<Actor<null>>,
+	): Promise<void> {
+		console.log("_preCreate")
+		const defaultData = {
+			system: fu.mergeObject(data.system ?? {}, {
+				settings: CharacterGURPS.getDefaultSettings(),
+				total_points: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.initial_points`),
+			}),
+			flags: CharacterFlagDefaults,
+		}
+		this.update(defaultData)
+		return super._preCreate(data, options, user)
+	}
 
 	protected override _onCreate(
 		data: this["_source"],
-		options: DocumentModificationContext<TParent> & { promptImport: boolean },
+		options: DocumentModificationContext<TParent>,
 		userId: string,
 	): void {
-		const default_settings = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
-		const default_attributes = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
-		const default_resource_trackers = game.settings.get(
-			SYSTEM_NAME,
-			`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`,
-		)
-		const default_hit_locations = {
-			name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
-			roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
-			locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
-		}
-		const default_move_types = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
-		const populate_description = game.settings.get(
-			SYSTEM_NAME,
-			`${SETTINGS.DEFAULT_SHEET_SETTINGS}.populate_description`,
-		)
-		const initial_points = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.initial_points`)
-		const default_tech_level = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.tech_level`)
-		const sd: DeepPartial<CharacterSystemSource> = {
-			created_date: getCurrentTime(),
-			profile: {
-				player_name: "",
-				name: "",
-				title: "",
-				organization: "",
-				age: "",
-				birthday: "",
-				eyes: "",
-				hair: "",
-				skin: "",
-				handedness: "",
-				height: "6'",
-				weight: "0 lb",
-				SM: 0,
-				gender: "",
-				tech_level: "",
-				religion: "",
-				portrait: "",
-			},
-		}
-		sd.total_points = initial_points
-		sd.points_record = [
-			{
-				when: sd.created_date!,
-				points: initial_points,
-				reason: LocalizeGURPS.translations.gurps.character.points_record.initial_points,
-			},
-		]
-		sd.settings = default_settings
-		sd.settings.attributes = default_attributes
-		if (typeof sd.settings.attributes !== "object") sd.settings.attributes = []
-		sd.settings.body_type = default_hit_locations
-		sd.settings.resource_trackers = default_resource_trackers
-		if (typeof sd.settings.resource_trackers !== "object") sd.settings.resource_trackers = []
-		sd.settings.move_types = default_move_types
-		if (typeof sd.settings.move_types !== "object") sd.settings.move_types = []
-		sd.modified_date = sd.created_date
-		if (populate_description) sd.profile = SETTINGS_TEMP.general.auto_fill
-		sd.profile!.tech_level = default_tech_level
-		sd.attributes = this.newAttributes(sd.settings.attributes as AttributeDefObj[])
-		sd.resource_trackers = this.newTrackers(sd.settings.resource_trackers as ResourceTrackerDefObj[])
-		sd.move_types = this.newMoveTypes(sd.settings.move_types as MoveTypeDefObj[])
-		const flags = CharacterFlagDefaults
-		this.update({ _id: this._id, system: sd, flags: flags })
-		super._onCreate(data, options, userId)
-		if (options.promptImport) {
-			this.promptImport()
-		}
+		data.system = fu.mergeObject(data.system ?? {}, {
+			settings: CharacterGURPS.getDefaultSettings(),
+			total_points: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.initial_points`),
+		})
+		data.flags = CharacterFlagDefaults
+
+		console.log(data)
+		return super._onCreate(data, options, userId)
 	}
+
+	// protected override _onCreate(
+	// 	data: this["_source"],
+	// 	options: DocumentModificationContext<TParent> & { promptImport: boolean },
+	// 	userId: string,
+	// 	const default_settings = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
+	// 	const default_attributes = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
+	// ): void {
+	// 	const default_resource_trackers = game.settings.get(
+	// 		SYSTEM_NAME,
+	// 		`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`,
+	// 	)
+	// 	const default_hit_locations = {
+	// 		name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
+	// 		roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
+	// 		locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
+	// 	}
+	// 	const default_move_types = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
+	// 	const populate_description = game.settings.get(
+	// 		SYSTEM_NAME,
+	// 		`${SETTINGS.DEFAULT_SHEET_SETTINGS}.populate_description`,
+	// 	const initial_points = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.initial_points`)
+	// 	)
+	// 	const default_tech_level = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.tech_level`)
+	// 	const sd: DeepPartial<CharacterSystemSource> = {
+	// 		created_date: getCurrentTime(),
+	// 		profile: {
+	// 			player_name: "",
+	// 			name: "",
+	// 			title: "",
+	// 			organization: "",
+	// 			age: "",
+	// 			birthday: "",
+	// 			eyes: "",
+	// 			hair: "",
+	// 			skin: "",
+	// 			handedness: "",
+	// 			height: "6'",
+	// 			weight: "0 lb",
+	// 			SM: 0,
+	// 			gender: "",
+	// 			tech_level: "",
+	// 			religion: "",
+	// 			portrait: "",
+	// 		},
+	// 	}
+	// 	sd.total_points = initial_points
+	// 	sd.points_record = [
+	// 		{
+	// 			when: sd.created_date!,
+	// 			points: initial_points,
+	// 			reason: LocalizeGURPS.translations.gurps.character.points_record.initial_points,
+	// 		},
+	// 	]
+	// 	sd.settings = default_settings
+	// 	sd.settings.attributes = default_attributes
+	// 	if (typeof sd.settings.attributes !== "object") sd.settings.attributes = []
+	// 	sd.settings.body_type = default_hit_locations
+	// 	sd.settings.resource_trackers = default_resource_trackers
+	// 	if (typeof sd.settings.resource_trackers !== "object") sd.settings.resource_trackers = []
+	// 	sd.settings.move_types = default_move_types
+	// 	if (typeof sd.settings.move_types !== "object") sd.settings.move_types = []
+	// 	sd.modified_date = sd.created_date
+	// 	if (populate_description) sd.profile = SETTINGS_TEMP.general.auto_fill
+	// 	sd.profile!.tech_level = default_tech_level
+	// 	sd.attributes = this.newAttributes(sd.settings.attributes as AttributeDefObj[])
+	// 	sd.resource_trackers = this.newTrackers(sd.settings.resource_trackers as ResourceTrackerDefObj[])
+	// 	sd.move_types = this.newMoveTypes(sd.settings.move_types as MoveTypeDefObj[])
+	// 	const flags = CharacterFlagDefaults
+	// 	this.update({ _id: this._id, system: sd, flags: flags })
+	// 	super._onCreate(data, options, userId)
+	// 	if (options.promptImport) {
+	// 		this.promptImport()
+	// 	}
+	// }
 
 	protected override _preUpdate(
 		changed: DeepPartial<this["_source"]>,
@@ -545,6 +550,7 @@ class CharacterGURPS<
 	get settings(): SheetSettings {
 		return {
 			...this.system.settings,
+			body_type: this.BodyType,
 			resource_trackers: this.system.settings.resource_trackers.map(e => new ResourceTrackerDef(e)),
 			attributes: this.system.settings.attributes.map(e => new AttributeDef(e)),
 			move_types: this.system.settings.move_types.map(e => new MoveTypeDef(e)),
@@ -782,7 +788,7 @@ class CharacterGURPS<
 		return this.system.profile.SM + this.SizeModBonus
 	}
 
-	override get hitLocationTable(): HitLocationTable {
+	override get hitLocationTable(): BodyGURPS {
 		return this.BodyType
 	}
 
@@ -1095,10 +1101,8 @@ class CharacterGURPS<
 		return m
 	}
 
-	get BodyType(): HitLocationTable {
-		const b = this.system.settings.body_type
-		if (!b) return new HitLocationTable("", new DiceGURPS(), [], this, "")
-		return new HitLocationTable(b.name, b.roll, b.locations, this, "")
+	get BodyType(): BodyGURPS {
+		return BodyGURPS.fromObject(this.system.settings.body_type, this)
 	}
 
 	prepareAttributes(att_array = this.system.attributes): Map<string, Attribute> {
@@ -1134,7 +1138,6 @@ class CharacterGURPS<
 		collection: "effects" | "items",
 		documents: ActiveEffect<this>[] | Item<this>[],
 		result: ActiveEffect<this>["_source"][] | Item<this>["_source"][],
-		// @ts-expect-error type instantiation excessively deep (but it isn't)
 		options: DocumentModificationContext<this> & { substitutions: boolean },
 		userId: string,
 	): void {
@@ -1769,7 +1772,7 @@ class CharacterGURPS<
 		return Math.max(total, 0)
 	}
 
-	addDRBonusesFor(
+	override addDRBonusesFor(
 		locationID: string,
 		tooltip: TooltipGURPS | null = null,
 		drMap: Map<string, number> = new Map(),

@@ -27,9 +27,8 @@ import {
 	ImportedThirdPartyData,
 	ImportedThreshold,
 } from "./data.ts"
-import { BlockLayoutKey, PageSettings, SheetSettings } from "@module/data/sheet_settings.ts"
+import { BlockLayoutKey, PageSettings, SheetSettingsObj } from "@module/data/sheet_settings.ts"
 import { AttributeDefObj, AttributeObj, PoolThresholdDef } from "@sytem/attribute/data.ts"
-import { HitLocationData, HitLocationTableData } from "@actor/character/hit_location.ts"
 import { progression } from "@util/enum/progression.ts"
 import { ItemImporter, LengthUnits, LocalizeGURPS, WeightUnits, getCurrentTime } from "@util"
 import { display } from "@util/enum/display.ts"
@@ -38,6 +37,7 @@ import { MoveTypeDefObj, MoveTypeObj, MoveTypeOverrideObj } from "@sytem/move_ty
 import { ItemSourceGURPS } from "@item/base/data/index.ts"
 import { ChatMessageGURPS } from "@module/chat-message/document.ts"
 import { ActorFlags, ActorType, ManeuverID, SYSTEM_NAME } from "@data"
+import { BodyObj, HitLocationObj } from "@sytem/hit_location/data.ts"
 
 const GCS_FILE_VERSION = 4
 
@@ -150,7 +150,7 @@ export class CharacterImporter {
 		}
 	}
 
-	static importSettings(data?: ImportedSheetSettings, third_party?: ImportedThirdPartyData): SheetSettings {
+	static importSettings(data?: ImportedSheetSettings, third_party?: ImportedThirdPartyData): SheetSettingsObj {
 		return {
 			page: CharacterImporter.importPage(data?.page),
 			block_layout: (data?.block_layout as BlockLayoutKey[]) ?? [],
@@ -237,7 +237,7 @@ export class CharacterImporter {
 		return data ?? []
 	}
 
-	static importBody(data?: ImportedBody): HitLocationTableData {
+	static importBody(data?: ImportedBody): BodyObj {
 		return {
 			name: data?.name ?? "",
 			roll: data?.roll ?? "",
@@ -245,10 +245,10 @@ export class CharacterImporter {
 		}
 	}
 
-	static importHitLocations(data?: ImportedHitLocation[]): HitLocationData[] {
+	static importHitLocations(data?: ImportedHitLocation[]): HitLocationObj[] {
 		return (
 			data?.map(e => {
-				const location: HitLocationData = {
+				const location: HitLocationObj = {
 					id: e.id,
 					choice_name: e.choice_name,
 					table_name: e.table_name,

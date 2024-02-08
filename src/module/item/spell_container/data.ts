@@ -14,4 +14,5 @@ export interface SpellContainerSystemSource extends ItemGCSSystemSource {
 	vtt_notes: string
 	tags: string[]
 	template_picker: TemplatePickerObj
+	open: boolean
 }

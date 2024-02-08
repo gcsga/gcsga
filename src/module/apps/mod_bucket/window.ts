@@ -42,7 +42,7 @@ export class ModifierBucketWindow extends Application {
 		// Get position
 		const button = $("#modifier-bucket-button")
 		const buttonTop = button.offset()?.top ?? 0
-		const buttonLeft = (button.position()?.left || 0) + 220 ?? 0
+		const buttonLeft = button.position()?.left + 220
 		const buttonWidth = parseFloat(button.css("width").replace("px", ""))
 		const width = html.width() || 640
 		const height = parseFloat(html.css("height").replace("px", ""))

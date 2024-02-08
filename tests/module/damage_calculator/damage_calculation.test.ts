@@ -51,115 +51,148 @@ describe("Damage calculator", () => {
 		_roll.dice = new DiceGURPS("2d")
 		_roll.hits[0] = { basicDamage: 8, locationId: "Torso" }
 
-		_torso = new DamageHitLocation(_target, ".locations.0", {
-			choice_name: "Torso",
-			description: "",
-			dr_bonus: 0,
-			table_name: "Torso",
-			hit_penalty: 0,
-			id: "torso",
-			slots: 2,
-		})
+		_torso = DamageHitLocation.fromObject(
+			{
+				choice_name: "Torso",
+				description: "",
+				dr_bonus: 0,
+				table_name: "Torso",
+				hit_penalty: 0,
+				id: "torso",
+				slots: 2,
+			},
+			_target,
+		)
 
-		_vitals = new DamageHitLocation(_target, ".locations.1", {
-			choice_name: "Vitals",
-			description: "",
-			dr_bonus: 0,
-			table_name: "Vitals",
-			hit_penalty: -3,
-			id: "vitals",
-			slots: 0,
-		})
+		_vitals = DamageHitLocation.fromObject(
+			{
+				choice_name: "Vitals",
+				description: "",
+				dr_bonus: 0,
+				table_name: "Vitals",
+				hit_penalty: -3,
+				id: "vitals",
+				slots: 0,
+			},
+			_target,
+		)
 
-		_skull = new DamageHitLocation(_target, ".locations.2", {
-			choice_name: "Skull",
-			description: "",
-			dr_bonus: 2,
-			table_name: "Skull",
-			hit_penalty: -7,
-			id: "skull",
-			slots: 0,
-		})
+		_skull = DamageHitLocation.fromObject(
+			{
+				choice_name: "Skull",
+				description: "",
+				dr_bonus: 2,
+				table_name: "Skull",
+				hit_penalty: -7,
+				id: "skull",
+				slots: 0,
+			},
+			_target,
+		)
 
-		_eye = new DamageHitLocation(_target, ".locations.3", {
-			choice_name: "Eye",
-			description: "",
-			dr_bonus: 0,
-			table_name: "Eye",
-			hit_penalty: -9,
-			id: "eye",
-			slots: 0,
-		})
+		_eye = DamageHitLocation.fromObject(
+			{
+				choice_name: "Eye",
+				description: "",
+				dr_bonus: 0,
+				table_name: "Eye",
+				hit_penalty: -9,
+				id: "eye",
+				slots: 0,
+			},
+			_target,
+		)
 
-		_face = new DamageHitLocation(_target, ".locations.4", {
-			choice_name: "Face",
-			description: "",
-			dr_bonus: 0,
-			table_name: "Face",
-			hit_penalty: -5,
-			id: "face",
-			slots: 1,
-		})
+		_face = DamageHitLocation.fromObject(
+			{
+				choice_name: "Face",
+				description: "",
+				dr_bonus: 0,
+				table_name: "Face",
+				hit_penalty: -5,
+				id: "face",
+				slots: 1,
+			},
+			_target,
+		)
 
-		_neck = new DamageHitLocation(_target, ".locations.5", {
-			choice_name: "Neck",
-			description: "",
-			dr_bonus: 0,
-			table_name: "Neck",
-			hit_penalty: -5,
-			id: "neck",
-			slots: 1,
-		})
+		_neck = DamageHitLocation.fromObject(
+			{
+				choice_name: "Neck",
+				description: "",
+				dr_bonus: 0,
+				table_name: "Neck",
+				hit_penalty: -5,
+				id: "neck",
+				slots: 1,
+			},
+			_target,
+		)
 
-		_groin = new DamageHitLocation(_target, ".locations.6", {
-			choice_name: "Groin",
-			description: "",
-			dr_bonus: 0,
-			table_name: "Groin",
-			hit_penalty: -5,
-			id: "groin",
-			slots: 1,
-		})
+		_groin = DamageHitLocation.fromObject(
+			{
+				choice_name: "Groin",
+				description: "",
+				dr_bonus: 0,
+				table_name: "Groin",
+				hit_penalty: -5,
+				id: "groin",
+				slots: 1,
+			},
+			_target,
+		)
 
-		_arm = new DamageHitLocation(_target, ".locations.7", {
-			choice_name: "Arm",
-			description: "",
-			dr_bonus: 0,
-			table_name: "Arm",
-			hit_penalty: -2,
-			id: "arm",
-			slots: 1,
-		})
+		_arm = DamageHitLocation.fromObject(
+			{
+				choice_name: "Arm",
+				description: "",
+				dr_bonus: 0,
+				table_name: "Arm",
+				hit_penalty: -2,
+				id: "arm",
+				slots: 1,
+			},
+			_target,
+		)
 
-		_leg = new DamageHitLocation(_target, ".locations.8", {
-			choice_name: "Leg",
-			description: "",
-			dr_bonus: 0,
-			table_name: "Leg",
-			hit_penalty: -2,
-			id: "leg",
-			slots: 2,
-		})
+		_leg = DamageHitLocation.fromObject(
+			{
+				choice_name: "Leg",
+				description: "",
+				dr_bonus: 0,
+				table_name: "Leg",
+				hit_penalty: -2,
+				id: "leg",
+				slots: 2,
+			},
+			_target,
+		)
 
-		_hand = new DamageHitLocation(_target, ".locations.9", {
-			choice_name: "Hand",
-			description: "",
-			dr_bonus: 0,
-			table_name: "Hand",
-			hit_penalty: -4,
-			id: "hand",
-			slots: 1,
-		})
+		_hand = DamageHitLocation.fromObject(
+			{
+				choice_name: "Hand",
+				description: "",
+				dr_bonus: 0,
+				table_name: "Hand",
+				hit_penalty: -4,
+				id: "hand",
+				slots: 1,
+			},
+			_target,
+		)
 
-		_foot = new DamageHitLocation(_target, ".locations.10", {
-			choice_name: "Foot",
-			description: "",
-			dr_bonus: 0,
-			table_name: "Foot",
-			hit_penalty: -4,
-			id: "foot",
-			slots: 1,
-		})
+		_foot = DamageHitLocation.fromObject(
+			{
+				choice_name: "Foot",
+				description: "",
+				dr_bonus: 0,
+				table_name: "Foot",
+				hit_penalty: -4,
+				id: "foot",
+				slots: 1,
+			},
+			_target,
+		)
 
 		_target.hitLocationTable.locations.push(_torso)
 		_target.hitLocationTable.locations.push(_vitals)

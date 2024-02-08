@@ -1,13 +1,12 @@
 /// <reference types="vite/client" />
 
 import { ActorGURPS } from "@actor/base.ts"
-import { HitLocationData } from "@actor/character/hit_location.ts"
 import { ItemGURPS } from "@item/base/document.ts"
 import { ModifierBucket } from "@module/apps/mod_bucket/button.ts"
 import { CombatGURPS } from "@module/combat/document.ts"
 import { CombatantGURPS } from "@module/combatant/document.ts"
 import { AttributeEffect } from "@module/data/index.ts"
-import { SheetSettings } from "@module/data/sheet_settings.ts"
+import { SheetSettingsObj } from "@module/data/sheet_settings.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { ActiveEffectGURPS } from "@module/active-effect/index.ts"
 import { UserGURPS } from "@module/user/document.ts"
@@ -29,6 +28,7 @@ import { CanvasGURPS } from "@module/canvas/index.ts"
 import { SceneGURPS } from "@scene"
 import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
 import { EffectPanel } from "@item/effect/panel.ts"
+import { HitLocationObj } from "@sytem/hit_location/data.ts"
 interface GameGURPS
 	extends Game<
 		ActorGURPS<null>,
@@ -121,14 +121,14 @@ declare global {
 		get(module: "gcsga", key: "default_sheet_settings.initial_points"): number
 		get(module: "gcsga", key: "default_sheet_settings.tech_level"): string
 		get(module: "gcsga", key: "default_sheet_settings.tech_level"): string
-		get(module: "gcsga", key: "default_sheet_settings.settings"): SheetSettings
+		get(module: "gcsga", key: "default_sheet_settings.settings"): SheetSettingsObj
 		get(module: "gcsga", key: "default_attributes.attributes"): AttributeDefObj[]
 		get(module: "gcsga", key: "default_attributes.effects"): AttributeEffect[]
 		get(module: "gcsga", key: "default_resource_trackers.resource_trackers"): ResourceTrackerDefObj[]
 		get(module: "gcsga", key: "default_move_types.move_types"): MoveTypeDefObj[]
 		get(module: "gcsga", key: "default_hit_locations.name"): string
 		get(module: "gcsga", key: "default_hit_locations.roll"): string
-		get(module: "gcsga", key: "default_hit_locations.locations"): HitLocationData[]
+		get(module: "gcsga", key: "default_hit_locations.locations"): HitLocationObj[]
 		get(module: "gcsga", key: "colors.colors"): Record<string, { light: string; dark: string }>
 		get(module: "gcsga", key: "automatic_unready"): boolean
 		get(module: "gcsga", key: "initiative_formula"): ((combatant: CombatGURPS["turns"][number]) => string) | null

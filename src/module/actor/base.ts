@@ -3,7 +3,6 @@ import { ActorFlagsGURPS, ActorSystemSource } from "./base/data.ts"
 import { Attribute } from "@sytem/attribute/object.ts"
 import { TraitGURPS } from "@item/trait/document.ts"
 import { TraitContainerGURPS } from "@item/trait_container/document.ts"
-import { HitLocation, HitLocationTable } from "./character/hit_location.ts"
 import { EffectGURPS } from "@item/effect/document.ts"
 import { ConditionGURPS } from "@item/condition/document.ts"
 import { ItemGURPS } from "@item/base/document.ts"
@@ -44,6 +43,8 @@ import {
 } from "@data"
 import { itemIsOfType } from "@item/helpers.ts"
 import { ActiveEffectGURPS } from "@module/active-effect/document.ts"
+import { BodyGURPS, HitLocation } from "@sytem/hit_location/object.ts"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 
 interface ActorGURPS<TParent extends TokenDocumentGURPS | null> extends Actor<TParent> {
 	readonly _source: ActorSourceGURPS
@@ -145,12 +146,20 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 		super._preUpdate(changed, options, user)
 	}
 
-	get hitLocationTable(): HitLocationTable {
-		return new HitLocationTable("", "3d", [], this, "")
+	addDRBonusesFor(
+		_locationID: string,
+		_tooltip: TooltipGURPS | null = null,
+		drMap: Map<string, number> = new Map(),
+	): Map<string, number> {
+		return drMap
+	}
+
+	get hitLocationTable(): BodyGURPS {
+		return BodyGURPS.fromObject({ roll: "3d6", locations: [] }, this)
 	}
 
 	get HitLocations(): HitLocation[] {
-		const recurseLocations = function (table: HitLocationTable, locations: HitLocation[] = []): HitLocation[] {
+		const recurseLocations = function (table: BodyGURPS, locations: HitLocation[] = []): HitLocation[] {
 			table.locations.forEach(e => {
 				locations.push(e)
 				if (e.subTable) locations = recurseLocations(e.subTable, locations)
@@ -517,8 +526,16 @@ class DamageTargetActor implements DamageTarget {
 		return this.getSyntheticAttribute("hp")!.calc
 	}
 
-	get hitLocationTable(): HitLocationTable {
+	get hitLocationTable(): BodyGURPS {
 		return this.actor.hitLocationTable
+	}
+
+	addDRBonusesFor(
+		_locationID: string,
+		_tooltip: TooltipGURPS | null = null,
+		drMap: Map<string, number> = new Map(),
+	): Map<string, number> {
+		return drMap
 	}
 
 	/**

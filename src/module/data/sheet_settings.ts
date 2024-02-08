@@ -1,5 +1,4 @@
-import { HitLocationTable, HitLocationTableData } from "@actor/character/hit_location.ts"
-import { CharacterResolver, LengthUnits, WeightUnits } from "@util"
+import { BodyOwner, CharacterResolver, LengthUnits, WeightUnits } from "@util"
 import { display } from "@util/enum/display.ts"
 import { paper } from "@util/enum/paper.ts"
 import { progression } from "@util/enum/progression.ts"
@@ -11,6 +10,9 @@ import { MoveTypeDef } from "@sytem/move_type/move_type_def.ts"
 import { AttributeDefObj } from "@sytem/attribute/data.ts"
 import { ResourceTrackerDefObj } from "@sytem/resource_tracker/data.ts"
 import { MoveTypeDefObj } from "@sytem/move_type/data.ts"
+import { BodyObj } from "@sytem/hit_location/data.ts"
+import { BodyGURPS } from "@sytem/hit_location/object.ts"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
 
 export interface PageSettings {
 	paper_size: paper.Size
@@ -42,7 +44,7 @@ export interface SheetSettingsObj {
 	attributes: AttributeDefObj[]
 	resource_trackers: ResourceTrackerDefObj[]
 	move_types: MoveTypeDefObj[]
-	body_type: HitLocationTableData
+	body_type: BodyObj
 	damage_progression: progression.Option
 	default_length_units: LengthUnits
 	default_weight_units: WeightUnits
@@ -66,7 +68,7 @@ export interface SheetSettings {
 	attributes: AttributeDef[]
 	resource_trackers: ResourceTrackerDef[]
 	move_types: MoveTypeDef[]
-	body_type: HitLocationTable
+	body_type: BodyGURPS
 	damage_progression: progression.Option
 	default_length_units: LengthUnits
 	default_weight_units: WeightUnits
@@ -84,21 +86,33 @@ export interface SheetSettings {
 	exclude_unspent_points_from_total: boolean
 }
 
-export function defaultSheetSettings(): SheetSettingsObj {
+export function defaultSheetSettings(): SheetSettings {
+	const dummyBodyOwner: BodyOwner = {
+		hitLocationTable: new BodyGURPS(),
+		addDRBonusesFor: (_locationID: string, _tooltip: TooltipGURPS | null, drMap: Map<string, number>) => drMap,
+	}
+	const bodyObj: BodyObj = {
+		name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
+		roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
+		locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
+	}
+	const body = BodyGURPS.fromObject(bodyObj, dummyBodyOwner)
 	return {
 		...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`),
-		body_type: {
-			name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
-			roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
-			locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
-		},
-		attributes: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`),
-		resource_trackers: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`),
-		move_types: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`),
+		body_type: body,
+		attributes: game.settings
+			.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
+			.map(e => new AttributeDef(e)),
+		resource_trackers: game.settings
+			.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`)
+			.map(e => new ResourceTrackerDef(e)),
+		move_types: game.settings
+			.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
+			.map(e => new MoveTypeDef(e)),
 	}
 }
 
-export function sheetSettingsFor(actor: ActorGURPS | CharacterResolver | null): SheetSettings | SheetSettingsObj {
+export function sheetSettingsFor(actor: ActorGURPS | CharacterResolver | null): SheetSettings {
 	if (!actor || !(actor instanceof CharacterGURPS)) return defaultSheetSettings()
 	return actor.settings
 }

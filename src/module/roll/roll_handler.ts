@@ -637,7 +637,7 @@ class DamageRollTypeHandler extends RollTypeHandler {
 	private static getHitLocationFromLastAttackRoll(_actor: ActorGURPS | null): string {
 		const name = game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_DAMAGE_LOCATION)
 		const location = _actor?.hitLocationTable.locations.find(l => l.id === name)
-		return location?.table_name ?? "Torso"
+		return location?.tableName ?? "Torso"
 	}
 }
 
@@ -653,7 +653,7 @@ class LocationRollTypeHandler extends RollTypeHandler {
 		const result = await HitLocationUtil.rollRandomLocation(actor.hitLocationTable)
 
 		// Get localized version of the location id, if necessary.
-		const location = result.location?.choice_name ?? "Torso"
+		const location = result.location?.choiceName ?? "Torso"
 
 		const message = await renderTemplate(`systems/${SYSTEM_NAME}/templates/message/random-location-roll.hbs`, {
 			actor: { name: actor?.name, actor: { id: actor?.id } },

@@ -168,7 +168,7 @@ class TraitImporter extends ItemImporter {
 		const newItem: TraitSource = {
 			_id: id,
 			type: ItemType.Trait,
-			name: systemData.name ?? LocalizeGURPS.translations.TYPES.Item[ItemType.Trait],
+			name: systemData.name || LocalizeGURPS.translations.TYPES.Item[ItemType.Trait],
 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.Trait}.svg`,
 			system: systemData,
 			effects: [],
@@ -217,6 +217,7 @@ class TraitContainerImporter extends ItemImporter {
 			container_type: item.container_type ?? container.Type.Group,
 			disabled: item.disabled ?? false,
 			template_picker: ItemImporter.importTemplatePicker(item.template_picker),
+			open: item.open ?? false,
 		}
 
 		item.children?.reduce((acc, child) => {
@@ -232,7 +233,7 @@ class TraitContainerImporter extends ItemImporter {
 		const newItem: TraitContainerSource = {
 			_id: id,
 			type: ItemType.TraitContainer,
-			name: systemData.name ?? LocalizeGURPS.translations.TYPES.Item[ItemType.TraitContainer],
+			name: systemData.name || LocalizeGURPS.translations.TYPES.Item[ItemType.TraitContainer],
 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.Trait}.svg`,
 			system: systemData,
 			effects: [],
@@ -283,7 +284,7 @@ class TraitModifierImporter extends ItemImporter {
 		const newItem: TraitModifierSource = {
 			_id: id,
 			type: ItemType.TraitModifier,
-			name: systemData.name ?? LocalizeGURPS.translations.TYPES.Item[ItemType.TraitModifier],
+			name: systemData.name || LocalizeGURPS.translations.TYPES.Item[ItemType.TraitModifier],
 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.TraitModifier}.svg`,
 			system: systemData,
 			effects: [],
@@ -333,7 +334,7 @@ class TraitModifierContainerImporter extends ItemImporter {
 		const newItem: TraitModifierContainerSource = {
 			_id: id,
 			type: ItemType.TraitModifierContainer,
-			name: systemData.name ?? LocalizeGURPS.translations.TYPES.Item[ItemType.TraitModifierContainer],
+			name: systemData.name || LocalizeGURPS.translations.TYPES.Item[ItemType.TraitModifierContainer],
 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.TraitModifier}.svg`,
 			system: systemData,
 			effects: [],
@@ -396,7 +397,7 @@ class SkillImporter extends ItemImporter {
 		const newItem: SkillSource = {
 			_id: id,
 			type: ItemType.Skill,
-			name: systemData.name ?? LocalizeGURPS.translations.TYPES.Item[ItemType.Skill],
+			name: systemData.name || LocalizeGURPS.translations.TYPES.Item[ItemType.Skill],
 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.Skill}.svg`,
 			system: systemData,
 			effects: [],
@@ -457,7 +458,7 @@ class TechniqueImporter extends ItemImporter {
 		const newItem: TechniqueSource = {
 			_id: id,
 			type: ItemType.Technique,
-			name: systemData.name ?? LocalizeGURPS.translations.TYPES.Item[ItemType.Technique],
+			name: systemData.name || LocalizeGURPS.translations.TYPES.Item[ItemType.Technique],
 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.Skill}.svg`,
 			system: systemData,
 			effects: [],
@@ -488,8 +489,8 @@ class SkillContainerImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: SkillContainerSystemSource = {
-			slug: "",
 			_migration: { version: null, previous: null },
+			slug: "",
 			type: ItemType.SkillContainer,
 			name: item.name ?? "",
 			reference: item.reference ?? "",
@@ -498,6 +499,7 @@ class SkillContainerImporter extends ItemImporter {
 			vtt_notes: item.vtt_notes ?? "",
 			tags: item.tags ?? [],
 			template_picker: ItemImporter.importTemplatePicker(item.template_picker),
+			open: item.open ?? false,
 		}
 
 		item.children?.reduce((acc, child) => {
@@ -508,7 +510,7 @@ class SkillContainerImporter extends ItemImporter {
 		const newItem: SkillContainerSource = {
 			_id: id,
 			type: ItemType.SkillContainer,
-			name: systemData.name ?? LocalizeGURPS.translations.TYPES.Item[ItemType.SkillContainer],
+			name: systemData.name || LocalizeGURPS.translations.TYPES.Item[ItemType.SkillContainer],
 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.Skill}.svg`,
 			system: systemData,
 			effects: [],
@@ -574,7 +576,7 @@ class SpellImporter extends ItemImporter {
 		const newItem: SpellSource = {
 			_id: id,
 			type: ItemType.Spell,
-			name: systemData.name ?? LocalizeGURPS.translations.TYPES.Item[ItemType.Spell],
+			name: systemData.name || LocalizeGURPS.translations.TYPES.Item[ItemType.Spell],
 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.Spell}.svg`,
 			system: systemData,
 			effects: [],
@@ -642,7 +644,7 @@ class RitualMagicSpellImporter extends ItemImporter {
 		const newItem: RitualMagicSpellSource = {
 			_id: id,
 			type: ItemType.RitualMagicSpell,
-			name: systemData.name ?? LocalizeGURPS.translations.TYPES.Item[ItemType.RitualMagicSpell],
+			name: systemData.name || LocalizeGURPS.translations.TYPES.Item[ItemType.RitualMagicSpell],
 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.Spell}.svg`,
 			system: systemData,
 			effects: [],
@@ -683,6 +685,7 @@ class SpellContainerImporter extends ItemImporter {
 			vtt_notes: item.vtt_notes ?? "",
 			tags: item.tags ?? [],
 			template_picker: ItemImporter.importTemplatePicker(item.template_picker),
+			open: item.open ?? false,
 		}
 
 		item.children?.reduce((acc, mod) => {
@@ -693,7 +696,7 @@ class SpellContainerImporter extends ItemImporter {
 		const newItem: SpellContainerSource = {
 			_id: id,
 			type: ItemType.SpellContainer,
-			name: systemData.name ?? LocalizeGURPS.translations.TYPES.Item[ItemType.SpellContainer],
+			name: systemData.name || LocalizeGURPS.translations.TYPES.Item[ItemType.SpellContainer],
 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.Spell}.svg`,
 			system: systemData,
 			effects: [],
@@ -762,7 +765,7 @@ class EquipmentImporter extends ItemImporter {
 		const newItem: EquipmentSource = {
 			_id: id,
 			type: ItemType.Equipment,
-			name: systemData.description ?? LocalizeGURPS.translations.TYPES.Item[ItemType.Equipment],
+			name: systemData.description || LocalizeGURPS.translations.TYPES.Item[ItemType.Equipment],
 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.Equipment}.svg`,
 			system: systemData,
 			effects: [],
@@ -816,6 +819,7 @@ class EquipmentContainerImporter extends ItemImporter {
 			features: ItemImporter.importFeatures(item.features),
 			equipped: item.equipped ?? true,
 			ignore_weight_for_skills: item.ignore_weight_for_skills ?? false,
+			open: item.open ?? false,
 		}
 
 		item.children?.reduce((acc, child) => {
@@ -836,7 +840,7 @@ class EquipmentContainerImporter extends ItemImporter {
 		const newItem: EquipmentContainerSource = {
 			_id: id,
 			type: ItemType.EquipmentContainer,
-			name: systemData.description ?? LocalizeGURPS.translations.TYPES.Item[ItemType.EquipmentContainer],
+			name: systemData.description || LocalizeGURPS.translations.TYPES.Item[ItemType.EquipmentContainer],
 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.Equipment}.svg`,
 			system: systemData,
 			effects: [],
@@ -888,7 +892,7 @@ class EquipmentModifierImporter extends ItemImporter {
 		const newItem: EquipmentModifierSource = {
 			_id: id,
 			type: ItemType.EquipmentModifier,
-			name: systemData.name ?? LocalizeGURPS.translations.TYPES.Item[ItemType.EquipmentModifier],
+			name: systemData.name || LocalizeGURPS.translations.TYPES.Item[ItemType.EquipmentModifier],
 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.EquipmentModifier}.svg`,
 			system: systemData,
 			effects: [],
@@ -938,7 +942,7 @@ class EquipmentModifierContainerImporter extends ItemImporter {
 		const newItem: EquipmentModifierContainerSource = {
 			_id: id,
 			type: ItemType.EquipmentModifierContainer,
-			name: systemData.name ?? LocalizeGURPS.translations.TYPES.Item[ItemType.EquipmentModifierContainer],
+			name: systemData.name || LocalizeGURPS.translations.TYPES.Item[ItemType.EquipmentModifierContainer],
 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.EquipmentModifier}.svg`,
 			system: systemData,
 			effects: [],
@@ -980,7 +984,7 @@ class NoteImporter extends ItemImporter {
 		const newItem: NoteSource = {
 			_id: id,
 			type: ItemType.Note,
-			name: systemData.text ?? LocalizeGURPS.translations.TYPES.Item[ItemType.Note],
+			name: systemData.text || LocalizeGURPS.translations.TYPES.Item[ItemType.Note],
 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.Note}.svg`,
 			system: systemData,
 			effects: [],
@@ -1027,7 +1031,7 @@ class NoteContainerImporter extends ItemImporter {
 		const newItem: NoteContainerSource = {
 			_id: id,
 			type: ItemType.NoteContainer,
-			name: systemData.text ?? LocalizeGURPS.translations.TYPES.Item[ItemType.NoteContainer],
+			name: systemData.text || LocalizeGURPS.translations.TYPES.Item[ItemType.NoteContainer],
 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.Note}.svg`,
 			system: systemData,
 			effects: [],
@@ -1074,7 +1078,7 @@ class MeleeWeaponImporter extends ItemImporter {
 		const newItem: MeleeWeaponSource = {
 			_id: id,
 			type: ItemType.MeleeWeapon,
-			name: systemData.usage ?? LocalizeGURPS.translations.TYPES.Item[ItemType.MeleeWeapon],
+			name: systemData.usage || LocalizeGURPS.translations.TYPES.Item[ItemType.MeleeWeapon],
 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.MeleeWeapon}.svg`,
 			system: systemData,
 			effects: [],
@@ -1124,7 +1128,7 @@ class RangedWeaponImporter extends ItemImporter {
 		const newItem: RangedWeaponSource = {
 			_id: id,
 			type: ItemType.RangedWeapon,
-			name: systemData.usage ?? LocalizeGURPS.translations.TYPES.Item[ItemType.RangedWeapon],
+			name: systemData.usage || LocalizeGURPS.translations.TYPES.Item[ItemType.RangedWeapon],
 			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.RangedWeapon}.svg`,
 			system: systemData,
 			effects: [],
@@ -1165,5 +1169,4 @@ const ItemImportHandlers: Record<ImportedItemType, ItemImporter> = {
 	[ImportedItemType.MeleeWeapon]: new MeleeWeaponImporter(),
 	[ImportedItemType.RangedWeapon]: new RangedWeaponImporter(),
 }
-
 export { ItemImporter }

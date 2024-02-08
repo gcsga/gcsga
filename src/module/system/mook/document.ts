@@ -283,13 +283,14 @@ export class Mook {
 		const date = new Date().toISOString()
 		const data: DeepPartial<CharacterSource> = {
 			system: {
-				settings: fu.mergeObject(
-					game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`),
-					{
-						...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`),
-						...this.settings,
-					},
-				),
+				settings: {
+					...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`),
+					resource_trackers: game.settings.get(
+						SYSTEM_NAME,
+						`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`,
+					),
+					...this.settings,
+				},
 				attributes: this.system.attributes,
 				profile: this.profile,
 				created_date: date,

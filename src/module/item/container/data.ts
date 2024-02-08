@@ -6,6 +6,4 @@ export type BaseContainerSource<
 	TSystemData extends object = BaseContainerSystemSource,
 > = BaseItemSourceGURPS<TItemType, TSystemData>
 
-export interface BaseContainerSystemSource extends ItemSystemSource {
-	open?: boolean
-}
+export interface BaseContainerSystemSource extends ItemSystemSource {}

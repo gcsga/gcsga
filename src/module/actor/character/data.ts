@@ -1,6 +1,6 @@
 import { ActorFlagsGURPS, ActorSystemSource, BaseActorSourceGURPS } from "@actor/base/data.ts"
 import { ActorFlags, ActorType, RollModifier, SYSTEM_NAME, gid } from "@data"
-import { SheetSettings } from "@module/data/sheet_settings.ts"
+import { SheetSettingsObj } from "@module/data/sheet_settings.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { AttributeObj } from "@sytem/attribute/data.ts"
 import { PoolThreshold } from "@sytem/attribute/pool_threshold.ts"
@@ -49,7 +49,7 @@ export const CharacterFlagDefaults: CharacterFlags = {
 export interface CharacterSystemSource extends ActorSystemSource {
 	type: "character"
 	version: number
-	settings: SheetSettings
+	settings: SheetSettingsObj
 	created_date: string
 	modified_date: string
 	profile: CharacterProfile

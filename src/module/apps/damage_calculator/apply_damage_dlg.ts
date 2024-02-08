@@ -230,7 +230,7 @@ export class ApplyDamageDialog extends Application {
 		const result = await HitLocationUtil.rollRandomLocation(this.target.hitLocationTable)
 
 		// Get localized version of the location id, if necessary.
-		const location = result.location?.choice_name ?? "Torso"
+		const location = result.location?.choiceName ?? "Torso"
 
 		const message = await renderTemplate(`systems/${SYSTEM_NAME}/templates/message/random-location-roll.hbs`, {
 			actor: this.target,

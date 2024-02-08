@@ -1,4 +1,4 @@
-import { isContainer } from "./misc.ts"
+import { isContainer, rgbToHex } from "./misc.ts"
 import { LocalizeGURPS } from "./localize.ts"
 import { Study } from "./study.ts"
 import { study } from "./enum/study.ts"
@@ -10,6 +10,10 @@ import { CharacterGURPS } from "@actor"
 import { ItemGURPS } from "@item"
 
 class HandlebarsHelpersGURPS {
+	static rgbToHex(s: string): string {
+		return rgbToHex(s)
+	}
+
 	static camelcase(s: string): string {
 		let n = ""
 		for (const word of s.split(" ")) {
@@ -508,6 +512,7 @@ export function registerHandlebarsHelpers(): void {
 	Handlebars.registerHelper({
 		// Multiselect: HandlebarsHelpersGURPS.multiselect
 		// spellValues: HandlebarsHelpersGURPS.spellValues,
+		rgbToHex: HandlebarsHelpersGURPS.rgbToHex,
 		abs: HandlebarsHelpersGURPS.abs,
 		adjustedStudyHours: HandlebarsHelpersGURPS.adjustedStudyHours,
 		arr: HandlebarsHelpersGURPS.arr,

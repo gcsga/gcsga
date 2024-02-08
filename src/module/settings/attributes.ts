@@ -31,9 +31,7 @@ export class AttributeSettings extends SettingsMenuGURPS {
 				hint: "attributes hint temp",
 				default: defaultSettings[SYSTEM_NAME][`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`],
 				type: Object,
-				onChange: value => {
-					console.log(value)
-				},
+				onChange: () => {},
 			},
 			effects: {
 				prefix: SETTINGS.DEFAULT_ATTRIBUTES,
@@ -41,10 +39,28 @@ export class AttributeSettings extends SettingsMenuGURPS {
 				hint: "effects hint temp",
 				default: defaultSettings[SYSTEM_NAME][`${SETTINGS.DEFAULT_ATTRIBUTES}.effects`],
 				type: Object,
-				onChange: value => {
-					console.log(value)
-				},
+				onChange: () => {},
 			},
+		}
+	}
+
+	static override get defaultOptions(): FormApplicationOptions {
+		const options = super.defaultOptions
+		return {
+			...options,
+			tabs: [
+				{
+					navSelector: "nav",
+					contentSelector: "section.content",
+					initial: "attributes",
+				},
+			],
+			dragDrop: [
+				{
+					dragSelector: ".item-list .item .controls .drag",
+					dropSelector: null,
+				},
+			],
 		}
 	}
 
