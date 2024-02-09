@@ -25,7 +25,6 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 		return {
 			...options,
 			width: 620,
-			// min_width: 620,
 			height: 800,
 		}
 	}
@@ -33,8 +32,8 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 	override async getData(options: Partial<ItemSheetOptions> = {}): Promise<ItemSheetDataGURPS<TItem>> {
 		options.editable = this.isEditable
 		const { item } = this
-		const attributes = this.item.actor
-			? Object.values(this.item.actor.attributes).reduce((acc, c) => {
+		const attributes: Record<string, string> = this.item.actor
+			? Array.from(this.item.actor.attributes.values()).reduce((acc, c) => {
 					if (
 						[
 							attribute.Type.PrimarySeparator,
@@ -62,6 +61,7 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 
 		const locations = this._getHitLocations()
 
+		console.log(attributes)
 		const moveTypes = this.item.actor
 			? Object.values(this.item.actor.moveTypes).reduce((acc, c) => {
 					return { ...acc, [c.id]: c.move_type_def.name }
@@ -78,6 +78,7 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 			editable: this.isEditable,
 			document: item,
 			item,
+			system: item.system,
 			data: item.system,
 			title: this.title,
 			config: CONFIG.GURPS,
@@ -405,10 +406,12 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 interface ItemSheetDataGURPS<TItem extends ItemGURPS> extends ItemSheetData<TItem> {
 	item: TItem
 	data: TItem["system"]
+	system: TItem["system"]
 	config: ConfigGURPS["GURPS"]
 	attributes: Record<string, string>
 	locations: Record<string, string>
 	moveTypes: Record<string, string>
+	[key: string]: unknown
 }
 
 type ItemSheetOptions = DocumentSheetOptions

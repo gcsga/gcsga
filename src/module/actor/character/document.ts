@@ -68,7 +68,7 @@ import { PoolThreshold } from "@sytem/attribute/pool_threshold.ts"
 import { SkillDefault } from "@sytem/default/index.ts"
 import { BodyGURPS } from "@sytem/hit_location/object.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
-import { urlToBase64 } from "@util"
+import { getCurrentTime, urlToBase64 } from "@util"
 import { attribute } from "@util/enum/attribute.ts"
 import { feature } from "@util/enum/feature.ts"
 import { progression } from "@util/enum/progression.ts"
@@ -144,112 +144,26 @@ class CharacterGURPS<
 		}
 	}
 
-	protected override _preCreate(
-		data: this["_source"],
-		options: DocumentModificationContext<TParent>,
-		user: User<Actor<null>>,
-	): Promise<void> {
-		console.log("_preCreate")
-		const defaultData = {
-			system: fu.mergeObject(data.system ?? {}, {
-				settings: CharacterGURPS.getDefaultSettings(),
-				total_points: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.initial_points`),
-			}),
-			flags: CharacterFlagDefaults,
-		}
-		this.update(defaultData)
-		return super._preCreate(data, options, user)
-	}
-
 	protected override _onCreate(
 		data: this["_source"],
 		options: DocumentModificationContext<TParent>,
 		userId: string,
 	): void {
-		data.system = fu.mergeObject(data.system ?? {}, {
-			settings: CharacterGURPS.getDefaultSettings(),
-			total_points: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.initial_points`),
-		})
-		data.flags = CharacterFlagDefaults
-
-		console.log(data)
+		const date = getCurrentTime()
+		const defaultData = {
+			_id: data._id,
+			system: fu.mergeObject(data.system ?? {}, {
+				settings: CharacterGURPS.getDefaultSettings(),
+				total_points: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.initial_points`),
+				created_date: date,
+				modified_date: date,
+			}),
+			flags: CharacterFlagDefaults,
+		}
+		console.log(defaultData)
+		this.update(defaultData)
 		return super._onCreate(data, options, userId)
 	}
-
-	// protected override _onCreate(
-	// 	data: this["_source"],
-	// 	options: DocumentModificationContext<TParent> & { promptImport: boolean },
-	// 	userId: string,
-	// 	const default_settings = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
-	// 	const default_attributes = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
-	// ): void {
-	// 	const default_resource_trackers = game.settings.get(
-	// 		SYSTEM_NAME,
-	// 		`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`,
-	// 	)
-	// 	const default_hit_locations = {
-	// 		name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
-	// 		roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
-	// 		locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
-	// 	}
-	// 	const default_move_types = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
-	// 	const populate_description = game.settings.get(
-	// 		SYSTEM_NAME,
-	// 		`${SETTINGS.DEFAULT_SHEET_SETTINGS}.populate_description`,
-	// 	const initial_points = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.initial_points`)
-	// 	)
-	// 	const default_tech_level = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.tech_level`)
-	// 	const sd: DeepPartial<CharacterSystemSource> = {
-	// 		created_date: getCurrentTime(),
-	// 		profile: {
-	// 			player_name: "",
-	// 			name: "",
-	// 			title: "",
-	// 			organization: "",
-	// 			age: "",
-	// 			birthday: "",
-	// 			eyes: "",
-	// 			hair: "",
-	// 			skin: "",
-	// 			handedness: "",
-	// 			height: "6'",
-	// 			weight: "0 lb",
-	// 			SM: 0,
-	// 			gender: "",
-	// 			tech_level: "",
-	// 			religion: "",
-	// 			portrait: "",
-	// 		},
-	// 	}
-	// 	sd.total_points = initial_points
-	// 	sd.points_record = [
-	// 		{
-	// 			when: sd.created_date!,
-	// 			points: initial_points,
-	// 			reason: LocalizeGURPS.translations.gurps.character.points_record.initial_points,
-	// 		},
-	// 	]
-	// 	sd.settings = default_settings
-	// 	sd.settings.attributes = default_attributes
-	// 	if (typeof sd.settings.attributes !== "object") sd.settings.attributes = []
-	// 	sd.settings.body_type = default_hit_locations
-	// 	sd.settings.resource_trackers = default_resource_trackers
-	// 	if (typeof sd.settings.resource_trackers !== "object") sd.settings.resource_trackers = []
-	// 	sd.settings.move_types = default_move_types
-	// 	if (typeof sd.settings.move_types !== "object") sd.settings.move_types = []
-	// 	sd.modified_date = sd.created_date
-	// 	if (populate_description) sd.profile = SETTINGS_TEMP.general.auto_fill
-	// 	sd.profile!.tech_level = default_tech_level
-	// 	sd.attributes = this.newAttributes(sd.settings.attributes as AttributeDefObj[])
-	// 	sd.resource_trackers = this.newTrackers(sd.settings.resource_trackers as ResourceTrackerDefObj[])
-	// 	sd.move_types = this.newMoveTypes(sd.settings.move_types as MoveTypeDefObj[])
-	// 	const flags = CharacterFlagDefaults
-	// 	this.update({ _id: this._id, system: sd, flags: flags })
-	// 	super._onCreate(data, options, userId)
-	// 	if (options.promptImport) {
-	// 		this.promptImport()
-	// 	}
-	// }
 
 	protected override _preUpdate(
 		changed: DeepPartial<this["_source"]>,
@@ -1177,6 +1091,14 @@ class CharacterGURPS<
 
 	override prepareBaseData(): void {
 		super.prepareBaseData()
+
+		if (this.system.attributes.length === 0) this.system.attributes = this.newAttributes()
+
+		if (this.system.resource_trackers.length === 0 && this.system.settings.resource_trackers.length !== 0)
+			this.system.resource_trackers = this.newTrackers()
+
+		if (this.system.move_types.length === 0 && this.system.settings.move_types.length !== 0)
+			this.system.move_types = this.newMoveTypes()
 
 		// Attribute-like maps
 		this.attributes = this.prepareAttributes()

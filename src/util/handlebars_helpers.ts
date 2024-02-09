@@ -47,10 +47,10 @@ class HandlebarsHelpersGURPS {
 		return ""
 	}
 
-	static sum(...args: string[]): number {
+	static sum(...args: unknown[]): number {
 		const arr: number[] = []
 		for (const arg of args) {
-			if (parseInt(arg)) arr.push(parseInt(arg))
+			if (typeof arg === "string" && parseInt(arg)) arr.push(parseInt(arg))
 		}
 		return arr.reduce((a, b) => a + b, 0)
 	}
@@ -546,7 +546,7 @@ export function registerHandlebarsHelpers(): void {
 		sort: HandlebarsHelpersGURPS.sort,
 		// staticSpellValues: HandlebarsHelpersGURPS.staticSpellValues,
 		studyInfo: HandlebarsHelpersGURPS.studyInfo,
-		// sum: HandlebarsHelpersGURPS.sum,
+		sum: HandlebarsHelpersGURPS.sum,
 		textareaFormat: HandlebarsHelpersGURPS.textareaFormat,
 		customArmorDivisorSelect: HandlebarsHelpersGURPS.customArmorDivisorSelect,
 		// pageRef: pageRef,

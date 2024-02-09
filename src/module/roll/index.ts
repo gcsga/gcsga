@@ -83,6 +83,7 @@ export class RollGURPS extends Roll {
 		actor: ActorGURPS | null,
 		data: Partial<RollTypeData>,
 	): Promise<void> {
+		console.log("handleRoll", user, actor, data)
 		if (actor instanceof CharacterGURPS) {
 			const lastStack = user?.flags[SYSTEM_NAME][UserFlags.ModifierStack]
 			await user?.setFlag(SYSTEM_NAME, UserFlags.LastStack, lastStack)

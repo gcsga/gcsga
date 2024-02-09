@@ -67,7 +67,7 @@ export abstract class ItemGCS<TParent extends ActorGURPS | null = ActorGURPS | n
 	}
 
 	get resolvedNotes(): string {
-		return sheetDisplayNotes(this.secondaryText(display.Option.isInline))
+		return sheetDisplayNotes(this.secondaryText(display.Option.isInline), { unsatisfied: this.unsatisfiedReason })
 	}
 
 	get resolvedTooltip(): string {

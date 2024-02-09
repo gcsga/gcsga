@@ -12,11 +12,9 @@ export class TraitSheet<IType extends TraitGURPS = TraitGURPS> extends ItemSheet
 	}
 
 	override async getData(options: Partial<ItemSheetOptions> = {}): Promise<ItemSheetDataGURPS<IType>> {
-		const data = super.getData(options)
-		const modifiers = this.object.modifiers
-		return fu.mergeObject(data, {
-			modifiers,
-		})
+		const data = await super.getData(options)
+		data.modifiers = this.object.modifiers
+		return data
 	}
 
 	protected override async _updateObject(event: Event, formData: Record<string, unknown>): Promise<void> {
