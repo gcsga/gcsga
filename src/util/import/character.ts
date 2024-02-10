@@ -94,8 +94,6 @@ export class CharacterImporter {
 		items.push(...ItemImporter.importItems(data.other_equipment, { other: true }))
 		items.push(...ItemImporter.importItems(data.notes))
 
-		console.log(items)
-
 		const name = data.profile?.name ?? document.name ?? LocalizeGURPS.translations.TYPES.Actor[ActorType.Character]
 
 		const actorData: DeepPartial<CharacterSource> = {
@@ -287,8 +285,7 @@ export class CharacterImporter {
 	}
 
 	static importPortrait(data?: string): ImageFilePath {
-		if (game.user?.hasPermission(foundry.CONST.USER_PERMISSIONS.FILES_UPLOAD))
-			return `data:image/png,base64,${data}.png`
+		if (game.user?.hasPermission("FILES_UPLOAD")) return `data:image/png,base64,${data}.png`
 		return `/systems/${SYSTEM_NAME}/assets/icons/character.svg`
 	}
 

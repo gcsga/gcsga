@@ -431,7 +431,7 @@ function sluggify(text: string, { camel = null }: { camel?: SlugCamel } = {}): s
 type SlugCamel = "dromedary" | "bactrian" | null
 
 function ErrorGURPS(message: string): Error {
-	return Error(`GURPS | ${message}`)
+	return new Error(`GURPS | ${message}`)
 }
 
 /** Generate and return an HTML element for a FontAwesome icon */

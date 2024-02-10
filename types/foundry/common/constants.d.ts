@@ -278,15 +278,6 @@ export const JOURNAL_ENTRY_PAGE_FORMATS: {
 	MARKDOWN: 2
 }
 
-export const SHOWDOWN_OPTIONS: {
-	disableForced4SpacesIndentedSublists: true
-	noHeaderId: true
-	parseImgDimensions: true
-	strikethrough: true
-	tables: true
-	tablesHeaderId: true
-}
-
 /** Define the valid anchor locations for a Tooltip displayed on a Placeable Object */
 export const TEXT_ANCHOR_POINTS: {
 	CENTER: 0
@@ -674,6 +665,15 @@ export const TIMEOUTS: {
 	FOUNDRY_WEBSITE: 10000
 	PACKAGE_REPOSITORY: 5000
 	IP_DISCOVERY: 5000
+}
+
+export const SHOWDOWN_OPTIONS: {
+	disableForced4SpacesIndentedSublists: true
+	noHeaderId: true
+	parseImgDimensions: true
+	strikethrough: true
+	tables: true
+	tablesHeaderId: true
 }
 
 declare global {

@@ -90,6 +90,11 @@ declare global {
 
 	namespace globalThis {
 		// eslint-disable-next-line no-var
+		var GURPS: {
+			LastActor: ActorGURPS | null
+			LastToken: TokenDocumentGURPS | null
+		}
+		// eslint-disable-next-line no-var
 		var game: GameGURPS
 		// eslint-disable-next-line no-var
 		var fu: typeof foundry.utils
@@ -100,7 +105,8 @@ declare global {
 			ItemDirectory<ItemGURPS<null>>,
 			ChatLog,
 			CompendiumDirectory,
-			CombatTrackerGURPS<CombatGURPS | null>
+			CombatTrackerGURPS<CombatGURPS | null>,
+			Hotbar
 		>
 
 		// Add functions to the `Math` namespace for use in `Roll` formulas

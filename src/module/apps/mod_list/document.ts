@@ -1,6 +1,6 @@
 import { ActorGURPS } from "@actor"
 import { RollModifier, RollModifierTags, SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
-import { UserFlags, UserGURPS } from "@module/user/index.ts"
+import { UserFlags } from "@module/user/index.ts"
 import { LastActor } from "@util"
 
 class ModifierList extends Application {
@@ -67,7 +67,7 @@ class ModifierList extends Application {
 			id: $(event.currentTarget).data("name"),
 			modifier: $(event.currentTarget).data("modifier"),
 		}
-		return (game.user as UserGURPS).addModifier(modifier)
+		return game.user.addModifier(modifier)
 	}
 
 	_onCollapseToggle(event: JQuery.ClickEvent): this | Promise<this> {

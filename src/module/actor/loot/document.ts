@@ -174,7 +174,7 @@ class LootGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS |
 			if (path === "settings.attributes") data.type = "attribute_settings"
 			else if (path === "settings.body_type") data.type = "body_type"
 		}
-		fu.saveDataToFile(JSON.stringify(data, null, "\t"), extension, `${name}.${extension}`)
+		saveDataToFile(JSON.stringify(data, null, "\t"), extension, `${name}.${extension}`)
 	}
 
 	protected async exportSystemData(): Promise<[DeepPartial<LootSystemSource>, string]> {
@@ -239,7 +239,7 @@ class LootGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS |
 									name: rawFile.name,
 									path: rawFile.path,
 								}
-								fu.readTextFromFile(rawFile).then(text => {
+								readTextFromFile(rawFile).then(text => {
 									CharacterImporter.importCharacter(this, {
 										text: text,
 										name: rawFile.name,

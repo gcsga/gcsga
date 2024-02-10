@@ -51,6 +51,7 @@ class HandlebarsHelpersGURPS {
 		const arr: number[] = []
 		for (const arg of args) {
 			if (typeof arg === "string" && parseInt(arg)) arr.push(parseInt(arg))
+			if (typeof arg === "number") arr.push(arg)
 		}
 		return arr.reduce((a, b) => a + b, 0)
 	}
@@ -139,7 +140,7 @@ class HandlebarsHelpersGURPS {
 			timeStyle: "short",
 		}
 		options.timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
-		return date.toLocaleString("en-US", options).replace(" at", ",")
+		return date.toLocaleString("en-US", options)
 	}
 
 	// Lenght

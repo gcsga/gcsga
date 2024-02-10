@@ -127,7 +127,6 @@ export class DamageChat {
 		// Add any handling code here.
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	static async _clickOnDiceResults(event: JQuery.ClickEvent): Promise<void> {
 		event.preventDefault()
 		event.stopPropagation()

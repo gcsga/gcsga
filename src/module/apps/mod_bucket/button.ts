@@ -1,6 +1,6 @@
 import { RollType, SYSTEM_NAME } from "@data"
 import { ModifierBucketWindow } from "./window.ts"
-import { UserFlags, UserGURPS } from "@module/user/index.ts"
+import { UserFlags } from "@module/user/index.ts"
 import { LastActor } from "@util"
 import { RollGURPS } from "@module/roll/index.ts"
 
@@ -48,7 +48,7 @@ export class ModifierBucket extends Application {
 
 	override async getData(options?: Partial<ApplicationOptions> | undefined): Promise<object> {
 		// let total = (game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierTotal) as number) ?? 0
-		const total = (game.user as UserGURPS).modifierTotal
+		const total = game.user.modifierTotal
 		const buttonMagnet = game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierSticky) === true ? "sticky" : ""
 		let buttonColor = "total-white"
 		if (total > 0) buttonColor = "total-green"
@@ -68,13 +68,14 @@ export class ModifierBucket extends Application {
 	}
 
 	// Increase/Decrease modifier by 1 with the mouse wheel
-	async _onMouseWheel(event: WheelEvent): Promise<void> {
+	async _onMouseWheel(event: WheelEvent): Promise<this> {
 		const delta = Math.round(event.deltaY / -100)
-		return (game.user as UserGURPS).addModifier({
+		game.user.addModifier({
 			id: "",
 			modifier: delta,
 			tags: [],
 		})
+		return this.render()
 	}
 
 	// Open/close the modifier bucket

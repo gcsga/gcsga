@@ -17,13 +17,11 @@ import { display, feature, skillsel, wsel, wswitch } from "@util/enum/index.ts"
 import { WeaponParry } from "./weapon_parry.ts"
 import { MeleeWeaponSystemSource } from "@item/melee_weapon/data.ts"
 
-export interface BaseWeaponGURPS<TParent extends ActorGURPS | null> extends ItemGURPS<TParent> {
+interface BaseWeaponGURPS<TParent extends ActorGURPS | null> extends ItemGURPS<TParent> {
 	system: BaseWeaponSystemSource
 }
 
-export abstract class BaseWeaponGURPS<
-	TParent extends ActorGURPS | null = ActorGURPS | null,
-> extends ItemGURPS<TParent> {
+abstract class BaseWeaponGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
 	get itemName(): string {
 		if (this.container instanceof Item) return this.container?.name ?? ""
 		return ""
@@ -386,3 +384,5 @@ export abstract class BaseWeaponGURPS<
 
 	abstract checkUnready(type: RollType): void
 }
+
+export { BaseWeaponGURPS }

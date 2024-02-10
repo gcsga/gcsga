@@ -1,5 +1,6 @@
 import { DAMAGE_TYPE } from "@module/apps/damage_calculator/damage_type.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
+import { ErrorGURPS } from "@util"
 
 export const DamageRegEx =
 	// eslint-disable-next-line max-len
@@ -23,7 +24,7 @@ export class DamageRollGURPS {
 	constructor(text: string) {
 		// console.log(text)
 		const groups = text.match(DamageRegEx)?.groups
-		if (!groups) throw new Error("Bad damage term")
+		if (!groups) throw ErrorGURPS("Bad damage term")
 		this.text = text
 		this.groups = groups
 	}

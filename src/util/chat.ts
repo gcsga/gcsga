@@ -6,7 +6,6 @@ import { LastActor } from "./last_actor.ts"
 import { LocalizeGURPS } from "./localize.ts"
 import { RollTypeData } from "@module/roll/roll_handler.ts"
 import { GURPS_COMMANDS, RollModifier, RollType, gid } from "@data"
-import { UserGURPS } from "@module/user/document.ts"
 
 export function parse(message: string): [string, string[]] {
 	for (const [rule, rgx] of Object.entries(GURPS_COMMANDS)) {
@@ -86,7 +85,7 @@ async function _onModRClick(event: JQuery.ContextMenuEvent): Promise<void> {
 	const mod: RollModifier = fu.duplicate($(event.currentTarget).data("mod"))
 	mod.modifier = -mod.modifier
 	// return game.ModifierBucket.addModifier(mod)
-	return (game.user as UserGURPS).addModifier(mod)
+	return game.user.addModifier(mod)
 }
 
 /**

@@ -1156,9 +1156,8 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 			...(super.getData() as ActorSheetData<TActor>),
 			...this._prepareItems(),
 			actor: this.actor,
-			data: this.actor.system,
+			system: this.actor.system,
 			settings: sheetSettingsFor(this.actor),
-			// editing: this.actor.editing,
 			primaryAttributes,
 			body: body,
 			secondaryAttributes,
@@ -1396,7 +1395,7 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 
 interface CharacterSheetData<TActor extends CharacterGURPS> extends ActorSheetData<TActor> {
 	actor: TActor
-	data: TActor["system"]
+	system: TActor["system"]
 	traits: ItemGURPS[]
 	skills: ItemGURPS[]
 	spells: ItemGURPS[]

@@ -82,7 +82,7 @@ export class AttributeSettings extends SettingsMenuGURPS {
 			version: 4,
 			rows: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`),
 		}
-		fu.saveDataToFile(
+		saveDataToFile(
 			JSON.stringify(data, null, "\t"),
 			extension,
 			`${LocalizeGURPS.translations.gurps.settings.default_attributes.name}.${extension}`,

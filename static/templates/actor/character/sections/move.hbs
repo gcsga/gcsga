@@ -3,7 +3,7 @@
 	<div class="label">{{localize "gurps.character.move.maneuver"}}</div>
 	<div class="field">
 		<select class="move-select" data-name="maneuver" {{disabled (not actor.inCombat)}}>
-			{{#select moveData.maneuver}} {{#each maneuvers as |v k|}}
+			{{#select moveData.maneuver}} {{#each config.select.maneuvers as |v k|}}
 			<option value="{{k}}">{{localize v}}</option>
 			{{/each}} {{/select}}
 		</select>
@@ -12,7 +12,7 @@
 	<div class="label">{{localize "gurps.character.move.posture"}}</div>
 	<div class="field">
 		<select class="move-select" data-name="posture">
-			{{#select moveData.posture}} {{#each postures as |v k|}}
+			{{#select moveData.posture}} {{#each config.select.postures as |v k|}}
 			<option value="{{k}}">{{localize v}}</option>
 			{{/each}} {{/select}}
 		</select>

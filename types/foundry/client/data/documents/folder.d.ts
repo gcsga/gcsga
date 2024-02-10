@@ -107,7 +107,7 @@ declare global {
 		 * Get the Folder documents which are parent folders of the current folder or any if its parents.
 		 * @returns An array of Folder documents which are parent folders of this one
 		 */
-		geTParentFolders(): Folder<TDocument>[]
+		getParentFolders(): Folder<TDocument>[]
 	}
 
 	type EnfolderableDocument = Actor<null> | Item<null> | Macro | Scene | JournalEntry | RollTable

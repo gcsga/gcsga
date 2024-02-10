@@ -1801,7 +1801,7 @@ class CharacterGURPS<
 			else if (path === "settings.body_type") data.type = "body_type"
 		}
 		// return saveDataToFile(JSON.stringify(data, null, "\t"), extension, `${name}.${extension}`)
-		fu.saveDataToFile(JSON.stringify(data, null, "\t"), extension, `${name}.${extension}`)
+		saveDataToFile(JSON.stringify(data, null, "\t"), extension, `${name}.${extension}`)
 	}
 
 	protected async exportSystemData(): Promise<[DeepPartial<CharacterSystemSource>, string]> {
@@ -1908,7 +1908,6 @@ class CharacterGURPS<
 									name: rawFile.name,
 									path: rawFile.path,
 								}
-								// @ts-expect-error not defined
 								readTextFromFile(rawFile).then((text: string) => {
 									CharacterImporter.importCharacter(this, {
 										text: text,

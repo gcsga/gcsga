@@ -2,7 +2,7 @@ import { SOCKET, SYSTEM_NAME } from "@data"
 import { loadModifiers } from "@module/apps/mod_bucket/data.ts"
 import { TokenHUDGURPS } from "@module/canvas/index.ts"
 import { ColorSettings } from "@module/settings/colors.ts"
-import { getDefaultSkills } from "@util"
+import { LastActor, getDefaultSkills } from "@util"
 
 export const Ready = {
 	listen: (): void => {
@@ -11,6 +11,11 @@ export const Ready = {
 			ColorSettings.applyColors()
 			loadModifiers()
 			getDefaultSkills()
+
+			globalThis.GURPS = {
+				LastActor: await LastActor.get(),
+				LastToken: await LastActor.getToken(),
+			}
 
 			// ApplyDiceCSS()
 
@@ -27,11 +32,6 @@ export const Ready = {
 			if (canvas && canvas.hud) {
 				canvas.hud.token = new TokenHUDGURPS()
 			}
-
-			// Set initial LastActor values
-			// GURPS.clearLastActor = LastActor.clear
-			// GURPS.LastActor = await LastActor.get()
-			// GURPS.LastToken = await LastActor.getToken()
 
 			CONFIG.Combat.initiative.decimals = 5
 			// setInitiative()

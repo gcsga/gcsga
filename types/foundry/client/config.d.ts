@@ -168,7 +168,7 @@ declare global {
 			sidebarIcon: string
 		}
 
-		/** Configuration for the JournalEntry entity */
+		/** Configuration for the JournalEntryPage entity */
 		JournalEntryPage: {
 			documentClass: {
 				new (
@@ -307,11 +307,11 @@ declare global {
 
 		/** Configuration settings for the Canvas and its contained layers and objects */
 		Canvas: {
-			rulerClass: typeof Ruler
 			blurStrength: number
 			darknessColor: number
 			darknessLightPenalty: number
 			daylightColor: number
+			dragSpeedModifier: number
 			dispositionColors: {
 				HOSTILE: number
 				NEUTRAL: number
@@ -404,6 +404,7 @@ declare global {
 				sound: typeof ClockwiseSweepPolygon
 				move: typeof ClockwiseSweepPolygon
 			}
+			rulerClass: typeof Ruler
 
 			normalLightColor: number
 			maxZoom: number

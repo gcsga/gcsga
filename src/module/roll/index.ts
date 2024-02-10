@@ -59,12 +59,12 @@ export class RollGURPS extends Roll {
 	protected override _prepareData(data: Record<string, unknown>): Record<string, unknown> {
 		const d = super._prepareData(data) ?? {}
 		// d.gmod = game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierTotal)
-		d.gmod = (game.user as UserGURPS)?.modifierTotal
+		d.gmod = game.user?.modifierTotal
 		if (!objectHasKey(d, "gmodc"))
 			Object.defineProperty(d, "gmodc", {
 				get() {
 					// const mod = game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierTotal) as number
-					const mod = (game.user as UserGURPS)?.modifierTotal
+					const mod = game.user?.modifierTotal
 					game.gurps.modifierBucket.clear()
 					return mod
 				},
@@ -78,21 +78,16 @@ export class RollGURPS extends Roll {
 	 * @param {ActorGURPS} actor
 	 * @param data
 	 */
-	static async handleRoll(
-		user: UserGURPS | null,
-		actor: ActorGURPS | null,
-		data: Partial<RollTypeData>,
-	): Promise<void> {
-		console.log("handleRoll", user, actor, data)
+	static async handleRoll(user: UserGURPS | null, actor: ActorGURPS | null, data: RollTypeData): Promise<void> {
 		if (actor instanceof CharacterGURPS) {
 			const lastStack = user?.flags[SYSTEM_NAME][UserFlags.ModifierStack]
 			await user?.setFlag(SYSTEM_NAME, UserFlags.LastStack, lastStack)
 		}
 
-		return rollTypeHandlers[data.type as RollType].handleRollType(
+		return await rollTypeHandlers[data.type as RollType].handleRollType(
 			user,
 			actor,
-			data as RollTypeData,
+			data,
 			game.settings.get(SYSTEM_NAME, SETTINGS.ROLL_FORMULA) || "3d6",
 			data.hidden ?? false,
 		)

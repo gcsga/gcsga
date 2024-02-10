@@ -63,10 +63,10 @@ declare global {
 		protected _onClickSaveBinding(event: MouseEvent): Promise<void>
 
 		/** Given a clicked Action element, finds the parent Action */
-		protected _geTParentAction(event: MouseEvent | KeyboardEvent): object
+		protected _getParentAction(event: MouseEvent | KeyboardEvent): object
 
 		/** Given a Clicked binding control element, finds the parent Binding */
-		protected _geTParentBinding(event: MouseEvent | KeyboardEvent): {
+		protected _getParentBinding(event: MouseEvent | KeyboardEvent): {
 			bindingHTML: HTMLElement | null
 			bindingId: string | undefined
 		}

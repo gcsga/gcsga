@@ -13,14 +13,9 @@ declare class TileHUD extends BasePlaceableHUD<Tile> {}
  * This interface provides controls for visibility, attribute bars, elevation, status effects, and more.
  */
 declare class TokenHUD<TToken extends Token = Token> extends BasePlaceableHUD<TToken> {
-	/**
-	 * Track whether the status effects control palette is currently expanded or hidden
-	 * @type {boolean}
-	 * @private
-	 */
-	protected _statusEffects: boolean
-
 	override getData(options?: ApplicationOptions): TokenHUDData
+
+	protected _statusEffects: boolean
 
 	protected _getStatusEffectChoices(): Record<string, TokenHUDStatusEffectChoice | undefined>
 

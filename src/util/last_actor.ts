@@ -4,10 +4,14 @@ import { UserFlags } from "@module/user/data.ts"
 import { TokenDocumentGURPS } from "@scene/token-document/document.ts"
 
 export class LastActor {
-	static async set(actor: ActorGURPS, token?: TokenDocument): Promise<void> {
+	static async set(actor: ActorGURPS, token?: TokenDocumentGURPS): Promise<void> {
 		if (actor.type === ActorType.Loot) return
 		await game.user?.setFlag(SYSTEM_NAME, UserFlags.LastActor, actor.uuid)
-		if (token) await game.user?.setFlag(SYSTEM_NAME, UserFlags.LastToken, token.uuid)
+		GURPS.LastActor = actor
+		if (token) {
+			await game.user?.setFlag(SYSTEM_NAME, UserFlags.LastToken, token.uuid)
+			GURPS.LastToken = token
+		}
 		await game.gurps.modifierBucket.render()
 	}
 
@@ -19,7 +23,7 @@ export class LastActor {
 		return null
 	}
 
-	static async getToken(): Promise<TokenDocument | null> {
+	static async getToken(): Promise<TokenDocumentGURPS | null> {
 		const uuid: string = game.user?.flags[SYSTEM_NAME]?.[UserFlags.LastToken] || ""
 		const token: TokenDocumentGURPS | null = (await fromUuid(uuid)) as TokenDocumentGURPS | null
 		if (token) return token
@@ -28,5 +32,6 @@ export class LastActor {
 
 	static async clear(): Promise<void> {
 		game.user?.setFlag(SYSTEM_NAME, UserFlags.LastActor, null)
+		GURPS.LastActor = null
 	}
 }
