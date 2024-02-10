@@ -111,7 +111,7 @@ const config = Vite.defineConfig(({ command, mode }): Vite.UserConfig => {
 		fs.writeFileSync("./vendor.mjs", `/** ${message} */\n`)
 	}
 
-	const reEscape = (s: string) => s.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&")
+	// const reEscape = (s: string) => s.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&")
 
 	return {
 		base: command === "build" ? "./" : "/systems/gcsga/",
@@ -136,17 +136,17 @@ const config = Vite.defineConfig(({ command, mode }): Vite.UserConfig => {
 				fileName: "gcsga",
 			},
 			rollupOptions: {
-				external: new RegExp(
-					[
-						"(?:",
-						reEscape("../../icons/weapons/"),
-						"[-a-z/]+",
-						reEscape(".webp"),
-						"|",
-						reEscape("../ui/parchment.jpg"),
-						")$",
-					].join(""),
-				),
+				// external: new RegExp(
+				// 	[
+				// 		"(?:",
+				// 		reEscape("../../icons/weapons/"),
+				// 		"[-a-z/]+",
+				// 		reEscape(".webp"),
+				// 		"|",
+				// 		reEscape("../ui/parchment.jpg"),
+				// 		")$",
+				// 	].join(""),
+				// ),
 				output: {
 					assetFileNames: ({ name }): string => (name === "style.css" ? "styles/gcsga.css" : name ?? ""),
 					chunkFileNames: "[name].mjs",
