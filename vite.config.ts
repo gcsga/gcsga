@@ -50,9 +50,9 @@ const config = Vite.defineConfig(({ command, mode }): Vite.UserConfig => {
 			},
 			...viteStaticCopy({
 				targets: [
-					{ src: "CHANGELOG.md", dest: "." },
+					// { src: "CHANGELOG.md", dest: "." },
 					{ src: "README.md", dest: "." },
-					{ src: "CONTRIBUTING.md", dest: "." },
+					// { src: "CONTRIBUTING.md", dest: "." },
 				],
 			}),
 		)
