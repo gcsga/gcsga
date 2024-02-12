@@ -1,47 +1,7 @@
-import { ActorGURPS, CharacterGURPS } from "@actor"
-import {
-	CharacterFlagDefaults,
-	CharacterFlags,
-	CharacterMove,
-	CharacterProfile,
-	CharacterSource,
-	CharacterSystemSource,
-	PointsRecord,
-} from "@actor/character/data.ts"
-import {
-	ImportedAttribute,
-	ImportedAttributeDef,
-	ImportedBody,
-	ImportedCharacterProfile,
-	ImportedCharacterSystemSource,
-	ImportedHitLocation,
-	ImportedMoveData,
-	ImportedMoveType,
-	ImportedMoveTypeDef,
-	ImportedMoveTypeOverride,
-	ImportedPageSettings,
-	ImportedPointsRecord,
-	ImportedResourceTracker,
-	ImportedResourceTrackerDef,
-	ImportedSheetSettings,
-	ImportedThirdPartyData,
-	ImportedThreshold,
-} from "./data.ts"
-import { BlockLayoutKey, PageSettings, SheetSettingsObj } from "@module/data/sheet_settings.ts"
-import { AttributeDefObj, AttributeObj, PoolThresholdDef } from "@sytem/attribute/data.ts"
-import { progression } from "@util/enum/progression.ts"
-import { ItemImporter, LengthUnits, LocalizeGURPS, WeightUnits, getCurrentTime } from "@util"
-import { display } from "@util/enum/display.ts"
-import { ResourceTrackerDefObj, ResourceTrackerObj } from "@sytem/resource_tracker/data.ts"
-import { MoveTypeDefObj, MoveTypeObj, MoveTypeOverrideObj } from "@sytem/move_type/data.ts"
-import { ItemSourceGURPS } from "@item/base/data/index.ts"
+import { SYSTEM_NAME } from "@data"
 import { ChatMessageGURPS } from "@module/chat-message/document.ts"
-import { ActorFlags, ActorType, ManeuverID, SYSTEM_NAME } from "@data"
-import { BodyObj, HitLocationObj } from "@sytem/hit_location/data.ts"
 
-const GCS_FILE_VERSION = 4
-
-export class CharacterImporter {
+export class GCACharacterImporter {
 	static async throwError(text: string): Promise<void> {
 		ui.notifications.error(text)
 
