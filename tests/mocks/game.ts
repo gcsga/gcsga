@@ -1,6 +1,7 @@
 import { ConditionID, EFFECT_ACTION, SETTINGS, SYSTEM_NAME, gid } from "@data"
 import { ThresholdOp } from "@sytem/attribute/data.ts"
 import { MookData } from "@sytem/mook/data.ts"
+import { LocalizeGURPS } from "@util"
 import { attribute } from "@util/enum/attribute.ts"
 import { progression } from "@util/enum/progression.ts"
 
@@ -9,6 +10,7 @@ export class MockGame {
 
 	constructor() {
 		this.settings = new MockSettings()
+		LocalizeGURPS.ready = true
 	}
 }
 

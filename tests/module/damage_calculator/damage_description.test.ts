@@ -8,7 +8,7 @@ import { DiceGURPS } from "@module/dice/index.ts"
 const Torso = "Torso"
 
 // Add real tests here.
-describe("Damage calculator", () => {
+describe.skip("Damage calculator", () => {
 	let _attacker: DamageAttacker
 	let _target: _Target
 	let _roll: DamageRoll

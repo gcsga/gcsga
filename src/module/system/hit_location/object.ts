@@ -1,4 +1,4 @@
-import { BodyOwner, LocalizeGURPS, equalFold, sanitizeId } from "@util"
+import { BodyOwner, equalFold, sanitizeId } from "@util"
 import { BodyObj, HitLocationObj } from "./data.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { TooltipGURPS } from "@sytem/tooltip/index.ts"
@@ -31,8 +31,8 @@ class HitLocation {
 	constructor(actor: BodyOwner) {
 		this.owner = actor
 		this._id = "id"
-		this.choiceName = LocalizeGURPS.translations.gurps.placeholder.hit_location.choice_name
-		this.tableName = LocalizeGURPS.translations.gurps.placeholder.hit_location.table_name
+		this.choiceName = game.i18n.localize("gurps.placeholder.hit_location.choice_name")
+		this.tableName = game.i18n.localize("gurps.placeholder.hit_location.table_name")
 		this.slots = 0
 		this.hitPenalty = 0
 		this.drBonus = 0
@@ -93,7 +93,7 @@ class HitLocation {
 		if (this.drBonus !== 0) {
 			drMap.set(gid.All, this.drBonus)
 			tooltip?.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.tooltip.dr_bonus, {
+				game.i18n.format(game.i18n.localize("gurps.tooltip.dr_bonus"), {
 					item: this.choiceName,
 					bonus: this.drBonus.signedString(),
 					type: gid.All,
@@ -113,7 +113,7 @@ class HitLocation {
 				let value = drMap.get(k) ?? 0
 				if (!equalFold(gid.All, k)) value += base
 				buffer.push(
-					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.tooltip.dr_total, {
+					game.i18n.format(game.i18n.localize("gurps.tooltip.dr_total"), {
 						amount: value,
 						type: k,
 					}),
