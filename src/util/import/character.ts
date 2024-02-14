@@ -38,6 +38,7 @@ import { ItemSourceGURPS } from "@item/base/data/index.ts"
 import { ChatMessageGURPS } from "@module/chat-message/document.ts"
 import { ActorFlags, ActorType, ManeuverID, SYSTEM_NAME } from "@data"
 import { BodyObj, HitLocationObj } from "@sytem/hit_location/data.ts"
+import { GCACharacterImporter } from "./character_gca.ts"
 
 const GCS_FILE_VERSION = 4
 
@@ -58,6 +59,9 @@ export class CharacterImporter {
 		document: TActor,
 		file: { text: string; name: string; path: string },
 	): Promise<void> {
+		// Redirect to GCA5 importer
+		if (file.name.endsWith(".gca5")) return GCACharacterImporter.importCharacter(document, file)
+
 		const data = JSON.parse(file.text) as ImportedCharacterSystemSource
 
 		if (data.version !== GCS_FILE_VERSION) {

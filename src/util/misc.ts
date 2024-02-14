@@ -481,9 +481,20 @@ function rgbToHex(input: string): string {
 	return "#" + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1)
 }
 
+function localeDate(str: string): string {
+	const date = new Date(str)
+	const options: Intl.DateTimeFormatOptions = {
+		dateStyle: "medium",
+		timeStyle: "short",
+	}
+	options.timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+	return date.toLocaleString("en-US", options)
+}
+
 export {
 	ErrorGURPS,
 	capitalize,
+	localeDate,
 	d6ify,
 	dollarFormat,
 	extractTechLevel,

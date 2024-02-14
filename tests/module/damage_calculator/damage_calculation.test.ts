@@ -23,7 +23,7 @@ const Extremity = ["Hand", "Foot"]
 // const Torso = "Torso"
 
 // Add real tests here.
-describe.skip("Damage calculator", () => {
+describe("Damage calculator", () => {
 	let _attacker: DamageAttacker
 	let _target: _Target
 	let _roll: DamageRoll

@@ -2,20 +2,16 @@ import { gid } from "@module/data/index.ts"
 import { attribute } from "@util/enum/attribute.ts"
 
 export interface AttributeObj {
-	// Bonus?: number
-	// effectiveBonus?: number
-	// cost_reduction?: number
-	// order: number
 	attr_id: string
 	adj: number
 	damage?: number
 	attribute_def?: AttributeDefObj
 	apply_ops?: boolean
-	calc?: {
-		value: number
-		current?: number
-		points: number
-	}
+	// calc?: {
+	// 	value: number
+	// 	current?: number
+	// 	points: number
+	// }
 }
 
 export interface AttributeDefObj {

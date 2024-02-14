@@ -30,6 +30,7 @@ import {
 	MookTrait,
 	MookTraitModifier,
 } from "./data.ts"
+import { MoveTypeDef } from "@sytem/move_type/move_type_def.ts"
 
 export class Mook {
 	type = "mook"
@@ -37,12 +38,17 @@ export class Mook {
 	protected variableResolverExclusions: Map<string, boolean> = new Map()
 
 	settings: {
-		attributes: AttributeDefObj[]
+		attributes: AttributeDef[]
 		damage_progression: progression.Option
-		move_types: MoveTypeDefObj[]
+		move_types: MoveTypeDef[]
 	}
 
 	system: {
+		settings: {
+			attributes: AttributeDefObj[]
+			damage_progression: progression.Option
+			move_types: MoveTypeDefObj[]
+		}
 		attributes: AttributeObj[]
 	}
 
@@ -93,14 +99,20 @@ export class Mook {
 	}
 
 	constructor(data?: Partial<MookData>) {
-		this.settings = data?.settings ?? {
+		const settings = data?.system?.settings ?? {
 			attributes: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`),
 			damage_progression: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
 				.damage_progression,
 			move_types: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`),
 		}
+		this.settings = {
+			attributes: settings.attributes.map(e => new AttributeDef(e)),
+			damage_progression: settings.damage_progression,
+			move_types: settings.move_types.map(e => new MoveTypeDef(e)),
+		}
 		this.system = data?.system ?? {
-			attributes: this.newAttributes(this.settings.attributes),
+			settings,
+			attributes: this.newAttributes(settings.attributes),
 		}
 		this.attributes = this.getAttributes()
 		this.traits = data?.traits ?? []

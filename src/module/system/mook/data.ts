@@ -11,13 +11,13 @@ import { selfctrl } from "@util/enum/selfctrl.ts"
 import { StringBuilder } from "@util/string_builder.ts"
 
 export interface MookData {
-	settings: {
-		attributes: AttributeDefObj[]
-		damage_progression: progression.Option
-		move_types: MoveTypeDefObj[]
-	}
 	system: {
 		attributes: AttributeObj[]
+		settings: {
+			attributes: AttributeDefObj[]
+			damage_progression: progression.Option
+			move_types: MoveTypeDefObj[]
+		}
 	}
 	attributes: Map<string, Attribute>
 	traits: MookTrait[]

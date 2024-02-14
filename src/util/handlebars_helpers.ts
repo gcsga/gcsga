@@ -1,4 +1,4 @@
-import { isContainer, rgbToHex } from "./misc.ts"
+import { isContainer, localeDate, rgbToHex } from "./misc.ts"
 import { LocalizeGURPS } from "./localize.ts"
 import { Study } from "./study.ts"
 import { study } from "./enum/study.ts"
@@ -134,13 +134,7 @@ class HandlebarsHelpersGURPS {
 	// }
 
 	static date(str: string): string {
-		const date = new Date(str)
-		const options: Intl.DateTimeFormatOptions = {
-			dateStyle: "medium",
-			timeStyle: "short",
-		}
-		options.timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
-		return date.toLocaleString("en-US", options)
+		return localeDate(str)
 	}
 
 	// Lenght

@@ -91,7 +91,7 @@ type GCAExtendedTagsBlock = {
 
 type GCAUnknownTag = {
 	tagname: string
-	tagbalue: string
+	tagvalue: string
 }
 
 type GCABonusesBlock = {
@@ -378,7 +378,7 @@ type GCATrait = {
 		charammounits?: string
 	}
 
-	weaponmodesdata: {
+	weaponmodesdata?: {
 		mode?: string
 		damage?: string
 		damtype?: string
@@ -540,6 +540,106 @@ type GCATrait = {
 	_idkey: string
 }
 
+type GCATraitBlock = {
+	trait?: GCATrait[]
+	_count: number
+}
+
+type GCAItemBlock = {
+	item?: GCAItem[]
+	_count: number
+}
+
+type GCAItem = {
+	name: string
+	_idkey: number
+}
+
+type GCALoadout = {
+	name: string
+	bodyimagefile?: string
+	weight: number
+	shielddb: number
+	hexmask: string
+	alwaysautocalcarmor?: string
+	userorderedlayers?: string
+	facingdb: {
+		leftflank: number
+		leftfront: number
+		centerfront: number
+		rightfront: number
+		rightflank: number
+		rear: number
+	}
+	items: GCAItemBlock
+	armoritems: GCAItemBlock
+	shielditems: GCAItemBlock
+
+	orderedlayers?: GCAOrderedLayers
+
+	body?: GCABody
+	hitlocationtable?: GCAHitLocationTable
+}
+
+type GCATransform = {
+	name: string
+	points: number
+	items: GCAItemBlock
+}
+
+type GCALogEntryBlock = {
+	logentry: GCALogEntry[]
+	_count: number
+}
+
+type GCALogEntry = {
+	entrydate: string
+	campaigndate: string
+	charpoints: number
+
+	charmoney?: number
+
+	caption: string
+	notes: string
+}
+
+type GCABasicDamage = {
+	st: boolean
+	thbase: string
+	thadd: string
+	swbase: string
+	swadd: string
+}
+
+type GCADamageBreak = {
+	break: boolean
+	addice: boolean
+	subtract: boolean
+}
+
+type GCASkillType = {
+	name: string
+	costs: string
+	baseadj: boolean
+	adds: number
+	defaultstat: string
+	relname: string
+	zeropointsokay: number
+	subzero: number
+}
+
+type GCAGroup = {
+	name: string
+	groupitem: GCAGroupItem[]
+	_count: number
+}
+
+type GCAGroupItem = {
+	name: string
+	nameext?: string
+	itemtype: string
+}
+
 type GCACharacter = {
 	author?: {
 		name?: string
@@ -627,115 +727,27 @@ type GCACharacter = {
 	messages?: GCAMessagesBlock
 
 	traits: {
-		attributes: {
-			trait?: GCATrait[]
-			_count: number
-		}
-		cultures: {
-			trait?: GCATrait[]
-			_count: number
-		}
-		languages: {
-			trait?: GCATrait[]
-			_count: number
-		}
-		advantages: {
-			trait?: GCATrait[]
-			_count: number
-		}
-		disadvantages: {
-			trait?: GCATrait[]
-			_count: number
-		}
-		quirks: {
-			trait?: GCATrait[]
-			_count: number
-		}
-		perks: {
-			trait?: GCATrait[]
-			_count: number
-		}
-		features: {
-			trait?: GCATrait[]
-			_count: number
-		}
-		skills: {
-			trait?: GCATrait[]
-			_count: number
-		}
-		spells: {
-			trait?: GCATrait[]
-			_count: number
-		}
-		equipment: {
-			trait?: GCATrait[]
-			_count: number
-		}
-		templates: {
-			trait?: GCATrait[]
-			_count: number
-		}
+		attributes: GCATraitBlock
+		cultures: GCATraitBlock
+		languages: GCATraitBlock
+		advantages: GCATraitBlock
+		disadvantages: GCATraitBlock
+		quirks: GCATraitBlock
+		perks: GCATraitBlock
+		features: GCATraitBlock
+		skills: GCATraitBlock
+		spells: GCATraitBlock
+		equipment: GCATraitBlock
+		templates: GCATraitBlock
 	}
 
 	loadouts: {
-		loadout?: {
-			name: string
-			bodyimagefile?: string
-			weight: number
-			shielddb: number
-			hexmask: string
-			alwaysautocalcarmor?: string
-			userorderedlayers?: string
-			facingdb: {
-				leftflank: number
-				leftfront: number
-				centerfront: number
-				rightfront: number
-				rightflank: number
-				rear: number
-			}
-			items: {
-				item?: {
-					name: string
-					_idkey: number
-				}[]
-				_count: number
-			}
-			armoritems: {
-				item?: {
-					name: string
-					_idkey: number
-				}[]
-				_count: number
-			}
-			shielditems: {
-				item?: {
-					name: string
-					_idkey: number
-				}[]
-				_count: number
-			}
-
-			orderedlayers?: GCAOrderedLayers
-
-			body?: GCABody
-			hitlocationtable?: GCAHitLocationTable
-		}[]
+		loadout?: GCALoadout[]
 		_count: number
 	}
 
 	transforms?: {
-		transform: {
-			name: string
-			points: number
-			items: {
-				item: {
-					name: string
-					_idkey: number
-				}[]
-				_count: number
-			}
-		}[]
+		transform: GCATransform[]
 		_count: number
 	}
 
@@ -755,65 +767,26 @@ type GCACharacter = {
 		othermoney?: number
 		totalmoney?: number
 
-		logentries: {
-			logentry: {
-				entrydate: string
-				campaigndate: string
-				charpoints: number
-
-				charmoney?: number
-
-				caption: string
-				notes: string
-			}[]
-			_count: number
-		}
+		logentries: GCALogEntryBlock
 	}
 
 	basicdamages: {
-		basicdamage: {
-			st: boolean
-			thbase: string
-			thadd: string
-			swbase: string
-			swadd: string
-		}[]
+		basicdamage: GCABasicDamage[]
 		_count: number
 	}
 
 	damagebreaks: {
-		damagebreak?: {
-			break: boolean
-			addice: boolean
-			subtract: boolean
-		}[]
+		damagebreak?: GCADamageBreak[]
 		_count: number
 	}
 
 	skilltypes: {
-		skilltype: {
-			name: string
-			costs: string
-			baseadj: boolean
-			adds: number
-			defaultstat: string
-			relname: string
-			zeropointsokay: number
-			subzero: number
-		}[]
+		skilltype: GCASkillType[]
 		_count: number
 	}
 
 	groups: {
-		group: {
-			name: string
-			groupitem: {
-				name: string
-				nameext?: string
-				itemtype: string
-			}[]
-			_count: number
-		}[]
+		group: GCAGroup[]
 		_count: number
 	}
 
@@ -859,6 +832,18 @@ export type {
 	GCAAttackModesBlock,
 	GCAAttackMode,
 	GCATrait,
+	GCATraitBlock,
+	GCAItemBlock,
+	GCAItem,
+	GCALoadout,
+	GCATransform,
+	GCALogEntryBlock,
+	GCALogEntry,
+	GCABasicDamage,
+	GCADamageBreak,
+	GCASkillType,
+	GCAGroup,
+	GCAGroupItem,
 	GCACharacter,
 	gca5,
 }

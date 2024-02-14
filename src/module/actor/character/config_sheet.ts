@@ -460,7 +460,9 @@ export class CharacterSheetConfig<
 		formData = prepareFormData(formData, this.object)
 		if (!this.object.id) return
 		if (formData["system.settings.block_layout"])
-			formData["system.settings.block_layout"] = (formData["system.settings.block_layout"] as string).split("\n")
+			formData["system.settings.block_layout"] = (formData["system.settings.block_layout"] as string)
+				.split("\n")
+				.map(e => e.trim())
 		await this.object.update(formData)
 		return this.render()
 	}

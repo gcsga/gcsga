@@ -1335,7 +1335,8 @@
 				"generic": "Import Error for {name}:\n{message}",
 				"ritual_magic_gca": "GCA Import does not currently support Ritual Magic Spells. Spell levels will likely be incorrect.",
 				"invalid_item_type": "Invalid Item Type: {type}",
-				"portrait_permissions": "Portrait upload failed. You do not have \"FILES_UPLOAD\" permissions. Ask your GM to import your portrait, or acquire the appropriate permissions."
+				"portrait_permissions": "Portrait upload failed. You do not have \"FILES_UPLOAD\" permissions. Ask your GM to import your portrait, or acquire the appropriate permissions.",
+				"gca_invalid": "The provided GCA5 file is invalid. Missing key {key} in node {node}"
 			},
 			"modifier_app_load_failed": "Failed to initialize the Modifier Stack App.",
 			"no_last_actor": "No actor selected!",

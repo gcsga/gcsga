@@ -33,7 +33,7 @@
 		<div id="resource-trackers">{{>actor/character/sections/resource-trackers }}</div>
 		<div id="move">{{>actor/character/sections/move }}</div>
 	</div>
-	<div id="embeds" style="grid-template: {{ blockLayout settings.block_layout blocks }};">
+	<div id="embeds" style="grid-template: {{ blockLayout system.settings.block_layout blocks }};">
 		{{#if reactions.length }}
 		<div id="reactions">
 			<div class="header modifier">{{ localize "gurps.character.reactions.modifier" }}</div>

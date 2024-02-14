@@ -1,5 +1,34 @@
-import { SYSTEM_NAME } from "@data"
+import { ActorGURPS, CharacterGURPS } from "@actor"
+import {
+	ActorFlags,
+	ActorType,
+	BlockLayoutKey,
+	ManeuverID,
+	PageSettings,
+	SETTINGS,
+	SYSTEM_NAME,
+	SheetSettingsObj,
+} from "@data"
 import { ChatMessageGURPS } from "@module/chat-message/document.ts"
+import { GCAParser } from "./parse_gca.ts"
+import {
+	CharacterFlagDefaults,
+	CharacterFlags,
+	CharacterMove,
+	CharacterProfile,
+	CharacterSource,
+	CharacterSystemSource,
+	PointsRecord,
+} from "@actor/character/data.ts"
+import { GCABody, GCABodyItem, GCACharacter } from "./data_gca.ts"
+import { LengthUnits, LocalizeGURPS, WeightUnits, display, getCurrentTime, progression } from "@util"
+import { AttributeDefObj, AttributeObj } from "@sytem/attribute/data.ts"
+import { ResourceTrackerDefObj, ResourceTrackerObj } from "@sytem/resource_tracker/data.ts"
+import { MoveTypeDefObj, MoveTypeObj } from "@sytem/move_type/data.ts"
+import { BodyObj, HitLocationObj } from "@sytem/hit_location/data.ts"
+import { StringBuilder } from "@util/string_builder.ts"
+import { ItemSourceGURPS } from "@item/base/data/index.ts"
+import { GCAItemImporter } from "./item_gca.ts"
 
 export class GCACharacterImporter {
 	static async throwError(text: string): Promise<void> {
@@ -18,43 +47,43 @@ export class GCACharacterImporter {
 		document: TActor,
 		file: { text: string; name: string; path: string },
 	): Promise<void> {
-		const data = JSON.parse(file.text) as ImportedCharacterSystemSource
+		const data = GCAParser.parseFile(file.text).character[0]
 
-		if (data.version !== GCS_FILE_VERSION) {
-			if (data.version < GCS_FILE_VERSION)
-				return CharacterImporter.throwError(LocalizeGURPS.translations.gurps.error.import.format_old)
-			else return CharacterImporter.throwError(LocalizeGURPS.translations.gurps.error.import.format_new)
-		}
+		const date = getCurrentTime()
 
 		const systemData: CharacterSystemSource = {
 			_migration: { version: null, previous: null },
 			type: "character",
-			version: GCS_FILE_VERSION,
-			total_points: data.total_points,
-			points_record: CharacterImporter.importPointsRecord(data.points_record ?? []),
-			profile: CharacterImporter.importProfile(data.profile),
-			settings: CharacterImporter.importSettings(data.settings, data.third_party),
-			attributes: CharacterImporter.importAttributes(data.attributes),
-			resource_trackers: CharacterImporter.importResourceTrackers(data.third_party?.resource_trackers),
-			move_types: CharacterImporter.importMoveTypes(data.third_party?.move_types),
-			move: CharacterImporter.importMoveData(data.third_party?.move),
-			created_date: data.created_date,
-			modified_date: data.modified_date,
+			version: 4,
+			total_points: data.campaign.totalpoints ?? 0,
+			points_record: GCACharacterImporter.importPointsRecord(data),
+			profile: GCACharacterImporter.importProfile(data),
+			settings: GCACharacterImporter.importSettings(data),
+			attributes: GCACharacterImporter.importAttributes(data),
+			resource_trackers: GCACharacterImporter.importResourceTrackers(),
+			move_types: GCACharacterImporter.importMoveTypes(),
+			move: GCACharacterImporter.importMoveData(),
+			created_date: date,
+			modified_date: date,
 		}
 
-		const image = CharacterImporter.importPortrait(data.profile?.portrait)
+		const image = GCACharacterImporter.importPortrait()
 
-		const flags = CharacterImporter.importFlags(file)
+		const flags = GCACharacterImporter.importFlags(file)
 
 		const items: ItemSourceGURPS[] = []
-		items.push(...ItemImporter.importItems(data.traits))
-		items.push(...ItemImporter.importItems(data.skills))
-		items.push(...ItemImporter.importItems(data.spells))
-		items.push(...ItemImporter.importItems(data.equipment))
-		items.push(...ItemImporter.importItems(data.other_equipment, { other: true }))
-		items.push(...ItemImporter.importItems(data.notes))
+		items.push(...GCAItemImporter.importAdvantages(data))
+		items.push(...GCAItemImporter.importDisadvantages(data))
+		items.push(...GCAItemImporter.importPerks(data))
+		items.push(...GCAItemImporter.importQuirks(data))
+		items.push(...GCAItemImporter.importLanguages(data))
+		items.push(...GCAItemImporter.importCultures(data))
+		items.push(...GCAItemImporter.importSkills(data))
+		items.push(...GCAItemImporter.importSpells(data))
+		items.push(...GCAItemImporter.importEquipment(data))
 
-		const name = data.profile?.name ?? document.name ?? LocalizeGURPS.translations.TYPES.Actor[ActorType.Character]
+		const name =
+			systemData.profile.name ?? document.name ?? LocalizeGURPS.translations.TYPES.Actor[ActorType.Character]
 
 		const actorData: DeepPartial<CharacterSource> = {
 			name,
@@ -79,173 +108,195 @@ export class GCACharacterImporter {
 		if (document instanceof CharacterGURPS) if (document.sheet.config?.rendered) document.sheet.config.render(true)
 	}
 
-	static importPointsRecord(data: ImportedPointsRecord[]): PointsRecord[] {
-		return data.map(e => {
-			e.reason ??= ""
-			return e
-		}) as PointsRecord[]
+	static importPointsRecord(data: GCACharacter): PointsRecord[] {
+		return data.campaign.logentries.logentry.map(e => {
+			return {
+				when: new Date(e.entrydate).toString(),
+				points: e.charpoints,
+				reason: e.caption,
+			}
+		})
 	}
 
-	static importProfile(data?: ImportedCharacterProfile): CharacterProfile {
+	static importProfile(data: GCACharacter): CharacterProfile {
 		return {
-			name: data?.name ?? "",
-			age: data?.age ?? "",
-			birthday: data?.birthday ?? "",
-			eyes: data?.eyes ?? "",
-			hair: data?.hair ?? "",
-			skin: data?.skin ?? "",
-			handedness: data?.handedness ?? "",
-			gender: data?.gender ?? "",
-			height: data?.height ?? "",
-			weight: data?.weight ?? "",
-			player_name: data?.player_name ?? "",
-			title: data?.title ?? "",
-			organization: data?.organization ?? "",
-			religion: data?.religion ?? "",
-			tech_level: data?.tech_level ?? "",
-			portrait: data?.portrait ?? "",
-			SM: data?.SM ?? 0,
+			name: data.name ?? "",
+			age: data.vitals?.age ?? "",
+			birthday: "",
+			eyes: "",
+			hair: "",
+			skin: "",
+			handedness: "",
+			gender: "",
+			height: data.vitals?.height ?? "",
+			weight: data.vitals?.weight ?? "",
+			player_name: data.player ?? "",
+			title: "",
+			organization: "",
+			religion: "",
+			tech_level: `${data.campaign.basetl}`, // TODO: check
+			portrait: "",
+			SM: 0, // TODO: check
 		}
 	}
 
-	static importSettings(data?: ImportedSheetSettings, third_party?: ImportedThirdPartyData): SheetSettingsObj {
+	static importSettings(data: GCACharacter): SheetSettingsObj {
 		return {
-			page: CharacterImporter.importPage(data?.page),
-			block_layout: (data?.block_layout as BlockLayoutKey[]) ?? [],
-			attributes: CharacterImporter.importAttributeSettings(data?.attributes),
-			resource_trackers: CharacterImporter.importResourceTrackerSettings(
-				third_party?.settings?.resource_trackers,
-			),
-			move_types: CharacterImporter.importMoveTypeSettings(third_party?.settings?.move_types),
-			body_type: CharacterImporter.importBody(data?.body_type),
-			damage_progression: data?.damage_progression ?? progression.Option.BasicSet,
-			default_length_units: data?.default_length_units ?? LengthUnits.FeetAndInches,
-			default_weight_units: data?.default_weight_units ?? WeightUnits.Pound,
-			user_description_display: data?.user_description_display ?? display.Option.Tooltip,
-			modifiers_display: data?.modifiers_display ?? display.Option.Inline,
-			notes_display: data?.notes_display ?? display.Option.Inline,
-			skill_level_adj_display: data?.skill_level_adj_display ?? display.Option.Tooltip,
-			use_multiplicative_modifiers: data?.use_multiplicative_modifiers ?? false,
-			use_modifying_dice_plus_adds: data?.use_modifying_dice_plus_adds ?? false,
-			use_half_stat_defaults: data?.use_half_stat_defaults ?? false,
-			show_trait_modifier_adj: data?.show_trait_modifier_adj ?? false,
-			show_equipment_modifier_adj: data?.show_equipment_modifier_adj ?? false,
-			show_spell_adj: data?.show_spell_adj ?? true,
-			use_title_in_footer: data?.use_title_in_footer ?? false,
-			exclude_unspent_points_from_total: data?.exclude_unspent_points_from_total ?? false,
+			page: GCACharacterImporter.importPage(),
+			block_layout: GCACharacterImporter.importBlockLayout(),
+			attributes: GCACharacterImporter.importAttributeSettings(data),
+			resource_trackers: GCACharacterImporter.importResourceTrackerSettings(),
+			move_types: GCACharacterImporter.importMoveTypeSettings(),
+			body_type: GCACharacterImporter.importBody(data.body, data),
+			damage_progression: progression.Option.BasicSet,
+			default_length_units: LengthUnits.FeetAndInches,
+			default_weight_units: WeightUnits.Pound,
+			user_description_display: display.Option.Tooltip,
+			modifiers_display: display.Option.Inline,
+			notes_display: display.Option.Inline,
+			skill_level_adj_display: display.Option.Tooltip,
+			use_multiplicative_modifiers: false,
+			use_modifying_dice_plus_adds: false,
+			use_half_stat_defaults: false,
+			show_trait_modifier_adj: false,
+			show_equipment_modifier_adj: false,
+			show_spell_adj: true,
+			use_title_in_footer: false,
+			exclude_unspent_points_from_total: false,
 		}
 	}
 
-	static importPage(data?: ImportedPageSettings): PageSettings {
-		return data as PageSettings
+	static importPage(): PageSettings {
+		return game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`).page
 	}
 
-	static importAttributeSettings(data?: ImportedAttributeDef[]): AttributeDefObj[] {
-		return (
-			data?.map(e => {
-				return {
-					id: e.id,
-					type: e.type,
-					name: e.name,
-					full_name: e.full_name ?? "",
-					attribute_base: e.attribute_base ?? "",
-					cost_per_point: e.cost_per_point ?? 0,
-					cost_adj_percent_per_sm: e.cost_adj_percent_per_sm ?? 0,
-					thresholds: CharacterImporter.importThresholds(e.thresholds),
-				}
-			}) ?? []
-		)
+	static importBlockLayout(): BlockLayoutKey[] {
+		return game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`).block_layout
 	}
 
-	static importResourceTrackerSettings(data?: ImportedResourceTrackerDef[]): ResourceTrackerDefObj[] {
-		return (
-			data?.map(e => {
-				return {
-					id: e.id,
-					name: e.name,
-					full_name: e.full_name ?? "",
-					min: e.min ?? 0,
-					max: e.max ?? 0,
-					isMinEnforced: e.isMinEnforced ?? false,
-					isMaxEnforced: e.isMaxEnforced ?? false,
-					thresholds: CharacterImporter.importThresholds(e.thresholds),
-				}
-			}) ?? []
-		)
+	static importAttributeSettings(_data: GCACharacter): AttributeDefObj[] {
+		return game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
+		// return (
+		// 	data.traits.attributes.trait?.map(e => {
+		// 		return {
+		// 			id: e.symbol?.toLowerCase().replace(/ /g, "_") ?? "", // TODO: review
+		// 			type: this.getAttributeType(e),
+		// 			name: e.symbol ?? "",
+		// 			full_name: e.name ?? "",
+		// 			attribute_base: GCACharacterImporter.parseAttributeBase(e.calcs.basevalue ?? "", data),
+		// 			cost_per_point: parseFloat(e.calcs.step ?? "0"),
+		// 			cost_adj_percent_per_sm: 0,
+		// 			thresholds: [],
+		// 		}
+		// 	}) ?? []
+		// )
 	}
 
-	static importMoveTypeSettings(data?: ImportedMoveTypeDef[]): MoveTypeDefObj[] {
-		return (
-			data?.map(e => {
-				return {
-					id: e.id,
-					name: e.name,
-					move_type_base: e.move_type_base ?? "",
-					overrides: CharacterImporter.importMoveTypeOverrides(e.overrides),
-				}
-			}) ?? []
-		)
+	// static getAttributeType(data: GCATrait): attribute.Type {
+	// 	if (data.attackmodes && data.attackmodes?._count > 0) return attribute.Type.Pool
+	// 	if (parseFloat(data.calcs.step ?? "0") % 1 === 0) return attribute.Type.Decimal
+	// 	return attribute.Type.Integer
+	// }
+
+	// static parseAttributeBase(formula: string, _data: GCACharacter): string {
+	// 	// replace attribute variables with GCS equivalents
+	// 	formula = formula.replace(/ST:([A-z ]+[A-z])/g, (_, g1) => {
+	// 		return "$" + g1.toLowerCase().replace(/ /g, "_")
+	// 	})
+	// 	// replace skill variables with GCS equivalents
+	// 	formula = formula.replace(/SK:([A-z ]+[A-z])::level/g, (_, g1) => {
+	// 		return "skill_level(" + g1.toLowerCase().replace(/ /g, "_") + ")"
+	// 	})
+	// 	formula = formula.replace(/@max/g, "max")
+	// 	// replace if functions with GCS equivalents
+	// 	formula = formula.replace(/@if\((.*) THEN (.*) ELSE (.*)\)/g, (_, g1, g2, g3) => {
+	// 		return "if(" + g1 + "," + g2 + "," + g3 + ")"
+	// 	})
+	// 	return formula
+	// }
+
+	static importResourceTrackerSettings(): ResourceTrackerDefObj[] {
+		return game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`)
 	}
 
-	static importMoveTypeOverrides(data?: ImportedMoveTypeOverride[]): MoveTypeOverrideObj[] {
-		return data ?? []
+	static importMoveTypeSettings(): MoveTypeDefObj[] {
+		return game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
 	}
 
-	static importThresholds(data?: ImportedThreshold[]): PoolThresholdDef[] {
-		return data ?? []
-	}
-
-	static importBody(data?: ImportedBody): BodyObj {
+	static importBody(body: GCABody | undefined, char: GCACharacter): BodyObj {
+		if (!body)
+			return {
+				name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
+				roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
+				locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
+			}
 		return {
-			name: data?.name ?? "",
-			roll: data?.roll ?? "",
-			locations: CharacterImporter.importHitLocations(data?.locations),
+			name: body.name ?? "",
+			roll: "3d6", // TODO: change
+			locations: GCACharacterImporter.importHitLocations(body?.bodyitem ?? [], char),
 		}
 	}
 
-	static importHitLocations(data?: ImportedHitLocation[]): HitLocationObj[] {
+	static importHitLocations(location: GCABodyItem[], char: GCACharacter): HitLocationObj[] {
+		const hitLocationNotes = char.hitlocationtable?.hitlocationnote ?? []
+		const hitLocationLines = char.hitlocationtable?.hitlocationline ?? []
+
+		function getHitLocationNotes(name: string): string {
+			const buffer = new StringBuilder()
+			const noteNumbers = hitLocationLines.find(e => e.location === name)?.notes?.split(",") ?? []
+			if (noteNumbers.length === 0) return buffer.toString()
+			hitLocationNotes
+				.filter(e => noteNumbers.includes(e.key))
+				.forEach(e => {
+					buffer.appendToNewLine(e.value)
+				})
+			return buffer.toString()
+		}
+
 		return (
-			data?.map(e => {
+			location?.map(e => {
 				const location: HitLocationObj = {
-					id: e.id,
-					choice_name: e.choice_name,
-					table_name: e.table_name,
-					slots: e.slots ?? 0,
-					hit_penalty: e.hit_penalty ?? 0,
-					dr_bonus: e.dr_bonus ?? 0,
-					description: e.description ?? "",
+					id: e.name.toLowerCase(),
+					choice_name: e.name,
+					table_name: e.name,
+					slots: 0,
+					hit_penalty: 0,
+					dr_bonus: parseInt(e.basedr) ?? 0,
+					description: getHitLocationNotes(e.name),
 				}
-				if (e.sub_table) location.sub_table = CharacterImporter.importBody(e.sub_table)
 				return location
 			}) ?? []
 		)
 	}
 
-	static importAttributes(data?: ImportedAttribute[]): AttributeObj[] {
-		return data ?? []
+	static importAttributes(data: GCACharacter): AttributeObj[] {
+		const settings = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
+		const atts: AttributeObj[] = []
+		data.traits.attributes.trait?.forEach(e => {
+			const id = (e.symbol || e.name).toLowerCase().replace(/ /g, "_")
+			if (!settings.map(f => f.id).includes(id)) return
+			atts.push({
+				attr_id: id,
+				adj: (e.score ?? 0) - parseInt(e.calcs?.basescore ?? "0"),
+				damage: 0,
+			})
+		})
+		return atts
 	}
 
-	static importResourceTrackers(data?: ImportedResourceTracker[]): ResourceTrackerObj[] {
-		return data ?? []
+	static importResourceTrackers(): ResourceTrackerObj[] {
+		return []
 	}
 
-	static importMoveTypes(data?: ImportedMoveType[]): MoveTypeObj[] {
-		return (
-			data?.map(e => {
-				return {
-					move_type_id: e.move_type_id,
-					adj: e.adj ?? 0,
-				}
-			}) ?? []
-		)
+	static importMoveTypes(): MoveTypeObj[] {
+		return []
 	}
 
-	static importMoveData(data?: ImportedMoveData): CharacterMove {
-		return data ?? { maneuver: ManeuverID.DoNothing, posture: "standing", type: "ground" }
+	static importMoveData(): CharacterMove {
+		return { maneuver: ManeuverID.DoNothing, posture: "standing", type: "ground" }
 	}
 
-	static importPortrait(data?: string): ImageFilePath {
-		if (game.user?.hasPermission("FILES_UPLOAD")) return `data:image/png;base64,${data}.png`
+	static importPortrait(): ImageFilePath {
 		return `/systems/${SYSTEM_NAME}/assets/icons/character.svg`
 	}
 
