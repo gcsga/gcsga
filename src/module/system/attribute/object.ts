@@ -28,7 +28,7 @@ export class Attribute {
 		this.actor = actor
 		this.attr_id = attr_id
 		this.order = order
-		if (this.attribute_def.type === attribute.Type.Pool) {
+		if (this.attribute_def?.type === attribute.Type.Pool) {
 			this.apply_ops ??= true
 		}
 	}

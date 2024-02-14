@@ -161,7 +161,7 @@ class CharacterGURPS<
 			flags: CharacterFlagDefaults,
 		}
 		console.log(defaultData)
-		this.update(defaultData)
+		this.update(defaultData, { diff: false })
 		return super._onCreate(data, options, userId)
 	}
 
@@ -1079,7 +1079,7 @@ class CharacterGURPS<
 		super.prepareData()
 		const pools: Record<string, TokenPool> = {}
 		this.attributes?.forEach(e => {
-			if (e.attribute_def.type === attribute.Type.Pool) {
+			if (e.attribute_def?.type === attribute.Type.Pool) {
 				pools[e.id] = { value: e.current, min: -Infinity, max: e.max }
 			}
 		})

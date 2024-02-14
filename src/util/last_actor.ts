@@ -16,7 +16,7 @@ export class LastActor {
 	}
 
 	static async get(): Promise<ActorGURPS | null> {
-		const uuid: string = game.user?.flags[SYSTEM_NAME]?.[UserFlags.LastActor] || ""
+		const uuid: string = game.user.flags[SYSTEM_NAME]?.[UserFlags.LastActor] || ""
 		let actor = (await fromUuid(uuid)) as ActorGURPS | TokenDocument
 		if (actor instanceof TokenDocument) actor = actor.actor as ActorGURPS
 		if (actor) return actor
