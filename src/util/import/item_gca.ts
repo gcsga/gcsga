@@ -2,12 +2,18 @@ import { ItemSourceGURPS } from "@item/base/data/index.ts"
 import { GCACharacter, GCATrait } from "./data_gca.ts"
 import { TraitSource, TraitSystemSource } from "@item/trait/data.ts"
 import { ItemFlags, ItemType, SYSTEM_NAME, SkillDifficulty, gid } from "@data"
-import { LocalizeGURPS, difficulty, prereq, selfctrl } from "@util"
+import { LocalizeGURPS, container, difficulty, picker, prereq, selfctrl } from "@util"
 import { SkillSource, SkillSystemSource } from "@item/skill/data.ts"
 import { TechniqueSource, TechniqueSystemSource } from "@item/technique/data.ts"
 import { SpellSource, SpellSystemSource } from "@item/spell/data.ts"
 import { EquipmentSource, EquipmentSystemSource } from "@item/equipment/data.ts"
 import { EquipmentContainerSource, EquipmentContainerSystemSource } from "@item/equipment_container/data.ts"
+import { TraitContainerSource, TraitContainerSystemSource } from "@item/trait_container/data.ts"
+
+interface ItemImportContext {
+	char: GCACharacter
+	parentId: string | null
+}
 
 interface DocumentStats {
 	systemId: string
@@ -34,7 +40,8 @@ class GCAItemImporter {
 	static importAdvantages(data: GCACharacter): ItemSourceGURPS[] {
 		const results: ItemSourceGURPS[] = []
 		for (const item of data.traits.advantages.trait ?? []) {
-			results.push(this.importTrait(item, data))
+			if (item.ref?.owned === "yes") continue
+			results.push(this.importTrait(item, { char: data, parentId: null }))
 		}
 		return results
 	}
@@ -42,7 +49,7 @@ class GCAItemImporter {
 	static importDisadvantages(data: GCACharacter): ItemSourceGURPS[] {
 		const results: ItemSourceGURPS[] = []
 		for (const item of data.traits.disadvantages.trait ?? []) {
-			results.push(this.importTrait(item, data))
+			results.push(this.importTrait(item, { char: data, parentId: null }))
 		}
 		return results
 	}
@@ -50,7 +57,7 @@ class GCAItemImporter {
 	static importPerks(data: GCACharacter): ItemSourceGURPS[] {
 		const results: ItemSourceGURPS[] = []
 		for (const item of data.traits.perks.trait ?? []) {
-			results.push(this.importTrait(item, data))
+			results.push(this.importTrait(item, { char: data, parentId: null }))
 		}
 		return results
 	}
@@ -58,7 +65,7 @@ class GCAItemImporter {
 	static importQuirks(data: GCACharacter): ItemSourceGURPS[] {
 		const results: ItemSourceGURPS[] = []
 		for (const item of data.traits.quirks.trait ?? []) {
-			results.push(this.importTrait(item, data))
+			results.push(this.importTrait(item, { char: data, parentId: null }))
 		}
 		return results
 	}
@@ -66,7 +73,7 @@ class GCAItemImporter {
 	static importLanguages(data: GCACharacter): ItemSourceGURPS[] {
 		const results: ItemSourceGURPS[] = []
 		for (const item of data.traits.languages.trait ?? []) {
-			results.push(this.importTrait(item, data))
+			results.push(this.importTrait(item, { char: data, parentId: null }))
 		}
 		return results
 	}
@@ -74,12 +81,46 @@ class GCAItemImporter {
 	static importCultures(data: GCACharacter): ItemSourceGURPS[] {
 		const results: ItemSourceGURPS[] = []
 		for (const item of data.traits.cultures.trait ?? []) {
-			results.push(this.importTrait(item, data))
+			results.push(this.importTrait(item, { char: data, parentId: null }))
 		}
 		return results
 	}
 
-	private static importTrait(data: GCATrait, _char: GCACharacter): ItemSourceGURPS {
+	static importSkills(data: GCACharacter): ItemSourceGURPS[] {
+		const results: ItemSourceGURPS[] = []
+		for (const item of data.traits.skills.trait ?? []) {
+			if (item.type?.startsWith("Tech")) results.push(this.importTechnique(item, { char: data, parentId: null }))
+			else results.push(this.importSkill(item, { char: data, parentId: null }))
+		}
+		return results
+	}
+
+	static importEquipments(data: GCACharacter): ItemSourceGURPS[] {
+		const results: ItemSourceGURPS[] = []
+		for (const item of data.traits.equipment.trait ?? []) {
+			if (item.ref?.isparent) results.push(this.importEquipmentContainer(item, { char: data, parentId: null }))
+			else results.push(this.importEquipment(item, { char: data, parentId: null }))
+		}
+		return results
+	}
+
+	static importSpells(data: GCACharacter): ItemSourceGURPS[] {
+		const results: ItemSourceGURPS[] = []
+		for (const item of data.traits.spells.trait ?? []) {
+			results.push(this.importSpell(item, { char: data, parentId: null }))
+		}
+		return results
+	}
+
+	static importTemplates(data: GCACharacter): ItemSourceGURPS[] {
+		const results: ItemSourceGURPS[] = []
+		for (const item of data.traits.templates.trait ?? []) {
+			results.push(...this.importTemplate(item, { char: data, parentId: null }))
+		}
+		return results
+	}
+
+	private static importTrait(data: GCATrait, options: ItemImportContext): ItemSourceGURPS {
 		let level_points = 0
 		let base_points = 0
 		const levelDifference = data.calcs.cost?.split("/") ?? []
@@ -109,7 +150,7 @@ class GCAItemImporter {
 			notes: data.ref?.notes ?? "",
 			vtt_notes: data.ref?.vttnotes ?? "",
 			userdesc: data.ref?.description ?? "",
-			tags: [],
+			tags: data.cat?.split(",").map(e => e.trim()) ?? [],
 			base_points: base_points,
 			levels: levelDifference.length > 1 ? data.level ?? 0 : 0,
 			points_per_level: level_points,
@@ -138,7 +179,7 @@ class GCAItemImporter {
 			ownership: {},
 			flags: {
 				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: null,
+					[ItemFlags.Container]: options.parentId,
 				},
 			},
 			_stats: GCAItemImporter.getStats(),
@@ -147,16 +188,7 @@ class GCAItemImporter {
 		return newItem
 	}
 
-	static importSkills(data: GCACharacter): ItemSourceGURPS[] {
-		const results: ItemSourceGURPS[] = []
-		for (const item of data.traits.skills.trait ?? []) {
-			if (item.type?.startsWith("Tech")) results.push(this.importTechnique(item))
-			else results.push(this.importSkill(item))
-		}
-		return results
-	}
-
-	static importSkill(data: GCATrait): ItemSourceGURPS {
+	static importSkill(data: GCATrait, options: ItemImportContext): ItemSourceGURPS {
 		const id = fu.randomID()
 
 		const systemData: SkillSystemSource = {
@@ -168,10 +200,10 @@ class GCAItemImporter {
 			reference_highlight: "",
 			notes: data.ref?.notes ?? "",
 			vtt_notes: data.ref?.vttnotes ?? "",
-			tags: [],
+			tags: data.cat?.split(",").map(e => e.trim()) ?? [],
 			specialization: data.nameext ?? "",
 			tech_level: data.tl ?? "",
-			tech_level_required: data.tl !== "",
+			tech_level_required: !!data.tl && data.tl !== "",
 			difficulty: data.type?.toLowerCase() as SkillDifficulty,
 			points: data.points ?? 0,
 			encumbrance_penalty_multiplier: 0,
@@ -196,7 +228,7 @@ class GCAItemImporter {
 			ownership: {},
 			flags: {
 				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: null,
+					[ItemFlags.Container]: options.parentId,
 				},
 			},
 			_stats: GCAItemImporter.getStats(),
@@ -205,7 +237,7 @@ class GCAItemImporter {
 		return newItem
 	}
 
-	static importTechnique(data: GCATrait): ItemSourceGURPS {
+	static importTechnique(data: GCATrait, options: ItemImportContext): ItemSourceGURPS {
 		const id = fu.randomID()
 
 		const systemData: TechniqueSystemSource = {
@@ -217,7 +249,7 @@ class GCAItemImporter {
 			reference_highlight: "",
 			notes: data.ref?.notes ?? "",
 			vtt_notes: data.ref?.vttnotes ?? "",
-			tags: [],
+			tags: data.cat?.split(",").map(e => e.trim()) ?? [],
 			tech_level: data.tl ?? "",
 			difficulty: data.type?.toLowerCase().split("/")[1] as difficulty.Level.Average | difficulty.Level.Hard,
 			points: data.points ?? 0,
@@ -248,7 +280,7 @@ class GCAItemImporter {
 			ownership: {},
 			flags: {
 				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: null,
+					[ItemFlags.Container]: options.parentId,
 				},
 			},
 			_stats: GCAItemImporter.getStats(),
@@ -257,15 +289,7 @@ class GCAItemImporter {
 		return newItem
 	}
 
-	static importSpells(data: GCACharacter): ItemSourceGURPS[] {
-		const results: ItemSourceGURPS[] = []
-		for (const item of data.traits.spells.trait ?? []) {
-			results.push(this.importSpell(item))
-		}
-		return results
-	}
-
-	static importSpell(data: GCATrait): ItemSourceGURPS {
+	static importSpell(data: GCATrait, options: ItemImportContext): ItemSourceGURPS {
 		const id = fu.randomID()
 
 		const systemData: SpellSystemSource = {
@@ -277,7 +301,7 @@ class GCAItemImporter {
 			reference_highlight: "",
 			notes: data.ref?.notes ?? "",
 			vtt_notes: data.ref?.vttnotes ?? "",
-			tags: [],
+			tags: data.cat?.split(",").map(e => e.trim()) ?? [],
 			tech_level: data.tl ?? "",
 			tech_level_required: data.tl !== "",
 			difficulty: data.type?.toLowerCase() as SkillDifficulty,
@@ -310,7 +334,7 @@ class GCAItemImporter {
 			ownership: {},
 			flags: {
 				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: null,
+					[ItemFlags.Container]: options.parentId,
 				},
 			},
 			_stats: GCAItemImporter.getStats(),
@@ -319,16 +343,7 @@ class GCAItemImporter {
 		return newItem
 	}
 
-	static importEquipments(data: GCACharacter): ItemSourceGURPS[] {
-		const results: ItemSourceGURPS[] = []
-		for (const item of data.traits.equipment.trait ?? []) {
-			if (item.ref?.isparent) results.push(this.importEquipmentContainer(item))
-			else results.push(this.importEquipment(item))
-		}
-		return results
-	}
-
-	static importEquipment(data: GCATrait): ItemSourceGURPS {
+	static importEquipment(data: GCATrait, options: ItemImportContext): ItemSourceGURPS {
 		const id = fu.randomID()
 
 		const systemData: EquipmentSystemSource = {
@@ -340,7 +355,7 @@ class GCAItemImporter {
 			reference_highlight: "",
 			notes: data.ref?.notes ?? "",
 			vtt_notes: data.ref?.vttnotes ?? "",
-			tags: [],
+			tags: data.cat?.split(",").map(e => e.trim()) ?? [],
 			tech_level: data.tl ?? "",
 			legality_class: data.ref?.lc ?? "",
 			quantity: data.count ?? 1,
@@ -367,7 +382,7 @@ class GCAItemImporter {
 			ownership: {},
 			flags: {
 				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: null,
+					[ItemFlags.Container]: options.parentId,
 				},
 			},
 			_stats: GCAItemImporter.getStats(),
@@ -376,7 +391,7 @@ class GCAItemImporter {
 		return newItem
 	}
 
-	static importEquipmentContainer(data: GCATrait): ItemSourceGURPS {
+	static importEquipmentContainer(data: GCATrait, options: ItemImportContext): ItemSourceGURPS {
 		const id = fu.randomID()
 
 		const systemData: EquipmentContainerSystemSource = {
@@ -388,7 +403,7 @@ class GCAItemImporter {
 			reference_highlight: "",
 			notes: data.ref?.notes ?? "",
 			vtt_notes: data.ref?.vttnotes ?? "",
-			tags: [],
+			tags: data.cat?.split(",").map(e => e.trim()) ?? [],
 			tech_level: data.tl ?? "",
 			legality_class: data.ref?.lc ?? "",
 			quantity: data.count ?? 1,
@@ -416,13 +431,85 @@ class GCAItemImporter {
 			ownership: {},
 			flags: {
 				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: null,
+					[ItemFlags.Container]: options.parentId,
 				},
 			},
 			_stats: GCAItemImporter.getStats(),
 		}
 
 		return newItem
+	}
+
+	static importTemplate(data: GCATrait, options: ItemImportContext): ItemSourceGURPS[] {
+		const results: ItemSourceGURPS[] = []
+
+		const id = fu.randomID()
+
+		let cr = selfctrl.Roll.NoCR
+		if (data.modifiers?.modifier.some(e => e.group === "Self-Control")) {
+			const number = data.modifiers.modifier.find(e => e.group === "Self-Control")?.shortname ?? ""
+			if (number.startsWith("6")) cr = selfctrl.Roll.CR6
+			if (number.startsWith("9")) cr = selfctrl.Roll.CR9
+			if (number.startsWith("12")) cr = selfctrl.Roll.CR12
+			if (number.startsWith("15")) cr = selfctrl.Roll.CR15
+		}
+
+		let container_type = container.Type.Group
+		if (data.cat?.includes("Racial Templates")) container_type = container.Type.Ancestry
+		else if (data.cat?.includes("Meta-Traits")) container_type = container.Type.MetaTrait
+
+		const systemData: TraitContainerSystemSource = {
+			slug: "",
+			_migration: { version: null, previous: null },
+			type: ItemType.TraitContainer,
+			name: data.name,
+			reference: data.ref?.page ?? "",
+			reference_highlight: "",
+			notes: data.ref?.notes ?? "",
+			vtt_notes: data.ref?.vttnotes ?? "",
+			userdesc: data.ref?.description ?? "",
+			tags: data.cat?.split(",").map(e => e.trim()) ?? [],
+			prereqs: { type: prereq.Type.List, all: true },
+			features: [],
+			study: [],
+			cr,
+			cr_adj: selfctrl.Adjustment.NoCRAdj,
+			disabled: false,
+			ancestry: "",
+			template_picker: {
+				type: picker.Type.NotApplicable,
+				qualifier: {},
+			},
+			open: true,
+			container_type,
+		}
+
+		const newItem: TraitContainerSource = {
+			_id: id,
+			type: ItemType.TraitContainer,
+			name: systemData.name || LocalizeGURPS.translations.TYPES.Item[ItemType.TraitContainer],
+			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.Trait}.svg`,
+			system: systemData,
+			effects: [],
+			folder: null,
+			sort: 0,
+			ownership: {},
+			flags: {
+				[SYSTEM_NAME]: {
+					[ItemFlags.Container]: options.parentId,
+				},
+			},
+			_stats: GCAItemImporter.getStats(),
+		}
+
+		results.push(newItem)
+
+		for (const pkid of data.ref?.pkids?.split(",")?.map(e => e.trim()) ?? []) {
+			const trait = options.char.traits.advantages.trait?.find(e => e._idkey === parseInt(pkid))
+			if (!trait) continue
+			results.push(this.importTrait(trait, { char: options.char, parentId: id }))
+		}
+		return results
 	}
 }
 

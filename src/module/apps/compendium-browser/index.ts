@@ -77,7 +77,7 @@ class CompendiumBrowser extends Application {
 		return {
 			...super.defaultOptions,
 			id: "compendium-browser",
-			classes: [],
+			classes: ["gurps"],
 			template: `systems/${SYSTEM_NAME}/templates/compendium-browser/compendium-browser.hbs`,
 			width: 800,
 			height: 700,
@@ -728,7 +728,6 @@ class CompendiumBrowser extends Application {
 			user: game.user,
 			[activeTab]: activeTab === "settings" ? settings : { filterData: tab?.filterData },
 			scrollLimit: tab?.scrollLimit,
-			showCampaign: game.settings.get("pf2e", "campaignType") !== "none",
 		}
 	}
 
@@ -768,7 +767,6 @@ interface CompendiumBrowserSheetData {
 	user: Active<UserGURPS>
 	settings?: { settings: CompendiumBrowserSettings; sources: CompendiumBrowserSources }
 	scrollLimit?: number
-	showCampaign: boolean
 }
 
 export { CompendiumBrowser }

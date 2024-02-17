@@ -418,7 +418,7 @@ class GCAParser {
 			conditionals: this.parseBonusesBlock(this.getNode(xmlNode, "conditionals")),
 
 			_type: this.extractStringAttribute(xmlNode, "type"),
-			_idkey: this.extractStringAttribute(xmlNode, "idkey"),
+			_idkey: this.extractNumberAttribute(xmlNode, "idkey"),
 		}
 	}
 

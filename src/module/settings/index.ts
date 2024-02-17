@@ -157,6 +157,20 @@ export function registerSettings(): void {
 		},
 	})
 
+	game.settings.register(SYSTEM_NAME, SETTINGS.COMPENDIUM_BROWSER_SOURCES, {
+		name: "gurps.settings.compendium_browser_sources.name",
+		hint: "gurps.settings.compendium_browser_sources.hint",
+		default: {
+			sources: {},
+		},
+		type: Object,
+		scope: "world",
+		onChange: () => {
+			game.gurps.compendiumBrowser.packLoader.reset()
+			game.gurps.compendiumBrowser.initCompendiumList()
+		},
+	})
+
 	game.settings.register(SYSTEM_NAME, SETTINGS.ROLL_FORMULA, {
 		name: "gurps.settings.roll_formula.name",
 		hint: "gurps.settings.roll_formula.hint",

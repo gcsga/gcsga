@@ -255,12 +255,12 @@ export abstract class CompendiumBrowserTab {
 		})
 		Dialog.confirm({
 			content,
-			title: game.i18n.localize("PF2E.CompendiumBrowser.RollTable.CreateLabel"),
+			title: game.i18n.localize("gurps.compendium_browser.roll_table.create_label"),
 			yes: async $html => {
 				const html = $html[0]
 				const name =
 					htmlQuery<HTMLInputElement>(html, "input[name=name]")?.value ||
-					game.i18n.localize("PF2E.CompendiumBrowser.Title")
+					game.i18n.localize("gurps.compendium_browser.title")
 				const weight = Number(htmlQuery<HTMLInputElement>(html, "input[name=weight]")?.value) || 1
 				const results = this.#getRollTableResults({ weight })
 				const table = await RollTable.create({
@@ -285,7 +285,7 @@ export abstract class CompendiumBrowserTab {
 			},
 		)
 		Dialog.confirm({
-			title: game.i18n.localize("PF2E.CompendiumBrowser.RollTable.SelectTableTitle"),
+			title: game.i18n.localize("gurps.compendium_browser.roll_table.select_table_title"),
 			content,
 			yes: async $html => {
 				const html = $html[0]

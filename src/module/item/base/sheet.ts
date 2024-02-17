@@ -61,8 +61,6 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 		attributes.skill = LocalizeGURPS.translations.gurps.attributes.skill
 
 		const locations = this._getHitLocations()
-
-		console.log(attributes)
 		const moveTypes = this.item.actor
 			? Object.values(this.item.actor.moveTypes).reduce((acc, c) => {
 					return { ...acc, [c.id]: c.move_type_def.name }

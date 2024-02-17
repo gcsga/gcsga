@@ -101,7 +101,7 @@
         <div class="header reference">
             <i class="gcs-bookmark"></i>
         </div>
-        {{#each (sort modifiers "sort") }}
+        {{#each (sort document.modifiers "sort") }}
         {{>item/sections/trait-mod }}
 		{{else}}
 			<div class="enabled"></div>

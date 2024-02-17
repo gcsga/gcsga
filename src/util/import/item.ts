@@ -14,11 +14,13 @@ import { PrereqListObj } from "@prereq/data.ts"
 import { LocalizeGURPS, Study } from "@util"
 import { affects, container, difficulty, emcost, emweight, picker, prereq, selfctrl, tmcost } from "@util/enum/index.ts"
 import {
+	GCS_FILE_VERSION,
 	ImportedEquipmentContainerSystemSource,
 	ImportedEquipmentModifierContainerSystemSource,
 	ImportedEquipmentModifierSystemSource,
 	ImportedEquipmentSystemSource,
 	ImportedFeature,
+	ImportedItemLibrarySource,
 	ImportedItemSource,
 	ImportedItemType,
 	ImportedMeleeWeaponSystemSource,
@@ -57,6 +59,9 @@ import { MeleeWeaponSource, MeleeWeaponSystemSource } from "@item/melee_weapon/d
 import { RangedWeaponSource, RangedWeaponSystemSource } from "@item/ranged_weapon/data.ts"
 import { ItemFlags, ItemType, SYSTEM_NAME, gid } from "@data"
 import { TemplatePickerObj } from "@sytem/template_picker/document.ts"
+import { DialogGURPS } from "@ui/dialog.ts"
+import { ChatMessageGURPS } from "@module/chat-message/document.ts"
+import { ItemGURPS } from "@item"
 
 interface ItemImportContext {
 	parentId: string | null
@@ -766,7 +771,7 @@ class EquipmentImporter extends ItemImporter {
 			_id: id,
 			type: ItemType.Equipment,
 			name: systemData.description || LocalizeGURPS.translations.TYPES.Item[ItemType.Equipment],
-			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.Equipment}.svg`,
+			img: `systems/${SYSTEM_NAME}/assets/icons/equipment.svg`,
 			system: systemData,
 			effects: [],
 			folder: null,
@@ -841,7 +846,7 @@ class EquipmentContainerImporter extends ItemImporter {
 			_id: id,
 			type: ItemType.EquipmentContainer,
 			name: systemData.description || LocalizeGURPS.translations.TYPES.Item[ItemType.EquipmentContainer],
-			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.Equipment}.svg`,
+			img: `systems/${SYSTEM_NAME}/assets/icons/equipment.svg`,
 			system: systemData,
 			effects: [],
 			folder: null,
@@ -1149,6 +1154,99 @@ class RangedWeaponImporter extends ItemImporter {
 	}
 }
 
+class ItemCompendiumImporter {
+	static async throwError(text: string): Promise<void> {
+		ui.notifications.error(text)
+
+		await ChatMessageGURPS.create({
+			content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/chat/character-import-error.hbs`, {
+				lines: [text],
+			}),
+			type: CONST.CHAT_MESSAGE_TYPES.WHISPER,
+			whisper: [game.user.id],
+		})
+	}
+
+	static showDialog(): void {
+		setTimeout(async () => {
+			new DialogGURPS(
+				{
+					title: LocalizeGURPS.translations.gurps.system.library_import.title_item,
+					content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/item-library-import.hbs`, {}),
+					buttons: {
+						import: {
+							icon: '<i class="fas fa-file-import"></i>',
+							label: LocalizeGURPS.translations.gurps.system.library_import.import,
+							callback: (html: HTMLElement | JQuery<HTMLElement>) => {
+								const form = $(html).find("form")[0]
+								const files = form.data.files
+								if (!files.length)
+									ui.notifications?.error(LocalizeGURPS.translations.gurps.error.import.no_file)
+								else {
+									const file = files[0]
+									readTextFromFile(file).then(text =>
+										this.importCompendium({
+											text: text,
+											name: file.name,
+											path: file.path,
+										}),
+									)
+								}
+							},
+						},
+						no: {
+							icon: '<i class="fas fa-times"></i>',
+							label: LocalizeGURPS.translations.gurps.system.library_import.cancel,
+						},
+					},
+					default: "import",
+				},
+				{
+					width: 400,
+				},
+			).render(true)
+		}, 200)
+	}
+
+	static async importCompendium(file: { text: string; name: string; path: string }): Promise<void> {
+		const data = JSON.parse(file.text) as ImportedItemLibrarySource
+		const label = file.name.split(".")[0]
+		const name = label.slugify()
+
+		if (data.version !== GCS_FILE_VERSION) {
+			if (data.version < GCS_FILE_VERSION)
+				return this.throwError(LocalizeGURPS.translations.gurps.error.import.format_old)
+			else return this.throwError(LocalizeGURPS.translations.gurps.error.import.format_new)
+		}
+
+		const items = ItemImporter.importItems(data.rows)
+
+		let pack = game.packs.find(p => p.metadata.name === name)
+		if (!pack) {
+			pack = await CompendiumCollection.createCompendium({
+				type: "Item",
+				id: `world.${name}`,
+				label,
+				name,
+				package: "world",
+				packageName: SYSTEM_NAME,
+				packageType: "world",
+				path: `packs/${name}`,
+				system: SYSTEM_NAME,
+			})
+		}
+
+		const counter = items.length
+		ui.notifications.info(
+			LocalizeGURPS.format(LocalizeGURPS.translations.gurps.system.library_import.start, { pnumber: counter }),
+		)
+		await ItemGURPS.createDocuments(items, { pack: pack.collection, keepId: true })
+		ui.notifications.info(
+			LocalizeGURPS.format(LocalizeGURPS.translations.gurps.system.library_import.finished, { number: counter }),
+		)
+	}
+}
+
 const ItemImportHandlers: Record<ImportedItemType, ItemImporter> = {
 	[ImportedItemType.Trait]: new TraitImporter(),
 	[ImportedItemType.TraitContainer]: new TraitContainerImporter(),
@@ -1169,4 +1267,4 @@ const ItemImportHandlers: Record<ImportedItemType, ItemImporter> = {
 	[ImportedItemType.MeleeWeapon]: new MeleeWeaponImporter(),
 	[ImportedItemType.RangedWeapon]: new RangedWeaponImporter(),
 }
-export { ItemImporter }
+export { ItemImporter, ItemCompendiumImporter }

@@ -9,6 +9,7 @@ import {
 	PointsRecord,
 } from "@actor/character/data.ts"
 import {
+	GCS_FILE_VERSION,
 	ImportedAttribute,
 	ImportedAttributeDef,
 	ImportedBody,
@@ -39,8 +40,6 @@ import { ChatMessageGURPS } from "@module/chat-message/document.ts"
 import { ActorFlags, ActorType, ManeuverID, SYSTEM_NAME } from "@data"
 import { BodyObj, HitLocationObj } from "@sytem/hit_location/data.ts"
 import { GCACharacterImporter } from "./character_gca.ts"
-
-const GCS_FILE_VERSION = 4
 
 export class CharacterImporter {
 	static async throwError(text: string): Promise<void> {

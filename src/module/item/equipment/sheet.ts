@@ -1,8 +1,8 @@
 import { ItemSheetGCS } from "@item/gcs/sheet.ts"
-import { CharacterResolver, Weight } from "@util"
+import { Weight } from "@util"
 import { EquipmentGURPS } from "./document.ts"
 import { EquipmentContainerGURPS } from "@item"
-import { SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
+import { SYSTEM_NAME, sheetSettingsFor } from "@module/data/index.ts"
 import { ItemSheetDataGURPS, ItemSheetOptions } from "@item/base/sheet.ts"
 
 export class EquipmentSheet<TItem extends EquipmentGURPS | EquipmentContainerGURPS> extends ItemSheetGCS<TItem> {
@@ -29,10 +29,7 @@ export class EquipmentSheet<TItem extends EquipmentGURPS | EquipmentContainerGUR
 
 	protected override async _updateObject(event: Event, formData: Record<string, unknown>): Promise<void> {
 		const weight: string = formData["system.weight"] as string
-		const actor = this.actor as unknown as CharacterResolver
-		const units =
-			actor.settings.default_weight_units ??
-			game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`).default_weight_units
+		const units = sheetSettingsFor(this.actor).default_weight_units
 		const weightPounds = Weight.fromString(`${parseFloat(weight)} ${units}`, units)
 		formData["system.weight"] = Weight.format(weightPounds, units)
 

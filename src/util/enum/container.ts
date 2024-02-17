@@ -5,8 +5,8 @@ export namespace container {
 	export enum Type {
 		Group = "group",
 		AlternativeAbilities = "alternative_abilities",
-		Ancestry = "attributes",
-		Attributes = "ancestry",
+		Ancestry = "ancestry",
+		Attributes = "attributes",
 		MetaTrait = "meta_trait",
 	}
 

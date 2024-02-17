@@ -29,6 +29,7 @@ import { SceneGURPS } from "@scene"
 import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
 import { EffectPanel } from "@item/effect/panel.ts"
 import { HitLocationObj } from "@sytem/hit_location/data.ts"
+import { CompendiumDirectoryGURPS } from "@module/apps/sidebar/compendium-directory.ts"
 interface GameGURPS
 	extends Game<
 		ActorGURPS<null>,
@@ -59,7 +60,7 @@ type ConfiguredConfig = Config<
 	CombatGURPS,
 	CombatantGURPS<CombatGURPS | null, TokenDocumentGURPS>,
 	CombatTrackerGURPS<CombatGURPS | null>,
-	CompendiumDirectory,
+	CompendiumDirectoryGURPS,
 	Hotbar,
 	ItemGURPS,
 	Macro,
@@ -104,7 +105,7 @@ declare global {
 			ActorDirectory<ActorGURPS<null>>,
 			ItemDirectory<ItemGURPS<null>>,
 			ChatLog,
-			CompendiumDirectory,
+			CompendiumDirectoryGURPS,
 			CombatTrackerGURPS<CombatGURPS | null>,
 			Hotbar
 		>

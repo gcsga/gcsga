@@ -1,0 +1,66 @@
+<section class="{{cssClass}} directory flexcol" id="{{cssId}}" data-tab="{{tabName}}">
+	<!-- Directory Header -->
+	<header class="directory-header flexcol">
+		<div class="header-actions action-buttons flexrow">
+			{{#if canCreateEntry}}
+			<button class="create-entry">
+				<i class="{{sidebarIcon}}"></i>
+				{{localize 'SIDEBAR.Create' type=label}}
+			</button>
+			{{/if}} {{#if canCreateFolder}}
+			<button class="create-folder">
+				<i class="{{folderIcon}}"></i>
+				{{localize 'FOLDER.Create'}}
+			</button>
+			{{/if}}
+		</div>
+		<div class="header-search flexrow">
+			<i class="filter fa-solid {{#if filtersActive}}fa-filter-list{{else}}fa-filter{{/if}}"></i>
+			<i class="fa-solid fa-search"></i>
+			<input
+				type="search"
+				name="search"
+				value=""
+				placeholder="{{localize 'SIDEBAR.Search' types=labelPlural}}"
+				autocomplete="off"
+			/>
+			<a class="header-control toggle-sort" data-tooltip="{{localize sortTooltip}}">
+				<i class="fa-solid {{sortIcon}}"></i>
+			</a>
+			<a class="header-control collapse-all" data-tooltip="{{localize 'FOLDER.Collapse'}}">
+				<i class="fa-duotone fa-folder-tree"></i>
+			</a>
+		</div>
+	</header>
+
+	<!-- Directory Contents -->
+	<ol class="directory-list">
+		{{#each tree.children}} {{> (lookup @root "folderPartial") node=this folder=this.folder}} {{/each}} {{#each
+		tree.entries}} {{> (lookup @root "entryPartial")}} {{/each}}
+		<ol class="document-matches"></ol>
+	</ol>
+
+	<!-- Directory Footer -->
+	<footer class="directory-footer action-buttons {{#if unavailable}}warning{{/if}}">
+		{{#if unavailable}}
+		<i class="fa-solid fa-triangle-exclamation"></i>
+		<a class="show-issues">{{localize "SUPPORT.UnavailableDocuments" count=unavailable document=label}}</a>
+		{{/if}}
+		<button type="button" class="compendium-browser">
+			<i class="fa-solid fa-magnifying-glass"></i>
+			{{localize "gurps.compendium_browser.title"}}
+		</button>
+		<button type="button" class="import-item-library">
+			<i class="fa-solid fa-magnifying-glass"></i>
+			{{localize "gurps.system.library_import.button_item"}}
+		</button>
+	</footer>
+
+	<template class="compendium-search-match">
+		<li class="match">
+			<div class="thumbnail"><img /></div>
+			<a class="name"></a>
+			<span class="details"></span>
+		</li>
+	</template>
+</section>

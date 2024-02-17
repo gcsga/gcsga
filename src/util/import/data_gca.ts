@@ -537,7 +537,7 @@ type GCATrait = {
 	conditionals?: GCABonusesBlock
 
 	_type: string
-	_idkey: string
+	_idkey: number
 }
 
 type GCATraitBlock = {
