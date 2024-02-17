@@ -58,6 +58,7 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 		attributes.dodge = LocalizeGURPS.translations.gurps.attributes.dodge
 		attributes.parry = LocalizeGURPS.translations.gurps.attributes.parry
 		attributes.block = LocalizeGURPS.translations.gurps.attributes.block
+		attributes.skill = LocalizeGURPS.translations.gurps.attributes.skill
 
 		const locations = this._getHitLocations()
 

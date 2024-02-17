@@ -21,11 +21,7 @@ interface SkillGURPS<TParent extends ActorGURPS | null> extends ItemGCS<TParent>
 	type: ItemType.Skill
 }
 class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
-	declare level: SkillLevel
-
-	// level: SkillLevel = { level: -Infinity, relative_level: 0, tooltip: new TooltipGURPS() }
-
-	// unsatisfied_reason = ""
+	level: SkillLevel = { level: -Infinity, relative_level: 0, tooltip: new TooltipGURPS() }
 
 	// Getters
 	override get formattedName(): string {

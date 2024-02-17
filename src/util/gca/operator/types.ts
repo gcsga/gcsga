@@ -1,5 +1,5 @@
-import { Evaluator } from "@util/eval.ts"
-import { eFunction } from "@util/function.ts"
+import { EvaluatorGCA } from "../eval.ts"
+import { eFunction } from "../function.ts"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type Operand = any
@@ -28,7 +28,7 @@ export class expressionOperator {
 }
 
 export class expressionTree {
-	evaluator: Evaluator
+	evaluator: EvaluatorGCA
 
 	left?: Operand
 
@@ -38,7 +38,7 @@ export class expressionTree {
 
 	unaryOp: Operator | null
 
-	constructor(data: Partial<expressionTree> & { evaluator: Evaluator }) {
+	constructor(data: Partial<expressionTree> & { evaluator: EvaluatorGCA }) {
 		this.evaluator = data.evaluator
 		this.left = data.left
 		this.right = data.right

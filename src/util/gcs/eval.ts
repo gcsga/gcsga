@@ -9,10 +9,8 @@ import {
 	expressionTree,
 	parsedFunction,
 } from "./operator/types.ts"
-import { CharacterResolver } from "./resolvers.ts"
+import { CharacterResolver } from "../resolvers.ts"
 import { CharacterGURPS } from "@actor"
-
-type NewType = Operand
 
 // Evaluator is used to evaluate an expression. If you do not have any variables that will be resolved, you can leave
 // Resolver unset.
@@ -23,7 +21,7 @@ class Evaluator {
 
 	functions: Map<string, eFunction> = evalFunctions()
 
-	operandStack: NewType[] = []
+	operandStack: Operand[] = []
 
 	operatorStack: expressionOperator[] = []
 

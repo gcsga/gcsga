@@ -1,4 +1,7 @@
+import { difficulty } from "@util"
 import { ConditionID, EFFECT_ACTION, ManeuverID, RollType } from "./constants.ts"
+
+type SkillDifficulty = `${string}/${difficulty.Level}`
 
 // Items
 type Posture =
@@ -191,6 +194,7 @@ export type {
 	RollModifierStack,
 	Stringer,
 	TokenPool,
+	SkillDifficulty,
 	WeaponOwner,
 }
 

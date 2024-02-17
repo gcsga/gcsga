@@ -80,7 +80,7 @@ export class GCACharacterImporter {
 		items.push(...GCAItemImporter.importCultures(data))
 		items.push(...GCAItemImporter.importSkills(data))
 		items.push(...GCAItemImporter.importSpells(data))
-		items.push(...GCAItemImporter.importEquipment(data))
+		items.push(...GCAItemImporter.importEquipments(data))
 
 		const name =
 			systemData.profile.name ?? document.name ?? LocalizeGURPS.translations.TYPES.Actor[ActorType.Character]

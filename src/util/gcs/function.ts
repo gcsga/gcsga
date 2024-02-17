@@ -1,7 +1,7 @@
 import { DiceGURPS } from "@module/dice/index.ts"
-import { CharacterResolver, SkillResolver, TraitContainerResovler, TraitResolver } from "./resolvers.ts"
-import { equalFold } from "./string_criteria.ts"
-import { Length } from "./length.ts"
+import { CharacterResolver, SkillResolver, TraitContainerResovler, TraitResolver } from "../resolvers.ts"
+import { equalFold } from "../string_criteria.ts"
+import { Length } from "../length.ts"
 import { Evaluator } from "./eval.ts"
 import { ItemType } from "@data"
 

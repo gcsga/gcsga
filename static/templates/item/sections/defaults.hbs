@@ -2,7 +2,7 @@
 	<div class="header">{{localize "gurps.default.header"}}</div>
 	<div class="content">
 		<div> <a class="add button gcs-circled-add"></a> </div>
-		{{#each this.defaults}}
+		{{#each system.defaults}}
 			<div class="default">
 				<a class="remove button gcs-trash" data-index="{{@index}}"></a>
 			<select name="{{../sysPrefix}}defaults.{{@index}}.type" data-index="{{@index}}">

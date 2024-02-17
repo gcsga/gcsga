@@ -712,7 +712,8 @@
 		"attributes": {
 			"dodge": "Dodge",
 			"parry": "Parry",
-			"block": "Block"
+			"block": "Block",
+			"skill": "Skill"
 		},
 		"attribute_def": {
 			"id": "ID",

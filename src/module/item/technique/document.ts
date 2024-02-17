@@ -156,7 +156,9 @@ export class TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | nul
 			if (!(actor instanceof CharacterGURPS)) return 0
 			if (technique.default.type === gid.Skill) {
 				const sk = actor.baseSkill(technique.default, true)
-				return sk ? sk.level.level : 0
+				if (!sk) return 0
+				if (!sk.level) sk?.calculateLevel()
+				return sk.level.level
 			} else if (technique.default) {
 				return (
 					(technique.default?.skillLevelFast(actor, true, null, false) ?? 0) -
