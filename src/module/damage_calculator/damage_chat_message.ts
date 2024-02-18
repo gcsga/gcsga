@@ -29,6 +29,8 @@ export type DamagePayload = {
 	damageRoll: DamageRoll[]
 	modifiers: Array<RollModifier & { class?: string }>
 	modifierTotal: number
+	ranged: boolean
+	range?: { max: number; half: number }
 }
 
 type DropData = { type: string; x: number; y: number; payload: DamagePayload }
