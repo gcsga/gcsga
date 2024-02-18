@@ -1,14 +1,26 @@
-import { ItemGCS } from "@item/gcs"
-import { TraitModifierGURPS } from "@item/trait_modifier"
-import { TraitModifierContainerSource } from "./data"
+import { ActorGURPS } from "@actor/base.ts"
+import { ItemGCS } from "@item/gcs/document.ts"
+import { TraitModifierGURPS } from "@item/trait_modifier/document.ts"
+import { TraitModifierContainerSource, TraitModifierContainerSystemSource } from "./data.ts"
+import { ItemType } from "@data"
 
-export class TraitModifierContainerGURPS extends ItemGCS<TraitModifierContainerSource> {
+export interface TraitModifierContainerGURPS<TParent extends ActorGURPS | null = ActorGURPS | null>
+	extends ItemGCS<TParent> {
+	readonly _source: TraitModifierContainerSource
+	system: TraitModifierContainerSystemSource
+
+	type: ItemType.TraitModifierContainer
+}
+
+export class TraitModifierContainerGURPS<
+	TParent extends ActorGURPS | null = ActorGURPS | null,
+> extends ItemGCS<TParent> {
 	// Embedded Items
-	get children(): Collection<TraitModifierGURPS | TraitModifierContainerGURPS> {
+	override get children(): Collection<TraitModifierGURPS | TraitModifierContainerGURPS> {
 		return super.children as Collection<TraitModifierGURPS | TraitModifierContainerGURPS>
 	}
 
-	get enabled(): boolean {
+	override get enabled(): boolean {
 		return true
 	}
 }

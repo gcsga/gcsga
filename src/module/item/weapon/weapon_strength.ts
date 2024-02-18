@@ -1,8 +1,12 @@
-import { TooltipGURPS } from "@module/tooltip"
-import { Int } from "@util/fxp"
-import { BaseWeaponGURPS } from "./document"
-import { WeaponField } from "./weapon_field"
-import { feature, wswitch } from "@util/enum"
+import { Int } from "@util/fxp.ts"
+import { WeaponField } from "./weapon_field.ts"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { wswitch } from "@util/enum/wswitch.ts"
+import { feature } from "@util/enum/feature.ts"
+import { BaseWeaponGURPS } from "./document.ts"
+import { ItemType } from "@data"
+import { ItemGURPS } from "@item/base/document.ts"
+import { EquipmentResolver } from "@util/resolvers.ts"
 
 export class WeaponStrength extends WeaponField {
 	min?: number
@@ -33,12 +37,15 @@ export class WeaponStrength extends WeaponField {
 		return ws
 	}
 
-	resolve(w: BaseWeaponGURPS<any>, tooltip: TooltipGURPS | null): WeaponStrength {
+	resolve(w: BaseWeaponGURPS, tooltip: TooltipGURPS | null): WeaponStrength {
 		const result = new WeaponStrength()
 		Object.assign(result, this)
 		if (w.actor) {
-			if (w.container instanceof Item) {
-				const st = Math.max((w.container as any).ratedStrength, 0)
+			if (
+				w.container instanceof ItemGURPS &&
+				(w.container.type === ItemType.Equipment || w.container.type === ItemType.EquipmentContainer)
+			) {
+				const st = Math.max((w.container as unknown as EquipmentResolver).ratedStrength, 0)
 				if (st !== 0) result.min = st
 			}
 		}
@@ -48,7 +55,7 @@ export class WeaponStrength extends WeaponField {
 		result.twoHanded = w.resolveBoolFlag(wswitch.Type.TwoHanded, result.twoHanded ?? false)
 		result.twoHandedUnready = w.resolveBoolFlag(
 			wswitch.Type.TwoHandedAndUnreadyAfterAttack,
-			result.twoHandedUnready ?? false
+			result.twoHandedUnready ?? false,
 		)
 		result.min ??= 0
 		for (const bonus of w.collectWeaponBonuses(1, tooltip, feature.Type.WeaponMinSTBonus))
@@ -58,7 +65,7 @@ export class WeaponStrength extends WeaponField {
 		return result
 	}
 
-	toString(): string {
+	override toString(): string {
 		let buffer = ""
 		if (this.min && this.min > 0) buffer += this.min.toString()
 		if (this.bipod) buffer += "B"
@@ -72,7 +79,7 @@ export class WeaponStrength extends WeaponField {
 		return buffer
 	}
 
-	validate() {
+	validate(): void {
 		if (this.twoHandedUnready) this.twoHanded = false
 	}
 }

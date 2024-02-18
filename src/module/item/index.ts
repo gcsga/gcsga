@@ -1,25 +1,44 @@
-export * from "./base"
-export * from "./condition"
-export * from "./container"
-export * from "./equipment"
-export * from "./effect"
-export * from "./equipment_container"
-export * from "./equipment_modifier"
-export * from "./gcs"
-export * from "./melee_weapon"
-export * from "./note"
-export * from "./note_container"
-export * from "./ranged_weapon"
-export * from "./ritual_magic_spell"
-export * from "./skill"
-export * from "./skill_container"
-export * from "./spell"
-export * from "./spell_container"
-export * from "./technique"
-export * from "./trait"
-export * from "./trait_container"
-export * from "./trait_modifier"
-export * from "./trait_modifier_container"
-export * from "./equipment_modifier_container"
-export * from "./static"
-export * from "./weapon"
+// Base
+export * from "./base/document.ts"
+
+// Abstract
+export { ContainerGURPS } from "./container/document.ts"
+export { ItemGCS } from "./gcs/document.ts"
+export { BaseWeaponGURPS } from "./weapon/document.ts"
+
+// Traits
+export { TraitGURPS } from "./trait/document.ts"
+export { TraitContainerGURPS } from "./trait_container/document.ts"
+export { TraitModifierGURPS } from "./trait_modifier/document.ts"
+export { TraitModifierContainerGURPS } from "./trait_modifier_container/document.ts"
+
+// Skills
+export { SkillGURPS } from "./skill/document.ts"
+export { TechniqueGURPS } from "./technique/document.ts"
+export { SkillContainerGURPS } from "./skill_container/document.ts"
+
+// Spells
+export { SpellGURPS } from "./spell/document.ts"
+export { RitualMagicSpellGURPS } from "./ritual_magic_spell/document.ts"
+export { SpellContainerGURPS } from "./spell_container/document.ts"
+
+// Equipment
+export { EquipmentGURPS } from "./equipment/document.ts"
+export { EquipmentContainerGURPS } from "./equipment_container/document.ts"
+export { EquipmentModifierGURPS } from "./equipment_modifier/document.ts"
+export { EquipmentModifierContainerGURPS } from "./equipment_modifier_container/document.ts"
+
+// Notes
+export { NoteGURPS } from "./note/document.ts"
+export { NoteContainerGURPS } from "./note_container/document.ts"
+
+// Weapons
+export { MeleeWeaponGURPS } from "./melee_weapon/document.ts"
+export { RangedWeaponGURPS } from "./ranged_weapon/document.ts"
+
+// Weapons
+export { EffectGURPS } from "./effect/document.ts"
+export { ConditionGURPS } from "./condition/document.ts"
+
+// Legacy
+export { StaticItemGURPS } from "./static/document.ts"

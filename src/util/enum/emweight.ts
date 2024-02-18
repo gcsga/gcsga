@@ -1,6 +1,6 @@
-import { Fraction } from "@util/fxp"
-import { LocalizeGURPS } from "@util/localize"
-import { equalFold } from "@util/string_criteria"
+import { Fraction } from "@util/fxp.ts"
+import { LocalizeGURPS } from "@util/localize.ts"
+import { equalFold } from "@util/string_criteria.ts"
 
 export namespace emweight {
 	export enum Type {

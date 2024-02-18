@@ -1,17 +1,18 @@
-import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
-import { ItemType } from "@module/data"
+import { ItemType } from "@data"
+import { BaseContainerSource } from "@item/container/data.ts"
+import { ItemGCSSystemSource } from "@item/gcs/data.ts"
 
-export type EquipmentModifierContainerSource = ItemGCSSource<
+export type EquipmentModifierContainerSource = BaseContainerSource<
 	ItemType.EquipmentModifierContainer,
-	EquipmentModifierContainerSystemData
+	EquipmentModifierContainerSystemSource
 >
 
-export interface EquipmentModifierContainerData
-	extends Omit<EquipmentModifierContainerSource, "effects" | "items">,
-		EquipmentModifierContainerSystemData {
-	readonly type: EquipmentModifierContainerSource["type"]
-	data: EquipmentModifierContainerSystemData
-	readonly _source: EquipmentModifierContainerSource
+export interface EquipmentModifierContainerSystemSource extends ItemGCSSystemSource {
+	type: ItemType.EquipmentModifierContainer
+	name?: string
+	reference?: string
+	reference_highlight?: string
+	notes?: string
+	vtt_notes?: string
+	tags?: string[]
 }
-
-export type EquipmentModifierContainerSystemData = ItemGCSSystemData

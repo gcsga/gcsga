@@ -1,46 +1,35 @@
-import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
-import { Feature } from "@module/config"
-import { ItemType } from "@module/data"
-import { SkillDefault } from "@module/default"
-import { TooltipGURPS } from "@module/tooltip"
-import { PrereqList } from "@prereq"
-import { Study } from "@util"
-import { difficulty, study } from "@util/enum"
+import { ItemType, SkillDifficulty } from "@data"
+import { FeatureObj } from "@feature/index.ts"
+import { BaseContainerSource } from "@item/container/data.ts"
+import { ItemGCSSystemSource } from "@item/gcs/data.ts"
+import { PrereqListObj } from "@prereq/data.ts"
+import { SkillDefaultObj } from "@sytem/default/index.ts"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { study } from "@util/enum/study.ts"
+import { Study } from "@util/study.ts"
 
-export type SkillSource = ItemGCSSource<ItemType.Skill, SkillSystemData>
+export type SkillSource = BaseContainerSource<ItemType.Skill, SkillSystemSource>
 
-// Export class SkillData extends BaseItemDataGURPS<SkillGURPS> {}
-
-export interface SkillData extends Omit<SkillSource, "effects">, SkillSystemData {
-	readonly type: SkillSource["type"]
-	data: SkillSystemData
-
-	readonly _source: SkillSource
-}
-
-export interface SkillSystemData extends ItemGCSSystemData {
-	prereqs: PrereqList
+export interface SkillSystemSource extends ItemGCSSystemSource {
+	type: ItemType.Skill
+	name: string
+	reference: string
+	reference_highlight: string
+	notes: string
+	vtt_notes: string
+	tags: string[]
 	specialization: string
 	tech_level: string
 	tech_level_required: boolean
-	encumbrance_penalty_multiplier: EncumbrancePenaltyMultiplier
-	difficulty: `${string}/${difficulty.Level}`
+	difficulty: SkillDifficulty
 	points: number
-	defaulted_from: SkillDefault | null
-	defaults: SkillDefault[]
-	features: Feature[]
+	encumbrance_penalty_multiplier: number
+	defaulted_from: SkillDefaultObj | null
+	defaults: SkillDefaultObj[]
+	prereqs: PrereqListObj
+	features: FeatureObj[]
 	study: Study[]
-	study_hours_needed: study.Level
-	calc?: SkillCalcValues
-}
-
-export interface SkillCalcValues extends ItemGCSCalcValues {
-	level: number
-	rsl: string
-	points: number
-	resolved_notes?: string
-	tooltip: string
-	difficulty: string
+	study_hours_needed: study.Level | ""
 }
 
 export type EncumbrancePenaltyMultiplier = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9

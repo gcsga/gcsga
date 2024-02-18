@@ -1,41 +1,52 @@
-import { SETTINGS, SYSTEM_NAME } from "@module/data"
+import { SETTINGS, SYSTEM_NAME } from "@data"
+import { PartialSettingsData, SettingsMenuGURPS } from "./menu.ts"
+import { htmlClosest, htmlQuery } from "@util/dom.ts"
 import { getNewAttributeId, prepareFormData } from "@util"
-import { DnD } from "@util/drag_drop"
-import { ResourceTrackerDefObj } from "@module/resource_tracker/data"
-import { AttributeBaseSettings } from "./attribute_base"
+import { DnD } from "@util/drag_drop.ts"
+import { DropDataType } from "@module/apps/damage_calculator/damage_chat_message.ts"
+import { defaultSettings } from "./defaults.ts"
 
 enum ListType {
 	ResourceTracker = "resource_trackers",
 	Thresholds = "tracker_thresholds",
 }
 
-export class DefaultResourceTrackerSettings extends AttributeBaseSettings {
+type ConfigGURPSListName = (typeof ResourceTrackerSettings.SETTINGS)[number]
+
+export class ResourceTrackerSettings extends SettingsMenuGURPS {
 	static override readonly namespace = SETTINGS.DEFAULT_RESOURCE_TRACKERS
 
 	static override readonly SETTINGS = ["resource_trackers"]
 
-	_onDataImport(event: JQuery.ClickEvent) {
-		event.preventDefault()
+	protected static override get settings(): Record<ConfigGURPSListName, PartialSettingsData> {
+		return {
+			resource_trackers: {
+				prefix: SETTINGS.DEFAULT_RESOURCE_TRACKERS,
+				name: "trackers temp",
+				hint: "trackers hint temp",
+				default: defaultSettings[SYSTEM_NAME][`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`],
+				type: Object,
+				onChange: value => {
+					console.log(value)
+				},
+			},
+		}
 	}
 
-	_onDataExport(event: JQuery.ClickEvent) {
-		event.preventDefault()
-	}
+	protected _onDataImport(_event: MouseEvent): void {}
 
-	async _onAddItem(event: JQuery.ClickEvent) {
-		event.preventDefault()
-		event.stopPropagation()
-		const resource_trackers: ResourceTrackerDefObj[] = game.settings.get(
-			SYSTEM_NAME,
-			`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`
-		)
-		const type: ListType = $(event.currentTarget).data("type")
-		let new_id = ""
-		if (type === ListType.ResourceTracker) new_id = getNewAttributeId(resource_trackers)
+	protected _onDataExport(_event: MouseEvent): void {}
+
+	protected _onAddItem(event: MouseEvent): void {
+		const trackers = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`)
+		const type: ListType = htmlQuery(event.target, "[data-type]")?.dataset.type as ListType
+
+		let newID = ""
 		switch (type) {
 			case ListType.ResourceTracker:
-				resource_trackers.push({
-					id: new_id,
+				newID = getNewAttributeId(trackers)
+				trackers.push({
+					id: newID,
 					name: "",
 					full_name: "",
 					max: 10,
@@ -44,86 +55,88 @@ export class DefaultResourceTrackerSettings extends AttributeBaseSettings {
 					isMinEnforced: false,
 					thresholds: [],
 				})
-				await game.settings.set(SYSTEM_NAME, `${this.namespace}.resource_trackers`, resource_trackers)
-				return this.render()
-			case ListType.Thresholds:
-				resource_trackers[$(event.currentTarget).data("id")].thresholds ??= []
-				resource_trackers[$(event.currentTarget).data("id")].thresholds!.push({
-					state: "",
-					explanation: "",
-					expression: "",
-					ops: [],
-				})
-				await game.settings.set(SYSTEM_NAME, `${this.namespace}.resource_trackers`, resource_trackers)
-				return this.render()
+				game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`, trackers)
+				break
+			case ListType.Thresholds: {
+				const index = htmlQuery(event.target, "[data-id]")?.dataset.id
+				if (index) {
+					trackers[parseInt(index)].thresholds ??= []
+					trackers[parseInt(index)].thresholds?.push({
+						state: "",
+						explanation: "",
+						expression: "",
+						ops: [],
+					})
+				}
+				game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`, trackers)
+				break
+			}
 		}
+		this.render()
 	}
 
-	async _onDeleteItem(event: JQuery.ClickEvent) {
-		event.preventDefault()
-		event.stopPropagation()
-		const resource_trackers: ResourceTrackerDefObj[] = game.settings.get(
-			SYSTEM_NAME,
-			`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`
-		)
-		const type: "resource_trackers" | "tracker_thresholds" = $(event.currentTarget).data("type")
-		const index = Number($(event.currentTarget).data("index")) || 0
-		const parent_index = Number($(event.currentTarget).data("pindex")) || 0
+	protected _onDeleteItem(event: MouseEvent): void {
+		const trackers = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`)
+		const type: ListType = htmlQuery(event.target, "[data-type]")?.dataset.type as ListType
+
+		const index = parseInt(htmlQuery(event.target, "[data-index]")?.dataset.index ?? "-1")
+		const pindex = parseInt(htmlQuery(event.target, "[data-pindex]")?.dataset.pindex ?? "-1")
+		if (index === -1 || pindex === 1) return
+
 		switch (type) {
-			case "resource_trackers":
-				resource_trackers.splice(index, 1)
-				await game.settings.set(SYSTEM_NAME, `${this.namespace}.resource_trackers`, resource_trackers)
-				return this.render()
-			case "tracker_thresholds":
-				resource_trackers[parent_index].thresholds?.splice(index, 1)
-				await game.settings.set(SYSTEM_NAME, `${this.namespace}.resource_trackers`, resource_trackers)
-				return this.render()
+			case ListType.ResourceTracker:
+				trackers.splice(index, 1)
+				game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`, trackers)
+				break
+			case ListType.Thresholds:
+				trackers[pindex].thresholds?.splice(index, 1)
+				game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`, trackers)
+				break
 		}
+
+		this.render()
 	}
 
-	protected async _onDrop(event: DragEvent): Promise<unknown> {
-		let dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
-		let element = $(event.target!)
-		if (!element.hasClass("item")) element = element.parent(".item")
+	protected override _onDrop(event: DragEvent): void {
+		const dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
+		const element = htmlClosest(event.target, ".item")
+		if (!element) return
 
-		const resource_trackers: ResourceTrackerDefObj[] = game.settings.get(
+		const trackers = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`)
+		const index = parseInt(element.dataset.index ?? "-1")
+		if (index === -1) return
+		const above = element.classList.contains("border-top")
+
+		if (dragData.type === DropDataType.Item || dragData.type === DropDataType.Damage) return
+		if (dragData.order === index) return
+		if (above && dragData.order === index - 1) return
+		if (!above && dragData.order === index + 1) return
+
+		switch (dragData.type) {
+			case DropDataType.ResourceTrackers: {
+				const item = trackers.splice(dragData.index, 1)[0]
+				trackers.splice(index, 0, item)
+				// trackers.forEach((v, k) => (v.order = k))
+				break
+			}
+			case DropDataType.TrackerThresholds: {
+				const item = trackers[dragData.parent_index].thresholds?.splice(dragData.index, 1)[0]
+				if (!item) break
+				trackers[dragData.parent_index].thresholds?.splice(index, 0, item)
+				break
+			}
+		}
+
+		game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`, trackers)
+		this.render()
+	}
+
+	protected override async _updateObject(_event: Event, formData: Record<string, unknown>): Promise<void> {
+		const resource_trackers = game.settings.get(
 			SYSTEM_NAME,
-			`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`
+			`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`,
 		)
-		const target_index = element.data("index")
-		const above = element.hasClass("border-top")
-		if (dragData.order === target_index) return this.render()
-		if (above && dragData.order === target_index - 1) return this.render()
-		if (!above && dragData.order === target_index + 1) return this.render()
-
-		let container: any[] = []
-		if (dragData.type === "resource_trackers") container = resource_trackers
-		else if (dragData.type === "tracker_thresholds") container = resource_trackers
-		if (!container) return
-
-		let item
-		if (dragData.type.includes("_thresholds")) {
-			item = container[dragData.parent_index].thresholds.splice(dragData.index, 1)[0]
-			container[dragData.parent_index].thresholds.splice(target_index, 0, item as any)
-		} else {
-			item = container.splice(dragData.index, 1)[0]
-			container.splice(target_index, 0, item as any)
-		}
-		container.forEach((v: any, k: number) => {
-			v.order = k
-		})
-
-		await game.settings.set(SYSTEM_NAME, `${this.namespace}.resource_trackers`, resource_trackers)
-		return this.render()
-	}
-
-	protected override async _updateObject(_event: Event, formData: any): Promise<void> {
-		const resource_trackers = await game.settings.get(SYSTEM_NAME, `${this.namespace}.resource_trackers`)
 		formData = prepareFormData(formData, { system: { settings: { resource_trackers } } })
-		await game.settings.set(
-			SYSTEM_NAME,
-			`${this.namespace}.resource_trackers`,
-			formData["system.settings.resource_trackers"]
-		)
+		game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`, resource_trackers)
 	}
 }

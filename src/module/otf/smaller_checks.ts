@@ -1,5 +1,5 @@
-import { ParsedOtF, OtFAction, OtFTestAction, OtFLinkedAction, OptionalCheckParameters } from "./base"
-import { gspan } from "./utils"
+import { OptionalCheckParameters, OtFAction, OtFLinkedAction, OtFTestAction, ParsedOtF } from "./base.ts"
+import { gspan } from "./utils.ts"
 
 /**
  *
@@ -8,7 +8,7 @@ import { gspan } from "./utils"
  */
 export function checkForChat(str: string, opts: OptionalCheckParameters): ParsedOtF | undefined {
 	if (str[0] === "/") {
-		let action = <OtFAction>{
+		const action = <OtFAction>{
 			quiet: opts.blindroll,
 			orig: str,
 			type: "chat",
@@ -27,10 +27,10 @@ export function checkForChat(str: string, opts: OptionalCheckParameters): Parsed
  * @param opts
  */
 export function checkForHtml(str: string, opts: OptionalCheckParameters): ParsedOtF | undefined {
-	let m = str.match(/https?:\/\//i)
+	const m = str.match(/https?:\/\//i)
 	if (m) {
-		let lbl = opts.overridetxt ? opts.overridetxt : str
-		let action = <OtFLinkedAction>{
+		const lbl = opts.overridetxt ? opts.overridetxt : str
+		const action = <OtFLinkedAction>{
 			orig: str,
 			link: lbl,
 			type: "href",
@@ -50,10 +50,10 @@ export function checkForHtml(str: string, opts: OptionalCheckParameters): Parsed
  * @param str
  * @param opts
  */
-export function checkForIf(str: string, opts: OptionalCheckParameters): ParsedOtF | undefined {
-	let m = str.match(/^@(margin|isCritSuccess|IsCritFailure) *([=<>]+ *[+-]?[\d.]+)?$/i)
+export function checkForIf(str: string, _opts: OptionalCheckParameters): ParsedOtF | undefined {
+	const m = str.match(/^@(margin|isCritSuccess|IsCritFailure) *([=<>]+ *[+-]?[\d.]+)?$/i)
 	if (m) {
-		let action = <OtFTestAction>{
+		const action = <OtFTestAction>{
 			type: "test-if",
 			orig: str,
 			desc: m[1],
@@ -64,6 +64,7 @@ export function checkForIf(str: string, opts: OptionalCheckParameters): ParsedOt
 			action: action,
 		}
 	}
+	return
 }
 
 /**
@@ -72,12 +73,12 @@ export function checkForIf(str: string, opts: OptionalCheckParameters): ParsedOt
  * @param opts
  */
 export function checkForExists(str: string, opts: OptionalCheckParameters): ParsedOtF | undefined {
-	let m = str.match(/^\?([AMRS][TDPK]?):(.*)/i)
+	const m = str.match(/^\?([AMRS][TDPK]?):(.*)/i)
 	if (m) {
 		let name = m[2]
-		let quotes = name.match(/^['"](.*)['"]/)
+		const quotes = name.match(/^['"](.*)['"]/)
 		if (quotes) name = quotes[1]
-		let action = <OtFTestAction>{
+		const action = <OtFTestAction>{
 			orig: str,
 			type: "test-exists",
 			formula: m[1].toUpperCase(),
@@ -88,6 +89,7 @@ export function checkForExists(str: string, opts: OptionalCheckParameters): Pars
 			action: action,
 		}
 	}
+	return
 }
 
 /**
@@ -97,7 +99,7 @@ export function checkForExists(str: string, opts: OptionalCheckParameters): Pars
  */
 export function checkForPDF(str: string, opts: OptionalCheckParameters): ParsedOtF | undefined {
 	// For PDF link
-	let pdf = str.replace(/^PDF: */g, "")
+	const pdf = str.replace(/^PDF: */g, "")
 	if (pdf !== str) {
 		return <ParsedOtF>{
 			text: `<span class='pdflink' data-pdf='${pdf}'>${opts.overridetxt || pdf}</span>`,
@@ -118,11 +120,11 @@ export function checkForPDF(str: string, opts: OptionalCheckParameters): ParsedO
  * @param opts
  */
 export function checkForFoundryDrops(str: string, opts: OptionalCheckParameters): ParsedOtF | undefined {
-	let m = str.match(/^(\w+)\[([.\w]+)\]({.*})/)
+	const m = str.match(/^(\w+)\[([.\w]+)\]({.*})/)
 	if (m) {
-		let link = m[1]
+		const link = m[1]
 		if (["JournalEntry", "JournalEntryPage", "Actor", "RollTable", "Item"].includes(link)) {
-			let action = <OtFLinkedAction>{
+			const action = <OtFLinkedAction>{
 				type: "dragdrop",
 				orig: str,
 				link: m[1],
@@ -135,4 +137,5 @@ export function checkForFoundryDrops(str: string, opts: OptionalCheckParameters)
 			}
 		}
 	}
+	return
 }

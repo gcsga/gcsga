@@ -1,0 +1,52 @@
+{
+	"id": "gcsga",
+	"title": "GURPS 4e (EXPERIMENTAL)",
+	"description": "GURPS 4th Edition, unofficial game aid for FoundryVTT.",
+	"version": "1.0.0-alpha.8",
+	"authors": [
+		{
+			"name": "Chris Normand",
+			"email": "nose66@bellsouth.net",
+			"discord": "nose66"
+		},
+		{
+			"name": "M. Jeff Wilson",
+			"email": "geek.macbeer@gmail.com",
+			"discord": "Nick Coffin, PI#8616"
+		},
+		{
+			"name": "Mikolaj Tomczynski",
+			"email": "mikolajtomczynski@gmail.com",
+			"discord": "sasiedny"
+		}
+	],
+	"compatibility": {
+		"minimum": 11,
+		"verified": "11.315",
+		"maximum": 11
+	},
+	"scripts": [],
+	"esmodules": ["gcsga.mjs"],
+	"styles": ["styles/gcsga.css"],
+	"packs": [],
+	"relatinships": {},
+	"languages": [
+		{
+			"lang": "en",
+			"name": "English",
+			"path": "lang/en.json"
+		}
+	],
+	"url": "https://github.com/gcsga/gcsga",
+	"manifest": "this is autoreplaced",
+	"download": "this is autoreplaced",
+	"license": "MIT",
+	"readme": "README.md",
+	"bugs": "https://github.com/gcsga/gcsga/issues",
+	"changelog": "",
+	"gridDistance": 1,
+	"gridUnits": "yd",
+	"primaryTokenAttribute": "pools.hp",
+	"socket": true,
+	"secondaryTokenAttribute": "pools.fp"
+}

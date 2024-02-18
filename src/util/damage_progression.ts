@@ -1,5 +1,5 @@
-import { DiceGURPS } from "@module/dice"
-import { progression } from "./enum"
+import { DiceGURPS } from "@module/dice/index.ts"
+import { progression } from "./enum/progression.ts"
 
 /**
  *
@@ -10,7 +10,7 @@ export function thrustFor(p: progression.Option, st: number): DiceGURPS {
 	let d = new DiceGURPS()
 	let r = 0
 	switch (p) {
-		case progression.Option.BasicSet:
+		case progression.Option.BasicSet: {
 			if (st < 19)
 				return new DiceGURPS({
 					count: 1,
@@ -20,7 +20,7 @@ export function thrustFor(p: progression.Option, st: number): DiceGURPS {
 				})
 			let value = st - 11
 			if (st > 50) {
-				value--
+				value -= 1
 				if (st > 79) {
 					value -= 1 + (st - 80) / 5
 				}
@@ -31,6 +31,7 @@ export function thrustFor(p: progression.Option, st: number): DiceGURPS {
 				modifier: (value % 8) / 2 - 1,
 				multiplier: 1,
 			})
+		}
 		case progression.Option.KnowingYourOwnStrength:
 			if (st < 12) {
 				return new DiceGURPS({
@@ -62,10 +63,11 @@ export function thrustFor(p: progression.Option, st: number): DiceGURPS {
 				modifier: (st % 8) / 2 - 1,
 				multiplier: 1,
 			})
-		case progression.Option.ThrustEqualsSwingMinus2:
+		case progression.Option.ThrustEqualsSwingMinus2: {
 			const dice = swingFor(progression.Option.BasicSet, st)
 			dice.modifier -= 2
 			return dice
+		}
 		case progression.Option.SwingEqualsThrustPlus2:
 			return thrustFor(progression.Option.BasicSet, st)
 		case progression.Option.PhoenixFlameD3:
@@ -106,7 +108,6 @@ export function thrustFor(p: progression.Option, st: number): DiceGURPS {
 			r = st - Math.floor(st / 10) * 10
 
 			if (r === 2 || r === 3) d.modifier = 1
-			else if (r === 2 || r === 3) d.modifier = 1
 			else if (r === 4) {
 				d.modifier = -2
 				d.count += 1
@@ -148,7 +149,7 @@ export function thrustFor(p: progression.Option, st: number): DiceGURPS {
  */
 export function swingFor(p: progression.Option, st: number): DiceGURPS {
 	switch (p) {
-		case progression.Option.BasicSet:
+		case progression.Option.BasicSet: {
 			if (st < 10)
 				return new DiceGURPS({
 					count: 1,
@@ -167,7 +168,7 @@ export function swingFor(p: progression.Option, st: number): DiceGURPS {
 			}
 			let value = st
 			if (st > 40) value -= (st - 40) / 5
-			if (st > 59) value++
+			if (st > 59) value += 1
 			value += 9
 			return new DiceGURPS({
 				count: value / 8 + 1,
@@ -175,6 +176,7 @@ export function swingFor(p: progression.Option, st: number): DiceGURPS {
 				modifier: (value % 8) / 2 - 1,
 				multiplier: 1,
 			})
+		}
 		case progression.Option.KnowingYourOwnStrength:
 			if (st < 10) {
 				return new DiceGURPS({
@@ -194,10 +196,11 @@ export function swingFor(p: progression.Option, st: number): DiceGURPS {
 			return thrustFor(progression.Option.NoSchoolGrognardDamage, st + 3)
 		case progression.Option.ThrustEqualsSwingMinus2:
 			return swingFor(progression.Option.BasicSet, st)
-		case progression.Option.SwingEqualsThrustPlus2:
+		case progression.Option.SwingEqualsThrustPlus2: {
 			const dice = thrustFor(progression.Option.BasicSet, st)
 			dice.modifier += 2
 			return dice
+		}
 		case progression.Option.PhoenixFlameD3:
 			return thrustFor(progression.Option.PhoenixFlameD3, st)
 		case progression.Option.Tbone1:

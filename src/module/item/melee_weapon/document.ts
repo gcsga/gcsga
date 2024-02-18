@@ -1,14 +1,19 @@
-import { BaseWeaponGURPS } from "@item/weapon"
-import { RollType, SETTINGS, SYSTEM_NAME, gid } from "@module/data"
-import { TooltipGURPS } from "@module/tooltip"
-import { MeleeWeaponSource } from "./data"
-import { WeaponReach } from "@item/weapon/weapon_reach"
-import { WeaponBlock } from "@item/weapon/weapon_block"
-import { WeaponParry } from "@item/weapon/weapon_parry"
-import { includesFold } from "@util"
-import { ItemFlags } from "@item/data"
+import { ActorGURPS } from "@actor"
+import { WeaponBlock } from "@item/weapon/weapon_block.ts"
+import { WeaponParry } from "@item/weapon/weapon_parry.ts"
+import { WeaponReach } from "@item/weapon/weapon_reach.ts"
+import { ItemFlags, RollType, SETTINGS, SYSTEM_NAME, gid } from "@data"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { includesFold } from "@util/string_criteria.ts"
+import { MeleeWeaponSource, MeleeWeaponSystemSource } from "./data.ts"
+import { BaseWeaponGURPS } from "@item/weapon/document.ts"
 
-export class MeleeWeaponGURPS extends BaseWeaponGURPS<MeleeWeaponSource> {
+export interface MeleeWeaponGURPS<TParent extends ActorGURPS | null> extends BaseWeaponGURPS<TParent> {
+	readonly _source: MeleeWeaponSource
+	system: MeleeWeaponSystemSource
+}
+
+export class MeleeWeaponGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends BaseWeaponGURPS<TParent> {
 	get fastResolvedParry(): string {
 		return this.resolvedParry()
 	}
@@ -44,7 +49,7 @@ export class MeleeWeaponGURPS extends BaseWeaponGURPS<MeleeWeaponSource> {
 	}
 
 	checkUnready(type: RollType): void {
-		const check = game.settings.get(SYSTEM_NAME, SETTINGS.AUTOMATIC_UNREADY) as boolean
+		const check = game.settings.get(SYSTEM_NAME, SETTINGS.AUTOMATIC_UNREADY)
 		if (!check) return
 		if (!this.actor) return
 		let unready = false

@@ -1,31 +1,44 @@
-import { ContainedWeightReduction } from "@feature/contained_weight_reduction"
-import { EquipmentContainerGURPS } from "@item/equipment_container"
-import { EquipmentModifierGURPS, valueAdjustedForModifiers, weightAdjustedForModifiers } from "@item/equipment_modifier"
-import { EquipmentModifierContainerGURPS } from "@item/equipment_modifier_container"
-import { ItemGCS } from "@item/gcs"
-import { ItemType, SETTINGS, SYSTEM_NAME, sheetSettingsFor } from "@module/data"
-import { LocalizeGURPS, Weight, WeightUnits, fxp } from "@util"
-import { Feature } from "@module/config"
-import { EquipmentSource } from "./data"
-import { ItemFlags } from "@item/base"
-import { display } from "@util/enum"
-import { StringBuilder } from "@util/string_builder"
+import { ActorGURPS } from "@actor/base.ts"
+import { EquipmentSource, EquipmentSystemSource } from "./data.ts"
+import { ItemGCS } from "@item/gcs/document.ts"
+import { display } from "@util/enum/display.ts"
+import { StringBuilder } from "@util/string_builder.ts"
+import { sheetSettingsFor } from "@module/data/sheet_settings.ts"
+import { LocalizeGURPS } from "@util/localize.ts"
+import { Weight, WeightUnits } from "@util/weight.ts"
+import {
+	EquipmentModifierGURPS,
+	valueAdjustedForModifiers,
+	weightAdjustedForModifiers,
+} from "@item/equipment_modifier/document.ts"
+import { EquipmentModifierContainerGURPS } from "@item/equipment_modifier_container/document.ts"
+import { Int } from "@util/fxp.ts"
+import { ContainedWeightReduction, Feature } from "@feature/index.ts"
+import { EquipmentContainerGURPS } from "@item/index.ts"
+import { CharacterGURPS } from "@actor"
+import { ItemFlags, ItemType, SETTINGS, SYSTEM_NAME } from "@data"
 
-export class EquipmentGURPS extends ItemGCS<EquipmentSource> {
-	unsatisfied_reason = ""
+export interface EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
+	readonly _source: EquipmentSource
+	system: EquipmentSystemSource
+
+	type: ItemType.Equipment
+}
+export class EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
+	// unsatisfied_reason = ""
 
 	// Getters
-	get ratedStrength(): number {
-		return this.system.rated_strength
+	override get ratedStrength(): number {
+		return this.system.rated_strength ?? 0
 	}
 
 	get quantity(): number {
 		return this.system.quantity
 	}
 
-	secondaryText(optionChecker: (option: display.Option) => boolean): string {
+	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
 		const buffer = new StringBuilder()
-		const settings = sheetSettingsFor(this.actor)
+		const settings = sheetSettingsFor(this.actor as CharacterGURPS)
 		if (optionChecker(settings.modifiers_display)) {
 			buffer.appendToNewLine(this.modifierNotes)
 		}
@@ -65,7 +78,7 @@ export class EquipmentGURPS extends ItemGCS<EquipmentSource> {
 	}
 
 	get weightUnits(): WeightUnits {
-		if (this.actor) return this.actor.weightUnits
+		if (this.actor instanceof CharacterGURPS) return this.actor.weightUnits
 		const default_settings = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
 		return default_settings.default_weight_units
 	}
@@ -77,11 +90,12 @@ export class EquipmentGURPS extends ItemGCS<EquipmentSource> {
 	get isGreyedOut(): boolean {
 		return !(
 			this.system.quantity > 0 &&
-			(this.container?.type === ItemType.EquipmentContainer ? !(this.container as any).isGreyedOut : true)
+			!(this.container instanceof CompendiumCollection) &&
+			(this.container instanceof EquipmentContainerGURPS ? !this.container.isGreyedOut : true)
 		)
 	}
 
-	get enabled(): boolean {
+	override get enabled(): boolean {
 		return this.equipped
 	}
 
@@ -94,11 +108,11 @@ export class EquipmentGURPS extends ItemGCS<EquipmentSource> {
 	}
 
 	// Embedded Items
-	get children(): Collection<EquipmentGURPS | EquipmentContainerGURPS> {
+	override get children(): Collection<EquipmentGURPS | EquipmentContainerGURPS> {
 		return super.children as Collection<EquipmentGURPS | EquipmentContainerGURPS>
 	}
 
-	get modifiers(): Collection<EquipmentModifierGURPS | EquipmentModifierContainerGURPS> {
+	override get modifiers(): Collection<EquipmentModifierGURPS | EquipmentModifierContainerGURPS> {
 		const modifiers: Collection<EquipmentModifierGURPS> = new Collection()
 		for (const item of this.items) {
 			if (item instanceof EquipmentModifierGURPS) modifiers.set(item.id!, item)
@@ -107,7 +121,7 @@ export class EquipmentGURPS extends ItemGCS<EquipmentSource> {
 	}
 
 	get deepModifiers(): Collection<EquipmentModifierGURPS> {
-		const deepModifiers: Array<EquipmentModifierGURPS> = []
+		const deepModifiers: EquipmentModifierGURPS[] = []
 		for (const mod of this.modifiers) {
 			if (mod instanceof EquipmentModifierGURPS) deepModifiers.push(mod)
 			else
@@ -118,12 +132,12 @@ export class EquipmentGURPS extends ItemGCS<EquipmentSource> {
 		return new Collection(
 			deepModifiers.map(item => {
 				return [item.id!, item]
-			})
+			}),
 		)
 	}
 
 	get adjustedValue(): number {
-		return fxp.Int.from(valueAdjustedForModifiers(this.system.value, this.deepModifiers))
+		return Int.from(valueAdjustedForModifiers(this.system.value, this.deepModifiers))
 	}
 
 	// Value Calculator
@@ -133,7 +147,7 @@ export class EquipmentGURPS extends ItemGCS<EquipmentSource> {
 		for (const ch of this.children) {
 			value += ch.extendedValue
 		}
-		return fxp.Int.from(value * this.system.quantity)
+		return Int.from(value * this.system.quantity)
 	}
 
 	adjustedWeight(forSkills: boolean, defUnits: WeightUnits): number {
@@ -154,7 +168,7 @@ export class EquipmentGURPS extends ItemGCS<EquipmentSource> {
 			this.features,
 			this.children,
 			forSkills,
-			this.system.ignore_weight_for_skills && this.equipped
+			this.system.ignore_weight_for_skills && this.equipped,
 		)
 	}
 
@@ -162,13 +176,13 @@ export class EquipmentGURPS extends ItemGCS<EquipmentSource> {
 		return Weight.format(this.extendedWeight(false, this.weightUnits), this.weightUnits)
 	}
 
-	prepareBaseData(): void {
+	override prepareBaseData(): void {
 		this.system.weight = Weight.format(this.weight, this.weightUnits)
 		super.prepareBaseData()
 	}
 
-	override exportSystemData(keepOther: boolean): any {
-		const system: any = super.exportSystemData(keepOther)
+	override exportSystemData(keepOther: boolean): Record<string, unknown> {
+		const system = super.exportSystemData(keepOther)
 		system.type = "equipment"
 		system.description = this.name
 		delete system.name
@@ -192,27 +206,27 @@ export function extendedWeightAdjustedForModifiers(
 	features: Feature[],
 	children: Collection<EquipmentGURPS | EquipmentContainerGURPS>,
 	forSkills: boolean,
-	weightIgnoredForSkills: boolean
+	weightIgnoredForSkills: boolean,
 ): number {
 	if (quantity <= 0) return 0
 	let base = 0
 	if (!forSkills || !weightIgnoredForSkills)
-		base = fxp.Int.from(weightAdjustedForModifiers(baseWeight, modifiers, defUnits))
+		base = Int.from(weightAdjustedForModifiers(baseWeight, modifiers, defUnits))
 	if (children.size) {
 		let contained = 0
 		children.forEach(child => {
-			contained += fxp.Int.from(child.extendedWeight(forSkills, defUnits))
+			contained += Int.from(child.extendedWeight(forSkills, defUnits))
 		})
 		let [percentage, reduction] = [0, 0]
 		features.forEach(feature => {
 			if (feature instanceof ContainedWeightReduction) {
 				if (feature.isPercentageReduction) percentage += feature.percentageReduction
-				else reduction += fxp.Int.from(feature.fixedReduction(defUnits))
+				else reduction += Int.from(feature.fixedReduction(defUnits))
 			}
 		})
 		if (percentage >= 100) contained = 0
 		else if (percentage > 0) contained -= (contained * percentage) / 100
 		base += Math.max(0, contained - reduction)
 	}
-	return fxp.Int.from(base * quantity)
+	return Int.from(base * quantity)
 }

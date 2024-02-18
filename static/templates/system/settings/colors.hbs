@@ -1,0 +1,20 @@
+<form autocomplete="off" onsubmit="event.preventDefault();">
+	<div class="top-bar">
+		<div class="field">
+			<div class="label">{{localize "gurps.settings.colors.modePreference"}}</div>
+			<select name="modePreference" data-dtype="String">
+				{{#select settings.modePreference.value}} {{#each config.select.color as |v k|}}
+				<option value="{{k}}">{{localize v}}</option>
+				{{/each}} {{/select}}
+			</select>
+		</div>
+	</div>
+	<div class="fieldblock">
+		{{#each settings.colors.value as |setting key|}}
+		<div class="label">{{localize (concat "gurps.settings.colors." key)}}</div>
+		<input type="color" name="{{key}}.light" value="{{rgbToHex setting.light}}" />
+		<input type="color" name="{{key}}.dark" value="{{rgbToHex setting.dark}}" />
+		<a class="gcs-reset reset" data-id="{{setting.key}}"></a>
+		{{/each}}
+	</div>
+</form>

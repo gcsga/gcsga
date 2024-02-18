@@ -1,7 +1,8 @@
-import { SYSTEM_NAME } from "@module/data"
+import { ItemGURPS } from "@item"
+import { SYSTEM_NAME } from "@module/data/index.ts"
 
-export class ItemDirectoryGURPS extends ItemDirectory {
-	protected async _onDragStart(event: DragEvent): Promise<void> {
+export class ItemDirectoryGURPS extends ItemDirectory<ItemGURPS<null>> {
+	protected override async _onDragStart(event: DragEvent): Promise<void> {
 		const li = event.currentTarget
 		const id = $(li!).data("entry-id")
 		const item = game.items?.get(id)
@@ -10,7 +11,7 @@ export class ItemDirectoryGURPS extends ItemDirectory {
 			JSON.stringify({
 				type: "Item",
 				uuid: item?.uuid,
-			})
+			}),
 		)
 
 		const dragImage = document.createElement("div")

@@ -1,18 +1,25 @@
-import { SYSTEM_NAME } from "@module/data"
+import { SYSTEM_NAME } from "@module/data/index.ts"
+import { ItemGCS } from "./document.ts"
 import { LocalizeGURPS } from "@util"
-import { ItemGCS } from "./document"
-import { ItemSubstitutionSheet } from "./sub_sheet"
+import { ItemSubstitutionSheet } from "./sub_sheet.ts"
 
-export class ModifierChoiceSheet extends FormApplication {
-	object: ItemGCS & { modifiers?: Collection<ItemGCS & { enabled: boolean }> }
+type ModifierChoiceSheetOptions = FormApplicationOptions & {
+	puuid?: string
+}
 
+export class ModifierChoiceSheet<
+	TObject extends ItemGCS & { modifiers?: Collection<ItemGCS & { enabled: boolean }> } = ItemGCS & {
+		modifiers?: Collection<ItemGCS & { enabled: boolean }>
+	},
+	TOptions extends ModifierChoiceSheetOptions = ModifierChoiceSheetOptions,
+> extends FormApplication<TObject, TOptions> {
 	nextObjects: ItemGCS[]
 
 	puuid: string
 
 	choices: Record<string, boolean> = {}
 
-	constructor(items: ItemGCS[], options?: any) {
+	constructor(items: TObject[], options?: TOptions) {
 		const item = items.shift()!
 		super(item, options)
 		this.object = item
@@ -22,13 +29,15 @@ export class ModifierChoiceSheet extends FormApplication {
 	}
 
 	private _init() {
-		if ((this.object as any).children) {
-			this.nextObjects = [...this.nextObjects, ...(this.object as any).children]
+		if (this.object.children) {
+			this.nextObjects = [...this.nextObjects, ...this.object.children].filter(
+				e => e instanceof ItemGCS,
+			) as ItemGCS[]
 		}
 	}
 
-	static get defaultOptions(): FormApplicationOptions {
-		return mergeObject(super.defaultOptions, {
+	static override get defaultOptions(): FormApplicationOptions {
+		return fu.mergeObject(super.defaultOptions, {
 			id: "mod-choice-sheet",
 			classes: ["gurps"],
 			template: `systems/${SYSTEM_NAME}/templates/item/mod-choice-sheet.hbs`,
@@ -41,29 +50,31 @@ export class ModifierChoiceSheet extends FormApplication {
 		})
 	}
 
-	get title() {
+	override get title(): string {
 		return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.item.substitution.modifiers, {
 			name: this.object.name,
 		})
 	}
 
-	getData(options?: Partial<FormApplicationOptions> | undefined): MaybePromise<object> {
+	override getData(
+		options?: Partial<TOptions>,
+	): FormApplicationData<TObject> | Promise<FormApplicationData<TObject>> {
 		const choices: Record<string, ItemGCS> = {}
 		this.object.modifiers?.forEach(e => {
-			choices[e._id] = e
+			choices[e.id] = e
 		})
-		return mergeObject(super.getData(options), {
+		return fu.mergeObject(super.getData(options), {
 			choices,
 		})
 	}
 
-	activateListeners(html: JQuery<HTMLElement>): void {
+	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		html.find("#apply").on("click", event => this._onApply(event))
 		html.find("#cancel").on("click", event => this._onCancel(event))
 	}
 
-	protected async _onApply(event: JQuery.ClickEvent) {
+	protected async _onApply(event: JQuery.ClickEvent): Promise<void> {
 		event.preventDefault()
 		const updates = Object.keys(this.choices).map(k => {
 			return { _id: k, "system.disabled": !this.choices[k] }
@@ -71,27 +82,35 @@ export class ModifierChoiceSheet extends FormApplication {
 		await this.object.updateEmbeddedDocuments("Item", updates)
 		const items = this.nextObjects
 		await this.close()
-		ModifierChoiceSheet.new(items, { puuid: this.puuid })
+		ModifierChoiceSheet.new(items, { puuid: this.puuid } as ModifierChoiceSheetOptions)
 	}
 
-	protected async _onCancel(event: JQuery.ClickEvent) {
+	protected async _onCancel(event: JQuery.ClickEvent): Promise<void> {
 		event.preventDefault()
 		const items = this.nextObjects
 		await this.close()
-		ModifierChoiceSheet.new(items, { puuid: this.puuid })
+		ModifierChoiceSheet.new(items, { puuid: this.puuid } as ModifierChoiceSheetOptions)
 	}
 
-	protected async _updateObject(event: Event, formData?: any | undefined): Promise<any> {
+	protected override _updateObject(event: Event, formData: Record<string, unknown>): Promise<void> {
 		event.preventDefault()
 		for (const k of Object.keys(formData)) {
-			this.choices[k] = formData[k]
+			this.choices[k] = formData[k] as boolean
 		}
+		return new Promise(() => {
+			return
+		})
 	}
 
-	static new(items: ItemGCS[], options?: any): ModifierChoiceSheet | ItemSubstitutionSheet | null {
+	static new(
+		items: ItemGCS[],
+		options?: ModifierChoiceSheetOptions,
+	): ModifierChoiceSheet | ItemSubstitutionSheet | null {
 		if (items.length === 0) {
-			const item = fromUuidSync(options?.puuid)
-			return ItemSubstitutionSheet.new([item as any])
+			if (options?.puuid) {
+				const item = fromUuidSync(options.puuid) as ItemGCS
+				return ItemSubstitutionSheet.new([item])
+			}
 		}
 		const sheet = new ModifierChoiceSheet(items, options)
 		if (sheet.object.modifiers && sheet.object.modifiers?.size !== 0) {
@@ -99,6 +118,9 @@ export class ModifierChoiceSheet extends FormApplication {
 			// Return sheet?.render(true)
 		}
 		const newItems = sheet.nextObjects
-		return ModifierChoiceSheet.new(newItems, { puuid: sheet.puuid })
+		return ModifierChoiceSheet.new(
+			newItems,
+			fu.mergeObject(options ?? {}, { puuid: sheet.puuid }) as ModifierChoiceSheetOptions,
+		)
 	}
 }

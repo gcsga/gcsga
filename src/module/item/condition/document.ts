@@ -1,26 +1,32 @@
-import { DurationType, EffectGURPS, EffectModificationOptions } from "@item/effect"
-import { ItemType, SYSTEM_NAME } from "@module/data"
-import { ItemDataBaseProperties, ItemDataConstructorData } from "types/foundry/common/data/data.mjs/itemData"
-import { BaseUser } from "types/foundry/common/documents.mjs"
-import { PropertiesToSource } from "types/types/helperTypes"
-import { ConditionID, ConditionSource, ConditionSystemData, ManeuverID } from "./data"
-import { getConditionList } from "./list"
-import { getManeuverList } from "./maneuver"
+import { EffectGURPS } from "@item/effect/document.ts"
+import { getConditionList } from "./list.ts"
+import { getManeuverList } from "./maneuver.ts"
+import { DurationType, EffectModificationContext } from "@item/effect/data.ts"
+import { ConditionSource, ConditionSystemSource } from "./data.ts"
+import { ActorGURPS } from "@actor"
+import { ConditionID, ItemType, ManeuverID, SYSTEM_NAME } from "@data"
 
-export class ConditionGURPS extends EffectGURPS<ConditionSource> {
+export interface ConditionGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends EffectGURPS<TParent> {
+	readonly _source: ConditionSource
+	system: ConditionSystemSource
+
+	type: ItemType.Condition
+}
+
+export class ConditionGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends EffectGURPS<TParent> {
 	static getData(id: ConditionID | ManeuverID): Partial<ConditionSource> {
-		const [data, folder] = Object.values(ConditionID).includes(id as any)
+		const [data, folder] = Object.values(ConditionID).includes(id as ConditionID)
 			? [getConditionList()[id as ConditionID], "status"]
 			: [getManeuverList()[id as ManeuverID], "maneuver"]
 		return {
 			name: game.i18n.localize(`gurps.${folder}.${id}`),
 			type: ItemType.Condition,
 			img: `systems/${SYSTEM_NAME}/assets/${folder}/${id}.webp`,
-			system: mergeObject(ConditionGURPS.defaults, data) as ConditionSystemData,
+			system: fu.mergeObject(ConditionGURPS.defaults, data) as ConditionSystemSource,
 		}
 	}
 
-	static get defaults(): ConditionSystemData {
+	static get defaults(): ConditionSystemSource {
 		return {
 			id: null,
 			can_level: false,
@@ -38,25 +44,27 @@ export class ConditionGURPS extends EffectGURPS<ConditionSource> {
 				startTime: 0,
 				combat: null,
 			},
+			slug: "",
+			_migration: { previous: null, version: null },
 		}
 	}
 
-	protected _preUpdate(
-		changed: DeepPartial<ItemDataConstructorData>,
-		options: EffectModificationOptions,
-		user: BaseUser
-	): Promise<void> {
+	protected override _preUpdate(
+		changed: DeepPartial<this["_source"]>,
+		options: EffectModificationContext<TParent>,
+		user: foundry.documents.BaseUser,
+	): Promise<boolean | void> {
 		options.previousID = this.cid
-		if ((changed as any).system?.id !== this.cid) this._displayScrollingStatus(false)
+		if (changed.system?.id !== this.cid) this._displayScrollingStatus(false)
 		return super._preUpdate(changed, options, user)
 	}
 
-	protected _onUpdate(
-		changed: DeepPartial<PropertiesToSource<ItemDataBaseProperties>>,
-		options: EffectModificationOptions,
-		userId: string
+	protected override _onUpdate(
+		data: DeepPartial<this["_source"]>,
+		options: EffectModificationContext<TParent>,
+		userId: string,
 	): void {
-		super._onUpdate(changed, options, userId)
+		super._onUpdate(data, options, userId)
 		const [priorID, newID] = [options.previousID, this.cid]
 		const idChanged = !!priorID && !!newID && priorID !== newID
 		if (idChanged) {

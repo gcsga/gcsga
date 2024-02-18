@@ -1,22 +1,24 @@
-import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
-import { Feature } from "@module/config"
-import { ItemType } from "@module/data"
-import { affects, tmcost } from "@util/enum"
+import { ItemType } from "@data"
+import { FeatureObj } from "@feature/index.ts"
+import { BaseContainerSource } from "@item/container/data.ts"
+import { ItemGCSSystemSource } from "@item/gcs/data.ts"
+import { affects } from "@util/enum/affects.ts"
+import { tmcost } from "@util/enum/tmcost.ts"
 
-export type TraitModifierSource = ItemGCSSource<ItemType.TraitModifier, TraitModifierSystemData>
+export type TraitModifierSource = BaseContainerSource<ItemType.TraitModifier, TraitModifierSystemSource>
 
-export interface TraitModifierData extends Omit<TraitModifierSource, "effects">, TraitModifierSystemData {
-	readonly type: TraitModifierSource["type"]
-	data: TraitModifierSystemData
-
-	readonly _source: TraitModifierSource
-}
-
-export interface TraitModifierSystemData extends ItemGCSSystemData {
-	disabled: boolean
-	cost_type: tmcost.Type
+export interface TraitModifierSystemSource extends ItemGCSSystemSource {
+	type: ItemType.TraitModifier
+	name: string
+	reference: string
+	reference_highlight: string
+	notes: string
+	vtt_notes: string
+	tags: string[]
 	cost: number
 	levels: number
 	affects: affects.Option
-	features: Feature[]
+	cost_type: tmcost.Type
+	disabled: boolean
+	features: FeatureObj[]
 }

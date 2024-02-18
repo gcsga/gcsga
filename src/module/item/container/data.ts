@@ -1,11 +1,9 @@
-import { BaseItemSourceGURPS } from "@item/base"
-import { ItemType } from "@module/data"
+import { ItemType } from "@data"
+import { BaseItemSourceGURPS, ItemSystemSource } from "@item/base/data/system.ts"
 
 export type BaseContainerSource<
 	TItemType extends ItemType = ItemType,
-	TSystemData extends object = BaseContainerSystemData,
+	TSystemData extends object = BaseContainerSystemSource,
 > = BaseItemSourceGURPS<TItemType, TSystemData>
 
-export interface BaseContainerSystemData {
-	open?: boolean
-}
+export interface BaseContainerSystemSource extends ItemSystemSource {}

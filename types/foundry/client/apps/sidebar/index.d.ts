@@ -1,6 +1,2 @@
-import "./apps"
-import "./package-configuration"
-import "./sidebar"
-import "./tab-base"
-import "./tab-directory"
-import "./tabs"
+import "./package-configuration.d.ts"
+import "./apps/keybindings-config.d.ts"

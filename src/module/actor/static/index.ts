@@ -1,4 +1,4 @@
-export { StaticCharacterGURPS } from "./document"
-export { StaticCharacterSheetGURPS } from "./sheet"
-export * from "./data"
-export * from "./components"
+export { StaticCharacterGURPS } from "./document.ts"
+export { StaticCharacterSheetGURPS } from "./sheet.ts"
+export * from "./data.ts"
+export * from "./components.ts"

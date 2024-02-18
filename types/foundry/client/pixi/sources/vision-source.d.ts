@@ -1,123 +1,78 @@
-import type { ConfiguredObjectClassForName } from "../../../../types/helperTypes"
+/** A specialized subclass of the PointSource abstraction which is used to control the rendering of vision sources. */
+declare class VisionSource<TObject extends Token | null = Token | null> extends RenderedPointSource<TObject> {
+	static sourceType: "sight"
 
-declare global {
-	interface VisionSourceData extends Exclude<PointSource.Data, "walls"> {
-		x: number
+	protected static override _initializeShaderKeys: string[]
 
-		y: number
+	protected static override _refreshUniformsKeys: string[]
 
-		/** An optional z-index sorting for the source */
-		z: number
+	static override EDGE_OFFSET: number
 
-		/** The angle of rotation for this point source */
-		rotation: number
+	/* -------------------------------------------- */
+	/*  Vision Source Attributes                    */
+	/* -------------------------------------------- */
 
-		/** The angle of emission for this point source */
-		angle: number
+	/** The object of data which configures how the source is rendered */
+	data: VisionSourceData
 
-		/** The allowed radius of bright vision or illumination */
-		bright: number
+	/** The vision mode linked to this VisionSource */
+	visionMode: VisionMode | null
 
-		/** The allowed radius of dim vision or illumination */
-		dim: number
-	}
+	/** The unconstrained LOS polygon. */
+	los: PointSourcePolygon
 
-	/**
-	 * A specialized subclass of the PointSource abstraction which is used to control the rendering of vision sources.
-	 */
-	class VisionSource extends PointSource {
-		/** @param object - The Token object that generates this vision source */
-		constructor(object: InstanceType<ConfiguredObjectClassForName<"Token">>)
+	/* -------------------------------------------- */
+	/*  Vision Source Attributes                    */
+	/* -------------------------------------------- */
 
-		/**
-		 * The current vision mesh for this source
-		 * @defaultValue `this._createMesh(AdaptiveIlluminationShader)`
-		 */
-		illumination: PIXI.Mesh
+	/** An alias for the shape of the vision source. */
+	get fov(): PointSourcePolygon | PIXI.Polygon
 
-		static override sourceType: "vision"
+	/** If this vision source background is rendered into the lighting container. */
+	get preferred(): boolean
 
-		/**
-		 * Keys in the VisionSourceData structure which, when modified, change the appearance of the source
-		 * @defaultValue `["dim", "bright"]`
-		 * @internal
-		 */
-		protected static _appearanceKeys: string[]
+	override get isAnimated(): boolean
 
-		/**
-		 * The object of data which configures how the source is rendered
-		 * @defaultValue `{}`
-		 */
-		data: Partial<VisionSourceData>
+	/* -------------------------------------------- */
+	/*  Vision Source Initialization                */
+	/* -------------------------------------------- */
 
-		/**
-		 * The ratio of dim:bright as part of the source radius
-		 * @defaultValue `undefined`
-		 */
-		ratio: number | undefined
+	protected override _initialize(data: Partial<VisionSourceData>): void
 
-		/**
-		 * The rendered field-of-vision texture for the source for use within shaders.
-		 * @defaultValue `undefined`
-		 */
-		fovTexture: PIXI.RenderTexture | undefined
+	protected override _configure(changes: object): void
 
-		/**
-		 * Track which uniforms need to be reset
-		 * @defaultValue `{ illumination: true }`
-		 * @internal
-		 */
-		protected _resetUniforms: { illumination: boolean }
+	protected override _configureLayer(layer: RenderedPointSourceLayer, layerId: string): void
 
-		/**
-		 * To track if a source is temporarily shutdown to avoid glitches
-		 * @defaultValue `{ illumination: false }`
-		 * @internal
-		 */
-		protected _shutdown: { illumination: boolean }
+	/** Responsible for assigning the Vision Mode and handling exceptions based on vision special status. */
+	protected _initializeVisionMode(): void
 
-		/**
-		 * Initialize the source with provided object data.
-		 * @param data - Initial data provided to the point source
-		 * @returns A reference to the initialized source
-		 */
-		initialize(data?: Partial<VisionSourceData>): this
+	protected override _getPolygonConfiguration(): PointSourcePolygonConfig
 
-		fov?: PIXI.Circle
+	/** Create a restricted FOV polygon by limiting the radius of the unrestricted LOS polygon. */
+	protected _createRestrictedPolygon(): PointSourcePolygon
 
-		/**
-		 * Initialize the blend mode and vertical sorting of this source relative to others in the container.
-		 * @internal
-		 */
-		protected _initializeBlending(): void
+	/* -------------------------------------------- */
+	/*  Shader Management                           */
+	/* -------------------------------------------- */
 
-		/**
-		 * Process new input data provided to the LightSource.
-		 * @param data - Initial data provided to the vision source
-		 * @returns The changes compared to the prior data
-		 * @internal
-		 */
-		protected _initializeData(data: Partial<VisionSourceData>): Partial<VisionSourceData>
+	/** Update shader uniforms by providing data from this VisionSource. */
+	protected _updateColorationUniforms(): void
 
-		/**
-		 * Draw the display of this source to remove darkness from the LightingLayer illumination container.
-		 * @see LightSource#drawLight
-		 * @returns The rendered light container
-		 */
-		drawVision(): PIXI.Container | null
+	/** Update shader uniforms by providing data from this VisionSource. */
+	protected _updateIlluminationUniforms(): void
+}
 
-		/**
-		 * Draw a Container used for exploring the FOV area of Token sight in the SightLayer
-		 */
-		drawSight(): PIXI.Container
-
-		/**
-		 * Update shader uniforms by providing data from this PointSource
-		 * @param shader - The shader being updated
-		 * @internal
-		 */
-		protected _updateIlluminationUniforms(shader: AdaptiveIlluminationShader): void
-
-		protected override _drawRenderTextureContainer(): PIXI.Container
-	}
+declare interface VisionSourceData extends RenderedPointSourceData {
+	/** The amount of contrast */
+	contrast: number
+	/** Strength of the attenuation between bright, dim, and dark */
+	attenuation: number
+	/** The amount of color saturation */
+	saturation: number
+	/** The vision brightness. */
+	brightness: number
+	/** The vision mode. */
+	visionMode: string
+	/** Is this vision source blinded? */
+	blinded: boolean
 }

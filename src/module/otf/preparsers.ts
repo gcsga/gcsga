@@ -36,7 +36,7 @@ export function parseBlindRoll(str: string): [string, boolean, string] {
  * @param str
  */
 export function parseSourceId(str: string): [string, string | undefined] {
-	let m = str.match(/^@(?<src>[^@]+)@(?<remain>.*)/)
+	const m = str.match(/^@(?<src>[^@]+)@(?<remain>.*)/)
 	if (m?.groups) {
 		return [m.groups.remain.trim(), m.groups.src]
 	}

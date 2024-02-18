@@ -1,8 +1,11 @@
-import { SETTINGS, SYSTEM_NAME } from "@module/data"
-import { SettingsMenuGURPS } from "./menu"
+import { htmlClosest, htmlQuery } from "@util"
+import { PartialSettingsData, SettingsMenuGURPS } from "./menu.ts"
+import { SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
+
+type ConfigGURPSListName = (typeof ColorSettings.SETTINGS)[number]
 
 export class ColorSettings extends SettingsMenuGURPS {
-	static override readonly namespace = "colors"
+	static override readonly namespace = SETTINGS.COLORS
 
 	static override readonly SETTINGS = ["modePreference", "colors"] as const
 
@@ -11,22 +14,23 @@ export class ColorSettings extends SettingsMenuGURPS {
 		options.classes.push("gurps")
 		options.classes.push("settings-menu")
 
-		return mergeObject(options, {
+		return fu.mergeObject(options, {
 			title: `gurps.settings.${SETTINGS.COLORS}.name`,
 			id: `${SETTINGS.COLORS}-settings`,
 			template: `systems/${SYSTEM_NAME}/templates/system/settings/${SETTINGS.COLORS}.hbs`,
 			width: 480,
 			height: "auto",
-			submitOnClose: true,
+			submitOnClose: false,
 			submitOnChange: true,
 			closeOnSubmit: false,
 			resizable: true,
 		} as FormApplicationOptions)
 	}
 
-	protected static override get settings(): Record<string, any> {
+	protected static override get settings(): Record<ConfigGURPSListName, PartialSettingsData> {
 		return {
 			modePreference: {
+				prefix: SETTINGS.COLORS,
 				name: "gurps.settings.colors.modePreference.name",
 				hint: "gurps.settings.colors.modePreference.hint",
 				default: "auto",
@@ -38,8 +42,10 @@ export class ColorSettings extends SettingsMenuGURPS {
 				},
 			},
 			colors: {
-				name: "",
-				hint: "",
+				prefix: SETTINGS.COLORS,
+				name: "colors temp",
+				hint: "colors hint temp",
+				type: Object,
 				default: {
 					colorBackground: { light: "#eeeeee", dark: "#303030" },
 					colorOnBackground: { light: "#000000", dark: "#dddddd" },
@@ -119,23 +125,22 @@ export class ColorSettings extends SettingsMenuGURPS {
 		}
 	}
 
-	activateListeners(html: JQuery<HTMLElement>): void {
-		super.activateListeners(html)
-		html.find(".reset").on("click", event => this._onReset(event))
-		// Html.find(".reset-all").on("click", event => this._onResetAll(event))
+	override activateListeners($html: JQuery): void {
+		super.activateListeners($html)
+		const html = $html[0]
+
+		htmlQuery(html, "a.reset")?.addEventListener("click", event => {
+			this._onReset(event)
+		})
 	}
 
-	_onDataImport(event: JQuery.ClickEvent) {
-		event.preventDefault()
-	}
+	protected _onDataImport(_event: MouseEvent): void {}
 
-	_onDataExport(event: JQuery.ClickEvent) {
-		event.preventDefault()
-	}
+	protected _onDataExport(_event: MouseEvent): void {}
 
-	async _onReset(event: JQuery.ClickEvent) {
-		event.preventDefault()
-		const id = $(event.currentTarget).data("id")
+	async _onReset(event: MouseEvent): Promise<void> {
+		const id = htmlClosest(event.target, "[data-id]")?.dataset.id
+		if (!id) return
 		const colors = game.settings.get(SYSTEM_NAME, `${SETTINGS.COLORS}.colors`)
 		const defaults = game.settings.settings.get(`${SYSTEM_NAME}.${SETTINGS.COLORS}.colors`)?.default as Record<
 			string,
@@ -147,7 +152,7 @@ export class ColorSettings extends SettingsMenuGURPS {
 		this.render()
 	}
 
-	override async _onResetAll(event: JQuery.ClickEvent) {
+	override async _onResetAll(event: Event): Promise<void> {
 		event.preventDefault()
 		const constructor = this.constructor as typeof SettingsMenuGURPS
 		for (const setting of constructor.SETTINGS) {
@@ -158,25 +163,10 @@ export class ColorSettings extends SettingsMenuGURPS {
 		this.render()
 	}
 
-	override async getData(): Promise<any> {
-		const options = await super.getData()
-		const modePreference = game.settings.get(SYSTEM_NAME, `${SETTINGS.COLORS}.modePreference`)
-		const colors = game.settings.get(SYSTEM_NAME, `${SETTINGS.COLORS}.colors`)
-		const colorSettings: any = {}
-		for (const e of Object.keys(colors)) {
-			colorSettings[e] = {
-				key: e,
-				value: colors[e],
-			}
-		}
-		return mergeObject(options, {
-			modePreference: modePreference,
-			colorSettings: colorSettings,
-			config: CONFIG.GURPS,
-		})
-	}
-
-	protected override async _updateObject(_event: Event, formData: any): Promise<void> {
+	protected override async _updateObject(
+		_event: Event,
+		formData: { colors: Record<string, { light?: string; dark?: string }> } & Record<string, string>,
+	): Promise<void> {
 		for (const k of Object.keys(formData)) {
 			if (k === "modePreference") continue
 			const key = k.replace(/\.light|\.dark/g, "")
@@ -186,16 +176,16 @@ export class ColorSettings extends SettingsMenuGURPS {
 			if (k.includes("dark")) formData.colors[key].dark = formData[k]
 			delete formData[k]
 		}
-		for await (const key of (this.constructor as typeof SettingsMenuGURPS).SETTINGS) {
+		for await (const key of this.constructor.SETTINGS) {
 			const settingKey = `${SETTINGS.COLORS}.${key}`
 			await game.settings.set(SYSTEM_NAME, settingKey, formData[key])
 		}
 		ColorSettings.applyColors()
 	}
 
-	static applyColors() {
-		const modePreference = game.settings.get(SYSTEM_NAME, "colors.modePreference")
-		const colors: any = game.settings.get(SYSTEM_NAME, "colors.colors")
+	static applyColors(): void {
+		const modePreference = game.settings.get(SYSTEM_NAME, `${SETTINGS.COLORS}.modePreference`)
+		const colors = game.settings.get(SYSTEM_NAME, `${SETTINGS.COLORS}.colors`)
 		Object.keys(colors).forEach(e => {
 			if (!e.startsWith("color")) return
 			const name = `--${e.replace(/(\w)([A-Z])/g, "$1-$2").toLowerCase()}`

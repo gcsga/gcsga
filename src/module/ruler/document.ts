@@ -1,23 +1,22 @@
-import { RollModifierTags, SETTINGS, SSRT_SETTING, SYSTEM_NAME } from "@module/data"
+import { RollModifierTags, SETTINGS, SSRT_SETTING, SYSTEM_NAME } from "@data"
 import { allLengthUnits, Length, LengthSymbols, LengthUnits, LocalizeGURPS } from "@util"
 
 class RulerGURPS extends Ruler {
 	override _getSegmentLabel(segment: RulerMeasurementSegment, totalDistance: number): string {
-		// @ts-expect-error canvas type definition out of date
-		let units = canvas?.scene?.grid.units
+		let units = canvas.scene?.grid.units
 		Object.keys(LengthSymbols).forEach(k => {
-			if (LengthSymbols[k as LengthUnits].includes(units)) units = k
+			if (units && LengthSymbols[k as LengthUnits].includes(units)) units = k as LengthUnits
 		})
-		if (!allLengthUnits.includes(units)) units = LengthUnits.Yard
+		if (!allLengthUnits.includes(units as LengthUnits)) units = LengthUnits.Yard
 
 		let label = `${Math.round(segment.distance * 100) / 100} ${units}`
 		if (segment.last) label += ` [${Math.round(totalDistance * 100) / 100} ${units}]`
 
-		const yards = Length.fromInches(Length.toInches(totalDistance, units), LengthUnits.Yard)
+		const yards = Length.fromInches(Length.toInches(totalDistance, units as LengthUnits), LengthUnits.Yard)
 		const mod = RulerGURPS.getRangeMod(yards)
 
-		game.ModifierList.setRangeMod({
-			name: LocalizeGURPS.format(LocalizeGURPS.translations.gurps.modifier.speed.range, {
+		game.gurps.modifierList.setRangeMod({
+			id: LocalizeGURPS.format(LocalizeGURPS.translations.gurps.modifier.speed.range, {
 				distance: `${Math.round(totalDistance * 100) / 100} ${units}`,
 			}),
 			modifier: mod,
@@ -29,10 +28,12 @@ class RulerGURPS extends Ruler {
 	}
 
 	protected override _endMeasurement(): void {
-		let addRangeMod = !(this as any).draggedEntity
+		// TODO: fix
+		// @ts-expect-error no idea what draggedEntity is
+		const addRangeMod = this.draggedEntity
 		super._endMeasurement()
 		if (addRangeMod) {
-			game.ModifierList.addRangeMod()
+			game.gurps.modifierList.addRangeMod()
 		}
 	}
 

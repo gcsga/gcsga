@@ -1,4 +1,4 @@
-import { LocalizeGURPS } from "@util/localize"
+import { LocalizeGURPS } from "@util/localize.ts"
 
 export namespace spellmatch {
 	export enum Type {
@@ -23,7 +23,7 @@ export namespace spellmatch {
 			matcher: Matcher,
 			name: string,
 			powerSource: string,
-			colleges: string[]
+			colleges: string[],
 		): boolean {
 			switch (T) {
 				case Type.AllColleges:

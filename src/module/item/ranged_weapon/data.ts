@@ -1,24 +1,9 @@
-import { BaseWeaonCalcValues, BaseWeaponSource, BaseWeaponSystemData } from "@item/weapon"
-import { ItemType } from "@module/data"
+import { ItemType } from "@data"
+import { BaseWeaponSource, BaseWeaponSystemSource } from "@item/weapon/data.ts"
 
-export type RangedWeaponSource = BaseWeaponSource<ItemType.RangedWeapon, RangedWeaponSystemData>
+export type RangedWeaponSource = BaseWeaponSource<ItemType.RangedWeapon, RangedWeaponSystemSource>
 
-export interface RangedWeaponData extends Omit<RangedWeaponSource, "effects">, RangedWeaponSystemData {
-	readonly type: RangedWeaponSource["type"]
-	readonly _source: RangedWeaponSource
-}
-
-export interface RangedWeaponSystemData extends BaseWeaponSystemData {
-	accuracy: string
-	range: string
-	rate_of_fire: string
-	shots: string
-	bulk: string
-	recoil: string
-	calc?: RangedWeaponCalcValues
-}
-
-export interface RangedWeaponCalcValues extends BaseWeaonCalcValues {
+export interface RangedWeaponSystemSource extends BaseWeaponSystemSource {
 	accuracy: string
 	range: string
 	rate_of_fire: string

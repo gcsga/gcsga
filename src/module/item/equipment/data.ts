@@ -1,40 +1,30 @@
-import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
-import { Feature } from "@module/config"
-import { ItemType } from "@module/data"
-import { PrereqList } from "@prereq"
+import { ItemType } from "@data"
+import { FeatureObj } from "@feature/index.ts"
+import { BaseContainerSource } from "@item/container/data.ts"
+import { ItemGCSSystemSource } from "@item/gcs/data.ts"
+import { PrereqListObj } from "@prereq/data.ts"
+import { WeightString } from "@util/weight.ts"
 
-export type EquipmentSource = ItemGCSSource<ItemType.Equipment, EquipmentSystemData>
+export type EquipmentSource = BaseContainerSource<ItemType.Equipment, EquipmentSystemSource>
 
-export type CostValueType = "addition" | "percentage" | "multiplier"
-
-export interface EquipmentData extends Omit<EquipmentSource, "effects" | "items">, EquipmentSystemData {
-	readonly type: EquipmentSource["type"]
-	data: EquipmentSystemData
-
-	readonly _source: EquipmentSource
-}
-
-export interface EquipmentSystemData extends Omit<ItemGCSSystemData, "open"> {
+export interface EquipmentSystemSource extends Omit<ItemGCSSystemSource, "open"> {
+	type: ItemType.Equipment
 	description: string
-	prereqs: PrereqList
-	equipped: boolean
-	quantity: number
+	reference: string
+	reference_highlight: string
+	notes: string
+	vtt_notes: string
 	tech_level: string
 	legality_class: string
+	tags: string[]
+	rated_strength?: number
+	quantity: number
 	value: number
-	ignore_weight_for_skills: boolean
-	weight: string
-	uses: number
+	weight: WeightString
 	max_uses: number
-	features: Feature[]
-	// other: boolean
-	rated_strength: number
-	calc?: EquipmentCalcValues
-}
-
-export interface EquipmentCalcValues extends ItemGCSCalcValues {
-	weight: string
-	extended_weight: string
-	value: string
-	extended_value: string
+	uses: number
+	prereqs: PrereqListObj
+	features: FeatureObj[]
+	equipped: boolean
+	ignore_weight_for_skills: boolean
 }

@@ -1,5 +1,5 @@
 export const staticHpConditions: {
-	[key: string]: { breakpoint: ([string]: any) => number; label: string; style: string }
+	[key: string]: { breakpoint: (HP: { max: number }) => number; label: string; style: string }
 } = {
 	NORMAL: {
 		breakpoint: _ => Number.MAX_SAFE_INTEGER,
@@ -49,7 +49,7 @@ export const staticHpConditions: {
 }
 
 export const staticFpConditions: {
-	[key: string]: { breakpoint: ([string]: any) => number; label: string; style: string }
+	[key: string]: { breakpoint: (FP: { max: number }) => number; label: string; style: string }
 } = {
 	NORMAL: {
 		breakpoint: _ => Number.MAX_SAFE_INTEGER,

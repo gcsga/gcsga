@@ -1,7 +1,9 @@
-import { Int } from "./fxp"
+import { Int } from "./fxp.ts"
+
+export type WeightString = `${number} ${WeightUnits}`
 
 export class Weight {
-	static format(pounds: number, unit: WeightUnits = WeightUnits.Pound): string {
+	static format(pounds: number, unit: WeightUnits = WeightUnits.Pound): WeightString {
 		return `${Int.from(Weight.fromPounds(pounds, unit))} ${unit}`
 	}
 

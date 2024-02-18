@@ -1,71 +1,42 @@
-import { CharacterSettings } from "@actor"
-import type { DocumentSubTypes, DocumentType } from "../../../types/helperTypes"
-
-import type { TokenDataSource } from "../../common/data/data.mjs/tokenData"
-import { SheetSettings } from "@module/data"
+export {}
 
 declare global {
+	interface ClientSettingsStorage extends Map<string, Storage | WorldSettingsStorage> {
+		get(key: "client"): Storage
+		get(key: "world"): WorldSettingsStorage
+	}
+
 	/**
-	 * A class responsible for managing defined game settings or settings menus.
-	 * Each setting is a string key/value pair belonging to a certain package and a certain store scope.
-	 *
-	 * When Foundry Virtual Tabletop is initialized, a singleton instance of this class is constructed within the global
-	 * Game object as as game.settings.
-	 *
-	 * @see {@link Game#settings}
-	 * @see {@link Settings}
-	 * @see {@link SettingsConfig}
+	 * An abstract interface for defining setting storage patterns
+	 * Each setting is a key/value pair
 	 */
 	class ClientSettings {
-		constructor(worldSettings?: Setting["data"]["_source"][])
+		/** An object of registered game settings for this scope */
+		settings: ClientSettingsMap
 
-		/**
-		 * A object of registered game settings for this scope
-		 */
-		settings: Map<string, SettingConfig>
-
-		/**
-		 * Registered settings menus which trigger secondary applications
-		 */
-		menus: Map<string, SettingSubmenuConfig>
+		/** Registered settings menus which trigger secondary applications */
+		menus: Map<string, { type: SettingsMenuConstructor }>
 
 		/**
 		 * The storage interfaces used for persisting settings
 		 * Each storage interface shares the same API as window.localStorage
-		 * @remarks This is a lie, it doesn't actually have the same interface...
 		 */
-		storage: Map<string, Storage | WorldSettings>
+		storage: ClientSettingsStorage
 
-		/**
-		 * The types of settings which should be constructed as a function call rather than as a class constructor.
-		 * @internal
-		 */
-		protected static PRIMITIVE_TYPES: [
-			typeof String,
-			typeof Number,
-			typeof Boolean,
-			typeof Array,
-			typeof Symbol,
-			typeof BigInt,
-		]
+		constructor(worldSettings: SettingConfig)
 
-		/**
-		 * Return a singleton instance of the Game Settings Configuration app
-		 */
+		/** Return a singleton instance of the Game Settings Configuration app */
 		get sheet(): SettingsConfig
 
 		/**
 		 * Register a new game setting under this setting scope
 		 *
-		 * @param namespace - The namespace under which the setting is registered
-		 * @param key       - The key name for the setting under the namespace module
-		 * @param data      - Configuration for setting data
-		 * @typeParam N     - The namespace under which the setting is registered, as a type
-		 * @typeParam K     - The key name for the setting under the namespace module, as a type
-		 * @typeParam T     - The type of the setting value
+		 * @param module   The namespace under which the setting is registered
+		 * @param key      The key name for the setting under the namespace module
+		 * @param data     Configuration for setting data
 		 *
-		 * @example Register a client setting
-		 * ```typescript
+		 * @example
+		 * // Register a client setting
 		 * game.settings.register("myModule", "myClientSetting", {
 		 *   name: "Register a Module Setting with Choices",
 		 *   hint: "A description of the registered setting and its behavior.",
@@ -81,10 +52,9 @@ declare global {
 		 *     console.log(value)
 		 *   }
 		 * });
-		 * ```
 		 *
-		 * @example Register a world setting
-		 * ```typescript
+		 * @example
+		 * // Register a world setting
 		 * game.settings.register("myModule", "myWorldSetting", {
 		 *   name: "Register a Module Setting with a Range slider",
 		 *   hint: "A description of the registered setting and its behavior.",
@@ -101,27 +71,22 @@ declare global {
 		 *     console.log(value)
 		 *   }
 		 * });
-		 * ```
 		 */
-		register<N extends string, K extends string, T>(
-			namespace: N,
-			key: K,
-			data: ClientSettings.Values[`${N}.${K}`] extends string | number | boolean | Array<any> | object | null
-				? ClientSettings.PartialSettingConfig<ClientSettings.Values[`${N}.${K}`]>
-				: ClientSettings.PartialSettingConfig<T>
+		register<TChoices extends Record<string, unknown> | undefined>(
+			module: string,
+			key: string,
+			data: SettingRegistration<TChoices>,
 		): void
 
 		/**
 		 * Register a new sub-settings menu
 		 *
-		 * @param namespace - The namespace under which the menu is registered
-		 * @param key       - The key name for the setting under the namespace module
-		 * @param data      - Configuration for setting data
-		 * @typeParam N     - The namespace under which the menu is registered, as a type
-		 * @typeParam K     - The key name for the setting under the namespace module, as a type
+		 * @param module   The namespace under which the menu is registered
+		 * @param key      The key name for the setting under the namespace module
+		 * @param data     Configuration for setting data
 		 *
-		 * @example Define a settings submenu which handles advanced configuration needs
-		 * ```typescript
+		 * @example
+		 * // Define a settings submenu which handles advanced configuration needs
 		 * game.settings.registerMenu("myModule", "mySettingsMenu", {
 		 *   name: "My Settings Submenu",
 		 *   label: "Settings Menu Label",      // The text label used in the button
@@ -130,122 +95,50 @@ declare global {
 		 *   type: MySubmenuApplicationClass,   // A FormApplication subclass which should be created
 		 *   restricted: true                   // Restrict this submenu to gamemaster only?
 		 * });
-		 * ```
 		 */
-		registerMenu<N extends string, K extends string>(
-			namespace: N,
-			key: K,
-			data: ClientSettings.PartialSettingSubmenuConfig
-		): void
+		registerMenu(module: string, key: string, data: SettingSubmenuConfig): void
 
 		/**
-		 * Get the value of a game setting for a certain namespace and setting key
-		 *
-		 * @param namespace - The namespace under which the setting is registered
-		 * @param key       - The setting key to retrieve
-		 * @typeParam N     - The namespace under which the setting is registered, as a type
-		 * @typeParam K     - The setting key to retrieve, as a type
-		 *
-		 * @example Retrieve the current setting value
-		 * ```typescript
-		 * game.settings.get("myModule", "myClientSetting");
-		 * ```
+		 * Get the value of a game setting for a certain module and setting key
+		 * @param module    The module namespace under which the setting is registered
+		 * @param key       The setting key to retrieve
 		 */
-		get<N extends string, K extends string>(namespace: N, key: K): ClientSettings.Values[`${N}.${K}`]
+		get(module: "core", key: "compendiumConfiguration"): Record<string, { private: boolean; locked: boolean }>
+		get(module: "core", key: "defaultToken"): Partial<foundry.data.PrototypeTokenSource>
+		get(module: "core", key: "fontSize"): number
+		get(module: "core", key: "noCanvas"): boolean
+		get(module: "core", key: "rollMode"): RollMode
+		get(module: string, key: string): unknown
 
 		/**
-		 * Set the value of a game setting for a certain namespace and setting key
-		 *
-		 * @param namespace - The namespace under which the setting is registered
-		 * @param key       - The setting key to retrieve
-		 * @param value     - The data to assign to the setting key
-		 * @param options   - Additional options passed to the server when updating world-scope settings
-		 * @typeParam N     - The namespace under which the setting is registered, as a type
-		 * @typeParam K     - The setting key to retrieve, as a type
-		 * @typeParam V     - The type of the value being set
-		 *
-		 * @example
-		 * ```typescript
-		 * // Update the current value of a setting
-		 * game.settings.set("myModule", "myClientSetting", "b");
-		 * ```
+		 * Get the value of a game setting for a certain module and setting key
+		 * @param module    The module namespace under which the setting is registered
+		 * @param key   The setting key to retrieve
+		 * @param value The data to assign to the setting key
 		 */
-		set<N extends string, K extends string, V extends ClientSettings.Values[`${N}.${K}`]>(
-			namespace: N,
-			key: K,
-			value: V,
-			options?: DocumentModificationContext
-		): Promise<V>
+		set(module: string, key: string, value: unknown): Promise<unknown>
 	}
 
-	namespace ClientSettings {
-		type PartialSettingConfig<T = unknown> = InexactPartial<Omit<SettingConfig<T>, "key" | "namespace">>
+	interface SettingRegistration<
+		TChoices extends Record<string, unknown> | undefined = Record<string, unknown> | undefined,
+	> extends Omit<SettingConfig<TChoices>, "config" | "key" | "namespace" | "scope"> {
+		config?: boolean
+		scope?: "client" | "world"
+	}
 
-		type PartialSettingSubmenuConfig = Omit<SettingSubmenuConfig, "key" | "namespace">
+	interface ClientSettingsMap extends Map<string, SettingConfig> {
+		get(key: "core.chatBubblesPan"): SettingConfig & { default: boolean }
+		get(key: "core.defaultToken"): SettingConfig & { default: PreCreate<foundry.data.PrototypeTokenSource> }
+		get(key: "core.notesDisplayToggle"): SettingConfig & { default: boolean }
+		get(key: `${string}.${string}`): SettingConfig & { default: unknown }
+	}
 
-		interface Values {
-			"core.animateRollTable": boolean
-			"core.chatBubbles": boolean
-			"core.chatBubblesPan": boolean
-			"core.combatTrackerConfig": { resource: string; skipDefeated: boolean } | {}
-			"core.compendiumConfiguration": Partial<Record<string, CompendiumCollection.Configuration>>
-			"core.coneTemplateType": "round" | "flat"
-			"core.defaultDrawingConfig": foundry.data.DrawingData["_source"] | {}
-			"core.defaultToken": DeepPartial<TokenDataSource>
-			"core.disableResolutionScaling": boolean
-			"core.fontSize": number
-			"core.fpsMeter": boolean
-			"core.globalAmbientVolume": number
-			"core.globalInterfaceVolume": number
-			"core.globalPlaylistVolume": number
-			"core.keybindings": Record<string, KeybindingActionBinding[]>
-			"core.language": string
-			"core.leftClickRelease": boolean
-			"core.lightAnimation": boolean
-			"core.maxFPS": number
-			"core.mipmap": boolean
-			"core.moduleConfiguration": Record<string, boolean>
-			"core.noCanvas": boolean
-			"core.notesDisplayToggle": boolean
-			"core.nue.shownTips": boolean
-			"core.performanceMode": boolean
-			"core.permissions": Game.Permissions
-			"core.playlist.playingLocation": "top" | "bottom"
-			"core.rollMode": keyof CONFIG.Dice.RollModes
-			"core.rtcClientSettings": typeof AVSettings.DEFAULT_CLIENT_SETTINGS
-			"core.rtcWorldSettings": typeof AVSettings.DEFAULT_WORLD_SETTINGS
-			"core.scrollingStatusText": boolean
-			"core.sheetClasses": {
-				[Key in DocumentType as DocumentSubTypes<Key> extends string ? Key : never]?: Record<
-					DocumentSubTypes<Key> & string,
-					string
-				>
-			}
-			"core.time": number
-			"core.tokenDragPreview": boolean
-			"core.visionAnimation": boolean
-			// start GCSGA specific
-			"gcsga.initiative_formula": string
-			"gcsga.compendium_browser_packs": Omit<TabData<Record<string, PackInfo | undefined>>, "settings">
-			"gcsga.default_sheet_settings.settings": Omit<
-				SheetSettings,
-				"attributes" | "body_type" | "resource_trackers" | "move_types"
-			>
-			"gcsga.ssrt": SSRT_SETTING
-			"gcsga.default_damage_location": "torso" | "random"
-			"gcsga.default_attributes.attributes": AttributeDefObj[]
-			"gcsga.default_attributes.effects": AttributeDefObj[]
-			"gcsga.default_resource_trackers.resource_trackers": ResourceTrackerDefObj[]
-			"gcsga.default_hit_locations.name": string
-			"gcsga.default_hit_locations.roll": string
-			"gcsga.default_hit_locations.locations": HitLocationData[]
-			"gcsga.default_move_types.move_types": MoveTypeDefObj[]
-			"gcsga.damage_types.types": CustomDamageType[]
-			"gcsga.colors.colors": Record<string, { light: string; dark: string }>
-			"gcsga.roll_formula": string
-			"gcsga.default_sheet_settings.initial_points": number
-			"gcsga.default_sheet_settings.tech_level": string
-			[key: string]: unknown
-		}
+	/** A simple interface for World settings storage which imitates the API provided by localStorage */
+	class WorldSettingsStorage extends Collection<Setting> {
+		constructor(settings: object)
+
+		getItem(key: string): string | null
+
+		setItem(key: string, value: unknown): void
 	}
 }

@@ -1,5 +1,2 @@
-import "./normalized-rectangle"
-import "./polygon-helpers"
-import "./precise-text"
-import "./ray"
-import "./source-polygon"
+import "./polygon-helpers.d.ts"
+import "./source-polygon.d.ts"

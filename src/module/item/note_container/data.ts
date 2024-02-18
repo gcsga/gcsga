@@ -1,17 +1,12 @@
-import { ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
-import { NoteCalcValues } from "@item/note/data"
-import { ItemType } from "@module/data"
+import { ItemType } from "@data"
+import { BaseContainerSource } from "@item/container/data.ts"
+import { ItemGCSSystemSource } from "@item/gcs/data.ts"
 
-export type NoteContainerSource = ItemGCSSource<ItemType.NoteContainer, NoteContainerSystemData>
+export type NoteContainerSource = BaseContainerSource<ItemType.NoteContainer, NoteContainerSystemSource>
 
-export interface NoteContainerData extends Omit<NoteContainerSource, "effects" | "items">, NoteContainerSystemData {
-	readonly type: NoteContainerSource["type"]
-	data: NoteContainerSystemData
-
-	readonly _source: NoteContainerSource
-}
-
-export interface NoteContainerSystemData extends ItemGCSSystemData {
+export interface NoteContainerSystemSource extends ItemGCSSystemSource {
+	type: ItemType.NoteContainer
 	text: string
-	calc?: NoteCalcValues
+	reference: string
+	reference_highlight: string
 }

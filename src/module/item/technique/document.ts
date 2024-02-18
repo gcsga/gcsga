@@ -1,14 +1,21 @@
-import { ItemGCS } from "@item/gcs"
-import { SkillLevel } from "@item/skill/data"
-import { gid } from "@module/data"
-import { SkillDefault } from "@module/default"
-import { TooltipGURPS } from "@module/tooltip"
-import { TechniqueSource } from "./data"
-import { difficulty } from "@util/enum"
-import { SkillGURPS } from "@item/skill"
+import { ItemGCS } from "@item/gcs/document.ts"
+import { TechniqueSource, TechniqueSystemSource } from "./data.ts"
+import { SkillLevel } from "@item/skill/data.ts"
+import { SkillGURPS } from "@item/skill/document.ts"
+import { difficulty } from "@util/enum/difficulty.ts"
+import { SkillDefault } from "@sytem/default/index.ts"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { ActorGURPS, CharacterGURPS } from "@actor"
+import { ItemType, gid } from "@data"
 
-export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
-	level: SkillLevel = { level: 0, relative_level: 0, tooltip: new TooltipGURPS() }
+export interface TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
+	readonly _source: TechniqueSource
+	system: TechniqueSystemSource
+
+	type: ItemType.Technique
+}
+export class TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
+	declare level: SkillLevel
 
 	unsatisfied_reason = ""
 
@@ -19,7 +26,7 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 	// }
 
 	// Getters
-	secondaryText = SkillGURPS.prototype.secondaryText
+	override secondaryText = SkillGURPS.prototype.secondaryText
 
 	// points = SkillGURPS.prototype.points
 	get points(): number {
@@ -46,23 +53,14 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 		return this.system.difficulty
 	}
 
-	get defaultedFrom(): SkillDefault | null {
-		return this.system.defaulted_from ?? null
-	}
-
-	set defaultedFrom(v: SkillDefault | null) {
-		this.system.defaulted_from = v
-	}
-
 	get default(): SkillDefault {
 		return new SkillDefault(this.system.default)
 	}
 
 	adjustedPoints(tooltip?: TooltipGURPS): number {
 		let points = this.points
-		if (this.actor) {
+		if (this.actor instanceof CharacterGURPS) {
 			points += this.actor.skillPointBonusFor(this.name!, "", this.tags, tooltip)
-			// Points += this.actor.bonusFor(`skills.points/${this.name}`, tooltip)
 			points = Math.max(points, 0)
 		}
 		return points
@@ -70,10 +68,10 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 
 	satisfied(tooltip: TooltipGURPS): boolean {
 		if (this.default.type !== "skill") return true
-		const sk = this.actor?.bestSkillNamed(this.default.name ?? "", this.default.specialization ?? "", false, null)
-		const satisfied = (sk && (sk instanceof TechniqueGURPS || sk.points > 0)) || false
+		if (!(this.actor instanceof CharacterGURPS)) return true
+		const sk = this.actor.bestSkillNamed(this.default.name ?? "", this.default.specialization ?? "", false, null)
+		const satisfied = !!sk && (sk instanceof TechniqueGURPS || sk.points > 0)
 		if (!satisfied) {
-			// Tooltip.push(prefix)
 			if (!sk) tooltip.push("gurps.prereqs.technique.skill")
 			else tooltip.push("gurps.prereqs.technique.point")
 			tooltip.push(this.default.fullName(this.actor!))
@@ -116,7 +114,7 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 		const tooltip = new TooltipGURPS()
 		const points = this.adjustedPoints()
 
-		if (!actor) return { level: -Infinity, relative_level: -Infinity, tooltip: tooltip }
+		if (!(actor instanceof CharacterGURPS)) return { level: -Infinity, relative_level: -Infinity, tooltip: tooltip }
 
 		// Level of defaulting skill.
 		const default_skill_level = getDefaultSkillLevel(this)
@@ -125,7 +123,7 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 		const skill_bonus = actor.skillBonusFor(this.name!, this.specialization, this.tags, tooltip)
 
 		// The effective skill level is the base level plus the skill bonus.
-		let effective_skill_level = default_skill_level + skill_bonus
+		const effective_skill_level = default_skill_level + skill_bonus
 
 		// The base level of the technique (the default skill level plus the technique's modifier).
 		const base_technique_level = this.default.modifier + effective_skill_level
@@ -155,9 +153,12 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 		}
 
 		function getDefaultSkillLevel(technique: TechniqueGURPS): number {
+			if (!(actor instanceof CharacterGURPS)) return 0
 			if (technique.default.type === gid.Skill) {
 				const sk = actor.baseSkill(technique.default, true)
-				return sk ? sk.level.level : 0
+				if (!sk) return 0
+				if (!sk.level) sk?.calculateLevel()
+				return sk.level.level
 			} else if (technique.default) {
 				return (
 					(technique.default?.skillLevelFast(actor, true, null, false) ?? 0) -
@@ -172,7 +173,7 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 		return this.difficulty === difficulty.Level.Hard
 	}
 
-	incrementSkillLevel() {
+	incrementSkillLevel(): void {
 		const basePoints = this.points + 1
 		let maxPoints = basePoints
 		if (this.difficulty === difficulty.Level.Wildcard) maxPoints += 12
@@ -182,12 +183,12 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 		for (let points = basePoints; points < maxPoints; points++) {
 			this.system.points = points
 			if (this.calculateLevel().level > oldLevel) {
-				return this.update({ "system.points": points })
+				this.update({ "system.points": points })
 			}
 		}
 	}
 
-	decrementSkillLevel() {
+	decrementSkillLevel(): void {
 		if (this.points <= 0) return
 		const basePoints = this.points
 		let minPoints = basePoints
@@ -195,7 +196,7 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 		else minPoints -= 4
 		minPoints = Math.max(minPoints, 0)
 
-		let oldLevel = this.level.level
+		const oldLevel = this.level.level
 		for (let points = basePoints; points >= minPoints; points--) {
 			this.system.points = points
 			if (this.calculateLevel().level < oldLevel) {
@@ -204,18 +205,18 @@ export class TechniqueGURPS extends ItemGCS<TechniqueSource> {
 		}
 
 		if (this.points > 0) {
-			let oldLevel = this.calculateLevel().level
+			const oldLevel = this.calculateLevel().level
 			while (this.points > 0) {
 				this.system.points = Math.max(this.points - 1, 0)
 				if (this.calculateLevel().level !== oldLevel) {
-					this.system.points++
-					return this.update({ "system.points": this.points })
+					this.system.points += 1
+					this.update({ "system.points": this.points })
 				}
 			}
 		}
 	}
 
-	setLevel(level: number) {
+	setLevel(level: number): Promise<this | undefined> {
 		return this.update({ "system.points": this.getPointsForLevel(level) })
 	}
 

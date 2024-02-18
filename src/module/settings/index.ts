@@ -1,15 +1,14 @@
-import { CharacterProfile } from "@actor/character/data"
-import { DEFAULT_INITIATIVE_FORMULA, SETTINGS, SSRT_SETTING, SYSTEM_NAME } from "@module/data"
-import { getDefaultSkills, setInitiative } from "@util"
-import { DefaultAttributeSettings } from "./attributes"
-import { ColorSettings } from "./colors"
-import { DefaultHitLocationSettings } from "./hit_locations"
-import { DefaultResourceTrackerSettings } from "./resource_trackers"
-import { RollModifierSettings } from "./roll_modifiers"
-import { DefaultSheetSettings } from "./sheet_settings"
-import { DamageTypeSettings } from "@module/settings/damage_type"
-import { DefaultMoveSettings } from "./move_type"
-import { loadModifiers } from "@module/mod_bucket/data"
+import { SETTINGS, SSRT_SETTING, SYSTEM_NAME } from "@module/data/index.ts"
+import { ColorSettings } from "./colors.ts"
+import { DefaultSheetSettings } from "./sheet_settings.ts"
+import { RollModifierSettings } from "./roll_modifiers.ts"
+import { getDefaultSkills } from "@util/misc.ts"
+import { AttributeSettings } from "./attributes.ts"
+import { ResourceTrackerSettings } from "./resource_trackers.ts"
+import { MoveSettings } from "./move_type.ts"
+import { HitLocationSettings } from "./hit_locations.ts"
+import { loadModifiers } from "@module/apps/mod_bucket/data.ts"
+import { CharacterProfile } from "@actor/character/data.ts"
 
 /**
  *
@@ -32,50 +31,40 @@ export function registerSettings(): void {
 		label: "gurps.settings.default_attributes.label",
 		hint: "gurps.settings.default_attributes.hint",
 		icon: "gcs-attribute",
-		type: DefaultAttributeSettings,
+		type: AttributeSettings,
 		restricted: false,
 	})
-	DefaultAttributeSettings.registerSettings()
-
-	game.settings.registerMenu(SYSTEM_NAME, SETTINGS.DAMAGE_TYPES, {
-		name: "gurps.settings.damage_types.name",
-		label: "gurps.settings.damage_types.label",
-		hint: "gurps.settings.damage_types.hint",
-		icon: "gcs-melee-weapon",
-		type: DamageTypeSettings,
-		restricted: false,
-	})
-	DamageTypeSettings.registerSettings()
+	AttributeSettings.registerSettings()
 
 	game.settings.registerMenu(SYSTEM_NAME, SETTINGS.DEFAULT_RESOURCE_TRACKERS, {
 		name: "gurps.settings.default_resource_trackers.name",
 		label: "gurps.settings.default_resource_trackers.label",
 		hint: "gurps.settings.default_resource_trackers.hint",
 		icon: "gcs-coins",
-		type: DefaultResourceTrackerSettings,
+		type: ResourceTrackerSettings,
 		restricted: true,
 	})
-	DefaultResourceTrackerSettings.registerSettings()
+	ResourceTrackerSettings.registerSettings()
 
 	game.settings.registerMenu(SYSTEM_NAME, SETTINGS.DEFAULT_MOVE_TYPES, {
 		name: "gurps.settings.default_move_types.name",
 		label: "gurps.settings.default_move_types.label",
 		hint: "gurps.settings.default_move_types.hint",
 		icon: "fas fa-person-running",
-		type: DefaultMoveSettings,
+		type: MoveSettings,
 		restricted: false,
 	})
-	DefaultMoveSettings.registerSettings()
+	MoveSettings.registerSettings()
 
 	game.settings.registerMenu(SYSTEM_NAME, SETTINGS.DEFAULT_HIT_LOCATIONS, {
 		name: "gurps.settings.default_hit_locations.name",
 		label: "gurps.settings.default_hit_locations.label",
 		hint: "gurps.settings.default_hit_locations.hint",
 		icon: "gcs-body-type",
-		type: DefaultHitLocationSettings,
+		type: HitLocationSettings,
 		restricted: true,
 	})
-	DefaultHitLocationSettings.registerSettings()
+	HitLocationSettings.registerSettings()
 
 	game.settings.registerMenu(SYSTEM_NAME, SETTINGS.DEFAULT_SHEET_SETTINGS, {
 		name: "gurps.settings.default_sheet_settings.name",
@@ -91,6 +80,7 @@ export function registerSettings(): void {
 		name: "gurps.settings.roll_modifiers.name",
 		label: "gurps.settings.roll_modifiers.label",
 		hint: "gurps.settings.roll_modifiers.hint",
+		icon: "gcs-settings",
 		type: RollModifierSettings,
 		restricted: false,
 	})
@@ -162,7 +152,7 @@ export function registerSettings(): void {
 		type: Object,
 		scope: "world",
 		onChange: () => {
-			game.CompendiumBrowser.loadSettings()
+			game.gurps.compendiumBrowser.initCompendiumList()
 			getDefaultSkills()
 		},
 	})
@@ -174,7 +164,7 @@ export function registerSettings(): void {
 		config: true,
 		type: String,
 		default: "3d6",
-		onChange: (value: string) => console.log(`Roll Formula : ${value}`),
+		onChange: (value: unknown) => console.log(`Roll Formula : ${value}`),
 	})
 
 	game.settings.register(SYSTEM_NAME, SETTINGS.SSRT, {
@@ -238,8 +228,9 @@ export function registerSettings(): void {
 		scope: "world",
 		config: true,
 		type: String,
-		default: DEFAULT_INITIATIVE_FORMULA,
-		onChange: () => setInitiative(),
+		default: "$basic_speed+($dx/10000)+(1d6/100000)",
+		onChange: (value: unknown) => console.log(`Initiative Formula  : ${value}`),
+		// onChange: () => setInitiative(),
 	})
 
 	game.settings.register(SYSTEM_NAME, SETTINGS.DEFAULT_DAMAGE_LOCATION, {
@@ -263,7 +254,7 @@ export function registerSettings(): void {
 		config: true,
 		type: Boolean,
 		default: true,
-		onChange: (value: boolean) => console.log(`Automatic Unready : ${value}`),
+		onChange: (value: unknown) => console.log(`Automatic Unready : ${value}`),
 	})
 
 	game.settings.register(SYSTEM_NAME, SETTINGS.MODIFIER_LIST_COLLAPSE, {
@@ -280,20 +271,25 @@ export function registerSettings(): void {
  *
  */
 function autoFillProfile(): CharacterProfile {
-	const p: CharacterProfile | any = {}
-	p.tech_level = "3"
-	p.player_name = ""
-	p.gender = "Male"
-	p.age = "25"
-	p.eyes = "Blue"
-	p.hair = "Brown"
-	p.skin = "Fair"
-	p.handedness = "Right"
-	p.height = "6'"
-	p.weight = "180 lb"
-	p.name = "John Doe"
-	p.birthday = "January 1"
-	return p
+	return {
+		tech_level: "3",
+		title: "",
+		organization: "",
+		SM: 0,
+		religion: "",
+		portrait: "",
+		player_name: "",
+		gender: "Male",
+		age: "25",
+		eyes: "Blue",
+		hair: "Brown",
+		skin: "Fair",
+		handedness: "Right",
+		height: "6'",
+		weight: "180 lb",
+		name: "John Doe",
+		birthday: "January 1",
+	}
 }
 
 interface provider {

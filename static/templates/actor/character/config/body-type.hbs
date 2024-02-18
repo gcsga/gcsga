@@ -1,0 +1,22 @@
+<div class="add">
+	<a class="gcs-circled-add add" data-path="{{path}}" data-type="locations"></a>
+	<a class="gcs-reset reset-all" data-type="locations"></a>
+		<div>{{localize "gurps.settings.reset_all"}}</div>
+	<a class="data-import fas fa-file-import" data-type="locations"></a>
+	<a class="data-export fas fa-file-export" data-type="locations"></a>
+</div>
+<div class="fieldblock">
+<div class="label">{{localize "gurps.character.settings.body_type.name"}}</div>
+<div class="field">
+		<input type="text" name="{{path}}.name" value="{{this.name}}" data-dtype="String" />
+	</div>
+	<div class="label">{{localize "gurps.character.settings.body_type.roll"}}</div>
+	<div class="field">
+		<input type="text" name="{{path}}.roll" value="{{this.roll}}" data-dtype="String" />
+	</div>
+	<div class="item-list">
+		{{#each this.locations}}
+		{{>actor/character/config/location path=(concat ../path ".locations") l=../this.locations.length}}
+		{{/each}}
+	</div>
+</div>

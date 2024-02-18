@@ -1,8 +1,16 @@
-import { ItemGCS } from "@item/gcs"
-import { NoteSource } from "./data"
-import { EvalEmbeddedRegex, replaceAllStringFunc } from "@util"
-export class NoteGURPS extends ItemGCS<NoteSource> {
-	get formattedName(): string {
+import { ItemGCS } from "@item/gcs/document.ts"
+import { NoteSource, NoteSystemSource } from "./data.ts"
+import { EvalEmbeddedRegex, replaceAllStringFunc } from "@util/regexp.ts"
+import { CharacterResolver } from "@util"
+import { ActorGURPS } from "@actor"
+
+export interface NoteGURPS<TParent extends ActorGURPS | null> extends ItemGCS<TParent> {
+	readonly _source: NoteSource
+	system: NoteSystemSource
+}
+
+export class NoteGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
+	override get formattedName(): string {
 		return this.formattedText
 	}
 
@@ -15,17 +23,15 @@ export class NoteGURPS extends ItemGCS<NoteSource> {
 		// @ts-expect-error Showdown not properly declared yet
 		const converter = new showdown.Converter()
 		let text = this.system.text || this.name || ""
-		text = replaceAllStringFunc(EvalEmbeddedRegex, text, this.actor)
+		text = replaceAllStringFunc(EvalEmbeddedRegex, text, this.actor as unknown as CharacterResolver)
 		return converter.makeHtml(text)?.replace(/\s\+/g, "\r")
 	}
 
-	get enabled(): boolean {
+	override get enabled(): boolean {
 		return true
 	}
 
-	secondaryText = ItemGCS.prototype.secondaryText
-
-	get reference(): string {
+	override get reference(): string {
 		return this.system.reference
 	}
 }

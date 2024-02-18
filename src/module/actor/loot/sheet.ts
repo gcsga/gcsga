@@ -1,19 +1,14 @@
-import { ActorSheetGURPS } from "@actor/base"
-import { EquipmentContainerGURPS, EquipmentGURPS } from "@item"
-import { ItemGURPS } from "@module/config"
-import { ItemType, SYSTEM_NAME } from "@module/data"
-import { PDF } from "@module/pdf"
-import { dollarFormat, LocalizeGURPS, Weight } from "@util"
-import EmbeddedCollection from "types/foundry/common/abstract/embedded-collection.mjs"
-import { LootGURPS } from "./document"
+import { ActorSheetGURPS } from "@actor/base/sheet.ts"
+import { LootGURPS } from "./document.ts"
+import { LocalizeGURPS, PDF } from "@util"
+import { EquipmentContainerGURPS, EquipmentGURPS, ItemGURPS } from "@item"
+import { ItemFlags, ItemType, SYSTEM_NAME } from "@data"
 
-export class LootSheetGURPS extends ActorSheetGURPS {
+class LootSheetGURPS<TActor extends LootGURPS = LootGURPS> extends ActorSheetGURPS<TActor> {
 	editing!: boolean
 
-	declare object: LootGURPS
-
-	static override get defaultOptions(): ActorSheet.Options {
-		return mergeObject(super.defaultOptions, {
+	static override get defaultOptions(): ActorSheetOptions {
+		return fu.mergeObject(super.defaultOptions, {
 			classes: super.defaultOptions.classes.concat(["character"]),
 			width: 800,
 			height: 800,
@@ -22,10 +17,6 @@ export class LootSheetGURPS extends ActorSheetGURPS {
 
 	override get template(): string {
 		return `/systems/${SYSTEM_NAME}/templates/actor/loot/sheet.hbs`
-	}
-
-	protected _onDrop(event: DragEvent): void {
-		super._onDrop(event)
 	}
 
 	override activateListeners(html: JQuery<HTMLElement>): void {
@@ -40,7 +31,7 @@ export class LootSheetGURPS extends ActorSheetGURPS {
 		html.find(".item").on("dragover", event => this._onDragItem(event))
 	}
 
-	async _getAddItemMenu(event: JQuery.ContextMenuEvent, html: JQuery<HTMLElement>) {
+	async _getAddItemMenu(event: JQuery.ContextMenuEvent, html: JQuery<HTMLElement>): Promise<void> {
 		event.preventDefault()
 		const element = $(event.currentTarget)
 		const type = element.parent(".item-list")[0].id
@@ -67,9 +58,9 @@ export class LootSheetGURPS extends ActorSheetGURPS {
 		await ctx.render(element)
 	}
 
-	async _newItem(type: ItemType, other = false) {
+	async _newItem(type: ItemType, other = false): Promise<void> {
 		const itemName = `TYPES.Item.${type}`
-		const itemData: any = {
+		const itemData: { type: string; name: string; system: Record<string, unknown> } = {
 			type,
 			name: game.i18n.localize(itemName),
 			system: {},
@@ -82,7 +73,7 @@ export class LootSheetGURPS extends ActorSheetGURPS {
 		})
 	}
 
-	async _newNaturalAttacks() {
+	async _newNaturalAttacks(): Promise<void> {
 		const itemName = LocalizeGURPS.translations.gurps.item.natural_attacks
 		const itemData = {
 			type: ItemType.Trait,
@@ -96,7 +87,7 @@ export class LootSheetGURPS extends ActorSheetGURPS {
 						{
 							type: ItemType.MeleeWeapon,
 							name: "Bite",
-							_id: randomID(),
+							_id: fu.randomID(),
 							system: {
 								usage: "Bite",
 								reach: "C",
@@ -114,7 +105,7 @@ export class LootSheetGURPS extends ActorSheetGURPS {
 						{
 							type: ItemType.MeleeWeapon,
 							name: "Punch",
-							_id: randomID(),
+							_id: fu.randomID(),
 							system: {
 								usage: "Punch",
 								reach: "C",
@@ -136,7 +127,7 @@ export class LootSheetGURPS extends ActorSheetGURPS {
 						{
 							type: ItemType.MeleeWeapon,
 							name: "Kick",
-							_id: randomID(),
+							_id: fu.randomID(),
 							system: {
 								usage: "Kick",
 								reach: "C,1",
@@ -158,11 +149,10 @@ export class LootSheetGURPS extends ActorSheetGURPS {
 				},
 			},
 		}
-		const item = (await this.actor.createEmbeddedDocuments("Item", [itemData], { temporary: false }))[0]
-		return item.sheet.render(true)
+		await this.actor.createEmbeddedDocuments("Item", [itemData], { temporary: false })
 	}
 
-	async _getItemContextMenu(event: JQuery.ContextMenuEvent, html: JQuery<HTMLElement>) {
+	async _getItemContextMenu(event: JQuery.ContextMenuEvent, html: JQuery<HTMLElement>): Promise<void> {
 		event.preventDefault()
 		const id = $(event.currentTarget).data("item-id")
 		const item = this.actor.equipment.get(id)
@@ -176,10 +166,11 @@ export class LootSheetGURPS extends ActorSheetGURPS {
 					type: item.type,
 					name: item.name,
 					system: item.system,
-					flags: (item as any).flags,
-					sort: ((item as any).sort ?? 0) + 1,
+					flags: item.flags,
+					sort: (item.sort ?? 0) + 1,
 				}
-				await item.container?.createEmbeddedDocuments("Item", [itemData as any], {})
+				if (!(item.container instanceof CompendiumCollection))
+					await item.container?.createEmbeddedDocuments("Item", [itemData], {})
 			},
 		})
 		ctx.menuItems.push({
@@ -216,7 +207,7 @@ export class LootSheetGURPS extends ActorSheetGURPS {
 			icon: "<i class='fas fa-gear'></i><i class='fas fa-up'></i>",
 			callback: () => {
 				let tl = item.system.tech_level
-				let tlNumber = tl.match(/\d+/)?.[0]
+				const tlNumber = tl.match(/\d+/)?.[0]
 				if (!tlNumber) return
 				const newTLNumber = parseInt(tlNumber) + 1
 				tl = tl.replace(tlNumber, `${newTLNumber}`)
@@ -229,7 +220,7 @@ export class LootSheetGURPS extends ActorSheetGURPS {
 				icon: "<i class='fas fa-gear'></i><i class='fas fa-down'></i>",
 				callback: () => {
 					let tl = item.system.tech_level
-					let tlNumber = tl.match(/\d+/)?.[0]
+					const tlNumber = tl.match(/\d+/)?.[0]
 					if (!tlNumber) return
 					const newTLNumber = parseInt(tlNumber) - 1
 					tl = tl.replace(tlNumber, `${newTLNumber}`)
@@ -245,12 +236,13 @@ export class LootSheetGURPS extends ActorSheetGURPS {
 						type: ItemType.EquipmentContainer,
 						name: item.name,
 						system: item.system,
-						flags: (item as any).flags,
-						sort: ((item as any).sort ?? 0) + 1,
+						flags: item.flags,
+						sort: (item.sort ?? 0) + 1,
 						_id: item._id,
 					}
 					await item.delete()
-					await item.container?.createEmbeddedDocuments("Item", [itemData])
+					if (!(item.container instanceof CompendiumCollection))
+						await item.container?.createEmbeddedDocuments("Item", [itemData], {})
 				},
 			})
 		if (item instanceof EquipmentContainerGURPS && item.children.size === 0)
@@ -262,18 +254,19 @@ export class LootSheetGURPS extends ActorSheetGURPS {
 						type: ItemType.Equipment,
 						name: item.name,
 						system: item.system,
-						flags: (item as any).flags,
-						sort: ((item as any).sort ?? 0) + 1,
+						flags: item.flags,
+						sort: (item.sort ?? 0) + 1,
 						_id: item._id,
 					}
 					await item.delete()
-					await item.container?.createEmbeddedDocuments("Item", [itemData])
+					if (!(item.container instanceof CompendiumCollection))
+						await item.container?.createEmbeddedDocuments("Item", [itemData], {})
 				},
 			})
 		await ctx.render($(event.currentTarget))
 	}
 
-	protected _resizeInput(event: JQuery.ChangeEvent) {
+	protected _resizeInput(event: JQuery.ChangeEvent): void {
 		event.preventDefault()
 		const field = event.currentTarget
 		$(field).css("min-width", `${field.value.length}ch`)
@@ -287,24 +280,24 @@ export class LootSheetGURPS extends ActorSheetGURPS {
 		item?.update({ _id: id, "system.open": open })
 	}
 
-	protected async _openItemSheet(event: JQuery.DoubleClickEvent) {
+	protected async _openItemSheet(event: JQuery.DoubleClickEvent): Promise<void> {
 		event.preventDefault()
 		const id: string = $(event.currentTarget).data("item-id")
 		const item = this.actor.items.get(id)
 		item?.sheet?.render(true)
 	}
 
-	protected async _onEquippedToggle(event: JQuery.ClickEvent) {
+	protected async _onEquippedToggle(event: JQuery.ClickEvent): Promise<void> {
 		event.preventDefault()
 		const id = $(event.currentTarget).data("item-id")
 		const item = this.actor.items.get(id)
-		return item?.update({
-			"system.equipped": !(item as EquipmentGURPS).equipped,
+		item?.update({
+			"system.equipped": !(item as EquipmentGURPS<TActor>).equipped,
 		})
 	}
 
 	protected _onDragItem(event: JQuery.DragOverEvent): void {
-		let element = $(event.currentTarget!).closest(".item.desc")
+		const element = $(event.currentTarget!).closest(".item.desc")
 		if (!element.length) return
 		const heightAcross = (event.pageY! - element.offset()!.top) / element.height()!
 		const widthAcross = (event.pageX! - element.offset()!.left) / element.width()!
@@ -340,56 +333,63 @@ export class LootSheetGURPS extends ActorSheetGURPS {
 		}
 	}
 
-	getData(options?: Partial<ActorSheet.Options> | undefined): any {
-		const actorData = this.actor.toObject(false) as any
-		const items = deepClone(
-			(this.actor.items as EmbeddedCollection<any, any>)
-				.map(item => item)
-				.sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0))
-		)
+	override getData(options?: ActorSheetOptions): LootSheetData<TActor> | Promise<LootSheetData<TActor>> {
+		this.actor.noPrepare = false
+		this.actor.prepareData()
 
-		const sheetData = {
-			...super.getData(options),
-			...{
-				system: actorData.system,
-				items,
-				settings: (actorData.system as any).settings,
-				current_year: new Date().getFullYear(),
-				editing: true,
-			},
+		return {
+			...(super.getData(options) as ActorSheetData<TActor>),
+			...this._prepareItems(),
+			actor: this.actor,
+			data: this.actor.system,
+			config: CONFIG.GURPS,
+			currentYear: new Date().getFullYear(),
 		}
-		this.prepareItems(sheetData)
-		return sheetData
 	}
 
-	prepareItems(data: any) {
-		const [equipment, other_equipment] = data.items.reduce(
+	private _prepareItems(): {
+		carriedEquipment: ItemGURPS[]
+		otherEquipment: ItemGURPS[]
+		carriedWeight: number
+		carriedValue: number
+		otherValue: number
+	} {
+		const items = this.object.items
+		const processedItems: ItemGURPS[] = []
+		for (const item of items.filter(
+			e =>
+				!e.flags[SYSTEM_NAME] ||
+				!e.flags[SYSTEM_NAME][ItemFlags.Container] ||
+				e.flags[SYSTEM_NAME][ItemFlags.Container] === null,
+		)) {
+			processedItems.push(item)
+		}
+
+		const [carriedEquipment, otherEquipment] = processedItems.reduce(
 			(arr: ItemGURPS[][], item: ItemGURPS) => {
-				if (item instanceof EquipmentGURPS || item instanceof EquipmentContainerGURPS) {
-					if (item.other) arr[1].push(item)
-					else arr[0].push(item)
-				}
+				if (item.flags[SYSTEM_NAME]![ItemFlags.Other]) arr[1].push(item)
+				else arr[0].push(item)
 				return arr
 			},
-			[[], []]
+			[[], []],
 		)
 
-		const carried_value = this.actor.wealthCarried()
-		let carried_weight = this.actor.weightCarried(true)
+		// const melee = items.filter(e => e.type === ItemType.MeleeWeapon && e.system.calc.equipped)
+		// const ranged = items.filter(e => e.type === ItemType.RangedWeapon && e.system.calc.equipped)
+		const carriedValue = this.actor.wealthCarried()
+		const carriedWeight = this.actor.weightCarried(true)
+		const otherValue = this.actor.wealthNotCarried()
 
-		// Data.carried_weight = `${carried_weight} lb`
-		data.carried_weight = Weight.format(carried_weight, this.actor.settings.default_weight_units)
-		data.carried_value = dollarFormat(carried_value)
-
-		data.equipment = equipment
-		data.other_equipment = other_equipment
-		data.blocks = {
-			equipment: equipment,
-			other_equipment: other_equipment,
+		return {
+			carriedEquipment,
+			otherEquipment,
+			carriedValue,
+			carriedWeight,
+			otherValue,
 		}
 	}
 
-	protected override _getHeaderButtons(): Application.HeaderButton[] {
+	protected override _getHeaderButtons(): ApplicationHeaderButton[] {
 		// Const buttons: Application.HeaderButton[] = this.actor.canUserModify(game.user!, "update")
 		// 	? [
 		// 		{
@@ -400,8 +400,22 @@ export class LootSheetGURPS extends ActorSheetGURPS {
 		// 		},
 		// 	]
 		// 	: []
-		const buttons: Application.HeaderButton[] = []
+		const buttons: ApplicationHeaderButton[] = []
 		const all_buttons = [...buttons, ...super._getHeaderButtons()]
 		return all_buttons
 	}
 }
+
+interface LootSheetData<TActor extends LootGURPS> extends ActorSheetData<TActor> {
+	actor: TActor
+	data: TActor["system"]
+	carriedEquipment: ItemGURPS[]
+	otherEquipment: ItemGURPS[]
+	carriedWeight: number
+	carriedValue: number
+	otherValue: number
+	currentYear: number
+	config: ConfigGURPS["GURPS"]
+}
+
+export { LootSheetGURPS }

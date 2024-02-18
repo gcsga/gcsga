@@ -1,14 +1,15 @@
-import { LocalizeGURPS } from "./localize"
-
 // Export type Length = number
+
+import { Int } from "./fxp.ts"
+import { LocalizeGURPS } from "./localize.ts"
 
 // Export type Weight = number
 export class Length {
 	static format(inches: number, unit: LengthUnits): string {
 		switch (unit) {
-			case LengthUnits.FeetAndInches:
-				let oneFoot = 12
-				let feet = Math.trunc(inches / oneFoot)
+			case LengthUnits.FeetAndInches: {
+				const oneFoot = 12
+				const feet = Math.trunc(inches / oneFoot)
 				inches -= feet * oneFoot
 				if (feet === 0 && inches === 0) {
 					return "0'"
@@ -17,6 +18,7 @@ export class Length {
 				if (feet > 0) buffer += `${feet.toString()}'`
 				if (inches > 0) buffer += `${inches.toString()}"`
 				return buffer
+			}
 			case LengthUnits.Inch:
 			case LengthUnits.Feet:
 			case LengthUnits.Yard:
@@ -41,6 +43,7 @@ export class Length {
 				const value = parseInt(text.replace(r, ""))
 				return Length.toInches(value, unit) as Length
 			}
+			return Length.toInches(Int.fromString(text), LengthUnits.Inch)
 		})
 		const feetIndex = text.indexOf("'")
 		const inchIndex = text.indexOf('"')
@@ -132,82 +135,6 @@ export class Length {
 		return LocalizeGURPS.translations.gurps.length_units[u]
 	}
 }
-
-// Export function getLength(value: number, fromUnit: LengthUnits, toUnit: LengthUnits): Length {
-// 	return fromInches(toInches(value, fromUnit), toUnit)
-// }
-
-// export function lengthFromString(text: string, defaultUnits: LengthUnits): Length {
-// 	text = text.replace(/^\+/g, "")
-// 	allLengthUnits.forEach(unit => {
-// 		if (text.endsWith(f(unit))) {
-// 			const r = new RegExp(`${f(unit)}$`)
-// 			const value = parseInt(text.replace(r, ""))
-// 			return toInches(value, unit) as Length
-// 		}
-// 	})
-// 	// If no unit types match, try feet and inches
-// 	const feetIndex = text.indexOf("'")
-// 	const inchIndex = text.indexOf('"')
-// 	if (feetIndex === -1 && inchIndex === -1) {
-// 		// Use default unit
-// 		const value = parseInt(text)
-// 		return toInches(value, defaultUnits) as Length
-// 	}
-// 	let feet = 0
-// 	let inches = 0
-// 	if (feetIndex !== -1) {
-// 		const s = text.substring(0, feetIndex)
-// 		feet = parseInt(s)
-// 		if (!feet) return 0
-// 	}
-// 	if (inchIndex !== -1) {
-// 		if (feetIndex > inchIndex) {
-// 			console.error(`Invalid format: ${text}`)
-// 			return 0
-// 		}
-// 		const s = text.substring(feetIndex + 1, inchIndex)
-// 		inches = parseInt(s)
-// 		if (!inches) return 0
-// 	}
-// 	return (feet * 12 + inches) as Length
-// }
-
-// /**
-//  *
-//  * @param length
-//  * @param unit
-//  */
-// function toInches(length: number, unit: LengthUnits): Length {
-// 	switch (unit) {
-// 		case LengthUnits.FeetAndInches:
-// 		case LengthUnits.Inch:
-// 			return length as Length
-// 		case LengthUnits.Feet:
-// 			return (length * 12) as Length
-// 		case LengthUnits.Yard:
-// 			return (length * 36) as Length
-// 		case LengthUnits.Mile:
-// 			return (length * 63360) as Length
-// 		case LengthUnits.Centimeter:
-// 			return (length / 2.5) as Length
-// 		case LengthUnits.Kilometer:
-// 			return (length * 36000) as Length
-// 		case LengthUnits.Meter:
-// 			return (length * 36) as Length
-// 		case LengthUnits.AstronomicalUnit:
-// 			// 93 million miles
-// 			return length * 63360 * 93000000
-// 		case LengthUnits.Lightyear:
-// 			// 5.865 trillion miles
-// 			return length * 63360 * (5.865 * 10 ** 12)
-// 		case LengthUnits.Parsec:
-// 			// 3.26 lightyears
-// 			return length * 63360 * (3.26 * 5.865 * 10 ** 12)
-// 		default:
-// 			return toInches(length, LengthUnits.FeetAndInches)
-// 	}
-// }
 
 export enum LengthUnits {
 	FeetAndInches = "ft_in",

@@ -1,115 +1,114 @@
-import { ConfiguredDocumentClass, ConstructorDataType, DocumentConstructor } from "../../../../types/helperTypes"
-import { DocumentModificationOptions } from "../../../common/abstract/document.mjs"
+import type { ClientBaseFolder } from "./client-base-mixes.d.ts"
 
 declare global {
 	/**
 	 * The client-side Folder document which extends the common BaseFolder model.
-	 * Each Folder document contains FolderData which defines its data schema.
 	 *
-	 * @see {@link data.FolderData}              The Folder data schema
-	 * @see {@link documents.Folders}            The world-level collection of Folder documents
-	 * @see {@link embedded.FolderSound}         The FolderSound embedded document within a parent Folder
-	 * @see {@link applications.FolderConfig}    The Folder configuration application
-	 *
-	 * @param data - Initial data provided to construct the Folder document
+	 * @see {@link Folders}                     The world-level collection of Folder documents
+	 * @see {@link FolderConfig}                The Folder configuration application
 	 */
-	class Folder extends ClientDocumentMixin(foundry.documents.BaseFolder) {
-		/**
-		 * The depth of this folder in its sidebar tree
-		 *
-		 * @remarks For folders that have been populated by the {@link SidebarDirectory}, this is always be defined
-		 */
-		depth?: number
+	class Folder<TDocument extends EnfolderableDocument = EnfolderableDocument> extends ClientBaseFolder {
+		/** The depth of this folder in its sidebar tree */
+		depth: number
 
 		/**
-		 * Return an array of the Document instances which are contained within this Folder.
+		 * An array of other Folders which are the displayed children of this one. This differs from the results of
+		 * {@link Folder.getSubfolders} because reports the subset of child folders which  are displayed to the current User
+		 * in the UI.
 		 */
-		get contents(): InstanceType<(typeof CONFIG)[this["data"]["type"]]["documentClass"]>[]
+		children: Folder<TDocument>[]
+
+		/** Return whether the folder is displayed in the sidebar to the current User. */
+		displayed: boolean
+
+		/* -------------------------------------------- */
+		/*  Properties                                  */
+		/* -------------------------------------------- */
 
 		/**
-		 * Return whether the folder is displayed in the sidebar to the current user
+		 * The array of the Document instances which are contained within this Folder,
+		 * unless it's a Folder inside a Compendium pack, in which case it's the array
+		 * of objects inside the index of the pack that are contained in this Folder.
 		 */
-		get displayed(): boolean
+		get contents(): TDocument[]
 
-		/**
-		 * Return a reference to the Document type which is contained within this Folder.
-		 */
-		get documentClass(): (typeof CONFIG)[this["data"]["type"]]["documentClass"]
+		set contents(value: TDocument[])
 
-		/**
-		 * Return a reference to the WorldCollection instance which provides Documents to this Folder.
-		 */
-		get documentCollection(): Collection<InstanceType<(typeof CONFIG)[this["data"]["type"]]["documentClass"]>> // TODO: WorldCollection or ReturnType<Game["collections"]["get"]>
+		/** Return a reference to the Document type which is contained within this Folder. */
+		get documentClass(): ConstructorOf<TDocument>
 
-		/**
-		 * Return whether the folder is currently expanded within the sidebar interface.
-		 */
+		/** Return a reference to the WorldCollection instance which provides Documents to this Folder. */
+		get documentCollection(): WorldCollection<TDocument>
+
+		/** Return whether the folder is currently expanded within the sidebar interface. */
 		get expanded(): boolean
 
-		/**
-		 * A reference to the parent Folder if one is set, otherwise null.
-		 */
-		get parentFolder(): Folder | null
+		/** Return the list of ancestors of this folder, starting with the parent. */
+		get ancestors(): Folder<TDocument>[]
+
+		/** A reference to the parent Folder if one is set, otherwise null. */
+		get parentFolder(): this | null
+
+		/* -------------------------------------------- */
+		/*  Methods                                     */
+		/* -------------------------------------------- */
+
+		override _preCreate(
+			data: this["_source"],
+			options: DocumentModificationContext<null>,
+			user: User,
+		): Promise<boolean | void>
 
 		/**
-		 * Present a Dialog form to create a new Folder.
-		 * @see {@link ClientDocumentMixin.createDialog}
-		 * @param data    - Initial data with which to populate the creation form
-		 *                  (default: `{}`)
-		 * @param context - Additional context options or dialog positioning options
-		 *                  (default: `{}`)
-		 * @returns A Promise which resolves to the created Folder, or null if the dialog was closed.
-		 *
-		 * @remarks For weird reasons, we need to make this generic.
+		 * Create a new Folder by rendering a dialog window to provide basic creation details
+		 * @param data Initial data with which to populate the creation form
+		 * @param options Initial positioning and sizing options for the dialog form
+		 * @return An active FolderConfig instance for creating the new Folder entity
 		 */
-		static createDialog<T extends DocumentConstructor>(
-			this: T,
-			data?:
-				| DeepPartial<
-						| ConstructorDataType<InstanceType<T>["data"]>
-						| (ConstructorDataType<InstanceType<T>["data"]> & Record<string, unknown>)
-				  >
-				| undefined,
-			context?: Partial<Omit<FolderConfig.Options, "resolve">>
-		): Promise<InstanceType<ConfiguredDocumentClass<T>> | null | undefined>
+		static createDialog<TDocument extends foundry.abstract.Document>(
+			this: ConstructorOf<TDocument>,
+			data?: Record<string, unknown>,
+			context?: {
+				parent?: TDocument["parent"]
+				pack?: Collection<TDocument> | null
+			} & Partial<FormApplicationOptions>,
+		): Promise<TDocument | null>
 
 		/**
 		 * Export all Documents contained in this Folder to a given Compendium pack.
 		 * Optionally update existing Documents within the Pack by name, otherwise append all new entries.
-		 * @param pack    - A Compendium pack to which the documents will be exported
-		 * @param options - Additional options which customize how content is exported. See {@link ClientDocumentMixin#toCompendium}
-		 *                  (default: `{}`)
-		 * @returns The updated Compendium Collection instance
+		 * @param pack         A Compendium pack to which the entities will be exported
+		 * @param updateByName Update existing entries in the Compendium pack, matching by name
+		 * @return The updated Compendium Collection instance
 		 */
-		exportToCompendium<Metadata extends CompendiumCollection.Metadata>(
-			pack: CompendiumCollection<Metadata>,
-			options?: Folder.ExportToCompendiumOptions | undefined
-		): Promise<CompendiumCollection<Metadata>>
+		exportToCompendium(
+			pack: CompendiumCollection<TDocument>,
+			{ updateByName }?: { updateByName?: boolean },
+		): Promise<CompendiumCollection<TDocument>>
 
 		/**
 		 * Provide a dialog form that allows for exporting the contents of a Folder into an eligible Compendium pack.
-		 * @param pack    - A pack ID to set as the default choice in the select input
-		 * @param options - Additional options passed to the Dialog.prompt method
-		 *                  (default: `{}`)
-		 * @returns A Promise which resolves or rejects once the dialog has been submitted or closed
+		 * @param pack    A pack ID to set as the default choice in the select input
+		 * @param options Additional options passed to the Dialog.prompt method
+		 * @return A Promise which resolves or rejects once the dialog has been submitted or closed
 		 */
-		exportDialog(pack: string, options?: DialogOptions): Promise<void>
+		exportDialog(pack: string, options?: Record<string, unknown>): Promise<void>
+
+		protected override _onDelete(options: DocumentModificationContext<null>, userId: string): void
 
 		/**
 		 * Get the Folder documents which are sub-folders of the current folder, either direct children or recursively.
-		 * @param recursive - Identify child folders recursively, if false only direct children are returned
-		 *                    (default: `false`)
+		 * @param [recursive=false] Identify child folders recursively, if false only direct children are returned
 		 * @returns An array of Folder documents which are subfolders of this one
 		 */
-		getSubfolders(recursive?: boolean): InstanceType<ConfiguredDocumentClass<typeof Folder>>[]
+		getSubfolders(recursive?: boolean): Folder<TDocument>[]
 
-		protected _onDelete(options: DocumentModificationOptions, userId: string): void
+		/**
+		 * Get the Folder documents which are parent folders of the current folder or any if its parents.
+		 * @returns An array of Folder documents which are parent folders of this one
+		 */
+		getParentFolders(): Folder<TDocument>[]
 	}
 
-	namespace Folder {
-		interface ExportToCompendiumOptions {
-			/** Update existing entries in the Compendium pack, matching by name */
-			updateByName?: boolean | undefined
-		}
-	}
+	type EnfolderableDocument = Actor<null> | Item<null> | Macro | Scene | JournalEntry | RollTable
 }

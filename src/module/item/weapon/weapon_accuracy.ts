@@ -1,8 +1,9 @@
-import { WeaponGURPS } from "@module/config"
-import { TooltipGURPS } from "@module/tooltip"
-import { Int } from "@util/fxp"
-import { WeaponField } from "./weapon_field"
-import { feature, wswitch } from "@util/enum"
+import { Int } from "@util/fxp.ts"
+import { WeaponField } from "./weapon_field.ts"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { wswitch } from "@util/enum/wswitch.ts"
+import { feature } from "@util/enum/feature.ts"
+import { BaseWeaponGURPS } from "./document.ts"
 
 export class WeaponAccuracy extends WeaponField {
 	base = 0
@@ -25,7 +26,7 @@ export class WeaponAccuracy extends WeaponField {
 		return wa
 	}
 
-	resolve(w: WeaponGURPS, tooltip: TooltipGURPS): WeaponAccuracy {
+	resolve(w: BaseWeaponGURPS, tooltip: TooltipGURPS): WeaponAccuracy {
 		const result = WeaponAccuracy.parse(this.toString())
 		result.jet = w.resolveBoolFlag(wswitch.Type.Jet, result.jet)
 		if (!result.jet) {
@@ -34,7 +35,7 @@ export class WeaponAccuracy extends WeaponField {
 					1,
 					tooltip,
 					feature.Type.WeaponAccBonus,
-					feature.Type.WeaponScopeAccBonus
+					feature.Type.WeaponScopeAccBonus,
 				)) {
 					switch (bonus.type) {
 						case feature.Type.WeaponAccBonus:
@@ -52,13 +53,13 @@ export class WeaponAccuracy extends WeaponField {
 		return result
 	}
 
-	toString(): string {
+	override toString(): string {
 		if (this.jet) return "Jet" // not localized
 		if (this.scope !== 0) return this.base.toString() + this.scope.signedString()
 		return this.base.toString()
 	}
 
-	validate() {
+	validate(): void {
 		if (this.jet) {
 			this.base = 0
 			this.scope = 0

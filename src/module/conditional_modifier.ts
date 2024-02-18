@@ -1,4 +1,4 @@
-import { StringBuilder } from "@util/string_builder"
+import { StringBuilder } from "@util/string_builder.ts"
 
 export class ConditionalModifier {
 	from: string

@@ -1,5 +1,3 @@
-import "./base"
-import "./blend_modes"
-import "./filters"
-import "./lighting"
-import "./sampler"
+import "./base.d.ts"
+import "./filters/index.d.ts"
+import "./shaders/index.d.ts"

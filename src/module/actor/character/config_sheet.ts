@@ -1,30 +1,48 @@
-import { CharacterImporter } from "./import"
-import { LocalizeGURPS, getNewAttributeId, prepareFormData } from "@util"
-import { gid, SETTINGS, SYSTEM_NAME } from "@module/data"
-import { HitLocationTable } from "./hit_location"
-import { DnD } from "@util/drag_drop"
-import { AttributeDefObj } from "@module/attribute"
-import { CharacterSheetGURPS } from "./sheet"
-import { ResourceTrackerDefObj } from "@module/resource_tracker"
-import { PDF } from "@module/pdf"
-import { MoveTypeDefObj, MoveTypeOverrideConditionType } from "@module/move_type"
-import { CharacterGURPS } from "./document"
-import { attribute } from "@util/enum"
+import { AttributeDefObj } from "@sytem/attribute/data.ts"
+import { ResourceTrackerDefObj } from "@sytem/resource_tracker/data.ts"
+import { MoveTypeDefObj, MoveTypeOverrideConditionType } from "@sytem/move_type/data.ts"
+import { SETTINGS, SYSTEM_NAME, gid } from "@data"
+import { FilePickerGURPS, LocalizeGURPS, PDF, getNewAttributeId, prepareFormData } from "@util"
+import { GURPSCONFIG } from "@scripts/config/index.ts"
+import { attribute } from "@util/enum/attribute.ts"
+import { DnD } from "@util/drag_drop.ts"
+import { DropDataType } from "@module/apps/damage_calculator/damage_chat_message.ts"
+import { CharacterImporter } from "@util/import/character.ts"
+import { CharacterGURPS } from "@actor"
+import { BodyObj, HitLocationObj } from "@sytem/hit_location/data.ts"
 
-enum ListType {
-	Attributes = "attributes",
-	ResourceTrackers = "resource_trackers",
-	AttributeThresholds = "attribute_thresholds",
-	TrackerThresholds = "tracker_thresholds",
-	Locations = "locations",
-	SubTable = "sub_table",
-	MoveType = "move_types",
-	Overrides = "override",
+type ListType =
+	| DropDataType.Attributes
+	| DropDataType.ResourceTrackers
+	| DropDataType.AttributeThresholds
+	| DropDataType.TrackerThresholds
+	| DropDataType.Locations
+	| DropDataType.SubTable
+	| DropDataType.MoveType
+	| DropDataType.Overrides
+
+type CharacterSheetConfigOptions = FormApplicationOptions & {}
+
+interface CharacterSheetConfigData<TActor extends CharacterGURPS> extends FormApplicationData<TActor> {
+	actor: TActor["_source"]
+	system: TActor["system"]
+	attributes: AttributeDefObj[]
+	resource_trackers: ResourceTrackerDefObj[]
+	move_types: MoveTypeDefObj[]
+	locations: BodyObj
+	filename: string
+	config: typeof GURPSCONFIG
 }
 
-export class CharacterSheetConfig extends FormApplication {
-	object: CharacterGURPS
+export interface CharacterSheetConfig<TActor extends CharacterGURPS, TOptions extends CharacterSheetConfigOptions>
+	extends FormApplication<TActor, TOptions> {
+	object: TActor
+}
 
+export class CharacterSheetConfig<
+	TActor extends CharacterGURPS = CharacterGURPS,
+	TOptions extends CharacterSheetConfigOptions = CharacterSheetConfigOptions,
+> extends FormApplication<TActor, TOptions> {
 	filename: string
 
 	file?: { text: string; name: string; path: string }
@@ -33,22 +51,22 @@ export class CharacterSheetConfig extends FormApplication {
 
 	resource_trackers: ResourceTrackerDefObj[]
 
-	body_type: HitLocationTable
+	bodyType: BodyObj
 
 	move_types: MoveTypeDefObj[]
 
-	constructor(object: CharacterGURPS, options?: any) {
+	constructor(object: TActor, options?: Partial<TOptions>) {
 		super(object, options)
 		this.object = object
 		this.filename = ""
 		this.attributes = this.object.system.settings.attributes
 		this.resource_trackers = this.object.system.settings.resource_trackers
 		this.move_types = this.object.system.settings.move_types
-		this.body_type = this.object.BodyType
+		this.bodyType = this.object.BodyType.toObject()
 	}
 
-	static get defaultOptions(): FormApplicationOptions {
-		return mergeObject(super.defaultOptions, {
+	static override get defaultOptions(): FormApplicationOptions {
+		return fu.mergeObject(super.defaultOptions, {
 			classes: ["form", "character-config", "gurps"],
 			template: `systems/${SYSTEM_NAME}/templates/actor/character/config/config.hbs`,
 			width: 540,
@@ -68,13 +86,14 @@ export class CharacterSheetConfig extends FormApplication {
 		})
 	}
 
-	get title() {
+	override get title(): string {
 		return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.character.settings.header, {
 			name: this.object.name,
 		})
 	}
 
-	getData(options?: Partial<FormApplicationOptions> | undefined): any {
+	override getData(options?: Partial<FormApplicationOptions> | undefined): CharacterSheetConfigData<TActor> {
+		super.getData()
 		const actor = this.object
 		this.attributes = this.object.system.settings.attributes
 		this.resource_trackers = this.object.system.settings.resource_trackers
@@ -97,7 +116,7 @@ export class CharacterSheetConfig extends FormApplication {
 		}
 	}
 
-	activateListeners(html: JQuery<HTMLElement>): void {
+	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
 		html.find("textarea")
 			.each(function () {
@@ -136,7 +155,7 @@ export class CharacterSheetConfig extends FormApplication {
 		if (game.settings.get(SYSTEM_NAME, SETTINGS.SERVER_SIDE_FILE_DIALOG)) {
 			html.find("input[type='file']").on("click", event => {
 				event.preventDefault()
-				const filepicker = new FilePicker({
+				const filepicker = new FilePickerGURPS({
 					callback: (path: string) => {
 						const request = new XMLHttpRequest()
 						request.open("GET", path)
@@ -158,7 +177,7 @@ export class CharacterSheetConfig extends FormApplication {
 						request.send(null)
 					},
 				})
-				filepicker.extensions = [".gcs", ".xml", ".gca5"]
+				filepicker.extension = [".gcs", ".xml", ".gca5"]
 				filepicker.render(true)
 			})
 		} else {
@@ -168,12 +187,12 @@ export class CharacterSheetConfig extends FormApplication {
 				this.filename = filename
 				if (files) {
 					readTextFromFile(files[0]).then(
-						text =>
+						(text: string) =>
 							(this.file = {
 								text: text,
 								name: files[0].name,
 								path: files[0].path,
-							})
+							}),
 					)
 				}
 				this.render()
@@ -188,13 +207,13 @@ export class CharacterSheetConfig extends FormApplication {
 		html.find(".data-export").on("click", event => this._onDataExport(event))
 	}
 
-	async _onReset(event: JQuery.ClickEvent) {
+	async _onReset(event: JQuery.ClickEvent): Promise<this> {
 		event.preventDefault()
 		const type = $(event.currentTarget).data("type")
 		const default_attributes = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
 		const default_resource_trackers = game.settings.get(
 			SYSTEM_NAME,
-			`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`
+			`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`,
 		)
 		const default_hit_locations = {
 			name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
@@ -202,7 +221,7 @@ export class CharacterSheetConfig extends FormApplication {
 			locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
 		}
 		const default_move_types = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
-		const update: any = {}
+		const update: Record<string, unknown> = {}
 		if (type === "attributes") update["system.settings.attributes"] = default_attributes
 		if (type === "resource_trackers") update["system.settings.resource_trackers"] = default_resource_trackers
 		if (type === "locations") update["system.settings.body_type"] = default_hit_locations
@@ -211,18 +230,18 @@ export class CharacterSheetConfig extends FormApplication {
 		return this.render()
 	}
 
-	_onExport(event: JQuery.ClickEvent) {
+	_onExport(event: JQuery.ClickEvent): Promise<void> {
 		event.preventDefault()
 		return this.object.saveLocal()
 	}
 
-	_onDataImport(event: JQuery.ClickEvent) {
+	_onDataImport(event: JQuery.ClickEvent): void {
 		event.preventDefault()
 	}
 
-	_onDataExport(event: JQuery.ClickEvent) {
+	_onDataExport(event: JQuery.ClickEvent): Promise<void> {
 		event.preventDefault()
-		switch ($(event.currentTarget).data("type")) {
+		switch ($(event.currentTarget).data("type") as "attributes" | "locations") {
 			case "attributes":
 				return this.object.saveLocal("settings.attributes", "attr")
 			case "locations":
@@ -230,18 +249,18 @@ export class CharacterSheetConfig extends FormApplication {
 		}
 	}
 
-	async _onAddItem(event: JQuery.ClickEvent) {
+	async _onAddItem(event: JQuery.ClickEvent): Promise<this | void> {
 		event.preventDefault()
 		event.stopPropagation()
 		let path = ""
-		let locations = []
+		let locations: HitLocationObj[] = []
 		const type: ListType = $(event.currentTarget).data("type")
 		let new_id = ""
-		if ([ListType.Attributes, ListType.ResourceTrackers, ListType.MoveType].includes(type))
+		if ([DropDataType.Attributes, DropDataType.ResourceTrackers, DropDataType.MoveType].includes(type))
 			new_id = getNewAttributeId([...this.attributes, ...this.resource_trackers, ...this.move_types])
-		let formData: any = {}
+		let formData: Record<string, unknown> = {}
 		switch (type) {
-			case ListType.Attributes:
+			case DropDataType.Attributes:
 				this.attributes.push({
 					type: attribute.Type.Integer,
 					id: new_id,
@@ -252,7 +271,7 @@ export class CharacterSheetConfig extends FormApplication {
 				})
 				await this.object.update({ "system.settings.attributes": this.attributes })
 				return this.render()
-			case ListType.ResourceTrackers:
+			case DropDataType.ResourceTrackers:
 				this.resource_trackers.push({
 					id: new_id,
 					name: "",
@@ -265,7 +284,7 @@ export class CharacterSheetConfig extends FormApplication {
 				})
 				await this.object.update({ "system.settings.resource_trackers": this.resource_trackers })
 				return this.render()
-			case ListType.AttributeThresholds:
+			case DropDataType.AttributeThresholds:
 				this.attributes[$(event.currentTarget).data("id")].thresholds ??= []
 				this.attributes[$(event.currentTarget).data("id")].thresholds!.push({
 					state: "",
@@ -275,7 +294,7 @@ export class CharacterSheetConfig extends FormApplication {
 				})
 				await this.object.update({ "system.settings.attributes": this.attributes })
 				return this.render()
-			case ListType.TrackerThresholds:
+			case DropDataType.TrackerThresholds:
 				this.resource_trackers[$(event.currentTarget).data("id")].thresholds ??= []
 				this.resource_trackers[$(event.currentTarget).data("id")].thresholds!.push({
 					state: "",
@@ -285,9 +304,9 @@ export class CharacterSheetConfig extends FormApplication {
 				})
 				await this.object.update({ "system.settings.resource_trackers": this.resource_trackers })
 				return this.render()
-			case ListType.Locations:
+			case DropDataType.Locations:
 				path = $(event.currentTarget).data("path").replace("array.", "")
-				locations = getProperty(this.object, `${path}.locations`) ?? []
+				locations = (fu.getProperty(this.object, `${path}.locations`) as HitLocationObj[]) ?? []
 				locations.push({
 					id: LocalizeGURPS.translations.gurps.placeholder.hit_location.id,
 					choice_name: LocalizeGURPS.translations.gurps.placeholder.hit_location.choice_name,
@@ -301,10 +320,10 @@ export class CharacterSheetConfig extends FormApplication {
 				formData[`array.${path}.locations`] = locations
 				await this._updateObject(event as unknown as Event, formData)
 				return this.render()
-			case ListType.SubTable:
+			case DropDataType.SubTable: {
 				path = $(event.currentTarget).data("path").replace("array.", "")
 				const index = Number($(event.currentTarget).data("index"))
-				locations = getProperty(this.object, `${path}`) ?? []
+				locations = (fu.getProperty(this.object, `${path}`) as HitLocationObj[]) ?? []
 				locations[index].sub_table = {
 					name: "",
 					roll: "1d",
@@ -324,7 +343,8 @@ export class CharacterSheetConfig extends FormApplication {
 				formData[`array.${path}`] = locations
 				await this._updateObject(event as unknown as Event, formData)
 				return this.render()
-			case ListType.MoveType:
+			}
+			case DropDataType.MoveType:
 				this.move_types.push({
 					id: new_id,
 					name: "",
@@ -334,7 +354,7 @@ export class CharacterSheetConfig extends FormApplication {
 				})
 				await this.object.update({ "system.settings.move_types": this.move_types })
 				return this.render()
-			case ListType.Overrides:
+			case DropDataType.Overrides:
 				this.move_types[$(event.currentTarget).data("id")].overrides ??= []
 				this.move_types[$(event.currentTarget).data("id")].overrides.push({
 					condition: {
@@ -353,45 +373,47 @@ export class CharacterSheetConfig extends FormApplication {
 		event.stopPropagation()
 		const path = $(event.currentTarget).data("path")?.replace("array.", "")
 		let locations = []
-		let formData: any = {}
+		let formData: Record<string, unknown> = {}
 		const type: ListType = $(event.currentTarget).data("type")
 		const index = Number($(event.currentTarget).data("index")) || 0
 		const parent_index = Number($(event.currentTarget).data("pindex")) || 0
 		switch (type) {
-			case ListType.Attributes:
-			case ListType.ResourceTrackers:
-			case ListType.MoveType:
+			case DropDataType.Attributes:
+			case DropDataType.ResourceTrackers:
+			case DropDataType.MoveType:
 				this[type].splice(index, 1)
 				await this.object.update({ [`system.settings.${type}`]: this[type] })
 				return this.render()
-			case ListType.AttributeThresholds:
-			case ListType.TrackerThresholds:
+			case DropDataType.AttributeThresholds:
+			case DropDataType.TrackerThresholds: {
 				const list = type === "attribute_thresholds" ? "attributes" : "resource_trackers"
 				this[list][parent_index].thresholds?.splice(index, 1)
 				await this.object.update({ [`system.settings.${list}`]: this[list] })
 				return this.render()
-			case ListType.Overrides:
+			}
+			case DropDataType.Overrides:
 				this.move_types[parent_index].overrides?.splice(index, 1)
 				await this.object.update({ "system.settings.move_types": this.move_types })
 				return this.render()
-			case ListType.Locations:
-				locations = getProperty(this.object, `${path}`) ?? []
+			case DropDataType.Locations:
+				locations = (fu.getProperty(this.object, `${path}`) as HitLocationObj[]) ?? []
 				locations.splice($(event.currentTarget).data("index"), 1)
 				formData ??= {}
 				formData[`array.${path}`] = locations
 				await this._updateObject(event as unknown as Event, formData)
 				return this.render()
-			case ListType.SubTable:
-				locations = getProperty(this.object, `${path}`) ?? []
+			case DropDataType.SubTable: {
+				locations = (fu.getProperty(this.object, `${path}`) as HitLocationObj[]) ?? []
 				delete locations[index].sub_table
 				formData ??= {}
 				formData[`array.${path}`] = locations
 				await this._updateObject(event as unknown as Event, formData)
 				return this.render()
+			}
 		}
 	}
 
-	protected async _reimport(event: JQuery.ClickEvent) {
+	protected async _reimport(event: JQuery.ClickEvent): Promise<void> {
 		event.preventDefault()
 		const import_path = this.object.importData.path
 		const import_name = import_path.match(/.*[/\\]Data[/\\](.*)/)
@@ -403,7 +425,7 @@ export class CharacterSheetConfig extends FormApplication {
 			request.onload = () => {
 				if (request.status === 200) {
 					const text = request.response
-					CharacterImporter.import(this.object, {
+					CharacterImporter.importCharacter(this.object, {
 						text: text,
 						name: file_path,
 						path: import_path,
@@ -415,36 +437,37 @@ export class CharacterSheetConfig extends FormApplication {
 		request.send(null)
 	}
 
-	protected async _import(event: JQuery.ClickEvent) {
+	protected async _import(event: JQuery.ClickEvent): Promise<void> {
 		event.preventDefault()
 		if (this.file) {
 			const file = this.file
 			this.file = undefined
 			this.filename = ""
-			CharacterImporter.import(this.object, file)
+			CharacterImporter.importCharacter(this.object, file)
 		}
 	}
 
-	protected _getHeaderButtons(): Application.HeaderButton[] {
+	protected override _getHeaderButtons(): ApplicationHeaderButton[] {
 		const all_buttons = [...super._getHeaderButtons()]
 		all_buttons.at(-1)!.label = ""
 		all_buttons.at(-1)!.icon = "gcs-circled-x"
 		return all_buttons
 	}
 
-	protected async _updateObject(event: Event, formData?: any | undefined): Promise<unknown> {
+	protected async _updateObject(event: Event, formData: Record<string, unknown>): Promise<unknown> {
 		const element = $(event.currentTarget!)
 		if (element.hasClass("invalid")) delete formData[element.prop("name")]
 		formData = prepareFormData(formData, this.object)
 		if (!this.object.id) return
 		if (formData["system.settings.block_layout"])
-			formData["system.settings.block_layout"] = formData["system.settings.block_layout"].split("\n")
+			formData["system.settings.block_layout"] = (formData["system.settings.block_layout"] as string)
+				.split("\n")
+				.map(e => e.trim())
 		await this.object.update(formData)
 		return this.render()
 	}
 
-	async _onDragStart(event: DragEvent) {
-		// TODO:update
+	override async _onDragStart(event: DragEvent): Promise<void> {
 		const item = $(event.currentTarget!)
 		const type = item.data("type")
 		const index = Number(item.data("index"))
@@ -455,9 +478,9 @@ export class CharacterSheetConfig extends FormApplication {
 				type: type,
 				index: index,
 				parent_index: parent_index,
-			})
+			}),
 		)
-		;(event as any).dragType = type
+		// event.dragType = type
 	}
 
 	protected _onDragItem(event: JQuery.DragOverEvent): void {
@@ -473,9 +496,10 @@ export class CharacterSheetConfig extends FormApplication {
 		}
 	}
 
-	protected async _onDrop(event: DragEvent): Promise<unknown> {
-		let dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
-		const type: ListType = dragData.type
+	protected override async _onDrop(event: DragEvent): Promise<unknown> {
+		const dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
+		if (dragData.type === DropDataType.Damage) return
+		if (dragData.type === DropDataType.Item) return
 
 		let element = $(event.target!)
 		if (!element.hasClass("item")) element = element.parent(".item")
@@ -487,64 +511,61 @@ export class CharacterSheetConfig extends FormApplication {
 		if (!above && dragData.order === target_index + 1) return this.render()
 
 		const path = element.data("path")?.replace("array.", "")
-		let container
-		switch (type) {
-			case ListType.Attributes:
-			case ListType.AttributeThresholds:
-				container = this.attributes
-				break
-			case ListType.ResourceTrackers:
-			case ListType.TrackerThresholds:
-				container = this.resource_trackers
-				break
-			case ListType.MoveType:
-			case ListType.Overrides:
-				container = this.move_types
-				break
-			case ListType.Locations:
-			case ListType.SubTable:
-				container = getProperty(this.object, path)
-				break
-		}
-
-		let item
-		if ([ListType.AttributeThresholds, ListType.TrackerThresholds].includes(type)) {
-			item = container[dragData.parent_index].thresholds.splice(dragData.index, 1)[0]
-			container[dragData.parent_index].thresholds.splice(target_index, 0, item as any)
-		} else if (type === ListType.Overrides) {
-			item = container[dragData.parent_index].overrides.splice(dragData.index, 1)[0]
-			container[dragData.parent_index].overrides.splice(target_index, 0, item as any)
-		} else {
-			item = container.splice(dragData.index, 1)[0]
-			container.splice(target_index, 0, item as any)
-		}
-		if ([ListType.Attributes, ListType.ResourceTrackers, ListType.MoveType].includes(type))
-			container.forEach((v: any, k: number) => {
-				v.order = k
-			})
-
-		switch (type) {
-			case ListType.Attributes:
-			case ListType.AttributeThresholds:
-				await this.object.update({ "system.settings.attributes": container })
-			case ListType.ResourceTrackers:
-			case ListType.TrackerThresholds:
-				await this.object.update({ "system.settings.resource_trackers": container })
-			case ListType.MoveType:
-			case ListType.Overrides:
+		switch (dragData.type) {
+			case DropDataType.Attributes:
+			case DropDataType.AttributeThresholds: {
+				const container = this.attributes
+				if (dragData.type === DropDataType.AttributeThresholds) {
+					const item = container[dragData.parent_index].thresholds?.splice(dragData.index, 1)[0]
+					if (item) container[dragData.parent_index].thresholds?.splice(target_index, 0, item)
+				} else {
+					const item = container.splice(dragData.index, 1)[0]
+					if (item) container.splice(target_index, 0, item)
+				}
+				return this.object.update({ "system.settings.attributes": container })
+			}
+			case DropDataType.ResourceTrackers:
+			case DropDataType.TrackerThresholds: {
+				const container = this.resource_trackers
+				if (dragData.type === DropDataType.TrackerThresholds) {
+					const item = container[dragData.parent_index].thresholds?.splice(dragData.index, 1)[0]
+					if (item) container[dragData.parent_index].thresholds?.splice(target_index, 0, item)
+				} else {
+					const item = container.splice(dragData.index, 1)[0]
+					if (item) container.splice(target_index, 0, item)
+				}
+				return this.object.update({ "system.settings.resource_trackers": container })
+			}
+			case DropDataType.MoveType:
+			case DropDataType.Overrides: {
+				const container = this.move_types
+				if (dragData.type === DropDataType.Overrides) {
+					const item = container[dragData.parent_index].overrides?.splice(dragData.index, 1)[0]
+					if (item) container[dragData.parent_index].overrides?.splice(target_index, 0, item)
+				} else {
+					const item = container.splice(dragData.index, 1)[0]
+					if (item) container.splice(target_index, 0, item)
+				}
 				await this.object.update({ "system.settings.move_types": container })
 				await this.object.update({ "system.settings.attributes": container })
 				return this.render()
-			case ListType.Locations:
-			case ListType.SubTable:
-				const formData: any = {}
-				formData[`array.${path}`] = container
+			}
+			case DropDataType.Locations:
+			case DropDataType.SubTable: {
+				const container = fu.getProperty(this.object, path) as HitLocationObj[]
+				const item = container.splice(dragData.index, 1)[0]
+				if (item) container.splice(target_index, 0, item)
+				const formData = {
+					[`array.${path}`]: container,
+				}
 				return this._updateObject(event, formData)
+			}
 		}
+		return this.render()
 	}
 
-	close(options?: FormApplication.CloseOptions | undefined): Promise<void> {
-		;(this.object.sheet as unknown as CharacterSheetGURPS).config = null
+	override close(options?: { force?: boolean }): Promise<void> {
+		this.object.sheet.config = null
 		return super.close(options)
 	}
 }

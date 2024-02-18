@@ -1,0 +1,31 @@
+<div id="defaults">
+	<div class="header">{{localize "gurps.default.header"}}</div>
+	<div class="content">
+		<div> <a class="add button gcs-circled-add"></a> </div>
+		{{#each system.defaults}}
+			<div class="default">
+				<a class="remove button gcs-trash" data-index="{{@index}}"></a>
+			<select name="{{../sysPrefix}}defaults.{{@index}}.type" data-index="{{@index}}">
+				{{#select this.type}}
+				<option value="10">{{localize "gurps.enum.defaults.ten"}}</option>
+				{{#each ../attributes as |v k|}}
+				<option value="{{k}}">{{v}}</option>
+				{{/each}}
+				<option value="parry">{{localize "gurps.enum.defaults.parry"}}</option>
+				<option value="block">{{localize "gurps.enum.defaults.block"}}</option>
+				<option value="skill">{{localize "gurps.enum.defaults.skill"}}</option>
+				{{/select}}
+			</select>
+			<div class="field">
+				<input type="text" name="{{../sysPrefix}}defaults.{{@index}}.name" value="{{this.name}}" data-dtype="String" {{disabled (ne this.type "skill")}} />
+			</div>
+			<div class="field">
+				<input type="text" name="{{../sysPrefix}}defaults.{{@index}}.specialization" value="{{this.specialization}}" data-dtype="String" {{disabled (ne this.type "skill")}} />
+			</div>
+			<div class="field">
+				<input type="text" name="{{../sysPrefix}}defaults.{{@index}}.modifier" value="{{signed this.modifier}}" data-dtype="Number"/>
+			</div>
+		</div>
+		{{/each}}
+	</div>
+</div>

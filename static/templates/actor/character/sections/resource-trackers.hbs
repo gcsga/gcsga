@@ -1,0 +1,25 @@
+<div class="header">{{localize "gurps.character.resource_trackers.title"}}</div>
+<div class="fieldblock6">
+	{{#each resourceTrackers}} {{#if (and (eq this.max 0) (eq this.min 0))}}
+	<div class="points"></div>
+	<div class="field" style="grid-column: 2 / span 3">
+		<input type="text" name="resource_trackers.{{this.id}}.damage" value="{{this.current}}" data-dtype="Number" />
+	</div>
+	{{else}}
+	<div class="points"></div>
+	<div class="field">
+		<input type="text" name="resource_trackers.{{this.id}}.damage" value="{{this.current}}" data-dtype="Number" />
+	</div>
+	<div class="label">{{localize "gurps.character.pool_of"}}</div>
+	<div class="field">
+		<input type="text" value="{{this.max}}" data-dtype="Number" disabled />
+	</div>
+	{{/if}}
+	<div class="label">{{this.tracker_def.name}}</div>
+	<div class="label tooltip">
+		{{#if this.currentThreshold.state}} [{{this.currentThreshold.state}}] {{#if this.currentThreshold.explanation}}
+		<span class="tooltiptext">{{{this.currentThreshold.explanation}}}</span>
+		{{/if}} {{/if}}
+	</div>
+	{{/each}}
+</div>

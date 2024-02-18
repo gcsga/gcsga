@@ -1,24 +1,13 @@
-import { ItemSheetGCS } from "@item/gcs"
-import { TechniqueGURPS } from "./document"
+import { ItemSheetGCS } from "@item/gcs/sheet.ts"
+import { TechniqueGURPS } from "./document.ts"
+import { ItemSheetOptions } from "@item/base/sheet.ts"
 
-export class TechniqueSheet extends ItemSheetGCS<TechniqueGURPS> {
-	static get defaultOptions(): DocumentSheetOptions<Item> {
+export class TechniqueSheet<IType extends TechniqueGURPS = TechniqueGURPS> extends ItemSheetGCS<IType> {
+	static override get defaultOptions(): ItemSheetOptions {
 		const options = super.defaultOptions
-		mergeObject(options, {
+		fu.mergeObject(options, {
 			classes: options.classes.concat(["technique"]),
 		})
 		return options
-	}
-
-	getData(options?: Partial<DocumentSheetOptions<Item>> | undefined) {
-		const data = super.getData(options)
-		return mergeObject(data, {
-			attributes: {
-				...{ 10: "10" },
-				...super.getData(options).attributes,
-				...{ skill: "Skill" },
-			},
-			defaults: (this.item as any).defaults,
-		})
 	}
 }

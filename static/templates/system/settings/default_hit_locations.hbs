@@ -1,0 +1,21 @@
+<form autocomplete="off" onsubmit="event.preventDefault();">
+	<div class="add">
+		<a class="gcs-circled-add add" data-path="{{path}}" data-type="locations"></a>
+		<a class="data-import fas fa-file-import" data-type="locations"></a>
+		<a class="data-export fas fa-file-export" data-type="locations"></a>
+	</div>
+	<div class="fieldblock">
+		<div class="label">{{localize "gurps.character.settings.body_type.name"}}</div>
+		<div class="field">
+			<input type="text" name="{{path}}.name" value="{{settings.name.value}}" data-dtype="String" />
+		</div>
+		<div class="label">{{localize "gurps.character.settings.body_type.roll"}}</div>
+		<div class="field">
+			<input type="text" name="{{path}}.roll" value="{{settings.roll.value}}" data-dtype="String" />
+		</div>
+		<div class="item-list">
+			{{#each settings.locations.value}} {{>actor/character/config/location path=(concat ../path ".locations")
+			l=../setitngs.locations.value.length}} {{/each}}
+		</div>
+	</div>
+</form>

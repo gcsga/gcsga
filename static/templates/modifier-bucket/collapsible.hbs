@@ -1,0 +1,28 @@
+{{#if this.open}}
+<div class="collapsible open">
+	<div class="dropdown">
+		<a class="dropdown-toggle open gcs-circled-chevron-down" data-index="{{@index}}"></a>
+	</div>
+	<div class="name">{{this.title}}</div>
+</div>
+<div class="collapsible-content open">
+	{{#each this.items}} {{#if this.title}}
+	<div class="title" disabled>{{{this.id}}}</div>
+	{{else}}
+	<div
+		class="modifier {{#if (gt this.modifier 0)}}pos{{else if (eq this.modifier 0)}}zero{{else}}neg{{/if}}"
+		data-modifier="{{json this}}"
+	>
+		{{signed this.modifier}}: {{{this.id}}}
+	</div>
+	{{/if}} {{/each}}
+</div>
+{{else}}
+<div class="collapsible closed">
+	<div class="dropdown">
+		<a class="dropdown-toggle closed gcs-circled-chevron-right" data-index="{{@index}}"></a>
+	</div>
+	<div class="name">{{this.title}}</div>
+</div>
+<div class="collapsible-content closed" style="display: none"></div>
+{{/if}}

@@ -1,19 +1,27 @@
-import { ItemGCS } from "@item/gcs"
-import { SkillLevel } from "@item/skill/data"
-import { SkillDefault } from "@module/default"
-import { TooltipGURPS } from "@module/tooltip"
-import { RitualMagicSpellSource } from "./data"
-import { gid } from "@module/data"
-import { difficulty } from "@util/enum"
-import { SpellGURPS } from "@item/spell"
+import { ItemGCS } from "@item/gcs/document.ts"
+import { RitualMagicSpellSource, RitualMagicSpellSystemSource } from "./data.ts"
+import { SkillLevel } from "@item/skill/data.ts"
+import { SpellGURPS } from "@item/spell/document.ts"
+import { difficulty } from "@util/enum/difficulty.ts"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { SkillDefault } from "@sytem/default/index.ts"
+import { ActorGURPS, CharacterGURPS } from "@actor"
+import { ItemType, gid } from "@data"
 
-export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
-	level: SkillLevel = { level: 0, relative_level: 0, tooltip: new TooltipGURPS() }
+export interface RitualMagicSpellGURPS<TParent extends ActorGURPS | null> extends ItemGCS<TParent> {
+	readonly _source: RitualMagicSpellSource
+	system: RitualMagicSpellSystemSource
 
-	unsatisfied_reason = ""
+	type: ItemType.RitualMagicSpell
+}
+
+export class RitualMagicSpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
+	declare level: SkillLevel
+
+	// unsatisfied_reason = ""
 
 	// Getters
-	secondaryText = SpellGURPS.prototype.secondaryText
+	override secondaryText = SpellGURPS.prototype.secondaryText
 
 	get rituals(): string {
 		return ""
@@ -57,7 +65,7 @@ export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 
 	adjustedPoints(tooltip?: TooltipGURPS): number {
 		let points = this.points
-		if (this.actor) {
+		if (this.actor instanceof CharacterGURPS) {
 			points += this.actor.spellPointBonusesFor(this.name!, this.powerSource, this.college, this.tags, tooltip)
 			points = Math.max(points, 0)
 		}
@@ -65,6 +73,7 @@ export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 	}
 
 	satisfied(tooltip: TooltipGURPS): boolean {
+		if (!(this.actor instanceof CharacterGURPS)) return true
 		if (this.college.length === 0) {
 			// Tooltip.push(prefix)
 			tooltip.push("gurps.ritual_magic_spell.must_assign_college")
@@ -110,9 +119,9 @@ export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 
 	get effectiveLevel(): number {
 		const actor = this.actor || this.dummyActor
-		if (!actor) return -Infinity
-		let att = actor.resolveAttributeCurrent(this.attribute)
-		let effectiveAtt = actor.resolveAttributeEffective(this.attribute)
+		if (!(actor instanceof CharacterGURPS)) return -Infinity
+		const att = actor.resolveAttributeCurrent(this.attribute)
+		const effectiveAtt = actor.resolveAttributeEffective(this.attribute)
 		return this.level.level - att + effectiveAtt
 	}
 
@@ -129,11 +138,11 @@ export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 				if (skillLevel.level < possible.level) skillLevel = possible
 			}
 		}
-		if (this.actor) {
+		if (this.actor instanceof CharacterGURPS) {
 			const tooltip = new TooltipGURPS()
 			tooltip.push(skillLevel.tooltip)
-			let levels = Math.trunc(
-				this.actor.spellBonusFor(this.name!, this.powerSource, this.college, this.tags, tooltip)
+			const levels = Math.trunc(
+				this.actor.spellBonusFor(this.name!, this.powerSource, this.college, this.tags, tooltip),
 			)
 			skillLevel.level += levels
 			skillLevel.relative_level += levels
@@ -170,7 +179,7 @@ export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 		let relative_level = 0
 		let points = this.adjustedPoints()
 		let level = -Infinity
-		if (this.actor) {
+		if (this.actor instanceof CharacterGURPS) {
 			if (def?.type === gid.Skill) {
 				const sk = this.actor.baseSkill(def!, true)
 				if (sk) level = sk.level.level
@@ -203,7 +212,7 @@ export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 		}
 	}
 
-	incrementSkillLevel() {
+	incrementSkillLevel(): void {
 		const basePoints = this.points + 1
 		let maxPoints = basePoints
 		if (this.difficulty === difficulty.Level.Wildcard) maxPoints += 12
@@ -213,12 +222,12 @@ export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 		for (let points = basePoints; points < maxPoints; points++) {
 			this.system.points = points
 			if (this.calculateLevel().level > oldLevel) {
-				return this.update({ "system.points": points })
+				this.update({ "system.points": points })
 			}
 		}
 	}
 
-	decrementSkillLevel() {
+	decrementSkillLevel(): void {
 		if (this.points <= 0) return
 		const basePoints = this.points
 		let minPoints = basePoints
@@ -226,7 +235,7 @@ export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 		else minPoints -= 4
 		minPoints = Math.max(minPoints, 0)
 
-		let oldLevel = this.level.level
+		const oldLevel = this.level.level
 		for (let points = basePoints; points >= minPoints; points--) {
 			this.system.points = points
 			if (this.calculateLevel().level < oldLevel) {
@@ -235,18 +244,18 @@ export class RitualMagicSpellGURPS extends ItemGCS<RitualMagicSpellSource> {
 		}
 
 		if (this.points > 0) {
-			let oldLevel = this.calculateLevel().level
+			const oldLevel = this.calculateLevel().level
 			while (this.points > 0) {
 				this.system.points = Math.max(this.points - 1, 0)
 				if (this.calculateLevel().level !== oldLevel) {
-					this.system.points++
-					return this.update({ "system.points": this.points })
+					this.system.points += 1
+					this.update({ "system.points": this.points })
 				}
 			}
 		}
 	}
 
-	setLevel(level: number) {
+	setLevel(level: number): Promise<this | undefined> {
 		return this.update({ "system.points": this.getPointsForLevel(level) })
 	}
 

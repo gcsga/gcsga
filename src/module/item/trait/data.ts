@@ -1,39 +1,37 @@
-import { SkillBonus } from "@feature/skill_bonus"
-import { ItemGCSCalcValues, ItemGCSSource, ItemGCSSystemData } from "@item/gcs"
-import { Feature } from "@module/config"
-import { ItemType } from "@module/data"
-import { PrereqList } from "@prereq"
-import { StringCompareType, Study } from "@util"
-import { selfctrl, skillsel, study } from "@util/enum"
+import { ItemType } from "@data"
+import { FeatureObj, SkillBonus } from "@feature/index.ts"
+import { BaseContainerSource } from "@item/container/data.ts"
+import { ItemGCSSystemSource } from "@item/gcs/data.ts"
+import { PrereqListObj } from "@prereq/data.ts"
+import { selfctrl } from "@util/enum/selfctrl.ts"
+import { skillsel } from "@util/enum/skillsel.ts"
+import { study } from "@util/enum/study.ts"
+import { StringCompareType } from "@util/string_criteria.ts"
+import { Study } from "@util/study.ts"
 
-export type TraitSource = ItemGCSSource<ItemType.Trait, TraitSystemData>
+export type TraitSource = BaseContainerSource<ItemType.Trait, TraitSystemSource>
 
-export interface TraitData extends Omit<TraitSource, "effects" | "items">, TraitSystemData {
-	readonly type: TraitSource["type"]
-	readonly _source: TraitSource
-}
-
-export interface TraitSystemData extends ItemGCSSystemData {
-	prereqs: PrereqList
-	round_down: boolean
-	disabled: boolean
-	levels: number
-	can_level: boolean
+export interface TraitSystemSource extends ItemGCSSystemSource {
+	type: ItemType.Trait
+	name: string
+	reference: string
+	reference_highlight: string
+	notes: string
+	vtt_notes: string
+	userdesc: string
+	tags: string[]
 	base_points: number
+	levels: number
 	points_per_level: number
+	prereqs: PrereqListObj
+	features: FeatureObj[]
+	study: Study[]
 	cr: selfctrl.Roll
 	cr_adj: selfctrl.Adjustment
-	features?: Feature[]
-	study: Study[]
-	study_hours_needed: study.Level
-	userdesc: string
-	type: ItemType.Trait
-	calc?: TraitCalcValues
-}
-
-export interface TraitCalcValues extends ItemGCSCalcValues {
-	enabled: boolean
-	points: number
+	study_hours_needed: study.Level | ""
+	disabled: boolean
+	round_down: boolean
+	can_level: boolean
 }
 
 const CR_Features = new Map()

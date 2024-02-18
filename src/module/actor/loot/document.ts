@@ -1,34 +1,39 @@
-import { ActorConstructorContextGURPS, BaseActorGURPS } from "@actor/base"
-import { DocumentModificationOptionsGURPS } from "@actor/character"
-import { CharacterImporter } from "@actor/character/import"
-import { EquipmentContainerGURPS, EquipmentGURPS, ItemGCS, ModifierChoiceSheet } from "@item"
-import { ItemType, SETTINGS, SYSTEM_NAME } from "@module/data"
-import { TooltipGURPS } from "@module/tooltip"
-import { LocalizeGURPS, Weight, WeightUnits, fxp } from "@util"
-import Document, { Metadata } from "types/foundry/common/abstract/document.mjs"
-import { ActorDataConstructorData } from "types/foundry/common/data/data.mjs/actorData"
-import { LootSource } from "./data"
+import { ActorGURPS } from "@actor"
+import { LootSettings, LootSource, LootSystemSource } from "./data.ts"
+import { FilePickerGURPS, LocalizeGURPS, Weight, WeightUnits } from "@util"
+import { Int } from "@util/fxp.ts"
+import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { DialogGURPS } from "@ui"
+import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
+import { EquipmentContainerGURPS, EquipmentGURPS, ItemGCS } from "@item"
+import { EmbeddedItemInstances } from "@actor/types.ts"
+import { ModifierChoiceSheet } from "@item/gcs/mod_sheet.ts"
+import { CharacterImporter } from "@util/import/character.ts"
+import { ActorType, ItemFlags, ItemType, SETTINGS, SYSTEM_NAME } from "@data"
 
-export class LootGURPS extends BaseActorGURPS<LootSource> {
-	constructor(data: LootSource, context: ActorConstructorContextGURPS = {}) {
-		super(data, context)
+interface LootGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null> extends ActorGURPS<TParent> {
+	system: LootSystemSource
+	type: ActorType.Loot
+}
+
+class LootGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null> extends ActorGURPS<TParent> {
+	protected override _preUpdate(
+		changed: DeepPartial<this["_source"]>,
+		options: DocumentModificationContext<TParent>,
+		user: foundry.documents.BaseUser,
+	): Promise<void> {
+		changed = fu.mergeObject(changed, {
+			...this._checkImport(changed),
+		})
+		return super._preUpdate(changed, options, user)
 	}
 
-	override update(
-		data?: DeepPartial<ActorDataConstructorData | (ActorDataConstructorData & Record<string, unknown>)>,
-		context?: DocumentModificationContext & foundry.utils.MergeObjectOptions & { noPrepare?: boolean }
-	): Promise<this | undefined> {
-		if (context?.noPrepare) this.noPrepare = true
-		this.checkImport(data)
-		return super.update(data, context)
-	}
-
-	checkImport(data?: any) {
-		for (const i in data) {
-			if (i.includes("system.import")) return
-			if (i.includes("ownership")) return
-		}
-		data["system.modified_date"] = new Date().toISOString()
+	private _checkImport(data: DeepPartial<this["_source"]>): DeepPartial<LootSource> {
+		if (fu.hasProperty(data, "system.import")) return {}
+		if (Object.keys(data).some(e => e.includes("ownership"))) return {}
+		const additionalData: DeepPartial<LootSource> = {}
+		fu.setProperty(additionalData, "system.modified_date", new Date().toISOString())
+		return additionalData
 	}
 
 	get weightUnits(): WeightUnits {
@@ -39,7 +44,7 @@ export class LootGURPS extends BaseActorGURPS<LootSource> {
 		return this.system.import
 	}
 
-	get settings() {
+	get settings(): LootSettings {
 		return this.system.settings
 	}
 
@@ -66,7 +71,7 @@ export class LootGURPS extends BaseActorGURPS<LootSource> {
 				total += e.extendedWeight(for_skills, this.settings.default_weight_units)
 			}
 		})
-		return fxp.Int.from(total, 4)
+		return Int.from(total, 4)
 	}
 
 	wealthCarried(): number {
@@ -74,36 +79,68 @@ export class LootGURPS extends BaseActorGURPS<LootSource> {
 		for (const e of this.equipment) {
 			if (e.parent === this) value += e.extendedValue
 		}
-		return fxp.Int.from(value, 4)
+		return Int.from(value, 4)
+	}
+
+	get fastWealthNotCarried(): string {
+		return `$${this.wealthNotCarried()}`
+	}
+
+	wealthNotCarried(): number {
+		let value = 0
+		this.otherEquipment.forEach(e => {
+			if (e.container === this) value += e.extendedValue
+		})
+		return Int.from(value, 4)
+	}
+
+	override get itemTypes(): EmbeddedItemInstances<this> {
+		return super.itemTypes as EmbeddedItemInstances<this>
 	}
 
 	get equipment(): Collection<EquipmentGURPS | EquipmentContainerGURPS> {
-		const equipment: Collection<EquipmentGURPS | EquipmentContainerGURPS> = new Collection()
-		for (const item of this.items) {
-			if (item instanceof EquipmentGURPS || item instanceof EquipmentContainerGURPS) equipment.set(item.id!, item)
-		}
-		return equipment
+		return new Collection(
+			[...this.itemTypes[ItemType.Equipment], ...this.itemTypes[ItemType.EquipmentContainer]].map(e => [
+				e.id,
+				e,
+			]) as readonly [string, Item][],
+		) as Collection<EquipmentGURPS | EquipmentContainerGURPS>
 	}
 
-	get carried_equipment(): Collection<EquipmentGURPS | EquipmentContainerGURPS> {
-		return this.equipment
+	get carriedEquipment(): Collection<EquipmentGURPS | EquipmentContainerGURPS> {
+		return new Collection(
+			this.equipment
+				.filter(item => !item.other)
+				.map(item => {
+					return [item.id, item]
+				}),
+		)
+	}
+
+	get otherEquipment(): Collection<EquipmentGURPS | EquipmentContainerGURPS> {
+		return new Collection(
+			this.equipment
+				.filter(item => item.other)
+				.map(item => {
+					return [item.id, item]
+				}),
+		)
 	}
 
 	protected override _onCreateDescendantDocuments(
-		embeddedName: string,
-		documents: Document<any, any, Metadata<any>>[],
-		result: Record<string, unknown>[],
-		options: DocumentModificationOptionsGURPS,
-		userId: string
+		parent: this,
+		collection: "effects" | "items",
+		documents: ActiveEffect<this>[] | Item<this>[],
+		result: ActiveEffect<this>["_source"][] | Item<this>["_source"][],
+		options: DocumentModificationContext<this> & { substitutions: boolean },
+		userId: string,
 	): void {
-		super._onCreateDescendantDocuments(embeddedName, documents, result, options, userId)
-
+		super._onCreateDescendantDocuments(parent, collection, documents, result, options, userId)
 		// Replace @X@ notation fields with given text
-		if (embeddedName === "Item" && options.substitutions) {
+		if (collection === "items" && options.substitutions) {
 			for (const item of documents.filter(e => e instanceof ItemGCS)) {
-				// If ((item as any).modifiers) ModifierChoiceSheet.new([item as ItemGCS])
-				ModifierChoiceSheet.new([item as ItemGCS])
-				// ItemSubstitutionSheet.new([item as ItemGCS])
+				const sheet = ModifierChoiceSheet.new([item as ItemGCS<this>])
+				if (game.userId === userId) sheet?.render(true)
 			}
 		}
 	}
@@ -116,59 +153,60 @@ export class LootGURPS extends BaseActorGURPS<LootSource> {
 	processPrereqs(): void {
 		const not_met = LocalizeGURPS.translations.gurps.prereq.not_met
 		for (const e of this.equipment) {
-			e.unsatisfied_reason = ""
+			e.unsatisfiedReason = ""
 			if (!e.prereqsEmpty) {
 				const tooltip = new TooltipGURPS()
 				if (!e.prereqs.satisfied(this, e, tooltip)) {
-					e.unsatisfied_reason = not_met + tooltip.toString()
+					e.unsatisfiedReason = not_met + tooltip.toString()
 				}
 			}
 		}
 	}
 
-	async saveLocal(): Promise<void> {
-		const json = await this.exportSystemData()
-		return saveDataToFile(json.text, "gcs", json.name)
+	async saveLocal(path = "", extension = "gcs"): Promise<void> {
+		const [system, name] = await this.exportSystemData()
+		let data: Record<string, unknown>
+		if (path === "") {
+			data = system
+		} else {
+			data = fu.getProperty(system, path) as Record<string, unknown>
+			data.version = 4
+			if (path === "settings.attributes") data.type = "attribute_settings"
+			else if (path === "settings.body_type") data.type = "body_type"
+		}
+		saveDataToFile(JSON.stringify(data, null, "\t"), extension, `${name}.${extension}`)
 	}
 
-	protected async exportSystemData() {
-		const system: any = duplicate(this.system)
+	protected async exportSystemData(): Promise<[DeepPartial<LootSystemSource>, string]> {
+		const system: DeepPartial<LootSystemSource> & Record<string, unknown> = { ...fu.duplicate(this.system) }
 		system.type = "character"
-		const items = this.items.map((e: any) => e.exportSystemData(true))
-		const third_party: any = {}
+		const third_party: Record<string, unknown> = {}
 
-		third_party.settings = { resource_trackers: system.settings.resource_trackers }
-		third_party.resource_trackers = system.resource_trackers
 		third_party.import = system.import
-		third_party.move = system.move
 		system.third_party = third_party
-		system.equipment =
-			items
-				.filter(
-					e => [ItemType.Equipment, "equipment", ItemType.EquipmentContainer].includes(e.type) && !e.other
-				)
-				.map(e => {
-					delete e.other
-					return e
-				}) ?? []
-		const json = JSON.stringify(system, null, "\t")
-		const filename = `${this.name}.gcs`
+		system.traits = this.traits
+			.filter(e => !e.flags[SYSTEM_NAME]?.[ItemFlags.Container])
+			.map(e => e.exportSystemData(false))
 
-		return { text: json, name: filename }
+		// const json = JSON.stringify(system, null, "\t")
+		const filename = this.name ?? LocalizeGURPS.translations.TYPES.Actor.character_gcs
+
+		// return { text: json, name: filename }
+		return [system, filename]
 	}
 
-	async promptImport() {
-		let dialog = new Dialog({
+	async promptImport(): Promise<void> {
+		const dialog = new DialogGURPS({
 			title: LocalizeGURPS.translations.gurps.character.import_prompt.title,
 			content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/actor/import-prompt.hbs`, { object: this }),
 			buttons: {
 				import: {
 					icon: '<i class="fas fa-file-import"></i>',
 					label: LocalizeGURPS.translations.gurps.character.import_prompt.import,
-					callback: _html => {
-						let file: any = null
+					callback: () => {
+						let file: { name: string; text: string; path: string } | null = null
 						if (game.settings.get(SYSTEM_NAME, SETTINGS.SERVER_SIDE_FILE_DIALOG)) {
-							const filepicker = new FilePicker({
+							const filepicker = new FilePickerGURPS({
 								callback: (path: string) => {
 									const request = new XMLHttpRequest()
 									request.open("GET", path)
@@ -181,7 +219,7 @@ export class LootGURPS extends BaseActorGURPS<LootSource> {
 													name: path,
 													path: request.responseURL,
 												}
-												CharacterImporter.import(this, file)
+												CharacterImporter.importCharacter(this, file)
 											}
 											resolve(this)
 										}
@@ -189,7 +227,7 @@ export class LootGURPS extends BaseActorGURPS<LootSource> {
 									request.send(null)
 								},
 							})
-							filepicker.extensions = [".gcs", ".xml", ".gca5"]
+							filepicker.extension = [".gcs", ".xml", ".gca5"]
 							filepicker.render(true)
 						} else {
 							const inputEl = document.createElement("input")
@@ -202,7 +240,7 @@ export class LootGURPS extends BaseActorGURPS<LootSource> {
 									path: rawFile.path,
 								}
 								readTextFromFile(rawFile).then(text => {
-									CharacterImporter.import(this, {
+									CharacterImporter.importCharacter(this, {
 										text: text,
 										name: rawFile.name,
 										path: rawFile.path,
@@ -218,3 +256,5 @@ export class LootGURPS extends BaseActorGURPS<LootSource> {
 		dialog.render(true)
 	}
 }
+
+export { LootGURPS }

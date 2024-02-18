@@ -1,11 +1,12 @@
-import { CharacterGURPS } from "@actor"
-import { DEFAULT_INITIATIVE_FORMULA, ItemType, SETTINGS, SYSTEM_NAME } from "@module/data"
-import { v4 as uuidv4 } from "uuid"
-import { display } from "./enum"
-import { StringBuilder } from "./string_builder"
-import { LocalizeGURPS } from "./localize"
+import { ItemType, SETTINGS, SYSTEM_NAME } from "@data"
+import { LocalizeGURPS } from "./localize.ts"
+import { StringBuilder } from "./string_builder.ts"
+import { SkillResolver } from "./resolvers.ts"
+import { itemIsOfType } from "@item/helpers.ts"
+import { ItemGURPS } from "@item"
+// import uuid from "uuidv4"
 
-export function sanitizeId(id: string, permit_leading_digits: boolean, reserved: string[]): string {
+function sanitizeId(id: string, permit_leading_digits: boolean, reserved: string[]): string {
 	const buffer: string[] = []
 	for (let ch of id.split("")) {
 		if (ch.match("[A-Z]")) ch = ch.toLowerCase()
@@ -30,7 +31,7 @@ export function sanitizeId(id: string, permit_leading_digits: boolean, reserved:
 	return ""
 }
 
-export function sanitize(text: string): string {
+function sanitize(text: string): string {
 	text = text.replace(/%(?![0-9][0-9a-fA-F]+)/g, "%25")
 	text = decodeURIComponent(text) // convert % (not followed by 2 digit hex) to %25, unicode characters into html format
 	text = text.replace(/&nbsp;/g, " ") // we need to convert non-breaking spaces into regular spaces for parsing
@@ -50,14 +51,16 @@ export function sanitize(text: string): string {
 /**
  *
  */
-export function newUUID(): string {
-	return uuidv4()
+function newUUID(): string {
+	// TODO: fix
+	return ""
+	// return uuid()
 }
 
 /**
  *
  */
-export function getCurrentTime(): string {
+function getCurrentTime(): string {
 	return new Date().toISOString()
 }
 
@@ -66,7 +69,7 @@ export function getCurrentTime(): string {
  * @param value
  * @param base
  */
-// export function stringCompare(value?: string | string[] | null, base?: StringCriteria): boolean {
+// function stringCompare(value?: string | string[] | null, base?: StringCriteria): boolean {
 // 	if (!base) return true
 // 	if (!value) value = ""
 // 	if (typeof value === "string") value = [value]
@@ -107,7 +110,7 @@ export function getCurrentTime(): string {
  * @param value
  * @param base
  */
-// export function numberCompare(value: number, base?: NumericCriteria): boolean {
+// function numberCompare(value: number, base?: NumericCriteria): boolean {
 // 	if (!base) return true
 // 	switch (base.compare) {
 // 		case NumericComparisonType.AnyNumber:
@@ -125,11 +128,11 @@ export function getCurrentTime(): string {
 // 	}
 // }
 
-export function extractTechLevel(str: string): number {
+function extractTechLevel(str: string): number {
 	return Math.min(Math.max(0, parseInt(str)), 12)
 }
 
-export function dollarFormat(i: number): string {
+function dollarFormat(i: number): string {
 	const formatter = new Intl.NumberFormat("en-US", {
 		style: "currency",
 		currency: "USD",
@@ -137,7 +140,7 @@ export function dollarFormat(i: number): string {
 	return formatter.format(i)
 }
 
-export function toWord(n: number): string {
+function toWord(n: number): string {
 	switch (n) {
 		case 1:
 			return "one"
@@ -156,7 +159,7 @@ export function toWord(n: number): string {
 	}
 }
 
-export function removeAccents(str: string): string {
+function removeAccents(str: string): string {
 	return str
 		.normalize("NFD")
 		.replace(/[\u0300-\u036f]/g, "") // Remove accents
@@ -165,11 +168,11 @@ export function removeAccents(str: string): string {
 		.replace(/(^-+|-+$)/g, "")
 }
 
-export function capitalize(s: string): string {
+function capitalize(s: string): string {
 	return s.charAt(0).toUpperCase() + s.slice(1)
 }
 
-// export function getAdjustedStudyHours(s: Study): number {
+// function getAdjustedStudyHours(s: Study): number {
 // 	switch (s.type) {
 // 		case StudyType.Self:
 // 			return s.hours * 0.5
@@ -182,22 +185,22 @@ export function capitalize(s: string): string {
 // 	}
 // }
 
-export function prepareFormData(formData: any, object: any): any {
-	for (let aKey of Object.keys(formData)) {
+function prepareFormData(formData: Record<string, unknown>, object: object): Record<string, unknown> {
+	for (const aKey of Object.keys(formData)) {
 		if (formData[aKey] === null) formData[aKey] = "0"
 		if (aKey.includes(".halve_")) {
 			const tKey = aKey.replace(/\.halve_.*$/, "")
 			const tOp = aKey.split(".").at(-1)
 			formData[`${tKey}.ops`] ??= []
-			if (formData[aKey]) formData[`${tKey}.ops`].push(tOp)
+			if (formData[aKey]) (formData[`${tKey}.ops`] as unknown[]).push(tOp)
 			delete formData[aKey]
 		}
 	}
-	for (let aKey of Object.keys(formData)) {
+	for (const aKey of Object.keys(formData)) {
 		if (aKey.startsWith("array.") && aKey.match(/\d/)) {
 			const key = aKey.replace(/^array./g, "")
 			const arrayKey = key.split(/.\d+./)[0]
-			let array: any[] = formData[arrayKey] || getProperty(object, arrayKey)
+			let array: object[] = (formData[arrayKey] as object[]) || (fu.getProperty(object, arrayKey) as object[])
 			const index = parseInt(key.match(/.(\d+)./)![1])
 			const prop = key.replace(new RegExp(`^${arrayKey}.${index}.`), "")
 			array = setArrayProperty(array, index, prop, formData[aKey])
@@ -210,7 +213,7 @@ export function prepareFormData(formData: any, object: any): any {
 		} else if (aKey.startsWith("sarray.") && aKey.match(/\d/)) {
 			const key = aKey.replace(/^sarray./g, "")
 			const arrayKey = `${key.split(/thresholds.\d+./)[0]}thresholds`
-			const array: any[] = getProperty(object, arrayKey)
+			const array: object[] = fu.getProperty(object, arrayKey) as object[]
 			const index = parseInt(key.match(/thresholds.(\d+)./)![1])
 			const prop = key.replace(new RegExp(`^${arrayKey}.${index}.`), "")
 			setArrayProperty(array, index, prop, formData[aKey])
@@ -228,16 +231,16 @@ export function prepareFormData(formData: any, object: any): any {
  * @param prop
  * @param value
  */
-function setArrayProperty(a: any[], index: number, prop: string, value: any): any[] {
+function setArrayProperty(a: object[], index: number, prop: string, value: unknown): object[] {
 	if (prop.match(/.\d+./)) {
 		const inArrayKey = prop.split(/.\d+./)[0]
-		const inArrayArray = getProperty(a[index], inArrayKey)
+		const inArrayArray = fu.getProperty(a[index], inArrayKey) as object[]
 		const inArrayIndex = parseInt(prop.match(/.(\d+)./)![1])
 		const inArrayProp = prop.replace(`${inArrayKey}.${inArrayIndex}.`, "")
-		setProperty(a[index], inArrayKey, setArrayProperty(inArrayArray, inArrayIndex, inArrayProp, value))
+		fu.setProperty(a[index], inArrayKey, setArrayProperty(inArrayArray, inArrayIndex, inArrayProp, value))
 		return a
 	}
-	setProperty(a[index], prop, value)
+	fu.setProperty(a[index], prop, value)
 	return a
 }
 
@@ -247,19 +250,18 @@ function setArrayProperty(a: any[], index: number, prop: string, value: any): an
  * @param {string | null} flavor
  * @returns {string}
  */
-export function d6ify(str: string, flavor: string | null = ""): string {
-	let w = str.replace(/d([^6])/g, `d6${flavor || ""}$1`) // Find 'd's without a 6 behind it, and add it.
+function d6ify(str: string, flavor: string | null = ""): string {
+	const w = str.replace(/d([^6])/g, `d6${flavor || ""}$1`) // Find 'd's without a 6 behind it, and add it.
 	return w.replace(/d$/g, `d6${flavor || ""}`) // And do the same for the end of the line.
 }
 
-export async function urlToBase64(imageUrl: string) {
+async function urlToBase64(imageUrl: string): Promise<string> {
 	const format = imageUrl.split(".").at(-1) || ""
 	if (!["png", "webp", "jpg", "jpeg"].includes(format)) return ""
-	let img: any = await fetch(imageUrl)
-	img = await img.blob()
-	let bitmap = await createImageBitmap(img)
-	let canvas = document.createElement("canvas")
-	let ctx = canvas.getContext("2d")
+	const img: Blob = await fetch(imageUrl).then(v => v.blob())
+	const bitmap = await createImageBitmap(img)
+	const canvas = document.createElement("canvas")
+	const ctx = canvas.getContext("2d")
 	canvas.width = bitmap.width
 	canvas.height = bitmap.height
 	ctx?.drawImage(bitmap, 0, 0, bitmap.width, bitmap.height)
@@ -272,16 +274,17 @@ export async function urlToBase64(imageUrl: string) {
 		case "jpg":
 			return canvas.toDataURL("image/jpeg").replace("data:image/png;base64,", "")
 	}
+	return ""
 }
 
-export function setInitiative() {
-	let formula = game.settings.get(SYSTEM_NAME, SETTINGS.INITIATIVE_FORMULA)
-	if (!formula) formula = DEFAULT_INITIATIVE_FORMULA
-	if (game.user?.isGM) game.settings.set(SYSTEM_NAME, SETTINGS.INITIATIVE_FORMULA, formula)
-	CONFIG.Combat.initiative.formula = formula
-}
+// function setInitiative(): void {
+// 	let formula = game.settings.get(SYSTEM_NAME, SETTINGS.INITIATIVE_FORMULA)
+// 	if (!formula) formula = DEFAULT_INITIATIVE_FORMULA
+// 	if (game.user?.isGM) game.settings.set(SYSTEM_NAME, SETTINGS.INITIATIVE_FORMULA, formula)
+// 	CONFIG.Combat.initiative.formula = formula
+// }
 
-export function pick<T extends object, K extends keyof T>(obj: T, keys: Iterable<K>): Pick<T, K> {
+function pick<T extends object, K extends keyof T>(obj: T, keys: Iterable<K>): Pick<T, K> {
 	return [...keys].reduce(
 		(result, key) => {
 			if (key in obj) {
@@ -289,50 +292,40 @@ export function pick<T extends object, K extends keyof T>(obj: T, keys: Iterable
 			}
 			return result
 		},
-		{} as Pick<T, K>
+		{} as Pick<T, K>,
 	)
 }
 
-export async function getDefaultSkills() {
-	const skills: Item[] = []
+async function getDefaultSkills(): Promise<void> {
+	const skills: SkillResolver[] = []
 	const skillPacks = game.settings.get(SYSTEM_NAME, SETTINGS.COMPENDIUM_BROWSER_PACKS).skill
 	for (const s in skillPacks)
-		if (skillPacks[s].skillDefault) {
-			const pack = game.packs.get(s) as CompendiumCollection<any>
+		if (skillPacks[s]?.skillDefault) {
+			const pack = game.packs.get(s) as CompendiumCollection<Item<null>>
 			;(await pack.getDocuments()).forEach(e => {
-				skills.push(e)
+				skills.push(e as unknown as SkillResolver)
 			})
 		}
 	CONFIG.GURPS.skillDefaults = skills
 }
 
-export function flatten(obj: any, flatObj: Record<string, any> = {}, key = ""): Record<string, any> | null {
-	if (obj === null) return null
-	for (const k of Object.keys(obj)) {
-		let valKey = key === "" ? k : `${key}.${k}`
-		if (typeof obj[k] === "object") {
-			if (Array.isArray(obj[k]) && !valKey.startsWith("array.")) valKey = `array.${valKey}`
-			flatten(obj[k], flatObj, valKey)
-		} else flatObj[valKey] = obj[k]
-	}
-	return flatObj
-}
+// function flatten(obj: object, flatObj: Record<string, object> = {}, key = ""): Record<string, object> | null {
+//   if (obj === null) return null
+//   for (const k of Object.keys(obj)) {
+//     let valKey = key === "" ? k : `${key}.${k}`
+//     if (typeof obj[k] === "object") {
+//       if (Array.isArray(obj[k]) && !valKey.startsWith("array.")) valKey = `array.${valKey}`
+//       flatten(obj[k], flatObj, valKey)
+//     } else flatObj[valKey] = obj[k]
+//   }
+//   return flatObj
+// }
 
-export function inlineNote(
-	actor: CharacterGURPS,
-	option: "user_description_display" | "modifiers_display" | "notes_display" | "skill_level_adj_display"
-): boolean {
-	if (actor) return [display.Option.Inline, display.Option.InlineAndTooltip].includes(actor.settings[option])
-	return [display.Option.Inline, display.Option.InlineAndTooltip].includes(
-		game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)[option]
-	)
-}
-
-export function getNewAttributeId(list: { id: string }[]): string {
+function getNewAttributeId(list: { id: string }[]): string {
 	let base = ""
 	for (let i = 0; i < 5; i++) {
 		for (let n = 0; n < 26; n++) {
-			let attempt = `${base}${String.fromCharCode(97 + n)}`
+			const attempt = `${base}${String.fromCharCode(97 + n)}`
 			if (!list.some(e => e.id === attempt)) return attempt
 		}
 		base += "a"
@@ -341,39 +334,190 @@ export function getNewAttributeId(list: { id: string }[]): string {
 	throw new Error("Error generating new attribute ID, ran out of possible auto-generated IDs.")
 }
 
-export function isContainer(item: { type: ItemType }): boolean {
-	return [
-		ItemType.TraitContainer,
-		ItemType.SkillContainer,
-		ItemType.SpellContainer,
-		ItemType.EquipmentContainer,
-		ItemType.TraitModifierContainer,
-		ItemType.EquipmentModifierContainer,
-		ItemType.NoteContainer,
-	].includes(item.type as any)
+function isContainer(item: ItemGURPS): boolean {
+	return itemIsOfType(
+		item,
+		...[
+			ItemType.TraitContainer,
+			ItemType.SkillContainer,
+			ItemType.SpellContainer,
+			ItemType.EquipmentContainer,
+			ItemType.TraitModifierContainer,
+			ItemType.EquipmentModifierContainer,
+			ItemType.NoteContainer,
+		],
+	)
 }
 
-// export function sheetSettingsFor(actor: CharacterResolver): SheetSettings {
+// function sheetSettingsFor(actor: CharacterResolver): SheetSettings {
 // 	if (!actor) return
 // }
 
-export function sheetDisplayNotes(
+function sheetDisplayNotes(
 	s: string,
-	options: { unsatisfied?: string; unready?: boolean } = { unsatisfied: "", unready: false }
+	options: { unsatisfied?: string; unready?: boolean } = { unsatisfied: "", unready: false },
 ): string {
 	const buffer = new StringBuilder()
 	if (options.unsatisfied && options.unsatisfied !== "")
 		buffer.push(
 			`<div class='unsatisfied' data-tooltip='${options.unsatisfied}' data-tooltip-direction='DOWN'>` +
 				`<i class='gcs-triangle-exclamation'></i>${LocalizeGURPS.translations.gurps.prereq.unsatisfied}` +
-				"</div>"
+				"</div>",
 		)
 	if (options.unready)
 		buffer.push(
 			"<div class='unsatisfied'>" +
 				`<i class='gcs-triangle-exclamation'></i>${LocalizeGURPS.translations.gurps.weapon.unready}` +
-				"</div>"
+				"</div>",
 		)
 	buffer.appendToNewLine(s)
 	return `<div class="item-notes">${buffer.toString()}</div>`
+}
+
+const wordCharacter = String.raw`[\p{Alphabetic}\p{Mark}\p{Decimal_Number}\p{Join_Control}]`
+const nonWordCharacter = String.raw`[^\p{Alphabetic}\p{Mark}\p{Decimal_Number}\p{Join_Control}]`
+const nonWordCharacterRE = new RegExp(nonWordCharacter, "gu")
+
+const wordBoundary = String.raw`(?:${wordCharacter})(?=${nonWordCharacter})|(?:${nonWordCharacter})(?=${wordCharacter})`
+const nonWordBoundary = String.raw`(?:${wordCharacter})(?=${wordCharacter})`
+const lowerCaseLetter = String.raw`\p{Lowercase_Letter}`
+const upperCaseLetter = String.raw`\p{Uppercase_Letter}`
+const lowerCaseThenUpperCaseRE = new RegExp(`(${lowerCaseLetter})(${upperCaseLetter}${nonWordBoundary})`, "gu")
+
+const nonWordCharacterHyphenOrSpaceRE = /[^-\p{White_Space}\p{Alphabetic}\p{Mark}\p{Decimal_Number}\p{Join_Control}]/gu
+const upperOrWordBoundariedLowerRE = new RegExp(`${upperCaseLetter}|(?:${wordBoundary})${lowerCaseLetter}`, "gu")
+
+/**
+ * The system's sluggification algorithm for labels and other terms.
+ * @param text The text to sluggify
+ * @param [options.camel=null] The sluggification style to use
+ */
+function sluggify(text: string, { camel = null }: { camel?: SlugCamel } = {}): string {
+	// Sanity check
+	if (typeof text !== "string") {
+		console.warn("Non-string argument passed to `sluggify`")
+		return ""
+	}
+
+	// A hyphen by its lonesome would be wiped: return it as-is
+	if (text === "-") return text
+
+	switch (camel) {
+		case null:
+			return text
+				.replace(lowerCaseThenUpperCaseRE, "$1-$2")
+				.toLowerCase()
+				.replace(/['’]/g, "")
+				.replace(nonWordCharacterRE, " ")
+				.trim()
+				.replace(/[-\s]+/g, "-")
+		case "bactrian": {
+			const dromedary = sluggify(text, { camel: "dromedary" })
+			return dromedary.charAt(0).toUpperCase() + dromedary.slice(1)
+		}
+		case "dromedary":
+			return text
+				.replace(nonWordCharacterHyphenOrSpaceRE, "")
+				.replace(/[-_]+/g, " ")
+				.replace(upperOrWordBoundariedLowerRE, (part, index) =>
+					index === 0 ? part.toLowerCase() : part.toUpperCase(),
+				)
+				.replace(/\s+/g, "")
+		default:
+			throw Error("I don't think that's a real camel.")
+	}
+}
+
+type SlugCamel = "dromedary" | "bactrian" | null
+
+function ErrorGURPS(message: string): Error {
+	return new Error(`GURPS | ${message}`)
+}
+
+/** Generate and return an HTML element for a FontAwesome icon */
+type FontAwesomeStyle = "solid" | "regular" | "duotone"
+
+function fontAwesomeIcon(
+	glyph: string,
+	{ style = "solid", fixedWidth = false }: { style?: FontAwesomeStyle; fixedWidth?: boolean } = {},
+): HTMLElement {
+	const styleClass = `fa-${style}`
+	const glyphClass = glyph.startsWith("fa-") ? glyph : `fa-${glyph}`
+	const icon = document.createElement("i")
+	icon.classList.add(styleClass, glyphClass)
+	if (fixedWidth) icon.classList.add("fa-fw")
+
+	return icon
+}
+
+/** Check if a value is present in the provided array. Especially useful for checking against literal tuples */
+function tupleHasValue<const A extends readonly unknown[]>(array: A, value: unknown): value is A[number] {
+	return array.includes(value)
+}
+
+/** Check if an element is present in the provided set. Especially useful for checking against literal sets */
+function setHasElement<T extends Set<unknown>>(set: T, value: unknown): value is SetElement<T> {
+	return set.has(value)
+}
+/**
+ * Check if a key is present in a given object in a type safe way
+ *
+ * @param obj The object to check
+ * @param key The key to check
+ */
+function objectHasKey<O extends object>(obj: O, key: unknown): key is keyof O {
+	return (typeof key === "string" || typeof key === "number") && key in obj
+}
+
+/** Short form of type and non-null check */
+function isObject<T extends object>(value: unknown): value is DeepPartial<T>
+function isObject<T extends string>(value: unknown): value is { [K in T]?: unknown }
+function isObject(value: unknown): boolean {
+	return typeof value === "object" && value !== null
+}
+
+function rgbToHex(input: string): string {
+	const [r, g, b] = input.split(", ").map(e => parseInt(e))
+	return "#" + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1)
+}
+
+function localeDate(str: string): string {
+	const date = new Date(str)
+	const options: Intl.DateTimeFormatOptions = {
+		dateStyle: "medium",
+		timeStyle: "short",
+	}
+	options.timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
+	return date.toLocaleString("en-US", options)
+}
+
+export {
+	ErrorGURPS,
+	capitalize,
+	localeDate,
+	d6ify,
+	dollarFormat,
+	extractTechLevel,
+	rgbToHex,
+	fontAwesomeIcon,
+	getCurrentTime,
+	getDefaultSkills,
+	getNewAttributeId,
+	isContainer,
+	isObject,
+	newUUID,
+	objectHasKey,
+	pick,
+	prepareFormData,
+	removeAccents,
+	sanitize,
+	sanitizeId,
+	setArrayProperty,
+	setHasElement,
+	// setInitiative,
+	sheetDisplayNotes,
+	sluggify,
+	toWord,
+	tupleHasValue,
+	urlToBase64,
 }

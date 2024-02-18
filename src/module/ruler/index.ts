@@ -1,1 +1,0 @@
-export { RulerGURPS } from "./document"
