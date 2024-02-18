@@ -1,4 +1,8 @@
-export function pageRef(book: string, ref: string): string {
+import { SETTINGS, SYSTEM_NAME } from "@data"
+
+export function pageRef(ref: string): string {
+	const book = game.settings.get(SYSTEM_NAME, SETTINGS.BASE_BOOKS)
+
 	const value = basic[ref]
 	if (book === "dfrpg" && dfrpg[ref] !== undefined) return dfrpg[ref]
 	if (book === "lite" && lite[ref] !== undefined) return lite[ref]

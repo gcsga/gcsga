@@ -601,6 +601,14 @@ class DamageRollTypeHandler extends RollTypeHandler {
 			modifiers: this.addModsDisplayClass(this.getModifiers(user)),
 			modifierTotal: modifierTotal,
 			damageRoll: [],
+			ranged: item.type === ItemType.RangedWeapon,
+		}
+
+		if (chatData.ranged) {
+			chatData.range = {
+				max: item.range,
+				half: item
+			}
 		}
 
 		let stringified = undefined

@@ -36,7 +36,7 @@
 				{{selectOptions choices.damageType selected=calculator.damageTypeKey localize=true}}
 			</select>
 		</div>
-		<div class="label ref" data-pdf="{{pageRef books 'damage_type'}}">{{pageRef books "damage_type"}}</div>
+		<div class="label ref" data-pdf="{{pageRef "damage_type"}}">{{pageRef "damage_type"}}</div>
 
 		<div class="label"></div>
 		<div class="field no-stretch">
@@ -57,7 +57,7 @@
 					{{checked calculator.isInternalExplosion}}
 				/>{{localize "gurps.dmgcalc.internal"}}</label>
 		</div>
-		<div class="label ref" data-pdf="{{pageRef books 'explosions'}}">{{pageRef books "explosions"}}</div>
+		<div class="label ref" data-pdf="{{pageRef "explosions"}}">{{pageRef "explosions"}}</div>
 
 		<div class="label">{{localize "gurps.weapon.armor_divisor"}}</div>
 		<div class="field no-stretch">
@@ -97,7 +97,7 @@
 				</span>
 			</label> --}}
 		</div>
-		<div class="label ref" data-pdf="{{pageRef books 'armor_divisor'}}">{{pageRef books "armor_divisor"}}</div>
+		<div class="label ref" data-pdf="{{pageRef "armor_divisor"}}">{{pageRef "armor_divisor"}}</div>
 
 		<div class="label">{{localize "gurps.dmgcalc.range"}}</div>
 		<div class="field no-stretch range">
@@ -117,8 +117,7 @@
 					data-action="override-isHalfDamage"
 				/>{{localize "gurps.dmgcalc.half_d"}}</label>
 		</div>
-		<div class="label ref" data-pdf="{{pageRef books 'ranged_half_damage'}}">
-			{{pageRef books "ranged_half_damage"}}</div>
+		<div class="label ref" data-pdf="{{pageRef "ranged_half_damage"}}">{{pageRef "ranged_half_damage"}}</div>
 
 		<div class="label"></div>
 		<div class="field no-stretch">
@@ -145,8 +144,8 @@
 				</span>
 			</label>
 		</div>
-		<div class="label ref" data-pdf="{{pageRef books 'shotguns_multiple_projectiles'}}">
-			{{pageRef	books "shotguns_multiple_projectiles"}}</div>
+		<div class="label ref" data-pdf="{{pageRef "shotguns_multiple_projectiles"}}">
+			{{pageRef	"shotguns_multiple_projectiles"}}</div>
 	</div>
 
 	<div id="target">
@@ -167,7 +166,7 @@
 					{{/select}}
 				</select>
 			</div>
-			<div class="label ref" data-pdf="{{pageRef books 'injury_tolerance'}}">{{pageRef books 'injury_tolerance'}}</div>
+			<div class="label ref" data-pdf="{{pageRef "injury_tolerance"}}">{{pageRef "injury_tolerance"}}</div>
 
 			<div class="label">{{localize "gurps.dmgcalc.damage_reduction"}}</div>
 			<div class="field no-stretch">
@@ -197,7 +196,7 @@
 					</span>
 				</label>
 			</div>
-			<div class="label ref" data-pdf="{{pageRef books 'damage_reduction'}}">{{pageRef books 'damage_reduction'}}</div>
+			<div class="label ref" data-pdf="{{pageRef "damage_reduction"}}">{{pageRef "damage_reduction"}}</div>
 
 			<div class="label">{{localize "gurps.dmgcalc.vulnerability"}}</div>
 			<div id="vulnerability" class="field">
@@ -227,7 +226,7 @@
 						/></span>
 				</div>
 			</div>
-			<div class="label ref" data-pdf="{{pageRef books 'vulnerability'}}">{{pageRef books 'vulnerability'}}</div>
+			<div class="label ref" data-pdf="{{pageRef "vulnerability"}}">{{pageRef "vulnerability"}}</div>
 		</div>
 
 		<nav class="nav-tabs" data-group="primary">
@@ -311,7 +310,7 @@
 								/>
 							</label>
 						</div>
-						<div class="label ref" data-pdf="{{pageRef books 'hit_location'}}">{{pageRef books 'hit_location'}}</div>
+						<div class="label ref" data-pdf="{{pageRef "hit_location"}}">{{pageRef "hit_location"}}</div>
 
 						<div class="label"></div>
 						<div class="field">
@@ -325,7 +324,7 @@
 									{{checked this.flexibleArmorOverride}}
 								/>{{localize "gurps.dmgcalc.flexible"}}</label>
 						</div>
-						<div class="label ref" data-pdf="{{pageRef books 'flexible_armor'}}">{{pageRef books 'flexible_armor'}}</div>
+						<div class="label ref" data-pdf="{{pageRef "flexible_armor"}}">{{pageRef "flexible_armor"}}</div>
 
 						<div class="label">{{localize "gurps.dmgcalc.hardened_dr"}}</div>
 						<div class="field">
@@ -337,7 +336,7 @@
 								{{selectOptions @root.choices.hardened selected=this.hardenedDRLevel}}
 							</select>
 						</div>
-						<div class="label ref" data-pdf="{{pageRef books 'hardened_dr'}}">{{pageRef books 'hardened_dr'}}</div>
+						<div class="label ref" data-pdf="{{pageRef "hardened_dr"}}">{{pageRef "hardened_dr"}}</div>
 
 						<div id="results">
 							<div id="effects">
