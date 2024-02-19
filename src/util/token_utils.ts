@@ -1,8 +1,7 @@
 import { SYSTEM_NAME } from "@module/data/index.ts"
 
 export const TokenUtil = {
-	askWhichToken: async function (tokens: Token[]): Promise<Token | undefined> {
-		let token: Token | undefined
+	askWhichToken: async function (tokens: Token[], callback: (token: Token | undefined) => void): Promise<void> {
 		const dialog = new Dialog(
 			{
 				title: game.i18n.localize("gurps.token.select"),
@@ -16,18 +15,17 @@ export const TokenUtil = {
 						callback: html => {
 							const name = (html as JQuery<HTMLElement>).find("select option:selected").text().trim()
 							const target = tokens.find(token => token.name === name)
-							token = target
+							callback(target)
 						},
 					},
 				},
 				default: "apply",
-				close: () => {
-					token = undefined
-				},
+				// close: () => {
+				// 	return
+				// },
 			},
 			{ width: 300 },
 		)
-		dialog.render(true)
-		return token
+		await dialog.render(true)
 	},
 }

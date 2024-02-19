@@ -5,30 +5,14 @@ export const CanvasUtil = {
 	 * @param point.y the y coordinate.
 	 * @returns {Token[]} the Set of tokens found.
 	 */
-	getCanvasTokensAtPosition: function (point: { x: number; y: number }): Token[] {
-		// Remember the user's current targets (so we can restore them afterwards).
-		const oldTargets = [...game.user!.targets]
-
-		// Create a rectangle the size of a grid element centered on the point.
-		const gridSize = canvas.scene?.grid.size
-		if (!gridSize) return []
-		const rectangle = {
-			x: point.x - gridSize / 2,
-			y: point.y - gridSize / 2,
-			height: gridSize,
-			width: gridSize,
-		}
-
-		// Target all Tokens that fall inside the rectangle.
-		canvas!.tokens!.targetObjects(rectangle, { releaseOthers: true })
-		const newTargets = [...game.user!.targets]
-
-		// Now that we have the list of targets, reset the target selection back to whatever the user previously had.
-		// First, remove the newTargets...
-		newTargets.forEach(t => t.setTarget(false, { releaseOthers: false, groupSelection: true }))
-		// ...Finally, re-select the oldTargets.
-		oldTargets.forEach(t => t.setTarget(true, { releaseOthers: false, groupSelection: true }))
-
-		return newTargets
+	getCanvasTokensAtPosition: function (canvas: Canvas, point: { x: number; y: number }): Token[] {
+		const dropTargets = [...canvas.tokens!.placeables]
+			.sort((a, b) => b.document.sort - a.document.sort)
+			.filter(token => {
+				const maximumX = token.x + (token.hitArea?.right ?? 0)
+				const maximumY = token.y + (token.hitArea?.bottom ?? 0)
+				return point.x >= token.x && point.y >= token.y && point.x <= maximumX && point.y <= maximumY
+			})
+		return dropTargets
 	},
 }

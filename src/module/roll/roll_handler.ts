@@ -605,9 +605,10 @@ class DamageRollTypeHandler extends RollTypeHandler {
 		}
 
 		if (chatData.ranged) {
+			const weapon = item as RangedWeaponGURPS
 			chatData.range = {
-				max: item.range,
-				half: item
+				max: weapon.range.max,
+				half: weapon.range.halfDamage,
 			}
 		}
 

@@ -40,6 +40,7 @@
 		"extractPacks": "tsx ./build/extract-packs.ts",
 		"pretest": "npm run lint",
 		"test": "jest",
+		"tdd": "jest --coverage",
 		"migrate": "tsx ./build/run-migration.ts",
 		"lint": "npm run lint:ts && npm run lint:json && npm run prettier:scss",
 		"lint:ts": "eslint ./build ./src ./tests ./types --ext .ts",

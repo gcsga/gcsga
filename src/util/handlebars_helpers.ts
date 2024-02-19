@@ -8,6 +8,7 @@ import { SafeString } from "handlebars"
 import { ItemType } from "@data"
 import { CharacterGURPS } from "@actor"
 import { ItemGURPS } from "@item"
+import { pageRef } from "./page_ref.ts"
 
 class HandlebarsHelpersGURPS {
 	static rgbToHex(s: string): string {
@@ -544,7 +545,7 @@ export function registerHandlebarsHelpers(): void {
 		sum: HandlebarsHelpersGURPS.sum,
 		textareaFormat: HandlebarsHelpersGURPS.textareaFormat,
 		customArmorDivisorSelect: HandlebarsHelpersGURPS.customArmorDivisorSelect,
-		// pageRef: pageRef,
+		pageRef: pageRef,
 		// unsatisfied: HandlebarsHelpersGURPS.unsatisfied,
 	})
 }
