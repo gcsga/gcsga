@@ -32,6 +32,8 @@ export type DamagePayload = {
 	damageRoll: DamageRoll[]
 	modifiers: (RollModifier & { class?: string })[]
 	modifierTotal: number
+	ranged: boolean
+	range: { max: number; half: number }
 }
 
 export enum DropDataType {
@@ -83,11 +85,11 @@ export class DamageChat {
 	 * by the Damage Calculator. When the dragSection is dragged, attach the payload to the event's dataTransfer
 	 * object.
 	 */
-	static async renderChatMessage(app: ChatMessageGURPS, html: JQuery<HTMLElement>, _msg: object): Promise<boolean> {
+	static async renderChatMessage(app: ChatMessage, html: JQuery<HTMLElement>, _msg: object): Promise<boolean> {
 		// TODO Find a way to identify elements not tied to their appearance (data attributes, for example).
 		if (!html.find(".dice-roll.damage").length) return true
 
-		const transfer = JSON.parse(DamageChat.getTransferFlag(app))
+		const transfer = JSON.parse(DamageChat.getTransferFlag(app as ChatMessageGURPS))
 		const payload = transfer.payload as DamagePayload
 
 		payload.damageType = payload.damageType ?? "injury"
