@@ -157,7 +157,18 @@ export class DamageHitLocation extends HitLocation {
 		actor: BodyOwner,
 		owningTable?: BodyGURPS | undefined,
 	): DamageHitLocation {
-		const location = super.fromObject(data, actor, owningTable) as DamageHitLocation
+		const location = new DamageHitLocation(actor)
+
+		location.id = data.id
+		location.choiceName = data.choice_name
+		location.tableName = data.table_name
+		location.slots = data.slots ?? 0
+		location.hitPenalty = data.hit_penalty ?? 0
+		location.drBonus = data.dr_bonus ?? 0
+		location.description = data.description
+		if (data.sub_table) location.subTable = BodyGURPS.fromObject(data.sub_table, actor, location)
+
+		if (owningTable) location.owningTable = owningTable
 		location._map = new Map()
 		return location
 	}
