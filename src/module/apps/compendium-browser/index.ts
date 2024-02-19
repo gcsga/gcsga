@@ -1,5 +1,4 @@
-import { EquipmentContainerGURPS, EquipmentGURPS } from "@item"
-import { ActorType, ItemType, SETTINGS, SYSTEM_NAME } from "@data"
+import { ItemType, SETTINGS, SYSTEM_NAME } from "@data"
 import { UserGURPS } from "@module/user/document.ts"
 import {
 	ErrorGURPS,
@@ -28,7 +27,6 @@ import {
 	TraitModifierFilters,
 } from "./tabs/data.ts"
 import * as browserTabs from "./tabs/index.ts"
-import { getSelectedActors } from "@util/token-actor-utils.ts"
 import { PackLoader } from "./loader.ts"
 
 class CompendiumBrowser extends Application {
@@ -467,7 +465,7 @@ class CompendiumBrowser extends Application {
 			}
 		}
 
-		const list = html.querySelector<HTMLUListElement>(".tab.active ul.item-list")
+		const list = html.querySelector<HTMLDivElement>(".tab.active div.item-list")
 		if (!list) return
 		list.addEventListener("scroll", () => {
 			if (list.scrollTop + list.clientHeight >= list.scrollHeight - 5) {
@@ -506,7 +504,7 @@ class CompendiumBrowser extends Application {
 		if (!currentTab) return
 
 		if (!list) {
-			const listElement = html.querySelector<HTMLUListElement>(".tab.active ul.item-list")
+			const listElement = html.querySelector<HTMLDivElement>(".tab.active div.item-list")
 			if (!listElement) return
 			list = listElement
 		}
@@ -530,144 +528,153 @@ class CompendiumBrowser extends Application {
 	}
 
 	/** Activate click listeners on loaded actors and items */
-	#activateResultListeners(liElements: HTMLLIElement[] = []): void {
-		for (const liElement of liElements) {
-			const { entryUuid } = liElement.dataset
+	#activateResultListeners(divElements: HTMLDivElement[] = []): void {
+		for (const divElement of divElements) {
+			const { entryUuid } = divElement.dataset
 			if (!entryUuid) continue
 
-			const nameAnchor = liElement.querySelector<HTMLAnchorElement>("div.name > a")
-			if (nameAnchor) {
-				nameAnchor.addEventListener("click", async () => {
-					const document = await fromUuid(entryUuid)
-					if (document?.sheet) {
-						document.sheet.render(true)
-					}
-				})
-			}
+			divElement.addEventListener("click", async () => {
+				const doc = await fromUuid(entryUuid)
+				if (doc?.sheet) {
+					doc.sheet.render(true)
+				}
+			})
+			// const nameAnchor = divElement.querySelector<HTMLAnchorElement>("div.desc.item")
+			// if (nameAnchor) {
+			// 	console.log("NAMEANCHOR", nameAnchor)
+			// 	nameAnchor.addEventListener("click", async () => {
+			// 		const document = await fromUuid(entryUuid)
+			// 		if (document?.sheet) {
+			// 			document.sheet.render(true)
+			// 		}
+			// 	})
+			// }
 
-			if (this.activeTab === TabName.Equipment) {
-				// Add an item to selected tokens' actors' inventories
-				liElement
-					.querySelector<HTMLAnchorElement>("a[data-action=take-item]")
-					?.addEventListener("click", () => {
-						this.#takeEquipment(entryUuid)
-					})
-
-				// Attempt to buy an item with the selected tokens' actors'
-				liElement.querySelector<HTMLAnchorElement>("a[data-action=buy-item]")?.addEventListener("click", () => {
-					this.#buyEquipment(entryUuid)
-				})
-			}
+			// if (this.activeTab === TabName.Equipment) {
+			// 	// Add an item to selected tokens' actors' inventories
+			// 	divElement
+			// 		.querySelector<HTMLAnchorElement>("a[data-action=take-item]")
+			// 		?.addEventListener("click", () => {
+			// 			this.#takeEquipment(entryUuid)
+			// 		})
+			//
+			// 	// Attempt to buy an item with the selected tokens' actors'
+			// 	divElement
+			// 		.querySelector<HTMLAnchorElement>("a[data-action=buy-item]")
+			// 		?.addEventListener("click", () => {
+			// 			this.#buyEquipment(entryUuid)
+			// 		})
+			// }
 		}
 	}
 
-	async #takeEquipment(uuid: string): Promise<void> {
-		const actors = getSelectedActors({ include: [ActorType.Character, ActorType.Loot], assignedFallback: true })
-		const item = await this.#getEquipment(uuid)
-
-		if (actors.length === 0) {
-			ui.notifications.error(LocalizeGURPS.translations.gurps.error.no_token_selected)
-			return
-		}
-
-		for (const actor of actors) {
-			await actor.createEmbeddedDocuments("Item", [item], {})
-		}
-
-		if (actors.length === 1 && game.user.character && actors[0] === game.user.character) {
-			ui.notifications.info(
-				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.compendium_browser.added_item_to_character, {
-					item: item.name,
-					character: game.user.character.name,
-				}),
-			)
-		} else {
-			ui.notifications.info(
-				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.compendium_browser.added_item, {
-					item: item.name,
-				}),
-			)
-		}
-	}
-
-	async #buyEquipment(uuid: string): Promise<void> {
-		const actors = getSelectedActors({ include: [ActorType.Character, ActorType.Loot], assignedFallback: true })
-		const item = await this.#getEquipment(uuid)
-
-		if (actors.length === 0) {
-			if (game.user.character?.isOfType(ActorType.Character)) {
-				actors.push(game.user.character)
-			} else {
-				ui.notifications.error(LocalizeGURPS.translations.gurps.error.no_token_selected)
-				return
-			}
-		}
-
-		// eslint-disable-next-line prefer-const
-		let purchaseSuccesses = 0
-
-		// for (const actor of actors) {
-		// 	if (await actor.inventory.removeCoins(item.price.value)) {
-		// 		purchaseSuccesses = purchaseSuccesses + 1
-		// 		await actor.inventory.add(item, { stack: true })
-		// 	}
-		// }
-
-		if (actors.length === 1) {
-			if (purchaseSuccesses === 1) {
-				ui.notifications.info(
-					LocalizeGURPS.format(
-						LocalizeGURPS.translations.gurps.compendium_browser.bought_item_with_character,
-						{
-							item: item.name,
-							characters: actors[0].name,
-						},
-					),
-				)
-			} else {
-				ui.notifications.info(
-					LocalizeGURPS.format(
-						LocalizeGURPS.translations.gurps.compendium_browser.failed_to_buy_item_with_character,
-						{
-							item: item.name,
-							characters: actors[0].name,
-						},
-					),
-				)
-			}
-		} else {
-			if (purchaseSuccesses === actors.length) {
-				ui.notifications.info(
-					LocalizeGURPS.format(
-						LocalizeGURPS.translations.gurps.compendium_browser.bought_item_with_all_characters,
-						{
-							item: item.name,
-							characters: actors[0].name,
-						},
-					),
-				)
-			} else {
-				ui.notifications.info(
-					LocalizeGURPS.format(
-						LocalizeGURPS.translations.gurps.compendium_browser.failed_to_buy_item_with_some_characters,
-						{
-							item: item.name,
-							characters: actors[0].name,
-						},
-					),
-				)
-			}
-		}
-	}
-
-	async #getEquipment(uuid: string): Promise<EquipmentGURPS | EquipmentContainerGURPS> {
-		const item = await fromUuid(uuid)
-		if (!(item instanceof EquipmentGURPS || item instanceof EquipmentContainerGURPS)) {
-			throw ErrorGURPS("Unexpected failure retrieving compendium item")
-		}
-
-		return item
-	}
+	// async #takeEquipment(uuid: string): Promise<void> {
+	// 	const actors = getSelectedActors({ include: [ActorType.Character, ActorType.Loot], assignedFallback: true })
+	// 	const item = await this.#getEquipment(uuid)
+	//
+	// 	if (actors.length === 0) {
+	// 		ui.notifications.error(LocalizeGURPS.translations.gurps.error.no_token_selected)
+	// 		return
+	// 	}
+	//
+	// 	for (const actor of actors) {
+	// 		await actor.createEmbeddedDocuments("Item", [item], {})
+	// 	}
+	//
+	// 	if (actors.length === 1 && game.user.character && actors[0] === game.user.character) {
+	// 		ui.notifications.info(
+	// 			LocalizeGURPS.format(LocalizeGURPS.translations.gurps.compendium_browser.added_item_to_character, {
+	// 				item: item.name,
+	// 				character: game.user.character.name,
+	// 			}),
+	// 		)
+	// 	} else {
+	// 		ui.notifications.info(
+	// 			LocalizeGURPS.format(LocalizeGURPS.translations.gurps.compendium_browser.added_item, {
+	// 				item: item.name,
+	// 			}),
+	// 		)
+	// 	}
+	// }
+	//
+	// async #buyEquipment(uuid: string): Promise<void> {
+	// 	const actors = getSelectedActors({ include: [ActorType.Character, ActorType.Loot], assignedFallback: true })
+	// 	const item = await this.#getEquipment(uuid)
+	//
+	// 	if (actors.length === 0) {
+	// 		if (game.user.character?.isOfType(ActorType.Character)) {
+	// 			actors.push(game.user.character)
+	// 		} else {
+	// 			ui.notifications.error(LocalizeGURPS.translations.gurps.error.no_token_selected)
+	// 			return
+	// 		}
+	// 	}
+	//
+	// 	// eslint-disable-next-line prefer-const
+	// 	let purchaseSuccesses = 0
+	//
+	// 	// for (const actor of actors) {
+	// 	// 	if (await actor.inventory.removeCoins(item.price.value)) {
+	// 	// 		purchaseSuccesses = purchaseSuccesses + 1
+	// 	// 		await actor.inventory.add(item, { stack: true })
+	// 	// 	}
+	// 	// }
+	//
+	// 	if (actors.length === 1) {
+	// 		if (purchaseSuccesses === 1) {
+	// 			ui.notifications.info(
+	// 				LocalizeGURPS.format(
+	// 					LocalizeGURPS.translations.gurps.compendium_browser.bought_item_with_character,
+	// 					{
+	// 						item: item.name,
+	// 						characters: actors[0].name,
+	// 					},
+	// 				),
+	// 			)
+	// 		} else {
+	// 			ui.notifications.info(
+	// 				LocalizeGURPS.format(
+	// 					LocalizeGURPS.translations.gurps.compendium_browser.failed_to_buy_item_with_character,
+	// 					{
+	// 						item: item.name,
+	// 						characters: actors[0].name,
+	// 					},
+	// 				),
+	// 			)
+	// 		}
+	// 	} else {
+	// 		if (purchaseSuccesses === actors.length) {
+	// 			ui.notifications.info(
+	// 				LocalizeGURPS.format(
+	// 					LocalizeGURPS.translations.gurps.compendium_browser.bought_item_with_all_characters,
+	// 					{
+	// 						item: item.name,
+	// 						characters: actors[0].name,
+	// 					},
+	// 				),
+	// 			)
+	// 		} else {
+	// 			ui.notifications.info(
+	// 				LocalizeGURPS.format(
+	// 					LocalizeGURPS.translations.gurps.compendium_browser.failed_to_buy_item_with_some_characters,
+	// 					{
+	// 						item: item.name,
+	// 						characters: actors[0].name,
+	// 					},
+	// 				),
+	// 			)
+	// 		}
+	// 	}
+	// }
+	//
+	// async #getEquipment(uuid: string): Promise<EquipmentGURPS | EquipmentContainerGURPS> {
+	// 	const item = await fromUuid(uuid)
+	// 	if (!(item instanceof EquipmentGURPS || item instanceof EquipmentContainerGURPS)) {
+	// 		throw ErrorGURPS("Unexpected failure retrieving compendium item")
+	// 	}
+	//
+	// 	return item
+	// }
 
 	protected override _canDragStart(): boolean {
 		return true
@@ -742,7 +749,7 @@ class CompendiumBrowser extends Application {
 		const tab = this.activeTab
 		if (tab === "settings") return
 
-		const list = htmlQuery(this.element[0], ".tab.active ul.item-list")
+		const list = htmlQuery(this.element[0], ".tab.active div.item-list")
 		if (!list) return
 		list.scrollTop = 0
 		this.tabs[tab].scrollLimit = 100

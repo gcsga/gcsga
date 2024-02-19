@@ -73,7 +73,7 @@ export class ItemSheetGCS<IType extends ItemGCS = ItemGCS> extends ContainerShee
 
 	protected _addItemContextMenu(element: HTMLElement): void {
 		const id = $(element).data("item-id")
-		const item = this.object.deepItems.get(id) as ItemGURPS
+		const item = this.item.deepItems.get(id) as ItemGURPS
 		if (!item) return
 		// const ctx = new ContextMenu(html, ".menu", [])
 		const menuItems = [
@@ -203,7 +203,7 @@ export class ItemSheetGCS<IType extends ItemGCS = ItemGCS> extends ContainerShee
 		if ([ItemType.MeleeWeapon, ItemType.RangedWeapon].includes(type))
 			// @ts-expect-error what
 			itemData.system.usage = LocalizeGURPS.translations.TYPES.Item[type]
-		await this.object.createEmbeddedDocuments("Item", [itemData], {
+		await this.item.createEmbeddedDocuments("Item", [itemData], {
 			temporary: false,
 			renderSheet: true,
 			substitutions: false,
@@ -234,8 +234,8 @@ export class ItemSheetGCS<IType extends ItemGCS = ItemGCS> extends ContainerShee
 	}
 
 	override render(force?: boolean, options?: RenderOptions): this | Promise<this> {
-		if (this.object.container instanceof Item && this.object.container.sheet?.rendered)
-			this.object.container.sheet.render(true)
+		if (this.item.container instanceof Item && this.item.container.sheet?.rendered)
+			this.item.container.sheet.render(true)
 		return super.render(force, options)
 	}
 }

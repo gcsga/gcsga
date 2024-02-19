@@ -1345,7 +1345,8 @@
 			"cannot_add_type": "{type} items cannot be added to this actor.",
 			"mook": {
 				"name": "Name cannot be blank."
-			}
+			},
+			"pack_not_loaded": "Compendium \"{pack}\" could not be loaded."
 		},
 		"token": {
 			"select": "Select Token"

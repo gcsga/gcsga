@@ -959,7 +959,7 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 
 			// Create custom drag image
 			const dragImage = document.createElement("div")
-			dragImage.innerHTML = await renderTemplate(`systems / ${SYSTEM_NAME} /templates/actor / drag - image.hbs`, {
+			dragImage.innerHTML = await renderTemplate(`systems/${SYSTEM_NAME}/templates/actor/drag-image.hbs`, {
 				name: `${item?.name} `,
 				type: `${item?.type.replace("_container", "").replaceAll("_", "-")} `,
 			})

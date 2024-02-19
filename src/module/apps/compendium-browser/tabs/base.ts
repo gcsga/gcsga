@@ -143,21 +143,22 @@ export abstract class CompendiumBrowserTab {
 		return true
 	}
 
-	async renderResults(start: number): Promise<HTMLLIElement[]> {
+	async renderResults(start: number): Promise<HTMLDivElement[]> {
 		if (!this.templatePath) {
 			throw ErrorGURPS(`Tab "${this.tabName}" has no valid template path.`)
 		}
 		const indexData = this.getIndexData(start)
-		const liElements: HTMLLIElement[] = []
+		const divElements: HTMLDivElement[] = []
 		for (const entry of indexData) {
 			const htmlString = await renderTemplate(this.templatePath, {
 				entry,
 				filterData: this.filterData,
 			})
 			const html = this.#domParser.parseFromString(htmlString, "text/html")
-			liElements.push(html.body.firstElementChild as HTMLLIElement)
+			// divElements.push(...html.body.firstElementChild as HTMLDivElement)
+			divElements.push(...(Array.from(html.body.children) as HTMLDivElement[]))
 		}
-		return liElements
+		return divElements
 	}
 
 	/** Sort result array by name, level or price */
@@ -213,7 +214,7 @@ export abstract class CompendiumBrowserTab {
 	}
 
 	/** Ensure all index fields are present in the index data */
-	protected hasAllIndexFields(data: CompendiumIndexData, indexFields: string[]): boolean {
+	protected hasAllIndexFields(data: foundry.abstract.Document | CompendiumIndexData, indexFields: string[]): boolean {
 		for (const field of indexFields) {
 			if (fu.getProperty(data, field) === undefined && !/\.(?:source|publication)/.test(field)) {
 				return false
