@@ -21,6 +21,12 @@ export class _Attacker implements DamageAttacker {
 	name = "Arnold"
 }
 
+const _dummyHitLocationTable = {
+	name: "humanoid",
+	roll: "3d",
+	locations: <HitLocationObj[]>[],
+}
+
 export class _Target implements DamageTarget {
 	tokenId: string = ""
 
@@ -38,22 +44,14 @@ export class _Target implements DamageTarget {
 
 	_traits: TargetTrait[] = []
 
+	hitLocationTable = BodyGURPS.fromObject(_dummyHitLocationTable, this)
+
 	getTrait(name: string): TargetTrait | undefined {
 		return this._traits.find(it => it.name === name)
 	}
 
 	hasTrait(name: string): boolean {
 		return !!this.getTrait(name)
-	}
-
-	_dummyHitLocationTable = {
-		name: "humanoid",
-		roll: "3d",
-		locations: <HitLocationObj[]>[],
-	}
-
-	get hitLocationTable(): BodyGURPS {
-		return BodyGURPS.fromObject(this._dummyHitLocationTable, this)
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
