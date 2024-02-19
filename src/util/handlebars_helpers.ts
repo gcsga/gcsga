@@ -8,6 +8,7 @@ import { SafeString } from "handlebars"
 import { ItemType } from "@data"
 import { CharacterGURPS } from "@actor"
 import { ItemGURPS } from "@item"
+import { pageRef } from "./page_ref.ts"
 
 class HandlebarsHelpersGURPS {
 	static rgbToHex(s: string): string {
@@ -408,14 +409,6 @@ class HandlebarsHelpersGURPS {
 		return ""
 	}
 
-	// static unsatisfied(reason: string): string {
-	// 	return (
-	// 		`<div class='unsatisfied' data-tooltip='${reason}' data-tooltip-direction='DOWN'>` +
-	// 		`<i class='gcs-triangle-exclamation'></i>${LocalizeGURPS.translations.gurps.prereq.unsatisfied}` +
-	// 		"</div>"
-	// 	)
-	// }
-
 	static define<K extends string>(name: K, value: object, options: { data: { root: Record<K, object> } }): void {
 		options.data.root[name] = value
 	}
@@ -544,7 +537,7 @@ export function registerHandlebarsHelpers(): void {
 		sum: HandlebarsHelpersGURPS.sum,
 		textareaFormat: HandlebarsHelpersGURPS.textareaFormat,
 		customArmorDivisorSelect: HandlebarsHelpersGURPS.customArmorDivisorSelect,
-		// pageRef: pageRef,
+		pageRef: pageRef,
 		// unsatisfied: HandlebarsHelpersGURPS.unsatisfied,
 	})
 }

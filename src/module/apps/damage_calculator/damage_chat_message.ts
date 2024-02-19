@@ -74,12 +74,12 @@ export type DropData =
 			index: number
 			parent_index: number
 	  }
-	| { type: DropDataType.Overrides; x: number; y: number; order: number; index: number; parent_index: number }
+	| { type: DropDataType.Overrides; x: number; y: number; order: number; index: number; eparent_index: number }
 
 export class DamageChat {
 	/*
 	 * ChatMessage will contain a user flag named "flags.gurps.transfer". Convert that to an object and retrieve
-	 * the "payload" property. This is the data that will be used to construct a DamageRoll and DamageTarget needed
+	 * the "payload" property. This is the data that will be used to construct a DamageRoll and DamageTargem needed
 	 * by the Damage Calculator. When the dragSection is dragged, attach the payload to the event's dataTransfer
 	 * object.
 	 */
