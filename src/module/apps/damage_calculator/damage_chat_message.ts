@@ -1,10 +1,7 @@
 import { DiceGURPS } from "@module/dice/index.ts"
 import { RollModifier, SYSTEM_NAME } from "@data"
 import { DnD } from "@util/drag_drop.ts"
-import { CanvasUtil } from "@util/canvas.ts"
-import { TokenUtil } from "@util/token_utils.ts"
 import { ChatMessageGURPS } from "@module/chat-message/index.ts"
-import { ActorGURPS } from "@actor"
 import { DAMAGE_TYPE } from "./damage_type.ts"
 import { ChatMessageSource } from "types/foundry/common/documents/module.js"
 
@@ -32,6 +29,8 @@ export type DamagePayload = {
 	damageRoll: DamageRoll[]
 	modifiers: (RollModifier & { class?: string })[]
 	modifierTotal: number
+	ranged: boolean
+	range: { max: number; half: number }
 }
 
 export enum DropDataType {
@@ -83,11 +82,11 @@ export class DamageChat {
 	 * by the Damage Calculator. When the dragSection is dragged, attach the payload to the event's dataTransfer
 	 * object.
 	 */
-	static async renderChatMessage(app: ChatMessageGURPS, html: JQuery<HTMLElement>, _msg: object): Promise<boolean> {
+	static async renderChatMessage(app: ChatMessage, html: JQuery<HTMLElement>, _msg: object): Promise<boolean> {
 		// TODO Find a way to identify elements not tied to their appearance (data attributes, for example).
 		if (!html.find(".dice-roll.damage").length) return true
 
-		const transfer = JSON.parse(DamageChat.getTransferFlag(app))
+		const transfer = JSON.parse(DamageChat.getTransferFlag(app as ChatMessageGURPS))
 		const payload = transfer.payload as DamagePayload
 
 		payload.damageType = payload.damageType ?? "injury"
@@ -141,31 +140,5 @@ export class DamageChat {
 				roll.toggleClass("expanded")
 			})
 		}
-	}
-
-	static async handleDropOnCanvas(_canvas: Canvas, dropData: DropData): Promise<void> {
-		if (dropData.type !== DropDataType.Damage) return
-
-		if (dropData.payload.index === -1) {
-			ui.notifications?.warn("Multiple damage rolls are not yet supported.")
-			return
-		}
-
-		// Check to see what is under the cursor at this drop point
-		const tokens = CanvasUtil.getCanvasTokensAtPosition({ x: dropData.x, y: dropData.y })
-
-		if (tokens.length === 0) return
-
-		// Define the handler function for damage.
-		const handleDamageDrop = (actor: ActorGURPS) => actor.handleDamageDrop(dropData.payload)
-
-		// If only one token in the targets array, use that one.
-		if (tokens.length === 1) {
-			handleDamageDrop(tokens[0].actor as ActorGURPS)
-			return
-		}
-
-		const token = await TokenUtil.askWhichToken(tokens)
-		if (token?.actor) handleDamageDrop(token.actor as ActorGURPS)
 	}
 }

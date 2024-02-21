@@ -21,6 +21,12 @@ export class _Attacker implements DamageAttacker {
 	name = "Arnold"
 }
 
+const _dummyHitLocationTable = {
+	name: "humanoid",
+	roll: "3d",
+	locations: <HitLocationObj[]>[],
+}
+
 export class _Target implements DamageTarget {
 	tokenId: string = ""
 
@@ -38,22 +44,14 @@ export class _Target implements DamageTarget {
 
 	_traits: TargetTrait[] = []
 
+	hitLocationTable = BodyGURPS.fromObject(_dummyHitLocationTable, this)
+
 	getTrait(name: string): TargetTrait | undefined {
 		return this._traits.find(it => it.name === name)
 	}
 
 	hasTrait(name: string): boolean {
 		return !!this.getTrait(name)
-	}
-
-	_dummyHitLocationTable = {
-		name: "humanoid",
-		roll: "3d",
-		locations: <HitLocationObj[]>[],
-	}
-
-	get hitLocationTable(): BodyGURPS {
-		return BodyGURPS.fromObject(this._dummyHitLocationTable, this)
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -159,7 +157,10 @@ export class DamageHitLocation extends HitLocation {
 		actor: BodyOwner,
 		owningTable?: BodyGURPS | undefined,
 	): DamageHitLocation {
-		const location = super.fromObject(data, actor, owningTable) as DamageHitLocation
+		const location = new DamageHitLocation(actor)
+
+		const other = super.fromObject(data, actor, owningTable)
+		fu.mergeObject(location, other)
 		location._map = new Map()
 		return location
 	}

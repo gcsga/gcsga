@@ -348,6 +348,11 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 	}
 
 	handleDamageDrop(payload: DamagePayload): void {
+		if (payload.index === -1) {
+			ui.notifications?.warn("Multiple damage rolls are not yet supported.")
+			return
+		}
+
 		let attacker = undefined
 		if (payload.attacker) {
 			const actor = game.actors?.get(payload.attacker) as ActorGURPS | undefined

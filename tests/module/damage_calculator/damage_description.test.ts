@@ -922,11 +922,11 @@ describe("Damage calculator", () => {
 					[DamageTypes.burn, 1],
 					[DamageTypes.cor, 1],
 					[DamageTypes.cr, 1],
-					[DamageTypes.cut, 1 / 2],
+					[DamageTypes.cut, 1.5],
 					[DamageTypes.tox, 1],
 				]
-				for (const type of types) {
-					_roll.damageType = type[0]
+				for (const [type, multiplier] of types) {
+					_roll.damageType = type
 					const calc = _create(_roll, _target)
 					expect(calc.hits[0].results.steps).toMatchObject([
 						{
@@ -938,13 +938,13 @@ describe("Damage calculator", () => {
 						{ substep: "gurps.dmgcalc.substep.penetrating", text: "95", notes: "= 100 – 5" },
 						{
 							substep: "gurps.dmgcalc.substep.wounding_modifier",
-							text: `×${type[1]}`,
-							notes: `gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.${type[0].id}","location":"Torso"}`,
+							text: `×${multiplier === 1.5 ? "1&frac12;" : multiplier}`,
+							notes: `gurps.dmgcalc.description.damage_location:{"type":"gurps.dmgcalc.type.${type.id}","location":"Torso"}`,
 						},
 						{
 							substep: "gurps.dmgcalc.substep.injury",
-							text: `${Math.floor(95 * type[1])}`,
-							notes: `= 95 × ${type[1]}`,
+							text: `${Math.floor(95 * multiplier)}`,
+							notes: `= 95 × ${multiplier === 1.5 ? "1&frac12;" : multiplier}`,
 						},
 						{
 							substep: "gurps.dmgcalc.substep.adjusted_injury",
