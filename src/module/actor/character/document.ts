@@ -1062,7 +1062,7 @@ class CharacterGURPS<
 				if (game.userId === userId) sheet?.render(true)
 			}
 		}
-		if (this.system.profile.tech_level !== "" && collection === "items") {
+		if (!!this.system.profile?.tech_level && this.system.profile.tech_level !== "" && collection === "items") {
 			for (const item of documents.filter(
 				e => e instanceof SkillGURPS || e instanceof SpellGURPS || e instanceof RitualMagicSpellGURPS,
 			)) {

@@ -533,7 +533,7 @@ class CompendiumBrowser extends Application {
 			const { entryUuid } = divElement.dataset
 			if (!entryUuid) continue
 
-			divElement.addEventListener("click", async () => {
+			divElement.addEventListener("dblclick", async () => {
 				const doc = await fromUuid(entryUuid)
 				if (doc?.sheet) {
 					doc.sheet.render(true)

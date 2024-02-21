@@ -494,25 +494,32 @@ class HandlebarsHelpersGURPS {
 		}
 		return new Handlebars.SafeString(html)
 	}
+
+	static disabled(criteria: string | number | boolean | object): string {
+		return criteria ? "disabled" : ""
+	}
 }
 
 export function registerHandlebarsHelpers(): void {
 	Handlebars.registerHelper({
 		// Multiselect: HandlebarsHelpersGURPS.multiselect
+		// flatlist: HandlebarsHelpersGURPS.flatlist,
 		// spellValues: HandlebarsHelpersGURPS.spellValues,
-		rgbToHex: HandlebarsHelpersGURPS.rgbToHex,
+		// staticSpellValues: HandlebarsHelpersGURPS.staticSpellValues,
+		// unsatisfied: HandlebarsHelpersGURPS.unsatisfied,
 		abs: HandlebarsHelpersGURPS.abs,
 		adjustedStudyHours: HandlebarsHelpersGURPS.adjustedStudyHours,
 		arr: HandlebarsHelpersGURPS.arr,
 		blockLayout: HandlebarsHelpersGURPS.blockLayout,
 		camelcase: HandlebarsHelpersGURPS.camelcase,
 		concat: HandlebarsHelpersGURPS.cc,
+		customArmorDivisorSelect: HandlebarsHelpersGURPS.customArmorDivisorSelect,
 		date: HandlebarsHelpersGURPS.date,
 		define: HandlebarsHelpersGURPS.define,
 		diceString: HandlebarsHelpersGURPS.diceString,
 		diff: (v1, v2) => v1 - v2,
+		disabled: HandlebarsHelpersGURPS.disabled,
 		effective: HandlebarsHelpersGURPS.effective,
-		// flatlist: HandlebarsHelpersGURPS.flatlist,
 		format: HandlebarsHelpersGURPS.format,
 		ifText: HandlebarsHelpersGURPS.conditionalText,
 		in: HandlebarsHelpersGURPS.in,
@@ -526,19 +533,17 @@ export function registerHandlebarsHelpers(): void {
 		modifierString: HandlebarsHelpersGURPS.modifierString,
 		notEmpty: HandlebarsHelpersGURPS.notEmpty,
 		overspent: HandlebarsHelpersGURPS.overspent,
+		pageRef: pageRef,
 		print: HandlebarsHelpersGURPS.print,
 		ref: HandlebarsHelpersGURPS.ref,
+		rgbToHex: HandlebarsHelpersGURPS.rgbToHex,
 		ror: HandlebarsHelpersGURPS.ror,
 		selectOptsGURPS: HandlebarsHelpersGURPS.selectOptions,
 		signed: HandlebarsHelpersGURPS.signed,
 		sort: HandlebarsHelpersGURPS.sort,
-		// staticSpellValues: HandlebarsHelpersGURPS.staticSpellValues,
 		studyInfo: HandlebarsHelpersGURPS.studyInfo,
 		sum: HandlebarsHelpersGURPS.sum,
 		textareaFormat: HandlebarsHelpersGURPS.textareaFormat,
-		customArmorDivisorSelect: HandlebarsHelpersGURPS.customArmorDivisorSelect,
-		pageRef: pageRef,
-		// unsatisfied: HandlebarsHelpersGURPS.unsatisfied,
 	})
 }
 

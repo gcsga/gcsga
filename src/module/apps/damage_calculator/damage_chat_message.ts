@@ -73,7 +73,7 @@ export type DropData =
 			index: number
 			parent_index: number
 	  }
-	| { type: DropDataType.Overrides; x: number; y: number; order: number; index: number; eparent_index: number }
+	| { type: DropDataType.Overrides; x: number; y: number; order: number; index: number; parent_index: number }
 
 export class DamageChat {
 	/*

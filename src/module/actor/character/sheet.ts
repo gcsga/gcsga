@@ -26,7 +26,20 @@ import { Attribute } from "@sytem/attribute/index.ts"
 import { MoveType } from "@sytem/move_type/object.ts"
 import { ResourceTrackerObj } from "@sytem/resource_tracker/data.ts"
 import { ResourceTracker } from "@sytem/resource_tracker/object.ts"
-import { Length, LocalizeGURPS, PDF, WeaponResolver, Weight, WeightUnits, dom, evaluateToNumber, newUUID } from "@util"
+import {
+	Length,
+	LocalizeGURPS,
+	PDF,
+	WeaponResolver,
+	Weight,
+	WeightUnits,
+	evaluateToNumber,
+	htmlClosest,
+	htmlParents,
+	htmlQuery,
+	htmlQueryAll,
+	newUUID,
+} from "@util"
 import { attribute } from "@util/enum/attribute.ts"
 import EmbeddedCollection from "types/foundry/common/abstract/embedded-collection.js"
 import { CharacterSheetConfig } from "./config_sheet.ts"
@@ -43,6 +56,8 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 	searchValue = ""
 
 	noPrepare = false
+
+	editing = false
 
 	static override get defaultOptions(): ActorSheetOptions {
 		return fu.mergeObject(super.defaultOptions, {
@@ -102,6 +117,7 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 		const sheet = $(this.element)
 		sheet.find(".item-list.dragsection").removeClass("dragsection")
 		sheet.find(".item-list.dragindirect").removeClass("dragindirect")
+		await this.render()
 		return result
 	}
 
@@ -165,7 +181,7 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 
 	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
-		// if (this.actor.editing) html.find(".rollable").addClass("noroll")
+		if (this.editing) html.find(".rollable").addClass("noroll")
 
 		html.find("input").on("change", event => this._resizeInput(event))
 		html.find(".dropdown-toggle").on("click", event => this._onCollapseToggle(event))
@@ -851,13 +867,12 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 		return RollGURPS.handleRoll(game.user, this.actor, data as RollTypeData)
 	}
 
-	private _getTargetTableFromItemType(event: JQuery.DragOverEvent | DragEvent, type: ItemType): JQuery<HTMLElement> {
-		const sheet = $(this.element)
-		let currentTable = $(event.target).closest(".item-list")
+	private getTargetTableFromItemType(event: JQuery.DragOverEvent | DragEvent, type: ItemType): HTMLElement | null {
+		let currentTable = htmlClosest(event.target, ".item-list")
 		if ([ItemType.Equipment, ItemType.EquipmentContainer].includes(type)) {
 			if ($(event.target).closest(".item-list#other-equipment").length > 0)
-				currentTable = $(event.target).closest(".item-list#other-equipment")
-			else currentTable = sheet.find(".item-list#equipment")
+				currentTable = htmlClosest(event.target, ".item-list#other-equipment")
+			else currentTable = htmlQuery(this.element![0], ".item-list#equipment")
 		} else {
 			const idLookup = (function () {
 				switch (type) {
@@ -882,7 +897,7 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 						return "invalid"
 				}
 			})()
-			currentTable = sheet.find(`.item - list#${idLookup} `)
+			currentTable = htmlQuery(this.element![0], `.item-list#${idLookup}`)
 		}
 		return currentTable
 	}
@@ -897,17 +912,18 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 		},
 	): Promise<ItemGURPS[]> {
 		// The table element where the dragged item was dropped
-		let targetTableEl = [...$(event.target!).filter(".item-list"), ...$(event.target!).parents(".item-list")][0]
-		if (!targetTableEl) targetTableEl = this._getTargetTableFromItemType(event, sourceItem.type as ItemType)[0]
+		let targetTableEl = htmlClosest(event.target, ".item-list")
+		if (!targetTableEl) targetTableEl = this.getTargetTableFromItemType(event, sourceItem.type)
 		if (!targetTableEl) return []
 
 		// The item element onto which the dragged item was dropped
-		const targetItemEl = $(event.target!).closest(".desc[data-item-id]")
+		const targetItemEl = htmlClosest(event.target, ".desc[data-item-id]")
 		// This should only happen when switching between carried and other equipment
-		if (!targetItemEl)
+		if (!targetItemEl) {
 			return this.actor.createNestedEmbeddedDocuments([sourceItem], { id: null, other: options.other })
+		}
 
-		let targetItem = this.actor.items.get(targetItemEl.data("item-id")) as ItemGURPS<TActor> | null
+		let targetItem = this.actor.items.get(targetItemEl.dataset.itemId ?? "") as ItemGURPS<TActor> | null
 		let targetItemContainer: ActorGURPS | ContainerGURPS | CompendiumCollection | null | undefined =
 			targetItem?.container
 		if (targetItemContainer instanceof CompendiumCollection) return []
@@ -1056,74 +1072,79 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 	}
 
 	protected _onDragItem(event: DragEvent): void {
-		const sheet = $(this.element)
+		const sheet = this.element[0]
 		const itemData = $("#drag-ghost").data("item") as ItemSourceGURPS
 		if (!itemData) return
-		const currentTable = this._getTargetTableFromItemType(event, itemData.type)
+		const currentTable = this.getTargetTableFromItemType(event, itemData.type)
 
-		sheet.find(".item-list").each(function () {
-			if ($(this) !== currentTable) {
-				$(this).removeClass("dragsection")
-				$(this).removeClass("dragindirect")
+		if (!currentTable) return
+
+		htmlQueryAll(sheet, ".item-list").forEach(e => {
+			if (e !== currentTable) {
+				e.classList.remove("dragsection")
+				e.classList.remove("dragindirect")
 			}
 		})
 
 		let direct = false
-		if (![event.target, ...dom.parents(event.target as HTMLElement | null, "")].includes(currentTable[0])) {
-			currentTable.addClass("dragindirect")
+		if (![event.target, ...htmlParents(event.target as HTMLElement | null, ".item-list")].includes(currentTable)) {
+			currentTable.classList.add("dragindirect")
 		} else {
 			direct = true
 		}
 
 		const top = Math.max(
-			(currentTable.position().top ?? 0) + (currentTable.children(".header.reference").outerHeight() ?? 0),
-			sheet.find(".window-content").position().top,
+			currentTable.offsetTop + (htmlQuery(currentTable, ".header.reference")?.offsetHeight ?? 0),
+			htmlQuery(sheet, ".window-content")?.offsetTop ?? 0,
 		)
-		currentTable[0].style.setProperty("--top", `${top} px`)
-		currentTable[0].style.setProperty("--left", `${currentTable.position().left + 1} px`)
+		currentTable.style.setProperty("--top", `${top} px`)
+		currentTable.style.setProperty("--left", `${currentTable?.offsetTop + 1} px`)
 		const height = (function () {
-			const tableBottom = (currentTable.position().top ?? 0) + (currentTable.height() ?? 0)
+			const tableBottom = currentTable.offsetTop + currentTable.offsetHeight
 			const contentBottom =
-				(sheet.find(".window-content").position().top ?? 0) + (sheet.find(".window-content").height() ?? 0)
+				(htmlQuery(sheet, ".window-content")?.offsetTop ?? 0) +
+				(htmlQuery(sheet, ".window-content")?.offsetHeight ?? 0)
 			return Math.min(contentBottom - top, tableBottom - top)
 		})()
 		if (height !== 0) {
-			currentTable[0].style.setProperty("--height", `${height} px`)
-			currentTable[0].style.setProperty("--width", `${currentTable.width()} px`)
+			currentTable.style.setProperty("--height", `${height} px`)
+			currentTable.style.setProperty("--width", `${currentTable.offsetWidth} px`)
 		}
 
-		let element = $(event.target!).closest(".item.desc")
-		if (!element.length) element = currentTable.children(".item.desc").last()
-		let heightAcross = (event.pageY! - (element.offset()?.top ?? 0)) / element.height()!
-		const widthAcross = (event.pageX! - (element.offset()?.left ?? 0)) / element.width()!
-		let inContainer = widthAcross > 0.3 && element.hasClass("container")
+		let element = htmlClosest(event.target, ".item.desc")
+		if (!element) element = htmlQueryAll(currentTable, ".item.desc")?.at(-1) ?? null
+		if (!element) return
+		let heightAcross = (event.pageY! - element.offsetTop) / element.offsetHeight
+		const widthAcross = (event.pageX! - element.offsetLeft) / element.offsetWidth
+		let inContainer = widthAcross > 0.3 && element.classList.contains("container")
 		if (!direct) {
-			element = currentTable.children(".item.desc").last()
+			element = htmlQueryAll(currentTable, ".item.desc").at(-1) ?? null
 			heightAcross = 1
 			inContainer = false
 		}
-		if (heightAcross > 0.5 && element.hasClass("border-bottom")) return
-		if (heightAcross < 0.5 && element.hasClass("border-top")) return
-		if (inContainer && element.hasClass("border-in")) return
+		if (heightAcross > 0.5 && element?.classList.contains("border-bottom")) return
+		if (heightAcross < 0.5 && element?.classList.contains("border-top")) return
+		if (inContainer && element?.classList.contains("border-in")) return
 
-		$(".border-bottom").removeClass("border-bottom")
-		$(".border-top").removeClass("border-top")
-		$(".border-in").removeClass("border-in")
+		htmlQueryAll(sheet, ".border-bottom").forEach(e => e.classList.remove("border-bottom"))
+		htmlQueryAll(sheet, ".border-top").forEach(e => e.classList.remove("border-top"))
+		htmlQueryAll(sheet, ".border-in").forEach(e => e.classList.remove("border-in"))
 
-		const parent = element.parent(".item-list")
+		if (!element) return
+		const parent = htmlParents(element, ".item-list")[0]
 		let selection = []
-		if (parent.attr("id") === "equipment") {
+		if (parent.id === "equipment") {
 			selection = [
-				...Array.prototype.slice.call(element.prevUntil(".reference")),
-				...Array.prototype.slice.call(element.nextUntil(".equipped")),
+				...Array.prototype.slice.call($(element).prevUntil(".reference")),
+				...Array.prototype.slice.call($(element).nextUntil(".equipped")),
 			]
-		} else if (parent.attr("id") === "other-equipment") {
+		} else if (parent.id === "other-equipment") {
 			selection = [
-				...Array.prototype.slice.call(element.prevUntil(".reference")),
-				...Array.prototype.slice.call(element.nextUntil(".quantity")),
+				...Array.prototype.slice.call($(element).prevUntil(".reference")),
+				...Array.prototype.slice.call($(element).nextUntil(".quantity")),
 			]
-		} else selection = Array.prototype.slice.call(element.nextUntil(".item.desc"))
-		selection.unshift(element)
+		} else selection = Array.prototype.slice.call($(element).nextUntil(".item.desc"))
+		selection.unshift($(element))
 		if (inContainer) {
 			for (const e of selection) $(e).addClass("border-in")
 		} else if (heightAcross > 0.5) {
@@ -1136,7 +1157,6 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 	override getData(_options?: ActorSheetOptions): CharacterSheetData<TActor> | Promise<CharacterSheetData<TActor>> {
 		this.actor.noPrepare = false
 		this.actor.prepareData()
-		// const data = super.getData(options)
 		const [primaryAttributes, secondaryAttributes, poolAttributes] = this._prepareAttributes(this.actor.attributes)
 		const resourceTrackers = Array.from(this.actor.resourceTrackers.values())
 		const moveTypes = Array.from(this.actor.moveTypes.values())
@@ -1156,26 +1176,27 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 			...(super.getData() as ActorSheetData<TActor>),
 			...this._prepareItems(),
 			actor: this.actor,
-			system: this.actor.system,
-			settings: sheetSettingsFor(this.actor),
-			primaryAttributes,
-			body: body,
-			secondaryAttributes,
-			poolAttributes,
-			resourceTrackers,
-			moveTypes,
-			encumbrance,
-			lifting,
-			moveData,
-			height,
-			weight,
-			config: CONFIG.GURPS,
-			currentYear: new Date().getFullYear(),
+			autoDamage: this.actor.flags[SYSTEM_NAME][ActorFlags.AutoDamage]?.active,
 			autoEncumbrance: this.actor.flags[SYSTEM_NAME][ActorFlags.AutoEncumbrance]?.active,
 			autoThreshold: this.actor.flags[SYSTEM_NAME][ActorFlags.AutoThreshold]?.active,
-			autoDamage: this.actor.flags[SYSTEM_NAME][ActorFlags.AutoDamage]?.active,
+			body: body,
+			config: CONFIG.GURPS,
+			currentYear: new Date().getFullYear(),
+			editing: this.editing,
+			encumbrance,
+			height,
+			lifting,
+			moveData,
+			moveTypes,
 			overencumbered,
+			poolAttributes,
+			primaryAttributes,
+			resourceTrackers,
+			secondaryAttributes,
+			settings: sheetSettingsFor(this.actor),
 			skillDefaultsOpen: this.skillDefaultsOpen,
+			system: this.actor.system,
+			weight,
 		}
 	}
 
@@ -1352,21 +1373,25 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 		}
 	}
 
-	// Events
-	// async _onEditToggle(event: Event): Promise<void> {
-	// 	htmlQuery(event.target, "i")?.classList.toggle("fa-unlock fa-lock")
-	// 	await this.actor.update({ "system.editing": !this.actor.editing })
-	// }
+	async _onEditToggle(event: Event): Promise<void> {
+		const icon = htmlQuery(event.currentTarget, "i")
+		icon?.classList.toggle("fa-unlock")
+		icon?.classList.toggle("fa-lock")
+		this.editing = !this.editing
+		await this.submit()
+		this.render()
+		console.log(this.editing)
+	}
 
 	protected override _getHeaderButtons(): ApplicationHeaderButton[] {
 		const buttons: ApplicationHeaderButton[] = this.actor.canUserModify(game.user!, "update")
 			? [
-					// {
-					// 	label: "",
-					// 	class: "edit-toggle",
-					// 	icon: `fas fa-${this.actor.editing ? "unlock" : "lock"}`,
-					// 	onclick: (event: Event) => this._onEditToggle(event),
-					// },
+					{
+						label: "",
+						class: "edit-toggle",
+						icon: `fas fa-${this.editing ? "unlock" : "lock"}`,
+						onclick: (event: Event) => this._onEditToggle(event),
+					},
 					{
 						label: "",
 						class: "gmenu",
@@ -1395,42 +1420,42 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS = CharacterGURPS> extend
 
 interface CharacterSheetData<TActor extends CharacterGURPS> extends ActorSheetData<TActor> {
 	actor: TActor
-	system: TActor["system"]
-	traits: ItemGURPS[]
-	skills: ItemGURPS[]
-	spells: ItemGURPS[]
-	carriedEquipment: ItemGURPS[]
-	otherEquipment: ItemGURPS[]
-	notes: ItemGURPS[]
-	conditions: ItemGURPS[]
-	melee: ItemGURPS[]
-	ranged: ItemGURPS[]
-	reactions: ConditionalModifier[]
-	conditionalModifiers: ConditionalModifier[]
-	blocks: Record<string, (ItemGURPS | ConditionalModifier)[]>
-	// editing: boolean
-	carriedWeight: number
-	carriedValue: number
-	otherValue: number
-	config: ConfigGURPS["GURPS"]
-	body: BodyGURPS
-	settings: SheetSettings
-	primaryAttributes: Attribute[]
-	secondaryAttributes: Attribute[]
-	poolAttributes: Attribute[]
-	resourceTrackers: ResourceTracker[]
-	height: string
-	weight: string
-	moveTypes: MoveType[]
-	encumbrance: Encumbrance[]
-	lifting: Record<string, string>
-	moveData: CharacterMove
-	currentYear: number
-	overencumbered: boolean
+	autoDamage: boolean
 	autoEncumbrance: boolean
 	autoThreshold: boolean
-	autoDamage: boolean
+	blocks: Record<string, (ItemGURPS | ConditionalModifier)[]>
+	body: BodyGURPS
+	carriedEquipment: ItemGURPS[]
+	carriedValue: number
+	carriedWeight: number
+	conditionalModifiers: ConditionalModifier[]
+	conditions: ItemGURPS[]
+	config: ConfigGURPS["GURPS"]
+	currentYear: number
+	editing: boolean
+	encumbrance: Encumbrance[]
+	height: string
+	lifting: Record<string, string>
+	melee: ItemGURPS[]
+	moveData: CharacterMove
+	moveTypes: MoveType[]
+	notes: ItemGURPS[]
+	otherEquipment: ItemGURPS[]
+	otherValue: number
+	overencumbered: boolean
+	poolAttributes: Attribute[]
+	primaryAttributes: Attribute[]
+	ranged: ItemGURPS[]
+	reactions: ConditionalModifier[]
+	resourceTrackers: ResourceTracker[]
+	secondaryAttributes: Attribute[]
+	settings: SheetSettings
 	skillDefaultsOpen: boolean
+	skills: ItemGURPS[]
+	spells: ItemGURPS[]
+	system: TActor["system"]
+	traits: ItemGURPS[]
+	weight: string
 }
 
 export { CharacterSheetGURPS }

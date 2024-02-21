@@ -124,12 +124,17 @@ function htmlSelectorFor(element: HTMLElement): string {
 	return `${nodeName}${classesString}${datasetString}`
 }
 
-function parents(el: HTMLElement | Document | null, selector: string): HTMLElement[] {
+function htmlParents(element: MaybeHTML, selectors: string): HTMLElement[] {
+	if (!(element instanceof Element)) return []
 	const parents = []
-	while (el && (el = el.parentElement) && !(el instanceof Document)) {
-		if (!selector || el?.matches(selector)) parents.push(el)
+	let p: HTMLElement | null = element.parentElement
+	if (!p) return []
+	while (p !== null) {
+		const o: HTMLElement | null = p
+		if (p.matches(selectors)) parents.push(p)
+		p = o?.parentElement
 	}
 	return parents
 }
 
-export { createHTMLElement, htmlClosest, htmlQuery, htmlQueryAll, htmlSelectorFor, parents }
+export { createHTMLElement, htmlClosest, htmlQuery, htmlQueryAll, htmlSelectorFor, htmlParents }
