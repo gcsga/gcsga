@@ -54,6 +54,10 @@ class HitLocation {
 		return data
 	}
 
+	get descriptionTooltip(): string {
+		return (this.description ?? "").replace(/\n/g, "<br>")
+	}
+
 	static fromObject(data: HitLocationObj, actor: BodyOwner, owningTable?: BodyGURPS): HitLocation {
 		const location = new HitLocation(actor)
 
