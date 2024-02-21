@@ -1,10 +1,9 @@
 import { SYSTEM_NAME } from "@data"
 import { JournalEntryPagePDF } from "./document.ts"
-import { URLSearchParams } from "url"
 
-export class JournalPagePDFEditorSheet<
+export class JournalPDFPageSheetGURPS<
 	TDocument extends JournalEntryPagePDF = JournalEntryPagePDF,
-> extends JournalPageSheet<TDocument> {
+> extends JournalPDFPageSheet<TDocument> {
 	override get template(): string {
 		return `systems/${SYSTEM_NAME}/templates/app/pdf-${this.isEditable ? "edit" : "view"}.hbs`
 	}
@@ -27,6 +26,7 @@ export class JournalEntryPagePDFViewerSheet<
 			height: 900,
 			resizable: true,
 			popOut: true,
+			submitOnClose: false,
 		})
 	}
 
