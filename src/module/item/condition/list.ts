@@ -1,9 +1,9 @@
-import { LocalizeGURPS } from "@util"
 import { feature } from "@util/enum/feature.ts"
 import { stlimit } from "@util/enum/stlimit.ts"
 import { DurationType } from "@item/effect/data.ts"
 import { ConditionSystemSource } from "./data.ts"
 import { ConditionID, ManeuverID, SYSTEM_NAME, gid } from "@data"
+import { LocalizeGURPS } from "@util/localize.ts"
 
 export function getConditionList(): Record<ConditionID, Partial<ConditionSystemSource>> {
 	const ConditionList: Record<ConditionID, Partial<ConditionSystemSource>> = {

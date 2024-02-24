@@ -24,21 +24,6 @@ interface ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> exten
 class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends Item<TParent> {
 	declare _dummyActor: CharacterResolver | null
 
-	// _source!: SourceType
-
-	// // @ts-expect-error this is in fact always defined
-	// private _dummyActor: CharacterResolver | null
-
-	// // @ts-expect-error improperly defined type but stuff breaks otherwise so idc
-	// type: SourceType["type"]
-	//
-	// system!: SourceType["system"]
-	//
-	// flags!: ItemFlagsGURPS
-	//
-	// parent!: BaseActorGURPS | null
-	//
-
 	override update(
 		data: Record<string, unknown>,
 		context?: ItemModificationContextGURPS<TParent> | undefined,

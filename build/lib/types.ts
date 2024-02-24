@@ -1,4 +1,4 @@
-import { ActorGURPS } from "@actor/base.ts"
+import { ActorGURPS } from "@actor"
 import { ItemGURPS } from "@item"
 
 type CompendiumDocumentGURPS = ActorGURPS | ItemGURPS<ActorGURPS | null>

@@ -105,7 +105,6 @@ class LevelDatabase extends ClassicLevel<string, DBEntry> {
 	}
 
 	#getDBKeys(packName: string): { dbKey: DBKey; embeddedKey: EmbeddedKey | null } {
-		// @ts-expect-error packs not yet implemented
 		const metadata = systemJSON.packs.find(p => p.path.endsWith(packName))
 		if (!metadata) {
 			throw PackError(
@@ -114,19 +113,16 @@ class LevelDatabase extends ClassicLevel<string, DBEntry> {
 		}
 
 		const dbKey = ((): DBKey => {
-			// @ts-expect-error packs not yet implemented
 			switch (metadata.type) {
 				case "JournalEntry":
 					return "journal"
 				case "RollTable":
 					return "tables"
 				default: {
-					// @ts-expect-error packs not yet implemented
 					const key = `${metadata.type.toLowerCase()}s`
 					if (tupleHasValue(DB_KEYS, key)) {
 						return key
 					}
-					// @ts-expect-error packs not yet implemented
 					throw PackError(`Unkown Document type: ${metadata.type}`)
 				}
 			}

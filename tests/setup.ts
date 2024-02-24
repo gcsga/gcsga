@@ -69,6 +69,8 @@ global.game = Object.freeze({
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ;(global as any).JournalPageSheet = class {}
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+;(global as any).JournalPDFPageSheet = class {}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 ;(global as any).CombatTracker = class {}
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ;(global as any).ItemDirectory = class {}

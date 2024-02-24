@@ -2,7 +2,6 @@ import fs from "fs"
 import path from "path"
 import url from "url"
 import { CompendiumPack } from "./lib/compendium-pack.ts"
-// import { CompendiumPack, PackError } from "./lib/compendium-pack.ts"
 
 const asJson = process.argv[2]?.toLowerCase() === "json"
 const __dirname = url.fileURLToPath(new URL(".", import.meta.url))

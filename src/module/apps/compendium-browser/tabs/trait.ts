@@ -64,6 +64,7 @@ export class CompendiumBrowserTraitTab extends CompendiumBrowserTab {
 					points: item.adjustedPoints(),
 					tags: item.tags,
 					reference: item.reference,
+					enabled: item.enabled,
 				})
 			})
 		}

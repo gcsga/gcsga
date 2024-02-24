@@ -4,7 +4,6 @@
 
 -   Finish "static" character (0.15 and older) compatibility
 -   don't bother with editing features
--   mook generator
 -   implement name matching from imported libraries
 
 ## Jeff and Chris
