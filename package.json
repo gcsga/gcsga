@@ -80,7 +80,7 @@
 		"jsdom": "^23.1.0",
 		"peggy": "^3.0.2",
 		"pixi.js": "7.2.4",
-		"prettier": "3.1.1",
+		"prettier": "3.2.5",
 		"prompts": "^2.4.2",
 		"prosemirror-view": "1.32.5",
 		"sass": "^1.71.0",
