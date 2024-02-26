@@ -1,38 +1,16 @@
-// import { CREATURE_ACTOR_TYPES } from "@actor/values.ts"
-// import { itemIsOfType } from "@item/helpers.ts"
-// import { PHYSICAL_ITEM_TYPES } from "@item/physical/values.ts"
-// import { MigrationBase } from "@module/migration/base.ts"
+import { MigrationBase } from "@module/migration/base.ts"
 import { MigrationRunnerBase } from "@module/migration/runner/base.ts"
-// import { sluggify } from "@util"
+import { sluggify } from "@util"
 import fs from "fs-extra"
 import { JSDOM } from "jsdom"
 import path from "path"
 import * as R from "remeda"
 import "./lib/foundry-utils.ts"
 import { getFilesRecursively } from "./lib/helpers.ts"
-import { ActorSourceGURPS } from "@actor/data/index.ts"
-import { MigrationBase } from "@module/migration/base.ts"
-// import { itemIsOfType } from "@item/helpers.ts"
-import { sluggify } from "@util/misc.ts"
-// import { ItemGURPS, ItemType } from "@item"
-import { ItemSourceGURPS } from "@item/base/data/index.ts"
-import { ActorType, ItemType } from "@data"
+import { ActorType, ItemType } from "@module/data/constants.ts"
+import { ActorSourceGURPS } from "@actor/data.ts"
+import { ItemSourceGURPS } from "@item/data/index.ts"
 
-// import { Migration901ReorganizeBulkData } from "@module/migration/migrations/901-reorganize-bulk-data.ts"
-// import { Migration902DuskwoodDawnsilver } from "@module/migration/migrations/902-duskwood-dawnsilver.ts"
-// import { Migration903PhysicalNumericData } from "@module/migration/migrations/903-physical-numeric-data.ts"
-// import { Migration904UndercommonToSakvroth } from "@module/migration/migrations/904-undercommon-to-sakvroth.ts"
-// import { Migration905UnpersistUsage } from "@module/migration/migrations/905-unpersist-usage.ts"
-// import { Migration906LimitStackGroup } from "@module/migration/migrations/906-limit-stack-group.ts"
-// import { Migration907RestructureArmorWeaponRunes } from "@module/migration/migrations/907-restructure-armor-weapon-runes.ts"
-// import { Migration909RefineConsumableData } from "@module/migration/migrations/909-refine-consumable-data.ts"
-// import { Migration910EdictsAnathemaArrays } from "@module/migration/migrations/910-edicts-anathema-arrays.ts"
-// import { Migration911CoinBulk } from "@module/migration/migrations/911-coin-bulk.ts"
-// import { Migration912RmFocusTraitFocusCantrips } from "@module/migration/migrations/912-rm-focus-trait-focus-cantrips.ts"
-// import { Migration913SpellSustainedText } from "@module/migration/migrations/913-spell-sustained-text.ts"
-// import { Migration914MovePerceptionSenses } from "@module/migration/migrations/914-move-perception-senses.ts"
-// import { Migration915MoveLanguages } from "@module/migration/migrations/915-move-languages.ts"
-// import { BaseActorSourceGURPS } from "@actor/index.ts"
 // ^^^ don't let your IDE use the index in these imports. you need to specify the full path ^^^
 
 const { window } = new JSDOM()
@@ -41,36 +19,43 @@ globalThis.HTMLElement = window.HTMLElement
 globalThis.HTMLParagraphElement = window.HTMLParagraphElement
 globalThis.Text = window.Text
 
-const migrations: MigrationBase[] = [
-	// new Migration901ReorganizeBulkData(),
-	// new Migration902DuskwoodDawnsilver(),
-	// new Migration903PhysicalNumericData(),
-	// new Migration904UndercommonToSakvroth(),
-	// new Migration905UnpersistUsage(),
-	// new Migration906LimitStackGroup(),
-	// new Migration907RestructureArmorWeaponRunes(),
-	// new Migration909RefineConsumableData(),
-	// new Migration910EdictsAnathemaArrays(),
-	// new Migration911CoinBulk(),
-	// new Migration912RmFocusTraitFocusCantrips(),
-	// new Migration913SpellSustainedText(),
-	// new Migration914MovePerceptionSenses(),
-	// new Migration915MoveLanguages(),
-]
+const migrations: MigrationBase[] = []
 
 const packsDataPath = path.resolve(process.cwd(), "packs")
 
 type CompendiumSource = CompendiumDocument["_source"]
 
-const actorTypes = new Set(Object.values(ActorType).map(e => e as string))
-const itemTypes = new Set(Object.values(ItemType).map(e => e as string))
+const actorTypes = new Set([ActorType.Character, ActorType.Loot, ActorType.LegacyEnemy, ActorType.LegacyCharacter])
+const itemTypes = new Set([
+	ItemType.Trait,
+	ItemType.TraitContainer,
+	ItemType.TraitModifier,
+	ItemType.TraitModifierContainer,
+	ItemType.Skill,
+	ItemType.Technique,
+	ItemType.SkillContainer,
+	ItemType.Spell,
+	ItemType.RitualMagicSpell,
+	ItemType.SpellContainer,
+	ItemType.Equipment,
+	ItemType.EquipmentContainer,
+	ItemType.EquipmentModifier,
+	ItemType.EquipmentModifierContainer,
+	ItemType.Note,
+	ItemType.NoteContainer,
+	ItemType.LegacyItem,
+	ItemType.Effect,
+	ItemType.Condition,
+	ItemType.MeleeWeapon,
+	ItemType.RangedWeapon,
+])
 
 const isActorData = (docSource: CompendiumSource): docSource is ActorSourceGURPS => {
-	return "type" in docSource && actorTypes.has(docSource.type)
+	return "type" in docSource && actorTypes.has(docSource.type as ActorType)
 }
 
 const isItemData = (docSource: CompendiumSource): docSource is ItemSourceGURPS => {
-	return "type" in docSource && itemTypes.has(docSource.type)
+	return "type" in docSource && itemTypes.has(docSource.type as ItemType)
 }
 
 const isJournalEntryData = (docSource: CompendiumSource): docSource is foundry.documents.JournalEntrySource => {
@@ -157,7 +142,7 @@ async function migrate() {
 					}
 
 					const update = await migrationRunner.getUpdatedActor(source, migrationRunner.migrations)
-					// update.items = update.items.map((i: ItemGURPS) => fu.mergeObject({}, i, { performDeletions: true }))
+					// update.items = update.items.map(i => fu.mergeObject({}, i, { performDeletions: true }))
 
 					pruneDefaults(source)
 					pruneDefaults(update)
@@ -217,8 +202,8 @@ function pruneDefaults(
 	source: { type?: string; items?: ItemSourceGURPS[]; flags?: Record<string, Record<string, unknown> | undefined> },
 	{ deleteSlug = true } = {},
 ): void {
-	if (source.flags && Object.keys(source.flags.gcsga ?? {}).length === 0) {
-		delete source.flags.gcsga
+	if (source.flags && Object.keys(source.flags.pf2e ?? {}).length === 0) {
+		delete source.flags.pf2e
 	}
 	if (Object.keys(source.flags ?? {}).length === 0) {
 		delete source.flags

@@ -1,3 +1,4 @@
+import { MigrationRunnerBase } from "@module/migration/runner/base.ts"
 import fs from "fs"
 import path from "path"
 import coreIconsJSON from "../core-icons.json" assert { type: "json" }
@@ -5,10 +6,9 @@ import "./foundry-utils.ts"
 import { getFilesRecursively, PackError } from "./helpers.ts"
 import { DBFolder, LevelDatabase } from "./level-database.ts"
 import { PackEntry } from "./types.ts"
-import { ActorSourceGURPS } from "@actor/data/index.ts"
-import { isObject, sluggify } from "@util/misc.ts"
-import { MigrationRunnerBase } from "@module/migration/runner/base.ts"
-import { ItemSourceGURPS } from "@item/base/data/index.ts"
+import { ActorSourceGURPS } from "@actor/data.ts"
+import { ItemSourceGURPS } from "@item/data/index.ts"
+import { isObject, sluggify } from "@util"
 
 interface PackMetadata {
 	system: string
@@ -35,7 +35,7 @@ function isItemSource(docSource: PackEntry): docSource is ItemSourceGURPS {
  * This is used to check paths to core icons to ensure correctness. The JSON file will need to be periodically refreshed
  *  as upstream adds more icons.
  */
-const coreIcons = new Set(coreIconsJSON) as Set<string>
+const coreIcons = new Set(coreIconsJSON)
 
 class CompendiumPack {
 	packId: string
@@ -64,8 +64,8 @@ class CompendiumPack {
 	static LINK_PATTERNS = {
 		world: /@(?:Item|JournalEntry|Actor)\[[^\]]+\]|@Compendium\[world\.[^\]]{16}\]|@UUID\[(?:Item|JournalEntry|Actor)/g,
 		compendium:
-			/@Compendium\[gcsga\.(?<packName>[^.]+)\.(?<docType>Actor|JournalEntry|Item|Macro|RollTable)\.(?<docName>[^\]]+)\]\{?/g,
-		uuid: /@UUID\[Compendium\.gcsga\.(?<packName>[^.]+)\.(?<docType>Actor|JournalEntry|Item|Macro|RollTable)\.(?<docName>[^\]]+)\]\{?/g,
+			/@Compendium\[pf2e\.(?<packName>[^.]+)\.(?<docType>Actor|JournalEntry|Item|Macro|RollTable)\.(?<docName>[^\]]+)\]\{?/g,
+		uuid: /@UUID\[Compendium\.pf2e\.(?<packName>[^.]+)\.(?<docType>Actor|JournalEntry|Item|Macro|RollTable)\.(?<docName>[^\]]+)\]\{?/g,
 	}
 
 	constructor(packDir: string, parsedData: unknown[], parsedFolders: unknown[]) {
@@ -94,7 +94,7 @@ class CompendiumPack {
 			throw PackError(`Compendium ${this.packId} (${packDir}) was not found.`)
 		}
 
-		// parsedData.sort((a: any, b: any) => {
+		// parsedData.sort((a, b) => {
 		// 	if (a._id === b._id) {
 		// 		throw PackError(`_id collision in ${this.packId}: ${a._id}`)
 		// 	}
@@ -104,10 +104,6 @@ class CompendiumPack {
 		this.data = parsedData
 
 		const imagePathsFromItemSystemData = (_item: ItemSourceGURPS): string[] => {
-			// if (itemIsOfType(item, "ancestry", "background", "class", "kit")) {
-			// 	const grants: Record<string, { img: ImageFilePath }> = item.system.items
-			// 	return Object.values(grants).map(i => i.img)
-			// }
 			return []
 		}
 
@@ -137,7 +133,7 @@ class CompendiumPack {
 					const repoImgPath = path.resolve(
 						process.cwd(),
 						"static",
-						decodeURIComponent(imgPath).replace("systems/gcsga/", ""),
+						decodeURIComponent(imgPath).replace("systems/pf2e/", ""),
 					)
 					if (!isCoreIconPath && !fs.existsSync(repoImgPath)) {
 						throw PackError(`${documentName} (${this.packId}) has an unknown image path: ${imgPath}`)
@@ -146,25 +142,6 @@ class CompendiumPack {
 						throw PackError(`${documentName} (${this.packId}) references a non-WEBP/SVG image: ${imgPath}`)
 					}
 				}
-			}
-
-			if ("type" in docSource) {
-				// if (docSource.type === "script") {
-				// 	// Default macro ownership to 1
-				// 	docSource.ownership ??= { default: 1 }
-				// } else if ("items" in docSource && ["npc", "hazard"].includes(docSource.type)) {
-				// 	// Ensure all linked-weapon IDs point to a weapon
-				// 	const attackItems = docSource.items.filter((i): i is MeleeWeaponSource => i.type === "melee_weapon")
-				// 	for (const item of attackItems) {
-				// 		const { linkedWeapon } = item.flags?.gcsga ?? {}
-				// 		const weaponFound = linkedWeapon
-				// 			? docSource.items.some(i => i._id === linkedWeapon && i.type === "weapon")
-				// 			: false
-				// 		if (linkedWeapon && !weaponFound) {
-				// 			throw PackError(`Dangling linked weapon reference on ${docSource.name} in ${this.packId}`)
-				// 		}
-				// 	}
-				// }
 			}
 		}
 	}
@@ -235,7 +212,7 @@ class CompendiumPack {
 		if (isActorSource(docSource)) {
 			docSource.effects = []
 			docSource.flags.core = { sourceId: this.#sourceIdOf(docSource._id ?? "", { docType: "Actor" }) }
-			this.#assertSizeValid(docSource)
+			// this.#assertSizeValid(docSource)
 			docSource.system._migration = { version: MigrationRunnerBase.LATEST_SCHEMA_VERSION, previous: null }
 			for (const item of docSource.items) {
 				item.effects = []
@@ -288,37 +265,15 @@ class CompendiumPack {
 	/** Convert UUIDs in REs to resemble links by name or back again */
 	static convertUUIDs(
 		_source: ItemSourceGURPS,
-		// @ts-expect-error not used
+		// @ts-expect-error unused function
 		{ to, map }: { to: "ids" | "names"; map: Map<string, Map<string, string>> },
-	): void {
-		// const convertOptions = { to: to === "ids" ? "id" : "name", map } as const
-		//
-		// // Convert UUIDs found in places particular to certain item types
-		// if (itemIsOfType(source, "feat", "action") && source.system.selfEffect) {
-		// 	source.system.selfEffect.uuid = CompendiumPack.convertUUID(source.system.selfEffect.uuid, convertOptions)
-		// } else if (itemIsOfType(source, "ancestry", "background", "class", "kit")) {
-		// 	const items: Record<string, { uuid: string; items?: Record<string, { uuid: string }> }> =
-		// 		source.system.items
-		// 	for (const entry of Object.values(items)) {
-		// 		entry.uuid = CompendiumPack.convertUUID(entry.uuid, convertOptions)
-		// 		if (isObject(entry.items)) {
-		// 			for (const subentry of Object.values(entry.items)) {
-		// 				subentry.uuid = CompendiumPack.convertUUID(subentry.uuid, convertOptions)
-		// 			}
-		// 		}
-		// 	}
-		// }
-		//
-		// source.system.rules = source.system.rules.map(r =>
-		// 	recursiveReplaceString(r, s => (s.startsWith("Compendium.") ? this.convertUUID(s, convertOptions) : s)),
-		// )
-	}
+	): void {}
 
 	static convertUUID<TUUID extends string>(uuid: TUUID, { to, map }: ConvertUUIDOptions): TUUID {
 		if (uuid.startsWith("Item.")) {
 			throw PackError(`World-item UUID found: ${uuid}`)
 		}
-		if (!uuid.startsWith("Compendium.gcsga.")) return uuid
+		if (!uuid.startsWith("Compendium.pf2e.")) return uuid
 
 		const toNameRef = (uuid: string): TUUID => {
 			const parts = uuid.split(".")
@@ -333,7 +288,7 @@ class CompendiumPack {
 		}
 
 		const toIDRef = (uuid: string): TUUID => {
-			const match = /(?<=^Compendium\.gcsga\.)([^.]+)\.([^.]+)\.(.+)$/.exec(uuid)
+			const match = /(?<=^Compendium\.pf2e\.)([^.]+)\.([^.]+)\.(.+)$/.exec(uuid)
 			const [, packId, _docType, docName] = match ?? [null, null, null, null]
 			const docId = map.get(packId ?? "")?.get(docName ?? "")
 			if (docName && docId) {
@@ -425,13 +380,13 @@ class CompendiumPack {
 		return folderData.every(maybeFolderData => this.#isFolderSource(maybeFolderData))
 	}
 
-	#assertSizeValid(_source: ActorSourceGURPS | ItemSourceGURPS): void {
-		// if (source.type === "npc" || source.type === "vehicle") {
-		// 	if (!tupleHasValue(SIZES, source.system.traits.size.value)) {
-		// 		throw PackError(`Actor size on ${source.name} (${source._id}) is invalid.`)
-		// 	}
-		// }
-	}
+	// #assertSizeValid(source: ActorSourceGURPS | ItemSourceGURPS): void {
+	// 	if (source.type === "npc" || source.type === "vehicle") {
+	// 		if (!tupleHasValue(SIZES, source.system.traits.size.value)) {
+	// 			throw PackError(`Actor size on ${source.name} (${source._id}) is invalid.`)
+	// 		}
+	// 	}
+	// }
 }
 
 interface ConvertUUIDOptions {

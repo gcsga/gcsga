@@ -3,6 +3,8 @@ import { ContentTabName, TabName } from "../data.ts"
 import { CompendiumBrowser } from "../index.ts"
 import { CompendiumBrowserTab } from "./base.ts"
 import { CompendiumBrowserIndexData, TraitFilters } from "./data.ts"
+import { TraitContainerGURPS, TraitGURPS } from "@item"
+import { LocalizeGURPS } from "@util"
 
 export class CompendiumBrowserTraitTab extends CompendiumBrowserTab {
 	tabName: ContentTabName = TabName.Trait
@@ -23,36 +25,55 @@ export class CompendiumBrowserTraitTab extends CompendiumBrowserTab {
 		const indexFields = ["img", "formattedName", "resolvedNotes", "adjustedPoints", "system.reference"]
 		const tags = new Set<string>()
 
-		for await (const { pack, index } of this.browser.packLoader.loadPacks(
+		for await (const { pack } of this.browser.packLoader.loadPacks(
 			"Item",
 			this.browser.loadedPacks(TabName.Trait),
 			indexFields,
 		)) {
 			console.debug(`GURPS | Compendium Browser | ${pack.metadata.label} - Loading`)
-			for (const traitData of index) {
-				if (traitData.type === ItemType.Trait || traitData.type === ItemType.TraitContainer) {
-					if (!this.hasAllIndexFields(traitData, indexFields)) {
+			const collection = game.packs.get(pack.collection) as CompendiumCollection<
+				TraitGURPS<null> | TraitContainerGURPS<null>
+			>
+			if (!collection) return
+			;(await collection.getDocuments()).forEach((item: TraitGURPS<null> | TraitContainerGURPS<null>) => {
+				item.prepareData()
+
+				if (item.type === ItemType.Trait || item.type === ItemType.TraitContainer) {
+					if (!this.hasAllIndexFields(item, indexFields)) {
 						console.warn(
-							`Trait '${traitData.name}' does not have all required data fields. Consider unselecting pack '${pack.metadata.label}' in the compendium browser settings.`,
+							`${LocalizeGURPS.translations.TYPES.Item[item.type]} '${
+								item.name
+							}' does not have all required data fields. Consider unselecting pack '${
+								pack.metadata.label
+							}' in the compendium browser settings.`,
 						)
-						continue
+						return
 					}
-
-					const { system } = traitData
-					for (const tag of system.tags) tags.add(tag)
-
-					traits.push({
-						type: traitData.type,
-						name: traitData.name,
-						img: traitData.img,
-						uuid: `Compendium.${pack.collection}.${traitData._id}`,
-						formattedName: traitData.formattedName,
-						resolvedNotes: traitData.resolvedNotes,
-						points: traitData.adjustedPoints,
-						reference: traitData.reference,
-					})
+				} else {
+					return
 				}
-			}
+				// @ts-expect-error awaiting implementation
+				for (const tag of item.tags) tags.add(tag)
+
+				traits.push({
+					type: item.type,
+					name: item.name,
+					img: item.img,
+					uuid: `Compendium.${pack.collection}.${item._id}`,
+					// @ts-expect-error awaiting implementation
+					formattedName: item.formattedName,
+					// @ts-expect-error awaiting implementation
+					resolvedNotes: item.resolvedNotes,
+					// @ts-expect-error awaiting implementation
+					points: item.adjustedPoints(),
+					// @ts-expect-error awaiting implementation
+					tags: item.tags,
+					// @ts-expect-error awaiting implementation
+					reference: item.reference,
+					// @ts-expect-error awaiting implementation
+					enabled: item.enabled,
+				})
+			})
 		}
 
 		// Set indexData

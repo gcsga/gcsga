@@ -1,8 +1,9 @@
 import { ActorGURPS, CharacterGURPS } from "@actor"
-import { RollType, SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
-import { UserFlags, UserGURPS } from "@module/user/index.ts"
-import { CharacterResolver, objectHasKey } from "@util"
-import { RollTypeData, rollTypeHandlers } from "./roll_handler.ts"
+import { RollType, SETTINGS, SYSTEM_NAME } from "@data"
+import { objectHasKey } from "@util"
+import { RollTypeData, rollTypeHandlers } from "./roll-handler.ts"
+import { UserGURPS } from "@module/user/document.ts"
+import { UserFlags } from "@module/user/data.ts"
 
 export class RollGURPS extends Roll {
 	originalFormula = ""
@@ -17,8 +18,6 @@ export class RollGURPS extends Roll {
 
 	constructor(formula: string, data?: Record<string, unknown>, options?: RollOptions) {
 		const originalFormula = formula
-		// Formula = formula.replace(/([0-9]+)[dD]([\D])/g, "$1d6$2")
-		// formula = formula.replace(/([0-9]+)[dD]$/g, "$1d6")
 		super(formula, data, options)
 
 		this.usingMod = formula.includes("@gmod")
@@ -42,7 +41,8 @@ export class RollGURPS extends Roll {
 		const dataRgx = new RegExp(/\$([a-z.0-9_-]+)/gi)
 		const newFormula = formula.replace(dataRgx, (match, term) => {
 			if (data.actor) {
-				const actor = data.actor as CharacterResolver
+				const actor = data.actor
+				// @ts-expect-error awaiting implementation
 				const value = actor.resolveVariable(term.replace("$", "")) ?? null
 				if (value === null) {
 					if (warn && ui.notifications)
@@ -58,12 +58,12 @@ export class RollGURPS extends Roll {
 
 	protected override _prepareData(data: Record<string, unknown>): Record<string, unknown> {
 		const d = super._prepareData(data) ?? {}
-		// d.gmod = game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierTotal)
+		// @ts-expect-error awaiting implementation
 		d.gmod = game.user?.modifierTotal
 		if (!objectHasKey(d, "gmodc"))
 			Object.defineProperty(d, "gmodc", {
 				get() {
-					// const mod = game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierTotal) as number
+					// @ts-expect-error awaiting implementation
 					const mod = game.user?.modifierTotal
 					game.gurps.modifierBucket.clear()
 					return mod

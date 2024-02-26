@@ -71,12 +71,31 @@ enum ItemType {
 	EquipmentModifierContainer = "eqp_modifier_container",
 	Note = "note",
 	NoteContainer = "note_container",
-	LegacyEquipment = "equipment",
+	LegacyItem = "equipment",
 	Effect = "effect",
 	Condition = "condition",
 	MeleeWeapon = "melee_weapon",
 	RangedWeapon = "ranged_weapon",
 }
+
+type EffectType = ItemType.Effect | ItemType.Condition
+
+type WeaponType = ItemType.MeleeWeapon | ItemType.RangedWeapon
+
+type ContainerType =
+	| ItemType.Trait
+	| ItemType.TraitContainer
+	| ItemType.TraitModifierContainer
+	| ItemType.Skill
+	| ItemType.Technique
+	| ItemType.SkillContainer
+	| ItemType.Spell
+	| ItemType.RitualMagicSpell
+	| ItemType.SpellContainer
+	| ItemType.Equipment
+	| ItemType.EquipmentContainer
+	| ItemType.EquipmentModifierContainer
+	| ItemType.NoteContainer
 
 enum ItemFlags {
 	Deprecation = "deprecation",
@@ -296,3 +315,5 @@ export {
 	SYSTEM_NAME,
 	gid,
 }
+
+export type { EffectType, WeaponType, ContainerType }

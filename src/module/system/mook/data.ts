@@ -1,14 +1,9 @@
 import { ItemType } from "@data"
-import { WeaponDamageObj } from "@item/weapon/data.ts"
-import { WeaponDamage } from "@item/weapon/weapon_damage.ts"
+import { WeaponDamageObj } from "@item/abstract-weapon/data.ts"
+import { WeaponDamage } from "@item/abstract-weapon/weapon-damage.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
-import { AttributeDefObj, AttributeObj } from "@sytem/attribute/data.ts"
-import { Attribute } from "@sytem/attribute/object.ts"
-import { MoveTypeDefObj } from "@sytem/move_type/data.ts"
-import { difficulty } from "@util/enum/difficulty.ts"
-import { progression } from "@util/enum/progression.ts"
-import { selfctrl } from "@util/enum/selfctrl.ts"
-import { StringBuilder } from "@util/string_builder.ts"
+import { Attribute, AttributeDefObj, AttributeObj, MoveTypeDefObj } from "@system"
+import { StringBuilder, difficulty, progression, selfctrl } from "@util"
 
 export interface MookData {
 	system: {

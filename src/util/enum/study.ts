@@ -1,5 +1,5 @@
 import { LocalizeGURPS } from "@util/localize.ts"
-import { StringBuilder } from "@util/string_builder.ts"
+import { StringBuilder } from "@util/string-builder.ts"
 
 export namespace study {
 	export enum Type {

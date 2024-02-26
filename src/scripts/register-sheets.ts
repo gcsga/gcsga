@@ -1,25 +1,25 @@
-import { CharacterSheetGURPS, LootSheetGURPS, MookSheetGURPS, StaticCharacterSheetGURPS } from "@actor/sheet.ts"
+import { CharacterSheetGURPS, LegacyCharacterSheetGURPS, LootSheetGURPS, MookSheetGURPS } from "@actor/sheet.ts"
 import { ActorType, ItemType, SYSTEM_NAME } from "@data"
 import {
-	EffectSheet,
-	EquipmentModifierContainerSheet,
-	EquipmentModifierSheet,
-	EquipmentSheet,
-	MeleeWeaponSheet,
-	NoteContainerSheet,
-	NoteSheet,
-	RangedWeaponSheet,
-	RitualMagicSpellSheet,
-	SkillContainerSheet,
-	SkillSheet,
-	SpellContainerSheet,
-	SpellSheet,
-	StaticItemSheet,
-	TechniqueSheet,
-	TraitContainerSheet,
-	TraitModifierContainerSheet,
-	TraitModifierSheet,
-	TraitSheet,
+	EffectSheetGURPS,
+	EquipmentModifierContainerSheetGURPS,
+	EquipmentModifierSheetGURPS,
+	EquipmentSheetGURPS,
+	MeleeWeaponSheetGURPS,
+	NoteContainerSheetGURPS,
+	NoteSheetGURPS,
+	RangedWeaponSheetGURPS,
+	RitualMagicSpellSheetGURPS,
+	SkillContainerSheetGURPS,
+	SkillSheetGURPS,
+	SpellContainerSheetGURPS,
+	SpellSheetGURPS,
+	LegacyItemSheetGURPS,
+	TechniqueSheetGURPS,
+	TraitContainerSheetGURPS,
+	TraitModifierContainerSheetGURPS,
+	TraitModifierSheetGURPS,
+	TraitSheetGURPS,
 } from "@item/sheet.ts"
 import { JournalEntryPageType } from "@module/journal-entry/page/document.ts"
 import { JournalPDFPageSheetGURPS } from "@module/journal-entry/page/sheet.ts"
@@ -41,105 +41,105 @@ export function registerSheets(): void {
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.loot"),
 	})
-	Actors.registerSheet(SYSTEM_NAME, StaticCharacterSheetGURPS, {
+	Actors.registerSheet(SYSTEM_NAME, LegacyCharacterSheetGURPS, {
 		types: [ActorType.LegacyCharacter, ActorType.LegacyEnemy],
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.character"),
 	})
 
 	// Item
-	Items.registerSheet(SYSTEM_NAME, TraitSheet, {
+	Items.registerSheet(SYSTEM_NAME, TraitSheetGURPS, {
 		types: [ItemType.Trait],
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.trait"),
 	})
-	Items.registerSheet(SYSTEM_NAME, TraitContainerSheet, {
+	Items.registerSheet(SYSTEM_NAME, TraitContainerSheetGURPS, {
 		types: [ItemType.TraitContainer],
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.trait_container"),
 	})
-	Items.registerSheet(SYSTEM_NAME, TraitModifierSheet, {
+	Items.registerSheet(SYSTEM_NAME, TraitModifierSheetGURPS, {
 		types: [ItemType.TraitModifier],
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.modifier"),
 	})
-	Items.registerSheet(SYSTEM_NAME, TraitModifierContainerSheet, {
+	Items.registerSheet(SYSTEM_NAME, TraitModifierContainerSheetGURPS, {
 		types: [ItemType.TraitModifierContainer],
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.modifier_container"),
 	})
-	Items.registerSheet(SYSTEM_NAME, SkillSheet, {
+	Items.registerSheet(SYSTEM_NAME, SkillSheetGURPS, {
 		types: [ItemType.Skill],
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.skill"),
 	})
-	Items.registerSheet(SYSTEM_NAME, TechniqueSheet, {
+	Items.registerSheet(SYSTEM_NAME, TechniqueSheetGURPS, {
 		types: [ItemType.Technique],
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.technique"),
 	})
-	Items.registerSheet(SYSTEM_NAME, SkillContainerSheet, {
+	Items.registerSheet(SYSTEM_NAME, SkillContainerSheetGURPS, {
 		types: [ItemType.SkillContainer],
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.skill_container"),
 	})
-	Items.registerSheet(SYSTEM_NAME, SpellSheet, {
+	Items.registerSheet(SYSTEM_NAME, SpellSheetGURPS, {
 		types: [ItemType.Spell],
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.spell"),
 	})
-	Items.registerSheet(SYSTEM_NAME, SpellContainerSheet, {
+	Items.registerSheet(SYSTEM_NAME, SpellContainerSheetGURPS, {
 		types: [ItemType.SpellContainer],
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.spell_container"),
 	})
-	Items.registerSheet(SYSTEM_NAME, RitualMagicSpellSheet, {
+	Items.registerSheet(SYSTEM_NAME, RitualMagicSpellSheetGURPS, {
 		types: [ItemType.RitualMagicSpell],
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.ritual_magic_spell"),
 	})
-	Items.registerSheet(SYSTEM_NAME, EquipmentSheet, {
+	Items.registerSheet(SYSTEM_NAME, EquipmentSheetGURPS, {
 		types: [ItemType.Equipment, ItemType.EquipmentContainer],
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.equipment"),
 	})
-	Items.registerSheet(SYSTEM_NAME, EquipmentModifierSheet, {
+	Items.registerSheet(SYSTEM_NAME, EquipmentModifierSheetGURPS, {
 		types: [ItemType.EquipmentModifier],
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.eqp_modifier"),
 	})
-	Items.registerSheet(SYSTEM_NAME, EquipmentModifierContainerSheet, {
+	Items.registerSheet(SYSTEM_NAME, EquipmentModifierContainerSheetGURPS, {
 		types: [ItemType.EquipmentModifierContainer],
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.eqp_modifier_container"),
 	})
-	Items.registerSheet(SYSTEM_NAME, NoteSheet, {
+	Items.registerSheet(SYSTEM_NAME, NoteSheetGURPS, {
 		types: [ItemType.Note],
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.note"),
 	})
-	Items.registerSheet(SYSTEM_NAME, NoteContainerSheet, {
+	Items.registerSheet(SYSTEM_NAME, NoteContainerSheetGURPS, {
 		types: [ItemType.NoteContainer],
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.note_container"),
 	})
-	Items.registerSheet(SYSTEM_NAME, MeleeWeaponSheet, {
+	Items.registerSheet(SYSTEM_NAME, MeleeWeaponSheetGURPS, {
 		types: [ItemType.MeleeWeapon],
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.melee_weapon"),
 	})
-	Items.registerSheet(SYSTEM_NAME, RangedWeaponSheet, {
+	Items.registerSheet(SYSTEM_NAME, RangedWeaponSheetGURPS, {
 		types: [ItemType.RangedWeapon],
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.ranged_weapon"),
 	})
-	Items.registerSheet(SYSTEM_NAME, EffectSheet, {
+	Items.registerSheet(SYSTEM_NAME, EffectSheetGURPS, {
 		types: [ItemType.Effect, ItemType.Condition],
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.effect"),
 	})
-	Items.registerSheet(SYSTEM_NAME, StaticItemSheet, {
-		types: [ItemType.LegacyEquipment],
+	Items.registerSheet(SYSTEM_NAME, LegacyItemSheetGURPS, {
+		types: [ItemType.LegacyItem],
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.static_equipment"),
 	})

@@ -24,11 +24,11 @@ import {
 import { LocalizeGURPS } from "@util/localize.ts"
 import { allLengthUnits } from "@util/length.ts"
 import { allWeightUnits } from "@util/weight.ts"
-import { AllNumericCompareTypes, ContainedQuantityNumericCompareTypes } from "@util/numeric_criteria.ts"
-import { AllStringCompareTypes } from "@util/string_criteria.ts"
+import { AllNumericCompareTypes, ContainedQuantityNumericCompareTypes } from "@util/numeric-criteria.ts"
+import { AllStringCompareTypes } from "@util/string-criteria.ts"
 import { AllManeuverIDs, AllPostures, ApplicableConditions } from "./types.ts"
 import { EFFECT_ACTION } from "./constants.ts"
-import { allMoveTypeOverrideConditions } from "@sytem/move_type/data.ts"
+import { allMoveTypeOverrideConditions } from "@system"
 
 export function prepareSelectOptions(): void {
 	const SELECT_OPTIONS: Record<string, Record<string, string>> = {

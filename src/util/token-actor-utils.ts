@@ -13,7 +13,9 @@ function getSelectedActors(options: GetSelectedActorsOptions = {}): ActorGURPS[]
 	const { include = actorTypes, exclude = [], assignedFallback = false } = options
 	const actors = R.uniq(
 		game.user
+			// @ts-expect-error awaiting implementation
 			.getActiveTokens()
+			// @ts-expect-error awaiting implementation
 			.flatMap(t =>
 				t.actor &&
 				(include.length === 0 || t.actor.isOfType(...include)) &&
@@ -28,7 +30,9 @@ function getSelectedActors(options: GetSelectedActorsOptions = {}): ActorGURPS[]
 	}
 
 	if (
+		// @ts-expect-error awaiting implementation
 		(include.length === 0 || assigned.isOfType(...include)) &&
+		// @ts-expect-error awaiting implementation
 		(exclude.length === 0 || !assigned.isOfType(...exclude))
 	) {
 		return [assigned]

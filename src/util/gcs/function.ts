@@ -1,9 +1,9 @@
 import { DiceGURPS } from "@module/dice/index.ts"
-import { CharacterResolver, SkillResolver, TraitContainerResovler, TraitResolver } from "../resolvers.ts"
-import { equalFold } from "../string_criteria.ts"
+import { equalFold } from "../string-criteria.ts"
 import { Length } from "../length.ts"
 import { Evaluator } from "./eval.ts"
 import { ItemType } from "@data"
+import { VariableResolver } from "@util"
 
 export type eFunction = (e: Evaluator, a: string) => unknown
 
@@ -296,12 +296,15 @@ function evalSkillLevel(e: Evaluator, arg: string): number {
 	arg = arg.trim()
 	let relative = false
 	if (arg) relative = evalToBool(e, arg)
+	// @ts-expect-error awaiting implementation
 	if (entity.isSkillLevelResolutionExcluded(name, specialization)) return 0
+	// @ts-expect-error awaiting implementation
 	entity.registerSkillLevelResolutionExclusion(name, specialization)
 	let level = -Infinity
+	// @ts-expect-error awaiting implementation
 	entity.skills.forEach(s => {
 		if (s.type === ItemType.SkillContainer) return
-		else s = s as SkillResolver
+		// else s = s as SkillResolver
 		if (level !== -Infinity) return
 		if (equalFold(s.name || "", name) && equalFold(s.specialization, specialization)) {
 			s.updateLevel()
@@ -309,6 +312,7 @@ function evalSkillLevel(e: Evaluator, arg: string): number {
 			else level = s.level.level
 		}
 	})
+	// @ts-expect-error awaiting implementation
 	entity.unregisterSkillLevelResolutionExclusion(name, specialization)
 	return level
 }
@@ -349,26 +353,31 @@ export function evalEncumbrance(e: Evaluator, a: string): number {
 	}
 	const entity = e.resolver
 	if (!entity) return 0
+	// @ts-expect-error awaiting implementation
 	const level = entity.encumbranceLevel(forSkills).level
 	if (returnFactor) return 1 - level / 5
 	return level
 }
 
 export function evalHasTrait(e: Evaluator, a: string): boolean {
-	const entity: CharacterResolver | undefined = e.resolver as CharacterResolver
+	const entity: VariableResolver | undefined = e.resolver
 	if (!entity) return false
 	const arg = a.replaceAll(/^['"]|[']$/g, "")
+	// @ts-expect-error awaiting implementation
 	return entity.traits.some(t => equalFold(t.name ?? "", arg))
 }
 
 export function evalTraitLevel(e: Evaluator, a: string): number {
-	const entity: CharacterResolver | undefined = e.resolver as CharacterResolver
+	const entity: VariableResolver | undefined = e.resolver
 	if (!entity) return -1
 	const arg = a.replaceAll(/^['"]|[']$/g, "")
 	let levels = -1
+	// @ts-expect-error awaiting implementation
 	entity.traits
-		.filter((t: TraitResolver | TraitContainerResovler) => t.name === arg && t.type === ItemType.Trait)
-		.every((t: TraitResolver | TraitContainerResovler) => {
+		// @ts-expect-error awaiting implementation
+		.filter(t => t.name === arg && t.type === ItemType.Trait)
+		// @ts-expect-error awaiting implementation
+		.every(t => {
 			if (t.isLeveled) levels = t.levels
 			return true
 		})
@@ -504,7 +513,7 @@ function valueToYards(value: number): number {
 }
 
 export function evalRandomHeight(e: Evaluator, a: string): number {
-	const entity: CharacterResolver | undefined = e.resolver as CharacterResolver
+	const entity: VariableResolver | undefined = e.resolver
 	if (!entity) return -1
 	const stDecimal = evalToNumber(e, a)
 	let base: number
@@ -544,7 +553,7 @@ export function evalRandomHeight(e: Evaluator, a: string): number {
 }
 
 export function evalRandomWeight(e: Evaluator, a: string): number | null {
-	const entity: CharacterResolver | undefined = e.resolver as CharacterResolver
+	const entity: VariableResolver | undefined = e.resolver
 	if (!entity) return -1
 	let arg: string
 	;[arg, a] = nextArg(a)
@@ -557,6 +566,7 @@ export function evalRandomWeight(e: Evaluator, a: string): number | null {
 	let overweight = false
 	let fat = false
 	let veryFat = false
+	// @ts-expect-error awaiting implementation
 	entity.traits.forEach(t => {
 		if (t.type === ItemType.TraitContainer) return
 		if (!t.enabled) return

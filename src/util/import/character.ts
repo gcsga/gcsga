@@ -9,6 +9,7 @@ import {
 	PointsRecord,
 } from "@actor/character/data.ts"
 import {
+	GCS_FILE_VERSION,
 	ImportedAttribute,
 	ImportedAttributeDef,
 	ImportedBody,
@@ -27,20 +28,25 @@ import {
 	ImportedThirdPartyData,
 	ImportedThreshold,
 } from "./data.ts"
-import { BlockLayoutKey, PageSettings, SheetSettingsObj } from "@module/data/sheet_settings.ts"
-import { AttributeDefObj, AttributeObj, PoolThresholdDef } from "@sytem/attribute/data.ts"
 import { progression } from "@util/enum/progression.ts"
 import { ItemImporter, LengthUnits, LocalizeGURPS, WeightUnits, getCurrentTime } from "@util"
 import { display } from "@util/enum/display.ts"
-import { ResourceTrackerDefObj, ResourceTrackerObj } from "@sytem/resource_tracker/data.ts"
-import { MoveTypeDefObj, MoveTypeObj, MoveTypeOverrideObj } from "@sytem/move_type/data.ts"
-import { ItemSourceGURPS } from "@item/base/data/index.ts"
 import { ChatMessageGURPS } from "@module/chat-message/document.ts"
-import { ActorFlags, ActorType, ManeuverID, SYSTEM_NAME } from "@data"
-import { BodyObj, HitLocationObj } from "@sytem/hit_location/data.ts"
-import { GCACharacterImporter } from "./character_gca.ts"
-
-const GCS_FILE_VERSION = 4
+import { ActorFlags, ActorType, BlockLayoutKey, ManeuverID, PageSettings, SYSTEM_NAME, SheetSettingsObj } from "@data"
+import { GCACharacterImporter } from "./character-gca.ts"
+import { ItemSourceGURPS } from "@item/data/index.ts"
+import {
+	AttributeDefObj,
+	AttributeObj,
+	BodyObj,
+	HitLocationObj,
+	MoveTypeDefObj,
+	MoveTypeObj,
+	MoveTypeOverrideObj,
+	PoolThresholdDef,
+	ResourceTrackerDefObj,
+	ResourceTrackerObj,
+} from "@system"
 
 export class CharacterImporter {
 	static async throwError(text: string): Promise<void> {
@@ -120,6 +126,7 @@ export class CharacterImporter {
 		await document.update(actorData, { diff: false, recursive: false })
 
 		// Refresh the config sheet if it is rendered
+		// @ts-expect-error awaiting implementation
 		if (document instanceof CharacterGURPS) if (document.sheet.config?.rendered) document.sheet.config.render(true)
 	}
 

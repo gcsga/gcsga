@@ -1,4 +1,4 @@
-import { ActorGURPS } from "@actor/base.ts"
+import { ActorGURPS } from "@actor"
 import { MockActor } from "./actor.ts"
 import { MockItem } from "./item.ts"
 import { ItemGURPS } from "@item/base/document.ts"

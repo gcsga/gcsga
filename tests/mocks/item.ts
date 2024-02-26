@@ -1,7 +1,6 @@
-import { ActorGURPS } from "@actor/base.ts"
-import { ItemSourceGURPS } from "@item/base/data/index.ts"
-import { ItemGURPS } from "@item/base/document.ts"
-import { ItemGCSSystemSource } from "@item/gcs/data.ts"
+import { ActorGURPS } from "@actor"
+import { ItemGURPS } from "@item"
+import { ItemSourceGURPS, ItemSystemSource } from "@item/data/index.ts"
 
 export class MockItem {
 	readonly _source: ItemSourceGURPS
@@ -24,7 +23,7 @@ export class MockItem {
 		return this._source.name
 	}
 
-	get system(): ItemGCSSystemSource {
+	get system(): ItemSystemSource {
 		return this.system
 	}
 

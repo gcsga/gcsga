@@ -5,6 +5,7 @@ import { ErrorGURPS, fontAwesomeIcon, htmlQuery } from "@util"
 import MiniSearch from "minisearch"
 import { CompendiumMigrationStatus } from "../compendium-migration-status.ts"
 import { SYSTEM_NAME } from "@data"
+import { ItemCompendiumImporter } from "@util/import/compendium.ts"
 
 class CompendiumDirectoryGURPS extends CompendiumDirectory {
 	static readonly STOP_WORDS = new Set(["of", "th", "the"])
@@ -57,8 +58,11 @@ class CompendiumDirectoryGURPS extends CompendiumDirectory {
 		super.activateListeners($html)
 
 		// Hook in the compendium browser
-		$html[0].querySelector("footer > button")?.addEventListener("click", () => {
+		$html[0].querySelector("footer > button.compendium-browser")?.addEventListener("click", () => {
 			game.gurps.compendiumBrowser.render(true)
+		})
+		$html[0].querySelector("footer > button.import-item-library")?.addEventListener("click", () => {
+			ItemCompendiumImporter.showDialog()
 		})
 	}
 
@@ -159,7 +163,7 @@ class CompendiumDirectoryGURPS extends CompendiumDirectory {
 			li.addEventListener("click", async event => {
 				event.stopPropagation()
 				const doc = await fromUuid(match.uuid)
-				await doc?.sheet?.render(true, { editable: doc.sheet.isEditable })
+				doc?.sheet?.render(true, { editable: doc.sheet.isEditable })
 			})
 
 			const anchor = li.querySelector("a")

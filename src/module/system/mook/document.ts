@@ -1,23 +1,4 @@
-import { CharacterSource, Encumbrance } from "@actor/character/data.ts"
-import { CharacterGURPS } from "@actor/index.ts"
-import { ItemFlags, ItemType, SETTINGS, SYSTEM_NAME, gid } from "@data"
-import { SkillGURPS } from "@item"
-import { ItemSourceGURPS, TraitSource } from "@item/base/data/index.ts"
-import { MeleeWeaponSource } from "@item/melee_weapon/data.ts"
-import { NoteSource } from "@item/note/data.ts"
-import { RangedWeaponSource } from "@item/ranged_weapon/data.ts"
-import { SkillSource } from "@item/skill/data.ts"
-import { SpellSource } from "@item/spell/data.ts"
-import { SpellGURPS } from "@item/spell/document.ts"
-import { TraitModifierSource } from "@item/trait_modifier/data.ts"
-import { DiceGURPS } from "@module/dice/index.ts"
-import { AttributeDef } from "@sytem/attribute/attribute_def.ts"
-import { AttributeDefObj, AttributeObj } from "@sytem/attribute/data.ts"
-import { Attribute } from "@sytem/attribute/object.ts"
-import { MoveTypeDefObj } from "@sytem/move_type/data.ts"
-import { attribute } from "@util/enum/attribute.ts"
-import { progression } from "@util/enum/progression.ts"
-import { damageProgression } from "@util/index.ts"
+import { ItemFlags, ItemType, SETTINGS, SYSTEM_NAME, gid } from "@module/data/constants.ts"
 import {
 	MookData,
 	MookEquipment,
@@ -30,7 +11,22 @@ import {
 	MookTrait,
 	MookTraitModifier,
 } from "./data.ts"
-import { MoveTypeDef } from "@sytem/move_type/move_type_def.ts"
+import { Attribute, AttributeDef, AttributeDefObj, AttributeObj, MoveTypeDef, MoveTypeDefObj } from "@system"
+import { attribute, damageProgression, progression } from "@util"
+import { DiceGURPS } from "@module/dice/index.ts"
+import { CharacterSource, Encumbrance } from "@actor/character/data.ts"
+import { CharacterGURPS } from "@actor"
+import { SkillGURPS, SpellGURPS } from "@item"
+import {
+	ItemSourceGURPS,
+	MeleeWeaponSource,
+	NoteSource,
+	RangedWeaponSource,
+	SkillSource,
+	SpellSource,
+	TraitModifierSource,
+	TraitSource,
+} from "@item/data/index.ts"
 
 export class Mook {
 	type = "mook"
@@ -321,20 +317,24 @@ export class Mook {
 		if (!newActor) return null
 		await newActor?.update(data)
 		const updateMap: ({ _id: string } & Record<string, unknown>)[] = []
+		// @ts-expect-error awaiting implementation
 		newActor.itemTypes[ItemType.Skill].forEach((item, index: number) => {
 			updateMap.push({
 				_id: item.id!,
+				// @ts-expect-error awaiting implementation
 				"system.points": (item as SkillGURPS).getPointsForLevel(this.skills[index].level),
 			})
 		})
+		// @ts-expect-error awaiting implementation
 		newActor.itemTypes[ItemType.Spell].forEach((item, index: number) => {
 			updateMap.push({
 				_id: item.id!,
+				// @ts-expect-error awaiting implementation
 				"system.points": (item as SpellGURPS).getPointsForLevel(this.spells[index].level),
 			})
 		})
 		await newActor.updateEmbeddedDocuments("Item", updateMap)
-		await newActor.sheet?.render(true)
+		newActor.sheet?.render(true)
 		return newActor
 	}
 

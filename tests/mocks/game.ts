@@ -1,6 +1,5 @@
 import { ConditionID, EFFECT_ACTION, SETTINGS, SYSTEM_NAME, gid } from "@data"
-import { ThresholdOp } from "@sytem/attribute/data.ts"
-import { MookData } from "@sytem/mook/data.ts"
+import { MookData, ThresholdOp } from "@system"
 import { LocalizeGURPS } from "@util"
 import { attribute } from "@util/enum/attribute.ts"
 import { progression } from "@util/enum/progression.ts"

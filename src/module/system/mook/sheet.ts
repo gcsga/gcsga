@@ -1,12 +1,12 @@
-import { CharacterSheetConfig } from "@actor/character/config_sheet.ts"
 import { SYSTEM_NAME } from "@data"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { Attribute, AttributeObj } from "@sytem/attribute/index.ts"
 import { attribute } from "@util/enum/attribute.ts"
-import { DialogGURPS } from "@ui/dialog.ts"
 import { MookParser } from "./parse.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { Mook } from "./document.ts"
+import { CharacterSheetConfig } from "@actor/character/config-sheet.ts"
+import { Attribute, AttributeObj } from "@system"
+import { DialogGURPS } from "@module/apps/dialog.ts"
 
 export class MookGeneratorSheet extends FormApplication {
 	config: CharacterSheetConfig | null = null
@@ -190,7 +190,7 @@ export class MookGeneratorSheet extends FormApplication {
 
 	private async createMook() {
 		const actor = await this.object.createActor()
-		await actor?.sheet?.render(true)
+		actor?.sheet?.render(true)
 		return this.close()
 	}
 

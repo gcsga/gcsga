@@ -1,16 +1,22 @@
 import { SOCKET, SYSTEM_NAME } from "@data"
-import { loadModifiers } from "@module/apps/mod_bucket/data.ts"
+import { loadModifiers } from "@module/apps/modifier-bucket/data.ts"
 import { TokenHUDGURPS } from "@module/canvas/index.ts"
-import { ColorSettings } from "@module/settings/colors.ts"
-import { LastActor, getDefaultSkills } from "@util"
+import { LastActor } from "@util"
+// import { ColorSettings } from "@module/settings/colors.ts"
+// import { SetGameGURPS } from "@scripts/set-game-gurps.ts"
+// import { LastActor, getDefaultSkills } from "@util"
 
 export const Ready = {
 	listen: (): void => {
 		Hooks.once("ready", async () => {
+			console.log("GURPS | Starting GURPS Game Aid")
+			// Some of game.gurps must wait until the ready phase
+			// SetGameGURPS.onReady()
+
 			// Do anything once the system is ready
-			ColorSettings.applyColors()
+			// ColorSettings.applyColors()
 			loadModifiers()
-			getDefaultSkills()
+			// getDefaultSkills()
 
 			globalThis.GURPS = {
 				LastActor: await LastActor.get(),
@@ -40,8 +46,8 @@ export const Ready = {
 				switch (response.type as SOCKET) {
 					case SOCKET.UPDATE_BUCKET:
 						// Ui.notifications?.info(response.users)
-						await game.gurps.modifierList.render()
-						await game.gurps.modifierBucket.render()
+						game.gurps.modifierList.render()
+						game.gurps.modifierBucket.render()
 						break
 					case SOCKET.INITIATIVE_CHANGED:
 						// eslint-disable-next-line @typescript-eslint/no-explicit-any

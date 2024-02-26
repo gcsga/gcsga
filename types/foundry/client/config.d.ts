@@ -312,6 +312,7 @@ declare global {
 			darknessLightPenalty: number
 			daylightColor: number
 			dragSpeedModifier: number
+			rulerClass: typeof Ruler
 			dispositionColors: {
 				HOSTILE: number
 				NEUTRAL: number
@@ -404,7 +405,6 @@ declare global {
 				sound: typeof ClockwiseSweepPolygon
 				move: typeof ClockwiseSweepPolygon
 			}
-			rulerClass: typeof Ruler
 
 			normalLightColor: number
 			maxZoom: number

@@ -1,8 +1,8 @@
 import { prereq } from "@util/enum/prereq.ts"
 import { spellcmp } from "@util/enum/spellcmp.ts"
-import { NumericCriteriaObj } from "@util/numeric_criteria.ts"
-import { StringCriteriaObj } from "@util/string_criteria.ts"
-import { WeightCriteriaObj } from "@util/weight_criteria.ts"
+import { NumericCriteriaObj } from "@util/numeric-criteria.ts"
+import { StringCriteriaObj } from "@util/string-criteria.ts"
+import { WeightCriteriaObj } from "@util/weight-criteria.ts"
 
 export interface AttributePrereqObj {
 	type: prereq.Type.Attribute

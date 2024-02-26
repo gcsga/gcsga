@@ -26,10 +26,29 @@
 		"maximum": 11
 	},
 	"scripts": [],
-	"esmodules": ["gcsga.mjs"],
-	"styles": ["styles/gcsga.css"],
-	"packs": [],
-	"relatinships": {},
+	"esmodules": ["gurps.mjs"],
+	"styles": ["styles/gurps.css"],
+	"packs": [
+		{
+			"name": "basic-set-traits",
+			"label": "Basic Set Traits",
+			"path": "packs/basic-set-traits",
+			"type": "Item",
+			"system": "gcsga",
+			"ownership": {
+				"PLAYER": "LIMITED",
+				"ASSISTANT": "OWNER"
+			}
+		}
+	],
+	"packFolders": [
+		{
+			"name": "Basic Set",
+			"sorting": "m",
+			"packs": ["basic-set-traits"]
+		}
+	],
+	"relationships": {},
 	"languages": [
 		{
 			"lang": "en",

@@ -1,6 +1,7 @@
 // import { CompendiumPack } from "./lib/compendium-pack.ts"
 
 // CompendiumPack.loadJSON("packs/actions")
+// CompendiumPack.loadJSON("packs/basic-set-traits")
 // CompendiumPack.loadJSON("packs/adventure-specific-actions")
 // CompendiumPack.loadJSON("packs/bestiary-ability-glossary-srd")
 // CompendiumPack.loadJSON("packs/spells")

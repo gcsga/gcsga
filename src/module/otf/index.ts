@@ -1,5 +1,5 @@
-export { parseForRollOrDamage } from "./parse_damage.ts"
-export { parselink } from "./parse_otf.ts"
+export { parseForRollOrDamage } from "./parse-damage.ts"
+export { parselink } from "./parse-otf.ts"
 export type {
 	ParsedOtF,
 	OtFAction,

@@ -1,6 +1,6 @@
 // Evaluator is used to evaluate an expression. If you do not have any variables that will be resolved, you can leave
 
-import { GCACharacter } from "@util/import/data_gca.ts"
+import { GCACharacter } from "@util/import/data-gca.ts"
 import {
 	Operand,
 	Operator,

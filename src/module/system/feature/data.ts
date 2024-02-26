@@ -4,8 +4,8 @@ import { spellmatch } from "@util/enum/spellmatch.ts"
 import { stlimit } from "@util/enum/stlimit.ts"
 import { wsel } from "@util/enum/wsel.ts"
 import { wswitch } from "@util/enum/wswitch.ts"
-import { NumericCriteria } from "@util/numeric_criteria.ts"
-import { StringCriteria } from "@util/string_criteria.ts"
+import { NumericCriteria } from "@util/numeric-criteria.ts"
+import { StringCriteria } from "@util/string-criteria.ts"
 
 export interface AttributeBonusObj extends LeveledAmountObj {
 	limitation?: stlimit.Option

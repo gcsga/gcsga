@@ -1,4 +1,4 @@
-import { DamageChat } from "@module/apps/damage_calculator/damage_chat_message.ts"
+import { DamageChat } from "@module/apps/damage-calculator/damage-chat-message.ts"
 import { Chat } from "@util"
 
 export const RenderChatMessage = {

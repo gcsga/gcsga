@@ -1,11 +1,9 @@
-import { sanitize } from "@util"
+import { difficulty, sanitize, stdmg } from "@util"
 import { MookData, MookMelee, MookRanged, MookSkill, MookSpell, MookTrait, MookTraitModifier } from "./data.ts"
 import { Mook } from "./document.ts"
 import { ItemType, SETTINGS, SYSTEM_NAME, gid } from "@data"
-import { difficulty } from "@util/enum/difficulty.ts"
-import { stdmg } from "@util/enum/stdmg.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
-import { WeaponDamageObj } from "@item/weapon/data.ts"
+import { WeaponDamageObj } from "@item/abstract-weapon/data.ts"
 
 const regex_points = /\[(-?\d+)\]/
 const damage_type_matches: Map<string, string> = new Map([
@@ -202,7 +200,8 @@ export class MookParser {
 			text = input
 		} else {
 			text = this.extractText(["Advantages:", "Advantages/Disadvantages:", "Traits:"], ["Skills:", "Spells:"])
-			if (text.includes(";")) text = text.replace(/\n/g, " ") // if ; separated, remove newlines
+			if (text.includes(";"))
+				text = text.replace(/\n/g, " ") // if ; separated, remove newlines
 			else if (text.split(",").length > 2) text = text.replace(/,/g, " ") // if , separated, replace with ;
 			text = text.replace(/advantages\/disadvantages:?/gi, ";")
 			text = text.replace(/disadvantages:?/gi, ";")

@@ -1,4 +1,4 @@
-import { EffectID, ManeuverID, SOCKET, SYSTEM_NAME } from "@data"
+import { EffectID, SOCKET, SYSTEM_NAME } from "@data"
 import { TokenGURPS } from "./object.ts"
 
 export interface TokenHUDDataGURPS extends TokenHUDData {
@@ -75,17 +75,19 @@ export class TokenHUDGURPS<TToken extends TokenGURPS> extends TokenHUD<TToken> {
 
 	protected async _onToggleCombat(event: JQuery.ClickEvent): Promise<void> {
 		event.preventDefault()
-		// await super._onToggleCombat(event)
+		// @ts-expect-error awaiting implementation
+		await super._onToggleCombat(event)
 		const { actor } = this.object
 		if (actor) {
+			// @ts-expect-error awaiting implementation
 			if (this.object?.inCombat) await actor.changeManeuver(ManeuverID.DoNothing)
+			// @ts-expect-error awaiting implementation
 			else actor.resetManeuvers()
 		}
-		await this.render(true)
+		this.render(true)
 	}
 
 	protected _onClickControl(event: JQuery.ClickEvent): void {
-		// super._onClickControl(event)
 		const button = event.currentTarget
 		switch (button.dataset.action) {
 			case "maneuvers":
@@ -132,12 +134,14 @@ export class TokenHUDGURPS<TToken extends TokenGURPS> extends TokenHUD<TToken> {
 		const id: EffectID = icon.dataset.statusId as EffectID
 		const { actor } = token
 		if (!(actor && id)) return
-		// const combatant = token.combatant
 
 		if (event.type === "click") {
+			// @ts-expect-error awaiting implementation
 			await actor?.increaseCondition(id)
 		} else if (event.type === "contextmenu") {
+			// @ts-expect-error awaiting implementation
 			if (event.ctrlKey) await actor?.decreaseCondition(id, { forceRemove: true })
+			// @ts-expect-error awaiting implementation
 			else await actor?.decreaseCondition(id)
 		}
 		game.socket?.emit(`system.${SYSTEM_NAME}`, { type: SOCKET.UPDATE_BUCKET, users: [] })
@@ -145,6 +149,7 @@ export class TokenHUDGURPS<TToken extends TokenGURPS> extends TokenHUD<TToken> {
 	}
 
 	static async #setActiveEffects(token: TokenGURPS, icons: NodeListOf<HTMLImageElement>) {
+		// @ts-expect-error awaiting implementation
 		const affectingConditions = token.actor?.conditions
 
 		for (const icon of icons) {
@@ -161,6 +166,7 @@ export class TokenHUDGURPS<TToken extends TokenGURPS> extends TokenHUD<TToken> {
 			icon.replaceWith(picture)
 
 			const id = picture.dataset.statusId ?? ""
+			// @ts-expect-error awaiting implementation
 			const affecting = affectingConditions?.filter(c => c.cid === id) || []
 			if (affecting.length > 0 || iconSrc === token.document.overlayEffect) {
 				picture.classList.add("active")
@@ -168,11 +174,13 @@ export class TokenHUDGURPS<TToken extends TokenGURPS> extends TokenHUD<TToken> {
 
 			if (affecting.length > 0) {
 				// Show a badge icon if the condition has a value or is locked
+				// @ts-expect-error awaiting implementation
 				const hasValue = affecting.some(c => c.canLevel)
 
 				if (hasValue) {
 					const badge = document.createElement("i")
 					badge.classList.add("badge")
+					// @ts-expect-error awaiting implementation
 					const value = Math.max(...affecting.map(c => c.level ?? 1))
 					badge.innerText = value.toString()
 					picture.append(badge)

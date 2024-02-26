@@ -3,13 +3,7 @@
 	<div class="fieldblock">
 		<div class="label">{{localize "gurps.character.name"}}</div>
 		<div class="field">
-			<input
-				type="text"
-				name="name"
-				value="{{actor.name}}"
-				data-dtype="String"
-				{{disabled (not editing)}}
-			/>
+			<input type="text" name="name" value="{{actor.name}}" data-dtype="String" {{disabled (not editing)}} />
 		</div>
 		<div class="label">{{localize "gurps.character.title"}}</div>
 		<div class="field">
@@ -18,7 +12,9 @@
 				name="system.profile.title"
 				value="{{system.profile.title}}"
 				data-dtype="String"
-				{{disabled (not editing)}}
+				{{disabled
+				(not
+				editing)}}
 			/>
 		</div>
 		<div class="label">{{localize "gurps.character.organization"}}</div>
@@ -28,7 +24,9 @@
 				name="system.profile.organization"
 				value="{{system.profile.organization}}"
 				data-dtype="String"
-				{{disabled (not editing)}}
+				{{disabled
+				(not
+				editing)}}
 			/>
 		</div>
 	</div>

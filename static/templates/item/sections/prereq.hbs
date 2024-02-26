@@ -8,7 +8,7 @@
 		<a class="add-list button gcs-circled-vertical-ellipsis" data-path="{{path}}"></a>
 		<select name="{{path}}.when_tl.compare" data-dtype="String">
 			{{#select this.when_tl.compare}}
-			{{#each config.select.numeric_criteria as |v k|}}
+			{{#each config.select.numeric-criteria as |v k|}}
 			<option value="{{k}}">{{localize "gurps.field_prefix.tech_level"}} {{localize v}}</option>
 			{{/each}}
 			{{/select}}
@@ -46,7 +46,7 @@
 		{{else}}
 		<select name="{{path}}.quantity.compare">
 			{{#select this.quantity.compare}}
-			{{#each config.select.numeric_criteria_strict as |v k|}}
+			{{#each config.select.numeric-criteria_strict as |v k|}}
 			<option value="{{k}}">{{localize v}}</option>
 			{{/each}}
 			{{/select}}

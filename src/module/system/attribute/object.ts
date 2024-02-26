@@ -1,15 +1,12 @@
-import { CharacterResolver } from "@util/resolvers.ts"
-import { PoolThreshold } from "./pool_threshold.ts"
+import { PoolThreshold } from "./pool-threshold.ts"
 import { AttributeObj, reserved_ids } from "./data.ts"
-import { attribute } from "@util/enum/attribute.ts"
-import { stlimit } from "@util/enum/stlimit.ts"
-import { sanitizeId } from "@util/misc.ts"
-import { AttributeDef } from "./attribute_def.ts"
+import { AttributeDef } from "./attribute-def.ts"
 import { ActorFlags, SYSTEM_NAME, gid } from "@data"
-import { Mook } from "@sytem/mook/document.ts"
+import { AttributeResolver, attribute, sanitizeId, stlimit } from "@util"
+import { Mook } from "@system"
 
 export class Attribute {
-	actor: CharacterResolver | Mook
+	actor: AttributeResolver | Mook
 
 	order: number
 
@@ -23,7 +20,7 @@ export class Attribute {
 
 	_overridenThreshold?: PoolThreshold | null = null
 
-	constructor(actor: CharacterResolver | Mook, attr_id: string, order: number, data?: Partial<AttributeObj>) {
+	constructor(actor: AttributeResolver | Mook, attr_id: string, order: number, data?: Partial<AttributeObj>) {
 		if (data) Object.assign(this, data)
 		this.actor = actor
 		this.attr_id = attr_id
@@ -110,7 +107,8 @@ export class Attribute {
 	}
 
 	get currentThreshold(): PoolThreshold | null {
-		const actor = this.actor as CharacterResolver
+		const actor = this.actor
+		if (actor instanceof Mook) return null
 		const def = this.attribute_def
 		if (!def) return null
 		if (
@@ -124,7 +122,7 @@ export class Attribute {
 		const cur = this.current
 		if (def.thresholds) {
 			for (const t of def.thresholds) {
-				if (cur <= t.threshold!(this.actor as CharacterResolver)) return t
+				if (cur <= t.threshold!(this.actor)) return t
 			}
 		}
 		return null

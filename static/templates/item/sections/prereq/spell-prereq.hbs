@@ -12,7 +12,7 @@
 		{{disabled (or (eq this.sub_type "college_count") (eq this.sub_type "any"))}}
 	>
 		{{#select this.qualifier.compare}}
-			{{#each config.select.string_criteria as |v k|}}
+			{{#each config.select.string-criteria as |v k|}}
 				<option value="{{k}}">{{localize v}}</option>
 			{{/each}}
 		{{/select}}

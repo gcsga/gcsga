@@ -1,13 +1,15 @@
-import { ItemType } from "@data"
-import { FeatureObj } from "@feature/index.ts"
-import { BaseContainerSource } from "@item/container/data.ts"
-import { ItemGCSSystemSource } from "@item/gcs/data.ts"
-import { PrereqListObj } from "@prereq/data.ts"
-import { WeightString } from "@util/weight.ts"
+import {
+	AbstractContainerSource,
+	AbstractContainerSystemData,
+	AbstractContainerSystemSource,
+} from "@item/abstract-container/data.ts"
+import { ItemType } from "@module/data/constants.ts"
+import { FeatureObj, PrereqListObj } from "@system"
+import { WeightString } from "@util"
 
-export type EquipmentSource = BaseContainerSource<ItemType.Equipment, EquipmentSystemSource>
+type EquipmentSource = AbstractContainerSource<ItemType.Equipment, EquipmentSystemSource>
 
-export interface EquipmentSystemSource extends Omit<ItemGCSSystemSource, "open"> {
+interface EquipmentSystemSource extends AbstractContainerSystemSource {
 	type: ItemType.Equipment
 	description: string
 	reference: string
@@ -28,3 +30,7 @@ export interface EquipmentSystemSource extends Omit<ItemGCSSystemSource, "open">
 	equipped: boolean
 	ignore_weight_for_skills: boolean
 }
+
+interface EquipmentSystemData extends EquipmentSystemSource, AbstractContainerSystemData {}
+
+export type { EquipmentSource, EquipmentSystemData, EquipmentSystemSource }

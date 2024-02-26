@@ -1,25 +1,21 @@
 import { ActorProxyGURPS } from "@actor"
 import { SYSTEM_NAME } from "@data"
 import { ItemProxyGURPS } from "@item"
-import { StatusEffectsGURPS } from "@item/condition/list.ts"
 import { ActiveEffectGURPS } from "@module/active-effect/index.ts"
+import { CombatTrackerGURPS } from "@module/apps/sidebar/combat-tracker.ts"
+import { CompendiumDirectoryGURPS } from "@module/apps/sidebar/compendium-directory.ts"
+import { RulerGURPS } from "@module/canvas/ruler/document.ts"
 import { TokenGURPS } from "@module/canvas/token/index.ts"
 import { CombatGURPS } from "@module/combat/document.ts"
-import { CombatantGURPS } from "@module/combatant/document.ts"
+import { CombatantGURPS } from "@module/combat/index.ts"
 import { JournalEntryGURPS } from "@module/journal-entry/document.ts"
 import { JournalEntryPageProxyGURPS } from "@module/journal-entry/page/document.ts"
-import * as SpeedProviderGURPS from "@module/modules/drag_ruler.ts"
 import { RollGURPS } from "@module/roll/index.ts"
-import { RulerGURPS } from "@module/ruler/document.ts"
-import { registerSettings } from "@module/settings/index.ts"
-import { UserGURPS } from "@module/user/index.ts"
+import { UserGURPS } from "@module/user/document.ts"
 import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
 import { GURPSCONFIG } from "@scripts/config/index.ts"
 import { registerFonts } from "@scripts/register-fonts.ts"
 import { registerTemplates } from "@scripts/register-templates.ts"
-import { SetGameGURPS } from "@scripts/set-game-gurps.ts"
-import { CombatTrackerGURPS, ItemDirectoryGURPS } from "@ui"
-import { registerHandlebarsHelpers } from "@util/handlebars_helpers.ts"
 
 const LEGAL =
 	"GURPS is a trademark of Steve Jackson Games, and its rules and art are copyrighted by Steve Jackson Games.\nAll rights are reserved by Steve Jackson Games.\nThis game aid is the original creation of Mikolaj Tomczynski and is released for free distribution, and not for resale, under the permissions granted by\nhttp://www.sjgames.com/general/online_policy.html"
@@ -63,23 +59,23 @@ export const Init = {
 			CONFIG.Token.documentClass = TokenDocumentGURPS
 			CONFIG.Token.objectClass = TokenGURPS
 
-			CONFIG.statusEffects = StatusEffectsGURPS
+			// CONFIG.statusEffects = StatusEffectsGURPS
 			CONFIG.Canvas.rulerClass = RulerGURPS
 
+			// CONFIG.ui.items = ItemDirectoryGURPS
 			CONFIG.ui.combat = CombatTrackerGURPS
-			CONFIG.ui.items = ItemDirectoryGURPS
+			CONFIG.ui.compendium = CompendiumDirectoryGURPS
 
 			CONFIG.Dice.rolls.unshift(RollGURPS)
 
-			// StaticHitLocation.init()
-			SpeedProviderGURPS.init()
+			// SpeedProviderGURPS.init()
 
 			registerFonts()
-			registerHandlebarsHelpers()
-			registerSettings()
+			// registerHandlebarsHelpers()
+			// registerSettings()
 			registerTemplates()
 
-			SetGameGURPS.onInit()
+			// SetGameGURPS.onInit()
 		})
 	},
 }

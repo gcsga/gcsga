@@ -1,6 +1,6 @@
 import { ActorGURPS } from "@actor"
-import { ActorSourceGURPS } from "@actor/data/index.ts"
-import { ItemSourceGURPS } from "@item/base/data/index.ts"
+import { ActorSourceGURPS } from "@actor/data.ts"
+import { ItemSourceGURPS } from "@item/data/index.ts"
 import { SceneGURPS } from "@scene/index.ts"
 
 /**

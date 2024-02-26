@@ -2,7 +2,7 @@
 	<div class="placeholder"> </div>
 	<select name="{{path}}.name.compare">
 		{{#select this.name.compare}}
-			{{#each config.select.string_criteria as |v k|}}
+			{{#each config.select.string-criteria as |v k|}}
 				<option value="{{k}}">{{localize "gurps.field_prefix.name"}} {{localize v}}</option>
 			{{/each}}
 		{{/select}}
@@ -21,7 +21,7 @@
 	<div class="placeholder"> </div>
 	<select name="{{path}}.notes.compare">
 		{{#select this.notes.compare}}
-			{{#each config.select.string_criteria as |v k|}}
+			{{#each config.select.string-criteria as |v k|}}
 				<option value="{{k}}">{{localize "gurps.field_prefix.notes"}} {{localize v}}</option>
 			{{/each}}
 		{{/select}}
@@ -40,7 +40,7 @@
 	<div class="placeholder"> </div>
 	<select name="{{path}}.level.compare">
 		{{#select this.level.compare}}
-			{{#each config.select.numeric_criteria as |v k|}}
+			{{#each config.select.numeric-criteria as |v k|}}
 				<option value="{{k}}">{{localize "gurps.field_prefix.level"}} {{localize v}}</option>
 			{{/each}}
 		{{/select}}

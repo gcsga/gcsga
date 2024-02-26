@@ -1,17 +1,15 @@
-import { ItemType } from "@data"
-import { FeatureObj, SkillBonus } from "@feature/index.ts"
-import { BaseContainerSource } from "@item/container/data.ts"
-import { ItemGCSSystemSource } from "@item/gcs/data.ts"
-import { PrereqListObj } from "@prereq/data.ts"
-import { selfctrl } from "@util/enum/selfctrl.ts"
-import { skillsel } from "@util/enum/skillsel.ts"
-import { study } from "@util/enum/study.ts"
-import { StringCompareType } from "@util/string_criteria.ts"
-import { Study } from "@util/study.ts"
+import {
+	AbstractContainerSource,
+	AbstractContainerSystemData,
+	AbstractContainerSystemSource,
+} from "@item/abstract-container/data.ts"
+import { ItemType } from "@module/data/constants.ts"
+import { FeatureObj, PrereqListObj, SkillBonus, Study } from "@system"
+import { StringCompareType, selfctrl, skillsel, study } from "@util"
 
-export type TraitSource = BaseContainerSource<ItemType.Trait, TraitSystemSource>
+type TraitSource = AbstractContainerSource<ItemType.Trait, TraitSystemSource>
 
-export interface TraitSystemSource extends ItemGCSSystemSource {
+interface TraitSystemSource extends AbstractContainerSystemSource {
 	type: ItemType.Trait
 	name: string
 	reference: string
@@ -34,7 +32,7 @@ export interface TraitSystemSource extends ItemGCSSystemSource {
 	can_level: boolean
 }
 
-const CR_Features = new Map()
+const CRFeatures = new Map()
 
 const merchantPenalty = new SkillBonus()
 Object.assign(merchantPenalty, {
@@ -43,6 +41,9 @@ Object.assign(merchantPenalty, {
 	specialization: { compare: StringCompareType.AnyString },
 	tags: { compare: StringCompareType.AnyString },
 })
-CR_Features.set(selfctrl.Adjustment.MajorCostOfLivingIncrease, [merchantPenalty])
+CRFeatures.set(selfctrl.Adjustment.MajorCostOfLivingIncrease, [merchantPenalty])
 
-export { CR_Features }
+interface TraitSystemData extends TraitSystemSource, AbstractContainerSystemData {}
+
+export { CRFeatures }
+export type { TraitSource, TraitSystemSource, TraitSystemData }

@@ -1,13 +1,13 @@
 import type { ActorGURPS } from "@actor"
-import type { ActorSourceGURPS } from "@actor/data/index.ts"
+import { ActorSourceGURPS } from "@actor/data.ts"
 import { SETTINGS, SYSTEM_NAME } from "@data"
 import type { ItemGURPS } from "@item"
 import type { MigrationBase } from "@module/migration/base.ts"
 import { MigrationRunnerBase } from "@module/migration/runner/base.ts"
-import type { UserGURPS } from "@module/user/index.ts"
+import { UserGURPS } from "@module/user/document.ts"
 import { SceneGURPS } from "@scene"
 import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
-import { Progress } from "@sytem/progress.ts"
+import { Progress } from "@system/progress.ts"
 
 export class MigrationRunner extends MigrationRunnerBase {
 	override needsMigration(): boolean {

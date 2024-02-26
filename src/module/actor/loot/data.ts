@@ -1,25 +1,16 @@
-import { ActorFlagsGURPS, ActorSystemSource, BaseActorSourceGURPS } from "@actor/base/data.ts"
-import { ActorType } from "@data"
-import { display } from "@util/enum/display.ts"
-import { WeightUnits } from "@util/weight.ts"
+import { ActorFlagsGURPS, ActorSystemData, ActorSystemSource, BaseActorSourceGURPS } from "@actor/base/data.ts"
+import { ActorType, SYSTEM_NAME } from "@module/data/constants.ts"
 
-export interface LootSource extends BaseActorSourceGURPS<ActorType.Loot, LootSystemSource> {
-	flags: LootFlags
-}
-export type LootFlags = ActorFlagsGURPS
-
-export interface LootSystemSource extends ActorSystemSource {
-	description: string
-	import: { name: string; path: string; last_import: string }
-	settings: LootSettings
-	created_date: string
-	modified_date: string
+type LootSource = BaseActorSourceGURPS<ActorType.Loot, LootSystemSource> & {
+	flags: DeepPartial<LootFlags>
 }
 
-export interface LootSettings {
-	default_weight_units: WeightUnits
-	user_description_display: display.Option
-	modifiers_display: display.Option
-	notes_display: display.Option
-	show_equipment_modifier_adj: boolean
+type LootFlags = ActorFlagsGURPS & {
+	[SYSTEM_NAME]: {}
 }
+
+interface LootSystemSource extends ActorSystemSource {}
+
+interface LootSystemData extends LootSystemSource, ActorSystemData {}
+
+export type { LootSource, LootSystemSource, LootSystemData, LootFlags }

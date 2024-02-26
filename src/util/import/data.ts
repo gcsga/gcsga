@@ -1,5 +1,4 @@
-import { ThresholdOp } from "@sytem/attribute/data.ts"
-import { MoveTypeOverrideConditionType } from "@sytem/move_type/data.ts"
+import { MoveTypeOverrideConditionType, ThresholdOp } from "@system"
 import { LengthUnits, NumericCompareType, StringCompareType, WeightUnits } from "@util"
 import {
 	affects,
@@ -25,6 +24,8 @@ import {
 	wsel,
 	wswitch,
 } from "@util/enum/index.ts"
+
+const GCS_FILE_VERSION = 4
 
 export enum ImportedItemType {
 	Trait = "trait",
@@ -754,6 +755,51 @@ export type ImportedItemSource =
 	| ImportedMeleeWeaponSystemSource
 	| ImportedRangedWeaponSystemSource
 
+interface TraitLibrarySystemSource {
+	version: number
+	type: "trait_list"
+	rows: (ImportedTraitSystemSource | ImportedTraitContainerSystemSource)[]
+}
+interface TraitModifierLibrarySystemSource {
+	version: number
+	type: "modifier_list"
+	rows: (ImportedTraitModifierSystemSource | ImportedTraitModifierContainerSystemSource)[]
+}
+interface SkillLibrarySystemSource {
+	version: number
+	type: "skill_list"
+	rows: (ImportedSkillSystemSource | ImportedTechniqueSystemSorce | ImportedSkillContainerSystemSource)[]
+}
+interface SpellLibrarySystemSource {
+	version: number
+	type: "spell_list"
+	rows: (ImportedSpellSystemSource | ImportedRitualMagicSpellSystemSource | ImportedSpellContainerSystemSource)[]
+}
+interface EquipmentLibrarySystemSource {
+	version: number
+	type: "equipment_list"
+	rows: (ImportedEquipmentSystemSource | ImportedEquipmentContainerSystemSource)[]
+}
+interface EquipmentModifierLibrarySystemSource {
+	version: number
+	type: "eqp_modifier_list"
+	rows: (ImportedEquipmentModifierSystemSource | ImportedEquipmentModifierContainerSystemSource)[]
+}
+interface NoteLibrarySystemSource {
+	version: number
+	type: "note_list"
+	rows: (ImportedNoteSystemSource | ImportedNoteContainerSystemSource)[]
+}
+
+export type ImportedItemLibrarySource =
+	| TraitLibrarySystemSource
+	| TraitModifierLibrarySystemSource
+	| SkillLibrarySystemSource
+	| SpellLibrarySystemSource
+	| EquipmentLibrarySystemSource
+	| EquipmentModifierLibrarySystemSource
+	| NoteLibrarySystemSource
+
 export type {
 	ImportedAttribute,
 	ImportedAttributeBonus,
@@ -810,3 +856,5 @@ export type {
 	ImportedTraitSystemSource,
 	ImportedWeaponBonus,
 }
+
+export { GCS_FILE_VERSION }

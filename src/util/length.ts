@@ -1,5 +1,3 @@
-// Export type Length = number
-
 import { Int } from "./fxp.ts"
 import { LocalizeGURPS } from "./localize.ts"
 

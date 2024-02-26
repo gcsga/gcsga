@@ -1,8 +1,5 @@
-import { RollModifier, RollModifierStack, SYSTEM_NAME } from "@module/data/index.ts"
-
-type UserSourceGURPS = Omit<foundry.documents.UserSource, "flags"> & {
-	flags: DeepPartial<UserFlagsGURPS>
-}
+import { SYSTEM_NAME } from "@module/data/constants.ts"
+import { RollModifier, RollModifierStack } from "@module/data/types.ts"
 
 enum UserFlags {
 	Init = "init",
@@ -13,6 +10,10 @@ enum UserFlags {
 	LastActor = "lastActor",
 	LastToken = "lastToken",
 	SearchPackContents = "searchPackContents",
+}
+
+type UserSourceGURPS = Omit<foundry.documents.UserSource, "flags"> & {
+	flags: DeepPartial<UserFlagsGURPS>
 }
 
 type UserFlagsGURPS = DocumentFlags & {
@@ -29,4 +30,4 @@ type UserFlagsGURPS = DocumentFlags & {
 }
 
 export { UserFlags }
-export type { UserSourceGURPS, UserFlagsGURPS }
+export type { UserFlagsGURPS, UserSourceGURPS }

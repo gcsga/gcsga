@@ -1,11 +1,11 @@
 import { ActorGURPS, CharacterGURPS, LootGURPS } from "@actor"
-import { BaseWeaponGURPS, MeleeWeaponGURPS, RangedWeaponGURPS } from "@item"
-import { RollGURPS } from "@module/roll/index.ts"
-import { MookGeneratorSheet } from "@sytem/mook/sheet.ts"
-import { LastActor } from "./last_actor.ts"
-import { LocalizeGURPS } from "./localize.ts"
-import { RollTypeData } from "@module/roll/roll_handler.ts"
 import { GURPS_COMMANDS, RollModifier, RollType, gid } from "@data"
+import { MookGeneratorSheet } from "@system"
+import { LastActor } from "./last-actor.ts"
+import { LocalizeGURPS } from "./localize.ts"
+import { AbstractWeaponGURPS, MeleeWeaponGURPS, RangedWeaponGURPS } from "@item"
+import { RollGURPS } from "@module/roll/index.ts"
+import { RollTypeData } from "@module/roll/roll-handler.ts"
 
 export function parse(message: string): [string, string[]] {
 	for (const [rule, rgx] of Object.entries(GURPS_COMMANDS)) {
@@ -72,6 +72,7 @@ async function _onModClick(event: JQuery.ClickEvent): Promise<void> {
 	event.preventDefault()
 	event.stopPropagation()
 	const mod: RollModifier = $(event.currentTarget).data("mod")
+	// @ts-expect-error awaiting implementation
 	return game.user.addModifier(mod)
 }
 
@@ -84,7 +85,7 @@ async function _onModRClick(event: JQuery.ContextMenuEvent): Promise<void> {
 	event.stopPropagation()
 	const mod: RollModifier = fu.duplicate($(event.currentTarget).data("mod"))
 	mod.modifier = -mod.modifier
-	// return game.ModifierBucket.addModifier(mod)
+	// @ts-expect-error awaiting implementation
 	return game.user.addModifier(mod)
 }
 
@@ -103,13 +104,16 @@ async function _onRollClick(event: JQuery.ClickEvent) {
 
 	if (type === RollType.Attribute) {
 		const id = $(event.currentTarget).data("json").id
+		// @ts-expect-error awaiting implementation
 		if (id === gid.Dodge) data.attribute = actor?.dodgeAttribute
+		// @ts-expect-error awaiting implementation
 		else data.attribute = actor?.attributes.get(id)
 	} else if ([RollType.Skill, RollType.SkillRelative].includes(type)) {
 		if (actor instanceof CharacterGURPS) {
 			const itemData = $(event.currentTarget).data("json")
 
 			// Grab best skill or default
+			// @ts-expect-error awaiting implementation
 			data.item = actor.bestSkillNamed(itemData.name!, itemData.specialization || "", false, null)
 
 			// Update level at least once to calculate default level
@@ -132,8 +136,10 @@ async function _onRollClick(event: JQuery.ClickEvent) {
 	} else if ([RollType.Attack].includes(type)) {
 		if (actor instanceof CharacterGURPS) {
 			const itemData = $(event.currentTarget).data("json")
+			// @ts-expect-error awaiting implementation
 			data.item = actor.weapons.find(
-				(e: BaseWeaponGURPS) => e.itemName === itemData.itemName && e.usage === itemData.usage,
+				// @ts-expect-error awaiting implementation
+				(e: AbstractWeaponGURPS) => e.itemName === itemData.itemName && e.usage === itemData.usage,
 			)
 		}
 		if (!data.item || data.item.effectiveLevel === -Infinity) {

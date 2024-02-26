@@ -927,6 +927,7 @@
 			"percentage": "by {value}%"
 		},
 		"compendium_browser": {
+			"title": "Compendium Browser",
 			"added_item": "Added {item} to the selected actor(s).",
 			"added_item_to_character": "Added {item} to {character}.",
 			"bought_item_with_all_characters": "Purchased {item} with all selected actor(s).",
@@ -934,7 +935,6 @@
 			"failed_to_buy_item_with_character": "Could not purchase {item} with {character}.",
 			"failed_to_buy_item_with_some_characters": "Could not purchase {item} with some of the selected actor(s).",
 			"button": "Open Library Browser",
-			"title": "GCS Library Browser",
 			"hint": "Use the tabs above to select a library.",
 			"trait": "Traits",
 			"modifier": "Trait Modifiers",
@@ -1345,7 +1345,8 @@
 			"cannot_add_type": "{type} items cannot be added to this actor.",
 			"mook": {
 				"name": "Name cannot be blank."
-			}
+			},
+			"pack_not_loaded": "Compendium \"{pack}\" could not be loaded."
 		},
 		"token": {
 			"select": "Select Token"

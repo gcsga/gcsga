@@ -1,19 +1,5 @@
-import { CharacterGURPS, LootGURPS, StaticCharacterGURPS } from "@actor"
+import { CharacterGURPS, LegacyCharacterGURPS, LootGURPS } from "@actor"
 import { ActorType, ItemType, ModifierItem } from "@data"
-import {
-	AttributeBonus,
-	ConditionalModifierBonus,
-	ContainedWeightReduction,
-	CostReduction,
-	DRBonus,
-	MoveBonus,
-	ReactionBonus,
-	SkillBonus,
-	SkillPointBonus,
-	SpellBonus,
-	SpellPointBonus,
-	WeaponBonus,
-} from "@feature/index.ts"
 import {
 	ConditionGURPS,
 	EffectGURPS,
@@ -21,6 +7,7 @@ import {
 	EquipmentGURPS,
 	EquipmentModifierContainerGURPS,
 	EquipmentModifierGURPS,
+	LegacyItemGURPS,
 	MeleeWeaponGURPS,
 	NoteContainerGURPS,
 	NoteGURPS,
@@ -30,36 +17,45 @@ import {
 	SkillGURPS,
 	SpellContainerGURPS,
 	SpellGURPS,
-	StaticItemGURPS,
 	TechniqueGURPS,
 	TraitContainerGURPS,
 	TraitGURPS,
 	TraitModifierContainerGURPS,
 	TraitModifierGURPS,
-} from "@item/index.ts"
+} from "@item"
 import { JournalEntryPageGURPS, JournalEntryPagePDF } from "@module/journal-entry/page/document.ts"
 import {
+	AttributeBonus,
 	AttributePrereq,
+	ConditionalModifierBonus,
 	ContainedQuantityPrereq,
 	ContainedWeightPrereq,
+	ContainedWeightReduction,
+	CostReduction,
+	DRBonus,
 	EquippedEquipmentPrereq,
+	MoveBonus,
 	PrereqList,
+	ReactionBonus,
+	SkillBonus,
+	SkillPointBonus,
 	SkillPrereq,
+	SpellBonus,
+	SpellPointBonus,
 	SpellPrereq,
 	TraitPrereq,
-} from "@prereq"
-import { feature } from "@util/enum/feature.ts"
-import { prereq } from "@util/enum/prereq.ts"
-import { SkillResolver } from "@util/resolvers.ts"
+	WeaponBonus,
+} from "@system"
+import { feature, prereq } from "@util"
 
 export const GURPSCONFIG = {
-	skillDefaults: [] as SkillResolver[],
+	skillDefaults: [] as SkillGURPS[],
 
 	Actor: {
 		documentClasses: {
 			[ActorType.Character]: CharacterGURPS,
-			[ActorType.LegacyCharacter]: StaticCharacterGURPS,
-			[ActorType.LegacyEnemy]: StaticCharacterGURPS,
+			[ActorType.LegacyCharacter]: LegacyCharacterGURPS,
+			[ActorType.LegacyEnemy]: LegacyCharacterGURPS,
 			[ActorType.Loot]: LootGURPS,
 		},
 		allowedContents: {
@@ -81,8 +77,8 @@ export const GURPSCONFIG = {
 				ItemType.Effect,
 				ItemType.Condition,
 			],
-			[ActorType.LegacyCharacter]: [ItemType.LegacyEquipment],
-			[ActorType.LegacyEnemy]: [ItemType.LegacyEquipment],
+			[ActorType.LegacyCharacter]: [ItemType.LegacyItem],
+			[ActorType.LegacyEnemy]: [ItemType.LegacyItem],
 			[ActorType.Loot]: [ItemType.Equipment, ItemType.EquipmentContainer],
 		},
 	},
@@ -105,7 +101,7 @@ export const GURPSCONFIG = {
 			[ItemType.EquipmentModifierContainer]: EquipmentModifierContainerGURPS,
 			[ItemType.Note]: NoteGURPS,
 			[ItemType.NoteContainer]: NoteContainerGURPS,
-			[ItemType.LegacyEquipment]: StaticItemGURPS,
+			[ItemType.LegacyItem]: LegacyItemGURPS,
 			[ItemType.Effect]: EffectGURPS,
 			[ItemType.Condition]: ConditionGURPS,
 			[ItemType.MeleeWeapon]: MeleeWeaponGURPS,
@@ -152,7 +148,7 @@ export const GURPSCONFIG = {
 			[ItemType.EquipmentModifierContainer]: [ItemType.EquipmentModifier, ItemType.EquipmentModifierContainer],
 			[ItemType.Note]: [],
 			[ItemType.NoteContainer]: [ItemType.Note, ItemType.NoteContainer],
-			[ItemType.LegacyEquipment]: [],
+			[ItemType.LegacyItem]: [],
 			[ItemType.Effect]: [],
 			[ItemType.Condition]: [],
 			[ItemType.MeleeWeapon]: [],
@@ -175,7 +171,7 @@ export const GURPSCONFIG = {
 			[ItemType.EquipmentModifierContainer]: [ItemType.EquipmentModifier, ItemType.EquipmentModifierContainer],
 			[ItemType.Note]: [],
 			[ItemType.NoteContainer]: [ItemType.Note, ItemType.NoteContainer],
-			[ItemType.LegacyEquipment]: [],
+			[ItemType.LegacyItem]: [],
 			[ItemType.Effect]: [],
 			[ItemType.Condition]: [],
 			[ItemType.MeleeWeapon]: [],

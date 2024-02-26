@@ -43,8 +43,8 @@ export default class BaseUser<TCharacter extends BaseActor<null> = BaseActor<nul
 	 * @param permission The permission name from USER_PERMISSIONS to test
 	 * @return Does the user have at least this permission
 	 */
-	hasPermission(permission: UserPermission): boolean
-	hasPermission(permission: string): boolean
+	// hasPermission(permission: UserPermission): boolean
+	hasPermission(permission: UserPermission | string): boolean
 
 	/**
 	 * Test whether the User has at least the permission level of a certain role

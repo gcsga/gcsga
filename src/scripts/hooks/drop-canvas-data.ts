@@ -1,6 +1,6 @@
 import { ActorGURPS } from "@actor"
-import { TokenUtil } from "@util/token_utils.ts"
-import { DropData, DropDataType } from "@module/apps/damage_calculator/damage_chat_message.ts"
+import { TokenUtil } from "@util/token-utils.ts"
+import { DropData, DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
 import { CanvasUtil } from "@util/canvas.ts"
 
 export const DropCanvasData = {
@@ -16,9 +16,11 @@ export const DropCanvasData = {
 					const dropData = data as DropData
 					switch (dropData.type) {
 						case DropDataType.Item:
+							// @ts-expect-error awaiting implementation
 							actorGurps.sheet.emulateItemDrop(dropData)
 							return false
 						case DropDataType.Damage:
+							// @ts-expect-error awaiting implementation
 							actorGurps.handleDamageDrop(dropData.payload)
 							return false
 					}

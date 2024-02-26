@@ -143,21 +143,22 @@ export abstract class CompendiumBrowserTab {
 		return true
 	}
 
-	async renderResults(start: number): Promise<HTMLLIElement[]> {
+	async renderResults(start: number): Promise<HTMLDivElement[]> {
 		if (!this.templatePath) {
 			throw ErrorGURPS(`Tab "${this.tabName}" has no valid template path.`)
 		}
 		const indexData = this.getIndexData(start)
-		const liElements: HTMLLIElement[] = []
+		const divElements: HTMLDivElement[] = []
 		for (const entry of indexData) {
 			const htmlString = await renderTemplate(this.templatePath, {
 				entry,
 				filterData: this.filterData,
 			})
 			const html = this.#domParser.parseFromString(htmlString, "text/html")
-			liElements.push(html.body.firstElementChild as HTMLLIElement)
+			// divElements.push(...html.body.firstElementChild as HTMLDivElement)
+			divElements.push(...(Array.from(html.body.children) as HTMLDivElement[]))
 		}
-		return liElements
+		return divElements
 	}
 
 	/** Sort result array by name, level or price */
@@ -213,7 +214,7 @@ export abstract class CompendiumBrowserTab {
 	}
 
 	/** Ensure all index fields are present in the index data */
-	protected hasAllIndexFields(data: CompendiumIndexData, indexFields: string[]): boolean {
+	protected hasAllIndexFields(data: foundry.abstract.Document | CompendiumIndexData, indexFields: string[]): boolean {
 		for (const field of indexFields) {
 			if (fu.getProperty(data, field) === undefined && !/\.(?:source|publication)/.test(field)) {
 				return false
@@ -255,12 +256,12 @@ export abstract class CompendiumBrowserTab {
 		})
 		Dialog.confirm({
 			content,
-			title: game.i18n.localize("PF2E.CompendiumBrowser.RollTable.CreateLabel"),
+			title: game.i18n.localize("gurps.compendium_browser.roll_table.create_label"),
 			yes: async $html => {
 				const html = $html[0]
 				const name =
 					htmlQuery<HTMLInputElement>(html, "input[name=name]")?.value ||
-					game.i18n.localize("PF2E.CompendiumBrowser.Title")
+					game.i18n.localize("gurps.compendium_browser.title")
 				const weight = Number(htmlQuery<HTMLInputElement>(html, "input[name=weight]")?.value) || 1
 				const results = this.#getRollTableResults({ weight })
 				const table = await RollTable.create({
@@ -285,7 +286,7 @@ export abstract class CompendiumBrowserTab {
 			},
 		)
 		Dialog.confirm({
-			title: game.i18n.localize("PF2E.CompendiumBrowser.RollTable.SelectTableTitle"),
+			title: game.i18n.localize("gurps.compendium_browser.roll_table.select_table_title"),
 			content,
 			yes: async $html => {
 				const html = $html[0]

@@ -1,34 +1,31 @@
 /// <reference types="vite/client" />
 
-import { ActorGURPS } from "@actor/base.ts"
-import { ItemGURPS } from "@item/base/document.ts"
-import { ModifierBucket } from "@module/apps/mod_bucket/button.ts"
-import { CombatGURPS } from "@module/combat/document.ts"
-import { CombatantGURPS } from "@module/combatant/document.ts"
-import { AttributeEffect } from "@module/data/index.ts"
-import { SheetSettingsObj } from "@module/data/sheet_settings.ts"
-import { DiceGURPS } from "@module/dice/index.ts"
+import { ActorGURPS } from "@actor"
+import { ItemGURPS } from "@item"
+import { EffectPanel } from "@item/abstract-effect/panel.ts"
 import { ActiveEffectGURPS } from "@module/active-effect/index.ts"
-import { UserGURPS } from "@module/user/document.ts"
-import { GURPSCONFIG } from "@scripts/config/index.ts"
-import { AttributeDefObj } from "@sytem/attribute/data.ts"
-import { MoveTypeDefObj } from "@sytem/move_type/data.ts"
-import { ResourceTrackerDefObj } from "@sytem/resource_tracker/data.ts"
-import { CombatTrackerGURPS } from "@ui/combat_tracker.ts"
-import { ModifierList } from "@module/apps/mod_list/document.ts"
 import {
 	CompendiumBrowser,
 	CompendiumBrowserSettings,
 	CompendiumBrowserSources,
 } from "@module/apps/compendium-browser/index.ts"
+import { ModifierBucket } from "@module/apps/modifier-bucket/button.ts"
+import { ModifierList } from "@module/apps/modifier-list/document.ts"
+import { CombatTrackerGURPS } from "@module/apps/sidebar/combat-tracker.ts"
+import { CompendiumDirectoryGURPS } from "@module/apps/sidebar/compendium-directory.ts"
+import { CanvasGURPS } from "@module/canvas/index.ts"
+import { ChatMessageGURPS } from "@module/chat-message/index.ts"
+import { CombatGURPS, CombatantGURPS } from "@module/combat/index.ts"
+import { AttributeEffect, SheetSettingsObj } from "@module/data/index.ts"
+import { DiceGURPS } from "@module/dice/index.ts"
 import { JournalEntryGURPS } from "@module/journal-entry/document.ts"
 import { JournalEntryPageGURPS } from "@module/journal-entry/page/document.ts"
-import { ChatMessageGURPS } from "@module/chat-message/document.ts"
-import { CanvasGURPS } from "@module/canvas/index.ts"
-import { SceneGURPS } from "@scene"
-import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
-import { EffectPanel } from "@item/effect/panel.ts"
-import { HitLocationObj } from "@sytem/hit_location/data.ts"
+import { UserGURPS } from "@module/user/document.ts"
+import { SceneGURPS, TokenDocumentGURPS } from "@scene"
+import { GURPSCONFIG } from "@scripts/config/index.ts"
+import { AttributeDefObj, MoveTypeDefObj, ResourceTrackerDefObj } from "@system"
+import { HitLocationObj } from "@system/hit-location/data.ts"
+
 interface GameGURPS
 	extends Game<
 		ActorGURPS<null>,
@@ -59,7 +56,7 @@ type ConfiguredConfig = Config<
 	CombatGURPS,
 	CombatantGURPS<CombatGURPS | null, TokenDocumentGURPS>,
 	CombatTrackerGURPS<CombatGURPS | null>,
-	CompendiumDirectory,
+	CompendiumDirectoryGURPS,
 	Hotbar,
 	ItemGURPS,
 	Macro,
@@ -104,7 +101,7 @@ declare global {
 			ActorDirectory<ActorGURPS<null>>,
 			ItemDirectory<ItemGURPS<null>>,
 			ChatLog,
-			CompendiumDirectory,
+			CompendiumDirectoryGURPS,
 			CombatTrackerGURPS<CombatGURPS | null>,
 			Hotbar
 		>
@@ -161,5 +158,5 @@ declare global {
 	const BUILD_MODE: "development" | "production"
 	// const CONDITION_SOURCES: ConditionSource[]
 	// const EN_JSON: typeof EnJSON
-	const ROLL_PARSER: string
+	// const ROLL_PARSER: string
 }

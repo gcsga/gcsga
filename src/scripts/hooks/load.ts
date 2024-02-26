@@ -4,12 +4,12 @@ import { ItemProxyGURPS } from "@item"
 import { ActiveEffectGURPS } from "@module/active-effect/index.ts"
 import { ChatMessageGURPS } from "@module/chat-message/document.ts"
 import { CombatGURPS } from "@module/combat/document.ts"
-import { CombatantGURPS } from "@module/combatant/document.ts"
-import { UserGURPS } from "@module/user/index.ts"
+import { CombatantGURPS } from "@module/combat/index.ts"
+import { UserGURPS } from "@module/user/document.ts"
 import { SceneGURPS } from "@scene"
 import { TokenDocumentGURPS } from "@scene/token-document/document.ts"
-import { TokenConfigGURPS } from "@scene/token-document/sheet.ts"
-import { ClientDatabaseBackendGURPS } from "@sytem/client-backend.ts"
+// import { TokenConfigGURPS } from "@scene/token-document/index.ts"
+import { ClientDatabaseBackendGURPS } from "@system/client-backend.ts"
 
 export const Load = {
 	listen(): void {
@@ -31,7 +31,7 @@ export const Load = {
 		CONFIG.Scene.documentClass = SceneGURPS
 		CONFIG.Tile.documentClass = TileDocument
 		CONFIG.Token.documentClass = TokenDocumentGURPS
-		CONFIG.Token.prototypeSheetClass = TokenConfigGURPS
+		// CONFIG.Token.prototypeSheetClass = TokenConfigGURPS
 		CONFIG.User.documentClass = UserGURPS
 
 		CONFIG.Canvas.darknessColor = 0x2d2d52 // Lightness increased by ~0.4/10 (Munsell value)
@@ -76,7 +76,7 @@ export const Load = {
 			[ItemType.EquipmentModifierContainer]: "gcs-eqp-modifier",
 			[ItemType.Note]: "gcs-note",
 			[ItemType.NoteContainer]: "gcs-note",
-			[ItemType.LegacyEquipment]: "gcs-equipment",
+			[ItemType.LegacyItem]: "gcs-equipment",
 			[ItemType.Effect]: "gcs-effect",
 			[ItemType.Condition]: "gcs-condition",
 			[ItemType.MeleeWeapon]: "gcs-melee-weapon",

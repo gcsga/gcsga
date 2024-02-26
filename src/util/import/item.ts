@@ -1,18 +1,5 @@
-import { FeatureObj } from "@feature"
-import {
-	ItemSourceGURPS,
-	TraitContainerSource,
-	TraitModifierContainerSource,
-	TraitSource,
-} from "@item/base/data/index.ts"
 import { EncumbrancePenaltyMultiplier, SkillSource, SkillSystemSource } from "@item/skill/data.ts"
-import { TraitSystemSource } from "@item/trait/data.ts"
-import { TraitContainerSystemSource } from "@item/trait_container/data.ts"
-import { TraitModifierSource, TraitModifierSystemSource } from "@item/trait_modifier/data.ts"
-import { TraitModifierContainerSystemSource } from "@item/trait_modifier_container/data.ts"
-import { PrereqListObj } from "@prereq/data.ts"
-import { LocalizeGURPS, Study } from "@util"
-import { affects, container, difficulty, emcost, emweight, picker, prereq, selfctrl, tmcost } from "@util/enum/index.ts"
+import { TraitSource, TraitSystemSource } from "@item/trait/data.ts"
 import {
 	ImportedEquipmentContainerSystemSource,
 	ImportedEquipmentModifierContainerSystemSource,
@@ -40,23 +27,42 @@ import {
 	ImportedTraitSystemSource,
 } from "./data.ts"
 import { TechniqueSource, TechniqueSystemSource } from "@item/technique/data.ts"
-import { SkillContainerSource, SkillContainerSystemSource } from "@item/skill_container/data.ts"
 import { SpellSource, SpellSystemSource } from "@item/spell/data.ts"
-import { RitualMagicSpellSource, RitualMagicSpellSystemSource } from "@item/ritual_magic_spell/data.ts"
-import { SpellContainerSource, SpellContainerSystemSource } from "@item/spell_container/data.ts"
 import { EquipmentSource, EquipmentSystemSource } from "@item/equipment/data.ts"
-import { EquipmentContainerSource, EquipmentContainerSystemSource } from "@item/equipment_container/data.ts"
-import { EquipmentModifierSource, EquipmentModifierSystemSource } from "@item/equipment_modifier/data.ts"
+import { ItemFlags, ItemType, SYSTEM_NAME, gid } from "@data"
+import { ItemSourceGURPS } from "@item/data/index.ts"
+import { FeatureObj, PrereqListObj, Study, TemplatePickerObj } from "@system"
+import {
+	LocalizeGURPS,
+	affects,
+	container,
+	difficulty,
+	emcost,
+	emweight,
+	picker,
+	prereq,
+	selfctrl,
+	tmcost,
+} from "@util"
+import { TraitContainerSource, TraitContainerSystemSource } from "@item/trait-container/data.ts"
+import { TraitModifierSource, TraitModifierSystemSource } from "@item/trait-modifier/data.ts"
+import {
+	TraitModifierContainerSource,
+	TraitModifierContainerSystemSource,
+} from "@item/trait-modifier-container/data.ts"
+import { SkillContainerSource, SkillContainerSystemSource } from "@item/skill-container/data.ts"
+import { RitualMagicSpellSource, RitualMagicSpellSystemSource } from "@item/ritual-magic-spell/data.ts"
+import { SpellContainerSource, SpellContainerSystemSource } from "@item/spell-container/data.ts"
+import { EquipmentContainerSource, EquipmentContainerSystemSource } from "@item/equipment-container/data.ts"
+import { EquipmentModifierSource, EquipmentModifierSystemSource } from "@item/equipment-modifier/data.ts"
 import {
 	EquipmentModifierContainerSource,
 	EquipmentModifierContainerSystemSource,
-} from "@item/equipment_modifier_container/data.ts"
-import { NoteContainerSource, NoteContainerSystemSource } from "@item/note_container/data.ts"
+} from "@item/equipment-modifier-container/data.ts"
 import { NoteSource, NoteSystemSource } from "@item/note/data.ts"
-import { MeleeWeaponSource, MeleeWeaponSystemSource } from "@item/melee_weapon/data.ts"
-import { RangedWeaponSource, RangedWeaponSystemSource } from "@item/ranged_weapon/data.ts"
-import { ItemFlags, ItemType, SYSTEM_NAME, gid } from "@data"
-import { TemplatePickerObj } from "@sytem/template_picker/document.ts"
+import { NoteContainerSource, NoteContainerSystemSource } from "@item/note-container/data.ts"
+import { MeleeWeaponSource, MeleeWeaponSystemSource } from "@item/melee-weapon/data.ts"
+import { RangedWeaponSource, RangedWeaponSystemSource } from "@item/ranged-weapon/data.ts"
 
 interface ItemImportContext {
 	parentId: string | null
@@ -766,7 +772,7 @@ class EquipmentImporter extends ItemImporter {
 			_id: id,
 			type: ItemType.Equipment,
 			name: systemData.description || LocalizeGURPS.translations.TYPES.Item[ItemType.Equipment],
-			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.Equipment}.svg`,
+			img: `systems/${SYSTEM_NAME}/assets/icons/equipment.svg`,
 			system: systemData,
 			effects: [],
 			folder: null,
@@ -841,7 +847,7 @@ class EquipmentContainerImporter extends ItemImporter {
 			_id: id,
 			type: ItemType.EquipmentContainer,
 			name: systemData.description || LocalizeGURPS.translations.TYPES.Item[ItemType.EquipmentContainer],
-			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.Equipment}.svg`,
+			img: `systems/${SYSTEM_NAME}/assets/icons/equipment.svg`,
 			system: systemData,
 			effects: [],
 			folder: null,
@@ -1021,6 +1027,7 @@ class NoteContainerImporter extends ItemImporter {
 			text: item.text ?? "",
 			reference: item.reference ?? "",
 			reference_highlight: item.reference ?? "",
+			open: item.open ?? false,
 		}
 
 		item.children?.reduce((acc, child) => {
