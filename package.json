@@ -84,7 +84,7 @@
 		"prompts": "^2.4.2",
 		"prosemirror-view": "1.32.5",
 		"sass": "^1.71.0",
-		"socket.io": "4.6.2",
+		"socket.io": "4.7.4",
 		"socket.io-client": "4.7.4",
 		"tinymce": "6.8.3",
 		"tsconfig-paths": "^4.2.0",
