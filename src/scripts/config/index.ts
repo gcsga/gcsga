@@ -1,4 +1,4 @@
-import { CharacterGURPS, LegacyCharacterGURPS, LootGURPS } from "@actor"
+import { CharacterGURPS, LootGURPS } from "@actor"
 import { ActorType, ItemType, ModifierItem } from "@data"
 import {
 	ConditionGURPS,
@@ -54,8 +54,8 @@ export const GURPSCONFIG = {
 	Actor: {
 		documentClasses: {
 			[ActorType.Character]: CharacterGURPS,
-			[ActorType.LegacyCharacter]: LegacyCharacterGURPS,
-			[ActorType.LegacyEnemy]: LegacyCharacterGURPS,
+			// [ActorType.LegacyCharacter]: LegacyCharacterGURPS,
+			// [ActorType.LegacyEnemy]: LegacyCharacterGURPS,
 			[ActorType.Loot]: LootGURPS,
 		},
 		allowedContents: {
@@ -77,8 +77,8 @@ export const GURPSCONFIG = {
 				ItemType.Effect,
 				ItemType.Condition,
 			],
-			[ActorType.LegacyCharacter]: [ItemType.LegacyItem],
-			[ActorType.LegacyEnemy]: [ItemType.LegacyItem],
+			// [ActorType.LegacyCharacter]: [ItemType.LegacyItem],
+			// [ActorType.LegacyEnemy]: [ItemType.LegacyItem],
 			[ActorType.Loot]: [ItemType.Equipment, ItemType.EquipmentContainer],
 		},
 	},

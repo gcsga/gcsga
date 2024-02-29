@@ -38,7 +38,20 @@
 			"ownership": {
 				"PLAYER": "LIMITED",
 				"ASSISTANT": "OWNER"
-			}
+			},
+			"flags": {}
+		},
+		{
+			"name": "condition-items",
+			"label": "Conditions",
+			"path": "packs/conditions",
+			"type": "Item",
+			"system": "gcsga",
+			"ownership": {
+				"PLAYER": "OBSERVER",
+				"ASSISTANT": "OWNER"
+			},
+			"flags": {}
 		}
 	],
 	"packFolders": [

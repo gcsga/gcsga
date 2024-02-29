@@ -6,9 +6,10 @@ import "./foundry-utils.ts"
 import { getFilesRecursively, PackError } from "./helpers.ts"
 import { DBFolder, LevelDatabase } from "./level-database.ts"
 import { PackEntry } from "./types.ts"
-import { ActorSourceGURPS } from "@actor/data.ts"
-import { ItemSourceGURPS } from "@item/data/index.ts"
-import { isObject, sluggify } from "@util"
+import type { ActorSourceGURPS } from "@actor/data.ts"
+import type { ItemSourceGURPS } from "@item/data/index.ts"
+import { isObject, sluggify } from "@util/misc.ts"
+import { ItemSource } from "types/foundry/common/documents/item.js"
 
 interface PackMetadata {
 	system: string
@@ -64,8 +65,8 @@ class CompendiumPack {
 	static LINK_PATTERNS = {
 		world: /@(?:Item|JournalEntry|Actor)\[[^\]]+\]|@Compendium\[world\.[^\]]{16}\]|@UUID\[(?:Item|JournalEntry|Actor)/g,
 		compendium:
-			/@Compendium\[pf2e\.(?<packName>[^.]+)\.(?<docType>Actor|JournalEntry|Item|Macro|RollTable)\.(?<docName>[^\]]+)\]\{?/g,
-		uuid: /@UUID\[Compendium\.pf2e\.(?<packName>[^.]+)\.(?<docType>Actor|JournalEntry|Item|Macro|RollTable)\.(?<docName>[^\]]+)\]\{?/g,
+			/@Compendium\[gcsga\.(?<packName>[^.]+)\.(?<docType>Actor|JournalEntry|Item|Macro|RollTable)\.(?<docName>[^\]]+)\]\{?/g,
+		uuid: /@UUID\[Compendium\.gcsga\.(?<packName>[^.]+)\.(?<docType>Actor|JournalEntry|Item|Macro|RollTable)\.(?<docName>[^\]]+)\]\{?/g,
 	}
 
 	constructor(packDir: string, parsedData: unknown[], parsedFolders: unknown[]) {
@@ -103,9 +104,12 @@ class CompendiumPack {
 
 		this.data = parsedData
 
-		const imagePathsFromItemSystemData = (_item: ItemSourceGURPS): string[] => {
+		const imagePathsFromItemSystemData = (_item: ItemSource): string[] => {
 			return []
 		}
+		// const imagePathsFromItemSystemData = (_item: ItemSourceGURPS): string[] => {
+		// 	return []
+		// }
 
 		for (const docSource of this.data) {
 			// Populate CompendiumPack.namesToIds for later conversion of compendium links
@@ -133,7 +137,7 @@ class CompendiumPack {
 					const repoImgPath = path.resolve(
 						process.cwd(),
 						"static",
-						decodeURIComponent(imgPath).replace("systems/pf2e/", ""),
+						decodeURIComponent(imgPath).replace("systems/gcsga/", ""),
 					)
 					if (!isCoreIconPath && !fs.existsSync(repoImgPath)) {
 						throw PackError(`${documentName} (${this.packId}) has an unknown image path: ${imgPath}`)
@@ -273,7 +277,7 @@ class CompendiumPack {
 		if (uuid.startsWith("Item.")) {
 			throw PackError(`World-item UUID found: ${uuid}`)
 		}
-		if (!uuid.startsWith("Compendium.pf2e.")) return uuid
+		if (!uuid.startsWith("Compendium.gcsga.")) return uuid
 
 		const toNameRef = (uuid: string): TUUID => {
 			const parts = uuid.split(".")
@@ -288,7 +292,7 @@ class CompendiumPack {
 		}
 
 		const toIDRef = (uuid: string): TUUID => {
-			const match = /(?<=^Compendium\.pf2e\.)([^.]+)\.([^.]+)\.(.+)$/.exec(uuid)
+			const match = /(?<=^Compendium\.gcsga\.)([^.]+)\.([^.]+)\.(.+)$/.exec(uuid)
 			const [, packId, _docType, docName] = match ?? [null, null, null, null]
 			const docId = map.get(packId ?? "")?.get(docName ?? "")
 			if (docName && docId) {

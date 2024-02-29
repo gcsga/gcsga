@@ -44,7 +44,7 @@ export class PrereqList {
 	): boolean {
 		let actorTechLevel = "0"
 		if (actor instanceof CharacterGURPS) {
-			actorTechLevel = actor.profile.tech_level
+			actorTechLevel = actor.techLevel
 		}
 		if (this.when_tl.compare !== NumericCompareType.AnyNumber) {
 			let tl = extractTechLevel(actorTechLevel)

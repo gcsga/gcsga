@@ -764,7 +764,7 @@
 				"per_die_per_level": "{total} ({base} per die, per level)",
 				"per_die": "{total} ({base} per die)",
 				"per_level": "{total} ({base} per level)",
-				"switch": "{type} set to {value}",
+				"weapon_switch": "{type} set to {value}",
 				"weapon_bonus": "{level} to damage",
 				"weapon_acc_bonus": "{level} to damage",
 				"weapon_scope_acc_bonus": "{level} to scope accuracy",

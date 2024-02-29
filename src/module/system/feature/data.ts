@@ -4,36 +4,40 @@ import { spellmatch } from "@util/enum/spellmatch.ts"
 import { stlimit } from "@util/enum/stlimit.ts"
 import { wsel } from "@util/enum/wsel.ts"
 import { wswitch } from "@util/enum/wswitch.ts"
-import { NumericCriteria } from "@util/numeric-criteria.ts"
-import { StringCriteria } from "@util/string-criteria.ts"
+import { NumericCriteriaObj } from "@util/numeric-criteria.ts"
+import { StringCriteriaObj } from "@util/string-criteria.ts"
 
-export interface AttributeBonusObj extends LeveledAmountObj {
+export interface BaseFeatureObj<TType extends feature.Type> {
+	// type: feature.Type
+	type: TType
+}
+
+export interface AttributeBonusObj extends LeveledAmountObj, BaseFeatureObj<feature.Type.AttributeBonus> {
 	limitation?: stlimit.Option
 	attribute: string
 }
 
-export interface ConditionalModifierBonusObj extends LeveledAmountObj {
+export interface ConditionalModifierBonusObj
+	extends LeveledAmountObj,
+		BaseFeatureObj<feature.Type.ConditionalModifierBonus> {
 	situation: string
 }
 
-export interface ContainedWeightReductionObj {
-	type: feature.Type.ContainedWeightReduction
+export interface ContainedWeightReductionObj extends BaseFeatureObj<feature.Type.ContainedWeightReduction> {
 	reduction: string
 }
 
-export interface CostReductionObj {
-	type: feature.Type.CostReduction
+export interface CostReductionObj extends BaseFeatureObj<feature.Type.CostReduction> {
 	attribute?: string
 	percentage?: number
 }
 
-export interface DRBonusObj extends LeveledAmountObj {
+export interface DRBonusObj extends LeveledAmountObj, BaseFeatureObj<feature.Type.DRBonus> {
 	location: string
 	specialization?: string
 }
 
 export interface LeveledAmountObj {
-	type: feature.Type
 	amount: number
 	per_level?: boolean
 	effective?: boolean
@@ -43,46 +47,48 @@ export enum MoveBonusType {
 	Base = "base",
 	Enhanced = "enhanced",
 }
-export interface MoveBonusObj extends LeveledAmountObj {
+export interface MoveBonusObj extends LeveledAmountObj, BaseFeatureObj<feature.Type.MoveBonus> {
 	move_type: string
 	limitation: MoveBonusType
 }
-export interface ReactionBonusObj extends LeveledAmountObj {
+export interface ReactionBonusObj extends LeveledAmountObj, BaseFeatureObj<feature.Type.ReactionBonus> {
 	situation: string
 }
-export interface SkillBonusObj extends LeveledAmountObj {
+export interface SkillBonusObj extends LeveledAmountObj, BaseFeatureObj<feature.Type.SkillBonus> {
 	selection_type: skillsel.Type
-	name?: StringCriteria
-	specialization?: StringCriteria
-	tags?: StringCriteria
+	name?: StringCriteriaObj
+	specialization?: StringCriteriaObj
+	tags?: StringCriteriaObj
 }
-export interface SkillPointBonusObj extends LeveledAmountObj {
-	name?: StringCriteria
-	specialization?: StringCriteria
-	tags?: StringCriteria
+export interface SkillPointBonusObj extends LeveledAmountObj, BaseFeatureObj<feature.Type.SkillPointBonus> {
+	name?: StringCriteriaObj
+	specialization?: StringCriteriaObj
+	tags?: StringCriteriaObj
 }
-export interface SpellBonusObj extends LeveledAmountObj {
+export interface SpellBonusObj extends LeveledAmountObj, BaseFeatureObj<feature.Type.SpellBonus> {
 	match: spellmatch.Type
-	name: StringCriteria
-	tags: StringCriteria
+	name: StringCriteriaObj
+	tags: StringCriteriaObj
 }
-export interface SpellPointBonusObj extends LeveledAmountObj {
+export interface SpellPointBonusObj extends LeveledAmountObj, BaseFeatureObj<feature.Type.SpellPointBonus> {
 	match: spellmatch.Type
-	name: StringCriteria
-	tags: StringCriteria
+	name: StringCriteriaObj
+	tags: StringCriteriaObj
 }
-export interface WeaponBonusObj extends WeaponLeveledAmountObj {
-	type: feature.WeaponBonusType
+export interface WeaponBonusObj<TType extends feature.WeaponBonusType>
+	extends WeaponLeveledAmountObj,
+		BaseFeatureObj<TType> {
 	percent?: boolean
 	switch_type_value?: boolean
 	selection_type: wsel.Type
 	switch_type?: wswitch.Type
-	name?: StringCriteria
-	specialization?: StringCriteria
-	level?: NumericCriteria
-	usage?: StringCriteria
-	tags?: StringCriteria
+	name?: StringCriteriaObj
+	specialization?: StringCriteriaObj
+	level?: NumericCriteriaObj
+	usage?: StringCriteriaObj
+	tags?: StringCriteriaObj
 }
+
 export interface WeaponLeveledAmountObj {
 	amount: number
 	leveled: boolean

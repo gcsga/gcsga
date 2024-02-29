@@ -4,9 +4,7 @@ import { LeveledAmount } from "./leveled-amount.ts"
 import { MoveBonusObj, MoveBonusType } from "./data.ts"
 import { gid } from "@data"
 
-export class MoveBonus extends BonusOwner {
-	override type = feature.Type.MoveBonus
-
+export class MoveBonus extends BonusOwner<feature.Type.MoveBonus> {
 	move_type: string
 
 	limitation: MoveBonusType
@@ -23,7 +21,6 @@ export class MoveBonus extends BonusOwner {
 	override toObject(): MoveBonusObj {
 		return {
 			...super.toObject(),
-			type: this.type,
 			move_type: this.move_type,
 			limitation: this.limitation,
 		}

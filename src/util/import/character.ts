@@ -8,6 +8,25 @@ import {
 	CharacterSystemSource,
 	PointsRecord,
 } from "@actor/character/data.ts"
+import { ActorFlags, ActorType, BlockLayoutKey, ManeuverID, PageSettings, SYSTEM_NAME, SheetSettingsObj } from "@data"
+import { ItemSourceGURPS } from "@item/data/index.ts"
+import { ChatMessageGURPS } from "@module/chat-message/document.ts"
+import {
+	AttributeDefObj,
+	AttributeObj,
+	BodyObj,
+	HitLocationObj,
+	MoveTypeDefObj,
+	MoveTypeObj,
+	MoveTypeOverrideObj,
+	PoolThresholdObj,
+	ResourceTrackerDefObj,
+	ResourceTrackerObj,
+} from "@system"
+import { ItemImporter, LengthUnits, LocalizeGURPS, WeightUnits, getCurrentTime } from "@util"
+import { display } from "@util/enum/display.ts"
+import { progression } from "@util/enum/progression.ts"
+import { GCACharacterImporter } from "./character-gca.ts"
 import {
 	GCS_FILE_VERSION,
 	ImportedAttribute,
@@ -28,25 +47,6 @@ import {
 	ImportedThirdPartyData,
 	ImportedThreshold,
 } from "./data.ts"
-import { progression } from "@util/enum/progression.ts"
-import { ItemImporter, LengthUnits, LocalizeGURPS, WeightUnits, getCurrentTime } from "@util"
-import { display } from "@util/enum/display.ts"
-import { ChatMessageGURPS } from "@module/chat-message/document.ts"
-import { ActorFlags, ActorType, BlockLayoutKey, ManeuverID, PageSettings, SYSTEM_NAME, SheetSettingsObj } from "@data"
-import { GCACharacterImporter } from "./character-gca.ts"
-import { ItemSourceGURPS } from "@item/data/index.ts"
-import {
-	AttributeDefObj,
-	AttributeObj,
-	BodyObj,
-	HitLocationObj,
-	MoveTypeDefObj,
-	MoveTypeObj,
-	MoveTypeOverrideObj,
-	PoolThresholdDef,
-	ResourceTrackerDefObj,
-	ResourceTrackerObj,
-} from "@system"
 
 export class CharacterImporter {
 	static async throwError(text: string): Promise<void> {
@@ -199,7 +199,7 @@ export class CharacterImporter {
 					type: e.type,
 					name: e.name,
 					full_name: e.full_name ?? "",
-					attribute_base: e.attribute_base ?? "",
+					base: e.attribute_base ?? "",
 					cost_per_point: e.cost_per_point ?? 0,
 					cost_adj_percent_per_sm: e.cost_adj_percent_per_sm ?? 0,
 					thresholds: CharacterImporter.importThresholds(e.thresholds),
@@ -242,7 +242,7 @@ export class CharacterImporter {
 		return data ?? []
 	}
 
-	static importThresholds(data?: ImportedThreshold[]): PoolThresholdDef[] {
+	static importThresholds(data?: ImportedThreshold[]): PoolThresholdObj[] {
 		return data ?? []
 	}
 
@@ -273,7 +273,15 @@ export class CharacterImporter {
 	}
 
 	static importAttributes(data?: ImportedAttribute[]): AttributeObj[] {
-		return data ?? []
+		return (
+			data?.map(att => {
+				return {
+					id: att.attr_id,
+					adj: att.adj,
+					damage: att.damage ?? 0,
+				}
+			}) ?? []
+		)
 	}
 
 	static importResourceTrackers(data?: ImportedResourceTracker[]): ResourceTrackerObj[] {

@@ -5,7 +5,7 @@ import {
 } from "@item/abstract-container/data.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { FeatureObj, PrereqListObj, SkillBonus, Study } from "@system"
-import { StringCompareType, selfctrl, skillsel, study } from "@util"
+import { StringCompareType, feature, selfctrl, skillsel, study } from "@util"
 
 type TraitSource = AbstractContainerSource<ItemType.Trait, TraitSystemSource>
 
@@ -32,18 +32,23 @@ interface TraitSystemSource extends AbstractContainerSystemSource {
 	can_level: boolean
 }
 
-const CRFeatures = new Map()
-
-const merchantPenalty = new SkillBonus()
-Object.assign(merchantPenalty, {
-	selection_type: skillsel.Type.Name,
-	name: { compare: StringCompareType.IsString, qualifier: "Merchant" },
-	specialization: { compare: StringCompareType.AnyString },
-	tags: { compare: StringCompareType.AnyString },
-})
-CRFeatures.set(selfctrl.Adjustment.MajorCostOfLivingIncrease, [merchantPenalty])
+const CR_FEATURES = new Map([
+	[
+		selfctrl.Adjustment.MajorCostOfLivingIncrease,
+		[
+			SkillBonus.fromObject({
+				type: feature.Type.SkillBonus,
+				selection_type: skillsel.Type.Name,
+				name: { compare: StringCompareType.IsString, qualifier: "Merchant" },
+				specialization: { compare: StringCompareType.AnyString },
+				tags: { compare: StringCompareType.AnyString },
+				amount: 1,
+			}),
+		],
+	],
+])
 
 interface TraitSystemData extends TraitSystemSource, AbstractContainerSystemData {}
 
-export { CRFeatures }
+export { CR_FEATURES }
 export type { TraitSource, TraitSystemSource, TraitSystemData }

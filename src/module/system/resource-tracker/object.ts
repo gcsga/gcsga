@@ -1,66 +1,41 @@
-import { ResourceTrackerResolver, sanitizeId } from "@util"
+import { ResourceTrackerResolver } from "@util"
 import { ResourceTrackerObj } from "./data.ts"
-import { ResourceTrackerDef } from "./tracker_def.ts"
-import { PoolThreshold, reserved_ids } from "@system"
+import { ResourceTrackerDef } from "./definition.ts"
+import { AbstractAttribute, PoolThreshold } from "@system"
 
-export class ResourceTracker {
-	actor: ResourceTrackerResolver
-
+class ResourceTracker<TActor extends ResourceTrackerResolver> extends AbstractAttribute<TActor> {
 	order: number
+	damage?: number
 
-	tracker_id: string
-
-	damage: number
-
-	constructor(actor: ResourceTrackerResolver, tracker_id: string, order: number, data?: Partial<ResourceTrackerObj>) {
-		if (data) Object.assign(this, data)
-		this.actor = actor
-		this.tracker_id = tracker_id
+	constructor(actor: TActor, data: ResourceTrackerObj, order: number) {
+		super(actor, data)
+		this.damage = data.damage ?? 0
 		this.order = order
-		this.damage ??= 0
 	}
 
-	get id(): string {
-		return this.tracker_id
+	get definition(): ResourceTrackerDef | null {
+		return this.actor.settings.resource_trackers.find(att => att.id === this.id) ?? null
 	}
 
-	set id(v: string) {
-		this.tracker_id = sanitizeId(v, false, reserved_ids)
-	}
-
-	get tracker_def(): ResourceTrackerDef {
-		return new ResourceTrackerDef(this.actor.settings.resource_trackers.find(e => e.id === this.tracker_id))
-	}
-
-	get max(): number {
-		return this.tracker_def.max
-	}
-
-	set max(v: number) {
-		this.tracker_def.max = v
+	override get max(): number {
+		return this.definition?.max ?? 0
 	}
 
 	get min(): number {
-		return this.tracker_def.min
+		return this.definition?.min ?? 0
 	}
 
-	set min(v: number) {
-		this.tracker_def.min = v
+	override get current(): number {
+		return this.max - (this.damage ?? 0)
 	}
 
-	get current(): number {
-		return this.max - this.damage
-	}
-
-	set current(v: number) {
-		this.max = v
-	}
-
-	get currentThreshold(): Partial<PoolThreshold> | null {
-		const cur = this.current
-		for (const t of this.tracker_def.thresholds) {
-			if (cur <= t.threshold!(this.actor)) return t
+	get currentThreshold(): PoolThreshold | null {
+		if (!this.actor || !this.definition) return null
+		for (const threshold of this.definition.thresholds ?? []) {
+			if (this.current <= threshold.threshold(this.actor)) return threshold
 		}
 		return null
 	}
 }
+
+export { ResourceTracker }

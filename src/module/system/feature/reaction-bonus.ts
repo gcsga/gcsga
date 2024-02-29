@@ -4,9 +4,7 @@ import { LeveledAmount } from "./leveled-amount.ts"
 import { ReactionBonusObj } from "./data.ts"
 import { feature } from "@util"
 
-export class ReactionBonus extends BonusOwner {
-	override type = feature.Type.ReactionBonus
-
+export class ReactionBonus extends BonusOwner<feature.Type.ReactionBonus> {
 	situation = LocalizeGURPS.translations.gurps.feature.reaction_bonus
 
 	constructor() {

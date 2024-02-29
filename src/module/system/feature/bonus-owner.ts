@@ -1,35 +1,34 @@
 import { feature } from "@util/enum/feature.ts"
 import { LeveledAmount } from "./leveled-amount.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { LeveledAmountObj } from "./data.ts"
+import { BaseFeatureObj, LeveledAmountObj } from "./data.ts"
 import { WeaponLeveledAmount } from "./weapon-leveled-amount.ts"
-import { Stringer, WeaponOwner } from "@data"
-import { TooltipGURPS } from "@util"
+import { FeatureOwner, TooltipGURPS, WeaponOwner } from "@util"
 
-export abstract class BonusOwner {
-	type: feature.Type = feature.Type.AttributeBonus
+export abstract class BonusOwner<TType extends feature.Type> {
+	declare type: TType
 
-	private _owner?: Stringer | WeaponOwner
+	private _owner: FeatureOwner | WeaponOwner | null = null
 
-	private _subOwner?: Stringer | WeaponOwner
+	private _subOwner: FeatureOwner | WeaponOwner | null = null
 
 	effective?: boolean // If true, bonus is applied later as part of effect bonuses
 
 	leveledAmount: LeveledAmount = new LeveledAmount({ amount: 1 })
 
-	get owner(): Stringer | undefined {
+	get owner(): FeatureOwner | WeaponOwner | null {
 		return this._owner
 	}
 
-	set owner(owner: Stringer | undefined) {
+	set owner(owner: FeatureOwner | WeaponOwner | null) {
 		this._owner = owner
 	}
 
-	get subOwner(): Stringer | undefined {
+	get subOwner(): FeatureOwner | WeaponOwner | null {
 		return this._subOwner
 	}
 
-	set subOwner(subOwner: Stringer | undefined) {
+	set subOwner(subOwner: FeatureOwner | WeaponOwner | null) {
 		this._subOwner = subOwner
 	}
 
@@ -70,7 +69,7 @@ export abstract class BonusOwner {
 		}
 	}
 
-	toObject(): LeveledAmountObj {
+	toObject(): LeveledAmountObj & BaseFeatureObj<TType> {
 		return {
 			type: this.type,
 			amount: this.amount,

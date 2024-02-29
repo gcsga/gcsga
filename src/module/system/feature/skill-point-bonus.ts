@@ -5,7 +5,7 @@ import { SkillPointBonusObj } from "./data.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { TooltipGURPS, feature } from "@util"
 
-export class SkillPointBonus extends BonusOwner {
+export class SkillPointBonus extends BonusOwner<feature.Type.SkillPointBonus> {
 	name?: StringCriteria
 
 	specialization?: StringCriteria

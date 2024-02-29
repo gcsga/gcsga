@@ -5,9 +5,7 @@ import { DRBonusObj } from "./data.ts"
 import { TooltipGURPS, equalFold, feature } from "@util"
 import { gid } from "@module/data/constants.ts"
 
-export class DRBonus extends BonusOwner {
-	override type = feature.Type.DRBonus
-
+export class DRBonus extends BonusOwner<feature.Type.DRBonus> {
 	location: string = gid.Torso
 
 	specialization: string = gid.All

@@ -246,7 +246,7 @@ export class GCACharacterImporter {
 			const id = (e.symbol || e.name).toLowerCase().replace(/ /g, "_")
 			if (!settings.map(f => f.id).includes(id)) return
 			atts.push({
-				attr_id: id,
+				id: id,
 				adj: (e.score ?? 0) - parseInt(e.calcs?.basescore ?? "0"),
 				damage: 0,
 			})

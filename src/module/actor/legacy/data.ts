@@ -1,5 +1,5 @@
-import { ActorFlagsGURPS, ActorSystemData, ActorSystemSource, BaseActorSourceGURPS } from "@actor/base/data.ts"
-import { ActorType, SYSTEM_NAME } from "@module/data/constants.ts"
+import type { ActorFlagsGURPS, ActorSystemData, ActorSystemSource, BaseActorSourceGURPS } from "@actor/base/data.ts"
+import type { ActorType, SYSTEM_NAME } from "@module/data/constants.ts"
 
 type LegacyCharacterSource = BaseActorSourceGURPS<ActorType.LegacyCharacter, LegacyCharacterSystemSource> & {
 	flags: DeepPartial<LegacyCharacterFlags>

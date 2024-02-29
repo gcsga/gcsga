@@ -1,13 +1,311 @@
 import { ActorGURPS } from "@actor"
-import type { ItemFlagsGURPS, ItemSystemData } from "./data.ts"
+import { AbstractContainerGURPS } from "@item"
 import type { ItemSourceGURPS } from "@item/data/index.ts"
+import { CONTAINER_TYPES, ItemFlags, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
+import { MigrationList, MigrationRunner } from "@module/migration/index.ts"
+import { EvalEmbeddedRegex, SkillDefaultResovler, display, replaceAllStringFunc, setHasElement } from "@util"
+import * as R from "remeda"
+import type { ItemFlagsGURPS, ItemSystemData } from "./data.ts"
 import type { ItemSheetGURPS } from "./sheet.ts"
+import { ItemInstances } from "@item/types.ts"
+import { ContainedWeightReduction, ContainedWeightReductionObj, Feature, PrereqList } from "@system"
+import { itemIsOfType } from "@item/helpers.ts"
 
 /** The basic `Item` subclass for the system */
 class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends Item<TParent> {
+	/** Has this document completed `DataModel` initialization? */
+	declare initialized: boolean
+	/**
+	 * The cached container of this item, if in a container, or null
+	 * @ignore
+	 */
+	private declare _container: AbstractContainerGURPS<ActorGURPS> | null
+
+	// Cache for list of unsatisfied prerequisites
+	declare unsatisfiedReason: string
+
+	// Dummy actor, used for actor substitution for skill defaults
+	private declare _dummyActor: SkillDefaultResovler | null
+
+	get dummyActor(): SkillDefaultResovler | null {
+		return this._dummyActor
+	}
+
+	set dummyActor(actor: SkillDefaultResovler | null) {
+		this._dummyActor = actor
+	}
+
 	/** The recorded schema version of this item, updated after each data migration */
 	get schemaVersion(): number | null {
 		return Number(this.system._migration?.version) || null
+	}
+
+	get features(): Feature[] {
+		if (
+			itemIsOfType(
+				this,
+				ItemType.Trait,
+				ItemType.TraitModifier,
+				ItemType.Skill,
+				ItemType.Technique,
+				ItemType.Equipment,
+				ItemType.EquipmentContainer,
+				ItemType.EquipmentModifier,
+			)
+		) {
+			return (
+				this.system.features?.map(feature => {
+					const FeatureConstructor = CONFIG.GURPS.Feature.classes[feature.type]
+					// @ts-expect-error conflicting type definitions, probably ok
+					const f = FeatureConstructor.fromObject(feature as ContainedWeightReductionObj)
+					if (this.isOfType(ItemType.Trait)) {
+						// @ts-expect-error maybe fine? idk
+						if (this.isLeveled && !(f instanceof ContainedWeightReduction)) f.setLevel(this.levels)
+					}
+					return f
+				}) ?? []
+			)
+		}
+		return []
+	}
+
+	get prereqsEmpty(): boolean {
+		if (
+			itemIsOfType(
+				this,
+				ItemType.Trait,
+				ItemType.Skill,
+				ItemType.Technique,
+				ItemType.Spell,
+				ItemType.RitualMagicSpell,
+				ItemType.Equipment,
+				ItemType.EquipmentContainer,
+			)
+		) {
+			if (!this.system.prereqs) return true
+			return this.system.prereqs?.prereqs ? this.system.prereqs.prereqs.length > 1 : false
+		}
+		return true
+	}
+
+	get prereqs(): PrereqList {
+		if (
+			itemIsOfType(
+				this,
+				ItemType.Trait,
+				ItemType.Skill,
+				ItemType.Technique,
+				ItemType.Spell,
+				ItemType.RitualMagicSpell,
+				ItemType.Equipment,
+				ItemType.EquipmentContainer,
+			)
+		) {
+			if (!this.system.prereqs) return new PrereqList()
+			return PrereqList.fromObject(this.system.prereqs, this.actor)
+		}
+		return new PrereqList()
+	}
+
+	/** Don't allow the user to create a condition or spellcasting entry from the sidebar. */
+	static override createDialog<TDocument extends foundry.abstract.Document>(
+		this: ConstructorOf<TDocument>,
+		data?: Record<string, unknown>,
+		context?: {
+			parent?: TDocument["parent"]
+			pack?: Collection<TDocument> | null
+		} & Partial<FormApplicationOptions>,
+	): Promise<TDocument | null>
+	static override async createDialog(
+		data: { folder?: string } = {},
+		context: {
+			parent?: ActorGURPS | null
+			pack?: Collection<ItemGURPS<null>> | null
+		} & Partial<FormApplicationOptions> = {},
+	): Promise<Item<ActorGURPS | null> | null> {
+		const omittedTypes: ItemType[] = []
+		if (BUILD_MODE === "production") omittedTypes.push(ItemType.Condition)
+
+		// Create the dialog, temporarily changing the list of allowed items
+		const original = game.system.documentTypes.Item
+		try {
+			game.system.documentTypes.Item = R.difference(original, omittedTypes)
+			return super.createDialog<ItemGURPS>(data, {
+				...context,
+				classes: [...(context.classes ?? []), "dialog-item-create"],
+			})
+		} finally {
+			game.system.documentTypes.Item = original
+		}
+	}
+
+	/** Include the item type along with data from upstream */
+	override toDragData(): { type: string; itemType: string; [key: string]: unknown } {
+		return { ...super.toDragData(), itemType: this.type }
+	}
+
+	static override async createDocuments<TDocument extends foundry.abstract.Document>(
+		this: ConstructorOf<TDocument>,
+		data?: (TDocument | PreCreate<TDocument["_source"]>)[],
+		context?: DocumentModificationContext<TDocument["parent"]>,
+	): Promise<TDocument[]>
+	static override async createDocuments(
+		data: (ItemGURPS | PreCreate<ItemSourceGURPS>)[] = [],
+		context: DocumentModificationContext<ActorGURPS | null> = {},
+	): Promise<foundry.abstract.Document[]> {
+		// Convert all `ItemGURPS`s to source objects
+		const sources: PreCreate<ItemSourceGURPS>[] = data.map(
+			(d): PreCreate<ItemSourceGURPS> => (d instanceof ItemGURPS ? d.toObject() : d),
+		)
+
+		// Migrate source in case of importing from an old compendium
+		for (const source of [...sources]) {
+			source.effects = [] // Never
+
+			const item = new CONFIG.Item.documentClass(source)
+			await MigrationRunner.ensureSchemaVersion(item, MigrationList.constructFromVersion(item.schemaVersion))
+			data.splice(data.indexOf(source), 1, item.toObject())
+		}
+
+		const actor = context.parent
+		if (!actor) return super.createDocuments(sources, context)
+
+		// Check if this item is valid for this actor
+		if (sources.some(s => !actor.checkItemValidity(s))) {
+			return []
+		}
+
+		return super.createDocuments(sources, context)
+	}
+
+	static override async deleteDocuments<TDocument extends foundry.abstract.Document>(
+		this: ConstructorOf<TDocument>,
+		ids?: string[],
+		context?: DocumentModificationContext<TDocument["parent"]>,
+	): Promise<TDocument[]>
+	static override async deleteDocuments(
+		ids: string[] = [],
+		context: DocumentModificationContext<ActorGURPS | null> = {},
+	): Promise<foundry.abstract.Document[]> {
+		ids = Array.from(new Set(ids))
+		const actor = context.parent
+		if (actor) {
+			const items = ids.flatMap(id => actor.items.get(id) ?? [])
+
+			// If a container is being deleted, its contents are also deleted
+			const containers = items.filter((i): i is AbstractContainerGURPS<ActorGURPS> => i.isOfType("container"))
+			for (const container of containers) {
+				items.push(...container.deepContents)
+			}
+
+			ids = Array.from(new Set(items.map(i => i.id))).filter(id => actor.items.has(id))
+		}
+
+		return super.deleteDocuments(ids, context)
+	}
+
+	get container(): AbstractContainerGURPS<ActorGURPS> | null {
+		if (this.flags[SYSTEM_NAME][ItemFlags.Container] === null) return (this._container = null)
+		return (this._container ??=
+			(this.actor?.items.find(
+				c => c.id === this.flags[SYSTEM_NAME][ItemFlags.Container],
+			) as AbstractContainerGURPS<ActorGURPS>) ?? null)
+	}
+
+	get parents(): (CompendiumCollection<CompendiumDocument> | AbstractContainerGURPS | ActorGURPS)[] {
+		if (!this.container && !this.parent && !this.compendium) return []
+		const parents: (CompendiumCollection<CompendiumDocument> | AbstractContainerGURPS | ActorGURPS)[] = []
+		if (this.container) parents.push(this.container, ...this.container.parents)
+		if (this.actor || this.compendium) parents.push((this.actor || this.compendium)!)
+		return parents
+	}
+
+	/** Check this item's type (or whether it's one among multiple types) without a call to `instanceof` */
+	isOfType<T extends ItemType>(...types: T[]): this is ItemInstances<TParent>[T]
+	isOfType(type: "container"): this is AbstractContainerGURPS<TParent>
+	isOfType<T extends "container" | ItemType>(
+		...types: T[]
+	): this is T extends "container"
+		? AbstractContainerGURPS<TParent>
+		: T extends ItemType
+			? ItemInstances<TParent>[T]
+			: never
+	isOfType(...types: string[]): boolean {
+		return types.some(t => (t === "container" ? setHasElement(CONTAINER_TYPES, this.type) : this.type === t))
+	}
+
+	// The name of the item displayed on the character sheet
+	get formattedName(): string {
+		return this.name ?? ""
+	}
+
+	// The notes of the item displayed on the character sheet
+	secondaryText(_optionChecker: (option: display.Option) => boolean): string {
+		return ""
+	}
+
+	get localNotes(): string {
+		// @ts-expect-error doesn't exist here but does elsewhere
+		return this.system.notes ?? ""
+	}
+
+	// Notes with variables replaced with their values
+	get notes(): string {
+		return replaceAllStringFunc(EvalEmbeddedRegex, this.localNotes, this.actor)
+	}
+
+	get tags(): string[] {
+		if (
+			this.isOfType(
+				ItemType.Trait,
+				ItemType.TraitContainer,
+				ItemType.Skill,
+				ItemType.Technique,
+				ItemType.Spell,
+				ItemType.RitualMagicSpell,
+				ItemType.Equipment,
+				ItemType.EquipmentContainer,
+				ItemType.EquipmentModifier,
+				ItemType.EquipmentModifierContainer,
+			)
+		) {
+			return this.system.tags ?? []
+		}
+		return []
+	}
+
+	/**
+	 * Never prepare data except as part of `DataModel` initialization. If embedded, don't prepare data if the parent is
+	 * not yet initialized. See https://github.com/foundryvtt/foundryvtt/issues/7987
+	 */
+	override prepareData(): void {
+		if (this.initialized) return
+		if (!this.parent || this.parent.initialized) {
+			this.initialized = true
+			super.prepareData()
+		}
+	}
+
+	/** Ensure the presence of the gcsga flag scope with default properties and values */
+	override prepareBaseData(): void {
+		super.prepareBaseData()
+
+		this.system.slug ||= null
+
+		const flags = this.flags
+		flags[SYSTEM_NAME] ??= {
+			[ItemFlags.Container]: this.flags[SYSTEM_NAME][ItemFlags.Container] ?? null,
+		}
+	}
+
+	prepareSiblingData(): void {
+		if (!this.actor) return
+
+		// Clear the container reference if it turns out to be stale
+		if (this._container && !this.actor.items.has(this._container.id)) {
+			this.setFlag(SYSTEM_NAME, ItemFlags.Container, null)
+			this._container = this.flags[SYSTEM_NAME][ItemFlags.Container] = null
+		}
 	}
 }
 
@@ -15,6 +313,7 @@ interface ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> exten
 	constructor: typeof ItemGURPS
 	flags: ItemFlagsGURPS
 	readonly _source: ItemSourceGURPS
+	readonly type: ItemType
 	system: ItemSystemData
 
 	_sheet: ItemSheetGURPS<this> | null

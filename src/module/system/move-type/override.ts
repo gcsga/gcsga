@@ -2,13 +2,14 @@ import { MoveTypeOverrideConditionType, MoveTypeOverrideObj } from "./data.ts"
 import { MoveTypeResolver, evaluateToNumber } from "@util"
 
 export class MoveTypeOverride {
+	// Value to check the actor against
 	condition: { type: MoveTypeOverrideConditionType; qualifier: string }
-
-	move_type_base: string
+	// Overriddes the base value of the move type definition when condition is met
+	base: string
 
 	constructor(data: MoveTypeOverrideObj) {
 		this.condition = data.condition
-		this.move_type_base = data.move_type_base
+		this.base = data.base
 	}
 
 	conditionMet(resolver: MoveTypeResolver): boolean {
@@ -23,6 +24,6 @@ export class MoveTypeOverride {
 	}
 
 	baseValue(resolver: MoveTypeResolver): number {
-		return evaluateToNumber(this.move_type_base, resolver)
+		return evaluateToNumber(this.base, resolver)
 	}
 }

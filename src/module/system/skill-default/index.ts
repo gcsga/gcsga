@@ -4,10 +4,7 @@ import { SkillDefaultResovler } from "@util"
 
 export type SkillDefaultType = gid.Block | gid.Parry | gid.Skill | gid.Ten | string
 
-const skill_based_default_types: Map<string, boolean> = new Map()
-skill_based_default_types.set(gid.Skill, true)
-skill_based_default_types.set(gid.Parry, true)
-skill_based_default_types.set(gid.Block, true)
+const SKILL_BASED_DEFAULT_TYPES: Set<string> = new Set([gid.Skill, gid.Parry, gid.Block])
 
 export interface SkillDefaultObj {
 	type: SkillDefaultType
@@ -38,7 +35,7 @@ export class SkillDefault {
 	}
 
 	get skillBased(): boolean {
-		return skill_based_default_types.get(this.type) ?? false
+		return SKILL_BASED_DEFAULT_TYPES.has(this.type) ?? false
 	}
 
 	equivalent(other?: SkillDefault): boolean {
@@ -133,7 +130,6 @@ export class SkillDefault {
 	bestFast(actor: SkillDefaultResovler, require_points: boolean, excludes: Map<string, boolean> | null): number {
 		let best = -Infinity
 		for (const sk of actor.skillNamed(this.name!, this.specialization || "", require_points, excludes)) {
-			// @ts-expect-error awaiting implementation
 			if (best < sk.level.level) best = sk.level.level
 		}
 		return best

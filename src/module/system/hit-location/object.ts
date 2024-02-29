@@ -2,7 +2,7 @@ import { BodyOwner, StringBuilder, TooltipGURPS, equalFold, sanitizeId } from "@
 import { BodyObj, HitLocationObj } from "./data.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { gid } from "@data"
-import { reserved_ids } from "@system"
+import { RESERVED_IDS } from "@system"
 
 class HitLocation {
 	private _id: string
@@ -23,7 +23,7 @@ class HitLocation {
 	}
 
 	set id(v: string) {
-		this._id = sanitizeId(v, false, reserved_ids)
+		this._id = sanitizeId(v, false, RESERVED_IDS)
 	}
 
 	constructor(actor: BodyOwner) {

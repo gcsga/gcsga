@@ -1,8 +1,8 @@
 import { ActorGURPS } from "@actor"
-import { SceneGURPS } from "../document.ts"
+import type { SceneGURPS } from "../document.ts"
 import { TokenFlagsGURPS } from "./data.ts"
-import { CombatGURPS, CombatantGURPS } from "@module/combat/index.ts"
-import { TokenGURPS } from "@module/canvas/index.ts"
+import type { CombatGURPS, CombatantGURPS } from "@module/combat/index.ts"
+import type { TokenGURPS } from "@module/canvas/index.ts"
 
 class TokenDocumentGURPS<TParent extends SceneGURPS | null = SceneGURPS | null> extends TokenDocument<TParent> {
 	/** This should be in Foundry core, but ... */

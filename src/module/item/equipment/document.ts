@@ -1,11 +1,97 @@
 import { ActorGURPS } from "@actor"
 import { AbstractContainerGURPS } from "@item"
-import { EquipmentSource, EquipmentSystemData } from "./data.ts"
+import { EquipmentFlags, EquipmentSource, EquipmentSystemData } from "./data.ts"
+import { ItemFlags, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
+import { ItemInstances } from "@item/types.ts"
+import { Int, Weight, WeightUnits } from "@util"
+import {
+	extendedWeightAdjustedForModifiers,
+	valueAdjustedForModifiers,
+	weightAdjustedForModifiers,
+} from "@item/helpers.ts"
+import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
 
-class EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends AbstractContainerGURPS<TParent> {}
+class EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends AbstractContainerGURPS<TParent> {
+	get other(): boolean {
+		if (this.container?.isOfType(ItemType.EquipmentContainer)) return this.container.other
+		return this.flags[SYSTEM_NAME][ItemFlags.Other]
+	}
+
+	// Gets weight in pounds
+	get weight(): number {
+		return Weight.fromString(this.system.weight, this.weightUnits)
+	}
+
+	get weightUnits(): WeightUnits {
+		return sheetSettingsFor(this.actor).default_weight_units
+	}
+
+	get weightString(): string {
+		return Weight.format(this.weight, this.weightUnits)
+	}
+
+	get equipped(): boolean {
+		return this.system.equipped && !this.other
+	}
+
+	get modifiers(): Collection<
+		ItemInstances<TParent>[ItemType.EquipmentModifier] | ItemInstances<TParent>[ItemType.EquipmentModifierContainer]
+	> {
+		return new Collection(
+			this.contents
+				.filter(item => item.isOfType(ItemType.EquipmentModifier, ItemType.EquipmentModifierContainer))
+				.map(item => [
+					item.id,
+					item as
+						| ItemInstances<TParent>[ItemType.EquipmentModifier]
+						| ItemInstances<TParent>[ItemType.EquipmentModifierContainer],
+				]),
+		)
+	}
+
+	get deepModifiers(): Collection<ItemInstances<TParent>[ItemType.EquipmentModifier]> {
+		return new Collection(
+			this.deepContents
+				.filter(item => item.isOfType(ItemType.EquipmentModifier))
+				.map(item => [item.id, item as ItemInstances<TParent>[ItemType.EquipmentModifier]]),
+		)
+	}
+
+	get adjustedValue(): number {
+		return Int.from(valueAdjustedForModifiers(this.system.value, this.deepModifiers))
+	}
+
+	get extendedValue(): number {
+		if (this.system.quantity <= 0) return 0
+		return this.adjustedValue
+	}
+
+	adjustedWeight(forSkills: boolean, defUnits: WeightUnits): number {
+		if (forSkills && this.system.ignore_weight_for_skills) return 0
+		return weightAdjustedForModifiers(Weight.fromString(this.system.weight, defUnits), this.deepModifiers, defUnits)
+	}
+
+	get adjustedWeightFast(): string {
+		return Weight.format(this.adjustedWeight(false, this.weightUnits), this.weightUnits)
+	}
+
+	extendedWeight(forSkills: boolean, defUnits: WeightUnits): number {
+		return extendedWeightAdjustedForModifiers(
+			defUnits,
+			this.system.quantity,
+			this.weight,
+			this.deepModifiers,
+			this.features,
+			new Collection(),
+			forSkills,
+			this.system.ignore_weight_for_skills && this.equipped,
+		)
+	}
+}
 
 interface EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | null>
 	extends AbstractContainerGURPS<TParent> {
+	flags: EquipmentFlags
 	readonly _source: EquipmentSource
 	system: EquipmentSystemData
 }

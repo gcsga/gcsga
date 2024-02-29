@@ -3,9 +3,7 @@ import { BonusOwner } from "./bonus-owner.ts"
 import { CostReductionObj } from "./data.ts"
 import { gid } from "@data"
 
-export class CostReduction extends BonusOwner {
-	declare type: feature.Type.CostReduction
-
+export class CostReduction extends BonusOwner<feature.Type.CostReduction> {
 	attribute: string
 
 	percentage?: number
@@ -19,7 +17,6 @@ export class CostReduction extends BonusOwner {
 	// @ts-expect-error incorrect return type
 	override toObject(): CostReductionObj {
 		return {
-			type: this.type,
 			attribute: this.attribute,
 			percentage: this.percentage,
 		}

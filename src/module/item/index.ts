@@ -4,6 +4,7 @@ export * from "./base/document.ts"
 // Abstract
 export { AbstractContainerGURPS } from "./abstract-container/document.ts"
 export { AbstractEffectGURPS } from "./abstract-effect/document.ts"
+export { AbstractSkillGURPS } from "./abstract-skill/document.ts"
 export { AbstractWeaponGURPS } from "./abstract-weapon/document.ts"
 
 // Traits

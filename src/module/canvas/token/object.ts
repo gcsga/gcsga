@@ -1,4 +1,4 @@
-import { TokenDocumentGURPS } from "@scene"
+import type { TokenDocumentGURPS } from "@scene"
 
 class TokenGURPS<TDocument extends TokenDocumentGURPS = TokenDocumentGURPS> extends Token<TDocument> {}
 

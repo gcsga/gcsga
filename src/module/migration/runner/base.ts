@@ -1,9 +1,8 @@
-import { ActorSourceGURPS } from "@actor/data.ts"
+import type { ActorSourceGURPS } from "@actor/data.ts"
 import { MigrationRecord } from "@data"
-import { ItemSourceGURPS } from "@item/data/index.ts"
+import type { ItemSourceGURPS } from "@item/data/index.ts"
 import { MigrationBase } from "@module/migration/base.ts"
-import { SceneGURPS } from "@scene"
-import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
+import type { SceneGURPS, TokenDocumentGURPS } from "@scene"
 
 interface CollectionDiff<T extends foundry.documents.ActiveEffectSource | ItemSourceGURPS> {
 	inserted: T[]

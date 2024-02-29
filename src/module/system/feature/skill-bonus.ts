@@ -4,7 +4,7 @@ import { LeveledAmount } from "./leveled-amount.ts"
 import { SkillBonusObj } from "./data.ts"
 import { feature, skillsel } from "@util"
 
-export class SkillBonus extends BonusOwner {
+export class SkillBonus extends BonusOwner<feature.Type.SkillBonus> {
 	selection_type: skillsel.Type
 
 	name?: StringCriteria

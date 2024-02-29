@@ -7,12 +7,11 @@ import { LocalizeGURPS } from "@util/localize.ts"
 import { Int } from "@util/fxp.ts"
 import { WeaponBonusObj } from "./data.ts"
 import { WeaponLeveledAmount } from "./weapon-leveled-amount.ts"
-import { WeaponOwner } from "@data"
 import { AbstractWeaponGURPS } from "@item"
-import { TooltipGURPS } from "@util"
+import { TooltipGURPS, WeaponOwner } from "@util"
 
-export class WeaponBonus {
-	type: feature.WeaponBonusType
+export class WeaponBonus<TType extends feature.WeaponBonusType = feature.WeaponBonusType> {
+	type: TType
 
 	private _owner?: WeaponOwner
 
@@ -40,7 +39,7 @@ export class WeaponBonus {
 
 	effective?: boolean // If true, bonus is applied later as part of effect bonuses
 
-	constructor(type: feature.WeaponBonusType) {
+	constructor(type: TType) {
 		this.type = type
 		this.selection_type = wsel.Type.WithRequiredSkill
 		this.name = new StringCriteria({ compare: StringCompareType.IsString })
@@ -108,16 +107,19 @@ export class WeaponBonus {
 		buf.push(" [")
 		if (this.type === feature.Type.WeaponSwitch) {
 			buf.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.feature.weapon_bonus.switch, {
+				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.feature.weapon_bonus.weapon_switch, {
 					type: this.switch_type!,
 					value: this.switch_type_value!,
 				}),
 			)
 		} else {
 			buf.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.feature.weapon_bonus[this.type], {
-					level: this.leveledAmount.format(this.percent ?? false),
-				}),
+				LocalizeGURPS.format(
+					LocalizeGURPS.translations.gurps.feature.weapon_bonus[this.type as feature.WeaponBonusType],
+					{
+						level: this.leveledAmount.format(this.percent ?? false),
+					},
+				),
 			)
 		}
 		buf.push("]")
@@ -133,7 +135,7 @@ export class WeaponBonus {
 		return 0
 	}
 
-	toObject(): WeaponBonusObj {
+	toObject(): WeaponBonusObj<TType> {
 		return {
 			type: this.type,
 			percent: this.percent,
@@ -151,7 +153,7 @@ export class WeaponBonus {
 		}
 	}
 
-	static fromObject(data: WeaponBonusObj): WeaponBonus {
+	static fromObject(data: WeaponBonusObj<feature.WeaponBonusType>): WeaponBonus {
 		const bonus = new WeaponBonus(data.type)
 		bonus.percent = data.percent
 		if (data.switch_type) bonus.switch_type = data.switch_type

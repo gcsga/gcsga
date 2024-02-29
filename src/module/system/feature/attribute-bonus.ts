@@ -5,7 +5,7 @@ import { stlimit } from "@util/enum/stlimit.ts"
 import { feature } from "@util/enum/feature.ts"
 import { AttributeBonusObj } from "./data.ts"
 
-export class AttributeBonus extends BonusOwner {
+export class AttributeBonus extends BonusOwner<feature.Type.AttributeBonus> {
 	limitation?: stlimit.Option
 
 	attribute: string
@@ -26,7 +26,6 @@ export class AttributeBonus extends BonusOwner {
 	override toObject(): AttributeBonusObj {
 		return {
 			...super.toObject(),
-			type: this.type,
 			attribute: this.attribute,
 			limitation: this.limitation,
 		}

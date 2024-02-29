@@ -3,11 +3,20 @@ import {
 	AbstractContainerSystemData,
 	AbstractContainerSystemSource,
 } from "@item/abstract-container/data.ts"
-import { ItemType } from "@module/data/constants.ts"
+import { ItemFlagsGURPS } from "@item/data/index.ts"
+import { ItemFlags, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { FeatureObj, PrereqListObj } from "@system"
 import { WeightString } from "@util"
 
-type EquipmentSource = AbstractContainerSource<ItemType.Equipment, EquipmentSystemSource>
+type EquipmentSource = AbstractContainerSource<ItemType.Equipment, EquipmentSystemSource> & {
+	flags: DeepPartial<EquipmentFlags>
+}
+
+type EquipmentFlags = ItemFlagsGURPS & {
+	[SYSTEM_NAME]: {
+		[ItemFlags.Other]: boolean
+	}
+}
 
 interface EquipmentSystemSource extends AbstractContainerSystemSource {
 	type: ItemType.Equipment
@@ -33,4 +42,4 @@ interface EquipmentSystemSource extends AbstractContainerSystemSource {
 
 interface EquipmentSystemData extends EquipmentSystemSource, AbstractContainerSystemData {}
 
-export type { EquipmentSource, EquipmentSystemData, EquipmentSystemSource }
+export type { EquipmentSource, EquipmentSystemData, EquipmentSystemSource, EquipmentFlags }

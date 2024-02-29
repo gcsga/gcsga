@@ -78,9 +78,48 @@ enum ItemType {
 	RangedWeapon = "ranged_weapon",
 }
 
+type ItemTypes =
+	| ItemType.Trait
+	| ItemType.TraitContainer
+	| ItemType.TraitModifier
+	| ItemType.TraitModifierContainer
+	| ItemType.Skill
+	| ItemType.Technique
+	| ItemType.SkillContainer
+	| ItemType.Spell
+	| ItemType.RitualMagicSpell
+	| ItemType.SpellContainer
+	| ItemType.Equipment
+	| ItemType.EquipmentContainer
+	| ItemType.EquipmentModifier
+	| ItemType.EquipmentModifierContainer
+	| ItemType.Note
+	| ItemType.NoteContainer
+	| ItemType.LegacyItem
+	| ItemType.Effect
+	| ItemType.Condition
+	| ItemType.MeleeWeapon
+	| ItemType.RangedWeapon
+
 type EffectType = ItemType.Effect | ItemType.Condition
 
 type WeaponType = ItemType.MeleeWeapon | ItemType.RangedWeapon
+
+const CONTAINER_TYPES = new Set([
+	ItemType.Trait,
+	ItemType.TraitContainer,
+	ItemType.TraitModifierContainer,
+	ItemType.Skill,
+	ItemType.Technique,
+	ItemType.SkillContainer,
+	ItemType.Spell,
+	ItemType.RitualMagicSpell,
+	ItemType.SpellContainer,
+	ItemType.Equipment,
+	ItemType.EquipmentContainer,
+	ItemType.EquipmentModifierContainer,
+	ItemType.NoteContainer,
+] as const)
 
 type ContainerType =
 	| ItemType.Trait
@@ -199,8 +238,8 @@ enum ManeuverID {
 // Actor
 enum ActorType {
 	Character = "character_gcs",
-	LegacyCharacter = "character",
-	LegacyEnemy = "enemy",
+	// LegacyCharacter = "character",
+	// LegacyEnemy = "enemy",
 	Loot = "loot",
 	// MassCombatElement = "element",
 	// Vehicle = "vehicle",
@@ -312,8 +351,9 @@ export {
 	SETTINGS,
 	SOCKET,
 	SSRT_SETTING,
+	CONTAINER_TYPES,
 	SYSTEM_NAME,
 	gid,
 }
 
-export type { EffectType, WeaponType, ContainerType }
+export type { EffectType, WeaponType, ContainerType, ItemTypes }

@@ -1,33 +1,31 @@
 import { PoolThreshold } from "./pool-threshold.ts"
-import { AttributeObj, reserved_ids } from "./data.ts"
-import { AttributeDef } from "./attribute-def.ts"
+import { AttributeObj } from "./data.ts"
+import { AttributeDef } from "./definition.ts"
 import { ActorFlags, SYSTEM_NAME, gid } from "@data"
-import { AttributeResolver, attribute, sanitizeId, stlimit } from "@util"
-import { Mook } from "@system"
+import { AttributeResolver, ErrorGURPS, attribute, stlimit } from "@util"
+import { AbstractAttribute } from "@system/abstract-attribute/object.ts"
 
-export class Attribute {
-	actor: AttributeResolver | Mook
-
-	order: number
-
-	private attr_id: string
-
+class Attribute<TActor extends AttributeResolver> extends AbstractAttribute<TActor> {
 	adj = 0
-
 	damage?: number
+	order: number
+	applyOps: boolean
 
-	apply_ops?: boolean
+	private _overridenThreshold: PoolThreshold | null = null
 
-	_overridenThreshold?: PoolThreshold | null = null
-
-	constructor(actor: AttributeResolver | Mook, attr_id: string, order: number, data?: Partial<AttributeObj>) {
-		if (data) Object.assign(this, data)
-		this.actor = actor
-		this.attr_id = attr_id
+	constructor(actor: TActor, data: AttributeObj, order: number) {
+		super(actor, data)
+		this.adj = data.adj
+		if (data.damage !== undefined) this.damage = data.damage
 		this.order = order
-		if (this.attribute_def?.type === attribute.Type.Pool) {
-			this.apply_ops ??= true
-		}
+		this.applyOps = this.definition?.type === attribute.Type.Pool
+	}
+
+	overrideThreshold(value: PoolThreshold): Error | void {
+		if (!this.definition) return ErrorGURPS(`Attribute with ID ${this.id} has no definition`)
+		if (this.definition.type !== attribute.Type.Pool)
+			return ErrorGURPS(`Cannot set threshold for non-pool attribute "${this.definition?.fullName}"`)
+		this._overridenThreshold = value
 	}
 
 	get bonus(): number {
@@ -37,114 +35,63 @@ export class Attribute {
 
 	get effectiveBonus(): number {
 		if (!this.actor) return 0
-		return this.actor.attributeBonusFor(this.id, stlimit.Option.None, true, null)
+		return this.actor.attributeBonusFor(this.id, stlimit.Option.None, true)
 	}
 
-	get cost_reduction(): number {
+	get definition(): AttributeDef | null {
+		return this.actor.settings.attributes.find(att => att.id === this.id) ?? null
+	}
+
+	override get max(): number {
+		const def = this.definition
+		if (!def) return 0
+		const max = super.max + this.adj + this.bonus
+		if ([attribute.Type.Decimal, attribute.Type.DecimalRef].includes(this.definition?.type)) return Math.floor(max)
+		return max
+	}
+
+	override get current(): number {
+		if (this.definition && this.definition.type === attribute.Type.Pool) return this.max - (this.damage ?? 0)
+		return this.max
+	}
+
+	override get effective(): number {
+		const def = this.definition
+		if (!def) return 0
+		const eff = this.max + this.effectiveBonus
+		if ([attribute.Type.Decimal, attribute.Type.DecimalRef].includes(this.definition?.type)) return Math.floor(eff)
+		if (this.id === gid.Strength) return this.actor.effectiveST(eff)
+		return eff
+	}
+
+	get points(): number {
+		const def = this.definition
+		if (!def) return 0
+		let sm = 0
+		if (this.actor) sm = this.actor.adjustedSizeModifier
+		return def.computeCost(this.actor, this.adj, this.costReduction, sm)
+	}
+
+	get costReduction(): number {
 		if (!this.actor) return 0
 		return this.actor.costReductionFor(this.id)
 	}
 
-	get id(): string {
-		return this.attr_id
-	}
-
-	set id(v: string) {
-		this.attr_id = sanitizeId(v, false, reserved_ids)
-	}
-
-	get attribute_def(): AttributeDef {
-		return this.actor.settings.attributes.find(e => e.id === this.attr_id) as AttributeDef
-	}
-
-	get max(): number {
-		const def = this.attribute_def
-		if (!def) return 0
-		const max = def.baseValue(this.actor) + this.adj + this.bonus
-		if (![attribute.Type.Decimal, attribute.Type.DecimalRef].includes(def.type)) {
-			return Math.floor(max)
-		}
-		return max
-	}
-
-	set max(v: number) {
-		if (this.max === v) return
-		const def = this.attribute_def
-		if (def) this.adj = v - (def.baseValue(this.actor) + this.bonus)
-	}
-
-	get effective(): number {
-		return this._effective()
-	}
-
-	_effective(bonus = 0): number {
-		const def = this.attribute_def
-		if (!def) return 0
-		let effective = this.max + this.effectiveBonus + bonus
-		if (![attribute.Type.Decimal, attribute.Type.DecimalRef].includes(def.type)) {
-			effective = Math.floor(effective)
-		}
-		if (this.id === gid.Strength) return this.actor.effectiveST(effective)
-		return effective
-	}
-
-	get current(): number {
-		const max = this.max
-		const def = this.attribute_def
-		if (!def || def.type !== attribute.Type.Pool) {
-			return max
-		}
-		return max - (this.damage ?? 0)
-	}
-
-	set current(v: number) {
-		this.max = v
-	}
-
-	private get _manualThreshold(): PoolThreshold | null {
-		if (this.actor instanceof Mook) return null
-		return this.actor.flags?.[SYSTEM_NAME][ActorFlags.AutoThreshold].manual[this.id] || null
+	private _manualThreshold(): PoolThreshold | null {
+		if (!this.actor || !this.definition) return null
+		return this.actor.flags[SYSTEM_NAME][ActorFlags.AutoThreshold].manual[this.id] ?? null
 	}
 
 	get currentThreshold(): PoolThreshold | null {
-		const actor = this.actor
-		if (actor instanceof Mook) return null
-		const def = this.attribute_def
-		if (!def) return null
-		if (
-			[attribute.Type.PrimarySeparator, attribute.Type.SecondarySeparator, attribute.Type.PoolSeparator].includes(
-				def.type,
-			)
-		)
-			return null
+		if (!this.actor || !this.definition) return null
+		if (this.definition.type !== attribute.Type.Pool) return null
 		if (this._overridenThreshold) return this._overridenThreshold
-		if (actor.flags[SYSTEM_NAME][ActorFlags.AutoThreshold].active === false) return this._manualThreshold
-		const cur = this.current
-		if (def.thresholds) {
-			for (const t of def.thresholds) {
-				if (cur <= t.threshold!(this.actor)) return t
-			}
+		if (this.actor.flags[SYSTEM_NAME][ActorFlags.AutoThreshold].active === false) return this._manualThreshold()
+		for (const threshold of this.definition.thresholds ?? []) {
+			if (this.current <= threshold.threshold(this.actor)) return threshold
 		}
 		return null
 	}
-
-	get points(): number {
-		const def = this.attribute_def
-		if (!def) return 0
-		let sm = 0
-		if (this.actor) sm = this.actor.adjustedSizeModifier
-		return def.computeCost(this.actor, this.adj, this.cost_reduction, sm)
-	}
-
-	toObj(): AttributeObj {
-		const obj: AttributeObj = {
-			// Bonus: this.bonus,
-			// cost_reduction: this.costReduction,
-			// order: this.order,
-			attr_id: this.attr_id,
-			adj: this.adj,
-		}
-		if (this.damage) obj.damage = this.damage
-		return obj
-	}
 }
+
+export { Attribute }

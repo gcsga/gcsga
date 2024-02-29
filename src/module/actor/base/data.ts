@@ -1,6 +1,6 @@
-import { ActorGURPS } from "@actor"
-import { ActorType, MigrationRecord, SYSTEM_NAME } from "@data"
-import { ItemSourceGURPS } from "@item/data/index.ts"
+import type { ActorGURPS } from "@actor"
+import type { ActorFlags, ActorType, MigrationRecord, RollModifier, SYSTEM_NAME } from "@data"
+import type { ItemSourceGURPS } from "@item/data/index.ts"
 
 /** Base interface for all actor data */
 type BaseActorSourceGURPS<
@@ -13,6 +13,9 @@ type BaseActorSourceGURPS<
 
 type ActorFlagsGURPS = foundry.documents.ActorFlags & {
 	[SYSTEM_NAME]: {
+		[ActorFlags.TargetModifiers]: RollModifier[]
+		[ActorFlags.SelfModifiers]: RollModifier[]
+		[ActorFlags.Import]: { name: string; path: string; last_import: string }
 		[key: string]: unknown
 	}
 }

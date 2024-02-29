@@ -1,9 +1,8 @@
-import { ActorFlagsGURPS, ActorSystemData, ActorSystemSource, BaseActorSourceGURPS } from "@actor/base/data.ts"
+import type { ActorFlagsGURPS, ActorSystemData, ActorSystemSource, BaseActorSourceGURPS } from "@actor/base/data.ts"
 import { ActorFlags, ActorType, SYSTEM_NAME, SheetSettingsObj, gid } from "@data"
-import { RollModifier } from "@module/data/types.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
-import { AttributeObj, MoveTypeObj, PoolThreshold, ResourceTrackerObj } from "@system"
-import { Weight } from "@util"
+import type { AttributeObj, MoveTypeObj, PoolThreshold, ResourceTrackerObj } from "@system"
+import type { Weight } from "@util/weight.ts"
 
 type CharacterSource = BaseActorSourceGURPS<ActorType.Character, CharacterSystemSource> & {
 	flags: DeepPartial<CharacterFlags>
@@ -11,14 +10,10 @@ type CharacterSource = BaseActorSourceGURPS<ActorType.Character, CharacterSystem
 
 type CharacterFlags = ActorFlagsGURPS & {
 	[SYSTEM_NAME]: {
-		[ActorFlags.TargetModifiers]: RollModifier[]
-
-		[ActorFlags.SelfModifiers]: RollModifier[]
 		[ActorFlags.MoveType]: string
 		[ActorFlags.AutoEncumbrance]: { active: boolean; manual: number }
 		[ActorFlags.AutoThreshold]: { active: boolean; manual: Record<string, PoolThreshold | null> }
 		[ActorFlags.AutoDamage]: { active: boolean; thrust: DiceGURPS; swing: DiceGURPS }
-		[ActorFlags.Import]: { name: string; path: string; last_import: string }
 	}
 }
 
@@ -126,5 +121,15 @@ export const CharacterDefaultData: Partial<CharacterSystemSource> = {
 	},
 }
 
+export interface PointsBreakdown {
+	ancestry: number
+	attributes: number
+	advantages: number
+	disadvantages: number
+	quirks: number
+	skills: number
+	spells: number
+}
+
 export { CharacterFlagDefaults }
-export type { CharacterSource, CharacterSystemSource, CharacterSystemData, CharacterFlags }
+export type { CharacterFlags, CharacterSource, CharacterSystemData, CharacterSystemSource }
