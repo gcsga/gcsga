@@ -3,8 +3,9 @@ import { BasePrereq } from "./base.ts"
 import { NumericCompareType, NumericCriteria } from "@util/numeric-criteria.ts"
 import { prereq } from "@util/enum/prereq.ts"
 import { TraitPrereqObj } from "./data.ts"
-import { LocalizeGURPS, PrereqResolver, TooltipGURPS } from "@util"
-import { LootGURPS } from "@actor"
+import { LocalizeGURPS, TooltipGURPS } from "@util"
+import { ActorGURPS } from "@actor"
+import { ActorType, ItemType } from "@module/data/constants.ts"
 
 export class TraitPrereq extends BasePrereq {
 	override type = prereq.Type.Trait
@@ -31,17 +32,15 @@ export class TraitPrereq extends BasePrereq {
 		return prereq
 	}
 
-	satisfied(actor: PrereqResolver, exclude: unknown, tooltip: TooltipGURPS): boolean {
-		if (actor instanceof LootGURPS) return true
+	satisfied(actor: ActorGURPS, exclude: unknown, tooltip: TooltipGURPS): boolean {
+		if (actor.isOfType(ActorType.Loot)) return true
 		let satisfied = false
-		for (const t of actor.traits) {
+		for (const t of actor.itemTypes[ItemType.Trait]) {
 			if (exclude === t || !this.name.matches(t.name ?? "")) continue
 			let notes = t.system.notes
-			// @ts-expect-error awaiting implementation
 			if (t.modifierNotes !== "") notes += `\n${t.modifierNotes}`
 			if (!this.notes.matches(notes)) continue
 			let levels = 0
-			// @ts-expect-error awaiting implementation
 			if (t.isLeveled) levels = Math.max(t.levels, 0)
 			satisfied = this.level.matches(levels)
 		}

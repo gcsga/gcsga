@@ -2,10 +2,10 @@ import { PoolThreshold } from "./pool-threshold.ts"
 import { AttributeObj } from "./data.ts"
 import { AttributeDef } from "./definition.ts"
 import { ActorFlags, SYSTEM_NAME, gid } from "@data"
-import { AttributeResolver, ErrorGURPS, attribute, stlimit } from "@util"
+import { AttributeResolver, ErrorGURPS, Int, attribute, stlimit } from "@util"
 import { AbstractAttribute } from "@system/abstract-attribute/object.ts"
 
-class Attribute<TActor extends AttributeResolver> extends AbstractAttribute<TActor> {
+class AttributeGURPS<TActor extends AttributeResolver = AttributeResolver> extends AbstractAttribute<TActor> {
 	adj = 0
 	damage?: number
 	order: number
@@ -22,8 +22,7 @@ class Attribute<TActor extends AttributeResolver> extends AbstractAttribute<TAct
 	}
 
 	overrideThreshold(value: PoolThreshold): Error | void {
-		if (!this.definition) return ErrorGURPS(`Attribute with ID ${this.id} has no definition`)
-		if (this.definition.type !== attribute.Type.Pool)
+		if (this.definition?.type !== attribute.Type.Pool)
 			return ErrorGURPS(`Cannot set threshold for non-pool attribute "${this.definition?.fullName}"`)
 		this._overridenThreshold = value
 	}
@@ -39,7 +38,12 @@ class Attribute<TActor extends AttributeResolver> extends AbstractAttribute<TAct
 	}
 
 	get definition(): AttributeDef | null {
-		return this.actor.settings.attributes.find(att => att.id === this.id) ?? null
+		const definition = this.actor.settings.attributes.find(att => att.id === this.id)
+		if (!definition) {
+			ErrorGURPS(`Attribute with ID ${this.id} has no definition`)
+			return null
+		}
+		return definition
 	}
 
 	override get max(): number {
@@ -92,6 +96,25 @@ class Attribute<TActor extends AttributeResolver> extends AbstractAttribute<TAct
 		}
 		return null
 	}
+
+	get isPool(): boolean {
+		if (!this.definition) return false
+		return [attribute.Type.Pool, attribute.Type.PoolSeparator].includes(this.definition.type)
+	}
+
+	get isPrimary(): boolean {
+		if (!this.definition) return false
+		if (this.definition.type === attribute.Type.PrimarySeparator) return true
+		const [, err] = Int.fromString(this.definition.base)
+		return err === null
+	}
+
+	get isSecondary(): boolean {
+		if (!this.definition) return false
+		if (this.definition.type === attribute.Type.SecondarySeparator) return true
+		const [, err] = Int.fromString(this.definition.base)
+		return err !== null
+	}
 }
 
-export { Attribute }
+export { AttributeGURPS }

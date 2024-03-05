@@ -24,7 +24,6 @@ export class WeaponBulk extends WeaponField {
 	resolve(w: AbstractWeaponGURPS, tooltip: TooltipGURPS): WeaponBulk {
 		const result = new WeaponBulk()
 		Object.assign(result, this)
-		// @ts-expect-error awaiting implementation
 		for (const bonus of w.collectWeaponBonuses(1, tooltip, feature.Type.WeaponBulkBonus)) {
 			const amt = bonus.adjustedAmountForWeapon(w)
 			result.normal += amt

@@ -1,6 +1,7 @@
 import { SOCKET, SYSTEM_NAME } from "@data"
 import { loadModifiers } from "@module/apps/modifier-bucket/data.ts"
 import { TokenHUDGURPS } from "@module/canvas/index.ts"
+import { SetGameGURPS } from "@scripts/set-game-gurps.ts"
 import { LastActor } from "@util"
 // import { ColorSettings } from "@module/settings/colors.ts"
 // import { SetGameGURPS } from "@scripts/set-game-gurps.ts"
@@ -11,7 +12,7 @@ export const Ready = {
 		Hooks.once("ready", async () => {
 			console.log("GURPS | Starting GURPS Game Aid")
 			// Some of game.gurps must wait until the ready phase
-			// SetGameGURPS.onReady()
+			SetGameGURPS.onReady()
 
 			// Do anything once the system is ready
 			// ColorSettings.applyColors()

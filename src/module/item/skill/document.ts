@@ -119,7 +119,7 @@ class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 			let bonus = actor.skillBonusFor(this.name!, this.specialization, this.tags, tooltip)
 			level += bonus
 			relativeLevel += bonus
-			bonus = actor.encumbranceLevel(true).penalty * this.encumbrancePenaltyMultiplier
+			bonus = actor.encumbrance.forSkills.penalty * this.encumbrancePenaltyMultiplier
 			level += bonus
 			if (bonus !== 0) {
 				tooltip.push(

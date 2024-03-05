@@ -3,7 +3,7 @@ import { ItemGURPS, SkillGURPS } from "@item"
 import { ItemType } from "@module/data/constants.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { Study } from "@system"
-import { LocalizeGURPS, isContainer, localeDate, rgbToHex, study } from "@util"
+import { LocalizeGURPS, isContainer, localeDate, objectHasKey, rgbToHex, study } from "@util"
 import { pageRef } from "@util/page-ref.ts"
 import { SafeString } from "handlebars"
 
@@ -69,7 +69,15 @@ class HandlebarsHelpersGURPS {
 			let line = value
 				.split(" ")
 				.slice(0, line_length) // Get only first N items
-				.filter(s => items[s].length || !["reactions", "conditional_modifiers", "melee", "ranged"].includes(s))
+				.filter(s => {
+					if (objectHasKey(items, s)) {
+						return (
+							items[s].length > 0 ||
+							!["reactions", "conditional_modifiers", "melee", "ranged"].includes(s)
+						)
+					}
+					return false
+				})
 			if (!line.length) continue
 			if (line_length > line.length) line = line.concat(Array(line_length - line.length).fill(line[0]))
 			outString += `\n"${line.join(" ")}"`
@@ -394,9 +402,7 @@ class HandlebarsHelpersGURPS {
 		if (a instanceof Item) {
 			if (a.type === ItemType.Skill) {
 				const sk = a as SkillGURPS
-				// @ts-expect-error awaiting implementation
 				if (sk.effectiveLevel > sk.level.level) return "pos"
-				// @ts-expect-error awaiting implementation
 				if (sk.effectiveLevel > sk.level.level) return "neg"
 				return ""
 			}

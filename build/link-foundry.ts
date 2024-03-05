@@ -22,7 +22,7 @@ if (!dataPathStats?.isDirectory()) {
 	process.exit(1)
 }
 
-const symlinkPath = path.resolve(dataPath, "systems", "pf2e")
+const symlinkPath = path.resolve(dataPath, "systems", "gcsga")
 const symlinkStats = fs.lstatSync(symlinkPath, { throwIfNoEntry: false })
 if (symlinkStats) {
 	const atPath = symlinkStats.isDirectory() ? "folder" : symlinkStats.isSymbolicLink() ? "symlink" : "file"
@@ -31,7 +31,7 @@ if (symlinkStats) {
 			type: "confirm",
 			name: "value",
 			initial: false,
-			message: `A "pf2e" ${atPath} already exists in the "systems" subfolder. Replace with new symlink?`,
+			message: `A "gcsga" ${atPath} already exists in the "systems" subfolder. Replace with new symlink?`,
 		})
 	).value
 	if (!proceed) {

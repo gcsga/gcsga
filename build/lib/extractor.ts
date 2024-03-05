@@ -306,9 +306,9 @@ class PackExtractor {
 	}
 
 	#sanitizeDocument<T extends PackEntry>(docSource: T, { isEmbedded } = { isEmbedded: false }): T {
-		// Clear non-core/pf2e flags
+		// Clear non-core/gcsga flags
 		for (const flagScope in docSource.flags) {
-			if (!["core", "pf2e"].includes(flagScope) || !isEmbedded) {
+			if (!["core", "gcsga"].includes(flagScope) || !isEmbedded) {
 				delete docSource.flags[flagScope]
 			}
 		}
@@ -428,13 +428,13 @@ class PackExtractor {
 
 				if ("img" in docSource && typeof docSource.img === "string") {
 					docSource.img = docSource.img.replace(
-						"https://assets.forge-vtt.com/bazaar/systems/pf2e/assets/",
-						"systems/pf2e/",
+						"https://assets.forge-vtt.com/bazaar/systems/gcsga/assets/",
+						"systems/gcsga/",
 					) as ImageFilePath
 				}
 
-				if (R.isPlainObject(docSource.flags?.pf2e) && Object.keys(docSource.flags.pf2e).length === 0) {
-					delete docSource.flags.pf2e
+				if (R.isPlainObject(docSource.flags?.gcsga) && Object.keys(docSource.flags.gcsga).length === 0) {
+					delete docSource.flags.gcsga
 				}
 				if (Object.keys(docSource.flags ?? {}).length === 0) {
 					delete (docSource as { flags?: object }).flags
@@ -565,8 +565,8 @@ class PackExtractor {
 		// 	const isFeat = !["ancestryfeature", "classfeature", "pfsboon", "deityboon", "curse"].includes(
 		// 		source.system.category,
 		// 	)
-		// 	if (isFeat && source.img === "systems/pf2e/icons/default-icons/feat.svg") {
-		// 		source.img = "systems/pf2e/icons/features/feats/feats.webp"
+		// 	if (isFeat && source.img === "systems/gcsga/icons/default-icons/feat.svg") {
+		// 		source.img = "systems/gcsga/icons/features/feats/feats.webp"
 		// 	}
 		//
 		// 	if (source.system.maxTakable === 1) {

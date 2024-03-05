@@ -52,7 +52,6 @@ export class CompendiumBrowserTraitTab extends CompendiumBrowserTab {
 				} else {
 					return
 				}
-				// @ts-expect-error awaiting implementation
 				for (const tag of item.tags) tags.add(tag)
 
 				traits.push({
@@ -60,17 +59,11 @@ export class CompendiumBrowserTraitTab extends CompendiumBrowserTab {
 					name: item.name,
 					img: item.img,
 					uuid: `Compendium.${pack.collection}.${item._id}`,
-					// @ts-expect-error awaiting implementation
 					formattedName: item.formattedName,
-					// @ts-expect-error awaiting implementation
 					resolvedNotes: item.resolvedNotes,
-					// @ts-expect-error awaiting implementation
-					points: item.adjustedPoints(),
-					// @ts-expect-error awaiting implementation
+					points: item.adjustedPoints,
 					tags: item.tags,
-					// @ts-expect-error awaiting implementation
-					reference: item.reference,
-					// @ts-expect-error awaiting implementation
+					reference: item.system.reference,
 					enabled: item.enabled,
 				})
 			})

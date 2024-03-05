@@ -1,1 +1,1 @@
-export { LegacyCharacterGURPS } from "./document.ts"
+// export { LegacyCharacterGURPS } from "./document.ts"

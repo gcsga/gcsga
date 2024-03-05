@@ -27,7 +27,6 @@ export class WeaponROF extends WeaponField {
 
 	resolve(w: AbstractWeaponGURPS, tooltip?: TooltipGURPS): WeaponROF {
 		const result = WeaponROF.parse(this.toString())
-		// @ts-expect-error awaiting implementation
 		result.jet = w.resolveBoolFlag(wswitch.Type.Jet, result.jet)
 		if (!result.jet) {
 			const [buf1, buf2] = [new TooltipGURPS(), new TooltipGURPS()]

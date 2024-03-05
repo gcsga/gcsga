@@ -1,6 +1,5 @@
-import { ActorGURPS, CharacterGURPS } from "@actor"
-import { gid } from "@data"
-import { SkillDefaultResovler } from "@util"
+import { ActorGURPS } from "@actor"
+import { ActorType, gid } from "@data"
 
 export type SkillDefaultType = gid.Block | gid.Parry | gid.Skill | gid.Ten | string
 
@@ -48,7 +47,7 @@ export class SkillDefault {
 		)
 	}
 
-	fullName(actor: SkillDefaultResovler): string {
+	fullName(actor: ActorGURPS): string {
 		if (this.skillBased) {
 			let buffer = ""
 			buffer += this.name
@@ -62,11 +61,12 @@ export class SkillDefault {
 	}
 
 	skillLevel(
-		actor: SkillDefaultResovler,
+		actor: ActorGURPS,
 		require_points: boolean,
 		excludes: Map<string, boolean>,
 		rule_of_20: boolean,
 	): number {
+		if (!actor.isOfType(ActorType.Character)) return 0
 		let best = -Infinity
 		switch (this.type) {
 			case gid.Parry:
@@ -84,10 +84,10 @@ export class SkillDefault {
 		}
 	}
 
-	best(actor: SkillDefaultResovler, require_points: boolean, excludes: Map<string, boolean>): number {
+	best(actor: ActorGURPS, require_points: boolean, excludes: Map<string, boolean>): number {
 		let best = -Infinity
+		if (!actor.isOfType(ActorType.Character)) return best
 		for (const s of actor.skillNamed(this.name!, this.specialization || "", require_points, excludes)) {
-			// @ts-expect-error awaiting implementation
 			const level = s.calculateLevel().level
 			if (best < level) best = level
 		}
@@ -95,17 +95,17 @@ export class SkillDefault {
 	}
 
 	skillLevelFast(
-		actor: SkillDefaultResovler,
+		actor: ActorGURPS,
 		require_points: boolean,
 		excludes: Map<string, boolean> | null = new Map(),
 		rule_of_20 = false,
 	): number {
 		let level = 0
 		let best = 0
-		if (actor instanceof ActorGURPS && !(actor instanceof CharacterGURPS)) return 0
+		if (!actor.isOfType(ActorType.Character)) return 0
 		switch (this.type) {
 			case gid.Dodge:
-				level = actor.dodge(actor.encumbranceLevel(true))
+				level = actor.encumbrance.current.dodge.normal
 				if (rule_of_20 && level > 20) level = 20
 				return this.finalLevel(level)
 			case gid.Parry:
@@ -127,8 +127,9 @@ export class SkillDefault {
 		}
 	}
 
-	bestFast(actor: SkillDefaultResovler, require_points: boolean, excludes: Map<string, boolean> | null): number {
+	bestFast(actor: ActorGURPS, require_points: boolean, excludes: Map<string, boolean> | null): number {
 		let best = -Infinity
+		if (!actor.isOfType(ActorType.Character)) return best
 		for (const sk of actor.skillNamed(this.name!, this.specialization || "", require_points, excludes)) {
 			if (best < sk.level.level) best = sk.level.level
 		}

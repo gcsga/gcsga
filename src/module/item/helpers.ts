@@ -9,6 +9,9 @@ import { EquipmentContainerGURPS } from "./equipment-container/document.ts"
 import { EquipmentModifierGURPS } from "./equipment-modifier/document.ts"
 import { EquipmentGURPS } from "./equipment/document.ts"
 import { ItemInstances } from "./types.ts"
+import { TraitGURPS } from "./trait/document.ts"
+import { TargetTrait, TargetTraitModifier } from "@module/apps/damage-calculator/index.ts"
+import { TraitModifierGURPS } from "./trait-modifier/document.ts"
 
 type ItemOrSource = PreCreate<ItemSourceGURPS> | ItemGURPS
 
@@ -182,11 +185,62 @@ function modifyPoints(points: number, modifier: number): number {
 	return points + calculateModifierPoints(points, modifier)
 }
 
+/**
+ * Adapt a TraitGURPS to the TargetTrait interface expected by the Damage Calculator.
+ */
+class TraitAdapter implements TargetTrait {
+	private trait: TraitGURPS
+
+	// Actor
+	//  .traits.contents.find(it => it.name === 'Damage Resistance')
+	//  .modifiers.contents.filter(it => it.enabled === true).find(it => it.name === 'Hardened')
+
+	getModifier(name: string): TraitModifierAdapter | undefined {
+		return this.modifiers?.find(it => it.name === name)
+	}
+
+	get levels(): number {
+		return this.trait.levels
+	}
+
+	get name(): string {
+		return this.trait.name
+	}
+
+	get modifiers(): TraitModifierAdapter[] {
+		return this.trait.deepModifiers.filter(mod => mod.enabled).map(mod => new TraitModifierAdapter(mod))
+	}
+
+	constructor(trait: TraitGURPS) {
+		this.trait = trait
+	}
+}
+
+/**
+ * Adapt the TraitModifierGURPS to the interface expected by Damage calculator.
+ */
+class TraitModifierAdapter implements TargetTraitModifier {
+	private modifier: TraitModifierGURPS
+
+	get levels(): number {
+		return this.modifier.levels
+	}
+
+	get name(): string {
+		return this.modifier.name!
+	}
+
+	constructor(modifier: TraitModifierGURPS) {
+		this.modifier = modifier
+	}
+}
+
 export {
 	calculateModifierPoints,
 	extendedWeightAdjustedForModifiers,
 	itemIsOfType,
 	modifyPoints,
 	valueAdjustedForModifiers,
+	TraitAdapter,
 	weightAdjustedForModifiers,
 }

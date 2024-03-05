@@ -272,7 +272,7 @@ class CharacterSheetConfig<
 					type: attribute.Type.Integer,
 					id: new_id,
 					name: "",
-					attribute_base: "",
+					base: "",
 					cost_per_point: 0,
 					cost_adj_percent_per_sm: 0,
 				})
@@ -281,6 +281,7 @@ class CharacterSheetConfig<
 			case DropDataType.ResourceTrackers:
 				this.resource_trackers.push({
 					id: new_id,
+					base: "",
 					name: "",
 					full_name: "",
 					max: 0,
@@ -355,7 +356,7 @@ class CharacterSheetConfig<
 				this.move_types.push({
 					id: new_id,
 					name: "",
-					move_type_base: "",
+					base: "",
 					cost_per_point: 0,
 					overrides: [],
 				})
@@ -368,7 +369,7 @@ class CharacterSheetConfig<
 						type: MoveTypeOverrideConditionType.Condition,
 						qualifier: "",
 					},
-					move_type_base: "",
+					base: "",
 				})
 				await this.object.update({ "system.settings.move_types": this.move_types })
 				return this.render()
@@ -422,10 +423,8 @@ class CharacterSheetConfig<
 
 	protected async _reimport(event: JQuery.ClickEvent): Promise<void> {
 		event.preventDefault()
-		// @ts-expect-error awaiting implementation
 		const import_path = this.object.importData.path
 		const import_name = import_path.match(/.*[/\\]Data[/\\](.*)/)
-		// @ts-expect-error awaiting implementation
 		const file_path = import_name?.[1].replace(/\\/g, "/") || this.object.importData.name
 		const request = new XMLHttpRequest()
 		request.open("GET", file_path)

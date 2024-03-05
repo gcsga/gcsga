@@ -1,4 +1,4 @@
-import { CharacterFlags, Encumbrance } from "@actor/character/data.ts"
+import { CharacterFlags } from "@actor/character/data.ts"
 import {
 	AttributeDef,
 	BodyGURPS,
@@ -25,9 +25,10 @@ import {
 } from "@item"
 import { WeightUnits } from "./weight.ts"
 import { ActorGURPS } from "@actor"
+import { CharacterEncumbrance } from "@actor/character/encumbrance.ts"
 
 interface BodyOwner {
-	hitLocationTable: BodyGURPS
+	hitLocationTable: BodyGURPS<this>
 	addDRBonusesFor: (
 		locationID: string,
 		tooltip: TooltipGURPS | null,
@@ -36,7 +37,7 @@ interface BodyOwner {
 }
 
 interface EquipmentHolder {
-	collections: {
+	itemCollections: {
 		equipment: Collection<EquipmentGURPS | EquipmentContainerGURPS>
 	}
 	settings: {
@@ -50,7 +51,7 @@ interface VariableResolver {
 
 interface PrereqResolver extends EquipmentHolder, VariableResolver {
 	techLevel: string
-	collections: {
+	itemCollections: {
 		traits: Collection<TraitGURPS | TraitContainerGURPS>
 		skills: Collection<SkillGURPS | TechniqueGURPS | SkillContainerGURPS>
 		spells: Collection<SpellGURPS | RitualMagicSpellGURPS | SpellContainerGURPS>
@@ -82,7 +83,7 @@ interface MoveTypeResolver extends VariableResolver {
 	settings: {
 		move_types: MoveTypeDef[]
 	}
-	collections: {
+	itemCollections: {
 		traits: Collection<TraitGURPS<ActorGURPS> | TraitContainerGURPS<ActorGURPS>>
 		skills: Collection<SkillGURPS<ActorGURPS> | TechniqueGURPS<ActorGURPS> | SkillContainerGURPS<ActorGURPS>>
 		conditions: Collection<ConditionGURPS<ActorGURPS>>
@@ -106,13 +107,7 @@ interface SkillDefaultResolver extends VariableResolver {
 		require_points: boolean,
 		excludes: Map<string, boolean> | null,
 	) => Collection<SkillGURPS | TechniqueGURPS>
-	dodge: (enc: Encumbrance) => number
-	encumbranceLevel: (forSkills: boolean) => {
-		level: number
-		maximum_carry: number
-		penalty: number
-		name: string
-	}
+	encumbrance: CharacterEncumbrance
 	parryBonus: number
 	blockBonus: number
 	dodgeBonus: number
@@ -135,12 +130,7 @@ interface WeaponBonusResolver extends VariableResolver {
 		tags: string[],
 		tooltip: TooltipGURPS | null,
 	) => SkillBonus[]
-	encumbranceLevel: (forSkills: boolean) => {
-		level: number
-		maximum_carry: number
-		penalty: number
-		name: string
-	}
+	encumbrance: CharacterEncumbrance
 }
 
 interface FeatureOwner {

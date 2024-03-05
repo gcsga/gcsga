@@ -93,7 +93,6 @@ export class WeaponBonus<TType extends feature.WeaponBonusType = feature.WeaponB
 		if (this.type === feature.Type.WeaponMinSTBonus) {
 			this.leveledAmount.dieCount = 1
 		} else {
-			// @ts-expect-error awaiting implementation
 			this.leveledAmount.dieCount = Int.from(wpn.damage.base!.count)
 		}
 		return this.leveledAmount.adjustedAmount

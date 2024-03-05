@@ -94,9 +94,18 @@ export interface PointsRecord {
 
 export interface Encumbrance {
 	level: number
-	maximum_carry: number
+	maximumCarry: number
 	penalty: number
 	name: string
+	active: boolean
+	dodge: {
+		normal: number
+		effective: number
+	}
+	move: {
+		normal: number
+		effective: number
+	}
 }
 
 export const CharacterDefaultData: Partial<CharacterSystemSource> = {

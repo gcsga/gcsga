@@ -55,8 +55,8 @@ export const Load = {
 		// Inline link icons
 		CONFIG.Actor.typeIcons = {
 			[ActorType.Character]: "gcs-character",
-			[ActorType.LegacyCharacter]: "gcs-character",
-			[ActorType.LegacyEnemy]: "gcs-character",
+			// [ActorType.LegacyCharacter]: "gcs-character",
+			// [ActorType.LegacyEnemy]: "gcs-character",
 			[ActorType.Loot]: "fa-solid fa-gem",
 		}
 		CONFIG.Item.typeIcons = {

@@ -11,14 +11,14 @@ import {
 	TechniqueGURPS,
 	TraitGURPS,
 } from "@item"
-import { ItemType, RollModifier, RollType, SETTINGS, SYSTEM_NAME } from "@data"
+import { ActorType, ItemType, RollModifier, RollType, SETTINGS, SYSTEM_NAME } from "@data"
 import { UserFlags } from "@module/user/data.ts"
 import { ErrorGURPS, LocalizeGURPS } from "@util"
 import { DamageRollGURPS } from "./damage-roll.ts"
 import { ChatMessageGURPS } from "@module/chat-message/document.ts"
 import { ChatMessageSource } from "types/foundry/common/documents/chat-message.js"
 import { UserGURPS } from "@module/user/document.ts"
-import { Attribute } from "@system"
+import { AttributeGURPS } from "@system"
 import { DamageChat, DamagePayload } from "@module/apps/damage-calculator/damage-chat-message.ts"
 import { HitLocationUtil } from "@module/apps/damage-calculator/hit-location-utils.ts"
 import { RollGURPS } from "./index.ts"
@@ -123,7 +123,7 @@ abstract class RollTypeHandler {
 	async getMessageData(
 		actor: ActorGURPS | null,
 		user: User | null,
-		item: ItemGURPS | Attribute | undefined,
+		item: ItemGURPS | AttributeGURPS | undefined,
 		level: number,
 		formula: string,
 		name: string,
@@ -325,7 +325,6 @@ class ModifierRollTypeHandler extends RollTypeHandler {
 			modifier: data.modifier ?? 0,
 			tags: [],
 		}
-		// @ts-expect-error awaiting implementation
 		return game.user.addModifier(mod)
 	}
 }
@@ -336,32 +335,29 @@ class AttributeRollTypeHandler extends RollTypeHandler {
 	}
 
 	override getName(data: RollTypeData): string {
-		return data.attribute?.attribute_def.combinedName ?? ""
+		return data.attribute?.definition?.combinedName ?? ""
 	}
 
 	override get effectiveLevelLabel(): string {
 		return LocalizeGURPS.translations.gurps.roll.effective_skill
 	}
 
-	override getItemData(item: Attribute, _actor: ActorGURPS | null) {
+	override getItemData(item: AttributeGURPS, _actor: ActorGURPS | null) {
 		return { id: item.id }
 	}
 }
 
 class SkillRollTypeHandler extends RollTypeHandler {
 	override isValid(data: RollTypeData<SkillGURPS<ActorGURPS>>): boolean {
-		// @ts-expect-error awaiting implementation
 		return !!data.item?.effectiveLevel && !isNaN(data.item.effectiveLevel)
 	}
 
 	override getLevel(data: RollTypeData<SkillGURPS>): number {
-		// @ts-expect-error awaiting implementation
 		return data.item?.effectiveLevel ?? 0
 	}
 
 	override getType(data: RollTypeData): RollType {
 		if (!data.item) throw ErrorGURPS("No item found")
-		// @ts-expect-error awaiting implementation
 		if ([ItemType.Spell, ItemType.RitualMagicSpell].includes(data.item.type)) return RollType.Spell
 		return RollType.Skill
 	}
@@ -372,8 +368,7 @@ class SkillRollTypeHandler extends RollTypeHandler {
 		modifiers: RollModifier[],
 		level: number,
 	): number {
-		// @ts-expect-error awaiting implementation
-		if (item instanceof SkillGURPS && item.encumbrancePenaltyMultiplier && encumbrance.level > 0) {
+		if (item.isOfType(ItemType.Skill) && item.encumbrancePenaltyMultiplier && encumbrance.level > 0) {
 			modifiers.unshift({
 				id: LocalizeGURPS.format(LocalizeGURPS.translations.gurps.roll.encumbrance, {
 					name: encumbrance.name,
@@ -388,25 +383,20 @@ class SkillRollTypeHandler extends RollTypeHandler {
 	override getItemData(
 		item: ItemGURPS,
 		_actor: ActorGURPS | null,
-	): Partial<SkillGURPS | TechniqueGURPS | SpellGURPS | RitualMagicSpellGURPS> {
+	): DeepPartial<SkillGURPS | TechniqueGURPS | SpellGURPS | RitualMagicSpellGURPS> {
 		switch (true) {
-			case item instanceof SkillGURPS:
+			case item.isOfType(ItemType.Skill):
 				return {
 					name: item.name,
-					// @ts-expect-error awaiting implementation
 					specialization: item.specialization,
 				}
-			case item instanceof TechniqueGURPS:
+			case item.isOfType(ItemType.Technique):
 				return {
 					name: item.name,
-					// @ts-expect-error awaiting implementation
 					specialization: item.specialization,
-					// @ts-expect-error awaiting implementation
 					default: item.default === null ? undefined : item.default,
 				}
-			case item instanceof SpellGURPS:
-			case item instanceof RitualMagicSpellGURPS:
-				// @ts-expect-error awaiting implementation
+			case item.isOfType(ItemType.Spell, ItemType.RitualMagicSpell):
 				return {
 					name: item.name,
 					type: item.type,
@@ -419,7 +409,6 @@ class SkillRollTypeHandler extends RollTypeHandler {
 
 class ControlRollTypeHandler extends RollTypeHandler {
 	override getLevel(data: RollTypeData<TraitGURPS>): number {
-		// @ts-expect-error awaiting implementation
 		return data.item?.skillLevel ?? 0
 	}
 
@@ -440,15 +429,12 @@ class AttackRollTypeHandler extends RollTypeHandler {
 		// otherwise, just return the value.
 		// if (typeof data.item.skillLevel === "function") return data.item.skillLevel(null)
 		// else return data.item.skillLevel
-		// @ts-expect-error awaiting implementation
 		return data.item?.level ?? 0
 	}
 
 	override getName(data: RollTypeData<MeleeWeaponGURPS | RangedWeaponGURPS>): string {
 		if (!data.item) return ""
-		// @ts-expect-error awaiting implementation
 		if (data.item.itemName) return `${data.item.itemName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
-		// @ts-expect-error awaiting implementation
 		return `${data.item.formattedName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
 	}
 
@@ -464,13 +450,10 @@ class AttackRollTypeHandler extends RollTypeHandler {
 		if (item instanceof MeleeWeaponGURPS || item instanceof RangedWeaponGURPS) {
 			itemData = {
 				usage: item.system.usage,
-				// @ts-expect-error awaiting implementation
 				itemName: item.itemName,
-				// @ts-expect-error awaiting implementation
 				formattedName: item.formattedName,
 				uuid: item.uuid,
 				weaponID: item.id,
-				// @ts-expect-error awaiting implementation
 				damage: item.fastResolvedDamage,
 				type: item.type,
 			}
@@ -519,7 +502,6 @@ class AttackRollTypeHandler extends RollTypeHandler {
 				uuid: data.item.uuid,
 				weaponID: item.id,
 				attacker: data.actor,
-				// @ts-expect-error awaiting implementation
 				damage: item.damage,
 			},
 		})
@@ -536,20 +518,17 @@ class AttackRollTypeHandler extends RollTypeHandler {
 
 class ParryRollTypeHandler extends RollTypeHandler {
 	override isValid(data: RollTypeData<MeleeWeaponGURPS>): boolean {
-		// @ts-expect-error awaiting implementation
 		return !!data.item && !isNaN(parseInt(data.item.parry.current ?? "")) && data.item.parry.current !== ""
 	}
 
 	override getLevel(data: RollTypeData<MeleeWeaponGURPS>): number {
 		if (!data.item) return 0
-		// @ts-expect-error awaiting implementation
 		return parseInt(data.item?.parry.resolve(data.item, null).toString())
 	}
 
 	override getName(data: RollTypeData<MeleeWeaponGURPS | RangedWeaponGURPS>): string {
 		if (!data.item) return ""
 		return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.roll.parry, {
-			// @ts-expect-error awaiting implementation
 			name: data.item.itemName ?? data.item.formattedName,
 		})
 	}
@@ -564,20 +543,17 @@ class ParryRollTypeHandler extends RollTypeHandler {
  */
 class BlockRollTypeHandler extends RollTypeHandler {
 	override isValid(data: RollTypeData<MeleeWeaponGURPS>): boolean {
-		// @ts-expect-error awaiting implementation
 		return !!data.item && !isNaN(parseInt(data.item.block.current ?? "")) && data.item.block.current !== ""
 	}
 
 	override getLevel(data: RollTypeData<MeleeWeaponGURPS>): number {
 		if (!data.item) return 0
-		// @ts-expect-error awaiting implementation
 		return parseInt(data.item.block.resolve(data.item, null).toString())
 	}
 
 	override getName(data: RollTypeData<MeleeWeaponGURPS>): string {
 		if (!data.item) return ""
 		return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.roll.block, {
-			// @ts-expect-error awaiting implementation
 			name: data.item.itemName ?? data.item.formattedName,
 		})
 	}
@@ -590,12 +566,9 @@ class BlockRollTypeHandler extends RollTypeHandler {
 class DamageRollTypeHandler extends RollTypeHandler {
 	override getName(data: RollTypeData<MeleeWeaponGURPS | RangedWeaponGURPS>): string {
 		if (!data.item) return ""
-		// @ts-expect-error awaiting implementation
 		return data.item.itemName
-			? // @ts-expect-error awaiting implementation
-				`${data.item.itemName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
-			: // @ts-expect-error awaiting implementation
-				`${data.item.formattedName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
+			? `${data.item.itemName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
+			: `${data.item.formattedName}${data.item.usage ? ` - ${data.item.usage}` : ""}`
 	}
 
 	override getLevel(_data: RollTypeData): number {
@@ -646,7 +619,6 @@ class DamageRollTypeHandler extends RollTypeHandler {
 
 		for (let i = 0; i < extras.times; i++) {
 			// Roll the damage for the attack.
-			// @ts-expect-error awaiting implementation
 			const damageRoll = new DamageRollGURPS(item.fastResolvedDamage)
 			await damageRoll.evaluate()
 
@@ -695,7 +667,6 @@ class DamageRollTypeHandler extends RollTypeHandler {
 	 */
 	private static getHitLocationFromLastAttackRoll(_actor: ActorGURPS | null): string {
 		const name = game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_DAMAGE_LOCATION)
-		// @ts-expect-error awaiting implementation
 		const location = _actor?.hitLocationTable.locations.find(l => l.id === name)
 		return location?.tableName ?? "Torso"
 	}
@@ -710,7 +681,8 @@ class LocationRollTypeHandler extends RollTypeHandler {
 		// hidden: boolean,
 	): Promise<void> {
 		if (actor === null) throw ErrorGURPS("No actor for hit location roll")
-		// @ts-expect-error awaiting implementation
+		if (!actor.isOfType(ActorType.Character))
+			throw ErrorGURPS(`actor is of type ${actor.type}, which does not have a hit location table.`)
 		const result = await HitLocationUtil.rollRandomLocation(actor.hitLocationTable)
 
 		// Get localized version of the location id, if necessary.
@@ -789,7 +761,7 @@ export type RollTypeData<TItem extends ItemGURPS = ItemGURPS> = {
 	type: RollType // RollTypeHandler
 	modifier?: number // AddModifier
 	comment?: string // AddModifier
-	attribute?: Attribute
+	attribute?: AttributeGURPS
 	item?: TItem
 	formula?: string
 	hidden?: boolean

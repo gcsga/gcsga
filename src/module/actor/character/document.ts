@@ -1,11 +1,10 @@
 import { ActorGURPS } from "@actor"
 import { TokenDocumentGURPS } from "@scene"
-import { CharacterFlags, CharacterSource, CharacterSystemData, Encumbrance, PointsBreakdown } from "./data.ts"
+import { CharacterFlagDefaults, CharacterFlags, CharacterSource, CharacterSystemData, PointsBreakdown } from "./data.ts"
 import {
-	AbstractAttribute,
 	AbstractAttributeDef,
 	AbstractAttributeObj,
-	Attribute,
+	AttributeGURPS,
 	AttributeDef,
 	AttributeObj,
 	BodyGURPS,
@@ -23,8 +22,9 @@ import {
 	WeaponBonus,
 } from "@system"
 import { AbstractWeaponGURPS, SkillGURPS, TechniqueGURPS, TraitContainerGURPS, TraitGURPS } from "@item"
-import { ActorFlags, ItemType, SYSTEM_NAME, WeaponType, gid } from "@module/data/constants.ts"
+import { ActorFlags, ItemType, SETTINGS, SYSTEM_NAME, WeaponType, gid } from "@module/data/constants.ts"
 import {
+	ErrorGURPS,
 	Int,
 	LocalizeGURPS,
 	TooltipGURPS,
@@ -33,6 +33,7 @@ import {
 	damageProgression,
 	equalFold,
 	feature,
+	getCurrentTime,
 	skillsel,
 	stlimit,
 	wsel,
@@ -41,17 +42,23 @@ import { addWeaponBonusToMap } from "@actor/helpers.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { ItemInstances } from "@item/types.ts"
 import { CharacterLifts } from "./lifts.ts"
+import { CharacterEncumbrance } from "./encumbrance.ts"
+import { SheetSettingsObj } from "@module/data/sheet-settings.ts"
 
 class CharacterGURPS<
 	TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null,
 > extends ActorGURPS<TParent> {
 	/** Attribute Collections */
-	declare attributes: Map<string, Attribute<this>>
-	private declare _prevAttributes: Map<string, Attribute<this>>
+	declare attributes: Map<string, AttributeGURPS<this>>
+	private declare _prevAttributes: Map<string, AttributeGURPS<this>>
 	declare resourceTrackers: Map<string, ResourceTracker<this>>
 	declare moveTypes: Map<string, MoveType<this>>
 	declare pointsBreakdown: PointsBreakdown
 
+	/** Hit location table */
+	declare hitLocationTable: BodyGURPS<this>
+	/** Encumbrance */
+	declare encumbrance: CharacterEncumbrance<this>
 	/** Various lift types */
 	declare lifts: CharacterLifts<this>
 	/** Accumulated reaction bonuses */
@@ -73,28 +80,24 @@ class CharacterGURPS<
 		return this.attributeBonusFor(gid.Dodge, stlimit.Option.None) ?? 0
 	}
 
-	get hitLocationTable(): BodyGURPS {
-		return BodyGURPS.fromObject(this.system.settings.body_type, this)
-	}
-
 	get currentMove(): number {
-		return this.move(this.encumbranceLevel(true))
+		return this.encumbrance.current.move.normal
 	}
 
 	get effectiveMove(): number {
-		return this.eMove(this.encumbranceLevel(true))
+		return this.encumbrance.current.move.effective
 	}
 
 	get effectiveSprint(): number {
-		return Math.max(this.currentMove * 1.2, this.currentMove + 1)
+		return Math.max(this.encumbrance.current.move.effective * 1.2, this.encumbrance.current.move.effective + 1)
 	}
 
 	get currentDodge(): number {
-		return this.dodge(this.encumbranceLevel(true))
+		return this.encumbrance.current.dodge.normal
 	}
 
 	get effectiveDodge(): number {
-		return this.eDodge(this.encumbranceLevel(true))
+		return this.encumbrance.current.dodge.effective
 	}
 
 	get strengthOrZero(): number {
@@ -119,68 +122,13 @@ class CharacterGURPS<
 		return this.thrustFor(this.strikingST)
 	}
 
-	thrustFor(st: number): DiceGURPS {
-		return damageProgression.thrustFor(this.settings.damage_progression, st)
-	}
-
 	get swing(): DiceGURPS {
 		if (this.flags[SYSTEM_NAME][ActorFlags.AutoDamage]?.active === false)
 			return new DiceGURPS(this.flags[SYSTEM_NAME][ActorFlags.AutoDamage].swing)
 		return this.swingFor(this.strikingST)
 	}
 
-	swingFor(st: number): DiceGURPS {
-		return damageProgression.swingFor(this.settings.damage_progression, st)
-	}
-
-	get allEncumbrance(): Encumbrance[] {
-		const bl = this.lifts.basicLift
-		const ae: Encumbrance[] = [
-			{
-				level: 0,
-				maximum_carry: Int.from(bl, 4),
-				penalty: 0,
-				name: LocalizeGURPS.translations.gurps.character.encumbrance[0],
-			},
-			{
-				level: 1,
-				maximum_carry: Int.from(bl * 2, 4),
-				penalty: -1,
-				name: LocalizeGURPS.translations.gurps.character.encumbrance[1],
-			},
-			{
-				level: 2,
-				maximum_carry: Int.from(bl * 3, 4),
-				penalty: -2,
-				name: LocalizeGURPS.translations.gurps.character.encumbrance[2],
-			},
-			{
-				level: 3,
-				maximum_carry: Int.from(bl * 6, 4),
-				penalty: -3,
-				name: LocalizeGURPS.translations.gurps.character.encumbrance[3],
-			},
-			{
-				level: 4,
-				maximum_carry: Int.from(bl * 10, 4),
-				penalty: -4,
-				name: LocalizeGURPS.translations.gurps.character.encumbrance[4],
-			},
-		]
-		return ae
-	}
-
-	encumbranceLevel(forSkills = true, carried = this.weightCarried(forSkills)): Encumbrance {
-		const autoEncumbrance = this.flags[SYSTEM_NAME][ActorFlags.AutoEncumbrance]
-		const allEncumbrance = this.allEncumbrance
-		if (autoEncumbrance && !autoEncumbrance.active) return allEncumbrance[autoEncumbrance?.manual || 0]
-		for (const e of allEncumbrance) {
-			if (carried <= e.maximum_carry) return e
-		}
-		return allEncumbrance[allEncumbrance.length - 1]
-	}
-
-	get dodgeAttribute(): DeepPartial<Attribute<this>> {
+	get dodgeAttribute(): DeepPartial<AttributeGURPS<this>> {
 		return {
 			id: gid.Dodge,
 			definition: {
@@ -191,7 +139,7 @@ class CharacterGURPS<
 		}
 	}
 
-	get sizeModAttribute(): DeepPartial<Attribute<this>> {
+	get sizeModAttribute(): DeepPartial<AttributeGURPS<this>> {
 		return {
 			definition: {
 				combinedName: LocalizeGURPS.translations.gurps.character.sm,
@@ -200,8 +148,89 @@ class CharacterGURPS<
 		}
 	}
 
+	protected override _onCreate(
+		data: CharacterSource,
+		options: DocumentModificationContext<TParent>,
+		userId: string,
+	): void {
+		const date = getCurrentTime()
+		const defaultData = {
+			_id: data._id,
+			system: fu.mergeObject(data.system ?? {}, {
+				settings: CharacterGURPS.getDefaultSettings(),
+				total_points: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.initial_points`),
+				created_date: date,
+				modified_date: date,
+			}),
+			flags: CharacterFlagDefaults,
+		}
+		console.log(defaultData)
+		this.update(defaultData, { diff: false })
+		super._onCreate(data, options, userId)
+	}
+
+	private static getDefaultSettings(): SheetSettingsObj {
+		return {
+			...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`),
+			body_type: {
+				name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
+				roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
+				locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
+			},
+			attributes: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`),
+			resource_trackers: game.settings.get(
+				SYSTEM_NAME,
+				`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`,
+			),
+			move_types: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`),
+		}
+	}
+
+	thrustFor(st: number): DiceGURPS {
+		return damageProgression.thrustFor(this.settings.damage_progression, st)
+	}
+
+	swingFor(st: number): DiceGURPS {
+		return damageProgression.swingFor(this.settings.damage_progression, st)
+	}
+
+	override resolveAttributeCurrent(id: string): number {
+		const attribute = this.attributes.get(id)
+		if (!attribute) {
+			throw ErrorGURPS(`Cannot resolve attribute: $${id}`)
+		}
+		return attribute.current
+	}
+
+	override resolveAttributeEffective(id: string): number {
+		const attribute = this.attributes.get(id)
+		if (!attribute) {
+			throw ErrorGURPS(`Cannot resolve attribute: $${id}`)
+		}
+		return attribute.effective
+	}
+
+	override resolveAttributeMax(id: string): number {
+		const attribute = this.attributes.get(id)
+		if (!attribute) {
+			throw ErrorGURPS(`Cannot resolve attribute: $${id}`)
+		}
+		return attribute.max
+	}
+
+	override resolveAttributeName(id: string): string {
+		const attribute = this.attributes.get(id)
+		if (!attribute) {
+			throw ErrorGURPS(`Cannot resolve attribute: $${id}`)
+		}
+		if (!attribute.definition) {
+			throw ErrorGURPS(`Cannot resolve attribute definition: $${id}`)
+		}
+		return attribute.definition?.name
+	}
+
 	weightCarried(forSkills: boolean): number {
-		const total = this.collections.carriedEquipment.reduce((n, e) => {
+		const total = this.itemCollections.carriedEquipment.reduce((n, e) => {
 			if (!e.container) return n + e.extendedWeight(forSkills, this.system.settings.default_weight_units)
 			return n
 		}, 0)
@@ -210,7 +239,15 @@ class CharacterGURPS<
 
 	wealthCarried(): number {
 		let value = 0
-		for (const e of this.collections.carriedEquipment) {
+		for (const e of this.itemCollections.carriedEquipment) {
+			if (!e.container) value += e.extendedValue
+		}
+		return Int.from(value, 4)
+	}
+
+	wealthNotCarried(): number {
+		let value = 0
+		for (const e of this.itemCollections.carriedEquipment) {
 			if (!e.container) value += e.extendedValue
 		}
 		return Int.from(value, 4)
@@ -224,67 +261,10 @@ class CharacterGURPS<
 		return ST
 	}
 
-	move(enc: Encumbrance, initialMove = this.resolveAttributeCurrent(gid.BasicMove)): number {
-		// let initialMove = Math.max(0, this.resolveAttributeCurrent(gid.BasicMove))
-		initialMove = Math.max(0, this.resolveAttributeCurrent(gid.BasicMove))
-		const move = Math.trunc((initialMove * (10 + 2 * enc.penalty)) / 10)
-		if (move < 1) {
-			if (initialMove > 0) return 1
-			return 0
-		}
-		return move
-	}
-
-	// Move accounting for pool thresholds
-	// eMove(enc: Encumbrance): number {
-	eMove(
-		enc: Encumbrance,
-		initialMove = this.resolveAttributeCurrent(gid.BasicMove),
-		ops = this.countThresholdOpMet(ThresholdOp.HalveMove),
-	): number {
-		// Let initialMove = this.moveByType(Math.max(0, this.resolveAttributeCurrent(gid.BasicMove)))
-		// let initialMove = this.resolveMove(this.moveType)
-		let divisor = 2 * Math.min(ops, 2)
-		if (divisor === 0) divisor = 1
-		if (divisor > 0) initialMove = Math.ceil(initialMove / divisor)
-		const move = Math.trunc((initialMove * (10 + 2 * enc.penalty)) / 10)
-		if (move < 1) {
-			if (initialMove > 0) return 1
-			return 0
-		}
-		return move
-	}
-
-	resolveMove(type: string): number {
-		const move = this.moveTypes?.get(type)?.base
-		if (move) return move
-		return 0
-		// return -Infinity
-	}
-
-	get moveType(): string {
-		return this.flags[SYSTEM_NAME][ActorFlags.MoveType]
-	}
-
-	dodge(enc: Encumbrance): number {
-		const dodge =
-			3 +
-			Math.max(this.resolveAttributeCurrent(gid.BasicSpeed), 0) +
-			Math.max(this.resolveAttributeCurrent(gid.Dodge), 0)
-		return Math.floor(Math.max(dodge + enc.penalty, 1))
-	}
-
-	// Dodge accounting for pool thresholds
-	eDodge(enc: Encumbrance, ops = this.countThresholdOpMet(ThresholdOp.HalveDodge)): number {
-		let dodge =
-			3 +
-			Math.max(this.resolveAttributeCurrent(gid.BasicSpeed), 0) +
-			Math.max(this.resolveAttributeCurrent(gid.Dodge), 0)
-		const divisor = 2 * Math.min(ops, 2)
-		if (divisor > 0) {
-			dodge = Math.ceil(dodge / divisor)
-		}
-		return Math.floor(Math.max(dodge + enc.penalty, 1))
+	baseSkill(def: SkillDefault | null, require_points: boolean): SkillGURPS | null {
+		if (!def) return null
+		if (!def.skillBased) return null
+		return this.bestSkillNamed(def.name ?? "", def.specialization ?? "", require_points, null)
 	}
 
 	countThresholdOpMet(op: ThresholdOp): number {
@@ -296,13 +276,7 @@ class CharacterGURPS<
 				const threshold = a.currentThreshold
 				if (threshold && threshold.ops?.includes(op)) total += 1
 			})
-		return total
-	}
-
-	baseSkill(def: SkillDefault | null, require_points: boolean): SkillGURPS | null {
-		if (!def) return null
-		if (!def.skillBased) return null
-		return this.bestSkillNamed(def.name ?? "", def.specialization ?? "", require_points, null)
+		return Math.max(2 * Math.min(total, 2), 1)
 	}
 
 	bestWeaponNamed(
@@ -330,7 +304,7 @@ class CharacterGURPS<
 		excludes: Map<string, boolean> | null,
 	): Collection<AbstractWeaponGURPS> {
 		const weapons: Collection<AbstractWeaponGURPS> = new Collection()
-		for (const wep of this.collections.equippedWeapons(type)) {
+		for (const wep of this.itemCollections.equippedWeapons(type)) {
 			if (
 				(excludes === null || !excludes.get(wep.name!)) &&
 				!(wep.container instanceof CompendiumCollection) &&
@@ -381,7 +355,7 @@ class CharacterGURPS<
 				skills.set(item.id, item)
 			}
 		}
-		for (const item of this.collections.skills) {
+		for (const item of this.itemCollections.skills) {
 			if (
 				(excludes === null || !excludes.get(item.name!)) &&
 				item.isOfType(ItemType.Skill, ItemType.Technique) &&
@@ -606,7 +580,7 @@ class CharacterGURPS<
 		return Math.max(total, 0)
 	}
 
-	addDRBonusesFor(
+	override addDRBonusesFor(
 		locationID: string,
 		tooltip: TooltipGURPS | null = null,
 		drMap: Map<string, number> = new Map(),
@@ -642,9 +616,29 @@ class CharacterGURPS<
 		if (this.system.move_types.length === 0)
 			this.system.move_types = this.generateNewAttributes(this.settings.move_types)
 
-		this.attributes = this.prepareAttributes(this.system.attributes)
-		this.resourceTrackers = this.prepareAttributes(this.system.resource_trackers)
-		this.moveTypes = this.prepareAttributes(this.system.move_types)
+		this.attributes = new Map(
+			this.system.attributes
+				.map((value, index) => {
+					return new AttributeGURPS(this, value, index)
+				})
+				.map(e => [e.id, e]),
+		)
+		this.resourceTrackers = new Map(
+			this.system.resource_trackers
+				.map((value, index) => {
+					return new ResourceTracker(this, value, index)
+				})
+				.map(e => [e.id, e]),
+		)
+		this.moveTypes = new Map(
+			this.system.move_types
+				.map((value, index) => {
+					return new MoveType(this, value, index)
+				})
+				.map(e => [e.id, e]),
+		)
+
+		this.hitLocationTable = BodyGURPS.fromObject(this.system.settings.body_type, this)
 	}
 
 	generateNewAttributes<TDef extends AttributeDef>(definitions: TDef[]): AttributeObj[]
@@ -663,10 +657,11 @@ class CharacterGURPS<
 
 		this.pointsBreakdown = this.calculatePointsBreakdown()
 		this.lifts = new CharacterLifts(this)
-		this.reactions = ConditionalModifier.modifiersFromItems(feature.Type.ReactionBonus, this.collections)
+		this.encumbrance = new CharacterEncumbrance(this)
+		this.reactions = ConditionalModifier.modifiersFromItems(feature.Type.ReactionBonus, this.itemCollections)
 		this.conditionalModifiers = ConditionalModifier.modifiersFromItems(
 			feature.Type.ConditionalModifierBonus,
-			this.collections,
+			this.itemCollections,
 		)
 	}
 
@@ -683,14 +678,14 @@ class CharacterGURPS<
 		pb.attributes += Array.from(this.attributes.values()).reduce((acc, att) => {
 			return acc + att.points
 		}, 0)
-		this.collections.traits.forEach(trait => {
+		this.itemCollections.traits.forEach(trait => {
 			this.calculateSingleTraitPoints(trait, pb)
 		})
-		this.collections.skills.forEach(skill => {
+		this.itemCollections.skills.forEach(skill => {
 			if (skill.isOfType(ItemType.SkillContainer)) return
 			pb.skills += skill.points
 		})
-		this.collections.spells.forEach(spell => {
+		this.itemCollections.spells.forEach(spell => {
 			if (spell.isOfType(ItemType.SpellContainer)) return
 			pb.spells += spell.points
 		})

@@ -12,6 +12,7 @@ import {
 	AbstractAttribute,
 	AttributeBonus,
 	AttributeDef,
+	BodyGURPS,
 	CostReduction,
 	DRBonus,
 	Feature,
@@ -25,7 +26,11 @@ import {
 import { ActorInstances, EmbeddedItemInstances } from "@actor/types.ts"
 import { ItemCollectionMap } from "./item-collection-map.ts"
 import { SheetSettings, sheetSettingsFor } from "@module/data/sheet-settings.ts"
-import { CR_FEATURES } from "@item/trait/data.ts"
+import { DamagePayload } from "@module/apps/damage-calculator/damage-chat-message.ts"
+import { DamageAttackerAdapter, DamageTargetActor, DamageWeaponAdapter } from "@actor/helpers.ts"
+import { DamageRollAdapter, DamageTarget } from "@module/apps/damage-calculator/index.ts"
+import { ApplyDamageDialog } from "@module/apps/damage-calculator/apply-damage-dialog.ts"
+import { getCRFeatures } from "@item/trait/data.ts"
 
 /**
  * Extend the base Actor class to implement additional logic specialized for GURPS.
@@ -36,6 +41,8 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 	declare initialized: boolean
 	// Cached variable values for fast access
 	declare cachedVariables: Map<string, string>
+	/** Hit location table */
+	declare hitLocationTable: BodyGURPS<this>
 
 	// Exclusions to prevent circular references in variable resolution
 	declare variableResolverExclusions: Set<string>
@@ -47,7 +54,7 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 	declare features: FeatureMap
 
 	// Map of item collections
-	declare collections: ItemCollectionMap<this>
+	declare itemCollections: ItemCollectionMap<this>
 
 	get importData(): { name: string; path: string; last_import: string } {
 		return this.flags[SYSTEM_NAME][ActorFlags.Import]
@@ -123,12 +130,28 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 	getVariableSets(): Map<string, AbstractAttribute>[] {
 		const sets: Map<string, AbstractAttribute>[] = []
 		for (const key of this.variableResolverSets) {
-			if (!objectHasKey(this, key)) continue
+			if (!objectHasKey(this, key)) {
+				console.error(`No such variable resolver set: ${key}`)
+				continue
+			}
 			const map = this[key]
-			if (!(map instanceof Map)) continue
-			if (map.size === 0) continue
-			if (typeof map.keys().next() !== "string") continue
-			if (!(map.values().next() instanceof AbstractAttribute)) continue
+			if (!(map instanceof Map)) {
+				console.error(`Variable resolver set is not a Map: ${key}`)
+				continue
+			}
+			if (map.size === 0) {
+				// Not a real error as empty sets are valid
+				// console.error(`Variable resolver set is empty: ${key}`)
+				continue
+			}
+			if (typeof map.keys().next().value !== "string") {
+				console.error(`Variable resolver key is not a string: ${key}`)
+				continue
+			}
+			if (!(map.values().next().value instanceof AbstractAttribute)) {
+				console.error(`Variable resolver object type is not a valid Attribute type: ${key}`)
+				continue
+			}
 			sets.push(map)
 		}
 		return sets
@@ -159,9 +182,9 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 			console.error(`Attempt to resolver variable via itself: $${variableName}`)
 			return ""
 		}
+		this.cachedVariables ??= new Map()
 		const cached = this.cachedVariables.get(variableName)
 		if (cached) return cached
-		this.cachedVariables ??= new Map()
 		this.variableResolverExclusions ??= new Set()
 
 		this.variableResolverExclusions.add(variableName)
@@ -207,6 +230,17 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 		}
 	}
 
+	/**
+	 * Never prepare data except as part of `DataModel` initialization. If embedded, don't prepare data if the parent is
+	 * not yet initialized. See https://github.com/foundryvtt/foundryvtt/issues/7987
+	 */
+	override prepareData(): void {
+		if (this.initialized) return
+		if (this.parent && !this.parent.initialized) return
+		this.initialized = true
+		super.prepareData()
+	}
+
 	override prepareBaseData(): void {
 		super.prepareBaseData()
 
@@ -226,7 +260,7 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 	override prepareEmbeddedDocuments(): void {
 		super.prepareEmbeddedDocuments()
 
-		this.collections = new ItemCollectionMap<this>(this.items)
+		this.itemCollections = new ItemCollectionMap<this>(this.items)
 
 		this.prepareFeatures()
 		this.preparePrereqs()
@@ -235,7 +269,7 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 	}
 
 	prepareFeatures(): void {
-		for (const trait of this.collections.traits) {
+		for (const trait of this.itemCollections.traits) {
 			if (!trait.enabled) continue
 			let levels = 0
 			if (trait.isOfType(ItemType.Trait)) {
@@ -243,8 +277,9 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 				for (const feature of trait.features) {
 					this.prepareFeature(trait, null, feature, levels)
 				}
-				if (CR_FEATURES.has(trait.CRAdj))
-					for (const f of CR_FEATURES?.get(trait.CRAdj) || []) {
+				const crFeatures = getCRFeatures()
+				if (crFeatures.has(trait.CRAdj))
+					for (const f of crFeatures?.get(trait.CRAdj) || []) {
 						this.prepareFeature(trait, null, f, levels)
 					}
 				for (const mod of trait.deepModifiers) {
@@ -255,13 +290,13 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 				}
 			}
 		}
-		for (const skill of this.collections.skills) {
+		for (const skill of this.itemCollections.skills) {
 			if (skill.isOfType(ItemType.SkillContainer)) continue
 			for (const f of skill.features) {
 				this.prepareFeature(skill, null, f, 0)
 			}
 		}
-		for (const equipment of this.collections.carriedEquipment) {
+		for (const equipment of this.itemCollections.carriedEquipment) {
 			if (!equipment.equipped) continue
 			for (const feature of equipment.features) {
 				this.prepareFeature(equipment, null, feature, 0)
@@ -327,7 +362,7 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 
 	preparePrereqs(): void {
 		const notMet = LocalizeGURPS.translations.gurps.prereq.not_met
-		for (const trait of this.collections.traits) {
+		for (const trait of this.itemCollections.traits) {
 			if (itemIsOfType(trait, ItemType.TraitContainer)) continue
 			if (trait.prereqsEmpty) continue
 			trait.unsatisfiedReason = ""
@@ -349,7 +384,41 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 		}
 	}
 
-	// Targeted item retrieval
+	// Handle damage dropping onto the character sheet
+	handleDamageDrop(payload: DamagePayload): void {
+		if (payload.index === -1) {
+			ui.notifications?.warn("Multiple damage rolls are not yet supported.")
+			return
+		}
+
+		let attacker = undefined
+		if (payload.attacker) {
+			const actor = game.actors?.get(payload.attacker)
+			if (actor) {
+				attacker = new DamageAttackerAdapter(actor)
+			}
+		}
+
+		let weapon = undefined
+		if (payload.uuid) {
+			const temp = fromUuidSync(payload.uuid)
+			if (temp instanceof ItemGURPS && temp.isOfType(ItemType.MeleeWeapon, ItemType.RangedWeapon)) {
+				weapon = new DamageWeaponAdapter(temp)
+			}
+		}
+
+		const roll = new DamageRollAdapter(payload, attacker, weapon)
+		const target: DamageTarget = new DamageTargetActor(this)
+		ApplyDamageDialog.create(roll, target).then(dialog => dialog.render(true))
+	}
+
+	addDRBonusesFor(
+		_locationID: string,
+		_tooltip: TooltipGURPS | null = null,
+		_drMap: Map<string, number> = new Map(),
+	): Map<string, number> {
+		throw ErrorGURPS("The base ActorGURPS class cannot add DR bonuses")
+	}
 }
 
 interface ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null> extends Actor<TParent> {

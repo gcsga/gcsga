@@ -1,4 +1,4 @@
-import { CharacterSheetGURPS, LegacyCharacterSheetGURPS, LootSheetGURPS, MookSheetGURPS } from "@actor/sheet.ts"
+import { CharacterSheetGURPS, LootSheetGURPS, MookSheetGURPS } from "@actor/sheet.ts"
 import { ActorType, ItemType, SYSTEM_NAME } from "@data"
 import {
 	EffectSheetGURPS,
@@ -41,11 +41,11 @@ export function registerSheets(): void {
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.loot"),
 	})
-	Actors.registerSheet(SYSTEM_NAME, LegacyCharacterSheetGURPS, {
-		types: [ActorType.LegacyCharacter, ActorType.LegacyEnemy],
-		makeDefault: true,
-		label: game.i18n.localize("gurps.system.sheet.character"),
-	})
+	// Actors.registerSheet(SYSTEM_NAME, LegacyCharacterSheetGURPS, {
+	// 	types: [ActorType.LegacyCharacter, ActorType.LegacyEnemy],
+	// 	makeDefault: true,
+	// 	label: game.i18n.localize("gurps.system.sheet.character"),
+	// })
 
 	// Item
 	Items.registerSheet(SYSTEM_NAME, TraitSheetGURPS, {

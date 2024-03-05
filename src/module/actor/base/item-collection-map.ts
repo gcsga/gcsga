@@ -78,15 +78,21 @@ class ItemCollectionMap<TActor extends ActorGURPS> {
 
 	equippedWeapons<TType extends WeaponType | undefined>(
 		type?: TType,
-	): (ItemInstance.MeleeWeaponGURPS | ItemInstance.RangedWeaponGURPS)[]
-	equippedWeapons<TType extends ItemType.MeleeWeapon | undefined>(type?: TType): ItemInstance.MeleeWeaponGURPS[]
-	equippedWeapons<TType extends ItemType.RangedWeapon | undefined>(type?: TType): ItemInstance.RangedWeaponGURPS[]
+	): Collection<ItemInstance.MeleeWeaponGURPS<TActor> | ItemInstance.RangedWeaponGURPS<TActor>>
+	equippedWeapons<TType extends ItemType.MeleeWeapon | undefined>(
+		type?: TType,
+	): Collection<ItemInstance.MeleeWeaponGURPS<TActor>>
+	equippedWeapons<TType extends ItemType.RangedWeapon | undefined>(
+		type?: TType,
+	): Collection<ItemInstance.RangedWeaponGURPS<TActor>>
 	equippedWeapons<TType extends ItemType | undefined>(
 		type?: TType,
-	): (ItemInstance.MeleeWeaponGURPS | ItemInstance.RangedWeaponGURPS)[] {
-		if (type === ItemType.MeleeWeapon) return this.meleeWeapons.filter(item => item.equipped)
-		if (type === ItemType.RangedWeapon) return this.rangedWeapons.filter(item => item.equipped)
-		return this.weapons.filter(item => item.equipped)
+	): Collection<ItemInstance.MeleeWeaponGURPS<TActor> | ItemInstance.RangedWeaponGURPS<TActor>> {
+		if (type === ItemType.MeleeWeapon)
+			return new Collection(this.meleeWeapons.filter(item => item.equipped).map(item => [item.id, item]))
+		if (type === ItemType.RangedWeapon)
+			return new Collection(this.rangedWeapons.filter(item => item.equipped).map(item => [item.id, item]))
+		return new Collection(this.weapons.filter(item => item.equipped).map(item => [item.id, item]))
 	}
 }
 

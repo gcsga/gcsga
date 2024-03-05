@@ -2,7 +2,7 @@ import { ItemType } from "@data"
 import { WeaponDamageObj } from "@item/abstract-weapon/data.ts"
 import { WeaponDamage } from "@item/abstract-weapon/weapon-damage.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
-import { Attribute, AttributeDefObj, AttributeObj, MoveTypeDefObj } from "@system"
+import { AttributeGURPS, AttributeDefObj, AttributeObj, MoveTypeDefObj } from "@system"
 import { StringBuilder, difficulty, progression, selfctrl } from "@util"
 
 export interface MookData {
@@ -14,7 +14,7 @@ export interface MookData {
 			move_types: MoveTypeDefObj[]
 		}
 	}
-	attributes: Map<string, Attribute>
+	attributes: Map<string, AttributeGURPS>
 	traits: MookTrait[]
 	skills: MookSkill[]
 	spells: MookSpell[]

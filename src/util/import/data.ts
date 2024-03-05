@@ -162,7 +162,7 @@ type ImportedDRBonus = ImportedLeveledAmount & {
 
 type ImportedSkillBonus = ImportedLeveledAmount & {
 	type: feature.Type.SkillBonus
-	selection: skillsel.Type
+	selection_type: skillsel.Type
 	name?: ImportedStringCriteria
 	specialization?: ImportedStringCriteria
 	tags?: ImportedStringCriteria
@@ -633,13 +633,13 @@ interface ImportedMoveTypeOverride {
 		type: MoveTypeOverrideConditionType
 		qualifier: string
 	}
-	move_type_base: string
+	base: string
 }
 
 interface ImportedMoveTypeDef {
 	id: string
 	name: string
-	move_type_base?: string
+	base?: string
 	cost_per_point?: number // unused
 	overrides?: ImportedMoveTypeOverride[]
 }
@@ -690,12 +690,12 @@ interface ImportedAttribute {
 }
 
 interface ImportedResourceTracker {
-	tracker_id: string
+	id: string
 	damage: number
 }
 
 interface ImportedMoveType {
-	move_type_id: string
+	id: string
 	adj?: number
 }
 

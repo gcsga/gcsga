@@ -42,7 +42,7 @@ export class _Target implements DamageTarget {
 
 	_traits: TargetTrait[] = []
 
-	hitLocationTable = BodyGURPS.fromObject(_dummyHitLocationTable, this)
+	hitLocationTable: BodyGURPS<this> = BodyGURPS.fromObject(_dummyHitLocationTable, this)
 
 	getTrait(name: string): TargetTrait | undefined {
 		return this._traits.find(it => it.name === name)
@@ -143,18 +143,18 @@ export class _TargetTraitModifier implements TargetTraitModifier {
 	}
 }
 
-export class DamageHitLocation extends HitLocation {
+export class DamageHitLocation<TOwner extends BodyOwner = BodyOwner> extends HitLocation<TOwner> {
 	_map: Map<string, number> = new Map()
 
 	override _DR(_tooltip: TooltipGURPS | null, _drMap: Map<string, number> = new Map()): Map<string, number> {
 		return this._map
 	}
 
-	static override fromObject(
+	static override fromObject<TOwner extends BodyOwner>(
 		data: HitLocationObj,
-		actor: BodyOwner,
-		owningTable?: BodyGURPS | undefined,
-	): DamageHitLocation {
+		actor: TOwner,
+		owningTable?: BodyGURPS<TOwner> | undefined,
+	): DamageHitLocation<TOwner> {
 		const location = new DamageHitLocation(actor)
 
 		const other = super.fromObject(data, actor, owningTable)

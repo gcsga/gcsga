@@ -25,9 +25,8 @@ export class EquippedEquipmentPrereq extends BasePrereq {
 		tooltip: TooltipGURPS,
 		hasEquipmentPenalty: { value: boolean },
 	): boolean {
-		let satisfied = actor.equipment.some(
-			// @ts-expect-error awaiting implementation
-			eqp => eqp.equipped && this.name.matches(eqp.name ?? "") && eqp.quantity > 0,
+		let satisfied = actor.itemCollections.equipment.some(
+			eqp => eqp.equipped && this.name.matches(eqp.name ?? "") && eqp.system.quantity > 0,
 		)
 		if (!this.has) satisfied = !satisfied
 		if (!satisfied) {

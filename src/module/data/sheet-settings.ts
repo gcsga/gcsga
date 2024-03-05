@@ -66,7 +66,7 @@ export interface SheetSettings {
 	attributes: AttributeDef[]
 	resource_trackers: ResourceTrackerDef[]
 	move_types: MoveTypeDef[]
-	body_type: BodyGURPS
+	body_type: BodyGURPS<BodyOwner>
 	damage_progression: progression.Option
 	default_length_units: LengthUnits
 	default_weight_units: WeightUnits

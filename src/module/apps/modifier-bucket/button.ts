@@ -47,7 +47,6 @@ export class ModifierBucket extends Application {
 	}
 
 	override async getData(options?: Partial<ApplicationOptions> | undefined): Promise<object> {
-		// @ts-expect-error awaiting implementation
 		const total = game.user.modifierTotal
 		const buttonMagnet = game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierSticky) === true ? "sticky" : ""
 		let buttonColor = "total-white"
@@ -70,7 +69,6 @@ export class ModifierBucket extends Application {
 	// Increase/Decrease modifier by 1 with the mouse wheel
 	async _onMouseWheel(event: WheelEvent): Promise<this> {
 		const delta = Math.round(event.deltaY / -100)
-		// @ts-expect-error awaiting implementation
 		game.user.addModifier({
 			id: "",
 			modifier: delta,

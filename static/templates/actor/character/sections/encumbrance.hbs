@@ -1,6 +1,6 @@
 <div id="encumbrance">
-	<div class="header title">{{localize "gurps.character.encumbrance.title"}}
-		{{#if autoEncumbrance}}
+	<div class="header title">
+		{{localize "gurps.character.encumbrance.title"}} {{#if autoEncumbrance}}
 		<a
 			class="enc-toggle fas fa-toggle-on"
 			data-tooltip="{{localize 'gurps.tooltip.auto_encumbrance'}}"
@@ -18,25 +18,25 @@
 	<div class="header max-load">{{localize "gurps.character.encumbrance.max_load"}}</div>
 	<div class="header move">{{localize "gurps.character.encumbrance.move"}}</div>
 	<div class="header dodge">{{localize "gurps.character.encumbrance.dodge"}}</div>
-	{{#each encumbrance}}
-	{{#if this.active}}
-		{{#if ../overencumbered}}
-		<div class="encumbrance-marker overencumbered"><i class="gcs-weight"></i></div>
-		<div class="level-number overencumbered">{{this.level}}</div>
-		<div class="level overencumbered">{{this.name}}</div>
-		<div class="max-load overencumbered">{{this.carry}}</div>
-		<div class="move overencumbered">{{this.move.effective}}</div>
-		<div data-id="dodge" data-type="attribute" class="dodge overencumbered rollable {{effective this.dodge}}">{{this.dodge.effective}}</div>
-		{{else}}
-		<div class="encumbrance-marker active"><i class="gcs-weight"></i></div>
-		<div class="level-number active">{{this.level}}</div>
-		<div class="level active">{{this.name}}</div>
-		<div class="max-load active">{{this.carry}}</div>
-		<div class="move active {{effective this.move}}">{{this.move.effective}}</div>
-		<div data-id="dodge" data-type="attribute" class="dodge active rollable {{effective this.dodge}}">{{this.dodge.effective}}</div>
-		{{/if}}
+	{{#each encumbrance.levels}} {{#if this.active}} {{#if ../encumbrance.overencumbered}}
+	<div class="encumbrance-marker overencumbered"><i class="gcs-weight"></i></div>
+	<div class="level-number overencumbered">{{this.level}}</div>
+	<div class="level overencumbered">{{this.name}}</div>
+	<div class="max-load overencumbered">{{this.carry}}</div>
+	<div class="move overencumbered">{{this.move.effective}}</div>
+	<div data-id="dodge" data-type="attribute" class="dodge overencumbered rollable {{effective this.dodge}}">
+		{{this.dodge.effective}}
+	</div>
 	{{else}}
-	{{#unless ../autoEncumbrance}}
+	<div class="encumbrance-marker active"><i class="gcs-weight"></i></div>
+	<div class="level-number active">{{this.level}}</div>
+	<div class="level active">{{this.name}}</div>
+	<div class="max-load active">{{this.carry}}</div>
+	<div class="move active {{effective this.move}}">{{this.move.effective}}</div>
+	<div data-id="dodge" data-type="attribute" class="dodge active rollable {{effective this.dodge}}">
+		{{this.dodge.effective}}
+	</div>
+	{{/if}} {{else}} {{#unless ../autoEncumbrance}}
 	<div class="encumbrance-marker manual" data-level="{{this.level}}"></div>
 	{{else}}
 	<div class="encumbrance-marker"></div>
@@ -46,6 +46,5 @@
 	<div class="max-load">{{this.carry}}</div>
 	<div class="move">{{this.move.effective}}</div>
 	<div class="dodge">{{this.dodge.effective}}</div>
-	{{/if}}
-	{{/each}}
+	{{/if}} {{/each}}
 </div>

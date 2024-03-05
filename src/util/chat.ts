@@ -1,9 +1,8 @@
-import { ActorGURPS, CharacterGURPS, LootGURPS } from "@actor"
-import { GURPS_COMMANDS, RollModifier, RollType, gid } from "@data"
+import { ActorGURPS } from "@actor"
+import { ActorType, GURPS_COMMANDS, RollModifier, RollType, gid } from "@data"
 import { MookGeneratorSheet } from "@system"
 import { LastActor } from "./last-actor.ts"
 import { LocalizeGURPS } from "./localize.ts"
-import { AbstractWeaponGURPS, MeleeWeaponGURPS, RangedWeaponGURPS } from "@item"
 import { RollGURPS } from "@module/roll/index.ts"
 import { RollTypeData } from "@module/roll/roll-handler.ts"
 
@@ -72,7 +71,6 @@ async function _onModClick(event: JQuery.ClickEvent): Promise<void> {
 	event.preventDefault()
 	event.stopPropagation()
 	const mod: RollModifier = $(event.currentTarget).data("mod")
-	// @ts-expect-error awaiting implementation
 	return game.user.addModifier(mod)
 }
 
@@ -85,7 +83,6 @@ async function _onModRClick(event: JQuery.ContextMenuEvent): Promise<void> {
 	event.stopPropagation()
 	const mod: RollModifier = fu.duplicate($(event.currentTarget).data("mod"))
 	mod.modifier = -mod.modifier
-	// @ts-expect-error awaiting implementation
 	return game.user.addModifier(mod)
 }
 
@@ -100,20 +97,17 @@ async function _onRollClick(event: JQuery.ClickEvent) {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const data: any = { type: type, hidden: event.ctrlKey }
 	let actor: ActorGURPS | null = await LastActor.get()
-	if (actor instanceof LootGURPS) return
+	if (!actor?.isOfType(ActorType.Character)) return
 
 	if (type === RollType.Attribute) {
 		const id = $(event.currentTarget).data("json").id
-		// @ts-expect-error awaiting implementation
 		if (id === gid.Dodge) data.attribute = actor?.dodgeAttribute
-		// @ts-expect-error awaiting implementation
 		else data.attribute = actor?.attributes.get(id)
 	} else if ([RollType.Skill, RollType.SkillRelative].includes(type)) {
-		if (actor instanceof CharacterGURPS) {
+		if (actor.isOfType(ActorType.Character)) {
 			const itemData = $(event.currentTarget).data("json")
 
 			// Grab best skill or default
-			// @ts-expect-error awaiting implementation
 			data.item = actor.bestSkillNamed(itemData.name!, itemData.specialization || "", false, null)
 
 			// Update level at least once to calculate default level
@@ -124,24 +118,17 @@ async function _onRollClick(event: JQuery.ClickEvent) {
 			}
 		}
 	} else if ([RollType.Spell, RollType.SpellRelative].includes(type)) {
-		if (actor instanceof CharacterGURPS) {
-			const itemData = $(event.currentTarget).data("json")
-			// @ts-expect-error idk
-			data.item = actor.spells.find((e: SpellGURPS | RitualMagicSpellGURPS) => e.name === itemData.name)
-		}
+		const itemData = $(event.currentTarget).data("json")
+		data.item = actor.itemCollections.spells.find(e => e.name === itemData.name)
 		if (!data.item || data.item.effectiveLevel === -Infinity) {
 			ui.notifications?.warn(LocalizeGURPS.translations.gurps.notification.no_default_skill)
 			return
 		}
 	} else if ([RollType.Attack].includes(type)) {
-		if (actor instanceof CharacterGURPS) {
-			const itemData = $(event.currentTarget).data("json")
-			// @ts-expect-error awaiting implementation
-			data.item = actor.weapons.find(
-				// @ts-expect-error awaiting implementation
-				(e: AbstractWeaponGURPS) => e.itemName === itemData.itemName && e.usage === itemData.usage,
-			)
-		}
+		const itemData = $(event.currentTarget).data("json")
+		data.item = actor.itemCollections.weapons.find(
+			e => e.itemName === itemData.itemName && e.usage === itemData.usage,
+		)
 		if (!data.item || data.item.effectiveLevel === -Infinity) {
 			ui.notifications?.warn(LocalizeGURPS.translations.gurps.notification.no_default_skill)
 			return
@@ -192,10 +179,14 @@ function getDamageRollData(
 		return undefined
 	}
 
-	const actor = game.actors!.get(eventData.actor) as ActorGURPS
+	const actor = game.actors.get(eventData.actor)
+	if (!actor) {
+		console.error(`Cannot find actor with id "${eventData.actor}"`)
+		return undefined
+	}
 	const data: Partial<RollTypeData> = {
 		type: RollType.Damage,
-		item: actor.items.get(eventData.weapon) as MeleeWeaponGURPS<ActorGURPS> | RangedWeaponGURPS<ActorGURPS>,
+		item: actor.items.get(eventData.weapon),
 		times: 1,
 	}
 

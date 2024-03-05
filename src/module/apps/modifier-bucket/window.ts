@@ -74,7 +74,6 @@ export class ModifierBucketWindow extends Application {
 	_onClickModifier(event: JQuery.ClickEvent): void {
 		event.preventDefault()
 		const modifier = $(event.currentTarget).data("modifier")
-		// @ts-expect-error awaiting implementation
 		return game.user.addModifier(modifier)
 	}
 

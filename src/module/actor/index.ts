@@ -5,7 +5,7 @@ export { ActorGURPS, ActorProxyGURPS } from "./base/document.ts"
 export { CharacterGURPS } from "./character/document.ts"
 
 // Legacy Character
-export { LegacyCharacterGURPS } from "./legacy/document.ts"
+// export { LegacyCharacterGURPS } from "./legacy/document.ts"
 
 // Loot
 export { LootGURPS } from "./loot/document.ts"

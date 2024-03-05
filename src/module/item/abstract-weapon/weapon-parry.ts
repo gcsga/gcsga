@@ -23,7 +23,7 @@ export class WeaponParry extends WeaponField {
 		if (!wp.no) {
 			wp.fencing = s.includes("f")
 			wp.unbalanced = s.includes("u")
-			wp.modifier = Int.fromString(s)
+			wp.modifier = Int.fromString(s)[0]
 		}
 		wp.validate()
 		return wp
@@ -31,23 +31,17 @@ export class WeaponParry extends WeaponField {
 
 	resolve(w: AbstractWeaponGURPS, tooltip: TooltipGURPS | null): WeaponParry {
 		const result = WeaponParry.parse(this.toString())
-		// @ts-expect-error awaiting implementation
 		result.no = !w.resolveBoolFlag(wswitch.Type.CanParry, !result.no)
-		// @ts-expect-error awaiting implementation
 		result.fencing = w.resolveBoolFlag(wswitch.Type.Fencing, result.fencing)
-		// @ts-expect-error awaiting implementation
 		result.unbalanced = w.resolveBoolFlag(wswitch.Type.Unbalanced, result.unbalanced)
 		if (!result.no) {
 			const actor = w.actor
 			if (actor instanceof CharacterGURPS) {
 				let primaryTooltip: TooltipGURPS | null = null
 				if (tooltip !== null) primaryTooltip = new TooltipGURPS()
-				// @ts-expect-error awaiting implementation
 				const preAdj = w.skillLevelBaseAdjustment(actor, primaryTooltip)
-				// @ts-expect-error awaiting implementation
 				const postAdj = w.skillLevelPostAdjustment(actor, primaryTooltip)
 				let best = -Infinity
-				// @ts-expect-error awaiting implementation
 				for (const def of w.defaults) {
 					let level = def.skillLevelFast(actor, false, null, true)
 					if (level === -Infinity) continue
@@ -58,9 +52,7 @@ export class WeaponParry extends WeaponField {
 				}
 				if (best !== -Infinity) {
 					if (primaryTooltip !== null) tooltip?.push("\n", primaryTooltip)
-					// @ts-expect-error awaiting implementation
 					result.modifier += 3 + best + actor.parryBonus
-					// @ts-expect-error awaiting implementation
 					for (const bonus of w.collectWeaponBonuses(1, tooltip, feature.Type.WeaponParryBonus)) {
 						result.modifier += bonus.adjustedAmountForWeapon(w)
 					}

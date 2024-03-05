@@ -53,6 +53,7 @@ export class ContainedWeightReduction {
 
 	toObject(): ContainedWeightReductionObj {
 		return {
+			type: feature.Type.ContainedWeightReduction,
 			reduction: this.reduction,
 		}
 	}

@@ -174,7 +174,7 @@ export class MookParser {
 			newValues.set(id, newValue)
 		})
 
-		this.object.attributes = this.object.getAttributes()
+		this.object.refreshAttributes()
 
 		// While loop to account for attributes which affect other attributes
 		// hard-capped at 5 iterations to prevent infinite loop, may result in inaccuracies
@@ -184,10 +184,10 @@ export class MookParser {
 				const [newValue, currentValue] = [newValues.get(id), this.object.attributes.get(id)!.max]
 				if (!newValue || !currentValue) continue
 				if (newValue === currentValue) continue
-				const index = this.object.system.attributes.findIndex(e => e.attr_id === id)
+				const index = this.object.system.attributes.findIndex(e => e.id === id)
 				this.object.system.attributes[index].adj += newValue - currentValue
 			}
-			this.object.attributes = this.object.getAttributes()
+			this.object.refreshAttributes()
 		}
 	}
 

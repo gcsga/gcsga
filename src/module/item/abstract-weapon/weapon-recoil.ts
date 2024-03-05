@@ -13,8 +13,8 @@ export class WeaponRecoil extends WeaponField {
 		const wr = new WeaponRecoil()
 		s = s.replaceAll(" ", "").replaceAll(",", "")
 		const parts = s.split("/")
-		wr.shot = Int.fromString(parts[0])
-		if (parts.length > 1) wr.slug = Int.fromString(parts[1])
+		wr.shot = Int.fromString(parts[0])[0]
+		if (parts.length > 1) wr.slug = Int.fromString(parts[1])[0]
 		wr.validate()
 		return wr
 	}
@@ -22,7 +22,6 @@ export class WeaponRecoil extends WeaponField {
 	resolve(w: AbstractWeaponGURPS, tooltip: TooltipGURPS): WeaponRecoil {
 		const result = WeaponRecoil.parse(this.toString())
 		if (this.shot > 0 || this.slug > 0) {
-			// @ts-expect-error awaiting implementation
 			for (const bonus of w.collectWeaponBonuses(1, tooltip, feature.Type.WeaponRecoilBonus)) {
 				const amt = bonus.adjustedAmountForWeapon(w)
 				result.shot += amt

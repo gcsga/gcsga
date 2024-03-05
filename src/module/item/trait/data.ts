@@ -32,23 +32,25 @@ interface TraitSystemSource extends AbstractContainerSystemSource {
 	can_level: boolean
 }
 
-const CR_FEATURES = new Map([
-	[
-		selfctrl.Adjustment.MajorCostOfLivingIncrease,
+function getCRFeatures(): Map<string, SkillBonus[]> {
+	return new Map([
 		[
-			SkillBonus.fromObject({
-				type: feature.Type.SkillBonus,
-				selection_type: skillsel.Type.Name,
-				name: { compare: StringCompareType.IsString, qualifier: "Merchant" },
-				specialization: { compare: StringCompareType.AnyString },
-				tags: { compare: StringCompareType.AnyString },
-				amount: 1,
-			}),
+			selfctrl.Adjustment.MajorCostOfLivingIncrease,
+			[
+				SkillBonus.fromObject({
+					type: feature.Type.SkillBonus,
+					selection_type: skillsel.Type.Name,
+					name: { compare: StringCompareType.IsString, qualifier: "Merchant" },
+					specialization: { compare: StringCompareType.AnyString },
+					tags: { compare: StringCompareType.AnyString },
+					amount: 1,
+				}),
+			],
 		],
-	],
-])
+	])
+}
 
 interface TraitSystemData extends TraitSystemSource, AbstractContainerSystemData {}
 
-export { CR_FEATURES }
+export { getCRFeatures }
 export type { TraitSource, TraitSystemSource, TraitSystemData }

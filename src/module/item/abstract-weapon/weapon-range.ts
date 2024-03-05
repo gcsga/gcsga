@@ -2,9 +2,9 @@ import { Int } from "@util/fxp.ts"
 import { WeaponField } from "./weapon-field.ts"
 import { wswitch } from "@util/enum/wswitch.ts"
 import { feature } from "@util/enum/feature.ts"
-import { AbstractWeaponGURPS, EquipmentContainerGURPS, EquipmentGURPS } from "@item"
-import { CharacterGURPS } from "@actor"
+import { AbstractWeaponGURPS } from "@item"
 import { TooltipGURPS } from "@util"
+import { ActorType, ItemType } from "@module/data/constants.ts"
 export class WeaponRange extends WeaponField {
 	halfDamage = 0
 
@@ -40,15 +40,15 @@ export class WeaponRange extends WeaponField {
 			s = s.replaceAll(",", "")
 			let parts = s.split("/")
 			if (parts.length > 1) {
-				wr.halfDamage = Int.fromString(parts[0])
+				wr.halfDamage = Int.fromString(parts[0])[0]
 				parts[0] = parts[1]
 			}
 			parts = parts[0].split("-")
 			if (parts.length > 1) {
-				wr.min = Int.fromString(parts[0])
-				wr.max = Int.fromString(parts[1])
+				wr.min = Int.fromString(parts[0])[0]
+				wr.max = Int.fromString(parts[1])[0]
 			} else {
-				wr.max = Int.fromString(parts[0])
+				wr.max = Int.fromString(parts[0])[0]
 			}
 		}
 		wr.validate()
@@ -58,17 +58,17 @@ export class WeaponRange extends WeaponField {
 	resolve(w: AbstractWeaponGURPS, tooltip: TooltipGURPS): WeaponRange {
 		const result = new WeaponRange()
 		Object.assign(result, this)
-		// @ts-expect-error awaiting implementation
 		result.musclePowered = w.resolveBoolFlag(wswitch.Type.MusclePowered, result.musclePowered)
-		// @ts-expect-error awaiting implementation
 		result.inMiles = w.resolveBoolFlag(wswitch.Type.RangeInMiles, result.inMiles)
 		if (result.musclePowered) {
 			let st = 0
-			// @ts-expect-error awaiting implementation
-			if (w.container instanceof (EquipmentGURPS || EquipmentContainerGURPS)) st = w.container.ratedStrength
+			if (w.container?.isOfType(ItemType.Equipment, ItemType.EquipmentContainer)) {
+				st = w.container.system.rated_strength ?? st
+			}
 			if (st === 0) {
-				// @ts-expect-error awaiting implementation
-				if (w.actor instanceof CharacterGURPS) st = w.actor.throwingST
+				if (w.actor?.isOfType(ActorType.Character)) {
+					st = w.actor.throwingST
+				}
 			}
 			if (st > 0) {
 				result.halfDamage = Math.max(0, Math.trunc(result.halfDamage * st))
@@ -76,7 +76,6 @@ export class WeaponRange extends WeaponField {
 				result.max = Math.max(0, Math.trunc(result.max * st))
 			}
 		}
-		// @ts-expect-error awaiting implementation
 		for (const bonus of w.collectWeaponBonuses(
 			1,
 			tooltip,

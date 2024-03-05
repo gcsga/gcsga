@@ -8,7 +8,6 @@ import { NumericCriteriaObj } from "@util/numeric-criteria.ts"
 import { StringCriteriaObj } from "@util/string-criteria.ts"
 
 export interface BaseFeatureObj<TType extends feature.Type> {
-	// type: feature.Type
 	type: TType
 }
 
@@ -67,13 +66,13 @@ export interface SkillPointBonusObj extends LeveledAmountObj, BaseFeatureObj<fea
 }
 export interface SpellBonusObj extends LeveledAmountObj, BaseFeatureObj<feature.Type.SpellBonus> {
 	match: spellmatch.Type
-	name: StringCriteriaObj
-	tags: StringCriteriaObj
+	name?: StringCriteriaObj
+	tags?: StringCriteriaObj
 }
 export interface SpellPointBonusObj extends LeveledAmountObj, BaseFeatureObj<feature.Type.SpellPointBonus> {
 	match: spellmatch.Type
-	name: StringCriteriaObj
-	tags: StringCriteriaObj
+	name?: StringCriteriaObj
+	tags?: StringCriteriaObj
 }
 export interface WeaponBonusObj<TType extends feature.WeaponBonusType>
 	extends WeaponLeveledAmountObj,
@@ -91,6 +90,6 @@ export interface WeaponBonusObj<TType extends feature.WeaponBonusType>
 
 export interface WeaponLeveledAmountObj {
 	amount: number
-	leveled: boolean
-	per_die: boolean
+	leveled?: boolean
+	per_die?: boolean
 }

@@ -31,7 +31,7 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 		return this.system.usage
 	}
 
-	get resolvedNotes(): string {
+	override resolvedNotes(): string {
 		return sheetDisplayNotes(this.secondaryText(display.Option.isInline), { unready: this.unready })
 	}
 
@@ -150,7 +150,7 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 	}
 
 	encumbrancePenalty(actor: WeaponBonusResolver, tooltip: TooltipGURPS | null): number {
-		const penalty = actor.encumbranceLevel(true).penalty
+		const penalty = actor.encumbrance.current.penalty
 		if (penalty !== 0 && tooltip) {
 			tooltip.push("\n")
 			tooltip.push(

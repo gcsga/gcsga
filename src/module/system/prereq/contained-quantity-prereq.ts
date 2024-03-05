@@ -25,7 +25,6 @@ export class ContainedQuantityPrereq extends BasePrereq {
 		let satisfied = false
 		if (exclude instanceof EquipmentContainerGURPS) {
 			const eqp = exclude as EquipmentContainerGURPS
-			// @ts-expect-error awaiting implementation
 			satisfied = this.qualifier.matches(eqp.children.size)
 		}
 		if (!this.has) satisfied = !satisfied

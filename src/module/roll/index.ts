@@ -58,12 +58,10 @@ export class RollGURPS extends Roll {
 
 	protected override _prepareData(data: Record<string, unknown>): Record<string, unknown> {
 		const d = super._prepareData(data) ?? {}
-		// @ts-expect-error awaiting implementation
 		d.gmod = game.user?.modifierTotal
 		if (!objectHasKey(d, "gmodc"))
 			Object.defineProperty(d, "gmodc", {
 				get() {
-					// @ts-expect-error awaiting implementation
 					const mod = game.user?.modifierTotal
 					game.gurps.modifierBucket.clear()
 					return mod

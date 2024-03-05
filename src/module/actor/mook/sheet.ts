@@ -1,14 +1,13 @@
 import { CharacterGURPS } from "@actor"
 import { ActorSheetGURPS } from "@actor/base/sheet.ts"
-import { CharacterSheetData } from "@actor/character/sheet.ts"
 
 class MookSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS<TActor> {
-	override async getData(options?: ActorSheetOptions): Promise<CharacterSheetData<TActor>> {
-		const sheetData = await super.getData(options)
-		return {
-			...sheetData,
-		}
-	}
+	// override async getData(options?: ActorSheetOptions): Promise<CharacterSheetData<TActor>> {
+	// 	const sheetData = await super.getData(options)
+	// 	return {
+	// 		...sheetData,
+	// 	}
+	// }
 }
 
 export { MookSheetGURPS }

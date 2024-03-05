@@ -69,7 +69,6 @@ class ModifierList extends Application {
 			id: $(event.currentTarget).data("name"),
 			modifier: $(event.currentTarget).data("modifier"),
 		}
-		// @ts-expect-error awaiting implementation
 		return game.user.addModifier(modifier)
 	}
 
@@ -84,7 +83,6 @@ class ModifierList extends Application {
 	}
 
 	addRangeMod(): void {
-		// @ts-expect-error awaiting implementation
 		return game.user.addModifier(this._tempRangeMod)
 	}
 

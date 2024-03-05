@@ -39,11 +39,8 @@ export class WeaponShots extends WeaponField {
 
 	resolve(w: AbstractWeaponGURPS, tooltip: TooltipGURPS): WeaponShots {
 		const result = WeaponShots.parse(this.toString())
-		// @ts-expect-error awaiting implementation
 		result.reloadTimeIsPerShot = w.resolveBoolFlag(wswitch.Type.ReloadTimeIsPerShot, result.reloadTimeIsPerShot)
-		// @ts-expect-error awaiting implementation
 		result.thrown = w.resolveBoolFlag(wswitch.Type.Thrown, result.thrown)
-		// @ts-expect-error awaiting implementation
 		for (const bonus of w.collectWeaponBonuses(
 			1,
 			tooltip,

@@ -8,7 +8,7 @@ import {
 	expressionTree,
 	parsedFunction,
 } from "./operator/types.ts"
-import { VariableResolver } from "@util"
+import { ErrorGURPS, VariableResolver } from "@util"
 
 // Evaluator is used to evaluate an expression. If you do not have any variables that will be resolved, you can leave
 // Resolver unset.
@@ -48,6 +48,9 @@ class Evaluator {
 	}
 
 	parse(expression: string): void {
+		if (!expression) {
+			throw ErrorGURPS("No expression to parse!")
+		}
 		let unaryOp: Operator | null = null
 		let haveOperand = false
 		const haveOperator = false

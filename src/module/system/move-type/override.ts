@@ -15,11 +15,11 @@ export class MoveTypeOverride {
 	conditionMet(resolver: MoveTypeResolver): boolean {
 		switch (this.condition.type) {
 			case MoveTypeOverrideConditionType.Skill:
-				return resolver.skills.some(e => e.name === this.condition.qualifier)
+				return resolver.itemCollections.skills.some(e => e.name === this.condition.qualifier)
 			case MoveTypeOverrideConditionType.Trait:
-				return resolver.traits.some(e => e.name === this.condition.qualifier)
+				return resolver.itemCollections.traits.some(e => e.name === this.condition.qualifier)
 			case MoveTypeOverrideConditionType.Condition:
-				return resolver.conditions.some(e => e.system.id === this.condition.qualifier)
+				return resolver.itemCollections.conditions.some(e => e.system.id === this.condition.qualifier)
 		}
 	}
 

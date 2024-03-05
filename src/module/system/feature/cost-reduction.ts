@@ -14,9 +14,10 @@ export class CostReduction extends BonusOwner<feature.Type.CostReduction> {
 		this.percentage = 40
 	}
 
-	// @ts-expect-error incorrect return type
+	// @ts-expect-error incorrect type
 	override toObject(): CostReductionObj {
 		return {
+			type: feature.Type.CostReduction,
 			attribute: this.attribute,
 			percentage: this.percentage,
 		}

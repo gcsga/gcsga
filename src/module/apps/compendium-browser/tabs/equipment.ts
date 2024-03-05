@@ -1,7 +1,7 @@
 import { ContentTabName, TabName } from "../data.ts"
 import { CompendiumBrowserTab } from "./base.ts"
 import { CompendiumBrowserIndexData, EquipmentFilters } from "./data.ts"
-import { LocalizeGURPS } from "@util"
+import { LocalizeGURPS, Weight } from "@util"
 import { CompendiumBrowser } from "../index.ts"
 import { ItemType, SYSTEM_NAME } from "@data"
 import { EquipmentContainerGURPS, EquipmentGURPS } from "@item"
@@ -62,7 +62,6 @@ export class CompendiumBrowserEquipmentTab extends CompendiumBrowserTab {
 				} else {
 					return
 				}
-				// @ts-expect-error awaiting implementation
 				for (const tag of item.tags) tags.add(tag)
 
 				equipment.push({
@@ -70,20 +69,13 @@ export class CompendiumBrowserEquipmentTab extends CompendiumBrowserTab {
 					name: item.name,
 					img: item.img,
 					uuid: `Compendium.${pack.collection}.${item._id}`,
-					// @ts-expect-error awaiting implementation
 					formattedName: item.formattedName,
-					// @ts-expect-error awaiting implementation
 					resolvedNotes: item.resolvedNotes,
-					// @ts-expect-error awaiting implementation
 					value: item.adjustedValue,
-					// @ts-expect-error awaiting implementation
 					weight: item.adjustedWeight,
-					// @ts-expect-error awaiting implementation
 					extendedValue: item.extendedValue,
-					// @ts-expect-error awaiting implementation
-					extendedWeight: item.extendedWeightFast,
-					// @ts-expect-error awaiting implementation
-					reference: item.reference,
+					extendedWeight: Weight.format(item.extendedWeight(false, item.weightUnits), item.weightUnits),
+					reference: item.system.reference,
 				})
 			})
 		}

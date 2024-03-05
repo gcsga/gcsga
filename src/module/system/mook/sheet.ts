@@ -1,11 +1,10 @@
 import { SYSTEM_NAME } from "@data"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { attribute } from "@util/enum/attribute.ts"
 import { MookParser } from "./parse.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { Mook } from "./document.ts"
 import { CharacterSheetConfig } from "@actor/character/config-sheet.ts"
-import { Attribute, AttributeObj } from "@system"
+import { AttributeGURPS, AttributeObj } from "@system"
 import { DialogGURPS } from "@module/apps/dialog.ts"
 
 export class MookGeneratorSheet extends FormApplication {
@@ -111,15 +110,14 @@ export class MookGeneratorSheet extends FormApplication {
 		}
 	}
 
-	prepareAttributes(attributes: Map<string, Attribute>): [Attribute[], Attribute[], Attribute[]] {
-		const primary_attributes: Attribute[] = []
-		const secondary_attributes: Attribute[] = []
-		const point_pools: Attribute[] = []
+	prepareAttributes(attributes: Map<string, AttributeGURPS>): [AttributeGURPS[], AttributeGURPS[], AttributeGURPS[]] {
+		const primary_attributes: AttributeGURPS[] = []
+		const secondary_attributes: AttributeGURPS[] = []
+		const point_pools: AttributeGURPS[] = []
 		if (attributes)
 			attributes.forEach(a => {
-				if ([attribute.Type.Pool, attribute.Type.PoolSeparator].includes(a.attribute_def?.type))
-					point_pools.push(a)
-				else if (a.attribute_def?.isPrimary) primary_attributes.push(a)
+				if (a.isPool) point_pools.push(a)
+				else if (a.isPrimary) primary_attributes.push(a)
 				else secondary_attributes.push(a)
 			})
 		return [primary_attributes, secondary_attributes, point_pools]
@@ -214,7 +212,7 @@ export class MookGeneratorSheet extends FormApplication {
 					if (i.endsWith(".damage")) (formData[i] as number) = Math.max(att.max - (formData[i] as number), 0)
 				}
 				const key = i.replace(`attributes.${id}.`, "")
-				const index = attributes.findIndex(e => e.attr_id === id)
+				const index = attributes.findIndex(e => e.id === id)
 				fu.setProperty(attributes[index], key, formData[i])
 				formData["system.attributes"] = attributes
 				delete formData[i]

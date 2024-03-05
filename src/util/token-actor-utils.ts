@@ -30,9 +30,7 @@ function getSelectedActors(options: GetSelectedActorsOptions = {}): ActorGURPS[]
 	}
 
 	if (
-		// @ts-expect-error awaiting implementation
 		(include.length === 0 || assigned.isOfType(...include)) &&
-		// @ts-expect-error awaiting implementation
 		(exclude.length === 0 || !assigned.isOfType(...exclude))
 	) {
 		return [assigned]

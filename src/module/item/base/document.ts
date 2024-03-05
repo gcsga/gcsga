@@ -3,7 +3,14 @@ import { AbstractContainerGURPS } from "@item"
 import type { ItemSourceGURPS } from "@item/data/index.ts"
 import { CONTAINER_TYPES, ItemFlags, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { MigrationList, MigrationRunner } from "@module/migration/index.ts"
-import { EvalEmbeddedRegex, SkillDefaultResovler, display, replaceAllStringFunc, setHasElement } from "@util"
+import {
+	EvalEmbeddedRegex,
+	SkillDefaultResolver,
+	display,
+	replaceAllStringFunc,
+	setHasElement,
+	sheetDisplayNotes,
+} from "@util"
 import * as R from "remeda"
 import type { ItemFlagsGURPS, ItemSystemData } from "./data.ts"
 import type { ItemSheetGURPS } from "./sheet.ts"
@@ -25,13 +32,13 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 	declare unsatisfiedReason: string
 
 	// Dummy actor, used for actor substitution for skill defaults
-	private declare _dummyActor: SkillDefaultResovler | null
+	private declare _dummyActor: SkillDefaultResolver | null
 
-	get dummyActor(): SkillDefaultResovler | null {
+	get dummyActor(): SkillDefaultResolver | null {
 		return this._dummyActor
 	}
 
-	set dummyActor(actor: SkillDefaultResovler | null) {
+	set dummyActor(actor: SkillDefaultResolver | null) {
 		this._dummyActor = actor
 	}
 
@@ -239,6 +246,10 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 		return this.name ?? ""
 	}
 
+	resolvedNotes(): string {
+		return sheetDisplayNotes(this.secondaryText(display.Option.isInline), { unsatisfied: this.unsatisfiedReason })
+	}
+
 	// The notes of the item displayed on the character sheet
 	secondaryText(_optionChecker: (option: display.Option) => boolean): string {
 		return ""
@@ -274,6 +285,12 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 		return []
 	}
 
+	protected override _initialize(options?: Record<string, unknown>): void {
+		this.initialized = false
+		this._container = null
+		super._initialize(options)
+	}
+
 	/**
 	 * Never prepare data except as part of `DataModel` initialization. If embedded, don't prepare data if the parent is
 	 * not yet initialized. See https://github.com/foundryvtt/foundryvtt/issues/7987
@@ -293,9 +310,16 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 		this.system.slug ||= null
 
 		const flags = this.flags
-		flags[SYSTEM_NAME] ??= {
-			[ItemFlags.Container]: this.flags[SYSTEM_NAME][ItemFlags.Container] ?? null,
+		flags[SYSTEM_NAME] = fu.mergeObject(flags[SYSTEM_NAME] ?? {}, { [ItemFlags.Container]: null })
+
+		this.flags = flags
+		this.flags[SYSTEM_NAME].container ||= null
+
+		if (this._container?.id !== this.flags[SYSTEM_NAME].container) {
+			this._container = null
 		}
+
+		console.log(this.name, this.flags)
 	}
 
 	prepareSiblingData(): void {

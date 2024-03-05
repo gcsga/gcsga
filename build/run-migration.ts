@@ -25,7 +25,8 @@ const packsDataPath = path.resolve(process.cwd(), "packs")
 
 type CompendiumSource = CompendiumDocument["_source"]
 
-const actorTypes = new Set([ActorType.Character, ActorType.Loot, ActorType.LegacyEnemy, ActorType.LegacyCharacter])
+// const actorTypes = new Set([ActorType.Character, ActorType.Loot, ActorType.LegacyEnemy, ActorType.LegacyCharacter])
+const actorTypes = new Set([ActorType.Character, ActorType.Loot])
 const itemTypes = new Set([
 	ItemType.Trait,
 	ItemType.TraitContainer,
@@ -202,8 +203,8 @@ function pruneDefaults(
 	source: { type?: string; items?: ItemSourceGURPS[]; flags?: Record<string, Record<string, unknown> | undefined> },
 	{ deleteSlug = true } = {},
 ): void {
-	if (source.flags && Object.keys(source.flags.pf2e ?? {}).length === 0) {
-		delete source.flags.pf2e
+	if (source.flags && Object.keys(source.flags.gcsga ?? {}).length === 0) {
+		delete source.flags.gcsga
 	}
 	if (Object.keys(source.flags ?? {}).length === 0) {
 		delete source.flags

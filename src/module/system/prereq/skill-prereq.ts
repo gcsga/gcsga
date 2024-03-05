@@ -38,22 +38,18 @@ export class SkillPrereq extends BasePrereq {
 		let satisfied = false
 		let techLevel = ""
 		if (exclude instanceof Item && (exclude.type === ItemType.Skill || exclude.type === ItemType.Technique)) {
-			// @ts-expect-error awaiting implementation
 			techLevel = exclude.techLevel
 		}
-		for (const sk of actor.skills) {
-			if (sk.type === ItemType.SkillContainer) continue
+		for (const sk of actor.itemCollections.skills) {
+			if (sk.isOfType(ItemType.SkillContainer)) continue
 
 			if (
 				exclude === sk ||
 				!this.name.matches(sk.name ?? "") ||
-				// @ts-expect-error awaiting implementation
 				!this.specialization.matches(sk.specialization ?? "")
 			)
 				continue
-			// @ts-expect-error awaiting implementation
 			satisfied = this.level.matches(sk.level.level)
-			// @ts-expect-error awaiting implementation
 			if (satisfied && techLevel !== "") satisfied = sk.techLevel === "" || techLevel === sk.techLevel
 		}
 		if (!this.has) satisfied = !satisfied

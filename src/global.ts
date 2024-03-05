@@ -133,6 +133,7 @@ declare global {
 		get(module: "gcsga", key: "default_hit_locations.roll"): string
 		get(module: "gcsga", key: "default_hit_locations.locations"): HitLocationObj[]
 		get(module: "gcsga", key: "colors.colors"): Record<string, { light: string; dark: string }>
+		get(module: "gcsga", key: "colors.modePreference"): string
 		get(module: "gcsga", key: "automatic_unready"): boolean
 		get(module: "gcsga", key: "initiative_formula"): ((combatant: CombatGURPS["turns"][number]) => string) | null
 		get(module: "gcsga", setting: "compendium_browser_packs"): CompendiumBrowserSettings
@@ -143,6 +144,29 @@ declare global {
 
 	interface ClientSettingsMap {
 		// get(key: "gcsga.worldClock.worldCreatedOn"): SettingConfig & { default: string }
+		get(key: "gcsga.default_sheet_settings.initial_points"): SettingConfig & { default: number }
+		get(key: "gcsga.default_sheet_settings.tech_level"): SettingConfig & { default: string }
+		get(key: "gcsga.default_sheet_settings.tech_level"): SettingConfig & { default: string }
+		get(key: "gcsga.default_sheet_settings.settings"): SettingConfig & { default: SheetSettingsObj }
+		get(key: "gcsga.default_attributes.attributes"): SettingConfig & { default: AttributeDefObj[] }
+		get(key: "gcsga.default_attributes.effects"): SettingConfig & { default: AttributeEffect[] }
+		get(
+			key: "gcsga.default_resource_trackers.resource_trackers",
+		): SettingConfig & { default: ResourceTrackerDefObj[] }
+		get(key: "gcsga.default_move_types.move_types"): SettingConfig & { default: MoveTypeDefObj[] }
+		get(key: "gcsga.default_hit_locations.name"): SettingConfig & { default: string }
+		get(key: "gcsga.default_hit_locations.roll"): SettingConfig & { default: string }
+		get(key: "gcsga.default_hit_locations.locations"): SettingConfig & { default: HitLocationObj[] }
+		get(key: "gcsga.colors.modePreference"): SettingConfig & { default: string }
+		get(key: "gcsga.colors.colors"): SettingConfig & { default: Record<string, { light: string; dark: string }> }
+		get(key: "gcsga.automatic_unready"): SettingConfig & { default: boolean }
+		get(
+			key: "gcsga.initiative_formula",
+		): SettingConfig & { default: ((combatant: CombatGURPS["turns"][number]) => string) | null }
+		get(key: "gcsga.compendium_browser_packs"): SettingConfig & { default: CompendiumBrowserSettings }
+		get(key: "gcsga.compendium_browser_sources"): SettingConfig & { default: CompendiumBrowserSources }
+		get(key: "gcsga.roll_formula"): SettingConfig & { default: string }
+		get(key: "gcsga.world_schema_version"): SettingConfig & { default: number }
 	}
 
 	interface RollMathProxy {

@@ -1,5 +1,4 @@
 import { ItemFlags, ItemType, MigrationRecord, SYSTEM_NAME } from "@data"
-import { FeatureObj, PrereqListObj, Study } from "@system"
 
 type BaseItemSourceGURPS<
 	TType extends ItemType = ItemType,

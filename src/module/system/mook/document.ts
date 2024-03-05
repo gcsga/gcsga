@@ -1,4 +1,4 @@
-import { ItemFlags, ItemType, SETTINGS, SYSTEM_NAME, gid } from "@module/data/constants.ts"
+import { ActorFlags, ItemFlags, ItemType, SETTINGS, SYSTEM_NAME, gid } from "@module/data/constants.ts"
 import {
 	MookData,
 	MookEquipment,
@@ -11,12 +11,11 @@ import {
 	MookTrait,
 	MookTraitModifier,
 } from "./data.ts"
-import { Attribute, AttributeDef, AttributeDefObj, AttributeObj, MoveTypeDef, MoveTypeDefObj } from "@system"
-import { attribute, damageProgression, progression } from "@util"
+import { AttributeGURPS, AttributeDef, AttributeDefObj, AttributeObj, MoveTypeDef, MoveTypeDefObj } from "@system"
+import { damageProgression, progression } from "@util"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { CharacterSource, Encumbrance } from "@actor/character/data.ts"
 import { CharacterGURPS } from "@actor"
-import { SkillGURPS, SpellGURPS } from "@item"
 import {
 	ItemSourceGURPS,
 	MeleeWeaponSource,
@@ -30,6 +29,18 @@ import {
 
 export class Mook {
 	type = "mook"
+
+	flags = {
+		[SYSTEM_NAME]: {
+			[ActorFlags.TargetModifiers]: [],
+			[ActorFlags.SelfModifiers]: [],
+			[ActorFlags.Import]: { name: "", path: "", last_import: "" },
+			[ActorFlags.MoveType]: gid.Ground,
+			[ActorFlags.AutoEncumbrance]: { active: true, manual: 0 },
+			[ActorFlags.AutoThreshold]: { active: true, manual: {} },
+			[ActorFlags.AutoDamage]: { active: true, thrust: new DiceGURPS(), swing: new DiceGURPS() },
+		},
+	}
 
 	protected variableResolverExclusions: Map<string, boolean> = new Map()
 
@@ -48,7 +59,7 @@ export class Mook {
 		attributes: AttributeObj[]
 	}
 
-	attributes: Map<string, Attribute>
+	declare attributes: Map<string, AttributeGURPS>
 
 	traits: MookTrait[]
 
@@ -86,7 +97,17 @@ export class Mook {
 
 	update(data: Partial<MookData>): void {
 		Object.assign(this, fu.mergeObject(this, data))
-		this.attributes = this.getAttributes()
+		this.refreshAttributes()
+	}
+
+	refreshAttributes(): void {
+		this.attributes = new Map(
+			this.system.attributes
+				.map((value, index) => {
+					return new AttributeGURPS(this, value, index)
+				})
+				.map(e => [e.id, e]),
+		)
 	}
 
 	// TODO: need to parse and store proper active defense values
@@ -108,9 +129,9 @@ export class Mook {
 		}
 		this.system = data?.system ?? {
 			settings,
-			attributes: this.newAttributes(settings.attributes),
+			attributes: this.generateNewAttributes(settings.attributes.map(def => new AttributeDef(def))),
 		}
-		this.attributes = this.getAttributes()
+		this.refreshAttributes()
 		this.traits = data?.traits ?? []
 		this.skills = data?.skills ?? []
 		this.spells = data?.spells ?? []
@@ -144,45 +165,16 @@ export class Mook {
 		}
 	}
 
-	newAttributes(defs: AttributeDefObj[]): AttributeObj[] {
-		const atts: AttributeObj[] = []
-		let i = 0
-		for (const def of defs) {
-			const attr = new Attribute(this, def.id, i)
-			if (
-				[
-					attribute.Type.PrimarySeparator,
-					attribute.Type.SecondarySeparator,
-					attribute.Type.PoolSeparator,
-				].includes(def.type)
-			) {
-				atts.push({
-					attr_id: attr.id,
-					adj: attr.adj,
-				})
-			} else {
-				atts.push({
-					attr_id: attr.id,
-					adj: attr.adj,
-				})
-			}
-			if (attr.damage) atts[i].damage = attr.damage
-			i += 1
-		}
-		return atts
-	}
-
-	getAttributes(att_array = this.system.attributes): Map<string, Attribute> {
-		const attributes: Map<string, Attribute> = new Map()
-		if (!att_array.length) return attributes
-		att_array.forEach((v, k) => {
-			attributes.set(v.attr_id, new Attribute(this, v.attr_id, k, v))
+	generateNewAttributes<TDef extends AttributeDef>(definitions: TDef[]): AttributeObj[] {
+		const values: AttributeObj[] = []
+		definitions.forEach(definition => {
+			values.push(definition.generateNewAttribute())
 		})
-		return attributes
+		return values
 	}
 
-	resolveAttributeCurrent(attr_id: string): number {
-		const att = this.attributes?.get(attr_id)?.current
+	resolveAttributeCurrent(id: string): number {
+		const att = this.attributes?.get(id)?.current
 		if (att) return att
 		return -Infinity
 	}
@@ -232,15 +224,14 @@ export class Mook {
 		this.variableResolverExclusions.set(variableName, true)
 		if (gid.SizeModifier === variableName) return this.profile.SM.signedString()
 		const parts = variableName.split(".") // TODO: check
-		const attr: Attribute | undefined = this.attributes.get(parts[0])
+		const attr: AttributeGURPS | undefined = this.attributes.get(parts[0])
 		if (!attr) {
 			console.warn(`No such variable: $${variableName}`)
 			return ""
 		}
 		let def
-		if (attr instanceof Attribute) {
-			// Def = this.settings.attributes.find(e => e.id === (attr as Attribute).attr_id)
-			def = attr.attribute_def
+		if (attr instanceof AttributeGURPS) {
+			def = attr.definition
 		}
 		if (!def) {
 			console.warn(`No such variable definition: $${variableName}`)
@@ -260,15 +251,6 @@ export class Mook {
 
 	unregisterSkillLevelResolutionExclusion(_name: string, _specialization: string): void {
 		// do nothing}
-	}
-
-	encumbranceLevel(_forSkills: boolean): Encumbrance {
-		return {
-			level: 0,
-			maximum_carry: 0,
-			penalty: 0,
-			name: "",
-		}
 	}
 
 	effectiveST(initialST: number): number {
@@ -297,7 +279,7 @@ export class Mook {
 						SYSTEM_NAME,
 						`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`,
 					),
-					...this.settings,
+					...this.system.settings,
 				},
 				attributes: this.system.attributes,
 				profile: this.profile,
@@ -307,30 +289,26 @@ export class Mook {
 			items: await this._createItemData(),
 		}
 
-		const newActor = (await CharacterGURPS.create(
+		const newActor = await CharacterGURPS.create(
 			{
 				name: this.profile.name,
 				img: this.profile.portrait,
 			} as PreCreate<CharacterGURPS["_source"]>,
 			{ promptImport: false } as DocumentModificationContext<CharacterGURPS["parent"]>,
-		)) as CharacterGURPS
+		)
 		if (!newActor) return null
 		await newActor?.update(data)
 		const updateMap: ({ _id: string } & Record<string, unknown>)[] = []
-		// @ts-expect-error awaiting implementation
 		newActor.itemTypes[ItemType.Skill].forEach((item, index: number) => {
 			updateMap.push({
 				_id: item.id!,
-				// @ts-expect-error awaiting implementation
-				"system.points": (item as SkillGURPS).getPointsForLevel(this.skills[index].level),
+				"system.points": item.getPointsForLevel(this.skills[index].level),
 			})
 		})
-		// @ts-expect-error awaiting implementation
 		newActor.itemTypes[ItemType.Spell].forEach((item, index: number) => {
 			updateMap.push({
 				_id: item.id!,
-				// @ts-expect-error awaiting implementation
-				"system.points": (item as SpellGURPS).getPointsForLevel(this.spells[index].level),
+				"system.points": item.getPointsForLevel(this.spells[index].level),
 			})
 		})
 		await newActor.updateEmbeddedDocuments("Item", updateMap)
@@ -507,15 +485,15 @@ export class Mook {
 		return data
 	}
 
-	resolveAttributeName(attr_id: string): string {
-		const def = this.resolveAttributeDef(attr_id)
+	resolveAttributeName(id: string): string {
+		const def = this.resolveAttributeDef(id)
 		if (def) return def.name
 		return "unknown"
 	}
 
-	resolveAttributeDef(attr_id: string): AttributeDef | null {
-		const a = this.attributes?.get(attr_id)
-		if (a) return a.attribute_def
+	resolveAttributeDef(id: string): AttributeDef | null {
+		const a = this.attributes?.get(id)
+		if (a) return a.definition
 		return null
 	}
 }

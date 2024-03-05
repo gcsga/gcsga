@@ -20,7 +20,7 @@ export class WeaponAccuracy extends WeaponField {
 			s = s.replace(/^\+/, "")
 			const parts = s.split("+")
 			;[wa.base, parts[0]] = Int.extract(parts[0])
-			if (parts.length > 1) wa.scope = Int.fromString(parts[1])
+			if (parts.length > 1) [wa.scope] = Int.fromString(parts[1])
 		}
 		wa.validate()
 		return wa
@@ -28,11 +28,9 @@ export class WeaponAccuracy extends WeaponField {
 
 	resolve(w: AbstractWeaponGURPS, tooltip: TooltipGURPS): WeaponAccuracy {
 		const result = WeaponAccuracy.parse(this.toString())
-		// @ts-expect-error awaiting implementation
 		result.jet = w.resolveBoolFlag(wswitch.Type.Jet, result.jet)
 		if (!result.jet) {
 			if (w.actor) {
-				// @ts-expect-error awaiting implementation
 				for (const bonus of w.collectWeaponBonuses(
 					1,
 					tooltip,

@@ -20,7 +20,6 @@ export const DropCanvasData = {
 							actorGurps.sheet.emulateItemDrop(dropData)
 							return false
 						case DropDataType.Damage:
-							// @ts-expect-error awaiting implementation
 							actorGurps.handleDamageDrop(dropData.payload)
 							return false
 					}

@@ -213,6 +213,7 @@ export class CharacterImporter {
 			data?.map(e => {
 				return {
 					id: e.id,
+					base: "",
 					name: e.name,
 					full_name: e.full_name ?? "",
 					min: e.min ?? 0,
@@ -231,7 +232,7 @@ export class CharacterImporter {
 				return {
 					id: e.id,
 					name: e.name,
-					move_type_base: e.move_type_base ?? "",
+					base: e.base ?? "",
 					overrides: CharacterImporter.importMoveTypeOverrides(e.overrides),
 				}
 			}) ?? []
@@ -292,7 +293,7 @@ export class CharacterImporter {
 		return (
 			data?.map(e => {
 				return {
-					move_type_id: e.move_type_id,
+					id: e.id,
 					adj: e.adj ?? 0,
 				}
 			}) ?? []

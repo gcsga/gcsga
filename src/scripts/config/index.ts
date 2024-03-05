@@ -25,6 +25,7 @@ import {
 } from "@item"
 import { JournalEntryPageGURPS, JournalEntryPagePDF } from "@module/journal-entry/page/document.ts"
 import {
+	AttributeGURPS,
 	AttributeBonus,
 	AttributePrereq,
 	ConditionalModifierBonus,
@@ -35,8 +36,10 @@ import {
 	DRBonus,
 	EquippedEquipmentPrereq,
 	MoveBonus,
+	MoveType,
 	PrereqList,
 	ReactionBonus,
+	ResourceTracker,
 	SkillBonus,
 	SkillPointBonus,
 	SkillPrereq,
@@ -177,6 +180,14 @@ export const GURPSCONFIG = {
 			[ItemType.MeleeWeapon]: [],
 			[ItemType.RangedWeapon]: [],
 		} as Record<ItemType, ItemType[]>,
+	},
+
+	Attribute: {
+		classes: {
+			attribute: AttributeGURPS,
+			resourceTracker: ResourceTracker,
+			moveType: MoveType,
+		},
 	},
 
 	Feature: {

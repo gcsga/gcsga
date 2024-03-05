@@ -4,7 +4,7 @@ import { DiceGURPS } from "@module/dice/index.ts"
 import { gid } from "@data"
 import { RESERVED_IDS } from "@system"
 
-class HitLocation {
+class HitLocation<TOwner extends BodyOwner = BodyOwner> {
 	private _id: string
 	choiceName: string
 	tableName: string
@@ -12,11 +12,11 @@ class HitLocation {
 	hitPenalty: number
 	drBonus: number
 	description?: string
-	subTable?: BodyGURPS
+	subTable?: BodyGURPS<TOwner>
 
 	rollRange: string
-	owner: BodyOwner
-	owningTable?: BodyGURPS
+	owner: TOwner
+	owningTable?: BodyGURPS<TOwner>
 
 	get id(): string {
 		return this._id
@@ -26,8 +26,8 @@ class HitLocation {
 		this._id = sanitizeId(v, false, RESERVED_IDS)
 	}
 
-	constructor(actor: BodyOwner) {
-		this.owner = actor
+	constructor(owner: TOwner) {
+		this.owner = owner
 		this._id = "id"
 		this.choiceName = game.i18n.localize("gurps.placeholder.hit_location.choice_name")
 		this.tableName = game.i18n.localize("gurps.placeholder.hit_location.table_name")
@@ -56,7 +56,11 @@ class HitLocation {
 		return (this.description ?? "").replace(/\n/g, "<br>")
 	}
 
-	static fromObject(data: HitLocationObj, actor: BodyOwner, owningTable?: BodyGURPS): HitLocation {
+	static fromObject<TOwner extends BodyOwner>(
+		data: HitLocationObj,
+		actor: TOwner,
+		owningTable?: BodyGURPS<TOwner>,
+	): HitLocation<TOwner> {
 		const location = new HitLocation(actor)
 
 		location.id = data.id
@@ -150,20 +154,22 @@ class HitLocation {
 	}
 }
 
-class BodyGURPS {
+class BodyGURPS<TOwner extends BodyOwner = BodyOwner> {
+	owner?: TOwner
 	name?: string
 	roll: DiceGURPS
-	locations: HitLocation[]
+	locations: HitLocation<TOwner>[]
 
-	private _owningLocation?: HitLocation
+	private _owningLocation?: HitLocation<TOwner>
 
-	get owningLocation(): HitLocation | null {
+	get owningLocation(): HitLocation<TOwner> | null {
 		return this._owningLocation ?? null
 	}
 
-	constructor() {
+	constructor(owner?: TOwner) {
 		this.roll = new DiceGURPS()
 		this.locations = []
+		if (owner) this.owner = owner
 	}
 
 	toObject(): BodyObj {
@@ -174,8 +180,12 @@ class BodyGURPS {
 		}
 	}
 
-	static fromObject(data: BodyObj | undefined, actor: BodyOwner, owningLocation?: HitLocation): BodyGURPS {
-		const body = new BodyGURPS()
+	static fromObject<TOwner extends BodyOwner>(
+		data: BodyObj | undefined,
+		actor: TOwner,
+		owningLocation?: HitLocation<TOwner>,
+	): BodyGURPS<TOwner> {
+		const body = new BodyGURPS(actor)
 		body.name = data?.name
 		body.roll = new DiceGURPS(data?.roll)
 		body.locations = data?.locations?.map(e => HitLocation.fromObject(e, actor)) ?? []

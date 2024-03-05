@@ -17,7 +17,7 @@ export class WeaponBlock extends WeaponField {
 		s = s.toLowerCase()
 		wp.no = s.includes("no")
 		if (!wp.no) {
-			wp.modifier = Int.fromString(s)
+			;[wp.modifier] = Int.fromString(s)
 		}
 		wp.validate()
 		return wp
@@ -25,19 +25,15 @@ export class WeaponBlock extends WeaponField {
 
 	resolve(w: AbstractWeaponGURPS, tooltip: TooltipGURPS | null): WeaponBlock {
 		const result = WeaponBlock.parse(this.toString())
-		// @ts-expect-error awaiting implementation
 		result.no = !w.resolveBoolFlag(wswitch.Type.CanBlock, !result.no)
 		if (!result.no) {
 			const actor = w.actor as CharacterGURPS
 			if (actor !== null) {
 				let primaryTooltip: TooltipGURPS | null = null
 				if (tooltip !== null) primaryTooltip = new TooltipGURPS()
-				// @ts-expect-error awaiting implementation
 				const preAdj = w.skillLevelBaseAdjustment(actor, primaryTooltip)
-				// @ts-expect-error awaiting implementation
 				const postAdj = w.skillLevelPostAdjustment(actor, primaryTooltip)
 				let best = -Infinity
-				// @ts-expect-error awaiting implementation
 				for (const def of w.defaults) {
 					let level = def.skillLevelFast(actor, false, null, true)
 					if (level === -Infinity) continue
@@ -48,9 +44,7 @@ export class WeaponBlock extends WeaponField {
 				}
 				if (best !== -Infinity) {
 					if (primaryTooltip !== null) tooltip?.push("\n", primaryTooltip)
-					// @ts-expect-error awaiting implementation
 					result.modifier += 3 + best + actor.blockBonus
-					// @ts-expect-error awaiting implementation
 					for (const bonus of w.collectWeaponBonuses(1, tooltip, feature.Type.WeaponBlockBonus)) {
 						result.modifier += bonus.adjustedAmountForWeapon(w)
 					}
