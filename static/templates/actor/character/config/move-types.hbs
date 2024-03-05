@@ -6,42 +6,46 @@
 	{{/if}}
 </div>
 <div class="item-list">
-	{{#each move_types}}
-		<div class="item" data-id="{{this.id}}" data-index="{{@index}}" data-type="move_types">
-			<div class="controls">
-				<a class="gcs-grip drag" data-index="{{@index}}" data-type="move_types"></a>
-				<a class="gcs-trash delete" data-index="{{@index}}" data-type="move_types"></a>
-				<a class="gcs-circled-add add" data-id="{{@index}}" data-type="override"></a>
+	{{#each attributes.moveTypes}}
+	<div class="item" data-id="{{this.id}}" data-index="{{@index}}" data-type="move_types">
+		<div class="controls">
+			<a class="gcs-grip drag" data-index="{{@index}}" data-type="move_types"></a>
+			<a class="gcs-trash delete" data-index="{{@index}}" data-type="move_types"></a>
+			<a class="gcs-circled-add add" data-id="{{@index}}" data-type="override"></a>
+		</div>
+		<div class="fieldblock">
+			<div class="label">{{localize "gurps.move_type_def.id"}}</div>
+			<div class="field">
+				<input
+					type="text"
+					name="array.system.settings.move_types.{{@index}}.id"
+					value="{{this.id}}"
+					data-dtype="String"
+				/>
 			</div>
-			<div class="fieldblock">
-				<div class="label">{{localize "gurps.move_type_def.id"}}</div>
-				<div class="field">
-					<input type="text" name="array.system.settings.move_types.{{@index}}.id" value="{{this.id}}" data-dtype="String" />
-				</div>
-				<div class="label">{{localize "gurps.move_type_def.name"}}</div>
-				<div class="field">
-					<input
-						type="text"
-						name="array.system.settings.move_types.{{@index}}.name"
-						value="{{this.name}}"
-						data-dtype="String"
-					/>
-				</div>
-				<div class="label">{{localize "gurps.move_type_def.move_type_base"}}</div>
-				<div class="field">
-					<input
-						type="text"
-						name="array.system.settings.move_types.{{@index}}.move_type_base"
-						value="{{this.move_type_base}}"
-						data-dtype="String"
-					/>
-				</div>
-				<div class="item-list overrides">
-					{{#each this.overrides}}
-					{{>actor/character/config/override id=@../index parent="array.system.settings.move_types"}}
-					{{/each}}
-				</div>
+			<div class="label">{{localize "gurps.move_type_def.name"}}</div>
+			<div class="field">
+				<input
+					type="text"
+					name="array.system.settings.move_types.{{@index}}.name"
+					value="{{this.name}}"
+					data-dtype="String"
+				/>
+			</div>
+			<div class="label">{{localize "gurps.move_type_def.move_type_base"}}</div>
+			<div class="field">
+				<input
+					type="text"
+					name="array.system.settings.move_types.{{@index}}.move_type_base"
+					value="{{this.move_type_base}}"
+					data-dtype="String"
+				/>
+			</div>
+			<div class="item-list overrides">
+				{{#each this.overrides}} {{>actor/character/config/override id=@../index
+				parent="array.system.settings.move_types"}} {{/each}}
 			</div>
 		</div>
+	</div>
 	{{/each}}
 </div>

@@ -21,7 +21,7 @@
 	<div class="label">{{localize "gurps.character.move.type"}}</div>
 	<div class="field">
 		<select class="move-select" data-name="move">
-			{{#select moveData.type}} {{#each moveTypes as |v k|}}
+			{{#select moveData.type}} {{#each attributes.moveTypes as |v k|}}
 			<option value="{{v.id}}">{{v.name}}</option>
 			{{/each}} {{/select}}
 		</select>

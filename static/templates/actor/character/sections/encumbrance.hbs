@@ -22,7 +22,7 @@
 	<div class="encumbrance-marker overencumbered"><i class="gcs-weight"></i></div>
 	<div class="level-number overencumbered">{{this.level}}</div>
 	<div class="level overencumbered">{{this.name}}</div>
-	<div class="max-load overencumbered">{{this.carry}}</div>
+	<div class="max-load overencumbered">{{this.maximumCarry}}</div>
 	<div class="move overencumbered">{{this.move.effective}}</div>
 	<div data-id="dodge" data-type="attribute" class="dodge overencumbered rollable {{effective this.dodge}}">
 		{{this.dodge.effective}}
@@ -31,7 +31,7 @@
 	<div class="encumbrance-marker active"><i class="gcs-weight"></i></div>
 	<div class="level-number active">{{this.level}}</div>
 	<div class="level active">{{this.name}}</div>
-	<div class="max-load active">{{this.carry}}</div>
+	<div class="max-load active">{{this.maximumCarry}}</div>
 	<div class="move active {{effective this.move}}">{{this.move.effective}}</div>
 	<div data-id="dodge" data-type="attribute" class="dodge active rollable {{effective this.dodge}}">
 		{{this.dodge.effective}}
@@ -43,7 +43,7 @@
 	{{/unless}}
 	<div class="level-number">{{this.level}}</div>
 	<div class="level">{{localize this.name}}</div>
-	<div class="max-load">{{this.carry}}</div>
+	<div class="max-load">{{this.maximumCarry}}</div>
 	<div class="move">{{this.move.effective}}</div>
 	<div class="dodge">{{this.dodge.effective}}</div>
 	{{/if}} {{/each}}

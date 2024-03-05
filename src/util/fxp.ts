@@ -20,6 +20,9 @@ export class Int {
 		if (str.match(/[eE]/)) {
 			try {
 				const f = parseFloat(str)
+				if (isNaN(f)) {
+					return [0, ErrorGURPS(`${f} is not a number`)]
+				}
 				return [f, null]
 			} catch (err) {
 				if (err instanceof Error) return [0, err]
@@ -43,6 +46,7 @@ export class Int {
 				if (value < 0) neg = true
 				value = -value
 		}
+
 		if (parts.length > 0) {
 			const cutoff = 1 + FourDecimalPlaces
 			const buffer = new StringBuilder()
@@ -59,8 +63,6 @@ export class Int {
 		}
 		if (neg) value = -value
 		return [value, null]
-		// str = str.match(/-?[\d.Ee+]+/) ? str.match(/-?[\d.Ee]+/)![0] : "0"
-		// return Int.from(parseFloat(str))
 	}
 
 	static extract(str: string): [number, string] {

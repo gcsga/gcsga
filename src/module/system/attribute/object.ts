@@ -97,6 +97,15 @@ class AttributeGURPS<TActor extends AttributeResolver = AttributeResolver> exten
 		return null
 	}
 
+	get isSeparator(): boolean {
+		if (!this.definition) return false
+		return [
+			attribute.Type.PrimarySeparator,
+			attribute.Type.SecondarySeparator,
+			attribute.Type.PoolSeparator,
+		].includes(this.definition.type)
+	}
+
 	get isPool(): boolean {
 		if (!this.definition) return false
 		return [attribute.Type.Pool, attribute.Type.PoolSeparator].includes(this.definition.type)
@@ -105,14 +114,16 @@ class AttributeGURPS<TActor extends AttributeResolver = AttributeResolver> exten
 	get isPrimary(): boolean {
 		if (!this.definition) return false
 		if (this.definition.type === attribute.Type.PrimarySeparator) return true
-		const [, err] = Int.fromString(this.definition.base)
+		if (this.definition.type === attribute.Type.Pool || this.isSeparator) return false
+		const [, err] = Int.fromString(this.definition.base.trim())
 		return err === null
 	}
 
 	get isSecondary(): boolean {
 		if (!this.definition) return false
 		if (this.definition.type === attribute.Type.SecondarySeparator) return true
-		const [, err] = Int.fromString(this.definition.base)
+		if (this.definition.type === attribute.Type.Pool || this.isSeparator) return false
+		const [, err] = Int.fromString(this.definition.base.trim())
 		return err !== null
 	}
 }

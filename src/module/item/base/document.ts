@@ -318,8 +318,6 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 		if (this._container?.id !== this.flags[SYSTEM_NAME].container) {
 			this._container = null
 		}
-
-		console.log(this.name, this.flags)
 	}
 
 	prepareSiblingData(): void {

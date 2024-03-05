@@ -15,10 +15,10 @@
 		{{/if}}
 	</div>
 	<div class="fieldblock7">
-		{{#each poolAttributes}}
-			{{#if (eq this.attribute_def.type "pool_separator")}}
+		{{#each attributes.poolAttributes}}
+			{{#if (eq this.definition.type "pool_separator")}}
 				<div class="separator_parent">
-					<div class="separator" data-text="{{this.attribute_def.name}}">{{this.attribute_def.name}}</div>
+					<div class="separator" data-text="{{this.definition.name}}">{{this.definition.name}}</div>
 				</div>
 			{{else}}
 			{{#if ../editing}}
@@ -45,7 +45,7 @@
 						{{disabled (not ../editing)}}
 					/>
 				</div>
-				<div class="label">{{this.attribute_def.name}}</div>
+				<div class="label">{{this.definition.name}}</div>
 				{{#if ../autoThreshold}}
 				<div class="label" data-tooltip="{{{this.currentThreshold.explanation}}}" data-tooltip-direction="DOWN">
 					{{#if this.currentThreshold.state}}
@@ -55,7 +55,7 @@
 				{{else}}
 				<select class="threshold-select" data-name="{{this.id}}">
 					{{#select this._manualThreshold.state}}
-						{{#each this.attribute_def.thresholds}}
+						{{#each this.definition.thresholds}}
 						<option value="{{this.state}}">[{{this.state}}]</option>
 						{{/each}}
 					{{/select}}
