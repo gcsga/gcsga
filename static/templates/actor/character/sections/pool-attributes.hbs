@@ -1,6 +1,6 @@
 <div id="pool-attributes">
 	<div class="header">{{localize "gurps.character.point_pools"}}
-		{{#if autoThreshold}}
+		{{#if settings.auto_threshold.active}}
 		<a
 			class="threshold-toggle fas fa-toggle-on"
 			data-tooltip="{{localize 'gurps.tooltip.auto_threshold'}}"
@@ -46,7 +46,7 @@
 					/>
 				</div>
 				<div class="label">{{this.definition.name}}</div>
-				{{#if ../autoThreshold}}
+				{{#if ../settings.auto_threshold.active}}
 				<div class="label" data-tooltip="{{{this.currentThreshold.explanation}}}" data-tooltip-direction="DOWN">
 					{{#if this.currentThreshold.state}}
 						[{{this.currentThreshold.state}}]

@@ -24,7 +24,6 @@ import {
 import { AbstractWeaponGURPS, SkillGURPS, TechniqueGURPS, TraitContainerGURPS, TraitGURPS } from "@item"
 import { ActorFlags, ItemType, SETTINGS, SYSTEM_NAME, WeaponType, gid } from "@module/data/constants.ts"
 import {
-	ErrorGURPS,
 	Int,
 	LocalizeGURPS,
 	TooltipGURPS,
@@ -65,8 +64,6 @@ class CharacterGURPS<
 	declare reactions: ConditionalModifier[]
 	/** Accumulated conditional modifier bonuses */
 	declare conditionalModifiers: ConditionalModifier[]
-
-	override variableResolverSets: Set<string> = new Set(["attributes", "resourceTrackers", "moveTypes"])
 
 	get parryBonus(): number {
 		return this.attributeBonusFor(gid.Parry, stlimit.Option.None) ?? 0
@@ -148,11 +145,13 @@ class CharacterGURPS<
 		}
 	}
 
-	protected override _onCreate(
-		data: CharacterSource,
+	protected override async _preCreate(
+		data: this["_source"],
 		options: DocumentModificationContext<TParent>,
-		userId: string,
-	): void {
+		user: User<Actor<null>>,
+	): Promise<boolean | void> {
+		await super._preCreate(data, options, user)
+
 		const date = getCurrentTime()
 		const defaultData = {
 			_id: data._id,
@@ -164,9 +163,8 @@ class CharacterGURPS<
 			}),
 			flags: CharacterFlagDefaults,
 		}
-		console.log(defaultData)
-		this.update(defaultData, { diff: false })
-		super._onCreate(data, options, userId)
+
+		this.updateSource(defaultData)
 	}
 
 	private static getDefaultSettings(): SheetSettingsObj {
@@ -197,7 +195,8 @@ class CharacterGURPS<
 	override resolveAttributeCurrent(id: string): number {
 		const attribute = this.attributes.get(id)
 		if (!attribute) {
-			throw ErrorGURPS(`Cannot resolve attribute: $${id}`)
+			console.error(`GURPS | Cannot resolve attribute: $${id}`)
+			return 0
 		}
 		return attribute.current
 	}
@@ -205,7 +204,8 @@ class CharacterGURPS<
 	override resolveAttributeEffective(id: string): number {
 		const attribute = this.attributes.get(id)
 		if (!attribute) {
-			throw ErrorGURPS(`Cannot resolve attribute: $${id}`)
+			console.error(`GURPS | Cannot resolve attribute: $${id}`)
+			return 0
 		}
 		return attribute.effective
 	}
@@ -213,7 +213,8 @@ class CharacterGURPS<
 	override resolveAttributeMax(id: string): number {
 		const attribute = this.attributes.get(id)
 		if (!attribute) {
-			throw ErrorGURPS(`Cannot resolve attribute: $${id}`)
+			console.error(`GURPS | Cannot resolve attribute: $${id}`)
+			return 0
 		}
 		return attribute.max
 	}
@@ -221,10 +222,12 @@ class CharacterGURPS<
 	override resolveAttributeName(id: string): string {
 		const attribute = this.attributes.get(id)
 		if (!attribute) {
-			throw ErrorGURPS(`Cannot resolve attribute: $${id}`)
+			console.error(`GURPS | Cannot resolve attribute: $${id}`)
+			return ""
 		}
 		if (!attribute.definition) {
-			throw ErrorGURPS(`Cannot resolve attribute definition: $${id}`)
+			console.error(`GURPS | Cannot resolve attribute definition: $${id}`)
+			return ""
 		}
 		return attribute.definition?.name
 	}
@@ -276,7 +279,7 @@ class CharacterGURPS<
 				const threshold = a.currentThreshold
 				if (threshold && threshold.ops?.includes(op)) total += 1
 			})
-		return Math.max(2 * Math.min(total, 2), 1)
+		return total
 	}
 
 	bestWeaponNamed(
@@ -603,8 +606,17 @@ class CharacterGURPS<
 		return drMap
 	}
 
+	protected override _initialize(options?: Record<string, unknown>): void {
+		// this.attributes ??= new Map()
+		// this.resourceTrackers ??= new Map()
+		// this.moveTypes ??= new Map()
+		super._initialize(options)
+	}
+
 	override prepareBaseData(): void {
 		super.prepareBaseData()
+
+		this.variableResolverSets = new Set(["attributes", "resourceTrackers", "moveTypes"])
 
 		// Initialize atributes if they do not exist
 		if (this.system.attributes.length === 0)
@@ -639,6 +651,7 @@ class CharacterGURPS<
 		)
 
 		this.hitLocationTable = BodyGURPS.fromObject(this.system.settings.body_type, this)
+		this.hitLocationTable.updateRollRanges()
 	}
 
 	generateNewAttributes<TDef extends AttributeDef>(definitions: TDef[]): AttributeObj[]
@@ -652,12 +665,22 @@ class CharacterGURPS<
 		return values
 	}
 
+	override prepareEmbeddedDocuments(): void {
+		// Initial values for lifts and encumbrance, needed for skill level calculation
+		this.lifts = new CharacterLifts(this)
+		this.encumbrance = new CharacterEncumbrance(this)
+
+		return super.prepareEmbeddedDocuments()
+	}
+
 	override prepareDerivedData(): void {
 		super.prepareDerivedData()
 
 		this.pointsBreakdown = this.calculatePointsBreakdown()
-		this.lifts = new CharacterLifts(this)
-		this.encumbrance = new CharacterEncumbrance(this)
+		if (this.attributes.has(gid.Strength)) {
+			this.lifts = new CharacterLifts(this)
+			this.encumbrance = new CharacterEncumbrance(this)
+		}
 		this.reactions = ConditionalModifier.modifiersFromItems(feature.Type.ReactionBonus, this.itemCollections)
 		this.conditionalModifiers = ConditionalModifier.modifiersFromItems(
 			feature.Type.ConditionalModifierBonus,

@@ -6,7 +6,7 @@ import type { ActorSourceGURPS } from "@actor/data.ts"
 import type { ActiveEffectGURPS } from "@module/active-effect/index.ts"
 import { ItemSourceGURPS } from "@item/data/index.ts"
 import { itemIsOfType } from "@item/helpers.ts"
-import { ErrorGURPS, Evaluator, LocalizeGURPS, TooltipGURPS, attribute, objectHasKey, stlimit } from "@util"
+import { ErrorGURPS, Evaluator, LastActor, LocalizeGURPS, TooltipGURPS, attribute, objectHasKey, stlimit } from "@util"
 import { ActorFlags, ActorType, ItemType, SYSTEM_NAME, gid } from "@module/data/constants.ts"
 import {
 	AbstractAttribute,
@@ -48,7 +48,7 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 	declare variableResolverExclusions: Set<string>
 
 	// Set of keys containing
-	variableResolverSets: Set<string> = new Set()
+	declare variableResolverSets: Set<string>
 
 	// Map of features added by items
 	declare features: FeatureMap
@@ -97,6 +97,15 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 	get sizeModifierBonus(): number {
 		if (this.isOfType(ActorType.Character)) return this.attributeBonusFor(gid.SizeModifier, stlimit.Option.None)
 		return 0
+	}
+
+	protected override _onCreate(
+		data: this["_source"],
+		options: DocumentModificationContext<TParent>,
+		userId: string,
+	): void {
+		super._onCreate(data, options, userId)
+		LastActor.set(this)
 	}
 
 	/** A means of checking this actor's type without risk of circular import references */
@@ -230,6 +239,13 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 		}
 	}
 
+	protected override _initialize(options?: Record<string, unknown>): void {
+		this.initialized = false
+
+		this._itemTypes = null
+		return super._initialize(options)
+	}
+
 	/**
 	 * Never prepare data except as part of `DataModel` initialization. If embedded, don't prepare data if the parent is
 	 * not yet initialized. See https://github.com/foundryvtt/foundryvtt/issues/7987
@@ -243,6 +259,9 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 
 	override prepareBaseData(): void {
 		super.prepareBaseData()
+
+		this.variableResolverSets = new Set()
+		this.itemCollections = new ItemCollectionMap<this>(this.items)
 
 		this.features = {
 			attributeBonuses: [],
@@ -260,12 +279,39 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 	override prepareEmbeddedDocuments(): void {
 		super.prepareEmbeddedDocuments()
 
-		this.itemCollections = new ItemCollectionMap<this>(this.items)
+		// this.itemCollections = new ItemCollectionMap<this>(this.items)
 
 		this.prepareFeatures()
-		this.preparePrereqs()
+
+		this.updateSkills()
+		this.updateSpells()
+
+		for (let i = 0; i < 5; i++) {
+			this.preparePrereqs()
+			const skillsChanged = this.updateSkills()
+			const spellsChanged = this.updateSpells()
+			if (!skillsChanged && !spellsChanged) break
+		}
 
 		this.prepareDataFromItems()
+	}
+
+	updateSkills(): boolean {
+		let changed = false
+		for (const item of this.itemCollections.skills) {
+			if (item.isOfType(ItemType.SkillContainer)) continue
+			if (item.updateLevel()) changed = true
+		}
+		return changed
+	}
+
+	updateSpells(): boolean {
+		let changed = false
+		for (const item of this.itemCollections.spells) {
+			if (item.isOfType(ItemType.SpellContainer)) continue
+			if (item.updateLevel()) changed = true
+		}
+		return changed
 	}
 
 	prepareFeatures(): void {

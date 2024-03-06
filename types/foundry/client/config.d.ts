@@ -10,6 +10,7 @@ declare global {
 		TChatMessage extends ChatMessage,
 		TCombat extends Combat,
 		TCombatant extends Combatant<TCombat | null, TTokenDocument | null>,
+		TActorDirectory extends ActorDirectory<Actor<null>>,
 		TCombatTracker extends CombatTracker<TCombat | null>,
 		TCompendiumDirectory extends CompendiumDirectory,
 		THotbar extends Hotbar,
@@ -596,7 +597,7 @@ declare global {
 		}
 
 		ui: {
-			actors: ConstructorOf<ActorDirectory<Actor<null>>>
+			actors: ConstructorOf<TActorDirectory>
 			chat: ConstructorOf<TChatLog>
 			combat: ConstructorOf<TCombatTracker>
 			compendium: ConstructorOf<TCompendiumDirectory>

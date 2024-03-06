@@ -1,18 +1,10 @@
-import { ActorProxyGURPS } from "@actor"
 import { SYSTEM_NAME } from "@data"
-import { ItemProxyGURPS } from "@item"
-import { ActiveEffectGURPS } from "@module/active-effect/index.ts"
+import { ActorDirectoryGURPS } from "@module/apps/sidebar/actor-directory.ts"
 import { CombatTrackerGURPS } from "@module/apps/sidebar/combat-tracker.ts"
 import { CompendiumDirectoryGURPS } from "@module/apps/sidebar/compendium-directory.ts"
 import { RulerGURPS } from "@module/canvas/ruler/document.ts"
 import { TokenGURPS } from "@module/canvas/token/index.ts"
-import { CombatGURPS } from "@module/combat/document.ts"
-import { CombatantGURPS } from "@module/combat/index.ts"
-import { JournalEntryGURPS } from "@module/journal-entry/document.ts"
-import { JournalEntryPageProxyGURPS } from "@module/journal-entry/page/document.ts"
 import { RollGURPS } from "@module/roll/index.ts"
-import { UserGURPS } from "@module/user/document.ts"
-import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
 import { GURPSCONFIG } from "@scripts/config/index.ts"
 import { registerHandlebarsHelpers } from "@scripts/handlebars.ts"
 import { registerFonts } from "@scripts/register-fonts.ts"
@@ -48,24 +40,13 @@ export const Init = {
 
 			CONFIG.GURPS = GURPSCONFIG
 
-			// Assign custom classes and constants hereby
-			CONFIG.User.documentClass = UserGURPS
-			CONFIG.Item.documentClass = ItemProxyGURPS
-			CONFIG.Actor.documentClass = ActorProxyGURPS
-			CONFIG.ActiveEffect.documentClass = ActiveEffectGURPS
-			CONFIG.Combat.documentClass = CombatGURPS
-			CONFIG.Combatant.documentClass = CombatantGURPS
-
-			CONFIG.JournalEntry.documentClass = JournalEntryGURPS
-			CONFIG.JournalEntryPage.documentClass = JournalEntryPageProxyGURPS
-
-			CONFIG.Token.documentClass = TokenDocumentGURPS
 			CONFIG.Token.objectClass = TokenGURPS
 
 			// CONFIG.statusEffects = StatusEffectsGURPS
 			CONFIG.Canvas.rulerClass = RulerGURPS
 
 			// CONFIG.ui.items = ItemDirectoryGURPS
+			CONFIG.ui.actors = ActorDirectoryGURPS
 			CONFIG.ui.combat = CombatTrackerGURPS
 			CONFIG.ui.compendium = CompendiumDirectoryGURPS
 

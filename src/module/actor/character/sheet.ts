@@ -1,6 +1,5 @@
 import { CharacterGURPS } from "@actor"
 import { ActorSheetDataGURPS, ActorSheetGURPS } from "@actor/base/sheet.ts"
-import { CharacterFlags } from "./data.ts"
 import { ItemGURPS } from "@item"
 import { AbstractAttribute, ConditionalModifier } from "@system"
 import { ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
@@ -42,7 +41,7 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS
 			...sheetData,
 			actor,
 			system: this.actor.system,
-			flags: this.actor.flags,
+			settings: this.actor.flags[SYSTEM_NAME],
 			attributes: {
 				primaryAttributes,
 				secondaryAttributes,
@@ -75,7 +74,7 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS
 interface CharacterSheetData<TActor extends CharacterGURPS = CharacterGURPS> extends ActorSheetDataGURPS<TActor> {
 	actor: TActor
 	system: TActor["system"]
-	flags: CharacterFlags
+	settings: Record<string, unknown>
 	attributes: Record<string, AbstractAttribute[]>
 	collections: Record<string, Collection<ItemGURPS<TActor>> | ConditionalModifier[]>
 	config: ConfigGURPS["GURPS"]

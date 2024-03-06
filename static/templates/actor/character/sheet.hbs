@@ -10,13 +10,13 @@
 			{{>actor/character/sections/secondary-attributes }} {{>actor/character/sections/pool-attributes }}
 		</div>
 		<div id="hit-locations">
-			<div class="header body-plan">{{ body.name }}</div>
+			<div class="header body-plan">{{ actor.hitLocationTable.name }}</div>
 			<div class="header roll rollable" data-type="location" data-actor-id="{{this.id}}">
 				{{ localize "gurps.character.body_type.roll" }}
 			</div>
 			<div class="header location">{{ localize "gurps.character.body_type.location" }}</div>
 			<div class="header dr">{{ localize "gurps.character.body_type.dr" }}</div>
-			{{#each body.locations }} {{>actor/character/sections/hit-location}} {{/each }}
+			{{#each actor.hitLocationTable.locations }} {{>actor/character/sections/hit-location}} {{/each }}
 		</div>
 		<div id="encumbrance-lifting">
 			{{>actor/character/sections/encumbrance }}

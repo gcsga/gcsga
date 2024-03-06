@@ -23,6 +23,12 @@ declare global {
 		/** The WorldCollection instance which this Sidebar Directory displays. */
 		static get collection(): WorldCollection<WorldDocument>
 
+		/**
+		 * The collection of Documents which are displayed in this Sidebar Directory
+		 * @type {DocumentCollection}
+		 */
+		get collection(): DocumentCollection<TDocument>
+
 		/** Initialize the content of the directory by categorizing folders and documents into a hierarchical tree structure. */
 		initialize(): void
 
@@ -61,6 +67,8 @@ declare global {
 		protected override _renderInner(data: object): Promise<JQuery>
 
 		protected override _onSearchFilter(event: KeyboardEvent, query: string, rgx: RegExp, html: HTMLElement): void
+
+		protected _onClickEntryName(event: PointerEvent): void
 
 		/** Highlight folders as drop targets when a drag event enters or exits their area */
 		protected _onDragHighlight(event: DragEvent): void
@@ -104,6 +112,8 @@ declare global {
 		renderUpdateKeys: string[]
 		/** The CSS selector that activates the context menu for displayed Documents. */
 		contextMenuSelector: string
+		/** The CSS selector for the clickable area of an entry in the tab. */
+		entryClickSelector: string
 	}
 
 	interface SidebarDirectoryRenderOptions extends RenderOptions {

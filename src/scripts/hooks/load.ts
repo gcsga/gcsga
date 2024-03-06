@@ -1,10 +1,12 @@
-import { ActorProxyGURPS } from "@actor"
+import { CharacterGURPS } from "@actor"
 import { ActorType, ItemType } from "@data"
 import { ItemProxyGURPS } from "@item"
 import { ActiveEffectGURPS } from "@module/active-effect/index.ts"
 import { ChatMessageGURPS } from "@module/chat-message/document.ts"
 import { CombatGURPS } from "@module/combat/document.ts"
 import { CombatantGURPS } from "@module/combat/index.ts"
+import { JournalEntryGURPS } from "@module/journal-entry/document.ts"
+import { JournalEntryPageProxyGURPS } from "@module/journal-entry/page/document.ts"
 import { UserGURPS } from "@module/user/document.ts"
 import { SceneGURPS } from "@scene"
 import { TokenDocumentGURPS } from "@scene/token-document/document.ts"
@@ -19,7 +21,8 @@ export const Load = {
 		// Assign document classes
 		CONFIG.ActiveEffect.documentClass = ActiveEffectGURPS
 		CONFIG.Actor.collection = Actors
-		CONFIG.Actor.documentClass = ActorProxyGURPS
+		// CONFIG.Actor.documentClass = ActorProxyGURPS
+		CONFIG.Actor.documentClass = CharacterGURPS
 		CONFIG.ActorDelta.documentClass = ActorDelta
 		CONFIG.AmbientLight.documentClass = AmbientLightDocument
 		CONFIG.ChatMessage.documentClass = ChatMessageGURPS
@@ -30,6 +33,8 @@ export const Load = {
 		CONFIG.MeasuredTemplate.documentClass = MeasuredTemplateDocument
 		CONFIG.Scene.documentClass = SceneGURPS
 		CONFIG.Tile.documentClass = TileDocument
+		CONFIG.JournalEntry.documentClass = JournalEntryGURPS
+		CONFIG.JournalEntryPage.documentClass = JournalEntryPageProxyGURPS
 		CONFIG.Token.documentClass = TokenDocumentGURPS
 		// CONFIG.Token.prototypeSheetClass = TokenConfigGURPS
 		CONFIG.User.documentClass = UserGURPS

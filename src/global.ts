@@ -11,6 +11,7 @@ import {
 } from "@module/apps/compendium-browser/index.ts"
 import { ModifierBucket } from "@module/apps/modifier-bucket/button.ts"
 import { ModifierList } from "@module/apps/modifier-list/document.ts"
+import { ActorDirectoryGURPS } from "@module/apps/sidebar/actor-directory.ts"
 import { CombatTrackerGURPS } from "@module/apps/sidebar/combat-tracker.ts"
 import { CompendiumDirectoryGURPS } from "@module/apps/sidebar/compendium-directory.ts"
 import { CanvasGURPS } from "@module/canvas/index.ts"
@@ -55,6 +56,7 @@ type ConfiguredConfig = Config<
 	ChatMessage,
 	CombatGURPS,
 	CombatantGURPS<CombatGURPS | null, TokenDocumentGURPS>,
+	ActorDirectoryGURPS<ActorGURPS<null>>,
 	CombatTrackerGURPS<CombatGURPS | null>,
 	CompendiumDirectoryGURPS,
 	Hotbar,
@@ -98,7 +100,7 @@ declare global {
 
 		// eslint-disable-next-line no-var
 		var ui: FoundryUI<
-			ActorDirectory<ActorGURPS<null>>,
+			ActorDirectoryGURPS<ActorGURPS<null>>,
 			ItemDirectory<ItemGURPS<null>>,
 			ChatLog,
 			CompendiumDirectoryGURPS,

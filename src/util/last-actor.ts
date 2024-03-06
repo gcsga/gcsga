@@ -5,6 +5,7 @@ import { TokenDocumentGURPS } from "@scene/token-document/document.ts"
 
 export class LastActor {
 	static async set(actor: ActorGURPS, token?: TokenDocumentGURPS): Promise<void> {
+		console.log(actor, token)
 		if (actor.type === ActorType.Loot) return
 		await game.user?.setFlag(SYSTEM_NAME, UserFlags.LastActor, actor.uuid)
 		GURPS.LastActor = actor
