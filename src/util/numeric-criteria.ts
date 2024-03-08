@@ -72,4 +72,8 @@ export class NumericCriteria {
 		if (result !== "") result += " "
 		return result + this.qualifier.toString()
 	}
+
+	toObject(): NumericCriteriaObj {
+		return { compare: this.compare, qualifier: this.qualifier }
+	}
 }

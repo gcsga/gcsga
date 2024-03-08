@@ -7,9 +7,7 @@ import { LocalizeGURPS, TooltipGURPS } from "@util"
 import { ActorGURPS } from "@actor"
 import { ActorType, ItemType } from "@module/data/constants.ts"
 
-export class TraitPrereq extends BasePrereq {
-	override type = prereq.Type.Trait
-
+export class TraitPrereq extends BasePrereq<prereq.Type.Trait> {
 	name: StringCriteria
 
 	level: NumericCriteria
@@ -67,5 +65,15 @@ export class TraitPrereq extends BasePrereq {
 			)
 		}
 		return satisfied
+	}
+
+	override toObject(): TraitPrereqObj {
+		return {
+			...super.toObject(),
+			has: this.has,
+			name: this.name.toObject(),
+			notes: this.notes.toObject(),
+			level: this.level.toObject(),
+		}
 	}
 }

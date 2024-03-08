@@ -1,10 +1,10 @@
 <div id="defaults">
 	<div class="header">{{localize "gurps.default.header"}}</div>
 	<div class="content">
-		<div> <a class="add button gcs-circled-add"></a> </div>
+		<div> <a class="button gcs-circled-add" data-action="add-default"></a> </div>
 		{{#each system.defaults}}
 			<div class="default">
-				<a class="remove button gcs-trash" data-index="{{@index}}"></a>
+				<a class="button gcs-trash" data-action="remove-default" data-index="{{@index}}"></a>
 			<select name="{{../sysPrefix}}defaults.{{@index}}.type" data-index="{{@index}}">
 				{{#select this.type}}
 				<option value="10">{{localize "gurps.enum.defaults.ten"}}</option>

@@ -3,9 +3,10 @@ import { ActorSheetDataGURPS, ActorSheetGURPS } from "@actor/base/sheet.ts"
 import { ItemGURPS } from "@item"
 import { AbstractAttribute, ConditionalModifier } from "@system"
 import { ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
-import { Weight } from "@util"
+import { LocalizeGURPS, Weight } from "@util"
 import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
 import { CharacterEncumbrance } from "./encumbrance.ts"
+import { CharacterConfigSheet } from "./config.ts"
 
 class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS<TActor> {
 	static override get defaultOptions(): ActorSheetOptions {
@@ -68,6 +69,32 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS
 			uncarriedValue: actor.wealthNotCarried(),
 			encumbrance: actor.encumbrance,
 		}
+	}
+
+	private _onConfigureCharacter(event: Event): void {
+		event.preventDefault()
+		new CharacterConfigSheet(this.document, {
+			top: (this.position.top ?? 0) + 40,
+			left:
+				(this.position.left ?? 0) +
+				((this.position.width ?? 0) - Number(DocumentSheet.defaultOptions.width)) / 2,
+		}).render(true)
+	}
+
+	protected override _getHeaderButtons(): ApplicationHeaderButton[] {
+		const buttons = super._getHeaderButtons()
+		const configButton: ApplicationHeaderButton = {
+			label: LocalizeGURPS.translations.gurps.system.configure_character,
+			class: "configure-character",
+			icon: "fas fa-user-gear",
+			onclick: ev => this._onConfigureCharacter(ev),
+		}
+		buttons.splice(
+			buttons.findIndex(e => e.class === "configure-sheet"),
+			1,
+			configButton,
+		)
+		return buttons
 	}
 }
 

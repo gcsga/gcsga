@@ -2,10 +2,9 @@ import { StringCompareType, StringCriteria } from "@util/string-criteria.ts"
 import { BasePrereq } from "./base.ts"
 import { prereq } from "@util/enum/prereq.ts"
 import { EquippedEquipmentPrereqObj } from "./data.ts"
-import { EquipmentContainerGURPS, EquipmentGURPS } from "@item"
 import { LocalizeGURPS, PrereqResolver, TooltipGURPS } from "@util"
 
-export class EquippedEquipmentPrereq extends BasePrereq {
+export class EquippedEquipmentPrereq extends BasePrereq<prereq.Type.EquippedEquipment> {
 	name: StringCriteria
 
 	constructor() {
@@ -21,14 +20,13 @@ export class EquippedEquipmentPrereq extends BasePrereq {
 
 	satisfied(
 		actor: PrereqResolver,
-		_exclude: EquipmentGURPS | EquipmentContainerGURPS,
+		_exclude: unknown,
 		tooltip: TooltipGURPS,
 		hasEquipmentPenalty: { value: boolean },
 	): boolean {
-		let satisfied = actor.itemCollections.equipment.some(
+		const satisfied = actor.itemCollections.equipment.some(
 			eqp => eqp.equipped && this.name.matches(eqp.name ?? "") && eqp.system.quantity > 0,
 		)
-		if (!this.has) satisfied = !satisfied
 		if (!satisfied) {
 			hasEquipmentPenalty.value = true
 			tooltip.push(LocalizeGURPS.translations.gurps.prereq.prefix)
@@ -39,5 +37,12 @@ export class EquippedEquipmentPrereq extends BasePrereq {
 			)
 		}
 		return satisfied
+	}
+
+	override toObject(): EquippedEquipmentPrereqObj {
+		return {
+			...super.toObject(),
+			name: this.name.toObject(),
+		}
 	}
 }

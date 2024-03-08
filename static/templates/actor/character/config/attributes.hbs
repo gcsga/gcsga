@@ -8,7 +8,7 @@
 	<a class="data-export fas fa-file-export" data-type="attributes"></a>
 </div>
 <div class="item-list">
-	{{#each attributes}}
+	{{#each attributes.attributes}}
 	<div class="item" data-id="{{this.id}}" data-index="{{@index}}" data-type="attributes">
 		<div class="controls">
 			<a class="gcs-grip drag" data-index="{{@index}}" data-type="attributes"></a>
@@ -81,12 +81,12 @@
 					data-dtype="String"
 				/>
 			</div>
-			<div class="label">{{localize "gurps.attribute_def.attribute_base"}}</div>
+			<div class="label">{{localize "gurps.attribute_def.base"}}</div>
 			<div class="field">
 				<input
 					type="text"
-					name="array.system.settings.attributes.{{@index}}.attribute_base"
-					value="{{this.attribute_base}}"
+					name="array.system.settings.attributes.{{@index}}.base"
+					value="{{this.base}}"
 					data-dtype="String"
 				/>
 			</div>

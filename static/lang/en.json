@@ -720,7 +720,7 @@
 			"name": "Name",
 			"short_name": "Short Name",
 			"full_name": "Full Name",
-			"attribute_base": "Base Value",
+			"base": "Base Value",
 			"cost_per_point": "Cost per Point",
 			"cost_adj_percent_per_sm": "SM Reduction",
 			"type": "Attribute Type",
@@ -736,7 +736,7 @@
 			"alias": "Alias",
 			"pdf": "Reference",
 			"name": "Name",
-			"tracker_base": "Base Value",
+			"base": "Base Value",
 			"max": "Max",
 			"max_enforced": "Enforce",
 			"min": "Min",
@@ -746,7 +746,7 @@
 		"move_type_def": {
 			"id": "ID",
 			"name": "Name",
-			"move_type_base": "Base Value",
+			"base": "Base Value",
 			"cost_per_point": "Cost per Point",
 			"condition_type": "Condition Type",
 			"condition_qualifier": "Qualifier"
@@ -981,6 +981,7 @@
 			}
 		},
 		"system": {
+			"configure_character": "Configure",
 			"sheet": {
 				"character_gcs": "GURPS Character Sheet",
 				"character": "GURPS Character Sheet (Legacy)",

@@ -131,6 +131,7 @@ export const CharacterDefaultData: Partial<CharacterSystemSource> = {
 }
 
 export interface PointsBreakdown {
+	overspent: boolean
 	ancestry: number
 	attributes: number
 	advantages: number
@@ -138,6 +139,8 @@ export interface PointsBreakdown {
 	quirks: number
 	skills: number
 	spells: number
+	total: number
+	unspent: number
 }
 
 export { CharacterFlagDefaults }

@@ -1,4 +1,4 @@
-import { EquipmentContainerGURPS } from "@item"
+import { ItemGURPS } from "@item"
 import { BasePrereq } from "./base.ts"
 import {
 	EquipmentHolder,
@@ -13,7 +13,7 @@ import {
 import { ContainedWeightPrereqObj } from "./data.ts"
 import { ItemType } from "@module/data/constants.ts"
 
-export class ContainedWeightPrereq extends BasePrereq {
+export class ContainedWeightPrereq extends BasePrereq<prereq.Type.ContainedWeight> {
 	qualifier: WeightCriteria
 
 	constructor(character: EquipmentHolder | null) {
@@ -32,10 +32,10 @@ export class ContainedWeightPrereq extends BasePrereq {
 		return prereq
 	}
 
-	satisfied(actor: EquipmentHolder, exclude: EquipmentContainerGURPS, tooltip: TooltipGURPS): boolean {
+	satisfied(actor: EquipmentHolder, exclude: unknown, tooltip: TooltipGURPS): boolean {
 		const units = actor.settings.default_weight_units
 		let satisfied = false
-		if (!exclude.isOfType(ItemType.EquipmentContainer)) satisfied = true
+		if (!(exclude instanceof ItemGURPS) || !exclude.isOfType(ItemType.EquipmentContainer)) satisfied = true
 		else {
 			const eqp = exclude
 			const weight = eqp.extendedWeight(false, units) - eqp.adjustedWeight(false, units)
@@ -52,5 +52,13 @@ export class ContainedWeightPrereq extends BasePrereq {
 			)
 		}
 		return satisfied
+	}
+
+	override toObject(): ContainedWeightPrereqObj {
+		return {
+			...super.toObject(),
+			has: this.has,
+			qualifier: this.qualifier.toObject(),
+		}
 	}
 }

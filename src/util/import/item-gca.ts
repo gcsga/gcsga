@@ -258,6 +258,8 @@ class GCAItemImporter {
 				name: data.ref?.default?.match(/SK:([A-z -]+)::level/)?.[1],
 				modifier: parseInt(data.ref!.default!.replace(/SK:.*::level/, "")),
 			},
+			// TODO: change
+			defaults: [],
 			limited: !!data.calcs.upto && data.calcs.upto !== "",
 			limit: parseInt(data.calcs.upto?.replace("prereq", "") || "0"),
 			prereqs: { type: prereq.Type.List, all: true },

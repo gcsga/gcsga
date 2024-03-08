@@ -105,6 +105,8 @@ type EffectType = ItemType.Effect | ItemType.Condition
 
 type WeaponType = ItemType.MeleeWeapon | ItemType.RangedWeapon
 
+const DefaultHaver = [ItemType.Skill, ItemType.Technique, ItemType.MeleeWeapon, ItemType.RangedWeapon]
+
 const CONTAINER_TYPES = new Set([
 	ItemType.Trait,
 	ItemType.TraitContainer,
@@ -338,8 +340,10 @@ enum HOOKS {
 export {
 	ActorFlags,
 	ActorType,
+	CONTAINER_TYPES,
 	ConditionID,
 	DEFAULT_INITIATIVE_FORMULA,
+	DefaultHaver,
 	EFFECT_ACTION,
 	GURPS_COMMANDS,
 	HOOKS,
@@ -351,9 +355,8 @@ export {
 	SETTINGS,
 	SOCKET,
 	SSRT_SETTING,
-	CONTAINER_TYPES,
 	SYSTEM_NAME,
 	gid,
 }
 
-export type { EffectType, WeaponType, ContainerType, ItemTypes }
+export type { ContainerType, EffectType, ItemTypes, WeaponType }

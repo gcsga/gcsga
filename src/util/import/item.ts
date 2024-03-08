@@ -447,6 +447,7 @@ class TechniqueImporter extends ItemImporter {
 			difficulty: item.difficulty ?? difficulty.Level.Average,
 			points: item.points ?? 0,
 			default: item.default ?? { type: gid.Skill, name: "Skill", modifier: 0 },
+			defaults: item.defaults ?? [],
 			limit: item.limit ?? 0,
 			limited: typeof item.limit === "number",
 			prereqs: ItemImporter.importPrereqs(item.prereqs),

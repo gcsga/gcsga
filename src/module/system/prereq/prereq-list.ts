@@ -1,10 +1,11 @@
 import { prereq } from "@util/enum/prereq.ts"
 import { NumericCompareType, NumericCriteria } from "@util/numeric-criteria.ts"
-import { BasePrereq } from "./base.ts"
 import { PrereqListObj } from "./data.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { PrereqResolver, TooltipGURPS, extractTechLevel } from "@util"
-import { CharacterGURPS } from "@actor"
+import { ActorGURPS } from "@actor"
+import { Prereq } from "./index.ts"
+import { ActorType } from "@module/data/constants.ts"
 
 export class PrereqList {
 	type: prereq.Type
@@ -13,7 +14,7 @@ export class PrereqList {
 
 	when_tl: NumericCriteria
 
-	prereqs: (BasePrereq | PrereqList)[]
+	prereqs: Prereq[]
 
 	constructor() {
 		this.type = prereq.Type.List
@@ -37,13 +38,13 @@ export class PrereqList {
 	}
 
 	satisfied(
-		actor: PrereqResolver,
+		actor: ActorGURPS,
 		exclude: unknown,
 		tooltip: TooltipGURPS,
 		hasEquipmentPenalty: { value: boolean } = { value: false },
 	): boolean {
 		let actorTechLevel = "0"
-		if (actor instanceof CharacterGURPS) {
+		if (actor.isOfType(ActorType.Character)) {
 			actorTechLevel = actor.techLevel
 		}
 		if (this.when_tl.compare !== NumericCompareType.AnyNumber) {
@@ -65,5 +66,14 @@ export class PrereqList {
 			tooltip.push(local)
 		}
 		return satisfied
+	}
+
+	toObject(): PrereqListObj {
+		return {
+			type: prereq.Type.List,
+			all: this.all,
+			when_tl: this.when_tl.toObject(),
+			prereqs: this.prereqs.map(item => item.toObject()),
+		}
 	}
 }

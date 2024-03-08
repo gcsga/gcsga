@@ -355,6 +355,7 @@ interface ImportedTechniqueSystemSorce {
 	difficulty?: difficulty.Level.Average | difficulty.Level.Hard
 	points?: number
 	default?: ImportedSkillDefault
+	defaults?: ImportedSkillDefault[]
 	limit?: number
 	prereqs?: ImportedPrereqList
 	weapons?: (ImportedMeleeWeaponSystemSource | ImportedRangedWeaponSystemSource)[]

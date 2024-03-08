@@ -3,14 +3,12 @@ import { BasePrereq } from "./base.ts"
 import { prereq } from "@util/enum/prereq.ts"
 import { NumericCompareType, NumericCriteria } from "@util/numeric-criteria.ts"
 import { SkillPrereqObj } from "./data.ts"
-import { SkillGURPS, TechniqueGURPS } from "@item"
+import { ItemGURPS } from "@item"
 import { ItemType } from "@data"
 import { LocalizeGURPS, PrereqResolver, TooltipGURPS } from "@util"
 import { LootGURPS } from "@actor"
 
-export class SkillPrereq extends BasePrereq {
-	override type = prereq.Type.Skill
-
+export class SkillPrereq extends BasePrereq<prereq.Type.Skill> {
 	name: StringCriteria
 
 	level: NumericCriteria
@@ -33,11 +31,11 @@ export class SkillPrereq extends BasePrereq {
 		return prereq
 	}
 
-	satisfied(actor: PrereqResolver, exclude: SkillGURPS | TechniqueGURPS, tooltip: TooltipGURPS): boolean {
+	satisfied(actor: PrereqResolver, exclude: unknown, tooltip: TooltipGURPS): boolean {
 		if (actor instanceof LootGURPS) return true
 		let satisfied = false
 		let techLevel = ""
-		if (exclude instanceof Item && (exclude.type === ItemType.Skill || exclude.type === ItemType.Technique)) {
+		if (exclude instanceof ItemGURPS && exclude.isOfType(ItemType.Skill, ItemType.Technique)) {
 			techLevel = exclude.techLevel
 		}
 		for (const sk of actor.itemCollections.skills) {
@@ -88,5 +86,15 @@ export class SkillPrereq extends BasePrereq {
 				)
 		}
 		return satisfied
+	}
+
+	override toObject(): SkillPrereqObj {
+		return {
+			...super.toObject(),
+			has: this.has,
+			name: this.name.toObject(),
+			specialization: this.specialization.toObject(),
+			level: this.level.toObject(),
+		}
 	}
 }

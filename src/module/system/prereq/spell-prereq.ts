@@ -4,15 +4,12 @@ import { spellcmp } from "@util/enum/spellcmp.ts"
 import { StringCompareType, StringCriteria } from "@util/string-criteria.ts"
 import { NumericCompareType, NumericCriteria } from "@util/numeric-criteria.ts"
 import { SpellPrereqObj } from "./data.ts"
-import { SpellGURPS } from "@item/spell/document.ts"
-import { RitualMagicSpellGURPS } from "@item"
+import { ItemGURPS } from "@item"
 import { ActorType, ItemType } from "@data"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
 import { ActorGURPS } from "@actor"
 
-export class SpellPrereq extends BasePrereq {
-	override type = prereq.Type.Spell
-
+export class SpellPrereq extends BasePrereq<prereq.Type.Spell> {
 	sub_type: spellcmp.Type
 
 	qualifier: StringCriteria
@@ -35,15 +32,12 @@ export class SpellPrereq extends BasePrereq {
 		return prereq
 	}
 
-	satisfied(actor: ActorGURPS, exclude: SpellGURPS | RitualMagicSpellGURPS, tooltip: TooltipGURPS): boolean {
+	satisfied(actor: ActorGURPS, exclude: unknown, tooltip: TooltipGURPS): boolean {
 		if (actor.isOfType(ActorType.Loot)) return true
 		let count = 0
 		const colleges: Set<string> = new Set()
 		let techLevel = ""
-		if (
-			exclude instanceof Item &&
-			(exclude.type === ItemType.Spell || exclude.type === ItemType.RitualMagicSpell)
-		) {
+		if (exclude instanceof ItemGURPS && exclude.isOfType(ItemType.Spell, ItemType.RitualMagicSpell)) {
 			techLevel = exclude.techLevel
 		}
 		for (const sp of actor.itemCollections.spells) {
@@ -105,5 +99,15 @@ export class SpellPrereq extends BasePrereq {
 			}
 		}
 		return satisfied
+	}
+
+	override toObject(): SpellPrereqObj {
+		return {
+			...super.toObject(),
+			has: this.has,
+			sub_type: this.sub_type,
+			qualifier: this.qualifier.toObject(),
+			quantity: this.quantity.toObject(),
+		}
 	}
 }

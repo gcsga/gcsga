@@ -21,6 +21,7 @@ interface TechniqueSystemSource extends AbstractContainerSystemSource {
 	difficulty: difficulty.Level.Average | difficulty.Level.Hard
 	points: number
 	default: SkillDefaultObj
+	defaults: SkillDefaultObj[]
 	limit: number
 	limited: boolean
 	prereqs: PrereqListObj

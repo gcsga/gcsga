@@ -5,10 +5,9 @@ import { AttributePrereqObj } from "./data.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { gid } from "@data"
 import { PrereqResolver, TooltipGURPS } from "@util"
-import { AttributeGURPS } from "@system"
 import { LootGURPS } from "@actor"
 
-export class AttributePrereq extends BasePrereq {
+export class AttributePrereq extends BasePrereq<prereq.Type.Attribute> {
 	which: string
 
 	combined_with: string
@@ -31,7 +30,7 @@ export class AttributePrereq extends BasePrereq {
 		return prereq
 	}
 
-	satisfied(actor: PrereqResolver, _exclude: AttributeGURPS, tooltip: TooltipGURPS): boolean {
+	satisfied(actor: PrereqResolver, _exclude: unknown, tooltip: TooltipGURPS): boolean {
 		if (actor instanceof LootGURPS) return true
 		let value = actor.resolveAttributeCurrent(this.which)
 		if (this.combined_with !== "") value += actor.resolveAttributeCurrent(this.combined_with)
@@ -53,5 +52,15 @@ export class AttributePrereq extends BasePrereq {
 			)
 		}
 		return satisfied
+	}
+
+	override toObject(): AttributePrereqObj {
+		return {
+			...super.toObject(),
+			has: this.has,
+			which: this.which,
+			combined_with: this.combined_with,
+			qualifier: this.qualifier.toObject(),
+		}
 	}
 }

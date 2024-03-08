@@ -690,6 +690,7 @@ class CharacterGURPS<
 
 	private calculatePointsBreakdown(): PointsBreakdown {
 		const pb = {
+			overspent: false,
 			ancestry: 0,
 			attributes: 0,
 			advantages: 0,
@@ -697,6 +698,8 @@ class CharacterGURPS<
 			quirks: 0,
 			skills: 0,
 			spells: 0,
+			unspent: 0,
+			total: 0,
 		}
 		pb.attributes += Array.from(this.attributes.values()).reduce((acc, att) => {
 			return acc + att.points
@@ -712,6 +715,10 @@ class CharacterGURPS<
 			if (spell.isOfType(ItemType.SpellContainer)) return
 			pb.spells += spell.points
 		})
+		pb.total = this.system.total_points
+		const spent = pb.ancestry + pb.attributes + pb.advantages + pb.disadvantages + pb.quirks + pb.skills + pb.spells
+		pb.unspent = pb.total - spent
+		if (pb.unspent < 0) pb.overspent = true
 		return pb
 	}
 
