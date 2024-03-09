@@ -26,4 +26,11 @@ export class MoveTypeOverride {
 	baseValue(resolver: MoveTypeResolver): number {
 		return evaluateToNumber(this.base, resolver)
 	}
+
+	static newObject(): MoveTypeOverrideObj {
+		return {
+			condition: { type: MoveTypeOverrideConditionType.Skill, qualifier: "" },
+			base: "",
+		}
+	}
 }

@@ -73,4 +73,13 @@ export class AttributeDef extends AbstractAttributeDef {
 			damage: 0,
 		}
 	}
+
+	static override newObject(reservedIds: string[]): AttributeDefObj {
+		return {
+			...super.newObject(reservedIds),
+			type: attribute.Type.Integer,
+			name: "",
+			full_name: "",
+		}
+	}
 }

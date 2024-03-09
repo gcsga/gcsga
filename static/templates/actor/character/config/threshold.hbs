@@ -1,7 +1,7 @@
 <div class="item" data-index="{{@index}}" data-type="threshold">
 	<div class="controls">
 		<a class="gcs-grip drag" data-pindex="{{id}}" data-index="{{@index}}" data-type="{{#if (in parent 'resource_trackers')}}tracker_thresholds{{else}}attribute_thresholds{{/if}}"></a>
-		<a class="gcs-trash delete" data-pindex="{{id}}" data-index="{{@index}}" data-type="{{#if (in parent 'resource_trackers')}}tracker_thresholds{{else}}attribute_thresholds{{/if}}"></a>
+		<a class="gcs-trash delete" data-pindex="{{id}}" data-index="{{@index}}" data-action="{{#if (in parent 'resource_trackers')}}remove-resource-tracker-threshold{{else}}remove-attribute-threshold{{/if}}"></a>
 	</div>
 	<div class="fieldblock">
 		<div class="label">{{localize "gurps.attribute_def.state"}}</div>

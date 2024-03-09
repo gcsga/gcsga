@@ -27,4 +27,12 @@ export class MoveTypeDef extends AbstractAttributeDef {
 			adj: 0,
 		}
 	}
+
+	static override newObject(reservedIds: string[]): MoveTypeDefObj {
+		return {
+			...super.newObject(reservedIds),
+			name: "",
+			overrides: [],
+		}
+	}
 }

@@ -1,7 +1,7 @@
 import { HOOKS, ModifierItem, RollModifier, RollModifierStack, SOCKET, SYSTEM_NAME } from "@data"
 import { ModifierBucket } from "./button.ts"
 import { UserFlags } from "@module/user/data.ts"
-import { LocalizeGURPS, PDF } from "@util"
+import { LocalizeGURPS, PDF, htmlQuery, htmlQueryAll } from "@util"
 import { DialogGURPS } from "../dialog.ts"
 
 export class ModifierBucketWindow extends Application {
@@ -36,68 +36,94 @@ export class ModifierBucketWindow extends Application {
 		}
 	}
 
-	override activateListeners(html: JQuery<HTMLElement>): void {
-		super.activateListeners(html)
+	override activateListeners($html: JQuery): void {
+		super.activateListeners($html)
+		const html = $html[0]
 
 		// Get position
-		const button = $("#modifier-bucket-button")
-		const buttonTop = button.offset()?.top ?? 0
-		const buttonLeft = button.position()?.left + 220
-		const buttonWidth = parseFloat(button.css("width").replace("px", ""))
-		const width = html.width() || 640
-		const height = parseFloat(html.css("height").replace("px", ""))
+		const button = htmlQuery(document, "#modifier-bucket-button")
+		if (!button) {
+			return console.error("Modifier bucket button not found!")
+		}
+
+		const buttonTop = button.offsetTop
+		const buttonLeft = button.offsetLeft + 220
+		const buttonWidth = button.offsetWidth
+		const width = html.offsetWidth || 640
+		const height = html.offsetHeight
 		const left = Math.max(buttonLeft + buttonWidth / 2 - width / 2, 10)
-		html.css("left", `${left}px`)
-		html.css("top", `${buttonTop - height - 10}px`)
+
+		console.log(buttonLeft, buttonWidth, width, left)
+		console.log(buttonLeft + buttonWidth / 2 - width / 2)
+
+		html.style.setProperty("left", `${left}px`)
+		html.style.setProperty("top", `${buttonTop - height - 10}px`)
 
 		// Focus the textbox on show
-		const searchbar = html.find(".searchbar")
-		searchbar.trigger("focus")
+		const searchbar = htmlQuery(html, ".searchbar")
+		if (searchbar) {
+			searchbar.focus()
+		}
 
 		// Detect changes to input
 		// searchbar.on("keydown", event => this._keyDown(event))
 
 		// Modifier Deleting
-		html.find(".player").on("click", event => this._onSendToPlayer(event))
-		html.find(".modifier").on("click", event => this._onClickModifier(event))
-		html.find(".collapsible").on("click", event => this._onCollapseToggle(event))
-		html.find(".ref").on("click", event => PDF.handle(event))
+		for (const player of htmlQueryAll(html, "a.player"))
+			player.addEventListener("click", ev => this._onSendToPlayer(ev))
+		for (const modifier of htmlQueryAll(html, "a.modifier"))
+			modifier.addEventListener("click", ev => this._onClickModifier(ev))
+		for (const section of htmlQueryAll(html, ".collapsible"))
+			section.addEventListener("click", ev => this._onCollapseToggle(ev))
+		for (const ref of htmlQueryAll(html, "a.ref")) ref.addEventListener("click", ev => PDF.handle(ev))
 
 		// Save Current Bucket
-		html.find("#save-current").on("click", event => this._onSaveCurrentStack(event))
-		html.find("#stacks #dropdown-toggle").on("click", event => this._onStackCollapseToggle(event))
-		html.find("#stacks .apply").on("click", event => this._onApplyStack(event))
-		html.find("#stacks .apply").on("click", event => this._onApplyStack(event))
-		html.find("#stacks .delete").on("click", event => this._onDeleteStack(event))
+		htmlQuery(html, "#save-current")?.addEventListener("click", _ => this._onSaveCurrentStack())
+
+		const stacks = htmlQuery(html, "#stacks")
+		if (!stacks) return
+		for (const section of htmlQueryAll(stacks, "#dropdown-toggle"))
+			section.addEventListener("click", ev => this._onStackCollapseToggle(ev))
+		for (const section of htmlQueryAll(stacks, ".apply"))
+			section.addEventListener("click", ev => this._onApplyStack(ev))
+		for (const section of htmlQueryAll(stacks, ".delete"))
+			section.addEventListener("click", ev => this._onDeleteStack(ev))
 	}
 
-	_onClickModifier(event: JQuery.ClickEvent): void {
-		event.preventDefault()
-		const modifier = $(event.currentTarget).data("modifier")
+	_onClickModifier(event: MouseEvent): void {
+		const element = event.currentTarget ?? null
+		if (!(element instanceof HTMLLinkElement)) return
+
+		const modifier = JSON.parse(element.dataset.modifier ?? "")
+
 		return game.user.addModifier(modifier)
 	}
 
-	private async _onCollapseToggle(event: JQuery.ClickEvent): Promise<unknown> {
-		event.preventDefault()
-		const index = parseInt($(event.currentTarget).find(".dropdown-toggle").data("index"))
+	private async _onCollapseToggle(event: MouseEvent): Promise<unknown> {
+		const element = event.currentTarget ?? null
+		if (!(element instanceof HTMLLinkElement)) return
+
+		const index = parseInt(htmlQuery(element, ".dropdown-toggle")?.dataset.index ?? "")
+		if (isNaN(index)) return console.error("Invalid index")
+
 		this.categoriesOpen[index] = !this.categoriesOpen[index]
 		return this.render()
 	}
 
-	private async _onStackCollapseToggle(event: JQuery.ClickEvent): Promise<unknown> {
-		event.preventDefault()
-		console.log("what")
+	private async _onStackCollapseToggle(event: MouseEvent): Promise<unknown> {
+		const element = event.currentTarget ?? null
+		if (!(element instanceof HTMLLinkElement)) return
+
 		const savedStacks = (game.user.getFlag(SYSTEM_NAME, UserFlags.SavedStacks) as RollModifierStack[]) ?? []
 		const stacks = this.stacksOpen
 		stacks.push(...Array(savedStacks.length - stacks.length).fill(false))
-		const index = parseInt(event.currentTarget.dataset.index)
+		const index = parseInt(element.dataset.index ?? "")
 		stacks[index] = !this.stacksOpen[index]
 		this.stacksOpen = stacks
 		return this.render()
 	}
 
-	private async _onSaveCurrentStack(event: JQuery.ClickEvent): Promise<void> {
-		event.preventDefault()
+	private async _onSaveCurrentStack(): Promise<void> {
 		const modStack = game.user.getFlag(SYSTEM_NAME, UserFlags.ModifierStack) as RollModifier[]
 		setTimeout(async () => {
 			new DialogGURPS(
@@ -137,28 +163,46 @@ export class ModifierBucketWindow extends Application {
 		}, 200)
 	}
 
-	private async _onApplyStack(event: JQuery.ClickEvent): Promise<boolean> {
-		event.preventDefault()
-		const index = event.currentTarget.dataset.index
-		const savedStacks = (game.user.getFlag(SYSTEM_NAME, UserFlags.SavedStacks) as RollModifierStack[]) ?? []
+	private async _onApplyStack(event: MouseEvent): Promise<boolean> {
+		const element = event.currentTarget ?? null
+		if (!(element instanceof HTMLLinkElement)) return false
+
+		const index = parseInt(element.dataset.index ?? "")
+		if (isNaN(index)) {
+			console.error("Invalid index")
+			return false
+		}
+
+		const savedStacks = game.user.flags[SYSTEM_NAME][UserFlags.SavedStacks]
 		await game.user.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, savedStacks[index].items)
 		return Hooks.call(HOOKS.AddModifier)
 	}
 
-	private async _onDeleteStack(event: JQuery.ClickEvent): Promise<boolean> {
-		event.preventDefault()
-		const index = event.currentTarget.dataset.index
-		const savedStacks = (game.user.getFlag(SYSTEM_NAME, UserFlags.SavedStacks) as RollModifierStack[]) ?? []
+	private async _onDeleteStack(event: MouseEvent): Promise<boolean> {
+		const element = event.currentTarget ?? null
+		if (!(element instanceof HTMLLinkElement)) return false
+
+		const index = parseInt(element.dataset.index ?? "")
+		if (isNaN(index)) {
+			console.error("Invalid index")
+			return false
+		}
+
+		const savedStacks = game.user.flags[SYSTEM_NAME][UserFlags.SavedStacks]
 		savedStacks.splice(index, 1)
 		await game.user.setFlag(SYSTEM_NAME, UserFlags.SavedStacks, savedStacks)
 		return Hooks.call(HOOKS.AddModifier)
 	}
 
-	private async _onSendToPlayer(event: JQuery.ClickEvent) {
-		event.preventDefault()
-		const id = $(event.currentTarget).data("user-id")
+	private async _onSendToPlayer(event: MouseEvent): Promise<void> {
+		const element = event.currentTarget ?? null
+		if (!(element instanceof HTMLLinkElement)) return
+
+		const id = element.dataset.userId
+		if (!id) return console.error("No id provided")
 		const player = game.users?.get(id)
-		if (!player) return
+		if (!player) return console.error(`Player with id "${id}" does not exist.`)
+
 		const modStack = game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierStack)
 		await player.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, modStack)
 		game.socket?.emit(`system.${SYSTEM_NAME}`, { type: SOCKET.UPDATE_BUCKET, users: [player.id] })

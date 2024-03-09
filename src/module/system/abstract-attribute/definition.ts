@@ -1,5 +1,5 @@
 import { RESERVED_IDS } from "@system"
-import { VariableResolver, sanitizeId } from "@util"
+import { VariableResolver, getNewAttributeId, sanitizeId } from "@util"
 import { AbstractAttributeDefObj, AbstractAttributeObj } from "./data.ts"
 
 abstract class AbstractAttributeDef {
@@ -24,6 +24,17 @@ abstract class AbstractAttributeDef {
 	generateNewAttribute(): AbstractAttributeObj {
 		return {
 			id: this.id,
+		}
+	}
+
+	static newObject(reservedIds: string[]): AbstractAttributeDefObj {
+		return {
+			id: getNewAttributeId(
+				reservedIds.map(e => {
+					return { id: e }
+				}),
+			),
+			base: "10",
 		}
 	}
 }

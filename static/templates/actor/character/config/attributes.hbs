@@ -1,7 +1,7 @@
 <div class="add">
-	<a class="gcs-circled-add add" data-type="attributes"></a>
+	<a class="gcs-circled-add" data-action="add-attribute"></a>
 	{{#if actor}}
-	<a class="gcs-reset reset-all" data-type="attributes"></a>
+	<a class="gcs-reset" data-action="reset-all" data-type="attributes"></a>
 	<div>{{localize "gurps.settings.reset_all"}}</div>
 	{{/if}}
 	<a class="data-import fas fa-file-import" data-type="attributes"></a>
@@ -12,9 +12,9 @@
 	<div class="item" data-id="{{this.id}}" data-index="{{@index}}" data-type="attributes">
 		<div class="controls">
 			<a class="gcs-grip drag" data-index="{{@index}}" data-type="attributes"></a>
-			<a class="gcs-trash delete" data-index="{{@index}}" data-type="attributes"></a>
+			<a class="gcs-trash" data-index="{{@index}}" data-action="remove-attribute"></a>
 			{{#if (eq this.type "pool")}}
-			<a class="gcs-circled-add add" data-id="{{@index}}" data-type="attribute_thresholds"></a>
+			<a class="gcs-circled-add" data-id="{{@index}}" data-action="att-attribute-threshold"></a>
 			{{/if}}
 		</div>
 		<div class="fieldblock">

@@ -44,4 +44,16 @@ export class ResourceTrackerDef extends AbstractAttributeDef {
 			damage: 0,
 		}
 	}
+
+	static override newObject(reservedIds: string[]): ResourceTrackerDefObj {
+		return {
+			...super.newObject(reservedIds),
+			name: "",
+			full_name: "",
+			min: 0,
+			max: 10,
+			isMinEnforced: false,
+			isMaxEnforced: false,
+		}
+	}
 }

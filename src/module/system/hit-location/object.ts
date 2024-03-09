@@ -1,4 +1,4 @@
-import { BodyOwner, StringBuilder, TooltipGURPS, equalFold, sanitizeId } from "@util"
+import { BodyOwner, LocalizeGURPS, StringBuilder, TooltipGURPS, equalFold, sanitizeId } from "@util"
 import { BodyObj, HitLocationObj } from "./data.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { gid } from "@data"
@@ -152,6 +152,19 @@ class HitLocation<TOwner extends BodyOwner = BodyOwner> {
 		}
 		return buffer.toString()
 	}
+
+	// Return true if the provided ID is a valid hit location ID
+	static validateId(id: string): boolean {
+		return id !== gid.All
+	}
+
+	static newObject(): HitLocationObj {
+		return {
+			id: LocalizeGURPS.translations.gurps.placeholder.hit_location.id,
+			choice_name: LocalizeGURPS.translations.gurps.placeholder.hit_location.choice_name,
+			table_name: LocalizeGURPS.translations.gurps.placeholder.hit_location.table_name,
+		}
+	}
 }
 
 class BodyGURPS<TOwner extends BodyOwner = BodyOwner> {
@@ -197,6 +210,14 @@ class BodyGURPS<TOwner extends BodyOwner = BodyOwner> {
 	updateRollRanges(): void {
 		let start = this.roll.minimum(false)
 		if (this.locations) for (const location of this.locations) start = location.updateRollRange(start)
+	}
+
+	static newObject(): BodyObj {
+		return {
+			name: "",
+			roll: "1d",
+			locations: [],
+		}
 	}
 }
 

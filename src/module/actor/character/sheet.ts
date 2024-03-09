@@ -50,7 +50,7 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS
 				resourceTrackers,
 				moveTypes,
 			},
-			collections: {
+			itemCollections: {
 				traits: actor.itemCollections.traits,
 				skills: actor.itemCollections.skills,
 				spells: actor.itemCollections.spells,
@@ -103,7 +103,7 @@ interface CharacterSheetData<TActor extends CharacterGURPS = CharacterGURPS> ext
 	system: TActor["system"]
 	settings: Record<string, unknown>
 	attributes: Record<string, AbstractAttribute[]>
-	collections: Record<string, Collection<ItemGURPS<TActor>> | ConditionalModifier[]>
+	itemCollections: Record<string, Collection<ItemGURPS<TActor>> | ConditionalModifier[]>
 	config: ConfigGURPS["GURPS"]
 	carriedValue: number
 	carriedWeight: string

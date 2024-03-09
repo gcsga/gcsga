@@ -33,20 +33,21 @@
 		<div id="resource-trackers">{{>actor/character/sections/resource-trackers }}</div>
 		<div id="move">{{>actor/character/sections/move }}</div>
 	</div>
-	<div id="embeds" style="grid-template: {{ blockLayout system.settings.block_layout collections }};">
+	<div id="embeds" style="grid-template: {{ blockLayout system.settings.block_layout itemCollections }};">
 		{{#if reactions.length }}
 		<div id="reactions">
 			<div class="header modifier">{{ localize "gurps.character.reactions.modifier" }}</div>
 			<div class="header condition">{{ localize "gurps.character.reactions.reaction" }}</div>
 			{{#each reactions }} {{>actor/character/sections/reaction }} {{/each }}
 		</div>
-		{{/if }} {{#if collections.conditional_modifiers.length }}
+		{{/if }} {{#if itemCollections.conditional_modifiers.length }}
 		<div id="conditional-modifiers">
 			<div class="header modifier">{{ localize "gurps.character.conditional_modifiers.modifier" }}</div>
 			<div class="header condition">{{ localize "gurps.character.conditional_modifiers.reaction" }}</div>
-			{{#each collections.conditional_modifiers }} {{>actor/character/sections/conditional-modifier }} {{/each }}
+			{{#each itemCollections.conditional_modifiers }} {{>actor/character/sections/conditional-modifier }} {{/each
+			}}
 		</div>
-		{{/if }} {{#if collections.melee_weapons.length }}
+		{{/if }} {{#if itemCollections.melee_weapons.length }}
 		<div id="melee" class="item-list">
 			<div class="header desc">{{ localize "gurps.character.melee.desc" }}</div>
 			<div class="header usage">{{ localize "gurps.character.melee.usage" }}</div>
@@ -56,9 +57,9 @@
 			<div class="header damage">{{ localize "gurps.character.melee.damage" }}</div>
 			<div class="header reach">{{ localize "gurps.character.melee.reach" }}</div>
 			<div class="header st">{{ localize "gurps.character.melee.st" }}</div>
-			{{#each collections.melee_weapons }} {{>actor/character/sections/melee-attack }} {{/each }}
+			{{#each itemCollections.melee_weapons }} {{>actor/character/sections/melee-attack }} {{/each }}
 		</div>
-		{{/if }} {{#if collections.ranged_weapons.length }}
+		{{/if }} {{#if itemCollections.ranged_weapons.length }}
 		<div id="ranged" class="item-list">
 			<div class="header desc">{{ localize "gurps.character.ranged.desc" }}</div>
 			<div class="header usage">{{ localize "gurps.character.ranged.usage" }}</div>
@@ -71,14 +72,14 @@
 			<div class="header bulk">{{ localize "gurps.character.ranged.bulk" }}</div>
 			<div class="header recoil">{{ localize "gurps.character.ranged.recoil" }}</div>
 			<div class="header st">{{ localize "gurps.character.ranged.st" }}</div>
-			{{#each collections.ranged_weapons }} {{>actor/character/sections/ranged-attack }} {{/each }}
+			{{#each itemCollections.ranged_weapons }} {{>actor/character/sections/ranged-attack }} {{/each }}
 		</div>
 		{{/if}}
 		<div id="traits" class="item-list">
 			<div class="header desc">{{ localize "gurps.character.traits.desc" }}</div>
 			<div class="header points">{{ localize "gurps.character.traits.points"}}</div>
 			<div class="header reference"><i class="gcs-bookmark"></i></div>
-			{{#each collections.traits }} {{>actor/character/sections/trait }} {{else}}
+			{{#each itemCollections.traits }} {{>actor/character/sections/trait }} {{else}}
 			<div class="desc item placeholder">
 				<div class="dropdown"></div>
 				<div class="name"></div>
@@ -95,7 +96,7 @@
 			<div class="header reference">
 				<i class="gcs-bookmark"></i>
 			</div>
-			{{#each collections.skills }} {{>actor/character/sections/skill }} {{else}}
+			{{#each itemCollections.skills }} {{>actor/character/sections/skill }} {{else}}
 			<div class="desc item placeholder"></div>
 			<div class="level placeholder"></div>
 			<div class="rsl placeholder"></div>
@@ -111,7 +112,7 @@
 			<div class="header reference">
 				<i class="gcs-bookmark"></i>
 			</div>
-			{{#each collections.spells}} {{>actor/character/sections/spell }} {{else}}
+			{{#each itemCollections.spells}} {{>actor/character/sections/spell }} {{else}}
 			<div class="desc item placeholder"></div>
 			<div class="level placeholder"></div>
 			<div class="rsl placeholder"></div>
@@ -147,7 +148,7 @@
 			<div class="header reference">
 				<i class="gcs-bookmark"></i>
 			</div>
-			{{#each collections.equipment }} {{>actor/character/sections/equipment }} {{else}}
+			{{#each itemCollections.equipment }} {{>actor/character/sections/equipment }} {{else}}
 			<div class="equipped"></div>
 			<div class="quantity placeholder"></div>
 			<div class="desc item placeholder placeholder"></div>
@@ -186,7 +187,7 @@
 			<div class="header reference">
 				<i class="gcs-bookmark"></i>
 			</div>
-			{{#each collections.other_equipment }} {{>actor/character/sections/other-equipment }} {{else}}
+			{{#each itemCollections.other_equipment }} {{>actor/character/sections/other-equipment }} {{else}}
 			<div class="quantity"></div>
 			<div class="desc item placeholder"></div>
 			<div class="uses placeholder"></div>
@@ -204,7 +205,7 @@
 			<div class="header reference">
 				<i class="gcs-bookmark"></i>
 			</div>
-			{{#each collections.notes }} {{>actor/character/sections/note }} {{else}}
+			{{#each itemCollections.notes }} {{>actor/character/sections/note }} {{else}}
 			<div class="desc item placeholder"></div>
 			<div class="reference placeholder"></div>
 			{{/each }}
@@ -215,7 +216,7 @@
 			<div class="header reference">
 				<i class="gcs-bookmark"></i>
 			</div>
-			{{#each collections.effects}} {{>actor/character/sections/effect }} {{/each }}
+			{{#each itemCollections.effects}} {{>actor/character/sections/effect }} {{/each }}
 		</div>
 		{{/if }}
 	</div>

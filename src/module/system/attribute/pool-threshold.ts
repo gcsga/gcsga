@@ -20,4 +20,13 @@ export class PoolThreshold {
 	threshold(resolver: VariableResolver): number {
 		return evaluateToNumber(this.expression, resolver)
 	}
+
+	static newObject(): PoolThresholdObj {
+		return {
+			state: "",
+			explanation: "",
+			expression: "",
+			ops: [],
+		}
+	}
 }

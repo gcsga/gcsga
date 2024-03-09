@@ -70,6 +70,8 @@ export class CharacterImporter {
 
 		const data = JSON.parse(file.text) as ImportedCharacterSystemSource
 
+		console.log(data)
+
 		if (data.version !== GCS_FILE_VERSION) {
 			if (data.version < GCS_FILE_VERSION)
 				return CharacterImporter.throwError(LocalizeGURPS.translations.gurps.error.import.format_old)

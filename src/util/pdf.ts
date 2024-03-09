@@ -334,10 +334,12 @@ function getReferenceBook(references: string): string[] {
 	return books
 }
 
-function handle(event: JQuery.MouseEventBase): void {
-	event.preventDefault()
-	const pdf = $(event.currentTarget).data("pdf")
-	if (pdf) return open(pdf)
+function handle(event: MouseEvent): void {
+	const element = event.currentTarget ?? null
+	if (!(element instanceof HTMLElement)) return
+
+	const link = element.dataset.pdf
+	if (link) return open(link)
 }
 
 function open(pdfs: string): void {

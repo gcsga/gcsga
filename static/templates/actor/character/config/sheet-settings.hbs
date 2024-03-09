@@ -33,12 +33,12 @@
 			<input id="file-upload" type="file" accept=".gcs,.gca5" style="display: none" />
 		</label>
 		{{#if (ne filename "")}}
-		<button class="import-confirm">
+		<button data-action="import-confirm">
 			<i class="fas fa-file-import"></i>
 			{{localize "gurps.character.settings.import.import" file=filename}}
 		</button>
 		{{else}}
-		<button class="import-confirm" disabled>
+		<button disabled>
 			<i class="fas fa-file-import"></i>
 			{{localize "gurps.character.settings.import.import" file=(localize "gurps.character.settings.import.none")
 			}}
