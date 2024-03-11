@@ -92,7 +92,7 @@
 		"typescript": "^5.3.3",
 		"uuid": "^9.0.1",
 		"uuidv4": "^6.2.13",
-		"vite": "^5.1.1",
+		"vite": "^5.1.5",
 		"vite-plugin-checker": "^0.6.2",
 		"vite-plugin-static-copy": "^1.0.1",
 		"vite-tsconfig-paths": "^4.2.3",
