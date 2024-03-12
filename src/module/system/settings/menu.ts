@@ -1,5 +1,5 @@
-import { SYSTEM_NAME } from "@data"
-import { htmlQuery } from "@util/dom.ts"
+import { SETTINGS, SYSTEM_NAME } from "@data"
+import { htmlQuery, htmlQueryAll } from "@util/dom.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import * as R from "remeda"
 
@@ -81,6 +81,14 @@ abstract class SettingsMenuGURPS extends FormApplication {
 		}
 	}
 
+	public getReservedIds(): string[] {
+		return [
+			...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`),
+			...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`),
+			...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`),
+		].map(e => e.id)
+	}
+
 	/* -------------------------------------------- */
 	/*  Event Listeners and Handlers                */
 	/* -------------------------------------------- */
@@ -113,6 +121,26 @@ abstract class SettingsMenuGURPS extends FormApplication {
 			this.close()
 		} else {
 			this.render()
+		}
+	}
+
+	protected override _onDragOver(event: DragEvent): void {
+		super._onDragOver(event)
+		const element = event.currentTarget
+		if (!(element instanceof HTMLElement)) return
+		if (!element.classList.contains("item")) return
+
+		const heightAcross = (event.offsetY - element.offsetTop) / element.offsetHeight
+		for (const item of htmlQueryAll(element.parentElement, ".item")) {
+			item.classList.remove("border-top")
+			item.classList.remove("border-bottom")
+		}
+		if (heightAcross > 0.5) {
+			element.classList.remove("border-top")
+			element.classList.add("border-bottom")
+		} else {
+			element.classList.remove("border-bottom")
+			element.classList.add("border-top")
 		}
 	}
 

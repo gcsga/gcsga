@@ -1,15 +1,11 @@
 import { MenuTemplateData, PartialSettingsData, SettingsMenuGURPS, settingsToSheetData } from "./menu.ts"
 import { SETTINGS, SYSTEM_NAME } from "@data"
 import { defaultSettings } from "./defaults.ts"
-import { htmlClosest, htmlQuery } from "@util/dom.ts"
-import { DnD, LocalizeGURPS, prepareFormData } from "@util"
-import { HitLocationObj } from "@system"
+import { htmlQueryAll } from "@util/dom.ts"
+import { DnD, SettingsHelpers, prepareFormData } from "@util"
+import { BodyObj, HitLocationObj } from "@system"
 import { DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
-
-enum ListType {
-	Locations = "locations",
-	SubTable = "sub_table",
-}
+import { DropDataContext } from "@util/settings-helpers.ts"
 
 type ConfigGURPSListName = (typeof HitLocationSettings.SETTINGS)[number]
 
@@ -44,6 +40,53 @@ export class HitLocationSettings extends SettingsMenuGURPS {
 		}
 	}
 
+	get bodyType(): BodyObj {
+		return {
+			name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
+			roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
+			locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
+		}
+	}
+
+	override activateListeners($html: JQuery<HTMLElement>): void {
+		super.activateListeners($html)
+		const html = $html[0]
+
+		for (const button of htmlQueryAll(html, "a[data-action^=add-]")) {
+			const context: DropDataContext = {
+				element: button,
+				app: this,
+				targetIndex: 0,
+			}
+
+			switch (button.dataset.action) {
+				case "add-location":
+					button.addEventListener("click", () => SettingsHelpers.addHitLocation(context))
+					break
+				case "add-sub-table":
+					button.addEventListener("click", () => SettingsHelpers.addSubTable(context))
+					break
+			}
+		}
+
+		for (const button of htmlQueryAll(html, "a[data-action^=remove-]")) {
+			const context: DropDataContext = {
+				element: button,
+				app: this,
+				targetIndex: 0,
+			}
+
+			switch (button.dataset.action) {
+				case "remove-location":
+					button.addEventListener("click", () => SettingsHelpers.removeHitLocation(context))
+					break
+				case "remove-sub-table":
+					button.addEventListener("click", () => SettingsHelpers.removeSubTable(context))
+					break
+			}
+		}
+	}
+
 	override async getData(): Promise<MenuTemplateData & { path: string }> {
 		const settings = (this.constructor as typeof SettingsMenuGURPS).settings
 		const templateData = settingsToSheetData(settings, this.cache)
@@ -63,141 +106,36 @@ export class HitLocationSettings extends SettingsMenuGURPS {
 		})
 	}
 
-	override activateListeners($html: JQuery<HTMLElement>): void {
-		super.activateListeners($html)
-		const html = $html[0]
-
-		htmlQuery(html, ".item")?.addEventListener("dragover", event => this._onDragItem(event))
-		htmlQuery(html, ".add")?.addEventListener("click", event => this._onAddItem(event))
-		htmlQuery(html, ".delete")?.addEventListener("click", event => this._onDeleteItem(event))
-	}
-
 	protected _onDataImport(_event: MouseEvent): void {}
 
 	protected _onDataExport(_event: MouseEvent): void {}
 
-	protected _onDragItem(event: DragEvent): void {
-		const element = $(event.currentTarget!)
-		const heightAcross = (event.pageY! - element.offset()!.top) / element.height()!
-		element.siblings(".item").removeClass("border-top").removeClass("border-bottom")
-		if (heightAcross > 0.5) {
-			element.removeClass("border-top")
-			element.addClass("border-bottom")
-		} else {
-			element.removeClass("border-bottom")
-			element.addClass("border-top")
-		}
-	}
-
-	protected async _onAddItem(event: MouseEvent): Promise<this> {
-		const path = htmlQuery(event.target, "[data-path]")?.dataset.path?.replace("array.", "") ?? ""
-		let locations = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`)
-		const type: ListType = htmlQuery(event.target, "[data-type]")?.dataset.type as ListType
-		let formData: Record<string, unknown> = {}
-
-		switch (type) {
-			case ListType.Locations:
-				locations.push({
-					id: LocalizeGURPS.translations.gurps.placeholder.hit_location.id,
-					choice_name: LocalizeGURPS.translations.gurps.placeholder.hit_location.choice_name,
-					table_name: LocalizeGURPS.translations.gurps.placeholder.hit_location.table_name,
-					slots: 0,
-					hit_penalty: 0,
-					dr_bonus: 0,
-					description: "",
-				})
-				formData ??= {}
-				formData[`array.${path}.locations`] = locations
-				await this._updateObject(event as unknown as Event, formData)
-				return this.render()
-			case ListType.SubTable: {
-				const index = Number(htmlQuery(event.target, "[data-index]")?.dataset.index)
-				locations = (fu.getProperty(this.object, `${path}`) as HitLocationObj[]) ?? []
-				locations[index].sub_table = {
-					name: "",
-					roll: "1d",
-					locations: [
-						{
-							id: LocalizeGURPS.translations.gurps.placeholder.hit_location.id,
-							choice_name: LocalizeGURPS.translations.gurps.placeholder.hit_location.choice_name,
-							table_name: LocalizeGURPS.translations.gurps.placeholder.hit_location.table_name,
-							slots: 0,
-							hit_penalty: 0,
-							dr_bonus: 0,
-							description: "",
-						},
-					],
-				}
-				formData ??= {}
-				formData[`array.${path}.locations`] = locations
-				await this._updateObject(event as unknown as Event, formData)
-				return this.render()
-			}
-		}
-	}
-
-	protected async _onDeleteItem(event: MouseEvent): Promise<this> {
-		const path = htmlQuery(event.target, "[data-path]")?.dataset.path?.replace("array.", "") ?? ""
-		const locations = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`)
-		let formData: Record<string, unknown> = {}
-		const type: ListType = htmlQuery(event.target, "[data-type]")?.dataset.type as ListType
-		const index = Number(htmlQuery(event.target, "[data-index]")?.dataset.index)
-		switch (type) {
-			case ListType.Locations:
-				locations.splice(index, 1)
-				formData ??= {}
-				formData[`array.${path}`] = locations
-				await this._updateObject(event as unknown as Event, formData)
-				return this.render()
-			case ListType.SubTable:
-				// Locations = getProperty(this.object, `${path}`) ?? []
-				delete locations[index].sub_table
-				formData ??= {}
-				formData[`array.${path}`] = locations
-				await this._updateObject(event as unknown as Event, formData)
-				return this.render()
-		}
-	}
-
 	protected override _onDrop(event: DragEvent): void {
 		const dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
-		const element = htmlClosest(event.target, ".item")
-		if (!element) return
 
-		const attributes = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
-		const effects = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`)
-		const index = parseInt(element.dataset.index ?? "-1")
-		if (index === -1) return
-		const above = element.classList.contains("border-top")
+		if (dragData.type !== DropDataType.HitLocation) return
 
-		if (dragData.type === DropDataType.Item || dragData.type === DropDataType.Damage) return
-		if (dragData.order === index) return
-		if (above && dragData.order === index - 1) return
-		if (!above && dragData.order === index + 1) return
-
-		switch (dragData.type) {
-			case DropDataType.Attributes: {
-				const item = attributes.splice(dragData.index, 1)[0]
-				attributes.splice(index, 0, item)
-				attributes.forEach((v, k) => (v.order = k))
-				break
-			}
-			case DropDataType.Effects: {
-				const item = effects.splice(dragData.index, 1)[0]
-				effects.splice(index, 0, item)
-				break
-			}
-			case DropDataType.AttributeThresholds: {
-				const item = attributes[dragData.parent_index].thresholds?.splice(dragData.index, 1)[0]
-				if (!item) break
-				attributes[dragData.parent_index].thresholds?.splice(index, 0, item)
-				break
-			}
+		let element = event.currentTarget
+		if (!(element instanceof HTMLElement)) return console.error("Drop event target is not valid.")
+		while (!element.classList.contains("item")) {
+			element = element.parentElement
+			if (!(element instanceof HTMLElement)) return console.error("Drop event target is not valid.")
 		}
 
-		game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`, attributes)
-		game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`, effects)
-		this.render()
+		const targetIndex = parseInt(element.dataset.index ?? "")
+		if (isNaN(targetIndex)) return console.error("Drop target index is not valid", element)
+
+		const above = element.classList.contains("border-top")
+		if (above && dragData.order === targetIndex - 1) return
+		if (!above && dragData.order === targetIndex + 1) return
+
+		const context: DropDataContext = {
+			element,
+			app: this,
+			targetIndex,
+		}
+
+		return SettingsHelpers.onDropHitLocation(dragData, context)
 	}
 
 	protected override async _updateObject(event: Event, data: Record<string, unknown>): Promise<void> {

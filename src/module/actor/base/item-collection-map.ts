@@ -3,8 +3,11 @@ import { itemIsOfType } from "@item/helpers.ts"
 import { ItemFlags, ItemType, SYSTEM_NAME, WeaponType } from "@module/data/constants.ts"
 import EmbeddedCollection from "types/foundry/common/abstract/embedded-collection.js"
 import type { ActorGURPS } from "./document.ts"
+import { ItemSourceGURPS } from "@item/data/index.ts"
 
-class ItemCollectionMap<TActor extends ActorGURPS> {
+type ItemSections = "traits" | "skills" | "spells" | "carriedEquipment" | "otherEquipment" | "notes" | "effects" | null
+
+class ActorItemCollectionMap<TActor extends ActorGURPS> {
 	traits: Collection<ItemInstance.TraitGURPS<TActor> | ItemInstance.TraitContainerGURPS<TActor>>
 	skills: Collection<
 		ItemInstance.SkillGURPS<TActor> | ItemInstance.TechniqueGURPS<TActor> | ItemInstance.SkillContainerGURPS<TActor>
@@ -58,22 +61,32 @@ class ItemCollectionMap<TActor extends ActorGURPS> {
 			itemIsOfType(item, ItemType.Condition),
 		)
 
-		this.traits = new Collection(traits.map(item => [item.id, item]))
-		this.skills = new Collection(skills.map(item => [item.id, item]))
-		this.spells = new Collection(spells.map(item => [item.id, item]))
-		this.equipment = new Collection(equipment.map(item => [item.id, item]))
+		this.traits = new Collection(traits.sort((a, b) => a.sort - b.sort).map(item => [item.id, item]))
+		this.skills = new Collection(skills.sort((a, b) => a.sort - b.sort).map(item => [item.id, item]))
+		this.spells = new Collection(spells.sort((a, b) => a.sort - b.sort).map(item => [item.id, item]))
+		this.equipment = new Collection(equipment.sort((a, b) => a.sort - b.sort).map(item => [item.id, item]))
 		this.carriedEquipment = new Collection(
-			equipment.filter(item => !item.flags[SYSTEM_NAME][ItemFlags.Other]).map(item => [item.id, item]),
+			equipment
+				.filter(item => !item.flags[SYSTEM_NAME][ItemFlags.Other])
+				.sort((a, b) => a.sort - b.sort)
+				.map(item => [item.id, item]),
 		)
 		this.otherEquipment = new Collection(
-			equipment.filter(item => item.flags[SYSTEM_NAME][ItemFlags.Other]).map(item => [item.id, item]),
+			equipment
+				.filter(item => item.flags[SYSTEM_NAME][ItemFlags.Other])
+				.sort((a, b) => a.sort - b.sort)
+				.map(item => [item.id, item]),
 		)
-		this.notes = new Collection(notes.map(item => [item.id, item]))
-		this.effects = new Collection([...effects, ...conditions].map(item => [item.id, item]))
-		this.conditions = new Collection(conditions.map(item => [item.id, item]))
-		this.weapons = new Collection([...meleeWeapons, ...rangedWeapons].map(item => [item.id, item]))
-		this.meleeWeapons = new Collection(meleeWeapons.map(item => [item.id, item]))
-		this.rangedWeapons = new Collection(rangedWeapons.map(item => [item.id, item]))
+		this.notes = new Collection(notes.sort((a, b) => a.sort - b.sort).map(item => [item.id, item]))
+		this.effects = new Collection(
+			[...effects, ...conditions].sort((a, b) => a.sort - b.sort).map(item => [item.id, item]),
+		)
+		this.conditions = new Collection(conditions.sort((a, b) => a.sort - b.sort).map(item => [item.id, item]))
+		this.weapons = new Collection(
+			[...meleeWeapons, ...rangedWeapons].sort((a, b) => a.sort - b.sort).map(item => [item.id, item]),
+		)
+		this.meleeWeapons = new Collection(meleeWeapons.sort((a, b) => a.sort - b.sort).map(item => [item.id, item]))
+		this.rangedWeapons = new Collection(rangedWeapons.sort((a, b) => a.sort - b.sort).map(item => [item.id, item]))
 	}
 
 	equippedWeapons<TType extends WeaponType | undefined>(
@@ -94,6 +107,65 @@ class ItemCollectionMap<TActor extends ActorGURPS> {
 			return new Collection(this.rangedWeapons.filter(item => item.equipped).map(item => [item.id, item]))
 		return new Collection(this.weapons.filter(item => item.equipped).map(item => [item.id, item]))
 	}
+
+	public getSection(data: ItemSourceGURPS): Collection<ItemInstance.ItemGURPS<TActor>> | null {
+		switch (data.type) {
+			case ItemType.Trait:
+			case ItemType.TraitContainer:
+				return this.traits
+			case ItemType.Skill:
+			case ItemType.Technique:
+			case ItemType.SkillContainer:
+				return this.skills
+			case ItemType.Spell:
+			case ItemType.RitualMagicSpell:
+			case ItemType.SpellContainer:
+				return this.spells
+			case ItemType.Equipment:
+			case ItemType.EquipmentContainer:
+				if (data.flags[SYSTEM_NAME]?.[ItemFlags.Other]) return this.otherEquipment
+				return this.carriedEquipment
+			case ItemType.Note:
+			case ItemType.NoteContainer:
+				return this.notes
+			case ItemType.Effect:
+			case ItemType.Condition:
+				return this.effects
+			default:
+				console.error(`Item of type "${data.type}" does not fit any section on this sheet`)
+				return null
+		}
+	}
+
+	public getSectionName(data: ItemSourceGURPS): ItemSections {
+		switch (data.type) {
+			case ItemType.Trait:
+			case ItemType.TraitContainer:
+				return "traits"
+			case ItemType.Skill:
+			case ItemType.Technique:
+			case ItemType.SkillContainer:
+				return "skills"
+			case ItemType.Spell:
+			case ItemType.RitualMagicSpell:
+			case ItemType.SpellContainer:
+				return "spells"
+			case ItemType.Equipment:
+			case ItemType.EquipmentContainer:
+				if (data.flags[SYSTEM_NAME]?.[ItemFlags.Other]) return "otherEquipment"
+				return "carriedEquipment"
+			case ItemType.Note:
+			case ItemType.NoteContainer:
+				return "notes"
+			case ItemType.Effect:
+			case ItemType.Condition:
+				return "effects"
+			default:
+				console.error(`Item of type "${data.type}" does not fit any section on this sheet`)
+				return null
+		}
+	}
 }
 
-export { ItemCollectionMap }
+export { ActorItemCollectionMap }
+export type { ItemSections }

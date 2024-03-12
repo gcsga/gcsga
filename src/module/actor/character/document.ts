@@ -98,6 +98,7 @@ class CharacterGURPS<
 	}
 
 	get strengthOrZero(): number {
+		if (!this.attributes.has(gid.Strength)) return 0
 		return Math.max(this.resolveAttributeCurrent(gid.Strength), 0)
 	}
 

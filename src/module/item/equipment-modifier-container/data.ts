@@ -18,6 +18,7 @@ interface EquipmentModifierContainerSystemSource extends AbstractContainerSystem
 	notes?: string
 	vtt_notes?: string
 	tags?: string[]
+	open: boolean
 }
 
 interface EquipmentModifierContainerSystemData

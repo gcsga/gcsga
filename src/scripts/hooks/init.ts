@@ -2,6 +2,7 @@ import { SYSTEM_NAME } from "@data"
 import { ActorDirectoryGURPS } from "@module/apps/sidebar/actor-directory.ts"
 import { CombatTrackerGURPS } from "@module/apps/sidebar/combat-tracker.ts"
 import { CompendiumDirectoryGURPS } from "@module/apps/sidebar/compendium-directory.ts"
+import { ItemDirectoryGURPS } from "@module/apps/sidebar/item-directory.ts"
 import { RulerGURPS } from "@module/canvas/ruler/document.ts"
 import { TokenGURPS } from "@module/canvas/token/index.ts"
 import { RollGURPS } from "@module/roll/index.ts"
@@ -45,9 +46,9 @@ export const Init = {
 			// CONFIG.statusEffects = StatusEffectsGURPS
 			CONFIG.Canvas.rulerClass = RulerGURPS
 
-			// CONFIG.ui.items = ItemDirectoryGURPS
-			CONFIG.ui.actors = ActorDirectoryGURPS
 			CONFIG.ui.combat = CombatTrackerGURPS
+			CONFIG.ui.actors = ActorDirectoryGURPS
+			CONFIG.ui.items = ItemDirectoryGURPS
 			CONFIG.ui.compendium = CompendiumDirectoryGURPS
 
 			CONFIG.Dice.rolls.unshift(RollGURPS)

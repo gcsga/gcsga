@@ -1,8 +1,9 @@
-import { SOCKET, SYSTEM_NAME } from "@data"
+import { SOCKET } from "@data"
 import { loadModifiers } from "@module/apps/modifier-bucket/data.ts"
 import { TokenHUDGURPS } from "@module/canvas/index.ts"
 import { SetGameGURPS } from "@scripts/set-game-gurps.ts"
 import { LastActor } from "@util"
+import { createDragImage } from "@util/drag-image.ts"
 // import { ColorSettings } from "@module/settings/colors.ts"
 // import { SetGameGURPS } from "@scripts/set-game-gurps.ts"
 // import { LastActor, getDefaultSkills } from "@util"
@@ -27,13 +28,7 @@ export const Ready = {
 			// ApplyDiceCSS()
 
 			// Enable drag image
-			const DRAG_IMAGE = document.createElement("div")
-			DRAG_IMAGE.innerHTML = await renderTemplate(`systems/${SYSTEM_NAME}/templates/actor/drag-image.hbs`, {
-				name: "",
-				type: "",
-			})
-			DRAG_IMAGE.id = "drag-ghost"
-			document.body.appendChild(DRAG_IMAGE)
+			createDragImage(null, null)
 
 			// Set default user flag state
 			if (canvas && canvas.hud) {

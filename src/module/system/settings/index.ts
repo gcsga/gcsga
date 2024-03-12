@@ -3,10 +3,10 @@ import { SETTINGS, SSRT_SETTING, SYSTEM_NAME } from "@module/data/constants.ts"
 import { ColorSettings } from "./colors.ts"
 import { AttributeSettings } from "./attributes.ts"
 import { ResourceTrackerSettings } from "./resource-trackers.ts"
-import { MoveSettings } from "./move-type.ts"
 import { HitLocationSettings } from "./hit-locations.ts"
 import { DefaultSheetSettings } from "./sheet-settings.ts"
 import { RollModifierSettings } from "./roll-modifiers.ts"
+import { MoveSettings } from "./move-type.ts"
 
 export function registerSettings(): void {
 	// Register any custom system settings here

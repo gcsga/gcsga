@@ -1,20 +1,13 @@
-import { ConditionID, EFFECT_ACTION, SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
+import { SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
 import { PartialSettingsData, SettingsMenuGURPS } from "./menu.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { htmlClosest, htmlQuery } from "@util/dom.ts"
-import { getNewAttributeId, prepareFormData } from "@util/misc.ts"
-import { attribute } from "@util/enum/attribute.ts"
+import { htmlQueryAll } from "@util/dom.ts"
+import { prepareFormData } from "@util/misc.ts"
 import { defaultSettings } from "./defaults.ts"
-import { DnD } from "@util"
+import { DnD, SettingsHelpers } from "@util"
 import { DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
-
-enum ListType {
-	Attribute = "attributes",
-	Thresholds = "attribute_thresholds",
-	Effect = "effects",
-	Enter = "enter",
-	Leave = "leave",
-}
+import { AttributeDefObj } from "@system"
+import { DropDataContext } from "@util/settings-helpers.ts"
 
 type ConfigGURPSListName = (typeof AttributeSettings.SETTINGS)[number]
 
@@ -64,13 +57,47 @@ export class AttributeSettings extends SettingsMenuGURPS {
 		}
 	}
 
+	get attributes(): AttributeDefObj[] {
+		return game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
+	}
+
 	override activateListeners($html: JQuery<HTMLElement>): void {
 		super.activateListeners($html)
 		const html = $html[0]
 
-		htmlQuery(html, ".item")?.addEventListener("dragover", event => this._onDragItem(event))
-		htmlQuery(html, ".add")?.addEventListener("click", event => this._onAddItem(event))
-		htmlQuery(html, ".delete")?.addEventListener("click", event => this._onDeleteItem(event))
+		for (const button of htmlQueryAll(html, "a[data-action^=add-]")) {
+			const context: DropDataContext = {
+				element: button,
+				app: this,
+				targetIndex: 0,
+			}
+
+			switch (button.dataset.action) {
+				case "add-attribute":
+					button.addEventListener("click", () => SettingsHelpers.addAttribute(context))
+					break
+				case "add-attribute-threshold":
+					button.addEventListener("click", () => SettingsHelpers.addAttributeThreshold(context))
+					break
+			}
+		}
+
+		for (const button of htmlQueryAll(html, "a[data-action^=remove-]")) {
+			const context: DropDataContext = {
+				element: button,
+				app: this,
+				targetIndex: 0,
+			}
+
+			switch (button.dataset.action) {
+				case "remove-attribute":
+					button.addEventListener("click", () => SettingsHelpers.removeAttribute(context))
+					break
+				case "remove-attribute-threshold":
+					button.addEventListener("click", () => SettingsHelpers.removeAttributeThreshold(context))
+					break
+			}
+		}
 	}
 
 	protected _onDataImport(_event: MouseEvent): void {}
@@ -89,149 +116,52 @@ export class AttributeSettings extends SettingsMenuGURPS {
 		)
 	}
 
-	protected _onDragItem(event: DragEvent): void {
-		const element = $(event.currentTarget!)
-		const heightAcross = (event.pageY! - element.offset()!.top) / element.height()!
-		element.siblings(".item").removeClass("border-top").removeClass("border-bottom")
-		if (heightAcross > 0.5) {
-			element.removeClass("border-top")
-			element.addClass("border-bottom")
-		} else {
-			element.removeClass("border-bottom")
-			element.addClass("border-top")
-		}
-	}
-
-	protected _onAddItem(event: MouseEvent): void {
-		const attributes = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
-		const effects = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`)
-		const type: ListType = htmlQuery(event.target, "[data-type]")?.dataset.type as ListType
-
-		let newID = ""
-		switch (type) {
-			case ListType.Attribute:
-				newID = getNewAttributeId(attributes)
-				attributes.push({
-					type: attribute.Type.Integer,
-					id: newID,
-					name: newID,
-					base: "10",
-					cost_per_point: 0,
-					cost_adj_percent_per_sm: 0,
-				})
-				game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`, attributes)
-				break
-			case ListType.Effect:
-				effects.push({
-					attribute: "",
-					state: "",
-					enter: [],
-					leave: [],
-				})
-				game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`, effects)
-				break
-			case ListType.Thresholds: {
-				const index = htmlQuery(event.target, "[data-id]")?.dataset.id
-				if (index) {
-					attributes[parseInt(index)].thresholds ??= []
-					attributes[parseInt(index)].thresholds?.push({
-						state: "",
-						explanation: "",
-						expression: "",
-						ops: [],
-					})
-				}
-				game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`, attributes)
-				break
-			}
-			case ListType.Enter:
-			case ListType.Leave: {
-				const index = htmlQuery(event.target, "[data-id]")?.dataset.id
-				if (index) {
-					effects[parseInt(index)][type] ??= []
-					effects[parseInt(index)][type].push({
-						id: ConditionID.Reeling,
-						action: EFFECT_ACTION.ADD,
-					})
-					game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`, effects)
-					break
-				}
-			}
-		}
-		this.render()
-	}
-
-	protected _onDeleteItem(event: MouseEvent): void {
-		const attributes = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
-		const effects = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`)
-		const type: ListType = htmlQuery(event.target, "[data-type]")?.dataset.type as ListType
-
-		const index = parseInt(htmlQuery(event.target, "[data-index]")?.dataset.index ?? "-1")
-		const pindex = parseInt(htmlQuery(event.target, "[data-pindex]")?.dataset.pindex ?? "-1")
-		if (index === -1 || pindex === 1) return
-
-		switch (type) {
-			case ListType.Attribute:
-				attributes.splice(index, 1)
-				game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`, attributes)
-				break
-			case ListType.Thresholds:
-				attributes[pindex].thresholds?.splice(index, 1)
-				game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`, attributes)
-				break
-			case ListType.Effect:
-				effects.splice(index, 1)
-				game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`, effects)
-				break
-			case ListType.Enter:
-			case ListType.Leave:
-				effects[pindex][type]?.splice(index, 1)
-				game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`, effects)
-				break
-		}
-
-		this.render()
-	}
-
 	protected override _onDrop(event: DragEvent): void {
 		const dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
-		const element = htmlClosest(event.target, ".item")
-		if (!element) return
 
-		const attributes = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
-		const effects = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`)
-		const index = parseInt(element.dataset.index ?? "-1")
-		if (index === -1) return
-		const above = element.classList.contains("border-top")
+		if (dragData.type === DropDataType.Damage) return
+		if (dragData.type === DropDataType.Item) return
+		if (dragData.type === DropDataType.HitLocation) return
+		if (dragData.type === DropDataType.SubTable) return
+		if (dragData.type === DropDataType.ResourceTracker) return
+		if (dragData.type === DropDataType.ResourceTrackerThreshold) return
+		if (dragData.type === DropDataType.MoveType) return
+		if (dragData.type === DropDataType.MoveTypeOverride) return
 
-		if (dragData.type === DropDataType.Item || dragData.type === DropDataType.Damage) return
-		if (dragData.order === index) return
-		if (above && dragData.order === index - 1) return
-		if (!above && dragData.order === index + 1) return
-
-		switch (dragData.type) {
-			case DropDataType.Attributes: {
-				const item = attributes.splice(dragData.index, 1)[0]
-				attributes.splice(index, 0, item)
-				attributes.forEach((v, k) => (v.order = k))
-				break
-			}
-			case DropDataType.Effects: {
-				const item = effects.splice(dragData.index, 1)[0]
-				effects.splice(index, 0, item)
-				break
-			}
-			case DropDataType.AttributeThresholds: {
-				const item = attributes[dragData.parent_index].thresholds?.splice(dragData.index, 1)[0]
-				if (!item) break
-				attributes[dragData.parent_index].thresholds?.splice(index, 0, item)
-				break
-			}
+		let element = event.currentTarget
+		if (!(element instanceof HTMLElement)) return console.error("Drop event target is not valid.")
+		while (!element.classList.contains("item")) {
+			element = element.parentElement
+			if (!(element instanceof HTMLElement)) return console.error("Drop event target is not valid.")
 		}
 
-		game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`, attributes)
-		game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`, effects)
-		this.render()
+		const targetIndex = parseInt(element.dataset.index ?? "")
+		if (isNaN(targetIndex)) return console.error("Drop target index is not valid", element)
+
+		const above = element.classList.contains("border-top")
+		if (above && dragData.order === targetIndex - 1) return
+		if (!above && dragData.order === targetIndex + 1) return
+
+		const context: DropDataContext = {
+			element,
+			app: this,
+			targetIndex,
+		}
+
+		switch (dragData.type) {
+			case DropDataType.Attribute:
+				return SettingsHelpers.onDropAttribute(dragData, context)
+			case DropDataType.AttributeThreshold:
+				return SettingsHelpers.onDropAttributeThreshold(dragData, context)
+			case DropDataType.Effect: {
+				const effects = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`)
+				const index = parseInt(element.dataset.index ?? "")
+				if (isNaN(index)) return console.error("Invalid index")
+
+				const item = effects.splice(dragData.index, 1)[0]
+				effects.splice(index, 0, item)
+			}
+		}
 	}
 
 	protected override async _updateObject(_event: Event, data: Record<string, unknown>): Promise<void> {

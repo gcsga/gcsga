@@ -1,17 +1,17 @@
 <div class="add">
 	<a class="gcs-circled-add" data-action="add-attribute"></a>
 	{{#if actor}}
-	<a class="gcs-reset" data-action="reset-all" data-type="attributes"></a>
+	<a class="gcs-reset" data-action="reset-all" data-type="attribute"></a>
 	<div>{{localize "gurps.settings.reset_all"}}</div>
 	{{/if}}
-	<a class="data-import fas fa-file-import" data-type="attributes"></a>
-	<a class="data-export fas fa-file-export" data-type="attributes"></a>
+	<a class="data-import fas fa-file-import" data-type="attribute"></a>
+	<a class="data-export fas fa-file-export" data-type="attribute"></a>
 </div>
 <div class="item-list">
 	{{#each attributes.attributes}}
-	<div class="item" data-id="{{this.id}}" data-index="{{@index}}" data-type="attributes">
+	<div class="item" data-id="{{this.id}}" data-index="{{@index}}" data-type="attribute">
 		<div class="controls">
-			<a class="gcs-grip drag" data-index="{{@index}}" data-type="attributes"></a>
+			<a class="gcs-grip drag" data-index="{{@index}}" data-type="attribute"></a>
 			<a class="gcs-trash" data-index="{{@index}}" data-action="remove-attribute"></a>
 			{{#if (eq this.type "pool")}}
 			<a class="gcs-circled-add" data-id="{{@index}}" data-action="att-attribute-threshold"></a>

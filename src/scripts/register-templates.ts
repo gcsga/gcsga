@@ -115,7 +115,6 @@ export function registerTemplates(): void {
 
 		// Misc Character
 		"actor/character/sections/error",
-		"actor/drag-image",
 		"actor/import",
 
 		// Item Prereqs

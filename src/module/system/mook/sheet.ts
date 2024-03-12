@@ -3,12 +3,12 @@ import { LocalizeGURPS } from "@util/localize.ts"
 import { MookParser } from "./parse.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { Mook } from "./document.ts"
-import { CharacterSheetConfig } from "@actor/character/config-sheet.ts"
 import { AttributeGURPS, AttributeObj } from "@system"
 import { DialogGURPS } from "@module/apps/dialog.ts"
+import { CharacterConfigSheet } from "@actor/character/config.ts"
 
 export class MookGeneratorSheet extends FormApplication {
-	config: CharacterSheetConfig | null = null
+	config: CharacterConfigSheet | null = null
 
 	override object: Mook
 

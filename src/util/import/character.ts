@@ -8,7 +8,16 @@ import {
 	CharacterSystemSource,
 	PointsRecord,
 } from "@actor/character/data.ts"
-import { ActorFlags, ActorType, BlockLayoutKey, ManeuverID, PageSettings, SYSTEM_NAME, SheetSettingsObj } from "@data"
+import {
+	ActorFlags,
+	ActorType,
+	BlockLayoutKey,
+	ManeuverID,
+	PageSettings,
+	SETTINGS,
+	SYSTEM_NAME,
+	SheetSettingsObj,
+} from "@data"
 import { ItemSourceGURPS } from "@item/data/index.ts"
 import { ChatMessageGURPS } from "@module/chat-message/document.ts"
 import {
@@ -93,6 +102,15 @@ export class CharacterImporter {
 			created_date: data.created_date,
 			modified_date: data.modified_date,
 		}
+
+		if (systemData.settings.resource_trackers.length === 0)
+			systemData.settings.resource_trackers = game.settings.get(
+				SYSTEM_NAME,
+				`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`,
+			)
+
+		if (systemData.settings.move_types.length === 0)
+			systemData.settings.move_types = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
 
 		const image = CharacterImporter.importPortrait(data.profile?.portrait)
 

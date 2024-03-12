@@ -1,15 +1,15 @@
 <div class="add">
 	<a class="gcs-circled-add" data-action="add-resource-tracker"></a>
 	{{#if actor}}
-	<a class="gcs-reset" data-action="reset-all" data-type="resource-trackers"></a>
+	<a class="gcs-reset" data-action="reset-all" data-type="resourceTracker"></a>
 	<div>{{localize "gurps.settings.reset_all"}}</div>
 	{{/if}}
 </div>
 <div class="item-list">
 	{{#each attributes.resourceTrackers}}
-	<div class="item" data-id="{{this.id}}" data-index="{{@index}}" data-type="resource_trackers">
+	<div class="item" data-id="{{this.id}}" data-index="{{@index}}" data-type="resourceTracker">
 		<div class="controls">
-			<a class="gcs-grip drag" data-index="{{@index}}" data-type="resource-tracker"></a>
+			<a class="gcs-grip drag" data-index="{{@index}}" data-type="resourceTracker"></a>
 			<a class="gcs-trash" data-index="{{@index}}" data-action="remove-resource-tracker"></a>
 			<a class="gcs-circled-add" data-id="{{@index}}" data-action="add-resource-tracker-threshold"></a>
 		</div>

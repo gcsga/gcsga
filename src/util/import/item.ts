@@ -330,6 +330,7 @@ class TraitModifierContainerImporter extends ItemImporter {
 			notes: item.notes ?? "",
 			vtt_notes: item.vtt_notes ?? "",
 			tags: item.tags ?? [],
+			open: item.open ?? false,
 		}
 
 		item.children?.reduce((acc, child) => {
@@ -939,6 +940,7 @@ class EquipmentModifierContainerImporter extends ItemImporter {
 			notes: item.notes ?? "",
 			vtt_notes: item.vtt_notes ?? "",
 			tags: item.tags ?? [],
+			open: item.open ?? false,
 		}
 
 		item.children?.reduce((acc, child) => {

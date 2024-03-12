@@ -1,9 +1,11 @@
 import { SETTINGS, SYSTEM_NAME } from "@data"
 import { PartialSettingsData, SettingsMenuGURPS } from "./menu.ts"
-import { htmlClosest, htmlQuery } from "@util/dom.ts"
-import { DnD, getNewAttributeId, prepareFormData } from "@util"
+import { htmlQuery, htmlQueryAll } from "@util/dom.ts"
+import { DnD, SettingsHelpers, getNewAttributeId, prepareFormData } from "@util"
 import { defaultSettings } from "./defaults.ts"
 import { DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
+import { ResourceTrackerDefObj } from "@system"
+import { DropDataContext } from "@util/settings-helpers.ts"
 
 enum ListType {
 	ResourceTracker = "resource_trackers",
@@ -29,6 +31,49 @@ export class ResourceTrackerSettings extends SettingsMenuGURPS {
 					console.log(value)
 				},
 			},
+		}
+	}
+
+	get resourceTrackers(): ResourceTrackerDefObj[] {
+		return game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`)
+	}
+
+	override activateListeners($html: JQuery<HTMLElement>): void {
+		super.activateListeners($html)
+		const html = $html[0]
+
+		for (const button of htmlQueryAll(html, "a[data-action^=add-]")) {
+			const context: DropDataContext = {
+				element: button,
+				app: this,
+				targetIndex: 0,
+			}
+
+			switch (button.dataset.action) {
+				case "add-resource-tracker":
+					button.addEventListener("click", () => SettingsHelpers.addResourceTracker(context))
+					break
+				case "add-resource-tracker-threshold":
+					button.addEventListener("click", () => SettingsHelpers.addResourceTrackerThreshold(context))
+					break
+			}
+		}
+
+		for (const button of htmlQueryAll(html, "a[data-action^=remove-]")) {
+			const context: DropDataContext = {
+				element: button,
+				app: this,
+				targetIndex: 0,
+			}
+
+			switch (button.dataset.action) {
+				case "remove-resource-tracker":
+					button.addEventListener("click", () => SettingsHelpers.removeResourceTracker(context))
+					break
+				case "remove-resource-tracker-threshold":
+					button.addEventListener("click", () => SettingsHelpers.removeResourceTrackerThreshold(context))
+					break
+			}
 		}
 	}
 
@@ -99,36 +144,43 @@ export class ResourceTrackerSettings extends SettingsMenuGURPS {
 
 	protected override _onDrop(event: DragEvent): void {
 		const dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
-		const element = htmlClosest(event.target, ".item")
-		if (!element) return
 
-		const trackers = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`)
-		const index = parseInt(element.dataset.index ?? "-1")
-		if (index === -1) return
-		const above = element.classList.contains("border-top")
+		if (dragData.type === DropDataType.Damage) return
+		if (dragData.type === DropDataType.Item) return
+		if (dragData.type === DropDataType.HitLocation) return
+		if (dragData.type === DropDataType.SubTable) return
+		if (dragData.type === DropDataType.Attribute) return
+		if (dragData.type === DropDataType.Effect) return
+		if (dragData.type === DropDataType.AttributeThreshold) return
+		if (dragData.type === DropDataType.MoveType) return
+		if (dragData.type === DropDataType.MoveTypeOverride) return
 
-		if (dragData.type === DropDataType.Item || dragData.type === DropDataType.Damage) return
-		if (dragData.order === index) return
-		if (above && dragData.order === index - 1) return
-		if (!above && dragData.order === index + 1) return
-
-		switch (dragData.type) {
-			case DropDataType.ResourceTrackers: {
-				const item = trackers.splice(dragData.index, 1)[0]
-				trackers.splice(index, 0, item)
-				// trackers.forEach((v, k) => (v.order = k))
-				break
-			}
-			case DropDataType.TrackerThresholds: {
-				const item = trackers[dragData.parent_index].thresholds?.splice(dragData.index, 1)[0]
-				if (!item) break
-				trackers[dragData.parent_index].thresholds?.splice(index, 0, item)
-				break
-			}
+		let element = event.currentTarget
+		if (!(element instanceof HTMLElement)) return console.error("Drop event target is not valid.")
+		while (!element.classList.contains("item")) {
+			element = element.parentElement
+			if (!(element instanceof HTMLElement)) return console.error("Drop event target is not valid.")
 		}
 
-		game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`, trackers)
-		this.render()
+		const targetIndex = parseInt(element.dataset.index ?? "")
+		if (isNaN(targetIndex)) return console.error("Drop target index is not valid", element)
+
+		const above = element.classList.contains("border-top")
+		if (above && dragData.order === targetIndex - 1) return
+		if (!above && dragData.order === targetIndex + 1) return
+
+		const context: DropDataContext = {
+			element,
+			app: this,
+			targetIndex,
+		}
+
+		switch (dragData.type) {
+			case DropDataType.ResourceTracker:
+				return SettingsHelpers.onDropResourceTracker(dragData, context)
+			case DropDataType.ResourceTrackerThreshold:
+				return SettingsHelpers.onDropResourceTrackerThreshold(dragData, context)
+		}
 	}
 
 	protected override async _updateObject(_event: Event, formData: Record<string, unknown>): Promise<void> {

@@ -1,10 +1,11 @@
 import { PartialSettingsData, SettingsMenuGURPS } from "./menu.ts"
-import { htmlClosest, htmlQuery } from "@util/dom.ts"
-import { DnD, getNewAttributeId, prepareFormData } from "@util"
+import { htmlQuery, htmlQueryAll } from "@util/dom.ts"
+import { DnD, SettingsHelpers, getNewAttributeId, prepareFormData } from "@util"
 import { defaultSettings } from "./defaults.ts"
 import { SETTINGS, SYSTEM_NAME } from "@data"
 import { DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
-import { MoveTypeOverrideConditionType } from "@system"
+import { MoveTypeDefObj, MoveTypeOverrideConditionType } from "@system"
+import { DropDataContext } from "@util/settings-helpers.ts"
 
 enum ListType {
 	MoveType = "move_types",
@@ -30,6 +31,49 @@ export class MoveSettings extends SettingsMenuGURPS {
 					console.log(value)
 				},
 			},
+		}
+	}
+
+	get moveTypes(): MoveTypeDefObj[] {
+		return game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
+	}
+
+	override activateListeners($html: JQuery<HTMLElement>): void {
+		super.activateListeners($html)
+		const html = $html[0]
+
+		for (const button of htmlQueryAll(html, "a[data-action^=add-]")) {
+			const context: DropDataContext = {
+				element: button,
+				app: this,
+				targetIndex: 0,
+			}
+
+			switch (button.dataset.action) {
+				case "add-move-type":
+					button.addEventListener("click", () => SettingsHelpers.addMoveType(context))
+					break
+				case "add-move-type-override":
+					button.addEventListener("click", () => SettingsHelpers.addMoveTypeOverride(context))
+					break
+			}
+		}
+
+		for (const button of htmlQueryAll(html, "a[data-action^=remove-]")) {
+			const context: DropDataContext = {
+				element: button,
+				app: this,
+				targetIndex: 0,
+			}
+
+			switch (button.dataset.action) {
+				case "remove-move-type":
+					button.addEventListener("click", () => SettingsHelpers.removeMoveType(context))
+					break
+				case "remove-move-type-override":
+					button.addEventListener("click", () => SettingsHelpers.removeMoveTypeOverride(context))
+					break
+			}
 		}
 	}
 
@@ -97,35 +141,43 @@ export class MoveSettings extends SettingsMenuGURPS {
 
 	protected override _onDrop(event: DragEvent): void {
 		const dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
-		const element = htmlClosest(event.target, ".item")
-		if (!element) return
 
-		const move_types = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
-		const index = parseInt(element.dataset.index ?? "-1")
-		if (index === -1) return
-		const above = element.classList.contains("border-top")
+		if (dragData.type === DropDataType.Damage) return
+		if (dragData.type === DropDataType.Item) return
+		if (dragData.type === DropDataType.HitLocation) return
+		if (dragData.type === DropDataType.SubTable) return
+		if (dragData.type === DropDataType.Attribute) return
+		if (dragData.type === DropDataType.Effect) return
+		if (dragData.type === DropDataType.AttributeThreshold) return
+		if (dragData.type === DropDataType.ResourceTracker) return
+		if (dragData.type === DropDataType.ResourceTrackerThreshold) return
 
-		if (dragData.type === DropDataType.Item || dragData.type === DropDataType.Damage) return
-		if (dragData.order === index) return
-		if (above && dragData.order === index - 1) return
-		if (!above && dragData.order === index + 1) return
-
-		switch (dragData.type) {
-			case DropDataType.MoveType: {
-				const item = move_types.splice(dragData.index, 1)[0]
-				move_types.splice(index, 0, item)
-				break
-			}
-			case DropDataType.Overrides: {
-				const item = move_types[dragData.parent_index].overrides?.splice(dragData.index, 1)[0]
-				if (!item) break
-				move_types[dragData.parent_index].overrides?.splice(index, 0, item)
-				break
-			}
+		let element = event.currentTarget
+		if (!(element instanceof HTMLElement)) return console.error("Drop event target is not valid.")
+		while (!element.classList.contains("item")) {
+			element = element.parentElement
+			if (!(element instanceof HTMLElement)) return console.error("Drop event target is not valid.")
 		}
 
-		game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`, move_types)
-		this.render()
+		const targetIndex = parseInt(element.dataset.index ?? "")
+		if (isNaN(targetIndex)) return console.error("Drop target index is not valid", element)
+
+		const above = element.classList.contains("border-top")
+		if (above && dragData.order === targetIndex - 1) return
+		if (!above && dragData.order === targetIndex + 1) return
+
+		const context: DropDataContext = {
+			element,
+			app: this,
+			targetIndex,
+		}
+
+		switch (dragData.type) {
+			case DropDataType.MoveType:
+				return SettingsHelpers.onDropMoveType(dragData, context)
+			case DropDataType.MoveTypeOverride:
+				return SettingsHelpers.onDropMoveTypeOverride(dragData, context)
+		}
 	}
 
 	protected override async _updateObject(_event: Event, formData: Record<string, unknown>): Promise<void> {

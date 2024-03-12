@@ -1,4 +1,5 @@
 import { ActorGURPS } from "@actor"
+import { TargetTrait, TargetTraitModifier } from "@module/apps/damage-calculator/index.ts"
 import { CONTAINER_TYPES, ItemType } from "@module/data/constants.ts"
 import { ContainedWeightReduction, Feature } from "@system"
 import { Int, Weight, WeightUnits, emcost, emweight, setHasElement } from "@util"
@@ -8,10 +9,9 @@ import { ItemSourceGURPS } from "./data/index.ts"
 import { EquipmentContainerGURPS } from "./equipment-container/document.ts"
 import { EquipmentModifierGURPS } from "./equipment-modifier/document.ts"
 import { EquipmentGURPS } from "./equipment/document.ts"
-import { ItemInstances } from "./types.ts"
-import { TraitGURPS } from "./trait/document.ts"
-import { TargetTrait, TargetTraitModifier } from "@module/apps/damage-calculator/index.ts"
 import { TraitModifierGURPS } from "./trait-modifier/document.ts"
+import { TraitGURPS } from "./trait/document.ts"
+import { ItemInstances } from "./types.ts"
 
 type ItemOrSource = PreCreate<ItemSourceGURPS> | ItemGURPS
 
@@ -185,6 +185,43 @@ function modifyPoints(points: number, modifier: number): number {
 	return points + calculateModifierPoints(points, modifier)
 }
 
+function getItemArtworkName(type: string): string {
+	switch (type) {
+		case ItemType.Trait:
+		case ItemType.TraitContainer:
+			return "trait"
+		case ItemType.TraitModifier:
+		case ItemType.TraitModifierContainer:
+			return "trait-modifier"
+		case ItemType.Skill:
+		case ItemType.Technique:
+		case ItemType.SkillContainer:
+			return "skill"
+		case ItemType.Spell:
+		case ItemType.RitualMagicSpell:
+		case ItemType.SpellContainer:
+			return "spell"
+		case ItemType.Equipment:
+		case ItemType.EquipmentContainer:
+			return "equipment"
+		case ItemType.EquipmentModifier:
+		case ItemType.EquipmentModifierContainer:
+			return "equipment-modifier"
+		case ItemType.Note:
+		case ItemType.NoteContainer:
+			return "note"
+		case ItemType.Effect:
+		case ItemType.Condition:
+			return "effect"
+		case ItemType.MeleeWeapon:
+			return "melee-weapon"
+		case ItemType.RangedWeapon:
+			return "ranged-weapon"
+		default:
+			return "question-mark"
+	}
+}
+
 /**
  * Adapt a TraitGURPS to the TargetTrait interface expected by the Damage Calculator.
  */
@@ -236,11 +273,12 @@ class TraitModifierAdapter implements TargetTraitModifier {
 }
 
 export {
+	TraitAdapter,
 	calculateModifierPoints,
 	extendedWeightAdjustedForModifiers,
+	getItemArtworkName,
 	itemIsOfType,
 	modifyPoints,
 	valueAdjustedForModifiers,
-	TraitAdapter,
 	weightAdjustedForModifiers,
 }

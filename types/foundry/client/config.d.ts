@@ -10,8 +10,9 @@ declare global {
 		TChatMessage extends ChatMessage,
 		TCombat extends Combat,
 		TCombatant extends Combatant<TCombat | null, TTokenDocument | null>,
-		TActorDirectory extends ActorDirectory<Actor<null>>,
 		TCombatTracker extends CombatTracker<TCombat | null>,
+		TActorDirectory extends ActorDirectory<Actor<null>>,
+		TItemDirectory extends ItemDirectory<Item<null>>,
 		TCompendiumDirectory extends CompendiumDirectory,
 		THotbar extends Hotbar,
 		TItem extends Item<TActor | null>,
@@ -603,7 +604,7 @@ declare global {
 			compendium: ConstructorOf<TCompendiumDirectory>
 			controls: typeof SceneControls
 			hotbar: ConstructorOf<THotbar>
-			items: ConstructorOf<ItemDirectory<Item<null>>>
+			items: ConstructorOf<TItemDirectory>
 			// journal: typeof JournalDirectory;
 			// macros: typeof MacroDirectory;
 			menu: typeof MainMenu

@@ -1,5 +1,4 @@
 import { ErrorGURPS } from "./misc.ts"
-import { StringBuilder } from "./string-builder.ts"
 
 const FourDecimalPlaces = 4
 
@@ -17,52 +16,59 @@ export class Int {
 	static fromString(str: string): [number, Error | null] {
 		if (str === "") return [0, ErrorGURPS("Empty string is not valid")]
 		str = str.replaceAll(",", "")
-		if (str.match(/[eE]/)) {
-			try {
-				const f = parseFloat(str)
-				if (isNaN(f)) {
-					return [0, ErrorGURPS(`${f} is not a number`)]
-				}
-				return [f, null]
-			} catch (err) {
-				if (err instanceof Error) return [0, err]
-			}
+		if (str.match(/\d+[eE][+-]?\d+/)) {
+			// Given a floating-point value with an exponent, which technically
+			// isn't valid input, but we'll try to convert it anyway.
+			const f = Number(str.match(/\d+[eE][+-]?\d+/)![0] ?? "")
+			if (isNaN(f)) return [0, ErrorGURPS(`${f} is not a number`)]
+			return [f, null]
 		}
-		const parts = str.split(".", 2)
-		let [value, fraction] = [0, 0]
-		let neg = false
-		switch (parts[0]) {
-			case "":
-				break
-			case "-":
-			case "-0":
-				neg = true
-				break
-			default:
-				value = parseInt(parts[0])
-				if (isNaN(value)) {
-					return [0, ErrorGURPS(`${value} is not a number`)]
-				}
-				if (value < 0) neg = true
-				value = -value
-		}
-
-		if (parts.length > 0) {
-			const cutoff = 1 + FourDecimalPlaces
-			const buffer = new StringBuilder()
-			buffer.push("1")
-			buffer.push(parts[1])
-			while (buffer.toString().length < cutoff) {
-				buffer.push("0")
-			}
-			let frac = buffer.toString()
-			if (frac.length > cutoff) frac = frac.substring(0, cutoff)
-			fraction = parseInt(frac)
-			if (isNaN(fraction)) return [0, ErrorGURPS(`${fraction} is not a number`)]
-			value += fraction
-		}
-		if (neg) value = -value
+		const value = parseFloat(str)
+		if (isNaN(value)) return [0, ErrorGURPS(`${value} is not a number`)]
 		return [value, null]
+		// if (str.match(/[eE]/)) {
+		// 	const f = parseFloat(str)
+		// 	if (isNaN(f)) return [0, ErrorGURPS(`${f} is not a number`)]
+		// 	return [f, null]
+		// }
+		// const parts = str.split(".", 2)
+		// let [value, fraction] = [0, 0]
+		// let neg = false
+		// console.log(parts)
+		// switch (parts[0]) {
+		// 	case "":
+		// 		break
+		// 	case "-":
+		// 	case "-0":
+		// 		neg = true
+		// 		break
+		// 	default:
+		// 		value = parseInt(parts[0])
+		// 		if (isNaN(value)) {
+		// 			return [0, ErrorGURPS(`${value} is not a number`)]
+		// 		}
+		// 		if (value < 0) {
+		// 			neg = true
+		// 			value = -value
+		// 		}
+		// }
+		// if (parts.length > 1) {
+		// 	const cutoff = 1 + FourDecimalPlaces
+		// 	const buffer = new StringBuilder()
+		// 	buffer.push("1")
+		// 	buffer.push(parts[1])
+		// 	while (buffer.toString().length < cutoff) {
+		// 		buffer.push("0")
+		// 	}
+		// 	let frac = buffer.toString()
+		// 	console.log(frac)
+		// 	if (frac.length > cutoff) frac = frac.substring(0, cutoff)
+		// 	fraction = parseInt(frac)
+		// 	if (isNaN(fraction)) return [0, ErrorGURPS(`${fraction} is not a number`)]
+		// 	value += fraction
+		// }
+		// if (neg) value = -value
+		// return [value, null]
 	}
 
 	static extract(str: string): [number, string] {

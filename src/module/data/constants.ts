@@ -239,7 +239,8 @@ enum ManeuverID {
 
 // Actor
 enum ActorType {
-	Character = "character_gcs",
+	Character = "character",
+	// Character = "character_gcs",
 	// LegacyCharacter = "character",
 	// LegacyEnemy = "enemy",
 	Loot = "loot",

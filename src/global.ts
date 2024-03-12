@@ -14,6 +14,7 @@ import { ModifierList } from "@module/apps/modifier-list/document.ts"
 import { ActorDirectoryGURPS } from "@module/apps/sidebar/actor-directory.ts"
 import { CombatTrackerGURPS } from "@module/apps/sidebar/combat-tracker.ts"
 import { CompendiumDirectoryGURPS } from "@module/apps/sidebar/compendium-directory.ts"
+import { ItemDirectoryGURPS } from "@module/apps/sidebar/item-directory.ts"
 import { CanvasGURPS } from "@module/canvas/index.ts"
 import { ChatMessageGURPS } from "@module/chat-message/index.ts"
 import { CombatGURPS, CombatantGURPS } from "@module/combat/index.ts"
@@ -56,8 +57,9 @@ type ConfiguredConfig = Config<
 	ChatMessage,
 	CombatGURPS,
 	CombatantGURPS<CombatGURPS | null, TokenDocumentGURPS>,
-	ActorDirectoryGURPS<ActorGURPS<null>>,
 	CombatTrackerGURPS<CombatGURPS | null>,
+	ActorDirectoryGURPS<ActorGURPS<null>>,
+	ItemDirectoryGURPS<ItemGURPS<null>>,
 	CompendiumDirectoryGURPS,
 	Hotbar,
 	ItemGURPS,

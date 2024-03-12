@@ -204,11 +204,11 @@ class HandlebarsHelpersGURPS {
 		return list.map(e => e).sort((a, b) => a[key] - b[key])
 	}
 
-	static textareaFormat(s: string | string[]): string {
-		if (typeof s === "string") return s?.replaceAll("\t", "").replaceAll("\n", "\r") || ""
-		else {
-			return s?.join("\r") || ""
-		}
+	static textareaFormat(arr: string[]): string {
+		console.log(arr)
+		const s = arr.map(s => s.replace(/\t/g, "").replace(/\n/g, "\r")).join("\n")
+		console.log(s.replaceAll("\r", "\\r"))
+		return s
 	}
 
 	static customArmorDivisorSelect(divisor: number, _options: unknown): number | undefined {

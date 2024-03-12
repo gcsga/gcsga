@@ -24,7 +24,7 @@ import {
 	WeaponBonus,
 } from "@system"
 import { ActorInstances, EmbeddedItemInstances } from "@actor/types.ts"
-import { ItemCollectionMap } from "./item-collection-map.ts"
+import { ActorItemCollectionMap } from "./item-collection-map.ts"
 import { SheetSettings, sheetSettingsFor } from "@module/data/sheet-settings.ts"
 import { DamagePayload } from "@module/apps/damage-calculator/damage-chat-message.ts"
 import { DamageAttackerAdapter, DamageTargetActor, DamageWeaponAdapter } from "@actor/helpers.ts"
@@ -54,7 +54,7 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 	declare features: FeatureMap
 
 	// Map of item collections
-	declare itemCollections: ItemCollectionMap<this>
+	declare itemCollections: ActorItemCollectionMap<this>
 
 	get importData(): { name: string; path: string; last_import: string } {
 		return this.flags[SYSTEM_NAME][ActorFlags.Import]
@@ -99,6 +99,15 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 		return 0
 	}
 
+	protected override async _preCreate(
+		data: this["_source"],
+		options: DocumentModificationContext<TParent>,
+		user: User<Actor<null>>,
+	): Promise<boolean | void> {
+		super._preCreate(data, options, user)
+		this.updateSource({ name: LocalizeGURPS.translations.TYPES.Actor[data.type] })
+	}
+
 	protected override _onCreate(
 		data: this["_source"],
 		options: DocumentModificationContext<TParent>,
@@ -106,6 +115,16 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 	): void {
 		super._onCreate(data, options, userId)
 		LastActor.set(this)
+	}
+
+	static override getDefaultArtwork(actorData: foundry.documents.ActorSource): {
+		img: ImageFilePath
+		texture: {
+			src: ImageFilePath | VideoFilePath
+		}
+	} {
+		const img: ImageFilePath = `systems/${SYSTEM_NAME}/icons/default-icons/${actorData.type}.svg`
+		return { img, texture: { src: img } }
 	}
 
 	/** A means of checking this actor's type without risk of circular import references */
@@ -261,7 +280,7 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 		super.prepareBaseData()
 
 		this.variableResolverSets = new Set()
-		this.itemCollections = new ItemCollectionMap<this>(this.items)
+		this.itemCollections = new ActorItemCollectionMap<this>(this.items)
 
 		this.features = {
 			attributeBonuses: [],

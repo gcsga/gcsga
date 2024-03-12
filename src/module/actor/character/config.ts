@@ -1,21 +1,22 @@
-import { SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
-import { CharacterGURPS } from "./document.ts"
-import {
-	AbstractAttributeDef,
-	AttributeDef,
-	BodyGURPS,
-	HitLocation,
-	HitLocationObj,
-	MoveTypeDef,
-	PoolThreshold,
-	RESERVED_IDS,
-	ResourceTrackerDef,
-} from "@system"
-import { CharacterImporter, PDF, htmlQuery, htmlQueryAll, prepareFormData, sanitizeId } from "@util"
+import { DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
 import { FilePickerGURPS } from "@module/apps/file-picker.ts"
-import { MoveTypeOverride } from "@system/move-type/override.ts"
+import { SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
+import { AbstractAttributeDef, AttributeDefObj, MoveTypeDefObj, ResourceTrackerDefObj } from "@system"
+import {
+	CharacterImporter,
+	DnD,
+	LocalizeGURPS,
+	PDF,
+	SettingsHelpers,
+	htmlClosest,
+	htmlQuery,
+	htmlQueryAll,
+	prepareFormData,
+} from "@util"
+import { DropDataContext } from "@util/settings-helpers.ts"
+import { CharacterGURPS } from "./document.ts"
 
-class CharacterConfigSheet<TActor extends CharacterGURPS> extends DocumentSheet<TActor> {
+class CharacterConfigSheet<TActor extends CharacterGURPS = CharacterGURPS> extends DocumentSheet<TActor> {
 	// Display this filename in the import button text before importing
 	declare filename: string
 	declare file?: { text: string; name: string; path: string }
@@ -23,6 +24,18 @@ class CharacterConfigSheet<TActor extends CharacterGURPS> extends DocumentSheet<
 
 	get actor(): TActor {
 		return this.object
+	}
+
+	get attributes(): AttributeDefObj[] {
+		return this.actor.system.settings.attributes
+	}
+
+	get resourceTrackers(): ResourceTrackerDefObj[] {
+		return this.actor.system.settings.resource_trackers
+	}
+
+	get moveTypes(): MoveTypeDefObj[] {
+		return this.actor.system.settings.move_types
 	}
 
 	static override get defaultOptions(): DocumentSheetOptions {
@@ -43,6 +56,30 @@ class CharacterConfigSheet<TActor extends CharacterGURPS> extends DocumentSheet<
 			dragDrop: [{ dragSelector: ".item-list .item .controls .drag", dropSelector: null }],
 			scrollY: [".content", ".item-list", ".tab"],
 		})
+	}
+
+	override get title(): string {
+		return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.character.settings.header, {
+			name: this.object.name,
+		})
+	}
+
+	protected override _updateObject(event: Event, formData: Record<string, unknown>): Promise<void> {
+		const element = event.currentTarget
+		if (!(element instanceof HTMLElement)) return super._updateObject(event, {})
+
+		if (element instanceof HTMLInputElement)
+			if (element.classList.contains("invalid")) delete formData[element.name]
+
+		if (formData["system.settings.block_layout"]) {
+			console.log(formData["system.settings.block_layout"])
+			formData["system.settings.block_layout"] = (formData["system.settings.block_layout"] as string)
+				.split("\r")
+				.map(e => e.trim())
+		}
+
+		formData = prepareFormData(formData, this.actor)
+		return super._updateObject(event, formData)
 	}
 
 	override async getData(options?: ActorSheetOptions): Promise<CharacterConfigSheetData<TActor>> {
@@ -81,7 +118,16 @@ class CharacterConfigSheet<TActor extends CharacterGURPS> extends DocumentSheet<
 
 		// Validate IDs for attributes and hit locations
 		for (const input of htmlQueryAll(html, "input[name$='.id']")) {
-			input.addEventListener("input", ev => this._validateId(ev))
+			input.addEventListener("input", ev => {
+				const element = ev.currentTarget
+				if (!(element instanceof HTMLInputElement && ev instanceof InputEvent)) return null
+
+				return SettingsHelpers.validateId({
+					element,
+					app: this,
+					targetIndex: 0,
+				})
+			})
 		}
 
 		// Handle client-side and server-side import
@@ -92,63 +138,75 @@ class CharacterConfigSheet<TActor extends CharacterGURPS> extends DocumentSheet<
 		// Confirm Import
 		htmlQuery(html, "button[data-action=import-confirm]")?.addEventListener("click", () => this._onImportConfirm())
 
-		// Displaattributesy drop indicators
-		for (const item of htmlQueryAll(html, ".item")) item.addEventListener("dragover", ev => this._onDragItem(ev))
+		// Reimport
+		htmlQuery(html, "button[data-action=reimport]")?.addEventListener("click", () => this._onReImport())
 
 		for (const button of htmlQueryAll(html, "a[data-action^=add-]")) {
+			const context: DropDataContext = {
+				element: button,
+				app: this,
+				targetIndex: 0,
+			}
+
 			switch (button.dataset.action) {
 				case "add-attribute":
-					button.addEventListener("click", () => this._addAttribute())
+					button.addEventListener("click", () => SettingsHelpers.addAttribute(context))
 					break
 				case "add-attribute-threshold":
-					button.addEventListener("click", ev => this._addAttributeThreshold(ev))
+					button.addEventListener("click", () => SettingsHelpers.addAttributeThreshold(context))
 					break
 				case "add-resource-tracker":
-					button.addEventListener("click", () => this._addResourceTracker())
+					button.addEventListener("click", () => SettingsHelpers.addResourceTracker(context))
 					break
 				case "add-resource-tracker-threshold":
-					button.addEventListener("click", ev => this._addResourceTrackerThreshold(ev))
+					button.addEventListener("click", () => SettingsHelpers.addResourceTrackerThreshold(context))
 					break
 				case "add-move-type":
-					button.addEventListener("click", () => this._addMoveType())
+					button.addEventListener("click", () => SettingsHelpers.addMoveType(context))
 					break
 				case "add-move-type-override":
-					button.addEventListener("click", ev => this._addMoveTypeOverride(ev))
+					button.addEventListener("click", () => SettingsHelpers.addMoveTypeOverride(context))
 					break
 				case "add-location":
-					button.addEventListener("click", ev => this._addHitLocation(ev))
+					button.addEventListener("click", () => SettingsHelpers.addHitLocation(context))
 					break
 				case "add-sub-table":
-					button.addEventListener("click", ev => this._addSubtable(ev))
+					button.addEventListener("click", () => SettingsHelpers.addSubTable(context))
 					break
 			}
 		}
 
 		for (const button of htmlQueryAll(html, "a[data-action^=remove-]")) {
+			const context: DropDataContext = {
+				element: button,
+				app: this,
+				targetIndex: 0,
+			}
+
 			switch (button.dataset.action) {
 				case "remove-attribute":
-					button.addEventListener("click", ev => this._removeAttribute(ev))
+					button.addEventListener("click", () => SettingsHelpers.removeAttribute(context))
 					break
 				case "remove-attribute-threshold":
-					button.addEventListener("click", ev => this._removeAttributeThreshold(ev))
+					button.addEventListener("click", () => SettingsHelpers.removeAttributeThreshold(context))
 					break
 				case "remove-resource-tracker":
-					button.addEventListener("click", ev => this._removeResourceTracker(ev))
+					button.addEventListener("click", () => SettingsHelpers.removeResourceTracker(context))
 					break
 				case "remove-resource-tracker-threshold":
-					button.addEventListener("click", ev => this._removeResourceTrackerThreshold(ev))
+					button.addEventListener("click", () => SettingsHelpers.removeResourceTrackerThreshold(context))
 					break
 				case "remove-move-type":
-					button.addEventListener("click", ev => this._removeMoveType(ev))
+					button.addEventListener("click", () => SettingsHelpers.removeMoveType(context))
 					break
 				case "remove-move-type-override":
-					button.addEventListener("click", ev => this._removeMoveTypeOverride(ev))
+					button.addEventListener("click", () => SettingsHelpers.removeMoveTypeOverride(context))
 					break
 				case "remove-location":
-					button.addEventListener("click", ev => this._removeHitLocation(ev))
+					button.addEventListener("click", () => SettingsHelpers.removeHitLocation(context))
 					break
 				case "remove-sub-table":
-					button.addEventListener("click", ev => this._removeSubtable(ev))
+					button.addEventListener("click", () => SettingsHelpers.removeSubTable(context))
 					break
 			}
 		}
@@ -182,7 +240,7 @@ class CharacterConfigSheet<TActor extends CharacterGURPS> extends DocumentSheet<
 		}
 	}
 
-	private _getReservedIds(): string[] {
+	public getReservedIds(): string[] {
 		return [
 			...this.actor.system.settings.attributes,
 			...this.actor.system.settings.resource_trackers,
@@ -190,38 +248,7 @@ class CharacterConfigSheet<TActor extends CharacterGURPS> extends DocumentSheet<
 		].map(e => e.id)
 	}
 
-	private _validateId(event: Event): void {
-		const element = event.currentTarget ?? null
-		if (!(element instanceof HTMLInputElement && event instanceof InputEvent)) return
-
-		const value = element.value
-		const name = element.name
-
-		let invalid = value === ""
-
-		if (name.includes("locations")) invalid = HitLocation.validateId(value)
-		else {
-			invalid ||= sanitizeId(value, false, RESERVED_IDS) !== value
-
-			if (name.includes("attributes")) {
-				invalid ||= this.actor.settings.attributes.some(
-					(e, index) => e.id === value && !name.endsWith(`attributes.${index}.id`),
-				)
-			} else if (name.includes("resource_trackers")) {
-				invalid ||= this.actor.settings.resource_trackers.some(
-					(e, index) => e.id === value && !name.endsWith(`resource_trackers.${index}.id`),
-				)
-			} else if (name.includes("move_types")) {
-				invalid ||= this.actor.settings.move_types.some(
-					(e, index) => e.id === value && !name.endsWith(`move_types.${index}.id`),
-				)
-			}
-		}
-		if (invalid) element.classList.add("invalid")
-		else element.classList.remove("invalid")
-	}
-
-	private _openClientSideImport(event: Event): void {
+	private async _openClientSideImport(event: Event): Promise<void> {
 		const element = event.currentTarget
 		if (!(element instanceof HTMLInputElement)) return
 
@@ -229,9 +256,10 @@ class CharacterConfigSheet<TActor extends CharacterGURPS> extends DocumentSheet<
 		this.filename = element.value.split(/\\|\//).pop() ?? ""
 		const files = element.files
 		if (!files) return console.error("No file provided for import.")
-		readTextFromFile(files[0]).then(text => {
+		await readTextFromFile(files[0]).then(text => {
 			this.file = { text, name: files[0].name, path: element.value }
 		})
+
 		// Refresh view
 		this.render()
 	}
@@ -272,213 +300,58 @@ class CharacterConfigSheet<TActor extends CharacterGURPS> extends DocumentSheet<
 		if (this.actor.sheet.rendered) this.actor.sheet.render()
 	}
 
-	private _addAttribute(): void {
-		const attributes = this.actor.system.settings.attributes
-		attributes.push(AttributeDef.newObject(this._getReservedIds()))
-		this.actor.update({ "system.settings.attributes": attributes })
+	private _onReImport(): void {
+		const importPath = this.actor.importData.path
+		const importName = importPath.match(/.*[/\\]Data[/\\](.*)/)
+		const filePath = importName?.[1].replace(/\\/g, "/") || this.object.importData.name
+
+		const request = new XMLHttpRequest()
+		request.open("GET", filePath)
+
+		new Promise(resolve => {
+			request.onload = () => {
+				if (request.status === 200) {
+					const text = request.response
+					CharacterImporter.importCharacter(this.object, {
+						text: text,
+						name: filePath,
+						path: importPath,
+					})
+				}
+				resolve(this)
+			}
+		})
+		request.send(null)
 	}
 
-	private _removeAttribute(event: MouseEvent): void {
-		const element = event.currentTarget
-		if (!(element instanceof HTMLAnchorElement)) return
-
-		const index = Number(element.dataset.index) ?? null
-		if (!(typeof index === "number")) return console.error("Invalid index")
-
-		const attributes = this.actor.system.settings.attributes
-		attributes.splice(index, 1)
-		this.actor.update({ "system.settings.attributes": attributes })
-	}
-
-	private _addAttributeThreshold(event: MouseEvent): void {
-		const element = event.currentTarget
-		if (!(element instanceof HTMLAnchorElement)) return
-
-		const index = Number(element.dataset.index) ?? null
-		if (!(typeof index === "number")) return console.error("Invalid index")
-
-		const attributes = this.actor.system.settings.attributes
-		attributes[index].thresholds?.push(PoolThreshold.newObject())
-		this.actor.update({ "system.settings.attributes": attributes })
-	}
-
-	private _removeAttributeThreshold(event: MouseEvent): void {
-		const element = event.currentTarget
-		if (!(element instanceof HTMLAnchorElement)) return
-
-		const pindex = Number(element.dataset.pindex) ?? null
-		if (!(typeof pindex === "number")) return console.error("Invalid index")
-
-		const index = Number(element.dataset.index) ?? null
-		if (!(typeof index === "number")) return console.error("Invalid index")
-
-		const attributes = this.actor.system.settings.attributes
-		attributes[pindex].thresholds?.splice(index, 1)
-		this.actor.update({ "system.settings.attributes": attributes })
-	}
-
-	private _addResourceTracker(): void {
-		const resourceTrackers = this.actor.system.settings.resource_trackers
-
-		resourceTrackers.push(ResourceTrackerDef.newObject(this._getReservedIds()))
-		this.actor.update({ "system.settings.resource_trackers": resourceTrackers })
-	}
-
-	private _removeResourceTracker(event: MouseEvent): void {
-		const element = event.currentTarget
-		if (!(element instanceof HTMLAnchorElement)) return
-
-		const index = Number(element.dataset.index) ?? null
-		if (!(typeof index === "number")) return console.error("Invalid index")
-
-		const resourceTrackers = this.actor.system.settings.resource_trackers
-		resourceTrackers.splice(index, 1)
-
-		this.actor.update({ "system.settings.resource_trackers": resourceTrackers })
-	}
-
-	private _addResourceTrackerThreshold(event: MouseEvent): void {
-		const element = event.currentTarget
-		if (!(element instanceof HTMLAnchorElement)) return
-
-		const index = Number(element.dataset.index) ?? null
-		if (!(typeof index === "number")) return console.error("Invalid index")
-
-		const resourceTrackers = this.actor.system.settings.resource_trackers
-		resourceTrackers[index].thresholds?.push(PoolThreshold.newObject())
-		this.actor.update({ "system.settings.resource_trackers": resourceTrackers })
-	}
-
-	private _removeResourceTrackerThreshold(event: MouseEvent): void {
-		const element = event.currentTarget
-		if (!(element instanceof HTMLAnchorElement)) return
-
-		const pindex = Number(element.dataset.pindex) ?? null
-		if (!(typeof pindex === "number")) return console.error("Invalid index")
-
-		const index = Number(element.dataset.index) ?? null
-		if (!(typeof index === "number")) return console.error("Invalid index")
-
-		const resourceTrackers = this.actor.system.settings.resource_trackers
-		resourceTrackers[pindex].thresholds?.splice(index, 1)
-		this.actor.update({ "system.settings.resource_trackers": resourceTrackers })
-	}
-
-	private _addMoveType(): void {
-		const moveTypes = this.actor.system.settings.move_types
-		moveTypes.push(MoveTypeDef.newObject(this._getReservedIds()))
-		this.actor.update({ "system.settings.move_types": moveTypes })
-	}
-
-	private _removeMoveType(event: MouseEvent): void {
-		const element = event.currentTarget
-		if (!(element instanceof HTMLAnchorElement)) return
-
-		const index = Number(element.dataset.index) ?? null
-		if (!(typeof index === "number")) return console.error("Invalid index")
-
-		const moveTypes = this.actor.system.settings.move_types
-		moveTypes.splice(index, 1)
-		this.actor.update({ "system.settings.move_types": moveTypes })
-	}
-
-	private _addMoveTypeOverride(event: MouseEvent): void {
-		const element = event.currentTarget
-		if (!(element instanceof HTMLAnchorElement)) return
-
-		const index = Number(element.dataset.index) ?? null
-		if (!(typeof index === "number")) return console.error("Invalid index")
-
-		const moveTypes = this.actor.system.settings.move_types
-		moveTypes[index].overrides?.push(MoveTypeOverride.newObject())
-		this.actor.update({ "system.settings.move_types": moveTypes })
-	}
-
-	private _removeMoveTypeOverride(event: MouseEvent): void {
-		const element = event.currentTarget
-		if (!(element instanceof HTMLAnchorElement)) return
-
-		const pindex = Number(element.dataset.pindex) ?? null
-		if (!(typeof pindex === "number")) return console.error("Invalid index")
-
-		const index = Number(element.dataset.index) ?? null
-		if (!(typeof index === "number")) return console.error("Invalid index")
-
-		const moveTypes = this.actor.system.settings.move_types
-		moveTypes[pindex].overrides?.splice(index, 1)
-		this.actor.update({ "system.settings.move_types": moveTypes })
-	}
-
-	private _addHitLocation(event: MouseEvent): void {
-		const element = event.currentTarget
-		if (!(element instanceof HTMLAnchorElement)) return
-
-		const path = (element.dataset.path ?? "").replace(/^array\./, "")
-		if (!(typeof path === "string")) return
-		const index = Number(element.dataset.index) ?? null
-		if (!(typeof index === "number")) return console.error("Invalid index")
-
-		const table = fu.getProperty(this.actor, `${path}.locations`) as HitLocationObj[]
-		if (!Array.isArray(table)) return
-
-		table.push(HitLocation.newObject())
-		this._updateObject(event, { [`array.${path}`]: table })
-	}
-
-	private _removeHitLocation(event: MouseEvent): void {
-		const element = event.currentTarget
-		if (!(element instanceof HTMLAnchorElement)) return
-
-		const path = (element.dataset.path ?? "").replace(/^array\./, "")
-		if (!(typeof path === "string")) return
-		const index = Number(element.dataset.index) ?? null
-		if (!(typeof index === "number")) return console.error("Invalid index")
-
-		const table = fu.getProperty(this.actor, `${path}.locations`) as HitLocationObj[]
-		if (!Array.isArray(table)) return
-
-		table.splice(index, 1)
-		this._updateObject(event, { [`array.${path}`]: table })
-	}
-
-	private _addSubtable(event: MouseEvent): void {
-		const element = event.currentTarget
-		if (!(element instanceof HTMLAnchorElement)) return
-
-		const path = (element.dataset.path ?? "").replace(/^array\./, "")
-		if (!(typeof path === "string")) return
-		const index = Number(element.dataset.index) ?? null
-		if (!(typeof index === "number")) return console.error("Invalid index")
-
-		const table = fu.getProperty(this.actor, path) as HitLocationObj[]
-		table[index].sub_table = BodyGURPS.newObject()
-		if (!Array.isArray(table)) return
-
-		table.push(HitLocation.newObject())
-		this._updateObject(event, { [`array.${path}`]: table })
-	}
-
-	private _removeSubtable(event: MouseEvent): void {
-		const element = event.currentTarget
-		if (!(element instanceof HTMLAnchorElement)) return
-
-		const path = (element.dataset.path ?? "").replace(/^array\./, "")
-		if (!(typeof path === "string")) return
-		const index = Number(element.dataset.index) ?? null
-		if (!(typeof index === "number")) return
-
-		const table = fu.getProperty(this.actor, path) as HitLocationObj[]
-		if (!Array.isArray(table)) return
-
-		delete table[index].sub_table
-		this._updateObject(event, { [`array.${path}`]: table })
-	}
-
-	protected _onDragItem(event: DragEvent): void {
+	override async _onDragStart(event: DragEvent): Promise<void> {
 		const element = event.currentTarget
 		if (!(element instanceof HTMLElement)) return
 
-		const heightAcross = (event.pageY - element.offsetTop) / element.offsetHeight
+		const type = element.dataset.type as DropDataType
+
+		const index = parseInt(element.dataset.index ?? "")
+		if (isNaN(index)) return console.error("Invalid index")
+
+		const parentIndex = parseInt(element.dataset.pindex ?? "")
+
+		event.dataTransfer?.setData(
+			DnD.TEXT_PLAIN,
+			JSON.stringify({
+				type,
+				index,
+				parentIndex: isNaN(parentIndex) ? 0 : parentIndex,
+			}),
+		)
+	}
+
+	protected override _onDragOver(event: DragEvent): void {
+		super._onDragOver(event)
+		const element = event.currentTarget
+		if (!(element instanceof HTMLElement)) return
+		if (!element.classList.contains("item")) return
+
+		const heightAcross = (event.offsetY - element.offsetTop) / element.offsetHeight
 		for (const item of htmlQueryAll(element.parentElement, ".item")) {
 			item.classList.remove("border-top")
 			item.classList.remove("border-bottom")
@@ -492,20 +365,52 @@ class CharacterConfigSheet<TActor extends CharacterGURPS> extends DocumentSheet<
 		}
 	}
 
-	protected override _updateObject(event: Event, formData: Record<string, unknown>): Promise<void> {
-		const element = event.currentTarget
-		if (!(element instanceof HTMLElement)) return super._updateObject(event, {})
+	protected override async _onDrop(event: DragEvent): Promise<void> {
+		const dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
 
-		if (element instanceof HTMLInputElement)
-			if (element.classList.contains("invalid")) delete formData[element.name]
+		console.log(dragData)
 
-		if (formData["system.settings.block_layout"])
-			formData["system.settings.block_layout"] = (formData["system.settings.block_layout"] as string)
-				.split("\n")
-				.map(e => e.trim())
+		if (dragData.type === DropDataType.Damage) return
+		if (dragData.type === DropDataType.Item) return
+		if (dragData.type === DropDataType.Effect) return
+		if (dragData.type === DropDataType.SubTable) return
 
-		formData = prepareFormData(formData, this.actor)
-		return super._updateObject(event, formData)
+		let element = event.target
+		if (!(element instanceof HTMLElement)) return console.error("Drop event target is not valid.")
+		while (!element.classList.contains("item")) {
+			element = htmlClosest(element, ".item")
+			if (!(element instanceof HTMLElement)) return console.error("Drop event target is not valid.")
+		}
+
+		const targetIndex = parseInt(element.dataset.index ?? "")
+		if (isNaN(targetIndex)) return console.error("Drop target index is not valid", element)
+
+		const above = element.classList.contains("border-top")
+		if (above && dragData.order === targetIndex - 1) return
+		if (!above && dragData.order === targetIndex + 1) return
+
+		const context: DropDataContext = {
+			element,
+			app: this,
+			targetIndex,
+		}
+
+		switch (dragData.type) {
+			case DropDataType.Attribute:
+				return SettingsHelpers.onDropAttribute(dragData, context)
+			case DropDataType.AttributeThreshold:
+				return SettingsHelpers.onDropAttributeThreshold(dragData, context)
+			case DropDataType.ResourceTracker:
+				return SettingsHelpers.onDropResourceTracker(dragData, context)
+			case DropDataType.ResourceTrackerThreshold:
+				return SettingsHelpers.onDropResourceTrackerThreshold(dragData, context)
+			case DropDataType.MoveType:
+				return SettingsHelpers.onDropMoveType(dragData, context)
+			case DropDataType.MoveTypeOverride:
+				return SettingsHelpers.onDropMoveTypeOverride(dragData, context)
+			case DropDataType.HitLocation:
+				return SettingsHelpers.onDropHitLocation(dragData, context)
+		}
 	}
 }
 

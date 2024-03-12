@@ -1,4 +1,4 @@
-import { gid } from "@module/data/index.ts"
+import { gid } from "@module/data/constants.ts"
 import { AbstractAttributeDefObj, AbstractAttributeObj } from "@system/abstract-attribute/data.ts"
 import { attribute } from "@util/enum/attribute.ts"
 

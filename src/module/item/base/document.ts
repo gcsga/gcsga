@@ -5,6 +5,7 @@ import { CONTAINER_TYPES, ItemFlags, ItemType, SYSTEM_NAME } from "@module/data/
 import { MigrationList, MigrationRunner } from "@module/migration/index.ts"
 import {
 	EvalEmbeddedRegex,
+	LocalizeGURPS,
 	SkillDefaultResolver,
 	display,
 	replaceAllStringFunc,
@@ -16,7 +17,7 @@ import type { ItemFlagsGURPS, ItemSystemData } from "./data.ts"
 import type { ItemSheetGURPS } from "./sheet.ts"
 import { ItemInstances } from "@item/types.ts"
 import { ContainedWeightReduction, ContainedWeightReductionObj, Feature, PrereqList } from "@system"
-import { itemIsOfType } from "@item/helpers.ts"
+import { getItemArtworkName, itemIsOfType } from "@item/helpers.ts"
 
 /** The basic `Item` subclass for the system */
 class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends Item<TParent> {
@@ -112,6 +113,24 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 			return PrereqList.fromObject(this.system.prereqs, this.actor)
 		}
 		return new PrereqList()
+	}
+
+	protected override async _preCreate(
+		data: this["_source"],
+		options: DocumentModificationContext<TParent>,
+		user: User<Actor<null>>,
+	): Promise<boolean | void> {
+		super._preCreate(data, options, user)
+		this.updateSource({ name: LocalizeGURPS.translations.TYPES.Item[data.type] })
+	}
+
+	static override getDefaultArtwork(itemData: foundry.documents.ItemSource): {
+		img: ImageFilePath
+		texture: { src: ImageFilePath | VideoFilePath }
+	} {
+		const type = getItemArtworkName(itemData.type)
+		const img: ImageFilePath = `systems/${SYSTEM_NAME}/icons/default-icons/${type}.svg`
+		return { img, texture: { src: img } }
 	}
 
 	/** Don't allow the user to create a condition or spellcasting entry from the sidebar. */
@@ -225,6 +244,14 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 		if (this.container) parents.push(this.container, ...this.container.parents)
 		if (this.actor || this.compendium) parents.push((this.actor || this.compendium)!)
 		return parents
+	}
+
+	get parentIds(): string[] {
+		const parents = this.parents.filter(parent => !(parent instanceof CompendiumCollection)) as (
+			| AbstractContainerGURPS
+			| ActorGURPS
+		)[]
+		return parents.map(e => e.id)
 	}
 
 	/** Check this item's type (or whether it's one among multiple types) without a call to `instanceof` */

@@ -1,8 +1,8 @@
 import { ActorGURPS } from "@actor"
-import { ItemCollectionMap } from "@actor/base/item-collection-map.ts"
 import { LocalizeGURPS, StringBuilder, feature, selfctrl } from "@util"
 import { ConditionalModifierBonus, Feature, ReactionBonus } from "./feature/index.ts"
 import { ItemType } from "@module/data/constants.ts"
+import { ActorItemCollectionMap } from "@actor/base/item-collection-map.ts"
 
 export class ConditionalModifier {
 	from: string
@@ -37,7 +37,7 @@ export class ConditionalModifier {
 
 	static modifiersFromItems(
 		type: feature.Type.ReactionBonus | feature.Type.ConditionalModifierBonus,
-		collections: ItemCollectionMap<ActorGURPS>,
+		collections: ActorItemCollectionMap<ActorGURPS>,
 	): ConditionalModifier[] {
 		const reactionMap: Map<string, ConditionalModifier> = new Map()
 		for (const t of collections.traits) {

@@ -14,12 +14,12 @@
 	{{#if actor}}
 	<div>
 		{{#if (ne system.import.name "")}}
-		<button class="quick-import">
+		<button data-action="reimport">
 			<i class="fas fa-arrows-rotate"></i>
 			{{localize "gurps.character.settings.import.reimport" file=system.import.name}}
 		</button>
 		{{else}}
-		<button class="quick-import" disabled>
+		<button disabled>
 			<i class="fas fa-arrows-rotate"></i>
 			{{localize "gurps.character.settings.import.reimport" file=(localize "gurps.character.settings.import.none")
 			}}
@@ -195,9 +195,4 @@
 		</select>
 	</div>
 	<div class="title">{{localize "gurps.character.settings.block_layout.title"}}</div>
-	<textarea name="system.settings.block_layout" type="text" data-dtype="String">
-{{{textareaFormat
-			system.settings.block_layout
-		}}}</textarea
-	>
 </div>

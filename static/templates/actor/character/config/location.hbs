@@ -1,13 +1,13 @@
-<div class="item"data-path="{{path}}" data-index="{{@index}}" data-type="locations">
+<div class="item"data-path="{{path}}" data-index="{{@index}}" data-type="hitLocation">
 	<div class="controls">
-		<a class="gcs-grip drag" data-path="{{path}}" data-index="{{@index}}" data-type="locations"></a>
+		<a class="gcs-grip drag" data-path="{{path}}" data-index="{{@index}}" data-type="hitLocation"></a>
 		{{#if (eq l 1)}}
 		<a class="gcs-trash disabled"></a>
 		{{else}}
-		<a class="gcs-trash delete" data-path="{{path}}" data-index="{{@index}}" data-type="locations"></a>
+		<a class="gcs-trash delete" data-path="{{path}}" data-index="{{@index}}" data-type="hitLocation"></a>
 		{{/if}}
 		{{#unless this.sub_table}}
-			<a class="gcs-circled-add add" data-path="{{path}}" data-index="{{@index}}" data-type="sub_table"></a>
+			<a class="gcs-circled-add add" data-path="{{path}}" data-index="{{@index}}" data-type="subTable"></a>
 		{{/unless}}
 	</div>
 	<div class="fieldblock">
@@ -79,8 +79,8 @@
 			></input>
 		</div>
 			<div class="sub-table-controls">
-				<a class="gcs-trash delete" data-path="{{path}}" data-index="{{@index}}" data-type="sub_table"></a>
-				<a class="gcs-circled-add add" data-path="{{path}}.{{@index}}.sub_table" data-index="{{@index}}" data-type="locations"></a>
+				<a class="gcs-trash delete" data-path="{{path}}" data-index="{{@index}}" data-type="subTable"></a>
+				<a class="gcs-circled-add add" data-path="{{path}}.{{@index}}.sub_table" data-index="{{@index}}" data-type="hitLocation"></a>
 			</div>
 			{{#with this.sub_table}}
 			<div class="item-list">

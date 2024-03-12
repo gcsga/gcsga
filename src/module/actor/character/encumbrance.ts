@@ -1,6 +1,6 @@
 import type { CharacterGURPS } from "@actor"
 import { Encumbrance } from "./data.ts"
-import { ErrorGURPS, Int, LocalizeGURPS, stlimit } from "@util"
+import { Int, LocalizeGURPS, stlimit } from "@util"
 import { ActorFlags, SYSTEM_NAME, gid } from "@module/data/constants.ts"
 import { AttributeGURPS, AttributeDef, ThresholdOp } from "@system"
 
@@ -117,7 +117,7 @@ class CharacterEncumbrance<TOwner extends CharacterGURPS = CharacterGURPS> {
 	}
 
 	private _getCurrentLevel(weightCarried: number): Encumbrance {
-		const autoEncumbrance = this.owner.flags[SYSTEM_NAME][ActorFlags.AutoEncumbrance]
+		const autoEncumbrance = this.owner.flags[SYSTEM_NAME]?.[ActorFlags.AutoEncumbrance] ?? { active: true }
 		if (!autoEncumbrance.active) return this.levels[autoEncumbrance.manual || 0]
 		for (const level of this.levels) {
 			if (weightCarried <= level.maximumCarry) return level
@@ -132,14 +132,14 @@ class CharacterEncumbrance<TOwner extends CharacterGURPS = CharacterGURPS> {
 
 	public getBaseMove(type: string): number {
 		const move = this.owner.moveTypes.get(type)
-		if (!move) {
-			throw ErrorGURPS(`Cannot resolve move type $${type}`)
-		}
+		if (!move) return 0
 		return move.base
 	}
 
 	public getDodge(penalty: number, divisor = 1): number {
-		const basicSpeed = Math.max(this.owner.resolveAttributeCurrent(gid.BasicSpeed), 0)
+		const basicSpeed = this.owner.attributes.has(gid.BasicSpeed)
+			? Math.max(this.owner.resolveAttributeCurrent(gid.BasicSpeed), 0)
+			: 0
 		const baseDodge = Math.ceil(
 			(basicSpeed + 3 + this.owner.attributeBonusFor(gid.Dodge, stlimit.Option.None)) / divisor,
 		)
@@ -147,7 +147,7 @@ class CharacterEncumbrance<TOwner extends CharacterGURPS = CharacterGURPS> {
 	}
 
 	public getMove(penalty: number, divisor = 1): number {
-		const moveType = this.owner.flags[SYSTEM_NAME][ActorFlags.MoveType]
+		const moveType = this.owner.flags[SYSTEM_NAME]?.[ActorFlags.MoveType] ?? gid.Ground
 		const baseMove =
 			(this.getBaseMove(moveType) + this.owner.attributeBonusFor(gid.BasicMove, stlimit.Option.None)) / divisor
 		const finalMove = Math.trunc((baseMove * (10 + 2 * penalty)) / 10)

@@ -1,7 +1,7 @@
 import { SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
 import { PartialSettingsData, SettingsMenuGURPS } from "./menu.ts"
 import { RollModifier } from "@module/data/types.ts"
-import { LocalizeGURPS, prepareFormData } from "@util"
+import { DnD, LocalizeGURPS, prepareFormData } from "@util"
 
 type ConfigGURPSListName = (typeof RollModifierSettings.SETTINGS)[number]
 
@@ -42,7 +42,6 @@ export class RollModifierSettings extends SettingsMenuGURPS {
 
 	override activateListeners(html: JQuery<HTMLElement>): void {
 		super.activateListeners(html)
-		html.find(".item").on("dragover", event => this._onDragItem(event))
 		html.find(".add").on("click", event => this._onAddItem(event))
 		html.find(".delete").on("click", event => this._onDeleteItem(event))
 	}
@@ -83,24 +82,11 @@ export class RollModifierSettings extends SettingsMenuGURPS {
 		const item = $(event.currentTarget!)
 		const index = Number(item.data("index"))
 		event.dataTransfer?.setData(
-			"text/plain",
+			DnD.TEXT_PLAIN,
 			JSON.stringify({
 				index: index,
 			}),
 		)
-	}
-
-	protected _onDragItem(event: JQuery.DragOverEvent): void {
-		const element = $(event.currentTarget!)
-		const heightAcross = (event.pageY! - element.offset()!.top) / element.height()!
-		element.siblings(".item").removeClass("border-top").removeClass("border-bottom")
-		if (heightAcross > 0.5) {
-			element.removeClass("border-top")
-			element.addClass("border-bottom")
-		} else {
-			element.removeClass("border-bottom")
-			element.addClass("border-top")
-		}
 	}
 
 	protected override async _onDrop(event: DragEvent): Promise<unknown> {

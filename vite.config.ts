@@ -165,7 +165,7 @@ const config = Vite.defineConfig(({ command, mode }): Vite.UserConfig => {
 			open: "/game",
 			proxy: {
 				"^(?!/systems/gcsga/)": "http://localhost:30000/",
-				"/socket.io": {
+				"/socketmio": {
 					target: "ws://localhost:30000",
 					ws: true,
 				},

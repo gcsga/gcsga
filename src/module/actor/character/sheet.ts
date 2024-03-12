@@ -41,8 +41,8 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS
 		return {
 			...sheetData,
 			actor,
-			system: this.actor.system,
-			settings: this.actor.flags[SYSTEM_NAME],
+			system: actor.system,
+			settings: actor.flags[SYSTEM_NAME],
 			attributes: {
 				primaryAttributes,
 				secondaryAttributes,
