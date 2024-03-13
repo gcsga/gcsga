@@ -1,7 +1,16 @@
 import { ActorGURPS } from "@actor"
-import { AbstractContainerGURPS } from "@item"
+import {
+	AbstractContainerGURPS,
+	EquipmentContainerGURPS,
+	EquipmentModifierContainerGURPS,
+	NoteContainerGURPS,
+	SkillContainerGURPS,
+	SpellContainerGURPS,
+	TraitContainerGURPS,
+	TraitModifierContainerGURPS,
+} from "@item"
 import type { ItemSourceGURPS } from "@item/data/index.ts"
-import { CONTAINER_TYPES, ItemFlags, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
+import { ABSTRACT_CONTAINER_TYPES, CONTAINER_TYPES, ItemFlags, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { MigrationList, MigrationRunner } from "@module/migration/index.ts"
 import {
 	EvalEmbeddedRegex,
@@ -219,7 +228,9 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 			const items = ids.flatMap(id => actor.items.get(id) ?? [])
 
 			// If a container is being deleted, its contents are also deleted
-			const containers = items.filter((i): i is AbstractContainerGURPS<ActorGURPS> => i.isOfType("container"))
+			const containers = items.filter((i): i is AbstractContainerGURPS<ActorGURPS> =>
+				i.isOfType("abstract-container"),
+			)
 			for (const container of containers) {
 				items.push(...container.deepContents)
 			}
@@ -256,16 +267,41 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 
 	/** Check this item's type (or whether it's one among multiple types) without a call to `instanceof` */
 	isOfType<T extends ItemType>(...types: T[]): this is ItemInstances<TParent>[T]
-	isOfType(type: "container"): this is AbstractContainerGURPS<TParent>
-	isOfType<T extends "container" | ItemType>(
+	isOfType(type: "abstract-container"): this is AbstractContainerGURPS<TParent>
+	isOfType(
+		type: "container",
+	): this is
+		| TraitContainerGURPS<TParent>
+		| TraitModifierContainerGURPS<TParent>
+		| SkillContainerGURPS<TParent>
+		| SpellContainerGURPS<TParent>
+		| EquipmentContainerGURPS<TParent>
+		| EquipmentModifierContainerGURPS<TParent>
+		| NoteContainerGURPS<TParent>
+	isOfType<T extends "abstract-container" | "container" | ItemType>(
 		...types: T[]
-	): this is T extends "container"
+	): this is T extends "abstract-container"
 		? AbstractContainerGURPS<TParent>
-		: T extends ItemType
-			? ItemInstances<TParent>[T]
-			: never
+		: T extends "container"
+			?
+					| TraitContainerGURPS<TParent>
+					| TraitModifierContainerGURPS<TParent>
+					| SkillContainerGURPS<TParent>
+					| SpellContainerGURPS<TParent>
+					| EquipmentContainerGURPS<TParent>
+					| EquipmentModifierContainerGURPS<TParent>
+					| NoteContainerGURPS<TParent>
+			: T extends ItemType
+				? ItemInstances<TParent>[T]
+				: never
 	isOfType(...types: string[]): boolean {
-		return types.some(t => (t === "container" ? setHasElement(CONTAINER_TYPES, this.type) : this.type === t))
+		return types.some(t =>
+			t === "abstract-container"
+				? setHasElement(ABSTRACT_CONTAINER_TYPES, this.type)
+				: t === "container"
+					? setHasElement(CONTAINER_TYPES, this.type)
+					: this.type === t,
+		)
 	}
 
 	// The name of the item displayed on the character sheet
@@ -273,7 +309,7 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 		return this.name ?? ""
 	}
 
-	resolvedNotes(): string {
+	get resolvedNotes(): string {
 		return sheetDisplayNotes(this.secondaryText(display.Option.isInline), { unsatisfied: this.unsatisfiedReason })
 	}
 

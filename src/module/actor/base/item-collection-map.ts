@@ -5,7 +5,8 @@ import EmbeddedCollection from "types/foundry/common/abstract/embedded-collectio
 import type { ActorGURPS } from "./document.ts"
 import { ItemSourceGURPS } from "@item/data/index.ts"
 
-type ItemSections = "traits" | "skills" | "spells" | "carriedEquipment" | "otherEquipment" | "notes" | "effects" | null
+const itemSections = ["traits", "skills", "spells", "carriedEquipment", "otherEquipment", "notes", "effects"] as const
+type ItemSections = (typeof itemSections)[number]
 
 class ActorItemCollectionMap<TActor extends ActorGURPS> {
 	traits: Collection<ItemInstance.TraitGURPS<TActor> | ItemInstance.TraitContainerGURPS<TActor>>
@@ -137,7 +138,7 @@ class ActorItemCollectionMap<TActor extends ActorGURPS> {
 		}
 	}
 
-	public getSectionName(data: ItemSourceGURPS): ItemSections {
+	public getSectionName(data: ItemSourceGURPS): ItemSections | null {
 		switch (data.type) {
 			case ItemType.Trait:
 			case ItemType.TraitContainer:
@@ -165,7 +166,26 @@ class ActorItemCollectionMap<TActor extends ActorGURPS> {
 				return null
 		}
 	}
+
+	public findStackableItem(
+		item: ItemInstance.EquipmentGURPS | ItemSourceGURPS,
+	): ItemInstance.EquipmentGURPS<TActor> | ItemInstance.EquipmentContainerGURPS<TActor> | null {
+		// Prevent upstream from mutating property descriptors
+		const testItem =
+			item instanceof ItemInstance.ItemGURPS ? item.clone() : new ItemInstance.ItemProxyGURPS(fu.deepClone(item))
+		if (!testItem.isOfType(ItemType.Equipment)) return null
+
+		const stackCandidates = this.equipment.filter(i => i.isStackableWith(testItem))
+		if (stackCandidates.length === 0) return null
+		else if (stackCandidates.length > 1) {
+			// Prefer stacking with unequipped items
+			const notEquipped = stackCandidates.filter(item => !item.equipped)
+			return notEquipped.length > 0 ? notEquipped[0] : stackCandidates[0]
+		} else {
+			return stackCandidates[0]
+		}
+	}
 }
 
-export { ActorItemCollectionMap }
+export { ActorItemCollectionMap, itemSections }
 export type { ItemSections }

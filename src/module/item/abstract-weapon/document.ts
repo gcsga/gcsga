@@ -31,7 +31,7 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 		return this.system.usage
 	}
 
-	override resolvedNotes(): string {
+	override get resolvedNotes(): string {
 		return sheetDisplayNotes(this.secondaryText(display.Option.isInline), { unready: this.unready })
 	}
 

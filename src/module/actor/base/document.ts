@@ -1,10 +1,10 @@
 import { TokenDocumentGURPS } from "@scene/token-document/document.ts"
 import { ActorFlagsGURPS, ActorSystemData, PrototypeTokenGURPS } from "./data.ts"
-import { ItemGURPS } from "@item"
+import { AbstractContainerGURPS, EquipmentContainerGURPS, EquipmentGURPS, ItemGURPS } from "@item"
 import type { ActorSheetGURPS } from "./sheet.ts"
 import type { ActorSourceGURPS } from "@actor/data.ts"
 import type { ActiveEffectGURPS } from "@module/active-effect/index.ts"
-import { ItemSourceGURPS } from "@item/data/index.ts"
+import { EquipmentContainerSource, EquipmentSource, ItemSourceGURPS } from "@item/data/index.ts"
 import { itemIsOfType } from "@item/helpers.ts"
 import { ErrorGURPS, Evaluator, LastActor, LocalizeGURPS, TooltipGURPS, attribute, objectHasKey, stlimit } from "@util"
 import { ActorFlags, ActorType, ItemType, SYSTEM_NAME, gid } from "@module/data/constants.ts"
@@ -483,6 +483,100 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 		_drMap: Map<string, number> = new Map(),
 	): Map<string, number> {
 		throw ErrorGURPS("The base ActorGURPS class cannot add DR bonuses")
+	}
+
+	/**
+	 * Moves an item to another actor's inventory.
+	 * @param targetActor Instance of actor to be receiving the item.
+	 * @param item        Instance of the item being transferred.
+	 * @param quantity    Number of items to move.
+	 * @param containerId Id of the container that will contain the item.
+	 * @return The target item, if the transfer is successful, or otherwise `null`.
+	 */
+	async transferEquipmentToActor(
+		targetActor: ActorGURPS,
+		item: EquipmentGURPS<ActorGURPS> | EquipmentContainerGURPS<ActorGURPS>,
+		quantity: number,
+		containerId?: string,
+		newStack = false,
+	): Promise<ItemGURPS<ActorGURPS> | null> {
+		if (!item.isOfType(ItemType.Equipment, ItemType.EquipmentContainer)) {
+			throw ErrorGURPS("Only equipment can be transfered between actors")
+		}
+		const container = targetActor.items.get(containerId ?? "")
+		if (container && !container?.isOfType(ItemType.EquipmentContainer)) {
+			throw ErrorGURPS("containerId refers to a non-container")
+		}
+
+		// Loot transfers can be performed by non-owners when a GM is online */
+		// const gmMustTransfer = (source: ActorGURPS, target: ActorGURPS): boolean => {
+		// 	const bothAreOwned = source.isOwner && target.isOwner
+		// 	const sourceIsOwnedOrLoot = source.isLootableBy(game.user)
+		// 	const targetIsOwnedOrLoot = target.isLootableBy(game.user)
+		// 	return !bothAreOwned && sourceIsOwnedOrLoot && targetIsOwnedOrLoot
+		// }
+		// if (gmMustTransfer(this, targetActor)) {
+		// 	const source = { tokenId: this.token?.id, actorId: this.id, itemId: item.id }
+		// 	const target = { tokenId: targetActor.token?.id, actorId: targetActor.id }
+		// 	await new ItemTransfer(source, target, quantity, container?.id).request()
+		// 	return null
+		// }
+
+		if (!this.canUserModify(game.user, "update")) {
+			ui.notifications.error(LocalizeGURPS.translations.gurps.error.cannot_move_item_source)
+			return null
+		}
+		if (!targetActor.canUserModify(game.user, "update")) {
+			ui.notifications.error(LocalizeGURPS.translations.gurps.error.cannot_move_item_destination)
+			return null
+		}
+
+		// Limit the amount of items transfered to how many are actually available.
+		quantity = Math.min(quantity, item.system.quantity)
+
+		// Remove the item from the source if we are transferring all of it; otherwise, subtract the appropriate number.
+		const newQuantity = item.system.quantity - quantity
+		const removeFromSource = newQuantity < 1
+
+		if (removeFromSource) {
+			await item.delete()
+		} else {
+			await item.update({ "system.quantity": newQuantity })
+		}
+
+		const newItemData = item.toObject()
+		// newItemData.system.quantity = quantity
+		// newItemData.system.equipped.carryType = "worn"
+		// if ("invested" in newItemData.system.equipped) {
+		// 	newItemData.system.equipped.invested = item.traits.has("invested") ? false : null
+		// }
+
+		return targetActor.addToInventory(newItemData, container, newStack)
+	}
+
+	async addToInventory(
+		itemSource: EquipmentSource | EquipmentContainerSource,
+		_container?: AbstractContainerGURPS<this>,
+		newStack?: boolean,
+	): Promise<ItemGURPS<this> | null> {
+		// Stack with an existing item if possible
+		const stackItem = this.itemCollections.findStackableItem(itemSource)
+		if (!newStack && stackItem && stackItem.type !== ItemType.EquipmentContainer) {
+			const stackQuantity = stackItem.system.quantity + itemSource.system.quantity
+			await stackItem.update({ "system.quantity": stackQuantity })
+			return stackItem
+		}
+
+		// Otherwise create a new item
+		const result = await ItemGURPS.create(itemSource, { parent: this })
+		if (!result) {
+			return null
+		}
+		const movedItem = this.items.get(result.id)
+		if (!movedItem) return null
+		// await this.stowOrUnstow(movedItem, container)
+
+		return movedItem
 	}
 }
 

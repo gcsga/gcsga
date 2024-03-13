@@ -1344,6 +1344,8 @@
 			"no_last_actor": "No actor selected!",
 			"no_token_selected": "No token selected!",
 			"cannot_add_type": "{type} items cannot be added to this actor.",
+			"cannot_move_item_source": "You are not allowed to move items from this actor.",
+			"cannot_move_item_destination": "You are not allowed to move items to this actor.",
 			"mook": {
 				"name": "Name cannot be blank."
 			},

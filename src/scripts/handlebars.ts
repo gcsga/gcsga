@@ -59,7 +59,7 @@ class HandlebarsHelpersGURPS {
 		return a ? Object.values(a).length > 0 : false
 	}
 
-	static blockLayout(blocks: string[], items: Record<string, unknown[]>): string {
+	static blockLayout(blocks: string[], items: Record<string, { items: unknown[] }>): string {
 		if (!blocks) return ""
 
 		let outString = ""
@@ -72,7 +72,7 @@ class HandlebarsHelpersGURPS {
 				.filter(s => {
 					if (objectHasKey(items, s)) {
 						return (
-							items[s].length > 0 ||
+							items[s].items.length > 0 ||
 							!["reactions", "conditional_modifiers", "melee", "ranged"].includes(s)
 						)
 					}

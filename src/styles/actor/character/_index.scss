@@ -11,9 +11,9 @@ form {
 
 	@import "personal", "stats", "embeds";
 
-	div {
-		background-color: rgba(var(--color-content), 1);
-	}
+	// div {
+	// 	background-color: rgba(var(--color-content), 1);
+	// }
 
 	> div {
 		background-color: rgb(var(--color-page));

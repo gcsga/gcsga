@@ -1,5 +1,5 @@
 import { ActorGURPS } from "@actor"
-import { AbstractContainerGURPS } from "@item"
+import { AbstractContainerGURPS, EquipmentGURPS } from "@item"
 import { EquipmentContainerSource, EquipmentContainerSystemData } from "./data.ts"
 import { EquipmentFlags } from "@item/equipment/data.ts"
 import { ItemFlags, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
@@ -108,6 +108,11 @@ class EquipmentContainerGURPS<
 			forSkills,
 			this.system.ignore_weight_for_skills && this.equipped,
 		)
+	}
+
+	/** Can the provided item stack with this item? */
+	isStackableWith(_item: EquipmentGURPS): false {
+		return false
 	}
 }
 

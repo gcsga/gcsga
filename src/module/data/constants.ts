@@ -1,3 +1,5 @@
+import Sortable from "sortablejs"
+
 const SYSTEM_NAME = "gcsga"
 
 // Settings
@@ -107,7 +109,7 @@ type WeaponType = ItemType.MeleeWeapon | ItemType.RangedWeapon
 
 const DefaultHaver = [ItemType.Skill, ItemType.Technique, ItemType.MeleeWeapon, ItemType.RangedWeapon]
 
-const CONTAINER_TYPES = new Set([
+const ABSTRACT_CONTAINER_TYPES = new Set([
 	ItemType.Trait,
 	ItemType.TraitContainer,
 	ItemType.TraitModifierContainer,
@@ -118,6 +120,16 @@ const CONTAINER_TYPES = new Set([
 	ItemType.RitualMagicSpell,
 	ItemType.SpellContainer,
 	ItemType.Equipment,
+	ItemType.EquipmentContainer,
+	ItemType.EquipmentModifierContainer,
+	ItemType.NoteContainer,
+] as const)
+
+const CONTAINER_TYPES = new Set([
+	ItemType.TraitContainer,
+	ItemType.TraitModifierContainer,
+	ItemType.SkillContainer,
+	ItemType.SpellContainer,
 	ItemType.EquipmentContainer,
 	ItemType.EquipmentModifierContainer,
 	ItemType.NoteContainer,
@@ -340,6 +352,7 @@ enum HOOKS {
 
 export {
 	ActorFlags,
+	ABSTRACT_CONTAINER_TYPES,
 	ActorType,
 	CONTAINER_TYPES,
 	ConditionID,
@@ -358,6 +371,30 @@ export {
 	SSRT_SETTING,
 	SYSTEM_NAME,
 	gid,
+}
+
+export const SORTABLE_BASE_OPTIONS: Sortable.Options = {
+	animation: 200,
+	direction: "vertical",
+	dragClass: "drag-preview",
+	dragoverBubble: true,
+	easing: "cubic-bezier(1, 0, 0, 1)",
+	fallbackOnBody: true,
+	// filter: "div.item-summary",
+	filter: "div.item-summary",
+	ghostClass: "drag-gap",
+	group: "inventory",
+	preventOnFilter: false,
+	swapThreshold: 0.25,
+
+	// These options are from the Autoscroll plugin and serve as a fallback on mobile/safari/ie/edge
+	// Other browsers use the native implementation
+	scroll: true,
+	scrollSensitivity: 30,
+	scrollSpeed: 15,
+
+	delay: 500,
+	delayOnTouchOnly: true,
 }
 
 export type { ContainerType, EffectType, ItemTypes, WeaponType }

@@ -9,6 +9,7 @@ export function registerTemplates(): void {
 		"actor/character/sections/dropdown-closed",
 		"actor/character/sections/dropdown-open",
 		"actor/character/sections/effect",
+		"actor/character/sections/embeds",
 		"actor/character/sections/encumbrance",
 		"actor/character/sections/equipment",
 		"actor/character/sections/hit-location",

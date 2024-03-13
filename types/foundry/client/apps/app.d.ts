@@ -313,6 +313,11 @@ declare global {
 		/** Track Tab navigation handlers which are active for this Application */
 		tabs: TabsOptions[]
 		dragDrop: {
+			permissions?: {
+				dragover?: Function
+				dragstart?: Function
+				drop?: Function
+			}
 			callbacks?: {
 				dragover?: Function
 				dragstart?: Function

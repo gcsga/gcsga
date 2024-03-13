@@ -50,24 +50,68 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS
 				resourceTrackers,
 				moveTypes,
 			},
-			itemCollections: {
-				traits: actor.itemCollections.traits,
-				skills: actor.itemCollections.skills,
-				spells: actor.itemCollections.spells,
-				equipment: actor.itemCollections.carriedEquipment,
-				other_equipment: actor.itemCollections.otherEquipment,
-				notes: actor.itemCollections.notes,
-				reactions: actor.reactions,
-				conditional_modifiers: actor.conditionalModifiers,
-				melee_weapons: actor.itemCollections.equippedWeapons(ItemType.MeleeWeapon),
-				ranged_weapons: actor.itemCollections.equippedWeapons(ItemType.RangedWeapon),
-				effects: actor.itemCollections.effects,
-			},
+			itemCollections: this._prepareItemCollections(),
 			config: CONFIG.GURPS,
 			carriedValue: actor.wealthCarried(),
 			carriedWeight: Weight.format(actor.weightCarried(false), sheetSettingsFor(actor).default_weight_units),
 			uncarriedValue: actor.wealthNotCarried(),
 			encumbrance: actor.encumbrance,
+		}
+	}
+
+	protected _prepareItemCollections(): Record<string, SheetItemCollection> {
+		const collections = {
+			traits: {
+				items: this._prepareItemCollection(this.actor.itemCollections.traits),
+				types: [ItemType.Trait, ItemType.TraitContainer],
+			},
+			skills: {
+				items: this._prepareItemCollection(this.actor.itemCollections.skills),
+				types: [ItemType.Skill, ItemType.Technique, ItemType.SkillContainer],
+			},
+			spells: {
+				items: this._prepareItemCollection(this.actor.itemCollections.spells),
+				types: [ItemType.Spell, ItemType.RitualMagicSpell, ItemType.SpellContainer],
+			},
+			equipment: {
+				items: this._prepareItemCollection(this.actor.itemCollections.carriedEquipment),
+				types: [ItemType.Equipment, ItemType.EquipmentContainer],
+			},
+			other_equipment: {
+				items: this._prepareItemCollection(this.actor.itemCollections.otherEquipment),
+				types: [ItemType.Equipment, ItemType.EquipmentContainer],
+			},
+			notes: {
+				items: this._prepareItemCollection(this.actor.itemCollections.notes),
+				types: [ItemType.Note, ItemType.NoteContainer],
+			},
+			reactions: { items: this.actor.reactions, types: [] },
+			conditional_modifiers: { items: this.actor.conditionalModifiers, types: [] },
+			melee_weapons: {
+				items: this._prepareItemCollection(this.actor.itemCollections.equippedWeapons(ItemType.MeleeWeapon)),
+				types: [],
+			},
+			ranged_weapons: {
+				items: this._prepareItemCollection(this.actor.itemCollections.equippedWeapons(ItemType.RangedWeapon)),
+				types: [],
+			},
+			effects: {
+				items: this._prepareItemCollection(this.actor.itemCollections.effects),
+				types: [ItemType.Effect, ItemType.Condition],
+			},
+		}
+		return collections
+	}
+
+	protected _prepareItemCollection(collection: Collection<ItemGURPS>): SheetItem<ItemGURPS>[] {
+		return collection.contents.sort((a, b) => (a.sort || 0) - (b.sort || 0)).map(e => this._prepareSheetItem(e))
+	}
+
+	protected _prepareSheetItem<TItem extends ItemGURPS = ItemGURPS>(item: TItem): SheetItem<TItem> {
+		return {
+			item,
+			isContainer: item.isOfType("container"),
+			children: item.isOfType("container") ? this._prepareItemCollection(item.children) : [],
 		}
 	}
 
@@ -98,12 +142,23 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS
 	}
 }
 
+interface SheetItem<TItem extends ItemGURPS = ItemGURPS> {
+	item: TItem
+	isContainer: boolean
+	children: SheetItem[]
+}
+
+interface SheetItemCollection {
+	items: (SheetItem | ConditionalModifier)[]
+	types: ItemType[]
+}
+
 interface CharacterSheetData<TActor extends CharacterGURPS = CharacterGURPS> extends ActorSheetDataGURPS<TActor> {
 	actor: TActor
 	system: TActor["system"]
 	settings: Record<string, unknown>
 	attributes: Record<string, AbstractAttribute[]>
-	itemCollections: Record<string, Collection<ItemGURPS<TActor>> | ConditionalModifier[]>
+	itemCollections: Record<string, SheetItemCollection>
 	config: ConfigGURPS["GURPS"]
 	carriedValue: number
 	carriedWeight: string

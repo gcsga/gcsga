@@ -1,4 +1,5 @@
 import { ActorGURPS } from "@actor"
+import * as R from "remeda"
 import { AbstractContainerGURPS } from "@item"
 import { EquipmentFlags, EquipmentSource, EquipmentSystemData } from "./data.ts"
 import { ItemFlags, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
@@ -86,6 +87,31 @@ class EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> exte
 			forSkills,
 			this.system.ignore_weight_for_skills && this.equipped,
 		)
+	}
+
+	/** Can the provided item stack with this item? */
+	isStackableWith(item: EquipmentGURPS): boolean {
+		const preCheck = this !== item && this.type === item.type && this.name === item.name
+		if (!preCheck) return false
+
+		const thisData = this.toObject()
+		const otherData = item.toObject()
+		thisData.system.quantity = otherData.system.quantity
+		thisData.system.equipped = otherData.system.equipped
+		thisData.flags[SYSTEM_NAME]![ItemFlags.Container] = otherData.flags[SYSTEM_NAME]![ItemFlags.Container]
+		thisData.system._migration = otherData.system._migration
+
+		return R.equals(thisData, otherData)
+	}
+
+	/** Combine this item with a target item if possible */
+	async stackWith(targetItem: EquipmentGURPS): Promise<void> {
+		if (this.isStackableWith(targetItem)) {
+			const stackQuantity = this.system.quantity + targetItem.system.quantity
+			if (await this.delete({ render: false })) {
+				await targetItem.update({ "system.quantity": stackQuantity })
+			}
+		}
 	}
 }
 

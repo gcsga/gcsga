@@ -19,7 +19,7 @@ abstract class AbstractContainerGURPS<
 		const items: ItemGURPS<NonNullable<TParent>>[] = []
 		for (const item of this.contents) {
 			items.push(item)
-			if (item.isOfType("container")) items.push(...item.deepContents)
+			if (item.isOfType("abstract-container")) items.push(...item.deepContents)
 		}
 		return new Collection(items.map(item => [item.id, item]))
 	}

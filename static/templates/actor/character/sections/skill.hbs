@@ -1,21 +1,21 @@
 <div
-	class="desc item{{#if (isContainer this)}} container{{/if}} other"
+	class="desc item{{#if (isContainer this)}} container{{/if}}"
 	data-item-id="{{ this._id }}"
 	data-tooltip-direction="DOWN"
 	data-tooltip="{{this.resolvedTooltip}}"
 	{{{indent
 	this.parents.length}}}
 >
-	<div class="dropdown">
+	<div class="dropdown" data-item-id="{{ this._id }}">
 		{{#if (isContainer this)}} {{#if this.system.open}} {{>actor/character/sections/dropdown-open}} {{else}}
 		{{>actor/character/sections/dropdown-closed}} {{/if}} {{/if}}
 	</div>
-	<div class="name">{{this.formattedName}}</div>
+	<div class="name" data-item-id="{{ this._id }}">{{this.formattedName}}</div>
 	{{{this.resolvedNotes}}}
 </div>
 {{#if (isContainer this)}}
-<div class="level"></div>
-<div class="rsl"></div>
+<div class="level" data-item-id="{{ this._id }}"></div>
+<div class="rsl" data-item-id="{{ this._id }}"></div>
 {{else}}
 <div
 	data-item-id="{{this._id}}"
@@ -37,6 +37,8 @@
 	{{this.relativeLevel}}
 </div>
 {{/if}}
-<div class="points" data-tooltip="{{this.pointsTooltip}}" data-tooltip-direction="DOWN">{{this.adjustedPoints}}</div>
-<div class="reference">{{{ref this.system.reference}}}</div>
+<div class="points" data-item-id="{{ this._id }}" data-tooltip="{{this.pointsTooltip}}" data-tooltip-direction="DOWN">
+	{{this.adjustedPoints}}
+</div>
+<div class="reference" data-item-id="{{ this._id }}">{{{ref this.system.reference}}}</div>
 {{#if this.system.open}} {{#each (sort this.children "sort")}} {{>actor/character/sections/skill}} {{/each}} {{/if}}
