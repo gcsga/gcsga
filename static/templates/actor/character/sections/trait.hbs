@@ -1,7 +1,7 @@
 <li {{#if isContainer}}data-is-container{{/if}} {{#if inContainer}}data-container-id="{{ item.flags.gcsga.container }}"{{/if}} data-item-id="{{ item.id }}">
     <div class="data">
         <div
-            class="desc item"
+            class="desc"
             data-disabled="{{ not item.enabled }}"
             data-tooltip-direction="DOWN"
             data-tooltip="{{ item.resolvedTooltip }}"

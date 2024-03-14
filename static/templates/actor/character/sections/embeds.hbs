@@ -22,7 +22,7 @@
 	{{/if}} {{/with}} {{#with itemCollections.melee_weapons as |section|}} {{#if section.items.length}}
 	<div id="melee">
 		<header>
-			<span class="desc">{{ localize "gurps.character.melee.desc" }}</span>
+			<span class="item-name">{{ localize "gurps.character.melee.desc" }}</span>
 			<span class="usage">{{ localize "gurps.character.melee.usage" }}</span>
 			<span class="level">{{ localize "gurps.character.melee.level" }}</span>
 			<span class="parry">{{ localize "gurps.character.melee.parry" }}</span>
@@ -38,7 +38,7 @@
 	{{/if}} {{/with}} {{#with itemCollections.ranged_weapons as |section|}} {{#if section.items.length}}
 	<div id="ranged">
 		<header>
-			<span class="desc">{{ localize "gurps.character.ranged.desc" }}</span>
+			<span class="item-name">{{ localize "gurps.character.ranged.desc" }}</span>
 			<span class="usage">{{ localize "gurps.character.ranged.usage" }}</span>
 			<span class="level">{{ localize "gurps.character.ranged.level" }}</span>
 			<span class="accuracy">{{ localize "gurps.character.ranged.accuracy" }}</span>
@@ -59,7 +59,21 @@
 		<header>
 			<span class="desc">{{ localize "gurps.character.traits.desc" }}</span>
 			<span class="points">{{ localize "gurps.character.traits.points" }}</span>
-			<div class="reference">Ref</div>
+			<span class="reference">
+				<i class="gcs-bookmark"></i>
+			</span>
+		</header>
+		<ul class="items" data-item-list data-item-types="{{ section.types }}">
+			{{#each section.items}} {{>actor/character/sections/trait}} {{/each}}
+		</ul>
+	</div>
+	<div id="traits" class="never">
+		<header>
+			<span class="desc">{{ localize "gurps.character.traits.desc" }}</span>
+			<span class="points">{{ localize "gurps.character.traits.points" }}</span>
+			<span class="reference">
+				<i class="gcs-bookmark"></i>
+			</span>
 		</header>
 		<ul class="items" data-item-list data-item-types="{{ section.types }}">
 			{{#each section.items}} {{>actor/character/sections/trait}} {{/each}}
@@ -68,7 +82,7 @@
 	{{/with}} {{#with itemCollections.skills as |section|}}
 	<div id="skills">
 		<header>
-			<span class="desc">{{ localize "gurps.character.skills.desc" }}</span>
+			<span class="item-name">{{ localize "gurps.character.skills.desc" }}</span>
 			<span class="level">{{ localize "gurps.character.skills.level" }}</span>
 			<span class="rsl">{{ localize "gurps.character.skills.rsl" }}</span>
 			<span class="points">{{ localize "gurps.character.skills.points" }}</span>
@@ -83,7 +97,7 @@
 	{{/with}} {{#with itemCollections.spells as |section|}}
 	<div id="spells">
 		<header>
-			<span class="desc">{{ localize "gurps.character.spells.desc" }}</span>
+			<span class="item-name">{{ localize "gurps.character.spells.desc" }}</span>
 			<span class="level">{{ localize "gurps.character.spells.level" }}</span>
 			<span class="rsl">{{ localize "gurps.character.spells.rsl" }}</span>
 			<span class="points">{{ localize "gurps.character.spells.points" }}</span>
