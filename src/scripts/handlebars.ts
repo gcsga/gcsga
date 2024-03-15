@@ -178,10 +178,12 @@ class HandlebarsHelpersGURPS {
 			return [e, e]
 		})
 		const buffer: string[] = []
-		references.forEach(e => {
-			buffer.push(`<div class="ref" data-pdf="${e[0]}">${e[1]}</div>`)
+		references.forEach((e, index) => {
+			buffer.push(
+				`<div class="ref" data-pdf="${e[0]}">${e[1]}${references.length > 1 && index < references.length - 1 ? "," : ""}</div>`,
+			)
 		})
-		return buffer.join(",")
+		return buffer.join("")
 	}
 
 	static adjustedStudyHours(entry: Study): number {
