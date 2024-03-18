@@ -301,7 +301,7 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 		// this.itemCollections = new ItemCollectionMap<this>(this.items)
 
 		this.prepareFeatures()
-
+		this.discardCaches()
 		this.updateSkills()
 		this.updateSpells()
 
@@ -313,6 +313,10 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 		}
 
 		this.prepareDataFromItems()
+	}
+
+	discardCaches(): void {
+		this.cachedVariables = new Map()
 	}
 
 	updateSkills(): boolean {

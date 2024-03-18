@@ -2,7 +2,7 @@ import { SOCKET } from "@data"
 import { loadModifiers } from "@module/apps/modifier-bucket/data.ts"
 import { TokenHUDGURPS } from "@module/canvas/index.ts"
 import { SetGameGURPS } from "@scripts/set-game-gurps.ts"
-import { LastActor } from "@util"
+import { LastActor, evaluateToNumber } from "@util"
 import { createDragImage } from "@util/drag-image.ts"
 // import { ColorSettings } from "@module/settings/colors.ts"
 // import { SetGameGURPS } from "@scripts/set-game-gurps.ts"
@@ -23,6 +23,7 @@ export const Ready = {
 			globalThis.GURPS = {
 				LastActor: await LastActor.get(),
 				LastToken: await LastActor.getToken(),
+				eval: evaluateToNumber,
 			}
 
 			// ApplyDiceCSS()

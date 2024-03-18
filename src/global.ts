@@ -94,6 +94,7 @@ declare global {
 		var GURPS: {
 			LastActor: ActorGURPS | null
 			LastToken: TokenDocumentGURPS | null
+			[key: string]: unknown
 		}
 		// eslint-disable-next-line no-var
 		var game: GameGURPS
