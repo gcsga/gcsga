@@ -49,8 +49,9 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 				...SORTABLE_BASE_OPTIONS,
 				scroll: list,
 				setData: (dataTransfer, dragEl) => {
+					console.log(dragEl.dataset.itemId)
 					const item = this.actor.items.get(dragEl.dataset.itemId, { strict: true })
-					dataTransfer.setData("text/plain", JSON.stringify(item.toDragData()))
+					dataTransfer.setData(DnD.TEXT_PLAIN, JSON.stringify(item.toDragData()))
 				},
 				onMove: event => this.#onMoveItem(event),
 				onEnd: event => this.#onDropItem(event),

@@ -1,12 +1,12 @@
 {{#unless actor}}
 <div class="fieldblock">
-	<div class="label">{{localize "gurps.settings.default_sheet_settings.initial_points"}}</div>
+	<div class="label">{{ localize "gurps.settings.default_sheet_settings.initial_points" }}</div>
 	<div class="field">
-		<input type="text" name="initial_points" value="{{initial_points}}" data-dtype="Number" />
+		<input type="text" name="initial_points" value="{{ initial_points }}" data-dtype="Number" />
 	</div>
-	<div class="label">{{localize "gurps.settings.default_sheet_settings.default_tech_level"}}</div>
+	<div class="label">{{ localize "gurps.settings.default_sheet_settings.default_tech_level" }}</div>
 	<div class="field">
-		<input type="text" name="tech_level" value="{{tech_level}}" data-dtype="Number" />
+		<input type="text" name="tech_level" value="{{ tech_level }}" data-dtype="Number" />
 	</div>
 </div>
 {{/unless}}
@@ -16,9 +16,9 @@
 		{{#if (ne system.import.name "")}}
 		<button data-action="reimport">
 			<i class="fas fa-arrows-rotate"></i>
-			{{localize "gurps.character.settings.import.reimport" file=system.import.name}}
+			{{ localize "gurps.character.settings.import.reimport" file=flags.import.name }}
 		</button>
-		{{else}}
+		{{ else }}
 		<button disabled>
 			<i class="fas fa-arrows-rotate"></i>
 			{{localize "gurps.character.settings.import.reimport" file=(localize "gurps.character.settings.import.none")
@@ -29,15 +29,15 @@
 	<div>
 		<label for="file-upload" class="button">
 			<i class="fas fa-file"></i>
-			{{localize "gurps.character.settings.import.file"}}
+			{{ localize "gurps.character.settings.import.file" }}
 			<input id="file-upload" type="file" accept=".gcs,.gca5" style="display: none" />
 		</label>
 		{{#if (ne filename "")}}
 		<button data-action="import-confirm">
 			<i class="fas fa-file-import"></i>
-			{{localize "gurps.character.settings.import.import" file=filename}}
+			{{ localize "gurps.character.settings.import.import" file=filename }}
 		</button>
-		{{else}}
+		{{ else }}
 		<button disabled>
 			<i class="fas fa-file-import"></i>
 			{{localize "gurps.character.settings.import.import" file=(localize "gurps.character.settings.import.none")
@@ -48,24 +48,26 @@
 	<div>
 		<button class="export">
 			<i class="fas fa-arrows-rotate"></i>
-			{{localize "gurps.character.settings.import.export" file=(concat actor.name ".gcs")}}
+			{{ localize "gurps.character.settings.import.export" file=(concat actor.name ".gcs") }}
 		</button>
 	</div>
 	{{/if}}
 	<div class="field">
-		<div class="label">{{localize "gurps.character.settings.damage_progression"}}</div>
+		<div class="label">{{ localize "gurps.character.settings.damage_progression" }}</div>
 		<select name="system.settings.damage_progression" data-dtype="String">
 			{{#select system.settings.damage_progression}} {{#each config.select.progression as |v k|}}
-			<option value="{{k}}">{{localize v}}</option>
+			<option value="{{ k }}">{{ localize v }}</option>
 			{{/each}} {{/select}}
 		</select>
 	</div>
-	<div><i>{{{localize (concat "gurps.enum.progression.alt_string." system.settings.damage_progression)}}}</i></div>
+	<div>
+		<i>{{{ localize (concat "gurps.enum.progression.alt_string." system.settings.damage_progression) }}}</i>
+	</div>
 	<hr />
 	{{#unless actor}}
 	<label class="label checkbox-label">
-		<input type="checkbox" name="populate_description" data-dtype="Boolean" {{checked populate_description}} />
-		{{localize "gurps.settings.default_sheet_settings.populate_description"}}
+		<input type="checkbox" name="populate_description" data-dtype="Boolean" {{ checked populate_description }} />
+		{{ localize "gurps.settings.default_sheet_settings.populate_description" }}
 	</label>
 	{{/unless}}
 	<div class="field">
@@ -77,7 +79,7 @@
 				{{checked
 				system.settings.show_trait_modifier_adj}}
 			/>
-			{{localize "gurps.character.settings.show_trait_modifier_adj"}}
+			{{ localize "gurps.character.settings.show_trait_modifier_adj" }}
 		</label>
 	</div>
 	<div class="field">
@@ -89,7 +91,7 @@
 				{{checked
 				system.settings.show_equipment_modifier_adj}}
 			/>
-			{{localize "gurps.character.settings.show_equipment_modifier_adj"}}
+			{{ localize "gurps.character.settings.show_equipment_modifier_adj" }}
 		</label>
 	</div>
 	<div class="field">
@@ -101,7 +103,7 @@
 				{{checked
 				system.settings.show_spell_adj}}
 			/>
-			{{localize "gurps.character.settings.show_spell_adj"}}
+			{{ localize "gurps.character.settings.show_spell_adj" }}
 		</label>
 	</div>
 	<div class="field">
@@ -113,7 +115,7 @@
 				{{checked
 				system.settings.use_multiplicative_modifiers}}
 			/>
-			{{localize "gurps.character.settings.use_multiplicative_modifiers"}}
+			{{ localize "gurps.character.settings.use_multiplicative_modifiers" }}
 		</label>
 	</div>
 	<div class="field">
@@ -125,7 +127,7 @@
 				{{checked
 				system.settings.use_modifying_dice_plus_adds}}
 			/>
-			{{localize "gurps.character.settings.use_modifying_dice_plus_adds"}}
+			{{ localize "gurps.character.settings.use_modifying_dice_plus_adds" }}
 		</label>
 	</div>
 	<div class="field">
@@ -137,62 +139,62 @@
 				{{checked
 				system.settings.exclude_unspent_points_from_total}}
 			/>
-			{{localize "gurps.character.settings.exclude_unspent_points_from_total"}}
+			{{ localize "gurps.character.settings.exclude_unspent_points_from_total" }}
 		</label>
 	</div>
 </div>
 <div class="fieldblock">
-	<div class="title">{{localize "gurps.character.settings.units.title"}}</div>
+	<div class="title">{{ localize "gurps.character.settings.units.title" }}</div>
 	<hr />
-	<div class="label">{{localize "gurps.character.settings.units.length"}}</div>
+	<div class="label">{{ localize "gurps.character.settings.units.length" }}</div>
 	<div class="field">
 		<select name="system.settings.default_length_units" data-dtype="String">
 			{{#select system.settings.default_length_units}} {{#each config.select.length_units as |v k|}}
-			<option value="{{k}}">{{localize v}}</option>
+			<option value="{{ k }}">{{ localize v }}</option>
 			{{/each}} {{/select}}
 		</select>
 	</div>
-	<div class="label">{{localize "gurps.character.settings.units.weight"}}</div>
+	<div class="label">{{ localize "gurps.character.settings.units.weight" }}</div>
 	<div class="field">
 		<select name="system.settings.default_weight_units" data-dtype="String">
 			{{#select system.settings.default_weight_units}} {{#each config.select.weight_units as |v k|}}
-			<option value="{{k}}">{{localize v}}</option>
+			<option value="{{ k }}">{{ localize v }}</option>
 			{{/each}} {{/select}}
 		</select>
 	</div>
-	<div class="title">{{localize "gurps.character.settings.display.title"}}</div>
+	<div class="title">{{ localize "gurps.character.settings.display.title" }}</div>
 	<hr />
-	<div class="label">{{localize "gurps.character.settings.display.userdesc"}}</div>
+	<div class="label">{{ localize "gurps.character.settings.display.userdesc" }}</div>
 	<div class="field">
 		<select name="system.settings.user_description_display" data-dtype="String">
 			{{#select system.settings.user_description_display}} {{#each config.select.display as |v k|}}
-			<option value="{{k}}">{{localize v}}</option>
+			<option value="{{ k }}">{{ localize v }}</option>
 			{{/each}} {{/select}}
 		</select>
 	</div>
-	<div class="label">{{localize "gurps.character.settings.display.modifiers"}}</div>
+	<div class="label">{{ localize "gurps.character.settings.display.modifiers" }}</div>
 	<div class="field">
 		<select name="system.settings.modifiers_display" data-dtype="String">
 			{{#select system.settings.modifiers_display}} {{#each config.select.display as |v k|}}
-			<option value="{{k}}">{{localize v}}</option>
+			<option value="{{ k }}">{{ localize v }}</option>
 			{{/each}} {{/select}}
 		</select>
 	</div>
-	<div class="label">{{localize "gurps.character.settings.display.notes"}}</div>
+	<div class="label">{{ localize "gurps.character.settings.display.notes" }}</div>
 	<div class="field">
 		<select name="system.settings.notes_display" data-dtype="String">
 			{{#select system.settings.notes_display}} {{#each config.select.display as |v k|}}
-			<option value="{{k}}">{{localize v}}</option>
+			<option value="{{ k }}">{{ localize v }}</option>
 			{{/each}} {{/select}}
 		</select>
 	</div>
-	<div class="label">{{localize "gurps.character.settings.display.skill_level_adj"}}</div>
+	<div class="label">{{ localize "gurps.character.settings.display.skill_level_adj" }}</div>
 	<div class="field">
 		<select name="system.settings.skill_level_adj_display" data-dtype="String">
 			{{#select system.settings.skill_level_adj_display}} {{#each config.select.display as |v k|}}
-			<option value="{{k}}">{{localize v}}</option>
+			<option value="{{ k }}">{{ localize v }}</option>
 			{{/each}} {{/select}}
 		</select>
 	</div>
-	<div class="title">{{localize "gurps.character.settings.block_layout.title"}}</div>
+	<div class="title">{{ localize "gurps.character.settings.block_layout.title" }}</div>
 </div>

@@ -57,19 +57,7 @@
 	{{/if}} {{/with}} {{#with itemCollections.traits as |section|}}
 	<div id="traits">
 		<header>
-			<span class="desc">{{ localize "gurps.character.traits.desc" }}</span>
-			<span class="points">{{ localize "gurps.character.traits.points" }}</span>
-			<span class="reference">
-				<i class="gcs-bookmark"></i>
-			</span>
-		</header>
-		<ul class="items" data-item-list data-item-types="{{ section.types }}">
-			{{#each section.items}} {{>actor/character/sections/trait}} {{/each}}
-		</ul>
-	</div>
-	<div id="traits" class="never">
-		<header>
-			<span class="desc">{{ localize "gurps.character.traits.desc" }}</span>
+			<span class="item-name">{{ localize "gurps.character.traits.desc" }}</span>
 			<span class="points">{{ localize "gurps.character.traits.points" }}</span>
 			<span class="reference">
 				<i class="gcs-bookmark"></i>

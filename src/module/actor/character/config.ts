@@ -1,6 +1,6 @@
 import { DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
 import { FilePickerGURPS } from "@module/apps/file-picker.ts"
-import { SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
+import { SETTINGS, SORTABLE_BASE_OPTIONS, SYSTEM_NAME } from "@module/data/constants.ts"
 import { AbstractAttributeDef, AttributeDefObj, MoveTypeDefObj, ResourceTrackerDefObj } from "@system"
 import {
 	CharacterImporter,
@@ -15,6 +15,8 @@ import {
 } from "@util"
 import { DropDataContext } from "@util/settings-helpers.ts"
 import { CharacterGURPS } from "./document.ts"
+import Sortable from "sortablejs"
+import { CharacterFlags } from "./data.ts"
 
 class CharacterConfigSheet<TActor extends CharacterGURPS = CharacterGURPS> extends DocumentSheet<TActor> {
 	// Display this filename in the import button text before importing
@@ -103,12 +105,15 @@ class CharacterConfigSheet<TActor extends CharacterGURPS = CharacterGURPS> exten
 			},
 			filename: this.filename,
 			config: CONFIG.GURPS,
+			flags: this.actor.flags[SYSTEM_NAME],
 		}
 	}
 
 	override activateListeners($html: JQuery): void {
 		super.activateListeners($html)
 		const html = $html[0]
+
+		this.#activateItemDragDrop(html)
 
 		// Open PDF links
 		for (const ref of htmlQueryAll(html, "a.ref")) ref.addEventListener("click", ev => PDF.handle(ev))
@@ -132,7 +137,7 @@ class CharacterConfigSheet<TActor extends CharacterGURPS = CharacterGURPS> exten
 
 		// Handle client-side and server-side import
 		if (game.settings.get(SYSTEM_NAME, SETTINGS.SERVER_SIDE_FILE_DIALOG))
-			htmlQuery(html, "input[type='file']")?.addEventListener("click", () => this._openServerSideImport())
+			htmlQuery(html, "input[type='file']")?.addEventListener("click", ev => this._openServerSideImport(ev))
 		else htmlQuery(html, "input[type='file']")?.addEventListener("change", ev => this._openClientSideImport(ev))
 
 		// Confirm Import
@@ -212,6 +217,125 @@ class CharacterConfigSheet<TActor extends CharacterGURPS = CharacterGURPS> exten
 		}
 	}
 
+	#activateItemDragDrop(html: HTMLElement): void {
+		for (const list of htmlQueryAll(html, "ul[data-item-list]")) {
+			const options: Sortable.Options = {
+				...SORTABLE_BASE_OPTIONS,
+				scroll: list,
+				setData: (dataTransfer, dragEl) => {
+					const type = dragEl.dataset.type as DropDataType
+					const index = parseInt(dragEl.dataset.index ?? "")
+					if (isNaN(index)) return console.error("Invalid index")
+
+					const parentIndex = parseInt(dragEl.dataset.pindex ?? "")
+					dataTransfer.setData(
+						DnD.TEXT_PLAIN,
+						JSON.stringify({ type, index, parentIndex: isNaN(parentIndex) ? 0 : parentIndex }),
+					)
+				},
+				onMove: event => this.#onMoveItem(event),
+				onEnd: event => this.#onDropItem(event),
+			}
+
+			new Sortable(list, options)
+		}
+	}
+
+	#onMoveItem(event: Sortable.MoveEvent): boolean {
+		const isSeparateSheet = htmlClosest(event.target, "form") !== htmlClosest(event.related, "form")
+		if (!this.isEditable || isSeparateSheet) return false
+
+		const type = event.dragged?.dataset.type ?? ""
+
+		const targetRow = htmlClosest(event.related, "li.item[data-type]")
+		if (targetRow?.dataset.type === type) return true
+		return false
+	}
+
+	async #onDropItem(event: Sortable.SortableEvent & { originalEvent?: DragEvent }): Promise<void> {
+		const isSeparateSheet = htmlClosest(event.target, "form") !== htmlClosest(event.originalEvent?.target, "form")
+		if (!this.isEditable || isSeparateSheet) return
+
+		const dragData = DnD.getSortableDragData(event, DnD.TEXT_PLAIN)
+
+		const element = event.originalEvent?.target
+		if (!(element instanceof HTMLElement)) return console.error("Drop event target is not valid.")
+
+		const targetIndex = parseInt(element.dataset.index ?? "")
+		if (isNaN(targetIndex)) return console.error("Drop target index is not valid", element)
+
+		const context: DropDataContext = {
+			element,
+			app: this,
+			targetIndex,
+		}
+
+		switch (dragData.type) {
+			case DropDataType.Attribute:
+				return SettingsHelpers.onDropAttribute(dragData, context)
+			case DropDataType.AttributeThreshold:
+				return SettingsHelpers.onDropAttributeThreshold(dragData, context)
+			case DropDataType.ResourceTracker:
+				return SettingsHelpers.onDropResourceTracker(dragData, context)
+			case DropDataType.ResourceTrackerThreshold:
+				return SettingsHelpers.onDropResourceTrackerThreshold(dragData, context)
+			case DropDataType.MoveType:
+				return SettingsHelpers.onDropMoveType(dragData, context)
+			case DropDataType.MoveTypeOverride:
+				return SettingsHelpers.onDropMoveTypeOverride(dragData, context)
+			case DropDataType.HitLocation:
+				return SettingsHelpers.onDropHitLocation(dragData, context)
+		}
+		// const targetSection =
+		// 	htmlClosest(event.originalEvent?.target, "ul[data-item-section]")?.dataset.itemSection ?? ""
+		// const isItemSection = (type: unknown): type is ItemSections => {
+		// 	return typeof type === "string" && itemSections.some(e => e === type)
+		// }
+		// if (!isItemSection(targetSection)) return
+		//
+		// const collection = this.actor.itemCollections[targetSection] as Collection<ItemGURPS<TActor>>
+		// const sourceItem = collection.get(event.item.dataset.itemId, { strict: true })
+		// const itemsInList = htmlQueryAll(htmlClosest(event.item, "ul"), ":scope > li").map(li =>
+		// 	li.dataset.itemId === sourceItem.id ? sourceItem : collection.get(li.dataset.itemId, { strict: true }),
+		// )
+		//
+		// const targetItemId = htmlClosest(event.originalEvent?.target, "li[data-item-id]")?.dataset.itemId ?? ""
+		// const targetItem = this.actor.items.get(targetItemId)
+		//
+		// const containerElem = htmlClosest(event.item, "ul[data-container-id]")
+		// const containerId = containerElem?.dataset.containerId ?? ""
+		// const container = targetItem?.isOfType("container") ? targetItem : collection.get(containerId)
+		// if (container && !container.isOfType("container")) {
+		// 	throw ErrorGURPS("Unexpected non-container retrieved while sorting items")
+		// }
+		//
+		// if (container && isContainerCycle(sourceItem, container)) {
+		// 	this.render()
+		// 	return
+		// }
+		//
+		// const sourceIndex = itemsInList.indexOf(sourceItem)
+		// const targetBefore = itemsInList[sourceIndex - 1]
+		// const targetAfter = itemsInList[sourceIndex + 1]
+		// const siblings = [...itemsInList]
+		// siblings.splice(siblings.indexOf(sourceItem), 1)
+		// type SortingUpdate = {
+		// 	_id: string
+		// 	"flags.gcsga.container": string | null
+		// 	sort?: number
+		// }
+		// const sortingUpdates: SortingUpdate[] = SortingHelpers.performIntegerSort(sourceItem, {
+		// 	siblings,
+		// 	target: targetBefore ?? targetAfter,
+		// 	sortBefore: !targetBefore,
+		// }).map(u => ({ _id: u.target.id, "flags.gcsga.container": container?.id ?? null, sort: u.update.sort }))
+		// if (!sortingUpdates.some(u => u._id === sourceItem.id)) {
+		// 	sortingUpdates.push({ _id: sourceItem.id, "flags.gcsga.container": container?.id ?? null })
+		// }
+		//
+		// await this.actor.updateEmbeddedDocuments("Item", sortingUpdates)
+	}
+
 	private _onResetAll(event: MouseEvent): Promise<TActor | undefined> | void {
 		const element = event.currentTarget ?? null
 		if (!(element instanceof HTMLAnchorElement)) return
@@ -264,7 +388,8 @@ class CharacterConfigSheet<TActor extends CharacterGURPS = CharacterGURPS> exten
 		this.render()
 	}
 
-	private _openServerSideImport(): void {
+	private _openServerSideImport(event: MouseEvent): void {
+		event.preventDefault()
 		const filepicker = new FilePickerGURPS({
 			callback: (path: string) => {
 				const request = new XMLHttpRequest()
@@ -287,7 +412,8 @@ class CharacterConfigSheet<TActor extends CharacterGURPS = CharacterGURPS> exten
 				request.send(null)
 			},
 		})
-		filepicker.extension = [".gcs", ".xml", ".gca5"]
+		filepicker.extensions = [".gcs", ".xml", ".gca5"]
+		console.log(filepicker)
 		filepicker.render(true)
 	}
 
@@ -324,94 +450,94 @@ class CharacterConfigSheet<TActor extends CharacterGURPS = CharacterGURPS> exten
 		request.send(null)
 	}
 
-	override async _onDragStart(event: DragEvent): Promise<void> {
-		const element = event.currentTarget
-		if (!(element instanceof HTMLElement)) return
+	// override async _onDragStart(event: DragEvent): Promise<void> {
+	// 	const element = event.currentTarget
+	// 	if (!(element instanceof HTMLElement)) return
+	//
+	// 	const type = element.dataset.type as DropDataType
+	//
+	// 	const index = parseInt(element.dataset.index ?? "")
+	// 	if (isNaN(index)) return console.error("Invalid index")
+	//
+	// 	const parentIndex = parseInt(element.dataset.pindex ?? "")
+	//
+	// 	event.dataTransfer?.setData(
+	// 		DnD.TEXT_PLAIN,
+	// 		JSON.stringify({
+	// 			type,
+	// 			index,
+	// 			parentIndex: isNaN(parentIndex) ? 0 : parentIndex,
+	// 		}),
+	// 	)
+	// }
 
-		const type = element.dataset.type as DropDataType
+	// protected override _onDragOver(event: DragEvent): void {
+	// 	super._onDragOver(event)
+	// 	const element = event.currentTarget
+	// 	if (!(element instanceof HTMLElement)) return
+	// 	if (!element.classList.contains("item")) return
+	//
+	// 	const heightAcross = (event.offsetY - element.offsetTop) / element.offsetHeight
+	// 	for (const item of htmlQueryAll(element.parentElement, ".item")) {
+	// 		item.classList.remove("border-top")
+	// 		item.classList.remove("border-bottom")
+	// 	}
+	// 	if (heightAcross > 0.5) {
+	// 		element.classList.remove("border-top")
+	// 		element.classList.add("border-bottom")
+	// 	} else {
+	// 		element.classList.remove("border-bottom")
+	// 		element.classList.add("border-top")
+	// 	}
+	// }
 
-		const index = parseInt(element.dataset.index ?? "")
-		if (isNaN(index)) return console.error("Invalid index")
-
-		const parentIndex = parseInt(element.dataset.pindex ?? "")
-
-		event.dataTransfer?.setData(
-			DnD.TEXT_PLAIN,
-			JSON.stringify({
-				type,
-				index,
-				parentIndex: isNaN(parentIndex) ? 0 : parentIndex,
-			}),
-		)
-	}
-
-	protected override _onDragOver(event: DragEvent): void {
-		super._onDragOver(event)
-		const element = event.currentTarget
-		if (!(element instanceof HTMLElement)) return
-		if (!element.classList.contains("item")) return
-
-		const heightAcross = (event.offsetY - element.offsetTop) / element.offsetHeight
-		for (const item of htmlQueryAll(element.parentElement, ".item")) {
-			item.classList.remove("border-top")
-			item.classList.remove("border-bottom")
-		}
-		if (heightAcross > 0.5) {
-			element.classList.remove("border-top")
-			element.classList.add("border-bottom")
-		} else {
-			element.classList.remove("border-bottom")
-			element.classList.add("border-top")
-		}
-	}
-
-	protected override async _onDrop(event: DragEvent): Promise<void> {
-		const dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
-
-		console.log(dragData)
-
-		if (dragData.type === DropDataType.Damage) return
-		if (dragData.type === DropDataType.Item) return
-		if (dragData.type === DropDataType.Effect) return
-		if (dragData.type === DropDataType.SubTable) return
-
-		let element = event.target
-		if (!(element instanceof HTMLElement)) return console.error("Drop event target is not valid.")
-		while (!element.classList.contains("item")) {
-			element = htmlClosest(element, ".item")
-			if (!(element instanceof HTMLElement)) return console.error("Drop event target is not valid.")
-		}
-
-		const targetIndex = parseInt(element.dataset.index ?? "")
-		if (isNaN(targetIndex)) return console.error("Drop target index is not valid", element)
-
-		const above = element.classList.contains("border-top")
-		if (above && dragData.order === targetIndex - 1) return
-		if (!above && dragData.order === targetIndex + 1) return
-
-		const context: DropDataContext = {
-			element,
-			app: this,
-			targetIndex,
-		}
-
-		switch (dragData.type) {
-			case DropDataType.Attribute:
-				return SettingsHelpers.onDropAttribute(dragData, context)
-			case DropDataType.AttributeThreshold:
-				return SettingsHelpers.onDropAttributeThreshold(dragData, context)
-			case DropDataType.ResourceTracker:
-				return SettingsHelpers.onDropResourceTracker(dragData, context)
-			case DropDataType.ResourceTrackerThreshold:
-				return SettingsHelpers.onDropResourceTrackerThreshold(dragData, context)
-			case DropDataType.MoveType:
-				return SettingsHelpers.onDropMoveType(dragData, context)
-			case DropDataType.MoveTypeOverride:
-				return SettingsHelpers.onDropMoveTypeOverride(dragData, context)
-			case DropDataType.HitLocation:
-				return SettingsHelpers.onDropHitLocation(dragData, context)
-		}
-	}
+	// 	protected override async _onDrop(event: DragEvent): Promise<void> {
+	// 		const dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)
+	//
+	// 		console.log(dragData)
+	//
+	// 		if (dragData.type === DropDataType.Damage) return
+	// 		if (dragData.type === DropDataType.Item) return
+	// 		if (dragData.type === DropDataType.Effect) return
+	// 		if (dragData.type === DropDataType.SubTable) return
+	//
+	// 		let element = event.target
+	// 		if (!(element instanceof HTMLElement)) return console.error("Drop event target is not valid.")
+	// 		while (!element.classList.contains("item")) {
+	// 			element = htmlClosest(element, ".item")
+	// 			if (!(element instanceof HTMLElement)) return console.error("Drop event target is not valid.")
+	// 		}
+	//
+	// 		const targetIndex = parseInt(element.dataset.index ?? "")
+	// 		if (isNaN(targetIndex)) return console.error("Drop target index is not valid", element)
+	//
+	// 		const above = element.classList.contains("border-top")
+	// 		if (above && dragData.order === targetIndex - 1) return
+	// 		if (!above && dragData.order === targetIndex + 1) return
+	//
+	// 		const context: DropDataContext = {
+	// 			element,
+	// 			app: this,
+	// 			targetIndex,
+	// 		}
+	//
+	// 		switch (dragData.type) {
+	// 			case DropDataType.Attribute:
+	// 				return SettingsHelpers.onDropAttribute(dragData, context)
+	// 			case DropDataType.AttributeThreshold:
+	// 				return SettingsHelpers.onDropAttributeThreshold(dragData, context)
+	// 			case DropDataType.ResourceTracker:
+	// 				return SettingsHelpers.onDropResourceTracker(dragData, context)
+	// 			case DropDataType.ResourceTrackerThreshold:
+	// 				return SettingsHelpers.onDropResourceTrackerThreshold(dragData, context)
+	// 			case DropDataType.MoveType:
+	// 				return SettingsHelpers.onDropMoveType(dragData, context)
+	// 			case DropDataType.MoveTypeOverride:
+	// 				return SettingsHelpers.onDropMoveTypeOverride(dragData, context)
+	// 			case DropDataType.HitLocation:
+	// 				return SettingsHelpers.onDropHitLocation(dragData, context)
+	// 		}
+	// 	}
 }
 
 interface CharacterConfigSheetData<TActor extends CharacterGURPS = CharacterGURPS> extends DocumentSheetData<TActor> {
@@ -421,6 +547,7 @@ interface CharacterConfigSheetData<TActor extends CharacterGURPS = CharacterGURP
 	attributes: Record<string, AbstractAttributeDef[]>
 	filename: string
 	config: ConfigGURPS["GURPS"]
+	flags: CharacterFlags[typeof SYSTEM_NAME]
 }
 
 export { CharacterConfigSheet }

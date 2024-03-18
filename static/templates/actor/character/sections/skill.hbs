@@ -1,44 +1,47 @@
-<div
-	class="desc item{{#if (isContainer this)}} container{{/if}}"
-	data-item-id="{{ this._id }}"
-	data-tooltip-direction="DOWN"
-	data-tooltip="{{this.resolvedTooltip}}"
-	{{{indent
-	this.parents.length}}}
->
-	<div class="dropdown" data-item-id="{{ this._id }}">
-		{{#if (isContainer this)}} {{#if this.system.open}} {{>actor/character/sections/dropdown-open}} {{else}}
-		{{>actor/character/sections/dropdown-closed}} {{/if}} {{/if}}
-	</div>
-	<div class="name" data-item-id="{{ this._id }}">{{this.formattedName}}</div>
-	{{{this.resolvedNotes}}}
-</div>
-{{#if (isContainer this)}}
-<div class="level" data-item-id="{{ this._id }}"></div>
-<div class="rsl" data-item-id="{{ this._id }}"></div>
-{{else}}
-<div
-	data-item-id="{{this._id}}"
-	data-type="skill"
-	class="level rollable {{effective this}}"
-	data-html="true"
-	data-tooltip-direction="DOWN"
-	data-tooltip="{{this.levelTooltip}}"
->
-	{{this.skillLevel}}
-</div>
-<div
-	data-item-id="{{this._id}}"
-	data-type="skill_rsl"
-	class="rsl rollable {{effective this}}"
-	data-tooltip-direction="DOWN"
-	data-tooltip="{{this.levelTooltip}}"
->
-	{{this.relativeLevel}}
-</div>
-{{/if}}
-<div class="points" data-item-id="{{ this._id }}" data-tooltip="{{this.pointsTooltip}}" data-tooltip-direction="DOWN">
-	{{this.adjustedPoints}}
-</div>
-<div class="reference" data-item-id="{{ this._id }}">{{{ref this.system.reference}}}</div>
-{{#if this.system.open}} {{#each (sort this.children "sort")}} {{>actor/character/sections/skill}} {{/each}} {{/if}}
+<li data-item-id="{{ item.id }}" {{#if isContainer}} data-is-container {{/if}}>
+    <div class="data">
+        <div
+            class="item-name"
+            data-tooltip-direction="DOWN"
+            data-tooltip="{{ item.resolvedTooltip }}"
+            {{{ indent item.parents.length }}}
+            >
+            <div class="dropdown">
+                {{#if (or isContainer item.children.size)}}
+                    {{#if item.system.open}}
+                        {{>actor/character/sections/dropdown-open}}
+                    {{ else }}
+                        {{>actor/character/sections/dropdown-closed}}
+                    {{/if}}
+                {{/if}}
+            </div>
+            <div class="name">{{ item.formattedName }}</div>
+            {{{ item.resolvedNotes }}}
+        </div>
+        {{#if (isContainer this)}}
+            <div class="level"></div>
+            <div class="rsl"></div>
+        {{ else }}
+            <div data-type="skill"
+                 class="level rollable {{ effective this }}"
+                 data-tooltip-direction="DOWN"
+                 data-tooltip="{{ item.levelTooltip }}">{{ item.skillLevel }}</div>
+            <div data-type="skill_rsl"
+                 class="rsl rollable {{ effective this }}"
+                 data-tooltip-direction="DOWN"
+                 data-tooltip="{{ item.levelTooltip }}">{{ item.relativeLevel }}</div>
+        {{/if}}
+        <div class="points"
+             data-tooltip="{{ item.pointsTooltip }}"
+             data-tooltip-direction="DOWN">{{ item.fastAdjustedPoints }}</div>
+        <div class="reference"">{{{ ref item.system.reference }}}
+        </div>
+    </div>
+    {{#if item.system.open}}
+        <ul class="items" data-item-list data-container-id="{{ item.id }}">
+            {{#each children}}
+                {{>actor/character/sections/skill inContainer=true}}
+            {{/each}}
+        </ul>
+    {{/if}}
+</li>

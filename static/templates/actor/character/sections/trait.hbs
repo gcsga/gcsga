@@ -1,13 +1,11 @@
-<li {{#if isContainer}}data-is-container{{/if}} {{#if inContainer}}data-container-id="{{ item.flags.gcsga.container }}"{{/if}} data-item-id="{{ item.id }}">
+<li data-item-id="{{ item.id }}" {{#if isContainer}} data-is-container {{/if}}>
     <div class="data">
         <div
-            class="desc"
+            class="item-name"
             data-disabled="{{ not item.enabled }}"
             data-tooltip-direction="DOWN"
             data-tooltip="{{ item.resolvedTooltip }}"
-            data-item-id="{{ item._id }}"
-            {{{indent
-            item.parents.length}}}
+            {{{ indent item.parents.length }}}
             >
             <div class="dropdown">
                 {{#if (or isContainer item.children.size)}}
@@ -32,9 +30,11 @@
         <div class="reference">{{{ ref item.system.reference }}}</div>
     </div>
     <div class="item-summary" hidden="hidden"></div>
+    {{#if item.system.open}}
+        <ul class="items" data-item-list data-container-id="{{ item.id }}">
+            {{#each children}}
+                {{>actor/character/sections/trait inContainer=true}}
+            {{/each}}
+        </ul>
+    {{/if}}
 </li>
-{{#if item.system.open}}
-    {{#each children}}
-        {{>actor/character/sections/trait inContainer=true}}
-    {{/each}}
-{{/if}}

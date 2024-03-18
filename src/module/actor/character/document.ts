@@ -168,6 +168,14 @@ class CharacterGURPS<
 		this.updateSource(defaultData)
 	}
 
+	override async update(
+		data: Record<string, unknown>,
+		context?: DocumentModificationContext<TParent>,
+	): Promise<this | undefined> {
+		console.log(data)
+		return super.update(data, context)
+	}
+
 	private static getDefaultSettings(): SheetSettingsObj {
 		return {
 			...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`),

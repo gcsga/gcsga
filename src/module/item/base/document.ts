@@ -373,7 +373,7 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 		this.system.slug ||= null
 
 		const flags = this.flags
-		flags[SYSTEM_NAME] = fu.mergeObject(flags[SYSTEM_NAME] ?? {}, { [ItemFlags.Container]: null })
+		flags[SYSTEM_NAME] ??= fu.mergeObject(flags[SYSTEM_NAME] ?? {}, {})
 
 		this.flags = flags
 		this.flags[SYSTEM_NAME].container ||= null

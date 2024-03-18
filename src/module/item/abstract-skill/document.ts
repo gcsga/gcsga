@@ -31,6 +31,10 @@ abstract class AbstractSkillGURPS<
 		this.system.points = value
 	}
 
+	get fastAdjustedPoints(): number {
+		return this.adjustedPoints()
+	}
+
 	get techLevel(): string {
 		return this.system.tech_level
 	}

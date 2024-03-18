@@ -2,7 +2,7 @@ import { CharacterGURPS } from "@actor"
 import { ActorSheetDataGURPS, ActorSheetGURPS } from "@actor/base/sheet.ts"
 import { ItemGURPS } from "@item"
 import { AbstractAttribute, ConditionalModifier } from "@system"
-import { ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
+import { ItemFlags, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { LocalizeGURPS, Weight } from "@util"
 import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
 import { CharacterEncumbrance } from "./encumbrance.ts"
@@ -103,15 +103,21 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS
 		return collections
 	}
 
-	protected _prepareItemCollection(collection: Collection<ItemGURPS>): SheetItem<ItemGURPS>[] {
-		return collection.contents.sort((a, b) => (a.sort || 0) - (b.sort || 0)).map(e => this._prepareSheetItem(e))
+	protected _prepareItemCollection(
+		collection: Collection<ItemGURPS>,
+		parent: string | null = null,
+	): SheetItem<ItemGURPS>[] {
+		return collection.contents
+			.filter(item => item.flags[SYSTEM_NAME][ItemFlags.Container] === parent)
+			.sort((a, b) => (a.sort || 0) - (b.sort || 0))
+			.map(e => this._prepareSheetItem(e))
 	}
 
 	protected _prepareSheetItem<TItem extends ItemGURPS = ItemGURPS>(item: TItem): SheetItem<TItem> {
 		return {
 			item,
 			isContainer: item.isOfType("container"),
-			children: item.isOfType("container") ? this._prepareItemCollection(item.children) : [],
+			children: item.isOfType("container") ? this._prepareItemCollection(item.children, item._id) : [],
 		}
 	}
 
