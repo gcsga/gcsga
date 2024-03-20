@@ -1,7 +1,7 @@
 import { ItemGURPS } from "@item"
 import { ActorGURPS } from "./document.ts"
 import { DamagePayload, DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
-import { DnD, ErrorGURPS, htmlClosest, htmlQuery, htmlQueryAll } from "@util"
+import { DnD, ErrorGURPS, htmlClosest, htmlQueryAll } from "@util"
 import { ItemFlags, ItemType, SORTABLE_BASE_OPTIONS, SYSTEM_NAME } from "@module/data/constants.ts"
 import { ItemSections, itemSections } from "./item-collection-map.ts"
 import Sortable from "sortablejs"
@@ -37,10 +37,8 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 		super.activateListeners($html)
 		const html = $html[0]
 
-		// for (const item of htmlQueryAll(html, "[data-item-id]")) {
-		// 	item.addEventListener("dragover", ev => this._onDragOverItem(ev, item))
-		// }
 		this.#activateItemDragDrop(html)
+		this._applyBanding()
 	}
 
 	#activateItemDragDrop(html: HTMLElement): void {
@@ -49,12 +47,14 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 				...SORTABLE_BASE_OPTIONS,
 				scroll: list,
 				setData: (dataTransfer, dragEl) => {
-					console.log(dragEl.dataset.itemId)
 					const item = this.actor.items.get(dragEl.dataset.itemId, { strict: true })
 					dataTransfer.setData(DnD.TEXT_PLAIN, JSON.stringify(item.toDragData()))
 				},
 				onMove: event => this.#onMoveItem(event),
-				onEnd: event => this.#onDropItem(event),
+				onEnd: async event => {
+					await this.#onDropItem(event)
+					this._applyBanding()
+				},
 			}
 
 			new Sortable(list, options)
@@ -82,7 +82,7 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 		if (targetItem?.isOfType("container")) {
 			if (isContainerCycle(sourceItem, targetItem)) return false
 			if (targetItemRow && !openContainer) {
-				htmlQuery(targetItemRow, ":scope > .data")?.classList.add("drop-highlight")
+				targetItemRow.classList.add("drop-highlight")
 				return false
 			}
 		}
@@ -148,63 +148,22 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 		await this.actor.updateEmbeddedDocuments("Item", sortingUpdates)
 	}
 
-	// protected override _createDragDropHandlers(): DragDropGURPS[] {
-	// 	return this.options.dragDrop.map(d => {
-	// 		d.permissions = {
-	// 			dragstart: this._canDragStart.bind(this),
-	// 			drop: this._canDragDrop.bind(this),
-	// 		}
-	// 		d.callbacks = {
-	// 			dragstart: this._onDragStart.bind(this),
-	// 			dragover: this._onDragOver.bind(this),
-	// 			drop: this._onDrop.bind(this),
-	// 		}
-	// 		return new DragDropGURPS(d)
-	// 	})
-	// }
+	protected _applyBanding(): void {
+		const html = this.element[0]
 
-	// protected _onDragOverItem(event: DragEvent, element: HTMLElement): void {
-	// 	if (!(element instanceof HTMLElement)) return
-	//
-	// 	const heightAcross = (event.offsetY - element.offsetTop) / element.offsetHeight
-	// 	const item = htmlClosest(element, ".item")
-	// 	console.log(item)
-	// 	for (const item of htmlQueryAll(element.parentElement, ".item")) {
-	// 		item.classList.remove("border-top")
-	// 		item.classList.remove("border-bottom")
-	// 	}
-	// 	if (heightAcross > 0.5) {
-	// 		element.classList.remove("border-top")
-	// 		element.classList.add("border-bottom")
-	// 	} else {
-	// 		element.classList.remove("border-bottom")
-	// 		element.classList.add("border-top")
-	// 	}
-	//
-	// 	// this._highlightDropArea(event)
-	// }
-
-	// Created a highlighted area corresponding to the table the item will be sorted into
-	// private _highlightDropArea(event: DragEvent): void {
-	// 	const itemData = JSON.parse(htmlQuery(document, "#drag-ghost")?.dataset.item ?? "") as ItemSourceGURPS
-	// 	if (!itemData) {
-	// 		console.error("dragged item data cannot be found")
-	// 		return
-	// 	}
-	// 	const dropSection = this.actor.itemCollections.getSectionName(itemData)
-	//
-	// 	if (dropSection === null) {
-	// 		console.error(`Item of type "${itemData.type}" does not fit any section on this sheet`)
-	// 		return
-	// 	}
-	//
-	// 	for (const element of htmlQueryAll(this.element[0], ".item-list")) {
-	// 		if (element.id !== dropSection) {
-	// 			element.classList.remove("dragsection")
-	// 			element.classList.remove("dragindirect")
-	// 		}
-	// 	}
-	// }
+		for (const list of htmlQueryAll(html, "#embeds [data-item-list]:not([data-container-id])")) {
+			let banding = true
+			for (const item of htmlQueryAll(list, "li")) {
+				banding = !banding
+				item.style.backgroundColor = ""
+				item.style.color = ""
+				if (banding) {
+					item.style.backgroundColor = "rgb(var(--color-banding))"
+					item.style.color = "rgb(var(--color-on-banding))"
+				}
+			}
+		}
+	}
 
 	protected override _onDrop(event: DragEvent): Promise<boolean | void> {
 		if (!event?.dataTransfer) return super._onDrop(event)
@@ -239,7 +198,6 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 			return [item]
 		}
 
-		// return this._handleDroppedItem(event, item, data)
 		return this._handleDroppedItem(event, item)
 	}
 

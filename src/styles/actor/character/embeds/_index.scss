@@ -50,13 +50,8 @@
 			background-color: rgb(var(--color-content));
 			color: rgb(var(--color-on-content));
 
-			&:nth-of-type(even) {
-				background-color: rgb(var(--color-banding));
-				color: rgb(var(--color-on-banding));
-			}
-
 			&.drop-highlight {
-				background: #b7f8c7;
+				background-color: blue;
 			}
 
 			&.drag-preview {
@@ -66,9 +61,6 @@
 
 			// The gap left by an item being dragged to a new position
 			&.drag-gap {
-				// visibility: hidden;
-				// color: red;
-				// background-color: red;
 				border: 2px dashed rgb(var(--color-drop-area));
 			}
 
@@ -161,5 +153,23 @@
 	header,
 	ul.items > li > .data {
 		grid-template-columns: auto 2.5rem 3rem 2.5rem 3.5rem;
+	}
+}
+
+#equipment {
+	grid-area: equipment;
+
+	header,
+	ul.items > li > .data {
+		grid-template-columns: 1rem 1.25rem auto 2.5rem 2rem 2rem 2.5rem 2.5rem 2.5rem 2.5rem 3.5rem;
+	}
+}
+
+#other_equipment {
+	grid-area: other_equipment;
+
+	header,
+	ul.items > li > .data {
+		grid-template-columns: 1.25rem auto 2.5rem 2rem 2rem 2.5rem 2.5rem 2.5rem 2.5rem 3.5rem;
 	}
 }

@@ -1,26 +1,42 @@
-<div class="quantity">{{ this.system.quantity }}</div>
-<div
-	class="desc item{{#if (isContainer this)}} container{{/if}} other {{disabled this.system.calc.disabled}}"
-	data-item-id="{{ this._id }}"
-	data-tooltip-direction="DOWN"
-	data-tooltip="{{this.resolvedTooltip}}"
-	{{{indent
-	this.parents.length}}}
->
-	<div class="dropdown">
-		{{#if (eq this.type "equipment_container") }} {{#if this.open }} {{>actor/character/sections/dropdown-open }} {{
-		else }} {{>actor/character/sections/dropdown-closed }} {{/if }} {{/if }}
-	</div>
-	<div class="name">{{ this.name }}</div>
-	{{{this.resolvedNotes}}}
-</div>
-<div class="uses">{{#if (and this.system.uses this.system.max_uses) }} {{ this.system.uses }} {{/if }}</div>
-<div class="tech-level {{disabled this.system.calc.disabled}}">{{ this.system.tech_level }}</div>
-<div class="legality-class {{disabled this.system.calc.disabled}}">{{ this.system.legality_class }}</div>
-<div class="value {{disabled this.system.calc.disabled}}">{{ this.system.calc.value }}</div>
-<div class="weight {{disabled this.system.calc.disabled}}">{{ this.system.calc.weight }}</div>
-<div class="extended-value {{disabled this.system.calc.disabled}}">{{ this.system.calc.extended_value }}</div>
-<div class="extended-weight {{disabled this.system.calc.disabled}}">{{ this.system.calc.extended_weight }}</div>
-<div class="reference {{disabled this.system.calc.disabled}}">{{{ref this.system.reference}}}</div>
-{{#if this.system.open }} {{#each (sort this.children "sort") }} {{>actor/character/sections/other-equipment }} {{/each
-}} {{/if }}
+<li data-item-id="{{ item.id }}" {{#if isContainer}} data-is-container {{/if}}>G
+    <div class="data">
+        <div class="quantity">{{ item.system.quantity }}</div>
+        <div
+            class="item-name {{ disabled (not item.enabled) }}"
+            data-tooltip-direction="DOWN"
+            data-tooltip="{{ item.resolvedTooltip }}"
+            {{{ indent item.parents.length }}}
+            >
+            <div class="dropdown">
+                {{#if (isContainer item)}}
+                    {{#if item.system.open}}
+                        {{>actor/character/sections/dropdown-open}}
+                    {{ else }}
+                        {{>actor/character/sections/dropdown-closed}}
+                    {{/if}}
+                {{/if}}
+            </div>
+            <div class="name">{{ item.formattedName }}</div>
+            {{{ item.resolvedNotes }}}
+        </div>
+        <div class="uses {{ disabled (not item.enabled) }}">
+            {{#if (and item.system.uses item.system.max_uses)}}
+                {{ item.system.uses }}
+            {{/if}}
+        </div>
+        <div class="tech-level {{ disabled (not item.enabled) }}">{{ item.system.tech_level }}</div>
+        <div class="legality-class {{ disabled (not item.enabled) }}">{{ item.system.legality_class }}</div>
+        <div class="value {{ disabled (not item.enabled) }}">{{ item.adjustedValue }}</div>
+        <div class="weight {{ disabled (not item.enabled) }}">{{ item.adjustedWeightFat }}</div>
+        <div class="extended-value {{ disabled (not item.enabled) }}">{{ item.extendedValue }}</div>
+        <div class="extended-weight {{ disabled (not item.enabled) }}">{{ item.extendedWeightFast }}</div>
+        <div class="reference {{ disabled (not item.enabled) }}">{{{ ref item.system.reference }}}</div>
+    </div>
+    {{#if item.system.open}}
+        <ul class="items" data-item-list data-container-id="{{ item.id }}">
+            {{#each children}}
+                {{>actor/character/sections/equipment inContainer=true}}
+            {{/each}}
+        </ul>
+    {{/if}}
+</li>

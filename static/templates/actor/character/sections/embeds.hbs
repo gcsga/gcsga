@@ -63,7 +63,7 @@
 				<i class="gcs-bookmark"></i>
 			</span>
 		</header>
-		<ul class="items" data-item-list data-item-types="{{ section.types }}">
+		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
 			{{#each section.items}} {{>actor/character/sections/trait}} {{/each}}
 		</ul>
 	</div>
@@ -78,7 +78,7 @@
 				<i class="gcs-bookmark"></i>
 			</span>
 		</header>
-		<ul class="items" data-item-list data-item-types="{{ section.types }}">
+		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
 			{{#each section.items}} {{>actor/character/sections/skill}} {{/each}}
 		</ul>
 	</div>
@@ -93,8 +93,65 @@
 				<i class="gcs-bookmark"></i>
 			</span>
 		</header>
-		<ul class="items" data-item-list data-item-types="{{ section.types }}">
+		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
 			{{#each section.items}} {{>actor/character/sections/spell}} {{/each}}
+		</ul>
+	</div>
+	{{/with}} {{#with itemCollections.equipment as |section|}}
+	<div id="equipment">
+		<header>
+			<span class="equipped">
+				<i class="gcs-checkmark"></i>
+			</span>
+			<span class="quantity">{{ localize "gurps.character.equipment.quantity" }}</span>
+			<span class="desc">
+				{{localize "gurps.character.equipment.desc" weight=actor.fastWeightCarried
+				value=actor.fastWealthCarried}}
+			</span>
+			<span class="uses">{{ localize "gurps.character.equipment.uses" }}</span>
+			<span class="tech-level">{{ localize "gurps.character.equipment.tech_level" }}</span>
+			<span class="legality-class">{{ localize "gurps.character.equipment.legality_class" }}</span>
+			<span class="value"><i class="gcs-coins"></i></span>
+			<span class="weight"><i class="gcs-weight"></i></span>
+			<span class="extended-value">
+				<i class="gcs-stack"></i>
+				<i class="gcs-coins"></i>
+			</span>
+			<span class="extended-weight">
+				<i class="gcs-stack"></i>
+				<i class="gcs-weight"></i>
+			</span>
+			<span class="reference"><i class="gcs-bookmark"></i></span>
+		</header>
+		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
+			{{#each section.items}} {{>actor/character/sections/equipment}} {{/each}}
+		</ul>
+	</div>
+	{{/with}} {{#with itemCollections.other_other_equipment as |section|}}
+	<div id="other_other_equipment">
+		<header>
+			<span class="quantity">{{ localize "gurps.character.other_equipment.quantity" }}</span>
+			<span class="desc">
+				{{localize "gurps.character.other_equipment.desc" weight=actor.fastWeightCarried
+				value=actor.fastWealthCarried}}
+			</span>
+			<span class="uses">{{ localize "gurps.character.other_equipment.uses" }}</span>
+			<span class="tech-level">{{ localize "gurps.character.other_equipment.tech_level" }}</span>
+			<span class="legality-class">{{ localize "gurps.character.other_equipment.legality_class" }}</span>
+			<span class="value"><i class="gcs-coins"></i></span>
+			<span class="weight"><i class="gcs-weight"></i></span>
+			<span class="extended-value">
+				<i class="gcs-stack"></i>
+				<i class="gcs-coins"></i>
+			</span>
+			<span class="extended-weight">
+				<i class="gcs-stack"></i>
+				<i class="gcs-weight"></i>
+			</span>
+			<span class="reference"><i class="gcs-bookmark"></i></span>
+		</header>
+		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
+			{{#each section.items}} {{>actor/character/sections/other-equipment}} {{/each}}
 		</ul>
 	</div>
 	{{/with}}

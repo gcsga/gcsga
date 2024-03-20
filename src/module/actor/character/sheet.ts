@@ -62,26 +62,32 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS
 	protected _prepareItemCollections(): Record<string, SheetItemCollection> {
 		const collections = {
 			traits: {
+				name: "traits",
 				items: this._prepareItemCollection(this.actor.itemCollections.traits),
 				types: [ItemType.Trait, ItemType.TraitContainer],
 			},
 			skills: {
+				name: "skills",
 				items: this._prepareItemCollection(this.actor.itemCollections.skills),
 				types: [ItemType.Skill, ItemType.Technique, ItemType.SkillContainer],
 			},
 			spells: {
+				name: "spells",
 				items: this._prepareItemCollection(this.actor.itemCollections.spells),
 				types: [ItemType.Spell, ItemType.RitualMagicSpell, ItemType.SpellContainer],
 			},
 			equipment: {
+				name: "carriedEquipment",
 				items: this._prepareItemCollection(this.actor.itemCollections.carriedEquipment),
 				types: [ItemType.Equipment, ItemType.EquipmentContainer],
 			},
 			other_equipment: {
+				name: "otherEquipment",
 				items: this._prepareItemCollection(this.actor.itemCollections.otherEquipment),
 				types: [ItemType.Equipment, ItemType.EquipmentContainer],
 			},
 			notes: {
+				name: "notes",
 				items: this._prepareItemCollection(this.actor.itemCollections.notes),
 				types: [ItemType.Note, ItemType.NoteContainer],
 			},
@@ -155,6 +161,7 @@ interface SheetItem<TItem extends ItemGURPS = ItemGURPS> {
 }
 
 interface SheetItemCollection {
+	name?: string
 	items: (SheetItem | ConditionalModifier)[]
 	types: ItemType[]
 }
