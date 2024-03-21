@@ -45,13 +45,15 @@
 		list-style: none;
 		margin: 0;
 		padding: 0;
+		height: calc(100% - 18px);
 
 		> li {
 			background-color: rgb(var(--color-content));
 			color: rgb(var(--color-on-content));
 
-			&.drop-highlight {
-				background-color: blue;
+			&.drop-highlight > div.data {
+				outline: 2px solid rgba(var(--color-drop-area), 128);
+				outline-offset: -2px;
 			}
 
 			&.drag-preview {

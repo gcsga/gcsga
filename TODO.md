@@ -1,7 +1,5 @@
 ## Immediate TODO
 
--   Replace item lists with UL and LI elements and figure out how to get a static grid width going for easier sorting with SortableJS
--   No need to do the whole bar thing but it'll be easier once SortableJS is in place
 -   make sure containers actually work properly
 -   implement item sheets
 -   get rid of redundant partials
