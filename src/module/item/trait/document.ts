@@ -1,7 +1,7 @@
 import { ActorGURPS } from "@actor"
 import { AbstractContainerGURPS } from "@item"
 import { TraitSource, TraitSystemData } from "./data.ts"
-import { StringBuilder, affects, display, selfctrl, tmcost } from "@util"
+import { LocalizeGURPS, StringBuilder, affects, display, selfctrl, tmcost } from "@util"
 import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
 import { resolveStudyHours, studyHoursProgressText } from "@system"
 import { ItemType } from "@module/data/constants.ts"
@@ -212,6 +212,26 @@ class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 			buffer.push(mod.fullDescription)
 		})
 		return buffer.toString()
+	}
+
+	override getContextMenuItems(): ContextMenuEntry[] {
+		return [
+			{
+				name: LocalizeGURPS.translations.gurps.context.duplicate,
+				icon: "",
+				callback: async () => {
+					const itemData = {
+						type: this.type,
+						name: this.name,
+						system: this.system,
+						flags: this.flags,
+						sort: (this.sort ?? 0) + 1,
+					}
+					if (!(this.container instanceof CompendiumCollection))
+						await this.container?.createEmbeddedDocuments("Item", [itemData], {})
+				},
+			},
+		]
 	}
 }
 

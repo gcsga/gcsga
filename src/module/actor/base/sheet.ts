@@ -37,7 +37,20 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 		super.activateListeners($html)
 		const html = $html[0]
 
+		for (const toggle of htmlQueryAll(html, "li[data-item-id] > .data a.dropdown-toggle")) {
+			toggle.addEventListener("click", ev => {
+				const itemId = htmlClosest(ev.currentTarget, "[data-item-id]")?.dataset.itemId
+				if (!itemId) throw ErrorGURPS("Invalid dropdown operation: No item ID found")
+				const item = this.actor.items.get(itemId)
+				if (!item) throw ErrorGURPS(`Invalid dropdown operation: No item found with ID: "${itemId}"`)
+				if (!item.isOfType("container"))
+					throw ErrorGURPS(`Invalid dropdown operation: Target item is not a container`)
+				item.update({ "system.open": !item.system.open })
+			})
+		}
+
 		this.#activateItemDragDrop(html)
+		this.#activateContextMenu(html)
 		this._applyBanding()
 	}
 
@@ -58,6 +71,16 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 			}
 
 			new Sortable(list, options)
+		}
+	}
+
+	#activateContextMenu(html: HTMLElement): void {
+		for (const itemRow of htmlQueryAll(html, "li[data-item-id]")) {
+			const itemId = itemRow.dataset.itemId
+			if (!itemId) throw ErrorGURPS("Invalid dropdown operation: No item ID found")
+			const item = this.actor.items.get(itemId)
+			if (!item) throw ErrorGURPS(`Invalid dropdown operation: No item found with ID: "${itemId}"`)
+			ContextMenu.create(this, $(itemRow), "*", item.getContextMenuItems())
 		}
 	}
 

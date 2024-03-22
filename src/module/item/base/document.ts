@@ -392,6 +392,10 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 			this._container = this.flags[SYSTEM_NAME][ItemFlags.Container] = null
 		}
 	}
+
+	getContextMenuItems(): ContextMenuEntry[] {
+		return []
+	}
 }
 
 interface ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends Item<TParent> {

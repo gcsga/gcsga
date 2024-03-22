@@ -1,44 +1,37 @@
-<div id="ranged" class="item-list table">
-	<div class="header usage desc">{{localize "gurps.weapon.ranged_header"}}</div>
-	<div class="header level">{{localize "gurps.character.ranged.level"}}</div>
-	<div class="header accuracy">{{localize "gurps.character.ranged.accuracy"}}</div>
-	<div class="header damage">{{localize "gurps.character.ranged.damage"}}</div>
-	<div class="header range">{{localize "gurps.character.ranged.range"}}</div>
-	<div class="header rate-of-fire">{{localize "gurps.character.ranged.rate_of_fire"}}</div>
-	<div class="header shots">{{localize "gurps.character.ranged.shots"}}</div>
-	<div class="header bulk">{{localize "gurps.character.ranged.bulk"}}</div>
-	<div class="header recoil">{{localize "gurps.character.ranged.recoil"}}</div>
-	<div class="header st">{{localize "gurps.character.ranged.st"}}</div>
-	{{#each rangedWeapons}}
-	<div class="usage desc item" data-item-id="{{this.id}}" data-type="Item">
-		<div class="name">
-			{{this.system.usage}}
-		</div>
-		{{>actor/character/sections/item-notes}}
-	</div>
-	<div data-item-id="{{this.id}}" class="level">
-		{{this.level}}</div>
-	<div data-item-id="{{this.id}}" class="accuracy">
-		{{signed this.accuracy}}</div>
-	<div data-item-id="{{this.id}}" class="damage">
-		{{this.damage}}</div>
-	<div data-item-id="{{this.id}}" class="range">{{this.range}}</div>
-	<div data-item-id="{{this.id}}" class="rate-of-fire">{{this.rate_of_fire}}</div>
-	<div data-item-id="{{this.id}}" class="shots">{{this.shots}}</div>
-	<div data-item-id="{{this.id}}" class="bulk">{{this.bulk}}
-	</div>
-	<div data-item-id="{{this.id}}" class="recoil">{{this.recoil}}</div>
-	<div data-item-id="{{this.id}}" class="st">{{this.strength}}</div>
-	{{else}}
-	<div class="usage desc filler"></div>
-	<div class="level"></div>
-	<div class="accuracy"></div>
-	<div class="damage"></div>
-	<div class="range"></div>
-	<div class="rate-of-fire"></div>
-	<div class="shots"></div>
-	<div class="bulk"></div>
-	<div class="recoil"></div>
-	<div class="st"></div>
-	{{/each}}
+{{#with itemCollections.ranged as |section|}}
+<div id="ranged">
+	<header>
+		<span class="usage desc">{{ localize "gurps.weapon.ranged_header" }}</span>
+		<span class="level">{{ localize "gurps.character.ranged.level" }}</span>
+		<span class="accuracy">{{ localize "gurps.character.ranged.accuracy" }}</span>
+		<span class="damage">{{ localize "gurps.character.ranged.damage" }}</span>
+		<span class="range">{{ localize "gurps.character.ranged.range" }}</span>
+		<span class="rate-of-fire">{{ localize "gurps.character.ranged.rate_of_fire" }}</span>
+		<span class="shots">{{ localize "gurps.character.ranged.shots" }}</span>
+		<span class="bulk">{{ localize "gurps.character.ranged.bulk" }}</span>
+		<span class="recoil">{{ localize "gurps.character.ranged.recoil" }}</span>
+		<span class="st">{{ localize "gurps.character.ranged.st" }}</span>
+	</header>
+	<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
+		{{#each section.items}}
+		<li data-item-id="{{ item.id }}">
+			<div class="data">
+				<div class="item-name">
+					<div class="name">{{ this.system.usage }}</div>
+					{{{ item.resolvedNotes }}}
+				</div>
+				<div class="level">{{ this.level }}</div>
+				<div class="accuracy">{{ signed this.accuracy }}</div>
+				<div class="damage">{{ this.damage }}</div>
+				<div class="range">{{ this.range }}</div>
+				<div class="rate-of-fire">{{ this.rate_of_fire }}</div>
+				<div class="shots">{{ this.shots }}</div>
+				<div class="bulk">{{ this.bulk }}</div>
+				<div class="recoil">{{ this.recoil }}</div>
+				<div class="st">{{ this.strength }}</div>
+			</div>
+		</li>
+		{{/each}}
+	</ul>
 </div>
+{{/with}}
