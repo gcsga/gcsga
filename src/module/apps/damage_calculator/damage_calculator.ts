@@ -53,85 +53,41 @@ export interface IDamageCalculator {
 	applyTotalDamage(): void
 	applyBasicDamage(index: number): unknown
 
-	// === Attacker ===
-	readonly attacker: DamageAttacker | undefined
-	readonly weapon: DamageWeapon | undefined
-	readonly dice: DiceGURPS
-
+	// === Attack ===
 	readonly damagePoolID: string
 	damagePoolOverride: string | undefined
-
-	readonly damageTypeKey: string
 	damageTypeOverride: string | undefined
-
-	readonly isExplosion: boolean
 	isExplosionOverride: boolean | undefined
-
-	readonly isInternalExplosion: boolean
 	isInternalOverride: boolean | undefined
-
-	readonly armorDivisor: number
 	armorDivisorOverride: number | undefined
-
-	readonly range: number | undefined
 	rangeOverride: number | undefined
-
-	readonly isHalfDamage: boolean
 	isHalfDamageOverride: boolean | undefined
-
-	readonly isShotgunCloseRange: boolean
 	isShotgunCloseRangeOverride: boolean | undefined
-
-	readonly rofMultiplier: number
 	rofMultiplierOverride: number | undefined
 
 	// === Target ===
 	readonly target: DamageTarget
-
-	readonly injuryTolerance: string
 	injuryToleranceOverride: string | undefined
 
 	vulnerabilities: Vulnerability[]
-	readonly vulnerabilityLevel: number
 	vulnerabilityOverride: number | undefined
 	applyVulnerability(index: number, checked: boolean): void
 
-	readonly damageReduction: number
 	damageReductionOverride: number | undefined
-
-	readonly hitLocationTable: BodyGURPS
-	readonly hitLocationChoice: Record<string, string>
 }
 
 interface LocationDamage {
-	selectedEffects: InjuryEffect[]
-
+	readonly results: DamageResults
+	readonly selectedEffects: InjuryEffect[]
 	toggleEffect(index: number): unknown
-	hitLocation: HitLocation | undefined
 
 	readonly isOverridden: boolean
 	resetOverrides(): void
-
-	readonly results: DamageResults
-
-	readonly basicDamage: number
 	basicDamageOverride: number | undefined
-
-	readonly locationName: string
 	locationNameOverride: string | undefined
-
-	readonly isLargeAreaInjury: boolean
-
-	readonly damageResistance: ExplainedValue
 	damageResistanceOverride: number | undefined
-
-	readonly isFlexibleArmor: boolean
 	flexibleArmorOverride: boolean | undefined
-
-	readonly hardenedDRLevel: number
 	hardenedDROverride: number | undefined
-
-	readonly woundingModifier: number
 	woundingModifierOverride: number | undefined
 }
 
@@ -324,10 +280,10 @@ class DamageCalculator implements IDamageCalculator {
 	}
 
 	get isExplosion(): boolean {
-		return this.overrides.isExplosion ?? this._hasExplosionModifier
+		return this.overrides.isExplosion ?? this.hasExplosionModifier
 	}
 
-	private get _hasExplosionModifier(): boolean {
+	private get hasExplosionModifier(): boolean {
 		return this.damageRoll.damageModifier === "ex"
 	}
 
@@ -340,7 +296,7 @@ class DamageCalculator implements IDamageCalculator {
 			this.overrides.isExplosion = true
 			this.overrides.range = 0
 		}
-		this.overrides.isExplosion = this._hasExplosionModifier === value ? undefined : value
+		this.overrides.isExplosion = this.hasExplosionModifier === value ? undefined : value
 	}
 
 	get isInternalExplosion(): boolean {
@@ -519,10 +475,6 @@ class DamageCalculator implements IDamageCalculator {
 		choice[DefaultHitLocations.LargeArea] = this.format("gurps.dmgcalc.description.large_area_injury")
 		return choice
 	}
-
-	// getHitLocation(locationName: string) {
-	// 	return this.hitLocationTable.locations.find(it => it.tableName === locationName)
-	// }
 
 	/**
 	 * @returns {number} the maximum injury based on Injury Tolerance, or Infinity.
@@ -716,27 +668,6 @@ class DamageCalculator implements IDamageCalculator {
 		return undefined
 	}
 
-	/**
-	 * @returns {number} yards of knockback, if any.
-	 */
-	// @ts-expect-error unused
-	private knockback(results: DamageResults): number {
-		if (this.isDamageTypeKnockbackEligible) {
-			if (this.damageType === DamageTypes.cut && results.penetratingDamage!.value > 0) return 0
-
-			return Math.floor(results.rawDamage!.value / (this.knockbackResistance - 2))
-		}
-		return 0
-	}
-
-	private get isDamageTypeKnockbackEligible() {
-		return [DamageTypes.cr, DamageTypes.cut, DamageTypes.kb].includes(this.damageType)
-	}
-
-	private get knockbackResistance() {
-		return this.target.ST
-	}
-
 	// @ts-expect-error unused
 	private knockbackEffects(knockback: number): InjuryEffect[] {
 		if (knockback === 0) return []
@@ -777,7 +708,6 @@ class HitLocationDamage implements LocationDamage {
 	}
 
 	calculator: DamageCalculator
-
 	hit: DamageHit
 
 	get damageType(): DamageType {
@@ -794,6 +724,14 @@ class HitLocationDamage implements LocationDamage {
 
 	get target(): DamageTarget {
 		return this.calculator.target
+	}
+
+	hasNoBrain(target: DamageTarget): boolean {
+		return target.hasTrait("No Brain")
+	}
+
+	hasNoVitals(target: DamageTarget): boolean {
+		return target.hasTrait("No Vitals")
 	}
 
 	/*
@@ -1264,15 +1202,14 @@ class HitLocationDamage implements LocationDamage {
 				case Skull:
 				case Eye:
 					if (results.shockEffects.length > 0 || this.isMajorWound(results)) {
-						const penalty =
-							this.damageType !== DamageTypes.tox && !this.target.hasTrait("No Brain") ? -10 : 0
+						const penalty = this.damageType !== DamageTypes.tox && !this.hasNoBrain(this.target) ? -10 : 0
 						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck(penalty)]))
 					}
 					break
 
 				case Vitals:
 					if (results.shockEffects.length > 0) {
-						const penalty = this.target.hasTrait("No Vitals") ? 0 : -5
+						const penalty = this.hasNoVitals(this.target) ? 0 : -5
 						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck(penalty)]))
 					}
 					break
@@ -1284,7 +1221,7 @@ class HitLocationDamage implements LocationDamage {
 
 				case Groin:
 					if (this.isMajorWound(results)) {
-						const penalty = this.target.hasTrait("No Vitals") ? 0 : -5
+						const penalty = this.hasNoVitals(this.target) ? 0 : -5
 						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck(penalty)]))
 					}
 					break
@@ -1476,6 +1413,27 @@ class HitLocationDamage implements LocationDamage {
 		const location = this.hitLocation
 		const divisor = location && Extremity.includes(location.id) ? 3 : 2
 		return results.injury!.value > this.target.hitPoints.value / divisor
+	}
+
+	/**
+	 * @returns {number} yards of knockback, if any.
+	 */
+	// @ts-expect-error unused
+	private knockback(results: DamageResults): number {
+		if (this.isDamageTypeKnockbackEligible) {
+			if (this.damageType === DamageTypes.cut && results.penetratingDamage!.value > 0) return 0
+
+			return Math.floor(results.rawDamage!.value / (this.knockbackResistance - 2))
+		}
+		return 0
+	}
+
+	private get isDamageTypeKnockbackEligible() {
+		return [DamageTypes.cr, DamageTypes.cut, DamageTypes.kb].includes(this.damageType)
+	}
+
+	private get knockbackResistance() {
+		return this.target.ST
 	}
 }
 
