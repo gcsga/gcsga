@@ -26,10 +26,21 @@ import {
 import { RollModifier, RollType, gid } from "@module/data/index.ts"
 import { BodyGURPS, HitLocation } from "@sytem/hit_location/object.ts"
 
-export const Head = ["skull", "eye", "face"]
-export const Limb = ["arm", "leg"]
-export const Extremity = ["hand", "foot"]
+const Skull = "skull"
+const Eye = "eye"
+const Vitals = "vitals"
+const Face = "face"
+const Arm = "arm"
+const Leg = "leg"
+const Hand = "hand"
+const Foot = "foot"
 const Torso = "torso"
+const Neck = "neck"
+const Groin = "groin"
+
+export const Head = [Skull, Eye, Face]
+export const Limb = [Arm, Leg]
+export const Extremity = [Hand, Foot]
 
 export interface IDamageCalculator {
 	readonly hits: LocationDamage[]
@@ -93,6 +104,8 @@ export interface IDamageCalculator {
 }
 
 interface LocationDamage {
+	selectedEffects: InjuryEffect[]
+
 	toggleEffect(index: number): unknown
 	hitLocation: HitLocation | undefined
 
@@ -172,6 +185,10 @@ class DamageCalculator implements IDamageCalculator {
 	}
 
 	hits: LocationDamage[] = []
+	target: DamageTarget
+	private damageRoll: DamageRoll
+
+	format: (stringId: string, data?: Record<string, string | number | boolean | null>) => string
 
 	private overrides: ContainerOverrides = {
 		armorDivisor: undefined,
@@ -207,12 +224,6 @@ class DamageCalculator implements IDamageCalculator {
 
 		this.hits.forEach(it => it.resetOverrides())
 	}
-
-	private damageRoll: DamageRoll
-
-	format: (stringId: string, data?: Record<string, string | number | boolean | null>) => string
-
-	target: DamageTarget
 
 	applyBasicDamage(index: number): void {
 		const amount = this.hits[index].results.basicDamage!.value
@@ -259,7 +270,7 @@ class DamageCalculator implements IDamageCalculator {
 		return this.damageRoll.dice
 	}
 
-	private get diceOfDamage(): number {
+	get diceOfDamage(): number {
 		return this.dice.count
 	}
 
@@ -361,7 +372,7 @@ class DamageCalculator implements IDamageCalculator {
 		this.overrides.armorDivisor = this.damageRoll.armorDivisor === value ? undefined : value
 	}
 
-	private effectiveArmorDivisor(hardenedDRLevel: number): ExplainedValue {
+	effectiveArmorDivisor(hardenedDRLevel: number): ExplainedValue {
 		const ad = this.armorDivisor
 		if (isArmorDivisorLimitation())
 			return { value: ad, explanation: this.format("gurps.dmgcalc.description.armor_divisor", { divisor: ad }) }
@@ -407,6 +418,7 @@ class DamageCalculator implements IDamageCalculator {
 		return this.overrides.range !== undefined ? this.overrides.range : this._calculateRange()
 	}
 
+	// TODO Extract this as a utility funtion.
 	private _calculateRange(): number | undefined {
 		const scenes = game.scenes
 		if (scenes) {
@@ -471,7 +483,7 @@ class DamageCalculator implements IDamageCalculator {
 		this.overrides.isShotgunCloseRange = this.damageRoll.isShotgunCloseRange === value ? undefined : value
 	}
 
-	private get multiplierForShotgun() {
+	get multiplierForShotgun() {
 		// B409:At ranges less than 10% of 1/2D, don’t apply the RoF multiplier to RoF.
 		// Instead, multiply both basic damage dice and the target’s DR by half that value (round down).
 		return this.isShotgunCloseRange ? Math.floor(this.rofMultiplier / 2) : 1
@@ -507,6 +519,10 @@ class DamageCalculator implements IDamageCalculator {
 		choice[DefaultHitLocations.LargeArea] = this.format("gurps.dmgcalc.description.large_area_injury")
 		return choice
 	}
+
+	// getHitLocation(locationName: string) {
+	// 	return this.hitLocationTable.locations.find(it => it.tableName === locationName)
+	// }
 
 	/**
 	 * @returns {number} the maximum injury based on Injury Tolerance, or Infinity.
@@ -626,48 +642,6 @@ class DamageCalculator implements IDamageCalculator {
 
 	// === Step Calculations ===
 
-	getDamageResults(locationDamage: HitLocationDamage): DamageResults {
-		const results = new DamageResults()
-
-		// Basic Damage
-		results.addResults(this.getBasicDamageSteps(locationDamage))
-
-		// Damage Resistance
-		results.addResults(this.getDamageResistanceSteps(locationDamage))
-
-		// Penetrating Damge = Basic Damage - Damage Resistance
-		results.addResults(this.getPenetratingDamageSteps(results.basicDamage!, results.damageResistance!))
-
-		// Wounding Modifier
-		results.addResults(this.getWoundingModifierSteps(locationDamage))
-
-		// Injury = Penetrating Damage * Wounding Modifier
-		results.addResults(
-			this.getInjurySteps(
-				results.basicDamage!.value,
-				results.woundingModifier!.value,
-				results.penetratingDamage!.value,
-				locationDamage,
-			),
-		)
-
-		// results.knockback = this.knockback(results)
-		// results.addEffects(this.knockbackEffects(results.knockback))
-		results.addEffects(this.shockEffects(results, locationDamage.locationName))
-		// results.addEffects(this.majorWoundEffects(results, locationDamage.locationName))
-		// results.addEffects(this.miscellaneousEffects(results, locationDamage.locationName))
-		return results
-	}
-
-	getBasicDamageSteps(hit: HitLocationDamage): (CalculatorStep | undefined)[] {
-		const basicDamages: (CalculatorStep | undefined)[] = []
-
-		basicDamages.push(new BasicDamageStep(hit.basicDamage, this.damagePool.name))
-		basicDamages.push(this.adjustBasicDamage(hit.basicDamage))
-
-		return basicDamages
-	}
-
 	/**
 	 * Add steps to adjust Basic Damage for explosion, knockback, half damage, and shotgun.
 	 * @param basicDamage The basic damage value of the hitLocation.
@@ -719,293 +693,13 @@ class DamageCalculator implements IDamageCalculator {
 		}
 	}
 
-	getDamageResistanceSteps(hit: HitLocationDamage): (CalculatorStep | undefined)[] {
-		const results: (CalculatorStep | undefined)[] = []
-
-		const dr = this.damageResistanceAndReason(hit)
-		results.push(new DamageResistanceStep(dr.value, dr.explanation))
-		results.push(this.adjustDamageResistance(dr.value, hit))
-
-		return results
-	}
-
-	/**
-	 * Calculates the damage resistance and reason for a given hitLocation.
-	 * @param hitLocation The damage to location object.
-	 * @returns An object containing the key and value of the damage resistance and reason.
-	 */
-	private damageResistanceAndReason(hitLocation: LocationDamage): ExplainedValue {
-		if (hitLocation.damageResistanceOverride)
-			return {
-				explanation: this.format("gurps.dmgcalc.override"),
-				value: hitLocation.damageResistanceOverride,
-			}
-
-		// B400: Large-Area Injury: “effective DR” is the average of your torso DR and the DR of the least protected hit
-		// location exposed to the attack.
-		if (hitLocation.isLargeAreaInjury) {
-			// I'm only handling the simplest case: all hit locations are exposed to the attack.
-			const averageDR = Math.floor(
-				(torsoDR(this.hitLocationTable, this.damageType) +
-					leastProtectedLocationDR(this.hitLocationTable, this.damageType)) /
-					2,
-			)
-			return { explanation: this.format("gurps.dmgcalc.description.large_area_injury"), value: averageDR }
-		}
-
-		return hitLocation.damageResistance
-
-		function leastProtectedLocationDR(hitLocationTable: BodyGURPS, damageType: DamageType) {
-			const allLocationsDR = hitLocationTable.locations
-				.map(it => HitLocationUtil.getHitLocationDR(it, damageType))
-				.filter(it => it !== -1)
-			return Math.min(...allLocationsDR)
-		}
-
-		function torsoDR(hitLocationTable: BodyGURPS, damageType: DamageType) {
-			const torso = HitLocationUtil.getHitLocation(hitLocationTable, Torso)
-			return HitLocationUtil.getHitLocationDR(torso, damageType)
-		}
-	}
-
-	/**
-	 * Adjusts the damage resistance based on the given parameters.
-	 * @param dr - The damage resistance value.
-	 * @param hitLocation - The location damage.
-	 * @returns A CalculatorStep object representing the adjusted damage resistance,
-	 *          or undefined if no adjustment is needed.
-	 */
-	adjustDamageResistance(dr: number, hitLocation: LocationDamage): CalculatorStep | undefined {
-		const effectiveArmorDivisor = this.effectiveArmorDivisor(hitLocation.hardenedDRLevel)
-		// Armor Divisor is "Ignores DR"
-
-		if (effectiveArmorDivisor.value === IgnoresDR) {
-			return new EffectiveDamageResistanceStep(0, this.format("gurps.dmgcalc.description.armor_divisor_ignores"))
-		}
-
-		// B414: If an explosive goes off inside someone – e.g., a follow-up attack penetrates the target’s DR,
-		// or a dragon swallows a hand grenade – DR has no effect!
-		if (this.isInternalExplosion) {
-			return new EffectiveDamageResistanceStep(0, this.format("gurps.dmgcalc.description.explosion_internal"))
-		}
-
-		if (this.damageType === DamageTypes.injury) {
-			return new EffectiveDamageResistanceStep(0, this.format("gurps.dmgcalc.description.ignores_dr"))
-		}
-
-		// B409: At ranges less than 10% of 1/2D, don’t apply the RoF multiplier to RoF.
-		// Instead, multiply both basic damage dice and the target’s DR by half that value (round down).
-		if (this.multiplierForShotgun > 1) {
-			return new EffectiveDamageResistanceStep(
-				dr * this.multiplierForShotgun,
-				this.format("gurps.dmgcalc.description.shotgun", { multiplier: this.multiplierForShotgun }),
-			)
-		}
-
-		if (effectiveArmorDivisor.value !== NoArmorDivisor) {
-			// There are two cases: Armor Divisor WITH and WITHOUT Hardened Armor.
-			return new EffectiveDamageResistanceStep(
-				this.getEffectiveDR(dr, effectiveArmorDivisor.value),
-				effectiveArmorDivisor.explanation,
-			)
-		}
-
-		return undefined
-	}
-
-	private getEffectiveDR(dr: number, effectiveArmorDivisor: number) {
-		const result = Math.floor(dr / effectiveArmorDivisor)
-		// B110: In addition, if you have any level of (Armor Divisor as a limitation), targets that have DR 0 (e.g.,
-		// bare flesh) get DR 1 against your attack.
-		return isArmorDivisorLimitation() ? Math.max(result, 1) : result
-
-		function isArmorDivisorLimitation() {
-			return effectiveArmorDivisor < 1
-		}
-	}
-
-	getPenetratingDamageSteps(
-		basicDamage: CalculatorStep,
-		damageResistance: CalculatorStep,
-	): (CalculatorStep | undefined)[] {
-		const penetrating = basicDamage!.value - damageResistance!.value
-		return [
-			new PenetratingDamageStep(Math.max(penetrating, 0), `= ${basicDamage!.value} – ${damageResistance!.value}`),
-		]
-	}
-
-	getWoundingModifierSteps(hit: LocationDamage): (CalculatorStep | undefined)[] {
-		const results: (CalculatorStep | undefined)[] = []
-
-		const mod = this.woundingModifierAndReason(hit)
-		const step1 = new WoundingModifierStep(mod.value, mod.explanation)
-		results.push(step1)
-
-		const step2 = this.adjustWoundingModifierForInjuryTolerance(mod.value, hit)
-		results.push(step2)
-
-		results.push(this.adjustWoundingModifierForVulnerabilities(step2?.value ?? step1.value))
-
-		return results
-	}
-
-	/**
-	 *
-	 * @param locationDamage
-	 * @returns
-	 */
-	woundingModifierAndReason(locationDamage: LocationDamage): ExplainedValue {
-		if (locationDamage.woundingModifierOverride)
-			return {
-				value: locationDamage.woundingModifierOverride,
-				explanation: this.format("gurps.dmgcalc.override"),
-			}
-
-		if (this.woundingModifierByDamageType) return this.woundingModifierByDamageType
-
-		const modifierAndReason = this.woundingModifierByHitLocation(locationDamage.locationName!)
-		if (modifierAndReason) return modifierAndReason
-
-		const location = this.hitLocationTable.locations.find(it => it.tableName === locationDamage.locationName)
-		return {
-			value: this.damageType.woundingModifier,
-			explanation: this.format("gurps.dmgcalc.description.damage_location", {
-				type: this.format(this.damageType.full_name),
-				location:
-					locationDamage.locationName === DefaultHitLocations.LargeArea
-						? this.format("gurps.dmgcalc.description.large_area_injury")
-						: location?.tableName ?? "",
-			}),
-		}
-	}
-
-	get woundingModifierByDamageType(): ExplainedValue | undefined {
-		// B398: Fatigue damage always ignores hit location.
-		if (this.damageType === DamageTypes.fat)
-			return { value: 1, explanation: this.format("gurps.dmgcalc.description.fatigue") }
-
-		if (this.isInternalExplosion)
-			return { value: 3, explanation: this.format("gurps.dmgcalc.description.explosion_internal") }
-		return undefined
-	}
-
-	/**
-	 * Adjusts the wounding modifier for injury tolerance.
-	 * @param woundingModifier - The original wounding modifier.
-	 * @param locationDamage - The location damage.
-	 * @returns The calculator step if the wounding modifier is adjusted, otherwise undefined.
-	 */
-	private adjustWoundingModifierForInjuryTolerance(
-		woundingModifier: number,
-		locationDamage: LocationDamage,
-	): CalculatorStep | undefined {
-		let mod = undefined
-
-		// B380: Homogenous: Things that lack vulnerable internal parts or mechanisms – such as uniformly solid or
-		// hollow objects, unpowered vehicles, trees, and walls – are even less vulnerable!
-		if (this.isHomogenous)
-			mod = { value: this.damageType.homogenous, key: this.format("gurps.dmgcalc.tolerance.homogenous") }
-
-		const location = this.hitLocationTable.locations.find(it => it.tableName === locationDamage.locationName)
-
-		// B380: Unliving: Machines and anyone with Injury Tolerance (Unliving) (p. 60), such as most corporeal
-		// undead, are less vulnerable to impaling and piercing damage.
-		// B400: Hit location has its usual effect, save that piercing and impaling damage to any location other than
-		// the eye, skull, or vitals uses the Unliving wounding modifiers.
-		if (location && this.isUnliving && !["skull", "eye", "vitals"].includes(location.id))
-			mod = { value: this.damageType.unliving, key: this.format("gurps.dmgcalc.tolerance.unliving") }
-
-		// B400: No Brain: Hits to the skull get no extra knockdown or wounding modifier. Hits to the eye can cripple
-		// the eye; otherwise, treat them as face hits, not skull hits.
-		if (location && this.target.hasTrait("No Brain") && ["skull", "eye"].includes(location.id!))
-			mod = { value: this.damageType.woundingModifier, key: this.format("gurps.dmgcalc.description.no_brain") }
-
-		/**
-		 * TODO Diffuse: Exception: Area-effect, cone, and explosion attacks cause normal injury.
-		 */
-		// B400: Diffuse: Ignore all knockdown or wounding modifiers for hit location.
-		if (this.isDiffuse && this.woundingModifierByHitLocation(locationDamage.locationName!)) {
-			mod = { value: this.damageType.woundingModifier, key: this.format("gurps.dmgcalc.description.diffuse") }
-		}
-
-		if (mod && mod.value !== woundingModifier) {
-			return new InjuryToleranceStep(mod.value, mod.key)
-		}
-
-		return undefined
-	}
-
-	/**
-	 * @returns {number} wounding modifier only based on hit location.
-	 */
-	woundingModifierByHitLocation(locationName: string): ExplainedValue | undefined {
-		const location = this.hitLocationTable.locations.find(it => it.tableName === locationName)
-
-		const standardMessage = this.format("gurps.dmgcalc.description.damage_location", {
-			type: this.format(`gurps.dmgcalc.type.${this.damageType.id}`),
-			location:
-				locationName === DefaultHitLocations.LargeArea
-					? this.format("gurps.dmgcalc.description.large_area_injury")
-					: location?.tableName ?? "",
-		})
-
-		if (!location) return undefined
-
-		switch (location.id) {
-			case "vitals":
-				// B399: Increase the wounding modifier for an impaling or any piercing attack to x3...
-				if ([DamageTypes.imp, ...AnyPiercingType].includes(this.damageType))
-					return { value: 3, explanation: standardMessage }
-				if (this.isTightBeamBurning)
-					// ...Increase the  wounding modifier for a tight-beam burning attack (see box) to x2.
-					return {
-						value: 2,
-						explanation: this.format("gurps.dmgcalc.description.tight_beam_burn", {
-							location: location?.tableName,
-						}),
-					}
-				break
-
-			case "skull":
-			case "eye":
-				// B399: The wounding modifier for all attacks (to the skull) increases to x4. Treat (eye hits) as a
-				// skull hit. Exception: None of these effects apply to toxic damage.
-				if (this.damageType !== DamageTypes.tox) return { value: 4, explanation: standardMessage }
-				break
-
-			case "face":
-				// B399: Corrosion damage (to the face) (only) gets a x1.5 wounding modifier.
-				if (this.damageType === DamageTypes.cor) return { value: 1.5, explanation: standardMessage }
-				break
-
-			case "neck":
-				// B399: Increase the wounding multiplier of crushing and corrosion attacks to x1.5, and that of cutting
-				// damage to x2.
-				if ([DamageTypes.cor, DamageTypes.cr].includes(this.damageType))
-					return { value: 1.5, explanation: standardMessage }
-				if (this.damageType === DamageTypes.cut) return { value: 2, explanation: standardMessage }
-				break
-
-			case "hand":
-			case "foot":
-			case "arm":
-			case "leg":
-				// B399: Arm or Leg ... reduce the wounding multiplier of large piercing, huge piercing, and impaling
-				// damage to x1. Hands or Feet ... As for an arm or leg.
-				if ([DamageTypes["pi+"], DamageTypes["pi++"], DamageTypes.imp].includes(this.damageType))
-					return { value: 1, explanation: standardMessage }
-				break
-		}
-		return undefined
-	}
-
 	/**
 	 * Adjusts the wounding modifier for vulnerabilities.
 	 * @param woundingModifier - The original wounding modifier.
 	 * @returns A CalculatorStep object representing the adjusted wounding modifier, or undefined if no adjustment
 	 *  is needed.
 	 */
-	private adjustWoundingModifierForVulnerabilities(woundingModifier: number): CalculatorStep | undefined {
+	adjustWoundingModifierForVulnerabilities(woundingModifier: number): CalculatorStep | undefined {
 		if (this.vulnerabilityLevel !== NotVulnerable) {
 			// B161: You take extra damage from a particular attack form. Whenever this type of attack hits you,
 			// the GM applies a special wounding multiplier to damage that penetrates your DR. Regular wounding
@@ -1020,70 +714,6 @@ class DamageCalculator implements IDamageCalculator {
 		}
 
 		return undefined
-	}
-
-	getInjurySteps(
-		basicDamage: number,
-		woundingModifier: number,
-		penetratingDamage: number,
-		locationDamage: HitLocationDamage,
-	): (CalculatorStep | undefined)[] {
-		let injury = Math.floor(woundingModifier * penetratingDamage)
-
-		// If the wounding modifier is not zero, and any damage penetrates, then the minimum injury is 1.
-		if (injury === 0 && woundingModifier !== 0 && penetratingDamage > 0) injury = 1
-
-		const results = []
-		results.push(new InjuryStep(injury, `= ${penetratingDamage} × ${formatFraction(woundingModifier)}`))
-
-		const maximumForInjuryTolerance = this.maximumForInjuryTolerance
-		if (injury > maximumForInjuryTolerance.value) {
-			results.push(new AdjustedInjuryStep(maximumForInjuryTolerance.value, maximumForInjuryTolerance.explanation))
-		}
-
-		if (!this.isDiffuse) {
-			const bluntTrauma = this.bluntTrauma_(locationDamage.isFlexibleArmor, basicDamage, penetratingDamage)
-			if (bluntTrauma > 0) {
-				results.push(new AdjustedInjuryStep(bluntTrauma, this.format("gurps.dmgcalc.description.blunt_trauma")))
-			}
-		}
-
-		// Adjust for Damage Reduction.
-		if (this.damageReduction !== NoDamageReduction) {
-			const newValue = Math.ceil(getCurrentValue(results) / this.damageReduction)
-			results.push(
-				new DamageReductionStep(
-					newValue,
-					this.format("gurps.dmgcalc.description.damage_reduction", {
-						injury: getCurrentValue(results),
-						reduction: this.damageReduction,
-					}),
-				),
-			)
-		}
-
-		// Adjust for hit location.
-		injury = getCurrentValue(results)
-		const maximumForHitLocation = locationDamage.maximumInjury(this.target.hitPoints.value)
-		const newValue = Math.min(injury, maximumForHitLocation.value)
-		if (newValue < injury) {
-			results.push(new MaxForLocationStep(newValue, maximumForHitLocation.explanation))
-		}
-
-		return results
-
-		function getCurrentValue(results: (CalculatorStep | undefined)[]): number {
-			return [...results].reverse().find(it => it !== undefined)!.value
-		}
-	}
-
-	/**
-	 * @returns {number} the amount of blunt trauma damage, if any.
-	 */
-	private bluntTrauma_(isFlexibleArmor: boolean, basicDamage: number, penetratingDamage: number): number {
-		// No need to do this check -- this method is only called if isBluntTrauma is true.
-		if (penetratingDamage > 0 || !isFlexibleArmor) return 0
-		return this.damageType.bluntTraumaDivisor > 0 ? Math.floor(basicDamage / this.damageType.bluntTraumaDivisor) : 0
 	}
 
 	/**
@@ -1131,107 +761,6 @@ class DamageCalculator implements IDamageCalculator {
 		)
 		return [knockbackEffect]
 	}
-
-	// @ts-expect-error unused
-	private shockEffects(results: DamageResults, locationName: string): InjuryEffect[] {
-		const rawModifier = Math.floor(results.injury!.value / this.shockFactor)
-		if (rawModifier > 0) {
-			const modifier = Math.min(4, rawModifier) * -1
-
-			// TODO In RAW, this doubling only occurs if the target is physiologically male and does not have the
-			// 	 "No Vitals" Injury Tolerance trait.
-			// const location = this.hitLocationTable.locations.find(it => it.tableName === locationName)
-			// if (this.damageType === DamageTypes.cr && location?.id === "groin" && !this.target.hasTrait("No Vitals"))
-			// 	modifier *= 2
-
-			const shockEffect = new ShockInjuryEffect(modifier)
-			return [shockEffect]
-		}
-		return []
-	}
-
-	// @ts-expect-error unused
-	private majorWoundEffects(results: DamageResults, locationName: string): InjuryEffect[] {
-		const wounds = []
-
-		// Fatigue attacks and Injury Tolerance (Homogenous) ignore hit location.
-		if (this.damageType === DamageTypes.fat || this.isHomogenous || this.isDiffuse) {
-			if (this.isMajorWound(results, locationName))
-				wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck()]))
-		} else {
-			const location = this.hitLocationTable.locations.find(it => it.tableName === locationName)
-			switch (location?.id) {
-				case "torso":
-					if (this.isMajorWound(results, locationName))
-						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck()]))
-					break
-
-				case "skull":
-				case "eye":
-					if (results.shockEffects.length > 0 || this.isMajorWound(results, locationName)) {
-						const penalty =
-							this.damageType !== DamageTypes.tox && !this.target.hasTrait("No Brain") ? -10 : 0
-						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck(penalty)]))
-					}
-					break
-
-				case "vitals":
-					if (results.shockEffects.length > 0) {
-						const penalty = this.target.hasTrait("No Vitals") ? 0 : -5
-						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck(penalty)]))
-					}
-					break
-
-				case "face":
-					if (this.isMajorWound(results, locationName))
-						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck(-5)]))
-					break
-
-				case "groin":
-					if (this.isMajorWound(results, locationName)) {
-						const penalty = this.target.hasTrait("No Vitals") ? 0 : -5
-						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck(penalty)]))
-					}
-					break
-
-				default:
-					if (this.isMajorWound(results, locationName))
-						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck()]))
-			}
-		}
-
-		return wounds
-	}
-
-	private isMajorWound(results: DamageResults, locationName: string): boolean {
-		const location = this.hitLocationTable.locations.find(it => it.tableName === locationName)
-		const divisor = location && Extremity.includes(location.id) ? 3 : 2
-		return results.injury!.value > this.target.hitPoints.value / divisor
-	}
-
-	// @ts-expect-error unused
-	private miscellaneousEffects(results: DamageResults, locationName: string): InjuryEffect[] {
-		const location = this.hitLocationTable.locations.find(it => it.tableName === locationName)
-
-		if (location && location.id === "eye" && results.injury!.value > this.target.hitPoints.value / 10)
-			return [new InjuryEffect(InjuryEffectType.eyeBlinded)]
-
-		if (location && location.id === "face" && this.isMajorWound(results, locationName)) {
-			return results.injury!.value > this.target.hitPoints.value
-				? [new InjuryEffect(InjuryEffectType.blinded)]
-				: [new InjuryEffect(InjuryEffectType.eyeBlinded)]
-		}
-
-		if (location && Limb.includes(location.id) && this.isMajorWound(results, locationName)) {
-			return [new InjuryEffect(InjuryEffectType.limbCrippled)]
-		}
-
-		if (location && Extremity.includes(location.id) && this.isMajorWound(results, locationName)) {
-			return [new InjuryEffect(InjuryEffectType.limbCrippled)]
-		}
-
-		return []
-	}
 }
 
 /**
@@ -1250,6 +779,22 @@ class HitLocationDamage implements LocationDamage {
 	calculator: DamageCalculator
 
 	hit: DamageHit
+
+	get damageType(): DamageType {
+		return this.calculator.damageType
+	}
+
+	get damagePool(): TargetPool {
+		return this.calculator.damagePool
+	}
+
+	get hitLocationTable(): BodyGURPS {
+		return this.calculator.hitLocationTable
+	}
+
+	get target(): DamageTarget {
+		return this.calculator.target
+	}
 
 	/*
 	 * TODO Sometime in the future, I want to save the overrides and vulnerabilities on the target in a map keyed by
@@ -1280,7 +825,385 @@ class HitLocationDamage implements LocationDamage {
 	}
 
 	get results(): DamageResults {
-		return this.calculator.getDamageResults(this)
+		const results = new DamageResults()
+
+		// Basic Damage
+		results.addResults(this.getBasicDamageSteps())
+
+		// Damage Resistance
+		results.addResults(this.getDamageResistanceSteps())
+
+		// Penetrating Damage
+		results.addResults(HitLocationDamage.getPenetratingDamageSteps(results.basicDamage!, results.damageResistance!))
+
+		// Wounding Modifier
+		results.addResults(this.getWoundingModifierSteps())
+
+		// Injury = Penetrating Damage * Wounding Modifier
+		results.addResults(
+			this.getInjurySteps(
+				results.basicDamage!.value,
+				results.woundingModifier!.value,
+				results.penetratingDamage!.value,
+			),
+		)
+
+		// results.knockback = this.knockback(results)
+		// results.addEffects(this.knockbackEffects(results.knockback))
+		results.addEffects(this.shockEffects(results))
+		// results.addEffects(this.majorWoundEffects(results, locationDamage.locationName))
+		// results.addEffects(this.miscellaneousEffects(results, locationDamage.locationName))
+		return results
+	}
+
+	getBasicDamageSteps(): (CalculatorStep | undefined)[] {
+		const basicDamages: (CalculatorStep | undefined)[] = []
+
+		basicDamages.push(new BasicDamageStep(this.basicDamage, this.damagePool.name))
+		basicDamages.push(this.calculator.adjustBasicDamage(this.basicDamage))
+
+		return basicDamages
+	}
+
+	getDamageResistanceSteps(): (CalculatorStep | undefined)[] {
+		const results: (CalculatorStep | undefined)[] = []
+
+		const dr = this.damageResistanceAndReason()
+		results.push(new DamageResistanceStep(dr.value, dr.explanation))
+		results.push(this.adjustDamageResistance(dr.value))
+
+		return results
+	}
+
+	/**
+	 * Calculates the damage resistance and reason for a given hitLocation.
+	 * @param hitLocation The damage to location object.
+	 * @returns An object containing the key and value of the damage resistance and reason.
+	 */
+	private damageResistanceAndReason(): ExplainedValue {
+		if (this.damageResistanceOverride)
+			return {
+				explanation: this.format("gurps.dmgcalc.override"),
+				value: this.damageResistanceOverride,
+			}
+
+		// B400: Large-Area Injury: “effective DR” is the average of your torso DR and the DR of the least protected hit
+		// location exposed to the attack.
+		if (this.isLargeAreaInjury) {
+			// I'm only handling the simplest case: all hit locations are exposed to the attack.
+			const averageDR = Math.floor(
+				(torsoDR(this.hitLocationTable, this.damageType) +
+					leastProtectedLocationDR(this.hitLocationTable, this.damageType)) /
+					2,
+			)
+			return { explanation: this.format("gurps.dmgcalc.description.large_area_injury"), value: averageDR }
+		}
+
+		return this.damageResistance
+
+		function leastProtectedLocationDR(hitLocationTable: BodyGURPS, damageType: DamageType) {
+			const allLocationsDR = hitLocationTable.locations
+				.map(it => HitLocationUtil.getHitLocationDR(it, damageType))
+				.filter(it => it !== -1)
+			return Math.min(...allLocationsDR)
+		}
+
+		function torsoDR(hitLocationTable: BodyGURPS, damageType: DamageType) {
+			const torso = HitLocationUtil.getHitLocation(hitLocationTable, Torso)
+			return HitLocationUtil.getHitLocationDR(torso, damageType)
+		}
+	}
+
+	/**
+	 * Adjusts the damage resistance based on the given parameters.
+	 * @param dr - The damage resistance value.
+	 * @param hitLocation - The location damage.
+	 * @returns A CalculatorStep object representing the adjusted damage resistance,
+	 *          or undefined if no adjustment is needed.
+	 */
+	private adjustDamageResistance(dr: number): CalculatorStep | undefined {
+		const effectiveArmorDivisor = this.calculator.effectiveArmorDivisor(this.hardenedDRLevel)
+		// Armor Divisor is "Ignores DR"
+
+		if (effectiveArmorDivisor.value === IgnoresDR) {
+			return new EffectiveDamageResistanceStep(0, this.format("gurps.dmgcalc.description.armor_divisor_ignores"))
+		}
+
+		// B414: If an explosive goes off inside someone – e.g., a follow-up attack penetrates the target’s DR,
+		// or a dragon swallows a hand grenade – DR has no effect!
+		if (this.calculator.isInternalExplosion) {
+			return new EffectiveDamageResistanceStep(0, this.format("gurps.dmgcalc.description.explosion_internal"))
+		}
+
+		if (this.damageType === DamageTypes.injury) {
+			return new EffectiveDamageResistanceStep(0, this.format("gurps.dmgcalc.description.ignores_dr"))
+		}
+
+		// B409: At ranges less than 10% of 1/2D, don’t apply the RoF multiplier to RoF.
+		// Instead, multiply both basic damage dice and the target’s DR by half that value (round down).
+		const multiplierForShotgun = this.calculator.multiplierForShotgun
+		if (multiplierForShotgun > 1) {
+			return new EffectiveDamageResistanceStep(
+				dr * multiplierForShotgun,
+				this.format("gurps.dmgcalc.description.shotgun", { multiplier: multiplierForShotgun }),
+			)
+		}
+
+		if (effectiveArmorDivisor.value !== NoArmorDivisor) {
+			// There are two cases: Armor Divisor WITH and WITHOUT Hardened Armor.
+			return new EffectiveDamageResistanceStep(
+				this.getEffectiveDR(dr, effectiveArmorDivisor.value),
+				effectiveArmorDivisor.explanation,
+			)
+		}
+
+		return undefined
+	}
+
+	private getEffectiveDR(dr: number, effectiveArmorDivisor: number) {
+		const result = Math.floor(dr / effectiveArmorDivisor)
+		// B110: In addition, if you have any level of (Armor Divisor as a limitation), targets that have DR 0 (e.g.,
+		// bare flesh) get DR 1 against your attack.
+		return isArmorDivisorLimitation() ? Math.max(result, 1) : result
+
+		function isArmorDivisorLimitation() {
+			return effectiveArmorDivisor < 1
+		}
+	}
+
+	static getPenetratingDamageSteps(
+		basicDamage: CalculatorStep,
+		damageResistance: CalculatorStep,
+	): (CalculatorStep | undefined)[] {
+		const penetrating = basicDamage!.value - damageResistance!.value
+		return [
+			new PenetratingDamageStep(Math.max(penetrating, 0), `= ${basicDamage!.value} – ${damageResistance!.value}`),
+		]
+	}
+
+	getWoundingModifierSteps(): (CalculatorStep | undefined)[] {
+		const results: (CalculatorStep | undefined)[] = []
+
+		const mod = this.woundingModifierAndReason()
+		const step1 = new WoundingModifierStep(mod.value, mod.explanation)
+		results.push(step1)
+
+		const step2 = this.adjustWoundingModifierForInjuryTolerance(mod.value)
+		results.push(step2)
+
+		results.push(this.calculator.adjustWoundingModifierForVulnerabilities(step2?.value ?? step1.value))
+
+		return results
+	}
+
+	/**
+	 *
+	 * @param locationDamage
+	 * @returns
+	 */
+	private woundingModifierAndReason(): ExplainedValue {
+		if (this.woundingModifierOverride)
+			return {
+				value: this.woundingModifierOverride,
+				explanation: this.format("gurps.dmgcalc.override"),
+			}
+
+		if (this.woundingModifierByDamageType) return this.woundingModifierByDamageType
+
+		const modifierAndReason = this.woundingModifierByHitLocation(this.locationName!)
+		if (modifierAndReason) return modifierAndReason
+
+		const location = this.hitLocationTable.locations.find(it => it.tableName === this.locationName)
+		return {
+			value: this.damageType.woundingModifier,
+			explanation: this.format("gurps.dmgcalc.description.damage_location", {
+				type: this.format(this.damageType.full_name),
+				location:
+					this.locationName === DefaultHitLocations.LargeArea
+						? this.format("gurps.dmgcalc.description.large_area_injury")
+						: location?.tableName ?? "",
+			}),
+		}
+	}
+
+	/**
+	 * Adjusts the wounding modifier for injury tolerance.
+	 * @param woundingModifier - The original wounding modifier.
+	 * @param locationDamage - The location damage.
+	 * @returns The calculator step if the wounding modifier is adjusted, otherwise undefined.
+	 */
+	private adjustWoundingModifierForInjuryTolerance(woundingModifier: number): CalculatorStep | undefined {
+		let mod = undefined
+
+		// B380: Homogenous: Things that lack vulnerable internal parts or mechanisms – such as uniformly solid or
+		// hollow objects, unpowered vehicles, trees, and walls – are even less vulnerable!
+		if (this.calculator.isHomogenous)
+			mod = {
+				value: this.damageType.homogenous,
+				key: this.format("gurps.dmgcalc.tolerance.homogenous"),
+			}
+
+		const location = this.hitLocationTable.locations.find(it => it.tableName === this.locationName)
+
+		// B380: Unliving: Machines and anyone with Injury Tolerance (Unliving) (p. 60), such as most corporeal
+		// undead, are less vulnerable to impaling and piercing damage.
+		// B400: Hit location has its usual effect, save that piercing and impaling damage to any location other than
+		// the eye, skull, or vitals uses the Unliving wounding modifiers.
+		if (location && this.calculator.isUnliving && ![Skull, Eye, Vitals].includes(location.id))
+			mod = { value: this.damageType.unliving, key: this.format("gurps.dmgcalc.tolerance.unliving") }
+
+		// B400: No Brain: Hits to the skull get no extra knockdown or wounding modifier. Hits to the eye can cripple
+		// the eye; otherwise, treat them as face hits, not skull hits.
+		if (location && this.calculator.target.hasTrait("No Brain") && [Skull, Eye].includes(location.id!))
+			mod = {
+				value: this.damageType.woundingModifier,
+				key: this.format("gurps.dmgcalc.description.no_brain"),
+			}
+
+		/**
+		 * TODO Diffuse: Exception: Area-effect, cone, and explosion attacks cause normal injury.
+		 */
+		// B400: Diffuse: Ignore all knockdown or wounding modifiers for hit location.
+		if (this.calculator.isDiffuse && this.woundingModifierByHitLocation(this.locationName!)) {
+			mod = {
+				value: this.damageType.woundingModifier,
+				key: this.format("gurps.dmgcalc.description.diffuse"),
+			}
+		}
+
+		if (mod && mod.value !== woundingModifier) {
+			return new InjuryToleranceStep(mod.value, mod.key)
+		}
+
+		return undefined
+	}
+
+	/**
+	 * @returns {number} wounding modifier only based on hit location.
+	 */
+	private woundingModifierByHitLocation(locationName: string): ExplainedValue | undefined {
+		const location = this.hitLocation
+		const damageType = this.damageType
+
+		const standardMessage = this.format("gurps.dmgcalc.description.damage_location", {
+			type: this.format(`gurps.dmgcalc.type.${damageType.id}`),
+			location:
+				locationName === DefaultHitLocations.LargeArea
+					? this.format("gurps.dmgcalc.description.large_area_injury")
+					: location?.tableName ?? "",
+		})
+
+		if (!location) return undefined
+
+		switch (location.id) {
+			case Vitals:
+				// B399: Increase the wounding modifier for an impaling or any piercing attack to x3...
+				if ([DamageTypes.imp, ...AnyPiercingType].includes(damageType))
+					return { value: 3, explanation: standardMessage }
+				if (this.calculator.isTightBeamBurning)
+					// ...Increase the  wounding modifier for a tight-beam burning attack (see box) to x2.
+					return {
+						value: 2,
+						explanation: this.format("gurps.dmgcalc.description.tight_beam_burn", {
+							location: location?.tableName,
+						}),
+					}
+				break
+
+			case Skull:
+			case Eye:
+				// B399: The wounding modifier for all attacks (to the skull) increases to x4. Treat (eye hits) as a
+				// skull hit. Exception: None of these effects apply to toxic damage.
+				if (damageType !== DamageTypes.tox) return { value: 4, explanation: standardMessage }
+				break
+
+			case Face:
+				// B399: Corrosion damage (to the face) (only) gets a x1.5 wounding modifier.
+				if (damageType === DamageTypes.cor) return { value: 1.5, explanation: standardMessage }
+				break
+
+			case Neck:
+				// B399: Increase the wounding multiplier of crushing and corrosion attacks to x1.5, and that of cutting
+				// damage to x2.
+				if ([DamageTypes.cor, DamageTypes.cr].includes(damageType))
+					return { value: 1.5, explanation: standardMessage }
+				if (damageType === DamageTypes.cut) return { value: 2, explanation: standardMessage }
+				break
+
+			case Hand:
+			case Foot:
+			case Arm:
+			case Leg:
+				// B399: Arm or Leg ... reduce the wounding multiplier of large piercing, huge piercing, and impaling
+				// damage to x1. Hands or Feet ... As for an arm or leg.
+				if ([DamageTypes["pi+"], DamageTypes["pi++"], DamageTypes.imp].includes(damageType))
+					return { value: 1, explanation: standardMessage }
+				break
+		}
+		return undefined
+	}
+
+	getInjurySteps(
+		basicDamage: number,
+		woundingModifier: number,
+		penetratingDamage: number,
+	): (CalculatorStep | undefined)[] {
+		let injury = Math.floor(woundingModifier * penetratingDamage)
+
+		// If the wounding modifier is not zero, and any damage penetrates, then the minimum injury is 1.
+		if (injury === 0 && woundingModifier !== 0 && penetratingDamage > 0) injury = 1
+
+		const results = []
+		results.push(new InjuryStep(injury, `= ${penetratingDamage} × ${formatFraction(woundingModifier)}`))
+
+		const maximumForInjuryTolerance = this.calculator.maximumForInjuryTolerance
+		if (injury > maximumForInjuryTolerance.value) {
+			results.push(new AdjustedInjuryStep(maximumForInjuryTolerance.value, maximumForInjuryTolerance.explanation))
+		}
+
+		if (!this.calculator.isDiffuse) {
+			const bluntTrauma = this.bluntTrauma_(this.isFlexibleArmor, basicDamage, penetratingDamage)
+			if (bluntTrauma > 0) {
+				results.push(new AdjustedInjuryStep(bluntTrauma, this.format("gurps.dmgcalc.description.blunt_trauma")))
+			}
+		}
+
+		// Adjust for Damage Reduction.
+		if (this.calculator.damageReduction !== NoDamageReduction) {
+			const newValue = Math.ceil(getCurrentValue(results) / this.calculator.damageReduction)
+			results.push(
+				new DamageReductionStep(
+					newValue,
+					this.format("gurps.dmgcalc.description.damage_reduction", {
+						injury: getCurrentValue(results),
+						reduction: this.calculator.damageReduction,
+					}),
+				),
+			)
+		}
+
+		// Adjust for hit location.
+		injury = getCurrentValue(results)
+		const maximumForHitLocation = this.maximumInjury(this.calculator.target.hitPoints.value)
+		const newValue = Math.min(injury, maximumForHitLocation.value)
+		if (newValue < injury) {
+			results.push(new MaxForLocationStep(newValue, maximumForHitLocation.explanation))
+		}
+
+		return results
+
+		function getCurrentValue(results: (CalculatorStep | undefined)[]): number {
+			return [...results].reverse().find(it => it !== undefined)!.value
+		}
+	}
+
+	/**
+	 * @returns {number} the amount of blunt trauma damage, if any.
+	 */
+	private bluntTrauma_(isFlexibleArmor: boolean, basicDamage: number, penetratingDamage: number): number {
+		// No need to do this check -- this method is only called if isBluntTrauma is true.
+		if (penetratingDamage > 0 || !isFlexibleArmor) return 0
+		return this.damageType.bluntTraumaDivisor > 0 ? Math.floor(basicDamage / this.damageType.bluntTraumaDivisor) : 0
 	}
 
 	toggleEffect(index: number): void {
@@ -1294,8 +1217,109 @@ class HitLocationDamage implements LocationDamage {
 		}
 	}
 
+	get selectedEffects(): InjuryEffect[] {
+		return []
+	}
+
 	isEffectActive(index: number): boolean {
 		return this.overrides.effects?.includes(index) ?? false
+	}
+
+	shockEffects(results: DamageResults): InjuryEffect[] {
+		const rawModifier = Math.floor(results.injury!.value / this.calculator.shockFactor)
+		if (rawModifier > 0) {
+			const modifier = Math.min(4, rawModifier) * -1
+
+			// TODO In RAW, this doubling only occurs if the target is physiologically male and does not have the "No Vitals" Injury Tolerance trait.
+			const location = this.hitLocation
+			const crushingDamage = this.damageType === DamageTypes.cr
+			const groinHit = location?.id === "groin"
+			const noVitals = this.calculator.target.hasTrait("No Vitals")
+
+			const shockEffect =
+				crushingDamage && groinHit && !noVitals
+					? new ShockInjuryEffect(modifier * 2, true)
+					: new ShockInjuryEffect(modifier, false)
+			return [shockEffect]
+		}
+		return []
+	}
+
+	// @ts-expect-error unused
+	private majorWoundEffects(results: DamageResults, locationName: string): InjuryEffect[] {
+		const wounds = []
+
+		// Fatigue attacks and Injury Tolerance (Homogenous) ignore hit location.
+		if (this.damageType === DamageTypes.fat || this.calculator.isHomogenous || this.calculator.isDiffuse) {
+			if (this.isMajorWound(results))
+				wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck()]))
+		} else {
+			const location = this.hitLocation
+			switch (location?.id) {
+				case Torso:
+					if (this.isMajorWound(results))
+						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck()]))
+					break
+
+				case Skull:
+				case Eye:
+					if (results.shockEffects.length > 0 || this.isMajorWound(results)) {
+						const penalty =
+							this.damageType !== DamageTypes.tox && !this.target.hasTrait("No Brain") ? -10 : 0
+						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck(penalty)]))
+					}
+					break
+
+				case Vitals:
+					if (results.shockEffects.length > 0) {
+						const penalty = this.target.hasTrait("No Vitals") ? 0 : -5
+						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck(penalty)]))
+					}
+					break
+
+				case Face:
+					if (this.isMajorWound(results))
+						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck(-5)]))
+					break
+
+				case Groin:
+					if (this.isMajorWound(results)) {
+						const penalty = this.target.hasTrait("No Vitals") ? 0 : -5
+						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck(penalty)]))
+					}
+					break
+
+				default:
+					if (this.isMajorWound(results))
+						wounds.push(new InjuryEffect(InjuryEffectType.majorWound, [], [new KnockdownCheck()]))
+			}
+		}
+
+		return wounds
+	}
+
+	// @ts-expect-error unused
+	private miscellaneousEffects(results: DamageResults, locationName: string): InjuryEffect[] {
+		const location = this.hitLocation
+
+		if (location && location.id === Eye && results.injury!.value > this.target.hitPoints.value / 10)
+			return [new InjuryEffect(InjuryEffectType.eyeBlinded)]
+
+		if (location && location.id === Face && this.isMajorWound(results)) {
+			return results.injury!.value > this.target.hitPoints.value
+				? [new InjuryEffect(InjuryEffectType.blinded)]
+				: [new InjuryEffect(InjuryEffectType.eyeBlinded)]
+		}
+
+		if (location && Limb.includes(location.id) && this.isMajorWound(results)) {
+			return [new InjuryEffect(InjuryEffectType.limbCrippled)]
+		}
+
+		if (location && Extremity.includes(location.id) && this.isMajorWound(results)) {
+			return [new InjuryEffect(InjuryEffectType.limbCrippled)]
+		}
+
+		return []
 	}
 
 	// --- Basic Damage ---
@@ -1318,16 +1342,25 @@ class HitLocationDamage implements LocationDamage {
 
 		if (this.overrides.woundingModifier) {
 			woundingModifier = this.overrides.woundingModifier
-		} else if (this.calculator.woundingModifierByDamageType) {
-			const modifier = this.calculator.woundingModifierByDamageType
-			woundingModifier = modifier.value
-		} else if (this.calculator.woundingModifierByHitLocation(this.locationName)) {
-			const modifier = this.calculator.woundingModifierByHitLocation(this.locationName)
+		} else if (this.woundingModifierByDamageType) {
+			woundingModifier = this.woundingModifierByDamageType.value
+		} else if (this.woundingModifierByHitLocation(this.locationName)) {
+			const modifier = this.woundingModifierByHitLocation(this.locationName)
 			woundingModifier = modifier ? modifier.value : 1
 		} else {
-			woundingModifier = this.calculator.damageType.woundingModifier
+			woundingModifier = this.damageType.woundingModifier
 		}
 		return woundingModifier
+	}
+
+	get woundingModifierByDamageType(): ExplainedValue | undefined {
+		// B398: Fatigue damage always ignores hit location.
+		if (this.damageType === DamageTypes.fat)
+			return { value: 1, explanation: this.format("gurps.dmgcalc.description.fatigue") }
+
+		if (this.calculator.isInternalExplosion)
+			return { value: 3, explanation: this.format("gurps.dmgcalc.description.explosion_internal") }
+		return undefined
 	}
 
 	get woundingModifierOverride(): number | undefined {
@@ -1363,14 +1396,13 @@ class HitLocationDamage implements LocationDamage {
 	get damageResistance(): ExplainedValue {
 		return {
 			explanation: `${this.hitLocation?.tableName}`,
-			value:
-				this.overrides.rawDR ?? HitLocationUtil.getHitLocationDR(this.hitLocation, this.calculator.damageType),
+			value: this.overrides.rawDR ?? HitLocationUtil.getHitLocationDR(this.hitLocation, this.damageType),
 		}
 	}
 
 	set damageResistanceOverride(dr: number | undefined) {
 		this.overrides.rawDR =
-			HitLocationUtil.getHitLocationDR(this.hitLocation, this.calculator.damageType) === dr ? undefined : dr
+			HitLocationUtil.getHitLocationDR(this.hitLocation, this.damageType) === dr ? undefined : dr
 	}
 
 	get damageResistanceOverride() {
@@ -1383,8 +1415,7 @@ class HitLocationDamage implements LocationDamage {
 	}
 
 	get _isFlexibleArmor(): boolean {
-		const hitLocation = HitLocationUtil.getHitLocation(this.calculator.hitLocationTable, this.locationName)
-		return HitLocationUtil.isFlexibleArmor(hitLocation)
+		return HitLocationUtil.isFlexibleArmor(this.hitLocation)
 	}
 
 	get flexibleArmorOverride(): boolean | undefined {
@@ -1416,7 +1447,7 @@ class HitLocationDamage implements LocationDamage {
 	 * @returns the maximum injury based on hit location, or Infinity if none.
 	 */
 	maximumInjury(maxHitPoints: number): ExplainedValue {
-		const location = this.calculator.hitLocationTable.locations.find(it => it.tableName === this.locationName)
+		const location = this.hitLocation
 
 		if (location && Limb.includes(location.id)) {
 			const max = Math.floor(maxHitPoints / 2) + 1
@@ -1439,6 +1470,12 @@ class HitLocationDamage implements LocationDamage {
 		}
 
 		return { value: Infinity, explanation: "" }
+	}
+
+	private isMajorWound(results: DamageResults): boolean {
+		const location = this.hitLocation
+		const divisor = location && Extremity.includes(location.id) ? 3 : 2
+		return results.injury!.value > this.target.hitPoints.value / divisor
 	}
 }
 

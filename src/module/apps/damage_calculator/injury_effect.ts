@@ -43,10 +43,13 @@ class InjuryEffect {
 }
 
 export class ShockInjuryEffect extends InjuryEffect {
-	constructor(level: number) {
+	groin: boolean
+
+	constructor(level: number, groin: boolean = false) {
 		super(InjuryEffectType.shock)
 
 		this.level = level
+		this.groin = groin
 		this.displayName = this.format("gurps.dmgcalc.effect_types.shock")
 		this.description = this.format("gurps.dmgcalc.effect_descriptions.shock", {
 			level: asDisplayString(this.level),
