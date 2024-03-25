@@ -794,7 +794,7 @@ class HitLocationDamage implements LocationDamage {
 		return results
 	}
 
-	getBasicDamageSteps(): (CalculatorStep | undefined)[] {
+	private getBasicDamageSteps(): (CalculatorStep | undefined)[] {
 		const basicDamages: (CalculatorStep | undefined)[] = []
 
 		basicDamages.push(new BasicDamageStep(this.basicDamage, this.damagePool.name))
@@ -803,7 +803,7 @@ class HitLocationDamage implements LocationDamage {
 		return basicDamages
 	}
 
-	getDamageResistanceSteps(): (CalculatorStep | undefined)[] {
+	private getDamageResistanceSteps(): (CalculatorStep | undefined)[] {
 		const results: (CalculatorStep | undefined)[] = []
 
 		const dr = this.damageResistanceAndReason()
@@ -919,7 +919,7 @@ class HitLocationDamage implements LocationDamage {
 		]
 	}
 
-	getWoundingModifierSteps(): (CalculatorStep | undefined)[] {
+	private getWoundingModifierSteps(): (CalculatorStep | undefined)[] {
 		const results: (CalculatorStep | undefined)[] = []
 
 		const mod = this.woundingModifierAndReason()
@@ -1081,7 +1081,7 @@ class HitLocationDamage implements LocationDamage {
 		return undefined
 	}
 
-	getInjurySteps(
+	private getInjurySteps(
 		basicDamage: number,
 		woundingModifier: number,
 		penetratingDamage: number,
@@ -1144,6 +1144,8 @@ class HitLocationDamage implements LocationDamage {
 		return this.damageType.bluntTraumaDivisor > 0 ? Math.floor(basicDamage / this.damageType.bluntTraumaDivisor) : 0
 	}
 
+	// === Effects ===
+
 	toggleEffect(index: number): void {
 		if (this.overrides.effects === undefined) this.overrides.effects = []
 
@@ -1163,7 +1165,7 @@ class HitLocationDamage implements LocationDamage {
 		return this.overrides.effects?.includes(index) ?? false
 	}
 
-	shockEffects(results: DamageResults): InjuryEffect[] {
+	private shockEffects(results: DamageResults): InjuryEffect[] {
 		const rawModifier = Math.floor(results.injury!.value / this.calculator.shockFactor)
 		if (rawModifier > 0) {
 			const modifier = Math.min(4, rawModifier) * -1
@@ -1322,7 +1324,7 @@ class HitLocationDamage implements LocationDamage {
 	}
 
 	get hitLocation(): HitLocation | undefined {
-		return this.calculator.hitLocationTable.locations.find(it => it.tableName === this.locationName)
+		return this.hitLocationTable.locations.find(it => it.tableName === this.locationName)
 	}
 
 	get isLargeAreaInjury(): boolean {
@@ -1369,7 +1371,7 @@ class HitLocationDamage implements LocationDamage {
 	}
 
 	private get _hardenedDRLevel(): number {
-		return this.calculator.target.getTrait("Damage Resistance")?.getModifier("Hardened")?.levels ?? 0
+		return this.target.getTrait("Damage Resistance")?.getModifier("Hardened")?.levels ?? 0
 	}
 
 	get hardenedDROverride(): number | undefined {
