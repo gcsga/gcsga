@@ -171,7 +171,6 @@ export class ApplyDamageDialog extends Application {
 		event.preventDefault()
 
 		const intValue = parseInt(target.value)
-		// const floatValue = parseFloat(target.value)
 		const index = parseInt(target.dataset.index)
 		const locationDamage = this.calculator.hits[index]
 
@@ -219,6 +218,13 @@ export class ApplyDamageDialog extends Application {
 			case "injury-effect": {
 				const parentIndex = parseInt(target.dataset.effectIndex)
 				locationDamage.toggleEffect(parentIndex)
+				break
+			}
+
+			case "apply-effects": {
+				// this.calculator.applySelectedEffects()
+				const effects = locationDamage.selectedEffects
+				console.log(effects)
 				break
 			}
 		}
