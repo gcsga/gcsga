@@ -110,7 +110,7 @@ declare global {
 			documentClass: {
 				new (data: PreCreate<TItem["_source"]>, context?: DocumentConstructionContext<TItem["parent"]>): TItem
 			}
-			collection: typeof Items
+			collection: ConstructorOf<Items<Item<null>>>
 			sheetClasses: Record<
 				string,
 				Record<

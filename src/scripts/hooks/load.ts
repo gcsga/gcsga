@@ -1,8 +1,9 @@
-import { CharacterGURPS } from "@actor"
+import { ActorProxyGURPS } from "@actor"
 import { ActorType, ItemType } from "@data"
 import { ItemProxyGURPS } from "@item"
 import { ActiveEffectGURPS } from "@module/active-effect/index.ts"
 import { ChatMessageGURPS } from "@module/chat-message/document.ts"
+import { ItemsGURPS } from "@module/collection/items.ts"
 import { CombatGURPS } from "@module/combat/document.ts"
 import { CombatantGURPS } from "@module/combat/index.ts"
 import { JournalEntryGURPS } from "@module/journal-entry/document.ts"
@@ -21,13 +22,13 @@ export const Load = {
 		// Assign document classes
 		CONFIG.ActiveEffect.documentClass = ActiveEffectGURPS
 		CONFIG.Actor.collection = Actors
-		// CONFIG.Actor.documentClass = ActorProxyGURPS
-		CONFIG.Actor.documentClass = CharacterGURPS
+		CONFIG.Actor.documentClass = ActorProxyGURPS
 		CONFIG.ActorDelta.documentClass = ActorDelta
 		CONFIG.AmbientLight.documentClass = AmbientLightDocument
 		CONFIG.ChatMessage.documentClass = ChatMessageGURPS
 		CONFIG.Combat.documentClass = CombatGURPS
 		CONFIG.Combatant.documentClass = CombatantGURPS
+		CONFIG.Item.collection = ItemsGURPS
 		CONFIG.Item.documentClass = ItemProxyGURPS
 		CONFIG.Macro.documentClass = Macro
 		CONFIG.MeasuredTemplate.documentClass = MeasuredTemplateDocument

@@ -203,13 +203,16 @@ class HandlebarsHelpersGURPS {
 	}
 
 	static sort<K extends string>(list: Record<K, number>[], key: K): unknown[] {
+		if (!list) return []
 		return list.map(e => e).sort((a, b) => a[key] - b[key])
 	}
 
 	static textareaFormat(arr: string[]): string {
-		console.log(arr)
+		if (!Array.isArray(arr)) {
+			if (typeof arr === "string") return arr
+			return ""
+		}
 		const s = arr.map(s => s.replace(/\t/g, "").replace(/\n/g, "\r")).join("\n")
-		console.log(s.replaceAll("\r", "\\r"))
 		return s
 	}
 

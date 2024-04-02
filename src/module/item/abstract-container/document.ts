@@ -10,13 +10,13 @@ abstract class AbstractContainerGURPS<
 	TParent extends ActorGURPS | null = ActorGURPS | null,
 > extends ItemGURPS<TParent> {
 	/** This container's contents, reloaded every data preparation cycle */
-	contents: Collection<ItemGURPS<NonNullable<TParent>>> = new Collection()
+	contents: Collection<ItemGURPS<TParent>> = new Collection()
 
 	// Map of item collections
-	declare itemCollections: ItemItemCollectionMap<NonNullable<TParent>>
+	declare itemCollections: ItemItemCollectionMap
 
-	get deepContents(): Collection<ItemGURPS<NonNullable<TParent>>> {
-		const items: ItemGURPS<NonNullable<TParent>>[] = []
+	get deepContents(): Collection<ItemGURPS<TParent>> {
+		const items: ItemGURPS<TParent>[] = []
 		for (const item of this.contents) {
 			items.push(item)
 			if (item.isOfType("abstract-container")) items.push(...item.deepContents)
@@ -25,15 +25,15 @@ abstract class AbstractContainerGURPS<
 	}
 
 	/** Reload this container's contents following Actor embedded-document preparation */
-	override prepareSiblingData(this: AbstractContainerGURPS<ActorGURPS>): void {
+	override prepareSiblingData(): void {
 		super.prepareSiblingData()
 
 		if (this.flags[SYSTEM_NAME][ItemFlags.Container] === this.id)
 			this.setFlag(SYSTEM_NAME, ItemFlags.Container, null)
 		this.contents = new Collection(
-			this.actor.items.filter(i => i.container?.id === this.id).map(item => [item.id, item]),
+			this.collection.filter(i => i.container?.id === this.id).map(item => [item.id, item]),
 		)
-		this.itemCollections = new ItemItemCollectionMap<ActorGURPS>(this.deepContents)
+		this.itemCollections = new ItemItemCollectionMap(this.deepContents)
 	}
 
 	get enabled(): boolean {
@@ -79,6 +79,13 @@ abstract class AbstractContainerGURPS<
 		context?: DocumentModificationContext<NonNullable<TParent>>,
 	): Promise<ItemGURPS[]> {
 		return this.parent?.deleteEmbeddedDocuments("Item", ids, context) as Promise<ItemGURPS[]>
+	}
+
+	override delete(context?: DocumentModificationContext<TParent> | undefined): Promise<this | undefined> {
+		for (const content of this.contents) {
+			content.delete(context)
+		}
+		return super.delete(context)
 	}
 }
 

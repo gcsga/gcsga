@@ -14,7 +14,6 @@ import { ABSTRACT_CONTAINER_TYPES, CONTAINER_TYPES, ItemFlags, ItemType, SYSTEM_
 import { MigrationList, MigrationRunner } from "@module/migration/index.ts"
 import {
 	EvalEmbeddedRegex,
-	LocalizeGURPS,
 	SkillDefaultResolver,
 	display,
 	replaceAllStringFunc,
@@ -36,7 +35,7 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 	 * The cached container of this item, if in a container, or null
 	 * @ignore
 	 */
-	private declare _container: AbstractContainerGURPS<ActorGURPS> | null
+	private declare _container: AbstractContainerGURPS | null
 
 	// Cache for list of unsatisfied prerequisites
 	declare unsatisfiedReason: string
@@ -50,6 +49,12 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 
 	set dummyActor(actor: SkillDefaultResolver | null) {
 		this._dummyActor = actor
+	}
+
+	override get visible(): boolean {
+		// @ts-expect-error they can be equal but whatever
+		if (this.collection !== game.items) return super.visible
+		return super.visible && this.flags[SYSTEM_NAME][ItemFlags.Container] === null
 	}
 
 	/** The recorded schema version of this item, updated after each data migration */
@@ -124,14 +129,14 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 		return new PrereqList()
 	}
 
-	protected override async _preCreate(
-		data: this["_source"],
-		options: DocumentModificationContext<TParent>,
-		user: User<Actor<null>>,
-	): Promise<boolean | void> {
-		super._preCreate(data, options, user)
-		this.updateSource({ name: LocalizeGURPS.translations.TYPES.Item[data.type] })
-	}
+	// protected override async _preCreate(
+	// 	data: this["_source"],
+	// 	options: DocumentModificationContext<TParent>,
+	// 	user: User<Actor<null>>,
+	// ): Promise<boolean | void> {
+	// 	super._preCreate(data, options, user)
+	// 	this.updateSource({ name: LocalizeGURPS.translations.TYPES.Item[data.type] })
+	// }
 
 	static override getDefaultArtwork(itemData: foundry.documents.ItemSource): {
 		img: ImageFilePath
@@ -241,12 +246,11 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 		return super.deleteDocuments(ids, context)
 	}
 
-	get container(): AbstractContainerGURPS<ActorGURPS> | null {
+	get container(): AbstractContainerGURPS | null {
 		if (this.flags[SYSTEM_NAME][ItemFlags.Container] === null) return (this._container = null)
 		return (this._container ??=
-			(this.actor?.items.find(
-				c => c.id === this.flags[SYSTEM_NAME][ItemFlags.Container],
-			) as AbstractContainerGURPS<ActorGURPS>) ?? null)
+			(this.collection.get(this.flags[SYSTEM_NAME][ItemFlags.Container]) as unknown as AbstractContainerGURPS) ??
+			null)
 	}
 
 	get parents(): (CompendiumCollection<CompendiumDocument> | AbstractContainerGURPS | ActorGURPS)[] {
@@ -384,13 +388,20 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 	}
 
 	prepareSiblingData(): void {
-		if (!this.actor) return
+		if (!this.collection) return
 
 		// Clear the container reference if it turns out to be stale
-		if (this._container && !this.actor.items.has(this._container.id)) {
+		if (this._container && !this.collection.has(this._container.id)) {
 			this.setFlag(SYSTEM_NAME, ItemFlags.Container, null)
 			this._container = this.flags[SYSTEM_NAME][ItemFlags.Container] = null
 		}
+		// if (!this.actor) return
+		//
+		// // Clear the container reference if it turns out to be stale
+		// if (this._container && !this.actor.items.has(this._container.id)) {
+		// 	this.setFlag(SYSTEM_NAME, ItemFlags.Container, null)
+		// 	this._container = this.flags[SYSTEM_NAME][ItemFlags.Container] = null
+		// }
 	}
 
 	getContextMenuItems(): ContextMenuEntry[] {

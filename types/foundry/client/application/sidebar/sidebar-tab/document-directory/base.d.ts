@@ -91,11 +91,64 @@ declare global {
 		protected _handleDroppedEntry(target: HTMLElement, data: DropCanvasData): Promise<void>
 
 		/**
+		 * Determine if an Entry is being compared to itself
+		 * @param {DirectoryMixinEntry} entry          The Entry
+		 * @param {DirectoryMixinEntry} otherEntry     The other Entry
+		 * @returns {boolean}                          Is the Entry being compared to itself?
+		 */
+		protected _entryIsSelf(entry: TDocument, otherEntry: TDocument): boolean
+
+		/**
+		 * Determine whether an Entry belongs to the target folder
+		 * @param {DirectoryMixinEntry} entry   The Entry
+		 * @param {Folder} folder               The target folder
+		 * @returns {boolean}                   Is the Entry a sibling?
+		 */
+		protected _entryBelongsToFolder(entry: TDocument, folder: Folder | null): boolean
+
+		/**
+		 * Check if an Entry is already present in the Collection
+		 * @param {DirectoryMixinEntry} entry     The Entry being dropped
+		 * @returns {boolean}                     Is the Entry already present?
+		 */
+		protected _entryAlreadyExists(entry: TDocument): boolean
+
+		/**
+		 * Get the dropped Entry from the drop data
+		 * @param {object} data                      The data being dropped
+		 * @returns {Promise<DirectoryMixinEntry>}   The dropped Entry
+		 */
+		protected _getDroppedEntryFromData(data: object): Promise<TDocument>
+
+		/**
 		 * Handle Folder data being dropped into the directory.
 		 * @param target The target element
 		 * @param data   The data being dropped
 		 */
 		protected _handleDroppedFolder(target: HTMLElement, data: DropCanvasData): Promise<void>
+
+		/**
+		 * Create a dropped Entry in this Collection
+		 * @param {DirectoryMixinEntry} entry       The Entry being dropped
+		 * @param {string} [folderId]               The ID of the Folder to which the Entry should be added
+		 * @returns {Promise<DirectoryMixinEntry>}  The created Entry
+		 * @protected
+		 */
+		protected _createDroppedEntry(entry: TDocument, folderId: string): Promise<TDocument>
+
+		/**
+		 * Sort a relative entry within a collection
+		 * @param {DirectoryMixinEntry} entry   The entry to sort
+		 * @param {object} sortData             The sort data
+		 * @param {string} sortData.sortKey     The sort key to use for sorting
+		 * @param {boolean} sortData.sortBefore Sort before the target?
+		 * @param {object} sortData.updateData  Additional data to update on the entry
+		 * return {Promise<object>}             The sorted entry
+		 */
+		protected _sortRelative(
+			entry: object,
+			sortData: { sortKey: string; sortBefore: boolean; updateData: object },
+		): Promise<object>
 
 		/**
 		 * Default folder context actions

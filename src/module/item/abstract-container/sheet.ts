@@ -177,7 +177,7 @@ class AbstractContainerSheetGURPS<TItem extends AbstractContainerGURPS> extends 
 			siblings.push(...target.contents)
 		} else if (source.container?.id !== target.container?.id) {
 			siblings.push(
-				...target.parent.items.filter(
+				...target.collection.filter(
 					item => item.flags[SYSTEM_NAME][ItemFlags.Container] === target.container?.id,
 				),
 			)
