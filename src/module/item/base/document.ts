@@ -14,6 +14,7 @@ import { ABSTRACT_CONTAINER_TYPES, CONTAINER_TYPES, ItemFlags, ItemType, SYSTEM_
 import { MigrationList, MigrationRunner } from "@module/migration/index.ts"
 import {
 	EvalEmbeddedRegex,
+	LocalizeGURPS,
 	SkillDefaultResolver,
 	display,
 	replaceAllStringFunc,
@@ -129,14 +130,14 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 		return new PrereqList()
 	}
 
-	// protected override async _preCreate(
-	// 	data: this["_source"],
-	// 	options: DocumentModificationContext<TParent>,
-	// 	user: User<Actor<null>>,
-	// ): Promise<boolean | void> {
-	// 	super._preCreate(data, options, user)
-	// 	this.updateSource({ name: LocalizeGURPS.translations.TYPES.Item[data.type] })
-	// }
+	protected override async _preCreate(
+		data: this["_source"],
+		options: DocumentModificationContext<TParent>,
+		user: User<Actor<null>>,
+	): Promise<boolean | void> {
+		super._preCreate(data, options, user)
+		if (data._id === null) this.updateSource({ name: LocalizeGURPS.translations.TYPES.Item[data.type] })
+	}
 
 	static override getDefaultArtwork(itemData: foundry.documents.ItemSource): {
 		img: ImageFilePath

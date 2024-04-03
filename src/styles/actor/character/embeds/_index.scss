@@ -2,6 +2,7 @@
 	display: grid;
 	width: 100%;
 	grid-template-columns: 50% 50% !important;
+	gap: var(--section-gap);
 
 	> div {
 		background-color: rgb(var(--color-content));
@@ -46,6 +47,10 @@
 		margin: 0;
 		padding: 0;
 		height: calc(100% - 18px);
+
+		&:not([data-container-id]) {
+			min-height: 18px;
+		}
 
 		> li {
 			background-color: rgb(var(--color-content));

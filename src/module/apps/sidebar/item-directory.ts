@@ -1,4 +1,4 @@
-import { ItemGURPS } from "@item"
+import { AbstractContainerGURPS, ItemGURPS } from "@item"
 import { ItemFlags, SYSTEM_NAME } from "@module/data/constants.ts"
 import { DnD } from "@util"
 import { createDragImage } from "@util/drag-image.ts"
@@ -32,20 +32,20 @@ class ItemDirectoryGURPS<TItem extends ItemGURPS<null>> extends ItemDirectory<TI
 		target: HTMLElement,
 		data: DropCanvasData<string, object>,
 	): Promise<void> {
-		async function addContent(list: TItem["_source"][], uuid: string, containerId: string): Promise<void> {
-			const originalDocument = (await fromUuid(uuid)) as TItem
-			const newId = foundry.utils.randomID()
-			const data = fu.mergeObject(originalDocument.toObject(), {
-				_id: newId,
-				flags: { [SYSTEM_NAME]: { [ItemFlags.Container]: containerId } },
-			})
-			list.push(data)
-			if (originalDocument.isOfType("abstract-container")) {
-				for (const item of originalDocument.contents) {
-					addContent(list, item.uuid, newId)
-				}
-			}
-		}
+		// async function addContent(list: TItem["_source"][], uuid: string, containerId: string): Promise<void> {
+		// 	const originalDocument = (await fromUuid(uuid)) as TItem
+		// 	const newId = fu.randomID()
+		// 	const data = fu.mergeObject(originalDocument.clone().toObject(), {
+		// 		_id: newId,
+		// 		[`flags.${SYSTEM_NAME}.${ItemFlags.Container}`]: containerId,
+		// 	})
+		// 	list.push(data)
+		// 	if (originalDocument.isOfType("abstract-container")) {
+		// 		for (const item of originalDocument.contents) {
+		// 			addContent(list, item.uuid, newId)
+		// 		}
+		// 	}
+		// }
 
 		// Determine the closest Folder
 		const closestFolder: HTMLElement | null = target ? target.closest(".folder") : null
@@ -57,15 +57,16 @@ class ItemDirectoryGURPS<TItem extends ItemGURPS<null>> extends ItemDirectory<TI
 		let entry = await this._getDroppedEntryFromData(data)
 		if (!entry) return
 
+		const newId = fu.randomID()
+		const entryClone = fu.mergeObject(entry.clone().toObject(), {
+			_id: newId,
+			[`flags.${SYSTEM_NAME}.${ItemFlags.Container}`]: null,
+		})
+
 		// Get entries for all contents of the dropped item
-		const entryContents: TItem["_source"][] = []
+		const items: TItem["_source"][] = []
 		if (entry.isOfType("abstract-container")) {
-			const originalDocument = await fromUuid(data.uuid ?? "")
-			if (originalDocument instanceof ItemGURPS && originalDocument.isOfType("abstract-container")) {
-				for (const content of originalDocument.contents) {
-					await addContent(entryContents, content.uuid, entry.id)
-				}
-			}
+			items.push(...AbstractContainerGURPS.cloneContents(entry, newId))
 		}
 
 		// Sort relative to another Document
@@ -99,10 +100,10 @@ class ItemDirectoryGURPS<TItem extends ItemGURPS<null>> extends ItemDirectory<TI
 
 			// Create items for original item contents
 			// @ts-expect-error bad type
-			cls.create(entryContents, { fromCompendium: !!entry.compendium, keepId: true })
+			cls.create(items, { fromCompendium: !!entry.compendium, keepId: true })
 			// @ts-expect-error bad type
 			entry = cls.create(
-				{ ...entry.toObject(), folder: folderId, flags: { [SYSTEM_NAME]: { [ItemFlags.Container]: null } } },
+				{ ...entryClone, folder: folderId },
 				{ fromCompendium: !!entry.compendium, keepId: true },
 			)
 

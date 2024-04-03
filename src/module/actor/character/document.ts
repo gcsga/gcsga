@@ -172,7 +172,6 @@ class CharacterGURPS<
 		data: Record<string, unknown>,
 		context?: DocumentModificationContext<TParent>,
 	): Promise<this | undefined> {
-		console.log(data)
 		return super.update(data, context)
 	}
 

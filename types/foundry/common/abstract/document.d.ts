@@ -385,16 +385,16 @@ export default abstract class Document<
 	): Promise<Document[]>
 
 	/**
-                 * Update one or multiple existing entities using provided input data.
-                 * Data may be provided as a single object to update one Document, or as an Array of Objects.
-                 /**
-                 * Update multiple embedded Document instances within a parent Document using provided differential data.
-                 * @see {@link Document.updateDocuments}
-                 * @param embeddedName               The name of the embedded Document type
-                 * @param updates An array of differential data objects, each used to update a single Document
-                 * @param [context={}] Additional context which customizes the update workflow
-                 * @return An array of updated Document instances
-                 */
+  * Update one or multiple existing entities using provided input data.
+  * Data may be provided as a single object to update one Document, or as an Array of Objects.
+  /**
+  * Update multiple embedded Document instances within a parent Document using provided differential data.
+  * @see {@link Document.updateDocuments}
+  * @param embeddedName               The name of the embedded Document type
+  * @param updates An array of differential data objects, each used to update a single Document
+  * @param [context={}] Additional context which customizes the update workflow
+  * @return An array of updated Document instances
+  */
 	updateEmbeddedDocuments(
 		embeddedName: string,
 		updateData: EmbeddedDocumentUpdateData[],

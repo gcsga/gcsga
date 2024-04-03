@@ -49,6 +49,17 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 			})
 		}
 
+		for (const entry of htmlQueryAll(html, "li[data-item-id]")) {
+			entry.addEventListener("dblclick", ev => {
+				ev.stopPropagation()
+				const itemId = entry.dataset.itemId
+				if (!itemId) throw ErrorGURPS("Invalid double-click operation: No item ID found")
+				const item = this.actor.items.get(itemId)
+				if (!item) throw ErrorGURPS(`Invalid double-click operation: No item found with ID: "${itemId}"`)
+				item.sheet.render(true)
+			})
+		}
+
 		this.#activateItemDragDrop(html)
 		this.#activateContextMenu(html)
 		this._applyBanding()
@@ -273,11 +284,11 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 		containerId: string | null,
 	): Promise<ItemGURPS<TActor>[]> {
 		const newId = fu.randomID()
-		const itemSource = item
-			.clone({ _id: newId, flags: { [SYSTEM_NAME]: { [ItemFlags.Container]: containerId } } })
-			.toObject()
+		const itemSource: ItemGURPS["_source"] = fu.mergeObject(item.clone().toObject(), {
+			_id: newId,
+			[`flags.${SYSTEM_NAME}.${ItemFlags.Container}`]: containerId,
+		})
 		const items: ItemGURPS["_source"][] = [itemSource]
-		console.log(itemSource.name, itemSource._id)
 		items.push(...AbstractContainerGURPS.cloneContents(item, newId))
 
 		return this.actor.createEmbeddedDocuments("Item", items, { keepId: true }) as unknown as ItemGURPS<TActor>[]

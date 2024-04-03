@@ -38,24 +38,18 @@ abstract class AbstractContainerGURPS<
 	//
 
 	static cloneContents(item: AbstractContainerGURPS, containerId: string | null): ItemGURPS["_source"][] {
-		console.log("parent ID", containerId)
 		const contents: ItemGURPS["_source"][] = []
 		for (const content of item.contents) {
 			const newId = fu.randomID()
-			const newItem = content
-				.clone({
-					_id: newId,
-					flags: { [SYSTEM_NAME]: { [ItemFlags.Container]: containerId } },
-				})
-				.toObject()
+			const newItem: ItemGURPS["_source"] = fu.mergeObject(content.clone().toObject(), {
+				_id: newId,
+				[`flags.${SYSTEM_NAME}.${ItemFlags.Container}`]: containerId,
+			})
 			contents.push(newItem)
-			console.log(newItem.name, newItem._id, newItem.flags.gcsga.container)
 			if (content.isOfType("abstract-container")) {
 				contents.push(...AbstractContainerGURPS.cloneContents(content, newId))
 			}
 		}
-		console.log(contents)
-
 		return contents
 	}
 

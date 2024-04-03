@@ -4,6 +4,16 @@ import { AttributeBonus, PrereqList, PrereqObj, SkillDefault, TraitPrereq } from
 import { ItemType } from "@module/data/constants.ts"
 
 class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheetOptions> {
+	static override get defaultOptions(): ItemSheetOptions {
+		const options = super.defaultOptions
+		return {
+			...options,
+			submitOnChange: true,
+			closeOnSubmit: false,
+			classes: [...options.classes, "gurps", "item"],
+		}
+	}
+
 	override activateListeners($html: JQuery): void {
 		const html = $html[0]
 
