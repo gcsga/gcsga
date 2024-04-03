@@ -7,7 +7,7 @@ import type { ActiveEffectGURPS } from "@module/active-effect/index.ts"
 import { EquipmentContainerSource, EquipmentSource, ItemSourceGURPS } from "@item/data/index.ts"
 import { itemIsOfType } from "@item/helpers.ts"
 import { ErrorGURPS, Evaluator, LastActor, LocalizeGURPS, TooltipGURPS, attribute, objectHasKey, stlimit } from "@util"
-import { ActorFlags, ActorType, ItemType, SYSTEM_NAME, gid } from "@module/data/constants.ts"
+import { ActorFlags, ActorType, ItemFlags, ItemType, SYSTEM_NAME, gid } from "@module/data/constants.ts"
 import {
 	AbstractAttribute,
 	AttributeBonus,
@@ -136,6 +136,10 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 	/** Checks if the item can be added to this actor by checking the valid item types. */
 	checkItemValidity(source: PreCreate<ItemSourceGURPS>): boolean {
 		if (!itemIsOfType(source, ...this.allowedItemTypes)) {
+			// if item is indirectly owned, allow by default
+			// container validly owning the item is assumed
+			if (source.flags?.[SYSTEM_NAME]?.[ItemFlags.Container] !== null) return true
+
 			ui.notifications.error(
 				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.error.cannot_add_type, {
 					type: LocalizeGURPS.translations.TYPES.Item[source.type],

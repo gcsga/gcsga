@@ -24,6 +24,41 @@ abstract class AbstractContainerGURPS<
 		return new Collection(items.map(item => [item.id, item]))
 	}
 
+	// static async contentFromDropData(data: { uuid: ItemUUID }, newId: string): Promise<ItemGURPS[]> {
+	// 	if (!data.uuid) throw ErrorGURPS("No UUID provided")
+	//
+	// 	const originalDocument = (await fromUuid(data.uuid)) as ItemGURPS
+	//
+	// 	if (!originalDocument) throw ErrorGURPS(`UUID "${data.uuid}" does not correspond to a valid item.`)
+	// 	if (!originalDocument.isOfType("abstract-container"))
+	// 		throw ErrorGURPS(`Item with UUID "${data.uuid}" is not a container.`)
+	//
+	// 	for (const )
+	// }
+	//
+
+	static cloneContents(item: AbstractContainerGURPS, containerId: string | null): ItemGURPS["_source"][] {
+		console.log("parent ID", containerId)
+		const contents: ItemGURPS["_source"][] = []
+		for (const content of item.contents) {
+			const newId = fu.randomID()
+			const newItem = content
+				.clone({
+					_id: newId,
+					flags: { [SYSTEM_NAME]: { [ItemFlags.Container]: containerId } },
+				})
+				.toObject()
+			contents.push(newItem)
+			console.log(newItem.name, newItem._id, newItem.flags.gcsga.container)
+			if (content.isOfType("abstract-container")) {
+				contents.push(...AbstractContainerGURPS.cloneContents(content, newId))
+			}
+		}
+		console.log(contents)
+
+		return contents
+	}
+
 	/** Reload this container's contents following Actor embedded-document preparation */
 	override prepareSiblingData(): void {
 		super.prepareSiblingData()

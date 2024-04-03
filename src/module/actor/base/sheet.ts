@@ -1,4 +1,4 @@
-import { ItemGURPS } from "@item"
+import { AbstractContainerGURPS, ItemGURPS } from "@item"
 import { ActorGURPS } from "./document.ts"
 import { DamagePayload, DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
 import { DnD, ErrorGURPS, htmlClosest, htmlQueryAll } from "@util"
@@ -210,10 +210,15 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 		const item = await ItemGURPS.fromDropData(data)
 		if (!item) return []
 
-		// Drops from the same actor are handled by Sortable
-		if (item.actor?.uuid === this.actor.uuid) return []
+		// const contents: ItemGURPS[] = []
+		// if (item.isOfType("abstract-container"))
+		// contents.push(...AbstractContainerGURPS.contentFromDropData(data, newId))
+		// 	if (item.actor?.uuid === this.actor.uuid)
+		// 		// Drops from the same actor are handled by Sortable
+		// 		return []
 
 		if (item.actor && item.isOfType(ItemType.Equipment, ItemType.EquipmentContainer)) {
+			// TODO check implementation
 			await this.moveEquipmentBetweenActors(
 				event,
 				item.actor.id,
@@ -252,10 +257,30 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 			itemSource.flags[SYSTEM_NAME] = fu.mergeObject(itemSource.flags[SYSTEM_NAME] ?? {}, {})
 			itemSource.flags[SYSTEM_NAME][ItemFlags.Container] = containerId
 		}
+
+		if (item.isOfType("abstract-container")) {
+			return this._onDropContainerCreate(item, containerId)
+		}
+
 		// Creating a new item: clear the _id via cloning it
 		return this._onDropItemCreate(new Item.implementation(itemSource).clone().toObject()) as Promise<
 			ItemGURPS<TActor>[]
 		>
+	}
+
+	protected async _onDropContainerCreate(
+		item: AbstractContainerGURPS,
+		containerId: string | null,
+	): Promise<ItemGURPS<TActor>[]> {
+		const newId = fu.randomID()
+		const itemSource = item
+			.clone({ _id: newId, flags: { [SYSTEM_NAME]: { [ItemFlags.Container]: containerId } } })
+			.toObject()
+		const items: ItemGURPS["_source"][] = [itemSource]
+		console.log(itemSource.name, itemSource._id)
+		items.push(...AbstractContainerGURPS.cloneContents(item, newId))
+
+		return this.actor.createEmbeddedDocuments("Item", items, { keepId: true }) as unknown as ItemGURPS<TActor>[]
 	}
 
 	/**
