@@ -1,6 +1,6 @@
-<li class="prereq" {{{ indent indent 5 19 }}}>
+<li class="prereq">
     <div class="top">
-        {{#unless (eq indent 0)}} <a class="button gcs-trash"
+        {{#unless (eq path "array.system.prereqs")}} <a class="button gcs-trash"
     data-action="remove-prereq"
     data-path="{{ path }}"></a> {{/unless}}
         <a class="button gcs-circled-add"
@@ -11,7 +11,7 @@
            data-path="{{ path }}"></a>
         <select name="{{ path }}.when_tl.compare" data-dtype="String">
             {{#select prereq.when_tl.compare}}
-            {{#each config.select.numeric_criteria as |v k|}}
+            {{#each @root.config.select.numeric_criteria as |v k|}}
                 <option value="{{ k }}">{{ localize "gurps.field_prefix.tech_level" }} {{ localize v }}</option>
             {{/each}} {{/select}}
         </select>
@@ -20,7 +20,7 @@
         </div>
         <select name="{{ path }}.all" data-dtype="Boolean">
             {{#select this.all}}
-            {{#each config.select.all as |v k|}}
+            {{#each @root.config.select.all as |v k|}}
                 <option value="{{ k }}">{{ localize v }}</option>
             {{/each}} {{/select}}
         </select>
@@ -30,49 +30,41 @@
             {{#if (eq this.type "attribute-prereq")}}
                 {{>item/sections/prereq/attribute-prereq
                 path=(concat ../path ".prereqs." @index)
-                config=../config
                 }}
             {{/if}}
             {{#if (eq this.type "contained-quantity-prereq")}}
                 {{>item/sections/prereq/contained-quantity-prereq
                 path=(concat ../path ".prereqs." @index)
-                config=../config
                 }}
             {{/if}}
             {{#if (eq this.type "contained-weight-prereq")}}
                 {{>item/sections/prereq/contained-weight-prereq
                 path=(concat ../path ".prereqs." @index)
-                config=../config
                 }}
             {{/if}}
             {{#if (eq this.type "equipped-equipment-prereq")}}
                 {{>item/sections/prereq/equipped-equipment-prereq
                 path=(concat ../path ".prereqs." @index)
-                config=../config
                 }}
             {{/if}}
             {{#if (eq this.type "prereq-list")}}
                 {{>item/sections/prereq/prereq-list
                 path=(concat ../path ".prereqs." @index)
-                config=../config
                 }}
             {{/if}}
             {{#if (eq this.type "skill-prereq")}}
                 {{>item/sections/prereq/skill-prereq
                 path=(concat ../path ".prereqs." @index)
-                config=../config
                 }}
             {{/if}}
             {{#if (eq this.type "spell-prereq")}}
                 {{>item/sections/prereq/spell-prereq
                 path=(concat ../path ".prereqs." @index)
-                config=../config
                 }}
             {{/if}}
             {{#if (eq this.type "trait-prereq")}}
                 {{>item/sections/prereq/trait-prereq
                 path=(concat ../path ".prereqs." @index)
-                config=../config
                 }}
             {{/if}}
         {{/each}}

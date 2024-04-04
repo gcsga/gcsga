@@ -1,34 +1,44 @@
-<div class="attribute-prereq">
-	<div class="placeholder"> </div>
-	<select name="{{path}}.which">
-		{{#select this.which}}
-			{{#each attributes as |v k|}}
-				<option value="{{k}}">{{v}}</option>
-			{{/each}}
-		{{/select}}
-	</select>
-	<select name="{{path}}.combined_with">
-		{{#select this.combined_with}}
-			<option value=""></option>
-			{{#each attributes as |v k|}}
-				<option value="{{k}}">{{localize "gurps.field_prefix.combined_with"}} {{v}}</option>
-			{{/each}}
-		{{/select}}
-	</select>
-	<select name="{{path}}.qualifier.compare">
-		{{#select this.qualifier.compare}}
-			{{#each config.select.numeric-criteria as |v k|}}
-				<option value="{{k}}">{{localize "gurps.field_prefix.attribute_level"}} {{localize v}}</option>
-			{{/each}}
-		{{/select}}
-	</select>
-	<div class="field">
-		<input
-			type="text"
-			name="{{path}}.qualifier.qualifier"
-			value="{{this.qualifier.qualifier}}"
-			data-dtype="Number"
-			{{disabled (eq this.qualifier.compare "none")}}
-		/>
-	</div>
-</div>
+<li class="prereq">
+    <div class="top">
+        <a class="button gcs-trash"
+           data-action="remove-prereq"
+           data-path="{{ path }}"></a>
+        <select name="{{ path }}.has" data-dtype="Boolean">
+            {{#select this.has}}
+            {{#each @root.config.select.has as |v k|}}
+                <option value="{{ k }}">{{ localize v }}</option>
+            {{/each}} {{/select}}
+        </select>
+        <select class="type" name="{{ path }}.type" data-path="{{ path }}">
+            {{#select this.type}}
+            {{#each config.select.prereq_strict as |v k|}}
+                <option value="{{ k }}">{{ localize v }}</option>
+            {{/each}} {{/select}}
+        </select>
+    </div>
+    <div>
+        <div class="placeholder"></div>
+        <select name="{{ path }}.which">
+            {{#select this.which}}
+            {{#each attributes as |v k|}}
+                <option value="{{ k }}">{{ v }}</option>
+            {{/each}} {{/select}}
+        </select>
+        <select name="{{ path }}.combined_with">
+            {{#select this.combined_with}}
+            <option value=""></option>
+            {{#each attributes as |v k|}}
+                <option value="{{ k }}">{{ localize "gurps.field_prefix.combined_with" }} {{ v }}</option>
+            {{/each}} {{/select}}
+        </select>
+        <select name="{{ path }}.qualifier.compare">
+            {{#select this.qualifier.compare}}
+            {{#each config.select.numeric-criteria as |v k|}}
+                <option value="{{ k }}">{{ localize "gurps.field_prefix.attribute_level" }} {{ localize v }}</option>
+            {{/each}} {{/select}}
+        </select>
+        <div class="field">
+            <input type="text" name="{{ path }}.qualifier.qualifier" value="{{ this.qualifier.qualifier }}" data-dtype="Number" {{ disabled (eq this.qualifier.compare "none") }} />
+        </div>
+    </div>
+</li>

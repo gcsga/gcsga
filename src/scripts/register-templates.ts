@@ -119,8 +119,7 @@ export function registerTemplates(): void {
 		"actor/import",
 
 		// Item Prereqs
-		"item/sections/prerequisites",
-		"item/sections/prereq",
+		"item/sections/prereqs",
 		"item/sections/prereq/prereq-list",
 		"item/sections/prereq/trait-prereq",
 		"item/sections/prereq/attribute-prereq",
