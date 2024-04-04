@@ -1,84 +1,97 @@
-<div class="prereq" {{{indent indent 5 19}}}>
-	<div class="top">
-		{{#if (eq this.type "prereq_list")}}
-		{{#unless (eq indent 0)}}
-		<a class="button gcs-trash" data-action="remove-prereq" data-path="{{path}}"></a>
-		{{/unless}}
-		<a class="button gcs-circled-add" data-action="add-prereq" data-path="{{path}}"></a>
-		<a class="button gcs-circled-vertical-ellipsis" data-action="add-prereq-list" data-path="{{path}}"></a>
-		<select name="{{path}}.when_tl.compare" data-dtype="String">
-			{{#select this.when_tl.compare}}
-			{{#each config.select.numeric-criteria as |v k|}}
-			<option value="{{k}}">{{localize "gurps.field_prefix.tech_level"}} {{localize v}}</option>
-			{{/each}}
-			{{/select}}
-		</select>
-		<div class="field">
-			<input type="text" name="{{path}}.when_tl.qualifier" value="{{this.when_tl.qualifier}}" data-dtype="String" {{disabled (eq this.when_tl.compare "none")}}/>
-		</div>
-		<select name="{{path}}.all" data-dtype="Boolean">
-			{{#select this.all}}
-			{{#each config.select.all as |v k|}}
-			<option value="{{k}}">{{localize v}}</option>
-			{{/each}}
-			{{/select}}
-		</select>
-		{{else}}
-		<a class="button gcs-trash" data-action="remove-prereq" data-path="{{path}}"></a>
-		{{#unless (eq this.type "equipped_equipment_prereq")}}
-		<select name="{{path}}.has" data-dtype="Boolean">
-			{{#select this.has}}
-			{{#each config.select.has as |v k|}}
-			<option value="{{k}}">{{localize v}}</option>
-			{{/each}}
-			{{/select}}
-		</select>
-		{{/unless}}
-		{{#unless (eq this.type "spell_prereq")}}
-		<select class="type" name="{{path}}.type" data-path="{{path}}">
-			{{#select this.type}}
-			{{#each config.select.prereq_strict as |v k|}}
-			<option value="{{k}}">{{localize v}}</option>
-			{{/each}}
-			{{/select}}
-		</select>
-		{{#if (eq this.type "contained_quantity_prereq")}}{{>item/sections/prereq/contained-quantity-prereq}}{{/if}}
-		{{else}}
-		<select name="{{path}}.quantity.compare">
-			{{#select this.quantity.compare}}
-			{{#each config.select.numeric-criteria_strict as |v k|}}
-			<option value="{{k}}">{{localize v}}</option>
-			{{/each}}
-			{{/select}}
-		</select>
-		<div class="field">
-			<input
-				type="text"
-				name="{{path}}.quantity.qualifier"
-				value="{{this.quantity.qualifier}}"
-				data-dtype="Number"
-			/>
-		</div>
-		<select class="type" name="{{path}}.type" data-path="{{path}}">
-			{{#select this.type}}
-			{{#each config.select.prereq_strict as |v k|}}
-			<option value="{{k}}">{{localize v}}</option>
-			{{/each}}
-			{{/select}}
-		</select>
-		{{/unless}}
-		{{/if}}
-	</div>
-	{{#if (eq this.type "equipped_equipment_prereq")}}{{>item/sections/prereq/equipped-equipment-prereq}}{{/if}}
-	{{#if (eq this.type "trait_prereq")}}{{>item/sections/prereq/trait-prereq}}{{/if}}
-	{{#if (eq this.type "attribute_prereq")}}{{>item/sections/prereq/attribute-prereq}}{{/if}}
-	{{#if (eq this.type "skill_prereq")}}{{>item/sections/prereq/skill-prereq}}{{/if}}
-	{{#if (eq this.type "spell_prereq")}}{{>item/sections/prereq/spell-prereq}}{{/if}}
-	{{#if (eq this.type "contained_weight_prereq")}}{{>item/sections/prereq/contained-weight-prereq}}{{/if}}
+<div class="prereq" {{{ indent indent 5 19 }}}>
+    <div class="top">
+        {{#if (eq this.type "prereq_list")}}
+            {{#unless (eq indent 0)}}
+            <a class="button gcs-trash"
+               data-action="remove-prereq"
+               data-path="{{ path }}"></a>
+        {{/unless}}
+        <a class="button gcs-circled-add"
+           data-action="add-prereq"
+           data-path="{{ path }}"></a>
+        <a class="button gcs-circled-vertical-ellipsis"
+           data-action="add-prereq-list"
+           data-path="{{ path }}"></a>
+        <select name="{{ path }}.when_tl.compare" data-dtype="String">
+            {{#select this.when_tl.compare}}
+            {{#each config.select.numeric-criteria as |v k|}}
+                <option value="{{ k }}">{{ localize "gurps.field_prefix.tech_level" }} {{ localize v }}</option>
+            {{/each}}
+        {{/select}}
+    </select>
+    <div class="field">
+        <input type="text" name="{{ path }}.when_tl.qualifier" value="{{ this.when_tl.qualifier }}" data-dtype="String" {{ disabled (eq this.when_tl.compare "none") }} />
+    </div>
+    <select name="{{ path }}.all" data-dtype="Boolean">
+        {{#select this.all}}
+        {{#each config.select.all as |v k|}}
+            <option value="{{ k }}">{{ localize v }}</option>
+        {{/each}}
+    {{/select}}
+</select>
+{{ else }}
+<a class="button gcs-trash"
+   data-action="remove-prereq"
+   data-path="{{ path }}"></a>
+{{#unless (eq this.type "equipped_equipment_prereq")}}
+<select name="{{ path }}.has" data-dtype="Boolean">
+    {{#select this.has}}
+    {{#each config.select.has as |v k|}}
+        <option value="{{ k }}">{{ localize v }}</option>
+    {{/each}}
+{{/select}}
+</select>
+{{/unless}}
+{{#unless (eq this.type "spell_prereq")}}
+<select class="type" name="{{ path }}.type" data-path="{{ path }}">
+    {{#select this.type}}
+    {{#each config.select.prereq_strict as |v k|}}
+        <option value="{{ k }}">{{ localize v }}</option>
+    {{/each}}
+{{/select}}
+</select>
+{{#if (eq this.type "contained_quantity_prereq")}}
+    {{>item/sections/prereq/contained-quantity-prereq}}{{/if}}
+{{ else }}
+    <select name="{{ path }}.quantity.compare">
+        {{#select this.quantity.compare}}
+        {{#each config.select.numeric-criteria_strict as |v k|}}
+            <option value="{{ k }}">{{ localize v }}</option>
+        {{/each}}
+    {{/select}}
+</select>
+<div class="field">
+    <input type="text"
+           name="{{ path }}.quantity.qualifier"
+           value="{{ this.quantity.qualifier }}"
+           data-dtype="Number" />
 </div>
-{{#if (eq this.type "prereq_list")}}
-{{#each this.prereqs}}
-{{>item/sections/prereq path=(concat ../path ".prereqs." @index) config=../config indent=(sum ../indent 1)
-attributes=../attributes}}
-{{/each}}
+<select class="type" name="{{ path }}.type" data-path="{{ path }}">
+    {{#select this.type}}
+    {{#each config.select.prereq_strict as |v k|}}
+        <option value="{{ k }}">{{ localize v }}</option>
+    {{/each}}
+{{/select}}
+</select>
+{{/unless}}
 {{/if}}
+</div>
+{{#if (eq this.type "equipped_equipment_prereq")}}
+    {{>item/sections/prereq/equipped-equipment-prereq}}{{/if}}
+    {{#if (eq this.type "trait_prereq")}}
+        {{>item/sections/prereq/trait-prereq}}{{/if}}
+        {{#if (eq this.type "attribute_prereq")}}
+            {{>item/sections/prereq/attribute-prereq}}{{/if}}
+            {{#if (eq this.type "skill_prereq")}}
+                {{>item/sections/prereq/skill-prereq}}{{/if}}
+                {{#if (eq this.type "spell_prereq")}}
+                    {{>item/sections/prereq/spell-prereq}}{{/if}}
+                    {{#if (eq this.type "contained_weight_prereq")}}
+                        {{>item/sections/prereq/contained-weight-prereq}}{{/if}}
+                    </div>
+                    {{#if (eq this.type "prereq_list")}}
+                        {{#each this.prereqs}}
+                            {{>item/sections/prereq path=(concat ../path ".prereqs." @index) config=../config indent=(sum ../indent 1)
+                            attributes=../attributes}}
+                        {{/each}}
+                    {{/if}}

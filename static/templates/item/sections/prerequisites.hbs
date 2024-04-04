@@ -1,6 +1,9 @@
 <div id="prerequisites" class="table">
-	<div class="header">{{localize "gurps.prereq.header"}}</div>
-	<div class="content">
-		{{>item/sections/prereq system.prereqs path="array.system.prereqs" config=config indent=0 attributes=attributes}}
-	</div>
+	<header>
+		<span>{{ localize "gurps.prereq.header" }}</span>
+	</header>
+	<ul>
+		{{#with system.prereqs}} {{>item/sections/prereq/prereq-list path="array.system.prereqs" indent=0 config=config
+		attributes=attributes}} {{/with}}
+	</ul>
 </div>

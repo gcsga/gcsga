@@ -52,4 +52,4 @@
     - Implement full actor/item migration from 0.16 to 1.0
 
 11. The Forge
-    - Ensure everything works correctly on the forge
+    - Ensure everything works correctly on the forgm

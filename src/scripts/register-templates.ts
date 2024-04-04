@@ -121,6 +121,7 @@ export function registerTemplates(): void {
 		// Item Prereqs
 		"item/sections/prerequisites",
 		"item/sections/prereq",
+		"item/sections/prereq/prereq-list",
 		"item/sections/prereq/trait-prereq",
 		"item/sections/prereq/attribute-prereq",
 		"item/sections/prereq/contained-quantity-prereq",
