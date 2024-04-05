@@ -1,23 +1,39 @@
-<div class="move-bonus">
-	<div class="placeholder"> </div>
-	<select name="array.system.features.{{@index}}.move_type">
-		{{#select this.move_type}}
-			{{#unless (in move_types this.move_type)}}
-				<option value="{{this.move_type}}">{{localize
-						"gurps.field_prefix.move_type_unknown"
-						type=this.move_type
-					}}</option>
-			{{/unless}}
-			{{#each move_types as |v k|}}
-				<option value="{{k}}">{{localize "gurps.field_prefix.move_type" type=v}}</option>
-			{{/each}}
-		{{/select}}
-	</select>
-	<select name="array.system.features.{{@index}}.limitation">
-		{{#select this.limitation}}
-			{{#each config.select.movelimit as |v k|}}
-				<option value="{{k}}">{{localize v}}</option>
-			{{/each}}
-		{{/select}}
-	</select>
-</div>
+<li class="feature">
+	<div class="top">
+		<a class="button gcs-trash" data-action="remove-feature" data-index="{{@index}}"></a>
+		<select class="type" name="array.system.features.{{@index}}.type" data-index="{{@index}}">
+			{{#select this.type}} {{#each @root.config.select.feature_strict as |v k| }}
+			<option value="{{ k }}">{{ localize v }}</option>
+			{{/each}} {{#if (eq @root.item.type "equipment_container") }} {{#each @rootconfig.select.feature as |v k| }}
+			<option value="{{ k }}">{{ localize v }}</option>
+			{{/each}} {{/if}} {{/select}}
+		</select>
+		<label class="checkbox-label">
+			<input
+				type="checkbox"
+				data-dtype="Boolean"
+				name="array.system.features.{{@index}}.per_level"
+				{{checked
+				this.per_level}}
+			/>
+			{{ localize "gurps.feature.per_level" }}
+		</label>
+	</div>
+	<div class="move-bonus">
+		<div class="placeholder"></div>
+		<select name="array.system.features.{{@index}}.move_type">
+			{{#select this.move_type}} {{#unless (in move_types this.move_type)}}
+			<option value="{{ this.move_type }}">
+				{{ localize "gurps.field_prefix.move_type_unknown" type=this.move_type }}
+			</option>
+			{{/unless}} {{#each move_types as |v k|}}
+			<option value="{{ k }}">{{ localize "gurps.field_prefix.move_type" type=v }}</option>
+			{{/each}} {{/select}}
+		</select>
+		<select name="array.system.features.{{@index}}.limitation">
+			{{#select this.limitation}} {{#each config.select.movelimit as |v k|}}
+			<option value="{{ k }}">{{ localize v }}</option>
+			{{/each}} {{/select}}
+		</select>
+	</div>
+</li>
