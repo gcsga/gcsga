@@ -1,21 +1,21 @@
 <form class="{{cssClass}}" autocomplete="off">
 	<div id="sheet">
 		<div id="details">
-			<div class="label">{{localize "gurps.item.img"}}</div>
+			<label>{{localize "gurps.item.img"}}</label>
 			<div class="field">
 				<div class="img-display" style="background-image: url({{document.img}});">
 					<img src="{{document.img}}" data-edit="img" title="{{document.name}}" />
 				</div>
 			</div>
-			<div class="label">{{localize "gurps.item.name"}}</div>
+			<label>{{localize "gurps.item.name"}}</label>
 			<div class="field">
 				<input type="text" name="name" value="{{item.name}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.notes"}}</div>
+			<label>{{localize "gurps.item.notes"}}</label>
 			<div class="field">
 				<textarea type="text" name="system.notes" data-dtype="String">{{textareaFormat system.notes}}</textarea>
 			</div>
-			<div class="label">{{localize "gurps.item.vtt_notes"}}</div>
+			<label>{{localize "gurps.item.vtt_notes"}}</label>
 			<div class="field">
 				<textarea type="text" name="system.vtt_notes" data-dtype="String">
 {{textareaFormat
@@ -23,19 +23,19 @@
 					}}</textarea
 				>
 			</div>
-			<div class="label">{{localize "gurps.item.tags"}}</div>
+			<label>{{localize "gurps.item.tags"}}</label>
 			<div class="field">
 				<input type="text" name="system.tags" value="{{join system.tags ', '}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.difficulty"}}</div>
+			<label>{{localize "gurps.item.difficulty"}}</label>
 			<div class="field">
 				<select name="system.difficulty" data-dtype="String">
-					{{#select system.difficulty}} {{#each config.select.difficulty as |v k|}}
+					{{#select system.difficulty}} {{#each @root.config.select.difficulty as |v k|}}
 					<option value="{{k}}">{{localize v}}</option>
 					{{/each}} {{/select}}
 				</select>
 			</div>
-			<div class="label">{{localize "gurps.item.defaults_to"}}</div>
+			<label>{{localize "gurps.item.defaults_to"}}</label>
 			<div class="field no-stretch">
 				<select name="system.default.type" data-dtype="String">
 					{{#select system.default.type}}
@@ -58,9 +58,9 @@
 					data-dtype="Number"
 				/>
 			</div>
-			<div class="label"></div>
+			<label></label>
 			<div class="field no-stretch">
-				<label class="label checkbox-label">
+				<label class="check">
 					<input type="checkbox" name="system.limited" data-dtype="Boolean" {{checked system.limited}} />
 					{{localize "gurps.item.limit"}}
 				</label>
@@ -71,17 +71,17 @@
 				{{/if}}
 			</div>
 			{{#if document.actor}}
-			<div class="label">{{localize "gurps.item.points"}}</div>
+			<label>{{localize "gurps.item.points"}}</label>
 			<div class="field no-stretch">
 				<input type="text" name="system.points" value="{{system.points}}" data-dtype="Number" />
 				<input type="text" value="{{document.skillLevel}}/{{document.relativeLevel}}" readonly tabindex="-1" />
 			</div>
 			{{/if}}
-			<div class="label">{{localize "gurps.item.reference"}}</div>
+			<label>{{localize "gurps.item.reference"}}</label>
 			<div class="field">
 				<input type="text" name="system.reference" value="{{system.reference}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.reference_highlight"}}</div>
+			<label>{{localize "gurps.item.reference_highlight"}}</label>
 			<div class="field">
 				<input
 					type="text"

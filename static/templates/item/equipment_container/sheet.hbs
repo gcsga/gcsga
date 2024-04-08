@@ -1,47 +1,47 @@
 <form class="{{cssClass}}" autocomplete="off">
 	<div id="sheet">
 		<div id="details">
-			<div class="label">{{localize "gurps.item.name"}}</div>
+			<label>{{localize "gurps.item.name"}}</label>
 			<div class="field">
 				<input type="text" name="name" value="{{item.name}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.notes"}}</div>
+			<label>{{localize "gurps.item.notes"}}</label>
 			<div class="field">
 				<input type="text" name="system.notes" value="{{system.notes}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.vtt_notes"}}</div>
+			<label>{{localize "gurps.item.vtt_notes"}}</label>
 			<div class="field">
 				<input type="text" name="system.vtt_notes" value="{{system.vtt_notes}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.tech_level"}}</div>
+			<label>{{localize "gurps.item.tech_level"}}</label>
 			<div class="field">
 				<input type="text" name="system.tech_level" value="{{system.tech_level}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.legality_class"}}</div>
+			<label>{{localize "gurps.item.legality_class"}}</label>
 			<div class="field">
 				<input type="text" name="system.legality_class" value="{{system.legality_class}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.quantity"}}</div>
+			<label>{{localize "gurps.item.quantity"}}</label>
 			<div class="field no-stretch">
 				<input type="text" name="system.quantity" value="{{system.quantity}}" data-dtype="Number" />
-				<label class="label checkbox-label">
+				<label class="check">
 					<input type="checkbox" {{checked system.equipped}} />
 					{{localize "gurps.item.equipped"}}
 				</label>
 			</div>
-			<div class="label">{{localize "gurps.item.value"}}</div>
+			<label>{{localize "gurps.item.value"}}</label>
 			<div class="field no-stretch">
 				<input type="text" name="system.value" value="{{system.value}}" data-dtype="Number" />
-				<div class="label">{{localize "gurps.item.extended_value"}}</div>
+				<label>{{localize "gurps.item.extended_value"}}</label>
 				<input type="text" value="{{document.extendedValue}}" readonly tabIndex="-1" />
 			</div>
-			<div class="label">{{localize "gurps.item.weight"}}</div>
+			<label>{{localize "gurps.item.weight"}}</label>
 			<div class="field no-stretch">
 				<input type="text" name="system.weight" value="{{system.weight}}" data-dtype="String" />
-				<div class="label">{{localize "gurps.item.extended_weight"}}</div>
+				<label>{{localize "gurps.item.extended_weight"}}</label>
 				<input type="text" value="{{document.extendedWeightFast}}" readonly tabIndex="-1" />
 			</div>
-			<div class="label">{{localize "gurps.item.uses"}}</div>
+			<label>{{localize "gurps.item.uses"}}</label>
 			<div class="field no-stretch">
 				<input
 					type="text"
@@ -50,18 +50,18 @@
 					data-dtype="Number"
 					{{disabled (eq system.max_uses 0)}}
 				/>
-				<div class="label">{{localize "gurps.item.max_uses"}}</div>
+				<label>{{localize "gurps.item.max_uses"}}</label>
 				<input type="text" name="system.max_uses" value="{{system.max_uses}}" data-dtype="Number" />
 			</div>
-			<div class="label">{{localize "gurps.item.tags"}}</div>
+			<label>{{localize "gurps.item.tags"}}</label>
 			<div class="field">
 				<input type="text" name="system.tags" value="{{join system.tags ', '}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.reference"}}</div>
+			<label>{{localize "gurps.item.reference"}}</label>
 			<div class="field">
 				<input type="text" name="system.reference" value="{{system.reference}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.reference_highlight"}}</div>
+			<label>{{localize "gurps.item.reference_highlight"}}</label>
 			<div class="field">
 					<input type="text" name="system.reference_highlight" value="{{system.reference_highlight}}" data-dtype="String" />
 			</div>

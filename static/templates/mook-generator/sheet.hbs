@@ -1,14 +1,14 @@
 <form autocomplete="off">
 	<div id="identity" class="fieldblock">
-		<div class="label">{{localize "gurps.character.name"}}</div>
+		<label>{{localize "gurps.character.name"}}</label>
 		<div class="field">
 			<input type="text" name="profile.name" value="{{actor.profile.name}}" data-dtype="String" />
 		</div>
-		<div class="label">{{localize "gurps.character.title"}}</div>
+		<label>{{localize "gurps.character.title"}}</label>
 		<div class="field">
 			<input type="text" name="profile.title" value="{{actor.profile.title}}" data-dtype="String" />
 		</div>
-		<div class="label">{{localize "gurps.character.appearance"}}</div>
+		<label>{{localize "gurps.character.appearance"}}</label>
 		<div class="field">
 			<textarea type="text" name="profile.userdesc" data-dtype="String">{{textareaFormat actor.profile.appearance
 				}}</textarea>
@@ -25,12 +25,12 @@
 					{{#each point_pools}}
 					{{>mook-generator/attribute}}
 					{{/each}}
-					<div class="label">{{localize "gurps.character.basic_thrust"}}</div>
+					<label>{{localize "gurps.character.basic_thrust"}}</label>
 					<div class="field">
 						<input name="thrust" class="input number" type="text" data-dtype="String" value="{{actor.thrust.string}}"
 							style="min-width: {{length basic_thrust}}ch;" />
 					</div>
-					<div class="label">{{localize "gurps.character.basic_swing"}}</div>
+					<label>{{localize "gurps.character.basic_swing"}}</label>
 					<div class="field">
 						<input name="swing" class="input number" type="text" data-dtype="String" value="{{actor.swing.string}}"
 							style="min-width: {{length basic_swing}}ch;" />

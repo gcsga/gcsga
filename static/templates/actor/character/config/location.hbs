@@ -11,11 +11,11 @@
 		{{/unless}}
 	</div>
 	<div class="fieldblock">
-		<div class="label">{{localize "gurps.character.settings.body_type.id"}}</div>
+		<label>{{localize "gurps.character.settings.body_type.id"}}</label>
 		<div class="field">
 			<input type="text" name="{{path}}.{{@index}}.id" value="{{this.id}}" data-dtype="String" />
 		</div>
-		<div class="label">{{localize "gurps.character.settings.body_type.choice_name"}}</div>
+		<label>{{localize "gurps.character.settings.body_type.choice_name"}}</label>
 		<div class="field">
 			<input
 				type="text"
@@ -24,7 +24,7 @@
 				data-dtype="String"
 			/>
 		</div>
-		<div class="label">{{localize "gurps.character.settings.body_type.table_name"}}</div>
+		<label>{{localize "gurps.character.settings.body_type.table_name"}}</label>
 		<div class="field">
 			<input
 				type="text"
@@ -33,7 +33,7 @@
 				data-dtype="String"
 			/>
 		</div>
-		<div class="label">{{localize "gurps.character.settings.body_type.slots"}}</div>
+		<label>{{localize "gurps.character.settings.body_type.slots"}}</label>
 		<div class="field">
 			<input
 				type="text"
@@ -42,7 +42,7 @@
 				data-dtype="Number"
 			/>
 		</div>
-		<div class="label">{{localize "gurps.character.settings.body_type.hit_penalty"}}</div>
+		<label>{{localize "gurps.character.settings.body_type.hit_penalty"}}</label>
 		<div class="field">
 			<input
 				type="text"
@@ -51,7 +51,7 @@
 				data-dtype="Number"
 			/>
 		</div>
-		<div class="label">{{localize "gurps.character.settings.body_type.dr_bonus"}}</div>
+		<label>{{localize "gurps.character.settings.body_type.dr_bonus"}}</label>
 		<div class="field">
 			<input
 				type="text"
@@ -60,7 +60,7 @@
 				data-dtype="Number"
 			/>
 		</div>
-		<div class="label">{{localize "gurps.character.settings.body_type.description"}}</div>
+		<label>{{localize "gurps.character.settings.body_type.description"}}</label>
 		<div class="field">
 			<textarea
 				type="text"
@@ -69,7 +69,7 @@
 			>{{textareaFormat this.description}}</textarea>
 		</div>
 		{{#if this.sub_table}}
-		<div class="label">{{localize "gurps.character.settings.body_type.sub_roll"}}</div>
+		<label>{{localize "gurps.character.settings.body_type.sub_roll"}}</label>
 		<div class="field">
 			<input
 				type="text"

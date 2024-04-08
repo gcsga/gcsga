@@ -8,7 +8,7 @@
 			<div class="section">
 				{{#each settings.trait as |conf pack|}}
 				<div class="entry">
-					<label class="checkbox-label">
+					<label class="check">
 						<input type="checkbox" name="trait-{{pack}}" {{checked conf.load}} />
 						{{conf.name}}
 					</label>
@@ -25,7 +25,7 @@
 			<div class="section">
 				{{#each settings.modifier as |conf pack|}}
 				<div class="entry">
-					<label class="checkbox-label">
+					<label class="check">
 						<input type="checkbox" name="modifier-{{pack}}" {{checked conf.load}} />
 						{{conf.name}}
 					</label>
@@ -42,11 +42,11 @@
 			<div class="section">
 				{{#each settings.skill as |conf pack|}}
 				<div class="entry">
-					<label class="checkbox-label">
+					<label class="check">
 						<input type="checkbox" name="skill-{{pack}}" {{checked conf.load}} />
 						{{conf.name}}
 					</label>
-					<label class="checkbox-label">
+					<label class="check">
 						<input type="checkbox" name="default-skill-{{pack}}" {{checked conf.skillDefault}} />
 						Use for Defaults?
 					</label>
@@ -63,7 +63,7 @@
 			<div class="section">
 				{{#each settings.spell as |conf pack|}}
 				<div class="entry">
-					<label class="checkbox-label">
+					<label class="check">
 						<input type="checkbox" name="spell-{{pack}}" {{checked conf.load}} />
 						{{conf.name}}
 					</label>
@@ -80,7 +80,7 @@
 			<div class="section">
 				{{#each settings.equipment as |conf pack|}}
 				<div class="entry">
-					<label class="checkbox-label">
+					<label class="check">
 						<input type="checkbox" name="equipment-{{pack}}" {{checked conf.load}} />
 						{{conf.name}}
 					</label>
@@ -97,7 +97,7 @@
 			<div class="section">
 				{{#each settings.eqp_modifier as |conf pack|}}
 				<div class="entry">
-					<label class="checkbox-label">
+					<label class="check">
 						<input type="checkbox" name="eqp_modifier-{{pack}}" {{checked conf.load}} />
 						{{conf.name}}
 					</label>
@@ -114,7 +114,7 @@
 			<div class="section">
 				{{#each settings.note as |conf pack|}}
 				<div>
-					<label class="checkbox-label">
+					<label class="check">
 						<input type="checkbox" name="note-{{pack}}" {{checked conf.load}} />
 						{{conf.name}}
 					</label>

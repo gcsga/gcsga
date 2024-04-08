@@ -8,7 +8,7 @@
 			<option value="{{ k }}">{{ localize v }}</option>
 			{{/each}} {{/if}} {{/select}}
 		</select>
-		<label class="checkbox-label">
+		<label class="check">
 			<input
 				type="checkbox"
 				data-dtype="Boolean"
@@ -19,7 +19,7 @@
 			{{ localize "gurps.feature.per_level" }}
 		</label>
 		{{#unless (eq this.type "weapon_min_st_bonus")}}
-		<label class="checkbox-label">
+		<label class="check">
 			<input
 				type="checkbox"
 				data-dtype="Boolean"
@@ -30,7 +30,7 @@
 			{{ localize "gurps.feature.per_die" }}
 		</label>
 		{{/unless}}
-		<label class="checkbox-label">
+		<label class="check">
 			<input
 				type="checkbox"
 				data-dtype="Boolean"
@@ -45,12 +45,12 @@
 		<div class="placeholder"></div>
 		<div class="placeholder"></div>
 		<select name="array.system.features.{{@index}}.switch_type">
-			{{#select this.switch_type}} {{#each config.select.wswitch as |v k| }}
+			{{#select this.switch_type}} {{#each @root.config.select.wswitch as |v k| }}
 			<option value="{{ k }}">{{ localize v }}</option>
 			{{/each}} {{/select}}
 		</select>
 		<select name="array.system.features.{{@index}}.switch_type_value">
-			{{#select this.switch_type_value}} {{#each config.select.wswitch_value as |v k| }}
+			{{#select this.switch_type_value}} {{#each @root.config.select.wswitch_value as |v k| }}
 			<option value="{{ k }}">{{ localize v }}</option>
 			{{/each}} {{/select}}
 		</select>

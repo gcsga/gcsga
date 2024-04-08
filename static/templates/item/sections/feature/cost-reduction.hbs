@@ -14,7 +14,7 @@
 			{{/each}} {{/select}}
 		</select>
 		<select name="array.system.features.{{@index}}.percentage">
-			{{#select this.percentage}} {{#each config.select.percentage as |v k|}}
+			{{#select this.percentage}} {{#each @root.config.select.percentage as |v k|}}
 			<option value="{{ k }}">{{ localize "gurps.field_prefix.percentage" value=v }}</option>
 			{{/each}} {{/select}}
 		</select>

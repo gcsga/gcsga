@@ -713,7 +713,8 @@
 			"dodge": "Dodge",
 			"parry": "Parry",
 			"block": "Block",
-			"skill": "Skill"
+			"skill": "Skill",
+			"size": "Size Modifier"
 		},
 		"attribute_def": {
 			"id": "ID",

@@ -4,10 +4,12 @@ import { ContainedWeightReduction } from "./contained-weight-reduction.ts"
 import { CostReduction } from "./cost-reduction.ts"
 import {
 	AttributeBonusObj,
+	ConditionalModifierBonusObj,
 	ContainedWeightReductionObj,
 	CostReductionObj,
 	DRBonusObj,
 	MoveBonusObj,
+	ReactionBonusObj,
 	SkillBonusObj,
 	SkillPointBonusObj,
 	SpellBonusObj,
@@ -54,6 +56,8 @@ export type Feature =
 
 export type FeatureObj =
 	| ContainedWeightReductionObj
+	| ReactionBonusObj
+	| ConditionalModifierBonusObj
 	| AttributeBonusObj
 	| CostReductionObj
 	| DRBonusObj

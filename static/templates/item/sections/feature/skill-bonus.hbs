@@ -16,7 +16,7 @@
                 {{/each}}
             {{/if}} {{/select}}
         </select>
-        <label class="checkbox-label">
+        <label class="check">
             <input
                 type="checkbox"
                 data-dtype="Boolean"
@@ -31,14 +31,14 @@
             <div class="placeholder"></div>
             <select name="array.system.features.{{@index}}.selection_type">
                 {{#select this.selection_type}}
-                {{#each config.select.skillsel as |v k|}}
+                {{#each @root.config.select.skillsel as |v k|}}
                     <option value="{{ k }}">{{ localize v }}</option>
                 {{/each}}
             {{/select}}
         </select>
         <select name="array.system.features.{{@index}}.name.compare" {{ disabled (eq this.selection_type "this_weapon") }}>
             {{#select this.name.compare}}
-            {{#each config.select.string-criteria as |v k|}}
+            {{#each @root.config.select.string_criteria as |v k|}}
                 <option value="{{ k }}">{{ localize v }}</option>
             {{/each}} {{/select}}
         </select>
@@ -50,7 +50,7 @@
         <div class="placeholder"></div>
         <select name="array.system.features.{{@index}}.specialization.compare">
             {{#select this.specialization.compare}}
-            {{#each config.select.string-criteria as |v k|}}
+            {{#each @root.config.select.string_criteria as |v k|}}
                 {{#if (eq ../this.selection_type "weapons_with_required_skill")}}
                     <option value="{{ k }}">{{ localize "gurps.field_prefix.specialization" }}{{ localize v }}</option>
                 {{ else }}
@@ -67,7 +67,7 @@
         <div class="placeholder"></div>
         <select name="array.system.features.{{@index}}.tags.compare">
             {{#select this.tags.compare}}
-            {{#each config.select.string-criteria as |v k|}}
+            {{#each @root.config.select.string_criteria as |v k|}}
                 <option value="{{ k }}">{{ localize "gurps.field_prefix.tags" }} {{ localize v }}</option>
             {{/each}} {{/select}}
         </select>

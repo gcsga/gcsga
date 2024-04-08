@@ -4,7 +4,7 @@
 		<a class="gcs-trash" data-pindex="{{id}}" data-index="{{@index}}" data-action="remove-move-type-override"></a>
 	</div>
 	<div class="fieldblock">
-		<div class="label">{{localize "gurps.move_type_def.condition_type"}}</div>
+		<label>{{localize "gurps.move_type_def.condition_type"}}</label>
 		<div class="field">
 			<select
 				name="array.system.settings.move_types.{{id}}.overrides.{{@index}}.condition.type"
@@ -15,7 +15,7 @@
 				{{/each}} {{/select}}
 			</select>
 		</div>
-		<div class="label">{{localize "gurps.move_type_def.condition_qualifier"}}</div>
+		<label>{{localize "gurps.move_type_def.condition_qualifier"}}</label>
 		<div class="field">
 			<input
 				type="text"
@@ -24,7 +24,7 @@
 				data-dtype="String"
 			/>
 		</div>
-		<div class="label">{{localize "gurps.move_type_def.base"}}</div>
+		<label>{{localize "gurps.move_type_def.base"}}</label>
 		<div class="field">
 			<input
 				type="text"

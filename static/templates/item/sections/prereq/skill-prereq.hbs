@@ -11,7 +11,7 @@
         </select>
         <select class="type" name="{{ path }}.type" data-path="{{ path }}">
             {{#select this.type}}
-            {{#each config.select.prereq_strict as |v k|}}
+            {{#each @root.config.select.prereq_strict as |v k|}}
                 <option value="{{ k }}">{{ localize v }}</option>
             {{/each}} {{/select}}
         </select>
@@ -20,7 +20,7 @@
         <div class="placeholder"></div>
         <select name="{{ path }}.name.compare">
             {{#select this.name.compare}}
-            {{#each config.select.string-criteria as |v k|}}
+            {{#each @root.config.select.string_criteria as |v k|}}
                 <option value="{{ k }}">{{ localize "gurps.field_prefix.name" }} {{ localize v }}</option>
             {{/each}} {{/select}}
         </select>
@@ -32,7 +32,7 @@
         <div class="placeholder"></div>
         <select name="{{ path }}.specialization.compare">
             {{#select this.specialization.compare}}
-            {{#each config.select.string-criteria as |v k|}}
+            {{#each @root.config.select.string_criteria as |v k|}}
                 <option value="{{ k }}">{{ localize "gurps.field_prefix.specialization" }} {{ localize v }}</option>
             {{/each}} {{/select}}
         </select>
@@ -44,7 +44,7 @@
         <div class="placeholder"></div>
         <select name="{{ path }}.level.compare">
             {{#select this.level.compare}}
-            {{#each config.select.numeric-criteria as |v k|}}
+            {{#each @root.config.select.numeric_criteria as |v k|}}
                 <option value="{{ k }}">{{ localize "gurps.field_prefix.level" }} {{ localize v }}</option>
             {{/each}} {{/select}}
         </select>

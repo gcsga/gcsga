@@ -8,7 +8,7 @@
 			<option value="{{ k }}">{{ localize v }}</option>
 			{{/each}} {{/if}} {{/select}}
 		</select>
-		<label class="checkbox-label">
+		<label class="check">
 			<input
 				type="checkbox"
 				data-dtype="Boolean"
@@ -33,7 +33,7 @@
 	</div>
 	<div class="dr-bonus">
 		<div class="placeholder"></div>
-		<div class="label">{{ localize "gurps.field_prefix.dr_bonus_before" }}</div>
+		<label>{{ localize "gurps.field_prefix.dr_bonus_before" }}</label>
 		<div class="field">
 			<input
 				type="text"
@@ -42,6 +42,6 @@
 				data-dtype="String"
 			/>
 		</div>
-		<div class="label">{{ localize "gurps.field_prefix.dr_bonus_after" }}</div>
+		<label>{{ localize "gurps.field_prefix.dr_bonus_after" }}</label>
 	</div>
 </li>

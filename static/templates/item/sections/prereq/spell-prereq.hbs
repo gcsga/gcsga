@@ -11,7 +11,7 @@
         </select>
         <select name="{{ path }}.quantity.compare">
             {{#select this.quantity.compare}}
-            {{#each config.select.numeric-criteria_strict as |v k|}}
+            {{#each @root.config.select.numeric_criteria_strict as |v k|}}
                 <option value="{{ k }}">{{ localize v }}</option>
             {{/each}} {{/select}}
         </select>
@@ -23,7 +23,7 @@
         </div>
         <select class="type" name="{{ path }}.type" data-path="{{ path }}">
             {{#select this.type}}
-            {{#each config.select.prereq_strict as |v k|}}
+            {{#each @root.config.select.prereq_strict as |v k|}}
                 <option value="{{ k }}">{{ localize v }}</option>
             {{/each}} {{/select}}
         </select>
@@ -32,13 +32,13 @@
         <div class="placeholder"></div>
         <select name="{{ path }}.sub_type">
             {{#select this.sub_type}}
-            {{#each config.select.spellcmp as |v k|}}
+            {{#each @root.config.select.spellcmp as |v k|}}
                 <option value="{{ k }}">{{ localize v }}</option>
             {{/each}} {{/select}}
         </select>
         <select name="{{ path }}.qualifier.compare" {{ disabled (or (eq this.sub_type "college_count") (eq this.sub_type "any")) }}>
             {{#select this.qualifier.compare}}
-            {{#each config.select.string-criteria as |v k|}}
+            {{#each @root.config.select.string_criteria as |v k|}}
                 <option value="{{ k }}">{{ localize v }}</option>
             {{/each}} {{/select}}
         </select>

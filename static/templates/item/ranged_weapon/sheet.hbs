@@ -1,17 +1,17 @@
 <form class="{{cssClass}}" autocomplete="off">
 	<div id="sheet">
 		<div id="details">
-			<div class="label">{{localize "gurps.item.img"}}</div>
+			<label>{{localize "gurps.item.img"}}</label>
 			<div class="field">
 				<div class="img-display" style="background-image: url({{document.img}});">
 					<img src="{{document.img}}" data-edit="img" title="{{document.name}}" />
 				</div>
 			</div>
-			<div class="label">{{localize "gurps.weapon.usage"}}</div>
+			<label>{{localize "gurps.weapon.usage"}}</label>
 			<div class="field">
 				<input type="text" name="system.usage" value="{{system.usage}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.weapon.notes"}}</div>
+			<label>{{localize "gurps.weapon.notes"}}</label>
 			<div class="field">
 				<input
 					type="text"
@@ -20,7 +20,7 @@
 					data-dtype="String"
 				/>
 			</div>
-			<div class="label">{{localize "gurps.weapon.accuracy"}}</div>
+			<label>{{localize "gurps.weapon.accuracy"}}</label>
 			<div class="field no-stretch">
 				<input
 					type="text"
@@ -29,7 +29,7 @@
 					data-dtype="Number"
 					{{disabled document.accuracy.jet}}
 				/>
-			<div class="label">{{localize "gurps.weapon.accuracy_scope"}}</div>
+			<label>{{localize "gurps.weapon.accuracy_scope"}}</label>
 				<input
 					type="text"
 					name="weapon.accuracy.scope"
@@ -37,7 +37,7 @@
 					data-dtype="Number"
 					{{disabled document.accuracy.jet}}
 				/>
-				<label class="label checkbox-label" style="justify-self: end;">
+				<label class="check" style="justify-self: end;">
 					<input
 						type="checkbox"
 						name="weapon.accuracy.jet"
@@ -47,11 +47,11 @@
 				{{ localize "gurps.weapon.accuracy_jet" }}
 				</label>
 			</div>
-			<div class="label">{{localize "gurps.weapon.damage"}}</div>
+			<label>{{localize "gurps.weapon.damage"}}</label>
 			<div class="field no-stretch">
 				<select name="system.damage.st" data-dtype="String">
 					{{#select system.damage.st}}
-						{{#each config.select.stdmg as |v k|}}
+						{{#each @root.config.select.stdmg as |v k|}}
 							<option value="{{k}}">{{v}}</option>
 						{{/each}}
 					{{/select}}
@@ -62,18 +62,18 @@
 					value="{{signed system.damage.modifier_per_die}}"
 					data-dtype="Number"
 				/>
-				<div class="label">{{localize "gurps.weapon.modifier_per_die"}}</div>
+				<label>{{localize "gurps.weapon.modifier_per_die"}}</label>
 			</div>
-			<div class="label"></div>
+			<label></label>
 			<div class="field no-stretch">
-				<div class="label">{{localize "gurps.weapon.armor_divisor"}}</div>
+				<label>{{localize "gurps.weapon.armor_divisor"}}</label>
 				<input
 					type="text"
 					name="system.damage.armor_divisor"
 					value="{{system.damage.armor_divisor}}"
 					data-dtype="Number"
 				/>
-				<div class="label">{{localize "gurps.weapon.damage_type"}}</div>
+				<label>{{localize "gurps.weapon.damage_type"}}</label>
 				<input
 					type="text"
 					name="system.damage.type"
@@ -81,7 +81,7 @@
 					data-dtype="String"
 				/>
 			</div>
-			<div class="label">{{localize "gurps.weapon.fragmentation"}}</div>
+			<label>{{localize "gurps.weapon.fragmentation"}}</label>
 			<div class="field no-stretch">
 				<input
 					type="text"
@@ -89,14 +89,14 @@
 					value="{{diceString system.damage.fragmentation}}"
 					data-dtype="String"
 				/>
-				<div class="label">{{localize "gurps.weapon.armor_divisor"}}</div>
+				<label>{{localize "gurps.weapon.armor_divisor"}}</label>
 				<input
 					type="text"
 					name="system.damage.fragmentation_armor_divisor"
 					value="{{system.damage.fragmentation_armor_divisor}}"
 					data-dtype="Number"
 				/>
-				<div class="label">{{localize "gurps.weapon.damage_type"}}</div>
+				<label>{{localize "gurps.weapon.damage_type"}}</label>
 				<input
 					type="text"
 					name="system.damage.fragmentation_type"
@@ -104,7 +104,7 @@
 					data-dtype="String"
 				/>
 			</div>
-			<div class="label">{{localize "gurps.weapon.range"}}</div>
+			<label>{{localize "gurps.weapon.range"}}</label>
 			<div class="field no-stretch">
 				<input
 					type="text"
@@ -112,14 +112,14 @@
 					value="{{document.range.max}}"
 					data-dtype="Number"
 				/>
-				<div class="label">{{localize "gurps.weapon.range_half_damage"}}</div>
+				<label>{{localize "gurps.weapon.range_half_damage"}}</label>
 				<input
 					type="text"
 					name="weapon.range.halfDamage"
 					value="{{document.range.halfDamage}}"
 					data-dtype="Number"
 				/>
-				<div class="label">{{localize "gurps.weapon.range_min"}}</div>
+				<label>{{localize "gurps.weapon.range_min"}}</label>
 				<input
 					type="text"
 					name="weapon.range.min"
@@ -127,9 +127,9 @@
 					data-dtype="Number"
 				/>
 			</div>
-			<div class="label"></div>
+			<label></label>
 			<div class="field no-stretch">
-				<label class="label checkbox-label">
+				<label class="check">
 					<input
 						type="checkbox"
 						name="weapon.range.musclePowered"
@@ -138,7 +138,7 @@
 					/>
 					{{localize "gurps.weapon.muscle_powered"}}
 				</label>
-				<label class="label checkbox-label">
+				<label class="check">
 					<input
 						type="checkbox"
 						name="weapon.range.inMiles"
@@ -148,27 +148,27 @@
 					{{localize "gurps.weapon.in_miles"}}
 				</label>
 			</div>
-			<div class="label">{{localize "gurps.weapon.rate_of_fire"}}</div>
+			<label>{{localize "gurps.weapon.rate_of_fire"}}</label>
 			<div class="field no-stretch">
-				<div class="label">{{localize "gurps.weapon.mode_1"}}</div>
+				<label>{{localize "gurps.weapon.mode_1"}}</label>
 				<input
 					type="text"
 					name="weapon.rate_of_fire.mode1.shotsPerAttack"
 					value="{{document.rate_of_fire.mode1.shotsPerAttack}}"
 					data-dtype="Number"
 				/>
-				<div class="label">{{localize "gurps.weapon.shots_per_attack"}}</div>
+				<label>{{localize "gurps.weapon.shots_per_attack"}}</label>
 				<input
 					type="text"
 					name="weapon.rate_of_fire.mode1.secondaryProjectiles"
 					value="{{document.rate_of_fire.mode1.secondaryProjectiles}}"
 					data-dtype="Number"
 				/>
-				<div class="label">{{localize "gurps.weapon.secondary_projectiles"}}</div>
+				<label>{{localize "gurps.weapon.secondary_projectiles"}}</label>
 			</div>
-			<div class="label"></div>
+			<label></label>
 			<div class="field no-stretch">
-				<label class="label checkbox-label">
+				<label class="check">
 					<input
 						type="checkbox"
 						name="weapon.rate_of_fire.mode1.fullAutoOnly"
@@ -177,7 +177,7 @@
 					/>
 					{{localize "gurps.weapon.full_auto_only"}}
 				</label>
-				<label class="label checkbox-label">
+				<label class="check">
 					<input
 						type="checkbox"
 						name="weapon.rate_of_fire.mode1.highCyclicControlledBursts"
@@ -187,27 +187,27 @@
 					{{localize "gurps.weapon.high_cyclic_controlled_bursts"}}
 				</label>
 			</div>
-			<div class="label"></div>
+			<label></label>
 			<div class="field no-stretch">
-				<div class="label">{{localize "gurps.weapon.mode_2"}}</div>
+				<label>{{localize "gurps.weapon.mode_2"}}</label>
 				<input
 					type="text"
 					name="weapon.rate_of_fire.mode2.shotsPerAttack"
 					value="{{document.rate_of_fire.mode2.shotsPerAttack}}"
 					data-dtype="Number"
 				/>
-				<div class="label">{{localize "gurps.weapon.shots_per_attack"}}</div>
+				<label>{{localize "gurps.weapon.shots_per_attack"}}</label>
 				<input
 					type="text"
 					name="weapon.rate_of_fire.mode2.secondaryProjectiles"
 					value="{{document.rate_of_fire.mode2.secondaryProjectiles}}"
 					data-dtype="Number"
 				/>
-				<div class="label">{{localize "gurps.weapon.secondary_projectiles"}}</div>
+				<label>{{localize "gurps.weapon.secondary_projectiles"}}</label>
 			</div>
-			<div class="label"></div>
+			<label></label>
 			<div class="field no-stretch">
-				<label class="label checkbox-label">
+				<label class="check">
 					<input
 						type="checkbox"
 						name="weapon.rate_of_fire.mode2.fullAutoOnly"
@@ -216,7 +216,7 @@
 					/>
 					{{localize "gurps.weapon.full_auto_only"}}
 				</label>
-				<label class="label checkbox-label">
+				<label class="check">
 					<input
 						type="checkbox"
 						name="weapon.rate_of_fire.mode2.highCyclicControlledBursts"
@@ -226,7 +226,7 @@
 					{{localize "gurps.weapon.high_cyclic_controlled_bursts"}}
 				</label>
 			</div>
-			<div class="label">{{localize "gurps.weapon.shots"}}</div>
+			<label>{{localize "gurps.weapon.shots"}}</label>
 			<div class="field no-stretch">
 				<input
 					type="text"
@@ -235,7 +235,7 @@
 					data-dtype="Number"
 					{{disabled document.shots.thrown}}
 				/>
-				<div class="label">{{localize "gurps.weapon.in_chamber"}}</div>
+				<label>{{localize "gurps.weapon.in_chamber"}}</label>
 				<input
 					type="text"
 					name="weapon.shots.inChamber"
@@ -243,7 +243,7 @@
 					data-dtype="Number"
 					{{disabled document.shots.thrown}}
 				/>
-				<div class="label">{{localize "gurps.weapon.duration"}}</div>
+				<label>{{localize "gurps.weapon.duration"}}</label>
 				<input
 					type="text"
 					name="weapon.shots.duration"
@@ -252,16 +252,16 @@
 					{{disabled document.shots.thrown}}
 				/>
 			</div>
-			<div class="label"></div>
+			<label></label>
 			<div class="field no-stretch">
-				<div class="label">{{localize "gurps.weapon.reload_time"}}</div>
+				<label>{{localize "gurps.weapon.reload_time"}}</label>
 				<input
 					type="text"
 					name="weapon.shots.reloadTime"
 					value="{{document.shots.reloadTime}}"
 					data-dtype="Number"
 				/>
-				<label class="label checkbox-label">
+				<label class="check">
 					<input
 						type="checkbox"
 						name="weapon.shots.reloadTimeIsPerShot"
@@ -270,7 +270,7 @@
 					/>
 					{{localize "gurps.weapon.reload_time_is_per_shot"}}
 				</label>
-				<label class="label checkbox-label">
+				<label class="check">
 					<input
 						type="checkbox"
 						name="weapon.shots.thrown"
@@ -280,7 +280,7 @@
 					{{localize "gurps.weapon.thrown"}}
 				</label>
 			</div>
-			<div class="label">{{localize "gurps.weapon.bulk"}}</div>
+			<label>{{localize "gurps.weapon.bulk"}}</label>
 			<div class="field no-stretch">
 				<input
 					type="text"
@@ -288,14 +288,14 @@
 					value="{{document.bulk.normal}}"
 					data-dtype="Number"
 				/>
-				<div class="label">{{localize "gurps.weapon.bulk_giant"}}</div>
+				<label>{{localize "gurps.weapon.bulk_giant"}}</label>
 				<input
 					type="text"
 					name="weapon.bulk.giant"
 					value="{{document.bulk.giant}}"
 					data-dtype="Number"
 				/>
-				<label class="label checkbox-label">
+				<label class="check">
 					<input
 						type="checkbox"
 						name="weapon.bulk.retractingStock"
@@ -305,7 +305,7 @@
 					{{localize "gurps.weapon.retracting_stock"}}
 				</label>
 			</div>
-			<div class="label">{{localize "gurps.weapon.recoil"}}</div>
+			<label>{{localize "gurps.weapon.recoil"}}</label>
 			<div class="field no-stretch">
 				<input
 					type="text"
@@ -313,7 +313,7 @@
 					value="{{document.recoil.shot}}"
 					data-dtype="Number"
 				/>
-				<div class="label">{{localize "gurps.weapon.slug"}}</div>
+				<label>{{localize "gurps.weapon.slug"}}</label>
 				<input
 					type="text"
 					name="weapon.recoil.slug"
@@ -321,7 +321,7 @@
 					data-dtype="Number"
 				/>
 			</div>
-			<div class="label">{{localize "gurps.weapon.strength"}}</div>
+			<label>{{localize "gurps.weapon.strength"}}</label>
 			<div class="field no-stretch">
 				<input
 					type="text"
@@ -329,7 +329,7 @@
 					value="{{document.strength.min}}"
 					data-dtype="Number"
 				/>
-				<label class="label checkbox-label">
+				<label class="check">
 					<input
 						type="checkbox"
 						name="weapon.strength.twoHanded"
@@ -338,7 +338,7 @@
 					/>
 					{{localize "gurps.weapon.two_handed"}}
 				</label>
-				<label class="label checkbox-label">
+				<label class="check">
 					<input
 						type="checkbox"
 						name="weapon.strength.twoHandedUnready"
@@ -348,9 +348,9 @@
 					{{localize "gurps.weapon.two_handed_unready"}}
 				</label>
 			</div>
-			<div class="label"></div>
+			<label></label>
 			<div class="field no-stretch">
-				<label class="label checkbox-label">
+				<label class="check">
 					<input
 						type="checkbox"
 						name="weapon.strength.bipod"
@@ -359,7 +359,7 @@
 					/>
 					{{localize "gurps.weapon.bipod"}}
 				</label>
-				<label class="label checkbox-label">
+				<label class="check">
 					<input
 						type="checkbox"
 						name="weapon.strength.mounted"
@@ -368,7 +368,7 @@
 					/>
 					{{localize "gurps.weapon.mounted"}}
 				</label>
-				<label class="label checkbox-label">
+				<label class="check">
 					<input
 						type="checkbox"
 						name="weapon.strength.musketRest"

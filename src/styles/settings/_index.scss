@@ -7,7 +7,7 @@
 .window-app.settings-menu {
 	&#colors-settings,
 	&#default_sheet_settings-settings {
-		.label {
+		label {
 			white-space: nowrap;
 			text-align: right;
 			align-self: center;
@@ -74,7 +74,7 @@
 				grid-column: 1 / span 2;
 			}
 
-			.label {
+			label {
 				white-space: nowrap;
 				text-align: right;
 			}
@@ -191,7 +191,7 @@
 				grid-column: 1 / span 2;
 			}
 
-			.label {
+			label {
 				white-space: nowrap;
 				text-align: right;
 			}
@@ -237,7 +237,7 @@
 	&#damage_types-settings,
 	&#default_resource_trackers-settings,
 	&#default_move_types-settings {
-		.label {
+		label {
 			white-space: nowrap;
 			display: grid;
 			align-items: end;

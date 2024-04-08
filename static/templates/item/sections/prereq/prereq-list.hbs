@@ -27,42 +27,42 @@
     </div>
     <ul>
         {{#each this.prereqs}}
-            {{#if (eq this.type "attribute-prereq")}}
+            {{#if (eq this.type "attribute_prereq")}}
                 {{>item/sections/prereq/attribute-prereq
                 path=(concat ../path ".prereqs." @index)
                 }}
             {{/if}}
-            {{#if (eq this.type "contained-quantity-prereq")}}
+            {{#if (eq this.type "contained_quantity_prereq")}}
                 {{>item/sections/prereq/contained-quantity-prereq
                 path=(concat ../path ".prereqs." @index)
                 }}
             {{/if}}
-            {{#if (eq this.type "contained-weight-prereq")}}
+            {{#if (eq this.type "contained_weight_prereq")}}
                 {{>item/sections/prereq/contained-weight-prereq
                 path=(concat ../path ".prereqs." @index)
                 }}
             {{/if}}
-            {{#if (eq this.type "equipped-equipment-prereq")}}
+            {{#if (eq this.type "equipped_equipment_prereq")}}
                 {{>item/sections/prereq/equipped-equipment-prereq
                 path=(concat ../path ".prereqs." @index)
                 }}
             {{/if}}
-            {{#if (eq this.type "prereq-list")}}
+            {{#if (eq this.type "prereq_list")}}
                 {{>item/sections/prereq/prereq-list
                 path=(concat ../path ".prereqs." @index)
                 }}
             {{/if}}
-            {{#if (eq this.type "skill-prereq")}}
+            {{#if (eq this.type "skill_prereq")}}
                 {{>item/sections/prereq/skill-prereq
                 path=(concat ../path ".prereqs." @index)
                 }}
             {{/if}}
-            {{#if (eq this.type "spell-prereq")}}
+            {{#if (eq this.type "spell_prereq")}}
                 {{>item/sections/prereq/spell-prereq
                 path=(concat ../path ".prereqs." @index)
                 }}
             {{/if}}
-            {{#if (eq this.type "trait-prereq")}}
+            {{#if (eq this.type "trait_prereq")}}
                 {{>item/sections/prereq/trait-prereq
                 path=(concat ../path ".prereqs." @index)
                 }}

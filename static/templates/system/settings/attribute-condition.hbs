@@ -3,7 +3,7 @@
 		<a class="gcs-trash delete" data-pindex="{{pid}}" data-index="{{@index}}" data-type="{{list}}"></a>
 	</div>
 	<div class="fieldblock">
-		<div class="label">{{localize "gurps.settings.default_attributes.condition"}}</div>
+		<label>{{localize "gurps.settings.default_attributes.condition"}}</label>
 		<div class="field">
 			<select name="{{parent}}.{{pid}}.{{list}}.{{@index}}.id" data-dtype="String">
 				{{#select this.id}}
@@ -15,7 +15,7 @@
 				{{/select}}
 			</select>
 		</div>
-		<div class="label">{{localize "gurps.settings.default_attributes.action"}}</div>
+		<label>{{localize "gurps.settings.default_attributes.action"}}</label>
 		<div class="field">
 			<select name="{{parent}}.{{pid}}.{{list}}.{{@index}}.action" data-dtype="String">
 				{{#select this.action}}

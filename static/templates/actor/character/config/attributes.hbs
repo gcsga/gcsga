@@ -26,14 +26,14 @@
             </div>
             <div class="fieldblock">
                 {{#if (in this.type "_separator")}}
-                    <div class="label">{{ localize "gurps.attribute_def.id" }}</div>
+                    <label>{{ localize "gurps.attribute_def.id" }}</label>
                     <div class="field">
                         <input type="text"
                                name="array.system.settings.attributes.{{@index}}.id"
                                value="{{ this.id }}"
                                data-dtype="String" />
                     </div>
-                    <div class="label">{{ localize "gurps.attribute_def.type" }}</div>
+                    <label>{{ localize "gurps.attribute_def.type" }}</label>
                     <div class="field">
                         <select name="array.system.settings.attributes.{{@index}}.type"
                                 data-dtype="String">
@@ -43,7 +43,7 @@
                             {{/each}} {{/select}}
                         </select>
                     </div>
-                    <div class="label">{{ localize "gurps.attribute_def.name" }}</div>
+                    <label>{{ localize "gurps.attribute_def.name" }}</label>
                     <div class="field">
                         <input type="text"
                                name="array.system.settings.attributes.{{@index}}.name"
@@ -51,14 +51,14 @@
                                data-dtype="String" />
                     </div>
                 {{ else }}
-                    <div class="label">{{ localize "gurps.attribute_def.id" }}</div>
+                    <label>{{ localize "gurps.attribute_def.id" }}</label>
                     <div class="field">
                         <input type="text"
                                name="array.system.settings.attributes.{{@index}}.id"
                                value="{{ this.id }}"
                                data-dtype="String" />
                     </div>
-                    <div class="label">{{ localize "gurps.attribute_def.type" }}</div>
+                    <label>{{ localize "gurps.attribute_def.type" }}</label>
                     <div class="field">
                         <select name="array.system.settings.attributes.{{@index}}.type"
                                 data-dtype="String">
@@ -68,21 +68,21 @@
                             {{/each}} {{/select}}
                         </select>
                     </div>
-                    <div class="label">{{ localize "gurps.attribute_def.short_name" }}</div>
+                    <label>{{ localize "gurps.attribute_def.short_name" }}</label>
                     <div class="field">
                         <input type="text"
                                name="array.system.settings.attributes.{{@index}}.name"
                                value="{{ this.name }}"
                                data-dtype="String" />
                     </div>
-                    <div class="label">{{ localize "gurps.attribute_def.full_name" }}</div>
+                    <label>{{ localize "gurps.attribute_def.full_name" }}</label>
                     <div class="field">
                         <input type="text"
                                name="array.system.settings.attributes.{{@index}}.full_name"
                                value="{{ this.full_name }}"
                                data-dtype="String" />
                     </div>
-                    <div class="label">{{ localize "gurps.attribute_def.base" }}</div>
+                    <label>{{ localize "gurps.attribute_def.base" }}</label>
                     <div class="field">
                         <input type="text"
                                name="array.system.settings.attributes.{{@index}}.base"
@@ -90,14 +90,14 @@
                                data-dtype="String" />
                     </div>
                     {{#unless (in this.type "_ref")}}
-                    <div class="label">{{ localize "gurps.attribute_def.cost_per_point" }}</div>
+                    <label>{{ localize "gurps.attribute_def.cost_per_point" }}</label>
                     <div class="field">
                         <input type="text"
                                name="array.system.settings.attributes.{{@index}}.cost_per_point"
                                value="{{ this.cost_per_point }}"
                                data-dtype="Number" />
                     </div>
-                    <div class="label">{{ localize "gurps.attribute_def.cost_adj_percent_per_sm" }}</div>
+                    <label>{{ localize "gurps.attribute_def.cost_adj_percent_per_sm" }}</label>
                     <div class="field">
                         <input type="text"
                                name="array.system.settings.attributes.{{@index}}.cost_adj_percent_per_sm"

@@ -8,7 +8,7 @@
 			<option value="{{ k }}">{{ localize v }}</option>
 			{{/each}} {{/if}} {{/select}}
 		</select>
-		<label class="checkbox-label">
+		<label class="check">
 			<input
 				type="checkbox"
 				data-dtype="Boolean"
@@ -31,7 +31,7 @@
 			{{/each}} {{/select}}
 		</select>
 		<select name="array.system.features.{{@index}}.limitation">
-			{{#select this.limitation}} {{#each config.select.movelimit as |v k|}}
+			{{#select this.limitation}} {{#each @root.config.select.movelimit as |v k|}}
 			<option value="{{ k }}">{{ localize v }}</option>
 			{{/each}} {{/select}}
 		</select>

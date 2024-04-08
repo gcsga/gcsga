@@ -1,42 +1,42 @@
 <form class="{{cssClass}}" autocomplete="off">
 	<div id="sheet">
 		<div id="details">
-			<div class="label">{{localize "gurps.item.img"}}</div>
+			<label>{{localize "gurps.item.img"}}</label>
 			<div class="field">
 				<div class="img-display" style="background-image: url({{document.img}});">
 					<img src="{{document.img}}" data-edit="img" title="{{document.name}}" />
 				</div>
 			</div>
-			<div class="label">{{localize "gurps.item.name"}}</div>
+			<label>{{localize "gurps.item.name"}}</label>
 			<div class="field">
 				<input type="text" name="name" value="{{item.name}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.tech_level"}}</div>
+			<label>{{localize "gurps.item.tech_level"}}</label>
 			<div class="field no-stretch">
 				{{#if system.tech_level_required}}
 				<input type="text" name="system.tech_level" value="{{system.tech_level}}" data-dtype="String" />
 				{{else}}
 				<input type="text" name="system.tech_level" value="{{system.tech_level}}" data-dtype="String" disabled/>
 				{{/if}}
-				<label class="label checkbox-label">
+				<label class="check">
 					<input type="checkbox" name="system.tech_level_required" data-dtype="Boolean"
 						{{checked system.tech_level_required}} />
 					{{localize "gurps.item.tech_level_required"}}
 				</label>
 			</div>
-			<div class="label">{{localize "gurps.item.college"}}</div>
+			<label>{{localize "gurps.item.college"}}</label>
 			<div class="field">
 				<input type="text" name="system.college" value="{{join system.college ', '}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.class"}}</div>
+			<label>{{localize "gurps.item.class"}}</label>
 			<div class="field">
 				<input type="text" name="system.class" value="{{system.class}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.power_source"}}</div>
+			<label>{{localize "gurps.item.power_source"}}</label>
 			<div class="field">
 				<input type="text" name="system.power_source" value="{{system.power_source}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.difficulty"}}</div>
+			<label>{{localize "gurps.item.difficulty"}}</label>
 			<div class="field no-stretch">
 				<select name="attribute" data-dtype="String">
 					{{#select document.attribute}}
@@ -45,63 +45,63 @@
 						{{/each}}
 					{{/select}}
 				</select>
-				<div class="label">{{localize "gurps.item.slash"}}</div>
+				<label>{{localize "gurps.item.slash"}}</label>
 				<select name="difficulty" data-dtype="String">
 					{{#select document.difficulty}}
-						{{#each config.select.difficulty as |v k|}}
+						{{#each @root.config.select.difficulty as |v k|}}
 							<option value="{{k}}">{{localize v}}</option>
 						{{/each}}
 					{{/select}}
 				</select>
 			</div>
 			{{#if document.actor}}
-			<div class="label">{{localize "gurps.item.points"}}</div>
+			<label>{{localize "gurps.item.points"}}</label>
 			<div class="field no-stretch">
 				<input type="text" name="system.points" value="{{system.points}}" data-dtype="Number" />
-				<div class="label">{{localize "gurps.item.level"}}</div>
+				<label>{{localize "gurps.item.level"}}</label>
 				<input type="text" value="{{concat document.skillLevel '/' document.relativeLevel}}" readonly tabIndex="-1"/>
 			<div class="field">
 				<input type="text" name="system.base_skill" value="{{system.base_skill}}" data-dtype="String" />
 			</div>
 			</div>
 			{{/if}}
-			<div class="label">{{localize "gurps.item.resist"}}</div>
+			<label>{{localize "gurps.item.resist"}}</label>
 			<div class="field">
 				<input type="text" name="system.resist" value="{{system.resist}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.casting_cost"}}</div>
+			<label>{{localize "gurps.item.casting_cost"}}</label>
 			<div class="field">
 				<input type="text" name="system.casting_cost" value="{{system.casting_cost}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.maintenance_cost"}}</div>
+			<label>{{localize "gurps.item.maintenance_cost"}}</label>
 			<div class="field">
 				<input type="text" name="system.maintenance_cost" value="{{system.maintenance_cost}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.casting_time"}}</div>
+			<label>{{localize "gurps.item.casting_time"}}</label>
 			<div class="field">
 				<input type="text" name="system.casting_time" value="{{system.casting_time}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.duration"}}</div>
+			<label>{{localize "gurps.item.duration"}}</label>
 			<div class="field">
 				<input type="text" name="system.duration" value="{{system.duration}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.notes"}}</div>
+			<label>{{localize "gurps.item.notes"}}</label>
 			<div class="field">
 				<input type="text" name="system.notes" value="{{system.notes}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.vtt_notes"}}</div>
+			<label>{{localize "gurps.item.vtt_notes"}}</label>
 			<div class="field">
 				<input type="text" name="system.vtt_notes" value="{{system.vtt_notes}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.tags"}}</div>
+			<label>{{localize "gurps.item.tags"}}</label>
 			<div class="field">
 				<input type="text" name="system.tags" value="{{join system.tags ', '}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.reference"}}</div>
+			<label>{{localize "gurps.item.reference"}}</label>
 			<div class="field">
 				<input type="text" name="system.reference" value="{{system.reference}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.reference_highlight"}}</div>
+			<label>{{localize "gurps.item.reference_highlight"}}</label>
 			<div class="field">
 					<input type="text" name="system.reference_highlight" value="{{system.reference_highlight}}" data-dtype="String" />
 			</div>

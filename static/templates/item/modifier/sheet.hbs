@@ -1,7 +1,7 @@
 <form class="{{cssClass}}" autocomplete="off">
 	<div id="sheet">
 		<div id="details">
-			<div class="label">{{localize "gurps.item.img"}}</div>
+			<label>{{localize "gurps.item.img"}}</label>
 			<div class="field">
 				<div class="img-display" style="background-image: url({{document.img}});">
 					<img src="{{document.img}}" data-edit="img" title="{{document.name}}" />
@@ -9,67 +9,67 @@
 			</div>
 			<label class="label"></label>
 			<div class="field">
-				<label class="checkbox-label">
+				<label class="check">
 					<input name="system.disabled" type="checkbox" data-dtype="Boolean" {{checked (not
 						system.disabled)}} />
 					{{localize "gurps.item.enabled"}}
 				</label>
 			</div>
-			<div class="label">{{localize "gurps.item.name"}}</div>
+			<label>{{localize "gurps.item.name"}}</label>
 			<div class="field">
 				<input type="text" name="name" value="{{item.name}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.notes"}}</div>
+			<label>{{localize "gurps.item.notes"}}</label>
 			<div class="field">
 				<input type="text" name="system.notes" value="{{system.notes}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.vtt_notes"}}</div>
+			<label>{{localize "gurps.item.vtt_notes"}}</label>
 			<div class="field">
 				<input type="text" name="system.vtt_notes" value="{{system.vtt_notes}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.cost_mod"}}</div>
+			<label>{{localize "gurps.item.cost_mod"}}</label>
 			<div class="field no-stretch">
 				<input type="text" name="system.cost" value="{{system.cost}}" data-dtype="Number"/>
 				<select name="system.cost_type" data-dtype="String">
 					{{#select system.cost_type}}
-					{{#each config.select.tmcost as |v k|}}
+					{{#each @root.config.select.tmcost as |v k|}}
 					<option value="{{k}}">{{localize v}}</option>
 					{{/each}}
 					{{/select}}
 				</select>
 				<select name="system.affects" data-dtype="String">
 					{{#select system.affects}}
-					{{#each config.select.affects as |v k|}}
+					{{#each @root.config.select.affects as |v k|}}
 					<option value="{{k}}">{{localize v}}</option>
 					{{/each}}
 					{{/select}}
 				</select>
 			</div>
 			{{#if (eq system.cost_type "percentage_leveled")}}
-			<div class="label">{{localize "gurps.item.level"}}</div>
+			<label>{{localize "gurps.item.level"}}</label>
 			<div class="field">
 				<input type="text" name="system.levels" value="{{system.levels}}" data-dtype="Number" />
 			</div>
 			{{else}}
-			<div class="label">{{localize "gurps.item.level"}}</div>
+			<label>{{localize "gurps.item.level"}}</label>
 			<div class="field">
 				<input type="text" value="{{system.levels}}" disabled/>
 			</div>
 			{{/if}}
-			<div class="label">{{localize "gurps.item.total"}}</div>
+			<label>{{localize "gurps.item.total"}}</label>
 			<div class="field">
 				<input type="text" value="{{document.costDescription}}" readonly tabIndex="-1"/>
 			</div>
-			<div class="label">{{localize "gurps.item.tags"}}</div>
+			<label>{{localize "gurps.item.tags"}}</label>
 			<div class="field">
 				<input type="text" name="system.tags" value="{{join system.tags ', '}}" data-dtype="String" />
 			</div>
-			<div class="label">{{localize "gurps.item.reference"}}</div>
+			<label>{{localize "gurps.item.reference"}}</label>
 			<div class="field">
 				<input type="text" name="system.reference" value="{{system.reference}}" data-dtype="String" />
 			</div>
 		</div>
-		<div class="label">{{localize "gurps.item.reference_highlight"}}</div>
+		<label>{{localize "gurps.item.reference_highlight"}}</label>
 		<div class="field">
 				<input type="text" name="system.reference_highlight" value="{{system.reference_highlight}}" data-dtype="String" />
 		</div>

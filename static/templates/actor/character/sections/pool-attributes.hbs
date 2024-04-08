@@ -35,7 +35,7 @@
 						data-dtype="Number"
 					/>
 				</div>
-				<div class="label">{{localize "gurps.character.pool_of"}}</div>
+				<label>{{localize "gurps.character.pool_of"}}</label>
 				<div class="field">
 					<input
 						type="text"
@@ -45,7 +45,7 @@
 						{{disabled (not ../editing)}}
 					/>
 				</div>
-				<div class="label">{{this.definition.name}}</div>
+				<label>{{this.definition.name}}</label>
 				{{#if ../settings.auto_threshold.active}}
 				<div class="label" data-tooltip="{{{this.currentThreshold.explanation}}}" data-tooltip-direction="DOWN">
 					{{#if this.currentThreshold.state}}

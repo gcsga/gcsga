@@ -1,10 +1,10 @@
 {{#unless actor}}
 <div class="fieldblock">
-	<div class="label">{{ localize "gurps.settings.default_sheet_settings.initial_points" }}</div>
+	<label>{{ localize "gurps.settings.default_sheet_settings.initial_points" }}</label>
 	<div class="field">
 		<input type="text" name="initial_points" value="{{ initial_points }}" data-dtype="Number" />
 	</div>
-	<div class="label">{{ localize "gurps.settings.default_sheet_settings.default_tech_level" }}</div>
+	<label>{{ localize "gurps.settings.default_sheet_settings.default_tech_level" }}</label>
 	<div class="field">
 		<input type="text" name="tech_level" value="{{ tech_level }}" data-dtype="Number" />
 	</div>
@@ -53,9 +53,9 @@
 	</div>
 	{{/if}}
 	<div class="field">
-		<div class="label">{{ localize "gurps.character.settings.damage_progression" }}</div>
+		<label>{{ localize "gurps.character.settings.damage_progression" }}</label>
 		<select name="system.settings.damage_progression" data-dtype="String">
-			{{#select system.settings.damage_progression}} {{#each config.select.progression as |v k|}}
+			{{#select system.settings.damage_progression}} {{#each @root.config.select.progression as |v k|}}
 			<option value="{{ k }}">{{ localize v }}</option>
 			{{/each}} {{/select}}
 		</select>
@@ -65,13 +65,13 @@
 	</div>
 	<hr />
 	{{#unless actor}}
-	<label class="label checkbox-label">
+	<label class="check">
 		<input type="checkbox" name="populate_description" data-dtype="Boolean" {{ checked populate_description }} />
 		{{ localize "gurps.settings.default_sheet_settings.populate_description" }}
 	</label>
 	{{/unless}}
 	<div class="field">
-		<label class="label checkbox-label">
+		<label class="check">
 			<input
 				type="checkbox"
 				name="system.settings.show_trait_modifier_adj"
@@ -83,7 +83,7 @@
 		</label>
 	</div>
 	<div class="field">
-		<label class="label checkbox-label">
+		<label class="check">
 			<input
 				type="checkbox"
 				name="system.settings.show_equipment_modifier_adj"
@@ -95,7 +95,7 @@
 		</label>
 	</div>
 	<div class="field">
-		<label class="label checkbox-label">
+		<label class="check">
 			<input
 				type="checkbox"
 				name="system.settings.show_spell_adj"
@@ -107,7 +107,7 @@
 		</label>
 	</div>
 	<div class="field">
-		<label class="label checkbox-label">
+		<label class="check">
 			<input
 				type="checkbox"
 				name="system.settings.use_multiplicative_modifiers"
@@ -119,7 +119,7 @@
 		</label>
 	</div>
 	<div class="field">
-		<label class="label checkbox-label">
+		<label class="check">
 			<input
 				type="checkbox"
 				name="system.settings.use_modifying_dice_plus_adds"
@@ -131,7 +131,7 @@
 		</label>
 	</div>
 	<div class="field">
-		<label class="label checkbox-label">
+		<label class="check">
 			<input
 				type="checkbox"
 				name="system.settings.exclude_unspent_points_from_total"
@@ -146,52 +146,52 @@
 <div class="fieldblock">
 	<div class="title">{{ localize "gurps.character.settings.units.title" }}</div>
 	<hr />
-	<div class="label">{{ localize "gurps.character.settings.units.length" }}</div>
+	<label>{{ localize "gurps.character.settings.units.length" }}</label>
 	<div class="field">
 		<select name="system.settings.default_length_units" data-dtype="String">
-			{{#select system.settings.default_length_units}} {{#each config.select.length_units as |v k|}}
+			{{#select system.settings.default_length_units}} {{#each @root.config.select.length_units as |v k|}}
 			<option value="{{ k }}">{{ localize v }}</option>
 			{{/each}} {{/select}}
 		</select>
 	</div>
-	<div class="label">{{ localize "gurps.character.settings.units.weight" }}</div>
+	<label>{{ localize "gurps.character.settings.units.weight" }}</label>
 	<div class="field">
 		<select name="system.settings.default_weight_units" data-dtype="String">
-			{{#select system.settings.default_weight_units}} {{#each config.select.weight_units as |v k|}}
+			{{#select system.settings.default_weight_units}} {{#each @root.config.select.weight_units as |v k|}}
 			<option value="{{ k }}">{{ localize v }}</option>
 			{{/each}} {{/select}}
 		</select>
 	</div>
 	<div class="title">{{ localize "gurps.character.settings.display.title" }}</div>
 	<hr />
-	<div class="label">{{ localize "gurps.character.settings.display.userdesc" }}</div>
+	<label>{{ localize "gurps.character.settings.display.userdesc" }}</label>
 	<div class="field">
 		<select name="system.settings.user_description_display" data-dtype="String">
-			{{#select system.settings.user_description_display}} {{#each config.select.display as |v k|}}
+			{{#select system.settings.user_description_display}} {{#each @root.config.select.display as |v k|}}
 			<option value="{{ k }}">{{ localize v }}</option>
 			{{/each}} {{/select}}
 		</select>
 	</div>
-	<div class="label">{{ localize "gurps.character.settings.display.modifiers" }}</div>
+	<label>{{ localize "gurps.character.settings.display.modifiers" }}</label>
 	<div class="field">
 		<select name="system.settings.modifiers_display" data-dtype="String">
-			{{#select system.settings.modifiers_display}} {{#each config.select.display as |v k|}}
+			{{#select system.settings.modifiers_display}} {{#each @root.config.select.display as |v k|}}
 			<option value="{{ k }}">{{ localize v }}</option>
 			{{/each}} {{/select}}
 		</select>
 	</div>
-	<div class="label">{{ localize "gurps.character.settings.display.notes" }}</div>
+	<label>{{ localize "gurps.character.settings.display.notes" }}</label>
 	<div class="field">
 		<select name="system.settings.notes_display" data-dtype="String">
-			{{#select system.settings.notes_display}} {{#each config.select.display as |v k|}}
+			{{#select system.settings.notes_display}} {{#each @root.config.select.display as |v k|}}
 			<option value="{{ k }}">{{ localize v }}</option>
 			{{/each}} {{/select}}
 		</select>
 	</div>
-	<div class="label">{{ localize "gurps.character.settings.display.skill_level_adj" }}</div>
+	<label>{{ localize "gurps.character.settings.display.skill_level_adj" }}</label>
 	<div class="field">
 		<select name="system.settings.skill_level_adj_display" data-dtype="String">
-			{{#select system.settings.skill_level_adj_display}} {{#each config.select.display as |v k|}}
+			{{#select system.settings.skill_level_adj_display}} {{#each @root.config.select.display as |v k|}}
 			<option value="{{ k }}">{{ localize v }}</option>
 			{{/each}} {{/select}}
 		</select>

@@ -1,5 +1,7 @@
 ## Immediate TODO
 
+fix conditional modifier partial and others
+
 1. Item sheets
 
     - Embedded lists

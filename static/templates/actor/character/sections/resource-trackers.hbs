@@ -10,12 +10,12 @@
 	<div class="field">
 		<input type="text" name="resource_trackers.{{this.id}}.damage" value="{{this.current}}" data-dtype="Number" />
 	</div>
-	<div class="label">{{localize "gurps.character.pool_of"}}</div>
+	<label>{{localize "gurps.character.pool_of"}}</label>
 	<div class="field">
 		<input type="text" value="{{this.max}}" data-dtype="Number" disabled />
 	</div>
 	{{/if}}
-	<div class="label">{{this.definition.name}}</div>
+	<label>{{this.definition.name}}</label>
 	<div class="label tooltip">
 		{{#if this.currentThreshold.state}} [{{this.currentThreshold.state}}] {{#if this.currentThreshold.explanation}}
 		<span class="tooltiptext">{{{this.currentThreshold.explanation}}}</span>

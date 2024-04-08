@@ -96,7 +96,8 @@ class HandlebarsHelpersGURPS {
 		return JSON.stringify(a)
 	}
 
-	static join(a: unknown[], s: string): string {
+	static join(a: string[], s: string): string {
+		console.log(a, s)
 		if (!a || !a.length) return ""
 		return a.join(s)
 	}

@@ -54,15 +54,12 @@ class AbstractContainerSheetGURPS<TItem extends AbstractContainerGURPS> extends 
 
 		return {
 			...sheetData,
-			item,
-			system: item.system,
 			itemCollections: {
 				melee_weapons: item.itemCollections.meleeWeapons,
 				ranged_weapons: item.itemCollections.rangedWeapons,
 				trait_modifiers: item.itemCollections.traitModifiers,
 				equipment_modifiers: item.itemCollections.equipmentModifiers,
 			},
-			config: CONFIG.GURPS,
 		}
 	}
 
@@ -212,10 +209,7 @@ class AbstractContainerSheetGURPS<TItem extends AbstractContainerGURPS> extends 
 }
 
 interface AbstractContainerSheetData<TItem extends AbstractContainerGURPS> extends ItemSheetDataGURPS<TItem> {
-	item: TItem
-	system: TItem["system"]
 	itemCollections: Record<string, Collection<ItemGURPS>>
-	config: ConfigGURPS["GURPS"]
 }
 
 export { AbstractContainerSheetGURPS }
