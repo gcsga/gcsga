@@ -14,8 +14,7 @@ export class SkillBonus extends BonusOwner<feature.Type.SkillBonus> {
 	tags?: StringCriteria
 
 	constructor() {
-		super()
-		this.type = feature.Type.SkillBonus
+		super(feature.Type.SkillBonus)
 		this.selection_type = skillsel.Type.Name
 		this.name = new StringCriteria({ compare: StringCompareType.IsString })
 		this.specialization = new StringCriteria({ compare: StringCompareType.AnyString })

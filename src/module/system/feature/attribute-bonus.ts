@@ -11,7 +11,7 @@ export class AttributeBonus extends BonusOwner<feature.Type.AttributeBonus> {
 	attribute: string
 
 	constructor(attrID: string = gid.Strength) {
-		super()
+		super(feature.Type.AttributeBonus)
 		this.type = feature.Type.AttributeBonus
 		this.attribute = attrID
 		this.limitation = stlimit.Option.None

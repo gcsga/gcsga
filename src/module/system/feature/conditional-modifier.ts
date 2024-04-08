@@ -8,7 +8,7 @@ export class ConditionalModifierBonus extends BonusOwner<feature.Type.Conditiona
 	situation = LocalizeGURPS.translations.gurps.feature.conditional_modifier
 
 	constructor() {
-		super()
+		super(feature.Type.ConditionalModifierBonus)
 		this.situation = LocalizeGURPS.translations.gurps.feature.conditional_modifier
 		this.leveledAmount = new LeveledAmount({ amount: 1 })
 	}

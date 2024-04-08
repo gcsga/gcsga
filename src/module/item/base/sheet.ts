@@ -1,4 +1,4 @@
-import { LocalizeGURPS, feature, htmlQuery, htmlQueryAll, prepareFormData, prereq } from "@util"
+import { feature, htmlQuery, htmlQueryAll, prepareFormData, prereq, study } from "@util"
 import { ItemGURPS } from "./document.ts"
 import {
 	AttributeBonus,
@@ -10,7 +10,7 @@ import {
 	SkillDefault,
 	TraitPrereq,
 } from "@system"
-import { ActorType, ItemType, SETTINGS, SYSTEM_NAME, gid } from "@module/data/constants.ts"
+import { ActorType, ItemType, SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
 
 class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheetOptions> {
 	static override get defaultOptions(): ItemSheetOptions {
@@ -18,12 +18,12 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 		return {
 			...options,
 			submitOnChange: true,
-			closeOnSubmit: false,
 			classes: [...options.classes, "gurps", "item"],
 		}
 	}
 
 	override activateListeners($html: JQuery): void {
+		super.activateListeners($html)
 		const html = $html[0]
 
 		for (const button of htmlQueryAll(html, "a[data-action=add-prereq]")) {
@@ -161,11 +161,13 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 				const featureClass = CONFIG.GURPS.Feature.classes[value]
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				if (feature.WeaponBonusTypes.includes(value as any)) {
+					console.log("weapon", value)
 					features[index] = new featureClass(value as feature.WeaponBonusType).toObject()
 				} else {
 					// @ts-expect-error argument not needed
 					features[index] = new featureClass().toObject()
 				}
+				console.log(features[index])
 
 				return this._updateObject(event, { "system.features": features })
 			})
@@ -199,6 +201,53 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 				return this._updateObject(event, { ["system.defaults"]: defaults })
 			})
 		}
+
+		htmlQuery(html, "a[data-action=add-study]")?.addEventListener("click", async event => {
+			await this._onSubmit(event) // Submit any unsaved changes
+
+			if (
+				!this.item.isOfType(
+					ItemType.Trait,
+					ItemType.Skill,
+					ItemType.Technique,
+					ItemType.Spell,
+					ItemType.RitualMagicSpell,
+				)
+			)
+				return
+
+			const studyEntries = this.item.system.study
+			studyEntries.push({
+				type: study.Type.Self,
+				hours: 0,
+				note: "",
+			})
+			return this._updateObject(event, { ["system.study"]: studyEntries })
+		})
+
+		for (const button of htmlQueryAll(html, "a[data-action=remove-study]")) {
+			button.addEventListener("click", async event => {
+				await this._onSubmit(event) // Submit any unsaved changes
+
+				if (
+					!this.item.isOfType(
+						ItemType.Trait,
+						ItemType.Skill,
+						ItemType.Technique,
+						ItemType.Spell,
+						ItemType.RitualMagicSpell,
+					)
+				)
+					return
+
+				const index = parseInt(button.dataset.index ?? "")
+				if (isNaN(index)) return console.error("No valid index provided for:", button)
+
+				const study = this.item.system.study ?? []
+				study.splice(index, 1)
+				return this._updateObject(event, { ["system.study"]: study })
+			})
+		}
 	}
 
 	override async getData(options?: Partial<ItemSheetOptions>): Promise<ItemSheetDataGURPS<TItem>> {
@@ -224,10 +273,10 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 					return acc
 				}, {})
 		}
-		attributes[gid.SizeModifier] = LocalizeGURPS.translations.gurps.attributes.size
-		attributes[gid.Dodge] = LocalizeGURPS.translations.gurps.attributes.dodge
-		attributes[gid.Parry] = LocalizeGURPS.translations.gurps.attributes.parry
-		attributes[gid.Block] = LocalizeGURPS.translations.gurps.attributes.block
+		// attributes[gid.SizeModifier] = LocalizeGURPS.translations.gurps.attributes.size
+		// attributes[gid.Dodge] = LocalizeGURPS.translations.gurps.attributes.dodge
+		// attributes[gid.Parry] = LocalizeGURPS.translations.gurps.attributes.parry
+		// attributes[gid.Block] = LocalizeGURPS.translations.gurps.attributes.block
 
 		return {
 			...sheetData,
@@ -235,17 +284,16 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 			system: item.system,
 			attributes,
 			config: CONFIG.GURPS,
+			weaponBonusTypes: feature.WeaponBonusTypes,
 		}
 	}
 
-	protected override _updateObject(event: Event, formData: Record<string, unknown>): Promise<void> {
+	protected override async _updateObject(event: Event, formData: Record<string, unknown>): Promise<void> {
 		function splitArray(s: string): string[] {
 			const a: string[] = s.split(",").map(e => e.trim())
 			if (a.length === 1 && a[0] === "") return []
 			return a
 		}
-
-		console.log(formData)
 
 		formData = prepareFormData(formData, this.object)
 		if (typeof formData["system.tags"] === "string") formData["system.tags"] = splitArray(formData["system.tags"])
@@ -259,6 +307,7 @@ interface ItemSheetDataGURPS<TItem extends ItemGURPS> extends ItemSheetData<TIte
 	system: TItem["system"]
 	attributes: Record<string, string>
 	config: ConfigGURPS["GURPS"]
+	weaponBonusTypes: readonly feature.Type[]
 }
 
 interface ItemSheetOptions extends DocumentSheetOptions {}

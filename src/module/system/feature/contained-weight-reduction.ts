@@ -34,6 +34,7 @@ export class ContainedWeightReduction {
 	setLevel(_level: number): void {}
 
 	constructor() {
+		this.type = feature.Type.ContainedWeightReduction
 		this.reduction = "0%"
 	}
 

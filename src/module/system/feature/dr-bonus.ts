@@ -11,7 +11,7 @@ export class DRBonus extends BonusOwner<feature.Type.DRBonus> {
 	specialization: string = gid.All
 
 	constructor() {
-		super()
+		super(feature.Type.DRBonus)
 		this.location = gid.Torso
 		this.specialization = gid.All
 		this.leveledAmount = new LeveledAmount({ amount: 1 })

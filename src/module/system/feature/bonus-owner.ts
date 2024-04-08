@@ -16,6 +16,10 @@ export abstract class BonusOwner<TType extends feature.Type> {
 
 	leveledAmount: LeveledAmount = new LeveledAmount({ amount: 1 })
 
+	constructor(type: TType) {
+		this.type = type
+	}
+
 	get owner(): FeatureOwner | WeaponOwner | null {
 		return this._owner
 	}

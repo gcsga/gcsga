@@ -111,7 +111,7 @@ export class StringCriteria {
 }
 
 export function equalFold(s: string, t: string): boolean {
-	if (!s && !t) return false
+	if (!s || !t) return false
 	return s.toLowerCase() === t.toLowerCase()
 }
 

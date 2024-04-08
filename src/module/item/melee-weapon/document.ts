@@ -8,23 +8,9 @@ import { WeaponBlock } from "@item/abstract-weapon/weapon-block.ts"
 import { WeaponReach } from "@item/abstract-weapon/weapon-reach.ts"
 
 class MeleeWeaponGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends AbstractWeaponGURPS<TParent> {
-	get parry(): WeaponParry {
-		const wp = WeaponParry.parse(this.system.parry)
-		wp.current = wp.resolve(this, new TooltipGURPS()).toString()
-		return wp
-	}
-
-	get block(): WeaponBlock {
-		const wb = WeaponBlock.parse(this.system.block)
-		wb.current = wb.resolve(this, new TooltipGURPS()).toString()
-		return wb
-	}
-
-	get reach(): WeaponReach {
-		const wr = WeaponReach.parse(this.system.reach)
-		wr.current = wr.resolve(this, new TooltipGURPS()).toString()
-		return wr
-	}
+	declare parry: WeaponParry
+	declare block: WeaponBlock
+	declare reach: WeaponReach
 
 	checkUnready(type: RollType): void {
 		const check = game.settings.get(SYSTEM_NAME, SETTINGS.AUTOMATIC_UNREADY)
@@ -53,6 +39,17 @@ class MeleeWeaponGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> ex
 			}
 		}
 		this.setFlag(SYSTEM_NAME, ItemFlags.Unready, unready)
+	}
+
+	override prepareBaseData(): void {
+		super.prepareBaseData()
+		this.parry = WeaponParry.parse(this.system.parry)
+		this.block = WeaponBlock.parse(this.system.block)
+		this.reach = WeaponReach.parse(this.system.reach)
+
+		this.parry.current = this.parry.resolve(this, new TooltipGURPS()).toString()
+		this.block.current = this.block.resolve(this, new TooltipGURPS()).toString()
+		this.reach.current = this.reach.resolve(this, new TooltipGURPS()).toString()
 	}
 }
 

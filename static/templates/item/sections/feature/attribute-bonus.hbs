@@ -41,13 +41,18 @@
         {{/unless}}
         {{#each @root.attributes as |v k|}}
             <option value="{{ k }}">{{ localize "gurps.field_prefix.attribute" att=v }}</option>
-        {{/each}}{{/select}}
-    </select>
-    <select name="array.system.features.{{@index}}.limitation" {{ disabled (ne this.attribute "st") }}>
-        {{#select this.limitation}}
-        {{#each @root.config.select.stlimit as |v k|}}
-            <option value="{{ k }}">{{ localize v }}</option>
-        {{/each}} {{/select}}
-    </select>
+        {{/each}}
+        <option value="sm">{{ localize "gurps.field_prefix.attribute" att=(localize "gurps.attribute.size") }}</option>
+        <option value="dodge">{{ localize "gurps.field_prefix.attribute" att=(localize "gurps.attribute.dodge") }}</option>
+        <option value="parry">{{ localize "gurps.field_prefix.attribute" att=(localize "gurps.attribute.parry") }}</option>
+        <option value="block">{{ localize "gurps.field_prefix.attribute" att=(localize "gurps.attribute.block") }}</option>
+    {{/select}}
+</select>
+<select name="array.system.features.{{@index}}.limitation" {{ disabled (ne this.attribute "st") }}>
+    {{#select this.limitation}}
+    {{#each @root.config.select.stlimit as |v k|}}
+        <option value="{{ k }}">{{ localize v }}</option>
+    {{/each}} {{/select}}
+</select>
 </div>
 </li>

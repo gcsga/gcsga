@@ -1,37 +1,42 @@
 <div id="study">
-	<div class="header">{{localize "gurps.study.header"}}</div>
-	<div class="content">
-		<div class="control">
+	<header>
+		<span>{{ localize "gurps.study.header" }}</span>
+	</header>
+	<ul>
+		<div>
 			<a class="button gcs-circled-add" data-action="add-study"></a>
-			<div>
-				{{localize "gurps.study.studied_alt" hours=document.studyHours total=document.studyHoursNeeded}}
-				<select name="system.study_hours_needed">
-					{{#select system.study_hours_needed}} {{#each @root.config.select.study_level as |v k|}}
-					<option value="{{k}}">{{localize v}}</option>
-					{{/each}} {{/select}}
-				</select>
-				{{localize "gurps.study.for"}}
-			</div>
+			{{ localize "gurps.study.studied_alt" hours=document.studyHours total=document.studyHoursNeeded }}
+			<select name="system.study_hours_needed">
+				{{#select system.study_hours_needed}} {{#each @root.config.select.study_level as |v k|}}
+				<option value="{{ k }}">{{ localize v }}</option>
+				{{/each}} {{/select}}
+			</select>
+			{{ localize "gurps.study.for" }}
 		</div>
 		{{#each system.study}}
-		<div class="study-entry">
+		<li>
 			<a class="button gcs-trash" data-action="remove-study" data-index="{{@index}}"></a>
 			<select class="type" name="array.system.study.{{@index}}.type" data-index="{{@index}}">
 				{{#select this.type}} {{#each @root.config.select.study as |v k| }}
-				<option value="{{k}}">{{localize v}}</option>
+				<option value="{{ k }}">{{ localize v }}</option>
 				{{/each}} {{/select}}
 			</select>
-			<i class="gcs-info" tooltip-direction="DOWN" data-tooltip="{{{studyInfo this.type}}}"></i>
-			<input type="text" name="array.system.study.{{@index}}.hours" value="{{this.hours}}" data-dtype="Number" />
-			<input type="text" value="{{adjustedStudyHours this}}" readonly tabindex="-1" />
+			<i class="gcs-info" tooltip-direction="DOWN" data-tooltip="{{{ studyInfo this.type }}}"></i>
+			<input
+				type="text"
+				name="array.system.study.{{@index}}.hours"
+				value="{{ this.hours }}"
+				data-dtype="Number"
+			/>
+			<input type="text" value="{{ adjustedStudyHours this }}" readonly tabindex="-1" data-dtype="Number" />
 			<input
 				type="text"
 				name="array.system.study.{{@index}}.note"
-				value="{{this.notes}}"
+				value="{{ this.notes }}"
 				data-dtype="String"
-				placeholder="{{localize 'gurps.item.note'}}"
+				placeholder="{{ localize 'gurps.item.note' }}"
 			/>
-		</div>
+		</li>
 		{{/each}}
-	</div>
+	</ul>
 </div>

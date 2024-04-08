@@ -1,7 +1,7 @@
 import { ActorGURPS } from "@actor"
 import { AbstractContainerGURPS } from "@item"
 import { TraitSource, TraitSystemData } from "./data.ts"
-import { LocalizeGURPS, StringBuilder, affects, display, selfctrl, tmcost } from "@util"
+import { LocalizeGURPS, StringBuilder, affects, display, selfctrl, study, tmcost } from "@util"
 import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
 import { resolveStudyHours, studyHoursProgressText } from "@system"
 import { ItemType } from "@module/data/constants.ts"
@@ -212,6 +212,16 @@ class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 			buffer.push(mod.fullDescription)
 		})
 		return buffer.toString()
+	}
+
+	get studyHours(): number {
+		return resolveStudyHours(this.system.study ?? [])
+	}
+
+	get studyHoursNeeded(): string {
+		const system = this.system
+		if ((system.study_hours_needed as string) === "") return study.Level.Standard
+		return system.study_hours_needed
 	}
 
 	override getContextMenuItems(): ContextMenuEntry[] {

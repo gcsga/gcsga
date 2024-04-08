@@ -1,11 +1,14 @@
 ## Immediate TODO
 
-fix conditional modifier partial and others
+0. Items
+
+    - Fix weapon field default values
 
 1. Item sheets
 
-    - Embedded lists
-    - Functionality
+    - Embedded modifier lists
+        - roll modifier lists
+        - effect dropdowns
 
 2. Compendium browser
 

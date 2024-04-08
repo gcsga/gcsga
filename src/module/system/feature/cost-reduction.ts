@@ -9,7 +9,7 @@ export class CostReduction extends BonusOwner<feature.Type.CostReduction> {
 	percentage?: number
 
 	constructor(attrID: string = gid.Strength) {
-		super()
+		super(feature.Type.CostReduction)
 		this.attribute = attrID
 		this.percentage = 40
 	}

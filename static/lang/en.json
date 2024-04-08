@@ -31,6 +31,12 @@
 		}
 	},
 	"gurps": {
+		"attribute": {
+			"sm": "Size Modifier",
+			"dodge": "Dodge",
+			"parry": "Parry",
+			"block": "Block"
+		},
 		"pdf": {
 			"offset": "Page Offset",
 			"offset_placeholder": "Offset (e.g. -5, 0, 2)",

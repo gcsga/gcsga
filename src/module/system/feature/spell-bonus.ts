@@ -12,8 +12,7 @@ export class SpellBonus extends BonusOwner<feature.Type.SpellBonus> {
 	tags: StringCriteria
 
 	constructor() {
-		super()
-		this.type = feature.Type.SpellBonus
+		super(feature.Type.SpellBonus)
 		this.match = spellmatch.Type.AllColleges
 		this.name = new StringCriteria({ compare: StringCompareType.IsString })
 		this.tags = new StringCriteria({ compare: StringCompareType.AnyString })

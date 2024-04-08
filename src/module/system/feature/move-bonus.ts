@@ -12,7 +12,7 @@ export class MoveBonus extends BonusOwner<feature.Type.MoveBonus> {
 	override leveledAmount: LeveledAmount
 
 	constructor() {
-		super()
+		super(feature.Type.MoveBonus)
 		this.move_type = gid.Ground
 		this.limitation = MoveBonusType.Base
 		this.leveledAmount = new LeveledAmount({ amount: 1 })

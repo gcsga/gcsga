@@ -1,31 +1,50 @@
 <div id="defaults">
-	<div class="header">{{localize "gurps.default.header"}}</div>
-	<div class="content">
-		<div> <a class="button gcs-circled-add" data-action="add-default"></a> </div>
+	<header>
+		<span>{{ localize "gurps.default.header" }}</span>
+	</header>
+	<ul>
+		<div>
+			<a class="button gcs-circled-add" data-action="add-default"></a>
+		</div>
 		{{#each system.defaults}}
-			<div class="default">
-				<a class="button gcs-trash" data-action="remove-default" data-index="{{@index}}"></a>
-			<select name="{{../sysPrefix}}defaults.{{@index}}.type" data-index="{{@index}}">
+		<li>
+			<a class="button gcs-trash" data-action="remove-default" data-index="{{@index}}"></a>
+			<select name="{{@root.sysPrefix}}defaults.{{@index}}.type" data-index="{{@index}}">
 				{{#select this.type}}
-				<option value="10">{{localize "gurps.enum.defaults.ten"}}</option>
-				{{#each ../attributes as |v k|}}
-				<option value="{{k}}">{{v}}</option>
+				<option value="10">{{ localize "gurps.enum.defaults.ten" }}</option>
+				{{#each @root.attributes as |v k|}}
+				<option value="{{ k }}">{{ v }}</option>
 				{{/each}}
-				<option value="parry">{{localize "gurps.enum.defaults.parry"}}</option>
-				<option value="block">{{localize "gurps.enum.defaults.block"}}</option>
-				<option value="skill">{{localize "gurps.enum.defaults.skill"}}</option>
+				<option value="parry">{{ localize "gurps.enum.defaults.parry" }}</option>
+				<option value="block">{{ localize "gurps.enum.defaults.block" }}</option>
+				<option value="skill">{{ localize "gurps.enum.defaults.skill" }}</option>
 				{{/select}}
 			</select>
 			<div class="field">
-				<input type="text" name="{{../sysPrefix}}defaults.{{@index}}.name" value="{{this.name}}" data-dtype="String" {{disabled (ne this.type "skill")}} />
+				<input
+					type="text"
+					name="{{@root.sysPrefix}}defaults.{{@index}}.name"
+					value="{{ this.name }}"
+					data-dtype="String"
+				/>
 			</div>
 			<div class="field">
-				<input type="text" name="{{../sysPrefix}}defaults.{{@index}}.specialization" value="{{this.specialization}}" data-dtype="String" {{disabled (ne this.type "skill")}} />
+				<input
+					type="text"
+					name="{{@root.sysPrefix}}defaults.{{@index}}.specialization"
+					value="{{ this.specialization }}"
+					data-dtype="String"
+				/>
 			</div>
 			<div class="field">
-				<input type="text" name="{{../sysPrefix}}defaults.{{@index}}.modifier" value="{{signed this.modifier}}" data-dtype="Number"/>
+				<input
+					type="text"
+					name="{{@root.sysPrefix}}defaults.{{@index}}.modifier"
+					value="{{ signed this.modifier }}"
+					data-dtype="Number"
+				/>
 			</div>
-		</div>
+		</li>
 		{{/each}}
-	</div>
+	</ul>
 </div>

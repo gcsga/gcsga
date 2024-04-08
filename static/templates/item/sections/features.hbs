@@ -16,6 +16,8 @@
 		{{>item/sections/feature/spell-bonus }} {{/if}} {{#if (eq this.type "skill_point_bonus") }}
 		{{>item/sections/feature/skill-point-bonus }} {{/if}} {{#if (eq this.type "spell_point_bonus") }}
 		{{>item/sections/feature/spell-point-bonus }} {{/if}} {{#if (eq this.type "move_bonus") }}
-		{{>item/sections/feature/move-bonus }} {{/if}} {{/each}}
+		{{>item/sections/feature/move-bonus }} {{/if}} {{#if (eq this.type "weapon_switch") }}
+		{{>item/sections/feature/weapon-switch }} {{/if}} {{#if (in @root.weaponBonusTypes this.type)}}
+		{{>item/sections/feature/weapon-bonus}} {{/if}} {{/each}}
 	</ul>
 </div>

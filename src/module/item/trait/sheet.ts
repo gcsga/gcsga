@@ -15,6 +15,11 @@ class TraitSheetGURPS extends AbstractContainerSheetGURPS<TraitGURPS> {
 			...sheetData,
 		}
 	}
+
+	protected override async _updateObject(event: Event, formData: Record<string, unknown>): Promise<void> {
+		formData["system.disabled"] = !formData["system.disabled"]
+		return super._updateObject(event, formData)
+	}
 }
 interface TraitSheetData extends AbstractContainerSheetData<TraitGURPS> {}
 

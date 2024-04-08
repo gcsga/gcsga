@@ -459,9 +459,7 @@ class AttackRollTypeHandler extends RollTypeHandler {
 			}
 			if (item instanceof RangedWeaponGURPS) {
 				fu.mergeObject(itemData, {
-					// @ts-expect-error awaiting implementation
 					rate_of_fire: item.rate_of_fire,
-					// @ts-expect-error awaiting implementation
 					recoil: item.recoil,
 				})
 			}
@@ -480,16 +478,13 @@ class AttackRollTypeHandler extends RollTypeHandler {
 		if (item instanceof RangedWeaponGURPS) {
 			const effectiveRof = this.effectiveRateOfFire(item)
 			const numberOfShots = Math.min(
-				// @ts-expect-error awaiting implementation
 				Math.floor(data.margin_number / parseInt(item.recoil.current ?? "0")) + 1,
 				effectiveRof,
 			)
 			if (numberOfShots > 1)
 				fu.mergeObject(extra, {
 					ranged: {
-						// @ts-expect-error awaiting implementation
 						rate_of_fire: item.rate_of_fire.current,
-						// @ts-expect-error awaiting implementation
 						recoil: item.recoil,
 						potential_hits: numberOfShots,
 					},
@@ -510,7 +505,6 @@ class AttackRollTypeHandler extends RollTypeHandler {
 	}
 
 	private effectiveRateOfFire(item: RangedWeaponGURPS) {
-		// @ts-expect-error awaiting implementation
 		const rof = item.rate_of_fire.resolve(item)
 		return rof.mode1.shotsPerAttack + Math.max(rof.mode1.secondaryProjectiles, 1)
 	}
@@ -608,9 +602,7 @@ class DamageRollTypeHandler extends RollTypeHandler {
 		if (chatData.ranged) {
 			const weapon = item as RangedWeaponGURPS
 			chatData.range = {
-				// @ts-expect-error awaiting implementation
 				max: weapon.range.max,
-				// @ts-expect-error awaiting implementation
 				half: weapon.range.halfDamage,
 			}
 		}

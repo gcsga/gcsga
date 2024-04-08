@@ -8,7 +8,7 @@ export class ReactionBonus extends BonusOwner<feature.Type.ReactionBonus> {
 	situation = LocalizeGURPS.translations.gurps.feature.reaction_bonus
 
 	constructor() {
-		super()
+		super(feature.Type.ReactionBonus)
 		this.situation = LocalizeGURPS.translations.gurps.feature.reaction_bonus
 		this.leveledAmount = new LeveledAmount({ amount: 1 })
 	}
