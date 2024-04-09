@@ -7,8 +7,23 @@ import { resolveStudyHours, studyHoursProgressText } from "@system"
 import { ItemType } from "@module/data/constants.ts"
 import { ItemInstances } from "@item/types.ts"
 import { modifyPoints } from "@item/helpers.ts"
+import { StringField } from "types/foundry/common/data/fields.js"
 
 class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends AbstractContainerGURPS<TParent> {
+	static override defineSchema(): foundry.documents.ItemSchema<string, object> {
+		return this.mergeSchema(super.defineSchema(), {
+			type: new foundry.data.fields.StringField(),
+			name: new foundry.data.fields.StringField(),
+			reference: new foundry.data.fields.StringField(),
+			reference_highlight: new foundry.data.fields.StringField(),
+			notes: new foundry.data.fields.StringField(),
+			vtt_notes: new foundry.data.fields.StringField(),
+			userdesc: new foundry.data.fields.StringField(),
+			tags: new foundry.data.fields.ArrayField(new StringField()),
+			base_points: new foundry.data.fields.NumberField(),
+		})
+	}
+
 	override get formattedName(): string {
 		const name: string = this.name ?? ""
 		const levels = this.levels
