@@ -4,6 +4,25 @@ import { DiceGURPS } from "@module/dice/index.ts"
 import { gid } from "@data"
 import { RESERVED_IDS } from "@system"
 
+const fields = foundry.data.fields
+
+type HitLocationSchema = {
+	id: foundry.data.fields.StringField
+	choice_name: foundry.data.fields.StringField
+	table_name: foundry.data.fields.StringField
+	slots?: foundry.data.fields.NumberField
+	hit_penalty?: foundry.data.fields.NumberField
+	dr_bonus?: foundry.data.fields.NumberField
+	description?: foundry.data.fields.StringField
+	sub_table?: foundry.data.fields.ObjectField<BodyObj, BodyObj, false>
+}
+
+type BodySchema = {
+	name?: foundry.data.fields.StringField
+	roll: foundry.data.fields.StringField
+	locations?: foundry.data.fields.ArrayField<foundry.data.fields.SchemaField<HitLocationSchema>>
+}
+
 class HitLocation<TOwner extends BodyOwner = BodyOwner> {
 	private _id: string
 	choiceName: string
@@ -36,6 +55,19 @@ class HitLocation<TOwner extends BodyOwner = BodyOwner> {
 		this.drBonus = 0
 
 		this.rollRange = "-"
+	}
+
+	static defineSchema(): HitLocationSchema {
+		return {
+			id: new fields.StringField({ initial: "id" }),
+			choice_name: new fields.StringField({ initial: "untitled choice" }),
+			table_name: new fields.StringField({ initial: "untitled location" }),
+			slots: new fields.NumberField({ initial: 0 }),
+			hit_penalty: new fields.NumberField({ initial: 0 }),
+			dr_bonus: new fields.NumberField({ initial: 0 }),
+			description: new fields.StringField(),
+			sub_table: new fields.ObjectField<BodyObj, BodyObj, false>({ required: false }),
+		}
 	}
 
 	toObject(): HitLocationObj {
@@ -183,6 +215,14 @@ class BodyGURPS<TOwner extends BodyOwner = BodyOwner> {
 		this.roll = new DiceGURPS()
 		this.locations = []
 		if (owner) this.owner = owner
+	}
+
+	static defineSchema(): BodySchema {
+		return {
+			name: new fields.StringField(),
+			roll: new fields.StringField({ initial: "3d" }),
+			locations: new fields.ArrayField(new fields.SchemaField(HitLocation.defineSchema())),
+		}
 	}
 
 	toObject(): BodyObj {

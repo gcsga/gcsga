@@ -59,7 +59,6 @@ class RangedWeaponGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> e
 		this.accuracy.current = this.accuracy.resolve(this, new TooltipGURPS()).toString()
 		this.range.current = this.range.resolve(this, new TooltipGURPS()).toString(true)
 		this.ROF.current = this.ROF.resolve(this, new TooltipGURPS()).toString()
-		this.rate_of_fire.current = this.rate_of_fire.resolve(this, new TooltipGURPS()).toString()
 		this.shots.current = this.shots.resolve(this, new TooltipGURPS()).toString()
 		this.bulk.current = this.bulk.resolve(this, new TooltipGURPS()).toString()
 		this.recoil.current = this.recoil.resolve(this, new TooltipGURPS()).toString()

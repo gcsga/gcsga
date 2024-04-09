@@ -142,6 +142,7 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 		return new PrereqList()
 	}
 
+	// TODO: replace with something better
 	protected override async _preCreate(
 		data: this["_source"],
 		options: DocumentModificationContext<TParent>,

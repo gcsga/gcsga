@@ -1,6 +1,6 @@
 import { SETTINGS, SYSTEM_NAME } from "@data"
 import { PartialSettingsData, SettingsMenuGURPS } from "./menu.ts"
-import { LengthUnits, WeightUnits } from "@util"
+import { LengthUnits, WeightUnits, paper } from "@util"
 import { display } from "@util/enum/display.ts"
 import { progression } from "@util/enum/progression.ts"
 
@@ -44,6 +44,7 @@ export class DefaultSheetSettings extends SettingsMenuGURPS {
 					notes_display: display.Option.Inline,
 					skill_level_adj_display: display.Option.Tooltip,
 					use_multiplicative_modifiers: false,
+					use_half_stat_defaults: false,
 					use_modifying_dice_plus_adds: false,
 					damage_progression: progression.Option.BasicSet,
 					show_trait_modifier_adj: false,
@@ -61,6 +62,14 @@ export class DefaultSheetSettings extends SettingsMenuGURPS {
 						"other_equipment",
 						"notes",
 					],
+					page: {
+						paper_size: paper.Size.Letter,
+						orientation: paper.Orientation.Portrait,
+						top_margin: "0.25 in",
+						left_margin: "0.25 in",
+						bottom_margin: "0.25 in",
+						right_margin: "0.25 in",
+					},
 				},
 			},
 			initial_points: {

@@ -89,7 +89,7 @@ export class CharacterImporter {
 
 		const systemData: CharacterSystemSource = {
 			_migration: { version: null, previous: null },
-			type: "character",
+			type: ActorType.Character,
 			version: GCS_FILE_VERSION,
 			total_points: data.total_points,
 			points_record: CharacterImporter.importPointsRecord(data.points_record ?? []),

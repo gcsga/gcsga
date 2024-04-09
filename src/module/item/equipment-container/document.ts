@@ -4,17 +4,50 @@ import { EquipmentContainerSource, EquipmentContainerSystemData } from "./data.t
 import { EquipmentFlags } from "@item/equipment/data.ts"
 import { ItemFlags, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { ItemInstances } from "@item/types.ts"
-import { Int, Weight, WeightUnits } from "@util"
+import { Int, LocalizeGURPS, Weight, WeightString, WeightUnits } from "@util"
 import {
 	extendedWeightAdjustedForModifiers,
 	valueAdjustedForModifiers,
 	weightAdjustedForModifiers,
 } from "@item/helpers.ts"
 import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
+import { Feature, PrereqList } from "@system"
+
+const fields = foundry.data.fields
 
 class EquipmentContainerGURPS<
 	TParent extends ActorGURPS | null = ActorGURPS | null,
 > extends AbstractContainerGURPS<TParent> {
+	static override defineSchema(): foundry.documents.ItemSchema<string, object> {
+		return this.mergeSchema(super.defineSchema(), {
+			system: new fields.SchemaField({
+				type: new fields.StringField({ required: true, initial: ItemType.EquipmentContainer }),
+				description: new fields.StringField({
+					required: true,
+					initial: LocalizeGURPS.translations.TYPES.Item[ItemType.EquipmentContainer],
+				}),
+				reference: new fields.StringField(),
+				reference_highlight: new fields.StringField(),
+				notes: new fields.StringField(),
+				vtt_notes: new fields.StringField(),
+				tech_level: new fields.StringField(),
+				legality_class: new fields.StringField(),
+				tags: new fields.ArrayField(new foundry.data.fields.StringField()),
+				rated_strength: new fields.NumberField({ required: false, min: 0 }),
+				quantity: new fields.NumberField({ min: 0, initial: 1 }),
+				value: new fields.NumberField({ min: 0, initial: 0 }),
+				weight: new fields.StringField<WeightString>({ initial: `0 ${WeightUnits.Pound}` }),
+				max_uses: new fields.NumberField({ min: 0, initial: 0, integer: true }),
+				uses: new fields.NumberField({ min: 0, initial: 0, integer: true }),
+				prereqs: new fields.SchemaField(PrereqList.defineSchema()),
+				features: new fields.ArrayField(new fields.ObjectField<Feature>()),
+				equipped: new fields.BooleanField({ initial: true }),
+				ignore_weight_for_skills: new fields.BooleanField({ initial: false }),
+				open: new fields.BooleanField({ initial: false }),
+			}),
+		})
+	}
+
 	get other(): boolean {
 		if (this.container?.isOfType(ItemType.EquipmentContainer)) return this.container.other
 		return this.flags[SYSTEM_NAME][ItemFlags.Other]

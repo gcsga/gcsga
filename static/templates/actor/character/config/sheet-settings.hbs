@@ -122,6 +122,18 @@
 		<label class="check">
 			<input
 				type="checkbox"
+				name="system.settings.use_half_stat_defaults"
+				data-dtype="Boolean"
+				{{checked
+				system.settings.use_half_stat_defaults}}
+			/>
+			{{ localize "gurps.character.settings.use_half_stat_defaults" }}
+		</label>
+	</div>
+	<div class="field">
+		<label class="check">
+			<input
+				type="checkbox"
 				name="system.settings.use_modifying_dice_plus_adds"
 				data-dtype="Boolean"
 				{{checked

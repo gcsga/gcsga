@@ -58,7 +58,7 @@ export class GCACharacterImporter {
 
 		const systemData: CharacterSystemSource = {
 			_migration: { version: null, previous: null },
-			type: "character",
+			type: ActorType.Character,
 			version: 4,
 			total_points: data.campaign.totalpoints ?? 0,
 			points_record: GCACharacterImporter.importPointsRecord(data),

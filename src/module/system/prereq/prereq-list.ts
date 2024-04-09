@@ -1,11 +1,20 @@
 import { prereq } from "@util/enum/prereq.ts"
-import { NumericCompareType, NumericCriteria } from "@util/numeric-criteria.ts"
-import { PrereqListObj } from "./data.ts"
+import { NumericCompareType, NumericCriteria, NumericCriteriaSchema } from "@util/numeric-criteria.ts"
+import { PrereqListObj, PrereqObj } from "./data.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { PrereqResolver, TooltipGURPS, extractTechLevel } from "@util"
 import { ActorGURPS } from "@actor"
 import { Prereq } from "./index.ts"
 import { ActorType } from "@module/data/constants.ts"
+
+const fields = foundry.data.fields
+
+type PrereqListSchema = {
+	type: foundry.data.fields.StringField<prereq.Type, prereq.Type, true, false, true>
+	all: foundry.data.fields.BooleanField<boolean, boolean, true, false, true>
+	when_tl: foundry.data.fields.SchemaField<NumericCriteriaSchema>
+	prereqs: foundry.data.fields.ArrayField<foundry.data.fields.ObjectField<PrereqObj>>
+}
 
 export class PrereqList {
 	type: prereq.Type
@@ -15,6 +24,15 @@ export class PrereqList {
 	when_tl: NumericCriteria
 
 	prereqs: Prereq[]
+
+	static defineSchema(): PrereqListSchema {
+		return {
+			type: new fields.StringField({ required: true, initial: prereq.Type.List }),
+			all: new fields.BooleanField({ required: true }),
+			when_tl: new fields.SchemaField(NumericCriteria.defineSchema()),
+			prereqs: new fields.ArrayField(new fields.ObjectField<PrereqObj>()),
+		}
+	}
 
 	constructor() {
 		this.type = prereq.Type.List

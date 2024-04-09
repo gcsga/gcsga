@@ -30,7 +30,7 @@ const CharacterFlagDefaults: CharacterFlags = {
 }
 
 interface CharacterSystemSource extends ActorSystemSource {
-	type: "character"
+	type: ActorType.Character
 	version: number
 	settings: SheetSettingsObj
 	created_date: string

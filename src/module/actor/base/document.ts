@@ -99,6 +99,14 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 		return 0
 	}
 
+	static mergeSchema(
+		a: foundry.documents.ActorSchema<string, object>,
+		b: foundry.data.fields.DataSchema,
+	): foundry.documents.ActorSchema<string, object> {
+		Object.assign(a, b)
+		return a
+	}
+
 	protected override async _preCreate(
 		data: this["_source"],
 		options: DocumentModificationContext<TParent>,

@@ -1,6 +1,22 @@
 import { ResourceTrackerResolver } from "@util"
 import { ResourceTrackerDefObj, ResourceTrackerObj } from "./data.ts"
 import { AbstractAttributeDef, PoolThreshold } from "@system"
+import { PoolThresholdSchema } from "@system/attribute/pool-threshold.ts"
+
+const fields = foundry.data.fields
+
+type ResourceTrackerDefSchema = {
+	id: foundry.data.fields.StringField
+	base: foundry.data.fields.StringField
+	name: foundry.data.fields.StringField
+	full_name: foundry.data.fields.StringField
+	thresholds: foundry.data.fields.ArrayField<foundry.data.fields.SchemaField<PoolThresholdSchema>>
+	max: foundry.data.fields.NumberField
+	min: foundry.data.fields.NumberField
+	isMaxEnforced: foundry.data.fields.BooleanField
+	isMinEnforced: foundry.data.fields.BooleanField
+	order: foundry.data.fields.NumberField
+}
 
 export class ResourceTrackerDef extends AbstractAttributeDef {
 	name: string
@@ -21,6 +37,21 @@ export class ResourceTrackerDef extends AbstractAttributeDef {
 		this.isMaxEnforced = data.isMaxEnforced ?? false
 		this.isMinEnforced = data.isMinEnforced ?? false
 		this.order = data.order ?? 0
+	}
+
+	static defineSchema(): ResourceTrackerDefSchema {
+		return {
+			id: new fields.StringField({ initial: "id" }),
+			base: new fields.StringField({ initial: "10" }),
+			name: new fields.StringField({ initial: "id" }),
+			full_name: new fields.StringField(),
+			thresholds: new fields.ArrayField(new fields.SchemaField(PoolThreshold.defineSchema())),
+			max: new fields.NumberField({ integer: true, initial: 10 }),
+			min: new fields.NumberField({ integer: true, initial: 0 }),
+			isMaxEnforced: new fields.BooleanField({ initial: false }),
+			isMinEnforced: new fields.BooleanField({ initial: false }),
+			order: new fields.NumberField({ min: 0 }),
+		}
 	}
 
 	get fullName(): string {

@@ -5,6 +5,8 @@ export type SkillDefaultType = gid.Block | gid.Parry | gid.Skill | gid.Ten | str
 
 const SKILL_BASED_DEFAULT_TYPES: Set<string> = new Set([gid.Skill, gid.Parry, gid.Block])
 
+const fields = foundry.data.fields
+
 export interface SkillDefaultObj {
 	type: SkillDefaultType
 	name?: string
@@ -13,6 +15,16 @@ export interface SkillDefaultObj {
 	level?: number
 	adjusted_level?: number
 	points?: number
+}
+
+type SkillDefaultSchema = {
+	type: foundry.data.fields.StringField<SkillDefaultType, SkillDefaultType, true, false, true>
+	name?: foundry.data.fields.StringField<string, string, false, false, false>
+	specialization?: foundry.data.fields.StringField<string, string, false, false, false>
+	modifier?: foundry.data.fields.NumberField<number, number, false, false, false>
+	level?: foundry.data.fields.NumberField<number, number, false, false, false>
+	adjusted_level?: foundry.data.fields.NumberField<number, number, false, false, false>
+	points?: foundry.data.fields.NumberField<number, number, false, false, false>
 }
 
 export class SkillDefault {
@@ -26,6 +38,18 @@ export class SkillDefault {
 
 	constructor(data?: SkillDefaultObj) {
 		if (data) Object.assign(this, data)
+	}
+
+	static defineSchema(): SkillDefaultSchema {
+		return {
+			type: new fields.StringField<SkillDefaultType, SkillDefaultType, true>({ initial: gid.Dexterity }),
+			name: new fields.StringField({ required: false }),
+			specialization: new fields.StringField({ required: false }),
+			modifier: new fields.NumberField({ required: false }),
+			level: new fields.NumberField({ required: false }),
+			adjusted_level: new fields.NumberField({ required: false }),
+			points: new fields.NumberField({ required: false }),
+		}
 	}
 
 	// For the sake of naming consistency
