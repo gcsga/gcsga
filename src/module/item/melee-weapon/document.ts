@@ -1,16 +1,47 @@
 import { ActorGURPS } from "@actor"
 import { AbstractWeaponGURPS } from "@item"
 import { MeleeWeaponSource, MeleeWeaponSystemData } from "./data.ts"
-import { ActorType, ItemFlags, RollType, SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
-import { TooltipGURPS, includesFold } from "@util"
+import { ActorType, ItemFlags, ItemType, RollType, SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
+import { LocalizeGURPS, TooltipGURPS, includesFold, stdmg } from "@util"
 import { WeaponParry } from "@item/abstract-weapon/weapon-parry.ts"
 import { WeaponBlock } from "@item/abstract-weapon/weapon-block.ts"
 import { WeaponReach } from "@item/abstract-weapon/weapon-reach.ts"
+import { SkillDefault } from "@system"
+
+const fields = foundry.data.fields
 
 class MeleeWeaponGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends AbstractWeaponGURPS<TParent> {
 	declare parry: WeaponParry
 	declare block: WeaponBlock
 	declare reach: WeaponReach
+
+	static override defineSchema(): foundry.documents.ItemSchema<string, object> {
+		return this.mergeSchema(super.defineSchema(), {
+			system: new fields.SchemaField({
+				type: new fields.StringField({ required: true, initial: ItemType.MeleeWeapon }),
+				strength: new fields.StringField({ initial: "0" }),
+				usage: new fields.StringField({
+					required: true,
+					initial: LocalizeGURPS.translations.TYPES.Item[ItemType.MeleeWeapon],
+				}),
+				usage_notes: new fields.StringField(),
+				defaults: new fields.ArrayField(new fields.SchemaField(SkillDefault.defineSchema())),
+				damage: new fields.SchemaField({
+					type: new fields.StringField({ initial: "cr" }),
+					st: new fields.StringField<stdmg.Option>({ choices: stdmg.Options, initial: stdmg.Option.Thrust }),
+					base: new fields.StringField(),
+					armor_divisor: new fields.NumberField({ min: 0, initial: 1 }),
+					fragmentation: new fields.StringField(),
+					fragmentation_armor_divisor: new fields.NumberField({ min: 0, initial: 1 }),
+					fragmentation_type: new fields.StringField(),
+					modifier_per_die: new fields.NumberField({ initial: 0 }),
+				}),
+				reach: new fields.StringField({ initial: "1" }),
+				parry: new fields.StringField({ initial: "no" }),
+				block: new fields.StringField({ initial: "no" }),
+			}),
+		})
+	}
 
 	checkUnready(type: RollType): void {
 		const check = game.settings.get(SYSTEM_NAME, SETTINGS.AUTOMATIC_UNREADY)

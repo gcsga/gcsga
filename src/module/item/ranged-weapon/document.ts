@@ -1,14 +1,17 @@
 import { ActorGURPS } from "@actor"
 import { AbstractWeaponGURPS } from "@item"
 import { RangedWeaponSource, RangedWeaponSystemData } from "./data.ts"
-import { ActorType, ItemFlags, RollType, SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
-import { TooltipGURPS, includesFold } from "@util"
+import { ActorType, ItemFlags, ItemType, RollType, SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
+import { LocalizeGURPS, TooltipGURPS, includesFold, stdmg } from "@util"
 import { WeaponAccuracy } from "@item/abstract-weapon/weapon-accuracy.ts"
 import { WeaponRange } from "@item/abstract-weapon/weapon-range.ts"
 import { WeaponROF } from "@item/abstract-weapon/weapon-rof.ts"
 import { WeaponShots } from "@item/abstract-weapon/weapon-shots.ts"
 import { WeaponBulk } from "@item/abstract-weapon/weapon-bulk.ts"
 import { WeaponRecoil } from "@item/abstract-weapon/weapon-recoil.ts"
+import { SkillDefault } from "@system"
+
+const fields = foundry.data.fields
 
 class RangedWeaponGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends AbstractWeaponGURPS<TParent> {
 	declare accuracy: WeaponAccuracy
@@ -18,6 +21,37 @@ class RangedWeaponGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> e
 	declare shots: WeaponShots
 	declare bulk: WeaponBulk
 	declare recoil: WeaponRecoil
+
+	static override defineSchema(): foundry.documents.ItemSchema<string, object> {
+		return this.mergeSchema(super.defineSchema(), {
+			system: new fields.SchemaField({
+				type: new fields.StringField({ required: true, initial: ItemType.RangedWeapon }),
+				strength: new fields.StringField({ initial: "0" }),
+				usage: new fields.StringField({
+					required: true,
+					initial: LocalizeGURPS.translations.TYPES.Item[ItemType.RangedWeapon],
+				}),
+				usage_notes: new fields.StringField(),
+				defaults: new fields.ArrayField(new fields.SchemaField(SkillDefault.defineSchema())),
+				damage: new fields.SchemaField({
+					type: new fields.StringField({ initial: "cr" }),
+					st: new fields.StringField<stdmg.Option>({ choices: stdmg.Options, initial: stdmg.Option.None }),
+					base: new fields.StringField({ initial: "+1d" }),
+					armor_divisor: new fields.NumberField({ min: 0, initial: 1 }),
+					fragmentation: new fields.StringField(),
+					fragmentation_armor_divisor: new fields.NumberField({ min: 0, initial: 1 }),
+					fragmentation_type: new fields.StringField(),
+					modifier_per_die: new fields.NumberField({ initial: 0 }),
+				}),
+				accuracy: new fields.StringField({ initial: "0" }),
+				range: new fields.StringField({ initial: "" }),
+				rate_of_fire: new fields.StringField({ initial: "1" }),
+				shots: new fields.StringField({ initial: "0" }),
+				bulk: new fields.StringField({ initial: "0" }),
+				recoil: new fields.StringField({ initial: "0" }),
+			}),
+		})
+	}
 
 	checkUnready(type: RollType): void {
 		const check = game.settings.get(SYSTEM_NAME, SETTINGS.AUTOMATIC_UNREADY)

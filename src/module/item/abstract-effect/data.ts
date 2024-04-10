@@ -42,6 +42,8 @@ export enum DurationType {
 	None = "none",
 }
 
+export const DurationTypes = [DurationType.Seconds, DurationType.Turns, DurationType.Rounds, DurationType.None] as const
+
 // interface EffectModificationContext<TParent extends ActorGURPS | null> extends DocumentModificationContext<TParent> {
 // 	previousLevel: number
 // 	previousID?: string | null

@@ -3,8 +3,43 @@ import { ItemGURPS } from "@item"
 import { EquipmentModifierSource, EquipmentModifierSystemData } from "./data.ts"
 import { LocalizeGURPS, StringBuilder, Weight, WeightUnits, emcost, emweight } from "@util"
 import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
+import { ItemType } from "@module/data/constants.ts"
+import { Feature } from "@system"
+
+const fields = foundry.data.fields
 
 class EquipmentModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
+	static override defineSchema(): foundry.documents.ItemSchema<string, object> {
+		return this.mergeSchema(super.defineSchema(), {
+			system: new fields.SchemaField({
+				type: new fields.StringField({ required: true, initial: ItemType.EquipmentModifier }),
+				name: new fields.StringField({
+					required: true,
+					initial: LocalizeGURPS.translations.TYPES.Item[ItemType.EquipmentModifier],
+				}),
+				reference: new fields.StringField(),
+				reference_highlight: new fields.StringField(),
+				notes: new fields.StringField(),
+				vtt_notes: new fields.StringField(),
+				userdesc: new fields.StringField(),
+				tags: new fields.ArrayField(new foundry.data.fields.StringField()),
+				cost_type: new fields.StringField<emcost.Type>({
+					choices: emcost.Types,
+					initial: emcost.Type.Original,
+				}),
+				weight_type: new fields.StringField<emweight.Type>({
+					choices: emweight.Types,
+					initial: emweight.Type.Original,
+				}),
+				disabled: new fields.BooleanField({ initial: false }),
+				tech_level: new fields.StringField(),
+				cost: new fields.NumberField({ initial: 0 }),
+				weight: new fields.NumberField({ initial: 0 }),
+				features: new fields.ArrayField(new fields.ObjectField<Feature>()),
+			}),
+		})
+	}
+
 	get enabled(): boolean {
 		return !this.system.disabled
 	}
