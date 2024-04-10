@@ -32,7 +32,7 @@ class TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> exte
 				}),
 				points: new fields.NumberField({ min: 0, integer: true, initial: 1 }),
 				default: new fields.SchemaField(SkillDefault.defineSchema(), {
-					initial: { type: gid.Skill, name: gid.Skill, modifier: 0 },
+					initial: { type: gid.Skill, name: "Skill", modifier: 0 },
 				}),
 				defaults: new fields.ArrayField(new fields.SchemaField(SkillDefault.defineSchema())),
 				prereqs: new fields.SchemaField(PrereqList.defineSchema()),

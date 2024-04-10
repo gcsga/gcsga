@@ -31,7 +31,7 @@ class EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> exte
 				tech_level: new fields.StringField(),
 				legality_class: new fields.StringField(),
 				tags: new fields.ArrayField(new foundry.data.fields.StringField()),
-				rated_strength: new fields.NumberField({ required: false, min: 0 }),
+				rated_strength: new fields.NumberField({ required: false, min: 0, initial: 0 }),
 				quantity: new fields.NumberField({ min: 0, initial: 1 }),
 				value: new fields.NumberField({ min: 0, initial: 0 }),
 				weight: new fields.StringField<WeightString>({ initial: `0 ${WeightUnits.Pound}` }),

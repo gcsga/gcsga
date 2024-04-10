@@ -14,7 +14,7 @@
 			"spell",
 			"ritual_magic_spell",
 			"spell_container",
-			"equipment_gcs",
+			"equipment",
 			"equipment_container",
 			"eqp_modifier",
 			"eqp_modifier_container",
@@ -23,8 +23,7 @@
 			"melee_weapon",
 			"ranged_weapon",
 			"effect",
-			"condition",
-			"equipment"
+			"condition"
 		]
 	}
 }

@@ -82,7 +82,7 @@ export const Load = {
 			[ItemType.EquipmentModifierContainer]: "gcs-eqp-modifier",
 			[ItemType.Note]: "gcs-note",
 			[ItemType.NoteContainer]: "gcs-note",
-			[ItemType.LegacyItem]: "gcs-equipment",
+			// [ItemType.LegacyItem]: "gcs-equipment",
 			[ItemType.Effect]: "gcs-effect",
 			[ItemType.Condition]: "gcs-condition",
 			[ItemType.MeleeWeapon]: "gcs-melee-weapon",

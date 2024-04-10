@@ -1,14 +1,12 @@
 ## Immediate TODO
 
-0. Items
-
-    - Fix weapon field default values
-
 1. Item sheets
 
     - Embedded modifier lists
         - roll modifier lists
         - effect dropdowns
+    - Sign number fields when necessary
+    - Weight field display
 
 2. Compendium browser
 
@@ -57,4 +55,8 @@
     - Implement full actor/item migration from 0.16 to 1.0
 
 11. The Forge
+
     - Ensure everything works correctly on the forgm
+
+12. Trait Container Ancestry
+    - Implement

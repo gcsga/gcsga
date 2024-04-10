@@ -14,7 +14,7 @@ import {
 	SkillSheetGURPS,
 	SpellContainerSheetGURPS,
 	SpellSheetGURPS,
-	LegacyItemSheetGURPS,
+	// LegacyItemSheetGURPS,
 	TechniqueSheetGURPS,
 	TraitContainerSheetGURPS,
 	TraitModifierContainerSheetGURPS,
@@ -138,11 +138,11 @@ export function registerSheets(): void {
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.effect"),
 	})
-	Items.registerSheet(SYSTEM_NAME, LegacyItemSheetGURPS, {
-		types: [ItemType.LegacyItem],
-		makeDefault: true,
-		label: game.i18n.localize("gurps.system.sheet.static_equipment"),
-	})
+	// Items.registerSheet(SYSTEM_NAME, LegacyItemSheetGURPS, {
+	// 	types: [ItemType.LegacyItem],
+	// 	makeDefault: true,
+	// 	label: game.i18n.localize("gurps.system.sheet.static_equipment"),
+	// })
 
 	// Journal Entry Page
 	DocumentSheetConfig.registerSheet(JournalEntryPage, SYSTEM_NAME, JournalPDFPageSheetGURPS, {

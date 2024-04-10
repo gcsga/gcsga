@@ -30,7 +30,7 @@ class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 					initial: `${gid.Dexterity}/${difficulty.Level.Average}`,
 				}),
 				points: new fields.NumberField({ min: 0, integer: true, initial: 1 }),
-				encumbrance_penalty_multiplier: new fields.NumberField({ integer: true, min: 0, max: 9 }),
+				encumbrance_penalty_multiplier: new fields.NumberField({ integer: true, min: 0, max: 9, initial: 0 }),
 				defaulted_from: new fields.SchemaField(SkillDefault.defineSchema()),
 				defaults: new fields.ArrayField(new fields.SchemaField(SkillDefault.defineSchema())),
 				prereqs: new fields.SchemaField(PrereqList.defineSchema()),

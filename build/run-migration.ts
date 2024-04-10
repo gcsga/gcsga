@@ -44,7 +44,7 @@ const itemTypes = new Set([
 	ItemType.EquipmentModifierContainer,
 	ItemType.Note,
 	ItemType.NoteContainer,
-	ItemType.LegacyItem,
+	// ItemType.LegacyItem,
 	ItemType.Effect,
 	ItemType.Condition,
 	ItemType.MeleeWeapon,

@@ -42,4 +42,4 @@ export { EffectGURPS } from "./effect/document.ts"
 export { ConditionGURPS } from "./condition/document.ts"
 
 // Legacy
-export { LegacyItemGURPS } from "./legacy/document.ts"
+// export { LegacyItemGURPS } from "./legacy/document.ts"

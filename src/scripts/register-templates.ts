@@ -146,7 +146,7 @@ export function registerTemplates(): void {
 		"item/sections/feature/move-bonus",
 
 		// Item Modifiers
-		"item/sections/modifiers",
+		"item/sections/roll-modifiers",
 
 		// Item Study
 		"item/sections/study",

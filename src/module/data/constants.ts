@@ -67,13 +67,14 @@ enum ItemType {
 	Spell = "spell",
 	RitualMagicSpell = "ritual_magic_spell",
 	SpellContainer = "spell_container",
-	Equipment = "equipment_gcs",
+	// Equipment = "equipment_gcs",
+	Equipment = "equipment",
 	EquipmentContainer = "equipment_container",
 	EquipmentModifier = "eqp_modifier",
 	EquipmentModifierContainer = "eqp_modifier_container",
 	Note = "note",
 	NoteContainer = "note_container",
-	LegacyItem = "equipment",
+	// LegacyItem = "equipment",
 	Effect = "effect",
 	Condition = "condition",
 	MeleeWeapon = "melee_weapon",
@@ -97,7 +98,7 @@ type ItemTypes =
 	| ItemType.EquipmentModifierContainer
 	| ItemType.Note
 	| ItemType.NoteContainer
-	| ItemType.LegacyItem
+	// | ItemType.LegacyItem
 	| ItemType.Effect
 	| ItemType.Condition
 	| ItemType.MeleeWeapon

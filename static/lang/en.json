@@ -17,7 +17,7 @@
 			"spell": "Spell",
 			"ritual_magic_spell": "Ritual Magic Spell",
 			"spell_container": "Spell Container",
-			"equipment_gcs": "Equipment",
+			"equipment": "Equipment",
 			"equipment_container": "Equipment Container",
 			"eqp_modifier": "Equipment Modifier",
 			"eqp_modifier_container": "Equipment Modifier Container",
@@ -26,8 +26,7 @@
 			"melee_weapon": "Melee Weapon",
 			"ranged_weapon": "Ranged Weapon",
 			"effect": "Active Effect",
-			"condition": "Condition",
-			"equipment": "Equipment (Legacy)"
+			"condition": "Condition"
 		}
 	},
 	"gurps": {
@@ -656,7 +655,7 @@
 			"defaults_to": "Default To",
 			"default": "Default: {skill}{modifier}",
 			"college": "College",
-			"class": "Class",
+			"spell_class": "Class",
 			"power_source": "Power Source",
 			"resist": "Resistance",
 			"casting_cost": "Casting Cost",

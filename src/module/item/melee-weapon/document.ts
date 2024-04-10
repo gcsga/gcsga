@@ -37,8 +37,8 @@ class MeleeWeaponGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> ex
 					modifier_per_die: new fields.NumberField({ initial: 0 }),
 				}),
 				reach: new fields.StringField({ initial: "1" }),
-				parry: new fields.StringField({ initial: "no" }),
-				block: new fields.StringField({ initial: "no" }),
+				parry: new fields.StringField({ initial: "No" }),
+				block: new fields.StringField({ initial: "No" }),
 			}),
 		})
 	}

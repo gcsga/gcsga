@@ -25,4 +25,4 @@ export { RangedWeaponSheetGURPS } from "./ranged-weapon/sheet.ts"
 
 export { EffectSheetGURPS } from "./effect/sheet.ts"
 
-export { LegacyItemSheetGURPS } from "./legacy/sheet.ts"
+// export { LegacyItemSheetGURPS } from "./legacy/sheet.ts"
