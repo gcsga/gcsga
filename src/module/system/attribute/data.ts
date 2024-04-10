@@ -34,8 +34,8 @@ export enum ThresholdOp {
 export interface PoolThresholdObj {
 	state: string
 	explanation?: string
-	expression?: string
-	ops?: ThresholdOp[]
+	expression: string
+	ops: ThresholdOp[]
 }
 
 export const RESERVED_IDS: string[] = [gid.Skill, gid.Parry, gid.Block, gid.Dodge, gid.SizeModifier, gid.Ten]

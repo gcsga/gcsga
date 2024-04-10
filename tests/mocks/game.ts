@@ -511,10 +511,12 @@ export const _defaultMookData: Partial<MookData> = {
 						{
 							state: "Tiring",
 							expression: "$fp-1",
+							ops: [],
 						},
 						{
 							state: "Rested",
 							expression: "$fp",
+							ops: [],
 						},
 					],
 				},
@@ -576,10 +578,12 @@ export const _defaultMookData: Partial<MookData> = {
 						{
 							state: "Wounded",
 							expression: "$hp-1",
+							ops: [],
 						},
 						{
 							state: "Healthy",
 							expression: "$hp",
+							ops: [],
 						},
 					],
 				},

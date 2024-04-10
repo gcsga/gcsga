@@ -161,13 +161,11 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 				const featureClass = CONFIG.GURPS.Feature.classes[value]
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				if (feature.WeaponBonusTypes.includes(value as any)) {
-					console.log("weapon", value)
 					features[index] = new featureClass(value as feature.WeaponBonusType).toObject()
 				} else {
 					// @ts-expect-error argument not needed
 					features[index] = new featureClass().toObject()
 				}
-				console.log(features[index])
 
 				return this._updateObject(event, { "system.features": features })
 			})

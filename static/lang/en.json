@@ -1,7 +1,6 @@
 {
 	"TYPES": {
 		"Actor": {
-			"character_gcs": "Character",
 			"character": "Character",
 			"enemy": "Enemy (Legacy)",
 			"loot": "Loot"

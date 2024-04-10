@@ -8,6 +8,14 @@
 			<option value="{{ k }}">{{ localize v }}</option>
 			{{/each}} {{/if}} {{/select}}
 		</select>
+		<div class="field">
+			<input
+				type="text"
+				name="array.system.features.{{@index}}.amount"
+				value="{{ signed this.amount }}"
+				data-dtype="Number"
+			/>
+		</div>
 		<label class="check">
 			<input
 				type="checkbox"

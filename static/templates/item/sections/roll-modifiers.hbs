@@ -23,8 +23,8 @@
 				<div class="field">
 					<input
 						type="text"
-						name="array.system.modifiers.{{@index}}.name"
-						value="{{ this.name }}"
+						name="array.system.modifiers.{{@index}}.id"
+						value="{{ this.id }}"
 						data-dtype="String"
 					/>
 				</div>
@@ -37,25 +37,26 @@
 						data-dtype="Number"
 					/>
 				</div>
-				<div>
-					<label>{{ localize "gurps.modifier.sheet.cost" }}</label>
-					<div class="field">
-						<input
-							type="text"
-							name="array.system.modifiers.{{@index}}.cost.value"
-							value="{{ this.cost.value }}"
-							data-dtype="Number"
-						/>
-					</div>
-					<label>{{ localize "gurps.modifier.sheet.id" }}</label>
-					<div class="field">
-						<input
-							type="text"
-							name="array.system.modifiers.{{@index}}.cost.id"
-							value="{{ this.cost.id }}"
-							data-dtype="String"
-						/>
-					</div>
+			</div>
+			<div>
+				<div class="placeholder"></div>
+				<label>{{ localize "gurps.modifier.sheet.cost" }}</label>
+				<div class="field">
+					<input
+						type="text"
+						name="array.system.modifiers.{{@index}}.cost.value"
+						value="{{ this.cost.value }}"
+						data-dtype="Number"
+					/>
+				</div>
+				<label>{{ localize "gurps.modifier.sheet.id" }}</label>
+				<div class="field">
+					<input
+						type="text"
+						name="array.system.modifiers.{{@index}}.cost.id"
+						value="{{ this.cost.id }}"
+						data-dtype="String"
+					/>
 				</div>
 			</div>
 		</li>

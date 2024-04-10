@@ -132,6 +132,17 @@ interface ModifierHeader {
 type ImagePath = `${string}.${ImageFileExtension}`
 type ImageFileExtension = "jpg" | "jpeg" | "png" | "svg" | "webp"
 
+interface Stringer {
+	formattedName: string
+}
+
+interface WeaponOwner {
+	formattedName: string
+	isLeveled: boolean
+	currentLevel: number
+	ratedStrength: number
+}
+
 // Attributes
 interface AttributeEffect {
 	attribute: string
@@ -181,8 +192,10 @@ export type {
 	Posture,
 	RollModifier,
 	RollModifierStack,
+	Stringer,
 	TokenPool,
 	SkillDifficulty,
+	WeaponOwner,
 }
 
 export { Postures, AllManeuverIDs, ApplicableConditions, AllPostures }

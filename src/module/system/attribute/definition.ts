@@ -16,7 +16,7 @@ type AttributeDefSchema = {
 	full_name: foundry.data.fields.StringField
 	cost_per_point: foundry.data.fields.NumberField
 	cost_adj_percent_per_sm: foundry.data.fields.NumberField
-	thresholds: foundry.data.fields.ArrayField<foundry.data.fields.SchemaField<PoolThresholdSchema>>
+	thresholds?: foundry.data.fields.ArrayField<foundry.data.fields.SchemaField<PoolThresholdSchema>>
 	order: foundry.data.fields.NumberField
 }
 

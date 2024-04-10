@@ -4,12 +4,13 @@
 		<select class="type" name="array.system.features.{{@index}}.type" data-index="{{@index}}">
 			{{#select this.type}} {{#each @root.config.select.feature_strict as |v k| }}
 			<option value="{{ k }}">{{ localize v }}</option>
-			{{/each}} {{#if (eq @root.item.type "equipment_container") }} {{#each @rootconfig.select.feature as |v k| }}
+			{{/each}} {{#if (eq @root.item.type "equipment_container") }} {{#each @root.config.select.feature as |v k|
+			}}
 			<option value="{{ k }}">{{ localize v }}</option>
 			{{/each}} {{/if}} {{/select}}
 		</select>
 		<select name="array.system.features.{{@index}}.which">
-			{{#select this.which}} {{#each attributes as |v k|}}
+			{{#select this.which}} {{#each @root.attributes as |v k|}}
 			<option value="{{ k }}">{{ v }}</option>
 			{{/each}} {{/select}}
 		</select>

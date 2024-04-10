@@ -1,4 +1,4 @@
-import { ActorGURPS, CharacterGURPS } from "@actor"
+import { ActorGURPS } from "@actor"
 import {
 	CharacterFlagDefaults,
 	CharacterFlags,
@@ -79,8 +79,6 @@ export class CharacterImporter {
 
 		const data = JSON.parse(file.text) as ImportedCharacterSystemSource
 
-		console.log(data)
-
 		if (data.version !== GCS_FILE_VERSION) {
 			if (data.version < GCS_FILE_VERSION)
 				return CharacterImporter.throwError(LocalizeGURPS.translations.gurps.error.import.format_old)
@@ -144,10 +142,6 @@ export class CharacterImporter {
 		}
 
 		await document.update(actorData, { diff: false, recursive: false })
-
-		// Refresh the config sheet if it is rendered
-		// @ts-expect-error awaiting implementation
-		if (document instanceof CharacterGURPS) if (document.sheet.config?.rendered) document.sheet.config.render(true)
 	}
 
 	static importPointsRecord(data: ImportedPointsRecord[]): PointsRecord[] {
@@ -264,7 +258,16 @@ export class CharacterImporter {
 	}
 
 	static importThresholds(data?: ImportedThreshold[]): PoolThresholdObj[] {
-		return data ?? []
+		return (
+			data?.map(e => {
+				return {
+					state: e.state,
+					explanation: e.explanation ?? "",
+					expression: e.expression,
+					ops: e.ops ?? [],
+				}
+			}) ?? []
+		)
 	}
 
 	static importBody(data?: ImportedBody): BodyObj {

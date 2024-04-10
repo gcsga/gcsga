@@ -29,7 +29,7 @@ export function registerSheets(): void {
 	Actors.registerSheet(SYSTEM_NAME, CharacterSheetGURPS, {
 		types: [ActorType.Character],
 		makeDefault: true,
-		label: game.i18n.localize("gurps.system.sheet.character_gcs"),
+		label: game.i18n.localize("gurps.system.sheet.character"),
 	})
 	Actors.registerSheet(SYSTEM_NAME, MookSheetGURPS, {
 		types: [ActorType.Character],

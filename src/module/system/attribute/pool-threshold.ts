@@ -6,8 +6,8 @@ const fields = foundry.data.fields
 export type PoolThresholdSchema = {
 	state: foundry.data.fields.StringField
 	explanation?: foundry.data.fields.StringField
-	expression?: foundry.data.fields.StringField
-	ops?: foundry.data.fields.ArrayField<foundry.data.fields.StringField<ThresholdOp>>
+	expression: foundry.data.fields.StringField
+	ops: foundry.data.fields.ArrayField<foundry.data.fields.StringField<ThresholdOp>>
 }
 
 export class PoolThreshold {
@@ -29,7 +29,7 @@ export class PoolThreshold {
 	static defineSchema(): PoolThresholdSchema {
 		return {
 			state: new fields.StringField(),
-			explanation: new fields.StringField(),
+			explanation: new fields.StringField({ required: false }),
 			expression: new fields.StringField(),
 			ops: new fields.ArrayField(new fields.StringField<ThresholdOp>()),
 		}
