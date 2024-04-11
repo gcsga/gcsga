@@ -111,13 +111,13 @@
 			/>
 		</div>
 	</section>
-	{{>item/sections/prereqs }} {{>item/sections/features }} {{#with itemColletions.modifiers as |section|}}
+	{{>item/sections/prereqs }} {{>item/sections/features }} {{#with itemCollections.trait_modifiers as |section|}}
 	<div id="trait-modifiers">
 		<header>
 			<span class="enabled">
 				<i class="gcs-checkmark"></i>
 			</span>
-			<span class="desc">{{ localize "gurps.item.modifier_desc" }}</span>
+			<span class="item-name">{{ localize "gurps.item.modifier_desc" }}</span>
 			<span class="cost">{{ localize "gurps.item.modifier_point_cost" }}</span>
 			<span class="tags">{{ localize "gurps.item.tags" }}</span>
 			<span class="reference">

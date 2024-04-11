@@ -7,15 +7,7 @@
             data-tooltip="{{ item.resolvedTooltip }}"
             {{{ indent item.parents.length }}}
             >
-            <div class="dropdown">
-                {{#if (or isContainer item.children.size)}}
-                    {{#if item.system.open}}
-                        {{>actor/character/sections/dropdown-open}}
-                    {{ else }}
-                        {{>actor/character/sections/dropdown-closed}}
-                    {{/if}}
-                {{/if}}
-            </div>
+            {{{ dropdown item }}}
             <span class="name">
                 {{ item.formattedName }}
                 <span class="container-type">

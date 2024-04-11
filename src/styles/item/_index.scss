@@ -62,9 +62,7 @@
 		header {
 			background-color: rgb(var(--color-header));
 			color: rgb(var(--color-on-header));
-			justify-content: center;
 			text-align: center;
-			padding: var(--padding-header);
 		}
 		> ul {
 			min-height: 18px;
@@ -86,6 +84,16 @@
 			display: flex;
 			gap: 5px;
 			align-items: center;
+		}
+	}
+
+	#prereqs,
+	#features,
+	#study,
+	#roll-modifiers {
+		header {
+			justify-content: center;
+			padding: var(--padding-header);
 		}
 	}
 
@@ -122,8 +130,9 @@
 
 	#trait-modifiers,
 	#equipment-modifiers {
-		header {
-			padding: 0;
+		header,
+		ul.items > li > .data {
+			display: grid;
 
 			> * {
 				display: flex;
@@ -132,24 +141,24 @@
 			}
 		}
 
-		header,
-		ul.items > li > .data {
-			justify-content: center;
-			display: grid;
-		}
-
 		header > span.reference {
 			border: none;
 			border-radius: 0;
 			color: inherit;
-			padding: 0;
+		}
+	}
+
+	#trait-modifiers {
+		header,
+		ul.items > li > .data {
+			grid-template-columns: 1.5rem auto 8rem 3rem 3.5rem;
 		}
 	}
 
 	#equipment-modifiers {
 		header,
 		ul.items > li > .data {
-			grid-template-columns: 1rem auto 1.5rem 8rem 8rem 3rem 3.5rem;
+			grid-template-columns: 1.5rem auto 1.5rem 8rem 9rem 3rem 3.5rem;
 		}
 	}
 }

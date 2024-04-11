@@ -8,15 +8,7 @@
         <div class="item-name {{ disabled (not item.enabled) }}"
              data-tooltip-direction="DOWN"
              data-tooltip="{{ item.resolvedTooltip }}">
-            <div class="dropdown">
-                {{#if (isContainer item)}}
-                    {{#if item.system.open}}
-                        {{>actor/character/sections/dropdown-open}}
-                    {{ else }}
-                        {{>actor/character/sections/dropdown-closed}}
-                    {{/if}}
-                {{/if}}
-            </div>
+            {{{ dropdown item }}}
             <div class="name">{{ item.formattedName }}</div>
             {{{ item.resolvedNotes }}}
         </div>

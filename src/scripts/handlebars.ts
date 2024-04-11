@@ -509,6 +509,13 @@ class HandlebarsHelpersGURPS {
 	static disabled(criteria: string | number | boolean | object): string {
 		return criteria ? "disabled" : ""
 	}
+
+	static dropdown(item: ItemGURPS): string {
+		if (!item.isOfType("container")) return ""
+		if (item.system.open)
+			return `<div class="dropdown"><a class="dropdown-toggle open gcs-circled-chevron-down"></a></div>`
+		return `<div class="dropdown"><a class="dropdown-toggle closed gcs-circled-chevron-right"></a></div>`
+	}
 }
 
 export function registerHandlebarsHelpers(): void {
@@ -530,6 +537,7 @@ export function registerHandlebarsHelpers(): void {
 		diceString: HandlebarsHelpersGURPS.diceString,
 		diff: (v1, v2) => v1 - v2,
 		disabled: HandlebarsHelpersGURPS.disabled,
+		dropdown: HandlebarsHelpersGURPS.dropdown,
 		effective: HandlebarsHelpersGURPS.effective,
 		format: HandlebarsHelpersGURPS.format,
 		ifText: HandlebarsHelpersGURPS.conditionalText,
