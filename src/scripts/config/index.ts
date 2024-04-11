@@ -292,6 +292,7 @@ export const GURPSCONFIG = {
 		color: {},
 		effect_action: {},
 		conditions: {},
+		duration_type: {},
 	} as Record<string, Record<string, string>>,
 
 	meleeMods: [] as ModifierItem[],

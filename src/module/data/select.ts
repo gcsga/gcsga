@@ -29,6 +29,7 @@ import { AllStringCompareTypes } from "@util/string-criteria.ts"
 import { AllManeuverIDs, AllPostures, ApplicableConditions } from "./types.ts"
 import { EFFECT_ACTION } from "./constants.ts"
 import { allMoveTypeOverrideConditions } from "@system"
+import { DurationTypes } from "@item/abstract-effect/data.ts"
 
 export function prepareSelectOptions(): void {
 	const SELECT_OPTIONS: Record<string, Record<string, string>> = {
@@ -232,6 +233,11 @@ export function prepareSelectOptions(): void {
 		conditions: ApplicableConditions.reduce((acc, c) => {
 			return Object.assign(acc, {
 				[c]: LocalizeGURPS.translations.gurps.status[c],
+			})
+		}, {}),
+		duration_type: DurationTypes.reduce((acc, c) => {
+			return Object.assign(acc, {
+				[c]: LocalizeGURPS.translations.gurps.enum.duration_type[c],
 			})
 		}, {}),
 	}

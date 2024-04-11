@@ -152,8 +152,8 @@ export function registerTemplates(): void {
 		"item/sections/study",
 
 		// Item Embeds
-		"item/sections/trait-mod",
-		"item/sections/eqp-mod",
+		"item/sections/trait-modifier",
+		"item/sections/equipment-modifier",
 		"item/sections/melee",
 		"item/sections/ranged",
 		"item/sections/defaults",

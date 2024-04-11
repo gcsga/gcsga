@@ -6,12 +6,9 @@
             {{/if}}
         </div>
         <div class="quantity">{{ item.system.quantity }}</div>
-        <div
-            class="item-name {{ disabled (not item.enabled) }}"
-            data-tooltip-direction="DOWN"
-            data-tooltip="{{ item.resolvedTooltip }}"
-            {{{ indent item.parents.length }}}
-            >
+        <div class="item-name {{ disabled (not item.enabled) }}"
+             data-tooltip-direction="DOWN"
+             data-tooltip="{{ item.resolvedTooltip }}">
             <div class="dropdown">
                 {{#if (isContainer item)}}
                     {{#if item.system.open}}

@@ -28,7 +28,7 @@ class ConditionGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> exte
 				duration: new fields.SchemaField({
 					type: new fields.StringField<DurationType>({
 						choices: DurationTypes,
-						initial: DurationType.Seconds,
+						initial: DurationType.None,
 					}),
 					startRound: new fields.NumberField({ nullable: true }),
 					startTime: new fields.NumberField({ nullable: true }),

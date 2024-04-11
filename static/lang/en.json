@@ -1985,6 +1985,12 @@
 					"tbone_2_clean": "From <span class='ref' data-pdf='https://www.gamesdiner.com/2009/10/new-st-damage/'>T Bone's Games Diner</span>",
 					"phoenix_flame_d3": "From a <span class='ref' data-pdf='https://github.com/richardwilkes/gcs/pull/393'>house rule</span> that uses d3s instead of d6s for damage"
 				}
+			},
+			"duration_type": {
+				"seconds": "Seconds",
+				"turns": "Turns",
+				"rounds": "Rounds",
+				"none": "None"
 			}
 		},
 		"string_criteria": {

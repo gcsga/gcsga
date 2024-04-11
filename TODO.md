@@ -3,7 +3,6 @@
 1. Item sheets
 
     - Embedded modifier lists
-        - effect dropdowns
     - Sign number fields when necessary
     - Weight field display
 

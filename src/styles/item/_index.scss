@@ -119,4 +119,37 @@
 			white-space: nowrap;
 		}
 	}
+
+	#trait-modifiers,
+	#equipment-modifiers {
+		header {
+			padding: 0;
+
+			> * {
+				display: flex;
+				justify-content: center;
+				padding: var(--padding-header);
+			}
+		}
+
+		header,
+		ul.items > li > .data {
+			justify-content: center;
+			display: grid;
+		}
+
+		header > span.reference {
+			border: none;
+			border-radius: 0;
+			color: inherit;
+			padding: 0;
+		}
+	}
+
+	#equipment-modifiers {
+		header,
+		ul.items > li > .data {
+			grid-template-columns: 1rem auto 1.5rem 8rem 8rem 3rem 3.5rem;
+		}
+	}
 }
