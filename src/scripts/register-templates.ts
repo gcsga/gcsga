@@ -6,8 +6,6 @@ export function registerTemplates(): void {
 		"actor/character/sections/basic-damage",
 		"actor/character/sections/conditional-modifier",
 		"actor/character/sections/description",
-		"actor/character/sections/dropdown-closed",
-		"actor/character/sections/dropdown-open",
 		"actor/character/sections/effect",
 		"actor/character/sections/embeds",
 		"actor/character/sections/encumbrance",

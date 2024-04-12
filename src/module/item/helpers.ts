@@ -1,7 +1,7 @@
 import { ActorGURPS } from "@actor"
 import { TargetTrait, TargetTraitModifier } from "@module/apps/damage-calculator/index.ts"
 import { ABSTRACT_CONTAINER_TYPES, ItemType } from "@module/data/constants.ts"
-import { ContainedWeightReduction, Feature } from "@system"
+import { ConditionalModifier, ContainedWeightReduction, Feature } from "@system"
 import { Int, Weight, WeightUnits, emcost, emweight, setHasElement } from "@util"
 import { AbstractContainerGURPS } from "./abstract-container/document.ts"
 import { ItemGURPS } from "./base/document.ts"
@@ -14,6 +14,18 @@ import { TraitGURPS } from "./trait/document.ts"
 import { ItemInstances } from "./types.ts"
 
 type ItemOrSource = PreCreate<ItemSourceGURPS> | ItemGURPS
+
+interface SheetItem<TItem extends ItemGURPS = ItemGURPS> {
+	item: TItem
+	isContainer: boolean
+	children: SheetItem[]
+}
+
+interface SheetItemCollection {
+	name?: string
+	items: (SheetItem | ConditionalModifier)[]
+	types: ItemType[]
+}
 
 /** Determine in a type-safe way whether an `ItemGURPS` or `ItemSourceGURPS` is among certain types */
 function itemIsOfType<TParent extends ActorGURPS | null, TType extends ItemType>(
@@ -284,3 +296,5 @@ export {
 	valueAdjustedForModifiers,
 	weightAdjustedForModifiers,
 }
+
+export type { SheetItem, SheetItemCollection }

@@ -1,12 +1,13 @@
 import { CharacterGURPS } from "@actor"
 import { ActorSheetDataGURPS, ActorSheetGURPS } from "@actor/base/sheet.ts"
 import { ItemGURPS } from "@item"
-import { AbstractAttribute, ConditionalModifier } from "@system"
+import { AbstractAttribute } from "@system"
 import { ItemFlags, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { LocalizeGURPS, Weight } from "@util"
 import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
 import { CharacterEncumbrance } from "./encumbrance.ts"
 import { CharacterConfigSheet } from "./config.ts"
+import { SheetItem, SheetItemCollection } from "@item/helpers.ts"
 
 class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS<TActor> {
 	static override get defaultOptions(): ActorSheetOptions {
@@ -152,18 +153,6 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS
 		)
 		return buttons
 	}
-}
-
-interface SheetItem<TItem extends ItemGURPS = ItemGURPS> {
-	item: TItem
-	isContainer: boolean
-	children: SheetItem[]
-}
-
-interface SheetItemCollection {
-	name?: string
-	items: (SheetItem | ConditionalModifier)[]
-	types: ItemType[]
 }
 
 interface CharacterSheetData<TActor extends CharacterGURPS = CharacterGURPS> extends ActorSheetDataGURPS<TActor> {

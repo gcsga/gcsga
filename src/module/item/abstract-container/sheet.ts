@@ -1,10 +1,11 @@
 import { ItemSheetDataGURPS, ItemSheetGURPS, ItemSheetOptions } from "@item/base/sheet.ts"
 import { AbstractContainerGURPS } from "./document.ts"
-import { DnD, htmlClosest, htmlQueryAll, objectHasKey } from "@util"
+import { DnD, ErrorGURPS, LocalizeGURPS, htmlClosest, htmlQueryAll, objectHasKey } from "@util"
 import { ItemFlags, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { createDragImage } from "@util/drag-image.ts"
 import { ItemGURPS } from "@item"
 import { ItemSourceGURPS } from "@item/data/index.ts"
+import { SheetItem, SheetItemCollection } from "@item/helpers.ts"
 
 class AbstractContainerSheetGURPS<TItem extends AbstractContainerGURPS> extends ItemSheetGURPS<TItem> {
 	static override get defaultOptions(): ItemSheetOptions {
@@ -45,21 +46,119 @@ class AbstractContainerSheetGURPS<TItem extends AbstractContainerGURPS> extends 
 				item.update({ "system.disabled": !item.system.disabled })
 			})
 		}
+
+		this.#activateContextMenu(html)
+	}
+
+	#activateContextMenu(html: HTMLElement): void {
+		function getLangType(type: ItemType) {
+			switch (type) {
+				case ItemType.TraitModifier:
+					return "trait_modifier"
+				case ItemType.TraitModifierContainer:
+					return "trait_modifier_container"
+				case ItemType.EquipmentModifier:
+					return "equipment_modifier"
+				case ItemType.EquipmentModifierContainer:
+					return "equipment_modifier_container"
+				case ItemType.MeleeWeapon:
+					return "melee_weapon"
+				case ItemType.RangedWeapon:
+					return "ranged_weapon"
+				default:
+					return null
+			}
+		}
+
+		for (const itemRow of htmlQueryAll(html, "li[data-item-id]")) {
+			const itemId = itemRow.dataset.itemId
+			if (!itemId) throw ErrorGURPS("Invalid dropdown operation: No item ID found")
+			const item = this.item.contents.get(itemId)
+			if (!item) throw ErrorGURPS(`Invalid dropdown operation: No item found with ID: "${itemId}"`)
+			ContextMenu.create(this, $(itemRow), "*", item.getContextMenuItems())
+		}
+
+		for (const itemList of htmlQueryAll(html, "ul[data-item-list]")) {
+			console.log(itemList.children, itemList.children.length)
+			if (itemList.children.length !== 0) continue
+			const itemTypes: ItemType[] = (itemList.dataset.itemTypes?.split(",") as ItemType[]) ?? []
+			console.log(itemTypes)
+			const menuItems: ContextMenuEntry[] = []
+			for (const type of itemTypes) {
+				const langType = getLangType(type)
+				if (langType === null) continue
+				menuItems.push({
+					name: LocalizeGURPS.translations.gurps.context.new_item[langType],
+					icon: "",
+					callback: async () => {
+						console.log(this.item, this.item.container)
+						if (!(this.item.container instanceof CompendiumCollection)) {
+							await this.item.container?.createEmbeddedDocuments("Item", [
+								{
+									name: LocalizeGURPS.translations.TYPES.Item[type],
+									type,
+									[`flags.${SYSTEM_NAME}.${ItemFlags.Container}`]: this.item._id,
+								},
+							])
+						}
+					},
+				})
+			}
+			console.log(menuItems)
+
+			ContextMenu.create(this, $(itemList), "*", menuItems)
+		}
 	}
 
 	override async getData(options?: Partial<ItemSheetOptions>): Promise<AbstractContainerSheetData<TItem>> {
 		const sheetData = await super.getData(options)
-
-		const item = this.item
-
 		return {
 			...sheetData,
-			itemCollections: {
-				melee_weapons: item.itemCollections.meleeWeapons,
-				ranged_weapons: item.itemCollections.rangedWeapons,
-				trait_modifiers: item.itemCollections.traitModifiers,
-				equipment_modifiers: item.itemCollections.equipmentModifiers,
+			itemCollections: this._prepareItemCollections(),
+		}
+	}
+
+	protected _prepareItemCollections(): Record<string, SheetItemCollection> {
+		const collections = {
+			trait_modifiers: {
+				name: "trait_modifiers",
+				items: this._prepareItemCollection(this.item.itemCollections.traitModifiers),
+				types: [ItemType.TraitModifier, ItemType.TraitModifierContainer],
 			},
+			equipment_modifiers: {
+				name: "equipment_modifiers",
+				items: this._prepareItemCollection(this.item.itemCollections.equipmentModifiers),
+				types: [ItemType.EquipmentModifier, ItemType.EquipmentModifierContainer],
+			},
+			melee_weapons: {
+				name: "melee_weapons",
+				items: this._prepareItemCollection(this.item.itemCollections.meleeWeapons),
+				types: [ItemType.MeleeWeapon],
+			},
+			ranged_weapons: {
+				name: "ranged_weapons",
+				items: this._prepareItemCollection(this.item.itemCollections.rangedWeapons),
+				types: [ItemType.RangedWeapon],
+			},
+		}
+		return collections
+	}
+
+	protected _prepareItemCollection(
+		collection: Collection<ItemGURPS>,
+		parent: string | null = this.item._id,
+	): SheetItem<ItemGURPS>[] {
+		return collection.contents
+			.filter(item => item.flags[SYSTEM_NAME][ItemFlags.Container] === parent)
+			.sort((a, b) => (a.sort || 0) - (b.sort || 0))
+			.map(e => this._prepareSheetItem(e))
+	}
+
+	protected _prepareSheetItem<TItem extends ItemGURPS = ItemGURPS>(item: TItem): SheetItem<TItem> {
+		return {
+			item,
+			isContainer: item.isOfType("container"),
+			children: item.isOfType("container") ? this._prepareItemCollection(item.children, item._id) : [],
 		}
 	}
 
@@ -209,7 +308,7 @@ class AbstractContainerSheetGURPS<TItem extends AbstractContainerGURPS> extends 
 }
 
 interface AbstractContainerSheetData<TItem extends AbstractContainerGURPS> extends ItemSheetDataGURPS<TItem> {
-	itemCollections: Record<string, Collection<ItemGURPS>>
+	itemCollections: Record<string, SheetItemCollection>
 }
 
 export { AbstractContainerSheetGURPS }

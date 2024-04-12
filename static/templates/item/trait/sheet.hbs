@@ -125,16 +125,7 @@
 			</span>
 		</header>
 		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
-			{{#each section.items}}
-			<li data-item-id="{{ item.id }}">
-				<div class="data">
-					<div class="item-name">
-						<div class="name">{{ item.system.usage }}</div>
-						{{{ item.resolvedNotes }}}
-					</div>
-				</div>
-			</li>
-			{{/each}}
+			{{#each section.items}} {{>item/sections/trait-modifier}} {{/each}}
 		</ul>
 	</div>
 	{{/with}} {{>item/sections/melee }} {{>item/sections/ranged }} {{>item/sections/study}}

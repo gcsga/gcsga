@@ -1,7 +1,7 @@
 <li data-item-id="{{ item.id }}" {{#if isContainer}} data-is-container{{/if}}>
     <div class="data">
-        <div class="equipped">
-            {{#if item.equipped}}
+        <div class="enabled">
+            {{#if item.enabled}}
                 <i class="gcs-checkmark"></i>
             {{/if}}
         </div>
@@ -19,7 +19,7 @@
     {{#if item.system.open}}
         <ul class="items" data-item-list data-container-id="{{ item.id }}">
             {{#each children}}
-                {{>actor/item/sections/equipment-modifier}}
+                {{>actor/item/sections/trait-modifier}}
             {{/each}}
         </ul>
     {{/if}}

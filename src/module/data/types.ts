@@ -177,6 +177,7 @@ interface MigratedDocumentMigrationRecord {
 		foundry?: string
 	} | null
 }
+
 type MigrationRecord = NewDocumentMigrationRecord | MigratedDocumentMigrationRecord
 
 export type {
