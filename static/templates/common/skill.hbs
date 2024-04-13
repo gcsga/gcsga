@@ -4,13 +4,13 @@
             class="item-name"
             data-tooltip-direction="DOWN"
             data-tooltip="{{ item.resolvedTooltip }}"
-            {{{ indent item.parents.length }}}
+            {{{ indent indent }}}
             >
             {{{ dropdown item }}}
             <div class="name">{{ item.formattedName }}</div>
             {{{ item.resolvedNotes }}}
         </div>
-        {{#if (isContainer)}}
+        {{#if isContainer}}
             <div class="level"></div>
             <div class="rsl"></div>
         {{ else }}

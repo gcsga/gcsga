@@ -6,8 +6,10 @@
             {{/if}}
         </div>
         <div class="item-name {{ disabled (not item.enabled) }}"
-             data-tooltip-direction="DOWN"
-             data-tooltip="{{ item.resolvedTooltip }}">
+            data-tooltip-direction="DOWN"
+            data-tooltip="{{ item.resolvedTooltip }}"
+            {{{ indent indent }}}
+            >
             {{{ dropdown item }}}
             <div class="name">{{ item.formattedName }}</div>
             {{{ item.resolvedNotes }}}

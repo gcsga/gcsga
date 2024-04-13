@@ -94,6 +94,43 @@ class TraitModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> 
 	get isLeveled(): boolean {
 		return this.costType === tmcost.Type.Percentage && this.levels > 0
 	}
+
+	override getContextMenuItems(): ContextMenuEntry[] {
+		return [
+			{
+				name: LocalizeGURPS.translations.gurps.context.new_item.trait_modifier,
+				icon: "",
+				callback: async () => {
+					return this.createSiblingDocuments("Item", [
+						{
+							type: ItemType.TraitModifier,
+							name: LocalizeGURPS.translations.TYPES.Item[ItemType.TraitModifier],
+						},
+					])
+				},
+			},
+			{
+				name: LocalizeGURPS.translations.gurps.context.new_item.trait_modifier_container,
+				icon: "",
+				callback: async () => {
+					return this.createSiblingDocuments("Item", [
+						{
+							type: ItemType.TraitModifierContainer,
+							name: LocalizeGURPS.translations.TYPES.Item[ItemType.TraitModifierContainer],
+						},
+					])
+				},
+			},
+			...super.getContextMenuItems(),
+			{
+				name: LocalizeGURPS.translations.gurps.context.toggle_state,
+				icon: "",
+				callback: async () => {
+					return this.update({ "system.disabled": !this.system.disabled })
+				},
+			},
+		]
+	}
 }
 
 interface TraitModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {

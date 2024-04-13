@@ -1,10 +1,12 @@
 import { ActorGURPS } from "@actor"
-import { ItemGURPS } from "@item"
+import { ItemGURPS, ItemProxyGURPS } from "@item"
 import { ContainerSource, ItemSourceGURPS, ItemSystemData } from "@item/data/index.ts"
 import { itemIsOfType } from "@item/helpers.ts"
 import { ItemFlags, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { LocalizeGURPS } from "@util"
 import { ItemItemCollectionMap } from "./item-collection-map.ts"
+import Document, { _Document } from "types/foundry/common/abstract/document.js"
+import { DataSchema } from "types/foundry/common/data/fields.js"
 
 abstract class AbstractContainerGURPS<
 	TParent extends ActorGURPS | null = ActorGURPS | null,
@@ -111,6 +113,25 @@ abstract class AbstractContainerGURPS<
 		}
 
 		return this.parent?.createEmbeddedDocuments("Item", data, context) as Promise<ItemGURPS[]>
+	}
+
+	override createEmbeddedDocuments(
+		embeddedName: string,
+		data: object[],
+		context?: DocumentModificationContext<this> | undefined,
+	): Promise<Document<_Document | null, DataSchema>[]> {
+		if (embeddedName !== "Item") return super.createEmbeddedDocuments(embeddedName, data, context)
+
+		console.log(data)
+
+		if (this.parent) {
+			return this.parent.createEmbeddedDocuments(embeddedName, data)
+		}
+
+		if (this.compendium) {
+			return ItemProxyGURPS.createDocuments(data, { pack: this.pack })
+		}
+		return ItemProxyGURPS.createDocuments(data)
 	}
 
 	// async deleteContainedDocuments(

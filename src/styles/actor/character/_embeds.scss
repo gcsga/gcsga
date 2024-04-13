@@ -36,6 +36,16 @@
 	ul.items > li > .data {
 		grid-template-columns: auto 2.5rem 3.5rem;
 	}
+
+	// Trait Container Type Annotation
+	.container-type {
+		background-color: rgb(var(--color-on-content));
+		color: rgb(var(--color-content));
+		padding: 0px 5px;
+		border-radius: 5px;
+		font-size: 80%;
+		white-space: nowrap;
+	}
 }
 
 #skills {
@@ -71,5 +81,23 @@
 	header,
 	ul.items > li > .data {
 		grid-template-columns: 1.25rem auto 2.5rem 2rem 2rem 2.5rem 2.5rem 2.5rem 2.5rem 3.5rem;
+	}
+}
+
+#notes {
+	grid-area: notes;
+
+	header,
+	ul.items > li > .data {
+		grid-template-columns: auto 3.5rem;
+	}
+}
+
+#effects {
+	grid-area: effects;
+
+	header,
+	ul.items > li > .data {
+		grid-template-columns: auto 3.5rem;
 	}
 }

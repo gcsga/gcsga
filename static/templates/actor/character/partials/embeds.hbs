@@ -154,5 +154,25 @@
 			{{#each section.items}} {{>common/other-equipment}} {{/each}}
 		</ul>
 	</div>
+	{{/with}} {{#with itemCollections.notes as |section|}}
+	<div id="notes">
+		<header>
+			<span class="item-name">{{ localize "gurps.character.notes.desc" }}</span>
+			<span class="reference"><i class="gcs-bookmark"></i></span>
+		</header>
+		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
+			{{#each section.items}} {{>common/note}} {{/each}}
+		</ul>
+	</div>
+	{{/with}} {{#with itemCollections.effects as |section|}}
+	<div id="effects">
+		<header>
+			<span class="item-name">{{ localize "gurps.character.effects.desc" }}</span>
+			<span class="reference"><i class="gcs-bookmark"></i></span>
+		</header>
+		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
+			{{#each section.items}} {{>common/effect}} {{/each}}
+		</ul>
+	</div>
 	{{/with}}
 </section>

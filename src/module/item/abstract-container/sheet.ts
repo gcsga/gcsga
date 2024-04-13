@@ -107,15 +107,14 @@ class AbstractContainerSheetGURPS<TItem extends AbstractContainerGURPS> extends 
 					name: LocalizeGURPS.translations.gurps.context.new_item[langType],
 					icon: "",
 					callback: async () => {
-						if (!(this.item.container instanceof CompendiumCollection)) {
-							await this.item.container?.createEmbeddedDocuments("Item", [
-								{
-									name: LocalizeGURPS.translations.TYPES.Item[type],
-									type,
-									[`flags.${SYSTEM_NAME}.${ItemFlags.Container}`]: this.item._id,
-								},
-							])
-						}
+						await this.item.createEmbeddedDocuments("Item", [
+							{
+								name: LocalizeGURPS.translations.TYPES.Item[type],
+								type,
+								flags: { [SYSTEM_NAME]: { [ItemFlags.Container]: this.item._id } },
+							},
+						])
+						this.render()
 					},
 				})
 			}
@@ -171,6 +170,7 @@ class AbstractContainerSheetGURPS<TItem extends AbstractContainerGURPS> extends 
 	protected _prepareSheetItem<TItem extends ItemGURPS = ItemGURPS>(item: TItem): SheetItem<TItem> {
 		return {
 			item,
+			indent: item.parents.length - this.item.parents.length,
 			isContainer: item.isOfType("container"),
 			children: item.isOfType("container") ? this._prepareItemCollection(item.children, item._id) : [],
 		}

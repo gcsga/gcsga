@@ -8,7 +8,6 @@
 
 2. Compendium browser
 
-    - Replace UI with new list based UI
     - Re-enable listeners and drag-drop
     - Implement item ghosts
 

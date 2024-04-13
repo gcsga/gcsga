@@ -33,7 +33,10 @@ class TraitContainerGURPS<
 					choices: selfctrl.Adjustments,
 					initial: selfctrl.Adjustment.NoCRAdj,
 				}),
-				container_type: new fields.StringField<container.Type>({ choices: container.Types }),
+				container_type: new fields.StringField<container.Type>({
+					choices: container.Types,
+					initial: container.Type.Group,
+				}),
 				disabled: new fields.BooleanField({ initial: false }),
 				open: new fields.BooleanField({ initial: false }),
 			}),

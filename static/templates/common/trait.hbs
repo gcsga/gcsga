@@ -5,16 +5,16 @@
             data-disabled="{{ not item.enabled }}"
             data-tooltip-direction="DOWN"
             data-tooltip="{{ item.resolvedTooltip }}"
-            {{{ indent item.parents.length }}}
+            {{{ indent indent }}}
             >
             {{{ dropdown item }}}
             <span class="name">
                 {{ item.formattedName }}
-                <span class="container-type">
-                    {{#if (and isContainer (ne item.system.container_type "group"))}}
+                {{#if (and isContainer (ne item.system.container_type "group"))}}
+                    <span class="container-type">
                         {{ localize (concat "gurps.character.traits.container_type." item.system.container_type) }}
-                    {{/if}}
-                </span>
+                    </span>
+                {{/if}}
             </span>
             {{{ item.resolvedNotes }}}
         </div>

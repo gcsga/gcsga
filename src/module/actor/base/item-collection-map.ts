@@ -167,6 +167,23 @@ class ActorItemCollectionMap<TActor extends ActorGURPS> {
 		}
 	}
 
+	findCollection(id: string): Collection<ItemInstance.ItemGURPS<TActor>> | null {
+		for (const collection of [
+			this.traits,
+			this.skills,
+			this.spells,
+			this.carriedEquipment,
+			this.otherEquipment,
+			this.notes,
+			this.effects,
+			this.meleeWeapons,
+			this.rangedWeapons,
+		]) {
+			if (collection.has(id)) return collection
+		}
+		return null
+	}
+
 	public findStackableItem(
 		item: ItemInstance.EquipmentGURPS | ItemSourceGURPS,
 	): ItemInstance.EquipmentGURPS<TActor> | ItemInstance.EquipmentContainerGURPS<TActor> | null {

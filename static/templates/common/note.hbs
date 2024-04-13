@@ -1,8 +1,10 @@
 <li data-type="{{ item.type }}" data-item-id="{{ item.id }}" {{#if isContainer}} data-is-container {{/if}}>
     <div class="data">
         <div class="item-name"
-             data-tooltip-direction="DOWN"
-             data-tooltip="{{ item.resolvedTooltip }}">
+            data-tooltip-direction="DOWN"
+            data-tooltip="{{ item.resolvedTooltip }}"
+            {{{ indent indent }}}
+            >
             {{{ dropdown item }}}
             <div class="name">{{ item.formattedName }}</div>
         </div>

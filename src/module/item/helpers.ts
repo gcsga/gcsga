@@ -23,6 +23,7 @@ type ItemOrSource = PreCreate<ItemSourceGURPS> | ItemGURPS
 
 interface SheetItem<TItem extends ItemGURPS = ItemGURPS> {
 	item: TItem
+	indent: number
 	isContainer: boolean
 	children: SheetItem[]
 }

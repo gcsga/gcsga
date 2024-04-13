@@ -35,6 +35,8 @@
 		// When the table is empty, render 1 row's worth of vertical space
 		&:not([data-container-id]) {
 			min-height: 18px;
+			background-color: rgb(var(--color-content));
+			border: 1px solid rgb(var(--color-header));
 		}
 
 		// All items in this list
@@ -118,10 +120,14 @@
 	header,
 	ul.items > li > .data {
 		// Border to the right of table fields
+		.enabled,
+		.equipped,
+		.quantity,
 		.item-name,
 		.level,
 		.rsl,
 		.points,
+		.uses,
 		.tech-level,
 		.legality-class,
 		.value,

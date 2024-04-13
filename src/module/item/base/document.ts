@@ -27,6 +27,8 @@ import type { ItemSheetGURPS } from "./sheet.ts"
 import { ItemInstances } from "@item/types.ts"
 import { ContainedWeightReduction, ContainedWeightReductionObj, Feature, PrereqList } from "@system"
 import { getItemArtworkName, itemIsOfType } from "@item/helpers.ts"
+import Document, { _Document } from "types/foundry/common/abstract/document.js"
+import { DataSchema } from "types/foundry/common/data/fields.js"
 
 /** The basic `Item` subclass for the system */
 class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends Item<TParent> {
@@ -402,6 +404,38 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 		return []
 	}
 
+	// Refresh sheets of container containing this item
+	protected override _onCreate(
+		data: this["_source"],
+		options: DocumentModificationContext<TParent>,
+		userId: string,
+	): void {
+		super._onCreate(data, options, userId)
+		for (const parent of this.parents) {
+			if (parent instanceof ItemGURPS && parent.sheet.rendered) parent.sheet.render()
+		}
+	}
+
+	// Refresh sheets of container containing this item
+	protected override _onUpdate(
+		data: DeepPartial<this["_source"]>,
+		options: DocumentModificationContext<TParent>,
+		userId: string,
+	): void {
+		super._onUpdate(data, options, userId)
+		for (const parent of this.parents) {
+			if (parent instanceof ItemGURPS && parent.sheet.rendered) parent.sheet.render()
+		}
+	}
+
+	// Refresh sheets of container containing this item
+	protected override _onDelete(options: DocumentModificationContext<TParent>, userId: string): void {
+		super._onDelete(options, userId)
+		for (const parent of this.parents) {
+			if (parent instanceof ItemGURPS && parent.sheet.rendered) parent.sheet.render()
+		}
+	}
+
 	protected override _initialize(options?: Record<string, unknown>): void {
 		this.initialized = false
 		this._container = null
@@ -455,6 +489,48 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 	}
 
 	getContextMenuItems(): ContextMenuEntry[] {
+		return [
+			{
+				name: LocalizeGURPS.translations.gurps.context.duplicate,
+				icon: "",
+				callback: async () => {
+					const itemData = {
+						type: this.type,
+						name: this.name,
+						system: this.system,
+						flags: this.flags,
+						sort: (this.sort ?? 0) + 1,
+					}
+					if (!(this.container instanceof CompendiumCollection))
+						await this.container?.createEmbeddedDocuments("Item", [itemData], {})
+				},
+			},
+			{
+				name: LocalizeGURPS.translations.gurps.context.delete,
+				icon: "",
+				callback: async () => {
+					await this.delete()
+				},
+			},
+		]
+	}
+
+	async createSiblingDocuments(
+		embeddedName: "Item",
+		data: object[],
+	): Promise<Document<_Document | null, DataSchema>[]> {
+		if (this.container instanceof ItemGURPS) {
+			return (
+				this.container.createEmbeddedDocuments(
+					embeddedName,
+					data.map(e => {
+						return fu.mergeObject(e, {
+							flags: { [SYSTEM_NAME]: { [ItemFlags.Container]: this.container!._id } },
+						})
+					}),
+				) ?? []
+			)
+		}
 		return []
 	}
 }

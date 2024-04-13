@@ -143,18 +143,38 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 		}
 		if (!isItemSection(targetSection)) return
 
-		const collection = this.actor.itemCollections[targetSection] as Collection<ItemGURPS<TActor>>
-		const sourceItem = collection.get(event.item.dataset.itemId, { strict: true })
+		const sourceCollection = this.actor.itemCollections.findCollection(event.item.dataset.itemId ?? "")
+		const targetCollection = this.actor.itemCollections[targetSection] as Collection<ItemGURPS<TActor>>
+		const sourceItem = this.actor.items.get(event.item.dataset.itemId, { strict: true })
 		const itemsInList = htmlQueryAll(htmlClosest(event.item, "ul"), ":scope > li").map(li =>
-			li.dataset.itemId === sourceItem.id ? sourceItem : collection.get(li.dataset.itemId, { strict: true }),
+			li.dataset.itemId === sourceItem.id
+				? sourceItem
+				: targetCollection.get(li.dataset.itemId, { strict: true }),
 		)
+
+		// There are two collections which can store items
+		// This changes the flag which decides where the item is displayed
+		// May have to make this more generic and improve at some point
+		const otherUpdates: Record<string, unknown> = {}
+		if (sourceItem.isOfType(ItemType.Equipment, ItemType.EquipmentContainer)) {
+			if (
+				sourceCollection === this.actor.itemCollections.carriedEquipment &&
+				targetCollection === this.actor.itemCollections.otherEquipment
+			)
+				otherUpdates[`flags.${SYSTEM_NAME}.${ItemFlags.Other}`] = true
+			if (
+				sourceCollection === this.actor.itemCollections.otherEquipment &&
+				targetCollection === this.actor.itemCollections.carriedEquipment
+			)
+				otherUpdates[`flags.${SYSTEM_NAME}.${ItemFlags.Other}`] = false
+		}
 
 		const targetItemId = htmlClosest(event.originalEvent?.target, "li[data-item-id]")?.dataset.itemId ?? ""
 		const targetItem = this.actor.items.get(targetItemId)
 
 		const containerElem = htmlClosest(event.item, "ul[data-container-id]")
 		const containerId = containerElem?.dataset.containerId ?? ""
-		const container = targetItem?.isOfType("container") ? targetItem : collection.get(containerId)
+		const container = targetItem?.isOfType("container") ? targetItem : this.actor.items.get(containerId)
 		if (container && !container.isOfType("container")) {
 			throw ErrorGURPS("Unexpected non-container retrieved while sorting items")
 		}
@@ -171,16 +191,30 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 		siblings.splice(siblings.indexOf(sourceItem), 1)
 		type SortingUpdate = {
 			_id: string
-			"flags.gcsga.container": string | null
 			sort?: number
+			[key: string]: unknown
 		}
 		const sortingUpdates: SortingUpdate[] = SortingHelpers.performIntegerSort(sourceItem, {
 			siblings,
 			target: targetBefore ?? targetAfter,
 			sortBefore: !targetBefore,
-		}).map(u => ({ _id: u.target.id, "flags.gcsga.container": container?.id ?? null, sort: u.update.sort }))
+		}).map(u => ({
+			_id: u.target.id,
+			[`flags.${SYSTEM_NAME}.${ItemFlags.Container}`]: container?.id ?? null,
+			sort: u.update.sort,
+		}))
 		if (!sortingUpdates.some(u => u._id === sourceItem.id)) {
-			sortingUpdates.push({ _id: sourceItem.id, "flags.gcsga.container": container?.id ?? null })
+			sortingUpdates.push({
+				_id: sourceItem.id,
+				[`flags.${SYSTEM_NAME}.${ItemFlags.Container}`]: container?.id ?? null,
+				...otherUpdates,
+			})
+		} else {
+			const index = sortingUpdates.findIndex(u => u._id === sourceItem.id)
+			sortingUpdates[index] = {
+				...sortingUpdates[index],
+				...otherUpdates,
+			}
 		}
 
 		await this.actor.updateEmbeddedDocuments("Item", sortingUpdates)
@@ -207,9 +241,9 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 		// const contents: ItemGURPS[] = []
 		// if (item.isOfType("abstract-container"))
 		// contents.push(...AbstractContainerGURPS.contentFromDropData(data, newId))
-		// 	if (item.actor?.uuid === this.actor.uuid)
-		// 		// Drops from the same actor are handled by Sortable
-		// 		return []
+		if (item.actor?.uuid === this.actor.uuid)
+			// Drops from the same actor are handled by Sortable
+			return []
 
 		if (item.actor && item.isOfType(ItemType.Equipment, ItemType.EquipmentContainer)) {
 			// TODO check implementation

@@ -1,7 +1,7 @@
 import { ActorGURPS } from "@actor"
 import { ItemGURPS } from "@item"
 import { EquipmentModifierSource, EquipmentModifierSystemData } from "./data.ts"
-import { LocalizeGURPS, StringBuilder, Weight, WeightUnits, emcost, emweight } from "@util"
+import { LocalizeGURPS, StringBuilder, Weight, WeightString, WeightUnits, emcost, emweight } from "@util"
 import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { Feature } from "@system"
@@ -33,8 +33,8 @@ class EquipmentModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | nu
 				}),
 				disabled: new fields.BooleanField({ initial: false }),
 				tech_level: new fields.StringField(),
-				cost: new fields.NumberField({ initial: 0 }),
-				weight: new fields.NumberField({ initial: 0 }),
+				cost: new fields.StringField({ initial: "0" }),
+				weight: new fields.StringField<WeightString>({ initial: `0 ${WeightUnits.Pound}` }),
 				features: new fields.ArrayField(new fields.ObjectField<Feature>()),
 			}),
 		})
@@ -107,6 +107,36 @@ class EquipmentModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | nu
 			}
 		}
 		return buffer.toString()
+	}
+
+	override getContextMenuItems(): ContextMenuEntry[] {
+		return [
+			{
+				name: LocalizeGURPS.translations.gurps.context.new_item.equipment_modifier,
+				icon: "",
+				callback: async () => {
+					return this.createSiblingDocuments("Item", [
+						{
+							type: ItemType.EquipmentModifier,
+							name: LocalizeGURPS.translations.TYPES.Item[ItemType.EquipmentModifier],
+						},
+					])
+				},
+			},
+			{
+				name: LocalizeGURPS.translations.gurps.context.new_item.equipment_modifier_container,
+				icon: "",
+				callback: async () => {
+					return this.createSiblingDocuments("Item", [
+						{
+							type: ItemType.EquipmentModifierContainer,
+							name: LocalizeGURPS.translations.TYPES.Item[ItemType.EquipmentModifierContainer],
+						},
+					])
+				},
+			},
+			...super.getContextMenuItems(),
+		]
 	}
 }
 

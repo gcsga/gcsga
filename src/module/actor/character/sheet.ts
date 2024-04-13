@@ -123,6 +123,7 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS
 	protected _prepareSheetItem<TItem extends ItemGURPS = ItemGURPS>(item: TItem): SheetItem<TItem> {
 		return {
 			item,
+			indent: item.parents.length,
 			isContainer: item.isOfType("container"),
 			children: item.isOfType("container") ? this._prepareItemCollection(item.children, item._id) : [],
 		}

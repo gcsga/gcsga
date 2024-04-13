@@ -145,7 +145,7 @@ class HandlebarsHelpersGURPS {
 		return localeDate(str)
 	}
 
-	// Lenght
+	// Length
 	static len(...args: unknown[]): number {
 		let length = 0
 		for (const a of args) {

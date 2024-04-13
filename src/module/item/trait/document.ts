@@ -265,18 +265,35 @@ class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 	override getContextMenuItems(): ContextMenuEntry[] {
 		return [
 			{
-				name: LocalizeGURPS.translations.gurps.context.duplicate,
+				name: LocalizeGURPS.translations.gurps.context.new_item.trait,
 				icon: "",
 				callback: async () => {
-					const itemData = {
-						type: this.type,
-						name: this.name,
-						system: this.system,
-						flags: this.flags,
-						sort: (this.sort ?? 0) + 1,
-					}
-					if (!(this.container instanceof CompendiumCollection))
-						await this.container?.createEmbeddedDocuments("Item", [itemData], {})
+					return this.createSiblingDocuments("Item", [
+						{
+							type: ItemType.Trait,
+							name: LocalizeGURPS.translations.TYPES.Item[ItemType.Trait],
+						},
+					])
+				},
+			},
+			{
+				name: LocalizeGURPS.translations.gurps.context.new_item.trait_container,
+				icon: "",
+				callback: async () => {
+					return this.createSiblingDocuments("Item", [
+						{
+							type: ItemType.TraitContainer,
+							name: LocalizeGURPS.translations.TYPES.Item[ItemType.TraitContainer],
+						},
+					])
+				},
+			},
+			...super.getContextMenuItems(),
+			{
+				name: LocalizeGURPS.translations.gurps.context.toggle_state,
+				icon: "",
+				callback: async () => {
+					return this.update({ "system.disabled": !this.system.disabled })
 				},
 			},
 		]

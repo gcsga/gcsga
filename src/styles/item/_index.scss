@@ -56,8 +56,6 @@
 	#features,
 	#study,
 	#defaults,
-	#trait-modifiers,
-	#equipment-modifiers,
 	#roll-modifiers {
 		header {
 			background-color: rgb(var(--color-header));
@@ -117,6 +115,11 @@
 		}
 	}
 
+	#trait-modifiers,
+	#equipment-modifiers {
+		@include item-list;
+	}
+
 	#prereqs {
 		> ul > li li {
 			margin-left: 6px;
@@ -126,30 +129,6 @@
 	#features {
 		label.check {
 			white-space: nowrap;
-		}
-	}
-
-	#trait-modifiers,
-	#equipment-modifiers {
-		ul {
-			padding: 0;
-		}
-
-		header,
-		ul.items > li > .data {
-			display: grid;
-
-			> * {
-				display: flex;
-				justify-content: center;
-				padding: var(--padding-header);
-			}
-		}
-
-		header > span.reference {
-			border: none;
-			border-radius: 0;
-			color: inherit;
 		}
 	}
 

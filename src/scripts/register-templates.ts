@@ -154,8 +154,6 @@ export function registerTemplates(): void {
 		"item/partials/study",
 
 		// Item Embeds
-		"item/partials/trait-modifier",
-		"item/partials/equipment-modifier",
 		"item/partials/melee",
 		"item/partials/ranged",
 		"item/partials/defaults",
