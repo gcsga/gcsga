@@ -61,7 +61,6 @@
 	.dr:nth-child(8n + 4) {
 		&:not(.header) {
 			background-color: rgba(var(--color-banding), 1);
-			@import "embeds/roll_banding";
 		}
 	}
 }

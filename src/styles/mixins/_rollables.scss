@@ -1,0 +1,31 @@
+@mixin rollables {
+	.rollable[data-type="modifier"]:not(.noroll) {
+		background: var(--background-mod);
+		color: rgb(var(--color-on-button-mod));
+
+		&:hover {
+			background: rgb(var(--color-button-mod-rollover)) !important;
+			color: rgb(var(--color-on-button-mod-rollover)) !important;
+		}
+	}
+
+	.rollable:not([data-type="modifier"]):not(.noroll) {
+		background: var(--background-roll);
+		color: rgb(var(--color-on-button-roll));
+
+		&:hover {
+			background: rgb(var(--color-button-roll-rollover)) !important;
+			color: rgb(var(--color-on-button-roll-rollover)) !important;
+		}
+	}
+
+	&.banding {
+		.rollable[data-type="modifier"]:not(.noroll) {
+			background: var(--background-mod-banding);
+		}
+
+		.rollable:not([data-type="modifier"]):not(.noroll) {
+			background: var(--background-roll-banding);
+		}
+	}
+}

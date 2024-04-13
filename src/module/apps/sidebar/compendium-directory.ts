@@ -1,7 +1,7 @@
 import { ActorGURPS } from "@actor"
 import { ItemGURPS } from "@item"
 import { UserFlags } from "@module/user/data.ts"
-import { ErrorGURPS, fontAwesomeIcon, htmlQuery } from "@util"
+import { DnD, ErrorGURPS, fontAwesomeIcon, htmlQuery } from "@util"
 import MiniSearch from "minisearch"
 import { CompendiumMigrationStatus } from "../compendium-migration-status.ts"
 import { SYSTEM_NAME } from "@data"
@@ -12,11 +12,11 @@ class CompendiumDirectoryGURPS extends CompendiumDirectory {
 
 	static readonly searchEngine = new MiniSearch<CompendiumIndexData>({
 		fields: ["name"],
-		idField: "uuid",
+		idField: "id",
 		processTerm: t =>
 			t.length > 1 && !this.STOP_WORDS.has(t) ? t.toLocaleLowerCase(game.i18n.lang).replace(/['"]/g, "") : null,
 		searchOptions: { combineWith: "AND", prefix: true },
-		storeFields: ["uuid", "img", "name", "type", "documentType", "packLabel"],
+		storeFields: ["id", "img", "name", "type", "documentType", "packLabel"],
 	})
 
 	/** Include ability to search and drag document search results */
@@ -221,7 +221,7 @@ class CompendiumDirectoryGURPS extends CompendiumDirectory {
 		if (!documentType) return
 
 		event.dataTransfer.setDragImage(dragPreview, 75, 25)
-		event.dataTransfer.setData("text/plain", JSON.stringify({ type: documentType, uuid }))
+		event.dataTransfer.setData(DnD.TEXT_PLAIN, JSON.stringify({ type: documentType, uuid }))
 	}
 
 	/** Called by a "ready" hook */

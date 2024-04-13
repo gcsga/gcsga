@@ -1,0 +1,75 @@
+#embeds {
+	display: grid;
+	width: 100%;
+	grid-template-columns: 50% 50% !important;
+	gap: var(--section-gap);
+
+	> div {
+		background-color: rgb(var(--color-content));
+	}
+
+	@include item-list;
+}
+
+#reactions {
+	grid-area: reactions;
+
+	header,
+	ul.items > li > .data {
+		grid-template-columns: 2.5rem auto;
+	}
+}
+
+#conditional_modifiers {
+	grid-area: conditional_modifiers;
+
+	header,
+	ul.items > li > .data {
+		grid-template-columns: 2.5rem auto;
+	}
+}
+
+#traits {
+	grid-area: traits;
+
+	header,
+	ul.items > li > .data {
+		grid-template-columns: auto 2.5rem 3.5rem;
+	}
+}
+
+#skills {
+	grid-area: skills;
+
+	header,
+	ul.items > li > .data {
+		grid-template-columns: auto 2.5rem 3rem 2.5rem 3.5rem;
+	}
+}
+
+#spells {
+	grid-area: spells;
+
+	header,
+	ul.items > li > .data {
+		grid-template-columns: auto 2.5rem 3rem 2.5rem 3.5rem;
+	}
+}
+
+#equipment {
+	grid-area: equipment;
+
+	header,
+	ul.items > li > .data {
+		grid-template-columns: 1rem 1.25rem auto 2.5rem 2rem 2rem 2.5rem 2.5rem 2.5rem 2.5rem 3.5rem;
+	}
+}
+
+#other_equipment {
+	grid-area: other_equipment;
+
+	header,
+	ul.items > li > .data {
+		grid-template-columns: 1.25rem auto 2.5rem 2rem 2rem 2.5rem 2.5rem 2.5rem 2.5rem 3.5rem;
+	}
+}

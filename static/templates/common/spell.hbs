@@ -1,41 +1,39 @@
-<div
-	class="desc item{{#if (isContainer this)}} container{{/if}}"
-	data-item-id="{{ this._id }}"
-	data-tooltip-direction="DOWN"
-	data-tooltip="{{ this.resolvedTooltip }}"
-	{{{indent
-	this.parents.length}}}
->
-	{{{ dropdown item }}}
-	<div class="name">{{ this.formattedName }}</div>
-	{{{ this.resolvedNotes }}}
-</div>
-{{#if (isContainer this)}}
-<div class="level"></div>
-<div class="rsl"></div>
-{{ else }}
-<div
-	data-item-id="{{ this._id }}"
-	data-type="spell"
-	class="level rollable {{ effective this }}"
-	data-html="true"
-	data-tooltip-direction="DOWN"
-	data-tooltip="{{ this.levelTooltip }}"
->
-	{{ this.skillLevel }}
-</div>
-<div
-	data-item-id="{{ this._id }}"
-	data-type="spell_rsl"
-	class="rsl rollable {{ effective this }}"
-	data-tooltip-direction="DOWN"
-	data-tooltip="{{ this.levelTooltip }}"
->
-	{{ this.relativeLevel }}
-</div>
-{{/if}}
-<div class="points" data-tooltip="{{ this.pointsTooltip }}" data-tooltip-direction="DOWN">
-	{{ this.adjustedPoints }}
-</div>
-<div class="reference">{{{ ref this.system.reference }}}</div>
-{{#if this.system.open}} {{#each this.children}} {{>actor/character/partials/spell}} {{/each}} {{/if}}
+<li data-type="{{ item.type }}" data-item-id="{{ item.id }}" {{#if isContainer}} data-is-container {{/if}}>
+    <div class="data">
+        <div
+            class="item-name"
+            data-tooltip-direction="DOWN"
+            data-tooltip="{{ item.resolvedTooltip }}"
+            {{{ indent item.parents.length }}}
+            >
+            {{{ dropdown item }}}
+            <div class="name">{{ item.formattedName }}</div>
+            {{{ item.resolvedNotes }}}
+        </div>
+        {{#if (isContainer)}}
+            <div class="level"></div>
+            <div class="rsl"></div>
+        {{ else }}
+            <div data-type="skill"
+                 class="level rollable {{ effective this }}"
+                 data-tooltip-direction="DOWN"
+                 data-tooltip="{{ item.levelTooltip }}">{{ item.skillLevel }}</div>
+            <div data-type="skill_rsl"
+                 class="rsl rollable {{ effective this }}"
+                 data-tooltip-direction="DOWN"
+                 data-tooltip="{{ item.levelTooltip }}">{{ item.relativeLevel }}</div>
+        {{/if}}
+        <div class="points"
+             data-tooltip="{{ item.pointsTooltip }}"
+             data-tooltip-direction="DOWN">{{ item.fastAdjustedPoints }}</div>
+        <div class="reference"">{{{ ref item.reference }}}
+        </div>
+    </div>
+    {{#if item.system.open}}
+        <ul class="items" data-item-list data-container-id="{{ item.id }}">
+            {{#each children}}
+                {{>common/spell}}
+            {{/each}}
+        </ul>
+    {{/if}}
+</li>

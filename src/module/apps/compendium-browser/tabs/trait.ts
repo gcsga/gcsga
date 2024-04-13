@@ -9,7 +9,22 @@ import { LocalizeGURPS } from "@util"
 export class CompendiumBrowserTraitTab extends CompendiumBrowserTab {
 	tabName: ContentTabName = TabName.Trait
 	filterData: TraitFilters
-	templatePath = `systems/${SYSTEM_NAME}/templates/compendium-browser/partials/trait.hbs`
+	templatePath = `systems/${SYSTEM_NAME}/templates/common/trait.hbs`
+
+	/* MiniSearch */
+	override searchFields = ["name", "tags", "reference", "points", "resolvedNotes"]
+	override storeFields = [
+		"type",
+		"formattedName",
+		"name",
+		"img",
+		"resolvedNotes",
+		"adjustedPoints",
+		"tags",
+		"reference",
+		"points",
+		"enabled",
+	]
 
 	constructor(browser: CompendiumBrowser) {
 		super(browser)
@@ -58,13 +73,15 @@ export class CompendiumBrowserTraitTab extends CompendiumBrowserTab {
 					type: item.type,
 					name: item.name,
 					img: item.img,
-					uuid: `Compendium.${pack.collection}.${item._id}`,
+					id: item.uuid ?? `Compendium.${pack.collection}.${item._id}`,
 					formattedName: item.formattedName,
 					resolvedNotes: item.resolvedNotes,
-					points: item.adjustedPoints,
+					adjustedPoints: item.adjustedPoints,
 					tags: item.tags,
-					reference: item.system.reference,
+					reference: item.reference,
 					enabled: item.enabled,
+					"system.open": item.isOfType(ItemType.TraitContainer) ? item.system.open : false,
+					"system.container_type": item.isOfType(ItemType.TraitContainer) ? item.system.container_type : "",
 				})
 			})
 		}
@@ -84,6 +101,7 @@ export class CompendiumBrowserTraitTab extends CompendiumBrowserTab {
 	}
 
 	protected override filterIndexData(entry: CompendiumBrowserIndexData): boolean {
+		return true
 		const { multiselects } = this.filterData
 
 		// Tags

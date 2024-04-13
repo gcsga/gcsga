@@ -1,4 +1,4 @@
-<li data-item-id="{{ item.id }}" {{#if isContainer}} data-is-container{{/if}}>
+<li data-type="{{ item.type }}" data-item-id="{{ item.id }}" {{#if isContainer}} data-is-container {{/if}}>
     <div class="data">
         <div class="equipped">
             {{#if item.equipped}}
@@ -21,7 +21,7 @@
     {{#if item.system.open}}
         <ul class="items" data-item-list data-container-id="{{ item.id }}">
             {{#each children}}
-                {{>actor/item/partials/equipment-modifier}}
+                {{>common/equipment-modifier}}
             {{/each}}
         </ul>
     {{/if}}

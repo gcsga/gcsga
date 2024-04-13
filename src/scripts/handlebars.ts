@@ -1,5 +1,7 @@
 import { CharacterGURPS } from "@actor"
 import { ItemGURPS, SkillGURPS } from "@item"
+import { ItemSourceGURPS } from "@item/data/index.ts"
+import { itemIsOfType } from "@item/helpers.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { Study } from "@system"
@@ -510,8 +512,8 @@ class HandlebarsHelpersGURPS {
 		return criteria ? "disabled" : ""
 	}
 
-	static dropdown(item: ItemGURPS): string {
-		if (!item.isOfType("container")) return ""
+	static dropdown(item: ItemGURPS | ItemSourceGURPS): string {
+		if (!itemIsOfType(item, "container")) return `<div class="dropdown"></div>`
 		if (item.system.open)
 			return `<div class="dropdown"><a class="dropdown-toggle open gcs-circled-chevron-down"></a></div>`
 		return `<div class="dropdown"><a class="dropdown-toggle closed gcs-circled-chevron-right"></a></div>`

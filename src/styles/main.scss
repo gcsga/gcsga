@@ -3,7 +3,28 @@
 /* This is your Sass entry file */
 /* ---------------------------- */
 
-@import "fonts", "actor", "ui", "packs", "item", "scene", "settings", "system", "variables", "app";
+@import // GCS font and emojis
+	"fonts",
+	// Useful functions
+	"mixins",
+	// Character sheets
+	"actor",
+	// Foundry system stylings
+	"ui",
+	// Compendium browser
+	"packs",
+	// Item sheets
+	"item",
+	// Scene and scene-object sheets
+	"scene",
+	// GURPS settings apps
+	"settings",
+	// GURPS system apps
+	"system",
+	// Various constants
+	"variables",
+	// TODO: replace with system
+	"app";
 
 #drag-ghost {
 	position: absolute;

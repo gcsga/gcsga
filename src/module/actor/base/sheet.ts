@@ -1,7 +1,7 @@
 import { AbstractContainerGURPS, ItemGURPS } from "@item"
 import { ActorGURPS } from "./document.ts"
 import { DamagePayload, DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
-import { DnD, ErrorGURPS, htmlClosest, htmlQueryAll } from "@util"
+import { DnD, ErrorGURPS, applyBanding, htmlClosest, htmlQueryAll } from "@util"
 import { ItemFlags, ItemType, SORTABLE_BASE_OPTIONS, SYSTEM_NAME } from "@module/data/constants.ts"
 import { ItemSections, itemSections } from "./item-collection-map.ts"
 import Sortable from "sortablejs"
@@ -62,7 +62,7 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 
 		this.#activateItemDragDrop(html)
 		this.#activateContextMenu(html)
-		this._applyBanding()
+		applyBanding(this.element[0])
 	}
 
 	#activateItemDragDrop(html: HTMLElement): void {
@@ -77,7 +77,7 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 				onMove: event => this.#onMoveItem(event),
 				onEnd: async event => {
 					await this.#onDropItem(event)
-					this._applyBanding()
+					applyBanding(this.element[0])
 				},
 			}
 
@@ -184,23 +184,6 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 		}
 
 		await this.actor.updateEmbeddedDocuments("Item", sortingUpdates)
-	}
-
-	protected _applyBanding(): void {
-		const html = this.element[0]
-
-		for (const list of htmlQueryAll(html, "#embeds [data-item-list]:not([data-container-id])")) {
-			let banding = true
-			for (const item of htmlQueryAll(list, "li")) {
-				banding = !banding
-				item.style.backgroundColor = ""
-				item.style.color = ""
-				if (banding) {
-					item.style.backgroundColor = "rgb(var(--color-banding))"
-					item.style.color = "rgb(var(--color-on-banding))"
-				}
-			}
-		}
 	}
 
 	protected override _onDrop(event: DragEvent): Promise<boolean | void> {

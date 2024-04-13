@@ -85,7 +85,7 @@
 			.field:nth-child(6n-1),
 			.points:nth-child(6n-2) {
 				background-color: rgba(var(--color-banding), 1);
-				@import "embeds/roll_banding";
+				@include rollables;
 			}
 			.field {
 				width: 6ch;

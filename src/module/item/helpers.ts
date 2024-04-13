@@ -1,6 +1,6 @@
 import { ActorGURPS } from "@actor"
 import { TargetTrait, TargetTraitModifier } from "@module/apps/damage-calculator/index.ts"
-import { ABSTRACT_CONTAINER_TYPES, ItemType } from "@module/data/constants.ts"
+import { ABSTRACT_CONTAINER_TYPES, CONTAINER_TYPES, ItemType } from "@module/data/constants.ts"
 import { ConditionalModifier, ContainedWeightReduction, Feature } from "@system"
 import { Int, Weight, WeightUnits, emcost, emweight, setHasElement } from "@util"
 import { AbstractContainerGURPS } from "./abstract-container/document.ts"
@@ -12,6 +12,12 @@ import { EquipmentGURPS } from "./equipment/document.ts"
 import { TraitModifierGURPS } from "./trait-modifier/document.ts"
 import { TraitGURPS } from "./trait/document.ts"
 import { ItemInstances } from "./types.ts"
+import { TraitContainerGURPS } from "./trait-container/document.ts"
+import { TraitModifierContainerGURPS } from "./trait-modifier-container/document.ts"
+import { SkillContainerGURPS } from "./skill-container/document.ts"
+import { SpellContainerGURPS } from "./spell-container/document.ts"
+import { EquipmentModifierContainerGURPS } from "./equipment-modifier-container/document.ts"
+import { NoteContainerGURPS } from "./note-container/document.ts"
 
 type ItemOrSource = PreCreate<ItemSourceGURPS> | ItemGURPS
 
@@ -31,24 +37,48 @@ interface SheetItemCollection {
 function itemIsOfType<TParent extends ActorGURPS | null, TType extends ItemType>(
 	item: ItemOrSource,
 	...types: TType[]
-): item is ItemInstances<TParent>[TType] | ItemInstances<TParent>[TType]["_source"]
-function itemIsOfType<TParent extends ActorGURPS | null, TType extends "abstract-container" | ItemType>(
-	item: ItemOrSource,
-	...types: TType[]
-): item is TType extends "abstract-container"
-	? AbstractContainerGURPS<TParent> | AbstractContainerGURPS<TParent>["_source"]
-	: TType extends ItemType
-		? ItemInstances<TParent>[TType] | ItemInstances<TParent>[TType]["_source"]
-		: never
+): item is ItemInstances<TParent>[TType]
 function itemIsOfType<TParent extends ActorGURPS | null>(
 	item: ItemOrSource,
 	type: "abstract-container",
-): item is AbstractContainerGURPS<TParent> | AbstractContainerGURPS["_source"]
+): item is AbstractContainerGURPS<TParent> | AbstractContainerGURPS<TParent>["_source"]
+function itemIsOfType<TParent extends ActorGURPS | null>(
+	item: ItemOrSource,
+	type: "container",
+): item is
+	| TraitContainerGURPS<TParent>
+	| TraitModifierContainerGURPS<TParent>
+	| SkillContainerGURPS<TParent>
+	| SpellContainerGURPS<TParent>
+	| EquipmentContainerGURPS<TParent>
+	| EquipmentModifierContainerGURPS<TParent>
+	| NoteContainerGURPS<TParent>
+function itemIsOfType<TParent extends ActorGURPS | null, TType extends "abstract-container" | "container" | ItemType>(
+	item: ItemOrSource,
+	...types: TType[]
+): item is TType extends "abstract-container"
+	? AbstractContainerGURPS<TParent>
+	: TType extends "container"
+		?
+				| TraitContainerGURPS<TParent>
+				| TraitModifierContainerGURPS<TParent>
+				| SkillContainerGURPS<TParent>
+				| SpellContainerGURPS<TParent>
+				| EquipmentContainerGURPS<TParent>
+				| EquipmentModifierContainerGURPS<TParent>
+				| NoteContainerGURPS<TParent>
+		: TType extends ItemType
+			? ItemInstances<TParent>[TType]
+			: never
 function itemIsOfType(item: ItemOrSource, ...types: string[]): boolean {
 	return (
-		typeof item.name === "string" &&
+		typeof item.type === "string" &&
 		types.some(t =>
-			t === "abstract-container" ? setHasElement(ABSTRACT_CONTAINER_TYPES, item.type) : item.type === t,
+			t === "abstract-container"
+				? setHasElement(ABSTRACT_CONTAINER_TYPES, item.type)
+				: t === "container"
+					? setHasElement(CONTAINER_TYPES, item.type)
+					: item.type === t,
 		)
 	)
 }

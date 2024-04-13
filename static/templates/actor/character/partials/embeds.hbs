@@ -64,7 +64,7 @@
 			</span>
 		</header>
 		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
-			{{#each section.items}} {{>actor/character/partials/trait}} {{/each}}
+			{{#each section.items}} {{>common/trait}} {{/each}}
 		</ul>
 	</div>
 	{{/with}} {{#with itemCollections.skills as |section|}}
@@ -79,7 +79,7 @@
 			</span>
 		</header>
 		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
-			{{#each section.items}} {{>actor/character/partials/skill}} {{/each}}
+			{{#each section.items}} {{>common/skill}} {{/each}}
 		</ul>
 	</div>
 	{{/with}} {{#with itemCollections.spells as |section|}}
@@ -94,7 +94,7 @@
 			</span>
 		</header>
 		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
-			{{#each section.items}} {{>actor/character/partials/spell}} {{/each}}
+			{{#each section.items}} {{>common/spell}} {{/each}}
 		</ul>
 	</div>
 	{{/with}} {{#with itemCollections.equipment as |section|}}
@@ -124,7 +124,7 @@
 			<span class="reference"><i class="gcs-bookmark"></i></span>
 		</header>
 		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
-			{{#each section.items}} {{>actor/character/partials/equipment}} {{/each}}
+			{{#each section.items}} {{>common/equipment}} {{/each}}
 		</ul>
 	</div>
 	{{/with}} {{#with itemCollections.other_equipment as |section|}}
@@ -151,7 +151,7 @@
 			<span class="reference"><i class="gcs-bookmark"></i></span>
 		</header>
 		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
-			{{#each section.items}} {{>actor/character/partials/other-equipment}} {{/each}}
+			{{#each section.items}} {{>common/other-equipment}} {{/each}}
 		</ul>
 	</div>
 	{{/with}}

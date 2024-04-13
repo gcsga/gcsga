@@ -1,4 +1,4 @@
-<li data-item-id="{{ item.id }}" {{#if isContainer}} data-is-container {{/if}}>
+<li data-type="{{ item.type }}" data-item-id="{{ item.id }}" {{#if isContainer}} data-is-container {{/if}}>
     <div class="data">
         <div
             class="item-name"
@@ -19,13 +19,16 @@
             {{{ item.resolvedNotes }}}
         </div>
         <span class="points">{{ item.adjustedPoints }}</span>
-        <div class="reference">{{{ ref item.system.reference }}}</div>
+        {{#if @root.compendium}}
+            <span class="tags">{{ join item.tags ", " }}</span>
+        {{/if}}
+        <div class="reference">{{{ ref item.reference }}}</div>
     </div>
     <div class="item-summary" hidden="hidden"></div>
     {{#if item.system.open}}
         <ul class="items" data-item-list data-container-id="{{ item.id }}">
             {{#each children}}
-                {{>actor/character/partials/trait inContainer=true}}
+                {{>common/trait inContainer=true}}
             {{/each}}
         </ul>
     {{/if}}

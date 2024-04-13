@@ -10,13 +10,13 @@ abstract class AbstractContainerGURPS<
 	TParent extends ActorGURPS | null = ActorGURPS | null,
 > extends ItemGURPS<TParent> {
 	/** This container's contents, reloaded every data preparation cycle */
-	contents: Collection<ItemGURPS<TParent>> = new Collection()
+	contents: Collection<ItemGURPS<ActorGURPS | null>> = new Collection()
 
 	// Map of item collections
 	declare itemCollections: ItemItemCollectionMap
 
-	get deepContents(): Collection<ItemGURPS<TParent>> {
-		const items: ItemGURPS<TParent>[] = []
+	get deepContents(): Collection<ItemGURPS<ActorGURPS | null>> {
+		const items: ItemGURPS<ActorGURPS | null>[] = []
 		for (const item of this.contents) {
 			items.push(item)
 			if (item.isOfType("abstract-container")) items.push(...item.deepContents)
@@ -38,6 +38,7 @@ abstract class AbstractContainerGURPS<
 	//
 
 	static cloneContents(item: AbstractContainerGURPS, containerId: string | null): ItemGURPS["_source"][] {
+		item.prepareSiblingData()
 		const contents: ItemGURPS["_source"][] = []
 		for (const content of item.contents) {
 			const newId = fu.randomID()
@@ -59,9 +60,18 @@ abstract class AbstractContainerGURPS<
 
 		if (this.flags[SYSTEM_NAME][ItemFlags.Container] === this.id)
 			this.setFlag(SYSTEM_NAME, ItemFlags.Container, null)
-		this.contents = new Collection(
-			this.collection.filter(i => i.container?.id === this.id).map(item => [item.id, item]),
-		)
+
+		if (this.compendium) {
+			this.contents = new Collection(
+				(this.compendium as CompendiumCollection<ItemGURPS<null>>)
+					.filter(i => i.container?.id === this.id)
+					.map(item => [item.id, item]),
+			)
+		} else {
+			this.contents = new Collection(
+				this.collection.filter(i => i.container?.id === this.id).map(item => [item.id, item]),
+			)
+		}
 		this.itemCollections = new ItemItemCollectionMap(this.deepContents)
 	}
 
@@ -103,19 +113,19 @@ abstract class AbstractContainerGURPS<
 		return this.parent?.createEmbeddedDocuments("Item", data, context) as Promise<ItemGURPS[]>
 	}
 
-	async deleteContainedDocuments(
-		ids: string[],
-		context?: DocumentModificationContext<NonNullable<TParent>>,
-	): Promise<ItemGURPS[]> {
-		return this.parent?.deleteEmbeddedDocuments("Item", ids, context) as Promise<ItemGURPS[]>
-	}
-
-	override delete(context?: DocumentModificationContext<TParent> | undefined): Promise<this | undefined> {
-		for (const content of this.contents) {
-			content.delete(context)
-		}
-		return super.delete(context)
-	}
+	// async deleteContainedDocuments(
+	// 	ids: string[],
+	// 	context?: DocumentModificationContext<NonNullable<TParent>>,
+	// ): Promise<ItemGURPS[]> {
+	// 	return this.parent?.deleteEmbeddedDocuments("Item", ids, context) as Promise<ItemGURPS[]>
+	// }
+	//
+	// override delete(context?: DocumentModificationContext<TParent> | undefined): Promise<this | undefined> {
+	// 	for (const content of this.contents) {
+	// 		content.delete(context)
+	// 	}
+	// 	return super.delete(context)
+	// }
 }
 
 interface AbstractContainerGURPS<TParent extends ActorGURPS | null> extends ItemGURPS<TParent> {

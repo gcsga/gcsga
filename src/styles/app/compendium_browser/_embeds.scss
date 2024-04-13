@@ -1,4 +1,4 @@
-@import "traits", "modifiers", "skills", "spells", "equipment", "eqp_modifiers", "notes";
+// @import "traits", "modifiers", "skills", "spells", "equipment", "eqp_modifiers", "notes";
 
 .library-tab {
 	grid-template:
@@ -6,132 +6,132 @@
 		"list";
 }
 
-.item-list {
-	display: grid;
-	grid-auto-rows: 0fr;
-	gap: var(--section-gap);
-	background-color: rgb(var(--color-content));
-	color: rgb(var(--color-on-content));
-	font: var(--font-field);
-
-	> :not(.header) {
-		padding: var(--padding-standard);
-		&.border-top {
-			border-top: 2px dashed rgb(var(--color-drop-area));
-			&.desc {
-				border-top: none;
-				.name {
-					border-top: 2px dashed rgb(var(--color-drop-area));
-				}
-			}
-		}
-		&.border-bottom {
-			border-bottom: 2px dashed rgb(var(--color-drop-area));
-			&.desc {
-				border-bottom: none;
-				.item-notes {
-					border-bottom: 2px dashed rgb(var(--color-drop-area));
-				}
-			}
-		}
-		&.border-in {
-			border-top: 2px dashed rgb(var(--color-drop-area));
-			border-bottom: 2px dashed rgb(var(--color-drop-area));
-			&.desc {
-				border-left: 2px dashed rgb(var(--color-drop-area));
-			}
-			&.reference {
-				border-right: 2px dashed rgb(var(--color-drop-area));
-			}
-		}
-	}
-
-	.header {
-		font: var(--font-label);
-		justify-content: center;
-		text-align: center;
-		background-color: rgb(var(--color-header));
-		color: rgb(var(--color-on-header));
-		padding: var(--padding-header);
-		position: sticky;
-		top: 0;
-	}
-
-	.dropdown {
-		font-size: var(--font-size-10);
-	}
-
-	.item-list {
-		grid-area: list;
-	}
-
-	.item-list.hover {
-		border: 1px solid red !important;
-	}
-
-	.ph::before {
-		content: "";
-	}
-
-	> .desc {
-		display: grid;
-		grid-template:
-			"dropdown name"
-			"blank notes";
-		grid-template-columns: min-content auto;
-		.dropdown {
-			min-width: 0.75em;
-			margin-right: 6px;
-		}
-		.name {
-			font: inherit;
-			background: transparent;
-			color: inherit;
-			grid-area: name;
-		}
-		.item-notes {
-			grid-area: notes;
-			font: var(--font-secondary-fields);
-		}
-	}
-
-	> .reference:not(.header) {
-		display: flex;
-		flex-direction: row;
-		color: rgba(var(--color-link), 1) !important;
-		.ref {
-			background-color: transparent;
-			cursor: pointer;
-			&:hover {
-				color: rgba(var(--color-link-rollover), 1) !important;
-			}
-			&:active {
-				color: rgba(var(--color-link-pressed), 1) !important;
-			}
-		}
-	}
-
-	> div {
-		border-right: 1px solid rgb(var(--color-interior-divider));
-		border-bottom: 1px solid rgb(var(--color-interior-divider));
-
-		&.header {
-			border-bottom: none;
-		}
-
-		&.reference {
-			border-right: none;
-		}
-	}
-
-	> :not(.header) {
-		padding: var(--padding-standard);
-		&.quantity {
-			min-width: 1em; //possibly unnecessary
-		}
-	}
-
-	.desc.header {
-		white-space: nowrap;
-	}
-}
+// .item-list {
+// 	display: grid;
+// 	grid-auto-rows: 0fr;
+// 	gap: var(--section-gap);
+// 	background-color: rgb(var(--color-content));
+// 	color: rgb(var(--color-on-content));
+// 	font: var(--font-field);
+//
+// 	> :not(.header) {
+// 		padding: var(--padding-standard);
+// 		&.border-top {
+// 			border-top: 2px dashed rgb(var(--color-drop-area));
+// 			&.desc {
+// 				border-top: none;
+// 				.name {
+// 					border-top: 2px dashed rgb(var(--color-drop-area));
+// 				}
+// 			}
+// 		}
+// 		&.border-bottom {
+// 			border-bottom: 2px dashed rgb(var(--color-drop-area));
+// 			&.desc {
+// 				border-bottom: none;
+// 				.item-notes {
+// 					border-bottom: 2px dashed rgb(var(--color-drop-area));
+// 				}
+// 			}
+// 		}
+// 		&.border-in {
+// 			border-top: 2px dashed rgb(var(--color-drop-area));
+// 			border-bottom: 2px dashed rgb(var(--color-drop-area));
+// 			&.desc {
+// 				border-left: 2px dashed rgb(var(--color-drop-area));
+// 			}
+// 			&.reference {
+// 				border-right: 2px dashed rgb(var(--color-drop-area));
+// 			}
+// 		}
+// 	}
+//
+// 	.header {
+// 		font: var(--font-label);
+// 		justify-content: center;
+// 		text-align: center;
+// 		background-color: rgb(var(--color-header));
+// 		color: rgb(var(--color-on-header));
+// 		padding: var(--padding-header);
+// 		position: sticky;
+// 		top: 0;
+// 	}
+//
+// 	.dropdown {
+// 		font-size: var(--font-size-10);
+// 	}
+//
+// 	.item-list {
+// 		grid-area: list;
+// 	}
+//
+// 	.item-list.hover {
+// 		border: 1px solid red !important;
+// 	}
+//
+// 	.ph::before {
+// 		content: "";
+// 	}
+//
+// 	> .desc {
+// 		display: grid;
+// 		grid-template:
+// 			"dropdown name"
+// 			"blank notes";
+// 		grid-template-columns: min-content auto;
+// 		.dropdown {
+// 			min-width: 0.75em;
+// 			margin-right: 6px;
+// 		}
+// 		.name {
+// 			font: inherit;
+// 			background: transparent;
+// 			color: inherit;
+// 			grid-area: name;
+// 		}
+// 		.item-notes {
+// 			grid-area: notes;
+// 			font: var(--font-secondary-fields);
+// 		}
+// 	}
+//
+// 	> .reference:not(.header) {
+// 		display: flex;
+// 		flex-direction: row;
+// 		color: rgba(var(--color-link), 1) !important;
+// 		.ref {
+// 			background-color: transparent;
+// 			cursor: pointer;
+// 			&:hover {
+// 				color: rgba(var(--color-link-rollover), 1) !important;
+// 			}
+// 			&:active {
+// 				color: rgba(var(--color-link-pressed), 1) !important;
+// 			}
+// 		}
+// 	}
+//
+// 	> div {
+// 		border-right: 1px solid rgb(var(--color-interior-divider));
+// 		border-bottom: 1px solid rgb(var(--color-interior-divider));
+//
+// 		&.header {
+// 			border-bottom: none;
+// 		}
+//
+// 		&.reference {
+// 			border-right: none;
+// 		}
+// 	}
+//
+// 	> :not(.header) {
+// 		padding: var(--padding-standard);
+// 		&.quantity {
+// 			min-width: 1em; //possibly unnecessary
+// 		}
+// 	}
+//
+// 	.desc.header {
+// 		white-space: nowrap;
+// 	}
+// }

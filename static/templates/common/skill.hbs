@@ -1,4 +1,4 @@
-<li data-item-id="{{ item.id }}" {{#if isContainer}} data-is-container {{/if}}>
+<li data-type="{{ item.type }}" data-item-id="{{ item.id }}" {{#if isContainer}} data-is-container {{/if}}>
     <div class="data">
         <div
             class="item-name"
@@ -10,7 +10,7 @@
             <div class="name">{{ item.formattedName }}</div>
             {{{ item.resolvedNotes }}}
         </div>
-        {{#if (isContainer this)}}
+        {{#if (isContainer)}}
             <div class="level"></div>
             <div class="rsl"></div>
         {{ else }}
@@ -26,13 +26,13 @@
         <div class="points"
              data-tooltip="{{ item.pointsTooltip }}"
              data-tooltip-direction="DOWN">{{ item.fastAdjustedPoints }}</div>
-        <div class="reference"">{{{ ref item.system.reference }}}
+        <div class="reference"">{{{ ref item.reference }}}
         </div>
     </div>
     {{#if item.system.open}}
         <ul class="items" data-item-list data-container-id="{{ item.id }}">
             {{#each children}}
-                {{>actor/character/partials/skill inContainer=true}}
+                {{>common/skill}}
             {{/each}}
         </ul>
     {{/if}}

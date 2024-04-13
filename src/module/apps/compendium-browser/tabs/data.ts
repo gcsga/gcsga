@@ -38,7 +38,7 @@ type BrowserFilter = TraitFilters | SkillFilters | SpellFilters | EquipmentFilte
 type CompendiumBrowserIndexData = Omit<CompendiumIndexData, "_id"> & Partial<SearchResult>
 
 interface RenderResultListOptions {
-	list?: HTMLDivElement
+	list?: HTMLUListElement
 	start?: number
 	replace?: boolean
 }

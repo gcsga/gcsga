@@ -90,7 +90,7 @@ export class RollModifierSettings extends SettingsMenuGURPS {
 	}
 
 	protected override async _onDrop(event: DragEvent): Promise<unknown> {
-		const dragData = JSON.parse(event.dataTransfer!.getData("text/plain"))
+		const dragData = JSON.parse(event.dataTransfer!.getData(DnD.TEXT_PLAIN))
 		let element = $(event.target!)
 		if (!element.hasClass("item")) element = element.parent(".item")
 

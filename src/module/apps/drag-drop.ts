@@ -12,8 +12,6 @@ class DragDropGURPS extends DragDrop {
 			document.body.appendChild(div)
 		}
 
-		console.log("WHAT")
-
 		// Add the preview image
 		const i = div.children[0] as HTMLImageElement
 		i.src = img.src

@@ -2,14 +2,23 @@ import { SYSTEM_NAME } from "@data"
 
 export function registerTemplates(): void {
 	const templatePaths = [
+		// Common Item Partials
+		"common/trait",
+		"common/trait-modifier",
+		"common/skill",
+		"common/spell",
+		"common/equipment",
+		"common/other-equipment",
+		"common/equipment-modifier",
+		"common/effect",
+		"common/note",
+
 		// Character
 		"actor/character/partials/basic-damage",
 		"actor/character/partials/conditional-modifier",
 		"actor/character/partials/description",
-		"actor/character/partials/effect",
 		"actor/character/partials/embeds",
 		"actor/character/partials/encumbrance",
-		"actor/character/partials/equipment",
 		"actor/character/partials/hit-location",
 		"actor/character/partials/identity",
 		"actor/character/partials/lifting",
@@ -17,8 +26,6 @@ export function registerTemplates(): void {
 		"actor/character/partials/melee-attack",
 		"actor/character/partials/miscellaneous",
 		"actor/character/partials/move",
-		"actor/character/partials/note",
-		"actor/character/partials/other-equipment",
 		"actor/character/partials/points",
 		"actor/character/partials/pool-attributes",
 		"actor/character/partials/portrait",
@@ -27,9 +34,6 @@ export function registerTemplates(): void {
 		"actor/character/partials/reaction",
 		"actor/character/partials/resource-trackers",
 		"actor/character/partials/secondary-attributes",
-		"actor/character/partials/skill",
-		"actor/character/partials/spell",
-		"actor/character/partials/trait",
 
 		// Character Config Sheet
 		"actor/character/config/sheet-settings",

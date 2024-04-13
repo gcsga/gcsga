@@ -61,7 +61,6 @@
 			&:not(.header) {
 				background-color: rgba(var(--color-banding), 1);
 				color: rgba(var(--color-on-banding), 1);
-				@import "roll_banding";
 				&.disabled {
 					.name,
 					.item-notes,
@@ -106,7 +105,6 @@
 			&:not(.header) {
 				background-color: rgba(var(--color-banding), 1);
 				color: rgba(var(--color-on-banding), 1);
-				@import "roll_banding";
 			}
 		}
 	}
@@ -130,7 +128,6 @@
 			&:not(.header) {
 				background-color: rgba(var(--color-banding), 1);
 				color: rgba(var(--color-on-banding), 1);
-				@import "roll_banding";
 			}
 		}
 	}

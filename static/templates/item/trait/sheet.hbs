@@ -125,7 +125,7 @@
 			</span>
 		</header>
 		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
-			{{#each section.items}} {{>item/partials/trait-modifier}} {{/each}}
+			{{#each section.items}} {{>common/trait-modifier}} {{/each}}
 		</ul>
 	</div>
 	{{/with}} {{>item/partials/melee }} {{>item/partials/ranged }} {{>item/partials/study}}

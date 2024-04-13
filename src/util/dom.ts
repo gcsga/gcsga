@@ -120,4 +120,18 @@ function htmlSelectorFor(element: HTMLElement): string {
 	return `${nodeName}${classesString}${datasetString}`
 }
 
-export { createHTMLElement, htmlClosest, htmlQuery, htmlQueryAll, htmlSelectorFor }
+/** Apply the banding class to every other item in a list */
+function applyBanding(html: HTMLElement): void {
+	for (const list of htmlQueryAll(html, "[data-item-list]:not([data-container-id])")) {
+		let banding = true
+		for (const item of htmlQueryAll(list, "li")) {
+			banding = !banding
+			item.classList.remove("banding")
+			if (banding) {
+				item.classList.add("banding")
+			}
+		}
+	}
+}
+
+export { createHTMLElement, htmlClosest, htmlQuery, htmlQueryAll, htmlSelectorFor, applyBanding }

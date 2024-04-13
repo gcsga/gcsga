@@ -9,7 +9,7 @@ import { EquipmentContainerGURPS, EquipmentGURPS } from "@item"
 export class CompendiumBrowserEquipmentTab extends CompendiumBrowserTab {
 	tabName: ContentTabName = TabName.Equipment
 	filterData: EquipmentFilters
-	templatePath = `systems/${SYSTEM_NAME}/templates/compendium-browser/partials/equipment.hbs`
+	templatePath = `systems/${SYSTEM_NAME}/templates/common/equipment.hbs`
 
 	constructor(browser: CompendiumBrowser) {
 		super(browser)
@@ -68,14 +68,14 @@ export class CompendiumBrowserEquipmentTab extends CompendiumBrowserTab {
 					type: item.type,
 					name: item.name,
 					img: item.img,
-					uuid: `Compendium.${pack.collection}.${item._id}`,
+					id: `Compendium.${pack.collection}.${item._id}`,
 					formattedName: item.formattedName,
 					resolvedNotes: item.resolvedNotes,
 					value: item.adjustedValue,
 					weight: item.adjustedWeight,
 					extendedValue: item.extendedValue,
 					extendedWeight: Weight.format(item.extendedWeight(false, item.weightUnits), item.weightUnits),
-					reference: item.system.reference,
+					reference: item.reference,
 				})
 			})
 		}

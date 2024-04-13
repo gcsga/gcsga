@@ -3,55 +3,57 @@
 		<a data-tab="landing-page" style="display: none"></a>
 		<a data-tab="trait">
 			<i class="gcs-trait"></i>
-			{{localize "gurps.compendium_browser.trait"}}
+			{{ localize "gurps.compendium_browser.trait" }}
 		</a>
 		<a data-tab="modifier">
 			<i class="gcs-modifier"></i>
-			{{localize "gurps.compendium_browser.modifier"}}
+			{{ localize "gurps.compendium_browser.modifier" }}
 		</a>
 		<a data-tab="skill">
 			<i class="gcs-skill"></i>
-			{{localize "gurps.compendium_browser.skill"}}
+			{{ localize "gurps.compendium_browser.skill" }}
 		</a>
 		<a data-tab="spell">
 			<i class="gcs-spell"></i>
-			{{localize "gurps.compendium_browser.spell"}}
+			{{ localize "gurps.compendium_browser.spell" }}
 		</a>
 		<a data-tab="equipment">
 			<i class="gcs-equipment"></i>
-			{{localize "gurps.compendium_browser.equipment"}}
+			{{ localize "gurps.compendium_browser.equipment" }}
 		</a>
 		<a data-tab="eqp_modifier">
 			<i class="gcs-eqp-modifier"></i>
-			{{localize "gurps.compendium_browser.eqp_modifier"}}
+			{{ localize "gurps.compendium_browser.eqp_modifier" }}
 		</a>
 		<a data-tab="note">
 			<i class="gcs-note"></i>
-			{{localize "gurps.compendium_browser.note"}}
+			{{ localize "gurps.compendium_browser.note" }}
 		</a>
 		{{#if user.isGM }}
 		<a data-tab="settings">
 			<i class="gcs-settings"></i>
-			{{localize "gurps.compendium_browser.settings"}}
+			{{ localize "gurps.compendium_browser.settings" }}
 		</a>
 		{{/if}}
 	</nav>
 	<section class="content">
 		<div class="tab" data-group="primary" data-tab="landing-page">
-			<div style="text-align center; padding: 2em;">{{localize "gurps.compendium_browser.hint"}}</div>
+			<div style="text-align center; padding: 2em;">{{ localize "gurps.compendium_browser.hint" }}</div>
 		</div>
 		{{#with trait}}
 		<div class="tab browser" data-group="primary" data-tab="trait">
 			<div class="library-tab" id="embeds">
 				{{>compendium-browser/searchbar}}
-				<div id="traits" class="item-list">
-					<div class="header desc">{{localize "gurps.compendium_browser.item.trait"}}</div>
-					<div class="header points">{{localize "gurps.compendium_browser.item.points"}}</div>
-					<div class="header tags">{{localize "gurps.compendium_browser.item.tags"}}</div>
-					<div class="header reference">
-						<i class="gcs-bookmark"></i>
-					</div>
-					{{#each indexData }} {{>actor/character/partials/trait}} {{/each}}
+				<div id="traits" class="list">
+					<header>
+						<span class="item-name">{{ localize "gurps.compendium_browser.item.trait" }}</span>
+						<span class="points">{{ localize "gurps.compendium_browser.item.points" }}</span>
+						<span class="tags">{{ localize "gurps.compendium_browser.item.tags" }}</span>
+						<span class="reference">
+							<i class="gcs-bookmark"></i>
+						</span>
+					</header>
+					<ul class="items" data-item-list></ul>
 				</div>
 			</div>
 		</div>
@@ -59,14 +61,16 @@
 		<div class="tab browser" data-group="primary" data-tab="modifier">
 			<div class="library-tab" id="embeds">
 				{{>compendium-browser/searchbar}}
-				<div id="modifiers" class="item-list">
-					<div class="header desc">{{localize "gurps.compendium_browser.item.modifier"}}</div>
-					<div class="header cost">{{localize "gurps.compendium_browser.item.cost_mod"}}</div>
-					<div class="header tags">{{localize "gurps.compendium_browser.item.tags"}}</div>
-					<div class="header reference">
-						<i class="gcs-bookmark"></i>
-					</div>
-					{{#each indexData }} {{>item/partials/trait-mod }} {{/each}}
+				<div id="modifiers" class="list">
+					<header>
+						<span class="desc">{{ localize "gurps.compendium_browser.item.modifier" }}</span>
+						<span class="cost">{{ localize "gurps.compendium_browser.item.cost_mod" }}</span>
+						<span class="tags">{{ localize "gurps.compendium_browser.item.tags" }}</span>
+						<span class="reference">
+							<i class="gcs-bookmark"></i>
+						</span>
+					</header>
+					<ul class="items" data-item-list></ul>
 				</div>
 			</div>
 		</div>
@@ -74,14 +78,16 @@
 		<div class="tab browser" data-group="primary" data-tab="skill">
 			<div class="library-tab" id="embeds">
 				{{>compendium-browser/searchbar}}
-				<div id="skills" class="item-list">
-					<div class="header desc">{{localize "gurps.compendium_browser.item.skill"}}</div>
-					<div class="header difficulty">{{localize "gurps.compendium_browser.item.difficulty"}}</div>
-					<div class="header tags">{{localize "gurps.compendium_browser.item.tags"}}</div>
-					<div class="header reference">
-						<i class="gcs-bookmark"></i>
-					</div>
-					{{#each indexData }} {{>actor/character/partials/skill}} {{/each}}
+				<div id="skills" class="list">
+					<header>
+						<span class="desc">{{ localize "gurps.compendium_browser.item.skill" }}</span>
+						<span class="difficulty">{{ localize "gurps.compendium_browser.item.difficulty" }}</span>
+						<span class="tags">{{ localize "gurps.compendium_browser.item.tags" }}</span>
+						<span class="reference">
+							<i class="gcs-bookmark"></i>
+						</span>
+					</header>
+					<ul class="items" data-item-list></ul>
 				</div>
 			</div>
 		</div>
@@ -89,22 +95,24 @@
 		<div class="tab browser" data-group="primary" data-tab="spell">
 			<div class="library-tab" id="embeds">
 				{{>compendium-browser/searchbar}}
-				<div id="spells" class="item-list">
-					<div class="header desc">{{localize "gurps.compendium_browser.item.spell"}}</div>
-					<div class="header college">{{localize "gurps.compendium_browser.item.college"}}</div>
-					<div class="header resist">{{localize "gurps.compendium_browser.item.resist"}}</div>
-					<div class="header class">{{localize "gurps.compendium_browser.item.spell_class"}}</div>
-					<div class="header casting-cost">{{localize "gurps.compendium_browser.item.casting_cost"}}</div>
-					<div class="header maintenance-cost">
-						{{localize "gurps.compendium_browser.item.maintenance_cost"}}
-					</div>
-					<div class="header casting-time">{{localize "gurps.compendium_browser.item.casting_time"}}</div>
-					<div class="header duration">{{localize "gurps.compendium_browser.item.duration"}}</div>
-					<div class="header difficulty">{{localize "gurps.compendium_browser.item.difficulty"}}</div>
-					<div class="header tags">{{localize "gurps.compendium_browser.item.tags"}}</div>
-					<div class="header reference">
-						<i class="gcs-bookmark"></i>
-					</div>
+				<div id="spells" class="list">
+					<header>
+						<span class="desc">{{ localize "gurps.compendium_browser.item.spell" }}</span>
+						<span class="college">{{ localize "gurps.compendium_browser.item.college" }}</span>
+						<span class="resist">{{ localize "gurps.compendium_browser.item.resist" }}</span>
+						<span class="class">{{ localize "gurps.compendium_browser.item.spell_class" }}</span>
+						<span class="casting-cost">{{ localize "gurps.compendium_browser.item.casting_cost" }}</span>
+						<span class="maintenance-cost">
+							{{ localize "gurps.compendium_browser.item.maintenance_cost" }}
+						</span>
+						<span class="casting-time">{{ localize "gurps.compendium_browser.item.casting_time" }}</span>
+						<span class="duration">{{ localize "gurps.compendium_browser.item.duration" }}</span>
+						<span class="difficulty">{{ localize "gurps.compendium_browser.item.difficulty" }}</span>
+						<span class="tags">{{ localize "gurps.compendium_browser.item.tags" }}</span>
+						<span class="reference">
+							<i class="gcs-bookmark"></i>
+						</span>
+					</header>
 					{{#each indexData }} {{>actor/character/partials/spell}} {{/each}}
 				</div>
 			</div>
@@ -113,22 +121,26 @@
 		<div class="tab browser" data-group="primary" data-tab="equipment">
 			<div class="library-tab" id="embeds">
 				{{>compendium-browser/searchbar}}
-				<div id="equipment" class="item-list">
-					<div class="header desc">{{localize "gurps.compendium_browser.item.equipment"}}</div>
-					<div class="header uses">{{localize "gurps.compendium_browser.item.uses"}}</div>
-					<div class="header tech-level">{{localize "gurps.compendium_browser.item.tech_level"}}</div>
-					<div class="header legality-class">{{localize "gurps.compendium_browser.item.legality_class"}}</div>
-					<div class="header value">
-						<i class="gcs-coins"></i>
-					</div>
-					<div class="header weight">
-						<i class="gcs-weight"></i>
-					</div>
-					<div class="header tags">{{localize "gurps.compendium_browser.item.tags"}}</div>
-					<div class="header reference">
-						<i class="gcs-bookmark"></i>
-					</div>
-					{{#each indexData }} {{>actor/character/partials/other-equipment}} {{/each}}
+				<div id="equipment" class="list">
+					<header>
+						<span class="desc">{{ localize "gurps.compendium_browser.item.equipment" }}</span>
+						<span class="uses">{{ localize "gurps.compendium_browser.item.uses" }}</span>
+						<span class="tech-level">{{ localize "gurps.compendium_browser.item.tech_level" }}</span>
+						<span class="legality-class">
+							{{ localize "gurps.compendium_browser.item.legality_class" }}
+						</span>
+						<span class="value">
+							<i class="gcs-coins"></i>
+						</span>
+						<span class="weight">
+							<i class="gcs-weight"></i>
+						</span>
+						<span class="tags">{{ localize "gurps.compendium_browser.item.tags" }}</span>
+						<span class="reference">
+							<i class="gcs-bookmark"></i>
+						</span>
+					</header>
+					<ul class="items" data-item-list></ul>
 				</div>
 			</div>
 		</div>
@@ -136,16 +148,18 @@
 		<div class="tab browser" data-group="primary" data-tab="eqp_modifier">
 			<div class="library-tab" id="embeds">
 				{{>compendium-browser/searchbar}}
-				<div id="eqp-modifiers" class="item-list">
-					<div class="header desc">{{localize "gurps.compendium_browser.item.eqp_modifier"}}</div>
-					<div class="header tech_level">{{localize "gurps.compendium_browser.item.tech_level"}}</div>
-					<div class="header value">{{localize "gurps.compendium_browser.item.value_mod"}}</div>
-					<div class="header weight">{{localize "gurps.compendium_browser.item.weight_mod"}}</div>
-					<div class="header tags">{{localize "gurps.compendium_browser.item.tags"}}</div>
-					<div class="header reference">
-						<i class="gcs-bookmark"></i>
-					</div>
-					{{#each indexData }} {{>item/partials/eqp-mod }} {{/each}}
+				<div id="eqp-modifiers" class="list">
+					<header>
+						<span class="desc">{{ localize "gurps.compendium_browser.item.eqp_modifier" }}</span>
+						<span class="tech_level">{{ localize "gurps.compendium_browser.item.tech_level" }}</span>
+						<span class="value">{{ localize "gurps.compendium_browser.item.value_mod" }}</span>
+						<span class="weight">{{ localize "gurps.compendium_browser.item.weight_mod" }}</span>
+						<span class="tags">{{ localize "gurps.compendium_browser.item.tags" }}</span>
+						<span class="reference">
+							<i class="gcs-bookmark"></i>
+						</span>
+					</header>
+					<ul class="items" data-item-list></ul>
 				</div>
 			</div>
 		</div>
@@ -153,12 +167,14 @@
 		<div class="tab browser" data-group="primary" data-tab="note">
 			<div class="library-tab" id="embeds">
 				{{>compendium-browser/searchbar}}
-				<div id="notes" class="item-list">
-					<div class="header desc">{{localize "gurps.compendium_browser.item.note"}}</div>
-					<div class="header reference">
-						<i class="gcs-bookmark"></i>
-					</div>
-					{{#each indexData }} {{>actor/character/partials/note}} {{/each}}
+				<div id="notes" class="list">
+					<header>
+						<span class="desc">{{ localize "gurps.compendium_browser.item.note" }}</span>
+						<span class="reference">
+							<i class="gcs-bookmark"></i>
+						</span>
+					</header>
+					<ul class="items" data-item-list></ul>
 				</div>
 			</div>
 		</div>

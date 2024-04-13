@@ -97,10 +97,8 @@ class AbstractContainerSheetGURPS<TItem extends AbstractContainerGURPS> extends 
 		}
 
 		for (const itemList of htmlQueryAll(html, "ul[data-item-list]")) {
-			console.log(itemList.children, itemList.children.length)
 			if (itemList.children.length !== 0) continue
 			const itemTypes: ItemType[] = (itemList.dataset.itemTypes?.split(",") as ItemType[]) ?? []
-			console.log(itemTypes)
 			const menuItems: ContextMenuEntry[] = []
 			for (const type of itemTypes) {
 				const langType = getLangType(type)
@@ -109,7 +107,6 @@ class AbstractContainerSheetGURPS<TItem extends AbstractContainerGURPS> extends 
 					name: LocalizeGURPS.translations.gurps.context.new_item[langType],
 					icon: "",
 					callback: async () => {
-						console.log(this.item, this.item.container)
 						if (!(this.item.container instanceof CompendiumCollection)) {
 							await this.item.container?.createEmbeddedDocuments("Item", [
 								{
@@ -122,7 +119,6 @@ class AbstractContainerSheetGURPS<TItem extends AbstractContainerGURPS> extends 
 					},
 				})
 			}
-			console.log(menuItems)
 
 			ContextMenu.create(this, $(itemList), "*", menuItems)
 		}

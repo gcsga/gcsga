@@ -75,6 +75,33 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 		return Number(this.system._migration?.version) || null
 	}
 
+	get reference(): string {
+		if (
+			this.isOfType(
+				ItemType.Trait,
+				ItemType.TraitContainer,
+				ItemType.TraitModifier,
+				ItemType.TraitModifierContainer,
+				ItemType.Skill,
+				ItemType.Technique,
+				ItemType.SkillContainer,
+				ItemType.Spell,
+				ItemType.RitualMagicSpell,
+				ItemType.SpellContainer,
+				ItemType.Equipment,
+				ItemType.EquipmentContainer,
+				ItemType.EquipmentModifier,
+				ItemType.EquipmentModifierContainer,
+				ItemType.Note,
+				ItemType.NoteContainer,
+				ItemType.Effect,
+				ItemType.Condition,
+			)
+		)
+			return this.system.reference ?? ""
+		return ""
+	}
+
 	get features(): Feature[] {
 		if (
 			itemIsOfType(
@@ -241,27 +268,36 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 		ids: string[] = [],
 		context: DocumentModificationContext<ActorGURPS | null> = {},
 	): Promise<foundry.abstract.Document[]> {
-		ids = Array.from(new Set(ids))
+		let items: Item[] = []
 		const actor = context.parent
-		if (actor) {
-			const items = ids.flatMap(id => actor.items.get(id) ?? [])
+		const pack = game.packs.get(context.pack ?? "") as CompendiumCollection<Item<null>>
 
-			// If a container is being deleted, its contents are also deleted
-			const containers = items.filter((i): i is AbstractContainerGURPS<ActorGURPS> =>
-				i.isOfType("abstract-container"),
-			)
-			for (const container of containers) {
-				items.push(...container.deepContents)
-			}
+		if (actor) items = ids.flatMap(id => actor.items.get(id) ?? [])
+		else if (pack) items = ids.flatMap(id => pack?.get(id) ?? [])
+		else items = ids.flatMap(id => game.items.get(id) ?? [])
 
-			ids = Array.from(new Set(items.map(i => i.id))).filter(id => actor.items.has(id))
+		const containers = items.filter(
+			(i): i is AbstractContainerGURPS<ActorGURPS | null> =>
+				i instanceof ItemGURPS && i.isOfType("abstract-container"),
+		)
+		for (const container of containers) {
+			items.push(...container.deepContents)
 		}
+
+		ids = Array.from(new Set(items.map(i => i.id))).filter(id =>
+			actor ? actor.items.has(id) : pack ? pack.has(id) : game.items.has(id),
+		)
 
 		return super.deleteDocuments(ids, context)
 	}
 
 	get container(): AbstractContainerGURPS | null {
 		if (this.flags[SYSTEM_NAME][ItemFlags.Container] === null) return (this._container = null)
+		if (this.compendium)
+			return (this._container ??=
+				(this.compendium.get(
+					this.flags[SYSTEM_NAME][ItemFlags.Container],
+				) as unknown as AbstractContainerGURPS) ?? null)
 		return (this._container ??=
 			(this.collection.get(this.flags[SYSTEM_NAME][ItemFlags.Container]) as unknown as AbstractContainerGURPS) ??
 			null)
@@ -402,20 +438,20 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 	}
 
 	prepareSiblingData(): void {
-		if (!this.collection) return
+		if (!this.collection && !this.compendium) return
 
 		// Clear the container reference if it turns out to be stale
-		if (this._container && !this.collection.has(this._container.id)) {
-			this.setFlag(SYSTEM_NAME, ItemFlags.Container, null)
-			this._container = this.flags[SYSTEM_NAME][ItemFlags.Container] = null
+		if (this.compendium) {
+			if (this._container && !this.compendium.has(this._container.id)) {
+				this.setFlag(SYSTEM_NAME, ItemFlags.Container, null)
+				this._container = this.flags[SYSTEM_NAME][ItemFlags.Container] = null
+			}
+		} else {
+			if (this._container && !this.collection.has(this._container.id)) {
+				this.setFlag(SYSTEM_NAME, ItemFlags.Container, null)
+				this._container = this.flags[SYSTEM_NAME][ItemFlags.Container] = null
+			}
 		}
-		// if (!this.actor) return
-		//
-		// // Clear the container reference if it turns out to be stale
-		// if (this._container && !this.actor.items.has(this._container.id)) {
-		// 	this.setFlag(SYSTEM_NAME, ItemFlags.Container, null)
-		// 	this._container = this.flags[SYSTEM_NAME][ItemFlags.Container] = null
-		// }
 	}
 
 	getContextMenuItems(): ContextMenuEntry[] {

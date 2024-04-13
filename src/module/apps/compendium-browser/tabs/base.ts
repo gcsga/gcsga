@@ -49,7 +49,7 @@ export abstract class CompendiumBrowserTab {
 		// Initialize MiniSearch
 		this.searchEngine = new MiniSearch({
 			fields: this.searchFields,
-			idField: "uuid",
+			idField: "id",
 			processTerm: t =>
 				t.length > 1 && !CompendiumDirectoryGURPS.STOP_WORDS.has(t)
 					? t.toLocaleLowerCase(game.i18n.lang).replace(/['"]/g, "")
@@ -143,22 +143,22 @@ export abstract class CompendiumBrowserTab {
 		return true
 	}
 
-	async renderResults(start: number): Promise<HTMLDivElement[]> {
+	async renderResults(start: number): Promise<HTMLLIElement[]> {
 		if (!this.templatePath) {
 			throw ErrorGURPS(`Tab "${this.tabName}" has no valid template path.`)
 		}
 		const indexData = this.getIndexData(start)
-		const divElements: HTMLDivElement[] = []
-		for (const entry of indexData) {
+		const liElements: HTMLLIElement[] = []
+		for (const item of indexData) {
 			const htmlString = await renderTemplate(this.templatePath, {
-				entry,
+				compendium: true,
+				item,
 				filterData: this.filterData,
 			})
 			const html = this.#domParser.parseFromString(htmlString, "text/html")
-			// divElements.push(...html.body.firstElementChild as HTMLDivElement)
-			divElements.push(...(Array.from(html.body.children) as HTMLDivElement[]))
+			liElements.push(html.body.firstElementChild as HTMLLIElement)
 		}
-		return divElements
+		return liElements
 	}
 
 	/** Sort result array by name, level or price */

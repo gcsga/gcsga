@@ -1,8 +1,10 @@
 import { ItemType, SETTINGS, SYSTEM_NAME } from "@data"
 import { UserGURPS } from "@module/user/document.ts"
 import {
+	DnD,
 	ErrorGURPS,
 	LocalizeGURPS,
+	applyBanding,
 	createHTMLElement,
 	fontAwesomeIcon,
 	htmlQuery,
@@ -27,6 +29,7 @@ import {
 } from "./tabs/data.ts"
 import * as browserTabs from "./tabs/index.ts"
 import { PackLoader } from "./loader.ts"
+import { ItemGURPS } from "@item"
 
 class CompendiumBrowser extends Application {
 	settings: CompendiumBrowserSettings
@@ -79,7 +82,7 @@ class CompendiumBrowser extends Application {
 			width: 800,
 			height: 700,
 			resizable: true,
-			dragDrop: [{ dragSelector: ".item" }],
+			dragDrop: [{ dragSelector: "ul.items > li[data-item-id]" }],
 			tabs: [
 				{
 					navSelector: "nav",
@@ -87,7 +90,7 @@ class CompendiumBrowser extends Application {
 					initial: "landing-page",
 				},
 			],
-			scrollY: [".item-list"],
+			scrollY: [".items"],
 		}
 	}
 
@@ -464,9 +467,10 @@ class CompendiumBrowser extends Application {
 			}
 		}
 
-		const list = html.querySelector<HTMLDivElement>(".tab.active div.item-list")
+		const list = html.querySelector<HTMLUListElement>(".tab.active ul.items")
 		if (!list) return
 		list.addEventListener("scroll", () => {
+			console.log("scroll")
 			if (list.scrollTop + list.clientHeight >= list.scrollHeight - 5) {
 				const currentValue = currentTab.scrollLimit
 				const maxValue = currentTab.totalItemCount ?? 0
@@ -503,7 +507,7 @@ class CompendiumBrowser extends Application {
 		if (!currentTab) return
 
 		if (!list) {
-			const listElement = html.querySelector<HTMLDivElement>(".tab.active div.item-list")
+			const listElement = html.querySelector<HTMLUListElement>(".tab.active ul.items")
 			if (!listElement) return
 			list = listElement
 		}
@@ -520,34 +524,31 @@ class CompendiumBrowser extends Application {
 		} else {
 			list.append(fragment)
 		}
+
 		// Re-apply drag drop handler
 		for (const dragDropHandler of this._dragDrop) {
 			dragDropHandler.bind(html)
 		}
+
+		applyBanding(html)
 	}
 
 	/** Activate click listeners on loaded actors and items */
-	#activateResultListeners(divElements: HTMLDivElement[] = []): void {
-		for (const divElement of divElements) {
-			const { entryUuid } = divElement.dataset
-			if (!entryUuid) continue
+	#activateResultListeners(liElements: HTMLLIElement[] = []): void {
+		for (const liElement of liElements) {
+			const { itemId } = liElement.dataset
+			if (!itemId) continue
 
-			divElement.addEventListener("dblclick", async () => {
-				const doc = await fromUuid(entryUuid)
-				if (doc?.sheet) {
-					doc.sheet.render(true)
-				}
-			})
-			// const nameAnchor = divElement.querySelector<HTMLAnchorElement>("div.desc.item")
-			// if (nameAnchor) {
-			// 	console.log("NAMEANCHOR", nameAnchor)
-			// 	nameAnchor.addEventListener("click", async () => {
-			// 		const document = await fromUuid(entryUuid)
-			// 		if (document?.sheet) {
-			// 			document.sheet.render(true)
-			// 		}
-			// 	})
-			// }
+			const nameAnchor = liElement.querySelector<HTMLDivElement>("div.item-name")
+			if (nameAnchor) {
+				nameAnchor.addEventListener("dblclick", async () => {
+					const document = await fromUuid(itemId)
+					if (document instanceof ItemGURPS) document.prepareSiblingData()
+					if (document?.sheet) {
+						document.sheet.render(true)
+					}
+				})
+			}
 
 			// if (this.activeTab === TabName.Equipment) {
 			// 	// Add an item to selected tokens' actors' inventories
@@ -690,12 +691,14 @@ class CompendiumBrowser extends Application {
 		}
 
 		this.element.animate({ opacity: 0.125 }, 250)
+
 		const item = event.currentTarget
 		event.dataTransfer.setData(
-			"text/plain",
+			DnD.TEXT_PLAIN,
 			JSON.stringify({
-				type: item.dataset.type,
-				uuid: item.dataset.entryUuid,
+				type: "Item",
+				uuid: item.dataset.itemId,
+				itemType: item.dataset.type,
 			}),
 		)
 		// awful hack (dataTransfer.types will include "from-browser")
@@ -748,7 +751,7 @@ class CompendiumBrowser extends Application {
 		const tab = this.activeTab
 		if (tab === "settings") return
 
-		const list = htmlQuery(this.element[0], ".tab.active div.item-list")
+		const list = htmlQuery(this.element[0], ".tab.active ul.items")
 		if (!list) return
 		list.scrollTop = 0
 		this.tabs[tab].scrollLimit = 100

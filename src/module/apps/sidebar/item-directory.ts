@@ -32,21 +32,6 @@ class ItemDirectoryGURPS<TItem extends ItemGURPS<null>> extends ItemDirectory<TI
 		target: HTMLElement,
 		data: DropCanvasData<string, object>,
 	): Promise<void> {
-		// async function addContent(list: TItem["_source"][], uuid: string, containerId: string): Promise<void> {
-		// 	const originalDocument = (await fromUuid(uuid)) as TItem
-		// 	const newId = fu.randomID()
-		// 	const data = fu.mergeObject(originalDocument.clone().toObject(), {
-		// 		_id: newId,
-		// 		[`flags.${SYSTEM_NAME}.${ItemFlags.Container}`]: containerId,
-		// 	})
-		// 	list.push(data)
-		// 	if (originalDocument.isOfType("abstract-container")) {
-		// 		for (const item of originalDocument.contents) {
-		// 			addContent(list, item.uuid, newId)
-		// 		}
-		// 	}
-		// }
-
 		// Determine the closest Folder
 		const closestFolder: HTMLElement | null = target ? target.closest(".folder") : null
 		if (closestFolder) closestFolder.classList.remove("droptarget")
@@ -100,9 +85,9 @@ class ItemDirectoryGURPS<TItem extends ItemGURPS<null>> extends ItemDirectory<TI
 
 			// Create items for original item contents
 			// @ts-expect-error bad type
-			cls.create(items, { fromCompendium: !!entry.compendium, keepId: true })
+			await cls.create(items, { fromCompendium: !!entry.compendium, keepId: true })
 			// @ts-expect-error bad type
-			entry = cls.create(
+			entry = await cls.create(
 				{ ...entryClone, folder: folderId },
 				{ fromCompendium: !!entry.compendium, keepId: true },
 			)
@@ -113,6 +98,7 @@ class ItemDirectoryGURPS<TItem extends ItemGURPS<null>> extends ItemDirectory<TI
 
 		// Resort the collection
 		sortData.updateData = { folder: folder || null }
+		console.log(entry, sortData)
 		this._sortRelative(entry, sortData)
 	}
 
