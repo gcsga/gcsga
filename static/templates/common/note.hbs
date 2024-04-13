@@ -8,4 +8,4 @@
 	<div class="md">{{{ this.formattedName }}}</div>
 </div>
 <div class="reference">{{{ ref this.system.reference }}}</div>
-{{#if this.system.open }} {{#each (sort this.children "sort")}} {{>actor/character/sections/note }} {{/each }} {{/if }}
+{{#if this.system.open }} {{#each (sort this.children "sort")}} {{>actor/character/partials/note }} {{/each }} {{/if }}

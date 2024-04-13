@@ -5,10 +5,10 @@
 	this.parents.lengtht}}}
 >
 	<div class="dropdown">
-		{{#if (isContainer this)}} {{#if this.system.open }} {{>actor/character/sections/dropdown-open }} {{ else }}
-		{{>actor/character/sections/dropdown-closed }} {{/if }} {{/if }}
+		{{#if (isContainer this)}} {{#if this.system.open }} {{>actor/character/partials/dropdown-open }} {{ else }}
+		{{>actor/character/partials/dropdown-closed }} {{/if }} {{/if }}
 	</div>
 	<div class="md">{{{this.formattedName}}}</div>
 </div>
 <div class="reference">{{{ref this.system.reference}}}</div>
-{{#if this.system.open }} {{#each (sort this.children "sort")}} {{>actor/character/sections/note }} {{/each }} {{/if }}
+{{#if this.system.open }} {{#each (sort this.children "sort")}} {{>actor/character/partials/note }} {{/each }} {{/if }}

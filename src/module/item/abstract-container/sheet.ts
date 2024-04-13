@@ -48,6 +48,24 @@ class AbstractContainerSheetGURPS<TItem extends AbstractContainerGURPS> extends 
 		}
 
 		this.#activateContextMenu(html)
+		this._applyBanding()
+	}
+
+	protected _applyBanding(): void {
+		const html = this.element[0]
+
+		for (const list of htmlQueryAll(html, "[data-item-list]:not([data-container-id])")) {
+			let banding = true
+			for (const item of htmlQueryAll(list, "li")) {
+				banding = !banding
+				item.style.backgroundColor = ""
+				item.style.color = ""
+				if (banding) {
+					item.style.backgroundColor = "rgb(var(--color-banding))"
+					item.style.color = "rgb(var(--color-on-banding))"
+				}
+			}
+		}
 	}
 
 	#activateContextMenu(html: HTMLElement): void {

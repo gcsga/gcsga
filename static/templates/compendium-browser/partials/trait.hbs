@@ -8,7 +8,7 @@
 >
 	<div class="dropdown">
 		{{#if (or (isContainer entry) entry.children.size)}} {{#if entry.system.open}}
-		{{>actor/character/sections/dropdown-open}} {{else}} {{>actor/character/sections/dropdown-closed}} {{/if}}
+		{{>actor/character/partials/dropdown-open}} {{else}} {{>actor/character/partials/dropdown-closed}} {{/if}}
 		{{/if}}
 	</div>
 	<div class="name">
@@ -23,4 +23,4 @@
 <div class="points {{disabled (not entry.enabled)}}">{{entry.points}}</div>
 <div class="tags">{{join entry.tags ", "}}</div>
 <div class="reference" {{disabled (not entry.enabled)}}>{{{ref entry.reference}}}</div>
-{{#if entry.system.open}} {{#each (sort entry.children "sort")}} {{>actor/character/sections/trait}} {{/each}} {{/if}}
+{{#if entry.system.open}} {{#each (sort entry.children "sort")}} {{>actor/character/partials/trait}} {{/each}} {{/if}}

@@ -1,0 +1,24 @@
+<div id="features">
+	<header>
+		<span>{{ localize "gurps.feature.header" }}</span>
+	</header>
+	<ul>
+		<div>
+			<a class="button gcs-circled-add" data-action="add-feature"></a>
+		</div>
+		{{#each system.features}} {{#if (eq this.type "attribute_bonus") }} {{>item/partials/feature/attribute-bonus}}
+		{{/if}} {{#if (eq this.type "reaction_bonus") }} {{>item/partials/feature/reaction-bonus}} {{/if}} {{#if (eq
+		this.type "dr_bonus") }} {{>item/partials/feature/dr-bonus}} {{/if}} {{#if (eq this.type "conditional_modifier")
+		}} {{>item/partials/feature/conditional-modifier}} {{/if}} {{#if (eq this.type "weapon_switch")}}
+		{{>item/partials/feature/weapon-switch}} {{/if}} {{#if (in ../weaponFeatures this.type)}}
+		{{>item/partials/feature/weapon-bonus}} {{/if}} {{#if (eq this.type "skill_bonus") }}
+		{{>item/partials/feature/skill-bonus }} {{/if}} {{#if (eq this.type "spell_bonus") }}
+		{{>item/partials/feature/spell-bonus }} {{/if}} {{#if (eq this.type "skill_point_bonus") }}
+		{{>item/partials/feature/skill-point-bonus }} {{/if}} {{#if (eq this.type "spell_point_bonus") }}
+		{{>item/partials/feature/spell-point-bonus }} {{/if}} {{#if (eq this.type "move_bonus") }}
+		{{>item/partials/feature/move-bonus }} {{/if}} {{#if (eq this.type "weapon_switch") }}
+		{{>item/partials/feature/weapon-switch }} {{/if}} {{#if (in @root.weaponBonusTypes this.type)}}
+		{{>item/partials/feature/weapon-bonus}} {{/if}} {{#if (eq this.type "cost_reduction") }}
+		{{>item/partials/feature/cost-reduction }} {{/if}} {{/each}}
+	</ul>
+</div>

@@ -68,16 +68,8 @@
 			min-height: 18px;
 			background-color: rgb(var(--color-content));
 			border: 1px solid rgb(var(--color-header));
-			padding: 5px;
 			margin: 0;
 			overflow-x: hidden;
-		}
-
-		ul {
-			list-style: none;
-			display: flex;
-			flex-direction: column;
-			gap: 5px;
 		}
 
 		li {
@@ -90,10 +82,19 @@
 	#prereqs,
 	#features,
 	#study,
+	#defaults,
 	#roll-modifiers {
 		header {
 			justify-content: center;
 			padding: var(--padding-header);
+		}
+
+		> ul {
+			padding: 5px;
+		}
+
+		ul {
+			gap: 5px;
 		}
 	}
 
@@ -130,6 +131,10 @@
 
 	#trait-modifiers,
 	#equipment-modifiers {
+		ul {
+			padding: 0;
+		}
+
 		header,
 		ul.items > li > .data {
 			display: grid;

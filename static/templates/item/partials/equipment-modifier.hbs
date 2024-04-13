@@ -1,7 +1,7 @@
 <li data-item-id="{{ item.id }}" {{#if isContainer}} data-is-container{{/if}}>
     <div class="data">
-        <div class="enabled">
-            {{#if item.enabled}}
+        <div class="equipped">
+            {{#if item.equipped}}
                 <i class="gcs-checkmark"></i>
             {{/if}}
         </div>
@@ -12,14 +12,16 @@
             <div class="name">{{ item.formattedName }}</div>
             {{{ item.resolvedNotes }}}
         </div>
+        <div class="tech-level">{{ item.techLevel }}</div>
         <div class="value">{{ item.costDescription }}</div>
+        <div class="weight">{{ item.weightDescription }}</div>
         <div class="tags">{{ join item.tags ", " }}</div>
         <div class="reference">{{{ ref item.reference }}}</div>
     </div>
     {{#if item.system.open}}
         <ul class="items" data-item-list data-container-id="{{ item.id }}">
             {{#each children}}
-                {{>actor/item/sections/trait-modifier}}
+                {{>actor/item/partials/equipment-modifier}}
             {{/each}}
         </ul>
     {{/if}}

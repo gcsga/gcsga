@@ -111,7 +111,7 @@
 			/>
 		</div>
 	</section>
-	{{>item/sections/prereqs }} {{>item/sections/features }} {{#with itemCollections.trait_modifiers as |section|}}
+	{{>item/partials/prereqs }} {{>item/partials/features }} {{#with itemCollections.trait_modifiers as |section|}}
 	<div id="trait-modifiers">
 		<header>
 			<span class="enabled">
@@ -125,8 +125,8 @@
 			</span>
 		</header>
 		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
-			{{#each section.items}} {{>item/sections/trait-modifier}} {{/each}}
+			{{#each section.items}} {{>item/partials/trait-modifier}} {{/each}}
 		</ul>
 	</div>
-	{{/with}} {{>item/sections/melee }} {{>item/sections/ranged }} {{>item/sections/study}}
+	{{/with}} {{>item/partials/melee }} {{>item/partials/ranged }} {{>item/partials/study}}
 </form>

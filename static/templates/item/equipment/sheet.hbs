@@ -87,7 +87,7 @@
 			/>
 		</div>
 	</section>
-	{{>item/sections/prereqs}} {{>item/sections/features}} {{#with itemCollections.equipment_modifiers as |section| }}
+	{{>item/partials/prereqs}} {{>item/partials/features}} {{#with itemCollections.equipment_modifiers as |section| }}
 	<div id="equipment-modifiers">
 		<header>
 			<span class="enabled">
@@ -103,8 +103,8 @@
 			</span>
 		</header>
 		<ul class="items" data-item-list data-item-types="{{ section.types }}">
-			{{#each section.items}} {{>item/sections/eqpuipment-modifier}} {{/each}}
+			{{#each section.items}} {{>item/partials/eqpuipment-modifier}} {{/each}}
 		</ul>
 	</div>
-	{{/with}} {{>item/sections/melee}} {{>item/sections/ranged}}
+	{{/with}} {{>item/partials/melee}} {{>item/partials/ranged}}
 </form>

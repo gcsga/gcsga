@@ -7,8 +7,8 @@
 	this.parents.length}}}
 >
 	<div class="dropdown">
-		{{#if (isContainer this)}} {{#if this.system.open}} {{>actor/character/sections/dropdown-open}} {{else}}
-		{{>actor/character/sections/dropdown-closed}} {{/if}} {{/if}}
+		{{#if (isContainer this)}} {{#if this.system.open}} {{>actor/character/partials/dropdown-open}} {{else}}
+		{{>actor/character/partials/dropdown-closed}} {{/if}} {{/if}}
 	</div>
 	<div class="name">{{this.formattedName}}</div>
 	{{{this.resolvedNotes}}}
@@ -23,4 +23,4 @@
 <div class="difficulty">{{this.difficulty}}</div>
 <div class="tags">{{join this.tags ", "}}</div>
 <div class="reference">{{{ref this.system.reference}}}</div>
-{{#if this.system.open}} {{#each this.children}} {{>actor/character/sections/spell}} {{/each}} {{/if}}
+{{#if this.system.open}} {{#each this.children}} {{>actor/character/partials/spell}} {{/each}} {{/if}}

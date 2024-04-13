@@ -6,7 +6,7 @@
 			<span class="condition">{{ localize "gurps.character.reactions.reaction" }}</span>
 		</header>
 		<ul class="items" data-item-list data-item-types="">
-			{{#each section.items}} {{>actor/character/sections/reaction}} {{/each}}
+			{{#each section.items}} {{>actor/character/partials/reaction}} {{/each}}
 		</ul>
 	</div>
 	{{/if}} {{/with}} {{#with itemCollections.conditional_modifiers as |section|}} {{#if section.items.length}}
@@ -16,7 +16,7 @@
 			<span class="condition">{{ localize "gurps.character.conditional_modifiers.reaction" }}</span>
 		</header>
 		<ul class="items" data-item-list data-item-types="">
-			{{#each section.items}} {{>actor/character/sections/conditional-modifier}} {{/each}}
+			{{#each section.items}} {{>actor/character/partials/conditional-modifier}} {{/each}}
 		</ul>
 	</div>
 	{{/if}} {{/with}} {{#with itemCollections.melee_weapons as |section|}} {{#if section.items.length}}
@@ -32,7 +32,7 @@
 			<span class="st">{{ localize "gurps.character.melee.st" }}</span>
 		</header>
 		<ul class="items" data-item-list data-item-types="">
-			{{#each section.items}} {{>actor/character/sections/melee-attack}} {{/each}}
+			{{#each section.items}} {{>actor/character/partials/melee-attack}} {{/each}}
 		</ul>
 	</div>
 	{{/if}} {{/with}} {{#with itemCollections.ranged_weapons as |section|}} {{#if section.items.length}}
@@ -51,7 +51,7 @@
 			<span class="st">{{ localize "gurps.character.ranged.st" }}</span>
 		</header>
 		<ul class="items" data-item-list data-item-types="">
-			{{#each section.items}} {{>actor/character/sections/ranged-attack}} {{/each}}
+			{{#each section.items}} {{>actor/character/partials/ranged-attack}} {{/each}}
 		</ul>
 	</div>
 	{{/if}} {{/with}} {{#with itemCollections.traits as |section|}}
@@ -64,7 +64,7 @@
 			</span>
 		</header>
 		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
-			{{#each section.items}} {{>actor/character/sections/trait}} {{/each}}
+			{{#each section.items}} {{>actor/character/partials/trait}} {{/each}}
 		</ul>
 	</div>
 	{{/with}} {{#with itemCollections.skills as |section|}}
@@ -79,7 +79,7 @@
 			</span>
 		</header>
 		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
-			{{#each section.items}} {{>actor/character/sections/skill}} {{/each}}
+			{{#each section.items}} {{>actor/character/partials/skill}} {{/each}}
 		</ul>
 	</div>
 	{{/with}} {{#with itemCollections.spells as |section|}}
@@ -94,7 +94,7 @@
 			</span>
 		</header>
 		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
-			{{#each section.items}} {{>actor/character/sections/spell}} {{/each}}
+			{{#each section.items}} {{>actor/character/partials/spell}} {{/each}}
 		</ul>
 	</div>
 	{{/with}} {{#with itemCollections.equipment as |section|}}
@@ -124,7 +124,7 @@
 			<span class="reference"><i class="gcs-bookmark"></i></span>
 		</header>
 		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
-			{{#each section.items}} {{>actor/character/sections/equipment}} {{/each}}
+			{{#each section.items}} {{>actor/character/partials/equipment}} {{/each}}
 		</ul>
 	</div>
 	{{/with}} {{#with itemCollections.other_equipment as |section|}}
@@ -151,7 +151,7 @@
 			<span class="reference"><i class="gcs-bookmark"></i></span>
 		</header>
 		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
-			{{#each section.items}} {{>actor/character/sections/other-equipment}} {{/each}}
+			{{#each section.items}} {{>actor/character/partials/other-equipment}} {{/each}}
 		</ul>
 	</div>
 	{{/with}}
