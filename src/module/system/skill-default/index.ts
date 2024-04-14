@@ -43,12 +43,12 @@ export class SkillDefault {
 	static defineSchema(): SkillDefaultSchema {
 		return {
 			type: new fields.StringField<SkillDefaultType, SkillDefaultType, true>({ initial: gid.Dexterity }),
-			name: new fields.StringField({ required: false }),
-			specialization: new fields.StringField({ required: false }),
-			modifier: new fields.NumberField({ required: false }),
-			level: new fields.NumberField({ required: false }),
-			adjusted_level: new fields.NumberField({ required: false }),
-			points: new fields.NumberField({ required: false }),
+			name: new fields.StringField(),
+			specialization: new fields.StringField(),
+			modifier: new fields.NumberField({ integer: true }),
+			level: new fields.NumberField(),
+			adjusted_level: new fields.NumberField(),
+			points: new fields.NumberField(),
 		}
 	}
 
@@ -155,6 +155,7 @@ export class SkillDefault {
 		let best = -Infinity
 		if (!actor.isOfType(ActorType.Character)) return best
 		for (const sk of actor.skillNamed(this.name!, this.specialization || "", require_points, excludes)) {
+			if (!sk.level) sk.updateLevel()
 			if (best < sk.level.level) best = sk.level.level
 		}
 		return best

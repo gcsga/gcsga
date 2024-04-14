@@ -14,6 +14,7 @@ class RangedWeaponSheetGURPS extends ItemSheetGURPS<RangedWeaponGURPS> {
 
 		return {
 			...sheetData,
+			sysPrefix: "array.system.",
 		}
 	}
 
@@ -42,7 +43,7 @@ class RangedWeaponSheetGURPS extends ItemSheetGURPS<RangedWeaponGURPS> {
 			return obj
 		}, {})
 		for (const key of Object.keys(groupedWeaponData) as (keyof RangedWeaponGURPS)[]) {
-			const property = this.object[key] as WeaponField
+			const property = (this.object[key] as WeaponField) ?? {}
 			if (key === "rate_of_fire") {
 				const parts = key.split(".") as ("mode1" | "mode2")[]
 				if (parts.length > 1) {
@@ -61,6 +62,8 @@ class RangedWeaponSheetGURPS extends ItemSheetGURPS<RangedWeaponGURPS> {
 		return data
 	}
 }
-interface RangedWeaponSheetData extends ItemSheetDataGURPS<RangedWeaponGURPS> {}
+interface RangedWeaponSheetData extends ItemSheetDataGURPS<RangedWeaponGURPS> {
+	sysPrefix: string
+}
 
 export { RangedWeaponSheetGURPS }

@@ -3,7 +3,8 @@ import { LeveledAmount } from "./leveled-amount.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { BaseFeatureObj, LeveledAmountObj } from "./data.ts"
 import { WeaponLeveledAmount } from "./weapon-leveled-amount.ts"
-import { FeatureOwner, TooltipGURPS, WeaponOwner } from "@util"
+import { FeatureOwner, WeaponOwner } from "@module/util/index.ts"
+import { TooltipGURPS } from "@util"
 
 export abstract class BonusOwner<TType extends feature.Type> {
 	declare type: TType

@@ -12,17 +12,13 @@ const actorTypes: ActorType[] = [ActorType.Character, ActorType.Loot]
 function getSelectedActors(options: GetSelectedActorsOptions = {}): ActorGURPS[] {
 	const { include = actorTypes, exclude = [], assignedFallback = false } = options
 	const actors = R.uniq(
-		game.user
-			// @ts-expect-error awaiting implementation
-			.getActiveTokens()
-			// @ts-expect-error awaiting implementation
-			.flatMap(t =>
-				t.actor &&
-				(include.length === 0 || t.actor.isOfType(...include)) &&
-				(exclude.length === 0 || !t.actor.isOfType(...exclude))
-					? t.actor
-					: [],
-			),
+		game.user.activeTokens.flatMap(t =>
+			t.actor &&
+			(include.length === 0 || t.actor.isOfType(...include)) &&
+			(exclude.length === 0 || !t.actor.isOfType(...exclude))
+				? t.actor
+				: [],
+		),
 	) as ActorGURPS[]
 	const assigned = game.user.character
 	if (actors.length > 0 || !assignedFallback || !assigned) {

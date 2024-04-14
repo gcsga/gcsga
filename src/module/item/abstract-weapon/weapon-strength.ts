@@ -44,8 +44,10 @@ export class WeaponStrength extends WeaponField {
 				w.container instanceof ItemGURPS &&
 				(w.container.type === ItemType.Equipment || w.container.type === ItemType.EquipmentContainer)
 			) {
-				// @ts-expect-error awaiting implementation
-				const st = Math.max(w.container.ratedStrength, 0)
+				let st = 0
+				if (w.container.isOfType(ItemType.Equipment, ItemType.EquipmentContainer)) {
+					st = Math.max(w.container.system.rated_strength ?? 0, 0)
+				}
 				if (st !== 0) result.min = st
 			}
 		}

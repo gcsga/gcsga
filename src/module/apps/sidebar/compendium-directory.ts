@@ -5,7 +5,7 @@ import { DnD, ErrorGURPS, fontAwesomeIcon, htmlQuery } from "@util"
 import MiniSearch from "minisearch"
 import { CompendiumMigrationStatus } from "../compendium-migration-status.ts"
 import { SYSTEM_NAME } from "@data"
-import { ItemCompendiumImporter } from "@util/import/compendium.ts"
+import { ItemCompendiumImporter } from "@module/util/index.ts"
 
 class CompendiumDirectoryGURPS extends CompendiumDirectory {
 	static readonly STOP_WORDS = new Set(["of", "th", "the"])

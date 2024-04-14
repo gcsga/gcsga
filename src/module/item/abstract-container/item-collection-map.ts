@@ -19,7 +19,7 @@ class ItemItemCollectionMap {
 			| ItemInstance.EquipmentModifierContainerGURPS
 		)[] = items.filter(item => itemIsOfType(item, ItemType.EquipmentModifier, ItemType.EquipmentModifierContainer))
 		const meleeWeapons: ItemInstance.MeleeWeaponGURPS[] = items.filter(item =>
-			itemIsOfType(item, ItemType.RangedWeapon),
+			itemIsOfType(item, ItemType.MeleeWeapon),
 		)
 		const rangedWeapons: ItemInstance.RangedWeaponGURPS[] = items.filter(item =>
 			itemIsOfType(item, ItemType.RangedWeapon),

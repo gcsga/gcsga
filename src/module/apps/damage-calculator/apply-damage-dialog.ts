@@ -3,7 +3,8 @@ import { DamageRoll, DamageTarget } from "./index.ts"
 import { SETTINGS, SYSTEM_NAME, gid } from "@data"
 import { HitLocationUtil } from "./hit-location-utils.ts"
 import { DamageTypes } from "./damage-type.ts"
-import { LocalizeGURPS, PDF, htmlQueryAll } from "@util"
+import { LocalizeGURPS, htmlQueryAll } from "@util"
+import { PDF } from "@module/util/index.ts"
 
 export class ApplyDamageDialog extends Application {
 	static async create(roll: DamageRoll, target: DamageTarget, options = {}): Promise<ApplyDamageDialog> {
@@ -29,7 +30,7 @@ export class ApplyDamageDialog extends Application {
 			{
 				navSelector: ".nav-tabs",
 				contentSelector: ".content",
-				initial: "0",
+				initial: "",
 			},
 		]
 

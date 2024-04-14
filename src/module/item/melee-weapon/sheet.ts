@@ -13,6 +13,7 @@ class MeleeWeaponSheetGURPS extends ItemSheetGURPS<MeleeWeaponGURPS> {
 
 		return {
 			...sheetData,
+			sysPrefix: "array.system.",
 		}
 	}
 
@@ -42,13 +43,15 @@ class MeleeWeaponSheetGURPS extends ItemSheetGURPS<MeleeWeaponGURPS> {
 			return obj
 		}, {})
 		for (const key of Object.keys(groupedWeaponData) as (keyof MeleeWeaponGURPS)[]) {
-			const property = this.object[key] as WeaponField
+			const property = (this.object[key] as WeaponField) ?? {}
 			Object.assign(property, groupedWeaponData[key])
 			data[`system.${key}`] = property.toString()
 		}
 		return data
 	}
 }
-interface MeleeWeaponSheetData extends ItemSheetDataGURPS<MeleeWeaponGURPS> {}
+interface MeleeWeaponSheetData extends ItemSheetDataGURPS<MeleeWeaponGURPS> {
+	sysPrefix: string
+}
 
 export { MeleeWeaponSheetGURPS }

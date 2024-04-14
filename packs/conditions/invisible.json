@@ -1,0 +1,27 @@
+{
+    "_id": "85GR6pZgMqa7TZ3k",
+    "img": "systems/gcsga/assets/status/invisible.webp",
+    "name": "Invisible",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "invisible",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "type": "condition"
+    },
+    "type": "condition"
+}

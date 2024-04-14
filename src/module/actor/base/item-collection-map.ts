@@ -52,7 +52,7 @@ class ActorItemCollectionMap<TActor extends ActorGURPS> {
 			itemIsOfType(item, ItemType.Note, ItemType.NoteContainer),
 		)
 		const meleeWeapons: ItemInstance.MeleeWeaponGURPS<TActor>[] = items.filter(item =>
-			itemIsOfType(item, ItemType.RangedWeapon),
+			itemIsOfType(item, ItemType.MeleeWeapon),
 		)
 		const rangedWeapons: ItemInstance.RangedWeaponGURPS<TActor>[] = items.filter(item =>
 			itemIsOfType(item, ItemType.RangedWeapon),

@@ -7,6 +7,7 @@ import { Ready } from "./ready.ts"
 import { RenderChatMessage } from "./render-chat-message.ts"
 import { RenderHotbar } from "./render-hotbar.ts"
 import { RenderPlayerList } from "./render-player-list.ts"
+// import { RenderTokenHUD } from "./render-token-hud.ts"
 import { Setup } from "./setup.ts"
 
 export const HooksGURPS = {
@@ -22,6 +23,7 @@ export const HooksGURPS = {
 			DropCanvasData,
 			RenderPlayerList,
 			RenderHotbar,
+			// RenderTokenHUD,
 		]
 		for (const Listener of listeners) {
 			Listener.listen()

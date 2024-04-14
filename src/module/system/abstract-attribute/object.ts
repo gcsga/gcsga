@@ -1,6 +1,6 @@
-import { VariableResolver } from "@util"
 import { AbstractAttributeDef } from "./definition.ts"
 import { AbstractAttributeObj } from "./data.ts"
+import { VariableResolver } from "@module/util/index.ts"
 
 abstract class AbstractAttribute<TActor extends VariableResolver = VariableResolver> {
 	actor: TActor

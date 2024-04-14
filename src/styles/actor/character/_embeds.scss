@@ -29,6 +29,24 @@
 	}
 }
 
+#melee {
+	grid-area: melee;
+
+	header,
+	ul.items > li > .data {
+		grid-template-columns: auto 6rem 2rem 3rem 3rem 4.5rem 3rem 2rem;
+	}
+}
+
+#ranged {
+	grid-area: ranged;
+
+	header,
+	ul.items > li > .data {
+		grid-template-columns: auto 6em 2rem 2.5rem 4.5rem 4.5rem 2.5rem 3rem 2.5rem 2.5rem 2rem;
+	}
+}
+
 #traits {
 	grid-area: traits;
 

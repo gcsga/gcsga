@@ -120,21 +120,7 @@
 	header,
 	ul.items > li > .data {
 		// Border to the right of table fields
-		.enabled,
-		.equipped,
-		.quantity,
-		.item-name,
-		.level,
-		.rsl,
-		.points,
-		.uses,
-		.tech-level,
-		.legality-class,
-		.value,
-		.weight,
-		.extended-value,
-		.extended-weight,
-		.tags {
+		> :not(.reference):not(.strength) {
 			border-right: 1px solid rgb(var(--color-interior-divider));
 		}
 	}

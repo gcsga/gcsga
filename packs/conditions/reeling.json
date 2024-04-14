@@ -1,0 +1,28 @@
+{
+    "_id": "hKDZobPPLCNqLTNM",
+    "img": "systems/gcsga/assets/status/reeling.webp",
+    "name": "Reeling",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "reeling",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "reference": "B419",
+        "type": "condition"
+    },
+    "type": "condition"
+}

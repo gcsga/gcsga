@@ -1,0 +1,27 @@
+{
+    "_id": "j1xKH69YA3ZucH7U",
+    "img": "systems/gcsga/assets/status/disarmed.webp",
+    "name": "Disarmed",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "disarmed",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "type": "condition"
+    },
+    "type": "condition"
+}

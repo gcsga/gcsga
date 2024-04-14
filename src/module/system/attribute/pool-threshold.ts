@@ -1,4 +1,4 @@
-import { VariableResolver, evaluateToNumber } from "@util"
+import { VariableResolver, evaluateToNumber } from "@module/util/index.ts"
 import { PoolThresholdObj, ThresholdOp } from "./data.ts"
 
 const fields = foundry.data.fields

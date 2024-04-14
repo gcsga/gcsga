@@ -8,7 +8,8 @@ import { Int } from "@util/fxp.ts"
 import { WeaponBonusObj } from "./data.ts"
 import { WeaponLeveledAmount } from "./weapon-leveled-amount.ts"
 import { AbstractWeaponGURPS } from "@item"
-import { TooltipGURPS, WeaponOwner } from "@util"
+import { TooltipGURPS } from "@util"
+import { WeaponOwner } from "@module/data/types.ts"
 
 export class WeaponBonus<TType extends feature.WeaponBonusType = feature.WeaponBonusType> {
 	type: TType

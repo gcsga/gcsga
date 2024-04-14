@@ -1,21 +1,32 @@
-<div class="item desc" data-item-id="{{this._id}}">
-	<div class="name">
-		{{this.itemName}}
+<li data-type="{{ item.type }}" data-item-id="{{ item.id }}">
+	<div class="data">
+		<div class="item-name">
+			<div class="name">{{ item.itemName }}</div>
+			{{{ item.resolvedNotes }}}
+		</div>
+		<div data-type="attack" class="usage rollable">{{ item.system.usage }}</div>
+		<div data-type="attack" class="level rollable">{{ item.level }}</div>
+		<div
+			data-modifier="{{ item.accuracy.current }}"
+			data-comment="{{ localize 'gurps.weapon.accuracy_for' name=item.formattedName }}"
+			data-type="modifier"
+			class="accuracy rollable"
+		>
+			{{ item.accuracy.current }}
+		</div>
+		<div data-type="damage" class="damage rollable">{{ item.fastResolvedDamage }}</div>
+		<div class="range">{{ item.range.current }}</div>
+		<div class="rate-of-fire">{{ item.rate_of_fire.current }}</div>
+		<div class="shots">{{ item.shots.current }}</div>
+		<div
+			data-modifier="{{ item.bulk.current }}"
+			data-comment="{{ localize 'gurps.weapon.bulk_for' name=item.bulk.current }}"
+			data-type="modifier"
+			class="bulk rollable"
+		>
+			{{ item.bulk.current }}
+		</div>
+		<div class="recoil">{{ item.recoil.current }}</div>
+		<div class="st">{{ item.strength.current }}</div>
 	</div>
-	{{{this.resolvedNotes}}}
-</div>
-<div data-item-id="{{this._id}}" data-type="attack" class="usage rollable">{{this.system.usage}}</div>
-<div data-item-id="{{this._id}}" data-type="attack" class="level rollable">{{this.skillLevel}}</div>
-<div data-modifier="{{this.accuracy.current}}"
-	data-comment="{{localize 'gurps.weapon.accuracy_for' name=this.formattedName}}" data-type="modifier"
-	class="accuracy rollable">{{this.accuracy.current}}</div>
-<div data-item-id="{{this._id}}" data-type="damage" class="damage rollable">
-	{{this.fastResolvedDamage}}
-</div>
-<div class="range">{{this.range.current}}</div>
-<div class="rate-of-fire">{{this.rate_of_fire.current}}</div>
-<div class="shots">{{this.shots.current}}</div>
-<div data-modifier="{{this.bulk.current}}" data-comment="{{localize 'gurps.weapon.bulk_for' name=this.bulk.current}}"
-	data-type="modifier" class="bulk rollable">{{this.bulk.current}}</div>
-<div class="recoil">{{this.recoil.current}}</div>
-<div class="st">{{this.strength.current}}</div>
+</li>

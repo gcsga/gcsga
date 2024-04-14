@@ -1,6 +1,7 @@
 import { RESERVED_IDS } from "@system"
-import { VariableResolver, getNewAttributeId, sanitizeId } from "@util"
+import { getNewAttributeId, sanitizeId } from "@util"
 import { AbstractAttributeDefObj, AbstractAttributeObj } from "./data.ts"
+import { VariableResolver } from "@module/util/resolvers.ts"
 
 abstract class AbstractAttributeDef {
 	private _id: string

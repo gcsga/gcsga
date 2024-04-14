@@ -8,9 +8,10 @@ import {
 	ResourceTrackerDef,
 	ResourceTrackerDefObj,
 } from "@system"
-import { BodyOwner, LengthUnits, TooltipGURPS, WeightUnits, display, paper, progression } from "@util"
+import { LengthUnits, TooltipGURPS, WeightUnits, display, paper, progression } from "@util"
 import { ActorType, SETTINGS, SYSTEM_NAME } from "./constants.ts"
 import { ActorGURPS } from "@actor"
+import { BodyOwner } from "@module/util/resolvers.ts"
 
 export interface PageSettings {
 	paper_size: paper.Size

@@ -1,12 +1,11 @@
-import { EffectID, SOCKET, SYSTEM_NAME } from "@data"
+import { COMPENDIA, ManeuverID, SYSTEM_NAME } from "@module/data/constants.ts"
 import { TokenGURPS } from "./object.ts"
+import { htmlQuery, htmlQueryAll } from "@util"
 
 export interface TokenHUDDataGURPS extends TokenHUDData {
-	maneuvers: Record<string, TokenHUDStatusEffectChoice | undefined>
-}
-
-export interface TokenHUDGURPS<TToken extends TokenGURPS> extends TokenHUD<TToken> {
-	object: TToken
+	statuses: Partial<TokenHUDStatusEffectChoice>[]
+	maneuvers: Partial<TokenHUDStatusEffectChoice>[]
+	inCombat: boolean
 }
 
 export class TokenHUDGURPS<TToken extends TokenGURPS> extends TokenHUD<TToken> {
@@ -16,79 +15,113 @@ export class TokenHUDGURPS<TToken extends TokenGURPS> extends TokenHUD<TToken> {
 		return `systems/${SYSTEM_NAME}/templates/hud/token.hbs`
 	}
 
-	static #activateListeners(html: HTMLElement, token: TokenGURPS): void {
-		const effectControls = html.querySelectorAll<HTMLPictureElement>(".effect-control")
+	override activateListeners($html: JQuery<HTMLElement>): void {
+		super.activateListeners($html)
 
-		for (const control of effectControls) {
-			control.addEventListener("click", event => {
-				this.#setStatusValue(event, token)
+		const html = $html[0]
+
+		const actor = this.object.actor
+
+		for (const control of htmlQueryAll(html, ".effect-control")) {
+			control.addEventListener("click", () => {
+				const statusId = control.dataset.statusId ?? ""
+				if (statusId === "") return
+				// return actor?.increaseCondition(statusId)
+				console.log("increase", statusId, actor)
 			})
-			control.addEventListener("contextmenu", event => {
-				this.#setStatusValue(event, token)
+			control.addEventListener("contextmenu", () => {
+				const statusId = control.dataset.statusId ?? ""
+				if (statusId === "") return
+				// return actor?.decreaseCondition(statusId)
+				console.log("decrease", statusId, actor)
 			})
 
 			control.addEventListener("mouseover", () => {
-				this.#showStatusLabel(control)
+				const titleBar = htmlQuery(html, ".title-bar")
+				if (titleBar && control.title) {
+					titleBar.innerText = control.title
+					titleBar.classList.toggle("active")
+				}
 			})
 			control.addEventListener("mouseout", () => {
-				this.#showStatusLabel(control)
+				const titleBar = htmlQuery(html, ".title-bar")
+				if (titleBar && control.title) {
+					titleBar.innerText = control.title
+					titleBar.classList.toggle("active")
+				}
 			})
 		}
-	}
 
-	override activateListeners(html: JQuery<HTMLElement>): void {
-		super.activateListeners(html)
 		this._toggleManeuvers(this._maneuvers)
 	}
 
-	override getData(options: ApplicationOptions): TokenHUDDataGURPS {
-		const data = fu.mergeObject(super.getData(options), {
-			inCombat: this.object?.inCombat,
-			maneuvers: this._getManeuverChoices(),
-		}) as TokenHUDDataGURPS
-		return data
+	// @ts-expect-error async
+	override async getData(options?: ApplicationOptions | undefined): Promise<TokenHUDDataGURPS> {
+		const data = super.getData(options)
+
+		return fu.mergeObject(data, {
+			statuses: await this.#getStatusEffectChoices(),
+			maneuvers: await this.#getManeuverChoices(),
+			inCombat: this.object.inCombat,
+		})
 	}
 
-	_getManeuverChoices(): Record<string, TokenHUDStatusEffectChoice | undefined> {
-		const effects = super._getStatusEffectChoices()
-		const filteredEffects = Object.keys(effects)
-			.filter((key: string) => key.includes("/maneuver/"))
-			.reduce((obj, key: string) => {
-				return Object.assign(obj, {
-					[key]: effects[key],
+	async #getStatusEffectChoices(): Promise<Partial<TokenHUDStatusEffectChoice>[]> {
+		const indexFields = ["system.slug"]
+		const pack = game.packs.get(`${SYSTEM_NAME}.${COMPENDIA.CONDITIONS}`)
+		if (pack) {
+			const index = await pack.getIndex({ fields: indexFields })
+			return index
+				.map(a => {
+					return {
+						id: a.system.slug,
+						title: a.name,
+						src: a.img,
+					}
 				})
-			}, {})
-		return filteredEffects
-	}
-
-	override _getStatusEffectChoices(): Record<string, TokenHUDStatusEffectChoice | undefined> {
-		const effects = super._getStatusEffectChoices()
-		const filteredEffects = Object.keys(effects)
-			.filter((key: string) => key.includes("/status/"))
-			.reduce((obj, key: string) => {
-				return Object.assign(obj, {
-					[key]: effects[key],
-				})
-			}, {})
-		return filteredEffects
-	}
-
-	protected async _onToggleCombat(event: JQuery.ClickEvent): Promise<void> {
-		event.preventDefault()
-		// @ts-expect-error awaiting implementation
-		await super._onToggleCombat(event)
-		const { actor } = this.object
-		if (actor) {
-			// @ts-expect-error awaiting implementation
-			if (this.object?.inCombat) await actor.changeManeuver(ManeuverID.DoNothing)
-			// @ts-expect-error awaiting implementation
-			else actor.resetManeuvers()
+				.sort(
+					(a, b) =>
+						Object.keys(CONFIG.GURPS.statusEffects.conditions).indexOf(a.id) -
+						Object.keys(CONFIG.GURPS.statusEffects.conditions).indexOf(b.id),
+				)
 		}
-		this.render(true)
+		return []
 	}
 
-	protected _onClickControl(event: JQuery.ClickEvent): void {
-		const button = event.currentTarget
+	async #getManeuverChoices(): Promise<Partial<TokenHUDStatusEffectChoice>[]> {
+		const indexFields = ["system.slug"]
+		const pack = game.packs.get(`${SYSTEM_NAME}.${COMPENDIA.MANEUVERS}`)
+		if (pack) {
+			const index = await pack.getIndex({ fields: indexFields })
+			return index
+				.map(a => {
+					return {
+						id: a.system.slug,
+						title: a.name,
+						src: a.img,
+					}
+				})
+				.sort((a, b) => Object.values(ManeuverID).indexOf(a.id) - Object.values(ManeuverID).indexOf(b.id))
+		}
+		return []
+	}
+
+	// Change visibility of maneuvers panel
+	protected _toggleManeuvers(active: boolean): void {
+		this._maneuvers = active
+
+		const button = htmlQuery(this.element[0], `.control-icon[data-action="maneuvers"]`)
+		if (button) {
+			button.classList.toggle("active", active)
+			const palette = htmlQuery(button, ".maneuvers")
+			palette?.classList.toggle("active", active)
+		}
+	}
+
+	protected override _onClickControl(event: MouseEvent): void {
+		super._onClickControl(event)
+		if (event.defaultPrevented) return
+		const button = event.currentTarget as HTMLElement
 		switch (button.dataset.action) {
 			case "maneuvers":
 				return this._onToggleManeuvers(event)
@@ -101,121 +134,111 @@ export class TokenHUDGURPS<TToken extends TokenGURPS> extends TokenHUD<TToken> {
 		this._toggleStatusEffects(!this._statusEffects)
 	}
 
-	protected _onToggleManeuvers(event: JQuery.ClickEvent): void {
+	protected _onToggleManeuvers(event: MouseEvent): void {
 		event.preventDefault()
-		this._maneuvers = $(event.currentTarget).hasClass("active")
+		this._maneuvers = (event.currentTarget as HTMLElement).classList.contains("active")
 		this._toggleStatusEffects(false)
 		this._toggleManeuvers(!this._maneuvers)
 	}
 
-	_toggleManeuvers(active: boolean): void {
-		this._maneuvers = active
-		const button = this.element.find('.control-icon[data-action="maneuvers"]')[0]
-		if (!button) return
-		button.classList.toggle("active", active)
-		const palette = button.querySelector(".maneuvers")
-		palette?.classList.toggle("active", active)
-	}
-
-	static #showStatusLabel(icon: HTMLPictureElement): void {
-		const titleBar = icon.closest(".icon-grid")?.querySelector<HTMLElement>(".title-bar")
-		if (titleBar && icon.title) {
-			titleBar.innerText = icon.title
-			titleBar.classList.toggle("active")
-		}
-	}
-
-	static async #setStatusValue(event: MouseEvent, token: TokenGURPS): Promise<void> {
-		event.preventDefault()
-		event.stopPropagation()
-
-		const icon = event.currentTarget
-		if (!(icon instanceof HTMLPictureElement)) return
-		const id: EffectID = icon.dataset.statusId as EffectID
-		const { actor } = token
-		if (!(actor && id)) return
-
-		if (event.type === "click") {
-			// @ts-expect-error awaiting implementation
-			await actor?.increaseCondition(id)
-		} else if (event.type === "contextmenu") {
-			// @ts-expect-error awaiting implementation
-			if (event.ctrlKey) await actor?.decreaseCondition(id, { forceRemove: true })
-			// @ts-expect-error awaiting implementation
-			else await actor?.decreaseCondition(id)
-		}
-		game.socket?.emit(`system.${SYSTEM_NAME}`, { type: SOCKET.UPDATE_BUCKET, users: [] })
-		game.gurps.effectPanel.refresh()
-	}
-
-	static async #setActiveEffects(token: TokenGURPS, icons: NodeListOf<HTMLImageElement>) {
-		// @ts-expect-error awaiting implementation
-		const affectingConditions = token.actor?.conditions
-
-		for (const icon of icons) {
-			const picture = document.createElement("picture")
-			picture.classList.add("effect-control")
-			picture.dataset.statusId = icon.dataset.statusId
-			if (icon.title) picture.title = icon.title
-			else picture.setAttribute("style", "cursor: default;")
-			const iconSrc = icon.getAttribute("src")!
-			picture.setAttribute("src", iconSrc)
-			const newIcon = document.createElement("img")
-			newIcon.src = iconSrc
-			picture.append(newIcon)
-			icon.replaceWith(picture)
-
-			const id = picture.dataset.statusId ?? ""
-			// @ts-expect-error awaiting implementation
-			const affecting = affectingConditions?.filter(c => c.cid === id) || []
-			if (affecting.length > 0 || iconSrc === token.document.overlayEffect) {
-				picture.classList.add("active")
-			}
-
-			if (affecting.length > 0) {
-				// Show a badge icon if the condition has a value or is locked
-				// @ts-expect-error awaiting implementation
-				const hasValue = affecting.some(c => c.canLevel)
-
-				if (hasValue) {
-					const badge = document.createElement("i")
-					badge.classList.add("badge")
-					// @ts-expect-error awaiting implementation
-					const value = Math.max(...affecting.map(c => c.level ?? 1))
-					badge.innerText = value.toString()
-					picture.append(badge)
-				}
-			}
-		}
-	}
-
-	static async onRenderTokenHUD(html: HTMLElement, tokenData: Record<string, string>): Promise<void> {
-		const token = canvas?.tokens?.get(tokenData._id) as TokenGURPS
-		if (!token) return
-
-		const iconGrid = html.querySelector<HTMLElement>(".status-effects")
-		const maneuverGrid = html.querySelector<HTMLElement>(".maneuvers")
-		if (!iconGrid) throw Error("Unexpected error retrieving status effects grid")
-		const statusIcons = iconGrid.querySelectorAll<HTMLImageElement>(".effect-control")
-		const maneuverIcons = maneuverGrid?.querySelectorAll<HTMLImageElement>(".effect-control")
-
-		await this.#setActiveEffects(token, statusIcons)
-		this.#activateListeners(iconGrid, token)
-
-		if (maneuverGrid && maneuverIcons) {
-			await this.#setActiveEffects(token, maneuverIcons)
-			this.#activateListeners(maneuverGrid, token)
-		}
-	}
-
-	_onToggleEffect(event: JQuery.ClickEvent | JQuery.ContextMenuEvent, { overlay = false } = {}): Promise<boolean> {
-		event.preventDefault()
-		event.stopPropagation()
-		const img = event.currentTarget
-		const effect =
-			img.dataset.statusId && this.object?.actor
-				? CONFIG.statusEffects.find(e => e.id === img.dataset.statusId)
-				: img.getAttribute("src")
-		return this.object!.toggleEffect(effect, { overlay })
-	}
+	// static async #setStatusValue(event: MouseEvent, token: TokenGURPS): Promise<void> {
+	// 	event.preventDefault()
+	// 	event.stopPropagation()
+	//
+	// 	const icon = event.currentTarget
+	// 	if (!(icon instanceof HTMLPictureElement)) return
+	// 	const id: EffectID = icon.dataset.statusId as EffectID
+	// 	const { actor } = token
+	// 	if (!(actor && id)) return
+	//
+	// 	if (event.type === "click") {
+	// 		// @ts-expect-error awaiting implementation
+	// 		await actor?.increaseCondition(id)
+	// 	} else if (event.type === "contextmenu") {
+	// 		// @ts-expect-error awaiting implementation
+	// 		if (event.ctrlKey) await actor?.decreaseCondition(id, { forceRemove: true })
+	// 		// @ts-expect-error awaiting implementation
+	// 		else await actor?.decreaseCondition(id)
+	// 	}
+	// 	game.socket?.emit(`system.${SYSTEM_NAME}`, { type: SOCKET.UPDATE_BUCKET, users: [] })
+	// 	game.gurps.effectPanel.refresh()
+	// }
+	//
+	// static async #setActiveEffects(token: TokenGURPS, icons: NodeListOf<HTMLImageElement>) {
+	// 	// @ts-expect-error awaiting implementation
+	// 	const affectingConditions = token.actor?.conditions
+	//
+	// 	for (const icon of icons) {
+	// 		const picture = document.createElement("picture")
+	// 		picture.classList.add("effect-control")
+	// 		picture.dataset.statusId = icon.dataset.statusId
+	// 		if (icon.title) picture.title = icon.title
+	// 		else picture.setAttribute("style", "cursor: default;")
+	// 		const iconSrc = icon.getAttribute("src")!
+	// 		picture.setAttribute("src", iconSrc)
+	// 		const newIcon = document.createElement("img")
+	// 		newIcon.src = iconSrc
+	// 		picture.append(newIcon)
+	// 		icon.replaceWith(picture)
+	//
+	// 		const id = picture.dataset.statusId ?? ""
+	//
+	// 		// @ts-expect-error awaiting implementation
+	// 		const affecting = affectingConditions?.filter(c => c.cid === id) || []
+	// 		if (affecting.length > 0 || iconSrc === token.document.overlayEffect) {
+	// 			picture.classList.add("active")
+	// 		}
+	//
+	// 		if (affecting.length > 0) {
+	// 			// Show a badge icon if the condition has a value or is locked
+	//
+	// 			// @ts-expect-error awaiting implementation
+	// 			const hasValue = affecting.some(c => c.canLevel)
+	//
+	// 			if (hasValue) {
+	// 				const badge = document.createElement("i")
+	// 				badge.classList.add("badge")
+	//
+	// 				// @ts-expect-error awaiting implementation
+	// 				const value = Math.max(...affecting.map(c => c.level ?? 1))
+	// 				badge.innerText = value.toString()
+	// 				picture.append(badge)
+	// 			}
+	// 		}
+	// 	}
+	// }
+	//
+	// static async onRenderTokenHUD(html: HTMLElement, tokenData: TokenHUDData<TokenGURPS>): Promise<void> {
+	// 	console.log(html, tokenData)
+	//
+	// 	const token = canvas?.tokens?.get(tokenData._id ?? "") as TokenGURPS
+	// 	if (!token) return
+	//
+	// 	console.log(token)
+	//
+	// 	const iconGrid = html.querySelector<HTMLElement>(".status-effects")
+	// 	const maneuverGrid = html.querySelector<HTMLElement>(".maneuvers")
+	// 	if (!iconGrid) throw ErrorGURPS("Unexpected error retrieving status effects grid")
+	// 	const statusIcons = iconGrid.querySelectorAll<HTMLImageElement>(".effect-control")
+	// 	const maneuverIcons = maneuverGrid?.querySelectorAll<HTMLImageElement>(".effect-control")
+	//
+	// 	await this.#setActiveEffects(token, statusIcons)
+	// 	this.#activateListeners(iconGrid, token)
+	//
+	// 	if (maneuverGrid && maneuverIcons) {
+	// 		await this.#setActiveEffects(token, maneuverIcons)
+	// 		this.#activateListeners(maneuverGrid, token)
+	// 	}
+	// }
+	//
+	// _onToggleEffect(event: JQuery.ClickEvent | JQuery.ContextMenuEvent, { overlay = false } = {}): Promise<boolean> {
+	// 	event.preventDefault()
+	// 	event.stopPropagation()
+	// 	const img = event.currentTarget
+	// 	const effect =
+	// 		img.dataset.statusId && this.object?.actor
+	// 			? CONFIG.statusEffects.find(e => e.id === img.dataset.statusId)
+	// 			: img.getAttribute("src")
+	// 	return this.object!.toggleEffect(effect, { overlay })
+	// }
 }

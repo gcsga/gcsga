@@ -42,6 +42,7 @@ export class RollGURPS extends Roll {
 		const newFormula = formula.replace(dataRgx, (match, term) => {
 			if (data.actor) {
 				const actor = data.actor
+
 				// @ts-expect-error awaiting implementation
 				const value = actor.resolveVariable(term.replace("$", "")) ?? null
 				if (value === null) {

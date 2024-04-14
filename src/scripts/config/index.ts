@@ -51,8 +51,60 @@ import {
 } from "@system"
 import { feature, prereq } from "@util"
 
+const tokenHUDConditions = {
+	crouching: "gurps.status.crouching",
+	kneeling: "gurps.status.kneeling",
+	sitting: "gurps.status.sitting",
+	crawling: "gurps.status.crawling",
+	prone: "gurps.status.prone",
+	reeling: "gurps.status.reeling",
+	fatigued: "gurps.status.fatigued",
+	crippled: "gurps.status.crippled",
+	bleeding: "gurps.status.bleeding",
+	dead: "gurps.status.dead",
+	shock: "gurps.status.shock",
+	pain: "gurps.status.pain",
+	unconscious: "gurps.status.unconscious",
+	sleeping: "gurps.status.sleeping",
+	comatose: "gurps.status.comatose",
+	stun: "gurps.status.stun",
+	"mental-stun": "gurps.status.mental-stun",
+	poisoned: "gurps.status.poisoned",
+	burning: "gurps.status.burning",
+	cold: "gurps.status.cold",
+	disarmed: "gurps.status.disarmed",
+	falling: "gurps.status.falling",
+	grappled: "gurps.status.grappled",
+	restrained: "gurps.status.restrained",
+	pinned: "gurps.status.pinned",
+	sprinting: "gurps.status.sprinting",
+	flying: "gurps.status.flying",
+	stealthy: "gurps.status.stealthy",
+	waiting: "gurps.status.waiting",
+	invisible: "gurps.status.invisible",
+	coughing: "gurps.status.coughing",
+	retching: "gurps.status.retching",
+	nausea: "gurps.status.nausea",
+	agony: "gurps.status.agony",
+	seizure: "gurps.status.seizure",
+	blind: "gurps.status.blind",
+	deafened: "gurps.status.deafened",
+	silenced: "gurps.status.silenced",
+	choking: "gurps.status.choking",
+	"heart-attack": "gurps.status.heart-attack",
+	euphoric: "gurps.status.euphoric",
+	hallucinating: "gurps.status.hallucinating",
+	drunk: "gurps.status.drunk",
+	drowsy: "gurps.status.drowsy",
+	dazed: "gurps.status.dazed",
+}
+
 export const GURPSCONFIG = {
 	skillDefaults: [] as SkillGURPS[],
+
+	statusEffects: {
+		conditions: tokenHUDConditions,
+	},
 
 	Actor: {
 		documentClasses: {

@@ -2,10 +2,11 @@ import { MenuTemplateData, PartialSettingsData, SettingsMenuGURPS, settingsToShe
 import { SETTINGS, SYSTEM_NAME } from "@data"
 import { defaultSettings } from "./defaults.ts"
 import { htmlQueryAll } from "@util/dom.ts"
-import { DnD, SettingsHelpers, prepareFormData } from "@util"
+import { DnD, prepareFormData } from "@util"
 import { BodyObj, HitLocationObj } from "@system"
 import { DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
-import { DropDataContext } from "@util/settings-helpers.ts"
+import { DropDataContext } from "@module/util/settings-helpers.ts"
+import { SettingsHelpers } from "@module/util/index.ts"
 
 type ConfigGURPSListName = (typeof HitLocationSettings.SETTINGS)[number]
 

@@ -2,7 +2,7 @@
 import { BaseItemSourceGURPS, ItemSystemData, ItemSystemSource } from "@item/base/data.ts"
 import { EffectType } from "@module/data/constants.ts"
 import { RollModifier } from "@module/data/types.ts"
-// import { FeatureObj } from "@system"
+import { FeatureObj } from "@system"
 
 type AbstractEffectSource<
 	TType extends EffectType,
@@ -11,7 +11,7 @@ type AbstractEffectSource<
 
 interface AbstractEffectSystemSource extends ItemSystemSource {
 	id: string | null
-	// features?: FeatureObj[]
+	features?: FeatureObj[]
 	modifiers?: RollModifier[]
 	can_level: boolean
 	levels?: {

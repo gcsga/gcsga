@@ -1,0 +1,27 @@
+{
+    "_id": "2Hnbf7Nre7ORZCnk",
+    "img": "systems/gcsga/assets/maneuver/all-out-attack-double.webp",
+    "name": "All-out Attack (Double)",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "all-out-attack-double",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "type": "condition"
+    },
+    "type": "condition"
+}

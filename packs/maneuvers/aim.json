@@ -1,0 +1,27 @@
+{
+    "_id": "HFYoWaMAUbVhzL3y",
+    "img": "systems/gcsga/assets/maneuver/aiming.webp",
+    "name": "Aim",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "aiming",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "type": "condition"
+    },
+    "type": "condition"
+}

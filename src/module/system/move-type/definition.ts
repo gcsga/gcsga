@@ -1,4 +1,4 @@
-import { MoveTypeResolver, evaluateToNumber } from "@util"
+import { MoveTypeResolver, evaluateToNumber } from "@module/util/index.ts"
 import { MoveTypeDefObj, MoveTypeObj } from "./data.ts"
 import { MoveTypeOverride, MoveTypeOverrideSchema } from "./override.ts"
 import { AbstractAttributeDef } from "@system"

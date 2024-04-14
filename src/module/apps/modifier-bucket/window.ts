@@ -1,8 +1,9 @@
 import { HOOKS, ModifierItem, RollModifier, RollModifierStack, SOCKET, SYSTEM_NAME } from "@data"
 import { ModifierBucket } from "./button.ts"
 import { UserFlags } from "@module/user/data.ts"
-import { LocalizeGURPS, PDF, htmlQuery, htmlQueryAll } from "@util"
+import { LocalizeGURPS, htmlQuery, htmlQueryAll } from "@util"
 import { DialogGURPS } from "../dialog.ts"
+import { PDF } from "@module/util/index.ts"
 
 export class ModifierBucketWindow extends Application {
 	refresh = foundry.utils.debounce(this.render, 100)

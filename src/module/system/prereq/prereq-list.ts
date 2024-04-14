@@ -2,10 +2,11 @@ import { prereq } from "@util/enum/prereq.ts"
 import { NumericCompareType, NumericCriteria, NumericCriteriaSchema } from "@util/numeric-criteria.ts"
 import { PrereqListObj, PrereqObj } from "./data.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { PrereqResolver, TooltipGURPS, extractTechLevel } from "@util"
+import { TooltipGURPS, extractTechLevel } from "@util"
 import { ActorGURPS } from "@actor"
 import { Prereq } from "./index.ts"
 import { ActorType } from "@module/data/constants.ts"
+import { PrereqResolver } from "@module/util/index.ts"
 
 const fields = foundry.data.fields
 

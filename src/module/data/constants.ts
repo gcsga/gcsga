@@ -2,6 +2,11 @@ import Sortable from "sortablejs"
 
 const SYSTEM_NAME = "gcsga"
 
+enum COMPENDIA {
+	CONDITIONS = "conditions",
+	MANEUVERS = "maneuvers",
+}
+
 // Settings
 enum SETTINGS {
 	BASIC_SET_PDF = "basic_set_pdf",
@@ -160,11 +165,11 @@ enum ItemFlags {
 
 enum ConditionID {
 	// Posture
-	PostureCrouch = "posture_crouch",
-	PostureKneel = "posture_kneel",
-	PostureSit = "posture_sit",
-	PostureCrawl = "posture_crawl",
-	PostureProne = "posture_prone",
+	PostureCrouch = "crouching",
+	PostureKneel = "kneeling",
+	PostureSit = "sitting",
+	PostureCrawl = "crawling",
+	PostureProne = "prone",
 	// Serious Damage
 	Reeling = "reeling",
 	Fatigued = "fatigued",
@@ -176,10 +181,10 @@ enum ConditionID {
 	Pain = "pain",
 	Unconscious = "unconscious",
 	Sleeping = "sleeping",
-	Coma = "coma",
+	Comatose = "comatose",
 	// Confusion ?
 	Stun = "stun",
-	MentalStun = "mental_stun",
+	MentalStun = "mental-stun",
 	Poisoned = "poisoned",
 	Burning = "burning",
 	Cold = "cold",
@@ -192,7 +197,7 @@ enum ConditionID {
 	// Stealth / Movement Good
 	Sprinting = "sprinting",
 	Flying = "flying",
-	Stealth = "stealth",
+	Stealthy = "stealthy",
 	Waiting = "waiting",
 	Invisible = "invisible",
 	// Afflictions
@@ -202,52 +207,52 @@ enum ConditionID {
 	Agony = "agony",
 	Seizure = "seizure",
 	// Disabled Function
-	Blinded = "blind", // Inconsistency here between "blinded" and "blind" to match foundry default name
+	Blind = "blind", // Inconsistency here between "blinded" and "blind" to match foundry default name
 	Deafened = "deafened",
 	Silenced = "silenced",
 	Choking = "choking",
-	HeartAttack = "heart_attack",
+	HeartAttack = "heart-attack",
 	// Drunk-adjacent
-	Euphoria = "euphoria",
+	Euphoric = "euphoric",
 	Hallucinating = "hallucinating",
 	Drunk = "drunk",
 	Drowsy = "drowsy",
-	Daze = "daze",
+	Dazed = "dazed",
 	// ConditionTrigger -- this is a special condition that is used to trigger other effects.
 	Trigger = "trigger",
 }
 
 enum ManeuverID {
 	// Row 1
-	DoNothing = "do_nothing",
+	DoNothing = "do-nothing",
 	Attack = "attack",
-	AOA = "aoa",
-	AOD = "aod",
+	AOA = "all-out-attack",
+	AOD = "all-out-defense",
 	// Row 2
 	Move = "move",
-	MoveAndAttack = "move_attack",
-	AOADouble = "aoa_double",
-	AODDouble = "aod_double",
+	MoveAndAttack = "move-and-attack",
+	AOADouble = "all-out-attack-double",
+	AODDouble = "all-out-defense-double",
 	// Row 3
-	ChangePosture = "change_posture",
+	ChangePosture = "change-posture",
 	Feint = "feint",
-	AOAFeint = "aoa_feint",
-	AODDodge = "aod_dodge",
+	AOAFeint = "all-out-attack-feint",
+	AODDodge = "all-out-defense-dodge",
 	// Row 4
 	Ready = "ready",
 	Evaluate = "evaluate",
-	AOADetermined = "aoa_determined",
-	AODParry = "aod_parry",
+	AOADetermined = "all-out-attack-determined",
+	AODParry = "all-out-defense-parry",
 	// Row 5
 	Concentrate = "concentrate",
 	Aiming = "aiming",
-	AOAStrong = "aoa_strong",
-	AODBlock = "aod_block",
+	AOAStrong = "all-out-attack-strong",
+	AODBlock = "all-out-defense-block",
 	// Row 6
 	Wait = "wait",
-	BLANK_1 = "blank_1",
-	AOASF = "aoa_suppressing_fire",
-	BLANK_2 = "blank_2",
+	BLANK_1 = "blank-1",
+	AOASF = "all-out-attack-suppressing-fire",
+	BLANK_2 = "blank-2",
 }
 
 // Actor
@@ -352,9 +357,10 @@ enum HOOKS {
 }
 
 export {
-	ActorFlags,
 	ABSTRACT_CONTAINER_TYPES,
+	ActorFlags,
 	ActorType,
+	COMPENDIA,
 	CONTAINER_TYPES,
 	ConditionID,
 	DEFAULT_INITIATIVE_FORMULA,

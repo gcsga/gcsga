@@ -42,8 +42,11 @@ export const Init = {
 			CONFIG.GURPS = GURPSCONFIG
 
 			CONFIG.Token.objectClass = TokenGURPS
-
-			// CONFIG.statusEffects = StatusEffectsGURPS
+			CONFIG.statusEffects = Object.entries(CONFIG.GURPS.statusEffects.conditions).map(([id, label]) => ({
+				id,
+				label,
+				icon: `systems/${SYSTEM_NAME}/assets/status/${id}.webp` as const,
+			}))
 			CONFIG.Canvas.rulerClass = RulerGURPS
 
 			CONFIG.ui.combat = CombatTrackerGURPS

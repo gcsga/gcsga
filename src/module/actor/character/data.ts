@@ -1,5 +1,6 @@
 import type { ActorFlagsGURPS, ActorSystemData, ActorSystemSource, BaseActorSourceGURPS } from "@actor/base/data.ts"
-import { ActorFlags, ActorType, SYSTEM_NAME, SheetSettingsObj, gid } from "@data"
+import { ActorFlags, ActorType, SYSTEM_NAME, gid } from "@data"
+import { SheetSettingsObj } from "@module/data/sheet-settings.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import type { AttributeObj, MoveTypeObj, PoolThreshold, ResourceTrackerObj } from "@system"
 import type { Weight } from "@util/weight.ts"

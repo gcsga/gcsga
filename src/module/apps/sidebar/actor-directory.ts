@@ -1,5 +1,5 @@
 import { ActorGURPS } from "@actor"
-import { LastActor } from "@util"
+import { LastActor } from "@module/util/last-actor.ts"
 
 export class ActorDirectoryGURPS<TActor extends ActorGURPS<null>> extends ActorDirectory<TActor> {
 	// Set LastActor value when clicking on entry

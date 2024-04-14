@@ -1,0 +1,27 @@
+{
+    "_id": "fw3ACOvn8iDtkCx1",
+    "img": "systems/gcsga/assets/maneuver/move-and-attack.webp",
+    "name": "Move and Attack",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "move-and-attack",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "type": "condition"
+    },
+    "type": "condition"
+}

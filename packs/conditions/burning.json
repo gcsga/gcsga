@@ -1,0 +1,28 @@
+{
+    "_id": "exKYB324Wto5gNj1",
+    "img": "systems/gcsga/assets/status/burning.webp",
+    "name": "Burning",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "burning",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "reference": "B434",
+        "type": "condition"
+    },
+    "type": "condition"
+}

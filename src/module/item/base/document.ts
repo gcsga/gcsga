@@ -15,7 +15,6 @@ import { MigrationList, MigrationRunner } from "@module/migration/index.ts"
 import {
 	EvalEmbeddedRegex,
 	LocalizeGURPS,
-	SkillDefaultResolver,
 	display,
 	replaceAllStringFunc,
 	setHasElement,
@@ -29,6 +28,7 @@ import { ContainedWeightReduction, ContainedWeightReductionObj, Feature, PrereqL
 import { getItemArtworkName, itemIsOfType } from "@item/helpers.ts"
 import Document, { _Document } from "types/foundry/common/abstract/document.js"
 import { DataSchema } from "types/foundry/common/data/fields.js"
+import { SkillDefaultResolver } from "@module/util/resolvers.ts"
 
 /** The basic `Item` subclass for the system */
 class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends Item<TParent> {
@@ -172,14 +172,14 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 	}
 
 	// TODO: replace with something better
-	protected override async _preCreate(
-		data: this["_source"],
-		options: DocumentModificationContext<TParent>,
-		user: User<Actor<null>>,
-	): Promise<boolean | void> {
-		super._preCreate(data, options, user)
-		if (data._id === null) this.updateSource({ name: LocalizeGURPS.translations.TYPES.Item[data.type] })
-	}
+	// protected override async _preCreate(
+	// 	data: this["_source"],
+	// 	options: DocumentModificationContext<TParent>,
+	// 	user: User<Actor<null>>,
+	// ): Promise<boolean | void> {
+	// 	super._preCreate(data, options, user)
+	// 	if (data._id === null) this.updateSource({ name: LocalizeGURPS.translations.TYPES.Item[data.type] })
+	// }
 
 	static override getDefaultArtwork(itemData: foundry.documents.ItemSource): {
 		img: ImageFilePath

@@ -25,7 +25,9 @@
 	#defaults,
 	#trait-modifiers,
 	#equipment-modifiers,
-	#roll-modifiers {
+	#roll-modifiers,
+	#melee-attacks,
+	#ranged-attacks {
 		margin: 2px 16px;
 	}
 
@@ -92,6 +94,8 @@
 		}
 
 		ul {
+			display: flex;
+			flex-direction: column;
 			gap: 5px;
 		}
 	}
@@ -116,7 +120,9 @@
 	}
 
 	#trait-modifiers,
-	#equipment-modifiers {
+	#equipment-modifiers,
+	#melee-attacks,
+	#ranged-attacks {
 		@include item-list;
 	}
 
@@ -143,6 +149,20 @@
 		header,
 		ul.items > li > .data {
 			grid-template-columns: 1.5rem auto 1.5rem 8rem 9rem 3rem 3.5rem;
+		}
+	}
+
+	#melee-attacks {
+		header,
+		ul.items > li > .data {
+			grid-template-columns: auto 2rem 3rem 3rem 4rem 3rem 3rem;
+		}
+	}
+
+	#ranged-attacks {
+		header,
+		ul.items > li > .data {
+			grid-template-columns: auto 2rem 2.5rem 4rem 4rem 2.5rem 3rem 2.5rem 3rem 2rem;
 		}
 	}
 }

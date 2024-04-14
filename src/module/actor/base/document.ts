@@ -6,7 +6,7 @@ import type { ActorSourceGURPS } from "@actor/data.ts"
 import type { ActiveEffectGURPS } from "@module/active-effect/index.ts"
 import { EquipmentContainerSource, EquipmentSource, ItemSourceGURPS } from "@item/data/index.ts"
 import { itemIsOfType } from "@item/helpers.ts"
-import { ErrorGURPS, Evaluator, LastActor, LocalizeGURPS, TooltipGURPS, attribute, objectHasKey, stlimit } from "@util"
+import { ErrorGURPS, LocalizeGURPS, TooltipGURPS, attribute, objectHasKey, stlimit } from "@util"
 import { ActorFlags, ActorType, ItemFlags, ItemType, SYSTEM_NAME, gid } from "@module/data/constants.ts"
 import {
 	AbstractAttribute,
@@ -31,6 +31,9 @@ import { DamageAttackerAdapter, DamageTargetActor, DamageWeaponAdapter } from "@
 import { DamageRollAdapter, DamageTarget } from "@module/apps/damage-calculator/index.ts"
 import { ApplyDamageDialog } from "@module/apps/damage-calculator/apply-damage-dialog.ts"
 import { getCRFeatures } from "@item/trait/data.ts"
+import { RollModifier } from "@module/data/types.ts"
+import { LastActor } from "@module/util/last-actor.ts"
+import { Evaluator } from "@module/util/index.ts"
 
 /**
  * Extend the base Actor class to implement additional logic specialized for GURPS.
@@ -99,6 +102,14 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 		return 0
 	}
 
+	// Modifiers
+	get modifiers(): RollModifier[] {
+		return this.itemCollections.effects.reduce((acc: RollModifier[], item) => {
+			acc.push(...(item.system.modifiers ?? []))
+			return acc
+		}, [])
+	}
+
 	static mergeSchema(
 		a: foundry.documents.ActorSchema<string, object>,
 		b: foundry.data.fields.DataSchema,
@@ -107,14 +118,14 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 		return a
 	}
 
-	protected override async _preCreate(
-		data: this["_source"],
-		options: DocumentModificationContext<TParent>,
-		user: User<Actor<null>>,
-	): Promise<boolean | void> {
-		super._preCreate(data, options, user)
-		this.updateSource({ name: LocalizeGURPS.translations.TYPES.Actor[data.type] })
-	}
+	// protected override async _preCreate(
+	// 	data: this["_source"],
+	// 	options: DocumentModificationContext<TParent>,
+	// 	user: User<Actor<null>>,
+	// ): Promise<boolean | void> {
+	// 	super._preCreate(data, options, user)
+	// 	this.updateSource({ name: LocalizeGURPS.translations.TYPES.Actor[data.type] })
+	// }
 
 	protected override _onCreate(
 		data: this["_source"],

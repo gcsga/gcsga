@@ -4,8 +4,9 @@ import { LocalizeGURPS } from "@util/localize.ts"
 import { NumericCompareType, NumericCriteria } from "@util/numeric-criteria.ts"
 import { BasePrereq } from "./base.ts"
 import { ContainedQuantityPrereqObj } from "./data.ts"
-import { PrereqResolver, TooltipGURPS } from "@util"
+import { TooltipGURPS } from "@util"
 import { ItemType } from "@module/data/constants.ts"
+import { PrereqResolver } from "@module/util/index.ts"
 
 export class ContainedQuantityPrereq extends BasePrereq<prereq.Type.ContainedQuantity> {
 	qualifier: NumericCriteria

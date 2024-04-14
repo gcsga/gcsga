@@ -2,7 +2,7 @@ import { feature } from "@util/enum/feature.ts"
 import { Int } from "@util/fxp.ts"
 import { Weight, WeightUnits } from "@util/weight.ts"
 import { ContainedWeightReductionObj } from "./data.ts"
-import { FeatureOwner } from "@util"
+import { FeatureOwner } from "@module/util/index.ts"
 
 export class ContainedWeightReduction {
 	declare type: feature.Type.ContainedWeightReduction

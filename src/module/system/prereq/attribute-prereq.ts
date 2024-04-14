@@ -4,8 +4,9 @@ import { prereq } from "@util/enum/prereq.ts"
 import { AttributePrereqObj } from "./data.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { gid } from "@data"
-import { PrereqResolver, TooltipGURPS } from "@util"
+import { TooltipGURPS } from "@util"
 import { LootGURPS } from "@actor"
+import { PrereqResolver } from "@module/util/index.ts"
 
 export class AttributePrereq extends BasePrereq<prereq.Type.Attribute> {
 	which: string

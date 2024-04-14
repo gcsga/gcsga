@@ -5,8 +5,9 @@ import { NumericCompareType, NumericCriteria } from "@util/numeric-criteria.ts"
 import { SkillPrereqObj } from "./data.ts"
 import { ItemGURPS } from "@item"
 import { ItemType } from "@data"
-import { LocalizeGURPS, PrereqResolver, TooltipGURPS } from "@util"
+import { LocalizeGURPS, TooltipGURPS } from "@util"
 import { LootGURPS } from "@actor"
+import { PrereqResolver } from "@module/util/index.ts"
 
 export class SkillPrereq extends BasePrereq<prereq.Type.Skill> {
 	name: StringCriteria

@@ -1,17 +1,9 @@
 import { ItemGURPS } from "@item"
 import { BasePrereq } from "./base.ts"
-import {
-	EquipmentHolder,
-	LocalizeGURPS,
-	NumericCompareType,
-	TooltipGURPS,
-	Weight,
-	WeightCriteria,
-	WeightUnits,
-	prereq,
-} from "@util"
+import { LocalizeGURPS, NumericCompareType, TooltipGURPS, Weight, WeightCriteria, WeightUnits, prereq } from "@util"
 import { ContainedWeightPrereqObj } from "./data.ts"
 import { ItemType } from "@module/data/constants.ts"
+import { EquipmentHolder } from "@module/util/index.ts"
 
 export class ContainedWeightPrereq extends BasePrereq<prereq.Type.ContainedWeight> {
 	qualifier: WeightCriteria

@@ -94,16 +94,24 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS
 			},
 			reactions: { items: this.actor.reactions, types: [] },
 			conditional_modifiers: { items: this.actor.conditionalModifiers, types: [] },
-			melee_weapons: {
-				items: this._prepareItemCollection(this.actor.itemCollections.equippedWeapons(ItemType.MeleeWeapon)),
+			melee: {
+				items: this._prepareItemCollection(
+					this.actor.itemCollections.equippedWeapons(ItemType.MeleeWeapon),
+					null,
+					true,
+				),
 				types: [],
 			},
-			ranged_weapons: {
-				items: this._prepareItemCollection(this.actor.itemCollections.equippedWeapons(ItemType.RangedWeapon)),
+			ranged: {
+				items: this._prepareItemCollection(
+					this.actor.itemCollections.equippedWeapons(ItemType.RangedWeapon),
+					null,
+					true,
+				),
 				types: [],
 			},
 			effects: {
-				items: this._prepareItemCollection(this.actor.itemCollections.effects),
+				items: this._prepareItemCollection(this.actor.itemCollections.effects, null),
 				types: [ItemType.Effect, ItemType.Condition],
 			},
 		}
@@ -113,7 +121,10 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS
 	protected _prepareItemCollection(
 		collection: Collection<ItemGURPS>,
 		parent: string | null = null,
+		ignoreParent = false,
 	): SheetItem<ItemGURPS>[] {
+		if (ignoreParent)
+			return collection.contents.sort((a, b) => (a.sort || 0) - (b.sort || 0)).map(e => this._prepareSheetItem(e))
 		return collection.contents
 			.filter(item => item.flags[SYSTEM_NAME][ItemFlags.Container] === parent)
 			.sort((a, b) => (a.sort || 0) - (b.sort || 0))

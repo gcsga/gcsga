@@ -1,9 +1,10 @@
 import { ActorGURPS } from "@actor"
-import { SceneGURPS, TokenDocumentGURPS } from "@scene"
-import { UserFlags, UserFlagsGURPS, UserSourceGURPS } from "./data.ts"
 import { TokenGURPS } from "@module/canvas/index.ts"
 import { HOOKS, RollModifierTags, SYSTEM_NAME } from "@module/data/constants.ts"
 import { RollModifier } from "@module/data/types.ts"
+import { SceneGURPS, TokenDocumentGURPS } from "@scene"
+import * as R from "remeda"
+import { UserFlags, UserFlagsGURPS, UserSourceGURPS } from "./data.ts"
 
 class UserGURPS extends User<ActorGURPS<null>> {
 	override prepareData(): void {
@@ -46,6 +47,13 @@ class UserGURPS extends User<ActorGURPS<null>> {
 			total += m.modifier
 		}
 		return total
+	}
+
+	get activeTokens(): TokenDocumentGURPS[] {
+		if (!canvas.ready || canvas.tokens.controlled.length === 0) {
+			return R.compact([game.user.character?.getActiveTokens(true, true).shift()]) as TokenDocumentGURPS[]
+		}
+		return canvas.tokens.controlled.filter(t => t.isOwner).map(t => t.document)
 	}
 
 	addModifier(mod: RollModifier): void {

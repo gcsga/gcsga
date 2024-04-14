@@ -1,0 +1,41 @@
+{
+    "_id": "5bH7mqJIUcSKsxLi",
+    "img": "systems/gcsga/assets/status/nausea.webp",
+    "name": "Nausea",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "nausea",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [
+            {
+                "id": "to all attribute rolls",
+                "modifier": -2
+            },
+            {
+                "id": "to all skill rolls",
+                "modifier": -2
+            },
+            {
+                "id": "to all active defense rolls",
+                "modifier": -1
+            }
+        ],
+        "overlay": false,
+        "reference": "B428",
+        "type": "condition"
+    },
+    "type": "condition"
+}

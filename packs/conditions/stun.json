@@ -1,0 +1,28 @@
+{
+    "_id": "bPppFU2ZBW7lXkwv",
+    "img": "systems/gcsga/assets/status/stun.webp",
+    "name": "Stun",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "stun",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "reference": "B420",
+        "type": "condition"
+    },
+    "type": "condition"
+}

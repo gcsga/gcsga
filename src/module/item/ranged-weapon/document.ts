@@ -84,7 +84,7 @@ class RangedWeaponGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> e
 	override prepareBaseData(): void {
 		super.prepareBaseData()
 		this.accuracy = WeaponAccuracy.parse(this.system.accuracy)
-		this.range = WeaponRange.parse(this.system.accuracy)
+		this.range = WeaponRange.parse(this.system.range)
 		this.ROF = WeaponROF.parse(this.system.rate_of_fire)
 		this.shots = WeaponShots.parse(this.system.shots)
 		this.bulk = WeaponBulk.parse(this.system.bulk)

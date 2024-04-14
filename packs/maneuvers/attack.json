@@ -1,0 +1,27 @@
+{
+    "_id": "8pPmkd3vzdMLz2JC",
+    "img": "systems/gcsga/assets/maneuver/attack.webp",
+    "name": "Attack",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "attack",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "type": "condition"
+    },
+    "type": "condition"
+}

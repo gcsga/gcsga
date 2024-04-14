@@ -1,0 +1,32 @@
+{
+    "_id": "7AkKj9UaXyAa9Tgj",
+    "img": "systems/gcsga/assets/status/sitting.webp",
+    "name": "Sitting",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "sitting",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [
+            {
+                "id": "to hit with ranged combat (Sitting/Crawling/Lying Down)",
+                "modifier": -2
+            }
+        ],
+        "overlay": false,
+        "type": "condition"
+    },
+    "type": "condition"
+}

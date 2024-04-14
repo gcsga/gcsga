@@ -1,4 +1,4 @@
-import { ResourceTrackerResolver } from "@util"
+import { ResourceTrackerResolver } from "@module/util/index.ts"
 import { ResourceTrackerDefObj, ResourceTrackerObj } from "./data.ts"
 import { AbstractAttributeDef, PoolThreshold } from "@system"
 import { PoolThresholdSchema } from "@system/attribute/pool-threshold.ts"

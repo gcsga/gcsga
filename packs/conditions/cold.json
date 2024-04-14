@@ -1,0 +1,28 @@
+{
+    "_id": "3j7SgNgmFrev7faM",
+    "img": "systems/gcsga/assets/status/cold.webp",
+    "name": "Cold",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "cold",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "reference": "B430",
+        "type": "condition"
+    },
+    "type": "condition"
+}

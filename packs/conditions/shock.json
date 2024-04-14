@@ -1,0 +1,33 @@
+{
+    "_id": "1BfloK26EPZSz6z5",
+    "img": "systems/gcsga/assets/status/shock.webp",
+    "name": "Shock",
+    "system": {
+        "can_level": true,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": 1,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "rounds"
+        },
+        "id": "shock",
+        "levels": {
+            "current": 0,
+            "max": 8
+        },
+        "modifiers": [
+            {
+                "id": "shock test",
+                "modifier": -1
+            }
+        ],
+        "overlay": false,
+        "reference": "B419",
+        "type": "condition"
+    },
+    "type": "condition"
+}

@@ -1,12 +1,23 @@
-import { AbstractContainerGURPS, ItemGURPS } from "@item"
+import { AbstractContainerGURPS, AbstractWeaponGURPS, ItemGURPS } from "@item"
 import { ActorGURPS } from "./document.ts"
 import { DamagePayload, DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
-import { DnD, ErrorGURPS, applyBanding, htmlClosest, htmlQueryAll } from "@util"
-import { ItemFlags, ItemType, SORTABLE_BASE_OPTIONS, SYSTEM_NAME } from "@module/data/constants.ts"
+import { DnD, ErrorGURPS, LocalizeGURPS, applyBanding, htmlClosest, htmlQueryAll } from "@util"
+import {
+	ActorType,
+	ItemFlags,
+	ItemType,
+	RollType,
+	SORTABLE_BASE_OPTIONS,
+	SYSTEM_NAME,
+	gid,
+} from "@module/data/constants.ts"
 import { ItemSections, itemSections } from "./item-collection-map.ts"
 import Sortable from "sortablejs"
 import { isContainerCycle } from "@item/abstract-container/helpers.ts"
 import { ItemSourceGURPS } from "@item/data/index.ts"
+import { RollTypeData } from "@module/roll/roll-handler.ts"
+import { RollGURPS } from "@module/roll/index.ts"
+import { evaluateToNumber } from "@module/util/index.ts"
 
 type DispatchFunctions = Record<string, (arg: DamagePayload) => void>
 
@@ -60,9 +71,60 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 			})
 		}
 
+		for (const button of htmlQueryAll(html, "div.rollable")) {
+			button.addEventListener("click", ev => this.#onClickRoll(ev, button))
+		}
+
 		this.#activateItemDragDrop(html)
 		this.#activateContextMenu(html)
 		applyBanding(this.element[0])
+	}
+
+	async #onClickRoll(event: MouseEvent, button: HTMLElement): Promise<void> {
+		event.preventDefault()
+		const type = button.dataset.type as RollType
+		const data: Record<string, unknown> = { type, hidden: event.ctrlKey }
+		if (!this.actor.isOfType(ActorType.Character)) return
+		if (type === RollType.Attribute) {
+			const id = button.dataset.id ?? ""
+			if (id === gid.Dodge) {
+				data.attribute = this.actor.dodgeAttribute
+			} else data.attribute = this.actor.attributes.get(id)
+		}
+		if (
+			[
+				RollType.Damage,
+				RollType.Attack,
+				RollType.Parry,
+				RollType.Block,
+				RollType.Skill,
+				RollType.SkillRelative,
+				RollType.Spell,
+				RollType.SpellRelative,
+				RollType.ControlRoll,
+			].includes(type)
+		) {
+			let itemId = button.dataset.itemId ?? ""
+			if (itemId === "") {
+				itemId = htmlClosest(button, "[data-item-id]")?.dataset.itemId ?? ""
+				if (itemId === "") throw ErrorGURPS("The rollable button does not correspond to a valid item.")
+			}
+			if (([gid.Thrust, gid.Swing] as string[]).includes(itemId)) {
+				const attackId = itemId as gid.Thrust | gid.Swing
+				data.item = {
+					itemName: LocalizeGURPS.translations.gurps.character[attackId],
+					uuid: attackId,
+					fastResolvedDamage: this.actor[attackId].string,
+				}
+			} else data.item = this.actor.items.get(itemId)
+		}
+		if (type === RollType.Modifier) {
+			data.modifier = evaluateToNumber(button.dataset.modifier ?? "", this.actor)
+			data.comment = button.dataset.comment ?? ""
+			if (event.type === "contextmenu") data.modifier = -(data.modifier as number)
+		}
+		if ([RollType.Attack, RollType.Parry].includes(type)) (data.item as AbstractWeaponGURPS).checkUnready(type)
+		return RollGURPS.handleRoll(game.user, this.actor, data as RollTypeData)
 	}
 
 	#activateItemDragDrop(html: HTMLElement): void {

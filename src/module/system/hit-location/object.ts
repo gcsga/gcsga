@@ -1,8 +1,9 @@
-import { BodyOwner, LocalizeGURPS, StringBuilder, TooltipGURPS, equalFold, sanitizeId } from "@util"
+import { LocalizeGURPS, StringBuilder, TooltipGURPS, equalFold, sanitizeId } from "@util"
 import { BodyObj, HitLocationObj } from "./data.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { gid } from "@data"
 import { RESERVED_IDS } from "@system"
+import { BodyOwner } from "@module/util/index.ts"
 
 const fields = foundry.data.fields
 

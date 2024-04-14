@@ -6,9 +6,10 @@ import { WeaponDamageObj } from "./data.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { progression } from "@util/enum/progression.ts"
 import { CharacterGURPS } from "@actor"
-import { ItemType, sheetSettingsFor } from "@data"
+import { ItemType } from "@data"
 import { AbstractWeaponGURPS } from "./document.ts"
 import { TooltipGURPS } from "@util"
+import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
 
 export class WeaponDamage {
 	owner?: AbstractWeaponGURPS

@@ -1,11 +1,12 @@
 import { PartialSettingsData, SettingsMenuGURPS } from "./menu.ts"
 import { htmlQuery, htmlQueryAll } from "@util/dom.ts"
-import { DnD, SettingsHelpers, getNewAttributeId, prepareFormData } from "@util"
+import { DnD, getNewAttributeId, prepareFormData } from "@util"
 import { defaultSettings } from "./defaults.ts"
 import { SETTINGS, SYSTEM_NAME } from "@data"
 import { DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
 import { MoveTypeDefObj, MoveTypeOverrideConditionType } from "@system"
-import { DropDataContext } from "@util/settings-helpers.ts"
+import { DropDataContext } from "@module/util/settings-helpers.ts"
+import { SettingsHelpers } from "@module/util/index.ts"
 
 enum ListType {
 	MoveType = "move_types",

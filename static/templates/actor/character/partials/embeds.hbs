@@ -1,5 +1,5 @@
 <section id="embeds" style="grid-template: {{ blockLayout system.settings.block_layout itemCollections }}" data-embeds>
-	{{#with itemCollections.reactions as |section|}} {{#if section.items.length}}
+	{{#with itemCollections.reactions as |section|}}
 	<div id="reactions">
 		<header>
 			<span class="modifier">{{ localize "gurps.character.reactions.modifier" }}</span>
@@ -9,7 +9,7 @@
 			{{#each section.items}} {{>actor/character/partials/reaction}} {{/each}}
 		</ul>
 	</div>
-	{{/if}} {{/with}} {{#with itemCollections.conditional_modifiers as |section|}} {{#if section.items.length}}
+	{{/with}} {{#with itemCollections.conditional_modifiers as |section|}}
 	<div id="conditional_modifiers">
 		<header>
 			<span class="modifier">{{ localize "gurps.character.conditional_modifiers.modifier" }}</span>
@@ -19,7 +19,7 @@
 			{{#each section.items}} {{>actor/character/partials/conditional-modifier}} {{/each}}
 		</ul>
 	</div>
-	{{/if}} {{/with}} {{#with itemCollections.melee_weapons as |section|}} {{#if section.items.length}}
+	{{/with}} {{#with itemCollections.melee as |section|}}
 	<div id="melee">
 		<header>
 			<span class="item-name">{{ localize "gurps.character.melee.desc" }}</span>
@@ -35,7 +35,7 @@
 			{{#each section.items}} {{>actor/character/partials/melee-attack}} {{/each}}
 		</ul>
 	</div>
-	{{/if}} {{/with}} {{#with itemCollections.ranged_weapons as |section|}} {{#if section.items.length}}
+	{{/with}} {{#with itemCollections.ranged as |section|}}
 	<div id="ranged">
 		<header>
 			<span class="item-name">{{ localize "gurps.character.ranged.desc" }}</span>
@@ -54,7 +54,7 @@
 			{{#each section.items}} {{>actor/character/partials/ranged-attack}} {{/each}}
 		</ul>
 	</div>
-	{{/if}} {{/with}} {{#with itemCollections.traits as |section|}}
+	{{/with}} {{#with itemCollections.traits as |section|}}
 	<div id="traits">
 		<header>
 			<span class="item-name">{{ localize "gurps.character.traits.desc" }}</span>

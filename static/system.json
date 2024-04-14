@@ -42,9 +42,21 @@
 			"flags": {}
 		},
 		{
-			"name": "condition-items",
+			"name": "conditions",
 			"label": "Conditions",
 			"path": "packs/conditions",
+			"type": "Item",
+			"system": "gcsga",
+			"ownership": {
+				"PLAYER": "OBSERVER",
+				"ASSISTANT": "OWNER"
+			},
+			"flags": {}
+		},
+		{
+			"name": "maneuvers",
+			"label": "Maneuvers",
+			"path": "packs/maneuvers",
 			"type": "Item",
 			"system": "gcsga",
 			"ownership": {

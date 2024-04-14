@@ -1,8 +1,8 @@
 import { SOCKET } from "@data"
 import { loadModifiers } from "@module/apps/modifier-bucket/data.ts"
 import { TokenHUDGURPS } from "@module/canvas/index.ts"
+import { LastActor, evaluateToNumber } from "@module/util/index.ts"
 import { SetGameGURPS } from "@scripts/set-game-gurps.ts"
-import { LastActor, evaluateToNumber } from "@util"
 import { createDragImage } from "@util/drag-image.ts"
 // import { ColorSettings } from "@module/settings/colors.ts"
 // import { SetGameGURPS } from "@scripts/set-game-gurps.ts"
@@ -33,6 +33,7 @@ export const Ready = {
 
 			// Set default user flag state
 			if (canvas && canvas.hud) {
+				// @ts-expect-error async
 				canvas.hud.token = new TokenHUDGURPS()
 			}
 

@@ -1,0 +1,28 @@
+{
+    "_id": "QUD1yQj8FAdBM8gt",
+    "img": "systems/gcsga/assets/status/dead.webp",
+    "name": "Dead",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "dead",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "reference": "B423",
+        "type": "condition"
+    },
+    "type": "condition"
+}

@@ -4,10 +4,11 @@ import { LocalizeGURPS } from "@util/localize.ts"
 import { htmlQueryAll } from "@util/dom.ts"
 import { prepareFormData } from "@util/misc.ts"
 import { defaultSettings } from "./defaults.ts"
-import { DnD, SettingsHelpers } from "@util"
+import { DnD } from "@util"
 import { DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
 import { AttributeDefObj } from "@system"
-import { DropDataContext } from "@util/settings-helpers.ts"
+import { DropDataContext } from "@module/util/settings-helpers.ts"
+import { SettingsHelpers } from "@module/util/index.ts"
 
 type ConfigGURPSListName = (typeof AttributeSettings.SETTINGS)[number]
 

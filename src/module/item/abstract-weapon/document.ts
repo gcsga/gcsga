@@ -7,7 +7,6 @@ import {
 	LocalizeGURPS,
 	StringBuilder,
 	TooltipGURPS,
-	WeaponBonusResolver,
 	display,
 	feature,
 	sheetDisplayNotes,
@@ -21,6 +20,7 @@ import { WeaponFlags } from "./data.ts"
 import { ContainedWeightReduction, Feature, SkillBonus, SkillDefault, WeaponBonus } from "@system"
 import { WeaponParry } from "./weapon-parry.ts"
 import { WeaponDamage } from "./weapon-damage.ts"
+import { WeaponBonusResolver } from "@module/util/resolvers.ts"
 
 abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
 	get itemName(): string {
@@ -69,13 +69,7 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 	}
 
 	get defaults(): SkillDefault[] {
-		const defaults: SkillDefault[] = []
-		const list = this.system.defaults
-		for (const f of list ?? []) {
-			defaults.push(new SkillDefault(f))
-			return defaults
-		}
-		return []
+		return this.system.defaults.map(e => new SkillDefault(e))
 	}
 
 	skillLevel(tooltip?: TooltipGURPS): number {
@@ -84,9 +78,7 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 		if (actor instanceof ActorGURPS && actor.isOfType(ActorType.Character)) {
 			let primaryTooltip = new TooltipGURPS()
 			if (tooltip) primaryTooltip = tooltip
-			const adj =
-				this.skillLevelBaseAdjustment(actor, primaryTooltip) +
-				this.skillLevelPostAdjustment(actor, primaryTooltip)
+			const adj = this.skillLevelPostAdjustment(actor, primaryTooltip)
 			let best = -Infinity
 			for (const def of this.defaults) {
 				let level = def.skillLevelFast(actor, false, null, true)

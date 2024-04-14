@@ -2,21 +2,12 @@ import { DropDataType } from "@module/apps/damage-calculator/damage-chat-message
 import { FilePickerGURPS } from "@module/apps/file-picker.ts"
 import { SETTINGS, SORTABLE_BASE_OPTIONS, SYSTEM_NAME } from "@module/data/constants.ts"
 import { AbstractAttributeDef, AttributeDefObj, MoveTypeDefObj, ResourceTrackerDefObj } from "@system"
-import {
-	CharacterImporter,
-	DnD,
-	LocalizeGURPS,
-	PDF,
-	SettingsHelpers,
-	htmlClosest,
-	htmlQuery,
-	htmlQueryAll,
-	prepareFormData,
-} from "@util"
-import { DropDataContext } from "@util/settings-helpers.ts"
+import { DnD, LocalizeGURPS, htmlClosest, htmlQuery, htmlQueryAll, prepareFormData } from "@util"
 import { CharacterGURPS } from "./document.ts"
 import Sortable from "sortablejs"
 import { CharacterFlags } from "./data.ts"
+import { CharacterImporter, PDF, SettingsHelpers } from "@module/util/index.ts"
+import { DropDataContext } from "@module/util/settings-helpers.ts"
 
 class CharacterConfigSheet<TActor extends CharacterGURPS = CharacterGURPS> extends DocumentSheet<TActor> {
 	// Display this filename in the import button text before importing

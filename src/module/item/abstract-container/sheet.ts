@@ -47,6 +47,17 @@ class AbstractContainerSheetGURPS<TItem extends AbstractContainerGURPS> extends 
 			})
 		}
 
+		for (const entry of htmlQueryAll(html, "li[data-item-id]")) {
+			entry.addEventListener("dblclick", ev => {
+				ev.stopPropagation()
+				const itemId = entry.dataset.itemId
+				if (!itemId) throw ErrorGURPS("Invalid double-click operation: No item ID found")
+				const item = this.item.deepContents.get(itemId)
+				if (!item) throw ErrorGURPS(`Invalid double-click operation: No item found with ID: "${itemId}"`)
+				item.sheet.render(true)
+			})
+		}
+
 		this.#activateContextMenu(html)
 		this._applyBanding()
 	}

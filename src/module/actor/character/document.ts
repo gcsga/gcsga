@@ -887,6 +887,17 @@ class CharacterGURPS<
 	hasTrait(name: string): boolean {
 		return this.itemTypes[ItemType.Trait].some(trait => trait.enabled && trait.name === name)
 	}
+
+	// async changeManeuver(id: ManeuverID | "none"): Promise<ConditionGURPS | null> {
+	// 	const existing = this.itemCollections.conditions.find(e => e.system.id === id)
+	// 	if (existing) return null
+	// 	if (id === "none") return this.resetManeuvers()
+	// 	if ([ManeuverID.BLANK_1, ManeuverID.BLANK_2].includes(id)) return null
+	//
+	// 	const maneuvers = this.itemCollections.conditions.filter(e => AllManeuverIDs.includes(e.system.id))
+	// 	const nedManeuver = fu.duplicate(ConditionGURPS.)
+	//
+	// }
 }
 
 interface CharacterGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null>

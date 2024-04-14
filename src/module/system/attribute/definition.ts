@@ -2,9 +2,9 @@ import { attribute } from "@util/enum/attribute.ts"
 import { PoolThreshold, PoolThresholdSchema } from "./pool-threshold.ts"
 import { AttributeDefObj, AttributeObj } from "./data.ts"
 import { progression } from "@util/enum/progression.ts"
-import { AttributeResolver, evaluateToNumber } from "@util"
 import { AbstractAttributeDef } from "@system/abstract-attribute/definition.ts"
 import { gid } from "@module/data/constants.ts"
+import { AttributeResolver, evaluateToNumber } from "@module/util/index.ts"
 
 const fields = foundry.data.fields
 

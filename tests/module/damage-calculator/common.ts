@@ -10,8 +10,9 @@ import {
 	TargetTraitModifier,
 } from "@module/apps/damage-calculator/index.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
+import { BodyOwner } from "@module/util/index.ts"
 import { BodyGURPS, HitLocation, HitLocationObj } from "@system"
-import { BodyOwner, TooltipGURPS } from "@util"
+import { TooltipGURPS } from "@util"
 
 export class _Attacker implements DamageAttacker {
 	tokenId: string = ""

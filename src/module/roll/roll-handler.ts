@@ -1,4 +1,4 @@
-import { ActorGURPS, CharacterGURPS } from "@actor"
+import { ActorGURPS } from "@actor"
 import { Encumbrance } from "@actor/character/data.ts"
 import {
 	AbstractWeaponGURPS,
@@ -134,8 +134,8 @@ abstract class RollTypeHandler {
 		const modifiers: (RollModifier & { class?: string })[] = this.getModifiers(user)
 
 		// Determine the encumbrance penalty, if any, and add it to the modifiers.
-		// @ts-expect-error awaiting implementation
-		const encumbrance = (actor as CharacterGURPS).encumbranceLevel(true)
+		let encumbrance = { name: LocalizeGURPS.translations.gurps.character.encumbrance[0], penalty: 0 } as Encumbrance
+		if (actor?.isOfType(ActorType.Character)) encumbrance = actor.encumbrance.forSkills
 		level = this.modifyForEncumbrance(item, encumbrance, modifiers, level)
 
 		// Calculate the effective level by applying all modifiers.
@@ -464,6 +464,7 @@ class AttackRollTypeHandler extends RollTypeHandler {
 				})
 			}
 		}
+
 		// @ts-expect-error awaiting implementation
 		return itemData
 	}
@@ -584,9 +585,6 @@ class DamageRollTypeHandler extends RollTypeHandler {
 		extras: { times: number } & Record<string, unknown>,
 	): Promise<Record<string, unknown>> {
 		const modifierTotal = this.applyMods(0, this.getModifiers(user))
-
-		console.trace()
-		console.log(actor, user, item, _level, _formula, name, _type, extras)
 
 		const chatData: Partial<DamagePayload> = {
 			name,

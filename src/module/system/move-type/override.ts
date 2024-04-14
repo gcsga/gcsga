@@ -1,5 +1,5 @@
+import { MoveTypeResolver, evaluateToNumber } from "@module/util/index.ts"
 import { MoveTypeOverrideConditionType, MoveTypeOverrideObj } from "./data.ts"
-import { MoveTypeResolver, evaluateToNumber } from "@util"
 
 const fields = foundry.data.fields
 

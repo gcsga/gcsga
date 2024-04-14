@@ -2,7 +2,8 @@ import { StringCompareType, StringCriteria } from "@util/string-criteria.ts"
 import { BasePrereq } from "./base.ts"
 import { prereq } from "@util/enum/prereq.ts"
 import { EquippedEquipmentPrereqObj } from "./data.ts"
-import { LocalizeGURPS, PrereqResolver, TooltipGURPS } from "@util"
+import { LocalizeGURPS, TooltipGURPS } from "@util"
+import { PrereqResolver } from "@module/util/index.ts"
 
 export class EquippedEquipmentPrereq extends BasePrereq<prereq.Type.EquippedEquipment> {
 	name: StringCriteria

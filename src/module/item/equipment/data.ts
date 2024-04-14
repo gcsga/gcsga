@@ -28,7 +28,7 @@ interface EquipmentSystemSource extends AbstractContainerSystemSource {
 	tech_level: string
 	legality_class: string
 	tags: string[]
-	rated_strength?: number
+	rated_strength: number | null
 	quantity: number
 	value: number
 	weight: WeightString

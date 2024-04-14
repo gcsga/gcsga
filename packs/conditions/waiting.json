@@ -1,0 +1,27 @@
+{
+    "_id": "jPDgXWa3651Srv5b",
+    "img": "systems/gcsga/assets/status/waiting.webp",
+    "name": "Waiting",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "waiting",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "type": "condition"
+    },
+    "type": "condition"
+}

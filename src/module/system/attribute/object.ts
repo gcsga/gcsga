@@ -2,8 +2,9 @@ import { PoolThreshold } from "./pool-threshold.ts"
 import { AttributeObj } from "./data.ts"
 import { AttributeDef } from "./definition.ts"
 import { ActorFlags, SYSTEM_NAME, gid } from "@data"
-import { AttributeResolver, ErrorGURPS, Int, attribute, stlimit } from "@util"
+import { ErrorGURPS, Int, attribute, stlimit } from "@util"
 import { AbstractAttribute } from "@system/abstract-attribute/object.ts"
+import { AttributeResolver } from "@module/util/index.ts"
 
 class AttributeGURPS<TActor extends AttributeResolver = AttributeResolver> extends AbstractAttribute<TActor> {
 	adj = 0

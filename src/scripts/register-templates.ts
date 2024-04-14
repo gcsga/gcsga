@@ -154,8 +154,8 @@ export function registerTemplates(): void {
 		"item/partials/study",
 
 		// Item Embeds
-		"item/partials/melee",
-		"item/partials/ranged",
+		"item/partials/melee-attacks",
+		"item/partials/ranged-attacks",
 		"item/partials/defaults",
 
 		// Legacy Item

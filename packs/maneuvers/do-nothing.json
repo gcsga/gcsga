@@ -1,0 +1,27 @@
+{
+    "_id": "goF9wb5jRDCnivYC",
+    "img": "systems/gcsga/assets/maneuver/do-nothing.webp",
+    "name": "Do Nothing",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "do-nothing",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "type": "condition"
+    },
+    "type": "condition"
+}

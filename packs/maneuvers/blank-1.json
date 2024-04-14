@@ -1,0 +1,27 @@
+{
+    "_id": "tkn65HONJlecAgSd",
+    "img": "systems/gcsga/assets/maneuver/blank-1.webp",
+    "name": "Blank 1",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "blank-1",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "type": "condition"
+    },
+    "type": "condition"
+}

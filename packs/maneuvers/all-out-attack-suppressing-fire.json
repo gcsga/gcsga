@@ -1,0 +1,27 @@
+{
+    "_id": "lTfzTm8R5QpPssJw",
+    "img": "systems/gcsga/assets/maneuver/all-out-attack-suppressing-fire.webp",
+    "name": "All-out Attack (Suppressing Fire)",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "all-out-attack-suppressing-fire",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "type": "condition"
+    },
+    "type": "condition"
+}

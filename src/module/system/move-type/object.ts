@@ -1,4 +1,4 @@
-import { MoveTypeResolver } from "@util"
+import { MoveTypeResolver } from "@module/util/index.ts"
 import { MoveTypeObj } from "./data.ts"
 import { MoveTypeDef } from "./definition.ts"
 import { AbstractAttribute, MoveBonusType } from "@system"

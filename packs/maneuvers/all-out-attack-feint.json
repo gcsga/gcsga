@@ -1,0 +1,27 @@
+{
+    "_id": "JAABLc85PzIJxLCT",
+    "img": "systems/gcsga/assets/maneuver/all-out-attack-feint.webp",
+    "name": "All-out Attack (Feint)",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "all-out-attack-feint",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "type": "condition"
+    },
+    "type": "condition"
+}
