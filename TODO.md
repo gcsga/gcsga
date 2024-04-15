@@ -1,5 +1,15 @@
 ## Immediate TODO
 
+0. Token HUD
+
+-   Add ability to increase/decrease conditions
+-   Add leveled condition support
+-   Add conditions displaying on Token
+-   Add status effect application
+-   Include current maneuver and posture
+    -   Maybe separate posture from other conditions in Token HUD?
+    -   Include all current statuses
+
 1. Item sheets
 
     - Embedded modifier lists

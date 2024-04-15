@@ -1,13 +1,13 @@
 import { TokenDocumentGURPS } from "@scene/token-document/document.ts"
 import { ActorFlagsGURPS, ActorSystemData, PrototypeTokenGURPS } from "./data.ts"
-import { AbstractContainerGURPS, EquipmentContainerGURPS, EquipmentGURPS, ItemGURPS } from "@item"
+import { AbstractContainerGURPS, ConditionGURPS, EquipmentContainerGURPS, EquipmentGURPS, ItemGURPS } from "@item"
 import type { ActorSheetGURPS } from "./sheet.ts"
 import type { ActorSourceGURPS } from "@actor/data.ts"
 import type { ActiveEffectGURPS } from "@module/active-effect/index.ts"
 import { EquipmentContainerSource, EquipmentSource, ItemSourceGURPS } from "@item/data/index.ts"
 import { itemIsOfType } from "@item/helpers.ts"
 import { ErrorGURPS, LocalizeGURPS, TooltipGURPS, attribute, objectHasKey, stlimit } from "@util"
-import { ActorFlags, ActorType, ItemFlags, ItemType, SYSTEM_NAME, gid } from "@module/data/constants.ts"
+import { ActorFlags, ActorType, COMPENDIA, ItemFlags, ItemType, SYSTEM_NAME, gid } from "@module/data/constants.ts"
 import {
 	AbstractAttribute,
 	AttributeBonus,
@@ -604,6 +604,44 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 		// await this.stowOrUnstow(movedItem, container)
 
 		return movedItem
+	}
+
+	async increaseCondition(statusId: string): Promise<ConditionGURPS<this> | undefined> {
+		const existing = this.itemCollections.conditions.find(e => e.system.slug === statusId)
+		if (existing) {
+			if (existing.system.can_level) {
+				const newLevel = Math.max(existing.system.levels.current, 0) + 1
+				if (existing.system.levels.max >= newLevel)
+					return existing.update({ "system.levels.current": newLevel })
+				return existing
+			} else {
+				return existing.delete()
+			}
+		}
+
+		const indexFields = ["system.slug"]
+		const pack = game.packs.get(`${SYSTEM_NAME}.${COMPENDIA.CONDITIONS}`)
+		if (pack) {
+			const index = await pack.getIndex({ fields: indexFields })
+			const item = index.find(e => e.system.slug === statusId)
+			if (!item) throw ErrorGURPS(`No condition found with ID "${statusId}"`)
+			const embeddedItems = (await this.createEmbeddedDocuments("Item", [item])) as ConditionGURPS<this>[]
+			if (embeddedItems[0]) return embeddedItems[0]
+		}
+		return
+	}
+
+	async decreaseCondition(
+		statusId: string,
+		{ forceRemove } = { forceRemove: false },
+	): Promise<ConditionGURPS<this> | undefined> {
+		const existing = this.itemCollections.conditions.find(e => e.system.slug === statusId)
+		if (!existing) return
+		if (!existing.system.can_level || forceRemove) return existing.delete()
+
+		const newLevel = Math.max(existing.system.levels.current - 1, 0)
+		if (newLevel >= 0) existing.delete()
+		return existing.update({ "system.levels.current": newLevel })
 	}
 }
 

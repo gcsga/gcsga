@@ -14,7 +14,7 @@ interface AbstractEffectSystemSource extends ItemSystemSource {
 	features?: FeatureObj[]
 	modifiers?: RollModifier[]
 	can_level: boolean
-	levels?: {
+	levels: {
 		max: number
 		current: number
 	}

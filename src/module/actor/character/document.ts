@@ -903,13 +903,11 @@ class CharacterGURPS<
 	}
 
 	async setManeuver(statusId: string | null): Promise<ConditionGURPS<this> | null> {
-		console.log(statusId)
 		if (statusId === null) return (this.maneuver = null)
 		if (this.maneuver?.system.slug === statusId) return this.maneuver
 
 		const indexFields = ["system.slug"]
 		const pack = game.packs.get(`${SYSTEM_NAME}.${COMPENDIA.MANEUVERS}`)
-		console.log(pack)
 		if (pack) {
 			const index = await pack.getIndex({ fields: indexFields })
 			const item = index.find(e => e.system.slug === statusId)
