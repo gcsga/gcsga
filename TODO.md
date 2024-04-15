@@ -2,7 +2,6 @@
 
 0. Token HUD
 
--   Add ability to increase/decrease conditions
 -   Add leveled condition support
 -   Add conditions displaying on Token
 -   Add status effect application
