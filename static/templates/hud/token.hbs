@@ -45,7 +45,7 @@
                  title="{{ localize "HUD.AssignStatusEffects" }}" />
             <div class="status-effects icon-grid">
                 {{#each statuses as |status|}}
-                    <img class="effect-control {{ status.cssClass }}" src="{{ status.src }}" {{#if status.title}}title="{{ status.title }}"{{/if}} data-status-id="{{ status.id }}" />
+                    <img class="effect-control {{ status.cssClass }}" src="{{ status.src }}" data-type="status" {{#if status.title}}title="{{ status.title }}"{{/if}} data-status-id="{{ status.id }}" />
                 {{/each}}
                 <div class="title-bar"></div>
             </div>
@@ -63,7 +63,7 @@
                 <i class="fas fa-person-running"></i>
                 <div class="maneuvers icon-grid">
                     {{#each maneuvers as |status|}}
-                        <img class="effect-control {{ status.cssClass }}" src="{{ status.src }}" {{#if status.title}}title="{{ status.title }}"{{/if}} data-status-id="{{ status.id }}" />
+                        <img class="effect-control {{ status.cssClass }}" src="{{ status.src }}" data-type="maneuver" {{#if status.title}}title="{{ status.title }}"{{/if}} data-status-id="{{ status.id }}" />
                     {{/each}}
                     <div class="title-bar"></div>
                 </div>

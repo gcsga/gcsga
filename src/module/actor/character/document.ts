@@ -21,9 +21,19 @@ import {
 	ThresholdOp,
 	WeaponBonus,
 } from "@system"
-import { AbstractWeaponGURPS, SkillGURPS, TechniqueGURPS, TraitContainerGURPS, TraitGURPS } from "@item"
-import { ActorFlags, ActorType, ItemType, SETTINGS, SYSTEM_NAME, WeaponType, gid } from "@module/data/constants.ts"
+import { AbstractWeaponGURPS, ConditionGURPS, SkillGURPS, TechniqueGURPS, TraitContainerGURPS, TraitGURPS } from "@item"
 import {
+	ActorFlags,
+	ActorType,
+	COMPENDIA,
+	ItemType,
+	SETTINGS,
+	SYSTEM_NAME,
+	WeaponType,
+	gid,
+} from "@module/data/constants.ts"
+import {
+	ErrorGURPS,
 	Int,
 	LengthUnits,
 	LocalizeGURPS,
@@ -64,6 +74,10 @@ class CharacterGURPS<
 	declare resourceTrackers: Map<string, ResourceTracker<this>>
 	declare moveTypes: Map<string, MoveType<this>>
 	declare pointsBreakdown: PointsBreakdown
+
+	/** Singular embeds for characters */
+	declare maneuver: ConditionGURPS<this> | null
+	declare posture: ConditionGURPS<this> | null
 
 	/** Hit location table */
 	declare hitLocationTable: BodyGURPS<this>
@@ -888,15 +902,36 @@ class CharacterGURPS<
 		return this.itemTypes[ItemType.Trait].some(trait => trait.enabled && trait.name === name)
 	}
 
-	// async changeManeuver(id: ManeuverID | "none"): Promise<ConditionGURPS | null> {
-	// 	const existing = this.itemCollections.conditions.find(e => e.system.id === id)
-	// 	if (existing) return null
-	// 	if (id === "none") return this.resetManeuvers()
-	// 	if ([ManeuverID.BLANK_1, ManeuverID.BLANK_2].includes(id)) return null
+	async setManeuver(statusId: string | null): Promise<ConditionGURPS<this> | null> {
+		console.log(statusId)
+		if (statusId === null) return (this.maneuver = null)
+		if (this.maneuver?.system.slug === statusId) return this.maneuver
+
+		const indexFields = ["system.slug"]
+		const pack = game.packs.get(`${SYSTEM_NAME}.${COMPENDIA.MANEUVERS}`)
+		console.log(pack)
+		if (pack) {
+			const index = await pack.getIndex({ fields: indexFields })
+			const item = index.find(e => e.system.slug === statusId)
+			if (!item) throw ErrorGURPS(`No maneuver found with ID "${statusId}"`)
+			const embeddedItems = (await this.createEmbeddedDocuments("Item", [item])) as ConditionGURPS<this>[]
+			if (embeddedItems[0]) return (this.maneuver = embeddedItems[0])
+		}
+		return null
+	}
+
+	// async setManeuver(statusId: string): Promise<ConditionGURPS|null> {
+	// 	const indexFields = ["system.slug"]
+	// 	if (this.isOfType(ActorType.Character)) {
+	// 		if (this.)
+	// 	}
 	//
-	// 	const maneuvers = this.itemCollections.conditions.filter(e => AllManeuverIDs.includes(e.system.id))
-	// 	const nedManeuver = fu.duplicate(ConditionGURPS.)
 	//
+	// 	const pack = game.packs.get(`${SYSTEM_NAME}.${COMPENDIA.MANEUVERS}`)
+	// 	if (pack) {
+	// 		const index = await pack.getIndex({fields: indexFields})
+	// 	}
+	// 	return null
 	// }
 }
 

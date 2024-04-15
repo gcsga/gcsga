@@ -1,6 +1,6 @@
-import { COMPENDIA, ManeuverID, SYSTEM_NAME } from "@module/data/constants.ts"
+import { ActorType, COMPENDIA, ManeuverID, SYSTEM_NAME } from "@module/data/constants.ts"
 import { TokenGURPS } from "./object.ts"
-import { htmlQuery, htmlQueryAll } from "@util"
+import { ErrorGURPS, htmlQuery, htmlQueryAll } from "@util"
 
 export interface TokenHUDDataGURPS extends TokenHUDData {
 	statuses: Partial<TokenHUDStatusEffectChoice>[]
@@ -20,21 +20,9 @@ export class TokenHUDGURPS<TToken extends TokenGURPS> extends TokenHUD<TToken> {
 
 		const html = $html[0]
 
-		const actor = this.object.actor
-
 		for (const control of htmlQueryAll(html, ".effect-control")) {
-			control.addEventListener("click", () => {
-				const statusId = control.dataset.statusId ?? ""
-				if (statusId === "") return
-				// return actor?.increaseCondition(statusId)
-				console.log("increase", statusId, actor)
-			})
-			control.addEventListener("contextmenu", () => {
-				const statusId = control.dataset.statusId ?? ""
-				if (statusId === "") return
-				// return actor?.decreaseCondition(statusId)
-				console.log("decrease", statusId, actor)
-			})
+			control.addEventListener("click", event => this._setStatusValue(event, control))
+			control.addEventListener("contextmenu", event => this._setStatusValue(event, control))
 
 			control.addEventListener("mouseover", () => {
 				const titleBar = htmlQuery(html, ".title-bar")
@@ -64,6 +52,26 @@ export class TokenHUDGURPS<TToken extends TokenGURPS> extends TokenHUD<TToken> {
 			maneuvers: await this.#getManeuverChoices(),
 			inCombat: this.object.inCombat,
 		})
+	}
+
+	protected async _setStatusValue(event: MouseEvent, icon: HTMLElement): Promise<unknown> {
+		console.log(event, icon, icon.dataset.type, icon.dataset)
+		const statusId = icon.dataset.statusId
+		if (!statusId) throw ErrorGURPS("The provided status ID is not valid.")
+		if (!this.object.actor) throw ErrorGURPS("This Token does not have an Actor attached to it.")
+
+		if (icon.dataset.type === "maneuver" && this.object.actor.isOfType(ActorType.Character)) {
+			if (event.type === "contextmenu") return this.object.actor.setManeuver(null)
+			return this.object.actor.setManeuver(statusId)
+		}
+
+		if (event.type === "click") {
+			// return this.object.actor.increaseCondition(statusId)
+		} else if (event.type === "contextmenu") {
+			// if (event.ctrlKey) await this.object.actor.decreaseCondition(statusId, { forceRemove: true })
+			// else return this.object.actor.decreaseCondition(statusId)
+		}
+		return
 	}
 
 	async #getStatusEffectChoices(): Promise<Partial<TokenHUDStatusEffectChoice>[]> {
