@@ -787,6 +787,16 @@ class CharacterGURPS<
 				.map(e => [e.id, e]),
 		)
 
+		this.pools = {}
+		this.attributes.forEach(e => {
+			const pool = e.toTokenPool()
+			if (pool) this.pools[e.id] = pool
+		})
+		this.resourceTrackers.forEach(e => {
+			const pool = e.toTokenPool()
+			if (pool) this.pools[e.id] = pool
+		})
+
 		this.hitLocationTable = BodyGURPS.fromObject(this.system.settings.body_type, this)
 		this.hitLocationTable.updateRollRanges()
 	}
@@ -903,8 +913,12 @@ class CharacterGURPS<
 	}
 
 	async setManeuver(statusId: string | null): Promise<ConditionGURPS<this> | null> {
-		if (statusId === null) return (this.maneuver = null)
 		if (this.maneuver?.system.slug === statusId) return this.maneuver
+
+		// Delete the current maneuver
+		await this.maneuver?.delete()
+		this.maneuver = null
+		if (statusId === null) return this.maneuver
 
 		const indexFields = ["system.slug"]
 		const pack = game.packs.get(`${SYSTEM_NAME}.${COMPENDIA.MANEUVERS}`)

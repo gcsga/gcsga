@@ -1,13 +1,20 @@
 import { TokenDocumentGURPS } from "@scene/token-document/document.ts"
 import { ActorFlagsGURPS, ActorSystemData, PrototypeTokenGURPS } from "./data.ts"
-import { AbstractContainerGURPS, ConditionGURPS, EquipmentContainerGURPS, EquipmentGURPS, ItemGURPS } from "@item"
+import {
+	AbstractContainerGURPS,
+	AbstractEffectGURPS,
+	ConditionGURPS,
+	EquipmentContainerGURPS,
+	EquipmentGURPS,
+	ItemGURPS,
+} from "@item"
 import type { ActorSheetGURPS } from "./sheet.ts"
 import type { ActorSourceGURPS } from "@actor/data.ts"
 import type { ActiveEffectGURPS } from "@module/active-effect/index.ts"
 import { EquipmentContainerSource, EquipmentSource, ItemSourceGURPS } from "@item/data/index.ts"
 import { itemIsOfType } from "@item/helpers.ts"
 import { ErrorGURPS, LocalizeGURPS, TooltipGURPS, attribute, objectHasKey, stlimit } from "@util"
-import { ActorFlags, ActorType, COMPENDIA, ItemFlags, ItemType, SYSTEM_NAME, gid } from "@module/data/constants.ts"
+import { ActorFlags, ActorType, ConditionID, ItemFlags, ItemType, SYSTEM_NAME, gid } from "@module/data/constants.ts"
 import {
 	AbstractAttribute,
 	AttributeBonus,
@@ -31,9 +38,11 @@ import { DamageAttackerAdapter, DamageTargetActor, DamageWeaponAdapter } from "@
 import { DamageRollAdapter, DamageTarget } from "@module/apps/damage-calculator/index.ts"
 import { ApplyDamageDialog } from "@module/apps/damage-calculator/apply-damage-dialog.ts"
 import { getCRFeatures } from "@item/trait/data.ts"
-import { RollModifier } from "@module/data/types.ts"
+import { RollModifier, TokenPool } from "@module/data/types.ts"
 import { LastActor } from "@module/util/last-actor.ts"
 import { Evaluator } from "@module/util/index.ts"
+import { TokenGURPS } from "@module/canvas/index.ts"
+import { SceneGURPS } from "@scene"
 
 /**
  * Extend the base Actor class to implement additional logic specialized for GURPS.
@@ -46,6 +55,8 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 	declare cachedVariables: Map<string, string>
 	/** Hit location table */
 	declare hitLocationTable: BodyGURPS<this>
+	/** Token Pools */
+	declare pools: Record<string, TokenPool>
 
 	// Exclusions to prevent circular references in variable resolution
 	declare variableResolverExclusions: Set<string>
@@ -606,42 +617,55 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 		return movedItem
 	}
 
-	async increaseCondition(statusId: string): Promise<ConditionGURPS<this> | undefined> {
-		const existing = this.itemCollections.conditions.find(e => e.system.slug === statusId)
-		if (existing) {
-			if (existing.system.can_level) {
-				const newLevel = Math.max(existing.system.levels.current, 0) + 1
-				if (existing.system.levels.max >= newLevel)
-					return existing.update({ "system.levels.current": newLevel })
-				return existing
-			} else {
-				return existing.delete()
-			}
-		}
+	getCondition(id: ConditionID): ConditionGURPS<this> | null {
+		return this.itemCollections.conditions.find(e => e.system.slug === id) ?? null
+	}
 
-		const indexFields = ["system.slug"]
-		const pack = game.packs.get(`${SYSTEM_NAME}.${COMPENDIA.CONDITIONS}`)
-		if (pack) {
-			const index = await pack.getIndex({ fields: indexFields })
-			const item = index.find(e => e.system.slug === statusId)
-			if (!item) throw ErrorGURPS(`No condition found with ID "${statusId}"`)
-			const embeddedItems = (await this.createEmbeddedDocuments("Item", [item])) as ConditionGURPS<this>[]
-			if (embeddedItems[0]) return embeddedItems[0]
+	hasCondition(id: ConditionID): boolean {
+		return this.itemCollections.conditions.some(e => e.system.slug === id) ?? null
+	}
+
+	async increaseCondition(
+		condition: ConditionID | AbstractEffectGURPS<this>,
+	): Promise<AbstractEffectGURPS<this> | null> {
+		const existing =
+			typeof condition === "string"
+				? this.itemCollections.conditions.find(e => e.system.slug === condition)
+				: condition
+
+		if (existing) {
+			const currentValue = existing._source.system.levels.current
+			if (currentValue === null) {
+				await game.gurps.ConditionManager.updateConditionValue(existing.id, this, 0)
+				return null
+			}
+			await game.gurps.ConditionManager.updateConditionValue(existing.id, this, currentValue + 1)
+			return existing
+		} else if (typeof condition === "string") {
+			const conditionSource = game.gurps.ConditionManager.getCondition(condition).toObject()
+			const conditionLevel = conditionSource.system.can_level ? 1 : null
+			conditionSource.system.levels.current = conditionLevel
+			const items = (await this.createEmbeddedDocuments("Item", [conditionSource])) as ConditionGURPS<this>[]
+			return items.shift() ?? null
 		}
-		return
+		return null
 	}
 
 	async decreaseCondition(
-		statusId: string,
+		conditionSlug: ConditionID | AbstractEffectGURPS<this>,
 		{ forceRemove } = { forceRemove: false },
-	): Promise<ConditionGURPS<this> | undefined> {
-		const existing = this.itemCollections.conditions.find(e => e.system.slug === statusId)
-		if (!existing) return
-		if (!existing.system.can_level || forceRemove) return existing.delete()
+	): Promise<void> {
+		// Find a valid matching condition if a slug was passed
+		const condition = typeof conditionSlug === "string" ? this.getCondition(conditionSlug) : conditionSlug
+		if (!condition) return
 
-		const newLevel = Math.max(existing.system.levels.current - 1, 0)
-		if (newLevel >= 0) existing.delete()
-		return existing.update({ "system.levels.current": newLevel })
+		const currentValue = condition._source.system.levels.current
+		const newValue = typeof currentValue === "number" ? Math.max(currentValue - 1, 0) : null
+		if (newValue !== null && !forceRemove) {
+			await game.gurps.ConditionManager.updateConditionValue(condition.id, this, newValue)
+		} else {
+			await this.deleteEmbeddedDocuments("Item", [condition.id])
+		}
 	}
 }
 
@@ -656,6 +680,13 @@ interface ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGU
 	prototypeToken: PrototypeTokenGURPS<this>
 
 	get sheet(): ActorSheetGURPS<ActorGURPS>
+
+	getActiveTokens(linked: boolean | undefined, document: true): TokenDocumentGURPS<SceneGURPS>[]
+	getActiveTokens(linked?: boolean | undefined, document?: false): TokenGURPS<TokenDocumentGURPS<SceneGURPS>>[]
+	getActiveTokens(
+		linked?: boolean,
+		document?: boolean,
+	): TokenDocumentGURPS<SceneGURPS>[] | TokenGURPS<TokenDocumentGURPS<SceneGURPS>>[]
 }
 
 /** A `Proxy` to to get Foundry to construct `ActorGURPS` subclasses */

@@ -3,6 +3,7 @@ import type { SceneGURPS } from "../document.ts"
 import { TokenFlagsGURPS } from "./data.ts"
 import type { CombatGURPS, CombatantGURPS } from "@module/combat/index.ts"
 import type { TokenGURPS } from "@module/canvas/index.ts"
+import { ConditionID } from "@module/data/constants.ts"
 
 class TokenDocumentGURPS<TParent extends SceneGURPS | null = SceneGURPS | null> extends TokenDocument<TParent> {
 	/** Has this document completed `DataModel` initialization? */
@@ -25,6 +26,11 @@ class TokenDocumentGURPS<TParent extends SceneGURPS | null = SceneGURPS | null> 
 			this.initialized = true
 			super.prepareData()
 		}
+	}
+
+	override hasStatusEffect(statusId: string): boolean {
+		if (statusId === ConditionID.Dead) return this.overlayEffect === CONFIG.controlIcons.defeated
+		return this.actor?.itemCollections.conditions.some(e => e.system.slug === statusId) ?? false
 	}
 }
 

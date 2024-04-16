@@ -1,7 +1,7 @@
 import { PoolThreshold } from "./pool-threshold.ts"
 import { AttributeObj } from "./data.ts"
 import { AttributeDef } from "./definition.ts"
-import { ActorFlags, SYSTEM_NAME, gid } from "@data"
+import { ActorFlags, SYSTEM_NAME, TokenPool, gid } from "@data"
 import { ErrorGURPS, Int, attribute, stlimit } from "@util"
 import { AbstractAttribute } from "@system/abstract-attribute/object.ts"
 import { AttributeResolver } from "@module/util/index.ts"
@@ -126,6 +126,15 @@ class AttributeGURPS<TActor extends AttributeResolver = AttributeResolver> exten
 		if (this.definition.type === attribute.Type.Pool || this.isSeparator) return false
 		const [, err] = Int.fromString(this.definition.base.trim())
 		return err !== null
+	}
+
+	toTokenPool(): TokenPool | null {
+		if (!this.isPool) return null
+		return {
+			value: this.current,
+			max: this.max,
+			min: -Infinity,
+		}
 	}
 }
 

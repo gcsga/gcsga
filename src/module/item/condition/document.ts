@@ -20,8 +20,8 @@ class ConditionGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> exte
 				can_level: new fields.BooleanField({ initial: false }),
 				levels: new fields.SchemaField(
 					{
-						max: new fields.NumberField({ integer: true }),
-						current: new fields.NumberField({ integer: true }),
+						max: new fields.NumberField({ integer: true, initial: 0 }),
+						current: new fields.NumberField({ integer: true, initial: 0 }),
 					},
 					{ required: false },
 				),

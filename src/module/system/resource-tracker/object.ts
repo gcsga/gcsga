@@ -2,6 +2,7 @@ import { ResourceTrackerResolver } from "@module/util/index.ts"
 import { ResourceTrackerObj } from "./data.ts"
 import { ResourceTrackerDef } from "./definition.ts"
 import { AbstractAttribute, PoolThreshold } from "@system"
+import { TokenPool } from "@module/data/types.ts"
 
 class ResourceTracker<TActor extends ResourceTrackerResolver> extends AbstractAttribute<TActor> {
 	order: number
@@ -35,6 +36,14 @@ class ResourceTracker<TActor extends ResourceTrackerResolver> extends AbstractAt
 			if (this.current <= threshold.threshold(this.actor)) return threshold
 		}
 		return null
+	}
+
+	toTokenPool(): TokenPool | null {
+		return {
+			value: this.current,
+			max: this.definition?.isMaxEnforced ? this.max : Infinity,
+			min: this.definition?.isMinEnforced ? this.min : -Infinity,
+		}
 	}
 }
 

@@ -15,8 +15,8 @@ interface AbstractEffectSystemSource extends ItemSystemSource {
 	modifiers?: RollModifier[]
 	can_level: boolean
 	levels: {
-		max: number
-		current: number
+		max: number | null
+		current: number | null
 	}
 	overlay?: boolean
 	duration: {

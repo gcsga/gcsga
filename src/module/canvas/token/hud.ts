@@ -1,4 +1,4 @@
-import { ActorType, COMPENDIA, ManeuverID, SYSTEM_NAME } from "@module/data/constants.ts"
+import { ActorType, COMPENDIA, ConditionID, ManeuverID, SYSTEM_NAME } from "@module/data/constants.ts"
 import { TokenGURPS } from "./object.ts"
 import { ErrorGURPS, htmlQuery, htmlQueryAll } from "@util"
 
@@ -55,8 +55,7 @@ export class TokenHUDGURPS<TToken extends TokenGURPS> extends TokenHUD<TToken> {
 	}
 
 	protected async _setStatusValue(event: MouseEvent, icon: HTMLElement): Promise<unknown> {
-		console.log(event, icon, icon.dataset.type, icon.dataset)
-		const statusId = icon.dataset.statusId
+		const statusId = icon.dataset.statusId as ConditionID
 		if (!statusId) throw ErrorGURPS("The provided status ID is not valid.")
 		if (!this.object.actor) throw ErrorGURPS("This Token does not have an Actor attached to it.")
 
@@ -66,10 +65,10 @@ export class TokenHUDGURPS<TToken extends TokenGURPS> extends TokenHUD<TToken> {
 		}
 
 		if (event.type === "click") {
-			// return this.object.actor.increaseCondition(statusId)
+			return this.object.actor.increaseCondition(statusId)
 		} else if (event.type === "contextmenu") {
-			// if (event.ctrlKey) await this.object.actor.decreaseCondition(statusId, { forceRemove: true })
-			// else return this.object.actor.decreaseCondition(statusId)
+			if (event.ctrlKey) return this.object.actor.decreaseCondition(statusId, { forceRemove: true })
+			else return this.object.actor.decreaseCondition(statusId)
 		}
 		return
 	}
@@ -85,6 +84,9 @@ export class TokenHUDGURPS<TToken extends TokenGURPS> extends TokenHUD<TToken> {
 						id: a.system.slug,
 						title: a.name,
 						src: a.img,
+						isActive: this.object.actor?.itemCollections.conditions.some(
+							e => e.system.slug === a.system.slug,
+						),
 					}
 				})
 				.sort(

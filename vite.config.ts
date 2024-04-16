@@ -1,4 +1,4 @@
-// import { execSync } from "child_process"
+import { execSync } from "child_process"
 import esbuild from "esbuild"
 import fs from "fs-extra"
 import path from "path"
@@ -10,11 +10,10 @@ import tsconfigPaths from "vite-tsconfig-paths"
 import packageJSON from "./package.json" assert { type: "json" }
 import { ConditionSource } from "@item/condition/data.ts"
 
-const CONDITION_SOURCES: ConditionSource[] = []
-// const CONDITION_SOURCES = ((): ConditionSource[] => {
-// 	const output = execSync("npm run build:conditions", { encoding: "utf-8" })
-// 	return JSON.parse(output.slice(output.indexOf("[")))
-// })()
+const CONDITION_SOURCES = ((): ConditionSource[] => {
+	const output = execSync("npm run build:conditions", { encoding: "utf-8" })
+	return JSON.parse(output.slice(output.indexOf("[")))
+})()
 const EN_JSON = JSON.parse(fs.readFileSync("./static/lang/en.json", { encoding: "utf-8" }))
 
 const config = Vite.defineConfig(({ command, mode }): Vite.UserConfig => {

@@ -3,6 +3,7 @@
 import { ActorGURPS } from "@actor"
 import { ItemGURPS } from "@item"
 import { EffectPanel } from "@item/abstract-effect/panel.ts"
+import { ConditionSource } from "@item/data/index.ts"
 import { ActiveEffectGURPS } from "@module/active-effect/index.ts"
 import {
 	CompendiumBrowser,
@@ -28,6 +29,7 @@ import { UserGURPS } from "@module/user/document.ts"
 import { SceneGURPS, TokenDocumentGURPS } from "@scene"
 import { GURPSCONFIG } from "@scripts/config/index.ts"
 import { AttributeDefObj, MoveTypeDefObj, ResourceTrackerDefObj } from "@system"
+import { ConditionManager } from "@system/condition-manager.ts"
 import { HitLocationObj } from "@system/hit-location/data.ts"
 
 interface GameGURPS
@@ -48,6 +50,7 @@ interface GameGURPS
 		modifierList: ModifierList
 		effectPanel: EffectPanel
 		Dice: typeof DiceGURPS
+		ConditionManager: typeof ConditionManager
 	}
 }
 
@@ -188,7 +191,7 @@ declare global {
 	}
 
 	const BUILD_MODE: "development" | "production"
-	// const CONDITION_SOURCES: ConditionSource[]
+	const CONDITION_SOURCES: ConditionSource[]
 	// const EN_JSON: typeof EnJSON
 	// const ROLL_PARSER: string
 }
