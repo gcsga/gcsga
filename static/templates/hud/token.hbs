@@ -44,9 +44,12 @@
                  height="36"
                  title="{{ localize "HUD.AssignStatusEffects" }}" />
             <div class="status-effects icon-grid">
-                {{#each statuses as |status|}}
+                {{#each conditions as |status|}}
                     <picture class="effect-control {{#if status.isActive}}active{{/if}}" src="{{ status.src }}" data-type="status" {{#if status.title}}title="{{ status.title }}"{{/if}} data-status-id="{{ status.id }}">
                         <img src="{{ status.src }}" />
+                        {{#if (and status.isActive status.canLevel)}}
+                            <i class="badge">{{ status.level }}</i>
+                        {{/if}}
                     </picture>
                 {{/each}}
                 <div class="title-bar"></div>

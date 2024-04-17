@@ -161,6 +161,7 @@ enum ItemFlags {
 	Container = "container",
 	Other = "other", // used for equipment only
 	Unready = "unready",
+	Overlay = "overlay", // used for effects only
 }
 
 enum ConditionID {
@@ -245,7 +246,7 @@ enum ManeuverID {
 	AODParry = "all-out-defense-parry",
 	// Row 5
 	Concentrate = "concentrate",
-	Aiming = "aiming",
+	Aim = "aim",
 	AOAStrong = "all-out-attack-strong",
 	AODBlock = "all-out-defense-block",
 	// Row 6

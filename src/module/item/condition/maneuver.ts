@@ -20,7 +20,7 @@ export function getManeuverList(): Record<ManeuverID, Partial<ConditionSystemSou
 		[ManeuverID.AOADetermined]: { id: ManeuverID.AOADetermined, slug: ManeuverID.AOADetermined },
 		[ManeuverID.AODParry]: { id: ManeuverID.AODParry, slug: ManeuverID.AODParry },
 		[ManeuverID.Concentrate]: { id: ManeuverID.Concentrate, slug: ManeuverID.Concentrate },
-		[ManeuverID.Aiming]: { id: ManeuverID.Aiming, slug: ManeuverID.Aiming },
+		[ManeuverID.Aim]: { id: ManeuverID.Aim, slug: ManeuverID.Aim },
 		[ManeuverID.AOAStrong]: { id: ManeuverID.AOAStrong, slug: ManeuverID.AOAStrong },
 		[ManeuverID.AODBlock]: { id: ManeuverID.AODBlock, slug: ManeuverID.AODBlock },
 		[ManeuverID.Wait]: { id: ManeuverID.Wait, slug: ManeuverID.Wait },

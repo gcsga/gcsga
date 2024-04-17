@@ -88,7 +88,13 @@ export function getConditionList(): Record<ConditionID, Partial<ConditionSystemS
 			modifiers: [{ id: "shock test", modifier: -1 }],
 			duration: {
 				type: DurationType.Rounds,
+				startRound: null,
+				startTime: null,
+				startTurn: null,
 				rounds: 1,
+				seconds: 0,
+				turns: 0,
+				combat: null,
 			},
 			features: [
 				{

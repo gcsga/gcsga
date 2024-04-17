@@ -33,7 +33,6 @@ export const Ready = {
 
 			// Set default user flag state
 			if (canvas && canvas.hud) {
-				// @ts-expect-error async
 				canvas.hud.token = new TokenHUDGURPS()
 			}
 

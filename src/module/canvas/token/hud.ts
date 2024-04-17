@@ -1,9 +1,9 @@
-import { ActorType, COMPENDIA, ConditionID, ManeuverID, SYSTEM_NAME } from "@module/data/constants.ts"
+import { ActorType, ConditionID, ManeuverID, SYSTEM_NAME } from "@module/data/constants.ts"
 import { TokenGURPS } from "./object.ts"
 import { ErrorGURPS, htmlQuery, htmlQueryAll } from "@util"
 
 export interface TokenHUDDataGURPS extends TokenHUDData {
-	statuses: Partial<TokenHUDStatusEffectChoice>[]
+	conditions: Partial<TokenHUDStatusEffectChoice>[]
 	maneuvers: Partial<TokenHUDStatusEffectChoice>[]
 	inCombat: boolean
 }
@@ -43,13 +43,12 @@ export class TokenHUDGURPS<TToken extends TokenGURPS> extends TokenHUD<TToken> {
 		this._toggleManeuvers(this._maneuvers)
 	}
 
-	// @ts-expect-error async
-	override async getData(options?: ApplicationOptions | undefined): Promise<TokenHUDDataGURPS> {
+	override getData(options?: ApplicationOptions | undefined): TokenHUDDataGURPS {
 		const data = super.getData(options)
 
 		return fu.mergeObject(data, {
-			statuses: await this.#getStatusEffectChoices(),
-			maneuvers: await this.#getManeuverChoices(),
+			conditions: this._getConditionChoices(),
+			maneuvers: this._getManeuverChoices(),
 			inCombat: this.object.inCombat,
 		})
 	}
@@ -60,6 +59,7 @@ export class TokenHUDGURPS<TToken extends TokenGURPS> extends TokenHUD<TToken> {
 		if (!this.object.actor) throw ErrorGURPS("This Token does not have an Actor attached to it.")
 
 		if (icon.dataset.type === "maneuver" && this.object.actor.isOfType(ActorType.Character)) {
+			if ([ManeuverID.BLANK_1, ManeuverID.BLANK_2, ""].includes(statusId)) return
 			if (event.type === "contextmenu") return this.object.actor.setManeuver(null)
 			return this.object.actor.setManeuver(statusId)
 		}
@@ -73,47 +73,49 @@ export class TokenHUDGURPS<TToken extends TokenGURPS> extends TokenHUD<TToken> {
 		return
 	}
 
-	async #getStatusEffectChoices(): Promise<Partial<TokenHUDStatusEffectChoice>[]> {
-		const indexFields = ["system.slug"]
-		const pack = game.packs.get(`${SYSTEM_NAME}.${COMPENDIA.CONDITIONS}`)
-		if (pack) {
-			const index = await pack.getIndex({ fields: indexFields })
-			return index
-				.map(a => {
-					return {
-						id: a.system.slug,
-						title: a.name,
-						src: a.img,
-						isActive: this.object.actor?.itemCollections.conditions.some(
-							e => e.system.slug === a.system.slug,
-						),
-					}
-				})
-				.sort(
-					(a, b) =>
-						Object.keys(CONFIG.GURPS.statusEffects.conditions).indexOf(a.id) -
-						Object.keys(CONFIG.GURPS.statusEffects.conditions).indexOf(b.id),
-				)
-		}
-		return []
+	protected _getConditionChoices(): TokenHUDConditionChoice[] {
+		const conditions = game.gurps.ConditionManager.conditions
+		return Object.keys(CONFIG.GURPS.statusEffects.conditions).reduce((acc: TokenHUDConditionChoice[], key) => {
+			const condition = conditions.get(key)
+			if (!condition) return acc
+
+			const currentCondition = this.object.actor?.getCondition(key as ConditionID) ?? null
+
+			acc.push({
+				id: key,
+				title: condition.name,
+				src: condition.img,
+				isActive: currentCondition !== null,
+				isOverlay: this.object.document.overlayEffect === condition.img,
+				canLevel: condition.canLevel,
+				level: currentCondition?.level ?? null,
+				cssClass: "",
+			})
+			return acc
+		}, [])
 	}
 
-	async #getManeuverChoices(): Promise<Partial<TokenHUDStatusEffectChoice>[]> {
-		const indexFields = ["system.slug"]
-		const pack = game.packs.get(`${SYSTEM_NAME}.${COMPENDIA.MANEUVERS}`)
-		if (pack) {
-			const index = await pack.getIndex({ fields: indexFields })
-			return index
-				.map(a => {
-					return {
-						id: a.system.slug,
-						title: a.name,
-						src: a.img,
-					}
-				})
-				.sort((a, b) => Object.values(ManeuverID).indexOf(a.id) - Object.values(ManeuverID).indexOf(b.id))
-		}
-		return []
+	protected _getManeuverChoices(): TokenHUDStatusEffectChoice[] {
+		const actor = this.object.actor
+		if (!actor?.isOfType(ActorType.Character)) return []
+
+		const maneuvers = game.gurps.ConditionManager.maneuvers
+		return Object.keys(CONFIG.GURPS.statusEffects.maneuvers).reduce((acc: TokenHUDStatusEffectChoice[], key) => {
+			const maneuver = maneuvers.get(key)
+			if (!maneuver) return acc
+
+			const title = [ManeuverID.BLANK_1, ManeuverID.BLANK_2, ""].includes(key) ? "" : maneuver.name
+
+			acc.push({
+				id: key,
+				title,
+				src: maneuver.img,
+				isActive: actor.maneuver?.system.slug === key,
+				isOverlay: false,
+				cssClass: "",
+			})
+			return acc
+		}, [])
 	}
 
 	// Change visibility of maneuvers panel
@@ -251,4 +253,9 @@ export class TokenHUDGURPS<TToken extends TokenGURPS> extends TokenHUD<TToken> {
 	// 			: img.getAttribute("src")
 	// 	return this.object!.toggleEffect(effect, { overlay })
 	// }
+}
+
+type TokenHUDConditionChoice = TokenHUDStatusEffectChoice & {
+	canLevel: boolean
+	level: number | null
 }

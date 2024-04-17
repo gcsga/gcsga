@@ -10,7 +10,7 @@ import {
 } from "@item"
 import type { ActorSheetGURPS } from "./sheet.ts"
 import type { ActorSourceGURPS } from "@actor/data.ts"
-import type { ActiveEffectGURPS } from "@module/active-effect/index.ts"
+import { ActiveEffectGURPS } from "@module/active-effect/index.ts"
 import { EquipmentContainerSource, EquipmentSource, ItemSourceGURPS } from "@item/data/index.ts"
 import { itemIsOfType } from "@item/helpers.ts"
 import { ErrorGURPS, LocalizeGURPS, TooltipGURPS, attribute, objectHasKey, stlimit } from "@util"
@@ -43,6 +43,7 @@ import { LastActor } from "@module/util/last-actor.ts"
 import { Evaluator } from "@module/util/index.ts"
 import { TokenGURPS } from "@module/canvas/index.ts"
 import { SceneGURPS } from "@scene"
+import { TokenEffect } from "@module/canvas/token/effect.ts"
 
 /**
  * Extend the base Actor class to implement additional logic specialized for GURPS.
@@ -119,6 +120,15 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 			acc.push(...(item.system.modifiers ?? []))
 			return acc
 		}, [])
+	}
+
+	override get temporaryEffects(): TemporaryEffect[] {
+		const effects: TokenEffect[] = this.itemCollections.effects.map(e => {
+			// const overlay = e.system.slug === ConditionID.Dead
+			const effect = new TokenEffect(e)
+			return effect
+		})
+		return [...super.temporaryEffects, ...effects]
 	}
 
 	static mergeSchema(

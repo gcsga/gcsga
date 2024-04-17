@@ -62,6 +62,7 @@ import { CharacterEncumbrance } from "./encumbrance.ts"
 import { SheetSettingsObj } from "@module/data/sheet-settings.ts"
 import { ActorSchema } from "types/foundry/common/documents/actor.js"
 import { ItemSchema } from "types/foundry/common/documents/item.js"
+import { TokenEffect } from "@module/canvas/token/effect.ts"
 
 const fields = foundry.data.fields
 
@@ -273,6 +274,13 @@ class CharacterGURPS<
 			} as AttributeDef,
 			effective: this.adjustedSizeModifier,
 		}
+	}
+
+	// Add maneuver first
+	override get temporaryEffects(): TemporaryEffect[] {
+		const effects = super.temporaryEffects.filter(e => e instanceof TokenEffect && e.id !== this.maneuver?.id)
+		if (this.maneuver) return [new TokenEffect(this.maneuver), ...effects]
+		return effects
 	}
 
 	protected override async _preCreate(

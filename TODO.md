@@ -2,7 +2,6 @@
 
 0. Token HUD
 
--   add locked status to tokens so they can't be removed (e.g. for reeling caused by pool thresholds)
 -   Add leveled condition support
 -   Add conditions displaying on Token
 -   Add status effect application

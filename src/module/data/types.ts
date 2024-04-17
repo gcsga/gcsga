@@ -38,7 +38,7 @@ const AllManeuverIDs: ManeuverID[] = [
 	ManeuverID.AOADetermined,
 	ManeuverID.AODParry,
 	ManeuverID.Concentrate,
-	ManeuverID.Aiming,
+	ManeuverID.Aim,
 	ManeuverID.AOAStrong,
 	ManeuverID.AODBlock,
 	ManeuverID.Wait,

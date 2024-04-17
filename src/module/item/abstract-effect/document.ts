@@ -3,10 +3,15 @@ import { ItemGURPS } from "@item"
 import { ConditionSource, ConditionSystemData } from "@item/condition/data.ts"
 import { EffectSource, EffectSystemData } from "@item/effect/data.ts"
 import { UserGURPS } from "@module/user/document.ts"
+import { EffectFlags } from "./data.ts"
 
 abstract class AbstractEffectGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
 	get level(): number | null {
-		return this.system.can_level ? this.system.levels.current : null
+		return this.canLevel ? this.system.levels.current : null
+	}
+
+	get canLevel(): boolean {
+		return this.system.can_level
 	}
 
 	protected override _onCreate(
@@ -63,6 +68,7 @@ abstract class AbstractEffectGURPS<TParent extends ActorGURPS | null = ActorGURP
 
 interface AbstractEffectGURPS<TParent extends ActorGURPS | null> extends ItemGURPS<TParent> {
 	readonly _source: EffectSource | ConditionSource
+	flags: EffectFlags
 	system: EffectSystemData | ConditionSystemData
 }
 

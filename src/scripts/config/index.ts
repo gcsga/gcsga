@@ -99,11 +99,39 @@ const tokenHUDConditions = {
 	dazed: "gurps.status.dazed",
 }
 
+const tokenHUDManeuvers = {
+	"do-nothing": "gurps.maneuver.do-nothing",
+	attack: "gurps.maneuver.attack",
+	"all-out-attack": "gurps.maneuver.all-out-attack",
+	"all-out-defense": "gurps.maneuver.all-out-defense",
+	move: "gurps.maneuver.move",
+	"move-and-attack": "gurps.maneuver.move-and-attack",
+	"all-out-attack-double": "gurps.maneuver.all-out-attack-double",
+	"all-out-defense-double": "gurps.maneuver.all-out-defense-double",
+	"change-posture": "gurps.maneuver.change-posture",
+	feint: "gurps.maneuver.feint",
+	"all-out-attack-feint": "gurps.maneuver.all-out-attack-feint",
+	"all-out-defense-dodge": "gurps.maneuver.all-out-defense-dodge",
+	ready: "gurps.maneuver.ready",
+	evaluate: "gurps.maneuver.evaluate",
+	"all-out-attack-determined": "gurps.maneuver.all-out-attack-determined",
+	"all-out-defense-parry": "gurps.maneuver.all-out-defense-parry",
+	concentrate: "gurps.maneuver.concentrate",
+	aim: "gurps.maneuver.aim",
+	"all-out-attack-strong": "gurps.maneuver.all-out-attack-strong",
+	"all-out-defense-block": "gurps.maneuver.all-out-defense-block",
+	wait: "gurps.maneuver.wait",
+	"blank-1": "gurps.maneuver.blank-1",
+	"all-out-attack-suppressing-fire": "gurps.maneuver.all-out-attack-suppressing-fire",
+	"blank-2": "gurps.maneuver.blank-2",
+}
+
 export const GURPSCONFIG = {
 	skillDefaults: [] as SkillGURPS[],
 
 	statusEffects: {
 		conditions: tokenHUDConditions,
+		maneuvers: tokenHUDManeuvers,
 	},
 
 	Actor: {

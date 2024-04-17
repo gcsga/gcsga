@@ -14,6 +14,10 @@ const CONDITION_SOURCES = ((): ConditionSource[] => {
 	const output = execSync("npm run build:conditions", { encoding: "utf-8" })
 	return JSON.parse(output.slice(output.indexOf("[")))
 })()
+const MANEUVER_SOURCES = ((): ConditionSource[] => {
+	const output = execSync("npm run build:maneuvers", { encoding: "utf-8" })
+	return JSON.parse(output.slice(output.indexOf("[")))
+})()
 const EN_JSON = JSON.parse(fs.readFileSync("./static/lang/en.json", { encoding: "utf-8" }))
 
 const config = Vite.defineConfig(({ command, mode }): Vite.UserConfig => {
@@ -119,6 +123,7 @@ const config = Vite.defineConfig(({ command, mode }): Vite.UserConfig => {
 		define: {
 			BUILD_MODE: JSON.stringify(buildMode),
 			CONDITION_SOURCES: JSON.stringify(CONDITION_SOURCES),
+			MANEUVER_SOURCES: JSON.stringify(MANEUVER_SOURCES),
 			EN_JSON: JSON.stringify(EN_JSON),
 			// ROLL_PARSER: JSON.stringify(ROLL_PARSER),
 			fu: "foundry.utils",

@@ -1,13 +1,21 @@
 // import { ActorGURPS } from "@actor/base/document.ts"
-import { BaseItemSourceGURPS, ItemSystemData, ItemSystemSource } from "@item/base/data.ts"
-import { EffectType } from "@module/data/constants.ts"
+import { BaseItemSourceGURPS, ItemFlagsGURPS, ItemSystemData, ItemSystemSource } from "@item/base/data.ts"
+import { EffectType, ItemFlags, SYSTEM_NAME } from "@module/data/constants.ts"
 import { RollModifier } from "@module/data/types.ts"
 import { FeatureObj } from "@system"
 
 type AbstractEffectSource<
 	TType extends EffectType,
 	TSystemSource extends AbstractEffectSystemSource = AbstractEffectSystemSource,
-> = BaseItemSourceGURPS<TType, TSystemSource>
+> = BaseItemSourceGURPS<TType, TSystemSource> & {
+	flags: DeepPartial<EffectFlags>
+}
+
+type EffectFlags = ItemFlagsGURPS & {
+	[SYSTEM_NAME]: {
+		[ItemFlags.Overlay]: boolean
+	}
+}
 
 interface AbstractEffectSystemSource extends ItemSystemSource {
 	id: string | null
@@ -21,13 +29,13 @@ interface AbstractEffectSystemSource extends ItemSystemSource {
 	overlay?: boolean
 	duration: {
 		type: DurationType
-		startRound?: number | null
-		startTime?: number | null
-		startTurn?: number | null
-		rounds?: number
-		seconds?: number
-		turns?: number
-		combat?: string | null
+		startRound: number | null
+		startTime: number | null
+		startTurn: number | null
+		rounds: number
+		seconds: number
+		turns: number
+		combat: string | null
 	}
 	reference: string
 	reference_highlight: string
@@ -53,5 +61,6 @@ export type {
 	AbstractEffectSource,
 	AbstractEffectSystemSource,
 	AbstractEffectSystemData,
+	EffectFlags,
 	// EffectModificationContext
 }

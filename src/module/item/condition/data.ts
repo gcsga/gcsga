@@ -14,6 +14,7 @@ export interface Consequence {
 }
 
 interface ConditionSystemSource extends AbstractEffectSystemSource {
+	slug: string | null
 	// id: ConditionID | ManeuverID
 	checks: RollModifier[]
 	consequences: Consequence[]
