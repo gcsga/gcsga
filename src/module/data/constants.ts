@@ -277,6 +277,7 @@ enum ActorFlags {
 	AutoThreshold = "auto_threshold",
 	AutoDamage = "auto_damage",
 	Import = "import",
+	Maneuver = "maneuver",
 }
 
 // Commonly Used Values

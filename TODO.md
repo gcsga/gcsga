@@ -2,8 +2,7 @@
 
 0. Token HUD
 
--   Add leveled condition support
--   Add conditions displaying on Token
+-   maneuvers not displaying first (maybe put on other side?)
 -   Add status effect application
 -   Include current maneuver and posture
     -   Maybe separate posture from other conditions in Token HUD?

@@ -32,7 +32,7 @@ export class EffectPanel extends Application {
 
 		if (!actor || !(actor instanceof CharacterGURPS))
 			return {
-				conditions: [],
+				// conditions: [],
 				effects: [],
 				actor: null,
 				user: { isGM: false },
@@ -42,13 +42,13 @@ export class EffectPanel extends Application {
 			return effect
 		})
 
-		const conditions = actor.itemCollections.effects.filter(e => e !== actor.maneuver)
+		// const conditions = actor.itemCollections.effects.filter(e => e !== actor.maneuver)
 
 		return {
 			...(await super.getData(options)),
 			actor,
 			effects,
-			conditions,
+			// conditions,
 			user: { isGM: game.user?.isGM },
 		}
 	}

@@ -58,18 +58,6 @@ class ConditionGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> exte
 		}
 	}
 
-	// static getData(id: ConditionID | ManeuverID): Partial<ConditionSource> {
-	// 	const [data, folder] = Object.values(ConditionID).includes(id as ConditionID)
-	// 		? [getConditionList()[id as ConditionID], "status"]
-	// 		: [getManeuverList()[id as ManeuverID], "maneuver"]
-	// 	return {
-	// 		name: game.i18n.localize(`gurps.${folder}.${id}`),
-	// 		type: ItemType.Condition,
-	// 		img: `systems/${SYSTEM_NAME}/assets/${folder}/${id}.webp`,
-	// 		system: data,
-	// 	}
-	// }
-
 	static getAllConditions(): DeepPartial<ConditionSource>[] {
 		const [data, folder] = [getConditionList(), "status"]
 		return Object.entries(data).map(([id, e]) => {

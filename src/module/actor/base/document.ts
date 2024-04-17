@@ -139,15 +139,6 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 		return a
 	}
 
-	// protected override async _preCreate(
-	// 	data: this["_source"],
-	// 	options: DocumentModificationContext<TParent>,
-	// 	user: User<Actor<null>>,
-	// ): Promise<boolean | void> {
-	// 	super._preCreate(data, options, user)
-	// 	this.updateSource({ name: LocalizeGURPS.translations.TYPES.Actor[data.type] })
-	// }
-
 	protected override _onCreate(
 		data: this["_source"],
 		options: DocumentModificationContext<TParent>,
@@ -318,6 +309,16 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 		if (this.parent && !this.parent.initialized) return
 		this.initialized = true
 		super.prepareData()
+
+		if (this.initialized && canvas.ready) {
+			// Work around `t.actor` potentially being a lazy getter for a synthetic actor (viz. this one)
+			const thisTokenIsControlled = canvas.tokens.controlled.some(
+				t => t.document === this.parent || (t.document.actorLink && t.actor === this),
+			)
+			if (game.user.character === this || thisTokenIsControlled) {
+				game.gurps.effectPanel.refresh()
+			}
+		}
 	}
 
 	override prepareBaseData(): void {

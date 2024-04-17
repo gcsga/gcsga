@@ -3,7 +3,7 @@ import { ConditionGURPS } from "@item"
 import { ConditionSource } from "@item/data/index.ts"
 import { TokenGURPS } from "@module/canvas/index.ts"
 import { COMPENDIA, ConditionID, ItemType, ManeuverID, SYSTEM_NAME } from "@module/data/constants.ts"
-import { ApplicableConditions } from "@module/data/types.ts"
+import { AllManeuverIDs, ApplicableConditions } from "@module/data/types.ts"
 import { ErrorGURPS, LocalizeGURPS, setHasElement, sluggify } from "@util"
 
 export class ConditionManager {
@@ -79,6 +79,22 @@ export class ConditionManager {
 		if (!setHasElement(new Set(ApplicableConditions), slug)) return null
 
 		const condition = ConditionManager.conditions.get(slug)?.clone(modifications)
+		if (!condition) throw ErrorGURPS("Unexpected failure looking up condition")
+
+		return condition
+	}
+
+	/**
+	 * Get a maneuver using the maneuver name.
+	 * @param slug A maneuver slug
+	 */
+	static getManeuver(slug: ManeuverID, modifications?: DeepPartial<ConditionSource>): ConditionGURPS<null>
+	static getManeuver(slug: string, modifications?: DeepPartial<ConditionSource>): ConditionGURPS<null> | null
+	static getManeuver(slug: string, modifications: DeepPartial<ConditionSource> = {}): ConditionGURPS<null> | null {
+		slug = sluggify(slug)
+		if (!setHasElement(new Set(AllManeuverIDs), slug)) return null
+
+		const condition = ConditionManager.maneuvers.get(slug)?.clone(modifications)
 		if (!condition) throw ErrorGURPS("Unexpected failure looking up condition")
 
 		return condition

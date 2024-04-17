@@ -4,11 +4,19 @@ import type { TokenDocumentGURPS } from "@scene"
 import { CanvasGURPS } from "../index.ts"
 
 class TokenGURPS<TDocument extends TokenDocumentGURPS = TokenDocumentGURPS> extends Token<TDocument> {
+	/** Refresh vision and the `EffectsPanel` */
 	protected override _onControl(
 		options?: { releaseOthers?: boolean | undefined; pan?: boolean | undefined } | undefined,
 	): void {
-		super._onControl(options)
+		if (game.ready) game.gurps.effectPanel.refresh()
 		if (this.actor) LastActor.set(this.actor, this.document)
+		return super._onControl(options)
+	}
+
+	/** Refresh vision and the `EffectsPanel` */
+	protected override _onRelease(options?: Record<string, unknown>): void {
+		game.gurps.effectPanel.refresh()
+		return super._onRelease(options)
 	}
 
 	async showFloatyText(params: showFloatyTextOptions): Promise<void> {
