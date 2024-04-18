@@ -1,22 +1,21 @@
-import { ActorGURPS } from "@actor"
 import { TokenUtil } from "@util/token-utils.ts"
 import { DropData, DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
 import { CanvasUtil } from "@util/canvas.ts"
+import { TokenGURPS } from "@module/canvas/index.ts"
 
 export const DropCanvasData = {
 	listen: (): void => {
 		Hooks.on("dropCanvasData", async (canvas: Canvas, data: DropCanvasData) => {
-			const dropTargets = CanvasUtil.getCanvasTokensAtPosition(canvas, { x: data.x, y: data.y })
+			const dropTargets = CanvasUtil.getCanvasTokensAtPosition(canvas, { x: data.x, y: data.y }) as TokenGURPS[]
 
 			if (dropTargets.length === 0) return false
 
-			const handleDropEvent = async (token: Token | undefined): Promise<boolean> => {
+			const handleDropEvent = async (token: TokenGURPS | undefined): Promise<boolean> => {
 				if (token && token.actor) {
-					const actorGurps = token.actor as ActorGURPS
+					const actorGurps = token.actor
 					const dropData = data as DropData
 					switch (dropData.type) {
 						case DropDataType.Item:
-							// @ts-expect-error awaiting implementation
 							actorGurps.sheet.emulateItemDrop(dropData)
 							return false
 						case DropDataType.Damage:

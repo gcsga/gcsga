@@ -1,9 +1,10 @@
 import type { ActorFlagsGURPS, ActorSystemData, ActorSystemSource, BaseActorSourceGURPS } from "@actor/base/data.ts"
-import { ActorFlags, ActorType, ManeuverID, SYSTEM_NAME, gid } from "@data"
+import { ActorFlags, ActorType, SYSTEM_NAME, gid } from "@data"
 import { SheetSettingsObj } from "@module/data/sheet-settings.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import type { AttributeObj, MoveTypeObj, PoolThreshold, ResourceTrackerObj } from "@system"
 import type { Weight } from "@util/weight.ts"
+import { CharacterManeuver } from "../../system/maneuver-manager.ts"
 
 type CharacterSource = BaseActorSourceGURPS<ActorType.Character, CharacterSystemSource> & {
 	flags: DeepPartial<CharacterFlags>
@@ -15,7 +16,6 @@ type CharacterFlags = ActorFlagsGURPS & {
 		[ActorFlags.AutoEncumbrance]: { active: boolean; manual: number }
 		[ActorFlags.AutoThreshold]: { active: boolean; manual: Record<string, PoolThreshold | null> }
 		[ActorFlags.AutoDamage]: { active: boolean; thrust: DiceGURPS; swing: DiceGURPS }
-		[ActorFlags.Maneuver]: ManeuverID | null
 	}
 }
 
@@ -28,7 +28,6 @@ const CharacterFlagDefaults: CharacterFlags = {
 		[ActorFlags.AutoThreshold]: { active: true, manual: {} },
 		[ActorFlags.AutoDamage]: { active: true, thrust: new DiceGURPS(), swing: new DiceGURPS() },
 		[ActorFlags.Import]: { name: "", path: "", last_import: "" },
-		[ActorFlags.Maneuver]: null,
 	},
 }
 
@@ -50,7 +49,7 @@ interface CharacterSystemSource extends ActorSystemSource {
 interface CharacterSystemData extends CharacterSystemSource, ActorSystemData {}
 
 export interface CharacterMove {
-	maneuver: string
+	maneuver: CharacterManeuver | null
 	posture: string
 	type: string
 }

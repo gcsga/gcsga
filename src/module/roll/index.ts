@@ -43,7 +43,6 @@ export class RollGURPS extends Roll {
 			if (data.actor) {
 				const actor = data.actor
 
-				// @ts-expect-error awaiting implementation
 				const value = actor.resolveVariable(term.replace("$", "")) ?? null
 				if (value === null) {
 					if (warn && ui.notifications)

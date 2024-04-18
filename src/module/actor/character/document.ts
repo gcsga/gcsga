@@ -61,7 +61,7 @@ import { CharacterEncumbrance } from "./encumbrance.ts"
 import { SheetSettingsObj } from "@module/data/sheet-settings.ts"
 import { ActorSchema } from "types/foundry/common/documents/actor.js"
 import { ItemSchema } from "types/foundry/common/documents/item.js"
-import { TokenEffect } from "@module/canvas/token/effect.ts"
+import { ManeuverEffect } from "@module/canvas/token/maneuver-effect.ts"
 
 const fields = foundry.data.fields
 
@@ -76,7 +76,6 @@ class CharacterGURPS<
 	declare pointsBreakdown: PointsBreakdown
 
 	/** Singular embeds for characters */
-	declare maneuver: ConditionGURPS<this> | null
 	declare posture: ConditionGURPS<this> | null
 
 	/** Hit location table */
@@ -189,6 +188,11 @@ class CharacterGURPS<
 				move_types: new fields.ArrayField(new fields.ObjectField()),
 				total_points: new fields.NumberField({ initial: 100 }),
 				points_record: new fields.ArrayField(new fields.ObjectField()),
+				move: new fields.SchemaField({
+					maneuver: new fields.ObjectField({ nullable: true, initial: null }),
+					posture: new fields.StringField({ initial: "standing" }),
+					type: new fields.StringField({ initial: gid.Ground }),
+				}),
 			}),
 			flags: new fields.ObjectField({ initial: CharacterFlagDefaults }),
 		})
@@ -275,11 +279,11 @@ class CharacterGURPS<
 		}
 	}
 
-	// Add maneuver first
 	override get temporaryEffects(): TemporaryEffect[] {
-		const effects = super.temporaryEffects.filter(e => e instanceof TokenEffect && e.id !== this.maneuver?.id)
-		if (this.maneuver) return [new TokenEffect(this.maneuver), ...effects]
-		return effects
+		if (this.system.move.maneuver !== null) {
+			return [new ManeuverEffect(this.system.move.maneuver, this), ...super.temporaryEffects]
+		}
+		return super.temporaryEffects
 	}
 
 	protected override async _preCreate(
@@ -920,19 +924,18 @@ class CharacterGURPS<
 		return this.itemTypes[ItemType.Trait].some(trait => trait.enabled && trait.name === name)
 	}
 
-	async setManeuver(statusId: ManeuverID | null): Promise<ConditionGURPS<this> | null> {
-		if (statusId === null) {
-			await this.maneuver?.delete()
-			await this.setFlag(SYSTEM_NAME, ActorFlags.Maneuver, null)
-			return (this.maneuver = statusId)
-		}
-		if (this.maneuver?.system.slug === statusId) return this.maneuver
-
-		await this.maneuver?.delete()
-		const maneuverSource = game.gurps.ConditionManager.getManeuver(statusId)
-		await this.setFlag(SYSTEM_NAME, ActorFlags.Maneuver, statusId)
-		const items = (await this.createEmbeddedDocuments("Item", [maneuverSource])) as ConditionGURPS<this>[]
-		return (this.maneuver = items.shift() ?? null)
+	async setManeuver(statusId: ManeuverID | null): Promise<this | null> {
+		const currentManeuver: ManeuverID | null = this.system.move.maneuver?.id ?? null
+		if (currentManeuver !== null)
+			this.getActiveTokens()
+				.shift()
+				?.showFloatyText({ delete: { name: LocalizeGURPS.translations.gurps.maneuver[currentManeuver] } })
+		if (statusId === null) return (await this.update({ "system.move.maneuver": null })) ?? null
+		const maneuver = game.gurps.ManeuverManager.maneuvers.get(statusId) ?? null
+		this.getActiveTokens()
+			.shift()
+			?.showFloatyText({ create: { name: LocalizeGURPS.translations.gurps.maneuver[statusId] } })
+		return (await this.update({ "system.move.maneuver": maneuver })) ?? null
 	}
 }
 

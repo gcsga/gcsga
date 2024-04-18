@@ -31,6 +31,7 @@ import { GURPSCONFIG } from "@scripts/config/index.ts"
 import { AttributeDefObj, MoveTypeDefObj, ResourceTrackerDefObj } from "@system"
 import { ConditionManager } from "@system/condition-manager.ts"
 import { HitLocationObj } from "@system/hit-location/data.ts"
+import { ManeuverManager } from "@system/maneuver-manager.ts"
 
 interface GameGURPS
 	extends Game<
@@ -51,6 +52,7 @@ interface GameGURPS
 		effectPanel: EffectPanel
 		Dice: typeof DiceGURPS
 		ConditionManager: typeof ConditionManager
+		ManeuverManager: typeof ManeuverManager
 	}
 }
 

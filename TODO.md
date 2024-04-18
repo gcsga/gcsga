@@ -3,6 +3,7 @@
 0. Token HUD
 
 -   maneuvers not displaying first (maybe put on other side?)
+-   make maneuvers display on other side (not an item anymore)
 -   Add status effect application
 -   Include current maneuver and posture
     -   Maybe separate posture from other conditions in Token HUD?

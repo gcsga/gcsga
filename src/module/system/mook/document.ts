@@ -39,7 +39,6 @@ export class Mook {
 			[ActorFlags.AutoEncumbrance]: { active: true, manual: 0 },
 			[ActorFlags.AutoThreshold]: { active: true, manual: {} },
 			[ActorFlags.AutoDamage]: { active: true, thrust: new DiceGURPS(), swing: new DiceGURPS() },
-			[ActorFlags.Maneuver]: null,
 		},
 	}
 

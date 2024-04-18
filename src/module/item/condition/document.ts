@@ -1,5 +1,5 @@
 import { ActorGURPS } from "@actor"
-import { ConditionSource, ConditionSystemData, Consequence } from "./data.ts"
+import { AllConditionSubtypes, ConditionSource, ConditionSubtype, ConditionSystemData, Consequence } from "./data.ts"
 import { AbstractEffectGURPS } from "@item"
 import { COMPENDIA, ConditionID, ItemType, ManeuverID, SYSTEM_NAME } from "@module/data/constants.ts"
 import { RollModifier } from "@module/data/types.ts"
@@ -14,7 +14,10 @@ class ConditionGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> exte
 		return this.mergeSchema(super.defineSchema(), {
 			system: new fields.SchemaField({
 				type: new fields.StringField({ required: true, initial: ItemType.Condition }),
-				id: new fields.StringField<ConditionID | ManeuverID, ConditionID | ManeuverID, true, false>(),
+				sub_type: new fields.StringField<ConditionSubtype>({
+					choices: AllConditionSubtypes,
+					initial: ConditionSubtype.Normal,
+				}),
 				slug: new fields.StringField<ConditionID | ManeuverID, ConditionID | ManeuverID, true, false>(),
 				modifiers: new fields.ArrayField(new fields.ObjectField<RollModifier>()),
 				can_level: new fields.BooleanField({ initial: false }),

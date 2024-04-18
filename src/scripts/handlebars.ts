@@ -336,8 +336,7 @@ class HandlebarsHelpersGURPS {
 	// }
 
 	static overspent(actor: CharacterGURPS): boolean {
-		// @ts-expect-error awaiting implementation
-		return actor.unspentPoints < 0
+		return actor.pointsBreakdown.unspent < 0
 	}
 
 	// Static gmod() {

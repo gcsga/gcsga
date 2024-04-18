@@ -1,3 +1,4 @@
+import { ManeuverID } from "@module/data/constants.ts"
 import { MoveTypeOverrideConditionType, ThresholdOp } from "@system"
 import { LengthUnits, NumericCompareType, StringCompareType, WeightUnits } from "@util"
 import {
@@ -701,9 +702,16 @@ interface ImportedMoveType {
 }
 
 interface ImportedMoveData {
-	maneuver: string
+	maneuver: ImportedCharacterManeuver
 	posture: string
 	type: string
+}
+
+interface ImportedCharacterManeuver {
+	id: ManeuverID
+	move: {
+		base: string
+	} | null
 }
 
 interface ImportedThirdPartyData {

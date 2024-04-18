@@ -282,7 +282,7 @@ function evalSigned(e: Evaluator, a: string): string {
  */
 function evalSkillLevel(e: Evaluator, arg: string): number {
 	const entity = e.resolver
-	if (!entity) return 0
+	if (!(entity instanceof ActorGURPS)) return 0
 	let [name, remaining] = nextArg(arg)
 	name = evalToString(e, name)
 	if (!name) return 0
@@ -297,26 +297,21 @@ function evalSkillLevel(e: Evaluator, arg: string): number {
 	let relative = false
 	if (arg) relative = evalToBool(e, arg)
 
-	// @ts-expect-error awaiting implementation
 	if (entity.isSkillLevelResolutionExcluded(name, specialization)) return 0
 
-	// @ts-expect-error awaiting implementation
 	entity.registerSkillLevelResolutionExclusion(name, specialization)
 	let level = -Infinity
 
-	// @ts-expect-error awaiting implementation
-	entity.skills.forEach(s => {
-		if (s.type === ItemType.SkillContainer) return
-		// else s = s as SkillResolver
+	entity.itemCollections.skills.forEach(s => {
+		if (s.isOfType(ItemType.SkillContainer)) return
 		if (level !== -Infinity) return
 		if (equalFold(s.name || "", name) && equalFold(s.specialization, specialization)) {
 			s.updateLevel()
-			if (relative) level = s.level.relative_level
+			if (relative) level = s.level.relativeLevel
 			else level = s.level.level
 		}
 	})
 
-	// @ts-expect-error awaiting implementation
 	entity.unregisterSkillLevelResolutionExclusion(name, specialization)
 	return level
 }
@@ -356,10 +351,10 @@ export function evalEncumbrance(e: Evaluator, a: string): number {
 		returnFactor = evalToBool(e, remaining)
 	}
 	const entity = e.resolver
-	if (!entity) return 0
+	if (!(entity instanceof ActorGURPS)) return 0
+	if (!entity.isOfType(ActorType.Character)) return 0
 
-	// @ts-expect-error awaiting implementation
-	const level = entity.encumbranceLevel(forSkills).level
+	const level = forSkills ? entity.encumbrance.forSkills.level : entity.encumbrance.current.level
 	if (returnFactor) return 1 - level / 5
 	return level
 }

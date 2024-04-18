@@ -1,6 +1,6 @@
 import { ActorType, ConditionID, ManeuverID, SYSTEM_NAME } from "@module/data/constants.ts"
 import { TokenGURPS } from "./object.ts"
-import { ErrorGURPS, htmlQuery, htmlQueryAll } from "@util"
+import { ErrorGURPS, LocalizeGURPS, htmlQuery, htmlQueryAll } from "@util"
 
 export interface TokenHUDDataGURPS extends TokenHUDData {
 	conditions: Partial<TokenHUDStatusEffectChoice>[]
@@ -100,23 +100,21 @@ export class TokenHUDGURPS<TToken extends TokenGURPS> extends TokenHUD<TToken> {
 		const actor = this.object.actor
 		if (!actor?.isOfType(ActorType.Character)) return []
 
-		const maneuvers = game.gurps.ConditionManager.maneuvers
-		return Object.keys(CONFIG.GURPS.statusEffects.maneuvers).reduce((acc: TokenHUDStatusEffectChoice[], key) => {
-			const maneuver = maneuvers.get(key)
-			if (!maneuver) return acc
+		const maneuvers = game.gurps.ManeuverManager.maneuvers
+		return Array.from(maneuvers.values()).map(e => {
+			const title = [ManeuverID.BLANK_1, ManeuverID.BLANK_2, ""].includes(e.id)
+				? ""
+				: LocalizeGURPS.translations.gurps.maneuver[e.id]
 
-			const title = [ManeuverID.BLANK_1, ManeuverID.BLANK_2, ""].includes(key) ? "" : maneuver.name
-
-			acc.push({
-				id: key,
+			return {
+				id: e.id,
 				title,
-				src: maneuver.img,
-				isActive: actor.maneuver?.system.slug === key,
+				src: `systems/${SYSTEM_NAME}/assets/maneuver/${e.id}.webp`,
+				isActive: actor.system.move.maneuver?.id === e.id,
 				isOverlay: false,
 				cssClass: "",
-			})
-			return acc
-		}, [])
+			}
+		})
 	}
 
 	// Change visibility of maneuvers panel

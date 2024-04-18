@@ -1,6 +1,6 @@
 import { AbstractContainerGURPS, AbstractWeaponGURPS, ItemGURPS } from "@item"
 import { ActorGURPS } from "./document.ts"
-import { DamagePayload, DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
+import { DamagePayload, DropData, DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
 import { DnD, ErrorGURPS, LocalizeGURPS, applyBanding, htmlClosest, htmlQueryAll } from "@util"
 import {
 	ActorType,
@@ -35,6 +35,13 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 
 	readonly dropDispatch: DispatchFunctions = {
 		[DropDataType.Damage]: this.actor.handleDamageDrop.bind(this.actor),
+	}
+
+	async emulateItemDrop(data: DropData): Promise<Item[] | undefined> {
+		if (data.type !== DropDataType.Item) return undefined
+		const item = (await fromUuid(data.uuid)) as Item
+		if (!item) return
+		return this._onDropItemCreate({ ...item.toObject() })
 	}
 
 	override async getData(options: Partial<ActorSheetOptions> = this.options): Promise<ActorSheetDataGURPS<TActor>> {

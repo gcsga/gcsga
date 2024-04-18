@@ -49,6 +49,7 @@ import {
 } from "./data.ts"
 import { ItemImporter } from "./item.ts"
 import { BlockLayoutKey, PageSettings, SheetSettingsObj } from "@module/data/sheet-settings.ts"
+import { ManeuverManager } from "@system/maneuver-manager.ts"
 
 export class CharacterImporter {
 	static async throwError(text: string): Promise<void> {
@@ -317,7 +318,8 @@ export class CharacterImporter {
 	}
 
 	static importMoveData(data?: ImportedMoveData): CharacterMove {
-		return data ?? { maneuver: ManeuverID.DoNothing, posture: "standing", type: "ground" }
+		const maneuver = ManeuverManager.maneuvers.get(ManeuverID.DoNothing) ?? null
+		return data ?? { maneuver, posture: "standing", type: "ground" }
 	}
 
 	static importPortrait(data?: string): ImageFilePath {

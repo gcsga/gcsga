@@ -156,7 +156,6 @@ abstract class RollTypeHandler {
 			margin: marginText,
 			margin_number: margin,
 			type,
-			// @ts-expect-error awaiting implementation
 			item: this.getItemData(item, actor),
 			total: `${roll.total!}: ${LocalizeGURPS.translations.gurps.roll.success[success]}`,
 			tooltip: await roll.getTooltip(),
@@ -465,7 +464,6 @@ class AttackRollTypeHandler extends RollTypeHandler {
 			}
 		}
 
-		// @ts-expect-error awaiting implementation
 		return itemData
 	}
 

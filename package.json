@@ -10,7 +10,6 @@
 		"build:packs": "tsx ./build/build-packs.ts",
 		"build:packs:json": "tsx ./build/build-packs.ts json",
 		"build:conditions": "tsx ./build/conditions.ts",
-		"build:maneuvers": "tsx ./build/maneuvers.ts",
 		"clean": "tsx ./build/clean.ts",
 		"watch": "npm run clean && npm run build:packs && vite build --watch --mode development",
 		"hot": "vite serve",

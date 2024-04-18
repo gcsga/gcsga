@@ -26,6 +26,7 @@ import { GCABody, GCABodyItem, GCACharacter } from "./data-gca.ts"
 import { GCAItemImporter } from "./item-gca.ts"
 import { GCAParser } from "./parse-gca.ts"
 import { BlockLayoutKey, PageSettings, SheetSettingsObj } from "@module/data/sheet-settings.ts"
+import { ManeuverManager } from "@system/maneuver-manager.ts"
 
 export class GCACharacterImporter {
 	static async throwError(text: string): Promise<void> {
@@ -251,7 +252,8 @@ export class GCACharacterImporter {
 	}
 
 	static importMoveData(): CharacterMove {
-		return { maneuver: ManeuverID.DoNothing, posture: "standing", type: "ground" }
+		const maneuver = ManeuverManager.maneuvers.get(ManeuverID.DoNothing) ?? null
+		return { maneuver, posture: "standing", type: "ground" }
 	}
 
 	static importPortrait(): ImageFilePath {

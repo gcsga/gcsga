@@ -1,11 +1,15 @@
+import { TokenGURPS } from "@module/canvas/index.ts"
 import { SYSTEM_NAME } from "@module/data/index.ts"
 
 export const TokenUtil = {
-	askWhichToken: async function (tokens: Token[], callback: (token: Token | undefined) => void): Promise<void> {
+	askWhichToken: async function (
+		tokens: TokenGURPS[],
+		callback: (token: TokenGURPS | undefined) => void,
+	): Promise<void> {
 		const dialog = new Dialog(
 			{
 				title: game.i18n.localize("gurps.token.select"),
-				content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/token/select_token.hbs`, {
+				content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/token/select-token.hbs`, {
 					tokens: tokens,
 				}),
 				buttons: {

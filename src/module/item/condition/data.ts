@@ -15,11 +15,20 @@ export interface Consequence {
 
 interface ConditionSystemSource extends AbstractEffectSystemSource {
 	slug: string | null
-	// id: ConditionID | ManeuverID
+	sub_type: ConditionSubtype
 	checks: RollModifier[]
 	consequences: Consequence[]
 }
 
+enum ConditionSubtype {
+	Normal = "normal",
+	Posture = "posture",
+}
+
+const AllConditionSubtypes = [ConditionSubtype.Normal, ConditionSubtype.Posture]
+
 interface ConditionSystemData extends ConditionSystemSource, Omit<AbstractEffectSystemData, "id"> {}
 
 export type { ConditionSource, ConditionSystemData, ConditionSystemSource }
+
+export { ConditionSubtype, AllConditionSubtypes }

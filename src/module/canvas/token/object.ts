@@ -2,8 +2,16 @@ import { LastActor } from "@module/util/last-actor.ts"
 import * as R from "remeda"
 import type { TokenDocumentGURPS } from "@scene"
 import { CanvasGURPS } from "../index.ts"
+import { ActorType, ManeuverID } from "@module/data/constants.ts"
 
 class TokenGURPS<TDocument extends TokenDocumentGURPS = TokenDocumentGURPS> extends Token<TDocument> {
+	// readonly maneuver: TokenManeuver
+	//
+	// constructor(document: TDocument) {
+	// 	super(document)
+	// 	this.maneuver = new TokenManeuver(this, null)
+	// }
+
 	/** Refresh vision and the `EffectsPanel` */
 	protected override _onControl(
 		options?: { releaseOthers?: boolean | undefined; pan?: boolean | undefined } | undefined,
@@ -17,6 +25,19 @@ class TokenGURPS<TDocument extends TokenDocumentGURPS = TokenDocumentGURPS> exte
 	protected override _onRelease(options?: Record<string, unknown>): void {
 		game.gurps.effectPanel.refresh()
 		return super._onRelease(options)
+	}
+
+	override async drawEffects(): Promise<void> {
+		await super.drawEffects()
+		await this._animation
+	}
+
+	override async toggleCombat(combat?: Combat | undefined): Promise<this> {
+		if (this.actor?.isOfType(ActorType.Character)) {
+			if (this.inCombat) await this.actor.setManeuver(null)
+			else await this.actor.setManeuver(ManeuverID.DoNothing)
+		}
+		return super.toggleCombat(combat)
 	}
 
 	async showFloatyText(params: showFloatyTextOptions): Promise<void> {
