@@ -877,8 +877,8 @@
 			"attack_level": "{name} ({level})",
 			"cr_level": "{name} (CR: {level})",
 			"damage": "{total} {type} damage",
-			"parry": "{name} - Parry",
-			"block": "{name} - Block",
+			"parry": "{name} - Parry ({level})",
+			"block": "{name} - Block ({level})",
 			"location": "Random Hit Location: {name}",
 			"success": {
 				"success": "Success!",

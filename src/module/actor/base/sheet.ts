@@ -1,7 +1,7 @@
-import { AbstractContainerGURPS, AbstractWeaponGURPS, ItemGURPS } from "@item"
+import { AbstractContainerGURPS, ItemGURPS } from "@item"
 import { ActorGURPS } from "./document.ts"
 import { DamagePayload, DropData, DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
-import { DnD, ErrorGURPS, LocalizeGURPS, applyBanding, htmlClosest, htmlQueryAll } from "@util"
+import { DnD, ErrorGURPS, applyBanding, htmlClosest, htmlQueryAll } from "@util"
 import {
 	ActorType,
 	ItemFlags,
@@ -18,6 +18,8 @@ import { ItemSourceGURPS } from "@item/data/index.ts"
 import { RollTypeData } from "@module/roll/roll-handler.ts"
 import { RollGURPS } from "@module/roll/index.ts"
 import { evaluateToNumber } from "@module/util/index.ts"
+import { AttributeGURPS } from "@system"
+import { CharacterGURPS } from "@actor"
 
 type DispatchFunctions = Record<string, (arg: DamagePayload) => void>
 
@@ -90,47 +92,56 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 	async #onClickRoll(event: MouseEvent, button: HTMLElement): Promise<void> {
 		event.preventDefault()
 		const type = button.dataset.type as RollType
-		const data: Record<string, unknown> = { type, hidden: event.ctrlKey }
+		const data: Partial<RollTypeData> = { type, hidden: event.ctrlKey }
 		if (!this.actor.isOfType(ActorType.Character)) return
-		if (type === RollType.Attribute) {
+		if (data.type === RollType.Attribute) {
 			const id = button.dataset.id ?? ""
 			if (id === gid.Dodge) {
-				data.attribute = this.actor.dodgeAttribute
+				data.attribute = this.actor.dodgeAttribute as AttributeGURPS<CharacterGURPS>
 			} else data.attribute = this.actor.attributes.get(id)
 		}
 		if (
-			[
-				RollType.Damage,
-				RollType.Attack,
-				RollType.Parry,
-				RollType.Block,
-				RollType.Skill,
-				RollType.SkillRelative,
-				RollType.Spell,
-				RollType.SpellRelative,
-				RollType.ControlRoll,
-			].includes(type)
+			data.type === RollType.Skill ||
+			data.type === RollType.SkillRelative ||
+			data.type === RollType.Spell ||
+			data.type === RollType.SpellRelative ||
+			data.type === RollType.Attack ||
+			data.type === RollType.Parry ||
+			data.type === RollType.Block ||
+			data.type === RollType.Damage ||
+			data.type === RollType.ControlRoll
 		) {
-			let itemId = button.dataset.itemId ?? ""
-			if (itemId === "") {
-				itemId = htmlClosest(button, "[data-item-id]")?.dataset.itemId ?? ""
-				if (itemId === "") throw ErrorGURPS("The rollable button does not correspond to a valid item.")
+			const itemId = htmlClosest(button, "[data-item-id]")?.dataset.itemId ?? ""
+			if (itemId === "") throw ErrorGURPS("The rollable button does not correspond to a valid item.")
+
+			if (data.type === RollType.Damage && ([gid.Thrust, gid.Swing] as string[]).includes(itemId)) {
+				data.item =
+					itemId === gid.Thrust ? await this.actor.getThrustWeapon() : await this.actor.getSwingWeapon()
+			} else if (data.type === RollType.Parry || data.type === RollType.Block)
+				data.item = this.actor.itemCollections.meleeWeapons.get(itemId) ?? null
+			else if (data.type === RollType.Attack || data.type === RollType.Damage)
+				data.item = this.actor.itemCollections.weapons.get(itemId) ?? null
+			else if (data.type === RollType.Skill || data.type === RollType.SkillRelative) {
+				data.item =
+					this.actor.itemTypes[ItemType.Skill].find(e => e.id === itemId) ??
+					this.actor.itemTypes[ItemType.Technique].find(e => e.id === itemId) ??
+					null
+			} else if (data.type === RollType.Spell || data.type === RollType.SpellRelative) {
+				data.item =
+					this.actor.itemTypes[ItemType.Spell].find(e => e.id === itemId) ??
+					this.actor.itemTypes[ItemType.RitualMagicSpell].find(e => e.id === itemId) ??
+					null
+			} else if (data.type === RollType.ControlRoll) {
+				data.item = this.actor.itemCollections.traits.get(itemId) ?? null
 			}
-			if (([gid.Thrust, gid.Swing] as string[]).includes(itemId)) {
-				const attackId = itemId as gid.Thrust | gid.Swing
-				data.item = {
-					itemName: LocalizeGURPS.translations.gurps.character[attackId],
-					uuid: attackId,
-					fastResolvedDamage: this.actor[attackId].string,
-				}
-			} else data.item = this.actor.items.get(itemId)
+
+			if (data.type === RollType.Attack || data.type === RollType.Parry) data.item?.checkUnready(data.type)
 		}
-		if (type === RollType.Modifier) {
+		if (data.type === RollType.Modifier) {
+			data.user = game.user.id
 			data.modifier = evaluateToNumber(button.dataset.modifier ?? "", this.actor)
-			data.comment = button.dataset.comment ?? ""
-			if (event.type === "contextmenu") data.modifier = -(data.modifier as number)
+			data.name = button.dataset.comment ?? ""
 		}
-		if ([RollType.Attack, RollType.Parry].includes(type)) (data.item as AbstractWeaponGURPS).checkUnready(type)
 		return RollGURPS.handleRoll(game.user, this.actor, data as RollTypeData)
 	}
 

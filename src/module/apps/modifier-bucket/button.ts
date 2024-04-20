@@ -7,6 +7,17 @@ import { LastActor } from "@module/util/last-actor.ts"
 export class ModifierBucket extends Application {
 	window: ModifierBucketWindow
 
+	/**
+	 * Debounce and slightly delayed request to re-render this panel. necessary for situations where it is not possible
+	 * to properly wait for promises to resolve before refreshing the ui.
+	 */
+	refresh = foundry.utils.debounce(this.render, 100)
+
+	override render(force?: boolean | undefined, options?: RenderOptions | undefined): this {
+		if (this.window.rendered) this.window.render(force, options)
+		return super.render(force, options)
+	}
+
 	constructor() {
 		super()
 		this.window = new ModifierBucketWindow(this)
@@ -102,6 +113,9 @@ export class ModifierBucket extends Application {
 	private async _onDiceClick(event: JQuery.ClickEvent): Promise<void> {
 		event.preventDefault()
 		return RollGURPS.handleRoll(game.user, game.user.character, {
+			name: "",
+			actor: game.user.character?.id ?? "",
+			user: game.user.id,
 			type: RollType.Generic,
 			formula: "3d6",
 			hidden: event.ctrlKey,
@@ -112,6 +126,9 @@ export class ModifierBucket extends Application {
 	async _onDiceContextMenu(event: JQuery.ContextMenuEvent): Promise<void> {
 		event.preventDefault()
 		return RollGURPS.handleRoll(game.user, null, {
+			name: "",
+			actor: game.user.character?.id ?? "",
+			user: game.user.id,
 			type: RollType.Generic,
 			formula: "1d6",
 			hidden: event.ctrlKey,

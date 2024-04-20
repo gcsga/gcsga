@@ -6,7 +6,6 @@ import { TooltipGURPS } from "@util"
 
 export class WeaponRecoil extends WeaponField {
 	shot = 0
-
 	slug = 0
 
 	static parse(s: string): WeaponRecoil {
@@ -19,7 +18,7 @@ export class WeaponRecoil extends WeaponField {
 		return wr
 	}
 
-	resolve(w: AbstractWeaponGURPS, tooltip: TooltipGURPS): WeaponRecoil {
+	resolve(w: AbstractWeaponGURPS, tooltip: TooltipGURPS | null = null): WeaponRecoil {
 		const result = WeaponRecoil.parse(this.toString())
 		if (this.shot > 0 || this.slug > 0) {
 			for (const bonus of w.collectWeaponBonuses(1, tooltip, feature.Type.WeaponRecoilBonus)) {

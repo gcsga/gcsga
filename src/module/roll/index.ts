@@ -1,5 +1,5 @@
-import { ActorGURPS, CharacterGURPS } from "@actor"
-import { RollType, SETTINGS, SYSTEM_NAME } from "@data"
+import { ActorGURPS } from "@actor"
+import { ActorType, RollType, SYSTEM_NAME } from "@data"
 import { objectHasKey } from "@util"
 import { RollTypeData, rollTypeHandlers } from "./roll-handler.ts"
 import { UserGURPS } from "@module/user/document.ts"
@@ -40,7 +40,7 @@ export class RollGURPS extends Roll {
 		super.replaceFormulaData(formula, data)
 		const dataRgx = new RegExp(/\$([a-z.0-9_-]+)/gi)
 		const newFormula = formula.replace(dataRgx, (match, term) => {
-			if (data.actor) {
+			if (data.actor instanceof ActorGURPS) {
 				const actor = data.actor
 
 				const value = actor.resolveVariable(term.replace("$", "")) ?? null
@@ -77,17 +77,11 @@ export class RollGURPS extends Roll {
 	 * @param data
 	 */
 	static async handleRoll(user: UserGURPS | null, actor: ActorGURPS | null, data: RollTypeData): Promise<void> {
-		if (actor instanceof CharacterGURPS) {
+		if (actor?.isOfType(ActorType.Character)) {
 			const lastStack = user?.flags[SYSTEM_NAME][UserFlags.ModifierStack]
 			await user?.setFlag(SYSTEM_NAME, UserFlags.LastStack, lastStack)
 		}
 
-		return await rollTypeHandlers[data.type as RollType].handleRollType(
-			user,
-			actor,
-			data,
-			game.settings.get(SYSTEM_NAME, SETTINGS.ROLL_FORMULA) || "3d6",
-			data.hidden ?? false,
-		)
+		return await rollTypeHandlers[data.type as RollType].handleRollType(data)
 	}
 }

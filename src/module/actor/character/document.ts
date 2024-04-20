@@ -21,7 +21,15 @@ import {
 	ThresholdOp,
 	WeaponBonus,
 } from "@system"
-import { AbstractWeaponGURPS, ConditionGURPS, SkillGURPS, TechniqueGURPS, TraitContainerGURPS, TraitGURPS } from "@item"
+import {
+	AbstractWeaponGURPS,
+	ConditionGURPS,
+	MeleeWeaponGURPS,
+	SkillGURPS,
+	TechniqueGURPS,
+	TraitContainerGURPS,
+	TraitGURPS,
+} from "@item"
 import {
 	ActorFlags,
 	ActorType,
@@ -50,6 +58,7 @@ import {
 	paper,
 	progression,
 	skillsel,
+	stdmg,
 	stlimit,
 	wsel,
 } from "@util"
@@ -88,6 +97,9 @@ class CharacterGURPS<
 	declare reactions: ConditionalModifier[]
 	/** Accumulated conditional modifier bonuses */
 	declare conditionalModifiers: ConditionalModifier[]
+
+	/** Exclusions to prevent circular references in skill level resoluiton */
+	declare skillResolverExclusions: Set<string>
 
 	static override defineSchema(): ActorSchema<string, object, SourceFromSchema<ItemSchema<string, object>>> {
 		const settings = this.getDefaultSettings()
@@ -261,6 +273,7 @@ class CharacterGURPS<
 
 	get dodgeAttribute(): DeepPartial<AttributeGURPS<this>> {
 		return {
+			_id: gid.Dodge,
 			id: gid.Dodge,
 			definition: {
 				combinedName: LocalizeGURPS.translations.gurps.attributes.dodge,
@@ -277,6 +290,50 @@ class CharacterGURPS<
 			} as AttributeDef,
 			effective: this.adjustedSizeModifier,
 		}
+	}
+
+	async getThrustWeapon(): Promise<MeleeWeaponGURPS<this>> {
+		return (
+			await this.createEmbeddedDocuments(
+				"Item",
+				[
+					{
+						name: LocalizeGURPS.translations.gurps.character[gid.Thrust],
+						type: ItemType.MeleeWeapon,
+						system: {
+							usage: LocalizeGURPS.translations.gurps.character[gid.Thrust],
+							damage: {
+								type: "",
+								st: stdmg.Option.Thrust,
+							},
+						},
+					},
+				],
+				{ temporary: true },
+			)
+		).shift() as MeleeWeaponGURPS<this>
+	}
+
+	async getSwingWeapon(): Promise<MeleeWeaponGURPS<this>> {
+		return (
+			await this.createEmbeddedDocuments(
+				"Item",
+				[
+					{
+						name: LocalizeGURPS.translations.gurps.character[gid.Swing],
+						type: ItemType.MeleeWeapon,
+						system: {
+							usage: LocalizeGURPS.translations.gurps.character[gid.Swing],
+							damage: {
+								type: "",
+								st: stdmg.Option.Swing,
+							},
+						},
+					},
+				],
+				{ temporary: true },
+			)
+		).shift() as MeleeWeaponGURPS<this>
 	}
 
 	override get temporaryEffects(): TemporaryEffect[] {
@@ -914,6 +971,28 @@ class CharacterGURPS<
 			actor: this,
 			system: this.system,
 		}
+	}
+
+	isSkillLevelResolutionExcluded(name: string, specialization: string): boolean {
+		if (this.skillResolverExclusions.has(this.skillLevelResolutionKey(name, specialization))) {
+			if (specialization) name += ` (${specialization})`
+			console.error(`Attempt to resolve skill level via itself: ${name}`)
+			return true
+		}
+		return false
+	}
+
+	registerSkillLevelResolutionExclusion(name: string, specialization: string): void {
+		this.skillResolverExclusions ??= new Set()
+		this.skillResolverExclusions.add(this.skillLevelResolutionKey(name, specialization))
+	}
+
+	unregisterSkillLevelResolutionExclusion(name: string, specialization: string): void {
+		this.skillResolverExclusions.delete(this.skillLevelResolutionKey(name, specialization))
+	}
+
+	skillLevelResolutionKey(name: string, specialization: string): string {
+		return `${name}\u0000${specialization}`
 	}
 
 	getTrait(name: string): ItemInstances<this>[ItemType.Trait] | null {

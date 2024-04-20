@@ -185,10 +185,10 @@ export class DamageChat {
 	}
 
 	static setTransferFlag(
-		object: Partial<ChatMessageSource>,
+		object: DeepPartial<ChatMessageSource>,
 		payload: Partial<DamagePayload>,
 		userTarget: string,
-	): Partial<ChatMessageSource> {
+	): DeepPartial<ChatMessageSource> {
 		const transfer = JSON.stringify({ type: DropDataType.Damage, payload: payload, userTarget: userTarget })
 		fu.setProperty(object, `flags.${SYSTEM_NAME}.${DamageChatFlags.Transfer}`, transfer)
 		return object

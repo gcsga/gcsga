@@ -1,4 +1,4 @@
-import { HOOKS, ModifierItem, RollModifier, RollModifierStack, SOCKET, SYSTEM_NAME } from "@data"
+import { HOOKS, ModifierItem, RollModifierStack, SOCKET, SYSTEM_NAME } from "@data"
 import { ModifierBucket } from "./button.ts"
 import { UserFlags } from "@module/user/data.ts"
 import { LocalizeGURPS, htmlQuery, htmlQueryAll } from "@util"
@@ -54,9 +54,6 @@ export class ModifierBucketWindow extends Application {
 		const height = html.offsetHeight
 		const left = Math.max(buttonLeft + buttonWidth / 2 - width / 2, 10)
 
-		console.log(buttonLeft, buttonWidth, width, left)
-		console.log(buttonLeft + buttonWidth / 2 - width / 2)
-
 		html.style.setProperty("left", `${left}px`)
 		html.style.setProperty("top", `${buttonTop - height - 10}px`)
 
@@ -69,14 +66,13 @@ export class ModifierBucketWindow extends Application {
 		// Detect changes to input
 		// searchbar.on("keydown", event => this._keyDown(event))
 
-		// Modifier Deleting
-		for (const player of htmlQueryAll(html, "a.player"))
+		for (const player of htmlQueryAll(html, "button.player"))
 			player.addEventListener("click", ev => this._onSendToPlayer(ev))
-		for (const modifier of htmlQueryAll(html, "a.modifier"))
+		for (const modifier of htmlQueryAll(html, "button.modifier"))
 			modifier.addEventListener("click", ev => this._onClickModifier(ev))
 		for (const section of htmlQueryAll(html, ".collapsible"))
 			section.addEventListener("click", ev => this._onCollapseToggle(ev))
-		for (const ref of htmlQueryAll(html, "a.ref")) ref.addEventListener("click", ev => PDF.handle(ev))
+		for (const ref of htmlQueryAll(html, "div.ref")) ref.addEventListener("click", ev => PDF.handle(ev))
 
 		// Save Current Bucket
 		htmlQuery(html, "#save-current")?.addEventListener("click", _ => this._onSaveCurrentStack())
@@ -93,7 +89,7 @@ export class ModifierBucketWindow extends Application {
 
 	_onClickModifier(event: MouseEvent): void {
 		const element = event.currentTarget ?? null
-		if (!(element instanceof HTMLLinkElement)) return
+		if (!(element instanceof HTMLButtonElement)) return
 
 		const modifier = JSON.parse(element.dataset.modifier ?? "")
 
@@ -115,7 +111,7 @@ export class ModifierBucketWindow extends Application {
 		const element = event.currentTarget ?? null
 		if (!(element instanceof HTMLLinkElement)) return
 
-		const savedStacks = (game.user.getFlag(SYSTEM_NAME, UserFlags.SavedStacks) as RollModifierStack[]) ?? []
+		const savedStacks = game.user.flags[SYSTEM_NAME][UserFlags.SavedStacks]
 		const stacks = this.stacksOpen
 		stacks.push(...Array(savedStacks.length - stacks.length).fill(false))
 		const index = parseInt(element.dataset.index ?? "")
@@ -125,7 +121,7 @@ export class ModifierBucketWindow extends Application {
 	}
 
 	private async _onSaveCurrentStack(): Promise<void> {
-		const modStack = game.user.getFlag(SYSTEM_NAME, UserFlags.ModifierStack) as RollModifier[]
+		const modStack = game.user.flags[SYSTEM_NAME][UserFlags.ModifierStack]
 		setTimeout(async () => {
 			new DialogGURPS(
 				{
@@ -140,8 +136,7 @@ export class ModifierBucketWindow extends Application {
 								let name = form.find("input").val()
 								if (!name || name === "")
 									name = LocalizeGURPS.translations.gurps.system.modifier_bucket.untitled_stack
-								const savedStacks =
-									(game.user.getFlag(SYSTEM_NAME, UserFlags.SavedStacks) as RollModifierStack[]) ?? []
+								const savedStacks = game.user.flags[SYSTEM_NAME][UserFlags.SavedStacks]
 								savedStacks.push({
 									title: name,
 									items: modStack,
@@ -197,21 +192,21 @@ export class ModifierBucketWindow extends Application {
 
 	private async _onSendToPlayer(event: MouseEvent): Promise<void> {
 		const element = event.currentTarget ?? null
-		if (!(element instanceof HTMLLinkElement)) return
+		if (!(element instanceof HTMLButtonElement)) return
 
 		const id = element.dataset.userId
 		if (!id) return console.error("No id provided")
 		const player = game.users?.get(id)
 		if (!player) return console.error(`Player with id "${id}" does not exist.`)
 
-		const modStack = game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierStack)
+		const modStack = game.user.flags[SYSTEM_NAME][UserFlags.ModifierStack]
 		await player.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, modStack)
 		game.socket?.emit(`system.${SYSTEM_NAME}`, { type: SOCKET.UPDATE_BUCKET, users: [player.id] })
 	}
 
 	override getData(options?: Partial<ApplicationOptions> | undefined): object | Promise<object> {
-		const modStack = game.user.getFlag(SYSTEM_NAME, UserFlags.ModifierStack) ?? []
-		const savedStacks = (game.user.getFlag(SYSTEM_NAME, UserFlags.SavedStacks) as RollModifierStack[]) ?? []
+		const modStack = game.user.flags[SYSTEM_NAME][UserFlags.ModifierStack]
+		const savedStacks = game.user.flags[SYSTEM_NAME][UserFlags.SavedStacks]
 
 		const commonMods = CONFIG.GURPS.commonMods
 

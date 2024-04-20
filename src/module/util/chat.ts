@@ -2,9 +2,9 @@ import { ActorGURPS } from "@actor"
 import { ActorType, GURPS_COMMANDS, RollModifier, RollType, gid } from "@data"
 import { MookGeneratorSheet } from "@system"
 import { RollGURPS } from "@module/roll/index.ts"
-import { RollTypeData } from "@module/roll/roll-handler.ts"
 import { LastActor } from "./last-actor.ts"
 import { LocalizeGURPS } from "@util"
+import { RollTypeData } from "@module/roll/roll-handler.ts"
 
 export function parse(message: string): [string, string[]] {
 	for (const [rule, rgx] of Object.entries(GURPS_COMMANDS)) {
@@ -186,7 +186,7 @@ function getDamageRollData(
 	}
 	const data: Partial<RollTypeData> = {
 		type: RollType.Damage,
-		item: actor.items.get(eventData.weapon),
+		item: actor.itemCollections.weapons.get(eventData.weapon) ?? null,
 		times: 1,
 	}
 
@@ -208,7 +208,7 @@ async function _onMultiDamageRoll(event: JQuery.ClickEvent): Promise<void> {
 	// let times = parseInt($(damageHits).data("times"))
 
 	const times = parseInt(event.currentTarget.innerText)
-	data.data.times = times
+	if (data.data.type === RollType.Damage) data.data.times = times
 	await RollGURPS.handleRoll(game.user, data.actor, data.data as RollTypeData)
 }
 

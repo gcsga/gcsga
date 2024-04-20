@@ -1,3 +1,4 @@
+import { RollType } from "@module/data/constants.ts"
 import { Int } from "@util/fxp.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 
@@ -22,6 +23,10 @@ export namespace selfctrl {
 
 		export function toString(R: Roll): string {
 			return LocalizeGURPS.translations.gurps.enum.selfctrl.roll[R]
+		}
+
+		export function toRollableButton(R: Roll): string {
+			return `<div data-type="${RollType.ControlRoll}" class="rollable">${Roll.toString(R)}</div>`
 		}
 
 		export function multiplier(R: Roll): number {

@@ -1,5 +1,10 @@
 ## Immediate TODO
 
+BUGS
+
+-   for some reason bucket flags are shared
+-   maybe replace flags with settings
+
 0. Token HUD
 
 -   maneuvers not displaying first (maybe put on other side?)

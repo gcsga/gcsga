@@ -43,6 +43,10 @@ class TraitContainerGURPS<
 		})
 	}
 
+	get skillLevel(): number {
+		return this.CR
+	}
+
 	get CR(): selfctrl.Roll {
 		return this.system.cr
 	}

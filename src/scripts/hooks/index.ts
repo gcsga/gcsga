@@ -1,3 +1,4 @@
+import { AddModifier } from "./add-modifier.ts"
 import { CanvasReady } from "./canvas-ready.ts"
 import { DropCanvasData } from "./drop-canvas-data.ts"
 import { I18nInit } from "./i18n-init.ts"
@@ -23,6 +24,7 @@ export const HooksGURPS = {
 			DropCanvasData,
 			RenderPlayerList,
 			RenderHotbar,
+			AddModifier,
 			// RenderTokenHUD,
 		]
 		for (const Listener of listeners) {

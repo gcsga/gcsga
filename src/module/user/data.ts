@@ -29,5 +29,18 @@ type UserFlagsGURPS = DocumentFlags & {
 	}
 }
 
-export { UserFlags }
+const UserDefaultFlags: UserFlagsGURPS = {
+	[SYSTEM_NAME]: {
+		[UserFlags.Init]: true,
+		[UserFlags.LastStack]: [],
+		[UserFlags.ModifierStack]: [],
+		[UserFlags.ModifierSticky]: false,
+		[UserFlags.SavedStacks]: [],
+		[UserFlags.LastActor]: null,
+		[UserFlags.LastToken]: null,
+		[UserFlags.SearchPackContents]: false,
+	},
+}
+
+export { UserFlags, UserDefaultFlags }
 export type { UserFlagsGURPS, UserSourceGURPS }

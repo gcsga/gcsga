@@ -4,7 +4,7 @@ import { VariableResolver } from "@module/util/index.ts"
 
 abstract class AbstractAttribute<TActor extends VariableResolver = VariableResolver> {
 	actor: TActor
-	private _id: string
+	_id: string
 
 	constructor(actor: TActor, data: AbstractAttributeObj) {
 		this.actor = actor

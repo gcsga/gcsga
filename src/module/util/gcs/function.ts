@@ -282,7 +282,7 @@ function evalSigned(e: Evaluator, a: string): string {
  */
 function evalSkillLevel(e: Evaluator, arg: string): number {
 	const entity = e.resolver
-	if (!(entity instanceof ActorGURPS)) return 0
+	if (!(entity instanceof ActorGURPS && entity.isOfType(ActorType.Character))) return 0
 	let [name, remaining] = nextArg(arg)
 	name = evalToString(e, name)
 	if (!name) return 0

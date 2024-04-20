@@ -12,7 +12,7 @@ class AttributeGURPS<TActor extends AttributeResolver = AttributeResolver> exten
 	order: number
 	applyOps: boolean
 
-	private _overridenThreshold: PoolThreshold | null = null
+	protected _overridenThreshold: PoolThreshold | null = null
 
 	constructor(actor: TActor, data: AttributeObj, order: number) {
 		super(actor, data)

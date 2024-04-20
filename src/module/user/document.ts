@@ -4,31 +4,34 @@ import { HOOKS, RollModifierTags, SYSTEM_NAME } from "@module/data/constants.ts"
 import { RollModifier } from "@module/data/types.ts"
 import { SceneGURPS, TokenDocumentGURPS } from "@scene"
 import * as R from "remeda"
-import { UserFlags, UserFlagsGURPS, UserSourceGURPS } from "./data.ts"
+import { UserDefaultFlags, UserFlags, UserFlagsGURPS, UserSourceGURPS } from "./data.ts"
 
-class UserGURPS extends User<ActorGURPS<null>> {
+class UserGURPS<TActor extends ActorGURPS<null> = ActorGURPS<null>> extends User<TActor> {
+	static override defineSchema(): foundry.documents.UserSchema<foundry.documents.BaseActor<null>> {
+		return this.mergeSchema(super.defineSchema(), {
+			flags: new foundry.data.fields.ObjectField({ initial: UserDefaultFlags }),
+		})
+	}
+
+	static mergeSchema(
+		a: foundry.documents.UserSchema<foundry.documents.BaseActor<null>>,
+		b: foundry.data.fields.DataSchema,
+	): foundry.documents.UserSchema<foundry.documents.BaseActor<null>> {
+		Object.assign(a, b)
+		return a
+	}
+
+	// Why does this need to be done every time?
+	override prepareBaseData(): void {
+		super.prepareBaseData()
+		this.flags = fu.mergeObject(UserDefaultFlags, this.flags)
+	}
+
 	override prepareData(): void {
 		super.prepareData()
 		if (canvas?.ready && canvas.tokens?.controlled && canvas.tokens?.controlled.length > 0) {
 			game.gurps.effectPanel.refresh()
 		}
-	}
-
-	override prepareBaseData(): void {
-		super.prepareBaseData()
-		this.flags = fu.mergeObject(
-			{
-				[SYSTEM_NAME]: {
-					[UserFlags.Init]: true,
-					[UserFlags.LastStack]: [],
-					[UserFlags.ModifierStack]: [],
-					[UserFlags.ModifierSticky]: false,
-					[UserFlags.LastActor]: null,
-					[UserFlags.LastToken]: null,
-				},
-			},
-			this.flags,
-		)
 	}
 
 	get modifierTotal(): number {
@@ -74,7 +77,7 @@ class UserGURPS extends User<ActorGURPS<null>> {
 	}
 }
 
-interface UserGURPS extends User<ActorGURPS<null>> {
+interface UserGURPS<TActor extends ActorGURPS<null>> extends User<TActor> {
 	targets: Set<TokenGURPS<TokenDocumentGURPS<SceneGURPS>>>
 	flags: UserFlagsGURPS
 	readonly _source: UserSourceGURPS

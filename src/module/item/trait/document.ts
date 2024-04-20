@@ -238,7 +238,7 @@ class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 	get modifierNotes(): string {
 		const buffer = new StringBuilder()
 		if (this.CR !== selfctrl.Roll.NoCR) {
-			buffer.push(selfctrl.Roll.toString(this.CR))
+			buffer.push(selfctrl.Roll.toRollableButton(this.CR))
 			if (this.CRAdj !== selfctrl.Adjustment.NoCRAdj) {
 				if (buffer.length !== 0) buffer.push(", ")
 				buffer.push(selfctrl.Adjustment.description(this.CRAdj, this.CR))
