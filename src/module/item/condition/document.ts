@@ -6,6 +6,7 @@ import { RollModifier } from "@module/data/types.ts"
 import { DurationType, DurationTypes } from "@item/abstract-effect/data.ts"
 import { getConditionList } from "./list.ts"
 import { getManeuverList } from "./maneuver.ts"
+import { Feature } from "@system"
 
 const fields = foundry.data.fields
 
@@ -45,6 +46,7 @@ class ConditionGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> exte
 				reference_highlight: new fields.StringField(),
 				checks: new fields.ArrayField(new fields.ObjectField<RollModifier>()),
 				consequences: new fields.ArrayField(new fields.ObjectField<Consequence>()),
+				features: new fields.ArrayField(new fields.ObjectField<Feature>()),
 			}),
 		})
 	}

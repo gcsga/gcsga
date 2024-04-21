@@ -5,6 +5,8 @@ import { BaseFeatureObj, LeveledAmountObj } from "./data.ts"
 import { WeaponLeveledAmount } from "./weapon-leveled-amount.ts"
 import { FeatureOwner, WeaponOwner } from "@module/util/index.ts"
 import { TooltipGURPS } from "@util"
+import { ItemGURPS } from "@item"
+import { ItemType } from "@module/data/constants.ts"
 
 export abstract class BonusOwner<TType extends feature.Type> {
 	declare type: TType
@@ -27,6 +29,10 @@ export abstract class BonusOwner<TType extends feature.Type> {
 
 	set owner(owner: FeatureOwner | WeaponOwner | null) {
 		this._owner = owner
+		if (owner instanceof ItemGURPS) {
+			if (owner.isOfType(ItemType.Effect, ItemType.Condition)) this.effective = true
+			else this.effective = false
+		}
 	}
 
 	get subOwner(): FeatureOwner | WeaponOwner | null {

@@ -1,26 +1,11 @@
 ## Immediate TODO
 
-BUGS
-
--   for some reason bucket flags are shared
--   maybe replace flags with settings
-
-0. Token HUD
-
--   maneuvers not displaying first (maybe put on other side?)
--   make maneuvers display on other side (not an item anymore)
--   Add status effect application
--   Include current maneuver and posture
-    -   Maybe separate posture from other conditions in Token HUD?
-    -   Include all current statuses
-
 1. Item sheets
 
     - Embedded modifier lists
         - enable toggle
         - re-odering
         - dropdown
-    - Sign number fields when necessary
 
 2. Compendium browser
 

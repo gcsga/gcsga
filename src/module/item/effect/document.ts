@@ -4,6 +4,7 @@ import { EffectSource, EffectSystemData } from "./data.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { RollModifier } from "@module/data/types.ts"
 import { DurationType, DurationTypes } from "@item/abstract-effect/data.ts"
+import { Feature } from "@system"
 
 const fields = foundry.data.fields
 
@@ -37,6 +38,7 @@ class EffectGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends
 				}),
 				reference: new fields.StringField(),
 				reference_highlight: new fields.StringField(),
+				features: new fields.ArrayField(new fields.ObjectField<Feature>()),
 			}),
 		})
 	}

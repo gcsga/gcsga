@@ -422,6 +422,12 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 				}
 			}
 		}
+		for (const effect of this.itemCollections.effects) {
+			for (const feature of effect.features) {
+				const levels = Math.max(effect.level ?? 0, 0)
+				this.prepareFeature(effect, null, feature, levels)
+			}
+		}
 	}
 
 	prepareFeature(owner: ItemGURPS, subOwner: ItemGURPS | null, feature: Feature, levels: number): number {

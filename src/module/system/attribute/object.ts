@@ -30,7 +30,7 @@ class AttributeGURPS<TActor extends AttributeResolver = AttributeResolver> exten
 
 	get bonus(): number {
 		if (!this.actor) return 0
-		return this.actor.attributeBonusFor(this.id, stlimit.Option.None)
+		return this.actor.attributeBonusFor(this.id, stlimit.Option.None, false)
 	}
 
 	get effectiveBonus(): number {

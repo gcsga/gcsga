@@ -115,6 +115,8 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 				ItemType.Equipment,
 				ItemType.EquipmentContainer,
 				ItemType.EquipmentModifier,
+				ItemType.Effect,
+				ItemType.Condition,
 			)
 		) {
 			return (

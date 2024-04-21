@@ -220,7 +220,6 @@ export class MookGeneratorSheet extends FormApplication {
 			if (i === "thrust") formData.thrust = new DiceGURPS(formData.thrust as string)
 			if (i === "swing") formData.swing = new DiceGURPS(formData.swing as string)
 		}
-		console.log(formData)
 		return this.object.update(formData)
 	}
 }

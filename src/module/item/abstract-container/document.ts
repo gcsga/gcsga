@@ -122,8 +122,6 @@ abstract class AbstractContainerGURPS<
 	): Promise<Document<_Document | null, DataSchema>[]> {
 		if (embeddedName !== "Item") return super.createEmbeddedDocuments(embeddedName, data, context)
 
-		console.log(data)
-
 		if (this.parent) {
 			return this.parent.createEmbeddedDocuments(embeddedName, data)
 		}

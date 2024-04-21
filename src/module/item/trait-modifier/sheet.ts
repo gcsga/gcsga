@@ -1,6 +1,7 @@
 import { ItemSheetDataGURPS, ItemSheetGURPS, ItemSheetOptions } from "@item/base/sheet.ts"
 import { SYSTEM_NAME } from "@module/data/constants.ts"
 import { TraitModifierGURPS } from "./document.ts"
+import { objectHasKey } from "@util"
 
 class TraitModifierSheetGURPS extends ItemSheetGURPS<TraitModifierGURPS> {
 	override get template(): string {
@@ -13,6 +14,13 @@ class TraitModifierSheetGURPS extends ItemSheetGURPS<TraitModifierGURPS> {
 		return {
 			...sheetData,
 		}
+	}
+
+	protected override async _updateObject(event: Event, formData: Record<string, unknown>): Promise<void> {
+		if (objectHasKey(formData, "system.disabled")) {
+			formData["system.disabled"] = !formData["system.disabled"]
+		}
+		return super._updateObject(event, formData)
 	}
 }
 interface TraitModifierSheetData extends ItemSheetDataGURPS<TraitModifierGURPS> {}

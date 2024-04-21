@@ -3,16 +3,16 @@ import * as R from "remeda"
 import type { TokenDocumentGURPS } from "@scene"
 import { CanvasGURPS } from "../index.ts"
 import { ActorType, ManeuverID } from "@module/data/constants.ts"
+import { TokenManeuver } from "./maneuver.ts"
 
 class TokenGURPS<TDocument extends TokenDocumentGURPS = TokenDocumentGURPS> extends Token<TDocument> {
-	// readonly maneuver: TokenManeuver
-	//
-	// constructor(document: TDocument) {
-	// 	super(document)
-	// 	this.maneuver = new TokenManeuver(this, null)
-	// }
+	readonly maneuver: TokenManeuver
 
-	/** Refresh vision and the `EffectsPanel` */
+	constructor(document: TDocument) {
+		super(document)
+		this.maneuver = this.addChild(new TokenManeuver(this))
+	}
+
 	protected override _onControl(
 		options?: { releaseOthers?: boolean | undefined; pan?: boolean | undefined } | undefined,
 	): void {
@@ -30,6 +30,15 @@ class TokenGURPS<TDocument extends TokenDocumentGURPS = TokenDocumentGURPS> exte
 	override async drawEffects(): Promise<void> {
 		await super.drawEffects()
 		await this._animation
+
+		if (!this.actor?.isOfType(ActorType.Character)) return
+
+		const maneuver = this.actor.system.move.maneuver
+		this.maneuver.setManeuver(maneuver)
+		await this.maneuver.draw()
+		if (maneuver) {
+			this.maneuver.refresh()
+		}
 	}
 
 	override async toggleCombat(combat?: Combat | undefined): Promise<this> {
@@ -98,7 +107,7 @@ class TokenGURPS<TDocument extends TokenDocumentGURPS = TokenDocumentGURPS> exte
 interface TokenGURPS<TDocument extends TokenDocumentGURPS = TokenDocumentGURPS> extends Token<TDocument> {}
 
 type NumericFloatyEffect = { name: string; level?: number | null }
-type showFloatyTextOptions =
+export type showFloatyTextOptions =
 	| number
 	| { create: NumericFloatyEffect }
 	| { update: NumericFloatyEffect }

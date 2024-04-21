@@ -2,12 +2,13 @@ import { CharacterGURPS } from "@actor"
 import { ActorSheetDataGURPS, ActorSheetGURPS } from "@actor/base/sheet.ts"
 import { ItemGURPS } from "@item"
 import { AbstractAttribute } from "@system"
-import { ItemFlags, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
-import { LocalizeGURPS, Weight } from "@util"
+import { ItemFlags, ItemType, ManeuverID, SYSTEM_NAME } from "@module/data/constants.ts"
+import { LocalizeGURPS, Weight, htmlQuery } from "@util"
 import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
 import { CharacterEncumbrance } from "./encumbrance.ts"
 import { CharacterConfigSheet } from "./config.ts"
 import { SheetItem, SheetItemCollection } from "@item/helpers.ts"
+import { CharacterMove } from "./data.ts"
 
 class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS<TActor> {
 	static override get defaultOptions(): ActorSheetOptions {
@@ -19,6 +20,17 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS
 		})
 		data.classes.push("character")
 		return data
+	}
+
+	override activateListeners($html: JQuery<HTMLElement>): void {
+		super.activateListeners($html)
+		const html = $html[0]
+
+		htmlQuery(html, '.move-select[data-name="maneuver"]')?.addEventListener("change", ev => {
+			const value = (ev.currentTarget as HTMLSelectElement).value as ManeuverID | "none"
+			if (value === "none") return this.actor.setManeuver(null)
+			return this.actor.setManeuver(value)
+		})
 	}
 
 	override get template(): string {
@@ -51,6 +63,7 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS
 				resourceTrackers,
 				moveTypes,
 			},
+			move: actor.system.move,
 			itemCollections: this._prepareItemCollections(),
 			config: CONFIG.GURPS,
 			carriedValue: actor.wealthCarried(),
@@ -172,6 +185,7 @@ interface CharacterSheetData<TActor extends CharacterGURPS = CharacterGURPS> ext
 	system: TActor["system"]
 	settings: Record<string, unknown>
 	attributes: Record<string, AbstractAttribute[]>
+	move: CharacterMove
 	itemCollections: Record<string, SheetItemCollection>
 	config: ConfigGURPS["GURPS"]
 	carriedValue: number

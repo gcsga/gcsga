@@ -29,6 +29,12 @@ const MODIFIER_CLASS_ZERO = "zero"
 const MODIFIER_CLASS_NEGATIVE = "neg"
 const MODIFIER_CLASS_POSITIVE = "pos"
 
+interface RollMargin {
+	success: RollSuccess
+	value: number
+	string: string
+}
+
 interface BaseRollTypeData<TType extends RollType> {
 	type: TType
 	actor: string | null
@@ -95,6 +101,7 @@ type ChatData = {
 	rollMode: RollMode
 	formula: string
 	effective: string
+	tooltip: string
 }
 
 abstract class RollTypeHandler<TData extends RollTypeData = RollTypeData> {
@@ -128,7 +135,7 @@ abstract class RollTypeHandler<TData extends RollTypeData = RollTypeData> {
 		const level = this.getEffectiveLevel(data)
 		const name = this.getName(data)
 		const success = this.getSuccess(data, roll.total)
-		const margin = this.getMarginText(data, roll.total)
+		const margin = this.getMargin(data, roll.total)
 
 		const chatData: ChatData = {
 			type: data.type,
@@ -139,13 +146,12 @@ abstract class RollTypeHandler<TData extends RollTypeData = RollTypeData> {
 			modifiers: this.getModifiers(data).map(e => this._applyModifierClasses(e)),
 			success,
 			total: `${roll.total!}: ${LocalizeGURPS.translations.gurps.roll.success[success]}`,
-			margin,
+			margin: margin.string,
 			rollMode: data.hidden ? CONST.DICE_ROLL_MODES.PRIVATE : game.settings.get("core", "rollMode"),
 			formula: this.getFormula(data),
 			effective: `<div class="effective">${LocalizeGURPS.format(this.effectiveLevelLabel, { level })}`,
+			tooltip: await roll.getTooltip(),
 		}
-
-		console.log(chatData)
 
 		const message = await renderTemplate(this.chatMessageTemplate, chatData)
 		const actor = game.actors.get(data.actor ?? "")
@@ -207,13 +213,9 @@ abstract class RollTypeHandler<TData extends RollTypeData = RollTypeData> {
 		return RollSuccess.Success
 	}
 
-	getMargin(_data: TData): number {
-		return 0
-	}
-
-	getMarginText(data: TData, rollTotal: number): string {
+	getMargin(data: TData, rollTotal: number): RollMargin {
 		const success = this.getSuccess(data, rollTotal)
-		const margin = Math.abs(this.getMargin(data))
+		const margin = Math.abs(this.getEffectiveLevel(data) - rollTotal)
 		const from = this.getName(data)
 		const marginMod: RollModifier = {
 			modifier: margin,
@@ -231,14 +233,18 @@ abstract class RollTypeHandler<TData extends RollTypeData = RollTypeData> {
 			marginClass = MODIFIER_CLASS_POSITIVE
 		}
 
-		return `<div class="margin mod mod-${marginClass}" data-mod='${JSON.stringify(marginMod)}'>${game.i18n.format(marginTemplate, { margin })}</div>`
+		return {
+			success,
+			value: margin,
+			string: `<div class="margin mod mod-${marginClass}" data-mod='${JSON.stringify(marginMod)}'>${game.i18n.format(marginTemplate, { margin })}</div>`,
+		}
 	}
 
 	getFormula(_data: TData): string {
 		return game.settings.get(SYSTEM_NAME, SETTINGS.ROLL_FORMULA)
 	}
 
-	getExtras(_data: TData): Record<string, unknown> {
+	getExtras(_data: TData, _rollTotal: number): Record<string, unknown> {
 		return {}
 	}
 
@@ -254,7 +260,6 @@ abstract class RollTypeHandler<TData extends RollTypeData = RollTypeData> {
 
 class ModifierRollTypeHandler extends RollTypeHandler<ModifierRollTypeData> {
 	override async handleRollType(data: ModifierRollTypeData): Promise<void> {
-		console.log(data)
 		const user = this.getUser(data)
 		if (!user) return
 		return user.addModifier({ id: data.name, modifier: data.modifier })
@@ -374,13 +379,13 @@ class AttackRollTypeHandler extends RollTypeHandler<AttackRollTypeData> {
 			: itemData
 	}
 
-	override getExtras(data: AttackRollTypeData): Record<string, unknown> {
+	override getExtras(data: AttackRollTypeData, rollTotal: number): Record<string, unknown> {
 		const extra = {}
 
 		if (data.item?.isOfType(ItemType.RangedWeapon)) {
 			const effectiveROF = this.getEffectiveROF(data.item)
 			const numberOfShots = Math.min(
-				Math.floor(this.getMargin(data) / data.item.recoil.resolve(data.item).shot) + 1,
+				Math.floor(this.getMargin(data, rollTotal).value / data.item.recoil.resolve(data.item).shot) + 1,
 				effectiveROF,
 			)
 			if (numberOfShots > 1)

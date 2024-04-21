@@ -65,7 +65,7 @@ interface AttributeResolver extends VariableResolver {
 	attributeBonusFor: (
 		attributeId: string,
 		limitation: stlimit.Option,
-		effective?: boolean,
+		effective: boolean | null,
 		tooltip?: TooltipGURPS | null,
 	) => number
 	costReductionFor: (attributeID: string) => number

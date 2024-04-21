@@ -94,6 +94,10 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 		const type = button.dataset.type as RollType
 		const data: Partial<RollTypeData> = { type, hidden: event.ctrlKey }
 		if (!this.actor.isOfType(ActorType.Character)) return
+		if (data.type === RollType.Location) {
+			data.user = game.user.id
+			data.actor = this.actor.id
+		}
 		if (data.type === RollType.Attribute) {
 			const id = button.dataset.id ?? ""
 			if (id === gid.Dodge) {

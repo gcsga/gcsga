@@ -4,27 +4,25 @@ import { HOOKS, RollModifierTags, SYSTEM_NAME } from "@module/data/constants.ts"
 import { RollModifier } from "@module/data/types.ts"
 import { SceneGURPS, TokenDocumentGURPS } from "@scene"
 import * as R from "remeda"
-import { UserDefaultFlags, UserFlags, UserFlagsGURPS, UserSourceGURPS } from "./data.ts"
+import { UserFlags, UserFlagsGURPS, UserSourceGURPS } from "./data.ts"
 
 class UserGURPS<TActor extends ActorGURPS<null> = ActorGURPS<null>> extends User<TActor> {
-	static override defineSchema(): foundry.documents.UserSchema<foundry.documents.BaseActor<null>> {
-		return this.mergeSchema(super.defineSchema(), {
-			flags: new foundry.data.fields.ObjectField({ initial: UserDefaultFlags }),
-		})
-	}
-
-	static mergeSchema(
-		a: foundry.documents.UserSchema<foundry.documents.BaseActor<null>>,
-		b: foundry.data.fields.DataSchema,
-	): foundry.documents.UserSchema<foundry.documents.BaseActor<null>> {
-		Object.assign(a, b)
-		return a
-	}
-
-	// Why does this need to be done every time?
 	override prepareBaseData(): void {
 		super.prepareBaseData()
-		this.flags = fu.mergeObject(UserDefaultFlags, this.flags)
+		this.flags = fu.mergeObject(
+			{
+				[SYSTEM_NAME]: {
+					[UserFlags.LastStack]: [],
+					[UserFlags.ModifierStack]: [],
+					[UserFlags.ModifierSticky]: false,
+					[UserFlags.SavedStacks]: [],
+					[UserFlags.LastActor]: null,
+					[UserFlags.LastToken]: null,
+					[UserFlags.SearchPackContents]: false,
+				},
+			},
+			this.flags,
+		)
 	}
 
 	override prepareData(): void {

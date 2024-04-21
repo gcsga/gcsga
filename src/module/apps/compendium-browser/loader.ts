@@ -17,7 +17,6 @@ class PackLoader {
 		packs: string[],
 		indexFields: string[],
 	): AsyncGenerator<{ pack: CompendiumCollection<CompendiumDocument>; index: CompendiumIndex }, void, unknown> {
-		console.log("loadPacks")
 		const localize = LocalizeGURPS.translations.gurps.progress_bar
 		const sources = this.#getSources()
 

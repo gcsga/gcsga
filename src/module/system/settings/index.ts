@@ -274,4 +274,21 @@ export function registerSettings(): void {
 		type: Boolean,
 		default: true,
 	})
+
+	game.settings.register(SYSTEM_NAME, SETTINGS.MANEUVER_DETAIL, {
+		name: "gurps.settings.maneuver_detail.name",
+		hint: "gurps.settings.maneuver_detail.hint",
+		scope: "world",
+		config: true,
+		type: String,
+		choices: {
+			full: "gurps.settings.maneuver_detail.choices.full",
+			no_feint: "gurps.settings.maneuver_detail.choices.no_feint",
+			general: "gurps.settings.maneuver_detail.choices.general",
+		},
+		default: "general",
+		onChange: value => {
+			console.log(`${SETTINGS.MANEUVER_DETAIL}: ${value}`)
+		},
+	})
 }

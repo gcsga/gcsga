@@ -20,7 +20,7 @@ import { CanvasGURPS } from "@module/canvas/index.ts"
 import { ChatMessageGURPS } from "@module/chat-message/index.ts"
 import { ItemsGURPS } from "@module/collection/items.ts"
 import { CombatGURPS, CombatantGURPS } from "@module/combat/index.ts"
-import { AttributeEffect } from "@module/data/index.ts"
+import { AttributeEffect, MANEUVER_DETAIL_SETTING } from "@module/data/index.ts"
 import { SheetSettingsObj } from "@module/data/sheet-settings.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { JournalEntryGURPS } from "@module/journal-entry/document.ts"
@@ -153,6 +153,7 @@ declare global {
 		get(module: "gcsga", setting: "compendium_browser_sources"): CompendiumBrowserSources
 		get(module: "gcsga", setting: "roll_formula"): string
 		get(module: "gcsga", setting: "world_schema_version"): number
+		get(module: "gcsga", setting: "maneuver_visiblity"): MANEUVER_DETAIL_SETTING
 	}
 
 	interface ClientSettingsMap {

@@ -1330,6 +1330,15 @@
 					"gurps": "GURPS Basic Set (B/BX)",
 					"lite": "GURPS Lite",
 					"dfrpg": "The Dungeon Fantasy Roleplaying Game (DFA/DFX)"
+				},
+				"maneuver_detail": {
+					"name": "Maneuver Detail",
+					"hint": "Determines the level of maneuver detail visible to players and the GM.",
+					"choices": {
+						"full": "Full Detail",
+						"no_feint": "No Feint",
+						"general": "General"
+					}
 				}
 			}
 		},

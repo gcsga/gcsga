@@ -2,6 +2,7 @@ import { AbstractContainerSheetData, AbstractContainerSheetGURPS } from "@item/a
 import { TraitGURPS } from "./document.ts"
 import { ItemSheetOptions } from "@item/base/sheet.ts"
 import { SYSTEM_NAME } from "@module/data/constants.ts"
+import { objectHasKey } from "@util"
 
 class TraitSheetGURPS extends AbstractContainerSheetGURPS<TraitGURPS> {
 	override get template(): string {
@@ -17,7 +18,9 @@ class TraitSheetGURPS extends AbstractContainerSheetGURPS<TraitGURPS> {
 	}
 
 	protected override async _updateObject(event: Event, formData: Record<string, unknown>): Promise<void> {
-		formData["system.disabled"] = !formData["system.disabled"]
+		if (objectHasKey(formData, "system.disabled")) {
+			formData["system.disabled"] = !formData["system.disabled"]
+		}
 		return super._updateObject(event, formData)
 	}
 }

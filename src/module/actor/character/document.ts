@@ -70,7 +70,6 @@ import { CharacterEncumbrance } from "./encumbrance.ts"
 import { SheetSettingsObj } from "@module/data/sheet-settings.ts"
 import { ActorSchema } from "types/foundry/common/documents/actor.js"
 import { ItemSchema } from "types/foundry/common/documents/item.js"
-import { ManeuverEffect } from "@module/canvas/token/maneuver-effect.ts"
 
 const fields = foundry.data.fields
 
@@ -336,13 +335,6 @@ class CharacterGURPS<
 		).shift() as MeleeWeaponGURPS<this>
 	}
 
-	override get temporaryEffects(): TemporaryEffect[] {
-		if (this.system.move.maneuver !== null) {
-			return [new ManeuverEffect(this.system.move.maneuver, this), ...super.temporaryEffects]
-		}
-		return super.temporaryEffects
-	}
-
 	protected override async _preCreate(
 		data: this["_source"],
 		options: DocumentModificationContext<TParent>,
@@ -365,9 +357,32 @@ class CharacterGURPS<
 		this.updateSource(defaultData)
 	}
 
+	protected override _onUpdate(
+		changed: DeepPartial<this["_source"]>,
+		options: CharacterUpdateContext<TParent>,
+		userId: string,
+	): void {
+		super._onUpdate(changed, options, userId)
+		if (options.maneuverChange) {
+			const tokens = this.getActiveTokens()
+			if (options.maneuverChange.create) {
+				for (const token of tokens) {
+					const createName = token.maneuver.getFilteredName(options.maneuverChange.create)
+					token.showFloatyText({ create: { name: LocalizeGURPS.translations.gurps.maneuver[createName] } })
+				}
+			}
+			if (options.maneuverChange.delete) {
+				for (const token of tokens) {
+					const deleteName = token.maneuver.getFilteredName(options.maneuverChange.delete)
+					token.showFloatyText({ delete: { name: LocalizeGURPS.translations.gurps.maneuver[deleteName] } })
+				}
+			}
+		}
+	}
+
 	override async update(
 		data: Record<string, unknown>,
-		context?: DocumentModificationContext<TParent>,
+		context?: CharacterUpdateContext<TParent>,
 	): Promise<this | undefined> {
 		return super.update(data, context)
 	}
@@ -580,7 +595,7 @@ class CharacterGURPS<
 	attributeBonusFor(
 		attributeId: string,
 		limitation: stlimit.Option,
-		effective = false,
+		effective: boolean | null = null,
 		tooltip: TooltipGURPS | null = null,
 	): number {
 		let total = 0
@@ -589,7 +604,7 @@ class CharacterGURPS<
 				if (
 					feature.limitation === limitation &&
 					feature.attribute === attributeId &&
-					(!effective || feature.effective === effective)
+					(effective === null || feature.effective === effective)
 				) {
 					total += feature.adjustedAmount
 					feature.addToTooltip(tooltip)
@@ -601,7 +616,7 @@ class CharacterGURPS<
 	moveBonusFor(
 		id: string,
 		limitation: MoveBonusType,
-		effective = false,
+		effective: boolean | null = null,
 		tooltip: TooltipGURPS | null = null,
 	): number {
 		let total = 0
@@ -610,7 +625,7 @@ class CharacterGURPS<
 				if (
 					feature.limitation === limitation &&
 					feature.move_type === id &&
-					(!effective || feature.effective === effective)
+					(effective === null || feature.effective === effective)
 				) {
 					total += feature.adjustedAmount
 					feature.addToTooltip(tooltip)
@@ -1004,17 +1019,16 @@ class CharacterGURPS<
 	}
 
 	async setManeuver(statusId: ManeuverID | null): Promise<this | null> {
+		const maneuverChange: { create?: ManeuverID; delete?: ManeuverID } = {}
 		const currentManeuver: ManeuverID | null = this.system.move.maneuver?.id ?? null
-		if (currentManeuver !== null)
-			this.getActiveTokens()
-				.shift()
-				?.showFloatyText({ delete: { name: LocalizeGURPS.translations.gurps.maneuver[currentManeuver] } })
-		if (statusId === null) return (await this.update({ "system.move.maneuver": null })) ?? null
+		if (currentManeuver !== null) {
+			maneuverChange.delete = currentManeuver
+		}
+		if (statusId === null) return (await this.update({ "system.move.maneuver": null }, { maneuverChange })) ?? null
 		const maneuver = game.gurps.ManeuverManager.maneuvers.get(statusId) ?? null
-		this.getActiveTokens()
-			.shift()
-			?.showFloatyText({ create: { name: LocalizeGURPS.translations.gurps.maneuver[statusId] } })
-		return (await this.update({ "system.move.maneuver": maneuver })) ?? null
+
+		maneuverChange.create = statusId
+		return (await this.update({ "system.move.maneuver": maneuver }, { maneuverChange })) ?? null
 	}
 }
 
@@ -1023,6 +1037,10 @@ interface CharacterGURPS<TParent extends TokenDocumentGURPS | null = TokenDocume
 	flags: CharacterFlags
 	readonly _source: CharacterSource
 	system: CharacterSystemData
+}
+
+interface CharacterUpdateContext<TParent extends TokenDocumentGURPS | null> extends DocumentUpdateContext<TParent> {
+	maneuverChange?: { create?: ManeuverID; delete?: ManeuverID }
 }
 
 export { CharacterGURPS }

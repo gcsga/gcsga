@@ -78,13 +78,15 @@ export class ModifierBucketWindow extends Application {
 		htmlQuery(html, "#save-current")?.addEventListener("click", _ => this._onSaveCurrentStack())
 
 		const stacks = htmlQuery(html, "#stacks")
-		if (!stacks) return
-		for (const section of htmlQueryAll(stacks, "#dropdown-toggle"))
-			section.addEventListener("click", ev => this._onStackCollapseToggle(ev))
-		for (const section of htmlQueryAll(stacks, ".apply"))
-			section.addEventListener("click", ev => this._onApplyStack(ev))
-		for (const section of htmlQueryAll(stacks, ".delete"))
-			section.addEventListener("click", ev => this._onDeleteStack(ev))
+		for (const section of htmlQueryAll(stacks, "a.dropdown-toggle")) {
+			section.addEventListener("click", () => this._onStackCollapseToggle(section as HTMLLinkElement))
+		}
+		for (const section of htmlQueryAll(stacks, "a.apply")) {
+			section.addEventListener("click", () => this._onApplyStack(section as HTMLLinkElement))
+		}
+		for (const section of htmlQueryAll(stacks, "a.delete")) {
+			section.addEventListener("click", () => this._onDeleteStack(section as HTMLLinkElement))
+		}
 	}
 
 	_onClickModifier(event: MouseEvent): void {
@@ -107,10 +109,7 @@ export class ModifierBucketWindow extends Application {
 		return this.render()
 	}
 
-	private async _onStackCollapseToggle(event: MouseEvent): Promise<unknown> {
-		const element = event.currentTarget ?? null
-		if (!(element instanceof HTMLLinkElement)) return
-
+	private async _onStackCollapseToggle(element: HTMLLinkElement): Promise<unknown> {
 		const savedStacks = game.user.flags[SYSTEM_NAME][UserFlags.SavedStacks]
 		const stacks = this.stacksOpen
 		stacks.push(...Array(savedStacks.length - stacks.length).fill(false))
@@ -159,10 +158,7 @@ export class ModifierBucketWindow extends Application {
 		}, 200)
 	}
 
-	private async _onApplyStack(event: MouseEvent): Promise<boolean> {
-		const element = event.currentTarget ?? null
-		if (!(element instanceof HTMLLinkElement)) return false
-
+	private async _onApplyStack(element: HTMLLinkElement): Promise<boolean> {
 		const index = parseInt(element.dataset.index ?? "")
 		if (isNaN(index)) {
 			console.error("Invalid index")
@@ -174,13 +170,9 @@ export class ModifierBucketWindow extends Application {
 		return Hooks.call(HOOKS.AddModifier)
 	}
 
-	private async _onDeleteStack(event: MouseEvent): Promise<boolean> {
-		const element = event.currentTarget ?? null
-		if (!(element instanceof HTMLLinkElement)) return false
-
+	private async _onDeleteStack(element: HTMLLinkElement): Promise<boolean> {
 		const index = parseInt(element.dataset.index ?? "")
 		if (isNaN(index)) {
-			console.error("Invalid index")
 			return false
 		}
 

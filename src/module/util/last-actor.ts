@@ -5,6 +5,10 @@ import { TokenDocumentGURPS } from "@scene/token-document/document.ts"
 
 export class LastActor {
 	static async set(actor: ActorGURPS, token?: TokenDocumentGURPS): Promise<void> {
+		if (!actor.isOwner) {
+			console.warn(`${game.user.name} does not have ownership of ${actor.name}`)
+			return
+		}
 		if (actor.type === ActorType.Loot) return
 		await game.user?.setFlag(SYSTEM_NAME, UserFlags.LastActor, actor.uuid)
 		GURPS.LastActor = actor

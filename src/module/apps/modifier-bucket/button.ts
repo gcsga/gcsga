@@ -149,7 +149,6 @@ export class ModifierBucket extends Application {
 
 	async clear(): Promise<unknown> {
 		await game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, [])
-		// await game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierTotal, 0)
 		game.gurps.modifierList.render()
 		return this.render(true)
 	}

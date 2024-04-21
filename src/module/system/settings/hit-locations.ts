@@ -150,7 +150,6 @@ export class HitLocationSettings extends SettingsMenuGURPS {
 			data[k.replace("body_type.", "")] = data[k]
 			delete data[k]
 		})
-		console.log(data)
 		await super._updateObject(event, data)
 		this.render()
 	}

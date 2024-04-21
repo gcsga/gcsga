@@ -20,7 +20,6 @@ enum SETTINGS {
 	STATIC_IMPORT_HP_FP = "import_hp_fp",
 	STATIC_IMPORT_BODY_PLAN = "import_bodyplan",
 	STATIC_AUTOMATICALLY_SET_IGNOREQTY = "auto-ignore-qty",
-	// MODIFIER_MODE = "modifier_mode",
 	COLORS = "colors",
 	SHOW_IMPORT_BUTTON = "show_import_button",
 	DEFAULT_ATTRIBUTES = "default_attributes",
@@ -38,12 +37,19 @@ enum SETTINGS {
 	BASE_BOOKS = "base_books",
 	AUTOMATIC_UNREADY = "automatic_unready",
 	WORLD_SCHEMA_VERSION = "world_schema_version",
+	MANEUVER_DETAIL = "maneuver_detail",
 }
 
 enum SSRT_SETTING {
 	STANDARD = "standard",
 	SIMPLIFIED = "simplified",
 	TENS = "tens",
+}
+
+enum MANEUVER_DETAIL_SETTING {
+	FULL = "full",
+	NO_FEINT = "no_feint",
+	GENERAL = "general",
 }
 
 enum SOCKET {
@@ -371,6 +377,7 @@ export {
 	HOOKS,
 	ItemFlags,
 	ItemType,
+	MANEUVER_DETAIL_SETTING,
 	ManeuverID,
 	RollModifierTags,
 	RollType,

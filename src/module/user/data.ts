@@ -2,7 +2,6 @@ import { SYSTEM_NAME } from "@module/data/constants.ts"
 import { RollModifier, RollModifierStack } from "@module/data/types.ts"
 
 enum UserFlags {
-	Init = "init",
 	LastStack = "lastStack",
 	ModifierStack = "modifierStack",
 	ModifierSticky = "modifierSticky",
@@ -18,7 +17,6 @@ type UserSourceGURPS = Omit<foundry.documents.UserSource, "flags"> & {
 
 type UserFlagsGURPS = DocumentFlags & {
 	[SYSTEM_NAME]: {
-		[UserFlags.Init]: boolean
 		[UserFlags.LastStack]: RollModifier[]
 		[UserFlags.ModifierStack]: RollModifier[]
 		[UserFlags.ModifierSticky]: boolean
@@ -29,18 +27,17 @@ type UserFlagsGURPS = DocumentFlags & {
 	}
 }
 
-const UserDefaultFlags: UserFlagsGURPS = {
-	[SYSTEM_NAME]: {
-		[UserFlags.Init]: true,
-		[UserFlags.LastStack]: [],
-		[UserFlags.ModifierStack]: [],
-		[UserFlags.ModifierSticky]: false,
-		[UserFlags.SavedStacks]: [],
-		[UserFlags.LastActor]: null,
-		[UserFlags.LastToken]: null,
-		[UserFlags.SearchPackContents]: false,
-	},
-}
+// const UserDefaultFlags: UserFlagsGURPS = {
+// 	[SYSTEM_NAME]: {
+// 		[UserFlags.LastStack]: [],
+// 		[UserFlags.ModifierStack]: [],
+// 		[UserFlags.ModifierSticky]: false,
+// 		[UserFlags.SavedStacks]: [],
+// 		[UserFlags.LastActor]: null,
+// 		[UserFlags.LastToken]: null,
+// 		[UserFlags.SearchPackContents]: false,
+// 	},
+// }
 
-export { UserFlags, UserDefaultFlags }
+export { UserFlags }
 export type { UserFlagsGURPS, UserSourceGURPS }

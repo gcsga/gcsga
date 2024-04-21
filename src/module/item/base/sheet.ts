@@ -110,6 +110,8 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 					ItemType.Equipment,
 					ItemType.EquipmentContainer,
 					ItemType.EquipmentModifier,
+					ItemType.Effect,
+					ItemType.Condition,
 				)
 			)
 				return
@@ -132,6 +134,8 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 						ItemType.Equipment,
 						ItemType.EquipmentContainer,
 						ItemType.EquipmentModifier,
+						ItemType.Effect,
+						ItemType.Condition,
 					)
 				)
 					return
