@@ -1,0 +1,44 @@
+{
+    "_id": "sa8MC7ELtVcZXqti",
+    "img": "systems/gcsga/assets/status/crouching.webp",
+    "name": "Crouching",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "crouching",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [
+            {
+                "id": "to hit (Crouching or Kneeling, no cover)",
+                "modifier": -2
+            },
+            {
+                "id": "to hit with melee combat (Crouching)",
+                "modifier": -2
+            },
+            {
+                "id": "to hit with ranged combat (Crouching/Kneeling)",
+                "modifier": -2
+            },
+            {
+                "id": "to be hit with ranged combat (Crouching/Kneeling)",
+                "modifier": -2
+            }
+        ],
+        "overlay": false,
+        "type": "condition"
+    },
+    "type": "condition"
+}

@@ -38,7 +38,7 @@ const AllManeuverIDs: ManeuverID[] = [
 	ManeuverID.AOADetermined,
 	ManeuverID.AODParry,
 	ManeuverID.Concentrate,
-	ManeuverID.Aiming,
+	ManeuverID.Aim,
 	ManeuverID.AOAStrong,
 	ManeuverID.AODBlock,
 	ManeuverID.Wait,
@@ -67,7 +67,7 @@ const ApplicableConditions = [
 	ConditionID.Pain,
 	ConditionID.Unconscious,
 	ConditionID.Sleeping,
-	ConditionID.Coma,
+	ConditionID.Comatose,
 	ConditionID.Stun,
 	ConditionID.MentalStun,
 	ConditionID.Poisoned,
@@ -80,7 +80,7 @@ const ApplicableConditions = [
 	ConditionID.Pinned,
 	ConditionID.Sprinting,
 	ConditionID.Flying,
-	ConditionID.Stealth,
+	ConditionID.Stealthy,
 	ConditionID.Waiting,
 	ConditionID.Invisible,
 	ConditionID.Coughing,
@@ -88,16 +88,16 @@ const ApplicableConditions = [
 	ConditionID.Nausea,
 	ConditionID.Agony,
 	ConditionID.Seizure,
-	ConditionID.Blinded,
+	ConditionID.Blind,
 	ConditionID.Deafened,
 	ConditionID.Silenced,
 	ConditionID.Choking,
 	ConditionID.HeartAttack,
-	ConditionID.Euphoria,
+	ConditionID.Euphoric,
 	ConditionID.Hallucinating,
 	ConditionID.Drunk,
 	ConditionID.Drowsy,
-	ConditionID.Daze,
+	ConditionID.Dazed,
 ]
 
 type EffectID = ConditionID | ManeuverID
@@ -177,6 +177,7 @@ interface MigratedDocumentMigrationRecord {
 		foundry?: string
 	} | null
 }
+
 type MigrationRecord = NewDocumentMigrationRecord | MigratedDocumentMigrationRecord
 
 export type {

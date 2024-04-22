@@ -1,20 +1,22 @@
-import { TooltipGURPS } from "@sytem/tooltip/index.ts"
+import { TooltipGURPS } from "@util"
 import { prereq } from "@util/enum/prereq.ts"
-import { CharacterResolver, LootResolver } from "@util/resolvers.ts"
+import { BasePrereqObj } from "./data.ts"
+import { PrereqResolver } from "@module/util/index.ts"
 
-export abstract class BasePrereq {
-	type!: prereq.Type
+export abstract class BasePrereq<TType extends prereq.Type = prereq.Type> {
+	declare type: TType
 
 	has = true
 
-	constructor(type: prereq.Type) {
+	constructor(type: TType) {
 		this.type = type
 	}
 
-	abstract satisfied(
-		character: CharacterResolver | LootResolver,
-		exclude: unknown,
-		tooltip: TooltipGURPS,
-		...args: unknown[]
-	): boolean
+	abstract satisfied(character: PrereqResolver, exclude: unknown, tooltip: TooltipGURPS, ...args: unknown[]): boolean
+
+	toObject(): BasePrereqObj<TType> {
+		return {
+			type: this.type,
+		}
+	}
 }

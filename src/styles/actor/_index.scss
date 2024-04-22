@@ -5,12 +5,6 @@
 	&.character {
 		@import "character";
 	}
-	&.character.static {
-		@import "static";
-	}
-	&.mook {
-		@import "mook";
-	}
 	.error {
 		background-color: rgb(var(--color-error));
 		color: rgb(var(--color-on-error));

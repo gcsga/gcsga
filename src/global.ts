@@ -1,34 +1,39 @@
 /// <reference types="vite/client" />
 
-import { ActorGURPS } from "@actor/base.ts"
-import { ItemGURPS } from "@item/base/document.ts"
-import { ModifierBucket } from "@module/apps/mod_bucket/button.ts"
-import { CombatGURPS } from "@module/combat/document.ts"
-import { CombatantGURPS } from "@module/combatant/document.ts"
-import { AttributeEffect } from "@module/data/index.ts"
-import { SheetSettingsObj } from "@module/data/sheet_settings.ts"
-import { DiceGURPS } from "@module/dice/index.ts"
+import { ActorGURPS } from "@actor"
+import { ItemGURPS } from "@item"
+import { EffectPanel } from "@item/abstract-effect/panel.ts"
+import { ConditionSource } from "@item/data/index.ts"
 import { ActiveEffectGURPS } from "@module/active-effect/index.ts"
-import { UserGURPS } from "@module/user/document.ts"
-import { GURPSCONFIG } from "@scripts/config/index.ts"
-import { AttributeDefObj } from "@sytem/attribute/data.ts"
-import { MoveTypeDefObj } from "@sytem/move_type/data.ts"
-import { ResourceTrackerDefObj } from "@sytem/resource_tracker/data.ts"
-import { CombatTrackerGURPS } from "@ui/combat_tracker.ts"
-import { ModifierList } from "@module/apps/mod_list/document.ts"
 import {
 	CompendiumBrowser,
 	CompendiumBrowserSettings,
 	CompendiumBrowserSources,
 } from "@module/apps/compendium-browser/index.ts"
+import { ModifierBucket } from "@module/apps/modifier-bucket/button.ts"
+import { ModifierList } from "@module/apps/modifier-list/document.ts"
+import { ActorDirectoryGURPS } from "@module/apps/sidebar/actor-directory.ts"
+import { CombatTrackerGURPS } from "@module/apps/sidebar/combat-tracker.ts"
+import { CompendiumDirectoryGURPS } from "@module/apps/sidebar/compendium-directory.ts"
+import { ItemDirectoryGURPS } from "@module/apps/sidebar/item-directory.ts"
+import { CanvasGURPS } from "@module/canvas/index.ts"
+import { ChatMessageGURPS } from "@module/chat-message/index.ts"
+import { ItemsGURPS } from "@module/collection/items.ts"
+import { CombatGURPS, CombatantGURPS } from "@module/combat/index.ts"
+import { AttributeEffect, MANEUVER_DETAIL_SETTING } from "@module/data/index.ts"
+import { SheetSettingsObj } from "@module/data/sheet-settings.ts"
+import { DiceGURPS } from "@module/dice/index.ts"
 import { JournalEntryGURPS } from "@module/journal-entry/document.ts"
 import { JournalEntryPageGURPS } from "@module/journal-entry/page/document.ts"
-import { ChatMessageGURPS } from "@module/chat-message/document.ts"
-import { CanvasGURPS } from "@module/canvas/index.ts"
-import { SceneGURPS } from "@scene"
-import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
-import { EffectPanel } from "@item/effect/panel.ts"
-import { HitLocationObj } from "@sytem/hit_location/data.ts"
+import { UserGURPS } from "@module/user/document.ts"
+import { SceneGURPS, TokenDocumentGURPS } from "@scene"
+import { GURPSCONFIG } from "@scripts/config/index.ts"
+import { remigrate } from "@scripts/system/remigrate.ts"
+import { AttributeDefObj, MoveTypeDefObj, ResourceTrackerDefObj } from "@system"
+import { ConditionManager } from "@system/condition-manager.ts"
+import { HitLocationObj } from "@system/hit-location/data.ts"
+import { ManeuverManager } from "@system/maneuver-manager.ts"
+
 interface GameGURPS
 	extends Game<
 		ActorGURPS<null>,
@@ -36,6 +41,7 @@ interface GameGURPS
 		ChatMessageGURPS,
 		CombatGURPS,
 		ItemGURPS<null>,
+		ItemsGURPS<ItemGURPS<null>>,
 		Macro,
 		SceneGURPS,
 		UserGURPS
@@ -46,6 +52,11 @@ interface GameGURPS
 		modifierList: ModifierList
 		effectPanel: EffectPanel
 		Dice: typeof DiceGURPS
+		ConditionManager: typeof ConditionManager
+		ManeuverManager: typeof ManeuverManager
+		system: {
+			remigrate: typeof remigrate
+		}
 	}
 }
 
@@ -59,7 +70,9 @@ type ConfiguredConfig = Config<
 	CombatGURPS,
 	CombatantGURPS<CombatGURPS | null, TokenDocumentGURPS>,
 	CombatTrackerGURPS<CombatGURPS | null>,
-	CompendiumDirectory,
+	ActorDirectoryGURPS<ActorGURPS<null>>,
+	ItemDirectoryGURPS<ItemGURPS<null>>,
+	CompendiumDirectoryGURPS,
 	Hotbar,
 	ItemGURPS,
 	Macro,
@@ -93,6 +106,7 @@ declare global {
 		var GURPS: {
 			LastActor: ActorGURPS | null
 			LastToken: TokenDocumentGURPS | null
+			[key: string]: unknown
 		}
 		// eslint-disable-next-line no-var
 		var game: GameGURPS
@@ -101,10 +115,10 @@ declare global {
 
 		// eslint-disable-next-line no-var
 		var ui: FoundryUI<
-			ActorDirectory<ActorGURPS<null>>,
+			ActorDirectoryGURPS<ActorGURPS<null>>,
 			ItemDirectory<ItemGURPS<null>>,
 			ChatLog,
-			CompendiumDirectory,
+			CompendiumDirectoryGURPS,
 			CombatTrackerGURPS<CombatGURPS | null>,
 			Hotbar
 		>
@@ -136,16 +150,43 @@ declare global {
 		get(module: "gcsga", key: "default_hit_locations.roll"): string
 		get(module: "gcsga", key: "default_hit_locations.locations"): HitLocationObj[]
 		get(module: "gcsga", key: "colors.colors"): Record<string, { light: string; dark: string }>
+		get(module: "gcsga", key: "colors.modePreference"): string
 		get(module: "gcsga", key: "automatic_unready"): boolean
 		get(module: "gcsga", key: "initiative_formula"): ((combatant: CombatGURPS["turns"][number]) => string) | null
 		get(module: "gcsga", setting: "compendium_browser_packs"): CompendiumBrowserSettings
 		get(module: "gcsga", setting: "compendium_browser_sources"): CompendiumBrowserSources
 		get(module: "gcsga", setting: "roll_formula"): string
 		get(module: "gcsga", setting: "world_schema_version"): number
+		get(module: "gcsga", setting: "maneuver_visiblity"): MANEUVER_DETAIL_SETTING
+		get(module: "gcsga", setting: "world_schema_version"): number
+		get(module: "gcsga", setting: "world_system_version"): string
 	}
 
 	interface ClientSettingsMap {
 		// get(key: "gcsga.worldClock.worldCreatedOn"): SettingConfig & { default: string }
+		get(key: "gcsga.default_sheet_settings.initial_points"): SettingConfig & { default: number }
+		get(key: "gcsga.default_sheet_settings.tech_level"): SettingConfig & { default: string }
+		get(key: "gcsga.default_sheet_settings.tech_level"): SettingConfig & { default: string }
+		get(key: "gcsga.default_sheet_settings.settings"): SettingConfig & { default: SheetSettingsObj }
+		get(key: "gcsga.default_attributes.attributes"): SettingConfig & { default: AttributeDefObj[] }
+		get(key: "gcsga.default_attributes.effects"): SettingConfig & { default: AttributeEffect[] }
+		get(
+			key: "gcsga.default_resource_trackers.resource_trackers",
+		): SettingConfig & { default: ResourceTrackerDefObj[] }
+		get(key: "gcsga.default_move_types.move_types"): SettingConfig & { default: MoveTypeDefObj[] }
+		get(key: "gcsga.default_hit_locations.name"): SettingConfig & { default: string }
+		get(key: "gcsga.default_hit_locations.roll"): SettingConfig & { default: string }
+		get(key: "gcsga.default_hit_locations.locations"): SettingConfig & { default: HitLocationObj[] }
+		get(key: "gcsga.colors.modePreference"): SettingConfig & { default: string }
+		get(key: "gcsga.colors.colors"): SettingConfig & { default: Record<string, { light: string; dark: string }> }
+		get(key: "gcsga.automatic_unready"): SettingConfig & { default: boolean }
+		get(
+			key: "gcsga.initiative_formula",
+		): SettingConfig & { default: ((combatant: CombatGURPS["turns"][number]) => string) | null }
+		get(key: "gcsga.compendium_browser_packs"): SettingConfig & { default: CompendiumBrowserSettings }
+		get(key: "gcsga.compendium_browser_sources"): SettingConfig & { default: CompendiumBrowserSources }
+		get(key: "gcsga.roll_formula"): SettingConfig & { default: string }
+		get(key: "gcsga.world_schema_version"): SettingConfig & { default: number }
 	}
 
 	interface RollMathProxy {
@@ -159,7 +200,8 @@ declare global {
 	}
 
 	const BUILD_MODE: "development" | "production"
-	// const CONDITION_SOURCES: ConditionSource[]
+	const CONDITION_SOURCES: ConditionSource[]
+	const MANEUVER_SOURCES: ConditionSource[]
 	// const EN_JSON: typeof EnJSON
-	const ROLL_PARSER: string
+	// const ROLL_PARSER: string
 }

@@ -7,7 +7,7 @@ import { CompendiumBrowserIndexData, NoteFilters } from "./data.ts"
 export class CompendiumBrowserNoteTab extends CompendiumBrowserTab {
 	tabName: ContentTabName = TabName.Note
 	filterData: NoteFilters
-	templatePath = `systems/${SYSTEM_NAME}/templates/compendium-browser/partials/note.hbs`
+	templatePath = `systems/${SYSTEM_NAME}/templates/common/note.hbs`
 
 	constructor(browser: CompendiumBrowser) {
 		super(browser)
@@ -45,7 +45,7 @@ export class CompendiumBrowserNoteTab extends CompendiumBrowserTab {
 						type: noteData.type,
 						name: noteData.name,
 						img: noteData.img,
-						uuid: `Compendium.${pack.collection}.${noteData._id}`,
+						id: `Compendium.${pack.collection}.${noteData._id}`,
 						formattedName: noteData.formattedName,
 						resolvedNotes: noteData.resolvedNotes,
 						points: noteData.adjustedPoints,

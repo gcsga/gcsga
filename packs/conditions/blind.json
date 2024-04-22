@@ -1,0 +1,27 @@
+{
+    "_id": "arsy68lvHs3Fjefs",
+    "img": "systems/gcsga/assets/status/blind.webp",
+    "name": "Blind",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "blind",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "type": "condition"
+    },
+    "type": "condition"
+}

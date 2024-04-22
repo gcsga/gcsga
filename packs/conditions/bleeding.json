@@ -1,0 +1,28 @@
+{
+    "_id": "U2ByKJef2QSPd72A",
+    "img": "systems/gcsga/assets/status/bleeding.webp",
+    "name": "Bleeding",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "bleeding",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "reference": "B420",
+        "type": "condition"
+    },
+    "type": "condition"
+}

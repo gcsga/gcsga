@@ -1,0 +1,112 @@
+{
+    "_id": "QTlWOBG43KOik8N5",
+    "img": "systems/gcsga/assets/icons/trait.svg",
+    "name": "Combat Reflexes",
+    "system": {
+        "base_points": 15,
+        "can_level": false,
+        "cr": 0,
+        "cr_adj": "none",
+        "disabled": false,
+        "features": [
+            {
+                "amount": 1,
+                "name": {
+                    "compare": "starts_with",
+                    "qualifier": "fast-draw"
+                },
+                "per_level": false,
+                "selection_type": "skills_with_name",
+                "specialization": {
+                    "compare": "none",
+                    "qualifier": ""
+                },
+                "tags": {
+                    "compare": "none",
+                    "qualifier": ""
+                },
+                "type": "skill_bonus"
+            },
+            {
+                "amount": 1,
+                "attribute": "dodge",
+                "per_level": false,
+                "type": "attribute_bonus"
+            },
+            {
+                "amount": 1,
+                "attribute": "parry",
+                "per_level": false,
+                "type": "attribute_bonus"
+            },
+            {
+                "amount": 1,
+                "attribute": "block",
+                "per_level": false,
+                "type": "attribute_bonus"
+            },
+            {
+                "amount": 2,
+                "attribute": "fright_check",
+                "per_level": false,
+                "type": "attribute_bonus"
+            },
+            {
+                "amount": 6,
+                "per_level": false,
+                "situation": "on all IQ rolls to wake up or to recover from surprise or mental stun",
+                "type": "conditional_modifier"
+            },
+            {
+                "amount": 1,
+                "per_level": false,
+                "situation": "to initiative rolls for your side (+2 if you are the leader)",
+                "type": "conditional_modifier"
+            }
+        ],
+        "id": "",
+        "levels": 0,
+        "name": "Combat Reflexes",
+        "notes": "Never freeze",
+        "points_per_level": 0,
+        "prereqs": {
+            "all": true,
+            "prereqs": [
+                {
+                    "has": false,
+                    "level": {
+                        "compare": "none",
+                        "qualifier": "0"
+                    },
+                    "name": {
+                        "compare": "is",
+                        "qualifier": "Enhanced Time Sense"
+                    },
+                    "notes": {
+                        "compare": "none",
+                        "qualifier": ""
+                    },
+                    "type": "trait_prereq"
+                }
+            ],
+            "type": "prereq_list",
+            "when_tl": {
+                "compare": "none"
+            }
+        },
+        "reference": "B43",
+        "reference_highlight": "B43",
+        "round_down": false,
+        "study": [],
+        "study_hours_needed": "120",
+        "tags": [
+            "Advantage",
+            "Mental"
+        ],
+        "type": "trait",
+        "userdesc": "",
+        "vtt_notes": "",
+        "weapons": []
+    },
+    "type": "trait"
+}

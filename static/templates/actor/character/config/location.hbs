@@ -1,21 +1,21 @@
-<div class="item"data-path="{{path}}" data-index="{{@index}}" data-type="locations">
+<div class="item"data-path="{{path}}" data-index="{{@index}}" data-type="hitLocation">
 	<div class="controls">
-		<a class="gcs-grip drag" data-path="{{path}}" data-index="{{@index}}" data-type="locations"></a>
+		<a class="gcs-grip drag" data-path="{{path}}" data-index="{{@index}}" data-type="hitLocation"></a>
 		{{#if (eq l 1)}}
 		<a class="gcs-trash disabled"></a>
 		{{else}}
-		<a class="gcs-trash delete" data-path="{{path}}" data-index="{{@index}}" data-type="locations"></a>
+		<a class="gcs-trash delete" data-path="{{path}}" data-index="{{@index}}" data-type="hitLocation"></a>
 		{{/if}}
 		{{#unless this.sub_table}}
-			<a class="gcs-circled-add add" data-path="{{path}}" data-index="{{@index}}" data-type="sub_table"></a>
+			<a class="gcs-circled-add add" data-path="{{path}}" data-index="{{@index}}" data-type="subTable"></a>
 		{{/unless}}
 	</div>
 	<div class="fieldblock">
-		<div class="label">{{localize "gurps.character.settings.body_type.id"}}</div>
+		<label>{{localize "gurps.character.settings.body_type.id"}}</label>
 		<div class="field">
 			<input type="text" name="{{path}}.{{@index}}.id" value="{{this.id}}" data-dtype="String" />
 		</div>
-		<div class="label">{{localize "gurps.character.settings.body_type.choice_name"}}</div>
+		<label>{{localize "gurps.character.settings.body_type.choice_name"}}</label>
 		<div class="field">
 			<input
 				type="text"
@@ -24,7 +24,7 @@
 				data-dtype="String"
 			/>
 		</div>
-		<div class="label">{{localize "gurps.character.settings.body_type.table_name"}}</div>
+		<label>{{localize "gurps.character.settings.body_type.table_name"}}</label>
 		<div class="field">
 			<input
 				type="text"
@@ -33,7 +33,7 @@
 				data-dtype="String"
 			/>
 		</div>
-		<div class="label">{{localize "gurps.character.settings.body_type.slots"}}</div>
+		<label>{{localize "gurps.character.settings.body_type.slots"}}</label>
 		<div class="field">
 			<input
 				type="text"
@@ -42,7 +42,7 @@
 				data-dtype="Number"
 			/>
 		</div>
-		<div class="label">{{localize "gurps.character.settings.body_type.hit_penalty"}}</div>
+		<label>{{localize "gurps.character.settings.body_type.hit_penalty"}}</label>
 		<div class="field">
 			<input
 				type="text"
@@ -51,7 +51,7 @@
 				data-dtype="Number"
 			/>
 		</div>
-		<div class="label">{{localize "gurps.character.settings.body_type.dr_bonus"}}</div>
+		<label>{{localize "gurps.character.settings.body_type.dr_bonus"}}</label>
 		<div class="field">
 			<input
 				type="text"
@@ -60,7 +60,7 @@
 				data-dtype="Number"
 			/>
 		</div>
-		<div class="label">{{localize "gurps.character.settings.body_type.description"}}</div>
+		<label>{{localize "gurps.character.settings.body_type.description"}}</label>
 		<div class="field">
 			<textarea
 				type="text"
@@ -69,7 +69,7 @@
 			>{{textareaFormat this.description}}</textarea>
 		</div>
 		{{#if this.sub_table}}
-		<div class="label">{{localize "gurps.character.settings.body_type.sub_roll"}}</div>
+		<label>{{localize "gurps.character.settings.body_type.sub_roll"}}</label>
 		<div class="field">
 			<input
 				type="text"
@@ -79,8 +79,8 @@
 			></input>
 		</div>
 			<div class="sub-table-controls">
-				<a class="gcs-trash delete" data-path="{{path}}" data-index="{{@index}}" data-type="sub_table"></a>
-				<a class="gcs-circled-add add" data-path="{{path}}.{{@index}}.sub_table" data-index="{{@index}}" data-type="locations"></a>
+				<a class="gcs-trash delete" data-path="{{path}}" data-index="{{@index}}" data-type="subTable"></a>
+				<a class="gcs-circled-add add" data-path="{{path}}.{{@index}}.sub_table" data-index="{{@index}}" data-type="hitLocation"></a>
 			</div>
 			{{#with this.sub_table}}
 			<div class="item-list">

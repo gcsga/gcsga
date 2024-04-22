@@ -1,37 +1,30 @@
-import { ItemGCS } from "@item/gcs/document.ts"
-import { NoteSource, NoteSystemSource } from "./data.ts"
-import { EvalEmbeddedRegex, replaceAllStringFunc } from "@util/regexp.ts"
-import { CharacterResolver } from "@util"
 import { ActorGURPS } from "@actor"
+import { ItemGURPS } from "@item"
+import { NoteSource, NoteSystemData } from "./data.ts"
+import { ItemType } from "@module/data/constants.ts"
+import { LocalizeGURPS } from "@util"
 
-export interface NoteGURPS<TParent extends ActorGURPS | null> extends ItemGCS<TParent> {
+const fields = foundry.data.fields
+
+class NoteGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
+	static override defineSchema(): foundry.documents.ItemSchema<string, object> {
+		return this.mergeSchema(super.defineSchema(), {
+			system: new fields.SchemaField({
+				type: new fields.StringField({ required: true, initial: ItemType.Note }),
+				text: new fields.StringField({
+					required: true,
+					initial: LocalizeGURPS.translations.TYPES.Item[ItemType.Note],
+				}),
+				reference: new fields.StringField(),
+				reference_highlight: new fields.StringField(),
+			}),
+		})
+	}
+}
+
+interface NoteGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
 	readonly _source: NoteSource
-	system: NoteSystemSource
+	system: NoteSystemData
 }
 
-export class NoteGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
-	override get formattedName(): string {
-		return this.formattedText
-	}
-
-	get formattedText(): string {
-		const showdown_options = {
-			...CONST.SHOWDOWN_OPTIONS,
-		}
-		// @ts-expect-error Showdown not properly declared yet
-		Object.entries(showdown_options).forEach(([k, v]) => showdown.setOption(k, v))
-		// @ts-expect-error Showdown not properly declared yet
-		const converter = new showdown.Converter()
-		let text = this.system.text || this.name || ""
-		text = replaceAllStringFunc(EvalEmbeddedRegex, text, this.actor as unknown as CharacterResolver)
-		return converter.makeHtml(text)?.replace(/\s\+/g, "\r")
-	}
-
-	override get enabled(): boolean {
-		return true
-	}
-
-	override get reference(): string {
-		return this.system.reference
-	}
-}
+export { NoteGURPS }

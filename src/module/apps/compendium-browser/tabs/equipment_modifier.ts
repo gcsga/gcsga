@@ -8,7 +8,7 @@ import { ItemType, SYSTEM_NAME } from "@data"
 export class CompendiumBrowserEquipmentModifierTab extends CompendiumBrowserTab {
 	tabName: ContentTabName = TabName.EquipmentModifier
 	filterData: EquipmentModifierFilters
-	templatePath = `systems/${SYSTEM_NAME}/templates/compendium-browser/partials/equipment-modifier.hbs`
+	templatePath = `systems/${SYSTEM_NAME}/templates/common/equipment-modifier.hbs`
 
 	constructor(browser: CompendiumBrowser) {
 		super(browser)
@@ -53,7 +53,7 @@ export class CompendiumBrowserEquipmentModifierTab extends CompendiumBrowserTab 
 						type: modifierData.type,
 						name: modifierData.name,
 						img: modifierData.img,
-						uuid: `Compendium.${pack.collection}.${modifierData._id}`,
+						id: `Compendium.${pack.collection}.${modifierData._id}`,
 						formattedName: modifierData.formattedName,
 						resolvedNotes: modifierData.resolvedNotes,
 						costDescription: modifierData.costDescription,

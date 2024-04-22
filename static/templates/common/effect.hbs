@@ -1,0 +1,12 @@
+<li data-type="{{ item.type }}" data-item-id="{{ item.id }}">
+    <div class="data">
+        <div class="item-name"
+             data-tooltip-direction="DOWN"
+             data-tooltip="{{ item.resolvedTooltip }}">
+            <div class="name">{{ item.formattedName }}</div>
+            {{{ item.resolvedNotes }}}
+        </div>
+        <div class="reference"">{{{ ref item.reference }}}
+        </div>
+    </div>
+</li>

@@ -1,13 +1,24 @@
-import { ItemType } from "@data"
-import { FeatureObj } from "@feature/index.ts"
-import { BaseContainerSource } from "@item/container/data.ts"
-import { ItemGCSSystemSource } from "@item/gcs/data.ts"
-import { PrereqListObj } from "@prereq/data.ts"
-import { WeightString } from "@util/weight.ts"
+import {
+	AbstractContainerSource,
+	AbstractContainerSystemData,
+	AbstractContainerSystemSource,
+} from "@item/abstract-container/data.ts"
+import { ItemFlagsGURPS } from "@item/data/index.ts"
+import { ItemFlags, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
+import { FeatureObj, PrereqListObj } from "@system"
+import { WeightString } from "@util"
 
-export type EquipmentSource = BaseContainerSource<ItemType.Equipment, EquipmentSystemSource>
+type EquipmentSource = AbstractContainerSource<ItemType.Equipment, EquipmentSystemSource> & {
+	flags: DeepPartial<EquipmentFlags>
+}
 
-export interface EquipmentSystemSource extends Omit<ItemGCSSystemSource, "open"> {
+type EquipmentFlags = ItemFlagsGURPS & {
+	[SYSTEM_NAME]: {
+		[ItemFlags.Other]: boolean
+	}
+}
+
+interface EquipmentSystemSource extends AbstractContainerSystemSource {
 	type: ItemType.Equipment
 	description: string
 	reference: string
@@ -17,7 +28,7 @@ export interface EquipmentSystemSource extends Omit<ItemGCSSystemSource, "open">
 	tech_level: string
 	legality_class: string
 	tags: string[]
-	rated_strength?: number
+	rated_strength: number | null
 	quantity: number
 	value: number
 	weight: WeightString
@@ -28,3 +39,7 @@ export interface EquipmentSystemSource extends Omit<ItemGCSSystemSource, "open">
 	equipped: boolean
 	ignore_weight_for_skills: boolean
 }
+
+interface EquipmentSystemData extends EquipmentSystemSource, AbstractContainerSystemData {}
+
+export type { EquipmentSource, EquipmentSystemData, EquipmentSystemSource, EquipmentFlags }

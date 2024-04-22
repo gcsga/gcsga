@@ -1,0 +1,41 @@
+<li class="feature">
+	<div class="top">
+		<a class="button gcs-trash" data-action="remove-feature" data-index="{{@index}}"></a>
+		<select class="type" name="array.system.features.{{@index}}.type" data-index="{{@index}}">
+			{{#select this.type}} {{#each @root.config.select.feature_strict as |v k| }}
+			<option value="{{ k }}">{{ localize v }}</option>
+			{{/each}} {{#if (eq @root.item.type "equipment_container") }} {{#each @rootconfig.select.feature as |v k| }}
+			<option value="{{ k }}">{{ localize v }}</option>
+			{{/each}} {{/if}} {{/select}}
+		</select>
+		<div class="field">
+			<input
+				type="text"
+				name="array.system.features.{{@index}}.amount"
+				value="{{ signed this.amount false }}"
+				data-dtype="Number"
+			/>
+		</div>
+		<label class="check">
+			<input
+				type="checkbox"
+				data-dtype="Boolean"
+				name="array.system.features.{{@index}}.per_level"
+				{{checked
+				this.per_level}}
+			/>
+			{{ localize "gurps.feature.per_level" }}
+		</label>
+	</div>
+	<div>
+		<div class="placeholder"></div>
+		<div class="field">
+			<input
+				type="text"
+				name="array.system.features.{{@index}}.situation"
+				value="{{ this.situation }}"
+				data-dtype="String"
+			/>
+		</div>
+	</div>
+</li>

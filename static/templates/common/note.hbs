@@ -1,0 +1,25 @@
+<li data-type="{{ item.type }}" data-item-id="{{ item.id }}" {{#if isContainer}} data-is-container {{/if}}>
+    <div class="data">
+        <div class="item-name"
+            data-tooltip-direction="DOWN"
+            data-tooltip="{{ item.resolvedTooltip }}"
+            {{{ indent indent }}}
+            >
+            {{{ dropdown item }}}
+            <div class="name">{{ item.formattedName }}</div>
+        </div>
+        <div class="uses {{ disabled (not item.enabled) }}">
+            {{#if (and item.system.uses item.system.max_uses)}}
+                {{ item.system.uses }}
+            {{/if}}
+        </div>
+        <div class="md">{{{ this.formattedName }}}</div>
+    </div>
+    {{#if item.system.open}}
+        <ul class="items" data-item-list data-container-id="{{ item.id }}">
+            {{#each children}}
+                {{>common/note}}
+            {{/each}}
+        </ul>
+    {{/if}}
+</li>

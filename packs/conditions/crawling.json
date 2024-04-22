@@ -1,0 +1,36 @@
+{
+    "_id": "HEkglkwPsIOZUvI7",
+    "img": "systems/gcsga/assets/status/crawling.webp",
+    "name": "Crawling",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "crawling",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [
+            {
+                "id": "to hit with melee combat (Crawling/Lying Down)",
+                "modifier": -4
+            },
+            {
+                "id": "to active defenses (Crawling/Lying Down)",
+                "modifier": -3
+            }
+        ],
+        "overlay": false,
+        "type": "condition"
+    },
+    "type": "condition"
+}

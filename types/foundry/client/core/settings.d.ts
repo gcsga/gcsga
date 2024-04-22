@@ -130,7 +130,6 @@ declare global {
 		get(key: "core.chatBubblesPan"): SettingConfig & { default: boolean }
 		get(key: "core.defaultToken"): SettingConfig & { default: PreCreate<foundry.data.PrototypeTokenSource> }
 		get(key: "core.notesDisplayToggle"): SettingConfig & { default: boolean }
-		get(key: `${string}.${string}`): SettingConfig & { default: unknown }
 	}
 
 	/** A simple interface for World settings storage which imitates the API provided by localStorage */

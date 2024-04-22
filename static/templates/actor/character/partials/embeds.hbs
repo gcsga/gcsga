@@ -1,0 +1,178 @@
+<section id="embeds" style="grid-template: {{ blockLayout system.settings.block_layout itemCollections }}" data-embeds>
+	{{#with itemCollections.reactions as |section|}}
+	<div id="reactions">
+		<header>
+			<span class="modifier">{{ localize "gurps.character.reactions.modifier" }}</span>
+			<span class="condition">{{ localize "gurps.character.reactions.reaction" }}</span>
+		</header>
+		<ul class="items" data-item-list data-item-types="">
+			{{#each section.items}} {{>actor/character/partials/reaction}} {{/each}}
+		</ul>
+	</div>
+	{{/with}} {{#with itemCollections.conditional_modifiers as |section|}}
+	<div id="conditional_modifiers">
+		<header>
+			<span class="modifier">{{ localize "gurps.character.conditional_modifiers.modifier" }}</span>
+			<span class="condition">{{ localize "gurps.character.conditional_modifiers.reaction" }}</span>
+		</header>
+		<ul class="items" data-item-list data-item-types="">
+			{{#each section.items}} {{>actor/character/partials/conditional-modifier}} {{/each}}
+		</ul>
+	</div>
+	{{/with}} {{#with itemCollections.melee as |section|}}
+	<div id="melee">
+		<header>
+			<span class="item-name">{{ localize "gurps.character.melee.desc" }}</span>
+			<span class="usage">{{ localize "gurps.character.melee.usage" }}</span>
+			<span class="level">{{ localize "gurps.character.melee.level" }}</span>
+			<span class="parry">{{ localize "gurps.character.melee.parry" }}</span>
+			<span class="block">{{ localize "gurps.character.melee.block" }}</span>
+			<span class="damage">{{ localize "gurps.character.melee.damage" }}</span>
+			<span class="reach">{{ localize "gurps.character.melee.reach" }}</span>
+			<span class="strength">{{ localize "gurps.character.melee.st" }}</span>
+		</header>
+		<ul class="items" data-item-list data-item-types="">
+			{{#each section.items}} {{>actor/character/partials/melee-attack}} {{/each}}
+		</ul>
+	</div>
+	{{/with}} {{#with itemCollections.ranged as |section|}}
+	<div id="ranged">
+		<header>
+			<span class="item-name">{{ localize "gurps.character.ranged.desc" }}</span>
+			<span class="usage">{{ localize "gurps.character.ranged.usage" }}</span>
+			<span class="level">{{ localize "gurps.character.ranged.level" }}</span>
+			<span class="accuracy">{{ localize "gurps.character.ranged.accuracy" }}</span>
+			<span class="damage">{{ localize "gurps.character.ranged.damage" }}</span>
+			<span class="range">{{ localize "gurps.character.ranged.range" }}</span>
+			<span class="rate-of-fire">{{ localize "gurps.character.ranged.rate_of_fire" }}</span>
+			<span class="shots">{{ localize "gurps.character.ranged.shots" }}</span>
+			<span class="bulk">{{ localize "gurps.character.ranged.bulk" }}</span>
+			<span class="recoil">{{ localize "gurps.character.ranged.recoil" }}</span>
+			<span class="strength">{{ localize "gurps.character.ranged.st" }}</span>
+		</header>
+		<ul class="items" data-item-list data-item-types="">
+			{{#each section.items}} {{>actor/character/partials/ranged-attack}} {{/each}}
+		</ul>
+	</div>
+	{{/with}} {{#with itemCollections.traits as |section|}}
+	<div id="traits">
+		<header>
+			<span class="item-name">{{ localize "gurps.character.traits.desc" }}</span>
+			<span class="points">{{ localize "gurps.character.traits.points" }}</span>
+			<span class="reference">
+				<i class="gcs-bookmark"></i>
+			</span>
+		</header>
+		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
+			{{#each section.items}} {{>common/trait}} {{/each}}
+		</ul>
+	</div>
+	{{/with}} {{#with itemCollections.skills as |section|}}
+	<div id="skills">
+		<header>
+			<span class="item-name">{{ localize "gurps.character.skills.desc" }}</span>
+			<span class="level">{{ localize "gurps.character.skills.level" }}</span>
+			<span class="rsl">{{ localize "gurps.character.skills.rsl" }}</span>
+			<span class="points">{{ localize "gurps.character.skills.points" }}</span>
+			<span class="reference">
+				<i class="gcs-bookmark"></i>
+			</span>
+		</header>
+		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
+			{{#each section.items}} {{>common/skill}} {{/each}}
+		</ul>
+	</div>
+	{{/with}} {{#with itemCollections.spells as |section|}}
+	<div id="spells">
+		<header>
+			<span class="item-name">{{ localize "gurps.character.spells.desc" }}</span>
+			<span class="level">{{ localize "gurps.character.spells.level" }}</span>
+			<span class="rsl">{{ localize "gurps.character.spells.rsl" }}</span>
+			<span class="points">{{ localize "gurps.character.spells.points" }}</span>
+			<span class="reference">
+				<i class="gcs-bookmark"></i>
+			</span>
+		</header>
+		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
+			{{#each section.items}} {{>common/spell}} {{/each}}
+		</ul>
+	</div>
+	{{/with}} {{#with itemCollections.equipment as |section|}}
+	<div id="equipment">
+		<header>
+			<span class="equipped">
+				<i class="gcs-checkmark"></i>
+			</span>
+			<span class="quantity">{{ localize "gurps.character.equipment.quantity" }}</span>
+			<span class="item-name">
+				{{localize "gurps.character.equipment.desc" weight=actor.fastWeightCarried
+				value=actor.fastWealthCarried}}
+			</span>
+			<span class="uses">{{ localize "gurps.character.equipment.uses" }}</span>
+			<span class="tech-level">{{ localize "gurps.character.equipment.tech_level" }}</span>
+			<span class="legality-class">{{ localize "gurps.character.equipment.legality_class" }}</span>
+			<span class="value"><i class="gcs-coins"></i></span>
+			<span class="weight"><i class="gcs-weight"></i></span>
+			<span class="extended-value">
+				<i class="gcs-stack"></i>
+				<i class="gcs-coins"></i>
+			</span>
+			<span class="extended-weight">
+				<i class="gcs-stack"></i>
+				<i class="gcs-weight"></i>
+			</span>
+			<span class="reference"><i class="gcs-bookmark"></i></span>
+		</header>
+		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
+			{{#each section.items}} {{>common/equipment}} {{/each}}
+		</ul>
+	</div>
+	{{/with}} {{#with itemCollections.other_equipment as |section|}}
+	<div id="other_equipment">
+		<header>
+			<span class="quantity">{{ localize "gurps.character.other_equipment.quantity" }}</span>
+			<span class="item-name">
+				{{localize "gurps.character.other_equipment.desc" weight=actor.fastWeightCarried
+				value=actor.fastWealthCarried}}
+			</span>
+			<span class="uses">{{ localize "gurps.character.other_equipment.uses" }}</span>
+			<span class="tech-level">{{ localize "gurps.character.other_equipment.tech_level" }}</span>
+			<span class="legality-class">{{ localize "gurps.character.other_equipment.legality_class" }}</span>
+			<span class="value"><i class="gcs-coins"></i></span>
+			<span class="weight"><i class="gcs-weight"></i></span>
+			<span class="extended-value">
+				<i class="gcs-stack"></i>
+				<i class="gcs-coins"></i>
+			</span>
+			<span class="extended-weight">
+				<i class="gcs-stack"></i>
+				<i class="gcs-weight"></i>
+			</span>
+			<span class="reference"><i class="gcs-bookmark"></i></span>
+		</header>
+		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
+			{{#each section.items}} {{>common/other-equipment}} {{/each}}
+		</ul>
+	</div>
+	{{/with}} {{#with itemCollections.notes as |section|}}
+	<div id="notes">
+		<header>
+			<span class="item-name">{{ localize "gurps.character.notes.desc" }}</span>
+			<span class="reference"><i class="gcs-bookmark"></i></span>
+		</header>
+		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
+			{{#each section.items}} {{>common/note}} {{/each}}
+		</ul>
+	</div>
+	{{/with}} {{#with itemCollections.effects as |section|}}
+	<div id="effects">
+		<header>
+			<span class="item-name">{{ localize "gurps.character.effects.desc" }}</span>
+			<span class="reference"><i class="gcs-bookmark"></i></span>
+		</header>
+		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
+			{{#each section.items}} {{>common/effect}} {{/each}}
+		</ul>
+	</div>
+	{{/with}}
+</section>

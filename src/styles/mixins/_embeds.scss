@@ -1,0 +1,135 @@
+@mixin item-list {
+	// header styling
+	header {
+		display: grid;
+		background-color: rgb(var(--color-header));
+		color: rgb(var(--color-on-header));
+		justify-content: normal;
+		padding: 0;
+
+		// text inside of header
+		> span {
+			display: flex;
+			justify-content: center;
+			padding: var(--padding-header);
+		}
+
+		// reset default style for "reference" class
+		> span.reference {
+			border: none;
+			border-radius: 0;
+			color: inherit;
+			padding: 0;
+		}
+	}
+
+	.dropdown {
+		background-color: transparent;
+		font-size: var(--font-size-10);
+		margin-top: 3px;
+	}
+
+	// All item lists including recursive lists for containers
+	ul.items {
+		display: flex;
+		flex-direction: column;
+		position: relative;
+		width: 100%;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		height: calc(100% - 18px);
+
+		// When the table is empty, render 1 row's worth of vertical space
+		&:not([data-container-id]) {
+			min-height: 18px;
+			background-color: rgb(var(--color-content));
+			border: 1px solid rgb(var(--color-header));
+		}
+
+		// All items in this list
+		> li {
+			background-color: rgb(var(--color-content));
+			color: rgb(var(--color-on-content));
+
+			@include rollables;
+
+			// Alternating banding (classes added on render)
+			&.banding {
+				background-color: rgb(var(--color-banding));
+				color: rgb(var(--color-on-banding));
+			}
+
+			// Container which an item is being dropped into
+			&.drop-highlight > div.data {
+				outline: 2px solid rgba(var(--color-drop-area), 128);
+				outline-offset: -2px;
+			}
+
+			// Do not display the drag "ghost"
+			&.drag-preview {
+				opacity: 0;
+			}
+
+			// The preview of the item's new position
+			&.drag-gap {
+				border: 2px dashed rgb(var(--color-drop-area));
+			}
+
+			// The content of the item itself (but not its children)
+			> div.data {
+				display: grid;
+
+				> * {
+					padding: var(--padding-standard);
+					border-bottom: 1px solid rgb(var(--color-interior-divider));
+				}
+
+				// The item's name field
+				div.item-name {
+					display: grid;
+					justify-content: start;
+					grid-template:
+						"dropdown name"
+						"blank notes";
+
+					div.dropdown {
+						min-width: 0.75em;
+						margin-right: 6px;
+					}
+
+					div.name {
+						font: inherit;
+						color: inherit;
+						grid-area: name;
+					}
+
+					div.item-notes {
+						grid-area: notes;
+						font: var(--font-page-secondary-fields);
+					}
+				}
+
+				// Align points text to the right
+				div.points {
+					text-align: end;
+				}
+
+				// Allow references to spill over multiple lines
+				div.reference {
+					display: flex;
+					flex-wrap: wrap;
+					justify-content: start;
+				}
+			}
+		}
+	}
+
+	header,
+	ul.items > li > .data {
+		// Border to the right of table fields
+		> :not(.reference):not(.strength) {
+			border-right: 1px solid rgb(var(--color-interior-divider));
+		}
+	}
+}

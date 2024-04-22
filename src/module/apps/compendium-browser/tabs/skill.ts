@@ -8,7 +8,7 @@ import { ItemType, SYSTEM_NAME } from "@data"
 export class CompendiumBrowserSkillTab extends CompendiumBrowserTab {
 	tabName: ContentTabName = TabName.Skill
 	filterData: SkillFilters
-	templatePath = `systems/${SYSTEM_NAME}/templates/compendium-browser/partials/skill.hbs`
+	templatePath = `systems/${SYSTEM_NAME}/templates/common/skill.hbs`
 
 	constructor(browser: CompendiumBrowser) {
 		super(browser)
@@ -54,7 +54,7 @@ export class CompendiumBrowserSkillTab extends CompendiumBrowserTab {
 						type: skillData.type,
 						name: skillData.name,
 						img: skillData.img,
-						uuid: `Compendium.${pack.collection}.${skillData._id}`,
+						id: `Compendium.${pack.collection}.${skillData._id}`,
 						formattedName: skillData.formattedName,
 						resolvedNotes: skillData.resolvedNotes,
 						level: skillData.level,

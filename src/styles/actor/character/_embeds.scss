@@ -1,0 +1,131 @@
+#embeds {
+	display: grid;
+	width: 100%;
+	grid-template-columns: 50% 50% !important;
+	gap: var(--section-gap);
+
+	> div {
+		background-color: rgb(var(--color-content));
+	}
+
+	@include item-list;
+
+	.ref {
+		color: rgb(var(--color-link));
+		&:hover {
+			color: rgb(var(--color-link-rollover));
+		}
+		&:active {
+			color: rgb(var(--color-link-pressed));
+		}
+	}
+}
+
+#reactions {
+	grid-area: reactions;
+
+	header,
+	ul.items > li > .data {
+		grid-template-columns: 2.5rem auto;
+	}
+}
+
+#conditional_modifiers {
+	grid-area: conditional_modifiers;
+
+	header,
+	ul.items > li > .data {
+		grid-template-columns: 2.5rem auto;
+	}
+}
+
+#melee {
+	grid-area: melee;
+
+	header,
+	ul.items > li > .data {
+		grid-template-columns: auto 6rem 2rem 3rem 3rem 4.5rem 3rem 2rem;
+	}
+}
+
+#ranged {
+	grid-area: ranged;
+
+	header,
+	ul.items > li > .data {
+		grid-template-columns: auto 6em 2rem 2.5rem 4.5rem 4.5rem 2.5rem 3rem 2.5rem 2.5rem 2rem;
+	}
+}
+
+#traits {
+	grid-area: traits;
+
+	header,
+	ul.items > li > .data {
+		grid-template-columns: auto 2.5rem 3.5rem;
+	}
+
+	// Trait Container Type Annotation
+	.container-type {
+		background-color: rgb(var(--color-on-content));
+		color: rgb(var(--color-content));
+		padding: 0px 5px;
+		border-radius: 5px;
+		font-size: 80%;
+		white-space: nowrap;
+	}
+}
+
+#skills {
+	grid-area: skills;
+
+	header,
+	ul.items > li > .data {
+		grid-template-columns: auto 2.5rem 3rem 2.5rem 3.5rem;
+	}
+}
+
+#spells {
+	grid-area: spells;
+
+	header,
+	ul.items > li > .data {
+		grid-template-columns: auto 2.5rem 3rem 2.5rem 3.5rem;
+	}
+}
+
+#equipment {
+	grid-area: equipment;
+
+	header,
+	ul.items > li > .data {
+		grid-template-columns: 1rem 1.25rem auto 2.5rem 2rem 2rem 2.5rem 2.5rem 2.5rem 2.5rem 3.5rem;
+	}
+}
+
+#other_equipment {
+	grid-area: other_equipment;
+
+	header,
+	ul.items > li > .data {
+		grid-template-columns: 1.25rem auto 2.5rem 2rem 2rem 2.5rem 2.5rem 2.5rem 2.5rem 3.5rem;
+	}
+}
+
+#notes {
+	grid-area: notes;
+
+	header,
+	ul.items > li > .data {
+		grid-template-columns: auto 3.5rem;
+	}
+}
+
+#effects {
+	grid-area: effects;
+
+	header,
+	ul.items > li > .data {
+		grid-template-columns: auto 3.5rem;
+	}
+}

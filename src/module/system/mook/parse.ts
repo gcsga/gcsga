@@ -1,11 +1,9 @@
-import { sanitize } from "@util"
+import { difficulty, sanitize, stdmg } from "@util"
 import { MookData, MookMelee, MookRanged, MookSkill, MookSpell, MookTrait, MookTraitModifier } from "./data.ts"
 import { Mook } from "./document.ts"
 import { ItemType, SETTINGS, SYSTEM_NAME, gid } from "@data"
-import { difficulty } from "@util/enum/difficulty.ts"
-import { stdmg } from "@util/enum/stdmg.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
-import { WeaponDamageObj } from "@item/weapon/data.ts"
+import { WeaponDamageObj } from "@item/abstract-weapon/data.ts"
 
 const regex_points = /\[(-?\d+)\]/
 const damage_type_matches: Map<string, string> = new Map([
@@ -176,7 +174,7 @@ export class MookParser {
 			newValues.set(id, newValue)
 		})
 
-		this.object.attributes = this.object.getAttributes()
+		this.object.refreshAttributes()
 
 		// While loop to account for attributes which affect other attributes
 		// hard-capped at 5 iterations to prevent infinite loop, may result in inaccuracies
@@ -186,10 +184,10 @@ export class MookParser {
 				const [newValue, currentValue] = [newValues.get(id), this.object.attributes.get(id)!.max]
 				if (!newValue || !currentValue) continue
 				if (newValue === currentValue) continue
-				const index = this.object.system.attributes.findIndex(e => e.attr_id === id)
+				const index = this.object.system.attributes.findIndex(e => e.id === id)
 				this.object.system.attributes[index].adj += newValue - currentValue
 			}
-			this.object.attributes = this.object.getAttributes()
+			this.object.refreshAttributes()
 		}
 	}
 
@@ -202,7 +200,8 @@ export class MookParser {
 			text = input
 		} else {
 			text = this.extractText(["Advantages:", "Advantages/Disadvantages:", "Traits:"], ["Skills:", "Spells:"])
-			if (text.includes(";")) text = text.replace(/\n/g, " ") // if ; separated, remove newlines
+			if (text.includes(";"))
+				text = text.replace(/\n/g, " ") // if ; separated, remove newlines
 			else if (text.split(",").length > 2) text = text.replace(/,/g, " ") // if , separated, replace with ;
 			text = text.replace(/advantages\/disadvantages:?/gi, ";")
 			text = text.replace(/disadvantages:?/gi, ";")

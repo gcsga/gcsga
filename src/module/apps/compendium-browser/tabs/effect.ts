@@ -7,7 +7,7 @@ import { ItemType, SYSTEM_NAME } from "@data"
 export class CompendiumBrowserEffectTab extends CompendiumBrowserTab {
 	tabName: ContentTabName = TabName.Effect
 	filterData: EffectFilters
-	templatePath = `systems/${SYSTEM_NAME}/templates/compendium-browser/partials/effect.hbs`
+	templatePath = `systems/${SYSTEM_NAME}/templates/common/effect.hbs`
 
 	constructor(browser: CompendiumBrowser) {
 		super(browser)
@@ -45,7 +45,7 @@ export class CompendiumBrowserEffectTab extends CompendiumBrowserTab {
 						type: effectData.type,
 						name: effectData.name,
 						img: effectData.img,
-						uuid: `Compendium.${pack.collection}.${effectData._id}`,
+						id: `Compendium.${pack.collection}.${effectData._id}`,
 						formattedName: effectData.formattedName,
 						resolvedNotes: effectData.resolvedNotes,
 						points: effectData.adjustedPoints,

@@ -1,0 +1,72 @@
+<li class="prereq">
+    <div class="top">
+        {{#unless (eq path "array.system.prereqs")}} <a class="button gcs-trash"
+    data-action="remove-prereq"
+    data-path="{{ path }}"></a> {{/unless}}
+        <a class="button gcs-circled-add"
+           data-action="add-prereq"
+           data-path="{{ path }}"></a>
+        <a class="button gcs-circled-vertical-ellipsis"
+           data-action="add-prereq-list"
+           data-path="{{ path }}"></a>
+        <select name="{{ path }}.when_tl.compare" data-dtype="String">
+            {{#select prereq.when_tl.compare}}
+            {{#each @root.config.select.numeric_criteria as |v k|}}
+                <option value="{{ k }}">{{ localize "gurps.field_prefix.tech_level" }} {{ localize v }}</option>
+            {{/each}} {{/select}}
+        </select>
+        <div class="field">
+            <input type="text" name="{{ path }}.when_tl.qualifier" value="{{ this.when_tl.qualifier }}" data-dtype="String" {{ disabled (eq this.when_tl.compare "none") }} />
+        </div>
+        <select name="{{ path }}.all" data-dtype="Boolean">
+            {{#select this.all}}
+            {{#each @root.config.select.all as |v k|}}
+                <option value="{{ k }}">{{ localize v }}</option>
+            {{/each}} {{/select}}
+        </select>
+    </div>
+    <ul>
+        {{#each this.prereqs}}
+            {{#if (eq this.type "attribute_prereq")}}
+                {{>item/partials/prereq/attribute-prereq
+                path=(concat ../path ".prereqs." @index)
+                }}
+            {{/if}}
+            {{#if (eq this.type "contained_quantity_prereq")}}
+                {{>item/partials/prereq/contained-quantity-prereq
+                path=(concat ../path ".prereqs." @index)
+                }}
+            {{/if}}
+            {{#if (eq this.type "contained_weight_prereq")}}
+                {{>item/partials/prereq/contained-weight-prereq
+                path=(concat ../path ".prereqs." @index)
+                }}
+            {{/if}}
+            {{#if (eq this.type "equipped_equipment_prereq")}}
+                {{>item/partials/prereq/equipped-equipment-prereq
+                path=(concat ../path ".prereqs." @index)
+                }}
+            {{/if}}
+            {{#if (eq this.type "prereq_list")}}
+                {{>item/partials/prereq/prereq-list
+                path=(concat ../path ".prereqs." @index)
+                }}
+            {{/if}}
+            {{#if (eq this.type "skill_prereq")}}
+                {{>item/partials/prereq/skill-prereq
+                path=(concat ../path ".prereqs." @index)
+                }}
+            {{/if}}
+            {{#if (eq this.type "spell_prereq")}}
+                {{>item/partials/prereq/spell-prereq
+                path=(concat ../path ".prereqs." @index)
+                }}
+            {{/if}}
+            {{#if (eq this.type "trait_prereq")}}
+                {{>item/partials/prereq/trait-prereq
+                path=(concat ../path ".prereqs." @index)
+                }}
+            {{/if}}
+        {{/each}}
+    </ul>
+</li>

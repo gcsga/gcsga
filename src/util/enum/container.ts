@@ -1,12 +1,12 @@
 import { LocalizeGURPS } from "@util/localize.ts"
-import { equalFold } from "@util/string_criteria.ts"
+import { equalFold } from "@util/string-criteria.ts"
 
 export namespace container {
 	export enum Type {
 		Group = "group",
 		AlternativeAbilities = "alternative_abilities",
-		Ancestry = "attributes",
-		Attributes = "ancestry",
+		Ancestry = "ancestry",
+		Attributes = "attributes",
 		MetaTrait = "meta_trait",
 	}
 

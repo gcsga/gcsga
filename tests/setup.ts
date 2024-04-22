@@ -79,6 +79,8 @@ global.game = Object.freeze({
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 ;(global as any).Combatant = class {}
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+;(global as any).DocumentSheet = class {}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 ;(global as any).Hooks = class {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	static on(..._args: any) {}

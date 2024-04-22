@@ -1,0 +1,28 @@
+{
+    "_id": "AOEOyyl9kDXxZywZ",
+    "img": "systems/gcsga/assets/status/fatigued.webp",
+    "name": "Fatigued",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "fatigued",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "reference": "B426",
+        "type": "condition"
+    },
+    "type": "condition"
+}

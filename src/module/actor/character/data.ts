@@ -1,40 +1,25 @@
-import { ActorFlagsGURPS, ActorSystemSource, BaseActorSourceGURPS } from "@actor/base/data.ts"
-import { ActorFlags, ActorType, RollModifier, SYSTEM_NAME, gid } from "@data"
-import { SheetSettingsObj } from "@module/data/sheet_settings.ts"
+import type { ActorFlagsGURPS, ActorSystemData, ActorSystemSource, BaseActorSourceGURPS } from "@actor/base/data.ts"
+import { ActorFlags, ActorType, SYSTEM_NAME, gid } from "@data"
+import { SheetSettingsObj } from "@module/data/sheet-settings.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
-import { AttributeObj } from "@sytem/attribute/data.ts"
-import { PoolThreshold } from "@sytem/attribute/pool_threshold.ts"
-import { MoveTypeObj } from "@sytem/move_type/data.ts"
-import { ResourceTrackerObj } from "@sytem/resource_tracker/data.ts"
-import { Weight } from "@util/weight.ts"
+import type { AttributeObj, MoveTypeObj, PoolThreshold, ResourceTrackerObj } from "@system"
+import type { Weight } from "@util/weight.ts"
+import { CharacterManeuver } from "../../system/maneuver-manager.ts"
 
-export type CharacterSource = BaseActorSourceGURPS<ActorType.Character, CharacterSystemSource> & {
+type CharacterSource = BaseActorSourceGURPS<ActorType.Character, CharacterSystemSource> & {
 	flags: DeepPartial<CharacterFlags>
 }
-// export interface CharacterDataGURPS
-// 	extends Omit<CharacterSource, "effects" | "flags" | "items" | "token">,
-// 		CharacterSystemSource {
-// 	readonly type: CharacterSource["type"]
-// 	data: CharacterSystemSource
-// 	flags: CharacterFlags
-//
-// 	readonly _source: CharacterSource
-// }
 
-export interface CharacterFlags extends ActorFlagsGURPS {
+type CharacterFlags = ActorFlagsGURPS & {
 	[SYSTEM_NAME]: {
-		[ActorFlags.TargetModifiers]: RollModifier[]
-
-		[ActorFlags.SelfModifiers]: RollModifier[]
 		[ActorFlags.MoveType]: string
 		[ActorFlags.AutoEncumbrance]: { active: boolean; manual: number }
 		[ActorFlags.AutoThreshold]: { active: boolean; manual: Record<string, PoolThreshold | null> }
 		[ActorFlags.AutoDamage]: { active: boolean; thrust: DiceGURPS; swing: DiceGURPS }
-		[ActorFlags.Import]: { name: string; path: string; last_import: string }
 	}
 }
 
-export const CharacterFlagDefaults: CharacterFlags = {
+const CharacterFlagDefaults: CharacterFlags = {
 	[SYSTEM_NAME]: {
 		[ActorFlags.TargetModifiers]: [],
 		[ActorFlags.SelfModifiers]: [],
@@ -46,8 +31,8 @@ export const CharacterFlagDefaults: CharacterFlags = {
 	},
 }
 
-export interface CharacterSystemSource extends ActorSystemSource {
-	type: "character"
+interface CharacterSystemSource extends ActorSystemSource {
+	type: ActorType.Character
 	version: number
 	settings: SheetSettingsObj
 	created_date: string
@@ -59,59 +44,15 @@ export interface CharacterSystemSource extends ActorSystemSource {
 	move: CharacterMove
 	total_points: number
 	points_record: PointsRecord[]
-	// calc: CharacterCalc
-	// editing: boolean
-	// TODO: check if this fits
-	// pools: Record<string, TokenPool>
-	// import: { name: string; path: string; last_import: string }
-	// third_party: DeepPartial<CharacterThirdPartyData>
 }
 
-// export type CharacterThirdPartyData = {
-// 	settings: {
-// 		resource_trackers: ResourceTrackerDefObj[]
-// 		move_types: MoveTypeDefObj[]
-// 	}
-// 	resource_trackers: ResourceTrackerObj[]
-// 	move_types: MoveTypeObj[]
-// } & Record<string, unknown>
+interface CharacterSystemData extends CharacterSystemSource, ActorSystemData {}
 
 export interface CharacterMove {
-	maneuver: string
+	maneuver: CharacterManeuver | null
 	posture: string
 	type: string
 }
-
-// export interface CharacterSettings {
-// 	default_length_units: LengthUnits
-// 	default_weight_units: WeightUnits
-// 	user_description_display: DisplayMode
-// 	modifiers_display: DisplayMode
-// 	notes_display: DisplayMode
-// 	skill_level_adj_display: DisplayMode
-// 	use_multiplicative_modifiers: boolean
-// 	use_modifying_dice_plus_adds: boolean
-// 	use_half_stat_defaults: boolean
-// 	damage_progression: DamageProgression
-// 	show_trait_modifier_adj: boolean
-// 	show_equipment_modifier_adj: boolean
-// 	show_spell_adj: boolean
-// 	use_title_in_footer: boolean
-// 	exclude_unspent_points_from_total: boolean
-// 	page: {
-// 		paper_size: string
-// 		top_margin: string
-// 		left_margin: string
-// 		bottom_margin: string
-// 		right_margin: string
-// 		orientation: string
-// 	}
-// 	block_layout: Array<string>
-// 	body_type: HitLocationTableData
-// 	attributes: AttributeDefObj[]
-// 	resource_trackers: ResourceTrackerDefObj[]
-// 	move_types: MoveTypeDefObj[]
-// }
 
 export interface CharacterProfile {
 	player_name: string
@@ -134,8 +75,6 @@ export interface CharacterProfile {
 }
 
 export interface CharacterCalc {
-	// Swing: RollGURPS;
-	// thrust: RollGURPS;
 	swing: string
 	thrust: string
 	basic_lift: Weight
@@ -157,9 +96,18 @@ export interface PointsRecord {
 
 export interface Encumbrance {
 	level: number
-	maximum_carry: number
+	maximumCarry: number
 	penalty: number
 	name: string
+	active: boolean
+	dodge: {
+		normal: number
+		effective: number
+	}
+	move: {
+		normal: number
+		effective: number
+	}
 }
 
 export const CharacterDefaultData: Partial<CharacterSystemSource> = {
@@ -182,18 +130,20 @@ export const CharacterDefaultData: Partial<CharacterSystemSource> = {
 		religion: "",
 		portrait: "",
 	},
-	// editing: true,
-	// calc: {
-	// 	swing: "",
-	// 	thrust: "",
-	// 	basic_lift: 0,
-	// 	lifting_st_bonus: 0,
-	// 	striking_st_bonus: 0,
-	// 	throwing_st_bonus: 0,
-	// 	move: [0, 0, 0, 0, 0],
-	// 	dodge: [0, 0, 0, 0, 0],
-	// 	dodge_bonus: 0,
-	// 	block_bonus: 0,
-	// 	parry_bonus: 0,
-	// },
 }
+
+export interface PointsBreakdown {
+	overspent: boolean
+	ancestry: number
+	attributes: number
+	advantages: number
+	disadvantages: number
+	quirks: number
+	skills: number
+	spells: number
+	total: number
+	unspent: number
+}
+
+export { CharacterFlagDefaults }
+export type { CharacterFlags, CharacterSource, CharacterSystemData, CharacterSystemSource }

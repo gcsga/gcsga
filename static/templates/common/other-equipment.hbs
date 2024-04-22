@@ -1,0 +1,31 @@
+<li data-type="{{ item.type }}" data-item-id="{{ item.id }}" {{#if isContainer}} data-is-container {{/if}}>
+    <div class="data">
+        <div class="quantity">{{ item.system.quantity }}</div>
+        <div class="item-name {{ disabled (not item.enabled) }}"
+             data-tooltip-direction="DOWN"
+             data-tooltip="{{ item.resolvedTooltip }}">
+            {{{ dropdown item }}}
+            <div class="name">{{ item.formattedName }}</div>
+            {{{ item.resolvedNotes }}}
+        </div>
+        <div class="uses {{ disabled (not item.enabled) }}">
+            {{#if (and item.system.uses item.system.max_uses)}}
+                {{ item.system.uses }}
+            {{/if}}
+        </div>
+        <div class="tech-level {{ disabled (not item.enabled) }}">{{ item.system.tech_level }}</div>
+        <div class="legality-class {{ disabled (not item.enabled) }}">{{ item.system.legality_class }}</div>
+        <div class="value {{ disabled (not item.enabled) }}">{{ item.adjustedValue }}</div>
+        <div class="weight {{ disabled (not item.enabled) }}">{{ item.adjustedWeightFat }}</div>
+        <div class="extended-value {{ disabled (not item.enabled) }}">{{ item.extendedValue }}</div>
+        <div class="extended-weight {{ disabled (not item.enabled) }}">{{ item.extendedWeightFast }}</div>
+        <div class="reference {{ disabled (not item.enabled) }}">{{{ ref item.reference }}}</div>
+    </div>
+    {{#if item.system.open}}
+        <ul class="items" data-item-list data-container-id="{{ item.id }}">
+            {{#each children}}
+                {{>common/other-equipment}}
+            {{/each}}
+        </ul>
+    {{/if}}
+</li>

@@ -1,11 +1,23 @@
-import { ItemType, SETTINGS, SYSTEM_NAME } from "@data"
+import { ItemType } from "@module/data/constants.ts"
+import * as R from "remeda"
+import { StringBuilder } from "./string-builder.ts"
 import { LocalizeGURPS } from "./localize.ts"
-import { StringBuilder } from "./string_builder.ts"
-import { SkillResolver } from "./resolvers.ts"
-import { itemIsOfType } from "@item/helpers.ts"
-import { ItemGURPS } from "@item"
-// import uuid from "uuidv4"
 
+/**
+ * Given an array, adds a certain amount of elements to it
+ * until the desired length is being reached
+ */
+function padArray<T>(array: T[], requiredLength: number, padWith: T): T[] {
+	const result = [...array]
+	for (let i = array.length; i < requiredLength; i += 1) {
+		result.push(padWith)
+	}
+	return result
+}
+
+/**
+ * Sanitize IDs to ones used by the GCS attribute system
+ */
 function sanitizeId(id: string, permit_leading_digits: boolean, reserved: string[]): string {
 	const buffer: string[] = []
 	for (let ch of id.split("")) {
@@ -31,6 +43,9 @@ function sanitizeId(id: string, permit_leading_digits: boolean, reserved: string
 	return ""
 }
 
+/**
+ * Sanitize text, getting rid of any non-standard characters or HTML-escaped characters
+ */
 function sanitize(text: string): string {
 	text = text.replace(/%(?![0-9][0-9a-fA-F]+)/g, "%25")
 	text = decodeURIComponent(text) // convert % (not followed by 2 digit hex) to %25, unicode characters into html format
@@ -49,278 +64,8 @@ function sanitize(text: string): string {
 }
 
 /**
- *
+ * Generate an Attribute ID given a list of taken IDs
  */
-function newUUID(): string {
-	// TODO: fix
-	return ""
-	// return uuid()
-}
-
-/**
- *
- */
-function getCurrentTime(): string {
-	return new Date().toISOString()
-}
-
-/**
- *
- * @param value
- * @param base
- */
-// function stringCompare(value?: string | string[] | null, base?: StringCriteria): boolean {
-// 	if (!base) return true
-// 	if (!value) value = ""
-// 	if (typeof value === "string") value = [value]
-// 	value = value.map(e => {
-// 		return e.toLowerCase()
-// 	})
-// 	base.qualifier = base.qualifier?.toLowerCase()
-// 	switch (base.compare) {
-// 		case StringComparisonType.AnyString:
-// 			return true
-// 		case StringComparisonType.IsString:
-// 			return base.qualifier !== undefined && value.includes(base.qualifier)
-// 		case StringComparisonType.IsNotString:
-// 			return base.qualifier !== undefined && !value.includes(base.qualifier)
-// 		case StringComparisonType.ContainsString:
-// 			for (const v of value) if (base.qualifier && v.includes(base.qualifier)) return true
-// 			return false
-// 		case StringComparisonType.DoesNotContainString:
-// 			for (const v of value) if (base.qualifier && v.includes(base.qualifier)) return false
-// 			return true
-// 		case StringComparisonType.StartsWithString:
-// 			for (const v of value) if (base.qualifier && v.startsWith(base.qualifier)) return true
-// 			return false
-// 		case StringComparisonType.DoesNotStartWithString:
-// 			for (const v of value) if (base.qualifier && v.startsWith(base.qualifier)) return false
-// 			return true
-// 		case StringComparisonType.EndsWithString:
-// 			for (const v of value) if (base.qualifier && v.endsWith(base.qualifier)) return true
-// 			return false
-// 		case StringComparisonType.DoesNotEndWithString:
-// 			for (const v of value) if (base.qualifier && v.endsWith(base.qualifier)) return false
-// 			return true
-// 	}
-// }
-
-/**
- *
- * @param value
- * @param base
- */
-// function numberCompare(value: number, base?: NumericCriteria): boolean {
-// 	if (!base) return true
-// 	switch (base.compare) {
-// 		case NumericComparisonType.AnyNumber:
-// 			return true
-// 		case NumericComparisonType.EqualsNumber:
-// 			return value === base.qualifier
-// 		case NumericComparisonType.NotEqualsNumber:
-// 			return value !== base.qualifier
-// 		case NumericComparisonType.AtMostNumber:
-// 			return value <= base.qualifier!
-// 		case NumericComparisonType.AtLeastNumber:
-// 			return value >= base.qualifier!
-// 		default:
-// 			return true
-// 	}
-// }
-
-function extractTechLevel(str: string): number {
-	return Math.min(Math.max(0, parseInt(str)), 12)
-}
-
-function dollarFormat(i: number): string {
-	const formatter = new Intl.NumberFormat("en-US", {
-		style: "currency",
-		currency: "USD",
-	})
-	return formatter.format(i)
-}
-
-function toWord(n: number): string {
-	switch (n) {
-		case 1:
-			return "one"
-		case 2:
-			return "two"
-		case 3:
-			return "three"
-		case 4:
-			return "four"
-		case 5:
-			return "five"
-		case 6:
-			return "six"
-		default:
-			return "d6"
-	}
-}
-
-function removeAccents(str: string): string {
-	return str
-		.normalize("NFD")
-		.replace(/[\u0300-\u036f]/g, "") // Remove accents
-		.replace(/([^\w]+|\s+)/g, "-") // Replace space and other characters by hyphen
-		.replace(/--+/g, "-") // Replaces multiple hyphens by one hyphen
-		.replace(/(^-+|-+$)/g, "")
-}
-
-function capitalize(s: string): string {
-	return s.charAt(0).toUpperCase() + s.slice(1)
-}
-
-// function getAdjustedStudyHours(s: Study): number {
-// 	switch (s.type) {
-// 		case StudyType.Self:
-// 			return s.hours * 0.5
-// 		case StudyType.Job:
-// 			return s.hours * 0.25
-// 		case StudyType.Teacher:
-// 			return s.hours
-// 		case StudyType.Intensive:
-// 			return s.hours * 2
-// 	}
-// }
-
-function prepareFormData(formData: Record<string, unknown>, object: object): Record<string, unknown> {
-	for (const aKey of Object.keys(formData)) {
-		if (formData[aKey] === null) formData[aKey] = "0"
-		if (aKey.includes(".halve_")) {
-			const tKey = aKey.replace(/\.halve_.*$/, "")
-			const tOp = aKey.split(".").at(-1)
-			formData[`${tKey}.ops`] ??= []
-			if (formData[aKey]) (formData[`${tKey}.ops`] as unknown[]).push(tOp)
-			delete formData[aKey]
-		}
-	}
-	for (const aKey of Object.keys(formData)) {
-		if (aKey.startsWith("array.") && aKey.match(/\d/)) {
-			const key = aKey.replace(/^array./g, "")
-			const arrayKey = key.split(/.\d+./)[0]
-			let array: object[] = (formData[arrayKey] as object[]) || (fu.getProperty(object, arrayKey) as object[])
-			const index = parseInt(key.match(/.(\d+)./)![1])
-			const prop = key.replace(new RegExp(`^${arrayKey}.${index}.`), "")
-			array = setArrayProperty(array, index, prop, formData[aKey])
-			formData[arrayKey] = array
-			delete formData[aKey]
-		} else if (aKey.startsWith("array.")) {
-			formData[aKey.replace("array.", "")] = formData[aKey]
-			delete formData[aKey]
-			// HACK: stupid exception for static resource trackers only. remove in 2.0
-		} else if (aKey.startsWith("sarray.") && aKey.match(/\d/)) {
-			const key = aKey.replace(/^sarray./g, "")
-			const arrayKey = `${key.split(/thresholds.\d+./)[0]}thresholds`
-			const array: object[] = fu.getProperty(object, arrayKey) as object[]
-			const index = parseInt(key.match(/thresholds.(\d+)./)![1])
-			const prop = key.replace(new RegExp(`^${arrayKey}.${index}.`), "")
-			setArrayProperty(array, index, prop, formData[aKey])
-			formData[arrayKey] = array
-			delete formData[aKey]
-		}
-	}
-	return formData
-}
-
-/**
- *
- * @param a
- * @param index
- * @param prop
- * @param value
- */
-function setArrayProperty(a: object[], index: number, prop: string, value: unknown): object[] {
-	if (prop.match(/.\d+./)) {
-		const inArrayKey = prop.split(/.\d+./)[0]
-		const inArrayArray = fu.getProperty(a[index], inArrayKey) as object[]
-		const inArrayIndex = parseInt(prop.match(/.(\d+)./)![1])
-		const inArrayProp = prop.replace(`${inArrayKey}.${inArrayIndex}.`, "")
-		fu.setProperty(a[index], inArrayKey, setArrayProperty(inArrayArray, inArrayIndex, inArrayProp, value))
-		return a
-	}
-	fu.setProperty(a[index], prop, value)
-	return a
-}
-
-/**
- * Prounounced "dee six if eye" Convert a GURPS dice roll to Foundry dice roll (e.g. 1d => 1d6, 2d-1 => 2d6-1)
- * @param {string} str
- * @param {string | null} flavor
- * @returns {string}
- */
-function d6ify(str: string, flavor: string | null = ""): string {
-	const w = str.replace(/d([^6])/g, `d6${flavor || ""}$1`) // Find 'd's without a 6 behind it, and add it.
-	return w.replace(/d$/g, `d6${flavor || ""}`) // And do the same for the end of the line.
-}
-
-async function urlToBase64(imageUrl: string): Promise<string> {
-	const format = imageUrl.split(".").at(-1) || ""
-	if (!["png", "webp", "jpg", "jpeg"].includes(format)) return ""
-	const img: Blob = await fetch(imageUrl).then(v => v.blob())
-	const bitmap = await createImageBitmap(img)
-	const canvas = document.createElement("canvas")
-	const ctx = canvas.getContext("2d")
-	canvas.width = bitmap.width
-	canvas.height = bitmap.height
-	ctx?.drawImage(bitmap, 0, 0, bitmap.width, bitmap.height)
-	switch (format) {
-		case "webp":
-			return canvas.toDataURL("image/webp").replace("data:image/webp;base64,", "")
-		case "png":
-			return canvas.toDataURL("image/png").replace("data:image/png;base64,", "")
-		case "jpeg":
-		case "jpg":
-			return canvas.toDataURL("image/jpeg").replace("data:image/png;base64,", "")
-	}
-	return ""
-}
-
-// function setInitiative(): void {
-// 	let formula = game.settings.get(SYSTEM_NAME, SETTINGS.INITIATIVE_FORMULA)
-// 	if (!formula) formula = DEFAULT_INITIATIVE_FORMULA
-// 	if (game.user?.isGM) game.settings.set(SYSTEM_NAME, SETTINGS.INITIATIVE_FORMULA, formula)
-// 	CONFIG.Combat.initiative.formula = formula
-// }
-
-function pick<T extends object, K extends keyof T>(obj: T, keys: Iterable<K>): Pick<T, K> {
-	return [...keys].reduce(
-		(result, key) => {
-			if (key in obj) {
-				result[key] = obj[key]
-			}
-			return result
-		},
-		{} as Pick<T, K>,
-	)
-}
-
-async function getDefaultSkills(): Promise<void> {
-	const skills: SkillResolver[] = []
-	const skillPacks = game.settings.get(SYSTEM_NAME, SETTINGS.COMPENDIUM_BROWSER_PACKS).skill
-	for (const s in skillPacks)
-		if (skillPacks[s]?.skillDefault) {
-			const pack = game.packs.get(s) as CompendiumCollection<Item<null>>
-			;(await pack.getDocuments()).forEach(e => {
-				skills.push(e as unknown as SkillResolver)
-			})
-		}
-	CONFIG.GURPS.skillDefaults = skills
-}
-
-// function flatten(obj: object, flatObj: Record<string, object> = {}, key = ""): Record<string, object> | null {
-//   if (obj === null) return null
-//   for (const k of Object.keys(obj)) {
-//     let valKey = key === "" ? k : `${key}.${k}`
-//     if (typeof obj[k] === "object") {
-//       if (Array.isArray(obj[k]) && !valKey.startsWith("array.")) valKey = `array.${valKey}`
-//       flatten(obj[k], flatObj, valKey)
-//     } else flatObj[valKey] = obj[k]
-//   }
-//   return flatObj
-// }
-
 function getNewAttributeId(list: { id: string }[]): string {
 	let base = ""
 	for (let i = 0; i < 5; i++) {
@@ -334,44 +79,42 @@ function getNewAttributeId(list: { id: string }[]): string {
 	throw new Error("Error generating new attribute ID, ran out of possible auto-generated IDs.")
 }
 
-function isContainer(item: ItemGURPS): boolean {
-	return itemIsOfType(
-		item,
-		...[
-			ItemType.TraitContainer,
-			ItemType.SkillContainer,
-			ItemType.SpellContainer,
-			ItemType.EquipmentContainer,
-			ItemType.TraitModifierContainer,
-			ItemType.EquipmentModifierContainer,
-			ItemType.NoteContainer,
-		],
-	)
+/**
+ * Check if a key is present in a given object in a type safe way
+ *
+ * @param obj The object to check
+ * @param key The key to check
+ */
+function objectHasKey<O extends object>(obj: O, key: unknown): key is keyof O {
+	return (typeof key === "string" || typeof key === "number") && key in obj
 }
 
-// function sheetSettingsFor(actor: CharacterResolver): SheetSettings {
-// 	if (!actor) return
-// }
+/** Check if a value is present in the provided array. Especially useful for checking against literal tuples */
+function tupleHasValue<const A extends readonly unknown[]>(array: A, value: unknown): value is A[number] {
+	return array.includes(value)
+}
 
-function sheetDisplayNotes(
-	s: string,
-	options: { unsatisfied?: string; unready?: boolean } = { unsatisfied: "", unready: false },
-): string {
-	const buffer = new StringBuilder()
-	if (options.unsatisfied && options.unsatisfied !== "")
-		buffer.push(
-			`<div class='unsatisfied' data-tooltip='${options.unsatisfied}' data-tooltip-direction='DOWN'>` +
-				`<i class='gcs-triangle-exclamation'></i>${LocalizeGURPS.translations.gurps.prereq.unsatisfied}` +
-				"</div>",
-		)
-	if (options.unready)
-		buffer.push(
-			"<div class='unsatisfied'>" +
-				`<i class='gcs-triangle-exclamation'></i>${LocalizeGURPS.translations.gurps.weapon.unready}` +
-				"</div>",
-		)
-	buffer.appendToNewLine(s)
-	return `<div class="item-notes">${buffer.toString()}</div>`
+/** Check if an element is present in the provided set. Especially useful for checking against literal sets */
+function setHasElement<T extends Set<unknown>>(set: T, value: unknown): value is SetElement<T> {
+	return set.has(value)
+}
+
+let intlNumberFormat: Intl.NumberFormat
+/**
+ * Return an integer string of a number, always with sign (+/-)
+ * @param value The number to convert to a string
+ * @param options.emptyStringZero If the value is zero, return an empty string
+ * @param options.zeroIsNegative Treat zero as a negative value
+ */
+function signedInteger(value: number, { emptyStringZero = false, zeroIsNegative = false } = {}): string {
+	if (value === 0 && emptyStringZero) return ""
+	const nf = (intlNumberFormat ??= new Intl.NumberFormat(game.i18n.lang, {
+		maximumFractionDigits: 0,
+		signDisplay: "always",
+	}))
+	const maybeNegativeZero = zeroIsNegative && value === 0 ? -0 : value
+
+	return nf.format(maybeNegativeZero)
 }
 
 const wordCharacter = String.raw`[\p{Alphabetic}\p{Mark}\p{Decimal_Number}\p{Join_Control}]`
@@ -424,14 +167,24 @@ function sluggify(text: string, { camel = null }: { camel?: SlugCamel } = {}): s
 				)
 				.replace(/\s+/g, "")
 		default:
-			throw Error("I don't think that's a real camel.")
+			throw ErrorGURPS("I don't think that's a real camel.")
 	}
 }
 
 type SlugCamel = "dromedary" | "bactrian" | null
 
+/** Parse a string containing html */
+function parseHTML(unparsed: string): HTMLElement {
+	const fragment = document.createElement("template")
+	fragment.innerHTML = unparsed
+	const element = fragment.content.firstElementChild
+	if (!(element instanceof HTMLElement)) throw ErrorGURPS("Unexpected error parsing HTML")
+
+	return element
+}
+
 function ErrorGURPS(message: string): Error {
-	return new Error(`GURPS | ${message}`)
+	return Error(`GURPS Game Aid | ${message}`)
 }
 
 /** Generate and return an HTML element for a FontAwesome icon */
@@ -450,25 +203,6 @@ function fontAwesomeIcon(
 	return icon
 }
 
-/** Check if a value is present in the provided array. Especially useful for checking against literal tuples */
-function tupleHasValue<const A extends readonly unknown[]>(array: A, value: unknown): value is A[number] {
-	return array.includes(value)
-}
-
-/** Check if an element is present in the provided set. Especially useful for checking against literal sets */
-function setHasElement<T extends Set<unknown>>(set: T, value: unknown): value is SetElement<T> {
-	return set.has(value)
-}
-/**
- * Check if a key is present in a given object in a type safe way
- *
- * @param obj The object to check
- * @param key The key to check
- */
-function objectHasKey<O extends object>(obj: O, key: unknown): key is keyof O {
-	return (typeof key === "string" || typeof key === "number") && key in obj
-}
-
 /** Short form of type and non-null check */
 function isObject<T extends object>(value: unknown): value is DeepPartial<T>
 function isObject<T extends string>(value: unknown): value is { [K in T]?: unknown }
@@ -476,9 +210,108 @@ function isObject(value: unknown): boolean {
 	return typeof value === "object" && value !== null
 }
 
+/** Walk an object tree and replace any string values found according to a provided function */
+function recursiveReplaceString<T>(source: T, replace: (s: string) => string): T
+function recursiveReplaceString(source: unknown, replace: (s: string) => string): unknown {
+	const clone = Array.isArray(source) || R.isObject(source) ? fu.deepClone(source) : source
+	if (typeof clone === "string") {
+		return replace(clone)
+	} else if (Array.isArray(clone)) {
+		return clone.map(e => recursiveReplaceString(e, replace))
+	} else if (R.isObject(clone)) {
+		for (const [key, value] of Object.entries(clone)) {
+			clone[key] = recursiveReplaceString(value, replace)
+		}
+	}
+
+	return clone
+}
+
+/** Create a localization function with a prefixed localization object path */
+function localizer(prefix: string): (...args: Parameters<Localization["format"]>) => string {
+	return (...[suffix, formatArgs]: Parameters<Localization["format"]>) =>
+		formatArgs ? game.i18n.format(`${prefix}.${suffix}`, formatArgs) : game.i18n.localize(`${prefix}.${suffix}`)
+}
+
+/** Get the current time as an ISO string (standard for the system) */
+function getCurrentTime(): string {
+	return new Date().toISOString()
+}
+
+/** Disgusting hack to get arrays and attribute threshold op boolean values working with prepareFormData */
+function prepareFormData(formData: Record<string, unknown>, object: object): Record<string, unknown> {
+	function setArrayProperty(a: object[], index: number, prop: string, value: unknown): object[] {
+		if (prop.match(/.\d+./)) {
+			const inArrayKey = prop.split(/.\d+./)[0]
+			const inArrayArray = fu.getProperty(a[index], inArrayKey) as object[]
+			const inArrayIndex = parseInt(prop.match(/.(\d+)./)![1])
+			const inArrayProp = prop.replace(`${inArrayKey}.${inArrayIndex}.`, "")
+			fu.setProperty(a[index], inArrayKey, setArrayProperty(inArrayArray, inArrayIndex, inArrayProp, value))
+			return a
+		}
+		fu.setProperty(a[index], prop, value)
+		return a
+	}
+
+	for (const aKey of Object.keys(formData)) {
+		if (formData[aKey] === null) formData[aKey] = "0"
+		if (aKey.includes(".halve_")) {
+			const tKey = aKey.replace(/\.halve_.*$/, "")
+			const tOp = aKey.split(".").at(-1)
+			formData[`${tKey}.ops`] ??= []
+			if (formData[aKey]) (formData[`${tKey}.ops`] as unknown[]).push(tOp)
+			delete formData[aKey]
+		}
+	}
+	for (const aKey of Object.keys(formData)) {
+		if (aKey.startsWith("array.") && aKey.match(/\d/)) {
+			const key = aKey.replace(/^array./g, "")
+			const arrayKey = key.split(/.\d+./)[0]
+			let array: object[] = (formData[arrayKey] as object[]) || (fu.getProperty(object, arrayKey) as object[])
+			const index = parseInt(key.match(/.(\d+)./)![1])
+			const prop = key.replace(new RegExp(`^${arrayKey}.${index}.`), "")
+			array = setArrayProperty(array, index, prop, formData[aKey])
+			formData[arrayKey] = array
+			delete formData[aKey]
+		} else if (aKey.startsWith("array.")) {
+			formData[aKey.replace("array.", "")] = formData[aKey]
+			delete formData[aKey]
+			// HACK: stupid exception for static resource trackers only. remove in 2.0
+		} else if (aKey.startsWith("sarray.") && aKey.match(/\d/)) {
+			const key = aKey.replace(/^sarray./g, "")
+			const arrayKey = `${key.split(/thresholds.\d+./)[0]}thresholds`
+			const array: object[] = fu.getProperty(object, arrayKey) as object[]
+			const index = parseInt(key.match(/thresholds.(\d+)./)![1])
+			const prop = key.replace(new RegExp(`^${arrayKey}.${index}.`), "")
+			setArrayProperty(array, index, prop, formData[aKey])
+			formData[arrayKey] = array
+			delete formData[aKey]
+		}
+	}
+	return formData
+}
+
+/** Get a Tech Level as a number, given a string */
+function extractTechLevel(str: string): number {
+	return Math.min(Math.max(0, parseInt(str)), 12)
+}
+
 function rgbToHex(input: string): string {
 	const [r, g, b] = input.split(", ").map(e => parseInt(e))
 	return "#" + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1)
+}
+
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+function isContainer(item: { type: ItemType }): boolean {
+	return [
+		ItemType.TraitContainer,
+		ItemType.SkillContainer,
+		ItemType.SpellContainer,
+		ItemType.EquipmentContainer,
+		ItemType.TraitModifierContainer,
+		ItemType.EquipmentModifierContainer,
+		ItemType.NoteContainer,
+	].includes(item.type)
 }
 
 function localeDate(str: string): string {
@@ -491,33 +324,61 @@ function localeDate(str: string): string {
 	return date.toLocaleString("en-US", options)
 }
 
+/**
+ * Prounounced "dee six if eye" Convert a GURPS dice roll to Foundry dice roll (e.g. 1d => 1d6, 2d-1 => 2d6-1)
+ * @param {string} str
+ * @param {string | null} flavor
+ * @returns {string}
+ */
+function d6ify(str: string, flavor: string | null = ""): string {
+	const w = str.replace(/d([^6])/g, `d6${flavor || ""}$1`) // Find 'd's without a 6 behind it, and add it.
+	return w.replace(/d$/g, `d6${flavor || ""}`) // And do the same for the end of the line.
+}
+
+function sheetDisplayNotes(
+	s: string,
+	options: { unsatisfied?: string; unready?: boolean } = { unsatisfied: "", unready: false },
+): string {
+	const buffer = new StringBuilder()
+	if (options.unsatisfied && options.unsatisfied !== "")
+		buffer.push(
+			`<div class='unsatisfied' data-tooltip='${options.unsatisfied}' data-tooltip-direction='DOWN'>` +
+				`<i class='gcs-triangle-exclamation'></i>${LocalizeGURPS.translations.gurps.prereq.unsatisfied}` +
+				"</div>",
+		)
+	if (options.unready)
+		buffer.push(
+			"<div class='unsatisfied'>" +
+				`<i class='gcs-triangle-exclamation'></i>${LocalizeGURPS.translations.gurps.weapon.unready}` +
+				"</div>",
+		)
+	buffer.appendToNewLine(s)
+	return `<div class="item-notes">${buffer.toString()}</div>`
+}
+
 export {
 	ErrorGURPS,
-	capitalize,
-	localeDate,
 	d6ify,
-	dollarFormat,
 	extractTechLevel,
-	rgbToHex,
 	fontAwesomeIcon,
 	getCurrentTime,
-	getDefaultSkills,
 	getNewAttributeId,
 	isContainer,
 	isObject,
-	newUUID,
+	localeDate,
+	localizer,
 	objectHasKey,
-	pick,
+	padArray,
+	parseHTML,
 	prepareFormData,
-	removeAccents,
+	recursiveReplaceString,
+	rgbToHex,
 	sanitize,
 	sanitizeId,
-	setArrayProperty,
 	setHasElement,
-	// setInitiative,
 	sheetDisplayNotes,
+	signedInteger,
 	sluggify,
-	toWord,
 	tupleHasValue,
-	urlToBase64,
+	type SlugCamel,
 }

@@ -1,0 +1,28 @@
+{
+    "_id": "4d4bxYr6MLf2S9Wz",
+    "img": "systems/gcsga/assets/status/drunk.webp",
+    "name": "Drunk",
+    "system": {
+        "can_level": true,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "drunk",
+        "levels": {
+            "current": 0,
+            "max": 2
+        },
+        "modifiers": [],
+        "overlay": false,
+        "reference": "B428",
+        "type": "condition"
+    },
+    "type": "condition"
+}

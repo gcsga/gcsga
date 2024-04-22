@@ -1,0 +1,28 @@
+{
+    "_id": "CeVmvnX2ESZqe1se",
+    "img": "systems/gcsga/assets/status/choking.webp",
+    "name": "Choking",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "choking",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "reference": "B428",
+        "type": "condition"
+    },
+    "type": "condition"
+}

@@ -1,0 +1,28 @@
+{
+    "_id": "V7cwqsPFaXk2xFMl",
+    "img": "systems/gcsga/assets/status/grappled.webp",
+    "name": "Grappled",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "grappled",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "reference": "B371",
+        "type": "condition"
+    },
+    "type": "condition"
+}

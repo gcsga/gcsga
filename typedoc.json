@@ -1,5 +1,5 @@
 {
-	"name": "GURPS System for FoundryVTT",
+	"name": "GURPS Game Aid for FoundryVTT",
 	"inputFiles": ["./src/module"],
 	"out": "docs",
 	"mode": "file",

@@ -11,18 +11,12 @@ form {
 
 	@import "personal", "stats", "embeds";
 
-	div {
-		background-color: rgba(var(--color-content), 1);
-	}
+	// div {
+	// 	background-color: rgba(var(--color-content), 1);
+	// }
 
 	> div {
 		background-color: rgb(var(--color-page));
-	}
-
-	.dropdown {
-		background-color: transparent;
-		font-size: var(--font-size-10);
-		margin-top: 3px;
 	}
 
 	background-color: rgb(var(--color-page));
@@ -34,7 +28,7 @@ form {
 	gap: var(--section-gap);
 
 	// General Styles
-	.header {
+	header {
 		grid-area: header;
 		background-color: rgba(var(--color-header), 1);
 		color: rgba(var(--color-on-header), 1);
@@ -78,7 +72,7 @@ form {
 		grid-template-columns: repeat(7, auto);
 	}
 
-	.label {
+	label {
 		font: var(--font-page-primary-labels);
 		padding: var(--padding-standard);
 	}

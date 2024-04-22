@@ -1,0 +1,27 @@
+{
+    "_id": "rMYktLV92QXHGCy9",
+    "img": "systems/gcsga/assets/status/restrained.webp",
+    "name": "Restrained",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "restrained",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "type": "condition"
+    },
+    "type": "condition"
+}

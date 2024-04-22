@@ -1,11 +1,7 @@
 import * as R from "remeda"
-// export function parents(el: any | null, selector: string): Document {
-// 	const parents = []
-// 	while ((el = el.parentNode) && el !== document) {
-// 		if (!selector || el?.matches(selector)) parents.push(el)
-// 	}
-// 	return parents
-// }
+
+/**  DOM helper functions that return HTMLElement(s) (or `null`) */
+
 type MaybeHTML = Maybe<Document | Element | EventTarget>
 
 /**
@@ -39,8 +35,8 @@ function createHTMLElement<K extends keyof HTMLElementTagNameMap>(
 	const element = document.createElement(nodeName)
 	if (classes.length > 0) element.classList.add(...classes)
 
-	for (const [key, value] of Object.entries(dataset).filter(([, v]) => !R.isNil(v))) {
-		element.dataset[key] = String(value)
+	for (const [key, value] of Object.entries(dataset).filter(([, v]) => !R.isNil(v) && v !== false)) {
+		element.dataset[key] = value === true ? "" : String(value)
 	}
 
 	if (innerHTML) {
@@ -124,12 +120,18 @@ function htmlSelectorFor(element: HTMLElement): string {
 	return `${nodeName}${classesString}${datasetString}`
 }
 
-function parents(el: HTMLElement | Document | null, selector: string): HTMLElement[] {
-	const parents = []
-	while (el && (el = el.parentElement) && !(el instanceof Document)) {
-		if (!selector || el?.matches(selector)) parents.push(el)
+/** Apply the banding class to every other item in a list */
+function applyBanding(html: HTMLElement): void {
+	for (const list of htmlQueryAll(html, "[data-item-list]:not([data-container-id])")) {
+		let banding = true
+		for (const item of htmlQueryAll(list, "li")) {
+			banding = !banding
+			item.classList.remove("banding")
+			if (banding) {
+				item.classList.add("banding")
+			}
+		}
 	}
-	return parents
 }
 
-export { createHTMLElement, htmlClosest, htmlQuery, htmlQueryAll, htmlSelectorFor, parents }
+export { createHTMLElement, htmlClosest, htmlQuery, htmlQueryAll, htmlSelectorFor, applyBanding }

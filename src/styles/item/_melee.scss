@@ -4,7 +4,7 @@
 	display: grid;
 	grid-template-columns: 1fr repeat(6, min-content);
 
-	.header {
+	header {
 		grid-area: auto;
 		padding: var(--padding-header);
 		background-color: rgb(var(--color-header));
@@ -24,7 +24,7 @@
 			padding: var(--padding-header);
 		}
 
-		&.header {
+		&header {
 			border-bottom: none;
 		}
 
@@ -45,7 +45,7 @@
 	.damage:nth-child(14n + 5),
 	.reach:nth-child(14n + 6),
 	.st:nth-child(14n + 7) {
-		&:not(.header) {
+		&:not(header) {
 			background-color: rgb(var(--color-banding));
 			color: rgb(var(--color-on-banding));
 		}

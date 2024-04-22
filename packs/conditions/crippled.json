@@ -1,0 +1,28 @@
+{
+    "_id": "5asx7Vn0TqaB3Gmu",
+    "img": "systems/gcsga/assets/status/crippled.webp",
+    "name": "Crippled",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "crippled",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "reference": "B420",
+        "type": "condition"
+    },
+    "type": "condition"
+}

@@ -1,16 +1,15 @@
-import { ItemType } from "@data"
-import { FeatureObj } from "@feature/index.ts"
-import { BaseContainerSource } from "@item/container/data.ts"
-import { ItemGCSSystemSource } from "@item/gcs/data.ts"
-import { PrereqListObj } from "@prereq/data.ts"
-import { SkillDefaultObj } from "@sytem/default/index.ts"
-import { difficulty } from "@util/enum/difficulty.ts"
-import { study } from "@util/enum/study.ts"
-import { Study } from "@util/study.ts"
+import {
+	AbstractContainerSource,
+	AbstractContainerSystemData,
+	AbstractContainerSystemSource,
+} from "@item/abstract-container/data.ts"
+import { ItemType } from "@module/data/constants.ts"
+import { FeatureObj, PrereqListObj, SkillDefaultObj, Study } from "@system"
+import { difficulty, study } from "@util"
 
-export type TechniqueSource = BaseContainerSource<ItemType.Technique, TechniqueSystemSource>
+type TechniqueSource = AbstractContainerSource<ItemType.Technique, TechniqueSystemSource>
 
-export interface TechniqueSystemSource extends ItemGCSSystemSource {
+interface TechniqueSystemSource extends AbstractContainerSystemSource {
 	type: ItemType.Technique
 	name: string
 	reference: string
@@ -22,6 +21,7 @@ export interface TechniqueSystemSource extends ItemGCSSystemSource {
 	difficulty: difficulty.Level.Average | difficulty.Level.Hard
 	points: number
 	default: SkillDefaultObj
+	defaults: SkillDefaultObj[]
 	limit: number
 	limited: boolean
 	prereqs: PrereqListObj
@@ -29,3 +29,7 @@ export interface TechniqueSystemSource extends ItemGCSSystemSource {
 	study: Study[]
 	study_hours_needed: study.Level | ""
 }
+
+interface TechniqueSystemData extends TechniqueSystemSource, AbstractContainerSystemData {}
+
+export type { TechniqueSource, TechniqueSystemData, TechniqueSystemSource }

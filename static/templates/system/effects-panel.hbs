@@ -1,52 +1,38 @@
-<section class="effect-panel">
-    {{#each conditions as |condition|}}
-        {{> effect effect=condition}}
-    {{/each}}
-
-    {{#each effects as |effect|}}
-        {{> effect effect=effect}}
-    {{/each}}
-</section>
-
-{{#*inline "effect"}}
-{{#if (or (not effect.unidentified) @root.user.isGM)}}
-<div class="effect-item" data-item-id="{{effect.id}}">
-    <div class="effect-info">
-        <h1>{{effect.name}}</h1>
-        {{#if (or (eq effect.type "effect") effect.breakdown)}}
-            <div class="tags">
-                {{#if (and effect.system.duration.sustained (not effect.system.expired))}}
-                    <div class="tag tag_secondary">{{localize "gurps.effect.sustained"}}</div>
-                {{/if}}
-                {{#if effect.unidentified}}
-                    <div class="tag tag_secondary">{{localize "gurps.effect.unidentified"}}</div>
-                {{/if}}
-                {{#if effect.breakdown}}
-                    <div class="tag tag_secondary">{{effect.breakdown}}</div>
-                {{/if}}
-                {{#if effect.system.remaining}}
-                    <div class="tag tag_secondary">{{effect.system.remaining}}</div>
-                {{/if}}
-            </div>
-        {{/if}}
-        <div class="instructions">
-            {{#if (not effect.locked)}}
-                {{#if effect.system.can_level}}
-                    <p>{{localize "gurps.effect.increment"}}</p>
-                    <p>{{localize "gurps.effect.decrement"}}</p>
-                {{else}}
-                    <p>{{localize "gurps.effect.remove"}}</p>
-                {{/if}}
-            {{/if}}
-        </div>
-    </div>
-    <div class="icon"style="background-image: url({{effect.img}})">
-        {{#if effect.system.can_level}}
-            <div class="value-wrapper">
-                <div class="value"><strong>{{effect.system.levels.current}}</strong></div>
-            </div>
-        {{/if}}
-    </div>
+<section class="effect-panel">{{#each effects as |effect|}} {{> effect effect=effect}} {{/each}}</section>
+{{#*inline "effect"}} {{#if (or (not effect.unidentified) @root.user.isGM)}}
+<div class="effect-item" data-item-id="{{ effect.id }}">
+	<div class="effect-info">
+		<h1>{{ effect.name }}</h1>
+		{{#if (or (eq effect.type "effect") effect.breakdown)}}
+		<div class="tags">
+			{{#if (and effect.system.duration.sustained (not effect.system.expired))}}
+			<div class="tag tag_secondary">{{ localize "gurps.effect.sustained" }}</div>
+			{{/if}} {{#if effect.unidentified}}
+			<div class="tag tag_secondary">{{ localize "gurps.effect.unidentified" }}</div>
+			{{/if}} {{#if effect.breakdown}}
+			<div class="tag tag_secondary">{{ effect.breakdown }}</div>
+			{{/if}} {{#if effect.system.remaining}}
+			<div class="tag tag_secondary">{{ effect.system.remaining }}</div>
+			{{/if}}
+		</div>
+		{{/if}}
+		<div class="instructions">
+			{{#if (not effect.locked)}} {{#if effect.system.can_level}}
+			<p>{{ localize "gurps.effect.increment" }}</p>
+			<p>{{ localize "gurps.effect.decrement" }}</p>
+			{{ else }}
+			<p>{{ localize "gurps.effect.remove" }}</p>
+			{{/if}} {{/if}}
+		</div>
+	</div>
+	<div class="icon" style="background-image: url({{ effect.img }})">
+		{{#if effect.system.can_level}}
+		<div class="value-wrapper">
+			<div class="value">
+				<strong>{{ effect.system.levels.current }}</strong>
+			</div>
+		</div>
+		{{/if}}
+	</div>
 </div>
-{{/if}}
-{{/inline}}
+{{/if}} {{/inline}}

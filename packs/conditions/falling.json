@@ -1,0 +1,28 @@
+{
+    "_id": "JVYQewsxjpRpWlTA",
+    "img": "systems/gcsga/assets/status/falling.webp",
+    "name": "Falling",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "falling",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "reference": "B431",
+        "type": "condition"
+    },
+    "type": "condition"
+}

@@ -1,11 +1,7 @@
-import { RollModifier, RollModifierStack, SYSTEM_NAME } from "@module/data/index.ts"
-
-type UserSourceGURPS = Omit<foundry.documents.UserSource, "flags"> & {
-	flags: DeepPartial<UserFlagsGURPS>
-}
+import { SYSTEM_NAME } from "@module/data/constants.ts"
+import { RollModifier, RollModifierStack } from "@module/data/types.ts"
 
 enum UserFlags {
-	Init = "init",
 	LastStack = "lastStack",
 	ModifierStack = "modifierStack",
 	ModifierSticky = "modifierSticky",
@@ -15,9 +11,12 @@ enum UserFlags {
 	SearchPackContents = "searchPackContents",
 }
 
+type UserSourceGURPS = Omit<foundry.documents.UserSource, "flags"> & {
+	flags: DeepPartial<UserFlagsGURPS>
+}
+
 type UserFlagsGURPS = DocumentFlags & {
 	[SYSTEM_NAME]: {
-		[UserFlags.Init]: boolean
 		[UserFlags.LastStack]: RollModifier[]
 		[UserFlags.ModifierStack]: RollModifier[]
 		[UserFlags.ModifierSticky]: boolean
@@ -28,5 +27,17 @@ type UserFlagsGURPS = DocumentFlags & {
 	}
 }
 
+// const UserDefaultFlags: UserFlagsGURPS = {
+// 	[SYSTEM_NAME]: {
+// 		[UserFlags.LastStack]: [],
+// 		[UserFlags.ModifierStack]: [],
+// 		[UserFlags.ModifierSticky]: false,
+// 		[UserFlags.SavedStacks]: [],
+// 		[UserFlags.LastActor]: null,
+// 		[UserFlags.LastToken]: null,
+// 		[UserFlags.SearchPackContents]: false,
+// 	},
+// }
+
 export { UserFlags }
-export type { UserSourceGURPS, UserFlagsGURPS }
+export type { UserFlagsGURPS, UserSourceGURPS }

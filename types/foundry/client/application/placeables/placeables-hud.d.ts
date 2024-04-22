@@ -25,6 +25,19 @@ declare class TokenHUD<TToken extends Token = Token> extends BasePlaceableHUD<TT
 	 * @private
 	 */
 	protected _toggleStatusEffects(active: boolean): void
+
+	/**
+	 * Toggle Token combat state
+	 * @private
+	 */
+	protected _onToggleCombat(event: JQuery.ClickEvent): Promise<TToken>
+
+	/**
+	 * Handle Control clicks
+	 * @param {MouseEvent} event
+	 * @private
+	 */
+	protected _onClickControl(event: MouseEvent): void
 }
 
 type TokenHUDData<T extends Token = Token> = BasePlaceableHUDData<T> & {

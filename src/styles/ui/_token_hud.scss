@@ -9,7 +9,7 @@
 
 	.maneuvers,
 	.status-effects {
-		width: auto;
+		width: max-content;
 		visibility: hidden;
 		position: absolute;
 		left: 65px;
@@ -43,14 +43,10 @@
 
 			img {
 				border: 1px solid rgba(black, 0);
-				height: 35px;
+				height: 35px !important;
 				margin: 0;
-				width: 35px;
+				width: 35px !important;
 			}
-
-			// &:not(.active):hover img {
-			//     border: 1px solid rgba(#ff6400, 0.5);
-			// }
 
 			.badge {
 				background: rgb(var(--color-control));

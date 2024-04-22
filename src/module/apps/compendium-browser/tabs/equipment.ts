@@ -1,14 +1,15 @@
 import { ContentTabName, TabName } from "../data.ts"
 import { CompendiumBrowserTab } from "./base.ts"
 import { CompendiumBrowserIndexData, EquipmentFilters } from "./data.ts"
-import { LocalizeGURPS } from "@util"
+import { LocalizeGURPS, Weight } from "@util"
 import { CompendiumBrowser } from "../index.ts"
 import { ItemType, SYSTEM_NAME } from "@data"
+import { EquipmentContainerGURPS, EquipmentGURPS } from "@item"
 
 export class CompendiumBrowserEquipmentTab extends CompendiumBrowserTab {
 	tabName: ContentTabName = TabName.Equipment
 	filterData: EquipmentFilters
-	templatePath = `systems/${SYSTEM_NAME}/templates/compendium-browser/partials/equipment.hbs`
+	templatePath = `systems/${SYSTEM_NAME}/templates/common/equipment.hbs`
 
 	constructor(browser: CompendiumBrowser) {
 		super(browser)
@@ -21,46 +22,62 @@ export class CompendiumBrowserEquipmentTab extends CompendiumBrowserTab {
 		console.debug("GURPS | Compendium Browser | Started loading equipment")
 
 		const equipment: CompendiumBrowserIndexData[] = []
-		const indexFields = ["img", "formattedName", "resolvedNotes", "adjustedPoints", "system.reference"]
+		const indexFields = [
+			"formattedName",
+			"resolvedNotes",
+			"adjustedValue",
+			"adjustedWeight",
+			"extendedValue",
+			"extendedWeightFast",
+			"system.tech_level",
+			"system.legality_class",
+			"reference",
+		]
 		const tags = new Set<string>()
 
-		for await (const { pack, index } of this.browser.packLoader.loadPacks(
+		for await (const { pack } of this.browser.packLoader.loadPacks(
 			"Item",
 			this.browser.loadedPacks(TabName.Equipment),
 			indexFields,
 		)) {
 			console.debug(`GURPS | Compendium Browser | ${pack.metadata.label} - Loading`)
-			for (const equipmentData of index) {
-				if (equipmentData.type === ItemType.Equipment || equipmentData.type === ItemType.EquipmentContainer) {
-					if (!this.hasAllIndexFields(equipmentData, indexFields)) {
+			const collection = game.packs.get(pack.collection) as CompendiumCollection<
+				EquipmentGURPS<null> | EquipmentContainerGURPS<null>
+			>
+			if (!collection) return
+			;(await collection.getDocuments()).forEach((item: EquipmentGURPS<null> | EquipmentContainerGURPS<null>) => {
+				item.prepareData()
+
+				if (item.type === ItemType.Equipment || item.type === ItemType.EquipmentContainer) {
+					if (!this.hasAllIndexFields(item, indexFields)) {
 						console.warn(
-							`${LocalizeGURPS.translations.TYPES.Item[equipmentData.type]} '${
-								equipmentData.name
+							`${LocalizeGURPS.translations.TYPES.Item[item.type]} '${
+								item.name
 							}' does not have all required data fields. Consider unselecting pack '${
 								pack.metadata.label
 							}' in the compendium browser settings.`,
 						)
-						continue
+						return
 					}
-
-					const { system } = equipmentData
-					for (const tag of system.tags) tags.add(tag)
-
-					equipment.push({
-						type: equipmentData.type,
-						name: equipmentData.name,
-						img: equipmentData.img,
-						uuid: `Compendium.${pack.collection}.${equipmentData._id}`,
-						formattedName: equipmentData.formattedName,
-						resolvedNotes: equipmentData.resolvedNotes,
-						value: equipmentData.adjustedValue,
-						weight: equipmentData.adjustedWeight,
-						extendedValue: equipmentData.extendedValue,
-						extendedWeight: equipmentData.extendedWeightFast,
-						reference: equipmentData.reference,
-					})
+				} else {
+					return
 				}
-			}
+				for (const tag of item.tags) tags.add(tag)
+
+				equipment.push({
+					type: item.type,
+					name: item.name,
+					img: item.img,
+					id: `Compendium.${pack.collection}.${item._id}`,
+					formattedName: item.formattedName,
+					resolvedNotes: item.resolvedNotes,
+					value: item.adjustedValue,
+					weight: item.adjustedWeight,
+					extendedValue: item.extendedValue,
+					extendedWeight: Weight.format(item.extendedWeight(false, item.weightUnits), item.weightUnits),
+					reference: item.reference,
+				})
+			})
 		}
 
 		// Set indexData

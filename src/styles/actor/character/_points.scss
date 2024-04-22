@@ -7,7 +7,7 @@
 		"block";
 	grid-template-rows: 0fr 1fr;
 	border: var(--standard-border);
-	.header {
+	header {
 		display: flex;
 		justify-content: space-evenly;
 		a {
@@ -34,12 +34,13 @@
 		color: rgb(var(--color-on-error));
 	}
 	.fieldblock {
-		.field:nth-child(4n-1),
-		.label:nth-child(4n) {
+		.field:nth-child(4n-1) {
 			background-color: rgba(var(--color-banding), 1);
-			&.label {
-				color: rgba(var(--color-on-banding), 1);
-			}
+		}
+
+		label:nth-child(4n) {
+			background-color: rgba(var(--color-banding), 1);
+			color: rgba(var(--color-on-banding), 1);
 		}
 	}
 }

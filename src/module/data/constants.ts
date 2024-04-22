@@ -1,4 +1,11 @@
+import Sortable from "sortablejs"
+
 const SYSTEM_NAME = "gcsga"
+
+enum COMPENDIA {
+	CONDITIONS = "conditions",
+	MANEUVERS = "maneuvers",
+}
 
 // Settings
 enum SETTINGS {
@@ -13,7 +20,6 @@ enum SETTINGS {
 	STATIC_IMPORT_HP_FP = "import_hp_fp",
 	STATIC_IMPORT_BODY_PLAN = "import_bodyplan",
 	STATIC_AUTOMATICALLY_SET_IGNOREQTY = "auto-ignore-qty",
-	// MODIFIER_MODE = "modifier_mode",
 	COLORS = "colors",
 	SHOW_IMPORT_BUTTON = "show_import_button",
 	DEFAULT_ATTRIBUTES = "default_attributes",
@@ -30,13 +36,21 @@ enum SETTINGS {
 	MODIFIER_LIST_COLLAPSE = "modifier_list_collapse",
 	BASE_BOOKS = "base_books",
 	AUTOMATIC_UNREADY = "automatic_unready",
+	WORLD_SYSTEM_VERSION = "world_system_version",
 	WORLD_SCHEMA_VERSION = "world_schema_version",
+	MANEUVER_DETAIL = "maneuver_detail",
 }
 
 enum SSRT_SETTING {
 	STANDARD = "standard",
 	SIMPLIFIED = "simplified",
 	TENS = "tens",
+}
+
+enum MANEUVER_DETAIL_SETTING {
+	FULL = "full",
+	NO_FEINT = "no_feint",
+	GENERAL = "general",
 }
 
 enum SOCKET {
@@ -66,32 +80,104 @@ enum ItemType {
 	RitualMagicSpell = "ritual_magic_spell",
 	SpellContainer = "spell_container",
 	Equipment = "equipment_gcs",
+	// Equipment = "equipment",
 	EquipmentContainer = "equipment_container",
 	EquipmentModifier = "eqp_modifier",
 	EquipmentModifierContainer = "eqp_modifier_container",
 	Note = "note",
 	NoteContainer = "note_container",
-	LegacyEquipment = "equipment",
+	LegacyItem = "equipment",
 	Effect = "effect",
 	Condition = "condition",
 	MeleeWeapon = "melee_weapon",
 	RangedWeapon = "ranged_weapon",
 }
 
+type ItemTypes =
+	| ItemType.Trait
+	| ItemType.TraitContainer
+	| ItemType.TraitModifier
+	| ItemType.TraitModifierContainer
+	| ItemType.Skill
+	| ItemType.Technique
+	| ItemType.SkillContainer
+	| ItemType.Spell
+	| ItemType.RitualMagicSpell
+	| ItemType.SpellContainer
+	| ItemType.Equipment
+	| ItemType.EquipmentContainer
+	| ItemType.EquipmentModifier
+	| ItemType.EquipmentModifierContainer
+	| ItemType.Note
+	| ItemType.NoteContainer
+	| ItemType.LegacyItem
+	| ItemType.Effect
+	| ItemType.Condition
+	| ItemType.MeleeWeapon
+	| ItemType.RangedWeapon
+
+type EffectType = ItemType.Effect | ItemType.Condition
+
+type WeaponType = ItemType.MeleeWeapon | ItemType.RangedWeapon
+
+const DefaultHaver = [ItemType.Skill, ItemType.Technique, ItemType.MeleeWeapon, ItemType.RangedWeapon]
+
+const ABSTRACT_CONTAINER_TYPES = new Set([
+	ItemType.Trait,
+	ItemType.TraitContainer,
+	ItemType.TraitModifierContainer,
+	ItemType.Skill,
+	ItemType.Technique,
+	ItemType.SkillContainer,
+	ItemType.Spell,
+	ItemType.RitualMagicSpell,
+	ItemType.SpellContainer,
+	ItemType.Equipment,
+	ItemType.EquipmentContainer,
+	ItemType.EquipmentModifierContainer,
+	ItemType.NoteContainer,
+] as const)
+
+const CONTAINER_TYPES = new Set([
+	ItemType.TraitContainer,
+	ItemType.TraitModifierContainer,
+	ItemType.SkillContainer,
+	ItemType.SpellContainer,
+	ItemType.EquipmentContainer,
+	ItemType.EquipmentModifierContainer,
+	ItemType.NoteContainer,
+] as const)
+
+type ContainerType =
+	| ItemType.Trait
+	| ItemType.TraitContainer
+	| ItemType.TraitModifierContainer
+	| ItemType.Skill
+	| ItemType.Technique
+	| ItemType.SkillContainer
+	| ItemType.Spell
+	| ItemType.RitualMagicSpell
+	| ItemType.SpellContainer
+	| ItemType.Equipment
+	| ItemType.EquipmentContainer
+	| ItemType.EquipmentModifierContainer
+	| ItemType.NoteContainer
+
 enum ItemFlags {
 	Deprecation = "deprecation",
 	Container = "container",
 	Other = "other", // used for equipment only
 	Unready = "unready",
+	Overlay = "overlay", // used for effects only
 }
 
 enum ConditionID {
 	// Posture
-	PostureCrouch = "posture_crouch",
-	PostureKneel = "posture_kneel",
-	PostureSit = "posture_sit",
-	PostureCrawl = "posture_crawl",
-	PostureProne = "posture_prone",
+	PostureCrouch = "crouching",
+	PostureKneel = "kneeling",
+	PostureSit = "sitting",
+	PostureCrawl = "crawling",
+	PostureProne = "prone",
 	// Serious Damage
 	Reeling = "reeling",
 	Fatigued = "fatigued",
@@ -103,10 +189,10 @@ enum ConditionID {
 	Pain = "pain",
 	Unconscious = "unconscious",
 	Sleeping = "sleeping",
-	Coma = "coma",
+	Comatose = "comatose",
 	// Confusion ?
 	Stun = "stun",
-	MentalStun = "mental_stun",
+	MentalStun = "mental-stun",
 	Poisoned = "poisoned",
 	Burning = "burning",
 	Cold = "cold",
@@ -119,7 +205,7 @@ enum ConditionID {
 	// Stealth / Movement Good
 	Sprinting = "sprinting",
 	Flying = "flying",
-	Stealth = "stealth",
+	Stealthy = "stealthy",
 	Waiting = "waiting",
 	Invisible = "invisible",
 	// Afflictions
@@ -129,56 +215,57 @@ enum ConditionID {
 	Agony = "agony",
 	Seizure = "seizure",
 	// Disabled Function
-	Blinded = "blind", // Inconsistency here between "blinded" and "blind" to match foundry default name
+	Blind = "blind", // Inconsistency here between "blinded" and "blind" to match foundry default name
 	Deafened = "deafened",
 	Silenced = "silenced",
 	Choking = "choking",
-	HeartAttack = "heart_attack",
+	HeartAttack = "heart-attack",
 	// Drunk-adjacent
-	Euphoria = "euphoria",
+	Euphoric = "euphoric",
 	Hallucinating = "hallucinating",
 	Drunk = "drunk",
 	Drowsy = "drowsy",
-	Daze = "daze",
+	Dazed = "dazed",
 	// ConditionTrigger -- this is a special condition that is used to trigger other effects.
 	Trigger = "trigger",
 }
 
 enum ManeuverID {
 	// Row 1
-	DoNothing = "do_nothing",
+	DoNothing = "do-nothing",
 	Attack = "attack",
-	AOA = "aoa",
-	AOD = "aod",
+	AOA = "all-out-attack",
+	AOD = "all-out-defense",
 	// Row 2
 	Move = "move",
-	MoveAndAttack = "move_attack",
-	AOADouble = "aoa_double",
-	AODDouble = "aod_double",
+	MoveAndAttack = "move-and-attack",
+	AOADouble = "all-out-attack-double",
+	AODDouble = "all-out-defense-double",
 	// Row 3
-	ChangePosture = "change_posture",
+	ChangePosture = "change-posture",
 	Feint = "feint",
-	AOAFeint = "aoa_feint",
-	AODDodge = "aod_dodge",
+	AOAFeint = "all-out-attack-feint",
+	AODDodge = "all-out-defense-dodge",
 	// Row 4
 	Ready = "ready",
 	Evaluate = "evaluate",
-	AOADetermined = "aoa_determined",
-	AODParry = "aod_parry",
+	AOADetermined = "all-out-attack-determined",
+	AODParry = "all-out-defense-parry",
 	// Row 5
 	Concentrate = "concentrate",
-	Aiming = "aiming",
-	AOAStrong = "aoa_strong",
-	AODBlock = "aod_block",
+	Aim = "aim",
+	AOAStrong = "all-out-attack-strong",
+	AODBlock = "all-out-defense-block",
 	// Row 6
 	Wait = "wait",
-	BLANK_1 = "blank_1",
-	AOASF = "aoa_suppressing_fire",
-	BLANK_2 = "blank_2",
+	BLANK_1 = "blank-1",
+	AOASF = "all-out-attack-suppressing-fire",
+	BLANK_2 = "blank-2",
 }
 
 // Actor
 enum ActorType {
+	// Character = "character",
 	Character = "character_gcs",
 	LegacyCharacter = "character",
 	LegacyEnemy = "enemy",
@@ -278,15 +365,20 @@ enum HOOKS {
 }
 
 export {
+	ABSTRACT_CONTAINER_TYPES,
 	ActorFlags,
 	ActorType,
+	COMPENDIA,
+	CONTAINER_TYPES,
 	ConditionID,
 	DEFAULT_INITIATIVE_FORMULA,
+	DefaultHaver,
 	EFFECT_ACTION,
 	GURPS_COMMANDS,
 	HOOKS,
 	ItemFlags,
 	ItemType,
+	MANEUVER_DETAIL_SETTING,
 	ManeuverID,
 	RollModifierTags,
 	RollType,
@@ -296,3 +388,29 @@ export {
 	SYSTEM_NAME,
 	gid,
 }
+
+export const SORTABLE_BASE_OPTIONS: Sortable.Options = {
+	animation: 200,
+	direction: "vertical",
+	dragClass: "drag-preview",
+	dragoverBubble: true,
+	easing: "cubic-bezier(1, 0, 0, 1)",
+	fallbackOnBody: true,
+	// filter: "div.item-summary",
+	filter: "div.item-summary",
+	ghostClass: "drag-gap",
+	group: "inventory",
+	preventOnFilter: false,
+	swapThreshold: 0.25,
+
+	// These options are from the Autoscroll plugin and serve as a fallback on mobile/safari/ie/edge
+	// Other browsers use the native implementation
+	scroll: true,
+	scrollSensitivity: 30,
+	scrollSpeed: 15,
+
+	delay: 500,
+	delayOnTouchOnly: true,
+}
+
+export type { ContainerType, EffectType, ItemTypes, WeaponType }

@@ -1,0 +1,27 @@
+{
+    "_id": "H8M2tQ4rEjXS45gk",
+    "img": "systems/gcsga/assets/status/deafened.webp",
+    "name": "Deafened",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "deafened",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "type": "condition"
+    },
+    "type": "condition"
+}

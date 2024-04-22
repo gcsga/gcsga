@@ -1,0 +1,28 @@
+{
+    "_id": "gtZsD96ro3fgEE9U",
+    "img": "systems/gcsga/assets/status/heart-attack.webp",
+    "name": "Heart Attack",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "heart-attack",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "reference": "B429",
+        "type": "condition"
+    },
+    "type": "condition"
+}

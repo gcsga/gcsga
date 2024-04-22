@@ -1,0 +1,397 @@
+<form class="{{ cssClass }}" autocomplete="off">
+	<div id="sheet">
+		<div id="details">
+			<label>{{ localize "gurps.item.img" }}</label>
+			<div class="field">
+				<div class="img-display" style="background-image: url({{ item.img }});">
+					<img src="{{ item.img }}" data-edit="img" title="{{ document.name }}" />
+				</div>
+			</div>
+			<label>{{ localize "gurps.weapon.usage" }}</label>
+			<div class="field">
+				<input type="text" name="system.usage" value="{{ system.usage }}" data-dtype="String" />
+			</div>
+			<label>{{ localize "gurps.weapon.notes" }}</label>
+			<div class="field">
+				<input type="text" name="system.usage_notes" value="{{ system.usage_notes }}" data-dtype="String" />
+			</div>
+			<label>{{ localize "gurps.weapon.accuracy" }}</label>
+			<div class="field no-stretch">
+				<input
+					type="text"
+					name="weapon.accuracy.base"
+					value="{{ item.accuracy.base }}"
+					data-dtype="Number"
+					{{
+					disabled
+					item.accuracy.jet
+					}}
+				/>
+				<label>{{ localize "gurps.weapon.accuracy_scope" }}</label>
+				<input
+					type="text"
+					name="weapon.accuracy.scope"
+					value="{{ item.accuracy.scope }}"
+					data-dtype="Number"
+					{{
+					disabled
+					item.accuracy.jet
+					}}
+				/>
+				<label class="check" style="justify-self: end">
+					<input
+						type="checkbox"
+						name="weapon.accuracy.jet"
+						data-dtype="Boolean"
+						{{
+						checked
+						item.accuracy.jet
+						}}
+					/>
+					{{ localize "gurps.weapon.accuracy_jet" }}
+				</label>
+			</div>
+			<label>{{ localize "gurps.weapon.damage" }}</label>
+			<div class="field no-stretch">
+				<select name="system.damage.st" data-dtype="String">
+					{{#select system.damage.st}} {{#each @root.config.select.stdmg as |v k|}}
+					<option value="{{ k }}">{{ v }}</option>
+					{{/each}} {{/select}}
+				</select>
+				<input
+					type="text"
+					name="system.damage.modifier_per_die"
+					value="{{ signed system.damage.modifier_per_die }}"
+					data-dtype="Number"
+				/>
+				<label>{{ localize "gurps.weapon.modifier_per_die" }}</label>
+			</div>
+			<label></label>
+			<div class="field no-stretch">
+				<label>{{ localize "gurps.weapon.armor_divisor" }}</label>
+				<input
+					type="text"
+					name="system.damage.armor_divisor"
+					value="{{ system.damage.armor_divisor }}"
+					data-dtype="Number"
+				/>
+				<label>{{ localize "gurps.weapon.damage_type" }}</label>
+				<input type="text" name="system.damage.type" value="{{ system.damage.type }}" data-dtype="String" />
+			</div>
+			<label>{{ localize "gurps.weapon.fragmentation" }}</label>
+			<div class="field no-stretch">
+				<input
+					type="text"
+					name="system.damage.fragmentation"
+					value="{{ diceString system.damage.fragmentation }}"
+					data-dtype="String"
+				/>
+				<label>{{ localize "gurps.weapon.armor_divisor" }}</label>
+				<input
+					type="text"
+					name="system.damage.fragmentation_armor_divisor"
+					value="{{ system.damage.fragmentation_armor_divisor }}"
+					data-dtype="Number"
+				/>
+				<label>{{ localize "gurps.weapon.damage_type" }}</label>
+				<input
+					type="text"
+					name="system.damage.fragmentation_type"
+					value="{{ system.damage.fragmentation_type }}"
+					data-dtype="String"
+				/>
+			</div>
+			<label>{{ localize "gurps.weapon.range" }}</label>
+			<div class="field no-stretch">
+				<input type="text" name="weapon.range.max" value="{{ item.range.max }}" data-dtype="Number" />
+				<label>{{ localize "gurps.weapon.range_half_damage" }}</label>
+				<input
+					type="text"
+					name="weapon.range.halfDamage"
+					value="{{ item.range.halfDamage }}"
+					data-dtype="Number"
+				/>
+				<label>{{ localize "gurps.weapon.range_min" }}</label>
+				<input type="text" name="weapon.range.min" value="{{ item.range.min }}" data-dtype="Number" />
+			</div>
+			<label></label>
+			<div class="field no-stretch">
+				<label class="check">
+					<input
+						type="checkbox"
+						name="weapon.range.musclePowered"
+						data-dtype="Boolean"
+						{{
+						checked
+						item.range.musclePowered
+						}}
+					/>
+					{{ localize "gurps.weapon.muscle_powered" }}
+				</label>
+				<label class="check">
+					<input
+						type="checkbox"
+						name="weapon.range.inMiles"
+						data-dtype="Boolean"
+						{{
+						checked
+						item.range.inMiles
+						}}
+					/>
+					{{ localize "gurps.weapon.in_miles" }}
+				</label>
+			</div>
+			<label>{{ localize "gurps.weapon.rate_of_fire" }}</label>
+			<div class="field no-stretch">
+				<label>{{ localize "gurps.weapon.mode_1" }}</label>
+				<input
+					type="text"
+					name="weapon.rate_of_fire.mode1.shotsPerAttack"
+					value="{{ item.rate_of_fire.mode1.shotsPerAttack }}"
+					data-dtype="Number"
+				/>
+				<label>{{ localize "gurps.weapon.shots_per_attack" }}</label>
+				<input
+					type="text"
+					name="weapon.rate_of_fire.mode1.secondaryProjectiles"
+					value="{{ item.rate_of_fire.mode1.secondaryProjectiles }}"
+					data-dtype="Number"
+				/>
+				<label>{{ localize "gurps.weapon.secondary_projectiles" }}</label>
+			</div>
+			<label></label>
+			<div class="field no-stretch">
+				<label class="check">
+					<input
+						type="checkbox"
+						name="weapon.rate_of_fire.mode1.fullAutoOnly"
+						data-dtype="Boolean"
+						{{
+						checked
+						item.rate_of_fire.mode1.fullAutoOnly
+						}}
+					/>
+					{{ localize "gurps.weapon.full_auto_only" }}
+				</label>
+				<label class="check">
+					<input
+						type="checkbox"
+						name="weapon.rate_of_fire.mode1.highCyclicControlledBursts"
+						data-dtype="Boolean"
+						{{
+						checked
+						item.rate_of_fire.mode1.highCyclicControlledBursts
+						}}
+					/>
+					{{ localize "gurps.weapon.high_cyclic_controlled_bursts" }}
+				</label>
+			</div>
+			<label></label>
+			<div class="field no-stretch">
+				<label>{{ localize "gurps.weapon.mode_2" }}</label>
+				<input
+					type="text"
+					name="weapon.rate_of_fire.mode2.shotsPerAttack"
+					value="{{ item.rate_of_fire.mode2.shotsPerAttack }}"
+					data-dtype="Number"
+				/>
+				<label>{{ localize "gurps.weapon.shots_per_attack" }}</label>
+				<input
+					type="text"
+					name="weapon.rate_of_fire.mode2.secondaryProjectiles"
+					value="{{ item.rate_of_fire.mode2.secondaryProjectiles }}"
+					data-dtype="Number"
+				/>
+				<label>{{ localize "gurps.weapon.secondary_projectiles" }}</label>
+			</div>
+			<label></label>
+			<div class="field no-stretch">
+				<label class="check">
+					<input
+						type="checkbox"
+						name="weapon.rate_of_fire.mode2.fullAutoOnly"
+						data-dtype="Boolean"
+						{{
+						checked
+						item.rate_of_fire.mode2.fullAutoOnly
+						}}
+					/>
+					{{ localize "gurps.weapon.full_auto_only" }}
+				</label>
+				<label class="check">
+					<input
+						type="checkbox"
+						name="weapon.rate_of_fire.mode2.highCyclicControlledBursts"
+						data-dtype="Boolean"
+						{{
+						checked
+						item.rate_of_fire.mode2.highCyclicControlledBursts
+						}}
+					/>
+					{{ localize "gurps.weapon.high_cyclic_controlled_bursts" }}
+				</label>
+			</div>
+			<label>{{ localize "gurps.weapon.shots" }}</label>
+			<div class="field no-stretch">
+				<input
+					type="text"
+					name="weapon.shots.count"
+					value="{{ item.shots.count }}"
+					data-dtype="Number"
+					{{
+					disabled
+					item.shots.thrown
+					}}
+				/>
+				<label>{{ localize "gurps.weapon.in_chamber" }}</label>
+				<input
+					type="text"
+					name="weapon.shots.inChamber"
+					value="{{ item.shots.inChamber }}"
+					data-dtype="Number"
+					{{
+					disabled
+					item.shots.thrown
+					}}
+				/>
+				<label>{{ localize "gurps.weapon.duration" }}</label>
+				<input
+					type="text"
+					name="weapon.shots.duration"
+					value="{{ item.shots.duration }}"
+					data-dtype="Number"
+					{{
+					disabled
+					item.shots.thrown
+					}}
+				/>
+			</div>
+			<label></label>
+			<div class="field no-stretch">
+				<label>{{ localize "gurps.weapon.reload_time" }}</label>
+				<input
+					type="text"
+					name="weapon.shots.reloadTime"
+					value="{{ item.shots.reloadTime }}"
+					data-dtype="Number"
+				/>
+				<label class="check">
+					<input
+						type="checkbox"
+						name="weapon.shots.reloadTimeIsPerShot"
+						data-dtype="Boolean"
+						{{
+						checked
+						item.shots.reloadTimeIsPerShot
+						}}
+					/>
+					{{ localize "gurps.weapon.reload_time_is_per_shot" }}
+				</label>
+				<label class="check">
+					<input
+						type="checkbox"
+						name="weapon.shots.thrown"
+						data-dtype="Boolean"
+						{{
+						checked
+						item.shots.thrown
+						}}
+					/>
+					{{ localize "gurps.weapon.thrown" }}
+				</label>
+			</div>
+			<label>{{ localize "gurps.weapon.bulk" }}</label>
+			<div class="field no-stretch">
+				<input type="text" name="weapon.bulk.normal" value="{{ item.bulk.normal }}" data-dtype="Number" />
+				<label>{{ localize "gurps.weapon.bulk_giant" }}</label>
+				<input type="text" name="weapon.bulk.giant" value="{{ item.bulk.giant }}" data-dtype="Number" />
+				<label class="check">
+					<input
+						type="checkbox"
+						name="weapon.bulk.retractingStock"
+						data-dtype="Boolean"
+						{{
+						checked
+						item.bulk.retractingStock
+						}}
+					/>
+					{{ localize "gurps.weapon.retracting_stock" }}
+				</label>
+			</div>
+			<label>{{ localize "gurps.weapon.recoil" }}</label>
+			<div class="field no-stretch">
+				<input type="text" name="weapon.recoil.shot" value="{{ item.recoil.shot }}" data-dtype="Number" />
+				<label>{{ localize "gurps.weapon.slug" }}</label>
+				<input type="text" name="weapon.recoil.slug" value="{{ item.recoil.slug }}" data-dtype="Number" />
+			</div>
+			<label>{{ localize "gurps.weapon.strength" }}</label>
+			<div class="field no-stretch">
+				<input type="text" name="weapon.strength.min" value="{{ item.strength.min }}" data-dtype="Number" />
+				<label class="check">
+					<input
+						type="checkbox"
+						name="weapon.strength.twoHanded"
+						data-dtype="Boolean"
+						{{
+						checked
+						item.strength.twoHanded
+						}}
+					/>
+					{{ localize "gurps.weapon.two_handed" }}
+				</label>
+				<label class="check">
+					<input
+						type="checkbox"
+						name="weapon.strength.twoHandedUnready"
+						data-dtype="Boolean"
+						{{
+						checked
+						item.strength.twoHandedUnready
+						}}
+					/>
+					{{ localize "gurps.weapon.two_handed_unready" }}
+				</label>
+			</div>
+			<label></label>
+			<div class="field no-stretch">
+				<label class="check">
+					<input
+						type="checkbox"
+						name="weapon.strength.bipod"
+						data-dtype="Boolean"
+						{{
+						checked
+						item.strength.bipod
+						}}
+					/>
+					{{ localize "gurps.weapon.bipod" }}
+				</label>
+				<label class="check">
+					<input
+						type="checkbox"
+						name="weapon.strength.mounted"
+						data-dtype="Boolean"
+						{{
+						checked
+						item.strength.mounted
+						}}
+					/>
+					{{ localize "gurps.weapon.mounted" }}
+				</label>
+				<label class="check">
+					<input
+						type="checkbox"
+						name="weapon.strength.musketRest"
+						data-dtype="Boolean"
+						{{
+						checked
+						item.strength.musketRest
+						}}
+					/>
+					{{ localize "gurps.weapon.musket_rest" }}
+				</label>
+			</div>
+		</div>
+		{{>item/partials/defaults attributes=attributes sysPrefix=sysPrefix}}
+	</div>
+</form>

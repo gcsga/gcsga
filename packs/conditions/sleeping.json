@@ -1,0 +1,27 @@
+{
+    "_id": "acohQ7J2NWHRVMAY",
+    "img": "systems/gcsga/assets/status/sleeping.webp",
+    "name": "Sleeping",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "sleeping",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "type": "condition"
+    },
+    "type": "condition"
+}

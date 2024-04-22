@@ -3,7 +3,28 @@
 /* This is your Sass entry file */
 /* ---------------------------- */
 
-@import "fonts", "actor", "ui", "packs", "item", "scene", "settings", "system", "variables", "app";
+@import // GCS font and emojis
+	"fonts",
+	// Useful functions
+	"mixins",
+	// Character sheets
+	"actor",
+	// Foundry system stylings
+	"ui",
+	// Compendium browser
+	"packs",
+	// Item sheets
+	"item",
+	// Scene and scene-object sheets
+	"scene",
+	// GURPS settings apps
+	"settings",
+	// GURPS system apps
+	"system",
+	// Various constants
+	"variables",
+	// TODO: replace with system
+	"app";
 
 #drag-ghost {
 	position: absolute;
@@ -14,7 +35,6 @@
 	width: min-content;
 	display: grid;
 	grid-auto-flow: column;
-	// grid-template-columns: min-content;
 	padding: 4px 15px;
 	gap: 4px;
 	border: 1px solid rgb(var(--color-on-selection));
@@ -94,13 +114,12 @@
 		color: rgb(var(--color-on-control)); // Redundant?
 		font: inherit;
 		width: 14px;
+		max-width: 14px;
 		height: 14px;
 		border: 1px solid rgb(var(--color-control-edge));
 		border-radius: 4px;
-		display: grid;
-		place-content: center;
+		display: flex;
 		filter: none;
-		translate: 0 0;
 
 		&:focus,
 		&:focus-visible {
@@ -126,50 +145,28 @@
 	}
 
 	.field {
-		display: grid;
-		grid-auto-flow: dense column;
+		display: flex;
 		align-items: start;
-		column-gap: 9px;
+		gap: 9px;
+		flex: 1;
 
 		&.no-stretch {
 			width: max-content;
-		}
-
-		&.check label.checkbox-label {
-			translate: 0 -4px;
 		}
 
 		input[type="number"] {
 			width: 60px;
 		}
 
-		.checkbox-label {
-			display: grid;
-			grid-template-columns: 1em auto;
+		label.check {
+			// display: grid;
+			// grid-template-columns: 1em auto;
 			gap: 3px;
 			height: 16px;
 			grid-row-gap: 0px;
 			white-space: nowrap;
-			translate: 0 0;
-		}
-
-		// .checkbox-label + .checkbox-label {
-		// 	margin-top: 1em;
-		// }
-	}
-
-	.table {
-		> div.header {
 			font: var(--font-label);
-		}
-
-		> div:not(.header) {
-			font: var(--font-field);
-		}
-
-		> div.filler,
-		> div:not(.header) {
-			min-height: 18px;
+			font-size: var(--font-size-14);
 		}
 	}
 
@@ -290,10 +287,16 @@
 .gurps,
 .window-app.gurps {
 	// Header
-	background-image: linear-gradient(rgba(var(--color-focused-tab), 1), rgba(var(--color-focused-tab), 1));
-	color: rgba(var(--color-on-focused-tab), 1);
-	border: 1px solid rgba(var(--color-header), 1);
-	font: var(--font-system);
+	header.window-header {
+		background-image: linear-gradient(rgba(var(--color-focused-tab), 1), rgba(var(--color-focused-tab), 1));
+		color: rgba(var(--color-on-focused-tab), 1);
+		border: none;
+		font: var(--font-system);
+		flex: 0 0 30px;
+		overflow: hidden;
+		padding: 0 8px;
+		line-height: 30px;
+	}
 
 	.window-title {
 		font: inherit;
@@ -505,15 +508,12 @@
 		}
 
 		&[readonly] {
-			// background-color: rgb(var(--color-background));
 			background-color: transparent;
 			color: rgb(var(--color-on-background));
 			pointer-events: none;
 		}
 
 		&:disabled {
-			// background-color: rgb(var(--color-background));
-			/* color: rgba(var(--color-on-editable), 0); // Invisible Text */
 			pointer-events: none;
 		}
 
@@ -532,18 +532,14 @@
 		height: 24px;
 	}
 
-	.checkbox-label {
+	label.check {
 		display: grid;
 		grid-auto-flow: column;
 		grid-gap: 5px;
 		justify-content: left;
 	}
 
-	/* .checkbox-label + .checkbox-label { */
-	/* 	margin-top: 1em; */
-	/* } */
-
-	.header {
+	header {
 		grid-area: auto;
 		padding: var(--padding-header);
 		background-color: rgb(var(--color-header));
@@ -593,20 +589,14 @@ nav.nav-tabs {
 	width: max-content;
 	max-width: 600px;
 	padding: 6px 8px;
-	// background: rgba(0, 0, 0, 0.95);
 	background: rgb(var(--color-tooltip));
 	font-family: var(--font-primary);
 	font-size: var(--font-size-12);
 	line-height: var(--font-size-12);
-	// color: var(--color-text-light-highlight);
 	color: rgb(var(--color-on-tooltip));
-	// border: 1px solid var(--color-border-dark-secondary);
 	border: 1px solid rgb(var(--color-control-edge));
-	// border-radius: 3px;
 	border-radius: 0;
 	box-shadow: none;
-	// box-shadow: 0 0 4px #000;
 	visibility: hidden;
 	text-align: left !important;
-	// white-space: pre;
 }

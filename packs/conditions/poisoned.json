@@ -1,0 +1,27 @@
+{
+    "_id": "k0z9Pyer4mpLpgRU",
+    "img": "systems/gcsga/assets/status/poisoned.webp",
+    "name": "Poisoned",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "poisoned",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "type": "condition"
+    },
+    "type": "condition"
+}

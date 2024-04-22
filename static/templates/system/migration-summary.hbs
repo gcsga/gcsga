@@ -1,0 +1,62 @@
+<div class="container">
+	{{#if options.troubleshoot}}
+	<h3>{{ localize "gurps.migrations.summary.troubleshoot.hint" version=systemVersion }}</h3>
+	{{ else }}
+	<h3>{{ localize "gurps.migrations.finished" version=systemVersion }}</h3>
+	{{/if}}
+	<div class="dialog-content">
+		<table>
+			<thead>
+				<tr>
+					<th>{{ localize "gurps.migrations.summary.documents" }}</th>
+					<th>
+						{{ localize "gurps.migrations.summary.migrated" }} / {{ localize
+						"gurps.migrations.summary.total" }}
+					</th>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>{{ localize "gurps.actor.plural" }}</td>
+					<td>
+						<span class="docs-successful">{{ actors.successful }}</span>
+						/ {{ actors.total }}
+					</td>
+					<td>
+						{{#if (eq actors.successful actors.total)}}
+						<i class="fa-solid fa-check"></i>
+						{{ else }}
+						<i class="fa-solid fa-times"></i>
+						{{/if}}
+					</td>
+				</tr>
+				<tr>
+					<td>{{ localize "gurps.item.plural" }}</td>
+					<td>
+						<span class="docs-successful">{{ items.successful }}</span>
+						/ {{ items.total }}
+					</td>
+					<td>
+						{{#if (eq items.successful items.total)}}
+						<i class="fa-solid fa-check"></i>
+						{{ else }}
+						<i class="fa-solid fa-times"></i>
+						{{/if}}
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	{{#if helpResources}}
+	<p class="help-resources">{{{ helpResourcesText }}}</p>
+	{{/if}}
+	<div class="dialog-buttons">
+		<button type="button" data-action="close">{{ localize "gurps.ok" }}</button>
+		{{#if canRemigrate}}
+		<button type="button" data-action="remigrate" {{ disabled helpResources }}>
+			{{ localize "gurps.migrations.summary.remigrate" }}
+		</button>
+		{{/if}}
+	</div>
+</div>

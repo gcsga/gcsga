@@ -1,0 +1,28 @@
+{
+    "_id": "i2zt5LX2NfL1pVDA",
+    "img": "systems/gcsga/assets/status/mental-stun.webp",
+    "name": "Mental Stun",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "mental-stun",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "reference": "B420",
+        "type": "condition"
+    },
+    "type": "condition"
+}

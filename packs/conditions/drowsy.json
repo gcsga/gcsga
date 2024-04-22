@@ -1,0 +1,28 @@
+{
+    "_id": "rlvLF5L32jhZsBS1",
+    "img": "systems/gcsga/assets/status/drowsy.webp",
+    "name": "Drowsy",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "drowsy",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "reference": "B428",
+        "type": "condition"
+    },
+    "type": "condition"
+}

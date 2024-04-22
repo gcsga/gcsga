@@ -1,0 +1,35 @@
+<li data-type="{{ item.type }}" data-item-id="{{ item.id }}" {{#if isContainer}} data-is-container {{/if}}>
+    <div class="data">
+        <div
+            class="item-name"
+            data-disabled="{{ not item.enabled }}"
+            data-tooltip-direction="DOWN"
+            data-tooltip="{{ item.resolvedTooltip }}"
+            {{{ indent indent }}}
+            >
+            {{{ dropdown item }}}
+            <span class="name">
+                {{ item.formattedName }}
+                {{#if (and isContainer (ne item.system.container_type "group"))}}
+                    <span class="container-type">
+                        {{ localize (concat "gurps.character.traits.container_type." item.system.container_type) }}
+                    </span>
+                {{/if}}
+            </span>
+            {{{ item.resolvedNotes }}}
+        </div>
+        <span class="points">{{ item.adjustedPoints }}</span>
+        {{#if @root.compendium}}
+            <span class="tags">{{ join item.tags ", " }}</span>
+        {{/if}}
+        <div class="reference">{{{ ref item.reference }}}</div>
+    </div>
+    <div class="item-summary" hidden="hidden"></div>
+    {{#if item.system.open}}
+        <ul class="items" data-item-list data-container-id="{{ item.id }}">
+            {{#each children}}
+                {{>common/trait inContainer=true}}
+            {{/each}}
+        </ul>
+    {{/if}}
+</li>

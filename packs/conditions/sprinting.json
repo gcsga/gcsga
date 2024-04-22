@@ -1,0 +1,28 @@
+{
+    "_id": "LauNfJB3jprejgAa",
+    "img": "systems/gcsga/assets/status/sprinting.webp",
+    "name": "Sprinting",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "sprinting",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "reference": "B354",
+        "type": "condition"
+    },
+    "type": "condition"
+}

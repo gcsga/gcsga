@@ -11,11 +11,11 @@ export class Weight {
 		text = text.trim().replace(/^\++/, "")
 		for (const unit of allWeightUnits) {
 			if (text.endsWith(unit)) {
-				const value = Int.fromString(text)
+				const value = Int.fromString(text)[0]
 				return Weight.toPounds(value, unit)
 			}
 		}
-		const value = Int.fromString(text)
+		const value = Int.fromString(text)[0]
 		return Weight.toPounds(value, defUnits)
 	}
 

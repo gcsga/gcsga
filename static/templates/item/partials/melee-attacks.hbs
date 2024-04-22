@@ -1,0 +1,31 @@
+{{#with @root.itemCollections.melee_weapons as |section|}}
+<div id="melee-attacks">
+	<header>
+		<span class="item-name">{{ localize "gurps.weapon.melee_header" }}</span>
+		<span class="level">{{ localize "gurps.character.melee.level" }}</span>
+		<span class="parry">{{ localize "gurps.character.melee.parry" }}</span>
+		<span class="block">{{ localize "gurps.character.melee.block" }}</span>
+		<span class="damage">{{ localize "gurps.character.melee.damage" }}</span>
+		<span class="reach">{{ localize "gurps.character.melee.reach" }}</span>
+		<span class="strength">{{ localize "gurps.character.melee.st" }}</span>
+	</header>
+	<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
+		{{#each section.items}}
+		<li data-item-id="{{ item.id }}">
+			<div class="data">
+				<div class="item-name">
+					<div class="name">{{ item.formattedName }}</div>
+					{{{ item.resolvedNotes }}}
+				</div>
+				<div class="level">{{ item.level }}</div>
+				<div class="parry rollable">{{ item.parry.current }}</div>
+				<div class="block rollable">{{ item.block.current }}</div>
+				<div class="damage rollable">{{ item.fastResolvedDamage }}</div>
+				<div class="reach">{{ item.reach.current }}</div>
+				<div class="strength">{{ item.strength.current }}</div>
+			</div>
+		</li>
+		{{/each}}
+	</ul>
+</div>
+{{/with}}

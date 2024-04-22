@@ -1,0 +1,28 @@
+{
+    "_id": "bAtWXhCp6P6FNG2L",
+    "img": "systems/gcsga/assets/status/comatose.webp",
+    "name": "Comatose",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "comatose",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "reference": "B429",
+        "type": "condition"
+    },
+    "type": "condition"
+}

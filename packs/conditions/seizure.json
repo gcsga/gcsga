@@ -1,0 +1,28 @@
+{
+    "_id": "BhFAEeP6NFAGXetp",
+    "img": "systems/gcsga/assets/status/seizure.webp",
+    "name": "Seizure",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "seizure",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "reference": "B429",
+        "type": "condition"
+    },
+    "type": "condition"
+}

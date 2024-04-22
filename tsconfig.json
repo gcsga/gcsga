@@ -26,33 +26,25 @@
 		"useDefineForClassFields": true,
 		"noErrorTruncation": true,
 		"paths": {
-			"@assets/*": ["static/assets/*"],
-			"@data": ["src/module/data/index.ts"],
-			"@data/*": ["src/module/data/*"],
 			"@actor": ["src/module/actor/index.ts"],
 			"@actor/*": ["src/module/actor/*"],
 			"@item": ["src/module/item/index.ts"],
 			"@item/*": ["src/module/item/*"],
-			"@feature": ["src/module/system/feature/index.ts"],
-			"@feature/*": ["src/module/system/feature/*"],
-			"@prereq": ["src/module/system/prereq/index.ts"],
-			"@prereq/*": ["src/module/system/prereq/*"],
 			"@scene": ["src/module/scene/index.ts"],
 			"@scene/*": ["src/module/scene/*"],
 			"@system": ["src/module/system/index.ts"],
-			"@sytem/*": ["src/module/system/*"],
-			"@ui": ["src/module/ui/index.ts"],
-			"@ui/*": ["src/module/ui/*"],
+			"@system/*": ["src/module/system/*"],
 			"@module/*": ["src/module/*"],
 			"@scripts/*": ["src/scripts/*"],
 			"@util": ["src/util/index.ts"],
 			"@util/*": ["src/util/*"],
+			"@data": ["src/module/data/index.ts"],
 			"@lang/*": ["static/lang/*"]
 		},
-		"types": ["jest", "jquery", "node"],
+		"types": ["jest", "jquery", "node", "tooltipster"],
 		"typeRoots": ["node_modules/@types", "types/foundry"]
 	},
 	"watchOptions": {
-		"excludeDirectories": []
+		"excludeDirectories": ["packs/", "static/packs/"]
 	}
 }

@@ -1,4 +1,4 @@
-import { ActorGURPS } from "@actor/base.ts"
+import { ActorGURPS } from "@actor"
 
 export class MockToken {
 	actor: ActorGURPS | null

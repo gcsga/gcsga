@@ -1,0 +1,28 @@
+{
+    "_id": "Cp9oES9tHR6IY6ya",
+    "img": "systems/gcsga/assets/status/pain.webp",
+    "name": "Pain",
+    "system": {
+        "can_level": true,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "pain",
+        "levels": {
+            "current": 0,
+            "max": 12
+        },
+        "modifiers": [],
+        "overlay": false,
+        "reference": "B428",
+        "type": "condition"
+    },
+    "type": "condition"
+}
