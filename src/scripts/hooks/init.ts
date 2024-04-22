@@ -5,6 +5,7 @@ import { CompendiumDirectoryGURPS } from "@module/apps/sidebar/compendium-direct
 import { ItemDirectoryGURPS } from "@module/apps/sidebar/item-directory.ts"
 import { RulerGURPS } from "@module/canvas/ruler/document.ts"
 import { TokenGURPS } from "@module/canvas/token/index.ts"
+import * as SpeedProviderGURPS from "@module/modules/drag-ruler.ts"
 import { RollGURPS } from "@module/roll/index.ts"
 import { GURPSCONFIG } from "@scripts/config/index.ts"
 import { registerHandlebarsHelpers } from "@scripts/handlebars.ts"
@@ -56,7 +57,7 @@ export const Init = {
 
 			CONFIG.Dice.rolls.unshift(RollGURPS)
 
-			// SpeedProviderGURPS.init()
+			SpeedProviderGURPS.init()
 
 			registerFonts()
 			registerHandlebarsHelpers()
