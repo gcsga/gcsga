@@ -1,11 +1,15 @@
 import { ItemSheetDataGURPS, ItemSheetGURPS, ItemSheetOptions } from "@item/base/sheet.ts"
 import { AbstractContainerGURPS } from "./document.ts"
-import { DnD, ErrorGURPS, LocalizeGURPS, htmlClosest, htmlQueryAll, objectHasKey } from "@util"
-import { ItemFlags, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
+import { DnD, ErrorGURPS, LocalizeGURPS, applyBanding, htmlClosest, htmlQuery, htmlQueryAll, objectHasKey } from "@util"
+import { ItemFlags, ItemType, SORTABLE_BASE_OPTIONS, SYSTEM_NAME } from "@module/data/constants.ts"
 import { createDragImage } from "@util/drag-image.ts"
 import { ItemGURPS } from "@item"
 import { ItemSourceGURPS } from "@item/data/index.ts"
 import { SheetItem, SheetItemCollection } from "@item/helpers.ts"
+import Sortable from "sortablejs"
+import { isContainerCycle } from "./helpers.ts"
+import { ItemItemSections, itemItemSections } from "./item-collection-map.ts"
+import { ActorGURPS } from "@actor"
 
 class AbstractContainerSheetGURPS<TItem extends AbstractContainerGURPS> extends ItemSheetGURPS<TItem> {
 	static override get defaultOptions(): ItemSheetOptions {
@@ -56,8 +60,31 @@ class AbstractContainerSheetGURPS<TItem extends AbstractContainerGURPS> extends 
 				if (!item) throw ErrorGURPS(`Invalid double-click operation: No item found with ID: "${itemId}"`)
 				item.sheet.render(true)
 			})
+
+			htmlQuery(entry, ".enabled")?.addEventListener("click", ev => {
+				ev.stopPropagation()
+				const itemId = entry.dataset.itemId
+				if (!itemId) throw ErrorGURPS("Invalid double-click operation: No item ID found")
+				const item = this.item.deepContents.get(itemId)
+				if (!item) throw ErrorGURPS(`Invalid double-click operation: No item found with ID: "${itemId}"`)
+				if (!item.isOfType(ItemType.TraitModifier, ItemType.EquipmentModifier))
+					throw ErrorGURPS(`Item is not a modifier.`)
+				item.update({ "system.disabled": !item.system.disabled })
+			})
+
+			htmlQuery(entry, ".dropdown")?.addEventListener("click", ev => {
+				ev.stopPropagation()
+				const itemId = entry.dataset.itemId
+				if (!itemId) throw ErrorGURPS("Invalid double-click operation: No item ID found")
+				const item = this.item.deepContents.get(itemId)
+				if (!item) throw ErrorGURPS(`Invalid double-click operation: No item found with ID: "${itemId}"`)
+				if (!item.isOfType(ItemType.TraitModifierContainer, ItemType.EquipmentModifierContainer))
+					throw ErrorGURPS(`Item is not a container.`)
+				item.update({ "system.open": !item.system.open })
+			})
 		}
 
+		this.#activateItemDragDrop(html)
 		this.#activateContextMenu(html)
 		this._applyBanding()
 	}
@@ -76,6 +103,26 @@ class AbstractContainerSheetGURPS<TItem extends AbstractContainerGURPS> extends 
 					item.style.color = "rgb(var(--color-on-banding))"
 				}
 			}
+		}
+	}
+
+	#activateItemDragDrop(html: HTMLElement): void {
+		for (const list of htmlQueryAll(html, "ul[data-item-list]")) {
+			const options: Sortable.Options = {
+				...SORTABLE_BASE_OPTIONS,
+				scroll: list,
+				setData: (dataTransfer, dragEl) => {
+					const item = this.item.deepContents.get(dragEl.dataset.itemId, { strict: true })
+					dataTransfer.setData(DnD.TEXT_PLAIN, JSON.stringify(item.toDragData()))
+				},
+				onMove: event => this.#onMoveItem(event),
+				onEnd: async event => {
+					await this.#onDropItem(event)
+					applyBanding(this.element[0])
+				},
+			}
+
+			new Sortable(list, options)
 		}
 	}
 
@@ -102,7 +149,7 @@ class AbstractContainerSheetGURPS<TItem extends AbstractContainerGURPS> extends 
 		for (const itemRow of htmlQueryAll(html, "li[data-item-id]")) {
 			const itemId = itemRow.dataset.itemId
 			if (!itemId) throw ErrorGURPS("Invalid dropdown operation: No item ID found")
-			const item = this.item.contents.get(itemId)
+			const item = this.item.deepContents.get(itemId)
 			if (!item) throw ErrorGURPS(`Invalid dropdown operation: No item found with ID: "${itemId}"`)
 			ContextMenu.create(this, $(itemRow), "*", item.getContextMenuItems())
 		}
@@ -134,6 +181,121 @@ class AbstractContainerSheetGURPS<TItem extends AbstractContainerGURPS> extends 
 		}
 	}
 
+	#onMoveItem(event: Sortable.MoveEvent): boolean {
+		const isSeparateSheet = htmlClosest(event.target, "form") !== htmlClosest(event.related, "form")
+		if (!this.isEditable || isSeparateSheet) return false
+
+		// Item being dragged
+		const sourceItem = this.item.deepContents.get(event.dragged?.dataset.itemId, { strict: true })
+
+		// Remove container highlights
+		for (const row of htmlQueryAll(this.form, "li[data-is-container]")) {
+			row.classList.remove("drop-highlight")
+		}
+
+		// Grab section (traits, equipment, other equipment) item is being dragged into
+		const targetSection = htmlClosest(event.related, "ul[data-item-types]")?.dataset.itemTypes?.split(",") ?? []
+		if (targetSection.length === 0) return false
+
+		const targetItemRow = htmlClosest(event.related, "li[data-item-id]")
+		const targetItem = this.item.deepContents.get(targetItemRow?.dataset.itemId ?? "")
+		const targetContainer = targetItem?.container
+		if (targetContainer) {
+			const targetContainerRow = htmlClosest(targetItemRow, "li[data-is-container]")
+			if (isContainerCycle(sourceItem, targetContainer)) return false
+			if (targetContainerRow) {
+				targetContainerRow.classList.add("drop-highlight")
+			}
+		}
+
+		// Do not allow dragging if item cannot go into this section
+		if (targetSection.includes(sourceItem.type)) return true
+		return false
+	}
+
+	async #onDropItem(event: Sortable.SortableEvent & { originalEvent?: DragEvent }): Promise<void> {
+		const isSeparateSheet = htmlClosest(event.target, "form") !== htmlClosest(event.originalEvent?.target, "form")
+		if (!this.isEditable || isSeparateSheet) return
+
+		const containerRowData = htmlQueryAll(this.form, "li[data-is-container] > .data")
+		for (const row of containerRowData) {
+			row.classList.remove("drop-highlight")
+		}
+
+		const targetSection =
+			htmlClosest(event.originalEvent?.target, "ul[data-item-section]")?.dataset.itemSection ?? ""
+		const isItemSection = (type: unknown): type is ItemItemSections => {
+			return typeof type === "string" && itemItemSections.some(e => e === type)
+		}
+
+		if (!isItemSection(targetSection)) return
+
+		// const sourceCollection = this.item.itemCollections.findCollection(event.item.dataset.itemId ?? "")
+		const targetCollection = this.item.itemCollections[targetSection] as Collection<ItemGURPS>
+		const sourceItem = this.item.deepContents.get(event.item.dataset.itemId, { strict: true })
+		const itemsInList = htmlQueryAll(htmlClosest(event.item, "ul"), ":scope > li").map(li =>
+			li.dataset.itemId === sourceItem.id
+				? sourceItem
+				: targetCollection.get(li.dataset.itemId, { strict: true }),
+		)
+
+		// There are two collections which can store items
+		// This changes the flag which decides where the item is displayed
+		// May have to make this more generic and improve at some point
+		const otherUpdates: Record<string, unknown> = {}
+
+		const targetItemId = htmlClosest(event.originalEvent?.target, "li[data-item-id]")?.dataset.itemId ?? ""
+		const targetItem = this.item.deepContents.get(targetItemId)
+
+		const containerElem = htmlClosest(event.item, "ul[data-container-id]")
+		const containerId = containerElem?.dataset.containerId ?? ""
+		const container = targetItem?.isOfType("container") ? targetItem : this.item.deepContents.get(containerId)
+		if (container && !container.isOfType("container")) {
+			throw ErrorGURPS("Unexpected non-container retrieved while sorting items")
+		}
+
+		if (container && isContainerCycle(sourceItem, container)) {
+			this.render()
+			return
+		}
+
+		const sourceIndex = itemsInList.indexOf(sourceItem)
+		const targetBefore = itemsInList[sourceIndex - 1]
+		const targetAfter = itemsInList[sourceIndex + 1]
+		const siblings = [...itemsInList]
+		siblings.splice(siblings.indexOf(sourceItem), 1)
+		type SortingUpdate = {
+			_id: string
+			sort?: number
+			[key: string]: unknown
+		}
+		const sortingUpdates: SortingUpdate[] = SortingHelpers.performIntegerSort(sourceItem, {
+			siblings,
+			target: targetBefore ?? targetAfter,
+			sortBefore: !targetBefore,
+		}).map(u => ({
+			_id: u.target.id,
+			[`flags.${SYSTEM_NAME}.${ItemFlags.Container}`]: container?.id ?? this.item.id,
+			sort: u.update.sort,
+		}))
+		if (!sortingUpdates.some(u => u._id === sourceItem.id)) {
+			sortingUpdates.push({
+				_id: sourceItem.id,
+				[`flags.${SYSTEM_NAME}.${ItemFlags.Container}`]: container?.id ?? this.item.id,
+				...otherUpdates,
+			})
+		} else {
+			const index = sortingUpdates.findIndex(u => u._id === sourceItem.id)
+			sortingUpdates[index] = {
+				...sortingUpdates[index],
+				...otherUpdates,
+			}
+		}
+
+		// TODO: make sure this works
+		await this.item.updateEmbeddedDocuments("Item", sortingUpdates)
+	}
+
 	override async getData(options?: Partial<ItemSheetOptions>): Promise<AbstractContainerSheetData<TItem>> {
 		const sheetData = await super.getData(options)
 		return {
@@ -145,22 +307,22 @@ class AbstractContainerSheetGURPS<TItem extends AbstractContainerGURPS> extends 
 	protected _prepareItemCollections(): Record<string, SheetItemCollection> {
 		const collections = {
 			trait_modifiers: {
-				name: "trait_modifiers",
+				name: "traitModifiers",
 				items: this._prepareItemCollection(this.item.itemCollections.traitModifiers),
 				types: [ItemType.TraitModifier, ItemType.TraitModifierContainer],
 			},
 			equipment_modifiers: {
-				name: "equipment_modifiers",
+				name: "equipmentModifiers",
 				items: this._prepareItemCollection(this.item.itemCollections.equipmentModifiers),
 				types: [ItemType.EquipmentModifier, ItemType.EquipmentModifierContainer],
 			},
 			melee_weapons: {
-				name: "melee_weapons",
+				name: "meleeWeapons",
 				items: this._prepareItemCollection(this.item.itemCollections.meleeWeapons),
 				types: [ItemType.MeleeWeapon],
 			},
 			ranged_weapons: {
-				name: "ranged_weapons",
+				name: "rangedWeapons",
 				items: this._prepareItemCollection(this.item.itemCollections.rangedWeapons),
 				types: [ItemType.RangedWeapon],
 			},
@@ -262,6 +424,16 @@ class AbstractContainerSheetGURPS<TItem extends AbstractContainerGURPS> extends 
 			console.error("Dropped item is invalid")
 			return []
 		}
+
+		if (
+			item.parents
+				.filter(e => e instanceof ItemGURPS)
+				.map(e => (e as ActorGURPS | AbstractContainerGURPS).uuid)
+				.includes(this.item.uuid)
+		)
+			// Drops from the same actor are handled by Sortable
+			return []
+
 		const itemData = item.toObject()
 
 		// Handle item sorting within the same item

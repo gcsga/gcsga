@@ -36,6 +36,7 @@ enum SETTINGS {
 	MODIFIER_LIST_COLLAPSE = "modifier_list_collapse",
 	BASE_BOOKS = "base_books",
 	AUTOMATIC_UNREADY = "automatic_unready",
+	WORLD_SYSTEM_VERSION = "world_system_version",
 	WORLD_SCHEMA_VERSION = "world_schema_version",
 	MANEUVER_DETAIL = "maneuver_detail",
 }
@@ -78,14 +79,14 @@ enum ItemType {
 	Spell = "spell",
 	RitualMagicSpell = "ritual_magic_spell",
 	SpellContainer = "spell_container",
-	// Equipment = "equipment_gcs",
-	Equipment = "equipment",
+	Equipment = "equipment_gcs",
+	// Equipment = "equipment",
 	EquipmentContainer = "equipment_container",
 	EquipmentModifier = "eqp_modifier",
 	EquipmentModifierContainer = "eqp_modifier_container",
 	Note = "note",
 	NoteContainer = "note_container",
-	// LegacyItem = "equipment",
+	LegacyItem = "equipment",
 	Effect = "effect",
 	Condition = "condition",
 	MeleeWeapon = "melee_weapon",
@@ -109,7 +110,7 @@ type ItemTypes =
 	| ItemType.EquipmentModifierContainer
 	| ItemType.Note
 	| ItemType.NoteContainer
-	// | ItemType.LegacyItem
+	| ItemType.LegacyItem
 	| ItemType.Effect
 	| ItemType.Condition
 	| ItemType.MeleeWeapon
@@ -264,10 +265,10 @@ enum ManeuverID {
 
 // Actor
 enum ActorType {
-	Character = "character",
-	// Character = "character_gcs",
-	// LegacyCharacter = "character",
-	// LegacyEnemy = "enemy",
+	// Character = "character",
+	Character = "character_gcs",
+	LegacyCharacter = "character",
+	LegacyEnemy = "enemy",
 	Loot = "loot",
 	// MassCombatElement = "element",
 	// Vehicle = "vehicle",

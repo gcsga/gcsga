@@ -28,6 +28,7 @@ import { JournalEntryPageGURPS } from "@module/journal-entry/page/document.ts"
 import { UserGURPS } from "@module/user/document.ts"
 import { SceneGURPS, TokenDocumentGURPS } from "@scene"
 import { GURPSCONFIG } from "@scripts/config/index.ts"
+import { remigrate } from "@scripts/system/remigrate.ts"
 import { AttributeDefObj, MoveTypeDefObj, ResourceTrackerDefObj } from "@system"
 import { ConditionManager } from "@system/condition-manager.ts"
 import { HitLocationObj } from "@system/hit-location/data.ts"
@@ -53,6 +54,9 @@ interface GameGURPS
 		Dice: typeof DiceGURPS
 		ConditionManager: typeof ConditionManager
 		ManeuverManager: typeof ManeuverManager
+		system: {
+			remigrate: typeof remigrate
+		}
 	}
 }
 
@@ -154,6 +158,8 @@ declare global {
 		get(module: "gcsga", setting: "roll_formula"): string
 		get(module: "gcsga", setting: "world_schema_version"): number
 		get(module: "gcsga", setting: "maneuver_visiblity"): MANEUVER_DETAIL_SETTING
+		get(module: "gcsga", setting: "world_schema_version"): number
+		get(module: "gcsga", setting: "world_system_version"): string
 	}
 
 	interface ClientSettingsMap {

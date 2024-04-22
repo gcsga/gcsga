@@ -1,7 +1,8 @@
 {
 	"TYPES": {
 		"Actor": {
-			"character": "Character",
+			"character": "Character (Legacy)",
+			"character_gcs": "Character",
 			"enemy": "Enemy (Legacy)",
 			"loot": "Loot"
 		},
@@ -16,7 +17,8 @@
 			"spell": "Spell",
 			"ritual_magic_spell": "Ritual Magic Spell",
 			"spell_container": "Spell Container",
-			"equipment": "Equipment",
+			"equipment": "Equipment (Legacy)",
+			"equipment_gcs": "Equipment",
 			"equipment_container": "Equipment Container",
 			"eqp_modifier": "Equipment Modifier",
 			"eqp_modifier_container": "Equipment Modifier Container",
@@ -29,6 +31,10 @@
 		}
 	},
 	"gurps": {
+		"ok": "OK",
+		"actor": {
+			"plural": "Actors"
+		},
 		"attribute": {
 			"sm": "Size Modifier",
 			"dodge": "Dodge",
@@ -617,6 +623,7 @@
 			}
 		},
 		"item": {
+			"plural": "Items",
 			"img": "Image",
 			"name": "Name",
 			"enabled": "Enabled",
@@ -1340,6 +1347,10 @@
 						"general": "General"
 					}
 				}
+			},
+			"world_schema_version": {
+				"name": "World Schema Version",
+				"hint": "Records the schema version for documents in the GURPS system (don't modify this unless you know what you are doing)."
 			}
 		},
 		"error": {
@@ -2107,25 +2118,25 @@
 			"title": "Apply Damage"
 		},
 		"migrations": {
-			"finished": "GURPs Game Aid system migration to version {version} completed!",
-			"onlygmcanuse": "only a gamemaster can use this tool.",
-			"outsideschemarange": "the specified range is outside the system's schema version range (between {minimum} and {maximum}).",
-			"running": "running system migration ...",
+			"finished": "GURPS Game Aid system migration to version {version} completed!",
+			"onlygmcanuse": "Only a gamemaster can use this tool.",
+			"outsideschemarange": "The specified range is outside the system's schema version range (between {minimum} and {maximum}).",
+			"running": "Running system migration ...",
 			"starting": "applying GURPS system migration to version {version}. please be patient and do not close your game or shut down your server.",
 			"summary": {
-				"documents": "documents",
-				"helpresources": "an unexpected error was encountered while migrating some actors or items. if you would like further assistance, feel free to report an issue at the <a href=\"https://github.com/gcsga/gcsga/issues\">system repository</a> or visit us on <a href=\"https://discord.gg/hWHbuvF\">discord</a> for community support.",
-				"migrated": "migrated",
-				"remigrate": "remigrate",
-				"title": "migration summary",
-				"total": "total",
+				"documents": "Documents",
+				"helpresources": "An unexpected error was encountered while migrating some actors or items. if you would like further assistance, feel free to report an issue at the <a href=\"https://github.com/gcsga/gcsga/issues\">system repository</a> or visit us on <a href=\"https://discord.gg/hWHbuvF\">discord</a> for community support.",
+				"migrated": "Migrated",
+				"remigrate": "Remigrate",
+				"title": "Migration Summary",
+				"total": "Total",
 				"troubleshoot": {
-					"hint": "here you can run a remigration, which will attempt to automatically fix issues with actors and items.",
-					"title": "system troubleshooting"
+					"hint": "Here you can run a remigration, which will attempt to automatically fix issues with actors and items.",
+					"title": "System Troubleshooting"
 				}
 			},
-			"troubleshooting": "troubleshooting",
-			"worldnotready": "game world not ready: try again in a few seconds."
+			"troubleshooting": "Troubleshooting",
+			"worldnotready": "Game world not ready: try again in a few seconds."
 		}
 	}
 }

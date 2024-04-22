@@ -1,7 +1,7 @@
 <div id="modifier-bucket-window" class="gurps">
 	<div class="column">
 		<div id="melee" class="section">
-			<div class="header">{{localize "gurps.system.modifier_bucket.melee"}}</div>
+			<header>{{localize "gurps.system.modifier_bucket.melee"}}</header>
 			<div class="content">
 				{{#each meleeMods}}
 				{{>modifier-bucket/modifier}}
@@ -9,7 +9,7 @@
 			</div>
 		</div>
 		<div id="ranged" class="section">
-			<div class="header">{{localize "gurps.system.modifier_bucket.ranged"}}</div>
+			<header>{{localize "gurps.system.modifier_bucket.ranged"}}</header>
 			<div class="content">
 				{{#each rangedMods}}
 				{{>modifier-bucket/modifier}}
@@ -17,7 +17,7 @@
 			</div>
 		</div>
 		<div id="defense" class="section">
-			<div class="header">{{localize "gurps.system.modifier_bucket.defense"}}</div>
+			<header>{{localize "gurps.system.modifier_bucket.defense"}}</header>
 			<div class="content">
 				{{#each defenseMods}}
 				{{>modifier-bucket/modifier}}
@@ -27,7 +27,7 @@
 	</div>
 	<div class="column">
 		<div id="categories" class="section">
-			<div class="header">{{localize "gurps.system.modifier_bucket.categories"}}</div>
+			<header>{{localize "gurps.system.modifier_bucket.categories"}}</header>
 			<div class="content" style="gap: 0;">
 				{{#each commonMods}}
 				{{>modifier-bucket/collapsible}}
@@ -35,7 +35,7 @@
 			</div>
 		</div>
 		<div id="send-modifiers" class="section">
-			<div class="header">{{localize "gurps.system.modifier_bucket.send"}}</div>
+			<header>{{localize "gurps.system.modifier_bucket.send"}}</header>
 			<div class="content">
 				{{#each players}}
 				{{>modifier-bucket/player}}
@@ -43,7 +43,7 @@
 			</div>
 		</div>
 		<div id="custom" class="section">
-			<div class="header">{{localize "gurps.system.modifier_bucket.custom"}}</div>
+			<header>{{localize "gurps.system.modifier_bucket.custom"}}</header>
 			<div class="content">
 				<div class="generic">
 					{{#each genericMods}}
@@ -56,7 +56,7 @@
 	</div>
 	<div class="column">
 		<div id="stacks" class="section">
-			<div class="header">{{localize "gurps.system.modifier_bucket.saved_stacks"}}</div>
+			<header>{{localize "gurps.system.modifier_bucket.saved_stacks"}}</header>
 			<div class="content" style="gap: 0;" autocomplete="off">
 				<button id="save-current">
 					<i class="fas fa-save"></i>

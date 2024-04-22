@@ -1,16 +1,23 @@
 import { CharacterGURPS } from "@actor"
 import { ActorSheetDataGURPS, ActorSheetGURPS } from "@actor/base/sheet.ts"
 import { ItemGURPS } from "@item"
-import { AbstractAttribute } from "@system"
-import { ItemFlags, ItemType, ManeuverID, SYSTEM_NAME } from "@module/data/constants.ts"
-import { LocalizeGURPS, Weight, htmlQuery } from "@util"
+import { AbstractAttribute, PoolThreshold } from "@system"
+import { ActorFlags, ItemFlags, ItemType, ManeuverID, SYSTEM_NAME } from "@module/data/constants.ts"
+import { LocalizeGURPS, Weight, htmlQuery, htmlQueryAll } from "@util"
 import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
 import { CharacterEncumbrance } from "./encumbrance.ts"
 import { CharacterConfigSheet } from "./config.ts"
 import { SheetItem, SheetItemCollection } from "@item/helpers.ts"
 import { CharacterMove } from "./data.ts"
 
+enum SheetModes {
+	PLAY = 1,
+	EDIT = 2,
+}
+
 class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS<TActor> {
+	private _mode: SheetModes = SheetModes.PLAY
+
 	static override get defaultOptions(): ActorSheetOptions {
 		const data = fu.mergeObject(super.defaultOptions, {
 			width: 800,
@@ -31,6 +38,44 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS
 			if (value === "none") return this.actor.setManeuver(null)
 			return this.actor.setManeuver(value)
 		})
+
+		htmlQuery(html, '[data-action="toggle-damage"]')?.addEventListener("click", () => {
+			const value = this.actor.flags[SYSTEM_NAME][ActorFlags.AutoDamage]
+			value.active = !value.active
+			value.thrust = this.actor.thrust
+			value.swing = this.actor.swing
+			this.actor.setFlag(SYSTEM_NAME, ActorFlags.AutoDamage, value)
+		})
+
+		htmlQuery(html, '[data-action="toggle-encumbrance"]')?.addEventListener("click", () => {
+			const value = this.actor.flags[SYSTEM_NAME][ActorFlags.AutoEncumbrance]
+			value.active = !value.active
+			value.manual = this.actor.encumbrance.current.level
+			this.actor.setFlag(SYSTEM_NAME, ActorFlags.AutoEncumbrance, value)
+		})
+
+		htmlQuery(html, '[data-action="toggle-thresholds"]')?.addEventListener("click", () => {
+			const value = this.actor.flags[SYSTEM_NAME][ActorFlags.AutoThreshold]
+			value.active = !value.active
+			value.manual = Array.from(this.actor.attributes.values()).reduce(
+				(acc: Record<string, PoolThreshold | null>, att) => {
+					if (!att.isPool) return acc
+					acc[att.id] = att.currentThreshold
+					return acc
+				},
+				{},
+			)
+			this.actor.setFlag(SYSTEM_NAME, ActorFlags.AutoThreshold, value)
+		})
+
+		for (const marker of htmlQueryAll(html, ".encumbrance-marker.manual")) {
+			marker.addEventListener("click", () => {
+				const level = parseInt(marker.dataset.level ?? "")
+				const value = this.actor.flags[SYSTEM_NAME][ActorFlags.AutoEncumbrance]
+				value.manual = level
+				this.actor.setFlag(SYSTEM_NAME, ActorFlags.AutoEncumbrance, value)
+			})
+		}
 	}
 
 	override get template(): string {
@@ -70,6 +115,7 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS
 			carriedWeight: Weight.format(actor.weightCarried(false), sheetSettingsFor(actor).default_weight_units),
 			uncarriedValue: actor.wealthNotCarried(),
 			encumbrance: actor.encumbrance,
+			editMode: this._mode === SheetModes.EDIT,
 		}
 	}
 
@@ -163,8 +209,24 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS
 		}).render(true)
 	}
 
+	async _onChangeMode(event: Event): Promise<void> {
+		event.preventDefault()
+		const toggle = event.currentTarget as HTMLLinkElement
+		htmlQuery(toggle, "i")?.classList.toggle("fa-unlock")
+		htmlQuery(toggle, "i")?.classList.toggle("fa-lock")
+		this._mode = this._mode === SheetModes.PLAY ? SheetModes.EDIT : SheetModes.PLAY
+		await this.submit()
+		this.render()
+	}
+
 	protected override _getHeaderButtons(): ApplicationHeaderButton[] {
 		const buttons = super._getHeaderButtons()
+		const lockButton: ApplicationHeaderButton = {
+			label: "",
+			class: "edit-toggle",
+			icon: `fas fa-${this._mode === SheetModes.EDIT ? "unlock" : "lock"}`,
+			onclick: ev => this._onChangeMode(ev),
+		}
 		const configButton: ApplicationHeaderButton = {
 			label: LocalizeGURPS.translations.gurps.system.configure_character,
 			class: "configure-character",
@@ -176,7 +238,7 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS
 			1,
 			configButton,
 		)
-		return buttons
+		return [lockButton, ...buttons]
 	}
 }
 
@@ -192,6 +254,7 @@ interface CharacterSheetData<TActor extends CharacterGURPS = CharacterGURPS> ext
 	carriedWeight: string
 	uncarriedValue: number
 	encumbrance: CharacterEncumbrance<TActor>
+	editMode: boolean
 }
 
 export { CharacterSheetGURPS }

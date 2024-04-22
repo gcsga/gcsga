@@ -1,6 +1,6 @@
 {
 	"Actor": {
-		"types": ["character", "loot"]
+		"types": ["character_gcs", "loot", "character"]
 	},
 	"Item": {
 		"types": [
@@ -14,7 +14,7 @@
 			"spell",
 			"ritual_magic_spell",
 			"spell_container",
-			"equipment",
+			"equipment_gcs",
 			"equipment_container",
 			"eqp_modifier",
 			"eqp_modifier_container",
@@ -23,7 +23,8 @@
 			"melee_weapon",
 			"ranged_weapon",
 			"effect",
-			"condition"
+			"condition",
+			"equipment"
 		]
 	}
 }

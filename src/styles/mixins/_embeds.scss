@@ -4,6 +4,8 @@
 		display: grid;
 		background-color: rgb(var(--color-header));
 		color: rgb(var(--color-on-header));
+		justify-content: normal;
+		padding: 0;
 
 		// text inside of header
 		> span {
@@ -19,6 +21,12 @@
 			color: inherit;
 			padding: 0;
 		}
+	}
+
+	.dropdown {
+		background-color: transparent;
+		font-size: var(--font-size-10);
+		margin-top: 3px;
 	}
 
 	// All item lists including recursive lists for containers

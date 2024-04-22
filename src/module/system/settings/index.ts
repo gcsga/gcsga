@@ -7,9 +7,12 @@ import { HitLocationSettings } from "./hit-locations.ts"
 import { DefaultSheetSettings } from "./sheet-settings.ts"
 import { RollModifierSettings } from "./roll-modifiers.ts"
 import { MoveSettings } from "./move-type.ts"
+import { MigrationRunner } from "@module/migration/index.ts"
 
 export function registerSettings(): void {
-	// Register any custom system settings here
+	if (BUILD_MODE === "development") {
+		registerWorldSchemaVersion()
+	}
 
 	game.settings.registerMenu(SYSTEM_NAME, SETTINGS.COLORS, {
 		name: "gurps.settings.colors.name",
@@ -290,5 +293,34 @@ export function registerSettings(): void {
 		onChange: value => {
 			console.log(`${SETTINGS.MANEUVER_DETAIL}: ${value}`)
 		},
+	})
+
+	registerTrackingSettings()
+
+	if (BUILD_MODE === "production") {
+		registerWorldSchemaVersion()
+	}
+}
+
+/** Registers temporary settings for tracking things like first time launches*/
+function registerTrackingSettings(): void {
+	game.settings.register(SYSTEM_NAME, SETTINGS.WORLD_SYSTEM_VERSION, {
+		name: "World System Version",
+		scope: "world",
+		config: false,
+		default: game.system.version,
+		type: String,
+	})
+}
+
+function registerWorldSchemaVersion(): void {
+	game.settings.register(SYSTEM_NAME, SETTINGS.WORLD_SCHEMA_VERSION, {
+		name: "gurps.settings.world_schema_version.name",
+		hint: "gurps.settings.world_schema_version.hint",
+		scope: "world",
+		config: true,
+		default: MigrationRunner.LATEST_SCHEMA_VERSION,
+		type: Number,
+		requiresReload: true,
 	})
 }

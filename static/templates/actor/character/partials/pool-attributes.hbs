@@ -1,67 +1,62 @@
 <div id="pool-attributes">
-	<div class="header">{{localize "gurps.character.point_pools"}}
-		{{#if settings.auto_threshold.active}}
+	<header>
+		{{ localize "gurps.character.point_pools" }} {{#if settings.auto_threshold.active}}
 		<a
-			class="threshold-toggle fas fa-toggle-on"
-			data-tooltip="{{localize 'gurps.tooltip.auto_threshold'}}"
+			class="fas fa-toggle-on"
+			data-tooltip="{{ localize 'gurps.tooltip.auto_threshold' }}"
 			data-tooltip-direction="DOWN"
+			data-action="toggle-thresholds"
 		></a>
-		{{else}}
+		{{ else }}
 		<a
-			class="threshold-toggle fas fa-toggle-off"
-			data-tooltip="{{localize 'gurps.tooltip.auto_threshold'}}"
+			class="fas fa-toggle-off"
+			data-tooltip="{{ localize 'gurps.tooltip.auto_threshold' }}"
 			data-tooltip-direction="DOWN"
+			data-action="toggle-thresholds"
 		></a>
 		{{/if}}
-	</div>
+	</header>
 	<div class="fieldblock7">
-		{{#each attributes.poolAttributes}}
-			{{#if (eq this.definition.type "pool_separator")}}
-				<div class="separator_parent">
-					<div class="separator" data-text="{{this.definition.name}}">{{this.definition.name}}</div>
-				</div>
-			{{else}}
-			{{#if ../editing}}
-			<i class="menu fas fa-ellipsis-vertical" data-id="{{this.id}}"></i>
-			{{else}}
-			<div style="padding: 0;"></div>
-			{{/if}}
-				<div class="points">[{{this.points}}]</div>
-				<div class="field">
-					<input
-						type="text"
-						name="attributes.{{this.id}}.damage"
-						value="{{this.current}}"
-						data-dtype="Number"
-					/>
-				</div>
-				<label>{{localize "gurps.character.pool_of"}}</label>
-				<div class="field">
-					<input
-						type="text"
-						name="attributes.{{this.id}}.adj"
-						value="{{this.max}}"
-						data-dtype="Number"
-						{{disabled (not ../editing)}}
-					/>
-				</div>
-				<label>{{this.definition.name}}</label>
-				{{#if ../settings.auto_threshold.active}}
-				<div class="label" data-tooltip="{{{this.currentThreshold.explanation}}}" data-tooltip-direction="DOWN">
-					{{#if this.currentThreshold.state}}
-						[{{this.currentThreshold.state}}]
-					{{/if}}
-				</div>
-				{{else}}
-				<select class="threshold-select" data-name="{{this.id}}">
-					{{#select this._manualThreshold.state}}
-						{{#each this.definition.thresholds}}
-						<option value="{{this.state}}">[{{this.state}}]</option>
-						{{/each}}
-					{{/select}}
-				</select>
-				{{/if}}
-			{{/if}}
-		{{/each}}
+		{{#each attributes.poolAttributes}} {{#if (eq this.definition.type "pool_separator")}}
+		<div class="separator_parent">
+			<div class="separator" data-text="{{ this.definition.name }}">{{ this.definition.name }}</div>
+		</div>
+		{{ else }} {{#if @root.editMode}}
+		<i class="menu fas fa-ellipsis-vertical" data-id="{{ this.id }}"></i>
+		{{ else }}
+		<div style="padding: 0"></div>
+		{{/if}}
+		<div class="points">[{{ this.points }}]</div>
+		<div class="field">
+			<input type="text" name="attributes.{{ this.id }}.damage" value="{{ this.current }}" data-dtype="Number" />
+		</div>
+		<label>{{ localize "gurps.character.pool_of" }}</label>
+		{{#if @root.editMode}}
+		<div data-id="{{ this.id }}" data-type="attribute" class="field">
+			<input
+				name="attributes.{{ this.id }}.adj"
+				type="text"
+				data-dtype="Number"
+				value="{{ this.effective }}"
+				type="text"
+			/>
+		</div>
+		{{ else }}
+		<div data-id="{{ this.id }}" data-type="attribute" class="field {{ effective this }}">
+			<input class="input number" value="{{ this.effective }}" disabled />
+		</div>
+		{{/if}}
+		<label>{{ this.definition.name }}</label>
+		{{#if ../settings.auto_threshold.active}}
+		<div class="label" data-tooltip="{{{ this.currentThreshold.explanation }}}" data-tooltip-direction="DOWN">
+			{{#if this.currentThreshold.state}} [{{ this.currentThreshold.state }}] {{/if}}
+		</div>
+		{{ else }}
+		<select class="threshold-select" data-name="{{ this.id }}">
+			{{#select this._manualThreshold.state}} {{#each this.definition.thresholds}}
+			<option value="{{ this.state }}">[{{ this.state }}]</option>
+			{{/each}} {{/select}}
+		</select>
+		{{/if}} {{/if}} {{/each}}
 	</div>
 </div>

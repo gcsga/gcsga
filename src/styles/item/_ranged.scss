@@ -4,7 +4,7 @@
 	display: grid;
 	grid-template-columns: 1fr repeat(9, auto);
 
-	.header {
+	header {
 		grid-area: auto;
 		padding: var(--padding-header);
 		background-color: rgb(var(--color-header));
@@ -24,7 +24,7 @@
 			padding: var(--padding-header);
 		}
 
-		&.header {
+		&header {
 			border-bottom: none;
 		}
 
@@ -48,7 +48,7 @@
 	.bulk:nth-child(20n + 8),
 	.recoil:nth-child(20n + 9),
 	.st:nth-child(20n + 10) {
-		&:not(.header) {
+		&:not(header) {
 			background-color: rgb(var(--color-banding));
 			color: rgb(var(--color-on-banding));
 		}

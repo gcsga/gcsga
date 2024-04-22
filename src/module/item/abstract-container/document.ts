@@ -132,6 +132,24 @@ abstract class AbstractContainerGURPS<
 		return ItemProxyGURPS.createDocuments(data)
 	}
 
+	override updateEmbeddedDocuments(
+		embeddedName: string,
+		updateData: EmbeddedDocumentUpdateData[],
+		context?: DocumentUpdateContext<this> | undefined,
+	): Promise<Document<_Document | null, DataSchema>[]> {
+		if (embeddedName !== "Item") return super.createEmbeddedDocuments(embeddedName, updateData, context)
+
+		if (this.parent) {
+			return this.parent.updateEmbeddedDocuments(embeddedName, updateData)
+		}
+
+		if (this.compendium) {
+			return ItemProxyGURPS.updateDocuments(updateData, { pack: this.pack })
+		}
+
+		return Item.updateDocuments(updateData)
+	}
+
 	// async deleteContainedDocuments(
 	// 	ids: string[],
 	// 	context?: DocumentModificationContext<NonNullable<TParent>>,

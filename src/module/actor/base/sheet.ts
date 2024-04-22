@@ -1,7 +1,7 @@
 import { AbstractContainerGURPS, ItemGURPS } from "@item"
 import { ActorGURPS } from "./document.ts"
 import { DamagePayload, DropData, DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
-import { DnD, ErrorGURPS, applyBanding, htmlClosest, htmlQueryAll } from "@util"
+import { DnD, ErrorGURPS, applyBanding, htmlClosest, htmlQuery, htmlQueryAll } from "@util"
 import {
 	ActorType,
 	ItemFlags,
@@ -11,13 +11,13 @@ import {
 	SYSTEM_NAME,
 	gid,
 } from "@module/data/constants.ts"
-import { ItemSections, itemSections } from "./item-collection-map.ts"
+import { ActorItemSections, actorItemSections } from "./item-collection-map.ts"
 import Sortable from "sortablejs"
 import { isContainerCycle } from "@item/abstract-container/helpers.ts"
 import { ItemSourceGURPS } from "@item/data/index.ts"
 import { RollTypeData } from "@module/roll/roll-handler.ts"
 import { RollGURPS } from "@module/roll/index.ts"
-import { evaluateToNumber } from "@module/util/index.ts"
+import { PDF, evaluateToNumber } from "@module/util/index.ts"
 import { AttributeGURPS } from "@system"
 import { CharacterGURPS } from "@actor"
 
@@ -78,10 +78,26 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 				if (!item) throw ErrorGURPS(`Invalid double-click operation: No item found with ID: "${itemId}"`)
 				item.sheet.render(true)
 			})
+
+			htmlQuery(entry, ".equipped")?.addEventListener("click", ev => {
+				ev.stopPropagation()
+				const itemId = entry.dataset.itemId
+				if (!itemId) throw ErrorGURPS("Invalid double-click operation: No item ID found")
+				const item = this.actor.items.get(itemId)
+				if (!item) throw ErrorGURPS(`Invalid double-click operation: No item found with ID: "${itemId}"`)
+				if (!item.isOfType(ItemType.Equipment, ItemType.EquipmentContainer))
+					throw ErrorGURPS(`Invalid double-click operation: Item is not equipment`)
+				return item.update({ "system.equipped": !item.system.equipped })
+			})
+		}
+
+		for (const reference of htmlQueryAll(html, ".ref")) {
+			reference.addEventListener("click", ev => PDF.handle(ev))
 		}
 
 		for (const button of htmlQueryAll(html, "div.rollable")) {
 			button.addEventListener("click", ev => this.#onClickRoll(ev, button))
+			button.addEventListener("contextmenu", ev => this.#onClickRoll(ev, button))
 		}
 
 		this.#activateItemDragDrop(html)
@@ -91,13 +107,10 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 
 	async #onClickRoll(event: MouseEvent, button: HTMLElement): Promise<void> {
 		event.preventDefault()
+		event.stopImmediatePropagation()
 		const type = button.dataset.type as RollType
-		const data: Partial<RollTypeData> = { type, hidden: event.ctrlKey }
+		const data: Partial<RollTypeData> = { type, hidden: event.ctrlKey, user: game.user.id, actor: this.actor.id }
 		if (!this.actor.isOfType(ActorType.Character)) return
-		if (data.type === RollType.Location) {
-			data.user = game.user.id
-			data.actor = this.actor.id
-		}
 		if (data.type === RollType.Attribute) {
 			const id = button.dataset.id ?? ""
 			if (id === gid.Dodge) {
@@ -144,6 +157,7 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 		if (data.type === RollType.Modifier) {
 			data.user = game.user.id
 			data.modifier = evaluateToNumber(button.dataset.modifier ?? "", this.actor)
+			if (event.type === "contextmenu") data.modifier = -data.modifier
 			data.name = button.dataset.comment ?? ""
 		}
 		return RollGURPS.handleRoll(game.user, this.actor, data as RollTypeData)
@@ -161,7 +175,7 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 				onMove: event => this.#onMoveItem(event),
 				onEnd: async event => {
 					await this.#onDropItem(event)
-					applyBanding(this.element[0])
+					applyBanding(html)
 				},
 			}
 
@@ -222,8 +236,8 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 
 		const targetSection =
 			htmlClosest(event.originalEvent?.target, "ul[data-item-section]")?.dataset.itemSection ?? ""
-		const isItemSection = (type: unknown): type is ItemSections => {
-			return typeof type === "string" && itemSections.some(e => e === type)
+		const isItemSection = (type: unknown): type is ActorItemSections => {
+			return typeof type === "string" && actorItemSections.some(e => e === type)
 		}
 		if (!isItemSection(targetSection)) return
 

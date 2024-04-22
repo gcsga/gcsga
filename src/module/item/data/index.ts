@@ -4,6 +4,7 @@ import type { EquipmentContainerSource } from "@item/equipment-container/data.ts
 import type { EquipmentModifierContainerSource } from "@item/equipment-modifier-container/data.ts"
 import type { EquipmentModifierSource } from "@item/equipment-modifier/data.ts"
 import type { EquipmentSource } from "@item/equipment/data.ts"
+import { LegacyItemSource } from "@item/legacy/data.ts"
 // import { LegacyItemSource } from "@item/legacy/data.ts"
 import type { MeleeWeaponSource } from "@item/melee-weapon/data.ts"
 import type { NoteContainerSource } from "@item/note-container/data.ts"
@@ -41,7 +42,7 @@ type ItemSourceGURPS =
 	| RangedWeaponSource
 	| EffectSource
 	| ConditionSource
-// | LegacyItemSource
+	| LegacyItemSource
 
 type ContainerSource =
 	| TraitSource

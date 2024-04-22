@@ -208,8 +208,8 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 			pack?: Collection<ItemGURPS<null>> | null
 		} & Partial<FormApplicationOptions> = {},
 	): Promise<Item<ActorGURPS | null> | null> {
-		const omittedTypes: ItemType[] = []
-		if (BUILD_MODE === "production") omittedTypes.push(ItemType.Condition)
+		const omittedTypes: ItemType[] = [ItemType.LegacyItem, ItemType.Condition]
+		if (BUILD_MODE === "production") omittedTypes.push()
 
 		// Create the dialog, temporarily changing the list of allowed items
 		const original = game.system.documentTypes.Item

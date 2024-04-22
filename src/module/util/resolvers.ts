@@ -57,8 +57,8 @@ interface PrereqResolver extends EquipmentHolder, VariableResolver {
 		spells: Collection<SpellGURPS | RitualMagicSpellGURPS | SpellContainerGURPS>
 		equipment: Collection<EquipmentGURPS | EquipmentContainerGURPS>
 	}
-	resolveAttributeCurrent: (attr_id: string) => number
-	resolveAttributeName: (attr_id: string) => string
+	resolveAttributeCurrent: (id: string) => number
+	resolveAttributeName: (id: string) => string
 }
 
 interface AttributeResolver extends VariableResolver {
@@ -99,8 +99,8 @@ interface ResourceTrackerResolver extends VariableResolver {
 }
 
 interface SkillDefaultResolver extends VariableResolver {
-	resolveAttributeCurrent: (attr_id: string) => number
-	resolveAttributeName: (attr_id: string) => string
+	resolveAttributeCurrent: (id: string) => number
+	resolveAttributeName: (id: string) => string
 	skillNamed: (
 		name: string,
 		specialization: string,

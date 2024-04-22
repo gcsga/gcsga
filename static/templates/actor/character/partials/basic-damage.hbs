@@ -1,53 +1,66 @@
 <div id="basic-damage">
-	<div class="header">
-		{{localize "gurps.character.basic_damage"}} {{#if settings.auto_damage.active}}
+	<header>
+		{{ localize "gurps.character.basic_damage" }} {{#if settings.auto_damage.active}}
 		<a
-			class="damage-toggle fas fa-toggle-on"
-			data-tooltip="{{localize 'gurps.tooltip.auto_damage'}}"
+			class="fas fa-toggle-on"
+			data-tooltip="{{ localize 'gurps.tooltip.auto_damage' }}"
 			data-tooltip-direction="DOWN"
+			data-action="toggle-damage"
 		></a>
-		{{else}}
+		{{ else }}
 		<a
-			class="damage-toggle fas fa-toggle-off"
-			data-tooltip="{{localize 'gurps.tooltip.auto_damage'}}"
+			class="fas fa-toggle-off"
+			data-tooltip="{{ localize 'gurps.tooltip.auto_damage' }}"
 			data-tooltip-direction="DOWN"
+			data-action="toggle-damage"
 		></a>
 		{{/if}}
-	</div>
+	</header>
 	<div class="fieldblock3" style="grid-template-columns: 0 0fr 1fr">
 		<div class="points" readonly stlye=""></div>
-		<div class="field rollable" data-type="damage" data-item-id="thrust">
+		{{#if @root.editMode}}
+		<div class="field">
 			<input
 				type="text"
 				name="thrust"
-				value="{{actor.thrust.string}}"
-				{{disabled
-				(or
-				settings.auto_damage.active
-				(not
-				editing))}}
-				style="min-width: {{length actor.thrust.string}}ch;"
+				value="{{ actor.thrust.string }}"
+				style="min-width: {{ length actor.thrust.string }}ch"
 				data-dtype="String"
 			/>
 		</div>
-		<label>{{localize "gurps.character.basic_thrust"}}</label>
+		{{ else }}
+		<div class="field rollable" data-type="damage" data-item-id="thrust">
+			<input
+				type="text"
+				value="{{ actor.thrust.string }}"
+				style="min-width: {{ length actor.thrust.string }}ch"
+				disabled
+			/>
+		</div>
+		{{/if}}
+		<label>{{ localize "gurps.character.basic_thrust" }}</label>
 		<div class="points" readonly></div>
-		<div class="field rollable" data-type="damage" data-item-id="swing">
+		{{#if @root.editMode}}
+		<div class="field">
 			<input
 				type="text"
 				name="swing"
-				value="{{actor.swing.string}}"
-				{{
-				disabled
-				(or
-				settings.auto_damage.active
-				(not
-				editing))
-				}}
-				style="min-width: {{length actor.swing.string}}ch;"
+				value="{{ actor.swing.string }}"
+				style="min-width: {{ length actor.swing.string }}ch"
 				data-dtype="String"
 			/>
 		</div>
-		<label>{{localize "gurps.character.basic_swing"}}</label>
+		{{ else }}
+		<div class="field rollable" data-type="damage" data-item-id="swing">
+			<input
+				type="text"
+				value="{{ actor.swing.string }}"
+				style="min-width: {{ length actor.swing.string }}ch"
+				type="text"
+				disabled
+			/>
+		</div>
+		{{/if}}
+		<label>{{ localize "gurps.character.basic_swing" }}</label>
 	</div>
 </div>

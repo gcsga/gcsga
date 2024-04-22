@@ -1,4 +1,10 @@
 @mixin rollables {
+	.rollable {
+		cursor: pointer;
+		input {
+			cursor: pointer;
+		}
+	}
 	.rollable[data-type="modifier"]:not(.noroll) {
 		background: var(--background-mod);
 		color: rgb(var(--color-on-button-mod));

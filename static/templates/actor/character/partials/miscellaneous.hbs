@@ -1,5 +1,5 @@
 <div id="miscellaneous">
-	<div class="header">{{localize "gurps.character.miscellaneous"}}</div>
+	<header>{{localize "gurps.character.miscellaneous"}}</header>
 	<div class="fieldblock">
 		<label>{{localize "gurps.character.created_date"}}</label>
 		<div class="field">
@@ -18,7 +18,7 @@
 				data-dtype="string"
 				{{disabled
 				(not
-				editing)}}
+				@root.editMode)}}
 			/>
 		</div>
 	</div>

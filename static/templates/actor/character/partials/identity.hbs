@@ -1,32 +1,42 @@
 <div id="identity">
-	<div class="header">{{localize "gurps.character.identity"}}</div>
+	<header>{{ localize "gurps.character.identity" }}</header>
 	<div class="fieldblock">
-		<label>{{localize "gurps.character.name"}}</label>
+		<label>{{ localize "gurps.character.name" }}</label>
 		<div class="field">
-			<input type="text" name="name" value="{{actor.name}}" data-dtype="String" {{disabled (not editing)}} />
+			<input
+				type="text"
+				name="name"
+				value="{{ actor.name }}"
+				data-dtype="String"
+				{{
+				disabled
+				(not
+				@root.editMode)
+				}}
+			/>
 		</div>
-		<label>{{localize "gurps.character.title"}}</label>
+		<label>{{ localize "gurps.character.title" }}</label>
 		<div class="field">
 			<input
 				type="text"
 				name="system.profile.title"
-				value="{{system.profile.title}}"
+				value="{{ system.profile.title }}"
 				data-dtype="String"
 				{{disabled
 				(not
-				editing)}}
+				@root.editMode)}}
 			/>
 		</div>
-		<label>{{localize "gurps.character.organization"}}</label>
+		<label>{{ localize "gurps.character.organization" }}</label>
 		<div class="field">
 			<input
 				type="text"
 				name="system.profile.organization"
-				value="{{system.profile.organization}}"
+				value="{{ system.profile.organization }}"
 				data-dtype="String"
 				{{disabled
 				(not
-				editing)}}
+				@root.editMode)}}
 			/>
 		</div>
 	</div>

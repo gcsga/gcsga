@@ -3,7 +3,7 @@
 	border: 1px solid rgb(var(--color-header));
 	display: grid;
 
-	> :not(.header) {
+	> :not(header) {
 		border-right: 1px solid rgb(var(--color-interior-divider));
 		border-bottom: 1px solid rgb(var(--color-interior-divider));
 	}

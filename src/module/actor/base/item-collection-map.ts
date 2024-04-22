@@ -5,8 +5,16 @@ import EmbeddedCollection from "types/foundry/common/abstract/embedded-collectio
 import type { ActorGURPS } from "./document.ts"
 import { ItemSourceGURPS } from "@item/data/index.ts"
 
-const itemSections = ["traits", "skills", "spells", "carriedEquipment", "otherEquipment", "notes", "effects"] as const
-type ItemSections = (typeof itemSections)[number]
+const actorItemSections = [
+	"traits",
+	"skills",
+	"spells",
+	"carriedEquipment",
+	"otherEquipment",
+	"notes",
+	"effects",
+] as const
+type ActorItemSections = (typeof actorItemSections)[number]
 
 class ActorItemCollectionMap<TActor extends ActorGURPS> {
 	traits: Collection<ItemInstance.TraitGURPS<TActor> | ItemInstance.TraitContainerGURPS<TActor>>
@@ -138,7 +146,7 @@ class ActorItemCollectionMap<TActor extends ActorGURPS> {
 		}
 	}
 
-	public getSectionName(data: ItemSourceGURPS): ItemSections | null {
+	public getSectionName(data: ItemSourceGURPS): ActorItemSections | null {
 		switch (data.type) {
 			case ItemType.Trait:
 			case ItemType.TraitContainer:
@@ -204,5 +212,5 @@ class ActorItemCollectionMap<TActor extends ActorGURPS> {
 	}
 }
 
-export { ActorItemCollectionMap, itemSections }
-export type { ItemSections }
+export { ActorItemCollectionMap, actorItemSections }
+export type { ActorItemSections }

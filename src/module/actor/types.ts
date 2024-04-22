@@ -7,6 +7,8 @@ import { TokenDocumentGURPS } from "@scene"
 interface ActorInstances<TParent extends TokenDocumentGURPS | null> {
 	[ActorType.Loot]: ActorInstance.LootGURPS<TParent>
 	[ActorType.Character]: ActorInstance.CharacterGURPS<TParent>
+	[ActorType.LegacyEnemy]: ActorInstance.LegacyCharacterGURPS<TParent>
+	[ActorType.LegacyCharacter]: ActorInstance.LegacyCharacterGURPS<TParent>
 }
 
 type EmbeddedItemInstances<TParent extends ActorGURPS> = {

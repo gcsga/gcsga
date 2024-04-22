@@ -19,7 +19,7 @@ interface ItemInstances<TParent extends ActorGURPS | null> {
 	[ItemType.EquipmentModifierContainer]: ItemInstance.EquipmentModifierContainerGURPS<TParent>
 	[ItemType.Note]: ItemInstance.NoteGURPS<TParent>
 	[ItemType.NoteContainer]: ItemInstance.NoteContainerGURPS<TParent>
-	// [ItemType.LegacyItem]: ItemInstance.LegacyItemGURPS<TParent>
+	[ItemType.LegacyItem]: ItemInstance.LegacyItemGURPS<TParent>
 	[ItemType.Effect]: ItemInstance.EffectGURPS<TParent>
 	[ItemType.Condition]: ItemInstance.ConditionGURPS<TParent>
 	[ItemType.MeleeWeapon]: ItemInstance.MeleeWeaponGURPS<TParent>

@@ -100,7 +100,7 @@ type ChatData = {
 	margin: string
 	rollMode: RollMode
 	formula: string
-	effective: string
+	effectiveText: string
 	tooltip: string
 }
 
@@ -132,10 +132,10 @@ abstract class RollTypeHandler<TData extends RollTypeData = RollTypeData> {
 
 	async getMessageData(data: TData): Promise<DeepPartial<foundry.documents.ChatMessageSource>> {
 		const roll = await Roll.create(this.getFormula(data)).evaluate({ async: true })
-		const level = this.getEffectiveLevel(data)
+		const level = this.getLevel(data)
+		const effectiveLevel = this.getEffectiveLevel(data)
 		const name = this.getName(data)
-		const success = this.getSuccess(data, roll.total)
-		const margin = this.getMargin(data, roll.total)
+		const margin = this.getMargin(data, effectiveLevel, roll.total)
 
 		const chatData: ChatData = {
 			type: data.type,
@@ -144,12 +144,12 @@ abstract class RollTypeHandler<TData extends RollTypeData = RollTypeData> {
 			displayName: LocalizeGURPS.format(this.displayNameLocalizationKey, { name, level }),
 			item: this.getItemData(data),
 			modifiers: this.getModifiers(data).map(e => this._applyModifierClasses(e)),
-			success,
-			total: `${roll.total!}: ${LocalizeGURPS.translations.gurps.roll.success[success]}`,
+			success: margin.success,
+			total: `${roll.total!}: ${LocalizeGURPS.translations.gurps.roll.success[margin.success]}`,
 			margin: margin.string,
 			rollMode: data.hidden ? CONST.DICE_ROLL_MODES.PRIVATE : game.settings.get("core", "rollMode"),
 			formula: this.getFormula(data),
-			effective: `<div class="effective">${LocalizeGURPS.format(this.effectiveLevelLabel, { level })}`,
+			effectiveText: `<div class='effective'>${LocalizeGURPS.format(this.effectiveLevelLabel, { level: effectiveLevel })}</div>`,
 			tooltip: await roll.getTooltip(),
 		}
 
@@ -209,13 +209,20 @@ abstract class RollTypeHandler<TData extends RollTypeData = RollTypeData> {
 		}
 	}
 
-	getSuccess(_data: TData, _rollTotal: number): RollSuccess {
-		return RollSuccess.Success
+	getSuccess(level: number, rollTotal: number): RollSuccess {
+		if (rollTotal === 18) return RollSuccess.CriticalFailure
+		if (rollTotal <= 4) return RollSuccess.CriticalSuccess
+		if (level >= 15 && rollTotal <= 5) return RollSuccess.CriticalSuccess
+		if (level >= 16 && rollTotal <= 6) return RollSuccess.CriticalSuccess
+		if (level <= 15 && rollTotal === 17) return RollSuccess.CriticalFailure
+		if (rollTotal - level >= 10) return RollSuccess.CriticalFailure
+		if (level >= rollTotal) return RollSuccess.Success
+		return RollSuccess.Failure
 	}
 
-	getMargin(data: TData, rollTotal: number): RollMargin {
-		const success = this.getSuccess(data, rollTotal)
-		const margin = Math.abs(this.getEffectiveLevel(data) - rollTotal)
+	getMargin(data: TData, level: number, rollTotal: number): RollMargin {
+		const success = this.getSuccess(level, rollTotal)
+		const margin = Math.abs(level - rollTotal)
 		const from = this.getName(data)
 		const marginMod: RollModifier = {
 			modifier: margin,
@@ -385,7 +392,10 @@ class AttackRollTypeHandler extends RollTypeHandler<AttackRollTypeData> {
 		if (data.item?.isOfType(ItemType.RangedWeapon)) {
 			const effectiveROF = this.getEffectiveROF(data.item)
 			const numberOfShots = Math.min(
-				Math.floor(this.getMargin(data, rollTotal).value / data.item.recoil.resolve(data.item).shot) + 1,
+				Math.floor(
+					this.getMargin(data, this.getEffectiveLevel(data), rollTotal).value /
+						data.item.recoil.resolve(data.item).shot,
+				) + 1,
 				effectiveROF,
 			)
 			if (numberOfShots > 1)

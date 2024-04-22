@@ -287,10 +287,16 @@
 .gurps,
 .window-app.gurps {
 	// Header
-	background-image: linear-gradient(rgba(var(--color-focused-tab), 1), rgba(var(--color-focused-tab), 1));
-	color: rgba(var(--color-on-focused-tab), 1);
-	border: 1px solid rgba(var(--color-header), 1);
-	font: var(--font-system);
+	header.window-header {
+		background-image: linear-gradient(rgba(var(--color-focused-tab), 1), rgba(var(--color-focused-tab), 1));
+		color: rgba(var(--color-on-focused-tab), 1);
+		border: none;
+		font: var(--font-system);
+		flex: 0 0 30px;
+		overflow: hidden;
+		padding: 0 8px;
+		line-height: 30px;
+	}
 
 	.window-title {
 		font: inherit;
@@ -533,7 +539,7 @@
 		justify-content: left;
 	}
 
-	.header {
+	header {
 		grid-area: auto;
 		padding: var(--padding-header);
 		background-color: rgb(var(--color-header));

@@ -1,5 +1,6 @@
-import { TokenDocumentGURPS } from "@scene/token-document/document.ts"
-import { ActorFlagsGURPS, ActorSystemData, PrototypeTokenGURPS } from "./data.ts"
+import type { ActorSourceGURPS } from "@actor/data.ts"
+import { DamageAttackerAdapter, DamageTargetActor, DamageWeaponAdapter } from "@actor/helpers.ts"
+import { ActorInstances, EmbeddedItemInstances } from "@actor/types.ts"
 import {
 	AbstractContainerGURPS,
 	AbstractEffectGURPS,
@@ -8,13 +9,22 @@ import {
 	EquipmentGURPS,
 	ItemGURPS,
 } from "@item"
-import type { ActorSheetGURPS } from "./sheet.ts"
-import type { ActorSourceGURPS } from "@actor/data.ts"
-import { ActiveEffectGURPS } from "@module/active-effect/index.ts"
 import { EquipmentContainerSource, EquipmentSource, ItemSourceGURPS } from "@item/data/index.ts"
 import { itemIsOfType } from "@item/helpers.ts"
-import { ErrorGURPS, LocalizeGURPS, TooltipGURPS, attribute, objectHasKey, stlimit } from "@util"
+import { getCRFeatures } from "@item/trait/data.ts"
+import { ActiveEffectGURPS } from "@module/active-effect/index.ts"
+import { ApplyDamageDialog } from "@module/apps/damage-calculator/apply-damage-dialog.ts"
+import { DamagePayload } from "@module/apps/damage-calculator/damage-chat-message.ts"
+import { DamageRollAdapter, DamageTarget } from "@module/apps/damage-calculator/index.ts"
+import { TokenGURPS } from "@module/canvas/index.ts"
+import { TokenEffect } from "@module/canvas/token/effect.ts"
 import { ActorFlags, ActorType, ConditionID, ItemFlags, ItemType, SYSTEM_NAME, gid } from "@module/data/constants.ts"
+import { SheetSettings, sheetSettingsFor } from "@module/data/sheet-settings.ts"
+import { RollModifier, TokenPool } from "@module/data/types.ts"
+import { Evaluator } from "@module/util/index.ts"
+import { LastActor } from "@module/util/last-actor.ts"
+import { SceneGURPS } from "@scene"
+import { TokenDocumentGURPS } from "@scene/token-document/document.ts"
 import {
 	AbstractAttribute,
 	AttributeBonus,
@@ -30,20 +40,11 @@ import {
 	SpellPointBonus,
 	WeaponBonus,
 } from "@system"
-import { ActorInstances, EmbeddedItemInstances } from "@actor/types.ts"
+import { ErrorGURPS, LocalizeGURPS, TooltipGURPS, attribute, objectHasKey, stlimit } from "@util"
+import * as R from "remeda"
+import { ActorFlagsGURPS, ActorSystemData, PrototypeTokenGURPS } from "./data.ts"
 import { ActorItemCollectionMap } from "./item-collection-map.ts"
-import { SheetSettings, sheetSettingsFor } from "@module/data/sheet-settings.ts"
-import { DamagePayload } from "@module/apps/damage-calculator/damage-chat-message.ts"
-import { DamageAttackerAdapter, DamageTargetActor, DamageWeaponAdapter } from "@actor/helpers.ts"
-import { DamageRollAdapter, DamageTarget } from "@module/apps/damage-calculator/index.ts"
-import { ApplyDamageDialog } from "@module/apps/damage-calculator/apply-damage-dialog.ts"
-import { getCRFeatures } from "@item/trait/data.ts"
-import { RollModifier, TokenPool } from "@module/data/types.ts"
-import { LastActor } from "@module/util/last-actor.ts"
-import { Evaluator } from "@module/util/index.ts"
-import { TokenGURPS } from "@module/canvas/index.ts"
-import { SceneGURPS } from "@scene"
-import { TokenEffect } from "@module/canvas/token/effect.ts"
+import type { ActorSheetGURPS } from "./sheet.ts"
 
 /**
  * Extend the base Actor class to implement additional logic specialized for GURPS.
@@ -154,8 +155,42 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 			src: ImageFilePath | VideoFilePath
 		}
 	} {
-		const img: ImageFilePath = `systems/${SYSTEM_NAME}/icons/default-icons/${actorData.type}.svg`
+		// TODO: replace
+		const type = actorData.type === ActorType.Loot ? "loot" : "character"
+		const img: ImageFilePath = `systems/${SYSTEM_NAME}/icons/default-icons/${type}.svg`
 		return { img, texture: { src: img } }
+	}
+
+	/** Don't allow the user to create a condition or spellcasting entry from the sidebar. */
+	static override createDialog<TDocument extends foundry.abstract.Document>(
+		this: ConstructorOf<TDocument>,
+		data?: Record<string, unknown>,
+		context?: {
+			parent?: TDocument["parent"]
+			pack?: Collection<TDocument> | null
+		} & Partial<FormApplicationOptions>,
+	): Promise<TDocument | null>
+	static override async createDialog(
+		data: { folder?: string } = {},
+		context: {
+			parent?: null
+			pack?: Collection<ActorGURPS<null>> | null
+		} & Partial<FormApplicationOptions> = {},
+	): Promise<ActorGURPS | null> {
+		const omittedTypes: ActorType[] = [ActorType.LegacyCharacter, ActorType.LegacyEnemy]
+		if (BUILD_MODE === "production") omittedTypes.push()
+
+		// Create the dialog, temporarily changing the list of allowed actors
+		const original = game.system.documentTypes.Actor
+		try {
+			game.system.documentTypes.Actor = R.difference(original, omittedTypes)
+			return super.createDialog<ActorGURPS>(data, {
+				...context,
+				classes: [...(context.classes ?? []), "dialog-actor-create"],
+			})
+		} finally {
+			game.system.documentTypes.Item = original
+		}
 	}
 
 	/** A means of checking this actor's type without risk of circular import references */

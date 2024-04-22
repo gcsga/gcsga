@@ -19,12 +19,6 @@ form {
 		background-color: rgb(var(--color-page));
 	}
 
-	.dropdown {
-		background-color: transparent;
-		font-size: var(--font-size-10);
-		margin-top: 3px;
-	}
-
 	background-color: rgb(var(--color-page));
 
 	// Sheet Layout
@@ -34,7 +28,7 @@ form {
 	gap: var(--section-gap);
 
 	// General Styles
-	.header {
+	header {
 		grid-area: header;
 		background-color: rgba(var(--color-header), 1);
 		color: rgba(var(--color-on-header), 1);

@@ -1,5 +1,5 @@
 <div id="apply-damage" autocomplete="off">
-	<div class="header">{{localize "gurps.dmgcalc.attacker"}}: {{calculator.attacker.name}}</div>
+	<header>{{localize "gurps.dmgcalc.attacker"}}: {{calculator.attacker.name}}</header>
 	<div class="fieldblock">
 		<label>{{localize "gurps.dmgcalc.weapon"}}</label>
 		<div class="field no-ref">
@@ -149,7 +149,7 @@
 	</div>
 
 	<div id="target">
-		<div class="header">{{localize "gurps.dmgcalc.target"}}: {{calculator.target.name}}</div>
+		<header>{{localize "gurps.dmgcalc.target"}}: {{calculator.target.name}}</header>
 		<div class="fieldblock">
 			<label>{{localize "gurps.dmgcalc.injury_tolerance"}}</label>
 			<div class="field">
@@ -341,7 +341,7 @@
 						<div id="results">
 							<div id="effects">
 								<div class="table">
-									<div class="header">{{localize "gurps.dmgcalc.effects_table"}}</div>
+									<header>{{localize "gurps.dmgcalc.effects_table"}}</header>
 									{{#each this.results.effects}}
 										{{define "hit-index" @../index}}
 										{{define "hit" ../this}}
@@ -370,7 +370,7 @@
 
 							<div id="calc">
 								<div class="table">
-									<div class="header">{{localize "gurps.dmgcalc.calculation"}}</div>
+									<header>{{localize "gurps.dmgcalc.calculation"}}</header>
 									{{#each this.results.steps}}
 										<div class="step">{{localize substep}}</div>
 										<div class="value">{{{text}}}</div>

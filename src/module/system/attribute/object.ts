@@ -82,7 +82,7 @@ class AttributeGURPS<TActor extends AttributeResolver = AttributeResolver> exten
 		return this.actor.costReductionFor(this.id)
 	}
 
-	private _manualThreshold(): PoolThreshold | null {
+	private get _manualThreshold(): PoolThreshold | null {
 		if (!this.actor || !this.definition) return null
 		return this.actor.flags[SYSTEM_NAME][ActorFlags.AutoThreshold].manual[this.id] ?? null
 	}
@@ -91,7 +91,7 @@ class AttributeGURPS<TActor extends AttributeResolver = AttributeResolver> exten
 		if (!this.actor || !this.definition) return null
 		if (this.definition.type !== attribute.Type.Pool) return null
 		if (this._overridenThreshold) return this._overridenThreshold
-		if (this.actor.flags[SYSTEM_NAME][ActorFlags.AutoThreshold].active === false) return this._manualThreshold()
+		if (this.actor.flags[SYSTEM_NAME][ActorFlags.AutoThreshold].active === false) return this._manualThreshold
 		for (const threshold of this.definition.thresholds ?? []) {
 			if (this.current <= threshold.threshold(this.actor)) return threshold
 		}

@@ -1,133 +1,188 @@
 <div id="description">
-	<div class="header">{{localize "gurps.character.description"}}</div>
+	<header>{{ localize "gurps.character.description" }}</header>
 	<div class="fieldblock">
-		<label>{{localize "gurps.character.gender"}}</label>
+		<label>{{ localize "gurps.character.gender" }}</label>
 		<div class="field">
 			<input
 				type="text"
 				name="system.profile.gender"
 				data-dtype="String"
-				value="{{system.profile.gender}}"
-				{{disabled (not editing)}}
+				value="{{ system.profile.gender }}"
+				{{
+				disabled
+				(not
+				@root.editMode)
+				}}
 			/>
 		</div>
-		<label>{{localize "gurps.character.age"}}</label>
+		<label>{{ localize "gurps.character.age" }}</label>
 		<div class="field">
 			<input
 				type="text"
 				name="system.profile.age"
 				data-dtype="String"
-				value="{{system.profile.age}}"
-				{{disabled (not editing)}}
+				value="{{ system.profile.age }}"
+				{{
+				disabled
+				(not
+				@root.editMode)
+				}}
 			/>
 		</div>
-		<label>{{localize "gurps.character.birthday"}}</label>
+		<label>{{ localize "gurps.character.birthday" }}</label>
 		<div class="field">
 			<input
 				type="text"
 				name="system.profile.birthday"
 				data-dtype="String"
-				value="{{system.profile.birthday}}"
-				{{disabled (not editing)}}
+				value="{{ system.profile.birthday }}"
+				{{
+				disabled
+				(not
+				@root.editMode)
+				}}
 			/>
 		</div>
-		<label>{{localize "gurps.character.religion"}}</label>
+		<label>{{ localize "gurps.character.religion" }}</label>
 		<div class="field">
 			<input
 				type="text"
 				name="system.profile.religion"
 				data-dtype="String"
-				value="{{system.profile.religion}}"
-				{{disabled (not editing)}}
+				value="{{ system.profile.religion }}"
+				{{
+				disabled
+				(not
+				@root.editMode)
+				}}
 			/>
 		</div>
 	</div>
 	<div class="fieldblock">
-		<label>{{localize "gurps.character.height"}}</label>
+		<label>{{ localize "gurps.character.height" }}</label>
 		<div class="field">
 			<input
 				type="text"
 				name="system.profile.height"
 				data-dtype="String"
-				value="{{height}}"
-				{{disabled (not editing)}}
+				value="{{ height }}"
+				{{
+				disabled
+				(not
+				@root.editMode)
+				}}
 			/>
 		</div>
-		<label>{{localize "gurps.character.weight"}}</label>
+		<label>{{ localize "gurps.character.weight" }}</label>
 		<div class="field">
 			<input
 				type="text"
 				name="system.profile.weight"
 				data-dtype="String"
-				value="{{weight}}"
-				{{disabled (not editing)}}
+				value="{{ weight }}"
+				{{
+				disabled
+				(not
+				@root.editMode)
+				}}
 			/>
 		</div>
-		<label>{{localize "gurps.character.sm"}}</label>
+		<label>{{ localize "gurps.character.sm" }}</label>
+		{{#if @root.editMode}}
+		<div
+			class="field"
+			data-type="modifier"
+			data-comment="{{ localize 'gurps.modifier.size.size' size=(signed actor.adjustedSizeModifier) }}"
+			data-modifier="{{ system.profile.SM }}"
+		>
+			<input type="text" value="{{ signed actor.adjustedSizeModifier }}" />
+		</div>
+		{{ else }}
 		<div
 			class="field rollable"
 			data-type="modifier"
-			data-comment="{{localize 'gurps.modifier.size.size' size=(signed actor.adjustedSizeModifier)}}"
-			data-modifier="{{system.profile.SM}}"
+			data-comment="{{ localize 'gurps.modifier.size.size' size=(signed actor.adjustedSizeModifier) }}"
+			data-modifier="{{ system.profile.SM }}"
 		>
 			<input
 				type="text"
 				name="system.profile.SM"
 				data-dtype="Number"
-				value="{{signed actor.adjustedSizeModifier}}"
-				{{disabled (not editing)}}
+				value="{{ signed actor.adjustedSizeModifier }}"
+				disabled
 			/>
 		</div>
-		<label>{{localize "gurps.character.tech_level"}}</label>
+		{{/if}}
+		<label>{{ localize "gurps.character.tech_level" }}</label>
 		<div class="field">
 			<input
 				type="text"
 				name="system.profile.tech_level"
 				data-dtype="String"
-				value="{{system.profile.tech_level}}"
-				{{disabled (not editing)}}
+				value="{{ system.profile.tech_level }}"
+				{{
+				disabled
+				(not
+				@root.editMode)
+				}}
 			/>
 		</div>
 	</div>
 	<div class="fieldblock">
-		<label>{{localize "gurps.character.hair"}}</label>
+		<label>{{ localize "gurps.character.hair" }}</label>
 		<div class="field">
 			<input
 				type="text"
 				name="system.profile.hair"
 				data-dtype="String"
-				value="{{system.profile.hair}}"
-				{{disabled (not editing)}}
+				value="{{ system.profile.hair }}"
+				{{
+				disabled
+				(not
+				@root.editMode)
+				}}
 			/>
 		</div>
-		<label>{{localize "gurps.character.eyes"}}</label>
+		<label>{{ localize "gurps.character.eyes" }}</label>
 		<div class="field">
 			<input
 				type="text"
 				name="system.profile.eyes"
 				data-dtype="String"
-				value="{{system.profile.eyes}}"
-				{{disabled (not editing)}}
+				value="{{ system.profile.eyes }}"
+				{{
+				disabled
+				(not
+				@root.editMode)
+				}}
 			/>
 		</div>
-		<label>{{localize "gurps.character.skin"}}</label>
+		<label>{{ localize "gurps.character.skin" }}</label>
 		<div class="field">
 			<input
 				type="text"
 				name="system.profile.skin"
 				data-dtype="String"
-				value="{{system.profile.skin}}"
-				{{disabled (not editing)}}
+				value="{{ system.profile.skin }}"
+				{{
+				disabled
+				(not
+				@root.editMode)
+				}}
 			/>
 		</div>
-		<label>{{localize "gurps.character.handedness"}}</label>
+		<label>{{ localize "gurps.character.handedness" }}</label>
 		<div class="field">
 			<input
 				type="text"
 				name="system.profile.handedness"
 				data-dtype="String"
-				value="{{system.profile.handedness}}"
-				{{disabled (not editing)}}
+				value="{{ system.profile.handedness }}"
+				{{
+				disabled
+				(not
+				@root.editMode)
+				}}
 			/>
 		</div>
 	</div>

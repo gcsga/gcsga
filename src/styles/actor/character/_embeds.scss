@@ -9,6 +9,16 @@
 	}
 
 	@include item-list;
+
+	.ref {
+		color: rgb(var(--color-link));
+		&:hover {
+			color: rgb(var(--color-link-rollover));
+		}
+		&:active {
+			color: rgb(var(--color-link-pressed));
+		}
+	}
 }
 
 #reactions {

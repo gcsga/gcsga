@@ -14,7 +14,7 @@
 // 	color: rgb(var(--color-on-content));
 // 	font: var(--font-field);
 //
-// 	> :not(.header) {
+// 	> :not(header) {
 // 		padding: var(--padding-standard);
 // 		&.border-top {
 // 			border-top: 2px dashed rgb(var(--color-drop-area));
@@ -46,7 +46,7 @@
 // 		}
 // 	}
 //
-// 	.header {
+// 	header {
 // 		font: var(--font-label);
 // 		justify-content: center;
 // 		text-align: center;
@@ -95,7 +95,7 @@
 // 		}
 // 	}
 //
-// 	> .reference:not(.header) {
+// 	> .reference:not(header) {
 // 		display: flex;
 // 		flex-direction: row;
 // 		color: rgba(var(--color-link), 1) !important;
@@ -115,7 +115,7 @@
 // 		border-right: 1px solid rgb(var(--color-interior-divider));
 // 		border-bottom: 1px solid rgb(var(--color-interior-divider));
 //
-// 		&.header {
+// 		&header {
 // 			border-bottom: none;
 // 		}
 //
@@ -124,14 +124,14 @@
 // 		}
 // 	}
 //
-// 	> :not(.header) {
+// 	> :not(header) {
 // 		padding: var(--padding-standard);
 // 		&.quantity {
 // 			min-width: 1em; //possibly unnecessary
 // 		}
 // 	}
 //
-// 	.desc.header {
+// 	.descheader {
 // 		white-space: nowrap;
 // 	}
 // }
