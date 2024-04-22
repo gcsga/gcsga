@@ -235,14 +235,16 @@
 					{{#if this.isOverridden}}*{{/if}}
 					{{this.basicDamage}}
 					{{@root.calculator.damageType.id}}
-					({{this.hitLocation.choice_name}})</a>
+					({{this.hitLocation.choiceName}})</a>
 			{{/each}}
 		</nav>
 		<section class="content">
+
 			{{#each calculator.hits}}
 				<div class="tab browser" dagr-group="primary" data-tab="{{@index}}">
 					<div class="fieldblock">
-						<label>{{localize "gurps.character.basic_damage"}}</label>
+						<!-- Basic Damage -->
+						<div class="label">{{localize "gurps.character.basic_damage"}}</div>
 						<div class="field no-stretch no-ref">
 							<div>
 								<input
@@ -261,6 +263,7 @@
 									data-action="apply-basic"
 								>{{localize "gurps.misc.apply"}}</button>
 							</div>
+							<!-- Wounding Modifier -->
 							<div>
 								<label class="label" for="override-woundingmod">Wounding Modifier
 									<span class="input-wrapper multiply">
@@ -279,7 +282,8 @@
 							</div>
 						</div>
 
-						<label>{{localize "gurps.dmgcalc.hit_location"}}</label>
+						<!-- Hit Location -->
+						<div class="label">{{localize "gurps.dmgcalc.hit_location"}}</div>
 						<div class="field no-stretch location">
 							<select
 								name="hitLocation"
@@ -294,9 +298,11 @@
 									localize=false
 								}}
 							</select>
+							<!-- Randomize -->
 							<button type="button" data-index="{{@index}}" data-action="location-random">
 								<i class="fa-light fa-dice"></i>
 							</button>
+							<!-- DR -->
 							<label for="override-dr" class="label">{{localize "gurps.character.body_type.dr"}}
 								<input
 									id="override-dr"
@@ -312,7 +318,8 @@
 						</div>
 						<div class="label ref" data-pdf="{{pageRef "hit_location"}}">{{pageRef "hit_location"}}</div>
 
-						<label></label>
+						<!-- Flexible Armor -->
+						<div class="label"></div>
 						<div class="field">
 							<label for="flexible" class="check">
 								<input
@@ -326,7 +333,8 @@
 						</div>
 						<div class="label ref" data-pdf="{{pageRef "flexible_armor"}}">{{pageRef "flexible_armor"}}</div>
 
-						<label>{{localize "gurps.dmgcalc.hardened_dr"}}</label>
+						<!-- Hardened DR -->
+						<div class="label">{{localize "gurps.dmgcalc.hardened_dr"}}</div>
 						<div class="field">
 							<select
 								data-action="hardened-select"
@@ -338,7 +346,9 @@
 						</div>
 						<div class="label ref" data-pdf="{{pageRef "hardened_dr"}}">{{pageRef "hardened_dr"}}</div>
 
+						<!-- Results Area -->:
 						<div id="results">
+							<!-- Effects table -->
 							<div id="effects">
 								<div class="table">
 									<header>{{localize "gurps.dmgcalc.effects_table"}}</header>
@@ -367,7 +377,7 @@
 									{{/each}}
 								</div>
 							</div>
-
+							<!-- Calculation Table -->
 							<div id="calc">
 								<div class="table">
 									<header>{{localize "gurps.dmgcalc.calculation"}}</header>
@@ -378,19 +388,21 @@
 									{{/each}}
 								</div>
 							</div>
-
+							<!-- Apply Checked Effects -->
 							<div class="apply">
 								<button
 									type="button"
 									class="apply-button gcs-checkmark"
 									data-action="apply-effects"
+									data-index="{{@root.hit-index}}"
 								>{{localize "gurps.dmgcalc.apply_checked"}}</button>
 							</div>
-
+							<!-- Apply Injury -->
 							<div class="apply">
 								<div class="label">{{localize
 										"gurps.dmgcalc.injury"
 									}}&nbsp;({{calculator.damagePool.name}})</div>
+								<!-- Override Injury -->
 								<input
 									type="number"
 									class="{{ifText calculator.injuryOverride 'overridden'}}"
@@ -406,10 +418,10 @@
 								>{{localize "gurps.misc.apply"}}</button>
 							</div>
 						</div>
-
 					</div>
 				</div>
 			{{/each}}
+
 		</section>
 	</div>
 </div>
