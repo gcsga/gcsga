@@ -1,6 +1,6 @@
-import { ActorGURPS, CharacterGURPS } from "@actor"
+import { ActorGURPS } from "@actor"
 import { ConditionGURPS, EffectGURPS } from "@item"
-import { SYSTEM_NAME } from "@data"
+import { ActorType, SYSTEM_NAME } from "@data"
 
 export class EffectPanel extends Application {
 	/**
@@ -30,7 +30,7 @@ export class EffectPanel extends Application {
 	override async getData(options?: Partial<ApplicationOptions> | undefined): Promise<object> {
 		const { actor } = this
 
-		if (!actor || !(actor instanceof CharacterGURPS))
+		if (!actor || !actor.isOfType(ActorType.Character))
 			return {
 				// conditions: [],
 				effects: [],

@@ -4,9 +4,9 @@ import { prereq } from "@util/enum/prereq.ts"
 import { NumericCompareType, NumericCriteria } from "@util/numeric-criteria.ts"
 import { SkillPrereqObj } from "./data.ts"
 import { ItemGURPS } from "@item"
-import { ItemType } from "@data"
+import { ActorType, ItemType } from "@data"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
-import { LootGURPS } from "@actor"
+import { ActorGURPS } from "@actor"
 import { PrereqResolver } from "@module/util/index.ts"
 
 export class SkillPrereq extends BasePrereq<prereq.Type.Skill> {
@@ -33,7 +33,7 @@ export class SkillPrereq extends BasePrereq<prereq.Type.Skill> {
 	}
 
 	satisfied(actor: PrereqResolver, exclude: unknown, tooltip: TooltipGURPS): boolean {
-		if (actor instanceof LootGURPS) return true
+		if (actor instanceof ActorGURPS && actor.isOfType(ActorType.Loot)) return true
 		let satisfied = false
 		let techLevel = ""
 		if (exclude instanceof ItemGURPS && exclude.isOfType(ItemType.Skill, ItemType.Technique)) {

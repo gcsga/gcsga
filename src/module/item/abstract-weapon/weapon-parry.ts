@@ -1,9 +1,8 @@
 import { Int } from "@util/fxp.ts"
 import { WeaponField } from "./weapon-field.ts"
 import { wswitch } from "@util/enum/wswitch.ts"
-import { gid } from "@data"
+import { ActorType, gid } from "@data"
 import { feature } from "@util/enum/feature.ts"
-import { CharacterGURPS } from "@actor"
 import { AbstractWeaponGURPS } from "./document.ts"
 import { TooltipGURPS } from "@util"
 
@@ -36,7 +35,7 @@ export class WeaponParry extends WeaponField {
 		result.unbalanced = w.resolveBoolFlag(wswitch.Type.Unbalanced, result.unbalanced)
 		if (!result.no) {
 			const actor = w.actor
-			if (actor instanceof CharacterGURPS) {
+			if (actor?.isOfType(ActorType.Character)) {
 				let primaryTooltip: TooltipGURPS | null = null
 				if (tooltip !== null) primaryTooltip = new TooltipGURPS()
 				const preAdj = w.skillLevelBaseAdjustment(actor, primaryTooltip)

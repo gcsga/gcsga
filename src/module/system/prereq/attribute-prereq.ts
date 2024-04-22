@@ -3,9 +3,9 @@ import { BasePrereq } from "./base.ts"
 import { prereq } from "@util/enum/prereq.ts"
 import { AttributePrereqObj } from "./data.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { gid } from "@data"
+import { ActorType, gid } from "@data"
 import { TooltipGURPS } from "@util"
-import { LootGURPS } from "@actor"
+import { ActorGURPS } from "@actor"
 import { PrereqResolver } from "@module/util/index.ts"
 
 export class AttributePrereq extends BasePrereq<prereq.Type.Attribute> {
@@ -32,7 +32,7 @@ export class AttributePrereq extends BasePrereq<prereq.Type.Attribute> {
 	}
 
 	satisfied(actor: PrereqResolver, _exclude: unknown, tooltip: TooltipGURPS): boolean {
-		if (actor instanceof LootGURPS) return true
+		if (actor instanceof ActorGURPS && actor.isOfType(ActorType.Loot)) return true
 		let value = actor.resolveAttributeCurrent(this.which)
 		if (this.combined_with !== "") value += actor.resolveAttributeCurrent(this.combined_with)
 		let satisfied = this.qualifier.matches(value)
