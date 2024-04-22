@@ -192,7 +192,7 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 		return { img, texture: { src: img } }
 	}
 
-	/** Don't allow the user to create a condition or spellcasting entry from the sidebar. */
+	/** Don't allow the user to create a condition from the sidebar. */
 	static override createDialog<TDocument extends foundry.abstract.Document>(
 		this: ConstructorOf<TDocument>,
 		data?: Record<string, unknown>,

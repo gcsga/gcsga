@@ -161,7 +161,7 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 		return { img, texture: { src: img } }
 	}
 
-	/** Don't allow the user to create a condition or spellcasting entry from the sidebar. */
+	/** Don't allow the user to create old actor types from the sidebar. */
 	static override createDialog<TDocument extends foundry.abstract.Document>(
 		this: ConstructorOf<TDocument>,
 		data?: Record<string, unknown>,
@@ -189,7 +189,7 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 				classes: [...(context.classes ?? []), "dialog-actor-create"],
 			})
 		} finally {
-			game.system.documentTypes.Item = original
+			game.system.documentTypes.Actor = original
 		}
 	}
 

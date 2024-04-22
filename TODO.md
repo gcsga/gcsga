@@ -1,5 +1,13 @@
 ## Immediate TODO
 
+0. BUGS
+
+-   fix melee and ranged weapon sheets being all screwed up
+-   fix weapon damgage bonus not having a per die option
+-   fix weapon damage bonus not working
+-   fix features not applying per level
+-   check github issues and check against them
+
 1. Character Sheet
 
 -   fix headers
