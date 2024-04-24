@@ -6,8 +6,14 @@ export namespace selfctrl {
 	export enum Roll {
 		NoCR = 0,
 		CR6 = 6,
+		CR7 = 7,
+		CR8 = 8,
 		CR9 = 9,
+		CR10 = 10,
+		CR11 = 11,
 		CR12 = 12,
+		CR13 = 13,
+		CR14 = 14,
 		CR15 = 15,
 	}
 
@@ -22,7 +28,18 @@ export namespace selfctrl {
 		}
 
 		export function toString(R: Roll): string {
-			return LocalizeGURPS.translations.gurps.enum.selfctrl.roll[R]
+			switch (R) {
+				case Roll.NoCR:
+				case Roll.CR6:
+				case Roll.CR9:
+				case Roll.CR12:
+				case Roll.CR15:
+					return LocalizeGURPS.translations.gurps.enum.selfctrl.roll[R]
+				default:
+					return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.enum.selfctrl.roll.non_standard, {
+						number: R,
+					})
+			}
 		}
 
 		export function toRollableButton(R: Roll): string {
@@ -35,10 +52,22 @@ export namespace selfctrl {
 					return 1
 				case Roll.CR6:
 					return 2
+				case Roll.CR7:
+					return 1.83
+				case Roll.CR8:
+					return 1.67
 				case Roll.CR9:
 					return 1.5
+				case Roll.CR10:
+					return 1.33
+				case Roll.CR11:
+					return 1.17
 				case Roll.CR12:
 					return 1
+				case Roll.CR13:
+					return 0.83
+				case Roll.CR14:
+					return 0.67
 				case Roll.CR15:
 					return 0.5
 				default:
@@ -51,7 +80,19 @@ export namespace selfctrl {
 		}
 	}
 
-	export const Rolls: Roll[] = [Roll.NoCR, Roll.CR6, Roll.CR9, Roll.CR12, Roll.CR15]
+	export const Rolls: Roll[] = [
+		Roll.NoCR,
+		Roll.CR6,
+		Roll.CR7,
+		Roll.CR8,
+		Roll.CR9,
+		Roll.CR10,
+		Roll.CR11,
+		Roll.CR12,
+		Roll.CR13,
+		Roll.CR14,
+		Roll.CR15,
+	]
 
 	export enum Adjustment {
 		NoCRAdj = "none",

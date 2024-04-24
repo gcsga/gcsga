@@ -1902,7 +1902,8 @@
 					"6": "CR: 6 (Resist Rarely)",
 					"9": "CR: 9 (Resist Fairly Often)",
 					"12": "CR: 12 (Resist Quite Often)",
-					"15": "CR: 15 (Resist Almost All The Time)"
+					"15": "CR: 15 (Resist Almost All The Time)",
+					"non_standard": "CR: {number} (non-standard)"
 				},
 				"adjustment": {
 					"string": {
