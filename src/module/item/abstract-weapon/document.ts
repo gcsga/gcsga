@@ -23,6 +23,8 @@ import { WeaponDamage } from "./weapon-damage.ts"
 import { WeaponBonusResolver } from "@module/util/resolvers.ts"
 
 abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
+	declare damage: WeaponDamage
+
 	get itemName(): string {
 		return this.container?.name ?? ""
 	}
@@ -79,15 +81,15 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 			let primaryTooltip = new TooltipGURPS()
 			if (tooltip) primaryTooltip = tooltip
 			const adj = this.skillLevelPostAdjustment(actor, primaryTooltip)
-			let best = -Infinity
+			let best = Number.MIN_SAFE_INTEGER
 			for (const def of this.defaults) {
 				let level = def.skillLevelFast(actor, false, null, true)
-				if (level !== -Infinity) {
+				if (level !== Number.MIN_SAFE_INTEGER) {
 					level += adj
 					if (best < level) best = level
 				}
 			}
-			if (best === -Infinity) return 0
+			if (best === Number.MIN_SAFE_INTEGER) return 0
 			if (tooltip && primaryTooltip && primaryTooltip.length !== 0) {
 				if (tooltip.length !== 0) tooltip.push("\n")
 				tooltip.push(primaryTooltip)
@@ -179,12 +181,18 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 		return value
 	}
 
-	get fastResolvedDamage(): string {
-		return this.damage.resolvedDamage(null)
-	}
+	// get fastResolvedDamage(): string {
+	// 	return this.damage.resolvedDamage(null)
+	// }
 
-	get damage(): WeaponDamage {
-		return new WeaponDamage({ ...this.system.damage, owner: this })
+	// get damage(): WeaponDamage {
+	// 	return new WeaponDamage({ ...this.system.damage, owner: this })
+	// }
+
+	override prepareBaseData(): void {
+		super.prepareBaseData()
+		this.damage = new WeaponDamage({ ...this.system.damage, owner: this })
+		this.damage.current = this.damage.resolvedDamage(null)
 	}
 
 	resolvedValue(input: string, baseDefaultType: string, tooltip?: TooltipGURPS): string {
@@ -192,11 +200,11 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 		input ??= ""
 		input = input.trim()
 		if (!input.match(/^[+-]?[0-9]+/)) return input
-		let skillLevel = -Infinity
+		let skillLevel = Number.MIN_SAFE_INTEGER
 		const modifier = parseInt(input) || 0
 		const re = new RegExp(`^${modifier >= 0 ? "\\+?" : ""}${modifier}`)
 		let buffer = input.replace(re, "")
-		while (skillLevel === -Infinity) {
+		while (skillLevel === Number.MIN_SAFE_INTEGER) {
 			const primaryTooltip = new TooltipGURPS()
 			let secondaryTooltip = new TooltipGURPS()
 			const preAdj = this.skillLevelBaseAdjustment(this.actor, primaryTooltip)
@@ -204,10 +212,10 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 			let adj = 3
 			if (baseDefaultType === gid.Parry) adj += this.actor.parryBonus
 			else adj += this.actor.blockBonus
-			let best = -Infinity
+			let best = Number.MIN_SAFE_INTEGER
 			for (const def of this.defaults) {
 				let level = def.skillLevelFast(this.actor, false, null, true)
-				if (level === -Infinity) continue
+				if (level === Number.MIN_SAFE_INTEGER) continue
 				level += preAdj
 				if (baseDefaultType !== def.type) level = Math.trunc(level / 2 + adj)
 				level += postAdj
@@ -220,7 +228,7 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 					secondaryTooltip = possibleTooltip
 				}
 			}
-			if (best !== -Infinity && tooltip) {
+			if (best !== Number.MIN_SAFE_INTEGER && tooltip) {
 				if (primaryTooltip && primaryTooltip.length !== 0) {
 					if (tooltip.length !== 0) tooltip.push("\n")
 					tooltip.push(primaryTooltip)
@@ -256,10 +264,10 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 		...allowedFeatureTypes: feature.WeaponBonusType[]
 	): WeaponBonus[] {
 		if (!this.actor || !this.actor.isOfType(ActorType.Character)) return []
-		const allowed: Map<feature.WeaponBonusType, boolean> = new Map()
-		for (const one of allowedFeatureTypes) allowed.set(one, true)
+		const allowed: Set<feature.WeaponBonusType> = new Set()
+		for (const one of allowedFeatureTypes) allowed.add(one)
 		let bestDef = new SkillDefault()
-		let best = -Infinity
+		let best = Number.MIN_SAFE_INTEGER
 		for (const one of this.defaults) {
 			if (one.skillBased) {
 				const level = one.skillLevelFast(this.actor, false, null, true)
@@ -269,7 +277,7 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 				}
 			}
 		}
-		const bonusSet: Map<WeaponBonus, boolean> = new Map()
+		const bonusSet: Set<WeaponBonus> = new Set()
 		const tags = this.container?.tags ?? []
 		let [name, specialization] = ["", ""]
 		if (bestDef) {
@@ -288,8 +296,9 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 		)
 		const nameQualifier = this.formattedName
 		this.actor.addNamedWeaponBonusesFor(nameQualifier, this.usage, tags, dieCount, tooltip, bonusSet, allowed)
-		for (const f of this.container?.features ?? [])
+		for (const f of this.container?.features ?? []) {
 			this._extractWeaponBonus(f, bonusSet, allowed, Int.from(dieCount), tooltip)
+		}
 		if (
 			!(this.container instanceof CompendiumCollection) &&
 			[ItemType.Trait, ItemType.TraitContainer, ItemType.Equipment, ItemType.EquipmentContainer].includes(
@@ -312,12 +321,12 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 
 	private _extractWeaponBonus(
 		f: Feature,
-		set: Map<WeaponBonus, boolean>,
-		allowedFeatureTypes: Map<feature.Type, boolean>,
+		set: Set<WeaponBonus>,
+		allowedFeatureTypes: Set<feature.Type>,
 		dieCount: number,
 		tooltip: TooltipGURPS | null,
 	): void {
-		if (!allowedFeatureTypes.get(f.type)) return
+		if (!allowedFeatureTypes.has(f.type)) return
 		if (f instanceof WeaponBonus) {
 			const savedLevel = f.leveledAmount.level
 			const savedDieCount = f.leveledAmount.dieCount
@@ -329,7 +338,7 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 				case wsel.Type.ThisWeapon:
 					if (f.specialization?.matches(this.usage)) {
 						if (!set.has(f)) {
-							set.set(f, true)
+							set.add(f)
 							f.addToTooltip(tooltip)
 						}
 					}
@@ -342,7 +351,7 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 						f.tags?.matchesList(...(this.container as any).tags)
 					) {
 						if (!set.has(f)) {
-							set.set(f, true)
+							set.add(f)
 							f.addToTooltip(tooltip)
 						}
 					}
@@ -352,6 +361,7 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 			}
 			f.leveledAmount.level = savedLevel
 			f.leveledAmount.dieCount = savedDieCount
+			console.log(f.leveledAmount, f.adjustedAmount)
 		}
 	}
 

@@ -183,7 +183,7 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 		// Create the dialog, temporarily changing the list of allowed actors
 		const original = game.system.documentTypes.Actor
 		try {
-			game.system.documentTypes.Actor = R.difference(original, omittedTypes)
+			game.system.documentTypes.Actor = R.difference.multiset(original, omittedTypes)
 			return super.createDialog<ActorGURPS>(data, {
 				...context,
 				classes: [...(context.classes ?? []), "dialog-actor-create"],

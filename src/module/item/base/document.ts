@@ -124,6 +124,7 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 					const FeatureConstructor = CONFIG.GURPS.Feature.classes[feature.type]
 					// @ts-expect-error conflicting type definitions, probably ok
 					const f = FeatureConstructor.fromObject(feature as ContainedWeightReductionObj)
+					f.owner = this
 					if (this.isOfType(ItemType.Trait)) {
 						// @ts-expect-error maybe fine? idk
 						if (this.isLeveled && !(f instanceof ContainedWeightReduction)) f.setLevel(this.levels)
@@ -214,7 +215,7 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 		// Create the dialog, temporarily changing the list of allowed items
 		const original = game.system.documentTypes.Item
 		try {
-			game.system.documentTypes.Item = R.difference(original, omittedTypes)
+			game.system.documentTypes.Item = R.difference.multiset(original, omittedTypes)
 			return super.createDialog<ItemGURPS>(data, {
 				...context,
 				classes: [...(context.classes ?? []), "dialog-item-create"],

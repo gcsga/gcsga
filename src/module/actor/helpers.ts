@@ -13,11 +13,11 @@ import { MeleeWeaponGURPS, RangedWeaponGURPS } from "@item"
 import { ActorType, ItemType } from "@module/data/constants.ts"
 import { TraitAdapter } from "@item/helpers.ts"
 
-function addWeaponBonusToMap(
+function addWeaponBonusToSet(
 	bonus: WeaponBonus,
 	dieCount: number,
 	tooltip: TooltipGURPS | null = null,
-	m: Map<WeaponBonus, boolean> = new Map(),
+	set: Set<WeaponBonus> = new Set(),
 ): void {
 	const savedLevel = bonus.leveledAmount.level
 	const savedDieCount = bonus.leveledAmount.dieCount
@@ -26,7 +26,7 @@ function addWeaponBonusToMap(
 	bonus.addToTooltip(tooltip)
 	bonus.leveledAmount.level = savedLevel
 	bonus.leveledAmount.dieCount = savedDieCount
-	m.set(bonus, true)
+	set.add(bonus)
 }
 
 class DamageTargetActor<TActor extends ActorGURPS> implements DamageTarget {
@@ -215,8 +215,8 @@ class DamageWeaponAdapter implements DamageWeapon {
 	}
 
 	get damageDice(): string {
-		return this.base?.fastResolvedDamage ?? ""
+		return this.base?.damage.current ?? ""
 	}
 }
 
-export { addWeaponBonusToMap, DamageAttackerAdapter, DamageWeaponAdapter, DamageTargetActor }
+export { addWeaponBonusToSet, DamageAttackerAdapter, DamageWeaponAdapter, DamageTargetActor }

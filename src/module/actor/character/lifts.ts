@@ -47,7 +47,7 @@ class CharacterLifts<TActor extends CharacterGURPS> {
 		let basicLift = ST ** 2 / 5
 		if (sheetSettingsFor(actor).damage_progression === progression.Option.KnowingYourOwnStrength)
 			basicLift = Int.from(2 * 10 ** (ST / 10), 1)
-		if (basicLift === Infinity || basicLift === -Infinity) return 0
+		if (basicLift === Number.MAX_SAFE_INTEGER || basicLift === Number.MIN_SAFE_INTEGER) return 0
 		if (basicLift >= 10) return Math.round(basicLift)
 		return basicLift
 	}

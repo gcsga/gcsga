@@ -2,9 +2,8 @@
 
 0. BUGS
 
--   fix melee and ranged weapon sheets being all screwed up
--   fix weapon damgage bonus not having a per die option
--   fix weapon damage bonus not working
+-   fix weapon damage bonus not working when not against "this weapon"
+-   fix weapon by skill showing specialization instead of usage
 -   fix features not applying per level
 -   check github issues and check against them
 

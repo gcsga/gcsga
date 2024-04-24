@@ -62,13 +62,13 @@ abstract class AbstractSkillGURPS<
 	}
 
 	get skillLevel(): string {
-		if (this.effectiveLevel === -Infinity) return "-"
+		if (this.effectiveLevel === Number.MIN_SAFE_INTEGER) return "-"
 		return this.effectiveLevel.toString()
 	}
 
 	get relativeLevel(): string {
 		const level = this.level
-		if (level.level === -Infinity) return "-"
+		if (level.level === Number.MIN_SAFE_INTEGER) return "-"
 		if (this.actor?.isOfType(ActorType.Character)) {
 			return (
 				(this.actor?.attributes?.get(this.attribute)?.definition?.name ?? "") +
@@ -80,13 +80,13 @@ abstract class AbstractSkillGURPS<
 
 	get effectiveLevel(): number {
 		const actor = this.dummyActor || this.actor
-		if (!actor) return -Infinity
+		if (!actor) return Number.MIN_SAFE_INTEGER
 		if (actor instanceof ActorGURPS && actor.isOfType(ActorType.Character)) {
 			const att = actor.resolveAttributeCurrent(this.attribute)
 			const effectiveAtt = actor.resolveAttributeEffective(this.attribute)
 			return this.level.level - att + effectiveAtt
 		}
-		return -Infinity
+		return Number.MIN_SAFE_INTEGER
 	}
 
 	updateLevel(): boolean {

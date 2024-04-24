@@ -31,6 +31,6 @@
 import { HooksGURPS } from "@scripts/hooks/index.ts"
 import "./styles/main.scss"
 
-Error.stackTraceLimit = Infinity
+Error.stackTraceLimit = Number.MAX_SAFE_INTEGER
 
 HooksGURPS.listen()

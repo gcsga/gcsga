@@ -126,7 +126,7 @@ function evalIf(e: Evaluator, args: string): boolean {
  * @param args
  */
 function evalMaximum(e: Evaluator, args: string): number {
-	let max = -Infinity
+	let max = Number.MIN_SAFE_INTEGER
 	while (args) {
 		let arg: string
 		;[arg, args] = nextArg(args)
@@ -300,11 +300,11 @@ function evalSkillLevel(e: Evaluator, arg: string): number {
 	if (entity.isSkillLevelResolutionExcluded(name, specialization)) return 0
 
 	entity.registerSkillLevelResolutionExclusion(name, specialization)
-	let level = -Infinity
+	let level = Number.MIN_SAFE_INTEGER
 
 	entity.itemCollections.skills.forEach(s => {
 		if (s.isOfType(ItemType.SkillContainer)) return
-		if (level !== -Infinity) return
+		if (level !== Number.MIN_SAFE_INTEGER) return
 		if (equalFold(s.name || "", name) && equalFold(s.specialization, specialization)) {
 			s.updateLevel()
 			if (relative) level = s.level.relativeLevel

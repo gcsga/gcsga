@@ -41,8 +41,8 @@ class ResourceTracker<TActor extends ResourceTrackerResolver> extends AbstractAt
 	toTokenPool(): TokenPool | null {
 		return {
 			value: this.current,
-			max: this.definition?.isMaxEnforced ? this.max : Infinity,
-			min: this.definition?.isMinEnforced ? this.min : -Infinity,
+			max: this.definition?.isMaxEnforced ? this.max : Number.MAX_SAFE_INTEGER,
+			min: this.definition?.isMinEnforced ? this.min : Number.MIN_SAFE_INTEGER,
 		}
 	}
 }

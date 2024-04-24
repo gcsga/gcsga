@@ -121,9 +121,9 @@ interface WeaponBonusResolver extends VariableResolver {
 		tags: string[],
 		dieCount: number,
 		tooltip: TooltipGURPS | null,
-		m: Map<WeaponBonus, boolean>,
-		allowedFeatureTypes: Map<feature.Type, boolean>,
-	) => Map<WeaponBonus, boolean>
+		set: Set<WeaponBonus>,
+		allowedFeatureTypes: Set<feature.Type>,
+	) => Set<WeaponBonus>
 	namedWeaponSkillBonusesFor: (
 		name: string,
 		usage: string,

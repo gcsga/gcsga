@@ -133,7 +133,7 @@ class AttributeGURPS<TActor extends AttributeResolver = AttributeResolver> exten
 		return {
 			value: this.current,
 			max: this.max,
-			min: -Infinity,
+			min: Number.MIN_SAFE_INTEGER,
 		}
 	}
 }

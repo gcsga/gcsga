@@ -374,7 +374,7 @@ class AttackRollTypeHandler extends RollTypeHandler<AttackRollTypeData> {
 			formattedName: data.item?.formattedName,
 			uuid: data.item?.uuid,
 			weaponId: data.item?.id,
-			damage: data.item?.fastResolvedDamage,
+			damage: data.item?.damage.current,
 			type: data.item?.type,
 		}
 		return data.item?.isOfType(ItemType.RangedWeapon)
@@ -497,7 +497,7 @@ class DamageRollTypeHandler extends RollTypeHandler<DamageRollTypeData> {
 		let stringified: string | null = null
 
 		for (let i = 0; i < extras.times; i++) {
-			const damageRoll = new DamageRollGURPS(data.item?.fastResolvedDamage ?? "")
+			const damageRoll = new DamageRollGURPS(data.item?.damage.current ?? "")
 			await damageRoll.evaluate()
 
 			if (!stringified) {

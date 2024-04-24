@@ -477,7 +477,7 @@ class DamageCalculator implements IDamageCalculator {
 	}
 
 	/**
-	 * @returns {number} the maximum injury based on Injury Tolerance, or Infinity.
+	 * @returns {number} the maximum injury based on Injury Tolerance, or Number.MAX_SAFE_INTEGER.
 	 */
 	get maximumForInjuryTolerance(): ExplainedValue {
 		if (this.isDiffuse) {
@@ -485,7 +485,7 @@ class DamageCalculator implements IDamageCalculator {
 				return { value: 1, explanation: this.format("gurps.dmgcalc.description.diffuse_max", { value: 1 }) }
 			return { value: 2, explanation: this.format("gurps.dmgcalc.description.diffuse_max", { value: 2 }) }
 		}
-		return { value: Infinity, explanation: "" }
+		return { value: Number.MAX_SAFE_INTEGER, explanation: "" }
 	}
 
 	// --- Injury Tolerance ---
@@ -1383,7 +1383,7 @@ class HitLocationDamage implements LocationDamage {
 	}
 
 	/**
-	 * @returns the maximum injury based on hit location, or Infinity if none.
+	 * @returns the maximum injury based on hit location, or Number.MAX_SAFE_INTEGER if none.
 	 */
 	maximumInjury(maxHitPoints: number): ExplainedValue {
 		const location = this.hitLocation
@@ -1408,7 +1408,7 @@ class HitLocationDamage implements LocationDamage {
 			}
 		}
 
-		return { value: Infinity, explanation: "" }
+		return { value: Number.MAX_SAFE_INTEGER, explanation: "" }
 	}
 
 	private isMajorWound(results: DamageResults): boolean {

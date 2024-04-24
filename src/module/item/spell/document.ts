@@ -132,7 +132,7 @@ class SpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 	}
 
 	calculateLevel(): SkillLevel {
-		const none = { level: -Infinity, relativeLevel: 0, tooltip: new TooltipGURPS() }
+		const none = { level: Number.MIN_SAFE_INTEGER, relativeLevel: 0, tooltip: new TooltipGURPS() }
 		const actor = this.dummyActor || this.actor
 		if (!actor) return none
 		if (actor instanceof ActorGURPS && actor.isOfType(ActorType.Character)) {
@@ -153,10 +153,10 @@ class SpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 					relativeLevel += 1 + Math.floor(points / 4)
 					break
 				default:
-					level = -Infinity
+					level = Number.MIN_SAFE_INTEGER
 					relativeLevel = 0
 			}
-			if (level !== -Infinity) {
+			if (level !== Number.MIN_SAFE_INTEGER) {
 				relativeLevel += actor.spellBonusFor(
 					this.name!,
 					this.system.power_source,

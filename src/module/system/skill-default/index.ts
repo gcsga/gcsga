@@ -91,15 +91,15 @@ export class SkillDefault {
 		rule_of_20: boolean,
 	): number {
 		if (!actor.isOfType(ActorType.Character)) return 0
-		let best = -Infinity
+		let best = Number.MIN_SAFE_INTEGER
 		switch (this.type) {
 			case gid.Parry:
 				best = this.best(actor, require_points, excludes)
-				if (best !== -Infinity) best = best / 2 + 3 + actor.parryBonus
+				if (best !== Number.MIN_SAFE_INTEGER) best = best / 2 + 3 + actor.parryBonus
 				return this.finalLevel(best)
 			case gid.Block:
 				best = this.best(actor, require_points, excludes)
-				if (best !== -Infinity) best = best / 2 + 3 + actor.blockBonus
+				if (best !== Number.MIN_SAFE_INTEGER) best = best / 2 + 3 + actor.blockBonus
 				return this.finalLevel(best)
 			case gid.Skill:
 				return this.finalLevel(this.best(actor, require_points, excludes))
@@ -109,7 +109,7 @@ export class SkillDefault {
 	}
 
 	best(actor: ActorGURPS, require_points: boolean, excludes: Map<string, boolean>): number {
-		let best = -Infinity
+		let best = Number.MIN_SAFE_INTEGER
 		if (!actor.isOfType(ActorType.Character)) return best
 		for (const s of actor.skillNamed(this.name!, this.specialization || "", require_points, excludes)) {
 			const level = s.calculateLevel().level
@@ -134,11 +134,11 @@ export class SkillDefault {
 				return this.finalLevel(level)
 			case gid.Parry:
 				best = this.bestFast(actor, require_points, excludes)
-				if (best !== -Infinity) best = Math.floor(best / 2) + 3 + actor.parryBonus
+				if (best !== Number.MIN_SAFE_INTEGER) best = Math.floor(best / 2) + 3 + actor.parryBonus
 				return this.finalLevel(best)
 			case gid.Block:
 				best = this.bestFast(actor, require_points, excludes)
-				if (best !== -Infinity) best = Math.floor(best / 2) + 3 + actor.blockBonus
+				if (best !== Number.MIN_SAFE_INTEGER) best = Math.floor(best / 2) + 3 + actor.blockBonus
 				return this.finalLevel(best)
 			case gid.Skill:
 				return this.finalLevel(this.bestFast(actor, require_points, excludes))
@@ -152,7 +152,7 @@ export class SkillDefault {
 	}
 
 	bestFast(actor: ActorGURPS, require_points: boolean, excludes: Map<string, boolean> | null): number {
-		let best = -Infinity
+		let best = Number.MIN_SAFE_INTEGER
 		if (!actor.isOfType(ActorType.Character)) return best
 		for (const sk of actor.skillNamed(this.name!, this.specialization || "", require_points, excludes)) {
 			if (!sk.level) sk.updateLevel()
@@ -162,7 +162,7 @@ export class SkillDefault {
 	}
 
 	finalLevel(level: number): number {
-		if (level !== -Infinity) level += this.modifier
+		if (level !== Number.MIN_SAFE_INTEGER) level += this.modifier
 		return level
 	}
 

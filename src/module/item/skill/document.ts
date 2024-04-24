@@ -112,7 +112,7 @@ class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 
 	// Point & Level Manipulation
 	calculateLevel(): SkillLevel {
-		const none = { level: -Infinity, relativeLevel: 0, tooltip: new TooltipGURPS() }
+		const none = { level: Number.MIN_SAFE_INTEGER, relativeLevel: 0, tooltip: new TooltipGURPS() }
 		const actor = this.dummyActor || this.actor
 		if (!actor) return none
 		if (actor instanceof ActorGURPS && actor.isOfType(ActorType.Character)) {
@@ -122,7 +122,7 @@ class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 			let points = this.adjustedPoints()
 			const def = this.default
 			const diff = this.difficulty
-			if (level === -Infinity) return none
+			if (level === Number.MIN_SAFE_INTEGER) return none
 			if (sheetSettingsFor(actor).use_half_stat_defaults) {
 				level = Math.trunc(level / 2) + 5
 			}
@@ -144,11 +144,11 @@ class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 					relativeLevel = def!.adjustedLevel - level
 					break
 				default:
-					level = -Infinity
+					level = Number.MIN_SAFE_INTEGER
 					relativeLevel = 0
 			}
 
-			if (level === -Infinity) return none
+			if (level === Number.MIN_SAFE_INTEGER) return none
 			level += relativeLevel
 			if (diff !== difficulty.Level.Wildcard && def && level < def.adjustedLevel) {
 				level = def.adjustedLevel
@@ -210,7 +210,7 @@ class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 			const excludes = new Map()
 			excludes.set(this.name!, true)
 			let bestDef = new SkillDefault()
-			let best = -Infinity
+			let best = Number.MIN_SAFE_INTEGER
 			for (const def of this.resolveToSpecificDefaults()) {
 				if (def.equivalent(excluded) || this.inDefaultChain(def, new Map())) continue
 				const level = this.calcSkillDefaultLevel(def, excludes)

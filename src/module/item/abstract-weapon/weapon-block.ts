@@ -33,16 +33,16 @@ export class WeaponBlock extends WeaponField {
 				if (tooltip !== null) primaryTooltip = new TooltipGURPS()
 				const preAdj = w.skillLevelBaseAdjustment(actor, primaryTooltip)
 				const postAdj = w.skillLevelPostAdjustment(actor, primaryTooltip)
-				let best = -Infinity
+				let best = Number.MIN_SAFE_INTEGER
 				for (const def of w.defaults) {
 					let level = def.skillLevelFast(actor, false, null, true)
-					if (level === -Infinity) continue
+					if (level === Number.MIN_SAFE_INTEGER) continue
 					level += preAdj
 					if (def.type !== gid.Block) level = Math.trunc(level / 2)
 					level += postAdj
 					if (best < level) best = level
 				}
-				if (best !== -Infinity) {
+				if (best !== Number.MIN_SAFE_INTEGER) {
 					if (primaryTooltip !== null) tooltip?.push("\n", primaryTooltip)
 					result.modifier += 3 + best + actor.blockBonus
 					for (const bonus of w.collectWeaponBonuses(1, tooltip, feature.Type.WeaponBlockBonus)) {

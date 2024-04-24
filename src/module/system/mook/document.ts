@@ -176,7 +176,7 @@ export class Mook {
 	resolveAttributeCurrent(id: string): number {
 		const att = this.attributes?.get(id)?.current
 		if (att) return att
-		return -Infinity
+		return Number.MIN_SAFE_INTEGER
 	}
 
 	skillBonusFor(..._args: unknown[]): number {

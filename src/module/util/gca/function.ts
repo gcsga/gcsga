@@ -118,7 +118,7 @@ function evalIfGCA(e: EvaluatorGCA, args: string): boolean {
  * @param args
  */
 function evalMaximumGCA(e: EvaluatorGCA, args: string): number {
-	let max = -Infinity
+	let max = Number.MIN_SAFE_INTEGER
 	while (args) {
 		let arg: string
 		;[arg, args] = nextArg(args)
@@ -280,11 +280,11 @@ function evalMinimumGCA(e: EvaluatorGCA, args: string): number {
 // 	if (arg) relative = evalToBool(e, arg)
 // 	if (entity.isSkillLevelResolutionExcluded(name, specialization)) return 0
 // 	entity.registerSkillLevelResolutionExclusion(name, specialization)
-// 	let level = -Infinity
+// 	let level = Number.MIN_SAFE_INTEGER
 // 	entity.skills.forEach(s => {
 // 		if (s.type === ItemType.SkillContainer) return
 // 		else s = s as SkillResolver
-// 		if (level !== -Infinity) return
+// 		if (level !== Number.MIN_SAFE_INTEGER) return
 // 		if (equalFold(s.name || "", name) && equalFold(s.specialization, specialization)) {
 // 			s.updateLevel()
 // 			if (relative) level = s.level.relative_level

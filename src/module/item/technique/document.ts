@@ -95,7 +95,7 @@ class TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> exte
 		const points = this.adjustedPoints()
 
 		if (!(actor instanceof ActorGURPS) || !actor.isOfType(ActorType.Character)) {
-			return { level: -Infinity, relativeLevel: -Infinity, tooltip: tooltip }
+			return { level: Number.MIN_SAFE_INTEGER, relativeLevel: Number.MIN_SAFE_INTEGER, tooltip: tooltip }
 		}
 
 		// Level of defaulting skill.

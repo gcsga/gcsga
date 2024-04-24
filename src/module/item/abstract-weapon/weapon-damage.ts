@@ -30,6 +30,8 @@ export class WeaponDamage {
 
 	modifier_per_die?: number
 
+	current?: string
+
 	constructor(data: WeaponDamageObj & { owner?: AbstractWeaponGURPS }) {
 		this.owner = data.owner
 		this.type = data.type

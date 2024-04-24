@@ -67,7 +67,7 @@ class RitualMagicSpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | nul
 
 	calculateLevel(): SkillLevel {
 		let skillLevel: SkillLevel = {
-			level: -Infinity,
+			level: Number.MIN_SAFE_INTEGER,
 			relativeLevel: 0,
 			tooltip: new TooltipGURPS(),
 		}
@@ -118,7 +118,7 @@ class RitualMagicSpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | nul
 		const tooltip = new TooltipGURPS()
 		let relativeLevel = 0
 		let points = this.adjustedPoints()
-		let level = -Infinity
+		let level = Number.MIN_SAFE_INTEGER
 		if (this.actor?.isOfType(ActorType.Character)) {
 			if (def?.type === gid.Skill) {
 				const sk = this.actor.baseSkill(def!, true)
@@ -126,12 +126,12 @@ class RitualMagicSpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | nul
 			} else if (def) {
 				level = (def?.skillLevelFast(this.actor, true, null, false) || 0) - (def?.modifier || 0)
 			}
-			if (level !== -Infinity) {
+			if (level !== Number.MIN_SAFE_INTEGER) {
 				const base_level = level
 				level += def.modifier
 				if (this.difficulty === difficulty.Level.Hard) points -= 1
 				if (points > 0) relativeLevel = points
-				if (level !== -Infinity) {
+				if (level !== Number.MIN_SAFE_INTEGER) {
 					relativeLevel += this.actor.skillBonusFor(this.name!, college, this.tags, tooltip)
 					level += relativeLevel
 				}

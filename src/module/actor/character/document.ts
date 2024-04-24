@@ -62,7 +62,7 @@ import {
 	stlimit,
 	wsel,
 } from "@util"
-import { addWeaponBonusToMap } from "@actor/helpers.ts"
+import { addWeaponBonusToSet } from "@actor/helpers.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { ItemInstances } from "@item/types.ts"
 import { CharacterLifts } from "./lifts.ts"
@@ -509,7 +509,7 @@ class CharacterGURPS<
 		excludes: Map<string, boolean> | null,
 	): AbstractWeaponGURPS | null {
 		let best: AbstractWeaponGURPS | null = null
-		let level = -Infinity
+		let level = Number.MIN_SAFE_INTEGER
 		for (const w of this.weaponNamed(name, usage, type, excludes)) {
 			const skillLevel = w.level
 			if (!best || level < skillLevel) {
@@ -546,7 +546,7 @@ class CharacterGURPS<
 		excludes: Map<string, boolean> | null,
 	): SkillGURPS | null {
 		let best: SkillGURPS | null = null
-		let level = -Infinity
+		let level = Number.MIN_SAFE_INTEGER
 		for (const sk of this.skillNamed(name, specialization, require_points, excludes)) {
 			if (sk.isOfType(ItemType.Technique)) continue
 			const skillLevel = sk.calculateLevel().level
@@ -720,18 +720,18 @@ class CharacterGURPS<
 		tags: string[],
 		dieCount: number,
 		tooltip: TooltipGURPS | null = null,
-		m: Map<WeaponBonus, boolean> | null = null,
-		allowedFeatureTypes: Map<feature.Type, boolean> = new Map(),
-	): Map<WeaponBonus, boolean> {
-		if (m === null) m = new Map()
-		let rsl = -Infinity
+		set: Set<WeaponBonus> | null = null,
+		allowedFeatureTypes: Set<feature.Type> = new Set(),
+	): Set<WeaponBonus> {
+		if (set === null) set = new Set()
+		let rsl = Number.MIN_SAFE_INTEGER
 		for (const sk of this.skillNamed(name, specialization, true, null)) {
 			if (rsl < sk.level.relativeLevel) rsl = sk.level.relativeLevel
 		}
 		if (this.features)
 			for (const f of this.features.weaponBonuses) {
 				if (
-					allowedFeatureTypes.get(f.type) &&
+					allowedFeatureTypes.has(f.type) &&
 					f.selection_type === wsel.Type.WithRequiredSkill &&
 					f.name?.matches(name) &&
 					f.specialization?.matches(specialization) &&
@@ -739,10 +739,10 @@ class CharacterGURPS<
 					f.usage?.matches(usage) &&
 					f.tags?.matchesList(...tags)
 				) {
-					addWeaponBonusToMap(f, dieCount, tooltip, m)
+					addWeaponBonusToSet(f, dieCount, tooltip, set)
 				}
 			}
-		return m
+		return set
 	}
 
 	addNamedWeaponBonusesFor(
@@ -751,22 +751,22 @@ class CharacterGURPS<
 		tags: string[],
 		dieCount: number,
 		tooltip: TooltipGURPS | null = null,
-		m: Map<WeaponBonus, boolean> = new Map(),
-		allowedFeatureTypes: Map<feature.Type, boolean> = new Map(),
-	): Map<WeaponBonus, boolean> {
+		set: Set<WeaponBonus> = new Set(),
+		allowedFeatureTypes: Set<feature.Type> = new Set(),
+	): Set<WeaponBonus> {
 		if (this.features)
 			for (const f of this.features.weaponBonuses) {
 				if (
-					allowedFeatureTypes.get(f.type) &&
+					allowedFeatureTypes.has(f.type) &&
 					f.selection_type === wsel.Type.WithName &&
 					f.name?.matches(name) &&
 					f.usage?.matches(usage) &&
 					f.tags?.matchesList(...tags)
 				) {
-					addWeaponBonusToMap(f, dieCount, tooltip, m)
+					addWeaponBonusToSet(f, dieCount, tooltip, set)
 				}
 			}
-		return m
+		return set
 	}
 
 	namedWeaponSkillBonusesFor(

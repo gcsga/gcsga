@@ -112,7 +112,7 @@ async function _onRollClick(event: JQuery.ClickEvent) {
 
 			// Update level at least once to calculate default level
 			data.item.updateLevel()
-			if (!data.item || data.item.effectiveLevel === -Infinity) {
+			if (!data.item || data.item.effectiveLevel === Number.MIN_SAFE_INTEGER) {
 				ui.notifications?.warn(LocalizeGURPS.translations.gurps.notification.no_default_skill)
 				return
 			}
@@ -120,7 +120,7 @@ async function _onRollClick(event: JQuery.ClickEvent) {
 	} else if ([RollType.Spell, RollType.SpellRelative].includes(type)) {
 		const itemData = $(event.currentTarget).data("json")
 		data.item = actor.itemCollections.spells.find(e => e.name === itemData.name)
-		if (!data.item || data.item.effectiveLevel === -Infinity) {
+		if (!data.item || data.item.effectiveLevel === Number.MIN_SAFE_INTEGER) {
 			ui.notifications?.warn(LocalizeGURPS.translations.gurps.notification.no_default_skill)
 			return
 		}
@@ -129,7 +129,7 @@ async function _onRollClick(event: JQuery.ClickEvent) {
 		data.item = actor.itemCollections.weapons.find(
 			e => e.itemName === itemData.itemName && e.usage === itemData.usage,
 		)
-		if (!data.item || data.item.effectiveLevel === -Infinity) {
+		if (!data.item || data.item.effectiveLevel === Number.MIN_SAFE_INTEGER) {
 			ui.notifications?.warn(LocalizeGURPS.translations.gurps.notification.no_default_skill)
 			return
 		}

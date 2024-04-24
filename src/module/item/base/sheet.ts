@@ -77,7 +77,7 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 			if (!(field instanceof HTMLSelectElement)) return
 			field.addEventListener("change", async event => {
 				event.preventDefault()
-				await this._onSubmit(event) // Submit any unsaved changes
+				// await this._onSubmit(event) // Submit any unsaved changes
 
 				let path = field.dataset.path?.replace(/^array\./, "")
 				if (!path) return console.error("No data-path value provided for:", field)
@@ -153,7 +153,7 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 			if (!(field instanceof HTMLSelectElement)) return
 			field.addEventListener("change", async event => {
 				event.preventDefault()
-				await this._onSubmit(event) // Submit any unsaved changes
+				// await this._onSubmit(event) // Submit any unsaved changes
 
 				const index = parseInt(field.dataset.index ?? "")
 				if (isNaN(index)) return console.error("No valid index provided for:", field)
