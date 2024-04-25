@@ -59,7 +59,7 @@
         <div class="placeholder"></div>
         <select name="array.system.features.{{@index}}.specialization.compare">
             {{#select this.specialization.compare}}
-            {{#if (eq this.selection_type "skills_with_name") }}
+            {{#if (eq this.selection_type "weapons_with_required_skill") }}
                 {{#each @root.config.select.string_criteria as |v k| }}
                     <option value="{{ k }}">{{ localize "gurps.field_prefix.specialization" }} {{ localize v }}</option>
                 {{/each}} {{ else }}

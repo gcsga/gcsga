@@ -1,0 +1,8 @@
+@mixin header {
+	color: rgb(var(--color-on-header));
+	background-color: rgb(var(--color-header));
+	padding: var(--padding-header);
+}
+
+@mixin field {
+}

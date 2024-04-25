@@ -1,10 +1,9 @@
 ## Immediate TODO
 
+-   Simplify all styling
+
 0. BUGS
 
--   fix weapon damage bonus not working when not against "this weapon"
--   fix weapon by skill showing specialization instead of usage
--   fix features not applying per level
 -   check github issues and check against them
 
 1. Character Sheet
