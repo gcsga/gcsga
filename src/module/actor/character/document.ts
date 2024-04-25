@@ -728,7 +728,7 @@ class CharacterGURPS<
 		for (const sk of this.skillNamed(name, specialization, true, null)) {
 			if (rsl < sk.level.relativeLevel) rsl = sk.level.relativeLevel
 		}
-		if (this.features)
+		if (this.features) {
 			for (const f of this.features.weaponBonuses) {
 				if (
 					allowedFeatureTypes.has(f.type) &&
@@ -742,6 +742,7 @@ class CharacterGURPS<
 					addWeaponBonusToSet(f, dieCount, tooltip, set)
 				}
 			}
+		}
 		return set
 	}
 

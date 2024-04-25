@@ -376,11 +376,13 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 	}
 
 	override prepareEmbeddedDocuments(): void {
+		// need to grab features before preparing values on items.
+		// Otherwise, all non-getters will simply not see any features as these
+		// get discarded at the beginning of data preparation
+		this.prepareFeatures()
+
 		super.prepareEmbeddedDocuments()
 
-		// this.itemCollections = new ItemCollectionMap<this>(this.items)
-
-		this.prepareFeatures()
 		this.discardCaches()
 		this.updateSkills()
 		this.updateSpells()
@@ -535,7 +537,7 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 		// }
 
 		for (const item of this.items) {
-			item.prepareSiblingData?.()
+			item.prepareSiblingData()
 		}
 	}
 

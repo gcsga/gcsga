@@ -264,8 +264,7 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 		...allowedFeatureTypes: feature.WeaponBonusType[]
 	): WeaponBonus[] {
 		if (!this.actor || !this.actor.isOfType(ActorType.Character)) return []
-		const allowed: Set<feature.WeaponBonusType> = new Set()
-		for (const one of allowedFeatureTypes) allowed.add(one)
+		const allowed = new Set(allowedFeatureTypes)
 		let bestDef = new SkillDefault()
 		let best = Number.MIN_SAFE_INTEGER
 		for (const one of this.defaults) {
@@ -301,12 +300,14 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 		}
 		if (
 			!(this.container instanceof CompendiumCollection) &&
-			[ItemType.Trait, ItemType.TraitContainer, ItemType.Equipment, ItemType.EquipmentContainer].includes(
-				this.container?.type as ItemType,
+			this.container?.isOfType(
+				ItemType.Trait,
+				ItemType.TraitContainer,
+				ItemType.Equipment,
+				ItemType.EquipmentContainer,
 			)
 		) {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			;(this.container as any).modifiers.forEach((mod: any) => {
+			this.container.modifiers.forEach((mod: any) => {
 				let bonus: Feature
 				for (const f of mod.features) {
 					bonus = f
@@ -361,7 +362,6 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 			}
 			f.leveledAmount.level = savedLevel
 			f.leveledAmount.dieCount = savedDieCount
-			console.log(f.leveledAmount, f.adjustedAmount)
 		}
 	}
 
