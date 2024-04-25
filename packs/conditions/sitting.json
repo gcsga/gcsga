@@ -21,7 +21,15 @@
         },
         "modifiers": [
             {
-                "id": "to hit with ranged combat (Sitting/Crawling/Lying Down)",
+                "id": "to hit with melee attacks (Crouching/Kneeling/Sitting)",
+                "modifier": -2
+            },
+            {
+                "id": "to be hit with ranged attacks (Crouching/Kneeling/Sitting)",
+                "modifier": -2
+            },
+            {
+                "id": "to Active Defense (Kneeling/Sitting)",
                 "modifier": -2
             }
         ],

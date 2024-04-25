@@ -460,25 +460,16 @@ export function loadModifiers(): void {
 
 	const modifiersCover: ModifierItem[] = [
 		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.cover, title: true },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.head_only, modifier: -5 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.head_and_shoulders, modifier: -4 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.half_exposed, modifier: -3 },
 		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.light_cover, modifier: -2 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.same_sized_figure, modifier: -4 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.prone_no_cover, modifier: -4 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.prone_head_up, modifier: -5 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.prone_head_down, modifier: -7 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.crouching_no_cover, modifier: -2 },
+		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.partially_exposed, modifier: -2 },
 		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.occupied_hex, modifier: -4 },
 		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.posture, title: true },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.melee_crawling, modifier: -4 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.ranged_sitting, modifier: -2 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.defense_crawling, modifier: -3 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.melee_crouching, modifier: -2 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.ranged_crouching, modifier: -2 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.hit_ranged_crouching, modifier: -2 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.melee_kneeling, modifier: -2 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.defense_kneeling, modifier: -2 },
+		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.melee_crouch_kneel_sit, modifier: -2 },
+		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.ranged_crouch_kneel_sit, modifier: -2 },
+		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.defense_kneel_sit, modifier: -2 },
+		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.melee_crawl_prone, modifier: -4 },
+		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.ranged_crawl_prone, modifier: -2 },
+		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.defense_crawl_prone, modifier: -3 },
 	]
 
 	const modifiersDifficulty: ModifierItem[] = [
