@@ -1,10 +1,10 @@
 <form class="{{ cssClass }}" autocomplete="off">
-	<div id="personal">
+	<section id="personal">
 		{{>actor/character/partials/portrait }} {{>actor/character/partials/identity }}
 		{{>actor/character/partials/miscellaneous }} {{>actor/character/partials/description }}
 		{{>actor/character/partials/points pb=actor.pointsBreakdown}}
-	</div>
-	<div id="stats">
+	</section>
+	<section id="stats">
 		<div id="attributes">
 			{{>actor/character/partials/primary-attributes }} {{>actor/character/partials/basic-damage }}
 			{{>actor/character/partials/secondary-attributes }} {{>actor/character/partials/pool-attributes }}
@@ -32,12 +32,12 @@
 		</div>
 		<div id="resource-trackers">{{>actor/character/partials/resource-trackers }}</div>
 		<div id="move">{{>actor/character/partials/move }}</div>
-	</div>
+	</section>
 	{{>actor/character/partials/embeds}}
-	<div id="footer">
+	<section id="footer">
 		<div class="left">{{{ localize "gurps.character.copyright" current_year=current_year }}}</div>
 		<div class="right">
 			<a tabindex="-1" href="https://gurpscharactersheet.com/">gurpscharactersheet.com</a>
 		</div>
-	</div>
+	</section>
 </form>
