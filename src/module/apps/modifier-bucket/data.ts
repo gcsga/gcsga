@@ -239,14 +239,14 @@ export function loadModifiers(): void {
 			},
 			{
 				tags: ["Defense"],
-				id: LocalizeGURPS.translations.gurps.modifier.defense.dodge_side,
+				id: LocalizeGURPS.translations.gurps.modifier.defense.defend_side,
 				modifier: -2,
 				reference: "B390",
 			},
 			{
 				tags: ["Defense"],
-				id: LocalizeGURPS.translations.gurps.modifier.defense.dodge_rear,
-				modifier: -4,
+				id: LocalizeGURPS.translations.gurps.modifier.defense.defend_rear,
+				modifier: -2,
 				reference: "B391",
 			},
 			{ tags: ["Defense"], id: LocalizeGURPS.translations.gurps.modifier.defense.deceptive, modifier: -1 },
@@ -440,9 +440,13 @@ export function loadModifiers(): void {
 		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.arm, modifier: -2 },
 		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.torso, modifier: 0 },
 		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.vitals, modifier: -3 },
-		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.heart, modifier: -5 },
 		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.groin, modifier: -3 },
 		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.leg, modifier: -2 },
+		{
+			tags: ["Hit Location"],
+			id: LocalizeGURPS.translations.gurps.modifier.hit_location.hand_shield,
+			modifier: -8,
+		},
 		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.hand, modifier: -4 },
 		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.foot, modifier: -4 },
 		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.neck, modifier: -5 },
@@ -524,11 +528,6 @@ export function loadModifiers(): void {
 	]
 
 	const modifiersQuality: ModifierItem[] = [
-		{
-			tags: ["Quality"],
-			id: LocalizeGURPS.translations.gurps.modifier.equipment_quality.best_possible,
-			modifier: -10,
-		},
 		{
 			tags: ["Quality"],
 			id: LocalizeGURPS.translations.gurps.modifier.equipment_quality.best_possible,
