@@ -1,8 +1,13 @@
 @mixin rollables {
 	.rollable {
 		cursor: pointer;
-		input {
+		input[type="text"],
+		input[type="number"] {
 			cursor: pointer;
+
+			&[disabled] {
+				border: none;
+			}
 		}
 	}
 	.rollable[data-type="modifier"]:not(.noroll) {

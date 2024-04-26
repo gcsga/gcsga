@@ -6,19 +6,19 @@
 			<div class="separator" data-text="{{ this.definition.name }}">{{ this.definition.name }}</div>
 		</div>
 		{{ else if (or (eq this.definition.type "integer_ref") (eq this.attribte_def.type "decimal_ref")) }}
-		<div class="points"></div>
+		<label class="points"></label>
 		<div data-id="{{ this.id }}" data-type="attribute" class="field rollable {{ effective this }}">
 			<input
 				class="number"
 				type="text"
 				value="{{ this.effective }}"
 				disabled
-				style="min-width: {{ length this.effective }}ch"
+				style="min-width: {{ length this.effective }}rem"
 			/>
 		</div>
 		<label>{{ this.definition.combinedName }}</label>
 		{{ else }}
-		<div class="points">[{{ this.points }}]</div>
+		<label class="points">[{{ this.points }}]</label>
 		{{#if @root.editMode}}
 		<div data-id="{{ this.id }}" data-type="attribute" class="field">
 			<input
@@ -27,7 +27,7 @@
 				type="text"
 				data-dtype="Number"
 				value="{{ this.effective }}"
-				style="min-width: {{ length this.effective }}ch"
+				style="min-width: {{ length this.effective }}rem"
 			/>
 		</div>
 		{{ else }}
@@ -36,7 +36,7 @@
 				class="input number"
 				type="text"
 				value="{{ this.effective }}"
-				style="min-width: {{ length this.effective }}ch"
+				style="min-width: {{ length this.effective }}rem"
 				disabled
 			/>
 		</div>

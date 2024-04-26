@@ -9,11 +9,10 @@
 		<label class="points"></label>
 		<div data-id="{{ this.id }}" data-type="attribute" class="field rollable {{ effective this }}">
 			<input
-				class="number"
-				type="text"
+				type="number"
 				value="{{ this.effective }}"
 				disabled
-				style="min-width: {{ length this.effective }}ch"
+				style="min-width: {{ length this.effective }}rem"
 			/>
 		</div>
 		<label>{{ this.definition.combinedName }}</label>
@@ -23,20 +22,18 @@
 		<div data-id="{{ this.id }}" data-type="attribute" class="field">
 			<input
 				name="attributes.{{ this.id }}.adj"
-				class="input number"
-				type="text"
+				type="number"
 				data-dtype="Number"
 				value="{{ this.effective }}"
-				style="min-width: {{ length this.effective }}ch"
+				style="min-width: {{ length this.effective 2 }}rem"
 			/>
 		</div>
 		{{ else }}
 		<div data-id="{{ this.id }}" data-type="attribute" class="field rollable {{ effective this }}">
 			<input
-				class="input number"
-				type="text"
+				type="number"
 				value="{{ this.effective }}"
-				style="min-width: {{ length this.effective }}ch"
+				style="min-width: {{ length this.effective 2 }}rem"
 				disabled
 			/>
 		</div>

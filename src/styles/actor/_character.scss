@@ -1,0 +1,121 @@
+.actor.character.sheet section.window-content {
+	@include header;
+	@include fieldblock;
+	@include rollables;
+
+	div#portrait,
+	div#identity,
+	div#miscellaneous,
+	div#description,
+	div#points,
+	div#primary-attributes,
+	div#basic-damage,
+	div#secondary-attributes,
+	div#pool-attributes {
+		> div {
+			height: calc(100% - 1.125rem);
+			padding: 0.25rem;
+			color: rgb(var(--color-on-background));
+			background: rgb(var(--color-background));
+			border: 1px solid rgb(var(--color-header));
+			border-top: 0;
+		}
+	}
+
+	section#personal,
+	section#stats {
+		display: grid;
+		gap: var(--gap-section);
+	}
+
+	section#personal {
+		grid-area: personal;
+		grid-template:
+			"portrait identity miscellaneous points"
+			"portrait description description points";
+	}
+
+	div#portrait {
+		grid-area: portrait;
+
+		.img-display {
+			aspect-ratio: 1/1;
+
+			background-position: center;
+			background-repeat: no-repeat;
+			background-size: contain;
+
+			.profile-img {
+				width: 90%;
+				aspect-ratio: 1/1;
+
+				opacity: 0;
+				border: none;
+			}
+		}
+	}
+
+	div#identity {
+		grid-area: identity;
+	}
+
+	div#miscellaneous {
+		grid-area: miscellaneous;
+	}
+
+	div#points {
+		grid-area: points;
+	}
+
+	div#description {
+		grid-area: description;
+		display: grid;
+
+		div.content {
+			display: grid;
+			grid-auto-flow: column;
+			height: 100%;
+		}
+	}
+
+	section#stats {
+		grid-area: stats;
+		grid-template:
+			"attributes hit-locations encumbrance-lifting"
+			"resource-trackers move move";
+	}
+
+	div#attributes {
+		grid-area: attributes;
+		display: grid;
+		grid-template:
+			"primary-attributes secondary-attributes"
+			"basic-damage secondary-attributes"
+			"pool-attributes pool-attributes";
+		grid-template-columns: 1fr 1fr;
+		gap: var(--section-gap);
+	}
+
+	div#primary-attributes,
+	div#secondary-attributes {
+		label.points {
+			font: var(--font-page-secondary-fields);
+		}
+	}
+
+	div#primary-attributes {
+		grid-area: primary-attributes;
+	}
+
+	div#secondary-attributes {
+		grid-area: secondary-attributes;
+	}
+
+	div#pool-attributes {
+		grid-area: pool-attributes;
+	}
+
+	div#basic-damage {
+		grid-area: basic-damage;
+	}
+}
