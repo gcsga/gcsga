@@ -1,15 +1,45 @@
 .actor.sheet section.window-content {
 	@import "embeds";
 
-	display: grid;
+	form {
+		display: flex;
+		flex-flow: column nowrap;
+		gap: var(--gap-section);
+		margin: 1px;
+	}
+
 	padding: 0;
-	gap: var(--gap-section);
+
+	:not(a)[data-tooltip]:not([data-tooltip=""]) {
+		border-bottom: 1px solid rgb(var(--color-tooltip-marker));
+	}
 
 	section {
 		display: grid;
 		gap: var(--gap-section);
 	}
+
+	select {
+		appearance: none;
+		font: var(--font-page-primary-fields);
+		background-color: rgb(var(--color-editable));
+		color: rgb(var(--color-on-editable));
+		border: none;
+		border-bottom: 1px solid rgb(var(--color-control-edge));
+		border-radius: 0;
+		padding: 0;
+		height: 1.125rem;
+		width: max-content;
+		align-items: self-end;
+	}
+
+	option {
+		font: var(--font-page-primary-fields);
+		background-color: rgb(var(--color-control));
+		color: rgb(var(--color-on-control));
+		border: 1px solid rgb(var(--color-control-edge));
+	}
 }
 
-@import "character";
 // @import "character_config";
+@import "character";

@@ -55,7 +55,7 @@ class HitLocation<TOwner extends BodyOwner = BodyOwner> {
 		this.hitPenalty = 0
 		this.drBonus = 0
 
-		this.rollRange = "-"
+		this.rollRange = ""
 	}
 
 	static defineSchema(): HitLocationSchema {
@@ -112,7 +112,7 @@ class HitLocation<TOwner extends BodyOwner = BodyOwner> {
 	updateRollRange(start: number): number {
 		switch (this.slots) {
 			case 0:
-				this.rollRange = "-"
+				this.rollRange = ""
 				break
 			case 1:
 				this.rollRange = `${start}`

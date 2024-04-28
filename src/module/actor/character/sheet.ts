@@ -1,14 +1,15 @@
 import { CharacterGURPS } from "@actor"
 import { ActorSheetDataGURPS, ActorSheetGURPS } from "@actor/base/sheet.ts"
 import { ItemGURPS } from "@item"
-import { AbstractAttribute, PoolThreshold } from "@system"
+import { AbstractAttribute, AttributeObj, PoolThreshold, ResourceTrackerObj } from "@system"
 import { ActorFlags, ItemFlags, ItemType, ManeuverID, SYSTEM_NAME } from "@module/data/constants.ts"
 import { LocalizeGURPS, Weight, htmlQuery, htmlQueryAll } from "@util"
 import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
 import { CharacterEncumbrance } from "./encumbrance.ts"
 import { CharacterConfigSheet } from "./config.ts"
 import { SheetItem, SheetItemCollection } from "@item/helpers.ts"
-import { CharacterMove } from "./data.ts"
+import { CharacterMove, Encumbrance } from "./data.ts"
+import { DiceGURPS } from "@module/dice/index.ts"
 
 enum SheetModes {
 	PLAY = 1,
@@ -20,7 +21,7 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS
 
 	static override get defaultOptions(): ActorSheetOptions {
 		const data = fu.mergeObject(super.defaultOptions, {
-			width: 800,
+			width: 860,
 			height: 800,
 			tabs: [{ navSelector: ".tabs-navigation", contentSelector: ".tabs-content", initial: "lifting" }],
 			dragDrop: [{ dragSelector: ".item-list .item:not(.placeholder)", dropSelector: null }],
@@ -114,9 +115,19 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS
 			carriedValue: actor.wealthCarried(),
 			carriedWeight: Weight.format(actor.weightCarried(false), sheetSettingsFor(actor).default_weight_units),
 			uncarriedValue: actor.wealthNotCarried(),
-			encumbrance: actor.encumbrance,
+			encumbrance: this._prepareEncumbrance(this.actor.encumbrance),
 			editMode: this._mode === SheetModes.EDIT,
+			currentYear: new Date().getFullYear(),
 		}
+	}
+
+	protected _prepareEncumbrance(encumbrance: CharacterEncumbrance<TActor>): SheetEncumbrance[] {
+		return encumbrance.levels.map(e => {
+			return {
+				...e,
+				formattedCarry: Weight.format(e.maximumCarry, sheetSettingsFor(this.actor).default_weight_units),
+			}
+		})
 	}
 
 	protected _prepareItemCollections(): Record<string, SheetItemCollection> {
@@ -240,6 +251,62 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS
 		)
 		return [lockButton, ...buttons]
 	}
+
+	protected override _updateObject(event: Event, formData: Record<string, unknown>): Promise<void> {
+		if (formData.thrust || formData.swing) {
+			const autoDamage = {
+				active: this.actor.flags[SYSTEM_NAME][ActorFlags.AutoDamage]?.active ?? false,
+				thrust: new DiceGURPS(formData.thrust as string),
+				swing: new DiceGURPS(formData.swing as string),
+			}
+			delete formData.thrust
+			delete formData.swing
+			formData[`flags.${SYSTEM_NAME}.${ActorFlags.AutoDamage}`] = autoDamage
+		}
+
+		// Set values inside system.attributes array, and amend written values based on input
+		for (const i of Object.keys(formData)) {
+			if (i.startsWith("attributes.")) {
+				const attributes: AttributeObj[] =
+					(formData["system.attributes"] as AttributeObj[]) ?? fu.duplicate(this.actor.system.attributes)
+				const id = i.split(".")[1]
+				const att = this.actor.attributes.get(id)
+				if (att) {
+					if (i.endsWith(".adj")) (formData[i] as number) -= att.max - att.adj
+					if (i.endsWith(".damage")) (formData[i] as number) = Math.max(att.max - (formData[i] as number), 0)
+				}
+				const key = i.replace(`attributes.${id}.`, "")
+				const index = attributes.findIndex(e => e.id === id)
+				fu.setProperty(attributes[index], key, formData[i])
+				formData["system.attributes"] = attributes
+				delete formData[i]
+			}
+			if (i.startsWith("resource_trackers.")) {
+				const resource_trackers: ResourceTrackerObj[] =
+					(formData["system.resource_trackers"] as ResourceTrackerObj[]) ??
+					fu.duplicate(this.actor.system.resource_trackers)
+				const id = i.split(".")[1]
+				const tracker = this.actor.resourceTrackers.get(id)
+				if (tracker) {
+					let damage = tracker.max - Number(formData[i])
+					if (tracker.definition?.isMaxEnforced) damage = Math.max(damage, 0)
+					if (tracker.definition?.isMinEnforced) damage = Math.min(damage, tracker.max - tracker.min)
+					if (i.endsWith(".damage")) (formData[i] as number) = damage
+				}
+				const key = i.replace(`resource_trackers.${id}.`, "")
+				const index = resource_trackers.findIndex(e => e.id === id)
+				fu.setProperty(resource_trackers[index], key, formData[i])
+				formData["system.resource_trackers"] = resource_trackers
+				delete formData[i]
+			}
+		}
+
+		return super._updateObject(event, formData)
+	}
+}
+
+type SheetEncumbrance = Encumbrance & {
+	formattedCarry: string
 }
 
 interface CharacterSheetData<TActor extends CharacterGURPS = CharacterGURPS> extends ActorSheetDataGURPS<TActor> {
@@ -253,8 +320,9 @@ interface CharacterSheetData<TActor extends CharacterGURPS = CharacterGURPS> ext
 	carriedValue: number
 	carriedWeight: string
 	uncarriedValue: number
-	encumbrance: CharacterEncumbrance<TActor>
+	encumbrance: SheetEncumbrance[]
 	editMode: boolean
+	currentYear: number
 }
 
 export { CharacterSheetGURPS }

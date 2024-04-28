@@ -19,7 +19,7 @@ export function registerTemplates(): void {
 		"actor/character/partials/description",
 		"actor/character/partials/embeds",
 		"actor/character/partials/encumbrance",
-		"actor/character/partials/hit-location",
+		"actor/character/partials/hit-location-table",
 		"actor/character/partials/identity",
 		"actor/character/partials/lifting",
 		"actor/character/partials/macros",

@@ -13,7 +13,7 @@
 				type="text"
 				value="{{ this.effective }}"
 				disabled
-				style="min-width: {{ length this.effective }}rem"
+				style="min-width: calc({{ length this.effective }}ch + 1ch)"
 			/>
 		</div>
 		<label>{{ this.definition.combinedName }}</label>
@@ -27,7 +27,7 @@
 				type="text"
 				data-dtype="Number"
 				value="{{ this.effective }}"
-				style="min-width: {{ length this.effective }}rem"
+				style="min-width: calc({{ length this.effective }}ch + 1ch)"
 			/>
 		</div>
 		{{ else }}
@@ -36,12 +36,12 @@
 				class="input number"
 				type="text"
 				value="{{ this.effective }}"
-				style="min-width: {{ length this.effective }}rem"
+				style="min-width: calc({{ length this.effective }}ch + 1ch)"
 				disabled
 			/>
 		</div>
 		{{/if}}
-		<label>{{ this.definition.combinedName }}</label>
+		<span>{{ this.definition.combinedName }}</span>
 		{{/if}} {{/each}}
 	</div>
 </div>

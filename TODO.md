@@ -2,14 +2,9 @@
 
 -   Simplify all styling
 
-0. BUGS
+1. BUGS
 
--   check github issues and check against them
-
-1. Character Sheet
-
--   fix headers
--   fix styling
+    - check github issues and check against them
 
 2. Compendium browser
 
@@ -35,18 +30,21 @@
 
     - Reimplement missing functionality
 
-7. Migration
-
-    - Implement full actor/item migration from 0.16 to 1.0
-        - Implement migration for equipment_gcs and character_gcs old versions to unified one
-
-8. The Forge
+7. The Forge
 
     - Ensure everything works correctly on the forge
 
-9. Trait Container Ancestry
+8. Trait Container Ancestry
 
     - Implement
+
+9. misc
+
+    - item directory should indicate when items have contents
+
+10. Migration
+
+    - Implement full actor/item migration from 0.16 to 1.0
 
 # TO DO
 
@@ -83,6 +81,7 @@
 
 ## 1.1.0 and beyond
 
+-   off-hand flag and penalties for weapons
 -   Optional ADD settings
 -   id match attributes to be treated differently
 -   HP, Ablative DR?, resource trackers too, to be used as HP

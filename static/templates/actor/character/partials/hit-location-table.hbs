@@ -1,0 +1,30 @@
+<div id="hit-locations">
+	<header>
+		<span class="title">{{ actor.hitLocationTable.name }}</span>
+	</header>
+	<header>
+		<div class="roll rollable" data-type="location">{{ localize "gurps.character.body_type.roll" }}</div>
+		<span class="location">{{ localize "gurps.character.body_type.location" }}</span>
+		<span class="dr">{{ localize "gurps.character.body_type.dr" }}</span>
+	</header>
+	<ul>
+		{{#each actor.hitLocationTable.locations}} {{> location}} {{/each}}
+	</ul>
+</div>
+{{#*inline "location"}}
+<li>
+	<span class="roll">{{ this.rollRange }}</span>
+	<span class="location" data-tooltip="{{{ this.descriptionTooltip }}}" data-tooltip-direction="DOWN">
+		{{ this.tableName }}
+	</span>
+	<div
+		data-modifier="{{ ror this.hitPenalty 0 }}"
+		data-comment="{{ localize 'gurps.character.body_type.penalty_for' name=this.tableName }}"
+		data-type="modifier"
+		class="penalty rollable"
+	>
+		{{ signed (ror this.hitPenalty 0) }}
+	</div>
+	<span class="dr">{{ this.displayDR }}</span>
+</li>
+{{/inline}}

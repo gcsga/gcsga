@@ -24,7 +24,7 @@
 				type="text"
 				name="thrust"
 				value="{{ actor.thrust.string }}"
-				style="min-width: {{ length actor.thrust.string }}rem"
+				style="min-width: calc({{ length actor.thrust.string }}ch + 1ch)"
 				data-dtype="String"
 			/>
 		</div>
@@ -33,12 +33,12 @@
 			<input
 				type="text"
 				value="{{ actor.thrust.string }}"
-				style="min-width: {{ length actor.thrust.string }}rem"
+				style="min-width: calc({{ length actor.thrust.string }}ch + 1ch)"
 				disabled
 			/>
 		</div>
 		{{/if}}
-		<label>{{ localize "gurps.character.basic_thrust" }}</label>
+		<span>{{ localize "gurps.character.basic_thrust" }}</span>
 		<div class="points" readonly></div>
 		{{#if @root.editMode}}
 		<div class="field">
@@ -46,7 +46,7 @@
 				type="text"
 				name="swing"
 				value="{{ actor.swing.string }}"
-				style="min-width: {{ length actor.swing.string }}rem"
+				style="min-width: calc({{ length actor.swing.string }}ch + 1ch)"
 				data-dtype="String"
 			/>
 		</div>
@@ -55,12 +55,12 @@
 			<input
 				type="text"
 				value="{{ actor.swing.string }}"
-				style="min-width: {{ length actor.swing.string }}rem"
+				style="min-width: calc({{ length actor.swing.string }}ch + 1ch)"
 				type="text"
 				disabled
 			/>
 		</div>
 		{{/if}}
-		<label>{{ localize "gurps.character.basic_swing" }}</label>
+		<span>{{ localize "gurps.character.basic_swing" }}</span>
 	</div>
 </div>

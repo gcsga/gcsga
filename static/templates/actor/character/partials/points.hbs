@@ -5,43 +5,25 @@
 	</header>
 	<div class="fieldblock">
 		{{#if pb.overspent}}
-		<div class="field">
-			<input type="text" class="input overspent" value="{{ pb.unspent }}" disabled />
-		</div>
-		<label class="label overspent">{{ localize "gurps.character.points.overspent" }}</label>
+		<label>{{ pb.unspent }}</label>
+		<div class="overspent">{{ localize "gurps.character.points.overspent" }}</div>
 		{{ else }}
-		<div class="field">
-			<input type="text" value="{{ pb.unspent }}" disabled />
-		</div>
-		<label>{{ localize "gurps.character.points.unspent" }}</label>
+		<label>{{ pb.unspent }}</label>
+		<div>{{ localize "gurps.character.points.unspent" }}</div>
 		{{/if}}
-		<div class="field">
-			<input type="text" value="{{ pb.ancestry }}" disabled />
-		</div>
-		<label>{{ localize "gurps.character.points.ancestry" }}</label>
-		<div class="field">
-			<input type="text" value="{{ pb.attributes }}" disabled />
-		</div>
-		<label>{{ localize "gurps.character.points.attributes" }}</label>
-		<div class="field">
-			<input type="text" value="{{ pb.advantages }}" disabled />
-		</div>
-		<label>{{ localize "gurps.character.points.advantages" }}</label>
-		<div class="field">
-			<input type="text" value="{{ pb.disadvantages }}" disabled />
-		</div>
-		<label>{{ localize "gurps.character.points.disadvantages" }}</label>
-		<div class="field">
-			<input type="text" value="{{ pb.quirks }}" disabled />
-		</div>
-		<label>{{ localize "gurps.character.points.quirks" }}</label>
-		<div class="field">
-			<input type="text" value="{{ pb.skills }}" disabled />
-		</div>
-		<label>{{ localize "gurps.character.points.skills" }}</label>
-		<div class="field">
-			<input type="text" value="{{ pb.spells }}" disabled />
-		</div>
-		<label>{{ localize "gurps.character.points.spells" }}</label>
+		<label>{{ pb.ancestry }}</label>
+		<div>{{ localize "gurps.character.points.ancestry" }}</div>
+		<label>{{ pb.attributes }}</label>
+		<div>{{ localize "gurps.character.points.attributes" }}</div>
+		<label>{{ pb.advantages }}</label>
+		<div>{{ localize "gurps.character.points.advantages" }}</div>
+		<label>{{ pb.disadvantages }}</label>
+		<div>{{ localize "gurps.character.points.disadvantages" }}</div>
+		<label>{{ pb.quirks }}</label>
+		<div>{{ localize "gurps.character.points.quirks" }}</div>
+		<label>{{ pb.skills }}</label>
+		<div>{{ localize "gurps.character.points.skills" }}</div>
+		<label>{{ pb.spells }}</label>
+		<div>{{ localize "gurps.character.points.spells" }}</div>
 	</div>
 </div>

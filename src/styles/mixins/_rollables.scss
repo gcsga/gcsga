@@ -6,7 +6,7 @@
 			cursor: pointer;
 
 			&[disabled] {
-				border: none;
+				color: inherit !important;
 			}
 		}
 	}

@@ -1,47 +1,50 @@
 <div id="encumbrance">
-	<header>
-		<span class="title">
-			{{ localize "gurps.character.encumbrance.title" }} {{#if settings.auto_encumbrance.active}}
-			<a
-				class="fas fa-toggle-on"
-				data-tooltip="{{ localize 'gurps.tooltip.auto_encumbrance' }}"
-				data-tooltip-direction="DOWN"
-				data-action="toggle-encumbrance"
-			></a>
-			{{ else }}
-			<a
-				class="fas fa-toggle-off"
-				data-tooltip="{{ localize 'gurps.tooltip.auto_encumbrance' }}"
-				data-tooltip-direction="DOWN"
-				data-action="toggle-encumbrance"
-			></a>
-			{{/if}}
-		</span>
-	</header>
-	<header>
-		<span class="level">{{ localize "gurps.character.encumbrance.level" }}</span>
-		<span class="max-load">{{ localize "gurps.character.encumbrance.max_load" }}</span>
-		<span class="move">{{ localize "gurps.character.encumbrance.move" }}</span>
-		<span class="dodge">{{ localize "gurps.character.encumbrance.dodge" }}</span>
-	</header>
-	<ul>
-		{{#each encumbrance.levels}} {{#if this.active}} {{#if @root.encumbrance.overencumbered}}
-		<li class="overencumbered">{{> level}}</li>
+	<header class="title">
+		{{ localize "gurps.character.encumbrance.title" }} {{#if settings.auto_encumbrance.active}}
+		<a
+			class="fas fa-toggle-on"
+			data-tooltip="{{ localize 'gurps.tooltip.auto_encumbrance' }}"
+			data-tooltip-direction="DOWN"
+			data-action="toggle-encumbrance"
+		></a>
 		{{ else }}
-		<li class="active">{{> level}}</li>
-		{{/if}} {{ else }}
-		<li class="active">{{> level}}</li>
-		{{/if}} {{/each}}
-	</ul>
+		<a
+			class="fas fa-toggle-off"
+			data-tooltip="{{ localize 'gurps.tooltip.auto_encumbrance' }}"
+			data-tooltip-direction="DOWN"
+			data-action="toggle-encumbrance"
+		></a>
+		{{/if}}
+	</header>
+	<header class="level">{{ localize "gurps.character.encumbrance.level" }}</header>
+	<header class="max-load">{{ localize "gurps.character.encumbrance.max_load" }}</header>
+	<header class="move">{{ localize "gurps.character.encumbrance.move" }}</header>
+	<header class="dodge">{{ localize "gurps.character.encumbrance.dodge" }}</header>
+	{{#each encumbrance}} {{#if this.active}} {{#if @root.encumbrance.overencumbered}} {{> level
+	class="overencumbered"}} {{ else }} {{> level class="active"}} {{/if}} {{ else }} {{> level}} {{/if}} {{/each}}
 </div>
 {{#*inline "level"}} {{#unless @root.settings.auto_encumbrance.active}}
-<div class="encumbrance-marker manual" data-level="{{ this.level }}"></div>
+<div class="encumbrance-marker manual {{ class }}" data-level="{{ this.level }}">
+	{{#if class}}
+	<i class="gcs-weight"></i>
+	{{/if}}
+</div>
 {{ else }}
-<div class="encumbrance-marker"></div>
+<div class="encumbrance-marker {{ class }}">
+	{{#if class}}
+	<i class="gcs-weight"></i>
+	{{/if}}
+</div>
 {{/unless}}
-<span class="level-number">{{ this.level }}</span>
-<span class="level">{{ localize this.name }}</span>
-<span class="max-load">{{ this.maximumCarry }}</span>
-<span class="move">{{ this.move.effective }}</span>
-<span class="dodge">{{ this.dodge.effective }}</span>
+<div class="level-number {{ class }}">{{ this.level }}</div>
+<div class="level {{ class }}">{{ localize this.name }}</div>
+<div class="max-load {{ class }}">{{ this.formattedCarry }}</div>
+<div class="move {{ class }}">{{ this.move.effective }}</div>
+<div
+	data-type="attribute"
+	data-id="dodge"
+	class="dodge {{ class }} {{#if class}}rollable{{/if}} {{ effective this.dodge }}"
+>
+	{{ this.dodge.effective }}
+</div>
 {{/inline}}

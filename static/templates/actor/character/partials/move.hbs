@@ -1,30 +1,29 @@
-<header>{{ localize "gurps.character.move.title" }}</header>
-<div class="fieldblock-3">
-	<label>{{ localize "gurps.character.move.maneuver" }}</label>
-	<div class="field">
-		<select class="move-select" data-name="maneuver" {{ disabled (not actor.inCombat) }}>
-			{{#select move.maneuver.id}} {{#each @root.config.select.maneuvers as |v k|}}
-			<option value="{{ k }}">{{ localize v }}</option>
-			{{/each}} {{/select}}
-		</select>
+<div id="move">
+	<header>{{ localize "gurps.character.move.title" }}</header>
+	<div class="fieldblock">
+		<label>{{ localize "gurps.character.move.maneuver" }}</label>
+		<div class="field">
+			<select class="move-select" data-name="maneuver" {{ disabled (not actor.inCombat) }}>
+				{{#select move.maneuver.id}} {{#each @root.config.select.maneuvers as |v k|}}
+				<option value="{{ k }}">{{ localize v }}</option>
+				{{/each}} {{/select}}
+			</select>
+		</div>
+		<label>{{ localize "gurps.character.move.posture" }}</label>
+		<div class="field">
+			<select class="move-select" data-name="posture">
+				{{#select move.posture}} {{#each @root.config.select.postures as |v k|}}
+				<option value="{{ k }}">{{ localize v }}</option>
+				{{/each}} {{/select}}
+			</select>
+		</div>
+		<label>{{ localize "gurps.character.move.type" }}</label>
+		<div class="field">
+			<select class="move-select" data-name="move">
+				{{#select move.type}} {{#each attributes.moveTypes as |v k|}}
+				<option value="{{ v.id }}">{{ v.definition.name }}</option>
+				{{/each}} {{/select}}
+			</select>
+		</div>
 	</div>
-	<label></label>
-	<label>{{ localize "gurps.character.move.posture" }}</label>
-	<div class="field">
-		<select class="move-select" data-name="posture">
-			{{#select move.posture}} {{#each @root.config.select.postures as |v k|}}
-			<option value="{{ k }}">{{ localize v }}</option>
-			{{/each}} {{/select}}
-		</select>
-	</div>
-	<label></label>
-	<label>{{ localize "gurps.character.move.type" }}</label>
-	<div class="field">
-		<select class="move-select" data-name="move">
-			{{#select move.type}} {{#each attributes.moveTypes as |v k|}}
-			<option value="{{ v.id }}">{{ v.definition.name }}</option>
-			{{/each}} {{/select}}
-		</select>
-	</div>
-	<label></label>
 </div>
