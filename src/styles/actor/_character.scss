@@ -36,6 +36,7 @@
 		grid-template:
 			"portrait identity miscellaneous points"
 			"portrait description description points";
+		grid-template-columns: 0fr auto auto 0fr;
 	}
 
 	div#portrait {
