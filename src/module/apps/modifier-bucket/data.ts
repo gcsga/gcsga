@@ -407,31 +407,14 @@ export function loadModifiers(): void {
 	]
 
 	const modifiersLocation: ModifierItem[] = [
+		{ 
+			tags: ["Hit Location"],
+			id: LocalizeGURPS.translations.gurps.modifier.hit_location.basic_hit_locations,
+			title: true,
+		},
 		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.eyes, modifier: -9 },
 		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.skull, modifier: -7 },
-		{
-			tags: ["Hit Location"],
-			id: LocalizeGURPS.translations.gurps.modifier.hit_location.skull_behind,
-			modifier: -5,
-		},
 		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.face, modifier: -5 },
-		{
-			tags: ["Hit Location"],
-			id: LocalizeGURPS.translations.gurps.modifier.hit_location.face_behind,
-			modifier: -7,
-		},
-		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.nose, modifier: -7 },
-		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.jaw, modifier: -6 },
-		{
-			tags: ["Hit Location"],
-			id: LocalizeGURPS.translations.gurps.modifier.hit_location.neck_vein,
-			modifier: -8,
-		},
-		{
-			tags: ["Hit Location"],
-			id: LocalizeGURPS.translations.gurps.modifier.hit_location.limb_vein,
-			modifier: -5,
-		},
 		{
 			tags: ["Hit Location"],
 			id: LocalizeGURPS.translations.gurps.modifier.hit_location.arm_shield,
@@ -459,6 +442,53 @@ export function loadModifiers(): void {
 			tags: ["Hit Location"],
 			id: LocalizeGURPS.translations.gurps.modifier.hit_location.chinks_other,
 			modifier: -10,
+		},
+		{ 
+			tags: ["Hit Location"],
+			id: LocalizeGURPS.translations.gurps.modifier.hit_location.martial_arts_hit_locations,
+			title: true,
+		},
+		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.ear, modifier: -7 },
+		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.jaw, modifier: -6 },
+		{ 
+			tags: ["Hit Location"],
+			id: LocalizeGURPS.translations.gurps.modifier.hit_location.limb_joint,
+			modifier: -5,
+		},
+		{ 
+			tags: ["Hit Location"],
+			id: LocalizeGURPS.translations.gurps.modifier.hit_location.extremity_joint,
+			modifier: -7,
+		},
+		{ 
+			tags: ["Hit Location"],
+			id: LocalizeGURPS.translations.gurps.modifier.hit_location.nose,
+			modifier: -7,
+		},
+		{ 
+			tags: ["Hit Location"],
+			id: LocalizeGURPS.translations.gurps.modifier.hit_location.spine,
+			modifier: -8,
+		},
+		{
+			tags: ["Hit Location"],
+			id: LocalizeGURPS.translations.gurps.modifier.hit_location.neck_vein,
+			modifier: -8,
+		},
+		{
+			tags: ["Hit Location"],
+			id: LocalizeGURPS.translations.gurps.modifier.hit_location.limb_vein,
+			modifier: -5,
+		},
+		{
+			tags: ["Hit Location"],
+			id: LocalizeGURPS.translations.gurps.modifier.hit_location.skull_behind,
+			modifier: -5,
+		},
+		{
+			tags: ["Hit Location"],
+			id: LocalizeGURPS.translations.gurps.modifier.hit_location.face_behind,
+			modifier: -7,
 		},
 	]
 
