@@ -134,9 +134,8 @@
                 data-item-section="{{ section.name }}"
                 data-item-types="{{ section.types }}">
                 {{#each section.items}}
-                    {{>common/trait-modifier}}
-                {{/each}}
-            </ul>
-        </div>
-    {{/with}}
-</form>
+                    {{>common/trait-modifier}} {{/each}}
+                </ul>
+            </div>
+        {{/with}}
+    </form>

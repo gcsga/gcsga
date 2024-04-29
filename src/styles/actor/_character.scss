@@ -19,8 +19,8 @@
 	div#move > div {
 		height: calc(100% - 1.125rem);
 		padding: 0.25rem;
-		color: rgb(var(--color-on-background));
-		background: rgb(var(--color-background));
+		color: rgb(var(--color-on-content));
+		background: rgb(var(--color-content));
 		border: 1px solid rgb(var(--color-header));
 		border-top: 0;
 	}
@@ -172,8 +172,8 @@
 		}
 
 		li {
-			background-color: rgb(var(--color-background));
-			color: rgb(var(--color-on-background));
+			background-color: rgb(var(--color-content));
+			color: rgb(var(--color-on-content));
 
 			span,
 			div {
@@ -214,8 +214,8 @@
 			grid-column: auto / span 3;
 		}
 		> div {
-			background-color: rgb(var(--color-background));
-			color: rgb(var(--color-on-background));
+			background-color: rgb(var(--color-content));
+			color: rgb(var(--color-on-content));
 			padding: var(--padding-standard);
 		}
 
@@ -271,8 +271,8 @@
 		div[data-tab="lifting"] {
 			display: grid;
 			grid-template-columns: auto auto;
-			background-color: rgb(var(--color-background));
-			color: rgb(var(--color-on-background));
+			background-color: rgb(var(--color-content));
+			color: rgb(var(--color-on-content));
 
 			> * {
 				padding: var(--padding-standard);

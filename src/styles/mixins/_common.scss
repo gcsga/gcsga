@@ -6,6 +6,161 @@
 
 		text-align: center;
 		white-space: nowrap;
+
+		span.reference {
+			border: none;
+			padding: 0;
+			color: inherit;
+			border-radius: 0;
+		}
+	}
+}
+
+@mixin details {
+	i.gcs-info,
+	a.button {
+		align-self: center;
+		color: rgb(var(--color-icon-button));
+
+		&:hover {
+			color: rgb(var(--color-icon-button-rollover));
+			box-shadow: none;
+			text-shadow: none;
+		}
+	}
+
+	input[type="text"],
+	input[type="search"],
+	input[type="number"] {
+		font: var(--font-field);
+		height: 1.5rem;
+		width: 100%;
+		min-width: 40px;
+		border-radius: 0px;
+		background-color: rgb(var(--color-editable));
+		color: rgb(var(--color-on-editable));
+		border: 1px solid rgba(var(--color-control-edge));
+		padding: 1px 3px;
+
+		&:focus {
+			box-shadow: none;
+			border-width: 2px;
+			padding: 0 2px;
+		}
+
+		&[readonly] {
+			background-color: rgb(var(--color-background));
+			color: rgb(var(--color-on-background));
+			pointer-events: none;
+		}
+		&:disabled {
+			background-color: rgb(var(--color-background));
+			pointer-events: none;
+		}
+
+		&.invalid {
+			background-color: rgb(var(--color-error));
+			color: rgb(var(--color-on-error));
+		}
+	}
+
+	input[type="checkbox"] {
+		appearance: none;
+		margin: 0;
+		background-color: rgb(var(--color-control));
+		color: rgb(var(--color-on-control)); // Redundant?
+		font: inherit;
+		width: 0.875rem;
+		max-width: 0.875rem;
+		height: 0.875rem;
+		border: 1px solid rgb(var(--color-control-edge));
+		border-radius: 4px;
+		display: flex;
+		filter: none;
+
+		&:focus,
+		&:focus-visible {
+			border-width: 2px;
+			outline: none;
+			box-shadow: none;
+		}
+
+		&:active {
+			background-color: rgb(var(--color-pressed-control));
+		}
+
+		&::before {
+			font-family: "gcs";
+			font-size: var(--font-size-12);
+			content: "\e805";
+			opacity: 0;
+		}
+
+		&:checked::before {
+			opacity: 1;
+		}
+	}
+
+	label {
+		display: flex;
+		align-self: center;
+		flex-direction: row-reverse;
+		white-space: nowrap;
+
+		color: rgb(var(--color-on-background));
+
+		&.check {
+			gap: 5px;
+			align-items: center;
+		}
+	}
+
+	.field {
+		display: flex;
+		align-items: start;
+		gap: 9px;
+		flex: 1;
+
+		&.no-stretch {
+			width: max-content;
+		}
+
+		> label.check {
+			flex-direction: row;
+		}
+	}
+
+	select {
+		align-self: center;
+		font: var(--font-system);
+		background-color: rgb(var(--color-control));
+		color: rgb(var(--color-on-control));
+		border: 1px solid rgb(var(--color-control-edge));
+		padding: var(--padding-standard);
+		border-radius: 3px;
+		height: 1.5rem;
+		width: max-content;
+		align-items: self-end;
+
+		optgroup {
+			font: var(--font-system);
+			background-color: rgb(var(--color-header));
+			color: rgb(var(--color-on-header));
+			border: 1px solid rgb(var(--color-on-header));
+		}
+
+		option {
+			font: var(--font-system);
+			background-color: rgb(var(--color-control));
+			color: rgb(var(--color-on-control));
+			border: 1px solid rgb(var(--color-control-edge));
+		}
+
+		&:focus {
+			box-shadow: none;
+			border-width: 2px;
+			padding: 0px 2px;
+		}
 	}
 }
 

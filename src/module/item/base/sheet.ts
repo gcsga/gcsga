@@ -1,5 +1,4 @@
-import { feature, htmlQuery, htmlQueryAll, prepareFormData, prereq, study } from "@util"
-import { ItemGURPS } from "./document.ts"
+import { ActorType, ItemType, SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
 import {
 	AttributeBonus,
 	AttributeDefObj,
@@ -10,7 +9,8 @@ import {
 	SkillDefault,
 	TraitPrereq,
 } from "@system"
-import { ActorType, ItemType, SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
+import { feature, htmlQuery, htmlQueryAll, prepareFormData, prereq, study } from "@util"
+import { ItemGURPS } from "./document.ts"
 
 class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheetOptions> {
 	static override get defaultOptions(): ItemSheetOptions {
@@ -18,6 +18,7 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 		return {
 			...options,
 			submitOnChange: true,
+			width: 600,
 			classes: [...options.classes, "gurps", "item"],
 		}
 	}

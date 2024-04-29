@@ -1,5 +1,82 @@
-.window-app.gurps.item {
-	min-width: 600px;
+.item.sheet section.window-content {
+	@import "embeds";
+
+	@include details;
+
+	background: rgb(var(--color-background));
+
+	form {
+		display: flex;
+		flex-flow: column nowrap;
+		row-gap: 4px;
+	}
+
+	#details {
+		display: grid;
+		grid-template-columns: max-content 1fr;
+		row-gap: 4px;
+		column-gap: 9px;
+	}
+
+	#prereqs,
+	#features,
+	#study,
+	#defaults,
+	#roll-modifiers {
+		@include header;
+		background-color: rgb(var(--color-content));
+		color: rgb(var(--color-on-content));
+
+		> ul {
+			min-height: 1.125rem;
+			background-color: rgb(var(--color-content));
+			border: 1px solid rgb(var(--color-header));
+			margin: 0;
+			overflow-x: hidden;
+			padding: 5px;
+		}
+
+		li {
+			display: flex;
+			gap: 5px;
+			align-items: center;
+			align-items: flex-start;
+			flex-direction: column;
+
+			> div {
+				display: flex;
+				gap: 5px;
+			}
+		}
+
+		ul {
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+		}
+
+		div.placeholder {
+			width: 1rem;
+		}
+	}
+
+	#prereqs {
+		> ul > li li {
+			margin-left: 6px;
+		}
+	}
+
+	#features {
+		label.check {
+			white-space: nowrap;
+		}
+	}
+
+	#study {
+		li {
+			flex-direction: row;
+		}
+	}
 
 	.img-display {
 		border: 1px solid rgb(var(--color-control-edge));
@@ -15,154 +92,6 @@
 			width: 100%;
 			height: 100%;
 			border: none;
-		}
-	}
-
-	#details,
-	#prereqs,
-	#features,
-	#study,
-	#defaults,
-	#trait-modifiers,
-	#equipment-modifiers,
-	#roll-modifiers,
-	#melee-attacks,
-	#ranged-attacks {
-		margin: 2px 16px;
-	}
-
-	#details {
-		display: grid;
-		grid-template: "label field";
-		grid-template-columns: max-content 1fr;
-		row-gap: 4px;
-		column-gap: 9px;
-
-		label {
-			display: flex;
-			align-self: center;
-			flex-direction: row-reverse;
-
-			&.check {
-				gap: 5px;
-				align-items: center;
-			}
-		}
-
-		> .field > label.check {
-			flex-direction: row;
-		}
-	}
-
-	#prereqs,
-	#features,
-	#study,
-	#defaults,
-	#roll-modifiers {
-		header {
-			background-color: rgb(var(--color-header));
-			color: rgb(var(--color-on-header));
-			text-align: center;
-		}
-		> ul {
-			min-height: 18px;
-			background-color: rgb(var(--color-content));
-			border: 1px solid rgb(var(--color-header));
-			margin: 0;
-			overflow-x: hidden;
-		}
-
-		li {
-			display: flex;
-			gap: 5px;
-			align-items: center;
-		}
-	}
-
-	#prereqs,
-	#features,
-	#study,
-	#defaults,
-	#roll-modifiers {
-		header {
-			justify-content: center;
-			padding: var(--padding-header);
-		}
-
-		> ul {
-			padding: 5px;
-		}
-
-		ul {
-			display: flex;
-			flex-direction: column;
-			gap: 5px;
-		}
-	}
-
-	#prereqs,
-	#features,
-	#roll-modifiers {
-		li {
-			flex-direction: column;
-			align-items: flex-start;
-
-			> div {
-				display: flex;
-				align-items: center;
-				gap: 5px;
-			}
-		}
-
-		div.placeholder {
-			width: 14px;
-		}
-	}
-
-	#trait-modifiers,
-	#equipment-modifiers,
-	#melee-attacks,
-	#ranged-attacks {
-		@include item-list;
-	}
-
-	#prereqs {
-		> ul > li li {
-			margin-left: 6px;
-		}
-	}
-
-	#features {
-		label.check {
-			white-space: nowrap;
-		}
-	}
-
-	#trait-modifiers {
-		header,
-		ul.items > li > .data {
-			grid-template-columns: 1.5rem auto 8rem 3rem 3.5rem;
-		}
-	}
-
-	#equipment-modifiers {
-		header,
-		ul.items > li > .data {
-			grid-template-columns: 1.5rem auto 1.5rem 8rem 9rem 3rem 3.5rem;
-		}
-	}
-
-	#melee-attacks {
-		header,
-		ul.items > li > .data {
-			grid-template-columns: auto 2rem 3rem 3rem 4rem 3rem 3rem;
-		}
-	}
-
-	#ranged-attacks {
-		header,
-		ul.items > li > .data {
-			grid-template-columns: auto 2rem 2.5rem 4rem 4rem 2.5rem 3rem 2.5rem 3rem 2rem;
 		}
 	}
 }
