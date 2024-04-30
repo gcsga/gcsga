@@ -1,0 +1,35 @@
+aside#players {
+	background: transparent;
+	border: 1px solid rgb(var(--color-header));
+	> h3 {
+		display: flex;
+		background: rgba(var(--color-header), 0.8);
+		color: rgb(var(--color-on-header));
+		border-bottom: none;
+		padding: var(--padding-header);
+		margin: 0;
+		font: var(--font-primary);
+		justify-content: space-evenly;
+		> a {
+			translate: 0 3px;
+		}
+	}
+	> #player-list {
+		display: grid;
+		margin: 0px;
+		> li {
+			background-color: rgba(var(--color-content), 0.8);
+			color: rgb(var(--color-on-content));
+			padding: var(--padding-standard);
+			border-bottom: 1px solid rgb(var(--color-header));
+			.player-name {
+				font: var(--font-page-primary-fields);
+				color: inherit;
+			}
+		}
+		> li:nth-child(2n + 1) {
+			background-color: rgba(var(--color-banding), 0.8);
+			color: rgb(var(--color-on-banding));
+		}
+	}
+}

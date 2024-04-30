@@ -1,0 +1,34 @@
+#hotbar {
+	#hotbar-directory-controls,
+	#hotbar-lock,
+	#hotbar-page-controls {
+		background: rgba(var(--color-control), 0.8);
+		color: rgb(var(--color-on-control));
+		border: 1px solid rgb(var(--color-control-edge));
+		border-radius: 4px;
+		box-shadow: none;
+	}
+	#macro-list {
+		border: none;
+
+		> .macro {
+			background: rgba(var(--color-control), 0.8);
+			color: rgb(var(--color-on-control));
+			border: 1px solid rgb(var(--color-control-edge));
+			border-radius: 4px;
+			box-shadow: none;
+
+			> .macro-key {
+				font: var(--font-system);
+				background-color: rgb(var(--color-control));
+				color: rgb(var(--color-on-control));
+				border: 1px solid rgb(var(--color-control-edge));
+				border-radius: 2px;
+			}
+		}
+	}
+}
+
+#ui-bottom > div {
+	justify-content: unset;
+}

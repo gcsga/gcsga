@@ -1,0 +1,16 @@
+#navigation {
+	.nav-item {
+		background: rgba(var(--color-control), 0.8);
+		color: rgb(var(--color-on-control));
+		border: 1px solid rgb(var(--color-control-edge));
+	}
+	#scene-list {
+		.scene {
+			.scene-name {
+				&:hover {
+					text-shadow: none;
+				}
+			}
+		}
+	}
+}

@@ -1,0 +1,23 @@
+#ui-left > #controls {
+	li {
+		background: rgba(var(--color-control), 0.8);
+		color: rgb(var(--color-on-control));
+		border: 1px solid rgb(var(--color-control-edge));
+		box-shadow: none;
+		&.toggle {
+			background-color: rgba(var(--color-pressed-control), 0.8);
+			color: rgb(var(--color-on-pressed-control));
+			&.active {
+				background-color: rgba(var(--color-pressed-control), 0.8);
+				color: rgb(var(--color-on-pressed-control));
+				border-color: rgb(var(--color-on-pressed-control));
+				box-shadow: 0 0 10px rgb(var(--color-on-pressed-control));
+			}
+		}
+
+		&.active {
+			background-color: rgb(var(--color-focused-tab));
+			color: rgb(var(--color-on-focused-tab));
+		}
+	}
+}
