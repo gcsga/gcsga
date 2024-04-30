@@ -1,12 +1,10 @@
 #modifier-list {
 	background: transparent;
-	/* background: rgb(var(--color-content)); */
 	border: 1px solid rgb(var(--color-header));
 	border-radius: 5px;
 	margin: 0 5px 5px 15px;
 	padding: 0;
 	pointer-events: all;
-	/* opacity: 0.2; */
 	transition: all 0.1s linear 0s;
 	width: fit-content;
 	position: absolute;
@@ -25,11 +23,6 @@
 	.collapse-toggle {
 		cursor: pointer;
 	}
-
-	/* &:hover, */
-	/* &.hover { */
-	/* 	opacity: 1; */
-	/* } */
 
 	.content {
 		display: flex;

@@ -68,3 +68,44 @@ header.window-header {
 		}
 	}
 }
+
+form button,
+button {
+	justify-self: center;
+	width: min-content;
+	white-space: nowrap;
+	grid-area: button;
+	background-color: rgb(var(--color-control));
+	color: rgb(var(--color-on-control));
+	font: var(--font-system);
+	border: 1px solid rgb(var(--color-control-edge));
+	border-radius: 4px;
+	padding: 1px 6px;
+
+	&[disabled] {
+		cursor: default;
+		color: rgba(var(--color-on-control), 0.5);
+
+		&:active {
+			background-color: rgb(var(--color-control));
+			color: rgb(var(--color-on-control), 0.5);
+		}
+	}
+
+	&:hover,
+	&:focus {
+		box-shadow: none;
+	}
+
+	&:active {
+		background-color: rgb(var(--color-pressed-control));
+		color: rgb(var(--color-on-pressed-control));
+	}
+}
+
+ul,
+ol {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}

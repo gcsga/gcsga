@@ -45,6 +45,7 @@
 
 	#sidebar-tabs {
 		box-shadow: none;
+		border-bottom: 1px solid rgb(var(--color-divider));
 		.item {
 			background-color: rgba(var(--color-control), 0.6);
 			color: rgb(var(--color-on-control));
