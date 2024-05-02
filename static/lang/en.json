@@ -71,7 +71,7 @@
 				"determined": "to hit (Determined Attack)"
 			},
 			"defense": {
-				"all_out_defense": "All-Out Defense",
+				"all_out_defense": "to chosen Active Defense (All-Out Defense)",
 				"shield": "to Active Defense (Shield DB)",
 				"acrobatics_success": "to Dodge (Acrobatics, success)",
 				"dodge_and_drop": "to Dodge (Dodge and Drop)",
@@ -81,8 +81,8 @@
 				"dodge_side": "to Dodge (attacked from side)",
 				"dodge_rear": "to Dodge (attacked from rear)",
 				"defend_side": "to Active Defense (attacked from side)",
-				"defend_rear": "to Parry, if defense possible (attacked from rear)",
-				"deceptive": "to defenses due to Deceptive attack",
+				"telegraphic": "to Active Defense (attacked with Telegraphic Attack)",
+				"deceptive": "to Active Defense (attacked with Deceptive Attack)",
 				"will": "to Will Check, to maintain concentration",
 				"feverish_defense": "Feverish Defense"
 			},
@@ -139,6 +139,7 @@
 				"groin": "to hit Groin [*hit torso]",
 				"leg": "to hit Leg",
 				"hand_shield": "to hit Hand, holding shield",
+				"grab_held_weapon": "to Grab weapon/item, held in Hand",
 				"hand": "to hit Hand",
 				"foot": "to hit Foot",
 				"neck": "to hit Neck [*hit torso]",
@@ -187,7 +188,6 @@
 			},
 			"equipment_quality": {
 				"title": "Equipmnet Quality",
-				"best_possible": "Best Possible",
 				"fine": "Fine Quality (20x cost)",
 				"good": "Good Quality (5x cost)",
 				"improvised": "Improvised",
@@ -212,6 +212,25 @@
 			"rof": {
 				"title": "Rate of Fire",
 				"rof": "RoF: {rof}"
+			},
+			"striking_at_weapons": {
+				"title": "Striking At Weapons",
+				"small": "to hit melee weapon Reach C/small ranged weapon (Pistol)",
+				"medium": "to hit melee weapon Reach 1/medium ranged weapon (Carbine, Sawed-off Shotgun)",
+				"large": "to hit melee weapon Reach 2+/large ranged weapon (Rifle)",
+				"not_fencing": "to disarm if not using fencing weapon"
+			},
+			"melee_levels": {
+				"title": "Melee Combat At Different Levels",
+				"active_defense_1": "to Active Defense (2-3 feet difference)",
+				"active_defense_2": "to Active Defense (3-4 feet difference)",
+				"active_defense_3": "to Active Defense (4-6 feet difference)",
+				"upper_fighter": "Modifiers for the upper fighter",
+				"upper_head_neck": "to hit head and neck (1-5 feet difference)",
+				"upper_leg_foot": "to hit legs and feet (1-3 feet difference)",
+				"lower_fighter": "Modifiers for the lower fighter",
+				"lower_head_neck": "to hit head and neck (1-4 feet difference)",
+				"lower_leg_foot": "to hit legs and feet (1-5 feet difference)"
 			},
 			"attribute": {
 				"all": "to all attribute rolls",

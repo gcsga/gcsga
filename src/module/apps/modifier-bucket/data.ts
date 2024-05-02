@@ -160,7 +160,7 @@ export function loadModifiers(): void {
 			{
 				tags: ["Melee Combat"],
 				id: LocalizeGURPS.translations.gurps.modifier.melee.move,
-				modifier: -2,
+				modifier: -4,
 				max: 9,
 				reference: "B365",
 			},
@@ -186,7 +186,12 @@ export function loadModifiers(): void {
 			},
 		]
 		rangedMods = [
-			{ tags: ["Ranged Combat"], id: LocalizeGURPS.translations.gurps.modifier.ranged.aim, modifier: 1 },
+			{
+				tags: ["Ranged Combat"],
+				id: LocalizeGURPS.translations.gurps.modifier.ranged.aim,
+				modifier: 1,
+				reference: "B364",
+			},
 			{
 				tags: ["Ranged Combat"],
 				id: LocalizeGURPS.translations.gurps.modifier.ranged.determined,
@@ -211,7 +216,7 @@ export function loadModifiers(): void {
 				tags: ["Defense"],
 				id: LocalizeGURPS.translations.gurps.modifier.defense.acrobatics_success,
 				modifier: 2,
-				reference: "B374",
+				reference: "B375",
 			},
 			{
 				tags: ["Defense"],
@@ -243,12 +248,7 @@ export function loadModifiers(): void {
 				modifier: -2,
 				reference: "B390",
 			},
-			{
-				tags: ["Defense"],
-				id: LocalizeGURPS.translations.gurps.modifier.defense.defend_rear,
-				modifier: -2,
-				reference: "B391",
-			},
+			{ tags: ["Defense"], id: LocalizeGURPS.translations.gurps.modifier.defense.telegraphic, modifier: 2 },
 			{ tags: ["Defense"], id: LocalizeGURPS.translations.gurps.modifier.defense.deceptive, modifier: -1 },
 			{ tags: ["Defense"], id: LocalizeGURPS.translations.gurps.modifier.defense.will, modifier: -1 },
 			{
@@ -430,6 +430,11 @@ export function loadModifiers(): void {
 			id: LocalizeGURPS.translations.gurps.modifier.hit_location.hand_shield,
 			modifier: -8,
 		},
+		{ 
+			tags: ["Hit Location"],
+			id: LocalizeGURPS.translations.gurps.modifier.hit_location.grab_held_weapon,
+			modifier: -4,
+		},
 		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.hand, modifier: -4 },
 		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.foot, modifier: -4 },
 		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.neck, modifier: -5 },
@@ -558,11 +563,6 @@ export function loadModifiers(): void {
 	]
 
 	const modifiersQuality: ModifierItem[] = [
-		{
-			tags: ["Quality"],
-			id: LocalizeGURPS.translations.gurps.modifier.equipment_quality.best_possible,
-			modifier: 4,
-		},
 		{ tags: ["Quality"], id: LocalizeGURPS.translations.gurps.modifier.equipment_quality.fine, modifier: 2 },
 		{ tags: ["Quality"], id: LocalizeGURPS.translations.gurps.modifier.equipment_quality.good, modifier: 1 },
 		{
@@ -613,6 +613,28 @@ export function loadModifiers(): void {
 		}),
 	]
 
+	const modifiersStrikingAtWeapons: ModifierItem[] = [
+		{ tags: ["Striking At Weapons"], id: LocalizeGURPS.translations.gurps.modifier.striking_at_weapons.small, modifier: -5 },
+		{ tags: ["Striking At Weapons"], id: LocalizeGURPS.translations.gurps.modifier.striking_at_weapons.medium, modifier: -4 },
+		{ tags: ["Striking At Weapons"], id: LocalizeGURPS.translations.gurps.modifier.striking_at_weapons.large, modifier: -3 },
+		{ tags: ["Striking At Weapons"], id: LocalizeGURPS.translations.gurps.modifier.striking_at_weapons.not_fencing, modifier: -2 },
+	]
+
+	const modifiersMeleeLevels: ModifierItem[] = [
+		{ tags: ["Melee Levels"], id: LocalizeGURPS.translations.gurps.modifier.melee_levels.upper_fighter, title: true },
+		{ tags: ["Melee Levels"], id: LocalizeGURPS.translations.gurps.modifier.melee_levels.active_defense_1, modifier: 1 },
+		{ tags: ["Melee Levels"], id: LocalizeGURPS.translations.gurps.modifier.melee_levels.active_defense_2, modifier: 2 },
+		{ tags: ["Melee Levels"], id: LocalizeGURPS.translations.gurps.modifier.melee_levels.active_defense_3, modifier: 3 },
+		{ tags: ["Melee Levels"], id: LocalizeGURPS.translations.gurps.modifier.melee_levels.upper_head_neck, modifier: 1 },
+		{ tags: ["Melee Levels"], id: LocalizeGURPS.translations.gurps.modifier.melee_levels.upper_leg_foot, modifier: -2 },
+		{ tags: ["Melee Levels"], id: LocalizeGURPS.translations.gurps.modifier.melee_levels.lower_fighter, title: true },
+		{ tags: ["Melee Levels"], id: LocalizeGURPS.translations.gurps.modifier.melee_levels.active_defense_1, modifier: -1 },
+		{ tags: ["Melee Levels"], id: LocalizeGURPS.translations.gurps.modifier.melee_levels.active_defense_2, modifier: -2 },
+		{ tags: ["Melee Levels"], id: LocalizeGURPS.translations.gurps.modifier.melee_levels.active_defense_3, modifier: -3 },
+		{ tags: ["Melee Levels"], id: LocalizeGURPS.translations.gurps.modifier.melee_levels.lower_head_neck, modifier: -2 },
+		{ tags: ["Melee Levels"], id: LocalizeGURPS.translations.gurps.modifier.melee_levels.lower_leg_foot, modifier: 2 },
+	]
+
 	let modifiersSpeed: ModifierItem[] = []
 	const modifierSetting = game.settings.get(SYSTEM_NAME, SETTINGS.SSRT)
 	if (modifierSetting === "standard") modifiersSpeed = modifiersSpeedStandard
@@ -656,6 +678,14 @@ export function loadModifiers(): void {
 			title: LocalizeGURPS.translations.gurps.modifier.rof.title,
 			items: modifiersRof,
 		},
+		{
+			title: LocalizeGURPS.translations.gurps.modifier.striking_at_weapons.title,
+			items: modifiersStrikingAtWeapons,
+		},
+		{
+			title: LocalizeGURPS.translations.gurps.modifier.melee_levels.title,
+			items: modifiersMeleeLevels,
+		},
 	]
 	CONFIG.GURPS.commonMods = commonMods
 	CONFIG.GURPS.allMods = [
@@ -671,5 +701,7 @@ export function loadModifiers(): void {
 		...modifiersQuality,
 		...modifiersLighting,
 		...modifiersRof,
+		...modifiersStrikingAtWeapons,
+		...modifiersMeleeLevels,
 	].filter(e => objectHasKey(e, "title"))
 }
