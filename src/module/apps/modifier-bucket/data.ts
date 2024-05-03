@@ -141,6 +141,12 @@ export function loadModifiers(): void {
 		meleeMods = [
 			{
 				tags: ["Melee Combat"],
+				id: LocalizeGURPS.translations.gurps.modifier.melee.evaluate,
+				modifier: 1,
+				reference: "B364",
+			},
+			{
+				tags: ["Melee Combat"],
 				id: LocalizeGURPS.translations.gurps.modifier.melee.determined,
 				modifier: 4,
 				reference: "B365",
@@ -150,6 +156,12 @@ export function loadModifiers(): void {
 				id: LocalizeGURPS.translations.gurps.modifier.melee.telegraphic,
 				modifier: 4,
 				reference: "MA113",
+			},
+			{
+				tags: ["Melee Combat"],
+				id: LocalizeGURPS.translations.gurps.modifier.melee.rapid_strike,
+				modifier: -6,
+				reference: "B370",
 			},
 			{
 				tags: ["Melee Combat"],
@@ -166,23 +178,28 @@ export function loadModifiers(): void {
 			},
 			{
 				tags: ["Melee Combat"],
-				id: LocalizeGURPS.translations.gurps.modifier.melee.strong,
-				modifier: 2,
-				reference: "B365",
+				id: LocalizeGURPS.translations.gurps.modifier.melee.wild_swing,
+				modifier: -5,
+				max: 9,
+				reference: "B388",
 			},
 			{
 				tags: ["Melee Combat"],
-				id: LocalizeGURPS.translations.gurps.modifier.melee.mighty_blow,
-				modifier: 2,
-				cost: { id: "fp", value: 1 },
-				reference: "MA131",
+				id: LocalizeGURPS.translations.gurps.modifier.melee.outside_close_combat,
+				modifier: -2,
+				reference: "B392",
 			},
 			{
 				tags: ["Melee Combat"],
-				id: LocalizeGURPS.translations.gurps.modifier.melee.heroic_charge,
-				modifier: 0,
-				cost: { id: "fp", value: 1 },
-				reference: "MA131",
+				id: LocalizeGURPS.translations.gurps.modifier.melee.off_hand_attack,
+				modifier: -4,
+				reference: "B547",
+			},
+			{
+				tags: ["Melee Combat"],
+				id: LocalizeGURPS.translations.gurps.modifier.melee.dual_weapon_attack,
+				modifier: -4,
+				reference: "B417",
 			},
 		]
 		rangedMods = [
@@ -194,9 +211,39 @@ export function loadModifiers(): void {
 			},
 			{
 				tags: ["Ranged Combat"],
+				id: LocalizeGURPS.translations.gurps.modifier.ranged.braced,
+				modifier: 1,
+				reference: "B364",
+			},
+			{
+				tags: ["Ranged Combat"],
+				id: LocalizeGURPS.translations.gurps.modifier.ranged.ground_attack,
+				modifier: 4,
+				reference: "B414",
+			},
+			{
+				tags: ["Ranged Combat"],
 				id: LocalizeGURPS.translations.gurps.modifier.ranged.determined,
 				modifier: 1,
 				reference: "B365",
+			},
+			{
+				tags: ["Ranged Combat"],
+				id: LocalizeGURPS.translations.gurps.modifier.ranged.pop_up,
+				modifier: -2,
+				reference: "B390",
+			},
+			{
+				tags: ["Ranged Combat"],
+				id: LocalizeGURPS.translations.gurps.modifier.ranged.off_hand_attack,
+				modifier: -4,
+				reference: "B548",
+			},
+			{
+				tags: ["Ranged Combat"],
+				id: LocalizeGURPS.translations.gurps.modifier.ranged.dual_weapon_attack,
+				modifier: -4,
+				reference: "B417",
 			},
 		]
 		defenseMods = [
@@ -248,9 +295,30 @@ export function loadModifiers(): void {
 				modifier: -2,
 				reference: "B390",
 			},
-			{ tags: ["Defense"], id: LocalizeGURPS.translations.gurps.modifier.defense.telegraphic, modifier: 2 },
-			{ tags: ["Defense"], id: LocalizeGURPS.translations.gurps.modifier.defense.deceptive, modifier: -1 },
-			{ tags: ["Defense"], id: LocalizeGURPS.translations.gurps.modifier.defense.will, modifier: -1 },
+			{
+				tags: ["Defense"],
+				id: LocalizeGURPS.translations.gurps.modifier.defense.telegraphic,
+				modifier: 2,
+				reference: "MA113",
+			},
+			{
+				tags: ["Defense"],
+				id: LocalizeGURPS.translations.gurps.modifier.defense.deceptive,
+				modifier: -1,
+				reference: "B369",
+			},
+			{
+				tags: ["Defense"],
+				id: LocalizeGURPS.translations.gurps.modifier.defense.will,
+				modifier: -3,
+				reference: "B366",
+			},
+			{
+				tags: ["Defense"],
+				id: LocalizeGURPS.translations.gurps.modifier.defense.dual_weapon_attack_defense,
+				modifier: -1,
+				reference: "B417",
+			},
 			{
 				tags: ["Defense"],
 				id: LocalizeGURPS.translations.gurps.modifier.defense.feverish_defense,
