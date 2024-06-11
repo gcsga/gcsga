@@ -4,7 +4,7 @@ import { LeveledAmount } from "./leveled-amount.ts"
 import { SpellBonusObj } from "./data.ts"
 import { feature, spellmatch } from "@util"
 
-export class SpellBonus extends BonusOwner {
+export class SpellBonus extends BonusOwner<feature.Type.SpellBonus> {
 	match: spellmatch.Type
 
 	name: StringCriteria
@@ -12,8 +12,7 @@ export class SpellBonus extends BonusOwner {
 	tags: StringCriteria
 
 	constructor() {
-		super()
-		this.type = feature.Type.SpellBonus
+		super(feature.Type.SpellBonus)
 		this.match = spellmatch.Type.AllColleges
 		this.name = new StringCriteria({ compare: StringCompareType.IsString })
 		this.tags = new StringCriteria({ compare: StringCompareType.AnyString })

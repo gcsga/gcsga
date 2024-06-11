@@ -1,8 +1,8 @@
 {
 	"TYPES": {
 		"Actor": {
-			"character_gcs": "Character",
 			"character": "Character (Legacy)",
+			"character_gcs": "Character",
 			"enemy": "Enemy (Legacy)",
 			"loot": "Loot"
 		},
@@ -17,6 +17,7 @@
 			"spell": "Spell",
 			"ritual_magic_spell": "Ritual Magic Spell",
 			"spell_container": "Spell Container",
+			"equipment": "Equipment (Legacy)",
 			"equipment_gcs": "Equipment",
 			"equipment_container": "Equipment Container",
 			"eqp_modifier": "Equipment Modifier",
@@ -26,11 +27,20 @@
 			"melee_weapon": "Melee Weapon",
 			"ranged_weapon": "Ranged Weapon",
 			"effect": "Active Effect",
-			"condition": "Condition",
-			"equipment": "Equipment (Legacy)"
+			"condition": "Condition"
 		}
 	},
 	"gurps": {
+		"ok": "OK",
+		"actor": {
+			"plural": "Actors"
+		},
+		"attribute": {
+			"sm": "Size Modifier",
+			"dodge": "Dodge",
+			"parry": "Parry",
+			"block": "Block"
+		},
 		"pdf": {
 			"offset": "Page Offset",
 			"offset_placeholder": "Offset (e.g. -5, 0, 2)",
@@ -469,7 +479,8 @@
 				"show_trait_modifier_adj": "Show trait modifier cost adjustments",
 				"show_equipment_modifier_adj": "Show equipment modifier cost & weight adjustments",
 				"show_spell_adj": "Show spell ritual, cost & time adjustments",
-				"use_multiplicative_modifiers": "Use Multiplicative Modifiers (PW102; changes point value)",
+				"use_multiplicative_modifiers": "Use Multiplicative Modifiers (P102)",
+				"use_half_stat_defaults": "Use Half-Stat Defaults (PY65:30)",
 				"use_modifying_dice_plus_adds": "Use Modifying Dice + Adds (B269)",
 				"exclude_unspent_points_from_total": "Exclude unspent points from total",
 				"units": {
@@ -612,6 +623,7 @@
 			}
 		},
 		"item": {
+			"plural": "Items",
 			"img": "Image",
 			"name": "Name",
 			"enabled": "Enabled",
@@ -649,7 +661,7 @@
 			"defaults_to": "Default To",
 			"default": "Default: {skill}{modifier}",
 			"college": "College",
-			"class": "Class",
+			"spell_class": "Class",
 			"power_source": "Power Source",
 			"resist": "Resistance",
 			"casting_cost": "Casting Cost",
@@ -713,14 +725,15 @@
 			"dodge": "Dodge",
 			"parry": "Parry",
 			"block": "Block",
-			"skill": "Skill"
+			"skill": "Skill",
+			"size": "Size Modifier"
 		},
 		"attribute_def": {
 			"id": "ID",
 			"name": "Name",
 			"short_name": "Short Name",
 			"full_name": "Full Name",
-			"attribute_base": "Base Value",
+			"base": "Base Value",
 			"cost_per_point": "Cost per Point",
 			"cost_adj_percent_per_sm": "SM Reduction",
 			"type": "Attribute Type",
@@ -736,7 +749,7 @@
 			"alias": "Alias",
 			"pdf": "Reference",
 			"name": "Name",
-			"tracker_base": "Base Value",
+			"base": "Base Value",
 			"max": "Max",
 			"max_enforced": "Enforce",
 			"min": "Min",
@@ -746,7 +759,7 @@
 		"move_type_def": {
 			"id": "ID",
 			"name": "Name",
-			"move_type_base": "Base Value",
+			"base": "Base Value",
 			"cost_per_point": "Cost per Point",
 			"condition_type": "Condition Type",
 			"condition_qualifier": "Qualifier"
@@ -764,7 +777,7 @@
 				"per_die_per_level": "{total} ({base} per die, per level)",
 				"per_die": "{total} ({base} per die)",
 				"per_level": "{total} ({base} per level)",
-				"switch": "{type} set to {value}",
+				"weapon_switch": "{type} set to {value}",
 				"weapon_bonus": "{level} to damage",
 				"weapon_acc_bonus": "{level} to damage",
 				"weapon_scope_acc_bonus": "{level} to scope accuracy",
@@ -871,8 +884,8 @@
 			"attack_level": "{name} ({level})",
 			"cr_level": "{name} (CR: {level})",
 			"damage": "{total} {type} damage",
-			"parry": "{name} - Parry",
-			"block": "{name} - Block",
+			"parry": "{name} - Parry ({level})",
+			"block": "{name} - Block ({level})",
 			"location": "Random Hit Location: {name}",
 			"success": {
 				"success": "Success!",
@@ -927,6 +940,7 @@
 			"percentage": "by {value}%"
 		},
 		"compendium_browser": {
+			"title": "Compendium Browser",
 			"added_item": "Added {item} to the selected actor(s).",
 			"added_item_to_character": "Added {item} to {character}.",
 			"bought_item_with_all_characters": "Purchased {item} with all selected actor(s).",
@@ -934,7 +948,6 @@
 			"failed_to_buy_item_with_character": "Could not purchase {item} with {character}.",
 			"failed_to_buy_item_with_some_characters": "Could not purchase {item} with some of the selected actor(s).",
 			"button": "Open Library Browser",
-			"title": "GCS Library Browser",
 			"hint": "Use the tabs above to select a library.",
 			"trait": "Traits",
 			"modifier": "Trait Modifiers",
@@ -981,6 +994,7 @@
 			}
 		},
 		"system": {
+			"configure_character": "Configure",
 			"sheet": {
 				"character_gcs": "GURPS Character Sheet",
 				"character": "GURPS Character Sheet (Legacy)",
@@ -1128,11 +1142,11 @@
 				"hint": "When enabled, file prompts (for character sheet uploads, etc.) will use the FoundryVTT file dialog, which searches through files on the Foundry server. When disabled, file prompts will search the user's local machine."
 			},
 			"portrait_path": {
-				"name": "Default Portait Path",
+				"name": "Default Portrait Path",
 				"hint": "Choose where character portraits are stored (in the global Foundry User Data directory, or the local world directory).",
 				"choices": {
-					"global": "Global ([Foundry User Data]/Data/images/portaits/",
-					"local": "Local ([Foundry User Data]/Data/worlds/[World]/images/portaits/)"
+					"global": "Global ([Foundry User Data]/Data/images/portraits/",
+					"local": "Local ([Foundry User Data]/Data/worlds/[World]/images/portraits/)"
 				}
 			},
 			"portrait_overwrite": {
@@ -1323,7 +1337,20 @@
 					"gurps": "GURPS Basic Set (B/BX)",
 					"lite": "GURPS Lite",
 					"dfrpg": "The Dungeon Fantasy Roleplaying Game (DFA/DFX)"
+				},
+				"maneuver_detail": {
+					"name": "Maneuver Detail",
+					"hint": "Determines the level of maneuver detail visible to players and the GM.",
+					"choices": {
+						"full": "Full Detail",
+						"no_feint": "No Feint",
+						"general": "General"
+					}
 				}
+			},
+			"world_schema_version": {
+				"name": "World Schema Version",
+				"hint": "Records the schema version for documents in the GURPS system (don't modify this unless you know what you are doing)."
 			}
 		},
 		"error": {
@@ -1343,9 +1370,12 @@
 			"no_last_actor": "No actor selected!",
 			"no_token_selected": "No token selected!",
 			"cannot_add_type": "{type} items cannot be added to this actor.",
+			"cannot_move_item_source": "You are not allowed to move items from this actor.",
+			"cannot_move_item_destination": "You are not allowed to move items to this actor.",
 			"mook": {
 				"name": "Name cannot be blank."
-			}
+			},
+			"pack_not_loaded": "Compendium \"{pack}\" could not be loaded."
 		},
 		"token": {
 			"select": "Select Token"
@@ -1480,27 +1510,29 @@
 			"decrease_tech_level": "Decrease Tech Level",
 			"convert_to_container": "Convert to Container",
 			"convert_to_non_container": "Convert to Non-Container",
-			"new_trait": "New Trait",
-			"new_trait_container": "New Trait Container",
-			"new_natural_attacks": "Add Natural Attacks",
-			"new_skill": "New Skill",
-			"new_skill_container": "New Skill Container",
-			"new_technique": "New Technique",
-			"new_spell": "New Spell",
-			"new_spell_container": "New Spell Container",
-			"new_ritual_magic_spell": "New Ritual Magic Spell",
-			"new_carried_equipment": "New Carried Equipment",
-			"new_carried_equipment_container": "New Carried Equipment Container",
-			"new_other_equipment": "New Other Equipment",
-			"new_other_equipment_container": "New Other Equipment Container",
-			"new_note": "New Note",
-			"new_note_container": "New Note Container",
-			"new_equipment_modifier": "New Equipment Modifier",
-			"new_equipment_modifier_container": "New Equipment Modifier Container",
-			"new_trait_modifier": "New Trait Modifier",
-			"new_trait_modifier_container": "New Trait Modifier Container",
-			"new_melee_weapon": "New Melee Weapon",
-			"new_ranged_weapon": "New Ranged Weapon",
+			"new_item": {
+				"trait": "New Trait",
+				"trait_container": "New Trait Container",
+				"natural_attacks": "Add Natural Attacks",
+				"skill": "New Skill",
+				"skill_container": "New Skill Container",
+				"technique": "New Technique",
+				"spell": "New Spell",
+				"spell_container": "New Spell Container",
+				"ritual_magic_spell": "New Ritual Magic Spell",
+				"carried_equipment": "New Carried Equipment",
+				"carried_equipment_container": "New Carried Equipment Container",
+				"other_equipment": "New Other Equipment",
+				"other_equipment_container": "New Other Equipment Container",
+				"note": "New Note",
+				"note_container": "New Note Container",
+				"equipment_modifier": "New Equipment Modifier",
+				"equipment_modifier_container": "New Equipment Modifier Container",
+				"trait_modifier": "New Trait Modifier",
+				"trait_modifier_container": "New Trait Modifier Container",
+				"melee_weapon": "New Melee Weapon",
+				"ranged_weapon": "New Ranged Weapon"
+			},
 			"move_to_carried": "Move to Carried Equipment",
 			"move_to_other": "Move to Other Equipment"
 		},
@@ -1508,12 +1540,12 @@
 			"effect_expired": "Effect Expired: {effect}"
 		},
 		"status": {
-			"posture_standing": "Standing",
-			"posture_crouch": "Crouching",
-			"posture_kneel": "Kneeling",
-			"posture_sit": "Sitting",
-			"posture_crawl": "Crawling",
-			"posture_prone": "Prone",
+			"standing": "Standing",
+			"crouching": "Crouching",
+			"kneeling": "Kneeling",
+			"sitting": "Sitting",
+			"crawling": "Crawling",
+			"prone": "Prone",
 			"reeling": "Reeling",
 			"fatigued": "Fatigued",
 			"crippled": "Crippled",
@@ -1523,9 +1555,9 @@
 			"pain": "Pain",
 			"unconscious": "Unconscious",
 			"sleeping": "Sleeping",
-			"coma": "Comatose",
+			"comatose": "Comatose",
 			"stun": "Stun",
-			"mental_stun": "Mental Stun",
+			"mental-stun": "Mental Stun",
 			"poisoned": "Poisoned",
 			"burning": "Burning",
 			"cold": "Cold",
@@ -1536,7 +1568,7 @@
 			"pinned": "Pinned",
 			"sprinting": "Sprinting",
 			"flying": "Flying",
-			"stealth": "Stealthy",
+			"stealthy": "Stealthy",
 			"waiting": "Waiting",
 			"invisible": "Invisible",
 			"coughing": "Coughing",
@@ -1544,44 +1576,44 @@
 			"nausea": "Nausea",
 			"agony": "Agony",
 			"seizure": "Seizure",
-			"blind": "Blinded",
+			"blind": "Blind",
 			"deafened": "Deafened",
 			"silenced": "Silenced",
 			"choking": "Choking",
-			"heart_attack": "Heart Attack",
-			"euphoria": "Euphoric",
+			"heart-attack": "Heart Attack",
+			"euphoric": "Euphoric",
 			"hallucinating": "Hallucinating",
 			"drunk": "Drunk",
 			"drowsy": "Drowsy",
-			"daze": "Dazed",
+			"dazed": "Dazed",
 			"trigger": "Trigger"
 		},
 		"maneuver": {
 			"none": "None",
-			"do_nothing": "Do Nothing",
+			"do-nothing": "Do Nothing",
 			"attack": "Attack",
-			"aoa": "All-out Attack",
-			"aod": "All-out Defense",
+			"all-out-attack": "All-out Attack",
+			"all-out-defense": "All-out Defense",
 			"move": "Move",
-			"move_attack": "Move and Attack",
-			"aoa_double": "All-out Attack (Double)",
-			"aod_double": "All-out Defense (Double)",
-			"change_posture": "Change Posture",
+			"move-and-attack": "Move and Attack",
+			"all-out-attack-double": "All-out Attack (Double)",
+			"all-out-defense-double": "All-out Defense (Double)",
+			"change-posture": "Change Posture",
 			"feint": "Feint",
-			"aoa_feint": "All-out Attack (Feint)",
-			"aod_dodge": "All-out Defense (Dodge)",
+			"all-out-attack-feint": "All-out Attack (Feint)",
+			"all-out-defense-dodge": "All-out Defense (Dodge)",
 			"ready": "Ready",
 			"evaluate": "Evaluate",
-			"aoa_determined": "All-out Attack (Determined)",
-			"aod_parry": "All-out Defense (Parry)",
+			"all-out-attack-determined": "All-out Attack (Determined)",
+			"all-out-defense-parry": "All-out Defense (Parry)",
 			"concentrate": "Concentrate",
-			"aiming": "Aim",
-			"aoa_strong": "All-out Attack (Strong)",
-			"aod_block": "All-out Defense (Block)",
+			"aim": "Aim",
+			"all-out-attack-strong": "All-out Attack (Strong)",
+			"all-out-defense-block": "All-out Defense (Block)",
 			"wait": "Wait",
-			"blank_1": "",
-			"aoa_suppressing_fire": "All-out Attack (Suppressing Fire)",
-			"blank_2": ""
+			"blank-1": "Blank 1",
+			"all-out-attack-suppressing-fire": "All-out Attack (Suppressing Fire)",
+			"blank-2": "Blank 2"
 		},
 		"notification": {
 			"no_default_skill": "Cannot Roll: No applicable skill defaults found."
@@ -1727,6 +1759,10 @@
 					"a4": "A4",
 					"a5": "A5",
 					"a6": "A6"
+				},
+				"orientation": {
+					"portrait": "Portrait",
+					"landscape": "Landscape"
 				}
 			},
 			"emcost": {
@@ -1866,7 +1902,8 @@
 					"6": "CR: 6 (Resist Rarely)",
 					"9": "CR: 9 (Resist Fairly Often)",
 					"12": "CR: 12 (Resist Quite Often)",
-					"15": "CR: 15 (Resist Almost All The Time)"
+					"15": "CR: 15 (Resist Almost All The Time)",
+					"non_standard": "CR: {number} (non-standard)"
 				},
 				"adjustment": {
 					"string": {
@@ -1971,6 +2008,12 @@
 					"tbone_2_clean": "From <span class='ref' data-pdf='https://www.gamesdiner.com/2009/10/new-st-damage/'>T Bone's Games Diner</span>",
 					"phoenix_flame_d3": "From a <span class='ref' data-pdf='https://github.com/richardwilkes/gcs/pull/393'>house rule</span> that uses d3s instead of d6s for damage"
 				}
+			},
+			"duration_type": {
+				"seconds": "Seconds",
+				"turns": "Turns",
+				"rounds": "Rounds",
+				"none": "None"
 			}
 		},
 		"string_criteria": {
@@ -2076,25 +2119,25 @@
 			"title": "Apply Damage"
 		},
 		"migrations": {
-			"finished": "GURPs Game Aid system migration to version {version} completed!",
-			"onlygmcanuse": "only a gamemaster can use this tool.",
-			"outsideschemarange": "the specified range is outside the system's schema version range (between {minimum} and {maximum}).",
-			"running": "running system migration ...",
+			"finished": "GURPS Game Aid system migration to version {version} completed!",
+			"onlygmcanuse": "Only a gamemaster can use this tool.",
+			"outsideschemarange": "The specified range is outside the system's schema version range (between {minimum} and {maximum}).",
+			"running": "Running system migration ...",
 			"starting": "applying GURPS system migration to version {version}. please be patient and do not close your game or shut down your server.",
 			"summary": {
-				"documents": "documents",
-				"helpresources": "an unexpected error was encountered while migrating some actors or items. if you would like further assistance, feel free to report an issue at the <a href=\"https://github.com/gcsga/gcsga/issues\">system repository</a> or visit us on <a href=\"https://discord.gg/hWHbuvF\">discord</a> for community support.",
-				"migrated": "migrated",
-				"remigrate": "remigrate",
-				"title": "migration summary",
-				"total": "total",
+				"documents": "Documents",
+				"helpresources": "An unexpected error was encountered while migrating some actors or items. if you would like further assistance, feel free to report an issue at the <a href=\"https://github.com/gcsga/gcsga/issues\">system repository</a> or visit us on <a href=\"https://discord.gg/hWHbuvF\">discord</a> for community support.",
+				"migrated": "Migrated",
+				"remigrate": "Remigrate",
+				"title": "Migration Summary",
+				"total": "Total",
 				"troubleshoot": {
-					"hint": "here you can run a remigration, which will attempt to automatically fix issues with actors and items.",
-					"title": "system troubleshooting"
+					"hint": "Here you can run a remigration, which will attempt to automatically fix issues with actors and items.",
+					"title": "System Troubleshooting"
 				}
 			},
-			"troubleshooting": "troubleshooting",
-			"worldnotready": "game world not ready: try again in a few seconds."
+			"troubleshooting": "Troubleshooting",
+			"worldnotready": "Game world not ready: try again in a few seconds."
 		}
 	}
 }

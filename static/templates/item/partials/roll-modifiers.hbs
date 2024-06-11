@@ -1,0 +1,65 @@
+<div id="roll-modifiers">
+	<header>
+		<span>{{ localize "gurps.modifier.header" }}</span>
+	</header>
+	<ul>
+		<div>
+			<a class="button gcs-circled-add" data-action="add-roll-modifier"></a>
+		</div>
+		{{#each system.modifiers}}
+		<li class="roll-modifier">
+			<div class="top">
+				<a class="button gcs-trash" data-action="remove-roll-modifier" data-index="{{@index}}"></a>
+				<label>{{ localize "gurps.modifier.sheet.modifier" }}</label>
+				<div class="field">
+					<input
+						type="text"
+						name="array.system.modifiers.{{@index}}.modifier"
+						value="{{ this.modifier }}"
+						data-dtype="Number"
+					/>
+				</div>
+				<label>{{ localize "gurps.modifier.sheet.name" }}</label>
+				<div class="field">
+					<input
+						type="text"
+						name="array.system.modifiers.{{@index}}.id"
+						value="{{ this.id }}"
+						data-dtype="String"
+					/>
+				</div>
+				<label>{{ localize "gurps.modifier.sheet.max" }}</label>
+				<div class="field">
+					<input
+						type="text"
+						name="array.system.modifiers.{{@index}}.max"
+						value="{{ this.max }}"
+						data-dtype="Number"
+					/>
+				</div>
+			</div>
+			<div>
+				<div class="placeholder"></div>
+				<label>{{ localize "gurps.modifier.sheet.cost" }}</label>
+				<div class="field">
+					<input
+						type="text"
+						name="array.system.modifiers.{{@index}}.cost.value"
+						value="{{ this.cost.value }}"
+						data-dtype="Number"
+					/>
+				</div>
+				<label>{{ localize "gurps.modifier.sheet.id" }}</label>
+				<div class="field">
+					<input
+						type="text"
+						name="array.system.modifiers.{{@index}}.cost.id"
+						value="{{ this.cost.id }}"
+						data-dtype="String"
+					/>
+				</div>
+			</div>
+		</li>
+		{{/each}}
+	</ul>
+</div>

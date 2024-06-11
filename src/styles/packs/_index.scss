@@ -1,0 +1,52 @@
+#compendium-browser {
+	section.content {
+		padding: 5px;
+	}
+
+	.list {
+		height: calc(100% - 60px);
+	}
+
+	#embeds {
+		@include item-list;
+
+		ul.items {
+			overflow-y: scroll;
+		}
+	}
+
+	#traits {
+		header,
+		ul.items > li > .data {
+			grid-template-columns: auto 2.5rem 5rem 3.5rem;
+		}
+	}
+
+	#skills {
+		header,
+		ul.items > li > .data {
+			grid-template-columns: auto 2.5rem 3rem 2.5rem 3.5rem;
+		}
+	}
+
+	#spells {
+		header,
+		ul.items > li > .data {
+			grid-template-columns: auto 2.5rem 3rem 2.5rem 3.5rem;
+		}
+	}
+
+	#equipment {
+		header,
+		ul.items > li > .data {
+			grid-template-columns: 1rem 1.25rem auto 2.5rem 2rem 2rem 2.5rem 2.5rem 2.5rem 2.5rem 3.5rem;
+		}
+	}
+
+	#other_equipment {
+		header,
+		ul.items > li > .data {
+			grid-template-columns: 1.25rem auto 2.5rem 2rem 2rem 2.5rem 2.5rem 2.5rem 2.5rem 3.5rem;
+		}
+	}
+}

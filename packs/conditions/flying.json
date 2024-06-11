@@ -1,0 +1,27 @@
+{
+    "_id": "u96wagsfnB3MXnms",
+    "img": "systems/gcsga/assets/status/flying.webp",
+    "name": "Flying",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "flying",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "type": "condition"
+    },
+    "type": "condition"
+}

@@ -1,15 +1,14 @@
-import { CharacterSheetConfig } from "@actor/character/config_sheet.ts"
 import { SYSTEM_NAME } from "@data"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { Attribute, AttributeObj } from "@sytem/attribute/index.ts"
-import { attribute } from "@util/enum/attribute.ts"
-import { DialogGURPS } from "@ui/dialog.ts"
 import { MookParser } from "./parse.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { Mook } from "./document.ts"
+import { AttributeGURPS, AttributeObj } from "@system"
+import { DialogGURPS } from "@module/apps/dialog.ts"
+import { CharacterConfigSheet } from "@actor/character/config.ts"
 
 export class MookGeneratorSheet extends FormApplication {
-	config: CharacterSheetConfig | null = null
+	config: CharacterConfigSheet | null = null
 
 	override object: Mook
 
@@ -111,15 +110,14 @@ export class MookGeneratorSheet extends FormApplication {
 		}
 	}
 
-	prepareAttributes(attributes: Map<string, Attribute>): [Attribute[], Attribute[], Attribute[]] {
-		const primary_attributes: Attribute[] = []
-		const secondary_attributes: Attribute[] = []
-		const point_pools: Attribute[] = []
+	prepareAttributes(attributes: Map<string, AttributeGURPS>): [AttributeGURPS[], AttributeGURPS[], AttributeGURPS[]] {
+		const primary_attributes: AttributeGURPS[] = []
+		const secondary_attributes: AttributeGURPS[] = []
+		const point_pools: AttributeGURPS[] = []
 		if (attributes)
 			attributes.forEach(a => {
-				if ([attribute.Type.Pool, attribute.Type.PoolSeparator].includes(a.attribute_def?.type))
-					point_pools.push(a)
-				else if (a.attribute_def?.isPrimary) primary_attributes.push(a)
+				if (a.isPool) point_pools.push(a)
+				else if (a.isPrimary) primary_attributes.push(a)
 				else secondary_attributes.push(a)
 			})
 		return [primary_attributes, secondary_attributes, point_pools]
@@ -190,7 +188,7 @@ export class MookGeneratorSheet extends FormApplication {
 
 	private async createMook() {
 		const actor = await this.object.createActor()
-		await actor?.sheet?.render(true)
+		actor?.sheet?.render(true)
 		return this.close()
 	}
 
@@ -214,7 +212,7 @@ export class MookGeneratorSheet extends FormApplication {
 					if (i.endsWith(".damage")) (formData[i] as number) = Math.max(att.max - (formData[i] as number), 0)
 				}
 				const key = i.replace(`attributes.${id}.`, "")
-				const index = attributes.findIndex(e => e.attr_id === id)
+				const index = attributes.findIndex(e => e.id === id)
 				fu.setProperty(attributes[index], key, formData[i])
 				formData["system.attributes"] = attributes
 				delete formData[i]
@@ -222,7 +220,6 @@ export class MookGeneratorSheet extends FormApplication {
 			if (i === "thrust") formData.thrust = new DiceGURPS(formData.thrust as string)
 			if (i === "swing") formData.swing = new DiceGURPS(formData.swing as string)
 		}
-		console.log(formData)
 		return this.object.update(formData)
 	}
 }

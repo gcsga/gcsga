@@ -1,0 +1,58 @@
+<li class="feature">
+    <div class="top">
+        <a class="button gcs-trash"
+           data-action="remove-feature"
+           data-index="{{@index}}"></a>
+        <select class="type"
+                name="array.system.features.{{@index}}.type"
+                data-index="{{@index}}">
+            {{#select this.type}}
+            {{#each @root.config.select.feature_strict as |v k| }}
+                <option value="{{ k }}">{{ localize v }}</option>
+            {{/each}}
+            {{#if (eq @root.item.type "equipment_container") }}
+                {{#each @rootconfig.select.feature as |v k| }}
+                    <option value="{{ k }}">{{ localize v }}</option>
+                {{/each}} {{/if}}
+            {{/select}}
+        </select>
+        <div class="field">
+            <input type="text"
+                   name="array.system.features.{{@index}}.amount"
+                   value="{{ signed this.amount false }}"
+                   data-dtype="Number" />
+        </div>
+        <label class="check">
+            <input type="checkbox" data-dtype="Boolean" name="array.system.features.{{@index}}.per_level" {{ checked this.per_level }} />
+            {{ localize "gurps.feature.per_level" }}
+        </label>
+    </div>
+    <div class="attribute-bonus">
+        <div class="placeholder"></div>
+        <select name="array.system.features.{{@index}}.attribute">
+            {{#select this.attribute}}
+            {{#unless (in @root.attributes this.attribute)}}
+            <option value="{{ this.attribute }}">
+                {{localize
+                "gurps.field_prefix.attribute_unknown"
+                att=this.attribute
+                }}
+            </option>
+        {{/unless}}
+        {{#each @root.attributes as |v k|}}
+            <option value="{{ k }}">{{ localize "gurps.field_prefix.attribute" att=v }}</option>
+        {{/each}}
+        <option value="sm">{{ localize "gurps.field_prefix.attribute" att=(localize "gurps.attribute.size") }}</option>
+        <option value="dodge">{{ localize "gurps.field_prefix.attribute" att=(localize "gurps.attribute.dodge") }}</option>
+        <option value="parry">{{ localize "gurps.field_prefix.attribute" att=(localize "gurps.attribute.parry") }}</option>
+        <option value="block">{{ localize "gurps.field_prefix.attribute" att=(localize "gurps.attribute.block") }}</option>
+    {{/select}}
+</select>
+<select name="array.system.features.{{@index}}.limitation" {{ disabled (ne this.attribute "st") }}>
+    {{#select this.limitation}}
+    {{#each @root.config.select.stlimit as |v k|}}
+        <option value="{{ k }}">{{ localize v }}</option>
+    {{/each}} {{/select}}
+</select>
+</div>
+</li>

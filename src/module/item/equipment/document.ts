@@ -1,75 +1,53 @@
-import { ActorGURPS } from "@actor/base.ts"
-import { EquipmentSource, EquipmentSystemSource } from "./data.ts"
-import { ItemGCS } from "@item/gcs/document.ts"
-import { display } from "@util/enum/display.ts"
-import { StringBuilder } from "@util/string_builder.ts"
-import { sheetSettingsFor } from "@module/data/sheet_settings.ts"
-import { LocalizeGURPS } from "@util/localize.ts"
-import { Weight, WeightUnits } from "@util/weight.ts"
+import { ActorGURPS } from "@actor"
+import * as R from "remeda"
+import { AbstractContainerGURPS } from "@item"
+import { EquipmentFlags, EquipmentSource, EquipmentSystemData } from "./data.ts"
+import { ItemFlags, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
+import { ItemInstances } from "@item/types.ts"
+import { Int, LocalizeGURPS, Weight, WeightString, WeightUnits } from "@util"
 import {
-	EquipmentModifierGURPS,
+	extendedWeightAdjustedForModifiers,
 	valueAdjustedForModifiers,
 	weightAdjustedForModifiers,
-} from "@item/equipment_modifier/document.ts"
-import { EquipmentModifierContainerGURPS } from "@item/equipment_modifier_container/document.ts"
-import { Int } from "@util/fxp.ts"
-import { ContainedWeightReduction, Feature } from "@feature/index.ts"
-import { EquipmentContainerGURPS } from "@item/index.ts"
-import { CharacterGURPS } from "@actor"
-import { ItemFlags, ItemType, SETTINGS, SYSTEM_NAME } from "@data"
+} from "@item/helpers.ts"
+import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
+import { Feature, PrereqList } from "@system"
 
-export interface EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
-	readonly _source: EquipmentSource
-	system: EquipmentSystemSource
+const fields = foundry.data.fields
 
-	type: ItemType.Equipment
-}
-export class EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
-	// unsatisfied_reason = ""
-
-	// Getters
-	override get ratedStrength(): number {
-		return this.system.rated_strength ?? 0
-	}
-
-	get quantity(): number {
-		return this.system.quantity
-	}
-
-	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
-		const buffer = new StringBuilder()
-		const settings = sheetSettingsFor(this.actor as CharacterGURPS)
-		if (optionChecker(settings.modifiers_display)) {
-			buffer.appendToNewLine(this.modifierNotes)
-		}
-		if (optionChecker(settings.notes_display)) {
-			const localBuffer = new StringBuilder()
-			if (this.ratedStrength !== 0) {
-				localBuffer.push(LocalizeGURPS.translations.gurps.item.rated_strength)
-				localBuffer.push(" ")
-				localBuffer.push(this.ratedStrength.toString())
-			}
-			if (this.localNotes !== "") {
-				if (localBuffer.length !== 0) localBuffer.push("; ")
-				localBuffer.push(this.localNotes)
-			}
-			buffer.appendToNewLine(localBuffer.toString())
-		}
-		return buffer.toString()
-	}
-
-	get modifierNotes(): string {
-		const buffer = new StringBuilder()
-		for (const mod of this.deepModifiers.filter(e => e.enabled)) {
-			if (buffer.length !== 0) buffer.push("; ")
-			buffer.push(mod.fullDescription)
-		}
-		return buffer.toString()
+class EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends AbstractContainerGURPS<TParent> {
+	static override defineSchema(): foundry.documents.ItemSchema<string, object> {
+		return this.mergeSchema(super.defineSchema(), {
+			system: new fields.SchemaField({
+				type: new fields.StringField({ required: true, initial: ItemType.Equipment }),
+				description: new fields.StringField({
+					required: true,
+					initial: LocalizeGURPS.translations.TYPES.Item[ItemType.Equipment],
+				}),
+				reference: new fields.StringField(),
+				reference_highlight: new fields.StringField(),
+				notes: new fields.StringField(),
+				vtt_notes: new fields.StringField(),
+				tech_level: new fields.StringField(),
+				legality_class: new fields.StringField(),
+				tags: new fields.ArrayField(new foundry.data.fields.StringField()),
+				rated_strength: new fields.NumberField({ nullable: true, min: 0, initial: null }),
+				quantity: new fields.NumberField({ min: 0, initial: 1 }),
+				value: new fields.NumberField({ min: 0, initial: 0 }),
+				weight: new fields.StringField<WeightString>({ initial: `0 ${WeightUnits.Pound}` }),
+				max_uses: new fields.NumberField({ min: 0, initial: 0, integer: true }),
+				uses: new fields.NumberField({ min: 0, initial: 0, integer: true }),
+				prereqs: new fields.SchemaField(PrereqList.defineSchema()),
+				features: new fields.ArrayField(new fields.ObjectField<Feature>()),
+				equipped: new fields.BooleanField({ initial: true }),
+				ignore_weight_for_skills: new fields.BooleanField({ initial: false }),
+			}),
+		})
 	}
 
 	get other(): boolean {
-		if (this.container instanceof Item) return (this.container as EquipmentContainerGURPS).other
-		return this.getFlag(SYSTEM_NAME, ItemFlags.Other) as boolean
+		if (this.container?.isOfType(ItemType.EquipmentContainer)) return this.container.other
+		return this.flags[SYSTEM_NAME][ItemFlags.Other]
 	}
 
 	// Gets weight in pounds
@@ -78,61 +56,37 @@ export class EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | nul
 	}
 
 	get weightUnits(): WeightUnits {
-		if (this.actor instanceof CharacterGURPS) return this.actor.weightUnits
-		const default_settings = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
-		return default_settings.default_weight_units
+		return sheetSettingsFor(this.actor).default_weight_units
 	}
 
 	get weightString(): string {
 		return Weight.format(this.weight, this.weightUnits)
 	}
 
-	get isGreyedOut(): boolean {
-		return !(
-			this.system.quantity > 0 &&
-			!(this.container instanceof CompendiumCollection) &&
-			(this.container instanceof EquipmentContainerGURPS ? !this.container.isGreyedOut : true)
-		)
-	}
-
-	override get enabled(): boolean {
-		return this.equipped
-	}
-
 	get equipped(): boolean {
 		return this.system.equipped && !this.other
 	}
 
-	set equipped(equipped: boolean) {
-		this.system.equipped = equipped
-	}
-
-	// Embedded Items
-	override get children(): Collection<EquipmentGURPS | EquipmentContainerGURPS> {
-		return super.children as Collection<EquipmentGURPS | EquipmentContainerGURPS>
-	}
-
-	override get modifiers(): Collection<EquipmentModifierGURPS | EquipmentModifierContainerGURPS> {
-		const modifiers: Collection<EquipmentModifierGURPS> = new Collection()
-		for (const item of this.items) {
-			if (item instanceof EquipmentModifierGURPS) modifiers.set(item.id!, item)
-		}
-		return modifiers
-	}
-
-	get deepModifiers(): Collection<EquipmentModifierGURPS> {
-		const deepModifiers: EquipmentModifierGURPS[] = []
-		for (const mod of this.modifiers) {
-			if (mod instanceof EquipmentModifierGURPS) deepModifiers.push(mod)
-			else
-				for (const e of mod.deepItems) {
-					if (e instanceof EquipmentModifierGURPS) deepModifiers.push(e)
-				}
-		}
+	get modifiers(): Collection<
+		ItemInstances<TParent>[ItemType.EquipmentModifier] | ItemInstances<TParent>[ItemType.EquipmentModifierContainer]
+	> {
 		return new Collection(
-			deepModifiers.map(item => {
-				return [item.id!, item]
-			}),
+			this.contents
+				.filter(item => item.isOfType(ItemType.EquipmentModifier, ItemType.EquipmentModifierContainer))
+				.map(item => [
+					item.id,
+					item as
+						| ItemInstances<TParent>[ItemType.EquipmentModifier]
+						| ItemInstances<TParent>[ItemType.EquipmentModifierContainer],
+				]),
+		)
+	}
+
+	get deepModifiers(): Collection<ItemInstances<TParent>[ItemType.EquipmentModifier]> {
+		return new Collection(
+			this.deepContents
+				.filter(item => item.isOfType(ItemType.EquipmentModifier))
+				.map(item => [item.id, item as ItemInstances<TParent>[ItemType.EquipmentModifier]]),
 		)
 	}
 
@@ -140,14 +94,9 @@ export class EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | nul
 		return Int.from(valueAdjustedForModifiers(this.system.value, this.deepModifiers))
 	}
 
-	// Value Calculator
 	get extendedValue(): number {
 		if (this.system.quantity <= 0) return 0
-		let value = this.adjustedValue
-		for (const ch of this.children) {
-			value += ch.extendedValue
-		}
-		return Int.from(value * this.system.quantity)
+		return this.adjustedValue
 	}
 
 	adjustedWeight(forSkills: boolean, defUnits: WeightUnits): number {
@@ -166,67 +115,43 @@ export class EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | nul
 			this.weight,
 			this.deepModifiers,
 			this.features,
-			this.children,
+			new Collection(),
 			forSkills,
 			this.system.ignore_weight_for_skills && this.equipped,
 		)
 	}
 
-	get extendedWeightFast(): string {
-		return Weight.format(this.extendedWeight(false, this.weightUnits), this.weightUnits)
+	/** Can the provided item stack with this item? */
+	isStackableWith(item: EquipmentGURPS): boolean {
+		const preCheck = this !== item && this.type === item.type && this.name === item.name
+		if (!preCheck) return false
+
+		const thisData = this.toObject()
+		const otherData = item.toObject()
+		thisData.system.quantity = otherData.system.quantity
+		thisData.system.equipped = otherData.system.equipped
+		thisData.flags[SYSTEM_NAME]![ItemFlags.Container] = otherData.flags[SYSTEM_NAME]![ItemFlags.Container]
+		thisData.system._migration = otherData.system._migration
+
+		return R.equals(thisData, otherData)
 	}
 
-	override prepareBaseData(): void {
-		this.system.weight = Weight.format(this.weight, this.weightUnits)
-		super.prepareBaseData()
-	}
-
-	override exportSystemData(keepOther: boolean): Record<string, unknown> {
-		const system = super.exportSystemData(keepOther)
-		system.type = "equipment"
-		system.description = this.name
-		delete system.name
-		system.calc = {
-			extended_value: this.extendedValue,
-			extended_weight: this.extendedWeightFast,
-		}
-		return system
-	}
-
-	toggleState(): void {
-		this.equipped = !this.equipped
-	}
-}
-
-export function extendedWeightAdjustedForModifiers(
-	defUnits: WeightUnits,
-	quantity: number,
-	baseWeight: number,
-	modifiers: Collection<EquipmentModifierGURPS>,
-	features: Feature[],
-	children: Collection<EquipmentGURPS | EquipmentContainerGURPS>,
-	forSkills: boolean,
-	weightIgnoredForSkills: boolean,
-): number {
-	if (quantity <= 0) return 0
-	let base = 0
-	if (!forSkills || !weightIgnoredForSkills)
-		base = Int.from(weightAdjustedForModifiers(baseWeight, modifiers, defUnits))
-	if (children.size) {
-		let contained = 0
-		children.forEach(child => {
-			contained += Int.from(child.extendedWeight(forSkills, defUnits))
-		})
-		let [percentage, reduction] = [0, 0]
-		features.forEach(feature => {
-			if (feature instanceof ContainedWeightReduction) {
-				if (feature.isPercentageReduction) percentage += feature.percentageReduction
-				else reduction += Int.from(feature.fixedReduction(defUnits))
+	/** Combine this item with a target item if possible */
+	async stackWith(targetItem: EquipmentGURPS): Promise<void> {
+		if (this.isStackableWith(targetItem)) {
+			const stackQuantity = this.system.quantity + targetItem.system.quantity
+			if (await this.delete({ render: false })) {
+				await targetItem.update({ "system.quantity": stackQuantity })
 			}
-		})
-		if (percentage >= 100) contained = 0
-		else if (percentage > 0) contained -= (contained * percentage) / 100
-		base += Math.max(0, contained - reduction)
+		}
 	}
-	return Int.from(base * quantity)
 }
+
+interface EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | null>
+	extends AbstractContainerGURPS<TParent> {
+	flags: EquipmentFlags
+	readonly _source: EquipmentSource
+	system: EquipmentSystemData
+}
+
+export { EquipmentGURPS }

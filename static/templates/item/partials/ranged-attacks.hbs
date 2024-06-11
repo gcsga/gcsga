@@ -1,0 +1,37 @@
+{{#with @root.itemCollections.ranged_weapons as |section|}}
+<div id="ranged-attacks">
+	<header>
+		<span class="item-name">{{ localize "gurps.weapon.ranged_header" }}</span>
+		<span class="level">{{ localize "gurps.character.ranged.level" }}</span>
+		<span class="accuracy">{{ localize "gurps.character.ranged.accuracy" }}</span>
+		<span class="damage">{{ localize "gurps.character.ranged.damage" }}</span>
+		<span class="range">{{ localize "gurps.character.ranged.range" }}</span>
+		<span class="rate-of-fire">{{ localize "gurps.character.ranged.rate_of_fire" }}</span>
+		<span class="shots">{{ localize "gurps.character.ranged.shots" }}</span>
+		<span class="bulk">{{ localize "gurps.character.ranged.bulk" }}</span>
+		<span class="recoil">{{ localize "gurps.character.ranged.recoil" }}</span>
+		<span class="strength">{{ localize "gurps.character.ranged.st" }}</span>
+	</header>
+	<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
+		{{#each section.items}}
+		<li data-item-id="{{ item.id }}">
+			<div class="data">
+				<div class="item-name">
+					<div class="name">{{ item.system.usage }}</div>
+					{{{ item.resolvedNotes }}}
+				</div>
+				<div class="level">{{ item.level }}</div>
+				<div class="accuracy">{{ item.accuracy.current }}</div>
+				<div class="damage">{{ item.damage }}</div>
+				<div class="range">{{ item.range }}</div>
+				<div class="rate-of-fire">{{ item.ROF.current }}</div>
+				<div class="shots">{{ item.shots.current }}</div>
+				<div class="bulk">{{ item.bulk.current }}</div>
+				<div class="recoil">{{ item.recoil.current }}</div>
+				<div class="strength">{{ item.strength.current }}</div>
+			</div>
+		</li>
+		{{/each}}
+	</ul>
+</div>
+{{/with}}

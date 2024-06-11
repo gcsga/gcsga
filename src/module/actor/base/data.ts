@@ -1,37 +1,42 @@
-import { ActorFlags, ActorType, MigrationRecord, RollModifier, SYSTEM_NAME } from "@data"
-import { ItemSourceGURPS } from "@item/base/data/index.ts"
-import { DiceGURPS } from "@module/dice/index.ts"
-import { PoolThreshold } from "@sytem/attribute/pool_threshold.ts"
-import { PrototypeTokenSource } from "types/foundry/common/data/data.js"
+import type { ActorGURPS } from "@actor"
+import type { ActorFlags, ActorType, MigrationRecord, RollModifier, SYSTEM_NAME } from "@data"
+import type { ItemSourceGURPS } from "@item/data/index.ts"
 
-export type ActorFlagsGURPS = foundry.documents.ActorFlags & {
-	[SYSTEM_NAME]: {
-		[ActorFlags.TargetModifiers]: RollModifier[]
-		[ActorFlags.SelfModifiers]: RollModifier[]
-		[ActorFlags.AutoEncumbrance]?: { active: boolean; manual: number }
-		[ActorFlags.AutoThreshold]?: { active: boolean; manual: Record<string, PoolThreshold | null> }
-		[ActorFlags.AutoDamage]?: { active: boolean; thrust: DiceGURPS; swing: DiceGURPS }
-	} & Partial<Record<ActorFlags, unknown>>
-}
-
-export type ActorSourceFlagsGURPS = foundry.documents.ActorFlags & {
-	[SYSTEM_NAME]: {
-		[ActorFlags.TargetModifiers]: RollModifier[]
-		[ActorFlags.SelfModifiers]: RollModifier[]
-		[ActorFlags.AutoEncumbrance]?: { active: boolean; manual: number }
-		[ActorFlags.AutoThreshold]?: { active: boolean; manual: Record<string, PoolThreshold | null> }
-		[ActorFlags.AutoDamage]?: { active: boolean; thrust: DiceGURPS; swing: DiceGURPS }
-	} & Partial<Record<ActorFlags, unknown>>
-}
-
-export type BaseActorSourceGURPS<
-	TType extends ActorType = ActorType,
+/** Base interface for all actor data */
+type BaseActorSourceGURPS<
+	TType extends ActorType,
 	TSystemSource extends ActorSystemSource = ActorSystemSource,
 > = foundry.documents.ActorSource<TType, TSystemSource, ItemSourceGURPS> & {
-	flags: ActorSourceFlagsGURPS
-	prototypeToken: PrototypeTokenSource
+	flags: DeepPartial<ActorFlagsGURPS>
+	prototypeToken: PrototypeTokenSourceGURPS
 }
-export interface ActorSystemSource {
+
+type ActorFlagsGURPS = foundry.documents.ActorFlags & {
+	[SYSTEM_NAME]: {
+		[ActorFlags.TargetModifiers]: RollModifier[]
+		[ActorFlags.SelfModifiers]: RollModifier[]
+		[ActorFlags.Import]: { name: string; path: string; last_import: string }
+		[key: string]: unknown
+	}
+}
+
+type ActorSystemSource = {
 	/** A record of this actor's current world schema version as well a log of the last migration to occur */
 	_migration: MigrationRecord
 }
+
+interface ActorSystemData extends ActorSystemSource {}
+
+type PrototypeTokenSourceGURPS = foundry.data.PrototypeTokenSource & {
+	flags: {
+		[SYSTEM_NAME]?: {}
+	}
+}
+
+interface PrototypeTokenGURPS<TParent extends ActorGURPS | null> extends foundry.data.PrototypeToken<TParent> {
+	flags: DocumentFlags & {
+		[SYSTEM_NAME]: {}
+	}
+}
+
+export type { ActorFlagsGURPS, ActorSystemData, ActorSystemSource, BaseActorSourceGURPS, PrototypeTokenGURPS }

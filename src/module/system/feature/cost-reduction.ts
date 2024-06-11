@@ -3,23 +3,21 @@ import { BonusOwner } from "./bonus-owner.ts"
 import { CostReductionObj } from "./data.ts"
 import { gid } from "@data"
 
-export class CostReduction extends BonusOwner {
-	declare type: feature.Type.CostReduction
-
+export class CostReduction extends BonusOwner<feature.Type.CostReduction> {
 	attribute: string
 
 	percentage?: number
 
 	constructor(attrID: string = gid.Strength) {
-		super()
+		super(feature.Type.CostReduction)
 		this.attribute = attrID
 		this.percentage = 40
 	}
 
-	// @ts-expect-error incorrect return type
+	// @ts-expect-error incorrect type
 	override toObject(): CostReductionObj {
 		return {
-			type: this.type,
+			type: feature.Type.CostReduction,
 			attribute: this.attribute,
 			percentage: this.percentage,
 		}

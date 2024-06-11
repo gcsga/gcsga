@@ -1,28 +1,52 @@
-import { ActorGURPS } from "@actor/base.ts"
-import { ItemGCS } from "@item/gcs/document.ts"
-import { TraitSource, TraitSystemSource } from "./data.ts"
-import { display } from "@util/enum/display.ts"
-import { StringBuilder } from "@util/string_builder.ts"
-import { sheetSettingsFor } from "@module/data/sheet_settings.ts"
-import { resolveStudyHours, studyHoursProgressText } from "@util/study.ts"
-import { selfctrl } from "@util/enum/selfctrl.ts"
-import { TraitModifierGURPS } from "@item/trait_modifier/document.ts"
-import { TraitModifierContainerGURPS } from "@item/trait_modifier_container/document.ts"
-import { CharacterResolver } from "@util"
-import { study } from "@util/enum/study.ts"
-import { ItemType } from "@data"
+import { ActorGURPS } from "@actor"
+import { AbstractContainerGURPS } from "@item"
+import { TraitSource, TraitSystemData } from "./data.ts"
+import { LocalizeGURPS, StringBuilder, affects, display, selfctrl, study, tmcost } from "@util"
+import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
+import { Feature, PrereqList, Study, resolveStudyHours, studyHoursProgressText } from "@system"
+import { ItemType } from "@module/data/constants.ts"
+import { ItemInstances } from "@item/types.ts"
+import { modifyPoints } from "@item/helpers.ts"
 
-export interface TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
-	readonly _source: TraitSource
-	system: TraitSystemSource
+const fields = foundry.data.fields
 
-	type: ItemType.Trait
-}
+class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends AbstractContainerGURPS<TParent> {
+	static override defineSchema(): foundry.documents.ItemSchema<string, object> {
+		return this.mergeSchema(super.defineSchema(), {
+			system: new fields.SchemaField({
+				type: new fields.StringField({ required: true, initial: ItemType.Trait }),
+				name: new fields.StringField({
+					required: true,
+					initial: LocalizeGURPS.translations.TYPES.Item[ItemType.Trait],
+				}),
+				reference: new fields.StringField(),
+				reference_highlight: new fields.StringField(),
+				notes: new fields.StringField(),
+				vtt_notes: new fields.StringField(),
+				userdesc: new fields.StringField(),
+				tags: new fields.ArrayField(new foundry.data.fields.StringField()),
+				base_points: new fields.NumberField({ integer: true, initial: 0 }),
+				levels: new fields.NumberField({ min: 0, nullable: true }),
+				points_per_level: new fields.NumberField({ integer: true, nullable: true }),
+				prereqs: new fields.SchemaField(PrereqList.defineSchema()),
+				features: new fields.ArrayField(new fields.ObjectField<Feature>()),
+				study: new fields.ArrayField(new fields.ObjectField<Study>()),
+				cr: new fields.NumberField<selfctrl.Roll>({ choices: selfctrl.Rolls, initial: selfctrl.Roll.NoCR }),
+				cr_adj: new fields.StringField<selfctrl.Adjustment>({
+					choices: selfctrl.Adjustments,
+					initial: selfctrl.Adjustment.NoCRAdj,
+				}),
+				study_hours_needed: new fields.StringField<study.Level>({
+					choices: study.Levels,
+					initial: study.Level.Standard,
+				}),
+				disabled: new fields.BooleanField({ initial: false }),
+				round_down: new fields.BooleanField({ initial: false }),
+				can_level: new fields.BooleanField({ initial: false }),
+			}),
+		})
+	}
 
-export class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGCS<TParent> {
-	// unsatisfied_reason = ""
-
-	// Getters
 	override get formattedName(): string {
 		const name: string = this.name ?? ""
 		const levels = this.levels
@@ -48,8 +72,7 @@ export class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> e
 	override get enabled(): boolean {
 		if (this.system.disabled) return false
 		let enabled = !this.system.disabled
-		if (this.container instanceof ItemGCS && this.container.type === ItemType.TraitContainer)
-			enabled = enabled && this.container.enabled
+		if (this.container?.isOfType(ItemType.TraitContainer)) enabled = enabled && this.container.enabled
 		return enabled
 	}
 
@@ -57,11 +80,11 @@ export class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> e
 		this.system.disabled = !enabled
 	}
 
-	override get isLeveled(): boolean {
+	get isLeveled(): boolean {
 		return this.system.can_level
 	}
 
-	override get levels(): number {
+	get levels(): number {
 		return this.system.levels ?? 0
 	}
 
@@ -71,6 +94,90 @@ export class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> e
 
 	get pointsPerLevel(): number {
 		return this.system.points_per_level ?? 0
+	}
+
+	get adjustedPoints(): number {
+		if (!this.enabled) return 0
+		const levels = this.isLeveled ? this.levels : 0
+		let basePoints = this.basePoints
+		let pointsPerLevel = this.isLeveled ? this.pointsPerLevel : 0
+		let [baseEnh, levelEnh, baseLim, levelLim] = [0, 0, 0, 0]
+		let multiplier = selfctrl.Roll.multiplier(this.CR)
+
+		this.allModifiers.forEach(mod => {
+			const modifier = mod.costModifier
+			switch (mod.costType) {
+				case tmcost.Type.Percentage:
+					switch (mod.affects) {
+						case affects.Option.Total:
+							if (modifier < 0) {
+								baseLim += modifier
+								levelLim += modifier
+							} else {
+								baseEnh += modifier
+								levelEnh += modifier
+							}
+							break
+						case affects.Option.BaseOnly:
+							if (modifier < 0) {
+								baseLim += modifier
+							} else {
+								baseEnh += modifier
+							}
+							break
+						case affects.Option.LevelsOnly:
+							if (modifier < 0) {
+								levelLim += modifier
+							} else {
+								levelEnh += modifier
+							}
+							break
+					}
+					break
+				case tmcost.Type.Points:
+					if (mod.affects === affects.Option.LevelsOnly) {
+						if (this.isLeveled) pointsPerLevel += modifier
+						else basePoints += modifier
+					}
+					break
+				case tmcost.Type.Multiplier:
+					multiplier *= modifier
+			}
+		})
+
+		let modifiedBasePoints = basePoints
+		const leveledPoints = pointsPerLevel * levels
+
+		if (baseEnh !== 0 || baseLim !== 0 || levelEnh !== 0 || levelLim !== 0) {
+			if (sheetSettingsFor(this.actor).use_multiplicative_modifiers) {
+				if (baseEnh === levelEnh && baseLim === levelLim) {
+					modifiedBasePoints = modifyPoints(
+						modifyPoints(modifiedBasePoints + leveledPoints, baseEnh),
+						Math.max(-80, baseLim),
+					)
+				} else {
+					modifiedBasePoints =
+						modifyPoints(
+							modifyPoints(modifiedBasePoints + leveledPoints, baseEnh),
+							Math.max(-80, baseLim),
+						) + modifyPoints(modifyPoints(leveledPoints, levelEnh), Math.max(-80, levelLim))
+				}
+			} else {
+				const baseMod = Math.max(-80, baseEnh + baseLim)
+				const levelMod = Math.max(-80, baseEnh + levelLim)
+				if (baseMod === levelMod) {
+					modifiedBasePoints = modifyPoints(modifiedBasePoints + leveledPoints, baseMod)
+				} else {
+					modifiedBasePoints =
+						modifyPoints(modifiedBasePoints, baseMod) + modifyPoints(leveledPoints, levelMod)
+				}
+			}
+		} else {
+			modifiedBasePoints += leveledPoints
+		}
+		return this.system.round_down
+			? Math.floor(modifiedBasePoints * multiplier)
+			: Math.ceil(modifiedBasePoints * multiplier)
 	}
 
 	get skillLevel(): number {
@@ -85,16 +192,55 @@ export class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> e
 		return this.system.cr_adj
 	}
 
-	get roundCostDown(): boolean {
-		return this.system.round_down
+	get modifiers(): Collection<
+		ItemInstances<TParent>[ItemType.TraitModifier] | ItemInstances<TParent>[ItemType.TraitModifierContainer]
+	> {
+		return new Collection(
+			this.contents
+				.filter(item => item.isOfType(ItemType.TraitModifier, ItemType.TraitModifierContainer))
+				.map(item => [
+					item.id,
+					item as
+						| ItemInstances<TParent>[ItemType.TraitModifier]
+						| ItemInstances<TParent>[ItemType.TraitModifierContainer],
+				]),
+		)
+	}
+
+	get deepModifiers(): Collection<ItemInstances<TParent>[ItemType.TraitModifier]> {
+		return new Collection(
+			this.modifiers
+				.reduce((acc: ItemInstances<TParent>[ItemType.TraitModifier][], mod) => {
+					if (mod.isOfType(ItemType.TraitModifier)) acc.push(mod)
+					else
+						acc.push(
+							...(mod.deepContents.filter(content =>
+								content.isOfType(ItemType.TraitModifier),
+							) as ItemInstances<TParent>[ItemType.TraitModifier][]),
+						)
+					return acc
+				}, [])
+				.map(item => [item.id, item]),
+		)
+	}
+
+	get allModifiers(): Collection<ItemInstances<TParent>[ItemType.TraitModifier]> {
+		return new Collection(
+			[
+				...this.deepModifiers,
+				...((this.container?.isOfType(ItemType.TraitContainer)
+					? this.container.deepModifiers
+					: []) as ItemInstances<TParent>[ItemType.TraitModifier][]),
+			].map(item => [item.id, item]),
+		)
 	}
 
 	get modifierNotes(): string {
 		const buffer = new StringBuilder()
 		if (this.CR !== selfctrl.Roll.NoCR) {
-			buffer.push(selfctrl.Roll.toString(this.CR))
+			buffer.push(selfctrl.Roll.toRollableButton(this.CR))
 			if (this.CRAdj !== selfctrl.Adjustment.NoCRAdj) {
-				buffer.push(", ")
+				if (buffer.length !== 0) buffer.push(", ")
 				buffer.push(selfctrl.Adjustment.description(this.CRAdj, this.CR))
 			}
 		}
@@ -106,136 +252,57 @@ export class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> e
 		return buffer.toString()
 	}
 
-	adjustedPoints(): number {
-		if (!this.enabled) return 0
-		const baseEnh = 0
-		const levelEnh = 0
-		let baseLim = 0
-		let levelLim = 0
-		let basePoints = this.basePoints
-		let pointsPerLevel = this.pointsPerLevel
-		let multiplier = selfctrl.Roll.multiplier(this.CR)
-		for (const mod of this.deepModifiers) {
-			if (!mod.enabled) continue
-			const modifier = mod.costModifier
-			switch (mod.costType) {
-				case "percentage":
-					switch (mod.affects) {
-						case "total":
-							baseLim += modifier
-							levelLim += modifier
-							break
-						case "base_only":
-							baseLim += modifier
-							break
-						case "levels_only":
-							levelLim += modifier
-							break
-					}
-					break
-				case "points":
-					if (mod.affects === "levels_only") pointsPerLevel += modifier
-					else basePoints += modifier
-					continue
-				case "multiplier":
-					multiplier *= modifier
-			}
-		}
-		let modifiedBasePoints = basePoints
-		const leveledPoints = pointsPerLevel * this.levels
-		if (baseEnh !== 0 || baseLim !== 0 || levelEnh !== 0 || levelLim !== 0) {
-			if ((this.actor as unknown as CharacterResolver).settings.use_multiplicative_modifiers) {
-				if (baseEnh === levelEnh && baseLim === levelLim) {
-					modifiedBasePoints = TraitGURPS.modifyPoints(
-						TraitGURPS.modifyPoints(modifiedBasePoints + leveledPoints, baseEnh),
-						Math.max(-80, baseLim),
-					)
-				} else {
-					modifiedBasePoints =
-						TraitGURPS.modifyPoints(
-							TraitGURPS.modifyPoints(modifiedBasePoints, baseEnh),
-							Math.max(-80, baseLim),
-						) +
-						TraitGURPS.modifyPoints(
-							TraitGURPS.modifyPoints(leveledPoints, levelEnh),
-							Math.max(-80, levelLim),
-						)
-				}
-			} else {
-				const baseMod = Math.max(-80, baseEnh + baseLim)
-				const levelMod = Math.max(-80, levelEnh + levelLim)
-				if (baseMod === levelMod) {
-					modifiedBasePoints = TraitGURPS.modifyPoints(modifiedBasePoints + leveledPoints, baseMod)
-				} else {
-					modifiedBasePoints =
-						TraitGURPS.modifyPoints(modifiedBasePoints, baseMod) +
-						TraitGURPS.modifyPoints(leveledPoints, levelMod)
-				}
-			}
-		} else {
-			modifiedBasePoints += leveledPoints
-		}
-		if (this.roundCostDown) return Math.floor(modifiedBasePoints * multiplier)
-		else return Math.ceil(modifiedBasePoints * multiplier)
-	}
-
-	// Embedded Items
-	override get modifiers(): Collection<TraitModifierGURPS | TraitModifierContainerGURPS> {
-		return new Collection(
-			this.items
-				.filter(item => item instanceof TraitModifierGURPS || item instanceof TraitModifierContainerGURPS)
-				.map(item => {
-					return [item.id!, item]
-				}),
-		) as Collection<TraitModifierGURPS | TraitModifierContainerGURPS>
-	}
-
-	get deepModifiers(): Collection<TraitModifierGURPS> {
-		const deepModifiers: TraitModifierGURPS[] = []
-		for (const mod of this.modifiers) {
-			if (mod instanceof TraitModifierGURPS) deepModifiers.push(mod)
-			else
-				for (const e of mod.deepItems) {
-					if (e instanceof TraitModifierGURPS) deepModifiers.push(e)
-				}
-		}
-		return new Collection(
-			deepModifiers.map(item => {
-				return [item.id!, item]
-			}),
-		)
-	}
-
-	calculatePoints(): [number, number, number, number] {
-		if (!this.enabled) return [0, 0, 0, 0]
-		// eslint-disable-next-line prefer-const
-		let [ad, disad, race, quirk] = [0, 0, 0, 0]
-		const pts = this.adjustedPoints()
-		if (pts === -1) quirk += pts
-		else if (pts > 0) ad += pts
-		else if (pts < 0) disad += pts
-		return [ad, disad, race, quirk]
-	}
-
-	toggleState(): void {
-		this.enabled = !this.enabled
-	}
-
-	static modifyPoints(points: number, modifier: number): number {
-		return points + TraitGURPS.calculateModifierPoints(points, modifier)
-	}
-
-	static calculateModifierPoints(points: number, modifier: number): number {
-		return (points * modifier) / 100
-	}
-
 	get studyHours(): number {
 		return resolveStudyHours(this.system.study ?? [])
 	}
 
 	get studyHoursNeeded(): string {
 		const system = this.system
-		if (system.study_hours_needed === "") return study.Level.Standard
+		if ((system.study_hours_needed as string) === "") return study.Level.Standard
 		return system.study_hours_needed
 	}
+
+	override getContextMenuItems(): ContextMenuEntry[] {
+		return [
+			{
+				name: LocalizeGURPS.translations.gurps.context.new_item.trait,
+				icon: "",
+				callback: async () => {
+					return this.createSiblingDocuments("Item", [
+						{
+							type: ItemType.Trait,
+							name: LocalizeGURPS.translations.TYPES.Item[ItemType.Trait],
+						},
+					])
+				},
+			},
+			{
+				name: LocalizeGURPS.translations.gurps.context.new_item.trait_container,
+				icon: "",
+				callback: async () => {
+					return this.createSiblingDocuments("Item", [
+						{
+							type: ItemType.TraitContainer,
+							name: LocalizeGURPS.translations.TYPES.Item[ItemType.TraitContainer],
+						},
+					])
+				},
+			},
+			...super.getContextMenuItems(),
+			{
+				name: LocalizeGURPS.translations.gurps.context.toggle_state,
+				icon: "",
+				callback: async () => {
+					return this.update({ "system.disabled": !this.system.disabled })
+				},
+			},
+		]
+	}
 }
+
+interface TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends AbstractContainerGURPS<TParent> {
+	readonly _source: TraitSource
+	system: TraitSystemData
+}
+
+export { TraitGURPS }

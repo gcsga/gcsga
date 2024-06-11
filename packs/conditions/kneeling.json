@@ -1,0 +1,36 @@
+{
+    "_id": "Pa9AbuWU4Qk1HDwA",
+    "img": "systems/gcsga/assets/status/kneeling.webp",
+    "name": "Kneeling",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "kneeling",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [
+            {
+                "id": "to hit with melee combat (Kneeling/Sitting)",
+                "modifier": -2
+            },
+            {
+                "id": "to active defenses (Kneeling/Sitting)",
+                "modifier": -2
+            }
+        ],
+        "overlay": false,
+        "type": "condition"
+    },
+    "type": "condition"
+}

@@ -1,8 +1,12 @@
-import { AbstractContainerSheetData, AbstractContainerSheetGURPS } from "@item/abstract-container/sheet.ts"
+import { SYSTEM_NAME } from "@module/data/constants.ts"
 import { EquipmentModifierGURPS } from "./document.ts"
-import { ItemSheetOptions } from "@item/base/sheet.ts"
+import { ItemSheetDataGURPS, ItemSheetGURPS, ItemSheetOptions } from "@item/base/sheet.ts"
 
-class EquipmentModifierSheetGURPS extends AbstractContainerSheetGURPS<EquipmentModifierGURPS> {
+class EquipmentModifierSheetGURPS extends ItemSheetGURPS<EquipmentModifierGURPS> {
+	override get template(): string {
+		return `systems/${SYSTEM_NAME}/templates/item/equipment-modifier/sheet.hbs`
+	}
+
 	override async getData(options?: Partial<ItemSheetOptions>): Promise<EquipmentModifierSheetData> {
 		const sheetData = await super.getData(options)
 
@@ -11,6 +15,6 @@ class EquipmentModifierSheetGURPS extends AbstractContainerSheetGURPS<EquipmentM
 		}
 	}
 }
-interface EquipmentModifierSheetData extends AbstractContainerSheetData<EquipmentModifierGURPS> {}
+interface EquipmentModifierSheetData extends ItemSheetDataGURPS<EquipmentModifierGURPS> {}
 
 export { EquipmentModifierSheetGURPS }

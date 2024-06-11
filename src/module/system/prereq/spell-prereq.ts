@@ -4,15 +4,12 @@ import { spellcmp } from "@util/enum/spellcmp.ts"
 import { StringCompareType, StringCriteria } from "@util/string-criteria.ts"
 import { NumericCompareType, NumericCriteria } from "@util/numeric-criteria.ts"
 import { SpellPrereqObj } from "./data.ts"
-import { SpellGURPS } from "@item/spell/document.ts"
-import { RitualMagicSpellGURPS } from "@item"
-import { ItemType } from "@data"
-import { LocalizeGURPS, PrereqResolver, TooltipGURPS } from "@util"
-import { LootGURPS } from "@actor"
+import { ItemGURPS } from "@item"
+import { ActorType, ItemType } from "@data"
+import { LocalizeGURPS, TooltipGURPS } from "@util"
+import { ActorGURPS } from "@actor"
 
-export class SpellPrereq extends BasePrereq {
-	override type = prereq.Type.Spell
-
+export class SpellPrereq extends BasePrereq<prereq.Type.Spell> {
 	sub_type: spellcmp.Type
 
 	qualifier: StringCriteria
@@ -35,30 +32,23 @@ export class SpellPrereq extends BasePrereq {
 		return prereq
 	}
 
-	satisfied(actor: PrereqResolver, exclude: SpellGURPS | RitualMagicSpellGURPS, tooltip: TooltipGURPS): boolean {
-		if (actor instanceof LootGURPS) return true
+	satisfied(actor: ActorGURPS, exclude: unknown, tooltip: TooltipGURPS): boolean {
+		if (actor.isOfType(ActorType.Loot)) return true
 		let count = 0
 		const colleges: Set<string> = new Set()
 		let techLevel = ""
-		if (
-			exclude instanceof Item &&
-			(exclude.type === ItemType.Spell || exclude.type === ItemType.RitualMagicSpell)
-		) {
-			// @ts-expect-error awaiting implementation
+		if (exclude instanceof ItemGURPS && exclude.isOfType(ItemType.Spell, ItemType.RitualMagicSpell)) {
 			techLevel = exclude.techLevel
 		}
-		for (const sp of actor.spells) {
-			if (sp.type === ItemType.SpellContainer) continue
-			// @ts-expect-error awaiting implementation
+		for (const sp of actor.itemCollections.spells) {
+			if (sp.isOfType(ItemType.SpellContainer)) continue
 			if (exclude === sp || sp.points === 0) continue
-			// @ts-expect-error awaiting implementation
 			if (techLevel !== "" && sp.techLevel !== "" && techLevel !== sp.techLevel) continue
 			switch (this.sub_type) {
 				case spellcmp.Type.Name:
 					if (this.qualifier.matches(sp.name ?? "")) count += 1
 					break
 				case spellcmp.Type.Tag:
-					// @ts-expect-error awaiting implementation
 					for (const one of sp.tags) {
 						if (this.qualifier.matches(one ?? "")) {
 							count += 1
@@ -67,7 +57,6 @@ export class SpellPrereq extends BasePrereq {
 					}
 					break
 				case spellcmp.Type.College:
-					// @ts-expect-error awaiting implementation
 					for (const one of sp.college) {
 						if (this.qualifier.matches(one ?? "")) {
 							count += 1
@@ -76,7 +65,6 @@ export class SpellPrereq extends BasePrereq {
 					}
 					break
 				case spellcmp.Type.CollegeCount:
-					// @ts-expect-error awaiting implementation
 					for (const one of sp.college) colleges.add(one)
 					break
 				case spellcmp.Type.Any:
@@ -111,5 +99,15 @@ export class SpellPrereq extends BasePrereq {
 			}
 		}
 		return satisfied
+	}
+
+	override toObject(): SpellPrereqObj {
+		return {
+			...super.toObject(),
+			has: this.has,
+			sub_type: this.sub_type,
+			qualifier: this.qualifier.toObject(),
+			quantity: this.quantity.toObject(),
+		}
 	}
 }

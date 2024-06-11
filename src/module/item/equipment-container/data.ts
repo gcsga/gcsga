@@ -1,9 +1,12 @@
 import { BaseItemSourceGURPS, ItemSystemData, ItemSystemSource } from "@item/base/data.ts"
+import { EquipmentFlags } from "@item/equipment/data.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { FeatureObj, PrereqListObj } from "@system"
 import { WeightString } from "@util"
 
-type EquipmentContainerSource = BaseItemSourceGURPS<ItemType.EquipmentContainer, EquipmentContainerSystemSource>
+type EquipmentContainerSource = BaseItemSourceGURPS<ItemType.EquipmentContainer, EquipmentContainerSystemSource> & {
+	flags: DeepPartial<EquipmentFlags>
+}
 
 interface EquipmentContainerSystemSource extends ItemSystemSource {
 	type: ItemType.EquipmentContainer
@@ -15,7 +18,7 @@ interface EquipmentContainerSystemSource extends ItemSystemSource {
 	tech_level: string
 	legality_class: string
 	tags: string[]
-	rated_strength?: number
+	rated_strength: number | null
 	quantity: number
 	value: number
 	weight: WeightString

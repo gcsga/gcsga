@@ -1,39 +1,43 @@
-import { AttributeBonus } from "./attribute_bonus.ts"
-import { ContainedWeightReduction } from "./contained_weight_reduction.ts"
-import { CostReduction } from "./cost_reduction.ts"
+import { AttributeBonus } from "./attribute-bonus.ts"
+import { ConditionalModifierBonus } from "./conditional-modifier.ts"
+import { ContainedWeightReduction } from "./contained-weight-reduction.ts"
+import { CostReduction } from "./cost-reduction.ts"
 import {
 	AttributeBonusObj,
+	ConditionalModifierBonusObj,
 	ContainedWeightReductionObj,
 	CostReductionObj,
 	DRBonusObj,
-	LeveledAmountObj,
 	MoveBonusObj,
+	ReactionBonusObj,
 	SkillBonusObj,
 	SkillPointBonusObj,
 	SpellBonusObj,
 	SpellPointBonusObj,
 	WeaponBonusObj,
 } from "./data.ts"
-import { DRBonus } from "./dr_bonus.ts"
-import { MoveBonus } from "./move_bonus.ts"
-import { SkillBonus } from "./skill_bonus.ts"
-import { SkillPointBonus } from "./skill_point_bonus.ts"
-import { SpellBonus } from "./spell_bonus.ts"
-import { SpellPointBonus } from "./spell_point_bonus.ts"
-import { WeaponBonus } from "./weapon_bonus.ts"
+import { DRBonus } from "./dr-bonus.ts"
+import { MoveBonus } from "./move-bonus.ts"
+import { ReactionBonus } from "./reaction-bonus.ts"
+import { SkillBonus } from "./skill-bonus.ts"
+import { SkillPointBonus } from "./skill-point-bonus.ts"
+import { SpellBonus } from "./spell-bonus.ts"
+import { SpellPointBonus } from "./spell-point-bonus.ts"
+import { WeaponBonus } from "./weapon-bonus.ts"
+import { feature } from "@util"
 
-export { AttributeBonus } from "./attribute_bonus.ts"
-export { MoveBonus } from "./move_bonus.ts"
-export { ConditionalModifierBonus } from "./conditional_modifier.ts"
-export { ContainedWeightReduction } from "./contained_weight_reduction.ts"
-export { CostReduction } from "./cost_reduction.ts"
-export { DRBonus } from "./dr_bonus.ts"
-export { ReactionBonus } from "./reaction_bonus.ts"
-export { SkillBonus } from "./skill_bonus.ts"
-export { SkillPointBonus } from "./skill_point_bonus.ts"
-export { SpellBonus } from "./spell_bonus.ts"
-export { SpellPointBonus } from "./spell_point_bonus.ts"
-export { WeaponBonus } from "./weapon_bonus.ts"
+export { AttributeBonus } from "./attribute-bonus.ts"
+export { MoveBonus } from "./move-bonus.ts"
+export { ConditionalModifierBonus } from "./conditional-modifier.ts"
+export { ContainedWeightReduction } from "./contained-weight-reduction.ts"
+export { CostReduction } from "./cost-reduction.ts"
+export { DRBonus } from "./dr-bonus.ts"
+export { ReactionBonus } from "./reaction-bonus.ts"
+export { SkillBonus } from "./skill-bonus.ts"
+export { SkillPointBonus } from "./skill-point-bonus.ts"
+export { SpellBonus } from "./spell-bonus.ts"
+export { SpellPointBonus } from "./spell-point-bonus.ts"
+export { WeaponBonus } from "./weapon-bonus.ts"
 export * from "./data.ts"
 
 export type Feature =
@@ -47,10 +51,13 @@ export type Feature =
 	| SpellBonus
 	| SpellPointBonus
 	| WeaponBonus
+	| ReactionBonus
+	| ConditionalModifierBonus
 
 export type FeatureObj =
-	| LeveledAmountObj
 	| ContainedWeightReductionObj
+	| ReactionBonusObj
+	| ConditionalModifierBonusObj
 	| AttributeBonusObj
 	| CostReductionObj
 	| DRBonusObj
@@ -59,7 +66,7 @@ export type FeatureObj =
 	| SkillPointBonusObj
 	| SpellBonusObj
 	| SpellPointBonusObj
-	| WeaponBonusObj
+	| WeaponBonusObj<feature.WeaponBonusType>
 
 export interface FeatureMap {
 	attributeBonuses: AttributeBonus[]

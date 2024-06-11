@@ -9,6 +9,7 @@ import { CharacterGURPS } from "@actor"
 import { ItemType } from "@data"
 import { AbstractWeaponGURPS } from "./document.ts"
 import { TooltipGURPS } from "@util"
+import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
 
 export class WeaponDamage {
 	owner?: AbstractWeaponGURPS
@@ -29,6 +30,8 @@ export class WeaponDamage {
 
 	modifier_per_die?: number
 
+	current?: string
+
 	constructor(data: WeaponDamageObj & { owner?: AbstractWeaponGURPS }) {
 		this.owner = data.owner
 		this.type = data.type
@@ -44,10 +47,7 @@ export class WeaponDamage {
 	toString(): string {
 		let buffer = ""
 		if (this.st !== stdmg.Option.None) buffer += LocalizeGURPS.translations.gurps.weapon.damage_display[this.st]
-		let convertMods = false
-		if (this.owner && this.owner.actor instanceof CharacterGURPS)
-			// @ts-expect-error awaiting implementation
-			convertMods = this.owner.actor.settings.use_modifying_dice_plus_adds
+		const convertMods = sheetSettingsFor(this.owner?.actor ?? null).use_modifying_dice_plus_adds
 		if (this.base) {
 			const base = this.base.stringExtra(convertMods)
 			if (base !== "0") {
@@ -79,67 +79,48 @@ export class WeaponDamage {
 		if (!this.owner) return new DiceGURPS({ sides: 6, multiplier: 1 })
 		const actor = this.owner.actor as CharacterGURPS
 		if (!actor) return new DiceGURPS({ sides: 6, multiplier: 1 })
-		// @ts-expect-error awaiting implementation
 		const maxST = (this.owner.strength.resolve(this.owner, null).min ?? 0) * 3
 		let st = 0
-		// @ts-expect-error awaiting implementation
-		if (this.owner.container instanceof Item)
-			// @ts-expect-error awaiting implementation
-			st = this.owner.container.ratedStrength
-		// @ts-expect-error awaiting implementation
+		if (this.owner.container?.isOfType(ItemType.Equipment, ItemType.EquipmentContainer)) {
+			st = this.owner.container.system.rated_strength ?? st
+		}
 		if (st === 0) st = actor.strikingST
 		if (maxST > 0 && maxST < st) st = maxST
 		let base = new DiceGURPS({ sides: 6, multiplier: 1 })
 		if (this.base) base = this.base
 		if (
-			// @ts-expect-error awaiting implementation
 			!(this.owner.container instanceof CompendiumCollection) &&
-			// @ts-expect-error awaiting implementation
-			this.owner.container?.type === ItemType.Trait &&
-			// @ts-expect-error awaiting implementation
-			(this.owner.container as unknown as TraitResolver)?.isLeveled
+			this.owner.container?.isOfType(ItemType.Trait) &&
+			this.owner.container.isLeveled
 		)
-			// @ts-expect-error awaiting implementation
-			multiplyDice(Int.from((this.owner.container as unknown as TraitResolver).levels), base)
+			multiplyDice(Int.from(this.owner.container.levels), base)
 		const intST = Int.from(st)
 		switch (this.st) {
 			case stdmg.Option.Thrust:
-				// @ts-expect-error awaiting implementation
 				base = addDice(base, actor.thrustFor(intST))
 				break
 			case stdmg.Option.LeveledThrust: {
-				// @ts-expect-error awaiting implementation
 				const thrust = actor.thrustFor(intST)
 				if (
-					// @ts-expect-error awaiting implementation
 					!(this.owner.container instanceof CompendiumCollection) &&
-					// @ts-expect-error awaiting implementation
-					this.owner.container?.type === ItemType.Trait &&
-					// @ts-expect-error awaiting implementation
-					(this.owner.container as unknown as TraitResolver)?.isLeveled
+					this.owner.container?.isOfType(ItemType.Trait) &&
+					this.owner.container.isLeveled
 				)
-					// @ts-expect-error awaiting implementation
-					multiplyDice(Int.from((this.owner.container as unknown as TraitResolver).levels), base)
+					multiplyDice(Int.from(this.owner.container.levels), base)
 				base = addDice(base, thrust)
 				break
 			}
 			case stdmg.Option.Swing:
-				// @ts-expect-error awaiting implementation
 				base = addDice(base, actor.swingFor(intST))
 				break
 			case stdmg.Option.LeveledSwing: {
-				// @ts-expect-error awaiting implementation
 				const swing = actor.swingFor(intST)
 				if (
-					// @ts-expect-error awaiting implementation
 					!(this.owner.container instanceof CompendiumCollection) &&
-					// @ts-expect-error awaiting implementation
-					this.owner.container?.type === ItemType.Trait &&
-					// @ts-expect-error awaiting implementation
-					(this.owner.container as unknown as TraitResolver)?.isLeveled
+					this.owner.container?.isOfType(ItemType.Trait) &&
+					this.owner.container.isLeveled
 				)
-					// @ts-expect-error awaiting implementation
-					multiplyDice(Int.from((this.owner.container as unknown as TraitResolver).levels), base)
+					multiplyDice(Int.from(this.owner.container.levels), base)
 				base = addDice(base, swing)
 				break
 			}
@@ -154,11 +135,9 @@ export class WeaponDamage {
 		if (base.count === 0 && base.modifier === 0) return this.toString()
 		const actor = this.owner.actor as CharacterGURPS
 		const adjustForPhoenixFlame =
-			// @ts-expect-error awaiting implementation
 			actor?.settings.damage_progression === progression.Option.PhoenixFlameD3 && base.sides === 3
 		let [percentDamageBonus, percentDRDivisorBonus] = [0, 0]
 		let armorDivisor = this.armor_divisor ?? 1
-		// @ts-expect-error awaiting implementation
 		for (const bonus of this.owner.collectWeaponBonuses(
 			base.count,
 			tooltip,
@@ -191,7 +170,6 @@ export class WeaponDamage {
 		if (percentDRDivisorBonus !== 0) armorDivisor = (armorDivisor * percentDRDivisorBonus) / 100
 		let buffer = ""
 		if (base.count !== 0 || base.modifier !== 0)
-			// @ts-expect-error awaiting implementation
 			buffer += base.stringExtra(actor?.settings.use_modifying_dice_plus_adds ?? false)
 		if (armorDivisor !== 1) buffer += `(${armorDivisor})`
 		if (this.type.trim() !== "") {
@@ -199,7 +177,6 @@ export class WeaponDamage {
 			buffer += this.type
 		}
 		if (this.fragmentation) {
-			// @ts-expect-error awaiting implementation
 			const frag = this.fragmentation.stringExtra(actor?.settings.use_modifying_dice_plus_adds ?? false)
 			if (frag !== "0") {
 				if (buffer.length !== 0) buffer += " "

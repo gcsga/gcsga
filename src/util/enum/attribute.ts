@@ -1,5 +1,5 @@
 import { LocalizeGURPS } from "@util/localize.ts"
-import { equalFold } from "@util/string_criteria.ts"
+import { equalFold } from "@util/string-criteria.ts"
 
 export namespace attribute {
 	export enum Type {

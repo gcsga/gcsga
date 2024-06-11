@@ -1,0 +1,28 @@
+{
+    "_id": "ElfmejdI63y2t5qA",
+    "img": "systems/gcsga/assets/status/hallucinating.webp",
+    "name": "Hallucinating",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "hallucinating",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "reference": "B429",
+        "type": "condition"
+    },
+    "type": "condition"
+}

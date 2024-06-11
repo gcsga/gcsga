@@ -1,10 +1,21 @@
 import { prereq } from "@util/enum/prereq.ts"
-import { NumericCompareType, NumericCriteria } from "@util/numeric-criteria.ts"
-import { BasePrereq } from "./base.ts"
-import { PrereqListObj } from "./data.ts"
+import { NumericCompareType, NumericCriteria, NumericCriteriaSchema } from "@util/numeric-criteria.ts"
+import { PrereqListObj, PrereqObj } from "./data.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { PrereqResolver, TooltipGURPS, extractTechLevel } from "@util"
-import { CharacterGURPS } from "@actor"
+import { TooltipGURPS, extractTechLevel } from "@util"
+import { ActorGURPS } from "@actor"
+import { Prereq } from "./index.ts"
+import { ActorType } from "@module/data/constants.ts"
+import { PrereqResolver } from "@module/util/index.ts"
+
+const fields = foundry.data.fields
+
+type PrereqListSchema = {
+	type: foundry.data.fields.StringField<prereq.Type, prereq.Type, true, false, true>
+	all: foundry.data.fields.BooleanField<boolean, boolean, true, false, true>
+	when_tl: foundry.data.fields.SchemaField<NumericCriteriaSchema>
+	prereqs: foundry.data.fields.ArrayField<foundry.data.fields.ObjectField<PrereqObj>>
+}
 
 export class PrereqList {
 	type: prereq.Type
@@ -13,7 +24,16 @@ export class PrereqList {
 
 	when_tl: NumericCriteria
 
-	prereqs: (BasePrereq | PrereqList)[]
+	prereqs: Prereq[]
+
+	static defineSchema(): PrereqListSchema {
+		return {
+			type: new fields.StringField({ required: true, initial: prereq.Type.List }),
+			all: new fields.BooleanField({ required: true }),
+			when_tl: new fields.SchemaField(NumericCriteria.defineSchema()),
+			prereqs: new fields.ArrayField(new fields.ObjectField<PrereqObj>()),
+		}
+	}
 
 	constructor() {
 		this.type = prereq.Type.List
@@ -37,14 +57,14 @@ export class PrereqList {
 	}
 
 	satisfied(
-		actor: PrereqResolver,
+		actor: ActorGURPS,
 		exclude: unknown,
 		tooltip: TooltipGURPS,
 		hasEquipmentPenalty: { value: boolean } = { value: false },
 	): boolean {
 		let actorTechLevel = "0"
-		if (actor instanceof CharacterGURPS) {
-			actorTechLevel = actor.profile.tech_level
+		if (actor.isOfType(ActorType.Character)) {
+			actorTechLevel = actor.techLevel
 		}
 		if (this.when_tl.compare !== NumericCompareType.AnyNumber) {
 			let tl = extractTechLevel(actorTechLevel)
@@ -65,5 +85,14 @@ export class PrereqList {
 			tooltip.push(local)
 		}
 		return satisfied
+	}
+
+	toObject(): PrereqListObj {
+		return {
+			type: prereq.Type.List,
+			all: this.all,
+			when_tl: this.when_tl.toObject(),
+			prereqs: this.prereqs.map(item => item.toObject()),
+		}
 	}
 }

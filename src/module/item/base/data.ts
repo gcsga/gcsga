@@ -1,4 +1,4 @@
-import type { ItemFlags, ItemType, MigrationRecord, SYSTEM_NAME } from "@data"
+import { ItemFlags, ItemType, MigrationRecord, SYSTEM_NAME } from "@data"
 
 type BaseItemSourceGURPS<
 	TType extends ItemType = ItemType,
@@ -10,8 +10,8 @@ type BaseItemSourceGURPS<
 interface ItemFlagsGURPS extends foundry.documents.ItemFlags {
 	[SYSTEM_NAME]: {
 		[ItemFlags.Container]: string | null
-		[ItemFlags.Other]: boolean
-		[ItemFlags.Unready]: boolean
+		// [ItemFlags.Other]: boolean
+		// [ItemFlags.Unready]: boolean
 	}
 }
 

@@ -1,8 +1,8 @@
+import { SETTINGS, SYSTEM_NAME } from "@data"
+import { Progress } from "@system/progress.ts"
 import { LocalizeGURPS, sluggify } from "@util"
 import * as R from "remeda"
 import { CompendiumBrowserSources } from "./index.ts"
-import { Progress } from "@sytem/progress.ts"
-import { SETTINGS, SYSTEM_NAME } from "@data"
 
 class PackLoader {
 	loadedSources: string[] = []
@@ -37,7 +37,11 @@ class PackLoader {
 					this.#setModuleArt(packId, filteredIndex)
 					yield { pack, index: filteredIndex }
 				} else {
-					ui.notifications.warn(game.i18n.format("PF2E.BrowserWarnPackNotLoaded", { pack: pack.collection }))
+					ui.notifications.warn(
+						LocalizeGURPS.format(LocalizeGURPS.translations.gurps.error.pack_not_loaded, {
+							pack: pack.collection,
+						}),
+					)
 				}
 			}
 		}
@@ -115,7 +119,8 @@ class PackLoader {
 		const progress = new Progress({ max: packs.length })
 
 		const loadedSources = new Set<string>()
-		const indexFields = ["system.publication.title", "system.source.value"]
+		// const indexFields = ["system.publication.title", "system.source.value"]
+		const indexFields: string[] = []
 		const knownDocumentTypes = ["Actor", "Item"]
 
 		for (const packId of packs) {

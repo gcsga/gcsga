@@ -1,11 +1,22 @@
 import { RollType, SYSTEM_NAME } from "@data"
 import { ModifierBucketWindow } from "./window.ts"
-import { LastActor } from "@util"
 import { RollGURPS } from "@module/roll/index.ts"
 import { UserFlags } from "@module/user/data.ts"
+import { LastActor } from "@module/util/last-actor.ts"
 
 export class ModifierBucket extends Application {
 	window: ModifierBucketWindow
+
+	/**
+	 * Debounce and slightly delayed request to re-render this panel. necessary for situations where it is not possible
+	 * to properly wait for promises to resolve before refreshing the ui.
+	 */
+	refresh = foundry.utils.debounce(this.render, 100)
+
+	override render(force?: boolean | undefined, options?: RenderOptions | undefined): this {
+		if (this.window.rendered) this.window.render(force, options)
+		return super.render(force, options)
+	}
 
 	constructor() {
 		super()
@@ -47,7 +58,6 @@ export class ModifierBucket extends Application {
 	}
 
 	override async getData(options?: Partial<ApplicationOptions> | undefined): Promise<object> {
-		// @ts-expect-error awaiting implementation
 		const total = game.user.modifierTotal
 		const buttonMagnet = game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierSticky) === true ? "sticky" : ""
 		let buttonColor = "total-white"
@@ -70,7 +80,6 @@ export class ModifierBucket extends Application {
 	// Increase/Decrease modifier by 1 with the mouse wheel
 	async _onMouseWheel(event: WheelEvent): Promise<this> {
 		const delta = Math.round(event.deltaY / -100)
-		// @ts-expect-error awaiting implementation
 		game.user.addModifier({
 			id: "",
 			modifier: delta,
@@ -104,6 +113,9 @@ export class ModifierBucket extends Application {
 	private async _onDiceClick(event: JQuery.ClickEvent): Promise<void> {
 		event.preventDefault()
 		return RollGURPS.handleRoll(game.user, game.user.character, {
+			name: "",
+			actor: game.user.character?.id ?? "",
+			user: game.user.id,
 			type: RollType.Generic,
 			formula: "3d6",
 			hidden: event.ctrlKey,
@@ -114,6 +126,9 @@ export class ModifierBucket extends Application {
 	async _onDiceContextMenu(event: JQuery.ContextMenuEvent): Promise<void> {
 		event.preventDefault()
 		return RollGURPS.handleRoll(game.user, null, {
+			name: "",
+			actor: game.user.character?.id ?? "",
+			user: game.user.id,
 			type: RollType.Generic,
 			formula: "1d6",
 			hidden: event.ctrlKey,
@@ -134,7 +149,6 @@ export class ModifierBucket extends Application {
 
 	async clear(): Promise<unknown> {
 		await game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, [])
-		// await game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierTotal, 0)
 		game.gurps.modifierList.render()
 		return this.render(true)
 	}

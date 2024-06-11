@@ -1,5 +1,3 @@
-// Export type Length = number
-
 import { Int } from "./fxp.ts"
 import { LocalizeGURPS } from "./localize.ts"
 
@@ -43,7 +41,7 @@ export class Length {
 				const value = parseInt(text.replace(r, ""))
 				return Length.toInches(value, unit) as Length
 			}
-			return Length.toInches(Int.fromString(text), LengthUnits.Inch)
+			return Length.toInches(Int.fromString(text)[0], LengthUnits.Inch)
 		})
 		const feetIndex = text.indexOf("'")
 		const inchIndex = text.indexOf('"')

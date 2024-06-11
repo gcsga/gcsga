@@ -19,7 +19,7 @@ export class MigrationList {
 		return this.#list.filter(M => M.version > minVersion).map(M => new M())
 	}
 
-	static constructRange(min: number, max = Infinity): MigrationBase[] {
+	static constructRange(min: number, max = Number.MAX_SAFE_INTEGER): MigrationBase[] {
 		return this.#list.filter(M => M.version >= min && M.version <= max).map(M => new M())
 	}
 }

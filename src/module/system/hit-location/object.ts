@@ -1,10 +1,30 @@
-import { BodyOwner, StringBuilder, TooltipGURPS, equalFold, sanitizeId } from "@util"
+import { LocalizeGURPS, StringBuilder, TooltipGURPS, equalFold, sanitizeId } from "@util"
 import { BodyObj, HitLocationObj } from "./data.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { gid } from "@data"
-import { reserved_ids } from "@system"
+import { RESERVED_IDS } from "@system"
+import { BodyOwner } from "@module/util/index.ts"
 
-class HitLocation {
+const fields = foundry.data.fields
+
+type HitLocationSchema = {
+	id: foundry.data.fields.StringField
+	choice_name: foundry.data.fields.StringField
+	table_name: foundry.data.fields.StringField
+	slots?: foundry.data.fields.NumberField
+	hit_penalty?: foundry.data.fields.NumberField
+	dr_bonus?: foundry.data.fields.NumberField
+	description?: foundry.data.fields.StringField
+	sub_table?: foundry.data.fields.ObjectField<BodyObj, BodyObj, false>
+}
+
+type BodySchema = {
+	name?: foundry.data.fields.StringField
+	roll: foundry.data.fields.StringField
+	locations?: foundry.data.fields.ArrayField<foundry.data.fields.SchemaField<HitLocationSchema>>
+}
+
+class HitLocation<TOwner extends BodyOwner = BodyOwner> {
 	private _id: string
 	choiceName: string
 	tableName: string
@@ -12,22 +32,22 @@ class HitLocation {
 	hitPenalty: number
 	drBonus: number
 	description?: string
-	subTable?: BodyGURPS
+	subTable?: BodyGURPS<TOwner>
 
 	rollRange: string
-	owner: BodyOwner
-	owningTable?: BodyGURPS
+	owner: TOwner
+	owningTable?: BodyGURPS<TOwner>
 
 	get id(): string {
 		return this._id
 	}
 
 	set id(v: string) {
-		this._id = sanitizeId(v, false, reserved_ids)
+		this._id = sanitizeId(v, false, RESERVED_IDS)
 	}
 
-	constructor(actor: BodyOwner) {
-		this.owner = actor
+	constructor(owner: TOwner) {
+		this.owner = owner
 		this._id = "id"
 		this.choiceName = game.i18n.localize("gurps.placeholder.hit_location.choice_name")
 		this.tableName = game.i18n.localize("gurps.placeholder.hit_location.table_name")
@@ -36,6 +56,19 @@ class HitLocation {
 		this.drBonus = 0
 
 		this.rollRange = "-"
+	}
+
+	static defineSchema(): HitLocationSchema {
+		return {
+			id: new fields.StringField({ initial: "id" }),
+			choice_name: new fields.StringField({ initial: "untitled choice" }),
+			table_name: new fields.StringField({ initial: "untitled location" }),
+			slots: new fields.NumberField({ initial: 0 }),
+			hit_penalty: new fields.NumberField({ initial: 0 }),
+			dr_bonus: new fields.NumberField({ initial: 0 }),
+			description: new fields.StringField(),
+			sub_table: new fields.ObjectField<BodyObj, BodyObj, false>({ required: false }),
+		}
 	}
 
 	toObject(): HitLocationObj {
@@ -56,7 +89,11 @@ class HitLocation {
 		return (this.description ?? "").replace(/\n/g, "<br>")
 	}
 
-	static fromObject(data: HitLocationObj, actor: BodyOwner, owningTable?: BodyGURPS): HitLocation {
+	static fromObject<TOwner extends BodyOwner>(
+		data: HitLocationObj,
+		actor: TOwner,
+		owningTable?: BodyGURPS<TOwner>,
+	): HitLocation<TOwner> {
 		const location = new HitLocation(actor)
 
 		location.id = data.id
@@ -148,22 +185,45 @@ class HitLocation {
 		}
 		return buffer.toString()
 	}
+
+	// Return true if the provided ID is a valid hit location ID
+	static validateId(id: string): boolean {
+		return id !== gid.All
+	}
+
+	static newObject(): HitLocationObj {
+		return {
+			id: LocalizeGURPS.translations.gurps.placeholder.hit_location.id,
+			choice_name: LocalizeGURPS.translations.gurps.placeholder.hit_location.choice_name,
+			table_name: LocalizeGURPS.translations.gurps.placeholder.hit_location.table_name,
+		}
+	}
 }
 
-class BodyGURPS {
+class BodyGURPS<TOwner extends BodyOwner = BodyOwner> {
+	owner?: TOwner
 	name?: string
 	roll: DiceGURPS
-	locations: HitLocation[]
+	locations: HitLocation<TOwner>[]
 
-	private _owningLocation?: HitLocation
+	private _owningLocation?: HitLocation<TOwner>
 
-	get owningLocation(): HitLocation | null {
+	get owningLocation(): HitLocation<TOwner> | null {
 		return this._owningLocation ?? null
 	}
 
-	constructor() {
+	constructor(owner?: TOwner) {
 		this.roll = new DiceGURPS()
 		this.locations = []
+		if (owner) this.owner = owner
+	}
+
+	static defineSchema(): BodySchema {
+		return {
+			name: new fields.StringField(),
+			roll: new fields.StringField({ initial: "3d" }),
+			locations: new fields.ArrayField(new fields.SchemaField(HitLocation.defineSchema())),
+		}
 	}
 
 	toObject(): BodyObj {
@@ -174,8 +234,12 @@ class BodyGURPS {
 		}
 	}
 
-	static fromObject(data: BodyObj | undefined, actor: BodyOwner, owningLocation?: HitLocation): BodyGURPS {
-		const body = new BodyGURPS()
+	static fromObject<TOwner extends BodyOwner>(
+		data: BodyObj | undefined,
+		actor: TOwner,
+		owningLocation?: HitLocation<TOwner>,
+	): BodyGURPS<TOwner> {
+		const body = new BodyGURPS(actor)
 		body.name = data?.name
 		body.roll = new DiceGURPS(data?.roll)
 		body.locations = data?.locations?.map(e => HitLocation.fromObject(e, actor)) ?? []
@@ -187,6 +251,14 @@ class BodyGURPS {
 	updateRollRanges(): void {
 		let start = this.roll.minimum(false)
 		if (this.locations) for (const location of this.locations) start = location.updateRollRange(start)
+	}
+
+	static newObject(): BodyObj {
+		return {
+			name: "",
+			roll: "1d",
+			locations: [],
+		}
 	}
 }
 

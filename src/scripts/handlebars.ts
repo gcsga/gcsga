@@ -1,9 +1,11 @@
 import { CharacterGURPS } from "@actor"
 import { ItemGURPS, SkillGURPS } from "@item"
+import { ItemSourceGURPS } from "@item/data/index.ts"
+import { itemIsOfType } from "@item/helpers.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { Study } from "@system"
-import { LocalizeGURPS, isContainer, localeDate, rgbToHex, study } from "@util"
+import { LocalizeGURPS, isContainer, localeDate, objectHasKey, rgbToHex, study } from "@util"
 import { pageRef } from "@util/page-ref.ts"
 import { SafeString } from "handlebars"
 
@@ -59,7 +61,7 @@ class HandlebarsHelpersGURPS {
 		return a ? Object.values(a).length > 0 : false
 	}
 
-	static blockLayout(blocks: string[], items: Record<string, unknown[]>): string {
+	static blockLayout(blocks: string[], items: Record<string, { items: unknown[] }>): string {
 		if (!blocks) return ""
 
 		let outString = ""
@@ -69,7 +71,15 @@ class HandlebarsHelpersGURPS {
 			let line = value
 				.split(" ")
 				.slice(0, line_length) // Get only first N items
-				.filter(s => items[s].length || !["reactions", "conditional_modifiers", "melee", "ranged"].includes(s))
+				.filter(s => {
+					if (objectHasKey(items, s)) {
+						return (
+							items[s].items.length > 0 ||
+							!["reactions", "conditional_modifiers", "melee", "ranged"].includes(s)
+						)
+					}
+					return false
+				})
 			if (!line.length) continue
 			if (line_length > line.length) line = line.concat(Array(line_length - line.length).fill(line[0]))
 			outString += `\n"${line.join(" ")}"`
@@ -88,7 +98,7 @@ class HandlebarsHelpersGURPS {
 		return JSON.stringify(a)
 	}
 
-	static join(a: unknown[], s: string): string {
+	static join(a: string[], s: string): string {
 		if (!a || !a.length) return ""
 		return a.join(s)
 	}
@@ -135,7 +145,7 @@ class HandlebarsHelpersGURPS {
 		return localeDate(str)
 	}
 
-	// Lenght
+	// Length
 	static len(...args: unknown[]): number {
 		let length = 0
 		for (const a of args) {
@@ -170,10 +180,12 @@ class HandlebarsHelpersGURPS {
 			return [e, e]
 		})
 		const buffer: string[] = []
-		references.forEach(e => {
-			buffer.push(`<div class="ref" data-pdf="${e[0]}">${e[1]}</div>`)
+		references.forEach((e, index) => {
+			buffer.push(
+				`<div class="ref" data-pdf="${e[0]}">${e[1]}${references.length > 1 && index < references.length - 1 ? "," : ""}</div>`,
+			)
 		})
-		return buffer.join(",")
+		return buffer.join("")
 	}
 
 	static adjustedStudyHours(entry: Study): number {
@@ -193,14 +205,17 @@ class HandlebarsHelpersGURPS {
 	}
 
 	static sort<K extends string>(list: Record<K, number>[], key: K): unknown[] {
+		if (!list) return []
 		return list.map(e => e).sort((a, b) => a[key] - b[key])
 	}
 
-	static textareaFormat(s: string | string[]): string {
-		if (typeof s === "string") return s?.replaceAll("\t", "").replaceAll("\n", "\r") || ""
-		else {
-			return s?.join("\r") || ""
+	static textareaFormat(arr: string[]): string {
+		if (!Array.isArray(arr)) {
+			if (typeof arr === "string") return arr
+			return ""
 		}
+		const s = arr.map(s => s.replace(/\t/g, "").replace(/\n/g, "\r")).join("\n")
+		return s
 	}
 
 	static customArmorDivisorSelect(divisor: number, _options: unknown): number | undefined {
@@ -321,8 +336,7 @@ class HandlebarsHelpersGURPS {
 	// }
 
 	static overspent(actor: CharacterGURPS): boolean {
-		// @ts-expect-error awaiting implementation
-		return actor.unspentPoints < 0
+		return actor.pointsBreakdown.unspent < 0
 	}
 
 	// Static gmod() {
@@ -394,9 +408,7 @@ class HandlebarsHelpersGURPS {
 		if (a instanceof Item) {
 			if (a.type === ItemType.Skill) {
 				const sk = a as SkillGURPS
-				// @ts-expect-error awaiting implementation
 				if (sk.effectiveLevel > sk.level.level) return "pos"
-				// @ts-expect-error awaiting implementation
 				if (sk.effectiveLevel > sk.level.level) return "neg"
 				return ""
 			}
@@ -498,6 +510,13 @@ class HandlebarsHelpersGURPS {
 	static disabled(criteria: string | number | boolean | object): string {
 		return criteria ? "disabled" : ""
 	}
+
+	static dropdown(item: ItemGURPS | ItemSourceGURPS): string {
+		if (!itemIsOfType(item, "container")) return `<div class="dropdown"></div>`
+		if (item.system.open)
+			return `<div class="dropdown"><a class="dropdown-toggle open gcs-circled-chevron-down"></a></div>`
+		return `<div class="dropdown"><a class="dropdown-toggle closed gcs-circled-chevron-right"></a></div>`
+	}
 }
 
 export function registerHandlebarsHelpers(): void {
@@ -519,6 +538,7 @@ export function registerHandlebarsHelpers(): void {
 		diceString: HandlebarsHelpersGURPS.diceString,
 		diff: (v1, v2) => v1 - v2,
 		disabled: HandlebarsHelpersGURPS.disabled,
+		dropdown: HandlebarsHelpersGURPS.dropdown,
 		effective: HandlebarsHelpersGURPS.effective,
 		format: HandlebarsHelpersGURPS.format,
 		ifText: HandlebarsHelpersGURPS.conditionalText,

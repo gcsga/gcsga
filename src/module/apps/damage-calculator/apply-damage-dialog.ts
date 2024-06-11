@@ -3,7 +3,8 @@ import { DamageRoll, DamageTarget } from "./index.ts"
 import { SETTINGS, SYSTEM_NAME, gid } from "@data"
 import { HitLocationUtil } from "./hit-location-utils.ts"
 import { DamageTypes } from "./damage-type.ts"
-import { LocalizeGURPS, PDF } from "@util"
+import { LocalizeGURPS, htmlQueryAll } from "@util"
+import { PDF } from "@module/util/index.ts"
 
 export class ApplyDamageDialog extends Application {
 	static async create(roll: DamageRoll, target: DamageTarget, options = {}): Promise<ApplyDamageDialog> {
@@ -29,7 +30,7 @@ export class ApplyDamageDialog extends Application {
 			{
 				navSelector: ".nav-tabs",
 				contentSelector: ".content",
-				initial: "0",
+				initial: "",
 			},
 		]
 
@@ -68,12 +69,14 @@ export class ApplyDamageDialog extends Application {
 		return data
 	}
 
-	override activateListeners(html: JQuery<HTMLElement>): void {
-		super.activateListeners(html)
+	override activateListeners($html: JQuery): void {
+		super.activateListeners($html)
+		const html = $html[0]
 
-		html.find("[data-control]").on("change click", event => this._onApplyControl(event))
-		html.find("[data-action]").on("change click", event => this._onApplyControl(event))
-		html.find(".ref").on("click", event => PDF.handle(event))
+		$html.find("[data-control]").on("change click", event => this._onApplyControl(event))
+		$html.find("[data-action]").on("change click", event => this._onApplyControl(event))
+
+		for (const ref of htmlQueryAll(html, "a.ref")) ref.addEventListener("click", ev => PDF.handle(ev))
 	}
 
 	_onApplyControl(event: JQuery.Event): void {
@@ -171,7 +174,6 @@ export class ApplyDamageDialog extends Application {
 		event.preventDefault()
 
 		const intValue = parseInt(target.value)
-		// const floatValue = parseFloat(target.value)
 		const index = parseInt(target.dataset.index)
 		const locationDamage = this.calculator.hits[index]
 
@@ -219,6 +221,13 @@ export class ApplyDamageDialog extends Application {
 			case "injury-effect": {
 				const parentIndex = parseInt(target.dataset.effectIndex)
 				locationDamage.toggleEffect(parentIndex)
+				break
+			}
+
+			case "apply-effects": {
+				// this.calculator.applySelectedEffects()
+				const effects = locationDamage.selectedEffects
+				console.log(effects)
 				break
 			}
 		}

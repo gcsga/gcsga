@@ -1,0 +1,25 @@
+<div id="miscellaneous">
+	<header>{{localize "gurps.character.miscellaneous"}}</header>
+	<div class="fieldblock">
+		<label>{{localize "gurps.character.created_date"}}</label>
+		<div class="field">
+			<input type="text" value="{{date system.created_date}}" disabled />
+		</div>
+		<label>{{localize "gurps.character.modified_date"}}</label>
+		<div class="field">
+			<input type="text" value="{{date system.modified_date}}" disabled />
+		</div>
+		<label>{{localize "gurps.character.player_name"}}</label>
+		<div class="field">
+			<input
+				type="text"
+				name="system.profile.player_name"
+				value="{{system.profile.player_name}}"
+				data-dtype="string"
+				{{disabled
+				(not
+				@root.editMode)}}
+			/>
+		</div>
+	</div>
+</div>

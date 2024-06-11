@@ -20,6 +20,16 @@ export namespace paper {
 		}
 	}
 
-	export type Orientation = string
-	export type Length = string
+	export enum Orientation {
+		Portrait = "portrait",
+		Landscape = "landscape",
+	}
+
+	export namespace Orientation {
+		export function toString(O: Orientation): string {
+			return LocalizeGURPS.translations.gurps.enum.paper.orientation[O]
+		}
+	}
+
+	export type Length = `${number} ${"in" | "cm" | "mm"}`
 }

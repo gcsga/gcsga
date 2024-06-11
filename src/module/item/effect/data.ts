@@ -1,43 +1,14 @@
-import { ActorGURPS } from "@actor"
-import { ItemType, RollModifier } from "@data"
-import { FeatureObj } from "@feature/index.ts"
-import { BaseItemSourceGURPS, ItemSystemSource } from "@item/base/data/system.ts"
+import {
+	AbstractEffectSource,
+	AbstractEffectSystemData,
+	AbstractEffectSystemSource,
+} from "@item/abstract-effect/data.ts"
+import { ItemType } from "@module/data/constants.ts"
 
-export type EffectSource = BaseItemSourceGURPS<ItemType.Effect, EffectSystemSource>
+type EffectSource = AbstractEffectSource<ItemType.Effect, EffectSystemSource>
 
-export enum DurationType {
-	Seconds = "seconds",
-	Turns = "turns",
-	Rounds = "rounds",
-	None = "none",
-}
+interface EffectSystemSource extends AbstractEffectSystemSource {}
 
-export interface EffectSystemSource extends ItemSystemSource {
-	id: string | null
-	features?: FeatureObj[]
-	modifiers?: RollModifier[]
-	can_level: boolean
-	levels?: {
-		max: number
-		current: number
-	}
-	overlay?: boolean
-	duration: {
-		type: DurationType
-		startRound?: number | null
-		startTime?: number | null
-		startTurn?: number | null
-		rounds?: number
-		seconds?: number
-		turns?: number
-		combat?: string | null
-	}
-	reference: string
-	reference_highlight: string
-}
+interface EffectSystemData extends EffectSystemSource, AbstractEffectSystemData {}
 
-export interface EffectModificationContext<TParent extends ActorGURPS | null>
-	extends DocumentModificationContext<TParent> {
-	previousLevel: number
-	previousID?: string | null
-}
+export type { EffectSource, EffectSystemData }

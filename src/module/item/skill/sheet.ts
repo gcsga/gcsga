@@ -1,29 +1,24 @@
-import { ItemSheetGCS } from "@item/gcs/sheet.ts"
+import { AbstractContainerSheetData, AbstractContainerSheetGURPS } from "@item/abstract-container/sheet.ts"
 import { SkillGURPS } from "./document.ts"
-import { ItemSheetDataGURPS, ItemSheetOptions } from "@item/base/sheet.ts"
+import { ItemSheetOptions } from "@item/base/sheet.ts"
+import { SYSTEM_NAME } from "@module/data/constants.ts"
 
-export class SkillSheet<IType extends SkillGURPS = SkillGURPS> extends ItemSheetGCS<IType> {
-	static override get defaultOptions(): ItemSheetOptions {
-		const options = super.defaultOptions
-		fu.mergeObject(options, {
-			classes: options.classes.concat(["skill"]),
-		})
-		return options
+class SkillSheetGURPS extends AbstractContainerSheetGURPS<SkillGURPS> {
+	override get template(): string {
+		return `systems/${SYSTEM_NAME}/templates/item/skill/sheet.hbs`
 	}
 
-	override async getData(options: Partial<ItemSheetOptions> = {}): Promise<ItemSheetDataGURPS<IType>> {
-		const data = super.getData(options)
-		return fu.mergeObject(data, {
-			defaults: this.object.defaults,
-		})
-	}
+	override async getData(options?: Partial<ItemSheetOptions>): Promise<SkillSheetData> {
+		const sheetData = await super.getData(options)
 
-	protected override async _updateObject(event: Event, formData: Record<string, unknown>): Promise<void> {
-		const attribute = formData.attribute ?? this.item.attribute
-		const difficulty = formData.difficulty ?? this.item.difficulty
-		formData["system.difficulty"] = `${attribute}/${difficulty}`
-		delete formData.attribute
-		delete formData.difficulty
-		return super._updateObject(event, formData)
+		return {
+			...sheetData,
+			sysPrefix: "array.system.",
+		}
 	}
 }
+interface SkillSheetData extends AbstractContainerSheetData<SkillGURPS> {
+	sysPrefix: string
+}
+
+export { SkillSheetGURPS }

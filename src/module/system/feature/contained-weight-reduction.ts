@@ -2,38 +2,39 @@ import { feature } from "@util/enum/feature.ts"
 import { Int } from "@util/fxp.ts"
 import { Weight, WeightUnits } from "@util/weight.ts"
 import { ContainedWeightReductionObj } from "./data.ts"
-import { Stringer } from "@data"
+import { FeatureOwner } from "@module/util/index.ts"
 
 export class ContainedWeightReduction {
 	declare type: feature.Type.ContainedWeightReduction
 
-	private _owner?: Stringer
+	private _owner: FeatureOwner | null = null
 
-	private _subOwner?: Stringer
+	private _subOwner: FeatureOwner | null = null
 
 	reduction: string
 
 	effective: boolean = false
 
-	get owner(): Stringer | undefined {
+	get owner(): FeatureOwner | null {
 		return this._owner
 	}
 
-	set owner(owner: Stringer | undefined) {
+	set owner(owner: FeatureOwner | null) {
 		this._owner = owner
 	}
 
-	get subOwner(): Stringer | undefined {
+	get subOwner(): FeatureOwner | null {
 		return this._subOwner
 	}
 
-	set subOwner(subOwner: Stringer | undefined) {
+	set subOwner(subOwner: FeatureOwner | null) {
 		this._subOwner = subOwner
 	}
 
 	setLevel(_level: number): void {}
 
 	constructor() {
+		this.type = feature.Type.ContainedWeightReduction
 		this.reduction = "0%"
 	}
 
@@ -53,7 +54,7 @@ export class ContainedWeightReduction {
 
 	toObject(): ContainedWeightReductionObj {
 		return {
-			type: this.type,
+			type: feature.Type.ContainedWeightReduction,
 			reduction: this.reduction,
 		}
 	}

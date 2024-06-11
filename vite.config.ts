@@ -2,7 +2,7 @@ import { execSync } from "child_process"
 import esbuild from "esbuild"
 import fs from "fs-extra"
 import path from "path"
-import Peggy from "peggy"
+// import Peggy from "peggy"
 import * as Vite from "vite"
 import checker from "vite-plugin-checker"
 import { viteStaticCopy } from "vite-plugin-static-copy"
@@ -20,11 +20,11 @@ const config = Vite.defineConfig(({ command, mode }): Vite.UserConfig => {
 	const buildMode = mode === "production" ? "production" : "development"
 	const outDir = "dist"
 
-	const rollGrammar = fs.readFileSync("roll-grammar.peggy", { encoding: "utf-8" })
-	const ROLL_PARSER = Peggy.generate(rollGrammar, { output: "source" }).replace(
-		"return {\n    SyntaxError: peg$SyntaxError,\n    parse: peg$parse\n  };",
-		"AbstractDamageRoll.parser = { SyntaxError: peg$SyntaxError, parse: peg$parse };",
-	)
+	// const rollGrammar = fs.readFileSync("roll-grammar.peggy", { encoding: "utf-8" })
+	// const ROLL_PARSER = Peggy.generate(rollGrammar, { output: "source" }).replace(
+	// 	"return {\n    SyntaxError: peg$SyntaxError,\n    parse: peg$parse\n  };",
+	// 	"AbstractDamageRoll.parser = { SyntaxError: peg$SyntaxError, parse: peg$parse };",
+	// )
 
 	const plugins = [checker({ typescript: true }), tsconfigPaths()]
 	// Handle minification after build to allow for tree-shaking and whitespace minification
@@ -79,7 +79,7 @@ const config = Vite.defineConfig(({ command, mode }): Vite.UserConfig => {
 						const basePath = context.file.slice(context.file.indexOf("lang/"))
 						console.log(`Updating lang file at ${basePath}`)
 						fs.promises.copyFile(context.file, `${outDir}/${basePath}`).then(() => {
-							context.server.ws.send({
+							context.server.hot.send({
 								type: "custom",
 								event: "lang-update",
 								data: { path: `systems/gcsga/${basePath}` },
@@ -89,7 +89,7 @@ const config = Vite.defineConfig(({ command, mode }): Vite.UserConfig => {
 						const basePath = context.file.slice(context.file.indexOf("templates/"))
 						console.log(`Updating template file at ${basePath}`)
 						fs.promises.copyFile(context.file, `${outDir}/${basePath}`).then(() => {
-							context.server.ws.send({
+							context.server.hot.send({
 								type: "custom",
 								event: "template-update",
 								data: { path: `systems/gcsga/${basePath}` },
@@ -106,8 +106,8 @@ const config = Vite.defineConfig(({ command, mode }): Vite.UserConfig => {
 		const message = "This file is for a running vite dev server and is not copied to a build"
 		fs.writeFileSync("./index.html", `<h1>${message}</h1>\n`)
 		if (!fs.existsSync("./styles")) fs.mkdirSync("./styles")
-		fs.writeFileSync("./styles/gcsga.css", `/** ${message} */\n`)
-		fs.writeFileSync("./gcsga.mjs", `/** ${message} */\n\nimport "./src/gcsga.ts";\n`)
+		fs.writeFileSync("./styles/gurps.css", `/** ${message} */\n`)
+		fs.writeFileSync("./gurps.mjs", `/** ${message} */\n\nimport "./src/gurps.ts";\n`)
 		fs.writeFileSync("./vendor.mjs", `/** ${message} */\n`)
 	}
 
@@ -120,7 +120,7 @@ const config = Vite.defineConfig(({ command, mode }): Vite.UserConfig => {
 			BUILD_MODE: JSON.stringify(buildMode),
 			CONDITION_SOURCES: JSON.stringify(CONDITION_SOURCES),
 			EN_JSON: JSON.stringify(EN_JSON),
-			ROLL_PARSER: JSON.stringify(ROLL_PARSER),
+			// ROLL_PARSER: JSON.stringify(ROLL_PARSER),
 			fu: "foundry.utils",
 		},
 		esbuild: { keepNames: true },
@@ -131,7 +131,7 @@ const config = Vite.defineConfig(({ command, mode }): Vite.UserConfig => {
 			sourcemap: buildMode === "development",
 			lib: {
 				name: "gcsga",
-				entry: "src/gcsga.ts",
+				entry: "src/gurps.ts",
 				formats: ["es"],
 				fileName: "gcsga",
 			},
@@ -148,9 +148,9 @@ const config = Vite.defineConfig(({ command, mode }): Vite.UserConfig => {
 				// 	].join(""),
 				// ),
 				output: {
-					assetFileNames: ({ name }): string => (name === "style.css" ? "styles/gcsga.css" : name ?? ""),
+					assetFileNames: ({ name }): string => (name === "style.css" ? "styles/gurps.css" : name ?? ""),
 					chunkFileNames: "[name].mjs",
-					entryFileNames: "gcsga.mjs",
+					entryFileNames: "gurps.mjs",
 					manualChunks: {
 						vendor: buildMode === "production" ? Object.keys(packageJSON.dependencies) : [],
 					},
@@ -164,7 +164,7 @@ const config = Vite.defineConfig(({ command, mode }): Vite.UserConfig => {
 			open: "/game",
 			proxy: {
 				"^(?!/systems/gcsga/)": "http://localhost:30000/",
-				"/socket.io": {
+				"/socketmio": {
 					target: "ws://localhost:30000",
 					ws: true,
 				},

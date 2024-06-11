@@ -1,421 +1,318 @@
-import { attribute } from "@util/enum/attribute.ts"
+import { feature, htmlQuery, htmlQueryAll, prepareFormData, prereq, study } from "@util"
 import { ItemGURPS } from "./document.ts"
-import { LocalizeGURPS } from "@util/localize.ts"
-import { SETTINGS, SYSTEM_NAME, gid } from "@module/data/index.ts"
-import { NumericCompareType, PDF, StringCompareType, prepareFormData, stlimit } from "@util"
-import { prereq } from "@util/enum/prereq.ts"
-import { PrereqListObj, PrereqObj, TraitPrereqObj } from "@prereq/data.ts"
-import { feature } from "@util/enum/feature.ts"
-import { study } from "@util/enum/study.ts"
-import { FeatureObj } from "@feature"
-import { CharacterGURPS } from "@actor"
-import { ItemGCS } from "@item"
-import { BodyObj, HitLocationObj } from "@sytem/hit_location/data.ts"
+import {
+	AttributeBonus,
+	AttributeDefObj,
+	AttributeGURPS,
+	FeatureObj,
+	PrereqList,
+	PrereqObj,
+	SkillDefault,
+	TraitPrereq,
+} from "@system"
+import { ActorType, ItemType, SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
 
 class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheetOptions> {
-	constructor(item: TItem, options: Partial<ItemSheetOptions> = {}) {
-		super(item, options)
-		this.options.classes.push(this.item.type)
-	}
-
 	static override get defaultOptions(): ItemSheetOptions {
 		const options = super.defaultOptions
-		options.classes.push("gurps", "item")
-
 		return {
 			...options,
-			width: 620,
-			height: 800,
+			submitOnChange: true,
+			classes: [...options.classes, "gurps", "item"],
 		}
 	}
 
-	override async getData(options: Partial<ItemSheetOptions> = {}): Promise<ItemSheetDataGURPS<TItem>> {
-		options.editable = this.isEditable
-		const { item } = this
-		const attributes: Record<string, string> = this.item.actor
-			? Array.from(this.item.actor.attributes.values()).reduce((acc, c) => {
-					if (
-						[
-							attribute.Type.PrimarySeparator,
-							attribute.Type.SecondarySeparator,
-							attribute.Type.PoolSeparator,
-						].includes(c.attribute_def.type)
-					)
-						return acc
-					return { ...acc, [c.id]: c.attribute_def.name }
-				}, {})
-			: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`).reduce((acc, c) => {
-					if (
-						[
-							attribute.Type.PrimarySeparator,
-							attribute.Type.SecondarySeparator,
-							attribute.Type.PoolSeparator,
-						].includes(c.type)
-					)
-						return acc
-					return { ...acc, [c.id]: c.name }
-				})
-		attributes.dodge = LocalizeGURPS.translations.gurps.attributes.dodge
-		attributes.parry = LocalizeGURPS.translations.gurps.attributes.parry
-		attributes.block = LocalizeGURPS.translations.gurps.attributes.block
-		attributes.skill = LocalizeGURPS.translations.gurps.attributes.skill
+	override activateListeners($html: JQuery): void {
+		super.activateListeners($html)
+		const html = $html[0]
 
-		const locations = this._getHitLocations()
+		for (const button of htmlQueryAll(html, "a[data-action=add-prereq]")) {
+			button.addEventListener("click", async event => {
+				await this._onSubmit(event) // Submit any unsaved changes
 
-		console.log(attributes)
-		const moveTypes = this.item.actor
-			? Object.values(this.item.actor.moveTypes).reduce((acc, c) => {
-					return { ...acc, [c.id]: c.move_type_def.name }
+				const path = button.dataset.path?.replace(/^array\./, "")
+				if (!path) return console.error("No data-path value provided for:", button)
+
+				const prereqs = (fu.getProperty(this.item, `${path}.prereqs`) as PrereqObj[]) ?? []
+				prereqs.push(new TraitPrereq().toObject())
+
+				return this._updateObject(event, { [`array.${path}.prereqs`]: prereqs })
+			})
+		}
+
+		for (const button of htmlQueryAll(html, "a[data-action=add-prereq-list]")) {
+			button.addEventListener("click", async event => {
+				await this._onSubmit(event) // Submit any unsaved changes
+
+				const path = button.dataset.path?.replace(/^array\./, "")
+				if (!path) return console.error("No data-path value provided for:", button)
+
+				const prereqs = (fu.getProperty(this.item, `${path}.prereqs`) as PrereqObj[]) ?? []
+				prereqs.push(new PrereqList().toObject())
+
+				return this._updateObject(event, { [`array.${path}.prereqs`]: prereqs })
+			})
+		}
+
+		for (const button of htmlQueryAll(html, "a[data-action=remove-prereq]")) {
+			button.addEventListener("click", async event => {
+				await this._onSubmit(event) // Submit any unsaved changes
+
+				let path = button.dataset.path?.replace(/^array\./, "")
+				if (!path) return console.error("No data-path value provided for:", button)
+
+				const items = path.split(".")
+				const index = parseInt(items.pop() ?? "")
+				if (isNaN(index)) return console.error("No valid index provided for:", button)
+				path = items.join(".")
+
+				const prereqs = (fu.getProperty(this.item, path) as PrereqObj[]) ?? []
+				prereqs.splice(index, 1)
+
+				return this._updateObject(event, { [`array.${path}`]: prereqs })
+			})
+		}
+
+		for (const field of htmlQueryAll(html, 'select.type[data-path^="array.system.prereqs"]')) {
+			if (!(field instanceof HTMLSelectElement)) return
+			field.addEventListener("change", async event => {
+				event.preventDefault()
+				// await this._onSubmit(event) // Submit any unsaved changes
+
+				let path = field.dataset.path?.replace(/^array\./, "")
+				if (!path) return console.error("No data-path value provided for:", field)
+
+				const items = path.split(".")
+				const index = parseInt(items.pop() ?? "")
+				if (isNaN(index)) return console.error("No valid index provided for:", field)
+				path = items.join(".")
+
+				const prereqs = (fu.getProperty(this.item, path) as PrereqObj[]) ?? []
+				const value = field.value as prereq.Type
+
+				if (!prereqs[index]) return
+				const prereqClass = CONFIG.GURPS.Prereq.classes[value]
+				prereqs[index] = new prereqClass(this.item.actor ?? null).toObject()
+
+				return this._updateObject(event, { [`array.${path}`]: prereqs })
+			})
+		}
+
+		htmlQuery(html, "a[data-action=add-feature]")?.addEventListener("click", async event => {
+			await this._onSubmit(event) // Submit any unsaved changes
+
+			if (
+				!this.item.isOfType(
+					ItemType.Trait,
+					ItemType.TraitModifier,
+					ItemType.Skill,
+					ItemType.Technique,
+					ItemType.Equipment,
+					ItemType.EquipmentContainer,
+					ItemType.EquipmentModifier,
+					ItemType.Effect,
+					ItemType.Condition,
+				)
+			)
+				return
+
+			const features = this.item.system.features ?? []
+			features.push(new AttributeBonus().toObject())
+			return this._updateObject(event, { ["system.features"]: features })
+		})
+
+		for (const button of htmlQueryAll(html, "a[data-action=remove-feature]")) {
+			button.addEventListener("click", async event => {
+				await this._onSubmit(event) // Submit any unsaved changes
+
+				if (
+					!this.item.isOfType(
+						ItemType.Trait,
+						ItemType.TraitModifier,
+						ItemType.Skill,
+						ItemType.Technique,
+						ItemType.Equipment,
+						ItemType.EquipmentContainer,
+						ItemType.EquipmentModifier,
+						ItemType.Effect,
+						ItemType.Condition,
+					)
+				)
+					return
+
+				const index = parseInt(button.dataset.index ?? "")
+				if (isNaN(index)) return console.error("No valid index provided for:", button)
+
+				const features = this.item.system.features ?? []
+				features.splice(index, 1)
+				return this._updateObject(event, { ["system.features"]: features })
+			})
+		}
+
+		for (const field of htmlQueryAll(html, 'select.type[name^="array.system.features"]')) {
+			if (!(field instanceof HTMLSelectElement)) return
+			field.addEventListener("change", async event => {
+				event.preventDefault()
+				// await this._onSubmit(event) // Submit any unsaved changes
+
+				const index = parseInt(field.dataset.index ?? "")
+				if (isNaN(index)) return console.error("No valid index provided for:", field)
+
+				const features = (fu.getProperty(this.item, "system.features") as FeatureObj[]) ?? []
+				const value = field.value as feature.Type
+
+				if (!features[index]) return
+				const featureClass = CONFIG.GURPS.Feature.classes[value]
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
+				if (feature.WeaponBonusTypes.includes(value as any)) {
+					features[index] = new featureClass(value as feature.WeaponBonusType).toObject()
+				} else {
+					// @ts-expect-error argument not needed
+					features[index] = new featureClass().toObject()
+				}
+
+				return this._updateObject(event, { "system.features": features })
+			})
+		}
+
+		htmlQuery(html, "a[data-action=add-default]")?.addEventListener("click", async event => {
+			await this._onSubmit(event) // Submit any unsaved changes
+
+			if (!this.item.isOfType(ItemType.Skill, ItemType.Technique, ItemType.MeleeWeapon, ItemType.RangedWeapon))
+				return
+
+			const defaults = this.item.system.defaults ?? []
+			defaults.push(new SkillDefault().toObject())
+			return this._updateObject(event, { ["system.defaults"]: defaults })
+		})
+
+		for (const button of htmlQueryAll(html, "a[data-action=remove-default]")) {
+			button.addEventListener("click", async event => {
+				await this._onSubmit(event) // Submit any unsaved changes
+
+				if (
+					!this.item.isOfType(ItemType.Skill, ItemType.Technique, ItemType.MeleeWeapon, ItemType.RangedWeapon)
+				)
+					return
+
+				const index = parseInt(button.dataset.index ?? "")
+				if (isNaN(index)) return console.error("No valid index provided for:", button)
+
+				const defaults = this.item.system.defaults ?? []
+				defaults.splice(index, 1)
+				return this._updateObject(event, { ["system.defaults"]: defaults })
+			})
+		}
+
+		htmlQuery(html, "a[data-action=add-study]")?.addEventListener("click", async event => {
+			await this._onSubmit(event) // Submit any unsaved changes
+
+			if (
+				!this.item.isOfType(
+					ItemType.Trait,
+					ItemType.Skill,
+					ItemType.Technique,
+					ItemType.Spell,
+					ItemType.RitualMagicSpell,
+				)
+			)
+				return
+
+			const studyEntries = this.item.system.study
+			studyEntries.push({
+				type: study.Type.Self,
+				hours: 0,
+				note: "",
+			})
+			return this._updateObject(event, { ["system.study"]: studyEntries })
+		})
+
+		for (const button of htmlQueryAll(html, "a[data-action=remove-study]")) {
+			button.addEventListener("click", async event => {
+				await this._onSubmit(event) // Submit any unsaved changes
+
+				if (
+					!this.item.isOfType(
+						ItemType.Trait,
+						ItemType.Skill,
+						ItemType.Technique,
+						ItemType.Spell,
+						ItemType.RitualMagicSpell,
+					)
+				)
+					return
+
+				const index = parseInt(button.dataset.index ?? "")
+				if (isNaN(index)) return console.error("No valid index provided for:", button)
+
+				const study = this.item.system.study ?? []
+				study.splice(index, 1)
+				return this._updateObject(event, { ["system.study"]: study })
+			})
+		}
+	}
+
+	override async getData(options?: Partial<ItemSheetOptions>): Promise<ItemSheetDataGURPS<TItem>> {
+		const sheetData = await super.getData(options)
+		const item = this.item
+
+		let attributes: Record<string, string> = {}
+		if (this.item.actor) {
+			if (this.item.actor.isOfType(ActorType.Character)) {
+				attributes = Array.from(this.item.actor.attributes.values()).reduce(
+					(acc: Record<string, string>, att: AttributeGURPS) => {
+						acc[att.id] = att.definition?.name ?? ""
+						return acc
+					},
+					{},
+				)
+			}
+		} else {
+			attributes = game.settings
+				.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
+				.reduce((acc: Record<string, string>, att: AttributeDefObj) => {
+					acc[att.id] = att.name
+					return acc
 				}, {})
-			: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`).reduce((acc, c) => {
-					return { ...acc, [c.id]: c.name }
-				})
+		}
+		// attributes[gid.SizeModifier] = LocalizeGURPS.translations.gurps.attributes.size
+		// attributes[gid.Dodge] = LocalizeGURPS.translations.gurps.attributes.dodge
+		// attributes[gid.Parry] = LocalizeGURPS.translations.gurps.attributes.parry
+		// attributes[gid.Block] = LocalizeGURPS.translations.gurps.attributes.block
 
 		return {
-			attributes,
-			moveTypes,
-			locations,
-			cssClass: this.isEditable ? "editable" : "locked",
-			editable: this.isEditable,
-			document: item,
+			...sheetData,
 			item,
 			system: item.system,
-			data: item.system,
-			title: this.title,
+			attributes,
 			config: CONFIG.GURPS,
-			limited: game.user.limited,
-			owner: game.user.isOwner,
-			options,
+			weaponBonusTypes: feature.WeaponBonusTypes,
 		}
-	}
-
-	private _getHitLocations(): Record<string, string> {
-		if (this.item.actor)
-			return this.item.actor.HitLocations.reduce(
-				(acc, c) => {
-					return { ...acc, [c.id]: c.choiceName }
-				},
-				{ [gid.All]: LocalizeGURPS.translations.gurps.feature.all_locations },
-			)
-
-		const recurseLocations = function (table: BodyObj, locations: HitLocationObj[] = []): HitLocationObj[] {
-			table.locations?.forEach(e => {
-				locations.push(e)
-				if (e.sub_table) locations = recurseLocations(e.sub_table, locations)
-			})
-			return locations
-		}
-
-		const table = {
-			name: "",
-			roll: "",
-			locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
-		}
-		return recurseLocations(table, []).reduce(
-			(acc, c) => {
-				return { ...acc, [c.id]: c.choice_name }
-			},
-			{ [gid.All]: LocalizeGURPS.translations.gurps.feature.all_locations },
-		)
-	}
-
-	// getData(options?: Partial<DocumentSheetOptions<Item>>): any {
-	// 	const itemData = this.object.toObject(false)
-	// 	const attributes: Record<string, string> = {}
-	// 	const locations: Record<string, string> = {}
-	// 	const move_types: Record<string, string> = {}
-	// 	locations[gid.All] = LocalizeGURPS.translations.gurps.feature.all_locations
-	// 	const default_attributes = game.settings.get(
-	// 		SYSTEM_NAME,
-	// 		`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`,
-	// 	) as AttributeDefObj[]
-	// 	const default_hit_locations = {
-	// 		name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
-	// 		roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
-	// 		locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
-	// 	}
-	// 	const actor = this.item.actor as unknown as CharacterGURPS
-	// 	if (actor) {
-	// 		actor.attributes.forEach(e => {
-	// 			if (e.attribute_def.type.includes("_separator")) return
-	// 			attributes[e.id] = e.attribute_def.name
-	// 		})
-	// 		for (const e of actor.HitLocations) {
-	// 			locations[e.id] = LocalizeGURPS.format(LocalizeGURPS.translations.gurps.field_prefix.dr, {
-	// 				location: e.choice_name,
-	// 			})
-	// 		}
-	// 		actor.move_types.forEach(e => {
-	// 			move_types[e.id] = e.move_type_def.name
-	// 		})
-	// 	} else {
-	// 		default_attributes.forEach(e => {
-	// 			if (e.type.includes("_separator")) return
-	// 			attributes[e.id] = e.name
-	// 		})
-	// 		default_hit_locations.locations.forEach(e => {
-	// 			locations[e.id] = LocalizeGURPS.format(LocalizeGURPS.translations.gurps.field_prefix.dr, {
-	// 				location: e.choice_name,
-	// 			})
-	// 		})
-	// 	}
-	// 	attributes.dodge = LocalizeGURPS.translations.gurps.attributes.dodge
-	// 	attributes.parry = LocalizeGURPS.translations.gurps.attributes.parry
-	// 	attributes.block = LocalizeGURPS.translations.gurps.attributes.block
-	// 	const item = this.item
-	//
-	// 	const sheetData = {
-	// 		...super.getData(options),
-	// 		...{
-	// 			document: item,
-	// 			item: itemData,
-	// 			system: (itemData as any).system,
-	// 			config: CONFIG.GURPS,
-	// 			attributes: attributes,
-	// 			locations: locations,
-	// 			move_types: move_types,
-	// 			weaponFeatures: feature.WeaponBonusTypes,
-	// 			sysPrefix: "array.system.",
-	// 		},
-	// 	}
-	//
-	// 	return sheetData
-	// }
-
-	override get template(): string {
-		return `/systems/${SYSTEM_NAME}/templates/item/${this.item.type}/sheet.hbs`
-	}
-
-	override activateListeners(html: JQuery<HTMLElement>): void {
-		super.activateListeners(html)
-		html.find("textarea")
-			.each(function () {
-				this.setAttribute("style", `height:${this.scrollHeight + 2}px;overflow-y:hidden;`)
-			})
-			.on("input", event => {
-				const e = event.currentTarget
-				e.style.height = "0px"
-				e.style.height = `${e.scrollHeight + 2}px`
-			})
-
-		html.find(".ref").on("click", event => PDF.handle(event))
-		html.find(".prereq .add-child").on("click", event => this._addPrereqChild(event))
-		html.find(".prereq .add-list").on("click", event => this._addPrereqList(event))
-		html.find(".prereq .remove").on("click", event => this._removePrereq(event))
-		html.find(".prereq .type").on("change", event => this._onPrereqTypeChange(event))
-		html.find("#features .add").on("click", event => this._addFeature(event))
-		html.find(".feature .remove").on("click", event => this._removeFeature(event))
-		html.find(".feature .type").on("change", event => this._onFeatureTypeChange(event))
-		html.find("#defaults .add").on("click", event => this._addDefault(event))
-		html.find(".default .remove").on("click", event => this._removeDefault(event))
-		html.find("#study .add").on("click", event => this._addStudy(event))
-		html.find(".study-entry .remove").on("click", event => this._removeStudy(event))
-	}
-
-	private splitArray(s: string): string[] {
-		const a: string[] = s.split(",").map(e => e.trim())
-		if (a.length === 1 && a[0] === "") return []
-		return a
 	}
 
 	protected override async _updateObject(event: Event, formData: Record<string, unknown>): Promise<void> {
+		function splitArray(s: string): string[] {
+			const a: string[] = s.split(",").map(e => e.trim())
+			if (a.length === 1 && a[0] === "") return []
+			return a
+		}
+
 		formData = prepareFormData(formData, this.object)
-		if (typeof formData["system.tags"] === "string")
-			formData["system.tags"] = this.splitArray(formData["system.tags"])
+		if (typeof formData["system.tags"] === "string") formData["system.tags"] = splitArray(formData["system.tags"])
 		if (typeof formData["system.college"] === "string")
-			formData["system.college"] = this.splitArray(formData["system.college"])
+			formData["system.college"] = splitArray(formData["system.college"])
 		return super._updateObject(event, formData)
 	}
-
-	protected async _addPrereqChild(event: JQuery.ClickEvent): Promise<unknown> {
-		event.preventDefault()
-		if (!this.isEditable) return
-		const path = $(event.currentTarget).data("path").replace("array.", "")
-		const prereqs = (fu.getProperty(this.item, `${path}.prereqs`) as PrereqListObj["prereqs"]) ?? []
-		prereqs.push({
-			type: prereq.Type.Trait,
-			name: { compare: StringCompareType.IsString, qualifier: "" },
-			notes: { compare: StringCompareType.AnyString, qualifier: "" },
-			level: { compare: NumericCompareType.AtLeastNumber, qualifier: 0 },
-			has: true,
-		} as TraitPrereqObj)
-		const formData: Record<string, unknown> = {}
-		formData[`array.${path}.prereqs`] = prereqs
-		return this._updateObject(null as unknown as Event, formData)
-	}
-
-	protected async _addPrereqList(event: JQuery.ClickEvent): Promise<void> {
-		event.preventDefault()
-		if (!this.isEditable) return
-		const path = $(event.currentTarget).data("path").replace("array.", "")
-		const prereqs = (fu.getProperty(this.item, `${path}.prereqs`) as PrereqListObj["prereqs"]) ?? []
-		prereqs.push({
-			type: prereq.Type.List,
-			all: true,
-			when_tl: { compare: NumericCompareType.AnyNumber },
-			prereqs: [] as PrereqObj[],
-		} as PrereqListObj)
-		const formData: Record<string, unknown> = {}
-		formData[`array.${path}.prereqs`] = prereqs
-		return this._updateObject(null as unknown as Event, formData)
-	}
-
-	protected async _removePrereq(event: JQuery.ClickEvent): Promise<void> {
-		event.preventDefault()
-		let path = $(event.currentTarget).data("path").replace("array.", "")
-		const items = path.split(".")
-		const index = items.pop()
-		path = items.join(".")
-		const prereqs = (fu.getProperty(this.item, `${path}`) as PrereqListObj["prereqs"]) ?? []
-		prereqs.splice(index, 1)
-		const formData: Record<string, unknown> = {}
-		formData[`array.${path}`] = prereqs
-		return this._updateObject(null as unknown as Event, formData)
-	}
-
-	protected async _onPrereqTypeChange(event: JQuery.ChangeEvent): Promise<void> {
-		event.preventDefault()
-		if (!this.isEditable) return
-		if (!(this.actor instanceof CharacterGURPS)) return
-		const value = event.currentTarget.value as prereq.Type
-		// const PrereqConstructor = CONFIG.GURPS.Prereq.classes[value as prereq.Type]
-		let path = $(event.currentTarget).data("path").replace("array.", "")
-		const items = path.split(".")
-		const index = parseInt(items.pop())
-		path = items.join(".")
-		const prereqs = (fu.getProperty(this.item, `${path}`) as PrereqListObj["prereqs"]) ?? []
-		if (!prereqs[index]) return
-		prereqs[index] = {
-			...CONFIG.GURPS.Prereq.classes[value]
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				.fromObject({} as any, this.actor),
-		} as PrereqObj
-		const formData: Record<string, unknown> = {}
-		formData[`array.${path}`] = prereqs
-		return this._updateObject(null as unknown as Event, formData)
-	}
-
-	protected async _addFeature(event: JQuery.ClickEvent): Promise<TItem | undefined> {
-		event.preventDefault()
-		if (!this.isEditable) return this.item
-		if (!(this.item instanceof ItemGCS)) return this.item
-		const features = this.item.system.features ?? []
-		features?.push({
-			type: feature.Type.AttributeBonus,
-			attribute: "st",
-			limitation: stlimit.Option.None,
-			amount: 1,
-			per_level: false,
-		})
-		const update: Record<string, unknown> = {}
-		update["system.features"] = features
-		return this.item.update(update)
-	}
-
-	protected async _removeFeature(event: JQuery.ClickEvent): Promise<TItem | undefined> {
-		if (!this.isEditable) return this.item
-		if (!(this.item instanceof ItemGCS)) return this.item
-		const index = $(event.currentTarget).data("index")
-		const features = this.item.system.features ?? []
-		features.splice(index, 1)
-		const update: Record<string, unknown> = {}
-		update["system.features"] = features
-		return this.item.update(update)
-	}
-
-	protected async _addDefault(event: JQuery.ClickEvent): Promise<TItem | undefined> {
-		event.preventDefault()
-		if (!this.isEditable) return this.item
-		if (!(this.item instanceof ItemGCS)) return this.item
-		const defaults = this.item.system.defaults ?? []
-		defaults.push({
-			type: gid.Skill,
-			name: "",
-			specialization: "",
-			modifier: 0,
-		})
-		const update: Record<string, unknown> = {}
-		update["system.defaults"] = defaults
-		return this.item.update(update)
-	}
-
-	protected async _removeDefault(event: JQuery.ClickEvent): Promise<TItem | undefined> {
-		if (!this.isEditable) return this.item
-		if (!(this.item instanceof ItemGCS)) return this.item
-		const index = $(event.currentTarget).data("index")
-		const defaults = this.item.system.defaults ?? []
-		defaults.splice(index, 1)
-		const update: Record<string, unknown> = {}
-		update["system.defaults"] = defaults
-		return this.item.update(update)
-	}
-
-	protected async _addStudy(event: JQuery.ClickEvent): Promise<TItem | undefined> {
-		event.preventDefault()
-		if (!this.isEditable) return
-		if (!(this.item instanceof ItemGCS)) return
-		const studyEntry = this.item.system.study ?? []
-		studyEntry.push({
-			type: study.Type.Self,
-			hours: 0,
-			note: "",
-		})
-		const update: Record<string, unknown> = {}
-		update["system.study"] = studyEntry
-		return this.item.update(update)
-	}
-
-	protected async _removeStudy(event: JQuery.ClickEvent): Promise<TItem | undefined> {
-		if (!this.isEditable) return
-		if (!(this.item instanceof ItemGCS)) return
-		const index = $(event.currentTarget).data("index")
-		const studyEntry = this.item.system.study ?? []
-		studyEntry.splice(index, 1)
-		const update: Record<string, unknown> = {}
-		update["system.study"] = studyEntry
-		return this.item.update(update)
-	}
-
-	protected async _onFeatureTypeChange(event: JQuery.ChangeEvent): Promise<TItem | undefined> {
-		if (!this.isEditable) return
-		if (!(this.item instanceof ItemGCS)) return
-		const value = event.currentTarget.value
-		const index = parseInt($(event.currentTarget).data("index"))
-		const FeatureConstructor = CONFIG.GURPS.Feature.classes[value as feature.Type]
-		const features = fu.duplicate(this.item.system.features as FeatureObj[])
-		let f = new FeatureConstructor(value).toObject()
-		if (feature.WeaponBonusTypes.includes(value)) f = new FeatureConstructor(value).toObject()
-		features.splice(index, 1, f)
-		const update: Record<string, unknown> = {}
-		// await this.item.update({ "system.-=features": null }, {
-		// 	render: false,
-		// 	performDeletions: true,
-		// } as DocumentModificationContext<ActorGURPS>)
-		update["system.features"] = features
-		return this.item.update(update, { render: true })
-	}
-
-	protected override _getHeaderButtons(): ApplicationHeaderButton[] {
-		const buttons: ApplicationHeaderButton[] = []
-		const all_buttons = [...buttons, ...super._getHeaderButtons()]
-		all_buttons.at(-1)!.label = ""
-		all_buttons.at(-1)!.icon = "gcs-circled-x"
-		return all_buttons
-	}
 }
-
 interface ItemSheetDataGURPS<TItem extends ItemGURPS> extends ItemSheetData<TItem> {
 	item: TItem
-	data: TItem["system"]
 	system: TItem["system"]
-	config: ConfigGURPS["GURPS"]
 	attributes: Record<string, string>
-	locations: Record<string, string>
-	moveTypes: Record<string, string>
-	[key: string]: unknown
+	config: ConfigGURPS["GURPS"]
+	weaponBonusTypes: readonly feature.Type[]
 }
 
-type ItemSheetOptions = DocumentSheetOptions
+interface ItemSheetOptions extends DocumentSheetOptions {}
 
 export { ItemSheetGURPS }
 export type { ItemSheetDataGURPS, ItemSheetOptions }

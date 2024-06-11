@@ -3,12 +3,12 @@ import { BasePrereq } from "./base.ts"
 import { prereq } from "@util/enum/prereq.ts"
 import { AttributePrereqObj } from "./data.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { gid } from "@data"
-import { PrereqResolver, TooltipGURPS } from "@util"
-import { Attribute } from "@system"
-import { LootGURPS } from "@actor"
+import { ActorType, gid } from "@data"
+import { TooltipGURPS } from "@util"
+import { ActorGURPS } from "@actor"
+import { PrereqResolver } from "@module/util/index.ts"
 
-export class AttributePrereq extends BasePrereq {
+export class AttributePrereq extends BasePrereq<prereq.Type.Attribute> {
 	which: string
 
 	combined_with: string
@@ -31,8 +31,8 @@ export class AttributePrereq extends BasePrereq {
 		return prereq
 	}
 
-	satisfied(actor: PrereqResolver, _exclude: Attribute, tooltip: TooltipGURPS): boolean {
-		if (actor instanceof LootGURPS) return true
+	satisfied(actor: PrereqResolver, _exclude: unknown, tooltip: TooltipGURPS): boolean {
+		if (actor instanceof ActorGURPS && actor.isOfType(ActorType.Loot)) return true
 		let value = actor.resolveAttributeCurrent(this.which)
 		if (this.combined_with !== "") value += actor.resolveAttributeCurrent(this.combined_with)
 		let satisfied = this.qualifier.matches(value)
@@ -53,5 +53,15 @@ export class AttributePrereq extends BasePrereq {
 			)
 		}
 		return satisfied
+	}
+
+	override toObject(): AttributePrereqObj {
+		return {
+			...super.toObject(),
+			has: this.has,
+			which: this.which,
+			combined_with: this.combined_with,
+			qualifier: this.qualifier.toObject(),
+		}
 	}
 }

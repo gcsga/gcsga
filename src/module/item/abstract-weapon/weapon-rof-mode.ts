@@ -22,8 +22,8 @@ export class WeaponROFMode {
 		s = s.replaceAll("#", "").replaceAll("×", "x")
 		if (s.startsWith("x")) s = `1${s}`
 		const parts = s.split("x")
-		wr.shotsPerAttack = Int.fromString(s)
-		if (parts.length > 1) wr.secondaryProjectiles = Int.fromString(parts[1])
+		wr.shotsPerAttack = Int.fromString(s)[0]
+		if (parts.length > 1) wr.secondaryProjectiles = Int.fromString(parts[1])[0]
 		wr.validate()
 		return wr
 	}
@@ -35,9 +35,7 @@ export class WeaponROFMode {
 			feature.Type.WeaponRofMode1SecondaryBonus,
 		]
 		if (firstMode) {
-			// @ts-expect-error awaiting implementation
 			result.fullAutoOnly = w.resolveBoolFlag(wswitch.Type.FullAuto1, result.fullAutoOnly)
-			// @ts-expect-error awaiting implementation
 			result.highCyclicControlledBursts = w.resolveBoolFlag(
 				wswitch.Type.ControlledBursts1,
 				result.highCyclicControlledBursts,
@@ -45,15 +43,12 @@ export class WeaponROFMode {
 		} else {
 			shotsFeature = feature.Type.WeaponRofMode2ShotsBonus
 			secondaryFeature = feature.Type.WeaponRofMode2SecondaryBonus
-			// @ts-expect-error awaiting implementation
 			result.fullAutoOnly = w.resolveBoolFlag(wswitch.Type.FullAuto2, result.fullAutoOnly)
-			// @ts-expect-error awaiting implementation
 			result.highCyclicControlledBursts = w.resolveBoolFlag(
 				wswitch.Type.ControlledBursts2,
 				result.highCyclicControlledBursts,
 			)
 		}
-		// @ts-expect-error awaiting implementation
 		for (const bonus of w.collectWeaponBonuses(1, tooltip, shotsFeature, secondaryFeature)) {
 			if (bonus.type === shotsFeature) result.shotsPerAttack += bonus.adjustedAmountForWeapon(w)
 			else if (bonus.type === secondaryFeature) {

@@ -1,13 +1,16 @@
-import { ItemType, SkillDifficulty } from "@data"
-import { BaseContainerSource } from "@item/container/data.ts"
-import { ItemGCSSystemSource } from "@item/gcs/data.ts"
-import { PrereqListObj } from "@prereq/data.ts"
-import { study } from "@util/enum/study.ts"
-import { Study } from "@util/study.ts"
+import {
+	AbstractContainerSource,
+	AbstractContainerSystemData,
+	AbstractContainerSystemSource,
+} from "@item/abstract-container/data.ts"
+import { ItemType } from "@module/data/constants.ts"
+import { SkillDifficulty } from "@module/data/types.ts"
+import { PrereqListObj, Study } from "@system"
+import { study } from "@util"
 
-export type SpellSource = BaseContainerSource<ItemType.Spell, SpellSystemSource>
+type SpellSource = AbstractContainerSource<ItemType.Spell, SpellSystemSource>
 
-export interface SpellSystemSource extends ItemGCSSystemSource {
+interface SpellSystemSource extends AbstractContainerSystemSource {
 	type: ItemType.Spell
 	name: string
 	reference: string
@@ -31,3 +34,7 @@ export interface SpellSystemSource extends ItemGCSSystemSource {
 	study: Study[]
 	study_hours_needed: study.Level | ""
 }
+
+interface SpellSystemData extends SpellSystemSource, AbstractContainerSystemData {}
+
+export type { SpellSource, SpellSystemData, SpellSystemSource }

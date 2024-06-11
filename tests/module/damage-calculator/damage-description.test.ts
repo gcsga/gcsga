@@ -13,17 +13,17 @@ describe("Damage calculator", () => {
 	let _target: _Target
 	let _roll: DamageRoll
 
-	let _torso: DamageHitLocation
-	let _vitals: DamageHitLocation
-	let _skull: DamageHitLocation
-	let _eye: DamageHitLocation
-	let _face: DamageHitLocation
-	let _neck: DamageHitLocation
-	let _groin: DamageHitLocation
-	let _arm: DamageHitLocation
-	let _leg: DamageHitLocation
-	let _hand: DamageHitLocation
-	let _foot: DamageHitLocation
+	let _torso: DamageHitLocation<_Target>
+	let _vitals: DamageHitLocation<_Target>
+	let _skull: DamageHitLocation<_Target>
+	let _eye: DamageHitLocation<_Target>
+	let _face: DamageHitLocation<_Target>
+	let _neck: DamageHitLocation<_Target>
+	let _groin: DamageHitLocation<_Target>
+	let _arm: DamageHitLocation<_Target>
+	let _leg: DamageHitLocation<_Target>
+	let _hand: DamageHitLocation<_Target>
+	let _foot: DamageHitLocation<_Target>
 
 	beforeEach(() => {
 		_attacker = new _Attacker()

@@ -1,0 +1,27 @@
+{
+    "_id": "CFbaxAjhsU694ymI",
+    "img": "systems/gcsga/assets/status/unconscious.webp",
+    "name": "Unconscious",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "unconscious",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "type": "condition"
+    },
+    "type": "condition"
+}

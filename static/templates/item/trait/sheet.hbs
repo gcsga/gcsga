@@ -1,120 +1,132 @@
-<form class="{{cssClass}}" autocomplete="off">
-    <div id="sheet">
-        <div id="details">
-			<div class="label">{{localize "gurps.item.img"}}</div>
-			<div class="field">
-				<div class="img-display" style="background-image: url({{document.img}});">
-					<img src="{{document.img}}" data-edit="img" title="{{document.name}}" />
-				</div>
+<form class="{{ cssClass }}" autocomplete="off">
+	<section id="details">
+		<label>{{ localize "gurps.item.img" }}</label>
+		<div class="field">
+			<div class="img-display" style="background-image: url({{ document.img }})">
+				<img src="{{ document.img }}" data-edit="img" title="{{ document.name }}" />
 			</div>
-            <div class="label">{{localize "gurps.item.name"}}</div>
-            <div class="field">
-                <input type="text" name="name" value="{{item.name}}" data-dtype="String" />
-            </div>
-            <div class="label">{{localize "gurps.item.notes"}}</div>
-            <div class="field">
-                <input type="text" name="system.notes" value="{{system.notes}}" data-dtype="String" />
-            </div>
-            <div class="label">{{localize "gurps.item.vtt_notes"}}</div>
-            <div class="field">
-                <input type="text" name="system.vtt_notes" value="{{system.vtt_notes}}" data-dtype="String" />
-            </div>
-            <div class="label">{{localize "gurps.item.userdesc"}}</div>
-            <div class="field">
-				<textarea type="text" name="system.userdesc" data-dtype="String">{{textareaFormat
-						system.userdesc
-					}}</textarea>
-            </div>
-            <div class="label">{{localize "gurps.item.tags"}}</div>
-            <div class="field">
-				<input type="text" name="system.tags" value="{{join system.tags ', '}}" data-dtype="String" />
-            </div>
-            <label class="label"></label>
-            <div class="field">
-                <label class="label checkbox-label">
-                    <input name="system.disabled" type="checkbox" data-dtype="Boolean" {{checked (not
-                        system.disabled)}} />
-                    {{ localize "gurps.item.enabled" }}
-                </label>
-            </div>
-            <div class="label">{{ localize "gurps.item.point_cost" }}</div>
-            <div class="field no-stretch">
-                <input type="text" data="{{document.adjustedPoints}}" readonly tabIndex="-1" />
-                <label class="label checkbox-label">
-                    <input type="checkbox" checked />
-                    {{ localize "gurps.item.round_down" }}
-                </label>
-            </div>
-            <div class="label">{{ localize "gurps.item.base_cost" }}</div>
-            <div class="field">{{ numberInput system.base_points name="system.base_points" }}</div>
-            <div class="label checkbox-label" style="justify-self: end;">
-                <input type="checkbox" name="system.can_level" data-dtype="Boolean" {{checked system.can_level}} />
-                {{ localize "gurps.item.levels" }}
-            </div>
-            <div class="field no-stretch">
-                <input type="text" name="system.levels" value="{{system.levels}}" data-dtype="Number" {{disabled (not system.can_level)}} />
-                <div class="label">{{ localize "gurps.item.points_per_level" }}</div>
-                <input type="text" name="system.points_per_level" value="{{system.points_per_level}}"
-                    data-dtype="Number" {{disabled (not system.can_level)}} />
-            </div>
-            <div class="label">{{ localize "gurps.item.cr" }}</div>
-            <div class="field">
-                <select name="system.cr" data-dtype="Number">
-                    {{#select system.cr }}
-                    {{#each config.select.cr_level as |v k| }}
-                    <option value="{{k}}">
-                        {{ localize v }}
-                    </option>
-                    {{/each }}
-                    {{/select }}
-                </select>
-            </div>
-            <div class="label">{{ localize "gurps.item.cr_adj" }}</div>
-            <div class="field">
-                <select name="system.cr_adj" data-dtype="String" {{ disabled (eq system.cr 0 )}}>
-                    {{#select system.cr_adj }}
-                    {{#each config.select.cr_adj as |v k| }}
-                    <option value="{{k}}">
-                        {{ localize v }}
-                    </option>
-                    {{/each }}
-                    {{/select }}
-                </select>
-            </div>
-            <div class="label">{{localize "gurps.item.reference"}}</div>
-            <div class="field">
-                <input type="text" name="system.reference" value="{{system.reference}}" data-dtype="String" />
-            </div>
-            <div class="label">{{localize "gurps.item.reference_highlight"}}</div>
-            <div class="field">
-                <input type="text" name="system.reference_highlight" value="{{system.reference_highlight}}" data-dtype="String" />
-            </div>
-        </div>
-    </div>
-    {{>item/sections/prerequisites }}
-    {{>item/sections/features }}
-    <div id="trait-modifiers" class="item-list table">
-        <div class="header enabled">
-            <i class="gcs-checkmark"></i>
-        </div>
-        <div class="header desc">{{ localize "gurps.item.modifier_desc" }}</div>
-        <div class="header cost">{{ localize "gurps.item.modifier_point_cost" }}</div>
-        <div class="header tags">{{ localize "gurps.item.tags" }}</div>
-        <div class="header reference">
-            <i class="gcs-bookmark"></i>
-        </div>
-        {{#each (sort modifiers "sort") }}
-        {{>item/sections/trait-mod }}
-		{{else}}
-			<div class="enabled"></div>
-			<div class="desc filler"></div>
-			<div class="cost"></div>
-			<div class="tags"></div>
-			<div class="reference"></div>
-        {{/each }}
-    </div>
-    {{>item/sections/melee }}
-    {{>item/sections/ranged }}
-	{{>item/sections/study}}
-    </div>
+		</div>
+		<label>{{ localize "gurps.item.name" }}</label>
+		<div class="field">
+			<input type="text" name="name" value="{{ item.name }}" data-dtype="String" />
+		</div>
+		<label>{{ localize "gurps.item.notes" }}</label>
+		<div class="field">
+			<input type="text" name="system.notes" value="{{ system.notes }}" data-dtype="String" />
+		</div>
+		<label>{{ localize "gurps.item.vtt_notes" }}</label>
+		<div class="field">
+			<input type="text" name="system.vtt_notes" value="{{ system.vtt_notes }}" data-dtype="String" />
+		</div>
+		<label>{{ localize "gurps.item.userdesc" }}</label>
+		<div class="field">
+			<input type="text" name="system.userdesc" value="{{ system.userdesc }}" data-dtype="String" />
+		</div>
+		<label>{{ localize "gurps.item.tags" }}</label>
+		<div class="field">
+			<input type="text" name="system.tags" value="{{ join system.tags ', ' }}" data-dtype="String" />
+		</div>
+		<label class="label"></label>
+		<div class="field">
+			<label class="check">
+				<input
+					name="system.disabled"
+					type="checkbox"
+					data-dtype="Boolean"
+					{{
+					checked
+					(not
+					system.disabled)
+					}}
+				/>
+				{{ localize "gurps.item.enabled" }}
+			</label>
+		</div>
+		<label>{{ localize "gurps.item.point_cost" }}</label>
+		<div class="field no-stretch">
+			<input type="text" data="{{ document.adjustedPoints }}" readonly tabindex="-1" />
+			<label class="check">
+				<input type="checkbox" checked />
+				{{ localize "gurps.item.round_down" }}
+			</label>
+		</div>
+		<label>{{ localize "gurps.item.base_cost" }}</label>
+		<div class="field">{{ numberInput system.base_points name="system.base_points" }}</div>
+		<label class="check" style="justify-self: end">
+			<input type="checkbox" name="system.can_level" data-dtype="Boolean" {{ checked system.can_level }} />
+			{{ localize "gurps.item.levels" }}
+		</label>
+		<div class="field no-stretch">
+			<input
+				type="text"
+				name="system.levels"
+				value="{{ system.levels }}"
+				data-dtype="Number"
+				{{
+				disabled
+				(not
+				system.can_level)
+				}}
+			/>
+			<label>{{ localize "gurps.item.points_per_level" }}</label>
+			<input
+				type="text"
+				name="system.points_per_level"
+				value="{{ system.points_per_level }}"
+				data-dtype="Number"
+				{{
+				disabled
+				(not
+				system.can_level)
+				}}
+			/>
+		</div>
+		<label>{{ localize "gurps.item.cr" }}</label>
+		<div class="field">
+			<select name="system.cr" data-dtype="Number">
+				{{#select system.cr }} {{#each @root.config.select.cr_level as |v k| }}
+				<option value="{{ k }}">{{ localize v }}</option>
+				{{/each }} {{/select }}
+			</select>
+		</div>
+		<label>{{ localize "gurps.item.cr_adj" }}</label>
+		<div class="field">
+			<select name="system.cr_adj" data-dtype="String" {{ disabled (eq system.cr 0 ) }}>
+				{{#select system.cr_adj }} {{#each @root.config.select.cr_adj as |v k| }}
+				<option value="{{ k }}">{{ localize v }}</option>
+				{{/each }} {{/select }}
+			</select>
+		</div>
+		<label>{{ localize "gurps.item.reference" }}</label>
+		<div class="field">
+			<input type="text" name="system.reference" value="{{ system.reference }}" data-dtype="String" />
+		</div>
+		<label>{{ localize "gurps.item.reference_highlight" }}</label>
+		<div class="field">
+			<input
+				type="text"
+				name="system.reference_highlight"
+				value="{{ system.reference_highlight }}"
+				data-dtype="String"
+			/>
+		</div>
+	</section>
+	{{>item/partials/prereqs }} {{>item/partials/features }} {{#with itemCollections.trait_modifiers as |section|}}
+	<div id="trait-modifiers">
+		<header>
+			<span class="enabled">
+				<i class="gcs-checkmark"></i>
+			</span>
+			<span class="item-name">{{ localize "gurps.item.modifier_desc" }}</span>
+			<span class="cost">{{ localize "gurps.item.modifier_point_cost" }}</span>
+			<span class="tags">{{ localize "gurps.item.tags" }}</span>
+			<span class="reference">
+				<i class="gcs-bookmark"></i>
+			</span>
+		</header>
+		<ul class="items" data-item-list data-item-section="{{ section.name }}" data-item-types="{{ section.types }}">
+			{{#each section.items}} {{>common/trait-modifier}} {{/each}}
+		</ul>
+	</div>
+	{{/with}} {{>item/partials/melee-attacks }} {{>item/partials/ranged-attacks }} {{>item/partials/study}}
 </form>

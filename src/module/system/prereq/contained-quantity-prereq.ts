@@ -1,12 +1,14 @@
-import { EquipmentContainerGURPS } from "@item"
+import { ItemGURPS } from "@item"
 import { prereq } from "@util/enum/prereq.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { NumericCompareType, NumericCriteria } from "@util/numeric-criteria.ts"
 import { BasePrereq } from "./base.ts"
 import { ContainedQuantityPrereqObj } from "./data.ts"
-import { PrereqResolver, TooltipGURPS } from "@util"
+import { TooltipGURPS } from "@util"
+import { ItemType } from "@module/data/constants.ts"
+import { PrereqResolver } from "@module/util/index.ts"
 
-export class ContainedQuantityPrereq extends BasePrereq {
+export class ContainedQuantityPrereq extends BasePrereq<prereq.Type.ContainedQuantity> {
 	qualifier: NumericCriteria
 
 	constructor() {
@@ -21,12 +23,10 @@ export class ContainedQuantityPrereq extends BasePrereq {
 		return prereq
 	}
 
-	satisfied(_actor: PrereqResolver, exclude: EquipmentContainerGURPS, tooltip: TooltipGURPS): boolean {
+	satisfied(_actor: PrereqResolver, exclude: unknown, tooltip: TooltipGURPS): boolean {
 		let satisfied = false
-		if (exclude instanceof EquipmentContainerGURPS) {
-			const eqp = exclude as EquipmentContainerGURPS
-			// @ts-expect-error awaiting implementation
-			satisfied = this.qualifier.matches(eqp.children.size)
+		if (exclude instanceof ItemGURPS && exclude.isOfType(ItemType.EquipmentContainer)) {
+			satisfied = this.qualifier.matches(exclude.children.size)
 		}
 		if (!this.has) satisfied = !satisfied
 		if (!satisfied) {
@@ -39,5 +39,13 @@ export class ContainedQuantityPrereq extends BasePrereq {
 			)
 		}
 		return satisfied
+	}
+
+	override toObject(): ContainedQuantityPrereqObj {
+		return {
+			...super.toObject(),
+			has: this.has,
+			qualifier: this.qualifier.toObject(),
+		}
 	}
 }

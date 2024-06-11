@@ -1,25 +1,29 @@
-import { ItemSheetGCS } from "@item/gcs/sheet.ts"
+import { AbstractContainerSheetData, AbstractContainerSheetGURPS } from "@item/abstract-container/sheet.ts"
 import { TraitGURPS } from "./document.ts"
-import { ItemSheetDataGURPS, ItemSheetOptions } from "@item/base/sheet.ts"
+import { ItemSheetOptions } from "@item/base/sheet.ts"
+import { SYSTEM_NAME } from "@module/data/constants.ts"
+import { objectHasKey } from "@util"
 
-export class TraitSheet<IType extends TraitGURPS = TraitGURPS> extends ItemSheetGCS<IType> {
-	static override get defaultOptions(): DocumentSheetOptions {
-		const options = super.defaultOptions
-		fu.mergeObject(options, {
-			classes: options.classes.concat(["trait"]),
-		})
-		return options
+class TraitSheetGURPS extends AbstractContainerSheetGURPS<TraitGURPS> {
+	override get template(): string {
+		return `systems/${SYSTEM_NAME}/templates/item/trait/sheet.hbs`
 	}
 
-	override async getData(options: Partial<ItemSheetOptions> = {}): Promise<ItemSheetDataGURPS<IType>> {
-		const data = await super.getData(options)
-		data.modifiers = this.object.modifiers
-		return data
+	override async getData(options?: Partial<ItemSheetOptions>): Promise<TraitSheetData> {
+		const sheetData = await super.getData(options)
+
+		return {
+			...sheetData,
+		}
 	}
 
 	protected override async _updateObject(event: Event, formData: Record<string, unknown>): Promise<void> {
-		if (Object.keys(formData).includes("system.disabled"))
+		if (objectHasKey(formData, "system.disabled")) {
 			formData["system.disabled"] = !formData["system.disabled"]
+		}
 		return super._updateObject(event, formData)
 	}
 }
+interface TraitSheetData extends AbstractContainerSheetData<TraitGURPS> {}
+
+export { TraitSheetGURPS }

@@ -11,6 +11,8 @@ declare global {
 		TCombat extends Combat,
 		TCombatant extends Combatant<TCombat | null, TTokenDocument | null>,
 		TCombatTracker extends CombatTracker<TCombat | null>,
+		TActorDirectory extends ActorDirectory<Actor<null>>,
+		TItemDirectory extends ItemDirectory<Item<null>>,
 		TCompendiumDirectory extends CompendiumDirectory,
 		THotbar extends Hotbar,
 		TItem extends Item<TActor | null>,
@@ -108,7 +110,7 @@ declare global {
 			documentClass: {
 				new (data: PreCreate<TItem["_source"]>, context?: DocumentConstructionContext<TItem["parent"]>): TItem
 			}
-			collection: typeof Items
+			collection: ConstructorOf<Items<Item<null>>>
 			sheetClasses: Record<
 				string,
 				Record<
@@ -312,6 +314,7 @@ declare global {
 			darknessLightPenalty: number
 			daylightColor: number
 			dragSpeedModifier: number
+			rulerClass: typeof Ruler
 			dispositionColors: {
 				HOSTILE: number
 				NEUTRAL: number
@@ -404,7 +407,6 @@ declare global {
 				sound: typeof ClockwiseSweepPolygon
 				move: typeof ClockwiseSweepPolygon
 			}
-			rulerClass: typeof Ruler
 
 			normalLightColor: number
 			maxZoom: number
@@ -596,13 +598,13 @@ declare global {
 		}
 
 		ui: {
-			actors: ConstructorOf<ActorDirectory<Actor<null>>>
+			actors: ConstructorOf<TActorDirectory>
 			chat: ConstructorOf<TChatLog>
 			combat: ConstructorOf<TCombatTracker>
 			compendium: ConstructorOf<TCompendiumDirectory>
 			controls: typeof SceneControls
 			hotbar: ConstructorOf<THotbar>
-			items: ConstructorOf<ItemDirectory<Item<null>>>
+			items: ConstructorOf<TItemDirectory>
 			// journal: typeof JournalDirectory;
 			// macros: typeof MacroDirectory;
 			menu: typeof MainMenu

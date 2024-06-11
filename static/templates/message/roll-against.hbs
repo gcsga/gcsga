@@ -1,23 +1,19 @@
 <div class="dice-roll skill">
-	<div data-json="{{json item}}" data-type="{{type}}" class="name rollable">{{displayName}}</div>
+	<div data-json="{{ json item }}" data-type="{{ type }}" class="name rollable">{{ displayName }}</div>
 	{{#if item.default}}
-		<div class="default">
-			{{localize "gurps.roll.default" default=item.default}}
+	<div class="default">{{ localize "gurps.roll.default" default=item.default }}</div>
+	{{/if}} {{#if modifiers.length}}
+	<div class="modifiers">
+		{{#each modifiers}}
+		<div class="mod mod-{{ this.class }}" data-mod="{{ json this }}">
+			{{ signed this.modifier }} {{#if this.name}} : {{ this.name }}{{/if}}
 		</div>
-	{{/if}}
-	{{#if modifiers.length}}
-		<div class="modifiers">
-			{{#each modifiers}}
-				<div class="mod mod-{{this.class}}" data-mod="{{json this}}">{{signed this.modifier}}{{#if this.name}}:
-						{{this.name}}{{/if}}</div>
-			{{/each}}
-			{{{eff}}}
-		</div>
+		{{/each}} {{{ effectiveText }}}
+	</div>
 	{{/if}}
 	<hr />
 	<div class="dice-result">
-		<div class="dice-total {{success}}">{{total}}</div>
-		{{{margin}}}
-		{{{tooltip}}}
+		<div class="dice-total {{ success }}">{{ total }}</div>
+		{{{ margin }}} {{{ tooltip }}}
 	</div>
 </div>

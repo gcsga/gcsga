@@ -5,7 +5,7 @@ import { SkillPointBonusObj } from "./data.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { TooltipGURPS, feature } from "@util"
 
-export class SkillPointBonus extends BonusOwner {
+export class SkillPointBonus extends BonusOwner<feature.Type.SkillPointBonus> {
 	name?: StringCriteria
 
 	specialization?: StringCriteria
@@ -13,8 +13,7 @@ export class SkillPointBonus extends BonusOwner {
 	tags?: StringCriteria
 
 	constructor() {
-		super()
-		this.type = feature.Type.SkillPointBonus
+		super(feature.Type.SkillPointBonus)
 		this.name = new StringCriteria({ compare: StringCompareType.IsString })
 		this.specialization = new StringCriteria({ compare: StringCompareType.AnyString })
 		this.tags = new StringCriteria({ compare: StringCompareType.AnyString })

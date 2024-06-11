@@ -1,0 +1,215 @@
+<form class="{{ cssClass }}" autocomplete="off">
+	<div id="sheet" class="gcs_melee_sheet">
+		<div id="details">
+			<label>{{ localize "gurps.item.img" }}</label>
+			<div class="field">
+				<div class="img-display" style="background-image: url({{ document.img }})">
+					<img src="{{ document.img }}" data-edit="img" title="{{ document.name }}" />
+				</div>
+			</div>
+			<label>{{ localize "gurps.weapon.usage" }}</label>
+			<div class="field">
+				<input type="text" name="system.usage" value="{{ system.usage }}" data-dtype="String" />
+			</div>
+			<label>{{ localize "gurps.weapon.notes" }}</label>
+			<div class="field">
+				<input type="text" name="system.usage_notes" value="{{ system.usage_notes }}" data-dtype="String" />
+			</div>
+			<label class="check" style="justify-self: end">
+				<input
+					type="checkbox"
+					name="weapon.parry.no"
+					data-dtype="Boolean"
+					{{
+					checked
+					(not
+					document.parry.no)
+					}}
+				/>
+				{{ localize "gurps.weapon.parry" }}
+			</label>
+			<div class="field no-stretch">
+				<input
+					type="text"
+					name="weapon.parry.modifier"
+					value="{{ signed document.parry.modifier }}"
+					data-dtype="Number"
+					{{
+					disabled
+					document.parry.no
+					}}
+				/>
+				<label class="check">
+					<input
+						type="checkbox"
+						name="weapon.parry.fencing"
+						data-dtype="Boolean"
+						{{
+						checked
+						document.parry.fencing
+						}}
+						{{
+						disabled
+						document.parry.no
+						}}
+					/>
+					{{ localize "gurps.weapon.fencing" }}
+				</label>
+				<label class="check">
+					<input
+						type="checkbox"
+						name="weapon.parry.unbalanced"
+						data-dtype="Boolean"
+						{{
+						checked
+						document.parry.unbalanced
+						}}
+						{{
+						disabled
+						document.parry.no
+						}}
+					/>
+					{{ localize "gurps.weapon.unbalanced" }}
+				</label>
+			</div>
+			<label class="check" style="justify-self: end">
+				<input
+					type="checkbox"
+					name="weapon.block.no"
+					data-dtype="Boolean"
+					{{
+					checked
+					(not
+					document.block.no)
+					}}
+				/>
+				{{ localize "gurps.weapon.block" }}
+			</label>
+			<div class="field no-stretch">
+				<input
+					type="text"
+					name="weapon.block.modifier"
+					value="{{ signed document.block.modifier }}"
+					data-dtype="Number"
+					{{
+					disabled
+					document.block.no
+					}}
+				/>
+			</div>
+			<label>{{ localize "gurps.weapon.damage" }}</label>
+			<div class="field no-stretch">
+				<select name="system.damage.st" data-dtype="String">
+					{{#select system.damage.st}} {{#each @root.config.select.stdmg as |v k|}}
+					<option value="{{ k }}">{{ v }}</option>
+					{{/each}} {{/select}}
+				</select>
+				<input type="text" name="system.damage.base" value="{{ system.damage.base }}" data-dtype="String" />
+				<input
+					type="text"
+					name="system.damage.modifier_per_die"
+					value="{{ signed system.damage.modifier_per_die }}"
+					data-dtype="Number"
+				/>
+				<label>{{ localize "gurps.weapon.modifier_per_die" }}</label>
+			</div>
+			<label></label>
+			<div class="field no-stretch">
+				<label>{{ localize "gurps.weapon.armor_divisor" }}</label>
+				<input
+					type="text"
+					name="system.damage.armor_divisor"
+					value="{{ system.damage.armor_divisor }}"
+					data-dtype="Number"
+				/>
+				<label>{{ localize "gurps.weapon.damage_type" }}</label>
+				<input type="text" name="system.damage.type" value="{{ system.damage.type }}" data-dtype="String" />
+			</div>
+			<label>{{ localize "gurps.weapon.fragmentation" }}</label>
+			<div class="field no-stretch">
+				<input
+					type="text"
+					name="system.damage.fragmentation"
+					value="{{ diceString system.damage.fragmentation }}"
+					data-dtype="String"
+				/>
+				<label>{{ localize "gurps.weapon.armor_divisor" }}</label>
+				<input
+					type="text"
+					name="system.damage.fragmentation_armor_divisor"
+					value="{{ system.damage.fragmentation_armor_divisor }}"
+					data-dtype="Number"
+				/>
+				<label>{{ localize "gurps.weapon.damage_type" }}</label>
+				<input
+					type="text"
+					name="system.damage.fragmentation_type"
+					value="{{ system.damage.fragmentation_type }}"
+					data-dtype="String"
+				/>
+			</div>
+			<label>{{ localize "gurps.weapon.reach_max" }}</label>
+			<div class="field no-stretch">
+				<input type="text" name="weapon.reach.max" value="{{ document.reach.max }}" data-dtype="Number" />
+				<label>{{ localize "gurps.weapon.reach_min" }}</label>
+				<input type="text" name="weapon.reach.min" value="{{ document.reach.min }}" data-dtype="Number" />
+			</div>
+			<label></label>
+			<div class="field no-stretch">
+				<label class="check">
+					<input
+						type="checkbox"
+						name="weapon.reach.closeCombat"
+						data-dtype="Boolean"
+						{{
+						checked
+						document.reach.closeCombat
+						}}
+					/>
+					{{ localize "gurps.weapon.close_combat" }}
+				</label>
+				<label class="check">
+					<input
+						type="checkbox"
+						name="weapon.reach.changeRequiresReady"
+						data-dtype="Boolean"
+						{{
+						checked
+						document.reach.changeRequiresReady
+						}}
+					/>
+					{{ localize "gurps.weapon.change_requires_ready" }}
+				</label>
+			</div>
+			<label>{{ localize "gurps.weapon.strength" }}</label>
+			<div class="field no-stretch">
+				<input type="text" name="weapon.strength.min" value="{{ document.strength.min }}" data-dtype="Number" />
+				<label class="check">
+					<input
+						type="checkbox"
+						name="weapon.strength.twoHanded"
+						data-dtype="Boolean"
+						{{
+						checked
+						document.strength.twoHanded
+						}}
+					/>
+					{{ localize "gurps.weapon.two_handed" }}
+				</label>
+				<label class="check">
+					<input
+						type="checkbox"
+						name="weapon.strength.twoHandedUnready"
+						data-dtype="Boolean"
+						{{
+						checked
+						document.strength.twoHandedUnready
+						}}
+					/>
+					{{ localize "gurps.weapon.two_handed_unready" }}
+				</label>
+			</div>
+		</div>
+		{{>item/partials/defaults attributes=attributes sysPrefix=sysPrefix}}
+	</div>
+</form>

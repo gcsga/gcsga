@@ -1,0 +1,40 @@
+{
+    "_id": "p4rRvJvu01y9SYr5",
+    "img": "systems/gcsga/assets/status/prone.webp",
+    "name": "Prone",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "prone",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [
+            {
+                "id": "to hit (Prone, no cover)",
+                "modifier": -4
+            },
+            {
+                "id": "to hit (Prone, some cover, head up)",
+                "modifier": -5
+            },
+            {
+                "id": "to hit (Prone, some cover, head down)",
+                "modifier": -7
+            }
+        ],
+        "overlay": false,
+        "type": "condition"
+    },
+    "type": "condition"
+}

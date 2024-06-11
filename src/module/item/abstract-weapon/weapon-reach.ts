@@ -25,10 +25,10 @@ export class WeaponReach extends WeaponField {
 			wr.changeRequiresReady = s.includes("*")
 			s = s.replaceAll("*", "")
 			const parts = s.split(",")
-			wr.min = Int.fromString(parts[0])
+			wr.min = Int.fromString(parts[0])[0]
 			if (parts.length > 1) {
 				for (const one of parts.slice(1)) {
-					const reach = Int.fromString(one)
+					const reach = Int.fromString(one)[0]
 					if (reach > wr.max) wr.max = reach
 				}
 			}
@@ -39,14 +39,11 @@ export class WeaponReach extends WeaponField {
 
 	resolve(w: AbstractWeaponGURPS, tooltip: TooltipGURPS): WeaponReach {
 		const result = WeaponReach.parse(this.toString())
-		// @ts-expect-error awaiting implementation
 		result.closeCombat = w.resolveBoolFlag(wswitch.Type.CloseCombat, result.closeCombat)
-		// @ts-expect-error awaiting implementation
 		result.changeRequiresReady = w.resolveBoolFlag(
 			wswitch.Type.ReachChangeRequiresReady,
 			result.changeRequiresReady,
 		)
-		// @ts-expect-error awaiting implementation
 		for (const bonus of w.collectWeaponBonuses(
 			1,
 			tooltip,

@@ -1,20 +1,28 @@
-import { SceneFlagsGURPS } from "./data.ts"
-import { SceneConfigGURPS } from "./sheet.ts"
-import { TokenDocumentGURPS } from "./token-document/index.ts"
+import { TokenDocumentGURPS } from "./token-document/document.ts"
 
-class SceneGURPS extends Scene {}
+class SceneGURPS extends Scene {
+	/** Has this document completed `DataModel` initialization? */
+	declare initialized: boolean
+
+	protected override _initialize(options?: Record<string, unknown>): void {
+		this.initialized = false
+		super._initialize(options)
+	}
+
+	override prepareData(): void {
+		if (this.initialized) return
+		this.initialized = true
+		super.prepareData()
+	}
+
+	/** Toggle Unrestricted Global Vision according to scene darkness level */
+	override prepareBaseData(): void {
+		super.prepareBaseData()
+	}
+}
 
 interface SceneGURPS extends Scene {
-	flags: SceneFlagsGURPS
-
-	_sheet: SceneConfigGURPS<this> | null
-
-	readonly lights: foundry.abstract.EmbeddedCollection<AmbientLightDocument<this>>
-	readonly templates: foundry.abstract.EmbeddedCollection<MeasuredTemplateDocument<this>>
 	readonly tokens: foundry.abstract.EmbeddedCollection<TokenDocumentGURPS<this>>
-	readonly tiles: foundry.abstract.EmbeddedCollection<TileDocument<this>>
-
-	get sheet(): SceneConfigGURPS<this>
 }
 
 export { SceneGURPS }

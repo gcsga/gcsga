@@ -1,7 +1,9 @@
 import { LegacyCharacterGURPS } from "@actor"
 import { ActorSheetDataGURPS, ActorSheetGURPS } from "@actor/base/sheet.ts"
 
-class LegacyCharacterSheetGURPS<TActor extends LegacyCharacterGURPS> extends ActorSheetGURPS<TActor> {
+class LegacyCharacterSheetGURPS<
+	TActor extends LegacyCharacterGURPS = LegacyCharacterGURPS,
+> extends ActorSheetGURPS<TActor> {
 	override async getData(options?: ActorSheetOptions): Promise<LegacyCharacterSheetData<TActor>> {
 		const sheetData = await super.getData(options)
 		return {

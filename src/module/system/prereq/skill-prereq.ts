@@ -3,14 +3,13 @@ import { BasePrereq } from "./base.ts"
 import { prereq } from "@util/enum/prereq.ts"
 import { NumericCompareType, NumericCriteria } from "@util/numeric-criteria.ts"
 import { SkillPrereqObj } from "./data.ts"
-import { SkillGURPS, TechniqueGURPS } from "@item"
-import { ItemType } from "@data"
-import { LocalizeGURPS, PrereqResolver, TooltipGURPS } from "@util"
-import { LootGURPS } from "@actor"
+import { ItemGURPS } from "@item"
+import { ActorType, ItemType } from "@data"
+import { LocalizeGURPS, TooltipGURPS } from "@util"
+import { ActorGURPS } from "@actor"
+import { PrereqResolver } from "@module/util/index.ts"
 
-export class SkillPrereq extends BasePrereq {
-	override type = prereq.Type.Skill
-
+export class SkillPrereq extends BasePrereq<prereq.Type.Skill> {
 	name: StringCriteria
 
 	level: NumericCriteria
@@ -33,27 +32,23 @@ export class SkillPrereq extends BasePrereq {
 		return prereq
 	}
 
-	satisfied(actor: PrereqResolver, exclude: SkillGURPS | TechniqueGURPS, tooltip: TooltipGURPS): boolean {
-		if (actor instanceof LootGURPS) return true
+	satisfied(actor: PrereqResolver, exclude: unknown, tooltip: TooltipGURPS): boolean {
+		if (actor instanceof ActorGURPS && actor.isOfType(ActorType.Loot)) return true
 		let satisfied = false
 		let techLevel = ""
-		if (exclude instanceof Item && (exclude.type === ItemType.Skill || exclude.type === ItemType.Technique)) {
-			// @ts-expect-error awaiting implementation
+		if (exclude instanceof ItemGURPS && exclude.isOfType(ItemType.Skill, ItemType.Technique)) {
 			techLevel = exclude.techLevel
 		}
-		for (const sk of actor.skills) {
-			if (sk.type === ItemType.SkillContainer) continue
+		for (const sk of actor.itemCollections.skills) {
+			if (sk.isOfType(ItemType.SkillContainer)) continue
 
 			if (
 				exclude === sk ||
 				!this.name.matches(sk.name ?? "") ||
-				// @ts-expect-error awaiting implementation
 				!this.specialization.matches(sk.specialization ?? "")
 			)
 				continue
-			// @ts-expect-error awaiting implementation
 			satisfied = this.level.matches(sk.level.level)
-			// @ts-expect-error awaiting implementation
 			if (satisfied && techLevel !== "") satisfied = sk.techLevel === "" || techLevel === sk.techLevel
 		}
 		if (!this.has) satisfied = !satisfied
@@ -92,5 +87,15 @@ export class SkillPrereq extends BasePrereq {
 				)
 		}
 		return satisfied
+	}
+
+	override toObject(): SkillPrereqObj {
+		return {
+			...super.toObject(),
+			has: this.has,
+			name: this.name.toObject(),
+			specialization: this.specialization.toObject(),
+			level: this.level.toObject(),
+		}
 	}
 }

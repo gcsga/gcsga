@@ -1,6 +1,6 @@
 {{#if selfModifiers}}
 	<div class="list">
-		<div class="header">{{localize "gurps.token_modifier_window.self_modifiers"}}</div>
+		<header>{{localize "gurps.token_modifier_window.self_modifiers"}}</header>
 		{{#each selfModifiers}}
 			<div class="modifier rollable">{{signed this.modifier}}</div>
 			<div class="name">{{this.name}}</div>
@@ -9,7 +9,7 @@
 {{/if}}
 {{#if targetModifiers}}
 	<div class="list">
-		<div class="header">{{localize "gurps.token_modifier_window.target_modifiers"}}</div>
+		<header>{{localize "gurps.token_modifier_window.target_modifiers"}}</header>
 		{{#each targetModifiers}}
 			<div class="modifier rollable">{{signed this.modifier}}</div>
 			<div class="name">{{this.name}}</div>
@@ -19,7 +19,7 @@
 {{#if targets}}
 	{{#each targets}}
 		<div class="list">
-			<div class="header">{{localize "gurps.token_modifier_window.target_name" name=this.name}}</div>
+			<header>{{localize "gurps.token_modifier_window.target_name" name=this.name}}</header>
 			{{#each this.targetModifiers}}
 				<div class="modifier rollable">{{signed this.modifier}}</div>
 				<div class="name">{{this.name}}</div>

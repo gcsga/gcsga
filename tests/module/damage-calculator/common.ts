@@ -10,8 +10,9 @@ import {
 	TargetTraitModifier,
 } from "@module/apps/damage-calculator/index.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
+import { BodyOwner } from "@module/util/index.ts"
 import { BodyGURPS, HitLocation, HitLocationObj } from "@system"
-import { BodyOwner, TooltipGURPS } from "@util"
+import { TooltipGURPS } from "@util"
 
 export class _Attacker implements DamageAttacker {
 	tokenId: string = ""
@@ -42,7 +43,7 @@ export class _Target implements DamageTarget {
 
 	_traits: TargetTrait[] = []
 
-	hitLocationTable = BodyGURPS.fromObject(_dummyHitLocationTable, this)
+	hitLocationTable: BodyGURPS<this> = BodyGURPS.fromObject(_dummyHitLocationTable, this)
 
 	getTrait(name: string): TargetTrait | undefined {
 		return this._traits.find(it => it.name === name)
@@ -143,22 +144,30 @@ export class _TargetTraitModifier implements TargetTraitModifier {
 	}
 }
 
-export class DamageHitLocation extends HitLocation {
+export class DamageHitLocation<TOwner extends BodyOwner = BodyOwner> extends HitLocation<TOwner> {
 	_map: Map<string, number> = new Map()
 
 	override _DR(_tooltip: TooltipGURPS | null, _drMap: Map<string, number> = new Map()): Map<string, number> {
 		return this._map
 	}
 
-	static override fromObject(
+	static override fromObject<TOwner extends BodyOwner>(
 		data: HitLocationObj,
-		actor: BodyOwner,
-		owningTable?: BodyGURPS | undefined,
-	): DamageHitLocation {
+		actor: TOwner,
+		owningTable?: BodyGURPS<TOwner> | undefined,
+	): DamageHitLocation<TOwner> {
 		const location = new DamageHitLocation(actor)
 
-		const other = super.fromObject(data, actor, owningTable)
-		fu.mergeObject(location, other)
+		location.id = data.id
+		location.choiceName = data.choice_name
+		location.tableName = data.table_name
+		location.slots = data.slots ?? 0
+		location.hitPenalty = data.hit_penalty ?? 0
+		location.drBonus = data.dr_bonus ?? 0
+		location.description = data.description
+		if (data.sub_table) location.subTable = BodyGURPS.fromObject(data.sub_table, actor, location)
+
+		if (owningTable) location.owningTable = owningTable
 		location._map = new Map()
 		return location
 	}

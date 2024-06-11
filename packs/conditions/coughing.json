@@ -1,0 +1,28 @@
+{
+    "_id": "NAkdDkUxfyLA8vnu",
+    "img": "systems/gcsga/assets/status/coughing.webp",
+    "name": "Coughing",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "coughing",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "reference": "B428",
+        "type": "condition"
+    },
+    "type": "condition"
+}

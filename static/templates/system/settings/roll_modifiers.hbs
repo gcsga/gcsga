@@ -10,11 +10,11 @@
 				<a class="gcs-trash delete" data-index="{{@index}}"></a>
 			</div>
 			<div class="fieldblock">
-				<div class="label">{{localize "gurps.settings.roll_modifier.mod_name"}}</div>
+				<label>{{localize "gurps.settings.roll_modifier.mod_name"}}</label>
 				<div class="field">
 					<input type="text" name="array.modifiers.{{@index}}.name" value="{{this.name}}" data-dtype="String" />
 				</div>
-				<div class="label">{{localize "gurps.settings.roll_modifier.modifier"}}</div>
+				<label>{{localize "gurps.settings.roll_modifier.modifier"}}</label>
 				<div class="field">
 					<input type="text" name="array.modifiers.{{@index}}.modifier" value="{{this.modifier}}" data-dtype="Number" />
 				</div>

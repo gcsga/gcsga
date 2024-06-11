@@ -36,44 +36,122 @@ export type DamagePayload = {
 export enum DropDataType {
 	Damage = "damage",
 	Item = "Item",
-	Attributes = "attributes",
-	Effects = "effects",
-	ResourceTrackers = "resource_trackers",
-	AttributeThresholds = "attribute_thresholds",
-	TrackerThresholds = "tracker_thresholds",
-	Locations = "locations",
-	SubTable = "sub_table",
-	MoveType = "move_types",
-	Overrides = "override",
+	Attribute = "attribute",
+	Effect = "effect",
+	ResourceTracker = "resourceTracker",
+	AttributeThreshold = "attributeThreshold",
+	ResourceTrackerThreshold = "resourceTrackerThreshold",
+	HitLocation = "hitLocation",
+	SubTable = "subTable",
+	MoveType = "moveType",
+	MoveTypeOverride = "moveTypeOverride",
+}
+
+export interface DropDataDamage {
+	type: DropDataType.Damage
+	x: number
+	y: number
+	payload: DamagePayload
+}
+
+export interface DropDataItem {
+	type: DropDataType.Item
+	x: number
+	y: number
+	uuid: ItemUUID
+}
+
+export interface DropDataEffect {
+	type: DropDataType.Effect
+	x: number
+	y: number
+	order: number
+	index: number
+}
+
+export interface DropDataAttribute {
+	type: DropDataType.Attribute
+	x: number
+	y: number
+	order: number
+	index: number
+	parentIndex: number
+}
+
+export interface DropDataAttributeThreshold {
+	type: DropDataType.AttributeThreshold
+	x: number
+	y: number
+	order: number
+	index: number
+	parentIndex: number
+}
+
+export interface DropDataResourceTracker {
+	type: DropDataType.ResourceTracker
+	x: number
+	y: number
+	order: number
+	index: number
+	parentIndex: number
+}
+
+export interface DropDataResourceTrackerThreshold {
+	type: DropDataType.ResourceTrackerThreshold
+	x: number
+	y: number
+	order: number
+	index: number
+	parentIndex: number
+}
+
+export interface DropDataMoveType {
+	type: DropDataType.MoveType
+	x: number
+	y: number
+	order: number
+
+	index: number
+	parentIndex: number
+}
+
+export interface DropDataMoveTypeOverride {
+	type: DropDataType.MoveTypeOverride
+	x: number
+	y: number
+	order: number
+	index: number
+	parentIndex: number
+}
+
+export interface DropDataHitLocation {
+	type: DropDataType.HitLocation
+	x: number
+	y: number
+	order: number
+	index: number
+}
+
+export interface DropDataSubTable {
+	type: DropDataType.SubTable
+	x: number
+	y: number
+	order: number
+	index: number
 }
 
 export type DropData =
-	| { type: DropDataType.Damage; x: number; y: number; payload: DamagePayload }
-	| { type: DropDataType.Item; x: number; y: number; uuid: ItemUUID }
-	| { type: DropDataType.Attributes; x: number; y: number; order: number; index: number; parent_index: number }
-	| { type: DropDataType.Effects; x: number; y: number; order: number; index: number }
-	| { type: DropDataType.ResourceTrackers; x: number; y: number; order: number; index: number; parent_index: number }
-	| {
-			type: DropDataType.AttributeThresholds
-			x: number
-			y: number
-			order: number
-			index: number
-			parent_index: number
-	  }
-	| { type: DropDataType.TrackerThresholds; x: number; y: number; order: number; index: number; parent_index: number }
-	| { type: DropDataType.Locations; x: number; y: number; order: number; index: number }
-	| { type: DropDataType.SubTable; x: number; y: number; order: number; index: number }
-	| {
-			type: DropDataType.MoveType
-			x: number
-			y: number
-			order: number
-
-			index: number
-			parent_index: number
-	  }
-	| { type: DropDataType.Overrides; x: number; y: number; order: number; index: number; parent_index: number }
+	| DropDataDamage
+	| DropDataItem
+	| DropDataEffect
+	| DropDataAttribute
+	| DropDataAttributeThreshold
+	| DropDataResourceTracker
+	| DropDataResourceTrackerThreshold
+	| DropDataMoveType
+	| DropDataMoveTypeOverride
+	| DropDataHitLocation
+	| DropDataSubTable
 
 export class DamageChat {
 	/*
@@ -107,10 +185,10 @@ export class DamageChat {
 	}
 
 	static setTransferFlag(
-		object: Partial<ChatMessageSource>,
+		object: DeepPartial<ChatMessageSource>,
 		payload: Partial<DamagePayload>,
 		userTarget: string,
-	): Partial<ChatMessageSource> {
+	): DeepPartial<ChatMessageSource> {
 		const transfer = JSON.stringify({ type: DropDataType.Damage, payload: payload, userTarget: userTarget })
 		fu.setProperty(object, `flags.${SYSTEM_NAME}.${DamageChatFlags.Transfer}`, transfer)
 		return object

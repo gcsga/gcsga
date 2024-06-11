@@ -9,7 +9,7 @@
 	.weight:nth-child(16n + 6),
 	.tags:nth-child(16n + 7),
 	.reference:nth-child(16n + 8) {
-		&:not(.header) {
+		&:not(header) {
 			background-color: rgba(var(--color-banding), 1);
 			color: rgba(var(--color-on-banding), 1);
 			&.disabled {

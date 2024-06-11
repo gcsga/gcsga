@@ -1,3 +1,4 @@
+import { tupleHasValue } from "@util"
 import type { AbstractSublevel } from "abstract-level"
 import { ClassicLevel, type DatabaseOptions } from "classic-level"
 import * as R from "remeda"
@@ -6,8 +7,7 @@ import type { TableResultSource } from "types/foundry/common/documents/module.d.
 import systemJSON from "../../static/system.json" assert { type: "json" }
 import { PackError } from "./helpers.ts"
 import { PackEntry } from "./types.ts"
-import { BaseItemSourceGURPS } from "@item/base/data/system.ts"
-import { tupleHasValue } from "@util"
+import { ItemSourceGURPS } from "@item/data/index.ts"
 
 const DB_KEYS = ["actors", "items", "journal", "macros", "tables"] as const
 const EMBEDDED_KEYS = ["items", "pages", "results"] as const
@@ -105,7 +105,6 @@ class LevelDatabase extends ClassicLevel<string, DBEntry> {
 	}
 
 	#getDBKeys(packName: string): { dbKey: DBKey; embeddedKey: EmbeddedKey | null } {
-		// @ts-expect-error packs not yet implemented
 		const metadata = systemJSON.packs.find(p => p.path.endsWith(packName))
 		if (!metadata) {
 			throw PackError(
@@ -114,19 +113,16 @@ class LevelDatabase extends ClassicLevel<string, DBEntry> {
 		}
 
 		const dbKey = ((): DBKey => {
-			// @ts-expect-error packs not yet implemented
 			switch (metadata.type) {
 				case "JournalEntry":
 					return "journal"
 				case "RollTable":
 					return "tables"
 				default: {
-					// @ts-expect-error packs not yet implemented
 					const key = `${metadata.type.toLowerCase()}s`
 					if (tupleHasValue(DB_KEYS, key)) {
 						return key
 					}
-					// @ts-expect-error packs not yet implemented
 					throw PackError(`Unkown Document type: ${metadata.type}`)
 				}
 			}
@@ -152,7 +148,7 @@ type EmbeddedKey = (typeof EMBEDDED_KEYS)[number]
 
 type Sublevel<T> = AbstractSublevel<ClassicLevel<string, T>, string | Buffer | Uint8Array, string, T>
 
-type EmbeddedEntry = BaseItemSourceGURPS | SourceFromSchema<JournalEntryPageSchema> | TableResultSource
+type EmbeddedEntry = ItemSourceGURPS | SourceFromSchema<JournalEntryPageSchema> | TableResultSource
 type DBEntry = Omit<PackEntry, "pages" | "items" | "results"> & {
 	folder?: string | null
 	items?: (EmbeddedEntry | string)[]

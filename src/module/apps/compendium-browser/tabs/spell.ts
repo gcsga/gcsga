@@ -8,7 +8,7 @@ import { ItemType, SYSTEM_NAME } from "@data"
 export class CompendiumBrowserSpellTab extends CompendiumBrowserTab {
 	tabName: ContentTabName = TabName.Spell
 	filterData: SpellFilters
-	templatePath = `systems/${SYSTEM_NAME}/templates/compendium-browser/partials/spell.hbs`
+	templatePath = `systems/${SYSTEM_NAME}/templates/common/spell.hbs`
 
 	constructor(browser: CompendiumBrowser) {
 		super(browser)
@@ -54,7 +54,7 @@ export class CompendiumBrowserSpellTab extends CompendiumBrowserTab {
 						type: spellData.type,
 						name: spellData.name,
 						img: spellData.img,
-						uuid: `Compendium.${pack.collection}.${spellData._id}`,
+						id: `Compendium.${pack.collection}.${spellData._id}`,
 						formattedName: spellData.formattedName,
 						resolvedNotes: spellData.resolvedNotes,
 						level: spellData.level,

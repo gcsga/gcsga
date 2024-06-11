@@ -1,1 +1,15 @@
-[]
+[
+	"assets/icons/attribute.svg",
+	"assets/icons/character.svg",
+	"assets/icons/character-gcs.svg",
+	"assets/icons/effect.svg",
+	"assets/icons/equipment-modifier.svg",
+	"assets/icons/equipment.svg",
+	"assets/icons/melee-weapon.svg",
+	"assets/icons/ranged-weapon.svg",
+	"assets/icons/trait-modifier.svg",
+	"assets/icons/note.svg",
+	"assets/icons/skill.svg",
+	"assets/icons/spell.svg",
+	"assets/icons/loot.svg"
+]

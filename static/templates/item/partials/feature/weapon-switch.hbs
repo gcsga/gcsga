@@ -1,0 +1,58 @@
+<li class="feature">
+	<div class="top">
+		<a class="button gcs-trash" data-action="remove-feature" data-index="{{@index}}"></a>
+		<select class="type" name="array.system.features.{{@index}}.type" data-index="{{@index}}">
+			{{#select this.type}} {{#each @root.config.select.feature_strict as |v k| }}
+			<option value="{{ k }}">{{ localize v }}</option>
+			{{/each}} {{#if (eq @root.item.type "equipment_container") }} {{#each @rootconfig.select.feature as |v k| }}
+			<option value="{{ k }}">{{ localize v }}</option>
+			{{/each}} {{/if}} {{/select}}
+		</select>
+		<label class="check">
+			<input
+				type="checkbox"
+				data-dtype="Boolean"
+				name="array.system.features.{{@index}}.leveled"
+				{{checked
+				this.leveled}}
+			/>
+			{{ localize "gurps.feature.per_level" }}
+		</label>
+		{{#unless (eq this.type "weapon_min_st_bonus")}}
+		<label class="check">
+			<input
+				type="checkbox"
+				data-dtype="Boolean"
+				name="array.system.features.{{@index}}.per_die"
+				{{checked
+				this.per_die}}
+			/>
+			{{ localize "gurps.feature.per_die" }}
+		</label>
+		{{/unless}}
+		<label class="check">
+			<input
+				type="checkbox"
+				data-dtype="Boolean"
+				name="array.system.features.{{@index}}.percent"
+				{{checked
+				this.percent}}
+			/>
+			{{ localize "gurps.feature.percent" }}
+		</label>
+	</div>
+	<div class="field-3">
+		<div class="placeholder"></div>
+		<div class="placeholder"></div>
+		<select name="array.system.features.{{@index}}.switch_type">
+			{{#select this.switch_type}} {{#each @root.config.select.wswitch as |v k| }}
+			<option value="{{ k }}">{{ localize v }}</option>
+			{{/each}} {{/select}}
+		</select>
+		<select name="array.system.features.{{@index}}.switch_type_value">
+			{{#select this.switch_type_value}} {{#each @root.config.select.wswitch_value as |v k| }}
+			<option value="{{ k }}">{{ localize v }}</option>
+			{{/each}} {{/select}}
+		</select>
+	</div>
+</li>

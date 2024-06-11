@@ -1,7 +1,7 @@
 import { ActorGURPS } from "@actor"
 import { RollModifier, RollModifierTags, SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
 import { UserFlags } from "@module/user/data.ts"
-import { LastActor } from "@util"
+import { LastActor } from "@module/util/last-actor.ts"
 
 class ModifierList extends Application {
 	_tempRangeMod: RollModifier = { id: "", modifier: 0, tags: [RollModifierTags.Range] }
@@ -34,10 +34,9 @@ class ModifierList extends Application {
 		let targetMods: RollModifier[] = []
 		const actor = (game.user?.isGM ? await LastActor.get() : game.user?.character) as ActorGURPS
 		game.user?.targets.forEach(e => {
-			// @ts-expect-error awaiting implementation
-			targetMods = targetMods.concat(e.actor.modifiers)
+			targetMods = targetMods.concat(e.actor?.modifiers ?? [])
 		})
-		// @ts-expect-error awaiting implementation
+
 		const actorMods = actor?.modifiers
 
 		return fu.mergeObject(super.getData(options), {
@@ -69,7 +68,6 @@ class ModifierList extends Application {
 			id: $(event.currentTarget).data("name"),
 			modifier: $(event.currentTarget).data("modifier"),
 		}
-		// @ts-expect-error awaiting implementation
 		return game.user.addModifier(modifier)
 	}
 
@@ -84,7 +82,6 @@ class ModifierList extends Application {
 	}
 
 	addRangeMod(): void {
-		// @ts-expect-error awaiting implementation
 		return game.user.addModifier(this._tempRangeMod)
 	}
 

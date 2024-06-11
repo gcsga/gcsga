@@ -8,9 +8,10 @@ import {
 	ResourceTrackerDef,
 	ResourceTrackerDefObj,
 } from "@system"
-import { BodyOwner, LengthUnits, TooltipGURPS, WeightUnits, display, paper, progression } from "@util"
-import { SETTINGS, SYSTEM_NAME } from "./constants.ts"
-import { ActorGURPS, CharacterGURPS } from "@actor"
+import { LengthUnits, TooltipGURPS, WeightUnits, display, paper, progression } from "@util"
+import { ActorType, SETTINGS, SYSTEM_NAME } from "./constants.ts"
+import { ActorGURPS } from "@actor"
+import { BodyOwner } from "@module/util/resolvers.ts"
 
 export interface PageSettings {
 	paper_size: paper.Size
@@ -66,7 +67,7 @@ export interface SheetSettings {
 	attributes: AttributeDef[]
 	resource_trackers: ResourceTrackerDef[]
 	move_types: MoveTypeDef[]
-	body_type: BodyGURPS
+	body_type: BodyGURPS<BodyOwner>
 	damage_progression: progression.Option
 	default_length_units: LengthUnits
 	default_weight_units: WeightUnits
@@ -111,7 +112,14 @@ export function defaultSheetSettings(): SheetSettings {
 }
 
 export function sheetSettingsFor(actor: ActorGURPS | null): SheetSettings {
-	if (!actor || !(actor instanceof CharacterGURPS)) return defaultSheetSettings()
-	// @ts-expect-error awaiting implementation
-	return actor.settings
+	if (!actor || !actor.isOfType(ActorType.Character)) {
+		return defaultSheetSettings()
+	}
+	return {
+		...actor.system.settings,
+		body_type: actor.hitLocationTable,
+		resource_trackers: actor.system.settings.resource_trackers.map(e => new ResourceTrackerDef(e)),
+		attributes: actor.system.settings.attributes.map(e => new AttributeDef(e)),
+		move_types: actor.system.settings.move_types.map(e => new MoveTypeDef(e)),
+	}
 }

@@ -18,6 +18,7 @@ interface TraitModifierContainerSystemSource extends AbstractContainerSystemSour
 	notes: string
 	vtt_notes: string
 	tags: string[]
+	open: boolean
 }
 
 interface TraitModifierContainerSystemData extends TraitModifierContainerSystemSource, AbstractContainerSystemData {}

@@ -1,0 +1,39 @@
+<li data-type="{{ item.type }}" data-item-id="{{ item.id }}" {{#if isContainer}} data-is-container {{/if}}>
+    <div class="data">
+        <div
+            class="item-name"
+            data-tooltip-direction="DOWN"
+            data-tooltip="{{ item.resolvedTooltip }}"
+            {{{ indent indent }}}
+            >
+            {{{ dropdown item }}}
+            <div class="name">{{ item.formattedName }}</div>
+            {{{ item.resolvedNotes }}}
+        </div>
+        {{#if isContainer}}
+            <div class="level"></div>
+            <div class="rsl"></div>
+        {{ else }}
+            <div data-type="skill"
+                 class="level rollable {{ effective this }}"
+                 data-tooltip-direction="DOWN"
+                 data-tooltip="{{ item.levelTooltip }}">{{ item.skillLevel }}</div>
+            <div data-type="skill_rsl"
+                 class="rsl rollable {{ effective this }}"
+                 data-tooltip-direction="DOWN"
+                 data-tooltip="{{ item.levelTooltip }}">{{ item.relativeLevel }}</div>
+        {{/if}}
+        <div class="points"
+             data-tooltip="{{ item.pointsTooltip }}"
+             data-tooltip-direction="DOWN">{{ item.points }}</div>
+        <div class="reference"">{{{ ref item.reference }}}
+        </div>
+    </div>
+    {{#if item.system.open}}
+        <ul class="items" data-item-list data-container-id="{{ item.id }}">
+            {{#each children}}
+                {{>common/skill}}
+            {{/each}}
+        </ul>
+    {{/if}}
+</li>

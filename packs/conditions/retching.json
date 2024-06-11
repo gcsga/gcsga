@@ -1,0 +1,28 @@
+{
+    "_id": "BNWZB8yzrmFJ7x0a",
+    "img": "systems/gcsga/assets/status/retching.webp",
+    "name": "Retching",
+    "system": {
+        "can_level": false,
+        "checks": [],
+        "consequences": [],
+        "duration": {
+            "rounds": null,
+            "seconds": null,
+            "startRound": null,
+            "startTime": null,
+            "turns": null,
+            "type": "none"
+        },
+        "id": "retching",
+        "levels": {
+            "current": null,
+            "max": null
+        },
+        "modifiers": [],
+        "overlay": false,
+        "reference": "B429",
+        "type": "condition"
+    },
+    "type": "condition"
+}

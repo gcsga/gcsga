@@ -1,3 +1,4 @@
+import type { NumberField, StringField } from "types/foundry/common/data/fields.js"
 import { LocalizeGURPS } from "./localize.ts"
 
 export enum NumericCompareType {
@@ -27,10 +28,26 @@ export interface NumericCriteriaObj {
 	qualifier?: number
 }
 
+export type NumericCriteriaSchema = {
+	compare: StringField<NumericCompareType, NumericCompareType, true, false, true>
+	qualifier: NumberField<number, number, true, false, true>
+}
+
 export class NumericCriteria {
 	declare compare: NumericCompareType
 
 	declare qualifier: number
+
+	static defineSchema(): NumericCriteriaSchema {
+		return {
+			compare: new foundry.data.fields.StringField<NumericCompareType, NumericCompareType, true>({
+				required: true,
+				choices: AllNumericCompareTypes,
+				initial: NumericCompareType.AnyNumber,
+			}),
+			qualifier: new foundry.data.fields.NumberField(),
+		}
+	}
 
 	constructor(data: NumericCriteriaObj) {
 		this.compare = data.compare ?? NumericCompareType.AnyNumber
@@ -71,5 +88,9 @@ export class NumericCriteria {
 		if (this.compare === NumericCompareType.AnyNumber) return result
 		if (result !== "") result += " "
 		return result + this.qualifier.toString()
+	}
+
+	toObject(): NumericCriteriaObj {
+		return { compare: this.compare, qualifier: this.qualifier }
 	}
 }

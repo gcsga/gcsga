@@ -1,54 +1,49 @@
 <div class="dice-roll skill">
-	<div data-json="{{json item}}" data-type="{{type}}" class="name rollable">{{displayName}}</div>
+	<div data-json="{{ json item }}" data-type="{{ type }}" class="name rollable">{{ displayName }}</div>
 	{{#if item.default}}
-		<div class="default">
-			{{localize "gurps.roll.default" default=item.default}}
+	<div class="default">{{ localize "gurps.roll.default" default=item.default }}</div>
+	{{/if}} {{#if modifiers.length}}
+	<div class="modifiers">
+		{{#each modifiers}}
+		<div class="mod mod-{{ this.class }}" data-mod="{{ json this }}">
+			{{ signed this.modifier }} {{#if this.name}} : {{ this.name }}{{/if}}
 		</div>
-	{{/if}}
-	{{#if modifiers.length}}
-		<div class="modifiers">
-			{{#each modifiers}}
-				<div class="mod mod-{{this.class}}" data-mod="{{json this}}">{{signed this.modifier}}{{#if this.name}}:
-						{{this.name}}{{/if}}</div>
-			{{/each}}
-			{{{eff}}}
-		</div>
+		{{/each}} {{{ effective }}}
+	</div>
 	{{/if}}
 	<hr />
 	<div class="dice-result">
-		<div class="dice-total {{success}}">{{total}}</div>
-		{{{margin}}}
-		{{#with extra.ranged}}
-			<div class="gcs-ranged-weapon">
-				<strong>{{potential_hits}}</strong>
-				{{localize "gurps.roll.ranged.extra" rate_of_fire=rate_of_fire recoil=recoil}}.
+		<div class="dice-total {{ success }}">{{ total }}</div>
+		{{{ margin }}} {{#with extra.ranged}}
+		<div class="gcs-ranged-weapon">
+			<strong>{{ potential_hits }}</strong>
+			{{ localize "gurps.roll.ranged.extra" rate_of_fire=rate_of_fire recoil=recoil }}.
+		</div>
+		{{/with}} {{#if extra.damage}}
+		<div class="damage-buttons">
+			<div
+				data-weapon="{{ extra.damage.weaponID }}"
+				data-actor="{{ extra.damage.attacker }}"
+				data-type="damage"
+				class="damage rollable"
+			>
+				<i class="fa-light fa-dice"></i>
+				&nbsp;{{ extra.damage.damage }}
 			</div>
-		{{/with}}
-		{{#if extra.damage}}
-			<div class="damage-buttons">
-				<div
-					data-weapon="{{extra.damage.weaponID}}"
-					data-actor="{{extra.damage.attacker}}"
-					data-type="damage"
-					class="damage rollable"
-				>
-					<i class="fa-light fa-dice"></i>&nbsp;{{extra.damage.damage}}
-				</div>
-				{{#if extra.ranged}}
-					<div
-						data-weapon="{{extra.damage.weaponID}}"
-						data-actor="{{extra.damage.attacker}}"
-						data-type="damage"
-						data-times="{{extra.ranged.potential_hits}}"
-						class="damage hits"
-					>
-						<div class="minus">&minus;</div>
-						<div class="roll">{{extra.ranged.potential_hits}}</div>
-						<div class="plus">&plus;</div>
-					</div>
-				{{/if}}
+			{{#if extra.ranged}}
+			<div
+				data-weapon="{{ extra.damage.weaponID }}"
+				data-actor="{{ extra.damage.attacker }}"
+				data-type="damage"
+				data-times="{{ extra.ranged.potential_hits }}"
+				class="damage hits"
+			>
+				<div class="minus">&minus;</div>
+				<div class="roll">{{ extra.ranged.potential_hits }}</div>
+				<div class="plus">&plus;</div>
 			</div>
-		{{/if}}
-		{{{tooltip}}}
+			{{/if}}
+		</div>
+		{{/if}} {{{ tooltip }}}
 	</div>
 </div>

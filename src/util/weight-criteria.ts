@@ -53,4 +53,8 @@ export class WeightCriteria {
 		if (result !== "") result += " "
 		return result + this.qualifier.toString()
 	}
+
+	toObject(): WeightCriteriaObj {
+		return { compare: this.compare, qualifier: this.qualifier }
+	}
 }

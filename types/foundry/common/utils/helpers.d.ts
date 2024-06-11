@@ -308,6 +308,7 @@ declare global {
 	 * @return {Promise.<String>}   A Promise which resolves to the loaded text data
 	 */
 	export function readTextFromFile(file: File): Promise<string>
+
 	interface MergeObjectOptions {
 		/**
 		 * Control whether to insert new top-level objects into the resulting structure which do not previously exist

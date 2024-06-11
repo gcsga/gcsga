@@ -104,10 +104,14 @@ export class StringCriteria {
 		if (this.compare === StringCompareType.AnyString) return result
 		return `${result} "${this.qualifier}"`
 	}
+
+	toObject(): StringCriteriaObj {
+		return { compare: this.compare, qualifier: this.qualifier }
+	}
 }
 
 export function equalFold(s: string, t: string): boolean {
-	if (!s && !t) return false
+	if (!s || !t) return false
 	return s.toLowerCase() === t.toLowerCase()
 }
 

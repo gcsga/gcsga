@@ -1,19 +1,14 @@
-export interface MoveTypeObj {
-	move_type_id: string
+import { AbstractAttributeDefObj, AbstractAttributeObj } from "@system"
+
+export interface MoveTypeObj extends AbstractAttributeObj {
 	adj: number
-	// move_type_def: MoveTypeDefObj
-	calc?: {
-		value: number
-		points: number
-	}
 }
 
-export interface MoveTypeDefObj {
-	id: string
+export interface MoveTypeDefObj extends AbstractAttributeDefObj {
 	name: string
-	move_type_base: string
 	cost_per_point?: number
 	overrides: MoveTypeOverrideObj[]
+	order?: number
 }
 
 export interface MoveTypeOverrideObj {
@@ -21,7 +16,7 @@ export interface MoveTypeOverrideObj {
 		type: MoveTypeOverrideConditionType
 		qualifier: string
 	}
-	move_type_base: string
+	base: string
 }
 
 export enum MoveTypeOverrideConditionType {

@@ -45,7 +45,7 @@
 			grid-template:
 				"header"
 				"list";
-			.header {
+			header {
 				background-color: rgb(var(--color-error));
 				color: rgb(var(--color-on-error));
 				font: var(--font-page-secondary-fields);

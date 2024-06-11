@@ -4,13 +4,11 @@ import { LeveledAmount } from "./leveled-amount.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { ConditionalModifierBonusObj } from "./data.ts"
 
-export class ConditionalModifierBonus extends BonusOwner {
-	override type = feature.Type.ConditionalModifierBonus
-
+export class ConditionalModifierBonus extends BonusOwner<feature.Type.ConditionalModifierBonus> {
 	situation = LocalizeGURPS.translations.gurps.feature.conditional_modifier
 
 	constructor() {
-		super()
+		super(feature.Type.ConditionalModifierBonus)
 		this.situation = LocalizeGURPS.translations.gurps.feature.conditional_modifier
 		this.leveledAmount = new LeveledAmount({ amount: 1 })
 	}

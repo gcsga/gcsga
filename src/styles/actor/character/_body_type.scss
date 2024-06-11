@@ -7,7 +7,7 @@
 	grid-template-columns: auto auto auto auto;
 	grid-template-rows: repeat(1000, 0fr);
 	white-space: nowrap;
-	.header {
+	header {
 		grid-area: auto;
 	}
 	.header.body-plan {
@@ -23,14 +23,14 @@
 
 	.penalty,
 	.dr {
-		&:not(.header) {
+		&:not(header) {
 			color: rgba(var(--color-on-editable), 0.6);
 			font: var(--font-page-primary-fields);
 		}
 	}
 	.roll,
 	.location {
-		&:not(.header) {
+		&:not(header) {
 			color: rgba(var(--color-on-content), 1);
 			font: var(--font-page-primary-labels);
 		}
@@ -51,7 +51,7 @@
 		border-right: 1px solid rgb(var(--color-interior-divider));
 	}
 
-	:not(.header) {
+	:not(header) {
 		padding: var(--padding-standard);
 	}
 
@@ -59,9 +59,8 @@
 	.location:nth-child(8n + 2),
 	.penalty:nth-child(8n + 3),
 	.dr:nth-child(8n + 4) {
-		&:not(.header) {
+		&:not(header) {
 			background-color: rgba(var(--color-banding), 1);
-			@import "embeds/roll_banding";
 		}
 	}
 }

@@ -1,13 +1,11 @@
-import { ActorGURPS, CharacterGURPS } from "@actor"
-import { gid } from "@data"
-import { SkillDefaultResovler } from "@util"
+import { ActorGURPS } from "@actor"
+import { ActorType, gid } from "@data"
 
 export type SkillDefaultType = gid.Block | gid.Parry | gid.Skill | gid.Ten | string
 
-const skill_based_default_types: Map<string, boolean> = new Map()
-skill_based_default_types.set(gid.Skill, true)
-skill_based_default_types.set(gid.Parry, true)
-skill_based_default_types.set(gid.Block, true)
+const SKILL_BASED_DEFAULT_TYPES: Set<string> = new Set([gid.Skill, gid.Parry, gid.Block])
+
+const fields = foundry.data.fields
 
 export interface SkillDefaultObj {
 	type: SkillDefaultType
@@ -17,6 +15,16 @@ export interface SkillDefaultObj {
 	level?: number
 	adjusted_level?: number
 	points?: number
+}
+
+type SkillDefaultSchema = {
+	type: foundry.data.fields.StringField<SkillDefaultType, SkillDefaultType, true, false, true>
+	name?: foundry.data.fields.StringField<string, string, false, false, false>
+	specialization?: foundry.data.fields.StringField<string, string, false, false, false>
+	modifier?: foundry.data.fields.NumberField<number, number, false, false, false>
+	level?: foundry.data.fields.NumberField<number, number, false, false, false>
+	adjusted_level?: foundry.data.fields.NumberField<number, number, false, false, false>
+	points?: foundry.data.fields.NumberField<number, number, false, false, false>
 }
 
 export class SkillDefault {
@@ -32,13 +40,25 @@ export class SkillDefault {
 		if (data) Object.assign(this, data)
 	}
 
+	static defineSchema(): SkillDefaultSchema {
+		return {
+			type: new fields.StringField<SkillDefaultType, SkillDefaultType, true>({ initial: gid.Dexterity }),
+			name: new fields.StringField(),
+			specialization: new fields.StringField(),
+			modifier: new fields.NumberField({ integer: true }),
+			level: new fields.NumberField(),
+			adjusted_level: new fields.NumberField(),
+			points: new fields.NumberField(),
+		}
+	}
+
 	// For the sake of naming consistency
 	get adjustedLevel(): number {
 		return this.adjusted_level
 	}
 
 	get skillBased(): boolean {
-		return skill_based_default_types.get(this.type) ?? false
+		return SKILL_BASED_DEFAULT_TYPES.has(this.type) ?? false
 	}
 
 	equivalent(other?: SkillDefault): boolean {
@@ -51,7 +71,7 @@ export class SkillDefault {
 		)
 	}
 
-	fullName(actor: SkillDefaultResovler): string {
+	fullName(actor: ActorGURPS): string {
 		if (this.skillBased) {
 			let buffer = ""
 			buffer += this.name
@@ -65,20 +85,21 @@ export class SkillDefault {
 	}
 
 	skillLevel(
-		actor: SkillDefaultResovler,
+		actor: ActorGURPS,
 		require_points: boolean,
 		excludes: Map<string, boolean>,
 		rule_of_20: boolean,
 	): number {
-		let best = -Infinity
+		if (!actor.isOfType(ActorType.Character)) return 0
+		let best = Number.MIN_SAFE_INTEGER
 		switch (this.type) {
 			case gid.Parry:
 				best = this.best(actor, require_points, excludes)
-				if (best !== -Infinity) best = best / 2 + 3 + actor.parryBonus
+				if (best !== Number.MIN_SAFE_INTEGER) best = best / 2 + 3 + actor.parryBonus
 				return this.finalLevel(best)
 			case gid.Block:
 				best = this.best(actor, require_points, excludes)
-				if (best !== -Infinity) best = best / 2 + 3 + actor.blockBonus
+				if (best !== Number.MIN_SAFE_INTEGER) best = best / 2 + 3 + actor.blockBonus
 				return this.finalLevel(best)
 			case gid.Skill:
 				return this.finalLevel(this.best(actor, require_points, excludes))
@@ -87,10 +108,10 @@ export class SkillDefault {
 		}
 	}
 
-	best(actor: SkillDefaultResovler, require_points: boolean, excludes: Map<string, boolean>): number {
-		let best = -Infinity
+	best(actor: ActorGURPS, require_points: boolean, excludes: Map<string, boolean>): number {
+		let best = Number.MIN_SAFE_INTEGER
+		if (!actor.isOfType(ActorType.Character)) return best
 		for (const s of actor.skillNamed(this.name!, this.specialization || "", require_points, excludes)) {
-			// @ts-expect-error awaiting implementation
 			const level = s.calculateLevel().level
 			if (best < level) best = level
 		}
@@ -98,26 +119,26 @@ export class SkillDefault {
 	}
 
 	skillLevelFast(
-		actor: SkillDefaultResovler,
+		actor: ActorGURPS,
 		require_points: boolean,
 		excludes: Map<string, boolean> | null = new Map(),
 		rule_of_20 = false,
 	): number {
 		let level = 0
 		let best = 0
-		if (actor instanceof ActorGURPS && !(actor instanceof CharacterGURPS)) return 0
+		if (!actor.isOfType(ActorType.Character)) return 0
 		switch (this.type) {
 			case gid.Dodge:
-				level = actor.dodge(actor.encumbranceLevel(true))
+				level = actor.encumbrance.current.dodge.normal
 				if (rule_of_20 && level > 20) level = 20
 				return this.finalLevel(level)
 			case gid.Parry:
 				best = this.bestFast(actor, require_points, excludes)
-				if (best !== -Infinity) best = Math.floor(best / 2) + 3 + actor.parryBonus
+				if (best !== Number.MIN_SAFE_INTEGER) best = Math.floor(best / 2) + 3 + actor.parryBonus
 				return this.finalLevel(best)
 			case gid.Block:
 				best = this.bestFast(actor, require_points, excludes)
-				if (best !== -Infinity) best = Math.floor(best / 2) + 3 + actor.blockBonus
+				if (best !== Number.MIN_SAFE_INTEGER) best = Math.floor(best / 2) + 3 + actor.blockBonus
 				return this.finalLevel(best)
 			case gid.Skill:
 				return this.finalLevel(this.bestFast(actor, require_points, excludes))
@@ -130,17 +151,18 @@ export class SkillDefault {
 		}
 	}
 
-	bestFast(actor: SkillDefaultResovler, require_points: boolean, excludes: Map<string, boolean> | null): number {
-		let best = -Infinity
+	bestFast(actor: ActorGURPS, require_points: boolean, excludes: Map<string, boolean> | null): number {
+		let best = Number.MIN_SAFE_INTEGER
+		if (!actor.isOfType(ActorType.Character)) return best
 		for (const sk of actor.skillNamed(this.name!, this.specialization || "", require_points, excludes)) {
-			// @ts-expect-error awaiting implementation
+			if (!sk.level) sk.updateLevel()
 			if (best < sk.level.level) best = sk.level.level
 		}
 		return best
 	}
 
 	finalLevel(level: number): number {
-		if (level !== -Infinity) level += this.modifier
+		if (level !== Number.MIN_SAFE_INTEGER) level += this.modifier
 		return level
 	}
 

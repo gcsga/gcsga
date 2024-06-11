@@ -49,7 +49,7 @@ export abstract class CompendiumBrowserTab {
 		// Initialize MiniSearch
 		this.searchEngine = new MiniSearch({
 			fields: this.searchFields,
-			idField: "uuid",
+			idField: "id",
 			processTerm: t =>
 				t.length > 1 && !CompendiumDirectoryGURPS.STOP_WORDS.has(t)
 					? t.toLocaleLowerCase(game.i18n.lang).replace(/['"]/g, "")
@@ -149,9 +149,10 @@ export abstract class CompendiumBrowserTab {
 		}
 		const indexData = this.getIndexData(start)
 		const liElements: HTMLLIElement[] = []
-		for (const entry of indexData) {
+		for (const item of indexData) {
 			const htmlString = await renderTemplate(this.templatePath, {
-				entry,
+				compendium: true,
+				item,
 				filterData: this.filterData,
 			})
 			const html = this.#domParser.parseFromString(htmlString, "text/html")
@@ -213,7 +214,7 @@ export abstract class CompendiumBrowserTab {
 	}
 
 	/** Ensure all index fields are present in the index data */
-	protected hasAllIndexFields(data: CompendiumIndexData, indexFields: string[]): boolean {
+	protected hasAllIndexFields(data: foundry.abstract.Document | CompendiumIndexData, indexFields: string[]): boolean {
 		for (const field of indexFields) {
 			if (fu.getProperty(data, field) === undefined && !/\.(?:source|publication)/.test(field)) {
 				return false
@@ -255,12 +256,12 @@ export abstract class CompendiumBrowserTab {
 		})
 		Dialog.confirm({
 			content,
-			title: game.i18n.localize("PF2E.CompendiumBrowser.RollTable.CreateLabel"),
+			title: game.i18n.localize("gurps.compendium_browser.roll_table.create_label"),
 			yes: async $html => {
 				const html = $html[0]
 				const name =
 					htmlQuery<HTMLInputElement>(html, "input[name=name]")?.value ||
-					game.i18n.localize("PF2E.CompendiumBrowser.Title")
+					game.i18n.localize("gurps.compendium_browser.title")
 				const weight = Number(htmlQuery<HTMLInputElement>(html, "input[name=weight]")?.value) || 1
 				const results = this.#getRollTableResults({ weight })
 				const table = await RollTable.create({
@@ -285,7 +286,7 @@ export abstract class CompendiumBrowserTab {
 			},
 		)
 		Dialog.confirm({
-			title: game.i18n.localize("PF2E.CompendiumBrowser.RollTable.SelectTableTitle"),
+			title: game.i18n.localize("gurps.compendium_browser.roll_table.select_table_title"),
 			content,
 			yes: async $html => {
 				const html = $html[0]

@@ -22,7 +22,6 @@ export class DamageRollGURPS {
 	private _evaluatedRoll?: Rolled<Roll>
 
 	constructor(text: string) {
-		// console.log(text)
 		const groups = text.match(DamageRegEx)?.groups
 		if (!groups) throw ErrorGURPS("Bad damage term")
 		this.text = text
