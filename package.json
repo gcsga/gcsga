@@ -45,7 +45,7 @@
 		"@typescript-eslint/parser": "^6.21.0",
 		"classic-level": "^1.4.1",
 		"es-jest": "^2.1.0",
-		"eslint": "^9.0.0",
+		"eslint": "^9.4.0",
 		"eslint-config-prettier": "9.1.0",
 		"eslint-plugin-jest": "^27.9.0",
 		"eslint-plugin-json": "^3.1.0",
