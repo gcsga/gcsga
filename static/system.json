@@ -22,8 +22,8 @@
 	],
 	"compatibility": {
 		"minimum": 11,
-		"verified": "11.315",
-		"maximum": 11
+		"verified": "12.327",
+		"maximum": 12
 	},
 	"scripts": [],
 	"esmodules": ["gurps.mjs"],
@@ -76,8 +76,10 @@
 	"readme": "README.md",
 	"bugs": "https://github.com/gcsga/gcsga/issues",
 	"changelog": "",
-	"gridDistance": 1,
-	"gridUnits": "yd",
+	"grid": {
+		"distance": 1,
+		"units": "yd"
+	},
 	"primaryTokenAttribute": "pools.hp",
 	"socket": true,
 	"secondaryTokenAttribute": "pools.fp"
