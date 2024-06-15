@@ -4,7 +4,7 @@ import { MigrationList, MigrationRunner } from "@module/migration/index.ts"
 import { UserGURPS } from "@module/user/document.ts"
 import * as R from "remeda"
 
-class ClientDatabaseBackendGURPS extends ClientDatabaseBackend {
+class ClientDatabaseBackendGURPS extends foundry.data.ClientDatabaseBackend {
 	protected override async _getDocuments(
 		documentClass: typeof foundry.abstract.Document,
 		context: DatabaseBackendGetContext,
