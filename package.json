@@ -58,7 +58,7 @@
 		"jsdom": "^24.0.0",
 		"peggy": "^4.0.2",
 		"pixi.js": "7.2.4",
-		"prettier": "3.2.5",
+		"prettier": "3.3.2",
 		"prompts": "^2.4.2",
 		"prosemirror-view": "1.32.5",
 		"sass": "^1.75.0",
