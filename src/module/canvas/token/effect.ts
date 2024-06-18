@@ -5,7 +5,7 @@ import { sluggify } from "@util"
 class TokenEffect implements TemporaryEffect {
 	#effect: AbstractEffectGURPS<ActorGURPS>
 
-	tint: HexColorString | null = null
+	tint: Color | null = null
 
 	readonly isTemporary = true
 
@@ -29,8 +29,16 @@ class TokenEffect implements TemporaryEffect {
 		return this.#effect.name
 	}
 
-	get icon(): ImageFilePath {
+	get img(): ImageFilePath {
 		return this.#effect.img
+	}
+
+	get type(): string {
+		return this.#effect.type
+	}
+
+	get system(): AbstractEffectGURPS["system"] {
+		return this.#effect.system
 	}
 
 	get changes(): never[] {
@@ -69,6 +77,10 @@ class TokenEffect implements TemporaryEffect {
 
 	get origin(): ItemUUID {
 		return this.#effect.uuid
+	}
+
+	get _stats(): AbstractEffectGURPS["_stats"] {
+		return this.#effect._stats
 	}
 
 	getFlag(scope: string, flag: string): unknown {

@@ -45,7 +45,7 @@ export class MockItem {
 
 	static async updateDocuments(
 		updates: Record<string, unknown>[] = [],
-		_context: DocumentModificationContext<ActorGURPS | null> = {},
+		_operation: Partial<DatabaseUpdateOperation<ActorGURPS | null>> = {},
 	): Promise<ItemGURPS<ActorGURPS | null>[]> {
 		return updates.flatMap(update => {
 			const item = game.items.find(item => item.id === update._id)

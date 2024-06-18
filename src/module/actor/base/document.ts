@@ -124,12 +124,15 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 	}
 
 	override get temporaryEffects(): TemporaryEffect[] {
-		const effects: TokenEffect[] = this.itemCollections.effects.map(e => {
-			// const overlay = e.system.slug === ConditionID.Dead
-			const effect = new TokenEffect(e)
-			return effect
-		})
-		return [...super.temporaryEffects, ...effects]
+		const fromEffects = this.itemCollections.effects.map(e => new TokenEffect(e))
+		// const effects: TokenEffect[] = this.itemCollections.effects.map(e => {
+		// 	// const overlay = e.system.slug === ConditionID.Dead
+		// 	const effect = new TokenEffect(e)
+		// 	return effect
+		// })
+		// return [...super.temporaryEffects, ...effects]
+
+		return R.uniqueBy([super.temporaryEffects, fromEffects].flat(), e => e.img)
 	}
 
 	static mergeSchema(
@@ -142,10 +145,10 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 
 	protected override _onCreate(
 		data: this["_source"],
-		options: DocumentModificationContext<TParent>,
+		operation: DatabaseCreateOperation<TParent>,
 		userId: string,
 	): void {
-		super._onCreate(data, options, userId)
+		super._onCreate(data, operation, userId)
 		LastActor.set(this)
 	}
 

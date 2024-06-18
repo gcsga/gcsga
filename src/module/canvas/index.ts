@@ -1,6 +1,6 @@
 import { SceneGURPS, TokenDocumentGURPS } from "@scene/index.ts"
-import { TokenGURPS } from "./token/object.ts"
 import { TokenHUDGURPS } from "./token/hud.ts"
+import { TokenGURPS } from "./token/object.ts"
 
 export type CanvasGURPS = Canvas<
 	SceneGURPS,

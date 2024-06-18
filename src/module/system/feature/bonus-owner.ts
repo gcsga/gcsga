@@ -7,6 +7,14 @@ import { FeatureOwner, WeaponOwner } from "@module/util/index.ts"
 import { TooltipGURPS } from "@util"
 import { ItemGURPS } from "@item"
 import { ItemType } from "@module/data/constants.ts"
+import fields = foundry.data.fields
+
+export type BonusOwnerSchema = {
+	type: fields.StringField<feature.Type, feature.Type, true, false, true>
+	amount: fields.NumberField
+	per_level: fields.BooleanField
+	effective: fields.NumberField
+}
 
 export abstract class BonusOwner<TType extends feature.Type> {
 	declare type: TType

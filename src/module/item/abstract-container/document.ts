@@ -102,7 +102,7 @@ abstract class AbstractContainerGURPS<
 
 	async createContainedDocuments(
 		data: ItemSourceGURPS[],
-		context?: DocumentModificationContext<NonNullable<TParent>>,
+		operation?: DatabaseCreateOperation<NonNullable<TParent>>,
 	): Promise<ItemGURPS[]> {
 		data = data.filter(source => this.checkItemValidity(source))
 
@@ -112,15 +112,15 @@ abstract class AbstractContainerGURPS<
 			})
 		}
 
-		return this.parent?.createEmbeddedDocuments("Item", data, context) as Promise<ItemGURPS[]>
+		return this.parent?.createEmbeddedDocuments("Item", data, operation) as Promise<ItemGURPS[]>
 	}
 
 	override createEmbeddedDocuments(
 		embeddedName: string,
 		data: object[],
-		context?: DocumentModificationContext<this> | undefined,
+		operation?: Partial<DatabaseCreateOperation<this>> | undefined,
 	): Promise<Document<_Document | null, DataSchema>[]> {
-		if (embeddedName !== "Item") return super.createEmbeddedDocuments(embeddedName, data, context)
+		if (embeddedName !== "Item") return super.createEmbeddedDocuments(embeddedName, data, operation)
 
 		if (this.parent) {
 			return this.parent.createEmbeddedDocuments(embeddedName, data)
@@ -135,34 +135,20 @@ abstract class AbstractContainerGURPS<
 	override updateEmbeddedDocuments(
 		embeddedName: string,
 		updateData: EmbeddedDocumentUpdateData[],
-		context?: DocumentUpdateContext<this> | undefined,
-	): Promise<Document<_Document | null, DataSchema>[]> {
-		if (embeddedName !== "Item") return super.createEmbeddedDocuments(embeddedName, updateData, context)
+		operation?: Partial<DatabaseUpdateOperation<this>>,
+	): Promise<Document<Document>[]> {
+		if (embeddedName !== "Item") return super.updateEmbeddedDocuments(embeddedName, updateData, operation)
 
 		if (this.parent) {
 			return this.parent.updateEmbeddedDocuments(embeddedName, updateData)
 		}
 
 		if (this.compendium) {
-			return ItemProxyGURPS.updateDocuments(updateData, { pack: this.pack })
+			return ItemProxyGURPS.updateDocuments(updateData, { pack: this.pack }) as Promise<Document<Document>[]>
 		}
 
-		return Item.updateDocuments(updateData)
+		return Item.updateDocuments(updateData) as Promise<Document<Document>[]>
 	}
-
-	// async deleteContainedDocuments(
-	// 	ids: string[],
-	// 	context?: DocumentModificationContext<NonNullable<TParent>>,
-	// ): Promise<ItemGURPS[]> {
-	// 	return this.parent?.deleteEmbeddedDocuments("Item", ids, context) as Promise<ItemGURPS[]>
-	// }
-	//
-	// override delete(context?: DocumentModificationContext<TParent> | undefined): Promise<this | undefined> {
-	// 	for (const content of this.contents) {
-	// 		content.delete(context)
-	// 	}
-	// 	return super.delete(context)
-	// }
 }
 
 interface AbstractContainerGURPS<TParent extends ActorGURPS | null> extends ItemGURPS<TParent> {

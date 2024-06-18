@@ -126,7 +126,7 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 					const f = FeatureConstructor.fromObject(feature as ContainedWeightReductionObj)
 					f.owner = this
 					if (this.isOfType(ItemType.Trait)) {
-						// @ts-expect-error maybe fine? idk
+						// @ts-expect-error infinite instantiation
 						if (this.isLeveled && !(f instanceof ContainedWeightReduction)) f.setLevel(this.levels)
 					}
 					return f
@@ -233,11 +233,11 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 	static override async createDocuments<TDocument extends foundry.abstract.Document>(
 		this: ConstructorOf<TDocument>,
 		data?: (TDocument | PreCreate<TDocument["_source"]>)[],
-		context?: DocumentModificationContext<TDocument["parent"]>,
+		operation?: Partial<DatabaseCreateOperation<TDocument["parent"]>>,
 	): Promise<TDocument[]>
 	static override async createDocuments(
 		data: (ItemGURPS | PreCreate<ItemSourceGURPS>)[] = [],
-		context: DocumentModificationContext<ActorGURPS | null> = {},
+		operation: Partial<DatabaseCreateOperation<ActorGURPS | null>> = {},
 	): Promise<foundry.abstract.Document[]> {
 		// Convert all `ItemGURPS`s to source objects
 		const sources: PreCreate<ItemSourceGURPS>[] = data.map(
@@ -253,29 +253,29 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 			data.splice(data.indexOf(source), 1, item.toObject())
 		}
 
-		const actor = context.parent
-		if (!actor) return super.createDocuments(sources, context)
+		const actor = operation.parent
+		if (!actor) return super.createDocuments(sources, operation)
 
 		// Check if this item is valid for this actor
 		if (sources.some(s => !actor.checkItemValidity(s))) {
 			return []
 		}
 
-		return super.createDocuments(sources, context)
+		return super.createDocuments(sources, operation)
 	}
 
 	static override async deleteDocuments<TDocument extends foundry.abstract.Document>(
 		this: ConstructorOf<TDocument>,
 		ids?: string[],
-		context?: DocumentModificationContext<TDocument["parent"]>,
+		operation?: Partial<DatabaseCreateOperation<TDocument["parent"]>>,
 	): Promise<TDocument[]>
 	static override async deleteDocuments(
 		ids: string[] = [],
-		context: DocumentModificationContext<ActorGURPS | null> = {},
+		operation: Partial<DatabaseCreateOperation<ActorGURPS | null>> = {},
 	): Promise<foundry.abstract.Document[]> {
 		let items: Item[] = []
-		const actor = context.parent
-		const pack = game.packs.get(context.pack ?? "") as CompendiumCollection<Item<null>>
+		const actor = operation.parent
+		const pack = game.packs.get(operation.pack ?? "") as CompendiumCollection<Item<null>>
 
 		if (actor) items = ids.flatMap(id => actor.items.get(id) ?? [])
 		else if (pack) items = ids.flatMap(id => pack?.get(id) ?? [])
@@ -293,7 +293,7 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 			actor ? actor.items.has(id) : pack ? pack.has(id) : game.items.has(id),
 		)
 
-		return super.deleteDocuments(ids, context)
+		return super.deleteDocuments(ids, operation)
 	}
 
 	get container(): AbstractContainerGURPS | null {
@@ -410,10 +410,10 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 	// Refresh sheets of container containing this item
 	protected override _onCreate(
 		data: this["_source"],
-		options: DocumentModificationContext<TParent>,
+		operation: DatabaseCreateOperation<TParent>,
 		userId: string,
 	): void {
-		super._onCreate(data, options, userId)
+		super._onCreate(data, operation, userId)
 		for (const parent of this.parents) {
 			if (parent instanceof ItemGURPS && parent.sheet.rendered) parent.sheet.render()
 		}
@@ -422,18 +422,18 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 	// Refresh sheets of container containing this item
 	protected override _onUpdate(
 		data: DeepPartial<this["_source"]>,
-		options: DocumentModificationContext<TParent>,
+		operation: DatabaseUpdateOperation<TParent>,
 		userId: string,
 	): void {
-		super._onUpdate(data, options, userId)
+		super._onUpdate(data, operation, userId)
 		for (const parent of this.parents) {
 			if (parent instanceof ItemGURPS && parent.sheet.rendered) parent.sheet.render()
 		}
 	}
 
 	// Refresh sheets of container containing this item
-	protected override _onDelete(options: DocumentModificationContext<TParent>, userId: string): void {
-		super._onDelete(options, userId)
+	protected override _onDelete(operation: DatabaseDeleteOperation<TParent>, userId: string): void {
+		super._onDelete(operation, userId)
 		for (const parent of this.parents) {
 			if (parent instanceof ItemGURPS && parent.sheet.rendered) parent.sheet.render()
 		}

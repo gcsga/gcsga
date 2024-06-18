@@ -1,5 +1,4 @@
 /// <reference types="vite/client" />
-
 import { ActorGURPS } from "@actor"
 import { ItemGURPS } from "@item"
 import { EffectPanel } from "@item/abstract-effect/panel.ts"
@@ -18,7 +17,6 @@ import { CompendiumDirectoryGURPS } from "@module/apps/sidebar/compendium-direct
 import { ItemDirectoryGURPS } from "@module/apps/sidebar/item-directory.ts"
 import { CanvasGURPS } from "@module/canvas/index.ts"
 import { ChatMessageGURPS } from "@module/chat-message/index.ts"
-import { ItemsGURPS } from "@module/collection/items.ts"
 import { CombatGURPS, CombatantGURPS } from "@module/combat/index.ts"
 import { AttributeEffect, MANEUVER_DETAIL_SETTING } from "@module/data/index.ts"
 import { SheetSettingsObj } from "@module/data/sheet-settings.ts"
@@ -41,7 +39,7 @@ interface GameGURPS
 		ChatMessageGURPS,
 		CombatGURPS,
 		ItemGURPS<null>,
-		ItemsGURPS<ItemGURPS<null>>,
+		// ItemsGURPS<ItemGURPS<null>>,
 		Macro,
 		SceneGURPS,
 		UserGURPS
@@ -61,9 +59,9 @@ interface GameGURPS
 }
 
 type ConfiguredConfig = Config<
-	AmbientLightDocument<SceneGURPS | null>,
-	ActiveEffectGURPS<ActorGURPS | ItemGURPS | null>,
-	ActorGURPS,
+	ActiveEffectGURPS<ActorGURPS<TokenDocumentGURPS> | ItemGURPS | null>,
+	// @ts-expect-error not sure why it doesn't like it
+	ActorGURPS<TokenDocumentGURPS>,
 	ActorDelta<TokenDocumentGURPS>,
 	ChatLog,
 	ChatMessage,

@@ -85,5 +85,4 @@ global.game = Object.freeze({
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	static on(..._args: any) {}
 }
-
-Math.clamped = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)
+// Math.clamped = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)

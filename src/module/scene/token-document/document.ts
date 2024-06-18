@@ -29,7 +29,8 @@ class TokenDocumentGURPS<TParent extends SceneGURPS | null = SceneGURPS | null> 
 	}
 
 	override hasStatusEffect(statusId: string): boolean {
-		if (statusId === ConditionID.Dead) return this.overlayEffect === CONFIG.controlIcons.defeated
+		// if (statusId === ConditionID.Dead) return this.overlayEffect === CONFIG.controlIcons.defeated
+		if (statusId === ConditionID.Dead) return !!this.actor?.statuses.has(ConditionID.Dead)
 		return this.actor?.itemCollections.conditions.some(e => e.system.slug === statusId) ?? false
 	}
 }

@@ -337,7 +337,7 @@ class CharacterGURPS<
 
 	protected override async _preCreate(
 		data: this["_source"],
-		options: DocumentModificationContext<TParent>,
+		options: DatabaseCreateOperation<TParent>,
 		user: User<Actor<null>>,
 	): Promise<boolean | void> {
 		await super._preCreate(data, options, user)
@@ -359,7 +359,7 @@ class CharacterGURPS<
 
 	protected override _onUpdate(
 		changed: DeepPartial<this["_source"]>,
-		options: CharacterUpdateContext<TParent>,
+		options: DatabaseUpdateOperation<TParent>,
 		userId: string,
 	): void {
 		super._onUpdate(changed, options, userId)
@@ -382,9 +382,9 @@ class CharacterGURPS<
 
 	override async update(
 		data: Record<string, unknown>,
-		context?: CharacterUpdateContext<TParent>,
+		operation?: Partial<DatabaseUpdateOperation<TParent>>,
 	): Promise<this | undefined> {
-		return super.update(data, context)
+		return super.update(data, operation)
 	}
 
 	private static getDefaultSettings(): SheetSettingsObj {
@@ -1039,8 +1039,8 @@ interface CharacterGURPS<TParent extends TokenDocumentGURPS | null = TokenDocume
 	system: CharacterSystemData
 }
 
-interface CharacterUpdateContext<TParent extends TokenDocumentGURPS | null> extends DocumentUpdateContext<TParent> {
-	maneuverChange?: { create?: ManeuverID; delete?: ManeuverID }
-}
+// interface CharacterUpdateContext<TParent extends TokenDocumentGURPS | null> extends DocumentUpdateContext<TParent> {
+// 	maneuverChange?: { create?: ManeuverID; delete?: ManeuverID }
+// }
 
 export { CharacterGURPS }

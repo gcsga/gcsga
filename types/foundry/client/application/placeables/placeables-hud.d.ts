@@ -15,29 +15,7 @@ declare class TileHUD extends BasePlaceableHUD<Tile> {}
 declare class TokenHUD<TToken extends Token = Token> extends BasePlaceableHUD<TToken> {
 	override getData(options?: ApplicationOptions): TokenHUDData
 
-	protected _statusEffects: boolean
-
 	protected _getStatusEffectChoices(): Record<string, TokenHUDStatusEffectChoice | undefined>
-
-	/**
-	 * Assign css selectors for the active state of the status effects selection palette
-	 * @param {boolean} active      Should the effects menu be active?
-	 * @private
-	 */
-	protected _toggleStatusEffects(active: boolean): void
-
-	/**
-	 * Toggle Token combat state
-	 * @private
-	 */
-	protected _onToggleCombat(event: JQuery.ClickEvent): Promise<TToken>
-
-	/**
-	 * Handle Control clicks
-	 * @param {MouseEvent} event
-	 * @private
-	 */
-	protected _onClickControl(event: MouseEvent): void
 }
 
 type TokenHUDData<T extends Token = Token> = BasePlaceableHUDData<T> & {

@@ -19,7 +19,6 @@ declare global {
 		TChatMessage extends ChatMessage,
 		TCombat extends Combat,
 		TItem extends Item<null>,
-		TItems extends Items<TItem>,
 		TMacro extends Macro,
 		TScene extends Scene,
 		TUser extends User<TActor>,
@@ -126,11 +125,11 @@ declare global {
 		/* -------------------------------------------- */
 
 		actors: TActors
-		items: TItems
 		collections: Collection<WorldCollection<TActor | TItem | JournalEntry | TMacro | Playlist | RollTable | TScene>>
 
 		combats: CombatEncounters<TCombat>
 		folders: Folders<Folder>
+		items: Items<TItem>
 		journal: Journal
 		macros: Macros<TMacro>
 		messages: Messages<TChatMessage>
@@ -150,17 +149,7 @@ declare global {
 		 * @return A Promise which resolves to the created Game instance
 		 */
 		static create(): Promise<
-			Game<
-				Actor<null>,
-				Actors<Actor<null>>,
-				ChatMessage,
-				Combat,
-				Item<null>,
-				Items<Item<null>>,
-				Macro,
-				Scene,
-				User
-			>
+			Game<Actor<null>, Actors<Actor<null>>, ChatMessage, Combat, Item<null>, Macro, Scene, User>
 		>
 
 		/** Request World data from server and return it */
@@ -213,6 +202,9 @@ declare global {
 
 		/** A convenient reference to the currently active canvas tool */
 		get activeTool(): string
+
+		/** An alias for the structured data model organized by document class and type. */
+		get model(): Record<"Actor" | "Card" | "Cards" | "Item" | "JournalEntryPage", object>
 
 		/**
 		 * Toggle the pause state of the game

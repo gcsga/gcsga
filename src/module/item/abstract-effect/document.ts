@@ -2,8 +2,8 @@ import { ActorGURPS } from "@actor"
 import { ItemGURPS } from "@item"
 import { ConditionSource, ConditionSystemData } from "@item/condition/data.ts"
 import { EffectSource, EffectSystemData } from "@item/effect/data.ts"
-import { UserGURPS } from "@module/user/document.ts"
 import { EffectFlags } from "./data.ts"
+import { UserGURPS } from "@module/user/document.ts"
 
 abstract class AbstractEffectGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
 	get level(): number | null {
@@ -16,15 +16,15 @@ abstract class AbstractEffectGURPS<TParent extends ActorGURPS | null = ActorGURP
 
 	protected override _onCreate(
 		data: this["_source"],
-		options: DocumentModificationContext<TParent>,
+		operation: DatabaseCreateOperation<TParent>,
 		userId: string,
 	): void {
-		super._onCreate(data, options, userId)
+		super._onCreate(data, operation, userId)
 		this.actor?.getActiveTokens().shift()?.showFloatyText({ create: this })
 	}
 
-	protected override _onDelete(options: DocumentModificationContext<TParent>, userId: string): void {
-		super._onDelete(options, userId)
+	protected override _onDelete(operation: DatabaseDeleteOperation<TParent>, userId: string): void {
+		super._onDelete(operation, userId)
 		this.actor
 			?.getActiveTokens()
 			.shift()
@@ -33,7 +33,7 @@ abstract class AbstractEffectGURPS<TParent extends ActorGURPS | null = ActorGURP
 
 	protected override async _preUpdate(
 		changed: DeepPartial<this["_source"]>,
-		options: AbstractEffectModificationContext<TParent>,
+		options: DatabaseUpdateOperation<TParent> & { previousValue: number | null },
 		user: UserGURPS,
 	): Promise<boolean | void> {
 		options.previousValue = this.level
@@ -42,12 +42,12 @@ abstract class AbstractEffectGURPS<TParent extends ActorGURPS | null = ActorGURP
 
 	protected override _onUpdate(
 		data: DeepPartial<this["_source"]>,
-		options: AbstractEffectModificationContext<TParent>,
+		operation: DatabaseUpdateOperation<TParent> & { previousValue: number | null },
 		userId: string,
 	): void {
-		super._onUpdate(data, options, userId)
+		super._onUpdate(data, operation, userId)
 
-		const [priorValue, newValue] = [options.previousValue, this.level]
+		const [priorValue, newValue] = [operation.previousValue, this.level]
 		const valueChanged = !!priorValue && !!newValue && priorValue !== newValue
 
 		/* Show floaty text only for unlinked conditions */
@@ -70,11 +70,6 @@ interface AbstractEffectGURPS<TParent extends ActorGURPS | null> extends ItemGUR
 	readonly _source: EffectSource | ConditionSource
 	flags: EffectFlags
 	system: EffectSystemData | ConditionSystemData
-}
-
-interface AbstractEffectModificationContext<TParent extends ActorGURPS | null>
-	extends DocumentModificationContext<TParent> {
-	previousValue?: number | null
 }
 
 export { AbstractEffectGURPS }

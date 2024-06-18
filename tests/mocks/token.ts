@@ -28,9 +28,9 @@ export class MockToken {
 
 	update(
 		changes: EmbeddedDocumentUpdateData,
-		context: SceneEmbeddedModificationContext<NonNullable<this["parent"]>> = {},
+		operation: Partial<DatabaseUpdateOperation<NonNullable<this["parent"]>>> = {},
 	): void {
 		changes._id = this.id
-		this.scene?.updateEmbeddedDocuments("Token", [changes], context)
+		this.scene?.updateEmbeddedDocuments("Token", [changes], operation)
 	}
 }

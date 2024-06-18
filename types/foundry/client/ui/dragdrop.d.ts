@@ -69,7 +69,7 @@ declare global {
 		 */
 		protected _handleDrop(event: DragEvent): unknown
 
-		static createDragImage(img: { src: ImageFilePath }, width: number, height: number): HTMLDivElement
+		static createDragImage(img: ImageFilePath, width: number, height: number): HTMLDivElement
 	}
 
 	interface DragDropConfiguration {

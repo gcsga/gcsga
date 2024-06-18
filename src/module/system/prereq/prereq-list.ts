@@ -10,7 +10,7 @@ import { PrereqResolver } from "@module/util/index.ts"
 
 const fields = foundry.data.fields
 
-type PrereqListSchema = {
+export type PrereqListSchema = {
 	type: foundry.data.fields.StringField<prereq.Type, prereq.Type, true, false, true>
 	all: foundry.data.fields.BooleanField<boolean, boolean, true, false, true>
 	when_tl: foundry.data.fields.SchemaField<NumericCriteriaSchema>

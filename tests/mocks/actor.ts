@@ -74,7 +74,7 @@ export class MockActor {
 
 	static async updateDocuments(
 		updates: Record<string, unknown>[] = [],
-		_context: DocumentModificationContext<TokenDocumentGURPS<SceneGURPS | null>> = {},
+		_operation: Partial<DatabaseUpdateOperation<TokenDocumentGURPS<SceneGURPS | null>>> = {},
 	): Promise<ActorGURPS[]> {
 		return updates.flatMap(update => {
 			const actor = game.actors.find(a => a.id === update._id)
@@ -112,7 +112,7 @@ export class MockActor {
 	async createEmbeddedDocuments(
 		type: string,
 		data: ItemSourceGURPS[],
-		_context: DocumentModificationContext<ActorGURPS>,
+		_operation?: Partial<DatabaseCreateOperation<ActorGURPS>>,
 	): Promise<void> {
 		if (type === "Item") {
 			for (const source of data) {

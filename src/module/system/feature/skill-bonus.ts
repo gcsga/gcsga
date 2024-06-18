@@ -1,8 +1,14 @@
-import { BonusOwner } from "./bonus-owner.ts"
-import { StringCompareType, StringCriteria } from "@util/string-criteria.ts"
+import { BonusOwner, BonusOwnerSchema } from "./bonus-owner.ts"
+import { StringCompareType, StringCriteria, StringCriteriaField } from "@util/string-criteria.ts"
 import { LeveledAmount } from "./leveled-amount.ts"
 import { SkillBonusObj } from "./data.ts"
 import { feature, skillsel } from "@util"
+import fields = foundry.data.fields
+
+export type SkillBonusSchema = BonusOwnerSchema & {
+	selection_type: fields.StringField<skillsel.Type>
+	name: StringCriteriaField
+}
 
 export class SkillBonus extends BonusOwner<feature.Type.SkillBonus> {
 	selection_type: skillsel.Type

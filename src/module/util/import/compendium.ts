@@ -14,7 +14,6 @@ class ItemCompendiumImporter {
 			content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/chat/character-import-error.hbs`, {
 				lines: [text],
 			}),
-			type: CONST.CHAT_MESSAGE_TYPES.WHISPER,
 			whisper: [game.user.id],
 		})
 	}
