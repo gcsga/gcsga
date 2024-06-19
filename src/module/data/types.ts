@@ -170,11 +170,11 @@ interface NewDocumentMigrationRecord {
 }
 
 interface MigratedDocumentMigrationRecord {
-	version: number
+	version: number | null
 	previous: {
 		schema: number | null
-		system?: string
-		foundry?: string
+		system: string | null
+		foundry: string | null
 	} | null
 }
 

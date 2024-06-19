@@ -1,6 +1,6 @@
-import { RecordField } from "@system/schema-data-fields.ts"
+// import { RecordField } from "@system/schema-data-fields.ts"
 import { LocalizeGURPS } from "./localize.ts"
-import fields = foundry.data.fields
+// import fields = foundry.data.fields
 
 export enum StringCompareType {
 	AnyString = "none",
@@ -31,20 +31,20 @@ export interface StringCriteriaObj {
 	qualifier?: string
 }
 
-export class StringCriteriaField extends RecordField<
-	fields.StringField<string, string, true, false, false>,
-	fields.SchemaField<StringCriteriaValueSchema>,
-	true,
-	false,
-	true,
-	true
-> {}
+// export class StringCriteriaField extends RecordField<
+// 	fields.StringField<string, string, true, false, false>,
+// 	fields.SchemaField<StringCriteriaValueSchema>,
+// 	true,
+// 	false,
+// 	true,
+// 	true
+// > {}
 
-type StringCriteriaValueSchema = {
-	compare: fields.StringField<StringCompareType>
-	qualifier: fields.StringField
-}
-
+// type StringCriteriaValueSchema = {
+// 	compare: fields.StringField<StringCompareType>
+// 	qualifier: fields.StringField
+// }
+//
 export class StringCriteria {
 	compare: StringCompareType
 

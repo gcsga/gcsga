@@ -1,8 +1,4 @@
 import * as R from "remeda"
-/* -------------------------------------------- */
-/*  System `DataSchema` `DataField`s            */
-/* -------------------------------------------- */
-
 import { SlugCamel, sluggify } from "@util"
 import type {
 	CleanFieldOptions,
@@ -18,7 +14,11 @@ import type {
 } from "types/foundry/common/data/fields.js"
 import { DataModelValidationFailure } from "types/foundry/common/data/validation-failure.js"
 
-const { fields } = foundry.data
+/* -------------------------------------------- */
+/*  System `DataSchema` `DataField`s            */
+/* -------------------------------------------- */
+
+// const { fields } = foundry.data
 
 /** A `StringField` that does not cast the source value */
 class StrictStringField<
@@ -27,7 +27,7 @@ class StrictStringField<
 	TRequired extends boolean = false,
 	TNullable extends boolean = false,
 	THasInitial extends boolean = boolean,
-> extends fields.StringField<TSourceProp, TModelProp, TRequired, TNullable, THasInitial> {
+> extends foundry.data.fields.StringField<TSourceProp, TModelProp, TRequired, TNullable, THasInitial> {
 	protected override _cast(value: unknown): unknown {
 		return value
 	}
@@ -105,7 +105,7 @@ class RecordField<
 	TNullable extends boolean = false,
 	THasInitial extends boolean = true,
 	TDense extends boolean = false,
-> extends fields.ObjectField<
+> extends foundry.data.fields.ObjectField<
 	RecordFieldSourceProp<TKeyField, TValueField, TDense>,
 	RecordFieldModelProp<TKeyField, TValueField, TDense>,
 	TRequired,
@@ -134,7 +134,7 @@ class RecordField<
 		}
 		this.keyField = keyField
 
-		if (!(valueField instanceof fields.DataField)) {
+		if (!(valueField instanceof foundry.data.fields.DataField)) {
 			throw new Error(`${this.name} must have a DataField as its contained field`)
 		}
 		this.valueField = valueField
@@ -143,7 +143,10 @@ class RecordField<
 	protected _isValidKeyFieldType(
 		keyField: unknown,
 	): keyField is StringField<string, string, true, false, false> | NumberField<number, number, true, false, false> {
-		if (keyField instanceof fields.StringField || keyField instanceof fields.NumberField) {
+		if (
+			keyField instanceof foundry.data.fields.StringField ||
+			keyField instanceof foundry.data.fields.NumberField
+		) {
 			if (keyField.options.required !== true || keyField.options.nullable === true) {
 				throw new Error(`key field must be required and non-nullable`)
 			}
@@ -218,7 +221,7 @@ class RecordField<
 }
 
 /** A field that always results in a value of `null` */
-class NullField extends fields.DataField<null, null, true, true, true> {
+class NullField extends foundry.data.fields.DataField<null, null, true, true, true> {
 	constructor() {
 		super({ required: true, nullable: true, initial: null })
 	}
@@ -228,4 +231,4 @@ class NullField extends fields.DataField<null, null, true, true, true> {
 	}
 }
 
-export { SlugField, RecordField, NullField }
+export { NullField, RecordField, SlugField }

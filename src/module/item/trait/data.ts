@@ -11,30 +11,30 @@ import { TraitGURPS } from "./document.ts"
 import fields = foundry.data.fields
 import { PrereqListSchema } from "@system/prereq/prereq-list.ts"
 
-type TraitSource = AbstractContainerSource<ItemType.Trait, TraitSystemSource>
+// type TraitSource = AbstractContainerSource<ItemType.Trait, TraitSystemSource>
 
-interface TraitSystemSource extends AbstractContainerSystemSource {
-	type: ItemType.Trait
-	name: string
-	reference: string
-	reference_highlight: string
-	notes: string
-	vtt_notes: string
-	userdesc: string
-	tags: string[]
-	base_points: number
-	levels: number
-	points_per_level: number
-	prereqs: PrereqListObj
-	features: FeatureObj[]
-	study: Study[]
-	cr: selfctrl.Roll
-	cr_adj: selfctrl.Adjustment
-	study_hours_needed: study.Level | ""
-	disabled: boolean
-	round_down: boolean
-	can_level: boolean
-}
+// interface TraitSystemSource extends AbstractContainerSystemSource {
+// 	type: ItemType.Trait
+// 	name: string
+// 	reference: string
+// 	reference_highlight: string
+// 	notes: string
+// 	vtt_notes: string
+// 	userdesc: string
+// 	tags: string[]
+// 	base_points: number
+// 	levels: number
+// 	points_per_level: number
+// 	prereqs: PrereqListObj
+// 	features: FeatureObj[]
+// 	study: Study[]
+// 	cr: selfctrl.Roll
+// 	cr_adj: selfctrl.Adjustment
+// 	study_hours_needed: study.Level | ""
+// 	disabled: boolean
+// 	round_down: boolean
+// 	can_level: boolean
+// }
 
 function getCRFeatures(): Map<string, SkillBonus[]> {
 	return new Map([
@@ -75,7 +75,7 @@ class TraitSystemData extends ItemSystemModel<TraitGURPS, TraitSystemSchema> {
 			levels: new fields.NumberField({ min: 0, nullable: true }),
 			points_per_level: new fields.NumberField({ integer: true, nullable: true }),
 			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
-			features: new fields.ArrayField(new fields.ObjectField<Feature>()),
+			// features: new fields.ArrayField(new fields.ObjectField<Feature>()),
 			study: new fields.ArrayField(new fields.ObjectField<Study>()),
 			cr: new fields.NumberField<selfctrl.Roll>({ choices: selfctrl.Rolls, initial: selfctrl.Roll.NoCR }),
 			cr_adj: new fields.StringField<selfctrl.Adjustment>({
@@ -93,7 +93,9 @@ class TraitSystemData extends ItemSystemModel<TraitGURPS, TraitSystemSchema> {
 	}
 }
 
-interface TraitSystemData extends TraitSystemSource, AbstractContainerSystemData {}
+// interface TraitSystemData extends TraitSystemSource, AbstractContainerSystemData {}
+
+interface TraitSystemData extends ItemSystemModel<TraitGURPS, TraitSystemSchema> {}
 
 type TraitSystemSchema = ItemSystemSchema & {
 	type: fields.StringField<ItemType.Trait, ItemType.Trait, true, false, true>
@@ -107,8 +109,8 @@ type TraitSystemSchema = ItemSystemSchema & {
 	base_points: fields.NumberField<number, number, true, false, true>
 	levels: fields.NumberField
 	points_per_level: fields.NumberField
-	prereqs: PrereqListSchema
-	features: fields.ArrayField<FeatureSchema>
+	prereqs: fields.SchemaField<PrereqListSchema>
+	// features: fields.ArrayField<FeatureSchema>
 	study: fields.ArrayField<fields.ObjectField<Study>>
 	cr: fields.NumberField<selfctrl.Roll>
 	cr_adj: fields.StringField<selfctrl.Adjustment>
@@ -117,6 +119,10 @@ type TraitSystemSchema = ItemSystemSchema & {
 	round_down: fields.BooleanField
 	can_level: fields.BooleanField
 }
+
+type TraitSystemSource = SourceFromSchema<TraitSystemSchema>
+
+type TraitSource = AbstractContainerSource<ItemType.Trait, TraitSystemSource>
 
 export { getCRFeatures }
 export type { TraitSource, TraitSystemSource, TraitSystemData }

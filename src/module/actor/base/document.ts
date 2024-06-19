@@ -135,13 +135,13 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 		return R.uniqueBy([super.temporaryEffects, fromEffects].flat(), e => e.img)
 	}
 
-	static mergeSchema(
-		a: foundry.documents.ActorSchema<string, object>,
-		b: foundry.data.fields.DataSchema,
-	): foundry.documents.ActorSchema<string, object> {
-		Object.assign(a, b)
-		return a
-	}
+	// static mergeSchema(
+	// 	a: ActorSchema<string, object>,
+	// 	b: foundry.data.fields.DataSchema,
+	// ): foundry.documents.ActorSchema<string, object> {
+	// 	Object.assign(a, b)
+	// 	return a
+	// }
 
 	protected override _onCreate(
 		data: this["_source"],
