@@ -141,6 +141,12 @@ export function loadModifiers(): void {
 		meleeMods = [
 			{
 				tags: ["Melee Combat"],
+				id: LocalizeGURPS.translations.gurps.modifier.melee.evaluate,
+				modifier: 1,
+				reference: "B364",
+			},
+			{
+				tags: ["Melee Combat"],
 				id: LocalizeGURPS.translations.gurps.modifier.melee.determined,
 				modifier: 4,
 				reference: "B365",
@@ -153,6 +159,12 @@ export function loadModifiers(): void {
 			},
 			{
 				tags: ["Melee Combat"],
+				id: LocalizeGURPS.translations.gurps.modifier.melee.rapid_strike,
+				modifier: -6,
+				reference: "B370",
+			},
+			{
+				tags: ["Melee Combat"],
 				id: LocalizeGURPS.translations.gurps.modifier.melee.deceptive,
 				modifier: -2,
 				reference: "B369",
@@ -160,38 +172,78 @@ export function loadModifiers(): void {
 			{
 				tags: ["Melee Combat"],
 				id: LocalizeGURPS.translations.gurps.modifier.melee.move,
-				modifier: -2,
+				modifier: -4,
 				max: 9,
 				reference: "B365",
 			},
 			{
 				tags: ["Melee Combat"],
-				id: LocalizeGURPS.translations.gurps.modifier.melee.strong,
-				modifier: 2,
-				reference: "B365",
+				id: LocalizeGURPS.translations.gurps.modifier.melee.wild_swing,
+				modifier: -5,
+				max: 9,
+				reference: "B388",
 			},
 			{
 				tags: ["Melee Combat"],
-				id: LocalizeGURPS.translations.gurps.modifier.melee.mighty_blow,
-				modifier: 2,
-				cost: { id: "fp", value: 1 },
-				reference: "MA131",
+				id: LocalizeGURPS.translations.gurps.modifier.melee.outside_close_combat,
+				modifier: -2,
+				reference: "B392",
 			},
 			{
 				tags: ["Melee Combat"],
-				id: LocalizeGURPS.translations.gurps.modifier.melee.heroic_charge,
-				modifier: 0,
-				cost: { id: "fp", value: 1 },
-				reference: "MA131",
+				id: LocalizeGURPS.translations.gurps.modifier.melee.off_hand_attack,
+				modifier: -4,
+				reference: "B547",
+			},
+			{
+				tags: ["Melee Combat"],
+				id: LocalizeGURPS.translations.gurps.modifier.melee.dual_weapon_attack,
+				modifier: -4,
+				reference: "B417",
 			},
 		]
 		rangedMods = [
-			{ tags: ["Ranged Combat"], id: LocalizeGURPS.translations.gurps.modifier.ranged.aim, modifier: 1 },
+			{
+				tags: ["Ranged Combat"],
+				id: LocalizeGURPS.translations.gurps.modifier.ranged.aim,
+				modifier: 1,
+				reference: "B364",
+			},
+			{
+				tags: ["Ranged Combat"],
+				id: LocalizeGURPS.translations.gurps.modifier.ranged.braced,
+				modifier: 1,
+				reference: "B364",
+			},
+			{
+				tags: ["Ranged Combat"],
+				id: LocalizeGURPS.translations.gurps.modifier.ranged.ground_attack,
+				modifier: 4,
+				reference: "B414",
+			},
 			{
 				tags: ["Ranged Combat"],
 				id: LocalizeGURPS.translations.gurps.modifier.ranged.determined,
 				modifier: 1,
 				reference: "B365",
+			},
+			{
+				tags: ["Ranged Combat"],
+				id: LocalizeGURPS.translations.gurps.modifier.ranged.pop_up,
+				modifier: -2,
+				reference: "B390",
+			},
+			{
+				tags: ["Ranged Combat"],
+				id: LocalizeGURPS.translations.gurps.modifier.ranged.off_hand_attack,
+				modifier: -4,
+				reference: "B548",
+			},
+			{
+				tags: ["Ranged Combat"],
+				id: LocalizeGURPS.translations.gurps.modifier.ranged.dual_weapon_attack,
+				modifier: -4,
+				reference: "B417",
 			},
 		]
 		defenseMods = [
@@ -211,7 +263,7 @@ export function loadModifiers(): void {
 				tags: ["Defense"],
 				id: LocalizeGURPS.translations.gurps.modifier.defense.acrobatics_success,
 				modifier: 2,
-				reference: "B374",
+				reference: "B375",
 			},
 			{
 				tags: ["Defense"],
@@ -239,18 +291,34 @@ export function loadModifiers(): void {
 			},
 			{
 				tags: ["Defense"],
-				id: LocalizeGURPS.translations.gurps.modifier.defense.dodge_side,
+				id: LocalizeGURPS.translations.gurps.modifier.defense.defend_side,
 				modifier: -2,
 				reference: "B390",
 			},
 			{
 				tags: ["Defense"],
-				id: LocalizeGURPS.translations.gurps.modifier.defense.dodge_rear,
-				modifier: -4,
-				reference: "B391",
+				id: LocalizeGURPS.translations.gurps.modifier.defense.telegraphic,
+				modifier: 2,
+				reference: "MA113",
 			},
-			{ tags: ["Defense"], id: LocalizeGURPS.translations.gurps.modifier.defense.deceptive, modifier: -1 },
-			{ tags: ["Defense"], id: LocalizeGURPS.translations.gurps.modifier.defense.will, modifier: -1 },
+			{
+				tags: ["Defense"],
+				id: LocalizeGURPS.translations.gurps.modifier.defense.deceptive,
+				modifier: -1,
+				reference: "B369",
+			},
+			{
+				tags: ["Defense"],
+				id: LocalizeGURPS.translations.gurps.modifier.defense.will,
+				modifier: -3,
+				reference: "B366",
+			},
+			{
+				tags: ["Defense"],
+				id: LocalizeGURPS.translations.gurps.modifier.defense.dual_weapon_attack_defense,
+				modifier: -1,
+				reference: "B417",
+			},
 			{
 				tags: ["Defense"],
 				id: LocalizeGURPS.translations.gurps.modifier.defense.feverish_defense,
@@ -407,31 +475,14 @@ export function loadModifiers(): void {
 	]
 
 	const modifiersLocation: ModifierItem[] = [
+		{ 
+			tags: ["Hit Location"],
+			id: LocalizeGURPS.translations.gurps.modifier.hit_location.basic_hit_locations,
+			title: true,
+		},
 		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.eyes, modifier: -9 },
 		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.skull, modifier: -7 },
-		{
-			tags: ["Hit Location"],
-			id: LocalizeGURPS.translations.gurps.modifier.hit_location.skull_behind,
-			modifier: -5,
-		},
 		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.face, modifier: -5 },
-		{
-			tags: ["Hit Location"],
-			id: LocalizeGURPS.translations.gurps.modifier.hit_location.face_behind,
-			modifier: -7,
-		},
-		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.nose, modifier: -7 },
-		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.jaw, modifier: -6 },
-		{
-			tags: ["Hit Location"],
-			id: LocalizeGURPS.translations.gurps.modifier.hit_location.neck_vein,
-			modifier: -8,
-		},
-		{
-			tags: ["Hit Location"],
-			id: LocalizeGURPS.translations.gurps.modifier.hit_location.limb_vein,
-			modifier: -5,
-		},
 		{
 			tags: ["Hit Location"],
 			id: LocalizeGURPS.translations.gurps.modifier.hit_location.arm_shield,
@@ -440,9 +491,18 @@ export function loadModifiers(): void {
 		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.arm, modifier: -2 },
 		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.torso, modifier: 0 },
 		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.vitals, modifier: -3 },
-		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.heart, modifier: -5 },
 		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.groin, modifier: -3 },
 		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.leg, modifier: -2 },
+		{
+			tags: ["Hit Location"],
+			id: LocalizeGURPS.translations.gurps.modifier.hit_location.hand_shield,
+			modifier: -8,
+		},
+		{ 
+			tags: ["Hit Location"],
+			id: LocalizeGURPS.translations.gurps.modifier.hit_location.grab_held_weapon,
+			modifier: -4,
+		},
 		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.hand, modifier: -4 },
 		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.foot, modifier: -4 },
 		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.neck, modifier: -5 },
@@ -456,29 +516,67 @@ export function loadModifiers(): void {
 			id: LocalizeGURPS.translations.gurps.modifier.hit_location.chinks_other,
 			modifier: -10,
 		},
+		{ 
+			tags: ["Hit Location"],
+			id: LocalizeGURPS.translations.gurps.modifier.hit_location.martial_arts_hit_locations,
+			title: true,
+		},
+		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.ear, modifier: -7 },
+		{ tags: ["Hit Location"], id: LocalizeGURPS.translations.gurps.modifier.hit_location.jaw, modifier: -6 },
+		{ 
+			tags: ["Hit Location"],
+			id: LocalizeGURPS.translations.gurps.modifier.hit_location.limb_joint,
+			modifier: -5,
+		},
+		{ 
+			tags: ["Hit Location"],
+			id: LocalizeGURPS.translations.gurps.modifier.hit_location.extremity_joint,
+			modifier: -7,
+		},
+		{ 
+			tags: ["Hit Location"],
+			id: LocalizeGURPS.translations.gurps.modifier.hit_location.nose,
+			modifier: -7,
+		},
+		{ 
+			tags: ["Hit Location"],
+			id: LocalizeGURPS.translations.gurps.modifier.hit_location.spine,
+			modifier: -8,
+		},
+		{
+			tags: ["Hit Location"],
+			id: LocalizeGURPS.translations.gurps.modifier.hit_location.neck_vein,
+			modifier: -8,
+		},
+		{
+			tags: ["Hit Location"],
+			id: LocalizeGURPS.translations.gurps.modifier.hit_location.limb_vein,
+			modifier: -5,
+		},
+		{
+			tags: ["Hit Location"],
+			id: LocalizeGURPS.translations.gurps.modifier.hit_location.skull_behind,
+			modifier: -5,
+		},
+		{
+			tags: ["Hit Location"],
+			id: LocalizeGURPS.translations.gurps.modifier.hit_location.face_behind,
+			modifier: -7,
+		},
 	]
 
 	const modifiersCover: ModifierItem[] = [
 		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.cover, title: true },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.head_only, modifier: -5 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.head_and_shoulders, modifier: -4 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.half_exposed, modifier: -3 },
 		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.light_cover, modifier: -2 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.same_sized_figure, modifier: -4 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.prone_no_cover, modifier: -4 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.prone_head_up, modifier: -5 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.prone_head_down, modifier: -7 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.crouching_no_cover, modifier: -2 },
+		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.partially_exposed, modifier: -2 },
 		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.occupied_hex, modifier: -4 },
 		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.posture, title: true },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.melee_crawling, modifier: -4 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.ranged_sitting, modifier: -2 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.defense_crawling, modifier: -3 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.melee_crouching, modifier: -2 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.ranged_crouching, modifier: -2 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.hit_ranged_crouching, modifier: -2 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.melee_kneeling, modifier: -2 },
-		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.defense_kneeling, modifier: -2 },
+		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.melee_crouch_kneel_sit, modifier: -2 },
+		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.ranged_crouch_kneel_sit, modifier: -2 },
+		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.defense_kneel_sit, modifier: -2 },
+		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.melee_crawl_prone, modifier: -4 },
+		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.ranged_crawl_prone, modifier: -2 },
+		{ tags: ["Cover"], id: LocalizeGURPS.translations.gurps.modifier.cover.defense_crawl_prone, modifier: -3 },
 	]
 
 	const modifiersDifficulty: ModifierItem[] = [
@@ -533,16 +631,6 @@ export function loadModifiers(): void {
 	]
 
 	const modifiersQuality: ModifierItem[] = [
-		{
-			tags: ["Quality"],
-			id: LocalizeGURPS.translations.gurps.modifier.equipment_quality.best_possible,
-			modifier: -10,
-		},
-		{
-			tags: ["Quality"],
-			id: LocalizeGURPS.translations.gurps.modifier.equipment_quality.best_possible,
-			modifier: 4,
-		},
 		{ tags: ["Quality"], id: LocalizeGURPS.translations.gurps.modifier.equipment_quality.fine, modifier: 2 },
 		{ tags: ["Quality"], id: LocalizeGURPS.translations.gurps.modifier.equipment_quality.good, modifier: 1 },
 		{
@@ -593,6 +681,28 @@ export function loadModifiers(): void {
 		}),
 	]
 
+	const modifiersStrikingAtWeapons: ModifierItem[] = [
+		{ tags: ["Striking At Weapons"], id: LocalizeGURPS.translations.gurps.modifier.striking_at_weapons.small, modifier: -5 },
+		{ tags: ["Striking At Weapons"], id: LocalizeGURPS.translations.gurps.modifier.striking_at_weapons.medium, modifier: -4 },
+		{ tags: ["Striking At Weapons"], id: LocalizeGURPS.translations.gurps.modifier.striking_at_weapons.large, modifier: -3 },
+		{ tags: ["Striking At Weapons"], id: LocalizeGURPS.translations.gurps.modifier.striking_at_weapons.not_fencing, modifier: -2 },
+	]
+
+	const modifiersMeleeLevels: ModifierItem[] = [
+		{ tags: ["Melee Levels"], id: LocalizeGURPS.translations.gurps.modifier.melee_levels.upper_fighter, title: true },
+		{ tags: ["Melee Levels"], id: LocalizeGURPS.translations.gurps.modifier.melee_levels.active_defense_1, modifier: 1 },
+		{ tags: ["Melee Levels"], id: LocalizeGURPS.translations.gurps.modifier.melee_levels.active_defense_2, modifier: 2 },
+		{ tags: ["Melee Levels"], id: LocalizeGURPS.translations.gurps.modifier.melee_levels.active_defense_3, modifier: 3 },
+		{ tags: ["Melee Levels"], id: LocalizeGURPS.translations.gurps.modifier.melee_levels.upper_head_neck, modifier: 1 },
+		{ tags: ["Melee Levels"], id: LocalizeGURPS.translations.gurps.modifier.melee_levels.upper_leg_foot, modifier: -2 },
+		{ tags: ["Melee Levels"], id: LocalizeGURPS.translations.gurps.modifier.melee_levels.lower_fighter, title: true },
+		{ tags: ["Melee Levels"], id: LocalizeGURPS.translations.gurps.modifier.melee_levels.active_defense_1, modifier: -1 },
+		{ tags: ["Melee Levels"], id: LocalizeGURPS.translations.gurps.modifier.melee_levels.active_defense_2, modifier: -2 },
+		{ tags: ["Melee Levels"], id: LocalizeGURPS.translations.gurps.modifier.melee_levels.active_defense_3, modifier: -3 },
+		{ tags: ["Melee Levels"], id: LocalizeGURPS.translations.gurps.modifier.melee_levels.lower_head_neck, modifier: -2 },
+		{ tags: ["Melee Levels"], id: LocalizeGURPS.translations.gurps.modifier.melee_levels.lower_leg_foot, modifier: 2 },
+	]
+
 	let modifiersSpeed: ModifierItem[] = []
 	const modifierSetting = game.settings.get(SYSTEM_NAME, SETTINGS.SSRT)
 	if (modifierSetting === "standard") modifiersSpeed = modifiersSpeedStandard
@@ -636,6 +746,14 @@ export function loadModifiers(): void {
 			title: LocalizeGURPS.translations.gurps.modifier.rof.title,
 			items: modifiersRof,
 		},
+		{
+			title: LocalizeGURPS.translations.gurps.modifier.striking_at_weapons.title,
+			items: modifiersStrikingAtWeapons,
+		},
+		{
+			title: LocalizeGURPS.translations.gurps.modifier.melee_levels.title,
+			items: modifiersMeleeLevels,
+		},
 	]
 	CONFIG.GURPS.commonMods = commonMods
 	CONFIG.GURPS.allMods = [
@@ -651,5 +769,7 @@ export function loadModifiers(): void {
 		...modifiersQuality,
 		...modifiersLighting,
 		...modifiersRof,
+		...modifiersStrikingAtWeapons,
+		...modifiersMeleeLevels,
 	].filter(e => objectHasKey(e, "title"))
 }
