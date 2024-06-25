@@ -3,50 +3,12 @@ import { AbstractContainerGURPS } from "@item"
 import { TraitSource, TraitSystemData } from "./data.ts"
 import { LocalizeGURPS, StringBuilder, affects, display, selfctrl, study, tmcost } from "@util"
 import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
-import { Feature, PrereqList, Study, resolveStudyHours, studyHoursProgressText } from "@system"
+import { resolveStudyHours, studyHoursProgressText } from "@system"
 import { ItemType } from "@module/data/constants.ts"
 import { ItemInstances } from "@item/types.ts"
 import { modifyPoints } from "@item/helpers.ts"
 
-const fields = foundry.data.fields
-
 class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends AbstractContainerGURPS<TParent> {
-	// static override defineSchema(): foundry.documents.ItemSchema<string, object> {
-	// 	return this.mergeSchema(super.defineSchema(), {
-	// 		system: new fields.SchemaField({
-	// 			type: new fields.StringField({ required: true, initial: ItemType.Trait }),
-	// 			name: new fields.StringField({
-	// 				required: true,
-	// 				initial: LocalizeGURPS.translations.TYPES.Item[ItemType.Trait],
-	// 			}),
-	// 			reference: new fields.StringField(),
-	// 			reference_highlight: new fields.StringField(),
-	// 			notes: new fields.StringField(),
-	// 			vtt_notes: new fields.StringField(),
-	// 			userdesc: new fields.StringField(),
-	// 			tags: new fields.ArrayField(new foundry.data.fields.StringField()),
-	// 			base_points: new fields.NumberField({ integer: true, initial: 0 }),
-	// 			levels: new fields.NumberField({ min: 0, nullable: true }),
-	// 			points_per_level: new fields.NumberField({ integer: true, nullable: true }),
-	// 			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
-	// 			features: new fields.ArrayField(new fields.ObjectField<Feature>()),
-	// 			study: new fields.ArrayField(new fields.ObjectField<Study>()),
-	// 			cr: new fields.NumberField<selfctrl.Roll>({ choices: selfctrl.Rolls, initial: selfctrl.Roll.NoCR }),
-	// 			cr_adj: new fields.StringField<selfctrl.Adjustment>({
-	// 				choices: selfctrl.Adjustments,
-	// 				initial: selfctrl.Adjustment.NoCRAdj,
-	// 			}),
-	// 			study_hours_needed: new fields.StringField<study.Level>({
-	// 				choices: study.Levels,
-	// 				initial: study.Level.Standard,
-	// 			}),
-	// 			disabled: new fields.BooleanField({ initial: false }),
-	// 			round_down: new fields.BooleanField({ initial: false }),
-	// 			can_level: new fields.BooleanField({ initial: false }),
-	// 		}),
-	// 	})
-	// }
-	//
 	override get formattedName(): string {
 		const name: string = this.name ?? ""
 		const levels = this.levels

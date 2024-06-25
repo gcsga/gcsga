@@ -1,4 +1,5 @@
 // import { RecordField } from "@system/schema-data-fields.ts"
+import { StringField } from "types/foundry/common/data/fields.js"
 import { LocalizeGURPS } from "./localize.ts"
 // import fields = foundry.data.fields
 
@@ -29,6 +30,11 @@ export const AllStringCompareTypes: StringCompareType[] = [
 export interface StringCriteriaObj {
 	compare?: StringCompareType
 	qualifier?: string
+}
+
+export type StringCriteriaSchema = {
+	compare: StringField<StringCompareType, StringCompareType, true, false, true>
+	qualifier: StringField<string, string, true, false, true>
 }
 
 // export class StringCriteriaField extends RecordField<

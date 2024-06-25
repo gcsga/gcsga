@@ -32,17 +32,17 @@ import { SkillDefaultResolver } from "@module/util/resolvers.ts"
 
 /** The basic `Item` subclass for the system */
 class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends Item<TParent> {
-	static override defineSchema(): foundry.documents.ItemSchema<string, object> {
-		return this.mergeSchema(super.defineSchema(), {})
-	}
-
-	static mergeSchema(
-		a: foundry.documents.ItemSchema<string, object>,
-		b: foundry.data.fields.DataSchema,
-	): foundry.documents.ItemSchema<string, object> {
-		Object.assign(a, b)
-		return a
-	}
+	// static override defineSchema(): foundry.documents.ItemSchema<string, object> {
+	// 	return this.mergeSchema(super.defineSchema(), {})
+	// }
+	//
+	// static mergeSchema(
+	// 	a: foundry.documents.ItemSchema<string, object>,
+	// 	b: foundry.data.fields.DataSchema,
+	// ): foundry.documents.ItemSchema<string, object> {
+	// 	Object.assign(a, b)
+	// 	return a
+	// }
 
 	/** Has this document completed `DataModel` initialization? */
 	declare initialized: boolean

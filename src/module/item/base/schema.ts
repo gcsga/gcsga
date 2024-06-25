@@ -56,23 +56,4 @@ type ItemSystemSchema = {
 	}>
 }
 
-type ItemSystemSchema = {
-	slug: SlugField<true, true, true>
-	_migration: SchemaField<{
-		version: NumberField<number, number, true, true, true>
-		previous: SchemaField<
-			{
-				foundry: StringField<string, string, true, true, true>
-				system: StringField<string, string, true, true, true>
-				schema: NumberField<number, number, true, true, true>
-			},
-			{ foundry: string | null; system: string | null; schema: number | null },
-			{ foundry: string | null; system: string | null; schema: number | null },
-			true,
-			true,
-			true
-		>
-	}>
-}
-
 export { ItemSystemModel, type ItemSystemSchema }

@@ -8,13 +8,13 @@ import { Prereq } from "./index.ts"
 import { ActorType } from "@module/data/constants.ts"
 import { PrereqResolver } from "@module/util/index.ts"
 
-const fields = foundry.data.fields
+import fields = foundry.data.fields
 
 export type PrereqListSchema = {
-	type: foundry.data.fields.StringField<prereq.Type, prereq.Type, true, false, true>
-	all: foundry.data.fields.BooleanField<boolean, boolean, true, false, true>
-	when_tl: foundry.data.fields.SchemaField<NumericCriteriaSchema>
-	prereqs: foundry.data.fields.ArrayField<foundry.data.fields.ObjectField<PrereqObj>>
+	type: fields.StringField<prereq.Type, prereq.Type, true, false, true>
+	all: fields.BooleanField<boolean, boolean, true, false, true>
+	when_tl: fields.SchemaField<NumericCriteriaSchema>
+	prereqs: fields.ArrayField<foundry.data.fields.ObjectField<PrereqObj>>
 }
 
 export class PrereqList {

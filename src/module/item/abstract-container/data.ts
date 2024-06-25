@@ -1,13 +1,25 @@
-import { BaseItemSourceGURPS, ItemSystemData, ItemSystemSource } from "@item/base/data.ts"
-import { ContainerType } from "@module/data/constants.ts"
+import { ItemSystemModel, ItemSystemSchema } from "@item/base/schema.ts"
+import { AbstractContainerGURPS } from "./document.ts"
 
-type AbstractContainerSource<
-	TType extends ContainerType,
-	TSystemSource extends AbstractContainerSystemSource = AbstractContainerSystemSource,
-> = BaseItemSourceGURPS<TType, TSystemSource>
+abstract class AbstractContainerSystemData<
+	TParent extends AbstractContainerGURPS,
+	TSchema extends AbstractContainerSystemSchema,
+> extends ItemSystemModel<TParent, TSchema> { }
 
-interface AbstractContainerSystemSource extends ItemSystemSource {}
+interface AbstractContainerSystemData<
+	TParent extends AbstractContainerGURPS,
+	TSchema extends AbstractContainerSystemSchema,
+> extends ItemSystemModel<TParent, TSchema> { }
 
-interface AbstractContainerSystemData extends AbstractContainerSystemSource, ItemSystemData {}
+type AbstractContainerSystemSchema = ItemSystemSchema & {}
 
-export type { AbstractContainerSource, AbstractContainerSystemSource, AbstractContainerSystemData }
+// type AbstractContainerSource<
+// 	TType extends ContainerType,
+// 	TSystemSource extends AbstractContainerSystemSource = AbstractContainerSystemSource,
+// > = BaseItemSourceGURPS<TType, TSystemSource>
+
+// interface AbstractContainerSystemSource extends ItemSystemSource {}
+
+// interface AbstractContainerSystemData extends AbstractContainerSystemSource, ItemSystemData {}
+
+export { AbstractContainerSystemData }
