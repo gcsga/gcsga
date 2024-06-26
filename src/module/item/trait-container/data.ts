@@ -1,26 +1,47 @@
-import {
-	AbstractContainerSource,
-	AbstractContainerSystemData,
-	AbstractContainerSystemSource,
-} from "@item/abstract-container/data.ts"
 import { ItemType } from "@module/data/constants.ts"
-import { TemplatePickerObj } from "@system"
-import { container, selfctrl } from "@util"
+import { TemplatePicker, TemplatePickerSchema } from "@system"
+import { LocalizeGURPS, container, selfctrl } from "@util"
 import { TraitContainerGURPS } from "./document.ts"
-import { ItemSystemSchema } from "@item/base/schema.ts"
 import fields = foundry.data.fields
+import { AbstractContainerSource, AbstractContainerSystemData, AbstractContainerSystemSchema } from "@item/abstract-container/data.ts"
 
 class TraitContainerSystemData extends AbstractContainerSystemData<TraitContainerGURPS, TraitContainerSystemSchema> {
 	static override defineSchema(): TraitContainerSystemSchema {
+		const fields = foundry.data.fields
+
+		return {
+			...super.defineSchema(),
+			type: new fields.StringField({ required: true, initial: ItemType.TraitContainer }),
+			name: new fields.StringField({
+				required: true,
+				initial: LocalizeGURPS.translations.TYPES.Item[ItemType.TraitContainer],
+			}),
+			reference: new fields.StringField(),
+			reference_highlight: new fields.StringField(),
+			notes: new fields.StringField(),
+			vtt_notes: new fields.StringField(),
+			ancestry: new fields.StringField(),
+			userdesc: new fields.StringField(),
+			tags: new fields.ArrayField(new foundry.data.fields.StringField()),
+			template_picker: new fields.SchemaField(TemplatePicker.defineSchema()),
+			cr: new fields.NumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>({ choices: selfctrl.Rolls, initial: selfctrl.Roll.NoCR, nullable: false }),
+			cr_adj: new fields.StringField<selfctrl.Adjustment>({
+				choices: selfctrl.Adjustments,
+				initial: selfctrl.Adjustment.NoCRAdj,
+			}),
+			container_type: new fields.StringField<container.Type>({ choices: container.Types, initial: container.Type.Group }),
+			disabled: new fields.BooleanField({ initial: false }),
+			open: new fields.BooleanField({ initial: true }),
+		}
 
 	}
 }
 
 interface TraitContainerSystemData
-	extends ItemSystemModel<TraitContainerGURPS, TraitContainerSystemSchema>,
+	extends AbstractContainerSystemData<TraitContainerGURPS, TraitContainerSystemSchema>,
 	ModelPropsFromSchema<TraitContainerSystemSchema> { }
 
-type TraitContainerSystemSchema = ItemSystemSchema & {
+type TraitContainerSystemSchema = AbstractContainerSystemSchema & {
 	type: fields.StringField<ItemType.TraitContainer, ItemType.TraitContainer, true, false, true>
 	name: fields.StringField<string, string, true, false, true>
 	reference: fields.StringField
@@ -30,35 +51,16 @@ type TraitContainerSystemSchema = ItemSystemSchema & {
 	ancestry: fields.StringField
 	userdesc: fields.StringField
 	tags: fields.ArrayField<fields.StringField>
-	template_picker: TemplatePickerSchema
-	cr: fields.NumberField<selfctrl.Roll>
+	template_picker: fields.SchemaField<TemplatePickerSchema>
+	cr: fields.NumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>
 	cr_adj: fields.StringField<selfctrl.Adjustment>
 	container_type: fields.StringField<container.Type>
-	// features: fields.ArrayField<fields.ObjectField<FeatureObj>>
 	disabled: fields.BooleanField
 	open: fields.BooleanField
 }
 
-// type TraitContainerSource = AbstractContainerSource<ItemType.TraitContainer, TraitContainerSystemSource>
+type TraitContainerSystemSource = SourceFromSchema<TraitContainerSystemSchema>
 
-interface TraitContainerSystemSource extends AbstractContainerSystemSource {
-	type: ItemType.TraitContainer
-	name: string
-	reference: string
-	reference_highlight: string
-	notes: string
-	vtt_notes: string
-	ancestry: string
-	userdesc: string
-	tags: string[]
-	template_picker: TemplatePickerObj
-	cr: selfctrl.Roll
-	cr_adj: selfctrl.Adjustment
-	container_type: container.Type
-	disabled: boolean
-	open: boolean
-}
+type TraitContainerSource = AbstractContainerSource<ItemType.TraitContainer, TraitContainerSystemSource>
 
-interface TraitContainerSystemData extends TraitContainerSystemSource, AbstractContainerSystemData { }
-
-export type { TraitContainerSource, TraitContainerSystemData, TraitContainerSystemSource }
+export type { TraitContainerSource, TraitContainerSystemSource, TraitContainerSystemData }

@@ -1,5 +1,4 @@
-import { AbstractContainerSystemData } from "@item/abstract-container/data.ts"
-import { ItemSystemModel, ItemSystemSchema } from "@item/base/schema.ts"
+import { AbstractContainerSource, AbstractContainerSystemData, AbstractContainerSystemSchema } from "@item/abstract-container/data.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { FeatureObj, PrereqList, SkillBonus, Study } from "@system"
 import { LocalizeGURPS, StringCompareType, feature, selfctrl, skillsel, study } from "@util"
@@ -48,7 +47,7 @@ class TraitSystemData extends AbstractContainerSystemData<TraitGURPS, TraitSyste
 			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
 			features: new fields.ArrayField(new fields.ObjectField<FeatureObj>()),
 			study: new fields.ArrayField(new fields.ObjectField<Study>()),
-			cr: new fields.NumberField<selfctrl.Roll>({ choices: selfctrl.Rolls, initial: selfctrl.Roll.NoCR }),
+			cr: new fields.NumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>({ choices: selfctrl.Rolls, initial: selfctrl.Roll.NoCR, nullable: false }),
 			cr_adj: new fields.StringField<selfctrl.Adjustment>({
 				choices: selfctrl.Adjustments,
 				initial: selfctrl.Adjustment.NoCRAdj,
@@ -65,10 +64,10 @@ class TraitSystemData extends AbstractContainerSystemData<TraitGURPS, TraitSyste
 }
 
 interface TraitSystemData
-	extends ItemSystemModel<TraitGURPS, TraitSystemSchema>,
+	extends AbstractContainerSystemData<TraitGURPS, TraitSystemSchema>,
 	ModelPropsFromSchema<TraitSystemSchema> { }
 
-type TraitSystemSchema = ItemSystemSchema & {
+type TraitSystemSchema = AbstractContainerSystemSchema & {
 	type: fields.StringField<ItemType.Trait, ItemType.Trait, true, false, true>
 	name: fields.StringField<string, string, true, false, true>
 	reference: fields.StringField
@@ -83,7 +82,7 @@ type TraitSystemSchema = ItemSystemSchema & {
 	prereqs: fields.SchemaField<PrereqListSchema>
 	features: fields.ArrayField<fields.ObjectField<FeatureObj>>
 	study: fields.ArrayField<fields.ObjectField<Study>>
-	cr: fields.NumberField<selfctrl.Roll>
+	cr: fields.NumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>
 	cr_adj: fields.StringField<selfctrl.Adjustment>
 	study_hours_needed: fields.StringField<study.Level>
 	disabled: fields.BooleanField

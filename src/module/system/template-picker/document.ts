@@ -5,7 +5,7 @@ export interface TemplatePickerObj {
 	qualifier: NumericCriteriaObj
 }
 
-type TemplatePickerSchema = {
+export type TemplatePickerSchema = {
 	type: foundry.data.fields.StringField<picker.Type, picker.Type, true, false, true>
 	qualifier: foundry.data.fields.SchemaField<NumericCriteriaSchema>
 }

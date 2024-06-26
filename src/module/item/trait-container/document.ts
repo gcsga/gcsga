@@ -1,47 +1,14 @@
 import { ActorGURPS } from "@actor"
 import { AbstractContainerGURPS } from "@item"
-import { TraitContainerSource, TraitContainerSystemData } from "./data.ts"
 import { ItemInstances } from "@item/types.ts"
 import { ItemType } from "@module/data/constants.ts"
-import { LocalizeGURPS, container, selfctrl } from "@util"
+import { container, selfctrl } from "@util"
 import { calculateModifierPoints } from "@item/helpers.ts"
-import { TemplatePicker } from "@system"
-
-const fields = foundry.data.fields
+import { TraitContainerSource, TraitContainerSystemData } from "./data.ts"
 
 class TraitContainerGURPS<
 	TParent extends ActorGURPS | null = ActorGURPS | null,
 > extends AbstractContainerGURPS<TParent> {
-	static override defineSchema(): foundry.documents.ItemSchema<string, object> {
-		return this.mergeSchema(super.defineSchema(), {
-			system: new fields.SchemaField({
-				type: new fields.StringField({ required: true, initial: ItemType.TraitContainer }),
-				name: new fields.StringField({
-					required: true,
-					initial: LocalizeGURPS.translations.TYPES.Item[ItemType.TraitContainer],
-				}),
-				reference: new fields.StringField(),
-				reference_highlight: new fields.StringField(),
-				notes: new fields.StringField(),
-				vtt_notes: new fields.StringField(),
-				ancestry: new fields.StringField(),
-				userdesc: new fields.StringField(),
-				tags: new fields.ArrayField(new foundry.data.fields.StringField()),
-				template_picker: new fields.SchemaField(TemplatePicker.defineSchema()),
-				cr: new fields.NumberField<selfctrl.Roll>({ choices: selfctrl.Rolls, initial: selfctrl.Roll.NoCR }),
-				cr_adj: new fields.StringField<selfctrl.Adjustment>({
-					choices: selfctrl.Adjustments,
-					initial: selfctrl.Adjustment.NoCRAdj,
-				}),
-				container_type: new fields.StringField<container.Type>({
-					choices: container.Types,
-					initial: container.Type.Group,
-				}),
-				disabled: new fields.BooleanField({ initial: false }),
-				open: new fields.BooleanField({ initial: false }),
-			}),
-		})
-	}
 
 	get skillLevel(): number {
 		return this.CR
@@ -64,8 +31,8 @@ class TraitContainerGURPS<
 				.map(item => [
 					item.id,
 					item as
-						| ItemInstances<TParent>[ItemType.TraitModifier]
-						| ItemInstances<TParent>[ItemType.TraitModifierContainer],
+					| ItemInstances<TParent>[ItemType.TraitModifier]
+					| ItemInstances<TParent>[ItemType.TraitModifierContainer],
 				]),
 		)
 	}
