@@ -44,5 +44,5 @@ export namespace difficulty {
 
 	export const Levels: Level[] = [Level.Easy, Level.Average, Level.Hard, Level.VeryHard, Level.Wildcard]
 
-	export const TechiqueLevels = [Level.Average, Level.Hard] as const
+	export const TechniqueLevels = [Level.Average, Level.Hard] as const
 }

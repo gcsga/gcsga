@@ -23,11 +23,6 @@ export const ContainedQuantityNumericCompareTypes: NumericCompareType[] = [
 	NumericCompareType.AtMostNumber,
 ]
 
-export interface NumericCriteriaObj {
-	compare?: NumericCompareType
-	qualifier?: number
-}
-
 export type NumericCriteriaSchema = {
 	compare: StringField<NumericCompareType, NumericCompareType, true, false, true>
 	qualifier: NumberField<number, number, true, false, true>
@@ -49,7 +44,7 @@ export class NumericCriteria {
 		}
 	}
 
-	constructor(data: NumericCriteriaObj) {
+	constructor(data: SourceFromSchema<NumericCriteriaSchema>) {
 		this.compare = data.compare ?? NumericCompareType.AnyNumber
 		this.qualifier = data.qualifier ?? 0
 	}
@@ -90,7 +85,7 @@ export class NumericCriteria {
 		return result + this.qualifier.toString()
 	}
 
-	toObject(): NumericCriteriaObj {
+	toObject(): SourceFromSchema<NumericCriteriaSchema> {
 		return { compare: this.compare, qualifier: this.qualifier }
 	}
 }

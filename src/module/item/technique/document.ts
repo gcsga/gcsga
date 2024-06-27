@@ -1,51 +1,13 @@
 import { ActorGURPS } from "@actor"
 import { AbstractSkillGURPS } from "@item"
 import { TechniqueSource, TechniqueSystemData } from "./data.ts"
-import { LocalizeGURPS, NewLineRegex, StringBuilder, TooltipGURPS, difficulty, display, study } from "@util"
+import { LocalizeGURPS, NewLineRegex, StringBuilder, TooltipGURPS, difficulty, display } from "@util"
 import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
-import { Feature, PrereqList, SkillDefault, Study, resolveStudyHours, studyHoursProgressText } from "@system"
-import { ActorType, ItemType, gid } from "@module/data/constants.ts"
+import { SkillDefault, resolveStudyHours, studyHoursProgressText } from "@system"
+import { ActorType, gid } from "@module/data/constants.ts"
 import { SkillLevel } from "@item/skill/data.ts"
 
-const fields = foundry.data.fields
-
 class TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends AbstractSkillGURPS<TParent> {
-	static override defineSchema(): foundry.documents.ItemSchema<string, object> {
-		return this.mergeSchema(super.defineSchema(), {
-			system: new fields.SchemaField({
-				type: new fields.StringField({ required: true, initial: ItemType.Technique }),
-				name: new fields.StringField({
-					required: true,
-					initial: LocalizeGURPS.translations.TYPES.Item[ItemType.Technique],
-				}),
-				reference: new fields.StringField(),
-				reference_highlight: new fields.StringField(),
-				notes: new fields.StringField(),
-				vtt_notes: new fields.StringField(),
-				tags: new fields.ArrayField(new foundry.data.fields.StringField()),
-				specialization: new fields.StringField(),
-				tech_level: new fields.StringField(),
-				tech_level_required: new fields.BooleanField(),
-				difficulty: new fields.StringField<difficulty.Level.Average | difficulty.Level.Hard>({
-					choices: [difficulty.Level.Average, difficulty.Level.Hard],
-					initial: difficulty.Level.Average,
-				}),
-				points: new fields.NumberField({ min: 0, integer: true, initial: 1 }),
-				default: new fields.SchemaField(SkillDefault.defineSchema(), {
-					initial: { type: gid.Skill, name: "Skill", modifier: 0 },
-				}),
-				defaults: new fields.ArrayField(new fields.SchemaField(SkillDefault.defineSchema())),
-				prereqs: new fields.SchemaField(PrereqList.defineSchema()),
-				features: new fields.ArrayField(new fields.ObjectField<Feature>()),
-				study: new fields.ArrayField(new fields.ObjectField<Study>()),
-				study_hours_needed: new fields.StringField<study.Level>({
-					choices: study.Levels,
-					initial: study.Level.Standard,
-				}),
-			}),
-		})
-	}
-
 	declare default: SkillDefault
 
 	override secondaryText(optionChecker: (option: display.Option) => boolean): string {

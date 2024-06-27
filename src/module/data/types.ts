@@ -2,6 +2,7 @@ import { difficulty } from "@util"
 import { ConditionID, EFFECT_ACTION, ManeuverID, RollType } from "./constants.ts"
 
 type SkillDifficulty = `${string}/${difficulty.Level}`
+type TechniqueDifficulty = difficulty.Level.Average | difficulty.Level.Hard
 
 // Items
 type Posture =
@@ -197,6 +198,7 @@ export type {
 	TokenPool,
 	SkillDifficulty,
 	WeaponOwner,
+	TechniqueDifficulty
 }
 
 export { Postures, AllManeuverIDs, ApplicableConditions, AllPostures }

@@ -1,7 +1,5 @@
-// import { RecordField } from "@system/schema-data-fields.ts"
 import { StringField } from "types/foundry/common/data/fields.js"
 import { LocalizeGURPS } from "./localize.ts"
-// import fields = foundry.data.fields
 
 export enum StringCompareType {
 	AnyString = "none",
@@ -27,36 +25,17 @@ export const AllStringCompareTypes: StringCompareType[] = [
 	StringCompareType.DoesNotEndWithString,
 ]
 
-export interface StringCriteriaObj {
-	compare?: StringCompareType
-	qualifier?: string
-}
-
 export type StringCriteriaSchema = {
 	compare: StringField<StringCompareType, StringCompareType, true, false, true>
 	qualifier: StringField<string, string, true, false, true>
 }
 
-// export class StringCriteriaField extends RecordField<
-// 	fields.StringField<string, string, true, false, false>,
-// 	fields.SchemaField<StringCriteriaValueSchema>,
-// 	true,
-// 	false,
-// 	true,
-// 	true
-// > {}
-
-// type StringCriteriaValueSchema = {
-// 	compare: fields.StringField<StringCompareType>
-// 	qualifier: fields.StringField
-// }
-//
 export class StringCriteria {
 	compare: StringCompareType
 
 	qualifier: string
 
-	constructor(data: StringCriteriaObj) {
+	constructor(data: SourceFromSchema<StringCriteriaSchema>) {
 		this.compare = data.compare ?? StringCompareType.AnyString
 		this.qualifier = data.qualifier ?? ""
 	}
@@ -127,7 +106,7 @@ export class StringCriteria {
 		return `${result} "${this.qualifier}"`
 	}
 
-	toObject(): StringCriteriaObj {
+	toObject(): SourceFromSchema<StringCriteriaSchema> {
 		return { compare: this.compare, qualifier: this.qualifier }
 	}
 }

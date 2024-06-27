@@ -1,9 +1,4 @@
-import { NumericCriteria, NumericCriteriaObj, NumericCriteriaSchema, picker } from "@util"
-
-export interface TemplatePickerObj {
-	type: picker.Type
-	qualifier: NumericCriteriaObj
-}
+import { NumericCriteria, NumericCriteriaSchema, picker } from "@util"
 
 export type TemplatePickerSchema = {
 	type: foundry.data.fields.StringField<picker.Type, picker.Type, true, false, true>

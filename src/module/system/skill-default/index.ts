@@ -7,17 +7,7 @@ const SKILL_BASED_DEFAULT_TYPES: Set<string> = new Set([gid.Skill, gid.Parry, gi
 
 const fields = foundry.data.fields
 
-export interface SkillDefaultObj {
-	type: SkillDefaultType
-	name?: string
-	specialization?: string
-	modifier?: number
-	level?: number
-	adjusted_level?: number
-	points?: number
-}
-
-type SkillDefaultSchema = {
+export type SkillDefaultSchema = {
 	type: foundry.data.fields.StringField<SkillDefaultType, SkillDefaultType, true, false, true>
 	name?: foundry.data.fields.StringField<string, string, false, false, false>
 	specialization?: foundry.data.fields.StringField<string, string, false, false, false>
@@ -36,7 +26,7 @@ export class SkillDefault {
 	adjusted_level = 0
 	points = 0
 
-	constructor(data?: SkillDefaultObj) {
+	constructor(data?: SourceFromSchema<SkillDefaultSchema>) {
 		if (data) Object.assign(this, data)
 	}
 
@@ -166,7 +156,7 @@ export class SkillDefault {
 		return level
 	}
 
-	toObject(): SkillDefaultObj {
+	toObject(): SourceFromSchema<SkillDefaultSchema> {
 		return {
 			type: this.type,
 			name: this.name,
@@ -188,14 +178,4 @@ export class SkillDefault {
 			points: 0,
 		})
 	}
-}
-
-export interface SkillDefaultDef {
-	type: SkillDefaultType
-	name?: string
-	specialization?: string
-	modifier: number
-	level?: number
-	adjusted_level?: number
-	points?: number
 }

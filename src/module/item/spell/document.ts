@@ -2,52 +2,12 @@ import { ActorGURPS } from "@actor"
 import { AbstractSkillGURPS } from "@item"
 import { SpellSource, SpellSystemData } from "./data.ts"
 import { SkillLevel } from "@item/skill/data.ts"
-import { LocalizeGURPS, NewLineRegex, StringBuilder, TooltipGURPS, difficulty, display, study } from "@util"
+import { LocalizeGURPS, NewLineRegex, StringBuilder, TooltipGURPS, difficulty, display } from "@util"
 import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
-import { PrereqList, Study, resolveStudyHours, studyHoursProgressText } from "@system"
-import { ActorType, ItemType, gid } from "@module/data/constants.ts"
-import { SkillDifficulty } from "@module/data/types.ts"
-
-const fields = foundry.data.fields
+import { resolveStudyHours, studyHoursProgressText } from "@system"
+import { ActorType } from "@module/data/constants.ts"
 
 class SpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends AbstractSkillGURPS<TParent> {
-	static override defineSchema(): foundry.documents.ItemSchema<string, object> {
-		return this.mergeSchema(super.defineSchema(), {
-			system: new fields.SchemaField({
-				type: new fields.StringField({ required: true, initial: ItemType.Spell }),
-				name: new fields.StringField({
-					required: true,
-					initial: LocalizeGURPS.translations.TYPES.Item[ItemType.Spell],
-				}),
-				reference: new fields.StringField(),
-				reference_highlight: new fields.StringField(),
-				notes: new fields.StringField(),
-				vtt_notes: new fields.StringField(),
-				tags: new fields.ArrayField(new foundry.data.fields.StringField()),
-				tech_level: new fields.StringField(),
-				tech_level_required: new fields.BooleanField(),
-				difficulty: new fields.StringField<SkillDifficulty>({
-					initial: `${gid.Intelligence}/${difficulty.Level.Hard}`,
-				}),
-				college: new fields.ArrayField(new foundry.data.fields.StringField()),
-				power_source: new fields.StringField({ initial: "Arcane" }),
-				spell_class: new fields.StringField({ initial: "Regular" }),
-				resist: new fields.StringField(),
-				casting_cost: new fields.StringField({ initial: "1" }),
-				maintenance_cost: new fields.StringField(),
-				casting_time: new fields.StringField({ initial: "1 sec" }),
-				duration: new fields.StringField({ initial: "Instant" }),
-				points: new fields.NumberField({ min: 0, integer: true, initial: 1 }),
-				prereqs: new fields.SchemaField(PrereqList.defineSchema()),
-				study: new fields.ArrayField(new fields.ObjectField<Study>()),
-				study_hours_needed: new fields.StringField<study.Level>({
-					choices: study.Levels,
-					initial: study.Level.Standard,
-				}),
-			}),
-		})
-	}
-
 	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
 		const buffer = new StringBuilder()
 		const settings = sheetSettingsFor(this.actor)
