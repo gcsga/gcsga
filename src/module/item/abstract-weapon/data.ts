@@ -1,41 +1,58 @@
-import { BaseItemSourceGURPS, ItemFlagsGURPS, ItemSystemData, ItemSystemSource } from "@item/base/data.ts"
+import fields = foundry.data.fields
+import { BaseItemSourceGURPS, ItemFlagsGURPS, ItemSystemSource } from "@item/base/data.ts"
+import { ItemSystemModel, ItemSystemSchema } from "@item/base/schema.ts"
 import { ItemFlags, SYSTEM_NAME, WeaponType } from "@module/data/constants.ts"
-import { SkillDefaultObj } from "@system"
-import { stdmg } from "@util"
-
-type AbstractWeaponSource<
-	TType extends WeaponType,
-	TSystemSource extends AbstractWeaponSystemSource = AbstractWeaponSystemSource,
-> = BaseItemSourceGURPS<TType, TSystemSource> & {
-	flags: DeepPartial<WeaponFlags>
-}
+import { SkillDefault, SkillDefaultSchema } from "@system"
+import { AbstractWeaponGURPS } from "./document.ts"
+import { WeaponDamage, WeaponDamageSchema } from "./weapon-damage.ts"
 
 type WeaponFlags = ItemFlagsGURPS & {
 	[SYSTEM_NAME]: {
 		[ItemFlags.Unready]: boolean
 	}
 }
+abstract class AbstractWeaponSystemData<
+	TParent extends AbstractWeaponGURPS,
+	TSchema extends AbstractWeaponSystemSchema,
+> extends ItemSystemModel<TParent, TSchema> {
 
-interface AbstractWeaponSystemSource extends ItemSystemSource {
-	type: WeaponType
-	strength: string
-	usage: string
-	usage_notes: string
-	defaults: SkillDefaultObj[]
-	damage: WeaponDamageObj
+	static override defineSchema(): AbstractWeaponSystemSchema {
+		const fields = foundry.data.fields
+
+		return {
+			...super.defineSchema(),
+			strength: new fields.StringField(),
+			usage: new fields.StringField({
+				required: true,
+				// TODO: localize
+				initial: "Usage"
+			}),
+			usage_notes: new fields.StringField(),
+			defaults: new fields.ArrayField(new fields.SchemaField(SkillDefault.defineSchema())),
+			damage: new fields.SchemaField(WeaponDamage.defineSchema()),
+		}
+	}
 }
 
-interface AbstractWeaponSystemData extends AbstractWeaponSystemSource, ItemSystemData {}
+interface AbstractWeaponSystemData<
+	TParent extends AbstractWeaponGURPS,
+	TSchema extends AbstractWeaponSystemSchema,
+> extends ItemSystemModel<TParent, TSchema> { }
 
-interface WeaponDamageObj {
-	type: string
-	st?: stdmg.Option
-	base?: string
-	armor_divisor?: number
-	fragmentation?: string
-	fragmentation_armor_divisor?: number
-	fragmentation_type?: string
-	modifier_per_die?: number
+type AbstractWeaponSystemSchema = ItemSystemSchema & {
+	strength: fields.StringField<string, string, true, false, true>
+	usage: fields.StringField<string, string, true, false, true>
+	usage_notes: fields.StringField
+	defaults: fields.ArrayField<fields.SchemaField<SkillDefaultSchema>>
+	damage: fields.SchemaField<WeaponDamageSchema>
 }
 
-export type { AbstractWeaponSource, AbstractWeaponSystemSource, AbstractWeaponSystemData, WeaponDamageObj, WeaponFlags }
+type AbstractWeaponSource<
+	TType extends WeaponType,
+	TSystemSource extends AbstractWeaponSystemSource = AbstractWeaponSystemSource,
+> = BaseItemSourceGURPS<TType, TSystemSource>
+
+interface AbstractWeaponSystemSource extends ItemSystemSource { }
+
+export { AbstractWeaponSystemData }
+export type { AbstractWeaponSource, AbstractWeaponSystemSchema, WeaponFlags }

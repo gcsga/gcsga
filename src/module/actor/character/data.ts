@@ -1,10 +1,13 @@
+import fields = foundry.data.fields
 import type { ActorFlagsGURPS, ActorSystemData, ActorSystemSource, BaseActorSourceGURPS } from "@actor/base/data.ts"
+import { ActorSystemModel, ActorSystemSchema } from "@actor/base/schema.ts"
 import { ActorFlags, ActorType, SYSTEM_NAME, gid } from "@data"
-import { SheetSettingsObj } from "@module/data/sheet-settings.ts"
+import { PageSettings, SheetSettingsObj } from "@module/data/sheet-settings.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import type { AttributeObj, MoveTypeObj, PoolThreshold, ResourceTrackerObj } from "@system"
 import type { Weight } from "@util/weight.ts"
 import { CharacterManeuver } from "../../system/maneuver-manager.ts"
+import { CharacterGURPS } from "./document.ts"
 
 type CharacterSource = BaseActorSourceGURPS<ActorType.Character, CharacterSystemSource> & {
 	flags: DeepPartial<CharacterFlags>
@@ -46,7 +49,7 @@ interface CharacterSystemSource extends ActorSystemSource {
 	points_record: PointsRecord[]
 }
 
-interface CharacterSystemData extends CharacterSystemSource, ActorSystemData {}
+interface CharacterSystemData extends CharacterSystemSource, ActorSystemData { }
 
 export interface CharacterMove {
 	maneuver: CharacterManeuver | null
@@ -132,6 +135,9 @@ export const CharacterDefaultData: Partial<CharacterSystemSource> = {
 	},
 }
 
+export { CharacterFlagDefaults }
+// export type { CharacterFlags, CharacterSource, CharacterSystemData, CharacterSystemSource }
+
 export interface PointsBreakdown {
 	overspent: boolean
 	ancestry: number
@@ -145,5 +151,58 @@ export interface PointsBreakdown {
 	unspent: number
 }
 
-export { CharacterFlagDefaults }
+class CharacterSystemData extends ActorSystemModel<CharacterGURPS, CharacterSystemSchema> {
+
+	static override defineSchema(): CharacterSystemSchema {
+		return {
+			...super.defineSchema(),
+		}
+	}
+
+}
+
+type CharacterSystemSchema = ActorSystemSchema & {
+	type: fields.StringField<ActorType.Character, ActorType.Character, true, false, true>
+	version: fields.NumberField
+	settings: fields.SchemaField<SheetSettingsSchema>
+	created_date: fields.StringField
+	modified_date: fields.StringField
+	profile: fields.SchemaField<CharacterProfileSchema>
+	attributes: fields.ArrayField<fields.SchemaField<AttributeSchema>>
+	resource_trackers: fields.ArrayField<fields.SchemaField<AttributeSchema>>
+	move_types: fields.ArrayField<fields.SchemaField<AttributeSchema>>
+	move: fields.SchemaField<CharacterMoveSchema>
+	total_points: fields.NumberField
+	points_record: fields.ArrayField<fields.ObjectField<PointsRecord>>
+}
+
+type SheetSettingsSchema = {
+	page: fields.ObjectField<PageSettings>
+	block_layout: fields.ObjectField<BlockLayout>
+	attributes: AttributeDefObj[]
+	resource_trackers: ResourceTrackerDefObj[]
+	move_types: MoveTypeDefObj[]
+	body_type: BodyObj
+	damage_progression: progression.Option
+	default_length_units: LengthUnits
+	default_weight_units: WeightUnits
+	user_description_display: display.Option
+	modifiers_display: display.Option
+	notes_display: display.Option
+	skill_level_adj_display: display.Option
+	use_multiplicative_modifiers: boolean
+	use_modifying_dice_plus_adds: boolean
+	use_half_stat_defaults: boolean
+	show_trait_modifier_adj: boolean
+	show_equipment_modifier_adj: boolean
+	show_spell_adj: boolean
+	use_title_in_footer: boolean
+	exclude_unspent_points_from_total: boolean
+}
+
+type CharacterSystemSource = SourceFromSchema<CharacterSystemSchema>
+
+type CharacterSource = BaseActorSourceGURPS<ActorType.Character, CharacterSystemSource>
+
 export type { CharacterFlags, CharacterSource, CharacterSystemData, CharacterSystemSource }
+

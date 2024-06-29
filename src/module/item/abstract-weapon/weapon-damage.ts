@@ -1,8 +1,8 @@
+import fields = foundry.data.fields
 import { Int } from "@util/fxp.ts"
 import { feature } from "@util/enum/feature.ts"
 import { stdmg } from "@util/enum/stdmg.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
-import { WeaponDamageObj } from "./data.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { progression } from "@util/enum/progression.ts"
 import { CharacterGURPS } from "@actor"
@@ -10,6 +10,17 @@ import { ItemType } from "@data"
 import { AbstractWeaponGURPS } from "./document.ts"
 import { TooltipGURPS } from "@util"
 import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
+
+export type WeaponDamageSchema = {
+	type: fields.StringField<string, string, true, false, true>
+	st: fields.StringField<stdmg.Option>
+	base: fields.StringField
+	armor_divisor: fields.NumberField<number, number, true, false, true>
+	fragmentation: fields.StringField
+	fragmentation_armor_divisor: fields.NumberField<number, number, true, false, true>
+	fragmentation_type: fields.StringField
+	modifier_per_die: fields.NumberField<number, number, true, false, true>
+}
 
 export class WeaponDamage {
 	owner?: AbstractWeaponGURPS
@@ -32,7 +43,7 @@ export class WeaponDamage {
 
 	current?: string
 
-	constructor(data: WeaponDamageObj & { owner?: AbstractWeaponGURPS }) {
+	constructor(data: SourceFromSchema<WeaponDamageSchema> & { owner?: AbstractWeaponGURPS }) {
 		this.owner = data.owner
 		this.type = data.type
 		this.st = data.st ?? stdmg.Option.None
@@ -42,6 +53,19 @@ export class WeaponDamage {
 		this.fragmentation_armor_divisor = data.fragmentation_armor_divisor
 		this.fragmentation_type = data.fragmentation_type
 		this.modifier_per_die = data.modifier_per_die
+	}
+
+	static defineSchema(): WeaponDamageSchema {
+		return {
+			type: new fields.StringField({ required: true, initial: "cr" }),
+			st: new fields.StringField<stdmg.Option>(),
+			base: new fields.StringField(),
+			armor_divisor: new fields.NumberField({ integer: true, min: 0, initial: 1 }),
+			fragmentation: new fields.StringField(),
+			fragmentation_armor_divisor: new fields.NumberField({ integer: true, min: 0, initial: 1 }),
+			fragmentation_type: new fields.StringField(),
+			modifier_per_die: new fields.NumberField({ integer: true, min: 0, initial: 1 }),
+		}
 	}
 
 	toString(): string {
@@ -57,9 +81,8 @@ export class WeaponDamage {
 			if (this.armor_divisor !== 1) buffer += `(${this.armor_divisor})`
 			if (this.modifier_per_die !== 0) {
 				if (buffer.length !== 0) buffer += " "
-				buffer += `(${this.modifier_per_die?.signedString()} ${
-					LocalizeGURPS.translations.gurps.feature.per_die
-				})`
+				buffer += `(${this.modifier_per_die?.signedString()} ${LocalizeGURPS.translations.gurps.feature.per_die
+					})`
 			}
 			const t = this.type.trim()
 			if (t !== "") buffer += ` ${t}`

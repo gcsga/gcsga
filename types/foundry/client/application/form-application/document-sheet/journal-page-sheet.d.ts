@@ -57,6 +57,13 @@ declare global {
 		onNewSteps(): void
 	}
 
+	/** The Application responsible for displaying and editing a single JournalEntryPage PDF document. */
+	class JournalPDFPageSheet<
+		TDocument extends JournalEntryPage<JournalEntry | null>,
+	> extends JournalPageSheet<TDocument> {
+		static override get defaultOptions(): DocumentSheetOptions
+	}
+
 	/** The Application responsible for displaying and editing a single JournalEntryPage image document. */
 	class JournalImagePageSheet<
 		TDocument extends JournalEntryPage<JournalEntry | null>,

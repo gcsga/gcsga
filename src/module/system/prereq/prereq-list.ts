@@ -38,7 +38,7 @@ export class PrereqList {
 	constructor() {
 		this.type = prereq.Type.List
 		this.all = true
-		this.when_tl = new NumericCriteria({ compare: NumericCompareType.AnyNumber })
+		this.when_tl = new NumericCriteria({ compare: NumericCompareType.AnyNumber, qualifier: 0 })
 		this.prereqs = []
 	}
 
