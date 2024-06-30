@@ -1,4 +1,5 @@
-export { AttributeGURPS } from "./object.ts"
-export { AttributeDef } from "./definition.ts"
-export { PoolThreshold } from "./pool-threshold.ts"
 export * from "./data.ts"
+export { AttributeDef } from "./definition.ts"
+export { AttributeGURPS } from "./object.ts"
+export { PoolThreshold, type PoolThresholdSchema } from "./pool-threshold.ts"
+

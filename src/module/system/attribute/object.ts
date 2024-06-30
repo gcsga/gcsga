@@ -1,10 +1,10 @@
 import { PoolThreshold } from "./pool-threshold.ts"
-import { AttributeObj } from "./data.ts"
 import { AttributeDef } from "./definition.ts"
 import { ActorFlags, SYSTEM_NAME, TokenPool, gid } from "@data"
 import { ErrorGURPS, Int, attribute, stlimit } from "@util"
 import { AbstractAttribute } from "@system/abstract-attribute/object.ts"
 import { AttributeResolver } from "@module/util/index.ts"
+import { AttributeSchema } from "./data.ts"
 
 class AttributeGURPS<TActor extends AttributeResolver = AttributeResolver> extends AbstractAttribute<TActor> {
 	adj = 0
@@ -14,7 +14,7 @@ class AttributeGURPS<TActor extends AttributeResolver = AttributeResolver> exten
 
 	protected _overridenThreshold: PoolThreshold | null = null
 
-	constructor(actor: TActor, data: AttributeObj, order: number) {
+	constructor(actor: TActor, data: SourceFromSchema<AttributeSchema>, order: number) {
 		super(actor, data)
 		this.adj = data.adj
 		if (data.damage !== undefined) this.damage = data.damage

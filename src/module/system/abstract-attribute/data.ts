@@ -1,10 +1,21 @@
-interface AbstractAttributeObj {
-	id: string
+import fields = foundry.data.fields
+
+// interface AbstractAttributeObj {
+// 	id: string
+// }
+//
+// interface AbstractAttributeDefObj {
+// 	id: string
+// 	base: string
+// }
+
+type AbstractAttributeSchema = {
+	id: fields.StringField
 }
 
-interface AbstractAttributeDefObj {
-	id: string
-	base: string
+type AbstractAttributeDefSchema = {
+	id: fields.StringField
+	base: fields.StringField
 }
 
-export type { AbstractAttributeObj, AbstractAttributeDefObj }
+export type { AbstractAttributeSchema, AbstractAttributeDefSchema }

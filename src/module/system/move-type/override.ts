@@ -1,21 +1,6 @@
 import { MoveTypeResolver, evaluateToNumber } from "@module/util/index.ts"
-import { MoveTypeOverrideConditionType, MoveTypeOverrideObj } from "./data.ts"
+import { MoveTypeOverrideConditionType, MoveTypeOverrideSchema } from "./data.ts"
 
-const fields = foundry.data.fields
-
-export type MoveTypeOverrideSchema = {
-	condition: foundry.data.fields.SchemaField<{
-		type: foundry.data.fields.StringField<
-			MoveTypeOverrideConditionType,
-			MoveTypeOverrideConditionType,
-			true,
-			false,
-			true
-		>
-		qualifier: foundry.data.fields.StringField<string, string, true, false, true>
-	}>
-	base: foundry.data.fields.StringField<string, string, true, false, true>
-}
 
 export class MoveTypeOverride {
 	// Value to check the actor against
@@ -23,12 +8,13 @@ export class MoveTypeOverride {
 	// Overriddes the base value of the move type definition when condition is met
 	base: string
 
-	constructor(data: MoveTypeOverrideObj) {
+	constructor(data: SourceFromSchema<MoveTypeOverrideSchema>) {
 		this.condition = data.condition
 		this.base = data.base
 	}
 
 	static defineSchema(): MoveTypeOverrideSchema {
+		const fields = foundry.data.fields
 		return {
 			condition: new fields.SchemaField({
 				type: new fields.StringField<MoveTypeOverrideConditionType, MoveTypeOverrideConditionType, true>({
@@ -55,7 +41,7 @@ export class MoveTypeOverride {
 		return evaluateToNumber(this.base, resolver)
 	}
 
-	static newObject(): MoveTypeOverrideObj {
+	static newObject(): SourceFromSchema<MoveTypeOverrideSchema> {
 		return {
 			condition: { type: MoveTypeOverrideConditionType.Skill, qualifier: "" },
 			base: "",

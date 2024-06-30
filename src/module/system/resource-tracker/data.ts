@@ -1,17 +1,19 @@
-import { AbstractAttributeDefObj, PoolThresholdObj } from "@system"
+import fields = foundry.data.fields
+import { AbstractAttributeDefSchema, AbstractAttributeSchema, PoolThresholdSchema } from "@system"
 
-export interface ResourceTrackerObj {
-	id: string
-	damage: number
+type ResourceTrackerSchema = AbstractAttributeSchema & {
+	damage: fields.NumberField
 }
 
-export interface ResourceTrackerDefObj extends AbstractAttributeDefObj {
-	name: string
-	full_name: string
-	max: number
-	min: number
-	isMaxEnforced: boolean
-	isMinEnforced: boolean
-	thresholds?: PoolThresholdObj[]
-	order?: number
+type ResourceTrackerDefSchema = AbstractAttributeDefSchema & {
+	name: fields.StringField
+	full_name: fields.StringField
+	max: fields.NumberField
+	min: fields.NumberField
+	isMaxEnforced: fields.BooleanField
+	isMinEnforced: fields.BooleanField
+	thresholds: fields.ArrayField<fields.SchemaField<PoolThresholdSchema>>
+	order: fields.NumberField
 }
+
+export type { ResourceTrackerSchema, ResourceTrackerDefSchema }

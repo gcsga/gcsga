@@ -278,7 +278,7 @@ class HandlebarsHelpersGURPS {
 	// 	throw new Error(`hpFpCondition called with invalid type: [${type}]`)
 	// }
 
-	// static resourceCondition(r: StaticResourceTracker): string {
+	// static Resourceondition(r: StaticResourceTracker): string {
 	// 	// Let threshold = r.thresholds[0].condition
 	// 	let threshold = ""
 	// 	for (const t of r.thresholds) {

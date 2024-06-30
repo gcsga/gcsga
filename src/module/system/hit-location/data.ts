@@ -1,18 +1,25 @@
-interface BodyObj {
-	name?: string
-	roll: string
-	locations?: HitLocationObj[]
+import fields = foundry.data.fields
+
+type HitLocationSchema = {
+	id: fields.StringField
+	choice_name: fields.StringField
+	table_name: fields.StringField
+	slots: fields.NumberField
+	hit_penalty: fields.NumberField
+	dr_bonus: fields.NumberField
+	description: fields.StringField<string, string, true, true>
+	sub_table: fields.SchemaField<
+		BodySchema,
+		SourceFromSchema<BodySchema>,
+		ModelPropsFromSchema<BodySchema>,
+		true, true
+	>
 }
 
-interface HitLocationObj {
-	id: string
-	choice_name: string
-	table_name: string
-	slots?: number
-	hit_penalty?: number
-	dr_bonus?: number
-	description?: string
-	sub_table?: BodyObj
+type BodySchema = {
+	name: fields.StringField<string, string, false, true>
+	roll: fields.StringField
+	locations: fields.ArrayField<fields.SchemaField<HitLocationSchema>>
 }
 
-export type { BodyObj, HitLocationObj }
+export type { BodySchema, HitLocationSchema }

@@ -1,24 +1,11 @@
 import { attribute } from "@util/enum/attribute.ts"
-import { PoolThreshold, PoolThresholdSchema } from "./pool-threshold.ts"
-import { AttributeDefObj, AttributeObj } from "./data.ts"
+import { PoolThreshold } from "./pool-threshold.ts"
+import { AttributeDefSchema, AttributeSchema } from "./data.ts"
 import { progression } from "@util/enum/progression.ts"
 import { AbstractAttributeDef } from "@system/abstract-attribute/definition.ts"
 import { gid } from "@module/data/constants.ts"
 import { AttributeResolver, evaluateToNumber } from "@module/util/index.ts"
 
-const fields = foundry.data.fields
-
-type AttributeDefSchema = {
-	type: foundry.data.fields.StringField<attribute.Type, attribute.Type, true>
-	id: foundry.data.fields.StringField
-	base: foundry.data.fields.StringField
-	name: foundry.data.fields.StringField
-	full_name: foundry.data.fields.StringField
-	cost_per_point: foundry.data.fields.NumberField
-	cost_adj_percent_per_sm: foundry.data.fields.NumberField
-	thresholds?: foundry.data.fields.ArrayField<foundry.data.fields.SchemaField<PoolThresholdSchema>>
-	order: foundry.data.fields.NumberField
-}
 
 export class AttributeDef extends AbstractAttributeDef {
 	declare type: attribute.Type
@@ -29,7 +16,7 @@ export class AttributeDef extends AbstractAttributeDef {
 	thresholds?: PoolThreshold[]
 	order: number
 
-	constructor(data: AttributeDefObj) {
+	constructor(data: SourceFromSchema<AttributeDefSchema>) {
 		super(data)
 		this.type = data.type
 		this.name = data.name
@@ -41,6 +28,8 @@ export class AttributeDef extends AbstractAttributeDef {
 	}
 
 	static defineSchema(): AttributeDefSchema {
+		const fields = foundry.data.fields
+
 		return {
 			type: new fields.StringField<attribute.Type, attribute.Type, true>({
 				choices: attribute.Types,
@@ -99,7 +88,7 @@ export class AttributeDef extends AbstractAttributeDef {
 		return Math.round(cost)
 	}
 
-	override generateNewAttribute(): AttributeObj {
+	override generateNewAttribute(): SourceFromSchema<AttributeSchema> {
 		return {
 			...super.generateNewAttribute(),
 			adj: 0,
@@ -107,7 +96,7 @@ export class AttributeDef extends AbstractAttributeDef {
 		}
 	}
 
-	static override newObject(reservedIds: string[]): AttributeDefObj {
+	static override newObject(reservedIds: string[]): SourceFromSchema<AttributeDefSchema> {
 		return {
 			...super.newObject(reservedIds),
 			type: attribute.Type.Integer,

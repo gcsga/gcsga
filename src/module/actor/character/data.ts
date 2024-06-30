@@ -2,16 +2,17 @@ import fields = foundry.data.fields
 import type { ActorFlagsGURPS, ActorSystemData, ActorSystemSource, BaseActorSourceGURPS } from "@actor/base/data.ts"
 import { ActorSystemModel, ActorSystemSchema } from "@actor/base/schema.ts"
 import { ActorFlags, ActorType, SYSTEM_NAME, gid } from "@data"
-import { PageSettings, SheetSettingsObj } from "@module/data/sheet-settings.ts"
+import { BlockLayout, PageSettings, SheetSettingsObj } from "@module/data/sheet-settings.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
-import type { AttributeObj, MoveTypeObj, PoolThreshold, ResourceTrackerObj } from "@system"
-import type { Weight } from "@util/weight.ts"
+import type { AttributeDefSchema, AttributeObj, AttributeSchema, BodySchema, MoveTypeDefSchema, MoveTypeObj, MoveTypeSchema, PoolThreshold, ResourceTrackerDefSchema, ResourceTrackerObj, ResourceTrackerSchema, ResourcecTrackerSchema } from "@system"
+import type { Weight, WeightUnits } from "@util/weight.ts"
 import { CharacterManeuver } from "../../system/maneuver-manager.ts"
 import { CharacterGURPS } from "./document.ts"
+import { LengthUnits, display, progression } from "@util"
 
-type CharacterSource = BaseActorSourceGURPS<ActorType.Character, CharacterSystemSource> & {
-	flags: DeepPartial<CharacterFlags>
-}
+// type CharacterSource = BaseActorSourceGURPS<ActorType.Character, CharacterSystemSource> & {
+// 	flags: DeepPartial<CharacterFlags>
+// }
 
 type CharacterFlags = ActorFlagsGURPS & {
 	[SYSTEM_NAME]: {
@@ -22,74 +23,74 @@ type CharacterFlags = ActorFlagsGURPS & {
 	}
 }
 
-const CharacterFlagDefaults: CharacterFlags = {
-	[SYSTEM_NAME]: {
-		[ActorFlags.TargetModifiers]: [],
-		[ActorFlags.SelfModifiers]: [],
-		[ActorFlags.MoveType]: gid.Ground,
-		[ActorFlags.AutoEncumbrance]: { active: true, manual: 0 },
-		[ActorFlags.AutoThreshold]: { active: true, manual: {} },
-		[ActorFlags.AutoDamage]: { active: true, thrust: new DiceGURPS(), swing: new DiceGURPS() },
-		[ActorFlags.Import]: { name: "", path: "", last_import: "" },
-	},
-}
+// const CharacterFlagDefaults: CharacterFlags = {
+// 	[SYSTEM_NAME]: {
+// 		[ActorFlags.TargetModifiers]: [],
+// 		[ActorFlags.SelfModifiers]: [],
+// 		[ActorFlags.MoveType]: gid.Ground,
+// 		[ActorFlags.AutoEncumbrance]: { active: true, manual: 0 },
+// 		[ActorFlags.AutoThreshold]: { active: true, manual: {} },
+// 		[ActorFlags.AutoDamage]: { active: true, thrust: new DiceGURPS(), swing: new DiceGURPS() },
+// 		[ActorFlags.Import]: { name: "", path: "", last_import: "" },
+// 	},
+// }
 
-interface CharacterSystemSource extends ActorSystemSource {
-	type: ActorType.Character
-	version: number
-	settings: SheetSettingsObj
-	created_date: string
-	modified_date: string
-	profile: CharacterProfile
-	attributes: AttributeObj[]
-	resource_trackers: ResourceTrackerObj[]
-	move_types: MoveTypeObj[]
-	move: CharacterMove
-	total_points: number
-	points_record: PointsRecord[]
-}
+// interface CharacterSystemSource extends ActorSystemSource {
+// 	type: ActorType.Character
+// 	version: number
+// 	settings: SheetSettingsObj
+// 	created_date: string
+// 	modified_date: string
+// 	profile: CharacterProfile
+// 	attributes: AttributeObj[]
+// 	resource_trackers: ResourceTrackerObj[]
+// 	move_types: MoveTypeObj[]
+// 	move: CharacterMove
+// 	total_points: number
+// 	points_record: PointsRecord[]
+// }
+//
+// interface CharacterSystemData extends CharacterSystemSource, ActorSystemData { }
 
-interface CharacterSystemData extends CharacterSystemSource, ActorSystemData { }
+// export interface CharacterMove {
+// 	maneuver: CharacterManeuver | null
+// 	posture: string
+// 	type: string
+// }
 
-export interface CharacterMove {
-	maneuver: CharacterManeuver | null
-	posture: string
-	type: string
-}
-
-export interface CharacterProfile {
-	player_name: string
-	name: string
-	title: string
-	organization: string
-	age: string
-	birthday: string
-	eyes: string
-	hair: string
-	skin: string
-	handedness: string
-	height: string
-	weight: string
-	SM: number
-	gender: string
-	tech_level: string
-	religion: string
-	portrait: string
-}
-
-export interface CharacterCalc {
-	swing: string
-	thrust: string
-	basic_lift: Weight
-	lifting_st_bonus: number
-	striking_st_bonus: number
-	throwing_st_bonus: number
-	move: number[]
-	dodge: number[]
-	dodge_bonus: number
-	block_bonus: number
-	parry_bonus: number
-}
+// export interface CharacterProfile {
+// 	player_name: string
+// 	name: string
+// 	title: string
+// 	organization: string
+// 	age: string
+// 	birthday: string
+// 	eyes: string
+// 	hair: string
+// 	skin: string
+// 	handedness: string
+// 	height: string
+// 	weight: string
+// 	SM: number
+// 	gender: string
+// 	tech_level: string
+// 	religion: string
+// 	portrait: string
+// }
+//
+// export interface CharacterCalc {
+// 	swing: string
+// 	thrust: string
+// 	basic_lift: Weight
+// 	lifting_st_bonus: number
+// 	striking_st_bonus: number
+// 	throwing_st_bonus: number
+// 	move: number[]
+// 	dodge: number[]
+// 	dodge_bonus: number
+// 	block_bonus: number
+// 	parry_bonus: number
+// }
 
 export interface PointsRecord {
 	when: string
@@ -113,49 +114,67 @@ export interface Encumbrance {
 	}
 }
 
-export const CharacterDefaultData: Partial<CharacterSystemSource> = {
-	profile: {
-		player_name: "",
-		name: "",
-		title: "",
-		organization: "",
-		age: "",
-		birthday: "",
-		eyes: "",
-		hair: "",
-		skin: "",
-		handedness: "",
-		height: "6'",
-		weight: "0 lb",
-		SM: 0,
-		gender: "",
-		tech_level: "",
-		religion: "",
-		portrait: "",
-	},
-}
+// export const CharacterDefaultData: Partial<CharacterSystemSource> = {
+// 	profile: {
+// 		player_name: "",
+// 		name: "",
+// 		title: "",
+// 		organization: "",
+// 		age: "",
+// 		birthday: "",
+// 		eyes: "",
+// 		hair: "",
+// 		skin: "",
+// 		handedness: "",
+// 		height: "6'",
+// 		weight: "0 lb",
+// 		SM: 0,
+// 		gender: "",
+// 		tech_level: "",
+// 		religion: "",
+// 		portrait: "",
+// 	},
+// }
 
-export { CharacterFlagDefaults }
+// export { CharacterFlagDefaults }
 // export type { CharacterFlags, CharacterSource, CharacterSystemData, CharacterSystemSource }
 
-export interface PointsBreakdown {
-	overspent: boolean
-	ancestry: number
-	attributes: number
-	advantages: number
-	disadvantages: number
-	quirks: number
-	skills: number
-	spells: number
-	total: number
-	unspent: number
-}
+// export interface PointsBreakdown {
+// 	overspent: boolean
+// 	ancestry: number
+// 	attributes: number
+// 	advantages: number
+// 	disadvantages: number
+// 	quirks: number
+// 	skills: number
+// 	spells: number
+// 	total: number
+// 	unspent: number
+// }
 
 class CharacterSystemData extends ActorSystemModel<CharacterGURPS, CharacterSystemSchema> {
 
 	static override defineSchema(): CharacterSystemSchema {
+		const fields = foundry.data.fields
+
 		return {
 			...super.defineSchema(),
+			type: new fields.StringField<ActorType.Character, ActorType.Character, true, false, true>(),
+			version: new fields.NumberField({ initial: 4 }),
+			settings: new fields.SchemaField<SheetSettingsSchema>(),
+			created_date: fields.StringField
+	modified_date: fields.StringField
+	profile: fields.SchemaField<CharacterProfileSchema>
+	attributes: fields.ArrayField<fields.SchemaField<AttributeSchema>>
+	resource_trackers: fields.ArrayField<fields.SchemaField<ResourceTrackerSchema>>
+	move_types: fields.ArrayField<fields.SchemaField<MoveTypeSchema>>
+	move: fields.SchemaField<{
+				maneuver: fields.ObjectField<CharacterManeuver>
+				posture: fields.StringField
+				type: fields.StringField
+			}>
+	total_points: fields.NumberField
+	points_record: fields.ArrayField<fields.ObjectField<PointsRecord>>
 		}
 	}
 
@@ -169,35 +188,36 @@ type CharacterSystemSchema = ActorSystemSchema & {
 	modified_date: fields.StringField
 	profile: fields.SchemaField<CharacterProfileSchema>
 	attributes: fields.ArrayField<fields.SchemaField<AttributeSchema>>
-	resource_trackers: fields.ArrayField<fields.SchemaField<AttributeSchema>>
-	move_types: fields.ArrayField<fields.SchemaField<AttributeSchema>>
-	move: fields.SchemaField<CharacterMoveSchema>
+	resource_trackers: fields.ArrayField<fields.SchemaField<ResourceTrackerSchema>>
+	move_types: fields.ArrayField<fields.SchemaField<MoveTypeSchema>>
+	move: fields.SchemaField<{
+		maneuver: fields.ObjectField<CharacterManeuver>
+		posture: fields.StringField
+		type: fields.StringField
+	}>
 	total_points: fields.NumberField
 	points_record: fields.ArrayField<fields.ObjectField<PointsRecord>>
 }
 
-type SheetSettingsSchema = {
-	page: fields.ObjectField<PageSettings>
-	block_layout: fields.ObjectField<BlockLayout>
-	attributes: AttributeDefObj[]
-	resource_trackers: ResourceTrackerDefObj[]
-	move_types: MoveTypeDefObj[]
-	body_type: BodyObj
-	damage_progression: progression.Option
-	default_length_units: LengthUnits
-	default_weight_units: WeightUnits
-	user_description_display: display.Option
-	modifiers_display: display.Option
-	notes_display: display.Option
-	skill_level_adj_display: display.Option
-	use_multiplicative_modifiers: boolean
-	use_modifying_dice_plus_adds: boolean
-	use_half_stat_defaults: boolean
-	show_trait_modifier_adj: boolean
-	show_equipment_modifier_adj: boolean
-	show_spell_adj: boolean
-	use_title_in_footer: boolean
-	exclude_unspent_points_from_total: boolean
+
+type CharacterProfileSchema = {
+	player_name: fields.StringField
+	name: fields.StringField
+	title: fields.StringField
+	organization: fields.StringField
+	age: fields.StringField
+	birthday: fields.StringField
+	eyes: fields.StringField
+	hair: fields.StringField
+	skin: fields.StringField
+	handedness: fields.StringField
+	height: fields.StringField
+	weight: fields.StringField
+	SM: fields.NumberField
+	gender: fields.StringField
+	tech_level: fields.StringField
+	religion: fields.StringField
+	portrait: fields.StringField
 }
 
 type CharacterSystemSource = SourceFromSchema<CharacterSystemSchema>

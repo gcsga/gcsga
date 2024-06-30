@@ -1,22 +1,7 @@
 import { ResourceTrackerResolver } from "@module/util/index.ts"
-import { ResourceTrackerDefObj, ResourceTrackerObj } from "./data.ts"
+import { ResourceTrackerDefSchema, ResourceTrackerSchema } from "./data.ts"
 import { AbstractAttributeDef, PoolThreshold } from "@system"
-import { PoolThresholdSchema } from "@system/attribute/pool-threshold.ts"
 
-const fields = foundry.data.fields
-
-type ResourceTrackerDefSchema = {
-	id: foundry.data.fields.StringField
-	base: foundry.data.fields.StringField
-	name: foundry.data.fields.StringField
-	full_name: foundry.data.fields.StringField
-	thresholds: foundry.data.fields.ArrayField<foundry.data.fields.SchemaField<PoolThresholdSchema>>
-	max: foundry.data.fields.NumberField
-	min: foundry.data.fields.NumberField
-	isMaxEnforced: foundry.data.fields.BooleanField
-	isMinEnforced: foundry.data.fields.BooleanField
-	order: foundry.data.fields.NumberField
-}
 
 export class ResourceTrackerDef extends AbstractAttributeDef {
 	name: string
@@ -28,7 +13,7 @@ export class ResourceTrackerDef extends AbstractAttributeDef {
 	isMinEnforced = false
 	order = 0
 
-	constructor(data: ResourceTrackerDefObj) {
+	constructor(data: SourceFromSchema<ResourceTrackerDefSchema>) {
 		super(data)
 		this.name = data.name
 		this.full_name = data.full_name
@@ -40,6 +25,7 @@ export class ResourceTrackerDef extends AbstractAttributeDef {
 	}
 
 	static defineSchema(): ResourceTrackerDefSchema {
+		const fields = foundry.data.fields
 		return {
 			id: new fields.StringField({ initial: "id" }),
 			base: new fields.StringField({ initial: "10" }),
@@ -69,14 +55,14 @@ export class ResourceTrackerDef extends AbstractAttributeDef {
 		return this.max
 	}
 
-	override generateNewAttribute(): ResourceTrackerObj {
+	override generateNewAttribute(): SourceFromSchema<ResourceTrackerSchema> {
 		return {
 			...super.generateNewAttribute(),
 			damage: 0,
 		}
 	}
 
-	static override newObject(reservedIds: string[]): ResourceTrackerDefObj {
+	static override newObject(reservedIds: string[]): SourceFromSchema<ResourceTrackerDefSchema> {
 		return {
 			...super.newObject(reservedIds),
 			name: "",

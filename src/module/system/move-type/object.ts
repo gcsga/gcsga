@@ -1,13 +1,12 @@
 import { MoveTypeResolver } from "@module/util/index.ts"
-import { MoveTypeObj } from "./data.ts"
 import { MoveTypeDef } from "./definition.ts"
-import { AbstractAttribute, MoveBonusType } from "@system"
+import { AbstractAttribute, MoveBonusType, MoveTypeSchema } from "@system"
 
 export class MoveType<TActor extends MoveTypeResolver> extends AbstractAttribute<TActor> {
 	adj = 0
 	order: number
 
-	constructor(actor: TActor, data: MoveTypeObj, order: number) {
+	constructor(actor: TActor, data: SourceFromSchema<MoveTypeSchema>, order: number) {
 		super(actor, data)
 		this.adj = data.adj
 		this.order = order

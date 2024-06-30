@@ -1,14 +1,13 @@
 import { ResourceTrackerResolver } from "@module/util/index.ts"
-import { ResourceTrackerObj } from "./data.ts"
 import { ResourceTrackerDef } from "./definition.ts"
-import { AbstractAttribute, PoolThreshold } from "@system"
+import { AbstractAttribute, PoolThreshold, ResourceTrackerSchema } from "@system"
 import { TokenPool } from "@module/data/types.ts"
 
 class ResourceTracker<TActor extends ResourceTrackerResolver> extends AbstractAttribute<TActor> {
 	order: number
 	damage?: number
 
-	constructor(actor: TActor, data: ResourceTrackerObj, order: number) {
+	constructor(actor: TActor, data: SourceFromSchema<ResourceTrackerSchema>, order: number) {
 		super(actor, data)
 		this.damage = data.damage ?? 0
 		this.order = order

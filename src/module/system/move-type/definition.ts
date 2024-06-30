@@ -1,18 +1,8 @@
 import { MoveTypeResolver, evaluateToNumber } from "@module/util/index.ts"
-import { MoveTypeDefObj, MoveTypeObj } from "./data.ts"
-import { MoveTypeOverride, MoveTypeOverrideSchema } from "./override.ts"
-import { AbstractAttributeDef } from "@system"
+import { MoveTypeOverride } from "./override.ts"
+import { AbstractAttributeDef, MoveTypeDefSchema, MoveTypeSchema } from "@system"
 
 const fields = foundry.data.fields
-
-type MoveTypeDefDefSchema = {
-	id: foundry.data.fields.StringField
-	base: foundry.data.fields.StringField
-	name: foundry.data.fields.StringField
-	cost_per_point: foundry.data.fields.NumberField
-	overrides: foundry.data.fields.ArrayField<foundry.data.fields.SchemaField<MoveTypeOverrideSchema>>
-	order: foundry.data.fields.NumberField
-}
 
 export class MoveTypeDef extends AbstractAttributeDef {
 	name: string
@@ -20,7 +10,7 @@ export class MoveTypeDef extends AbstractAttributeDef {
 	overrides: MoveTypeOverride[]
 	order: number
 
-	constructor(data: MoveTypeDefObj) {
+	constructor(data: SourceFromSchema<MoveTypeDefSchema>) {
 		super(data)
 		this.name = data.name
 		this.cost_per_point = data.cost_per_point ?? 0
@@ -28,7 +18,7 @@ export class MoveTypeDef extends AbstractAttributeDef {
 		this.overrides = data.overrides?.map(threshold => new MoveTypeOverride(threshold))
 	}
 
-	static defineSchema(): MoveTypeDefDefSchema {
+	static defineSchema(): MoveTypeDefSchema {
 		return {
 			id: new fields.StringField({ initial: "id" }),
 			base: new fields.StringField({ initial: "$basic_move" }),
@@ -43,14 +33,14 @@ export class MoveTypeDef extends AbstractAttributeDef {
 		return evaluateToNumber(this.base, resolver)
 	}
 
-	override generateNewAttribute(): MoveTypeObj {
+	override generateNewAttribute(): SourceFromSchema<MoveTypeSchema> {
 		return {
 			...super.generateNewAttribute(),
 			adj: 0,
 		}
 	}
 
-	static override newObject(reservedIds: string[]): MoveTypeDefObj {
+	static override newObject(reservedIds: string[]): SourceFromSchema<MoveTypeDefSchema> {
 		return {
 			...super.newObject(reservedIds),
 			name: "",
