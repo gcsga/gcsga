@@ -63,29 +63,29 @@ type SheetSettingsSchema = {
 }
 
 export class SheetSettings extends foundry.abstract.DataModel<ActorGURPS, SheetSettingsSchema> {
-	// page: PageSettings
-	// block_layout: BlockLayout
-	// attributes: AttributeDef[]
-	// resource_trackers: ResourceTrackerDef[]
-	// move_types: MoveTypeDef[]
-	// body_type: BodyGURPS<BodyOwner>
-	// damage_progression: progression.Option
-	// default_length_units: LengthUnits
-	// default_weight_units: WeightUnits
-	// user_description_display: display.Option
-	// modifiers_display: display.Option
-	// notes_display: display.Option
-	// skill_level_adj_display: display.Option
-	// use_multiplicative_modifiers: boolean
-	// use_modifying_dice_plus_adds: boolean
-	// use_half_stat_defaults: boolean
-	// show_trait_modifier_adj: boolean
-	// show_equipment_modifier_adj: boolean
-	// show_spell_adj: boolean
-	// use_title_in_footer: boolean
-	// exclude_unspent_points_from_total: boolean
-	//
-	//
+	page: PageSettings
+	block_layout: BlockLayout
+	attributes: AttributeDef[]
+	resource_trackers: ResourceTrackerDef[]
+	move_types: MoveTypeDef[]
+	body_type: BodyGURPS<BodyOwner>
+	damage_progression: progression.Option
+	default_length_units: LengthUnits
+	default_weight_units: WeightUnits
+	user_description_display: display.Option
+	modifiers_display: display.Option
+	notes_display: display.Option
+	skill_level_adj_display: display.Option
+	use_multiplicative_modifiers: boolean
+	use_modifying_dice_plus_adds: boolean
+	use_half_stat_defaults: boolean
+	show_trait_modifier_adj: boolean
+	show_equipment_modifier_adj: boolean
+	show_spell_adj: boolean
+	use_title_in_footer: boolean
+	exclude_unspent_points_from_total: boolean
+
+
 	protected declare static _schema: fields.SchemaField<SheetSettingsSchema>
 
 	constructor(data: DeepPartial<SourceFromSchema<SheetSettingsSchema>>) {
@@ -213,3 +213,6 @@ export function sheetSettingsFor(actor: ActorGURPS | null): SheetSettings {
 		move_types: actor.system.settings.move_types.map(e => new MoveTypeDef(e)),
 	}
 }
+
+export { SheetSettings }
+export type { SheetSettingsSchema }

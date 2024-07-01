@@ -2,8 +2,7 @@ import { ActorGURPS } from "@actor"
 import { AbstractContainerGURPS } from "@item"
 import { TraitSource, TraitSystemData } from "./data.ts"
 import { LocalizeGURPS, StringBuilder, affects, display, selfctrl, study, tmcost } from "@util"
-import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
-import { resolveStudyHours, studyHoursProgressText } from "@system"
+import { resolveStudyHours, sheetSettingsFor, studyHoursProgressText } from "@system"
 import { ItemType } from "@module/data/constants.ts"
 import { ItemInstances } from "@item/types.ts"
 import { modifyPoints } from "@item/helpers.ts"
@@ -163,8 +162,8 @@ class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 				.map(item => [
 					item.id,
 					item as
-						| ItemInstances<TParent>[ItemType.TraitModifier]
-						| ItemInstances<TParent>[ItemType.TraitModifierContainer],
+					| ItemInstances<TParent>[ItemType.TraitModifier]
+					| ItemInstances<TParent>[ItemType.TraitModifierContainer],
 				]),
 		)
 	}

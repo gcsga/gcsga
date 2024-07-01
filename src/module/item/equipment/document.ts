@@ -10,7 +10,7 @@ import {
 	valueAdjustedForModifiers,
 	weightAdjustedForModifiers,
 } from "@item/helpers.ts"
-import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
+import { sheetSettingsFor } from "@system/sheet-settings.ts"
 
 class EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends AbstractContainerGURPS<TParent> {
 	get other(): boolean {
