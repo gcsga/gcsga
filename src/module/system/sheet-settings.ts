@@ -13,6 +13,7 @@ import { ActorType, SETTINGS, SYSTEM_NAME } from "./constants.ts"
 import { ActorGURPS } from "@actor"
 import { BodyOwner } from "@module/util/resolvers.ts"
 import fields = foundry.data.fields
+import { LaxSchemaField } from "./schema-data-fields.ts"
 
 export interface PageSettings {
 	paper_size: paper.Size
@@ -63,41 +64,62 @@ type SheetSettingsSchema = {
 }
 
 export class SheetSettings extends foundry.abstract.DataModel<ActorGURPS, SheetSettingsSchema> {
-	page: PageSettings
-	block_layout: BlockLayout
-	attributes: AttributeDef[]
-	resource_trackers: ResourceTrackerDef[]
-	move_types: MoveTypeDef[]
-	body_type: BodyGURPS<BodyOwner>
-	damage_progression: progression.Option
-	default_length_units: LengthUnits
-	default_weight_units: WeightUnits
-	user_description_display: display.Option
-	modifiers_display: display.Option
-	notes_display: display.Option
-	skill_level_adj_display: display.Option
-	use_multiplicative_modifiers: boolean
-	use_modifying_dice_plus_adds: boolean
-	use_half_stat_defaults: boolean
-	show_trait_modifier_adj: boolean
-	show_equipment_modifier_adj: boolean
-	show_spell_adj: boolean
-	use_title_in_footer: boolean
-	exclude_unspent_points_from_total: boolean
+	protected declare static _schema: LaxSchemaField<SheetSettingsSchema> | undefined;
 
-
-	protected declare static _schema: fields.SchemaField<SheetSettingsSchema>
+	// page: PageSettings
+	// block_layout: BlockLayout
+	// attributes: AttributeDef[]
+	// resource_trackers: ResourceTrackerDef[]
+	// move_types: MoveTypeDef[]
+	// body_type: BodyGURPS<BodyOwner>
+	// damage_progression: progression.Option
+	// default_length_units: LengthUnits
+	// default_weight_units: WeightUnits
+	// user_description_display: display.Option
+	// modifiers_display: display.Option
+	// notes_display: display.Option
+	// skill_level_adj_display: display.Option
+	// use_multiplicative_modifiers: boolean
+	// use_modifying_dice_plus_adds: boolean
+	// use_half_stat_defaults: boolean
+	// show_trait_modifier_adj: boolean
+	// show_equipment_modifier_adj: boolean
+	// show_spell_adj: boolean
+	// use_title_in_footer: boolean
+	// exclude_unspent_points_from_total: boolean
 
 	constructor(data: DeepPartial<SourceFromSchema<SheetSettingsSchema>>) {
 
 		super(data)
 
-		this.attributes = data.attributes.map(e => new AttributeDef(e))
-		this.resource_trackers = data.attributes.map(e => new ResourceTrackerDef(e))
-		this.move_types = data.attributes.map(e => new MoveTypeDef(e))
+
+		// this.page = data.page
+		// this.block_layout = data.block_layout
+		// this.attributes = data.attributes?.map(e => new AttributeDef(e)) ?? []
+		// this.resource_trackers = data.resource_trackers?.map(e => new ResourceTrackerDef(e)) ?? []
+		// this.move_types = data.move_types?.map(e => new MoveTypeDef(e)) ?? []
+		// this.body_type = BodyGURPS.fromObject(data.body_type, this.actor)
+		// this.damage_progression = data.damage_progression
+		// this.default_length_units = data.default_length_units
+		// this.default_weight_units = data.default_weight_units
+		// this.user_description_display = data.user_description_display
+		// this.modifiers_display = data.modifiers_display
+		// this.notes_display = data.notes_display
+		// this.skill_level_adj_display = data.skill_level_adj_display
+		// this.use_multiplicative_modifiers = data.use_multiplicative_modifiers
+		// this.use_modifying_dice_plus_adds = data.use_modifying_dice_plus_adds
+		// this.use_half_stat_defaults = data.use_half_stat_defaults
+		// this.show_trait_modifier_adj = data.show_trait_modifier_adj
+		// this.show_equipment_modifier_adj = data.show_equipment_modifier_adj
+		// this.show_spell_adj = data.show_spell_adj
+		// this.use_title_in_footer = data.use_title_in_footer
+		// this.exclude_unspent_points_from_total = data.exclude_unspent_points_from_total
+
 	}
 
-
+	get actor(): ActorGURPS {
+		return this.parent
+	}
 
 	static override defineSchema(): SheetSettingsSchema {
 		const fields = foundry.data.fields
@@ -214,5 +236,4 @@ export function sheetSettingsFor(actor: ActorGURPS | null): SheetSettings {
 	}
 }
 
-export { SheetSettings }
 export type { SheetSettingsSchema }

@@ -3,9 +3,10 @@ import type { ActorFlagsGURPS, BaseActorSourceGURPS } from "@actor/base/data.ts"
 import { ActorSystemModel, ActorSystemSchema } from "@actor/base/schema.ts"
 import { ActorFlags, ActorType, SYSTEM_NAME } from "@data"
 import { DiceGURPS } from "@module/dice/index.ts"
-import { SheetSettings, type AttributeSchema, type MoveTypeSchema, type PoolThreshold, type ResourceTrackerSchema, type SheetSettingsSchema } from "@system"
+import { AttributeGURPS, MoveType, ResourceTracker, SheetSettings, type AttributeSchema, type MoveTypeSchema, type PoolThreshold, type ResourceTrackerSchema, type SheetSettingsSchema } from "@system"
 import { CharacterManeuver } from "../../system/maneuver-manager.ts"
 import { CharacterGURPS } from "./document.ts"
+import { Attribute } from "pixi.js"
 
 // type CharacterSource = BaseActorSourceGURPS<ActorType.Character, CharacterSystemSource> & {
 // 	flags: DeepPartial<CharacterFlags>
@@ -158,20 +159,20 @@ class CharacterSystemData extends ActorSystemModel<CharacterGURPS, CharacterSyst
 			...super.defineSchema(),
 			type: new fields.StringField<ActorType.Character, ActorType.Character, true, false, true>(),
 			version: new fields.NumberField({ initial: 4 }),
-			settings: new fields.SchemaField<SheetSettingsSchema>(SheetSettings.defineSchema(), { initial: SheetSettings.default() }),
-			created_date: fields.StringField(),
-			modified_date: fields.StringField(),
-			profile: fields.SchemaField<CharacterProfileSchema>(),
-			attributes: fields.ArrayField<fields.SchemaField<AttributeSchema>>(),
-			resource_trackers: fields.ArrayField<fields.SchemaField<ResourceTrackerSchema>>(),
-			move_types: fields.ArrayField<fields.SchemaField<MoveTypeSchema>>(),
-			move: fields.SchemaField<{
-				maneuver: fields.ObjectField<CharacterManeuver>
-				posture: fields.StringField
-				type: fields.StringField
-			}>
-	total_points: fields.NumberField(),
-			points_record: fields.ArrayField<fields.ObjectField<PointsRecord>>()
+			settings: new fields.SchemaField<SheetSettingsSchema>(SheetSettings.defineSchema()),
+			created_date: new fields.StringField(),
+			modified_date: new fields.StringField(),
+			profile: new fields.SchemaField<CharacterProfileSchema>(CharacterProfile.defineSchema()),
+			attributes: new fields.ArrayField(new fields.SchemaField(AttributeGURPS.defineSchema())),
+			resource_trackers: new fields.ArrayField(new fields.SchemaField(ResourceTracker.defineSchema())),
+			move_types: new fields.ArrayField(new fields.SchemaField(MoveType.defineSchema())),
+			move: new fields.SchemaField({
+				maneuver: new fields.ObjectField(),
+				posture: new fields.StringField(),
+				type: new fields.StringField()
+			}),
+			total_points: new fields.NumberField(),
+			points_record: new fields.ArrayField(new fields.ObjectField<PointsRecord>()),
 		}
 	}
 

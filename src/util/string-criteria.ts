@@ -35,7 +35,7 @@ export class StringCriteria {
 
 	qualifier: string
 
-	constructor(data: SourceFromSchema<StringCriteriaSchema>) {
+	constructor(data: DeepPartial<SourceFromSchema<StringCriteriaSchema>>) {
 		this.compare = data.compare ?? StringCompareType.AnyString
 		this.qualifier = data.qualifier ?? ""
 	}

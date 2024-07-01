@@ -44,7 +44,7 @@ export class NumericCriteria {
 		}
 	}
 
-	constructor(data: SourceFromSchema<NumericCriteriaSchema>) {
+	constructor(data: DeepPartial<SourceFromSchema<NumericCriteriaSchema>>) {
 		this.compare = data.compare ?? NumericCompareType.AnyNumber
 		this.qualifier = data.qualifier ?? 0
 	}

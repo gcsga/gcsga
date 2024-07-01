@@ -4,8 +4,8 @@ import { spellmatch } from "@util/enum/spellmatch.ts"
 import { stlimit } from "@util/enum/stlimit.ts"
 import { wsel } from "@util/enum/wsel.ts"
 import { wswitch } from "@util/enum/wswitch.ts"
-import { NumericCriteriaObj, NumericCriteriaSchema } from "@util/numeric-criteria.ts"
-import { StringCriteriaObj, StringCriteriaSchema } from "@util/string-criteria.ts"
+import { NumericCriteriaSchema } from "@util/numeric-criteria.ts"
+import { StringCriteriaSchema } from "@util/string-criteria.ts"
 
 import fields = foundry.data.fields
 
@@ -161,24 +161,24 @@ export interface ReactionBonusObj extends LeveledAmountObj, BaseFeatureObj<featu
 }
 export interface SkillBonusObj extends LeveledAmountObj, BaseFeatureObj<feature.Type.SkillBonus> {
 	selection_type: skillsel.Type
-	name?: StringCriteriaObj
-	specialization?: StringCriteriaObj
-	tags?: StringCriteriaObj
+	name?: SourceFromSchema<StringCriteriaSchema>
+	specialization?: SourceFromSchema<StringCriteriaSchema>
+	tags?: SourceFromSchema<StringCriteriaSchema>
 }
 export interface SkillPointBonusObj extends LeveledAmountObj, BaseFeatureObj<feature.Type.SkillPointBonus> {
-	name?: StringCriteriaObj
-	specialization?: StringCriteriaObj
-	tags?: StringCriteriaObj
+	name?: SourceFromSchema<StringCriteriaSchema>
+	specialization?: SourceFromSchema<StringCriteriaSchema>
+	tags?: SourceFromSchema<StringCriteriaSchema>
 }
 export interface SpellBonusObj extends LeveledAmountObj, BaseFeatureObj<feature.Type.SpellBonus> {
 	match: spellmatch.Type
-	name?: StringCriteriaObj
-	tags?: StringCriteriaObj
+	name?: SourceFromSchema<StringCriteriaSchema>
+	tags?: SourceFromSchema<StringCriteriaSchema>
 }
 export interface SpellPointBonusObj extends LeveledAmountObj, BaseFeatureObj<feature.Type.SpellPointBonus> {
 	match: spellmatch.Type
-	name?: StringCriteriaObj
-	tags?: StringCriteriaObj
+	name?: SourceFromSchema<StringCriteriaSchema>
+	tags?: SourceFromSchema<StringCriteriaSchema>
 }
 export interface WeaponBonusObj<TType extends feature.WeaponBonusType>
 	extends WeaponLeveledAmountObj,
@@ -187,11 +187,11 @@ export interface WeaponBonusObj<TType extends feature.WeaponBonusType>
 	switch_type_value?: boolean
 	selection_type: wsel.Type
 	switch_type?: wswitch.Type
-	name?: StringCriteriaObj
-	specialization?: StringCriteriaObj
-	level?: NumericCriteriaObj
-	usage?: StringCriteriaObj
-	tags?: StringCriteriaObj
+	name?: SourceFromSchema<StringCriteriaSchema>
+	specialization?: SourceFromSchema<StringCriteriaSchema>
+	level?: SourceFromSchema<NumericCriteriaSchema>
+	usage?: SourceFromSchema<StringCriteriaSchema>
+	tags?: SourceFromSchema<StringCriteriaSchema>
 }
 
 export interface WeaponLeveledAmountObj {
