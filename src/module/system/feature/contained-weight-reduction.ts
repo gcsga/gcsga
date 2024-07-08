@@ -1,8 +1,8 @@
 import { feature } from "@util/enum/feature.ts"
 import { Int } from "@util/fxp.ts"
 import { Weight, WeightUnits } from "@util/weight.ts"
-import { ContainedWeightReductionObj } from "./data.ts"
 import { FeatureOwner } from "@module/util/index.ts"
+import { ContainedWeightReductionSchema } from "./data.ts"
 
 export class ContainedWeightReduction {
 	declare type: feature.Type.ContainedWeightReduction
@@ -31,7 +31,7 @@ export class ContainedWeightReduction {
 		this._subOwner = subOwner
 	}
 
-	setLevel(_level: number): void {}
+	setLevel(_level: number): void { }
 
 	constructor() {
 		this.type = feature.Type.ContainedWeightReduction
@@ -52,14 +52,14 @@ export class ContainedWeightReduction {
 		return Weight.fromString(this.reduction, defUnits)
 	}
 
-	toObject(): ContainedWeightReductionObj {
+	toObject(): SourceFromSchema<ContainedWeightReductionSchema> {
 		return {
 			type: feature.Type.ContainedWeightReduction,
 			reduction: this.reduction,
 		}
 	}
 
-	static fromObject(data: ContainedWeightReductionObj): ContainedWeightReduction {
+	static fromObject(data: SourceFromSchema<ContainedWeightReductionSchema>): ContainedWeightReduction {
 		const bonus = new ContainedWeightReduction()
 		bonus.reduction = data.reduction
 		return bonus

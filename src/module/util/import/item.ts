@@ -1,4 +1,4 @@
-import { EncumbrancePenaltyMultiplier, SkillSource, SkillSystemSource } from "@item/skill/data.ts"
+import { SkillSource, SkillSystemSource } from "@item/skill/data.ts"
 import { TraitSource, TraitSystemSource } from "@item/trait/data.ts"
 import {
 	ImportedEquipmentContainerSystemSource,
@@ -31,7 +31,7 @@ import { SpellSource, SpellSystemSource } from "@item/spell/data.ts"
 import { EquipmentSource, EquipmentSystemSource } from "@item/equipment/data.ts"
 import { ItemFlags, ItemType, SYSTEM_NAME, gid } from "@data"
 import { ItemSourceGURPS } from "@item/data/index.ts"
-import { FeatureObj, PrereqListObj, Study, TemplatePickerObj } from "@system"
+import { FeatureSchema, Study, TemplatePickerSchema } from "@system"
 import {
 	LocalizeGURPS,
 	affects,
@@ -63,6 +63,7 @@ import { NoteSource, NoteSystemSource } from "@item/note/data.ts"
 import { NoteContainerSource, NoteContainerSystemSource } from "@item/note-container/data.ts"
 import { MeleeWeaponSource, MeleeWeaponSystemSource } from "@item/melee-weapon/data.ts"
 import { RangedWeaponSource, RangedWeaponSystemSource } from "@item/ranged-weapon/data.ts"
+import { PrereqListSchema } from "@system/prereq/prereq-list.ts"
 
 interface ItemImportContext {
 	parentId: string | null
@@ -96,11 +97,11 @@ abstract class ItemImporter {
 
 	abstract importItem(item: ImportedItemSource, context: ItemImportContext): ItemSourceGURPS[]
 
-	static importPrereqs(prereqList?: ImportedPrereqList): PrereqListObj {
+	static importPrereqs(prereqList?: ImportedPrereqList): SourceFromSchema<PrereqListSchema> {
 		return prereqList ?? { type: prereq.Type.List, all: true }
 	}
 
-	static importFeatures(featureList?: ImportedFeature[]): FeatureObj[] {
+	static importFeatures(featureList?: ImportedFeature[]): SourceFromSchema<FeatureSchema>[] {
 		return featureList ?? []
 	}
 
@@ -108,7 +109,7 @@ abstract class ItemImporter {
 		return studyList ?? []
 	}
 
-	static importTemplatePicker(templatePicker?: ImportedTemplatePicker): TemplatePickerObj {
+	static importTemplatePicker(templatePicker?: ImportedTemplatePicker): SourceFromSchema<TemplatePickerSchema> {
 		return templatePicker ?? { type: picker.Type.NotApplicable, qualifier: {} }
 	}
 

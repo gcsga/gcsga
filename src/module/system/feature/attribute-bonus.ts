@@ -3,10 +3,10 @@ import { BonusOwner } from "./bonus-owner.ts"
 import { LeveledAmount } from "./leveled-amount.ts"
 import { stlimit } from "@util/enum/stlimit.ts"
 import { feature } from "@util/enum/feature.ts"
-import { AttributeBonusObj } from "./data.ts"
+import { AttributeBonusSchema } from "./data.ts"
 
 export class AttributeBonus extends BonusOwner<feature.Type.AttributeBonus> {
-	limitation?: stlimit.Option
+	limitation: stlimit.Option
 
 	attribute: string
 
@@ -23,7 +23,7 @@ export class AttributeBonus extends BonusOwner<feature.Type.AttributeBonus> {
 		return stlimit.Option.None
 	}
 
-	override toObject(): AttributeBonusObj {
+	override toObject(): SourceFromSchema<AttributeBonusSchema> {
 		return {
 			...super.toObject(),
 			attribute: this.attribute,
@@ -31,7 +31,7 @@ export class AttributeBonus extends BonusOwner<feature.Type.AttributeBonus> {
 		}
 	}
 
-	static fromObject(data: AttributeBonusObj): AttributeBonus {
+	static fromObject(data: SourceFromSchema<AttributeBonusSchema>): AttributeBonus {
 		const bonus = new AttributeBonus(data.attribute)
 		bonus.limitation = data.limitation || stlimit.Option.None
 		bonus.leveledAmount = LeveledAmount.fromObject(data)

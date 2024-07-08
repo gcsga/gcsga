@@ -1,20 +1,12 @@
 import { feature } from "@util/enum/feature.ts"
 import { LeveledAmount } from "./leveled-amount.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { BaseFeatureObj, LeveledAmountObj } from "./data.ts"
 import { WeaponLeveledAmount } from "./weapon-leveled-amount.ts"
 import { FeatureOwner, WeaponOwner } from "@module/util/index.ts"
 import { TooltipGURPS } from "@util"
 import { ItemGURPS } from "@item"
 import { ItemType } from "@module/data/constants.ts"
-import fields = foundry.data.fields
-
-export type BonusOwnerSchema = {
-	type: fields.StringField<feature.Type, feature.Type, true, false, true>
-	amount: fields.NumberField
-	per_level: fields.BooleanField
-	effective: fields.NumberField
-}
+import { BonusOwnerSchema } from "./data.ts"
 
 export abstract class BonusOwner<TType extends feature.Type> {
 	declare type: TType
@@ -88,12 +80,12 @@ export abstract class BonusOwner<TType extends feature.Type> {
 		}
 	}
 
-	toObject(): LeveledAmountObj & BaseFeatureObj<TType> {
+	toObject(): SourceFromSchema<BonusOwnerSchema<TType>> {
 		return {
 			type: this.type,
 			amount: this.amount,
 			per_level: this.leveledAmount.per_level,
-			effective: this.effective ?? false,
+			effective: this.effective ?? false
 		}
 	}
 }

@@ -1,7 +1,7 @@
 import { feature } from "@util/enum/feature.ts"
 import { BonusOwner } from "./bonus-owner.ts"
 import { LeveledAmount } from "./leveled-amount.ts"
-import { MoveBonusObj, MoveBonusType } from "./data.ts"
+import { MoveBonusSchema, MoveBonusType } from "./data.ts"
 import { gid } from "@data"
 
 export class MoveBonus extends BonusOwner<feature.Type.MoveBonus> {
@@ -18,7 +18,7 @@ export class MoveBonus extends BonusOwner<feature.Type.MoveBonus> {
 		this.leveledAmount = new LeveledAmount({ amount: 1 })
 	}
 
-	override toObject(): MoveBonusObj {
+	override toObject(): SourceFromSchema<MoveBonusSchema> {
 		return {
 			...super.toObject(),
 			move_type: this.move_type,
@@ -26,7 +26,7 @@ export class MoveBonus extends BonusOwner<feature.Type.MoveBonus> {
 		}
 	}
 
-	static fromObject(data: MoveBonusObj): MoveBonus {
+	static fromObject(data: SourceFromSchema<MoveBonusSchema>): MoveBonus {
 		const bonus = new MoveBonus()
 		bonus.move_type = data.move_type
 		bonus.limitation = data.limitation

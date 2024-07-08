@@ -1,8 +1,8 @@
 import { StringCompareType, StringCriteria } from "@util/string-criteria.ts"
 import { LeveledAmount } from "./leveled-amount.ts"
 import { BonusOwner } from "./bonus-owner.ts"
-import { SpellPointBonusObj } from "./data.ts"
 import { feature, spellmatch } from "@util"
+import { SpellPointBonusSchema } from "./data.ts"
 
 export class SpellPointBonus extends BonusOwner<feature.Type.SpellPointBonus> {
 	feature = feature.Type.SpellPointBonus
@@ -25,7 +25,7 @@ export class SpellPointBonus extends BonusOwner<feature.Type.SpellPointBonus> {
 		return spellmatch.Type.matchForType(this.match, this.name, name, powerSource, colleges)
 	}
 
-	override toObject(): SpellPointBonusObj {
+	override toObject(): SourceFromSchema<SpellPointBonusSchema> {
 		return {
 			...super.toObject(),
 			match: this.match,
@@ -34,7 +34,7 @@ export class SpellPointBonus extends BonusOwner<feature.Type.SpellPointBonus> {
 		}
 	}
 
-	static fromObject(data: SpellPointBonusObj): SpellPointBonus {
+	static fromObject(data: SourceFromSchema<SpellPointBonusSchema>): SpellPointBonus {
 		const bonus = new SpellPointBonus()
 		bonus.match = data.match
 		if (data.name) bonus.name = new StringCriteria(data.name)

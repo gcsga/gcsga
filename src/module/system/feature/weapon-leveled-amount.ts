@@ -1,5 +1,5 @@
 import { LocalizeGURPS } from "@util/localize.ts"
-import { WeaponLeveledAmountObj } from "./data.ts"
+import { WeaponLeveledAmountSchema } from "./data.ts"
 
 export class WeaponLeveledAmount {
 	level = 0
@@ -12,7 +12,7 @@ export class WeaponLeveledAmount {
 
 	per_die = false
 
-	constructor(data: Partial<WeaponLeveledAmount>) {
+	constructor(data: Partial<SourceFromSchema<WeaponLeveledAmountSchema>>) {
 		Object.assign(this, data)
 	}
 
@@ -57,7 +57,7 @@ export class WeaponLeveledAmount {
 		}
 	}
 
-	static fromObject(data: WeaponLeveledAmountObj): WeaponLeveledAmount {
+	static fromObject(data: SourceFromSchema<WeaponLeveledAmountSchema>): WeaponLeveledAmount {
 		return new WeaponLeveledAmount({ amount: data.amount, leveled: data.leveled, per_die: data.per_die })
 	}
 }

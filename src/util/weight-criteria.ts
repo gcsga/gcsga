@@ -1,17 +1,18 @@
+import { StringField } from "types/foundry/common/data/fields.js"
 import { LocalizeGURPS } from "./localize.ts"
 import { NumericCompareType } from "./numeric-criteria.ts"
 import { Weight, WeightString, WeightUnits } from "./weight.ts"
 
-export interface WeightCriteriaObj {
-	compare?: NumericCompareType
-	qualifier?: WeightString
+export type WeightCriteriaSchema = {
+	compare: StringField<NumericCompareType, NumericCompareType, true, false, true>
+	qualifier: StringField<WeightString, WeightString, true, false, true>
 }
 
 export class WeightCriteria {
 	declare compare: NumericCompareType
 	declare qualifier: WeightString
 
-	constructor(data: WeightCriteriaObj) {
+	constructor(data: SourceFromSchema<WeightCriteriaSchema>) {
 		this.compare = data.compare ?? NumericCompareType.AnyNumber
 		this.qualifier = data.qualifier ?? `0 ${WeightUnits.Pound}`
 	}
@@ -54,7 +55,7 @@ export class WeightCriteria {
 		return result + this.qualifier.toString()
 	}
 
-	toObject(): WeightCriteriaObj {
+	toObject(): SourceFromSchema<WeightCriteriaSchema> {
 		return { compare: this.compare, qualifier: this.qualifier }
 	}
 }

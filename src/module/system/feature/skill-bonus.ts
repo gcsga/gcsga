@@ -1,23 +1,17 @@
-import { BonusOwner, BonusOwnerSchema } from "./bonus-owner.ts"
+import { BonusOwner } from "./bonus-owner.ts"
 import { StringCompareType, StringCriteria } from "@util/string-criteria.ts"
 import { LeveledAmount } from "./leveled-amount.ts"
-import { SkillBonusObj } from "./data.ts"
 import { feature, skillsel } from "@util"
-import fields = foundry.data.fields
-
-export type SkillBonusSchema = BonusOwnerSchema & {
-	selection_type: fields.StringField<skillsel.Type>
-	name: StringCriteria
-}
+import { SkillBonusSchema } from "./data.ts"
 
 export class SkillBonus extends BonusOwner<feature.Type.SkillBonus> {
 	selection_type: skillsel.Type
 
-	name?: StringCriteria
+	name: StringCriteria
 
-	specialization?: StringCriteria
+	specialization: StringCriteria
 
-	tags?: StringCriteria
+	tags: StringCriteria
 
 	constructor() {
 		super(feature.Type.SkillBonus)
@@ -28,7 +22,7 @@ export class SkillBonus extends BonusOwner<feature.Type.SkillBonus> {
 		this.leveledAmount = new LeveledAmount({ amount: 1 })
 	}
 
-	override toObject(): SkillBonusObj {
+	override toObject(): SourceFromSchema<SkillBonusSchema> {
 		return {
 			...super.toObject(),
 			selection_type: this.selection_type,
@@ -38,7 +32,7 @@ export class SkillBonus extends BonusOwner<feature.Type.SkillBonus> {
 		}
 	}
 
-	static fromObject(data: SkillBonusObj): SkillBonus {
+	static fromObject(data: SourceFromSchema<SkillBonusSchema>): SkillBonus {
 		const bonus = new SkillBonus()
 		bonus.selection_type = data.selection_type
 		if (data.name) bonus.name = new StringCriteria(data.name)

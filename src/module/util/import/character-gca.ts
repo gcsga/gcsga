@@ -1,9 +1,6 @@
 import { ActorGURPS } from "@actor"
 import {
-	CharacterFlagDefaults,
 	CharacterFlags,
-	CharacterMove,
-	CharacterProfile,
 	CharacterSource,
 	CharacterSystemSource,
 	PointsRecord,
@@ -11,22 +8,12 @@ import {
 import { ActorFlags, ActorType, ManeuverID, SETTINGS, SYSTEM_NAME } from "@data"
 import { ItemSourceGURPS } from "@item/data/index.ts"
 import { ChatMessageGURPS } from "@module/chat-message/document.ts"
-import {
-	AttributeDefObj,
-	AttributeObj,
-	BodyObj,
-	HitLocationObj,
-	MoveTypeDefObj,
-	MoveTypeObj,
-	ResourceTrackerDefObj,
-	ResourceTrackerObj,
-} from "@system"
 import { LengthUnits, LocalizeGURPS, StringBuilder, WeightUnits, display, getCurrentTime, progression } from "@util"
 import { GCABody, GCABodyItem, GCACharacter } from "./data-gca.ts"
 import { GCAItemImporter } from "./item-gca.ts"
 import { GCAParser } from "./parse-gca.ts"
-import { BlockLayoutKey, PageSettings, SheetSettingsObj } from "@module/data/sheet-settings.ts"
 import { ManeuverManager } from "@system/maneuver-manager.ts"
+import { AttributeDefSchema, AttributeSchema, BlockLayoutKey, BodySchema, HitLocationSchema, MoveTypeDefSchema, MoveTypeSchema, PageSettings, ResourceTrackerDefSchema, ResourceTrackerSchema, SheetSettingsSchema } from "@system"
 
 export class GCACharacterImporter {
 	static async throwError(text: string): Promise<void> {
@@ -36,7 +23,6 @@ export class GCACharacterImporter {
 			content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/chat/character-import-error.hbs`, {
 				lines: [text],
 			}),
-			type: CONST.CHAT_MESSAGE_TYPES.WHISPER,
 			whisper: [game.user.id],
 		})
 	}
@@ -136,7 +122,7 @@ export class GCACharacterImporter {
 		}
 	}
 
-	static importSettings(data: GCACharacter): SheetSettingsObj {
+	static importSettings(data: GCACharacter): SourceFromSchema<SheetSettingsSchema> {
 		return {
 			page: GCACharacterImporter.importPage(),
 			block_layout: GCACharacterImporter.importBlockLayout(),
@@ -170,19 +156,19 @@ export class GCACharacterImporter {
 		return game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`).block_layout
 	}
 
-	static importAttributeSettings(_data: GCACharacter): AttributeDefObj[] {
+	static importAttributeSettings(_data: GCACharacter): SourceFromSchema<AttributeDefSchema>[] {
 		return game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
 	}
 
-	static importResourceTrackerSettings(): ResourceTrackerDefObj[] {
+	static importResourceTrackerSettings(): SourceFromSchema<ResourceTrackerDefSchema>[] {
 		return game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`)
 	}
 
-	static importMoveTypeSettings(): MoveTypeDefObj[] {
+	static importMoveTypeSettings(): SourceFromSchema<MoveTypeDefSchema>[] {
 		return game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
 	}
 
-	static importBody(body: GCABody | undefined, char: GCACharacter): BodyObj {
+	static importBody(body: GCABody | undefined, char: GCACharacter): SourceFromSchema<BodySchema> {
 		if (!body)
 			return {
 				name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
@@ -196,7 +182,7 @@ export class GCACharacterImporter {
 		}
 	}
 
-	static importHitLocations(location: GCABodyItem[], char: GCACharacter): HitLocationObj[] {
+	static importHitLocations(location: GCABodyItem[], char: GCACharacter): SourceFromSchema<HitLocationSchema>[] {
 		const hitLocationNotes = char.hitlocationtable?.hitlocationnote ?? []
 		const hitLocationLines = char.hitlocationtable?.hitlocationline ?? []
 
@@ -214,7 +200,7 @@ export class GCACharacterImporter {
 
 		return (
 			location?.map(e => {
-				const location: HitLocationObj = {
+				const location: SourceFromSchema<HitLocationSchema> = {
 					id: e.name.toLowerCase(),
 					choice_name: e.name,
 					table_name: e.name,
@@ -228,26 +214,27 @@ export class GCACharacterImporter {
 		)
 	}
 
-	static importAttributes(data: GCACharacter): AttributeObj[] {
+	static importAttributes(data: GCACharacter): SourceFromSchema<AttributeSchema>[] {
 		const settings = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
-		const atts: AttributeObj[] = []
+		const atts: SourceFromSchema<AttributeSchema>[] = []
 		data.traits.attributes.trait?.forEach(e => {
 			const id = (e.symbol || e.name).toLowerCase().replace(/ /g, "_")
 			if (!settings.map(f => f.id).includes(id)) return
 			atts.push({
-				id: id,
+				id,
 				adj: (e.score ?? 0) - parseInt(e.calcs?.basescore ?? "0"),
 				damage: 0,
+				apply_ops: false
 			})
 		})
 		return atts
 	}
 
-	static importResourceTrackers(): ResourceTrackerObj[] {
+	static importResourceTrackers(): SourceFromSchema<ResourceTrackerSchema>[] {
 		return []
 	}
 
-	static importMoveTypes(): MoveTypeObj[] {
+	static importMoveTypes(): SourceFromSchema<MoveTypeSchema>[] {
 		return []
 	}
 
@@ -261,7 +248,7 @@ export class GCACharacterImporter {
 	}
 
 	static importFlags(file: { text: string; path: string; name: string }): CharacterFlags {
-		const flags = CharacterFlagDefaults
+		const flags = {}
 
 		const time = getCurrentTime()
 

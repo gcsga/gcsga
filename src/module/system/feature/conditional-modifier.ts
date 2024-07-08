@@ -2,7 +2,7 @@ import { feature } from "@util/enum/feature.ts"
 import { BonusOwner } from "./bonus-owner.ts"
 import { LeveledAmount } from "./leveled-amount.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { ConditionalModifierBonusObj } from "./data.ts"
+import { ConditionalModifierBonusSchema } from "./data.ts"
 
 export class ConditionalModifierBonus extends BonusOwner<feature.Type.ConditionalModifierBonus> {
 	situation = LocalizeGURPS.translations.gurps.feature.conditional_modifier
@@ -13,14 +13,14 @@ export class ConditionalModifierBonus extends BonusOwner<feature.Type.Conditiona
 		this.leveledAmount = new LeveledAmount({ amount: 1 })
 	}
 
-	override toObject(): ConditionalModifierBonusObj {
+	override toObject(): SourceFromSchema<ConditionalModifierBonusSchema> {
 		return {
 			...super.toObject(),
 			situation: this.situation,
 		}
 	}
 
-	static fromObject(data: ConditionalModifierBonusObj): ConditionalModifierBonus {
+	static fromObject(data: SourceFromSchema<ConditionalModifierBonusSchema>): ConditionalModifierBonus {
 		const bonus = new ConditionalModifierBonus()
 		bonus.situation = data.situation
 		bonus.leveledAmount = LeveledAmount.fromObject(data)

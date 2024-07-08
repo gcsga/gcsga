@@ -1,12 +1,12 @@
 import { feature } from "@util/enum/feature.ts"
 import { BonusOwner } from "./bonus-owner.ts"
-import { CostReductionObj } from "./data.ts"
 import { gid } from "@data"
+import { CostReductionSchema } from "./data.ts"
 
 export class CostReduction extends BonusOwner<feature.Type.CostReduction> {
 	attribute: string
 
-	percentage?: number
+	percentage: number | null
 
 	constructor(attrID: string = gid.Strength) {
 		super(feature.Type.CostReduction)
@@ -14,16 +14,16 @@ export class CostReduction extends BonusOwner<feature.Type.CostReduction> {
 		this.percentage = 40
 	}
 
-	// @ts-expect-error incorrect type
-	override toObject(): CostReductionObj {
+	// @ts-expect-error TODO: fix type later
+	override toObject(): SourceFromSchema<CostReductionSchema> {
 		return {
 			type: feature.Type.CostReduction,
 			attribute: this.attribute,
-			percentage: this.percentage,
+			percentage: this.percentage ?? null,
 		}
 	}
 
-	static fromObject(data: CostReductionObj): CostReduction {
+	static fromObject(data: SourceFromSchema<CostReductionSchema>): CostReduction {
 		const bonus = new CostReduction(data.attribute)
 		bonus.attribute = data.attribute ?? gid.Strength
 		bonus.percentage = data.percentage

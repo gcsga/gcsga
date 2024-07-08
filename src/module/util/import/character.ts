@@ -1,9 +1,6 @@
 import { ActorGURPS } from "@actor"
 import {
-	CharacterFlagDefaults,
 	CharacterFlags,
-	CharacterMove,
-	CharacterProfile,
 	CharacterSource,
 	CharacterSystemSource,
 	PointsRecord,
@@ -11,18 +8,6 @@ import {
 import { ActorFlags, ActorType, ManeuverID, SETTINGS, SYSTEM_NAME } from "@data"
 import { ItemSourceGURPS } from "@item/data/index.ts"
 import { ChatMessageGURPS } from "@module/chat-message/document.ts"
-import {
-	AttributeDefObj,
-	AttributeObj,
-	BodyObj,
-	HitLocationObj,
-	MoveTypeDefObj,
-	MoveTypeObj,
-	MoveTypeOverrideObj,
-	PoolThresholdObj,
-	ResourceTrackerDefObj,
-	ResourceTrackerObj,
-} from "@system"
 import { LengthUnits, LocalizeGURPS, WeightUnits, getCurrentTime } from "@util"
 import { display } from "@util/enum/display.ts"
 import { progression } from "@util/enum/progression.ts"
@@ -48,8 +33,8 @@ import {
 	ImportedThreshold,
 } from "./data.ts"
 import { ItemImporter } from "./item.ts"
-import { BlockLayoutKey, PageSettings, SheetSettingsObj } from "@module/data/sheet-settings.ts"
 import { ManeuverManager } from "@system/maneuver-manager.ts"
+import { AttributeDefSchema, BlockLayoutKey, PageSettings, SheetSettingsSchema } from "@system"
 
 export class CharacterImporter {
 	static async throwError(text: string): Promise<void> {
@@ -59,7 +44,6 @@ export class CharacterImporter {
 			content: await renderTemplate(`systems/${SYSTEM_NAME}/templates/chat/character-import-error.hbs`, {
 				lines: [text],
 			}),
-			type: CONST.CHAT_MESSAGE_TYPES.WHISPER,
 			whisper: [game.user.id],
 		})
 	}
@@ -167,7 +151,7 @@ export class CharacterImporter {
 		}
 	}
 
-	static importSettings(data?: ImportedSheetSettings, third_party?: ImportedThirdPartyData): SheetSettingsObj {
+	static importSettings(data?: ImportedSheetSettings, third_party?: ImportedThirdPartyData): SourceFromSchema<SheetSettingsSchema> {
 		return {
 			page: CharacterImporter.importPage(data?.page),
 			block_layout: (data?.block_layout as BlockLayoutKey[]) ?? [],
@@ -199,7 +183,7 @@ export class CharacterImporter {
 		return data as PageSettings
 	}
 
-	static importAttributeSettings(data?: ImportedAttributeDef[]): AttributeDefObj[] {
+	static importAttributeSettings(data?: ImportedAttributeDef[]): SourceFromSchema<AttributeDefSchema>[] {
 		return (
 			data?.map(e => {
 				return {
@@ -216,7 +200,7 @@ export class CharacterImporter {
 		)
 	}
 
-	static importResourceTrackerSettings(data?: ImportedResourceTrackerDef[]): ResourceTrackerDefObj[] {
+	static importResourceTrackerSettings(data?: ImportedResourceTrackerDef[]): SourceFromSchema<ResourceTrackerDefSchema>[] {
 		return (
 			data?.map(e => {
 				return {
@@ -234,7 +218,7 @@ export class CharacterImporter {
 		)
 	}
 
-	static importMoveTypeSettings(data?: ImportedMoveTypeDef[]): MoveTypeDefObj[] {
+	static importMoveTypeSettings(data?: ImportedMoveTypeDef[]): SourceFromSchema<MoveTypeDefSchema>[] {
 		return (
 			data?.map(e => {
 				return {
@@ -247,11 +231,11 @@ export class CharacterImporter {
 		)
 	}
 
-	static importMoveTypeOverrides(data?: ImportedMoveTypeOverride[]): MoveTypeOverrideObj[] {
+	static importMoveTypeOverrides(data?: ImportedMoveTypeOverride[]): SourceFromSchema<MoveTypeOverrideSchema>[] {
 		return data ?? []
 	}
 
-	static importThresholds(data?: ImportedThreshold[]): PoolThresholdObj[] {
+	static importThresholds(data?: ImportedThreshold[]): SourceFromSchema<PoolThresholdSchema>[] {
 		return (
 			data?.map(e => {
 				return {
@@ -264,7 +248,7 @@ export class CharacterImporter {
 		)
 	}
 
-	static importBody(data?: ImportedBody): BodyObj {
+	static importBody(data?: ImportedBody): SourceFromSchema<BodySchema> {
 		return {
 			name: data?.name ?? "",
 			roll: data?.roll ?? "",
@@ -272,10 +256,10 @@ export class CharacterImporter {
 		}
 	}
 
-	static importHitLocations(data?: ImportedHitLocation[]): HitLocationObj[] {
+	static importHitLocations(data?: ImportedHitLocation[]): SourceFromSchema<HitLocationSchema>[] {
 		return (
 			data?.map(e => {
-				const location: HitLocationObj = {
+				const location: SourceFromSchema<HitLocationSchema> = {
 					id: e.id,
 					choice_name: e.choice_name,
 					table_name: e.table_name,
@@ -290,7 +274,7 @@ export class CharacterImporter {
 		)
 	}
 
-	static importAttributes(data?: ImportedAttribute[]): AttributeObj[] {
+	static importAttributes(data?: ImportedAttribute[]): SourceFromSchema<AttributeSchema>[] {
 		return (
 			data?.map(att => {
 				return {
@@ -302,11 +286,11 @@ export class CharacterImporter {
 		)
 	}
 
-	static importResourceTrackers(data?: ImportedResourceTracker[]): ResourceTrackerObj[] {
+	static importResourceTrackers(data?: ImportedResourceTracker[]): SourceFromSchema<ResourceTrackerSchema>[] {
 		return data ?? []
 	}
 
-	static importMoveTypes(data?: ImportedMoveType[]): MoveTypeObj[] {
+	static importMoveTypes(data?: ImportedMoveType[]): SourceFromSchema<MoveTypeSchema>[] {
 		return (
 			data?.map(e => {
 				return {
@@ -329,6 +313,7 @@ export class CharacterImporter {
 
 	static importFlags(file: { text: string; path: string; name: string }): CharacterFlags {
 		const flags = CharacterFlagDefaults
+		const flags = {}
 
 		const time = getCurrentTime()
 

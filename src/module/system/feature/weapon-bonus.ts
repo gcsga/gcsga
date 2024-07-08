@@ -5,11 +5,11 @@ import { NumericCompareType, NumericCriteria } from "@util/numeric-criteria.ts"
 import { StringCompareType, StringCriteria } from "@util/string-criteria.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { Int } from "@util/fxp.ts"
-import { WeaponBonusObj } from "./data.ts"
 import { WeaponLeveledAmount } from "./weapon-leveled-amount.ts"
 import { AbstractWeaponGURPS } from "@item"
 import { TooltipGURPS } from "@util"
 import { WeaponOwner } from "@module/data/types.ts"
+import { WeaponBonusSchema } from "./data.ts"
 
 export class WeaponBonus<TType extends feature.WeaponBonusType = feature.WeaponBonusType> {
 	type: TType
@@ -18,23 +18,23 @@ export class WeaponBonus<TType extends feature.WeaponBonusType = feature.WeaponB
 
 	private _subOwner?: WeaponOwner
 
-	percent?: boolean
+	percent: boolean | null
 
-	switch_type_value?: boolean
+	switch_type_value: boolean | null
 
 	selection_type: wsel.Type
 
-	switch_type?: wswitch.Type
+	switch_type: wswitch.Type | null
 
-	name?: StringCriteria
+	name: StringCriteria | null
 
-	specialization?: StringCriteria
+	specialization: StringCriteria | null
 
-	level?: NumericCriteria
+	level: NumericCriteria | null
 
-	usage?: StringCriteria
+	usage: StringCriteria | null
 
-	tags?: StringCriteria
+	tags: StringCriteria | null
 
 	leveledAmount: WeaponLeveledAmount
 
@@ -42,6 +42,9 @@ export class WeaponBonus<TType extends feature.WeaponBonusType = feature.WeaponB
 
 	constructor(type: TType) {
 		this.type = type
+		this.percent = null
+		this.switch_type_value = null
+		this.switch_type = null
 		this.selection_type = wsel.Type.WithRequiredSkill
 		this.name = new StringCriteria({ compare: StringCompareType.IsString })
 		this.specialization = new StringCriteria({ compare: StringCompareType.AnyString })
@@ -135,25 +138,26 @@ export class WeaponBonus<TType extends feature.WeaponBonusType = feature.WeaponB
 		return 0
 	}
 
-	toObject(): WeaponBonusObj<TType> {
+	toObject(): SourceFromSchema<WeaponBonusSchema> {
 		return {
 			type: this.type,
-			percent: this.percent,
-			switch_type_value: this.switch_type_value,
+			percent: this.percent ?? null,
+			switch_type_value: this.switch_type_value ?? null,
 			selection_type: this.selection_type,
-			switch_type: this.switch_type,
-			name: this.name,
-			specialization: this.specialization,
-			level: this.level,
-			usage: this.usage,
-			tags: this.tags,
+			switch_type: this.switch_type ?? null,
+			name: this.name ?? null,
+			specialization: this.specialization ?? null,
+			level: this.level ?? null,
+			usage: this.usage ?? null,
+			tags: this.tags ?? null,
 			amount: this.amount,
 			leveled: this.leveledAmount.leveled,
 			per_die: this.leveledAmount.per_die,
+			effective: this.effective ?? false,
 		}
 	}
 
-	static fromObject(data: WeaponBonusObj<feature.WeaponBonusType>): WeaponBonus {
+	static fromObject(data: SourceFromSchema<WeaponBonusSchema>): WeaponBonus {
 		const bonus = new WeaponBonus(data.type)
 		bonus.percent = data.percent
 		if (data.switch_type) bonus.switch_type = data.switch_type

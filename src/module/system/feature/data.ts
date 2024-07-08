@@ -8,6 +8,7 @@ import { NumericCriteriaSchema } from "@util/numeric-criteria.ts"
 import { StringCriteriaSchema } from "@util/string-criteria.ts"
 
 import fields = foundry.data.fields
+import { NullField } from "@system/schema-data-fields.ts"
 
 
 export enum MoveBonusType {
@@ -17,6 +18,14 @@ export enum MoveBonusType {
 
 export type BaseFeatureSchema<TType extends feature.Type> = {
 	type: fields.StringField<TType>
+}
+
+export type BonusOwnerSchema<TType extends feature.Type> = {
+	type: fields.StringField<TType, TType, true, false, true>
+	amount: fields.NumberField
+	per_level: fields.BooleanField
+	effective: fields.BooleanField
+	// effective: fields.NumberField
 }
 
 export type LeveledAmountSchema = {
@@ -42,7 +51,7 @@ export type ConditionalModifierBonusSchema = LeveledAmountSchema & BaseFeatureSc
 	situation: fields.StringField
 }
 
-export type ContainedWeightReductionSchema = BaseFeatureSchema<feature.Type.ConditionalModifierBonus> & {
+export type ContainedWeightReductionSchema = BaseFeatureSchema<feature.Type.ContainedWeightReduction> & {
 	reduction: fields.StringField
 }
 
@@ -67,40 +76,40 @@ export type ReactionBonusSchema = LeveledAmountSchema & BaseFeatureSchema<featur
 
 export type SkillBonusSchema = LeveledAmountSchema & BaseFeatureSchema<feature.Type.SkillBonus> & {
 	selection_type: fields.StringField<skillsel.Type>
-	name: StringCriteriaSchema
-	specialization: StringCriteriaSchema
-	tags: StringCriteriaSchema
+	name: fields.SchemaField<StringCriteriaSchema>
+	specialization: fields.SchemaField<StringCriteriaSchema>
+	tags: fields.SchemaField<StringCriteriaSchema>
 }
 
 export type SkillPointBonusSchema = LeveledAmountSchema & BaseFeatureSchema<feature.Type.SkillPointBonus> & {
-	name: StringCriteriaSchema
-	specialization: StringCriteriaSchema
-	tags: StringCriteriaSchema
+	name: fields.SchemaField<StringCriteriaSchema>
+	specialization: fields.SchemaField<StringCriteriaSchema>
+	tags: fields.SchemaField<StringCriteriaSchema>
 }
 
 export type SpellBonusSchema = LeveledAmountSchema & BaseFeatureSchema<feature.Type.SpellBonus> & {
 	match: fields.StringField<spellmatch.Type>
-	name: StringCriteriaSchema
-	tags: StringCriteriaSchema
+	name: fields.SchemaField<StringCriteriaSchema>
+	tags: fields.SchemaField<StringCriteriaSchema>
 }
 
 export type SpellPointBonusSchema = LeveledAmountSchema & BaseFeatureSchema<feature.Type.SpellPointBonus> & {
 	match: fields.StringField<spellmatch.Type>
-	name: StringCriteriaSchema
-	tags: StringCriteriaSchema
+	name: fields.SchemaField<StringCriteriaSchema>
+	tags: fields.SchemaField<StringCriteriaSchema>
 }
 
 export type WeaponBonusSchema = WeaponLeveledAmountSchema & {
 	type: fields.StringField<feature.WeaponBonusType>
-	percent: fields.BooleanField
-	switch_type_value: fields.BooleanField
+	percent: fields.BooleanField | NullField
+	switch_type_value: fields.BooleanField | NullField
 	selection_type: fields.StringField<wsel.Type>
-	switch_type: fields.StringField<wswitch.Type>
-	name: StringCriteriaSchema
-	specialization: StringCriteriaSchema
-	level: NumericCriteriaSchema
-	usage: StringCriteriaSchema
-	tags: StringCriteriaSchema
+	switch_type: fields.StringField<wswitch.Type> | NullField
+	name: fields.SchemaField<StringCriteriaSchema> | NullField
+	specialization: fields.SchemaField<StringCriteriaSchema> | NullField
+	level: fields.SchemaField<NumericCriteriaSchema> | NullField
+	usage: fields.SchemaField<StringCriteriaSchema> | NullField
+	tags: fields.SchemaField<StringCriteriaSchema> | NullField
 }
 
 export type FeatureSchema =
@@ -116,86 +125,3 @@ export type FeatureSchema =
 	| SpellBonusSchema
 	| SpellPointBonusSchema
 	| WeaponBonusSchema
-
-export interface BaseFeatureObj<TType extends feature.Type> {
-	type: TType
-}
-
-export interface AttributeBonusObj extends LeveledAmountObj, BaseFeatureObj<feature.Type.AttributeBonus> {
-	limitation?: stlimit.Option
-	attribute: string
-}
-
-export interface ConditionalModifierBonusObj
-	extends LeveledAmountObj,
-	BaseFeatureObj<feature.Type.ConditionalModifierBonus> {
-	situation: string
-}
-
-export interface ContainedWeightReductionObj extends BaseFeatureObj<feature.Type.ContainedWeightReduction> {
-	reduction: string
-}
-
-export interface CostReductionObj extends BaseFeatureObj<feature.Type.CostReduction> {
-	attribute?: string
-	percentage?: number
-}
-
-export interface DRBonusObj extends LeveledAmountObj, BaseFeatureObj<feature.Type.DRBonus> {
-	location: string
-	specialization?: string
-}
-
-export interface LeveledAmountObj {
-	amount: number
-	per_level?: boolean
-	effective?: boolean
-}
-
-export interface MoveBonusObj extends LeveledAmountObj, BaseFeatureObj<feature.Type.MoveBonus> {
-	move_type: string
-	limitation: MoveBonusType
-}
-export interface ReactionBonusObj extends LeveledAmountObj, BaseFeatureObj<feature.Type.ReactionBonus> {
-	situation: string
-}
-export interface SkillBonusObj extends LeveledAmountObj, BaseFeatureObj<feature.Type.SkillBonus> {
-	selection_type: skillsel.Type
-	name?: SourceFromSchema<StringCriteriaSchema>
-	specialization?: SourceFromSchema<StringCriteriaSchema>
-	tags?: SourceFromSchema<StringCriteriaSchema>
-}
-export interface SkillPointBonusObj extends LeveledAmountObj, BaseFeatureObj<feature.Type.SkillPointBonus> {
-	name?: SourceFromSchema<StringCriteriaSchema>
-	specialization?: SourceFromSchema<StringCriteriaSchema>
-	tags?: SourceFromSchema<StringCriteriaSchema>
-}
-export interface SpellBonusObj extends LeveledAmountObj, BaseFeatureObj<feature.Type.SpellBonus> {
-	match: spellmatch.Type
-	name?: SourceFromSchema<StringCriteriaSchema>
-	tags?: SourceFromSchema<StringCriteriaSchema>
-}
-export interface SpellPointBonusObj extends LeveledAmountObj, BaseFeatureObj<feature.Type.SpellPointBonus> {
-	match: spellmatch.Type
-	name?: SourceFromSchema<StringCriteriaSchema>
-	tags?: SourceFromSchema<StringCriteriaSchema>
-}
-export interface WeaponBonusObj<TType extends feature.WeaponBonusType>
-	extends WeaponLeveledAmountObj,
-	BaseFeatureObj<TType> {
-	percent?: boolean
-	switch_type_value?: boolean
-	selection_type: wsel.Type
-	switch_type?: wswitch.Type
-	name?: SourceFromSchema<StringCriteriaSchema>
-	specialization?: SourceFromSchema<StringCriteriaSchema>
-	level?: SourceFromSchema<NumericCriteriaSchema>
-	usage?: SourceFromSchema<StringCriteriaSchema>
-	tags?: SourceFromSchema<StringCriteriaSchema>
-}
-
-export interface WeaponLeveledAmountObj {
-	amount: number
-	leveled?: boolean
-	per_die?: boolean
-}

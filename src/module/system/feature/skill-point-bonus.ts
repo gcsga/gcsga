@@ -1,16 +1,16 @@
 import { StringCompareType, StringCriteria } from "@util/string-criteria.ts"
 import { BonusOwner } from "./bonus-owner.ts"
 import { LeveledAmount } from "./leveled-amount.ts"
-import { SkillPointBonusObj } from "./data.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { TooltipGURPS, feature } from "@util"
+import { SkillPointBonusSchema } from "./data.ts"
 
 export class SkillPointBonus extends BonusOwner<feature.Type.SkillPointBonus> {
-	name?: StringCriteria
+	name: StringCriteria
 
-	specialization?: StringCriteria
+	specialization: StringCriteria
 
-	tags?: StringCriteria
+	tags: StringCriteria
 
 	constructor() {
 		super(feature.Type.SkillPointBonus)
@@ -20,7 +20,7 @@ export class SkillPointBonus extends BonusOwner<feature.Type.SkillPointBonus> {
 		this.leveledAmount = new LeveledAmount({ amount: 1 })
 	}
 
-	override toObject(): SkillPointBonusObj {
+	override toObject(): SourceFromSchema<SkillPointBonusSchema> {
 		return {
 			...super.toObject(),
 			name: this.name,
@@ -43,7 +43,7 @@ export class SkillPointBonus extends BonusOwner<feature.Type.SkillPointBonus> {
 		}
 	}
 
-	static fromObject(data: SkillPointBonusObj): SkillPointBonus {
+	static fromObject(data: SourceFromSchema<SkillPointBonusSchema>): SkillPointBonus {
 		const bonus = new SkillPointBonus()
 		if (data.name) bonus.name = new StringCriteria(data.name)
 		if (data.specialization) bonus.specialization = new StringCriteria(data.specialization)
