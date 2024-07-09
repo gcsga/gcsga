@@ -577,7 +577,7 @@ class CharacterGURPS<
 
 	// Feature Bonuses
 	attributeBonusFor(
-		attributeId: string,
+		attributeId: string | null,
 		limitation: stlimit.Option,
 		effective: boolean | null = null,
 		tooltip: TooltipGURPS | null = null,

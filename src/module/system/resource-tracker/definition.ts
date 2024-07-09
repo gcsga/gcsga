@@ -1,30 +1,30 @@
-import { ResourceTrackerResolver } from "@module/util/index.ts"
 import { ResourceTrackerDefSchema, ResourceTrackerSchema } from "./data.ts"
-import { AbstractAttributeDef, PoolThreshold } from "@system"
+import { AbstractAttributeDef, PoolThreshold, ResourceTracker } from "@system"
+import { CharacterGURPS } from "@actor"
 
 
-export class ResourceTrackerDef extends AbstractAttributeDef {
-	name: string
-	private full_name: string
-	thresholds: PoolThreshold[] = []
-	max = 10
-	min = 0
-	isMaxEnforced = false
-	isMinEnforced = false
-	order = 0
+class ResourceTrackerDef extends AbstractAttributeDef<ResourceTrackerDefSchema, CharacterGURPS> {
+	// name: string
+	// private full_name: string
+	// thresholds: PoolThreshold[] = []
+	// max = 10
+	// min = 0
+	// isMaxEnforced = false
+	// isMinEnforced = false
+	// order = 0
 
-	constructor(data: SourceFromSchema<ResourceTrackerDefSchema>) {
+	constructor(data: DeepPartial<SourceFromSchema<ResourceTrackerDefSchema>>) {
 		super(data)
-		this.name = data.name
-		this.full_name = data.full_name
-		this.max = data.max ?? 10
-		this.min = data.min ?? 0
-		this.isMaxEnforced = data.isMaxEnforced ?? false
-		this.isMinEnforced = data.isMinEnforced ?? false
-		this.order = data.order ?? 0
+		// this.name = data.name
+		// this.full_name = data.full_name
+		// this.max = data.max ?? 10
+		// this.min = data.min ?? 0
+		// this.isMaxEnforced = data.isMaxEnforced ?? false
+		// this.isMinEnforced = data.isMinEnforced ?? false
+		// this.order = data.order ?? 0
 	}
 
-	static defineSchema(): ResourceTrackerDefSchema {
+	static override defineSchema(): ResourceTrackerDefSchema {
 		const fields = foundry.data.fields
 		return {
 			id: new fields.StringField({ initial: "id" }),
@@ -51,26 +51,24 @@ export class ResourceTrackerDef extends AbstractAttributeDef {
 		return `${this.full_name} (${this.name})`
 	}
 
-	baseValue(_resolver: ResourceTrackerResolver): number {
+	baseValue(_resolver: CharacterGURPS): number {
 		return this.max
 	}
 
 	override generateNewAttribute(): SourceFromSchema<ResourceTrackerSchema> {
-		return {
-			...super.generateNewAttribute(),
-			damage: 0,
-		}
+		return new ResourceTracker({}, 0).toObject()
+		// return {
+		// 	...super.generateNewAttribute(),
+		// 	damage: 0,
+		// }
 	}
 
 	static override newObject(reservedIds: string[]): SourceFromSchema<ResourceTrackerDefSchema> {
-		return {
-			...super.newObject(reservedIds),
-			name: "",
-			full_name: "",
-			min: 0,
-			max: 10,
-			isMinEnforced: false,
-			isMaxEnforced: false,
-		}
+		return new ResourceTrackerDef({}).toObject()
 	}
+
 }
+
+interface ResourceTrackerDef extends AbstractAttributeDef<ResourceTrackerDefSchema, CharacterGURPS>, ModelPropsFromSchema<ResourceTrackerDefSchema> { }
+
+export { ResourceTrackerDef }

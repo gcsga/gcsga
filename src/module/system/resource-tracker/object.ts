@@ -5,7 +5,7 @@ import { CharacterGURPS } from "@actor"
 
 class ResourceTracker extends AbstractAttribute<ResourceTrackerSchema, CharacterGURPS> {
 	order: number
-	damage?: number
+	// damage?: number
 
 	constructor(data: SourceFromSchema<ResourceTrackerSchema>, order: number) {
 		super(data)
@@ -54,5 +54,7 @@ class ResourceTracker extends AbstractAttribute<ResourceTrackerSchema, Character
 		}
 	}
 }
+
+interface ResourceTracker extends AbstractAttribute<ResourceTrackerSchema>, ModelPropsFromSchema<ResourceTrackerSchema> { }
 
 export { ResourceTracker }

@@ -1,11 +1,11 @@
 import fields = foundry.data.fields
 
 type AbstractAttributeSchema = {
-	id: fields.StringField
+	id: fields.StringField<string, string, true, true>
 }
 
 type AbstractAttributeDefSchema = {
-	id: fields.StringField
+	id: fields.StringField<string, string, true, true>
 	base: fields.StringField
 }
 

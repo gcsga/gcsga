@@ -1,16 +1,27 @@
-import { MoveTypeResolver } from "@module/util/index.ts"
 import { MoveTypeDef } from "./definition.ts"
 import { AbstractAttribute, MoveBonusType, MoveTypeSchema } from "@system"
+import { CharacterGURPS } from "@actor"
 
-export class MoveType<TActor extends MoveTypeResolver> extends AbstractAttribute<TActor> {
+class MoveType extends AbstractAttribute<MoveTypeSchema, CharacterGURPS> {
 	adj = 0
 	order: number
 
-	constructor(actor: TActor, data: SourceFromSchema<MoveTypeSchema>, order: number) {
-		super(actor, data)
-		this.adj = data.adj
+	constructor(data: SourceFromSchema<MoveTypeSchema>, order: number) {
+		super(data)
+		// this.adj = data.adj
 		this.order = order
 	}
+
+	static override defineSchema(): MoveTypeSchema {
+		const fields = foundry.data.fields
+
+		return {
+			...super.defineSchema(),
+			adj: new fields.NumberField({ initial: 0 })
+		}
+
+	}
+
 
 	override get definition(): MoveTypeDef | null {
 		return this.actor.settings.move_types.find(att => att.id === this.id) ?? null
@@ -49,3 +60,7 @@ export class MoveType<TActor extends MoveTypeResolver> extends AbstractAttribute
 		return enhanced
 	}
 }
+
+interface MoveType extends AbstractAttribute<MoveTypeSchema, CharacterGURPS>, ModelPropsFromSchema<MoveTypeSchema> { }
+
+export { MoveType }

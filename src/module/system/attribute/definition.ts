@@ -4,30 +4,32 @@ import { AttributeDefSchema, AttributeSchema } from "./data.ts"
 import { progression } from "@util/enum/progression.ts"
 import { AbstractAttributeDef } from "@system/abstract-attribute/definition.ts"
 import { gid } from "@module/data/constants.ts"
-import { AttributeResolver, evaluateToNumber } from "@module/util/index.ts"
+import { evaluateToNumber } from "@module/util/index.ts"
+import { ActorGURPS, CharacterGURPS } from "@actor"
+import { AttributeGURPS } from "./object.ts"
 
 
-export class AttributeDef extends AbstractAttributeDef {
-	declare type: attribute.Type
-	name: string
-	private full_name: string
-	cost_per_point = 0
-	cost_adj_percent_per_sm = 0
-	thresholds?: PoolThreshold[]
-	order: number
+class AttributeDef extends AbstractAttributeDef<AttributeDefSchema, ActorGURPS> {
+	// declare type: attribute.Type
+	// name: string
+	// private full_name: string
+	// cost_per_point = 0
+	// cost_adj_percent_per_sm = 0
+	// thresholds?: PoolThreshold[]
+	// order: number
 
-	constructor(data: SourceFromSchema<AttributeDefSchema>) {
+	constructor(data: DeepPartial<SourceFromSchema<AttributeDefSchema>>) {
 		super(data)
-		this.type = data.type
-		this.name = data.name
-		this.full_name = data.full_name ?? ""
-		this.cost_per_point = data.cost_per_point ?? 0
-		this.cost_adj_percent_per_sm = data.cost_adj_percent_per_sm ?? 0
-		this.order = data.order ?? 0
-		this.thresholds = data.thresholds?.map(threshold => new PoolThreshold(threshold))
+		// this.type = data.type
+		// this.name = data.name
+		// this.full_name = data.full_name ?? ""
+		// this.cost_per_point = data.cost_per_point ?? 0
+		// this.cost_adj_percent_per_sm = data.cost_adj_percent_per_sm ?? 0
+		// this.order = data.order ?? 0
+		// this.thresholds = data.thresholds?.map(threshold => new PoolThreshold(threshold))
 	}
 
-	static defineSchema(): AttributeDefSchema {
+	static override defineSchema(): AttributeDefSchema {
 		const fields = foundry.data.fields
 
 		return {
@@ -66,11 +68,11 @@ export class AttributeDef extends AbstractAttributeDef {
 		return !isNaN(parseInt(this.base))
 	}
 
-	baseValue(resolver: AttributeResolver): number {
+	baseValue(resolver: ActorGURPS): number {
 		return evaluateToNumber(this.base, resolver)
 	}
 
-	computeCost(actor: AttributeResolver, value: number, cost_reduction: number, size_modifier: number): number {
+	computeCost(actor: CharacterGURPS, value: number, cost_reduction: number, size_modifier: number): number {
 		let cost = value * (this.cost_per_point || 0)
 		if (
 			size_modifier > 0 &&
@@ -89,19 +91,14 @@ export class AttributeDef extends AbstractAttributeDef {
 	}
 
 	override generateNewAttribute(): SourceFromSchema<AttributeSchema> {
-		return {
-			...super.generateNewAttribute(),
-			adj: 0,
-			damage: 0,
-		}
+		return new AttributeGURPS({}, 0).toObject()
 	}
 
 	static override newObject(reservedIds: string[]): SourceFromSchema<AttributeDefSchema> {
-		return {
-			...super.newObject(reservedIds),
-			type: attribute.Type.Integer,
-			name: "",
-			full_name: "",
-		}
+		return new AttributeDef({}).toObject()
 	}
 }
+
+interface AttributeDef extends AbstractAttributeDef<AttributeDefSchema, CharacterGURPS>, ModelPropsFromSchema<AttributeDefSchema> { }
+
+export { AttributeDef }

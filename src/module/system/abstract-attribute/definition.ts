@@ -1,18 +1,46 @@
-import { RESERVED_IDS } from "@system"
 import { getNewAttributeId, sanitizeId } from "@util"
-import { AbstractAttributeDefObj, AbstractAttributeObj } from "./data.ts"
-import { VariableResolver } from "@module/util/resolvers.ts"
+import { AbstractAttributeDefSchema, AbstractAttributeSchema } from "./data.ts"
+import { ActorGURPS } from "@actor"
+import { LaxSchemaField } from "@system/schema-data-fields.ts"
+import { RESERVED_IDS } from "@system/attribute/data.ts"
 
-abstract class AbstractAttributeDef {
+abstract class AbstractAttributeDef<
+	TSchema extends AbstractAttributeDefSchema = AbstractAttributeDefSchema,
+	TActor extends ActorGURPS = ActorGURPS
+> extends foundry.abstract.DataModel<TActor, TSchema> {
+
+	protected declare static _schema: LaxSchemaField<AbstractAttributeDefSchema> | undefined
+
 	private _id: string
-	base: string
+	// base: string
 
-	constructor(data: AbstractAttributeDefObj) {
-		this._id = data.id
-		this.base = data.base
+	constructor(data: DeepPartial<SourceFromSchema<TSchema>>) {
+		super(data)
+		this._id = sanitizeId(String(data.id ?? ""), false, RESERVED_IDS)
+		// this._id = data.id ?? ""
+		// this.base = data.base
 	}
 
-	get id(): string {
+	static override defineSchema(): AbstractAttributeDefSchema {
+		const fields = foundry.data.fields
+
+		return {
+			id: new fields.StringField(),
+			base: new fields.StringField()
+		}
+	}
+
+	static override get schema(): LaxSchemaField<AbstractAttributeDefSchema> {
+		if (this._schema && Object.hasOwn(this, "_schema")) return this._schema
+
+		const schema = new LaxSchemaField(Object.freeze(this.defineSchema()))
+		schema.name = this.name
+		Object.defineProperty(this, "_schema", { value: schema, writable: false })
+
+		return schema
+	}
+
+	get id(): string | null {
 		return this._id
 	}
 
@@ -20,15 +48,15 @@ abstract class AbstractAttributeDef {
 		this._id = sanitizeId(value, false, RESERVED_IDS)
 	}
 
-	abstract baseValue(resolver: VariableResolver): number
+	abstract baseValue(resolver: TActor): number
 
-	generateNewAttribute(): AbstractAttributeObj {
+	generateNewAttribute(): SourceFromSchema<AbstractAttributeSchema> {
 		return {
 			id: this.id,
 		}
 	}
 
-	static newObject(reservedIds: string[]): AbstractAttributeDefObj {
+	static newObject(reservedIds: string[]): SourceFromSchema<AbstractAttributeDefSchema> {
 		return {
 			id: getNewAttributeId(
 				reservedIds.map(e => {
@@ -39,5 +67,9 @@ abstract class AbstractAttributeDef {
 		}
 	}
 }
+
+interface AbstractAttributeDef<TSchema extends AbstractAttributeDefSchema, TActor extends ActorGURPS> extends foundry.abstract.DataModel<TActor, TSchema>,
+	ModelPropsFromSchema<AbstractAttributeDefSchema> { }
+
 
 export { AbstractAttributeDef }

@@ -8,8 +8,8 @@ type ResourceTrackerSchema = AbstractAttributeSchema & {
 type ResourceTrackerDefSchema = AbstractAttributeDefSchema & {
 	name: fields.StringField
 	full_name: fields.StringField
-	max: fields.NumberField
-	min: fields.NumberField
+	max: fields.NumberField<number, number, true, false, true>
+	min: fields.NumberField<number, number, true, false, true>
 	isMaxEnforced: fields.BooleanField
 	isMinEnforced: fields.BooleanField
 	thresholds: fields.ArrayField<fields.SchemaField<PoolThresholdSchema>>

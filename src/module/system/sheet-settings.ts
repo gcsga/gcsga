@@ -88,8 +88,9 @@ class SheetSettings extends foundry.abstract.DataModel<ActorGURPS, SheetSettings
 	// exclude_unspent_points_from_total: boolean
 
 	constructor(data: DeepPartial<SourceFromSchema<SheetSettingsSchema>>) {
-
 		super(data)
+
+		this.attributes = data.attributes?.map(e => new AttributeDef(e))
 
 
 		// this.page = data.page

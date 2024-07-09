@@ -1,26 +1,26 @@
 import { PoolThreshold } from "./pool-threshold.ts"
-import { AttributeDef } from "./definition.ts"
 import { ActorFlags, SYSTEM_NAME, TokenPool, gid } from "@data"
 import { ErrorGURPS, Int, attribute, stlimit } from "@util"
 import { AbstractAttribute } from "@system/abstract-attribute/object.ts"
 import { AttributeSchema } from "./data.ts"
 import { AbstractAttributeSchema } from "@system/abstract-attribute/data.ts"
 import { CharacterGURPS } from "@actor"
+import { AttributeDef } from "./definition.ts"
 
-class AttributeGURPS extends AbstractAttribute<AbstractAttributeSchema, CharacterGURPS> {
-	adj = 0
-	damage?: number
+class AttributeGURPS extends AbstractAttribute<AttributeSchema, CharacterGURPS> {
+	// adj = 0
+	// damage?: number
 	order: number
-	applyOps: boolean
+	// applyOps: boolean
 
 	protected _overridenThreshold: PoolThreshold | null = null
 
-	constructor(data: SourceFromSchema<AttributeSchema>, order: number) {
+	constructor(data: DeepPartial<SourceFromSchema<AttributeSchema>>, order: number) {
 		super(data)
 		// this.adj = data.adj
 		// if (data.damage !== undefined) this.damage = data.damage
 		this.order = order
-		this.applyOps = this.definition?.type === attribute.Type.Pool
+		// this.applyOps = this.definition?.type === attribute.Type.Pool
 	}
 
 	static override defineSchema(): AttributeSchema {
@@ -150,8 +150,6 @@ class AttributeGURPS extends AbstractAttribute<AbstractAttributeSchema, Characte
 	}
 }
 
-interface AttributeGURPS extends AbstractAttribute<AttributeSchema>, ModelPropsFromSchema<AttributeSchema> {
-
-}
+interface AttributeGURPS extends AbstractAttribute<AttributeSchema>, ModelPropsFromSchema<AttributeSchema> { }
 
 export { AttributeGURPS }
