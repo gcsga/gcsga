@@ -3,10 +3,11 @@ import { AttributeDef } from "./definition.ts"
 import { ActorFlags, SYSTEM_NAME, TokenPool, gid } from "@data"
 import { ErrorGURPS, Int, attribute, stlimit } from "@util"
 import { AbstractAttribute } from "@system/abstract-attribute/object.ts"
-import { AttributeResolver } from "@module/util/index.ts"
 import { AttributeSchema } from "./data.ts"
+import { AbstractAttributeSchema } from "@system/abstract-attribute/data.ts"
+import { CharacterGURPS } from "@actor"
 
-class AttributeGURPS<TActor extends AttributeResolver = AttributeResolver> extends AbstractAttribute<TActor> {
+class AttributeGURPS extends AbstractAttribute<AbstractAttributeSchema, CharacterGURPS> {
 	adj = 0
 	damage?: number
 	order: number
@@ -14,12 +15,23 @@ class AttributeGURPS<TActor extends AttributeResolver = AttributeResolver> exten
 
 	protected _overridenThreshold: PoolThreshold | null = null
 
-	constructor(actor: TActor, data: SourceFromSchema<AttributeSchema>, order: number) {
-		super(actor, data)
-		this.adj = data.adj
-		if (data.damage !== undefined) this.damage = data.damage
+	constructor(data: SourceFromSchema<AttributeSchema>, order: number) {
+		super(data)
+		// this.adj = data.adj
+		// if (data.damage !== undefined) this.damage = data.damage
 		this.order = order
 		this.applyOps = this.definition?.type === attribute.Type.Pool
+	}
+
+	static override defineSchema(): AttributeSchema {
+		const fields = foundry.data.fields
+
+		return {
+			...super.defineSchema(),
+			adj: new fields.NumberField({ initial: 0 }),
+			damage: new fields.NumberField({ nullable: true, initial: null }),
+			apply_ops: new fields.BooleanField({ initial: null })
+		}
 	}
 
 	overrideThreshold(value: PoolThreshold): Error | void {
@@ -136,6 +148,10 @@ class AttributeGURPS<TActor extends AttributeResolver = AttributeResolver> exten
 			min: Number.MIN_SAFE_INTEGER,
 		}
 	}
+}
+
+interface AttributeGURPS extends AbstractAttribute<AttributeSchema>, ModelPropsFromSchema<AttributeSchema> {
+
 }
 
 export { AttributeGURPS }

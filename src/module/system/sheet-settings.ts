@@ -8,12 +8,11 @@ import {
 	ResourceTrackerDef,
 	ResourceTrackerDefSchema,
 } from "@system"
-import { LengthUnits, TooltipGURPS, WeightUnits, display, paper, progression } from "@util"
-import { ActorType, SETTINGS, SYSTEM_NAME } from "./constants.ts"
+import { LengthUnits, WeightUnits, display, paper, progression } from "@util"
 import { ActorGURPS } from "@actor"
-import { BodyOwner } from "@module/util/resolvers.ts"
 import fields = foundry.data.fields
 import { LaxSchemaField } from "./schema-data-fields.ts"
+import { SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
 
 export interface PageSettings {
 	paper_size: paper.Size
@@ -63,7 +62,7 @@ type SheetSettingsSchema = {
 	exclude_unspent_points_from_total: fields.BooleanField
 }
 
-export class SheetSettings extends foundry.abstract.DataModel<ActorGURPS, SheetSettingsSchema> {
+class SheetSettings extends foundry.abstract.DataModel<ActorGURPS, SheetSettingsSchema> {
 	protected declare static _schema: LaxSchemaField<SheetSettingsSchema> | undefined;
 
 	// page: PageSettings
@@ -168,10 +167,17 @@ export class SheetSettings extends foundry.abstract.DataModel<ActorGURPS, SheetS
 	}
 
 	static for(actor: ActorGURPS | null): SheetSettings {
-
+		return actor?.settings ?? SheetSettings.default()
 	}
 
 }
+
+interface SheetSettings
+	extends foundry.abstract.DataModel<ActorGURPS, SheetSettingsSchema>,
+	ModelPropsFromSchema<SheetSettingsSchema> {
+}
+
+
 
 // export interface SheetSettings {
 // 	page: PageSettings
@@ -223,17 +229,18 @@ export class SheetSettings extends foundry.abstract.DataModel<ActorGURPS, SheetS
 // 	}
 // }
 
-export function sheetSettingsFor(actor: ActorGURPS | null): SheetSettings {
-	if (!actor || !actor.isOfType(ActorType.Character)) {
-		return defaultSheetSettings()
-	}
-	return {
-		...actor.system.settings,
-		body_type: actor.hitLocationTable,
-		resource_trackers: actor.system.settings.resource_trackers.map(e => new ResourceTrackerDef(e)),
-		attributes: actor.system.settings.attributes.map(e => new AttributeDef(e)),
-		move_types: actor.system.settings.move_types.map(e => new MoveTypeDef(e)),
-	}
-}
+// export function sheetSettingsFor(actor: ActorGURPS | null): SheetSettings {
+// 	if (!actor || !actor.isOfType(ActorType.Character)) {
+// 		return defaultSheetSettings()
+// 	}
+// 	return {
+// 		...actor.system.settings,
+// 		body_type: actor.hitLocationTable,
+// 		resource_trackers: actor.system.settings.resource_trackers.map(e => new ResourceTrackerDef(e)),
+// 		attributes: actor.system.settings.attributes.map(e => new AttributeDef(e)),
+// 		move_types: actor.system.settings.move_types.map(e => new MoveTypeDef(e)),
+// 	}
+// }
 
 export type { SheetSettingsSchema }
+export { SheetSettings }

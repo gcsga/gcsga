@@ -6,7 +6,6 @@ import { DiceGURPS } from "@module/dice/index.ts"
 import { AttributeGURPS, MoveType, ResourceTracker, SheetSettings, type AttributeSchema, type MoveTypeSchema, type PoolThreshold, type ResourceTrackerSchema, type SheetSettingsSchema } from "@system"
 import { CharacterManeuver } from "../../system/maneuver-manager.ts"
 import { CharacterGURPS } from "./document.ts"
-import { Attribute } from "pixi.js"
 
 // type CharacterSource = BaseActorSourceGURPS<ActorType.Character, CharacterSystemSource> & {
 // 	flags: DeepPartial<CharacterFlags>
@@ -162,7 +161,25 @@ class CharacterSystemData extends ActorSystemModel<CharacterGURPS, CharacterSyst
 			settings: new fields.SchemaField<SheetSettingsSchema>(SheetSettings.defineSchema()),
 			created_date: new fields.StringField(),
 			modified_date: new fields.StringField(),
-			profile: new fields.SchemaField<CharacterProfileSchema>(CharacterProfile.defineSchema()),
+			profile: new fields.SchemaField<CharacterProfileSchema>({
+				player_name: new fields.StringField({ initial: game.user.name }),
+				name: new fields.StringField(),
+				title: new fields.StringField(),
+				organization: new fields.StringField(),
+				age: new fields.StringField(),
+				birthday: new fields.StringField(),
+				eyes: new fields.StringField(),
+				hair: new fields.StringField(),
+				skin: new fields.StringField(),
+				handedness: new fields.StringField(),
+				height: new fields.StringField(),
+				weight: new fields.StringField(),
+				SM: new fields.NumberField({ integer: true, initial: 0 }),
+				gender: new fields.StringField(),
+				tech_level: new fields.StringField(),
+				religion: new fields.StringField(),
+				portrait: new fields.StringField(),
+			}),
 			attributes: new fields.ArrayField(new fields.SchemaField(AttributeGURPS.defineSchema())),
 			resource_trackers: new fields.ArrayField(new fields.SchemaField(ResourceTracker.defineSchema())),
 			move_types: new fields.ArrayField(new fields.SchemaField(MoveType.defineSchema())),

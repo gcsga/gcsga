@@ -1,13 +1,37 @@
 import { AbstractAttributeDef } from "./definition.ts"
-import { AbstractAttributeObj } from "./data.ts"
-import { VariableResolver } from "@module/util/index.ts"
+import { AbstractAttributeSchema } from "./data.ts"
+import { ActorGURPS } from "@actor"
+import { LaxSchemaField } from "@system/schema-data-fields.ts"
 
-abstract class AbstractAttribute<TActor extends VariableResolver = VariableResolver> {
-	actor: TActor
+abstract class AbstractAttribute<
+	TSchema extends AbstractAttributeSchema = AbstractAttributeSchema,
+	TActor extends ActorGURPS = ActorGURPS
+> extends foundry.abstract.DataModel<TActor, TSchema> {
+
+	protected declare static _schema: LaxSchemaField<AbstractAttributeSchema> | undefined
+
+	static override defineSchema(): AbstractAttributeSchema {
+		const fields = foundry.data.fields
+
+		return {
+			id: new fields.StringField(),
+		}
+	}
+
+	static override get schema(): LaxSchemaField<AbstractAttributeSchema> {
+		if (this._schema && Object.hasOwn(this, "_schema")) return this._schema
+
+		const schema = new LaxSchemaField(Object.freeze(this.defineSchema()))
+		schema.name = this.name
+		Object.defineProperty(this, "_schema", { value: schema, writable: false })
+
+		return schema
+	}
+
 	_id: string
 
-	constructor(actor: TActor, data: AbstractAttributeObj) {
-		this.actor = actor
+	constructor(data: SourceFromSchema<AbstractAttributeSchema>) {
+		super(data)
 		this._id = data.id
 	}
 
@@ -15,6 +39,10 @@ abstract class AbstractAttribute<TActor extends VariableResolver = VariableResol
 
 	get id(): string {
 		return this._id
+	}
+
+	get actor(): TActor {
+		return this.parent
 	}
 
 	/** Effective value of the attribute, not taking into account modifiers from temporary effects */

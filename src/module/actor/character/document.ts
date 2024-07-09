@@ -1,25 +1,22 @@
 import { ActorGURPS } from "@actor"
 import { TokenDocumentGURPS } from "@scene"
-import { CharacterFlagDefaults, CharacterFlags, CharacterSource, CharacterSystemData, PointsBreakdown } from "./data.ts"
+import { CharacterFlags, CharacterSource, CharacterSystemData, PointsBreakdown } from "./data.ts"
 import {
 	AbstractAttributeDef,
-	AbstractAttributeObj,
 	AttributeGURPS,
 	AttributeDef,
-	AttributeObj,
 	BodyGURPS,
 	ConditionalModifier,
 	MoveBonusType,
 	MoveType,
 	MoveTypeDef,
-	MoveTypeObj,
 	ResourceTracker,
 	ResourceTrackerDef,
-	ResourceTrackerObj,
 	SkillBonus,
 	SkillDefault,
 	ThresholdOp,
 	WeaponBonus,
+	SheetSettings,
 } from "@system"
 import {
 	AbstractWeaponGURPS,
@@ -32,7 +29,6 @@ import {
 } from "@item"
 import {
 	ActorFlags,
-	ActorType,
 	ItemType,
 	ManeuverID,
 	SETTINGS,
@@ -42,21 +38,14 @@ import {
 } from "@module/data/constants.ts"
 import {
 	Int,
-	LengthUnits,
 	LocalizeGURPS,
 	TooltipGURPS,
-	WeightUnits,
-	allLengthUnits,
-	allWeightUnits,
 	attribute,
 	container,
 	damageProgression,
-	display,
 	equalFold,
 	feature,
 	getCurrentTime,
-	paper,
-	progression,
 	skillsel,
 	stdmg,
 	stlimit,
@@ -67,20 +56,15 @@ import { DiceGURPS } from "@module/dice/index.ts"
 import { ItemInstances } from "@item/types.ts"
 import { CharacterLifts } from "./lifts.ts"
 import { CharacterEncumbrance } from "./encumbrance.ts"
-import { SheetSettingsObj } from "@module/data/sheet-settings.ts"
-import { ActorSchema } from "types/foundry/common/documents/actor.js"
-import { ItemSchema } from "types/foundry/common/documents/item.js"
-
-const fields = foundry.data.fields
 
 class CharacterGURPS<
 	TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null,
 > extends ActorGURPS<TParent> {
 	/** Attribute Collections */
-	declare attributes: Map<string, AttributeGURPS<this>>
-	private declare _prevAttributes: Map<string, AttributeGURPS<this>>
-	declare resourceTrackers: Map<string, ResourceTracker<this>>
-	declare moveTypes: Map<string, MoveType<this>>
+	declare attributes: Map<string, AttributeGURPS>
+	private declare _prevAttributes: Map<string, AttributeGURPS>
+	declare resourceTrackers: Map<string, ResourceTracker>
+	declare moveTypes: Map<string, MoveType>
 	declare pointsBreakdown: PointsBreakdown
 
 	/** Singular embeds for characters */
@@ -100,114 +84,114 @@ class CharacterGURPS<
 	/** Exclusions to prevent circular references in skill level resoluiton */
 	declare skillResolverExclusions: Set<string>
 
-	static override defineSchema(): ActorSchema<string, object, SourceFromSchema<ItemSchema<string, object>>> {
-		const settings = this.getDefaultSettings()
-		const date = getCurrentTime()
-		return this.mergeSchema(super.defineSchema(), {
-			system: new fields.SchemaField({
-				type: new fields.StringField({ readonly: true, required: true, initial: ActorType.Character }),
-				version: new fields.NumberField({ readonly: true, required: true, initial: 4 }),
-				settings: new fields.SchemaField({
-					page: new fields.SchemaField({
-						paper_size: new fields.StringField<paper.Size>({ initial: settings.page.paper_size }),
-						orientation: new fields.StringField<paper.Orientation>({ initial: settings.page.orientation }),
-						top_margin: new fields.StringField<paper.Length>({ initial: settings.page.top_margin }),
-						left_margin: new fields.StringField<paper.Length>({ initial: settings.page.left_margin }),
-						bottom_margin: new fields.StringField<paper.Length>({ initial: settings.page.bottom_margin }),
-						right_margin: new fields.StringField<paper.Length>({ initial: settings.page.right_margin }),
-					}),
-					block_layout: new fields.ArrayField(new fields.StringField(), { initial: settings.block_layout }),
-					attributes: new fields.ArrayField(new fields.SchemaField(AttributeDef.defineSchema()), {
-						initial: settings.attributes,
-					}),
-					resource_trackers: new fields.ArrayField(
-						new fields.SchemaField(ResourceTrackerDef.defineSchema()),
-						{ initial: settings.resource_trackers },
-					),
-					move_types: new fields.ArrayField(new fields.SchemaField(MoveTypeDef.defineSchema()), {
-						initial: settings.move_types,
-					}),
-					body_type: new fields.SchemaField(BodyGURPS.defineSchema(), { initial: settings.body_type }),
-					damage_progression: new fields.StringField<progression.Option>({
-						choices: progression.Options,
-						initial: settings.damage_progression,
-					}),
-					default_length_units: new fields.StringField<LengthUnits>({
-						choices: allLengthUnits,
-						initial: settings.default_length_units,
-					}),
-					default_weight_units: new fields.StringField<WeightUnits>({
-						choices: allWeightUnits,
-						initial: settings.default_weight_units,
-					}),
-					user_description_display: new fields.StringField<display.Option>({
-						choices: display.Options,
-						initial: settings.user_description_display,
-					}),
-					modifiers_display: new fields.StringField<display.Option>({
-						choices: display.Options,
-						initial: settings.modifiers_display,
-					}),
-					notes_display: new fields.StringField<display.Option>({
-						choices: display.Options,
-						initial: settings.notes_display,
-					}),
-					skill_level_adj_display: new fields.StringField<display.Option>({
-						choices: display.Options,
-						initial: settings.skill_level_adj_display,
-					}),
-					use_multiplicative_modifiers: new fields.BooleanField({
-						initial: settings.use_multiplicative_modifiers,
-					}),
-					use_modifying_dice_plus_adds: new fields.BooleanField({
-						initial: settings.use_modifying_dice_plus_adds,
-					}),
-					use_half_stat_defaults: new fields.BooleanField({ initial: settings.use_half_stat_defaults }),
-					show_trait_modifier_adj: new fields.BooleanField({ initial: settings.show_trait_modifier_adj }),
-					show_equipment_modifier_adj: new fields.BooleanField({
-						initial: settings.show_equipment_modifier_adj,
-					}),
-					show_spell_adj: new fields.BooleanField({ initial: settings.show_spell_adj }),
-					use_title_in_footer: new fields.BooleanField({ initial: settings.use_title_in_footer }),
-					exclude_unspent_points_from_total: new fields.BooleanField({
-						initial: settings.exclude_unspent_points_from_total,
-					}),
-				}),
-				created_date: new fields.StringField({ initial: date }),
-				modified_date: new fields.StringField({ initial: date }),
-				profile: new fields.SchemaField({
-					player_name: new fields.StringField({ initial: game.user.name }),
-					name: new fields.StringField(),
-					title: new fields.StringField(),
-					organization: new fields.StringField(),
-					age: new fields.StringField(),
-					birthday: new fields.StringField(),
-					eyes: new fields.StringField(),
-					hair: new fields.StringField(),
-					skin: new fields.StringField(),
-					handedness: new fields.StringField(),
-					height: new fields.StringField(),
-					weight: new fields.StringField(),
-					SM: new fields.NumberField({ integer: true, initial: 0 }),
-					gender: new fields.StringField(),
-					tech_level: new fields.StringField(),
-					religion: new fields.StringField(),
-					portrait: new fields.StringField(),
-				}),
-				attributes: new fields.ArrayField(new fields.ObjectField()),
-				resource_trackers: new fields.ArrayField(new fields.ObjectField()),
-				move_types: new fields.ArrayField(new fields.ObjectField()),
-				total_points: new fields.NumberField({ initial: 100 }),
-				points_record: new fields.ArrayField(new fields.ObjectField()),
-				move: new fields.SchemaField({
-					maneuver: new fields.ObjectField({ nullable: true, initial: null }),
-					posture: new fields.StringField({ initial: "standing" }),
-					type: new fields.StringField({ initial: gid.Ground }),
-				}),
-			}),
-			flags: new fields.ObjectField({ initial: CharacterFlagDefaults }),
-		})
-	}
+	// static override defineSchema(): ActorSchema<string, object, SourceFromSchema<ItemSchema<string, object>>> {
+	// 	const settings = this.getDefaultSettings()
+	// 	const date = getCurrentTime()
+	// 	return this.mergeSchema(super.defineSchema(), {
+	// 		system: new fields.SchemaField({
+	// 			type: new fields.StringField({ readonly: true, required: true, initial: ActorType.Character }),
+	// 			version: new fields.NumberField({ readonly: true, required: true, initial: 4 }),
+	// 			settings: new fields.SchemaField({
+	// 				page: new fields.SchemaField({
+	// 					paper_size: new fields.StringField<paper.Size>({ initial: settings.page.paper_size }),
+	// 					orientation: new fields.StringField<paper.Orientation>({ initial: settings.page.orientation }),
+	// 					top_margin: new fields.StringField<paper.Length>({ initial: settings.page.top_margin }),
+	// 					left_margin: new fields.StringField<paper.Length>({ initial: settings.page.left_margin }),
+	// 					bottom_margin: new fields.StringField<paper.Length>({ initial: settings.page.bottom_margin }),
+	// 					right_margin: new fields.StringField<paper.Length>({ initial: settings.page.right_margin }),
+	// 				}),
+	// 				block_layout: new fields.ArrayField(new fields.StringField(), { initial: settings.block_layout }),
+	// 				attributes: new fields.ArrayField(new fields.SchemaField(AttributeDef.defineSchema()), {
+	// 					initial: settings.attributes,
+	// 				}),
+	// 				resource_trackers: new fields.ArrayField(
+	// 					new fields.SchemaField(ResourceTrackerDef.defineSchema()),
+	// 					{ initial: settings.resource_trackers },
+	// 				),
+	// 				move_types: new fields.ArrayField(new fields.SchemaField(MoveTypeDef.defineSchema()), {
+	// 					initial: settings.move_types,
+	// 				}),
+	// 				body_type: new fields.SchemaField(BodyGURPS.defineSchema(), { initial: settings.body_type }),
+	// 				damage_progression: new fields.StringField<progression.Option>({
+	// 					choices: progression.Options,
+	// 					initial: settings.damage_progression,
+	// 				}),
+	// 				default_length_units: new fields.StringField<LengthUnits>({
+	// 					choices: allLengthUnits,
+	// 					initial: settings.default_length_units,
+	// 				}),
+	// 				default_weight_units: new fields.StringField<WeightUnits>({
+	// 					choices: allWeightUnits,
+	// 					initial: settings.default_weight_units,
+	// 				}),
+	// 				user_description_display: new fields.StringField<display.Option>({
+	// 					choices: display.Options,
+	// 					initial: settings.user_description_display,
+	// 				}),
+	// 				modifiers_display: new fields.StringField<display.Option>({
+	// 					choices: display.Options,
+	// 					initial: settings.modifiers_display,
+	// 				}),
+	// 				notes_display: new fields.StringField<display.Option>({
+	// 					choices: display.Options,
+	// 					initial: settings.notes_display,
+	// 				}),
+	// 				skill_level_adj_display: new fields.StringField<display.Option>({
+	// 					choices: display.Options,
+	// 					initial: settings.skill_level_adj_display,
+	// 				}),
+	// 				use_multiplicative_modifiers: new fields.BooleanField({
+	// 					initial: settings.use_multiplicative_modifiers,
+	// 				}),
+	// 				use_modifying_dice_plus_adds: new fields.BooleanField({
+	// 					initial: settings.use_modifying_dice_plus_adds,
+	// 				}),
+	// 				use_half_stat_defaults: new fields.BooleanField({ initial: settings.use_half_stat_defaults }),
+	// 				show_trait_modifier_adj: new fields.BooleanField({ initial: settings.show_trait_modifier_adj }),
+	// 				show_equipment_modifier_adj: new fields.BooleanField({
+	// 					initial: settings.show_equipment_modifier_adj,
+	// 				}),
+	// 				show_spell_adj: new fields.BooleanField({ initial: settings.show_spell_adj }),
+	// 				use_title_in_footer: new fields.BooleanField({ initial: settings.use_title_in_footer }),
+	// 				exclude_unspent_points_from_total: new fields.BooleanField({
+	// 					initial: settings.exclude_unspent_points_from_total,
+	// 				}),
+	// 			}),
+	// 			created_date: new fields.StringField({ initial: date }),
+	// 			modified_date: new fields.StringField({ initial: date }),
+	// 			profile: new fields.SchemaField({
+	// 				player_name: new fields.StringField({ initial: game.user.name }),
+	// 				name: new fields.StringField(),
+	// 				title: new fields.StringField(),
+	// 				organization: new fields.StringField(),
+	// 				age: new fields.StringField(),
+	// 				birthday: new fields.StringField(),
+	// 				eyes: new fields.StringField(),
+	// 				hair: new fields.StringField(),
+	// 				skin: new fields.StringField(),
+	// 				handedness: new fields.StringField(),
+	// 				height: new fields.StringField(),
+	// 				weight: new fields.StringField(),
+	// 				SM: new fields.NumberField({ integer: true, initial: 0 }),
+	// 				gender: new fields.StringField(),
+	// 				tech_level: new fields.StringField(),
+	// 				religion: new fields.StringField(),
+	// 				portrait: new fields.StringField(),
+	// 			}),
+	// 			attributes: new fields.ArrayField(new fields.ObjectField()),
+	// 			resource_trackers: new fields.ArrayField(new fields.ObjectField()),
+	// 			move_types: new fields.ArrayField(new fields.ObjectField()),
+	// 			total_points: new fields.NumberField({ initial: 100 }),
+	// 			points_record: new fields.ArrayField(new fields.ObjectField()),
+	// 			move: new fields.SchemaField({
+	// 				maneuver: new fields.ObjectField({ nullable: true, initial: null }),
+	// 				posture: new fields.StringField({ initial: "standing" }),
+	// 				type: new fields.StringField({ initial: gid.Ground }),
+	// 			}),
+	// 		}),
+	// 		flags: new fields.ObjectField({ initial: CharacterFlagDefaults }),
+	// 	})
+	// }
 
 	get parryBonus(): number {
 		return this.attributeBonusFor(gid.Parry, stlimit.Option.None) ?? 0
@@ -270,7 +254,7 @@ class CharacterGURPS<
 		return this.swingFor(this.strikingST)
 	}
 
-	get dodgeAttribute(): DeepPartial<AttributeGURPS<this>> {
+	get dodgeAttribute(): DeepPartial<AttributeGURPS> {
 		return {
 			_id: gid.Dodge,
 			id: gid.Dodge,
@@ -282,7 +266,7 @@ class CharacterGURPS<
 		}
 	}
 
-	get sizeModAttribute(): DeepPartial<AttributeGURPS<this>> {
+	get sizeModAttribute(): DeepPartial<AttributeGURPS> {
 		return {
 			definition: {
 				combinedName: LocalizeGURPS.translations.gurps.character.sm,
@@ -291,7 +275,7 @@ class CharacterGURPS<
 		}
 	}
 
-	async getThrustWeapon(): Promise<MeleeWeaponGURPS<this>> {
+	async getThrustWeapon(): Promise<MeleeWeaponGURPS> {
 		return (
 			await this.createEmbeddedDocuments(
 				"Item",
@@ -308,7 +292,7 @@ class CharacterGURPS<
 						},
 					},
 				],
-				{ temporary: true },
+				// { temporary: true },
 			)
 		).shift() as MeleeWeaponGURPS<this>
 	}
@@ -330,7 +314,7 @@ class CharacterGURPS<
 						},
 					},
 				],
-				{ temporary: true },
+				// { temporary: true },
 			)
 		).shift() as MeleeWeaponGURPS<this>
 	}
@@ -387,22 +371,22 @@ class CharacterGURPS<
 		return super.update(data, operation)
 	}
 
-	private static getDefaultSettings(): SheetSettingsObj {
-		return {
-			...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`),
-			body_type: {
-				name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
-				roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
-				locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
-			},
-			attributes: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`),
-			resource_trackers: game.settings.get(
-				SYSTEM_NAME,
-				`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`,
-			),
-			move_types: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`),
-		}
-	}
+	// private static getDefaultSettings(): SheetSettings {
+	// 	return {
+	// 		...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`),
+	// 		body_type: {
+	// 			name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
+	// 			roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
+	// 			locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
+	// 		},
+	// 		attributes: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`),
+	// 		resource_trackers: game.settings.get(
+	// 			SYSTEM_NAME,
+	// 			`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`,
+	// 		),
+	// 		move_types: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`),
+	// 	}
+	// }
 
 	thrustFor(st: number): DiceGURPS {
 		return damageProgression.thrustFor(this.settings.damage_progression, st)
