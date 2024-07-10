@@ -1,6 +1,6 @@
 import { ActorGURPS } from "@actor"
 import { TokenDocumentGURPS } from "@scene"
-import { CharacterFlags, CharacterSource, CharacterSystemData, PointsBreakdown } from "./data.ts"
+import { CharacterFlags, CharacterSource, CharacterSystemData } from "./data.ts"
 import {
 	AbstractAttributeDef,
 	AttributeGURPS,
@@ -16,7 +16,6 @@ import {
 	SkillDefault,
 	ThresholdOp,
 	WeaponBonus,
-	SheetSettings,
 } from "@system"
 import {
 	AbstractWeaponGURPS,

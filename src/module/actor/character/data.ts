@@ -150,7 +150,6 @@ export interface Encumbrance {
 // }
 
 class CharacterSystemData extends ActorSystemModel<CharacterGURPS, CharacterSystemSchema> {
-
 	static override defineSchema(): CharacterSystemSchema {
 		const fields = foundry.data.fields
 
@@ -192,8 +191,10 @@ class CharacterSystemData extends ActorSystemModel<CharacterGURPS, CharacterSyst
 			points_record: new fields.ArrayField(new fields.ObjectField<PointsRecord>()),
 		}
 	}
-
 }
+
+interface CharacterSystemData extends ActorSystemModel<CharacterGURPS, CharacterSystemSchema>,
+	ModelPropsFromSchema<CharacterSystemSchema> { }
 
 type CharacterSystemSchema = ActorSystemSchema & {
 	type: fields.StringField<ActorType.Character, ActorType.Character, true, false, true>

@@ -19,7 +19,7 @@ import { DamageRollAdapter, DamageTarget } from "@module/apps/damage-calculator/
 import { TokenGURPS } from "@module/canvas/index.ts"
 import { TokenEffect } from "@module/canvas/token/effect.ts"
 import { ActorFlags, ActorType, ConditionID, ItemFlags, ItemType, SYSTEM_NAME, gid } from "@module/data/constants.ts"
-import { SheetSettings, sheetSettingsFor } from "@system/sheet-settings.ts"
+import { SheetSettings } from "@system/sheet-settings.ts"
 import { RollModifier, TokenPool } from "@module/data/types.ts"
 import { Evaluator } from "@module/util/index.ts"
 import { LastActor } from "@module/util/last-actor.ts"
@@ -77,7 +77,7 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 	}
 
 	get settings(): SheetSettings {
-		return sheetSettingsFor(this)
+		return SheetSettings.for(this)
 	}
 
 	get techLevel(): string {

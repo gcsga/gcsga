@@ -9,7 +9,7 @@ import {
 	ResourceTrackerDefSchema,
 } from "@system"
 import { LengthUnits, WeightUnits, display, paper, progression } from "@util"
-import { ActorGURPS } from "@actor"
+import { ActorGURPS, CharacterGURPS } from "@actor"
 import fields = foundry.data.fields
 import { LaxSchemaField } from "./schema-data-fields.ts"
 import { SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
@@ -62,7 +62,7 @@ type SheetSettingsSchema = {
 	exclude_unspent_points_from_total: fields.BooleanField
 }
 
-class SheetSettings extends foundry.abstract.DataModel<ActorGURPS, SheetSettingsSchema> {
+class SheetSettings extends foundry.abstract.DataModel<CharacterGURPS, SheetSettingsSchema> {
 	protected declare static _schema: LaxSchemaField<SheetSettingsSchema> | undefined;
 
 	// page: PageSettings
@@ -167,14 +167,16 @@ class SheetSettings extends foundry.abstract.DataModel<ActorGURPS, SheetSettings
 		return new SheetSettings({})
 	}
 
-	static for(actor: ActorGURPS | null): SheetSettings {
-		return actor?.settings ?? SheetSettings.default()
+	static for(actor: CharacterGURPS | null): SheetSettings {
+		if (actor)
+			return new SheetSettings(actor.system.settings)
+		// return actor?.settings ?? SheetSettings.default()
 	}
 
 }
 
 interface SheetSettings
-	extends foundry.abstract.DataModel<ActorGURPS, SheetSettingsSchema>,
+	extends foundry.abstract.DataModel<CharacterGURPS, SheetSettingsSchema>,
 	ModelPropsFromSchema<SheetSettingsSchema> {
 }
 

@@ -56,7 +56,7 @@ class AttributeGURPS extends AbstractAttribute<AttributeSchema, CharacterGURPS> 
 			ErrorGURPS(`Attribute with ID ${this.id} has no definition`)
 			return null
 		}
-		return definition
+		return new AttributeDef(definition)
 	}
 
 	override get max(): number {

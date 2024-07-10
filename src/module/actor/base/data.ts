@@ -25,7 +25,7 @@ type ActorSystemSource = {
 	_migration: MigrationRecord
 }
 
-interface ActorSystemData extends ActorSystemSource {}
+interface ActorSystemData extends ActorSystemSource { }
 
 type PrototypeTokenSourceGURPS = foundry.data.PrototypeTokenSource & {
 	flags: {
