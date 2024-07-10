@@ -89,10 +89,6 @@ class SheetSettings extends foundry.abstract.DataModel<CharacterGURPS, SheetSett
 
 	constructor(data: DeepPartial<SourceFromSchema<SheetSettingsSchema>>) {
 		super(data)
-
-		this.attributes = data.attributes?.map(e => new AttributeDef(e))
-
-
 		// this.page = data.page
 		// this.block_layout = data.block_layout
 		// this.attributes = data.attributes?.map(e => new AttributeDef(e)) ?? []
@@ -163,15 +159,29 @@ class SheetSettings extends foundry.abstract.DataModel<CharacterGURPS, SheetSett
 		}
 	}
 
-	static default(): SheetSettings {
-		return new SheetSettings({})
+	static default(): PreparedSheetSettings {
+		const settings = new SheetSettings({})
+		return {
+			...settings,
+			attributes: settings.attributes.map(e => new AttributeDef(e)),
+			resource_trackers: settings.resource_trackers.map(e => new ResourceTrackerDef(e)),
+			move_types: settings.move_types.map(e => new MoveTypeDef(e)),
+			body_type: new BodyGURPS(settings.body_type)
+		}
 	}
 
-	static for(actor: ActorGURPS | null): SheetSettings {
-		if (actor?.isOfType(ActorType.Character))
-			return new SheetSettings(actor.system.settings)
+	static for(actor: ActorGURPS | null): PreparedSheetSettings {
+		if (actor?.isOfType(ActorType.Character)) {
+			const settings = new SheetSettings(actor.system.settings)
+			return {
+				...settings,
+				attributes: settings.attributes.map(e => new AttributeDef(e)),
+				resource_trackers: settings.resource_trackers.map(e => new ResourceTrackerDef(e)),
+				move_types: settings.move_types.map(e => new MoveTypeDef(e)),
+				body_type: new BodyGURPS(settings.body_type)
+			}
+		}
 		if (actor) {
-
 			ErrorGURPS(`Actor "${actor.name}" is of type "${actor.type}", which does not support Sheet Settings. Returning default settings.`)
 		}
 		else {
@@ -186,6 +196,14 @@ interface SheetSettings
 	extends foundry.abstract.DataModel<CharacterGURPS, SheetSettingsSchema>,
 	ModelPropsFromSchema<SheetSettingsSchema> {
 }
+
+// interface PreparedSheetSettings
+// 	extends Omit<ModelPropsFromSchema<SheetSettingsSchema>, "attributes" | "resource_trackers" | "move_types" | "body_type"> {
+// 	attributes: AttributeDef[]
+// 	resource_trackers: ResourceTrackerDef[]
+// 	move_types: MoveTypeDef[]
+// 	body_type: BodyGURPS
+// }
 
 
 
@@ -253,4 +271,4 @@ interface SheetSettings
 // }
 
 export type { SheetSettingsSchema }
-export { SheetSettings }
+export { SheetSettings, PreparedSheetSettings }

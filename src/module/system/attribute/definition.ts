@@ -15,7 +15,7 @@ class AttributeDef extends AbstractAttributeDef<AttributeDefSchema, ActorGURPS> 
 	// private full_name: string
 	// cost_per_point = 0
 	// cost_adj_percent_per_sm = 0
-	// thresholds?: PoolThreshold[]
+	thresholds: PoolThreshold[]
 	// order: number
 
 	constructor(data: DeepPartial<SourceFromSchema<AttributeDefSchema>>) {
@@ -26,7 +26,7 @@ class AttributeDef extends AbstractAttributeDef<AttributeDefSchema, ActorGURPS> 
 		// this.cost_per_point = data.cost_per_point ?? 0
 		// this.cost_adj_percent_per_sm = data.cost_adj_percent_per_sm ?? 0
 		// this.order = data.order ?? 0
-		// this.thresholds = data.thresholds?.map(threshold => new PoolThreshold(threshold))
+		this.thresholds = data.thresholds?.map(threshold => new PoolThreshold(threshold)) ?? []
 	}
 
 	static override defineSchema(): AttributeDefSchema {

@@ -17,6 +17,10 @@ import {
 	SkillDefault,
 	ThresholdOp,
 	WeaponBonus,
+	AttributeSchema,
+	ResourceTrackerSchema,
+	MoveTypeSchema,
+	AbstractAttributeSchema,
 } from "@system"
 import {
 	AbstractWeaponGURPS,
@@ -330,12 +334,11 @@ class CharacterGURPS<
 		const defaultData = {
 			_id: data._id,
 			system: fu.mergeObject(data.system ?? {}, {
-				settings: CharacterGURPS.getDefaultSettings(),
 				total_points: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.initial_points`),
 				created_date: date,
 				modified_date: date,
 			}),
-			flags: CharacterFlagDefaults,
+			// flags: CharacterFlagDefaults,
 		}
 
 		this.updateSource(defaultData)
@@ -479,7 +482,7 @@ class CharacterGURPS<
 		Array.from(this.attributes.values())
 			.filter(a => a.definition?.type === attribute.Type.Pool)
 			.forEach(a => {
-				if (!a.applyOps) return
+				if (!a.apply_ops) return
 				const threshold = a.currentThreshold
 				if (threshold && threshold.ops?.includes(op)) total += 1
 			})
@@ -836,21 +839,21 @@ class CharacterGURPS<
 		this.attributes = new Map(
 			this.system.attributes
 				.map((value, index) => {
-					return new AttributeGURPS(this, value, index)
+					return new AttributeGURPS(value, index)
 				})
 				.map(e => [e.id, e]),
 		)
 		this.resourceTrackers = new Map(
 			this.system.resource_trackers
 				.map((value, index) => {
-					return new ResourceTracker(this, value, index)
+					return new ResourceTracker(value, index)
 				})
 				.map(e => [e.id, e]),
 		)
 		this.moveTypes = new Map(
 			this.system.move_types
 				.map((value, index) => {
-					return new MoveType(this, value, index)
+					return new MoveType(value, index)
 				})
 				.map(e => [e.id, e]),
 		)
@@ -869,11 +872,11 @@ class CharacterGURPS<
 		this.hitLocationTable.updateRollRanges()
 	}
 
-	generateNewAttributes<TDef extends AttributeDef>(definitions: TDef[]): AttributeObj[]
-	generateNewAttributes<TDef extends ResourceTrackerDef>(definitions: TDef[]): ResourceTrackerObj[]
-	generateNewAttributes<TDef extends MoveTypeDef>(definitions: TDef[]): MoveTypeObj[]
-	generateNewAttributes<TDef extends AbstractAttributeDef>(definitions: TDef[]): AbstractAttributeObj[] {
-		const values: AbstractAttributeObj[] = []
+	generateNewAttributes<TDef extends AttributeDef>(definitions: TDef[]): SourceFromSchema<AttributeSchema>[]
+	generateNewAttributes<TDef extends ResourceTrackerDef>(definitions: TDef[]): SourceFromSchema<ResourceTrackerSchema>[]
+	generateNewAttributes<TDef extends MoveTypeDef>(definitions: TDef[]): SourceFromSchema<MoveTypeSchema>[]
+	generateNewAttributes<TDef extends AbstractAttributeDef>(definitions: TDef[]): SourceFromSchema<AbstractAttributeSchema>[] {
+		const values: SourceFromSchema<AbstractAttributeSchema>[] = []
 		definitions.forEach(definition => {
 			values.push(definition.generateNewAttribute())
 		})

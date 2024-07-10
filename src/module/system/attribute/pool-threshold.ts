@@ -11,7 +11,7 @@ export class PoolThreshold {
 	expression = ""
 	ops: ThresholdOp[] = []
 
-	constructor(data: SourceFromSchema<PoolThresholdSchema>) {
+	constructor(data: DeepPartial<SourceFromSchema<PoolThresholdSchema>>) {
 		this.state = data.state
 		this.explanation = data.explanation ?? ""
 		this.expression = data.expression ?? ""

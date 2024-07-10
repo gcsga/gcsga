@@ -3,7 +3,6 @@ import { ActorFlags, SYSTEM_NAME, TokenPool, gid } from "@data"
 import { ErrorGURPS, Int, attribute, stlimit } from "@util"
 import { AbstractAttribute } from "@system/abstract-attribute/object.ts"
 import { AttributeSchema } from "./data.ts"
-import { AbstractAttributeSchema } from "@system/abstract-attribute/data.ts"
 import { CharacterGURPS } from "@actor"
 import { AttributeDef } from "./definition.ts"
 

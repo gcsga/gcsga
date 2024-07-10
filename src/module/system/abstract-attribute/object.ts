@@ -14,7 +14,7 @@ abstract class AbstractAttribute<
 		const fields = foundry.data.fields
 
 		return {
-			id: new fields.StringField({ nullable: true }),
+			id: new fields.StringField(),
 		}
 	}
 
@@ -28,7 +28,7 @@ abstract class AbstractAttribute<
 		return schema
 	}
 
-	_id: string | null
+	_id: string
 
 	constructor(data: DeepPartial<SourceFromSchema<TSchema>>) {
 		super(data)
@@ -37,7 +37,7 @@ abstract class AbstractAttribute<
 
 	abstract get definition(): AbstractAttributeDef | null
 
-	get id(): string | null {
+	get id(): string {
 		return this._id
 	}
 
