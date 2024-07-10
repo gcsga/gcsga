@@ -8,11 +8,11 @@ import {
 	ResourceTrackerDef,
 	ResourceTrackerDefSchema,
 } from "@system"
-import { LengthUnits, WeightUnits, display, paper, progression } from "@util"
+import { ErrorGURPS, LengthUnits, WeightUnits, display, paper, progression } from "@util"
 import { ActorGURPS, CharacterGURPS } from "@actor"
 import fields = foundry.data.fields
 import { LaxSchemaField } from "./schema-data-fields.ts"
-import { SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
+import { ActorType, SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
 
 export interface PageSettings {
 	paper_size: paper.Size
@@ -167,10 +167,17 @@ class SheetSettings extends foundry.abstract.DataModel<CharacterGURPS, SheetSett
 		return new SheetSettings({})
 	}
 
-	static for(actor: CharacterGURPS | null): SheetSettings {
-		if (actor)
+	static for(actor: ActorGURPS | null): SheetSettings {
+		if (actor?.isOfType(ActorType.Character))
 			return new SheetSettings(actor.system.settings)
-		// return actor?.settings ?? SheetSettings.default()
+		if (actor) {
+
+			ErrorGURPS(`Actor "${actor.name}" is of type "${actor.type}", which does not support Sheet Settings. Returning default settings.`)
+		}
+		else {
+			ErrorGURPS(`Actor does not exist. Returning default settings.`)
+		}
+		return SheetSettings.default()
 	}
 
 }

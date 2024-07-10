@@ -3,14 +3,13 @@ import { AbstractSkillGURPS } from "@item"
 import { SpellSource, SpellSystemData } from "./data.ts"
 import { SkillLevel } from "@item/skill/data.ts"
 import { LocalizeGURPS, NewLineRegex, StringBuilder, TooltipGURPS, difficulty, display } from "@util"
-import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
-import { resolveStudyHours, studyHoursProgressText } from "@system"
+import { SheetSettings, resolveStudyHours, studyHoursProgressText } from "@system"
 import { ActorType } from "@module/data/constants.ts"
 
 class SpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends AbstractSkillGURPS<TParent> {
 	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
 		const buffer = new StringBuilder()
-		const settings = sheetSettingsFor(this.actor)
+		const settings = SheetSettings.for(this.actor)
 		if (optionChecker(settings.notes_display)) {
 			buffer.appendToNewLine(this.notes.trim())
 			buffer.appendToNewLine(this.rituals)

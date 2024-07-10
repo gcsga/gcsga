@@ -1,37 +1,38 @@
 import { NumericCompareType, NumericCriteria } from "@util/numeric-criteria.ts"
 import { BasePrereq } from "./base.ts"
 import { prereq } from "@util/enum/prereq.ts"
-import { AttributePrereqObj } from "./data.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { ActorType, gid } from "@data"
 import { TooltipGURPS } from "@util"
 import { ActorGURPS } from "@actor"
-import { PrereqResolver } from "@module/util/index.ts"
+import { AttributePrereqSchema } from "./data.ts"
 
-export class AttributePrereq extends BasePrereq<prereq.Type.Attribute> {
-	which: string
+class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 
-	combined_with: string
-
-	qualifier: NumericCriteria
-
-	constructor() {
-		super(prereq.Type.Attribute)
-		this.which = gid.Strength
-		this.combined_with = ""
-		this.qualifier = new NumericCriteria({ compare: NumericCompareType.AtLeastNumber, qualifier: 10 })
+	constructor(data: DeepPartial<SourceFromSchema<AttributePrereqSchema>>) {
+		super(data)
+		if (data.qualifier)
+			this.qualifier = new NumericCriteria(data.qualifier)
 	}
 
-	static fromObject(data: AttributePrereqObj): AttributePrereq {
-		const prereq = new AttributePrereq()
-		prereq.has = data.has
-		if (data.which) prereq.which = data.which
-		if (data.combined_with) prereq.combined_with = data.combined_with
-		if (data.qualifier) prereq.qualifier = new NumericCriteria(data.qualifier)
-		return prereq
+	static override defineSchema(): AttributePrereqSchema {
+		const fields = foundry.data.fields
+
+		return {
+			type: new fields.StringField({ initial: prereq.Type.Attribute }),
+			which: new fields.StringField({ initial: gid.Strength }),
+			has: new fields.BooleanField({ initial: true }),
+			combined_with: new fields.StringField({ initial: "" }),
+			qualifier: new fields.SchemaField(NumericCriteria.defineSchema(), {
+				initial: {
+					compare: NumericCompareType.AtLeastNumber,
+					qualifier: 10
+				}
+			})
+		}
 	}
 
-	satisfied(actor: PrereqResolver, _exclude: unknown, tooltip: TooltipGURPS): boolean {
+	satisfied(actor: ActorGURPS, _exclude: unknown, tooltip: TooltipGURPS): boolean {
 		if (actor instanceof ActorGURPS && actor.isOfType(ActorType.Loot)) return true
 		let value = actor.resolveAttributeCurrent(this.which)
 		if (this.combined_with !== "") value += actor.resolveAttributeCurrent(this.combined_with)
@@ -54,14 +55,10 @@ export class AttributePrereq extends BasePrereq<prereq.Type.Attribute> {
 		}
 		return satisfied
 	}
-
-	override toObject(): AttributePrereqObj {
-		return {
-			...super.toObject(),
-			has: this.has,
-			which: this.which,
-			combined_with: this.combined_with,
-			qualifier: this.qualifier.toObject(),
-		}
-	}
 }
+
+interface AttributePrereq extends BasePrereq<AttributePrereqSchema>, Omit<ModelPropsFromSchema<AttributePrereqSchema>, "qualifier"> {
+	qualifier: NumericCriteria
+}
+
+export { AttributePrereq }

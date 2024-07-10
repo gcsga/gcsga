@@ -1,3 +1,4 @@
+import { NullField } from "@system/schema-data-fields.ts"
 import { feature } from "@util/enum/feature.ts"
 import { skillsel } from "@util/enum/skillsel.ts"
 import { spellmatch } from "@util/enum/spellmatch.ts"
@@ -6,9 +7,7 @@ import { wsel } from "@util/enum/wsel.ts"
 import { wswitch } from "@util/enum/wswitch.ts"
 import { NumericCriteriaSchema } from "@util/numeric-criteria.ts"
 import { StringCriteriaSchema } from "@util/string-criteria.ts"
-
 import fields = foundry.data.fields
-import { NullField } from "@system/schema-data-fields.ts"
 
 
 export enum MoveBonusType {

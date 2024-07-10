@@ -1,22 +1,59 @@
 import { TooltipGURPS } from "@util"
 import { prereq } from "@util/enum/prereq.ts"
-import { BasePrereqObj } from "./data.ts"
-import { PrereqResolver } from "@module/util/index.ts"
+import { BasePrereqSchema } from "./data.ts"
+import { ItemGURPS } from "@item"
+import { LaxSchemaField } from "@system/schema-data-fields.ts"
+import { ActorGURPS } from "@actor"
 
-export abstract class BasePrereq<TType extends prereq.Type = prereq.Type> {
-	declare type: TType
+abstract class BasePrereq<
+	TSchema extends BasePrereqSchema<prereq.Type> = BasePrereqSchema<prereq.Type>
+> extends foundry.abstract.DataModel<ItemGURPS, TSchema> {
 
-	has = true
+	protected declare static _schema: LaxSchemaField<BasePrereqSchema<prereq.Type>> | undefined
 
-	constructor(type: TType) {
-		this.type = type
-	}
+	static override defineSchema(): BasePrereqSchema<prereq.Type> {
+		const fields = foundry.data.fields
 
-	abstract satisfied(character: PrereqResolver, exclude: unknown, tooltip: TooltipGURPS, ...args: unknown[]): boolean
-
-	toObject(): BasePrereqObj<TType> {
 		return {
-			type: this.type,
+			type: new fields.StringField({ initial: prereq.Type.Attribute })
 		}
 	}
+
+	static override get schema(): LaxSchemaField<BasePrereqSchema<prereq.Type>> {
+		if (this._schema && Object.hasOwn(this, "_schema")) return this._schema
+
+		const schema = new LaxSchemaField(Object.freeze(this.defineSchema()))
+		schema.name = this.name
+		Object.defineProperty(this, "_schema", { value: schema, writable: false })
+
+		return schema
+	}
+
+	constructor(data: DeepPartial<SourceFromSchema<TSchema>>) {
+		super(data)
+	}
+
+	abstract satisfied(actor: ActorGURPS, exclude: unknown, tooltip: TooltipGURPS, ...args: unknown[]): boolean
 }
+
+export { BasePrereq }
+//
+//
+//
+// export abstract class BasePrereq<TType extends prereq.Type = prereq.Type> {
+// 	declare type: TType
+//
+// 	has = true
+//
+// 	constructor(type: TType) {
+// 		this.type = type
+// 	}
+//
+// 	abstract satisfied(character: PrereqResolver, exclude: unknown, tooltip: TooltipGURPS, ...args: unknown[]): boolean
+//
+// 	toObject(): BasePrereqObj<TType> {
+// 		return {
+// 			type: this.type,
+// 		}
+// 	}
+// }

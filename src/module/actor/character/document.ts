@@ -1,6 +1,7 @@
 import { ActorGURPS } from "@actor"
 import { TokenDocumentGURPS } from "@scene"
 import { CharacterFlags, CharacterSource, CharacterSystemData } from "./data.ts"
+
 import {
 	AbstractAttributeDef,
 	AttributeGURPS,

@@ -3,7 +3,6 @@ import { BasePrereq } from "./base.ts"
 import { prereq } from "@util/enum/prereq.ts"
 import { EquippedEquipmentPrereqObj } from "./data.ts"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
-import { PrereqResolver } from "@module/util/index.ts"
 
 export class EquippedEquipmentPrereq extends BasePrereq<prereq.Type.EquippedEquipment> {
 	name: StringCriteria
@@ -20,7 +19,7 @@ export class EquippedEquipmentPrereq extends BasePrereq<prereq.Type.EquippedEqui
 	}
 
 	satisfied(
-		actor: PrereqResolver,
+		actor: ActorGURPS,
 		_exclude: unknown,
 		tooltip: TooltipGURPS,
 		hasEquipmentPenalty: { value: boolean },

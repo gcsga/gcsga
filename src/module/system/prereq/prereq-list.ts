@@ -6,7 +6,6 @@ import { TooltipGURPS, extractTechLevel } from "@util"
 import { ActorGURPS } from "@actor"
 import { Prereq } from "./index.ts"
 import { ActorType } from "@module/data/constants.ts"
-import { PrereqResolver } from "@module/util/index.ts"
 
 import fields = foundry.data.fields
 
@@ -42,7 +41,7 @@ export class PrereqList {
 		this.prereqs = []
 	}
 
-	static fromObject(data: PrereqListObj, actor: PrereqResolver | null): PrereqList {
+	static fromObject(data: PrereqListObj, actor: ActorGURPS | null): PrereqList {
 		const prereq = new PrereqList()
 		prereq.all = data.all
 		if (data.when_tl) prereq.when_tl = new NumericCriteria(data.when_tl)
