@@ -346,7 +346,7 @@ class CharacterGURPS<
 
 	protected override _onUpdate(
 		changed: DeepPartial<this["_source"]>,
-		options: DatabaseUpdateOperation<TParent>,
+		options: CharacterUpdateOperation<TParent>,
 		userId: string,
 	): void {
 		super._onUpdate(changed, options, userId)
@@ -1024,6 +1024,10 @@ interface CharacterGURPS<TParent extends TokenDocumentGURPS | null = TokenDocume
 	flags: CharacterFlags
 	readonly _source: CharacterSource
 	system: CharacterSystemData
+}
+
+interface CharacterUpdateOperation<TParent extends TokenDocumentGURPS | null> extends DatabaseUpdateOperation<TParent> {
+	maneuverChange?: { create?: ManeuverID; delete?: ManeuverID }
 }
 
 // interface CharacterUpdateContext<TParent extends TokenDocumentGURPS | null> extends DocumentUpdateContext<TParent> {

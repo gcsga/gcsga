@@ -91,10 +91,10 @@ class SheetSettings extends foundry.abstract.DataModel<CharacterGURPS, SheetSett
 		super(data)
 		// this.page = data.page
 		// this.block_layout = data.block_layout
-		// this.attributes = data.attributes?.map(e => new AttributeDef(e)) ?? []
-		// this.resource_trackers = data.resource_trackers?.map(e => new ResourceTrackerDef(e)) ?? []
-		// this.move_types = data.move_types?.map(e => new MoveTypeDef(e)) ?? []
-		// this.body_type = BodyGURPS.fromObject(data.body_type, this.actor)
+		this.attributes = data.attributes?.map(e => new AttributeDef(e)) ?? []
+		this.resource_trackers = data.resource_trackers?.map(e => new ResourceTrackerDef(e)) ?? []
+		this.move_types = data.move_types?.map(e => new MoveTypeDef(e)) ?? []
+		this.body_type = BodyGURPS.fromObject(data.body_type, this.actor)
 		// this.damage_progression = data.damage_progression
 		// this.default_length_units = data.default_length_units
 		// this.default_weight_units = data.default_weight_units

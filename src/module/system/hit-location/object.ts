@@ -4,98 +4,157 @@ import { DiceGURPS } from "@module/dice/index.ts"
 import { gid } from "@data"
 import { RESERVED_IDS } from "@system"
 import { BodyOwner } from "@module/util/index.ts"
+import { ActorGURPS } from "@actor"
+import { LaxSchemaField } from "@system/schema-data-fields.ts"
 
+class HitLocation extends foundry.abstract.DataModel<ActorGURPS, HitLocationSchema> {
 
-class HitLocation<TOwner extends BodyOwner = BodyOwner> {
-	private _id: string
-	choiceName: string
-	tableName: string
-	slots: number
-	hitPenalty: number
-	drBonus: number
-	description: string | null = null
-	subTable?: BodyGURPS<TOwner>
+	protected declare static _schema: LaxSchemaField<HitLocationSchema> | undefined
 
-	rollRange: string
-	owner: TOwner
-	owningTable?: BodyGURPS<TOwner>
+	declare rollRange: string
+	declare owningTable: BodyGURPS | null
 
-	get id(): string {
-		return this._id
-	}
-
-	set id(v: string) {
-		this._id = sanitizeId(v, false, RESERVED_IDS)
-	}
-
-	constructor(owner: TOwner) {
-		this.owner = owner
-		this._id = "id"
-		this.choiceName = game.i18n.localize("gurps.placeholder.hit_location.choice_name")
-		this.tableName = game.i18n.localize("gurps.placeholder.hit_location.table_name")
-		this.slots = 0
-		this.hitPenalty = 0
-		this.drBonus = 0
-
-		this.rollRange = "-"
-	}
-
-	static defineSchema(): HitLocationSchema {
+	static override	defineSchema(): HitLocationSchema {
 		const fields = foundry.data.fields
+
 		return {
-			id: new fields.StringField({ initial: "id" }),
-			choice_name: new fields.StringField({ initial: "untitled choice" }),
-			table_name: new fields.StringField({ initial: "untitled location" }),
+			id: new fields.StringField({ initial: LocalizeGURPS.translations.gurps.placeholder.hit_location.id }),
+			choice_name: new fields.StringField({ initial: LocalizeGURPS.translations.gurps.placeholder.hit_location.choice_name }),
+			table_name: new fields.StringField({ initial: LocalizeGURPS.translations.gurps.placeholder.hit_location.table_name }),
 			slots: new fields.NumberField({ initial: 0 }),
 			hit_penalty: new fields.NumberField({ initial: 0 }),
 			dr_bonus: new fields.NumberField({ initial: 0 }),
-			description: new fields.StringField(),
-			sub_table: new fields.SchemaField<BodySchema,
-				SourceFromSchema<BodySchema>,
-				ModelPropsFromSchema<BodySchema>,
-				true, true
-			>(BodyGURPS.defineSchema(), { nullable: true })
+			description: new fields.StringField({ nullable: true }),
+			sub_table: new fields.SchemaField(BodyGURPS.defineSchema(){ nullable: true })
 		}
 	}
 
-	toObject(): SourceFromSchema<HitLocationSchema> {
-		const data: SourceFromSchema<HitLocationSchema> = {
-			id: this.id,
-			choice_name: this.choiceName,
-			table_name: this.tableName,
-			slots: this.slots,
-			hit_penalty: this.hitPenalty,
-			dr_bonus: this.drBonus,
-			description: this.description,
-			sub_table: null
+	constructor(data: DeepPartial<ModelPropsFromSchema<HitLocationSchema>>) {
+		super(data)
+		if (data.sub_table) {
+			this.sub_table = new BodyGURPS(data.sub_table)
 		}
-		if (this.subTable) data.sub_table = this.subTable.toObject()
-		return data
 	}
 
 	get descriptionTooltip(): string {
 		return (this.description ?? "").replace(/\n/g, "<br>")
 	}
 
-	static fromObject<TOwner extends BodyOwner>(
-		data: SourceFromSchema<HitLocationSchema>,
-		actor: TOwner,
-		owningTable?: BodyGURPS<TOwner>,
-	): HitLocation<TOwner> {
-		const location = new HitLocation(actor)
 
-		location.id = data.id
-		location.choiceName = data.choice_name
-		location.tableName = data.table_name
-		location.slots = data.slots ?? 0
-		location.hitPenalty = data.hit_penalty ?? 0
-		location.drBonus = data.dr_bonus ?? 0
-		location.description = data.description
-		if (data.sub_table) location.subTable = BodyGURPS.fromObject(data.sub_table, actor, location)
-
-		if (owningTable) location.owningTable = owningTable
-		return location
+	get actor(): ActorGURPS {
+		return this.parent
 	}
+
+	updateRollRange(start: number): number {
+		switch (this.slots) {
+			case 0:
+				this.rollRange = "-"
+				break
+			case 1:
+				this.rollRange = `${start}`
+				break
+			default:
+				this.rollRange = `${start}-${start + this.slots - 1}`
+		}
+		if (this.subTable) this.subTable.updateRollRanges()
+		return start + this.slots
+	}
+}
+
+interface HitLocation extends foundry.abstract.DataModel<ActorGURPS, HitLocationSchema>, ModelPropsFromSchema<HitLocationSchema> { }
+
+
+
+class HitLocation<TOwner extends BodyOwner = BodyOwner> {
+	// private _id: string
+	// choiceName: string
+	// tableName: string
+	// slots: number
+	// hitPenalty: number
+	// drBonus: number
+	// description: string | null = null
+	// subTable?: BodyGURPS<TOwner>
+	//
+	// rollRange: string
+	// owner: TOwner
+	// owningTable?: BodyGURPS<TOwner>
+	//
+	// get id(): string {
+	// 	return this._id
+	// }
+	//
+	// set id(v: string) {
+	// 	this._id = sanitizeId(v, false, RESERVED_IDS)
+	// }
+	//
+	// constructor(owner: TOwner) {
+	// 	this.owner = owner
+	// 	this._id = "id"
+	// 	this.choiceName = game.i18n.localize("gurps.placeholder.hit_location.choice_name")
+	// 	this.tableName = game.i18n.localize("gurps.placeholder.hit_location.table_name")
+	// 	this.slots = 0
+	// 	this.hitPenalty = 0
+	// 	this.drBonus = 0
+	//
+	// 	this.rollRange = "-"
+	// }
+
+	// static defineSchema(): HitLocationSchema {
+	// 	const fields = foundry.data.fields
+	// 	return {
+	// 		id: new fields.StringField({ initial: "id" }),
+	// 		choice_name: new fields.StringField({ initial: "untitled choice" }),
+	// 		table_name: new fields.StringField({ initial: "untitled location" }),
+	// 		slots: new fields.NumberField({ initial: 0 }),
+	// 		hit_penalty: new fields.NumberField({ initial: 0 }),
+	// 		dr_bonus: new fields.NumberField({ initial: 0 }),
+	// 		description: new fields.StringField(),
+	// 		sub_table: new fields.SchemaField<BodySchema,
+	// 			SourceFromSchema<BodySchema>,
+	// 			ModelPropsFromSchema<BodySchema>,
+	// 			true, true
+	// 		>(BodyGURPS.defineSchema(), { nullable: true })
+	// 	}
+	// }
+	//
+	// toObject(): SourceFromSchema<HitLocationSchema> {
+	// 	const data: SourceFromSchema<HitLocationSchema> = {
+	// 		id: this.id,
+	// 		choice_name: this.choiceName,
+	// 		table_name: this.tableName,
+	// 		slots: this.slots,
+	// 		hit_penalty: this.hitPenalty,
+	// 		dr_bonus: this.drBonus,
+	// 		description: this.description,
+	// 		sub_table: null
+	// 	}
+	// 	if (this.subTable) data.sub_table = this.subTable.toObject()
+	// 	return data
+	// }
+
+	// get descriptionTooltip(): string {
+	// 	return (this.description ?? "").replace(/\n/g, "<br>")
+	// }
+	//
+	// static fromObject<TOwner extends BodyOwner>(
+	// 	data: SourceFromSchema<HitLocationSchema>,
+	// 	actor: TOwner,
+	// 	owningTable?: BodyGURPS<TOwner>,
+	// ): HitLocation<TOwner> {
+	// 	const location = new HitLocation(actor)
+	//
+	// 	location.id = data.id
+	// 	location.choiceName = data.choice_name
+	// 	location.tableName = data.table_name
+	// 	location.slots = data.slots ?? 0
+	// 	location.hitPenalty = data.hit_penalty ?? 0
+	// 	location.drBonus = data.dr_bonus ?? 0
+	// 	location.description = data.description
+	// 	if (data.sub_table) location.subTable = BodyGURPS.fromObject(data.sub_table, actor, location)
+	//
+	// 	if (owningTable) location.owningTable = owningTable
+	// 	return location
+	// }
 
 	updateRollRange(start: number): number {
 		switch (this.slots) {

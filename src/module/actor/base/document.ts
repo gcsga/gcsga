@@ -72,12 +72,11 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 	// Map of item collections
 	declare itemCollections: ActorItemCollectionMap<this>
 
+	// SheetSettings Object
+	declare settings: SheetSettings
+
 	get importData(): { name: string; path: string; last_import: string } {
 		return this.flags[SYSTEM_NAME][ActorFlags.Import]
-	}
-
-	get settings(): PreparedSheetSettings {
-		return SheetSettings.for(this)
 	}
 
 	get techLevel(): string {
@@ -376,6 +375,8 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 			weaponBonuses: [],
 			moveBonuses: [],
 		}
+
+		this.settings = SheetSettings.for(this)
 	}
 
 	override prepareEmbeddedDocuments(): void {
