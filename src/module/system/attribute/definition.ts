@@ -9,7 +9,7 @@ import { ActorGURPS, CharacterGURPS } from "@actor"
 import { AttributeGURPS } from "./object.ts"
 
 
-class AttributeDef extends AbstractAttributeDef<AttributeDefSchema, ActorGURPS> {
+class AttributeDef extends AbstractAttributeDef<CharacterGURPS, AttributeDefSchema> {
 	// declare type: attribute.Type
 	// name: string
 	// private full_name: string
@@ -26,7 +26,7 @@ class AttributeDef extends AbstractAttributeDef<AttributeDefSchema, ActorGURPS> 
 		// this.cost_per_point = data.cost_per_point ?? 0
 		// this.cost_adj_percent_per_sm = data.cost_adj_percent_per_sm ?? 0
 		// this.order = data.order ?? 0
-		this.thresholds = data.thresholds?.map(threshold => new PoolThreshold(threshold)) ?? []
+		this.thresholds = data.thresholds?.map(threshold => new PoolThreshold(threshold!)) ?? []
 	}
 
 	static override defineSchema(): AttributeDefSchema {
@@ -94,11 +94,11 @@ class AttributeDef extends AbstractAttributeDef<AttributeDefSchema, ActorGURPS> 
 		return new AttributeGURPS({}, 0).toObject()
 	}
 
-	static override newObject(reservedIds: string[]): SourceFromSchema<AttributeDefSchema> {
+	static override newObject(_reservedIds: string[]): SourceFromSchema<AttributeDefSchema> {
 		return new AttributeDef({}).toObject()
 	}
 }
 
-interface AttributeDef extends AbstractAttributeDef<AttributeDefSchema, CharacterGURPS>, ModelPropsFromSchema<AttributeDefSchema> { }
+interface AttributeDef extends AbstractAttributeDef<CharacterGURPS, AttributeDefSchema>, ModelPropsFromSchema<AttributeDefSchema> { }
 
 export { AttributeDef }

@@ -5,7 +5,7 @@ type AbstractAttributeSchema = {
 }
 
 type AbstractAttributeDefSchema = {
-	id: fields.StringField<string, string, true, true>
+	id: fields.StringField<string, string, true, false>
 	base: fields.StringField
 }
 

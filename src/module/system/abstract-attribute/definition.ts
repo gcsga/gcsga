@@ -5,9 +5,11 @@ import { LaxSchemaField } from "@system/schema-data-fields.ts"
 import { RESERVED_IDS } from "@system/attribute/data.ts"
 
 abstract class AbstractAttributeDef<
-	TSchema extends AbstractAttributeDefSchema = AbstractAttributeDefSchema,
-	TActor extends ActorGURPS = ActorGURPS
+	TActor extends ActorGURPS = ActorGURPS,
+	TSchema extends AbstractAttributeDefSchema = AbstractAttributeDefSchema
 > extends foundry.abstract.DataModel<TActor, TSchema> {
+
+	declare parent: TActor
 
 	protected declare static _schema: LaxSchemaField<AbstractAttributeDefSchema> | undefined
 
@@ -40,12 +42,16 @@ abstract class AbstractAttributeDef<
 		return schema
 	}
 
-	get id(): string | null {
+	get id(): string {
 		return this._id
 	}
 
 	set id(value: string) {
 		this._id = sanitizeId(value, false, RESERVED_IDS)
+	}
+
+	get actor(): TActor {
+		return this.parent
 	}
 
 	abstract baseValue(resolver: TActor): number
@@ -68,7 +74,10 @@ abstract class AbstractAttributeDef<
 	}
 }
 
-interface AbstractAttributeDef<TSchema extends AbstractAttributeDefSchema, TActor extends ActorGURPS> extends foundry.abstract.DataModel<TActor, TSchema>,
+interface AbstractAttributeDef<
+	TActor extends ActorGURPS,
+	TSchema extends AbstractAttributeDefSchema
+> extends foundry.abstract.DataModel<TActor, TSchema>,
 	ModelPropsFromSchema<AbstractAttributeDefSchema> { }
 
 

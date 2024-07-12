@@ -143,9 +143,9 @@ class BodyGURPS extends foundry.abstract.DataModel<ActorGURPS, BodySchema> {
 		}
 	}
 
-	constructor(data: DeepPartial<SourceFromSchema<BodySchema>>, owningLocation: HitLocation) {
+	constructor(data: DeepPartial<SourceFromSchema<BodySchema>>, owningLocation: HitLocation | null = null) {
 		super(data)
-		this.owningLocation = owningLocation ?? null
+		this.owningLocation = owningLocation
 	}
 
 	get actor(): ActorGURPS {

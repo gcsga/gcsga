@@ -236,9 +236,11 @@ type CharacterProfileSchema = {
 	portrait: fields.StringField
 }
 
+type CharacterProfile = ModelPropsFromSchema<CharacterProfileSchema>
+
 type CharacterSystemSource = SourceFromSchema<CharacterSystemSchema>
 
 type CharacterSource = BaseActorSourceGURPS<ActorType.Character, CharacterSystemSource>
 
-export type { CharacterFlags, CharacterSource, CharacterSystemData, CharacterSystemSource }
+export type { CharacterFlags, CharacterSource, CharacterSystemData, CharacterSystemSource, CharacterProfile }
 

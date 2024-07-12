@@ -65,52 +65,12 @@ type SheetSettingsSchema = {
 class SheetSettings extends foundry.abstract.DataModel<CharacterGURPS, SheetSettingsSchema> {
 	protected declare static _schema: LaxSchemaField<SheetSettingsSchema> | undefined;
 
-	// page: PageSettings
-	// block_layout: BlockLayout
-	// attributes: AttributeDef[]
-	// resource_trackers: ResourceTrackerDef[]
-	// move_types: MoveTypeDef[]
-	// body_type: BodyGURPS<BodyOwner>
-	// damage_progression: progression.Option
-	// default_length_units: LengthUnits
-	// default_weight_units: WeightUnits
-	// user_description_display: display.Option
-	// modifiers_display: display.Option
-	// notes_display: display.Option
-	// skill_level_adj_display: display.Option
-	// use_multiplicative_modifiers: boolean
-	// use_modifying_dice_plus_adds: boolean
-	// use_half_stat_defaults: boolean
-	// show_trait_modifier_adj: boolean
-	// show_equipment_modifier_adj: boolean
-	// show_spell_adj: boolean
-	// use_title_in_footer: boolean
-	// exclude_unspent_points_from_total: boolean
-
 	constructor(data: DeepPartial<SourceFromSchema<SheetSettingsSchema>>) {
 		super(data)
-		// this.page = data.page
-		// this.block_layout = data.block_layout
-		this.attributes = data.attributes?.map(e => new AttributeDef(e)) ?? []
-		this.resource_trackers = data.resource_trackers?.map(e => new ResourceTrackerDef(e)) ?? []
-		this.move_types = data.move_types?.map(e => new MoveTypeDef(e)) ?? []
-		this.body_type = BodyGURPS.fromObject(data.body_type, this.actor)
-		// this.damage_progression = data.damage_progression
-		// this.default_length_units = data.default_length_units
-		// this.default_weight_units = data.default_weight_units
-		// this.user_description_display = data.user_description_display
-		// this.modifiers_display = data.modifiers_display
-		// this.notes_display = data.notes_display
-		// this.skill_level_adj_display = data.skill_level_adj_display
-		// this.use_multiplicative_modifiers = data.use_multiplicative_modifiers
-		// this.use_modifying_dice_plus_adds = data.use_modifying_dice_plus_adds
-		// this.use_half_stat_defaults = data.use_half_stat_defaults
-		// this.show_trait_modifier_adj = data.show_trait_modifier_adj
-		// this.show_equipment_modifier_adj = data.show_equipment_modifier_adj
-		// this.show_spell_adj = data.show_spell_adj
-		// this.use_title_in_footer = data.use_title_in_footer
-		// this.exclude_unspent_points_from_total = data.exclude_unspent_points_from_total
-
+		this.attributes = data.attributes?.map(e => new AttributeDef(e!)) ?? []
+		this.resource_trackers = data.resource_trackers?.map(e => new ResourceTrackerDef(e!)) ?? []
+		this.move_types = data.move_types?.map(e => new MoveTypeDef(e!)) ?? []
+		this.body_type = new BodyGURPS(data.body_type!)
 	}
 
 	get actor(): ActorGURPS {
@@ -159,27 +119,21 @@ class SheetSettings extends foundry.abstract.DataModel<CharacterGURPS, SheetSett
 		}
 	}
 
-	static default(): PreparedSheetSettings {
-		const settings = new SheetSettings({})
-		return {
-			...settings,
-			attributes: settings.attributes.map(e => new AttributeDef(e)),
-			resource_trackers: settings.resource_trackers.map(e => new ResourceTrackerDef(e)),
-			move_types: settings.move_types.map(e => new MoveTypeDef(e)),
-			body_type: new BodyGURPS(settings.body_type)
-		}
+	static default(): SheetSettings {
+		return new SheetSettings({})
+		// const settings = new SheetSettings({})
+		// return {
+		// 	...settings,
+		// 	attributes: settings.attributes.map(e => new AttributeDef(e)),
+		// 	resource_trackers: settings.resource_trackers.map(e => new ResourceTrackerDef(e)),
+		// 	move_types: settings.move_types.map(e => new MoveTypeDef(e)),
+		// 	body_type: new BodyGURPS(settings.body_type)
+		// }
 	}
 
-	static for(actor: ActorGURPS | null): PreparedSheetSettings {
+	static for(actor: ActorGURPS | null): SheetSettings {
 		if (actor?.isOfType(ActorType.Character)) {
-			const settings = new SheetSettings(actor.system.settings)
-			return {
-				...settings,
-				attributes: settings.attributes.map(e => new AttributeDef(e)),
-				resource_trackers: settings.resource_trackers.map(e => new ResourceTrackerDef(e)),
-				move_types: settings.move_types.map(e => new MoveTypeDef(e)),
-				body_type: new BodyGURPS(settings.body_type)
-			}
+			return new SheetSettings(actor.system.settings)
 		}
 		if (actor) {
 			ErrorGURPS(`Actor "${actor.name}" is of type "${actor.type}", which does not support Sheet Settings. Returning default settings.`)
@@ -194,7 +148,11 @@ class SheetSettings extends foundry.abstract.DataModel<CharacterGURPS, SheetSett
 
 interface SheetSettings
 	extends foundry.abstract.DataModel<CharacterGURPS, SheetSettingsSchema>,
-	ModelPropsFromSchema<SheetSettingsSchema> {
+	Omit<ModelPropsFromSchema<SheetSettingsSchema>, "attributes" | "resource_trackers" | "move_types" | "body_type"> {
+	attributes: AttributeDef[]
+	resource_trackers: ResourceTrackerDef[]
+	move_types: MoveTypeDef[]
+	body_type: BodyGURPS[]
 }
 
 // interface PreparedSheetSettings
@@ -271,4 +229,4 @@ interface SheetSettings
 // }
 
 export type { SheetSettingsSchema }
-export { SheetSettings, PreparedSheetSettings }
+export { SheetSettings }

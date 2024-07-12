@@ -10,7 +10,7 @@ import {
 	valueAdjustedForModifiers,
 	weightAdjustedForModifiers,
 } from "@item/helpers.ts"
-import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
+import { SheetSettings } from "@system"
 
 class EquipmentContainerGURPS<
 	TParent extends ActorGURPS | null = ActorGURPS | null,
@@ -27,7 +27,7 @@ class EquipmentContainerGURPS<
 	}
 
 	get weightUnits(): WeightUnits {
-		return sheetSettingsFor(this.actor).default_weight_units
+		return SheetSettings.for(this.actor).default_weight_units
 	}
 
 	get weightString(): string {

@@ -7,7 +7,7 @@ class ResourceTracker extends AbstractAttribute<CharacterGURPS, ResourceTrackerS
 	order: number
 	// damage?: number
 
-	constructor(data: SourceFromSchema<ResourceTrackerSchema>, order: number) {
+	constructor(data: DeepPartial<SourceFromSchema<ResourceTrackerSchema>>, order: number) {
 		super(data)
 		// this.damage = data.damage ?? 0
 		this.order = order

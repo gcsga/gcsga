@@ -3,7 +3,7 @@ import { AbstractAttributeDef, PoolThreshold, ResourceTracker } from "@system"
 import { CharacterGURPS } from "@actor"
 
 
-class ResourceTrackerDef extends AbstractAttributeDef<ResourceTrackerDefSchema, CharacterGURPS> {
+class ResourceTrackerDef extends AbstractAttributeDef<CharacterGURPS, ResourceTrackerDefSchema> {
 	// name: string
 	// private full_name: string
 	// thresholds: PoolThreshold[] = []
@@ -69,6 +69,6 @@ class ResourceTrackerDef extends AbstractAttributeDef<ResourceTrackerDefSchema, 
 
 }
 
-interface ResourceTrackerDef extends AbstractAttributeDef<ResourceTrackerDefSchema, CharacterGURPS>, ModelPropsFromSchema<ResourceTrackerDefSchema> { }
+interface ResourceTrackerDef extends AbstractAttributeDef<CharacterGURPS, ResourceTrackerDefSchema>, ModelPropsFromSchema<ResourceTrackerDefSchema> { }
 
 export { ResourceTrackerDef }

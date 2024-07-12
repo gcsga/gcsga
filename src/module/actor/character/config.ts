@@ -1,7 +1,7 @@
 import { DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
 import { FilePickerGURPS } from "@module/apps/file-picker.ts"
 import { SETTINGS, SORTABLE_BASE_OPTIONS, SYSTEM_NAME } from "@module/data/constants.ts"
-import { AbstractAttributeDef, AttributeDefObj, MoveTypeDefObj, ResourceTrackerDefObj } from "@system"
+import { AbstractAttributeDef, AttributeDef, MoveTypeDef, ResourceTrackerDef } from "@system"
 import { DnD, LocalizeGURPS, htmlClosest, htmlQuery, htmlQueryAll, prepareFormData } from "@util"
 import { CharacterGURPS } from "./document.ts"
 import Sortable from "sortablejs"
@@ -19,16 +19,16 @@ class CharacterConfigSheet<TActor extends CharacterGURPS = CharacterGURPS> exten
 		return this.object
 	}
 
-	get attributes(): AttributeDefObj[] {
-		return this.actor.system.settings.attributes
+	get attributes(): AttributeDef[] {
+		return this.actor.settings.attributes
 	}
 
-	get resourceTrackers(): ResourceTrackerDefObj[] {
-		return this.actor.system.settings.resource_trackers
+	get resourceTrackers(): ResourceTrackerDef[] {
+		return this.actor.settings.resource_trackers
 	}
 
-	get moveTypes(): MoveTypeDefObj[] {
-		return this.actor.system.settings.move_types
+	get moveTypes(): MoveTypeDef[] {
+		return this.actor.settings.move_types
 	}
 
 	static override get defaultOptions(): DocumentSheetOptions {
@@ -80,9 +80,9 @@ class CharacterConfigSheet<TActor extends CharacterGURPS = CharacterGURPS> exten
 
 		const actor = this.actor
 
-		const attributes = actor.settings.attributes.sort((a, b) => a.order - b.order)
-		const resourceTrackers = actor.settings.resource_trackers.sort((a, b) => a.order - b.order)
-		const moveTypes = actor.settings.move_types.sort((a, b) => a.order - b.order)
+		const attributes = actor.settings.attributes.sort((a, b) => a.order! - b.order!)
+		const resourceTrackers = actor.settings.resource_trackers.sort((a, b) => a.order! - b.order!)
+		const moveTypes = actor.settings.move_types.sort((a, b) => a.order! - b.order!)
 
 		return {
 			...sheetData,

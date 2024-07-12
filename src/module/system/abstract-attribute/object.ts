@@ -28,18 +28,18 @@ abstract class AbstractAttribute<
 		return schema
 	}
 
-	_id: string
+	// _id: string
 
 	constructor(data: DeepPartial<SourceFromSchema<TSchema>>) {
 		super(data)
-		this._id = String(data.id ?? "")
+		// this._id = String(data.id ?? "")
 	}
 
-	abstract get definition(): AbstractAttributeDef | null
+	abstract get definition(): AbstractAttributeDef<TActor> | null
 
-	get id(): string {
-		return this._id
-	}
+	// get id(): string {
+	// 	return this._id
+	// }
 
 	get actor(): TActor {
 		return this.parent

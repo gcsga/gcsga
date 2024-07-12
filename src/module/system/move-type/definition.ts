@@ -3,18 +3,10 @@ import { MoveTypeOverride } from "./override.ts"
 import { AbstractAttributeDef, MoveTypeDefSchema, MoveTypeSchema } from "@system"
 import { CharacterGURPS } from "@actor"
 
-class MoveTypeDef extends AbstractAttributeDef<MoveTypeDefSchema, CharacterGURPS> {
-	// name: string
-	// cost_per_point = 0
-	// overrides: MoveTypeOverride[]
-	// order: number
+class MoveTypeDef extends AbstractAttributeDef<CharacterGURPS, MoveTypeDefSchema> {
 
-	constructor(data: SourceFromSchema<MoveTypeDefSchema>) {
+	constructor(data: DeepPartial<SourceFromSchema<MoveTypeDefSchema>>) {
 		super(data)
-		// this.name = data.name
-		// this.cost_per_point = data.cost_per_point ?? 0
-		// this.order = data.order ?? 0
-		// this.overrides = data.overrides?.map(threshold => new MoveTypeOverride(threshold))
 	}
 
 	static override defineSchema(): MoveTypeDefSchema {
@@ -42,6 +34,6 @@ class MoveTypeDef extends AbstractAttributeDef<MoveTypeDefSchema, CharacterGURPS
 	}
 }
 
-interface MoveTypeDef extends AbstractAttributeDef<MoveTypeDefSchema, CharacterGURPS>, ModelPropsFromSchema<MoveTypeDefSchema> { }
+interface MoveTypeDef extends AbstractAttributeDef<CharacterGURPS, MoveTypeDefSchema>, ModelPropsFromSchema<MoveTypeDefSchema> { }
 
 export { MoveTypeDef }

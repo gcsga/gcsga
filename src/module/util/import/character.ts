@@ -1,6 +1,7 @@
 import { ActorGURPS } from "@actor"
 import {
 	CharacterFlags,
+	CharacterProfile,
 	CharacterSource,
 	CharacterSystemSource,
 	PointsRecord,
@@ -34,7 +35,7 @@ import {
 } from "./data.ts"
 import { ItemImporter } from "./item.ts"
 import { ManeuverManager } from "@system/maneuver-manager.ts"
-import { AttributeDefSchema, BlockLayoutKey, PageSettings, SheetSettingsSchema } from "@system"
+import { AttributeDefSchema, AttributeSchema, BlockLayoutKey, BodySchema, HitLocationSchema, MoveTypeDefSchema, MoveTypeOverrideSchema, MoveTypeSchema, PageSettings, PoolThresholdSchema, ResourceTrackerDefSchema, ResourceTrackerSchema, SheetSettingsSchema } from "@system"
 
 export class CharacterImporter {
 	static async throwError(text: string): Promise<void> {
@@ -185,7 +186,7 @@ export class CharacterImporter {
 
 	static importAttributeSettings(data?: ImportedAttributeDef[]): SourceFromSchema<AttributeDefSchema>[] {
 		return (
-			data?.map(e => {
+			data?.map((e, index) => {
 				return {
 					id: e.id,
 					type: e.type,
@@ -195,6 +196,7 @@ export class CharacterImporter {
 					cost_per_point: e.cost_per_point ?? 0,
 					cost_adj_percent_per_sm: e.cost_adj_percent_per_sm ?? 0,
 					thresholds: CharacterImporter.importThresholds(e.thresholds),
+					order: index
 				}
 			}) ?? []
 		)
@@ -202,7 +204,7 @@ export class CharacterImporter {
 
 	static importResourceTrackerSettings(data?: ImportedResourceTrackerDef[]): SourceFromSchema<ResourceTrackerDefSchema>[] {
 		return (
-			data?.map(e => {
+			data?.map((e, index) => {
 				return {
 					id: e.id,
 					base: "",
@@ -213,6 +215,7 @@ export class CharacterImporter {
 					isMinEnforced: e.isMinEnforced ?? false,
 					isMaxEnforced: e.isMaxEnforced ?? false,
 					thresholds: CharacterImporter.importThresholds(e.thresholds),
+					order: index
 				}
 			}) ?? []
 		)
@@ -220,12 +223,13 @@ export class CharacterImporter {
 
 	static importMoveTypeSettings(data?: ImportedMoveTypeDef[]): SourceFromSchema<MoveTypeDefSchema>[] {
 		return (
-			data?.map(e => {
+			data?.map((e, index) => {
 				return {
 					id: e.id,
 					name: e.name,
 					base: e.base ?? "",
 					overrides: CharacterImporter.importMoveTypeOverrides(e.overrides),
+					order: index
 				}
 			}) ?? []
 		)
@@ -267,8 +271,8 @@ export class CharacterImporter {
 					hit_penalty: e.hit_penalty ?? 0,
 					dr_bonus: e.dr_bonus ?? 0,
 					description: e.description ?? "",
+					sub_table: e.sub_table ? CharacterImporter.importBody(e.sub_table) : null
 				}
-				if (e.sub_table) location.sub_table = CharacterImporter.importBody(e.sub_table)
 				return location
 			}) ?? []
 		)
@@ -281,6 +285,7 @@ export class CharacterImporter {
 					id: att.attr_id,
 					adj: att.adj,
 					damage: att.damage ?? 0,
+					apply_ops: null
 				}
 			}) ?? []
 		)
@@ -312,8 +317,8 @@ export class CharacterImporter {
 	}
 
 	static importFlags(file: { text: string; path: string; name: string }): CharacterFlags {
-		const flags = CharacterFlagDefaults
-		const flags = {}
+		// const flags = CharacterFlagDefaults
+		const flags = { [SYSTEM_NAME]: {} }
 
 		const time = getCurrentTime()
 
