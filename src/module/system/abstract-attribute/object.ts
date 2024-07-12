@@ -4,8 +4,8 @@ import { ActorGURPS } from "@actor"
 import { LaxSchemaField } from "@system/schema-data-fields.ts"
 
 abstract class AbstractAttribute<
-	TSchema extends AbstractAttributeSchema = AbstractAttributeSchema,
-	TActor extends ActorGURPS = ActorGURPS
+	TActor extends ActorGURPS = ActorGURPS,
+	TSchema extends AbstractAttributeSchema = AbstractAttributeSchema
 > extends foundry.abstract.DataModel<TActor, TSchema> {
 
 	protected declare static _schema: LaxSchemaField<AbstractAttributeSchema> | undefined

@@ -1,24 +1,15 @@
-import { VariableResolver, evaluateToNumber } from "@module/util/index.ts"
+import { evaluateToNumber } from "@module/util/index.ts"
 import { PoolThresholdSchema, ThresholdOp } from "./data.ts"
+import { CharacterGURPS } from "@actor"
 
 
-export class PoolThreshold {
-	// Name
-	state = ""
-	// Long description
-	explanation = ""
-	// Value to check current value of the pool against
-	expression = ""
-	ops: ThresholdOp[] = []
+class PoolThreshold extends foundry.abstract.DataModel<CharacterGURPS, PoolThresholdSchema> {
 
 	constructor(data: DeepPartial<SourceFromSchema<PoolThresholdSchema>>) {
-		this.state = data.state
-		this.explanation = data.explanation ?? ""
-		this.expression = data.expression ?? ""
-		this.ops = data.ops ?? []
+		super(data)
 	}
 
-	static defineSchema(): PoolThresholdSchema {
+	static override defineSchema(): PoolThresholdSchema {
 		const fields = foundry.data.fields
 
 		return {
@@ -29,7 +20,7 @@ export class PoolThreshold {
 		}
 	}
 
-	threshold(resolver: VariableResolver): number {
+	threshold(resolver: CharacterGURPS): number {
 		return evaluateToNumber(this.expression, resolver)
 	}
 
@@ -42,3 +33,9 @@ export class PoolThreshold {
 		}
 	}
 }
+
+interface PoolThreshold extends foundry.abstract.DataModel<CharacterGURPS, PoolThresholdSchema>, ModelPropsFromSchema<PoolThresholdSchema> {
+
+}
+
+export { PoolThreshold }

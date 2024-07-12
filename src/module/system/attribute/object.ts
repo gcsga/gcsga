@@ -6,7 +6,7 @@ import { AttributeSchema } from "./data.ts"
 import { CharacterGURPS } from "@actor"
 import { AttributeDef } from "./definition.ts"
 
-class AttributeGURPS extends AbstractAttribute<AttributeSchema, CharacterGURPS> {
+class AttributeGURPS extends AbstractAttribute<CharacterGURPS, AttributeSchema> {
 	// adj = 0
 	// damage?: number
 	order: number
@@ -149,6 +149,6 @@ class AttributeGURPS extends AbstractAttribute<AttributeSchema, CharacterGURPS> 
 	}
 }
 
-interface AttributeGURPS extends AbstractAttribute<AttributeSchema>, ModelPropsFromSchema<AttributeSchema> { }
+interface AttributeGURPS extends AbstractAttribute<CharacterGURPS, AttributeSchema>, ModelPropsFromSchema<AttributeSchema> { }
 
 export { AttributeGURPS }

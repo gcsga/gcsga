@@ -2,7 +2,7 @@ import { MoveTypeDef } from "./definition.ts"
 import { AbstractAttribute, MoveBonusType, MoveTypeSchema } from "@system"
 import { CharacterGURPS } from "@actor"
 
-class MoveType extends AbstractAttribute<MoveTypeSchema, CharacterGURPS> {
+class MoveType extends AbstractAttribute<CharacterGURPS, MoveTypeSchema> {
 	adj = 0
 	order: number
 
@@ -61,6 +61,6 @@ class MoveType extends AbstractAttribute<MoveTypeSchema, CharacterGURPS> {
 	}
 }
 
-interface MoveType extends AbstractAttribute<MoveTypeSchema, CharacterGURPS>, ModelPropsFromSchema<MoveTypeSchema> { }
+interface MoveType extends AbstractAttribute<CharacterGURPS, MoveTypeSchema>, ModelPropsFromSchema<MoveTypeSchema> { }
 
 export { MoveType }

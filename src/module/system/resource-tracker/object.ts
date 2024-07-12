@@ -3,7 +3,7 @@ import { AbstractAttribute, PoolThreshold, ResourceTrackerSchema } from "@system
 import { TokenPool } from "@module/data/types.ts"
 import { CharacterGURPS } from "@actor"
 
-class ResourceTracker extends AbstractAttribute<ResourceTrackerSchema, CharacterGURPS> {
+class ResourceTracker extends AbstractAttribute<CharacterGURPS, ResourceTrackerSchema> {
 	order: number
 	// damage?: number
 
@@ -55,6 +55,6 @@ class ResourceTracker extends AbstractAttribute<ResourceTrackerSchema, Character
 	}
 }
 
-interface ResourceTracker extends AbstractAttribute<ResourceTrackerSchema>, ModelPropsFromSchema<ResourceTrackerSchema> { }
+interface ResourceTracker extends AbstractAttribute<CharacterGURPS, ResourceTrackerSchema>, ModelPropsFromSchema<ResourceTrackerSchema> { }
 
 export { ResourceTracker }
