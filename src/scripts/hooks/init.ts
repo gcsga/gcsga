@@ -43,10 +43,10 @@ export const Init = {
 			CONFIG.GURPS = GURPSCONFIG
 
 			CONFIG.Token.objectClass = TokenGURPS
-			CONFIG.statusEffects = Object.entries(CONFIG.GURPS.statusEffects.conditions).map(([id, label]) => ({
+			CONFIG.statusEffects = Object.entries(CONFIG.GURPS.statusEffects.conditions).map(([id, name]) => ({
 				id,
-				label,
-				icon: `systems/${SYSTEM_NAME}/assets/status/${id}.webp` as const,
+				name,
+				img: `systems/${SYSTEM_NAME}/assets/status/${id}.webp` as const,
 			}))
 			CONFIG.Canvas.rulerClass = RulerGURPS
 

@@ -26,12 +26,12 @@ class MoveTypeDef extends AbstractAttributeDef<CharacterGURPS, MoveTypeDefSchema
 		return evaluateToNumber(this.base, resolver)
 	}
 
-	override generateNewAttribute(): SourceFromSchema<MoveTypeSchema> {
-		return {
-			...super.generateNewAttribute(),
-			adj: 0,
-		}
-	}
+	// override generateNewAttribute(): SourceFromSchema<MoveTypeSchema> {
+	// 	return {
+	// 		...super.generateNewAttribute(),
+	// 		adj: 0,
+	// 	}
+	// }
 }
 
 interface MoveTypeDef extends AbstractAttributeDef<CharacterGURPS, MoveTypeDefSchema>, ModelPropsFromSchema<MoveTypeDefSchema> { }

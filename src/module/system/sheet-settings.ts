@@ -152,7 +152,7 @@ interface SheetSettings
 	attributes: AttributeDef[]
 	resource_trackers: ResourceTrackerDef[]
 	move_types: MoveTypeDef[]
-	body_type: BodyGURPS[]
+	body_type: BodyGURPS
 }
 
 // interface PreparedSheetSettings

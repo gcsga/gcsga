@@ -2,13 +2,14 @@ import { ActorGURPS } from "@actor"
 import { ItemGURPS } from "@item"
 import { TraitModifierSource, TraitModifierSystemData } from "./data.ts"
 import { LocalizeGURPS, StringBuilder, affects, display, tmcost } from "@util"
-import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
 import { ItemType } from "@module/data/constants.ts"
+import { SheetSettings } from "@system"
 
 class TraitModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
 
 	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
-		if (optionChecker(sheetSettingsFor(this.actor).notes_display)) return this.localNotes
+		const settings = SheetSettings.for(this.actor)
+		if (optionChecker(settings.notes_display)) return this.localNotes
 		return ""
 	}
 
@@ -55,7 +56,7 @@ class TraitModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> 
 		const buffer = new StringBuilder()
 		buffer.push(this.formattedName)
 		if (this.localNotes !== "") buffer.push(` (${this.localNotes})`)
-		if (sheetSettingsFor(this.actor).show_trait_modifier_adj) buffer.push(` [${this.costDescription}]`)
+		if (SheetSettings.for(this.actor).show_trait_modifier_adj) buffer.push(` [${this.costDescription}]`)
 		return buffer.toString()
 	}
 

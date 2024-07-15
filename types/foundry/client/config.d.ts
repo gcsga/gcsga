@@ -36,6 +36,8 @@ declare global {
 		TScene extends Scene,
 		TUser extends User<Actor<null>>,
 		TEffectsCanvasGroup extends EffectsCanvasGroup,
+		TJournalEntry extends JournalEntry,
+		TJournalEntryPage extends JournalEntryPage<TJournalEntry>,
 	> {
 		/** Configure debugging flags to display additional information */
 		debug: {
@@ -57,7 +59,7 @@ declare global {
 		/** Configuration for the Actor document */
 		Actor: {
 			documentClass: {
-				new (
+				new(
 					data: PreCreate<TActor["_source"]>,
 					context?: DocumentConstructionContext<TActor["parent"]>,
 				): TActor
@@ -106,7 +108,7 @@ declare global {
 			batchSize: number
 			collection: typeof Messages
 			documentClass: {
-				new (
+				new(
 					data: PreCreate<TChatMessage["_source"]>,
 					context?: DocumentConstructionContext<null>,
 				): TChatMessage
@@ -118,7 +120,7 @@ declare global {
 		/** Configuration for Item document */
 		Item: {
 			documentClass: {
-				new (data: PreCreate<TItem["_source"]>, context?: DocumentConstructionContext<TItem["parent"]>): TItem
+				new(data: PreCreate<TItem["_source"]>, context?: DocumentConstructionContext<TItem["parent"]>): TItem
 			}
 			collection: typeof Items
 			dataModels: Record<string, ConstructorOf<TypeDataModel<Item, DataSchema>>>
@@ -143,7 +145,7 @@ declare global {
 		/** Configuration for the Combat document */
 		Combat: {
 			documentClass: {
-				new (data: PreCreate<TCombat["_source"]>, context?: DocumentConstructionContext<null>): TCombat
+				new(data: PreCreate<TCombat["_source"]>, context?: DocumentConstructionContext<null>): TCombat
 			}
 			collection: typeof CombatEncounters
 			defeatedStatusId: string
@@ -156,7 +158,9 @@ declare global {
 
 		/** Configuration for the JournalEntry entity */
 		JournalEntry: {
-			documentClass: typeof JournalEntry
+			documentClass: {
+				new(data: PreCreate<TCombat["_source"]>, context?: DocumentConstructionContext<null>): TJournalEntry
+			}
 			noteIcons: {
 				Anchor: string
 				[key: string]: string
@@ -168,6 +172,29 @@ declare global {
 					{
 						id: string
 						cls: typeof JournalSheet
+						default: boolean
+						label: string
+						canConfigure: boolean
+						canBeDefault: boolean
+					}
+				>
+			>
+			sidebarIcon: string
+		}
+
+		/** Configuration for the JournalEntryPage entity */
+		JournalEntryPage: {
+			documentClass: {
+				new(data: PreCreate<TCombat["_source"]>, context?: DocumentConstructionContext<TJournalEntryPage["parent"]>): TJournalEntryPage
+			}
+			defaultType: string
+			sheetClasses: Record<
+				string,
+				Record<
+					string,
+					{
+						id: string
+						cls: typeof JournalPageSheet
 						default: boolean
 						label: string
 						canConfigure: boolean
@@ -226,7 +253,7 @@ declare global {
 		/** Configuration for the ActiveEffect embedded document type */
 		ActiveEffect: {
 			documentClass: {
-				new (
+				new(
 					data: PreCreate<TActiveEffect["_source"]>,
 					context?: DocumentConstructionContext<TActiveEffect["parent"]>,
 				): TActiveEffect

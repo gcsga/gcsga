@@ -1,12 +1,11 @@
 import { attribute } from "@util/enum/attribute.ts"
 import { PoolThreshold } from "./pool-threshold.ts"
-import { AttributeDefSchema, AttributeSchema } from "./data.ts"
+import { AttributeDefSchema } from "./data.ts"
 import { progression } from "@util/enum/progression.ts"
 import { AbstractAttributeDef } from "@system/abstract-attribute/definition.ts"
 import { gid } from "@module/data/constants.ts"
 import { evaluateToNumber } from "@module/util/index.ts"
 import { ActorGURPS, CharacterGURPS } from "@actor"
-import { AttributeGURPS } from "./object.ts"
 
 
 class AttributeDef extends AbstractAttributeDef<CharacterGURPS, AttributeDefSchema> {
@@ -90,13 +89,19 @@ class AttributeDef extends AbstractAttributeDef<CharacterGURPS, AttributeDefSche
 		return Math.round(cost)
 	}
 
-	override generateNewAttribute(): SourceFromSchema<AttributeSchema> {
-		return new AttributeGURPS({}, 0).toObject()
+	static override init(reservedIds: string[]): AttributeDef {
+		return super.init(reservedIds, "attribute")
 	}
 
-	static override newObject(_reservedIds: string[]): SourceFromSchema<AttributeDefSchema> {
-		return new AttributeDef({}).toObject()
-	}
+
+	//
+	// override generateNewAttribute(): SourceFromSchema<AttributeSchema> {
+	// 	return new AttributeGURPS({}, 0).toObject()
+	// }
+	//
+	// static override newObject(_reservedIds: string[]): SourceFromSchema<AttributeDefSchema> {
+	// 	return new AttributeDef({}).toObject()
+	// }
 }
 
 interface AttributeDef extends AbstractAttributeDef<CharacterGURPS, AttributeDefSchema>, ModelPropsFromSchema<AttributeDefSchema> { }

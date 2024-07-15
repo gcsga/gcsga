@@ -58,7 +58,6 @@ interface GameGURPS
 
 type ConfiguredConfig = Config<
 	ActiveEffectGURPS<ActorGURPS<TokenDocumentGURPS> | ItemGURPS | null>,
-	// @ts-expect-error not sure why it doesn't like it
 	ActorGURPS<TokenDocumentGURPS>,
 	ActorDelta<TokenDocumentGURPS>,
 	ChatLog,
@@ -73,6 +72,8 @@ type ConfiguredConfig = Config<
 	ItemGURPS,
 	Macro,
 	MeasuredTemplateDocument<SceneGURPS | null>,
+	RegionDocument<SceneGURPS | null>,
+	RegionBehavior<RegionDocument | null>,
 	TileDocument<SceneGURPS | null>,
 	TokenDocumentGURPS<SceneGURPS | null>,
 	WallDocument<SceneGURPS | null>,

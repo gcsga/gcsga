@@ -9,7 +9,6 @@ import { CombatantGURPS } from "@module/combat/index.ts"
 import { JournalEntryGURPS } from "@module/journal-entry/document.ts"
 import { JournalEntryPageProxyGURPS } from "@module/journal-entry/page/document.ts"
 import { UserGURPS } from "@module/user/document.ts"
-import { SceneGURPS } from "@scene"
 import { TokenDocumentGURPS } from "@scene/token-document/document.ts"
 // import { TokenConfigGURPS } from "@scene/token-document/index.ts"
 import { ClientDatabaseBackendGURPS } from "@system/client-backend.ts"
@@ -21,19 +20,20 @@ export const Load = {
 
 		// Assign document classes
 		CONFIG.ActiveEffect.documentClass = ActiveEffectGURPS
-		CONFIG.Actor.collection = Actors
+		// CONFIG.Actor.collection = Actors
 		CONFIG.Actor.documentClass = ActorProxyGURPS
 		CONFIG.ActorDelta.documentClass = ActorDelta
-		CONFIG.AmbientLight.documentClass = AmbientLightDocument
+		// CONFIG.AmbientLight.documentClass = AmbientLightDocument
 		CONFIG.ChatMessage.documentClass = ChatMessageGURPS
 		CONFIG.Combat.documentClass = CombatGURPS
 		CONFIG.Combatant.documentClass = CombatantGURPS
+		// @ts-expect-error probably fine
 		CONFIG.Item.collection = ItemsGURPS
 		CONFIG.Item.documentClass = ItemProxyGURPS
 		CONFIG.Macro.documentClass = Macro
 		CONFIG.MeasuredTemplate.documentClass = MeasuredTemplateDocument
-		CONFIG.Scene.documentClass = SceneGURPS
-		CONFIG.Tile.documentClass = TileDocument
+		// CONFIG.Scene.documentClass = SceneGURPS
+		// CONFIG.Tile.documentClass = TileDocument
 		CONFIG.JournalEntry.documentClass = JournalEntryGURPS
 		CONFIG.JournalEntryPage.documentClass = JournalEntryPageProxyGURPS
 		CONFIG.Token.documentClass = TokenDocumentGURPS

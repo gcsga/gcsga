@@ -2,8 +2,7 @@ import { ActorGURPS } from "@actor"
 import { AbstractSkillGURPS } from "@item"
 import { SkillLevel, SkillSource, SkillSystemData } from "./data.ts"
 import { LocalizeGURPS, NewLineRegex, StringBuilder, TooltipGURPS, difficulty, display } from "@util"
-import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
-import { SkillDefault, resolveStudyHours, studyHoursProgressText } from "@system"
+import { SheetSettings, SkillDefault, resolveStudyHours, studyHoursProgressText } from "@system"
 import { ActorType, ItemType } from "@module/data/constants.ts"
 class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends AbstractSkillGURPS<TParent> {
 
@@ -12,7 +11,7 @@ class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 
 	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
 		const buffer = new StringBuilder()
-		const settings = sheetSettingsFor(this.actor)
+		const settings = SheetSettings.for(this.actor)
 		if (optionChecker(settings.modifiers_display)) {
 			const text = this.modifierNotes
 			if ((text?.trim() ?? "") !== "") buffer.push(text)
@@ -86,7 +85,7 @@ class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 			const def = this.default
 			const diff = this.difficulty
 			if (level === Number.MIN_SAFE_INTEGER) return none
-			if (sheetSettingsFor(actor).use_half_stat_defaults) {
+			if (SheetSettings.for(actor).use_half_stat_defaults) {
 				level = Math.trunc(level / 2) + 5
 			}
 			if (diff === difficulty.Level.Wildcard) points /= 3

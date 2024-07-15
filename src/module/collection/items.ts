@@ -1,6 +1,6 @@
 import { ItemGURPS } from "@item"
 
-export class ItemsGURPS<TItem extends ItemGURPS<null> = ItemGURPS<null>> extends Items<TItem> {
+export class ItemsGURPS<TItem extends ItemGURPS<null>> extends Items<TItem> {
 	// protected override _onUpdateDocuments(
 	// 	documents: TItem[],
 	// 	result: TItem["_source"][],
@@ -12,4 +12,5 @@ export class ItemsGURPS<TItem extends ItemGURPS<null> = ItemGURPS<null>> extends
 	// 		document.prepareSiblingData()
 	// 	}
 	// }
+	//
 }

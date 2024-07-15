@@ -13,7 +13,6 @@ import {
 	AttributeDef,
 	BodyGURPS,
 	HitLocation,
-	HitLocationObj,
 	MoveTypeDef,
 	PoolThreshold,
 	RESERVED_IDS,

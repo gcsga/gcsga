@@ -2,8 +2,7 @@ import { ActorGURPS } from "@actor"
 import { AbstractSkillGURPS } from "@item"
 import { TechniqueSource, TechniqueSystemData } from "./data.ts"
 import { LocalizeGURPS, NewLineRegex, StringBuilder, TooltipGURPS, difficulty, display } from "@util"
-import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
-import { SkillDefault, resolveStudyHours, studyHoursProgressText } from "@system"
+import { SheetSettings, SkillDefault, resolveStudyHours, studyHoursProgressText } from "@system"
 import { ActorType, gid } from "@module/data/constants.ts"
 import { SkillLevel } from "@item/skill/data.ts"
 
@@ -12,7 +11,7 @@ class TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> exte
 
 	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
 		const buffer = new StringBuilder()
-		const settings = sheetSettingsFor(this.actor)
+		const settings = SheetSettings.for(this.actor)
 		if (optionChecker(settings.modifiers_display)) {
 			const text = this.modifierNotes
 			if ((text?.trim() ?? "") !== "") buffer.push(text)

@@ -1,8 +1,12 @@
 import { RollModifierTags, SETTINGS, SSRT_SETTING, SYSTEM_NAME } from "@data"
 import { allLengthUnits, Length, LengthSymbols, LengthUnits, LocalizeGURPS } from "@util"
+import { TokenGURPS } from "../token/object.ts"
+import { UserGURPS } from "@module/user/document.ts"
 
-class RulerGURPS extends Ruler {
-	override _getSegmentLabel(segment: RulerMeasurementSegment, totalDistance: number): string {
+class RulerGURPS extends Ruler<TokenGURPS, UserGURPS> {
+
+	protected override _getSegmentLabel(segment: RulerMeasurementSegment): string {
+		const totalDistance = this.totalDistance
 		let units = canvas.scene?.grid.units
 		Object.keys(LengthSymbols).forEach(k => {
 			if (units && LengthSymbols[k as LengthUnits].includes(units)) units = k as LengthUnits

@@ -3,6 +3,8 @@ import { AbstractAttributeDefSchema, AbstractAttributeSchema } from "./data.ts"
 import { ActorGURPS } from "@actor"
 import { LaxSchemaField } from "@system/schema-data-fields.ts"
 import { RESERVED_IDS } from "@system/attribute/data.ts"
+import { AttributeDef } from "@system/attribute/definition.ts"
+import { AttributeDefClasses, MoveTypeDef, ResourceTrackerDef } from "@system"
 
 abstract class AbstractAttributeDef<
 	TActor extends ActorGURPS = ActorGURPS,
@@ -56,22 +58,31 @@ abstract class AbstractAttributeDef<
 
 	abstract baseValue(resolver: TActor): number
 
-	generateNewAttribute(): SourceFromSchema<AbstractAttributeSchema> {
-		return {
-			id: this.id,
-		}
+	static init(reservedIds: string[], type: "attribute",): AttributeDef
+	static init(reservedIds: string[], type: "resource_tracker",): ResourceTrackerDef
+	static init(reservedIds: string[], type: "move_type",): MoveTypeDef
+	static init(reservedIds: string[], type: keyof typeof AttributeDefClasses,): AbstractAttributeDef {
+		const id = getNewAttributeId(reservedIds.map(e => { return { id: e } }))
+		const AttributeDefClass = AttributeDefClasses[type]
+		return new AttributeDefClass({ id })
 	}
 
-	static newObject(reservedIds: string[]): SourceFromSchema<AbstractAttributeDefSchema> {
-		return {
-			id: getNewAttributeId(
-				reservedIds.map(e => {
-					return { id: e }
-				}),
-			),
-			base: "10",
-		}
-	}
+	// generateNewAttribute(): SourceFromSchema<AbstractAttributeSchema> {
+	// 	return {
+	// 		id: this.id,
+	// 	}
+	// }
+	//
+	// static newObject(reservedIds: string[]): SourceFromSchema<AbstractAttributeDefSchema> {
+	// 	return {
+	// 		id: getNewAttributeId(
+	// 			reservedIds.map(e => {
+	// 				return { id: e }
+	// 			}),
+	// 		),
+	// 		base: "10",
+	// 	}
+	// }
 }
 
 interface AbstractAttributeDef<
