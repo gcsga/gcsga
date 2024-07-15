@@ -20,7 +20,6 @@ import { WeaponFlags } from "./data.ts"
 import { ContainedWeightReduction, Feature, SkillBonus, SkillDefault, WeaponBonus } from "@system"
 import { WeaponParry } from "./weapon-parry.ts"
 import { WeaponDamage } from "./weapon-damage.ts"
-import { WeaponBonusResolver } from "@module/util/resolvers.ts"
 
 abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
 	declare damage: WeaponDamage
@@ -100,7 +99,8 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 		return 0
 	}
 
-	skillLevelBaseAdjustment(actor: WeaponBonusResolver, tooltip: TooltipGURPS | null): number {
+	skillLevelBaseAdjustment(actor: ActorGURPS, tooltip: TooltipGURPS | null): number {
+		if (!actor.isOfType(ActorType.Character)) return 0
 		let adj = 0
 		const minST = this.resolvedMinimumStrength - actor.strikingST
 		if (minST > 0) adj -= minST
@@ -135,7 +135,7 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 		return adj
 	}
 
-	skillLevelPostAdjustment(actor: WeaponBonusResolver, tooltip: TooltipGURPS | null): number {
+	skillLevelPostAdjustment(actor: ActorGURPS, tooltip: TooltipGURPS | null): number {
 		if (this.isOfType(ItemType.MeleeWeapon)) {
 			const baseParry = WeaponParry.parse(this.system.parry)
 			if (baseParry.fencing) return this.encumbrancePenalty(actor, tooltip)
@@ -143,7 +143,8 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 		return 0
 	}
 
-	encumbrancePenalty(actor: WeaponBonusResolver, tooltip: TooltipGURPS | null): number {
+	encumbrancePenalty(actor: ActorGURPS, tooltip: TooltipGURPS | null): number {
+		if (!actor.isOfType(ActorType.Character)) return 0
 		const penalty = actor.encumbrance.current.penalty
 		if (penalty !== 0 && tooltip) {
 			tooltip.push("\n")
@@ -306,7 +307,7 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 			)
 		) {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			;(this.container as any).modifiers.forEach((mod: any) => {
+			; (this.container as any).modifiers.forEach((mod: any) => {
 				let bonus: Feature
 				for (const f of mod.features) {
 					bonus = f

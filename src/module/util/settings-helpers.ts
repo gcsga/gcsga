@@ -35,7 +35,7 @@ function addAttribute(context: DropDataContext): void {
 	if (!(context.app instanceof CharacterConfigSheet || context.app instanceof AttributeSettings)) return
 
 	const attributes = context.app.attributes
-	attributes.push(AttributeDef.newObject(context.app.getReservedIds()))
+	attributes.push(AttributeDef.createInstance(context.app.getReservedIds()))
 
 	if (context.app instanceof CharacterConfigSheet)
 		context.app.actor.update({ "system.settings.attributes": attributes })
@@ -94,7 +94,7 @@ function addResourceTracker(context: DropDataContext): void {
 	if (!(context.app instanceof CharacterConfigSheet || context.app instanceof ResourceTrackerSettings)) return
 
 	const resourceTrackers = context.app.resourceTrackers
-	resourceTrackers.push(ResourceTrackerDef.newObject(context.app.getReservedIds()))
+	resourceTrackers.push(ResourceTrackerDef.createInstance(context.app.getReservedIds()))
 
 	if (context.app instanceof CharacterConfigSheet)
 		context.app.actor.update({ "system.settings.resource_trackers": resourceTrackers })
@@ -153,7 +153,7 @@ function addMoveType(context: DropDataContext): void {
 	if (!(context.app instanceof CharacterConfigSheet || context.app instanceof MoveSettings)) return
 
 	const moveTypes = context.app.moveTypes
-	moveTypes.push(MoveTypeDef.newObject(context.app.getReservedIds()))
+	moveTypes.push(MoveTypeDef.createInstance(context.app.getReservedIds()))
 
 	if (context.app instanceof CharacterConfigSheet)
 		context.app.actor.update({ "system.settings.move_types": moveTypes })
@@ -216,10 +216,10 @@ function addHitLocation(context: DropDataContext): void {
 	const index = parseInt(context.element.dataset.index ?? "")
 	if (isNaN(index)) return console.error("Invalid index")
 
-	const table = fu.getProperty(context.app, `${path}.locations`) as HitLocationObj[]
+	const table = fu.getProperty(context.app, `${path}.locations`)
 	if (!Array.isArray(table)) return
 
-	table.push(HitLocation.newObject())
+	table.push(HitLocation.createInstance())
 
 	if (context.app instanceof CharacterConfigSheet) {
 		const formData = prepareFormData({ [`array.${path.replace(/^actor\./, "")}`]: table }, context.app.actor)
@@ -245,7 +245,7 @@ function removeHitLocation(context: DropDataContext): void {
 	const index = parseInt(context.element.dataset.index ?? "")
 	if (isNaN(index)) return console.error("Invalid index")
 
-	const table = fu.getProperty(context.app, `${path}.locations`) as HitLocationObj[]
+	const table = fu.getProperty(context.app, `${path}.locations`)
 	if (!Array.isArray(table)) return
 
 	table.splice(index, 1)
@@ -274,10 +274,10 @@ function addSubTable(context: DropDataContext): void {
 	const index = parseInt(context.element.dataset.index ?? "")
 	if (isNaN(index)) return console.error("Invalid index")
 
-	const table = fu.getProperty(context.app, path) as HitLocationObj[]
+	const table = fu.getProperty(context.app, path)
 	if (!Array.isArray(table)) return
 
-	table[index].sub_table = BodyGURPS.newObject()
+	table[index].sub_table = BodyGURPS.createInstance()
 
 	if (context.app instanceof CharacterConfigSheet) {
 		const formData = prepareFormData({ [`array.${path.replace(/^actor\./, "")}`]: table }, context.app.actor)
@@ -303,7 +303,7 @@ function removeSubTable(context: DropDataContext): void {
 	const index = parseInt(context.element.dataset.index ?? "")
 	if (isNaN(index)) return console.error("Invalid index")
 
-	const table = fu.getProperty(context.app, path) as HitLocationObj[]
+	const table = fu.getProperty(context.app, path)
 	if (!Array.isArray(table)) return
 
 	delete table[index].sub_table
@@ -422,7 +422,7 @@ function onDropHitLocation(data: DropDataHitLocation, context: DropDataContext):
 	const path = context.element?.dataset.path?.replace(/^array\./, "")
 	if (!path) return console.error("Drop target path is invalid")
 
-	const table = fu.getProperty(context.app, path) as HitLocationObj[]
+	const table = fu.getProperty(context.app, path) as HitLocation[]
 	const hitLocation = table.splice(data.index, 1)[0]
 	if (!hitLocation) return console.error(`Hit location at index ${data.index} does not exist.`)
 	table.splice(context.targetIndex, 0, hitLocation)

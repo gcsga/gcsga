@@ -1,5 +1,4 @@
 import { LocalizeGURPS } from "@util/localize.ts"
-import { LeveledAmountObj } from "./data.ts"
 
 export class LeveledAmount {
 	level = 0
@@ -36,8 +35,7 @@ export class LeveledAmount {
 			})
 		return amt
 	}
-
-	static fromObject(data: LeveledAmountObj): LeveledAmount {
-		return new LeveledAmount({ amount: data.amount, per_level: data.per_level })
-	}
+	// static fromObject(data: SourceFromSchema<): LeveledAmount {
+	// 	return new LeveledAmount({ amount: data.amount, per_level: data.per_level })
+	// }
 }

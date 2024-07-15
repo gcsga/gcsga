@@ -1,33 +1,43 @@
 import { StringCompareType, StringCriteria } from "@util/string-criteria.ts"
 import { BasePrereq } from "./base.ts"
-import { NumericCompareType, NumericCriteria } from "@util/numeric-criteria.ts"
-import { prereq } from "@util/enum/prereq.ts"
-import { TraitPrereqObj } from "./data.ts"
+import { NumericCriteria } from "@util/numeric-criteria.ts"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
 import { ActorGURPS } from "@actor"
 import { ActorType, ItemType } from "@module/data/constants.ts"
+import { TraitPrereqSchema } from "./data.ts"
 
-export class TraitPrereq extends BasePrereq<prereq.Type.Trait> {
-	name: StringCriteria
+class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
+	// name: StringCriteria
+	//
+	// level: NumericCriteria
+	//
+	// notes: StringCriteria
 
-	level: NumericCriteria
+	// constructor(data: ) {
+	// 	super(data)
+	// this.name = new StringCriteria({ compare: StringCompareType.IsString })
+	// this.notes = new StringCriteria({ compare: StringCompareType.AnyString })
+	// this.level = new NumericCriteria({ compare: NumericCompareType.AtLeastNumber })
+	// }
 
-	notes: StringCriteria
+	// static fromObject(data: TraitPrereqObj): TraitPrereq {
+	// 	const prereq = new TraitPrereq()
+	// 	prereq.has = data.has
+	// 	if (data.name) prereq.name = new StringCriteria(data.name)
+	// 	if (data.level) prereq.level = new NumericCriteria(data.level)
+	// 	if (data.notes) prereq.notes = new StringCriteria(data.notes)
+	// 	return prereq
+	// }
 
-	constructor() {
-		super(prereq.Type.Trait)
-		this.name = new StringCriteria({ compare: StringCompareType.IsString })
-		this.notes = new StringCriteria({ compare: StringCompareType.AnyString })
-		this.level = new NumericCriteria({ compare: NumericCompareType.AtLeastNumber })
-	}
+	static override defineSchema(): TraitPrereqSchema {
+		const fields = foundry.data.fields
 
-	static fromObject(data: TraitPrereqObj): TraitPrereq {
-		const prereq = new TraitPrereq()
-		prereq.has = data.has
-		if (data.name) prereq.name = new StringCriteria(data.name)
-		if (data.level) prereq.level = new NumericCriteria(data.level)
-		if (data.notes) prereq.notes = new StringCriteria(data.notes)
-		return prereq
+		return {
+			...super.defineSchema(),
+			name: new fields.SchemaField(StringCriteria.defineSchema()),
+			notes: new fields.SchemaField(StringCriteria.defineSchema()),
+			level: new fields.SchemaField(NumericCriteria.defineSchema())
+		}
 	}
 
 	satisfied(actor: ActorGURPS, exclude: unknown, tooltip: TooltipGURPS): boolean {
@@ -67,13 +77,22 @@ export class TraitPrereq extends BasePrereq<prereq.Type.Trait> {
 		return satisfied
 	}
 
-	override toObject(): TraitPrereqObj {
-		return {
-			...super.toObject(),
-			has: this.has,
-			name: this.name.toObject(),
-			notes: this.notes.toObject(),
-			level: this.level.toObject(),
-		}
-	}
+	// override toObject(): TraitPrereqObj {
+	// 	return {
+	// 		...super.toObject(),
+	// 		has: this.has,
+	// 		name: this.name.toObject(),
+	// 		notes: this.notes.toObject(),
+	// 		level: this.level.toObject(),
+	// 	}
+	// }
 }
+
+interface TraitPrereq extends BasePrereq<TraitPrereqSchema>, Omit<ModelPropsFromSchema<TraitPrereqSchema>, "name" | "level" | "notes"> {
+	name: StringCriteria
+	notes: StringCriteria
+	level: StringCriteria
+}
+
+
+export { TraitPrereq }

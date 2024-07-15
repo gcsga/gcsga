@@ -206,12 +206,8 @@ type CharacterSystemSchema = ActorSystemSchema & {
 	attributes: fields.ArrayField<fields.SchemaField<AttributeSchema>>
 	resource_trackers: fields.ArrayField<fields.SchemaField<ResourceTrackerSchema>>
 	move_types: fields.ArrayField<fields.SchemaField<MoveTypeSchema>>
-	move: fields.SchemaField<{
-		maneuver: fields.ObjectField<CharacterManeuver>
-		posture: fields.StringField
-		type: fields.StringField
-	}>
-	total_points: fields.NumberField
+	move: fields.SchemaField<CharacterMoveSchema>
+	total_points: fields.NumberField<number, number, true, false>
 	points_record: fields.ArrayField<fields.ObjectField<PointsRecord>>
 }
 
@@ -236,11 +232,19 @@ type CharacterProfileSchema = {
 	portrait: fields.StringField
 }
 
+type CharacterMoveSchema = {
+	maneuver: fields.ObjectField<CharacterManeuver>
+	posture: fields.StringField
+	type: fields.StringField
+}
+
 type CharacterProfile = ModelPropsFromSchema<CharacterProfileSchema>
+
+type CharacterMove = ModelPropsFromSchema<CharacterMoveSchema>
 
 type CharacterSystemSource = SourceFromSchema<CharacterSystemSchema>
 
 type CharacterSource = BaseActorSourceGURPS<ActorType.Character, CharacterSystemSource>
 
-export type { CharacterFlags, CharacterSource, CharacterSystemData, CharacterSystemSource, CharacterProfile }
+export type { CharacterFlags, CharacterSource, CharacterSystemData, CharacterSystemSource, CharacterProfile, CharacterMove }
 

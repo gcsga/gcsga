@@ -6,9 +6,9 @@ import { prepareFormData } from "@util/misc.ts"
 import { defaultSettings } from "./defaults.ts"
 import { DnD } from "@util"
 import { DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
-import { AttributeDefObj } from "@system"
 import { DropDataContext } from "@module/util/settings-helpers.ts"
 import { SettingsHelpers } from "@module/util/index.ts"
+import { AttributeDefSchema } from "@system/attribute/data.ts"
 
 type ConfigGURPSListName = (typeof AttributeSettings.SETTINGS)[number]
 
@@ -25,7 +25,7 @@ export class AttributeSettings extends SettingsMenuGURPS {
 				hint: "attributes hint temp",
 				default: defaultSettings[SYSTEM_NAME][`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`],
 				type: Object,
-				onChange: () => {},
+				onChange: () => { },
 			},
 			effects: {
 				prefix: SETTINGS.DEFAULT_ATTRIBUTES,
@@ -33,7 +33,7 @@ export class AttributeSettings extends SettingsMenuGURPS {
 				hint: "effects hint temp",
 				default: defaultSettings[SYSTEM_NAME][`${SETTINGS.DEFAULT_ATTRIBUTES}.effects`],
 				type: Object,
-				onChange: () => {},
+				onChange: () => { },
 			},
 		}
 	}
@@ -58,7 +58,7 @@ export class AttributeSettings extends SettingsMenuGURPS {
 		}
 	}
 
-	get attributes(): AttributeDefObj[] {
+	get attributes(): ModelPropsFromSchema<AttributeDefSchema>[] {
 		return game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
 	}
 
@@ -101,7 +101,7 @@ export class AttributeSettings extends SettingsMenuGURPS {
 		}
 	}
 
-	protected _onDataImport(_event: MouseEvent): void {}
+	protected _onDataImport(_event: MouseEvent): void { }
 
 	protected _onDataExport(_event: MouseEvent): void {
 		const extension = "attr"

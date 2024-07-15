@@ -150,8 +150,8 @@ class CompendiumBrowser extends Application {
 		])
 
 		for (const pack of game.packs) {
-			const tabNames = R.uniq(
-				R.uniq(pack.index.map(entry => entry.type))
+			const tabNames = R.unique(
+				R.unique(pack.index.map(entry => entry.type))
 					.filter((t): t is BrowsableType => setHasElement(browsableTypes, t))
 					.flatMap(t => typeToTab.get(t) ?? []),
 			)

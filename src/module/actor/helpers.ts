@@ -6,7 +6,7 @@ import {
 	TargetPool,
 	TargetTrait,
 } from "@module/apps/damage-calculator/index.ts"
-import { AttributeGURPS, AttributeObj, BodyGURPS, WeaponBonus } from "@system"
+import { AttributeGURPS, AttributeSchema, BodyGURPS, WeaponBonus } from "@system"
 import { Int, TooltipGURPS, attribute } from "@util"
 import type { ActorGURPS } from "./base/document.ts"
 import { MeleeWeaponGURPS, RangedWeaponGURPS } from "@item"
@@ -47,7 +47,7 @@ class DamageTargetActor<TActor extends ActorGURPS> implements DamageTarget {
 	}
 
 	incrementDamage(delta: number, damagePoolId: string): void {
-		const attributes: AttributeObj[] = []
+		const attributes: ModelPropsFromSchema<AttributeSchema>[] = []
 		if (this.actor.isOfType(ActorType.Character)) {
 			attributes.push(...this.actor.system.attributes)
 		}
@@ -70,7 +70,7 @@ class DamageTargetActor<TActor extends ActorGURPS> implements DamageTarget {
 		return this.getSyntheticAttribute("hp")!.calc
 	}
 
-	get hitLocationTable(): BodyGURPS<TActor> {
+	get hitLocationTable(): BodyGURPS {
 		if (this.actor.isOfType(ActorType.Character)) {
 			return this.actor.hitLocationTable
 		}
@@ -94,8 +94,8 @@ class DamageTargetActor<TActor extends ActorGURPS> implements DamageTarget {
 	 */
 	private getSyntheticAttribute(name: string):
 		| (AttributeGURPS & {
-				calc: { value: number; current: number }
-		  })
+			calc: { value: number; current: number }
+		})
 		| undefined {
 		if (!this.actor.isOfType(ActorType.Character)) return undefined
 		const attr = this.actor.attributes.get(name)

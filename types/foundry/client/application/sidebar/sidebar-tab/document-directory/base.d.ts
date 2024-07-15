@@ -1,4 +1,4 @@
-export {}
+export { }
 
 declare global {
 	/** A shared pattern for the sidebar directory which Actors, Items, and Scenes all use */
@@ -22,6 +22,7 @@ declare global {
 
 		/** The WorldCollection instance which this Sidebar Directory displays. */
 		static get collection(): WorldCollection<WorldDocument>
+
 
 		/** Initialize the content of the directory by categorizing folders and documents into a hierarchical tree structure. */
 		initialize(): void
@@ -61,6 +62,8 @@ declare global {
 		protected override _renderInner(data: object): Promise<JQuery>
 
 		protected override _onSearchFilter(event: KeyboardEvent, query: string, rgx: RegExp, html: HTMLElement): void
+
+		protected _onClickEntryName(event: PointerEvent): void
 
 		/** Highlight folders as drop targets when a drag event enters or exits their area */
 		protected _onDragHighlight(event: DragEvent): void

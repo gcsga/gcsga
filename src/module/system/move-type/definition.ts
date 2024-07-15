@@ -1,6 +1,6 @@
 import { evaluateToNumber } from "@module/util/index.ts"
 import { MoveTypeOverride } from "./override.ts"
-import { AbstractAttributeDef, MoveTypeDefSchema, MoveTypeSchema } from "@system"
+import { AbstractAttributeDef, MoveType, MoveTypeDefSchema } from "@system"
 import { CharacterGURPS } from "@actor"
 
 class MoveTypeDef extends AbstractAttributeDef<CharacterGURPS, MoveTypeDefSchema> {
@@ -24,6 +24,10 @@ class MoveTypeDef extends AbstractAttributeDef<CharacterGURPS, MoveTypeDefSchema
 
 	baseValue(resolver: CharacterGURPS): number {
 		return evaluateToNumber(this.base, resolver)
+	}
+
+	override	generateNewAttribute(): MoveType {
+		return new MoveType({ id: this.id }, 0)
 	}
 
 	// override generateNewAttribute(): SourceFromSchema<MoveTypeSchema> {

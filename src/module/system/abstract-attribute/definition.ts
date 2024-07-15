@@ -1,10 +1,9 @@
 import { getNewAttributeId, sanitizeId } from "@util"
-import { AbstractAttributeDefSchema, AbstractAttributeSchema } from "./data.ts"
+import { AbstractAttributeDefSchema } from "./data.ts"
 import { ActorGURPS } from "@actor"
 import { LaxSchemaField } from "@system/schema-data-fields.ts"
 import { RESERVED_IDS } from "@system/attribute/data.ts"
-import { AttributeDef } from "@system/attribute/definition.ts"
-import { AttributeDefClasses, MoveTypeDef, ResourceTrackerDef } from "@system"
+import { AbstractAttribute } from "@system"
 
 abstract class AbstractAttributeDef<
 	TActor extends ActorGURPS = ActorGURPS,
@@ -12,11 +11,11 @@ abstract class AbstractAttributeDef<
 > extends foundry.abstract.DataModel<TActor, TSchema> {
 
 	declare parent: TActor
-
 	protected declare static _schema: LaxSchemaField<AbstractAttributeDefSchema> | undefined
 
 	private _id: string
-	// base: string
+	attributeClass = AbstractAttribute
+
 
 	constructor(data: DeepPartial<SourceFromSchema<TSchema>>) {
 		super(data)
@@ -58,14 +57,24 @@ abstract class AbstractAttributeDef<
 
 	abstract baseValue(resolver: TActor): number
 
-	static init(reservedIds: string[], type: "attribute",): AttributeDef
-	static init(reservedIds: string[], type: "resource_tracker",): ResourceTrackerDef
-	static init(reservedIds: string[], type: "move_type",): MoveTypeDef
-	static init(reservedIds: string[], type: keyof typeof AttributeDefClasses,): AbstractAttributeDef {
+	abstract generateNewAttribute(): AbstractAttribute
+
+	static createInstance<T extends AbstractAttributeDef>
+		(this: new (source: DeepPartial<SourceFromSchema<AbstractAttributeDefSchema>>) => T, reservedIds: string[]): T {
 		const id = getNewAttributeId(reservedIds.map(e => { return { id: e } }))
-		const AttributeDefClass = AttributeDefClasses[type]
-		return new AttributeDefClass({ id })
+		return new this({ id })
 	}
+
+
+
+	// static init(reservedIds: string[], type: "attribute",): AttributeDef
+	// static init(reservedIds: string[], type: "resource_tracker",): ResourceTrackerDef
+	// static init(reservedIds: string[], type: "move_type",): MoveTypeDef
+	// static init(reservedIds: string[], type: keyof typeof AttributeDefClasses,): AbstractAttributeDef {
+	// 	const id = getNewAttributeId(reservedIds.map(e => { return { id: e } }))
+	// 	const AttributeDefClass = AttributeDefClasses[type]
+	// 	return new AttributeDefClass({ id })
+	// }
 
 	// generateNewAttribute(): SourceFromSchema<AbstractAttributeSchema> {
 	// 	return {
@@ -89,7 +98,8 @@ interface AbstractAttributeDef<
 	TActor extends ActorGURPS,
 	TSchema extends AbstractAttributeDefSchema
 > extends foundry.abstract.DataModel<TActor, TSchema>,
-	ModelPropsFromSchema<AbstractAttributeDefSchema> { }
+	ModelPropsFromSchema<AbstractAttributeDefSchema> {
+}
 
 
 export { AbstractAttributeDef }

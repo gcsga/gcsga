@@ -1,10 +1,9 @@
 import { CharacterGURPS } from "@actor"
 import { ActorSheetDataGURPS, ActorSheetGURPS } from "@actor/base/sheet.ts"
 import { ItemGURPS } from "@item"
-import { AbstractAttribute, PoolThreshold } from "@system"
+import { AbstractAttribute, PoolThreshold, SheetSettings } from "@system"
 import { ActorFlags, ItemFlags, ItemType, ManeuverID, SYSTEM_NAME } from "@module/data/constants.ts"
 import { LocalizeGURPS, Weight, htmlQuery, htmlQueryAll } from "@util"
-import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
 import { CharacterEncumbrance } from "./encumbrance.ts"
 import { CharacterConfigSheet } from "./config.ts"
 import { SheetItem, SheetItemCollection } from "@item/helpers.ts"
@@ -112,7 +111,7 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS
 			itemCollections: this._prepareItemCollections(),
 			config: CONFIG.GURPS,
 			carriedValue: actor.wealthCarried(),
-			carriedWeight: Weight.format(actor.weightCarried(false), sheetSettingsFor(actor).default_weight_units),
+			carriedWeight: Weight.format(actor.weightCarried(false), SheetSettings.for(actor).default_weight_units),
 			uncarriedValue: actor.wealthNotCarried(),
 			encumbrance: actor.encumbrance,
 			editMode: this._mode === SheetModes.EDIT,

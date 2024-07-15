@@ -1,5 +1,6 @@
 class DragDropGURPS extends DragDrop {
-	static override createDragImage(img: { src: ImageFilePath }, width: number, height: number): HTMLDivElement {
+
+	static override createDragImage(img: ImageFilePath, width: number, height: number): HTMLDivElement {
 		let div = document.getElementById("drag-preview") as HTMLDivElement
 
 		// Create the drag preview div
@@ -14,7 +15,7 @@ class DragDropGURPS extends DragDrop {
 
 		// Add the preview image
 		const i = div.children[0] as HTMLImageElement
-		i.src = img.src
+		i.src = img
 		i.width = width
 		i.height = height
 		return div

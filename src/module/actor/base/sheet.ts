@@ -114,7 +114,7 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 		if (data.type === RollType.Attribute) {
 			const id = button.dataset.id ?? ""
 			if (id === gid.Dodge) {
-				data.attribute = this.actor.dodgeAttribute as AttributeGURPS<CharacterGURPS>
+				data.attribute = this.actor.dodgeAttribute as AttributeGURPS
 			} else data.attribute = this.actor.attributes.get(id)
 		}
 		if (
@@ -460,9 +460,9 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 	}
 }
 
-interface ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TActor, ItemGURPS> {}
+interface ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TActor, ItemGURPS> { }
 
-interface ActorSheetDataGURPS<TActor extends ActorGURPS> extends ActorSheetData<TActor> {}
+interface ActorSheetDataGURPS<TActor extends ActorGURPS> extends ActorSheetData<TActor> { }
 
 export { ActorSheetGURPS }
 export type { ActorSheetDataGURPS }

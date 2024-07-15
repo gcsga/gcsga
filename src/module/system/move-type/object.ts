@@ -3,12 +3,11 @@ import { AbstractAttribute, MoveBonusType, MoveTypeSchema } from "@system"
 import { CharacterGURPS } from "@actor"
 
 class MoveType extends AbstractAttribute<CharacterGURPS, MoveTypeSchema> {
-	adj = 0
+	// adj = 0
 	order: number
 
-	constructor(data: SourceFromSchema<MoveTypeSchema>, order: number) {
+	constructor(data: DeepPartial<SourceFromSchema<MoveTypeSchema>>, order: number) {
 		super(data)
-		// this.adj = data.adj
 		this.order = order
 	}
 

@@ -1,4 +1,4 @@
-import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
+import { SheetSettings } from "@system"
 import type { CharacterGURPS } from "./document.ts"
 import { Int, Weight, progression } from "@util"
 
@@ -30,7 +30,7 @@ class CharacterLifts<TActor extends CharacterGURPS> {
 		this.carryOnBack = Int.from(this.basicLift * 15)
 		this.shiftSlightly = Int.from(this.basicLift * 50)
 
-		const units = sheetSettingsFor(actor).default_weight_units
+		const units = SheetSettings.for(actor).default_weight_units
 		this.map = {
 			basicLift: Weight.format(this.basicLift, units),
 			oneHandedLift: Weight.format(this.oneHandedLift, units),
@@ -45,7 +45,7 @@ class CharacterLifts<TActor extends CharacterGURPS> {
 	private getBasicLift(actor: TActor): number {
 		const ST = actor.liftingST
 		let basicLift = ST ** 2 / 5
-		if (sheetSettingsFor(actor).damage_progression === progression.Option.KnowingYourOwnStrength)
+		if (SheetSettings.for(actor).damage_progression === progression.Option.KnowingYourOwnStrength)
 			basicLift = Int.from(2 * 10 ** (ST / 10), 1)
 		if (basicLift === Number.MAX_SAFE_INTEGER || basicLift === Number.MIN_SAFE_INTEGER) return 0
 		if (basicLift >= 10) return Math.round(basicLift)

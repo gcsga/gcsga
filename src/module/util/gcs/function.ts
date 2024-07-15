@@ -3,7 +3,6 @@ import { Evaluator } from "./eval.ts"
 import { ActorType, ItemType } from "@data"
 import { ActorGURPS } from "@actor"
 import { Length, equalFold } from "@util"
-import { VariableResolver } from "../resolvers.ts"
 
 export type eFunction = (e: Evaluator, a: string) => unknown
 
@@ -110,7 +109,7 @@ function evalFloor(e: Evaluator, args: string): number {
  */
 function evalIf(e: Evaluator, args: string): boolean {
 	let arg: string
-	;[arg, args] = nextArg(args)
+		;[arg, args] = nextArg(args)
 	const evaluated = e.evaluateNew(arg)
 	const value = evalFrom(evaluated)
 	if (value === 0) {
@@ -129,7 +128,7 @@ function evalMaximum(e: Evaluator, args: string): number {
 	let max = Number.MIN_SAFE_INTEGER
 	while (args) {
 		let arg: string
-		;[arg, args] = nextArg(args)
+			;[arg, args] = nextArg(args)
 		const value = evalToNumber(e, arg)
 		max = Math.max(max, value)
 	}
@@ -145,7 +144,7 @@ function evalMinimum(e: Evaluator, args: string): number {
 	let min: number = Math.min()
 	while (args) {
 		let arg: string
-		;[arg, args] = nextArg(args)
+			;[arg, args] = nextArg(args)
 		const value = evalToNumber(e, arg)
 		min = Math.min(min, value)
 	}
@@ -288,11 +287,11 @@ function evalSkillLevel(e: Evaluator, arg: string): number {
 	if (!name) return 0
 	name = name.trim()
 	let specialization: string
-	;[specialization, remaining] = nextArg(remaining)
+		;[specialization, remaining] = nextArg(remaining)
 	specialization = specialization.trim()
 	if (!specialization || !evalToString(e, specialization)) return 0
 	specialization = specialization.replaceAll('"', "")
-	;[arg] = nextArg(remaining)
+		;[arg] = nextArg(remaining)
 	arg = arg.trim()
 	let relative = false
 	if (arg) relative = evalToBool(e, arg)
@@ -346,7 +345,7 @@ export function evalEncumbrance(e: Evaluator, a: string): number {
 	let [arg, remaining] = nextArg(a)
 	const forSkills = evalToBool(e, arg)
 	let returnFactor = false
-	;[arg] = nextArg(remaining)
+		;[arg] = nextArg(remaining)
 	if (arg.trim()) {
 		returnFactor = evalToBool(e, remaining)
 	}
@@ -360,7 +359,7 @@ export function evalEncumbrance(e: Evaluator, a: string): number {
 }
 
 export function evalHasTrait(e: Evaluator, a: string): boolean {
-	const entity: VariableResolver | undefined = e.resolver
+	const entity: ActorGURPS | undefined = e.resolver
 	if (!entity) return false
 	const arg = a.replaceAll(/^['"]|[']$/g, "")
 	if (!(entity instanceof ActorGURPS)) return false
@@ -369,7 +368,7 @@ export function evalHasTrait(e: Evaluator, a: string): boolean {
 }
 
 export function evalTraitLevel(e: Evaluator, a: string): number {
-	const entity: VariableResolver | undefined = e.resolver
+	const entity: ActorGURPS | undefined = e.resolver
 	if (!entity) return -1
 	const arg = a.replaceAll(/^['"]|[']$/g, "")
 	let levels = -1
@@ -386,11 +385,11 @@ export function evalTraitLevel(e: Evaluator, a: string): number {
 
 export function evalSSRT(e: Evaluator, a: string): number {
 	let arg: string
-	;[arg, a] = nextArg(a)
+		;[arg, a] = nextArg(a)
 	const n = evalToString(e, arg)
-	;[arg, a] = nextArg(a)
+		;[arg, a] = nextArg(a)
 	const units = evalToString(e, arg)
-	;[arg, a] = nextArg(a)
+		;[arg, a] = nextArg(a)
 	const wantSize = evalToBool(e, arg)
 	const length = Length.fromString(`${n} ${units}`)
 	let result = yardsToValue(length, wantSize)
@@ -513,7 +512,7 @@ function valueToYards(value: number): number {
 }
 
 export function evalRandomHeight(e: Evaluator, a: string): number {
-	const entity: VariableResolver | undefined = e.resolver
+	const entity: ActorGURPS | undefined = e.resolver
 	if (!entity) return -1
 	const stDecimal = evalToNumber(e, a)
 	let base: number
@@ -553,10 +552,10 @@ export function evalRandomHeight(e: Evaluator, a: string): number {
 }
 
 export function evalRandomWeight(e: Evaluator, a: string): number | null {
-	const entity: VariableResolver | undefined = e.resolver
+	const entity: ActorGURPS | undefined = e.resolver
 	if (!entity) return -1
 	let arg: string
-	;[arg, a] = nextArg(a)
+		;[arg, a] = nextArg(a)
 	const stDecimal = evalToNumber(e, arg)
 	let shift = 0
 	if (arg !== "") shift = evalToNumber(e, a)

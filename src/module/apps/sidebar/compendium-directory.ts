@@ -75,6 +75,7 @@ class CompendiumDirectoryGURPS extends CompendiumDirectory {
 			condition: $li => {
 				const compendium = game.packs.get($li.data("pack"), { strict: true })
 				const actorOrItem =
+					// @ts-expect-error probably fine?
 					compendium.documentClass === CONFIG.Actor.documentClass ||
 					compendium.documentClass === CONFIG.Item.documentClass
 				const isSystemCompendium = compendium.metadata.packageType === "system"

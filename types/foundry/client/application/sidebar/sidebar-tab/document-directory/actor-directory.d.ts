@@ -1,4 +1,4 @@
-export {}
+export { }
 
 declare global {
 	/** The sidebar directory which organizes and displays world-level Actor documents. */

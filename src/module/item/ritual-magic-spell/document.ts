@@ -1,53 +1,12 @@
 import { ActorGURPS } from "@actor"
 import { AbstractSkillGURPS } from "@item"
 import { RitualMagicSpellSource, RitualMagicSpellSystemData } from "./data.ts"
-import { LocalizeGURPS, TooltipGURPS, difficulty, study } from "@util"
-import { ActorType, ItemType, gid } from "@module/data/constants.ts"
+import { TooltipGURPS, difficulty, } from "@util"
+import { ActorType, gid } from "@module/data/constants.ts"
 import { SkillLevel } from "@item/skill/data.ts"
-import { PrereqList, SkillDefault, Study } from "@system"
-
-const fields = foundry.data.fields
+import { SkillDefault, } from "@system"
 
 class RitualMagicSpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends AbstractSkillGURPS<TParent> {
-	static override defineSchema(): foundry.documents.ItemSchema<string, object> {
-		return this.mergeSchema(super.defineSchema(), {
-			system: new fields.SchemaField({
-				type: new fields.StringField({ required: true, initial: ItemType.RitualMagicSpell }),
-				name: new fields.StringField({
-					required: true,
-					initial: LocalizeGURPS.translations.TYPES.Item[ItemType.RitualMagicSpell],
-				}),
-				reference: new fields.StringField(),
-				reference_highlight: new fields.StringField(),
-				notes: new fields.StringField(),
-				vtt_notes: new fields.StringField(),
-				tags: new fields.ArrayField(new foundry.data.fields.StringField()),
-				tech_level: new fields.StringField(),
-				tech_level_required: new fields.BooleanField(),
-				difficulty: new fields.StringField<difficulty.Level.Average | difficulty.Level.Hard>({
-					choices: [difficulty.Level.Average, difficulty.Level.Hard],
-					initial: difficulty.Level.Average,
-				}),
-				college: new fields.ArrayField(new foundry.data.fields.StringField()),
-				power_source: new fields.StringField({ initial: "Arcane" }),
-				spell_class: new fields.StringField({ initial: "Regular" }),
-				resist: new fields.StringField(),
-				casting_cost: new fields.StringField({ initial: "1" }),
-				maintenance_cost: new fields.StringField(),
-				casting_time: new fields.StringField({ initial: "1 sec" }),
-				duration: new fields.StringField({ initial: "Instant" }),
-				base_skill: new fields.StringField({ initial: "Ritual Magic" }),
-				prereq_count: new fields.NumberField({ integer: true, min: 0, initial: 0 }),
-				points: new fields.NumberField({ min: 0, integer: true, initial: 1 }),
-				prereqs: new fields.SchemaField(PrereqList.defineSchema()),
-				study: new fields.ArrayField(new fields.ObjectField<Study>()),
-				study_hours_needed: new fields.StringField<study.Level>({
-					choices: study.Levels,
-					initial: study.Level.Standard,
-				}),
-			}),
-		})
-	}
 
 	get college(): string[] {
 		return this.system.college

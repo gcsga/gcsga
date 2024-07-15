@@ -119,6 +119,15 @@ class HitLocation extends foundry.abstract.DataModel<ActorGURPS, HitLocationSche
 		}
 		return buffer.toString()
 	}
+
+	// Return true if the provided ID is a valid hit location ID
+	static validateId(id: string): boolean {
+		return id !== gid.All
+	}
+
+	static createInstance(): HitLocation {
+		return new HitLocation({})
+	}
 }
 
 interface HitLocation
@@ -161,6 +170,9 @@ class BodyGURPS extends foundry.abstract.DataModel<ActorGURPS, BodySchema> {
 		if (this.locations) for (const location of this.locations) start = location.updateRollRange(start)
 	}
 
+	static createInstance(): BodyGURPS {
+		return new BodyGURPS({})
+	}
 }
 
 interface BodyGURPS extends foundry.abstract.DataModel<ActorGURPS, BodySchema>, Omit<ModelPropsFromSchema<BodySchema>, "locations"> {

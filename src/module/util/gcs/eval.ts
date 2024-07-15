@@ -1,4 +1,4 @@
-import { VariableResolver } from "../index.ts"
+import { ActorGURPS } from "@actor"
 import { eFunction, evalFunctions } from "./function.ts"
 import { evalOperators } from "./operator/functions.ts"
 import {
@@ -14,7 +14,7 @@ import { ErrorGURPS } from "@util"
 // Evaluator is used to evaluate an expression. If you do not have any variables that will be resolved, you can leave
 // Resolver unset.
 class Evaluator {
-	resolver: VariableResolver
+	resolver: ActorGURPS
 
 	operators: Operator[] = evalOperators(true)
 
@@ -24,7 +24,7 @@ class Evaluator {
 
 	operatorStack: expressionOperator[] = []
 
-	constructor(data: { resolver: VariableResolver; operators?: Operator[]; functions?: Map<string, eFunction> }) {
+	constructor(data: { resolver: ActorGURPS; operators?: Operator[]; functions?: Map<string, eFunction> }) {
 		this.resolver = data.resolver
 		this.operators = data.operators ?? evalOperators(true)
 		this.functions = data.functions ?? evalFunctions()
@@ -123,7 +123,7 @@ class Evaluator {
 			;[index, op] = this.processFunction(expression, index)
 			index += op?.symbol.length || 0
 			let tmp: number
-			;[tmp, op] = this.nextOperator(expression, index, null)
+				;[tmp, op] = this.nextOperator(expression, index, null)
 			if (!op) return index
 			index = tmp
 		}
@@ -307,7 +307,7 @@ export { Evaluator }
  * @param expression
  * @param resolver
  */
-export function evaluateToNumber(expression: string, resolver: VariableResolver): number {
+export function evaluateToNumber(expression: string, resolver: ActorGURPS): number {
 	let result: Operand = 0
 	try {
 		result = new Evaluator({ resolver: resolver }).evaluate(expression)

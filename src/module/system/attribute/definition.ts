@@ -6,6 +6,7 @@ import { AbstractAttributeDef } from "@system/abstract-attribute/definition.ts"
 import { gid } from "@module/data/constants.ts"
 import { evaluateToNumber } from "@module/util/index.ts"
 import { ActorGURPS, CharacterGURPS } from "@actor"
+import { AttributeGURPS } from "./object.ts"
 
 
 class AttributeDef extends AbstractAttributeDef<CharacterGURPS, AttributeDefSchema> {
@@ -89,19 +90,9 @@ class AttributeDef extends AbstractAttributeDef<CharacterGURPS, AttributeDefSche
 		return Math.round(cost)
 	}
 
-	static override init(reservedIds: string[]): AttributeDef {
-		return super.init(reservedIds, "attribute")
+	generateNewAttribute(): AttributeGURPS {
+		return new AttributeGURPS({ id: this.id }, 0)
 	}
-
-
-	//
-	// override generateNewAttribute(): SourceFromSchema<AttributeSchema> {
-	// 	return new AttributeGURPS({}, 0).toObject()
-	// }
-	//
-	// static override newObject(_reservedIds: string[]): SourceFromSchema<AttributeDefSchema> {
-	// 	return new AttributeDef({}).toObject()
-	// }
 }
 
 interface AttributeDef extends AbstractAttributeDef<CharacterGURPS, AttributeDefSchema>, ModelPropsFromSchema<AttributeDefSchema> { }

@@ -3,10 +3,10 @@ import { SETTINGS, SYSTEM_NAME } from "@data"
 import { defaultSettings } from "./defaults.ts"
 import { htmlQueryAll } from "@util/dom.ts"
 import { DnD, prepareFormData } from "@util"
-import { BodyObj, HitLocationObj } from "@system"
 import { DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
 import { DropDataContext } from "@module/util/settings-helpers.ts"
 import { SettingsHelpers } from "@module/util/index.ts"
+import { BodySchema, HitLocationSchema } from "@system/hit-location/data.ts"
 
 type ConfigGURPSListName = (typeof HitLocationSettings.SETTINGS)[number]
 
@@ -36,12 +36,12 @@ export class HitLocationSettings extends SettingsMenuGURPS {
 				name: "bodtype locations ",
 				hint: "bodytype locations hint",
 				default: defaultSettings[SYSTEM_NAME][`${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`],
-				type: Array<HitLocationObj>,
+				type: Array<ModelPropsFromSchema<HitLocationSchema>>,
 			},
 		}
 	}
 
-	get bodyType(): BodyObj {
+	get bodyType(): ModelPropsFromSchema<BodySchema> {
 		return {
 			name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
 			roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
@@ -107,9 +107,9 @@ export class HitLocationSettings extends SettingsMenuGURPS {
 		})
 	}
 
-	protected _onDataImport(_event: MouseEvent): void {}
+	protected _onDataImport(_event: MouseEvent): void { }
 
-	protected _onDataExport(_event: MouseEvent): void {}
+	protected _onDataExport(_event: MouseEvent): void { }
 
 	protected override _onDrop(event: DragEvent): void {
 		const dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)

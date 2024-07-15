@@ -4,7 +4,7 @@ import { DnD, getNewAttributeId, prepareFormData } from "@util"
 import { defaultSettings } from "./defaults.ts"
 import { SETTINGS, SYSTEM_NAME } from "@data"
 import { DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
-import { MoveTypeDefObj, MoveTypeOverrideConditionType } from "@system"
+import { MoveTypeDefSchema, MoveTypeOverrideConditionType } from "@system"
 import { DropDataContext } from "@module/util/settings-helpers.ts"
 import { SettingsHelpers } from "@module/util/index.ts"
 
@@ -35,7 +35,7 @@ export class MoveSettings extends SettingsMenuGURPS {
 		}
 	}
 
-	get moveTypes(): MoveTypeDefObj[] {
+	get moveTypes(): ModelPropsFromSchema<MoveTypeDefSchema>[] {
 		return game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
 	}
 
@@ -78,9 +78,9 @@ export class MoveSettings extends SettingsMenuGURPS {
 		}
 	}
 
-	protected _onDataImport(_event: MouseEvent): void {}
+	protected _onDataImport(_event: MouseEvent): void { }
 
-	protected _onDataExport(_event: MouseEvent): void {}
+	protected _onDataExport(_event: MouseEvent): void { }
 
 	protected _onAddItem(event: MouseEvent): void {
 		const move_types = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)

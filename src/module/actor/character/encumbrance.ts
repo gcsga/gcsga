@@ -22,7 +22,7 @@ class CharacterEncumbrance<TOwner extends CharacterGURPS = CharacterGURPS> {
 		this.overencumbered = this._getOverencumbered(this.owner.weightCarried(false))
 	}
 
-	public get dodgeAttribute(): DeepPartial<AttributeGURPS<TOwner>> {
+	public get dodgeAttribute(): DeepPartial<AttributeGURPS> {
 		return {
 			id: gid.Dodge,
 			definition: {

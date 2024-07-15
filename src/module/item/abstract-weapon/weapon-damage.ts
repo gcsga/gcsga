@@ -9,7 +9,7 @@ import { CharacterGURPS } from "@actor"
 import { ItemType } from "@data"
 import { AbstractWeaponGURPS } from "./document.ts"
 import { TooltipGURPS } from "@util"
-import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
+import { SheetSettings } from "@system"
 
 export type WeaponDamageSchema = {
 	type: fields.StringField<string, string, true, false, true>
@@ -71,7 +71,7 @@ export class WeaponDamage {
 	toString(): string {
 		let buffer = ""
 		if (this.st !== stdmg.Option.None) buffer += LocalizeGURPS.translations.gurps.weapon.damage_display[this.st]
-		const convertMods = sheetSettingsFor(this.owner?.actor ?? null).use_modifying_dice_plus_adds
+		const convertMods = SheetSettings.for(this.owner?.actor ?? null).use_modifying_dice_plus_adds
 		if (this.base) {
 			const base = this.base.stringExtra(convertMods)
 			if (base !== "0") {

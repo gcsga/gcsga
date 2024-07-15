@@ -4,9 +4,9 @@ import { htmlQuery, htmlQueryAll } from "@util/dom.ts"
 import { DnD, getNewAttributeId, prepareFormData } from "@util"
 import { defaultSettings } from "./defaults.ts"
 import { DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
-import { ResourceTrackerDefObj } from "@system"
 import { DropDataContext } from "@module/util/settings-helpers.ts"
 import { SettingsHelpers } from "@module/util/index.ts"
+import { ResourceTrackerDefSchema } from "@system/resource-tracker/data.ts"
 
 enum ListType {
 	ResourceTracker = "resource_trackers",
@@ -35,7 +35,7 @@ export class ResourceTrackerSettings extends SettingsMenuGURPS {
 		}
 	}
 
-	get resourceTrackers(): ResourceTrackerDefObj[] {
+	get resourceTrackers(): ModelPropsFromSchema<ResourceTrackerDefSchema>[] {
 		return game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`)
 	}
 
@@ -78,9 +78,9 @@ export class ResourceTrackerSettings extends SettingsMenuGURPS {
 		}
 	}
 
-	protected _onDataImport(_event: MouseEvent): void {}
+	protected _onDataImport(_event: MouseEvent): void { }
 
-	protected _onDataExport(_event: MouseEvent): void {}
+	protected _onDataExport(_event: MouseEvent): void { }
 
 	protected _onAddItem(event: MouseEvent): void {
 		const trackers = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`)

@@ -34,8 +34,6 @@ class PoolThreshold extends foundry.abstract.DataModel<CharacterGURPS, PoolThres
 	}
 }
 
-interface PoolThreshold extends foundry.abstract.DataModel<CharacterGURPS, PoolThresholdSchema>, ModelPropsFromSchema<PoolThresholdSchema> {
-
-}
+interface PoolThreshold extends foundry.abstract.DataModel<CharacterGURPS, PoolThresholdSchema>, ModelPropsFromSchema<PoolThresholdSchema> { }
 
 export { PoolThreshold }

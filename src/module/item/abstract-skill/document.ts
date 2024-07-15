@@ -36,6 +36,7 @@ abstract class AbstractSkillGURPS<
 	}
 
 	get techLevel(): string {
+		if (this.isOfType(ItemType.Technique)) return ""
 		return this.system.tech_level
 	}
 
@@ -126,7 +127,7 @@ abstract class AbstractSkillGURPS<
 		}
 	}
 
-	incrementSkillLevel(options?: DocumentModificationContext<TParent>): void {
+	incrementSkillLevel(options?: Partial<DatabaseUpdateOperation<TParent>>): void {
 		const basePoints = this.points + 1
 		let maxPoints = basePoints
 		if (this.difficulty === difficulty.Level.Wildcard) maxPoints += 12
@@ -141,7 +142,7 @@ abstract class AbstractSkillGURPS<
 		}
 	}
 
-	decrementSkillLevel(options?: DocumentModificationContext<TParent>): void {
+	decrementSkillLevel(options?: Partial<DatabaseUpdateOperation<TParent>>): void {
 		if (this.points <= 0) return
 		const basePoints = this.points
 		let minPoints = basePoints

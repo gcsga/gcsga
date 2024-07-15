@@ -2,8 +2,8 @@ import { ActorGURPS } from "@actor"
 import { ItemGURPS } from "@item"
 import { EquipmentModifierSource, EquipmentModifierSystemData } from "./data.ts"
 import { LocalizeGURPS, StringBuilder, Weight, WeightUnits, emcost, emweight } from "@util"
-import { sheetSettingsFor } from "@module/data/sheet-settings.ts"
 import { ItemType } from "@module/data/constants.ts"
+import { SheetSettings } from "@system"
 
 
 class EquipmentModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
@@ -33,7 +33,7 @@ class EquipmentModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | nu
 	}
 
 	get weightUnits(): WeightUnits {
-		return sheetSettingsFor(this.actor).default_weight_units
+		return SheetSettings.for(this.actor).default_weight_units
 	}
 
 	get costDescription(): string {
@@ -59,7 +59,7 @@ class EquipmentModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | nu
 		if (this.localNotes !== "") {
 			buffer.push(` (${this.localNotes})`)
 		}
-		if (sheetSettingsFor(this.actor).show_equipment_modifier_adj) {
+		if (SheetSettings.for(this.actor).show_equipment_modifier_adj) {
 			const costDesc = this.costDescription
 			const weightDesc = this.weightDescription
 			if (costDesc !== "" || weightDesc !== "") {

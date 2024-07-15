@@ -55,6 +55,10 @@ class ResourceTrackerDef extends AbstractAttributeDef<CharacterGURPS, ResourceTr
 		return this.max
 	}
 
+	override	generateNewAttribute(): ResourceTracker {
+		return new ResourceTracker({ id: this.id }, 0)
+	}
+
 	// override generateNewAttribute(): SourceFromSchema<ResourceTrackerSchema> {
 	// 	return new ResourceTracker({}, 0).toObject()
 	// 	// return {

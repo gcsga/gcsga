@@ -1,19 +1,21 @@
-import { MoveTypeResolver, evaluateToNumber } from "@module/util/index.ts"
+import { evaluateToNumber } from "@module/util/index.ts"
 import { MoveTypeOverrideConditionType, MoveTypeOverrideSchema } from "./data.ts"
+import { ActorGURPS } from "@actor";
 
 
-export class MoveTypeOverride {
+class MoveTypeOverride extends foundry.abstract.DataModel<ActorGURPS, MoveTypeOverrideSchema> {
 	// Value to check the actor against
-	condition: { type: MoveTypeOverrideConditionType; qualifier: string }
+	// condition: { type: MoveTypeOverrideConditionType; qualifier: string }
 	// Overriddes the base value of the move type definition when condition is met
-	base: string
+	// base: string
 
-	constructor(data: SourceFromSchema<MoveTypeOverrideSchema>) {
-		this.condition = data.condition
-		this.base = data.base
+	constructor(data: DeepPartial<SourceFromSchema<MoveTypeOverrideSchema>>) {
+		super(data)
+		// this.condition = data.condition
+		// this.base = data.base
 	}
 
-	static defineSchema(): MoveTypeOverrideSchema {
+	static override defineSchema(): MoveTypeOverrideSchema {
 		const fields = foundry.data.fields
 		return {
 			condition: new fields.SchemaField({
@@ -26,7 +28,7 @@ export class MoveTypeOverride {
 		}
 	}
 
-	conditionMet(resolver: MoveTypeResolver): boolean {
+	conditionMet(resolver: ActorGURPS): boolean {
 		switch (this.condition.type) {
 			case MoveTypeOverrideConditionType.Skill:
 				return resolver.itemCollections.skills.some(e => e.name === this.condition.qualifier)
@@ -37,7 +39,7 @@ export class MoveTypeOverride {
 		}
 	}
 
-	baseValue(resolver: MoveTypeResolver): number {
+	baseValue(resolver: ActorGURPS): number {
 		return evaluateToNumber(this.base, resolver)
 	}
 
@@ -48,3 +50,7 @@ export class MoveTypeOverride {
 		}
 	}
 }
+
+interface MoveTypeOverride extends foundry.abstract.DataModel<ActorGURPS, MoveTypeOverrideSchema>, ModelPropsFromSchema<MoveTypeOverrideSchema> { }
+
+export { MoveTypeOverride }

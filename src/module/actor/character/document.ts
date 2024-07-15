@@ -17,10 +17,7 @@ import {
 	SkillDefault,
 	ThresholdOp,
 	WeaponBonus,
-	AttributeSchema,
-	ResourceTrackerSchema,
-	MoveTypeSchema,
-	AbstractAttributeSchema,
+	AbstractAttribute,
 } from "@system"
 import {
 	AbstractWeaponGURPS,
@@ -75,7 +72,7 @@ class CharacterGURPS<
 	declare posture: ConditionGURPS<this> | null
 
 	/** Hit location table */
-	declare hitLocationTable: BodyGURPS<this>
+	declare hitLocationTable: BodyGURPS
 	/** Encumbrance */
 	declare encumbrance: CharacterEncumbrance<this>
 	/** Various lift types */
@@ -258,25 +255,24 @@ class CharacterGURPS<
 		return this.swingFor(this.strikingST)
 	}
 
-	get dodgeAttribute(): DeepPartial<AttributeGURPS> {
-		return {
-			_id: gid.Dodge,
+	get dodgeAttribute(): AttributeGURPS {
+		return AttributeGURPS.fromSource({
 			id: gid.Dodge,
 			definition: {
-				combinedName: LocalizeGURPS.translations.gurps.attributes.dodge,
-			} as AttributeDef,
+				name: LocalizeGURPS.translations.gurps.attributes.dodge
+			},
 			effective: this.effectiveDodge,
-			current: this.currentDodge,
-		}
+			current: this.currentDodge
+		}) as AttributeGURPS
 	}
 
-	get sizeModAttribute(): DeepPartial<AttributeGURPS> {
-		return {
+	get sizeModAttribute(): AttributeGURPS {
+		return AttributeGURPS.fromSource({
 			definition: {
-				combinedName: LocalizeGURPS.translations.gurps.character.sm,
-			} as AttributeDef,
+				name: LocalizeGURPS.translations.gurps.character.sm,
+			},
 			effective: this.adjustedSizeModifier,
-		}
+		}) as AttributeGURPS
 	}
 
 	async getThrustWeapon(): Promise<MeleeWeaponGURPS> {
@@ -369,7 +365,7 @@ class CharacterGURPS<
 
 	override async update(
 		data: Record<string, unknown>,
-		operation?: Partial<DatabaseUpdateOperation<TParent>>,
+		operation?: Partial<CharacterUpdateOperation<TParent>>,
 	): Promise<this | undefined> {
 		return super.update(data, operation)
 	}
@@ -868,15 +864,15 @@ class CharacterGURPS<
 			if (pool) this.pools[e.id] = pool
 		})
 
-		this.hitLocationTable = BodyGURPS.fromObject(this.system.settings.body_type, this)
+		this.hitLocationTable = new BodyGURPS(this.system.settings.body_type, null)
 		this.hitLocationTable.updateRollRanges()
 	}
 
-	generateNewAttributes<TDef extends AttributeDef>(definitions: TDef[]): SourceFromSchema<AttributeSchema>[]
-	generateNewAttributes<TDef extends ResourceTrackerDef>(definitions: TDef[]): SourceFromSchema<ResourceTrackerSchema>[]
-	generateNewAttributes<TDef extends MoveTypeDef>(definitions: TDef[]): SourceFromSchema<MoveTypeSchema>[]
-	generateNewAttributes<TDef extends AbstractAttributeDef>(definitions: TDef[]): SourceFromSchema<AbstractAttributeSchema>[] {
-		const values: SourceFromSchema<AbstractAttributeSchema>[] = []
+	generateNewAttributes<TDef extends AttributeDef>(definitions: TDef[]): AttributeGURPS[]
+	generateNewAttributes<TDef extends ResourceTrackerDef>(definitions: TDef[]): ResourceTracker[]
+	generateNewAttributes<TDef extends MoveTypeDef>(definitions: TDef[]): MoveType[]
+	generateNewAttributes<TDef extends AbstractAttributeDef>(definitions: TDef[]): AbstractAttribute[] {
+		const values: AbstractAttribute[] = []
 		definitions.forEach(definition => {
 			values.push(definition.generateNewAttribute())
 		})
