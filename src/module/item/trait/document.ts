@@ -2,7 +2,7 @@ import { ActorGURPS } from "@actor"
 import { AbstractContainerGURPS } from "@item"
 import { TraitSource, TraitSystemData } from "./data.ts"
 import { LocalizeGURPS, StringBuilder, affects, display, selfctrl, study, tmcost } from "@util"
-import { resolveStudyHours, studyHoursProgressText } from "@system"
+import { SheetSettings, resolveStudyHours, studyHoursProgressText } from "@system"
 import { ItemType } from "@module/data/constants.ts"
 import { ItemInstances } from "@item/types.ts"
 import { modifyPoints } from "@item/helpers.ts"
@@ -16,7 +16,7 @@ class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 
 	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
 		const buffer = new StringBuilder()
-		const settings = sheetSettingsFor(this.actor)
+		const settings = SheetSettings.for(this.actor)
 		if (this.system.userdesc !== "" && optionChecker(settings.user_description_display)) {
 			buffer.push(this.system.userdesc)
 		}
@@ -110,7 +110,7 @@ class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 		const leveledPoints = pointsPerLevel * levels
 
 		if (baseEnh !== 0 || baseLim !== 0 || levelEnh !== 0 || levelLim !== 0) {
-			if (sheetSettingsFor(this.actor).use_multiplicative_modifiers) {
+			if (SheetSettings.for(this.actor).use_multiplicative_modifiers) {
 				if (baseEnh === levelEnh && baseLim === levelLim) {
 					modifiedBasePoints = modifyPoints(
 						modifyPoints(modifiedBasePoints + leveledPoints, baseEnh),

@@ -1,9 +1,9 @@
 import { feature } from "@util/enum/feature.ts"
-import { BonusOwner } from "./bonus-owner.ts"
+import { BaseFeature } from "./bonus-owner.ts"
 import { gid } from "@data"
 import { CostReductionSchema } from "./data.ts"
 
-export class CostReduction extends BonusOwner<feature.Type.CostReduction> {
+export class CostReduction extends BaseFeature<feature.Type.CostReduction> {
 	attribute: string
 
 	percentage: number | null

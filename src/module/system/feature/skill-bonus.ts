@@ -1,10 +1,10 @@
-import { BonusOwner } from "./bonus-owner.ts"
+import { BaseFeature } from "./bonus-owner.ts"
 import { StringCompareType, StringCriteria } from "@util/string-criteria.ts"
 import { LeveledAmount } from "./leveled-amount.ts"
 import { feature, skillsel } from "@util"
 import { SkillBonusSchema } from "./data.ts"
 
-export class SkillBonus extends BonusOwner<feature.Type.SkillBonus> {
+export class SkillBonus extends BaseFeature<feature.Type.SkillBonus> {
 	selection_type: skillsel.Type
 
 	name: StringCriteria

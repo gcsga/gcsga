@@ -15,20 +15,16 @@ export enum MoveBonusType {
 	Enhanced = "enhanced",
 }
 
-export type BaseFeatureSchema<TType extends feature.Type> = {
-	type: fields.StringField<TType>
-}
+// export type BaseFeatureSchema<TType extends feature.Type> = {
+// 	type: fields.StringField<TType>
+// }
 
-export type BonusOwnerSchema<TType extends feature.Type> = {
-	type: fields.StringField<TType, TType, true, false, true>
-	amount: fields.NumberField
-	per_level: fields.BooleanField
-	effective: fields.BooleanField
-	// effective: fields.NumberField
+export type BaseFeatureSchema = LeveledAmountSchema & {
+	type: fields.StringField<feature.Type, feature.Type, true, false, true>
 }
 
 export type LeveledAmountSchema = {
-	amount: fields.NumberField
+	amount: fields.NumberField<number, number, true, false>
 	per_level: fields.BooleanField
 	effective: fields.BooleanField
 }
@@ -41,58 +37,58 @@ export type WeaponLeveledAmountSchema = {
 }
 
 
-export type AttributeBonusSchema = LeveledAmountSchema & BaseFeatureSchema<feature.Type.AttributeBonus> & {
+export type AttributeBonusSchema = LeveledAmountSchema & BaseFeatureSchema & {
 	limitation: fields.StringField<stlimit.Option>
 	attribute: fields.StringField
 }
 
-export type ConditionalModifierBonusSchema = LeveledAmountSchema & BaseFeatureSchema<feature.Type.ConditionalModifierBonus> & {
+export type ConditionalModifierBonusSchema = LeveledAmountSchema & BaseFeatureSchema & {
 	situation: fields.StringField
 }
 
-export type ContainedWeightReductionSchema = BaseFeatureSchema<feature.Type.ContainedWeightReduction> & {
+export type ContainedWeightReductionSchema = BaseFeatureSchema & {
 	reduction: fields.StringField
 }
 
-export type CostReductionSchema = BaseFeatureSchema<feature.Type.CostReduction> & {
+export type CostReductionSchema = BaseFeatureSchema & {
 	attribute: fields.StringField
 	percentage: fields.NumberField
 }
 
-export type DRBonusSchema = LeveledAmountSchema & BaseFeatureSchema<feature.Type.DRBonus> & {
+export type DRBonusSchema = LeveledAmountSchema & BaseFeatureSchema & {
 	location: fields.StringField
 	specialization: fields.StringField
 }
 
-export type MoveBonusSchema = LeveledAmountSchema & BaseFeatureSchema<feature.Type.MoveBonus> & {
+export type MoveBonusSchema = LeveledAmountSchema & BaseFeatureSchema & {
 	move_type: fields.StringField
 	limitation: fields.StringField<MoveBonusType>
 }
 
-export type ReactionBonusSchema = LeveledAmountSchema & BaseFeatureSchema<feature.Type.ReactionBonus> & {
+export type ReactionBonusSchema = LeveledAmountSchema & BaseFeatureSchema & {
 	situation: fields.StringField
 }
 
-export type SkillBonusSchema = LeveledAmountSchema & BaseFeatureSchema<feature.Type.SkillBonus> & {
+export type SkillBonusSchema = LeveledAmountSchema & BaseFeatureSchema & {
 	selection_type: fields.StringField<skillsel.Type>
 	name: fields.SchemaField<StringCriteriaSchema>
 	specialization: fields.SchemaField<StringCriteriaSchema>
 	tags: fields.SchemaField<StringCriteriaSchema>
 }
 
-export type SkillPointBonusSchema = LeveledAmountSchema & BaseFeatureSchema<feature.Type.SkillPointBonus> & {
+export type SkillPointBonusSchema = LeveledAmountSchema & BaseFeatureSchema & {
 	name: fields.SchemaField<StringCriteriaSchema>
 	specialization: fields.SchemaField<StringCriteriaSchema>
 	tags: fields.SchemaField<StringCriteriaSchema>
 }
 
-export type SpellBonusSchema = LeveledAmountSchema & BaseFeatureSchema<feature.Type.SpellBonus> & {
+export type SpellBonusSchema = LeveledAmountSchema & BaseFeatureSchema & {
 	match: fields.StringField<spellmatch.Type>
 	name: fields.SchemaField<StringCriteriaSchema>
 	tags: fields.SchemaField<StringCriteriaSchema>
 }
 
-export type SpellPointBonusSchema = LeveledAmountSchema & BaseFeatureSchema<feature.Type.SpellPointBonus> & {
+export type SpellPointBonusSchema = LeveledAmountSchema & BaseFeatureSchema & {
 	match: fields.StringField<spellmatch.Type>
 	name: fields.SchemaField<StringCriteriaSchema>
 	tags: fields.SchemaField<StringCriteriaSchema>

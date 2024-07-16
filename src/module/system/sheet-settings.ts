@@ -121,14 +121,6 @@ class SheetSettings extends foundry.abstract.DataModel<CharacterGURPS, SheetSett
 
 	static default(): SheetSettings {
 		return new SheetSettings({})
-		// const settings = new SheetSettings({})
-		// return {
-		// 	...settings,
-		// 	attributes: settings.attributes.map(e => new AttributeDef(e)),
-		// 	resource_trackers: settings.resource_trackers.map(e => new ResourceTrackerDef(e)),
-		// 	move_types: settings.move_types.map(e => new MoveTypeDef(e)),
-		// 	body_type: new BodyGURPS(settings.body_type)
-		// }
 	}
 
 	static for(actor: ActorGURPS | null): SheetSettings {
@@ -154,79 +146,6 @@ interface SheetSettings
 	move_types: MoveTypeDef[]
 	body_type: BodyGURPS
 }
-
-// interface PreparedSheetSettings
-// 	extends Omit<ModelPropsFromSchema<SheetSettingsSchema>, "attributes" | "resource_trackers" | "move_types" | "body_type"> {
-// 	attributes: AttributeDef[]
-// 	resource_trackers: ResourceTrackerDef[]
-// 	move_types: MoveTypeDef[]
-// 	body_type: BodyGURPS
-// }
-
-
-
-// export interface SheetSettings {
-// 	page: PageSettings
-// 	block_layout: BlockLayout
-// 	attributes: AttributeDef[]
-// 	resource_trackers: ResourceTrackerDef[]
-// 	move_types: MoveTypeDef[]
-// 	body_type: BodyGURPS<BodyOwner>
-// 	damage_progression: progression.Option
-// 	default_length_units: LengthUnits
-// 	default_weight_units: WeightUnits
-// 	user_description_display: display.Option
-// 	modifiers_display: display.Option
-// 	notes_display: display.Option
-// 	skill_level_adj_display: display.Option
-// 	use_multiplicative_modifiers: boolean
-// 	use_modifying_dice_plus_adds: boolean
-// 	use_half_stat_defaults: boolean
-// 	show_trait_modifier_adj: boolean
-// 	show_equipment_modifier_adj: boolean
-// 	show_spell_adj: boolean
-// 	use_title_in_footer: boolean
-// 	exclude_unspent_points_from_total: boolean
-// }
-
-// export function defaultSheetSettings(): SheetSettings {
-// 	const dummyBodyOwner: BodyOwner = {
-// 		hitLocationTable: new BodyGURPS(),
-// 		addDRBonusesFor: (_locationID: string, _tooltip: TooltipGURPS | null, drMap: Map<string, number>) => drMap,
-// 	}
-// 	const bodyObj: BodyObj = {
-// 		name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
-// 		roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
-// 		locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
-// 	}
-// 	const body = BodyGURPS.fromObject(bodyObj, dummyBodyOwner)
-// 	return {
-// 		...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`),
-// 		body_type: body,
-// 		attributes: game.settings
-// 			.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
-// 			.map(e => new AttributeDef(e)),
-// 		resource_trackers: game.settings
-// 			.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`)
-// 			.map(e => new ResourceTrackerDef(e)),
-// 		move_types: game.settings
-// 			.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
-// 			.map(e => new MoveTypeDef(e)),
-// 	}
-// }
-
-// export function sheetSettingsFor(actor: ActorGURPS | null): SheetSettings {
-// 	if (!actor || !actor.isOfType(ActorType.Character)) {
-// 		return defaultSheetSettings()
-// 	}
-// 	return {
-// 		...actor.system.settings,
-// 		body_type: actor.hitLocationTable,
-// 		resource_trackers: actor.system.settings.resource_trackers.map(e => new ResourceTrackerDef(e)),
-// 		attributes: actor.system.settings.attributes.map(e => new AttributeDef(e)),
-// 		move_types: actor.system.settings.move_types.map(e => new MoveTypeDef(e)),
-// 	}
-// }
 
 export type { SheetSettingsSchema }
 export { SheetSettings }

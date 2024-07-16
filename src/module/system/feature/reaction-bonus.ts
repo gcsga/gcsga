@@ -1,10 +1,10 @@
-import { BonusOwner } from "./bonus-owner.ts"
+import { BaseFeature } from "./bonus-owner.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { LeveledAmount } from "./leveled-amount.ts"
 import { feature } from "@util"
 import { ReactionBonusSchema } from "./data.ts"
 
-export class ReactionBonus extends BonusOwner<feature.Type.ReactionBonus> {
+export class ReactionBonus extends BaseFeature<feature.Type.ReactionBonus> {
 	situation = LocalizeGURPS.translations.gurps.feature.reaction_bonus
 
 	constructor() {

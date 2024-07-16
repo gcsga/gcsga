@@ -1,11 +1,11 @@
 import { StringCompareType, StringCriteria } from "@util/string-criteria.ts"
-import { BonusOwner } from "./bonus-owner.ts"
+import { BaseFeature } from "./bonus-owner.ts"
 import { LeveledAmount } from "./leveled-amount.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { TooltipGURPS, feature } from "@util"
 import { SkillPointBonusSchema } from "./data.ts"
 
-export class SkillPointBonus extends BonusOwner<feature.Type.SkillPointBonus> {
+export class SkillPointBonus extends BaseFeature<feature.Type.SkillPointBonus> {
 	name: StringCriteria
 
 	specialization: StringCriteria

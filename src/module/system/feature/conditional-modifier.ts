@@ -1,10 +1,10 @@
 import { feature } from "@util/enum/feature.ts"
-import { BonusOwner } from "./bonus-owner.ts"
+import { BaseFeature } from "./bonus-owner.ts"
 import { LeveledAmount } from "./leveled-amount.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { ConditionalModifierBonusSchema } from "./data.ts"
 
-export class ConditionalModifierBonus extends BonusOwner<feature.Type.ConditionalModifierBonus> {
+export class ConditionalModifierBonus extends BaseFeature<feature.Type.ConditionalModifierBonus> {
 	situation = LocalizeGURPS.translations.gurps.feature.conditional_modifier
 
 	constructor() {

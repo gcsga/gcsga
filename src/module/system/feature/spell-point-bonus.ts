@@ -1,10 +1,10 @@
 import { StringCompareType, StringCriteria } from "@util/string-criteria.ts"
 import { LeveledAmount } from "./leveled-amount.ts"
-import { BonusOwner } from "./bonus-owner.ts"
+import { BaseFeature } from "./bonus-owner.ts"
 import { feature, spellmatch } from "@util"
 import { SpellPointBonusSchema } from "./data.ts"
 
-export class SpellPointBonus extends BonusOwner<feature.Type.SpellPointBonus> {
+export class SpellPointBonus extends BaseFeature<feature.Type.SpellPointBonus> {
 	feature = feature.Type.SpellPointBonus
 
 	match: spellmatch.Type

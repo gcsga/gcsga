@@ -35,7 +35,4 @@ export class LeveledAmount {
 			})
 		return amt
 	}
-	// static fromObject(data: SourceFromSchema<): LeveledAmount {
-	// 	return new LeveledAmount({ amount: data.amount, per_level: data.per_level })
-	// }
 }

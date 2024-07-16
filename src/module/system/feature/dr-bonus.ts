@@ -1,11 +1,11 @@
-import { BonusOwner } from "./bonus-owner.ts"
+import { BaseFeature } from "./bonus-owner.ts"
 import { LeveledAmount } from "./leveled-amount.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { TooltipGURPS, equalFold, feature } from "@util"
 import { gid } from "@module/data/constants.ts"
 import { DRBonusSchema } from "./data.ts"
 
-export class DRBonus extends BonusOwner<feature.Type.DRBonus> {
+export class DRBonus extends BaseFeature<feature.Type.DRBonus> {
 	location: string = gid.Torso
 
 	specialization: string = gid.All

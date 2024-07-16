@@ -1,10 +1,10 @@
 import { feature } from "@util/enum/feature.ts"
-import { BonusOwner } from "./bonus-owner.ts"
+import { BaseFeature } from "./bonus-owner.ts"
 import { LeveledAmount } from "./leveled-amount.ts"
 import { MoveBonusSchema, MoveBonusType } from "./data.ts"
 import { gid } from "@data"
 
-export class MoveBonus extends BonusOwner<feature.Type.MoveBonus> {
+export class MoveBonus extends BaseFeature<feature.Type.MoveBonus> {
 	move_type: string
 
 	limitation: MoveBonusType
