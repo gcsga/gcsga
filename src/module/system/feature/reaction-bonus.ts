@@ -1,29 +1,21 @@
-import { BaseFeature } from "./bonus-owner.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { LeveledAmount } from "./leveled-amount.ts"
-import { feature } from "@util"
 import { ReactionBonusSchema } from "./data.ts"
+import { BaseFeature, LeveledAmount } from "./base.ts"
 
-export class ReactionBonus extends BaseFeature<feature.Type.ReactionBonus> {
-	situation = LocalizeGURPS.translations.gurps.feature.reaction_bonus
+class ReactionBonus extends BaseFeature<ReactionBonusSchema> {
 
-	constructor() {
-		super(feature.Type.ReactionBonus)
-		this.situation = LocalizeGURPS.translations.gurps.feature.reaction_bonus
-		this.leveledAmount = new LeveledAmount({ amount: 1 })
-	}
+	static override defineSchema(): ReactionBonusSchema {
+		const fields = foundry.data.fields
 
-	override toObject(): SourceFromSchema<ReactionBonusSchema> {
 		return {
-			...super.toObject(),
-			situation: this.situation,
+			...super.defineSchema(),
+			...LeveledAmount.defineSchema(),
+			situation: new fields.StringField({ initial: LocalizeGURPS.translations.gurps.feature.reaction_bonus })
 		}
 	}
 
-	static fromObject(data: SourceFromSchema<ReactionBonusSchema>): ReactionBonus {
-		const bonus = new ReactionBonus()
-		bonus.situation = data.situation
-		bonus.leveledAmount = LeveledAmount.fromObject(data)
-		return bonus
-	}
 }
+
+interface ReactionBonus extends BaseFeature<ReactionBonusSchema>, ModelPropsFromSchema<ReactionBonusSchema> { }
+
+export { ReactionBonus }

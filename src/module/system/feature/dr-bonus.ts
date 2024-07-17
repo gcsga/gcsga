@@ -1,34 +1,25 @@
-import { BaseFeature } from "./bonus-owner.ts"
-import { LeveledAmount } from "./leveled-amount.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { TooltipGURPS, equalFold, feature } from "@util"
+import { TooltipGURPS, equalFold } from "@util"
 import { gid } from "@module/data/constants.ts"
 import { DRBonusSchema } from "./data.ts"
+import { BaseFeature, LeveledAmount } from "./base.ts"
 
-export class DRBonus extends BaseFeature<feature.Type.DRBonus> {
-	location: string = gid.Torso
+class DRBonus extends BaseFeature<DRBonusSchema> {
 
-	specialization: string = gid.All
+	static override defineSchema(): DRBonusSchema {
+		const fields = foundry.data.fields
 
-	constructor() {
-		super(feature.Type.DRBonus)
-		this.location = gid.Torso
-		this.specialization = gid.All
-		this.leveledAmount = new LeveledAmount({ amount: 1 })
-	}
-
-	private normalize(): void {
-		let s = this.location.trim()
-		if (equalFold(s, gid.All)) s = gid.All
-		this.location = s
-		s = this.specialization?.trim() ?? ""
-		if (s === "" || equalFold(s, gid.All)) s = gid.All
-		this.specialization = s
+		return {
+			...super.defineSchema(),
+			...LeveledAmount.defineSchema(),
+			location: new fields.StringField({ initial: gid.Torso }),
+			specialization: new fields.StringField({ initial: gid.All }),
+		}
 	}
 
 	override addToTooltip(tooltip: TooltipGURPS | null): void {
 		if (tooltip !== null) {
-			this.normalize()
+			this._normalize()
 			tooltip.push("\n")
 			tooltip.push(this.parentName)
 			tooltip.push(
@@ -40,19 +31,16 @@ export class DRBonus extends BaseFeature<feature.Type.DRBonus> {
 		}
 	}
 
-	override toObject(): SourceFromSchema<DRBonusSchema> {
-		return {
-			...super.toObject(),
-			location: this.location,
-			specialization: this.specialization,
-		}
-	}
-
-	static fromObject(data: SourceFromSchema<DRBonusSchema>): DRBonus {
-		const bonus = new DRBonus()
-		if (data.location) bonus.location = data.location
-		if (data.specialization) bonus.specialization = data.specialization
-		bonus.leveledAmount = LeveledAmount.fromObject(data)
-		return bonus
+	private _normalize(): void {
+		let s = this.location.trim()
+		if (equalFold(s, gid.All)) s = gid.All
+		this.location = s
+		s = this.specialization?.trim() ?? ""
+		if (s === "" || equalFold(s, gid.All)) s = gid.All
+		this.specialization = s
 	}
 }
+
+interface DRBonus extends BaseFeature<DRBonusSchema>, ModelPropsFromSchema<DRBonusSchema> { }
+
+export { DRBonus }

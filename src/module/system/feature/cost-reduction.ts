@@ -1,32 +1,20 @@
-import { feature } from "@util/enum/feature.ts"
-import { BaseFeature } from "./bonus-owner.ts"
 import { gid } from "@data"
 import { CostReductionSchema } from "./data.ts"
+import { BaseFeature } from "./base.ts"
 
-export class CostReduction extends BaseFeature<feature.Type.CostReduction> {
-	attribute: string
+class CostReduction extends BaseFeature<CostReductionSchema> {
 
-	percentage: number | null
+	static override defineSchema(): CostReductionSchema {
+		const fields = foundry.data.fields
 
-	constructor(attrID: string = gid.Strength) {
-		super(feature.Type.CostReduction)
-		this.attribute = attrID
-		this.percentage = 40
-	}
-
-	// @ts-expect-error TODO: fix type later
-	override toObject(): SourceFromSchema<CostReductionSchema> {
 		return {
-			type: feature.Type.CostReduction,
-			attribute: this.attribute,
-			percentage: this.percentage ?? null,
+			...super.defineSchema(),
+			attribute: new fields.StringField({ initial: gid.Strength }),
+			percentage: new fields.NumberField({ choices: CONFIG.GURPS.select.percentage, initial: 40 })
 		}
 	}
-
-	static fromObject(data: SourceFromSchema<CostReductionSchema>): CostReduction {
-		const bonus = new CostReduction(data.attribute)
-		bonus.attribute = data.attribute ?? gid.Strength
-		bonus.percentage = data.percentage
-		return bonus
-	}
 }
+
+interface CostReduction extends BaseFeature<CostReductionSchema>, ModelPropsFromSchema<CostReductionSchema> { }
+
+export { CostReduction }

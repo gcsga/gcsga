@@ -1,29 +1,18 @@
-import { feature } from "@util/enum/feature.ts"
-import { BaseFeature } from "./bonus-owner.ts"
-import { LeveledAmount } from "./leveled-amount.ts"
-import { LocalizeGURPS } from "@util/localize.ts"
 import { ConditionalModifierBonusSchema } from "./data.ts"
+import { BaseFeature, LeveledAmount } from "./base.ts"
+import { LocalizeGURPS } from "@util"
 
-export class ConditionalModifierBonus extends BaseFeature<feature.Type.ConditionalModifierBonus> {
-	situation = LocalizeGURPS.translations.gurps.feature.conditional_modifier
+class ConditionalModifierBonus extends BaseFeature<ConditionalModifierBonusSchema> {
 
-	constructor() {
-		super(feature.Type.ConditionalModifierBonus)
-		this.situation = LocalizeGURPS.translations.gurps.feature.conditional_modifier
-		this.leveledAmount = new LeveledAmount({ amount: 1 })
-	}
+	static override defineSchema(): ConditionalModifierBonusSchema {
+		const fields = foundry.data.fields
 
-	override toObject(): SourceFromSchema<ConditionalModifierBonusSchema> {
 		return {
-			...super.toObject(),
-			situation: this.situation,
+			...super.defineSchema(),
+			...LeveledAmount.defineSchema(),
+			situation: new fields.StringField({ initial: LocalizeGURPS.translations.gurps.feature.conditional_modifier })
 		}
 	}
-
-	static fromObject(data: SourceFromSchema<ConditionalModifierBonusSchema>): ConditionalModifierBonus {
-		const bonus = new ConditionalModifierBonus()
-		bonus.situation = data.situation
-		bonus.leveledAmount = LeveledAmount.fromObject(data)
-		return bonus
-	}
 }
+
+export { ConditionalModifierBonus }

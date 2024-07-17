@@ -24,9 +24,6 @@ abstract class BaseFeature<
 
 		return {
 			type: new fields.StringField({ choices: feature.Types, initial: undefined }),
-			amount: new fields.NumberField({ integer: true, initial: 1 }),
-			per_level: new fields.BooleanField({ initial: false }),
-			effective: new fields.BooleanField({ initial: false })
 		}
 	}
 
@@ -45,6 +42,7 @@ abstract class BaseFeature<
 		this._owner = null
 		this._subOwner = null
 		this.effective = false
+		// @ts-expect-error should be fine, but only works for levelable features
 		this.leveledAmount = new LeveledAmount(data)
 	}
 
@@ -117,6 +115,16 @@ interface BaseFeature<TSchema extends BaseFeatureSchema>
 class LeveledAmount {
 
 	declare level: number
+
+	static defineSchema(): LeveledAmountSchema {
+		const fields = foundry.data.fields
+
+		return {
+			amount: new fields.NumberField({ integer: true, initial: 1 }),
+			per_level: new fields.BooleanField({ initial: false }),
+			effective: new fields.BooleanField({ initial: false })
+		}
+	}
 
 	constructor(data: DeepPartial<SourceFromSchema<LeveledAmountSchema>>) {
 		this.level = 0
