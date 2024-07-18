@@ -1,20 +1,32 @@
 import { StringField } from "types/foundry/common/data/fields.js"
 import { LocalizeGURPS } from "./localize.ts"
-import { NumericCompareType } from "./numeric-criteria.ts"
 import { Weight, WeightString, WeightUnits } from "./weight.ts"
+import { AllNumericCompareTypes, NumericCompareType } from "@module/data/constants.ts"
+import { ItemGURPS } from "@item"
 
-export type WeightCriteriaSchema = {
+type WeightCriteriaSchema = {
 	compare: StringField<NumericCompareType, NumericCompareType, true, false, true>
 	qualifier: StringField<WeightString, WeightString, true, false, true>
 }
 
-export class WeightCriteria {
-	declare compare: NumericCompareType
-	declare qualifier: WeightString
+class WeightCriteria extends foundry.abstract.DataModel<ItemGURPS, WeightCriteriaSchema> {
 
-	constructor(data: SourceFromSchema<WeightCriteriaSchema>) {
-		this.compare = data.compare ?? NumericCompareType.AnyNumber
-		this.qualifier = data.qualifier ?? `0 ${WeightUnits.Pound}`
+	static override defineSchema(): WeightCriteriaSchema {
+		const fields = foundry.data.fields
+		return {
+			compare: new fields.StringField<NumericCompareType, NumericCompareType, true>({
+				required: true,
+				choices: AllNumericCompareTypes,
+				initial: NumericCompareType.AnyNumber,
+			}),
+			qualifier: new fields.StringField({
+				initial: `0 ${WeightUnits.Pound}`
+			}),
+		}
+	}
+
+	constructor(data?: DeepPartial<SourceFromSchema<WeightCriteriaSchema>>) {
+		super(data)
 	}
 
 	matches(n: WeightString): boolean {
@@ -34,7 +46,7 @@ export class WeightCriteria {
 		}
 	}
 
-	toString(): string {
+	override toString(): string {
 		return LocalizeGURPS.translations.gurps.numeric_criteria.string[this.compare]
 	}
 
@@ -54,8 +66,8 @@ export class WeightCriteria {
 		if (result !== "") result += " "
 		return result + this.qualifier.toString()
 	}
-
-	toObject(): SourceFromSchema<WeightCriteriaSchema> {
-		return { compare: this.compare, qualifier: this.qualifier }
-	}
 }
+
+interface WeightCriteria extends foundry.abstract.DataModel<ItemGURPS, WeightCriteriaSchema>, ModelPropsFromSchema<WeightCriteriaSchema> { }
+
+export { WeightCriteria, type WeightCriteriaSchema }

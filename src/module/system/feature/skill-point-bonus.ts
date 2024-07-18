@@ -1,32 +1,29 @@
-import { StringCompareType, StringCriteria } from "@util/string-criteria.ts"
-import { BaseFeature } from "./bonus-owner.ts"
-import { LeveledAmount } from "./leveled-amount.ts"
+import { StringCriteria } from "@util/string-criteria.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { TooltipGURPS, feature } from "@util"
+import { TooltipGURPS, } from "@util"
 import { SkillPointBonusSchema } from "./data.ts"
+import { BaseFeature, LeveledAmount } from "./base.ts"
 
-export class SkillPointBonus extends BaseFeature<feature.Type.SkillPointBonus> {
-	name: StringCriteria
+class SkillPointBonus extends BaseFeature<SkillPointBonusSchema> {
 
-	specialization: StringCriteria
+	static override defineSchema(): SkillPointBonusSchema {
+		const fields = foundry.data.fields
 
-	tags: StringCriteria
-
-	constructor() {
-		super(feature.Type.SkillPointBonus)
-		this.name = new StringCriteria({ compare: StringCompareType.IsString })
-		this.specialization = new StringCriteria({ compare: StringCompareType.AnyString })
-		this.tags = new StringCriteria({ compare: StringCompareType.AnyString })
-		this.leveledAmount = new LeveledAmount({ amount: 1 })
+		return {
+			...super.defineSchema(),
+			...LeveledAmount.defineSchema(),
+			name: new fields.SchemaField(StringCriteria.defineSchema()),
+			specialization: new fields.SchemaField(StringCriteria.defineSchema()),
+			tags: new fields.SchemaField(StringCriteria.defineSchema())
+		}
 	}
 
-	override toObject(): SourceFromSchema<SkillPointBonusSchema> {
-		return {
-			...super.toObject(),
-			name: this.name,
-			specialization: this.specialization,
-			tags: this.tags,
-		}
+	constructor(data: DeepPartial<SourceFromSchema<SkillPointBonusSchema>>) {
+		super(data)
+
+		this.name = new StringCriteria(data.name)
+		this.specialization = new StringCriteria(data.specialization)
+		this.tags = new StringCriteria(data.tags)
 	}
 
 	override addToTooltip(tooltip: TooltipGURPS | null): void {
@@ -43,12 +40,12 @@ export class SkillPointBonus extends BaseFeature<feature.Type.SkillPointBonus> {
 		}
 	}
 
-	static fromObject(data: SourceFromSchema<SkillPointBonusSchema>): SkillPointBonus {
-		const bonus = new SkillPointBonus()
-		if (data.name) bonus.name = new StringCriteria(data.name)
-		if (data.specialization) bonus.specialization = new StringCriteria(data.specialization)
-		if (data.tags) bonus.tags = new StringCriteria(data.tags)
-		bonus.leveledAmount = LeveledAmount.fromObject(data)
-		return bonus
-	}
 }
+
+interface SkillPointBonus extends BaseFeature<SkillPointBonusSchema>, Omit<ModelPropsFromSchema<SkillPointBonusSchema>, "name" | "specialization" | "tags"> {
+	name: StringCriteria
+	specialization: StringCriteria
+	tags: StringCriteria
+}
+
+export { SkillPointBonus }

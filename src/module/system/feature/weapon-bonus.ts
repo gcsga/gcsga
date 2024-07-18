@@ -1,16 +1,4 @@
-import { feature } from "@util/enum/feature.ts"
-import { wsel } from "@util/enum/wsel.ts"
-import { wswitch } from "@util/enum/wswitch.ts"
-import { NumericCompareType, NumericCriteria } from "@util/numeric-criteria.ts"
-import { StringCompareType, StringCriteria } from "@util/string-criteria.ts"
-import { LocalizeGURPS } from "@util/localize.ts"
-import { Int } from "@util/fxp.ts"
-import { WeaponLeveledAmount } from "./weapon-leveled-amount.ts"
-import { AbstractWeaponGURPS } from "@item"
-import { TooltipGURPS } from "@util"
-import { WeaponOwner } from "@module/data/types.ts"
-import { WeaponBonusSchema } from "./data.ts"
-
+/*
 export class WeaponBonus<TType extends feature.WeaponBonusType = feature.WeaponBonusType> {
 	type: TType
 
@@ -172,3 +160,173 @@ export class WeaponBonus<TType extends feature.WeaponBonusType = feature.WeaponB
 		return bonus
 	}
 }
+*/
+import { Int, LocalizeGURPS, NumericCriteria, StringCriteria, TooltipGURPS, feature, wsel, wswitch } from "@util"
+import { BaseFeature } from "./base.ts"
+import { WeaponBonusSchema, WeaponLeveledAmountSchema } from "./data.ts"
+import { AbstractWeaponGURPS } from "@item"
+import { ItemType } from "@module/data/constants.ts"
+
+class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
+
+
+	declare leveledAmount: WeaponLeveledAmount
+
+	static override defineSchema(): WeaponBonusSchema {
+		const fields = foundry.data.fields
+
+		return {
+			...super.defineSchema(),
+			...WeaponLeveledAmount.defineSchema(),
+			percent: new fields.BooleanField({ nullable: true }),
+			switch_type: new fields.StringField({ choices: wswitch.Types, nullable: true, initial: null }),
+			switch_type_value: new fields.BooleanField({ nullable: true, initial: null }),
+			selection_type: new fields.StringField({ choices: wsel.Types, initial: wsel.Type.WithRequiredSkill }),
+			name: new fields.SchemaField(StringCriteria.defineSchema(), { nullable: true }),
+			specialization: new fields.SchemaField(StringCriteria.defineSchema(), { nullable: true }),
+			level: new fields.SchemaField(NumericCriteria.defineSchema(), { nullable: true }),
+			usage: new fields.SchemaField(StringCriteria.defineSchema(), { nullable: true }),
+			tags: new fields.SchemaField(StringCriteria.defineSchema(), { nullable: true }),
+		}
+	}
+
+	constructor(data: DeepPartial<SourceFromSchema<WeaponBonusSchema>>) {
+		super(data)
+
+		this.name = new StringCriteria(data.name ?? undefined)
+		this.specialization = new StringCriteria(data.specialization ?? undefined)
+		this.level = new NumericCriteria(data.level ?? undefined)
+		this.usage = new StringCriteria(data.usage ?? undefined)
+		this.tags = new StringCriteria(data.tags ?? undefined)
+	}
+
+	adjustedAmountForWeapon(wpn: AbstractWeaponGURPS): number {
+		if (this.type === feature.Type.WeaponMinSTBonus) {
+			this.leveledAmount.dieCount = 1
+		} else {
+			this.leveledAmount.dieCount = Int.from(wpn.damage.base!.count)
+		}
+		return this.leveledAmount.adjustedAmount
+	}
+
+	override addToTooltip(tooltip: TooltipGURPS | null): void {
+		if (tooltip === null) return
+		const buf = new TooltipGURPS()
+		buf.push("\n")
+		buf.push(this.parentName)
+		buf.push(" [")
+		if (this.type === feature.Type.WeaponSwitch) {
+			buf.push(
+				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.feature.weapon_bonus.weapon_switch, {
+					type: this.switch_type!,
+					value: this.switch_type_value!,
+				}),
+			)
+		} else {
+			buf.push(
+				LocalizeGURPS.format(
+					LocalizeGURPS.translations.gurps.feature.weapon_bonus[this.type as feature.WeaponBonusType],
+					{
+						level: this.leveledAmount.format(this.percent ?? false),
+					},
+				),
+			)
+		}
+		buf.push("]")
+		tooltip.push(buf)
+	}
+
+	get derivedLevel(): number {
+		if (this.subOwner?.isOfType(ItemType.Trait, ItemType.TraitModifier)) {
+			if (this.subOwner.isLeveled) return this.subOwner.levels
+		} else if (this.owner?.isOfType(ItemType.Trait, ItemType.TraitModifier)) {
+			if (this.owner.isLeveled) return this.owner.levels
+		}
+		return 0
+	}
+}
+
+interface WeaponBonus extends BaseFeature<WeaponBonusSchema>, Omit<ModelPropsFromSchema<WeaponBonusSchema>, "name" | "specialization" | "level" | "usage" | "tags"> {
+	name: StringCriteria
+	specialization: StringCriteria
+	level: NumericCriteria
+	usage: StringCriteria
+	tags: StringCriteria
+}
+
+class WeaponLeveledAmount {
+
+	declare level: number
+	declare dieCount: number
+	declare amount: number
+	declare leveled: boolean
+	declare per_die: boolean
+
+	static defineSchema(): WeaponLeveledAmountSchema {
+		const fields = foundry.data.fields
+
+		return {
+			amount: new fields.NumberField({ integer: true, initial: 1 }),
+			leveled: new fields.BooleanField({ initial: false }),
+			per_die: new fields.BooleanField({ initial: false }),
+			effective: new fields.BooleanField({ initial: false })
+		}
+	}
+
+	constructor(data: DeepPartial<SourceFromSchema<WeaponLeveledAmountSchema>>) {
+		this.level = 0
+		this.dieCount = 0
+		this.amount = data.amount ?? 0
+		this.leveled = data.leveled ?? false
+		this.per_die = data.per_die ?? false
+	}
+
+	get adjustedAmount(): number {
+		let amt = this.amount
+		if (this.per_die) {
+			if (this.dieCount < 0) return 0
+			amt *= this.dieCount
+		}
+		if (this.leveled) {
+			if (this.level < 0) return 0
+			amt *= this.level
+		}
+		return amt
+	}
+
+	get per_level(): boolean {
+		return this.per_die
+	}
+
+	format(asPercentage: boolean): string {
+		let amt = this.amount.signedString()
+		let adjustedAmt = this.adjustedAmount.signedString()
+		if (asPercentage) {
+			amt += "%"
+			adjustedAmt += "%"
+		}
+		switch (true) {
+			case this.per_die && this.leveled:
+				return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.feature.weapon_bonus.per_die_per_level, {
+					total: adjustedAmt,
+					base: amt,
+				})
+			case this.per_die:
+				return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.feature.weapon_bonus.per_die, {
+					total: adjustedAmt,
+					base: amt,
+				})
+			case this.leveled:
+				return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.feature.weapon_bonus.per_level, {
+					total: adjustedAmt,
+					base: amt,
+				})
+			default:
+				return amt
+		}
+	}
+}
+
+interface WeaponLeveledAmount extends ModelPropsFromSchema<WeaponLeveledAmountSchema> { }
+
+export { WeaponBonus }

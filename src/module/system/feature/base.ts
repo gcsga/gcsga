@@ -66,13 +66,14 @@ abstract class BaseFeature<
 		this._subOwner = subOwner
 	}
 
-	get level(): number {
+	get levels(): number {
 		return this.leveledAmount.level
 	}
 
-	set level(level: number) {
+	set levels(level: number) {
 		this.leveledAmount.level = level
 	}
+
 
 	get parentName(): string {
 		if (!this.owner) return LocalizeGURPS.translations.gurps.misc.unknown

@@ -19,6 +19,10 @@ class StringCriteria extends foundry.abstract.DataModel<ItemGURPS, StringCriteri
 		}
 	}
 
+	constructor(data?: DeepPartial<SourceFromSchema<StringCriteriaSchema>>) {
+		super(data)
+	}
+
 	matches(s: string): boolean {
 		switch (this.compare) {
 			case StringCompareType.AnyString:

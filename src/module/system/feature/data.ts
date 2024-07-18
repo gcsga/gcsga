@@ -1,4 +1,3 @@
-import { NullField } from "@system/schema-data-fields.ts"
 import { feature } from "@util/enum/feature.ts"
 import { skillsel } from "@util/enum/skillsel.ts"
 import { spellmatch } from "@util/enum/spellmatch.ts"
@@ -19,7 +18,7 @@ export enum MoveBonusType {
 // 	type: fields.StringField<TType>
 // }
 
-export type BaseFeatureSchema = LeveledAmountSchema & {
+export type BaseFeatureSchema = {
 	type: fields.StringField<feature.Type, feature.Type, true, false, true>
 }
 
@@ -30,7 +29,7 @@ export type LeveledAmountSchema = {
 }
 
 export type WeaponLeveledAmountSchema = {
-	amount: fields.NumberField
+	amount: fields.NumberField<number, number, true, false>
 	leveled: fields.BooleanField
 	per_die: fields.BooleanField
 	effective: fields.BooleanField
@@ -94,17 +93,16 @@ export type SpellPointBonusSchema = LeveledAmountSchema & BaseFeatureSchema & {
 	tags: fields.SchemaField<StringCriteriaSchema>
 }
 
-export type WeaponBonusSchema = WeaponLeveledAmountSchema & {
-	type: fields.StringField<feature.WeaponBonusType>
-	percent: fields.BooleanField | NullField
-	switch_type_value: fields.BooleanField | NullField
+export type WeaponBonusSchema = WeaponLeveledAmountSchema & BaseFeatureSchema & {
+	percent: fields.BooleanField<boolean, boolean, true, true>
+	switch_type: fields.StringField<wswitch.Type, wswitch.Type, true, true>
+	switch_type_value: fields.BooleanField<boolean, boolean, true, true>
 	selection_type: fields.StringField<wsel.Type>
-	switch_type: fields.StringField<wswitch.Type> | NullField
-	name: fields.SchemaField<StringCriteriaSchema> | NullField
-	specialization: fields.SchemaField<StringCriteriaSchema> | NullField
-	level: fields.SchemaField<NumericCriteriaSchema> | NullField
-	usage: fields.SchemaField<StringCriteriaSchema> | NullField
-	tags: fields.SchemaField<StringCriteriaSchema> | NullField
+	name: fields.SchemaField<StringCriteriaSchema, SourceFromSchema<StringCriteriaSchema>, NonNullable<ModelPropsFromSchema<StringCriteriaSchema>>, true, true>
+	specialization: fields.SchemaField<StringCriteriaSchema, SourceFromSchema<StringCriteriaSchema>, NonNullable<ModelPropsFromSchema<StringCriteriaSchema>>, true, true>
+	level: fields.SchemaField<NumericCriteriaSchema, SourceFromSchema<NumericCriteriaSchema>, NonNullable<ModelPropsFromSchema<NumericCriteriaSchema>>, true, true>
+	usage: fields.SchemaField<StringCriteriaSchema, SourceFromSchema<StringCriteriaSchema>, NonNullable<ModelPropsFromSchema<StringCriteriaSchema>>, true, true>
+	tags: fields.SchemaField<StringCriteriaSchema, SourceFromSchema<StringCriteriaSchema>, NonNullable<ModelPropsFromSchema<StringCriteriaSchema>>, true, true>
 }
 
 export type FeatureSchema =

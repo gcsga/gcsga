@@ -22,6 +22,10 @@ class NumericCriteria extends foundry.abstract.DataModel<ItemGURPS, NumericCrite
 		}
 	}
 
+	constructor(data?: DeepPartial<SourceFromSchema<NumericCriteriaSchema>>) {
+		super(data)
+	}
+
 	matches(n: number): boolean {
 		switch (this.compare) {
 			case NumericCompareType.AnyNumber:
