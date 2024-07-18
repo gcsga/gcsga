@@ -23,7 +23,7 @@ class SkillBonus extends BaseFeature<SkillBonusSchema> {
 
 		this.name = new StringCriteria(data.name)
 		this.specialization = new StringCriteria(data.specialization)
-		this.tags = new StringCriteria({ data.tags })
+		this.tags = new StringCriteria(data.tags)
 	}
 
 }
@@ -31,7 +31,7 @@ class SkillBonus extends BaseFeature<SkillBonusSchema> {
 interface SkillBonus extends BaseFeature<SkillBonusSchema>, Omit<ModelPropsFromSchema<SkillBonusSchema>, "name" | "specialization" | "tags"> {
 	name: StringCriteria
 	specialization: StringCriteria
-	tagd: StringCriteria
+	tags: StringCriteria
 }
 
 export { SkillBonus }

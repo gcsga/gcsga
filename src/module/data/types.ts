@@ -181,6 +181,7 @@ interface MigratedDocumentMigrationRecord {
 
 type MigrationRecord = NewDocumentMigrationRecord | MigratedDocumentMigrationRecord
 
+
 export type {
 	AttributeEffect,
 	ConditionEffect,

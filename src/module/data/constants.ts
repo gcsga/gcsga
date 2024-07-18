@@ -364,32 +364,7 @@ enum HOOKS {
 	AddModifier = "addModifier",
 }
 
-export {
-	ABSTRACT_CONTAINER_TYPES,
-	ActorFlags,
-	ActorType,
-	COMPENDIA,
-	CONTAINER_TYPES,
-	ConditionID,
-	DEFAULT_INITIATIVE_FORMULA,
-	DefaultHaver,
-	EFFECT_ACTION,
-	GURPS_COMMANDS,
-	HOOKS,
-	ItemFlags,
-	ItemType,
-	MANEUVER_DETAIL_SETTING,
-	ManeuverID,
-	RollModifierTags,
-	RollType,
-	SETTINGS,
-	SOCKET,
-	SSRT_SETTING,
-	SYSTEM_NAME,
-	gid,
-}
-
-export const SORTABLE_BASE_OPTIONS: Sortable.Options = {
+const SORTABLE_BASE_OPTIONS: Sortable.Options = {
 	animation: 200,
 	direction: "vertical",
 	dragClass: "drag-preview",
@@ -411,6 +386,85 @@ export const SORTABLE_BASE_OPTIONS: Sortable.Options = {
 
 	delay: 500,
 	delayOnTouchOnly: true,
+}
+
+
+
+enum NumericCompareType {
+	AnyNumber = "none",
+	EqualsNumber = "is",
+	NotEqualsNumber = "is_not",
+	AtLeastNumber = "at_least",
+	AtMostNumber = "at_most",
+}
+
+const AllNumericCompareTypes: NumericCompareType[] = [
+	NumericCompareType.AnyNumber,
+	NumericCompareType.EqualsNumber,
+	NumericCompareType.NotEqualsNumber,
+	NumericCompareType.AtLeastNumber,
+	NumericCompareType.AtMostNumber,
+]
+
+const ContainedQuantityNumericCompareTypes: NumericCompareType[] = [
+	NumericCompareType.EqualsNumber,
+	NumericCompareType.AtLeastNumber,
+	NumericCompareType.AtMostNumber,
+]
+
+enum StringCompareType {
+	AnyString = "none",
+	IsString = "is",
+	IsNotString = "is_not",
+	ContainsString = "contains",
+	DoesNotContainString = "does_not_contain",
+	StartsWithString = "starts_with",
+	DoesNotStartWithString = "does_not_start_with",
+	EndsWithString = "ends_with",
+	DoesNotEndWithString = "does_not_end_with",
+}
+
+const AllStringCompareTypes: StringCompareType[] = [
+	StringCompareType.AnyString,
+	StringCompareType.IsString,
+	StringCompareType.IsNotString,
+	StringCompareType.ContainsString,
+	StringCompareType.DoesNotContainString,
+	StringCompareType.StartsWithString,
+	StringCompareType.DoesNotStartWithString,
+	StringCompareType.EndsWithString,
+	StringCompareType.DoesNotEndWithString,
+]
+
+export {
+	ABSTRACT_CONTAINER_TYPES,
+	ActorFlags,
+	ActorType,
+	AllNumericCompareTypes,
+	AllStringCompareTypes,
+	COMPENDIA,
+	CONTAINER_TYPES,
+	ConditionID,
+	ContainedQuantityNumericCompareTypes,
+	DEFAULT_INITIATIVE_FORMULA,
+	DefaultHaver,
+	EFFECT_ACTION,
+	GURPS_COMMANDS,
+	HOOKS,
+	ItemFlags,
+	ItemType,
+	MANEUVER_DETAIL_SETTING,
+	ManeuverID,
+	NumericCompareType,
+	RollModifierTags,
+	RollType,
+	SETTINGS,
+	SOCKET,
+	SORTABLE_BASE_OPTIONS,
+	SSRT_SETTING,
+	SYSTEM_NAME,
+	StringCompareType,
+	gid
 }
 
 export type { ContainerType, EffectType, ItemTypes, WeaponType }

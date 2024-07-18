@@ -1,4 +1,3 @@
-- convert numeric criteria and string criteria to data model superclasses
 - continue on feature conversion
 - move on to prereq conversion
 
