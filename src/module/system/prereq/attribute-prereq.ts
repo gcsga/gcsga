@@ -1,8 +1,8 @@
-import { NumericCompareType, NumericCriteria } from "@util/numeric-criteria.ts"
+import { NumericCriteria } from "@util/numeric-criteria.ts"
 import { BasePrereq } from "./base.ts"
 import { prereq } from "@util/enum/prereq.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { ActorType, gid } from "@data"
+import { ActorType, NumericCompareType, gid } from "@data"
 import { TooltipGURPS } from "@util"
 import { ActorGURPS } from "@actor"
 import { AttributePrereqSchema } from "./data.ts"
@@ -11,8 +11,7 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 
 	constructor(data: DeepPartial<SourceFromSchema<AttributePrereqSchema>>) {
 		super(data)
-		if (data.qualifier)
-			this.qualifier = new NumericCriteria(data.qualifier)
+		this.qualifier = new NumericCriteria(data.qualifier)
 	}
 
 	static override defineSchema(): AttributePrereqSchema {

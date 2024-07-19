@@ -1,29 +1,36 @@
 import { ItemGURPS } from "@item"
 import { prereq } from "@util/enum/prereq.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { NumericCompareType, NumericCriteria } from "@util/numeric-criteria.ts"
+import { NumericCriteria } from "@util/numeric-criteria.ts"
 import { BasePrereq } from "./base.ts"
-import { ContainedQuantityPrereqObj } from "./data.ts"
+import { ContainedQuantityPrereqSchema } from "./data.ts"
 import { TooltipGURPS } from "@util"
-import { ItemType } from "@module/data/constants.ts"
-import { PrereqResolver } from "@module/util/index.ts"
+import { ItemType, NumericCompareType } from "@module/data/constants.ts"
+import { ActorGURPS } from "@actor"
 
-export class ContainedQuantityPrereq extends BasePrereq<prereq.Type.ContainedQuantity> {
-	qualifier: NumericCriteria
+class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> {
 
-	constructor() {
-		super(prereq.Type.ContainedQuantity)
-		this.qualifier = new NumericCriteria({ compare: NumericCompareType.AtMostNumber, qualifier: 1 })
+	constructor(data: DeepPartial<SourceFromSchema<ContainedQuantityPrereqSchema>>) {
+		super(data)
+		this.qualifier = new NumericCriteria(data.qualifier)
 	}
 
-	static fromObject(data: ContainedQuantityPrereqObj): ContainedQuantityPrereq {
-		const prereq = new ContainedQuantityPrereq()
-		prereq.has = data.has
-		if (data.qualifier) prereq.qualifier = new NumericCriteria(data.qualifier)
-		return prereq
+	static override defineSchema(): ContainedQuantityPrereqSchema {
+		const fields = foundry.data.fields
+
+		return {
+			type: new fields.StringField({ initial: prereq.Type.ContainedQuantity }),
+			has: new fields.BooleanField({ initial: true }),
+			qualifier: new fields.SchemaField(NumericCriteria.defineSchema(), {
+				initial: {
+					compare: NumericCompareType.AtLeastNumber,
+					qualifier: 1
+				}
+			})
+		}
 	}
 
-	satisfied(_actor: PrereqResolver, exclude: unknown, tooltip: TooltipGURPS): boolean {
+	satisfied(_actor: ActorGURPS, exclude: unknown, tooltip: TooltipGURPS): boolean {
 		let satisfied = false
 		if (exclude instanceof ItemGURPS && exclude.isOfType(ItemType.EquipmentContainer)) {
 			satisfied = this.qualifier.matches(exclude.children.size)
@@ -40,12 +47,10 @@ export class ContainedQuantityPrereq extends BasePrereq<prereq.Type.ContainedQua
 		}
 		return satisfied
 	}
-
-	override toObject(): ContainedQuantityPrereqObj {
-		return {
-			...super.toObject(),
-			has: this.has,
-			qualifier: this.qualifier.toObject(),
-		}
-	}
 }
+
+interface ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema>, Omit<ModelPropsFromSchema<ContainedQuantityPrereqSchema>, "qualifier"> {
+	qualifier: NumericCriteria
+}
+
+export { ContainedQuantityPrereq }

@@ -1,30 +1,33 @@
 import { ItemGURPS } from "@item"
 import { BasePrereq } from "./base.ts"
-import { LocalizeGURPS, NumericCompareType, TooltipGURPS, Weight, WeightCriteria, WeightUnits, prereq } from "@util"
-import { ContainedWeightPrereqObj } from "./data.ts"
-import { ItemType } from "@module/data/constants.ts"
-import { EquipmentHolder } from "@module/util/index.ts"
+import { LocalizeGURPS, TooltipGURPS, Weight, WeightCriteria, WeightUnits, prereq } from "@util"
+import { ContainedWeightPrereqSchema } from "./data.ts"
+import { ItemType, NumericCompareType } from "@module/data/constants.ts"
+import { ActorGURPS } from "@actor"
 
-export class ContainedWeightPrereq extends BasePrereq<prereq.Type.ContainedWeight> {
-	qualifier: WeightCriteria
+class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
 
-	constructor(character: EquipmentHolder | null) {
-		let units = WeightUnits.Pound
-		if (character) units = character.settings.default_weight_units
-		super(prereq.Type.ContainedWeight)
-		this.qualifier = new WeightCriteria({
-			compare: NumericCompareType.AtMostNumber,
-			qualifier: Weight.format(5, units),
-		})
+	constructor(data: DeepPartial<SourceFromSchema<ContainedWeightPrereqSchema>>) {
+		super(data)
+		this.qualifier = new WeightCriteria(data.qualifier)
 	}
 
-	static fromObject(data: ContainedWeightPrereqObj, character: EquipmentHolder | null): ContainedWeightPrereq {
-		const prereq = new ContainedWeightPrereq(character)
-		if (data.qualifier) prereq.qualifier = new WeightCriteria(data.qualifier)
-		return prereq
+	static override defineSchema(): ContainedWeightPrereqSchema {
+		const fields = foundry.data.fields
+
+		return {
+			type: new fields.StringField({ initial: prereq.Type.ContainedWeight }),
+			has: new fields.BooleanField({ initial: true }),
+			qualifier: new fields.SchemaField(WeightCriteria.defineSchema(), {
+				initial: {
+					compare: NumericCompareType.AtLeastNumber,
+					qualifier: Weight.format(5, WeightUnits.Pound)
+				}
+			})
+		}
 	}
 
-	satisfied(actor: EquipmentHolder, exclude: unknown, tooltip: TooltipGURPS): boolean {
+	satisfied(actor: ActorGURPS, exclude: unknown, tooltip: TooltipGURPS): boolean {
 		const units = actor.settings.default_weight_units
 		let satisfied = false
 		if (!(exclude instanceof ItemGURPS) || !exclude.isOfType(ItemType.EquipmentContainer)) satisfied = true
@@ -45,12 +48,10 @@ export class ContainedWeightPrereq extends BasePrereq<prereq.Type.ContainedWeigh
 		}
 		return satisfied
 	}
-
-	override toObject(): ContainedWeightPrereqObj {
-		return {
-			...super.toObject(),
-			has: this.has,
-			qualifier: this.qualifier.toObject(),
-		}
-	}
 }
+
+interface ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema>, Omit<ModelPropsFromSchema<ContainedWeightPrereqSchema>, "qualifier"> {
+	qualifier: WeightCriteria
+}
+
+export { ContainedWeightPrereq }

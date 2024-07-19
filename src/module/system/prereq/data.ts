@@ -1,7 +1,7 @@
 import { prereq } from "@util/enum/prereq.ts"
 import { spellcmp } from "@util/enum/spellcmp.ts"
-import { NumericCriteriaSchema } from "@util/numeric-criteria.ts"
 import fields = foundry.data.fields
+import { NumericCriteriaSchema, WeightCriteriaSchema } from "@util"
 
 
 
@@ -23,7 +23,7 @@ export type ContainedQuantityPrereqSchema = BasePrereqSchema<prereq.Type.Contain
 
 export type ContainedWeightPrereqSchema = BasePrereqSchema<prereq.Type.ContainedWeight> & {
 	has: fields.BooleanField
-	qualifier: fields.SchemaField<NumericCriteriaSchema>
+	qualifier: fields.SchemaField<WeightCriteriaSchema>
 }
 
 export type EquippedEquipmentPrereqSchema = BasePrereqSchema<prereq.Type.EquippedEquipment> & {
