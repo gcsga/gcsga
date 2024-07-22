@@ -5,6 +5,7 @@ import { AbstractAttribute } from "@system/abstract-attribute/object.ts"
 import { AttributeSchema } from "./data.ts"
 import { CharacterGURPS } from "@actor"
 import { AttributeDef } from "./definition.ts"
+import { AbstractAttributeConstructionOptions } from "@system/abstract-attribute/data.ts"
 
 class AttributeGURPS extends AbstractAttribute<CharacterGURPS, AttributeSchema> {
 	// adj = 0
@@ -14,11 +15,11 @@ class AttributeGURPS extends AbstractAttribute<CharacterGURPS, AttributeSchema> 
 
 	protected _overridenThreshold: PoolThreshold | null = null
 
-	constructor(data: DeepPartial<SourceFromSchema<AttributeSchema>>, order: number) {
+	constructor(data: DeepPartial<SourceFromSchema<AttributeSchema>>, options: AbstractAttributeConstructionOptions<CharacterGURPS>) {
 		super(data)
 		// this.adj = data.adj
 		// if (data.damage !== undefined) this.damage = data.damage
-		this.order = order
+		this.order = options.order ?? 0
 		// this.applyOps = this.definition?.type === attribute.Type.Pool
 	}
 

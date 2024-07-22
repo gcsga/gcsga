@@ -2,9 +2,10 @@ import fields = foundry.data.fields
 import { BaseItemSourceGURPS, ItemFlagsGURPS, ItemSystemSource } from "@item/base/data.ts"
 import { EffectType, ItemFlags, SYSTEM_NAME } from "@module/data/constants.ts"
 import { RollModifier } from "@module/data/types.ts"
-import { FeatureObj } from "@system"
 import { AbstractEffectGURPS } from "./document.ts"
 import { ItemSystemModel, ItemSystemSchema } from "@item/base/schema.ts"
+import { FeatureSchema } from "@system"
+import { BaseFeature } from "@system/feature/base.ts"
 
 type EffectFlags = ItemFlagsGURPS & {
 	[SYSTEM_NAME]: {
@@ -31,7 +32,7 @@ abstract class AbstractEffectSystemData<
 		return {
 			...super.defineSchema(),
 			id: new fields.StringField({ initial: "" }),
-			features: new fields.ArrayField(new fields.ObjectField<FeatureObj>()),
+			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
 			modifiers: new fields.ArrayField(new fields.ObjectField<RollModifier>()),
 			can_level: new fields.BooleanField(),
 			levels: new fields.SchemaField({ max: new fields.NumberField(), current: new fields.NumberField() }),
@@ -61,7 +62,7 @@ interface AbstractEffectSystemData<
 
 type AbstractEffectSystemSchema = ItemSystemSchema & {
 	id: fields.StringField<string, string, true, false, true>
-	features: fields.ArrayField<fields.ObjectField<FeatureObj>>
+	features: fields.ArrayField<fields.SchemaField<FeatureSchema>>
 	modifiers: fields.ArrayField<fields.ObjectField<RollModifier>>
 	can_level: fields.BooleanField
 	levels: fields.SchemaField<{

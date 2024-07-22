@@ -1,24 +1,26 @@
 import { prereq } from "@util/enum/prereq.ts"
-import { NumericCriteria } from "@util/numeric-criteria.ts"
-import { LocalizeGURPS } from "@util/localize.ts"
-import { TooltipGURPS, extractTechLevel } from "@util"
+import { LocalizeGURPS, TooltipGURPS, extractTechLevel } from "@util"
 import { ActorGURPS } from "@actor"
-import { BasePrereq, Prereq, PrereqClasses, PrereqListSchema } from "./index.ts"
+import { BasePrereq, Prereq, PrereqConstructionOptions, PrereqListSchema } from "./index.ts"
 import { ActorType, NumericCompareType } from "@module/data/constants.ts"
+import { NumericCriteria } from "@module/util/index.ts"
 
 class PrereqList extends BasePrereq<PrereqListSchema> {
 
 
-	constructor(data: DeepPartial<SourceFromSchema<PrereqListSchema>>) {
-		super(data)
+	constructor(
+		data: DeepPartial<SourceFromSchema<PrereqListSchema>>,
+		options?: PrereqConstructionOptions
+	) {
+		super(data, options)
 
 		this.when_tl = new NumericCriteria(data.when_tl)
 		const prereqs: Prereq[] = []
 		if (data.prereqs)
 			for (const source of data.prereqs) {
 				if (!source || !source.type) continue
-				const PrereqClass = PrereqClasses[source.type]
-				prereqs.push(new PrereqClass(source))
+				const PrereqClass = CONFIG.GURPS.Prereq.classes[source.type]
+				prereqs.push(new PrereqClass(source as any))
 			}
 		this.prereqs = prereqs
 	}

@@ -1,5 +1,3 @@
-- move on to prereq conversion
-
 ## Immediate TODO
 
 0. BUGS

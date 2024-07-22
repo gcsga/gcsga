@@ -1,13 +1,12 @@
 import { prereq } from "@util/enum/prereq.ts"
 import { BasePrereq } from "./base.ts"
 import { spellcmp } from "@util/enum/spellcmp.ts"
-import { StringCriteria } from "@util/string-criteria.ts"
-import { NumericCriteria } from "@util/numeric-criteria.ts"
 import { SpellPrereqSchema } from "./data.ts"
 import { ItemGURPS } from "@item"
 import { ActorType, ItemType, NumericCompareType, StringCompareType } from "@data"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
 import { ActorGURPS } from "@actor"
+import { NumericCriteria, StringCriteria } from "@module/util/index.ts"
 
 class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 

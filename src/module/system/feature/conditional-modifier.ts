@@ -15,4 +15,6 @@ class ConditionalModifierBonus extends BaseFeature<ConditionalModifierBonusSchem
 	}
 }
 
+interface ConditionalModifierBonus extends BaseFeature<ConditionalModifierBonusSchema>, ModelPropsFromSchema<ConditionalModifierBonusSchema> { }
+
 export { ConditionalModifierBonus }

@@ -2,7 +2,7 @@ import { LastActor } from "@module/util/last-actor.ts"
 import * as R from "remeda"
 import type { TokenDocumentGURPS } from "@scene"
 import { CanvasGURPS } from "../index.ts"
-import { ActorType, ManeuverID } from "@module/data/constants.ts"
+import { ActorType } from "@module/data/constants.ts"
 import { TokenManeuver } from "./maneuver.ts"
 
 class TokenGURPS<TDocument extends TokenDocumentGURPS = TokenDocumentGURPS> extends Token<TDocument> {
@@ -29,7 +29,7 @@ class TokenGURPS<TDocument extends TokenDocumentGURPS = TokenDocumentGURPS> exte
 
 	override async drawEffects(): Promise<void> {
 		await super.drawEffects()
-		await this._animation
+		// await this._animation
 
 		if (!this.actor?.isOfType(ActorType.Character)) return
 
@@ -41,13 +41,13 @@ class TokenGURPS<TDocument extends TokenDocumentGURPS = TokenDocumentGURPS> exte
 		}
 	}
 
-	override async toggleCombat(combat?: Combat | undefined): Promise<this> {
-		if (this.actor?.isOfType(ActorType.Character)) {
-			if (this.inCombat) await this.actor.setManeuver(null)
-			else await this.actor.setManeuver(ManeuverID.DoNothing)
-		}
-		return super.toggleCombat(combat)
-	}
+	// override async toggleCombatant(combat?: Combat | undefined): Promise<this> {
+	// 	if (this.actor?.isOfType(ActorType.Character)) {
+	// 		if (this.inCombat) await this.actor.setManeuver(null)
+	// 		else await this.actor.setManeuver(ManeuverID.DoNothing)
+	// 	}
+	// 	return super.toggleCombatant(combat)
+	// }
 
 	async showFloatyText(params: showFloatyTextOptions): Promise<void> {
 		if (!this.isVisible) return
@@ -59,7 +59,7 @@ class TokenGURPS<TDocument extends TokenDocumentGURPS = TokenDocumentGURPS> exte
 				const maxHP = this.actor?.pools?.HP?.max
 				if (!(quantity && typeof maxHP === "number")) return null
 
-				const percent = Math.clamped(Math.abs(quantity) / maxHP, 0, 1)
+				const percent = Math.clamp(Math.abs(quantity) / maxHP, 0, 1)
 				const textColors = {
 					damage: 16711680, // reddish
 					healing: 65280, // greenish
@@ -99,12 +99,12 @@ class TokenGURPS<TDocument extends TokenDocumentGURPS = TokenDocumentGURPS> exte
 		})()
 		if (!scrollingTextArgs) return
 
-		await this._animation
+		// await this._animation
 		await canvas.interface?.createScrollingText(...scrollingTextArgs)
 	}
 }
 
-interface TokenGURPS<TDocument extends TokenDocumentGURPS = TokenDocumentGURPS> extends Token<TDocument> {}
+interface TokenGURPS<TDocument extends TokenDocumentGURPS = TokenDocumentGURPS> extends Token<TDocument> { }
 
 type NumericFloatyEffect = { name: string; level?: number | null }
 export type showFloatyTextOptions =

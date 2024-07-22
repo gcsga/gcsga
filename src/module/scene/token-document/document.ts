@@ -3,7 +3,7 @@ import type { SceneGURPS } from "../document.ts"
 import { TokenFlagsGURPS } from "./data.ts"
 import type { CombatGURPS, CombatantGURPS } from "@module/combat/index.ts"
 import type { TokenGURPS } from "@module/canvas/index.ts"
-import { ConditionID } from "@module/data/constants.ts"
+import { ActorType, ConditionID, ManeuverID } from "@module/data/constants.ts"
 
 class TokenDocumentGURPS<TParent extends SceneGURPS | null = SceneGURPS | null> extends TokenDocument<TParent> {
 	/** Has this document completed `DataModel` initialization? */
@@ -33,6 +33,18 @@ class TokenDocumentGURPS<TParent extends SceneGURPS | null = SceneGURPS | null> 
 		if (statusId === ConditionID.Dead) return !!this.actor?.statuses.has(ConditionID.Dead)
 		return this.actor?.itemCollections.conditions.some(e => e.system.slug === statusId) ?? false
 	}
+
+	override async toggleCombatant(options: { active?: boolean }) {
+		if (this.actor?.isOfType(ActorType.Character)) {
+			if (options.active || this.inCombat) await this.actor.setManeuver(null)
+			else await this.actor.setManeuver(ManeuverID.DoNothing)
+		}
+		return super.toggleCombatant(options)
+
+
+
+	}
+
 }
 
 interface TokenDocumentGURPS<TParent extends SceneGURPS | null = SceneGURPS | null> extends TokenDocument<TParent> {

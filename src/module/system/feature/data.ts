@@ -4,9 +4,8 @@ import { spellmatch } from "@util/enum/spellmatch.ts"
 import { stlimit } from "@util/enum/stlimit.ts"
 import { wsel } from "@util/enum/wsel.ts"
 import { wswitch } from "@util/enum/wswitch.ts"
-import { NumericCriteriaSchema } from "@util/numeric-criteria.ts"
-import { StringCriteriaSchema } from "@util/string-criteria.ts"
 import fields = foundry.data.fields
+import { NumericCriteriaSchema, StringCriteriaSchema } from "@module/util/data.ts"
 
 
 export enum MoveBonusType {
@@ -106,6 +105,7 @@ export type WeaponBonusSchema = WeaponLeveledAmountSchema & BaseFeatureSchema & 
 }
 
 export type FeatureSchema =
+	| BaseFeatureSchema
 	| AttributeBonusSchema
 	| ConditionalModifierBonusSchema
 	| ContainedWeightReductionSchema

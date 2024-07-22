@@ -1,6 +1,26 @@
 import { ActorProxyGURPS } from "@actor"
 import { ActorType, ItemType } from "@data"
 import { ItemProxyGURPS } from "@item"
+import { ConditionSystemData } from "@item/condition/data.ts"
+import { EffectSystemData } from "@item/effect/data.ts"
+import { EquipmentContainerSystemData } from "@item/equipment-container/data.ts"
+import { EquipmentModifierContainerSystemData } from "@item/equipment-modifier-container/data.ts"
+import { EquipmentModifierSystemData } from "@item/equipment-modifier/data.ts"
+import { EquipmentSystemData } from "@item/equipment/data.ts"
+import { MeleeWeaponSystemData } from "@item/melee-weapon/data.ts"
+import { NoteContainerSystemData } from "@item/note-container/data.ts"
+import { NoteSystemData } from "@item/note/data.ts"
+import { RangedWeaponSystemData } from "@item/ranged-weapon/data.ts"
+import { RitualMagicSpellSystemData } from "@item/ritual-magic-spell/data.ts"
+import { SkillContainerSystemData } from "@item/skill-container/data.ts"
+import { SkillSystemData } from "@item/skill/data.ts"
+import { SpellContainerSystemData } from "@item/spell-container/data.ts"
+import { SpellSystemData } from "@item/spell/data.ts"
+import { TechniqueSystemData } from "@item/technique/data.ts"
+import { TraitContainerSystemData } from "@item/trait-container/data.ts"
+import { TraitModifierContainerSystemData } from "@item/trait-modifier-container/data.ts"
+import { TraitModifierSystemData } from "@item/trait-modifier/data.ts"
+import { TraitSystemData } from "@item/trait/data.ts"
 import { ActiveEffectGURPS } from "@module/active-effect/index.ts"
 import { ChatMessageGURPS } from "@module/chat-message/document.ts"
 import { ItemsGURPS } from "@module/collection/items.ts"
@@ -39,6 +59,30 @@ export const Load = {
 		CONFIG.Token.documentClass = TokenDocumentGURPS
 		// CONFIG.Token.prototypeSheetClass = TokenConfigGURPS
 		CONFIG.User.documentClass = UserGURPS
+
+		CONFIG.Item.dataModels = {
+			[ItemType.Trait]: TraitSystemData,
+			[ItemType.TraitContainer]: TraitContainerSystemData,
+			[ItemType.TraitModifier]: TraitModifierSystemData,
+			[ItemType.TraitModifierContainer]: TraitModifierContainerSystemData,
+			[ItemType.Skill]: SkillSystemData,
+			[ItemType.Technique]: TechniqueSystemData,
+			[ItemType.SkillContainer]: SkillContainerSystemData,
+			[ItemType.Spell]: SpellSystemData,
+			[ItemType.RitualMagicSpell]: RitualMagicSpellSystemData,
+			[ItemType.SpellContainer]: SpellContainerSystemData,
+			[ItemType.Equipment]: EquipmentSystemData,
+			[ItemType.EquipmentContainer]: EquipmentContainerSystemData,
+			[ItemType.EquipmentModifier]: EquipmentModifierSystemData,
+			[ItemType.EquipmentModifierContainer]: EquipmentModifierContainerSystemData,
+			[ItemType.Note]: NoteSystemData,
+			[ItemType.NoteContainer]: NoteContainerSystemData,
+			// [ItemType.LegacyItem]: LegacyItemSystemData,
+			[ItemType.Effect]: EffectSystemData,
+			[ItemType.Condition]: ConditionSystemData,
+			[ItemType.MeleeWeapon]: MeleeWeaponSystemData,
+			[ItemType.RangedWeapon]: RangedWeaponSystemData,
+		}
 
 		CONFIG.Canvas.darknessColor = 0x2d2d52 // Lightness increased by ~0.4/10 (Munsell value)
 		CONFIG.Canvas.exploredColor = 0x262626 // Increased from 0 (black)

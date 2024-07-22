@@ -96,6 +96,7 @@ export class MoveSettings extends SettingsMenuGURPS {
 					base: "",
 					cost_per_point: 0,
 					overrides: [],
+					order: move_types.length
 				})
 				game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`, move_types)
 				break

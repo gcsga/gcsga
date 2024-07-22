@@ -1,6 +1,6 @@
 import { Int } from "@util/fxp.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { equalFold } from "@util/string-criteria.ts"
+import { equalFold } from "@module/util/string-criteria.ts"
 
 export namespace emcost {
 	export enum Type {

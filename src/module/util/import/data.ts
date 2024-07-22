@@ -1,6 +1,6 @@
-import { ManeuverID } from "@module/data/constants.ts"
+import { ManeuverID, NumericCompareType, StringCompareType } from "@module/data/constants.ts"
 import { MoveTypeOverrideConditionType, ThresholdOp } from "@system"
-import { LengthUnits, NumericCompareType, StringCompareType, WeightUnits } from "@util"
+import { LengthUnits, WeightUnits } from "@util"
 import {
 	affects,
 	attribute,
@@ -413,7 +413,7 @@ interface ImportedRitualMagicSpellSystemSource {
 	vtt_notes?: string
 	tags?: string[]
 	tech_level?: string
-	difficulty?: difficulty.Level
+	difficulty?: difficulty.Level.Average | difficulty.Level.Hard
 	college?: string[]
 	power_source?: string
 	spell_class?: string

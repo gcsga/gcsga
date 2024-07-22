@@ -10,8 +10,7 @@ import {
 	TargetTraitModifier,
 } from "@module/apps/damage-calculator/index.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
-import { BodyOwner } from "@module/util/index.ts"
-import { BodyGURPS, HitLocation, HitLocationObj } from "@system"
+import { BodyGURPS, HitLocation, HitLocationSchema } from "@system"
 import { TooltipGURPS } from "@util"
 
 export class _Attacker implements DamageAttacker {
@@ -23,7 +22,7 @@ export class _Attacker implements DamageAttacker {
 const _dummyHitLocationTable = {
 	name: "humanoid",
 	roll: "3d",
-	locations: <HitLocationObj[]>[],
+	locations: <ModelPropsFromSchema<HitLocationSchema>[]>[],
 }
 
 export class _Target implements DamageTarget {
@@ -43,7 +42,7 @@ export class _Target implements DamageTarget {
 
 	_traits: TargetTrait[] = []
 
-	hitLocationTable: BodyGURPS<this> = BodyGURPS.fromObject(_dummyHitLocationTable, this)
+	hitLocationTable: BodyGURPS = new BodyGURPS(_dummyHitLocationTable, { parent: this as any })
 
 	getTrait(name: string): TargetTrait | undefined {
 		return this._traits.find(it => it.name === name)
@@ -54,7 +53,7 @@ export class _Target implements DamageTarget {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	incrementDamage(_delta: number): void {}
+	incrementDamage(_delta: number): void { }
 
 	pools: TargetPool[] = [
 		{ id: "hp", name: "HP", fullName: "Hit Points" },
@@ -144,31 +143,42 @@ export class _TargetTraitModifier implements TargetTraitModifier {
 	}
 }
 
-export class DamageHitLocation<TOwner extends BodyOwner = BodyOwner> extends HitLocation<TOwner> {
+export class DamageHitLocation extends HitLocation {
 	_map: Map<string, number> = new Map()
 
 	override _DR(_tooltip: TooltipGURPS | null, _drMap: Map<string, number> = new Map()): Map<string, number> {
 		return this._map
 	}
 
-	static override fromObject<TOwner extends BodyOwner>(
-		data: HitLocationObj,
-		actor: TOwner,
-		owningTable?: BodyGURPS<TOwner> | undefined,
-	): DamageHitLocation<TOwner> {
-		const location = new DamageHitLocation(actor)
-
-		location.id = data.id
-		location.choiceName = data.choice_name
-		location.tableName = data.table_name
-		location.slots = data.slots ?? 0
-		location.hitPenalty = data.hit_penalty ?? 0
-		location.drBonus = data.dr_bonus ?? 0
-		location.description = data.description
-		if (data.sub_table) location.subTable = BodyGURPS.fromObject(data.sub_table, actor, location)
-
-		if (owningTable) location.owningTable = owningTable
-		location._map = new Map()
-		return location
+	constructor(
+		data: DeepPartial<ModelPropsFromSchema<HitLocationSchema>>,
+		//@ts-expect-error invalid parent type
+		options?: DataModelConstructionOptions<_Target>
+	) {
+		//@ts-expect-error invalid parent type
+		super(data, options)
 	}
+
+
+	// static override fromObject<TOwner extends BodyOwner>(
+	// 	data: HitLocationObj,
+	// 	actor: TOwner,
+	// 	owningTable?: BodyGURPS<TOwner> | undefined,
+	// ): DamageHitLocation<TOwner> {
+	// 	const location = new DamageHitLocation(actor)
+	//
+	// 	location.id = data.id
+	// 	location.choiceName = data.choice_name
+	// 	location.tableName = data.table_name
+	// 	location.slots = data.slots ?? 0
+	// 	location.hitPenalty = data.hit_penalty ?? 0
+	// 	location.drBonus = data.dr_bonus ?? 0
+	// 	location.description = data.description
+	// 	if (data.sub_table) location.subTable = BodyGURPS.fromObject(data.sub_table, actor, location)
+	//
+	// 	if (owningTable) location.owningTable = owningTable
+	// 	location._map = new Map()
+	// 	return location
+	// }
 }
+

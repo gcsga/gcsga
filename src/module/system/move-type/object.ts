@@ -1,14 +1,17 @@
 import { MoveTypeDef } from "./definition.ts"
-import { AbstractAttribute, MoveBonusType, MoveTypeSchema } from "@system"
+import { AbstractAttribute, AbstractAttributeConstructionOptions, MoveBonusType, MoveTypeSchema } from "@system"
 import { CharacterGURPS } from "@actor"
 
 class MoveType extends AbstractAttribute<CharacterGURPS, MoveTypeSchema> {
 	// adj = 0
 	order: number
 
-	constructor(data: DeepPartial<SourceFromSchema<MoveTypeSchema>>, order: number) {
+	constructor(
+		data: DeepPartial<SourceFromSchema<MoveTypeSchema>>,
+		options: AbstractAttributeConstructionOptions<CharacterGURPS>
+	) {
 		super(data)
-		this.order = order
+		this.order = options.order ?? 0
 	}
 
 	static override defineSchema(): MoveTypeSchema {

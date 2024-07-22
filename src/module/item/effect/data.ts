@@ -20,4 +20,5 @@ type EffectSystemSource = SourceFromSchema<EffectSystemSchema>
 
 type EffectSource = AbstractEffectSource<ItemType.Effect, EffectSystemSource>
 
-export type { EffectSource, EffectSystemSource, EffectSystemData }
+export type { EffectSource, EffectSystemSource }
+export { EffectSystemData }

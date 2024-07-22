@@ -19,7 +19,6 @@ import { RollTypeData } from "@module/roll/roll-handler.ts"
 import { RollGURPS } from "@module/roll/index.ts"
 import { PDF, evaluateToNumber } from "@module/util/index.ts"
 import { AttributeGURPS } from "@system"
-import { CharacterGURPS } from "@actor"
 
 type DispatchFunctions = Record<string, (arg: DamagePayload) => void>
 

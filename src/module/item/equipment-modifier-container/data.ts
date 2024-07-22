@@ -49,4 +49,5 @@ type EquipmentModifierContainerSystemSource = SourceFromSchema<EquipmentModifier
 
 type EquipmentModifierContainerSource = AbstractContainerSource<ItemType.EquipmentModifierContainer, EquipmentModifierContainerSystemSource>
 
-export type { EquipmentModifierContainerSource, EquipmentModifierContainerSystemData, EquipmentModifierContainerSystemSource }
+export type { EquipmentModifierContainerSource, EquipmentModifierContainerSystemSource }
+export { EquipmentModifierContainerSystemData }

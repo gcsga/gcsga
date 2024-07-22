@@ -1,4 +1,4 @@
-import { StringCriteria } from "@util/string-criteria.ts"
+import { StringCriteria } from "@module/util/string-criteria.ts"
 import { skillsel } from "@util"
 import { SkillBonusSchema } from "./data.ts"
 import { BaseFeature, LeveledAmount } from "./base.ts"

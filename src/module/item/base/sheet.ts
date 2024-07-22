@@ -2,13 +2,14 @@ import { feature, htmlQuery, htmlQueryAll, prepareFormData, prereq, study } from
 import { ItemGURPS } from "./document.ts"
 import {
 	AttributeBonus,
-	AttributeDefObj,
+	AttributeDefSchema,
 	AttributeGURPS,
-	FeatureObj,
+	Feature,
+	Prereq,
 	PrereqList,
-	PrereqObj,
 	SkillDefault,
 	TraitPrereq,
+	WeaponBonus,
 } from "@system"
 import { ActorType, ItemType, SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
 
@@ -33,8 +34,8 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 				const path = button.dataset.path?.replace(/^array\./, "")
 				if (!path) return console.error("No data-path value provided for:", button)
 
-				const prereqs = (fu.getProperty(this.item, `${path}.prereqs`) as PrereqObj[]) ?? []
-				prereqs.push(new TraitPrereq().toObject())
+				const prereqs = (fu.getProperty(this.item, `${path}.prereqs`) as Prereq[]) ?? []
+				prereqs.push(new TraitPrereq({}, { parent: this.item }))
 
 				return this._updateObject(event, { [`array.${path}.prereqs`]: prereqs })
 			})
@@ -47,8 +48,8 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 				const path = button.dataset.path?.replace(/^array\./, "")
 				if (!path) return console.error("No data-path value provided for:", button)
 
-				const prereqs = (fu.getProperty(this.item, `${path}.prereqs`) as PrereqObj[]) ?? []
-				prereqs.push(new PrereqList().toObject())
+				const prereqs = (fu.getProperty(this.item, `${path}.prereqs`) as Prereq[]) ?? []
+				prereqs.push(new PrereqList({}, { parent: this.item }))
 
 				return this._updateObject(event, { [`array.${path}.prereqs`]: prereqs })
 			})
@@ -66,7 +67,7 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 				if (isNaN(index)) return console.error("No valid index provided for:", button)
 				path = items.join(".")
 
-				const prereqs = (fu.getProperty(this.item, path) as PrereqObj[]) ?? []
+				const prereqs = (fu.getProperty(this.item, path) as Prereq[]) ?? []
 				prereqs.splice(index, 1)
 
 				return this._updateObject(event, { [`array.${path}`]: prereqs })
@@ -87,12 +88,12 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 				if (isNaN(index)) return console.error("No valid index provided for:", field)
 				path = items.join(".")
 
-				const prereqs = (fu.getProperty(this.item, path) as PrereqObj[]) ?? []
+				const prereqs = (fu.getProperty(this.item, path) as Prereq[]) ?? []
 				const value = field.value as prereq.Type
 
 				if (!prereqs[index]) return
-				const prereqClass = CONFIG.GURPS.Prereq.classes[value]
-				prereqs[index] = new prereqClass(this.item.actor ?? null).toObject()
+				const PrereqClass = CONFIG.GURPS.Prereq.classes[value]
+				prereqs[index] = new PrereqClass({}, { parent: this.item })
 
 				return this._updateObject(event, { [`array.${path}`]: prereqs })
 			})
@@ -117,7 +118,7 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 				return
 
 			const features = this.item.system.features ?? []
-			features.push(new AttributeBonus().toObject())
+			features.push(new AttributeBonus({}, { parent: this.item }))
 			return this._updateObject(event, { ["system.features"]: features })
 		})
 
@@ -158,17 +159,16 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 				const index = parseInt(field.dataset.index ?? "")
 				if (isNaN(index)) return console.error("No valid index provided for:", field)
 
-				const features = (fu.getProperty(this.item, "system.features") as FeatureObj[]) ?? []
+				const features = (fu.getProperty(this.item, "system.features") as Feature[]) ?? []
 				const value = field.value as feature.Type
 
 				if (!features[index]) return
-				const featureClass = CONFIG.GURPS.Feature.classes[value]
+				const FeatureClass = CONFIG.GURPS.Feature.classes[value]
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				if (feature.WeaponBonusTypes.includes(value as any)) {
-					features[index] = new featureClass(value as feature.WeaponBonusType).toObject()
+					features[index] = new WeaponBonus({ type: value }, { parent: this.item })
 				} else {
-					// @ts-expect-error argument not needed
-					features[index] = new featureClass().toObject()
+					features[index] = new FeatureClass({}, { parent: this.item })
 				}
 
 				return this._updateObject(event, { "system.features": features })
@@ -270,7 +270,7 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 		} else {
 			attributes = game.settings
 				.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
-				.reduce((acc: Record<string, string>, att: AttributeDefObj) => {
+				.reduce((acc: Record<string, string>, att: ModelPropsFromSchema<AttributeDefSchema>) => {
 					acc[att.id] = att.name
 					return acc
 				}, {})
@@ -312,7 +312,7 @@ interface ItemSheetDataGURPS<TItem extends ItemGURPS> extends ItemSheetData<TIte
 	weaponBonusTypes: readonly feature.Type[]
 }
 
-interface ItemSheetOptions extends DocumentSheetOptions {}
+interface ItemSheetOptions extends DocumentSheetOptions { }
 
 export { ItemSheetGURPS }
 export type { ItemSheetDataGURPS, ItemSheetOptions }

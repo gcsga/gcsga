@@ -131,7 +131,8 @@ abstract class RollTypeHandler<TData extends RollTypeData = RollTypeData> {
 	}
 
 	async getMessageData(data: TData): Promise<DeepPartial<foundry.documents.ChatMessageSource>> {
-		const roll = await Roll.create(this.getFormula(data)).evaluate({ async: true })
+		// const roll = await Roll.create(this.getFormula(data)).evaluate({ async: true })
+		const roll = await Roll.create(this.getFormula(data)).evaluate()
 		const level = this.getLevel(data)
 		const effectiveLevel = this.getEffectiveLevel(data)
 		const name = this.getName(data)
@@ -157,9 +158,9 @@ abstract class RollTypeHandler<TData extends RollTypeData = RollTypeData> {
 		const actor = game.actors.get(data.actor ?? "")
 
 		return {
-			user: data.user,
+			author: data.user,
 			speaker: { actor: actor?.id ?? "" },
-			type: CONST.CHAT_MESSAGE_TYPES.ROLL,
+			// type: CONST.CHAT_MESSAGE_TYPES.ROLL,
 			content: message,
 			rolls: [JSON.stringify(roll)],
 			sound: CONFIG.sounds.dice,
@@ -379,10 +380,10 @@ class AttackRollTypeHandler extends RollTypeHandler<AttackRollTypeData> {
 		}
 		return data.item?.isOfType(ItemType.RangedWeapon)
 			? {
-					...itemData,
-					rate_of_fire: data.item.ROF,
-					recoil: data.item.recoil,
-				}
+				...itemData,
+				rate_of_fire: data.item.ROF,
+				recoil: data.item.recoil,
+			}
 			: itemData
 	}
 
@@ -394,7 +395,7 @@ class AttackRollTypeHandler extends RollTypeHandler<AttackRollTypeData> {
 			const numberOfShots = Math.min(
 				Math.floor(
 					this.getMargin(data, this.getEffectiveLevel(data), rollTotal).value /
-						data.item.recoil.resolve(data.item).shot,
+					data.item.recoil.resolve(data.item).shot,
 				) + 1,
 				effectiveROF,
 			)
@@ -519,9 +520,9 @@ class DamageRollTypeHandler extends RollTypeHandler<DamageRollTypeData> {
 		const message = await renderTemplate(`systems/${SYSTEM_NAME}/templates/message/damage-roll.hbs`, chatData)
 
 		let messageData: DeepPartial<foundry.documents.ChatMessageSource> = {
-			user: data.user,
+			author: data.user,
 			speaker: { actor: chatData.attacker },
-			type: CONST.CHAT_MESSAGE_TYPES.ROLL,
+			// type: CONST.CHAT_MESSAGE_TYPES.ROLL,
 			content: message,
 			rolls: stringified ? [stringified] : [],
 			sound: CONFIG.sounds.dice,
@@ -546,7 +547,7 @@ class DamageRollTypeHandler extends RollTypeHandler<DamageRollTypeData> {
 	private static getHitLocationFromLastAttackRoll(actor: ActorGURPS | null): string {
 		const name = game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_DAMAGE_LOCATION)
 		const location = actor?.hitLocationTable.locations.find(l => l.id === name)
-		return location?.tableName ?? "Torso"
+		return location?.table_name ?? "Torso"
 	}
 }
 
@@ -559,7 +560,7 @@ class LocationRollTypeHandler extends RollTypeHandler<LocationRollTypeData> {
 		const result = await HitLocationUtil.rollRandomLocation(actor.hitLocationTable)
 
 		// Get localized version of the location id, if necessary.
-		const location = result.location?.choiceName ?? gid.Torso
+		const location = result.location?.choice_name ?? gid.Torso
 
 		const message = await renderTemplate(`systems/${SYSTEM_NAME}/templates/message/random-location-roll.hbs`, {
 			actor: { name: actor?.name, actor: { id: actor?.id } },
@@ -568,8 +569,8 @@ class LocationRollTypeHandler extends RollTypeHandler<LocationRollTypeData> {
 		})
 
 		const messageData = {
-			user: data.user,
-			type: CONST.CHAT_MESSAGE_TYPES.ROLL,
+			author: data.user,
+			// type: CONST.CHAT_MESSAGE_TYPES.ROLL,
 			content: message,
 			rolls: [JSON.stringify(result.roll)],
 			sound: CONFIG.sounds.dice,
@@ -583,7 +584,8 @@ class LocationRollTypeHandler extends RollTypeHandler<LocationRollTypeData> {
 class GenericRollTypeHandler extends RollTypeHandler<GenericRollTypeData> {
 	override async handleRollType(data: GenericRollTypeData): Promise<void> {
 		const formula = this.getFormula(data)
-		const roll = await RollGURPS.create(formula).evaluate({ async: true })
+		// const roll = await RollGURPS.create(formula).evaluate({ async: true })
+		const roll = await RollGURPS.create(formula).evaluate()
 		const modifiers = this.getModifiers(data).map(e => this._applyModifierClasses(e))
 		const total = modifiers.reduce((acc, mod) => {
 			return acc + mod.modifier
@@ -601,8 +603,8 @@ class GenericRollTypeHandler extends RollTypeHandler<GenericRollTypeData> {
 		const message = await renderTemplate(`systems/${SYSTEM_NAME}/templates/message/generic-roll.hbs`, chatData)
 
 		const messageData: DeepPartial<ChatMessageGURPS["_source"]> = {
-			user: data.user,
-			type: CONST.CHAT_MESSAGE_TYPES.ROLL,
+			author: data.user,
+			// type: CONST.CHAT_MESSAGE_TYPES.ROLL,
 			content: message,
 			rolls: [JSON.stringify(roll)],
 			sound: CONFIG.sounds.dice,

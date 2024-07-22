@@ -1,11 +1,11 @@
 import { ItemFlagsGURPS } from "@item/data/index.ts"
 import { ItemFlags, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
-import { FeatureObj, PrereqList } from "@system"
+import { FeatureSchema, PrereqList, PrereqListSchema } from "@system"
 import { LocalizeGURPS, WeightString } from "@util"
 import fields = foundry.data.fields
 import { AbstractContainerSource, AbstractContainerSystemData, AbstractContainerSystemSchema } from "@item/abstract-container/data.ts"
 import { EquipmentGURPS } from "./document.ts"
-import { PrereqListSchema } from "@system/prereq/prereq-list.ts"
+import { BaseFeature } from "@system/feature/base.ts"
 
 type EquipmentFlags = ItemFlagsGURPS & {
 	[SYSTEM_NAME]: {
@@ -38,8 +38,8 @@ class EquipmentSystemData extends AbstractContainerSystemData<EquipmentGURPS, Eq
 			max_uses: new fields.NumberField({ integer: true, min: 0 }),
 			uses: new fields.NumberField({ integer: true, min: 0 }),
 			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
-			features: new fields.ArrayField(new fields.ObjectField<FeatureObj>()),
 			equipped: new fields.BooleanField({ initial: true }),
+			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
 			ignore_weight_for_skills: new fields.BooleanField({ initial: false }),
 		}
 	}
@@ -66,7 +66,7 @@ type EquipmentSystemSchema = AbstractContainerSystemSchema & {
 	max_uses: fields.NumberField
 	uses: fields.NumberField
 	prereqs: fields.SchemaField<PrereqListSchema>
-	features: fields.ArrayField<fields.ObjectField<FeatureObj>>
+	features: fields.ArrayField<fields.SchemaField<FeatureSchema>>
 	equipped: fields.BooleanField
 	ignore_weight_for_skills: fields.BooleanField
 }
@@ -75,4 +75,5 @@ type EquipmentSystemSource = SourceFromSchema<EquipmentSystemSchema>
 
 type EquipmentSource = AbstractContainerSource<ItemType.Equipment, EquipmentSystemSource>
 
-export type { EquipmentSource, EquipmentSystemSource, EquipmentSystemData, EquipmentFlags }
+export type { EquipmentSource, EquipmentSystemSource, EquipmentFlags }
+export { EquipmentSystemData }

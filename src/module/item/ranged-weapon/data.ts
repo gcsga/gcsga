@@ -47,4 +47,5 @@ type RangedWeaponSystemSource = SourceFromSchema<RangedWeaponSystemSchema>
 
 type RangedWeaponSource = AbstractWeaponSource<ItemType.RangedWeapon, RangedWeaponSystemSource>
 
-export type { RangedWeaponSource, RangedWeaponSystemSource, RangedWeaponSystemData }
+export type { RangedWeaponSource, RangedWeaponSystemSource }
+export { RangedWeaponSystemData }

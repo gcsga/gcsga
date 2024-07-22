@@ -1,14 +1,14 @@
 import {
 	AbstractContainerSource,
 } from "@item/abstract-container/data.ts"
+import { AbstractSkillSystemData, AbstractSkillSystemSchema } from "@item/abstract-skill/data.ts"
 import { ItemType } from "@module/data/constants.ts"
-import { FeatureObj, PrereqList, SkillDefault, SkillDefaultSchema, } from "@system"
+import { TechniqueDifficulty } from "@module/data/types.ts"
+import { FeatureSchema, PrereqList, PrereqListSchema, SkillDefault, SkillDefaultSchema, } from "@system"
 import { LocalizeGURPS, difficulty, } from "@util"
 import { TechniqueGURPS } from "./document.ts"
 import fields = foundry.data.fields
-import { TechniqueDifficulty } from "@module/data/types.ts"
-import { PrereqListSchema } from "@system/prereq/prereq-list.ts"
-import { AbstractSkillSystemData, AbstractSkillSystemSchema } from "@item/abstract-skill/data.ts"
+import { BaseFeature } from "@system/feature/base.ts"
 
 
 class TechniqueSystemData extends AbstractSkillSystemData<TechniqueGURPS, TechniqueSystemSchema> {
@@ -29,7 +29,7 @@ class TechniqueSystemData extends AbstractSkillSystemData<TechniqueGURPS, Techni
 			limit: new fields.NumberField({ integer: true, initial: 0 }),
 			limited: new fields.BooleanField({ initial: false }),
 			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
-			features: new fields.ArrayField(new fields.ObjectField<FeatureObj>()),
+			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
 		}
 
 
@@ -47,11 +47,12 @@ type TechniqueSystemSchema = AbstractSkillSystemSchema & {
 	limit: fields.NumberField
 	limited: fields.BooleanField
 	prereqs: fields.SchemaField<PrereqListSchema>
-	features: fields.ArrayField<fields.ObjectField<FeatureObj>>
+	features: fields.ArrayField<fields.SchemaField<FeatureSchema>>
 }
 
 type TechniqueSystemSource = SourceFromSchema<TechniqueSystemSchema>
 
 type TechniqueSource = AbstractContainerSource<ItemType.Technique, TechniqueSystemSource>
 
-export type { TechniqueSource, TechniqueSystemData, TechniqueSystemSource }
+export type { TechniqueSource, TechniqueSystemSource }
+export { TechniqueSystemData }

@@ -358,9 +358,9 @@ class DamageCalculator implements IDamageCalculator {
 			explanation:
 				hardenedDRLevel > 0
 					? this.format("gurps.dmgcalc.description.hardened_dr", {
-							divisor: ad,
-							level: hardenedDRLevel,
-						})
+						divisor: ad,
+						level: hardenedDRLevel,
+					})
 					: this.format("gurps.dmgcalc.description.armor_divisor", { divisor: armorDivisors[index] }),
 		}
 
@@ -394,7 +394,9 @@ class DamageCalculator implements IDamageCalculator {
 			// const ruler = new Ruler() as Ruler & { totalDistance: number }
 			const ruler = new RulerGURPS(game.user)
 			ruler.waypoints = [new Point(token1.x, token1.y)]
-			ruler.measure(new Point(token2.x, token2.y), { gridSpaces: true })
+			// TODO: investigate what gridSpaces was used for before
+			// ruler.measure(new Point(token2.x, token2.y), { gridSpaces: true })
+			ruler.measure(new Point(token2.x, token2.y))
 			const horizontalDistance = ruler.totalDistance
 			const verticalDistance = Math.abs(token1.elevation - token2.elevation)
 			ruler.clear()
@@ -470,7 +472,7 @@ class DamageCalculator implements IDamageCalculator {
 
 	get hitLocationChoice(): Record<string, string> {
 		const choice: Record<string, string> = {}
-		this.hitLocationTable.locations.forEach(it => (choice[it.tableName] = it.tableName))
+		this.hitLocationTable.locations.forEach(it => (choice[it.table_name] = it.table_name))
 		choice.divider = "────────"
 		choice[DefaultHitLocations.LargeArea] = this.format("gurps.dmgcalc.description.large_area_injury")
 		return choice
@@ -832,7 +834,7 @@ class HitLocationDamage implements LocationDamage {
 			const averageDR = Math.floor(
 				(torsoDR(this.hitLocationTable, this.damageType) +
 					leastProtectedLocationDR(this.hitLocationTable, this.damageType)) /
-					2,
+				2,
 			)
 			return { explanation: this.format("gurps.dmgcalc.description.large_area_injury"), value: averageDR }
 		}
@@ -951,7 +953,7 @@ class HitLocationDamage implements LocationDamage {
 		const modifierAndReason = this.woundingModifierByHitLocation(this.locationName!)
 		if (modifierAndReason) return modifierAndReason
 
-		const location = this.hitLocationTable.locations.find(it => it.tableName === this.locationName)
+		const location = this.hitLocationTable.locations.find(it => it.table_name === this.locationName)
 		return {
 			value: this.damageType.woundingModifier,
 			explanation: this.format("gurps.dmgcalc.description.damage_location", {
@@ -959,7 +961,7 @@ class HitLocationDamage implements LocationDamage {
 				location:
 					this.locationName === DefaultHitLocations.LargeArea
 						? this.format("gurps.dmgcalc.description.large_area_injury")
-						: location?.tableName ?? "",
+						: location?.table_name ?? "",
 			}),
 		}
 	}
@@ -981,7 +983,7 @@ class HitLocationDamage implements LocationDamage {
 				key: this.format("gurps.dmgcalc.tolerance.homogenous"),
 			}
 
-		const location = this.hitLocationTable.locations.find(it => it.tableName === this.locationName)
+		const location = this.hitLocationTable.locations.find(it => it.table_name === this.locationName)
 
 		// B380: Unliving: Machines and anyone with Injury Tolerance (Unliving) (p. 60), such as most corporeal
 		// undead, are less vulnerable to impaling and piercing damage.
@@ -1028,7 +1030,7 @@ class HitLocationDamage implements LocationDamage {
 			location:
 				locationName === DefaultHitLocations.LargeArea
 					? this.format("gurps.dmgcalc.description.large_area_injury")
-					: location?.tableName ?? "",
+					: location?.table_name ?? "",
 		})
 
 		if (!location) return undefined
@@ -1043,7 +1045,7 @@ class HitLocationDamage implements LocationDamage {
 					return {
 						value: 2,
 						explanation: this.format("gurps.dmgcalc.description.tight_beam_burn", {
-							location: location?.tableName,
+							location: location?.table_name,
 						}),
 					}
 				break
@@ -1324,7 +1326,7 @@ class HitLocationDamage implements LocationDamage {
 	}
 
 	get hitLocation(): HitLocation | undefined {
-		return this.hitLocationTable.locations.find(it => it.tableName === this.locationName)
+		return this.hitLocationTable.locations.find(it => it.table_name === this.locationName)
 	}
 
 	get isLargeAreaInjury(): boolean {
@@ -1334,7 +1336,7 @@ class HitLocationDamage implements LocationDamage {
 	// --- Damage Resistance ---
 	get damageResistance(): ExplainedValue {
 		return {
-			explanation: `${this.hitLocation?.tableName}`,
+			explanation: `${this.hitLocation?.table_name}`,
 			value: this.overrides.rawDR ?? HitLocationUtil.getHitLocationDR(this.hitLocation, this.damageType),
 		}
 	}
@@ -1393,7 +1395,7 @@ class HitLocationDamage implements LocationDamage {
 			return {
 				value: max,
 				explanation: this.format("gurps.dmgcalc.description.location_max", {
-					location: location?.tableName,
+					location: location?.table_name,
 				}),
 			}
 		}
@@ -1403,7 +1405,7 @@ class HitLocationDamage implements LocationDamage {
 			return {
 				value: max,
 				explanation: this.format("gurps.dmgcalc.description.location_max", {
-					location: location?.tableName,
+					location: location?.table_name,
 				}),
 			}
 		}

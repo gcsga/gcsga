@@ -2,7 +2,8 @@ import { DiceGURPS } from "@module/dice/index.ts"
 import { Evaluator } from "./eval.ts"
 import { ActorType, ItemType } from "@data"
 import { ActorGURPS } from "@actor"
-import { Length, equalFold } from "@util"
+import { Length } from "@util"
+import { equalFold } from "../string-criteria.ts"
 
 export type eFunction = (e: Evaluator, a: string) => unknown
 

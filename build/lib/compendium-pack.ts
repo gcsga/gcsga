@@ -9,7 +9,6 @@ import { PackEntry } from "./types.ts"
 import type { ActorSourceGURPS } from "@actor/data.ts"
 import type { ItemSourceGURPS } from "@item/data/index.ts"
 import { isObject, sluggify } from "@util/misc.ts"
-import { ItemSource } from "types/foundry/common/documents/item.js"
 
 interface PackMetadata {
 	system: string
@@ -53,12 +52,12 @@ class CompendiumPack {
 			Map<string, string>
 		>
 	} & Record<string, Map<string, Map<string, string>> | undefined> = {
-		Actor: new Map(),
-		Item: new Map(),
-		JournalEntry: new Map(),
-		Macro: new Map(),
-		RollTable: new Map(),
-	}
+			Actor: new Map(),
+			Item: new Map(),
+			JournalEntry: new Map(),
+			Macro: new Map(),
+			RollTable: new Map(),
+		}
 
 	static #packsMetadata = JSON.parse(fs.readFileSync("static/system.json", "utf-8")).packs as PackMetadata[]
 
@@ -95,21 +94,11 @@ class CompendiumPack {
 			throw PackError(`Compendium ${this.packId} (${packDir}) was not found.`)
 		}
 
-		// parsedData.sort((a, b) => {
-		// 	if (a._id === b._id) {
-		// 		throw PackError(`_id collision in ${this.packId}: ${a._id}`)
-		// 	}
-		// 	return a._id?.localeCompare(b._id ?? "") ?? 0
-		// })
-
 		this.data = parsedData
 
-		const imagePathsFromItemSystemData = (_item: ItemSource): string[] => {
+		const imagePathsFromItemSystemData = (_item: ItemSourceGURPS): string[] => {
 			return []
 		}
-		// const imagePathsFromItemSystemData = (_item: ItemSourceGURPS): string[] => {
-		// 	return []
-		// }
 
 		for (const docSource of this.data) {
 			// Populate CompendiumPack.namesToIds for later conversion of compendium links
@@ -271,7 +260,7 @@ class CompendiumPack {
 		_source: ItemSourceGURPS,
 		// @ts-expect-error unused function
 		{ to, map }: { to: "ids" | "names"; map: Map<string, Map<string, string>> },
-	): void {}
+	): void { }
 
 	static convertUUID<TUUID extends string>(uuid: TUUID, { to, map }: ConvertUUIDOptions): TUUID {
 		if (uuid.startsWith("Item.")) {
@@ -383,14 +372,6 @@ class CompendiumPack {
 	#isFoldersData(folderData: unknown[]): folderData is DBFolder[] {
 		return folderData.every(maybeFolderData => this.#isFolderSource(maybeFolderData))
 	}
-
-	// #assertSizeValid(source: ActorSourceGURPS | ItemSourceGURPS): void {
-	// 	if (source.type === "npc" || source.type === "vehicle") {
-	// 		if (!tupleHasValue(SIZES, source.system.traits.size.value)) {
-	// 			throw PackError(`Actor size on ${source.name} (${source._id}) is invalid.`)
-	// 		}
-	// 	}
-	// }
 }
 
 interface ConvertUUIDOptions {

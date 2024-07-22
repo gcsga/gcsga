@@ -1,17 +1,20 @@
 import { ItemGURPS } from "@item"
 import { prereq } from "@util/enum/prereq.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { NumericCriteria } from "@util/numeric-criteria.ts"
 import { BasePrereq } from "./base.ts"
-import { ContainedQuantityPrereqSchema } from "./data.ts"
+import { ContainedQuantityPrereqSchema, PrereqConstructionOptions } from "./data.ts"
 import { TooltipGURPS } from "@util"
 import { ItemType, NumericCompareType } from "@module/data/constants.ts"
 import { ActorGURPS } from "@actor"
+import { NumericCriteria } from "@module/util/numeric-criteria.ts"
 
 class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> {
 
-	constructor(data: DeepPartial<SourceFromSchema<ContainedQuantityPrereqSchema>>) {
-		super(data)
+	constructor(
+		data: DeepPartial<SourceFromSchema<ContainedQuantityPrereqSchema>>,
+		options?: PrereqConstructionOptions
+	) {
+		super(data, options)
 		this.qualifier = new NumericCriteria(data.qualifier)
 	}
 

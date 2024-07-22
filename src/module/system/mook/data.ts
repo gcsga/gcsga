@@ -1,17 +1,18 @@
 import { ItemType } from "@data"
-import { WeaponDamageObj } from "@item/abstract-weapon/data.ts"
-import { WeaponDamage } from "@item/abstract-weapon/weapon-damage.ts"
+import { WeaponDamage, WeaponDamageSchema } from "@item/abstract-weapon/weapon-damage.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
-import { AttributeGURPS, AttributeDefObj, AttributeObj, MoveTypeDefObj } from "@system"
+import { AttributeDefSchema, AttributeSchema } from "@system/attribute/data.ts"
+import { AttributeGURPS } from "@system/attribute/object.ts"
+import { MoveTypeDef } from "@system/move-type/definition.ts"
 import { StringBuilder, difficulty, progression, selfctrl } from "@util"
 
 export interface MookData {
 	system: {
-		attributes: AttributeObj[]
+		attributes: Partial<ModelPropsFromSchema<AttributeSchema>>[]
 		settings: {
-			attributes: AttributeDefObj[]
+			attributes: DeepPartial<ModelPropsFromSchema<AttributeDefSchema>>[]
 			damage_progression: progression.Option
-			move_types: MoveTypeDefObj[]
+			move_types: MoveTypeDef[]
 		}
 	}
 	attributes: Map<string, AttributeGURPS>
@@ -169,7 +170,7 @@ export class MookSpell extends _MookItem {
 export class MookWeapon extends _MookItem {
 	strength: string
 
-	damage: WeaponDamageObj
+	damage: SourceFromSchema<WeaponDamageSchema>
 
 	level: number
 

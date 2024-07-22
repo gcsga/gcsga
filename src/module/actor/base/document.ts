@@ -472,7 +472,7 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 	prepareFeature(owner: ItemGURPS, subOwner: ItemGURPS | null, feature: Feature, levels: number): number {
 		feature.owner = owner
 		feature.subOwner = subOwner
-		feature.setLevel(levels)
+		feature.levels = levels
 
 		switch (true) {
 			case feature instanceof AttributeBonus:
@@ -489,13 +489,13 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 								allLocations.set(f2.location, true)
 								if (f2.specialization === feature.specialization) {
 									locationsMatched.set(f2.location, true)
-									const additionalDRBonus = new DRBonus()
+									const additionalDRBonus = new DRBonus({})
 									additionalDRBonus.location = f2.location
 									additionalDRBonus.specialization = feature.specialization
 									additionalDRBonus.leveledAmount = feature.leveledAmount
 									additionalDRBonus.owner = owner
 									additionalDRBonus.subOwner = subOwner
-									additionalDRBonus.setLevel(levels)
+									additionalDRBonus.levels = levels
 									this.features.drBonuses.push(additionalDRBonus)
 								}
 							}

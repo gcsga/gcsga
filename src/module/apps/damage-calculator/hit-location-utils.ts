@@ -49,7 +49,8 @@ export const HitLocationUtil = {
 
 		// TODO For Dice So Nice to appear, put this roll into the chat log.
 		const roll = Roll.create(new DiceGURPS(hitLocationTable.roll).toString(true))
-		await roll.evaluate({ async: true })
+		// await roll.evaluate({ async: true })
+		await roll.evaluate()
 		const rollTotal = roll.total!
 
 		for (const location of hitLocationTable.locations) {

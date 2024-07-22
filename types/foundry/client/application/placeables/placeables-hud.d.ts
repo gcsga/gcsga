@@ -1,12 +1,12 @@
 /**
  * An implementation of the PlaceableHUD base class which renders a heads-up-display interface for Drawing objects.
  */
-declare class DrawingHUD extends BasePlaceableHUD<Drawing> {}
+declare class DrawingHUD extends BasePlaceableHUD<Drawing> { }
 
 /**
  * An implementation of the PlaceableHUD base class which renders a heads-up-display interface for Tile objects.
  */
-declare class TileHUD extends BasePlaceableHUD<Tile> {}
+declare class TileHUD extends BasePlaceableHUD<Tile> { }
 
 /**
  * An implementation of the PlaceableHUD base class which renders a heads-up-display interface for Token objects.
@@ -16,6 +16,8 @@ declare class TokenHUD<TToken extends Token = Token> extends BasePlaceableHUD<TT
 	override getData(options?: ApplicationOptions): TokenHUDData
 
 	protected _getStatusEffectChoices(): Record<string, TokenHUDStatusEffectChoice | undefined>
+
+	protected _onClickControl(event: PointerEvent): void
 }
 
 type TokenHUDData<T extends Token = Token> = BasePlaceableHUDData<T> & {

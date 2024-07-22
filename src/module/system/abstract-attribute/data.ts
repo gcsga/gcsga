@@ -1,3 +1,4 @@
+import { ActorGURPS } from "@actor"
 import fields = foundry.data.fields
 
 type AbstractAttributeSchema = {
@@ -9,4 +10,8 @@ type AbstractAttributeDefSchema = {
 	base: fields.StringField
 }
 
-export type { AbstractAttributeSchema, AbstractAttributeDefSchema }
+interface AbstractAttributeConstructionOptions<TActor extends ActorGURPS> extends DataModelConstructionOptions<TActor> {
+	order?: number
+}
+
+export type { AbstractAttributeSchema, AbstractAttributeDefSchema, AbstractAttributeConstructionOptions }

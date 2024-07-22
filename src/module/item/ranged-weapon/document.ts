@@ -2,13 +2,14 @@ import { ActorGURPS } from "@actor"
 import { AbstractWeaponGURPS } from "@item"
 import { RangedWeaponSource, RangedWeaponSystemData } from "./data.ts"
 import { ActorType, ItemFlags, RollType, SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
-import { TooltipGURPS, includesFold } from "@util"
+import { TooltipGURPS } from "@util"
 import { WeaponAccuracy } from "@item/abstract-weapon/weapon-accuracy.ts"
 import { WeaponRange } from "@item/abstract-weapon/weapon-range.ts"
 import { WeaponROF } from "@item/abstract-weapon/weapon-rof.ts"
 import { WeaponShots } from "@item/abstract-weapon/weapon-shots.ts"
 import { WeaponBulk } from "@item/abstract-weapon/weapon-bulk.ts"
 import { WeaponRecoil } from "@item/abstract-weapon/weapon-recoil.ts"
+import { includesFold } from "@module/util/index.ts"
 
 class RangedWeaponGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends AbstractWeaponGURPS<TParent> {
 	declare accuracy: WeaponAccuracy

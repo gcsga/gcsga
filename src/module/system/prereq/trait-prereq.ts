@@ -1,15 +1,19 @@
-import { StringCriteria } from "@util/string-criteria.ts"
 import { BasePrereq } from "./base.ts"
-import { NumericCriteria } from "@util/numeric-criteria.ts"
 import { LocalizeGURPS, TooltipGURPS, prereq } from "@util"
 import { ActorGURPS } from "@actor"
 import { ActorType, ItemType, NumericCompareType, StringCompareType } from "@module/data/constants.ts"
-import { TraitPrereqSchema } from "./data.ts"
+import { PrereqConstructionOptions, TraitPrereqSchema } from "./data.ts"
+import { NumericCriteria } from "@module/util/numeric-criteria.ts"
+import { StringCriteria } from "@module/util/index.ts"
 
 class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 
-	constructor(data: DeepPartial<SourceFromSchema<TraitPrereqSchema>>) {
-		super(data)
+
+	constructor(
+		data: DeepPartial<SourceFromSchema<TraitPrereqSchema>>,
+		options?: PrereqConstructionOptions
+	) {
+		super(data, options)
 		this.name = new StringCriteria(data.name ?? undefined)
 		this.level = new NumericCriteria(data.level ?? undefined)
 		this.notes = new StringCriteria(data.notes ?? undefined)

@@ -39,11 +39,11 @@ const config = Vite.defineConfig(({ command, mode }): Vite.UserConfig => {
 					async handler(code, chunk) {
 						return chunk.fileName.endsWith(".mjs")
 							? esbuild.transform(code, {
-									keepNames: true,
-									minifyIdentifiers: false,
-									minifySyntax: true,
-									minifyWhitespace: true,
-								})
+								keepNames: true,
+								minifyIdentifiers: false,
+								minifySyntax: true,
+								minifyWhitespace: true,
+							})
 							: code
 					},
 				},

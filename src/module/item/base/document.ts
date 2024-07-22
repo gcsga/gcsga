@@ -55,13 +55,13 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 	declare unsatisfiedReason: string
 
 	// Dummy actor, used for actor substitution for skill defaults
-	private declare _dummyActor: SkillDefaultResolver | null
+	private declare _dummyActor: ActorGURPS | null
 
-	get dummyActor(): SkillDefaultResolver | null {
+	get dummyActor(): ActorGURPS | null {
 		return this._dummyActor
 	}
 
-	set dummyActor(actor: SkillDefaultResolver | null) {
+	set dummyActor(actor: ActorGURPS | null) {
 		this._dummyActor = actor
 	}
 
@@ -167,10 +167,10 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 				ItemType.EquipmentContainer,
 			)
 		) {
-			if (!this.system.prereqs) return new PrereqList()
-			return PrereqList.fromObject(this.system.prereqs, this.actor)
+			if (!this.system.prereqs) return new PrereqList({}, { parent: this })
+			if (!this.system.prereqs) return new PrereqList(this.system.prereqs, { parent: this })
 		}
-		return new PrereqList()
+		return new PrereqList({}, { parent: this })
 	}
 
 	// TODO: replace with something better

@@ -11,7 +11,7 @@ import {
 	MookTrait,
 	MookTraitModifier,
 } from "./data.ts"
-import { AttributeGURPS, AttributeDef, AttributeDefObj, AttributeObj, MoveTypeDef, MoveTypeDefObj } from "@system"
+import { AttributeGURPS, AttributeDef, MoveTypeDef } from "@system"
 import { damageProgression, progression } from "@util"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { CharacterSource, Encumbrance } from "@actor/character/data.ts"
@@ -52,11 +52,11 @@ export class Mook {
 
 	system: {
 		settings: {
-			attributes: AttributeDefObj[]
+			attributes: AttributeDef[]
 			damage_progression: progression.Option
-			move_types: MoveTypeDefObj[]
+			move_types: MoveTypeDef[]
 		}
-		attributes: AttributeObj[]
+		attributes: AttributeGURPS[]
 	}
 
 	declare attributes: Map<string, AttributeGURPS>
@@ -104,7 +104,7 @@ export class Mook {
 		this.attributes = new Map(
 			this.system.attributes
 				.map((value, index) => {
-					return new AttributeGURPS(this, value, index)
+					return new AttributeGURPS(value, { parent: this, order: index })
 				})
 				.map(e => [e.id, e]),
 		)

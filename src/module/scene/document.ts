@@ -1,4 +1,3 @@
-import type { AmbientLightDocumentGURPS } from "./ambient-light-document.ts"
 import { TokenDocumentGURPS } from "./token-document/document.ts"
 
 class SceneGURPS extends Scene {
@@ -23,7 +22,6 @@ class SceneGURPS extends Scene {
 }
 
 interface SceneGURPS extends Scene {
-	readonly lights: foundry.abstract.EmbeddedCollection<AmbientLightDocumentGURPS<this>>
 	readonly tokens: foundry.abstract.EmbeddedCollection<TokenDocumentGURPS<this>>
 }
 export { SceneGURPS }

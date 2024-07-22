@@ -130,7 +130,7 @@ export class TokenHUDGURPS<TToken extends TokenGURPS> extends TokenHUD<TToken> {
 		}
 	}
 
-	protected override _onClickControl(event: MouseEvent): void {
+	protected override _onClickControl(event: PointerEvent): void {
 		super._onClickControl(event)
 		if (event.defaultPrevented) return
 		const button = event.currentTarget as HTMLElement
@@ -143,13 +143,13 @@ export class TokenHUDGURPS<TToken extends TokenGURPS> extends TokenHUD<TToken> {
 	protected _onToggleStatusEffects(event: JQuery.ClickEvent): void {
 		event.preventDefault()
 		this._toggleManeuvers(false)
-		this._toggleStatusEffects(!this._statusEffects)
+		// this._toggleStatusEffects(!this._statusEffects)
 	}
 
 	protected _onToggleManeuvers(event: MouseEvent): void {
 		event.preventDefault()
 		this._maneuvers = (event.currentTarget as HTMLElement).classList.contains("active")
-		this._toggleStatusEffects(false)
+		// this._toggleStatusEffects(false)
 		this._toggleManeuvers(!this._maneuvers)
 	}
 }

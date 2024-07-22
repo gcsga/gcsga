@@ -2,10 +2,11 @@ import { ActorGURPS } from "@actor"
 import { AbstractWeaponGURPS } from "@item"
 import { MeleeWeaponSource, MeleeWeaponSystemData } from "./data.ts"
 import { ActorType, ItemFlags, RollType, SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
-import { TooltipGURPS, includesFold } from "@util"
+import { TooltipGURPS } from "@util"
 import { WeaponParry } from "@item/abstract-weapon/weapon-parry.ts"
 import { WeaponBlock } from "@item/abstract-weapon/weapon-block.ts"
 import { WeaponReach } from "@item/abstract-weapon/weapon-reach.ts"
+import { includesFold } from "@module/util/index.ts"
 
 class MeleeWeaponGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends AbstractWeaponGURPS<TParent> {
 	declare parry: WeaponParry

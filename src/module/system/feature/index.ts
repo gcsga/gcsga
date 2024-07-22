@@ -2,20 +2,6 @@ import { AttributeBonus } from "./attribute-bonus.ts"
 import { ConditionalModifierBonus } from "./conditional-modifier.ts"
 import { ContainedWeightReduction } from "./contained-weight-reduction.ts"
 import { CostReduction } from "./cost-reduction.ts"
-import {
-	AttributeBonusObj,
-	ConditionalModifierBonusObj,
-	ContainedWeightReductionObj,
-	CostReductionObj,
-	DRBonusObj,
-	MoveBonusObj,
-	ReactionBonusObj,
-	SkillBonusObj,
-	SkillPointBonusObj,
-	SpellBonusObj,
-	SpellPointBonusObj,
-	WeaponBonusObj,
-} from "./data.ts"
 import { DRBonus } from "./dr-bonus.ts"
 import { MoveBonus } from "./move-bonus.ts"
 import { ReactionBonus } from "./reaction-bonus.ts"
@@ -24,7 +10,6 @@ import { SkillPointBonus } from "./skill-point-bonus.ts"
 import { SpellBonus } from "./spell-bonus.ts"
 import { SpellPointBonus } from "./spell-point-bonus.ts"
 import { WeaponBonus } from "./weapon-bonus.ts"
-import { feature } from "@util"
 
 export { AttributeBonus } from "./attribute-bonus.ts"
 export { MoveBonus } from "./move-bonus.ts"
@@ -53,20 +38,6 @@ export type Feature =
 	| WeaponBonus
 	| ReactionBonus
 	| ConditionalModifierBonus
-
-export type FeatureObj =
-	| ContainedWeightReductionObj
-	| ReactionBonusObj
-	| ConditionalModifierBonusObj
-	| AttributeBonusObj
-	| CostReductionObj
-	| DRBonusObj
-	| MoveBonusObj
-	| SkillBonusObj
-	| SkillPointBonusObj
-	| SpellBonusObj
-	| SpellPointBonusObj
-	| WeaponBonusObj<feature.WeaponBonusType>
 
 export interface FeatureMap {
 	attributeBonuses: AttributeBonus[]

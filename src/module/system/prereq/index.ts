@@ -1,4 +1,3 @@
-import { prereq } from "@util"
 import { AttributePrereq } from "./attribute-prereq.ts"
 import { ContainedQuantityPrereq } from "./contained-quantity-prereq.ts"
 import { ContainedWeightPrereq } from "./contained-weight-prereq.ts"
@@ -28,14 +27,3 @@ export type Prereq =
 	| SkillPrereq
 	| SpellPrereq
 	| TraitPrereq
-
-export const PrereqClasses: Record<prereq.Type, ConstructorOf> = {
-	[prereq.Type.Attribute]: AttributePrereq,
-	[prereq.Type.ContainedQuantity]: ContainedQuantityPrereq,
-	[prereq.Type.ContainedWeight]: ContainedWeightPrereq,
-	[prereq.Type.EquippedEquipment]: EquippedEquipmentPrereq,
-	[prereq.Type.List]: PrereqList,
-	[prereq.Type.Skill]: SkillPrereq,
-	[prereq.Type.Spell]: SpellPrereq,
-	[prereq.Type.Trait]: TraitPrereq,
-}

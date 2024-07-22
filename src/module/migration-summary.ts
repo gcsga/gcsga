@@ -48,7 +48,6 @@ export class MigrationSummary extends Application<MigrationSummaryOptions> {
 
 		const helpResourcesText = await TextEditor.enrichHTML(
 			LocalizeGURPS.translations.gurps.migrations.summary.helpresources,
-			{ async: true },
 		)
 
 		return {

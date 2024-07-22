@@ -2,9 +2,10 @@ import fields = foundry.data.fields
 import { BaseItemSourceGURPS } from "@item/base/data.ts"
 import { ItemSystemModel, ItemSystemSchema } from "@item/base/schema.ts"
 import { ItemType } from "@module/data/constants.ts"
-import { FeatureObj } from "@system"
 import { LocalizeGURPS, emcost, emweight } from "@util"
 import { EquipmentModifierGURPS } from "./document.ts"
+import { BaseFeature } from "@system/feature/base.ts"
+import { FeatureSchema } from "@system"
 
 class EquipmentModifierSystemData extends ItemSystemModel<EquipmentModifierGURPS, EquipmentModifierSystemSchema> {
 	static override defineSchema(): EquipmentModifierSystemSchema {
@@ -28,7 +29,7 @@ class EquipmentModifierSystemData extends ItemSystemModel<EquipmentModifierGURPS
 			tech_level: new fields.StringField(),
 			cost: new fields.StringField(),
 			weight: new fields.StringField(),
-			features: new fields.ArrayField(new fields.ObjectField<FeatureObj>()),
+			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
 		}
 	}
 }
@@ -51,11 +52,12 @@ type EquipmentModifierSystemSchema = ItemSystemSchema & {
 	tech_level: fields.StringField
 	cost: fields.StringField
 	weight: fields.StringField
-	features: fields.ArrayField<fields.ObjectField<FeatureObj>>
+	features: fields.ArrayField<fields.SchemaField<FeatureSchema>>
 }
 
 type EquipmentModifierSystemSource = SourceFromSchema<EquipmentModifierSystemSchema>
 
 type EquipmentModifierSource = BaseItemSourceGURPS<ItemType.EquipmentModifier, EquipmentModifierSystemSource>
 
-export type { EquipmentModifierSource, EquipmentModifierSystemSource, EquipmentModifierSystemData }
+export type { EquipmentModifierSource, EquipmentModifierSystemSource }
+export { EquipmentModifierSystemData }

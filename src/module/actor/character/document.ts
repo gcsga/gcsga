@@ -44,7 +44,6 @@ import {
 	attribute,
 	container,
 	damageProgression,
-	equalFold,
 	feature,
 	getCurrentTime,
 	skillsel,
@@ -57,6 +56,7 @@ import { DiceGURPS } from "@module/dice/index.ts"
 import { ItemInstances } from "@item/types.ts"
 import { CharacterLifts } from "./lifts.ts"
 import { CharacterEncumbrance } from "./encumbrance.ts"
+import { equalFold } from "@module/util/index.ts"
 
 class CharacterGURPS<
 	TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null,
@@ -319,26 +319,26 @@ class CharacterGURPS<
 		).shift() as MeleeWeaponGURPS<this>
 	}
 
-	protected override async _preCreate(
-		data: this["_source"],
-		options: DatabaseCreateOperation<TParent>,
-		user: User<Actor<null>>,
-	): Promise<boolean | void> {
-		await super._preCreate(data, options, user)
-
-		const date = getCurrentTime()
-		const defaultData = {
-			_id: data._id,
-			system: fu.mergeObject(data.system ?? {}, {
-				total_points: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.initial_points`),
-				created_date: date,
-				modified_date: date,
-			}),
-			// flags: CharacterFlagDefaults,
-		}
-
-		this.updateSource(defaultData)
-	}
+	// protected override async _preCreate(
+	// 	data: this["_source"],
+	// 	options: DatabaseCreateOperation<TParent>,
+	// 	user: User<Actor<null>>,
+	// ): Promise<boolean | void> {
+	// 	await super._preCreate(data, options, user)
+	//
+	// 	const date = getCurrentTime()
+	// 	const defaultData = {
+	// 		_id: data._id,
+	// 		system: fu.mergeObject(data.system ?? {}, {
+	// 			total_points: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.initial_points`),
+	// 			created_date: date,
+	// 			modified_date: date,
+	// 		}),
+	// 		// flags: CharacterFlagDefaults,
+	// 	}
+	//
+	// 	this.updateSource(defaultData)
+	// }
 
 	protected override _onUpdate(
 		changed: DeepPartial<this["_source"]>,
@@ -864,7 +864,7 @@ class CharacterGURPS<
 			if (pool) this.pools[e.id] = pool
 		})
 
-		this.hitLocationTable = new BodyGURPS(this.system.settings.body_type, null)
+		this.hitLocationTable = new BodyGURPS(this.system.settings.body_type)
 		this.hitLocationTable.updateRollRanges()
 	}
 

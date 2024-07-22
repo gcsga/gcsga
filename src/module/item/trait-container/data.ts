@@ -63,4 +63,5 @@ type TraitContainerSystemSource = SourceFromSchema<TraitContainerSystemSchema>
 
 type TraitContainerSource = AbstractContainerSource<ItemType.TraitContainer, TraitContainerSystemSource>
 
-export type { TraitContainerSource, TraitContainerSystemSource, TraitContainerSystemData }
+export type { TraitContainerSource, TraitContainerSystemSource }
+export { TraitContainerSystemData }

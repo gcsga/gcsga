@@ -31,7 +31,7 @@ import { SpellSource, SpellSystemSource } from "@item/spell/data.ts"
 import { EquipmentSource, EquipmentSystemSource } from "@item/equipment/data.ts"
 import { ItemFlags, ItemType, SYSTEM_NAME, gid } from "@data"
 import { ItemSourceGURPS } from "@item/data/index.ts"
-import { FeatureSchema, Study, TemplatePickerSchema } from "@system"
+import { FeatureSchema, PrereqListSchema, Study, TemplatePickerSchema } from "@system"
 import {
 	LocalizeGURPS,
 	affects,
@@ -42,6 +42,8 @@ import {
 	picker,
 	prereq,
 	selfctrl,
+	stdmg,
+	study,
 	tmcost,
 } from "@util"
 import { TraitContainerSource, TraitContainerSystemSource } from "@item/trait-container/data.ts"
@@ -63,21 +65,12 @@ import { NoteSource, NoteSystemSource } from "@item/note/data.ts"
 import { NoteContainerSource, NoteContainerSystemSource } from "@item/note-container/data.ts"
 import { MeleeWeaponSource, MeleeWeaponSystemSource } from "@item/melee-weapon/data.ts"
 import { RangedWeaponSource, RangedWeaponSystemSource } from "@item/ranged-weapon/data.ts"
-import { PrereqListSchema } from "@system/prereq/prereq-list.ts"
+import { DocumentStatsSchema } from "types/foundry/common/data/fields.js"
 
 interface ItemImportContext {
 	parentId: string | null
 	other?: boolean
 	// sort: number
-}
-
-interface DocumentStats {
-	systemId: string
-	systemVersion: string
-	coreVersion: string
-	createdTime: number
-	modifiedTime: number
-	lastModifiedBy: string
 }
 
 abstract class ItemImporter {
@@ -98,6 +91,7 @@ abstract class ItemImporter {
 	abstract importItem(item: ImportedItemSource, context: ItemImportContext): ItemSourceGURPS[]
 
 	static importPrereqs(prereqList?: ImportedPrereqList): SourceFromSchema<PrereqListSchema> {
+		//@ts-expect-error not necessary
 		return prereqList ?? { type: prereq.Type.List, all: true }
 	}
 
@@ -110,10 +104,11 @@ abstract class ItemImporter {
 	}
 
 	static importTemplatePicker(templatePicker?: ImportedTemplatePicker): SourceFromSchema<TemplatePickerSchema> {
+		//@ts-expect-error not necessary
 		return templatePicker ?? { type: picker.Type.NotApplicable, qualifier: {} }
 	}
 
-	static getStats(): DocumentStats {
+	static getStats(): SourceFromSchema<DocumentStatsSchema> {
 		const date = Date.now()
 		return {
 			systemId: SYSTEM_NAME,
@@ -122,6 +117,8 @@ abstract class ItemImporter {
 			createdTime: date,
 			modifiedTime: date,
 			lastModifiedBy: game.user.id,
+			compendiumSource: null,
+			duplicateSource: null
 		}
 	}
 }
@@ -156,7 +153,7 @@ class TraitImporter extends ItemImporter {
 			study: ItemImporter.importStudy(item.study),
 			cr: item.cr ?? selfctrl.Roll.NoCR,
 			cr_adj: item.cr_adj ?? selfctrl.Adjustment.NoCRAdj,
-			study_hours_needed: item.study_hours_needed ?? "",
+			study_hours_needed: item.study_hours_needed === "" ? study.Level.Standard : item.study_hours_needed ?? study.Level.Standard,
 			disabled: item.disabled ?? false,
 			round_down: item.round_down ?? false,
 			can_level: item.can_level ?? false,
@@ -387,14 +384,14 @@ class SkillImporter extends ItemImporter {
 			tech_level_required: typeof item.tech_level === "string",
 			difficulty: item.difficulty ?? "dx/a",
 			points: item.points ?? 0,
-			encumbrance_penalty_multiplier: (item.encumbrance_penalty_multiplier as EncumbrancePenaltyMultiplier) ?? 0,
+			encumbrance_penalty_multiplier: (item.encumbrance_penalty_multiplier) ?? 0,
 			defaulted_from: item.defaulted_from ?? { type: gid.Skill, name: "Skill", modifier: 0 },
 			defaults: item.defaults ?? [],
 			prereqs: ItemImporter.importPrereqs(item.prereqs),
 			// weapons handled separately
 			features: ItemImporter.importFeatures(item.features),
 			study: ItemImporter.importStudy(item.study),
-			study_hours_needed: item.study_hours_needed ?? "",
+			study_hours_needed: item.study_hours_needed === "" ? study.Level.Standard : item.study_hours_needed ?? study.Level.Standard,
 		}
 
 		item.weapons?.reduce((acc, weapon) => {
@@ -446,6 +443,7 @@ class TechniqueImporter extends ItemImporter {
 			vtt_notes: item.vtt_notes ?? "",
 			tags: item.tags ?? [],
 			tech_level: item.tech_level ?? "",
+			tech_level_required: true,
 			difficulty: item.difficulty ?? difficulty.Level.Average,
 			points: item.points ?? 0,
 			default: item.default ?? { type: gid.Skill, name: "Skill", modifier: 0 },
@@ -456,7 +454,7 @@ class TechniqueImporter extends ItemImporter {
 			// weapons handled separately
 			features: ItemImporter.importFeatures(item.features),
 			study: ItemImporter.importStudy(item.study),
-			study_hours_needed: item.study_hours_needed ?? "",
+			study_hours_needed: item.study_hours_needed === "" ? study.Level.Standard : item.study_hours_needed ?? study.Level.Standard,
 		}
 
 		item.weapons?.reduce((acc, weapon) => {
@@ -574,7 +572,7 @@ class SpellImporter extends ItemImporter {
 			prereqs: ItemImporter.importPrereqs(item.prereqs),
 			// weapons handled separately
 			study: ItemImporter.importStudy(item.study),
-			study_hours_needed: item.study_hours_needed ?? "",
+			study_hours_needed: item.study_hours_needed === "" ? study.Level.Standard : item.study_hours_needed ?? study.Level.Standard,
 		}
 
 		item.weapons?.reduce((acc, weapon) => {
@@ -642,7 +640,7 @@ class RitualMagicSpellImporter extends ItemImporter {
 			prereqs: ItemImporter.importPrereqs(item.prereqs),
 			// weapons handled separately
 			study: ItemImporter.importStudy(item.study),
-			study_hours_needed: item.study_hours_needed ?? "",
+			study_hours_needed: item.study_hours_needed === "" ? study.Level.Standard : item.study_hours_needed ?? study.Level.Standard,
 		}
 
 		item.weapons?.reduce((acc, weapon) => {
@@ -1076,7 +1074,16 @@ class MeleeWeaponImporter extends ItemImporter {
 			slug: "",
 			_migration: { version: null, previous: null },
 			type: ItemType.MeleeWeapon,
-			damage: item.damage,
+			damage: {
+				base: "",
+				st: stdmg.Option.Thrust,
+				armor_divisor: 1,
+				fragmentation: "",
+				fragmentation_armor_divisor: 1,
+				fragmentation_type: "",
+				modifier_per_die: 0,
+				...item.damage
+			},
 			strength: item.strength ?? "",
 			usage: item.usage ?? "",
 			usage_notes: item.usage_notes ?? "",
@@ -1123,7 +1130,16 @@ class RangedWeaponImporter extends ItemImporter {
 			slug: "",
 			_migration: { version: null, previous: null },
 			type: ItemType.RangedWeapon,
-			damage: item.damage,
+			damage: {
+				base: "",
+				st: stdmg.Option.Thrust,
+				armor_divisor: 1,
+				fragmentation: "",
+				fragmentation_armor_divisor: 1,
+				fragmentation_type: "",
+				modifier_per_die: 0,
+				...item.damage
+			},
 			strength: item.strength ?? "",
 			usage: item.usage ?? "",
 			usage_notes: item.usage_notes ?? "",

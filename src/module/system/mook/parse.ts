@@ -3,7 +3,7 @@ import { MookData, MookMelee, MookRanged, MookSkill, MookSpell, MookTrait, MookT
 import { Mook } from "./document.ts"
 import { ItemType, SETTINGS, SYSTEM_NAME, gid } from "@data"
 import { DiceGURPS } from "@module/dice/index.ts"
-import { WeaponDamageObj } from "@item/abstract-weapon/data.ts"
+import { WeaponDamageSchema } from "@item/abstract-weapon/weapon-damage.ts"
 
 const regex_points = /\[(-?\d+)\]/
 const damage_type_matches: Map<string, string> = new Map([
@@ -62,7 +62,7 @@ export class MookParser {
 	parseStatBlock(text: string): MookData {
 		this.text = this.sanitizeStatBlock(text)
 		this.object.profile.name = this.parseName(this.text)
-		;[this.object.melee, this.object.ranged] = this.parseAttacks(this.text)
+			;[this.object.melee, this.object.ranged] = this.parseAttacks(this.text)
 		this.parseAttributes()
 		this.object.traits = this.parseTraits()
 		this.object.skills = this.parseSkills()
@@ -479,11 +479,11 @@ export class MookParser {
 		return spells
 	}
 
-	parseDamage(input: string): [WeaponDamageObj, string] {
+	parseDamage(input: string): [SourceFromSchema<WeaponDamageSchema>, string] {
 		const regex_full_damage = /(\d+d)([+-]\d+)?\s*(\(\d+\))?\s+\w+/
 		const regex_armor_divisor = /\((\d+)\)/
 
-		const damage: WeaponDamageObj = {
+		const damage: SourceFromSchema<WeaponDamageSchema> = {
 			type: "",
 			st: stdmg.Option.None,
 			base: "",
@@ -720,7 +720,7 @@ export class MookParser {
 
 			t = t.trim()
 
-			let damage: WeaponDamageObj = {
+			let damage: SourceFromSchema<WeaponDamageSchema> = {
 				type: "",
 				st: stdmg.Option.None,
 				base: "",
@@ -731,8 +731,8 @@ export class MookParser {
 				modifier_per_die: 0,
 			}
 
-			// capture damage
-			;[damage, t] = this.parseDamage(t)
+				// capture damage
+				;[damage, t] = this.parseDamage(t)
 
 			// if damage parser captures anything after the name, add it as a note
 			if (t.match(/\{\{.*\}\}/)) {

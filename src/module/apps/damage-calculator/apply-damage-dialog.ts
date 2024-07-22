@@ -239,7 +239,7 @@ export class ApplyDamageDialog extends Application {
 		const result = await HitLocationUtil.rollRandomLocation(this.target.hitLocationTable)
 
 		// Get localized version of the location id, if necessary.
-		const location = result.location?.choiceName ?? "Torso"
+		const location = result.location?.choice_name ?? "Torso"
 
 		const message = await renderTemplate(`systems/${SYSTEM_NAME}/templates/message/random-location-roll.hbs`, {
 			actor: this.target,
@@ -248,8 +248,8 @@ export class ApplyDamageDialog extends Application {
 		})
 
 		ChatMessage.create({
-			user: game.user.id,
-			type: CONST.CHAT_MESSAGE_TYPES.ROLL,
+			author: game.user.id,
+			// type: CONST.CHAT_MESSAGE_TYPES.ROLL,
 			content: message,
 			rolls: [JSON.stringify(result.roll)],
 			sound: CONFIG.sounds.dice,

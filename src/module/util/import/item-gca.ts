@@ -1,7 +1,7 @@
 import { GCACharacter, GCATrait } from "./data-gca.ts"
 import { TraitSource, TraitSystemSource } from "@item/trait/data.ts"
-import { ItemFlags, ItemType, SYSTEM_NAME, SkillDifficulty, gid } from "@data"
-import { LocalizeGURPS, container, difficulty, picker, prereq, selfctrl } from "@util"
+import { ItemFlags, ItemType, NumericCompareType, SYSTEM_NAME, SkillDifficulty, StringCompareType, gid } from "@data"
+import { LocalizeGURPS, container, difficulty, picker, prereq, selfctrl, study } from "@util"
 import { SkillSource, SkillSystemSource } from "@item/skill/data.ts"
 import { TechniqueSource, TechniqueSystemSource } from "@item/technique/data.ts"
 import { SpellSource, SpellSystemSource } from "@item/spell/data.ts"
@@ -154,12 +154,12 @@ class GCAItemImporter {
 			base_points: base_points,
 			levels: levelDifference.length > 1 ? data.level ?? 0 : 0,
 			points_per_level: level_points,
-			prereqs: { type: prereq.Type.List, all: true },
+			prereqs: { type: prereq.Type.List, all: true, when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 }, prereqs: [] },
 			features: [],
 			study: [],
 			cr,
 			cr_adj: selfctrl.Adjustment.NoCRAdj,
-			study_hours_needed: "",
+			study_hours_needed: study.Level.Standard,
 			disabled: false,
 			round_down: false,
 			can_level: levelDifference.length > 1,

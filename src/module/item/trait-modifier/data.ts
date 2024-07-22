@@ -1,10 +1,11 @@
 import { BaseItemSourceGURPS } from "@item/base/data.ts"
 import { ItemSystemModel, ItemSystemSchema } from "@item/base/schema.ts"
 import { ItemType } from "@module/data/constants.ts"
-import { FeatureObj } from "@system"
 import { LocalizeGURPS, affects, tmcost } from "@util"
 import { TraitModifierGURPS } from "./document.ts"
 import fields = foundry.data.fields
+import { BaseFeature } from "@system/feature/base.ts"
+import { FeatureSchema } from "@system"
 
 class TraitModifierSystemData extends ItemSystemModel<TraitModifierGURPS, TraitModifierSystemSchema> {
 	static override defineSchema(): TraitModifierSystemSchema {
@@ -27,7 +28,7 @@ class TraitModifierSystemData extends ItemSystemModel<TraitModifierGURPS, TraitM
 			affects: new fields.StringField<affects.Option>(),
 			cost_type: new fields.StringField<tmcost.Type>(),
 			disabled: new fields.BooleanField({ initial: false }),
-			features: new fields.ArrayField(new fields.ObjectField<FeatureObj>()),
+			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
 		}
 	}
 }
@@ -49,12 +50,12 @@ type TraitModifierSystemSchema = ItemSystemSchema & {
 	affects: fields.StringField<affects.Option>
 	cost_type: fields.StringField<tmcost.Type>
 	disabled: fields.BooleanField
-	features: fields.ArrayField<fields.ObjectField<FeatureObj>>
+	features: fields.ArrayField<fields.SchemaField<FeatureSchema>>
 }
 
 type TraitModifierSystemSource = SourceFromSchema<TraitModifierSystemSchema>
 
 type TraitModifierSource = BaseItemSourceGURPS<ItemType.TraitModifier, TraitModifierSystemSource>
 
-export type { TraitModifierSource, TraitModifierSystemData, TraitModifierSystemSource }
-
+export type { TraitModifierSource, TraitModifierSystemSource }
+export { TraitModifierSystemData }

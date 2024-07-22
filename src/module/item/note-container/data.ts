@@ -43,4 +43,5 @@ type NoteContainerSystemSource = SourceFromSchema<NoteContainerSystemSchema>
 
 type NoteContainerSource = AbstractContainerSource<ItemType.NoteContainer, NoteContainerSystemSource>
 
-export type { NoteContainerSource, NoteContainerSystemData, NoteContainerSystemSource }
+export type { NoteContainerSource, NoteContainerSystemSource }
+export { NoteContainerSystemData }

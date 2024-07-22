@@ -1,8 +1,7 @@
 import { feature } from "@util/enum/feature.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { WeaponLeveledAmount } from "./weapon-leveled-amount.ts"
 import { TooltipGURPS } from "@util"
-import { ItemGURPS } from "@item"
+import type { ItemGURPS } from "@item"
 import { ItemType } from "@module/data/constants.ts"
 import { BaseFeatureSchema, LeveledAmountSchema } from "./data.ts"
 import { LaxSchemaField } from "@system/schema-data-fields.ts"
@@ -37,8 +36,11 @@ abstract class BaseFeature<
 		return schema
 	}
 
-	constructor(data: DeepPartial<SourceFromSchema<TSchema>>) {
-		super(data)
+	constructor(
+		data: DeepPartial<SourceFromSchema<TSchema>>,
+		options?: DocumentConstructionContext<ItemGURPS>
+	) {
+		super(data, options)
 		this._owner = null
 		this._subOwner = null
 		this.effective = false
@@ -52,7 +54,7 @@ abstract class BaseFeature<
 
 	set owner(owner: ItemGURPS | null) {
 		this._owner = owner
-		if (owner instanceof ItemGURPS) {
+		if (owner !== null) {
 			if (owner.isOfType(ItemType.Effect, ItemType.Condition)) this.effective = true
 			else this.effective = false
 		}
@@ -98,7 +100,7 @@ abstract class BaseFeature<
 		return this.basicAddToTooltip(this.leveledAmount, tooltip)
 	}
 
-	basicAddToTooltip(amt: LeveledAmount | WeaponLeveledAmount, tooltip: TooltipGURPS | null): void {
+	basicAddToTooltip(amt: LeveledAmount, tooltip: TooltipGURPS | null): void {
 		if (tooltip !== null) {
 			// tooltip.push("\n")
 			tooltip.push(this.parentName)

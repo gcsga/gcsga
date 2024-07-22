@@ -85,6 +85,13 @@ declare global {
 		 */
 		hasStatusEffect(statusId: string): boolean
 
+		/**
+			 * Add or remove this Token from a Combat encounter.
+			 * @param {object} [options={}]         Additional options passed to TokenDocument.createCombatants or TokenDocument.deleteCombatants
+			 * @param {boolean} [options.active]      Require this token to be an active Combatant or to be removed. Otherwise, the current combat state of the Token is toggled.
+			 * @returns {Promise<boolean>}          Is this Token now an active Combatant?
+			 */
+		toggleCombatant(options?: { active?: boolean }): Promise<boolean>
 		/* -------------------------------------------- */
 		/*  Actor Data Operations                       */
 		/* -------------------------------------------- */

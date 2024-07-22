@@ -41,4 +41,5 @@ type MeleeWeaponSystemSource = SourceFromSchema<MeleeWeaponSystemSchema>
 
 type MeleeWeaponSource = AbstractWeaponSource<ItemType.MeleeWeapon, MeleeWeaponSystemSource>
 
-export type { MeleeWeaponSource, MeleeWeaponSystemSource, MeleeWeaponSystemData }
+export type { MeleeWeaponSource, MeleeWeaponSystemSource }
+export { MeleeWeaponSystemData }

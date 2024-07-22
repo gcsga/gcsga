@@ -63,14 +63,14 @@ function setProperty(obj: object, key: string, value: unknown): boolean {
 	// Update the target
 	if ((target as Record<string, unknown>)[key] !== value) {
 		changed = true
-		;(target as Record<string, unknown>)[key] = value
+			; (target as Record<string, unknown>)[key] = value
 	}
 
 	// Return changed status
 	return changed
 }
 
-class Color extends Number {}
+class Color extends Number { }
 
 /**
  * Learn the underlying data type of some variable. Supported identifiable types include:
@@ -205,7 +205,7 @@ function _mergeInsert(
 
 	// Recursively create simple objects
 	if (v?.constructor === Object) {
-		;(original as Record<string, unknown>)[k] = mergeObject({}, v, {
+		; (original as Record<string, unknown>)[k] = mergeObject({}, v, {
 			insertKeys: true,
 			inplace: true,
 			performDeletions,
@@ -214,7 +214,7 @@ function _mergeInsert(
 	}
 
 	// Insert a key
-	;(original as Record<string, unknown>)[k] = v
+	; (original as Record<string, unknown>)[k] = v
 }
 
 /** A helper function for merging objects when the target key exists in the original */
@@ -258,7 +258,7 @@ function _mergeUpdate(
 		if (tx !== "undefined" && tv !== tx && enforceTypes) {
 			throw new Error(`Mismatched data types encountered during object merge.`)
 		}
-		;(original as Record<string, unknown>)[k] = v
+		; (original as Record<string, unknown>)[k] = v
 	}
 }
 
@@ -306,7 +306,7 @@ function _arrayEquals(arr: unknown[], other: unknown): boolean {
  *                                               original object has a corresponding key that could be deleted.
  * @return {object}               An object of the data in other which differs from that in original
  */
-function diffObject(original: object, other: object, { inner = false, deletionKeys = false } = {}) {
+function diffObject(original: object, other: object, { inner = false, deletionKeys = false } = {}): object {
 	function _difference(v0: unknown, v1: unknown): [boolean, unknown] {
 		// Eliminate differences in types
 		const t0 = getType(v0)
@@ -389,6 +389,8 @@ function randomID(length = 16): string {
 	return r.map(i => chars[i]).join("")
 }
 
+class DataModel { }
+
 const f = (global.foundry = {
 	utils: {
 		deepClone,
@@ -401,6 +403,9 @@ const f = (global.foundry = {
 		randomID,
 		setProperty,
 	},
-} as typeof foundry)
+	abstract: {
+		DataModel: DataModel
+	}
+} as unknown as typeof foundry)
 
 global.fu = f.utils

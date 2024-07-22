@@ -43,13 +43,13 @@ declare global {
 		requiresReload?: boolean
 		/** The JS Type that the Setting is storing */
 		type:
-			| NumberConstructor
-			| StringConstructor
-			| BooleanConstructor
-			| ObjectConstructor
-			| ArrayConstructor
-			| ConstructorOf<DataModel>
-			| Function
+		| NumberConstructor
+		| StringConstructor
+		| BooleanConstructor
+		| ObjectConstructor
+		| ArrayConstructor
+		| ConstructorOf<DataModel>
+		| Function
 		/** For string Types, defines the allowable values */
 		choices?: TChoices
 		/** For numeric Types, defines the allowable range */
@@ -76,7 +76,7 @@ declare global {
 	}
 
 	interface SettingsMenuConstructor {
-		new (object?: object, options?: Partial<FormApplicationOptions>): FormApplication
+		new(object?: object, options?: Partial<FormApplicationOptions>): FormApplication
 		registerSettings(): void
 	}
 

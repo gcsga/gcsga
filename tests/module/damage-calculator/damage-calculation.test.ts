@@ -28,17 +28,17 @@ describe("Damage calculator", () => {
 	let _target: _Target
 	let _roll: DamageRoll
 
-	let _torso: DamageHitLocation<_Target>
-	let _vitals: DamageHitLocation<_Target>
-	let _skull: DamageHitLocation<_Target>
-	let _eye: DamageHitLocation<_Target>
-	let _face: DamageHitLocation<_Target>
-	let _neck: DamageHitLocation<_Target>
-	let _groin: DamageHitLocation<_Target>
-	let _arm: DamageHitLocation<_Target>
-	let _leg: DamageHitLocation<_Target>
-	let _hand: DamageHitLocation<_Target>
-	let _foot: DamageHitLocation<_Target>
+	let _torso: DamageHitLocation
+	let _vitals: DamageHitLocation
+	let _skull: DamageHitLocation
+	let _eye: DamageHitLocation
+	let _face: DamageHitLocation
+	let _neck: DamageHitLocation
+	let _groin: DamageHitLocation
+	let _arm: DamageHitLocation
+	let _leg: DamageHitLocation
+	let _hand: DamageHitLocation
+	let _foot: DamageHitLocation
 	const locations = ["Groin", "Vitals", "Neck", ...Head, ...Limb, ...Extremity]
 
 	beforeEach(() => {
@@ -51,7 +51,7 @@ describe("Damage calculator", () => {
 		_roll.dice = new DiceGURPS("2d")
 		_roll.hits[0] = { basicDamage: 8, locationId: "Torso" }
 
-		_torso = DamageHitLocation.fromObject(
+		_torso = new DamageHitLocation(
 			{
 				choice_name: "Torso",
 				description: "",
@@ -61,10 +61,10 @@ describe("Damage calculator", () => {
 				id: "torso",
 				slots: 2,
 			},
-			_target,
+			{ parent: _target },
 		)
 
-		_vitals = DamageHitLocation.fromObject(
+		_vitals = new DamageHitLocation(
 			{
 				choice_name: "Vitals",
 				description: "",
@@ -74,10 +74,10 @@ describe("Damage calculator", () => {
 				id: "vitals",
 				slots: 0,
 			},
-			_target,
+			{ parent: _target },
 		)
 
-		_skull = DamageHitLocation.fromObject(
+		_skull = new DamageHitLocation(
 			{
 				choice_name: "Skull",
 				description: "",
@@ -87,10 +87,10 @@ describe("Damage calculator", () => {
 				id: "skull",
 				slots: 0,
 			},
-			_target,
+			{ parent: _target },
 		)
 
-		_eye = DamageHitLocation.fromObject(
+		_eye = new DamageHitLocation(
 			{
 				choice_name: "Eye",
 				description: "",
@@ -100,10 +100,10 @@ describe("Damage calculator", () => {
 				id: "eye",
 				slots: 0,
 			},
-			_target,
+			{ parent: _target },
 		)
 
-		_face = DamageHitLocation.fromObject(
+		_face = new DamageHitLocation(
 			{
 				choice_name: "Face",
 				description: "",
@@ -113,10 +113,10 @@ describe("Damage calculator", () => {
 				id: "face",
 				slots: 1,
 			},
-			_target,
+			{ parent: _target },
 		)
 
-		_neck = DamageHitLocation.fromObject(
+		_neck = new DamageHitLocation(
 			{
 				choice_name: "Neck",
 				description: "",
@@ -126,10 +126,10 @@ describe("Damage calculator", () => {
 				id: "neck",
 				slots: 1,
 			},
-			_target,
+			{ parent: _target },
 		)
 
-		_groin = DamageHitLocation.fromObject(
+		_groin = new DamageHitLocation(
 			{
 				choice_name: "Groin",
 				description: "",
@@ -139,10 +139,10 @@ describe("Damage calculator", () => {
 				id: "groin",
 				slots: 1,
 			},
-			_target,
+			{ parent: _target },
 		)
 
-		_arm = DamageHitLocation.fromObject(
+		_arm = new DamageHitLocation(
 			{
 				choice_name: "Arm",
 				description: "",
@@ -152,10 +152,10 @@ describe("Damage calculator", () => {
 				id: "arm",
 				slots: 1,
 			},
-			_target,
+			{ parent: _target },
 		)
 
-		_leg = DamageHitLocation.fromObject(
+		_leg = new DamageHitLocation(
 			{
 				choice_name: "Leg",
 				description: "",
@@ -165,10 +165,10 @@ describe("Damage calculator", () => {
 				id: "leg",
 				slots: 2,
 			},
-			_target,
+			{ parent: _target },
 		)
 
-		_hand = DamageHitLocation.fromObject(
+		_hand = new DamageHitLocation(
 			{
 				choice_name: "Hand",
 				description: "",
@@ -178,10 +178,10 @@ describe("Damage calculator", () => {
 				id: "hand",
 				slots: 1,
 			},
-			_target,
+			{ parent: _target },
 		)
 
-		_foot = DamageHitLocation.fromObject(
+		_foot = new DamageHitLocation(
 			{
 				choice_name: "Foot",
 				description: "",
@@ -191,7 +191,7 @@ describe("Damage calculator", () => {
 				id: "foot",
 				slots: 1,
 			},
-			_target,
+			{ parent: _target },
 		)
 
 		_target.hitLocationTable.locations.push(_torso)

@@ -1,17 +1,17 @@
 import { AbstractContainerSource, AbstractContainerSystemData, AbstractContainerSystemSchema } from "@item/abstract-container/data.ts"
-import { ItemType } from "@module/data/constants.ts"
-import { FeatureObj, PrereqList, SkillBonus, Study } from "@system"
-import { LocalizeGURPS, StringCompareType, feature, selfctrl, skillsel, study } from "@util"
+import { ItemType, StringCompareType } from "@module/data/constants.ts"
+import { FeatureSchema, PrereqList, PrereqListSchema, SkillBonus, Study } from "@system"
+import { LocalizeGURPS, feature, selfctrl, skillsel, study } from "@util"
 import { TraitGURPS } from "./document.ts"
 import fields = foundry.data.fields
-import { PrereqListSchema } from "@system/prereq/prereq-list.ts"
+import { BaseFeature } from "@system/feature/base.ts"
 
 function getCRFeatures(): Map<string, SkillBonus[]> {
 	return new Map([
 		[
 			selfctrl.Adjustment.MajorCostOfLivingIncrease,
 			[
-				SkillBonus.fromObject({
+				new SkillBonus({
 					type: feature.Type.SkillBonus,
 					selection_type: skillsel.Type.Name,
 					name: { compare: StringCompareType.IsString, qualifier: "Merchant" },
@@ -45,7 +45,7 @@ class TraitSystemData extends AbstractContainerSystemData<TraitGURPS, TraitSyste
 			levels: new fields.NumberField({ min: 0, nullable: true }),
 			points_per_level: new fields.NumberField({ integer: true, nullable: true }),
 			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
-			features: new fields.ArrayField(new fields.ObjectField<FeatureObj>()),
+			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
 			study: new fields.ArrayField(new fields.ObjectField<Study>()),
 			cr: new fields.NumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>({ choices: selfctrl.Rolls, initial: selfctrl.Roll.NoCR, nullable: false }),
 			cr_adj: new fields.StringField<selfctrl.Adjustment>({
@@ -80,7 +80,7 @@ type TraitSystemSchema = AbstractContainerSystemSchema & {
 	levels: fields.NumberField
 	points_per_level: fields.NumberField
 	prereqs: fields.SchemaField<PrereqListSchema>
-	features: fields.ArrayField<fields.ObjectField<FeatureObj>>
+	features: fields.ArrayField<fields.SchemaField<FeatureSchema>>
 	study: fields.ArrayField<fields.ObjectField<Study>>
 	cr: fields.NumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>
 	cr_adj: fields.StringField<selfctrl.Adjustment>
@@ -94,5 +94,5 @@ type TraitSystemSource = SourceFromSchema<TraitSystemSchema>
 
 type TraitSource = AbstractContainerSource<ItemType.Trait, TraitSystemSource>
 
-export { getCRFeatures }
-export type { TraitSource, TraitSystemSource, TraitSystemData }
+export { getCRFeatures, TraitSystemData }
+export type { TraitSource, TraitSystemSource }

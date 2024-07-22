@@ -1,4 +1,4 @@
-import { StringCriteria } from "@util/string-criteria.ts"
+import { StringCriteria } from "@module/util/string-criteria.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { TooltipGURPS, } from "@util"
 import { SkillPointBonusSchema } from "./data.ts"

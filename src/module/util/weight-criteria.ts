@@ -1,16 +1,12 @@
-import type { NumberField, StringField } from "types/foundry/common/data/fields.js"
-import { LocalizeGURPS } from "./localize.ts"
+import { LocalizeGURPS } from "../../util/localize.ts"
+import { Weight, WeightString, WeightUnits } from "../../util/weight.ts"
 import { AllNumericCompareTypes, NumericCompareType } from "@module/data/constants.ts"
-import { ItemGURPS } from "@item"
+import type { ItemGURPS } from "@item"
+import type { WeightCriteriaSchema } from "./data.ts"
 
-type NumericCriteriaSchema = {
-	compare: StringField<NumericCompareType, NumericCompareType, true, false, true>
-	qualifier: NumberField<number, number, true, false, true>
-}
+class WeightCriteria extends foundry.abstract.DataModel<ItemGURPS, WeightCriteriaSchema> {
 
-class NumericCriteria extends foundry.abstract.DataModel<ItemGURPS, NumericCriteriaSchema> {
-
-	static override defineSchema(): NumericCriteriaSchema {
+	static override defineSchema(): WeightCriteriaSchema {
 		const fields = foundry.data.fields
 		return {
 			compare: new fields.StringField<NumericCompareType, NumericCompareType, true>({
@@ -18,26 +14,30 @@ class NumericCriteria extends foundry.abstract.DataModel<ItemGURPS, NumericCrite
 				choices: AllNumericCompareTypes,
 				initial: NumericCompareType.AnyNumber,
 			}),
-			qualifier: new fields.NumberField(),
+			qualifier: new fields.StringField({
+				initial: `0 ${WeightUnits.Pound}`
+			}),
 		}
 	}
 
-	constructor(data?: DeepPartial<SourceFromSchema<NumericCriteriaSchema>>) {
+	constructor(data?: DeepPartial<SourceFromSchema<WeightCriteriaSchema>>) {
 		super(data)
 	}
 
-	matches(n: number): boolean {
+	matches(n: WeightString): boolean {
+		const qualifier = Weight.fromString(this.qualifier)
+		const value = Weight.fromString(n)
 		switch (this.compare) {
 			case NumericCompareType.AnyNumber:
 				return true
 			case NumericCompareType.EqualsNumber:
-				return n === this.qualifier
+				return value === qualifier
 			case NumericCompareType.NotEqualsNumber:
-				return n !== this.qualifier
+				return value !== qualifier
 			case NumericCompareType.AtLeastNumber:
-				return n >= this.qualifier
+				return value >= qualifier
 			case NumericCompareType.AtMostNumber:
-				return n <= this.qualifier
+				return value <= qualifier
 		}
 	}
 
@@ -61,9 +61,8 @@ class NumericCriteria extends foundry.abstract.DataModel<ItemGURPS, NumericCrite
 		if (result !== "") result += " "
 		return result + this.qualifier.toString()
 	}
-
 }
 
-interface NumericCriteria extends foundry.abstract.DataModel<ItemGURPS, NumericCriteriaSchema>, ModelPropsFromSchema<NumericCriteriaSchema> { }
+interface WeightCriteria extends foundry.abstract.DataModel<ItemGURPS, WeightCriteriaSchema>, ModelPropsFromSchema<WeightCriteriaSchema> { }
 
-export { NumericCriteria, type NumericCriteriaSchema }
+export { WeightCriteria, type WeightCriteriaSchema }

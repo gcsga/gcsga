@@ -1,12 +1,7 @@
-import { StringField } from "types/foundry/common/data/fields.js"
-import { LocalizeGURPS } from "./localize.ts"
+import { LocalizeGURPS } from "../../util/localize.ts"
 import { AllStringCompareTypes, StringCompareType } from "@module/data/constants.ts"
-import { ItemGURPS } from "@item"
-
-type StringCriteriaSchema = {
-	compare: StringField<StringCompareType, StringCompareType, true, false, true>
-	qualifier: StringField<string, string, true, false, true>
-}
+import { StringCriteriaSchema } from "./data.ts"
+import type { ItemGURPS } from "@item"
 
 class StringCriteria extends foundry.abstract.DataModel<ItemGURPS, StringCriteriaSchema> {
 

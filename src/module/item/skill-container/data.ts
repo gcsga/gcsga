@@ -52,4 +52,5 @@ type SkillContainerSystemSource = SourceFromSchema<SkillContainerSystemSchema>
 
 type SkillContainerSource = AbstractContainerSource<ItemType.SkillContainer, SkillContainerSystemSource>
 
-export type { SkillContainerSource, SkillContainerSystemData, SkillContainerSystemSource }
+export type { SkillContainerSource, SkillContainerSystemSource }
+export { SkillContainerSystemData }

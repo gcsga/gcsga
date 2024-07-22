@@ -52,4 +52,5 @@ type SpellContainerSystemSource = SourceFromSchema<SpellContainerSystemSchema>
 
 type SpellContainerSource = AbstractContainerSource<ItemType.SpellContainer, SpellContainerSystemSource>
 
-export type { SpellContainerSource, SpellContainerSystemData, SpellContainerSystemSource }
+export type { SpellContainerSource, SpellContainerSystemSource }
+export { SpellContainerSystemData }

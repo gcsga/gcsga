@@ -49,4 +49,5 @@ type TraitModifierContainerSystemSource = SourceFromSchema<TraitModifierContaine
 
 type TraitModifierContainerSource = AbstractContainerSource<ItemType.TraitModifierContainer, TraitModifierContainerSystemSource>
 
-export type { TraitModifierContainerSource, TraitModifierContainerSystemData, TraitModifierContainerSystemSource }
+export type { TraitModifierContainerSource, TraitModifierContainerSystemSource }
+export { TraitModifierContainerSystemData }

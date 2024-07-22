@@ -94,7 +94,7 @@ export function getConditionList(): Record<ConditionID, Partial<ConditionSystemS
 				rounds: 1,
 				seconds: 0,
 				turns: 0,
-				combat: null,
+				combat: "",
 			},
 			features: [
 				{
@@ -208,16 +208,16 @@ export const StatusEffectsGURPS: StatusEffect[] = [
 	...[...Object.values(ConditionID)].map(e => {
 		const effect: StatusEffect = {
 			id: e,
-			icon: `systems/${SYSTEM_NAME}/assets/status/${e}.webp`,
-			label: `gurps.status.${e}`,
+			img: `systems/${SYSTEM_NAME}/assets/status/${e}.webp`,
+			name: `gurps.status.${e}`,
 		}
 		return effect
 	}),
 	...[...Object.values(ManeuverID)].map(e => {
 		const effect: StatusEffect = {
 			id: e,
-			icon: `systems/${SYSTEM_NAME}/assets/maneuver/${e}.webp`,
-			label: `gurps.maneuver.${e}`,
+			img: `systems/${SYSTEM_NAME}/assets/maneuver/${e}.webp`,
+			name: `gurps.maneuver.${e}`,
 		}
 		return effect
 	}),

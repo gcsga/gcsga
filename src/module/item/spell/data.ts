@@ -3,11 +3,10 @@ import {
 } from "@item/abstract-container/data.ts"
 import { ItemType, gid } from "@module/data/constants.ts"
 import { SkillDifficulty } from "@module/data/types.ts"
-import { PrereqList, } from "@system"
+import { PrereqList, PrereqListSchema, } from "@system"
 import { LocalizeGURPS, TooltipGURPS, difficulty, } from "@util"
 import { SpellGURPS } from "./document.ts"
 import fields = foundry.data.fields
-import { PrereqListSchema } from "@system/prereq/prereq-list.ts"
 import { AbstractSkillSystemData, AbstractSkillSystemSchema } from "@item/abstract-skill/data.ts"
 
 class SpellSystemData extends AbstractSkillSystemData<SpellGURPS, SpellSystemSchema> {
@@ -64,4 +63,5 @@ interface SpellLevel {
 	tooltip: TooltipGURPS
 }
 
-export type { SpellLevel, SpellSource, SpellSystemData, SpellSystemSource }
+export type { SpellLevel, SpellSource, SpellSystemSource }
+export { SpellSystemData }

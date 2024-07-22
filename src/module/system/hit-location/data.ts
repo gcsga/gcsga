@@ -1,3 +1,4 @@
+import { BodyGURPS } from "./index.ts"
 import fields = foundry.data.fields
 
 type HitLocationSchema = {
@@ -8,12 +9,13 @@ type HitLocationSchema = {
 	hit_penalty: fields.NumberField
 	dr_bonus: fields.NumberField<number, number, true, false>
 	description: fields.StringField<string, string, true, true>
-	sub_table: fields.SchemaField<
-		BodySchema,
-		SourceFromSchema<BodySchema>,
-		ModelPropsFromSchema<BodySchema>,
-		true, true
-	>
+	sub_table: fields.ObjectField<BodyGURPS, BodyGURPS, false>
+	// sub_table: fields.SchemaField<
+	// 	BodySchema,
+	// 	SourceFromSchema<BodySchema>,
+	// 	ModelPropsFromSchema<BodySchema>,
+	// 	true, false
+	// >
 }
 
 type BodySchema = {

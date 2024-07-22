@@ -64,7 +64,7 @@ function addAttributeThreshold(context: DropDataContext): void {
 	if (isNaN(index)) return console.error("Invalid index")
 
 	const attributes = context.app.attributes
-	attributes[index].thresholds?.push(PoolThreshold.newObject())
+	attributes[index].thresholds?.push(new PoolThreshold({}))
 
 	if (context.app instanceof CharacterConfigSheet)
 		context.app.actor.update({ "system.settings.attributes": attributes })
@@ -182,7 +182,7 @@ function addMoveTypeOverride(context: DropDataContext): void {
 	if (isNaN(index)) return console.error("Invalid index")
 
 	const moveTypes = context.app.moveTypes
-	moveTypes[index].overrides?.push(MoveTypeOverride.newObject())
+	moveTypes[index].overrides?.push(new MoveTypeOverride({}))
 
 	if (context.app instanceof CharacterConfigSheet)
 		context.app.actor.update({ "system.settings.move_types": moveTypes })

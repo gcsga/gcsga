@@ -37,5 +37,5 @@ type NoteSystemSource = SourceFromSchema<NoteSystemSchema>
 
 type NoteSource = BaseItemSourceGURPS<ItemType.Note, NoteSystemSource>
 
-export type { NoteSource, NoteSystemData, NoteSystemSource }
-
+export type { NoteSource, NoteSystemSource }
+export { NoteSystemData }

@@ -47,5 +47,5 @@ type ConditionSystemSource = SourceFromSchema<ConditionSystemSchema>
 
 type ConditionSource = AbstractEffectSource<ItemType.Condition, ConditionSystemSource>
 
-export { AllConditionSubtypes }
-export type { ConditionSource, ConditionSystemSource, ConditionSystemData, ConditionSubtype }
+export { AllConditionSubtypes, ConditionSystemData }
+export type { ConditionSource, ConditionSystemSource, ConditionSubtype }

@@ -1,8 +1,9 @@
 import { LocalizeGURPS } from "@util/localize.ts"
-import { TooltipGURPS, equalFold } from "@util"
+import { TooltipGURPS } from "@util"
 import { gid } from "@module/data/constants.ts"
 import { DRBonusSchema } from "./data.ts"
 import { BaseFeature, LeveledAmount } from "./base.ts"
+import { equalFold } from "@module/util/index.ts"
 
 class DRBonus extends BaseFeature<DRBonusSchema> {
 

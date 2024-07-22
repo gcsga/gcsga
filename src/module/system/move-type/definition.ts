@@ -27,17 +27,12 @@ class MoveTypeDef extends AbstractAttributeDef<CharacterGURPS, MoveTypeDefSchema
 	}
 
 	override	generateNewAttribute(): MoveType {
-		return new MoveType({ id: this.id }, 0)
+		return new MoveType({ id: this.id }, { order: 0 })
 	}
-
-	// override generateNewAttribute(): SourceFromSchema<MoveTypeSchema> {
-	// 	return {
-	// 		...super.generateNewAttribute(),
-	// 		adj: 0,
-	// 	}
-	// }
 }
 
-interface MoveTypeDef extends AbstractAttributeDef<CharacterGURPS, MoveTypeDefSchema>, ModelPropsFromSchema<MoveTypeDefSchema> { }
+interface MoveTypeDef extends AbstractAttributeDef<CharacterGURPS, MoveTypeDefSchema>, Omit<ModelPropsFromSchema<MoveTypeDefSchema>, "overrides"> {
+	overrides: MoveTypeOverride[]
+}
 
 export { MoveTypeDef }

@@ -1,9 +1,9 @@
 import { TooltipGURPS } from "@util"
 import { prereq } from "@util/enum/prereq.ts"
-import { BasePrereqSchema } from "./data.ts"
-import { ItemGURPS } from "@item"
+import { BasePrereqSchema, PrereqConstructionOptions } from "./data.ts"
+import type { ItemGURPS } from "@item"
 import { LaxSchemaField } from "@system/schema-data-fields.ts"
-import { ActorGURPS } from "@actor"
+import type { ActorGURPS } from "@actor"
 
 abstract class BasePrereq<
 	TSchema extends BasePrereqSchema<prereq.Type> = BasePrereqSchema<prereq.Type>
@@ -29,8 +29,11 @@ abstract class BasePrereq<
 		return schema
 	}
 
-	constructor(data: DeepPartial<SourceFromSchema<TSchema>>) {
-		super(data)
+	constructor(
+		data: DeepPartial<SourceFromSchema<TSchema>>,
+		options?: PrereqConstructionOptions
+	) {
+		super(data, options)
 	}
 
 	abstract satisfied(actor: ActorGURPS, exclude: unknown, tooltip: TooltipGURPS, ...args: unknown[]): boolean

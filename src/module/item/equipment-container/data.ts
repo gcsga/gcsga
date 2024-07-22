@@ -3,8 +3,8 @@ import { AbstractContainerSource, AbstractContainerSystemData, AbstractContainer
 import { ItemType } from "@module/data/constants.ts"
 import { LocalizeGURPS, WeightString } from "@util"
 import { EquipmentContainerGURPS } from "./document.ts"
-import { FeatureObj, PrereqList } from "@system"
-import { PrereqListSchema } from "@system/prereq/prereq-list.ts"
+import { FeatureSchema, PrereqList, PrereqListSchema } from "@system"
+import { BaseFeature } from "@system/feature/base.ts"
 
 class EquipmentContainerSystemData extends AbstractContainerSystemData<EquipmentContainerGURPS, EquipmentContainerSystemSchema> {
 	static override defineSchema(): EquipmentContainerSystemSchema {
@@ -31,7 +31,7 @@ class EquipmentContainerSystemData extends AbstractContainerSystemData<Equipment
 			max_uses: new fields.NumberField({ integer: true, min: 0 }),
 			uses: new fields.NumberField({ integer: true, min: 0 }),
 			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
-			features: new fields.ArrayField(new fields.ObjectField<FeatureObj>()),
+			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
 			equipped: new fields.BooleanField({ initial: true }),
 			ignore_weight_for_skills: new fields.BooleanField({ initial: false }),
 			open: new fields.BooleanField({ initial: true }),
@@ -60,7 +60,7 @@ type EquipmentContainerSystemSchema = AbstractContainerSystemSchema & {
 	max_uses: fields.NumberField
 	uses: fields.NumberField
 	prereqs: fields.SchemaField<PrereqListSchema>
-	features: fields.ArrayField<fields.ObjectField<FeatureObj>>
+	features: fields.ArrayField<fields.SchemaField<FeatureSchema>>
 	equipped: fields.BooleanField
 	ignore_weight_for_skills: fields.BooleanField
 	open: fields.BooleanField
@@ -70,4 +70,5 @@ type EquipmentContainerSystemSource = SourceFromSchema<EquipmentContainerSystemS
 
 type EquipmentContainerSource = AbstractContainerSource<ItemType.EquipmentContainer, EquipmentContainerSystemSource>
 
-export type { EquipmentContainerSource, EquipmentContainerSystemSource, EquipmentContainerSystemData }
+export type { EquipmentContainerSource, EquipmentContainerSystemSource }
+export { EquipmentContainerSystemData }

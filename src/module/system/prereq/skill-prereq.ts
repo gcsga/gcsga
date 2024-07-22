@@ -1,12 +1,12 @@
-import { StringCriteria } from "@util/string-criteria.ts"
+import { StringCriteria } from "@module/util/string-criteria.ts"
 import { BasePrereq } from "./base.ts"
 import { prereq } from "@util/enum/prereq.ts"
-import { NumericCriteria } from "@util/numeric-criteria.ts"
-import { SkillPrereqSchema } from "./data.ts"
 import { ActorType, ItemType, NumericCompareType, StringCompareType } from "@module/data/constants.ts"
 import { ActorGURPS } from "@actor"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
 import { ItemGURPS } from "@item"
+import { SkillPrereqSchema } from "./data.ts"
+import { NumericCriteria } from "@module/util/numeric-criteria.ts"
 
 class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 

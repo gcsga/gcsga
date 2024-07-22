@@ -42,47 +42,47 @@ global.game = Object.freeze({
 	},
 })
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).User = MockUser
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).Actor = MockActor
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).Item = MockItem
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).Token = MockToken
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).FormApplication = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).Roll = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).Application = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).Dialog = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).ChatMessage = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).Ruler = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).FilePicker = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).JournalEntryPage = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).JournalPageSheet = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).JournalPDFPageSheet = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).CombatTracker = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).ItemDirectory = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).Combat = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).Combatant = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).DocumentSheet = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).Hooks = class {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	static on(..._args: any) {}
-}
+	; (global as any).User = MockUser
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	; (global as any).Actor = MockActor
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	; (global as any).Item = MockItem
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	; (global as any).Token = MockToken
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	; (global as any).FormApplication = class { }
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	; (global as any).Roll = class { }
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	; (global as any).Application = class { }
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	; (global as any).Dialog = class { }
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	; (global as any).ChatMessage = class { }
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	; (global as any).Ruler = class { }
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	; (global as any).FilePicker = class { }
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	; (global as any).JournalEntryPage = class { }
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	; (global as any).JournalPageSheet = class { }
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	; (global as any).JournalPDFPageSheet = class { }
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	; (global as any).CombatTracker = class { }
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	; (global as any).ItemDirectory = class { }
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	; (global as any).Combat = class { }
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	; (global as any).Combatant = class { }
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	; (global as any).DocumentSheet = class { }
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	; (global as any).Hooks = class {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		static on(..._args: any) { }
+	}
 // Math.clamped = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)

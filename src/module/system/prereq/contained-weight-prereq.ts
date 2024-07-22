@@ -1,9 +1,10 @@
 import { ItemGURPS } from "@item"
 import { BasePrereq } from "./base.ts"
-import { LocalizeGURPS, TooltipGURPS, Weight, WeightCriteria, WeightUnits, prereq } from "@util"
+import { LocalizeGURPS, TooltipGURPS, Weight, WeightUnits, prereq } from "@util"
 import { ContainedWeightPrereqSchema } from "./data.ts"
 import { ItemType, NumericCompareType } from "@module/data/constants.ts"
 import { ActorGURPS } from "@actor"
+import { WeightCriteria } from "@module/util/weight-criteria.ts"
 
 class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
 

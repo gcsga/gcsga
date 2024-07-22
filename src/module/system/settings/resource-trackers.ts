@@ -100,6 +100,7 @@ export class ResourceTrackerSettings extends SettingsMenuGURPS {
 					isMaxEnforced: false,
 					isMinEnforced: false,
 					thresholds: [],
+					order: trackers.length
 				})
 				game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`, trackers)
 				break

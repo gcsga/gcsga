@@ -1,14 +1,14 @@
 import {
 	AbstractContainerSource,
 } from "@item/abstract-container/data.ts"
+import { AbstractSkillSystemData, AbstractSkillSystemSchema } from "@item/abstract-skill/data.ts"
 import { ItemType, gid } from "@module/data/constants.ts"
 import { SkillDifficulty } from "@module/data/types.ts"
-import { FeatureObj, PrereqList, SkillDefault, SkillDefaultSchema, } from "@system"
+import { FeatureSchema, PrereqList, PrereqListSchema, SkillDefault, SkillDefaultSchema, } from "@system"
 import { LocalizeGURPS, TooltipGURPS, difficulty, } from "@util"
 import { SkillGURPS } from "./document.ts"
 import fields = foundry.data.fields
-import { PrereqListSchema } from "@system/prereq/prereq-list.ts"
-import { AbstractSkillSystemData, AbstractSkillSystemSchema } from "@item/abstract-skill/data.ts"
+import { BaseFeature } from "@system/feature/base.ts"
 
 class SkillSystemData extends AbstractSkillSystemData<SkillGURPS, SkillSystemSchema> {
 	static override defineSchema(): SkillSystemSchema {
@@ -27,7 +27,7 @@ class SkillSystemData extends AbstractSkillSystemData<SkillGURPS, SkillSystemSch
 			defaulted_from: new fields.SchemaField(SkillDefault.defineSchema()),
 			defaults: new fields.ArrayField(new fields.SchemaField(SkillDefault.defineSchema())),
 			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
-			features: new fields.ArrayField(new fields.ObjectField<FeatureObj>()),
+			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
 		}
 
 
@@ -45,7 +45,7 @@ type SkillSystemSchema = AbstractSkillSystemSchema & {
 	defaulted_from: fields.SchemaField<SkillDefaultSchema>
 	defaults: fields.ArrayField<fields.SchemaField<SkillDefaultSchema>>
 	prereqs: fields.SchemaField<PrereqListSchema>
-	features: fields.ArrayField<fields.ObjectField<FeatureObj>>
+	features: fields.ArrayField<fields.SchemaField<FeatureSchema>>
 }
 
 type SkillSystemSource = SourceFromSchema<SkillSystemSchema>
@@ -58,4 +58,5 @@ interface SkillLevel {
 	tooltip: TooltipGURPS
 }
 
-export type { SkillLevel, SkillSource, SkillSystemData, SkillSystemSource }
+export type { SkillLevel, SkillSource, SkillSystemSource }
+export { SkillSystemData }

@@ -1,10 +1,9 @@
 import { AbstractContainerSource, } from "@item/abstract-container/data.ts"
 import fields = foundry.data.fields
-import { ItemType, gid } from "@module/data/constants.ts"
-import { PrereqList } from "@system"
+import { ItemType, } from "@module/data/constants.ts"
+import { PrereqList, PrereqListSchema } from "@system"
 import { LocalizeGURPS, difficulty } from "@util"
-import { SkillDifficulty } from "@module/data/types.ts"
-import { PrereqListSchema } from "@system/prereq/prereq-list.ts"
+import { TechniqueDifficulty } from "@module/data/types.ts"
 import { RitualMagicSpellGURPS } from "./document.ts"
 import { AbstractSkillSystemData, AbstractSkillSystemSchema } from "@item/abstract-skill/data.ts"
 
@@ -19,7 +18,7 @@ class RitualMagicSpellSystemData extends AbstractSkillSystemData<RitualMagicSpel
 				required: true,
 				initial: LocalizeGURPS.translations.TYPES.Item[ItemType.RitualMagicSpell],
 			}),
-			difficulty: new fields.StringField({ initial: `${gid.Intelligence}/${difficulty.Level.Hard}`, required: true }),
+			difficulty: new fields.StringField({ initial: difficulty.Level.Hard, required: true }),
 			college: new fields.ArrayField(new foundry.data.fields.StringField()),
 			power_source: new fields.StringField(),
 			spell_class: new fields.StringField(),
@@ -42,7 +41,7 @@ interface RitualMagicSpellSystemData extends AbstractSkillSystemData<RitualMagic
 type RitualMagicSpellSystemSchema = AbstractSkillSystemSchema & {
 	name: fields.StringField<string, string, true, false, true>
 	type: fields.StringField<ItemType.RitualMagicSpell, ItemType.RitualMagicSpell, true, false, true>
-	difficulty: fields.StringField<SkillDifficulty, SkillDifficulty, true>
+	difficulty: fields.StringField<TechniqueDifficulty, TechniqueDifficulty, true>
 	college: fields.ArrayField<fields.StringField>
 	power_source: fields.StringField
 	spell_class: fields.StringField
@@ -60,4 +59,5 @@ type RitualMagicSpellSystemSource = SourceFromSchema<RitualMagicSpellSystemSchem
 
 type RitualMagicSpellSource = AbstractContainerSource<ItemType.RitualMagicSpell, RitualMagicSpellSystemSource>
 
-export type { RitualMagicSpellSource, RitualMagicSpellSystemData, RitualMagicSpellSystemSource }
+export type { RitualMagicSpellSource, RitualMagicSpellSystemSource }
+export { RitualMagicSpellSystemData }

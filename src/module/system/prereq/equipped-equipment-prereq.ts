@@ -1,4 +1,4 @@
-import { StringCriteria } from "@util/string-criteria.ts"
+import { StringCriteria } from "@module/util/string-criteria.ts"
 import { BasePrereq } from "./base.ts"
 import { prereq } from "@util/enum/prereq.ts"
 import { EquippedEquipmentPrereqSchema } from "./data.ts"

@@ -150,6 +150,16 @@ export interface Encumbrance {
 // }
 
 class CharacterSystemData extends ActorSystemModel<CharacterGURPS, CharacterSystemSchema> {
+
+	constructor(
+		data: DeepPartial<SourceFromSchema<CharacterSystemSchema>>,
+		options: DataModelConstructionOptions<CharacterGURPS>
+	) {
+		super(data, options)
+		console.log(data)
+		console.log(this)
+	}
+
 	static override defineSchema(): CharacterSystemSchema {
 		const fields = foundry.data.fields
 

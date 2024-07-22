@@ -91,7 +91,7 @@ class AttributeDef extends AbstractAttributeDef<CharacterGURPS, AttributeDefSche
 	}
 
 	generateNewAttribute(): AttributeGURPS {
-		return new AttributeGURPS({ id: this.id }, 0)
+		return new AttributeGURPS({ id: this.id }, { order: 0 })
 	}
 }
 

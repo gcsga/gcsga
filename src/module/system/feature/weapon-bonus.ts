@@ -161,11 +161,12 @@ export class WeaponBonus<TType extends feature.WeaponBonusType = feature.WeaponB
 	}
 }
 */
-import { Int, LocalizeGURPS, NumericCriteria, StringCriteria, TooltipGURPS, feature, wsel, wswitch } from "@util"
+import { Int, LocalizeGURPS, TooltipGURPS, feature, wsel, wswitch } from "@util"
 import { BaseFeature } from "./base.ts"
 import { WeaponBonusSchema, WeaponLeveledAmountSchema } from "./data.ts"
-import { AbstractWeaponGURPS } from "@item"
+import { AbstractWeaponGURPS, ItemGURPS } from "@item"
 import { ItemType } from "@module/data/constants.ts"
+import { NumericCriteria, StringCriteria } from "@module/util/index.ts"
 
 class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 
@@ -190,8 +191,11 @@ class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 		}
 	}
 
-	constructor(data: DeepPartial<SourceFromSchema<WeaponBonusSchema>>) {
-		super(data)
+	constructor(
+		data: DeepPartial<SourceFromSchema<WeaponBonusSchema>>,
+		options?: DocumentConstructionContext<ItemGURPS>
+	) {
+		super(data, options)
 
 		this.name = new StringCriteria(data.name ?? undefined)
 		this.specialization = new StringCriteria(data.specialization ?? undefined)

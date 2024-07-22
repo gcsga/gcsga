@@ -7,8 +7,6 @@ import { LocalizeGURPS } from "@util"
 import { ItemItemCollectionMap } from "./item-collection-map.ts"
 import Document, { _Document } from "types/foundry/common/abstract/document.js"
 import { DataSchema } from "types/foundry/common/data/fields.js"
-import { AbstractSkillSystemData } from "@item/abstract-skill/data.ts"
-import { ItemSystemSchema } from "@item/base/schema.ts"
 
 abstract class AbstractContainerGURPS<
 	TParent extends ActorGURPS | null = ActorGURPS | null,

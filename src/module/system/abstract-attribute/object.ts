@@ -1,5 +1,5 @@
 import { AbstractAttributeDef } from "./definition.ts"
-import { AbstractAttributeSchema } from "./data.ts"
+import { AbstractAttributeConstructionOptions, AbstractAttributeSchema } from "./data.ts"
 import { ActorGURPS } from "@actor"
 import { LaxSchemaField } from "@system/schema-data-fields.ts"
 
@@ -30,8 +30,11 @@ abstract class AbstractAttribute<
 
 	// _id: string
 
-	constructor(data: DeepPartial<SourceFromSchema<TSchema>>) {
-		super(data)
+	constructor(
+		data: DeepPartial<SourceFromSchema<TSchema>>,
+		options?: AbstractAttributeConstructionOptions<TActor>
+	) {
+		super(data, options)
 		// this._id = String(data.id ?? "")
 	}
 
