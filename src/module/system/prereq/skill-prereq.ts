@@ -1,39 +1,51 @@
-import { StringCompareType, StringCriteria } from "@util/string-criteria.ts"
+import { StringCriteria } from "@util/string-criteria.ts"
 import { BasePrereq } from "./base.ts"
 import { prereq } from "@util/enum/prereq.ts"
-import { NumericCompareType, NumericCriteria } from "@util/numeric-criteria.ts"
-import { SkillPrereqObj } from "./data.ts"
-import { ItemGURPS } from "@item"
-import { ActorType, ItemType } from "@data"
-import { LocalizeGURPS, TooltipGURPS } from "@util"
+import { NumericCriteria } from "@util/numeric-criteria.ts"
+import { SkillPrereqSchema } from "./data.ts"
+import { ActorType, ItemType, NumericCompareType, StringCompareType } from "@module/data/constants.ts"
 import { ActorGURPS } from "@actor"
-import { PrereqResolver } from "@module/util/index.ts"
+import { LocalizeGURPS, TooltipGURPS } from "@util"
+import { ItemGURPS } from "@item"
 
-export class SkillPrereq extends BasePrereq<prereq.Type.Skill> {
-	name: StringCriteria
+class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 
-	level: NumericCriteria
-
-	specialization: StringCriteria
-
-	constructor() {
-		super(prereq.Type.Skill)
-		this.name = new StringCriteria({ compare: StringCompareType.IsString })
-		this.level = new NumericCriteria({ compare: NumericCompareType.AtLeastNumber })
-		this.specialization = new StringCriteria({ compare: StringCompareType.AnyString })
+	constructor(data: DeepPartial<SourceFromSchema<SkillPrereqSchema>>) {
+		super(data)
+		this.name = new StringCriteria(data.name ?? undefined)
+		this.level = new NumericCriteria(data.level ?? undefined)
+		this.specialization = new StringCriteria(data.specialization ?? undefined)
 	}
 
-	static fromObject(data: SkillPrereqObj): SkillPrereq {
-		const prereq = new SkillPrereq()
-		prereq.has = data.has
-		if (data.name) prereq.name = new StringCriteria(data.name)
-		if (data.level) prereq.level = new NumericCriteria(data.level)
-		if (data.specialization) prereq.specialization = new StringCriteria(data.specialization)
-		return prereq
+	static override defineSchema(): SkillPrereqSchema {
+		const fields = foundry.data.fields
+
+		return {
+			type: new fields.StringField({ initial: prereq.Type.Skill }),
+			has: new fields.BooleanField({ initial: true }),
+			name: new fields.SchemaField(StringCriteria.defineSchema(), {
+				initial: {
+					compare: StringCompareType.IsString,
+					qualifier: ""
+				}
+			}),
+			level: new fields.SchemaField(NumericCriteria.defineSchema(), {
+				initial: {
+					compare: NumericCompareType.AtLeastNumber,
+					qualifier: 0
+				}
+			}),
+			specialization: new fields.SchemaField(StringCriteria.defineSchema(), {
+				initial: {
+					compare: StringCompareType.AnyString,
+					qualifier: ""
+				}
+			}),
+		}
 	}
 
-	satisfied(actor: PrereqResolver, exclude: unknown, tooltip: TooltipGURPS): boolean {
-		if (actor instanceof ActorGURPS && actor.isOfType(ActorType.Loot)) return true
+	satisfied(actor: ActorGURPS, exclude: unknown, tooltip: TooltipGURPS): boolean {
+		if (actor.isOfType(ActorType.Loot)) return true
 		let satisfied = false
 		let techLevel = ""
 		if (exclude instanceof ItemGURPS && exclude.isOfType(ItemType.Skill, ItemType.Technique)) {
@@ -89,13 +101,12 @@ export class SkillPrereq extends BasePrereq<prereq.Type.Skill> {
 		return satisfied
 	}
 
-	override toObject(): SkillPrereqObj {
-		return {
-			...super.toObject(),
-			has: this.has,
-			name: this.name.toObject(),
-			specialization: this.specialization.toObject(),
-			level: this.level.toObject(),
-		}
-	}
 }
+
+interface SkillPrereq extends BasePrereq<SkillPrereqSchema>, Omit<ModelPropsFromSchema<SkillPrereqSchema>, "name" | "level" | "specialization"> {
+	name: StringCriteria
+	level: NumericCriteria
+	specialization: StringCriteria
+}
+
+export { SkillPrereq }

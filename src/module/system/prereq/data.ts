@@ -1,9 +1,7 @@
 import { prereq } from "@util/enum/prereq.ts"
 import { spellcmp } from "@util/enum/spellcmp.ts"
 import fields = foundry.data.fields
-import { NumericCriteriaSchema, WeightCriteriaSchema } from "@util"
-
-
+import { NumericCriteriaSchema, StringCriteriaSchema, WeightCriteriaSchema } from "@util"
 
 export type BasePrereqSchema<TType extends prereq.Type> = {
 	type: fields.StringField<TType>
@@ -27,34 +25,35 @@ export type ContainedWeightPrereqSchema = BasePrereqSchema<prereq.Type.Contained
 }
 
 export type EquippedEquipmentPrereqSchema = BasePrereqSchema<prereq.Type.EquippedEquipment> & {
-	name: fields.StringField<string, string, true, true>
+	name: fields.SchemaField<StringCriteriaSchema>
+	tags: fields.SchemaField<StringCriteriaSchema>
 }
 
 export type PrereqListSchema = BasePrereqSchema<prereq.Type.List> & {
 	all: fields.BooleanField<boolean, boolean, true, false, true>
 	when_tl: fields.SchemaField<NumericCriteriaSchema>
-	prereqs: fields.ArrayField<fields.SchemaField<PrereqSchema>>
+	prereqs: fields.ArrayField<fields.SchemaField<BasePrereqSchema<prereq.Type>>>
 }
 
 export type SkillPrereqSchema = BasePrereqSchema<prereq.Type.Skill> & {
 	has: fields.BooleanField
-	name: fields.StringField<string, string, true, true>
-	level: fields.NumberField<number, number, true, true>
-	specialization: fields.StringField<string, string, true, true>
+	name: fields.SchemaField<StringCriteriaSchema>
+	level: fields.SchemaField<NumericCriteriaSchema>
+	specialization: fields.SchemaField<StringCriteriaSchema>
 }
 
 export type SpellPrereqSchema = BasePrereqSchema<prereq.Type.Spell> & {
 	has: fields.BooleanField
 	sub_type: fields.StringField<spellcmp.Type>
-	qualifier: fields.StringField<string, string, true, true>
-	quantity: fields.NumberField<number, number, true, true>
+	qualifier: fields.SchemaField<StringCriteriaSchema>
+	quantity: fields.SchemaField<NumericCriteriaSchema>
 }
 
 export type TraitPrereqSchema = BasePrereqSchema<prereq.Type.Trait> & {
 	has: fields.BooleanField
-	name: fields.StringField<string, string, true, true>
-	level: fields.NumberField<number, number, true, true>
-	notes: fields.StringField<string, string, true, true>
+	name: fields.SchemaField<StringCriteriaSchema>
+	level: fields.SchemaField<NumericCriteriaSchema>
+	notes: fields.SchemaField<StringCriteriaSchema>
 }
 
 export type PrereqSchema =

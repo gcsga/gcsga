@@ -37,23 +37,3 @@ abstract class BasePrereq<
 }
 
 export { BasePrereq }
-//
-//
-//
-// export abstract class BasePrereq<TType extends prereq.Type = prereq.Type> {
-// 	declare type: TType
-//
-// 	has = true
-//
-// 	constructor(type: TType) {
-// 		this.type = type
-// 	}
-//
-// 	abstract satisfied(character: PrereqResolver, exclude: unknown, tooltip: TooltipGURPS, ...args: unknown[]): boolean
-//
-// 	toObject(): BasePrereqObj<TType> {
-// 		return {
-// 			type: this.type,
-// 		}
-// 	}
-// }

@@ -1,4 +1,3 @@
-- continue on feature conversion
 - move on to prereq conversion
 
 ## Immediate TODO

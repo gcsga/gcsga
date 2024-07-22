@@ -1,42 +1,44 @@
-import { StringCompareType, StringCriteria } from "@util/string-criteria.ts"
+import { StringCriteria } from "@util/string-criteria.ts"
 import { BasePrereq } from "./base.ts"
 import { NumericCriteria } from "@util/numeric-criteria.ts"
-import { LocalizeGURPS, TooltipGURPS } from "@util"
+import { LocalizeGURPS, TooltipGURPS, prereq } from "@util"
 import { ActorGURPS } from "@actor"
-import { ActorType, ItemType } from "@module/data/constants.ts"
+import { ActorType, ItemType, NumericCompareType, StringCompareType } from "@module/data/constants.ts"
 import { TraitPrereqSchema } from "./data.ts"
 
 class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
-	// name: StringCriteria
-	//
-	// level: NumericCriteria
-	//
-	// notes: StringCriteria
 
-	// constructor(data: ) {
-	// 	super(data)
-	// this.name = new StringCriteria({ compare: StringCompareType.IsString })
-	// this.notes = new StringCriteria({ compare: StringCompareType.AnyString })
-	// this.level = new NumericCriteria({ compare: NumericCompareType.AtLeastNumber })
-	// }
-
-	// static fromObject(data: TraitPrereqObj): TraitPrereq {
-	// 	const prereq = new TraitPrereq()
-	// 	prereq.has = data.has
-	// 	if (data.name) prereq.name = new StringCriteria(data.name)
-	// 	if (data.level) prereq.level = new NumericCriteria(data.level)
-	// 	if (data.notes) prereq.notes = new StringCriteria(data.notes)
-	// 	return prereq
-	// }
+	constructor(data: DeepPartial<SourceFromSchema<TraitPrereqSchema>>) {
+		super(data)
+		this.name = new StringCriteria(data.name ?? undefined)
+		this.level = new NumericCriteria(data.level ?? undefined)
+		this.notes = new StringCriteria(data.notes ?? undefined)
+	}
 
 	static override defineSchema(): TraitPrereqSchema {
 		const fields = foundry.data.fields
 
 		return {
-			...super.defineSchema(),
-			name: new fields.SchemaField(StringCriteria.defineSchema()),
-			notes: new fields.SchemaField(StringCriteria.defineSchema()),
-			level: new fields.SchemaField(NumericCriteria.defineSchema())
+			type: new fields.StringField({ initial: prereq.Type.Trait }),
+			has: new fields.BooleanField({ initial: true }),
+			name: new fields.SchemaField(StringCriteria.defineSchema(), {
+				initial: {
+					compare: StringCompareType.IsString,
+					qualifier: ""
+				}
+			}),
+			level: new fields.SchemaField(NumericCriteria.defineSchema(), {
+				initial: {
+					compare: NumericCompareType.AtLeastNumber,
+					qualifier: 0
+				}
+			}),
+			notes: new fields.SchemaField(StringCriteria.defineSchema(), {
+				initial: {
+					compare: StringCompareType.AnyString,
+					qualifier: ""
+				}
+			}),
 		}
 	}
 
@@ -77,22 +79,12 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 		return satisfied
 	}
 
-	// override toObject(): TraitPrereqObj {
-	// 	return {
-	// 		...super.toObject(),
-	// 		has: this.has,
-	// 		name: this.name.toObject(),
-	// 		notes: this.notes.toObject(),
-	// 		level: this.level.toObject(),
-	// 	}
-	// }
 }
 
 interface TraitPrereq extends BasePrereq<TraitPrereqSchema>, Omit<ModelPropsFromSchema<TraitPrereqSchema>, "name" | "level" | "notes"> {
 	name: StringCriteria
+	level: NumericCriteria
 	notes: StringCriteria
-	level: StringCriteria
 }
-
 
 export { TraitPrereq }

@@ -1,35 +1,42 @@
 import { prereq } from "@util/enum/prereq.ts"
 import { BasePrereq } from "./base.ts"
 import { spellcmp } from "@util/enum/spellcmp.ts"
-import { StringCompareType, StringCriteria } from "@util/string-criteria.ts"
-import { NumericCompareType, NumericCriteria } from "@util/numeric-criteria.ts"
-import { SpellPrereqObj } from "./data.ts"
+import { StringCriteria } from "@util/string-criteria.ts"
+import { NumericCriteria } from "@util/numeric-criteria.ts"
+import { SpellPrereqSchema } from "./data.ts"
 import { ItemGURPS } from "@item"
-import { ActorType, ItemType } from "@data"
+import { ActorType, ItemType, NumericCompareType, StringCompareType } from "@data"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
 import { ActorGURPS } from "@actor"
 
-export class SpellPrereq extends BasePrereq<prereq.Type.Spell> {
-	sub_type: spellcmp.Type
+class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 
-	qualifier: StringCriteria
-
-	quantity: NumericCriteria
-
-	constructor() {
-		super(prereq.Type.Spell)
-		this.sub_type = spellcmp.Type.Name
-		this.qualifier = new StringCriteria({ compare: StringCompareType.IsString })
-		this.quantity = new NumericCriteria({ compare: NumericCompareType.AtLeastNumber, qualifier: 1 })
+	constructor(data: DeepPartial<SourceFromSchema<SpellPrereqSchema>>) {
+		super(data)
+		this.qualifier = new StringCriteria(data.qualifier ?? undefined)
+		this.quantity = new NumericCriteria(data.quantity ?? undefined)
 	}
 
-	static fromObject(data: SpellPrereqObj): SpellPrereq {
-		const prereq = new SpellPrereq()
-		prereq.has = data.has
-		if (data.sub_type) prereq.sub_type = data.sub_type
-		if (data.qualifier) prereq.qualifier = new StringCriteria(data.qualifier)
-		if (data.quantity) prereq.quantity = new NumericCriteria(data.quantity)
-		return prereq
+	static override defineSchema(): SpellPrereqSchema {
+		const fields = foundry.data.fields
+
+		return {
+			type: new fields.StringField({ initial: prereq.Type.Spell }),
+			has: new fields.BooleanField({ initial: true }),
+			sub_type: new fields.StringField({ choices: spellcmp.Types, initial: spellcmp.Type.Name }),
+			qualifier: new fields.SchemaField(StringCriteria.defineSchema(), {
+				initial: {
+					compare: StringCompareType.IsString,
+					qualifier: ""
+				}
+			}),
+			quantity: new fields.SchemaField(NumericCriteria.defineSchema(), {
+				initial: {
+					compare: NumericCompareType.AtLeastNumber,
+					qualifier: 0
+				}
+			}),
+		}
 	}
 
 	satisfied(actor: ActorGURPS, exclude: unknown, tooltip: TooltipGURPS): boolean {
@@ -101,13 +108,12 @@ export class SpellPrereq extends BasePrereq<prereq.Type.Spell> {
 		return satisfied
 	}
 
-	override toObject(): SpellPrereqObj {
-		return {
-			...super.toObject(),
-			has: this.has,
-			sub_type: this.sub_type,
-			qualifier: this.qualifier.toObject(),
-			quantity: this.quantity.toObject(),
-		}
-	}
+
 }
+
+interface SpellPrereq extends BasePrereq<SpellPrereqSchema>, Omit<ModelPropsFromSchema<SpellPrereqSchema>, "quantity" | "qualifier"> {
+	quantity: NumericCriteria
+	qualifier: StringCriteria
+}
+
+export { SpellPrereq }
