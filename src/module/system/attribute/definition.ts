@@ -18,8 +18,10 @@ class AttributeDef extends AbstractAttributeDef<CharacterGURPS, AttributeDefSche
 	thresholds: PoolThreshold[]
 	// order: number
 
-	constructor(data: DeepPartial<SourceFromSchema<AttributeDefSchema>>) {
-		super(data)
+	constructor(data: DeepPartial<SourceFromSchema<AttributeDefSchema>>,
+		options?: DataModelConstructionOptions<CharacterGURPS>
+	) {
+		super(data, options)
 		// this.type = data.type
 		// this.name = data.name
 		// this.full_name = data.full_name ?? ""
@@ -40,7 +42,7 @@ class AttributeDef extends AbstractAttributeDef<CharacterGURPS, AttributeDefSche
 			id: new fields.StringField({ initial: "id" }),
 			base: new fields.StringField({ initial: "10" }),
 			name: new fields.StringField({ initial: "id" }),
-			full_name: new fields.StringField(),
+			full_name: new fields.StringField({ initial: "" }),
 			cost_per_point: new fields.NumberField({ min: 0 }),
 			cost_adj_percent_per_sm: new fields.NumberField({ integer: true, min: 0, max: 80, initial: 0 }),
 			thresholds: new fields.ArrayField(new fields.SchemaField(PoolThreshold.defineSchema()), {
@@ -91,7 +93,7 @@ class AttributeDef extends AbstractAttributeDef<CharacterGURPS, AttributeDefSche
 	}
 
 	generateNewAttribute(): AttributeGURPS {
-		return new AttributeGURPS({ id: this.id }, { order: 0 })
+		return new AttributeGURPS({ id: this.id }, { parent: this.parent, order: 0 })
 	}
 }
 

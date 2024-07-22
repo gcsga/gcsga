@@ -1,7 +1,7 @@
 import { BaseItemSourceGURPS } from "@item/base/data.ts"
 import { ItemSystemModel, ItemSystemSchema } from "@item/base/schema.ts"
 import { ItemType } from "@module/data/constants.ts"
-import { LocalizeGURPS, affects, tmcost } from "@util"
+import { affects, tmcost } from "@util"
 import { TraitModifierGURPS } from "./document.ts"
 import fields = foundry.data.fields
 import { BaseFeature } from "@system/feature/base.ts"
@@ -16,7 +16,6 @@ class TraitModifierSystemData extends ItemSystemModel<TraitModifierGURPS, TraitM
 			type: new fields.StringField({ required: true, initial: ItemType.TraitModifier }),
 			name: new fields.StringField({
 				required: true,
-				initial: LocalizeGURPS.translations.TYPES.Item[ItemType.TraitModifier],
 			}),
 			reference: new fields.StringField(),
 			reference_highlight: new fields.StringField(),

@@ -6,6 +6,7 @@ import { AttributeSchema } from "./data.ts"
 import { CharacterGURPS } from "@actor"
 import { AttributeDef } from "./definition.ts"
 import { AbstractAttributeConstructionOptions } from "@system/abstract-attribute/data.ts"
+import { SheetSettings } from "@system/sheet-settings.ts"
 
 class AttributeGURPS extends AbstractAttribute<CharacterGURPS, AttributeSchema> {
 	// adj = 0
@@ -15,11 +16,14 @@ class AttributeGURPS extends AbstractAttribute<CharacterGURPS, AttributeSchema> 
 
 	protected _overridenThreshold: PoolThreshold | null = null
 
-	constructor(data: DeepPartial<SourceFromSchema<AttributeSchema>>, options: AbstractAttributeConstructionOptions<CharacterGURPS>) {
-		super(data)
+	constructor(
+		data: DeepPartial<SourceFromSchema<AttributeSchema>>,
+		options?: AbstractAttributeConstructionOptions<CharacterGURPS>
+	) {
+		super(data, options)
 		// this.adj = data.adj
 		// if (data.damage !== undefined) this.damage = data.damage
-		this.order = options.order ?? 0
+		this.order = options?.order ?? 0
 		// this.applyOps = this.definition?.type === attribute.Type.Pool
 	}
 
@@ -30,7 +34,7 @@ class AttributeGURPS extends AbstractAttribute<CharacterGURPS, AttributeSchema> 
 			...super.defineSchema(),
 			adj: new fields.NumberField({ initial: 0 }),
 			damage: new fields.NumberField({ nullable: true, initial: null }),
-			apply_ops: new fields.BooleanField({ initial: null })
+			apply_ops: new fields.BooleanField({ nullable: true, initial: null })
 		}
 	}
 
@@ -51,7 +55,7 @@ class AttributeGURPS extends AbstractAttribute<CharacterGURPS, AttributeSchema> 
 	}
 
 	get definition(): AttributeDef | null {
-		const definition = this.actor.settings.attributes.find(att => att.id === this.id)
+		const definition = SheetSettings.for(this.actor).attributes.find(att => att.id === this.id)
 		if (!definition) {
 			ErrorGURPS(`Attribute with ID ${this.id} has no definition`)
 			return null

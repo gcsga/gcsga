@@ -3,7 +3,7 @@ import { gid } from "@data"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { equalFold } from "@module/util/index.ts"
 import { LaxSchemaField } from "@system/schema-data-fields.ts"
-import { LocalizeGURPS, StringBuilder, TooltipGURPS } from "@util"
+import { StringBuilder, TooltipGURPS } from "@util"
 import { BodySchema, HitLocationSchema } from "./data.ts"
 
 class HitLocation extends foundry.abstract.DataModel<ActorGURPS, HitLocationSchema> {
@@ -17,9 +17,13 @@ class HitLocation extends foundry.abstract.DataModel<ActorGURPS, HitLocationSche
 		const fields = foundry.data.fields
 
 		return {
-			id: new fields.StringField({ initial: LocalizeGURPS.translations.gurps.placeholder.hit_location.id }),
-			choice_name: new fields.StringField({ initial: LocalizeGURPS.translations.gurps.placeholder.hit_location.choice_name }),
-			table_name: new fields.StringField({ initial: LocalizeGURPS.translations.gurps.placeholder.hit_location.table_name }),
+			// id: new fields.StringField({ initial: LocalizeGURPS.translations.gurps.placeholder.hit_location.id }),
+			// choice_name: new fields.StringField({ initial: LocalizeGURPS.translations.gurps.placeholder.hit_location.choice_name }),
+			// table_name: new fields.StringField({ initial: LocalizeGURPS.translations.gurps.placeholder.hit_location.table_name }),
+			// TODO: find some way to bring localization back
+			id: new fields.StringField({ initial: "id" }),
+			choice_name: new fields.StringField({ initial: "untitled choice" }),
+			table_name: new fields.StringField({ initial: "untitled location" }),
 			slots: new fields.NumberField({ initial: 0 }),
 			hit_penalty: new fields.NumberField({ initial: 0 }),
 			dr_bonus: new fields.NumberField({ initial: 0 }),
@@ -129,10 +133,6 @@ class HitLocation extends foundry.abstract.DataModel<ActorGURPS, HitLocationSche
 	static validateId(id: string): boolean {
 		return id !== gid.All
 	}
-
-	static createInstance(): HitLocation {
-		return new HitLocation({})
-	}
 }
 
 interface HitLocation
@@ -161,6 +161,10 @@ class BodyGURPS extends foundry.abstract.DataModel<ActorGURPS, BodySchema> {
 	constructor(data: DeepPartial<SourceFromSchema<BodySchema>>, options?: BodyConstructionOptions) {
 		super(data, options)
 		this.owningLocation = options?.owningLocation ?? null
+
+		if (data.locations) {
+			this.locations = data.locations.map(e => new HitLocation(e!, { parent: this.parent }))
+		}
 	}
 
 	get actor(): ActorGURPS {
@@ -174,10 +178,6 @@ class BodyGURPS extends foundry.abstract.DataModel<ActorGURPS, BodySchema> {
 	updateRollRanges(): void {
 		let start = this.processedRoll.minimum(false)
 		if (this.locations) for (const location of this.locations) start = location.updateRollRange(start)
-	}
-
-	static createInstance(): BodyGURPS {
-		return new BodyGURPS({}, {})
 	}
 }
 

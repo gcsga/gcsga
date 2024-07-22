@@ -1,6 +1,6 @@
 import { ActorGURPS } from "@actor"
 import { TokenDocumentGURPS } from "@scene"
-import { CharacterFlags, CharacterSource, CharacterSystemData } from "./data.ts"
+import { CharacterFlagDefaults, CharacterFlags, CharacterSource, CharacterSystemData } from "./data.ts"
 
 import {
 	AbstractAttributeDef,
@@ -18,6 +18,10 @@ import {
 	ThresholdOp,
 	WeaponBonus,
 	AbstractAttribute,
+	AttributeSchema,
+	ResourceTrackerSchema,
+	MoveTypeSchema,
+	AbstractAttributeSchema,
 } from "@system"
 import {
 	AbstractWeaponGURPS,
@@ -319,26 +323,26 @@ class CharacterGURPS<
 		).shift() as MeleeWeaponGURPS<this>
 	}
 
-	// protected override async _preCreate(
-	// 	data: this["_source"],
-	// 	options: DatabaseCreateOperation<TParent>,
-	// 	user: User<Actor<null>>,
-	// ): Promise<boolean | void> {
-	// 	await super._preCreate(data, options, user)
-	//
-	// 	const date = getCurrentTime()
-	// 	const defaultData = {
-	// 		_id: data._id,
-	// 		system: fu.mergeObject(data.system ?? {}, {
-	// 			total_points: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.initial_points`),
-	// 			created_date: date,
-	// 			modified_date: date,
-	// 		}),
-	// 		// flags: CharacterFlagDefaults,
-	// 	}
-	//
-	// 	this.updateSource(defaultData)
-	// }
+	protected override async _preCreate(
+		data: this["_source"],
+		options: DatabaseCreateOperation<TParent>,
+		user: User<Actor<null>>,
+	): Promise<boolean | void> {
+		await super._preCreate(data, options, user)
+
+		const date = getCurrentTime()
+		const defaultData = {
+			_id: data._id,
+			system: fu.mergeObject(data.system ?? {}, {
+				total_points: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.initial_points`),
+				created_date: date,
+				modified_date: date,
+			}),
+			flags: CharacterFlagDefaults,
+		}
+
+		this.updateSource(defaultData)
+	}
 
 	protected override _onUpdate(
 		changed: DeepPartial<this["_source"]>,
@@ -835,21 +839,21 @@ class CharacterGURPS<
 		this.attributes = new Map(
 			this.system.attributes
 				.map((value, index) => {
-					return new AttributeGURPS(value, index)
+					return new AttributeGURPS(value, { parent: this, order: index })
 				})
 				.map(e => [e.id, e]),
 		)
 		this.resourceTrackers = new Map(
 			this.system.resource_trackers
 				.map((value, index) => {
-					return new ResourceTracker(value, index)
+					return new ResourceTracker(value, { parent: this, order: index })
 				})
 				.map(e => [e.id, e]),
 		)
 		this.moveTypes = new Map(
 			this.system.move_types
 				.map((value, index) => {
-					return new MoveType(value, index)
+					return new MoveType(value, { parent: this, order: index })
 				})
 				.map(e => [e.id, e]),
 		)
@@ -864,17 +868,17 @@ class CharacterGURPS<
 			if (pool) this.pools[e.id] = pool
 		})
 
-		this.hitLocationTable = new BodyGURPS(this.system.settings.body_type)
+		this.hitLocationTable = new BodyGURPS(this.system.settings.body_type, { parent: this })
 		this.hitLocationTable.updateRollRanges()
 	}
 
-	generateNewAttributes<TDef extends AttributeDef>(definitions: TDef[]): AttributeGURPS[]
-	generateNewAttributes<TDef extends ResourceTrackerDef>(definitions: TDef[]): ResourceTracker[]
-	generateNewAttributes<TDef extends MoveTypeDef>(definitions: TDef[]): MoveType[]
-	generateNewAttributes<TDef extends AbstractAttributeDef>(definitions: TDef[]): AbstractAttribute[] {
+	generateNewAttributes<TDef extends AttributeDef>(definitions: TDef[]): ModelPropsFromSchema<AttributeSchema>[]
+	generateNewAttributes<TDef extends ResourceTrackerDef>(definitions: TDef[]): ModelPropsFromSchema<ResourceTrackerSchema>[]
+	generateNewAttributes<TDef extends MoveTypeDef>(definitions: TDef[]): ModelPropsFromSchema<MoveTypeSchema>[]
+	generateNewAttributes<TDef extends AbstractAttributeDef>(definitions: TDef[]): ModelPropsFromSchema<AbstractAttributeSchema>[] {
 		const values: AbstractAttribute[] = []
 		definitions.forEach(definition => {
-			values.push(definition.generateNewAttribute())
+			values.push(definition.generateNewAttribute().toObject())
 		})
 		return values
 	}

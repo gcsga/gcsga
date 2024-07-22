@@ -1,5 +1,5 @@
 import { ResourceTrackerDef } from "./definition.ts"
-import { AbstractAttribute, AbstractAttributeConstructionOptions, PoolThreshold, ResourceTrackerSchema } from "@system"
+import { AbstractAttribute, AbstractAttributeConstructionOptions, PoolThreshold, ResourceTrackerSchema, SheetSettings } from "@system"
 import { TokenPool } from "@module/data/types.ts"
 import { CharacterGURPS } from "@actor"
 
@@ -9,10 +9,10 @@ class ResourceTracker extends AbstractAttribute<CharacterGURPS, ResourceTrackerS
 
 	constructor(
 		data: DeepPartial<SourceFromSchema<ResourceTrackerSchema>>,
-		options: AbstractAttributeConstructionOptions<CharacterGURPS>
+		options?: AbstractAttributeConstructionOptions<CharacterGURPS>
 	) {
-		super(data)
-		this.order = options.order ?? 0
+		super(data, options)
+		this.order = options?.order ?? 0
 	}
 
 	static override defineSchema(): ResourceTrackerSchema {
@@ -25,7 +25,7 @@ class ResourceTracker extends AbstractAttribute<CharacterGURPS, ResourceTrackerS
 	}
 
 	get definition(): ResourceTrackerDef | null {
-		return this.actor.settings.resource_trackers.find(att => att.id === this.id) ?? null
+		return SheetSettings.for(this.actor).resource_trackers.find(att => att.id === this.id) ?? null
 	}
 
 	override get max(): number {

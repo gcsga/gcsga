@@ -5,8 +5,15 @@ import { CharacterGURPS } from "@actor"
 
 class MoveTypeDef extends AbstractAttributeDef<CharacterGURPS, MoveTypeDefSchema> {
 
-	constructor(data: DeepPartial<SourceFromSchema<MoveTypeDefSchema>>) {
-		super(data)
+	constructor(
+		data: DeepPartial<SourceFromSchema<MoveTypeDefSchema>>,
+		options?: DataModelConstructionOptions<CharacterGURPS>
+	) {
+		super(data, options)
+
+		if (data.overrides) {
+			this.overrides = data.overrides.map(e => new MoveTypeOverride(e!, { parent: this.parent }))
+		}
 	}
 
 	static override defineSchema(): MoveTypeDefSchema {
@@ -27,7 +34,7 @@ class MoveTypeDef extends AbstractAttributeDef<CharacterGURPS, MoveTypeDefSchema
 	}
 
 	override	generateNewAttribute(): MoveType {
-		return new MoveType({ id: this.id }, { order: 0 })
+		return new MoveType({ id: this.id }, { parent: this.parent, order: 0 })
 	}
 }
 

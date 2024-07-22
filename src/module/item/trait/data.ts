@@ -1,7 +1,7 @@
 import { AbstractContainerSource, AbstractContainerSystemData, AbstractContainerSystemSchema } from "@item/abstract-container/data.ts"
 import { ItemType, StringCompareType } from "@module/data/constants.ts"
 import { FeatureSchema, PrereqList, PrereqListSchema, SkillBonus, Study } from "@system"
-import { LocalizeGURPS, feature, selfctrl, skillsel, study } from "@util"
+import { feature, selfctrl, skillsel, study } from "@util"
 import { TraitGURPS } from "./document.ts"
 import fields = foundry.data.fields
 import { BaseFeature } from "@system/feature/base.ts"
@@ -33,7 +33,6 @@ class TraitSystemData extends AbstractContainerSystemData<TraitGURPS, TraitSyste
 			type: new fields.StringField({ required: true, initial: ItemType.Trait }),
 			name: new fields.StringField({
 				required: true,
-				initial: LocalizeGURPS.translations.TYPES.Item[ItemType.Trait],
 			}),
 			reference: new fields.StringField(),
 			reference_highlight: new fields.StringField(),

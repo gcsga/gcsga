@@ -2,7 +2,7 @@ import fields = foundry.data.fields
 import { BaseItemSourceGURPS } from "@item/base/data.ts"
 import { ItemSystemModel, ItemSystemSchema } from "@item/base/schema.ts"
 import { ItemType } from "@module/data/constants.ts"
-import { LocalizeGURPS, emcost, emweight } from "@util"
+import { emcost, emweight } from "@util"
 import { EquipmentModifierGURPS } from "./document.ts"
 import { BaseFeature } from "@system/feature/base.ts"
 import { FeatureSchema } from "@system"
@@ -16,7 +16,6 @@ class EquipmentModifierSystemData extends ItemSystemModel<EquipmentModifierGURPS
 			type: new fields.StringField({ required: true, initial: ItemType.EquipmentModifier }),
 			name: new fields.StringField({
 				required: true,
-				initial: LocalizeGURPS.translations.TYPES.Item[ItemType.EquipmentModifier],
 			}),
 			reference: new fields.StringField(),
 			reference_highlight: new fields.StringField(),

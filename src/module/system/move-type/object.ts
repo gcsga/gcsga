@@ -1,5 +1,5 @@
 import { MoveTypeDef } from "./definition.ts"
-import { AbstractAttribute, AbstractAttributeConstructionOptions, MoveBonusType, MoveTypeSchema } from "@system"
+import { AbstractAttribute, AbstractAttributeConstructionOptions, MoveBonusType, MoveTypeSchema, SheetSettings } from "@system"
 import { CharacterGURPS } from "@actor"
 
 class MoveType extends AbstractAttribute<CharacterGURPS, MoveTypeSchema> {
@@ -8,10 +8,10 @@ class MoveType extends AbstractAttribute<CharacterGURPS, MoveTypeSchema> {
 
 	constructor(
 		data: DeepPartial<SourceFromSchema<MoveTypeSchema>>,
-		options: AbstractAttributeConstructionOptions<CharacterGURPS>
+		options?: AbstractAttributeConstructionOptions<CharacterGURPS>
 	) {
-		super(data)
-		this.order = options.order ?? 0
+		super(data, options)
+		this.order = options?.order ?? 0
 	}
 
 	static override defineSchema(): MoveTypeSchema {
@@ -26,7 +26,7 @@ class MoveType extends AbstractAttribute<CharacterGURPS, MoveTypeSchema> {
 
 
 	override get definition(): MoveTypeDef | null {
-		return this.actor.settings.move_types.find(att => att.id === this.id) ?? null
+		return SheetSettings.for(this.actor).move_types.find(att => att.id === this.id) ?? null
 	}
 
 	bonus(type: MoveBonusType): number {

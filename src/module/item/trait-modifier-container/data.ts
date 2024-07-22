@@ -6,7 +6,6 @@ import {
 } from "@item/abstract-container/data.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { TraitModifierContainerGURPS } from "./document.ts"
-import { LocalizeGURPS } from "@util"
 
 class TraitModifierContainerSystemData extends AbstractContainerSystemData<TraitModifierContainerGURPS, TraitModifierContainerSystemSchema> {
 	static override defineSchema(): TraitModifierContainerSystemSchema {
@@ -17,7 +16,6 @@ class TraitModifierContainerSystemData extends AbstractContainerSystemData<Trait
 			type: new fields.StringField({ required: true, initial: ItemType.TraitModifierContainer }),
 			name: new fields.StringField({
 				required: true,
-				initial: LocalizeGURPS.translations.TYPES.Item[ItemType.TraitModifierContainer],
 			}),
 			reference: new fields.StringField(),
 			reference_highlight: new fields.StringField(),

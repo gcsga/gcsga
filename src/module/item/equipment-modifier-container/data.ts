@@ -6,7 +6,6 @@ import {
 } from "@item/abstract-container/data.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { EquipmentModifierContainerGURPS } from "./document.ts"
-import { LocalizeGURPS } from "@util"
 
 class EquipmentModifierContainerSystemData extends AbstractContainerSystemData<EquipmentModifierContainerGURPS, EquipmentModifierContainerSystemSchema> {
 	static override defineSchema(): EquipmentModifierContainerSystemSchema {
@@ -17,7 +16,6 @@ class EquipmentModifierContainerSystemData extends AbstractContainerSystemData<E
 			type: new fields.StringField({ required: true, initial: ItemType.EquipmentModifierContainer }),
 			name: new fields.StringField({
 				required: true,
-				initial: LocalizeGURPS.translations.TYPES.Item[ItemType.EquipmentModifierContainer],
 			}),
 			reference: new fields.StringField(),
 			reference_highlight: new fields.StringField(),

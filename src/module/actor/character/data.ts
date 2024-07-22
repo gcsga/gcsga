@@ -1,7 +1,7 @@
 import fields = foundry.data.fields
 import type { ActorFlagsGURPS, BaseActorSourceGURPS } from "@actor/base/data.ts"
 import { ActorSystemModel, ActorSystemSchema } from "@actor/base/schema.ts"
-import { ActorFlags, ActorType, SYSTEM_NAME } from "@data"
+import { ActorFlags, ActorType, SYSTEM_NAME, gid } from "@data"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { AttributeGURPS, MoveType, ResourceTracker, SheetSettings, type AttributeSchema, type MoveTypeSchema, type PoolThreshold, type ResourceTrackerSchema, type SheetSettingsSchema } from "@system"
 import { CharacterManeuver } from "../../system/maneuver-manager.ts"
@@ -20,17 +20,17 @@ type CharacterFlags = ActorFlagsGURPS & {
 	}
 }
 
-// const CharacterFlagDefaults: CharacterFlags = {
-// 	[SYSTEM_NAME]: {
-// 		[ActorFlags.TargetModifiers]: [],
-// 		[ActorFlags.SelfModifiers]: [],
-// 		[ActorFlags.MoveType]: gid.Ground,
-// 		[ActorFlags.AutoEncumbrance]: { active: true, manual: 0 },
-// 		[ActorFlags.AutoThreshold]: { active: true, manual: {} },
-// 		[ActorFlags.AutoDamage]: { active: true, thrust: new DiceGURPS(), swing: new DiceGURPS() },
-// 		[ActorFlags.Import]: { name: "", path: "", last_import: "" },
-// 	},
-// }
+export const CharacterFlagDefaults: CharacterFlags = {
+	[SYSTEM_NAME]: {
+		[ActorFlags.TargetModifiers]: [],
+		[ActorFlags.SelfModifiers]: [],
+		[ActorFlags.MoveType]: gid.Ground,
+		[ActorFlags.AutoEncumbrance]: { active: true, manual: 0 },
+		[ActorFlags.AutoThreshold]: { active: true, manual: {} },
+		[ActorFlags.AutoDamage]: { active: true, thrust: new DiceGURPS(), swing: new DiceGURPS() },
+		[ActorFlags.Import]: { name: "", path: "", last_import: "" },
+	},
+}
 
 // interface CharacterSystemSource extends ActorSystemSource {
 // 	type: ActorType.Character
@@ -156,8 +156,6 @@ class CharacterSystemData extends ActorSystemModel<CharacterGURPS, CharacterSyst
 		options: DataModelConstructionOptions<CharacterGURPS>
 	) {
 		super(data, options)
-		console.log(data)
-		console.log(this)
 	}
 
 	static override defineSchema(): CharacterSystemSchema {
@@ -171,7 +169,7 @@ class CharacterSystemData extends ActorSystemModel<CharacterGURPS, CharacterSyst
 			created_date: new fields.StringField(),
 			modified_date: new fields.StringField(),
 			profile: new fields.SchemaField<CharacterProfileSchema>({
-				player_name: new fields.StringField({ initial: game.user.name }),
+				player_name: new fields.StringField({ initial: game.user?.name }),
 				name: new fields.StringField(),
 				title: new fields.StringField(),
 				organization: new fields.StringField(),
@@ -256,5 +254,6 @@ type CharacterSystemSource = SourceFromSchema<CharacterSystemSchema>
 
 type CharacterSource = BaseActorSourceGURPS<ActorType.Character, CharacterSystemSource>
 
-export type { CharacterFlags, CharacterSource, CharacterSystemData, CharacterSystemSource, CharacterProfile, CharacterMove }
+export type { CharacterFlags, CharacterSource, CharacterSystemSource, CharacterProfile, CharacterMove }
+export { CharacterSystemData }
 

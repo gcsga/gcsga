@@ -4,7 +4,7 @@ import {
 import { ItemType, gid } from "@module/data/constants.ts"
 import { SkillDifficulty } from "@module/data/types.ts"
 import { PrereqList, PrereqListSchema, } from "@system"
-import { LocalizeGURPS, TooltipGURPS, difficulty, } from "@util"
+import { TooltipGURPS, difficulty, } from "@util"
 import { SpellGURPS } from "./document.ts"
 import fields = foundry.data.fields
 import { AbstractSkillSystemData, AbstractSkillSystemSchema } from "@item/abstract-skill/data.ts"
@@ -18,7 +18,6 @@ class SpellSystemData extends AbstractSkillSystemData<SpellGURPS, SpellSystemSch
 			type: new fields.StringField({ required: true, initial: ItemType.Spell }),
 			name: new fields.StringField({
 				required: true,
-				initial: LocalizeGURPS.translations.TYPES.Item[ItemType.Spell],
 			}),
 			difficulty: new fields.StringField({ initial: `${gid.Intelligence}/${difficulty.Level.Hard}`, required: true }),
 			college: new fields.ArrayField(new foundry.data.fields.StringField()),

@@ -5,7 +5,6 @@ import {
 	AbstractContainerSystemSchema,
 } from "@item/abstract-container/data.ts"
 import { ItemType } from "@module/data/constants.ts"
-import { LocalizeGURPS } from "@util"
 import { NoteContainerGURPS } from "./document.ts"
 
 class NoteContainerSystemData extends AbstractContainerSystemData<NoteContainerGURPS, NoteContainerSystemSchema> {
@@ -17,7 +16,6 @@ class NoteContainerSystemData extends AbstractContainerSystemData<NoteContainerG
 			type: new fields.StringField({ required: true, initial: ItemType.NoteContainer }),
 			text: new fields.StringField({
 				required: true,
-				initial: LocalizeGURPS.translations.TYPES.Item[ItemType.NoteContainer],
 			}),
 			reference: new fields.StringField(),
 			reference_highlight: new fields.StringField(),

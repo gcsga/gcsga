@@ -3,7 +3,6 @@ import { BaseItemSourceGURPS } from "@item/base/data.ts"
 import { ItemSystemModel, ItemSystemSchema } from "@item/base/schema.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { NoteGURPS } from "./document.ts"
-import { LocalizeGURPS } from "@util"
 
 class NoteSystemData extends ItemSystemModel<NoteGURPS, NoteSystemSchema> {
 	static override defineSchema(): NoteSystemSchema {
@@ -14,7 +13,6 @@ class NoteSystemData extends ItemSystemModel<NoteGURPS, NoteSystemSchema> {
 			type: new fields.StringField({ required: true, initial: ItemType.Note }),
 			text: new fields.StringField({
 				required: true,
-				initial: LocalizeGURPS.translations.TYPES.Item[ItemType.Note],
 			}),
 			reference: new fields.StringField(),
 			reference_highlight: new fields.StringField(),

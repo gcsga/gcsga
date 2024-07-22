@@ -13,8 +13,11 @@ class ResourceTrackerDef extends AbstractAttributeDef<CharacterGURPS, ResourceTr
 	// isMinEnforced = false
 	// order = 0
 
-	constructor(data: DeepPartial<SourceFromSchema<ResourceTrackerDefSchema>>) {
-		super(data)
+	constructor(
+		data: DeepPartial<SourceFromSchema<ResourceTrackerDefSchema>>,
+		options?: DataModelConstructionOptions<CharacterGURPS>
+	) {
+		super(data, options)
 		// this.name = data.name
 		// this.full_name = data.full_name
 		// this.max = data.max ?? 10
@@ -56,7 +59,7 @@ class ResourceTrackerDef extends AbstractAttributeDef<CharacterGURPS, ResourceTr
 	}
 
 	override	generateNewAttribute(): ResourceTracker {
-		return new ResourceTracker({ id: this.id }, { order: 0 })
+		return new ResourceTracker({ id: this.id }, { parent: this.parent, order: 0 })
 	}
 
 	// override generateNewAttribute(): SourceFromSchema<ResourceTrackerSchema> {

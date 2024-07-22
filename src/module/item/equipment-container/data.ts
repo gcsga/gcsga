@@ -1,7 +1,7 @@
 import fields = foundry.data.fields
 import { AbstractContainerSource, AbstractContainerSystemData, AbstractContainerSystemSchema } from "@item/abstract-container/data.ts"
 import { ItemType } from "@module/data/constants.ts"
-import { LocalizeGURPS, WeightString } from "@util"
+import { WeightString } from "@util"
 import { EquipmentContainerGURPS } from "./document.ts"
 import { FeatureSchema, PrereqList, PrereqListSchema } from "@system"
 import { BaseFeature } from "@system/feature/base.ts"
@@ -15,7 +15,6 @@ class EquipmentContainerSystemData extends AbstractContainerSystemData<Equipment
 			type: new fields.StringField({ required: true, initial: ItemType.EquipmentContainer }),
 			description: new fields.StringField({
 				required: true,
-				initial: LocalizeGURPS.translations.TYPES.Item[ItemType.EquipmentContainer],
 			}),
 			reference: new fields.StringField(),
 			reference_highlight: new fields.StringField(),

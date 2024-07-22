@@ -1,6 +1,6 @@
 import { ItemType } from "@module/data/constants.ts"
 import { TemplatePicker, TemplatePickerSchema } from "@system"
-import { LocalizeGURPS, container, selfctrl } from "@util"
+import { container, selfctrl } from "@util"
 import { TraitContainerGURPS } from "./document.ts"
 import fields = foundry.data.fields
 import { AbstractContainerSource, AbstractContainerSystemData, AbstractContainerSystemSchema } from "@item/abstract-container/data.ts"
@@ -14,7 +14,6 @@ class TraitContainerSystemData extends AbstractContainerSystemData<TraitContaine
 			type: new fields.StringField({ required: true, initial: ItemType.TraitContainer }),
 			name: new fields.StringField({
 				required: true,
-				initial: LocalizeGURPS.translations.TYPES.Item[ItemType.TraitContainer],
 			}),
 			reference: new fields.StringField(),
 			reference_highlight: new fields.StringField(),

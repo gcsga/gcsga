@@ -17,8 +17,11 @@ abstract class AbstractAttributeDef<
 	attributeClass = AbstractAttribute
 
 
-	constructor(data: DeepPartial<SourceFromSchema<TSchema>>) {
-		super(data)
+	constructor(
+		data: DeepPartial<SourceFromSchema<TSchema>>,
+		options?: DataModelConstructionOptions<TActor>
+	) {
+		super(data, options)
 		this._id = sanitizeId(String(data.id ?? ""), false, RESERVED_IDS)
 		// this._id = data.id ?? ""
 		// this.base = data.base

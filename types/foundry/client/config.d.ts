@@ -65,6 +65,7 @@ declare global {
 				): TActor
 			}
 			collection: ConstructorOf<Actors<Actor<null>>>
+			dataModels: Record<string, ConstructorOf<TypeDataModel<Actor, DataSchema>>>
 			sheetClasses: Record<
 				string,
 				Record<

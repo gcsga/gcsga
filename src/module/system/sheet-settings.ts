@@ -36,11 +36,14 @@ export enum BlockLayoutKey {
 	BlockLayoutNotesKey = "notes",
 }
 
-export type BlockLayout = BlockLayoutKey[]
+type BlockLayoutString =
+	| `${BlockLayoutKey}`
+	| `${BlockLayoutKey} ${BlockLayoutKey}`
+
 
 type SheetSettingsSchema = {
 	page: fields.ObjectField<PageSettings>
-	block_layout: fields.ObjectField<BlockLayout>
+	block_layout: fields.ArrayField<fields.StringField<BlockLayoutString>>
 	attributes: fields.ArrayField<fields.SchemaField<AttributeDefSchema>>
 	resource_trackers: fields.ArrayField<fields.SchemaField<ResourceTrackerDefSchema>>
 	move_types: fields.ArrayField<fields.SchemaField<MoveTypeDefSchema>>
@@ -65,11 +68,17 @@ type SheetSettingsSchema = {
 class SheetSettings extends foundry.abstract.DataModel<CharacterGURPS, SheetSettingsSchema> {
 	protected declare static _schema: LaxSchemaField<SheetSettingsSchema> | undefined;
 
-	constructor(data: DeepPartial<SourceFromSchema<SheetSettingsSchema>>) {
-		super(data)
-		this.attributes = data.attributes?.map(e => new AttributeDef(e!)) ?? []
-		this.resource_trackers = data.resource_trackers?.map(e => new ResourceTrackerDef(e!)) ?? []
-		this.move_types = data.move_types?.map(e => new MoveTypeDef(e!)) ?? []
+	constructor(
+		data: DeepPartial<SourceFromSchema<SheetSettingsSchema>>,
+		options?: DataModelConstructionOptions<CharacterGURPS>
+	) {
+		super(data, options)
+		this.attributes = data.attributes?.map(e =>
+			new AttributeDef(e!, { parent: this.parent })) ?? []
+		this.resource_trackers = data.resource_trackers?.map(e =>
+			new ResourceTrackerDef(e!, { parent: this.parent })) ?? []
+		this.move_types = data.move_types?.map(e =>
+			new MoveTypeDef(e!, { parent: this.parent })) ?? []
 		this.body_type = new BodyGURPS(data.body_type!)
 	}
 
@@ -82,7 +91,7 @@ class SheetSettings extends foundry.abstract.DataModel<CharacterGURPS, SheetSett
 		const defaults = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`)
 		return {
 			page: new fields.ObjectField<PageSettings>({ initial: defaults.page }),
-			block_layout: new fields.ObjectField<BlockLayout>(),
+			block_layout: new fields.ArrayField(new fields.StringField(), { initial: defaults["block_layout"] }),
 			attributes: new fields.ArrayField(new fields.SchemaField(AttributeDef.defineSchema()),
 				{ initial: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) }
 			),
@@ -125,18 +134,24 @@ class SheetSettings extends foundry.abstract.DataModel<CharacterGURPS, SheetSett
 
 	static for(actor: ActorGURPS | null): SheetSettings {
 		if (actor?.isOfType(ActorType.Character)) {
-			return new SheetSettings(actor.system.settings)
+			return actor.settings ??
+				new SheetSettings(actor.system.settings, { parent: actor })
 		}
 		if (actor) {
-			ErrorGURPS(`Actor "${actor.name}" is of type "${actor.type}", which does not support Sheet Settings. Returning default settings.`)
+			ErrorGURPS(`Actor "${actor.name}" is of type "${actor.type}", which does not support Sheet Settings.Returning default settings.`)
 		}
 		else {
-			ErrorGURPS(`Actor does not exist. Returning default settings.`)
+			ErrorGURPS(`Actor does not exist.Returning default settings.`)
 		}
 		return SheetSettings.default()
 	}
 
 }
+
+// interface SheetSettings
+// 	extends foundry.abstract.DataModel<CharacterGURPS, SheetSettingsSchema>,
+// 	ModelPropsFromSchema<SheetSettingsSchema> {
+// }
 
 interface SheetSettings
 	extends foundry.abstract.DataModel<CharacterGURPS, SheetSettingsSchema>,

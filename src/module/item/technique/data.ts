@@ -5,7 +5,7 @@ import { AbstractSkillSystemData, AbstractSkillSystemSchema } from "@item/abstra
 import { ItemType } from "@module/data/constants.ts"
 import { TechniqueDifficulty } from "@module/data/types.ts"
 import { FeatureSchema, PrereqList, PrereqListSchema, SkillDefault, SkillDefaultSchema, } from "@system"
-import { LocalizeGURPS, difficulty, } from "@util"
+import { difficulty, } from "@util"
 import { TechniqueGURPS } from "./document.ts"
 import fields = foundry.data.fields
 import { BaseFeature } from "@system/feature/base.ts"
@@ -20,7 +20,6 @@ class TechniqueSystemData extends AbstractSkillSystemData<TechniqueGURPS, Techni
 			type: new fields.StringField({ required: true, initial: ItemType.Technique }),
 			name: new fields.StringField({
 				required: true,
-				initial: LocalizeGURPS.translations.TYPES.Item[ItemType.Technique],
 			}),
 			difficulty: new fields.StringField({ initial: difficulty.Level.Average, required: true }),
 			points: new fields.NumberField({ integer: true, min: 0 }),

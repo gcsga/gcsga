@@ -9,8 +9,11 @@ class MoveTypeOverride extends foundry.abstract.DataModel<ActorGURPS, MoveTypeOv
 	// Overriddes the base value of the move type definition when condition is met
 	// base: string
 
-	constructor(data: DeepPartial<SourceFromSchema<MoveTypeOverrideSchema>>) {
-		super(data)
+	constructor(
+		data: DeepPartial<SourceFromSchema<MoveTypeOverrideSchema>>,
+		options: DataModelConstructionOptions<ActorGURPS>
+	) {
+		super(data, options)
 		// this.condition = data.condition
 		// this.base = data.base
 	}
@@ -28,7 +31,7 @@ class MoveTypeOverride extends foundry.abstract.DataModel<ActorGURPS, MoveTypeOv
 		}
 	}
 
-	conditionMet(resolver: ActorGURPS): boolean {
+	conditionMet(resolver: ActorGURPS = this.parent): boolean {
 		switch (this.condition.type) {
 			case MoveTypeOverrideConditionType.Skill:
 				return resolver.itemCollections.skills.some(e => e.name === this.condition.qualifier)
@@ -41,13 +44,6 @@ class MoveTypeOverride extends foundry.abstract.DataModel<ActorGURPS, MoveTypeOv
 
 	baseValue(resolver: ActorGURPS): number {
 		return evaluateToNumber(this.base, resolver)
-	}
-
-	static newObject(): SourceFromSchema<MoveTypeOverrideSchema> {
-		return {
-			condition: { type: MoveTypeOverrideConditionType.Skill, qualifier: "" },
-			base: "",
-		}
 	}
 }
 

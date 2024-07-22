@@ -16,7 +16,7 @@ class PoolThreshold extends foundry.abstract.DataModel<CharacterGURPS, PoolThres
 			state: new fields.StringField(),
 			explanation: new fields.StringField({ required: false }),
 			expression: new fields.StringField(),
-			ops: new fields.ArrayField(new fields.StringField<ThresholdOp>()),
+			ops: new fields.ArrayField(new fields.StringField<ThresholdOp>(), { required: false }),
 		}
 	}
 

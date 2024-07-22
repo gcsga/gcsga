@@ -6,7 +6,6 @@ import {
 } from "@item/abstract-weapon/data.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { RangedWeaponGURPS } from "./document.ts"
-import { LocalizeGURPS } from "@util"
 
 class RangedWeaponSystemData extends AbstractWeaponSystemData<RangedWeaponGURPS, RangedWeaponSystemSchema> {
 	static override defineSchema(): RangedWeaponSystemSchema {
@@ -17,7 +16,6 @@ class RangedWeaponSystemData extends AbstractWeaponSystemData<RangedWeaponGURPS,
 			type: new fields.StringField({ required: true, initial: ItemType.RangedWeapon }),
 			usage: new fields.StringField({
 				required: true,
-				initial: LocalizeGURPS.translations.TYPES.Item[ItemType.RangedWeapon],
 			}),
 			accuracy: new fields.StringField(),
 			range: new fields.StringField(),

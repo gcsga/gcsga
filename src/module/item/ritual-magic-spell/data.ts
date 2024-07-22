@@ -2,7 +2,7 @@ import { AbstractContainerSource, } from "@item/abstract-container/data.ts"
 import fields = foundry.data.fields
 import { ItemType, } from "@module/data/constants.ts"
 import { PrereqList, PrereqListSchema } from "@system"
-import { LocalizeGURPS, difficulty } from "@util"
+import { difficulty } from "@util"
 import { TechniqueDifficulty } from "@module/data/types.ts"
 import { RitualMagicSpellGURPS } from "./document.ts"
 import { AbstractSkillSystemData, AbstractSkillSystemSchema } from "@item/abstract-skill/data.ts"
@@ -16,7 +16,6 @@ class RitualMagicSpellSystemData extends AbstractSkillSystemData<RitualMagicSpel
 			type: new fields.StringField({ required: true, initial: ItemType.RitualMagicSpell }),
 			name: new fields.StringField({
 				required: true,
-				initial: LocalizeGURPS.translations.TYPES.Item[ItemType.RitualMagicSpell],
 			}),
 			difficulty: new fields.StringField({ initial: difficulty.Level.Hard, required: true }),
 			college: new fields.ArrayField(new foundry.data.fields.StringField()),

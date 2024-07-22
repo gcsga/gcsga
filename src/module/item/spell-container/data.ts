@@ -6,7 +6,6 @@ import {
 } from "@item/abstract-container/data.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { TemplatePicker, TemplatePickerSchema } from "@system"
-import { LocalizeGURPS } from "@util"
 import { SpellContainerGURPS } from "./document.ts"
 
 class SpellContainerSystemData extends AbstractContainerSystemData<SpellContainerGURPS, SpellContainerSystemSchema> {
@@ -18,7 +17,6 @@ class SpellContainerSystemData extends AbstractContainerSystemData<SpellContaine
 			type: new fields.StringField({ required: true, initial: ItemType.SpellContainer }),
 			name: new fields.StringField({
 				required: true,
-				initial: LocalizeGURPS.translations.TYPES.Item[ItemType.SpellContainer],
 			}),
 			reference: new fields.StringField(),
 			reference_highlight: new fields.StringField(),

@@ -1,4 +1,5 @@
 import { ActorProxyGURPS } from "@actor"
+import { CharacterSystemData } from "@actor/character/data.ts"
 import { ActorType, ItemType } from "@data"
 import { ItemProxyGURPS } from "@item"
 import { ConditionSystemData } from "@item/condition/data.ts"
@@ -59,6 +60,8 @@ export const Load = {
 		CONFIG.Token.documentClass = TokenDocumentGURPS
 		// CONFIG.Token.prototypeSheetClass = TokenConfigGURPS
 		CONFIG.User.documentClass = UserGURPS
+
+		CONFIG.Actor.dataModels[ActorType.Character] = CharacterSystemData
 
 		CONFIG.Item.dataModels = {
 			[ItemType.Trait]: TraitSystemData,
