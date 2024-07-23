@@ -1,6 +1,6 @@
 import { ActorGURPS } from "@actor"
 import { TokenDocumentGURPS } from "@scene"
-import { CharacterFlagDefaults, CharacterFlags, CharacterSource, CharacterSystemData } from "./data.ts"
+import { CharacterFlagDefaults, CharacterFlags, CharacterSource, CharacterSystemData, PointBreakdown } from "./data.ts"
 
 import {
 	AbstractAttributeDef,
@@ -17,7 +17,6 @@ import {
 	SkillDefault,
 	ThresholdOp,
 	WeaponBonus,
-	AbstractAttribute,
 	AttributeSchema,
 	ResourceTrackerSchema,
 	MoveTypeSchema,
@@ -70,7 +69,7 @@ class CharacterGURPS<
 	private declare _prevAttributes: Map<string, AttributeGURPS>
 	declare resourceTrackers: Map<string, ResourceTracker>
 	declare moveTypes: Map<string, MoveType>
-	declare pointsBreakdown: PointsBreakdown
+	declare pointBreakdown: PointBreakdown
 
 	/** Singular embeds for characters */
 	declare posture: ConditionGURPS<this> | null
@@ -876,7 +875,7 @@ class CharacterGURPS<
 	generateNewAttributes<TDef extends ResourceTrackerDef>(definitions: TDef[]): ModelPropsFromSchema<ResourceTrackerSchema>[]
 	generateNewAttributes<TDef extends MoveTypeDef>(definitions: TDef[]): ModelPropsFromSchema<MoveTypeSchema>[]
 	generateNewAttributes<TDef extends AbstractAttributeDef>(definitions: TDef[]): ModelPropsFromSchema<AbstractAttributeSchema>[] {
-		const values: AbstractAttribute[] = []
+		const values: ModelPropsFromSchema<AbstractAttributeSchema>[] = []
 		definitions.forEach(definition => {
 			values.push(definition.generateNewAttribute().toObject())
 		})
@@ -894,7 +893,7 @@ class CharacterGURPS<
 	override prepareDerivedData(): void {
 		super.prepareDerivedData()
 
-		this.pointsBreakdown = this.calculatePointsBreakdown()
+		this.pointBreakdown = this.calculatePointBreakdown()
 		if (this.attributes.has(gid.Strength)) {
 			this.lifts = new CharacterLifts(this)
 			this.encumbrance = new CharacterEncumbrance(this)
@@ -906,7 +905,7 @@ class CharacterGURPS<
 		)
 	}
 
-	private calculatePointsBreakdown(): PointsBreakdown {
+	private calculatePointBreakdown(): PointBreakdown {
 		const pb = {
 			overspent: false,
 			ancestry: 0,
@@ -940,7 +939,7 @@ class CharacterGURPS<
 		return pb
 	}
 
-	private calculateSingleTraitPoints(trait: TraitGURPS | TraitContainerGURPS, pb: PointsBreakdown) {
+	private calculateSingleTraitPoints(trait: TraitGURPS | TraitContainerGURPS, pb: PointBreakdown) {
 		if (!trait.enabled) return
 		if (trait.isOfType(ItemType.TraitContainer)) {
 			switch (trait.containerType) {

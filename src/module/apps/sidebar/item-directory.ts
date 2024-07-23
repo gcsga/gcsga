@@ -58,7 +58,7 @@ class ItemDirectoryGURPS extends ItemDirectory<ItemGURPS<null>> {
 
 		// Sort relative to another Document
 		const collection = ItemDirectoryGURPS.collection
-		const sortData: Partial<SortData<ItemGURPS<null>>> = { sortKey: "sort" }
+		const sortData: Partial<SortData<ItemGURPS<null>>> & { sortKey: string } = { sortKey: "sort" }
 		const isRelative = target && target.dataset.entryId
 		if (isRelative) {
 			if (entry.id === target.dataset.entryId) return // Don't drop on yourself
@@ -74,7 +74,7 @@ class ItemDirectoryGURPS extends ItemDirectory<ItemGURPS<null>> {
 
 		// Determine siblings
 		sortData.siblings = collection.filter(
-			d => !this._entryIsSelf(d, entry) && this._entryBelongsToFolder(d, folder),
+			d => (d instanceof ItemGURPS) && !this._entryIsSelf(d, entry) && !!folder && this._entryBelongsToFolder(d, folder),
 		)
 
 		if (!this._entryAlreadyExists(entry)) {
@@ -82,7 +82,7 @@ class ItemDirectoryGURPS extends ItemDirectory<ItemGURPS<null>> {
 			const sorted = SortingHelpers.performIntegerSort(entry, sortData)
 			if (sorted.length === 1) entry = entry.clone({ sort: sorted[0].update[sortData.sortKey] }, { keepId: true })
 			const folderId = entry.folder ?? null
-			const cls = this.collection.documentClass
+			const cls = ItemDirectoryGURPS.collection.documentClass
 
 			// Create items for original item contents
 			await cls.create(items, { fromCompendium: !!entry.compendium, keepId: true })
@@ -102,7 +102,7 @@ class ItemDirectoryGURPS extends ItemDirectory<ItemGURPS<null>> {
 	}
 
 	override initialize(): void {
-		for (const item of ItemDirectoryGURPS.collection) {
+		for (const item of this.documents) {
 			item.prepareSiblingData()
 		}
 		return super.initialize()

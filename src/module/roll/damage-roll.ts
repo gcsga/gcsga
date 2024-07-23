@@ -82,7 +82,8 @@ export class DamageRollGURPS {
 
 	async evaluate(): Promise<void> {
 		if (!this._roll) this._roll = new Roll(this.rollFormula)
-		this._evaluatedRoll = await this._roll.evaluate({ async: true })
+		// this._evaluatedRoll = await this._roll.evaluate({ async: true })
+		this._evaluatedRoll = await this._roll.evaluate()
 	}
 
 	async getTooltip(): Promise<string> {

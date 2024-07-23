@@ -334,7 +334,7 @@ class HandlebarsHelpersGURPS {
 	// }
 
 	static overspent(actor: CharacterGURPS): boolean {
-		return actor.pointsBreakdown.unspent < 0
+		return actor.pointBreakdown.unspent < 0
 	}
 
 	// Static gmod() {
@@ -498,9 +498,8 @@ class HandlebarsHelpersGURPS {
 			const label = Handlebars.escapeExpression(option.label)
 			const isSelected = (selected as string | string[]).includes(option.name)
 			const isDisabled = (disabled as string | string[]).includes(option.name)
-			html += `<option value="${option.name}" ${isSelected ? "selected" : ""} ${
-				isDisabled ? "disabled" : ""
-			}>${label}</option>`
+			html += `<option value="${option.name}" ${isSelected ? "selected" : ""} ${isDisabled ? "disabled" : ""
+				}>${label}</option>`
 		}
 		return new Handlebars.SafeString(html)
 	}

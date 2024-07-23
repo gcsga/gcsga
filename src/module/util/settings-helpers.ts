@@ -123,7 +123,7 @@ function addResourceTrackerThreshold(context: DropDataContext): void {
 	if (isNaN(index)) return console.error("Invalid index")
 
 	const resourceTrackers = context.app.resourceTrackers
-	resourceTrackers[index].thresholds?.push(PoolThreshold.newObject())
+	resourceTrackers[index].thresholds?.push(new PoolThreshold({}, { parent: resourceTrackers[index].parent }))
 
 	if (context.app instanceof CharacterConfigSheet)
 		context.app.actor.update({ "system.settings.resource_trackers": resourceTrackers })
@@ -182,7 +182,7 @@ function addMoveTypeOverride(context: DropDataContext): void {
 	if (isNaN(index)) return console.error("Invalid index")
 
 	const moveTypes = context.app.moveTypes
-	moveTypes[index].overrides?.push(new MoveTypeOverride({}))
+	moveTypes[index].overrides?.push(new MoveTypeOverride({}, { parent: moveTypes[index].parent }))
 
 	if (context.app instanceof CharacterConfigSheet)
 		context.app.actor.update({ "system.settings.move_types": moveTypes })

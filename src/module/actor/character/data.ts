@@ -136,19 +136,6 @@ export interface Encumbrance {
 // export { CharacterFlagDefaults }
 // export type { CharacterFlags, CharacterSource, CharacterSystemData, CharacterSystemSource }
 
-// export interface PointsBreakdown {
-// 	overspent: boolean
-// 	ancestry: number
-// 	attributes: number
-// 	advantages: number
-// 	disadvantages: number
-// 	quirks: number
-// 	skills: number
-// 	spells: number
-// 	total: number
-// 	unspent: number
-// }
-
 class CharacterSystemData extends ActorSystemModel<CharacterGURPS, CharacterSystemSchema> {
 
 	constructor(
@@ -246,6 +233,19 @@ type CharacterMoveSchema = {
 	type: fields.StringField
 }
 
+type PointBreakdownSchema = {
+	overspent: fields.BooleanField
+	ancestry: fields.NumberField<number, number, true, false, true>
+	attributes: fields.NumberField<number, number, true, false, true>
+	advantages: fields.NumberField<number, number, true, false, true>
+	disadvantages: fields.NumberField<number, number, true, false, true>
+	quirks: fields.NumberField<number, number, true, false, true>
+	skills: fields.NumberField<number, number, true, false, true>
+	spells: fields.NumberField<number, number, true, false, true>
+	total: fields.NumberField<number, number, true, false, true>
+	unspent: fields.NumberField<number, number, true, false, true>
+}
+
 type CharacterProfile = ModelPropsFromSchema<CharacterProfileSchema>
 
 type CharacterMove = ModelPropsFromSchema<CharacterMoveSchema>
@@ -254,6 +254,8 @@ type CharacterSystemSource = SourceFromSchema<CharacterSystemSchema>
 
 type CharacterSource = BaseActorSourceGURPS<ActorType.Character, CharacterSystemSource>
 
-export type { CharacterFlags, CharacterSource, CharacterSystemSource, CharacterProfile, CharacterMove }
+type PointBreakdown = ModelPropsFromSchema<PointBreakdownSchema>
+
+export type { CharacterFlags, CharacterSource, CharacterSystemSource, CharacterProfile, CharacterMove, PointBreakdown }
 export { CharacterSystemData }
 

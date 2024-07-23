@@ -97,6 +97,42 @@ declare global {
 		 * @param html The context menu HTML being rendered for the directory
 		 */
 		protected _contextMenu(html: JQuery): void
+
+		/**
+	 * Get the dropped Entry from the drop data
+	 * @param {object} data         The data being dropped
+	 * @returns {Promise<object>}   The dropped Entry
+	 * @protected
+	 */
+		protected _getDroppedEntryFromData(data: object): Promise<TDocument>
+
+		/**
+		* Determine if an Entry is being compared to itself
+		* @param {TDocument} entry          The Entry
+		* @param {TDocument} otherEntry     The other Entry
+		* @returns {boolean}                          Is the Entry being compared to itself?
+		* @protected
+		*/
+		_entryIsSelf(entry: TDocument, otherEntry: TDocument): boolean
+
+		/**
+		 * Determine whether an Entry belongs to the target folder
+		 * @param {TDocument} entry   The Entry
+		 * @param {Folder} folder               The target folder
+		 * @returns {boolean}                   Is the Entry a sibling?
+		 * @protected
+		 */
+		_entryBelongsToFolder(entry: TDocument, folder: Folder): boolean
+
+
+		/**
+		 * Check if an Entry is already present in the Collection
+		 * @param {TDocument} entry     The Entry being dropped
+		 * @returns {boolean}                     Is the Entry already present?
+		 * @private
+		 */
+		_entryAlreadyExists(entry: TDocument): boolean
+
 	}
 
 	interface SidebarDirectoryOptions extends ApplicationOptions {
