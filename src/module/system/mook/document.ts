@@ -2,38 +2,40 @@ import { WeaponDamageSchema } from "@item/abstract-weapon/weapon-damage.ts"
 import { ItemType, SETTINGS, SYSTEM_NAME, gid } from "@module/data/index.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { AttributeDef, AttributeGURPS, MoveTypeDef } from "@system"
-import { progression, sanitize, stdmg } from "@util"
-import { MookEquipment, MookMelee, MookNote, MookRanged, MookSkill, MookSpell, MookTrait, MookTraitModifier } from "./components.ts"
+import { difficulty, progression, sanitize, stdmg } from "@util"
+import { MookEquipment, MookMelee, MookNote, MookRanged, MookSkill, MookSpell, MookTrait } from "./components.ts"
 import {
 	MookSchema,
+	MookTraitModifierSchema,
 	damage_type_matches,
 	regex_damage_type,
+	regex_difficulty,
 	regex_points
 } from "./data.ts"
 
 
 
 class Mook extends foundry.abstract.DataModel<null, MookSchema> {
-
 	declare text: string
 	declare catchall: string
 
 	constructor(
-		data: SourceFromSchema<MookSchema>,
+		data: Partial<SourceFromSchema<MookSchema>>,
 		options: DataModelConstructionOptions<null>
 	) {
 		super(data, options)
 
-		this.attributes = new Map(data.attributes.map(e => [e.id, new AttributeGURPS(e, { parent: this })]))
+		if (data.attributes)
+			this.attributes = new Map(data.attributes.map(e => [e.id, new AttributeGURPS(e, { parent: this })]))
 
-		this.traits = data.traits.map(e => new MookTrait(e, { parent: this }))
-		this.skills = data.skills.map(e => new MookSkill(e, { parent: this }))
-		this.spells = data.spells.map(e => new MookSpell(e, { parent: this }))
-		this.melee = data.melee.map(e => new MookMelee(e, { parent: this }))
-		this.ranged = data.ranged.map(e => new MookRanged(e, { parent: this }))
-		this.equipment = data.equipment.map(e => new MookEquipment(e, { parent: this }))
-		this.otherEquipment = data.otherEquipment.map(e => new MookEquipment(e, { parent: this }))
-		this.notes = data.notes.map(e => new MookNote(e, { parent: this }))
+		this.traits = data.traits?.map(e => new MookTrait(e, { parent: this })) ?? []
+		this.skills = data.skills?.map(e => new MookSkill(e, { parent: this })) ?? []
+		this.spells = data.spells?.map(e => new MookSpell(e, { parent: this })) ?? []
+		this.melee = data.melee?.map(e => new MookMelee(e, { parent: this })) ?? []
+		this.ranged = data.ranged?.map(e => new MookRanged(e, { parent: this })) ?? []
+		this.equipment = data.equipment?.map(e => new MookEquipment(e, { parent: this })) ?? []
+		this.otherEquipment = data.otherEquipment?.map(e => new MookEquipment(e, { parent: this })) ?? []
+		this.notes = data.notes?.map(e => new MookNote(e, { parent: this })) ?? []
 	}
 
 	static override defineSchema(): MookSchema {
@@ -102,14 +104,14 @@ class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 	 */
 
 	// Clean up a line of text for easier parsing
-	static cleanLine(text: string): string {
+	private _cleanLine(text: string): string {
 		const start = text
 		if (!text) return text
 		const pat = "*,.:" // things that just clutter up the text
 		if (pat.includes(text[0])) text = text.substring(1)
 		if (pat.includes(text[text.length - 1])) text = text.substring(0, text.length - 1)
 		text = text.trim()
-		return start === text ? text : Mook.cleanLine(text)
+		return start === text ? text : this._cleanLine(text)
 	}
 
 	// Find a block of text in between two matches and extract it from the original text block
@@ -525,7 +527,7 @@ class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 		return [damage, input]
 	}
 
-	private _parseTraits(skipSeparation = false): MookTrait[] {
+	private _parseTraits(skipSeparation = false): void {
 		const regex_levels = /\s(\d+)$/
 		const regex_cr = /\((CR:?)?\s*(\d+)\)/
 
@@ -546,11 +548,8 @@ class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 			text = text.trim()
 		}
 
-		const traits: MookTrait[] = []
-
 		text.split(";").forEach(t => {
 			if (!t.trim()) return
-			if
 
 			// Capture points
 			let points = 0
@@ -560,7 +559,7 @@ class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 			}
 
 			// Capture modifiers
-			let modifiers: MookTraitModifier[] = []
+			let modifiers: SourceFromSchema<MookTraitModifierSchema>[] = []
 			if (t.match(/\(.+\)/)) {
 				modifiers = this._parseTraitModifiers(t.match(/\((.*)\)/)![1])
 				if (modifiers.length > 0) t = t.replace(/\(.*\)/, "").trim()
@@ -591,13 +590,222 @@ class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 				notes: "",
 				reference: "",
 				modifiers,
-			})
-			traits.push(trait)
+			}, { parent: this })
+
+			this.traits.push(trait)
 		})
-		return traits
 	}
 
+	private _parseTraitModifiers(text: string): SourceFromSchema<MookTraitModifierSchema>[] {
+		const modifiers: SourceFromSchema<MookTraitModifierSchema>[] = []
+		const textmods = text.split(";")
+		textmods.forEach(m => {
+			if (m.split(",").length === 2 && m.split(",")[1].match(/[+-]?\d+%?/)) {
+				// assumes common format for modifier notation
+				const mod = m.split(",")
+				modifiers.push(
+					{
+						type: ItemType.TraitModifier,
+						name: mod[0].trim(),
+						cost: mod[1].trim(),
+						notes: "",
+						reference: "",
+					}
+				)
+			}
+		})
+		return modifiers
+	}
+
+	private _parseSkills(skipSeparation = false): void {
+		const attributes: { name: string; id: string }[] = [
+			...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`).map(e => {
+				return { id: e.id, name: e.name }
+			}),
+			...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`).map(e => {
+				return { id: e.id, name: e.id }
+			}),
+		]
+
+		const regex_level = /\s?-(\d+)/
+		const regex_difficulty_att = new RegExp(`\\((${attributes.map(e => e.name).join("|")})/([EAHVeahv][Hh]?)\\)`)
+		const regex_rsl = new RegExp(`[\\(|\\s](${attributes.map(e => e.name).join("|")})([-+]\\d+)?[\\)|\\s]?`)
+		const regex_specialization = /^(?:[A-z-\s]+) \(([A-z-\s]+)\)/
+		const regex_tl = /\/TL(\d+\^?)/
+
+		let text = ""
+		if (skipSeparation) text = this.text
+		else
+			text = this._extractText(
+				["Skills:"],
+				["Spells:", "Equipment:", "Language:", "Languages:", "Weapons:", "Class:", "Notes:", "*"],
+			)
+
+		text = text.replace(/skills:?/gi, " ")
+		text = this._cleanLine(text)
+		text = text.replaceAll(/\.\n/g, ";").replaceAll(",", ";")
+		text = text.trim()
+
+		text.split(";").forEach(t => {
+			t = this._cleanLine(t).trim().replace("\n", "")
+			if (!t) return
+
+			// Capture points
+			let points = 0
+			if (t.match(regex_points)) {
+				points = parseInt(t.match(regex_points)?.[1] ?? "0")
+				t = t.replace(regex_points, "").trim()
+			}
+
+			// Capture level
+			let level = 0
+			if (t.match(regex_level)) {
+				level = parseInt(t.match(regex_level)![1])
+				t = t.replace(regex_level, "").trim()
+			}
+
+			// Capture difficulty
+			let attribute: string = gid.Dexterity.toUpperCase()
+			let diff = difficulty.Level.Average.toUpperCase()
+			if (t.match(regex_difficulty_att)) {
+				const match = t.match(regex_difficulty_att)
+				attribute = attributes.find(e => e.name === match![1])?.id ?? gid.Intelligence.toUpperCase()
+				diff = match![2].toLowerCase() as difficulty.Level
+				t = t.replace(regex_difficulty, "").trim()
+			} else if (t.match(regex_difficulty)) {
+				diff = t.match(regex_difficulty)![1].toLowerCase() as difficulty.Level
+				t = t.replace(regex_difficulty, "").trim()
+			}
+
+			// Capture RSL
+			if (t.match(regex_rsl)) {
+				const match = t.match(regex_rsl)!
+				attribute = attributes.find(e => e.name === match[1])?.id ?? gid.Dexterity.toUpperCase()
+				t = t.replace(regex_rsl, "").trim()
+			}
+
+			// Capture specialization
+			let specialization = ""
+			if (t.match(regex_specialization)) {
+				specialization = t.match(regex_specialization)![1]
+				t = t.replace(new RegExp(`\\s*\\(${specialization}\\)`), "").trim()
+			}
+
+			// Capture TL
+			let tl = ""
+			if (t.match(regex_tl)) {
+				tl = t.match(regex_tl)![1]
+				t = t.replace(regex_tl, "").trim()
+			}
+
+			t = this._cleanLine(t)
+
+			this.skills.push(new MookSkill({
+				type: ItemType.Skill,
+				name: t,
+				attribute: attribute,
+				difficulty: diff as difficulty.Level,
+				points,
+				level,
+				specialization,
+				tech_level: tl,
+				notes: "",
+				reference: "",
+			}))
+		})
+	}
+
+	private _parseSpells(skipSeparation = false): void {
+		const attributes: { name: string; id: string }[] = [
+			...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`).map(e => {
+				return { id: e.id, name: e.name }
+			}),
+			...game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`).map(e => {
+				return { id: e.id, name: e.id }
+			}),
+		]
+
+		const regex_level = /\s?-(\d+)/
+		const regex_difficulty_att = new RegExp(`\\((${attributes.map(e => e.name).join("|")})/([EAHVeahv][Hh]?)\\)`)
+		const regex_rsl = new RegExp(`[\\(|\\s](${attributes.map(e => e.name).join("|")})([-+]\\d+)?[\\)|\\s]?`)
+		const regex_tl = /\/TL(\d+\^?)/
+
+		let text = ""
+		if (skipSeparation) text = this.text
+		else
+			text = this._extractText(
+				["Spells:"],
+				["Equipment:", "Language:", "Languages:", "Weapons:", "Class:", "Notes:"],
+			)
+
+		text = text.replace(/spells:?/gi, ";")
+		text = text.replace(/^.*:\n/, ";")
+		text = this._cleanLine(text)
+		text = text.replaceAll(/\.\n/g, ";").replaceAll(",", ";")
+		text = text.trim()
+
+		text.split(";").forEach(t => {
+			t = this._cleanLine(t).trim().replace("\n", "")
+			if (!t) return
+
+			// Capture points
+			let points = 0
+			if (t.match(regex_points)) {
+				points = parseInt(t.match(regex_points)?.[1] ?? "0")
+				t = t.replace(regex_points, "").trim()
+			}
+
+			// Capture level
+			let level = 0
+			if (t.match(regex_level)) {
+				level = parseInt(t.match(regex_level)![1])
+				t = t.replace(regex_level, "").trim()
+			}
+
+			// Capture difficulty
+			let attribute: string = gid.Intelligence.toUpperCase()
+			let diff = difficulty.Level.Hard.toUpperCase()
+			if (t.match(regex_difficulty_att)) {
+				const match = t.match(regex_difficulty_att)
+				attribute = attributes.find(e => e.name === match![1])?.id ?? gid.Intelligence.toUpperCase()
+				diff = match![2].toLowerCase() as difficulty.Level
+				t = t.replace(regex_difficulty, "").trim()
+			} else if (t.match(regex_difficulty)) {
+				diff = t.match(regex_difficulty)![1].toLowerCase() as difficulty.Level
+				t = t.replace(regex_difficulty, "").trim()
+			}
+
+			if (t.match(regex_rsl)) {
+				const match = t.match(regex_rsl)!
+				attribute = attributes.find(e => e.name === match[1])?.id ?? gid.Intelligence.toUpperCase()
+				t = t.replace(regex_rsl, "").trim()
+			}
+
+			// Capture TL
+			let tl = ""
+			if (t.match(regex_tl)) {
+				tl = t.match(regex_tl)![1]
+				t = t.replace(regex_tl, "").trim()
+			}
+
+			t = this._cleanLine(t)
+
+			this.spells.push(new MookSpell({
+				type: ItemType.Spell,
+				name: t,
+				college: [],
+				attribute: attribute,
+				difficulty: diff as difficulty.Level,
+				points,
+				level,
+				tech_level: tl,
+				notes: "",
+				reference: "",
+			}))
+		})
+	}
 }
+
 
 interface Mook extends foundry.abstract.DataModel<null, MookSchema>,
 	Omit<ModelPropsFromSchema<MookSchema>,

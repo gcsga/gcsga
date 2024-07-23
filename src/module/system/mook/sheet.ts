@@ -1,11 +1,11 @@
 import { SYSTEM_NAME } from "@data"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { MookParser } from "./parse.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { Mook } from "./document.ts"
-import { AttributeGURPS, AttributeObj } from "@system"
+import { AttributeGURPS, } from "@system"
 import { DialogGURPS } from "@module/apps/dialog.ts"
 import { CharacterConfigSheet } from "@actor/character/config.ts"
+import { htmlQuery } from "@util"
 
 export class MookGeneratorSheet extends FormApplication {
 	config: CharacterConfigSheet | null = null
@@ -16,7 +16,7 @@ export class MookGeneratorSheet extends FormApplication {
 
 	constructor(options?: Partial<ApplicationOptions>) {
 		super(options)
-		this.object = new Mook()
+		this.object = new Mook({}, {})
 	}
 
 	static override get defaultOptions(): FormApplicationOptions {
@@ -38,17 +38,24 @@ export class MookGeneratorSheet extends FormApplication {
 		return LocalizeGURPS.translations.gurps.mook.title
 	}
 
-	override activateListeners(html: JQuery<HTMLElement>): void {
-		super.activateListeners(html)
-		html.find("#import").on("click", event => this._onImportText(event))
-		html.find("#create").on("click", event => this._onCreateMook(event))
-		html.find("textarea").on("input propertychange", _ => {
+	override activateListeners($html: JQuery<HTMLElement>): void {
+		super.activateListeners($html)
+		const html = $html[0]
+
+		htmlQuery(html, "#import")?.addEventListener("click", ev => this._onImportText(ev))
+		htmlQuery(html, "#create")?.addEventListener("click", ev => this._onCreateMook(ev))
+		htmlQuery(html, "textarea")?.addEventListener("input propertychange", _ => {
 			if (!this.testing) {
 				this.testing = true
 				const button = $(html).find("button#create span")
 				button.text(LocalizeGURPS.translations.gurps.mook.test)
 			}
 		})
+
+		// html.find("#import").on("click", event => this._onImportText(event))
+		// html.find("#create").on("click", event => this._onCreateMook(event))
+		// html.find("textarea").on("input propertychange", _ => {
+		// })
 	}
 
 	static async init(): Promise<unknown> {
@@ -106,7 +113,7 @@ export class MookGeneratorSheet extends FormApplication {
 				acc += e.toString()
 				return acc
 			}, ""),
-			catchall: this.object.text.catchall,
+			catchall: this.object.catchall,
 		}
 	}
 
@@ -123,7 +130,7 @@ export class MookGeneratorSheet extends FormApplication {
 		return [primary_attributes, secondary_attributes, point_pools]
 	}
 
-	private async _onImportText(event: JQuery.ClickEvent) {
+	private async _onImportText(event: MouseEvent) {
 		event.preventDefault()
 		const dialog = new DialogGURPS(
 			{
@@ -161,7 +168,7 @@ export class MookGeneratorSheet extends FormApplication {
 		dialog.render(true)
 	}
 
-	private _onCreateMook(event: JQuery.ClickEvent) {
+	private _onCreateMook(event: MouseEvent) {
 		event.preventDefault()
 		if (this.testing) {
 			this.testing = !this.testMook()
@@ -180,8 +187,8 @@ export class MookGeneratorSheet extends FormApplication {
 		this.object.traits = parser.parseTraits(text.traits.replace(/\n/g, ";"), true)
 		this.object.skills = parser.parseSkills(text.skills.replace(/\n/g, ";"), true)
 		this.object.spells = parser.parseSpells(text.spells.replace(/\n/g, ";"), true)
-		;[this.object.melee] = parser.parseAttacks(text.melee.replace(/\n/g, ";"), true, true)
-		;[, this.object.ranged] = parser.parseAttacks(text.ranged.replace(/\n/g, ";"), true, true)
+			;[this.object.melee] = parser.parseAttacks(text.melee.replace(/\n/g, ";"), true, true)
+			;[, this.object.ranged] = parser.parseAttacks(text.ranged.replace(/\n/g, ";"), true, true)
 		console.log(this.object)
 		return true
 	}

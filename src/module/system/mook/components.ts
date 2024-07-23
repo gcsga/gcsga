@@ -12,11 +12,10 @@ import {
 	MookTraitModifierSchema,
 	MookTraitSchema,
 	MookWeaponSchema,
-	regex_points
 } from "./data.ts";
 import { Mook } from "./document.ts";
 
-abstract class MookItem<
+class MookItem<
 	TSchema extends MookItemSchema,
 	TParent extends Mook | MookItem<MookItemSchema> = Mook
 > extends foundry.abstract.DataModel<TParent, TSchema> {
@@ -32,16 +31,16 @@ abstract class MookItem<
 		}
 	}
 
-	abstract toText(): string
-
-	static fromText<T extends MookItem<MookItemSchema>>(
-		this: new (data: DeepPartial<SourceFromSchema<MookItemSchema>>, options: DataModelConstructionOptions<Mook>) => T,
-		text: string
-	): T {
-		const self = new this({ type: ItemType.Note, name: text }, {})
-		return self
+	toText(): string {
+		return this.name
 	}
 }
+
+interface MookItem<
+	TSchema extends MookItemSchema,
+	TParent extends Mook | MookItem<MookItemSchema> = Mook
+> extends foundry.abstract.DataModel<TParent, TSchema>,
+	ModelPropsFromSchema<MookItemSchema> { }
 
 class MookTrait extends MookItem<MookTraitSchema> {
 
@@ -66,7 +65,7 @@ class MookTrait extends MookItem<MookTraitSchema> {
 		}
 	}
 
-	toText(): string {
+	override toText(): string {
 		const buffer = new StringBuilder()
 		buffer.push(this.name)
 		if (this.levels !== 0) buffer.push(` ${this.levels}`)
@@ -81,52 +80,6 @@ class MookTrait extends MookItem<MookTraitSchema> {
 			buffer.push(` (${subBuffer.toString()})`)
 		}
 		return buffer.toString()
-	}
-
-	static override	fromText(text: string, parent: Mook): MookTrait {
-		const regex_levels = /\s(\d+)$/
-		const regex_cr = /\((CR:?)?\s*(\d+)\)/
-
-		// Capture points
-		let points = 0
-		if (text.match(regex_points)) {
-			points = parseInt(text.match(regex_points)?.[1] ?? "0")
-			text = text.replace(regex_points, "").trim()
-		}
-
-		// Capture modifiers
-		let modifiers: MookTraitModifier[] = []
-		if (text.match(/\(.+\)/)) {
-			modifiers = this._parseTraitModifiers(text.match(/\((.*)\)/)![1])
-			if (modifiers.length > 0) text = text.replace(/\(.*\)/, "").trim()
-		}
-
-		// Capture Levels
-		let levels = 0
-		if (text.match(regex_levels)) {
-			levels = parseInt(text.match(regex_levels)![1])
-			text = text.replace(regex_levels, "").trim()
-		}
-
-		// Capture CR
-		let cr = 0
-		if (text.match(regex_cr)) {
-			cr = parseInt(text.match(regex_cr)![2])
-			text = text.replace(regex_cr, "").trim()
-		}
-
-		text = Mook.cleanLine(text)
-
-		return new MookTrait({
-			type: ItemType.Trait,
-			name: text,
-			points,
-			cr,
-			levels,
-			notes: "",
-			reference: "",
-			modifiers,
-		}, { parent })
 	}
 }
 
@@ -145,7 +98,7 @@ class MookTraitModifier extends MookItem<MookTraitModifierSchema, MookTrait> {
 		}
 	}
 
-	toText(): string {
+	override toText(): string {
 		return `${this.name}, ${this.cost}`
 	}
 }
@@ -168,7 +121,7 @@ class MookSkill extends MookItem<MookSkillSchema> {
 		}
 	}
 
-	toText(): string {
+	override toText(): string {
 		const buffer = new StringBuilder()
 		buffer.push(this.name)
 		if (this.tech_level !== "") buffer.push(`/TL${this.tech_level}`)
@@ -196,7 +149,7 @@ class MookSpell extends MookItem<MookSpellSchema> {
 		}
 	}
 
-	toText(): string {
+	override toText(): string {
 		const buffer = new StringBuilder()
 		buffer.push(this.name)
 		if (this.tech_level !== "") buffer.push(`/TL${this.tech_level}`)
@@ -236,7 +189,7 @@ class MookMelee extends MookWeapon<MookMeleeSchema> {
 		}
 	}
 
-	toText(): string {
+	override toText(): string {
 		const buffer = new StringBuilder()
 		buffer.push(this.name)
 		buffer.push(` (${this.level}):`)
@@ -268,7 +221,7 @@ class MookRanged extends MookWeapon<MookRangedSchema> {
 		}
 	}
 
-	toText(): string {
+	override toText(): string {
 		const buffer = new StringBuilder()
 		buffer.push(this.name)
 		buffer.push(` (${this.level}):`)
@@ -303,7 +256,7 @@ class MookEquipment extends MookItem<MookEquipmentSchema> {
 		}
 	}
 
-	toText(): string {
+	override toText(): string {
 		const buffer = new StringBuilder()
 		buffer.push(this.name)
 		return buffer.toString()
@@ -315,7 +268,7 @@ interface MookEquipment extends MookItem<MookEquipmentSchema>, ModelPropsFromSch
 
 class MookNote extends MookItem<MookNoteSchema> {
 
-	toText(): string {
+	override toText(): string {
 		const buffer = new StringBuilder()
 		buffer.push(this.name)
 		return buffer.toString()

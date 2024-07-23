@@ -1,3 +1,7 @@
+- move mook item parsing to function of item
+- it can output multiple of the item that's fine
+- arrayFromText
+
 ## Immediate TODO
 
 0. BUGS
