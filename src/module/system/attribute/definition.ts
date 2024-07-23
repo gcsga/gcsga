@@ -7,9 +7,10 @@ import { gid } from "@module/data/constants.ts"
 import { evaluateToNumber } from "@module/util/index.ts"
 import { ActorGURPS, CharacterGURPS } from "@actor"
 import { AttributeGURPS } from "./object.ts"
+import { Mook } from "@system/mook/index.ts"
 
 
-class AttributeDef extends AbstractAttributeDef<CharacterGURPS, AttributeDefSchema> {
+class AttributeDef extends AbstractAttributeDef<CharacterGURPS | Mook, AttributeDefSchema> {
 	// declare type: attribute.Type
 	// name: string
 	// private full_name: string
@@ -70,7 +71,7 @@ class AttributeDef extends AbstractAttributeDef<CharacterGURPS, AttributeDefSche
 		return !isNaN(parseInt(this.base))
 	}
 
-	baseValue(resolver: ActorGURPS): number {
+	baseValue(resolver: ActorGURPS | Mook): number {
 		return evaluateToNumber(this.base, resolver)
 	}
 
@@ -97,6 +98,6 @@ class AttributeDef extends AbstractAttributeDef<CharacterGURPS, AttributeDefSche
 	}
 }
 
-interface AttributeDef extends AbstractAttributeDef<CharacterGURPS, AttributeDefSchema>, ModelPropsFromSchema<AttributeDefSchema> { }
+interface AttributeDef extends AbstractAttributeDef<CharacterGURPS | Mook, AttributeDefSchema>, ModelPropsFromSchema<AttributeDefSchema> { }
 
 export { AttributeDef }

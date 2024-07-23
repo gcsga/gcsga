@@ -1,287 +1,436 @@
 import { ItemType } from "@data"
-import { WeaponDamage, WeaponDamageSchema } from "@item/abstract-weapon/weapon-damage.ts"
-import { DiceGURPS } from "@module/dice/index.ts"
+import { WeaponDamageSchema } from "@item/abstract-weapon/weapon-damage.ts"
 import { AttributeDefSchema, AttributeSchema } from "@system/attribute/data.ts"
-import { AttributeGURPS } from "@system/attribute/object.ts"
-import { MoveTypeDef } from "@system/move-type/definition.ts"
-import { StringBuilder, difficulty, progression, selfctrl } from "@util"
+import { MoveTypeDefSchema } from "@system/move-type/data.ts"
+import { difficulty, progression, selfctrl } from "@util"
+import fields = foundry.data.fields
 
-export interface MookData {
-	system: {
-		attributes: Partial<ModelPropsFromSchema<AttributeSchema>>[]
-		settings: {
-			attributes: DeepPartial<ModelPropsFromSchema<AttributeDefSchema>>[]
-			damage_progression: progression.Option
-			move_types: MoveTypeDef[]
-		}
-	}
-	attributes: Map<string, AttributeGURPS>
-	traits: MookTrait[]
-	skills: MookSkill[]
-	spells: MookSpell[]
-	melee: MookMelee[]
-	ranged: MookRanged[]
-	equipment: MookEquipment[]
-	other_equipment: MookEquipment[]
-	notes: MookNote[]
-	profile: MookProfile
-	thrust: DiceGURPS
-	swing: DiceGURPS
+type MookSchema = {
+	attributes: fields.ArrayField<fields.SchemaField<MookAttributeSchema>>,
+	settings: fields.SchemaField<{
+		attributes: fields.ArrayField<fields.SchemaField<MookAttributeDefSchema>>
+		damage_progression: fields.StringField<progression.Option, progression.Option, true, false, true>
+		move_types: fields.ArrayField<fields.SchemaField<MookMoveTypeDefSchema>>
+	}>
+	profile: fields.SchemaField<{
+		name: fields.StringField<string, string, true, false, true>
+		description: fields.StringField<string, string, true, false, true>
+		title: fields.StringField<string, string, true, false, true>
+		height: fields.StringField<string, string, true, false, true>
+		weight: fields.StringField<string, string, true, false, true>
+		SM: fields.NumberField<number, number, true, false, true>
+		portrait: fields.StringField<string, string, true, false, true>
+		userdesc: fields.StringField<string, string, true, false, true>
+	}>
+	traits: fields.ArrayField<fields.SchemaField<MookTraitSchema>>
+	skills: fields.ArrayField<fields.SchemaField<MookSkillSchema>>
+	spells: fields.ArrayField<fields.SchemaField<MookSpellSchema>>
+	melee: fields.ArrayField<fields.SchemaField<MookMeleeSchema>>
+	ranged: fields.ArrayField<fields.SchemaField<MookRangedSchema>>
+	equipment: fields.ArrayField<fields.SchemaField<MookEquipmentSchema>>
+	otherEquipment: fields.ArrayField<fields.SchemaField<MookEquipmentSchema>>
+	notes: fields.ArrayField<fields.SchemaField<MookNoteSchema>>
+	thrust: fields.StringField<string, string, true, false, true>
+	swing: fields.StringField<string, string, true, false, true>
 }
 
-export interface MookProfile {
-	name: string
-	description: string
-	title: string
-	height: string
-	weight: string
-	SM: number
-	portrait: string
-	userdesc: string
+type MookAttributeSchema = AttributeSchema
+type MookAttributeDefSchema = AttributeDefSchema
+type MookMoveTypeDefSchema = MoveTypeDefSchema
+
+type MookItemSchema = {
+	type: fields.StringField<ItemType, ItemType, true, false>
+	name: fields.StringField<string, string, true, false>
+	notes: fields.StringField<string, string, true, false>
+	reference: fields.StringField<string, string, true, false>
 }
 
-class _MookItem {
-	type: ItemType
-
-	name: string
-
-	notes: string
-
-	reference: string
-
-	constructor(data: _MookItem) {
-		this.name = data.name
-		this.notes = data.notes
-		this.reference = data.reference
-		this.type = data.type
-	}
+type MookTraitSchema = MookItemSchema & {
+	points: fields.NumberField<number, number, true, false, true>
+	cr: fields.NumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>
+	levels: fields.NumberField<number, number, true, false, true>
+	modifiers: fields.ArrayField<fields.SchemaField<MookTraitModifierSchema>>
 }
 
-export class MookTrait extends _MookItem {
-	points: number
-
-	cr: selfctrl.Roll = selfctrl.Roll.NoCR
-
-	levels: number
-
-	modifiers: MookTraitModifier[] = []
-
-	constructor(data: MookTrait) {
-		super(data)
-		this.cr = data.cr
-		this.points = data.points
-		this.levels = data.levels
-		this.modifiers = data.modifiers
-	}
-
-	override toString(): string {
-		const buffer = new StringBuilder()
-		buffer.push(this.name)
-		if (this.levels !== 0) buffer.push(` ${this.levels}`)
-		if (this.points !== 0) buffer.push(` [${this.points}]`)
-		if (this.cr !== selfctrl.Roll.NoCR) buffer.push(` (CR:${this.cr})`)
-		if (this.modifiers.length !== 0) {
-			const subBuffer = new StringBuilder()
-			this.modifiers.forEach(mod => {
-				if (subBuffer.length !== 0) subBuffer.push("; ")
-				subBuffer.push(`${mod.name}, ${mod.cost}`)
-			})
-			buffer.push(` (${subBuffer.toString()})`)
-		}
-		return buffer.toString()
-	}
+type MookTraitModifierSchema = MookItemSchema & {
+	cost: fields.StringField<string, string, true, false, true>
 }
 
-export class MookTraitModifier extends _MookItem {
-	cost: string
-
-	constructor(data: MookTraitModifier) {
-		super(data)
-		this.cost = data.cost
-	}
+type MookSkillSchema = MookItemSchema & {
+	specialization: fields.StringField<string, string, true, false, true>
+	tech_level: fields.StringField<string, string, true, false, true>
+	attribute: fields.StringField<string, string, true, false, true>
+	difficulty: fields.StringField<difficulty.Level, difficulty.Level, true, false, true>
+	points: fields.NumberField<number, number, true, false, true>
+	level: fields.NumberField<number, number, true, false, true>
 }
 
-export class MookSkill extends _MookItem {
-	specialization: string
-
-	tech_level: string
-
-	attribute: string
-
-	difficulty: difficulty.Level
-
-	points: number
-
-	level: number
-
-	constructor(data: MookSkill) {
-		super(data)
-		this.specialization = data.specialization
-		this.tech_level = data.tech_level
-		this.attribute = data.attribute
-		this.difficulty = data.difficulty
-		this.points = data.points
-		this.level = data.level
-	}
-
-	override toString(): string {
-		const buffer = new StringBuilder()
-		buffer.push(this.name)
-		if (this.specialization !== "") buffer.push(` (${this.specialization})`)
-		if (this.tech_level !== "") buffer.push(`/TL${this.tech_level}`)
-		buffer.push(`-${this.level}`)
-		buffer.push(` (${this.attribute}/${this.difficulty})`)
-		return buffer.toString()
-	}
+type MookSpellSchema = MookItemSchema & {
+	college: fields.ArrayField<fields.StringField>
+	tech_level: fields.StringField<string, string, true, false, true>
+	attribute: fields.StringField<string, string, true, false, true>
+	difficulty: fields.StringField<difficulty.Level, difficulty.Level, true, false, true>
+	points: fields.NumberField<number, number, true, false, true>
+	level: fields.NumberField<number, number, true, false, true>
 }
 
-export class MookSpell extends _MookItem {
-	tech_level: string
-
-	attribute: string
-
-	difficulty: difficulty.Level
-
-	points: number
-
-	level: number
-
-	college: string[] = []
-
-	constructor(data: MookSpell) {
-		super(data)
-		this.tech_level = data.tech_level
-		this.attribute = data.attribute
-		this.difficulty = data.difficulty
-		this.points = data.points
-		this.level = data.level
-	}
-
-	override toString(): string {
-		const buffer = new StringBuilder()
-		buffer.push(this.name)
-		if (this.tech_level !== "") buffer.push(`/TL${this.tech_level}`)
-		buffer.push(`-${this.level}`)
-		buffer.push(` (${this.attribute}/${this.difficulty})`)
-		return buffer.toString()
-	}
+type MookWeaponSchema = MookItemSchema & {
+	strength: fields.StringField<string, string, true, false, true>
+	damage: fields.SchemaField<WeaponDamageSchema>
+	level: fields.NumberField<number, number, true, false, true>
 }
 
-export class MookWeapon extends _MookItem {
-	strength: string
-
-	damage: SourceFromSchema<WeaponDamageSchema>
-
-	level: number
-
-	constructor(data: MookWeapon) {
-		super(data)
-		this.strength = data.strength
-		this.damage = data.damage
-		this.level = data.level
-	}
+type MookMeleeSchema = MookWeaponSchema & {
+	reach: fields.StringField<string, string, true, false, true>
+	parry: fields.StringField<string, string, true, false, true>
+	block: fields.StringField<string, string, true, false, true>
 }
 
-export class MookMelee extends MookWeapon {
-	reach: string
-
-	parry: string
-
-	block: string
-
-	constructor(data: MookMelee) {
-		super(data)
-		this.reach = data.reach
-		this.parry = data.parry
-		this.block = data.block
-	}
-
-	override toString(): string {
-		const buffer = new StringBuilder()
-		buffer.push(this.name)
-		buffer.push(` (${this.level}):`)
-		buffer.push(` ${new WeaponDamage(this.damage).toString()}`)
-		if (this.strength !== "0") buffer.push(` ST:${this.strength}`)
-		if (this.reach !== "No") buffer.push(` Reach: ${this.reach}`)
-		if (this.parry !== "No") buffer.push(` Parry: ${this.parry}`)
-		if (this.block !== "No") buffer.push(` Block: ${this.block}`)
-		return buffer.toString()
-	}
+type MookRangedSchema = MookWeaponSchema & {
+	accuracy: fields.StringField<string, string, true, false, true>
+	range: fields.StringField<string, string, true, false, true>
+	rate_of_fire: fields.StringField<string, string, true, false, true>
+	shots: fields.StringField<string, string, true, false, true>
+	bulk: fields.StringField<string, string, true, false, true>
+	recoil: fields.StringField<string, string, true, false, true>
 }
 
-export class MookRanged extends MookWeapon {
-	accuracy: string
-
-	range: string
-
-	rate_of_fire: string
-
-	shots: string
-
-	bulk: string
-
-	recoil: string
-
-	constructor(data: MookRanged) {
-		super(data)
-		this.accuracy = data.accuracy
-		this.range = data.range
-		this.rate_of_fire = data.rate_of_fire
-		this.shots = data.shots
-		this.bulk = data.bulk
-		this.recoil = data.recoil
-	}
-
-	override toString(): string {
-		const buffer = new StringBuilder()
-		buffer.push(this.name)
-		buffer.push(` (${this.level}):`)
-		buffer.push(` ${new WeaponDamage(this.damage).toString()}`)
-		if (this.strength !== "0") buffer.push(` ST:${this.strength}`)
-		if (this.accuracy !== "") buffer.push(` Acc: ${this.accuracy}`)
-		if (this.range !== "") buffer.push(` Range: ${this.range}`)
-		if (this.rate_of_fire !== "0") buffer.push(` ROF: ${this.rate_of_fire}`)
-		if (this.shots !== "") buffer.push(` Shots: ${this.shots}`)
-		if (this.bulk !== "") buffer.push(` Bulk: ${this.bulk}`)
-		if (this.recoil !== "0") buffer.push(` Rcl: ${this.recoil}`)
-		return buffer.toString()
-	}
+type MookEquipmentSchema = MookItemSchema & {
+	quantity: fields.NumberField<number, number, true, false, true>
+	tech_level: fields.StringField<string, string, true, false, true>
+	legality_class: fields.StringField<string, string, true, false, true>
+	value: fields.NumberField<number, number, true, false, true>
+	weight: fields.StringField<string, string, true, false, true>
+	uses: fields.NumberField<number, number, true, false, true>
+	max_uses: fields.NumberField<number, number, true, false, true>
 }
 
-export class MookEquipment extends _MookItem {
-	quantity: number
+type MookNoteSchema = MookItemSchema
 
-	tech_level: string
 
-	legality_class: string
+// export interface MookData {
+// 	system: {
+// 		attributes: Partial<ModelPropsFromSchema<AttributeSchema>>[]
+// 		settings: {
+// 			attributes: DeepPartial<ModelPropsFromSchema<AttributeDefSchema>>[]
+// 			damage_progression: progression.Option
+// 			move_types: MoveTypeDef[]
+// 		}
+// 	}
+// 	attributes: Map<string, AttributeGURPS>
+// 	traits: MookTrait[]
+// 	skills: MookSkill[]
+// 	spells: MookSpell[]
+// 	melee: MookMelee[]
+// 	ranged: MookRanged[]
+// 	equipment: MookEquipment[]
+// 	other_equipment: MookEquipment[]
+// 	notes: MookNote[]
+// 	profile: MookProfile
+// 	thrust: DiceGURPS
+// 	swing: DiceGURPS
+// }
+//
+// export interface MookProfile {
+// 	name: string
+// 	description: string
+// 	title: string
+// 	height: string
+// 	weight: string
+// 	SM: number
+// 	portrait: string
+// 	userdesc: string
+// }
+//
+// class _MookItem {
+// 	type: ItemType
+//
+// 	name: string
+//
+// 	notes: string
+//
+// 	reference: string
+//
+// 	constructor(data: _MookItem) {
+// 		this.name = data.name
+// 		this.notes = data.notes
+// 		this.reference = data.reference
+// 		this.type = data.type
+// 	}
+// }
+//
+// export class MookTrait extends _MookItem {
+// 	points: number
+//
+// 	cr: selfctrl.Roll = selfctrl.Roll.NoCR
+//
+// 	levels: number
+//
+// 	modifiers: MookTraitModifier[] = []
+//
+// 	constructor(data: MookTrait) {
+// 		super(data)
+// 		this.cr = data.cr
+// 		this.points = data.points
+// 		this.levels = data.levels
+// 		this.modifiers = data.modifiers
+// 	}
+//
+// 	override toString(): string {
+// 		const buffer = new StringBuilder()
+// 		buffer.push(this.name)
+// 		if (this.levels !== 0) buffer.push(` ${this.levels}`)
+// 		if (this.points !== 0) buffer.push(` [${this.points}]`)
+// 		if (this.cr !== selfctrl.Roll.NoCR) buffer.push(` (CR:${this.cr})`)
+// 		if (this.modifiers.length !== 0) {
+// 			const subBuffer = new StringBuilder()
+// 			this.modifiers.forEach(mod => {
+// 				if (subBuffer.length !== 0) subBuffer.push("; ")
+// 				subBuffer.push(`${mod.name}, ${mod.cost}`)
+// 			})
+// 			buffer.push(` (${subBuffer.toString()})`)
+// 		}
+// 		return buffer.toString()
+// 	}
+// }
+//
+// export class MookTraitModifier extends _MookItem {
+// 	cost: string
+//
+// 	constructor(data: MookTraitModifier) {
+// 		super(data)
+// 		this.cost = data.cost
+// 	}
+// }
+//
+// export class MookSkill extends _MookItem {
+// 	specialization: string
+//
+// 	tech_level: string
+//
+// 	attribute: string
+//
+// 	difficulty: difficulty.Level
+//
+// 	points: number
+//
+// 	level: number
+//
+// 	constructor(data: MookSkill) {
+// 		super(data)
+// 		this.specialization = data.specialization
+// 		this.tech_level = data.tech_level
+// 		this.attribute = data.attribute
+// 		this.difficulty = data.difficulty
+// 		this.points = data.points
+// 		this.level = data.level
+// 	}
+//
+// 	override toString(): string {
+// 		const buffer = new StringBuilder()
+// 		buffer.push(this.name)
+// 		if (this.specialization !== "") buffer.push(` (${this.specialization})`)
+// 		if (this.tech_level !== "") buffer.push(`/TL${this.tech_level}`)
+// 		buffer.push(`-${this.level}`)
+// 		buffer.push(` (${this.attribute}/${this.difficulty})`)
+// 		return buffer.toString()
+// 	}
+// }
+//
+// export class MookSpell extends _MookItem {
+// 	tech_level: string
+//
+// 	attribute: string
+//
+// 	difficulty: difficulty.Level
+//
+// 	points: number
+//
+// 	level: number
+//
+// 	college: string[] = []
+//
+// 	constructor(data: MookSpell) {
+// 		super(data)
+// 		this.tech_level = data.tech_level
+// 		this.attribute = data.attribute
+// 		this.difficulty = data.difficulty
+// 		this.points = data.points
+// 		this.level = data.level
+// 	}
+//
+// 	override toString(): string {
+// 		const buffer = new StringBuilder()
+// 		buffer.push(this.name)
+// 		if (this.tech_level !== "") buffer.push(`/TL${this.tech_level}`)
+// 		buffer.push(`-${this.level}`)
+// 		buffer.push(` (${this.attribute}/${this.difficulty})`)
+// 		return buffer.toString()
+// 	}
+// }
+//
+// export class MookWeapon extends _MookItem {
+// 	strength: string
+//
+// 	damage: SourceFromSchema<WeaponDamageSchema>
+//
+// 	level: number
+//
+// 	constructor(data: MookWeapon) {
+// 		super(data)
+// 		this.strength = data.strength
+// 		this.damage = data.damage
+// 		this.level = data.level
+// 	}
+// }
+//
+// export class MookMelee extends MookWeapon {
+// 	reach: string
+//
+// 	parry: string
+//
+// 	block: string
+//
+// 	constructor(data: MookMelee) {
+// 		super(data)
+// 		this.reach = data.reach
+// 		this.parry = data.parry
+// 		this.block = data.block
+// 	}
+//
+// 	override toString(): string {
+// 		const buffer = new StringBuilder()
+// 		buffer.push(this.name)
+// 		buffer.push(` (${this.level}):`)
+// 		buffer.push(` ${new WeaponDamage(this.damage).toString()}`)
+// 		if (this.strength !== "0") buffer.push(` ST:${this.strength}`)
+// 		if (this.reach !== "No") buffer.push(` Reach: ${this.reach}`)
+// 		if (this.parry !== "No") buffer.push(` Parry: ${this.parry}`)
+// 		if (this.block !== "No") buffer.push(` Block: ${this.block}`)
+// 		return buffer.toString()
+// 	}
+// }
+//
+// export class MookRanged extends MookWeapon {
+// 	accuracy: string
+//
+// 	range: string
+//
+// 	rate_of_fire: string
+//
+// 	shots: string
+//
+// 	bulk: string
+//
+// 	recoil: string
+//
+// 	constructor(data: MookRanged) {
+// 		super(data)
+// 		this.accuracy = data.accuracy
+// 		this.range = data.range
+// 		this.rate_of_fire = data.rate_of_fire
+// 		this.shots = data.shots
+// 		this.bulk = data.bulk
+// 		this.recoil = data.recoil
+// 	}
+//
+// 	override toString(): string {
+// 		const buffer = new StringBuilder()
+// 		buffer.push(this.name)
+// 		buffer.push(` (${this.level}):`)
+// 		buffer.push(` ${new WeaponDamage(this.damage).toString()}`)
+// 		if (this.strength !== "0") buffer.push(` ST:${this.strength}`)
+// 		if (this.accuracy !== "") buffer.push(` Acc: ${this.accuracy}`)
+// 		if (this.range !== "") buffer.push(` Range: ${this.range}`)
+// 		if (this.rate_of_fire !== "0") buffer.push(` ROF: ${this.rate_of_fire}`)
+// 		if (this.shots !== "") buffer.push(` Shots: ${this.shots}`)
+// 		if (this.bulk !== "") buffer.push(` Bulk: ${this.bulk}`)
+// 		if (this.recoil !== "0") buffer.push(` Rcl: ${this.recoil}`)
+// 		return buffer.toString()
+// 	}
+// }
+//
+// export class MookEquipment extends _MookItem {
+// 	quantity: number
+//
+// 	tech_level: string
+//
+// 	legality_class: string
+//
+// 	value: number
+//
+// 	weight: string
+//
+// 	uses: number
+//
+// 	max_uses: number
+//
+// 	constructor(data: MookEquipment) {
+// 		super(data)
+// 		this.quantity = data.quantity
+// 		this.tech_level = data.tech_level
+// 		this.legality_class = data.legality_class
+// 		this.value = data.value
+// 		this.weight = data.weight
+// 		this.uses = data.uses
+// 		this.max_uses = data.max_uses
+// 	}
+//
+// 	override toString(): string {
+// 		const buffer = new StringBuilder()
+// 		buffer.push(this.name)
+// 		return buffer.toString()
+// 	}
+// }
+//
+// export type MookNote = _MookItem
 
-	value: number
+const regex_points = /\[(-?\d+)\]/
+const damage_type_matches: Map<string, string> = new Map([
+	["pi", "pi"],
+	["pierce", "pi"],
+	["piercing", "pi"],
+	["cr", "cr"],
+	["crush", "cr"],
+	["crushing", "cr"],
+	["pi-", "pi-"],
+	["small pierce", "pi-"],
+	["small piercing", "pi-"],
+	["pi+", "pi+"],
+	["large pierce", "pi+"],
+	["large piercing", "pi+"],
+	["pi++", "pi++"],
+	["huge pierce", "pi++"],
+	["huge piercing", "pi++"],
+	["burn", "burn"],
+	["burning", "burn"],
+	["imp", "imp"],
+	["impale", "imp"],
+	["impaling", "imp"],
+	["cut", "cut"],
+	["cutting", "cut"],
+	["injury", "injury"],
+	["cor", "cor"],
+	["corrosion", "cor"],
+	["corrosive", "cor"],
+	["tox", "tox"],
+	["toxic", "tox"],
+])
+const regex_damage_type = new RegExp(
+	`\\s+\\b(${Array.from(damage_type_matches.keys())
+		.map(e => e.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+		.join("|")})\\b`,
+)
+const regex_difficulty = /\((?:[A-z]+\/)?([EAHVeahv][Hh]?)\)/
 
-	weight: string
+export { regex_points, damage_type_matches, regex_damage_type, regex_difficulty }
 
-	uses: number
-
-	max_uses: number
-
-	constructor(data: MookEquipment) {
-		super(data)
-		this.quantity = data.quantity
-		this.tech_level = data.tech_level
-		this.legality_class = data.legality_class
-		this.value = data.value
-		this.weight = data.weight
-		this.uses = data.uses
-		this.max_uses = data.max_uses
-	}
-
-	override toString(): string {
-		const buffer = new StringBuilder()
-		buffer.push(this.name)
-		return buffer.toString()
-	}
+export type {
+	MookAttributeDefSchema,
+	MookAttributeSchema, MookEquipmentSchema, MookItemSchema, MookMeleeSchema, MookMoveTypeDefSchema,
+	MookNoteSchema, MookRangedSchema, MookSchema, MookSkillSchema,
+	MookSpellSchema, MookTraitModifierSchema, MookTraitSchema, MookWeaponSchema
 }
-
-export type MookNote = _MookItem
 
 export const EXAMPLE_STATBLOCKS = [
 	// 0

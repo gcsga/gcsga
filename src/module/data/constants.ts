@@ -464,7 +464,7 @@ export {
 	SSRT_SETTING,
 	SYSTEM_NAME,
 	StringCompareType,
-	gid
+	gid,
 }
 
 export type { ContainerType, EffectType, ItemTypes, WeaponType }

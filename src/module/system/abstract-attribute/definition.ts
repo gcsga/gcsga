@@ -3,10 +3,11 @@ import { AbstractAttributeDefSchema } from "./data.ts"
 import { ActorGURPS } from "@actor"
 import { LaxSchemaField } from "@system/schema-data-fields.ts"
 import { RESERVED_IDS } from "@system/attribute/data.ts"
-import { AbstractAttribute } from "@system"
+import { Mook } from "@system/mook/index.ts"
+import { AbstractAttribute } from "./object.ts"
 
 abstract class AbstractAttributeDef<
-	TActor extends ActorGURPS = ActorGURPS,
+	TActor extends ActorGURPS | Mook = ActorGURPS,
 	TSchema extends AbstractAttributeDefSchema = AbstractAttributeDefSchema
 > extends foundry.abstract.DataModel<TActor, TSchema> {
 
@@ -98,7 +99,7 @@ abstract class AbstractAttributeDef<
 }
 
 interface AbstractAttributeDef<
-	TActor extends ActorGURPS,
+	TActor extends ActorGURPS | Mook,
 	TSchema extends AbstractAttributeDefSchema
 > extends foundry.abstract.DataModel<TActor, TSchema>,
 	ModelPropsFromSchema<AbstractAttributeDefSchema> {

@@ -7,18 +7,16 @@ import { CharacterGURPS } from "@actor"
 import { AttributeDef } from "./definition.ts"
 import { AbstractAttributeConstructionOptions } from "@system/abstract-attribute/data.ts"
 import { SheetSettings } from "@system/sheet-settings.ts"
+import { Mook } from "@system/mook/index.ts"
 
-class AttributeGURPS extends AbstractAttribute<CharacterGURPS, AttributeSchema> {
-	// adj = 0
-	// damage?: number
+class AttributeGURPS extends AbstractAttribute<CharacterGURPS | Mook, AttributeSchema> {
 	order: number
-	// applyOps: boolean
 
 	protected _overridenThreshold: PoolThreshold | null = null
 
 	constructor(
 		data: DeepPartial<SourceFromSchema<AttributeSchema>>,
-		options?: AbstractAttributeConstructionOptions<CharacterGURPS>
+		options?: AbstractAttributeConstructionOptions<CharacterGURPS | Mook>
 	) {
 		super(data, options)
 		// this.adj = data.adj

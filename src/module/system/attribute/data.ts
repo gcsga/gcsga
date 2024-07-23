@@ -14,7 +14,6 @@ const RESERVED_IDS: string[] = [gid.Skill, gid.Parry, gid.Block, gid.Dodge, gid.
 type AttributeSchema = AbstractAttributeSchema & {
 	adj: fields.NumberField<number, number, true, false, true>
 	damage: fields.NumberField<number, number, true, true, true>
-	// attribute_def: fields.SchemaField<AttributeDefSchema>
 	apply_ops: fields.BooleanField<boolean, boolean, false, true, true>
 }
 

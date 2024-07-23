@@ -2,9 +2,10 @@ import { AbstractAttributeDef } from "./definition.ts"
 import { AbstractAttributeConstructionOptions, AbstractAttributeSchema } from "./data.ts"
 import { ActorGURPS } from "@actor"
 import { LaxSchemaField } from "@system/schema-data-fields.ts"
+import { Mook } from "@system/mook/index.ts"
 
 abstract class AbstractAttribute<
-	TActor extends ActorGURPS = ActorGURPS,
+	TActor extends ActorGURPS | Mook = ActorGURPS | Mook,
 	TSchema extends AbstractAttributeSchema = AbstractAttributeSchema
 > extends foundry.abstract.DataModel<TActor, TSchema> {
 

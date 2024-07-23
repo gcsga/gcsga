@@ -128,10 +128,21 @@ declare global {
 		/**
 		 * Check if an Entry is already present in the Collection
 		 * @param {TDocument} entry     The Entry being dropped
-		 * @returns {boolean}                     Is the Entry already present?
+		 * @returns {boolean}           Is the Entry already present?
 		 * @private
 		 */
 		_entryAlreadyExists(entry: TDocument): boolean
+
+		/**
+				 * Sort a relative entry within a collection
+				 * @param {TDocument} entry							The entry to sort
+				 * @param {object} sortData             The sort data
+				 * @param {string} sortData.sortKey     The sort key to use for sorting
+				 * @param {boolean} sortData.sortBefore Sort before the target?
+				 * @param {object} sortData.updateData  Additional data to update on the entry
+				 * @returns {Promise<TokenDocumentUUID>}             The sorted entry
+				 */
+		_sortRelative(entry: TDocument, sortData: { sortKey: string; sortBefore: boolean; updateData: object }): Promise<TDocument>
 
 	}
 
