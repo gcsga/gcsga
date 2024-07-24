@@ -5,6 +5,12 @@ import { MoveTypeDefSchema } from "@system/move-type/data.ts"
 import { difficulty, progression, selfctrl } from "@util"
 import fields = foundry.data.fields
 
+const regex_levels = /\s(\d+)$/
+const regex_cr = /\((CR:?)?\s*(\d+)\)/
+
+export { regex_cr, regex_levels }
+
+
 type MookSchema = {
 	attributes: fields.ArrayField<fields.SchemaField<MookAttributeSchema>>,
 	settings: fields.SchemaField<{
