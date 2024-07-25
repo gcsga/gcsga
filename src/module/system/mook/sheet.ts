@@ -51,11 +51,6 @@ export class MookGeneratorSheet extends FormApplication {
 				button.text(LocalizeGURPS.translations.gurps.mook.test)
 			}
 		})
-
-		// html.find("#import").on("click", event => this._onImportText(event))
-		// html.find("#create").on("click", event => this._onCreateMook(event))
-		// html.find("textarea").on("input propertychange", _ => {
-		// })
 	}
 
 	static async init(): Promise<unknown> {
@@ -148,11 +143,9 @@ export class MookGeneratorSheet extends FormApplication {
 							const text = textArray.value
 							// if (text.length < 3) text = EXAMPLE_STATBLOCKS[parseInt(text)]
 							if (text.trim()) {
-								const data = MookParser.init(text, this.object).parseStatBlock(text)
-								this.object.update(data)
+								this.object.parseStatblock(text)
 							}
 							this.testing = true
-							this.object.text = this._prepareText()
 							this.render()
 						},
 					},
@@ -181,16 +174,17 @@ export class MookGeneratorSheet extends FormApplication {
 			ui.notifications?.error(LocalizeGURPS.translations.gurps.error.mook.name)
 			return false
 		}
-		const parser = new MookParser("", this.object)
-		const text = this.object.text
-		console.log(text.traits)
-		this.object.traits = parser.parseTraits(text.traits.replace(/\n/g, ";"), true)
-		this.object.skills = parser.parseSkills(text.skills.replace(/\n/g, ";"), true)
-		this.object.spells = parser.parseSpells(text.spells.replace(/\n/g, ";"), true)
-			;[this.object.melee] = parser.parseAttacks(text.melee.replace(/\n/g, ";"), true, true)
-			;[, this.object.ranged] = parser.parseAttacks(text.ranged.replace(/\n/g, ";"), true, true)
 		console.log(this.object)
-		return true
+		// const parser = new MookParser("", this.object)
+		// const text = this.object.text
+		// console.log(text.traits)
+		// this.object.traits = parser.parseTraits(text.traits.replace(/\n/g, ";"), true)
+		// this.object.skills = parser.parseSkills(text.skills.replace(/\n/g, ";"), true)
+		// this.object.spells = parser.parseSpells(text.spells.replace(/\n/g, ";"), true)
+		// 	;[this.object.melee] = parser.parseAttacks(text.melee.replace(/\n/g, ";"), true, true)
+		// 	;[, this.object.ranged] = parser.parseAttacks(text.ranged.replace(/\n/g, ";"), true, true)
+		// console.log(this.object)
+		// return true
 	}
 
 	private async createMook() {

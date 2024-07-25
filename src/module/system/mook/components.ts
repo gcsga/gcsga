@@ -1,5 +1,5 @@
 import { WeaponDamage, WeaponDamageSchema } from "@item/abstract-weapon/weapon-damage.ts";
-import { ItemType, SETTINGS, SYSTEM_NAME, gid } from "@module/data/constants.ts";
+import { ItemFlags, ItemType, SETTINGS, SYSTEM_NAME, gid } from "@module/data/constants.ts";
 import { StringBuilder, difficulty, selfctrl, stdmg } from "@util";
 import {
 	MookEquipmentSchema,
@@ -21,6 +21,7 @@ import {
 } from "./data.ts";
 import { Mook } from "./document.ts";
 import { DiceGURPS } from "@module/dice/index.ts";
+import { EquipmentSource, ItemSourceGURPS, MeleeWeaponSource, NoteSource, RangedWeaponSource, SkillSource, SpellSource, TraitModifierSource, TraitSource } from "@item/data/index.ts";
 
 
 function cleanLine(text: string): string {
@@ -33,7 +34,7 @@ function cleanLine(text: string): string {
 	return start === text ? text : cleanLine(text)
 }
 
-class MookItem<
+abstract class MookItem<
 	TSchema extends MookItemSchema = MookItemSchema,
 	TParent extends Mook | MookItem<MookItemSchema> = Mook
 > extends foundry.abstract.DataModel<TParent, TSchema> {
@@ -53,10 +54,10 @@ class MookItem<
 		return this.name
 	}
 
-	static arrayFromText(text: string, parent: Mook | MookItem<MookItemSchema, Mook>): MookItem[] {
-		if (parent instanceof MookItem) parent = parent.parent
-		const item = new MookItem({ type: ItemType.Note, name: text }, { parent })
-		return [item]
+	abstract toItemSource(parentId: string | null): DeepPartial<ItemSourceGURPS>[]
+
+	static arrayFromText(_text: string, _parent: Mook | MookItem<MookItemSchema, Mook>): MookItem[] {
+		throw new Error("MookItem.arrayFromText must be implemented!")
 	}
 }
 
@@ -104,6 +105,33 @@ class MookTrait extends MookItem<MookTraitSchema> {
 			buffer.push(` (${subBuffer.toString()})`)
 		}
 		return buffer.toString()
+	}
+
+	override toItemSource(parentId: string | null = null): DeepPartial<TraitSource | TraitModifierSource>[] {
+		const id = fu.randomID()
+		const modifiers = this.modifiers.map(mod => mod.toItemSource(id)[0])
+		return [
+			...modifiers,
+			{
+				type: ItemType.Trait,
+				name: this.name,
+				_id: id,
+				flags: {
+					[SYSTEM_NAME]: {
+						[ItemFlags.Container]: parentId
+					}
+				},
+				system: {
+					name: this.name,
+					notes: this.notes,
+					reference: this.reference,
+					base_points: this.points,
+					cr: this.cr,
+					can_level: this.levels !== 0,
+					levels: this.levels
+				}
+			}
+		]
 	}
 
 	static override arrayFromText(text: string, parent: Mook | MookItem<MookItemSchema, Mook>): MookTrait[] {
@@ -199,6 +227,28 @@ class MookTraitModifier extends MookItem<MookTraitModifierSchema, MookTrait> {
 	override toText(): string {
 		return `${this.name}, ${this.cost}`
 	}
+
+	override toItemSource(parentId: string | null = null): DeepPartial<TraitModifierSource>[] {
+		const id = fu.randomID()
+		return [
+			{
+				type: ItemType.TraitModifier,
+				name: this.name,
+				_id: id,
+				flags: {
+					[SYSTEM_NAME]: {
+						[ItemFlags.Container]: parentId,
+					}
+				},
+				system: {
+					name: this.name,
+					notes: this.notes,
+					reference: this.reference,
+					cost: parseInt(this.cost) || 0,
+				}
+			}
+		]
+	}
 }
 
 interface MookTraitModifier extends MookItem<MookTraitModifierSchema, MookTrait>, ModelPropsFromSchema<MookTraitModifierSchema> { }
@@ -226,6 +276,31 @@ class MookSkill extends MookItem<MookSkillSchema> {
 		buffer.push(`-${this.level}`)
 		buffer.push(` (${this.attribute}/${this.difficulty})`)
 		return buffer.toString()
+	}
+
+	override toItemSource(parentId: string | null): DeepPartial<SkillSource>[] {
+		const id = fu.randomID()
+		return [
+
+			{
+				type: ItemType.Skill,
+				name: this.name,
+				_id: id,
+				flags: {
+					[SYSTEM_NAME]: {
+						[ItemFlags.Container]: parentId
+					}
+				},
+				system: {
+					name: this.name,
+					specialization: this.specialization,
+					notes: this.notes,
+					reference: this.reference,
+					tech_level: this.tech_level,
+					difficulty: `${this.attribute}/${this.difficulty}`
+				}
+			}
+		]
 	}
 
 	static override arrayFromText(text: string, parent: Mook | MookItem<MookItemSchema, Mook>): MookSkill[] {
@@ -347,6 +422,31 @@ class MookSpell extends MookItem<MookSpellSchema> {
 		return buffer.toString()
 	}
 
+	override toItemSource(parentId: string | null): DeepPartial<SpellSource>[] {
+		const id = fu.randomID()
+		return [
+
+			{
+				type: ItemType.Spell,
+				name: this.name,
+				_id: id,
+				flags: {
+					[SYSTEM_NAME]: {
+						[ItemFlags.Container]: parentId
+					}
+				},
+				system: {
+					name: this.name,
+					college: this.college,
+					notes: this.notes,
+					reference: this.reference,
+					tech_level: this.tech_level,
+					difficulty: `${this.attribute}/${this.difficulty}`
+				}
+			}
+		]
+	}
+
 	static override arrayFromText(text: string, parent: Mook | MookItem<MookItemSchema, Mook>): MookSpell[] {
 		if (parent instanceof MookItem) parent = parent.parent
 
@@ -432,7 +532,7 @@ class MookSpell extends MookItem<MookSpellSchema> {
 
 interface MookSpell extends MookItem<MookSpellSchema>, ModelPropsFromSchema<MookSpellSchema> { }
 
-class MookWeapon<TSchema extends MookWeaponSchema = MookWeaponSchema> extends MookItem<TSchema> {
+abstract class MookWeapon<TSchema extends MookWeaponSchema = MookWeaponSchema> extends MookItem<TSchema> {
 
 	static override defineSchema(): MookWeaponSchema {
 		const fields = foundry.data.fields
@@ -706,6 +806,38 @@ class MookMelee extends MookWeapon<MookMeleeSchema> {
 		if (this.block !== "No") buffer.push(` Block: ${this.block}`)
 		return buffer.toString()
 	}
+
+	override toItemSource(parentId: string | null): DeepPartial<MeleeWeaponSource>[] {
+		const id = fu.randomID()
+		return [
+
+			{
+				type: ItemType.MeleeWeapon,
+				name: this.name,
+				_id: id,
+				flags: {
+					[SYSTEM_NAME]: {
+						[ItemFlags.Container]: parentId
+					}
+				},
+				system: {
+					usage: this.name,
+					usage_notes: this.notes,
+					strength: this.strength,
+					damage: this.damage,
+					reach: this.reach,
+					parry: this.parry,
+					block: this.block,
+					defaults: [
+						{
+							type: gid.Ten,
+							modifier: this.level - 10,
+						},
+					],
+				}
+			}
+		]
+	}
 }
 
 interface MookMelee extends MookWeapon<MookMeleeSchema>, ModelPropsFromSchema<MookMeleeSchema> { }
@@ -741,6 +873,41 @@ class MookRanged extends MookWeapon<MookRangedSchema> {
 		if (this.recoil !== "0") buffer.push(` Rcl: ${this.recoil}`)
 		return buffer.toString()
 	}
+
+	override toItemSource(parentId: string | null): DeepPartial<RangedWeaponSource>[] {
+		const id = fu.randomID()
+		return [
+
+			{
+				type: ItemType.RangedWeapon,
+				name: this.name,
+				_id: id,
+				flags: {
+					[SYSTEM_NAME]: {
+						[ItemFlags.Container]: parentId
+					}
+				},
+				system: {
+					usage: this.name,
+					usage_notes: this.notes,
+					strength: this.strength,
+					damage: this.damage,
+					accuracy: this.accuracy,
+					range: this.range,
+					rate_of_fire: this.rate_of_fire,
+					shots: this.shots,
+					bulk: this.bulk,
+					recoil: this.recoil,
+					defaults: [
+						{
+							type: gid.Ten,
+							modifier: this.level - 10,
+						},
+					],
+				}
+			}
+		]
+	}
 }
 
 interface MookRanged extends MookWeapon<MookRangedSchema>, ModelPropsFromSchema<MookRangedSchema> { }
@@ -767,6 +934,34 @@ class MookEquipment extends MookItem<MookEquipmentSchema> {
 		buffer.push(this.name)
 		return buffer.toString()
 	}
+
+	override toItemSource(parentId: string | null): DeepPartial<EquipmentSource>[] {
+		const id = fu.randomID()
+		return [
+			{
+				type: ItemType.Equipment,
+				name: this.name,
+				_id: id,
+				flags: {
+					[SYSTEM_NAME]: {
+						[ItemFlags.Container]: parentId
+					}
+				},
+				system: {
+					description: this.name,
+					notes: this.notes,
+					quantity: this.quantity,
+					tech_level: this.tech_level,
+					legality_class: this.legality_class,
+					value: this.value,
+					weight: this.weight,
+					uses: this.uses,
+					max_uses: this.max_uses,
+					reference: this.reference,
+				}
+			}
+		]
+	}
 }
 
 interface MookEquipment extends MookItem<MookEquipmentSchema>, ModelPropsFromSchema<MookEquipmentSchema> { }
@@ -778,6 +973,26 @@ class MookNote extends MookItem<MookNoteSchema> {
 		const buffer = new StringBuilder()
 		buffer.push(this.name)
 		return buffer.toString()
+	}
+
+	override toItemSource(parentId: string | null): DeepPartial<NoteSource>[] {
+		const id = fu.randomID()
+		return [
+			{
+				type: ItemType.Note,
+				name: this.name,
+				_id: id,
+				flags: {
+					[SYSTEM_NAME]: {
+						[ItemFlags.Container]: parentId
+					}
+				},
+				system: {
+					text: this.notes,
+					reference: this.reference,
+				}
+			}
+		]
 	}
 }
 

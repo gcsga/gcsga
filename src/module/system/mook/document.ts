@@ -1,8 +1,11 @@
-import { SETTINGS, SYSTEM_NAME, gid } from "@module/data/index.ts"
+import { ActorType, SETTINGS, SYSTEM_NAME, gid } from "@module/data/index.ts"
 import { AttributeDef, AttributeGURPS, MoveTypeDef } from "@system"
 import { progression, sanitize } from "@util"
 import { MookEquipment, MookMelee, MookNote, MookRanged, MookSkill, MookSpell, MookTrait, MookWeapon } from "./components.ts"
 import { MookSchema } from "./data.ts"
+import { CharacterGURPS } from "@actor"
+import { CharacterSource } from "@actor/character/data.ts"
+import { ItemSourceGURPS, MeleeWeaponSource, RangedWeaponSource, SkillSource, SpellSource, TraitModifierSource, TraitSource } from "@item/data/index.ts"
 
 
 
@@ -51,7 +54,7 @@ class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 				height: new fields.StringField({ required: true, nullable: false, initial: "" }),
 				weight: new fields.StringField({ required: true, nullable: false, initial: "" }),
 				SM: new fields.NumberField({ required: true, nullable: false, initial: 0 }),
-				portrait: new fields.StringField({ required: true, nullable: false, initial: "" }),
+				portrait: new fields.FilePathField({ required: false, nullable: false, initial: "profile.png" }),
 				userdesc: new fields.StringField({ required: true, nullable: false, initial: "" }),
 			}),
 			traits: new fields.ArrayField(new fields.SchemaField(MookTrait.defineSchema())),
@@ -79,6 +82,36 @@ class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 		// this.parseEquipment()
 		this._parseAttacks(true)
 		this.catchall = this.text
+	}
+
+	async createActor(): Promise<CharacterGURPS | null> {
+
+		const attributes = Object.values(this.attributes)
+
+		const items: DeepPartial<ItemSourceGURPS>[] = [
+			...this.traits.reduce((acc: DeepPartial<TraitSource | TraitModifierSource>[], e) => { acc.push(...e.toItemSource(null)); return acc }, []),
+			...this.skills.reduce((acc: DeepPartial<SkillSource>[], e) => { acc.push(...e.toItemSource(null)); return acc }, []),
+			...this.spells.reduce((acc: DeepPartial<SpellSource>[], e) => { acc.push(...e.toItemSource(null)); return acc }, []),
+			...this.melee.reduce((acc: DeepPartial<MeleeWeaponSource>[], e) => { acc.push(...e.toItemSource(null)); return acc }, []),
+			...this.ranged.reduce((acc: DeepPartial<RangedWeaponSource>[], e) => { acc.push(...e.toItemSource(null)); return acc }, []),
+		]
+
+		const data: Omit<DeepPartial<CharacterSource>, "name" | "type" | "_id"> & { name: string, type: ActorType.Character } = {
+			type: ActorType.Character,
+			name: this.profile.name,
+			img: this.profile.portrait,
+			system: {
+				attributes,
+				profile: this.profile,
+			},
+			items
+		}
+
+		const newActor = await CharacterGURPS.create(data)
+		if (!newActor) return null
+
+		newActor.sheet?.render(true)
+		return newActor
 	}
 
 	private _sanitizeStatblock(text: string): string {
@@ -378,7 +411,7 @@ interface Mook extends foundry.abstract.DataModel<null, MookSchema>,
 
 export { Mook }
 
-// export class Mook {
+// export class MookOld {
 // 	type = "mook"
 //
 // 	flags = {

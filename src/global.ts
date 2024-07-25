@@ -27,7 +27,7 @@ import { UserGURPS } from "@module/user/document.ts"
 import { SceneGURPS, TokenDocumentGURPS } from "@scene"
 import { GURPSCONFIG } from "@scripts/config/index.ts"
 import { remigrate } from "@scripts/system/remigrate.ts"
-import { AttributeDefSchema, HitLocationSchema, MoveTypeDefSchema, ResourceTrackerDefSchema, SheetSettingsSchema } from "@system"
+import { AttributeDefSchema, HitLocationSchema, MookGeneratorSheet, MoveTypeDefSchema, ResourceTrackerDefSchema, SheetSettingsSchema } from "@system"
 import { ConditionManager } from "@system/condition-manager.ts"
 import { ManeuverManager } from "@system/maneuver-manager.ts"
 
@@ -44,13 +44,14 @@ interface GameGURPS
 		UserGURPS
 	> {
 	gurps: {
+		ConditionManager: typeof ConditionManager
+		Dice: typeof DiceGURPS
+		ManeuverManager: typeof ManeuverManager
 		compendiumBrowser: CompendiumBrowser
+		effectPanel: EffectPanel
 		modifierBucket: ModifierBucket
 		modifierList: ModifierList
-		effectPanel: EffectPanel
-		Dice: typeof DiceGURPS
-		ConditionManager: typeof ConditionManager
-		ManeuverManager: typeof ManeuverManager
+		mook: typeof MookGeneratorSheet
 		system: {
 			remigrate: typeof remigrate
 		}

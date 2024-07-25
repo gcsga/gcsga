@@ -102,7 +102,11 @@ class ItemDirectoryGURPS extends ItemDirectory<ItemGURPS<null>> {
 	}
 
 	override initialize(): void {
-		for (const item of this.documents) {
+		// for (const item of this.documents) {
+		// 	item.prepareSiblingData()
+		// }
+		// return super.initialize()
+		for (const item of ItemDirectoryGURPS.collection) {
 			item.prepareSiblingData()
 		}
 		return super.initialize()
