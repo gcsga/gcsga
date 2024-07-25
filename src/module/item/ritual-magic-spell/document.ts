@@ -1,13 +1,12 @@
 import { ActorGURPS } from "@actor"
 import { AbstractSkillGURPS } from "@item"
 import { RitualMagicSpellSource, RitualMagicSpellSystemData } from "./data.ts"
-import { TooltipGURPS, difficulty, } from "@util"
+import { TooltipGURPS, difficulty } from "@util"
 import { ActorType, gid } from "@module/data/constants.ts"
 import { SkillLevel } from "@item/skill/data.ts"
-import { SkillDefault, } from "@system"
+import { SkillDefault } from "@system"
 
 class RitualMagicSpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends AbstractSkillGURPS<TParent> {
-
 	get college(): string[] {
 		return this.system.college
 	}

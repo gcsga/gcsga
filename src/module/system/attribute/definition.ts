@@ -9,7 +9,6 @@ import { ActorGURPS, CharacterGURPS } from "@actor"
 import { AttributeGURPS } from "./object.ts"
 import { Mook } from "@system/mook/index.ts"
 
-
 class AttributeDef extends AbstractAttributeDef<CharacterGURPS | Mook, AttributeDefSchema> {
 	// declare type: attribute.Type
 	// name: string
@@ -19,8 +18,9 @@ class AttributeDef extends AbstractAttributeDef<CharacterGURPS | Mook, Attribute
 	thresholds: PoolThreshold[]
 	// order: number
 
-	constructor(data: DeepPartial<SourceFromSchema<AttributeDefSchema>>,
-		options?: DataModelConstructionOptions<CharacterGURPS>
+	constructor(
+		data: DeepPartial<SourceFromSchema<AttributeDefSchema>>,
+		options?: DataModelConstructionOptions<CharacterGURPS>,
 	) {
 		super(data, options)
 		// this.type = data.type
@@ -75,7 +75,7 @@ class AttributeDef extends AbstractAttributeDef<CharacterGURPS | Mook, Attribute
 		return evaluateToNumber(this.base, resolver)
 	}
 
-	computeCost(actor: CharacterGURPS, value: number, cost_reduction: number, size_modifier: number): number {
+	computeCost(actor: CharacterGURPS | Mook, value: number, cost_reduction: number, size_modifier: number): number {
 		let cost = value * (this.cost_per_point || 0)
 		if (
 			size_modifier > 0 &&
@@ -98,6 +98,8 @@ class AttributeDef extends AbstractAttributeDef<CharacterGURPS | Mook, Attribute
 	}
 }
 
-interface AttributeDef extends AbstractAttributeDef<CharacterGURPS | Mook, AttributeDefSchema>, ModelPropsFromSchema<AttributeDefSchema> { }
+interface AttributeDef
+	extends AbstractAttributeDef<CharacterGURPS | Mook, AttributeDefSchema>,
+	ModelPropsFromSchema<AttributeDefSchema> { }
 
 export { AttributeDef }

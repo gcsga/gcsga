@@ -5,9 +5,7 @@ import { LocalizeGURPS, StringBuilder, Weight, WeightUnits, emcost, emweight } f
 import { ItemType } from "@module/data/constants.ts"
 import { SheetSettings } from "@system"
 
-
 class EquipmentModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
-
 	get enabled(): boolean {
 		return !this.system.disabled
 	}
@@ -38,8 +36,9 @@ class EquipmentModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | nu
 
 	get costDescription(): string {
 		if (this.costType === emcost.Type.Original && (this.costAmount === "" || this.costAmount === "+0")) return ""
-		return `${parseFloat(this.costAmount).signedString()} ${LocalizeGURPS.translations.gurps.item.cost_type[this.costType]
-			}`
+		return `${parseFloat(this.costAmount).signedString()} ${
+			LocalizeGURPS.translations.gurps.item.cost_type[this.costType]
+		}`
 	}
 
 	get weightDescription(): string {
@@ -48,9 +47,10 @@ class EquipmentModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | nu
 			(this.weightAmount === "" || this.weightAmount.startsWith("+0"))
 		)
 			return ""
-		return `${(Weight.fromString(this.weightUnits) >= 0 ? "+" : "") +
+		return `${
+			(Weight.fromString(this.weightUnits) >= 0 ? "+" : "") +
 			Weight.format(Weight.fromString(this.weightAmount), this.weightUnits)
-			} ${emweight.Type.toString(this.weightType)}`
+		} ${emweight.Type.toString(this.weightType)}`
 	}
 
 	get fullDescription(): string {

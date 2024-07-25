@@ -1,92 +1,83 @@
 import { gid } from "@module/data/index.ts"
-import { EXAMPLE_STATBLOCKS, Mook, MookParser } from "@system"
+import { EXAMPLE_STATBLOCKS, Mook } from "@system"
 import { difficulty } from "@util/enum/difficulty.ts"
 import { MockGame, _defaultMookData } from "tests/mocks/game.ts"
 
 // Add real tests here.
 describe("Mook generator", () => {
 	let _mook: Mook
-	let _parser: MookParser
 
 	beforeEach(() => {
 		_mook = new Mook(_defaultMookData)
-		_parser = new MookParser("", _mook)
 		// @ts-expect-error game does not exist on globalThis type
 		global.game = new MockGame()
 	})
 
 	describe("Attribute Parsing", () => {
 		it("Attributes separated by spaces and newlines", () => {
-			_parser.text = EXAMPLE_STATBLOCKS[0]
-			_parser.parseStatBlock(_parser.text)
+			_mook.parseStatblock(EXAMPLE_STATBLOCKS[0])
 
-			_mook.refreshAttributes()
-			expect(_mook.system.attributes.find(e => e.id === gid.Strength)?.adj).toBe(1)
-			expect(_mook.system.attributes.find(e => e.id === gid.Dexterity)?.adj).toBe(1)
-			expect(_mook.system.attributes.find(e => e.id === gid.Intelligence)?.adj).toBe(-1)
-			expect(_mook.system.attributes.find(e => e.id === gid.Health)?.adj).toBe(1)
-			expect(_mook.system.attributes.find(e => e.id === gid.Will)?.adj).toBe(1)
-			expect(_mook.system.attributes.find(e => e.id === gid.FrightCheck)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e => e.id === gid.Perception)?.adj).toBe(1)
-			expect(_mook.system.attributes.find(e => e.id === gid.Vision)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e => e.id === gid.Hearing)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e => e.id === gid.TasteSmell)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e => e.id === gid.Touch)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e => e.id === gid.BasicSpeed)?.adj).toBe(0.5)
-			expect(_mook.system.attributes.find(e => e.id === gid.BasicMove)?.adj).toBe(-2)
-			expect(_mook.system.attributes.find(e => e.id === gid.FatiguePoints)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e => e.id === gid.HitPoints)?.adj).toBe(1)
+			expect(_mook.attributes.get(gid.Strength)?.adj).toBe(1)
+			expect(_mook.attributes.get(gid.Dexterity)?.adj).toBe(1)
+			expect(_mook.attributes.get(gid.Intelligence)?.adj).toBe(-1)
+			expect(_mook.attributes.get(gid.Health)?.adj).toBe(1)
+			expect(_mook.attributes.get(gid.Will)?.adj).toBe(1)
+			expect(_mook.attributes.get(gid.FrightCheck)?.adj).toBe(0)
+			expect(_mook.attributes.get(gid.Perception)?.adj).toBe(1)
+			expect(_mook.attributes.get(gid.Vision)?.adj).toBe(0)
+			expect(_mook.attributes.get(gid.Hearing)?.adj).toBe(0)
+			expect(_mook.attributes.get(gid.TasteSmell)?.adj).toBe(0)
+			expect(_mook.attributes.get(gid.Touch)?.adj).toBe(0)
+			expect(_mook.attributes.get(gid.BasicSpeed)?.adj).toBe(0.5)
+			expect(_mook.attributes.get(gid.BasicMove)?.adj).toBe(-2)
+			expect(_mook.attributes.get(gid.FatiguePoints)?.adj).toBe(0)
+			expect(_mook.attributes.get(gid.HitPoints)?.adj).toBe(1)
 		})
 
 		it("Attributes separated by ; and newlines", () => {
-			_parser.text = EXAMPLE_STATBLOCKS[9]
-			_parser.parseStatBlock(_parser.text)
+			_mook.parseStatblock(EXAMPLE_STATBLOCKS[9])
 
-			_mook.refreshAttributes()
-			expect(_mook.system.attributes.find(e => e.id === gid.Strength)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e => e.id === gid.Dexterity)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e => e.id === gid.Intelligence)?.adj).toBe(-1)
-			expect(_mook.system.attributes.find(e => e.id === gid.Health)?.adj).toBe(1)
-			expect(_mook.system.attributes.find(e => e.id === gid.Will)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e => e.id === gid.FrightCheck)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e => e.id === gid.Perception)?.adj).toBe(1)
-			expect(_mook.system.attributes.find(e => e.id === gid.Vision)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e => e.id === gid.Hearing)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e => e.id === gid.TasteSmell)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e => e.id === gid.Touch)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e => e.id === gid.BasicSpeed)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e => e.id === gid.BasicMove)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e => e.id === gid.FatiguePoints)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e => e.id === gid.HitPoints)?.adj).toBe(0)
+			expect(_mook.attributes.get(gid.Strength)?.adj).toBe(0)
+			expect(_mook.attributes.get(gid.Dexterity)?.adj).toBe(0)
+			expect(_mook.attributes.get(gid.Intelligence)?.adj).toBe(-1)
+			expect(_mook.attributes.get(gid.Health)?.adj).toBe(1)
+			expect(_mook.attributes.get(gid.Will)?.adj).toBe(0)
+			expect(_mook.attributes.get(gid.FrightCheck)?.adj).toBe(0)
+			expect(_mook.attributes.get(gid.Perception)?.adj).toBe(1)
+			expect(_mook.attributes.get(gid.Vision)?.adj).toBe(0)
+			expect(_mook.attributes.get(gid.Hearing)?.adj).toBe(0)
+			expect(_mook.attributes.get(gid.TasteSmell)?.adj).toBe(0)
+			expect(_mook.attributes.get(gid.Touch)?.adj).toBe(0)
+			expect(_mook.attributes.get(gid.BasicSpeed)?.adj).toBe(0)
+			expect(_mook.attributes.get(gid.BasicMove)?.adj).toBe(0)
+			expect(_mook.attributes.get(gid.FatiguePoints)?.adj).toBe(0)
+			expect(_mook.attributes.get(gid.HitPoints)?.adj).toBe(0)
 		})
 
 		it("Attributes separated by , and newlines, points added", () => {
-			_parser.text = EXAMPLE_STATBLOCKS[13]
-			_parser.parseStatBlock(_parser.text)
+			_mook.parseStatblock(EXAMPLE_STATBLOCKS[13])
 
-			_mook.refreshAttributes()
-			expect(_mook.system.attributes.find(e => e.id === gid.Strength)?.adj).toBe(3)
-			expect(_mook.system.attributes.find(e => e.id === gid.Dexterity)?.adj).toBe(4)
-			expect(_mook.system.attributes.find(e => e.id === gid.Intelligence)?.adj).toBe(3)
-			expect(_mook.system.attributes.find(e => e.id === gid.Health)?.adj).toBe(2)
-			expect(_mook.system.attributes.find(e => e.id === gid.Will)?.adj).toBe(-1)
-			expect(_mook.system.attributes.find(e => e.id === gid.FrightCheck)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e => e.id === gid.Perception)?.adj).toBe(1)
-			expect(_mook.system.attributes.find(e => e.id === gid.Vision)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e => e.id === gid.Hearing)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e => e.id === gid.TasteSmell)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e => e.id === gid.Touch)?.adj).toBe(0)
-			expect(_mook.system.attributes.find(e => e.id === gid.BasicSpeed)?.adj).toBe(0.25)
-			expect(_mook.system.attributes.find(e => e.id === gid.BasicMove)?.adj).toBe(1)
-			expect(_mook.system.attributes.find(e => e.id === gid.FatiguePoints)?.adj).toBe(1)
-			expect(_mook.system.attributes.find(e => e.id === gid.HitPoints)?.adj).toBe(-1)
+			expect(_mook.attributes.get(gid.Strength)?.adj).toBe(3)
+			expect(_mook.attributes.get(gid.Dexterity)?.adj).toBe(4)
+			expect(_mook.attributes.get(gid.Intelligence)?.adj).toBe(3)
+			expect(_mook.attributes.get(gid.Health)?.adj).toBe(2)
+			expect(_mook.attributes.get(gid.Will)?.adj).toBe(-1)
+			expect(_mook.attributes.get(gid.FrightCheck)?.adj).toBe(0)
+			expect(_mook.attributes.get(gid.Perception)?.adj).toBe(1)
+			expect(_mook.attributes.get(gid.Vision)?.adj).toBe(0)
+			expect(_mook.attributes.get(gid.Hearing)?.adj).toBe(0)
+			expect(_mook.attributes.get(gid.TasteSmell)?.adj).toBe(0)
+			expect(_mook.attributes.get(gid.Touch)?.adj).toBe(0)
+			expect(_mook.attributes.get(gid.BasicSpeed)?.adj).toBe(0.25)
+			expect(_mook.attributes.get(gid.BasicMove)?.adj).toBe(1)
+			expect(_mook.attributes.get(gid.FatiguePoints)?.adj).toBe(1)
+			expect(_mook.attributes.get(gid.HitPoints)?.adj).toBe(-1)
 		})
 	})
 
 	describe("Trait Parsing", () => {
 		it("Traits with CR, levels, no points, no modifiers", () => {
-			_parser.text = EXAMPLE_STATBLOCKS[0]
-			_parser.parseStatBlock(_parser.text)
+			_mook.parseStatblock(EXAMPLE_STATBLOCKS[0])
 
 			expect(_mook.traits.some(t => t.name === "Appearance (Ugly)" && t.points === 0)).toBe(true)
 			expect(_mook.traits.some(t => t.name === "Cowardice" && t.cr === 12 && t.points === 0)).toBe(true)
@@ -102,8 +93,7 @@ describe("Mook generator", () => {
 		})
 
 		it("Traits with modifiers, points, levels, CR", () => {
-			_parser.text = EXAMPLE_STATBLOCKS[13]
-			_parser.parseStatBlock(_parser.text)
+			_mook.parseStatblock(EXAMPLE_STATBLOCKS[13])
 
 			expect(
 				_mook.traits.some(
@@ -136,8 +126,7 @@ describe("Mook generator", () => {
 
 	describe("Skill Parsing", () => {
 		it("Skills with name-level notation, no points, no specializations, no RSL, no attributes", () => {
-			_parser.text = EXAMPLE_STATBLOCKS[0]
-			_parser.parseStatBlock(_parser.text)
+			_mook.parseStatblock(EXAMPLE_STATBLOCKS[0])
 
 			expect(
 				_mook.skills.some(
@@ -192,8 +181,7 @@ describe("Mook generator", () => {
 		})
 
 		it("Skills with name-level notation, no points, no specializations, no RSL, no attributes, odd linebreaks", () => {
-			_parser.text = EXAMPLE_STATBLOCKS[2]
-			_parser.parseStatBlock(_parser.text)
+			_mook.parseStatblock(EXAMPLE_STATBLOCKS[2])
 
 			expect(
 				_mook.skills.some(
@@ -398,8 +386,7 @@ describe("Mook generator", () => {
 		})
 
 		it("Skills with points, difficulty, RSL, specialization, name, levels", () => {
-			_parser.text = EXAMPLE_STATBLOCKS[13]
-			_parser.parseStatBlock(_parser.text)
+			_mook.parseStatblock(EXAMPLE_STATBLOCKS[13])
 
 			expect(
 				_mook.skills.some(
@@ -509,8 +496,7 @@ describe("Mook generator", () => {
 
 	describe("Spell Parsing", () => {
 		it("Spells with name-level notation, no points, no specializations, no RSL, no attributes", () => {
-			_parser.text = EXAMPLE_STATBLOCKS[14]
-			_parser.parseStatBlock(_parser.text)
+			_mook.parseStatblock(EXAMPLE_STATBLOCKS[14])
 
 			expect(
 				_mook.spells.some(
@@ -787,8 +773,7 @@ describe("Mook generator", () => {
 
 	describe("Attack parsing", () => {
 		it("Attacks separated by . and newlines, some armor divisors, notes, long form damage types", () => {
-			_parser.text = EXAMPLE_STATBLOCKS[0]
-			_parser.parseStatBlock(_parser.text)
+			_mook.parseStatblock(EXAMPLE_STATBLOCKS[0])
 
 			expect(
 				_mook.melee.some(
@@ -857,8 +842,7 @@ describe("Mook generator", () => {
 		})
 
 		it("Attacks separated by . and newlines, some armor divisors, notes, long form damage types, random interrupting line", () => {
-			_parser.text = EXAMPLE_STATBLOCKS[4]
-			_parser.parseStatBlock(_parser.text)
+			_mook.parseStatblock(EXAMPLE_STATBLOCKS[4])
 
 			expect(
 				_mook.melee.some(

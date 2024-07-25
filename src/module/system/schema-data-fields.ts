@@ -27,16 +27,16 @@ class LaxSchemaField<TDataSchema extends DataSchema> extends foundry.data.fields
 		data: Record<string, unknown>,
 		options: CleanFieldOptions = {},
 	): SourceFromSchema<TDataSchema> {
-		options.source = options.source || data;
+		options.source = options.source || data
 
 		// Clean each field that belongs to the schema
 		for (const [name, field] of this.entries()) {
-			if (!(name in data) && options.partial) continue;
-			data[name] = field.clean(data[name], options);
-			if (data[name] === undefined) delete data[name];
+			if (!(name in data) && options.partial) continue
+			data[name] = field.clean(data[name], options)
+			if (data[name] === undefined) delete data[name]
 		}
 
-		return data as SourceFromSchema<TDataSchema>;
+		return data as SourceFromSchema<TDataSchema>
 	}
 }
 
@@ -100,10 +100,10 @@ type RecordFieldModelProp<
 > = TDense extends true
 	? Record<ModelPropFromDataField<TKeyField>, ModelPropFromDataField<TValueField>>
 	: TDense extends false
-	? Partial<Record<ModelPropFromDataField<TKeyField>, ModelPropFromDataField<TValueField>>>
-	:
-	| Record<ModelPropFromDataField<TKeyField>, ModelPropFromDataField<TValueField>>
-	| Partial<Record<ModelPropFromDataField<TKeyField>, ModelPropFromDataField<TValueField>>>
+		? Partial<Record<ModelPropFromDataField<TKeyField>, ModelPropFromDataField<TValueField>>>
+		:
+				| Record<ModelPropFromDataField<TKeyField>, ModelPropFromDataField<TValueField>>
+				| Partial<Record<ModelPropFromDataField<TKeyField>, ModelPropFromDataField<TValueField>>>
 
 type RecordFieldSourceProp<
 	TKeyField extends StringField<string, string, true, false, false> | NumberField<number, number, true, false, false>,
@@ -113,10 +113,10 @@ type RecordFieldSourceProp<
 > = TDense extends true
 	? Record<SourcePropFromDataField<TKeyField>, SourcePropFromDataField<TValueField>>
 	: TDense extends false
-	? Partial<Record<SourcePropFromDataField<TKeyField>, SourcePropFromDataField<TValueField>>>
-	:
-	| Record<SourcePropFromDataField<TKeyField>, SourcePropFromDataField<TValueField>>
-	| Partial<Record<SourcePropFromDataField<TKeyField>, SourcePropFromDataField<TValueField>>>
+		? Partial<Record<SourcePropFromDataField<TKeyField>, SourcePropFromDataField<TValueField>>>
+		:
+				| Record<SourcePropFromDataField<TKeyField>, SourcePropFromDataField<TValueField>>
+				| Partial<Record<SourcePropFromDataField<TKeyField>, SourcePropFromDataField<TValueField>>>
 
 class RecordField<
 	TKeyField extends StringField<string, string, true, false, false> | NumberField<number, number, true, false, false>,

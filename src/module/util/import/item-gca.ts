@@ -154,7 +154,12 @@ class GCAItemImporter {
 			base_points: base_points,
 			levels: levelDifference.length > 1 ? data.level ?? 0 : 0,
 			points_per_level: level_points,
-			prereqs: { type: prereq.Type.List, all: true, when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 }, prereqs: [] },
+			prereqs: {
+				type: prereq.Type.List,
+				all: true,
+				when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 },
+				prereqs: [],
+			},
 			features: [],
 			study: [],
 			cr,

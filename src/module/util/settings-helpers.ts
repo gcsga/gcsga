@@ -123,7 +123,7 @@ function addResourceTrackerThreshold(context: DropDataContext): void {
 	if (isNaN(index)) return console.error("Invalid index")
 
 	const resourceTrackers = context.app.resourceTrackers
-	resourceTrackers[index].thresholds?.push(new PoolThreshold({}, { parent: resourceTrackers[index].parent }))
+	resourceTrackers[index].thresholds?.push(new PoolThreshold({}, { parent: resourceTrackers[index] }))
 
 	if (context.app instanceof CharacterConfigSheet)
 		context.app.actor.update({ "system.settings.resource_trackers": resourceTrackers })
@@ -219,7 +219,7 @@ function addHitLocation(context: DropDataContext): void {
 	const table = fu.getProperty(context.app, `${path}.locations`)
 	if (!Array.isArray(table)) return
 
-	table.push(HitLocation.createInstance())
+	table.push(new HitLocation({}, { parent: table }))
 
 	if (context.app instanceof CharacterConfigSheet) {
 		const formData = prepareFormData({ [`array.${path.replace(/^actor\./, "")}`]: table }, context.app.actor)
@@ -277,7 +277,7 @@ function addSubTable(context: DropDataContext): void {
 	const table = fu.getProperty(context.app, path)
 	if (!Array.isArray(table)) return
 
-	table[index].sub_table = BodyGURPS.createInstance()
+	table[index].sub_table = new BodyGURPS({}, { parent: table[index] })
 
 	if (context.app instanceof CharacterConfigSheet) {
 		const formData = prepareFormData({ [`array.${path.replace(/^actor\./, "")}`]: table }, context.app.actor)

@@ -9,7 +9,6 @@ import { SkillPrereqSchema } from "./data.ts"
 import { NumericCriteria } from "@module/util/numeric-criteria.ts"
 
 class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
-
 	constructor(data: DeepPartial<SourceFromSchema<SkillPrereqSchema>>) {
 		super(data)
 		this.name = new StringCriteria(data.name ?? undefined)
@@ -26,20 +25,20 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 			name: new fields.SchemaField(StringCriteria.defineSchema(), {
 				initial: {
 					compare: StringCompareType.IsString,
-					qualifier: ""
-				}
+					qualifier: "",
+				},
 			}),
 			level: new fields.SchemaField(NumericCriteria.defineSchema(), {
 				initial: {
 					compare: NumericCompareType.AtLeastNumber,
-					qualifier: 0
-				}
+					qualifier: 0,
+				},
 			}),
 			specialization: new fields.SchemaField(StringCriteria.defineSchema(), {
 				initial: {
 					compare: StringCompareType.AnyString,
-					qualifier: ""
-				}
+					qualifier: "",
+				},
 			}),
 		}
 	}
@@ -100,10 +99,11 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 		}
 		return satisfied
 	}
-
 }
 
-interface SkillPrereq extends BasePrereq<SkillPrereqSchema>, Omit<ModelPropsFromSchema<SkillPrereqSchema>, "name" | "level" | "specialization"> {
+interface SkillPrereq
+	extends BasePrereq<SkillPrereqSchema>,
+		Omit<ModelPropsFromSchema<SkillPrereqSchema>, "name" | "level" | "specialization"> {
 	name: StringCriteria
 	level: NumericCriteria
 	specialization: StringCriteria

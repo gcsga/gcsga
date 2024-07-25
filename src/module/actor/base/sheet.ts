@@ -459,9 +459,9 @@ abstract class ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TAc
 	}
 }
 
-interface ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TActor, ItemGURPS> { }
+interface ActorSheetGURPS<TActor extends ActorGURPS> extends ActorSheet<TActor, ItemGURPS> {}
 
-interface ActorSheetDataGURPS<TActor extends ActorGURPS> extends ActorSheetData<TActor> { }
+interface ActorSheetDataGURPS<TActor extends ActorGURPS> extends ActorSheetData<TActor> {}
 
 export { ActorSheetGURPS }
 export type { ActorSheetDataGURPS }

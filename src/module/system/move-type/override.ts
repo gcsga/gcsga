@@ -1,7 +1,6 @@
 import { evaluateToNumber } from "@module/util/index.ts"
 import { MoveTypeOverrideConditionType, MoveTypeOverrideSchema } from "./data.ts"
-import { ActorGURPS } from "@actor";
-
+import { ActorGURPS } from "@actor"
 
 class MoveTypeOverride extends foundry.abstract.DataModel<ActorGURPS, MoveTypeOverrideSchema> {
 	// Value to check the actor against
@@ -11,7 +10,7 @@ class MoveTypeOverride extends foundry.abstract.DataModel<ActorGURPS, MoveTypeOv
 
 	constructor(
 		data: DeepPartial<SourceFromSchema<MoveTypeOverrideSchema>>,
-		options: DataModelConstructionOptions<ActorGURPS>
+		options: DataModelConstructionOptions<ActorGURPS>,
 	) {
 		super(data, options)
 		// this.condition = data.condition
@@ -47,6 +46,8 @@ class MoveTypeOverride extends foundry.abstract.DataModel<ActorGURPS, MoveTypeOv
 	}
 }
 
-interface MoveTypeOverride extends foundry.abstract.DataModel<ActorGURPS, MoveTypeOverrideSchema>, ModelPropsFromSchema<MoveTypeOverrideSchema> { }
+interface MoveTypeOverride
+	extends foundry.abstract.DataModel<ActorGURPS, MoveTypeOverrideSchema>,
+		ModelPropsFromSchema<MoveTypeOverrideSchema> {}
 
 export { MoveTypeOverride }

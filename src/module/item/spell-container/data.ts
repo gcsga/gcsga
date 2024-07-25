@@ -26,13 +26,12 @@ class SpellContainerSystemData extends AbstractContainerSystemData<SpellContaine
 			template_picker: new fields.SchemaField(TemplatePicker.defineSchema()),
 			open: new fields.BooleanField({ initial: true }),
 		}
-
 	}
 }
 
 interface SpellContainerSystemData
 	extends AbstractContainerSystemData<SpellContainerGURPS, SpellContainerSystemSchema>,
-	ModelPropsFromSchema<SpellContainerSystemSchema> { }
+		ModelPropsFromSchema<SpellContainerSystemSchema> {}
 
 type SpellContainerSystemSchema = AbstractContainerSystemSchema & {
 	type: fields.StringField<ItemType.SpellContainer, ItemType.SpellContainer, true, false, true>

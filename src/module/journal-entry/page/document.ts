@@ -10,7 +10,7 @@ export enum JournalEntryPageType {
 
 export class JournalEntryPageGURPS<
 	TParent extends JournalEntryGURPS | null = JournalEntryGURPS | null,
-> extends JournalEntryPage<TParent> { }
+> extends JournalEntryPage<TParent> {}
 
 export interface JournalEntryPagePDF<TParent extends JournalEntryGURPS | null = JournalEntryGURPS | null>
 	extends JournalEntryPageGURPS<TParent> {
@@ -23,7 +23,7 @@ export interface JournalEntryPagePDF<TParent extends JournalEntryGURPS | null = 
 
 export class JournalEntryPagePDF<
 	TParent extends JournalEntryGURPS | null = JournalEntryGURPS | null,
-> extends JournalEntryPage<TParent> { }
+> extends JournalEntryPage<TParent> {}
 
 export const JournalEntryPageProxyGURPS = new Proxy(JournalEntryPageGURPS, {
 	construct(

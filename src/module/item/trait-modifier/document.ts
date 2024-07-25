@@ -6,7 +6,6 @@ import { ItemType } from "@module/data/constants.ts"
 import { SheetSettings } from "@system"
 
 class TraitModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
-
 	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
 		const settings = SheetSettings.for(this.actor)
 		if (optionChecker(settings.notes_display)) return this.localNotes

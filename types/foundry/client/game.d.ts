@@ -150,7 +150,17 @@ declare global {
 		 * @return A Promise which resolves to the created Game instance
 		 */
 		static create(): Promise<
-			Game<Actor<null>, Actors<Actor<null>>, ChatMessage, Combat, Item<null>, Items<Item<null>>, Macro, Scene, User>
+			Game<
+				Actor<null>,
+				Actors<Actor<null>>,
+				ChatMessage,
+				Combat,
+				Item<null>,
+				Items<Item<null>>,
+				Macro,
+				Scene,
+				User
+			>
 		>
 
 		/** Request World data from server and return it */

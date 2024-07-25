@@ -107,9 +107,9 @@ export class HitLocationSettings extends SettingsMenuGURPS {
 		})
 	}
 
-	protected _onDataImport(_event: MouseEvent): void { }
+	protected _onDataImport(_event: MouseEvent): void {}
 
-	protected _onDataExport(_event: MouseEvent): void { }
+	protected _onDataExport(_event: MouseEvent): void {}
 
 	protected override _onDrop(event: DragEvent): void {
 		const dragData = DnD.getDragData(event, DnD.TEXT_PLAIN)

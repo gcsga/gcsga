@@ -42,7 +42,9 @@ export class _Target implements DamageTarget {
 
 	_traits: TargetTrait[] = []
 
-	hitLocationTable: BodyGURPS = new BodyGURPS(_dummyHitLocationTable, { parent: this as any })
+	// TODO: maybe try fixing this?
+	//@ts-expect-error non-assignable parent type
+	hitLocationTable: BodyGURPS = new BodyGURPS(_dummyHitLocationTable, { parent: this })
 
 	getTrait(name: string): TargetTrait | undefined {
 		return this._traits.find(it => it.name === name)
@@ -152,13 +154,12 @@ export class DamageHitLocation extends HitLocation {
 
 	constructor(
 		data: DeepPartial<ModelPropsFromSchema<HitLocationSchema>>,
-		//@ts-expect-error invalid parent type
-		options?: DataModelConstructionOptions<_Target>
+		// @ts-expect-error invalid parent type
+		options?: DataModelConstructionOptions<_Target>,
 	) {
-		//@ts-expect-error invalid parent type
+		// @ts-expect-error invalid parent type
 		super(data, options)
 	}
-
 
 	// static override fromObject<TOwner extends BodyOwner>(
 	// 	data: HitLocationObj,
@@ -181,4 +182,3 @@ export class DamageHitLocation extends HitLocation {
 	// 	return location
 	// }
 }
-

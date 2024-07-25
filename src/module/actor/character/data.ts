@@ -3,7 +3,17 @@ import type { ActorFlagsGURPS, BaseActorSourceGURPS } from "@actor/base/data.ts"
 import { ActorSystemModel, ActorSystemSchema } from "@actor/base/schema.ts"
 import { ActorFlags, ActorType, SYSTEM_NAME, gid } from "@data"
 import { DiceGURPS } from "@module/dice/index.ts"
-import { AttributeGURPS, MoveType, ResourceTracker, SheetSettings, type AttributeSchema, type MoveTypeSchema, type PoolThreshold, type ResourceTrackerSchema, type SheetSettingsSchema } from "@system"
+import {
+	AttributeGURPS,
+	MoveType,
+	ResourceTracker,
+	SheetSettings,
+	type AttributeSchema,
+	type MoveTypeSchema,
+	type PoolThreshold,
+	type ResourceTrackerSchema,
+	type SheetSettingsSchema,
+} from "@system"
 import { CharacterManeuver } from "../../system/maneuver-manager.ts"
 import { CharacterGURPS } from "./document.ts"
 
@@ -137,10 +147,9 @@ export interface Encumbrance {
 // export type { CharacterFlags, CharacterSource, CharacterSystemData, CharacterSystemSource }
 
 class CharacterSystemData extends ActorSystemModel<CharacterGURPS, CharacterSystemSchema> {
-
 	constructor(
 		data: DeepPartial<SourceFromSchema<CharacterSystemSchema>>,
-		options: DataModelConstructionOptions<CharacterGURPS>
+		options: DataModelConstructionOptions<CharacterGURPS>,
 	) {
 		super(data, options)
 	}
@@ -180,7 +189,7 @@ class CharacterSystemData extends ActorSystemModel<CharacterGURPS, CharacterSyst
 			move: new fields.SchemaField({
 				maneuver: new fields.ObjectField(),
 				posture: new fields.StringField(),
-				type: new fields.StringField()
+				type: new fields.StringField(),
 			}),
 			total_points: new fields.NumberField(),
 			points_record: new fields.ArrayField(new fields.ObjectField<PointsRecord>()),
@@ -188,8 +197,9 @@ class CharacterSystemData extends ActorSystemModel<CharacterGURPS, CharacterSyst
 	}
 }
 
-interface CharacterSystemData extends ActorSystemModel<CharacterGURPS, CharacterSystemSchema>,
-	ModelPropsFromSchema<CharacterSystemSchema> { }
+interface CharacterSystemData
+	extends ActorSystemModel<CharacterGURPS, CharacterSystemSchema>,
+		ModelPropsFromSchema<CharacterSystemSchema> {}
 
 type CharacterSystemSchema = ActorSystemSchema & {
 	type: fields.StringField<ActorType.Character, ActorType.Character, true, false, true>
@@ -205,7 +215,6 @@ type CharacterSystemSchema = ActorSystemSchema & {
 	total_points: fields.NumberField<number, number, true, false>
 	points_record: fields.ArrayField<fields.ObjectField<PointsRecord>>
 }
-
 
 type CharacterProfileSchema = {
 	player_name: fields.StringField
@@ -258,4 +267,3 @@ type PointBreakdown = ModelPropsFromSchema<PointBreakdownSchema>
 
 export type { CharacterFlags, CharacterSource, CharacterSystemSource, CharacterProfile, CharacterMove, PointBreakdown }
 export { CharacterSystemData }
-

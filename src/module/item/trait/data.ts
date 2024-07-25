@@ -1,4 +1,8 @@
-import { AbstractContainerSource, AbstractContainerSystemData, AbstractContainerSystemSchema } from "@item/abstract-container/data.ts"
+import {
+	AbstractContainerSource,
+	AbstractContainerSystemData,
+	AbstractContainerSystemSchema,
+} from "@item/abstract-container/data.ts"
 import { ItemType, StringCompareType } from "@module/data/constants.ts"
 import { FeatureSchema, PrereqList, PrereqListSchema, SkillBonus, Study } from "@system"
 import { feature, selfctrl, skillsel, study } from "@util"
@@ -46,7 +50,11 @@ class TraitSystemData extends AbstractContainerSystemData<TraitGURPS, TraitSyste
 			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
 			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
 			study: new fields.ArrayField(new fields.ObjectField<Study>()),
-			cr: new fields.NumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>({ choices: selfctrl.Rolls, initial: selfctrl.Roll.NoCR, nullable: false }),
+			cr: new fields.NumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>({
+				choices: selfctrl.Rolls,
+				initial: selfctrl.Roll.NoCR,
+				nullable: false,
+			}),
 			cr_adj: new fields.StringField<selfctrl.Adjustment>({
 				choices: selfctrl.Adjustments,
 				initial: selfctrl.Adjustment.NoCRAdj,
@@ -64,7 +72,7 @@ class TraitSystemData extends AbstractContainerSystemData<TraitGURPS, TraitSyste
 
 interface TraitSystemData
 	extends AbstractContainerSystemData<TraitGURPS, TraitSystemSchema>,
-	ModelPropsFromSchema<TraitSystemSchema> { }
+		ModelPropsFromSchema<TraitSystemSchema> {}
 
 type TraitSystemSchema = AbstractContainerSystemSchema & {
 	type: fields.StringField<ItemType.Trait, ItemType.Trait, true, false, true>

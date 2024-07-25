@@ -8,7 +8,7 @@ class AbstractSkillSystemData<
 	TParent extends AbstractSkillGURPS,
 	TSchema extends AbstractSkillSystemSchema = AbstractSkillSystemSchema,
 > extends AbstractContainerSystemData<TParent, TSchema> {
-	static override	defineSchema(): AbstractSkillSystemSchema {
+	static override defineSchema(): AbstractSkillSystemSchema {
 		const fields = foundry.data.fields
 		return {
 			...super.defineSchema(),
@@ -25,7 +25,6 @@ class AbstractSkillSystemData<
 				choices: study.Levels,
 				initial: study.Level.Standard,
 			}),
-
 		}
 	}
 }

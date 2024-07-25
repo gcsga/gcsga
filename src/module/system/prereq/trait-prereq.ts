@@ -7,12 +7,7 @@ import { NumericCriteria } from "@module/util/numeric-criteria.ts"
 import { StringCriteria } from "@module/util/index.ts"
 
 class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
-
-
-	constructor(
-		data: DeepPartial<SourceFromSchema<TraitPrereqSchema>>,
-		options?: PrereqConstructionOptions
-	) {
+	constructor(data: DeepPartial<SourceFromSchema<TraitPrereqSchema>>, options?: PrereqConstructionOptions) {
 		super(data, options)
 		this.name = new StringCriteria(data.name ?? undefined)
 		this.level = new NumericCriteria(data.level ?? undefined)
@@ -28,20 +23,20 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 			name: new fields.SchemaField(StringCriteria.defineSchema(), {
 				initial: {
 					compare: StringCompareType.IsString,
-					qualifier: ""
-				}
+					qualifier: "",
+				},
 			}),
 			level: new fields.SchemaField(NumericCriteria.defineSchema(), {
 				initial: {
 					compare: NumericCompareType.AtLeastNumber,
-					qualifier: 0
-				}
+					qualifier: 0,
+				},
 			}),
 			notes: new fields.SchemaField(StringCriteria.defineSchema(), {
 				initial: {
 					compare: StringCompareType.AnyString,
-					qualifier: ""
-				}
+					qualifier: "",
+				},
 			}),
 		}
 	}
@@ -82,10 +77,11 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 		}
 		return satisfied
 	}
-
 }
 
-interface TraitPrereq extends BasePrereq<TraitPrereqSchema>, Omit<ModelPropsFromSchema<TraitPrereqSchema>, "name" | "level" | "notes"> {
+interface TraitPrereq
+	extends BasePrereq<TraitPrereqSchema>,
+		Omit<ModelPropsFromSchema<TraitPrereqSchema>, "name" | "level" | "notes"> {
 	name: StringCriteria
 	level: NumericCriteria
 	notes: StringCriteria

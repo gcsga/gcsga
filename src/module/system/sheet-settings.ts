@@ -3,6 +3,7 @@ import {
 	AttributeDefSchema,
 	BodyGURPS,
 	BodySchema,
+	Mook,
 	MoveTypeDef,
 	MoveTypeDefSchema,
 	ResourceTrackerDef,
@@ -36,10 +37,7 @@ export enum BlockLayoutKey {
 	BlockLayoutNotesKey = "notes",
 }
 
-type BlockLayoutString =
-	| `${BlockLayoutKey}`
-	| `${BlockLayoutKey} ${BlockLayoutKey}`
-
+type BlockLayoutString = `${BlockLayoutKey}` | `${BlockLayoutKey} ${BlockLayoutKey}`
 
 type SheetSettingsSchema = {
 	page: fields.ObjectField<PageSettings>
@@ -66,19 +64,17 @@ type SheetSettingsSchema = {
 }
 
 class SheetSettings extends foundry.abstract.DataModel<CharacterGURPS, SheetSettingsSchema> {
-	protected declare static _schema: LaxSchemaField<SheetSettingsSchema> | undefined;
+	protected declare static _schema: LaxSchemaField<SheetSettingsSchema> | undefined
 
 	constructor(
 		data: DeepPartial<SourceFromSchema<SheetSettingsSchema>>,
-		options?: DataModelConstructionOptions<CharacterGURPS>
+		options?: DataModelConstructionOptions<CharacterGURPS>,
 	) {
 		super(data, options)
-		this.attributes = data.attributes?.map(e =>
-			new AttributeDef(e!, { parent: this.parent })) ?? []
-		this.resource_trackers = data.resource_trackers?.map(e =>
-			new ResourceTrackerDef(e!, { parent: this.parent })) ?? []
-		this.move_types = data.move_types?.map(e =>
-			new MoveTypeDef(e!, { parent: this.parent })) ?? []
+		this.attributes = data.attributes?.map(e => new AttributeDef(e!, { parent: this.parent })) ?? []
+		this.resource_trackers =
+			data.resource_trackers?.map(e => new ResourceTrackerDef(e!, { parent: this.parent })) ?? []
+		this.move_types = data.move_types?.map(e => new MoveTypeDef(e!, { parent: this.parent })) ?? []
 		this.body_type = new BodyGURPS(data.body_type!)
 	}
 
@@ -92,31 +88,33 @@ class SheetSettings extends foundry.abstract.DataModel<CharacterGURPS, SheetSett
 		return {
 			page: new fields.ObjectField<PageSettings>({ initial: defaults.page }),
 			block_layout: new fields.ArrayField(new fields.StringField(), { initial: defaults["block_layout"] }),
-			attributes: new fields.ArrayField(new fields.SchemaField(AttributeDef.defineSchema()),
-				{ initial: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`) }
-			),
-			resource_trackers: new fields.ArrayField(new fields.SchemaField(ResourceTrackerDef.defineSchema()),
-				{ initial: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`) }
-			),
-			move_types: new fields.ArrayField(new fields.SchemaField(MoveTypeDef.defineSchema()),
-				{ initial: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`) }
-			),
-			body_type: new fields.SchemaField(BodyGURPS.defineSchema(),
-				{
-					initial: {
-						name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
-						roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
-						locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
-					}
-				}
-			),
+			attributes: new fields.ArrayField(new fields.SchemaField(AttributeDef.defineSchema()), {
+				initial: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`),
+			}),
+			resource_trackers: new fields.ArrayField(new fields.SchemaField(ResourceTrackerDef.defineSchema()), {
+				initial: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`),
+			}),
+			move_types: new fields.ArrayField(new fields.SchemaField(MoveTypeDef.defineSchema()), {
+				initial: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`),
+			}),
+			body_type: new fields.SchemaField(BodyGURPS.defineSchema(), {
+				initial: {
+					name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
+					roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
+					locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
+				},
+			}),
 			damage_progression: new fields.StringField<progression.Option>({ initial: defaults.damage_progression }),
 			default_length_units: new fields.StringField<LengthUnits>({ initial: defaults.default_length_units }),
 			default_weight_units: new fields.StringField<WeightUnits>({ initial: defaults.default_weight_units }),
-			user_description_display: new fields.StringField<display.Option>({ initial: defaults.user_description_display }),
+			user_description_display: new fields.StringField<display.Option>({
+				initial: defaults.user_description_display,
+			}),
 			modifiers_display: new fields.StringField<display.Option>({ initial: defaults.modifiers_display }),
 			notes_display: new fields.StringField<display.Option>({ initial: defaults.notes_display }),
-			skill_level_adj_display: new fields.StringField<display.Option>({ initial: defaults.skill_level_adj_display }),
+			skill_level_adj_display: new fields.StringField<display.Option>({
+				initial: defaults.skill_level_adj_display,
+			}),
 			use_multiplicative_modifiers: new fields.BooleanField({ initial: defaults.use_multiplicative_modifiers }),
 			use_modifying_dice_plus_adds: new fields.BooleanField({ initial: defaults.use_modifying_dice_plus_adds }),
 			use_half_stat_defaults: new fields.BooleanField({ initial: defaults.use_half_stat_defaults }),
@@ -124,7 +122,9 @@ class SheetSettings extends foundry.abstract.DataModel<CharacterGURPS, SheetSett
 			show_equipment_modifier_adj: new fields.BooleanField({ initial: defaults.show_equipment_modifier_adj }),
 			show_spell_adj: new fields.BooleanField({ initial: defaults.show_spell_adj }),
 			use_title_in_footer: new fields.BooleanField({ initial: defaults.use_title_in_footer }),
-			exclude_unspent_points_from_total: new fields.BooleanField({ initial: defaults.exclude_unspent_points_from_total }),
+			exclude_unspent_points_from_total: new fields.BooleanField({
+				initial: defaults.exclude_unspent_points_from_total,
+			}),
 		}
 	}
 
@@ -132,20 +132,19 @@ class SheetSettings extends foundry.abstract.DataModel<CharacterGURPS, SheetSett
 		return new SheetSettings({})
 	}
 
-	static for(actor: ActorGURPS | null): SheetSettings {
-		if (actor?.isOfType(ActorType.Character)) {
-			return actor.settings ??
-				new SheetSettings(actor.system.settings, { parent: actor })
+	static for(actor: ActorGURPS | Mook | null): SheetSettings {
+		if (actor instanceof ActorGURPS && actor?.isOfType(ActorType.Character)) {
+			return actor.settings ?? new SheetSettings(actor.system.settings, { parent: actor })
 		}
 		if (actor) {
-			ErrorGURPS(`Actor "${actor.name}" is of type "${actor.type}", which does not support Sheet Settings.Returning default settings.`)
-		}
-		else {
+			ErrorGURPS(
+				`Actor "${actor.name}" is of type "${actor.type}", which does not support Sheet Settings.Returning default settings.`,
+			)
+		} else {
 			ErrorGURPS(`Actor does not exist.Returning default settings.`)
 		}
 		return SheetSettings.default()
 	}
-
 }
 
 // interface SheetSettings
@@ -155,7 +154,10 @@ class SheetSettings extends foundry.abstract.DataModel<CharacterGURPS, SheetSett
 
 interface SheetSettings
 	extends foundry.abstract.DataModel<CharacterGURPS, SheetSettingsSchema>,
-	Omit<ModelPropsFromSchema<SheetSettingsSchema>, "attributes" | "resource_trackers" | "move_types" | "body_type"> {
+	Omit<
+		ModelPropsFromSchema<SheetSettingsSchema>,
+		"attributes" | "resource_trackers" | "move_types" | "body_type"
+	> {
 	attributes: AttributeDef[]
 	resource_trackers: ResourceTrackerDef[]
 	move_types: MoveTypeDef[]

@@ -358,9 +358,9 @@ class DamageCalculator implements IDamageCalculator {
 			explanation:
 				hardenedDRLevel > 0
 					? this.format("gurps.dmgcalc.description.hardened_dr", {
-						divisor: ad,
-						level: hardenedDRLevel,
-					})
+							divisor: ad,
+							level: hardenedDRLevel,
+						})
 					: this.format("gurps.dmgcalc.description.armor_divisor", { divisor: armorDivisors[index] }),
 		}
 
@@ -834,7 +834,7 @@ class HitLocationDamage implements LocationDamage {
 			const averageDR = Math.floor(
 				(torsoDR(this.hitLocationTable, this.damageType) +
 					leastProtectedLocationDR(this.hitLocationTable, this.damageType)) /
-				2,
+					2,
 			)
 			return { explanation: this.format("gurps.dmgcalc.description.large_area_injury"), value: averageDR }
 		}

@@ -162,8 +162,8 @@ class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 				.map(item => [
 					item.id,
 					item as
-					| ItemInstances<TParent>[ItemType.TraitModifier]
-					| ItemInstances<TParent>[ItemType.TraitModifierContainer],
+						| ItemInstances<TParent>[ItemType.TraitModifier]
+						| ItemInstances<TParent>[ItemType.TraitModifierContainer],
 				]),
 		)
 	}

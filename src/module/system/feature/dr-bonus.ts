@@ -6,7 +6,6 @@ import { BaseFeature, LeveledAmount } from "./base.ts"
 import { equalFold } from "@module/util/index.ts"
 
 class DRBonus extends BaseFeature<DRBonusSchema> {
-
 	static override defineSchema(): DRBonusSchema {
 		const fields = foundry.data.fields
 
@@ -42,6 +41,6 @@ class DRBonus extends BaseFeature<DRBonusSchema> {
 	}
 }
 
-interface DRBonus extends BaseFeature<DRBonusSchema>, ModelPropsFromSchema<DRBonusSchema> { }
+interface DRBonus extends BaseFeature<DRBonusSchema>, ModelPropsFromSchema<DRBonusSchema> {}
 
 export { DRBonus }

@@ -7,7 +7,6 @@ import { ItemType } from "@module/data/constants.ts"
 class SkillContainerGURPS<
 	TParent extends ActorGURPS | null = ActorGURPS | null,
 > extends AbstractContainerGURPS<TParent> {
-
 	get children(): Collection<
 		| ItemInstances<TParent>[ItemType.Skill]
 		| ItemInstances<TParent>[ItemType.Technique]
@@ -19,9 +18,9 @@ class SkillContainerGURPS<
 				.map(item => [
 					item.id,
 					item as
-					| ItemInstances<TParent>[ItemType.Skill]
-					| ItemInstances<TParent>[ItemType.Technique]
-					| ItemInstances<TParent>[ItemType.SkillContainer],
+						| ItemInstances<TParent>[ItemType.Skill]
+						| ItemInstances<TParent>[ItemType.Technique]
+						| ItemInstances<TParent>[ItemType.SkillContainer],
 				]),
 		)
 	}

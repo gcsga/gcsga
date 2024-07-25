@@ -3,18 +3,17 @@ import { CostReductionSchema } from "./data.ts"
 import { BaseFeature } from "./base.ts"
 
 class CostReduction extends BaseFeature<CostReductionSchema> {
-
 	static override defineSchema(): CostReductionSchema {
 		const fields = foundry.data.fields
 
 		return {
 			...super.defineSchema(),
 			attribute: new fields.StringField({ initial: gid.Strength }),
-			percentage: new fields.NumberField({ choices: CONFIG.GURPS.select.percentage, initial: 40 })
+			percentage: new fields.NumberField({ choices: CONFIG.GURPS.select.percentage, initial: 40 }),
 		}
 	}
 }
 
-interface CostReduction extends BaseFeature<CostReductionSchema>, ModelPropsFromSchema<CostReductionSchema> { }
+interface CostReduction extends BaseFeature<CostReductionSchema>, ModelPropsFromSchema<CostReductionSchema> {}
 
 export { CostReduction }

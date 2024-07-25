@@ -29,7 +29,7 @@ class RangedWeaponSystemData extends AbstractWeaponSystemData<RangedWeaponGURPS,
 
 interface RangedWeaponSystemData
 	extends AbstractWeaponSystemData<RangedWeaponGURPS, RangedWeaponSystemSchema>,
-	ModelPropsFromSchema<RangedWeaponSystemSchema> { }
+		ModelPropsFromSchema<RangedWeaponSystemSchema> {}
 
 type RangedWeaponSystemSchema = AbstractWeaponSystemSchema & {
 	type: fields.StringField<ItemType.RangedWeapon, ItemType.RangedWeapon, true, false, true>

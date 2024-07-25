@@ -1,5 +1,11 @@
 import { MoveTypeDef } from "./definition.ts"
-import { AbstractAttribute, AbstractAttributeConstructionOptions, MoveBonusType, MoveTypeSchema, SheetSettings } from "@system"
+import {
+	AbstractAttribute,
+	AbstractAttributeConstructionOptions,
+	MoveBonusType,
+	MoveTypeSchema,
+	SheetSettings,
+} from "@system"
 import { CharacterGURPS } from "@actor"
 
 class MoveType extends AbstractAttribute<CharacterGURPS, MoveTypeSchema> {
@@ -8,7 +14,7 @@ class MoveType extends AbstractAttribute<CharacterGURPS, MoveTypeSchema> {
 
 	constructor(
 		data: DeepPartial<SourceFromSchema<MoveTypeSchema>>,
-		options?: AbstractAttributeConstructionOptions<CharacterGURPS>
+		options?: AbstractAttributeConstructionOptions<CharacterGURPS>,
 	) {
 		super(data, options)
 		this.order = options?.order ?? 0
@@ -19,11 +25,9 @@ class MoveType extends AbstractAttribute<CharacterGURPS, MoveTypeSchema> {
 
 		return {
 			...super.defineSchema(),
-			adj: new fields.NumberField({ initial: 0 })
+			adj: new fields.NumberField({ initial: 0 }),
 		}
-
 	}
-
 
 	override get definition(): MoveTypeDef | null {
 		return SheetSettings.for(this.actor).move_types.find(att => att.id === this.id) ?? null
@@ -63,6 +67,6 @@ class MoveType extends AbstractAttribute<CharacterGURPS, MoveTypeSchema> {
 	}
 }
 
-interface MoveType extends AbstractAttribute<CharacterGURPS, MoveTypeSchema>, ModelPropsFromSchema<MoveTypeSchema> { }
+interface MoveType extends AbstractAttribute<CharacterGURPS, MoveTypeSchema>, ModelPropsFromSchema<MoveTypeSchema> {}
 
 export { MoveType }

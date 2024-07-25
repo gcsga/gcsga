@@ -1,11 +1,10 @@
 import { StringCriteria } from "@module/util/string-criteria.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { TooltipGURPS, } from "@util"
+import { TooltipGURPS } from "@util"
 import { SkillPointBonusSchema } from "./data.ts"
 import { BaseFeature, LeveledAmount } from "./base.ts"
 
 class SkillPointBonus extends BaseFeature<SkillPointBonusSchema> {
-
 	static override defineSchema(): SkillPointBonusSchema {
 		const fields = foundry.data.fields
 
@@ -14,7 +13,7 @@ class SkillPointBonus extends BaseFeature<SkillPointBonusSchema> {
 			...LeveledAmount.defineSchema(),
 			name: new fields.SchemaField(StringCriteria.defineSchema()),
 			specialization: new fields.SchemaField(StringCriteria.defineSchema()),
-			tags: new fields.SchemaField(StringCriteria.defineSchema())
+			tags: new fields.SchemaField(StringCriteria.defineSchema()),
 		}
 	}
 
@@ -39,10 +38,11 @@ class SkillPointBonus extends BaseFeature<SkillPointBonusSchema> {
 			)
 		}
 	}
-
 }
 
-interface SkillPointBonus extends BaseFeature<SkillPointBonusSchema>, Omit<ModelPropsFromSchema<SkillPointBonusSchema>, "name" | "specialization" | "tags"> {
+interface SkillPointBonus
+	extends BaseFeature<SkillPointBonusSchema>,
+		Omit<ModelPropsFromSchema<SkillPointBonusSchema>, "name" | "specialization" | "tags"> {
 	name: StringCriteria
 	specialization: StringCriteria
 	tags: StringCriteria

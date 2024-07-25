@@ -4,13 +4,12 @@ import { StringCriteriaSchema } from "./data.ts"
 import type { ItemGURPS } from "@item"
 
 class StringCriteria extends foundry.abstract.DataModel<ItemGURPS, StringCriteriaSchema> {
-
 	static override defineSchema(): StringCriteriaSchema {
 		const fields = foundry.data.fields
 
 		return {
 			compare: new fields.StringField({ choices: AllStringCompareTypes, initial: StringCompareType.AnyString }),
-			qualifier: new fields.StringField()
+			qualifier: new fields.StringField(),
 		}
 	}
 
@@ -85,8 +84,9 @@ class StringCriteria extends foundry.abstract.DataModel<ItemGURPS, StringCriteri
 	}
 }
 
-interface StringCriteria extends foundry.abstract.DataModel<ItemGURPS, StringCriteriaSchema>, ModelPropsFromSchema<StringCriteriaSchema> { }
-
+interface StringCriteria
+	extends foundry.abstract.DataModel<ItemGURPS, StringCriteriaSchema>,
+		ModelPropsFromSchema<StringCriteriaSchema> {}
 
 function equalFold(s: string, t: string): boolean {
 	if (!s || !t) return false
@@ -99,7 +99,6 @@ function includesFold(s: string, t: string): boolean {
 }
 
 export { StringCriteria, type StringCriteriaSchema, equalFold, includesFold }
-
 
 // export class StringCriteria {
 // 	compare: StringCompareType

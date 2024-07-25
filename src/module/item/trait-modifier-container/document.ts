@@ -7,7 +7,6 @@ import { ItemType } from "@module/data/constants.ts"
 class TraitModifierContainerGURPS<
 	TParent extends ActorGURPS | null = ActorGURPS | null,
 > extends AbstractContainerGURPS<TParent> {
-
 	get children(): Collection<
 		ItemInstances<TParent>[ItemType.TraitModifier] | ItemInstances<TParent>[ItemType.TraitModifierContainer]
 	> {
@@ -17,8 +16,8 @@ class TraitModifierContainerGURPS<
 				.map(item => [
 					item.id,
 					item as
-					| ItemInstances<TParent>[ItemType.TraitModifier]
-					| ItemInstances<TParent>[ItemType.TraitModifierContainer],
+						| ItemInstances<TParent>[ItemType.TraitModifier]
+						| ItemInstances<TParent>[ItemType.TraitModifierContainer],
 				]),
 		)
 	}

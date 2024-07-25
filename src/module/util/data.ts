@@ -18,4 +18,3 @@ type WeightCriteriaSchema = {
 }
 
 export type { NumericCriteriaSchema, StringCriteriaSchema, WeightCriteriaSchema }
-

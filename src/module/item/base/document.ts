@@ -31,7 +31,6 @@ import { DataSchema } from "types/foundry/common/data/fields.js"
 
 /** The basic `Item` subclass for the system */
 class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends Item<TParent> {
-
 	/** Has this document completed `DataModel` initialization? */
 	declare initialized: boolean
 	/**
@@ -214,7 +213,7 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 	}
 
 	/** Include the item type along with data from upstream */
-	override toDragData(): { type: string; itemType: string;[key: string]: unknown } {
+	override toDragData(): { type: string; itemType: string; [key: string]: unknown } {
 		return { ...super.toDragData(), itemType: this.type }
 	}
 
@@ -328,19 +327,19 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 	isOfType<T extends "abstract-container" | "container" | ItemType>(
 		...types: T[]
 	): this is T extends "abstract-container"
-	? AbstractContainerGURPS<TParent>
-	: T extends "container"
-	?
-	| TraitContainerGURPS<TParent>
-	| TraitModifierContainerGURPS<TParent>
-	| SkillContainerGURPS<TParent>
-	| SpellContainerGURPS<TParent>
-	| EquipmentContainerGURPS<TParent>
-	| EquipmentModifierContainerGURPS<TParent>
-	| NoteContainerGURPS<TParent>
-	: T extends ItemType
-	? ItemInstances<TParent>[T]
-	: never
+		? AbstractContainerGURPS<TParent>
+		: T extends "container"
+			?
+					| TraitContainerGURPS<TParent>
+					| TraitModifierContainerGURPS<TParent>
+					| SkillContainerGURPS<TParent>
+					| SpellContainerGURPS<TParent>
+					| EquipmentContainerGURPS<TParent>
+					| EquipmentModifierContainerGURPS<TParent>
+					| NoteContainerGURPS<TParent>
+			: T extends ItemType
+				? ItemInstances<TParent>[T]
+				: never
 	isOfType(...types: string[]): boolean {
 		return types.some(t =>
 			t === "abstract-container"

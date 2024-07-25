@@ -1,12 +1,16 @@
 import { evaluateToNumber } from "@module/util/index.ts"
 import { PoolThresholdSchema, ThresholdOp } from "./data.ts"
 import { CharacterGURPS } from "@actor"
+import { Mook } from "@system/mook/document.ts"
+import { AttributeDef } from "./definition.ts"
+import { ResourceTrackerDef } from "@system/resource-tracker/definition.ts"
 
-
-class PoolThreshold extends foundry.abstract.DataModel<CharacterGURPS, PoolThresholdSchema> {
-
-	constructor(data: DeepPartial<SourceFromSchema<PoolThresholdSchema>>) {
-		super(data)
+class PoolThreshold extends foundry.abstract.DataModel<AttributeDef | ResourceTrackerDef, PoolThresholdSchema> {
+	constructor(
+		data: DeepPartial<SourceFromSchema<PoolThresholdSchema>>,
+		options?: DataModelConstructionOptions<AttributeDef | ResourceTrackerDef>
+	) {
+		super(data, options)
 	}
 
 	static override defineSchema(): PoolThresholdSchema {
@@ -20,8 +24,8 @@ class PoolThreshold extends foundry.abstract.DataModel<CharacterGURPS, PoolThres
 		}
 	}
 
-	threshold(resolver: CharacterGURPS): number {
-		return evaluateToNumber(this.expression, resolver)
+	threshold(actor: CharacterGURPS | Mook): number {
+		return evaluateToNumber(this.expression, actor)
 	}
 
 	static newObject(): SourceFromSchema<PoolThresholdSchema> {
@@ -34,6 +38,8 @@ class PoolThreshold extends foundry.abstract.DataModel<CharacterGURPS, PoolThres
 	}
 }
 
-interface PoolThreshold extends foundry.abstract.DataModel<CharacterGURPS, PoolThresholdSchema>, ModelPropsFromSchema<PoolThresholdSchema> { }
+interface PoolThreshold
+	extends foundry.abstract.DataModel<AttributeDef | ResourceTrackerDef, PoolThresholdSchema>,
+	ModelPropsFromSchema<PoolThresholdSchema> { }
 
 export { PoolThreshold }

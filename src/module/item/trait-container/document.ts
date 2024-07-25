@@ -9,7 +9,6 @@ import { TraitContainerSource, TraitContainerSystemData } from "./data.ts"
 class TraitContainerGURPS<
 	TParent extends ActorGURPS | null = ActorGURPS | null,
 > extends AbstractContainerGURPS<TParent> {
-
 	get skillLevel(): number {
 		return this.CR
 	}
@@ -31,8 +30,8 @@ class TraitContainerGURPS<
 				.map(item => [
 					item.id,
 					item as
-					| ItemInstances<TParent>[ItemType.TraitModifier]
-					| ItemInstances<TParent>[ItemType.TraitModifierContainer],
+						| ItemInstances<TParent>[ItemType.TraitModifier]
+						| ItemInstances<TParent>[ItemType.TraitModifierContainer],
 				]),
 		)
 	}

@@ -1,6 +1,7 @@
 import { ActorGURPS } from "@actor"
 import {
 	CharacterFlags,
+	CharacterMove,
 	CharacterProfile,
 	CharacterSource,
 	CharacterSystemSource,
@@ -35,7 +36,23 @@ import {
 } from "./data.ts"
 import { ItemImporter } from "./item.ts"
 import { ManeuverManager } from "@system/maneuver-manager.ts"
-import { AttributeDefSchema, AttributeSchema, BlockLayoutKey, BodySchema, HitLocationSchema, MoveTypeDefSchema, MoveTypeOverrideSchema, MoveTypeSchema, PageSettings, PoolThresholdSchema, ResourceTrackerDefSchema, ResourceTrackerSchema, SheetSettingsSchema } from "@system"
+import {
+	AttributeDefSchema,
+	AttributeSchema,
+	BlockLayoutKey,
+	BodySchema,
+	BodySource,
+	HitLocationSchema,
+	HitLocationSource,
+	MoveTypeDefSchema,
+	MoveTypeOverrideSchema,
+	MoveTypeSchema,
+	PageSettings,
+	PoolThresholdSchema,
+	ResourceTrackerDefSchema,
+	ResourceTrackerSchema,
+	SheetSettingsSchema,
+} from "@system"
 
 export class CharacterImporter {
 	static async throwError(text: string): Promise<void> {
@@ -152,7 +169,10 @@ export class CharacterImporter {
 		}
 	}
 
-	static importSettings(data?: ImportedSheetSettings, third_party?: ImportedThirdPartyData): SourceFromSchema<SheetSettingsSchema> {
+	static importSettings(
+		data?: ImportedSheetSettings,
+		third_party?: ImportedThirdPartyData,
+	): SourceFromSchema<SheetSettingsSchema> {
 		return {
 			page: CharacterImporter.importPage(data?.page),
 			block_layout: (data?.block_layout as BlockLayoutKey[]) ?? [],
@@ -196,13 +216,15 @@ export class CharacterImporter {
 					cost_per_point: e.cost_per_point ?? 0,
 					cost_adj_percent_per_sm: e.cost_adj_percent_per_sm ?? 0,
 					thresholds: CharacterImporter.importThresholds(e.thresholds),
-					order: index
+					order: index,
 				}
 			}) ?? []
 		)
 	}
 
-	static importResourceTrackerSettings(data?: ImportedResourceTrackerDef[]): SourceFromSchema<ResourceTrackerDefSchema>[] {
+	static importResourceTrackerSettings(
+		data?: ImportedResourceTrackerDef[],
+	): SourceFromSchema<ResourceTrackerDefSchema>[] {
 		return (
 			data?.map((e, index) => {
 				return {
@@ -215,7 +237,7 @@ export class CharacterImporter {
 					isMinEnforced: e.isMinEnforced ?? false,
 					isMaxEnforced: e.isMaxEnforced ?? false,
 					thresholds: CharacterImporter.importThresholds(e.thresholds),
-					order: index
+					order: index,
 				}
 			}) ?? []
 		)
@@ -229,7 +251,8 @@ export class CharacterImporter {
 					name: e.name,
 					base: e.base ?? "",
 					overrides: CharacterImporter.importMoveTypeOverrides(e.overrides),
-					order: index
+					order: index,
+					cost_per_point: e.cost_per_point ?? null
 				}
 			}) ?? []
 		)
@@ -252,7 +275,7 @@ export class CharacterImporter {
 		)
 	}
 
-	static importBody(data?: ImportedBody): SourceFromSchema<BodySchema> {
+	static importBody(data?: ImportedBody): BodySource {
 		return {
 			name: data?.name ?? "",
 			roll: data?.roll ?? "",
@@ -260,10 +283,10 @@ export class CharacterImporter {
 		}
 	}
 
-	static importHitLocations(data?: ImportedHitLocation[]): SourceFromSchema<HitLocationSchema>[] {
+	static importHitLocations(data?: ImportedHitLocation[]): HitLocationSource[] {
 		return (
 			data?.map(e => {
-				const location: SourceFromSchema<HitLocationSchema> = {
+				const location = {
 					id: e.id,
 					choice_name: e.choice_name,
 					table_name: e.table_name,
@@ -271,7 +294,7 @@ export class CharacterImporter {
 					hit_penalty: e.hit_penalty ?? 0,
 					dr_bonus: e.dr_bonus ?? 0,
 					description: e.description ?? "",
-					sub_table: e.sub_table ? CharacterImporter.importBody(e.sub_table) : null
+					sub_table: e.sub_table ? CharacterImporter.importBody(e.sub_table) : undefined,
 				}
 				return location
 			}) ?? []
@@ -285,7 +308,7 @@ export class CharacterImporter {
 					id: att.attr_id,
 					adj: att.adj,
 					damage: att.damage ?? 0,
-					apply_ops: null
+					apply_ops: null,
 				}
 			}) ?? []
 		)

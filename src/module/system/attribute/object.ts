@@ -16,7 +16,7 @@ class AttributeGURPS extends AbstractAttribute<CharacterGURPS | Mook, AttributeS
 
 	constructor(
 		data: DeepPartial<SourceFromSchema<AttributeSchema>>,
-		options?: AbstractAttributeConstructionOptions<CharacterGURPS | Mook>
+		options?: AbstractAttributeConstructionOptions<CharacterGURPS | Mook>,
 	) {
 		super(data, options)
 		// this.adj = data.adj
@@ -32,7 +32,7 @@ class AttributeGURPS extends AbstractAttribute<CharacterGURPS | Mook, AttributeS
 			...super.defineSchema(),
 			adj: new fields.NumberField({ initial: 0 }),
 			damage: new fields.NumberField({ nullable: true, initial: null }),
-			apply_ops: new fields.BooleanField({ nullable: true, initial: null })
+			apply_ops: new fields.BooleanField({ nullable: true, initial: null }),
 		}
 	}
 
@@ -152,6 +152,8 @@ class AttributeGURPS extends AbstractAttribute<CharacterGURPS | Mook, AttributeS
 	}
 }
 
-interface AttributeGURPS extends AbstractAttribute<CharacterGURPS, AttributeSchema>, ModelPropsFromSchema<AttributeSchema> { }
+interface AttributeGURPS
+	extends AbstractAttribute<CharacterGURPS | Mook, AttributeSchema>,
+	ModelPropsFromSchema<AttributeSchema> { }
 
 export { AttributeGURPS }

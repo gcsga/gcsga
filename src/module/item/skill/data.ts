@@ -1,11 +1,9 @@
-import {
-	AbstractContainerSource,
-} from "@item/abstract-container/data.ts"
+import { AbstractContainerSource } from "@item/abstract-container/data.ts"
 import { AbstractSkillSystemData, AbstractSkillSystemSchema } from "@item/abstract-skill/data.ts"
 import { ItemType, gid } from "@module/data/constants.ts"
 import { SkillDifficulty } from "@module/data/types.ts"
-import { FeatureSchema, PrereqList, PrereqListSchema, SkillDefault, SkillDefaultSchema, } from "@system"
-import { TooltipGURPS, difficulty, } from "@util"
+import { FeatureSchema, PrereqList, PrereqListSchema, SkillDefault, SkillDefaultSchema } from "@system"
+import { TooltipGURPS, difficulty } from "@util"
 import { SkillGURPS } from "./document.ts"
 import fields = foundry.data.fields
 import { BaseFeature } from "@system/feature/base.ts"
@@ -21,19 +19,22 @@ class SkillSystemData extends AbstractSkillSystemData<SkillGURPS, SkillSystemSch
 				required: true,
 			}),
 			specialization: new fields.StringField(),
-			difficulty: new fields.StringField({ initial: `${gid.Dexterity}/${difficulty.Level.Average}`, required: true }),
+			difficulty: new fields.StringField({
+				initial: `${gid.Dexterity}/${difficulty.Level.Average}`,
+				required: true,
+			}),
 			encumbrance_penalty_multiplier: new fields.NumberField({ integer: true, min: 0, max: 9, initial: 0 }),
 			defaulted_from: new fields.SchemaField(SkillDefault.defineSchema()),
 			defaults: new fields.ArrayField(new fields.SchemaField(SkillDefault.defineSchema())),
 			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
 			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
 		}
-
-
 	}
 }
 
-interface SkillSystemData extends AbstractSkillSystemData<SkillGURPS, SkillSystemSchema>, ModelPropsFromSchema<SkillSystemSchema> { }
+interface SkillSystemData
+	extends AbstractSkillSystemData<SkillGURPS, SkillSystemSchema>,
+		ModelPropsFromSchema<SkillSystemSchema> {}
 
 type SkillSystemSchema = AbstractSkillSystemSchema & {
 	name: fields.StringField<string, string, true, false, true>

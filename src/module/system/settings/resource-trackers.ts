@@ -6,7 +6,7 @@ import { defaultSettings } from "./defaults.ts"
 import { DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
 import { DropDataContext } from "@module/util/settings-helpers.ts"
 import { SettingsHelpers } from "@module/util/index.ts"
-import { ResourceTrackerDefSchema } from "@system/resource-tracker/data.ts"
+import { ResourceTrackerDef } from "@system/resource-tracker/definition.ts"
 
 enum ListType {
 	ResourceTracker = "resource_trackers",
@@ -35,8 +35,9 @@ export class ResourceTrackerSettings extends SettingsMenuGURPS {
 		}
 	}
 
-	get resourceTrackers(): ModelPropsFromSchema<ResourceTrackerDefSchema>[] {
+	get resourceTrackers(): ResourceTrackerDef[] {
 		return game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`)
+			.map(e => new ResourceTrackerDef(e))
 	}
 
 	override activateListeners($html: JQuery<HTMLElement>): void {
@@ -100,7 +101,7 @@ export class ResourceTrackerSettings extends SettingsMenuGURPS {
 					isMaxEnforced: false,
 					isMinEnforced: false,
 					thresholds: [],
-					order: trackers.length
+					order: trackers.length,
 				})
 				game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`, trackers)
 				break

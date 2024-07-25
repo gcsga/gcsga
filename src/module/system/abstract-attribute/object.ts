@@ -6,9 +6,8 @@ import { Mook } from "@system/mook/index.ts"
 
 abstract class AbstractAttribute<
 	TActor extends ActorGURPS | Mook = ActorGURPS | Mook,
-	TSchema extends AbstractAttributeSchema = AbstractAttributeSchema
+	TSchema extends AbstractAttributeSchema = AbstractAttributeSchema,
 > extends foundry.abstract.DataModel<TActor, TSchema> {
-
 	protected declare static _schema: LaxSchemaField<AbstractAttributeSchema> | undefined
 
 	static override defineSchema(): AbstractAttributeSchema {
@@ -31,10 +30,7 @@ abstract class AbstractAttribute<
 
 	// _id: string
 
-	constructor(
-		data: DeepPartial<SourceFromSchema<TSchema>>,
-		options?: AbstractAttributeConstructionOptions<TActor>
-	) {
+	constructor(data: DeepPartial<SourceFromSchema<TSchema>>, options?: AbstractAttributeConstructionOptions<TActor>) {
 		super(data, options)
 		// this._id = String(data.id ?? "")
 	}

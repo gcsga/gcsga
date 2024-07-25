@@ -9,7 +9,6 @@ import { ActorGURPS } from "@actor"
 import { NumericCriteria, StringCriteria } from "@module/util/index.ts"
 
 class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
-
 	constructor(data: DeepPartial<SourceFromSchema<SpellPrereqSchema>>) {
 		super(data)
 		this.qualifier = new StringCriteria(data.qualifier ?? undefined)
@@ -26,14 +25,14 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 			qualifier: new fields.SchemaField(StringCriteria.defineSchema(), {
 				initial: {
 					compare: StringCompareType.IsString,
-					qualifier: ""
-				}
+					qualifier: "",
+				},
 			}),
 			quantity: new fields.SchemaField(NumericCriteria.defineSchema(), {
 				initial: {
 					compare: NumericCompareType.AtLeastNumber,
-					qualifier: 0
-				}
+					qualifier: 0,
+				},
 			}),
 		}
 	}
@@ -106,11 +105,11 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 		}
 		return satisfied
 	}
-
-
 }
 
-interface SpellPrereq extends BasePrereq<SpellPrereqSchema>, Omit<ModelPropsFromSchema<SpellPrereqSchema>, "quantity" | "qualifier"> {
+interface SpellPrereq
+	extends BasePrereq<SpellPrereqSchema>,
+		Omit<ModelPropsFromSchema<SpellPrereqSchema>, "quantity" | "qualifier"> {
 	quantity: NumericCriteria
 	qualifier: StringCriteria
 }

@@ -6,7 +6,6 @@ import { getConditionList } from "./list.ts"
 import { getManeuverList } from "./maneuver.ts"
 
 class ConditionGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends AbstractEffectGURPS<TParent> {
-
 	static async getConditions(): Promise<Record<string, string>> {
 		const indexFields = ["system.slug"]
 		const pack = game.packs.get(`${SYSTEM_NAME}.${COMPENDIA.CONDITIONS}`)

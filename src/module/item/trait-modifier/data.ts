@@ -34,7 +34,7 @@ class TraitModifierSystemData extends ItemSystemModel<TraitModifierGURPS, TraitM
 
 interface TraitModifierSystemData
 	extends ItemSystemModel<TraitModifierGURPS, TraitModifierSystemSchema>,
-	ModelPropsFromSchema<TraitModifierSystemSchema> { }
+		ModelPropsFromSchema<TraitModifierSystemSchema> {}
 
 type TraitModifierSystemSchema = ItemSystemSchema & {
 	type: fields.StringField<ItemType.TraitModifier, ItemType.TraitModifier, true, false, true>

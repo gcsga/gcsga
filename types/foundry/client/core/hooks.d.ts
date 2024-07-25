@@ -1,6 +1,6 @@
 import ApplicationV2 from "../../client-esm/applications/api/application.js"
 
-export { }
+export {}
 declare global {
 	type HookCallback<P extends unknown[]> = (...args: P) => boolean | void | Promise<boolean | void>
 	type HookParameters<H extends string, C extends unknown[]> = [hook: H, callback: HookCallback<C>]
@@ -26,7 +26,7 @@ declare global {
 	>
 	type HooksParamsPreUpdateCombat = HookParameters<
 		"preUpdateCombat",
-		[Combat, object, { diff: boolean; advanceTime: number;[key: string]: unknown }, string]
+		[Combat, object, { diff: boolean; advanceTime: number; [key: string]: unknown }, string]
 	>
 	type HookParamsPreUpdateToken = HookParameters<
 		"preUpdateToken",
@@ -34,7 +34,7 @@ declare global {
 			Scene,
 			foundry.documents.TokenSource,
 			DeepPartial<foundry.documents.TokenSource>,
-			{ diff: boolean;[key: string]: unknown },
+			{ diff: boolean; [key: string]: unknown },
 			string,
 		]
 	>

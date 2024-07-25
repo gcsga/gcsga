@@ -1,10 +1,8 @@
-import {
-	AbstractContainerSource,
-} from "@item/abstract-container/data.ts"
+import { AbstractContainerSource } from "@item/abstract-container/data.ts"
 import { ItemType, gid } from "@module/data/constants.ts"
 import { SkillDifficulty } from "@module/data/types.ts"
-import { PrereqList, PrereqListSchema, } from "@system"
-import { TooltipGURPS, difficulty, } from "@util"
+import { PrereqList, PrereqListSchema } from "@system"
+import { TooltipGURPS, difficulty } from "@util"
 import { SpellGURPS } from "./document.ts"
 import fields = foundry.data.fields
 import { AbstractSkillSystemData, AbstractSkillSystemSchema } from "@item/abstract-skill/data.ts"
@@ -19,7 +17,10 @@ class SpellSystemData extends AbstractSkillSystemData<SpellGURPS, SpellSystemSch
 			name: new fields.StringField({
 				required: true,
 			}),
-			difficulty: new fields.StringField({ initial: `${gid.Intelligence}/${difficulty.Level.Hard}`, required: true }),
+			difficulty: new fields.StringField({
+				initial: `${gid.Intelligence}/${difficulty.Level.Hard}`,
+				required: true,
+			}),
 			college: new fields.ArrayField(new foundry.data.fields.StringField()),
 			power_source: new fields.StringField(),
 			spell_class: new fields.StringField(),
@@ -30,12 +31,12 @@ class SpellSystemData extends AbstractSkillSystemData<SpellGURPS, SpellSystemSch
 			duration: new fields.StringField(),
 			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
 		}
-
-
 	}
 }
 
-interface SpellSystemData extends AbstractSkillSystemData<SpellGURPS, SpellSystemSchema>, ModelPropsFromSchema<SpellSystemSchema> { }
+interface SpellSystemData
+	extends AbstractSkillSystemData<SpellGURPS, SpellSystemSchema>,
+		ModelPropsFromSchema<SpellSystemSchema> {}
 
 type SpellSystemSchema = AbstractSkillSystemSchema & {
 	name: fields.StringField<string, string, true, false, true>

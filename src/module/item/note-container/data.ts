@@ -21,13 +21,12 @@ class NoteContainerSystemData extends AbstractContainerSystemData<NoteContainerG
 			reference_highlight: new fields.StringField(),
 			open: new fields.BooleanField({ initial: true }),
 		}
-
 	}
 }
 
 interface NoteContainerSystemData
 	extends AbstractContainerSystemData<NoteContainerGURPS, NoteContainerSystemSchema>,
-	ModelPropsFromSchema<NoteContainerSystemSchema> { }
+		ModelPropsFromSchema<NoteContainerSystemSchema> {}
 
 type NoteContainerSystemSchema = AbstractContainerSystemSchema & {
 	type: fields.StringField<ItemType.NoteContainer, ItemType.NoteContainer, true, false, true>

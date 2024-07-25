@@ -26,7 +26,7 @@ class MeleeWeaponSystemData extends AbstractWeaponSystemData<MeleeWeaponGURPS, M
 
 interface MeleeWeaponSystemData
 	extends AbstractWeaponSystemData<MeleeWeaponGURPS, MeleeWeaponSystemSchema>,
-	ModelPropsFromSchema<MeleeWeaponSystemSchema> { }
+		ModelPropsFromSchema<MeleeWeaponSystemSchema> {}
 
 type MeleeWeaponSystemSchema = AbstractWeaponSystemSchema & {
 	type: fields.StringField<ItemType.MeleeWeapon, ItemType.MeleeWeapon, true, false, true>

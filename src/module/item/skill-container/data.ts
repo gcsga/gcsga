@@ -26,13 +26,12 @@ class SkillContainerSystemData extends AbstractContainerSystemData<SkillContaine
 			template_picker: new fields.SchemaField(TemplatePicker.defineSchema()),
 			open: new fields.BooleanField({ initial: true }),
 		}
-
 	}
 }
 
 interface SkillContainerSystemData
 	extends AbstractContainerSystemData<SkillContainerGURPS, SkillContainerSystemSchema>,
-	ModelPropsFromSchema<SkillContainerSystemSchema> { }
+		ModelPropsFromSchema<SkillContainerSystemSchema> {}
 
 type SkillContainerSystemSchema = AbstractContainerSystemSchema & {
 	type: fields.StringField<ItemType.SkillContainer, ItemType.SkillContainer, true, false, true>

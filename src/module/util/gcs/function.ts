@@ -360,7 +360,7 @@ export function evalEncumbrance(e: Evaluator, a: string): number {
 }
 
 export function evalHasTrait(e: Evaluator, a: string): boolean {
-	const entity: ActorGURPS | undefined = e.resolver
+	const entity = e.resolver
 	if (!entity) return false
 	const arg = a.replaceAll(/^['"]|[']$/g, "")
 	if (!(entity instanceof ActorGURPS)) return false
@@ -369,7 +369,7 @@ export function evalHasTrait(e: Evaluator, a: string): boolean {
 }
 
 export function evalTraitLevel(e: Evaluator, a: string): number {
-	const entity: ActorGURPS | undefined = e.resolver
+	const entity = e.resolver
 	if (!entity) return -1
 	const arg = a.replaceAll(/^['"]|[']$/g, "")
 	let levels = -1
@@ -513,7 +513,7 @@ function valueToYards(value: number): number {
 }
 
 export function evalRandomHeight(e: Evaluator, a: string): number {
-	const entity: ActorGURPS | undefined = e.resolver
+	const entity = e.resolver
 	if (!entity) return -1
 	const stDecimal = evalToNumber(e, a)
 	let base: number
@@ -553,7 +553,7 @@ export function evalRandomHeight(e: Evaluator, a: string): number {
 }
 
 export function evalRandomWeight(e: Evaluator, a: string): number | null {
-	const entity: ActorGURPS | undefined = e.resolver
+	const entity = e.resolver
 	if (!entity) return -1
 	let arg: string
 		;[arg, a] = nextArg(a)

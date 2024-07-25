@@ -1,15 +1,12 @@
-import {
-	AbstractContainerSource,
-} from "@item/abstract-container/data.ts"
+import { AbstractContainerSource } from "@item/abstract-container/data.ts"
 import { AbstractSkillSystemData, AbstractSkillSystemSchema } from "@item/abstract-skill/data.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { TechniqueDifficulty } from "@module/data/types.ts"
-import { FeatureSchema, PrereqList, PrereqListSchema, SkillDefault, SkillDefaultSchema, } from "@system"
-import { difficulty, } from "@util"
+import { FeatureSchema, PrereqList, PrereqListSchema, SkillDefault, SkillDefaultSchema } from "@system"
+import { difficulty } from "@util"
 import { TechniqueGURPS } from "./document.ts"
 import fields = foundry.data.fields
 import { BaseFeature } from "@system/feature/base.ts"
-
 
 class TechniqueSystemData extends AbstractSkillSystemData<TechniqueGURPS, TechniqueSystemSchema> {
 	static override defineSchema(): TechniqueSystemSchema {
@@ -30,12 +27,12 @@ class TechniqueSystemData extends AbstractSkillSystemData<TechniqueGURPS, Techni
 			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
 			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
 		}
-
-
 	}
 }
 
-interface TechniqueSystemData extends AbstractSkillSystemData<TechniqueGURPS, TechniqueSystemSchema>, ModelPropsFromSchema<TechniqueSystemSchema> { }
+interface TechniqueSystemData
+	extends AbstractSkillSystemData<TechniqueGURPS, TechniqueSystemSchema>,
+		ModelPropsFromSchema<TechniqueSystemSchema> {}
 
 type TechniqueSystemSchema = AbstractSkillSystemSchema & {
 	name: fields.StringField<string, string, true, false, true>

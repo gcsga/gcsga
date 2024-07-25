@@ -181,7 +181,6 @@ interface MigratedDocumentMigrationRecord {
 
 type MigrationRecord = NewDocumentMigrationRecord | MigratedDocumentMigrationRecord
 
-
 export type {
 	AttributeEffect,
 	ConditionEffect,
@@ -199,7 +198,7 @@ export type {
 	TokenPool,
 	SkillDifficulty,
 	WeaponOwner,
-	TechniqueDifficulty
+	TechniqueDifficulty,
 }
 
 export { Postures, AllManeuverIDs, ApplicableConditions, AllPostures }

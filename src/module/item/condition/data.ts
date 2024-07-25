@@ -20,7 +20,6 @@ enum ConditionSubtype {
 const AllConditionSubtypes = [ConditionSubtype.Normal, ConditionSubtype.Posture]
 
 class ConditionSystemData extends AbstractEffectSystemData<ConditionGURPS, ConditionSystemSchema> {
-
 	static override defineSchema(): ConditionSystemSchema {
 		const fields = foundry.data.fields
 
@@ -35,7 +34,7 @@ class ConditionSystemData extends AbstractEffectSystemData<ConditionGURPS, Condi
 
 interface ConditionSystemData
 	extends AbstractEffectSystemData<ConditionGURPS, ConditionSystemSchema>,
-	ModelPropsFromSchema<ConditionSystemSchema> { }
+		ModelPropsFromSchema<ConditionSystemSchema> {}
 
 type ConditionSystemSchema = AbstractEffectSystemSchema & {
 	sub_type: fields.StringField<ConditionSubtype>

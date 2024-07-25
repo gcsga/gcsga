@@ -8,11 +8,7 @@ import { AttributePrereqSchema, PrereqConstructionOptions } from "./data.ts"
 import { NumericCriteria } from "@module/util/index.ts"
 
 class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
-
-	constructor(
-		data: DeepPartial<SourceFromSchema<AttributePrereqSchema>>,
-		options?: PrereqConstructionOptions
-	) {
+	constructor(data: DeepPartial<SourceFromSchema<AttributePrereqSchema>>, options?: PrereqConstructionOptions) {
 		super(data, options)
 		this.qualifier = new NumericCriteria(data.qualifier)
 	}
@@ -28,9 +24,9 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 			qualifier: new fields.SchemaField(NumericCriteria.defineSchema(), {
 				initial: {
 					compare: NumericCompareType.AtLeastNumber,
-					qualifier: 10
-				}
-			})
+					qualifier: 10,
+				},
+			}),
 		}
 	}
 
@@ -59,7 +55,9 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 	}
 }
 
-interface AttributePrereq extends BasePrereq<AttributePrereqSchema>, Omit<ModelPropsFromSchema<AttributePrereqSchema>, "qualifier"> {
+interface AttributePrereq
+	extends BasePrereq<AttributePrereqSchema>,
+		Omit<ModelPropsFromSchema<AttributePrereqSchema>, "qualifier"> {
 	qualifier: NumericCriteria
 }
 

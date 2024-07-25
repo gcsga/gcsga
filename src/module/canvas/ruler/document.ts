@@ -4,7 +4,6 @@ import { TokenGURPS } from "../token/object.ts"
 import { UserGURPS } from "@module/user/document.ts"
 
 class RulerGURPS extends Ruler<TokenGURPS, UserGURPS> {
-
 	protected override _getSegmentLabel(segment: RulerMeasurementSegment): string {
 		const totalDistance = this.totalDistance
 		let units = canvas.scene?.grid.units

@@ -10,9 +10,8 @@ const regex_cr = /\((CR:?)?\s*(\d+)\)/
 
 export { regex_cr, regex_levels }
 
-
 type MookSchema = {
-	attributes: fields.ArrayField<fields.SchemaField<MookAttributeSchema>>,
+	attributes: fields.ArrayField<fields.SchemaField<MookAttributeSchema>>
 	settings: fields.SchemaField<{
 		attributes: fields.ArrayField<fields.SchemaField<MookAttributeDefSchema>>
 		damage_progression: fields.StringField<progression.Option, progression.Option, true, false, true>
@@ -112,7 +111,6 @@ type MookEquipmentSchema = MookItemSchema & {
 }
 
 type MookNoteSchema = MookItemSchema
-
 
 // export interface MookData {
 // 	system: {
@@ -433,9 +431,19 @@ export { regex_points, damage_type_matches, regex_damage_type, regex_difficulty 
 
 export type {
 	MookAttributeDefSchema,
-	MookAttributeSchema, MookEquipmentSchema, MookItemSchema, MookMeleeSchema, MookMoveTypeDefSchema,
-	MookNoteSchema, MookRangedSchema, MookSchema, MookSkillSchema,
-	MookSpellSchema, MookTraitModifierSchema, MookTraitSchema, MookWeaponSchema
+	MookAttributeSchema,
+	MookEquipmentSchema,
+	MookItemSchema,
+	MookMeleeSchema,
+	MookMoveTypeDefSchema,
+	MookNoteSchema,
+	MookRangedSchema,
+	MookSchema,
+	MookSkillSchema,
+	MookSpellSchema,
+	MookTraitModifierSchema,
+	MookTraitSchema,
+	MookWeaponSchema,
 }
 
 export const EXAMPLE_STATBLOCKS = [

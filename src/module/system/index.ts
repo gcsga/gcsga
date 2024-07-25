@@ -19,5 +19,5 @@ export * from "./sheet-settings.ts"
 export const AttributeDefClasses = {
 	attribute: AttributeDef,
 	resource_tracker: ResourceTrackerDef,
-	move_type: MoveTypeDef
+	move_type: MoveTypeDef,
 }

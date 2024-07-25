@@ -4,7 +4,7 @@ import fields = foundry.data.fields
 import { NumericCriteriaSchema, StringCriteriaSchema, WeightCriteriaSchema } from "@module/util/data.ts"
 import type { ItemGURPS } from "@item"
 
-export interface PrereqConstructionOptions extends DocumentConstructionContext<ItemGURPS> { }
+export interface PrereqConstructionOptions extends DocumentConstructionContext<ItemGURPS> {}
 
 export type BasePrereqSchema<TType extends prereq.Type> = {
 	type: fields.StringField<TType>
@@ -34,7 +34,12 @@ export type EquippedEquipmentPrereqSchema = BasePrereqSchema<prereq.Type.Equippe
 
 export type PrereqListSchema = BasePrereqSchema<prereq.Type.List> & {
 	all: fields.BooleanField<boolean, boolean, true, false, true>
-	when_tl: fields.SchemaField<NumericCriteriaSchema, SourceFromSchema<NumericCriteriaSchema>, ModelPropsFromSchema<NumericCriteriaSchema>, false>
+	when_tl: fields.SchemaField<
+		NumericCriteriaSchema,
+		SourceFromSchema<NumericCriteriaSchema>,
+		ModelPropsFromSchema<NumericCriteriaSchema>,
+		false
+	>
 	prereqs: fields.ArrayField<fields.SchemaField<PrereqSchema>>
 }
 
@@ -69,8 +74,6 @@ export type PrereqSchema =
 	| EquippedEquipmentPrereqSchema
 	| SkillPrereqSchema
 	| SpellPrereqSchema
-
-
 
 // export interface BasePrereqObj<TType extends prereq.Type> {
 // 	type: TType

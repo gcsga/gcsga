@@ -4,7 +4,6 @@ import { SpellBonusSchema } from "./data.ts"
 import { BaseFeature, LeveledAmount } from "./base.ts"
 
 class SpellBonus extends BaseFeature<SpellBonusSchema> {
-
 	static override defineSchema(): SpellBonusSchema {
 		const fields = foundry.data.fields
 
@@ -13,7 +12,7 @@ class SpellBonus extends BaseFeature<SpellBonusSchema> {
 			...LeveledAmount.defineSchema(),
 			match: new fields.StringField({ choices: spellmatch.Types, initial: spellmatch.Type.Name }),
 			name: new fields.SchemaField(StringCriteria.defineSchema()),
-			tags: new fields.SchemaField(StringCriteria.defineSchema())
+			tags: new fields.SchemaField(StringCriteria.defineSchema()),
 		}
 	}
 
@@ -29,7 +28,9 @@ class SpellBonus extends BaseFeature<SpellBonusSchema> {
 	}
 }
 
-interface SpellBonus extends BaseFeature<SpellBonusSchema>, Omit<ModelPropsFromSchema<SpellBonusSchema>, "name" | "specialization" | "tags"> {
+interface SpellBonus
+	extends BaseFeature<SpellBonusSchema>,
+		Omit<ModelPropsFromSchema<SpellBonusSchema>, "name" | "specialization" | "tags"> {
 	name: StringCriteria
 	specialization: StringCriteria
 	tags: StringCriteria

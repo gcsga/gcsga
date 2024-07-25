@@ -5,17 +5,15 @@ import type { ItemGURPS } from "@item"
 import { LaxSchemaField } from "@system/schema-data-fields.ts"
 import type { ActorGURPS } from "@actor"
 
-abstract class BasePrereq<
-	TSchema extends BasePrereqSchema<prereq.Type> = BasePrereqSchema<prereq.Type>
-> extends foundry.abstract.DataModel<ItemGURPS, TSchema> {
-
+abstract class BasePrereq<TSchema extends BasePrereqSchema<prereq.Type> = BasePrereqSchema<prereq.Type>> extends foundry
+	.abstract.DataModel<ItemGURPS, TSchema> {
 	protected declare static _schema: LaxSchemaField<BasePrereqSchema<prereq.Type>> | undefined
 
 	static override defineSchema(): BasePrereqSchema<prereq.Type> {
 		const fields = foundry.data.fields
 
 		return {
-			type: new fields.StringField({ initial: prereq.Type.Attribute })
+			type: new fields.StringField({ initial: prereq.Type.Attribute }),
 		}
 	}
 
@@ -29,10 +27,7 @@ abstract class BasePrereq<
 		return schema
 	}
 
-	constructor(
-		data: DeepPartial<SourceFromSchema<TSchema>>,
-		options?: PrereqConstructionOptions
-	) {
+	constructor(data: DeepPartial<SourceFromSchema<TSchema>>, options?: PrereqConstructionOptions) {
 		super(data, options)
 	}
 

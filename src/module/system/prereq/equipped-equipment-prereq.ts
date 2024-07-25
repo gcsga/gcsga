@@ -7,7 +7,6 @@ import { ActorGURPS } from "@actor"
 import { StringCompareType } from "@module/data/constants.ts"
 
 class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> {
-
 	constructor(data: DeepPartial<SourceFromSchema<EquippedEquipmentPrereqSchema>>) {
 		super(data)
 		this.name = new StringCriteria(data.name ?? undefined)
@@ -22,15 +21,15 @@ class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> 
 			name: new fields.SchemaField(StringCriteria.defineSchema(), {
 				initial: {
 					compare: StringCompareType.IsString,
-					qualifier: ""
-				}
+					qualifier: "",
+				},
 			}),
 			tags: new fields.SchemaField(StringCriteria.defineSchema(), {
 				initial: {
 					compare: StringCompareType.AnyString,
-					qualifier: ""
-				}
-			})
+					qualifier: "",
+				},
+			}),
 		}
 	}
 
@@ -41,8 +40,7 @@ class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> 
 		hasEquipmentPenalty: { value: boolean },
 	): boolean {
 		const satisfied = actor.itemCollections.equipment.some(
-			eqp =>
-				eqp.equipped && this.name.matches(eqp.name ?? "") && eqp.system.quantity > 0,
+			eqp => eqp.equipped && this.name.matches(eqp.name ?? "") && eqp.system.quantity > 0,
 		)
 		if (!satisfied) {
 			hasEquipmentPenalty.value = true
@@ -57,7 +55,9 @@ class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> 
 	}
 }
 
-interface EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema>, Omit<ModelPropsFromSchema<EquippedEquipmentPrereqSchema>, "name" | "tags"> {
+interface EquippedEquipmentPrereq
+	extends BasePrereq<EquippedEquipmentPrereqSchema>,
+		Omit<ModelPropsFromSchema<EquippedEquipmentPrereqSchema>, "name" | "tags"> {
 	name: StringCriteria
 	tags: StringCriteria
 }

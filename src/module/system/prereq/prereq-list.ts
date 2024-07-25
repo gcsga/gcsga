@@ -6,12 +6,7 @@ import { ActorType, NumericCompareType } from "@module/data/constants.ts"
 import { NumericCriteria } from "@module/util/index.ts"
 
 class PrereqList extends BasePrereq<PrereqListSchema> {
-
-
-	constructor(
-		data: DeepPartial<SourceFromSchema<PrereqListSchema>>,
-		options?: PrereqConstructionOptions
-	) {
+	constructor(data: DeepPartial<SourceFromSchema<PrereqListSchema>>, options?: PrereqConstructionOptions) {
 		super(data, options)
 
 		this.when_tl = new NumericCriteria(data.when_tl)
@@ -20,7 +15,8 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 			for (const source of data.prereqs) {
 				if (!source || !source.type) continue
 				const PrereqClass = CONFIG.GURPS.Prereq.classes[source.type]
-				prereqs.push(new PrereqClass(source as any))
+				//@ts-expect-error "type" field mismatched but not causing errors
+				prereqs.push(new PrereqClass(source))
 			}
 		this.prereqs = prereqs
 	}
@@ -32,7 +28,7 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 			type: new fields.StringField({ initial: prereq.Type.List }),
 			all: new fields.BooleanField({ initial: true }),
 			when_tl: new fields.SchemaField(NumericCriteria.defineSchema()),
-			prereqs: new fields.ArrayField(new fields.SchemaField(BasePrereq.defineSchema()))
+			prereqs: new fields.ArrayField(new fields.SchemaField(BasePrereq.defineSchema())),
 		}
 	}
 
@@ -66,10 +62,11 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 		}
 		return satisfied
 	}
-
 }
 
-interface PrereqList extends BasePrereq<PrereqListSchema>, Omit<ModelPropsFromSchema<PrereqListSchema>, "when_tl" | "prereqs"> {
+interface PrereqList
+	extends BasePrereq<PrereqListSchema>,
+	Omit<ModelPropsFromSchema<PrereqListSchema>, "when_tl" | "prereqs"> {
 	when_tl: NumericCriteria
 	prereqs: Prereq[]
 }

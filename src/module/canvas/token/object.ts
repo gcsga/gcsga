@@ -104,7 +104,7 @@ class TokenGURPS<TDocument extends TokenDocumentGURPS = TokenDocumentGURPS> exte
 	}
 }
 
-interface TokenGURPS<TDocument extends TokenDocumentGURPS = TokenDocumentGURPS> extends Token<TDocument> { }
+interface TokenGURPS<TDocument extends TokenDocumentGURPS = TokenDocumentGURPS> extends Token<TDocument> {}
 
 type NumericFloatyEffect = { name: string; level?: number | null }
 export type showFloatyTextOptions =

@@ -3,9 +3,7 @@ import type { ItemGURPS } from "@item"
 import { NumericCriteriaSchema } from "./data.ts"
 import { LocalizeGURPS } from "@util"
 
-
 class NumericCriteria extends foundry.abstract.DataModel<ItemGURPS, NumericCriteriaSchema> {
-
 	static override defineSchema(): NumericCriteriaSchema {
 		const fields = foundry.data.fields
 		return {
@@ -57,9 +55,10 @@ class NumericCriteria extends foundry.abstract.DataModel<ItemGURPS, NumericCrite
 		if (result !== "") result += " "
 		return result + this.qualifier.toString()
 	}
-
 }
 
-interface NumericCriteria extends foundry.abstract.DataModel<ItemGURPS, NumericCriteriaSchema>, ModelPropsFromSchema<NumericCriteriaSchema> { }
+interface NumericCriteria
+	extends foundry.abstract.DataModel<ItemGURPS, NumericCriteriaSchema>,
+		ModelPropsFromSchema<NumericCriteriaSchema> {}
 
 export { NumericCriteria, type NumericCriteriaSchema }

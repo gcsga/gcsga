@@ -1,10 +1,5 @@
 import { ActorGURPS } from "@actor"
-import {
-	CharacterFlags,
-	CharacterSource,
-	CharacterSystemSource,
-	PointsRecord,
-} from "@actor/character/data.ts"
+import { CharacterFlags, CharacterSource, CharacterSystemSource, PointsRecord } from "@actor/character/data.ts"
 import { ActorFlags, ActorType, ManeuverID, SETTINGS, SYSTEM_NAME } from "@data"
 import { ItemSourceGURPS } from "@item/data/index.ts"
 import { ChatMessageGURPS } from "@module/chat-message/document.ts"
@@ -13,7 +8,19 @@ import { GCABody, GCABodyItem, GCACharacter } from "./data-gca.ts"
 import { GCAItemImporter } from "./item-gca.ts"
 import { GCAParser } from "./parse-gca.ts"
 import { ManeuverManager } from "@system/maneuver-manager.ts"
-import { AttributeDefSchema, AttributeSchema, BlockLayoutKey, BodySchema, HitLocationSchema, MoveTypeDefSchema, MoveTypeSchema, PageSettings, ResourceTrackerDefSchema, ResourceTrackerSchema, SheetSettingsSchema } from "@system"
+import {
+	AttributeDefSchema,
+	AttributeSchema,
+	BlockLayoutKey,
+	BodySchema,
+	HitLocationSchema,
+	MoveTypeDefSchema,
+	MoveTypeSchema,
+	PageSettings,
+	ResourceTrackerDefSchema,
+	ResourceTrackerSchema,
+	SheetSettingsSchema,
+} from "@system"
 
 export class GCACharacterImporter {
 	static async throwError(text: string): Promise<void> {
@@ -224,7 +231,7 @@ export class GCACharacterImporter {
 				id,
 				adj: (e.score ?? 0) - parseInt(e.calcs?.basescore ?? "0"),
 				damage: 0,
-				apply_ops: false
+				apply_ops: false,
 			})
 		})
 		return atts

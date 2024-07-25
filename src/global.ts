@@ -27,7 +27,14 @@ import { UserGURPS } from "@module/user/document.ts"
 import { SceneGURPS, TokenDocumentGURPS } from "@scene"
 import { GURPSCONFIG } from "@scripts/config/index.ts"
 import { remigrate } from "@scripts/system/remigrate.ts"
-import { AttributeDefSchema, HitLocationSchema, MookGeneratorSheet, MoveTypeDefSchema, ResourceTrackerDefSchema, SheetSettingsSchema } from "@system"
+import {
+	AttributeDefSchema,
+	HitLocationSchema,
+	MookGeneratorSheet,
+	MoveTypeDefSchema,
+	ResourceTrackerDefSchema,
+	SheetSettingsSchema,
+} from "@system"
 import { ConditionManager } from "@system/condition-manager.ts"
 import { ManeuverManager } from "@system/maneuver-manager.ts"
 
@@ -132,7 +139,7 @@ declare global {
 		}
 	}
 
-	interface Window { }
+	interface Window {}
 
 	interface ClientSettings {
 		get(module: "gcsga", key: "default_sheet_settings.initial_points"): number
@@ -141,7 +148,10 @@ declare global {
 		get(module: "gcsga", key: "default_sheet_settings.settings"): SourceFromSchema<SheetSettingsSchema>
 		get(module: "gcsga", key: "default_attributes.attributes"): SourceFromSchema<AttributeDefSchema>[]
 		get(module: "gcsga", key: "default_attributes.effects"): AttributeEffect[]
-		get(module: "gcsga", key: "default_resource_trackers.resource_trackers"): SourceFromSchema<ResourceTrackerDefSchema>[]
+		get(
+			module: "gcsga",
+			key: "default_resource_trackers.resource_trackers",
+		): SourceFromSchema<ResourceTrackerDefSchema>[]
 		get(module: "gcsga", key: "default_move_types.move_types"): SourceFromSchema<MoveTypeDefSchema>[]
 		get(module: "gcsga", key: "default_hit_locations.name"): string
 		get(module: "gcsga", key: "default_hit_locations.roll"): string
@@ -164,16 +174,24 @@ declare global {
 		get(key: "gcsga.default_sheet_settings.initial_points"): SettingConfig & { default: number }
 		get(key: "gcsga.default_sheet_settings.tech_level"): SettingConfig & { default: string }
 		get(key: "gcsga.default_sheet_settings.tech_level"): SettingConfig & { default: string }
-		get(key: "gcsga.default_sheet_settings.settings"): SettingConfig & { default: SourceFromSchema<SheetSettingsSchema> }
-		get(key: "gcsga.default_attributes.attributes"): SettingConfig & { default: SourceFromSchema<AttributeDefSchema>[] }
+		get(
+			key: "gcsga.default_sheet_settings.settings",
+		): SettingConfig & { default: SourceFromSchema<SheetSettingsSchema> }
+		get(
+			key: "gcsga.default_attributes.attributes",
+		): SettingConfig & { default: SourceFromSchema<AttributeDefSchema>[] }
 		get(key: "gcsga.default_attributes.effects"): SettingConfig & { default: AttributeEffect[] }
 		get(
 			key: "gcsga.default_resource_trackers.resource_trackers",
 		): SettingConfig & { default: SourceFromSchema<ResourceTrackerDefSchema>[] }
-		get(key: "gcsga.default_move_types.move_types"): SettingConfig & { default: SourceFromSchema<MoveTypeDefSchema>[] }
+		get(
+			key: "gcsga.default_move_types.move_types",
+		): SettingConfig & { default: SourceFromSchema<MoveTypeDefSchema>[] }
 		get(key: "gcsga.default_hit_locations.name"): SettingConfig & { default: string }
 		get(key: "gcsga.default_hit_locations.roll"): SettingConfig & { default: string }
-		get(key: "gcsga.default_hit_locations.locations"): SettingConfig & { default: SourceFromSchema<HitLocationSchema>[] }
+		get(
+			key: "gcsga.default_hit_locations.locations",
+		): SettingConfig & { default: SourceFromSchema<HitLocationSchema>[] }
 		get(key: "gcsga.colors.modePreference"): SettingConfig & { default: string }
 		get(key: "gcsga.colors.colors"): SettingConfig & { default: Record<string, { light: string; dark: string }> }
 		get(key: "gcsga.automatic_unready"): SettingConfig & { default: boolean }

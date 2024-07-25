@@ -5,7 +5,6 @@ import type { ItemGURPS } from "@item"
 import type { WeightCriteriaSchema } from "./data.ts"
 
 class WeightCriteria extends foundry.abstract.DataModel<ItemGURPS, WeightCriteriaSchema> {
-
 	static override defineSchema(): WeightCriteriaSchema {
 		const fields = foundry.data.fields
 		return {
@@ -15,7 +14,7 @@ class WeightCriteria extends foundry.abstract.DataModel<ItemGURPS, WeightCriteri
 				initial: NumericCompareType.AnyNumber,
 			}),
 			qualifier: new fields.StringField({
-				initial: `0 ${WeightUnits.Pound}`
+				initial: `0 ${WeightUnits.Pound}`,
 			}),
 		}
 	}
@@ -63,6 +62,8 @@ class WeightCriteria extends foundry.abstract.DataModel<ItemGURPS, WeightCriteri
 	}
 }
 
-interface WeightCriteria extends foundry.abstract.DataModel<ItemGURPS, WeightCriteriaSchema>, ModelPropsFromSchema<WeightCriteriaSchema> { }
+interface WeightCriteria
+	extends foundry.abstract.DataModel<ItemGURPS, WeightCriteriaSchema>,
+		ModelPropsFromSchema<WeightCriteriaSchema> {}
 
 export { WeightCriteria, type WeightCriteriaSchema }

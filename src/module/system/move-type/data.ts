@@ -26,13 +26,7 @@ type MoveTypeDefSchema = AbstractAttributeDefSchema & {
 
 type MoveTypeOverrideSchema = {
 	condition: fields.SchemaField<{
-		type: fields.StringField<
-			MoveTypeOverrideConditionType,
-			MoveTypeOverrideConditionType,
-			true,
-			false,
-			true
-		>
+		type: fields.StringField<MoveTypeOverrideConditionType, MoveTypeOverrideConditionType, true, false, true>
 		qualifier: fields.StringField
 	}>
 	base: fields.StringField
@@ -40,4 +34,3 @@ type MoveTypeOverrideSchema = {
 
 export { MoveTypeOverrideConditionType, allMoveTypeOverrideConditions }
 export type { MoveTypeDefSchema, MoveTypeOverrideSchema, MoveTypeSchema }
-

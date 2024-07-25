@@ -1,5 +1,11 @@
 import { ResourceTrackerDef } from "./definition.ts"
-import { AbstractAttribute, AbstractAttributeConstructionOptions, PoolThreshold, ResourceTrackerSchema, SheetSettings } from "@system"
+import {
+	AbstractAttribute,
+	AbstractAttributeConstructionOptions,
+	PoolThreshold,
+	ResourceTrackerSchema,
+	SheetSettings,
+} from "@system"
 import { TokenPool } from "@module/data/types.ts"
 import { CharacterGURPS } from "@actor"
 
@@ -9,7 +15,7 @@ class ResourceTracker extends AbstractAttribute<CharacterGURPS, ResourceTrackerS
 
 	constructor(
 		data: DeepPartial<SourceFromSchema<ResourceTrackerSchema>>,
-		options?: AbstractAttributeConstructionOptions<CharacterGURPS>
+		options?: AbstractAttributeConstructionOptions<CharacterGURPS>,
 	) {
 		super(data, options)
 		this.order = options?.order ?? 0
@@ -20,7 +26,7 @@ class ResourceTracker extends AbstractAttribute<CharacterGURPS, ResourceTrackerS
 
 		return {
 			...super.defineSchema(),
-			damage: new fields.NumberField({ initial: 0 })
+			damage: new fields.NumberField({ initial: 0 }),
 		}
 	}
 
@@ -57,6 +63,8 @@ class ResourceTracker extends AbstractAttribute<CharacterGURPS, ResourceTrackerS
 	}
 }
 
-interface ResourceTracker extends AbstractAttribute<CharacterGURPS, ResourceTrackerSchema>, ModelPropsFromSchema<ResourceTrackerSchema> { }
+interface ResourceTracker
+	extends AbstractAttribute<CharacterGURPS, ResourceTrackerSchema>,
+		ModelPropsFromSchema<ResourceTrackerSchema> {}
 
 export { ResourceTracker }

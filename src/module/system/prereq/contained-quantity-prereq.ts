@@ -9,10 +9,9 @@ import { ActorGURPS } from "@actor"
 import { NumericCriteria } from "@module/util/numeric-criteria.ts"
 
 class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> {
-
 	constructor(
 		data: DeepPartial<SourceFromSchema<ContainedQuantityPrereqSchema>>,
-		options?: PrereqConstructionOptions
+		options?: PrereqConstructionOptions,
 	) {
 		super(data, options)
 		this.qualifier = new NumericCriteria(data.qualifier)
@@ -27,9 +26,9 @@ class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> 
 			qualifier: new fields.SchemaField(NumericCriteria.defineSchema(), {
 				initial: {
 					compare: NumericCompareType.AtLeastNumber,
-					qualifier: 1
-				}
-			})
+					qualifier: 1,
+				},
+			}),
 		}
 	}
 
@@ -52,7 +51,9 @@ class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> 
 	}
 }
 
-interface ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema>, Omit<ModelPropsFromSchema<ContainedQuantityPrereqSchema>, "qualifier"> {
+interface ContainedQuantityPrereq
+	extends BasePrereq<ContainedQuantityPrereqSchema>,
+		Omit<ModelPropsFromSchema<ContainedQuantityPrereqSchema>, "qualifier"> {
 	qualifier: NumericCriteria
 }
 

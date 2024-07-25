@@ -3,7 +3,6 @@ import { gid } from "@data"
 import { BaseFeature, LeveledAmount } from "./base.ts"
 
 class MoveBonus extends BaseFeature<MoveBonusSchema> {
-
 	static override defineSchema(): MoveBonusSchema {
 		const fields = foundry.data.fields
 
@@ -14,9 +13,8 @@ class MoveBonus extends BaseFeature<MoveBonusSchema> {
 			limitation: new fields.StringField({ choices: Object.values(MoveBonusType), initial: MoveBonusType.Base }),
 		}
 	}
-
 }
 
-interface MoveBonus extends BaseFeature<MoveBonusSchema>, ModelPropsFromSchema<MoveBonusSchema> { }
+interface MoveBonus extends BaseFeature<MoveBonusSchema>, ModelPropsFromSchema<MoveBonusSchema> {}
 
 export { MoveBonus }

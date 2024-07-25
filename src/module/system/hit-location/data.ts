@@ -18,10 +18,18 @@ type HitLocationSchema = {
 	// >
 }
 
+type HitLocationSource = Omit<SourceFromSchema<HitLocationSchema>, "sub_table"> & {
+	sub_table?: BodySource
+}
+
 type BodySchema = {
 	name: fields.StringField<string, string, false, true>
 	roll: fields.StringField
 	locations: fields.ArrayField<fields.SchemaField<HitLocationSchema>>
 }
 
-export type { BodySchema, HitLocationSchema }
+type BodySource = Omit<SourceFromSchema<BodySchema>, "locations"> & {
+	locations: HitLocationSource[]
+}
+
+export type { BodySchema, HitLocationSchema, HitLocationSource, BodySource }

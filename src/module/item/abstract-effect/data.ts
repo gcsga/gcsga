@@ -25,7 +25,6 @@ abstract class AbstractEffectSystemData<
 	TParent extends AbstractEffectGURPS,
 	TSchema extends AbstractEffectSystemSchema,
 > extends ItemSystemModel<TParent, TSchema> {
-
 	static override defineSchema(): AbstractEffectSystemSchema {
 		const fields = foundry.data.fields
 
@@ -53,12 +52,8 @@ abstract class AbstractEffectSystemData<
 	}
 }
 
-interface AbstractEffectSystemData<
-	TParent extends AbstractEffectGURPS,
-	TSchema extends AbstractEffectSystemSchema,
-> extends ItemSystemModel<TParent, TSchema> {
-
-}
+interface AbstractEffectSystemData<TParent extends AbstractEffectGURPS, TSchema extends AbstractEffectSystemSchema>
+	extends ItemSystemModel<TParent, TSchema> {}
 
 type AbstractEffectSystemSchema = ItemSystemSchema & {
 	id: fields.StringField<string, string, true, false, true>
@@ -89,7 +84,7 @@ type AbstractEffectSource<
 	TSystemSource extends AbstractEffectSystemSource = AbstractEffectSystemSource,
 > = BaseItemSourceGURPS<TType, TSystemSource>
 
-interface AbstractEffectSystemSource extends ItemSystemSource { }
+interface AbstractEffectSystemSource extends ItemSystemSource {}
 
 export { AbstractEffectSystemData }
 export type { AbstractEffectSource, AbstractEffectSystemSchema, EffectFlags }

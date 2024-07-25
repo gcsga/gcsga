@@ -11,7 +11,6 @@ import { createDragImage } from "@util/drag-image.ts"
 // }
 
 class ItemDirectoryGURPS extends ItemDirectory<ItemGURPS<null>> {
-
 	protected override async _onDragStart(event: DragEvent): Promise<void> {
 		const element = event.currentTarget
 		if (!(element instanceof HTMLElement)) return

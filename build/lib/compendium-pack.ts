@@ -52,12 +52,12 @@ class CompendiumPack {
 			Map<string, string>
 		>
 	} & Record<string, Map<string, Map<string, string>> | undefined> = {
-			Actor: new Map(),
-			Item: new Map(),
-			JournalEntry: new Map(),
-			Macro: new Map(),
-			RollTable: new Map(),
-		}
+		Actor: new Map(),
+		Item: new Map(),
+		JournalEntry: new Map(),
+		Macro: new Map(),
+		RollTable: new Map(),
+	}
 
 	static #packsMetadata = JSON.parse(fs.readFileSync("static/system.json", "utf-8")).packs as PackMetadata[]
 
@@ -260,7 +260,7 @@ class CompendiumPack {
 		_source: ItemSourceGURPS,
 		// @ts-expect-error unused function
 		{ to, map }: { to: "ids" | "names"; map: Map<string, Map<string, string>> },
-	): void { }
+	): void {}
 
 	static convertUUID<TUUID extends string>(uuid: TUUID, { to, map }: ConvertUUIDOptions): TUUID {
 		if (uuid.startsWith("Item.")) {

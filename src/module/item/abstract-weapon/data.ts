@@ -15,7 +15,6 @@ abstract class AbstractWeaponSystemData<
 	TParent extends AbstractWeaponGURPS,
 	TSchema extends AbstractWeaponSystemSchema,
 > extends ItemSystemModel<TParent, TSchema> {
-
 	static override defineSchema(): AbstractWeaponSystemSchema {
 		const fields = foundry.data.fields
 
@@ -25,7 +24,7 @@ abstract class AbstractWeaponSystemData<
 			usage: new fields.StringField({
 				required: true,
 				// TODO: localize
-				initial: "Usage"
+				initial: "Usage",
 			}),
 			usage_notes: new fields.StringField(),
 			defaults: new fields.ArrayField(new fields.SchemaField(SkillDefault.defineSchema())),
@@ -34,10 +33,8 @@ abstract class AbstractWeaponSystemData<
 	}
 }
 
-interface AbstractWeaponSystemData<
-	TParent extends AbstractWeaponGURPS,
-	TSchema extends AbstractWeaponSystemSchema,
-> extends ItemSystemModel<TParent, TSchema> { }
+interface AbstractWeaponSystemData<TParent extends AbstractWeaponGURPS, TSchema extends AbstractWeaponSystemSchema>
+	extends ItemSystemModel<TParent, TSchema> {}
 
 type AbstractWeaponSystemSchema = ItemSystemSchema & {
 	strength: fields.StringField<string, string, true, false, true>
@@ -52,7 +49,7 @@ type AbstractWeaponSource<
 	TSystemSource extends AbstractWeaponSystemSource = AbstractWeaponSystemSource,
 > = BaseItemSourceGURPS<TType, TSystemSource>
 
-interface AbstractWeaponSystemSource extends ItemSystemSource { }
+interface AbstractWeaponSystemSource extends ItemSystemSource {}
 
 export { AbstractWeaponSystemData }
 export type { AbstractWeaponSource, AbstractWeaponSystemSchema, WeaponFlags }

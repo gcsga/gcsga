@@ -94,8 +94,8 @@ class DamageTargetActor<TActor extends ActorGURPS> implements DamageTarget {
 	 */
 	private getSyntheticAttribute(name: string):
 		| (AttributeGURPS & {
-			calc: { value: number; current: number }
-		})
+				calc: { value: number; current: number }
+		  })
 		| undefined {
 		if (!this.actor.isOfType(ActorType.Character)) return undefined
 		const attr = this.actor.attributes.get(name)

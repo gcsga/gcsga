@@ -7,7 +7,6 @@ import { ActorGURPS } from "@actor"
 import { WeightCriteria } from "@module/util/weight-criteria.ts"
 
 class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
-
 	constructor(data: DeepPartial<SourceFromSchema<ContainedWeightPrereqSchema>>) {
 		super(data)
 		this.qualifier = new WeightCriteria(data.qualifier)
@@ -22,9 +21,9 @@ class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
 			qualifier: new fields.SchemaField(WeightCriteria.defineSchema(), {
 				initial: {
 					compare: NumericCompareType.AtLeastNumber,
-					qualifier: Weight.format(5, WeightUnits.Pound)
-				}
-			})
+					qualifier: Weight.format(5, WeightUnits.Pound),
+				},
+			}),
 		}
 	}
 
@@ -51,7 +50,9 @@ class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
 	}
 }
 
-interface ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema>, Omit<ModelPropsFromSchema<ContainedWeightPrereqSchema>, "qualifier"> {
+interface ContainedWeightPrereq
+	extends BasePrereq<ContainedWeightPrereqSchema>,
+		Omit<ModelPropsFromSchema<ContainedWeightPrereqSchema>, "qualifier"> {
 	qualifier: WeightCriteria
 }
 

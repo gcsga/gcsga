@@ -3,7 +3,11 @@ import { ItemFlags, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { FeatureSchema, PrereqList, PrereqListSchema } from "@system"
 import { WeightString } from "@util"
 import fields = foundry.data.fields
-import { AbstractContainerSource, AbstractContainerSystemData, AbstractContainerSystemSchema } from "@item/abstract-container/data.ts"
+import {
+	AbstractContainerSource,
+	AbstractContainerSystemData,
+	AbstractContainerSystemSchema,
+} from "@item/abstract-container/data.ts"
 import { EquipmentGURPS } from "./document.ts"
 import { BaseFeature } from "@system/feature/base.ts"
 
@@ -46,7 +50,7 @@ class EquipmentSystemData extends AbstractContainerSystemData<EquipmentGURPS, Eq
 
 interface EquipmentSystemData
 	extends AbstractContainerSystemData<EquipmentGURPS, EquipmentSystemSchema>,
-	ModelPropsFromSchema<EquipmentSystemSchema> { }
+		ModelPropsFromSchema<EquipmentSystemSchema> {}
 
 type EquipmentSystemSchema = AbstractContainerSystemSchema & {
 	type: fields.StringField<ItemType.Equipment, ItemType.Equipment, true, false, true>

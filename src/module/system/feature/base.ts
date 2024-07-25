@@ -6,14 +6,14 @@ import { ItemType } from "@module/data/constants.ts"
 import { BaseFeatureSchema, LeveledAmountSchema } from "./data.ts"
 import { LaxSchemaField } from "@system/schema-data-fields.ts"
 
-abstract class BaseFeature<
-	TSchema extends BaseFeatureSchema = BaseFeatureSchema
-> extends foundry.abstract.DataModel<ItemGURPS, TSchema> {
-
+abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema> extends foundry.abstract.DataModel<
+	ItemGURPS,
+	TSchema
+> {
 	protected declare static _schema: LaxSchemaField<BaseFeatureSchema> | undefined
 
-	declare private _owner: ItemGURPS | null
-	declare private _subOwner: ItemGURPS | null
+	private declare _owner: ItemGURPS | null
+	private declare _subOwner: ItemGURPS | null
 
 	declare effective: boolean
 	declare leveledAmount: LeveledAmount
@@ -36,10 +36,7 @@ abstract class BaseFeature<
 		return schema
 	}
 
-	constructor(
-		data: DeepPartial<SourceFromSchema<TSchema>>,
-		options?: DocumentConstructionContext<ItemGURPS>
-	) {
+	constructor(data: DeepPartial<SourceFromSchema<TSchema>>, options?: DocumentConstructionContext<ItemGURPS>) {
 		super(data, options)
 		this._owner = null
 		this._subOwner = null
@@ -76,7 +73,6 @@ abstract class BaseFeature<
 		this.leveledAmount.level = level
 	}
 
-
 	get parentName(): string {
 		if (!this.owner) return LocalizeGURPS.translations.gurps.misc.unknown
 		const owner = this.owner.formattedName
@@ -109,14 +105,13 @@ abstract class BaseFeature<
 			tooltip.push("]")
 		}
 	}
-
 }
 
 interface BaseFeature<TSchema extends BaseFeatureSchema>
-	extends foundry.abstract.DataModel<ItemGURPS, TSchema>, ModelPropsFromSchema<BaseFeatureSchema> { }
+	extends foundry.abstract.DataModel<ItemGURPS, TSchema>,
+		ModelPropsFromSchema<BaseFeatureSchema> {}
 
 class LeveledAmount {
-
 	declare level: number
 
 	static defineSchema(): LeveledAmountSchema {
@@ -125,7 +120,7 @@ class LeveledAmount {
 		return {
 			amount: new fields.NumberField({ integer: true, initial: 1 }),
 			per_level: new fields.BooleanField({ initial: false }),
-			effective: new fields.BooleanField({ initial: false })
+			effective: new fields.BooleanField({ initial: false }),
 		}
 	}
 
@@ -160,7 +155,6 @@ class LeveledAmount {
 	}
 }
 
-interface LeveledAmount extends ModelPropsFromSchema<LeveledAmountSchema> { }
-
+interface LeveledAmount extends ModelPropsFromSchema<LeveledAmountSchema> {}
 
 export { BaseFeature, LeveledAmount }

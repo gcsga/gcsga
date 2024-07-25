@@ -380,10 +380,10 @@ class AttackRollTypeHandler extends RollTypeHandler<AttackRollTypeData> {
 		}
 		return data.item?.isOfType(ItemType.RangedWeapon)
 			? {
-				...itemData,
-				rate_of_fire: data.item.ROF,
-				recoil: data.item.recoil,
-			}
+					...itemData,
+					rate_of_fire: data.item.ROF,
+					recoil: data.item.recoil,
+				}
 			: itemData
 	}
 
@@ -395,7 +395,7 @@ class AttackRollTypeHandler extends RollTypeHandler<AttackRollTypeData> {
 			const numberOfShots = Math.min(
 				Math.floor(
 					this.getMargin(data, this.getEffectiveLevel(data), rollTotal).value /
-					data.item.recoil.resolve(data.item).shot,
+						data.item.recoil.resolve(data.item).shot,
 				) + 1,
 				effectiveROF,
 			)

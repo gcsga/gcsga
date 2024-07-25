@@ -4,7 +4,6 @@ import { SkillBonusSchema } from "./data.ts"
 import { BaseFeature, LeveledAmount } from "./base.ts"
 
 class SkillBonus extends BaseFeature<SkillBonusSchema> {
-
 	static override defineSchema(): SkillBonusSchema {
 		const fields = foundry.data.fields
 
@@ -14,7 +13,7 @@ class SkillBonus extends BaseFeature<SkillBonusSchema> {
 			selection_type: new fields.StringField({ choices: skillsel.Types, initial: skillsel.Type.Name }),
 			name: new fields.SchemaField(StringCriteria.defineSchema()),
 			specialization: new fields.SchemaField(StringCriteria.defineSchema()),
-			tags: new fields.SchemaField(StringCriteria.defineSchema())
+			tags: new fields.SchemaField(StringCriteria.defineSchema()),
 		}
 	}
 
@@ -25,10 +24,11 @@ class SkillBonus extends BaseFeature<SkillBonusSchema> {
 		this.specialization = new StringCriteria(data.specialization)
 		this.tags = new StringCriteria(data.tags)
 	}
-
 }
 
-interface SkillBonus extends BaseFeature<SkillBonusSchema>, Omit<ModelPropsFromSchema<SkillBonusSchema>, "name" | "specialization" | "tags"> {
+interface SkillBonus
+	extends BaseFeature<SkillBonusSchema>,
+		Omit<ModelPropsFromSchema<SkillBonusSchema>, "name" | "specialization" | "tags"> {
 	name: StringCriteria
 	specialization: StringCriteria
 	tags: StringCriteria

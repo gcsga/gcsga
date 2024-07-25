@@ -96,9 +96,9 @@ export class DefaultSheetSettings extends SettingsMenuGURPS {
 		}
 	}
 
-	protected _onDataImport(_event: MouseEvent): void { }
+	protected _onDataImport(_event: MouseEvent): void {}
 
-	protected _onDataExport(_event: MouseEvent): void { }
+	protected _onDataExport(_event: MouseEvent): void {}
 
 	override async _onResetAll(event: Event): Promise<void> {
 		event.preventDefault()

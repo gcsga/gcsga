@@ -7,7 +7,10 @@ import {
 import { ItemType } from "@module/data/constants.ts"
 import { TraitModifierContainerGURPS } from "./document.ts"
 
-class TraitModifierContainerSystemData extends AbstractContainerSystemData<TraitModifierContainerGURPS, TraitModifierContainerSystemSchema> {
+class TraitModifierContainerSystemData extends AbstractContainerSystemData<
+	TraitModifierContainerGURPS,
+	TraitModifierContainerSystemSchema
+> {
 	static override defineSchema(): TraitModifierContainerSystemSchema {
 		const fields = foundry.data.fields
 
@@ -24,13 +27,12 @@ class TraitModifierContainerSystemData extends AbstractContainerSystemData<Trait
 			tags: new fields.ArrayField(new foundry.data.fields.StringField()),
 			open: new fields.BooleanField({ initial: true }),
 		}
-
 	}
 }
 
 interface TraitModifierContainerSystemData
 	extends AbstractContainerSystemData<TraitModifierContainerGURPS, TraitModifierContainerSystemSchema>,
-	ModelPropsFromSchema<TraitModifierContainerSystemSchema> { }
+		ModelPropsFromSchema<TraitModifierContainerSystemSchema> {}
 
 type TraitModifierContainerSystemSchema = AbstractContainerSystemSchema & {
 	type: fields.StringField<ItemType.TraitModifierContainer, ItemType.TraitModifierContainer, true, false, true>
@@ -45,7 +47,10 @@ type TraitModifierContainerSystemSchema = AbstractContainerSystemSchema & {
 
 type TraitModifierContainerSystemSource = SourceFromSchema<TraitModifierContainerSystemSchema>
 
-type TraitModifierContainerSource = AbstractContainerSource<ItemType.TraitModifierContainer, TraitModifierContainerSystemSource>
+type TraitModifierContainerSource = AbstractContainerSource<
+	ItemType.TraitModifierContainer,
+	TraitModifierContainerSystemSource
+>
 
 export type { TraitModifierContainerSource, TraitModifierContainerSystemSource }
 export { TraitModifierContainerSystemData }

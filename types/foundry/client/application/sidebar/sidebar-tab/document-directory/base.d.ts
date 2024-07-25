@@ -1,4 +1,4 @@
-export { }
+export {}
 
 declare global {
 	/** A shared pattern for the sidebar directory which Actors, Items, and Scenes all use */
@@ -22,7 +22,6 @@ declare global {
 
 		/** The WorldCollection instance which this Sidebar Directory displays. */
 		static get collection(): WorldCollection<WorldDocument>
-
 
 		/** Initialize the content of the directory by categorizing folders and documents into a hierarchical tree structure. */
 		initialize(): void
@@ -99,20 +98,20 @@ declare global {
 		protected _contextMenu(html: JQuery): void
 
 		/**
-	 * Get the dropped Entry from the drop data
-	 * @param {object} data         The data being dropped
-	 * @returns {Promise<object>}   The dropped Entry
-	 * @protected
-	 */
+		 * Get the dropped Entry from the drop data
+		 * @param {object} data         The data being dropped
+		 * @returns {Promise<object>}   The dropped Entry
+		 * @protected
+		 */
 		protected _getDroppedEntryFromData(data: object): Promise<TDocument>
 
 		/**
-		* Determine if an Entry is being compared to itself
-		* @param {TDocument} entry          The Entry
-		* @param {TDocument} otherEntry     The other Entry
-		* @returns {boolean}                          Is the Entry being compared to itself?
-		* @protected
-		*/
+		 * Determine if an Entry is being compared to itself
+		 * @param {TDocument} entry          The Entry
+		 * @param {TDocument} otherEntry     The other Entry
+		 * @returns {boolean}                          Is the Entry being compared to itself?
+		 * @protected
+		 */
 		_entryIsSelf(entry: TDocument, otherEntry: TDocument): boolean
 
 		/**
@@ -124,7 +123,6 @@ declare global {
 		 */
 		_entryBelongsToFolder(entry: TDocument, folder: Folder): boolean
 
-
 		/**
 		 * Check if an Entry is already present in the Collection
 		 * @param {TDocument} entry     The Entry being dropped
@@ -134,16 +132,18 @@ declare global {
 		_entryAlreadyExists(entry: TDocument): boolean
 
 		/**
-				 * Sort a relative entry within a collection
-				 * @param {TDocument} entry							The entry to sort
-				 * @param {object} sortData             The sort data
-				 * @param {string} sortData.sortKey     The sort key to use for sorting
-				 * @param {boolean} sortData.sortBefore Sort before the target?
-				 * @param {object} sortData.updateData  Additional data to update on the entry
-				 * @returns {Promise<TokenDocumentUUID>}             The sorted entry
-				 */
-		_sortRelative(entry: TDocument, sortData: { sortKey: string; sortBefore: boolean; updateData: object }): Promise<TDocument>
-
+		 * Sort a relative entry within a collection
+		 * @param {TDocument} entry							The entry to sort
+		 * @param {object} sortData             The sort data
+		 * @param {string} sortData.sortKey     The sort key to use for sorting
+		 * @param {boolean} sortData.sortBefore Sort before the target?
+		 * @param {object} sortData.updateData  Additional data to update on the entry
+		 * @returns {Promise<TokenDocumentUUID>}             The sorted entry
+		 */
+		_sortRelative(
+			entry: TDocument,
+			sortData: { sortKey: string; sortBefore: boolean; updateData: object },
+		): Promise<TDocument>
 	}
 
 	interface SidebarDirectoryOptions extends ApplicationOptions {

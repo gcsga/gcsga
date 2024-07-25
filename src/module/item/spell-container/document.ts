@@ -7,7 +7,6 @@ import { ItemInstances } from "@item/types.ts"
 class SpellContainerGURPS<
 	TParent extends ActorGURPS | null = ActorGURPS | null,
 > extends AbstractContainerGURPS<TParent> {
-
 	get children(): Collection<
 		| ItemInstances<TParent>[ItemType.Spell]
 		| ItemInstances<TParent>[ItemType.RitualMagicSpell]
@@ -19,9 +18,9 @@ class SpellContainerGURPS<
 				.map(item => [
 					item.id,
 					item as
-					| ItemInstances<TParent>[ItemType.Spell]
-					| ItemInstances<TParent>[ItemType.RitualMagicSpell]
-					| ItemInstances<TParent>[ItemType.SpellContainer],
+						| ItemInstances<TParent>[ItemType.Spell]
+						| ItemInstances<TParent>[ItemType.RitualMagicSpell]
+						| ItemInstances<TParent>[ItemType.SpellContainer],
 				]),
 		)
 	}

@@ -31,15 +31,7 @@ import {
 	TraitContainerGURPS,
 	TraitGURPS,
 } from "@item"
-import {
-	ActorFlags,
-	ItemType,
-	ManeuverID,
-	SETTINGS,
-	SYSTEM_NAME,
-	WeaponType,
-	gid,
-} from "@module/data/constants.ts"
+import { ActorFlags, ItemType, ManeuverID, SETTINGS, SYSTEM_NAME, WeaponType, gid } from "@module/data/constants.ts"
 import {
 	Int,
 	LocalizeGURPS,
@@ -262,10 +254,10 @@ class CharacterGURPS<
 		return AttributeGURPS.fromSource({
 			id: gid.Dodge,
 			definition: {
-				name: LocalizeGURPS.translations.gurps.attributes.dodge
+				name: LocalizeGURPS.translations.gurps.attributes.dodge,
 			},
 			effective: this.effectiveDodge,
-			current: this.currentDodge
+			current: this.currentDodge,
 		}) as AttributeGURPS
 	}
 
@@ -872,9 +864,13 @@ class CharacterGURPS<
 	}
 
 	generateNewAttributes<TDef extends AttributeDef>(definitions: TDef[]): ModelPropsFromSchema<AttributeSchema>[]
-	generateNewAttributes<TDef extends ResourceTrackerDef>(definitions: TDef[]): ModelPropsFromSchema<ResourceTrackerSchema>[]
+	generateNewAttributes<TDef extends ResourceTrackerDef>(
+		definitions: TDef[],
+	): ModelPropsFromSchema<ResourceTrackerSchema>[]
 	generateNewAttributes<TDef extends MoveTypeDef>(definitions: TDef[]): ModelPropsFromSchema<MoveTypeSchema>[]
-	generateNewAttributes<TDef extends AbstractAttributeDef>(definitions: TDef[]): ModelPropsFromSchema<AbstractAttributeSchema>[] {
+	generateNewAttributes<TDef extends AbstractAttributeDef>(
+		definitions: TDef[],
+	): ModelPropsFromSchema<AbstractAttributeSchema>[] {
 		const values: ModelPropsFromSchema<AbstractAttributeSchema>[] = []
 		definitions.forEach(definition => {
 			values.push(definition.generateNewAttribute().toObject())

@@ -8,7 +8,7 @@ import { DnD } from "@util"
 import { DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
 import { DropDataContext } from "@module/util/settings-helpers.ts"
 import { SettingsHelpers } from "@module/util/index.ts"
-import { AttributeDefSchema } from "@system/attribute/data.ts"
+import { AttributeDef } from "@system/attribute/definition.ts"
 
 type ConfigGURPSListName = (typeof AttributeSettings.SETTINGS)[number]
 
@@ -58,8 +58,9 @@ export class AttributeSettings extends SettingsMenuGURPS {
 		}
 	}
 
-	get attributes(): ModelPropsFromSchema<AttributeDefSchema>[] {
+	get attributes(): AttributeDef[] {
 		return game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
+			.map(e => new AttributeDef(e))
 	}
 
 	override activateListeners($html: JQuery<HTMLElement>): void {

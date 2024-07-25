@@ -35,7 +35,7 @@ class EquipmentModifierSystemData extends ItemSystemModel<EquipmentModifierGURPS
 
 interface EquipmentModifierSystemData
 	extends ItemSystemModel<EquipmentModifierGURPS, EquipmentModifierSystemSchema>,
-	ModelPropsFromSchema<EquipmentModifierSystemSchema> { }
+		ModelPropsFromSchema<EquipmentModifierSystemSchema> {}
 
 type EquipmentModifierSystemSchema = ItemSystemSchema & {
 	type: fields.StringField<ItemType.EquipmentModifier, ItemType.EquipmentModifier, true, false, true>

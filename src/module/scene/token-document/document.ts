@@ -34,17 +34,13 @@ class TokenDocumentGURPS<TParent extends SceneGURPS | null = SceneGURPS | null> 
 		return this.actor?.itemCollections.conditions.some(e => e.system.slug === statusId) ?? false
 	}
 
-	override async toggleCombatant(options: { active?: boolean }) {
+	override async toggleCombatant(options: { active?: boolean }): Promise<boolean> {
 		if (this.actor?.isOfType(ActorType.Character)) {
 			if (options.active || this.inCombat) await this.actor.setManeuver(null)
 			else await this.actor.setManeuver(ManeuverID.DoNothing)
 		}
 		return super.toggleCombatant(options)
-
-
-
 	}
-
 }
 
 interface TokenDocumentGURPS<TParent extends SceneGURPS | null = SceneGURPS | null> extends TokenDocument<TParent> {

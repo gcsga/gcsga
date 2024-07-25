@@ -3,7 +3,11 @@ import { TemplatePicker, TemplatePickerSchema } from "@system"
 import { container, selfctrl } from "@util"
 import { TraitContainerGURPS } from "./document.ts"
 import fields = foundry.data.fields
-import { AbstractContainerSource, AbstractContainerSystemData, AbstractContainerSystemSchema } from "@item/abstract-container/data.ts"
+import {
+	AbstractContainerSource,
+	AbstractContainerSystemData,
+	AbstractContainerSystemSchema,
+} from "@item/abstract-container/data.ts"
 
 class TraitContainerSystemData extends AbstractContainerSystemData<TraitContainerGURPS, TraitContainerSystemSchema> {
 	static override defineSchema(): TraitContainerSystemSchema {
@@ -23,22 +27,28 @@ class TraitContainerSystemData extends AbstractContainerSystemData<TraitContaine
 			userdesc: new fields.StringField(),
 			tags: new fields.ArrayField(new foundry.data.fields.StringField()),
 			template_picker: new fields.SchemaField(TemplatePicker.defineSchema()),
-			cr: new fields.NumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>({ choices: selfctrl.Rolls, initial: selfctrl.Roll.NoCR, nullable: false }),
+			cr: new fields.NumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>({
+				choices: selfctrl.Rolls,
+				initial: selfctrl.Roll.NoCR,
+				nullable: false,
+			}),
 			cr_adj: new fields.StringField<selfctrl.Adjustment>({
 				choices: selfctrl.Adjustments,
 				initial: selfctrl.Adjustment.NoCRAdj,
 			}),
-			container_type: new fields.StringField<container.Type>({ choices: container.Types, initial: container.Type.Group }),
+			container_type: new fields.StringField<container.Type>({
+				choices: container.Types,
+				initial: container.Type.Group,
+			}),
 			disabled: new fields.BooleanField({ initial: false }),
 			open: new fields.BooleanField({ initial: true }),
 		}
-
 	}
 }
 
 interface TraitContainerSystemData
 	extends AbstractContainerSystemData<TraitContainerGURPS, TraitContainerSystemSchema>,
-	ModelPropsFromSchema<TraitContainerSystemSchema> { }
+		ModelPropsFromSchema<TraitContainerSystemSchema> {}
 
 type TraitContainerSystemSchema = AbstractContainerSystemSchema & {
 	type: fields.StringField<ItemType.TraitContainer, ItemType.TraitContainer, true, false, true>

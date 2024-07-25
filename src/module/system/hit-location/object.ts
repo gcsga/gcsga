@@ -6,14 +6,12 @@ import { LaxSchemaField } from "@system/schema-data-fields.ts"
 import { StringBuilder, TooltipGURPS } from "@util"
 import { BodySchema, HitLocationSchema } from "./data.ts"
 
-class HitLocation extends foundry.abstract.DataModel<ActorGURPS, HitLocationSchema> {
-
+class HitLocation extends foundry.abstract.DataModel<BodyGURPS, HitLocationSchema> {
 	protected declare static _schema: LaxSchemaField<HitLocationSchema> | undefined
 
 	declare rollRange: string
-	declare owningTable: BodyGURPS | null
 
-	static override	defineSchema(): HitLocationSchema {
+	static override defineSchema(): HitLocationSchema {
 		const fields = foundry.data.fields
 
 		return {
@@ -28,13 +26,13 @@ class HitLocation extends foundry.abstract.DataModel<ActorGURPS, HitLocationSche
 			hit_penalty: new fields.NumberField({ initial: 0 }),
 			dr_bonus: new fields.NumberField({ initial: 0 }),
 			description: new fields.StringField({ nullable: true }),
-			sub_table: new fields.ObjectField({ required: false })
+			sub_table: new fields.ObjectField({ required: false }),
 		}
 	}
 
 	constructor(
 		data: DeepPartial<SourceFromSchema<HitLocationSchema>>,
-		options?: DataModelConstructionOptions<ActorGURPS>
+		options?: DataModelConstructionOptions<BodyGURPS>,
 	) {
 		super(data, options)
 		if (data.sub_table) {
@@ -47,9 +45,12 @@ class HitLocation extends foundry.abstract.DataModel<ActorGURPS, HitLocationSche
 		return (this.description ?? "").replace(/\n/g, "<br>")
 	}
 
+	get owningTable(): BodyGURPS {
+		return this.parent
+	}
 
 	get actor(): ActorGURPS {
-		return this.parent
+		return this.owningTable.actor
 	}
 
 	updateRollRange(start: number): number {
@@ -136,13 +137,13 @@ class HitLocation extends foundry.abstract.DataModel<ActorGURPS, HitLocationSche
 }
 
 interface HitLocation
-	extends foundry.abstract.DataModel<ActorGURPS, HitLocationSchema>, Omit<ModelPropsFromSchema<HitLocationSchema>, "sub_table"> {
+	extends foundry.abstract.DataModel<BodyGURPS, HitLocationSchema>,
+	Omit<ModelPropsFromSchema<HitLocationSchema>, "sub_table"> {
 	sub_table: BodyGURPS | null
-	get schema(): LaxSchemaField<HitLocationSchema>;
+	get schema(): LaxSchemaField<HitLocationSchema>
 }
 
-class BodyGURPS extends foundry.abstract.DataModel<ActorGURPS, BodySchema> {
-
+class BodyGURPS extends foundry.abstract.DataModel<ActorGURPS | HitLocation, BodySchema> {
 	protected declare static _schema: LaxSchemaField<BodySchema> | undefined
 
 	declare owningLocation: HitLocation | null
@@ -153,8 +154,7 @@ class BodyGURPS extends foundry.abstract.DataModel<ActorGURPS, BodySchema> {
 		return {
 			name: new fields.StringField({ initial: null }),
 			roll: new fields.StringField({ initial: "1d" }),
-			locations: new fields.ArrayField(new fields.SchemaField(HitLocation.defineSchema()))
-
+			locations: new fields.ArrayField(new fields.SchemaField(HitLocation.defineSchema())),
 		}
 	}
 
@@ -167,8 +167,15 @@ class BodyGURPS extends foundry.abstract.DataModel<ActorGURPS, BodySchema> {
 		}
 	}
 
+	get owningLocation(): HitLocation | null {
+		if (this.parent instanceof HitLocation) return this.parent
+		return null
+	}
+
 	get actor(): ActorGURPS {
-		return this.parent
+		if (this.parent instanceof ActorGURPS) return this.parent
+		if (this.parent instanceof HitLocation) return this.owningLocation.actor
+		throw new Error("HitLocation does not have a valid actor owner")
 	}
 
 	get processedRoll(): DiceGURPS {
@@ -181,16 +188,16 @@ class BodyGURPS extends foundry.abstract.DataModel<ActorGURPS, BodySchema> {
 	}
 }
 
-interface BodyGURPS extends foundry.abstract.DataModel<ActorGURPS, BodySchema>, Omit<ModelPropsFromSchema<BodySchema>, "locations"> {
-	locations: Array<HitLocation>
+interface BodyGURPS
+	extends foundry.abstract.DataModel<ActorGURPS | HitLocation, BodySchema>,
+	Omit<ModelPropsFromSchema<BodySchema>, "locations"> {
+	locations: HitLocation[]
 
-	get schema(): LaxSchemaField<BodySchema>;
+	get schema(): LaxSchemaField<BodySchema>
 }
 
-
-interface BodyConstructionOptions extends DataModelConstructionOptions<ActorGURPS> {
+interface BodyConstructionOptions extends DataModelConstructionOptions<ActorGURPS | HitLocation> {
 	owningLocation?: HitLocation | null
 }
 
 export { BodyGURPS, HitLocation }
-

@@ -307,7 +307,7 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 			)
 		) {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
-			; (this.container as any).modifiers.forEach((mod: any) => {
+			;(this.container as any).modifiers.forEach((mod: any) => {
 				let bonus: Feature
 				for (const f of mod.features) {
 					bonus = f

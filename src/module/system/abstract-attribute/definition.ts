@@ -7,21 +7,16 @@ import { Mook } from "@system/mook/index.ts"
 import { AbstractAttribute } from "./object.ts"
 
 abstract class AbstractAttributeDef<
-	TActor extends ActorGURPS | Mook = ActorGURPS,
-	TSchema extends AbstractAttributeDefSchema = AbstractAttributeDefSchema
+	TActor extends ActorGURPS | Mook = ActorGURPS | Mook,
+	TSchema extends AbstractAttributeDefSchema = AbstractAttributeDefSchema,
 > extends foundry.abstract.DataModel<TActor, TSchema> {
-
 	declare parent: TActor
 	protected declare static _schema: LaxSchemaField<AbstractAttributeDefSchema> | undefined
 
 	private _id: string
 	attributeClass = AbstractAttribute
 
-
-	constructor(
-		data: DeepPartial<SourceFromSchema<TSchema>>,
-		options?: DataModelConstructionOptions<TActor>
-	) {
+	constructor(data: DeepPartial<SourceFromSchema<TSchema>>, options?: DataModelConstructionOptions<TActor>) {
 		super(data, options)
 		this._id = sanitizeId(String(data.id ?? ""), false, RESERVED_IDS)
 		// this._id = data.id ?? ""
@@ -33,7 +28,7 @@ abstract class AbstractAttributeDef<
 
 		return {
 			id: new fields.StringField(),
-			base: new fields.StringField()
+			base: new fields.StringField(),
 		}
 	}
 
@@ -63,13 +58,17 @@ abstract class AbstractAttributeDef<
 
 	abstract generateNewAttribute(): AbstractAttribute
 
-	static createInstance<T extends AbstractAttributeDef>
-		(this: new (source: DeepPartial<SourceFromSchema<AbstractAttributeDefSchema>>) => T, reservedIds: string[]): T {
-		const id = getNewAttributeId(reservedIds.map(e => { return { id: e } }))
+	static createInstance<T extends AbstractAttributeDef>(
+		this: new (source: DeepPartial<SourceFromSchema<AbstractAttributeDefSchema>>) => T,
+		reservedIds: string[],
+	): T {
+		const id = getNewAttributeId(
+			reservedIds.map(e => {
+				return { id: e }
+			}),
+		)
 		return new this({ id })
 	}
-
-
 
 	// static init(reservedIds: string[], type: "attribute",): AttributeDef
 	// static init(reservedIds: string[], type: "resource_tracker",): ResourceTrackerDef
@@ -98,12 +97,8 @@ abstract class AbstractAttributeDef<
 	// }
 }
 
-interface AbstractAttributeDef<
-	TActor extends ActorGURPS | Mook,
-	TSchema extends AbstractAttributeDefSchema
-> extends foundry.abstract.DataModel<TActor, TSchema>,
-	ModelPropsFromSchema<AbstractAttributeDefSchema> {
-}
-
+interface AbstractAttributeDef<TActor extends ActorGURPS | Mook, TSchema extends AbstractAttributeDefSchema>
+	extends foundry.abstract.DataModel<TActor, TSchema>,
+	ModelPropsFromSchema<AbstractAttributeDefSchema> { }
 
 export { AbstractAttributeDef }

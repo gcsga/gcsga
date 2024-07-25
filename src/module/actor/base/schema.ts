@@ -33,7 +33,7 @@ abstract class ActorSystemModel<TParent extends ActorGURPS, TSchema extends Acto
 }
 
 interface ActorSystemModel<TParent extends ActorGURPS, TSchema extends ActorSystemSchema>
-	extends foundry.abstract.TypeDataModel<TParent, TSchema> { }
+	extends foundry.abstract.TypeDataModel<TParent, TSchema> {}
 
 type ActorSystemSchema = {
 	_migration: SchemaField<{

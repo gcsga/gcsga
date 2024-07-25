@@ -91,7 +91,7 @@ abstract class ItemImporter {
 	abstract importItem(item: ImportedItemSource, context: ItemImportContext): ItemSourceGURPS[]
 
 	static importPrereqs(prereqList?: ImportedPrereqList): SourceFromSchema<PrereqListSchema> {
-		//@ts-expect-error not necessary
+		// @ts-expect-error not necessary
 		return prereqList ?? { type: prereq.Type.List, all: true }
 	}
 
@@ -104,7 +104,7 @@ abstract class ItemImporter {
 	}
 
 	static importTemplatePicker(templatePicker?: ImportedTemplatePicker): SourceFromSchema<TemplatePickerSchema> {
-		//@ts-expect-error not necessary
+		// @ts-expect-error not necessary
 		return templatePicker ?? { type: picker.Type.NotApplicable, qualifier: {} }
 	}
 
@@ -118,7 +118,7 @@ abstract class ItemImporter {
 			modifiedTime: date,
 			lastModifiedBy: game.user.id,
 			compendiumSource: null,
-			duplicateSource: null
+			duplicateSource: null,
 		}
 	}
 }
@@ -153,7 +153,8 @@ class TraitImporter extends ItemImporter {
 			study: ItemImporter.importStudy(item.study),
 			cr: item.cr ?? selfctrl.Roll.NoCR,
 			cr_adj: item.cr_adj ?? selfctrl.Adjustment.NoCRAdj,
-			study_hours_needed: item.study_hours_needed === "" ? study.Level.Standard : item.study_hours_needed ?? study.Level.Standard,
+			study_hours_needed:
+				item.study_hours_needed === "" ? study.Level.Standard : item.study_hours_needed ?? study.Level.Standard,
 			disabled: item.disabled ?? false,
 			round_down: item.round_down ?? false,
 			can_level: item.can_level ?? false,
@@ -384,14 +385,15 @@ class SkillImporter extends ItemImporter {
 			tech_level_required: typeof item.tech_level === "string",
 			difficulty: item.difficulty ?? "dx/a",
 			points: item.points ?? 0,
-			encumbrance_penalty_multiplier: (item.encumbrance_penalty_multiplier) ?? 0,
+			encumbrance_penalty_multiplier: item.encumbrance_penalty_multiplier ?? 0,
 			defaulted_from: item.defaulted_from ?? { type: gid.Skill, name: "Skill", modifier: 0 },
 			defaults: item.defaults ?? [],
 			prereqs: ItemImporter.importPrereqs(item.prereqs),
 			// weapons handled separately
 			features: ItemImporter.importFeatures(item.features),
 			study: ItemImporter.importStudy(item.study),
-			study_hours_needed: item.study_hours_needed === "" ? study.Level.Standard : item.study_hours_needed ?? study.Level.Standard,
+			study_hours_needed:
+				item.study_hours_needed === "" ? study.Level.Standard : item.study_hours_needed ?? study.Level.Standard,
 		}
 
 		item.weapons?.reduce((acc, weapon) => {
@@ -454,7 +456,8 @@ class TechniqueImporter extends ItemImporter {
 			// weapons handled separately
 			features: ItemImporter.importFeatures(item.features),
 			study: ItemImporter.importStudy(item.study),
-			study_hours_needed: item.study_hours_needed === "" ? study.Level.Standard : item.study_hours_needed ?? study.Level.Standard,
+			study_hours_needed:
+				item.study_hours_needed === "" ? study.Level.Standard : item.study_hours_needed ?? study.Level.Standard,
 		}
 
 		item.weapons?.reduce((acc, weapon) => {
@@ -572,7 +575,8 @@ class SpellImporter extends ItemImporter {
 			prereqs: ItemImporter.importPrereqs(item.prereqs),
 			// weapons handled separately
 			study: ItemImporter.importStudy(item.study),
-			study_hours_needed: item.study_hours_needed === "" ? study.Level.Standard : item.study_hours_needed ?? study.Level.Standard,
+			study_hours_needed:
+				item.study_hours_needed === "" ? study.Level.Standard : item.study_hours_needed ?? study.Level.Standard,
 		}
 
 		item.weapons?.reduce((acc, weapon) => {
@@ -640,7 +644,8 @@ class RitualMagicSpellImporter extends ItemImporter {
 			prereqs: ItemImporter.importPrereqs(item.prereqs),
 			// weapons handled separately
 			study: ItemImporter.importStudy(item.study),
-			study_hours_needed: item.study_hours_needed === "" ? study.Level.Standard : item.study_hours_needed ?? study.Level.Standard,
+			study_hours_needed:
+				item.study_hours_needed === "" ? study.Level.Standard : item.study_hours_needed ?? study.Level.Standard,
 		}
 
 		item.weapons?.reduce((acc, weapon) => {
@@ -1082,7 +1087,7 @@ class MeleeWeaponImporter extends ItemImporter {
 				fragmentation_armor_divisor: 1,
 				fragmentation_type: "",
 				modifier_per_die: 0,
-				...item.damage
+				...item.damage,
 			},
 			strength: item.strength ?? "",
 			usage: item.usage ?? "",
@@ -1138,7 +1143,7 @@ class RangedWeaponImporter extends ItemImporter {
 				fragmentation_armor_divisor: 1,
 				fragmentation_type: "",
 				modifier_per_die: 0,
-				...item.damage
+				...item.damage,
 			},
 			strength: item.strength ?? "",
 			usage: item.usage ?? "",

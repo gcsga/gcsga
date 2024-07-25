@@ -1,6 +1,6 @@
-import { WeaponDamage, WeaponDamageSchema } from "@item/abstract-weapon/weapon-damage.ts";
-import { ItemFlags, ItemType, SETTINGS, SYSTEM_NAME, gid } from "@module/data/constants.ts";
-import { StringBuilder, difficulty, selfctrl, stdmg } from "@util";
+import { WeaponDamage, WeaponDamageSchema } from "@item/abstract-weapon/weapon-damage.ts"
+import { ItemFlags, ItemType, SETTINGS, SYSTEM_NAME, gid } from "@module/data/constants.ts"
+import { StringBuilder, difficulty, selfctrl, stdmg } from "@util"
 import {
 	MookEquipmentSchema,
 	MookItemSchema,
@@ -18,11 +18,20 @@ import {
 	regex_difficulty,
 	regex_levels,
 	regex_points,
-} from "./data.ts";
-import { Mook } from "./document.ts";
-import { DiceGURPS } from "@module/dice/index.ts";
-import { EquipmentSource, ItemSourceGURPS, MeleeWeaponSource, NoteSource, RangedWeaponSource, SkillSource, SpellSource, TraitModifierSource, TraitSource } from "@item/data/index.ts";
-
+} from "./data.ts"
+import { Mook } from "./document.ts"
+import { DiceGURPS } from "@module/dice/index.ts"
+import {
+	EquipmentSource,
+	ItemSourceGURPS,
+	MeleeWeaponSource,
+	NoteSource,
+	RangedWeaponSource,
+	SkillSource,
+	SpellSource,
+	TraitModifierSource,
+	TraitSource,
+} from "@item/data/index.ts"
 
 function cleanLine(text: string): string {
 	const start = text
@@ -36,9 +45,8 @@ function cleanLine(text: string): string {
 
 abstract class MookItem<
 	TSchema extends MookItemSchema = MookItemSchema,
-	TParent extends Mook | MookItem<MookItemSchema> = Mook
+	TParent extends Mook | MookItem<MookItemSchema> = Mook,
 > extends foundry.abstract.DataModel<TParent, TSchema> {
-
 	static override defineSchema(): MookItemSchema {
 		const fields = foundry.data.fields
 
@@ -61,21 +69,21 @@ abstract class MookItem<
 	}
 }
 
-interface MookItem<
-	TSchema extends MookItemSchema,
-	TParent extends Mook | MookItem<MookItemSchema> = Mook
-> extends foundry.abstract.DataModel<TParent, TSchema>,
-	ModelPropsFromSchema<MookItemSchema> { }
+interface MookItem<TSchema extends MookItemSchema, TParent extends Mook | MookItem<MookItemSchema> = Mook>
+	extends foundry.abstract.DataModel<TParent, TSchema>,
+		ModelPropsFromSchema<MookItemSchema> {}
 
 class MookTrait extends MookItem<MookTraitSchema> {
-
-	constructor(
-		data: SourceFromSchema<MookTraitSchema>,
-		options: DataModelConstructionOptions<Mook>
-	) {
+	constructor(data: DeepPartial<SourceFromSchema<MookTraitSchema>>, options: DataModelConstructionOptions<Mook>) {
 		super(data, options)
 
-		this.modifiers = data.modifiers.map(e => new MookTraitModifier(e, { parent: this }))
+		this.modifiers = []
+		if (data.modifiers) {
+			for (const mod of data.modifiers) {
+				if (!mod) continue
+				this.modifiers.push(new MookTraitModifier(mod, { parent: this }))
+			}
+		}
 	}
 
 	static override defineSchema(): MookTraitSchema {
@@ -84,9 +92,14 @@ class MookTrait extends MookItem<MookTraitSchema> {
 		return {
 			...super.defineSchema(),
 			points: new fields.NumberField({ required: true, nullable: false, initial: 0 }),
-			cr: new fields.NumberField({ choices: selfctrl.Rolls, required: true, nullable: false, initial: selfctrl.Roll.NoCR }),
+			cr: new fields.NumberField({
+				choices: selfctrl.Rolls,
+				required: true,
+				nullable: false,
+				initial: selfctrl.Roll.NoCR,
+			}),
 			levels: new fields.NumberField({ required: true, nullable: false, initial: 0 }),
-			modifiers: new fields.ArrayField(new fields.SchemaField(MookTraitModifier.defineSchema()))
+			modifiers: new fields.ArrayField(new fields.SchemaField(MookTraitModifier.defineSchema())),
 		}
 	}
 
@@ -118,8 +131,8 @@ class MookTrait extends MookItem<MookTraitSchema> {
 				_id: id,
 				flags: {
 					[SYSTEM_NAME]: {
-						[ItemFlags.Container]: parentId
-					}
+						[ItemFlags.Container]: parentId,
+					},
 				},
 				system: {
 					name: this.name,
@@ -128,9 +141,9 @@ class MookTrait extends MookItem<MookTraitSchema> {
 					base_points: this.points,
 					cr: this.cr,
 					can_level: this.levels !== 0,
-					levels: this.levels
-				}
-			}
+					levels: this.levels,
+				},
+			},
 		]
 	}
 
@@ -173,16 +186,21 @@ class MookTrait extends MookItem<MookTraitSchema> {
 
 			t = cleanLine(t)
 
-			traits.push(new MookTrait({
-				type: ItemType.Trait,
-				name: t,
-				points,
-				cr,
-				levels,
-				notes: "",
-				reference: "",
-				modifiers
-			}, { parent }))
+			traits.push(
+				new MookTrait(
+					{
+						type: ItemType.Trait,
+						name: t,
+						points,
+						cr,
+						levels,
+						notes: "",
+						reference: "",
+						modifiers,
+					},
+					{ parent },
+				),
+			)
 		})
 		return traits
 	}
@@ -194,15 +212,13 @@ class MookTrait extends MookItem<MookTraitSchema> {
 			if (m.split(",").length === 2 && m.split(",")[1].match(/[+-]?\d+%?/)) {
 				// assumes common format for modifier notation
 				const mod = m.split(",")
-				modifiers.push(
-					{
-						type: ItemType.TraitModifier,
-						name: mod[0].trim(),
-						cost: mod[1].trim(),
-						notes: "",
-						reference: "",
-					}
-				)
+				modifiers.push({
+					type: ItemType.TraitModifier,
+					name: mod[0].trim(),
+					cost: mod[1].trim(),
+					notes: "",
+					reference: "",
+				})
 			}
 		})
 		return modifiers
@@ -214,7 +230,6 @@ interface MookTrait extends MookItem<MookTraitSchema>, Omit<ModelPropsFromSchema
 }
 
 class MookTraitModifier extends MookItem<MookTraitModifierSchema, MookTrait> {
-
 	static override defineSchema(): MookTraitModifierSchema {
 		const fields = foundry.data.fields
 
@@ -238,23 +253,24 @@ class MookTraitModifier extends MookItem<MookTraitModifierSchema, MookTrait> {
 				flags: {
 					[SYSTEM_NAME]: {
 						[ItemFlags.Container]: parentId,
-					}
+					},
 				},
 				system: {
 					name: this.name,
 					notes: this.notes,
 					reference: this.reference,
 					cost: parseInt(this.cost) || 0,
-				}
-			}
+				},
+			},
 		]
 	}
 }
 
-interface MookTraitModifier extends MookItem<MookTraitModifierSchema, MookTrait>, ModelPropsFromSchema<MookTraitModifierSchema> { }
+interface MookTraitModifier
+	extends MookItem<MookTraitModifierSchema, MookTrait>,
+		ModelPropsFromSchema<MookTraitModifierSchema> {}
 
 class MookSkill extends MookItem<MookSkillSchema> {
-
 	static override defineSchema(): MookSkillSchema {
 		const fields = foundry.data.fields
 
@@ -263,7 +279,12 @@ class MookSkill extends MookItem<MookSkillSchema> {
 			specialization: new fields.StringField({ required: true, nullable: false, initial: "" }),
 			tech_level: new fields.StringField({ required: true, nullable: false, initial: "" }),
 			attribute: new fields.StringField({ required: true, nullable: false, initial: gid.Dexterity }),
-			difficulty: new fields.StringField({ choices: difficulty.Levels, required: true, nullable: false, initial: difficulty.Level.Average }),
+			difficulty: new fields.StringField({
+				choices: difficulty.Levels,
+				required: true,
+				nullable: false,
+				initial: difficulty.Level.Average,
+			}),
 			points: new fields.NumberField({ required: true, nullable: false, initial: 0 }),
 			level: new fields.NumberField({ required: true, nullable: false, initial: 0 }),
 		}
@@ -281,15 +302,14 @@ class MookSkill extends MookItem<MookSkillSchema> {
 	override toItemSource(parentId: string | null): DeepPartial<SkillSource>[] {
 		const id = fu.randomID()
 		return [
-
 			{
 				type: ItemType.Skill,
 				name: this.name,
 				_id: id,
 				flags: {
 					[SYSTEM_NAME]: {
-						[ItemFlags.Container]: parentId
-					}
+						[ItemFlags.Container]: parentId,
+					},
 				},
 				system: {
 					name: this.name,
@@ -297,9 +317,9 @@ class MookSkill extends MookItem<MookSkillSchema> {
 					notes: this.notes,
 					reference: this.reference,
 					tech_level: this.tech_level,
-					difficulty: `${this.attribute}/${this.difficulty}`
-				}
-			}
+					difficulty: `${this.attribute}/${this.difficulty}`,
+				},
+			},
 		]
 	}
 
@@ -377,28 +397,29 @@ class MookSkill extends MookItem<MookSkillSchema> {
 
 			t = cleanLine(t)
 
-			skills.push(new MookSkill({
-				type: ItemType.Skill,
-				name: t,
-				attribute: attribute,
-				difficulty: diff as difficulty.Level,
-				points,
-				level,
-				specialization,
-				tech_level: tl,
-				notes: "",
-				reference: "",
-			}))
+			skills.push(
+				new MookSkill({
+					type: ItemType.Skill,
+					name: t,
+					attribute: attribute,
+					difficulty: diff as difficulty.Level,
+					points,
+					level,
+					specialization,
+					tech_level: tl,
+					notes: "",
+					reference: "",
+				}),
+			)
 		})
 
 		return skills
 	}
 }
 
-interface MookSkill extends MookItem<MookSkillSchema>, ModelPropsFromSchema<MookSkillSchema> { }
+interface MookSkill extends MookItem<MookSkillSchema>, ModelPropsFromSchema<MookSkillSchema> {}
 
 class MookSpell extends MookItem<MookSpellSchema> {
-
 	static override defineSchema(): MookSpellSchema {
 		const fields = foundry.data.fields
 
@@ -407,7 +428,12 @@ class MookSpell extends MookItem<MookSpellSchema> {
 			college: new fields.ArrayField(new fields.StringField()),
 			tech_level: new fields.StringField({ required: true, nullable: false, initial: "" }),
 			attribute: new fields.StringField({ required: true, nullable: false, initial: gid.Intelligence }),
-			difficulty: new fields.StringField({ choices: difficulty.Levels, required: true, nullable: false, initial: difficulty.Level.Hard }),
+			difficulty: new fields.StringField({
+				choices: difficulty.Levels,
+				required: true,
+				nullable: false,
+				initial: difficulty.Level.Hard,
+			}),
 			points: new fields.NumberField({ required: true, nullable: false, initial: 0 }),
 			level: new fields.NumberField({ required: true, nullable: false, initial: 0 }),
 		}
@@ -425,15 +451,14 @@ class MookSpell extends MookItem<MookSpellSchema> {
 	override toItemSource(parentId: string | null): DeepPartial<SpellSource>[] {
 		const id = fu.randomID()
 		return [
-
 			{
 				type: ItemType.Spell,
 				name: this.name,
 				_id: id,
 				flags: {
 					[SYSTEM_NAME]: {
-						[ItemFlags.Container]: parentId
-					}
+						[ItemFlags.Container]: parentId,
+					},
 				},
 				system: {
 					name: this.name,
@@ -441,9 +466,9 @@ class MookSpell extends MookItem<MookSpellSchema> {
 					notes: this.notes,
 					reference: this.reference,
 					tech_level: this.tech_level,
-					difficulty: `${this.attribute}/${this.difficulty}`
-				}
-			}
+					difficulty: `${this.attribute}/${this.difficulty}`,
+				},
+			},
 		]
 	}
 
@@ -512,28 +537,29 @@ class MookSpell extends MookItem<MookSpellSchema> {
 
 			t = cleanLine(t)
 
-			spells.push(new MookSpell({
-				type: ItemType.Spell,
-				name: t,
-				college: [],
-				attribute: attribute,
-				difficulty: diff as difficulty.Level,
-				points,
-				level,
-				tech_level: tl,
-				notes: "",
-				reference: "",
-			}))
+			spells.push(
+				new MookSpell({
+					type: ItemType.Spell,
+					name: t,
+					college: [],
+					attribute: attribute,
+					difficulty: diff as difficulty.Level,
+					points,
+					level,
+					tech_level: tl,
+					notes: "",
+					reference: "",
+				}),
+			)
 		})
 
 		return spells
 	}
 }
 
-interface MookSpell extends MookItem<MookSpellSchema>, ModelPropsFromSchema<MookSpellSchema> { }
+interface MookSpell extends MookItem<MookSpellSchema>, ModelPropsFromSchema<MookSpellSchema> {}
 
 abstract class MookWeapon<TSchema extends MookWeaponSchema = MookWeaponSchema> extends MookItem<TSchema> {
-
 	static override defineSchema(): MookWeaponSchema {
 		const fields = foundry.data.fields
 
@@ -541,7 +567,7 @@ abstract class MookWeapon<TSchema extends MookWeaponSchema = MookWeaponSchema> e
 			...super.defineSchema(),
 			strength: new fields.StringField({ required: true, nullable: false, initial: "0" }),
 			damage: new fields.SchemaField(WeaponDamage.defineSchema()),
-			level: new fields.NumberField({ required: true, nullable: false, initial: 0 })
+			level: new fields.NumberField({ required: true, nullable: false, initial: 0 }),
 		}
 	}
 
@@ -689,8 +715,8 @@ abstract class MookWeapon<TSchema extends MookWeaponSchema = MookWeaponSchema> e
 				modifier_per_die: 0,
 			}
 
-				// capture damage
-				;[damage, t] = this._parseDamage(t)
+			// capture damage
+			;[damage, t] = this._parseDamage(t)
 
 			// if damage parser captures anything after the name, add it as a note
 			if (t.match(/\{\{.*\}\}/)) {
@@ -702,34 +728,44 @@ abstract class MookWeapon<TSchema extends MookWeaponSchema = MookWeaponSchema> e
 			notes = cleanLine(notes)
 
 			if (isRanged) {
-				weapons.push(new MookRanged({
-					type: ItemType.RangedWeapon,
-					name,
-					accuracy,
-					range: half_damage > 0 && max_range > 0 ? `${half_damage}/${max_range}` : range,
-					level,
-					rate_of_fire: rof,
-					shots,
-					bulk,
-					recoil,
-					reference,
-					strength: ST,
-					notes,
-					damage,
-				}, { parent }))
+				weapons.push(
+					new MookRanged(
+						{
+							type: ItemType.RangedWeapon,
+							name,
+							accuracy,
+							range: half_damage > 0 && max_range > 0 ? `${half_damage}/${max_range}` : range,
+							level,
+							rate_of_fire: rof,
+							shots,
+							bulk,
+							recoil,
+							reference,
+							strength: ST,
+							notes,
+							damage,
+						},
+						{ parent },
+					),
+				)
 			} else {
-				weapons.push(new MookMelee({
-					type: ItemType.MeleeWeapon,
-					name,
-					reach,
-					strength: ST,
-					level,
-					damage,
-					parry,
-					block,
-					notes,
-					reference,
-				}, { parent }))
+				weapons.push(
+					new MookMelee(
+						{
+							type: ItemType.MeleeWeapon,
+							name,
+							reach,
+							strength: ST,
+							level,
+							damage,
+							parry,
+							block,
+							notes,
+							reference,
+						},
+						{ parent },
+					),
+				)
 			}
 		})
 		return weapons
@@ -778,12 +814,9 @@ abstract class MookWeapon<TSchema extends MookWeaponSchema = MookWeaponSchema> e
 		base = base.replace(damage.base, "").trim()
 		return [damage, input]
 	}
-
-
 }
 
 class MookMelee extends MookWeapon<MookMeleeSchema> {
-
 	static override defineSchema(): MookMeleeSchema {
 		const fields = foundry.data.fields
 
@@ -810,15 +843,14 @@ class MookMelee extends MookWeapon<MookMeleeSchema> {
 	override toItemSource(parentId: string | null): DeepPartial<MeleeWeaponSource>[] {
 		const id = fu.randomID()
 		return [
-
 			{
 				type: ItemType.MeleeWeapon,
 				name: this.name,
 				_id: id,
 				flags: {
 					[SYSTEM_NAME]: {
-						[ItemFlags.Container]: parentId
-					}
+						[ItemFlags.Container]: parentId,
+					},
 				},
 				system: {
 					usage: this.name,
@@ -834,17 +866,15 @@ class MookMelee extends MookWeapon<MookMeleeSchema> {
 							modifier: this.level - 10,
 						},
 					],
-				}
-			}
+				},
+			},
 		]
 	}
 }
 
-interface MookMelee extends MookWeapon<MookMeleeSchema>, ModelPropsFromSchema<MookMeleeSchema> { }
-
+interface MookMelee extends MookWeapon<MookMeleeSchema>, ModelPropsFromSchema<MookMeleeSchema> {}
 
 class MookRanged extends MookWeapon<MookRangedSchema> {
-
 	static override defineSchema(): MookRangedSchema {
 		const fields = foundry.data.fields
 
@@ -877,15 +907,14 @@ class MookRanged extends MookWeapon<MookRangedSchema> {
 	override toItemSource(parentId: string | null): DeepPartial<RangedWeaponSource>[] {
 		const id = fu.randomID()
 		return [
-
 			{
 				type: ItemType.RangedWeapon,
 				name: this.name,
 				_id: id,
 				flags: {
 					[SYSTEM_NAME]: {
-						[ItemFlags.Container]: parentId
-					}
+						[ItemFlags.Container]: parentId,
+					},
 				},
 				system: {
 					usage: this.name,
@@ -904,16 +933,15 @@ class MookRanged extends MookWeapon<MookRangedSchema> {
 							modifier: this.level - 10,
 						},
 					],
-				}
-			}
+				},
+			},
 		]
 	}
 }
 
-interface MookRanged extends MookWeapon<MookRangedSchema>, ModelPropsFromSchema<MookRangedSchema> { }
+interface MookRanged extends MookWeapon<MookRangedSchema>, ModelPropsFromSchema<MookRangedSchema> {}
 
 class MookEquipment extends MookItem<MookEquipmentSchema> {
-
 	static override defineSchema(): MookEquipmentSchema {
 		const fields = foundry.data.fields
 
@@ -944,8 +972,8 @@ class MookEquipment extends MookItem<MookEquipmentSchema> {
 				_id: id,
 				flags: {
 					[SYSTEM_NAME]: {
-						[ItemFlags.Container]: parentId
-					}
+						[ItemFlags.Container]: parentId,
+					},
 				},
 				system: {
 					description: this.name,
@@ -958,17 +986,15 @@ class MookEquipment extends MookItem<MookEquipmentSchema> {
 					uses: this.uses,
 					max_uses: this.max_uses,
 					reference: this.reference,
-				}
-			}
+				},
+			},
 		]
 	}
 }
 
-interface MookEquipment extends MookItem<MookEquipmentSchema>, ModelPropsFromSchema<MookEquipmentSchema> { }
-
+interface MookEquipment extends MookItem<MookEquipmentSchema>, ModelPropsFromSchema<MookEquipmentSchema> {}
 
 class MookNote extends MookItem<MookNoteSchema> {
-
 	override toText(): string {
 		const buffer = new StringBuilder()
 		buffer.push(this.name)
@@ -984,19 +1010,29 @@ class MookNote extends MookItem<MookNoteSchema> {
 				_id: id,
 				flags: {
 					[SYSTEM_NAME]: {
-						[ItemFlags.Container]: parentId
-					}
+						[ItemFlags.Container]: parentId,
+					},
 				},
 				system: {
 					text: this.notes,
 					reference: this.reference,
-				}
-			}
+				},
+			},
 		]
 	}
 }
 
-interface MookNote extends MookItem<MookNoteSchema>, ModelPropsFromSchema<MookNoteSchema> { }
+interface MookNote extends MookItem<MookNoteSchema>, ModelPropsFromSchema<MookNoteSchema> {}
 
-export { MookEquipment, MookItem, MookMelee, MookNote, MookRanged, MookSkill, MookSpell, MookTrait, MookTraitModifier, MookWeapon };
-
+export {
+	MookEquipment,
+	MookItem,
+	MookMelee,
+	MookNote,
+	MookRanged,
+	MookSkill,
+	MookSpell,
+	MookTrait,
+	MookTraitModifier,
+	MookWeapon,
+}

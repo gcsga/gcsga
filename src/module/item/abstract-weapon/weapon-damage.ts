@@ -81,8 +81,9 @@ export class WeaponDamage {
 			if (this.armor_divisor !== 1) buffer += `(${this.armor_divisor})`
 			if (this.modifier_per_die !== 0) {
 				if (buffer.length !== 0) buffer += " "
-				buffer += `(${this.modifier_per_die?.signedString()} ${LocalizeGURPS.translations.gurps.feature.per_die
-					})`
+				buffer += `(${this.modifier_per_die?.signedString()} ${
+					LocalizeGURPS.translations.gurps.feature.per_die
+				})`
 			}
 			const t = this.type.trim()
 			if (t !== "") buffer += ` ${t}`

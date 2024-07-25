@@ -6,15 +6,13 @@ import {
 import { ItemType } from "@module/data/constants.ts"
 import { EffectGURPS } from "./document.ts"
 
-class EffectSystemData extends AbstractEffectSystemData<EffectGURPS, EffectSystemSchema> {
-}
+class EffectSystemData extends AbstractEffectSystemData<EffectGURPS, EffectSystemSchema> {}
 
 interface EffectSystemData
 	extends AbstractEffectSystemData<EffectGURPS, EffectSystemSchema>,
-	ModelPropsFromSchema<EffectSystemSchema> { }
+		ModelPropsFromSchema<EffectSystemSchema> {}
 
-type EffectSystemSchema = AbstractEffectSystemSchema & {
-}
+type EffectSystemSchema = AbstractEffectSystemSchema & {}
 
 type EffectSystemSource = SourceFromSchema<EffectSystemSchema>
 

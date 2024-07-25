@@ -1,35 +1,93 @@
-import { ActorType, SETTINGS, SYSTEM_NAME, gid } from "@module/data/index.ts"
+import { ActorFlags, ActorType, SETTINGS, SYSTEM_NAME, gid } from "@module/data/index.ts"
 import { AttributeDef, AttributeGURPS, MoveTypeDef } from "@system"
-import { progression, sanitize } from "@util"
-import { MookEquipment, MookMelee, MookNote, MookRanged, MookSkill, MookSpell, MookTrait, MookWeapon } from "./components.ts"
+import { TooltipGURPS, progression, sanitize, stlimit } from "@util"
+import {
+	MookEquipment,
+	MookMelee,
+	MookNote,
+	MookRanged,
+	MookSkill,
+	MookSpell,
+	MookTrait,
+	MookWeapon,
+} from "./components.ts"
 import { MookSchema } from "./data.ts"
 import { CharacterGURPS } from "@actor"
-import { CharacterSource } from "@actor/character/data.ts"
-import { ItemSourceGURPS, MeleeWeaponSource, RangedWeaponSource, SkillSource, SpellSource, TraitModifierSource, TraitSource } from "@item/data/index.ts"
-
-
+import { CharacterFlags, CharacterSource } from "@actor/character/data.ts"
+import {
+	ItemSourceGURPS,
+	MeleeWeaponSource,
+	RangedWeaponSource,
+	SkillSource,
+	SpellSource,
+	TraitModifierSource,
+	TraitSource,
+} from "@item/data/index.ts"
+import { DiceGURPS } from "@module/dice/index.ts"
 
 class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 	declare text: string
 	declare catchall: string
 
-	constructor(
-		data: Partial<SourceFromSchema<MookSchema>>,
-		options: DataModelConstructionOptions<null>
-	) {
+	constructor(data: DeepPartial<SourceFromSchema<MookSchema>>, options?: DataModelConstructionOptions<null>) {
 		super(data, options)
 
-		if (data.attributes)
-			this.attributes = new Map(data.attributes.map(e => [e.id, new AttributeGURPS(e, { parent: this })]))
+		this.attributes = new Map()
+		if (data.attributes) {
+			for (const att of data.attributes) {
+				if (!att) continue
+				if (att.id) this.attributes.set(att.id, new AttributeGURPS(att, { parent: this }))
+			}
+		}
 
-		this.traits = data.traits?.map(e => new MookTrait(e, { parent: this })) ?? []
-		this.skills = data.skills?.map(e => new MookSkill(e, { parent: this })) ?? []
-		this.spells = data.spells?.map(e => new MookSpell(e, { parent: this })) ?? []
-		this.melee = data.melee?.map(e => new MookMelee(e, { parent: this })) ?? []
-		this.ranged = data.ranged?.map(e => new MookRanged(e, { parent: this })) ?? []
-		this.equipment = data.equipment?.map(e => new MookEquipment(e, { parent: this })) ?? []
-		this.otherEquipment = data.otherEquipment?.map(e => new MookEquipment(e, { parent: this })) ?? []
-		this.notes = data.notes?.map(e => new MookNote(e, { parent: this })) ?? []
+		if (data.traits) {
+			for (const e of data.traits) {
+				if (!e) continue
+				this.traits.push(new MookTrait(e, { parent: this }))
+			}
+		}
+		if (data.skills) {
+			for (const e of data.skills) {
+				if (!e) continue
+				this.skills.push(new MookSkill(e, { parent: this }))
+			}
+		}
+		if (data.spells) {
+			for (const e of data.spells) {
+				if (!e) continue
+				this.spells.push(new MookSpell(e, { parent: this }))
+			}
+		}
+		if (data.melee) {
+			for (const e of data.melee) {
+				if (!e) continue
+				this.melee.push(new MookMelee(e, { parent: this }))
+			}
+		}
+		if (data.ranged) {
+			for (const e of data.ranged) {
+				if (!e) continue
+				this.ranged.push(new MookRanged(e, { parent: this }))
+			}
+		}
+		if (data.equipment) {
+			for (const e of data.equipment) {
+				if (!e) continue
+				this.equipment.push(new MookEquipment(e, { parent: this }))
+			}
+		}
+		if (data.otherEquipment) {
+			for (const e of data.otherEquipment) {
+				if (!e) continue
+				this.otherEquipment.push(new MookEquipment(e, { parent: this }))
+			}
+		}
+		if (data.notes) {
+			for (const e of data.notes) {
+				if (!e) continue
+				this.notes.push(new MookNote(e, { parent: this }))
+			}
+		}
 	}
 
 	static override defineSchema(): MookSchema {
@@ -43,7 +101,7 @@ class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 					choices: progression.Options,
 					required: true,
 					nullable: false,
-					initial: progression.Option.BasicSet
+					initial: progression.Option.BasicSet,
 				}),
 				move_types: new fields.ArrayField(new fields.SchemaField(MoveTypeDef.defineSchema())),
 			}),
@@ -68,7 +126,6 @@ class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 			thrust: new fields.StringField({ required: true, nullable: false, initial: "" }),
 			swing: new fields.StringField({ required: true, nullable: false, initial: "" }),
 		}
-
 	}
 
 	parseStatblock(text: string): void {
@@ -85,18 +142,35 @@ class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 	}
 
 	async createActor(): Promise<CharacterGURPS | null> {
-
 		const attributes = Object.values(this.attributes)
 
 		const items: DeepPartial<ItemSourceGURPS>[] = [
-			...this.traits.reduce((acc: DeepPartial<TraitSource | TraitModifierSource>[], e) => { acc.push(...e.toItemSource(null)); return acc }, []),
-			...this.skills.reduce((acc: DeepPartial<SkillSource>[], e) => { acc.push(...e.toItemSource(null)); return acc }, []),
-			...this.spells.reduce((acc: DeepPartial<SpellSource>[], e) => { acc.push(...e.toItemSource(null)); return acc }, []),
-			...this.melee.reduce((acc: DeepPartial<MeleeWeaponSource>[], e) => { acc.push(...e.toItemSource(null)); return acc }, []),
-			...this.ranged.reduce((acc: DeepPartial<RangedWeaponSource>[], e) => { acc.push(...e.toItemSource(null)); return acc }, []),
+			...this.traits.reduce((acc: DeepPartial<TraitSource | TraitModifierSource>[], e) => {
+				acc.push(...e.toItemSource(null))
+				return acc
+			}, []),
+			...this.skills.reduce((acc: DeepPartial<SkillSource>[], e) => {
+				acc.push(...e.toItemSource(null))
+				return acc
+			}, []),
+			...this.spells.reduce((acc: DeepPartial<SpellSource>[], e) => {
+				acc.push(...e.toItemSource(null))
+				return acc
+			}, []),
+			...this.melee.reduce((acc: DeepPartial<MeleeWeaponSource>[], e) => {
+				acc.push(...e.toItemSource(null))
+				return acc
+			}, []),
+			...this.ranged.reduce((acc: DeepPartial<RangedWeaponSource>[], e) => {
+				acc.push(...e.toItemSource(null))
+				return acc
+			}, []),
 		]
 
-		const data: Omit<DeepPartial<CharacterSource>, "name" | "type" | "_id"> & { name: string, type: ActorType.Character } = {
+		const data: Omit<DeepPartial<CharacterSource>, "name" | "type" | "_id"> & {
+			name: string
+			type: ActorType.Character
+		} = {
 			type: ActorType.Character,
 			name: this.profile.name,
 			img: this.profile.portrait,
@@ -104,7 +178,7 @@ class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 				attributes,
 				profile: this.profile,
 			},
-			items
+			items,
 		}
 
 		const newActor = await CharacterGURPS.create(data)
@@ -121,7 +195,6 @@ class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 		text = text.replace(/[^ -~\n]+/g, "") // remove remaining non-ascii
 		return this._cleanLine(text) // trim and remove leading and trailing periods.
 	}
-
 
 	/*
 	 * General Use Parser Functions
@@ -164,7 +237,6 @@ class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 		}
 		return -1
 	}
-
 
 	/*
 	 * Specific Fields Parser Funtions
@@ -247,7 +319,6 @@ class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 			}
 		}
 	}
-
 
 	private _parseAttacks(oldFormat = false, skipSeparation = false): void {
 		const regex_acc = /\s?[Aa]cc:?\s*(\d+)\s?,?/
@@ -390,12 +461,95 @@ class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 
 		this.spells = MookSpell.arrayFromText(text, this)
 	}
+
+	/**
+	 * ActorGURPS compatibility placeholder functions
+	 */
+	costReductionFor(..._args: unknown[]): number {
+		return 0
+	}
+
+	attributeBonusFor(
+		_attributeId: string | null,
+		_limitation: stlimit.Option,
+		_effective: boolean | null = null,
+		_tooltip: TooltipGURPS | null = null,
+	): number {
+		return 0
+	}
+
+	effectiveST(initialST: number): number {
+		return initialST
+	}
+
+	protected variableResolverExclusions: Map<string, boolean> = new Map()
+
+	get name(): string {
+		return this.profile.name
+	}
+
+	get type(): string {
+		return "Mook"
+	}
+
+	get adjustedSizeModifier(): number {
+		return this.profile.SM
+	}
+
+	get flags(): CharacterFlags {
+		return {
+			[SYSTEM_NAME]: {
+				[ActorFlags.TargetModifiers]: [],
+				[ActorFlags.SelfModifiers]: [],
+				[ActorFlags.Import]: { name: "", path: "", last_import: "" },
+				[ActorFlags.MoveType]: gid.Ground,
+				[ActorFlags.AutoEncumbrance]: { active: true, manual: 0 },
+				[ActorFlags.AutoThreshold]: { active: true, manual: {} },
+				[ActorFlags.AutoDamage]: { active: true, thrust: new DiceGURPS(), swing: new DiceGURPS() },
+			}
+		}
+	}
+
+	resolveVariable(variableName: string): string {
+		if (this.variableResolverExclusions?.has(variableName)) {
+			console.warn(`Attempt to resolve variable via itself: $${variableName}`)
+			return ""
+		}
+		if (!this.variableResolverExclusions) this.variableResolverExclusions = new Map()
+		this.variableResolverExclusions.set(variableName, true)
+		if (gid.SizeModifier === variableName) return this.profile.SM.signedString()
+		const parts = variableName.split(".") // TODO: check
+		const attr: AttributeGURPS | undefined = this.attributes.get(parts[0])
+		if (!attr) {
+			console.warn(`No such variable: $${variableName}`)
+			return ""
+		}
+		let def
+		if (attr instanceof AttributeGURPS) {
+			def = attr.definition
+		}
+		if (!def) {
+			console.warn(`No such variable definition: $${variableName}`)
+			return ""
+		}
+		this.variableResolverExclusions = new Map()
+		return attr?.max.toString()
+	}
 }
 
-
-interface Mook extends foundry.abstract.DataModel<null, MookSchema>,
-	Omit<ModelPropsFromSchema<MookSchema>,
-		"attributes" | "traits" | "skills" | "spells" | "melee" | "ranged" | "equipment" | "otherEquipment" | "notes"
+interface Mook
+	extends foundry.abstract.DataModel<null, MookSchema>,
+	Omit<
+		ModelPropsFromSchema<MookSchema>,
+		| "attributes"
+		| "traits"
+		| "skills"
+		| "spells"
+		| "melee"
+		| "ranged"
+		| "equipment"
+		| "otherEquipment"
+		| "notes"
 	> {
 	attributes: Map<string, AttributeGURPS>
 

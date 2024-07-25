@@ -388,8 +388,6 @@ const SORTABLE_BASE_OPTIONS: Sortable.Options = {
 	delayOnTouchOnly: true,
 }
 
-
-
 enum NumericCompareType {
 	AnyNumber = "none",
 	EqualsNumber = "is",

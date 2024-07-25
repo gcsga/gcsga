@@ -20,9 +20,7 @@ class NoteSystemData extends ItemSystemModel<NoteGURPS, NoteSystemSchema> {
 	}
 }
 
-interface NoteSystemData
-	extends ItemSystemModel<NoteGURPS, NoteSystemSchema>,
-	ModelPropsFromSchema<NoteSystemSchema> { }
+interface NoteSystemData extends ItemSystemModel<NoteGURPS, NoteSystemSchema>, ModelPropsFromSchema<NoteSystemSchema> {}
 
 type NoteSystemSchema = ItemSystemSchema & {
 	type: fields.StringField<ItemType.Note, ItemType.Note, true, false, true>

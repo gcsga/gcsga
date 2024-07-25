@@ -5,7 +5,6 @@ import { LocalizeGURPS, NewLineRegex, StringBuilder, TooltipGURPS, difficulty, d
 import { SheetSettings, SkillDefault, resolveStudyHours, studyHoursProgressText } from "@system"
 import { ActorType, ItemType } from "@module/data/constants.ts"
 class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends AbstractSkillGURPS<TParent> {
-
 	declare level: SkillLevel
 	declare default: SkillDefault | null
 

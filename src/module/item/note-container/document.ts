@@ -7,7 +7,6 @@ import { ItemType } from "@module/data/constants.ts"
 class NoteContainerGURPS<
 	TParent extends ActorGURPS | null = ActorGURPS | null,
 > extends AbstractContainerGURPS<TParent> {
-
 	get children(): Collection<ItemInstances<TParent>[ItemType.Note] | ItemInstances<TParent>[ItemType.NoteContainer]> {
 		return new Collection(
 			this.contents

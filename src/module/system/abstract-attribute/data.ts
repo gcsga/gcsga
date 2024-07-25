@@ -11,7 +11,8 @@ type AbstractAttributeDefSchema = {
 	base: fields.StringField
 }
 
-interface AbstractAttributeConstructionOptions<TActor extends ActorGURPS | Mook> extends DataModelConstructionOptions<TActor> {
+interface AbstractAttributeConstructionOptions<TActor extends ActorGURPS | Mook>
+	extends DataModelConstructionOptions<TActor> {
 	order?: number
 }
 

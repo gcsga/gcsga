@@ -45,7 +45,7 @@ describe("Damage calculator", () => {
 				id: "torso",
 				slots: 2,
 			},
-			{ parent: _target }
+			{ parent: _target },
 		)
 
 		_vitals = new DamageHitLocation(
@@ -58,7 +58,7 @@ describe("Damage calculator", () => {
 				id: "vitals",
 				slots: 0,
 			},
-			{ parent: _target, }
+			{ parent: _target },
 		)
 
 		_skull = new DamageHitLocation(
@@ -71,7 +71,7 @@ describe("Damage calculator", () => {
 				id: "skull",
 				slots: 0,
 			},
-			{ parent: _target, }
+			{ parent: _target },
 		)
 
 		_eye = new DamageHitLocation(
@@ -84,7 +84,7 @@ describe("Damage calculator", () => {
 				id: "eye",
 				slots: 0,
 			},
-			{ parent: _target, }
+			{ parent: _target },
 		)
 
 		_face = new DamageHitLocation(
@@ -97,7 +97,7 @@ describe("Damage calculator", () => {
 				id: "face",
 				slots: 1,
 			},
-			{ parent: _target, }
+			{ parent: _target },
 		)
 
 		_neck = new DamageHitLocation(
@@ -110,7 +110,7 @@ describe("Damage calculator", () => {
 				id: "neck",
 				slots: 1,
 			},
-			{ parent: _target, }
+			{ parent: _target },
 		)
 
 		_groin = new DamageHitLocation(
@@ -123,7 +123,7 @@ describe("Damage calculator", () => {
 				id: "groin",
 				slots: 1,
 			},
-			{ parent: _target, }
+			{ parent: _target },
 		)
 
 		_arm = new DamageHitLocation(
@@ -136,7 +136,7 @@ describe("Damage calculator", () => {
 				id: "arm",
 				slots: 1,
 			},
-			{ parent: _target, }
+			{ parent: _target },
 		)
 
 		_leg = new DamageHitLocation(
@@ -149,7 +149,7 @@ describe("Damage calculator", () => {
 				id: "leg",
 				slots: 2,
 			},
-			{ parent: _target, }
+			{ parent: _target },
 		)
 
 		_hand = new DamageHitLocation(
@@ -162,7 +162,7 @@ describe("Damage calculator", () => {
 				id: "hand",
 				slots: 1,
 			},
-			{ parent: _target, }
+			{ parent: _target },
 		)
 
 		_foot = new DamageHitLocation(
@@ -175,7 +175,7 @@ describe("Damage calculator", () => {
 				id: "foot",
 				slots: 1,
 			},
-			{ parent: _target, }
+			{ parent: _target },
 		)
 
 		_target.hitLocationTable.locations.push(_torso)

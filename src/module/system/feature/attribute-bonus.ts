@@ -4,7 +4,6 @@ import { AttributeBonusSchema } from "./data.ts"
 import { BaseFeature, LeveledAmount } from "./base.ts"
 
 class AttributeBonus extends BaseFeature<AttributeBonusSchema> {
-
 	static override defineSchema(): AttributeBonusSchema {
 		const fields = foundry.data.fields
 
@@ -12,7 +11,7 @@ class AttributeBonus extends BaseFeature<AttributeBonusSchema> {
 			...super.defineSchema(),
 			...LeveledAmount.defineSchema(),
 			attribute: new fields.StringField({ initial: gid.Strength }),
-			limitation: new fields.StringField({ choices: stlimit.Options, initial: stlimit.Option.None })
+			limitation: new fields.StringField({ choices: stlimit.Options, initial: stlimit.Option.None }),
 		}
 	}
 
@@ -22,7 +21,6 @@ class AttributeBonus extends BaseFeature<AttributeBonusSchema> {
 	}
 }
 
-
-interface AttributeBonus extends BaseFeature<AttributeBonusSchema>, ModelPropsFromSchema<AttributeBonusSchema> { }
+interface AttributeBonus extends BaseFeature<AttributeBonusSchema>, ModelPropsFromSchema<AttributeBonusSchema> {}
 
 export { AttributeBonus }

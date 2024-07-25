@@ -13,14 +13,10 @@ class ManeuverEffect extends ActiveEffectGURPS<ActorGURPS> {
 	// 	}
 	//
 
-	constructor(
-		data: DeepPartial<SourceFromSchema<ActiveEffectSchema>>,
-		options?: ManeuverConstructionContext
-	) {
+	constructor(data: DeepPartial<SourceFromSchema<ActiveEffectSchema>>, options?: ManeuverConstructionContext) {
 		super(data, options)
 		this.maneuver = options!.maneuver!
 	}
-
 
 	override get id(): string {
 		return this.maneuver.id

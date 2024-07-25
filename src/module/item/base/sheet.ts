@@ -312,7 +312,7 @@ interface ItemSheetDataGURPS<TItem extends ItemGURPS> extends ItemSheetData<TIte
 	weaponBonusTypes: readonly feature.Type[]
 }
 
-interface ItemSheetOptions extends DocumentSheetOptions { }
+interface ItemSheetOptions extends DocumentSheetOptions {}
 
 export { ItemSheetGURPS }
 export type { ItemSheetDataGURPS, ItemSheetOptions }

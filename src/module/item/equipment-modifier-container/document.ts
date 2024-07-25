@@ -16,8 +16,8 @@ class EquipmentModifierContainerGURPS<
 				.map(item => [
 					item.id,
 					item as
-					| ItemInstances<TParent>[ItemType.EquipmentModifier]
-					| ItemInstances<TParent>[ItemType.EquipmentModifierContainer],
+						| ItemInstances<TParent>[ItemType.EquipmentModifier]
+						| ItemInstances<TParent>[ItemType.EquipmentModifierContainer],
 				]),
 		)
 	}

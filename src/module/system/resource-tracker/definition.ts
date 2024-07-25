@@ -2,7 +2,6 @@ import { ResourceTrackerDefSchema } from "./data.ts"
 import { AbstractAttributeDef, PoolThreshold, ResourceTracker } from "@system"
 import { CharacterGURPS } from "@actor"
 
-
 class ResourceTrackerDef extends AbstractAttributeDef<CharacterGURPS, ResourceTrackerDefSchema> {
 	// name: string
 	// private full_name: string
@@ -15,7 +14,7 @@ class ResourceTrackerDef extends AbstractAttributeDef<CharacterGURPS, ResourceTr
 
 	constructor(
 		data: DeepPartial<SourceFromSchema<ResourceTrackerDefSchema>>,
-		options?: DataModelConstructionOptions<CharacterGURPS>
+		options?: DataModelConstructionOptions<CharacterGURPS>,
 	) {
 		super(data, options)
 		// this.name = data.name
@@ -58,7 +57,7 @@ class ResourceTrackerDef extends AbstractAttributeDef<CharacterGURPS, ResourceTr
 		return this.max
 	}
 
-	override	generateNewAttribute(): ResourceTracker {
+	override generateNewAttribute(): ResourceTracker {
 		return new ResourceTracker({ id: this.id }, { parent: this.parent, order: 0 })
 	}
 
@@ -73,12 +72,12 @@ class ResourceTrackerDef extends AbstractAttributeDef<CharacterGURPS, ResourceTr
 	// static override newObject(reservedIds: string[]): SourceFromSchema<ResourceTrackerDefSchema> {
 	// 	return new ResourceTrackerDef({}).toObject()
 	// }
-
 }
 
-interface ResourceTrackerDef extends AbstractAttributeDef<CharacterGURPS, ResourceTrackerDefSchema>, Omit<ModelPropsFromSchema<ResourceTrackerDefSchema>, "thresholds"> {
+interface ResourceTrackerDef
+	extends AbstractAttributeDef<CharacterGURPS, ResourceTrackerDefSchema>,
+		Omit<ModelPropsFromSchema<ResourceTrackerDefSchema>, "thresholds"> {
 	thresholds: PoolThreshold[]
-
 }
 
 export { ResourceTrackerDef }

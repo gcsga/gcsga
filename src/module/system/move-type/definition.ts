@@ -4,10 +4,9 @@ import { AbstractAttributeDef, MoveType, MoveTypeDefSchema } from "@system"
 import { CharacterGURPS } from "@actor"
 
 class MoveTypeDef extends AbstractAttributeDef<CharacterGURPS, MoveTypeDefSchema> {
-
 	constructor(
 		data: DeepPartial<SourceFromSchema<MoveTypeDefSchema>>,
-		options?: DataModelConstructionOptions<CharacterGURPS>
+		options?: DataModelConstructionOptions<CharacterGURPS>,
 	) {
 		super(data, options)
 
@@ -33,12 +32,14 @@ class MoveTypeDef extends AbstractAttributeDef<CharacterGURPS, MoveTypeDefSchema
 		return evaluateToNumber(this.base, resolver)
 	}
 
-	override	generateNewAttribute(): MoveType {
+	override generateNewAttribute(): MoveType {
 		return new MoveType({ id: this.id }, { parent: this.parent, order: 0 })
 	}
 }
 
-interface MoveTypeDef extends AbstractAttributeDef<CharacterGURPS, MoveTypeDefSchema>, Omit<ModelPropsFromSchema<MoveTypeDefSchema>, "overrides"> {
+interface MoveTypeDef
+	extends AbstractAttributeDef<CharacterGURPS, MoveTypeDefSchema>,
+		Omit<ModelPropsFromSchema<MoveTypeDefSchema>, "overrides"> {
 	overrides: MoveTypeOverride[]
 }
 

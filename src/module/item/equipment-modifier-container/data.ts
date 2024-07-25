@@ -7,7 +7,10 @@ import {
 import { ItemType } from "@module/data/constants.ts"
 import { EquipmentModifierContainerGURPS } from "./document.ts"
 
-class EquipmentModifierContainerSystemData extends AbstractContainerSystemData<EquipmentModifierContainerGURPS, EquipmentModifierContainerSystemSchema> {
+class EquipmentModifierContainerSystemData extends AbstractContainerSystemData<
+	EquipmentModifierContainerGURPS,
+	EquipmentModifierContainerSystemSchema
+> {
 	static override defineSchema(): EquipmentModifierContainerSystemSchema {
 		const fields = foundry.data.fields
 
@@ -24,16 +27,21 @@ class EquipmentModifierContainerSystemData extends AbstractContainerSystemData<E
 			tags: new fields.ArrayField(new foundry.data.fields.StringField()),
 			open: new fields.BooleanField({ initial: true }),
 		}
-
 	}
 }
 
 interface EquipmentModifierContainerSystemData
 	extends AbstractContainerSystemData<EquipmentModifierContainerGURPS, EquipmentModifierContainerSystemSchema>,
-	ModelPropsFromSchema<EquipmentModifierContainerSystemSchema> { }
+		ModelPropsFromSchema<EquipmentModifierContainerSystemSchema> {}
 
 type EquipmentModifierContainerSystemSchema = AbstractContainerSystemSchema & {
-	type: fields.StringField<ItemType.EquipmentModifierContainer, ItemType.EquipmentModifierContainer, true, false, true>
+	type: fields.StringField<
+		ItemType.EquipmentModifierContainer,
+		ItemType.EquipmentModifierContainer,
+		true,
+		false,
+		true
+	>
 	name: fields.StringField<string, string, true, false, true>
 	reference: fields.StringField
 	reference_highlight: fields.StringField
@@ -45,7 +53,10 @@ type EquipmentModifierContainerSystemSchema = AbstractContainerSystemSchema & {
 
 type EquipmentModifierContainerSystemSource = SourceFromSchema<EquipmentModifierContainerSystemSchema>
 
-type EquipmentModifierContainerSource = AbstractContainerSource<ItemType.EquipmentModifierContainer, EquipmentModifierContainerSystemSource>
+type EquipmentModifierContainerSource = AbstractContainerSource<
+	ItemType.EquipmentModifierContainer,
+	EquipmentModifierContainerSystemSource
+>
 
 export type { EquipmentModifierContainerSource, EquipmentModifierContainerSystemSource }
 export { EquipmentModifierContainerSystemData }

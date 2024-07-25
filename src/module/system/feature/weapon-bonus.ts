@@ -169,8 +169,6 @@ import { ItemType } from "@module/data/constants.ts"
 import { NumericCriteria, StringCriteria } from "@module/util/index.ts"
 
 class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
-
-
 	declare leveledAmount: WeaponLeveledAmount
 
 	static override defineSchema(): WeaponBonusSchema {
@@ -193,7 +191,7 @@ class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 
 	constructor(
 		data: DeepPartial<SourceFromSchema<WeaponBonusSchema>>,
-		options?: DocumentConstructionContext<ItemGURPS>
+		options?: DocumentConstructionContext<ItemGURPS>,
 	) {
 		super(data, options)
 
@@ -250,7 +248,9 @@ class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 	}
 }
 
-interface WeaponBonus extends BaseFeature<WeaponBonusSchema>, Omit<ModelPropsFromSchema<WeaponBonusSchema>, "name" | "specialization" | "level" | "usage" | "tags"> {
+interface WeaponBonus
+	extends BaseFeature<WeaponBonusSchema>,
+		Omit<ModelPropsFromSchema<WeaponBonusSchema>, "name" | "specialization" | "level" | "usage" | "tags"> {
 	name: StringCriteria
 	specialization: StringCriteria
 	level: NumericCriteria
@@ -259,7 +259,6 @@ interface WeaponBonus extends BaseFeature<WeaponBonusSchema>, Omit<ModelPropsFro
 }
 
 class WeaponLeveledAmount {
-
 	declare level: number
 	declare dieCount: number
 	declare amount: number
@@ -273,7 +272,7 @@ class WeaponLeveledAmount {
 			amount: new fields.NumberField({ integer: true, initial: 1 }),
 			leveled: new fields.BooleanField({ initial: false }),
 			per_die: new fields.BooleanField({ initial: false }),
-			effective: new fields.BooleanField({ initial: false })
+			effective: new fields.BooleanField({ initial: false }),
 		}
 	}
 
@@ -331,6 +330,6 @@ class WeaponLeveledAmount {
 	}
 }
 
-interface WeaponLeveledAmount extends ModelPropsFromSchema<WeaponLeveledAmountSchema> { }
+interface WeaponLeveledAmount extends ModelPropsFromSchema<WeaponLeveledAmountSchema> {}
 
 export { WeaponBonus }

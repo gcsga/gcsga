@@ -1,6 +1,6 @@
-import { AbstractContainerSource, } from "@item/abstract-container/data.ts"
+import { AbstractContainerSource } from "@item/abstract-container/data.ts"
 import fields = foundry.data.fields
-import { ItemType, } from "@module/data/constants.ts"
+import { ItemType } from "@module/data/constants.ts"
 import { PrereqList, PrereqListSchema } from "@system"
 import { difficulty } from "@util"
 import { TechniqueDifficulty } from "@module/data/types.ts"
@@ -30,12 +30,12 @@ class RitualMagicSpellSystemData extends AbstractSkillSystemData<RitualMagicSpel
 			prereq_count: new fields.NumberField({ integer: true, min: 0, nullable: false, initial: 0 }),
 			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
 		}
-
-
 	}
 }
 
-interface RitualMagicSpellSystemData extends AbstractSkillSystemData<RitualMagicSpellGURPS, RitualMagicSpellSystemSchema>, ModelPropsFromSchema<RitualMagicSpellSystemSchema> { }
+interface RitualMagicSpellSystemData
+	extends AbstractSkillSystemData<RitualMagicSpellGURPS, RitualMagicSpellSystemSchema>,
+		ModelPropsFromSchema<RitualMagicSpellSystemSchema> {}
 
 type RitualMagicSpellSystemSchema = AbstractSkillSystemSchema & {
 	name: fields.StringField<string, string, true, false, true>

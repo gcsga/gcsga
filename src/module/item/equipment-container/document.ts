@@ -15,7 +15,6 @@ import { SheetSettings } from "@system"
 class EquipmentContainerGURPS<
 	TParent extends ActorGURPS | null = ActorGURPS | null,
 > extends AbstractContainerGURPS<TParent> {
-
 	get other(): boolean {
 		if (this.container?.isOfType(ItemType.EquipmentContainer)) return this.container.other
 		return this.flags[SYSTEM_NAME][ItemFlags.Other]
@@ -47,8 +46,8 @@ class EquipmentContainerGURPS<
 				.map(item => [
 					item.id,
 					item as
-					| ItemInstances<TParent>[ItemType.EquipmentModifier]
-					| ItemInstances<TParent>[ItemType.EquipmentModifierContainer],
+						| ItemInstances<TParent>[ItemType.EquipmentModifier]
+						| ItemInstances<TParent>[ItemType.EquipmentModifierContainer],
 				]),
 		)
 	}
@@ -70,8 +69,8 @@ class EquipmentContainerGURPS<
 				.map(item => [
 					item.id,
 					item as
-					| ItemInstances<TParent>[ItemType.Equipment]
-					| ItemInstances<TParent>[ItemType.EquipmentContainer],
+						| ItemInstances<TParent>[ItemType.Equipment]
+						| ItemInstances<TParent>[ItemType.EquipmentContainer],
 				]),
 		)
 	}
