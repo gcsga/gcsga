@@ -15,7 +15,7 @@ export function parse(message: string): [string, string[]] {
 	return ["none", [message, "", message]]
 }
 
-export function procesMessage(message: string): boolean {
+export function processMessage(message: string): boolean {
 	const [command, _match] = parse(message)
 	if (command === "none") return true
 	switch (command) {

@@ -11,9 +11,17 @@ const regex_cr = /\((CR:?)?\s*(\d+)\)/
 export { regex_cr, regex_levels }
 
 type MookSchema = {
-	attributes: fields.ArrayField<fields.SchemaField<MookAttributeSchema>>
+	attributes: fields.ArrayField<
+		fields.SchemaField<MookAttributeSchema>,
+		Partial<SourceFromSchema<MookAttributeSchema>>[],
+		Partial<ModelPropsFromSchema<MookAttributeSchema>>[]
+	>
 	settings: fields.SchemaField<{
-		attributes: fields.ArrayField<fields.SchemaField<MookAttributeDefSchema>>
+		attributes: fields.ArrayField<
+			fields.SchemaField<MookAttributeDefSchema>,
+			Partial<SourceFromSchema<MookAttributeDefSchema>>[],
+			Partial<ModelPropsFromSchema<MookAttributeDefSchema>>[]
+		>
 		damage_progression: fields.StringField<progression.Option, progression.Option, true, false, true>
 		move_types: fields.ArrayField<fields.SchemaField<MookMoveTypeDefSchema>>
 	}>

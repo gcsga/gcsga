@@ -8,6 +8,7 @@ import {
 	MoveType,
 	ResourceTracker,
 	SheetSettings,
+	SheetSettingsSource,
 	type AttributeSchema,
 	type MoveTypeSchema,
 	type PoolThreshold,
@@ -199,7 +200,7 @@ class CharacterSystemData extends ActorSystemModel<CharacterGURPS, CharacterSyst
 
 interface CharacterSystemData
 	extends ActorSystemModel<CharacterGURPS, CharacterSystemSchema>,
-		ModelPropsFromSchema<CharacterSystemSchema> {}
+	ModelPropsFromSchema<CharacterSystemSchema> { }
 
 type CharacterSystemSchema = ActorSystemSchema & {
 	type: fields.StringField<ActorType.Character, ActorType.Character, true, false, true>
@@ -237,7 +238,7 @@ type CharacterProfileSchema = {
 }
 
 type CharacterMoveSchema = {
-	maneuver: fields.ObjectField<CharacterManeuver>
+	maneuver: fields.ObjectField<CharacterManeuver, CharacterManeuver, true, true>
 	posture: fields.StringField
 	type: fields.StringField
 }
@@ -259,7 +260,9 @@ type CharacterProfile = ModelPropsFromSchema<CharacterProfileSchema>
 
 type CharacterMove = ModelPropsFromSchema<CharacterMoveSchema>
 
-type CharacterSystemSource = SourceFromSchema<CharacterSystemSchema>
+type CharacterSystemSource = Omit<SourceFromSchema<CharacterSystemSchema>, "settings"> & {
+	settings: SheetSettingsSource
+}
 
 type CharacterSource = BaseActorSourceGURPS<ActorType.Character, CharacterSystemSource>
 

@@ -1,6 +1,6 @@
 import { GCACharacter, GCATrait } from "./data-gca.ts"
 import { TraitSource, TraitSystemSource } from "@item/trait/data.ts"
-import { ItemFlags, ItemType, NumericCompareType, SYSTEM_NAME, SkillDifficulty, StringCompareType, gid } from "@data"
+import { ItemFlags, ItemType, NumericCompareType, SYSTEM_NAME, SkillDifficulty, gid } from "@data"
 import { LocalizeGURPS, container, difficulty, picker, prereq, selfctrl, study } from "@util"
 import { SkillSource, SkillSystemSource } from "@item/skill/data.ts"
 import { TechniqueSource, TechniqueSystemSource } from "@item/technique/data.ts"
@@ -9,23 +9,15 @@ import { EquipmentSource, EquipmentSystemSource } from "@item/equipment/data.ts"
 import { EquipmentContainerSource, EquipmentContainerSystemSource } from "@item/equipment-container/data.ts"
 import { TraitContainerSource, TraitContainerSystemSource } from "@item/trait-container/data.ts"
 import { ItemSourceGURPS } from "@item/data/index.ts"
+import { DocumentStatsSchema } from "types/foundry/common/data/fields.js"
 
 interface ItemImportContext {
 	char: GCACharacter
 	parentId: string | null
 }
 
-interface DocumentStats {
-	systemId: string
-	systemVersion: string
-	coreVersion: string
-	createdTime: number
-	modifiedTime: number
-	lastModifiedBy: string
-}
-
 class GCAItemImporter {
-	static getStats(): DocumentStats {
+	static getStats(): SourceFromSchema<DocumentStatsSchema> {
 		const date = Date.now()
 		return {
 			systemId: SYSTEM_NAME,
@@ -34,6 +26,8 @@ class GCAItemImporter {
 			createdTime: date,
 			modifiedTime: date,
 			lastModifiedBy: game.user.id,
+			compendiumSource: null,
+			duplicateSource: null
 		}
 	}
 
@@ -214,11 +208,11 @@ class GCAItemImporter {
 			encumbrance_penalty_multiplier: 0,
 			defaulted_from: null,
 			defaults: [],
-			prereqs: { type: prereq.Type.List, all: true },
+			prereqs: { type: prereq.Type.List, all: true, when_tl: { compare: NumericCompareType.AnyNumber, qualifier: null }, prereqs: [] },
 			// weapons handled separately
 			features: [],
 			study: [],
-			study_hours_needed: "",
+			study_hours_needed: study.Level.Standard,
 		}
 
 		const newItem: SkillSource = {
@@ -256,6 +250,7 @@ class GCAItemImporter {
 			vtt_notes: data.ref?.vttnotes ?? "",
 			tags: data.cat?.split(",").map(e => e.trim()) ?? [],
 			tech_level: data.tl ?? "",
+			tech_level_required: data.tl !== "",
 			difficulty: data.type?.toLowerCase().split("/")[1] as difficulty.Level.Average | difficulty.Level.Hard,
 			points: data.points ?? 0,
 			default: {
@@ -267,11 +262,16 @@ class GCAItemImporter {
 			defaults: [],
 			limited: !!data.calcs.upto && data.calcs.upto !== "",
 			limit: parseInt(data.calcs.upto?.replace("prereq", "") || "0"),
-			prereqs: { type: prereq.Type.List, all: true },
+			prereqs: {
+				type: prereq.Type.List,
+				all: true,
+				when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 },
+				prereqs: [],
+			},
 			// weapons handled separately
 			features: [],
 			study: [],
-			study_hours_needed: "",
+			study_hours_needed: study.Level.Standard,
 		}
 
 		const newItem: TechniqueSource = {
@@ -320,10 +320,15 @@ class GCAItemImporter {
 			casting_time: data.ref?.time ?? "",
 			duration: data.ref?.duration ?? "",
 			points: data.points ?? 0,
-			prereqs: { type: prereq.Type.List, all: true },
+			prereqs: {
+				type: prereq.Type.List,
+				all: true,
+				when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 },
+				prereqs: [],
+			},
 			// weapons handled separately
 			study: [],
-			study_hours_needed: "",
+			study_hours_needed: study.Level.Standard,
 		}
 
 		const newItem: SpellSource = {
@@ -367,7 +372,12 @@ class GCAItemImporter {
 			weight: `${data.weight ?? 0} lb`,
 			max_uses: 0,
 			uses: 0,
-			prereqs: { type: prereq.Type.List, all: true },
+			prereqs: {
+				type: prereq.Type.List,
+				all: true,
+				when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 },
+				prereqs: [],
+			},
 			rated_strength: null,
 			// weapons handled separately
 			features: [],
@@ -416,7 +426,12 @@ class GCAItemImporter {
 			weight: `${data.weight ?? 0} lb`,
 			max_uses: 0,
 			uses: 0,
-			prereqs: { type: prereq.Type.List, all: true },
+			prereqs: {
+				type: prereq.Type.List,
+				all: true,
+				when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 },
+				prereqs: [],
+			},
 			rated_strength: null,
 			// weapons handled separately
 			features: [],
@@ -481,7 +496,7 @@ class GCAItemImporter {
 			ancestry: "",
 			template_picker: {
 				type: picker.Type.NotApplicable,
-				qualifier: {},
+				qualifier: { compare: NumericCompareType.AnyNumber, qualifier: null },
 			},
 			open: true,
 			container_type,

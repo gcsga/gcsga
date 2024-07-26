@@ -1,5 +1,6 @@
 import { ActorGURPS } from "@actor"
 import {
+	CharacterFlagDefaults,
 	CharacterFlags,
 	CharacterMove,
 	CharacterProfile,
@@ -40,9 +41,7 @@ import {
 	AttributeDefSchema,
 	AttributeSchema,
 	BlockLayoutKey,
-	BodySchema,
 	BodySource,
-	HitLocationSchema,
 	HitLocationSource,
 	MoveTypeDefSchema,
 	MoveTypeOverrideSchema,
@@ -51,7 +50,7 @@ import {
 	PoolThresholdSchema,
 	ResourceTrackerDefSchema,
 	ResourceTrackerSchema,
-	SheetSettingsSchema,
+	SheetSettingsSource,
 } from "@system"
 
 export class CharacterImporter {
@@ -172,7 +171,7 @@ export class CharacterImporter {
 	static importSettings(
 		data?: ImportedSheetSettings,
 		third_party?: ImportedThirdPartyData,
-	): SourceFromSchema<SheetSettingsSchema> {
+	): SheetSettingsSource {
 		return {
 			page: CharacterImporter.importPage(data?.page),
 			block_layout: (data?.block_layout as BlockLayoutKey[]) ?? [],
@@ -294,7 +293,7 @@ export class CharacterImporter {
 					hit_penalty: e.hit_penalty ?? 0,
 					dr_bonus: e.dr_bonus ?? 0,
 					description: e.description ?? "",
-					sub_table: e.sub_table ? CharacterImporter.importBody(e.sub_table) : undefined,
+					sub_table: e.sub_table ? CharacterImporter.importBody(e.sub_table) : null,
 				}
 				return location
 			}) ?? []
@@ -335,13 +334,12 @@ export class CharacterImporter {
 	}
 
 	static importPortrait(data?: string): ImageFilePath {
-		if (game.user?.hasPermission("FILES_UPLOAD")) return `data:image/png;base64,${data}.png`
+		if (game.user?.hasPermission(foundry.CONST.USER_PERMISSIONS.FILES_UPLOAD)) return `data:image/png;base64,${data}.png`
 		return `/systems/${SYSTEM_NAME}/assets/icons/character.svg`
 	}
 
 	static importFlags(file: { text: string; path: string; name: string }): CharacterFlags {
-		// const flags = CharacterFlagDefaults
-		const flags = { [SYSTEM_NAME]: {} }
+		const flags = CharacterFlagDefaults
 
 		const time = getCurrentTime()
 

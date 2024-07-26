@@ -1,6 +1,8 @@
+import { AbstractAttributeDef } from "@system/abstract-attribute/definition.ts"
 import { ResourceTrackerDefSchema } from "./data.ts"
-import { AbstractAttributeDef, PoolThreshold, ResourceTracker } from "@system"
-import { CharacterGURPS } from "@actor"
+import type { CharacterGURPS } from "@actor"
+import { PoolThreshold } from "@system/attribute/pool-threshold.ts"
+import { ResourceTracker } from "./object.ts"
 
 class ResourceTrackerDef extends AbstractAttributeDef<CharacterGURPS, ResourceTrackerDefSchema> {
 	// name: string
@@ -76,7 +78,7 @@ class ResourceTrackerDef extends AbstractAttributeDef<CharacterGURPS, ResourceTr
 
 interface ResourceTrackerDef
 	extends AbstractAttributeDef<CharacterGURPS, ResourceTrackerDefSchema>,
-		Omit<ModelPropsFromSchema<ResourceTrackerDefSchema>, "thresholds"> {
+	Omit<ModelPropsFromSchema<ResourceTrackerDefSchema>, "thresholds"> {
 	thresholds: PoolThreshold[]
 }
 

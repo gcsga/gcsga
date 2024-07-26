@@ -12,6 +12,7 @@ import {
 import { ModifierBucket } from "@module/apps/modifier-bucket/button.ts"
 import { ModifierList } from "@module/apps/modifier-list/document.ts"
 import { ActorDirectoryGURPS } from "@module/apps/sidebar/actor-directory.ts"
+import { ChatLogGURPS } from "@module/apps/sidebar/chat-log.ts"
 import { CombatTrackerGURPS } from "@module/apps/sidebar/combat-tracker.ts"
 import { CompendiumDirectoryGURPS } from "@module/apps/sidebar/compendium-directory.ts"
 import { ItemDirectoryGURPS } from "@module/apps/sidebar/item-directory.ts"
@@ -30,6 +31,7 @@ import { remigrate } from "@scripts/system/remigrate.ts"
 import {
 	AttributeDefSchema,
 	HitLocationSchema,
+	HitLocationSource,
 	MookGeneratorSheet,
 	MoveTypeDefSchema,
 	ResourceTrackerDefSchema,
@@ -69,7 +71,7 @@ type ConfiguredConfig = Config<
 	ActiveEffectGURPS<ActorGURPS<TokenDocumentGURPS> | ItemGURPS | null>,
 	ActorGURPS,
 	ActorDelta<TokenDocumentGURPS>,
-	ChatLog,
+	ChatLogGURPS,
 	ChatMessage,
 	CombatGURPS,
 	CombatantGURPS<CombatGURPS | null, TokenDocumentGURPS>,
@@ -121,7 +123,7 @@ declare global {
 		var ui: FoundryUI<
 			ActorDirectoryGURPS<ActorGURPS<null>>,
 			ItemDirectory<ItemGURPS<null>>,
-			ChatLog,
+			ChatLogGURPS,
 			CompendiumDirectoryGURPS,
 			CombatTrackerGURPS<CombatGURPS | null>,
 			Hotbar
@@ -139,7 +141,7 @@ declare global {
 		}
 	}
 
-	interface Window {}
+	interface Window { }
 
 	interface ClientSettings {
 		get(module: "gcsga", key: "default_sheet_settings.initial_points"): number
@@ -155,7 +157,7 @@ declare global {
 		get(module: "gcsga", key: "default_move_types.move_types"): SourceFromSchema<MoveTypeDefSchema>[]
 		get(module: "gcsga", key: "default_hit_locations.name"): string
 		get(module: "gcsga", key: "default_hit_locations.roll"): string
-		get(module: "gcsga", key: "default_hit_locations.locations"): SourceFromSchema<HitLocationSchema>[]
+		get(module: "gcsga", key: "default_hit_locations.locations"): HitLocationSource[]
 		get(module: "gcsga", key: "colors.colors"): Record<string, { light: string; dark: string }>
 		get(module: "gcsga", key: "colors.modePreference"): string
 		get(module: "gcsga", key: "automatic_unready"): boolean

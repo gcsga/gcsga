@@ -23,7 +23,14 @@ type AttributeDefSchema = AbstractAttributeDefSchema & {
 	full_name: fields.StringField
 	cost_per_point: fields.NumberField
 	cost_adj_percent_per_sm: fields.NumberField
-	thresholds: fields.ArrayField<fields.SchemaField<PoolThresholdSchema>>
+	thresholds: fields.ArrayField<
+		fields.SchemaField<PoolThresholdSchema>,
+		Partial<SourceFromSchema<PoolThresholdSchema>>[],
+		ModelPropsFromSchema<PoolThresholdSchema>[],
+		false,
+		true
+	>
+	// thresholds: fields.ArrayField<fields.SchemaField<PoolThresholdSchema>>
 	order: fields.NumberField
 }
 

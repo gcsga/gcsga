@@ -1,4 +1,4 @@
-export * as Chat from "./chat.ts"
+export * as ChatUtilGURPS from "./chat.ts"
 export * from "./gcs/eval.ts"
 export * from "./import/index.ts"
 export * from "./last-actor.ts"

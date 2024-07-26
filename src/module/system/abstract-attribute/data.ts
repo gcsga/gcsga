@@ -8,7 +8,7 @@ type AbstractAttributeSchema = {
 
 type AbstractAttributeDefSchema = {
 	id: fields.StringField<string, string, true, false>
-	base: fields.StringField
+	base: fields.StringField<string, string, true, false, true>
 }
 
 interface AbstractAttributeConstructionOptions<TActor extends ActorGURPS | Mook>

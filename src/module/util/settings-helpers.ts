@@ -219,7 +219,7 @@ function addHitLocation(context: DropDataContext): void {
 	const table = fu.getProperty(context.app, `${path}.locations`)
 	if (!Array.isArray(table)) return
 
-	table.push(new HitLocation({}, { parent: table }))
+	table.push(new HitLocation({}).toObject())
 
 	if (context.app instanceof CharacterConfigSheet) {
 		const formData = prepareFormData({ [`array.${path.replace(/^actor\./, "")}`]: table }, context.app.actor)

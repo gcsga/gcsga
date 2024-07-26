@@ -1,6 +1,6 @@
 import ApplicationV2 from "../../client-esm/applications/api/application.js"
 
-export {}
+export { }
 declare global {
 	type HookCallback<P extends unknown[]> = (...args: P) => boolean | void | Promise<boolean | void>
 	type HookParameters<H extends string, C extends unknown[]> = [hook: H, callback: HookCallback<C>]
@@ -26,7 +26,7 @@ declare global {
 	>
 	type HooksParamsPreUpdateCombat = HookParameters<
 		"preUpdateCombat",
-		[Combat, object, { diff: boolean; advanceTime: number; [key: string]: unknown }, string]
+		[Combat, object, { diff: boolean; advanceTime: number;[key: string]: unknown }, string]
 	>
 	type HookParamsPreUpdateToken = HookParameters<
 		"preUpdateToken",
@@ -34,7 +34,7 @@ declare global {
 			Scene,
 			foundry.documents.TokenSource,
 			DeepPartial<foundry.documents.TokenSource>,
-			{ diff: boolean; [key: string]: unknown },
+			{ diff: boolean;[key: string]: unknown },
 			string,
 		]
 	>
@@ -56,6 +56,17 @@ declare global {
 		"getProseMirrorMenuDropDowns",
 		[foundry.prosemirror.ProseMirrorMenu, Record<string, ProseMirrorDropDownConfig>]
 	>
+	type HookParamsChatMessage = HookParameters<
+		"chatMessage",
+		[ChatLog, string, {
+			speaker: {
+				actor: string | null,
+				alias: string | null,
+				scene: string | null,
+				token: string | null,
+			},
+			user: string | null
+		}]>
 
 	class Hooks {
 		/**
@@ -108,6 +119,7 @@ declare global {
 		static on(...args: HookParamsUpdate<Scene, "Scene">): number
 		static on(...args: HookParamsUpdateWorldTime): number
 		static on(...args: HookParamsGetProseMirrorMenuDropDowns): number
+		static on(...args: HookParamsChatMessage): number
 		static on(...args: HookParameters<string, unknown[]>): number
 
 		/**

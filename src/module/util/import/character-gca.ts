@@ -1,5 +1,5 @@
 import { ActorGURPS } from "@actor"
-import { CharacterFlags, CharacterSource, CharacterSystemSource, PointsRecord } from "@actor/character/data.ts"
+import { CharacterFlagDefaults, CharacterFlags, CharacterMove, CharacterProfile, CharacterSource, CharacterSystemSource, PointsRecord } from "@actor/character/data.ts"
 import { ActorFlags, ActorType, ManeuverID, SETTINGS, SYSTEM_NAME } from "@data"
 import { ItemSourceGURPS } from "@item/data/index.ts"
 import { ChatMessageGURPS } from "@module/chat-message/document.ts"
@@ -11,15 +11,15 @@ import { ManeuverManager } from "@system/maneuver-manager.ts"
 import {
 	AttributeDefSchema,
 	AttributeSchema,
-	BlockLayoutKey,
-	BodySchema,
-	HitLocationSchema,
+	BlockLayoutString,
+	BodySource,
+	HitLocationSource,
 	MoveTypeDefSchema,
 	MoveTypeSchema,
 	PageSettings,
 	ResourceTrackerDefSchema,
 	ResourceTrackerSchema,
-	SheetSettingsSchema,
+	SheetSettingsSource,
 } from "@system"
 
 export class GCACharacterImporter {
@@ -129,7 +129,7 @@ export class GCACharacterImporter {
 		}
 	}
 
-	static importSettings(data: GCACharacter): SourceFromSchema<SheetSettingsSchema> {
+	static importSettings(data: GCACharacter): SheetSettingsSource {
 		return {
 			page: GCACharacterImporter.importPage(),
 			block_layout: GCACharacterImporter.importBlockLayout(),
@@ -159,7 +159,7 @@ export class GCACharacterImporter {
 		return game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`).page
 	}
 
-	static importBlockLayout(): BlockLayoutKey[] {
+	static importBlockLayout(): BlockLayoutString[] {
 		return game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_SHEET_SETTINGS}.settings`).block_layout
 	}
 
@@ -175,7 +175,7 @@ export class GCACharacterImporter {
 		return game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
 	}
 
-	static importBody(body: GCABody | undefined, char: GCACharacter): SourceFromSchema<BodySchema> {
+	static importBody(body: GCABody | undefined, char: GCACharacter): BodySource {
 		if (!body)
 			return {
 				name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
@@ -189,7 +189,7 @@ export class GCACharacterImporter {
 		}
 	}
 
-	static importHitLocations(location: GCABodyItem[], char: GCACharacter): SourceFromSchema<HitLocationSchema>[] {
+	static importHitLocations(location: GCABodyItem[], char: GCACharacter): HitLocationSource[] {
 		const hitLocationNotes = char.hitlocationtable?.hitlocationnote ?? []
 		const hitLocationLines = char.hitlocationtable?.hitlocationline ?? []
 
@@ -207,7 +207,7 @@ export class GCACharacterImporter {
 
 		return (
 			location?.map(e => {
-				const location: SourceFromSchema<HitLocationSchema> = {
+				const location = {
 					id: e.name.toLowerCase(),
 					choice_name: e.name,
 					table_name: e.name,
@@ -215,6 +215,7 @@ export class GCACharacterImporter {
 					hit_penalty: 0,
 					dr_bonus: parseInt(e.basedr) ?? 0,
 					description: getHitLocationNotes(e.name),
+					sub_table: null
 				}
 				return location
 			}) ?? []
@@ -255,7 +256,7 @@ export class GCACharacterImporter {
 	}
 
 	static importFlags(file: { text: string; path: string; name: string }): CharacterFlags {
-		const flags = {}
+		const flags = CharacterFlagDefaults
 
 		const time = getCurrentTime()
 

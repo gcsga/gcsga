@@ -10,25 +10,13 @@ import { AttributeGURPS } from "./object.ts"
 import { Mook } from "@system/mook/index.ts"
 
 class AttributeDef extends AbstractAttributeDef<CharacterGURPS | Mook, AttributeDefSchema> {
-	// declare type: attribute.Type
-	// name: string
-	// private full_name: string
-	// cost_per_point = 0
-	// cost_adj_percent_per_sm = 0
-	thresholds: PoolThreshold[]
-	// order: number
 
 	constructor(
 		data: DeepPartial<SourceFromSchema<AttributeDefSchema>>,
-		options?: DataModelConstructionOptions<CharacterGURPS>,
+		options?: DataModelConstructionOptions<CharacterGURPS | Mook>,
 	) {
+		console.log(data)
 		super(data, options)
-		// this.type = data.type
-		// this.name = data.name
-		// this.full_name = data.full_name ?? ""
-		// this.cost_per_point = data.cost_per_point ?? 0
-		// this.cost_adj_percent_per_sm = data.cost_adj_percent_per_sm ?? 0
-		// this.order = data.order ?? 0
 		this.thresholds = data.thresholds?.map(threshold => new PoolThreshold(threshold!)) ?? []
 	}
 
@@ -36,7 +24,7 @@ class AttributeDef extends AbstractAttributeDef<CharacterGURPS | Mook, Attribute
 		const fields = foundry.data.fields
 
 		return {
-			type: new fields.StringField<attribute.Type, attribute.Type, true>({
+			type: new fields.StringField({
 				choices: attribute.Types,
 				initial: attribute.Type.Integer,
 			}),
@@ -48,6 +36,8 @@ class AttributeDef extends AbstractAttributeDef<CharacterGURPS | Mook, Attribute
 			cost_adj_percent_per_sm: new fields.NumberField({ integer: true, min: 0, max: 80, initial: 0 }),
 			thresholds: new fields.ArrayField(new fields.SchemaField(PoolThreshold.defineSchema()), {
 				required: false,
+				nullable: true,
+				initial: null
 			}),
 			order: new fields.NumberField({ min: 0 }),
 		}
@@ -100,6 +90,8 @@ class AttributeDef extends AbstractAttributeDef<CharacterGURPS | Mook, Attribute
 
 interface AttributeDef
 	extends AbstractAttributeDef<CharacterGURPS | Mook, AttributeDefSchema>,
-	ModelPropsFromSchema<AttributeDefSchema> { }
+	Omit<ModelPropsFromSchema<AttributeDefSchema>, "thresholds"> {
+	thresholds: PoolThreshold[] | null
+}
 
 export { AttributeDef }

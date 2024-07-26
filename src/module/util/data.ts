@@ -9,7 +9,7 @@ type StringCriteriaSchema = {
 
 type NumericCriteriaSchema = {
 	compare: fields.StringField<NumericCompareType, NumericCompareType, true, false, true>
-	qualifier: fields.NumberField<number, number, true, false, true>
+	qualifier: fields.NumberField<number, number, true, true, true>
 }
 
 type WeightCriteriaSchema = {

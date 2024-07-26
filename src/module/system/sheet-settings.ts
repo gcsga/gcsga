@@ -1,8 +1,9 @@
 import {
-	AttributeDef,
 	AttributeDefSchema,
 	BodyGURPS,
 	BodySchema,
+	BodySource,
+	AttributeDef,
 	Mook,
 	MoveTypeDef,
 	MoveTypeDefSchema,
@@ -61,6 +62,10 @@ type SheetSettingsSchema = {
 	show_spell_adj: fields.BooleanField
 	use_title_in_footer: fields.BooleanField
 	exclude_unspent_points_from_total: fields.BooleanField
+}
+
+type SheetSettingsSource = Omit<SourceFromSchema<SheetSettingsSchema>, "body_type"> & {
+	body_type: BodySource
 }
 
 class SheetSettings extends foundry.abstract.DataModel<CharacterGURPS, SheetSettingsSchema> {
@@ -164,5 +169,5 @@ interface SheetSettings
 	body_type: BodyGURPS
 }
 
-export type { SheetSettingsSchema }
+export type { SheetSettingsSchema, SheetSettingsSource, BlockLayoutString }
 export { SheetSettings }

@@ -7,6 +7,7 @@ import { Load } from "./load.ts"
 import { Ready } from "./ready.ts"
 import { RenderChatMessage } from "./render-chat-message.ts"
 import { RenderHotbar } from "./render-hotbar.ts"
+import { ChatMessage } from "./chat-message.ts"
 import { RenderPlayerList } from "./render-player-list.ts"
 // import { RenderTokenHUD } from "./render-token-hud.ts"
 import { Setup } from "./setup.ts"
@@ -20,6 +21,7 @@ export const HooksGURPS = {
 			Init,
 			Ready,
 			Setup,
+			ChatMessage,
 			RenderChatMessage,
 			DropCanvasData,
 			RenderPlayerList,

@@ -21,6 +21,7 @@ class NumericCriteria extends foundry.abstract.DataModel<ItemGURPS, NumericCrite
 	}
 
 	matches(n: number): boolean {
+		if (this.qualifier === null) this.qualifier = 0
 		switch (this.compare) {
 			case NumericCompareType.AnyNumber:
 				return true
@@ -53,12 +54,12 @@ class NumericCriteria extends foundry.abstract.DataModel<ItemGURPS, NumericCrite
 		let result = this.altString()
 		if (this.compare === NumericCompareType.AnyNumber) return result
 		if (result !== "") result += " "
-		return result + this.qualifier.toString()
+		return result + (this.qualifier ?? 0).toString()
 	}
 }
 
 interface NumericCriteria
 	extends foundry.abstract.DataModel<ItemGURPS, NumericCriteriaSchema>,
-		ModelPropsFromSchema<NumericCriteriaSchema> {}
+	ModelPropsFromSchema<NumericCriteriaSchema> { }
 
 export { NumericCriteria, type NumericCriteriaSchema }

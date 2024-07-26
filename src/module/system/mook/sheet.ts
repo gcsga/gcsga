@@ -1,8 +1,7 @@
 import { SYSTEM_NAME } from "@data"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { DiceGURPS } from "@module/dice/index.ts"
 import { Mook } from "./document.ts"
-import { AttributeGURPS } from "@system"
+import { AttributeGURPS, EXAMPLE_STATBLOCKS } from "@system"
 import { DialogGURPS } from "@module/apps/dialog.ts"
 import { CharacterConfigSheet } from "@actor/character/config.ts"
 import { htmlQuery } from "@util"
@@ -55,6 +54,7 @@ export class MookGeneratorSheet extends FormApplication {
 
 	static async init(): Promise<unknown> {
 		const mg = new MookGeneratorSheet()
+		console.log(mg)
 		return mg.render(true)
 	}
 
@@ -73,44 +73,45 @@ export class MookGeneratorSheet extends FormApplication {
 		})
 	}
 
-	private _prepareText(): Record<
-		"traits" | "skills" | "spells" | "equipment" | "melee" | "ranged" | "catchall",
-		string
-	> {
-		return {
-			traits: this.object.traits.reduce((acc, e) => {
-				if (acc !== "") acc += "\n"
-				acc += e.toString()
-				return acc
-			}, ""),
-			skills: this.object.skills.reduce((acc, e) => {
-				if (acc !== "") acc += "\n"
-				acc += e.toString()
-				return acc
-			}, ""),
-			spells: this.object.spells.reduce((acc, e) => {
-				if (acc !== "") acc += "\n"
-				acc += e.toString()
-				return acc
-			}, ""),
-			equipment: this.object.equipment.reduce((acc, e) => {
-				if (acc !== "") acc += "\n"
-				acc += e.toString()
-				return acc
-			}, ""),
-			melee: this.object.melee.reduce((acc, e) => {
-				if (acc !== "") acc += "\n"
-				acc += e.toString()
-				return acc
-			}, ""),
-			ranged: this.object.ranged.reduce((acc, e) => {
-				if (acc !== "") acc += "\n"
-				acc += e.toString()
-				return acc
-			}, ""),
-			catchall: this.object.catchall,
-		}
-	}
+	// TODO: find out why this is here
+	// private _prepareText(): Record<
+	// 	"traits" | "skills" | "spells" | "equipment" | "melee" | "ranged" | "catchall",
+	// 	string
+	// > {
+	// 	return {
+	// 		traits: this.object.traits.reduce((acc, e) => {
+	// 			if (acc !== "") acc += "\n"
+	// 			acc += e.toString()
+	// 			return acc
+	// 		}, ""),
+	// 		skills: this.object.skills.reduce((acc, e) => {
+	// 			if (acc !== "") acc += "\n"
+	// 			acc += e.toString()
+	// 			return acc
+	// 		}, ""),
+	// 		spells: this.object.spells.reduce((acc, e) => {
+	// 			if (acc !== "") acc += "\n"
+	// 			acc += e.toString()
+	// 			return acc
+	// 		}, ""),
+	// 		equipment: this.object.equipment.reduce((acc, e) => {
+	// 			if (acc !== "") acc += "\n"
+	// 			acc += e.toString()
+	// 			return acc
+	// 		}, ""),
+	// 		melee: this.object.melee.reduce((acc, e) => {
+	// 			if (acc !== "") acc += "\n"
+	// 			acc += e.toString()
+	// 			return acc
+	// 		}, ""),
+	// 		ranged: this.object.ranged.reduce((acc, e) => {
+	// 			if (acc !== "") acc += "\n"
+	// 			acc += e.toString()
+	// 			return acc
+	// 		}, ""),
+	// 		catchall: this.object.catchall,
+	// 	}
+	// }
 
 	prepareAttributes(attributes: Map<string, AttributeGURPS>): [AttributeGURPS[], AttributeGURPS[], AttributeGURPS[]] {
 		const primary_attributes: AttributeGURPS[] = []
@@ -140,8 +141,8 @@ export class MookGeneratorSheet extends FormApplication {
 						callback: (html: JQuery<HTMLElement>) => {
 							if (html instanceof HTMLElement) html = $(html)
 							const textArray = html.find("textarea")[0]
-							const text = textArray.value
-							// if (text.length < 3) text = EXAMPLE_STATBLOCKS[parseInt(text)]
+							let text = textArray.value
+							if (text.length < 3) text = EXAMPLE_STATBLOCKS[parseInt(text)]
 							if (text.trim()) {
 								this.object.parseStatblock(text)
 							}
@@ -175,6 +176,7 @@ export class MookGeneratorSheet extends FormApplication {
 			return false
 		}
 		console.log(this.object)
+		return false
 		// const parser = new MookParser("", this.object)
 		// const text = this.object.text
 		// console.log(text.traits)
@@ -201,26 +203,27 @@ export class MookGeneratorSheet extends FormApplication {
 		return [...buttons, all_buttons.at(-1)!]
 	}
 
+	// TODO: re-do this
 	protected async _updateObject(_event: Event, formData: Record<string, unknown>): Promise<unknown> {
-		for (const i of Object.keys(formData)) {
-			if (i.startsWith("attributes.")) {
-				const attributes: AttributeObj[] =
-					(formData["system.attributes"] as AttributeObj[]) ?? fu.duplicate(this.object.system.attributes)
-				const id = i.split(".")[1]
-				const att = this.object.attributes.get(id)
-				if (att) {
-					if (i.endsWith(".adj")) (formData[i] as number) -= att.max - att.adj
-					if (i.endsWith(".damage")) (formData[i] as number) = Math.max(att.max - (formData[i] as number), 0)
-				}
-				const key = i.replace(`attributes.${id}.`, "")
-				const index = attributes.findIndex(e => e.id === id)
-				fu.setProperty(attributes[index], key, formData[i])
-				formData["system.attributes"] = attributes
-				delete formData[i]
-			}
-			if (i === "thrust") formData.thrust = new DiceGURPS(formData.thrust as string)
-			if (i === "swing") formData.swing = new DiceGURPS(formData.swing as string)
-		}
-		return this.object.update(formData)
+		// 	for (const i of Object.keys(formData)) {
+		// 		if (i.startsWith("attributes.")) {
+		// 			const attributes: AttributeObj[] =
+		// 				(formData["system.attributes"] as AttributeObj[]) ?? fu.duplicate(this.object.system.attributes)
+		// 			const id = i.split(".")[1]
+		// 			const att = this.object.attributes.get(id)
+		// 			if (att) {
+		// 				if (i.endsWith(".adj")) (formData[i] as number) -= att.max - att.adj
+		// 				if (i.endsWith(".damage")) (formData[i] as number) = Math.max(att.max - (formData[i] as number), 0)
+		// 			}
+		// 			const key = i.replace(`attributes.${id}.`, "")
+		// 			const index = attributes.findIndex(e => e.id === id)
+		// 			fu.setProperty(attributes[index], key, formData[i])
+		// 			formData["system.attributes"] = attributes
+		// 			delete formData[i]
+		// 		}
+		// 		if (i === "thrust") formData.thrust = new DiceGURPS(formData.thrust as string)
+		// 		if (i === "swing") formData.swing = new DiceGURPS(formData.swing as string)
+		// 	}
+		return this.object.updateSource(formData)
 	}
 }

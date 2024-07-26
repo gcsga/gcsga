@@ -3,6 +3,19 @@
  * @see {Sidebar}
  */
 declare class ChatLog<TChatMessage extends ChatMessage = ChatMessage> extends SidebarTab<ChatLogOptions> {
+
+	/**
+	* An enumeration of regular expression patterns used to match chat messages.
+	* @enum {RegExp}
+	*/
+	static MESSAGE_PATTERNS: Record<string, RegExp>
+
+	/**
+	 * The set of commands that can be processed over multiple lines.
+	 * @type {Set<string>}
+	 */
+	static MULTILINE_COMMANDS: Set<string>
+
 	/** Track whether the user currently has pending text in the chat box */
 	protected _pendingText: string
 

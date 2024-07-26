@@ -34,7 +34,7 @@ class SkillSystemData extends AbstractSkillSystemData<SkillGURPS, SkillSystemSch
 
 interface SkillSystemData
 	extends AbstractSkillSystemData<SkillGURPS, SkillSystemSchema>,
-		ModelPropsFromSchema<SkillSystemSchema> {}
+	ModelPropsFromSchema<SkillSystemSchema> { }
 
 type SkillSystemSchema = AbstractSkillSystemSchema & {
 	name: fields.StringField<string, string, true, false, true>
@@ -42,7 +42,7 @@ type SkillSystemSchema = AbstractSkillSystemSchema & {
 	specialization: fields.StringField
 	difficulty: fields.StringField<SkillDifficulty, SkillDifficulty, true>
 	encumbrance_penalty_multiplier: fields.NumberField<number, number, true, false, true>
-	defaulted_from: fields.SchemaField<SkillDefaultSchema>
+	defaulted_from: fields.SchemaField<SkillDefaultSchema, SourceFromSchema<SkillDefaultSchema>, ModelPropsFromSchema<SkillDefaultSchema>, true, true>
 	defaults: fields.ArrayField<fields.SchemaField<SkillDefaultSchema>>
 	prereqs: fields.SchemaField<PrereqListSchema>
 	features: fields.ArrayField<fields.SchemaField<FeatureSchema>>
