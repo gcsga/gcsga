@@ -21,16 +21,16 @@
         },
         "modifiers": [
             {
-                "id": "to hit (Prone, no cover)",
+                "id": "to hit with melee attacks (Crawling/Lying Down)",
                 "modifier": -4
             },
             {
-                "id": "to hit (Prone, some cover, head up)",
-                "modifier": -5
+                "id": "to be hit with ranged attacks (Crawling/Lying Down)",
+                "modifier": -2
             },
             {
-                "id": "to hit (Prone, some cover, head down)",
-                "modifier": -7
+                "id": "to Active Defense (Crawling/Lying Down)",
+                "modifier": -3
             }
         ],
         "overlay": false,

@@ -21,19 +21,11 @@
         },
         "modifiers": [
             {
-                "id": "to hit (Crouching or Kneeling, no cover)",
+                "id": "to hit with melee attacks (Crouching/Kneeling/Sitting)",
                 "modifier": -2
             },
             {
-                "id": "to hit with melee combat (Crouching)",
-                "modifier": -2
-            },
-            {
-                "id": "to hit with ranged combat (Crouching/Kneeling)",
-                "modifier": -2
-            },
-            {
-                "id": "to be hit with ranged combat (Crouching/Kneeling)",
+                "id": "to be hit with ranged attacks (Crouching/Kneeling/Sitting)",
                 "modifier": -2
             }
         ],
