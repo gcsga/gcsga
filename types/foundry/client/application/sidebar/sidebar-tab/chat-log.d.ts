@@ -3,11 +3,10 @@
  * @see {Sidebar}
  */
 declare class ChatLog<TChatMessage extends ChatMessage = ChatMessage> extends SidebarTab<ChatLogOptions> {
-
 	/**
-	* An enumeration of regular expression patterns used to match chat messages.
-	* @enum {RegExp}
-	*/
+	 * An enumeration of regular expression patterns used to match chat messages.
+	 * @enum {RegExp}
+	 */
 	static MESSAGE_PATTERNS: Record<string, RegExp>
 
 	/**

@@ -36,7 +36,8 @@ export class ResourceTrackerSettings extends SettingsMenuGURPS {
 	}
 
 	get resourceTrackers(): ResourceTrackerDef[] {
-		return game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`)
+		return game.settings
+			.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`)
 			.map(e => new ResourceTrackerDef(e))
 	}
 
@@ -79,9 +80,9 @@ export class ResourceTrackerSettings extends SettingsMenuGURPS {
 		}
 	}
 
-	protected _onDataImport(_event: MouseEvent): void { }
+	protected _onDataImport(_event: MouseEvent): void {}
 
-	protected _onDataExport(_event: MouseEvent): void { }
+	protected _onDataExport(_event: MouseEvent): void {}
 
 	protected _onAddItem(event: MouseEvent): void {
 		const trackers = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`)

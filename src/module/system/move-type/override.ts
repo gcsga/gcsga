@@ -1,6 +1,6 @@
-import { evaluateToNumber } from "@module/util/index.ts"
+import { evaluateToNumber } from "@module/util/gcs/eval.ts"
 import { MoveTypeOverrideConditionType, MoveTypeOverrideSchema } from "./data.ts"
-import { ActorGURPS } from "@actor"
+import type { ActorGURPS } from "@actor"
 
 class MoveTypeOverride extends foundry.abstract.DataModel<ActorGURPS, MoveTypeOverrideSchema> {
 	// Value to check the actor against

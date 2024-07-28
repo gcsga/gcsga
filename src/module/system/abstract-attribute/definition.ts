@@ -98,6 +98,6 @@ abstract class AbstractAttributeDef<
 
 interface AbstractAttributeDef<TActor extends ActorGURPS | Mook, TSchema extends AbstractAttributeDefSchema>
 	extends foundry.abstract.DataModel<TActor, TSchema>,
-	ModelPropsFromSchema<AbstractAttributeDefSchema> { }
+		ModelPropsFromSchema<AbstractAttributeDefSchema> {}
 
 export { AbstractAttributeDef }

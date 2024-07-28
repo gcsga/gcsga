@@ -60,6 +60,6 @@ class NumericCriteria extends foundry.abstract.DataModel<ItemGURPS, NumericCrite
 
 interface NumericCriteria
 	extends foundry.abstract.DataModel<ItemGURPS, NumericCriteriaSchema>,
-	ModelPropsFromSchema<NumericCriteriaSchema> { }
+		ModelPropsFromSchema<NumericCriteriaSchema> {}
 
 export { NumericCriteria, type NumericCriteriaSchema }

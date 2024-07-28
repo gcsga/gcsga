@@ -1,7 +1,5 @@
-import { ChatMessageGURPS } from "@module/chat-message/index.ts";
+import { ChatMessageGURPS } from "@module/chat-message/index.ts"
 
-class ChatLogGURPS extends ChatLog<ChatMessageGURPS> {
-
-}
+class ChatLogGURPS extends ChatLog<ChatMessageGURPS> {}
 
 export { ChatLogGURPS }

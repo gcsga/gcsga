@@ -1,14 +1,14 @@
-import { evaluateToNumber } from "@module/util/index.ts"
-import { PoolThresholdSchema, ThresholdOp } from "./data.ts"
-import { CharacterGURPS } from "@actor"
-import { Mook } from "@system/mook/document.ts"
-import { AttributeDef } from "./definition.ts"
-import { ResourceTrackerDef } from "@system/resource-tracker/definition.ts"
+import type { PoolThresholdSchema, ThresholdOp } from "./data.ts"
+import type { CharacterGURPS } from "@actor"
+import type { Mook } from "@system/mook/document.ts"
+import type { AttributeDef } from "./definition.ts"
+import type { ResourceTrackerDef } from "@system/resource-tracker/definition.ts"
+import { evaluateToNumber } from "@module/util/gcs/eval.ts"
 
 class PoolThreshold extends foundry.abstract.DataModel<AttributeDef | ResourceTrackerDef, PoolThresholdSchema> {
 	constructor(
 		data: DeepPartial<SourceFromSchema<PoolThresholdSchema>>,
-		options?: DataModelConstructionOptions<AttributeDef | ResourceTrackerDef>
+		options?: DataModelConstructionOptions<AttributeDef | ResourceTrackerDef>,
 	) {
 		super(data, options)
 	}
@@ -40,6 +40,6 @@ class PoolThreshold extends foundry.abstract.DataModel<AttributeDef | ResourceTr
 
 interface PoolThreshold
 	extends foundry.abstract.DataModel<AttributeDef | ResourceTrackerDef, PoolThresholdSchema>,
-	ModelPropsFromSchema<PoolThresholdSchema> { }
+		ModelPropsFromSchema<PoolThresholdSchema> {}
 
 export { PoolThreshold }

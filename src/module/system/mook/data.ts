@@ -11,19 +11,20 @@ const regex_cr = /\((CR:?)?\s*(\d+)\)/
 export { regex_cr, regex_levels }
 
 type MookSchema = {
-	attributes: fields.ArrayField<
-		fields.SchemaField<MookAttributeSchema>,
-		Partial<SourceFromSchema<MookAttributeSchema>>[],
-		Partial<ModelPropsFromSchema<MookAttributeSchema>>[]
-	>
-	settings: fields.SchemaField<{
+	system: fields.SchemaField<{
 		attributes: fields.ArrayField<
-			fields.SchemaField<MookAttributeDefSchema>,
-			Partial<SourceFromSchema<MookAttributeDefSchema>>[],
-			Partial<ModelPropsFromSchema<MookAttributeDefSchema>>[]
+			fields.SchemaField<MookAttributeSchema>,
+			Partial<SourceFromSchema<MookAttributeSchema>>[],
+			Partial<ModelPropsFromSchema<MookAttributeSchema>>[]
 		>
-		damage_progression: fields.StringField<progression.Option, progression.Option, true, false, true>
-		move_types: fields.ArrayField<fields.SchemaField<MookMoveTypeDefSchema>>
+		settings: fields.SchemaField<{
+			attributes: fields.ArrayField<
+				fields.SchemaField<MookAttributeDefSchema>,
+				Partial<SourceFromSchema<MookAttributeDefSchema>>[],
+				Partial<ModelPropsFromSchema<MookAttributeDefSchema>>[]
+			>
+			move_types: fields.ArrayField<fields.SchemaField<MookMoveTypeDefSchema>>
+		}>
 	}>
 	profile: fields.SchemaField<{
 		name: fields.StringField<string, string, true, false, true>
@@ -35,6 +36,7 @@ type MookSchema = {
 		portrait: fields.FilePathField<ImageFilePath, ImageFilePath, false, false, true>
 		userdesc: fields.StringField<string, string, true, false, true>
 	}>
+	damage_progression: fields.StringField<progression.Option, progression.Option, true, false, true>
 	traits: fields.ArrayField<fields.SchemaField<MookTraitSchema>>
 	skills: fields.ArrayField<fields.SchemaField<MookSkillSchema>>
 	spells: fields.ArrayField<fields.SchemaField<MookSpellSchema>>

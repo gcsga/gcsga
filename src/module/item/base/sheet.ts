@@ -270,7 +270,7 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 		} else {
 			attributes = game.settings
 				.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
-				.reduce((acc: Record<string, string>, att: ModelPropsFromSchema<AttributeDefSchema>) => {
+				.reduce((acc: Record<string, string>, att: SourceFromSchema<AttributeDefSchema>) => {
 					acc[att.id] = att.name
 					return acc
 				}, {})

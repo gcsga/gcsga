@@ -1,7 +1,9 @@
-import { evaluateToNumber } from "@module/util/index.ts"
 import { MoveTypeOverride } from "./override.ts"
-import { AbstractAttributeDef, MoveType, MoveTypeDefSchema } from "@system"
-import { CharacterGURPS } from "@actor"
+import type { CharacterGURPS } from "@actor"
+import { evaluateToNumber } from "@module/util/gcs/eval.ts"
+import { AbstractAttributeDef } from "@system/abstract-attribute/index.ts"
+import type { MoveTypeDefSchema } from "./data.ts"
+import { MoveType } from "./object.ts"
 
 class MoveTypeDef extends AbstractAttributeDef<CharacterGURPS, MoveTypeDefSchema> {
 	constructor(

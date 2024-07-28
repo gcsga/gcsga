@@ -1,20 +1,16 @@
-import {
-	AttributeDefSchema,
-	BodyGURPS,
-	BodySchema,
-	BodySource,
-	AttributeDef,
-	Mook,
-	MoveTypeDef,
-	MoveTypeDefSchema,
-	ResourceTrackerDef,
-	ResourceTrackerDefSchema,
-} from "@system"
-import { ErrorGURPS, LengthUnits, WeightUnits, display, paper, progression } from "@util"
-import { ActorGURPS, CharacterGURPS } from "@actor"
-import fields = foundry.data.fields
-import { LaxSchemaField } from "./schema-data-fields.ts"
+import type { ActorGURPS, CharacterGURPS } from "@actor"
 import { ActorType, SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
+import { ErrorGURPS, LengthUnits, WeightUnits, display, paper, progression } from "@util"
+import { AttributeDefSchema } from "./attribute/data.ts"
+import { AttributeDef } from "./attribute/definition.ts"
+import { BodyGURPS, BodySchema, BodySource } from "./hit-location/index.ts"
+import { MoveTypeDefSchema } from "./move-type/data.ts"
+import { MoveTypeDef } from "./move-type/definition.ts"
+import { ResourceTrackerDefSchema } from "./resource-tracker/data.ts"
+import { ResourceTrackerDef } from "./resource-tracker/definition.ts"
+import { LaxSchemaField } from "./schema-data-fields.ts"
+import fields = foundry.data.fields
+import { Mook } from "./mook/document.ts"
 
 export interface PageSettings {
 	paper_size: paper.Size
@@ -45,8 +41,8 @@ type SheetSettingsSchema = {
 	block_layout: fields.ArrayField<fields.StringField<BlockLayoutString>>
 	attributes: fields.ArrayField<fields.SchemaField<AttributeDefSchema>>
 	resource_trackers: fields.ArrayField<fields.SchemaField<ResourceTrackerDefSchema>>
-	move_types: fields.ArrayField<fields.SchemaField<MoveTypeDefSchema>>
 	body_type: fields.SchemaField<BodySchema>
+	move_types: fields.ArrayField<fields.SchemaField<MoveTypeDefSchema>>
 	damage_progression: fields.StringField<progression.Option>
 	default_length_units: fields.StringField<LengthUnits>
 	default_weight_units: fields.StringField<WeightUnits>
@@ -80,7 +76,7 @@ class SheetSettings extends foundry.abstract.DataModel<CharacterGURPS, SheetSett
 		this.resource_trackers =
 			data.resource_trackers?.map(e => new ResourceTrackerDef(e!, { parent: this.parent })) ?? []
 		this.move_types = data.move_types?.map(e => new MoveTypeDef(e!, { parent: this.parent })) ?? []
-		this.body_type = new BodyGURPS(data.body_type!)
+		this.body_type = new BodyGURPS(data.body_type ?? {})
 	}
 
 	get actor(): ActorGURPS {
@@ -138,7 +134,7 @@ class SheetSettings extends foundry.abstract.DataModel<CharacterGURPS, SheetSett
 	}
 
 	static for(actor: ActorGURPS | Mook | null): SheetSettings {
-		if (actor instanceof ActorGURPS && actor?.isOfType(ActorType.Character)) {
+		if (actor instanceof Actor && actor?.isOfType(ActorType.Character)) {
 			return actor.settings ?? new SheetSettings(actor.system.settings, { parent: actor })
 		}
 		if (actor) {
@@ -159,15 +155,15 @@ class SheetSettings extends foundry.abstract.DataModel<CharacterGURPS, SheetSett
 
 interface SheetSettings
 	extends foundry.abstract.DataModel<CharacterGURPS, SheetSettingsSchema>,
-	Omit<
-		ModelPropsFromSchema<SheetSettingsSchema>,
-		"attributes" | "resource_trackers" | "move_types" | "body_type"
-	> {
+		Omit<
+			ModelPropsFromSchema<SheetSettingsSchema>,
+			"attributes" | "resource_trackers" | "move_types" | "body_type"
+		> {
 	attributes: AttributeDef[]
 	resource_trackers: ResourceTrackerDef[]
 	move_types: MoveTypeDef[]
 	body_type: BodyGURPS
 }
 
-export type { SheetSettingsSchema, SheetSettingsSource, BlockLayoutString }
 export { SheetSettings }
+export type { BlockLayoutString, SheetSettingsSchema, SheetSettingsSource }

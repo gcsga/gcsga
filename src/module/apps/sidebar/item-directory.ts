@@ -106,8 +106,7 @@ class ItemDirectoryGURPS extends ItemDirectory<ItemGURPS<null>> {
 		// }
 		// return super.initialize()
 		for (const item of ItemDirectoryGURPS.collection) {
-			if (item instanceof ItemGURPS)
-				item.prepareSiblingData()
+			if (item instanceof ItemGURPS) item.prepareSiblingData()
 		}
 		return super.initialize()
 	}

@@ -168,10 +168,7 @@ export class CharacterImporter {
 		}
 	}
 
-	static importSettings(
-		data?: ImportedSheetSettings,
-		third_party?: ImportedThirdPartyData,
-	): SheetSettingsSource {
+	static importSettings(data?: ImportedSheetSettings, third_party?: ImportedThirdPartyData): SheetSettingsSource {
 		return {
 			page: CharacterImporter.importPage(data?.page),
 			block_layout: (data?.block_layout as BlockLayoutKey[]) ?? [],
@@ -251,7 +248,7 @@ export class CharacterImporter {
 					base: e.base ?? "",
 					overrides: CharacterImporter.importMoveTypeOverrides(e.overrides),
 					order: index,
-					cost_per_point: e.cost_per_point ?? null
+					cost_per_point: e.cost_per_point ?? null,
 				}
 			}) ?? []
 		)
@@ -334,7 +331,8 @@ export class CharacterImporter {
 	}
 
 	static importPortrait(data?: string): ImageFilePath {
-		if (game.user?.hasPermission(foundry.CONST.USER_PERMISSIONS.FILES_UPLOAD)) return `data:image/png;base64,${data}.png`
+		if (game.user?.hasPermission(foundry.CONST.USER_PERMISSIONS.FILES_UPLOAD))
+			return `data:image/png;base64,${data}.png`
 		return `/systems/${SYSTEM_NAME}/assets/icons/character.svg`
 	}
 

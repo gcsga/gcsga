@@ -15,7 +15,7 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 			for (const source of data.prereqs) {
 				if (!source || !source.type) continue
 				const PrereqClass = CONFIG.GURPS.Prereq.classes[source.type]
-				//@ts-expect-error "type" field mismatched but not causing errors
+				// @ts-expect-error "type" field mismatched but not causing errors
 				prereqs.push(new PrereqClass(source))
 			}
 		this.prereqs = prereqs
@@ -66,7 +66,7 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 
 interface PrereqList
 	extends BasePrereq<PrereqListSchema>,
-	Omit<ModelPropsFromSchema<PrereqListSchema>, "when_tl" | "prereqs"> {
+		Omit<ModelPropsFromSchema<PrereqListSchema>, "when_tl" | "prereqs"> {
 	when_tl: NumericCriteria
 	prereqs: Prereq[]
 }

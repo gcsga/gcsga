@@ -27,7 +27,7 @@ class GCAItemImporter {
 			modifiedTime: date,
 			lastModifiedBy: game.user.id,
 			compendiumSource: null,
-			duplicateSource: null
+			duplicateSource: null,
 		}
 	}
 
@@ -208,7 +208,12 @@ class GCAItemImporter {
 			encumbrance_penalty_multiplier: 0,
 			defaulted_from: null,
 			defaults: [],
-			prereqs: { type: prereq.Type.List, all: true, when_tl: { compare: NumericCompareType.AnyNumber, qualifier: null }, prereqs: [] },
+			prereqs: {
+				type: prereq.Type.List,
+				all: true,
+				when_tl: { compare: NumericCompareType.AnyNumber, qualifier: null },
+				prereqs: [],
+			},
 			// weapons handled separately
 			features: [],
 			study: [],

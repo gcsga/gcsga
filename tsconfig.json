@@ -41,8 +41,8 @@
 			"@data": ["src/module/data/index.ts"],
 			"@lang/*": ["static/lang/*"]
 		},
-		"types": ["jest", "jquery", "node", "tooltipster"],
-		"typeRoots": ["node_modules/@types", "types/foundry"]
+		"types": ["jest", "jquery", "node", "tooltipster", "@ethaks/fvtt-quench"],
+		"typeRoots": ["node_modules/@types", "node_modules", "types/foundry"]
 	},
 	"watchOptions": {
 		"excludeDirectories": ["packs/", "static/packs/"]

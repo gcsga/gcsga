@@ -1,10 +1,10 @@
 import { SYSTEM_NAME } from "@data"
-import { LocalizeGURPS } from "@util/localize.ts"
 import { Mook } from "./document.ts"
-import { AttributeGURPS, EXAMPLE_STATBLOCKS } from "@system"
 import { DialogGURPS } from "@module/apps/dialog.ts"
 import { CharacterConfigSheet } from "@actor/character/config.ts"
-import { htmlQuery } from "@util"
+import { LocalizeGURPS, htmlQuery } from "@util"
+import { AttributeGURPS } from "@system/attribute/index.ts"
+import { EXAMPLE_STATBLOCKS } from "./data.ts"
 
 export class MookGeneratorSheet extends FormApplication {
 	config: CharacterConfigSheet | null = null
@@ -16,6 +16,7 @@ export class MookGeneratorSheet extends FormApplication {
 	constructor(options?: Partial<ApplicationOptions>) {
 		super(options)
 		this.object = new Mook({}, {})
+		console.log(this.object)
 	}
 
 	static override get defaultOptions(): FormApplicationOptions {
@@ -54,7 +55,6 @@ export class MookGeneratorSheet extends FormApplication {
 
 	static async init(): Promise<unknown> {
 		const mg = new MookGeneratorSheet()
-		console.log(mg)
 		return mg.render(true)
 	}
 
@@ -69,49 +69,49 @@ export class MookGeneratorSheet extends FormApplication {
 			button_text: this.testing
 				? LocalizeGURPS.translations.gurps.mook.test
 				: LocalizeGURPS.translations.gurps.mook.create,
-			text: this.object.text,
+			text: this._prepareText(),
 		})
 	}
 
 	// TODO: find out why this is here
-	// private _prepareText(): Record<
-	// 	"traits" | "skills" | "spells" | "equipment" | "melee" | "ranged" | "catchall",
-	// 	string
-	// > {
-	// 	return {
-	// 		traits: this.object.traits.reduce((acc, e) => {
-	// 			if (acc !== "") acc += "\n"
-	// 			acc += e.toString()
-	// 			return acc
-	// 		}, ""),
-	// 		skills: this.object.skills.reduce((acc, e) => {
-	// 			if (acc !== "") acc += "\n"
-	// 			acc += e.toString()
-	// 			return acc
-	// 		}, ""),
-	// 		spells: this.object.spells.reduce((acc, e) => {
-	// 			if (acc !== "") acc += "\n"
-	// 			acc += e.toString()
-	// 			return acc
-	// 		}, ""),
-	// 		equipment: this.object.equipment.reduce((acc, e) => {
-	// 			if (acc !== "") acc += "\n"
-	// 			acc += e.toString()
-	// 			return acc
-	// 		}, ""),
-	// 		melee: this.object.melee.reduce((acc, e) => {
-	// 			if (acc !== "") acc += "\n"
-	// 			acc += e.toString()
-	// 			return acc
-	// 		}, ""),
-	// 		ranged: this.object.ranged.reduce((acc, e) => {
-	// 			if (acc !== "") acc += "\n"
-	// 			acc += e.toString()
-	// 			return acc
-	// 		}, ""),
-	// 		catchall: this.object.catchall,
-	// 	}
-	// }
+	private _prepareText(): Record<
+		"traits" | "skills" | "spells" | "equipment" | "melee" | "ranged" | "catchall",
+		string
+	> {
+		return {
+			traits: this.object.traits.reduce((acc, e) => {
+				if (acc !== "") acc += "\n"
+				acc += e.toText()
+				return acc
+			}, ""),
+			skills: this.object.skills.reduce((acc, e) => {
+				if (acc !== "") acc += "\n"
+				acc += e.toText()
+				return acc
+			}, ""),
+			spells: this.object.spells.reduce((acc, e) => {
+				if (acc !== "") acc += "\n"
+				acc += e.toText()
+				return acc
+			}, ""),
+			equipment: this.object.equipment.reduce((acc, e) => {
+				if (acc !== "") acc += "\n"
+				acc += e.toText()
+				return acc
+			}, ""),
+			melee: this.object.melee.reduce((acc, e) => {
+				if (acc !== "") acc += "\n"
+				acc += e.toText()
+				return acc
+			}, ""),
+			ranged: this.object.ranged.reduce((acc, e) => {
+				if (acc !== "") acc += "\n"
+				acc += e.toText()
+				return acc
+			}, ""),
+			catchall: this.object.catchall,
+		}
+	}
 
 	prepareAttributes(attributes: Map<string, AttributeGURPS>): [AttributeGURPS[], AttributeGURPS[], AttributeGURPS[]] {
 		const primary_attributes: AttributeGURPS[] = []

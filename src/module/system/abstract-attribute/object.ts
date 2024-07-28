@@ -1,8 +1,8 @@
-import { AbstractAttributeDef } from "./definition.ts"
-import { AbstractAttributeConstructionOptions, AbstractAttributeSchema } from "./data.ts"
-import { ActorGURPS } from "@actor"
+import type { AbstractAttributeDef } from "./definition.ts"
+import type { AbstractAttributeConstructionOptions, AbstractAttributeSchema } from "./data.ts"
+import type { ActorGURPS } from "@actor"
 import { LaxSchemaField } from "@system/schema-data-fields.ts"
-import { Mook } from "@system/mook/index.ts"
+import type { Mook } from "@system/mook/index.ts"
 
 abstract class AbstractAttribute<
 	TActor extends ActorGURPS | Mook = ActorGURPS | Mook,

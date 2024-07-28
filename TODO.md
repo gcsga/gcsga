@@ -1,7 +1,8 @@
 # BIG OL' TODO Document
 
 - make sure mook generator sheet works
-- maybe try generating attribute list from system data instead of directly in the constructor? Would that work?
+- reimplement system object on mook to separate generated attributes from object type attributes
+- figure out when to update attributes should just be on every object update?
 
 ## Immediate TODO
 

@@ -1,4 +1,3 @@
-import { WeaponDamage, WeaponDamageSchema } from "@item/abstract-weapon/weapon-damage.ts"
 import { ItemFlags, ItemType, SETTINGS, SYSTEM_NAME, gid } from "@module/data/constants.ts"
 import { StringBuilder, difficulty, selfctrl, stdmg } from "@util"
 import {
@@ -32,6 +31,7 @@ import {
 	TraitModifierSource,
 	TraitSource,
 } from "@item/data/index.ts"
+import { WeaponDamage, WeaponDamageSchema } from "@item/abstract-weapon/weapon-damage.ts"
 
 function cleanLine(text: string): string {
 	const start = text
@@ -163,7 +163,7 @@ class MookTrait extends MookItem<MookTraitSchema> {
 			}
 
 			// Capture modifiers
-			const modifierText = t.match(/\(.+\)/)?.[1] ?? ""
+			const modifierText = t.match(/\((.+,.+)\)/)?.[1] ?? ""
 			let modifiers: SourceFromSchema<MookTraitModifierSchema>[] = []
 			if (modifierText.length > 0) {
 				modifiers = this._parseTraitModifiers(modifierText)
@@ -295,7 +295,7 @@ class MookSkill extends MookItem<MookSkillSchema> {
 		buffer.push(this.name)
 		if (this.tech_level !== "") buffer.push(`/TL${this.tech_level}`)
 		buffer.push(`-${this.level}`)
-		buffer.push(` (${this.attribute}/${this.difficulty})`)
+		buffer.push(` (${this.attribute}/${this.difficulty})`.toUpperCase())
 		return buffer.toString()
 	}
 
@@ -335,7 +335,7 @@ class MookSkill extends MookItem<MookSkillSchema> {
 			}),
 		]
 
-		const regex_level = /\s?-(\d+)/
+		const regex_level = /\s?-?(\d+)\s?/
 		const regex_difficulty_att = new RegExp(`\\((${attributes.map(e => e.name).join("|")})/([EAHVeahv][Hh]?)\\)`)
 		const regex_rsl = new RegExp(`[\\(|\\s](${attributes.map(e => e.name).join("|")})([-+]\\d+)?[\\)|\\s]?`)
 		const regex_specialization = /^(?:[A-z-\s]+) \(([A-z-\s]+)\)/
@@ -354,19 +354,12 @@ class MookSkill extends MookItem<MookSkillSchema> {
 				t = t.replace(regex_points, "").trim()
 			}
 
-			// Capture level
-			let level = 0
-			if (t.match(regex_level)) {
-				level = parseInt(t.match(regex_level)![1])
-				t = t.replace(regex_level, "").trim()
-			}
-
 			// Capture difficulty
-			let attribute: string = gid.Dexterity.toUpperCase()
-			let diff = difficulty.Level.Average.toUpperCase()
+			let attribute: string = gid.Dexterity.toLowerCase()
+			let diff = difficulty.Level.Average.toLowerCase()
 			if (t.match(regex_difficulty_att)) {
 				const match = t.match(regex_difficulty_att)
-				attribute = attributes.find(e => e.name === match![1])?.id ?? gid.Intelligence.toUpperCase()
+				attribute = attributes.find(e => e.name === match![1])?.id ?? gid.Intelligence.toLowerCase()
 				diff = match![2].toLowerCase() as difficulty.Level
 				t = t.replace(regex_difficulty, "").trim()
 			} else if (t.match(regex_difficulty)) {
@@ -377,8 +370,15 @@ class MookSkill extends MookItem<MookSkillSchema> {
 			// Capture RSL
 			if (t.match(regex_rsl)) {
 				const match = t.match(regex_rsl)!
-				attribute = attributes.find(e => e.name === match[1])?.id ?? gid.Dexterity.toUpperCase()
+				attribute = attributes.find(e => e.name === match[1])?.id ?? gid.Dexterity.toLowerCase()
 				t = t.replace(regex_rsl, "").trim()
+			}
+
+			// Capture level
+			let level = 0
+			if (t.match(regex_level)) {
+				level = parseInt(t.match(regex_level)![1])
+				t = t.replace(regex_level, "").trim()
 			}
 
 			// Capture specialization
@@ -444,7 +444,7 @@ class MookSpell extends MookItem<MookSpellSchema> {
 		buffer.push(this.name)
 		if (this.tech_level !== "") buffer.push(`/TL${this.tech_level}`)
 		buffer.push(`-${this.level}`)
-		buffer.push(` (${this.attribute}/${this.difficulty})`)
+		buffer.push(` (${this.attribute}/${this.difficulty})`.toUpperCase())
 		return buffer.toString()
 	}
 
@@ -510,11 +510,11 @@ class MookSpell extends MookItem<MookSpellSchema> {
 			}
 
 			// Capture difficulty
-			let attribute: string = gid.Intelligence.toUpperCase()
-			let diff = difficulty.Level.Hard.toUpperCase()
+			let attribute: string = gid.Intelligence.toLowerCase()
+			let diff = difficulty.Level.Hard.toLowerCase()
 			if (t.match(regex_difficulty_att)) {
 				const match = t.match(regex_difficulty_att)
-				attribute = attributes.find(e => e.name === match![1])?.id ?? gid.Intelligence.toUpperCase()
+				attribute = attributes.find(e => e.name === match![1])?.id ?? gid.Intelligence.toLowerCase()
 				diff = match![2].toLowerCase() as difficulty.Level
 				t = t.replace(regex_difficulty, "").trim()
 			} else if (t.match(regex_difficulty)) {
@@ -524,7 +524,7 @@ class MookSpell extends MookItem<MookSpellSchema> {
 
 			if (t.match(regex_rsl)) {
 				const match = t.match(regex_rsl)!
-				attribute = attributes.find(e => e.name === match[1])?.id ?? gid.Intelligence.toUpperCase()
+				attribute = attributes.find(e => e.name === match[1])?.id ?? gid.Intelligence.toLowerCase()
 				t = t.replace(regex_rsl, "").trim()
 			}
 

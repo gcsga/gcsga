@@ -1,12 +1,9 @@
+import type { CharacterGURPS } from "@actor"
+import { AbstractAttribute, AbstractAttributeConstructionOptions } from "@system/abstract-attribute/index.ts"
+import { MoveBonusType } from "@system/feature/data.ts"
+import { SheetSettings } from "@system/sheet-settings.ts"
+import type { MoveTypeSchema } from "./data.ts"
 import { MoveTypeDef } from "./definition.ts"
-import {
-	AbstractAttribute,
-	AbstractAttributeConstructionOptions,
-	MoveBonusType,
-	MoveTypeSchema,
-	SheetSettings,
-} from "@system"
-import { CharacterGURPS } from "@actor"
 
 class MoveType extends AbstractAttribute<CharacterGURPS, MoveTypeSchema> {
 	// adj = 0

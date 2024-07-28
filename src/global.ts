@@ -141,7 +141,7 @@ declare global {
 		}
 	}
 
-	interface Window { }
+	interface Window {}
 
 	interface ClientSettings {
 		get(module: "gcsga", key: "default_sheet_settings.initial_points"): number

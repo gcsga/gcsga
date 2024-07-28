@@ -1,21 +1,18 @@
-import { attribute } from "@util/enum/attribute.ts"
 import { PoolThreshold } from "./pool-threshold.ts"
-import { AttributeDefSchema } from "./data.ts"
-import { progression } from "@util/enum/progression.ts"
+import type { AttributeDefSchema } from "./data.ts"
 import { AbstractAttributeDef } from "@system/abstract-attribute/definition.ts"
 import { gid } from "@module/data/constants.ts"
-import { evaluateToNumber } from "@module/util/index.ts"
-import { ActorGURPS, CharacterGURPS } from "@actor"
+import type { ActorGURPS, CharacterGURPS } from "@actor"
 import { AttributeGURPS } from "./object.ts"
-import { Mook } from "@system/mook/index.ts"
+import type { Mook } from "@system/mook/index.ts"
+import { attribute, progression } from "@util"
+import { evaluateToNumber } from "@module/util/gcs/eval.ts"
 
 class AttributeDef extends AbstractAttributeDef<CharacterGURPS | Mook, AttributeDefSchema> {
-
 	constructor(
 		data: DeepPartial<SourceFromSchema<AttributeDefSchema>>,
 		options?: DataModelConstructionOptions<CharacterGURPS | Mook>,
 	) {
-		console.log(data)
 		super(data, options)
 		this.thresholds = data.thresholds?.map(threshold => new PoolThreshold(threshold!)) ?? []
 	}
@@ -37,7 +34,7 @@ class AttributeDef extends AbstractAttributeDef<CharacterGURPS | Mook, Attribute
 			thresholds: new fields.ArrayField(new fields.SchemaField(PoolThreshold.defineSchema()), {
 				required: false,
 				nullable: true,
-				initial: null
+				initial: null,
 			}),
 			order: new fields.NumberField({ min: 0 }),
 		}
@@ -90,7 +87,7 @@ class AttributeDef extends AbstractAttributeDef<CharacterGURPS | Mook, Attribute
 
 interface AttributeDef
 	extends AbstractAttributeDef<CharacterGURPS | Mook, AttributeDefSchema>,
-	Omit<ModelPropsFromSchema<AttributeDefSchema>, "thresholds"> {
+		Omit<ModelPropsFromSchema<AttributeDefSchema>, "thresholds"> {
 	thresholds: PoolThreshold[] | null
 }
 

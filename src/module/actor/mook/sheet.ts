@@ -1,4 +1,4 @@
-import { CharacterGURPS } from "@actor"
+import type { CharacterGURPS } from "@actor"
 import { ActorSheetGURPS } from "@actor/base/sheet.ts"
 
 class MookSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS<TActor> {

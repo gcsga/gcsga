@@ -1,13 +1,10 @@
-import { ResourceTrackerDef } from "./definition.ts"
-import {
-	AbstractAttribute,
-	AbstractAttributeConstructionOptions,
-	PoolThreshold,
-	ResourceTrackerSchema,
-	SheetSettings,
-} from "@system"
-import { TokenPool } from "@module/data/types.ts"
-import { CharacterGURPS } from "@actor"
+import type { CharacterGURPS } from "@actor"
+import type { TokenPool } from "@module/data/types.ts"
+import type { ResourceTrackerDef } from "./definition.ts"
+import { AbstractAttribute, AbstractAttributeConstructionOptions } from "@system/abstract-attribute/index.ts"
+import { ResourceTrackerSchema } from "./data.ts"
+import { SheetSettings } from "@system/sheet-settings.ts"
+import { PoolThreshold } from "@system/attribute/index.ts"
 
 class ResourceTracker extends AbstractAttribute<CharacterGURPS, ResourceTrackerSchema> {
 	order: number

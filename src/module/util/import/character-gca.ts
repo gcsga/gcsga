@@ -1,5 +1,13 @@
 import { ActorGURPS } from "@actor"
-import { CharacterFlagDefaults, CharacterFlags, CharacterMove, CharacterProfile, CharacterSource, CharacterSystemSource, PointsRecord } from "@actor/character/data.ts"
+import {
+	CharacterFlagDefaults,
+	CharacterFlags,
+	CharacterMove,
+	CharacterProfile,
+	CharacterSource,
+	CharacterSystemSource,
+	PointsRecord,
+} from "@actor/character/data.ts"
 import { ActorFlags, ActorType, ManeuverID, SETTINGS, SYSTEM_NAME } from "@data"
 import { ItemSourceGURPS } from "@item/data/index.ts"
 import { ChatMessageGURPS } from "@module/chat-message/document.ts"
@@ -215,7 +223,7 @@ export class GCACharacterImporter {
 					hit_penalty: 0,
 					dr_bonus: parseInt(e.basedr) ?? 0,
 					description: getHitLocationNotes(e.name),
-					sub_table: null
+					sub_table: null,
 				}
 				return location
 			}) ?? []

@@ -1,19 +1,14 @@
-{{#if (in this.attribute_def.type "_separator")}}
+{{#if (in this.definition.type "_separator")}}
 <div class="separator_parent">
-	<div class="separator" data-text="{{this.attribute_def.name}}">{{this.attribute_def.name}}</div>
+	<div class="separator" data-text="{{this.definition.name}}">{{this.definition.name}}</div>
 </div>
-{{else if (or (eq this.attribute_def.type "integer_ref") (eq this.attribte_def.type "decimal_ref"))}}
+{{else if (or (eq this.definition.type "integer_ref") (eq this.attribte_def.type "decimal_ref"))}}
 <div class="field">
-	<input
-		class="number"
-		type="text"
-		value="{{this.max}}"
-		disabled style="min-width: {{length this.max}}ch;"
-	/>
+	<input class="number" type="text" value="{{this.max}}" disabled style="min-width: {{length this.max}}ch;" />
 </div>
-<label>{{this.attribute_def.resolveFullName}}</label>
+<label>{{this.definition.combinedName}}</label>
 {{else}}
-<label>{{this.attribute_def.resolveFullName}}</label>
+<label>{{this.definition.combinedName}}</label>
 <div class="field">
 	<input
 		name="attributes.{{this.id}}.adj"

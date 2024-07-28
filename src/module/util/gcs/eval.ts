@@ -1,4 +1,6 @@
-import { ActorGURPS } from "@actor"
+import type { ActorGURPS } from "@actor"
+import type { Mook } from "@system/mook/index.ts"
+import { ErrorGURPS } from "@util"
 import { eFunction, evalFunctions } from "./function.ts"
 import { evalOperators } from "./operator/functions.ts"
 import {
@@ -9,8 +11,6 @@ import {
 	expressionTree,
 	parsedFunction,
 } from "./operator/types.ts"
-import { ErrorGURPS } from "@util"
-import { Mook } from "@system/mook/index.ts"
 
 // Evaluator is used to evaluate an expression. If you do not have any variables that will be resolved, you can leave
 // Resolver unset.
@@ -124,7 +124,7 @@ class Evaluator {
 			;[index, op] = this.processFunction(expression, index)
 			index += op?.symbol.length || 0
 			let tmp: number
-				;[tmp, op] = this.nextOperator(expression, index, null)
+			;[tmp, op] = this.nextOperator(expression, index, null)
 			if (!op) return index
 			index = tmp
 		}

@@ -1,7 +1,6 @@
 import { DiceGURPS } from "@module/dice/index.ts"
 import { Evaluator } from "./eval.ts"
 import { ActorType, ItemType } from "@data"
-import { ActorGURPS } from "@actor"
 import { Length } from "@util"
 import { equalFold } from "../string-criteria.ts"
 
@@ -110,7 +109,7 @@ function evalFloor(e: Evaluator, args: string): number {
  */
 function evalIf(e: Evaluator, args: string): boolean {
 	let arg: string
-		;[arg, args] = nextArg(args)
+	;[arg, args] = nextArg(args)
 	const evaluated = e.evaluateNew(arg)
 	const value = evalFrom(evaluated)
 	if (value === 0) {
@@ -129,7 +128,7 @@ function evalMaximum(e: Evaluator, args: string): number {
 	let max = Number.MIN_SAFE_INTEGER
 	while (args) {
 		let arg: string
-			;[arg, args] = nextArg(args)
+		;[arg, args] = nextArg(args)
 		const value = evalToNumber(e, arg)
 		max = Math.max(max, value)
 	}
@@ -145,7 +144,7 @@ function evalMinimum(e: Evaluator, args: string): number {
 	let min: number = Math.min()
 	while (args) {
 		let arg: string
-			;[arg, args] = nextArg(args)
+		;[arg, args] = nextArg(args)
 		const value = evalToNumber(e, arg)
 		min = Math.min(min, value)
 	}
@@ -282,17 +281,17 @@ function evalSigned(e: Evaluator, a: string): string {
  */
 function evalSkillLevel(e: Evaluator, arg: string): number {
 	const entity = e.resolver
-	if (!(entity instanceof ActorGURPS && entity.isOfType(ActorType.Character))) return 0
+	if (!(entity instanceof Actor && entity.isOfType(ActorType.Character))) return 0
 	let [name, remaining] = nextArg(arg)
 	name = evalToString(e, name)
 	if (!name) return 0
 	name = name.trim()
 	let specialization: string
-		;[specialization, remaining] = nextArg(remaining)
+	;[specialization, remaining] = nextArg(remaining)
 	specialization = specialization.trim()
 	if (!specialization || !evalToString(e, specialization)) return 0
 	specialization = specialization.replaceAll('"', "")
-		;[arg] = nextArg(remaining)
+	;[arg] = nextArg(remaining)
 	arg = arg.trim()
 	let relative = false
 	if (arg) relative = evalToBool(e, arg)
@@ -346,12 +345,12 @@ export function evalEncumbrance(e: Evaluator, a: string): number {
 	let [arg, remaining] = nextArg(a)
 	const forSkills = evalToBool(e, arg)
 	let returnFactor = false
-		;[arg] = nextArg(remaining)
+	;[arg] = nextArg(remaining)
 	if (arg.trim()) {
 		returnFactor = evalToBool(e, remaining)
 	}
 	const entity = e.resolver
-	if (!(entity instanceof ActorGURPS)) return 0
+	if (!(entity instanceof Actor)) return 0
 	if (!entity.isOfType(ActorType.Character)) return 0
 
 	const level = forSkills ? entity.encumbrance.forSkills.level : entity.encumbrance.current.level
@@ -363,7 +362,7 @@ export function evalHasTrait(e: Evaluator, a: string): boolean {
 	const entity = e.resolver
 	if (!entity) return false
 	const arg = a.replaceAll(/^['"]|[']$/g, "")
-	if (!(entity instanceof ActorGURPS)) return false
+	if (!(entity instanceof Actor)) return false
 	if (!entity.isOfType(ActorType.Character)) return false
 	return entity.itemCollections.traits.some(t => equalFold(t.name ?? "", arg))
 }
@@ -373,7 +372,7 @@ export function evalTraitLevel(e: Evaluator, a: string): number {
 	if (!entity) return -1
 	const arg = a.replaceAll(/^['"]|[']$/g, "")
 	let levels = -1
-	if (!(entity instanceof ActorGURPS)) return levels
+	if (!(entity instanceof Actor)) return levels
 	if (!entity.isOfType(ActorType.Character)) return levels
 	entity.itemTypes[ItemType.Trait]
 		.filter(t => t.name === arg)
@@ -386,11 +385,11 @@ export function evalTraitLevel(e: Evaluator, a: string): number {
 
 export function evalSSRT(e: Evaluator, a: string): number {
 	let arg: string
-		;[arg, a] = nextArg(a)
+	;[arg, a] = nextArg(a)
 	const n = evalToString(e, arg)
-		;[arg, a] = nextArg(a)
+	;[arg, a] = nextArg(a)
 	const units = evalToString(e, arg)
-		;[arg, a] = nextArg(a)
+	;[arg, a] = nextArg(a)
 	const wantSize = evalToBool(e, arg)
 	const length = Length.fromString(`${n} ${units}`)
 	let result = yardsToValue(length, wantSize)
@@ -556,7 +555,7 @@ export function evalRandomWeight(e: Evaluator, a: string): number | null {
 	const entity = e.resolver
 	if (!entity) return -1
 	let arg: string
-		;[arg, a] = nextArg(a)
+	;[arg, a] = nextArg(a)
 	const stDecimal = evalToNumber(e, arg)
 	let shift = 0
 	if (arg !== "") shift = evalToNumber(e, a)
@@ -567,7 +566,7 @@ export function evalRandomWeight(e: Evaluator, a: string): number | null {
 	let fat = false
 	let veryFat = false
 
-	if (!(entity instanceof ActorGURPS)) return null
+	if (!(entity instanceof Actor)) return null
 	if (!entity.isOfType(ActorType.Character)) return null
 
 	entity.itemTypes[ItemType.Trait].forEach(t => {

@@ -10,7 +10,7 @@ import {
 	TargetTraitModifier,
 } from "@module/apps/damage-calculator/index.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
-import { BodyGURPS, HitLocation, HitLocationSchema } from "@system"
+import { BodyGURPS, HitLocation, HitLocationSchema } from "@system/hit-location/index.ts"
 import { TooltipGURPS } from "@util"
 
 export class _Attacker implements DamageAttacker {
@@ -43,7 +43,7 @@ export class _Target implements DamageTarget {
 	_traits: TargetTrait[] = []
 
 	// TODO: maybe try fixing this?
-	//@ts-expect-error non-assignable parent type
+	// @ts-expect-error non-assignable parent type
 	hitLocationTable: BodyGURPS = new BodyGURPS(_dummyHitLocationTable, { parent: this })
 
 	getTrait(name: string): TargetTrait | undefined {
@@ -55,7 +55,7 @@ export class _Target implements DamageTarget {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	incrementDamage(_delta: number): void { }
+	incrementDamage(_delta: number): void {}
 
 	pools: TargetPool[] = [
 		{ id: "hp", name: "HP", fullName: "Hit Points" },

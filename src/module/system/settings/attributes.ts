@@ -25,7 +25,7 @@ export class AttributeSettings extends SettingsMenuGURPS {
 				hint: "attributes hint temp",
 				default: defaultSettings[SYSTEM_NAME][`${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`],
 				type: Object,
-				onChange: () => { },
+				onChange: () => {},
 			},
 			effects: {
 				prefix: SETTINGS.DEFAULT_ATTRIBUTES,
@@ -33,7 +33,7 @@ export class AttributeSettings extends SettingsMenuGURPS {
 				hint: "effects hint temp",
 				default: defaultSettings[SYSTEM_NAME][`${SETTINGS.DEFAULT_ATTRIBUTES}.effects`],
 				type: Object,
-				onChange: () => { },
+				onChange: () => {},
 			},
 		}
 	}
@@ -59,8 +59,7 @@ export class AttributeSettings extends SettingsMenuGURPS {
 	}
 
 	get attributes(): AttributeDef[] {
-		return game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
-			.map(e => new AttributeDef(e))
+		return game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`).map(e => new AttributeDef(e))
 	}
 
 	override activateListeners($html: JQuery<HTMLElement>): void {
@@ -102,7 +101,7 @@ export class AttributeSettings extends SettingsMenuGURPS {
 		}
 	}
 
-	protected _onDataImport(_event: MouseEvent): void { }
+	protected _onDataImport(_event: MouseEvent): void {}
 
 	protected _onDataExport(_event: MouseEvent): void {
 		const extension = "attr"

@@ -36,8 +36,7 @@ export class MoveSettings extends SettingsMenuGURPS {
 	}
 
 	get moveTypes(): MoveTypeDef[] {
-		return game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
-			.map(e => new MoveTypeDef(e))
+		return game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`).map(e => new MoveTypeDef(e))
 	}
 
 	override activateListeners($html: JQuery<HTMLElement>): void {
@@ -79,9 +78,9 @@ export class MoveSettings extends SettingsMenuGURPS {
 		}
 	}
 
-	protected _onDataImport(_event: MouseEvent): void { }
+	protected _onDataImport(_event: MouseEvent): void {}
 
-	protected _onDataExport(_event: MouseEvent): void { }
+	protected _onDataExport(_event: MouseEvent): void {}
 
 	protected _onAddItem(event: MouseEvent): void {
 		const move_types = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)

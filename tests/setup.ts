@@ -1,11 +1,11 @@
 import "../build/lib/foundry-utils.ts"
 import { MockActor } from "./mocks/actor.ts"
+import { mockFoundry } from "./mocks/foundry.ts"
 import { MockItem } from "./mocks/item.ts"
 import { MockToken } from "./mocks/token.ts"
 import { MockUser } from "./mocks/user.ts"
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
+// @ts-expect-error it's a mock dude
 global.game = Object.freeze({
 	settings: Object.freeze({
 		get: (_module: string, _settingKey: string) => {
@@ -42,47 +42,66 @@ global.game = Object.freeze({
 	},
 })
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).User = MockUser
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).Actor = MockActor
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).Item = MockItem
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).Token = MockToken
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).FormApplication = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).Roll = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).Application = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).Dialog = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).ChatMessage = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).Ruler = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).FilePicker = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).JournalEntryPage = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).JournalPageSheet = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).JournalPDFPageSheet = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).CombatTracker = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).ItemDirectory = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).Combat = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).Combatant = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).DocumentSheet = class {}
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-;(global as any).Hooks = class {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	static on(..._args: any) {}
+// // @ts-expect-error it's a mock dude
+// global.foundry = Object.freeze({
+// 	abstract: {
+// 		DataModel: class {},
+// 		TypeDataModel: class {},
+// 	},
+// 	data: {
+// 		fields: {
+// 			BooleanField: class {},
+// 			StringField: class {},
+// 			NumberField: class {},
+// 			ArrayField: class {},
+// 			SchemaField: class {},
+// 			ObjectField: class {},
+// 			DataField: class {},
+// 		},
+// 	},
+// })
+
+// @ts-expect-error it's a mock dude
+global.foundry = mockFoundry
+// @ts-expect-error it's a mock dude
+global.User = MockUser
+// @ts-expect-error it's a mock dude
+global.Actor = MockActor
+// @ts-expect-error it's a mock dude
+global.Item = MockItem
+// @ts-expect-error it's a mock dude
+global.Token = MockToken
+// @ts-expect-error it's a mock dude
+global.FormApplication = class {}
+// @ts-expect-error it's a mock dude
+global.Roll = class {}
+// @ts-expect-error it's a mock dude
+global.Application = class {}
+// @ts-expect-error it's a mock dude
+global.Dialog = class {}
+// @ts-expect-error it's a mock dude
+global.ChatMessage = class {}
+// @ts-expect-error it's a mock dude
+global.Ruler = class {}
+// @ts-expect-error it's a mock dude
+global.FilePicker = class {}
+// @ts-expect-error it's a mock dude
+global.JournalEntryPage = class {}
+// @ts-expect-error it's a mock dude
+global.JournalPageSheet = class {}
+// @ts-expect-error it's a mock dude
+global.JournalPDFPageSheet = class {}
+// @ts-expect-error it's a mock dude
+global.CombatTracker = class {}
+// @ts-expect-error it's a mock dude
+global.ItemDirectory = class {}
+// @ts-expect-error it's a mock dude
+global.Combat = class {}
+// @ts-expect-error it's a mock dude
+global.Combatant = class {}
+// @ts-expect-error it's a mock dude
+global.DocumentSheet = class {}
+// @ts-expect-error it's a mock dude
+global.Hooks = class {
+	static on(..._args: unknown[]) {}
 }
-// Math.clamped = (value: number, min: number, max: number) => Math.min(Math.max(value, min), max)

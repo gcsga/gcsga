@@ -200,7 +200,7 @@ class CharacterSystemData extends ActorSystemModel<CharacterGURPS, CharacterSyst
 
 interface CharacterSystemData
 	extends ActorSystemModel<CharacterGURPS, CharacterSystemSchema>,
-	ModelPropsFromSchema<CharacterSystemSchema> { }
+		ModelPropsFromSchema<CharacterSystemSchema> {}
 
 type CharacterSystemSchema = ActorSystemSchema & {
 	type: fields.StringField<ActorType.Character, ActorType.Character, true, false, true>

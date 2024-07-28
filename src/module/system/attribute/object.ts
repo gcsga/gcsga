@@ -19,10 +19,7 @@ class AttributeGURPS extends AbstractAttribute<CharacterGURPS | Mook, AttributeS
 		options?: AbstractAttributeConstructionOptions<CharacterGURPS | Mook>,
 	) {
 		super(data, options)
-		// this.adj = data.adj
-		// if (data.damage !== undefined) this.damage = data.damage
 		this.order = options?.order ?? 0
-		// this.applyOps = this.definition?.type === attribute.Type.Pool
 	}
 
 	static override defineSchema(): AttributeSchema {
@@ -65,7 +62,7 @@ class AttributeGURPS extends AbstractAttribute<CharacterGURPS | Mook, AttributeS
 		const def = this.definition
 		if (!def) return 0
 		const max = super.max + this.adj + this.bonus
-		if ([attribute.Type.Decimal, attribute.Type.DecimalRef].includes(this.definition?.type)) return Math.floor(max)
+		if (![attribute.Type.Decimal, attribute.Type.DecimalRef].includes(this.definition?.type)) return Math.floor(max)
 		return max
 	}
 
@@ -78,7 +75,7 @@ class AttributeGURPS extends AbstractAttribute<CharacterGURPS | Mook, AttributeS
 		const def = this.definition
 		if (!def) return 0
 		const eff = this.max + this.effectiveBonus
-		if ([attribute.Type.Decimal, attribute.Type.DecimalRef].includes(this.definition?.type)) return Math.floor(eff)
+		if (![attribute.Type.Decimal, attribute.Type.DecimalRef].includes(this.definition?.type)) return Math.floor(eff)
 		if (this.id === gid.Strength) return this.actor.effectiveST(eff)
 		return eff
 	}
@@ -154,6 +151,6 @@ class AttributeGURPS extends AbstractAttribute<CharacterGURPS | Mook, AttributeS
 
 interface AttributeGURPS
 	extends AbstractAttribute<CharacterGURPS | Mook, AttributeSchema>,
-	ModelPropsFromSchema<AttributeSchema> { }
+		ModelPropsFromSchema<AttributeSchema> {}
 
 export { AttributeGURPS }

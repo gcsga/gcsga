@@ -1,5 +1,4 @@
 import { ActorFlags, ActorType, SETTINGS, SYSTEM_NAME, gid } from "@module/data/index.ts"
-import { AbstractAttributeDef, AbstractAttributeSchema, AttributeDef, AttributeGURPS, AttributeSchema, MoveTypeDef, MoveTypeSchema, ResourceTrackerDef, ResourceTrackerSchema } from "@system"
 import { TooltipGURPS, progression, sanitize, stlimit } from "@util"
 import {
 	MookEquipment,
@@ -24,26 +23,27 @@ import {
 	TraitSource,
 } from "@item/data/index.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
+import { AttributeDef, AttributeGURPS } from "@system/attribute/index.ts"
+import { MoveTypeDef } from "@system/move-type/index.ts"
 
 class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 	declare text: string
 	declare catchall: string
 
+	declare attributes: Map<string, AttributeGURPS>
+	private declare _prevAttributes: Map<string, AttributeGURPS>
+	declare settings: {
+		attributes: AttributeDef[]
+		damage_progression: progression.Option
+	}
+
 	constructor(data: DeepPartial<SourceFromSchema<MookSchema>>, options?: DataModelConstructionOptions<null>) {
-		data.settings ??= {}
-		data.settings.attributes = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
 		super(data, options)
 
-		this.settings.attributes = data.settings.attributes.map(e => new AttributeDef(e!, { parent: this }))
+		this.settings ??= { attributes: [], damage_progression: this.damage_progression }
 
-
-		if (data.attributes) {
-			for (const att of data.attributes) {
-				if (!att) continue
-				if (att.id) this.attributes.set(att.id, new AttributeGURPS(att, { parent: this }))
-			}
-		}
-
+		this.settings.attributes =
+			data.system?.settings?.attributes?.map(e => new AttributeDef(e!, { parent: this })) ?? []
 		if (data.traits) {
 			for (const e of data.traits) {
 				if (!e) continue
@@ -93,6 +93,9 @@ class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 			}
 		}
 
+		this.system.attributes = this.settings.attributes.map(value => {
+			return value.generateNewAttribute().toObject()
+		})
 		this.prepareData()
 	}
 
@@ -100,16 +103,14 @@ class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 		const fields = foundry.data.fields
 
 		return {
-			attributes: new fields.ArrayField(new fields.SchemaField(AttributeGURPS.defineSchema())),
-			settings: new fields.SchemaField({
-				attributes: new fields.ArrayField(new fields.SchemaField(AttributeDef.defineSchema())),
-				damage_progression: new fields.StringField({
-					choices: progression.Options,
-					required: true,
-					nullable: false,
-					initial: progression.Option.BasicSet,
+			system: new fields.SchemaField({
+				attributes: new fields.ArrayField(new fields.SchemaField(AttributeGURPS.defineSchema())),
+				settings: new fields.SchemaField({
+					attributes: new fields.ArrayField(new fields.SchemaField(AttributeDef.defineSchema()), {
+						initial: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`),
+					}),
+					move_types: new fields.ArrayField(new fields.SchemaField(MoveTypeDef.defineSchema())),
 				}),
-				move_types: new fields.ArrayField(new fields.SchemaField(MoveTypeDef.defineSchema())),
 			}),
 			profile: new fields.SchemaField({
 				name: new fields.StringField({ required: true, nullable: false, initial: "Mook" }),
@@ -118,8 +119,19 @@ class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 				height: new fields.StringField({ required: true, nullable: false, initial: "" }),
 				weight: new fields.StringField({ required: true, nullable: false, initial: "" }),
 				SM: new fields.NumberField({ required: true, nullable: false, initial: 0 }),
-				portrait: new fields.FilePathField({ required: false, nullable: false, categories: ["IMAGE"], initial: Actor.DEFAULT_ICON }),
+				portrait: new fields.FilePathField({
+					required: false,
+					nullable: false,
+					categories: ["IMAGE"],
+					initial: Actor.DEFAULT_ICON,
+				}),
 				userdesc: new fields.StringField({ required: true, nullable: false, initial: "" }),
+			}),
+			damage_progression: new fields.StringField({
+				choices: progression.Options,
+				required: true,
+				nullable: false,
+				initial: progression.Option.BasicSet,
 			}),
 			traits: new fields.ArrayField(new fields.SchemaField(MookTrait.defineSchema())),
 			skills: new fields.ArrayField(new fields.SchemaField(MookSkill.defineSchema())),
@@ -135,36 +147,33 @@ class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 	}
 
 	prepareData(): void {
-		this.attributes = new Map(
-			this.generateNewAttributes(this.settings.attributes)
-				.map((value, index) => {
-					return [value.id, new AttributeGURPS(value, { parent: this, order: index })]
-				})
-		)
+		this.attributes = new Map()
+		// 	this.system.attributes.map((value, order) => {
+		// 		return [value.id!, new AttributeGURPS(value, { parent: this, order })]
+		// 	}),
+		// )
+		this.system.attributes.forEach((value, order) => {
+			this.attributes.set(value.id!, new AttributeGURPS(value, { parent: this, order }))
+		})
 	}
 
 	parseStatblock(text: string): void {
-		console.log("hey")
 		this.text = this._sanitizeStatblock(text)
-		console.log("hey")
+
+		// Reset melee and ranged as these are set twice
+		this.melee = []
+		this.ranged = []
+
 		this._parseName()
-		console.log("hey")
 		this._parseAttacks(false)
-		console.log("hey")
 		this._parseAttributes()
-		console.log("hey")
 		this._parseTraits()
-		console.log("hey")
 		this._parseSkills()
-		console.log("hey")
 		this._parseSpells()
-		console.log("hey")
 		// this.parseEquipment()
 		this._parseAttacks(true)
-		console.log("hey")
 		this.catchall = this.text
 	}
-
 
 	async createActor(): Promise<CharacterGURPS | null> {
 		const attributes = Object.values(this.attributes)
@@ -273,30 +282,21 @@ class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 
 	private _parseAttributes(): void {
 		this.text = this._cleanLine(this.text)
-		console.log("ho")
 
 		// Create an array of Attribute IDs and strings which are associated with those attributes
 		const attribute_names: { id: string; match: string }[] = []
-		console.log("ho")
 		game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`).forEach(e => {
-			console.log("ho")
 			attribute_names.push({ id: e.id.toLowerCase(), match: e.id.toLowerCase() })
-			console.log("ho")
 			if (e.name && e.name !== "") attribute_names.push({ id: e.id.toLowerCase(), match: e.name.toLowerCase() })
-			console.log("ho")
 			if (e.full_name && e.full_name !== "")
 				attribute_names.push({ id: e.id.toLowerCase(), match: e.full_name.toLowerCase() })
-			console.log("ho")
 		})
-		console.log("ho")
 		attribute_names.push({ id: gid.BasicSpeed, match: "speed" }, { id: gid.BasicMove, match: "move" })
 
 		// Text which can appear before the attribute block
-		console.log("ho")
 		const preText = this._extractText([], ["Advantages:", "Advantages/Disadvantages:", "Traits:"])
 
 		// Regex expression which matches attributes
-		console.log("ho")
 		const regex_att = new RegExp(`(${attribute_names.map(e => e.match).join("|")}):?[\\n\\s]*(\\d+.?\\d*)`, "g")
 
 		// Extract attriubte block from the text
@@ -338,23 +338,22 @@ class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 		// While loop to account for attributes which affect other attributes
 		// hard-capped at 5 iterations to prevent infinite loop, may result in inaccuracies
 		for (let i = 0; i < 5; i++) {
-			console.log("ho ho")
 			// if all attribute values are as they were last loop, stop looping
 			if (!Array.from(newValues).some(([k, _v]) => newValues.get(k) !== this.attributes.get(k)?.max)) break
-			console.log("ho")
 
 			for (const id of newValues.keys()) {
-				console.log("ho")
-				console.log(this.attributes, id)
 				const [newValue, currentValue] = [newValues.get(id), this.attributes.get(id)!.max]
 
 				if (!newValue || !currentValue) continue
 				if (newValue === currentValue) continue
 
-				const attribute = this.attributes.get(id)!
-				attribute.adj += newValue - currentValue
-				this.attributes.set(id, attribute)
+				const index = this.system.attributes.findIndex(e => e.id === id)
+				this.system.attributes[index].adj! += newValue - currentValue
+				// const attribute = this.attributes.get(id)!
+				// attribute.adj += newValue - currentValue
+				// this.attributes.set(id, attribute)
 			}
+			this.prepareData()
 		}
 	}
 
@@ -437,8 +436,8 @@ class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 		}
 
 		const weapons = MookWeapon.arrayFromText(weaponText, this)
-		this.melee = weapons.filter(e => e instanceof MookMelee) as MookMelee[]
-		this.ranged = weapons.filter(e => e instanceof MookRanged) as MookRanged[]
+		this.melee.push(...(weapons.filter(e => e instanceof MookMelee) as MookMelee[]))
+		this.ranged.push(...(weapons.filter(e => e instanceof MookRanged) as MookRanged[]))
 	}
 
 	private _parseTraits(skipSeparation = false): void {
@@ -520,21 +519,20 @@ class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 		return initialST
 	}
 
-	generateNewAttributes<TDef extends AttributeDef>(definitions: TDef[]): ModelPropsFromSchema<AttributeSchema>[]
-	generateNewAttributes<TDef extends ResourceTrackerDef>(
-		definitions: TDef[],
-	): ModelPropsFromSchema<ResourceTrackerSchema>[]
-	generateNewAttributes<TDef extends MoveTypeDef>(definitions: TDef[]): ModelPropsFromSchema<MoveTypeSchema>[]
-	generateNewAttributes<TDef extends AbstractAttributeDef>(
-		definitions: TDef[],
-	): ModelPropsFromSchema<AbstractAttributeSchema>[] {
-		const values: ModelPropsFromSchema<AbstractAttributeSchema>[] = []
-		console.log(definitions)
-		definitions.forEach(definition => {
-			values.push(definition.generateNewAttribute().toObject())
-		})
-		return values
-	}
+	// generateNewAttributes<TDef extends AttributeDef>(definitions: TDef[]): ModelPropsFromSchema<AttributeSchema>[]
+	// generateNewAttributes<TDef extends ResourceTrackerDef>(
+	// 	definitions: TDef[],
+	// ): ModelPropsFromSchema<ResourceTrackerSchema>[]
+	// generateNewAttributes<TDef extends MoveTypeDef>(definitions: TDef[]): ModelPropsFromSchema<MoveTypeSchema>[]
+	// generateNewAttributes<TDef extends AbstractAttributeDef>(
+	// 	definitions: TDef[],
+	// ): ModelPropsFromSchema<AbstractAttributeSchema>[] {
+	// 	const values: ModelPropsFromSchema<AbstractAttributeSchema>[] = []
+	// 	definitions.forEach(definition => {
+	// 		values.push(definition.generateNewAttribute().toObject())
+	// 	})
+	// 	return values
+	// }
 
 	protected variableResolverExclusions: Map<string, boolean> = new Map()
 
@@ -560,7 +558,7 @@ class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 				[ActorFlags.AutoEncumbrance]: { active: true, manual: 0 },
 				[ActorFlags.AutoThreshold]: { active: true, manual: {} },
 				[ActorFlags.AutoDamage]: { active: true, thrust: new DiceGURPS(), swing: new DiceGURPS() },
-			}
+			},
 		}
 	}
 
@@ -593,20 +591,10 @@ class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 
 interface Mook
 	extends foundry.abstract.DataModel<null, MookSchema>,
-	Omit<
-		ModelPropsFromSchema<MookSchema>,
-		| "attributes"
-		| "traits"
-		| "skills"
-		| "spells"
-		| "melee"
-		| "ranged"
-		| "equipment"
-		| "otherEquipment"
-		| "notes"
-	> {
-	attributes: Map<string, AttributeGURPS>
-
+		Omit<
+			ModelPropsFromSchema<MookSchema>,
+			"traits" | "skills" | "spells" | "melee" | "ranged" | "equipment" | "otherEquipment" | "notes"
+		> {
 	traits: MookTrait[]
 	skills: MookSkill[]
 	spells: MookSpell[]

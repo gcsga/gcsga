@@ -62,23 +62,11 @@ class ResourceTrackerDef extends AbstractAttributeDef<CharacterGURPS, ResourceTr
 	override generateNewAttribute(): ResourceTracker {
 		return new ResourceTracker({ id: this.id }, { parent: this.parent, order: 0 })
 	}
-
-	// override generateNewAttribute(): SourceFromSchema<ResourceTrackerSchema> {
-	// 	return new ResourceTracker({}, 0).toObject()
-	// 	// return {
-	// 	// 	...super.generateNewAttribute(),
-	// 	// 	damage: 0,
-	// 	// }
-	// }
-	//
-	// static override newObject(reservedIds: string[]): SourceFromSchema<ResourceTrackerDefSchema> {
-	// 	return new ResourceTrackerDef({}).toObject()
-	// }
 }
 
 interface ResourceTrackerDef
 	extends AbstractAttributeDef<CharacterGURPS, ResourceTrackerDefSchema>,
-	Omit<ModelPropsFromSchema<ResourceTrackerDefSchema>, "thresholds"> {
+		Omit<ModelPropsFromSchema<ResourceTrackerDefSchema>, "thresholds"> {
 	thresholds: PoolThreshold[]
 }
 

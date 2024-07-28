@@ -1,15 +1,12 @@
 import fields = foundry.data.fields
-import { Int } from "@util/fxp.ts"
-import { feature } from "@util/enum/feature.ts"
-import { stdmg } from "@util/enum/stdmg.ts"
-import { DiceGURPS } from "@module/dice/index.ts"
-import { LocalizeGURPS } from "@util/localize.ts"
-import { progression } from "@util/enum/progression.ts"
-import { CharacterGURPS } from "@actor"
+import type { CharacterGURPS } from "@actor"
 import { ItemType } from "@data"
+import { DiceGURPS } from "@module/dice/index.ts"
+import { SheetSettings } from "@system/sheet-settings.ts"
+import { TooltipGURPS, feature, progression, stdmg } from "@util"
+import { Int } from "@util/fxp.ts"
+import { LocalizeGURPS } from "@util/localize.ts"
 import { AbstractWeaponGURPS } from "./document.ts"
-import { TooltipGURPS } from "@util"
-import { SheetSettings } from "@system"
 
 export type WeaponDamageSchema = {
 	type: fields.StringField<string, string, true, false, true>

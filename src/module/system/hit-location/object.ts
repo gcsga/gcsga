@@ -1,10 +1,10 @@
-import { ActorGURPS } from "@actor"
+import type { ActorGURPS } from "@actor"
 import { gid } from "@data"
 import { DiceGURPS } from "@module/dice/index.ts"
-import { equalFold } from "@module/util/index.ts"
 import { LaxSchemaField } from "@system/schema-data-fields.ts"
 import { StringBuilder, TooltipGURPS } from "@util"
-import { BodySchema, BodySource, HitLocationSchema } from "./data.ts"
+import type { BodySchema, BodySource, HitLocationSchema } from "./data.ts"
+import { equalFold } from "@module/util/string-criteria.ts"
 
 class HitLocation extends foundry.abstract.DataModel<BodyGURPS, HitLocationSchema> {
 	protected declare static _schema: LaxSchemaField<HitLocationSchema> | undefined
@@ -16,9 +16,6 @@ class HitLocation extends foundry.abstract.DataModel<BodyGURPS, HitLocationSchem
 		const fields = foundry.data.fields
 
 		return {
-			// id: new fields.StringField({ initial: LocalizeGURPS.translations.gurps.placeholder.hit_location.id }),
-			// choice_name: new fields.StringField({ initial: LocalizeGURPS.translations.gurps.placeholder.hit_location.choice_name }),
-			// table_name: new fields.StringField({ initial: LocalizeGURPS.translations.gurps.placeholder.hit_location.table_name }),
 			// TODO: find some way to bring localization back
 			id: new fields.StringField({ initial: "id" }),
 			choice_name: new fields.StringField({ initial: "untitled choice" }),
@@ -42,13 +39,13 @@ class HitLocation extends foundry.abstract.DataModel<BodyGURPS, HitLocationSchem
 	}
 
 	static override get schema(): LaxSchemaField<HitLocationSchema> {
-		if (this._schema && Object.hasOwn(this, "_schema")) return this._schema;
+		if (this._schema && Object.hasOwn(this, "_schema")) return this._schema
 
-		const schema = new LaxSchemaField(Object.freeze(this.defineSchema()));
-		schema.name = this.name;
-		Object.defineProperty(this, "_schema", { value: schema, writable: false });
+		const schema = new LaxSchemaField(Object.freeze(this.defineSchema()))
+		schema.name = this.name
+		Object.defineProperty(this, "_schema", { value: schema, writable: false })
 
-		return schema;
+		return schema
 	}
 
 	get descriptionTooltip(): string {
@@ -148,7 +145,7 @@ class HitLocation extends foundry.abstract.DataModel<BodyGURPS, HitLocationSchem
 
 interface HitLocation
 	extends foundry.abstract.DataModel<BodyGURPS, HitLocationSchema>,
-	Omit<ModelPropsFromSchema<HitLocationSchema>, "sub_table"> {
+		Omit<ModelPropsFromSchema<HitLocationSchema>, "sub_table"> {
 	sub_table: BodyGURPS | null
 	get schema(): LaxSchemaField<HitLocationSchema>
 }
@@ -162,7 +159,7 @@ class BodyGURPS extends foundry.abstract.DataModel<ActorGURPS | HitLocation, Bod
 		return {
 			name: new fields.StringField({ initial: null }),
 			roll: new fields.StringField({ initial: "1d" }),
-			locations: new fields.ArrayField(new fields.SchemaField(HitLocation.defineSchema())),
+			locations: new fields.ArrayField(new fields.SchemaField(HitLocation.defineSchema()), { initial: [] }),
 		}
 	}
 
@@ -170,19 +167,18 @@ class BodyGURPS extends foundry.abstract.DataModel<ActorGURPS | HitLocation, Bod
 		super(data, options)
 
 		if (data.locations) {
-			this.locations = data.locations.map(e =>
-				new HitLocation(e!, { parent: this }))
+			this.locations = data.locations.map(e => new HitLocation(e!, { parent: this }))
 		}
 	}
 
 	static override get schema(): LaxSchemaField<BodySchema> {
-		if (this._schema && Object.hasOwn(this, "_schema")) return this._schema;
+		if (this._schema && Object.hasOwn(this, "_schema")) return this._schema
 
-		const schema = new LaxSchemaField(Object.freeze(this.defineSchema()));
-		schema.name = this.name;
-		Object.defineProperty(this, "_schema", { value: schema, writable: false });
+		const schema = new LaxSchemaField(Object.freeze(this.defineSchema()))
+		schema.name = this.name
+		Object.defineProperty(this, "_schema", { value: schema, writable: false })
 
-		return schema;
+		return schema
 	}
 
 	get owningLocation(): HitLocation | null {
@@ -191,7 +187,7 @@ class BodyGURPS extends foundry.abstract.DataModel<ActorGURPS | HitLocation, Bod
 	}
 
 	get actor(): ActorGURPS {
-		if (this.parent instanceof ActorGURPS) return this.parent
+		if (this.parent instanceof Actor) return this.parent
 		if (this.parent instanceof HitLocation) return this.owningLocation!.actor
 		throw new Error("HitLocation does not have a valid actor owner")
 	}
@@ -208,7 +204,7 @@ class BodyGURPS extends foundry.abstract.DataModel<ActorGURPS | HitLocation, Bod
 
 interface BodyGURPS
 	extends foundry.abstract.DataModel<ActorGURPS | HitLocation, BodySchema>,
-	Omit<ModelPropsFromSchema<BodySchema>, "locations"> {
+		Omit<ModelPropsFromSchema<BodySchema>, "locations"> {
 	locations: HitLocation[]
 
 	get schema(): LaxSchemaField<BodySchema>
