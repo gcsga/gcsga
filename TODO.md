@@ -1,8 +1,6 @@
 # BIG OL' TODO Document
 
 - make sure mook generator sheet works
-- reimplement system object on mook to separate generated attributes from object type attributes
-- figure out when to update attributes should just be on every object update?
 
 ## Immediate TODO
 

@@ -362,7 +362,6 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 			}
 			f.leveledAmount.level = savedLevel
 			f.leveledAmount.dieCount = savedDieCount
-			console.log(f.leveledAmount, f.adjustedAmount)
 		}
 	}
 

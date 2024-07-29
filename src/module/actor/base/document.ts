@@ -539,7 +539,7 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 		// }
 
 		for (const item of this.items) {
-			item.prepareSiblingData?.()
+			item.prepareSiblingData()
 		}
 	}
 

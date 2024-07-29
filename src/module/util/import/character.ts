@@ -11,6 +11,22 @@ import {
 import { ActorFlags, ActorType, ManeuverID, SETTINGS, SYSTEM_NAME } from "@data"
 import { ItemSourceGURPS } from "@item/data/index.ts"
 import { ChatMessageGURPS } from "@module/chat-message/document.ts"
+import {
+	AttributeDefSchema,
+	AttributeSchema,
+	BlockLayoutKey,
+	BodySource,
+	HitLocationSource,
+	MoveTypeDefSchema,
+	MoveTypeOverrideSchema,
+	MoveTypeSchema,
+	PageSettings,
+	PoolThresholdSchema,
+	ResourceTrackerDefSchema,
+	ResourceTrackerSchema,
+	SheetSettingsSource,
+} from "@system"
+import { ManeuverManager } from "@system/maneuver-manager.ts"
 import { LengthUnits, LocalizeGURPS, WeightUnits, getCurrentTime } from "@util"
 import { display } from "@util/enum/display.ts"
 import { progression } from "@util/enum/progression.ts"
@@ -36,22 +52,6 @@ import {
 	ImportedThreshold,
 } from "./data.ts"
 import { ItemImporter } from "./item.ts"
-import { ManeuverManager } from "@system/maneuver-manager.ts"
-import {
-	AttributeDefSchema,
-	AttributeSchema,
-	BlockLayoutKey,
-	BodySource,
-	HitLocationSource,
-	MoveTypeDefSchema,
-	MoveTypeOverrideSchema,
-	MoveTypeSchema,
-	PageSettings,
-	PoolThresholdSchema,
-	ResourceTrackerDefSchema,
-	ResourceTrackerSchema,
-	SheetSettingsSource,
-} from "@system"
 
 export class CharacterImporter {
 	static async throwError(text: string): Promise<void> {
@@ -110,12 +110,12 @@ export class CharacterImporter {
 		const flags = CharacterImporter.importFlags(file)
 
 		const items: ItemSourceGURPS[] = []
-		items.push(...ItemImporter.importItems(data.traits))
-		items.push(...ItemImporter.importItems(data.skills))
-		items.push(...ItemImporter.importItems(data.spells))
-		items.push(...ItemImporter.importItems(data.equipment))
-		items.push(...ItemImporter.importItems(data.other_equipment, { other: true }))
-		items.push(...ItemImporter.importItems(data.notes))
+		items.push(...ItemImporter.importItems(data.traits, { fileVersion: data.version }))
+		items.push(...ItemImporter.importItems(data.skills, { fileVersion: data.version }))
+		items.push(...ItemImporter.importItems(data.spells, { fileVersion: data.version }))
+		items.push(...ItemImporter.importItems(data.equipment, { fileVersion: data.version }))
+		items.push(...ItemImporter.importItems(data.other_equipment, { other: true, fileVersion: data.version }))
+		items.push(...ItemImporter.importItems(data.notes, { fileVersion: data.version }))
 
 		const name = data.profile?.name ?? document.name ?? LocalizeGURPS.translations.TYPES.Actor[ActorType.Character]
 

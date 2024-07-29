@@ -6,6 +6,7 @@ import {
 	ImportedEquipmentModifierSystemSource,
 	ImportedEquipmentSystemSource,
 	ImportedFeature,
+	ImportedItemKind,
 	ImportedItemSource,
 	ImportedItemType,
 	ImportedMeleeWeaponSystemSource,
@@ -25,6 +26,7 @@ import {
 	ImportedTraitModifierContainerSystemSource,
 	ImportedTraitModifierSystemSource,
 	ImportedTraitSystemSource,
+	TID,
 } from "./data.ts"
 import { TechniqueSource, TechniqueSystemSource } from "@item/technique/data.ts"
 import { SpellSource, SpellSystemSource } from "@item/spell/data.ts"
@@ -70,20 +72,28 @@ import { DocumentStatsSchema } from "types/foundry/common/data/fields.js"
 interface ItemImportContext {
 	parentId: string | null
 	other?: boolean
+	fileVersion: number
 	// sort: number
 }
 
 abstract class ItemImporter {
 	static importItems(
 		list?: ImportedItemSource[],
-		context: { other?: boolean } = { other: false },
+		context: { other?: boolean; fileVersion: number } = { other: false, fileVersion: 4 },
 	): ItemSourceGURPS[] {
 		if (!list) return []
 
 		const results: ItemSourceGURPS[] = []
 
 		for (const item of list) {
-			results.push(...ItemImportHandlers[item.type].importItem(item, { parentId: null, other: context.other }))
+			if ((context.fileVersion = 5)) item.type = this.getTypeFromKind(item.id)
+			results.push(
+				...ItemImportHandlers[item.type].importItem(item, {
+					parentId: null,
+					other: context.other,
+					fileVersion: context.fileVersion,
+				}),
+			)
 		}
 		return results
 	}
@@ -108,6 +118,50 @@ abstract class ItemImporter {
 		return templatePicker ?? { type: picker.Type.NotApplicable, qualifier: {} }
 	}
 
+	static getTypeFromKind(id: TID): ImportedItemType {
+		const firstChar = id.substring(0, 1)
+		switch (firstChar) {
+			case ImportedItemKind.Trait:
+				return ImportedItemType.Trait
+			case ImportedItemKind.TraitContainer:
+				return ImportedItemType.TraitContainer
+			case ImportedItemKind.TraitModifier:
+				return ImportedItemType.TraitModifier
+			case ImportedItemKind.TraitModifierContainer:
+				return ImportedItemType.TraitModifierContainer
+			case ImportedItemKind.Skill:
+				return ImportedItemType.Skill
+			case ImportedItemKind.Technique:
+				return ImportedItemType.Technique
+			case ImportedItemKind.SkillContainer:
+				return ImportedItemType.SkillContainer
+			case ImportedItemKind.Spell:
+				return ImportedItemType.Spell
+			case ImportedItemKind.RitualMagicSpell:
+				return ImportedItemType.RitualMagicSpell
+			case ImportedItemKind.SpellContainer:
+				return ImportedItemType.SpellContainer
+			case ImportedItemKind.Equipment:
+				return ImportedItemType.Equipment
+			case ImportedItemKind.EquipmentContainer:
+				return ImportedItemType.EquipmentContainer
+			case ImportedItemKind.EquipmentModifier:
+				return ImportedItemType.EquipmentModifier
+			case ImportedItemKind.EquipmentModifierContainer:
+				return ImportedItemType.EquipmentModifierContainer
+			case ImportedItemKind.Note:
+				return ImportedItemType.Note
+			case ImportedItemKind.NoteContainer:
+				return ImportedItemType.NoteContainer
+			case ImportedItemKind.WeaponMelee:
+				return ImportedItemType.MeleeWeapon
+			case ImportedItemKind.WeaponRanged:
+				return ImportedItemType.RangedWeapon
+			default:
+				throw new Error("Invalid item kind")
+		}
+	}
+
 	static getStats(): SourceFromSchema<DocumentStatsSchema> {
 		const date = Date.now()
 		return {
@@ -126,7 +180,7 @@ abstract class ItemImporter {
 class TraitImporter extends ItemImporter {
 	override importItem(
 		item: ImportedTraitSystemSource,
-		context: ItemImportContext = { parentId: null },
+		context: ItemImportContext = { parentId: null, fileVersion: 4 },
 	): ItemSourceGURPS[] {
 		const results: ItemSourceGURPS[] = []
 
@@ -154,19 +208,32 @@ class TraitImporter extends ItemImporter {
 			cr: item.cr ?? selfctrl.Roll.NoCR,
 			cr_adj: item.cr_adj ?? selfctrl.Adjustment.NoCRAdj,
 			study_hours_needed:
-				item.study_hours_needed === "" ? study.Level.Standard : item.study_hours_needed ?? study.Level.Standard,
+				item.study_hours_needed === ""
+					? study.Level.Standard
+					: (item.study_hours_needed ?? study.Level.Standard),
 			disabled: item.disabled ?? false,
 			round_down: item.round_down ?? false,
 			can_level: item.can_level ?? false,
 		}
 
 		item.modifiers?.reduce((acc, mod) => {
-			acc.push(...ItemImportHandlers[mod.type].importItem(mod, { parentId: id }))
+			//@ts-expect-error not going to bother with a good return type for this yet
+			if ((context.fileVersion = 5)) mod.type = ItemImporter.getTypeFromKind(mod.id)
+			acc.push(
+				...ItemImportHandlers[mod.type].importItem(mod, { parentId: id, fileVersion: context.fileVersion }),
+			)
 			return acc
 		}, results)
 
 		item.weapons?.reduce((acc, weapon) => {
-			acc.push(...ItemImportHandlers[weapon.type].importItem(weapon, { parentId: id }))
+			//@ts-expect-error not going to bother with a good return type for this yet
+			if ((context.fileVersion = 5)) weapon.type = ItemImporter.getTypeFromKind(weapon.id)
+			acc.push(
+				...ItemImportHandlers[weapon.type].importItem(weapon, {
+					parentId: id,
+					fileVersion: context.fileVersion,
+				}),
+			)
 			return acc
 		}, results)
 
@@ -197,7 +264,7 @@ class TraitImporter extends ItemImporter {
 class TraitContainerImporter extends ItemImporter {
 	override importItem(
 		item: ImportedTraitContainerSystemSource,
-		context: ItemImportContext = { parentId: null },
+		context: ItemImportContext = { parentId: null, fileVersion: 4 },
 	): ItemSourceGURPS[] {
 		const results: ItemSourceGURPS[] = []
 
@@ -226,12 +293,20 @@ class TraitContainerImporter extends ItemImporter {
 		}
 
 		item.children?.reduce((acc, child) => {
-			acc.push(...ItemImportHandlers[child.type].importItem(child, { parentId: id }))
+			//@ts-expect-error not going to bother with a good return type for this yet
+			if ((context.fileVersion = 5)) child.type = ItemImporter.getTypeFromKind(child.id)
+			acc.push(
+				...ItemImportHandlers[child.type].importItem(child, { parentId: id, fileVersion: context.fileVersion }),
+			)
 			return acc
 		}, results)
 
 		item.modifiers?.reduce((acc, mod) => {
-			acc.push(...ItemImportHandlers[mod.type].importItem(mod, { parentId: id }))
+			//@ts-expect-error not going to bother with a good return type for this yet
+			if ((context.fileVersion = 5)) mod.type = ItemImporter.getTypeFromKind(mod.id)
+			acc.push(
+				...ItemImportHandlers[mod.type].importItem(mod, { parentId: id, fileVersion: context.fileVersion }),
+			)
 			return acc
 		}, results)
 
@@ -262,7 +337,7 @@ class TraitContainerImporter extends ItemImporter {
 class TraitModifierImporter extends ItemImporter {
 	override importItem(
 		item: ImportedTraitModifierSystemSource,
-		context: ItemImportContext = { parentId: null },
+		context: ItemImportContext = { parentId: null, fileVersion: 4 },
 	): ItemSourceGURPS[] {
 		const results: ItemSourceGURPS[] = []
 
@@ -313,7 +388,7 @@ class TraitModifierImporter extends ItemImporter {
 class TraitModifierContainerImporter extends ItemImporter {
 	override importItem(
 		item: ImportedTraitModifierContainerSystemSource,
-		context: ItemImportContext = { parentId: null },
+		context: ItemImportContext = { parentId: null, fileVersion: 4 },
 	): ItemSourceGURPS[] {
 		const results: ItemSourceGURPS[] = []
 
@@ -333,7 +408,11 @@ class TraitModifierContainerImporter extends ItemImporter {
 		}
 
 		item.children?.reduce((acc, child) => {
-			acc.push(...ItemImportHandlers[child.type].importItem(child, { parentId: id }))
+			//@ts-expect-error not going to bother with a good return type for this yet
+			if ((context.fileVersion = 5)) child.type = ItemImporter.getTypeFromKind(child.id)
+			acc.push(
+				...ItemImportHandlers[child.type].importItem(child, { parentId: id, fileVersion: context.fileVersion }),
+			)
 			return acc
 		}, results)
 
@@ -364,7 +443,7 @@ class TraitModifierContainerImporter extends ItemImporter {
 class SkillImporter extends ItemImporter {
 	override importItem(
 		item: ImportedSkillSystemSource,
-		context: ItemImportContext = { parentId: null },
+		context: ItemImportContext = { parentId: null, fileVersion: 4 },
 	): ItemSourceGURPS[] {
 		const results: ItemSourceGURPS[] = []
 
@@ -393,11 +472,20 @@ class SkillImporter extends ItemImporter {
 			features: ItemImporter.importFeatures(item.features),
 			study: ItemImporter.importStudy(item.study),
 			study_hours_needed:
-				item.study_hours_needed === "" ? study.Level.Standard : item.study_hours_needed ?? study.Level.Standard,
+				item.study_hours_needed === ""
+					? study.Level.Standard
+					: (item.study_hours_needed ?? study.Level.Standard),
 		}
 
 		item.weapons?.reduce((acc, weapon) => {
-			acc.push(...ItemImportHandlers[weapon.type].importItem(weapon, { parentId: id }))
+			//@ts-expect-error not going to bother with a good return type for this yet
+			if ((context.fileVersion = 5)) weapon.type = ItemImporter.getTypeFromKind(weapon.id)
+			acc.push(
+				...ItemImportHandlers[weapon.type].importItem(weapon, {
+					parentId: id,
+					fileVersion: context.fileVersion,
+				}),
+			)
 			return acc
 		}, results)
 
@@ -428,7 +516,7 @@ class SkillImporter extends ItemImporter {
 class TechniqueImporter extends ItemImporter {
 	override importItem(
 		item: ImportedTechniqueSystemSorce,
-		context: ItemImportContext = { parentId: null },
+		context: ItemImportContext = { parentId: null, fileVersion: 4 },
 	): ItemSourceGURPS[] {
 		const results: ItemSourceGURPS[] = []
 
@@ -457,11 +545,20 @@ class TechniqueImporter extends ItemImporter {
 			features: ItemImporter.importFeatures(item.features),
 			study: ItemImporter.importStudy(item.study),
 			study_hours_needed:
-				item.study_hours_needed === "" ? study.Level.Standard : item.study_hours_needed ?? study.Level.Standard,
+				item.study_hours_needed === ""
+					? study.Level.Standard
+					: (item.study_hours_needed ?? study.Level.Standard),
 		}
 
 		item.weapons?.reduce((acc, weapon) => {
-			acc.push(...ItemImportHandlers[weapon.type].importItem(weapon, { parentId: id }))
+			//@ts-expect-error not going to bother with a good return type for this yet
+			if ((context.fileVersion = 5)) weapon.type = ItemImporter.getTypeFromKind(weapon.id)
+			acc.push(
+				...ItemImportHandlers[weapon.type].importItem(weapon, {
+					parentId: id,
+					fileVersion: context.fileVersion,
+				}),
+			)
 			return acc
 		}, results)
 
@@ -492,7 +589,7 @@ class TechniqueImporter extends ItemImporter {
 class SkillContainerImporter extends ItemImporter {
 	override importItem(
 		item: ImportedSkillContainerSystemSource,
-		context: ItemImportContext = { parentId: null },
+		context: ItemImportContext = { parentId: null, fileVersion: 4 },
 	): ItemSourceGURPS[] {
 		const results: ItemSourceGURPS[] = []
 
@@ -513,7 +610,11 @@ class SkillContainerImporter extends ItemImporter {
 		}
 
 		item.children?.reduce((acc, child) => {
-			acc.push(...ItemImportHandlers[child.type].importItem(child, { parentId: id }))
+			//@ts-expect-error not going to bother with a good return type for this yet
+			if ((context.fileVersion = 5)) child.type = ItemImporter.getTypeFromKind(child.id)
+			acc.push(
+				...ItemImportHandlers[child.type].importItem(child, { parentId: id, fileVersion: context.fileVersion }),
+			)
 			return acc
 		}, results)
 
@@ -544,7 +645,7 @@ class SkillContainerImporter extends ItemImporter {
 class SpellImporter extends ItemImporter {
 	override importItem(
 		item: ImportedSpellSystemSource,
-		context: ItemImportContext = { parentId: null },
+		context: ItemImportContext = { parentId: null, fileVersion: 4 },
 	): ItemSourceGURPS[] {
 		const results: ItemSourceGURPS[] = []
 
@@ -576,11 +677,20 @@ class SpellImporter extends ItemImporter {
 			// weapons handled separately
 			study: ItemImporter.importStudy(item.study),
 			study_hours_needed:
-				item.study_hours_needed === "" ? study.Level.Standard : item.study_hours_needed ?? study.Level.Standard,
+				item.study_hours_needed === ""
+					? study.Level.Standard
+					: (item.study_hours_needed ?? study.Level.Standard),
 		}
 
 		item.weapons?.reduce((acc, weapon) => {
-			acc.push(...ItemImportHandlers[weapon.type].importItem(weapon, { parentId: id }))
+			//@ts-expect-error not going to bother with a good return type for this yet
+			if ((context.fileVersion = 5)) weapon.type = ItemImporter.getTypeFromKind(weapon.id)
+			acc.push(
+				...ItemImportHandlers[weapon.type].importItem(weapon, {
+					parentId: id,
+					fileVersion: context.fileVersion,
+				}),
+			)
 			return acc
 		}, results)
 
@@ -611,7 +721,7 @@ class SpellImporter extends ItemImporter {
 class RitualMagicSpellImporter extends ItemImporter {
 	override importItem(
 		item: ImportedRitualMagicSpellSystemSource,
-		context: ItemImportContext = { parentId: null },
+		context: ItemImportContext = { parentId: null, fileVersion: 4 },
 	): ItemSourceGURPS[] {
 		const results: ItemSourceGURPS[] = []
 
@@ -645,11 +755,20 @@ class RitualMagicSpellImporter extends ItemImporter {
 			// weapons handled separately
 			study: ItemImporter.importStudy(item.study),
 			study_hours_needed:
-				item.study_hours_needed === "" ? study.Level.Standard : item.study_hours_needed ?? study.Level.Standard,
+				item.study_hours_needed === ""
+					? study.Level.Standard
+					: (item.study_hours_needed ?? study.Level.Standard),
 		}
 
 		item.weapons?.reduce((acc, weapon) => {
-			acc.push(...ItemImportHandlers[weapon.type].importItem(weapon, { parentId: id }))
+			//@ts-expect-error not going to bother with a good return type for this yet
+			if ((context.fileVersion = 5)) weapon.type = ItemImporter.getTypeFromKind(weapon.id)
+			acc.push(
+				...ItemImportHandlers[weapon.type].importItem(weapon, {
+					parentId: id,
+					fileVersion: context.fileVersion,
+				}),
+			)
 			return acc
 		}, results)
 
@@ -680,7 +799,7 @@ class RitualMagicSpellImporter extends ItemImporter {
 class SpellContainerImporter extends ItemImporter {
 	override importItem(
 		item: ImportedSpellContainerSystemSource,
-		context: ItemImportContext = { parentId: null },
+		context: ItemImportContext = { parentId: null, fileVersion: 4 },
 	): ItemSourceGURPS[] {
 		const results: ItemSourceGURPS[] = []
 
@@ -701,7 +820,11 @@ class SpellContainerImporter extends ItemImporter {
 		}
 
 		item.children?.reduce((acc, mod) => {
-			acc.push(...ItemImportHandlers[item.type].importItem(mod, { parentId: id }))
+			//@ts-expect-error not going to bother with a good return type for this yet
+			if ((context.fileVersion = 5)) mod.type = ItemImporter.getTypeFromKind(mod.id)
+			acc.push(
+				...ItemImportHandlers[item.type].importItem(mod, { parentId: id, fileVersion: context.fileVersion }),
+			)
 			return acc
 		}, results)
 
@@ -732,7 +855,7 @@ class SpellContainerImporter extends ItemImporter {
 class EquipmentImporter extends ItemImporter {
 	override importItem(
 		item: ImportedEquipmentSystemSource,
-		context: ItemImportContext = { parentId: null },
+		context: ItemImportContext = { parentId: null, fileVersion: 4 },
 	): ItemSourceGURPS[] {
 		const results: ItemSourceGURPS[] = []
 
@@ -765,12 +888,23 @@ class EquipmentImporter extends ItemImporter {
 		}
 
 		item.modifiers?.reduce((acc, mod) => {
-			acc.push(...ItemImportHandlers[mod.type].importItem(mod, { parentId: id }))
+			//@ts-expect-error not going to bother with a good return type for this yet
+			if ((context.fileVersion = 5)) mod.type = ItemImporter.getTypeFromKind(mod.id)
+			acc.push(
+				...ItemImportHandlers[mod.type].importItem(mod, { parentId: id, fileVersion: context.fileVersion }),
+			)
 			return acc
 		}, results)
 
 		item.weapons?.reduce((acc, weapon) => {
-			acc.push(...ItemImportHandlers[weapon.type].importItem(weapon, { parentId: id }))
+			//@ts-expect-error not going to bother with a good return type for this yet
+			if ((context.fileVersion = 5)) weapon.type = ItemImporter.getTypeFromKind(weapon.id)
+			acc.push(
+				...ItemImportHandlers[weapon.type].importItem(weapon, {
+					parentId: id,
+					fileVersion: context.fileVersion,
+				}),
+			)
 			return acc
 		}, results)
 
@@ -801,7 +935,7 @@ class EquipmentImporter extends ItemImporter {
 class EquipmentContainerImporter extends ItemImporter {
 	override importItem(
 		item: ImportedEquipmentContainerSystemSource,
-		context: ItemImportContext = { parentId: null },
+		context: ItemImportContext = { parentId: null, fileVersion: 4 },
 	): ItemSourceGURPS[] {
 		const results: ItemSourceGURPS[] = []
 
@@ -835,17 +969,32 @@ class EquipmentContainerImporter extends ItemImporter {
 		}
 
 		item.children?.reduce((acc, child) => {
-			acc.push(...ItemImportHandlers[child.type].importItem(child, { parentId: id }))
+			//@ts-expect-error not going to bother with a good return type for this yet
+			if ((context.fileVersion = 5)) child.type = ItemImporter.getTypeFromKind(child.id)
+			acc.push(
+				...ItemImportHandlers[child.type].importItem(child, { parentId: id, fileVersion: context.fileVersion }),
+			)
 			return acc
 		}, results)
 
 		item.modifiers?.reduce((acc, mod) => {
-			acc.push(...ItemImportHandlers[mod.type].importItem(mod, { parentId: id }))
+			//@ts-expect-error not going to bother with a good return type for this yet
+			if ((context.fileVersion = 5)) mod.type = ItemImporter.getTypeFromKind(mod.id)
+			acc.push(
+				...ItemImportHandlers[mod.type].importItem(mod, { parentId: id, fileVersion: context.fileVersion }),
+			)
 			return acc
 		}, results)
 
 		item.weapons?.reduce((acc, weapon) => {
-			acc.push(...ItemImportHandlers[weapon.type].importItem(weapon, { parentId: id }))
+			//@ts-expect-error not going to bother with a good return type for this yet
+			if ((context.fileVersion = 5)) weapon.type = ItemImporter.getTypeFromKind(weapon.id)
+			acc.push(
+				...ItemImportHandlers[weapon.type].importItem(weapon, {
+					parentId: id,
+					fileVersion: context.fileVersion,
+				}),
+			)
 			return acc
 		}, results)
 
@@ -876,7 +1025,7 @@ class EquipmentContainerImporter extends ItemImporter {
 class EquipmentModifierImporter extends ItemImporter {
 	override importItem(
 		item: ImportedEquipmentModifierSystemSource,
-		context: ItemImportContext = { parentId: null },
+		context: ItemImportContext = { parentId: null, fileVersion: 4 },
 	): ItemSourceGURPS[] {
 		const results: ItemSourceGURPS[] = []
 
@@ -928,7 +1077,7 @@ class EquipmentModifierImporter extends ItemImporter {
 class EquipmentModifierContainerImporter extends ItemImporter {
 	override importItem(
 		item: ImportedEquipmentModifierContainerSystemSource,
-		context: ItemImportContext = { parentId: null },
+		context: ItemImportContext = { parentId: null, fileVersion: 4 },
 	): ItemSourceGURPS[] {
 		const results: ItemSourceGURPS[] = []
 
@@ -948,7 +1097,11 @@ class EquipmentModifierContainerImporter extends ItemImporter {
 		}
 
 		item.children?.reduce((acc, child) => {
-			acc.push(...ItemImportHandlers[child.type].importItem(child, { parentId: id }))
+			//@ts-expect-error not going to bother with a good return type for this yet
+			if ((context.fileVersion = 5)) child.type = ItemImporter.getTypeFromKind(child.id)
+			acc.push(
+				...ItemImportHandlers[child.type].importItem(child, { parentId: id, fileVersion: context.fileVersion }),
+			)
 			return acc
 		}, results)
 
@@ -979,7 +1132,7 @@ class EquipmentModifierContainerImporter extends ItemImporter {
 class NoteImporter extends ItemImporter {
 	override importItem(
 		item: ImportedNoteSystemSource,
-		context: ItemImportContext = { parentId: null },
+		context: ItemImportContext = { parentId: null, fileVersion: 4 },
 	): ItemSourceGURPS[] {
 		const results: ItemSourceGURPS[] = []
 
@@ -1021,7 +1174,7 @@ class NoteImporter extends ItemImporter {
 class NoteContainerImporter extends ItemImporter {
 	override importItem(
 		item: ImportedNoteContainerSystemSource,
-		context: ItemImportContext = { parentId: null },
+		context: ItemImportContext = { parentId: null, fileVersion: 4 },
 	): ItemSourceGURPS[] {
 		const results: ItemSourceGURPS[] = []
 
@@ -1038,7 +1191,11 @@ class NoteContainerImporter extends ItemImporter {
 		}
 
 		item.children?.reduce((acc, child) => {
-			acc.push(...ItemImportHandlers[child.type].importItem(child, { parentId: id }))
+			//@ts-expect-error not going to bother with a good return type for this yet
+			if ((context.fileVersion = 5)) child.type = ItemImporter.getTypeFromKind(child.id)
+			acc.push(
+				...ItemImportHandlers[child.type].importItem(child, { parentId: id, fileVersion: context.fileVersion }),
+			)
 			return acc
 		}, results)
 
@@ -1069,7 +1226,7 @@ class NoteContainerImporter extends ItemImporter {
 class MeleeWeaponImporter extends ItemImporter {
 	override importItem(
 		item: ImportedMeleeWeaponSystemSource,
-		context: ItemImportContext = { parentId: null },
+		context: ItemImportContext = { parentId: null, fileVersion: 4 },
 	): ItemSourceGURPS[] {
 		const results: ItemSourceGURPS[] = []
 
@@ -1125,7 +1282,7 @@ class MeleeWeaponImporter extends ItemImporter {
 class RangedWeaponImporter extends ItemImporter {
 	override importItem(
 		item: ImportedRangedWeaponSystemSource,
-		context: ItemImportContext = { parentId: null },
+		context: ItemImportContext = { parentId: null, fileVersion: 4 },
 	): ItemSourceGURPS[] {
 		const results: ItemSourceGURPS[] = []
 

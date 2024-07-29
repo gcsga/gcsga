@@ -70,6 +70,10 @@ abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema
 	}
 
 	set levels(level: number) {
+		if (!this.leveledAmount) {
+			// @ts-expect-error should be fine, but only works for levelable features
+			this.leveledAmount = new LeveledAmount(this._source)
+		}
 		this.leveledAmount.level = level
 	}
 
@@ -89,6 +93,10 @@ abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema
 	}
 
 	set amount(amt: number) {
+		if (!this.leveledAmount) {
+			// @ts-expect-error should be fine, but only works for levelable features
+			this.leveledAmount = new LeveledAmount(this._source)
+		}
 		this.leveledAmount.amount = amt
 	}
 

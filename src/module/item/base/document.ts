@@ -24,7 +24,7 @@ import * as R from "remeda"
 import type { ItemFlagsGURPS, ItemSystemData } from "./data.ts"
 import type { ItemSheetGURPS } from "./sheet.ts"
 import { ItemInstances } from "@item/types.ts"
-import { ContainedWeightReduction, Feature, PrereqList } from "@system"
+import { ContainedWeightReduction, Feature, FeatureSchema, PrereqList } from "@system"
 import { getItemArtworkName, itemIsOfType } from "@item/helpers.ts"
 import Document, { _Document } from "types/foundry/common/abstract/document.js"
 import { DataSchema } from "types/foundry/common/data/fields.js"
@@ -109,12 +109,12 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 			return (
 				this.system.features?.map(feature => {
 					const FeatureConstructor = CONFIG.GURPS.Feature.classes[feature.type]
-					// @ts-expect-error conflicting type definitions, probably ok
-					const f = FeatureConstructor.fromObject(feature as ContainedWeightReductionObj)
+					// @ts-expect-error invalid schema maybe
+					const f = new FeatureConstructor(feature as FeatureSchema, { parent: this })
 					f.owner = this
 					if (this.isOfType(ItemType.Trait)) {
 						// @ts-expect-error infinite instantiation
-						if (this.isLeveled && !(f instanceof ContainedWeightReduction)) f.setLevel(this.levels)
+						if (this.isLeveled && !(f instanceof ContainedWeightReduction)) f.levels = this.levels
 					}
 					return f
 				}) ?? []
