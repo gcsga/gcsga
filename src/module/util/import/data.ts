@@ -27,7 +27,7 @@ import {
 } from "@util/enum/index.ts"
 
 // const GCS_FILE_VERSION = 4
-const GCS_FILE_VERSION = 5
+const GCS_FILE_VERSIONS = [4, 5]
 
 export enum ImportedItemKind {
 	Campaign = "C",
@@ -918,4 +918,4 @@ export type {
 	ImportedWeaponBonus,
 }
 
-export { GCS_FILE_VERSION }
+export { GCS_FILE_VERSIONS }

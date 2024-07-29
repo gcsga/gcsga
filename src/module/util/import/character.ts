@@ -32,7 +32,7 @@ import { display } from "@util/enum/display.ts"
 import { progression } from "@util/enum/progression.ts"
 import { GCACharacterImporter } from "./character-gca.ts"
 import {
-	GCS_FILE_VERSION,
+	GCS_FILE_VERSIONS,
 	ImportedAttribute,
 	ImportedAttributeDef,
 	ImportedBody,
@@ -74,8 +74,8 @@ export class CharacterImporter {
 
 		const data = JSON.parse(file.text) as ImportedCharacterSystemSource
 
-		if (data.version !== GCS_FILE_VERSION) {
-			if (data.version < GCS_FILE_VERSION)
+		if (!GCS_FILE_VERSIONS.includes(data.version)) {
+			if (data.version < Math.min(...GCS_FILE_VERSIONS))
 				return CharacterImporter.throwError(LocalizeGURPS.translations.gurps.error.import.format_old)
 			else return CharacterImporter.throwError(LocalizeGURPS.translations.gurps.error.import.format_new)
 		}
@@ -83,7 +83,7 @@ export class CharacterImporter {
 		const systemData: CharacterSystemSource = {
 			_migration: { version: null, previous: null },
 			type: ActorType.Character,
-			version: GCS_FILE_VERSION,
+			version: data.version,
 			total_points: data.total_points,
 			points_record: CharacterImporter.importPointsRecord(data.points_record ?? []),
 			profile: CharacterImporter.importProfile(data.profile),
