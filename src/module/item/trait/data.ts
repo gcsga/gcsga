@@ -5,10 +5,11 @@ import {
 } from "@item/abstract-container/data.ts"
 import { ItemType, StringCompareType } from "@module/data/constants.ts"
 import { FeatureSchema, PrereqList, PrereqListSchema, SkillBonus, Study } from "@system"
+import { BaseFeature } from "@system/feature/base.ts"
 import { feature, selfctrl, skillsel, study } from "@util"
 import { TraitGURPS } from "./document.ts"
 import fields = foundry.data.fields
-import { BaseFeature } from "@system/feature/base.ts"
+import { RecordField } from "@system/schema-data-fields.ts"
 
 function getCRFeatures(): Map<string, SkillBonus[]> {
 	return new Map([
@@ -66,6 +67,7 @@ class TraitSystemData extends AbstractContainerSystemData<TraitGURPS, TraitSyste
 			disabled: new fields.BooleanField({ initial: false }),
 			round_down: new fields.BooleanField({ initial: false }),
 			can_level: new fields.BooleanField({ initial: false }),
+			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField()),
 		}
 	}
 }
@@ -95,11 +97,12 @@ type TraitSystemSchema = AbstractContainerSystemSchema & {
 	disabled: fields.BooleanField
 	round_down: fields.BooleanField
 	can_level: fields.BooleanField
+	replacements: RecordField<fields.StringField<string, string, true, false, false>, fields.StringField>
 }
 
 type TraitSystemSource = SourceFromSchema<TraitSystemSchema>
 
 type TraitSource = AbstractContainerSource<ItemType.Trait, TraitSystemSource>
 
-export { getCRFeatures, TraitSystemData }
+export { TraitSystemData, getCRFeatures }
 export type { TraitSource, TraitSystemSource }

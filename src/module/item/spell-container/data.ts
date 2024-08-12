@@ -7,6 +7,7 @@ import {
 import { ItemType } from "@module/data/constants.ts"
 import { TemplatePicker, TemplatePickerSchema } from "@system"
 import { SpellContainerGURPS } from "./document.ts"
+import { RecordField } from "@system/schema-data-fields.ts"
 
 class SpellContainerSystemData extends AbstractContainerSystemData<SpellContainerGURPS, SpellContainerSystemSchema> {
 	static override defineSchema(): SpellContainerSystemSchema {
@@ -25,6 +26,7 @@ class SpellContainerSystemData extends AbstractContainerSystemData<SpellContaine
 			tags: new fields.ArrayField(new foundry.data.fields.StringField()),
 			template_picker: new fields.SchemaField(TemplatePicker.defineSchema()),
 			open: new fields.BooleanField({ initial: true }),
+			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField()),
 		}
 	}
 }
@@ -43,6 +45,7 @@ type SpellContainerSystemSchema = AbstractContainerSystemSchema & {
 	tags: fields.ArrayField<fields.StringField>
 	template_picker: fields.SchemaField<TemplatePickerSchema>
 	open: fields.BooleanField
+	replacements: RecordField<fields.StringField<string, string, true, false, false>, fields.StringField>
 }
 
 type SpellContainerSystemSource = SourceFromSchema<SpellContainerSystemSchema>

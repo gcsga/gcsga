@@ -30,7 +30,6 @@ abstract class AbstractEffectSystemData<
 
 		return {
 			...super.defineSchema(),
-			id: new fields.StringField({ initial: "" }),
 			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
 			modifiers: new fields.ArrayField(new fields.ObjectField<RollModifier>()),
 			can_level: new fields.BooleanField(),
@@ -56,7 +55,6 @@ interface AbstractEffectSystemData<TParent extends AbstractEffectGURPS, TSchema 
 	extends ItemSystemModel<TParent, TSchema> {}
 
 type AbstractEffectSystemSchema = ItemSystemSchema & {
-	id: fields.StringField<string, string, true, false, true>
 	features: fields.ArrayField<fields.SchemaField<FeatureSchema>>
 	modifiers: fields.ArrayField<fields.ObjectField<RollModifier>>
 	can_level: fields.BooleanField

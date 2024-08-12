@@ -6,6 +6,7 @@ import { TraitModifierGURPS } from "./document.ts"
 import fields = foundry.data.fields
 import { BaseFeature } from "@system/feature/base.ts"
 import { FeatureSchema } from "@system"
+import { RecordField } from "@system/schema-data-fields.ts"
 
 class TraitModifierSystemData extends ItemSystemModel<TraitModifierGURPS, TraitModifierSystemSchema> {
 	static override defineSchema(): TraitModifierSystemSchema {
@@ -28,6 +29,7 @@ class TraitModifierSystemData extends ItemSystemModel<TraitModifierGURPS, TraitM
 			cost_type: new fields.StringField<tmcost.Type>(),
 			disabled: new fields.BooleanField({ initial: false }),
 			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
+			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField()),
 		}
 	}
 }
@@ -50,6 +52,7 @@ type TraitModifierSystemSchema = ItemSystemSchema & {
 	cost_type: fields.StringField<tmcost.Type>
 	disabled: fields.BooleanField
 	features: fields.ArrayField<fields.SchemaField<FeatureSchema>>
+	replacements: RecordField<fields.StringField<string, string, true, false, false>, fields.StringField>
 }
 
 type TraitModifierSystemSource = SourceFromSchema<TraitModifierSystemSchema>

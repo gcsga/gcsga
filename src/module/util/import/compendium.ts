@@ -1,7 +1,7 @@
 import { SYSTEM_NAME } from "@data"
 import { ChatMessageGURPS } from "@module/chat-message/document.ts"
 import { LocalizeGURPS } from "@util"
-import { GCS_FILE_VERSION, ImportedItemLibrarySource } from "./data.ts"
+import { GCS_FILE_VERSIONS, ImportedItemLibrarySource } from "./data.ts"
 import { ItemGURPS } from "@item"
 import { DialogGURPS } from "@module/apps/dialog.ts"
 import { ItemImporter } from "./item.ts"
@@ -64,8 +64,8 @@ class ItemCompendiumImporter {
 		const label = file.name.split(".")[0]
 		const name = label.slugify()
 
-		if (data.version !== GCS_FILE_VERSION) {
-			if (data.version < GCS_FILE_VERSION)
+		if (!GCS_FILE_VERSIONS.includes(data.version)) {
+			if (data.version < Math.min(...GCS_FILE_VERSIONS))
 				return this.throwError(LocalizeGURPS.translations.gurps.error.import.format_old)
 			else return this.throwError(LocalizeGURPS.translations.gurps.error.import.format_new)
 		}

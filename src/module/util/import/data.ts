@@ -1,4 +1,5 @@
 import { ManeuverID, NumericCompareType, StringCompareType } from "@module/data/constants.ts"
+import { ItemKind } from "@module/data/index.ts"
 import { MoveTypeOverrideConditionType, ThresholdOp } from "@system"
 import { LengthUnits, WeightUnits } from "@util"
 import {
@@ -25,42 +26,12 @@ import {
 	wsel,
 	wswitch,
 } from "@util/enum/index.ts"
+import { StrictTIDString } from "../tid.ts"
 
 // const GCS_FILE_VERSION = 4
 const GCS_FILE_VERSIONS = [4, 5]
 
-export enum ImportedItemKind {
-	Campaign = "C",
-	ConditionalModifier = "c",
-	Entity = "A",
-	Equipment = "e",
-	EquipmentContainer = "E",
-	EquipmentModifier = "f",
-	EquipmentModifierContainer = "F",
-	NavigatorFavorites = "0",
-	NavigatorLibrary = "1",
-	NavigatorDirectory = "2",
-	NavigatorFile = "3",
-	Note = "n",
-	NoteContainer = "N",
-	RitualMagicSpell = "r",
-	Session = "9",
-	Skill = "s",
-	SkillContainer = "S",
-	Spell = "p",
-	SpellContainer = "P",
-	TableOfContents = "8",
-	Technique = "q",
-	Template = "B",
-	Trait = "t",
-	TraitContainer = "T",
-	TraitModifier = "m",
-	TraitModifierContainer = "M",
-	WeaponMelee = "w",
-	WeaponRanged = "W",
-}
-
-export type TID<TKind extends ImportedItemKind = ImportedItemKind> = `${TKind}${string}`
+// export type StrictTIDString<TKind extends ItemKind = ItemKind> = `${TKind}${string}`
 
 export enum ImportedItemType {
 	Trait = "trait",
@@ -273,10 +244,11 @@ interface ImportedContainerBase<T> {
 	open?: boolean
 	children?: T[]
 	third_party?: Record<string, unknown>
+	replacements?: Record<string, string>
 }
 
 interface ImportedTraitSystemSource {
-	id: TID<ImportedItemKind.Trait>
+	id: StrictTIDString<ItemKind.Trait>
 	type: ImportedItemType.Trait
 	name?: string
 	reference?: string
@@ -299,11 +271,12 @@ interface ImportedTraitSystemSource {
 	disabled?: boolean
 	round_down?: boolean
 	can_level?: boolean
+	replacements?: Record<string, string>
 }
 
 interface ImportedTraitContainerSystemSource
 	extends ImportedContainerBase<ImportedTraitSystemSource | ImportedTraitContainerSystemSource> {
-	id: TID<ImportedItemKind.TraitContainer>
+	id: StrictTIDString<ItemKind.TraitContainer>
 	type: ImportedItemType.TraitContainer
 	name?: string
 	reference?: string
@@ -322,7 +295,7 @@ interface ImportedTraitContainerSystemSource
 }
 
 interface ImportedTraitModifierSystemSource {
-	id: TID<ImportedItemKind.TraitModifier>
+	id: StrictTIDString<ItemKind.TraitModifier>
 	type: ImportedItemType.TraitModifier
 	name?: string
 	reference?: string
@@ -336,11 +309,12 @@ interface ImportedTraitModifierSystemSource {
 	cost_type?: tmcost.Type
 	disabled?: boolean
 	features?: ImportedFeature[]
+	replacements?: Record<string, string>
 }
 
 interface ImportedTraitModifierContainerSystemSource
 	extends ImportedContainerBase<ImportedTraitModifierSystemSource | ImportedTraitModifierContainerSystemSource> {
-	id: TID<ImportedItemKind.TraitModifierContainer>
+	id: StrictTIDString<ItemKind.TraitModifierContainer>
 	type: ImportedItemType.TraitModifierContainer
 	name?: string
 	reference?: string
@@ -361,7 +335,7 @@ interface ImportedSkillDefault {
 }
 
 interface ImportedSkillSystemSource {
-	id: TID<ImportedItemKind.Skill>
+	id: StrictTIDString<ItemKind.Skill>
 	type: ImportedItemType.Skill
 	name?: string
 	reference?: string
@@ -381,10 +355,11 @@ interface ImportedSkillSystemSource {
 	features?: ImportedFeature[]
 	study?: ImportedStudy[]
 	study_hours_needed?: study.Level | ""
+	replacements?: Record<string, string>
 }
 
 interface ImportedTechniqueSystemSorce {
-	id: TID<ImportedItemKind.Technique>
+	id: StrictTIDString<ItemKind.Technique>
 	type: ImportedItemType.Technique
 	name?: string
 	reference?: string
@@ -403,13 +378,14 @@ interface ImportedTechniqueSystemSorce {
 	features?: ImportedFeature[]
 	study?: ImportedStudy[]
 	study_hours_needed?: study.Level | ""
+	replacements?: Record<string, string>
 }
 
 interface ImportedSkillContainerSystemSource
 	extends ImportedContainerBase<
 		ImportedSkillSystemSource | ImportedTechniqueSystemSorce | ImportedSkillContainerSystemSource
 	> {
-	id: TID<ImportedItemKind.SkillContainer>
+	id: StrictTIDString<ItemKind.SkillContainer>
 	type: ImportedItemType.SkillContainer
 	name?: string
 	reference?: string
@@ -421,7 +397,7 @@ interface ImportedSkillContainerSystemSource
 }
 
 interface ImportedSpellSystemSource {
-	id: TID<ImportedItemKind.Spell>
+	id: StrictTIDString<ItemKind.Spell>
 	type: ImportedItemType.Spell
 	name?: string
 	reference?: string
@@ -444,10 +420,11 @@ interface ImportedSpellSystemSource {
 	weapons?: (ImportedMeleeWeaponSystemSource | ImportedRangedWeaponSystemSource)[]
 	study?: ImportedStudy[]
 	study_hours_needed?: study.Level | ""
+	replacements?: Record<string, string>
 }
 
 interface ImportedRitualMagicSpellSystemSource {
-	id: TID<ImportedItemKind.RitualMagicSpell>
+	id: StrictTIDString<ItemKind.RitualMagicSpell>
 	type: ImportedItemType.RitualMagicSpell
 	name?: string
 	reference?: string
@@ -472,13 +449,14 @@ interface ImportedRitualMagicSpellSystemSource {
 	weapons?: (ImportedMeleeWeaponSystemSource | ImportedRangedWeaponSystemSource)[]
 	study?: ImportedStudy[]
 	study_hours_needed?: study.Level | ""
+	replacements?: Record<string, string>
 }
 
 interface ImportedSpellContainerSystemSource
 	extends ImportedContainerBase<
 		ImportedSpellSystemSource | ImportedRitualMagicSpellSystemSource | ImportedSpellContainerSystemSource
 	> {
-	id: TID<ImportedItemKind.SpellContainer>
+	id: StrictTIDString<ItemKind.SpellContainer>
 	type: ImportedItemType.SpellContainer
 	name?: string
 	reference?: string
@@ -490,7 +468,7 @@ interface ImportedSpellContainerSystemSource
 }
 
 interface ImportedEquipmentSystemSource {
-	id: TID<ImportedItemKind.Equipment>
+	id: StrictTIDString<ItemKind.Equipment>
 	type: ImportedItemType.Equipment
 	description?: string
 	reference?: string
@@ -512,11 +490,12 @@ interface ImportedEquipmentSystemSource {
 	features?: ImportedFeature[]
 	equipped?: boolean
 	ignore_weight_for_skills?: boolean
+	replacements?: Record<string, string>
 }
 
 interface ImportedEquipmentContainerSystemSource
 	extends ImportedContainerBase<ImportedEquipmentSystemSource | ImportedEquipmentContainerSystemSource> {
-	id: TID<ImportedItemKind.EquipmentContainer>
+	id: StrictTIDString<ItemKind.EquipmentContainer>
 	type: ImportedItemType.EquipmentContainer
 	description?: string
 	reference?: string
@@ -541,7 +520,7 @@ interface ImportedEquipmentContainerSystemSource
 }
 
 interface ImportedEquipmentModifierSystemSource {
-	id: TID<ImportedItemKind.EquipmentModifier>
+	id: StrictTIDString<ItemKind.EquipmentModifier>
 	type: ImportedItemType.EquipmentModifier
 	name?: string
 	reference?: string
@@ -556,13 +535,14 @@ interface ImportedEquipmentModifierSystemSource {
 	cost?: string
 	weight?: string
 	features?: ImportedFeature[]
+	replacements?: Record<string, string>
 }
 
 interface ImportedEquipmentModifierContainerSystemSource
 	extends ImportedContainerBase<
 		ImportedEquipmentModifierSystemSource | ImportedEquipmentModifierContainerSystemSource
 	> {
-	id: TID<ImportedItemKind.EquipmentModifierContainer>
+	id: StrictTIDString<ItemKind.EquipmentModifierContainer>
 	type: ImportedItemType.EquipmentModifierContainer
 	name?: string
 	reference?: string
@@ -573,16 +553,17 @@ interface ImportedEquipmentModifierContainerSystemSource
 }
 
 interface ImportedNoteSystemSource {
-	id: TID<ImportedItemKind.Note>
+	id: StrictTIDString<ItemKind.Note>
 	type: ImportedItemType.Note
 	text?: string
 	reference?: string
 	reference_highlight?: string
+	replacements?: Record<string, string>
 }
 
 interface ImportedNoteContainerSystemSource
 	extends ImportedContainerBase<ImportedNoteSystemSource | ImportedNoteContainerSystemSource> {
-	id: TID<ImportedItemKind.NoteContainer>
+	id: StrictTIDString<ItemKind.NoteContainer>
 	type: ImportedItemType.NoteContainer
 	text?: string
 	reference?: string
@@ -590,7 +571,7 @@ interface ImportedNoteContainerSystemSource
 }
 
 interface ImportedMeleeWeaponSystemSource {
-	id: TID<ImportedItemKind.WeaponMelee>
+	id: StrictTIDString<ItemKind.WeaponMelee>
 	type: ImportedItemType.MeleeWeapon
 	damage: ImportedWeaponDamage
 	strength?: string
@@ -603,7 +584,7 @@ interface ImportedMeleeWeaponSystemSource {
 }
 
 interface ImportedRangedWeaponSystemSource {
-	id: TID<ImportedItemKind.WeaponRanged>
+	id: StrictTIDString<ItemKind.WeaponRanged>
 	type: ImportedItemType.RangedWeapon
 	damage: ImportedWeaponDamage
 	strength?: string

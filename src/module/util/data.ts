@@ -1,5 +1,5 @@
 import type { NumericCompareType, StringCompareType } from "@module/data/constants.ts"
-import type { WeightString } from "@util"
+import type { WeightString } from "@util/weight.ts"
 import fields = foundry.data.fields
 
 type StringCriteriaSchema = {

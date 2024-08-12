@@ -691,8 +691,9 @@
 			"markdown_preview": "Markdown Preview",
 			"natural_attacks": "Natural Attacks",
 			"substitution": {
-				"title": "Substitution: {name}",
-				"modifiers": "Modifiers: {name}",
+				"tooltip": "Set Substitutions",
+				"prompt_substitutions": "Provide substitutions:",
+				"prompt_modifiers": "Select Modifiers for",
 				"apply": "OK",
 				"cancel": "Cancel"
 			},

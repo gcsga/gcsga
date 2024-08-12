@@ -10,8 +10,12 @@ import {
 	TraitModifierContainerGURPS,
 } from "@item"
 import type { ItemSourceGURPS } from "@item/data/index.ts"
+import { getItemArtworkName, itemIsOfType } from "@item/helpers.ts"
+import { ItemInstances } from "@item/types.ts"
 import { ABSTRACT_CONTAINER_TYPES, CONTAINER_TYPES, ItemFlags, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { MigrationList, MigrationRunner } from "@module/migration/index.ts"
+import { TID } from "@module/util/tid.ts"
+import { ContainedWeightReduction, Feature, FeatureSchema, PrereqList } from "@system"
 import {
 	EvalEmbeddedRegex,
 	LocalizeGURPS,
@@ -21,18 +25,16 @@ import {
 	sheetDisplayNotes,
 } from "@util"
 import * as R from "remeda"
-import type { ItemFlagsGURPS, ItemSystemData } from "./data.ts"
-import type { ItemSheetGURPS } from "./sheet.ts"
-import { ItemInstances } from "@item/types.ts"
-import { ContainedWeightReduction, Feature, FeatureSchema, PrereqList } from "@system"
-import { getItemArtworkName, itemIsOfType } from "@item/helpers.ts"
 import Document, { _Document } from "types/foundry/common/abstract/document.js"
 import { DataSchema } from "types/foundry/common/data/fields.js"
+import type { ItemFlagsGURPS, ItemSystemData } from "./data.ts"
+import type { ItemSheetGURPS } from "./sheet.ts"
 
 /** The basic `Item` subclass for the system */
 class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends Item<TParent> {
 	/** Has this document completed `DataModel` initialization? */
 	declare initialized: boolean
+
 	/**
 	 * The cached container of this item, if in a container, or null
 	 * @ignore
@@ -62,6 +64,11 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 	/** The recorded schema version of this item, updated after each data migration */
 	get schemaVersion(): number | null {
 		return Number(this.system._migration?.version) || null
+	}
+
+	/** The set of fields able to hold substitution values */
+	get substitutionFields(): string[] {
+		return []
 	}
 
 	get reference(): string {
@@ -170,6 +177,15 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 	// 	super._preCreate(data, options, user)
 	// 	if (data._id === null) this.updateSource({ name: LocalizeGURPS.translations.TYPES.Item[data.type] })
 	// }
+
+	protected override async _preCreate(
+		data: this["_source"],
+		options: DatabaseCreateOperation<TParent>,
+		user: User<Actor<null>>,
+	): Promise<boolean | void> {
+		super._preCreate(data, options, user)
+		this.updateSource({ system: { id: TID.fromDocumentType(data.type) } })
+	}
 
 	static override getDefaultArtwork(itemData: foundry.documents.ItemSource): {
 		img: ImageFilePath

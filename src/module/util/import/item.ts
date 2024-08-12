@@ -6,7 +6,6 @@ import {
 	ImportedEquipmentModifierSystemSource,
 	ImportedEquipmentSystemSource,
 	ImportedFeature,
-	ImportedItemKind,
 	ImportedItemSource,
 	ImportedItemType,
 	ImportedMeleeWeaponSystemSource,
@@ -26,12 +25,11 @@ import {
 	ImportedTraitModifierContainerSystemSource,
 	ImportedTraitModifierSystemSource,
 	ImportedTraitSystemSource,
-	TID,
 } from "./data.ts"
 import { TechniqueSource, TechniqueSystemSource } from "@item/technique/data.ts"
 import { SpellSource, SpellSystemSource } from "@item/spell/data.ts"
 import { EquipmentSource, EquipmentSystemSource } from "@item/equipment/data.ts"
-import { ItemFlags, ItemType, SYSTEM_NAME, gid } from "@data"
+import { ItemFlags, ItemKind, ItemType, SYSTEM_NAME, gid } from "@data"
 import { ItemSourceGURPS } from "@item/data/index.ts"
 import { FeatureSchema, PrereqListSchema, Study, TemplatePickerSchema } from "@system"
 import {
@@ -68,6 +66,7 @@ import { NoteContainerSource, NoteContainerSystemSource } from "@item/note-conta
 import { MeleeWeaponSource, MeleeWeaponSystemSource } from "@item/melee-weapon/data.ts"
 import { RangedWeaponSource, RangedWeaponSystemSource } from "@item/ranged-weapon/data.ts"
 import { DocumentStatsSchema } from "types/foundry/common/data/fields.js"
+import { TIDString } from "../tid.ts"
 
 interface ItemImportContext {
 	parentId: string | null
@@ -118,44 +117,44 @@ abstract class ItemImporter {
 		return templatePicker ?? { type: picker.Type.NotApplicable, qualifier: {} }
 	}
 
-	static getTypeFromKind(id: TID): ImportedItemType {
+	static getTypeFromKind(id: TIDString): ImportedItemType {
 		const firstChar = id.substring(0, 1)
 		switch (firstChar) {
-			case ImportedItemKind.Trait:
+			case ItemKind.Trait:
 				return ImportedItemType.Trait
-			case ImportedItemKind.TraitContainer:
+			case ItemKind.TraitContainer:
 				return ImportedItemType.TraitContainer
-			case ImportedItemKind.TraitModifier:
+			case ItemKind.TraitModifier:
 				return ImportedItemType.TraitModifier
-			case ImportedItemKind.TraitModifierContainer:
+			case ItemKind.TraitModifierContainer:
 				return ImportedItemType.TraitModifierContainer
-			case ImportedItemKind.Skill:
+			case ItemKind.Skill:
 				return ImportedItemType.Skill
-			case ImportedItemKind.Technique:
+			case ItemKind.Technique:
 				return ImportedItemType.Technique
-			case ImportedItemKind.SkillContainer:
+			case ItemKind.SkillContainer:
 				return ImportedItemType.SkillContainer
-			case ImportedItemKind.Spell:
+			case ItemKind.Spell:
 				return ImportedItemType.Spell
-			case ImportedItemKind.RitualMagicSpell:
+			case ItemKind.RitualMagicSpell:
 				return ImportedItemType.RitualMagicSpell
-			case ImportedItemKind.SpellContainer:
+			case ItemKind.SpellContainer:
 				return ImportedItemType.SpellContainer
-			case ImportedItemKind.Equipment:
+			case ItemKind.Equipment:
 				return ImportedItemType.Equipment
-			case ImportedItemKind.EquipmentContainer:
+			case ItemKind.EquipmentContainer:
 				return ImportedItemType.EquipmentContainer
-			case ImportedItemKind.EquipmentModifier:
+			case ItemKind.EquipmentModifier:
 				return ImportedItemType.EquipmentModifier
-			case ImportedItemKind.EquipmentModifierContainer:
+			case ItemKind.EquipmentModifierContainer:
 				return ImportedItemType.EquipmentModifierContainer
-			case ImportedItemKind.Note:
+			case ItemKind.Note:
 				return ImportedItemType.Note
-			case ImportedItemKind.NoteContainer:
+			case ItemKind.NoteContainer:
 				return ImportedItemType.NoteContainer
-			case ImportedItemKind.WeaponMelee:
+			case ItemKind.WeaponMelee:
 				return ImportedItemType.MeleeWeapon
-			case ImportedItemKind.WeaponRanged:
+			case ItemKind.WeaponRanged:
 				return ImportedItemType.RangedWeapon
 			default:
 				throw new Error("Invalid item kind")
@@ -187,6 +186,7 @@ class TraitImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: TraitSystemSource = {
+			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
 			type: ItemType.Trait,
@@ -214,6 +214,7 @@ class TraitImporter extends ItemImporter {
 			disabled: item.disabled ?? false,
 			round_down: item.round_down ?? false,
 			can_level: item.can_level ?? false,
+			replacements: item.replacements ?? {},
 		}
 
 		item.modifiers?.reduce((acc, mod) => {
@@ -271,6 +272,7 @@ class TraitContainerImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: TraitContainerSystemSource = {
+			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
 			type: ItemType.TraitContainer,
@@ -290,6 +292,7 @@ class TraitContainerImporter extends ItemImporter {
 			disabled: item.disabled ?? false,
 			template_picker: ItemImporter.importTemplatePicker(item.template_picker),
 			open: item.open ?? false,
+			replacements: item.replacements ?? {},
 		}
 
 		item.children?.reduce((acc, child) => {
@@ -344,6 +347,7 @@ class TraitModifierImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: TraitModifierSystemSource = {
+			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
 			type: ItemType.TraitModifier,
@@ -359,6 +363,7 @@ class TraitModifierImporter extends ItemImporter {
 			cost_type: item.cost_type ?? tmcost.Type.Points,
 			disabled: item.disabled ?? false,
 			features: ItemImporter.importFeatures(item.features),
+			replacements: item.replacements ?? {},
 		}
 
 		const newItem: TraitModifierSource = {
@@ -395,6 +400,7 @@ class TraitModifierContainerImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: TraitModifierContainerSystemSource = {
+			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
 			type: ItemType.TraitModifierContainer,
@@ -405,6 +411,7 @@ class TraitModifierContainerImporter extends ItemImporter {
 			vtt_notes: item.vtt_notes ?? "",
 			tags: item.tags ?? [],
 			open: item.open ?? false,
+			replacements: item.replacements ?? {},
 		}
 
 		item.children?.reduce((acc, child) => {
@@ -450,6 +457,7 @@ class SkillImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: SkillSystemSource = {
+			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
 			type: ItemType.Skill,
@@ -475,6 +483,7 @@ class SkillImporter extends ItemImporter {
 				item.study_hours_needed === ""
 					? study.Level.Standard
 					: (item.study_hours_needed ?? study.Level.Standard),
+			replacements: item.replacements ?? {},
 		}
 
 		item.weapons?.reduce((acc, weapon) => {
@@ -523,6 +532,7 @@ class TechniqueImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: TechniqueSystemSource = {
+			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
 			type: ItemType.Technique,
@@ -548,6 +558,7 @@ class TechniqueImporter extends ItemImporter {
 				item.study_hours_needed === ""
 					? study.Level.Standard
 					: (item.study_hours_needed ?? study.Level.Standard),
+			replacements: item.replacements ?? {},
 		}
 
 		item.weapons?.reduce((acc, weapon) => {
@@ -596,8 +607,9 @@ class SkillContainerImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: SkillContainerSystemSource = {
-			_migration: { version: null, previous: null },
+			id: item.id,
 			slug: "",
+			_migration: { version: null, previous: null },
 			type: ItemType.SkillContainer,
 			name: item.name ?? "",
 			reference: item.reference ?? "",
@@ -607,6 +619,7 @@ class SkillContainerImporter extends ItemImporter {
 			tags: item.tags ?? [],
 			template_picker: ItemImporter.importTemplatePicker(item.template_picker),
 			open: item.open ?? false,
+			replacements: item.replacements ?? {},
 		}
 
 		item.children?.reduce((acc, child) => {
@@ -652,6 +665,7 @@ class SpellImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: SpellSystemSource = {
+			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
 			type: ItemType.Spell,
@@ -680,6 +694,7 @@ class SpellImporter extends ItemImporter {
 				item.study_hours_needed === ""
 					? study.Level.Standard
 					: (item.study_hours_needed ?? study.Level.Standard),
+			replacements: item.replacements ?? {},
 		}
 
 		item.weapons?.reduce((acc, weapon) => {
@@ -728,6 +743,7 @@ class RitualMagicSpellImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: RitualMagicSpellSystemSource = {
+			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
 			type: ItemType.RitualMagicSpell,
@@ -758,6 +774,7 @@ class RitualMagicSpellImporter extends ItemImporter {
 				item.study_hours_needed === ""
 					? study.Level.Standard
 					: (item.study_hours_needed ?? study.Level.Standard),
+			replacements: item.replacements ?? {},
 		}
 
 		item.weapons?.reduce((acc, weapon) => {
@@ -806,6 +823,7 @@ class SpellContainerImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: SpellContainerSystemSource = {
+			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
 			type: ItemType.SpellContainer,
@@ -817,6 +835,7 @@ class SpellContainerImporter extends ItemImporter {
 			tags: item.tags ?? [],
 			template_picker: ItemImporter.importTemplatePicker(item.template_picker),
 			open: item.open ?? false,
+			replacements: item.replacements ?? {},
 		}
 
 		item.children?.reduce((acc, mod) => {
@@ -862,6 +881,7 @@ class EquipmentImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: EquipmentSystemSource = {
+			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
 			type: ItemType.Equipment,
@@ -885,6 +905,7 @@ class EquipmentImporter extends ItemImporter {
 			features: ItemImporter.importFeatures(item.features),
 			equipped: item.equipped ?? true,
 			ignore_weight_for_skills: item.ignore_weight_for_skills ?? false,
+			replacements: item.replacements ?? {},
 		}
 
 		item.modifiers?.reduce((acc, mod) => {
@@ -942,6 +963,7 @@ class EquipmentContainerImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: EquipmentContainerSystemSource = {
+			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
 			type: ItemType.EquipmentContainer,
@@ -966,6 +988,7 @@ class EquipmentContainerImporter extends ItemImporter {
 			equipped: item.equipped ?? true,
 			ignore_weight_for_skills: item.ignore_weight_for_skills ?? false,
 			open: item.open ?? false,
+			replacements: item.replacements ?? {},
 		}
 
 		item.children?.reduce((acc, child) => {
@@ -1032,6 +1055,7 @@ class EquipmentModifierImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: EquipmentModifierSystemSource = {
+			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
 			type: ItemType.EquipmentModifier,
@@ -1048,6 +1072,7 @@ class EquipmentModifierImporter extends ItemImporter {
 			cost: item.cost ?? "0",
 			weight: item.weight ?? "",
 			features: ItemImporter.importFeatures(item.features),
+			replacements: item.replacements ?? {},
 		}
 
 		const newItem: EquipmentModifierSource = {
@@ -1084,6 +1109,7 @@ class EquipmentModifierContainerImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: EquipmentModifierContainerSystemSource = {
+			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
 			type: ItemType.EquipmentModifierContainer,
@@ -1094,6 +1120,7 @@ class EquipmentModifierContainerImporter extends ItemImporter {
 			vtt_notes: item.vtt_notes ?? "",
 			tags: item.tags ?? [],
 			open: item.open ?? false,
+			replacements: item.replacements ?? {},
 		}
 
 		item.children?.reduce((acc, child) => {
@@ -1139,12 +1166,14 @@ class NoteImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: NoteSystemSource = {
+			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
 			type: ItemType.Note,
 			text: item.text ?? "",
 			reference: item.reference ?? "",
 			reference_highlight: item.reference ?? "",
+			replacements: item.replacements ?? {},
 		}
 
 		const newItem: NoteSource = {
@@ -1181,6 +1210,7 @@ class NoteContainerImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: NoteContainerSystemSource = {
+			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
 			type: ItemType.NoteContainer,
@@ -1188,6 +1218,7 @@ class NoteContainerImporter extends ItemImporter {
 			reference: item.reference ?? "",
 			reference_highlight: item.reference ?? "",
 			open: item.open ?? false,
+			replacements: item.replacements ?? {},
 		}
 
 		item.children?.reduce((acc, child) => {
@@ -1233,6 +1264,7 @@ class MeleeWeaponImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: MeleeWeaponSystemSource = {
+			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
 			type: ItemType.MeleeWeapon,
@@ -1289,6 +1321,7 @@ class RangedWeaponImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: RangedWeaponSystemSource = {
+			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
 			type: ItemType.RangedWeapon,

@@ -6,6 +6,7 @@ import { difficulty } from "@util"
 import { TechniqueDifficulty } from "@module/data/types.ts"
 import { RitualMagicSpellGURPS } from "./document.ts"
 import { AbstractSkillSystemData, AbstractSkillSystemSchema } from "@item/abstract-skill/data.ts"
+import { RecordField } from "@system/schema-data-fields.ts"
 
 class RitualMagicSpellSystemData extends AbstractSkillSystemData<RitualMagicSpellGURPS, RitualMagicSpellSystemSchema> {
 	static override defineSchema(): RitualMagicSpellSystemSchema {
@@ -29,6 +30,7 @@ class RitualMagicSpellSystemData extends AbstractSkillSystemData<RitualMagicSpel
 			base_skill: new fields.StringField(),
 			prereq_count: new fields.NumberField({ integer: true, min: 0, nullable: false, initial: 0 }),
 			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
+			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField()),
 		}
 	}
 }
@@ -52,6 +54,7 @@ type RitualMagicSpellSystemSchema = AbstractSkillSystemSchema & {
 	base_skill: fields.StringField
 	prereq_count: fields.NumberField<number, number, true, false>
 	prereqs: fields.SchemaField<PrereqListSchema>
+	replacements: RecordField<fields.StringField<string, string, true, false, false>, fields.StringField>
 }
 
 type RitualMagicSpellSystemSource = SourceFromSchema<RitualMagicSpellSystemSchema>

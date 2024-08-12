@@ -30,6 +30,10 @@ class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 		return buffer.toString()
 	}
 
+	override get substitutionFields(): string[] {
+		return ["name", "notes"]
+	}
+
 	override get enabled(): boolean {
 		if (this.system.disabled) return false
 		let enabled = !this.system.disabled

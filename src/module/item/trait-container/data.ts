@@ -8,6 +8,7 @@ import {
 	AbstractContainerSystemData,
 	AbstractContainerSystemSchema,
 } from "@item/abstract-container/data.ts"
+import { RecordField } from "@system/schema-data-fields.ts"
 
 class TraitContainerSystemData extends AbstractContainerSystemData<TraitContainerGURPS, TraitContainerSystemSchema> {
 	static override defineSchema(): TraitContainerSystemSchema {
@@ -42,6 +43,7 @@ class TraitContainerSystemData extends AbstractContainerSystemData<TraitContaine
 			}),
 			disabled: new fields.BooleanField({ initial: false }),
 			open: new fields.BooleanField({ initial: true }),
+			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField()),
 		}
 	}
 }
@@ -66,6 +68,7 @@ type TraitContainerSystemSchema = AbstractContainerSystemSchema & {
 	container_type: fields.StringField<container.Type>
 	disabled: fields.BooleanField
 	open: fields.BooleanField
+	replacements: RecordField<fields.StringField<string, string, true, false, false>, fields.StringField>
 }
 
 type TraitContainerSystemSource = SourceFromSchema<TraitContainerSystemSchema>

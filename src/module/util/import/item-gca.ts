@@ -10,6 +10,7 @@ import { EquipmentContainerSource, EquipmentContainerSystemSource } from "@item/
 import { TraitContainerSource, TraitContainerSystemSource } from "@item/trait-container/data.ts"
 import { ItemSourceGURPS } from "@item/data/index.ts"
 import { DocumentStatsSchema } from "types/foundry/common/data/fields.js"
+import { TID } from "../tid.ts"
 
 interface ItemImportContext {
 	char: GCACharacter
@@ -135,6 +136,7 @@ class GCAItemImporter {
 		const id = fu.randomID()
 
 		const systemData: TraitSystemSource = {
+			id: TID.fromDocumentType(ItemType.Trait),
 			slug: "",
 			_migration: { version: null, previous: null },
 			type: ItemType.Trait,
@@ -146,7 +148,7 @@ class GCAItemImporter {
 			userdesc: data.ref?.description ?? "",
 			tags: data.cat?.split(",").map(e => e.trim()) ?? [],
 			base_points: base_points,
-			levels: levelDifference.length > 1 ? data.level ?? 0 : 0,
+			levels: levelDifference.length > 1 ? (data.level ?? 0) : 0,
 			points_per_level: level_points,
 			prereqs: {
 				type: prereq.Type.List,
@@ -162,6 +164,7 @@ class GCAItemImporter {
 			disabled: false,
 			round_down: false,
 			can_level: levelDifference.length > 1,
+			replacements: {},
 		}
 
 		if (data.nameext?.trim()) systemData.name = `${systemData.name} (${data.nameext})`
@@ -191,6 +194,7 @@ class GCAItemImporter {
 		const id = fu.randomID()
 
 		const systemData: SkillSystemSource = {
+			id: TID.fromDocumentType(ItemType.Skill),
 			slug: "",
 			_migration: { version: null, previous: null },
 			type: ItemType.Skill,
@@ -218,6 +222,7 @@ class GCAItemImporter {
 			features: [],
 			study: [],
 			study_hours_needed: study.Level.Standard,
+			replacements: {},
 		}
 
 		const newItem: SkillSource = {
@@ -245,6 +250,7 @@ class GCAItemImporter {
 		const id = fu.randomID()
 
 		const systemData: TechniqueSystemSource = {
+			id: TID.fromDocumentType(ItemType.Technique),
 			slug: "",
 			_migration: { version: null, previous: null },
 			type: ItemType.Technique,
@@ -277,6 +283,7 @@ class GCAItemImporter {
 			features: [],
 			study: [],
 			study_hours_needed: study.Level.Standard,
+			replacements: {},
 		}
 
 		const newItem: TechniqueSource = {
@@ -304,6 +311,7 @@ class GCAItemImporter {
 		const id = fu.randomID()
 
 		const systemData: SpellSystemSource = {
+			id: TID.fromDocumentType(ItemType.Spell),
 			slug: "",
 			_migration: { version: null, previous: null },
 			type: ItemType.Spell,
@@ -334,6 +342,7 @@ class GCAItemImporter {
 			// weapons handled separately
 			study: [],
 			study_hours_needed: study.Level.Standard,
+			replacements: {},
 		}
 
 		const newItem: SpellSource = {
@@ -361,6 +370,7 @@ class GCAItemImporter {
 		const id = fu.randomID()
 
 		const systemData: EquipmentSystemSource = {
+			id: TID.fromDocumentType(ItemType.Equipment),
 			slug: "",
 			_migration: { version: null, previous: null },
 			type: ItemType.Equipment,
@@ -388,6 +398,7 @@ class GCAItemImporter {
 			features: [],
 			equipped: true,
 			ignore_weight_for_skills: false,
+			replacements: {},
 		}
 
 		const newItem: EquipmentSource = {
@@ -415,6 +426,7 @@ class GCAItemImporter {
 		const id = fu.randomID()
 
 		const systemData: EquipmentContainerSystemSource = {
+			id: TID.fromDocumentType(ItemType.EquipmentContainer),
 			slug: "",
 			_migration: { version: null, previous: null },
 			type: ItemType.EquipmentContainer,
@@ -443,6 +455,7 @@ class GCAItemImporter {
 			equipped: true,
 			ignore_weight_for_skills: false,
 			open: true,
+			replacements: {},
 		}
 
 		const newItem: EquipmentContainerSource = {
@@ -485,6 +498,7 @@ class GCAItemImporter {
 		else if (data.cat?.includes("Meta-Traits")) container_type = container.Type.MetaTrait
 
 		const systemData: TraitContainerSystemSource = {
+			id: TID.fromDocumentType(ItemType.TraitContainer),
 			slug: "",
 			_migration: { version: null, previous: null },
 			type: ItemType.TraitContainer,
@@ -505,6 +519,7 @@ class GCAItemImporter {
 			},
 			open: true,
 			container_type,
+			replacements: {},
 		}
 
 		const newItem: TraitContainerSource = {

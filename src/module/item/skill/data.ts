@@ -7,6 +7,7 @@ import { TooltipGURPS, difficulty } from "@util"
 import { SkillGURPS } from "./document.ts"
 import fields = foundry.data.fields
 import { BaseFeature } from "@system/feature/base.ts"
+import { RecordField } from "@system/schema-data-fields.ts"
 
 class SkillSystemData extends AbstractSkillSystemData<SkillGURPS, SkillSystemSchema> {
 	static override defineSchema(): SkillSystemSchema {
@@ -28,6 +29,7 @@ class SkillSystemData extends AbstractSkillSystemData<SkillGURPS, SkillSystemSch
 			defaults: new fields.ArrayField(new fields.SchemaField(SkillDefault.defineSchema())),
 			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
 			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
+			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField()),
 		}
 	}
 }
@@ -52,6 +54,7 @@ type SkillSystemSchema = AbstractSkillSystemSchema & {
 	defaults: fields.ArrayField<fields.SchemaField<SkillDefaultSchema>>
 	prereqs: fields.SchemaField<PrereqListSchema>
 	features: fields.ArrayField<fields.SchemaField<FeatureSchema>>
+	replacements: RecordField<fields.StringField<string, string, true, false, false>, fields.StringField>
 }
 
 type SkillSystemSource = SourceFromSchema<SkillSystemSchema>

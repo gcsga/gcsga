@@ -5,7 +5,7 @@ import { stlimit } from "@util/enum/stlimit.ts"
 import { wsel } from "@util/enum/wsel.ts"
 import { wswitch } from "@util/enum/wswitch.ts"
 import fields = foundry.data.fields
-import { NumericCriteriaSchema, StringCriteriaSchema } from "@module/util/data.ts"
+import type { NumericCriteriaSchema, StringCriteriaSchema } from "@module/util/data.ts"
 
 export enum MoveBonusType {
 	Base = "base",

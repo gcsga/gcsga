@@ -6,6 +6,7 @@ import { TooltipGURPS, difficulty } from "@util"
 import { SpellGURPS } from "./document.ts"
 import fields = foundry.data.fields
 import { AbstractSkillSystemData, AbstractSkillSystemSchema } from "@item/abstract-skill/data.ts"
+import { RecordField } from "@system/schema-data-fields.ts"
 
 class SpellSystemData extends AbstractSkillSystemData<SpellGURPS, SpellSystemSchema> {
 	static override defineSchema(): SpellSystemSchema {
@@ -30,6 +31,7 @@ class SpellSystemData extends AbstractSkillSystemData<SpellGURPS, SpellSystemSch
 			casting_time: new fields.StringField(),
 			duration: new fields.StringField(),
 			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
+			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField()),
 		}
 	}
 }
@@ -51,6 +53,7 @@ type SpellSystemSchema = AbstractSkillSystemSchema & {
 	casting_time: fields.StringField
 	duration: fields.StringField
 	prereqs: fields.SchemaField<PrereqListSchema>
+	replacements: RecordField<fields.StringField<string, string, true, false, false>, fields.StringField>
 }
 
 type SpellSystemSource = SourceFromSchema<SpellSystemSchema>

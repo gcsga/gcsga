@@ -7,6 +7,7 @@ import { difficulty } from "@util"
 import { TechniqueGURPS } from "./document.ts"
 import fields = foundry.data.fields
 import { BaseFeature } from "@system/feature/base.ts"
+import { RecordField } from "@system/schema-data-fields.ts"
 
 class TechniqueSystemData extends AbstractSkillSystemData<TechniqueGURPS, TechniqueSystemSchema> {
 	static override defineSchema(): TechniqueSystemSchema {
@@ -26,6 +27,7 @@ class TechniqueSystemData extends AbstractSkillSystemData<TechniqueGURPS, Techni
 			limited: new fields.BooleanField({ initial: false }),
 			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
 			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
+			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField()),
 		}
 	}
 }
@@ -44,6 +46,7 @@ type TechniqueSystemSchema = AbstractSkillSystemSchema & {
 	limited: fields.BooleanField
 	prereqs: fields.SchemaField<PrereqListSchema>
 	features: fields.ArrayField<fields.SchemaField<FeatureSchema>>
+	replacements: RecordField<fields.StringField<string, string, true, false, false>, fields.StringField>
 }
 
 type TechniqueSystemSource = SourceFromSchema<TechniqueSystemSchema>

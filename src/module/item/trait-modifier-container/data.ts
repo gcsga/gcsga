@@ -6,6 +6,7 @@ import {
 } from "@item/abstract-container/data.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { TraitModifierContainerGURPS } from "./document.ts"
+import { RecordField } from "@system/schema-data-fields.ts"
 
 class TraitModifierContainerSystemData extends AbstractContainerSystemData<
 	TraitModifierContainerGURPS,
@@ -26,6 +27,7 @@ class TraitModifierContainerSystemData extends AbstractContainerSystemData<
 			vtt_notes: new fields.StringField(),
 			tags: new fields.ArrayField(new foundry.data.fields.StringField()),
 			open: new fields.BooleanField({ initial: true }),
+			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField()),
 		}
 	}
 }
@@ -43,6 +45,7 @@ type TraitModifierContainerSystemSchema = AbstractContainerSystemSchema & {
 	vtt_notes: fields.StringField
 	tags: fields.ArrayField<fields.StringField>
 	open: fields.BooleanField
+	replacements: RecordField<fields.StringField<string, string, true, false, false>, fields.StringField>
 }
 
 type TraitModifierContainerSystemSource = SourceFromSchema<TraitModifierContainerSystemSchema>

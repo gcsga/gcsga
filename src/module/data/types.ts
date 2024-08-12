@@ -1,6 +1,39 @@
 import { difficulty } from "@util"
 import { ConditionID, EFFECT_ACTION, ManeuverID, RollType } from "./constants.ts"
 
+enum ItemKind {
+	Campaign = "C",
+	ConditionalModifier = "c",
+	Entity = "A",
+	Equipment = "e",
+	EquipmentContainer = "E",
+	EquipmentModifier = "f",
+	EquipmentModifierContainer = "F",
+	NavigatorFavorites = "0",
+	NavigatorLibrary = "1",
+	NavigatorDirectory = "2",
+	NavigatorFile = "3",
+	Note = "n",
+	NoteContainer = "N",
+	RitualMagicSpell = "r",
+	Session = "9",
+	Skill = "s",
+	SkillContainer = "S",
+	Spell = "p",
+	SpellContainer = "P",
+	TableOfContents = "8",
+	Technique = "q",
+	Template = "B",
+	Trait = "t",
+	TraitContainer = "T",
+	TraitModifier = "m",
+	TraitModifierContainer = "M",
+	WeaponMelee = "w",
+	WeaponRanged = "W",
+	Effect = "g",
+	Condition = "G",
+}
+
 type SkillDifficulty = `${string}/${difficulty.Level}`
 type TechniqueDifficulty = difficulty.Level.Average | difficulty.Level.Hard
 
@@ -194,11 +227,11 @@ export type {
 	Posture,
 	RollModifier,
 	RollModifierStack,
-	Stringer,
-	TokenPool,
 	SkillDifficulty,
-	WeaponOwner,
+	Stringer,
 	TechniqueDifficulty,
+	TokenPool,
+	WeaponOwner,
 }
 
-export { Postures, AllManeuverIDs, ApplicableConditions, AllPostures }
+export { AllManeuverIDs, AllPostures, ApplicableConditions, Postures, ItemKind }

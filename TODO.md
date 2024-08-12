@@ -1,6 +1,9 @@
 # BIG OL' TODO Document
 
-- make sure mook generator sheet works
+- "nameables" implementation
+  - add replacement fields to items which should have them
+  - add getters for nameable fields
+  - make substitution popup work
 
 ## Immediate TODO
 

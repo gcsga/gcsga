@@ -1,10 +1,3 @@
-// import type { ActorSourceGURPS } from "@actor/data/index.ts"
-// import type { NPCAttributesSource, NPCSystemSource } from "@actor/npc/data.ts"
-// import type { AbilitySource, ItemSourceGURPS, ItemType, SpellcastingEntrySource } from "@item/base/data/index.ts"
-// import { itemIsOfType } from "@item/helpers.ts"
-// import type { ItemInstances } from "@item/types.ts"
-// import type { PublicationData } from "@module/data.ts"
-// import type { RuleElementSource } from "@module/rules/index.ts"
 import { sluggify } from "@util/index.ts"
 import fs from "fs"
 import { JSDOM } from "jsdom"
@@ -12,14 +5,12 @@ import path from "path"
 import process from "process"
 import * as R from "remeda"
 import systemJSON from "../../static/system.json" assert { type: "json" }
-// import templateJSON from "../../static/template.json" assert { type: "json" }
 import { CompendiumPack, isActorSource, isItemSource } from "./compendium-pack.ts"
 import { PackError, getFilesRecursively } from "./helpers.ts"
 import { DBFolder, LevelDatabase } from "./level-database.ts"
 import type { PackEntry } from "./types.ts"
-import { ActorSourceGURPS } from "@actor/data.ts"
-// import { itemIsOfType } from "@item/helpers.ts"
-import { ItemSourceGURPS } from "@item/data/index.ts"
+// import type { ActorSourceGURPS } from "@actor/data.ts"
+import type { ItemSourceGURPS } from "@item/data/index.ts"
 
 declare global {
 	interface Global {
@@ -49,8 +40,7 @@ class PackExtractor {
 	readonly packsMetadata: CompendiumMetadata[]
 
 	/** The last actor inspected in `pruneTree` */
-	// @ts-expect-error unused property
-	#lastActor: ActorSourceGURPS | null = null
+	// #lastActor: ActorSourceGURPS | null = null
 	readonly #newDocIdMap: Record<string, string> = {}
 
 	readonly #idsToNames: {
@@ -449,7 +439,7 @@ class PackExtractor {
 					}
 
 					if (isActorSource(docSource)) {
-						this.#lastActor = docSource
+						// this.#lastActor = docSource
 
 						if (docSource.prototypeToken?.name === docSource.name) {
 							delete (docSource as { prototypeToken?: object }).prototypeToken

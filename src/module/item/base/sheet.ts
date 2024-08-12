@@ -1,4 +1,4 @@
-import { feature, htmlQuery, htmlQueryAll, prepareFormData, prereq, study } from "@util"
+import { LocalizeGURPS, feature, htmlQuery, htmlQueryAll, prepareFormData, prereq, study } from "@util"
 import { ItemGURPS } from "./document.ts"
 import {
 	AttributeBonus,
@@ -12,6 +12,7 @@ import {
 	WeaponBonus,
 } from "@system"
 import { ActorType, ItemType, SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
+import { ItemSubstitutionSheet } from "./substitution.ts"
 
 class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheetOptions> {
 	static override get defaultOptions(): ItemSheetOptions {
@@ -275,10 +276,6 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 					return acc
 				}, {})
 		}
-		// attributes[gid.SizeModifier] = LocalizeGURPS.translations.gurps.attributes.size
-		// attributes[gid.Dodge] = LocalizeGURPS.translations.gurps.attributes.dodge
-		// attributes[gid.Parry] = LocalizeGURPS.translations.gurps.attributes.parry
-		// attributes[gid.Block] = LocalizeGURPS.translations.gurps.attributes.block
 
 		return {
 			...sheetData,
@@ -288,6 +285,16 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 			config: CONFIG.GURPS,
 			weaponBonusTypes: feature.WeaponBonusTypes,
 		}
+	}
+
+	protected _openSubstitutionPrompt(event: Event): void {
+		event.preventDefault()
+		new ItemSubstitutionSheet(this.document, {
+			top: (this.position.top ?? 0) + 40,
+			left:
+				(this.position.left ?? 0) +
+				((this.position.width ?? 0) - Number(DocumentSheet.defaultOptions.width)) / 2,
+		}).render(true)
 	}
 
 	protected override async _updateObject(event: Event, formData: Record<string, unknown>): Promise<void> {
@@ -302,6 +309,19 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 		if (typeof formData["system.college"] === "string")
 			formData["system.college"] = splitArray(formData["system.college"])
 		return super._updateObject(event, formData)
+	}
+
+	protected override _getHeaderButtons(): ApplicationHeaderButton[] {
+		const buttons = super._getHeaderButtons()
+		const substitutionButton: ApplicationHeaderButton = {
+			label: LocalizeGURPS.translations.gurps.item.substitution.tooltip,
+			class: "set-substitutions",
+			icon: "",
+			onclick: ev => this._openSubstitutionPrompt(ev),
+		}
+		if ([ItemType.MeleeWeapon, ItemType.RangedWeapon].includes(this.item.type)) return buttons
+
+		return [substitutionButton, ...buttons]
 	}
 }
 interface ItemSheetDataGURPS<TItem extends ItemGURPS> extends ItemSheetData<TItem> {

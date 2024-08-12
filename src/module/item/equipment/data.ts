@@ -10,6 +10,7 @@ import {
 } from "@item/abstract-container/data.ts"
 import { EquipmentGURPS } from "./document.ts"
 import { BaseFeature } from "@system/feature/base.ts"
+import { RecordField } from "@system/schema-data-fields.ts"
 
 type EquipmentFlags = ItemFlagsGURPS & {
 	[SYSTEM_NAME]: {
@@ -44,6 +45,7 @@ class EquipmentSystemData extends AbstractContainerSystemData<EquipmentGURPS, Eq
 			equipped: new fields.BooleanField({ initial: true }),
 			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
 			ignore_weight_for_skills: new fields.BooleanField({ initial: false }),
+			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField()),
 		}
 	}
 }
@@ -72,6 +74,7 @@ type EquipmentSystemSchema = AbstractContainerSystemSchema & {
 	features: fields.ArrayField<fields.SchemaField<FeatureSchema>>
 	equipped: fields.BooleanField
 	ignore_weight_for_skills: fields.BooleanField
+	replacements: RecordField<fields.StringField<string, string, true, false, false>, fields.StringField>
 }
 
 type EquipmentSystemSource = SourceFromSchema<EquipmentSystemSchema>

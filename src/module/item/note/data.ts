@@ -3,6 +3,7 @@ import { BaseItemSourceGURPS } from "@item/base/data.ts"
 import { ItemSystemModel, ItemSystemSchema } from "@item/base/schema.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { NoteGURPS } from "./document.ts"
+import { RecordField } from "@system/schema-data-fields.ts"
 
 class NoteSystemData extends ItemSystemModel<NoteGURPS, NoteSystemSchema> {
 	static override defineSchema(): NoteSystemSchema {
@@ -16,6 +17,7 @@ class NoteSystemData extends ItemSystemModel<NoteGURPS, NoteSystemSchema> {
 			}),
 			reference: new fields.StringField(),
 			reference_highlight: new fields.StringField(),
+			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField()),
 		}
 	}
 }
@@ -27,6 +29,7 @@ type NoteSystemSchema = ItemSystemSchema & {
 	text: fields.StringField<string, string, true, false, true>
 	reference: fields.StringField
 	reference_highlight: fields.StringField
+	replacements: RecordField<fields.StringField<string, string, true, false, false>, fields.StringField>
 }
 
 type NoteSystemSource = SourceFromSchema<NoteSystemSchema>
