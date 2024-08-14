@@ -37,6 +37,23 @@ class TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> exte
 		return buffer.toString()
 	}
 
+	satisfied(tooltip: TooltipGURPS): boolean {
+		if (!this.default.skillBased) return true
+
+		const actor = this.actor
+		if (!actor || !actor.isOfType(ActorType.Character)) return true
+		const sk = actor.bestSkillNamed(
+			this.default.nameWithReplacements(this.nameableReplacements),
+			this.default.specializationWithReplacements(this.nameableReplacements),
+			false,
+			null,
+		)
+
+		const satisfied = sk !== null && (sk.isOfType(ItemType.Technique) || sk.points > 0)
+
+		return satisfied
+	}
+
 	get modifierNotes(): string {
 		if (!this.actor || !this.default) return ""
 		if (!this.actor.isOfType(ActorType.Character)) return ""
@@ -127,10 +144,6 @@ class TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> exte
 	}
 
 	/**  Replacements */
-	get nameWithReplacements(): string {
-		return Nameable.apply(this.system.name, this.nameableReplacements)
-	}
-
 	get notesWithReplacements(): string {
 		return Nameable.apply(this.system.notes, this.nameableReplacements)
 	}

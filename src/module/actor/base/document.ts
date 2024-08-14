@@ -18,7 +18,16 @@ import { DamagePayload } from "@module/apps/damage-calculator/damage-chat-messag
 import { DamageRollAdapter, DamageTarget } from "@module/apps/damage-calculator/index.ts"
 import { TokenGURPS } from "@module/canvas/index.ts"
 import { TokenEffect } from "@module/canvas/token/effect.ts"
-import { ActorFlags, ActorType, ConditionID, ItemFlags, ItemType, SYSTEM_NAME, gid } from "@module/data/constants.ts"
+import {
+	ActorFlags,
+	ActorType,
+	ConditionID,
+	ItemFlags,
+	ItemType,
+	SYSTEM_NAME,
+	StringCompareType,
+	gid,
+} from "@module/data/constants.ts"
 import { SheetSettings } from "@system/sheet-settings.ts"
 import { RollModifier, TokenPool } from "@module/data/types.ts"
 import { Evaluator } from "@module/util/index.ts"
@@ -548,6 +557,7 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 
 	preparePrereqs(): void {
 		const notMet = LocalizeGURPS.translations.gurps.prereq.not_met
+
 		for (const trait of this.itemCollections.traits) {
 			if (itemIsOfType(trait, ItemType.TraitContainer)) continue
 			if (trait.prereqsEmpty) continue
@@ -557,6 +567,68 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 				trait.unsatisfiedReason = notMet + tooltip.toString()
 			}
 		}
+
+		for (const skill of this.itemCollections.skills) {
+			let satisfied = true
+			if (itemIsOfType(skill, ItemType.SkillContainer)) continue
+			if (skill.prereqsEmpty) continue
+			skill.unsatisfiedReason = ""
+			const tooltip = new TooltipGURPS()
+			let eqpPenalty = { value: false }
+			satisfied = skill.prereqs.satisfied(this, skill, tooltip, eqpPenalty)
+
+			if (eqpPenalty) {
+				const penalty = new SkillBonus({ type: feature.Type.SkillBonus })
+				penalty.name.qualifier = skill.nameWithReplacements
+				penalty.specialization.compare = StringCompareType.IsString
+				penalty.specialization.qualifier = skill.specializationWithReplacements
+				if (skill.techLevel !== "") {
+					penalty.amount = -10
+				} else {
+					penalty.amount = -5
+				}
+				penalty.owner = skill
+				this.features.skillBonuses.push(penalty)
+			}
+
+			if (satisfied && itemIsOfType(skill, ItemType.Technique)) {
+				satisfied = skill.satisfied(tooltip)
+			}
+			if (!satisfied) {
+				skill.unsatisfiedReason = tooltip.toString()
+			}
+		}
+
+		for (const spell of this.itemCollections.spells) {
+			let satisfied = true
+			if (itemIsOfType(spell, ItemType.SpellContainer)) continue
+			if (spell.prereqsEmpty) continue
+			spell.unsatisfiedReason = ""
+			const tooltip = new TooltipGURPS()
+			let eqpPenalty = { value: false }
+			satisfied = spell.prereqs.satisfied(this, skill, tooltip, eqpPenalty)
+
+			if (eqpPenalty) {
+				const penalty = new SpellBonus({ type: feature.Type.SpellBonus })
+				penalty.name.qualifier = spell.nameWithReplacements
+				if (spell.techLevel !== "") {
+					penalty.amount = -10
+				} else {
+					penalty.amount = -5
+				}
+				penalty.owner = spell
+				this.features.spellBonuses.push(penalty)
+			}
+
+			if (satisfied && itemIsOfType(skill, ItemType.RitualMagicSpell)) {
+				satisfied = skill.satisfied(tooltip)
+			}
+			if (!satisfied) {
+				skill.unsatisfiedReason = tooltip.toString()
+			}
+		}
+
+		function equipmentSatisfied(eqp: ItemColl)
 	}
 
 	/** Prepare data among owned items as well as actor-data preparation performed by items */

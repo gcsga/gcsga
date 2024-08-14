@@ -169,8 +169,8 @@ class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 		const actor = this.dummyActor || this.actor
 		if (!actor) return null
 		if (actor instanceof ActorGURPS && actor.isOfType(ActorType.Character)) {
-			const excludes = new Map()
-			excludes.set(this.name!, true)
+			const excludes: Set<string> = new Set()
+			excludes.add(this.name!)
 			let bestDef = new SkillDefault({})
 			let best = Number.MIN_SAFE_INTEGER
 			for (const def of this.resolveToSpecificDefaults()) {
@@ -187,7 +187,7 @@ class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 		return null
 	}
 
-	calcSkillDefaultLevel(def: SkillDefault, excludes: Map<string, boolean>): number {
+	calcSkillDefaultLevel(def: SkillDefault, excludes: Set<string>): number {
 		const actor = this.dummyActor || this.actor
 		if (!actor) return 0
 		if (actor instanceof ActorGURPS && actor.isOfType(ActorType.Character)) {
@@ -210,8 +210,8 @@ class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 			if (!this.actor || !def || !def.skillBased) {
 				result.push(def)
 			} else {
-				const m: Map<string, boolean> = new Map()
-				m.set(this.formattedName, true)
+				const m: Set<string> = new Set()
+				m.add(this.formattedName)
 				for (const s of this.actor.skillNamed(def.name!, def.specialization!, true, m)) {
 					const local = new SkillDefault(fu.duplicate(def))
 					local.specialization = s.specialization
@@ -250,16 +250,8 @@ class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 	}
 
 	/**  Replacements */
-	get nameWithReplacements(): string {
-		return Nameable.apply(this.system.name, this.nameableReplacements)
-	}
-
 	get notesWithReplacements(): string {
 		return Nameable.apply(this.system.notes, this.nameableReplacements)
-	}
-
-	get specializationWithReplacements(): string {
-		return Nameable.apply(this.system.specialization, this.nameableReplacements)
 	}
 
 	/** Nameables */

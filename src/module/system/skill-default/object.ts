@@ -55,12 +55,7 @@ class SkillDefault<TItem extends ItemGURPS = ItemGURPS> extends foundry.abstract
 		return actor.resolveAttributeName(this.type)
 	}
 
-	skillLevel(
-		actor: ActorGURPS,
-		require_points: boolean,
-		excludes: Map<string, boolean>,
-		rule_of_20: boolean,
-	): number {
+	skillLevel(actor: ActorGURPS, require_points: boolean, excludes: Set<string>, rule_of_20: boolean): number {
 		if (!actor.isOfType(ActorType.Character)) return 0
 		let best = Number.MIN_SAFE_INTEGER
 		switch (this.type) {
@@ -79,7 +74,7 @@ class SkillDefault<TItem extends ItemGURPS = ItemGURPS> extends foundry.abstract
 		}
 	}
 
-	best(actor: ActorGURPS, require_points: boolean, excludes: Map<string, boolean>): number {
+	best(actor: ActorGURPS, require_points: boolean, excludes: Set<string>): number {
 		let best = Number.MIN_SAFE_INTEGER
 		if (!actor.isOfType(ActorType.Character)) return best
 		for (const s of actor.skillNamed(this.name!, this.specialization || "", require_points, excludes)) {
@@ -92,7 +87,7 @@ class SkillDefault<TItem extends ItemGURPS = ItemGURPS> extends foundry.abstract
 	skillLevelFast(
 		actor: ActorGURPS,
 		require_points: boolean,
-		excludes: Map<string, boolean> | null = new Map(),
+		excludes: Set<string> | null = new Set(),
 		rule_of_20 = false,
 	): number {
 		let level = 0
@@ -122,7 +117,7 @@ class SkillDefault<TItem extends ItemGURPS = ItemGURPS> extends foundry.abstract
 		}
 	}
 
-	bestFast(actor: ActorGURPS, require_points: boolean, excludes: Map<string, boolean> | null): number {
+	bestFast(actor: ActorGURPS, require_points: boolean, excludes: Set<string> | null): number {
 		let best = Number.MIN_SAFE_INTEGER
 		if (!actor.isOfType(ActorType.Character)) return best
 		for (const sk of actor.skillNamed(this.name!, this.specialization || "", require_points, excludes)) {
@@ -148,6 +143,16 @@ class SkillDefault<TItem extends ItemGURPS = ItemGURPS> extends foundry.abstract
 		})
 	}
 
+	/**  Replacements */
+	nameWithReplacements(replacements: Map<string, string>): string {
+		return Nameable.apply(this.name ?? "", replacements)
+	}
+
+	specializationWithReplacements(replacements: Map<string, string>): string {
+		return Nameable.apply(this.specialization ?? "", replacements)
+	}
+
+	/** Nameables */
 	fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {
 		Nameable.extract(this.name ?? "", m, existing)
 		Nameable.extract(this.specialization ?? "", m, existing)

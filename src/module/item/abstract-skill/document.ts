@@ -5,8 +5,9 @@ import { SkillLevel, SkillSource, SkillSystemData } from "@item/skill/data.ts"
 import { SpellSource, SpellSystemData } from "@item/spell/data.ts"
 import { TechniqueSource, TechniqueSystemData } from "@item/technique/data.ts"
 import { ActorType, ItemType } from "@module/data/constants.ts"
+import { Nameable } from "@module/util/nameable.ts"
 import { resolveStudyHours } from "@system"
-import { TooltipGURPS, difficulty, study } from "@util"
+import { StringBuilder, TooltipGURPS, difficulty, study } from "@util"
 
 abstract class AbstractSkillGURPS<
 	TParent extends ActorGURPS | null = ActorGURPS | null,
@@ -17,10 +18,16 @@ abstract class AbstractSkillGURPS<
 	abstract adjustedPoints(tooltip?: TooltipGURPS): number
 
 	override get formattedName(): string {
-		const name: string = this.name ?? ""
-		const specialization = this.specialization
-		const TL = this.techLevel
-		return `${name}${this.techLevelRequired ? `/TL${TL ?? ""}` : ""}${specialization ? ` (${specialization})` : ""}`
+		const buffer = new StringBuilder()
+		buffer.push(this.nameWithReplacements)
+		if (this.techLevel !== "") buffer.push(`/TL${this.techLevel}`)
+		if (this.isOfType(ItemType.Skill) && this.specialization !== "")
+			buffer.push(` (${this.specializationWithReplacements})`)
+		return buffer.toString()
+		// const name: string = this.name ?? ""
+		// const specialization = this.specialization
+		// const TL = this.techLevel
+		// return `${name}${this.techLevelRequired ? `/TL${TL ?? ""}` : ""}${specialization ? ` (${specialization})` : ""}`
 	}
 
 	get points(): number {
@@ -178,6 +185,15 @@ abstract class AbstractSkillGURPS<
 		const system = this.system
 		if ((system.study_hours_needed as string) === "") return study.Level.Standard
 		return system.study_hours_needed
+	}
+
+	/**  Replacements */
+	get nameWithReplacements(): string {
+		return Nameable.apply(this.system.name, this.nameableReplacements)
+	}
+
+	get specializationWithReplacements(): string {
+		return Nameable.apply(this.specialization, this.nameableReplacements)
 	}
 }
 

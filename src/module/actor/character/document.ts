@@ -411,12 +411,12 @@ class CharacterGURPS<
 	bestSkillNamed(
 		name: string,
 		specialization: string,
-		require_points: boolean,
-		excludes: Map<string, boolean> | null,
+		requirePoints: boolean,
+		excludes: Set<string> | null,
 	): SkillGURPS | null {
 		let best: SkillGURPS | null = null
 		let level = Number.MIN_SAFE_INTEGER
-		for (const sk of this.skillNamed(name, specialization, require_points, excludes)) {
+		for (const sk of this.skillNamed(name, specialization, requirePoints, excludes)) {
 			if (sk.isOfType(ItemType.Technique)) continue
 			const skillLevel = sk.calculateLevel().level
 			if (!best || level < skillLevel) {
@@ -430,34 +430,24 @@ class CharacterGURPS<
 	skillNamed(
 		name: string,
 		specialization: string,
-		require_points: boolean,
-		excludes: Map<string, boolean> | null,
-	): Collection<SkillGURPS | TechniqueGURPS> {
-		const skills: Collection<SkillGURPS | TechniqueGURPS> = new Collection()
-		const defaultSkills = CONFIG.GURPS.skillDefaults
-		for (const item of defaultSkills) {
-			if (
-				(excludes === null || !excludes.get(item.name!)) &&
-				item.isOfType(ItemType.Skill, ItemType.Technique) &&
-				item.name === name &&
-				(specialization === "" || specialization === item.specialization)
-			) {
-				item.dummyActor = this
-				item.points = 0
-				skills.set(item.id, item)
+		requirePoints: boolean,
+		excludes: Set<string> | null,
+	): Array<SkillGURPS | TechniqueGURPS> {
+		if (!excludes) excludes = new Set()
+
+		const list: Array<SkillGURPS | TechniqueGURPS> = []
+		this.itemCollections.skills.forEach(e => {
+			if (e.isOfType(ItemType.SkillContainer)) return
+			if (excludes.has(e.formattedName)) return
+			if (!requirePoints || e.isOfType(ItemType.Technique) || e.adjustedPoints() > 0) {
+				if (equalFold(e.nameWithReplacements, name)) {
+					if (specialization === "" || equalFold(e.specializationWithReplacements, specialization)) {
+						list.push(e)
+					}
+				}
 			}
-		}
-		for (const item of this.itemCollections.skills) {
-			if (
-				(excludes === null || !excludes.get(item.name!)) &&
-				item.isOfType(ItemType.Skill, ItemType.Technique) &&
-				item.name === name &&
-				(!require_points || item.isOfType(ItemType.Technique) || item.adjustedPoints() > 0) &&
-				(specialization === "" || specialization === item.specialization)
-			)
-				skills.set(item.id, item)
-		}
-		return skills
+		})
+		return list
 	}
 
 	// Feature Bonuses
