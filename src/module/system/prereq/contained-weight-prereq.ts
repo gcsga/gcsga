@@ -48,6 +48,8 @@ class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
 		}
 		return satisfied
 	}
+
+	fillWithNameableKeys(_m: Map<string, string>, _existing: Map<string, string>): void {}
 }
 
 interface ContainedWeightPrereq

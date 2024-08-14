@@ -166,13 +166,16 @@ export class WeaponDamage {
 			feature.Type.WeaponDRDivisorBonus,
 		)) {
 			if (bonus.type === feature.Type.WeaponBonus) {
-				bonus.leveledAmount.dieCount = Int.from(base.count)
+				// bonus.leveledAmount.dieCount = Int.from(base.count)
+				bonus.dieCount = Int.from(base.count)
 				let amt = bonus.adjustedAmountForWeapon(this.owner)
 				if (bonus.percent) percentDamageBonus += amt
 				else {
 					if (adjustForPhoenixFlame) {
-						if (bonus.leveledAmount.leveled) amt /= 2
-						if (bonus.leveledAmount.per_die) amt /= 2
+						// if (bonus.leveledAmount.leveled) amt /= 2
+						// if (bonus.leveledAmount.per_die) amt /= 2
+						if (bonus.leveled) amt /= 2
+						if (bonus.per_die) amt /= 2
 					}
 					base.modifier += Int.from(amt)
 				}

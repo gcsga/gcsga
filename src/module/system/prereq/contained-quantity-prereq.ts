@@ -49,6 +49,8 @@ class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> 
 		}
 		return satisfied
 	}
+
+	fillWithNameableKeys(_m: Map<string, string>, _existing: Map<string, string>): void {}
 }
 
 interface ContainedQuantityPrereq
@@ -56,5 +58,4 @@ interface ContainedQuantityPrereq
 		Omit<ModelPropsFromSchema<ContainedQuantityPrereqSchema>, "qualifier"> {
 	qualifier: NumericCriteria
 }
-
 export { ContainedQuantityPrereq }

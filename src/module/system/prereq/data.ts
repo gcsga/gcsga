@@ -3,6 +3,7 @@ import { spellcmp } from "@util/enum/spellcmp.ts"
 import fields = foundry.data.fields
 import { NumericCriteriaSchema, StringCriteriaSchema, WeightCriteriaSchema } from "@module/util/data.ts"
 import type { ItemGURPS } from "@item"
+import { Prereq } from "./index.ts"
 
 export interface PrereqConstructionOptions extends DocumentConstructionContext<ItemGURPS> {}
 
@@ -40,7 +41,7 @@ export type PrereqListSchema = BasePrereqSchema<prereq.Type.List> & {
 		ModelPropsFromSchema<NumericCriteriaSchema>,
 		false
 	>
-	prereqs: fields.ArrayField<fields.SchemaField<PrereqSchema>>
+	prereqs: fields.ArrayField<fields.ObjectField<Prereq>>
 }
 
 export type SkillPrereqSchema = BasePrereqSchema<prereq.Type.Skill> & {

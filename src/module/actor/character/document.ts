@@ -686,10 +686,13 @@ class CharacterGURPS<
 		}
 		if (this.features)
 			for (const f of this.features.drBonuses) {
-				if ((f.location === gid.All && isTopLevel) || equalFold(locationID, f.location)) {
-					const current = drMap.get(f.specialization!.toLowerCase()) ?? 0
-					drMap.set(f.specialization!.toLowerCase(), current + f.adjustedAmount)
-					f.addToTooltip(tooltip)
+				for (const location of f.locations) {
+					if ((location === gid.All && isTopLevel) || equalFold(locationID, location)) {
+						const current = drMap.get(f.specialization!.toLowerCase()) ?? 0
+						drMap.set(f.specialization!.toLowerCase(), current + f.adjustedAmount)
+						f.addToTooltip(tooltip)
+						break
+					}
 				}
 			}
 		return drMap

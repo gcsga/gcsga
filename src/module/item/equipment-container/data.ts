@@ -42,7 +42,7 @@ class EquipmentContainerSystemData extends AbstractContainerSystemData<
 			equipped: new fields.BooleanField({ initial: true }),
 			ignore_weight_for_skills: new fields.BooleanField({ initial: false }),
 			open: new fields.BooleanField({ initial: true }),
-			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField()),
+			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField({required: true, nullable: false})),
 		}
 	}
 }
@@ -72,7 +72,7 @@ type EquipmentContainerSystemSchema = AbstractContainerSystemSchema & {
 	equipped: fields.BooleanField
 	ignore_weight_for_skills: fields.BooleanField
 	open: fields.BooleanField
-	replacements: RecordField<fields.StringField<string, string, true, false, false>, fields.StringField>
+	replacements: RecordField<fields.StringField<string, string, true, false, false>,  fields.StringField<string,string,true,false,false>>
 }
 
 type EquipmentContainerSystemSource = SourceFromSchema<EquipmentContainerSystemSchema>

@@ -1,6 +1,6 @@
 import { MoveBonusSchema, MoveBonusType } from "./data.ts"
 import { gid } from "@data"
-import { BaseFeature, LeveledAmount } from "./base.ts"
+import { BaseFeature } from "./base.ts"
 
 class MoveBonus extends BaseFeature<MoveBonusSchema> {
 	static override defineSchema(): MoveBonusSchema {
@@ -8,11 +8,13 @@ class MoveBonus extends BaseFeature<MoveBonusSchema> {
 
 		return {
 			...super.defineSchema(),
-			...LeveledAmount.defineSchema(),
+			// ...LeveledAmount.defineSchema(),
 			move_type: new fields.StringField({ initial: gid.Ground }),
 			limitation: new fields.StringField({ choices: Object.values(MoveBonusType), initial: MoveBonusType.Base }),
 		}
 	}
+
+	fillWithNameableKeys(_m: Map<string, string>, _existing: Map<string, string>): void {}
 }
 
 interface MoveBonus extends BaseFeature<MoveBonusSchema>, ModelPropsFromSchema<MoveBonusSchema> {}

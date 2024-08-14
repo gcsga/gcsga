@@ -4,6 +4,7 @@ import { EquipmentModifierSource, EquipmentModifierSystemData } from "./data.ts"
 import { LocalizeGURPS, StringBuilder, Weight, WeightUnits, emcost, emweight } from "@util"
 import { ItemType } from "@module/data/constants.ts"
 import { SheetSettings } from "@system"
+import { Nameable } from "@module/util/nameable.ts"
 
 class EquipmentModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
 	get enabled(): boolean {
@@ -103,6 +104,27 @@ class EquipmentModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | nu
 			},
 			...super.getContextMenuItems(),
 		]
+	}
+
+	/**  Replacements */
+	get nameWithReplacements(): string {
+		return Nameable.apply(this.system.name, this.nameableReplacements)
+	}
+
+	get notesWithReplacements(): string {
+		return Nameable.apply(this.system.notes, this.nameableReplacements)
+	}
+
+	/** Nameables */
+	fillWithNameableKeys(m: Map<string, string>, existing?: Map<string, string>): void {
+		if (!this.enabled) return
+		if (!existing) existing = this.nameableReplacements
+
+		Nameable.extract(this.system.name, m, existing)
+		Nameable.extract(this.system.notes, m, existing)
+		for (const feature of this.features) {
+			feature.fillWithNameableKeys(m, existing)
+		}
 	}
 }
 

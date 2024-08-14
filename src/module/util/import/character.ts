@@ -331,8 +331,8 @@ export class CharacterImporter {
 	}
 
 	static importPortrait(data?: string): ImageFilePath {
-		if (game.user?.hasPermission(foundry.CONST.USER_PERMISSIONS.FILES_UPLOAD))
-			return `data:image/png;base64,${data}.png`
+		// if (game.user?.hasPermission(foundry.CONST.USER_PERMISSIONS.FILES_UPLOAD))
+		if (game.user?.hasPermission("FILES_UPLOAD")) return `data:image/png;base64,${data}.png`
 		return `/systems/${SYSTEM_NAME}/assets/icons/character.svg`
 	}
 

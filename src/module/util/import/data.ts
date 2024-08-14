@@ -878,6 +878,7 @@ export type {
 	ImportedSheetSettings,
 	ImportedSkillBonus,
 	ImportedSkillContainerSystemSource,
+	ImportedSkillDefault,
 	ImportedSkillPointBonus,
 	ImportedSkillPrereq,
 	ImportedSkillSystemSource,

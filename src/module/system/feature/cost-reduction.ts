@@ -12,6 +12,8 @@ class CostReduction extends BaseFeature<CostReductionSchema> {
 			percentage: new fields.NumberField({ choices: CONFIG.GURPS.select.percentage, initial: 40 }),
 		}
 	}
+
+	fillWithNameableKeys(_m: Map<string, string>, _existing: Map<string, string>): void {}
 }
 
 interface CostReduction extends BaseFeature<CostReductionSchema>, ModelPropsFromSchema<CostReductionSchema> {}

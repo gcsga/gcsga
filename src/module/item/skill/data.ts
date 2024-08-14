@@ -29,7 +29,7 @@ class SkillSystemData extends AbstractSkillSystemData<SkillGURPS, SkillSystemSch
 			defaults: new fields.ArrayField(new fields.SchemaField(SkillDefault.defineSchema())),
 			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
 			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
-			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField()),
+			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField({required: true, nullable: false})),
 		}
 	}
 }
@@ -54,7 +54,7 @@ type SkillSystemSchema = AbstractSkillSystemSchema & {
 	defaults: fields.ArrayField<fields.SchemaField<SkillDefaultSchema>>
 	prereqs: fields.SchemaField<PrereqListSchema>
 	features: fields.ArrayField<fields.SchemaField<FeatureSchema>>
-	replacements: RecordField<fields.StringField<string, string, true, false, false>, fields.StringField>
+	replacements: RecordField<fields.StringField<string, string, true, false, false>,  fields.StringField<string,string,true,false,false>>
 }
 
 type SkillSystemSource = SourceFromSchema<SkillSystemSchema>

@@ -12,7 +12,7 @@ import {
 	WeaponBonus,
 } from "@system"
 import { ActorType, ItemType, SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
-import { ItemSubstitutionSheet } from "./substitution.ts"
+import { ItemSubstitutionSheet } from "../../util/nameable.ts"
 
 class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheetOptions> {
 	static override get defaultOptions(): ItemSheetOptions {
@@ -118,9 +118,10 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 			)
 				return
 
-			const features = this.item.system.features ?? []
-			features.push(new AttributeBonus({}, { parent: this.item }))
-			return this._updateObject(event, { ["system.features"]: features })
+			const features = (this.item.system.features ?? []) as Feature[]
+			const att = new AttributeBonus({ type: feature.Type.AttributeBonus }, { parent: this.item })
+			features.push(att)
+			return this._updateObject(event, { ["system.features"]: features.map(e => e.toObject()) })
 		})
 
 		for (const button of htmlQueryAll(html, "a[data-action=remove-feature]")) {
@@ -183,7 +184,7 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 				return
 
 			const defaults = this.item.system.defaults ?? []
-			defaults.push(new SkillDefault().toObject())
+			defaults.push(new SkillDefault({}).toObject())
 			return this._updateObject(event, { ["system.defaults"]: defaults })
 		})
 

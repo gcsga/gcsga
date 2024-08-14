@@ -67,8 +67,30 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 	}
 
 	/** The set of fields able to hold substitution values */
-	get substitutionFields(): string[] {
-		return []
+	get nameableReplacements(): Map<string, string> {
+		if (
+			this.isOfType(
+				ItemType.Trait,
+				ItemType.TraitContainer,
+				ItemType.TraitModifier,
+				ItemType.Skill,
+				ItemType.Technique,
+				// ItemType.SkillContainer,
+				ItemType.Spell,
+				ItemType.RitualMagicSpell,
+				// ItemType.SpellContainer,
+				ItemType.Equipment,
+				ItemType.EquipmentContainer,
+				ItemType.EquipmentModifier,
+				// ItemType.EquipmentModifierContainer,
+				// ItemType.Note,
+				// ItemType.NoteContainer,
+				// ItemType.Effect,
+				// ItemType.Condition,
+			)
+		)
+			return new Map<string, string>(Object.entries(this.system.replacements) as [string, string][])
+		return new Map()
 	}
 
 	get reference(): string {

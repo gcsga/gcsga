@@ -5,6 +5,7 @@ import { ActorType, ItemType, NumericCompareType, StringCompareType } from "@mod
 import { PrereqConstructionOptions, TraitPrereqSchema } from "./data.ts"
 import { NumericCriteria } from "@module/util/numeric-criteria.ts"
 import { StringCriteria } from "@module/util/index.ts"
+import { Nameable } from "@module/util/nameable.ts"
 
 class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 	constructor(data: DeepPartial<SourceFromSchema<TraitPrereqSchema>>, options?: PrereqConstructionOptions) {
@@ -76,6 +77,11 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 			)
 		}
 		return satisfied
+	}
+
+	fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {
+		Nameable.extract(this.name.qualifier, m, existing)
+		Nameable.extract(this.notes.qualifier, m, existing)
 	}
 }
 

@@ -266,8 +266,12 @@ class GCAItemImporter {
 			points: data.points ?? 0,
 			default: {
 				type: gid.Skill,
-				name: data.ref?.default?.match(/SK:([A-z -]+)::level/)?.[1],
+				name: data.ref?.default?.match(/SK:([A-z -]+)::level/)?.[1] ?? null,
+				specialization: null,
 				modifier: parseInt(data.ref!.default!.replace(/SK:.*::level/, "")),
+				level: 0,
+				adjusted_level: 0,
+				points: 0,
 			},
 			// TODO: change
 			defaults: [],

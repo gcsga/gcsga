@@ -18,31 +18,32 @@ export enum MoveBonusType {
 
 export type BaseFeatureSchema = {
 	type: fields.StringField<feature.Type, feature.Type, true, false, true>
-}
-
-export type LeveledAmountSchema = {
 	amount: fields.NumberField<number, number, true, false>
 	per_level: fields.BooleanField
-	effective: fields.BooleanField
+	effective: fields.BooleanField<boolean, boolean, false>
 }
 
-export type WeaponLeveledAmountSchema = {
-	amount: fields.NumberField<number, number, true, false>
-	leveled: fields.BooleanField
-	per_die: fields.BooleanField
-	effective: fields.BooleanField
+// export type LeveledAmountSchema = {
+// 	amount: fields.NumberField<number, number, true, false>
+// 	per_level: fields.BooleanField
+// 	effective: fields.BooleanField<boolean, boolean, false>
+// }
+
+// export type WeaponLeveledAmountSchema = {
+// 	amount: fields.NumberField<number, number, true, false>
+// 	leveled: fields.BooleanField
+// 	per_die: fields.BooleanField
+// 	effective: fields.BooleanField<boolean, boolean, false>
+// }
+
+export type AttributeBonusSchema = BaseFeatureSchema & {
+	limitation: fields.StringField<stlimit.Option>
+	attribute: fields.StringField
 }
 
-export type AttributeBonusSchema = LeveledAmountSchema &
-	BaseFeatureSchema & {
-		limitation: fields.StringField<stlimit.Option>
-		attribute: fields.StringField
-	}
-
-export type ConditionalModifierBonusSchema = LeveledAmountSchema &
-	BaseFeatureSchema & {
-		situation: fields.StringField
-	}
+export type ConditionalModifierBonusSchema = BaseFeatureSchema & {
+	situation: fields.StringField
+}
 
 export type ContainedWeightReductionSchema = BaseFeatureSchema & {
 	reduction: fields.StringField
@@ -53,94 +54,90 @@ export type CostReductionSchema = BaseFeatureSchema & {
 	percentage: fields.NumberField
 }
 
-export type DRBonusSchema = LeveledAmountSchema &
-	BaseFeatureSchema & {
-		location: fields.StringField
-		specialization: fields.StringField
-	}
+export type DRBonusSchema = BaseFeatureSchema & {
+	locations: fields.ArrayField<fields.StringField>
+	specialization: fields.StringField
+}
 
-export type MoveBonusSchema = LeveledAmountSchema &
-	BaseFeatureSchema & {
-		move_type: fields.StringField
-		limitation: fields.StringField<MoveBonusType>
-	}
+export type MoveBonusSchema = BaseFeatureSchema & {
+	move_type: fields.StringField
+	limitation: fields.StringField<MoveBonusType>
+}
 
-export type ReactionBonusSchema = LeveledAmountSchema &
-	BaseFeatureSchema & {
-		situation: fields.StringField
-	}
+export type ReactionBonusSchema = BaseFeatureSchema & {
+	situation: fields.StringField
+}
 
-export type SkillBonusSchema = LeveledAmountSchema &
-	BaseFeatureSchema & {
-		selection_type: fields.StringField<skillsel.Type>
-		name: fields.SchemaField<StringCriteriaSchema>
-		specialization: fields.SchemaField<StringCriteriaSchema>
-		tags: fields.SchemaField<StringCriteriaSchema>
-	}
+export type SkillBonusSchema = BaseFeatureSchema & {
+	selection_type: fields.StringField<skillsel.Type>
+	name: fields.SchemaField<StringCriteriaSchema>
+	specialization: fields.SchemaField<StringCriteriaSchema>
+	tags: fields.SchemaField<StringCriteriaSchema>
+}
 
-export type SkillPointBonusSchema = LeveledAmountSchema &
-	BaseFeatureSchema & {
-		name: fields.SchemaField<StringCriteriaSchema>
-		specialization: fields.SchemaField<StringCriteriaSchema>
-		tags: fields.SchemaField<StringCriteriaSchema>
-	}
+export type SkillPointBonusSchema = BaseFeatureSchema & {
+	name: fields.SchemaField<StringCriteriaSchema>
+	specialization: fields.SchemaField<StringCriteriaSchema>
+	tags: fields.SchemaField<StringCriteriaSchema>
+}
 
-export type SpellBonusSchema = LeveledAmountSchema &
-	BaseFeatureSchema & {
-		match: fields.StringField<spellmatch.Type>
-		name: fields.SchemaField<StringCriteriaSchema>
-		tags: fields.SchemaField<StringCriteriaSchema>
-	}
+export type SpellBonusSchema = BaseFeatureSchema & {
+	match: fields.StringField<spellmatch.Type>
+	name: fields.SchemaField<StringCriteriaSchema>
+	tags: fields.SchemaField<StringCriteriaSchema>
+}
 
-export type SpellPointBonusSchema = LeveledAmountSchema &
-	BaseFeatureSchema & {
-		match: fields.StringField<spellmatch.Type>
-		name: fields.SchemaField<StringCriteriaSchema>
-		tags: fields.SchemaField<StringCriteriaSchema>
-	}
+export type SpellPointBonusSchema = BaseFeatureSchema & {
+	match: fields.StringField<spellmatch.Type>
+	name: fields.SchemaField<StringCriteriaSchema>
+	tags: fields.SchemaField<StringCriteriaSchema>
+}
 
-export type WeaponBonusSchema = WeaponLeveledAmountSchema &
-	BaseFeatureSchema & {
-		percent: fields.BooleanField<boolean, boolean, true, true>
-		switch_type: fields.StringField<wswitch.Type, wswitch.Type, true, true>
-		switch_type_value: fields.BooleanField<boolean, boolean, true, true>
-		selection_type: fields.StringField<wsel.Type>
-		name: fields.SchemaField<
-			StringCriteriaSchema,
-			SourceFromSchema<StringCriteriaSchema>,
-			NonNullable<ModelPropsFromSchema<StringCriteriaSchema>>,
-			true,
-			true
-		>
-		specialization: fields.SchemaField<
-			StringCriteriaSchema,
-			SourceFromSchema<StringCriteriaSchema>,
-			NonNullable<ModelPropsFromSchema<StringCriteriaSchema>>,
-			true,
-			true
-		>
-		level: fields.SchemaField<
-			NumericCriteriaSchema,
-			SourceFromSchema<NumericCriteriaSchema>,
-			NonNullable<ModelPropsFromSchema<NumericCriteriaSchema>>,
-			true,
-			true
-		>
-		usage: fields.SchemaField<
-			StringCriteriaSchema,
-			SourceFromSchema<StringCriteriaSchema>,
-			NonNullable<ModelPropsFromSchema<StringCriteriaSchema>>,
-			true,
-			true
-		>
-		tags: fields.SchemaField<
-			StringCriteriaSchema,
-			SourceFromSchema<StringCriteriaSchema>,
-			NonNullable<ModelPropsFromSchema<StringCriteriaSchema>>,
-			true,
-			true
-		>
-	}
+export type WeaponBonusSchema = BaseFeatureSchema & {
+	percent: fields.BooleanField<boolean, boolean, true, true>
+	switch_type: fields.StringField<wswitch.Type, wswitch.Type, true, true>
+	switch_type_value: fields.BooleanField<boolean, boolean, true, true>
+	selection_type: fields.StringField<wsel.Type>
+	name: fields.SchemaField<
+		StringCriteriaSchema,
+		SourceFromSchema<StringCriteriaSchema>,
+		NonNullable<ModelPropsFromSchema<StringCriteriaSchema>>,
+		true,
+		true
+	>
+	specialization: fields.SchemaField<
+		StringCriteriaSchema,
+		SourceFromSchema<StringCriteriaSchema>,
+		NonNullable<ModelPropsFromSchema<StringCriteriaSchema>>,
+		true,
+		true
+	>
+	level: fields.SchemaField<
+		NumericCriteriaSchema,
+		SourceFromSchema<NumericCriteriaSchema>,
+		NonNullable<ModelPropsFromSchema<NumericCriteriaSchema>>,
+		true,
+		true
+	>
+	usage: fields.SchemaField<
+		StringCriteriaSchema,
+		SourceFromSchema<StringCriteriaSchema>,
+		NonNullable<ModelPropsFromSchema<StringCriteriaSchema>>,
+		true,
+		true
+	>
+	tags: fields.SchemaField<
+		StringCriteriaSchema,
+		SourceFromSchema<StringCriteriaSchema>,
+		NonNullable<ModelPropsFromSchema<StringCriteriaSchema>>,
+		true,
+		true
+	>
+	amount: fields.NumberField<number, number, true, false>
+	leveled: fields.BooleanField
+	per_die: fields.BooleanField
+	effective: fields.BooleanField<boolean, boolean, false>
+}
 
 export type FeatureSchema =
 	| BaseFeatureSchema

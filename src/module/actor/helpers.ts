@@ -19,13 +19,19 @@ function addWeaponBonusToSet(
 	tooltip: TooltipGURPS | null = null,
 	set: Set<WeaponBonus> = new Set(),
 ): void {
-	const savedLevel = bonus.leveledAmount.level
-	const savedDieCount = bonus.leveledAmount.dieCount
-	bonus.leveledAmount.dieCount = Int.from(dieCount)
-	bonus.leveledAmount.level = bonus.derivedLevel
+	// const savedLevel = bonus.leveledAmount.level
+	const savedLevel = bonus.featureLevel
+	// const savedDieCount = bonus.leveledAmount.dieCount
+	const savedDieCount = bonus.dieCount
+	// bonus.leveledAmount.dieCount = Int.from(dieCount)
+	bonus.dieCount = Int.from(dieCount)
+	// bonus.leveledAmount.level = bonus.derivedLevel
+	bonus.featureLevel = bonus.derivedLevel
 	bonus.addToTooltip(tooltip)
-	bonus.leveledAmount.level = savedLevel
-	bonus.leveledAmount.dieCount = savedDieCount
+	// bonus.leveledAmount.level = savedLevel
+	bonus.featureLevel = savedLevel
+	// bonus.leveledAmount.dieCount = savedDieCount
+	bonus.dieCount = savedDieCount
 	set.add(bonus)
 }
 

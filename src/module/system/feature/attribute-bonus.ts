@@ -1,7 +1,7 @@
 import { gid } from "@data"
 import { stlimit } from "@util/enum/stlimit.ts"
 import { AttributeBonusSchema } from "./data.ts"
-import { BaseFeature, LeveledAmount } from "./base.ts"
+import { BaseFeature } from "./base.ts"
 
 class AttributeBonus extends BaseFeature<AttributeBonusSchema> {
 	static override defineSchema(): AttributeBonusSchema {
@@ -9,7 +9,6 @@ class AttributeBonus extends BaseFeature<AttributeBonusSchema> {
 
 		return {
 			...super.defineSchema(),
-			...LeveledAmount.defineSchema(),
 			attribute: new fields.StringField({ initial: gid.Strength }),
 			limitation: new fields.StringField({ choices: stlimit.Options, initial: stlimit.Option.None }),
 		}
@@ -19,6 +18,8 @@ class AttributeBonus extends BaseFeature<AttributeBonusSchema> {
 		if (this.attribute === gid.Strength) return this.limitation ?? stlimit.Option.None
 		return stlimit.Option.None
 	}
+
+	fillWithNameableKeys(_m: Map<string, string>, _existing: Map<string, string>): void {}
 }
 
 interface AttributeBonus extends BaseFeature<AttributeBonusSchema>, ModelPropsFromSchema<AttributeBonusSchema> {}

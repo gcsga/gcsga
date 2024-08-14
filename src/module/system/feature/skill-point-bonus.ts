@@ -2,7 +2,8 @@ import { StringCriteria } from "@module/util/string-criteria.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { TooltipGURPS } from "@util"
 import { SkillPointBonusSchema } from "./data.ts"
-import { BaseFeature, LeveledAmount } from "./base.ts"
+import { BaseFeature } from "./base.ts"
+import { Nameable } from "@module/util/nameable.ts"
 
 class SkillPointBonus extends BaseFeature<SkillPointBonusSchema> {
 	static override defineSchema(): SkillPointBonusSchema {
@@ -10,7 +11,7 @@ class SkillPointBonus extends BaseFeature<SkillPointBonusSchema> {
 
 		return {
 			...super.defineSchema(),
-			...LeveledAmount.defineSchema(),
+			// ...LeveledAmount.defineSchema(),
 			name: new fields.SchemaField(StringCriteria.defineSchema()),
 			specialization: new fields.SchemaField(StringCriteria.defineSchema()),
 			tags: new fields.SchemaField(StringCriteria.defineSchema()),
@@ -33,10 +34,17 @@ class SkillPointBonus extends BaseFeature<SkillPointBonusSchema> {
 			tooltip.push(
 				LocalizeGURPS.format(lang, {
 					source: this.parentName,
-					amount: this.leveledAmount.format(false),
+					// amount: this.leveledAmount.format(false),
+					amount: this.format(false),
 				}),
 			)
 		}
+	}
+
+	fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {
+		Nameable.extract(this.specialization.qualifier, m, existing)
+		Nameable.extract(this.name.qualifier, m, existing)
+		Nameable.extract(this.tags.qualifier, m, existing)
 	}
 }
 

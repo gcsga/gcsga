@@ -1,7 +1,8 @@
 import { StringCriteria } from "@module/util/string-criteria.ts"
 import { skillsel } from "@util"
 import { SkillBonusSchema } from "./data.ts"
-import { BaseFeature, LeveledAmount } from "./base.ts"
+import { BaseFeature } from "./base.ts"
+import { Nameable } from "@module/util/nameable.ts"
 
 class SkillBonus extends BaseFeature<SkillBonusSchema> {
 	static override defineSchema(): SkillBonusSchema {
@@ -9,7 +10,7 @@ class SkillBonus extends BaseFeature<SkillBonusSchema> {
 
 		return {
 			...super.defineSchema(),
-			...LeveledAmount.defineSchema(),
+			// ...LeveledAmount.defineSchema(),
 			selection_type: new fields.StringField({ choices: skillsel.Types, initial: skillsel.Type.Name }),
 			name: new fields.SchemaField(StringCriteria.defineSchema()),
 			specialization: new fields.SchemaField(StringCriteria.defineSchema()),
@@ -23,6 +24,14 @@ class SkillBonus extends BaseFeature<SkillBonusSchema> {
 		this.name = new StringCriteria(data.name)
 		this.specialization = new StringCriteria(data.specialization)
 		this.tags = new StringCriteria(data.tags)
+	}
+
+	fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {
+		Nameable.extract(this.specialization.qualifier, m, existing)
+		if (this.selection_type !== skillsel.Type.ThisWeapon) {
+			Nameable.extract(this.name.qualifier, m, existing)
+			Nameable.extract(this.tags.qualifier, m, existing)
+		}
 	}
 }
 

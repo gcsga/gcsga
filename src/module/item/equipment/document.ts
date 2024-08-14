@@ -11,6 +11,7 @@ import {
 	weightAdjustedForModifiers,
 } from "@item/helpers.ts"
 import { SheetSettings } from "@system"
+import { Nameable } from "@module/util/nameable.ts"
 
 class EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends AbstractContainerGURPS<TParent> {
 	get other(): boolean {
@@ -111,6 +112,39 @@ class EquipmentGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> exte
 			if (await this.delete({ render: false })) {
 				await targetItem.update({ "system.quantity": stackQuantity })
 			}
+		}
+	}
+
+	/**  Replacements */
+	get nameWithReplacements(): string {
+		return Nameable.apply(this.system.description, this.nameableReplacements)
+	}
+
+	get notesWithReplacements(): string {
+		return Nameable.apply(this.system.notes, this.nameableReplacements)
+	}
+
+	/** Nameables */
+	fillWithNameableKeys(m: Map<string, string>, existing?: Map<string, string>): void {
+		this.fillWithLocalNameableKeys(m, existing)
+		this.deepModifiers.forEach(mod => {
+			mod.fillWithNameableKeys(m, mod.nameableReplacements)
+		})
+	}
+
+	protected fillWithLocalNameableKeys(m: Map<string, string>, existing?: Map<string, string>): void {
+		if (!existing) existing = this.nameableReplacements
+
+		Nameable.extract(this.system.description, m, existing)
+		Nameable.extract(this.system.notes, m, existing)
+		if (this.prereqs) {
+			this.prereqs.fillWithNameableKeys(m, existing)
+		}
+		for (const feature of this.features) {
+			feature.fillWithNameableKeys(m, existing)
+		}
+		for (const weapon of this.itemCollections.weapons) {
+			weapon.fillWithNameableKeys(m, existing)
 		}
 	}
 }

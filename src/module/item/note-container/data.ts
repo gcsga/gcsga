@@ -21,7 +21,7 @@ class NoteContainerSystemData extends AbstractContainerSystemData<NoteContainerG
 			reference: new fields.StringField(),
 			reference_highlight: new fields.StringField(),
 			open: new fields.BooleanField({ initial: true }),
-			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField()),
+			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField({required: true, nullable: false})),
 		}
 	}
 }
@@ -36,7 +36,7 @@ type NoteContainerSystemSchema = AbstractContainerSystemSchema & {
 	reference: fields.StringField
 	reference_highlight: fields.StringField
 	open: fields.BooleanField
-	replacements: RecordField<fields.StringField<string, string, true, false, false>, fields.StringField>
+	replacements: RecordField<fields.StringField<string, string, true, false, false>,  fields.StringField<string,string,true,false,false>>
 }
 
 type NoteContainerSystemSource = SourceFromSchema<NoteContainerSystemSchema>

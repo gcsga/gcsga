@@ -45,7 +45,7 @@ class EquipmentSystemData extends AbstractContainerSystemData<EquipmentGURPS, Eq
 			equipped: new fields.BooleanField({ initial: true }),
 			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
 			ignore_weight_for_skills: new fields.BooleanField({ initial: false }),
-			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField()),
+			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField({required: true, nullable: false})),
 		}
 	}
 }
@@ -74,7 +74,7 @@ type EquipmentSystemSchema = AbstractContainerSystemSchema & {
 	features: fields.ArrayField<fields.SchemaField<FeatureSchema>>
 	equipped: fields.BooleanField
 	ignore_weight_for_skills: fields.BooleanField
-	replacements: RecordField<fields.StringField<string, string, true, false, false>, fields.StringField>
+	replacements: RecordField<fields.StringField<string, string, true, false, false>,  fields.StringField<string,string,true,false,false>>
 }
 
 type EquipmentSystemSource = SourceFromSchema<EquipmentSystemSchema>

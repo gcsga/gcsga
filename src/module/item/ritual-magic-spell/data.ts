@@ -30,7 +30,7 @@ class RitualMagicSpellSystemData extends AbstractSkillSystemData<RitualMagicSpel
 			base_skill: new fields.StringField(),
 			prereq_count: new fields.NumberField({ integer: true, min: 0, nullable: false, initial: 0 }),
 			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
-			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField()),
+			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField({required: true, nullable: false})),
 		}
 	}
 }
@@ -54,7 +54,7 @@ type RitualMagicSpellSystemSchema = AbstractSkillSystemSchema & {
 	base_skill: fields.StringField
 	prereq_count: fields.NumberField<number, number, true, false>
 	prereqs: fields.SchemaField<PrereqListSchema>
-	replacements: RecordField<fields.StringField<string, string, true, false, false>, fields.StringField>
+	replacements: RecordField<fields.StringField<string, string, true, false, false>,  fields.StringField<string,string,true,false,false>>
 }
 
 type RitualMagicSpellSystemSource = SourceFromSchema<RitualMagicSpellSystemSchema>

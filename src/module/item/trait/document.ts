@@ -6,6 +6,7 @@ import { SheetSettings, resolveStudyHours, studyHoursProgressText } from "@syste
 import { ItemType } from "@module/data/constants.ts"
 import { ItemInstances } from "@item/types.ts"
 import { modifyPoints } from "@item/helpers.ts"
+import { Nameable } from "@module/util/nameable.ts"
 
 class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends AbstractContainerGURPS<TParent> {
 	override get formattedName(): string {
@@ -28,10 +29,6 @@ class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 			)
 		}
 		return buffer.toString()
-	}
-
-	override get substitutionFields(): string[] {
-		return ["name", "notes"]
 	}
 
 	override get enabled(): boolean {
@@ -262,6 +259,44 @@ class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 				},
 			},
 		]
+	}
+
+	/**  Replacements */
+	get nameWithReplacements(): string {
+		return Nameable.apply(this.system.name, this.nameableReplacements)
+	}
+
+	get notesWithReplacements(): string {
+		return Nameable.apply(this.system.notes, this.nameableReplacements)
+	}
+
+	get userDescWithReplacements(): string {
+		return Nameable.apply(this.system.userdesc, this.nameableReplacements)
+	}
+
+	/** Nameables */
+	fillWithNameableKeys(m: Map<string, string>, existing?: Map<string, string>): void {
+		this.fillWithLocalNameableKeys(m, existing)
+		this.deepModifiers.forEach(mod => {
+			mod.fillWithNameableKeys(m, mod.nameableReplacements)
+		})
+	}
+
+	protected fillWithLocalNameableKeys(m: Map<string, string>, existing?: Map<string, string>): void {
+		if (!existing) existing = this.nameableReplacements
+
+		Nameable.extract(this.system.name, m, existing)
+		Nameable.extract(this.system.notes, m, existing)
+		Nameable.extract(this.system.userdesc, m, existing)
+		if (this.prereqs) {
+			this.prereqs.fillWithNameableKeys(m, existing)
+		}
+		for (const feature of this.features) {
+			feature.fillWithNameableKeys(m, existing)
+		}
+		for (const weapon of this.itemCollections.weapons) {
+			weapon.fillWithNameableKeys(m, existing)
+		}
 	}
 }
 

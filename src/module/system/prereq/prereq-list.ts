@@ -5,6 +5,21 @@ import { BasePrereq, Prereq, PrereqConstructionOptions, PrereqListSchema } from 
 import { ActorType, NumericCompareType } from "@module/data/constants.ts"
 import { NumericCriteria } from "@module/util/index.ts"
 
+function validatePrereqDepth(value: unknown, currentDepth: number, maxDepth: number): boolean {
+	const p = value as Prereq
+
+	if (currentDepth >= maxDepth) {
+		throw new Error("max depth reached")
+	}
+
+	if (p.type === prereq.Type.List) {
+		for (const child of p.prereqs) {
+			validatePrereqDepth(child, currentDepth + 1, maxDepth)
+		}
+	}
+	return true
+}
+
 class PrereqList extends BasePrereq<PrereqListSchema> {
 	constructor(data: DeepPartial<SourceFromSchema<PrereqListSchema>>, options?: PrereqConstructionOptions) {
 		super(data, options)
@@ -15,7 +30,7 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 			for (const source of data.prereqs) {
 				if (!source || !source.type) continue
 				const PrereqClass = CONFIG.GURPS.Prereq.classes[source.type]
-				// @ts-expect-error "type" field mismatched but not causing errors
+				// @ts-expect-error is ok
 				prereqs.push(new PrereqClass(source))
 			}
 		this.prereqs = prereqs
@@ -28,7 +43,13 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 			type: new fields.StringField({ initial: prereq.Type.List }),
 			all: new fields.BooleanField({ initial: true }),
 			when_tl: new fields.SchemaField(NumericCriteria.defineSchema()),
-			prereqs: new fields.ArrayField(new fields.SchemaField(BasePrereq.defineSchema())),
+			prereqs: new fields.ArrayField(
+				new fields.ObjectField<Prereq, Prereq>({
+					validate: (value: unknown) => {
+						return validatePrereqDepth(value, 0, 5)
+					},
+				}),
+			),
 		}
 	}
 
@@ -61,6 +82,12 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 			tooltip.push(local)
 		}
 		return satisfied
+	}
+
+	fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {
+		for (const prereq of this.prereqs) {
+			prereq.fillWithNameableKeys(m, existing)
+		}
 	}
 }
 

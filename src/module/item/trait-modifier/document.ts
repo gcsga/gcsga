@@ -4,6 +4,7 @@ import { TraitModifierSource, TraitModifierSystemData } from "./data.ts"
 import { LocalizeGURPS, StringBuilder, affects, display, tmcost } from "@util"
 import { ItemType } from "@module/data/constants.ts"
 import { SheetSettings } from "@system"
+import { Nameable } from "@module/util/nameable.ts"
 
 class TraitModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
 	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
@@ -98,6 +99,27 @@ class TraitModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> 
 				},
 			},
 		]
+	}
+
+	/**  Replacements */
+	get nameWithReplacements(): string {
+		return Nameable.apply(this.system.name, this.nameableReplacements)
+	}
+
+	get notesWithReplacements(): string {
+		return Nameable.apply(this.system.notes, this.nameableReplacements)
+	}
+
+	/** Nameables */
+	fillWithNameableKeys(m: Map<string, string>, existing?: Map<string, string>): void {
+		if (!this.enabled) return
+		if (!existing) existing = this.nameableReplacements
+
+		Nameable.extract(this.system.name, m, existing)
+		Nameable.extract(this.system.notes, m, existing)
+		for (const feature of this.features) {
+			feature.fillWithNameableKeys(m, existing)
+		}
 	}
 }
 

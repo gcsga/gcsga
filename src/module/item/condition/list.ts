@@ -135,6 +135,7 @@ export function getConditionList(): Record<ConditionID, Partial<ConditionSystemS
 					attribute: "dx",
 					limitation: stlimit.Option.None,
 					per_level: false,
+					effective: true,
 				},
 			],
 		},

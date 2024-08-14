@@ -20,6 +20,7 @@ import { WeaponFlags } from "./data.ts"
 import { ContainedWeightReduction, Feature, SkillBonus, SkillDefault, WeaponBonus } from "@system"
 import { WeaponParry } from "./weapon-parry.ts"
 import { WeaponDamage } from "./weapon-damage.ts"
+import { Nameable } from "@module/util/nameable.ts"
 
 abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
 	declare damage: WeaponDamage
@@ -267,7 +268,7 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 		if (!this.actor || !this.actor.isOfType(ActorType.Character)) return []
 		const allowed: Set<feature.WeaponBonusType> = new Set()
 		for (const one of allowedFeatureTypes) allowed.add(one)
-		let bestDef = new SkillDefault()
+		let bestDef = new SkillDefault({})
 		let best = Number.MIN_SAFE_INTEGER
 		for (const one of this.defaults) {
 			if (one.skillBased) {
@@ -329,10 +330,14 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 	): void {
 		if (!allowedFeatureTypes.has(f.type)) return
 		if (f instanceof WeaponBonus) {
-			const savedLevel = f.leveledAmount.level
-			const savedDieCount = f.leveledAmount.dieCount
-			f.leveledAmount.level = f.derivedLevel
-			f.leveledAmount.dieCount = dieCount
+			// const savedLevel = f.leveledAmount.level
+			const savedLevel = f.featureLevel
+			// const savedDieCount = f.leveledAmount.dieCount
+			const savedDieCount = f.dieCount
+			// f.leveledAmount.level = f.derivedLevel
+			f.featureLevel = f.derivedLevel
+			// f.leveledAmount.dieCount = dieCount
+			f.dieCount = dieCount
 			switch (f.selection_type) {
 				case wsel.Type.WithRequiredSkill:
 					break
@@ -360,12 +365,19 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 				default:
 					throw Error(`Unknown selection type ${(f as WeaponBonus).selection_type}`)
 			}
-			f.leveledAmount.level = savedLevel
-			f.leveledAmount.dieCount = savedDieCount
+			// f.leveledAmount.level = savedLevel
+			f.featureLevel = savedLevel
+			// f.leveledAmount.dieCount = savedDieCount
+			f.dieCount = savedDieCount
 		}
 	}
 
 	abstract checkUnready(type: RollType): void
+
+	fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {
+		Nameable.extract(this.system.usage, m, existing)
+		Nameable.extract(this.system.usage_notes, m, existing)
+	}
 }
 
 interface AbstractWeaponGURPS<TParent extends ActorGURPS | null> extends ItemGURPS<TParent> {

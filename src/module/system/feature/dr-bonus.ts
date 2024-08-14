@@ -2,7 +2,7 @@ import { LocalizeGURPS } from "@util/localize.ts"
 import { TooltipGURPS } from "@util"
 import { gid } from "@module/data/constants.ts"
 import { DRBonusSchema } from "./data.ts"
-import { BaseFeature, LeveledAmount } from "./base.ts"
+import { BaseFeature } from "./base.ts"
 import { equalFold } from "@module/util/index.ts"
 
 class DRBonus extends BaseFeature<DRBonusSchema> {
@@ -11,8 +11,8 @@ class DRBonus extends BaseFeature<DRBonusSchema> {
 
 		return {
 			...super.defineSchema(),
-			...LeveledAmount.defineSchema(),
-			location: new fields.StringField({ initial: gid.Torso }),
+			// ...LeveledAmount.defineSchema(),
+			locations: new fields.ArrayField(new fields.StringField(), { initial: [gid.Torso] }),
 			specialization: new fields.StringField({ initial: gid.All }),
 		}
 	}
@@ -24,7 +24,8 @@ class DRBonus extends BaseFeature<DRBonusSchema> {
 			tooltip.push(this.parentName)
 			tooltip.push(
 				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.feature.dr_bonus, {
-					level: this.leveledAmount.format(false),
+					// level: this.leveledAmount.format(false),
+					level: this.format(false),
 					type: this.specialization ?? gid.All,
 				}),
 			)
@@ -32,13 +33,20 @@ class DRBonus extends BaseFeature<DRBonusSchema> {
 	}
 
 	private _normalize(): void {
-		let s = this.location.trim()
-		if (equalFold(s, gid.All)) s = gid.All
-		this.location = s
-		s = this.specialization?.trim() ?? ""
+		for (const [index, location] of this.locations.entries()) {
+			const newLocation = location.trim()
+			if (equalFold(newLocation, gid.All)) {
+				this.locations = [gid.All]
+				break
+			}
+			this.locations[index] = location
+		}
+		let s = this.specialization?.trim() ?? ""
 		if (s === "" || equalFold(s, gid.All)) s = gid.All
 		this.specialization = s
 	}
+
+	fillWithNameableKeys(_m: Map<string, string>, _existing: Map<string, string>): void {}
 }
 
 interface DRBonus extends BaseFeature<DRBonusSchema>, ModelPropsFromSchema<DRBonusSchema> {}

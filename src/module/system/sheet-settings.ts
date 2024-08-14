@@ -8,7 +8,6 @@ import { MoveTypeDefSchema } from "./move-type/data.ts"
 import { MoveTypeDef } from "./move-type/definition.ts"
 import { ResourceTrackerDefSchema } from "./resource-tracker/data.ts"
 import { ResourceTrackerDef } from "./resource-tracker/definition.ts"
-import { LaxSchemaField } from "./schema-data-fields.ts"
 import fields = foundry.data.fields
 import { Mook } from "./mook/document.ts"
 
@@ -65,8 +64,6 @@ type SheetSettingsSource = Omit<SourceFromSchema<SheetSettingsSchema>, "body_typ
 }
 
 class SheetSettings extends foundry.abstract.DataModel<CharacterGURPS, SheetSettingsSchema> {
-	protected declare static _schema: LaxSchemaField<SheetSettingsSchema> | undefined
-
 	constructor(
 		data: DeepPartial<SourceFromSchema<SheetSettingsSchema>>,
 		options?: DataModelConstructionOptions<CharacterGURPS>,

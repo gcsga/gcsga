@@ -1,6 +1,6 @@
-import { LocalizeGURPS } from "@util/localize.ts"
 import { ReactionBonusSchema } from "./data.ts"
-import { BaseFeature, LeveledAmount } from "./base.ts"
+import { BaseFeature } from "./base.ts"
+import { Nameable } from "@module/util/nameable.ts"
 
 class ReactionBonus extends BaseFeature<ReactionBonusSchema> {
 	static override defineSchema(): ReactionBonusSchema {
@@ -8,9 +8,16 @@ class ReactionBonus extends BaseFeature<ReactionBonusSchema> {
 
 		return {
 			...super.defineSchema(),
-			...LeveledAmount.defineSchema(),
-			situation: new fields.StringField({ initial: LocalizeGURPS.translations.gurps.feature.reaction_bonus }),
+			// ...LeveledAmount.defineSchema(),
+
+			situation: new fields.StringField({
+				initial: game.i18n.localize("gurps.feature.reaction_bonus"),
+			}),
 		}
+	}
+
+	fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {
+		Nameable.extract(this.situation, m, existing)
 	}
 }
 

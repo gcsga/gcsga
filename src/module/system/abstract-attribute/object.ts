@@ -1,14 +1,14 @@
 import type { AbstractAttributeDef } from "./definition.ts"
 import type { AbstractAttributeConstructionOptions, AbstractAttributeSchema } from "./data.ts"
 import type { ActorGURPS } from "@actor"
-import { LaxSchemaField } from "@system/schema-data-fields.ts"
+// import { LaxSchemaField } from "@system/schema-data-fields.ts"
 import type { Mook } from "@system/mook/index.ts"
 
 abstract class AbstractAttribute<
 	TActor extends ActorGURPS | Mook = ActorGURPS | Mook,
 	TSchema extends AbstractAttributeSchema = AbstractAttributeSchema,
 > extends foundry.abstract.DataModel<TActor, TSchema> {
-	protected declare static _schema: LaxSchemaField<AbstractAttributeSchema> | undefined
+	// protected declare static _schema: LaxSchemaField<AbstractAttributeSchema> | undefined
 
 	static override defineSchema(): AbstractAttributeSchema {
 		const fields = foundry.data.fields
@@ -18,15 +18,15 @@ abstract class AbstractAttribute<
 		}
 	}
 
-	static override get schema(): LaxSchemaField<AbstractAttributeSchema> {
-		if (this._schema && Object.hasOwn(this, "_schema")) return this._schema
-
-		const schema = new LaxSchemaField(Object.freeze(this.defineSchema()))
-		schema.name = this.name
-		Object.defineProperty(this, "_schema", { value: schema, writable: false })
-
-		return schema
-	}
+	// static override get schema(): LaxSchemaField<AbstractAttributeSchema> {
+	// 	if (this._schema && Object.hasOwn(this, "_schema")) return this._schema
+	//
+	// 	const schema = new LaxSchemaField(Object.freeze(this.defineSchema()))
+	// 	schema.name = this.name
+	// 	Object.defineProperty(this, "_schema", { value: schema, writable: false })
+	//
+	// 	return schema
+	// }
 
 	// _id: string
 

@@ -53,6 +53,8 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 		}
 		return satisfied
 	}
+
+	fillWithNameableKeys(_m: Map<string, string>, _existing: Map<string, string>): void {}
 }
 
 interface AttributePrereq
@@ -60,5 +62,4 @@ interface AttributePrereq
 		Omit<ModelPropsFromSchema<AttributePrereqSchema>, "qualifier"> {
 	qualifier: NumericCriteria
 }
-
 export { AttributePrereq }

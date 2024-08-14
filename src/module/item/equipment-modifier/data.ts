@@ -30,7 +30,7 @@ class EquipmentModifierSystemData extends ItemSystemModel<EquipmentModifierGURPS
 			cost: new fields.StringField(),
 			weight: new fields.StringField(),
 			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
-			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField()),
+			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField({required: true, nullable: false})),
 		}
 	}
 }
@@ -54,7 +54,7 @@ type EquipmentModifierSystemSchema = ItemSystemSchema & {
 	cost: fields.StringField
 	weight: fields.StringField
 	features: fields.ArrayField<fields.SchemaField<FeatureSchema>>
-	replacements: RecordField<fields.StringField<string, string, true, false, false>, fields.StringField>
+	replacements: RecordField<fields.StringField<string, string, true, false, false>,  fields.StringField<string,string,true,false,false>>
 }
 
 type EquipmentModifierSystemSource = SourceFromSchema<EquipmentModifierSystemSchema>

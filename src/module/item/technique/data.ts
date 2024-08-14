@@ -27,7 +27,7 @@ class TechniqueSystemData extends AbstractSkillSystemData<TechniqueGURPS, Techni
 			limited: new fields.BooleanField({ initial: false }),
 			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
 			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
-			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField()),
+			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField({required: true, nullable: false})),
 		}
 	}
 }
@@ -46,7 +46,7 @@ type TechniqueSystemSchema = AbstractSkillSystemSchema & {
 	limited: fields.BooleanField
 	prereqs: fields.SchemaField<PrereqListSchema>
 	features: fields.ArrayField<fields.SchemaField<FeatureSchema>>
-	replacements: RecordField<fields.StringField<string, string, true, false, false>, fields.StringField>
+	replacements: RecordField<fields.StringField<string, string, true, false, false>,  fields.StringField<string,string,true,false,false>>
 }
 
 type TechniqueSystemSource = SourceFromSchema<TechniqueSystemSchema>

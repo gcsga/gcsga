@@ -1,7 +1,8 @@
 import { StringCriteria } from "@module/util/string-criteria.ts"
 import { spellmatch } from "@util"
 import { SpellPointBonusSchema } from "./data.ts"
-import { BaseFeature, LeveledAmount } from "./base.ts"
+import { BaseFeature } from "./base.ts"
+import { Nameable } from "@module/util/nameable.ts"
 
 class SpellPointBonus extends BaseFeature<SpellPointBonusSchema> {
 	static override defineSchema(): SpellPointBonusSchema {
@@ -9,7 +10,7 @@ class SpellPointBonus extends BaseFeature<SpellPointBonusSchema> {
 
 		return {
 			...super.defineSchema(),
-			...LeveledAmount.defineSchema(),
+			// ...LeveledAmount.defineSchema(),
 			match: new fields.StringField({ choices: spellmatch.Types, initial: spellmatch.Type.Name }),
 			name: new fields.SchemaField(StringCriteria.defineSchema()),
 			tags: new fields.SchemaField(StringCriteria.defineSchema()),
@@ -25,6 +26,13 @@ class SpellPointBonus extends BaseFeature<SpellPointBonusSchema> {
 
 	matchForType(name: string, powerSource: string, colleges: string[]): boolean {
 		return spellmatch.Type.matchForType(this.match, this.name, name, powerSource, colleges)
+	}
+
+	fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {
+		if (this.match !== spellmatch.Type.AllColleges) {
+			Nameable.extract(this.name.qualifier, m, existing)
+		}
+		Nameable.extract(this.tags.qualifier, m, existing)
 	}
 }
 

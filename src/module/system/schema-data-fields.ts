@@ -3,7 +3,6 @@ import { SlugCamel, sluggify } from "@util"
 import type {
 	CleanFieldOptions,
 	DataField,
-	DataSchema,
 	DataFieldValidationOptions,
 	MaybeSchemaProp,
 	ModelPropFromDataField,
@@ -22,23 +21,28 @@ import { DataModelValidationFailure } from "types/foundry/common/data/validation
 // const { fields } = foundry.data
 
 /** A `SchemaField` that preserves fields not declared in its `DataSchema` */
-class LaxSchemaField<TDataSchema extends DataSchema> extends foundry.data.fields.SchemaField<TDataSchema> {
-	protected override _cleanType(
-		data: Record<string, unknown>,
-		options: CleanFieldOptions = {},
-	): SourceFromSchema<TDataSchema> {
-		options.source = options.source || data
-
-		// Clean each field that belongs to the schema
-		for (const [name, field] of this.entries()) {
-			if (!(name in data) && options.partial) continue
-			data[name] = field.clean(data[name], options)
-			if (data[name] === undefined) delete data[name]
-		}
-
-		return data as SourceFromSchema<TDataSchema>
-	}
-}
+// class LaxSchemaField<TDataSchema extends DataSchema> extends foundry.data.fields.SchemaField<TDataSchema> {
+// 	protected override _cleanType(
+// 		data: Record<string, unknown>,
+// 		options: CleanFieldOptions = {},
+// 	): SourceFromSchema<TDataSchema> {
+// 		options.source = options.source || data
+//
+// 		console.log(data)
+//
+// 		// Clean each field that belongs to the schema
+// 		for (const [name, field] of this.entries()) {
+// 			console.log(name, field)
+// 			if (!(name in data) && options.partial) continue
+// 			data[name] = field.clean(data[name], options)
+// 			if (data[name] === undefined) delete data[name]
+// 		}
+//
+// 		console.log(data)
+//
+// 		return data as SourceFromSchema<TDataSchema>
+// 	}
+// }
 
 /** A `StringField` that does not cast the source value */
 class StrictStringField<
@@ -251,4 +255,4 @@ class NullField extends foundry.data.fields.DataField<null, null, true, true, tr
 	}
 }
 
-export { NullField, RecordField, SlugField, LaxSchemaField }
+export { NullField, RecordField, SlugField }

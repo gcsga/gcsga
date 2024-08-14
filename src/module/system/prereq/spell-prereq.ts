@@ -7,6 +7,7 @@ import { ActorType, ItemType, NumericCompareType, StringCompareType } from "@dat
 import { LocalizeGURPS, TooltipGURPS } from "@util"
 import { ActorGURPS } from "@actor"
 import { NumericCriteria, StringCriteria } from "@module/util/index.ts"
+import { Nameable } from "@module/util/nameable.ts"
 
 class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 	constructor(data: DeepPartial<SourceFromSchema<SpellPrereqSchema>>) {
@@ -105,6 +106,16 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 		}
 		return satisfied
 	}
+
+	fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {
+		if (
+			this.sub_type === spellcmp.Type.Name ||
+			this.sub_type === spellcmp.Type.Tag ||
+			this.sub_type === spellcmp.Type.College
+		) {
+			Nameable.extract(this.qualifier.qualifier, m, existing)
+		}
+	}
 }
 
 interface SpellPrereq
@@ -113,5 +124,4 @@ interface SpellPrereq
 	quantity: NumericCriteria
 	qualifier: StringCriteria
 }
-
 export { SpellPrereq }

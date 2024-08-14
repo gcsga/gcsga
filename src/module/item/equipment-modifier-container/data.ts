@@ -27,7 +27,7 @@ class EquipmentModifierContainerSystemData extends AbstractContainerSystemData<
 			vtt_notes: new fields.StringField(),
 			tags: new fields.ArrayField(new foundry.data.fields.StringField()),
 			open: new fields.BooleanField({ initial: true }),
-			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField()),
+			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField({required: true, nullable: false})),
 		}
 	}
 }
@@ -51,7 +51,7 @@ type EquipmentModifierContainerSystemSchema = AbstractContainerSystemSchema & {
 	vtt_notes: fields.StringField
 	tags: fields.ArrayField<fields.StringField>
 	open: fields.BooleanField
-	replacements: RecordField<fields.StringField<string, string, true, false, false>, fields.StringField>
+	replacements: RecordField<fields.StringField<string, string, true, false, false>,  fields.StringField<string,string,true,false,false>>
 }
 
 type EquipmentModifierContainerSystemSource = SourceFromSchema<EquipmentModifierContainerSystemSchema>

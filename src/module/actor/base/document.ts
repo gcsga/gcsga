@@ -40,7 +40,7 @@ import {
 	SpellPointBonus,
 	WeaponBonus,
 } from "@system"
-import { ErrorGURPS, LocalizeGURPS, TooltipGURPS, attribute, objectHasKey, stlimit } from "@util"
+import { ErrorGURPS, LocalizeGURPS, TooltipGURPS, attribute, feature, objectHasKey, stlimit } from "@util"
 import * as R from "remeda"
 import { ActorFlagsGURPS, ActorSystemData, PrototypeTokenGURPS } from "./data.ts"
 import { ActorItemCollectionMap } from "./item-collection-map.ts"
@@ -469,51 +469,78 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 		}
 	}
 
-	prepareFeature(owner: ItemGURPS, subOwner: ItemGURPS | null, feature: Feature, levels: number): number {
-		feature.owner = owner
-		feature.subOwner = subOwner
-		feature.levels = levels
+	prepareFeature(owner: ItemGURPS, subOwner: ItemGURPS | null, f: Feature, levels: number): number {
+		f.owner = owner
+		f.subOwner = subOwner
+		f.featureLevel = levels
 
 		switch (true) {
-			case feature instanceof AttributeBonus:
-				return this.features.attributeBonuses.push(feature)
-			case feature instanceof CostReduction:
-				return this.features.costReductions.push(feature)
-			case feature instanceof DRBonus:
-				if (feature.location === "") {
+			case f instanceof AttributeBonus:
+				return this.features.attributeBonuses.push(f)
+			case f instanceof CostReduction:
+				return this.features.costReductions.push(f)
+			case f instanceof DRBonus:
+				if (f.locations.length === 0) {
+					// "this armor"
 					if (itemIsOfType(owner, ItemType.Equipment, ItemType.EquipmentContainer)) {
-						const allLocations: Map<string, boolean> = new Map()
-						const locationsMatched: Map<string, boolean> = new Map()
+						const allLocations: Set<string> = new Set()
+						const locationsMatched: Set<string> = new Set()
 						for (const f2 of owner.features) {
-							if (f2 instanceof DRBonus && f2.location !== "") {
-								allLocations.set(f2.location, true)
-								if (f2.specialization === feature.specialization) {
-									locationsMatched.set(f2.location, true)
-									const additionalDRBonus = new DRBonus({})
-									additionalDRBonus.location = f2.location
-									additionalDRBonus.specialization = feature.specialization
-									additionalDRBonus.leveledAmount = feature.leveledAmount
-									additionalDRBonus.owner = owner
-									additionalDRBonus.subOwner = subOwner
-									additionalDRBonus.levels = levels
-									this.features.drBonuses.push(additionalDRBonus)
+							if (f2 instanceof DRBonus && f2.locations.length !== 0) {
+								for (const loc of f2.locations) {
+									allLocations.add(loc)
 								}
+								if (f2.specialization === f.specialization) {
+									for (const loc of f2.locations) {
+										locationsMatched.add(loc)
+									}
+								}
+								const additionalDRBonus = new DRBonus({
+									type: feature.Type.DRBonus,
+									locations: f.locations,
+									specialization: f.specialization,
+									amount: f.amount,
+									per_level: f.per_level,
+								})
+								additionalDRBonus.owner = owner
+								additionalDRBonus.subOwner = subOwner
+								additionalDRBonus.featureLevel = levels
+								this.features.drBonuses.push(additionalDRBonus)
 							}
 						}
-						return 0
+						for (const k of locationsMatched) {
+							allLocations.delete(k)
+						}
+						if (allLocations.size !== 0) {
+							const locations = Array.from(allLocations).sort()
+							const additionalDRBonus = new DRBonus({
+								type: feature.Type.DRBonus,
+								locations: locations,
+								specialization: f.specialization,
+								amount: f.amount,
+								per_level: f.per_level,
+							})
+							additionalDRBonus.owner = owner
+							additionalDRBonus.subOwner = subOwner
+							additionalDRBonus.featureLevel = levels
+							this.features.drBonuses.push(additionalDRBonus)
+						}
+						return this.features.drBonuses.length
 					}
-					return 0
-				} else return this.features.drBonuses.push(feature)
-			case feature instanceof SkillBonus:
-				return this.features.skillBonuses.push(feature)
-			case feature instanceof SkillPointBonus:
-				return this.features.skillPointBonuses.push(feature)
-			case feature instanceof SpellBonus:
-				return this.features.spellBonuses.push(feature)
-			case feature instanceof SpellPointBonus:
-				return this.features.spellPointBonuses.push(feature)
-			case feature instanceof WeaponBonus:
-				return this.features.weaponBonuses.push(feature)
+				} else {
+					return this.features.drBonuses.push(f)
+				}
+				return this.features.drBonuses.length
+			case f instanceof SkillBonus:
+				return this.features.skillBonuses.push(f)
+			case f instanceof SkillPointBonus:
+				return this.features.skillPointBonuses.push(f)
+			case f instanceof SpellBonus:
+				return this.features.spellBonuses.push(f)
+			case f instanceof SpellPointBonus:
+				return this.features.spellPointBonuses.push(f)
+			case f instanceof WeaponBonus:
+				return this.features.weaponBonuses.push(f)
 			default:
 				return 0
 		}

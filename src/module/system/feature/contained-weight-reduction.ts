@@ -37,6 +37,8 @@ class ContainedWeightReduction extends BaseFeature<ContainedWeightReductionSchem
 		const w = Weight.fromString(s, defUnits)
 		return Weight.format(w)
 	}
+
+	fillWithNameableKeys(_m: Map<string, string>, _existing: Map<string, string>): void {}
 }
 
 interface ContainedWeightReduction

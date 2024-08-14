@@ -5,6 +5,7 @@ import { LocalizeGURPS, NewLineRegex, StringBuilder, TooltipGURPS, difficulty, d
 import { SheetSettings, SkillDefault, resolveStudyHours, studyHoursProgressText } from "@system"
 import { ActorType, gid } from "@module/data/constants.ts"
 import { SkillLevel } from "@item/skill/data.ts"
+import { Nameable } from "@module/util/nameable.ts"
 
 class TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends AbstractSkillGURPS<TParent> {
 	declare default: SkillDefault
@@ -123,6 +124,34 @@ class TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> exte
 
 	private isHardDifficulty() {
 		return this.difficulty === difficulty.Level.Hard
+	}
+
+	/**  Replacements */
+	get nameWithReplacements(): string {
+		return Nameable.apply(this.system.name, this.nameableReplacements)
+	}
+
+	get notesWithReplacements(): string {
+		return Nameable.apply(this.system.notes, this.nameableReplacements)
+	}
+
+	/** Nameables */
+	fillWithNameableKeys(m: Map<string, string>, existing?: Map<string, string>): void {
+		if (!existing) existing = this.nameableReplacements
+
+		Nameable.extract(this.system.name, m, existing)
+		Nameable.extract(this.system.notes, m, existing)
+
+		this.default.fillWithNameableKeys(m, existing)
+		if (this.prereqs) {
+			this.prereqs.fillWithNameableKeys(m, existing)
+		}
+		for (const feature of this.features) {
+			feature.fillWithNameableKeys(m, existing)
+		}
+		for (const weapon of this.itemCollections.weapons) {
+			weapon.fillWithNameableKeys(m, existing)
+		}
 	}
 }
 

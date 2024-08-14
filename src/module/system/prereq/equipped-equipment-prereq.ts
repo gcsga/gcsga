@@ -5,6 +5,7 @@ import { EquippedEquipmentPrereqSchema } from "./data.ts"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
 import { ActorGURPS } from "@actor"
 import { StringCompareType } from "@module/data/constants.ts"
+import { Nameable } from "@module/util/nameable.ts"
 
 class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> {
 	constructor(data: DeepPartial<SourceFromSchema<EquippedEquipmentPrereqSchema>>) {
@@ -52,6 +53,11 @@ class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> 
 			)
 		}
 		return satisfied
+	}
+
+	fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {
+		Nameable.extract(this.name.qualifier, m, existing)
+		Nameable.extract(this.tags.qualifier, m, existing)
 	}
 }
 

@@ -15,6 +15,7 @@ import {
 	ImportedRangedWeaponSystemSource,
 	ImportedRitualMagicSpellSystemSource,
 	ImportedSkillContainerSystemSource,
+	ImportedSkillDefault,
 	ImportedSkillSystemSource,
 	ImportedSpellContainerSystemSource,
 	ImportedSpellSystemSource,
@@ -31,7 +32,7 @@ import { SpellSource, SpellSystemSource } from "@item/spell/data.ts"
 import { EquipmentSource, EquipmentSystemSource } from "@item/equipment/data.ts"
 import { ItemFlags, ItemKind, ItemType, SYSTEM_NAME, gid } from "@data"
 import { ItemSourceGURPS } from "@item/data/index.ts"
-import { FeatureSchema, PrereqListSchema, Study, TemplatePickerSchema } from "@system"
+import { Feature, PrereqListSchema, SkillDefaultSchema, Study, TemplatePickerSchema } from "@system"
 import {
 	LocalizeGURPS,
 	affects,
@@ -39,6 +40,7 @@ import {
 	difficulty,
 	emcost,
 	emweight,
+	feature,
 	picker,
 	prereq,
 	selfctrl,
@@ -65,7 +67,7 @@ import { NoteSource, NoteSystemSource } from "@item/note/data.ts"
 import { NoteContainerSource, NoteContainerSystemSource } from "@item/note-container/data.ts"
 import { MeleeWeaponSource, MeleeWeaponSystemSource } from "@item/melee-weapon/data.ts"
 import { RangedWeaponSource, RangedWeaponSystemSource } from "@item/ranged-weapon/data.ts"
-import { DocumentStatsSchema } from "types/foundry/common/data/fields.js"
+import { DocumentStatsSchema, SourceFromTypedSchemaTypes } from "types/foundry/common/data/fields.js"
 import { TIDString } from "../tid.ts"
 
 interface ItemImportContext {
@@ -104,12 +106,27 @@ abstract class ItemImporter {
 		return prereqList ?? { type: prereq.Type.List, all: true }
 	}
 
-	static importFeatures(featureList?: ImportedFeature[]): SourceFromSchema<FeatureSchema>[] {
+	static importFeatures(
+		featureList?: ImportedFeature[],
+	): SourceFromTypedSchemaTypes<Record<feature.Type, ConstructorOf<Feature>>>[] {
+		// @ts-expect-error should be fine
 		return featureList ?? []
 	}
 
 	static importStudy(studyList?: ImportedStudy[]): Study[] {
 		return studyList ?? []
+	}
+
+	static importSkillDefault(skillDefault?: ImportedSkillDefault): SourceFromSchema<SkillDefaultSchema> {
+		return {
+			type: skillDefault?.type ?? gid.Dexterity,
+			name: skillDefault?.name ?? null,
+			specialization: skillDefault?.specialization ?? null,
+			modifier: skillDefault?.modifier ?? 0,
+			level: skillDefault?.level ?? 0,
+			adjusted_level: skillDefault?.adjusted_level ?? 0,
+			points: skillDefault?.points ?? 0,
+		}
 	}
 
 	static importTemplatePicker(templatePicker?: ImportedTemplatePicker): SourceFromSchema<TemplatePickerSchema> {
@@ -291,7 +308,7 @@ class TraitContainerImporter extends ItemImporter {
 			container_type: item.container_type ?? container.Type.Group,
 			disabled: item.disabled ?? false,
 			template_picker: ItemImporter.importTemplatePicker(item.template_picker),
-			open: item.open ?? false,
+			open: true,
 			replacements: item.replacements ?? {},
 		}
 
@@ -410,7 +427,7 @@ class TraitModifierContainerImporter extends ItemImporter {
 			notes: item.notes ?? "",
 			vtt_notes: item.vtt_notes ?? "",
 			tags: item.tags ?? [],
-			open: item.open ?? false,
+			open: true,
 			replacements: item.replacements ?? {},
 		}
 
@@ -473,8 +490,8 @@ class SkillImporter extends ItemImporter {
 			difficulty: item.difficulty ?? "dx/a",
 			points: item.points ?? 0,
 			encumbrance_penalty_multiplier: item.encumbrance_penalty_multiplier ?? 0,
-			defaulted_from: item.defaulted_from ?? { type: gid.Skill, name: "Skill", modifier: 0 },
-			defaults: item.defaults ?? [],
+			defaulted_from: ItemImporter.importSkillDefault(item.defaulted_from),
+			defaults: item.defaults?.map(e => ItemImporter.importSkillDefault(e)) ?? [],
 			prereqs: ItemImporter.importPrereqs(item.prereqs),
 			// weapons handled separately
 			features: ItemImporter.importFeatures(item.features),
@@ -546,8 +563,8 @@ class TechniqueImporter extends ItemImporter {
 			tech_level_required: true,
 			difficulty: item.difficulty ?? difficulty.Level.Average,
 			points: item.points ?? 0,
-			default: item.default ?? { type: gid.Skill, name: "Skill", modifier: 0 },
-			defaults: item.defaults ?? [],
+			default: ItemImporter.importSkillDefault(item.default ?? { type: gid.Skill, name: "Skill", modifier: 0 }),
+			defaults: item.defaults?.map(e => ItemImporter.importSkillDefault(e)) ?? [],
 			limit: item.limit ?? 0,
 			limited: typeof item.limit === "number",
 			prereqs: ItemImporter.importPrereqs(item.prereqs),
@@ -618,7 +635,7 @@ class SkillContainerImporter extends ItemImporter {
 			vtt_notes: item.vtt_notes ?? "",
 			tags: item.tags ?? [],
 			template_picker: ItemImporter.importTemplatePicker(item.template_picker),
-			open: item.open ?? false,
+			open: true,
 			replacements: item.replacements ?? {},
 		}
 
@@ -834,7 +851,7 @@ class SpellContainerImporter extends ItemImporter {
 			vtt_notes: item.vtt_notes ?? "",
 			tags: item.tags ?? [],
 			template_picker: ItemImporter.importTemplatePicker(item.template_picker),
-			open: item.open ?? false,
+			open: true,
 			replacements: item.replacements ?? {},
 		}
 
@@ -987,7 +1004,7 @@ class EquipmentContainerImporter extends ItemImporter {
 			features: ItemImporter.importFeatures(item.features),
 			equipped: item.equipped ?? true,
 			ignore_weight_for_skills: item.ignore_weight_for_skills ?? false,
-			open: item.open ?? false,
+			open: true,
 			replacements: item.replacements ?? {},
 		}
 
@@ -1119,7 +1136,7 @@ class EquipmentModifierContainerImporter extends ItemImporter {
 			notes: item.notes ?? "",
 			vtt_notes: item.vtt_notes ?? "",
 			tags: item.tags ?? [],
-			open: item.open ?? false,
+			open: true,
 			replacements: item.replacements ?? {},
 		}
 
@@ -1217,7 +1234,7 @@ class NoteContainerImporter extends ItemImporter {
 			text: item.text ?? "",
 			reference: item.reference ?? "",
 			reference_highlight: item.reference ?? "",
-			open: item.open ?? false,
+			open: true,
 			replacements: item.replacements ?? {},
 		}
 
@@ -1284,7 +1301,7 @@ class MeleeWeaponImporter extends ItemImporter {
 			reach: item.reach ?? "",
 			parry: item.parry ?? "",
 			block: item.block ?? "",
-			defaults: item.defaults ?? [],
+			defaults: item.defaults?.map(e => ItemImporter.importSkillDefault(e)) ?? [],
 		}
 
 		const newItem: MeleeWeaponSource = {
@@ -1344,7 +1361,7 @@ class RangedWeaponImporter extends ItemImporter {
 			shots: item.shots ?? "",
 			bulk: item.bulk ?? "",
 			recoil: item.recoil ?? "",
-			defaults: item.defaults ?? [],
+			defaults: item.defaults?.map(e => ItemImporter.importSkillDefault(e)) ?? [],
 		}
 
 		const newItem: RangedWeaponSource = {

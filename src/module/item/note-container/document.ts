@@ -3,6 +3,7 @@ import { AbstractContainerGURPS } from "@item"
 import { NoteContainerSource, NoteContainerSystemData } from "./data.ts"
 import { ItemInstances } from "@item/types.ts"
 import { ItemType } from "@module/data/constants.ts"
+import { Nameable } from "@module/util/nameable.ts"
 
 class NoteContainerGURPS<
 	TParent extends ActorGURPS | null = ActorGURPS | null,
@@ -16,6 +17,13 @@ class NoteContainerGURPS<
 					item as ItemInstances<TParent>[ItemType.Note] | ItemInstances<TParent>[ItemType.NoteContainer],
 				]),
 		)
+	}
+
+	/** Nameables */
+	fillWithNameableKeys(m: Map<string, string>, existing?: Map<string, string>): void {
+		if (!existing) existing = this.nameableReplacements
+
+		Nameable.extract(this.system.text, m, existing)
 	}
 }
 

@@ -4,6 +4,7 @@ import { SkillLevel, SkillSource, SkillSystemData } from "./data.ts"
 import { LocalizeGURPS, NewLineRegex, StringBuilder, TooltipGURPS, difficulty, display } from "@util"
 import { SheetSettings, SkillDefault, resolveStudyHours, studyHoursProgressText } from "@system"
 import { ActorType, ItemType } from "@module/data/constants.ts"
+import { Nameable } from "@module/util/nameable.ts"
 class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends AbstractSkillGURPS<TParent> {
 	declare level: SkillLevel
 	declare default: SkillDefault | null
@@ -102,7 +103,7 @@ class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 					relativeLevel += 1 + Math.floor(points / 4)
 					break
 				case diff !== difficulty.Level.Wildcard && def && def.points < 0:
-					relativeLevel = def!.adjustedLevel - level
+					relativeLevel = def!.adjusted_level - level
 					break
 				default:
 					level = Number.MIN_SAFE_INTEGER
@@ -111,8 +112,8 @@ class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 
 			if (level === Number.MIN_SAFE_INTEGER) return none
 			level += relativeLevel
-			if (diff !== difficulty.Level.Wildcard && def && level < def.adjustedLevel) {
-				level = def.adjustedLevel
+			if (diff !== difficulty.Level.Wildcard && def && level < def.adjusted_level) {
+				level = def.adjusted_level
 			}
 			let bonus = actor.skillBonusFor(this.name!, this.specialization, this.tags, tooltip)
 			level += bonus
@@ -170,7 +171,7 @@ class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 		if (actor instanceof ActorGURPS && actor.isOfType(ActorType.Character)) {
 			const excludes = new Map()
 			excludes.set(this.name!, true)
-			let bestDef = new SkillDefault()
+			let bestDef = new SkillDefault({})
 			let best = Number.MIN_SAFE_INTEGER
 			for (const def of this.resolveToSpecificDefaults()) {
 				if (def.equivalent(excluded) || this.inDefaultChain(def, new Map())) continue
@@ -246,6 +247,41 @@ class SkillGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 			hadOne = true
 		}
 		return !hadOne
+	}
+
+	/**  Replacements */
+	get nameWithReplacements(): string {
+		return Nameable.apply(this.system.name, this.nameableReplacements)
+	}
+
+	get notesWithReplacements(): string {
+		return Nameable.apply(this.system.notes, this.nameableReplacements)
+	}
+
+	get specializationWithReplacements(): string {
+		return Nameable.apply(this.system.specialization, this.nameableReplacements)
+	}
+
+	/** Nameables */
+	fillWithNameableKeys(m: Map<string, string>, existing?: Map<string, string>): void {
+		if (!existing) existing = this.nameableReplacements
+
+		Nameable.extract(this.system.name, m, existing)
+		Nameable.extract(this.system.notes, m, existing)
+		Nameable.extract(this.system.specialization, m, existing)
+
+		if (this.prereqs) {
+			this.prereqs.fillWithNameableKeys(m, existing)
+		}
+		for (const def of this.defaults) {
+			def.fillWithNameableKeys(m, existing)
+		}
+		for (const feature of this.features) {
+			feature.fillWithNameableKeys(m, existing)
+		}
+		for (const weapon of this.itemCollections.weapons) {
+			weapon.fillWithNameableKeys(m, existing)
+		}
 	}
 }
 

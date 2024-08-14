@@ -29,7 +29,7 @@ class TraitModifierSystemData extends ItemSystemModel<TraitModifierGURPS, TraitM
 			cost_type: new fields.StringField<tmcost.Type>(),
 			disabled: new fields.BooleanField({ initial: false }),
 			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
-			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField()),
+			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField({required: true, nullable: false})),
 		}
 	}
 }
@@ -52,7 +52,7 @@ type TraitModifierSystemSchema = ItemSystemSchema & {
 	cost_type: fields.StringField<tmcost.Type>
 	disabled: fields.BooleanField
 	features: fields.ArrayField<fields.SchemaField<FeatureSchema>>
-	replacements: RecordField<fields.StringField<string, string, true, false, false>, fields.StringField>
+	replacements: RecordField<fields.StringField<string, string, true, false, false>,  fields.StringField<string,string,true,false,false>>
 }
 
 type TraitModifierSystemSource = SourceFromSchema<TraitModifierSystemSchema>

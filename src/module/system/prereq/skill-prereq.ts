@@ -7,6 +7,7 @@ import { LocalizeGURPS, TooltipGURPS } from "@util"
 import { ItemGURPS } from "@item"
 import { SkillPrereqSchema } from "./data.ts"
 import { NumericCriteria } from "@module/util/numeric-criteria.ts"
+import { Nameable } from "@module/util/nameable.ts"
 
 class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 	constructor(data: DeepPartial<SourceFromSchema<SkillPrereqSchema>>) {
@@ -98,6 +99,11 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 				)
 		}
 		return satisfied
+	}
+
+	fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {
+		Nameable.extract(this.name.qualifier, m, existing)
+		Nameable.extract(this.specialization.qualifier, m, existing)
 	}
 }
 

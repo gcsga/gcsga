@@ -4,12 +4,12 @@ import {
 	AbstractContainerSystemSchema,
 } from "@item/abstract-container/data.ts"
 import { ItemType, StringCompareType } from "@module/data/constants.ts"
-import { FeatureSchema, PrereqList, PrereqListSchema, SkillBonus, Study } from "@system"
-import { BaseFeature } from "@system/feature/base.ts"
+import { Feature, PrereqList, PrereqListSchema, SkillBonus, Study } from "@system"
 import { feature, selfctrl, skillsel, study } from "@util"
 import { TraitGURPS } from "./document.ts"
 import fields = foundry.data.fields
 import { RecordField } from "@system/schema-data-fields.ts"
+import { BaseFeature } from "@system/feature/base.ts"
 
 function getCRFeatures(): Map<string, SkillBonus[]> {
 	return new Map([
@@ -49,7 +49,7 @@ class TraitSystemData extends AbstractContainerSystemData<TraitGURPS, TraitSyste
 			levels: new fields.NumberField({ min: 0, nullable: true }),
 			points_per_level: new fields.NumberField({ integer: true, nullable: true }),
 			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
-			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
+			features: new fields.ArrayField(new fields.TypedSchemaField(BaseFeature.TYPES)),
 			study: new fields.ArrayField(new fields.ObjectField<Study>()),
 			cr: new fields.NumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>({
 				choices: selfctrl.Rolls,
@@ -67,7 +67,10 @@ class TraitSystemData extends AbstractContainerSystemData<TraitGURPS, TraitSyste
 			disabled: new fields.BooleanField({ initial: false }),
 			round_down: new fields.BooleanField({ initial: false }),
 			can_level: new fields.BooleanField({ initial: false }),
-			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField()),
+			replacements: new RecordField(
+				new fields.StringField({ required: true, nullable: false }),
+				new fields.StringField({ required: true, nullable: false }),
+			),
 		}
 	}
 }
@@ -89,7 +92,7 @@ type TraitSystemSchema = AbstractContainerSystemSchema & {
 	levels: fields.NumberField
 	points_per_level: fields.NumberField
 	prereqs: fields.SchemaField<PrereqListSchema>
-	features: fields.ArrayField<fields.SchemaField<FeatureSchema>>
+	features: fields.ArrayField<fields.TypedSchemaField<Record<feature.Type, ConstructorOf<Feature>>>>
 	study: fields.ArrayField<fields.ObjectField<Study>>
 	cr: fields.NumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>
 	cr_adj: fields.StringField<selfctrl.Adjustment>
@@ -97,7 +100,10 @@ type TraitSystemSchema = AbstractContainerSystemSchema & {
 	disabled: fields.BooleanField
 	round_down: fields.BooleanField
 	can_level: fields.BooleanField
-	replacements: RecordField<fields.StringField<string, string, true, false, false>, fields.StringField>
+	replacements: RecordField<
+		fields.StringField<string, string, true, false, false>,
+		fields.StringField<string, string, true, false, false>
+	>
 }
 
 type TraitSystemSource = SourceFromSchema<TraitSystemSchema>

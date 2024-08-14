@@ -7,6 +7,7 @@ import { LastActor, evaluateToNumber } from "@module/util/index.ts"
 import { TID } from "@module/util/tid.ts"
 import { SetGameGURPS } from "@scripts/set-game-gurps.ts"
 import { storeInitialWorldVersions } from "@scripts/store-versions.ts"
+import { AttributeBonus } from "@system"
 import { createDragImage } from "@util/drag-image.ts"
 // import { ColorSettings } from "@module/settings/colors.ts"
 // import { SetGameGURPS } from "@scripts/set-game-gurps.ts"
@@ -30,6 +31,7 @@ export const Ready = {
 				LastToken: await LastActor.getToken(),
 				eval: evaluateToNumber,
 				TID: TID,
+				att: AttributeBonus,
 			}
 
 			// Determine whether a system migration is required and feasible

@@ -43,7 +43,7 @@ class TraitContainerSystemData extends AbstractContainerSystemData<TraitContaine
 			}),
 			disabled: new fields.BooleanField({ initial: false }),
 			open: new fields.BooleanField({ initial: true }),
-			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField()),
+			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField({required: true, nullable: false})),
 		}
 	}
 }
@@ -68,7 +68,7 @@ type TraitContainerSystemSchema = AbstractContainerSystemSchema & {
 	container_type: fields.StringField<container.Type>
 	disabled: fields.BooleanField
 	open: fields.BooleanField
-	replacements: RecordField<fields.StringField<string, string, true, false, false>, fields.StringField>
+	replacements: RecordField<fields.StringField<string, string, true, false, false>,  fields.StringField<string,string,true,false,false>>
 }
 
 type TraitContainerSystemSource = SourceFromSchema<TraitContainerSystemSchema>

@@ -5,6 +5,7 @@ import { SkillLevel } from "@item/skill/data.ts"
 import { LocalizeGURPS, NewLineRegex, StringBuilder, TooltipGURPS, difficulty, display } from "@util"
 import { SheetSettings, resolveStudyHours, studyHoursProgressText } from "@system"
 import { ActorType } from "@module/data/constants.ts"
+import { Nameable } from "@module/util/nameable.ts"
 
 class SpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends AbstractSkillGURPS<TParent> {
 	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
@@ -133,6 +134,72 @@ class SpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 			}
 		}
 		return none
+	}
+
+	/**  Replacements */
+	get nameWithReplacements(): string {
+		return Nameable.apply(this.system.name, this.nameableReplacements)
+	}
+
+	get notesWithReplacements(): string {
+		return Nameable.apply(this.system.notes, this.nameableReplacements)
+	}
+
+	get powerSourceWithReplacements(): string {
+		return Nameable.apply(this.system.power_source, this.nameableReplacements)
+	}
+
+	get classWithReplacements(): string {
+		return Nameable.apply(this.system.spell_class, this.nameableReplacements)
+	}
+
+	get resistWithReplacements(): string {
+		return Nameable.apply(this.system.resist, this.nameableReplacements)
+	}
+
+	get castingCostWithReplacements(): string {
+		return Nameable.apply(this.system.casting_cost, this.nameableReplacements)
+	}
+
+	get maintenanceCostWithReplacements(): string {
+		return Nameable.apply(this.system.maintenance_cost, this.nameableReplacements)
+	}
+
+	get castingTimeWithReplacements(): string {
+		return Nameable.apply(this.system.casting_time, this.nameableReplacements)
+	}
+
+	get durationWithReplacements(): string {
+		return Nameable.apply(this.system.duration, this.nameableReplacements)
+	}
+
+	get collegeWithReplacements(): string[] {
+		return Nameable.applyToList(this.system.college, this.nameableReplacements)
+	}
+
+	/** Nameables */
+	fillWithNameableKeys(m: Map<string, string>, existing?: Map<string, string>): void {
+		if (!existing) existing = this.nameableReplacements
+
+		Nameable.extract(this.system.name, m, existing)
+		Nameable.extract(this.system.notes, m, existing)
+		Nameable.extract(this.system.power_source, m, existing)
+		Nameable.extract(this.system.spell_class, m, existing)
+		Nameable.extract(this.system.resist, m, existing)
+		Nameable.extract(this.system.casting_cost, m, existing)
+		Nameable.extract(this.system.maintenance_cost, m, existing)
+		Nameable.extract(this.system.casting_time, m, existing)
+		Nameable.extract(this.system.duration, m, existing)
+		for (const one of this.system.college) {
+			Nameable.extract(one, m, existing)
+		}
+
+		if (this.prereqs) {
+			this.prereqs.fillWithNameableKeys(m, existing)
+		}
+		for (const weapon of this.itemCollections.weapons) {
+			weapon.fillWithNameableKeys(m, existing)
+		}
 	}
 }
 
