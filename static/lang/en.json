@@ -2107,6 +2107,10 @@
 				"true": "Requires all of:",
 				"false": "Requires at least one of:"
 			},
+			"technique": {
+				"skill": "Requires a skill named {name}",
+				"points": "Requires at least 1 point in the skill named {name}"
+			},
 			"ritual_magic_spell": {
 				"college": "Must be assigned to a college",
 				"skill": "Requires a skill named {name}",

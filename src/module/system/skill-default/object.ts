@@ -3,6 +3,7 @@ import { ActorType, gid } from "@data"
 import { Nameable } from "@module/util/nameable.ts"
 import { SkillDefaultSchema, SkillDefaultType } from "./data.ts"
 import { ItemGURPS } from "@item"
+import { LocalizeGURPS, StringBuilder } from "@util"
 
 const SKILL_BASED_DEFAULT_TYPES: Set<string> = new Set([gid.Skill, gid.Parry, gid.Block])
 
@@ -42,15 +43,17 @@ class SkillDefault<TItem extends ItemGURPS = ItemGURPS> extends foundry.abstract
 		)
 	}
 
-	fullName(actor: ActorGURPS): string {
+	fullName(actor: ActorGURPS, replacements: Map<string, string>): string {
 		if (this.skillBased) {
-			let buffer = ""
-			buffer += this.name
-			if (this.specialization) buffer += ` (${this.specialization})`
-			if (this.type === gid.Dodge) buffer += " Dodge"
-			else if (this.type === gid.Parry) buffer += " Parry"
-			else if (this.type === gid.Block) buffer += " Block"
-			return buffer
+			const buffer = new StringBuilder()
+			buffer.push(this.nameWithReplacements(replacements))
+			if (this.specialization !== null && this.specialization !== "") {
+				buffer.push(` (${this.specializationWithReplacements(replacements)})`)
+			}
+			if (this.type === gid.Dodge) buffer.push(` ${LocalizeGURPS.translations.gurps.attribute.dodge}`)
+			else if (this.type === gid.Parry) buffer.push(` ${LocalizeGURPS.translations.gurps.attribute.parry}`)
+			else if (this.type === gid.Block) buffer.push(` ${LocalizeGURPS.translations.gurps.attribute.block}`)
+			return buffer.toString()
 		}
 		return actor.resolveAttributeName(this.type)
 	}

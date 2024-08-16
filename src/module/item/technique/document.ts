@@ -3,7 +3,7 @@ import { AbstractSkillGURPS } from "@item"
 import { TechniqueSource, TechniqueSystemData } from "./data.ts"
 import { LocalizeGURPS, NewLineRegex, StringBuilder, TooltipGURPS, difficulty, display } from "@util"
 import { SheetSettings, SkillDefault, resolveStudyHours, studyHoursProgressText } from "@system"
-import { ActorType, gid } from "@module/data/constants.ts"
+import { ActorType, ItemType, gid } from "@module/data/constants.ts"
 import { SkillLevel } from "@item/skill/data.ts"
 import { Nameable } from "@module/util/nameable.ts"
 
@@ -50,6 +50,22 @@ class TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> exte
 		)
 
 		const satisfied = sk !== null && (sk.isOfType(ItemType.Technique) || sk.points > 0)
+		if (!satisfied) {
+			tooltip.push(LocalizeGURPS.translations.gurps.prereq.prefix)
+			if (sk === null) {
+				tooltip.push(
+					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.technique.skill, {
+						name: this.default.fullName(actor, this.nameableReplacements),
+					}),
+				)
+			} else {
+				tooltip.push(
+					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.technique.points, {
+						name: this.default.fullName(actor, this.nameableReplacements),
+					}),
+				)
+			}
+		}
 
 		return satisfied
 	}
@@ -58,7 +74,7 @@ class TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> exte
 		if (!this.actor || !this.default) return ""
 		if (!this.actor.isOfType(ActorType.Character)) return ""
 		return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.item.default, {
-			skill: this.default.fullName(this.actor),
+			skill: this.default.fullName(this.actor, this.nameableReplacements),
 			modifier: this.default.modifier.signedString(),
 		})
 	}

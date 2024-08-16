@@ -22,7 +22,7 @@
 	],
 	"compatibility": {
 		"minimum": 12,
-		"verified": "12.330",
+		"verified": "12.331",
 		"maximum": 12
 	},
 	"scripts": [],

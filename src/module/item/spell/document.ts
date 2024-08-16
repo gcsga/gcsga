@@ -137,10 +137,6 @@ class SpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 	}
 
 	/**  Replacements */
-	get nameWithReplacements(): string {
-		return Nameable.apply(this.system.name, this.nameableReplacements)
-	}
-
 	get notesWithReplacements(): string {
 		return Nameable.apply(this.system.notes, this.nameableReplacements)
 	}
