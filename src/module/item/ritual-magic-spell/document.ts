@@ -1,7 +1,7 @@
 import { ActorGURPS } from "@actor"
 import { AbstractSkillGURPS } from "@item"
 import { RitualMagicSpellSource, RitualMagicSpellSystemData } from "./data.ts"
-import { TooltipGURPS, difficulty } from "@util"
+import { LocalizeGURPS, StringBuilder, TooltipGURPS, difficulty } from "@util"
 import { ActorType, gid } from "@module/data/constants.ts"
 import { SkillLevel } from "@item/skill/data.ts"
 import { SkillDefault } from "@system"
@@ -125,11 +125,44 @@ class RitualMagicSpellGURPS<TParent extends ActorGURPS | null = ActorGURPS | nul
 		return points
 	}
 
-	/**  Replacements */
-	get nameWithReplacements(): string {
-		return Nameable.apply(this.system.name, this.nameableReplacements)
+	satisfied(tooltip: TooltipGURPS): boolean {
+		const colleges = this.collegeWithReplacements
+		if (colleges.length === 0) {
+			tooltip.push(LocalizeGURPS.translations.gurps.prereq.prefix)
+			tooltip.push(LocalizeGURPS.translations.gurps.prereq.ritual_magic_spell.college)
+			return false
+		}
+
+		const actor = this.actor
+		if (!actor || !actor.isOfType(ActorType.Character)) return true
+
+		for (const college of colleges) {
+			if (actor.bestSkillNamed(this.baseSkillWithReplacements, college, false, null) !== null) return true
+		}
+
+		const ritual = this.baseSkillWithReplacements
+		const skillName = new StringBuilder()
+		skillName.push(ritual)
+		skillName.push(` (${colleges[0]})`)
+		for (const college of colleges.splice(1)) {
+			skillName.push(
+				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.ritual_magic_spell.or, {
+					name: `${ritual} (${college})`,
+				}),
+			)
+		}
+
+		tooltip.push(LocalizeGURPS.translations.gurps.prereq.prefix)
+		tooltip.push(
+			LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.ritual_magic_spell.skill, {
+				name: skillName.toString(),
+			}),
+		)
+
+		return false
 	}
 
+	/**  Replacements */
 	get notesWithReplacements(): string {
 		return Nameable.apply(this.system.notes, this.nameableReplacements)
 	}

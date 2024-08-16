@@ -606,7 +606,7 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 			spell.unsatisfiedReason = ""
 			const tooltip = new TooltipGURPS()
 			let eqpPenalty = { value: false }
-			satisfied = spell.prereqs.satisfied(this, skill, tooltip, eqpPenalty)
+			satisfied = spell.prereqs.satisfied(this, spell, tooltip, eqpPenalty)
 
 			if (eqpPenalty) {
 				const penalty = new SpellBonus({ type: feature.Type.SpellBonus })
@@ -620,15 +620,33 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 				this.features.spellBonuses.push(penalty)
 			}
 
-			if (satisfied && itemIsOfType(skill, ItemType.RitualMagicSpell)) {
-				satisfied = skill.satisfied(tooltip)
+			if (satisfied && itemIsOfType(spell, ItemType.RitualMagicSpell)) {
+				satisfied = spell.satisfied(tooltip)
 			}
 			if (!satisfied) {
-				skill.unsatisfiedReason = tooltip.toString()
+				spell.unsatisfiedReason = tooltip.toString()
 			}
 		}
 
-		function equipmentSatisfied(eqp: ItemColl)
+		function equipmentSatisfied(
+			actor: ActorGURPS,
+			collection: Collection<EquipmentGURPS | EquipmentContainerGURPS>,
+		) {
+			for (const equipment of collection) {
+				let satisfied = true
+				if (equipment.prereqsEmpty) continue
+				equipment.unsatisfiedReason = ""
+				const tooltip = new TooltipGURPS()
+				let eqpPenalty = { value: false }
+				satisfied = equipment.prereqs.satisfied(actor, equipment, tooltip, eqpPenalty)
+				if (!satisfied) {
+					equipment.unsatisfiedReason = tooltip.toString()
+				}
+			}
+		}
+
+		equipmentSatisfied(this, this.itemCollections.carriedEquipment)
+		equipmentSatisfied(this, this.itemCollections.otherEquipment)
 	}
 
 	/** Prepare data among owned items as well as actor-data preparation performed by items */

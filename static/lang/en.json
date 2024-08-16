@@ -2106,6 +2106,11 @@
 			"list": {
 				"true": "Requires all of:",
 				"false": "Requires at least one of:"
+			},
+			"ritual_magic_spell": {
+				"college": "Must be assigned to a college",
+				"skill": "Requires a skill named {name}",
+				"or": " or {name}"
 			}
 		},
 		"common": {
