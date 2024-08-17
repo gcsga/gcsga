@@ -16,6 +16,7 @@ class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 		return {
 			...super.defineSchema(),
 			// ...WeaponLeveledAmount.defineSchema(),
+			type: new fields.StringField({ required: true, nullable: false, blank: false }),
 			percent: new fields.BooleanField({ nullable: true }),
 			switch_type: new fields.StringField({ choices: wswitch.Types, nullable: true, initial: null }),
 			switch_type_value: new fields.BooleanField({ nullable: true, initial: null }),
@@ -159,79 +160,5 @@ interface WeaponBonus
 	usage: StringCriteria
 	tags: StringCriteria
 }
-
-// class WeaponLeveledAmount {
-// 	declare level: number
-// 	declare dieCount: number
-// 	declare amount: number
-// 	declare leveled: boolean
-// 	declare per_die: boolean
-//
-// 	static defineSchema(): WeaponLeveledAmountSchema {
-// 		const fields = foundry.data.fields
-//
-// 		return {
-// 			amount: new fields.NumberField({ integer: true, initial: 1 }),
-// 			leveled: new fields.BooleanField({ initial: false }),
-// 			per_die: new fields.BooleanField({ initial: false }),
-// 			effective: new fields.BooleanField({ initial: false }),
-// 		}
-// 	}
-//
-// 	constructor(data: DeepPartial<SourceFromSchema<WeaponLeveledAmountSchema>>) {
-// 		this.level = 0
-// 		this.dieCount = 0
-// 		this.amount = data.amount ?? 0
-// 		this.leveled = data.leveled ?? false
-// 		this.per_die = data.per_die ?? false
-// 	}
-//
-// 	get adjustedAmount(): number {
-// 		let amt = this.amount
-// 		if (this.per_die) {
-// 			if (this.dieCount < 0) return 0
-// 			amt *= this.dieCount
-// 		}
-// 		if (this.leveled) {
-// 			if (this.level < 0) return 0
-// 			amt *= this.level
-// 		}
-// 		return amt
-// 	}
-//
-// 	get per_level(): boolean {
-// 		return this.per_die
-// 	}
-//
-// 	format(asPercentage: boolean): string {
-// 		let amt = this.amount.signedString()
-// 		let adjustedAmt = this.adjustedAmount.signedString()
-// 		if (asPercentage) {
-// 			amt += "%"
-// 			adjustedAmt += "%"
-// 		}
-// 		switch (true) {
-// 			case this.per_die && this.leveled:
-// 				return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.feature.weapon_bonus.per_die_per_level, {
-// 					total: adjustedAmt,
-// 					base: amt,
-// 				})
-// 			case this.per_die:
-// 				return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.feature.weapon_bonus.per_die, {
-// 					total: adjustedAmt,
-// 					base: amt,
-// 				})
-// 			case this.leveled:
-// 				return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.feature.weapon_bonus.per_level, {
-// 					total: adjustedAmt,
-// 					base: amt,
-// 				})
-// 			default:
-// 				return amt
-// 		}
-// 	}
-// }
-//
-// interface WeaponLeveledAmount extends ModelPropsFromSchema<WeaponLeveledAmountSchema> {}
 
 export { WeaponBonus }

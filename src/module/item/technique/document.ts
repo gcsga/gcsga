@@ -84,6 +84,19 @@ class TechniqueGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> exte
 		this.default = new SkillDefault(this.system.default)
 	}
 
+	override get effectiveLevel(): number {
+		return this.level.level
+		// const actor = this.dummyActor || this.actor
+		// if (!actor) return Number.MIN_SAFE_INTEGER
+		// if (actor instanceof ActorGURPS && actor.isOfType(ActorType.Character)) {
+		// 	const att = actor.resolveAttributeCurrent(this.attribute)
+		// 	console.log(this, this.name)
+		// 	const effectiveAtt = actor.resolveAttributeEffective(this.attribute)
+		// 	return this.level.level - att + effectiveAtt
+		// }
+		// return Number.MIN_SAFE_INTEGER
+	}
+
 	calculateLevel(): SkillLevel {
 		const actor = this.dummyActor || this.actor
 		const tooltip = new TooltipGURPS()

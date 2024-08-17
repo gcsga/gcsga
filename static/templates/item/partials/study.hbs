@@ -16,7 +16,7 @@
 		{{#each system.study}}
 		<li>
 			<a class="button gcs-trash" data-action="remove-study" data-index="{{@index}}"></a>
-			<select class="type" name="array.system.study.{{@index}}.type" data-index="{{@index}}">
+			<select class="type" name="system.study.{{@index}}.type" data-index="{{@index}}">
 				{{#select this.type}} {{#each @root.config.select.study as |v k| }}
 				<option value="{{ k }}">{{ localize v }}</option>
 				{{/each}} {{/select}}
@@ -24,14 +24,14 @@
 			<i class="gcs-info" tooltip-direction="DOWN" data-tooltip="{{{ studyInfo this.type }}}"></i>
 			<input
 				type="text"
-				name="array.system.study.{{@index}}.hours"
+				name="system.study.{{@index}}.hours"
 				value="{{ this.hours }}"
 				data-dtype="Number"
 			/>
 			<input type="text" value="{{ adjustedStudyHours this }}" readonly tabindex="-1" data-dtype="Number" />
 			<input
 				type="text"
-				name="array.system.study.{{@index}}.note"
+				name="system.study.{{@index}}.note"
 				value="{{ this.notes }}"
 				data-dtype="String"
 				placeholder="{{ localize 'gurps.item.note' }}"

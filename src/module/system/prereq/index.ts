@@ -23,7 +23,11 @@ export type Prereq =
 	| ContainedQuantityPrereq
 	| ContainedWeightPrereq
 	| EquippedEquipmentPrereq
-	| PrereqList
 	| SkillPrereq
 	| SpellPrereq
 	| TraitPrereq
+	| PrereqList
+// export type PrereqLevel1 = Prereq | PrereqListLevel2
+// export type PrereqLevel2 = Prereq | PrereqListLevel3
+// export type PrereqLevel3 = Prereq
+// export type PrereqLevel = PrereqLevel1 | PrereqLevel2 | PrereqLevel3

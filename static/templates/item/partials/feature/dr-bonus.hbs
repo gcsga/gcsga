@@ -1,7 +1,7 @@
 <li class="feature">
 	<div class="top">
 		<a class="button gcs-trash" data-action="remove-feature" data-index="{{@index}}"></a>
-		<select class="type" name="array.system.features.{{@index}}.type" data-index="{{@index}}">
+		<select class="type" name="system.features.{{@index}}.type" data-index="{{@index}}">
 			{{#select this.type}} {{#each @root.config.select.feature_strict as |v k| }}
 			<option value="{{ k }}">{{ localize v }}</option>
 			{{/each}} {{#if (eq @root.item.type "equipment_container") }} {{#each @rootconfig.select.feature as |v k| }}
@@ -11,7 +11,7 @@
 		<div class="field">
 			<input
 				type="text"
-				name="array.system.features.{{@index}}.amount"
+				name="system.features.{{@index}}.amount"
 				value="{{ signed this.amount false }}"
 				data-dtype="Number"
 			/>
@@ -20,7 +20,7 @@
 			<input
 				type="checkbox"
 				data-dtype="Boolean"
-				name="array.system.features.{{@index}}.per_level"
+				name="system.features.{{@index}}.per_level"
 				{{checked
 				this.per_level}}
 			/>
@@ -29,7 +29,7 @@
 	</div>
 	<div>
 		<div class="placeholder"></div>
-		<select name="array.system.features.{{@index}}.location">
+		<select name="system.features.{{@index}}.location">
 			{{#select this.location}} {{#unless (in @root.locations this.location)}}
 			<option value="{{ this.location }}">
 				{{ localize "gurps.field_prefix.dr_unknown" part=this.location type=@root.defaultBodyType }}
@@ -45,7 +45,7 @@
 		<div class="field">
 			<input
 				type="text"
-				name="array.system.features.{{@index}}.specialization"
+				name="system.features.{{@index}}.specialization"
 				value="{{ this.specialization }}"
 				data-dtype="String"
 			/>

@@ -3,12 +3,24 @@ import { spellcmp } from "@util/enum/spellcmp.ts"
 import fields = foundry.data.fields
 import { NumericCriteriaSchema, StringCriteriaSchema, WeightCriteriaSchema } from "@module/util/data.ts"
 import type { ItemGURPS } from "@item"
-import { Prereq } from "./index.ts"
+import { ItemType } from "@module/data/constants.ts"
+
+export const ValidPrereqParentTypes = Object.freeze([
+	ItemType.Trait,
+	ItemType.TraitContainer,
+	ItemType.Skill,
+	ItemType.Technique,
+	ItemType.Spell,
+	ItemType.RitualMagicSpell,
+	ItemType.Equipment,
+	ItemType.EquipmentContainer,
+])
 
 export interface PrereqConstructionOptions extends DocumentConstructionContext<ItemGURPS> {}
 
 export type BasePrereqSchema<TType extends prereq.Type> = {
-	type: fields.StringField<TType>
+	id: fields.StringField<string, string, true>
+	type: fields.StringField<TType, TType, true>
 }
 
 export type AttributePrereqSchema = BasePrereqSchema<prereq.Type.Attribute> & {
@@ -41,7 +53,7 @@ export type PrereqListSchema = BasePrereqSchema<prereq.Type.List> & {
 		ModelPropsFromSchema<NumericCriteriaSchema>,
 		false
 	>
-	prereqs: fields.ArrayField<fields.ObjectField<Prereq>>
+	prereqs: fields.ArrayField<fields.StringField<string, string, true, false, true>>
 }
 
 export type SkillPrereqSchema = BasePrereqSchema<prereq.Type.Skill> & {
@@ -75,62 +87,3 @@ export type PrereqSchema =
 	| EquippedEquipmentPrereqSchema
 	| SkillPrereqSchema
 	| SpellPrereqSchema
-
-// export interface BasePrereqObj<TType extends prereq.Type> {
-// 	type: TType
-// }
-//
-// export interface AttributePrereqObj extends BasePrereqObj<prereq.Type.Attribute> {
-// 	has: boolean
-// 	which: string
-// 	combined_with?: string
-// 	qualifier?: NumericCriteriaObj
-// }
-//
-// export interface ContainedQuantityPrereqObj extends BasePrereqObj<prereq.Type.ContainedQuantity> {
-// 	has: boolean
-// 	qualifier?: NumericCriteriaObj
-// }
-//
-// export interface ContainedWeightPrereqObj extends BasePrereqObj<prereq.Type.ContainedWeight> {
-// 	has: boolean
-// 	qualifier?: WeightCriteriaObj
-// }
-// export interface EquippedEquipmentPrereqObj extends BasePrereqObj<prereq.Type.EquippedEquipment> {
-// 	name?: StringCriteriaObj
-// }
-//
-// export interface PrereqListObj extends BasePrereqObj<prereq.Type.List> {
-// 	all: boolean
-// 	when_tl?: NumericCriteriaObj
-// 	prereqs?: PrereqObj[]
-// }
-// export interface SkillPrereqObj extends BasePrereqObj<prereq.Type.Skill> {
-// 	has: boolean
-// 	name?: StringCriteriaObj
-// 	level?: NumericCriteriaObj
-// 	specialization?: StringCriteriaObj
-// }
-// export interface SpellPrereqObj extends BasePrereqObj<prereq.Type.Spell> {
-// 	has: boolean
-// 	sub_type: spellcmp.Type
-// 	qualifier?: StringCriteriaObj
-// 	quantity?: NumericCriteriaObj
-// }
-// export interface TraitPrereqObj extends BasePrereqObj<prereq.Type.Trait> {
-// 	has: boolean
-// 	name?: StringCriteriaObj
-// 	level?: NumericCriteriaObj
-// 	notes?: StringCriteriaObj
-// }
-//
-
-// export type PrereqObj =
-// 	| PrereqListObj
-// 	| TraitPrereqObj
-// 	| AttributePrereqObj
-// 	| ContainedQuantityPrereqObj
-// 	| ContainedWeightPrereqObj
-// 	| EquippedEquipmentPrereqObj
-// 	| SkillPrereqObj
-// 	| SpellPrereqObj

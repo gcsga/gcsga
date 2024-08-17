@@ -1,24 +1,27 @@
 <li class="prereq">
+		<input style="display: none;" name="system.prereqs.{{ this.index }}.type" value="{{this.type}}" data-dtype="String">
+		<input style="display: none;" name="system.prereqs.{{ this.index }}.id" value="{{this.id}}" data-dtype="String">
+		<input style="display: none;" name="system.prereqs.{{ this.index }}.prereqs" value="{{this.prereqs}}" data-dtype="String">
     <div class="top">
-        {{#unless (eq path "array.system.prereqs")}} <a class="button gcs-trash"
+        {{#unless (eq this.id "root")}} <a class="button gcs-trash"
     data-action="remove-prereq"
-    data-path="{{ path }}"></a> {{/unless}}
+    data-id="{{ this.id }}"></a> {{/unless}}
         <a class="button gcs-circled-add"
            data-action="add-prereq"
-           data-path="{{ path }}"></a>
+           data-id="{{ this.id }}"></a>
         <a class="button gcs-circled-vertical-ellipsis"
            data-action="add-prereq-list"
-           data-path="{{ path }}"></a>
-        <select name="{{ path }}.when_tl.compare" data-dtype="String">
+           data-id="{{ this.id }}"></a>
+        <select name="system.prereqs.{{ this.index }}.when_tl.compare" data-dtype="String">
             {{#select prereq.when_tl.compare}}
             {{#each @root.config.select.numeric_criteria as |v k|}}
                 <option value="{{ k }}">{{ localize "gurps.field_prefix.tech_level" }} {{ localize v }}</option>
             {{/each}} {{/select}}
         </select>
         <div class="field">
-            <input type="text" name="{{ path }}.when_tl.qualifier" value="{{ this.when_tl.qualifier }}" data-dtype="String" {{ disabled (eq this.when_tl.compare "none") }} />
+            <input type="text" name="system.prereqs.{{ this.index }}.when_tl.qualifier" value="{{ this.when_tl.qualifier }}" data-dtype="String" {{ disabled (eq this.when_tl.compare "none") }} />
         </div>
-        <select name="{{ path }}.all" data-dtype="Boolean">
+        <select name="system.prereqs.{{ this.index }}.all" data-dtype="Boolean">
             {{#select this.all}}
             {{#each @root.config.select.all as |v k|}}
                 <option value="{{ k }}">{{ localize v }}</option>
@@ -26,46 +29,30 @@
         </select>
     </div>
     <ul>
-        {{#each this.prereqs}}
+        {{#each this.children}}
             {{#if (eq this.type "attribute_prereq")}}
-                {{>item/partials/prereq/attribute-prereq
-                path=(concat ../path ".prereqs." @index)
-                }}
+                {{>item/partials/prereq/attribute-prereq }}
             {{/if}}
             {{#if (eq this.type "contained_quantity_prereq")}}
-                {{>item/partials/prereq/contained-quantity-prereq
-                path=(concat ../path ".prereqs." @index)
-                }}
+                {{>item/partials/prereq/contained-quantity-prereq }}
             {{/if}}
             {{#if (eq this.type "contained_weight_prereq")}}
-                {{>item/partials/prereq/contained-weight-prereq
-                path=(concat ../path ".prereqs." @index)
-                }}
+                {{>item/partials/prereq/contained-weight-prereq }}
             {{/if}}
             {{#if (eq this.type "equipped_equipment_prereq")}}
-                {{>item/partials/prereq/equipped-equipment-prereq
-                path=(concat ../path ".prereqs." @index)
-                }}
+                {{>item/partials/prereq/equipped-equipment-prereq }}
             {{/if}}
             {{#if (eq this.type "prereq_list")}}
-                {{>item/partials/prereq/prereq-list
-                path=(concat ../path ".prereqs." @index)
-                }}
+                {{>item/partials/prereq/prereq-list }}
             {{/if}}
             {{#if (eq this.type "skill_prereq")}}
-                {{>item/partials/prereq/skill-prereq
-                path=(concat ../path ".prereqs." @index)
-                }}
+                {{>item/partials/prereq/skill-prereq }}
             {{/if}}
             {{#if (eq this.type "spell_prereq")}}
-                {{>item/partials/prereq/spell-prereq
-                path=(concat ../path ".prereqs." @index)
-                }}
+                {{>item/partials/prereq/spell-prereq }}
             {{/if}}
             {{#if (eq this.type "trait_prereq")}}
-                {{>item/partials/prereq/trait-prereq
-                path=(concat ../path ".prereqs." @index)
-                }}
+                {{>item/partials/prereq/trait-prereq }}
             {{/if}}
         {{/each}}
     </ul>

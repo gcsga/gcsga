@@ -14,7 +14,7 @@ class RangedWeaponSheetGURPS extends ItemSheetGURPS<RangedWeaponGURPS> {
 
 		return {
 			...sheetData,
-			sysPrefix: "array.system.",
+			sysPrefix: "system.",
 		}
 	}
 

@@ -1,9 +1,9 @@
 import { AbstractContainerSource } from "@item/abstract-container/data.ts"
 import { AbstractSkillSystemData, AbstractSkillSystemSchema } from "@item/abstract-skill/data.ts"
-import { ItemType, gid } from "@module/data/constants.ts"
+import { ItemType, NumericCompareType, gid } from "@module/data/constants.ts"
 import { SkillDifficulty } from "@module/data/types.ts"
-import { FeatureSchema, PrereqList, PrereqListSchema, SkillDefault, SkillDefaultSchema } from "@system"
-import { TooltipGURPS, difficulty } from "@util"
+import { BasePrereq, Feature, Prereq, SkillDefault, SkillDefaultSchema } from "@system"
+import { TooltipGURPS, difficulty, feature, prereq } from "@util"
 import { SkillGURPS } from "./document.ts"
 import fields = foundry.data.fields
 import { BaseFeature } from "@system/feature/base.ts"
@@ -27,9 +27,22 @@ class SkillSystemData extends AbstractSkillSystemData<SkillGURPS, SkillSystemSch
 			encumbrance_penalty_multiplier: new fields.NumberField({ integer: true, min: 0, max: 9, initial: 0 }),
 			defaulted_from: new fields.SchemaField(SkillDefault.defineSchema()),
 			defaults: new fields.ArrayField(new fields.SchemaField(SkillDefault.defineSchema())),
-			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
-			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
-			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField({required: true, nullable: false})),
+			prereqs: new fields.ArrayField(new fields.TypedSchemaField(BasePrereq.TYPES), {
+				initial: [
+					{
+						type: prereq.Type.List,
+						id: "root",
+						all: true,
+						when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 },
+						prereqs: [],
+					},
+				],
+			}),
+			features: new fields.ArrayField(new fields.TypedSchemaField(BaseFeature.TYPES)),
+			replacements: new RecordField(
+				new fields.StringField({ required: true, nullable: false }),
+				new fields.StringField({ required: true, nullable: false }),
+			),
 		}
 	}
 }
@@ -52,9 +65,12 @@ type SkillSystemSchema = AbstractSkillSystemSchema & {
 		true
 	>
 	defaults: fields.ArrayField<fields.SchemaField<SkillDefaultSchema>>
-	prereqs: fields.SchemaField<PrereqListSchema>
-	features: fields.ArrayField<fields.SchemaField<FeatureSchema>>
-	replacements: RecordField<fields.StringField<string, string, true, false, false>,  fields.StringField<string,string,true,false,false>>
+	prereqs: fields.ArrayField<fields.TypedSchemaField<Record<prereq.Type, ConstructorOf<Prereq>>>>
+	features: fields.ArrayField<fields.TypedSchemaField<Record<feature.Type, ConstructorOf<Feature>>>>
+	replacements: RecordField<
+		fields.StringField<string, string, true, false, false>,
+		fields.StringField<string, string, true, false, false>
+	>
 }
 
 type SkillSystemSource = SourceFromSchema<SkillSystemSchema>

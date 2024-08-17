@@ -1,7 +1,7 @@
 import { prereq } from "@util/enum/prereq.ts"
 import { BasePrereq } from "./base.ts"
 import { spellcmp } from "@util/enum/spellcmp.ts"
-import { SpellPrereqSchema } from "./data.ts"
+import { PrereqConstructionOptions, SpellPrereqSchema } from "./data.ts"
 import { ItemGURPS } from "@item"
 import { ActorType, ItemType, NumericCompareType, StringCompareType } from "@data"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
@@ -10,8 +10,8 @@ import { NumericCriteria, StringCriteria } from "@module/util/index.ts"
 import { Nameable } from "@module/util/nameable.ts"
 
 class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
-	constructor(data: DeepPartial<SourceFromSchema<SpellPrereqSchema>>) {
-		super(data)
+	constructor(data: DeepPartial<SourceFromSchema<SpellPrereqSchema>>, options?: PrereqConstructionOptions) {
+		super(data, options)
 		this.qualifier = new StringCriteria(data.qualifier ?? undefined)
 		this.quantity = new NumericCriteria(data.quantity ?? undefined)
 	}
@@ -20,7 +20,8 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 		const fields = foundry.data.fields
 
 		return {
-			type: new fields.StringField({ initial: prereq.Type.Spell }),
+			...super.defineSchema(),
+			type: new fields.StringField({ required: true, nullable: false, blank: false, initial: prereq.Type.Spell }),
 			has: new fields.BooleanField({ initial: true }),
 			sub_type: new fields.StringField({ choices: spellcmp.Types, initial: spellcmp.Type.Name }),
 			qualifier: new fields.SchemaField(StringCriteria.defineSchema(), {

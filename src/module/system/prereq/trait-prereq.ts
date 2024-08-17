@@ -19,7 +19,8 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 		const fields = foundry.data.fields
 
 		return {
-			type: new fields.StringField({ initial: prereq.Type.Trait }),
+			...super.defineSchema(),
+			type: new fields.StringField({ required: true, nullable: false, blank: false, initial: prereq.Type.Trait }),
 			has: new fields.BooleanField({ initial: true }),
 			name: new fields.SchemaField(StringCriteria.defineSchema(), {
 				initial: {

@@ -2,7 +2,6 @@ import { SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
 import { PartialSettingsData, SettingsMenuGURPS } from "./menu.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { htmlQueryAll } from "@util/dom.ts"
-import { prepareFormData } from "@util/misc.ts"
 import { defaultSettings } from "./defaults.ts"
 import { DnD } from "@util"
 import { DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
@@ -165,11 +164,11 @@ export class AttributeSettings extends SettingsMenuGURPS {
 		}
 	}
 
-	protected override async _updateObject(_event: Event, data: Record<string, unknown>): Promise<void> {
-		const attributes = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
-		const effects = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`)
-		data = prepareFormData(data, { system: { settings: { attributes } }, effects })
-		game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`, attributes)
-		game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`, effects)
-	}
+	// protected override async _updateObject(_event: Event, data: Record<string, unknown>): Promise<void> {
+	// 	const attributes = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`)
+	// 	const effects = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`)
+	// 	// data = prepareFormData(data, { system: { settings: { attributes } }, effects })
+	// 	game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.attributes`, attributes)
+	// 	game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_ATTRIBUTES}.effects`, effects)
+	// }
 }

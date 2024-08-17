@@ -3,9 +3,9 @@ import {
 	AbstractContainerSystemData,
 	AbstractContainerSystemSchema,
 } from "@item/abstract-container/data.ts"
-import { ItemType, StringCompareType } from "@module/data/constants.ts"
-import { Feature, PrereqList, PrereqListSchema, SkillBonus, Study } from "@system"
-import { feature, selfctrl, skillsel, study } from "@util"
+import { ItemType, NumericCompareType, StringCompareType } from "@module/data/constants.ts"
+import { BasePrereq, Feature, Prereq, SkillBonus, Study } from "@system"
+import { feature, prereq, selfctrl, skillsel, study } from "@util"
 import { TraitGURPS } from "./document.ts"
 import fields = foundry.data.fields
 import { RecordField } from "@system/schema-data-fields.ts"
@@ -30,6 +30,15 @@ function getCRFeatures(): Map<string, SkillBonus[]> {
 }
 
 class TraitSystemData extends AbstractContainerSystemData<TraitGURPS, TraitSystemSchema> {
+	// constructor(
+	// 	data: DeepPartial<SourceFromSchema<TraitSystemSchema>>,
+	// 	options: DataModelConstructionOptions<TraitGURPS>,
+	// ) {
+	// 	super(data, options)
+	//
+	// 	if (data.prereqs) this.prereqs = new PrereqList(data.prereqs, { parent: this.parent })
+	// }
+
 	static override defineSchema(): TraitSystemSchema {
 		const fields = foundry.data.fields
 
@@ -48,7 +57,17 @@ class TraitSystemData extends AbstractContainerSystemData<TraitGURPS, TraitSyste
 			base_points: new fields.NumberField({ integer: true, initial: 0 }),
 			levels: new fields.NumberField({ min: 0, nullable: true }),
 			points_per_level: new fields.NumberField({ integer: true, nullable: true }),
-			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
+			prereqs: new fields.ArrayField(new fields.TypedSchemaField(BasePrereq.TYPES), {
+				initial: [
+					{
+						type: prereq.Type.List,
+						id: "root",
+						all: true,
+						when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 },
+						prereqs: [],
+					},
+				],
+			}),
 			features: new fields.ArrayField(new fields.TypedSchemaField(BaseFeature.TYPES)),
 			study: new fields.ArrayField(new fields.ObjectField<Study>()),
 			cr: new fields.NumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>({
@@ -79,6 +98,12 @@ interface TraitSystemData
 	extends AbstractContainerSystemData<TraitGURPS, TraitSystemSchema>,
 		ModelPropsFromSchema<TraitSystemSchema> {}
 
+// interface TraitSystemData
+// 	extends AbstractContainerSystemData<TraitGURPS, TraitSystemSchema>,
+// 		Omit<ModelPropsFromSchema<TraitSystemSchema>, "prereqs"> {
+// 	prereqs: PrereqList
+// }
+
 type TraitSystemSchema = AbstractContainerSystemSchema & {
 	type: fields.StringField<ItemType.Trait, ItemType.Trait, true, false, true>
 	name: fields.StringField<string, string, true, false, true>
@@ -91,7 +116,7 @@ type TraitSystemSchema = AbstractContainerSystemSchema & {
 	base_points: fields.NumberField<number, number, true, false, true>
 	levels: fields.NumberField
 	points_per_level: fields.NumberField
-	prereqs: fields.SchemaField<PrereqListSchema>
+	prereqs: fields.ArrayField<fields.TypedSchemaField<Record<prereq.Type, ConstructorOf<Prereq>>>>
 	features: fields.ArrayField<fields.TypedSchemaField<Record<feature.Type, ConstructorOf<Feature>>>>
 	study: fields.ArrayField<fields.ObjectField<Study>>
 	cr: fields.NumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>

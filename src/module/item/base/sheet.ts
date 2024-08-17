@@ -1,18 +1,17 @@
-import { LocalizeGURPS, feature, htmlQuery, htmlQueryAll, prepareFormData, prereq, study } from "@util"
+import { ErrorGURPS, LocalizeGURPS, feature, generateId, htmlQuery, htmlQueryAll, prereq, study } from "@util"
 import { ItemGURPS } from "./document.ts"
 import {
 	AttributeBonus,
 	AttributeDefSchema,
 	AttributeGURPS,
 	Feature,
-	Prereq,
-	PrereqList,
 	SkillDefault,
 	TraitPrereq,
 	WeaponBonus,
 } from "@system"
 import { ActorType, ItemType, SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
 import { ItemSubstitutionSheet } from "../../util/nameable.ts"
+import { PrereqList } from "@system/prereq/prereq-list.ts"
 
 class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheetOptions> {
 	static override get defaultOptions(): ItemSheetOptions {
@@ -32,13 +31,21 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 			button.addEventListener("click", async event => {
 				await this._onSubmit(event) // Submit any unsaved changes
 
-				const path = button.dataset.path?.replace(/^array\./, "")
-				if (!path) return console.error("No data-path value provided for:", button)
+				if (!this.item.canContainPrereqs()) return
 
-				const prereqs = (fu.getProperty(this.item, `${path}.prereqs`) as Prereq[]) ?? []
-				prereqs.push(new TraitPrereq({}, { parent: this.item }))
+				const parentId = button.dataset.id
+				if (!parentId) return console.error("No id provided for:", button)
 
-				return this._updateObject(event, { [`array.${path}.prereqs`]: prereqs })
+				const prereqs = this.item.system.prereqs
+				const newId = generateId()
+				const parentPrereq = prereqs.find(e => e.id === parentId)
+				if (parentPrereq) {
+					if (parentPrereq.type === prereq.Type.List) {
+						parentPrereq.updateSource({ prereqs: [newId, ...parentPrereq.prereqs] })
+					}
+					prereqs.push(new TraitPrereq({ id: newId }, { parent: this.item }))
+				}
+				return this._updateObject(event, { "system.prereqs": prereqs.map(e => e.toObject()) })
 			})
 		}
 
@@ -46,13 +53,21 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 			button.addEventListener("click", async event => {
 				await this._onSubmit(event) // Submit any unsaved changes
 
-				const path = button.dataset.path?.replace(/^array\./, "")
-				if (!path) return console.error("No data-path value provided for:", button)
+				if (!this.item.canContainPrereqs()) return
 
-				const prereqs = (fu.getProperty(this.item, `${path}.prereqs`) as Prereq[]) ?? []
-				prereqs.push(new PrereqList({}, { parent: this.item }))
+				const parentId = button.dataset.id
+				if (!parentId) return console.error("No id provided for:", button)
 
-				return this._updateObject(event, { [`array.${path}.prereqs`]: prereqs })
+				const prereqs = this.item.system.prereqs
+				const newId = generateId()
+				const parentPrereq = prereqs.find(e => e.id === parentId)
+				if (parentPrereq) {
+					if (parentPrereq.type === prereq.Type.List) {
+						parentPrereq.updateSource({ prereqs: [newId, ...parentPrereq.prereqs] })
+					}
+					prereqs.push(new PrereqList({ id: newId }, { parent: this.item }))
+				}
+				return this._updateObject(event, { "system.prereqs": prereqs.map(e => e.toObject()) })
 			})
 		}
 
@@ -60,63 +75,29 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 			button.addEventListener("click", async event => {
 				await this._onSubmit(event) // Submit any unsaved changes
 
-				let path = button.dataset.path?.replace(/^array\./, "")
-				if (!path) return console.error("No data-path value provided for:", button)
+				if (!this.item.canContainPrereqs()) return
 
-				const items = path.split(".")
-				const index = parseInt(items.pop() ?? "")
-				if (isNaN(index)) return console.error("No valid index provided for:", button)
-				path = items.join(".")
+				const deleteId = button.dataset.id
+				if (!deleteId) return console.error("No id provided for:", button)
+				const ids = [deleteId]
 
-				const prereqs = (fu.getProperty(this.item, path) as Prereq[]) ?? []
-				prereqs.splice(index, 1)
-
-				return this._updateObject(event, { [`array.${path}`]: prereqs })
-			})
-		}
-
-		for (const field of htmlQueryAll(html, 'select.type[data-path^="array.system.prereqs"]')) {
-			if (!(field instanceof HTMLSelectElement)) return
-			field.addEventListener("change", async event => {
-				event.preventDefault()
-				// await this._onSubmit(event) // Submit any unsaved changes
-
-				let path = field.dataset.path?.replace(/^array\./, "")
-				if (!path) return console.error("No data-path value provided for:", field)
-
-				const items = path.split(".")
-				const index = parseInt(items.pop() ?? "")
-				if (isNaN(index)) return console.error("No valid index provided for:", field)
-				path = items.join(".")
-
-				const prereqs = (fu.getProperty(this.item, path) as Prereq[]) ?? []
-				const value = field.value as prereq.Type
-
-				if (!prereqs[index]) return
-				const PrereqClass = CONFIG.GURPS.Prereq.classes[value]
-				prereqs[index] = new PrereqClass({}, { parent: this.item })
-
-				return this._updateObject(event, { [`array.${path}`]: prereqs })
+				let prereqs = this.item.system.prereqs
+				const prereqToDelete = prereqs.find(e => e.id === deleteId)
+				if (!prereqToDelete) throw ErrorGURPS(`Unable to find prereq with ID "${deleteId}"`)
+				if (prereqToDelete.type === prereq.Type.List) ids.push(...prereqToDelete.deepPrereqs)
+				prereqs = prereqs.filter(e => !ids.includes(e.id))
+				for (const prereqList of prereqs) {
+					if (prereqList.type !== prereq.Type.List) continue
+					prereqList.updateSource({ prereqs: prereqList.prereqs.filter(e => !ids.includes(e)) })
+				}
+				return this._updateObject(event, { "system.prereqs": prereqs.map(e => e.toObject()) })
 			})
 		}
 
 		htmlQuery(html, "a[data-action=add-feature]")?.addEventListener("click", async event => {
 			await this._onSubmit(event) // Submit any unsaved changes
 
-			if (
-				!this.item.isOfType(
-					ItemType.Trait,
-					ItemType.TraitModifier,
-					ItemType.Skill,
-					ItemType.Technique,
-					ItemType.Equipment,
-					ItemType.EquipmentContainer,
-					ItemType.EquipmentModifier,
-					ItemType.Effect,
-					ItemType.Condition,
-				)
-			)
-				return
+			if (!this.item.canContainFeatures()) return
 
 			const features = (this.item.system.features ?? []) as Feature[]
 			const att = new AttributeBonus({ type: feature.Type.AttributeBonus }, { parent: this.item })
@@ -152,7 +133,7 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 			})
 		}
 
-		for (const field of htmlQueryAll(html, 'select.type[name^="array.system.features"]')) {
+		for (const field of htmlQueryAll(html, 'select.type[name^="system.features"]')) {
 			if (!(field instanceof HTMLSelectElement)) return
 			field.addEventListener("change", async event => {
 				event.preventDefault()
@@ -166,14 +147,13 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 
 				if (!features[index]) return
 				const FeatureClass = CONFIG.GURPS.Feature.classes[value]
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				if (feature.WeaponBonusTypes.includes(value as any)) {
+				if (feature.Type.isWeaponType(value)) {
 					features[index] = new WeaponBonus({ type: value }, { parent: this.item })
 				} else {
 					features[index] = new FeatureClass({}, { parent: this.item })
 				}
 
-				return this._updateObject(event, { "system.features": features })
+				return this._updateObject(event, { "system.features": features.map(e => e.toObject()) })
 			})
 		}
 
@@ -305,10 +285,14 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 			return a
 		}
 
-		formData = prepareFormData(formData, this.object)
 		if (typeof formData["system.tags"] === "string") formData["system.tags"] = splitArray(formData["system.tags"])
 		if (typeof formData["system.college"] === "string")
 			formData["system.college"] = splitArray(formData["system.college"])
+		for (const [key, value] of Object.entries(formData)) {
+			if (key.match(/^system\.prereqs.*\.prereqs$/) && typeof value === "string") {
+				formData[key] = splitArray(value)
+			}
+		}
 		return super._updateObject(event, formData)
 	}
 

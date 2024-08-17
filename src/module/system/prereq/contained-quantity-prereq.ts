@@ -21,7 +21,13 @@ class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> 
 		const fields = foundry.data.fields
 
 		return {
-			type: new fields.StringField({ initial: prereq.Type.ContainedQuantity }),
+			...super.defineSchema(),
+			type: new fields.StringField({
+				required: true,
+				nullable: false,
+				blank: false,
+				initial: prereq.Type.ContainedQuantity,
+			}),
 			has: new fields.BooleanField({ initial: true }),
 			qualifier: new fields.SchemaField(NumericCriteria.defineSchema(), {
 				initial: {

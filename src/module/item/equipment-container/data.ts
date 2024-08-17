@@ -4,10 +4,10 @@ import {
 	AbstractContainerSystemData,
 	AbstractContainerSystemSchema,
 } from "@item/abstract-container/data.ts"
-import { ItemType } from "@module/data/constants.ts"
-import { WeightString } from "@util"
+import { ItemType, NumericCompareType } from "@module/data/constants.ts"
+import { WeightString, feature, prereq } from "@util"
 import { EquipmentContainerGURPS } from "./document.ts"
-import { FeatureSchema, PrereqList, PrereqListSchema } from "@system"
+import { BasePrereq, Feature, Prereq } from "@system"
 import { BaseFeature } from "@system/feature/base.ts"
 import { RecordField } from "@system/schema-data-fields.ts"
 
@@ -37,12 +37,25 @@ class EquipmentContainerSystemData extends AbstractContainerSystemData<
 			weight: new fields.StringField<WeightString>(),
 			max_uses: new fields.NumberField({ integer: true, min: 0 }),
 			uses: new fields.NumberField({ integer: true, min: 0 }),
-			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
-			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
+			prereqs: new fields.ArrayField(new fields.TypedSchemaField(BasePrereq.TYPES), {
+				initial: [
+					{
+						type: prereq.Type.List,
+						id: "root",
+						all: true,
+						when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 },
+						prereqs: [],
+					},
+				],
+			}),
+			features: new fields.ArrayField(new fields.TypedSchemaField(BaseFeature.TYPES)),
 			equipped: new fields.BooleanField({ initial: true }),
 			ignore_weight_for_skills: new fields.BooleanField({ initial: false }),
 			open: new fields.BooleanField({ initial: true }),
-			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField({required: true, nullable: false})),
+			replacements: new RecordField(
+				new fields.StringField({ required: true, nullable: false }),
+				new fields.StringField({ required: true, nullable: false }),
+			),
 		}
 	}
 }
@@ -67,12 +80,15 @@ type EquipmentContainerSystemSchema = AbstractContainerSystemSchema & {
 	weight: fields.StringField<WeightString>
 	max_uses: fields.NumberField
 	uses: fields.NumberField
-	prereqs: fields.SchemaField<PrereqListSchema>
-	features: fields.ArrayField<fields.SchemaField<FeatureSchema>>
+	prereqs: fields.ArrayField<fields.TypedSchemaField<Record<prereq.Type, ConstructorOf<Prereq>>>>
+	features: fields.ArrayField<fields.TypedSchemaField<Record<feature.Type, ConstructorOf<Feature>>>>
 	equipped: fields.BooleanField
 	ignore_weight_for_skills: fields.BooleanField
 	open: fields.BooleanField
-	replacements: RecordField<fields.StringField<string, string, true, false, false>,  fields.StringField<string,string,true,false,false>>
+	replacements: RecordField<
+		fields.StringField<string, string, true, false, false>,
+		fields.StringField<string, string, true, false, false>
+	>
 }
 
 type EquipmentContainerSystemSource = SourceFromSchema<EquipmentContainerSystemSchema>

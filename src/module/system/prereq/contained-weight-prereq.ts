@@ -1,14 +1,14 @@
 import { ItemGURPS } from "@item"
 import { BasePrereq } from "./base.ts"
 import { LocalizeGURPS, TooltipGURPS, Weight, WeightUnits, prereq } from "@util"
-import { ContainedWeightPrereqSchema } from "./data.ts"
+import { ContainedWeightPrereqSchema, PrereqConstructionOptions } from "./data.ts"
 import { ItemType, NumericCompareType } from "@module/data/constants.ts"
 import { ActorGURPS } from "@actor"
 import { WeightCriteria } from "@module/util/weight-criteria.ts"
 
 class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
-	constructor(data: DeepPartial<SourceFromSchema<ContainedWeightPrereqSchema>>) {
-		super(data)
+	constructor(data: DeepPartial<SourceFromSchema<ContainedWeightPrereqSchema>>, options?: PrereqConstructionOptions) {
+		super(data, options)
 		this.qualifier = new WeightCriteria(data.qualifier)
 	}
 
@@ -16,7 +16,13 @@ class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
 		const fields = foundry.data.fields
 
 		return {
-			type: new fields.StringField({ initial: prereq.Type.ContainedWeight }),
+			...super.defineSchema(),
+			type: new fields.StringField({
+				required: true,
+				nullable: false,
+				blank: false,
+				initial: prereq.Type.ContainedWeight,
+			}),
 			has: new fields.BooleanField({ initial: true }),
 			qualifier: new fields.SchemaField(WeightCriteria.defineSchema(), {
 				initial: {

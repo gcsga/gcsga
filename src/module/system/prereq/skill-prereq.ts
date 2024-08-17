@@ -5,13 +5,13 @@ import { ActorType, ItemType, NumericCompareType, StringCompareType } from "@mod
 import { ActorGURPS } from "@actor"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
 import { ItemGURPS } from "@item"
-import { SkillPrereqSchema } from "./data.ts"
+import { PrereqConstructionOptions, SkillPrereqSchema } from "./data.ts"
 import { NumericCriteria } from "@module/util/numeric-criteria.ts"
 import { Nameable } from "@module/util/nameable.ts"
 
 class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
-	constructor(data: DeepPartial<SourceFromSchema<SkillPrereqSchema>>) {
-		super(data)
+	constructor(data: DeepPartial<SourceFromSchema<SkillPrereqSchema>>, options?: PrereqConstructionOptions) {
+		super(data, options)
 		this.name = new StringCriteria(data.name ?? undefined)
 		this.level = new NumericCriteria(data.level ?? undefined)
 		this.specialization = new StringCriteria(data.specialization ?? undefined)
@@ -21,7 +21,8 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 		const fields = foundry.data.fields
 
 		return {
-			type: new fields.StringField({ initial: prereq.Type.Skill }),
+			...super.defineSchema(),
+			type: new fields.StringField({ required: true, nullable: false, blank: false, initial: prereq.Type.Skill }),
 			has: new fields.BooleanField({ initial: true }),
 			name: new fields.SchemaField(StringCriteria.defineSchema(), {
 				initial: {

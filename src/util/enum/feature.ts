@@ -47,6 +47,11 @@ export namespace feature {
 		export function toString(T: Type): string {
 			return LocalizeGURPS.translations.gurps.enum.feature[T]
 		}
+
+		export function isWeaponType(T: Type): T is feature.WeaponBonusType {
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			return WeaponBonusTypes.includes(T as any)
+		}
 	}
 
 	export const Types: Type[] = [

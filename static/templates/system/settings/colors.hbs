@@ -12,8 +12,8 @@
 	<div class="fieldblock">
 		{{#each settings.colors.value as |setting key|}}
 		<label>{{localize (concat "gurps.settings.colors." key)}}</label>
-		<input type="color" name="{{key}}.light" value="{{rgbToHex setting.light}}" />
-		<input type="color" name="{{key}}.dark" value="{{rgbToHex setting.dark}}" />
+		<input type="color" name="{{key}}.light" value="{{setting.light}}" />
+		<input type="color" name="{{key}}.dark" value="{{setting.dark}}" />
 		<a class="gcs-reset reset" data-id="{{setting.key}}"></a>
 		{{/each}}
 	</div>

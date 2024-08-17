@@ -1,6 +1,6 @@
 import { PartialSettingsData, SettingsMenuGURPS } from "./menu.ts"
 import { htmlQuery, htmlQueryAll } from "@util/dom.ts"
-import { DnD, getNewAttributeId, prepareFormData } from "@util"
+import { DnD, getNewAttributeId } from "@util"
 import { defaultSettings } from "./defaults.ts"
 import { SETTINGS, SYSTEM_NAME } from "@data"
 import { DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
@@ -182,11 +182,12 @@ export class MoveSettings extends SettingsMenuGURPS {
 		}
 	}
 
-	protected override async _updateObject(_event: Event, formData: Record<string, unknown>): Promise<void> {
-		const move_types = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
-		formData = prepareFormData(formData, { system: { settings: { move_types } } })
-		game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`, move_types)
-	}
+	// protected override async _updateObject(_event: Event, formData: Record<string, unknown>): Promise<void> {
+	// 	// const move_types = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
+	// 	// formData = prepareFormData(formData, { system: { settings: { move_types } } })
+	// 	// game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`, move_types)
+	// 	game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`, formData)
+	// }
 	// async _onAddItem(event: JQuery.ClickEvent) {
 	// 	event.preventDefault()
 	// 	event.stopPropagation()

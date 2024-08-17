@@ -1,18 +1,14 @@
 # BIG OL' TODO Document
 
-- "nameables" implementation
-  - add replacement fields to items which should have them
-  - add getters for nameable fields
-  - make substitution popup work
-
 ## Immediate TODO
 
 1. BUGS
 
-    - fix weapon damage bonus not working when not against "this weapon"
-    - fix weapon by skill showing specialization instead of usage
-    - fix features not applying per level
-    - check github issues and check against them
+- fix settings forms
+- fix weapon damage bonus not working when not against "this weapon"
+- fix weapon by skill showing specialization instead of usage
+- fix features not applying per level
+- check github issues and check against them
 
 2. Character Sheet
 

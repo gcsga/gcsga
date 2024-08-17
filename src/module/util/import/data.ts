@@ -288,6 +288,7 @@ interface ImportedTraitContainerSystemSource
 	tags?: string[]
 	modifiers?: (ImportedTraitModifierSystemSource | ImportedTraitModifierContainerSystemSource)[]
 	template_picker?: ImportedTemplatePicker
+	prereqs?: ImportedPrereqList
 	cr?: selfctrl.Roll
 	cr_adj?: selfctrl.Adjustment
 	container_type?: container.Type
@@ -870,6 +871,7 @@ export type {
 	ImportedNoteSystemSource,
 	ImportedPageSettings,
 	ImportedPointsRecord,
+	ImportedPrereq,
 	ImportedPrereqList,
 	ImportedRangedWeaponSystemSource,
 	ImportedResourceTracker,

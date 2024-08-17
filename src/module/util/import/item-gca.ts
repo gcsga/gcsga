@@ -150,12 +150,15 @@ class GCAItemImporter {
 			base_points: base_points,
 			levels: levelDifference.length > 1 ? (data.level ?? 0) : 0,
 			points_per_level: level_points,
-			prereqs: {
-				type: prereq.Type.List,
-				all: true,
-				when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 },
-				prereqs: [],
-			},
+			prereqs: [
+				{
+					id: "root",
+					type: prereq.Type.List,
+					all: true,
+					when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 },
+					prereqs: [],
+				},
+			],
 			features: [],
 			study: [],
 			cr,
@@ -212,12 +215,15 @@ class GCAItemImporter {
 			encumbrance_penalty_multiplier: 0,
 			defaulted_from: null,
 			defaults: [],
-			prereqs: {
-				type: prereq.Type.List,
-				all: true,
-				when_tl: { compare: NumericCompareType.AnyNumber, qualifier: null },
-				prereqs: [],
-			},
+			prereqs: [
+				{
+					id: "root",
+					type: prereq.Type.List,
+					all: true,
+					when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 },
+					prereqs: [],
+				},
+			],
 			// weapons handled separately
 			features: [],
 			study: [],
@@ -277,12 +283,15 @@ class GCAItemImporter {
 			defaults: [],
 			limited: !!data.calcs.upto && data.calcs.upto !== "",
 			limit: parseInt(data.calcs.upto?.replace("prereq", "") || "0"),
-			prereqs: {
-				type: prereq.Type.List,
-				all: true,
-				when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 },
-				prereqs: [],
-			},
+			prereqs: [
+				{
+					id: "root",
+					type: prereq.Type.List,
+					all: true,
+					when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 },
+					prereqs: [],
+				},
+			],
 			// weapons handled separately
 			features: [],
 			study: [],
@@ -337,12 +346,15 @@ class GCAItemImporter {
 			casting_time: data.ref?.time ?? "",
 			duration: data.ref?.duration ?? "",
 			points: data.points ?? 0,
-			prereqs: {
-				type: prereq.Type.List,
-				all: true,
-				when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 },
-				prereqs: [],
-			},
+			prereqs: [
+				{
+					id: "root",
+					type: prereq.Type.List,
+					all: true,
+					when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 },
+					prereqs: [],
+				},
+			],
 			// weapons handled separately
 			study: [],
 			study_hours_needed: study.Level.Standard,
@@ -391,12 +403,15 @@ class GCAItemImporter {
 			weight: `${data.weight ?? 0} lb`,
 			max_uses: 0,
 			uses: 0,
-			prereqs: {
-				type: prereq.Type.List,
-				all: true,
-				when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 },
-				prereqs: [],
-			},
+			prereqs: [
+				{
+					id: "root",
+					type: prereq.Type.List,
+					all: true,
+					when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 },
+					prereqs: [],
+				},
+			],
 			rated_strength: null,
 			// weapons handled separately
 			features: [],
@@ -447,12 +462,15 @@ class GCAItemImporter {
 			weight: `${data.weight ?? 0} lb`,
 			max_uses: 0,
 			uses: 0,
-			prereqs: {
-				type: prereq.Type.List,
-				all: true,
-				when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 },
-				prereqs: [],
-			},
+			prereqs: [
+				{
+					id: "root",
+					type: prereq.Type.List,
+					all: true,
+					when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 },
+					prereqs: [],
+				},
+			],
 			rated_strength: null,
 			// weapons handled separately
 			features: [],
@@ -521,6 +539,15 @@ class GCAItemImporter {
 				type: picker.Type.NotApplicable,
 				qualifier: { compare: NumericCompareType.AnyNumber, qualifier: null },
 			},
+			prereqs: [
+				{
+					id: "root",
+					type: prereq.Type.List,
+					all: true,
+					when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 },
+					prereqs: [],
+				},
+			],
 			open: true,
 			container_type,
 			replacements: {},

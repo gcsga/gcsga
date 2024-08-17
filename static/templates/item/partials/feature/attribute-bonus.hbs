@@ -4,7 +4,7 @@
            data-action="remove-feature"
            data-index="{{@index}}"></a>
         <select class="type"
-                name="array.system.features.{{@index}}.type"
+                name="system.features.{{@index}}.type"
                 data-index="{{@index}}">
             {{#select this.type}}
             {{#each @root.config.select.feature_strict as |v k| }}
@@ -18,18 +18,18 @@
         </select>
         <div class="field">
             <input type="text"
-                   name="array.system.features.{{@index}}.amount"
+                   name="system.features.{{@index}}.amount"
                    value="{{ signed this.amount false }}"
                    data-dtype="Number" />
         </div>
         <label class="check">
-            <input type="checkbox" data-dtype="Boolean" name="array.system.features.{{@index}}.per_level" {{ checked this.per_level }} />
+            <input type="checkbox" data-dtype="Boolean" name="system.features.{{@index}}.per_level" {{ checked this.per_level }} />
             {{ localize "gurps.feature.per_level" }}
         </label>
     </div>
     <div class="attribute-bonus">
         <div class="placeholder"></div>
-        <select name="array.system.features.{{@index}}.attribute">
+        <select name="system.features.{{@index}}.attribute">
             {{#select this.attribute}}
             {{#unless (in @root.attributes this.attribute)}}
             <option value="{{ this.attribute }}">
@@ -48,7 +48,7 @@
         <option value="block">{{ localize "gurps.field_prefix.attribute" att=(localize "gurps.attribute.block") }}</option>
     {{/select}}
 </select>
-<select name="array.system.features.{{@index}}.limitation" {{ disabled (ne this.attribute "st") }}>
+<select name="system.features.{{@index}}.limitation" {{ disabled (ne this.attribute "st") }}>
     {{#select this.limitation}}
     {{#each @root.config.select.stlimit as |v k|}}
         <option value="{{ k }}">{{ localize v }}</option>

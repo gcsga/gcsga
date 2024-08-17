@@ -15,21 +15,21 @@
 			<div class="field">
 				<input
 					type="text"
-					name="array.effects.{{@index}}.attribute"
+					name="effects.{{@index}}.attribute"
 					value="{{this.attribute}}"
 					data-dtype="String"
 				/>
 			</div>
 			<label>{{localize "gurps.definition.state"}}</label>
 			<div class="field">
-				<input type="text" name="array.effects.{{@index}}.state" value="{{this.state}}" data-dtype="String" />
+				<input type="text" name="effects.{{@index}}.state" value="{{this.state}}" data-dtype="String" />
 			</div>
 			<div class="item-list enter">
-				{{#each this.enter}} {{>system/settings/attribute-condition pid=@../index parent="array.effects"
+				{{#each this.enter}} {{>system/settings/attribute-condition pid=@../index parent="effects"
 				list="enter"}} {{/each}}
 			</div>
 			<div class="item-list leave">
-				{{#each this.leave}} {{>system/settings/attribute-condition pid=@../index parent="array.effects"
+				{{#each this.leave}} {{>system/settings/attribute-condition pid=@../index parent="effects"
 				list="leave"}} {{/each}}
 			</div>
 		</div>

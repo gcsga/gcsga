@@ -17,7 +17,13 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 		const fields = foundry.data.fields
 
 		return {
-			type: new fields.StringField({ initial: prereq.Type.Attribute }),
+			...super.defineSchema(),
+			type: new fields.StringField({
+				required: true,
+				nullable: false,
+				blank: false,
+				initial: prereq.Type.Attribute,
+			}),
 			which: new fields.StringField({ initial: gid.Strength }),
 			has: new fields.BooleanField({ initial: true }),
 			combined_with: new fields.StringField({ initial: "" }),

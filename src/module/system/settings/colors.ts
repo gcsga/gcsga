@@ -159,11 +159,19 @@ export class ColorSettings extends SettingsMenuGURPS {
 			`${SETTINGS.COLORS}.modePreference`,
 			game.settings.settings.get(`${SYSTEM_NAME}.${SETTINGS.COLORS}.modePreference`).default,
 		)
+		// let currentColors = game.settings.get(SYSTEM_NAME, `${SETTINGS.COLORS}.colors`)
+		// let defaultColors = game.settings.settings.get(`${SYSTEM_NAME}.${SETTINGS.COLORS}.colors`).default
+		// console.log(currentColors["colorBackground"]["dark"])
+		// console.log(defaultColors["colorBackground"]["dark"])
 		game.settings.set(
 			SYSTEM_NAME,
 			`${SETTINGS.COLORS}.colors`,
 			game.settings.settings.get(`${SYSTEM_NAME}.${SETTINGS.COLORS}.colors`).default,
 		)
+		// currentColors = game.settings.get(SYSTEM_NAME, `${SETTINGS.COLORS}.colors`)
+		// defaultColors = game.settings.settings.get(`${SYSTEM_NAME}.${SETTINGS.COLORS}.colors`).default
+		// console.log(currentColors["colorBackground"]["dark"])
+		// console.log(defaultColors["colorBackground"]["dark"])
 		ColorSettings.applyColors()
 		this.render()
 	}
@@ -195,12 +203,14 @@ export class ColorSettings extends SettingsMenuGURPS {
 			if (!e.startsWith("color")) return
 			const name = `--${e.replace(/(\w)([A-Z])/g, "$1-$2").toLowerCase()}`
 			const value = colors[e]
+			console.log(value)
 			value.light = foundry.utils.Color.fromString(value.light)
 				.rgb.map((i: number) => i * 255)
 				.join(", ")
 			value.dark = foundry.utils.Color.fromString(value.dark)
 				.rgb.map((i: number) => i * 255)
 				.join(", ")
+			console.log(value)
 			if (modePreference === "light") $(":root").css(name, value.light)
 			else if (modePreference === "dark") $(":root").css(name, value.dark)
 			else if (window.matchMedia("(prefers-color-scheme: dark)").matches) $(":root").css(name, value.dark)

@@ -1,7 +1,11 @@
 import { ItemType } from "@module/data/constants.ts"
-import * as R from "remeda"
-import { StringBuilder } from "./string-builder.ts"
 import { LocalizeGURPS } from "./localize.ts"
+import { StringBuilder } from "./string-builder.ts"
+
+function generateId(): string {
+	const buffer = Array.from({ length: 12 }, () => Math.floor(Math.random() * 256))
+	return btoa(String.fromCharCode.apply(null, buffer)).replaceAll("+", "-").replaceAll("/", "_")
+}
 
 /**
  * Given an array, adds a certain amount of elements to it
@@ -210,23 +214,6 @@ function isObject(value: unknown): boolean {
 	return typeof value === "object" && value !== null
 }
 
-/** Walk an object tree and replace any string values found according to a provided function */
-function recursiveReplaceString<T>(source: T, replace: (s: string) => string): T
-function recursiveReplaceString(source: unknown, replace: (s: string) => string): unknown {
-	const clone = Array.isArray(source) || R.isObject(source) ? fu.deepClone(source) : source
-	if (typeof clone === "string") {
-		return replace(clone)
-	} else if (Array.isArray(clone)) {
-		return clone.map(e => recursiveReplaceString(e, replace))
-	} else if (R.isObject(clone)) {
-		for (const [key, value] of Object.entries(clone)) {
-			clone[key] = recursiveReplaceString(value, replace)
-		}
-	}
-
-	return clone
-}
-
 /** Create a localization function with a prefixed localization object path */
 function localizer(prefix: string): (...args: Parameters<Localization["format"]>) => string {
 	return (...[suffix, formatArgs]: Parameters<Localization["format"]>) =>
@@ -238,58 +225,58 @@ function getCurrentTime(): string {
 	return new Date().toISOString()
 }
 
-/** Disgusting hack to get arrays and attribute threshold op boolean values working with prepareFormData */
-function prepareFormData(formData: Record<string, unknown>, object: object): Record<string, unknown> {
-	function setArrayProperty(a: object[], index: number, prop: string, value: unknown): object[] {
-		if (prop.match(/.\d+./)) {
-			const inArrayKey = prop.split(/.\d+./)[0]
-			const inArrayArray = fu.getProperty(a[index], inArrayKey) as object[]
-			const inArrayIndex = parseInt(prop.match(/.(\d+)./)![1])
-			const inArrayProp = prop.replace(`${inArrayKey}.${inArrayIndex}.`, "")
-			fu.setProperty(a[index], inArrayKey, setArrayProperty(inArrayArray, inArrayIndex, inArrayProp, value))
-			return a
-		}
-		fu.setProperty(a[index], prop, value)
-		return a
-	}
-
-	for (const aKey of Object.keys(formData)) {
-		if (formData[aKey] === null) formData[aKey] = "0"
-		if (aKey.includes(".halve_")) {
-			const tKey = aKey.replace(/\.halve_.*$/, "")
-			const tOp = aKey.split(".").at(-1)
-			formData[`${tKey}.ops`] ??= []
-			if (formData[aKey]) (formData[`${tKey}.ops`] as unknown[]).push(tOp)
-			delete formData[aKey]
-		}
-	}
-	for (const aKey of Object.keys(formData)) {
-		if (aKey.startsWith("array.") && aKey.match(/\d/)) {
-			const key = aKey.replace(/^array./g, "")
-			const arrayKey = key.split(/.\d+./)[0]
-			let array: object[] = (formData[arrayKey] as object[]) || (fu.getProperty(object, arrayKey) as object[])
-			const index = parseInt(key.match(/.(\d+)./)![1])
-			const prop = key.replace(new RegExp(`^${arrayKey}.${index}.`), "")
-			array = setArrayProperty(array, index, prop, formData[aKey])
-			formData[arrayKey] = array
-			delete formData[aKey]
-		} else if (aKey.startsWith("array.")) {
-			formData[aKey.replace("array.", "")] = formData[aKey]
-			delete formData[aKey]
-			// HACK: stupid exception for static resource trackers only. remove in 2.0
-		} else if (aKey.startsWith("sarray.") && aKey.match(/\d/)) {
-			const key = aKey.replace(/^sarray./g, "")
-			const arrayKey = `${key.split(/thresholds.\d+./)[0]}thresholds`
-			const array: object[] = fu.getProperty(object, arrayKey) as object[]
-			const index = parseInt(key.match(/thresholds.(\d+)./)![1])
-			const prop = key.replace(new RegExp(`^${arrayKey}.${index}.`), "")
-			setArrayProperty(array, index, prop, formData[aKey])
-			formData[arrayKey] = array
-			delete formData[aKey]
-		}
-	}
-	return formData
-}
+///** Disgusting hack to get arrays and attribute threshold op boolean values working with prepareFormData */
+//function prepareFormData(formData: Record<string, unknown>, object: object): Record<string, unknown> {
+//	function setArrayProperty(a: object[], index: number, prop: string, value: unknown): object[] {
+//		if (prop.match(/.\d+./)) {
+//			const inArrayKey = prop.split(/.\d+./)[0]
+//			const inArrayArray = fu.getProperty(a[index], inArrayKey) as object[]
+//			const inArrayIndex = parseInt(prop.match(/.(\d+)./)![1])
+//			const inArrayProp = prop.replace(`${inArrayKey}.${inArrayIndex}.`, "")
+//			fu.setProperty(a[index], inArrayKey, setArrayProperty(inArrayArray, inArrayIndex, inArrayProp, value))
+//			return a
+//		}
+//		fu.setProperty(a[index], prop, value)
+//		return a
+//	}
+//
+//	for (const aKey of Object.keys(formData)) {
+//		if (formData[aKey] === null) formData[aKey] = "0"
+//		if (aKey.includes(".halve_")) {
+//			const tKey = aKey.replace(/\.halve_.*$/, "")
+//			const tOp = aKey.split(".").at(-1)
+//			formData[`${tKey}.ops`] ??= []
+//			if (formData[aKey]) (formData[`${tKey}.ops`] as unknown[]).push(tOp)
+//			delete formData[aKey]
+//		}
+//	}
+//	for (const aKey of Object.keys(formData)) {
+//		if (aKey.startsWith("array.") && aKey.match(/\d/)) {
+//			const key = aKey.replace(/^array./g, "")
+//			const arrayKey = key.split(/.\d+./)[0]
+//			let array: object[] = (formData[arrayKey] as object[]) || (fu.getProperty(object, arrayKey) as object[])
+//			const index = parseInt(key.match(/.(\d+)./)![1])
+//			const prop = key.replace(new RegExp(`^${arrayKey}.${index}.`), "")
+//			array = setArrayProperty(array, index, prop, formData[aKey])
+//			formData[arrayKey] = array
+//			delete formData[aKey]
+//		} else if (aKey.startsWith("array.")) {
+//			formData[aKey.replace("array.", "")] = formData[aKey]
+//			delete formData[aKey]
+//			// HACK: stupid exception for static resource trackers only. remove in 2.0
+//		} else if (aKey.startsWith("sarray.") && aKey.match(/\d/)) {
+//			const key = aKey.replace(/^sarray./g, "")
+//			const arrayKey = `${key.split(/thresholds.\d+./)[0]}thresholds`
+//			const array: object[] = fu.getProperty(object, arrayKey) as object[]
+//			const index = parseInt(key.match(/thresholds.(\d+)./)![1])
+//			const prop = key.replace(new RegExp(`^${arrayKey}.${index}.`), "")
+//			setArrayProperty(array, index, prop, formData[aKey])
+//			formData[arrayKey] = array
+//			delete formData[aKey]
+//		}
+//	}
+//	return formData
+//}
 
 /** Get a Tech Level as a number, given a string */
 function extractTechLevel(str: string): number {
@@ -361,6 +348,7 @@ export {
 	d6ify,
 	extractTechLevel,
 	fontAwesomeIcon,
+	generateId,
 	getCurrentTime,
 	getNewAttributeId,
 	isContainer,
@@ -370,8 +358,6 @@ export {
 	objectHasKey,
 	padArray,
 	parseHTML,
-	prepareFormData,
-	recursiveReplaceString,
 	rgbToHex,
 	sanitize,
 	sanitizeId,

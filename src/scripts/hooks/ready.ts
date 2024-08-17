@@ -4,14 +4,10 @@ import { TokenHUDGURPS } from "@module/canvas/index.ts"
 import { MigrationSummary } from "@module/migration-summary.ts"
 import { MigrationList, MigrationRunner } from "@module/migration/index.ts"
 import { LastActor, evaluateToNumber } from "@module/util/index.ts"
-import { TID } from "@module/util/tid.ts"
 import { SetGameGURPS } from "@scripts/set-game-gurps.ts"
 import { storeInitialWorldVersions } from "@scripts/store-versions.ts"
-import { AttributeBonus } from "@system"
+import { ColorSettings } from "@system/settings/colors.ts"
 import { createDragImage } from "@util/drag-image.ts"
-// import { ColorSettings } from "@module/settings/colors.ts"
-// import { SetGameGURPS } from "@scripts/set-game-gurps.ts"
-// import { LastActor, getDefaultSkills } from "@util"
 
 export const Ready = {
 	listen: (): void => {
@@ -22,7 +18,7 @@ export const Ready = {
 			SetGameGURPS.onReady()
 
 			// Do anything once the system is ready
-			// ColorSettings.applyColors()
+			ColorSettings.applyColors()
 			loadModifiers()
 			// getDefaultSkills()
 
@@ -30,8 +26,7 @@ export const Ready = {
 				LastActor: await LastActor.get(),
 				LastToken: await LastActor.getToken(),
 				eval: evaluateToNumber,
-				TID: TID,
-				att: AttributeBonus,
+				ColorSettings,
 			}
 
 			// Determine whether a system migration is required and feasible

@@ -1,12 +1,12 @@
 import { AbstractContainerSource } from "@item/abstract-container/data.ts"
 import fields = foundry.data.fields
-import { ItemType } from "@module/data/constants.ts"
-import { PrereqList, PrereqListSchema } from "@system"
-import { difficulty } from "@util"
+import { ItemType, NumericCompareType } from "@module/data/constants.ts"
+import { difficulty, prereq } from "@util"
 import { TechniqueDifficulty } from "@module/data/types.ts"
 import { RitualMagicSpellGURPS } from "./document.ts"
 import { AbstractSkillSystemData, AbstractSkillSystemSchema } from "@item/abstract-skill/data.ts"
 import { RecordField } from "@system/schema-data-fields.ts"
+import { BasePrereq, Prereq } from "@system"
 
 class RitualMagicSpellSystemData extends AbstractSkillSystemData<RitualMagicSpellGURPS, RitualMagicSpellSystemSchema> {
 	static override defineSchema(): RitualMagicSpellSystemSchema {
@@ -29,8 +29,21 @@ class RitualMagicSpellSystemData extends AbstractSkillSystemData<RitualMagicSpel
 			duration: new fields.StringField(),
 			base_skill: new fields.StringField(),
 			prereq_count: new fields.NumberField({ integer: true, min: 0, nullable: false, initial: 0 }),
-			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
-			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField({required: true, nullable: false})),
+			prereqs: new fields.ArrayField(new fields.TypedSchemaField(BasePrereq.TYPES), {
+				initial: [
+					{
+						type: prereq.Type.List,
+						id: "root",
+						all: true,
+						when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 },
+						prereqs: [],
+					},
+				],
+			}),
+			replacements: new RecordField(
+				new fields.StringField({ required: true, nullable: false }),
+				new fields.StringField({ required: true, nullable: false }),
+			),
 		}
 	}
 }
@@ -53,8 +66,11 @@ type RitualMagicSpellSystemSchema = AbstractSkillSystemSchema & {
 	duration: fields.StringField
 	base_skill: fields.StringField
 	prereq_count: fields.NumberField<number, number, true, false>
-	prereqs: fields.SchemaField<PrereqListSchema>
-	replacements: RecordField<fields.StringField<string, string, true, false, false>,  fields.StringField<string,string,true,false,false>>
+	prereqs: fields.ArrayField<fields.TypedSchemaField<Record<prereq.Type, ConstructorOf<Prereq>>>>
+	replacements: RecordField<
+		fields.StringField<string, string, true, false, false>,
+		fields.StringField<string, string, true, false, false>
+	>
 }
 
 type RitualMagicSpellSystemSource = SourceFromSchema<RitualMagicSpellSystemSchema>

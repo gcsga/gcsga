@@ -9,21 +9,13 @@ import {
 	DropDataResourceTrackerThreshold,
 } from "@module/apps/damage-calculator/damage-chat-message.ts"
 import { SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
-import {
-	AttributeDef,
-	BodyGURPS,
-	HitLocation,
-	MoveTypeDef,
-	PoolThreshold,
-	RESERVED_IDS,
-	ResourceTrackerDef,
-} from "@system"
+import { AttributeDef, HitLocation, MoveTypeDef, PoolThreshold, RESERVED_IDS, ResourceTrackerDef } from "@system"
 import { MoveTypeOverride } from "@system/move-type/override.ts"
 import { AttributeSettings } from "@system/settings/attributes.ts"
 import { HitLocationSettings } from "@system/settings/hit-locations.ts"
 import { ResourceTrackerSettings } from "@system/settings/resource-trackers.ts"
 import { MoveSettings } from "@system/settings/move-type.ts"
-import { prepareFormData, sanitizeId } from "@util"
+import { sanitizeId } from "@util"
 
 type DropDataContext = {
 	element: HTMLElement
@@ -207,121 +199,121 @@ function removeMoveTypeOverride(context: DropDataContext): void {
 	else game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`, moveTypes)
 }
 
-function addHitLocation(context: DropDataContext): void {
-	if (!(context.app instanceof CharacterConfigSheet || context.app instanceof HitLocationSettings)) return
-
-	const path = context.element?.dataset.path?.replace(/^array\./, "")
-	if (!path) return console.error("Invalid path")
-
-	const index = parseInt(context.element.dataset.index ?? "")
-	if (isNaN(index)) return console.error("Invalid index")
-
-	const table = fu.getProperty(context.app, `${path}.locations`)
-	if (!Array.isArray(table)) return
-
-	table.push(new HitLocation({}).toObject())
-
-	if (context.app instanceof CharacterConfigSheet) {
-		const formData = prepareFormData({ [`array.${path.replace(/^actor\./, "")}`]: table }, context.app.actor)
-		context.app.actor.update(formData)
-	} else {
-		const formData = prepareFormData(
-			{ [`array.${path.replace(/^actor\./, "")}`]: table },
-			{ body_type: context.app.bodyType },
-		)
-		Object.keys(formData).forEach(key => {
-			formData[key.replace(/^body_type\./, "")] = formData[key]
-			delete formData[key]
-		})
-		game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`, formData["locations"])
-	}
+function addHitLocation(_context: DropDataContext): void {
+	// if (!(context.app instanceof CharacterConfigSheet || context.app instanceof HitLocationSettings)) return
+	//
+	// const path = context.element?.dataset.path?.replace(/^array\./, "")
+	// if (!path) return console.error("Invalid path")
+	//
+	// const index = parseInt(context.element.dataset.index ?? "")
+	// if (isNaN(index)) return console.error("Invalid index")
+	//
+	// const table = fu.getProperty(context.app, `${path}.locations`)
+	// if (!Array.isArray(table)) return
+	//
+	// table.push(new HitLocation({}).toObject())
+	//
+	// if (context.app instanceof CharacterConfigSheet) {
+	// 	const formData = prepareFormData({ [`array.${path.replace(/^actor\./, "")}`]: table }, context.app.actor)
+	// 	context.app.actor.update(formData)
+	// } else {
+	// 	const formData = prepareFormData(
+	// 		{ [`array.${path.replace(/^actor\./, "")}`]: table },
+	// 		{ body_type: context.app.bodyType },
+	// 	)
+	// 	Object.keys(formData).forEach(key => {
+	// 		formData[key.replace(/^body_type\./, "")] = formData[key]
+	// 		delete formData[key]
+	// 	})
+	// 	game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`, formData["locations"])
+	// }
 }
 
-function removeHitLocation(context: DropDataContext): void {
-	if (!(context.app instanceof CharacterConfigSheet || context.app instanceof HitLocationSettings)) return
-
-	const path = (context.element.dataset.path ?? "").replace(/^array\./, "")
-	if (!(typeof path === "string")) return
-	const index = parseInt(context.element.dataset.index ?? "")
-	if (isNaN(index)) return console.error("Invalid index")
-
-	const table = fu.getProperty(context.app, `${path}.locations`)
-	if (!Array.isArray(table)) return
-
-	table.splice(index, 1)
-
-	if (context.app instanceof CharacterConfigSheet) {
-		const formData = prepareFormData({ [`array.${path.replace(/^actor\./, "")}`]: table }, context.app.actor)
-		context.app.actor.update(formData)
-	} else {
-		const formData = prepareFormData(
-			{ [`array.${path.replace(/^actor\./, "")}`]: table },
-			{ body_type: context.app.bodyType },
-		)
-		Object.keys(formData).forEach(key => {
-			formData[key.replace(/^body_type\./, "")] = formData[key]
-			delete formData[key]
-		})
-		game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`, formData["locations"])
-	}
+function removeHitLocation(_context: DropDataContext): void {
+	// if (!(context.app instanceof CharacterConfigSheet || context.app instanceof HitLocationSettings)) return
+	//
+	// const path = (context.element.dataset.path ?? "").replace(/^array\./, "")
+	// if (!(typeof path === "string")) return
+	// const index = parseInt(context.element.dataset.index ?? "")
+	// if (isNaN(index)) return console.error("Invalid index")
+	//
+	// const table = fu.getProperty(context.app, `${path}.locations`)
+	// if (!Array.isArray(table)) return
+	//
+	// table.splice(index, 1)
+	//
+	// if (context.app instanceof CharacterConfigSheet) {
+	// 	const formData = prepareFormData({ [`array.${path.replace(/^actor\./, "")}`]: table }, context.app.actor)
+	// 	context.app.actor.update(formData)
+	// } else {
+	// 	const formData = prepareFormData(
+	// 		{ [`array.${path.replace(/^actor\./, "")}`]: table },
+	// 		{ body_type: context.app.bodyType },
+	// 	)
+	// 	Object.keys(formData).forEach(key => {
+	// 		formData[key.replace(/^body_type\./, "")] = formData[key]
+	// 		delete formData[key]
+	// 	})
+	// 	game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`, formData["locations"])
+	// }
 }
 
-function addSubTable(context: DropDataContext): void {
-	if (!(context.app instanceof CharacterConfigSheet || context.app instanceof HitLocationSettings)) return
-
-	const path = (context.element.dataset.path ?? "").replace(/^array\./, "")
-	if (!(typeof path === "string")) return
-	const index = parseInt(context.element.dataset.index ?? "")
-	if (isNaN(index)) return console.error("Invalid index")
-
-	const table = fu.getProperty(context.app, path)
-	if (!Array.isArray(table)) return
-
-	table[index].sub_table = new BodyGURPS({}, { parent: table[index] })
-
-	if (context.app instanceof CharacterConfigSheet) {
-		const formData = prepareFormData({ [`array.${path.replace(/^actor\./, "")}`]: table }, context.app.actor)
-		context.app.actor.update(formData)
-	} else {
-		const formData = prepareFormData(
-			{ [`array.${path.replace(/^actor\./, "")}`]: table },
-			{ body_type: context.app.bodyType },
-		)
-		Object.keys(formData).forEach(key => {
-			formData[key.replace(/^body_type\./, "")] = formData[key]
-			delete formData[key]
-		})
-		game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`, formData["locations"])
-	}
+function addSubTable(_context: DropDataContext): void {
+	// if (!(context.app instanceof CharacterConfigSheet || context.app instanceof HitLocationSettings)) return
+	//
+	// const path = (context.element.dataset.path ?? "").replace(/^array\./, "")
+	// if (!(typeof path === "string")) return
+	// const index = parseInt(context.element.dataset.index ?? "")
+	// if (isNaN(index)) return console.error("Invalid index")
+	//
+	// const table = fu.getProperty(context.app, path)
+	// if (!Array.isArray(table)) return
+	//
+	// table[index].sub_table = new BodyGURPS({}, { parent: table[index] })
+	//
+	// if (context.app instanceof CharacterConfigSheet) {
+	// 	const formData = prepareFormData({ [`array.${path.replace(/^actor\./, "")}`]: table }, context.app.actor)
+	// 	context.app.actor.update(formData)
+	// } else {
+	// 	const formData = prepareFormData(
+	// 		{ [`array.${path.replace(/^actor\./, "")}`]: table },
+	// 		{ body_type: context.app.bodyType },
+	// 	)
+	// 	Object.keys(formData).forEach(key => {
+	// 		formData[key.replace(/^body_type\./, "")] = formData[key]
+	// 		delete formData[key]
+	// 	})
+	// 	game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`, formData["locations"])
+	// }
 }
 
-function removeSubTable(context: DropDataContext): void {
-	if (!(context.app instanceof CharacterConfigSheet || context.app instanceof HitLocationSettings)) return
-
-	const path = (context.element.dataset.path ?? "").replace(/^array\./, "")
-	if (!(typeof path === "string")) return
-	const index = parseInt(context.element.dataset.index ?? "")
-	if (isNaN(index)) return console.error("Invalid index")
-
-	const table = fu.getProperty(context.app, path)
-	if (!Array.isArray(table)) return
-
-	delete table[index].sub_table
-
-	if (context.app instanceof CharacterConfigSheet) {
-		const formData = prepareFormData({ [`array.${path.replace(/^actor\./, "")}`]: table }, context.app.actor)
-		context.app.actor.update(formData)
-	} else {
-		const formData = prepareFormData(
-			{ [`array.${path.replace(/^actor\./, "")}`]: table },
-			{ body_type: context.app.bodyType },
-		)
-		Object.keys(formData).forEach(key => {
-			formData[key.replace(/^body_type\./, "")] = formData[key]
-			delete formData[key]
-		})
-		game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`, formData["locations"])
-	}
+function removeSubTable(_context: DropDataContext): void {
+	// if (!(context.app instanceof CharacterConfigSheet || context.app instanceof HitLocationSettings)) return
+	//
+	// const path = (context.element.dataset.path ?? "").replace(/^array\./, "")
+	// if (!(typeof path === "string")) return
+	// const index = parseInt(context.element.dataset.index ?? "")
+	// if (isNaN(index)) return console.error("Invalid index")
+	//
+	// const table = fu.getProperty(context.app, path)
+	// if (!Array.isArray(table)) return
+	//
+	// delete table[index].sub_table
+	//
+	// if (context.app instanceof CharacterConfigSheet) {
+	// 	const formData = prepareFormData({ [`array.${path.replace(/^actor\./, "")}`]: table }, context.app.actor)
+	// 	context.app.actor.update(formData)
+	// } else {
+	// 	const formData = prepareFormData(
+	// 		{ [`array.${path.replace(/^actor\./, "")}`]: table },
+	// 		{ body_type: context.app.bodyType },
+	// 	)
+	// 	Object.keys(formData).forEach(key => {
+	// 		formData[key.replace(/^body_type\./, "")] = formData[key]
+	// 		delete formData[key]
+	// 	})
+	// 	game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`, formData["locations"])
+	// }
 }
 
 function onDropAttribute(data: DropDataAttribute, context: DropDataContext): void {
@@ -416,33 +408,33 @@ function onDropMoveTypeOverride(data: DropDataMoveTypeOverride, context: DropDat
 	context.app.render()
 }
 
-function onDropHitLocation(data: DropDataHitLocation, context: DropDataContext): void {
-	if (!(context.app instanceof CharacterConfigSheet || context.app instanceof HitLocationSettings)) return
-
-	const path = context.element?.dataset.path?.replace(/^array\./, "")
-	if (!path) return console.error("Drop target path is invalid")
-
-	const table = fu.getProperty(context.app, path) as HitLocation[]
-	const hitLocation = table.splice(data.index, 1)[0]
-	if (!hitLocation) return console.error(`Hit location at index ${data.index} does not exist.`)
-	table.splice(context.targetIndex, 0, hitLocation)
-
-	if (context.app instanceof CharacterConfigSheet) {
-		const formData = prepareFormData({ [`array.${path.replace(/^actor\./, "")}`]: table }, context.app.actor)
-		context.app.actor.update(formData)
-	} else {
-		const formData = prepareFormData(
-			{ [`array.${path.replace(/^actor\./, "")}`]: table },
-			{ body_type: context.app.bodyType },
-		)
-		Object.keys(formData).forEach(key => {
-			formData[key.replace(/^body_type\./, "")] = formData[key]
-			delete formData[key]
-		})
-		game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`, formData["locations"])
-	}
-
-	context.app.render()
+function onDropHitLocation(_data: DropDataHitLocation, _context: DropDataContext): void {
+	// if (!(context.app instanceof CharacterConfigSheet || context.app instanceof HitLocationSettings)) return
+	//
+	// const path = context.element?.dataset.path?.replace(/^array\./, "")
+	// if (!path) return console.error("Drop target path is invalid")
+	//
+	// const table = fu.getProperty(context.app, path) as HitLocation[]
+	// const hitLocation = table.splice(data.index, 1)[0]
+	// if (!hitLocation) return console.error(`Hit location at index ${data.index} does not exist.`)
+	// table.splice(context.targetIndex, 0, hitLocation)
+	//
+	// if (context.app instanceof CharacterConfigSheet) {
+	// 	const formData = prepareFormData({ [`array.${path.replace(/^actor\./, "")}`]: table }, context.app.actor)
+	// 	context.app.actor.update(formData)
+	// } else {
+	// 	const formData = prepareFormData(
+	// 		{ [`array.${path.replace(/^actor\./, "")}`]: table },
+	// 		{ body_type: context.app.bodyType },
+	// 	)
+	// 	Object.keys(formData).forEach(key => {
+	// 		formData[key.replace(/^body_type\./, "")] = formData[key]
+	// 		delete formData[key]
+	// 	})
+	// 	game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`, formData["locations"])
+	// }
+	//
+	// context.app.render()
 }
 
 function validateId(context: DropDataContext): void {

@@ -1,9 +1,10 @@
 <li class="prereq">
+		<input style="display: none;" name="system.prereqs.{{ this.index }}.id" value="{{this.id}}" data-dtype="String">
     <div class="top">
         <a class="button gcs-trash"
            data-action="remove-prereq"
-           data-path="{{ path }}"></a>
-        <select name="{{ path }}.has" data-dtype="Boolean">
+           data-id="{{ this.id }}"></a>
+        <select name="system.prereqs.{{ this.index }}.has" data-dtype="Boolean">
             {{#select this.has}}
             {{#each @root.config.select.has as |v k|}}
                 <option value="{{ k }}">{{ localize v }}</option>
@@ -14,7 +15,7 @@
             <option value="block">{{ localize "gurps.attribute.block" }}</option>
         {{/select}}
     </select>
-    <select class="type" name="{{ path }}.type" data-path="{{ path }}">
+    <select class="type" name="system.prereqs.{{ this.index }}.type" data-id="{{ this.id }}">
         {{#select this.type}}
         {{#each @root.config.select.prereq_strict as |v k|}}
             <option value="{{ k }}">{{ localize v }}</option>
@@ -23,27 +24,27 @@
 </div>
 <div>
     <div class="placeholder"></div>
-    <select name="{{ path }}.which">
+    <select name="system.prereqs.{{ this.index }}.which">
         {{#select this.which}}
         {{#each attributes as |v k|}}
             <option value="{{ k }}">{{ v }}</option>
         {{/each}} {{/select}}
     </select>
-    <select name="{{ path }}.combined_with">
+    <select name="system.prereqs.{{ this.index }}.combined_with">
         {{#select this.combined_with}}
         <option value=""></option>
         {{#each attributes as |v k|}}
             <option value="{{ k }}">{{ localize "gurps.field_prefix.combined_with" }} {{ v }}</option>
         {{/each}} {{/select}}
     </select>
-    <select name="{{ path }}.qualifier.compare">
+    <select name="system.prereqs.{{ this.index }}.qualifier.compare">
         {{#select this.qualifier.compare}}
         {{#each @root.config.select.numeric_criteria as |v k|}}
             <option value="{{ k }}">{{ localize "gurps.field_prefix.attribute_level" }} {{ localize v }}</option>
         {{/each}} {{/select}}
     </select>
     <div class="field">
-        <input type="text" name="{{ path }}.qualifier.qualifier" value="{{ this.qualifier.qualifier }}" data-dtype="Number" {{ disabled (eq this.qualifier.compare "none") }} />
+        <input type="text" name="system.prereqs.{{ this.index }}.qualifier.qualifier" value="{{ this.qualifier.qualifier }}" data-dtype="Number" {{ disabled (eq this.qualifier.compare "none") }} />
     </div>
 </div>
 </li>

@@ -1,19 +1,20 @@
 <li class="prereq">
+	<input style="display: none" name="system.prereqs.{{ this.index }}.id" value="{{this.id}}" data-dtype="String" />
 	<div class="top">
-		<a class="button gcs-trash" data-action="remove-prereq" data-path="{{ path }}"></a>
-		<select name="{{ path }}.has" data-dtype="Boolean">
+		<a class="button gcs-trash" data-action="remove-prereq" data-id="{{ this.id }}"></a>
+		<select name="system.prereqs.{{ this.index }}.has" data-dtype="Boolean">
 			{{#select this.has}} {{#each @root.config.select.has as |v k|}}
 			<option value="{{ k }}">{{ localize v }}</option>
 			{{/each}} {{/select}}
 		</select>
-		<select class="type" name="{{ path }}.type" data-path="{{ path }}">
+		<select class="type" name="system.prereqs.{{ this.index }}.type" data-id="{{ this.id }}">
 			{{#select this.type}} {{#each @root.config.select.prereq_strict as |v k|}}
 			<option value="{{ k }}">{{ localize v }}</option>
 			{{/each}} {{/select}}
 		</select>
 	</div>
 	<div>
-		<select name="{{ path }}.qualifier.compare">
+		<select name="system.prereqs.{{ this.index }}.qualifier.compare">
 			{{#select this.qualifier.compare}} {{#each @root.config.select.numeric_criteria_strict as |v k|}}
 			<option value="{{ k }}">{{ localize v }}</option>
 			{{/each}} {{/select}}
@@ -21,7 +22,7 @@
 		<div class="field">
 			<input
 				type="text"
-				name="{{ path }}.qualifier.qualifier_weight"
+				name="system.prereqs.{{ this.index }}.qualifier.qualifier_weight"
 				value="{{ this.qualifier.qualifier }}"
 				data-dtype="String"
 			/>

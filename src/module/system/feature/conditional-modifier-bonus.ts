@@ -1,6 +1,7 @@
 import { ConditionalModifierBonusSchema } from "./data.ts"
 import { BaseFeature } from "./base.ts"
 import { Nameable } from "@module/util/nameable.ts"
+import { feature } from "@util"
 
 class ConditionalModifierBonus extends BaseFeature<ConditionalModifierBonusSchema> {
 	static override defineSchema(): ConditionalModifierBonusSchema {
@@ -8,7 +9,12 @@ class ConditionalModifierBonus extends BaseFeature<ConditionalModifierBonusSchem
 
 		return {
 			...super.defineSchema(),
-			// ...LeveledAmount.defineSchema(),
+			type: new fields.StringField({
+				required: true,
+				nullable: false,
+				blank: false,
+				initial: feature.Type.ConditionalModifierBonus,
+			}),
 			situation: new fields.StringField({
 				initial: game.i18n.localize("gurps.feature.conditional_modifier"),
 			}),

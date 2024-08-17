@@ -30,9 +30,9 @@ import {
 import { TechniqueSource, TechniqueSystemSource } from "@item/technique/data.ts"
 import { SpellSource, SpellSystemSource } from "@item/spell/data.ts"
 import { EquipmentSource, EquipmentSystemSource } from "@item/equipment/data.ts"
-import { ItemFlags, ItemKind, ItemType, SYSTEM_NAME, gid } from "@data"
+import { ItemFlags, ItemKind, ItemType, NumericCompareType, SYSTEM_NAME, gid } from "@data"
 import { ItemSourceGURPS } from "@item/data/index.ts"
-import { Feature, PrereqListSchema, SkillDefaultSchema, Study, TemplatePickerSchema } from "@system"
+import { Feature, Prereq, PrereqListSchema, SkillDefaultSchema, Study, TemplatePickerSchema } from "@system"
 import {
 	LocalizeGURPS,
 	affects,
@@ -41,6 +41,7 @@ import {
 	emcost,
 	emweight,
 	feature,
+	generateId,
 	picker,
 	prereq,
 	selfctrl,
@@ -101,9 +102,43 @@ abstract class ItemImporter {
 
 	abstract importItem(item: ImportedItemSource, context: ItemImportContext): ItemSourceGURPS[]
 
-	static importPrereqs(prereqList?: ImportedPrereqList): SourceFromSchema<PrereqListSchema> {
-		// @ts-expect-error not necessary
-		return prereqList ?? { type: prereq.Type.List, all: true }
+	static importPrereqs(
+		prereqList?: ImportedPrereqList,
+		parentId = "root",
+	): SourceFromTypedSchemaTypes<Record<prereq.Type, ConstructorOf<Prereq>>>[] {
+		if (!prereqList)
+			return [
+				{
+					type: prereq.Type.List,
+					id: parentId,
+					all: true,
+					when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 },
+					prereqs: [],
+				},
+			]
+
+		const list: SourceFromTypedSchemaTypes<Record<prereq.Type, ConstructorOf<Prereq>>>[] = []
+		const root: SourceFromSchema<PrereqListSchema> = {
+			type: prereq.Type.List,
+			id: parentId,
+			all: prereqList.all,
+			when_tl: {
+				compare: prereqList.when_tl?.compare ?? NumericCompareType.AnyNumber,
+				qualifier: prereqList.when_tl?.qualifier ?? 0,
+			},
+			prereqs: [],
+		}
+		for (const child of prereqList?.prereqs ?? []) {
+			const id = generateId()
+			root.prereqs!.push(id)
+			if (child.type === prereq.Type.List) {
+				list.push(...this.importPrereqs(child, id))
+			} else {
+				list.push({ ...child, id } as any)
+			}
+		}
+		list.unshift(root)
+		return list
 	}
 
 	static importFeatures(
@@ -308,6 +343,7 @@ class TraitContainerImporter extends ItemImporter {
 			container_type: item.container_type ?? container.Type.Group,
 			disabled: item.disabled ?? false,
 			template_picker: ItemImporter.importTemplatePicker(item.template_picker),
+			prereqs: ItemImporter.importPrereqs(item.prereqs),
 			open: true,
 			replacements: item.replacements ?? {},
 		}

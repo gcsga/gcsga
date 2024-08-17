@@ -1,9 +1,9 @@
 import { AbstractContainerSource } from "@item/abstract-container/data.ts"
 import { AbstractSkillSystemData, AbstractSkillSystemSchema } from "@item/abstract-skill/data.ts"
-import { ItemType } from "@module/data/constants.ts"
+import { ItemType, NumericCompareType } from "@module/data/constants.ts"
 import { TechniqueDifficulty } from "@module/data/types.ts"
-import { FeatureSchema, PrereqList, PrereqListSchema, SkillDefault, SkillDefaultSchema } from "@system"
-import { difficulty } from "@util"
+import { BasePrereq, Feature, Prereq, SkillDefault, SkillDefaultSchema } from "@system"
+import { difficulty, feature, prereq } from "@util"
 import { TechniqueGURPS } from "./document.ts"
 import fields = foundry.data.fields
 import { BaseFeature } from "@system/feature/base.ts"
@@ -25,9 +25,22 @@ class TechniqueSystemData extends AbstractSkillSystemData<TechniqueGURPS, Techni
 			defaults: new fields.ArrayField(new fields.SchemaField(SkillDefault.defineSchema())),
 			limit: new fields.NumberField({ integer: true, initial: 0 }),
 			limited: new fields.BooleanField({ initial: false }),
-			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
-			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
-			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField({required: true, nullable: false})),
+			prereqs: new fields.ArrayField(new fields.TypedSchemaField(BasePrereq.TYPES), {
+				initial: [
+					{
+						type: prereq.Type.List,
+						id: "root",
+						all: true,
+						when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 },
+						prereqs: [],
+					},
+				],
+			}),
+			features: new fields.ArrayField(new fields.TypedSchemaField(BaseFeature.TYPES)),
+			replacements: new RecordField(
+				new fields.StringField({ required: true, nullable: false }),
+				new fields.StringField({ required: true, nullable: false }),
+			),
 		}
 	}
 }
@@ -44,9 +57,12 @@ type TechniqueSystemSchema = AbstractSkillSystemSchema & {
 	defaults: fields.ArrayField<fields.SchemaField<SkillDefaultSchema>>
 	limit: fields.NumberField
 	limited: fields.BooleanField
-	prereqs: fields.SchemaField<PrereqListSchema>
-	features: fields.ArrayField<fields.SchemaField<FeatureSchema>>
-	replacements: RecordField<fields.StringField<string, string, true, false, false>,  fields.StringField<string,string,true,false,false>>
+	prereqs: fields.ArrayField<fields.TypedSchemaField<Record<prereq.Type, ConstructorOf<Prereq>>>>
+	features: fields.ArrayField<fields.TypedSchemaField<Record<feature.Type, ConstructorOf<Feature>>>>
+	replacements: RecordField<
+		fields.StringField<string, string, true, false, false>,
+		fields.StringField<string, string, true, false, false>
+	>
 }
 
 type TechniqueSystemSource = SourceFromSchema<TechniqueSystemSchema>

@@ -3,7 +3,6 @@
 		<span>{{ localize "gurps.prereq.header" }}</span>
 	</header>
 	<ul>
-		{{#with system.prereqs}} {{>item/partials/prereq/prereq-list path="array.system.prereqs" indent=0 config=config
-		attributes=attributes}} {{/with}}
+		{{#with document.prereqs}} {{>item/partials/prereq/prereq-list}} {{/with}}
 	</ul>
 </div>

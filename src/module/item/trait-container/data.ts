@@ -1,6 +1,6 @@
-import { ItemType } from "@module/data/constants.ts"
-import { TemplatePicker, TemplatePickerSchema } from "@system"
-import { container, selfctrl } from "@util"
+import { ItemType, NumericCompareType } from "@module/data/constants.ts"
+import { BasePrereq, Prereq, TemplatePicker, TemplatePickerSchema } from "@system"
+import { container, prereq, selfctrl } from "@util"
 import { TraitContainerGURPS } from "./document.ts"
 import fields = foundry.data.fields
 import {
@@ -28,6 +28,17 @@ class TraitContainerSystemData extends AbstractContainerSystemData<TraitContaine
 			userdesc: new fields.StringField(),
 			tags: new fields.ArrayField(new foundry.data.fields.StringField()),
 			template_picker: new fields.SchemaField(TemplatePicker.defineSchema()),
+			prereqs: new fields.ArrayField(new fields.TypedSchemaField(BasePrereq.TYPES), {
+				initial: [
+					{
+						type: prereq.Type.List,
+						id: "root",
+						all: true,
+						when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 },
+						prereqs: [],
+					},
+				],
+			}),
 			cr: new fields.NumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>({
 				choices: selfctrl.Rolls,
 				initial: selfctrl.Roll.NoCR,
@@ -43,7 +54,10 @@ class TraitContainerSystemData extends AbstractContainerSystemData<TraitContaine
 			}),
 			disabled: new fields.BooleanField({ initial: false }),
 			open: new fields.BooleanField({ initial: true }),
-			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField({required: true, nullable: false})),
+			replacements: new RecordField(
+				new fields.StringField({ required: true, nullable: false }),
+				new fields.StringField({ required: true, nullable: false }),
+			),
 		}
 	}
 }
@@ -63,12 +77,16 @@ type TraitContainerSystemSchema = AbstractContainerSystemSchema & {
 	userdesc: fields.StringField
 	tags: fields.ArrayField<fields.StringField>
 	template_picker: fields.SchemaField<TemplatePickerSchema>
+	prereqs: fields.ArrayField<fields.TypedSchemaField<Record<prereq.Type, ConstructorOf<Prereq>>>>
 	cr: fields.NumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>
 	cr_adj: fields.StringField<selfctrl.Adjustment>
 	container_type: fields.StringField<container.Type>
 	disabled: fields.BooleanField
 	open: fields.BooleanField
-	replacements: RecordField<fields.StringField<string, string, true, false, false>,  fields.StringField<string,string,true,false,false>>
+	replacements: RecordField<
+		fields.StringField<string, string, true, false, false>,
+		fields.StringField<string, string, true, false, false>
+	>
 }
 
 type TraitContainerSystemSource = SourceFromSchema<TraitContainerSystemSchema>

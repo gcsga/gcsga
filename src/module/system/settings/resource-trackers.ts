@@ -1,7 +1,7 @@
 import { SETTINGS, SYSTEM_NAME } from "@data"
 import { PartialSettingsData, SettingsMenuGURPS } from "./menu.ts"
 import { htmlQuery, htmlQueryAll } from "@util/dom.ts"
-import { DnD, getNewAttributeId, prepareFormData } from "@util"
+import { DnD, getNewAttributeId } from "@util"
 import { defaultSettings } from "./defaults.ts"
 import { DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
 import { DropDataContext } from "@module/util/settings-helpers.ts"
@@ -187,12 +187,12 @@ export class ResourceTrackerSettings extends SettingsMenuGURPS {
 		}
 	}
 
-	protected override async _updateObject(_event: Event, formData: Record<string, unknown>): Promise<void> {
-		const resource_trackers = game.settings.get(
-			SYSTEM_NAME,
-			`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`,
-		)
-		formData = prepareFormData(formData, { system: { settings: { resource_trackers } } })
-		game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`, resource_trackers)
-	}
+	// protected override async _updateObject(_event: Event, formData: Record<string, unknown>): Promise<void> {
+	// 	const resource_trackers = game.settings.get(
+	// 		SYSTEM_NAME,
+	// 		`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`,
+	// 	)
+	// 	formData = prepareFormData(formData, { system: { settings: { resource_trackers } } })
+	// 	game.settings.set(SYSTEM_NAME, `${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`, resource_trackers)
+	// }
 }

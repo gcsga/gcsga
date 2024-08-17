@@ -38,7 +38,6 @@ import {
 	EquippedEquipmentPrereq,
 	MoveBonus,
 	MoveType,
-	PrereqList,
 	ReactionBonus,
 	ResourceTracker,
 	SkillBonus,
@@ -49,6 +48,7 @@ import {
 	SpellPrereq,
 	TraitPrereq,
 	WeaponBonus,
+	PrereqList,
 } from "@system"
 import { feature, prereq } from "@util"
 

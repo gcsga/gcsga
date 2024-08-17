@@ -1,7 +1,7 @@
 import { SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
 import { PartialSettingsData, SettingsMenuGURPS } from "./menu.ts"
 import { RollModifier } from "@module/data/types.ts"
-import { DnD, LocalizeGURPS, prepareFormData } from "@util"
+import { DnD, LocalizeGURPS } from "@util"
 
 type ConfigGURPSListName = (typeof RollModifierSettings.SETTINGS)[number]
 
@@ -110,12 +110,12 @@ export class RollModifierSettings extends SettingsMenuGURPS {
 		return this.render()
 	}
 
-	protected override async _updateObject(_event: Event, formData: Record<string, unknown>): Promise<void> {
-		const modifiers: RollModifier[] = game.settings.get(
-			SYSTEM_NAME,
-			`${this.namespace}.modifiers`,
-		) as RollModifier[]
-		formData = prepareFormData(formData, { modifiers: modifiers })
-		await game.settings.set(SYSTEM_NAME, `${this.namespace}.modifiers`, formData.modifiers)
-	}
+	// protected override async _updateObject(_event: Event, formData: Record<string, unknown>): Promise<void> {
+	// 	const modifiers: RollModifier[] = game.settings.get(
+	// 		SYSTEM_NAME,
+	// 		`${this.namespace}.modifiers`,
+	// 	) as RollModifier[]
+	// 	formData = prepareFormData(formData, { modifiers: modifiers })
+	// 	await game.settings.set(SYSTEM_NAME, `${this.namespace}.modifiers`, formData.modifiers)
+	// }
 }

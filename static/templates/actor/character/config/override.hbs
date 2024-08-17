@@ -7,7 +7,7 @@
 		<label>{{localize "gurps.move_type_def.condition_type"}}</label>
 		<div class="field">
 			<select
-				name="array.system.settings.move_types.{{id}}.overrides.{{@index}}.condition.type"
+				name="system.settings.move_types.{{id}}.overrides.{{@index}}.condition.type"
 				data-dtype="String"
 			>
 				{{#select this.condition.type}} {{#each @root.config.select.move_override as |v k|}}

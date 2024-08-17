@@ -16,8 +16,8 @@ export enum MoveBonusType {
 // 	type: fields.StringField<TType>
 // }
 
-export type BaseFeatureSchema = {
-	type: fields.StringField<feature.Type, feature.Type, true, false, true>
+export type BaseFeatureSchema<TType extends feature.Type> = {
+	type: fields.StringField<TType, TType, true>
 	amount: fields.NumberField<number, number, true, false>
 	per_level: fields.BooleanField
 	effective: fields.BooleanField<boolean, boolean, false>
@@ -36,64 +36,64 @@ export type BaseFeatureSchema = {
 // 	effective: fields.BooleanField<boolean, boolean, false>
 // }
 
-export type AttributeBonusSchema = BaseFeatureSchema & {
+export type AttributeBonusSchema = BaseFeatureSchema<feature.Type.AttributeBonus> & {
 	limitation: fields.StringField<stlimit.Option>
 	attribute: fields.StringField
 }
 
-export type ConditionalModifierBonusSchema = BaseFeatureSchema & {
+export type ConditionalModifierBonusSchema = BaseFeatureSchema<feature.Type.ConditionalModifierBonus> & {
 	situation: fields.StringField
 }
 
-export type ContainedWeightReductionSchema = BaseFeatureSchema & {
+export type ContainedWeightReductionSchema = BaseFeatureSchema<feature.Type.ContainedWeightReduction> & {
 	reduction: fields.StringField
 }
 
-export type CostReductionSchema = BaseFeatureSchema & {
+export type CostReductionSchema = BaseFeatureSchema<feature.Type.CostReduction> & {
 	attribute: fields.StringField
 	percentage: fields.NumberField
 }
 
-export type DRBonusSchema = BaseFeatureSchema & {
+export type DRBonusSchema = BaseFeatureSchema<feature.Type.DRBonus> & {
 	locations: fields.ArrayField<fields.StringField>
 	specialization: fields.StringField
 }
 
-export type MoveBonusSchema = BaseFeatureSchema & {
+export type MoveBonusSchema = BaseFeatureSchema<feature.Type.MoveBonus> & {
 	move_type: fields.StringField
 	limitation: fields.StringField<MoveBonusType>
 }
 
-export type ReactionBonusSchema = BaseFeatureSchema & {
+export type ReactionBonusSchema = BaseFeatureSchema<feature.Type.ReactionBonus> & {
 	situation: fields.StringField
 }
 
-export type SkillBonusSchema = BaseFeatureSchema & {
+export type SkillBonusSchema = BaseFeatureSchema<feature.Type.SkillBonus> & {
 	selection_type: fields.StringField<skillsel.Type>
 	name: fields.SchemaField<StringCriteriaSchema>
 	specialization: fields.SchemaField<StringCriteriaSchema>
 	tags: fields.SchemaField<StringCriteriaSchema>
 }
 
-export type SkillPointBonusSchema = BaseFeatureSchema & {
+export type SkillPointBonusSchema = BaseFeatureSchema<feature.Type.SkillPointBonus> & {
 	name: fields.SchemaField<StringCriteriaSchema>
 	specialization: fields.SchemaField<StringCriteriaSchema>
 	tags: fields.SchemaField<StringCriteriaSchema>
 }
 
-export type SpellBonusSchema = BaseFeatureSchema & {
+export type SpellBonusSchema = BaseFeatureSchema<feature.Type.SpellBonus> & {
 	match: fields.StringField<spellmatch.Type>
 	name: fields.SchemaField<StringCriteriaSchema>
 	tags: fields.SchemaField<StringCriteriaSchema>
 }
 
-export type SpellPointBonusSchema = BaseFeatureSchema & {
+export type SpellPointBonusSchema = BaseFeatureSchema<feature.Type.SpellPointBonus> & {
 	match: fields.StringField<spellmatch.Type>
 	name: fields.SchemaField<StringCriteriaSchema>
 	tags: fields.SchemaField<StringCriteriaSchema>
 }
 
-export type WeaponBonusSchema = BaseFeatureSchema & {
+export type WeaponBonusSchema = BaseFeatureSchema<feature.WeaponBonusType> & {
 	percent: fields.BooleanField<boolean, boolean, true, true>
 	switch_type: fields.StringField<wswitch.Type, wswitch.Type, true, true>
 	switch_type_value: fields.BooleanField<boolean, boolean, true, true>
@@ -140,7 +140,6 @@ export type WeaponBonusSchema = BaseFeatureSchema & {
 }
 
 export type FeatureSchema =
-	| BaseFeatureSchema
 	| AttributeBonusSchema
 	| ConditionalModifierBonusSchema
 	| ContainedWeightReductionSchema

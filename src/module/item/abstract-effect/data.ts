@@ -1,11 +1,12 @@
 import fields = foundry.data.fields
 import { BaseItemSourceGURPS, ItemFlagsGURPS, ItemSystemSource } from "@item/base/data.ts"
+import { ItemSystemModel, ItemSystemSchema } from "@item/base/schema.ts"
 import { EffectType, ItemFlags, SYSTEM_NAME } from "@module/data/constants.ts"
 import { RollModifier } from "@module/data/types.ts"
-import { AbstractEffectGURPS } from "./document.ts"
-import { ItemSystemModel, ItemSystemSchema } from "@item/base/schema.ts"
-import { FeatureSchema } from "@system"
 import { BaseFeature } from "@system/feature/base.ts"
+import { feature } from "@util"
+import { AbstractEffectGURPS } from "./document.ts"
+import { Feature } from "@system"
 
 type EffectFlags = ItemFlagsGURPS & {
 	[SYSTEM_NAME]: {
@@ -30,7 +31,7 @@ abstract class AbstractEffectSystemData<
 
 		return {
 			...super.defineSchema(),
-			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
+			features: new fields.ArrayField(new fields.TypedSchemaField(BaseFeature.TYPES)),
 			modifiers: new fields.ArrayField(new fields.ObjectField<RollModifier>()),
 			can_level: new fields.BooleanField(),
 			levels: new fields.SchemaField({ max: new fields.NumberField(), current: new fields.NumberField() }),
@@ -55,7 +56,7 @@ interface AbstractEffectSystemData<TParent extends AbstractEffectGURPS, TSchema 
 	extends ItemSystemModel<TParent, TSchema> {}
 
 type AbstractEffectSystemSchema = ItemSystemSchema & {
-	features: fields.ArrayField<fields.SchemaField<FeatureSchema>>
+	features: fields.ArrayField<fields.TypedSchemaField<Record<feature.Type, ConstructorOf<Feature>>>>
 	modifiers: fields.ArrayField<fields.ObjectField<RollModifier>>
 	can_level: fields.BooleanField
 	levels: fields.SchemaField<{

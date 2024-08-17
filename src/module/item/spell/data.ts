@@ -1,8 +1,8 @@
 import { AbstractContainerSource } from "@item/abstract-container/data.ts"
-import { ItemType, gid } from "@module/data/constants.ts"
+import { ItemType, NumericCompareType, gid } from "@module/data/constants.ts"
 import { SkillDifficulty } from "@module/data/types.ts"
-import { PrereqList, PrereqListSchema } from "@system"
-import { TooltipGURPS, difficulty } from "@util"
+import { BasePrereq, Prereq } from "@system"
+import { TooltipGURPS, difficulty, prereq } from "@util"
 import { SpellGURPS } from "./document.ts"
 import fields = foundry.data.fields
 import { AbstractSkillSystemData, AbstractSkillSystemSchema } from "@item/abstract-skill/data.ts"
@@ -30,8 +30,21 @@ class SpellSystemData extends AbstractSkillSystemData<SpellGURPS, SpellSystemSch
 			maintenance_cost: new fields.StringField(),
 			casting_time: new fields.StringField(),
 			duration: new fields.StringField(),
-			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
-			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField({required: true, nullable: false})),
+			prereqs: new fields.ArrayField(new fields.TypedSchemaField(BasePrereq.TYPES), {
+				initial: [
+					{
+						type: prereq.Type.List,
+						id: "root",
+						all: true,
+						when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 },
+						prereqs: [],
+					},
+				],
+			}),
+			replacements: new RecordField(
+				new fields.StringField({ required: true, nullable: false }),
+				new fields.StringField({ required: true, nullable: false }),
+			),
 		}
 	}
 }
@@ -52,8 +65,11 @@ type SpellSystemSchema = AbstractSkillSystemSchema & {
 	maintenance_cost: fields.StringField
 	casting_time: fields.StringField
 	duration: fields.StringField
-	prereqs: fields.SchemaField<PrereqListSchema>
-	replacements: RecordField<fields.StringField<string, string, true, false, false>,  fields.StringField<string,string,true,false,false>>
+	prereqs: fields.ArrayField<fields.TypedSchemaField<Record<prereq.Type, ConstructorOf<Prereq>>>>
+	replacements: RecordField<
+		fields.StringField<string, string, true, false, false>,
+		fields.StringField<string, string, true, false, false>
+	>
 }
 
 type SpellSystemSource = SourceFromSchema<SpellSystemSchema>

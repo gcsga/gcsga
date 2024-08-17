@@ -91,6 +91,7 @@ abstract class AbstractSkillGURPS<
 		if (!actor) return Number.MIN_SAFE_INTEGER
 		if (actor instanceof ActorGURPS && actor.isOfType(ActorType.Character)) {
 			const att = actor.resolveAttributeCurrent(this.attribute)
+			console.log(this, this.name)
 			const effectiveAtt = actor.resolveAttributeEffective(this.attribute)
 			return this.level.level - att + effectiveAtt
 		}

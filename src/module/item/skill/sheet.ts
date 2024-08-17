@@ -13,7 +13,7 @@ class SkillSheetGURPS extends AbstractContainerSheetGURPS<SkillGURPS> {
 
 		return {
 			...sheetData,
-			sysPrefix: "array.system.",
+			sysPrefix: "system.",
 		}
 	}
 }

@@ -1,56 +1,46 @@
-import { prereq } from "@util/enum/prereq.ts"
-import { LocalizeGURPS, TooltipGURPS, extractTechLevel } from "@util"
 import { ActorGURPS } from "@actor"
-import { BasePrereq, Prereq, PrereqConstructionOptions, PrereqListSchema } from "./index.ts"
-import { ActorType, NumericCompareType } from "@module/data/constants.ts"
+import { ActorType, ItemType, NumericCompareType } from "@module/data/constants.ts"
 import { NumericCriteria } from "@module/util/index.ts"
-
-function validatePrereqDepth(value: unknown, currentDepth: number, maxDepth: number): boolean {
-	const p = value as Prereq
-
-	if (currentDepth >= maxDepth) {
-		throw new Error("max depth reached")
-	}
-
-	if (p.type === prereq.Type.List) {
-		for (const child of p.prereqs) {
-			validatePrereqDepth(child, currentDepth + 1, maxDepth)
-		}
-	}
-	return true
-}
+import { LocalizeGURPS, TooltipGURPS, extractTechLevel } from "@util"
+import { prereq } from "@util/enum/prereq.ts"
+import { BasePrereq, Prereq, PrereqConstructionOptions, PrereqListSchema } from "./index.ts"
 
 class PrereqList extends BasePrereq<PrereqListSchema> {
 	constructor(data: DeepPartial<SourceFromSchema<PrereqListSchema>>, options?: PrereqConstructionOptions) {
 		super(data, options)
 
 		this.when_tl = new NumericCriteria(data.when_tl)
-		const prereqs: Prereq[] = []
-		if (data.prereqs)
-			for (const source of data.prereqs) {
-				if (!source || !source.type) continue
-				const PrereqClass = CONFIG.GURPS.Prereq.classes[source.type]
-				// @ts-expect-error is ok
-				prereqs.push(new PrereqClass(source))
-			}
-		this.prereqs = prereqs
 	}
 
 	static override defineSchema(): PrereqListSchema {
 		const fields = foundry.data.fields
 
 		return {
-			type: new fields.StringField({ initial: prereq.Type.List }),
+			...super.defineSchema(),
+			type: new fields.StringField({ required: true, nullable: false, blank: false, initial: prereq.Type.List }),
 			all: new fields.BooleanField({ initial: true }),
 			when_tl: new fields.SchemaField(NumericCriteria.defineSchema()),
-			prereqs: new fields.ArrayField(
-				new fields.ObjectField<Prereq, Prereq>({
-					validate: (value: unknown) => {
-						return validatePrereqDepth(value, 0, 5)
-					},
-				}),
-			),
+			// prereqs: new fields.ArrayField(new fields.TypedSchemaField(BasePrereq.TYPES)),
+			prereqs: new fields.ArrayField(new fields.StringField({ required: true, nullable: false })),
 		}
+	}
+
+	get children(): Prereq[] {
+		const children: Prereq[] = []
+		if (!this.item.isOfType(ItemType.Trait)) return children
+		for (const id of this.prereqs) {
+			const child = this.item.system.prereqs.find(e => e.id === id)
+			if (child) children.push(child)
+		}
+		return children
+	}
+
+	get deepPrereqs(): string[] {
+		const prereqs = this.prereqs
+		for (const child of this.children) {
+			if (child.type === prereq.Type.List) prereqs.push(...child.deepPrereqs)
+		}
+		return prereqs
 	}
 
 	satisfied(
@@ -71,7 +61,7 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 		let count = 0
 		const local = new TooltipGURPS()
 		const eqpPenalty = { value: false }
-		for (const one of this.prereqs) {
+		for (const one of this.children) {
 			if (one.satisfied(actor, exclude, local, eqpPenalty)) count += 1
 		}
 		const satisfied = count === this.prereqs.length || (!this.all && count > 0)
@@ -85,17 +75,20 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 	}
 
 	fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {
-		for (const prereq of this.prereqs) {
+		for (const prereq of this.children) {
 			prereq.fillWithNameableKeys(m, existing)
 		}
 	}
 }
 
-interface PrereqList
-	extends BasePrereq<PrereqListSchema>,
-		Omit<ModelPropsFromSchema<PrereqListSchema>, "when_tl" | "prereqs"> {
+interface PrereqList extends BasePrereq<PrereqListSchema>, Omit<ModelPropsFromSchema<PrereqListSchema>, "when_tl"> {
 	when_tl: NumericCriteria
-	prereqs: Prereq[]
 }
 
+// interface PrereqList
+// 	extends BasePrereq<PrereqListSchema>,
+// 		Omit<ModelPropsFromSchema<PrereqListSchema>, "when_tl" | "prereqs"> {
+// 	when_tl: NumericCriteria
+// 	prereqs: Prereq[]
+// }
 export { PrereqList }

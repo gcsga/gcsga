@@ -1,13 +1,23 @@
 import { ActorGURPS } from "@actor"
 import {
 	AbstractContainerGURPS,
+	ConditionGURPS,
+	EffectGURPS,
 	EquipmentContainerGURPS,
+	EquipmentGURPS,
 	EquipmentModifierContainerGURPS,
+	EquipmentModifierGURPS,
 	NoteContainerGURPS,
+	RitualMagicSpellGURPS,
 	SkillContainerGURPS,
+	SkillGURPS,
 	SpellContainerGURPS,
+	SpellGURPS,
+	TechniqueGURPS,
 	TraitContainerGURPS,
+	TraitGURPS,
 	TraitModifierContainerGURPS,
+	TraitModifierGURPS,
 } from "@item"
 import type { ItemSourceGURPS } from "@item/data/index.ts"
 import { getItemArtworkName, itemIsOfType } from "@item/helpers.ts"
@@ -15,11 +25,13 @@ import { ItemInstances } from "@item/types.ts"
 import { ABSTRACT_CONTAINER_TYPES, CONTAINER_TYPES, ItemFlags, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { MigrationList, MigrationRunner } from "@module/migration/index.ts"
 import { TID } from "@module/util/tid.ts"
-import { ContainedWeightReduction, Feature, FeatureSchema, PrereqList } from "@system"
+import { ContainedWeightReduction, Feature, FeatureSchema } from "@system"
 import {
+	ErrorGURPS,
 	EvalEmbeddedRegex,
 	LocalizeGURPS,
 	display,
+	prereq,
 	replaceAllStringFunc,
 	setHasElement,
 	sheetDisplayNotes,
@@ -29,6 +41,7 @@ import Document, { _Document } from "types/foundry/common/abstract/document.js"
 import { DataSchema } from "types/foundry/common/data/fields.js"
 import type { ItemFlagsGURPS, ItemSystemData } from "./data.ts"
 import type { ItemSheetGURPS } from "./sheet.ts"
+import { PrereqList } from "@system/prereq/prereq-list.ts"
 
 /** The basic `Item` subclass for the system */
 class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends Item<TParent> {
@@ -153,41 +166,69 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 	}
 
 	get prereqsEmpty(): boolean {
-		if (
-			itemIsOfType(
-				this,
-				ItemType.Trait,
-				ItemType.Skill,
-				ItemType.Technique,
-				ItemType.Spell,
-				ItemType.RitualMagicSpell,
-				ItemType.Equipment,
-				ItemType.EquipmentContainer,
-			)
-		) {
+		if (this.canContainPrereqs()) {
 			if (!this.system.prereqs) return true
-			return this.system.prereqs?.prereqs ? this.system.prereqs.prereqs.length > 1 : false
+			return this.system.prereqs.length === 0
 		}
 		return true
 	}
 
 	get prereqs(): PrereqList {
-		if (
-			itemIsOfType(
-				this,
-				ItemType.Trait,
-				ItemType.Skill,
-				ItemType.Technique,
-				ItemType.Spell,
-				ItemType.RitualMagicSpell,
-				ItemType.Equipment,
-				ItemType.EquipmentContainer,
-			)
-		) {
-			if (!this.system.prereqs) return new PrereqList({}, { parent: this })
-			if (!this.system.prereqs) return new PrereqList(this.system.prereqs, { parent: this })
+		if (this.canContainPrereqs()) {
+			const rootPrereq = this.system.prereqs.find(e => e.id === "root")
+			if (rootPrereq) {
+				if (rootPrereq.type === prereq.Type.List) {
+					return rootPrereq
+				} else {
+					throw ErrorGURPS("Root prerequisite is not a prerequisite list!")
+				}
+			}
 		}
-		return new PrereqList({}, { parent: this })
+		return new PrereqList({ id: "root" }, { parent: this })
+	}
+
+	canContainPrereqs(): this is
+		| TraitGURPS<TParent>
+		| TraitContainerGURPS<TParent>
+		| SkillGURPS<TParent>
+		| TechniqueGURPS<TParent>
+		| SpellGURPS<TParent>
+		| RitualMagicSpellGURPS<TParent>
+		| EquipmentGURPS<TParent>
+		| EquipmentContainerGURPS<TParent> {
+		return this.isOfType(
+			ItemType.Trait,
+			ItemType.TraitContainer,
+			ItemType.Skill,
+			ItemType.Technique,
+			ItemType.Spell,
+			ItemType.RitualMagicSpell,
+			ItemType.Equipment,
+			ItemType.EquipmentContainer,
+		)
+	}
+
+	canContainFeatures(): this is
+		| TraitGURPS<TParent>
+		| TraitModifierGURPS<TParent>
+		| SkillGURPS<TParent>
+		| TechniqueGURPS<TParent>
+		| EquipmentGURPS<TParent>
+		| EquipmentContainerGURPS<TParent>
+		| EquipmentModifierGURPS<TParent>
+		| EffectGURPS<TParent>
+		| ConditionGURPS<TParent> {
+		return this.isOfType(
+			ItemType.Trait,
+			ItemType.TraitModifier,
+			ItemType.Skill,
+			ItemType.Technique,
+			ItemType.Equipment,
+			ItemType.EquipmentContainer,
+			ItemType.EquipmentModifier,
+			ItemType.Effect,
+			ItemType.Condition,
+		)
 	}
 
 	// TODO: replace with something better

@@ -1,5 +1,5 @@
 import { LocalizeGURPS } from "@util/localize.ts"
-import { TooltipGURPS } from "@util"
+import { TooltipGURPS, feature } from "@util"
 import { gid } from "@module/data/constants.ts"
 import { DRBonusSchema } from "./data.ts"
 import { BaseFeature } from "./base.ts"
@@ -12,6 +12,7 @@ class DRBonus extends BaseFeature<DRBonusSchema> {
 		return {
 			...super.defineSchema(),
 			// ...LeveledAmount.defineSchema(),
+			type: new fields.StringField({ required: true, nullable: false,  blank: false,initial: feature.Type.DRBonus }),
 			locations: new fields.ArrayField(new fields.StringField(), { initial: [gid.Torso] }),
 			specialization: new fields.StringField({ initial: gid.All }),
 		}

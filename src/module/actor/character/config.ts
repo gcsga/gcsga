@@ -2,7 +2,7 @@ import { DropDataType } from "@module/apps/damage-calculator/damage-chat-message
 import { FilePickerGURPS } from "@module/apps/file-picker.ts"
 import { SETTINGS, SORTABLE_BASE_OPTIONS, SYSTEM_NAME } from "@module/data/constants.ts"
 import { AbstractAttributeDef, AttributeDef, MoveTypeDef, ResourceTrackerDef } from "@system"
-import { DnD, LocalizeGURPS, htmlClosest, htmlQuery, htmlQueryAll, prepareFormData } from "@util"
+import { DnD, LocalizeGURPS, htmlClosest, htmlQuery, htmlQueryAll } from "@util"
 import { CharacterGURPS } from "./document.ts"
 import Sortable from "sortablejs"
 import { CharacterFlags } from "./data.ts"
@@ -71,7 +71,7 @@ class CharacterConfigSheet<TActor extends CharacterGURPS = CharacterGURPS> exten
 				.map(e => e.trim())
 		}
 
-		formData = prepareFormData(formData, this.actor)
+		// formData = prepareFormData(formData, this.actor)
 		return super._updateObject(event, formData)
 	}
 

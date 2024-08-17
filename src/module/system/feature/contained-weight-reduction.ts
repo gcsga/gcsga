@@ -2,6 +2,7 @@ import { Int } from "@util/fxp.ts"
 import { Weight, WeightUnits } from "@util/weight.ts"
 import { ContainedWeightReductionSchema } from "./data.ts"
 import { BaseFeature } from "./base.ts"
+import { feature } from "@util"
 
 class ContainedWeightReduction extends BaseFeature<ContainedWeightReductionSchema> {
 	static override defineSchema(): ContainedWeightReductionSchema {
@@ -10,6 +11,12 @@ class ContainedWeightReduction extends BaseFeature<ContainedWeightReductionSchem
 		return {
 			...super.defineSchema(),
 			// TODO: change for maybe percentage maybe number value (regex?)
+			type: new fields.StringField({
+				required: true,
+				nullable: false,
+				blank: false,
+				initial: feature.Type.ContainedWeightReduction,
+			}),
 			reduction: new fields.StringField({ initial: "0%" }),
 		}
 	}

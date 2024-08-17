@@ -1,6 +1,6 @@
 import { StringCriteria } from "@module/util/string-criteria.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { TooltipGURPS } from "@util"
+import { TooltipGURPS, feature } from "@util"
 import { SkillPointBonusSchema } from "./data.ts"
 import { BaseFeature } from "./base.ts"
 import { Nameable } from "@module/util/nameable.ts"
@@ -12,6 +12,7 @@ class SkillPointBonus extends BaseFeature<SkillPointBonusSchema> {
 		return {
 			...super.defineSchema(),
 			// ...LeveledAmount.defineSchema(),
+			type: new fields.StringField({ required: true, nullable: false,  blank: false,initial: feature.Type.SkillPointBonus }),
 			name: new fields.SchemaField(StringCriteria.defineSchema()),
 			specialization: new fields.SchemaField(StringCriteria.defineSchema()),
 			tags: new fields.SchemaField(StringCriteria.defineSchema()),

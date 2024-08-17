@@ -20,18 +20,16 @@ import {
 	WeaponBonus,
 } from "./index.ts"
 
-abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema> extends foundry.abstract.DataModel<
-	ItemGURPS,
-	TSchema
-> {
+abstract class BaseFeature<
+	TSchema extends BaseFeatureSchema<feature.Type> = BaseFeatureSchema<feature.Type>,
+> extends foundry.abstract.DataModel<ItemGURPS, TSchema> {
 	private declare _owner: ItemGURPS | null
 	private declare _subOwner: ItemGURPS | null
 
 	declare effective: boolean
 	declare featureLevel: number
-	// declare leveledAmount: LeveledAmount
 
-	static get TYPES(): Record<feature.Type, ConstructorOf<Feature>> {
+	static get TYPES(): Readonly<Record<feature.Type, ConstructorOf<Feature>>> {
 		return (BaseFeature.#TYPES ??= Object.freeze({
 			[feature.Type.AttributeBonus]: AttributeBonus,
 			[feature.Type.ConditionalModifierBonus]: ConditionalModifierBonus,
@@ -72,11 +70,17 @@ abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema
 
 	static #TYPES: any
 
-	static override defineSchema(): BaseFeatureSchema {
+	static override defineSchema(): BaseFeatureSchema<feature.Type> {
 		const fields = foundry.data.fields
 
 		return {
-			type: new fields.StringField({ required: true, choices: feature.Types }),
+			type: new fields.StringField({
+				required: true,
+				nullable: false,
+				blank: false,
+				choices: feature.Types,
+				initial: feature.Type.AttributeBonus,
+			}),
 			amount: new fields.NumberField({ required: true, integer: true, initial: 1 }),
 			per_level: new fields.BooleanField({ initial: false }),
 			effective: new fields.BooleanField({ required: false, initial: false }),
@@ -185,74 +189,13 @@ abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema
 		return amt
 	}
 
-	// basicAddToTooltip(amt: LeveledAmount, tooltip: TooltipGURPS | null): void {
-	// 	if (tooltip !== null) {
-	// 		// tooltip.push("\n")
-	// 		tooltip.push(this.parentName)
-	// 		tooltip.push(" [")
-	// 		tooltip.push(amt.format(false))
-	// 		tooltip.push("]")
-	// 	}
-	// }
-
 	abstract fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void
 }
 
-interface BaseFeature<TSchema extends BaseFeatureSchema>
+interface BaseFeature<TSchema extends BaseFeatureSchema<feature.Type>>
 	extends foundry.abstract.DataModel<ItemGURPS, TSchema>,
-		ModelPropsFromSchema<BaseFeatureSchema> {
+		Omit<ModelPropsFromSchema<BaseFeatureSchema<feature.Type>>, "type"> {
 	consturctor: typeof BaseFeature<TSchema>
-
-	// get schema(): LaxSchemaField<TSchema>
 }
 
-// class LeveledAmount {
-// 	declare level: number
-//
-// 	static defineSchema(): LeveledAmountSchema {
-// 		const fields = foundry.data.fields
-//
-// 		return {
-// 			amount: new fields.NumberField({ required: true, integer: true, initial: 1 }),
-// 			per_level: new fields.BooleanField({ initial: false }),
-// 			effective: new fields.BooleanField({ required: false, initial: false }),
-// 		}
-// 	}
-//
-// 	constructor(data: DeepPartial<SourceFromSchema<LeveledAmountSchema>>) {
-// 		this.level = 0
-// 		this.amount = data?.amount ?? 0
-// 		this.per_level = data?.per_level ?? false
-// 	}
-//
-// 	get adjustedAmount(): number {
-// 		let amt = this.amount
-// 		if (this.per_level) {
-// 			if (this.level < 0) return 0
-// 			amt *= this.level
-// 		}
-// 		return amt
-// 	}
-//
-// 	format(asPercentage: boolean): string {
-// 		let amt = this.amount.signedString()
-// 		let adjustedAmt = this.adjustedAmount.signedString()
-// 		if (asPercentage) {
-// 			amt += "%"
-// 			adjustedAmt += "%"
-// 		}
-// 		if (this.per_level)
-// 			return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.feature.weapon_bonus.per_level, {
-// 				total: adjustedAmt,
-// 				base: amt,
-// 			})
-// 		return amt
-// 	}
-// }
-//
-// interface LeveledAmount extends ModelPropsFromSchema<LeveledAmountSchema> {}
-
-export {
-	BaseFeature,
-	// LeveledAmount
-}
+export { BaseFeature }

@@ -1,7 +1,7 @@
 import { ItemFlagsGURPS } from "@item/data/index.ts"
-import { ItemFlags, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
-import { FeatureSchema, PrereqList, PrereqListSchema } from "@system"
-import { WeightString } from "@util"
+import { ItemFlags, ItemType, NumericCompareType, SYSTEM_NAME } from "@module/data/constants.ts"
+import { BasePrereq, Feature, Prereq } from "@system"
+import { WeightString, feature, prereq } from "@util"
 import fields = foundry.data.fields
 import {
 	AbstractContainerSource,
@@ -41,11 +41,24 @@ class EquipmentSystemData extends AbstractContainerSystemData<EquipmentGURPS, Eq
 			weight: new fields.StringField<WeightString>(),
 			max_uses: new fields.NumberField({ integer: true, min: 0 }),
 			uses: new fields.NumberField({ integer: true, min: 0 }),
-			prereqs: new fields.SchemaField(PrereqList.defineSchema()),
+			prereqs: new fields.ArrayField(new fields.TypedSchemaField(BasePrereq.TYPES), {
+				initial: [
+					{
+						type: prereq.Type.List,
+						id: "root",
+						all: true,
+						when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 },
+						prereqs: [],
+					},
+				],
+			}),
 			equipped: new fields.BooleanField({ initial: true }),
-			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
+			features: new fields.ArrayField(new fields.TypedSchemaField(BaseFeature.TYPES)),
 			ignore_weight_for_skills: new fields.BooleanField({ initial: false }),
-			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField({required: true, nullable: false})),
+			replacements: new RecordField(
+				new fields.StringField({ required: true, nullable: false }),
+				new fields.StringField({ required: true, nullable: false }),
+			),
 		}
 	}
 }
@@ -70,11 +83,14 @@ type EquipmentSystemSchema = AbstractContainerSystemSchema & {
 	weight: fields.StringField<WeightString>
 	max_uses: fields.NumberField
 	uses: fields.NumberField
-	prereqs: fields.SchemaField<PrereqListSchema>
-	features: fields.ArrayField<fields.SchemaField<FeatureSchema>>
+	prereqs: fields.ArrayField<fields.TypedSchemaField<Record<prereq.Type, ConstructorOf<Prereq>>>>
+	features: fields.ArrayField<fields.TypedSchemaField<Record<feature.Type, ConstructorOf<Feature>>>>
 	equipped: fields.BooleanField
 	ignore_weight_for_skills: fields.BooleanField
-	replacements: RecordField<fields.StringField<string, string, true, false, false>,  fields.StringField<string,string,true,false,false>>
+	replacements: RecordField<
+		fields.StringField<string, string, true, false, false>,
+		fields.StringField<string, string, true, false, false>
+	>
 }
 
 type EquipmentSystemSource = SourceFromSchema<EquipmentSystemSchema>

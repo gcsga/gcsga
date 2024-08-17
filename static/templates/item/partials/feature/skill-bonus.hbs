@@ -4,7 +4,7 @@
            data-action="remove-feature"
            data-index="{{@index}}"></a>
         <select class="type"
-                name="array.system.features.{{@index}}.type"
+                name="system.features.{{@index}}.type"
                 data-index="{{@index}}">
             {{#select this.type}}
             {{#each @root.config.select.feature_strict as |v k| }}
@@ -18,7 +18,7 @@
         </select>
         <div class="field">
             <input type="text"
-                   name="array.system.features.{{@index}}.amount"
+                   name="system.features.{{@index}}.amount"
                    value="{{ signed this.amount false }}"
                    data-dtype="Number" />
         </div>
@@ -26,7 +26,7 @@
             <input
                 type="checkbox"
                 data-dtype="Boolean"
-                name="array.system.features.{{@index}}.per_level"
+                name="system.features.{{@index}}.per_level"
                 {{checked
                 this.per_level}}
                 />
@@ -35,29 +35,29 @@
         </div>
         <div class="field-3">
             <div class="placeholder"></div>
-            <select name="array.system.features.{{@index}}.selection_type">
+            <select name="system.features.{{@index}}.selection_type">
                 {{#select this.selection_type}}
                 {{#each @root.config.select.skillsel as |v k|}}
                     <option value="{{ k }}">{{ localize v }}</option>
                 {{/each}}
             {{/select}}
         </select>
-        <select name="array.system.features.{{@index}}.name.compare" {{ disabled (eq this.selection_type "this_weapon") }}>
+        <select name="system.features.{{@index}}.name.compare" {{ disabled (eq this.selection_type "this_weapon") }}>
             {{#select this.name.compare}}
             {{#each @root.config.select.string_criteria as |v k|}}
                 <option value="{{ k }}">{{ localize v }}</option>
             {{/each}} {{/select}}
         </select>
         <div class="field">
-            <input type="text" name="array.system.features.{{@index}}.name.qualifier" value="{{ this.name.qualifier }}" data-dtype="String" {{ disabled (or (eq this.selection_type "this_weapon") (eq this.name.compare "none")) }} />
+            <input type="text" name="system.features.{{@index}}.name.qualifier" value="{{ this.name.qualifier }}" data-dtype="String" {{ disabled (or (eq this.selection_type "this_weapon") (eq this.name.compare "none")) }} />
         </div>
     </div>
     <div class="field-2">
         <div class="placeholder"></div>
-        <select name="array.system.features.{{@index}}.specialization.compare">
+        <select name="system.features.{{@index}}.specialization.compare">
             {{#select this.specialization.compare}}
             {{#each @root.config.select.string_criteria as |v k|}}
-                {{#if (eq ../this.selection_type "weapons_with_required_skill")}}
+                {{#if (eq ../this.selection_type "skills_with_name")}}
                     <option value="{{ k }}">{{ localize "gurps.field_prefix.specialization" }}{{ localize v }}</option>
                 {{ else }}
                     <option value="{{ k }}">{{ localize "gurps.field_prefix.usage" }} {{ localize v }}</option>
@@ -65,20 +65,20 @@
             {{/each}} {{/select}}
         </select>
         <div class="field">
-            <input type="text" name="array.system.features.{{@index}}.specialization.qualifier" value="{{ this.specialization.qualifier }}" data-dtype="String" {{ disabled (eq this.specialization.compare "none") }} />
+            <input type="text" name="system.features.{{@index}}.specialization.qualifier" value="{{ this.specialization.qualifier }}" data-dtype="String" {{ disabled (eq this.specialization.compare "none") }} />
         </div>
     </div>
     {{#unless (eq this.selection_type "this_weapon")}}
     <div class="field-2">
         <div class="placeholder"></div>
-        <select name="array.system.features.{{@index}}.tags.compare">
+        <select name="system.features.{{@index}}.tags.compare">
             {{#select this.tags.compare}}
             {{#each @root.config.select.string_criteria as |v k|}}
                 <option value="{{ k }}">{{ localize "gurps.field_prefix.tags" }} {{ localize v }}</option>
             {{/each}} {{/select}}
         </select>
         <div class="field">
-            <input type="text" name="array.system.features.{{@index}}.tags.qualifier" value="{{ this.tags.qualifier }}" data-dtype="String" {{ disabled (eq this.tags.compare "none") }} />
+            <input type="text" name="system.features.{{@index}}.tags.qualifier" value="{{ this.tags.qualifier }}" data-dtype="String" {{ disabled (eq this.tags.compare "none") }} />
         </div>
     </div>
 {{/unless}}

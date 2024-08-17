@@ -1,15 +1,18 @@
 import { StringCriteria } from "@module/util/string-criteria.ts"
 import { BasePrereq } from "./base.ts"
 import { prereq } from "@util/enum/prereq.ts"
-import { EquippedEquipmentPrereqSchema } from "./data.ts"
+import { EquippedEquipmentPrereqSchema, PrereqConstructionOptions } from "./data.ts"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
 import { ActorGURPS } from "@actor"
 import { StringCompareType } from "@module/data/constants.ts"
 import { Nameable } from "@module/util/nameable.ts"
 
 class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> {
-	constructor(data: DeepPartial<SourceFromSchema<EquippedEquipmentPrereqSchema>>) {
-		super(data)
+	constructor(
+		data: DeepPartial<SourceFromSchema<EquippedEquipmentPrereqSchema>>,
+		options?: PrereqConstructionOptions,
+	) {
+		super(data, options)
 		this.name = new StringCriteria(data.name ?? undefined)
 		this.tags = new StringCriteria(data.tags ?? undefined)
 	}
@@ -18,7 +21,13 @@ class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> 
 		const fields = foundry.data.fields
 
 		return {
-			type: new fields.StringField({ initial: prereq.Type.EquippedEquipment }),
+			...super.defineSchema(),
+			type: new fields.StringField({
+				required: true,
+				nullable: false,
+				blank: false,
+				initial: prereq.Type.EquippedEquipment,
+			}),
 			name: new fields.SchemaField(StringCriteria.defineSchema(), {
 				initial: {
 					compare: StringCompareType.IsString,

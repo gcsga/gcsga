@@ -2,10 +2,10 @@ import fields = foundry.data.fields
 import { BaseItemSourceGURPS } from "@item/base/data.ts"
 import { ItemSystemModel, ItemSystemSchema } from "@item/base/schema.ts"
 import { ItemType } from "@module/data/constants.ts"
-import { emcost, emweight } from "@util"
+import { emcost, emweight, feature } from "@util"
 import { EquipmentModifierGURPS } from "./document.ts"
 import { BaseFeature } from "@system/feature/base.ts"
-import { FeatureSchema } from "@system"
+import { Feature } from "@system"
 import { RecordField } from "@system/schema-data-fields.ts"
 
 class EquipmentModifierSystemData extends ItemSystemModel<EquipmentModifierGURPS, EquipmentModifierSystemSchema> {
@@ -29,8 +29,11 @@ class EquipmentModifierSystemData extends ItemSystemModel<EquipmentModifierGURPS
 			tech_level: new fields.StringField(),
 			cost: new fields.StringField(),
 			weight: new fields.StringField(),
-			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
-			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField({required: true, nullable: false})),
+			features: new fields.ArrayField(new fields.TypedSchemaField(BaseFeature.TYPES)),
+			replacements: new RecordField(
+				new fields.StringField({ required: true, nullable: false }),
+				new fields.StringField({ required: true, nullable: false }),
+			),
 		}
 	}
 }
@@ -53,8 +56,11 @@ type EquipmentModifierSystemSchema = ItemSystemSchema & {
 	tech_level: fields.StringField
 	cost: fields.StringField
 	weight: fields.StringField
-	features: fields.ArrayField<fields.SchemaField<FeatureSchema>>
-	replacements: RecordField<fields.StringField<string, string, true, false, false>,  fields.StringField<string,string,true,false,false>>
+	features: fields.ArrayField<fields.TypedSchemaField<Record<feature.Type, ConstructorOf<Feature>>>>
+	replacements: RecordField<
+		fields.StringField<string, string, true, false, false>,
+		fields.StringField<string, string, true, false, false>
+	>
 }
 
 type EquipmentModifierSystemSource = SourceFromSchema<EquipmentModifierSystemSchema>

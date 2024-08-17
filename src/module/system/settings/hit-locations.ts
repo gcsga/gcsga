@@ -2,7 +2,7 @@ import { MenuTemplateData, PartialSettingsData, SettingsMenuGURPS, settingsToShe
 import { SETTINGS, SYSTEM_NAME } from "@data"
 import { defaultSettings } from "./defaults.ts"
 import { htmlQueryAll } from "@util/dom.ts"
-import { DnD, prepareFormData } from "@util"
+import { DnD } from "@util"
 import { DropDataType } from "@module/apps/damage-calculator/damage-chat-message.ts"
 import { DropDataContext } from "@module/util/settings-helpers.ts"
 import { SettingsHelpers } from "@module/util/index.ts"
@@ -103,7 +103,7 @@ export class HitLocationSettings extends SettingsMenuGURPS {
 			config: CONFIG.GURPS,
 			settings: templateData,
 			instructions: `gurps.settings.${this.namespace}.hint`,
-			path: "array.body_type",
+			path: "body_type",
 		})
 	}
 
@@ -139,18 +139,23 @@ export class HitLocationSettings extends SettingsMenuGURPS {
 		return SettingsHelpers.onDropHitLocation(dragData, context)
 	}
 
-	protected override async _updateObject(event: Event, data: Record<string, unknown>): Promise<void> {
-		const body_type = {
-			name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
-			roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
-			locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
-		}
-		data = prepareFormData(data, { body_type: body_type })
-		Object.keys(data).forEach(k => {
-			data[k.replace("body_type.", "")] = data[k]
-			delete data[k]
-		})
-		await super._updateObject(event, data)
-		this.render()
-	}
+	// protected override async _updateObject(event: Event, data: Record<string, unknown>): Promise<void> {
+	// 	// const body_type = {
+	// 	// 	name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
+	// 	// 	roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
+	// 	// 	locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
+	// 	// }
+	// 	data = {
+	// 		name: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.name`),
+	// 		roll: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.roll`),
+	// 		locations: game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_HIT_LOCATIONS}.locations`),
+	// 	}
+	// 	// data = prepareFormData(data, { body_type: body_type })
+	// 	Object.keys(data).forEach(k => {
+	// 		data[k.replace("body_type.", "")] = data[k]
+	// 		delete data[k]
+	// 	})
+	// 	await super._updateObject(event, data)
+	// 	this.render()
+	// }
 }

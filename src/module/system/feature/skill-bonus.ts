@@ -1,5 +1,5 @@
 import { StringCriteria } from "@module/util/string-criteria.ts"
-import { skillsel } from "@util"
+import { feature, skillsel } from "@util"
 import { SkillBonusSchema } from "./data.ts"
 import { BaseFeature } from "./base.ts"
 import { Nameable } from "@module/util/nameable.ts"
@@ -10,7 +10,7 @@ class SkillBonus extends BaseFeature<SkillBonusSchema> {
 
 		return {
 			...super.defineSchema(),
-			// ...LeveledAmount.defineSchema(),
+			type: new fields.StringField({ required: true, nullable: false,  blank: false,initial: feature.Type.SkillBonus }),
 			selection_type: new fields.StringField({ choices: skillsel.Types, initial: skillsel.Type.Name }),
 			name: new fields.SchemaField(StringCriteria.defineSchema()),
 			specialization: new fields.SchemaField(StringCriteria.defineSchema()),

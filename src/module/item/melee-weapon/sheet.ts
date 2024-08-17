@@ -13,7 +13,7 @@ class MeleeWeaponSheetGURPS extends ItemSheetGURPS<MeleeWeaponGURPS> {
 
 		return {
 			...sheetData,
-			sysPrefix: "array.system.",
+			sysPrefix: "system.",
 		}
 	}
 

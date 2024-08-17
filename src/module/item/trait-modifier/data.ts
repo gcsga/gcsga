@@ -1,11 +1,11 @@
 import { BaseItemSourceGURPS } from "@item/base/data.ts"
 import { ItemSystemModel, ItemSystemSchema } from "@item/base/schema.ts"
 import { ItemType } from "@module/data/constants.ts"
-import { affects, tmcost } from "@util"
+import { affects, feature, tmcost } from "@util"
 import { TraitModifierGURPS } from "./document.ts"
 import fields = foundry.data.fields
 import { BaseFeature } from "@system/feature/base.ts"
-import { FeatureSchema } from "@system"
+import { Feature } from "@system"
 import { RecordField } from "@system/schema-data-fields.ts"
 
 class TraitModifierSystemData extends ItemSystemModel<TraitModifierGURPS, TraitModifierSystemSchema> {
@@ -28,8 +28,11 @@ class TraitModifierSystemData extends ItemSystemModel<TraitModifierGURPS, TraitM
 			affects: new fields.StringField<affects.Option>(),
 			cost_type: new fields.StringField<tmcost.Type>(),
 			disabled: new fields.BooleanField({ initial: false }),
-			features: new fields.ArrayField(new fields.SchemaField(BaseFeature.defineSchema())),
-			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField({required: true, nullable: false})),
+			features: new fields.ArrayField(new fields.TypedSchemaField(BaseFeature.TYPES)),
+			replacements: new RecordField(
+				new fields.StringField({ required: true, nullable: false }),
+				new fields.StringField({ required: true, nullable: false }),
+			),
 		}
 	}
 }
@@ -51,8 +54,11 @@ type TraitModifierSystemSchema = ItemSystemSchema & {
 	affects: fields.StringField<affects.Option>
 	cost_type: fields.StringField<tmcost.Type>
 	disabled: fields.BooleanField
-	features: fields.ArrayField<fields.SchemaField<FeatureSchema>>
-	replacements: RecordField<fields.StringField<string, string, true, false, false>,  fields.StringField<string,string,true,false,false>>
+	features: fields.ArrayField<fields.TypedSchemaField<Record<feature.Type, ConstructorOf<Feature>>>>
+	replacements: RecordField<
+		fields.StringField<string, string, true, false, false>,
+		fields.StringField<string, string, true, false, false>
+	>
 }
 
 type TraitModifierSystemSource = SourceFromSchema<TraitModifierSystemSchema>
