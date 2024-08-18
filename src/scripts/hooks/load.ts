@@ -61,7 +61,9 @@ export const Load = {
 		// CONFIG.Token.prototypeSheetClass = TokenConfigGURPS
 		CONFIG.User.documentClass = UserGURPS
 
-		CONFIG.Actor.dataModels[ActorType.Character] = CharacterSystemData
+		CONFIG.Actor.dataModels = {
+			[ActorType.Character]: CharacterSystemData,
+		}
 
 		CONFIG.Item.dataModels = {
 			[ItemType.Trait]: TraitSystemData,

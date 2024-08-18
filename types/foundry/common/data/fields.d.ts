@@ -1008,6 +1008,16 @@ export class DocumentUUIDField<
 	protected override _cast(value: unknown): string
 }
 
+interface ForeignDocumentFieldOptions<
+	TModelProp extends string,
+	TRequired extends boolean,
+	TNullable extends boolean,
+	THasInitial extends boolean,
+> extends StringFieldOptions<TModelProp, TRequired, TNullable, THasInitial> {
+	/** If true, return only the ID rather than the document itself */
+	idOnly?: boolean
+}
+
 /**
  * A special class of [StringField]{@link StringField} field which references another DataModel by its id.
  * This field may also be null to indicate that no foreign model is linked.
@@ -1025,7 +1035,7 @@ export class ForeignDocumentField<
 	 */
 	constructor(
 		model: ConstructorOf<abstract.DataModel>,
-		options?: StringFieldOptions<string, TRequired, TNullable, THasInitial>,
+		options?: ForeignDocumentFieldOptions<string, TRequired, TNullable, THasInitial>,
 		context?: DataFieldContext,
 	)
 

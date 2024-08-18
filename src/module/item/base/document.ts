@@ -363,15 +363,17 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 	}
 
 	get container(): AbstractContainerGURPS | null {
-		if (this.flags[SYSTEM_NAME][ItemFlags.Container] === null) return (this._container = null)
-		if (this.compendium)
-			return (this._container ??=
-				(this.compendium.get(
-					this.flags[SYSTEM_NAME][ItemFlags.Container],
-				) as unknown as AbstractContainerGURPS) ?? null)
-		return (this._container ??=
-			(this.collection.get(this.flags[SYSTEM_NAME][ItemFlags.Container]) as unknown as AbstractContainerGURPS) ??
-			null)
+		if (this.system.container === this._container?.id) return this._container
+		if (!this.system.container) return (this._container = null)
+		if (this.isEmbedded && this.actor !== null)
+			return (this._container = (this.actor.items.get(this.system.container) as AbstractContainerGURPS) ?? null)
+		if (this.pack) {
+			return (
+				(game.packs.get(this.pack)?.getDocument(this.system.container) as unknown as AbstractContainerGURPS) ??
+				null
+			)
+		}
+		return (this._container = (game.items.get(this.system.container) as AbstractContainerGURPS) ?? null)
 	}
 
 	get parents(): (CompendiumCollection<CompendiumDocument> | AbstractContainerGURPS | ActorGURPS)[] {

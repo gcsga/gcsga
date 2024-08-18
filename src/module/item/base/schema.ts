@@ -2,6 +2,7 @@ import type { ItemGURPS } from "./document.ts"
 import { SlugField } from "@system/schema-data-fields.ts"
 import { TID, TIDString } from "@module/util/tid.ts"
 import fields = foundry.data.fields
+import type { AbstractContainerGURPS } from "@item/abstract-container/document.ts"
 
 abstract class ItemSystemModel<TParent extends ItemGURPS, TSchema extends ItemSystemSchema> extends foundry.abstract
 	.TypeDataModel<TParent, TSchema> {
@@ -9,6 +10,7 @@ abstract class ItemSystemModel<TParent extends ItemGURPS, TSchema extends ItemSy
 		const fields = foundry.data.fields
 
 		return {
+			// container: new fields.ForeignDocumentField(foundry.documents.BaseItem, { idOnly: true }),
 			id: new fields.StringField({ required: true, nullable: false, validate: TID.isValidAndItem }),
 			slug: new SlugField({ required: true, nullable: true, initial: null }),
 			_migration: new fields.SchemaField({
@@ -40,6 +42,7 @@ interface ItemSystemModel<TParent extends ItemGURPS, TSchema extends ItemSystemS
 	extends foundry.abstract.TypeDataModel<TParent, TSchema> {}
 
 type ItemSystemSchema = {
+	// container: fields.ForeignDocumentField<AbstractContainerGURPS>
 	id: fields.StringField<TIDString, TIDString, true, false, true>
 	slug: SlugField<true, true, true>
 	_migration: fields.SchemaField<{

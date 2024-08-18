@@ -1,5 +1,7 @@
 # BIG OL' TODO Document
 
+- traverseEmbeddedDocuments
+
 ## Immediate TODO
 
 1. BUGS

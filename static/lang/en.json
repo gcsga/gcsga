@@ -30,6 +30,28 @@
 			"condition": "Condition"
 		}
 	},
+	"GURPS": {
+		"Actor": {
+			"base": {
+				"portrait": "Portrait"
+			},
+			"character": {}
+		},
+		"Item": {
+			"base": {
+				"FIELDS": {
+					"name": {
+						"hint": "The name of the item.",
+						"label": "Name"
+					},
+					"notes": {
+						"hint": "Helpful notes about the item.",
+						"label": "Notes"
+					}
+				}
+			}
+		}
+	},
 	"gurps": {
 		"ok": "OK",
 		"actor": {

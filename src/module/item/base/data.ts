@@ -25,6 +25,9 @@ interface ItemSourceFlagsGURPS extends DeepPartial<foundry.documents.ItemFlags> 
 }
 
 interface ItemSystemSource {
+	/** THe contaienr storing this item */
+	container: string | null
+
 	/** The TID of the item*/
 	id: TIDString
 

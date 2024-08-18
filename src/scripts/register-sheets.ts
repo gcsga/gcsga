@@ -1,4 +1,4 @@
-import { CharacterSheetGURPS, LootSheetGURPS, MookSheetGURPS } from "@actor/sheet.ts"
+import { CharacterSheetGURPS, CharacterSheetGURPSv2, LootSheetGURPS, MookSheetGURPS } from "@actor/sheet.ts"
 import { ActorType, ItemType, SYSTEM_NAME } from "@data"
 import {
 	EffectSheetGURPS,
@@ -30,6 +30,11 @@ export function registerSheets(): void {
 		types: [ActorType.Character],
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.character"),
+	})
+	Actors.registerSheet(SYSTEM_NAME, CharacterSheetGURPSv2, {
+		types: [ActorType.Character],
+		makeDefault: false,
+		label: game.i18n.localize("test sheet"),
 	})
 	Actors.registerSheet(SYSTEM_NAME, MookSheetGURPS, {
 		types: [ActorType.Character],

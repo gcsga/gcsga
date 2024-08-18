@@ -217,6 +217,20 @@ export default abstract class DataModel<
 	 * @returns Migrated source data, if necessary
 	 */
 	static migrateDataSafe(source: object): object
+
+	/**
+	 * Take data which conforms to the current data schema and add backwards-compatible accessors to it in order to
+	 * support older code which uses this data.
+	 * @param {object} source         Data which matches the current schema
+	 * @param {object} [options={}] Additional shimming options
+	 * @param {boolean} [options.embedded=true] Apply shims to embedded models?
+	 * @returns {object}            Data with added backwards-compatible properties
+	 */
+	static shimData<T extends DataModel>(
+		this: ConstructorOf<T>,
+		source: object,
+		options?: { embedded?: boolean },
+	): object
 }
 
 export interface DataModelValidationOptions {

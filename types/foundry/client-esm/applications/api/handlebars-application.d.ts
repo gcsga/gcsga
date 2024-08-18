@@ -6,7 +6,7 @@ declare function HandlebarsApplicationMixin<
 	TConfig extends DocumentSheetConfiguration = DocumentSheetConfiguration,
 	TRenderOptions extends DocumentSheetRenderOptions = DocumentSheetRenderOptions,
 >(
-	app: DocumentSheetV2<TDocument, TConfig, TRenderOptions>,
+	app: typeof DocumentSheetV2<TDocument, TConfig, TRenderOptions>,
 ): ConstructorOf<HandlebarsApplicationDocumentSheet<TDocument, TConfig, TRenderOptions>>
 
 export default HandlebarsApplicationMixin

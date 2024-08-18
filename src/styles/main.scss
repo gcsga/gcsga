@@ -3,7 +3,8 @@
 /* This is your Sass entry file */
 /* ---------------------------- */
 
-@import // GCS font and emojis
+@import "boilerplate",
+	// GCS font and emojis
 	"fonts",
 	// Useful functions
 	"mixins",
