@@ -30,15 +30,6 @@ function getCRFeatures(): Map<string, SkillBonus[]> {
 }
 
 class TraitSystemData extends AbstractContainerSystemData<TraitGURPS, TraitSystemSchema> {
-	// constructor(
-	// 	data: DeepPartial<SourceFromSchema<TraitSystemSchema>>,
-	// 	options: DataModelConstructionOptions<TraitGURPS>,
-	// ) {
-	// 	super(data, options)
-	//
-	// 	if (data.prereqs) this.prereqs = new PrereqList(data.prereqs, { parent: this.parent })
-	// }
-
 	static override defineSchema(): TraitSystemSchema {
 		const fields = foundry.data.fields
 

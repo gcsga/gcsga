@@ -10,7 +10,7 @@ type BaseItemSourceGURPS<
 
 interface ItemFlagsGURPS extends foundry.documents.ItemFlags {
 	[SYSTEM_NAME]: {
-		[ItemFlags.Container]: string | null
+		// [ItemFlags.Container]: string | null
 		// [ItemFlags.Other]: boolean
 		// [ItemFlags.Unready]: boolean
 	}
@@ -18,14 +18,14 @@ interface ItemFlagsGURPS extends foundry.documents.ItemFlags {
 
 interface ItemSourceFlagsGURPS extends DeepPartial<foundry.documents.ItemFlags> {
 	[SYSTEM_NAME]?: {
-		[ItemFlags.Container]?: string | null
+		// [ItemFlags.Container]?: string | null
 		[ItemFlags.Other]?: boolean
 		[ItemFlags.Unready]?: boolean
 	}
 }
 
 interface ItemSystemSource {
-	/** THe contaienr storing this item */
+	/** The contaienr storing this item */
 	container: string | null
 
 	/** The TID of the item*/

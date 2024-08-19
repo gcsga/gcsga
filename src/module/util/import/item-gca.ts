@@ -1,6 +1,6 @@
 import { GCACharacter, GCATrait } from "./data-gca.ts"
 import { TraitSource, TraitSystemSource } from "@item/trait/data.ts"
-import { ItemFlags, ItemType, NumericCompareType, SYSTEM_NAME, SkillDifficulty, gid } from "@data"
+import { ItemType, NumericCompareType, SYSTEM_NAME, SkillDifficulty, gid } from "@data"
 import { LocalizeGURPS, container, difficulty, picker, prereq, selfctrl, study } from "@util"
 import { SkillSource, SkillSystemSource } from "@item/skill/data.ts"
 import { TechniqueSource, TechniqueSystemSource } from "@item/technique/data.ts"
@@ -136,6 +136,7 @@ class GCAItemImporter {
 		const id = fu.randomID()
 
 		const systemData: TraitSystemSource = {
+			container: options.parentId,
 			id: TID.fromDocumentType(ItemType.Trait),
 			slug: "",
 			_migration: { version: null, previous: null },
@@ -182,11 +183,7 @@ class GCAItemImporter {
 			folder: null,
 			sort: 0,
 			ownership: {},
-			flags: {
-				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: options.parentId,
-				},
-			},
+			flags: {},
 			_stats: GCAItemImporter.getStats(),
 		}
 
@@ -197,6 +194,7 @@ class GCAItemImporter {
 		const id = fu.randomID()
 
 		const systemData: SkillSystemSource = {
+			container: options.parentId,
 			id: TID.fromDocumentType(ItemType.Skill),
 			slug: "",
 			_migration: { version: null, previous: null },
@@ -241,11 +239,7 @@ class GCAItemImporter {
 			folder: null,
 			sort: 0,
 			ownership: {},
-			flags: {
-				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: options.parentId,
-				},
-			},
+			flags: {},
 			_stats: GCAItemImporter.getStats(),
 		}
 
@@ -256,6 +250,7 @@ class GCAItemImporter {
 		const id = fu.randomID()
 
 		const systemData: TechniqueSystemSource = {
+			container: options.parentId,
 			id: TID.fromDocumentType(ItemType.Technique),
 			slug: "",
 			_migration: { version: null, previous: null },
@@ -309,11 +304,7 @@ class GCAItemImporter {
 			folder: null,
 			sort: 0,
 			ownership: {},
-			flags: {
-				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: options.parentId,
-				},
-			},
+			flags: {},
 			_stats: GCAItemImporter.getStats(),
 		}
 
@@ -324,6 +315,7 @@ class GCAItemImporter {
 		const id = fu.randomID()
 
 		const systemData: SpellSystemSource = {
+			container: options.parentId,
 			id: TID.fromDocumentType(ItemType.Spell),
 			slug: "",
 			_migration: { version: null, previous: null },
@@ -371,11 +363,7 @@ class GCAItemImporter {
 			folder: null,
 			sort: 0,
 			ownership: {},
-			flags: {
-				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: options.parentId,
-				},
-			},
+			flags: {},
 			_stats: GCAItemImporter.getStats(),
 		}
 
@@ -386,6 +374,7 @@ class GCAItemImporter {
 		const id = fu.randomID()
 
 		const systemData: EquipmentSystemSource = {
+			container: options.parentId,
 			id: TID.fromDocumentType(ItemType.Equipment),
 			slug: "",
 			_migration: { version: null, previous: null },
@@ -430,11 +419,7 @@ class GCAItemImporter {
 			folder: null,
 			sort: 0,
 			ownership: {},
-			flags: {
-				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: options.parentId,
-				},
-			},
+			flags: {},
 			_stats: GCAItemImporter.getStats(),
 		}
 
@@ -445,6 +430,7 @@ class GCAItemImporter {
 		const id = fu.randomID()
 
 		const systemData: EquipmentContainerSystemSource = {
+			container: options.parentId,
 			id: TID.fromDocumentType(ItemType.EquipmentContainer),
 			slug: "",
 			_migration: { version: null, previous: null },
@@ -490,11 +476,7 @@ class GCAItemImporter {
 			folder: null,
 			sort: 0,
 			ownership: {},
-			flags: {
-				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: options.parentId,
-				},
-			},
+			flags: {},
 			_stats: GCAItemImporter.getStats(),
 		}
 
@@ -520,6 +502,7 @@ class GCAItemImporter {
 		else if (data.cat?.includes("Meta-Traits")) container_type = container.Type.MetaTrait
 
 		const systemData: TraitContainerSystemSource = {
+			container: options.parentId,
 			id: TID.fromDocumentType(ItemType.TraitContainer),
 			slug: "",
 			_migration: { version: null, previous: null },
@@ -563,11 +546,7 @@ class GCAItemImporter {
 			folder: null,
 			sort: 0,
 			ownership: {},
-			flags: {
-				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: options.parentId,
-				},
-			},
+			flags: {},
 			_stats: GCAItemImporter.getStats(),
 		}
 

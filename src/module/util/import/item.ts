@@ -30,7 +30,7 @@ import {
 import { TechniqueSource, TechniqueSystemSource } from "@item/technique/data.ts"
 import { SpellSource, SpellSystemSource } from "@item/spell/data.ts"
 import { EquipmentSource, EquipmentSystemSource } from "@item/equipment/data.ts"
-import { ItemFlags, ItemKind, ItemType, NumericCompareType, SYSTEM_NAME, gid } from "@data"
+import { ItemKind, ItemType, NumericCompareType, SYSTEM_NAME, gid } from "@data"
 import { ItemSourceGURPS } from "@item/data/index.ts"
 import { Feature, Prereq, PrereqListSchema, SkillDefaultSchema, Study, TemplatePickerSchema } from "@system"
 import {
@@ -238,6 +238,7 @@ class TraitImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: TraitSystemSource = {
+			container: context.parentId,
 			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
@@ -300,11 +301,7 @@ class TraitImporter extends ItemImporter {
 			folder: null,
 			sort: 0,
 			ownership: {},
-			flags: {
-				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: context.parentId,
-				},
-			},
+			flags: {},
 			_stats: ItemImporter.getStats(),
 		}
 
@@ -324,6 +321,7 @@ class TraitContainerImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: TraitContainerSystemSource = {
+			container: context.parentId,
 			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
@@ -376,11 +374,7 @@ class TraitContainerImporter extends ItemImporter {
 			folder: null,
 			sort: 0,
 			ownership: {},
-			flags: {
-				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: context.parentId,
-				},
-			},
+			flags: {},
 			_stats: ItemImporter.getStats(),
 		}
 
@@ -400,6 +394,7 @@ class TraitModifierImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: TraitModifierSystemSource = {
+			container: context.parentId,
 			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
@@ -429,11 +424,7 @@ class TraitModifierImporter extends ItemImporter {
 			folder: null,
 			sort: 0,
 			ownership: {},
-			flags: {
-				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: context.parentId,
-				},
-			},
+			flags: {},
 			_stats: ItemImporter.getStats(),
 		}
 
@@ -453,6 +444,7 @@ class TraitModifierContainerImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: TraitModifierContainerSystemSource = {
+			container: context.parentId,
 			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
@@ -486,11 +478,7 @@ class TraitModifierContainerImporter extends ItemImporter {
 			folder: null,
 			sort: 0,
 			ownership: {},
-			flags: {
-				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: context.parentId,
-				},
-			},
+			flags: {},
 			_stats: ItemImporter.getStats(),
 		}
 
@@ -510,6 +498,7 @@ class SkillImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: SkillSystemSource = {
+			container: context.parentId,
 			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
@@ -561,11 +550,7 @@ class SkillImporter extends ItemImporter {
 			folder: null,
 			sort: 0,
 			ownership: {},
-			flags: {
-				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: context.parentId,
-				},
-			},
+			flags: {},
 			_stats: ItemImporter.getStats(),
 		}
 
@@ -585,6 +570,7 @@ class TechniqueImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: TechniqueSystemSource = {
+			container: context.parentId,
 			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
@@ -636,11 +622,7 @@ class TechniqueImporter extends ItemImporter {
 			folder: null,
 			sort: 0,
 			ownership: {},
-			flags: {
-				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: context.parentId,
-				},
-			},
+			flags: {},
 			_stats: ItemImporter.getStats(),
 		}
 
@@ -660,6 +642,7 @@ class SkillContainerImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: SkillContainerSystemSource = {
+			container: context.parentId,
 			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
@@ -694,11 +677,7 @@ class SkillContainerImporter extends ItemImporter {
 			folder: null,
 			sort: 0,
 			ownership: {},
-			flags: {
-				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: context.parentId,
-				},
-			},
+			flags: {},
 			_stats: ItemImporter.getStats(),
 		}
 
@@ -718,6 +697,7 @@ class SpellImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: SpellSystemSource = {
+			container: context.parentId,
 			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
@@ -772,11 +752,7 @@ class SpellImporter extends ItemImporter {
 			folder: null,
 			sort: 0,
 			ownership: {},
-			flags: {
-				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: context.parentId,
-				},
-			},
+			flags: {},
 			_stats: ItemImporter.getStats(),
 		}
 
@@ -796,6 +772,7 @@ class RitualMagicSpellImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: RitualMagicSpellSystemSource = {
+			container: context.parentId,
 			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
@@ -852,11 +829,7 @@ class RitualMagicSpellImporter extends ItemImporter {
 			folder: null,
 			sort: 0,
 			ownership: {},
-			flags: {
-				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: context.parentId,
-				},
-			},
+			flags: {},
 			_stats: ItemImporter.getStats(),
 		}
 
@@ -876,6 +849,7 @@ class SpellContainerImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: SpellContainerSystemSource = {
+			container: context.parentId,
 			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
@@ -910,11 +884,7 @@ class SpellContainerImporter extends ItemImporter {
 			folder: null,
 			sort: 0,
 			ownership: {},
-			flags: {
-				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: context.parentId,
-				},
-			},
+			flags: {},
 			_stats: ItemImporter.getStats(),
 		}
 
@@ -934,6 +904,7 @@ class EquipmentImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: EquipmentSystemSource = {
+			container: context.parentId,
 			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
@@ -992,11 +963,7 @@ class EquipmentImporter extends ItemImporter {
 			folder: null,
 			sort: 0,
 			ownership: {},
-			flags: {
-				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: context.parentId,
-				},
-			},
+			flags: {},
 			_stats: ItemImporter.getStats(),
 		}
 
@@ -1016,6 +983,7 @@ class EquipmentContainerImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: EquipmentContainerSystemSource = {
+			container: context.parentId,
 			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
@@ -1084,11 +1052,7 @@ class EquipmentContainerImporter extends ItemImporter {
 			folder: null,
 			sort: 0,
 			ownership: {},
-			flags: {
-				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: context.parentId,
-				},
-			},
+			flags: {},
 			_stats: ItemImporter.getStats(),
 		}
 
@@ -1108,6 +1072,7 @@ class EquipmentModifierImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: EquipmentModifierSystemSource = {
+			container: context.parentId,
 			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
@@ -1138,11 +1103,7 @@ class EquipmentModifierImporter extends ItemImporter {
 			folder: null,
 			sort: 0,
 			ownership: {},
-			flags: {
-				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: context.parentId,
-				},
-			},
+			flags: {},
 			_stats: ItemImporter.getStats(),
 		}
 
@@ -1162,6 +1123,7 @@ class EquipmentModifierContainerImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: EquipmentModifierContainerSystemSource = {
+			container: context.parentId,
 			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
@@ -1195,11 +1157,7 @@ class EquipmentModifierContainerImporter extends ItemImporter {
 			folder: null,
 			sort: 0,
 			ownership: {},
-			flags: {
-				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: context.parentId,
-				},
-			},
+			flags: {},
 			_stats: ItemImporter.getStats(),
 		}
 
@@ -1219,6 +1177,7 @@ class NoteImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: NoteSystemSource = {
+			container: context.parentId,
 			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
@@ -1239,11 +1198,7 @@ class NoteImporter extends ItemImporter {
 			folder: null,
 			sort: 0,
 			ownership: {},
-			flags: {
-				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: context.parentId,
-				},
-			},
+			flags: {},
 			_stats: ItemImporter.getStats(),
 		}
 
@@ -1263,6 +1218,7 @@ class NoteContainerImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: NoteContainerSystemSource = {
+			container: context.parentId,
 			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
@@ -1293,11 +1249,7 @@ class NoteContainerImporter extends ItemImporter {
 			folder: null,
 			sort: 0,
 			ownership: {},
-			flags: {
-				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: context.parentId,
-				},
-			},
+			flags: {},
 			_stats: ItemImporter.getStats(),
 		}
 
@@ -1317,6 +1269,7 @@ class MeleeWeaponImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: MeleeWeaponSystemSource = {
+			container: context.parentId,
 			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
@@ -1350,11 +1303,7 @@ class MeleeWeaponImporter extends ItemImporter {
 			folder: null,
 			sort: 0,
 			ownership: {},
-			flags: {
-				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: context.parentId,
-				},
-			},
+			flags: {},
 			_stats: ItemImporter.getStats(),
 		}
 
@@ -1374,6 +1323,7 @@ class RangedWeaponImporter extends ItemImporter {
 		const id = fu.randomID()
 
 		const systemData: RangedWeaponSystemSource = {
+			container: context.parentId,
 			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
@@ -1410,11 +1360,7 @@ class RangedWeaponImporter extends ItemImporter {
 			folder: null,
 			sort: 0,
 			ownership: {},
-			flags: {
-				[SYSTEM_NAME]: {
-					[ItemFlags.Container]: context.parentId,
-				},
-			},
+			flags: {},
 			_stats: ItemImporter.getStats(),
 		}
 

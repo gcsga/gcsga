@@ -19,7 +19,7 @@ import {
 	TraitModifierContainerGURPS,
 	TraitModifierGURPS,
 } from "@item"
-import type { ItemSourceGURPS } from "@item/data/index.ts"
+import type { ItemSourceGURPS, ItemSystemData } from "@item/data/index.ts"
 import { getItemArtworkName, itemIsOfType } from "@item/helpers.ts"
 import { ItemInstances } from "@item/types.ts"
 import { ABSTRACT_CONTAINER_TYPES, CONTAINER_TYPES, ItemFlags, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
@@ -39,7 +39,7 @@ import {
 import * as R from "remeda"
 import Document, { _Document } from "types/foundry/common/abstract/document.js"
 import { DataSchema } from "types/foundry/common/data/fields.js"
-import type { ItemFlagsGURPS, ItemSystemData } from "./data.ts"
+import type { ItemFlagsGURPS } from "./data.ts"
 import type { ItemSheetGURPS } from "./sheet.ts"
 import { PrereqList } from "@system/prereq/prereq-list.ts"
 
@@ -66,12 +66,6 @@ class ItemGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends I
 
 	set dummyActor(actor: ActorGURPS | null) {
 		this._dummyActor = actor
-	}
-
-	override get visible(): boolean {
-		// @ts-expect-error they can be equal but whatever
-		if (this.collection !== game.items) return super.visible
-		return super.visible && this.flags[SYSTEM_NAME][ItemFlags.Container] === null
 	}
 
 	/** The recorded schema version of this item, updated after each data migration */

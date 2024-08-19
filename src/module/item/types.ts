@@ -1,5 +1,5 @@
+import { ItemType } from "@module/data/constants.ts"
 import { ActorGURPS } from "@actor"
-import { ItemType } from "@data"
 import * as ItemInstance from "@item"
 
 interface ItemInstances<TParent extends ActorGURPS | null> {

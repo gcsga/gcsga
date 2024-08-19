@@ -165,7 +165,7 @@ type ContainerType =
 
 enum ItemFlags {
 	Deprecation = "deprecation",
-	Container = "container",
+	// Container = "container",
 	Other = "other", // used for equipment only
 	Unready = "unready",
 	Overlay = "overlay", // used for effects only

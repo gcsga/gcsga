@@ -1,3 +1,25 @@
+import { ItemType } from "@module/data/constants.ts"
+import { ConditionSystemData } from "./condition/data.ts"
+import { EffectSystemData } from "./effect/data.ts"
+import { EquipmentContainerSystemData } from "./equipment-container/data.ts"
+import { EquipmentModifierContainerSystemData } from "./equipment-modifier-container/data.ts"
+import { EquipmentModifierSystemData } from "./equipment-modifier/data.ts"
+import { EquipmentSystemData } from "./equipment/data.ts"
+import { MeleeWeaponSystemData } from "./melee-weapon/data.ts"
+import { NoteContainerSystemData } from "./note-container/data.ts"
+import { NoteSystemData } from "./note/data.ts"
+import { RangedWeaponSystemData } from "./ranged-weapon/data.ts"
+import { RitualMagicSpellSystemData } from "./ritual-magic-spell/data.ts"
+import { SkillContainerSystemData } from "./skill-container/data.ts"
+import { SkillSystemData } from "./skill/data.ts"
+import { SpellContainerSystemData } from "./spell-container/data.ts"
+import { SpellSystemData } from "./spell/data.ts"
+import { TechniqueSystemData } from "./technique/data.ts"
+import { TraitContainerSystemData } from "./trait-container/data.ts"
+import { TraitModifierContainerSystemData } from "./trait-modifier-container/data.ts"
+import { TraitModifierSystemData } from "./trait-modifier/data.ts"
+import { TraitSystemData } from "./trait/data.ts"
+
 // Base
 export * from "./base/document.ts"
 
@@ -43,3 +65,27 @@ export { ConditionGURPS } from "./condition/document.ts"
 
 // Legacy
 export { LegacyItemGURPS } from "./legacy/document.ts"
+
+export const ItemSystemData = {
+	[ItemType.Trait]: TraitSystemData,
+	[ItemType.TraitContainer]: TraitContainerSystemData,
+	[ItemType.TraitModifier]: TraitModifierSystemData,
+	[ItemType.TraitModifierContainer]: TraitModifierContainerSystemData,
+	[ItemType.Skill]: SkillSystemData,
+	[ItemType.Technique]: TechniqueSystemData,
+	[ItemType.SkillContainer]: SkillContainerSystemData,
+	[ItemType.Spell]: SpellSystemData,
+	[ItemType.RitualMagicSpell]: RitualMagicSpellSystemData,
+	[ItemType.SpellContainer]: SpellContainerSystemData,
+	[ItemType.Equipment]: EquipmentSystemData,
+	[ItemType.EquipmentContainer]: EquipmentContainerSystemData,
+	[ItemType.EquipmentModifier]: EquipmentModifierSystemData,
+	[ItemType.EquipmentModifierContainer]: EquipmentModifierContainerSystemData,
+	[ItemType.Note]: NoteSystemData,
+	[ItemType.NoteContainer]: NoteContainerSystemData,
+	// [ItemType.LegacyItem]: LegacyItemSystemData,
+	[ItemType.Effect]: EffectSystemData,
+	[ItemType.Condition]: ConditionSystemData,
+	[ItemType.MeleeWeapon]: MeleeWeaponSystemData,
+	[ItemType.RangedWeapon]: RangedWeaponSystemData,
+}

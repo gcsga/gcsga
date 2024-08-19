@@ -43,6 +43,7 @@ export const Load = {
 		CONFIG.ActiveEffect.documentClass = ActiveEffectGURPS
 		// CONFIG.Actor.collection = Actors
 		CONFIG.Actor.documentClass = ActorProxyGURPS
+		// CONFIG.Actor.documentClass = ActorGURPS2
 		CONFIG.ActorDelta.documentClass = ActorDelta
 		// CONFIG.AmbientLight.documentClass = AmbientLightDocument
 		CONFIG.ChatMessage.documentClass = ChatMessageGURPS
@@ -51,6 +52,7 @@ export const Load = {
 		// @ts-expect-error probably fine
 		CONFIG.Item.collection = ItemsGURPS
 		CONFIG.Item.documentClass = ItemProxyGURPS
+		// CONFIG.Item.documentClass = ItemGURPS2
 		CONFIG.Macro.documentClass = Macro
 		CONFIG.MeasuredTemplate.documentClass = MeasuredTemplateDocument
 		// CONFIG.Scene.documentClass = SceneGURPS
@@ -64,6 +66,10 @@ export const Load = {
 		CONFIG.Actor.dataModels = {
 			[ActorType.Character]: CharacterSystemData,
 		}
+
+		// CONFIG.Item.dataModels = {
+		// 	[ItemType.Trait]: TraitData,
+		// }
 
 		CONFIG.Item.dataModels = {
 			[ItemType.Trait]: TraitSystemData,

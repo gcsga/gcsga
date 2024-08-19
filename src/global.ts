@@ -83,6 +83,8 @@ type ConfiguredConfig = Config<
 	ItemGURPS,
 	Macro,
 	MeasuredTemplateDocument<SceneGURPS | null>,
+	RegionDocument<SceneGURPS | null>,
+	RegionBehavior<RegionDocument<SceneGURPS | null> | null>,
 	TileDocument<SceneGURPS | null>,
 	TokenDocumentGURPS<SceneGURPS | null>,
 	WallDocument<SceneGURPS | null>,
