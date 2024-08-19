@@ -24,7 +24,7 @@ type StaticTypeFromConstructors<T extends any[]> = T extends [Constructor<infer 
 type MergedStaticTypes<TTemplates extends SystemDataModelConstructor[]> = StaticTypeFromConstructors<TTemplates> &
 	typeof SystemDataModel
 
-export default class SystemDataModel<
+class SystemDataModel<
 	TDocument extends foundry.abstract.Document = foundry.abstract.Document,
 	TSchema extends fields.DataSchema = fields.DataSchema,
 > extends foundry.abstract.TypeDataModel<TDocument, TSchema> {
@@ -286,7 +286,7 @@ export default class SystemDataModel<
 	}
 }
 
-export default interface SystemDataModel<TDocument extends foundry.abstract.Document, TSchema extends fields.DataSchema>
+interface SystemDataModel<TDocument extends foundry.abstract.Document, TSchema extends fields.DataSchema>
 	extends foundry.abstract.TypeDataModel<TDocument, TSchema> {
 	constructor: typeof SystemDataModel
 }
@@ -296,14 +296,21 @@ export default interface SystemDataModel<TDocument extends foundry.abstract.Docu
 /**
  * Variant of the SystemDataModel with some extra actor-specific handling.
  */
-export class ActorDataModel extends SystemDataModel {}
+class ActorDataModel extends SystemDataModel {}
 
 /* -------------------------------------------- */
 
 /**
  * Variant of the SystemDataModel with support for rich item tooltips.
  */
-export class ItemDataModel extends SystemDataModel<Item> {
+class ItemDataModel extends SystemDataModel<Item> {
+	static override defineSchema(): ItemDataSchema {
+		const fields = foundry.data.fields
+		return {
+			container: new fields.ForeignDocumentField(foundry.documents.BaseItem, { idOnly: true }),
+		}
+	}
+
 	static override metadata: ItemDataModelMetadata = Object.freeze(
 		foundry.utils.mergeObject(
 			super.metadata,
@@ -325,3 +332,11 @@ export class ItemDataModel extends SystemDataModel<Item> {
 		return super.mixin(...templates) as any
 	}
 }
+
+interface ItemDataModel extends SystemDataModel<Item>, ModelPropsFromSchema<ItemDataSchema> {}
+
+type ItemDataSchema = {
+	container: fields.ForeignDocumentField<string>
+}
+
+export { ItemDataModel, ActorDataModel, SystemDataModel, type ItemDataSchema }

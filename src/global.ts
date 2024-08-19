@@ -22,6 +22,7 @@ import { ItemsGURPS } from "@module/collection/items.ts"
 import { CombatGURPS, CombatantGURPS } from "@module/combat/index.ts"
 import { AttributeEffect, MANEUVER_DETAIL_SETTING } from "@module/data/index.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
+import { ItemGURPS2 } from "@module/document/item.ts"
 import { JournalEntryGURPS } from "@module/journal-entry/document.ts"
 import { JournalEntryPageGURPS } from "@module/journal-entry/page/document.ts"
 import { UserGURPS } from "@module/user/document.ts"
@@ -46,8 +47,10 @@ interface GameGURPS
 		Actors<ActorGURPS<null>>,
 		ChatMessageGURPS,
 		CombatGURPS,
-		ItemGURPS<null>,
-		ItemsGURPS<ItemGURPS<null>>,
+		ItemGURPS2<null>,
+		// ItemGURPS<null>,
+		Items<ItemGURPS2<null>>,
+		// ItemsGURPS<ItemGURPS2<null>>,
 		Macro,
 		SceneGURPS,
 		UserGURPS

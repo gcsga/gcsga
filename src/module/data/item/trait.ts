@@ -2,9 +2,11 @@ import { ItemDataModel } from "../abstract.ts"
 import fields = foundry.data.fields
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { selfctrl } from "@util"
+import { PrereqTemplate } from "./templates/prereqs.ts"
+import { ContainerTemplate } from "./templates/container.ts"
 
 // @ts-expect-error deep type instantiation
-class TraitData extends ItemDataModel.mixin(BasicInformationTemplate) {
+class TraitData extends ItemDataModel.mixin(BasicInformationTemplate, PrereqTemplate, ContainerTemplate) {
 	static override defineSchema(): TraitSchema {
 		const fields = foundry.data.fields
 

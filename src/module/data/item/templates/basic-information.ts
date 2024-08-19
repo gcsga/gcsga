@@ -1,10 +1,7 @@
-import SystemDataModel from "@module/data/abstract.ts"
+import { SystemDataModel } from "@module/data/abstract.ts"
 import fields = foundry.data.fields
 
-export class BasicInformationTemplate extends SystemDataModel<
-	foundry.abstract.Document,
-	BasicInformationTemplateSchema
-> {
+class BasicInformationTemplate extends SystemDataModel<foundry.abstract.Document, BasicInformationTemplateSchema> {
 	static override defineSchema(): BasicInformationTemplateSchema {
 		const fields = foundry.data.fields
 		return {
@@ -20,7 +17,11 @@ export class BasicInformationTemplate extends SystemDataModel<
 	}
 }
 
-export type BasicInformationTemplateSchema = {
+interface BasicInformationTemplate
+	extends SystemDataModel<foundry.abstract.Document, BasicInformationTemplateSchema>,
+		ModelPropsFromSchema<BasicInformationTemplateSchema> {}
+
+type BasicInformationTemplateSchema = {
 	name: fields.StringField<string, string, true, false, true>
 	reference: fields.StringField
 	reference_highlight: fields.StringField
@@ -28,3 +29,5 @@ export type BasicInformationTemplateSchema = {
 	vtt_notes: fields.StringField
 	tags: fields.ArrayField<fields.StringField>
 }
+
+export { BasicInformationTemplate, type BasicInformationTemplateSchema }

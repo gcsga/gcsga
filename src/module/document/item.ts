@@ -1,8 +1,20 @@
-import SystemDataModel, { ItemDataModel } from "@module/data/abstract.ts"
-import { SYSTEM_NAME } from "@module/data/constants.ts"
+import { SystemDataModel, ItemDataModel } from "@module/data/abstract.ts"
+import { ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { ActorGURPS2 } from "./actor.ts"
+import * as ItemInstance from "@module/data/item/index.ts"
+
+interface ItemDataInstances {
+	[ItemType.Trait]: ItemInstance.TraitData
+}
 
 class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extends Item<TParent> {
+	/* -------------------------------------------- */
+	/*  Helper Functions                            */
+	/* -------------------------------------------- */
+	isOfType<T extends ItemType>(...types: T[]): this is { system: ItemDataInstances[T] } {
+		return types.some(t => this.type === t)
+	}
+
 	/** @inheritDoc */
 	override prepareData() {
 		super.prepareData()
@@ -147,7 +159,7 @@ class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extend
 
 interface ItemGURPS2<TParent extends ActorGURPS2 | null> extends Item<TParent> {
 	constructor: typeof ItemGURPS2
-	// system: ItemDataModel
+	system: ItemDataModel
 }
 
 export { ItemGURPS2 }
