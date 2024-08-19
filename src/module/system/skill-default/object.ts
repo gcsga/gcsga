@@ -19,7 +19,10 @@ class SkillDefault<TItem extends ItemGURPS = ItemGURPS> extends foundry.abstract
 		const fields = foundry.data.fields
 
 		return {
-			type: new fields.StringField<SkillDefaultType, SkillDefaultType, true>({ initial: gid.Dexterity }),
+			type: new fields.StringField<SkillDefaultType, SkillDefaultType, true>({
+				required: true,
+				initial: gid.Dexterity,
+			}),
 			name: new fields.StringField({ required: true, nullable: true, initial: null }),
 			specialization: new fields.StringField({ required: true, nullable: true, initial: null }),
 			modifier: new fields.NumberField({ integer: true, required: true, nullable: false, initial: 0 }),

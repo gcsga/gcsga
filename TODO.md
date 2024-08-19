@@ -1,6 +1,7 @@
 # BIG OL' TODO Document
 
 - traverseEmbeddedDocuments
+- change isOfType to allow checking if an item has a particular template as part of its schema
 
 ## Immediate TODO
 

@@ -13,14 +13,13 @@ import {
 	SpellPrereq,
 	TraitPrereq,
 } from "./index.ts"
-import type { ItemGURPS } from "@item"
-import { ItemType } from "@module/data/constants.ts"
-import { ItemSystemModel, ItemSystemSchema } from "@item/base/schema.ts"
+import type { ItemGURPS2 } from "@module/document/item.ts"
+import { ItemDataModel } from "@module/data/abstract.ts"
+import { PrereqTemplate } from "@module/data/item/templates/prereqs.ts"
+import { ActorGURPS2 } from "@module/document/actor.ts"
 
 abstract class BasePrereq<TSchema extends BasePrereqSchema<prereq.Type> = BasePrereqSchema<prereq.Type>> extends foundry
-	.abstract.DataModel<ItemGURPS | ItemSystemModel<ItemGURPS, ItemSystemSchema>, TSchema> {
-	// protected declare static _schema: LaxSchemaField<BasePrereqSchema<prereq.Type>> | undefined
-
+	.abstract.DataModel<ItemDataModel, TSchema> {
 	static get TYPES(): Record<prereq.Type, ConstructorOf<Prereq>> {
 		return (BasePrereq.#TYPES ??= Object.freeze({
 			[prereq.Type.List]: PrereqList,
@@ -45,14 +44,16 @@ abstract class BasePrereq<TSchema extends BasePrereqSchema<prereq.Type> = BasePr
 		}
 	}
 
-	get item(): ItemGURPS {
-		if (this.parent instanceof ItemSystemModel) return this.parent.parent
-		return this.parent
+	get actor(): ActorGURPS2 | null {
+		return this.parent.parent.actor
+	}
+
+	get item(): ItemGURPS2 {
+		return this.parent.parent
 	}
 
 	get index(): number {
-		if (!this.item.isOfType(ItemType.Trait)) return -1
-		return this.item.system.prereqs.findIndex(e => e.id === this.id)
+		return (this.parent as unknown as PrereqTemplate).prereqs.findIndex(e => e.id === this.id)
 	}
 
 	constructor(data: DeepPartial<SourceFromSchema<TSchema>>, options?: PrereqConstructionOptions) {
@@ -65,7 +66,7 @@ abstract class BasePrereq<TSchema extends BasePrereqSchema<prereq.Type> = BasePr
 }
 
 interface BasePrereq<TSchema extends BasePrereqSchema<prereq.Type>>
-	extends foundry.abstract.DataModel<ItemGURPS | ItemSystemModel<ItemGURPS, ItemSystemSchema>, TSchema>,
+	extends foundry.abstract.DataModel<ItemDataModel, TSchema>,
 		Omit<ModelPropsFromSchema<BasePrereqSchema<prereq.Type>>, "type"> {
 	consturctor: typeof BasePrereq<TSchema>
 }

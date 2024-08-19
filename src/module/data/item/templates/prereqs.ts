@@ -1,10 +1,11 @@
 import fields = foundry.data.fields
 import { SystemDataModel } from "@module/data/abstract.ts"
 import { NumericCompareType } from "@module/data/constants.ts"
-import { BasePrereq, Prereq } from "@system"
-import { prereq } from "@util"
+import { ItemGURPS2 } from "@module/document/item.ts"
+import { BasePrereq, type Prereq, type PrereqList } from "@system"
+import { ErrorGURPS, prereq } from "@util"
 
-class PrereqTemplate extends SystemDataModel<foundry.abstract.Document, PrereqTemplateSchema> {
+class PrereqTemplate extends SystemDataModel<ItemGURPS2, PrereqTemplateSchema> {
 	static override defineSchema(): PrereqTemplateSchema {
 		const fields = foundry.data.fields
 		return {
@@ -21,10 +22,17 @@ class PrereqTemplate extends SystemDataModel<foundry.abstract.Document, PrereqTe
 			}),
 		}
 	}
+
+	get rootPrereq(): PrereqList {
+		const rootPrereq = this.prereqs.find(e => e.id === "root")
+		if (!rootPrereq) throw ErrorGURPS("Item has no root prerequisite!")
+		if (rootPrereq.type !== prereq.Type.List) throw ErrorGURPS("Root prerequisite is not a prerequisite list!")
+		return rootPrereq
+	}
 }
 
 interface PrereqTemplate
-	extends SystemDataModel<foundry.abstract.Document, PrereqTemplateSchema>,
+	extends SystemDataModel<ItemGURPS2, PrereqTemplateSchema>,
 		ModelPropsFromSchema<PrereqTemplateSchema> {}
 
 type PrereqTemplateSchema = {

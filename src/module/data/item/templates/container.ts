@@ -1,10 +1,37 @@
 import { SystemDataModel } from "@module/data/abstract.ts"
+import { ItemType } from "@module/data/constants.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
+import fields = foundry.data.fields
 
 class ContainerTemplate extends SystemDataModel<ItemGURPS2, ContainerTemplateSchema> {
 	static override defineSchema(): ContainerTemplateSchema {
-		return {}
+		const fields = foundry.data.fields
+		return {
+			open: new fields.BooleanField({ required: true, nullable: true, initial: null }),
+		}
 	}
+
+	/**
+	 * Valid contents types for this item type
+	 */
+	static get contentsTypes(): Set<ItemType> {
+		return new Set([...this.childTypes, ...this.modifierTypes, ...this.weaponTypes])
+	}
+
+	/**
+	 * Valid child types for this item type
+	 */
+	static childTypes: Set<ItemType> = new Set()
+
+	/**
+	 * Valid modifier types for this item type
+	 */
+	static modifierTypes: Set<ItemType> = new Set()
+
+	/**
+	 * Valid weapon types for this item type
+	 */
+	static weaponTypes: Set<ItemType> = new Set()
 
 	/**
 	 * Get all of the items contained in this container. A promise if item is within a compendium.
@@ -51,12 +78,43 @@ class ContainerTemplate extends SystemDataModel<ItemGURPS2, ContainerTemplateSch
 			//@ts-expect-error is ok
 		}, new Collection<ItemGURPS2>())
 	}
+
+	get children(): Collection<ItemGURPS2> | Promise<Collection<ItemGURPS2>> {
+		if (!this.parent || this.constructor.childTypes.size === 0) return new Collection()
+		return new Collection(
+			Object.values(this.contents)
+				.filter(e => this.constructor.childTypes.has(e.type))
+				.map(e => [e.id, e]),
+		)
+	}
+
+	get modifiers(): Collection<ItemGURPS2> | Promise<Collection<ItemGURPS2>> {
+		if (!this.parent || this.constructor.modifierTypes.size === 0) return new Collection()
+		return new Collection(
+			Object.values(this.contents)
+				.filter(e => this.constructor.modifierTypes.has(e.type))
+				.map(e => [e.id, e]),
+		)
+	}
+
+	get weapons(): Collection<ItemGURPS2> | Promise<Collection<ItemGURPS2>> {
+		if (!this.parent || this.constructor.modifierTypes.size === 0) return new Collection()
+		return new Collection(
+			Object.values(this.contents)
+				.filter(e => this.constructor.modifierTypes.has(e.type))
+				.map(e => [e.id, e]),
+		)
+	}
 }
 
 interface ContainerTemplate
 	extends SystemDataModel<ItemGURPS2, ContainerTemplateSchema>,
-		ModelPropsFromSchema<ContainerTemplateSchema> {}
+		ModelPropsFromSchema<ContainerTemplateSchema> {
+	constructor: typeof ContainerTemplate
+}
 
-type ContainerTemplateSchema = {}
+type ContainerTemplateSchema = {
+	open: fields.BooleanField<boolean, boolean, true, true>
+}
 
 export { ContainerTemplate, type ContainerTemplateSchema }

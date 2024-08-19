@@ -1,26 +1,23 @@
-import { selfctrl } from "@util"
 import { ItemDataModel } from "../abstract.ts"
-import { ItemType } from "../constants.ts"
-import { BasicInformationTemplate } from "./templates/basic-information.ts"
-import { ContainerTemplate } from "./templates/container.ts"
-import { FeatureTemplate } from "./templates/features.ts"
-import { PrereqTemplate } from "./templates/prereqs.ts"
-import { ReplacementTemplate } from "./templates/replacements.ts"
-import { StudyTemplate } from "./templates/study.ts"
 import fields = foundry.data.fields
+import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
+import { selfctrl } from "@util"
+import { PrereqTemplate } from "./templates/prereqs.ts"
+import { ContainerTemplate } from "./templates/container.ts"
+import { ItemType } from "../constants.ts"
+import { ReplacementTemplate } from "./templates/replacements.ts"
 
-class TraitData extends ItemDataModel.mixin(
+// @ts-expect-error deep type instantiation
+class TraitContainerData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
 	PrereqTemplate,
 	ContainerTemplate,
-	FeatureTemplate,
-	StudyTemplate,
 	ReplacementTemplate,
 ) {
+	static override childTypes = new Set([ItemType.Trait, ItemType.TraitContainer])
 	static override modifierTypes = new Set([ItemType.TraitModifier, ItemType.TraitModifierContainer])
-	static override weaponTypes = new Set([ItemType.MeleeWeapon, ItemType.RangedWeapon])
 
-	static override defineSchema(): TraitSchema {
+	static override defineSchema(): TraitContainerSchema {
 		const fields = foundry.data.fields
 
 		return this.mergeSchema(super.defineSchema(), {
@@ -49,21 +46,16 @@ class TraitData extends ItemDataModel.mixin(
 	}
 }
 
-type TraitSchema = BasicInformationTemplateSchema &
-	PrereqTemplateSchema &
-	ContainerTemplateSchema &
-	FeatureTemplateSchema &
-	StudyTemplateSchema &
-	ReplacementTemplateSchema & {
-		userdesc: fields.StringField<string, string>
-		base_points: fields.NumberField<number, number, true, false, true>
-		levels: fields.NumberField
-		points_per_level: fields.NumberField
-		cr: fields.NumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>
-		cr_adj: fields.StringField<selfctrl.Adjustment>
-		disabled: fields.BooleanField<boolean>
-		round_down: fields.BooleanField<boolean>
-		can_level: fields.BooleanField
-	}
+type TraitContainerSchema = BasicInformationTemplateSchema & {
+	userdesc: fields.StringField<string, string>
+	base_points: fields.NumberField<number, number, true, false, true>
+	levels: fields.NumberField
+	points_per_level: fields.NumberField
+	cr: fields.NumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>
+	cr_adj: fields.StringField<selfctrl.Adjustment>
+	disabled: fields.BooleanField<boolean>
+	round_down: fields.BooleanField<boolean>
+	can_level: fields.BooleanField
+}
 
-export { TraitData, type TraitSchema }
+export { TraitContainerData, type TraitContainerSchema }

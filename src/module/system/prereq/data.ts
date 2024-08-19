@@ -2,8 +2,8 @@ import { prereq } from "@util/enum/prereq.ts"
 import { spellcmp } from "@util/enum/spellcmp.ts"
 import fields = foundry.data.fields
 import { NumericCriteriaSchema, StringCriteriaSchema, WeightCriteriaSchema } from "@module/util/data.ts"
-import type { ItemGURPS } from "@item"
 import { ItemType } from "@module/data/constants.ts"
+import { ItemDataModel } from "@module/data/abstract.ts"
 
 export const ValidPrereqParentTypes = Object.freeze([
 	ItemType.Trait,
@@ -16,7 +16,7 @@ export const ValidPrereqParentTypes = Object.freeze([
 	ItemType.EquipmentContainer,
 ])
 
-export interface PrereqConstructionOptions extends DocumentConstructionContext<ItemGURPS> {}
+export interface PrereqConstructionOptions extends DataModelConstructionOptions<ItemDataModel> {}
 
 export type BasePrereqSchema<TType extends prereq.Type> = {
 	id: fields.StringField<string, string, true>

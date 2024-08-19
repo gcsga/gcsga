@@ -5,6 +5,25 @@ import * as ItemInstance from "@module/data/item/index.ts"
 
 interface ItemDataInstances {
 	[ItemType.Trait]: ItemInstance.TraitData
+	[ItemType.TraitContainer]: ItemInstance.TraitContainerData
+	[ItemType.TraitModifier]: ItemInstance.TraitModifierData
+	[ItemType.TraitModifierContainer]: ItemInstance.TraitModifierContainerData
+	[ItemType.Skill]: ItemInstance.SkillData
+	[ItemType.Technique]: ItemInstance.TechniqueData
+	[ItemType.SkillContainer]: ItemInstance.SkillContainerData
+	[ItemType.Spell]: ItemInstance.SpellData
+	[ItemType.RitualMagicSpell]: ItemInstance.RitualMagicSpellData
+	[ItemType.SpellContainer]: ItemInstance.SpellContainerData
+	[ItemType.Equipment]: ItemInstance.EquipmentData
+	[ItemType.EquipmentContainer]: ItemInstance.EquipmentContainerData
+	[ItemType.EquipmentModifier]: ItemInstance.EquipmentModifierData
+	[ItemType.EquipmentModifierContainer]: ItemInstance.EquipmentModifierContainerData
+	[ItemType.Note]: ItemInstance.NoteData
+	[ItemType.NoteContainer]: ItemInstance.NoteContainerData
+	[ItemType.Effect]: ItemInstance.EffectData
+	[ItemType.Condition]: ItemInstance.ConditionData
+	[ItemType.MeleeWeapon]: ItemInstance.MeleeWeaponData
+	[ItemType.RangedWeapon]: ItemInstance.RangedWeaponData
 }
 
 class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extends Item<TParent> {

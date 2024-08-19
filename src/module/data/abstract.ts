@@ -1,5 +1,6 @@
 import { SYSTEM_NAME } from "./constants.ts"
 import fields = foundry.data.fields
+import { ItemGURPS2 } from "@module/document/item.ts"
 
 interface SystemDataModelMetadata {
 	systemFlagsModel: typeof SystemDataModel | null
@@ -288,7 +289,7 @@ class SystemDataModel<
 
 interface SystemDataModel<TDocument extends foundry.abstract.Document, TSchema extends fields.DataSchema>
 	extends foundry.abstract.TypeDataModel<TDocument, TSchema> {
-	constructor: typeof SystemDataModel
+	constructor: typeof SystemDataModel<TDocument, TSchema>
 }
 
 /* -------------------------------------------- */
@@ -303,7 +304,10 @@ class ActorDataModel extends SystemDataModel {}
 /**
  * Variant of the SystemDataModel with support for rich item tooltips.
  */
-class ItemDataModel extends SystemDataModel<Item> {
+class ItemDataModel<TSchema extends fields.DataSchema = fields.DataSchema> extends SystemDataModel<
+	ItemGURPS2,
+	TSchema
+> {
 	static override defineSchema(): ItemDataSchema {
 		const fields = foundry.data.fields
 		return {
@@ -328,12 +332,14 @@ class ItemDataModel extends SystemDataModel<Item> {
 			...args: any[]
 		) => InstanceTypeFromConstructors<TTemplates> &
 			SystemDataModel &
-			foundry.abstract.DataModel<Item, fields.DataSchema>) {
+			foundry.abstract.DataModel<ItemGURPS2, fields.DataSchema>) {
 		return super.mixin(...templates) as any
 	}
 }
 
-interface ItemDataModel extends SystemDataModel<Item>, ModelPropsFromSchema<ItemDataSchema> {}
+interface ItemDataModel<TSchema extends fields.DataSchema>
+	extends SystemDataModel<ItemGURPS2, TSchema>,
+		ModelPropsFromSchema<ItemDataSchema> {}
 
 type ItemDataSchema = {
 	container: fields.ForeignDocumentField<string>

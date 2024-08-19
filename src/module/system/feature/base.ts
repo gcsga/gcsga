@@ -1,7 +1,6 @@
 import { feature } from "@util/enum/feature.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { TooltipGURPS } from "@util"
-import type { ItemGURPS } from "@item"
 import { ItemType } from "@module/data/constants.ts"
 import { BaseFeatureSchema } from "./data.ts"
 import {
@@ -19,12 +18,14 @@ import {
 	SpellPointBonus,
 	WeaponBonus,
 } from "./index.ts"
+import { ItemDataModel } from "@module/data/abstract.ts"
+import { ItemGURPS2 } from "@module/document/item.ts"
 
 abstract class BaseFeature<
 	TSchema extends BaseFeatureSchema<feature.Type> = BaseFeatureSchema<feature.Type>,
-> extends foundry.abstract.DataModel<ItemGURPS, TSchema> {
-	private declare _owner: ItemGURPS | null
-	private declare _subOwner: ItemGURPS | null
+> extends foundry.abstract.DataModel<ItemDataModel, TSchema> {
+	private declare _owner: ItemGURPS2 | null
+	private declare _subOwner: ItemGURPS2 | null
 
 	declare effective: boolean
 	declare featureLevel: number
@@ -87,7 +88,7 @@ abstract class BaseFeature<
 		}
 	}
 
-	constructor(data: DeepPartial<SourceFromSchema<TSchema>>, options?: DocumentConstructionContext<ItemGURPS>) {
+	constructor(data: DeepPartial<SourceFromSchema<TSchema>>, options?: DataModelConstructionOptions<ItemDataModel>) {
 		super(data, options)
 		this._owner = null
 		this._subOwner = null
@@ -97,11 +98,11 @@ abstract class BaseFeature<
 		// this.leveledAmount = new LeveledAmount(data)
 	}
 
-	get owner(): ItemGURPS | null {
+	get owner(): ItemGURPS2 | null {
 		return this._owner
 	}
 
-	set owner(owner: ItemGURPS | null) {
+	set owner(owner: ItemGURPS2 | null) {
 		this._owner = owner
 		if (owner !== null) {
 			if (owner.isOfType(ItemType.Effect, ItemType.Condition)) this.effective = true
@@ -109,11 +110,11 @@ abstract class BaseFeature<
 		}
 	}
 
-	get subOwner(): ItemGURPS | null {
+	get subOwner(): ItemGURPS2 | null {
 		return this._subOwner
 	}
 
-	set subOwner(subOwner: ItemGURPS | null) {
+	set subOwner(subOwner: ItemGURPS2 | null) {
 		this._subOwner = subOwner
 	}
 
@@ -130,9 +131,10 @@ abstract class BaseFeature<
 
 	get parentName(): string {
 		if (!this.owner) return LocalizeGURPS.translations.gurps.misc.unknown
-		const owner = this.owner.formattedName
+		// const owner = this.owner.formattedName
+		const owner = this.owner.system.nameWithReplacements
 		if (!this.subOwner) return owner
-		return `${owner} (${this.subOwner.formattedName})`
+		return `${owner} (${this.subOwner.system.nameWithReplacements})`
 	}
 
 	get adjustedAmount(): number {
@@ -193,7 +195,7 @@ abstract class BaseFeature<
 }
 
 interface BaseFeature<TSchema extends BaseFeatureSchema<feature.Type>>
-	extends foundry.abstract.DataModel<ItemGURPS, TSchema>,
+	extends foundry.abstract.DataModel<ItemDataModel, TSchema>,
 		Omit<ModelPropsFromSchema<BaseFeatureSchema<feature.Type>>, "type"> {
 	consturctor: typeof BaseFeature<TSchema>
 }

@@ -1,8 +1,8 @@
 import { AbstractContainerSystemData, AbstractContainerSystemSchema } from "@item/abstract-container/data.ts"
-import fields = foundry.data.fields
 import { Study } from "@system"
 import { study } from "@util"
 import { AbstractSkillGURPS } from "./document.ts"
+import fields = foundry.data.fields
 
 class AbstractSkillSystemData<
 	TParent extends AbstractSkillGURPS,

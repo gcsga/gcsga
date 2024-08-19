@@ -905,7 +905,7 @@ export class EmbeddedCollectionField<
 	 * @param [context] Additional context which describes the field
 	 */
 	constructor(
-		element: ConstructorOf<Document>,
+		element: ConstructorOf<abstract.Document>,
 		options?: ArrayFieldOptions<TSourceProp, TRequired, TNullable, THasInitial>,
 		context?: DataFieldContext,
 	)

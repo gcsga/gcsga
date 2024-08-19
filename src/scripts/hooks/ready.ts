@@ -1,6 +1,7 @@
 import { SETTINGS, SOCKET, SYSTEM_NAME } from "@data"
 import { loadModifiers } from "@module/apps/modifier-bucket/data.ts"
 import { TokenHUDGURPS } from "@module/canvas/index.ts"
+import { ItemGURPS2 } from "@module/document/item.ts"
 import { MigrationSummary } from "@module/migration-summary.ts"
 import { MigrationList, MigrationRunner } from "@module/migration/index.ts"
 import { LastActor, evaluateToNumber } from "@module/util/index.ts"
@@ -26,7 +27,7 @@ export const Ready = {
 				LastActor: await LastActor.get(),
 				LastToken: await LastActor.getToken(),
 				eval: evaluateToNumber,
-				ColorSettings,
+				item: ItemGURPS2,
 			}
 
 			// Determine whether a system migration is required and feasible

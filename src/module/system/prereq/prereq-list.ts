@@ -1,16 +1,17 @@
 import { ActorGURPS } from "@actor"
-import { ActorType, ItemType, NumericCompareType } from "@module/data/constants.ts"
+import { ActorType, NumericCompareType } from "@module/data/constants.ts"
 import { NumericCriteria } from "@module/util/index.ts"
 import { LocalizeGURPS, TooltipGURPS, extractTechLevel } from "@util"
 import { prereq } from "@util/enum/prereq.ts"
-import { BasePrereq, Prereq, PrereqConstructionOptions, PrereqListSchema } from "./index.ts"
+import { BasePrereq, Prereq, PrereqListSchema } from "./index.ts"
+import { PrereqTemplate } from "@module/data/item/templates/prereqs.ts"
 
 class PrereqList extends BasePrereq<PrereqListSchema> {
-	constructor(data: DeepPartial<SourceFromSchema<PrereqListSchema>>, options?: PrereqConstructionOptions) {
-		super(data, options)
-
-		this.when_tl = new NumericCriteria(data.when_tl)
-	}
+	// constructor(data: DeepPartial<SourceFromSchema<PrereqListSchema>>, options?: PrereqConstructionOptions) {
+	// 	super(data, options)
+	//
+	// 	this.when_tl = new NumericCriteria(data.when_tl)
+	// }
 
 	static override defineSchema(): PrereqListSchema {
 		const fields = foundry.data.fields
@@ -27,9 +28,8 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 
 	get children(): Prereq[] {
 		const children: Prereq[] = []
-		if (!this.item.isOfType(ItemType.Trait)) return children
 		for (const id of this.prereqs) {
-			const child = this.item.system.prereqs.find(e => e.id === id)
+			const child = (this.parent as unknown as PrereqTemplate).prereqs.find(e => e.id === id)
 			if (child) children.push(child)
 		}
 		return children
@@ -81,14 +81,11 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 	}
 }
 
+// interface PrereqList extends BasePrereq<PrereqListSchema>, ModelPropsFromSchema<PrereqListSchema>> {
+// }
+
 interface PrereqList extends BasePrereq<PrereqListSchema>, Omit<ModelPropsFromSchema<PrereqListSchema>, "when_tl"> {
 	when_tl: NumericCriteria
 }
 
-// interface PrereqList
-// 	extends BasePrereq<PrereqListSchema>,
-// 		Omit<ModelPropsFromSchema<PrereqListSchema>, "when_tl" | "prereqs"> {
-// 	when_tl: NumericCriteria
-// 	prereqs: Prereq[]
-// }
 export { PrereqList }
