@@ -1,6 +1,7 @@
-import { SYSTEM_NAME } from "./constants.ts"
+import { ItemType, SYSTEM_NAME } from "./constants.ts"
 import fields = foundry.data.fields
-import { ItemGURPS2 } from "@module/document/item.ts"
+import type { ItemGURPS2 } from "@module/document/item.ts"
+import { ItemDataInstances } from "./item/types.ts"
 
 interface SystemDataModelMetadata {
 	systemFlagsModel: typeof SystemDataModel | null
@@ -10,21 +11,23 @@ interface ItemDataModelMetadata extends SystemDataModelMetadata {
 	singleton: boolean
 }
 
-type Constructor<T = {}> = new (...args: any[]) => T
+// Type to get the instance type of a class constructor
+type InstanceTypeOf<T> = T extends new (...args: any[]) => infer R ? R : never
 
-type SystemDataModelConstructor<T = {}> = Constructor<T & SystemDataModel>
-
-type InstanceTypeFromConstructors<T extends any[]> = T extends [infer First, ...infer Rest]
-	? (First extends Constructor<infer U> ? U : never) & InstanceTypeFromConstructors<Rest>
+// Type to combine instance types of all classes in the array
+type CombinedInstanceType<T extends any[]> = T extends [infer U, ...infer Rest]
+	? U extends new (...args: any[]) => any
+		? InstanceTypeOf<U> & CombinedInstanceType<Rest>
+		: never
 	: {}
 
-type StaticTypeFromConstructors<T extends any[]> = T extends [Constructor<infer _>, ...infer Rest]
-	? (T[0] extends Constructor<any> ? T[0] : never) & StaticTypeFromConstructors<Rest>
-	: {}
+// Type to combine static types of all classes in the array
+type CombinedStaticType<T extends any[]> = T extends [infer U, ...infer Rest] ? U & CombinedStaticType<Rest> : {}
 
-type MergedStaticTypes<TTemplates extends SystemDataModelConstructor[]> = StaticTypeFromConstructors<TTemplates> &
-	typeof SystemDataModel
+// Type to represent the combined class with both static and instance members
+type CombinedClass<T extends any[]> = CombinedStaticType<T> & (new (...args: any[]) => CombinedInstanceType<T>)
 
+// class SystemDataModel extends foundry.abstract.TypeDataModel<foundry.abstract.Document, fields.DataSchema> {
 class SystemDataModel<
 	TDocument extends foundry.abstract.Document = foundry.abstract.Document,
 	TSchema extends fields.DataSchema = fields.DataSchema,
@@ -252,10 +255,7 @@ class SystemDataModel<
 	/**
 	 * Mix multiple templates with the base type.
 	 */
-	static mixin<TTemplates extends SystemDataModelConstructor[]>(
-		...templates: TTemplates
-	): MergedStaticTypes<TTemplates> &
-		(new (...args: any[]) => InstanceTypeFromConstructors<TTemplates> & SystemDataModel) {
+	static mixin<T extends Array<typeof SystemDataModel<any, any>>>(...templates: T): CombinedClass<T> {
 		for (const template of templates) {
 			if (!(template.prototype instanceof SystemDataModel)) {
 				throw new Error(`${template.name} is not a subclass of SystemDataModel`)
@@ -308,6 +308,10 @@ class ItemDataModel<TSchema extends fields.DataSchema = fields.DataSchema> exten
 	ItemGURPS2,
 	TSchema
 > {
+	isOfType<T extends ItemType>(...types: T[]): this is ItemDataInstances[T] {
+		return types.some(t => this.parent.type === t)
+	}
+
 	static override defineSchema(): ItemDataSchema {
 		const fields = foundry.data.fields
 		return {
@@ -325,16 +329,20 @@ class ItemDataModel<TSchema extends fields.DataSchema = fields.DataSchema> exten
 		),
 	)
 
-	static override mixin<TTemplates extends SystemDataModelConstructor[]>(
-		...templates: TTemplates
-	): MergedStaticTypes<TTemplates> &
-		(new (
-			...args: any[]
-		) => InstanceTypeFromConstructors<TTemplates> &
-			SystemDataModel &
-			foundry.abstract.DataModel<ItemGURPS2, fields.DataSchema>) {
-		return super.mixin(...templates) as any
-	}
+	// static override mixin<TTemplates extends SystemDataModelConstructor[]>(
+	// 	...templates: TTemplates
+	// ): MergedStaticTypes<TTemplates> &
+	// 	(new (
+	// 		...args: any[]
+	// 	) => InstanceTypeFromConstructors<TTemplates> &
+	// 		SystemDataModel &
+	// 		foundry.abstract.DataModel<ItemGURPS2, fields.DataSchema>) {
+	// 	return super.mixin(...templates) as any
+	// }
+	//
+	// static override mixin<T extends (typeof ItemDataModel)[]>(...templates: T): CombinedClass<T> {
+	// 	return super.mixin(...(templates as any[])) as any
+	// }
 }
 
 interface ItemDataModel<TSchema extends fields.DataSchema>

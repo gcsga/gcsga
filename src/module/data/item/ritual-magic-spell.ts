@@ -2,12 +2,12 @@ import fields = foundry.data.fields
 import { ItemType } from "../constants.ts"
 import { difficulty } from "@util"
 import { TechniqueDifficulty } from "../types.ts"
-import { AbstractSkillTemplate } from "./templates/abstract-skill.ts"
-import { BasicInformationTemplate } from "./templates/basic-information.ts"
-import { ContainerTemplate } from "./templates/container.ts"
-import { PrereqTemplate } from "./templates/prereqs.ts"
-import { ReplacementTemplate } from "./templates/replacements.ts"
-import { StudyTemplate } from "./templates/study.ts"
+import { AbstractSkillTemplate, AbstractSkillTemplateSchema } from "./templates/abstract-skill.ts"
+import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
+import { ContainerTemplate, ContainerTemplateSchema } from "./templates/container.ts"
+import { PrereqTemplate, PrereqTemplateSchema } from "./templates/prereqs.ts"
+import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
+import { StudyTemplate, StudyTemplateSchema } from "./templates/study.ts"
 import { ItemDataModel } from "../abstract.ts"
 
 class RitualMagicSpellData extends ItemDataModel.mixin(
@@ -75,9 +75,11 @@ class RitualMagicSpellData extends ItemDataModel.mixin(
 				nullable: false,
 				initial: 0,
 			}),
-		})
+		}) as RitualMagicSpellSchema
 	}
 }
+
+interface RitualMagicSpellData extends ModelPropsFromSchema<RitualMagicSpellSchema> {}
 
 type RitualMagicSpellSchema = BasicInformationTemplateSchema &
 	PrereqTemplateSchema &

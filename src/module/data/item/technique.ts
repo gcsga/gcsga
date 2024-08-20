@@ -1,13 +1,13 @@
 import { ItemDataModel } from "../abstract.ts"
 import fields = foundry.data.fields
-import { PrereqTemplate } from "./templates/prereqs.ts"
-import { ContainerTemplate } from "./templates/container.ts"
-import { FeatureTemplate } from "./templates/features.ts"
-import { StudyTemplate } from "./templates/study.ts"
-import { ReplacementTemplate } from "./templates/replacements.ts"
+import { PrereqTemplate, PrereqTemplateSchema } from "./templates/prereqs.ts"
+import { ContainerTemplate, ContainerTemplateSchema } from "./templates/container.ts"
+import { FeatureTemplate, FeatureTemplateSchema } from "./templates/features.ts"
+import { StudyTemplate, StudyTemplateSchema } from "./templates/study.ts"
+import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
 import { ItemType } from "../constants.ts"
-import { BasicInformationTemplate } from "./templates/basic-information.ts"
-import { AbstractSkillTemplate } from "./templates/abstract-skill.ts"
+import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
+import { AbstractSkillTemplate, AbstractSkillTemplateSchema } from "./templates/abstract-skill.ts"
 import { SkillDefaultSchema, SkillDefault } from "@system"
 import { TechniqueDifficulty } from "../types.ts"
 import { difficulty } from "@util"
@@ -56,13 +56,16 @@ class TechniqueData extends ItemDataModel.mixin(
 				nullable: false,
 				initial: false,
 			}),
-		})
+		}) as TechniqueSchema
 	}
 }
+
+interface TechniqueData extends ModelPropsFromSchema<TechniqueSchema> {}
 
 type TechniqueSchema = BasicInformationTemplateSchema &
 	PrereqTemplateSchema &
 	ContainerTemplateSchema &
+	FeatureTemplateSchema &
 	StudyTemplateSchema &
 	ReplacementTemplateSchema &
 	AbstractSkillTemplateSchema & {

@@ -65,9 +65,11 @@ class SpellData extends ItemDataModel.mixin(
 				nullable: false,
 				initial: "Instant",
 			}),
-		})
+		}) as SpellSchema
 	}
 }
+
+interface SpellData extends ModelPropsFromSchema<SpellSchema> {}
 
 type SpellSchema = BasicInformationTemplateSchema &
 	PrereqTemplateSchema &

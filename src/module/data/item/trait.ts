@@ -1,12 +1,12 @@
 import { selfctrl } from "@util"
 import { ItemDataModel } from "../abstract.ts"
 import { ItemType } from "../constants.ts"
-import { BasicInformationTemplate } from "./templates/basic-information.ts"
-import { ContainerTemplate } from "./templates/container.ts"
-import { FeatureTemplate } from "./templates/features.ts"
-import { PrereqTemplate } from "./templates/prereqs.ts"
-import { ReplacementTemplate } from "./templates/replacements.ts"
-import { StudyTemplate } from "./templates/study.ts"
+import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
+import { ContainerTemplate, ContainerTemplateSchema } from "./templates/container.ts"
+import { FeatureTemplate, FeatureTemplateSchema } from "./templates/features.ts"
+import { PrereqTemplate, PrereqTemplateSchema } from "./templates/prereqs.ts"
+import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
+import { StudyTemplate, StudyTemplateSchema } from "./templates/study.ts"
 import fields = foundry.data.fields
 
 class TraitData extends ItemDataModel.mixin(
@@ -24,6 +24,7 @@ class TraitData extends ItemDataModel.mixin(
 		const fields = foundry.data.fields
 
 		return this.mergeSchema(super.defineSchema(), {
+			...super.defineSchema(),
 			userdesc: new fields.StringField<string, string>(),
 			base_points: new fields.NumberField<number, number, true, false>({
 				required: true,
@@ -45,7 +46,7 @@ class TraitData extends ItemDataModel.mixin(
 			disabled: new fields.BooleanField<boolean>({ initial: false }),
 			round_down: new fields.BooleanField<boolean>({ initial: false }),
 			can_level: new fields.BooleanField<boolean>({ initial: false }),
-		})
+		}) as TraitSchema
 	}
 }
 

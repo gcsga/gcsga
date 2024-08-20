@@ -2,7 +2,7 @@ import { ItemDataModel } from "../abstract.ts"
 import fields = foundry.data.fields
 import { PrereqTemplate, PrereqTemplateSchema } from "./templates/prereqs.ts"
 import { ContainerTemplate, ContainerTemplateSchema } from "./templates/container.ts"
-import { FeatureTemplate } from "./templates/features.ts"
+import { FeatureTemplate, FeatureTemplateSchema } from "./templates/features.ts"
 import { StudyTemplate, StudyTemplateSchema } from "./templates/study.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
 import { ItemType } from "../constants.ts"
@@ -11,7 +11,6 @@ import { AbstractSkillTemplate, AbstractSkillTemplateSchema } from "./templates/
 import { SkillDefaultSchema, SkillDefault } from "@system"
 import { AttributeDifficulty, AttributeDifficultySchema } from "./fields/attribute-difficulty.ts"
 
-// @ts-expect-error deep type instantiation
 class SkillData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
 	PrereqTemplate,
@@ -52,13 +51,16 @@ class SkillData extends ItemDataModel.mixin(
 			defaults: new fields.ArrayField<fields.SchemaField<SkillDefaultSchema>>(
 				new fields.SchemaField<SkillDefaultSchema>(SkillDefault.defineSchema()),
 			),
-		})
+		}) as SkillSchema
 	}
 }
+
+interface SkillData extends ModelPropsFromSchema<SkillSchema> {}
 
 type SkillSchema = BasicInformationTemplateSchema &
 	PrereqTemplateSchema &
 	ContainerTemplateSchema &
+	FeatureTemplateSchema &
 	StudyTemplateSchema &
 	ReplacementTemplateSchema &
 	AbstractSkillTemplateSchema & {
