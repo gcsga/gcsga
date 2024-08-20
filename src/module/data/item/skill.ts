@@ -10,6 +10,7 @@ import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./temp
 import { AbstractSkillTemplate, AbstractSkillTemplateSchema } from "./templates/abstract-skill.ts"
 import { SkillDefaultSchema, SkillDefault } from "@system"
 import { AttributeDifficulty, AttributeDifficultySchema } from "./fields/attribute-difficulty.ts"
+import { TooltipGURPS } from "@util"
 
 class SkillData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -52,6 +53,10 @@ class SkillData extends ItemDataModel.mixin(
 				new fields.SchemaField<SkillDefaultSchema>(SkillDefault.defineSchema()),
 			),
 		}) as SkillSchema
+	}
+
+	override calculateLevel() {
+		return (this._skillLevel ??= { level: 0, relativeLevel: 0, tooltip: new TooltipGURPS() })
 	}
 }
 

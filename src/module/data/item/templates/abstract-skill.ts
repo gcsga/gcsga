@@ -5,7 +5,7 @@ import { difficulty, TooltipGURPS } from "@util"
 import { ItemType } from "@module/data/constants.ts"
 
 class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
-	private declare _skillLevel: SkillLevel
+	protected declare _skillLevel: SkillLevel
 
 	static override defineSchema(): AbstractSkillTemplateSchema {
 		const fields = foundry.data.fields
