@@ -1,7 +1,9 @@
-import { ItemType, SYSTEM_NAME } from "./constants.ts"
+import { ActorType, ItemType, SYSTEM_NAME } from "./constants.ts"
 import fields = foundry.data.fields
 import type { ItemGURPS2 } from "@module/document/item.ts"
 import { ItemDataInstances } from "./item/types.ts"
+import { ActorGURPS2 } from "@module/document/actor.ts"
+import { ActorDataInstances } from "./actor/types.ts"
 
 interface SystemDataModelMetadata {
 	systemFlagsModel: typeof SystemDataModel | null
@@ -297,7 +299,20 @@ interface SystemDataModel<TDocument extends foundry.abstract.Document, TSchema e
 /**
  * Variant of the SystemDataModel with some extra actor-specific handling.
  */
-class ActorDataModel extends SystemDataModel {}
+class ActorDataModel<TSchema extends fields.DataSchema = fields.DataSchema> extends SystemDataModel<
+	ActorGURPS2,
+	TSchema
+> {
+	isOfType<T extends ActorType>(...types: T[]): this is ActorDataInstances[T] {
+		return types.some(t => this.parent.type === t)
+	}
+}
+
+interface ActorDataModel<TSchema extends fields.DataSchema>
+	extends SystemDataModel<ActorGURPS2, TSchema>,
+		ModelPropsFromSchema<ActorDataSchema> {}
+
+type ActorDataSchema = {}
 
 /* -------------------------------------------- */
 
@@ -328,21 +343,6 @@ class ItemDataModel<TSchema extends fields.DataSchema = fields.DataSchema> exten
 			{ inplace: false },
 		),
 	)
-
-	// static override mixin<TTemplates extends SystemDataModelConstructor[]>(
-	// 	...templates: TTemplates
-	// ): MergedStaticTypes<TTemplates> &
-	// 	(new (
-	// 		...args: any[]
-	// 	) => InstanceTypeFromConstructors<TTemplates> &
-	// 		SystemDataModel &
-	// 		foundry.abstract.DataModel<ItemGURPS2, fields.DataSchema>) {
-	// 	return super.mixin(...templates) as any
-	// }
-	//
-	// static override mixin<T extends (typeof ItemDataModel)[]>(...templates: T): CombinedClass<T> {
-	// 	return super.mixin(...(templates as any[])) as any
-	// }
 }
 
 interface ItemDataModel<TSchema extends fields.DataSchema>

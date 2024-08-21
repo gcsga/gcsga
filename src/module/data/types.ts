@@ -1,5 +1,5 @@
 import { difficulty } from "@util"
-import { ConditionID, EFFECT_ACTION, ManeuverID, RollType } from "./constants.ts"
+import { ConditionID, EFFECT_ACTION, ManeuverID } from "./constants.ts"
 
 enum ItemKind {
 	Campaign = "C",
@@ -137,30 +137,30 @@ const ApplicableConditions = [
 type EffectID = ConditionID | ManeuverID
 
 // Rolls
-type ModifierItem = RollModifier | ModifierHeader
+// type ModifierItem = RollModifier | ModifierHeader
 
-interface RollModifierStack {
-	title: string
-	items: RollModifier[]
-	editing?: boolean
-	open?: boolean
-}
+// interface RollModifierStack {
+// 	title: string
+// 	items: RollModifier[]
+// 	editing?: boolean
+// 	open?: boolean
+// }
 
-interface RollModifier {
-	id: string
-	modifier: number
-	rollType?: RollType
-	max?: number
-	tags?: string[]
-	cost?: { id: string; value: number }
-	reference?: string
-	target?: boolean
-}
+// interface RollModifier {
+// 	id: string
+// 	modifier: number
+// 	rollType?: RollType
+// 	max?: number
+// 	tags?: string[]
+// 	cost?: { id: string; value: number }
+// 	reference?: string
+// 	target?: boolean
+// }
 
-interface ModifierHeader {
-	id: string
-	title: true
-}
+// interface ModifierHeader {
+// 	id: string
+// 	title: true
+// }
 
 //
 type ImagePath = `${string}.${ImageFileExtension}`
@@ -221,12 +221,12 @@ export type {
 	ImagePath,
 	MigratedDocumentMigrationRecord,
 	MigrationRecord,
-	ModifierHeader,
-	ModifierItem,
+	// ModifierHeader,
+	// ModifierItem,
 	NewDocumentMigrationRecord,
 	Posture,
-	RollModifier,
-	RollModifierStack,
+	// RollModifier,
+	// RollModifierStack,
 	SkillDifficulty,
 	Stringer,
 	TechniqueDifficulty,
