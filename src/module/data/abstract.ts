@@ -1,6 +1,6 @@
 import { ActorType, ItemType, SYSTEM_NAME } from "./constants.ts"
 import fields = foundry.data.fields
-import type { ItemGURPS2 } from "@module/document/item.ts"
+import { ItemGURPS2 } from "@module/document/item.ts"
 import { ItemDataInstances } from "./item/types.ts"
 import { ActorGURPS2 } from "@module/document/actor.ts"
 import { ActorDataInstances } from "./actor/types.ts"
@@ -330,7 +330,7 @@ class ItemDataModel<TSchema extends fields.DataSchema = fields.DataSchema> exten
 	static override defineSchema(): ItemDataSchema {
 		const fields = foundry.data.fields
 		return {
-			container: new fields.ForeignDocumentField(foundry.documents.BaseItem, { idOnly: true }),
+			container: new fields.ForeignDocumentField(ItemGURPS2, { idOnly: true }),
 		}
 	}
 
@@ -350,7 +350,7 @@ interface ItemDataModel<TSchema extends fields.DataSchema>
 		ModelPropsFromSchema<ItemDataSchema> {}
 
 type ItemDataSchema = {
-	container: fields.ForeignDocumentField<string>
+	container: fields.ForeignDocumentField<ItemGURPS2>
 }
 
 export { ItemDataModel, ActorDataModel, SystemDataModel, type ItemDataSchema }

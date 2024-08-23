@@ -1,6 +1,5 @@
 import { ActorDataModel } from "../abstract.ts"
 import fields = foundry.data.fields
-import { PointsRecord } from "@actor/character/data.ts"
 import {
 	SheetSettingsSchema,
 	SheetSettings,
@@ -12,16 +11,14 @@ import {
 	MoveTypeSchema,
 } from "@system"
 import { CharacterManeuver } from "@system/maneuver-manager.ts"
-import { ActorType } from "../constants.ts"
+import { PointsRecord, PointsRecordSchema } from "./fields/points-record.ts"
 
 class CharacterData extends ActorDataModel {
 	static override defineSchema(): CharacterSchema {
 		const fields = foundry.data.fields
 
-		return {
-			...super.defineSchema(),
-			type: new fields.StringField<ActorType.Character, ActorType.Character, true, false, true>(),
-			version: new fields.NumberField({ initial: 4 }),
+		return this.mergeSchema(super.defineSchema(), {
+			version: new fields.NumberField({ required: true, nullable: false, initial: 5 }),
 			settings: new fields.SchemaField<SheetSettingsSchema>(SheetSettings.defineSchema()),
 			created_date: new fields.StringField(),
 			modified_date: new fields.StringField(),
@@ -48,19 +45,19 @@ class CharacterData extends ActorDataModel {
 			resource_trackers: new fields.ArrayField(new fields.SchemaField(ResourceTracker.defineSchema())),
 			move_types: new fields.ArrayField(new fields.SchemaField(MoveType.defineSchema())),
 			move: new fields.SchemaField({
+				// TODO: review
 				maneuver: new fields.ObjectField(),
 				posture: new fields.StringField(),
 				type: new fields.StringField(),
 			}),
 			total_points: new fields.NumberField(),
-			points_record: new fields.ArrayField(new fields.ObjectField<PointsRecord>()),
-		}
+			points_record: new fields.ArrayField(new fields.SchemaField(PointsRecord.defineSchema())),
+		}) as CharacterSchema
 	}
 }
 
 type CharacterSchema = {
-	type: fields.StringField<ActorType.Character, ActorType.Character, true, false, true>
-	version: fields.NumberField
+	version: fields.NumberField<number, number, true, false, true>
 	settings: fields.SchemaField<SheetSettingsSchema>
 	created_date: fields.StringField
 	modified_date: fields.StringField
@@ -70,7 +67,7 @@ type CharacterSchema = {
 	move_types: fields.ArrayField<fields.SchemaField<MoveTypeSchema>>
 	move: fields.SchemaField<CharacterMoveSchema>
 	total_points: fields.NumberField<number, number, true, false>
-	points_record: fields.ArrayField<fields.ObjectField<PointsRecord>>
+	points_record: fields.ArrayField<fields.SchemaField<PointsRecordSchema>>
 }
 
 type CharacterProfileSchema = {
@@ -99,17 +96,17 @@ type CharacterMoveSchema = {
 	type: fields.StringField
 }
 
-type PointBreakdownSchema = {
-	overspent: fields.BooleanField
-	ancestry: fields.NumberField<number, number, true, false, true>
-	attributes: fields.NumberField<number, number, true, false, true>
-	advantages: fields.NumberField<number, number, true, false, true>
-	disadvantages: fields.NumberField<number, number, true, false, true>
-	quirks: fields.NumberField<number, number, true, false, true>
-	skills: fields.NumberField<number, number, true, false, true>
-	spells: fields.NumberField<number, number, true, false, true>
-	total: fields.NumberField<number, number, true, false, true>
-	unspent: fields.NumberField<number, number, true, false, true>
-}
+// type PointBreakdownSchema = {
+// 	overspent: fields.BooleanField
+// 	ancestry: fields.NumberField<number, number, true, false, true>
+// 	attributes: fields.NumberField<number, number, true, false, true>
+// 	advantages: fields.NumberField<number, number, true, false, true>
+// 	disadvantages: fields.NumberField<number, number, true, false, true>
+// 	quirks: fields.NumberField<number, number, true, false, true>
+// 	skills: fields.NumberField<number, number, true, false, true>
+// 	spells: fields.NumberField<number, number, true, false, true>
+// 	total: fields.NumberField<number, number, true, false, true>
+// 	unspent: fields.NumberField<number, number, true, false, true>
+// }
 
 export { CharacterData }

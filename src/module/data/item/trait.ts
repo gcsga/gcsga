@@ -1,5 +1,5 @@
 import { selfctrl } from "@util"
-import { ItemDataModel } from "../abstract.ts"
+import { ItemDataModel, ItemDataSchema } from "../abstract.ts"
 import { ItemType } from "../constants.ts"
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { ContainerTemplate, ContainerTemplateSchema } from "./templates/container.ts"
@@ -48,9 +48,18 @@ class TraitData extends ItemDataModel.mixin(
 			can_level: new fields.BooleanField<boolean>({ initial: false }),
 		}) as TraitSchema
 	}
+
+	get enabled(): boolean {
+		return !this.disabled && this.container?.isOfType(ItemType.TraitContainer)
+			? this.container.system.enabled
+			: true
+	}
 }
 
-type TraitSchema = BasicInformationTemplateSchema &
+interface TraitData extends ModelPropsFromSchema<TraitSchema> {}
+
+type TraitSchema = ItemDataSchema &
+	BasicInformationTemplateSchema &
 	PrereqTemplateSchema &
 	ContainerTemplateSchema &
 	FeatureTemplateSchema &

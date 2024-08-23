@@ -1,4 +1,4 @@
-import { ItemDataModel } from "../abstract.ts"
+import { ItemDataModel, ItemDataSchema } from "../abstract.ts"
 import fields = foundry.data.fields
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { selfctrl } from "@util"
@@ -43,11 +43,18 @@ class TraitContainerData extends ItemDataModel.mixin(
 			can_level: new fields.BooleanField<boolean>({ initial: false }),
 		}) as TraitContainerSchema
 	}
+
+	get enabled(): boolean {
+		return !this.disabled && this.container?.isOfType(ItemType.TraitContainer)
+			? this.container.system.enabled
+			: true
+	}
 }
 
 interface TraitContainerData extends ModelPropsFromSchema<TraitContainerSchema> {}
 
-type TraitContainerSchema = BasicInformationTemplateSchema &
+type TraitContainerSchema = ItemDataSchema &
+	BasicInformationTemplateSchema &
 	PrereqTemplateSchema &
 	ContainerTemplateSchema &
 	ReplacementTemplateSchema & {

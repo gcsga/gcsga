@@ -1,9 +1,8 @@
-import SystemDataModel, { ActorDataModel } from "@module/data/abstract.ts"
+import { SystemDataModel, ActorDataModel } from "@module/data/abstract.ts"
 import { SYSTEM_NAME } from "@module/data/constants.ts"
 import { ItemGURPS2 } from "./item.ts"
 
 class ActorGURPS2<TParent extends TokenDocument | null = TokenDocument | null> extends Actor<TParent> {
-	/** @inheritDoc */
 	override prepareData() {
 		super.prepareData()
 		if (SYSTEM_NAME in this.flags && this._systemFlagsDataModel) {
@@ -16,7 +15,6 @@ class ActorGURPS2<TParent extends TokenDocument | null = TokenDocument | null> e
 
 	/* -------------------------------------------- */
 
-	/** @inheritDoc */
 	override async setFlag(scope: string, key: string, value: unknown): Promise<this> {
 		if (scope === SYSTEM_NAME && this._systemFlagsDataModel) {
 			let diff
@@ -61,12 +59,6 @@ class ActorGURPS2<TParent extends TokenDocument | null = TokenDocument | null> e
 	/**
 	 * Perform preliminary operations before a Document of this type is updated.
 	 * Pre-update operations only occur for the client which requested the operation.
-	 * @param {object} changed            The differential data that is changed relative to the documents prior values
-	 * @param {object} options            Additional options which modify the update request
-	 * @param {documents.BaseUser} user   The User requesting the document update
-	 * @returns {Promise<boolean|void>}   A return value of false indicates the update operation should be cancelled.
-	 * @see {Document#_preUpdate}
-	 * @protected
 	 */
 	protected override async _preUpdate(
 		changed: DeepPartial<this["_source"]>,

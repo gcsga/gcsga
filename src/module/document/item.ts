@@ -7,6 +7,7 @@ class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extend
 	/* -------------------------------------------- */
 	/*  Helper Functions                            */
 	/* -------------------------------------------- */
+
 	isOfType<T extends ItemType>(...types: T[]): this is { system: ItemDataInstances[T] } {
 		return types.some(t => this.type === t)
 	}
@@ -24,7 +25,6 @@ class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extend
 
 	/* -------------------------------------------- */
 
-	/** @inheritDoc */
 	override async setFlag(scope: string, key: string, value: unknown): Promise<this> {
 		if (scope === SYSTEM_NAME && this._systemFlagsDataModel) {
 			let diff
@@ -69,12 +69,6 @@ class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extend
 	/**
 	 * Perform preliminary operations before a Document of this type is updated.
 	 * Pre-update operations only occur for the client which requested the operation.
-	 * @param {object} changed            The differential data that is changed relative to the documents prior values
-	 * @param {object} options            Additional options which modify the update request
-	 * @param {documents.BaseUser} user   The User requesting the document update
-	 * @returns {Promise<boolean|void>}   A return value of false indicates the update operation should be cancelled.
-	 * @see {Document#_preUpdate}
-	 * @protected
 	 */
 	protected override async _preUpdate(
 		changed: DeepPartial<this["_source"]>,
