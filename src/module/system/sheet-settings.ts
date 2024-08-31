@@ -10,6 +10,7 @@ import { ResourceTrackerDefSchema } from "./resource-tracker/data.ts"
 import { ResourceTrackerDef } from "./resource-tracker/definition.ts"
 import fields = foundry.data.fields
 import { Mook } from "./mook/document.ts"
+import { ActorGURPS2 } from "@module/document/actor.ts"
 
 export interface PageSettings {
 	paper_size: paper.Size
@@ -130,10 +131,25 @@ class SheetSettings extends foundry.abstract.DataModel<CharacterGURPS, SheetSett
 		return new SheetSettings({})
 	}
 
-	static for(actor: ActorGURPS | Mook | null): SheetSettings {
-		if (actor instanceof Actor && actor?.isOfType(ActorType.Character)) {
-			return actor.settings ?? new SheetSettings(actor.system.settings, { parent: actor })
-		}
+	// static for(actor: ActorGURPS | Mook | null): SheetSettings {
+	// 	if (actor instanceof Actor && actor?.isOfType(ActorType.Character)) {
+	// 		return actor.settings ?? new SheetSettings(actor.system.settings, { parent: actor })
+	// 	}
+	// 	if (actor) {
+	// 		ErrorGURPS(
+	// 			`Actor "${actor.name}" is of type "${actor.type}", which does not support Sheet Settings.Returning default settings.`,
+	// 		)
+	// 	} else {
+	// 		ErrorGURPS(`Actor does not exist.Returning default settings.`)
+	// 	}
+	// 	return SheetSettings.default()
+	// }
+
+	static for(actor: ActorGURPS2 | Mook | null): SheetSettings {
+		if (actor instanceof ActorGURPS2)
+			if (actor.isOfType(ActorType.Character)) {
+				return actor.system.settings
+			}
 		if (actor) {
 			ErrorGURPS(
 				`Actor "${actor.name}" is of type "${actor.type}", which does not support Sheet Settings.Returning default settings.`,

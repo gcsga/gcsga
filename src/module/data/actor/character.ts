@@ -56,6 +56,10 @@ class CharacterData extends ActorDataModel {
 	}
 }
 
+interface CharacterData extends Omit<ModelPropsFromSchema<CharacterSchema>, "settings"> {
+	settings: SheetSettings
+}
+
 type CharacterSchema = {
 	version: fields.NumberField<number, number, true, false, true>
 	settings: fields.SchemaField<SheetSettingsSchema>

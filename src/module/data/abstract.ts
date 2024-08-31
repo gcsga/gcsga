@@ -319,10 +319,7 @@ type ActorDataSchema = {}
 /**
  * Variant of the SystemDataModel with support for rich item tooltips.
  */
-class ItemDataModel<TSchema extends fields.DataSchema = fields.DataSchema> extends SystemDataModel<
-	ItemGURPS2,
-	TSchema
-> {
+class ItemDataModel<TSchema extends ItemDataSchema = ItemDataSchema> extends SystemDataModel<ItemGURPS2, TSchema> {
 	isOfType<T extends ItemType>(...types: T[]): this is ItemDataInstances[T] {
 		return types.some(t => this.parent.type === t)
 	}
@@ -345,7 +342,7 @@ class ItemDataModel<TSchema extends fields.DataSchema = fields.DataSchema> exten
 	)
 }
 
-interface ItemDataModel<TSchema extends fields.DataSchema>
+interface ItemDataModel<TSchema extends ItemDataSchema>
 	extends SystemDataModel<ItemGURPS2, TSchema>,
 		ModelPropsFromSchema<ItemDataSchema> {}
 

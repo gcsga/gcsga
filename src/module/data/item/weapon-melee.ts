@@ -2,6 +2,7 @@ import { ItemDataModel } from "../abstract.ts"
 import fields = foundry.data.fields
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { AbstractWeaponTemplate, AbstractWeaponTemplateSchema } from "./templates/abstract-weapon.ts"
+import { Nameable } from "@module/util/nameable.ts"
 
 class WeaponMeleeData extends ItemDataModel.mixin(BasicInformationTemplate, AbstractWeaponTemplate) {
 	static override defineSchema(): WeaponMeleeSchema {
@@ -12,6 +13,11 @@ class WeaponMeleeData extends ItemDataModel.mixin(BasicInformationTemplate, Abst
 			parry: new fields.StringField(),
 			block: new fields.StringField(),
 		}) as WeaponMeleeSchema
+	}
+
+	fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {
+		Nameable.extract(this.name, m, existing)
+		Nameable.extract(this.notes, m, existing)
 	}
 }
 

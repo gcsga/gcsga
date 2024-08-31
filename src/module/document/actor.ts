@@ -1,8 +1,25 @@
 import { SystemDataModel, ActorDataModel } from "@module/data/abstract.ts"
-import { SYSTEM_NAME } from "@module/data/constants.ts"
+import { ActorType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { ItemGURPS2 } from "./item.ts"
+import { ActorDataInstances } from "@module/data/actor/types.ts"
+import { Evaluator } from "@module/util/index.ts"
 
 class ActorGURPS2<TParent extends TokenDocument | null = TokenDocument | null> extends Actor<TParent> {
+	/**
+	 * Type safe way of verifying if an Item is of a particular type.
+	 */
+	isOfType<T extends ActorType>(...types: T[]): this is { system: ActorDataInstances[T] } {
+		return types.some(t => this.type === t)
+	}
+
+	// Resolves an embedded expression
+	embeddedEval(s: string): string {
+		const ev = new Evaluator({ resolver: this })
+		const exp = s.slice(2, s.length - 2)
+		const result = ev.evaluate(exp)
+		return result
+	}
+
 	override prepareData() {
 		super.prepareData()
 		if (SYSTEM_NAME in this.flags && this._systemFlagsDataModel) {

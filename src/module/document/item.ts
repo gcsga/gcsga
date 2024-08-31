@@ -1,15 +1,25 @@
 import { SystemDataModel, ItemDataModel } from "@module/data/abstract.ts"
 import { ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { ActorGURPS2 } from "./actor.ts"
-import { ItemDataInstances } from "@module/data/item/types.ts"
+import { ItemDataInstances, ItemDataTemplates, ItemTemplateType } from "@module/data/item/types.ts"
 
 class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extends Item<TParent> {
 	/* -------------------------------------------- */
 	/*  Helper Functions                            */
 	/* -------------------------------------------- */
 
+	/**
+	 * Type safe way of verifying if an Item is of a particular type.
+	 */
 	isOfType<T extends ItemType>(...types: T[]): this is { system: ItemDataInstances[T] } {
 		return types.some(t => this.type === t)
+	}
+
+	/**
+	 * Type safe way of verifying if an Item contains a template
+	 */
+	hasTemplate<T extends ItemTemplateType>(template: T): this is { system: ItemDataTemplates[T] } {
+		return this.system.constructor._schemaTemplates.some(t => t.name === template)
 	}
 
 	/** @inheritDoc */

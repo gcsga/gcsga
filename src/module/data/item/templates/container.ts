@@ -2,6 +2,7 @@ import { SystemDataModel } from "@module/data/abstract.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import fields = foundry.data.fields
+import { ItemTemplateType } from "../types.ts"
 
 class ContainerTemplate extends SystemDataModel<ItemGURPS2, ContainerTemplateSchema> {
 	static override defineSchema(): ContainerTemplateSchema {
@@ -50,7 +51,7 @@ class ContainerTemplate extends SystemDataModel<ItemGURPS2, ContainerTemplateSch
 
 		// Otherwise use local document collection
 		return (this.parent.isEmbedded ? this.parent.actor!.items : game.items).reduce((collection, item) => {
-			if (item.system.container === this.parent.id) collection.set(item.id, item)
+			if (item.system.container === this.parent) collection.set(item.id, item)
 			return collection
 		}, new Collection())
 	}
@@ -62,7 +63,8 @@ class ContainerTemplate extends SystemDataModel<ItemGURPS2, ContainerTemplateSch
 		return (this.contents as Collection<ItemGURPS2>).reduce(
 			(collection: Collection<ItemGURPS2>, item: ItemGURPS2) => {
 				collection.set(item.id, item)
-				if (item.isOfType("container")) item.system.allContents.forEach(i => collection.set(i.id, i))
+				if (item.hasTemplate(ItemTemplateType.Container))
+					(item.system.allContents as Collection<ItemGURPS2>).forEach(i => collection.set(i.id, i))
 				return collection
 			},
 			new Collection(),
@@ -73,7 +75,8 @@ class ContainerTemplate extends SystemDataModel<ItemGURPS2, ContainerTemplateSch
 		return (await this.contents).reduce(async (promise: Promise<Collection<ItemGURPS2>>, item: ItemGURPS2) => {
 			const collection = await promise
 			collection.set(item.id, item)
-			if (item.isOfType("container")) (await item.system.allContents).forEach(i => collection.set(i.id, i))
+			if (item.hasTemplate(ItemTemplateType.Container))
+				(await item.system.allContents).forEach(i => collection.set(i.id, i))
 			return collection
 			//@ts-expect-error is ok
 		}, new Collection<ItemGURPS2>())

@@ -1,10 +1,12 @@
 import { SystemDataModel } from "@module/data/abstract.ts"
 import fields = foundry.data.fields
+import { ItemGURPS2 } from "@module/document/item.ts"
 
 class BasicInformationTemplate extends SystemDataModel<foundry.abstract.Document, BasicInformationTemplateSchema> {
 	static override defineSchema(): BasicInformationTemplateSchema {
 		const fields = foundry.data.fields
 		return {
+			container: new fields.ForeignDocumentField(ItemGURPS2, { idOnly: true }),
 			name: new fields.StringField({
 				required: true,
 			}),
@@ -15,6 +17,14 @@ class BasicInformationTemplate extends SystemDataModel<foundry.abstract.Document
 			tags: new fields.ArrayField(new foundry.data.fields.StringField()),
 		}
 	}
+
+	hasTag(tag: string): boolean {
+		return this.tags.includes(tag)
+	}
+
+	get combinedTags(): string {
+		return this.tags.join(", ")
+	}
 }
 
 interface BasicInformationTemplate
@@ -22,6 +32,7 @@ interface BasicInformationTemplate
 		ModelPropsFromSchema<BasicInformationTemplateSchema> {}
 
 type BasicInformationTemplateSchema = {
+	container: fields.ForeignDocumentField<ItemGURPS2>
 	name: fields.StringField<string, string, true, false, true>
 	reference: fields.StringField
 	reference_highlight: fields.StringField

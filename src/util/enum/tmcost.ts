@@ -9,10 +9,6 @@ export namespace tmcost {
 	}
 
 	export namespace Type {
-		export function LastType(): Type {
-			return Type.Multiplier
-		}
-
 		export function toString(T: Type): string {
 			return LocalizeGURPS.translations.gurps.enum.tmcost[T]
 		}

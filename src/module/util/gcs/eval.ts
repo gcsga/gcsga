@@ -1,4 +1,4 @@
-import type { ActorGURPS } from "@actor"
+// import type { ActorGURPS } from "@actor"
 import type { Mook } from "@system/mook/index.ts"
 import { ErrorGURPS } from "@util"
 import { eFunction, evalFunctions } from "./function.ts"
@@ -11,11 +11,13 @@ import {
 	expressionTree,
 	parsedFunction,
 } from "./operator/types.ts"
+import { ActorGURPS2 } from "@module/document/actor.ts"
 
 // Evaluator is used to evaluate an expression. If you do not have any variables that will be resolved, you can leave
 // Resolver unset.
 class Evaluator {
-	resolver: ActorGURPS | Mook
+	// resolver: ActorGURPS | Mook
+	resolver: ActorGURPS2 | Mook
 
 	operators: Operator[] = evalOperators(true)
 
@@ -25,7 +27,12 @@ class Evaluator {
 
 	operatorStack: expressionOperator[] = []
 
-	constructor(data: { resolver: ActorGURPS | Mook; operators?: Operator[]; functions?: Map<string, eFunction> }) {
+	// constructor(data: { resolver: ActorGURPS | Mook; operators?: Operator[]; functions?: Map<string, eFunction> }) {
+	// 	this.resolver = data.resolver
+	// 	this.operators = data.operators ?? evalOperators(true)
+	// 	this.functions = data.functions ?? evalFunctions()
+	// }
+	constructor(data: { resolver: ActorGURPS2 | Mook; operators?: Operator[]; functions?: Map<string, eFunction> }) {
 		this.resolver = data.resolver
 		this.operators = data.operators ?? evalOperators(true)
 		this.functions = data.functions ?? evalFunctions()
@@ -303,12 +310,8 @@ class Evaluator {
 
 export { Evaluator }
 
-/**
- *
- * @param expression
- * @param resolver
- */
-export function evaluateToNumber(expression: string, resolver: ActorGURPS | Mook): number {
+// export function evaluateToNumber(expression: string, resolver: ActorGURPS | Mook): number {
+export function evaluateToNumber(expression: string, resolver: ActorGURPS2 | Mook): number {
 	let result: Operand = 0
 	try {
 		result = new Evaluator({ resolver: resolver }).evaluate(expression)

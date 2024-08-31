@@ -1,17 +1,25 @@
 # BIG OL' TODO Document
 
-- traverseEmbeddedDocuments
-- change isOfType to allow checking if an item has a particular template as part of its schema
-
 ## Immediate TODO
 
-1. BUGS
+1. Refactor
 
-- fix settings forms
-- fix weapon damage bonus not working when not against "this weapon"
-- fix weapon by skill showing specialization instead of usage
-- fix features not applying per level
-- check github issues and check against them
+- items
+  - type-based functionality
+- actors
+  - type-based fucntionality
+- character sheets
+  - actorsheetv2
+  - imitate GCS and newest GGA layout
+- item sheets
+  - same as before
+- actor tab
+  - any work needed?
+- item tab
+  - allow for nesting
+- compendium browser
+- modifier bucket
+  - applicationv2
 
 2. Character Sheet
 
