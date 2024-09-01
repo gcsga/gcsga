@@ -1,16 +1,18 @@
-import { ActorGURPS } from "@actor"
 import { ActorType, gid } from "@data"
 import { Nameable } from "@module/util/nameable.ts"
 import { SkillDefaultSchema, SkillDefaultType } from "./data.ts"
-import { ItemGURPS } from "@item"
 import { LocalizeGURPS, StringBuilder } from "@util"
+import { ItemGURPS2 } from "@module/document/item.ts"
+import { ActorGURPS2 } from "@module/document/actor.ts"
 
 const SKILL_BASED_DEFAULT_TYPES: Set<string> = new Set([gid.Skill, gid.Parry, gid.Block])
 
-class SkillDefault<TItem extends ItemGURPS = ItemGURPS> extends foundry.abstract.DataModel<TItem, SkillDefaultSchema> {
+// class SkillDefault<TItem extends ItemGURPS = ItemGURPS> extends foundry.abstract.DataModel<TItem, SkillDefaultSchema> {
+class SkillDefault extends foundry.abstract.DataModel<ItemGURPS2, SkillDefaultSchema> {
 	constructor(
 		data: DeepPartial<SourceFromSchema<SkillDefaultSchema>>,
-		options?: DataModelConstructionOptions<TItem>,
+		// options?: DataModelConstructionOptions<TItem>,
+		options?: DataModelConstructionOptions<ItemGURPS2>,
 	) {
 		super(data, options)
 	}
@@ -46,7 +48,7 @@ class SkillDefault<TItem extends ItemGURPS = ItemGURPS> extends foundry.abstract
 		)
 	}
 
-	fullName(actor: ActorGURPS, replacements: Map<string, string>): string {
+	fullName(actor: ActorGURPS2, replacements: Map<string, string>): string {
 		if (this.skillBased) {
 			const buffer = new StringBuilder()
 			buffer.push(this.nameWithReplacements(replacements))
@@ -58,42 +60,54 @@ class SkillDefault<TItem extends ItemGURPS = ItemGURPS> extends foundry.abstract
 			else if (this.type === gid.Block) buffer.push(` ${LocalizeGURPS.translations.gurps.attribute.block}`)
 			return buffer.toString()
 		}
-		return actor.resolveAttributeName(this.type)
+		return actor.system.resolveAttributeName(this.type)
 	}
 
-	skillLevel(actor: ActorGURPS, require_points: boolean, excludes: Set<string>, rule_of_20: boolean): number {
+	skillLevel(
+		actor: ActorGURPS2,
+		replacements: Map<string, string>,
+		requirePoints: boolean,
+		excludes: Set<string>,
+		rule_of_20: boolean,
+	): number {
 		if (!actor.isOfType(ActorType.Character)) return 0
 		let best = Number.MIN_SAFE_INTEGER
 		switch (this.type) {
 			case gid.Parry:
-				best = this.best(actor, require_points, excludes)
-				if (best !== Number.MIN_SAFE_INTEGER) best = best / 2 + 3 + actor.parryBonus
+				best = this.best(actor, replacements, requirePoints, excludes)
+				if (best !== Number.MIN_SAFE_INTEGER) best = best / 2 + 3 + actor.system.parryBonus
 				return this.finalLevel(best)
 			case gid.Block:
-				best = this.best(actor, require_points, excludes)
-				if (best !== Number.MIN_SAFE_INTEGER) best = best / 2 + 3 + actor.blockBonus
+				best = this.best(actor, replacements, requirePoints, excludes)
+				if (best !== Number.MIN_SAFE_INTEGER) best = best / 2 + 3 + actor.system.blockBonus
 				return this.finalLevel(best)
 			case gid.Skill:
-				return this.finalLevel(this.best(actor, require_points, excludes))
+				return this.finalLevel(this.best(actor, replacements, requirePoints, excludes))
 			default:
-				return this.skillLevelFast(actor, require_points, excludes, rule_of_20)
+				return this.skillLevelFast(actor, replacements, requirePoints, excludes, rule_of_20)
 		}
 	}
 
-	best(actor: ActorGURPS, require_points: boolean, excludes: Set<string>): number {
+	best(actor: ActorGURPS2, replacements: Map<string, string>, requirePoints: boolean, excludes: Set<string>): number {
 		let best = Number.MIN_SAFE_INTEGER
 		if (!actor.isOfType(ActorType.Character)) return best
-		for (const s of actor.skillNamed(this.name!, this.specialization || "", require_points, excludes)) {
-			const level = s.calculateLevel().level
+		for (const s of actor.system.skillNamed(
+			this.nameWithReplacements(replacements),
+			this.specializationWithReplacements(replacements),
+			requirePoints,
+			excludes,
+		)) {
+			const level = s.system.calculateLevel().level
 			if (best < level) best = level
 		}
 		return best
 	}
 
 	skillLevelFast(
-		actor: ActorGURPS,
-		require_points: boolean,
-		excludes: Set<string> | null = new Set(),
+		actor: ActorGURPS2,
+		replacements: Map<string, string>,
+		requirePoints: boolean,
+		excludes: Set<string> = new Set(),
 		rule_of_20 = false,
 	): number {
 		let level = 0
@@ -101,34 +115,43 @@ class SkillDefault<TItem extends ItemGURPS = ItemGURPS> extends foundry.abstract
 		if (!actor.isOfType(ActorType.Character)) return 0
 		switch (this.type) {
 			case gid.Dodge:
-				level = actor.encumbrance.current.dodge.normal
+				level = actor.system.encumbrance.current.dodge.normal
 				if (rule_of_20 && level > 20) level = 20
 				return this.finalLevel(level)
 			case gid.Parry:
-				best = this.bestFast(actor, require_points, excludes)
-				if (best !== Number.MIN_SAFE_INTEGER) best = Math.floor(best / 2) + 3 + actor.parryBonus
+				best = this.bestFast(actor, replacements, requirePoints, excludes)
+				if (best !== Number.MIN_SAFE_INTEGER) best = Math.floor(best / 2) + 3 + actor.system.parryBonus
 				return this.finalLevel(best)
 			case gid.Block:
-				best = this.bestFast(actor, require_points, excludes)
-				if (best !== Number.MIN_SAFE_INTEGER) best = Math.floor(best / 2) + 3 + actor.blockBonus
+				best = this.bestFast(actor, replacements, requirePoints, excludes)
+				if (best !== Number.MIN_SAFE_INTEGER) best = Math.floor(best / 2) + 3 + actor.system.blockBonus
 				return this.finalLevel(best)
 			case gid.Skill:
-				return this.finalLevel(this.bestFast(actor, require_points, excludes))
+				return this.finalLevel(this.bestFast(actor, replacements, requirePoints, excludes))
 			case gid.Ten:
 				return this.finalLevel(10)
 			default:
-				level = actor.resolveAttributeCurrent(this.type)
+				level = actor.system.resolveAttributeCurrent(this.type)
 				if (rule_of_20) level = Math.min(level, 20)
 				return this.finalLevel(level)
 		}
 	}
 
-	bestFast(actor: ActorGURPS, require_points: boolean, excludes: Set<string> | null): number {
+	bestFast(
+		actor: ActorGURPS2,
+		replacements: Map<string, string>,
+		requirePoints: boolean,
+		excludes: Set<string> = new Set(),
+	): number {
 		let best = Number.MIN_SAFE_INTEGER
 		if (!actor.isOfType(ActorType.Character)) return best
-		for (const sk of actor.skillNamed(this.name!, this.specialization || "", require_points, excludes)) {
-			if (!sk.level) sk.updateLevel()
-			if (best < sk.level.level) best = sk.level.level
+		for (const sk of actor.system.skillNamed(
+			this.nameWithReplacements(replacements),
+			this.specializationWithReplacements(replacements),
+			requirePoints,
+			excludes,
+		)) {
+			if (best < sk.system.level.level) best = sk.system.level.level
 		}
 		return best
 	}
@@ -165,8 +188,9 @@ class SkillDefault<TItem extends ItemGURPS = ItemGURPS> extends foundry.abstract
 	}
 }
 
-interface SkillDefault<TItem extends ItemGURPS>
-	extends foundry.abstract.DataModel<TItem, SkillDefaultSchema>,
+// interface SkillDefault<TItem extends ItemGURPS>
+interface SkillDefault
+	extends foundry.abstract.DataModel<ItemGURPS2, SkillDefaultSchema>,
 		ModelPropsFromSchema<SkillDefaultSchema> {}
 
 export { SkillDefault }

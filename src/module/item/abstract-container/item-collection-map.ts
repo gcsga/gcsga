@@ -23,10 +23,10 @@ class ItemItemCollectionMap {
 			| ItemInstance.EquipmentModifierContainerGURPS
 		)[] = items.filter(item => itemIsOfType(item, ItemType.EquipmentModifier, ItemType.EquipmentModifierContainer))
 		const meleeWeapons: ItemInstance.MeleeWeaponGURPS[] = items.filter(item =>
-			itemIsOfType(item, ItemType.MeleeWeapon),
+			itemIsOfType(item, ItemType.WeaponMelee),
 		)
 		const rangedWeapons: ItemInstance.RangedWeaponGURPS[] = items.filter(item =>
-			itemIsOfType(item, ItemType.RangedWeapon),
+			itemIsOfType(item, ItemType.WeaponRanged),
 		)
 
 		this.traitModifiers = new Collection(traitModifiers.map(item => [item.id, item]))
@@ -44,9 +44,9 @@ class ItemItemCollectionMap {
 			case ItemType.EquipmentModifier:
 			case ItemType.EquipmentModifierContainer:
 				return this.equipmentModifiers
-			case ItemType.MeleeWeapon:
+			case ItemType.WeaponMelee:
 				return this.meleeWeapons
-			case ItemType.RangedWeapon:
+			case ItemType.WeaponRanged:
 				return this.rangedWeapons
 			default:
 				console.error(`Item of type "${data.type}" does not fit any section on this sheet`)
@@ -62,9 +62,9 @@ class ItemItemCollectionMap {
 			case ItemType.EquipmentModifier:
 			case ItemType.EquipmentModifierContainer:
 				return "equipmentModifiers"
-			case ItemType.MeleeWeapon:
+			case ItemType.WeaponMelee:
 				return "meleeWeapons"
-			case ItemType.RangedWeapon:
+			case ItemType.WeaponRanged:
 				return "rangedWeapons"
 			default:
 				console.error(`Item of type "${data.type}" does not fit any section on this sheet`)

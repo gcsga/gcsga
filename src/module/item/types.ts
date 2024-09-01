@@ -22,8 +22,8 @@ interface ItemInstances<TParent extends ActorGURPS | null> {
 	[ItemType.LegacyItem]: ItemInstance.LegacyItemGURPS<TParent>
 	[ItemType.Effect]: ItemInstance.EffectGURPS<TParent>
 	[ItemType.Condition]: ItemInstance.ConditionGURPS<TParent>
-	[ItemType.MeleeWeapon]: ItemInstance.MeleeWeaponGURPS<TParent>
-	[ItemType.RangedWeapon]: ItemInstance.RangedWeaponGURPS<TParent>
+	[ItemType.WeaponMelee]: ItemInstance.MeleeWeaponGURPS<TParent>
+	[ItemType.WeaponRanged]: ItemInstance.RangedWeaponGURPS<TParent>
 }
 
 export type { ItemInstances }

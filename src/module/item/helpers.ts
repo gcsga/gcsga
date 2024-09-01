@@ -258,9 +258,9 @@ function getItemArtworkName(type: string): string {
 		case ItemType.Effect:
 		case ItemType.Condition:
 			return "effect"
-		case ItemType.MeleeWeapon:
+		case ItemType.WeaponMelee:
 			return "melee-weapon"
-		case ItemType.RangedWeapon:
+		case ItemType.WeaponRanged:
 			return "ranged-weapon"
 		default:
 			return "question-mark"

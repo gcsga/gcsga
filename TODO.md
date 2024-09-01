@@ -20,6 +20,9 @@
 - compendium browser
 - modifier bucket
   - applicationv2
+- colors
+  - applicationv2 native dark mode
+  - automatic black/white text based on color brightness (mimic GCS for this)
 
 2. Character Sheet
 

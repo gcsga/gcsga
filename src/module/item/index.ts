@@ -86,6 +86,6 @@ export const ItemSystemData = {
 	// [ItemType.LegacyItem]: LegacyItemSystemData,
 	[ItemType.Effect]: EffectSystemData,
 	[ItemType.Condition]: ConditionSystemData,
-	[ItemType.MeleeWeapon]: MeleeWeaponSystemData,
-	[ItemType.RangedWeapon]: RangedWeaponSystemData,
+	[ItemType.WeaponMelee]: MeleeWeaponSystemData,
+	[ItemType.WeaponRanged]: RangedWeaponSystemData,
 }

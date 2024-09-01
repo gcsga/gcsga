@@ -9,11 +9,29 @@ import {
 	AttributeSchema,
 	ResourceTrackerSchema,
 	MoveTypeSchema,
+	AttributeBonus,
+	CostReduction,
+	DRBonus,
+	SkillBonus,
+	SkillPointBonus,
+	SpellBonus,
+	WeaponBonus,
+	MoveBonus,
+	SpellPointBonus,
 } from "@system"
 import { CharacterManeuver } from "@system/maneuver-manager.ts"
 import { PointsRecord, PointsRecordSchema } from "./fields/points-record.ts"
+import { ItemType } from "../constants.ts"
+import { equalFold } from "@module/util/index.ts"
+import { ItemGURPS2 } from "@module/document/item.ts"
+import { SkillData } from "../item/skill.ts"
+import { TechniqueData } from "../item/technique.ts"
+import { TooltipGURPS, skillsel } from "@util"
+import { Nameable } from "@module/util/nameable.ts"
 
 class CharacterData extends ActorDataModel {
+	declare features: CharacterFeatures
+
 	static override defineSchema(): CharacterSchema {
 		const fields = foundry.data.fields
 
@@ -53,6 +71,72 @@ class CharacterData extends ActorDataModel {
 			total_points: new fields.NumberField(),
 			points_record: new fields.ArrayField(new fields.SchemaField(PointsRecord.defineSchema())),
 		}) as CharacterSchema
+	}
+
+	bestSkillNamed(
+		name: string,
+		specialization: string,
+		requirePoints: boolean,
+		excludes: Set<string>,
+	):
+		| (ItemGURPS2 &
+				({ type: ItemType.Skill; system: SkillData } | { type: ItemType.Technique; system: TechniqueData }))
+		| null {
+		let best: ItemGURPS2 | null = null
+		let level = Number.MIN_SAFE_INTEGER
+		for (const sk of this.skillNamed(name, specialization, requirePoints, excludes)) {
+			const skillLevel = sk.system.calculateLevel(excludes).level
+			if (best === null || level < skillLevel) {
+				best = sk
+				level = skillLevel
+			}
+		}
+		return best as any
+	}
+
+	skillNamed(
+		name: string,
+		specialization: string,
+		requirePoints: boolean,
+		excludes: Set<string>,
+	): (ItemGURPS2 &
+		({ type: ItemType.Skill; system: SkillData } | { type: ItemType.Technique; system: TechniqueData }))[] {
+		const list: ItemGURPS2[] = []
+		this.parent.items.forEach(sk => {
+			if (!sk.isOfType(ItemType.Skill, ItemType.Technique)) return
+			if (excludes.has(sk.system.processedName)) return
+
+			if (!requirePoints || sk.type === ItemType.Technique || sk.system.adjustedPoints() > 0) {
+				if (equalFold(sk.system.nameWithReplacements, name)) {
+					if (specialization === "" || equalFold(sk.system.specializationWithReplacements, specialization)) {
+						list.push(sk as any)
+					}
+				}
+			}
+		})
+		return list as any
+	}
+
+	skillBonusFor(name: string, specialization: string, tags: string[], tooltip: TooltipGURPS): number {
+		let total = 0
+		for (const bonus of this.features.skillBonuses) {
+			if (bonus.selection_type === skillsel.Type.Name) {
+				let replacements: Map<string, string> = new Map()
+				const na = bonus.owner
+				if (Nameable.isAccesser(na)) {
+					replacements = na.nameableReplacements
+				}
+				if (
+					bonus.name.matches(replacements, name) &&
+					bonus.specialization.matches(replacements, specialization) &&
+					bonus.tags.matchesList(replacements, ...tags)
+				) {
+					total += bonus.adjustedAmount
+					bonus.addToTooltip(tooltip)
+				}
+			}
+		}
+		return total
 	}
 }
 
@@ -98,6 +182,18 @@ type CharacterMoveSchema = {
 	maneuver: fields.ObjectField<CharacterManeuver, CharacterManeuver, true, true>
 	posture: fields.StringField
 	type: fields.StringField
+}
+
+type CharacterFeatures = {
+	attributeBonuses: AttributeBonus[]
+	costReductions: CostReduction[]
+	drBonuses: DRBonus[]
+	skillBonuses: SkillBonus[]
+	skillPointBonuses: SkillPointBonus[]
+	spellBonuses: SpellBonus[]
+	spellPointBonuses: SpellPointBonus[]
+	weaponBonuses: WeaponBonus[]
+	moveBonuses: MoveBonus[]
 }
 
 // type PointBreakdownSchema = {

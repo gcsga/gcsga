@@ -13,7 +13,7 @@ class RangedWeaponSystemData extends AbstractWeaponSystemData<RangedWeaponGURPS,
 
 		return {
 			...super.defineSchema(),
-			type: new fields.StringField({ required: true, initial: ItemType.RangedWeapon }),
+			type: new fields.StringField({ required: true, initial: ItemType.WeaponRanged }),
 			usage: new fields.StringField({
 				required: true,
 			}),
@@ -32,7 +32,7 @@ interface RangedWeaponSystemData
 		ModelPropsFromSchema<RangedWeaponSystemSchema> {}
 
 type RangedWeaponSystemSchema = AbstractWeaponSystemSchema & {
-	type: fields.StringField<ItemType.RangedWeapon, ItemType.RangedWeapon, true, false, true>
+	type: fields.StringField<ItemType.WeaponRanged, ItemType.WeaponRanged, true, false, true>
 	accuracy: fields.StringField<string, string, true, false, true>
 	range: fields.StringField<string, string, true, false, true>
 	rate_of_fire: fields.StringField<string, string, true, false, true>
@@ -43,7 +43,7 @@ type RangedWeaponSystemSchema = AbstractWeaponSystemSchema & {
 
 type RangedWeaponSystemSource = SourceFromSchema<RangedWeaponSystemSchema>
 
-type RangedWeaponSource = AbstractWeaponSource<ItemType.RangedWeapon, RangedWeaponSystemSource>
+type RangedWeaponSource = AbstractWeaponSource<ItemType.WeaponRanged, RangedWeaponSystemSource>
 
 export type { RangedWeaponSource, RangedWeaponSystemSource }
 export { RangedWeaponSystemData }

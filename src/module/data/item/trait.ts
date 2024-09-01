@@ -3,6 +3,8 @@ import {
 	EvalEmbeddedRegex,
 	StringBuilder,
 	affects,
+	align,
+	cell,
 	display,
 	replaceAllStringFunc,
 	selfctrl,
@@ -23,6 +25,8 @@ import { SheetSettings, Study } from "@system"
 import { Nameable } from "@module/util/nameable.ts"
 import { WeaponMeleeData } from "./weapon-melee.ts"
 import { WeaponRangedData } from "./weapon-ranged.ts"
+import { CellData } from "./fields/cell-data.ts"
+import { modifyPoints } from "./helpers.ts"
 
 class TraitData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -32,8 +36,10 @@ class TraitData extends ItemDataModel.mixin(
 	StudyTemplate,
 	ReplacementTemplate,
 ) {
+	static override _systemType = ItemType.Trait
+
 	static override modifierTypes = new Set([ItemType.TraitModifier, ItemType.TraitModifierContainer])
-	static override weaponTypes = new Set([ItemType.MeleeWeapon, ItemType.RangedWeapon])
+	static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
 
 	static override defineSchema(): TraitSchema {
 		const fields = foundry.data.fields
@@ -73,23 +79,31 @@ class TraitData extends ItemDataModel.mixin(
 		}) as unknown as TraitSchema
 	}
 
-	protected _fillWithLocalNameableKeys(m: Map<string, string>, existing?: Map<string, string>): void {
-		if (!existing) existing = this.nameableReplacements
-
-		Nameable.extract(this.name, m, existing)
-		Nameable.extract(this.notes, m, existing)
-		Nameable.extract(this.userdesc, m, existing)
-		if (this.rootPrereq) {
-			this.rootPrereq.fillWithNameableKeys(m, existing)
-		}
-		for (const feature of this.features) {
-			feature.fillWithNameableKeys(m, existing)
-		}
-		;(
-			this.weapons as Collection<ItemGURPS2 & ({ system: WeaponMeleeData } | { system: WeaponRangedData })>
-		).forEach(weapon => {
-			weapon.system.fillWithNameableKeys(m, existing)
+	override get cellData() {
+		const cellData: Record<string, CellData> = {}
+		cellData.name = new CellData({
+			type: cell.Type.Text,
+			primary: this.processedName,
+			secondar: this.secondaryText(display.Option.isInline),
+			disabled: !this.enabled,
+			unsatisfiedReason: this.unsatisfiedReason,
+			tooltip: this.secondaryText(display.Option.isTooltip),
 		})
+		cellData.points = new CellData({
+			type: cell.Type.Text,
+			primary: this.adjustedPoints.toString(),
+			alignment: align.Option.End,
+		})
+		cellData.tags = new CellData({
+			type: cell.Type.Tags,
+			primary: this.combinedTags,
+		})
+		cellData.reference = new CellData({
+			type: cell.Type.PageRef,
+			primary: this.reference,
+			secondary: this.reference_highlight === "" ? this.nameWithReplacements : this.reference_highlight,
+		})
+		return cellData
 	}
 
 	get enabled(): boolean {
@@ -203,6 +217,15 @@ class TraitData extends ItemDataModel.mixin(
 			: Math.ceil(modifiedBasePoints * multiplier)
 	}
 
+	get processedName(): string {
+		const buffer = new StringBuilder()
+		buffer.push(this.nameWithReplacements)
+		if (this.can_level) {
+			buffer.push(` ${this.levels.toString()}`)
+		}
+		return buffer.toString()
+	}
+
 	get processedNotes(): string {
 		return replaceAllStringFunc(EvalEmbeddedRegex, this.notesWithReplacements, this.parent.actor)
 	}
@@ -236,8 +259,8 @@ class TraitData extends ItemDataModel.mixin(
 			buffer.appendToNewLine(this.modifierNotes)
 		}
 		if (optionChecker(settings.notes_display)) {
-			buffer.appendToNewLine(this.processedNotes())
-			buffer.appendToNewLine(Study.progressText(Study.resolveHours(this.study), this.study_hours_needed, false))
+			buffer.appendToNewLine(this.processedNotes)
+			buffer.appendToNewLine(Study.progressText(Study.resolveHours(this), this.study_hours_needed, false))
 		}
 		return buffer.toString()
 	}
@@ -262,17 +285,30 @@ class TraitData extends ItemDataModel.mixin(
 			mod.system.fillWithNameableKeys(m, mod.system.nameableReplacements)
 		})
 	}
+
+	protected _fillWithLocalNameableKeys(m: Map<string, string>, existing?: Map<string, string>): void {
+		if (!existing) existing = this.nameableReplacements
+
+		Nameable.extract(this.name, m, existing)
+		Nameable.extract(this.notes, m, existing)
+		Nameable.extract(this.userdesc, m, existing)
+		if (this.rootPrereq) {
+			this.rootPrereq.fillWithNameableKeys(m, existing)
+		}
+		for (const feature of this.features) {
+			feature.fillWithNameableKeys(m, existing)
+		}
+		;(
+			this.weapons as Collection<ItemGURPS2 & ({ system: WeaponMeleeData } | { system: WeaponRangedData })>
+		).forEach(weapon => {
+			weapon.system.fillWithNameableKeys(m, existing)
+		})
+	}
 }
 
-function modifyPoints(points: number, modifier: number): number {
-	return points + calculateModifierPoints(points, modifier)
+interface TraitData extends Omit<ModelPropsFromSchema<TraitSchema>, "study"> {
+	study: Study[]
 }
-
-function calculateModifierPoints(points: number, modifier: number): number {
-	return (points * modifier) / 100
-}
-
-interface TraitData extends ModelPropsFromSchema<TraitSchema> {}
 
 type TraitSchema = BasicInformationTemplateSchema &
 	PrereqTemplateSchema &

@@ -16,7 +16,7 @@ class EquipmentData extends ItemDataModel.mixin(
 	ReplacementTemplate,
 ) {
 	static override modifierTypes = new Set([ItemType.EquipmentModifier, ItemType.EquipmentModifierContainer])
-	static override weaponTypes = new Set([ItemType.MeleeWeapon, ItemType.RangedWeapon])
+	static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
 
 	static override defineSchema(): EquipmentSchema {
 		const fields = foundry.data.fields

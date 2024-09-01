@@ -137,7 +137,7 @@ abstract class AbstractWeaponGURPS<TParent extends ActorGURPS | null = ActorGURP
 	}
 
 	skillLevelPostAdjustment(actor: ActorGURPS, tooltip: TooltipGURPS | null): number {
-		if (this.isOfType(ItemType.MeleeWeapon)) {
+		if (this.isOfType(ItemType.WeaponMelee)) {
 			const baseParry = WeaponParry.parse(this.system.parry)
 			if (baseParry.fencing) return this.encumbrancePenalty(actor, tooltip)
 		}

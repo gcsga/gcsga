@@ -1,12 +1,13 @@
 import { study } from "@util"
 import fields = foundry.data.fields
-import { SystemDataModel } from "@module/data/abstract.ts"
+import { ItemDataModel, ItemDataSchema } from "@module/data/abstract.ts"
 import { Study, StudySchema } from "@system"
 
-class StudyTemplate extends SystemDataModel<foundry.abstract.Document, StudyTemplateSchema> {
+class StudyTemplate extends ItemDataModel<StudyTemplateSchema> {
 	static override defineSchema(): StudyTemplateSchema {
 		const fields = foundry.data.fields
 		return {
+			...super.defineSchema(),
 			study: new fields.ArrayField(new fields.SchemaField(Study.defineSchema())),
 			study_hours_needed: new fields.StringField<study.Level>({
 				choices: study.Levels,
@@ -17,10 +18,12 @@ class StudyTemplate extends SystemDataModel<foundry.abstract.Document, StudyTemp
 }
 
 interface StudyTemplate
-	extends SystemDataModel<foundry.abstract.Document, StudyTemplateSchema>,
-		ModelPropsFromSchema<StudyTemplateSchema> {}
+	extends ItemDataModel<StudyTemplateSchema>,
+		Omit<ModelPropsFromSchema<StudyTemplateSchema>, "study"> {
+	study: Study[]
+}
 
-type StudyTemplateSchema = {
+type StudyTemplateSchema = ItemDataSchema & {
 	study: fields.ArrayField<fields.SchemaField<StudySchema>>
 	study_hours_needed: fields.StringField<study.Level>
 }

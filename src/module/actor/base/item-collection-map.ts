@@ -60,10 +60,10 @@ class ActorItemCollectionMap<TActor extends ActorGURPS> {
 			itemIsOfType(item, ItemType.Note, ItemType.NoteContainer),
 		)
 		const meleeWeapons: ItemInstance.MeleeWeaponGURPS<TActor>[] = items.filter(item =>
-			itemIsOfType(item, ItemType.MeleeWeapon),
+			itemIsOfType(item, ItemType.WeaponMelee),
 		)
 		const rangedWeapons: ItemInstance.RangedWeaponGURPS<TActor>[] = items.filter(item =>
-			itemIsOfType(item, ItemType.RangedWeapon),
+			itemIsOfType(item, ItemType.WeaponRanged),
 		)
 		const effects: ItemInstance.EffectGURPS<TActor>[] = items.filter(item => itemIsOfType(item, ItemType.Effect))
 		const conditions: ItemInstance.ConditionGURPS<TActor>[] = items.filter(item =>
@@ -101,18 +101,18 @@ class ActorItemCollectionMap<TActor extends ActorGURPS> {
 	equippedWeapons<TType extends WeaponType | undefined>(
 		type?: TType,
 	): Collection<ItemInstance.MeleeWeaponGURPS<TActor> | ItemInstance.RangedWeaponGURPS<TActor>>
-	equippedWeapons<TType extends ItemType.MeleeWeapon | undefined>(
+	equippedWeapons<TType extends ItemType.WeaponMelee | undefined>(
 		type?: TType,
 	): Collection<ItemInstance.MeleeWeaponGURPS<TActor>>
-	equippedWeapons<TType extends ItemType.RangedWeapon | undefined>(
+	equippedWeapons<TType extends ItemType.WeaponRanged | undefined>(
 		type?: TType,
 	): Collection<ItemInstance.RangedWeaponGURPS<TActor>>
 	equippedWeapons<TType extends ItemType | undefined>(
 		type?: TType,
 	): Collection<ItemInstance.MeleeWeaponGURPS<TActor> | ItemInstance.RangedWeaponGURPS<TActor>> {
-		if (type === ItemType.MeleeWeapon)
+		if (type === ItemType.WeaponMelee)
 			return new Collection(this.meleeWeapons.filter(item => item.equipped).map(item => [item.id, item]))
-		if (type === ItemType.RangedWeapon)
+		if (type === ItemType.WeaponRanged)
 			return new Collection(this.rangedWeapons.filter(item => item.equipped).map(item => [item.id, item]))
 		return new Collection(this.weapons.filter(item => item.equipped).map(item => [item.id, item]))
 	}

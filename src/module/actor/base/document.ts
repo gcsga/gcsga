@@ -678,7 +678,7 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 		let weapon = undefined
 		if (payload.uuid) {
 			const temp = fromUuidSync(payload.uuid)
-			if (temp instanceof ItemGURPS && temp.isOfType(ItemType.MeleeWeapon, ItemType.RangedWeapon)) {
+			if (temp instanceof ItemGURPS && temp.isOfType(ItemType.WeaponMelee, ItemType.WeaponRanged)) {
 				weapon = new DamageWeaponAdapter(temp)
 			}
 		}

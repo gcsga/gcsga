@@ -1,12 +1,12 @@
-import { SystemDataModel } from "@module/data/abstract.ts"
+import { ItemDataModel, ItemDataSchema } from "@module/data/abstract.ts"
 import fields = foundry.data.fields
-import { ItemGURPS2 } from "@module/document/item.ts"
 import { RecordField } from "@system"
 
-class ReplacementTemplate extends SystemDataModel<ItemGURPS2, ReplacementTemplateSchema> {
+class ReplacementTemplate extends ItemDataModel<ReplacementTemplateSchema> {
 	static override defineSchema(): ReplacementTemplateSchema {
 		const fields = foundry.data.fields
 		return {
+			...super.defineSchema(),
 			replacements: new RecordField(
 				new fields.StringField({ required: true, nullable: false }),
 				new fields.StringField({ required: true, nullable: false }),
@@ -21,10 +21,10 @@ class ReplacementTemplate extends SystemDataModel<ItemGURPS2, ReplacementTemplat
 }
 
 interface ReplacementTemplate
-	extends SystemDataModel<ItemGURPS2, ReplacementTemplateSchema>,
+	extends ItemDataModel<ReplacementTemplateSchema>,
 		ModelPropsFromSchema<ReplacementTemplateSchema> {}
 
-type ReplacementTemplateSchema = {
+type ReplacementTemplateSchema = ItemDataSchema & {
 	replacements: RecordField<
 		fields.StringField<string, string, true, false, false>,
 		fields.StringField<string, string, true, false, false>

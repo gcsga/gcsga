@@ -10,7 +10,7 @@ import {
 	WeaponBonus,
 } from "@system"
 import { ActorType, ItemType, SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
-import { ItemSubstitutionSheet } from "../../util/nameable.ts"
+// import { ItemSubstitutionSheet } from "../../util/nameable.ts"
 import { PrereqList } from "@system/prereq/prereq-list.ts"
 
 class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheetOptions> {
@@ -160,7 +160,7 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 		htmlQuery(html, "a[data-action=add-default]")?.addEventListener("click", async event => {
 			await this._onSubmit(event) // Submit any unsaved changes
 
-			if (!this.item.isOfType(ItemType.Skill, ItemType.Technique, ItemType.MeleeWeapon, ItemType.RangedWeapon))
+			if (!this.item.isOfType(ItemType.Skill, ItemType.Technique, ItemType.WeaponMelee, ItemType.WeaponRanged))
 				return
 
 			const defaults = this.item.system.defaults ?? []
@@ -173,7 +173,7 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 				await this._onSubmit(event) // Submit any unsaved changes
 
 				if (
-					!this.item.isOfType(ItemType.Skill, ItemType.Technique, ItemType.MeleeWeapon, ItemType.RangedWeapon)
+					!this.item.isOfType(ItemType.Skill, ItemType.Technique, ItemType.WeaponMelee, ItemType.WeaponRanged)
 				)
 					return
 
@@ -304,7 +304,7 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 			icon: "",
 			onclick: ev => this._openSubstitutionPrompt(ev),
 		}
-		if ([ItemType.MeleeWeapon, ItemType.RangedWeapon].includes(this.item.type)) return buttons
+		if ([ItemType.WeaponMelee, ItemType.WeaponRanged].includes(this.item.type)) return buttons
 
 		return [substitutionButton, ...buttons]
 	}

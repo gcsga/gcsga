@@ -1001,7 +1001,7 @@ export { Mook }
 // 		const id = fu.randomID()
 // 		const data: DeepPartial<MeleeWeaponSource> = {
 // 			name: melee.name,
-// 			type: ItemType.MeleeWeapon,
+// 			type: ItemType.WeaponMelee,
 // 			_id: id,
 // 			flags: { [SYSTEM_NAME]: { [ItemFlags.Container]: null } },
 // 			system: {
@@ -1027,7 +1027,7 @@ export { Mook }
 // 		const id = fu.randomID()
 // 		const data: DeepPartial<RangedWeaponSource> = {
 // 			name: ranged.name,
-// 			type: ItemType.RangedWeapon,
+// 			type: ItemType.WeaponRanged,
 // 			_id: id,
 // 			flags: { [SYSTEM_NAME]: { [ItemFlags.Container]: null } },
 // 			system: {

@@ -137,9 +137,9 @@ class AbstractContainerSheetGURPS<TItem extends AbstractContainerGURPS> extends 
 					return "equipment_modifier"
 				case ItemType.EquipmentModifierContainer:
 					return "equipment_modifier_container"
-				case ItemType.MeleeWeapon:
+				case ItemType.WeaponMelee:
 					return "melee_weapon"
-				case ItemType.RangedWeapon:
+				case ItemType.WeaponRanged:
 					return "ranged_weapon"
 				default:
 					return null
@@ -319,12 +319,12 @@ class AbstractContainerSheetGURPS<TItem extends AbstractContainerGURPS> extends 
 			melee_weapons: {
 				name: "meleeWeapons",
 				items: this._prepareItemCollection(this.item.itemCollections.meleeWeapons),
-				types: [ItemType.MeleeWeapon],
+				types: [ItemType.WeaponMelee],
 			},
 			ranged_weapons: {
 				name: "rangedWeapons",
 				items: this._prepareItemCollection(this.item.itemCollections.rangedWeapons),
-				types: [ItemType.RangedWeapon],
+				types: [ItemType.WeaponRanged],
 			},
 		}
 		return collections

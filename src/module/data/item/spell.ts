@@ -9,6 +9,7 @@ import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./temp
 import { AbstractSkillTemplate, AbstractSkillTemplateSchema } from "./templates/abstract-skill.ts"
 import { AttributeDifficulty, AttributeDifficultySchema } from "./fields/attribute-difficulty.ts"
 import { difficulty } from "@util"
+import { Study } from "@system"
 
 class SpellData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -18,7 +19,7 @@ class SpellData extends ItemDataModel.mixin(
 	ReplacementTemplate,
 	AbstractSkillTemplate,
 ) {
-	static override weaponTypes = new Set([ItemType.MeleeWeapon, ItemType.RangedWeapon])
+	static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
 
 	static override defineSchema(): SpellSchema {
 		const fields = foundry.data.fields
@@ -69,7 +70,9 @@ class SpellData extends ItemDataModel.mixin(
 	}
 }
 
-interface SpellData extends ModelPropsFromSchema<SpellSchema> {}
+interface SpellData extends Omit<ModelPropsFromSchema<SpellSchema>, "study"> {
+	study: Study[]
+}
 
 type SpellSchema = BasicInformationTemplateSchema &
 	PrereqTemplateSchema &

@@ -4,6 +4,8 @@ import { ItemGURPS2 } from "@module/document/item.ts"
 import { ItemDataInstances } from "./item/types.ts"
 import { ActorGURPS2 } from "@module/document/actor.ts"
 import { ActorDataInstances } from "./actor/types.ts"
+import { ErrorGURPS } from "@util"
+import { CellData } from "./item/fields/cell-data.ts"
 
 interface SystemDataModelMetadata {
 	systemFlagsModel: typeof SystemDataModel | null
@@ -322,6 +324,18 @@ type ActorDataSchema = {}
 class ItemDataModel<TSchema extends ItemDataSchema = ItemDataSchema> extends SystemDataModel<ItemGURPS2, TSchema> {
 	isOfType<T extends ItemType>(...types: T[]): this is ItemDataInstances[T] {
 		return types.some(t => this.parent.type === t)
+	}
+
+	/* -------------------------------------------- */
+	/*  Getters                                     */
+	/* -------------------------------------------- */
+
+	get cellData(): Record<string, CellData> {
+		throw ErrorGURPS(`ItemGURPS.cellData must be implemented.`)
+	}
+
+	get contextMenuItmes(): ContextMenuEntry[] {
+		return []
 	}
 
 	static override defineSchema(): ItemDataSchema {

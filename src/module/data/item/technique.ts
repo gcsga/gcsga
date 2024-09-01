@@ -8,9 +8,10 @@ import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/repl
 import { ItemType } from "../constants.ts"
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { AbstractSkillTemplate, AbstractSkillTemplateSchema } from "./templates/abstract-skill.ts"
-import { SkillDefaultSchema, SkillDefault } from "@system"
+import { SkillDefaultSchema, SkillDefault, Study } from "@system"
 import { TechniqueDifficulty } from "../types.ts"
 import { difficulty } from "@util"
+import { calculateTechniqueLevel } from "./helpers.ts"
 
 class TechniqueData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -21,46 +22,64 @@ class TechniqueData extends ItemDataModel.mixin(
 	ReplacementTemplate,
 	AbstractSkillTemplate,
 ) {
-	static override weaponTypes = new Set([ItemType.MeleeWeapon, ItemType.RangedWeapon])
+	static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
 
 	static override defineSchema(): TechniqueSchema {
 		const fields = foundry.data.fields
 
 		return this.mergeSchema(super.defineSchema(), {
-			difficulty: new fields.StringField<TechniqueDifficulty, TechniqueDifficulty, true, false, true>({
+			difficulty: new fields.StringField({
 				required: true,
 				nullable: false,
 				initial: difficulty.Level.Average,
 			}),
-			default: new fields.SchemaField<
-				SkillDefaultSchema,
-				SourceFromSchema<SkillDefaultSchema>,
-				ModelPropsFromSchema<SkillDefaultSchema>,
-				true,
-				true
-			>(SkillDefault.defineSchema(), {
+			default: new fields.SchemaField(SkillDefault.defineSchema(), {
 				required: true,
 				nullable: true,
 			}),
-			defaults: new fields.ArrayField<fields.SchemaField<SkillDefaultSchema>>(
-				new fields.SchemaField<SkillDefaultSchema>(SkillDefault.defineSchema()),
-			),
-			limit: new fields.NumberField<number, number, true, false, true>({
+			defaulted_from: new fields.SchemaField(SkillDefault.defineSchema(), {
 				required: true,
-				nullable: false,
-				integer: true,
-				initial: 0,
+				nullable: true,
 			}),
-			limited: new fields.BooleanField<boolean, boolean, true, false, true>({
+			defaults: new fields.ArrayField(new fields.SchemaField(SkillDefault.defineSchema())),
+			limit: new fields.NumberField({
+				required: true,
+				nullable: true,
+				integer: true,
+				initial: null,
+			}),
+			limited: new fields.BooleanField({
 				required: true,
 				nullable: false,
 				initial: false,
 			}),
 		}) as TechniqueSchema
 	}
+
+	override calculateLevel(excludes: Set<string> = new Set()) {
+		const def = this.default ?? new SkillDefault({}, { parent: this.parent })
+
+		return calculateTechniqueLevel(
+			this.parent.actor,
+			this.nameableReplacements,
+			this.nameWithReplacements,
+			this.specializationWithReplacements,
+			this.tags,
+			def,
+			this.difficulty,
+			this.points,
+			true,
+			this.limit,
+			excludes,
+		)
+	}
 }
 
-interface TechniqueData extends ModelPropsFromSchema<TechniqueSchema> {}
+interface TechniqueData extends Omit<ModelPropsFromSchema<TechniqueSchema>, "study" | "defualt" | "defaults"> {
+	study: Study[]
+	default: SkillDefault
+	defaults: SkillDefault[]
+}
 
 type TechniqueSchema = BasicInformationTemplateSchema &
 	PrereqTemplateSchema &
@@ -77,8 +96,15 @@ type TechniqueSchema = BasicInformationTemplateSchema &
 			true,
 			true
 		>
+		defaulted_from: fields.SchemaField<
+			SkillDefaultSchema,
+			SourceFromSchema<SkillDefaultSchema>,
+			ModelPropsFromSchema<SkillDefaultSchema>,
+			true,
+			true
+		>
 		defaults: fields.ArrayField<fields.SchemaField<SkillDefaultSchema>>
-		limit: fields.NumberField<number, number, true, false, true>
+		limit: fields.NumberField<number, number, true, true, true>
 		limited: fields.BooleanField<boolean, boolean, true, false, true>
 	}
 

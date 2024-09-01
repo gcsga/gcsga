@@ -2,6 +2,7 @@ import { LocalizeGURPS } from "../../util/localize.ts"
 import { AllStringCompareTypes, StringCompareType } from "@module/data/constants.ts"
 import type { StringCriteriaSchema } from "./data.ts"
 import type { ItemGURPS } from "@item"
+import { Nameable } from "./nameable.ts"
 
 class StringCriteria extends foundry.abstract.DataModel<ItemGURPS, StringCriteriaSchema> {
 	static override defineSchema(): StringCriteriaSchema {
@@ -17,34 +18,36 @@ class StringCriteria extends foundry.abstract.DataModel<ItemGURPS, StringCriteri
 		super(data)
 	}
 
-	matches(s: string): boolean {
+	matches(replacements: Map<string, string>, value: string): boolean {
+		value = Nameable.apply(value, replacements)
 		switch (this.compare) {
 			case StringCompareType.AnyString:
 				return true
 			case StringCompareType.IsString:
-				return equalFold(s, this.qualifier)
+				return equalFold(value, this.qualifier)
 			case StringCompareType.IsNotString:
-				return !equalFold(s, this.qualifier)
+				return !equalFold(value, this.qualifier)
 			case StringCompareType.ContainsString:
-				return this.qualifier.toLowerCase().includes(s.toLowerCase())
+				return this.qualifier.toLowerCase().includes(value.toLowerCase())
 			case StringCompareType.DoesNotContainString:
-				return !this.qualifier.toLowerCase().includes(s.toLowerCase())
+				return !this.qualifier.toLowerCase().includes(value.toLowerCase())
 			case StringCompareType.StartsWithString:
-				return this.qualifier.toLowerCase().startsWith(s.toLowerCase())
+				return this.qualifier.toLowerCase().startsWith(value.toLowerCase())
 			case StringCompareType.DoesNotStartWithString:
-				return !this.qualifier.toLowerCase().startsWith(s.toLowerCase())
+				return !this.qualifier.toLowerCase().startsWith(value.toLowerCase())
 			case StringCompareType.EndsWithString:
-				return this.qualifier.toLowerCase().endsWith(s.toLowerCase())
+				return this.qualifier.toLowerCase().endsWith(value.toLowerCase())
 			case StringCompareType.DoesNotEndWithString:
-				return !this.qualifier.toLowerCase().endsWith(s.toLowerCase())
+				return !this.qualifier.toLowerCase().endsWith(value.toLowerCase())
 		}
 	}
 
-	matchesList(...s: string[]): boolean {
-		if (s.length === 0) return this.matches("")
+	matchesList(replacements: Map<string, string>, ...value: string[]): boolean {
+		value = Nameable.applyToList(value, replacements)
+		if (value.length === 0) return this.matches(replacements, "")
 		let matches = 0
-		for (const one of s) {
-			if (this.matches(one)) matches += 1
+		for (const one of value) {
+			if (this.matches(replacements, one)) matches += 1
 		}
 		switch (this.compare) {
 			case StringCompareType.AnyString:
@@ -57,7 +60,7 @@ class StringCriteria extends foundry.abstract.DataModel<ItemGURPS, StringCriteri
 			case StringCompareType.DoesNotContainString:
 			case StringCompareType.DoesNotStartWithString:
 			case StringCompareType.DoesNotEndWithString:
-				return matches === s.length
+				return matches === value.length
 		}
 	}
 

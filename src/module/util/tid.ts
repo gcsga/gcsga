@@ -54,9 +54,9 @@ class TID {
 					return ItemKind.Effect
 				case ItemType.Condition:
 					return ItemKind.Condition
-				case ItemType.MeleeWeapon:
+				case ItemType.WeaponMelee:
 					return ItemKind.WeaponMelee
-				case ItemType.RangedWeapon:
+				case ItemType.WeaponRanged:
 					return ItemKind.WeaponRanged
 				case ActorType.Character:
 					return ItemKind.Entity
@@ -107,9 +107,9 @@ class TID {
 			case ItemKind.Condition:
 				return ItemType.Condition
 			case ItemKind.WeaponMelee:
-				return ItemType.MeleeWeapon
+				return ItemType.WeaponMelee
 			case ItemKind.WeaponRanged:
-				return ItemType.MeleeWeapon
+				return ItemType.WeaponMelee
 			case ItemKind.Entity:
 				return ActorType.Character
 			default:

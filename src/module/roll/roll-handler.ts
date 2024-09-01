@@ -378,7 +378,7 @@ class AttackRollTypeHandler extends RollTypeHandler<AttackRollTypeData> {
 			damage: data.item?.damage.current,
 			type: data.item?.type,
 		}
-		return data.item?.isOfType(ItemType.RangedWeapon)
+		return data.item?.isOfType(ItemType.WeaponRanged)
 			? {
 					...itemData,
 					rate_of_fire: data.item.ROF,
@@ -390,7 +390,7 @@ class AttackRollTypeHandler extends RollTypeHandler<AttackRollTypeData> {
 	override getExtras(data: AttackRollTypeData, rollTotal: number): Record<string, unknown> {
 		const extra = {}
 
-		if (data.item?.isOfType(ItemType.RangedWeapon)) {
+		if (data.item?.isOfType(ItemType.WeaponRanged)) {
 			const effectiveROF = this.getEffectiveROF(data.item)
 			const numberOfShots = Math.min(
 				Math.floor(
@@ -485,10 +485,10 @@ class DamageRollTypeHandler extends RollTypeHandler<DamageRollTypeData> {
 			modifiers: this.getModifiers(data).map(e => this._applyModifierClasses(e)),
 			modifierTotal,
 			damageRoll: [],
-			ranged: data.item?.isOfType(ItemType.RangedWeapon),
+			ranged: data.item?.isOfType(ItemType.WeaponRanged),
 		}
 
-		if (data.item?.isOfType(ItemType.RangedWeapon)) {
+		if (data.item?.isOfType(ItemType.WeaponRanged)) {
 			chatData.range = {
 				max: data.item.range.max,
 				half: data.item.range.halfDamage,

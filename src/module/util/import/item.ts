@@ -205,9 +205,9 @@ abstract class ItemImporter {
 			case ItemKind.NoteContainer:
 				return ImportedItemType.NoteContainer
 			case ItemKind.WeaponMelee:
-				return ImportedItemType.MeleeWeapon
+				return ImportedItemType.WeaponMelee
 			case ItemKind.WeaponRanged:
-				return ImportedItemType.RangedWeapon
+				return ImportedItemType.WeaponRanged
 			default:
 				throw new Error("Invalid item kind")
 		}
@@ -1273,7 +1273,7 @@ class MeleeWeaponImporter extends ItemImporter {
 			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
-			type: ItemType.MeleeWeapon,
+			type: ItemType.WeaponMelee,
 			damage: {
 				base: "",
 				st: stdmg.Option.Thrust,
@@ -1295,9 +1295,9 @@ class MeleeWeaponImporter extends ItemImporter {
 
 		const newItem: MeleeWeaponSource = {
 			_id: id,
-			type: ItemType.MeleeWeapon,
-			name: systemData.usage || LocalizeGURPS.translations.TYPES.Item[ItemType.MeleeWeapon],
-			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.MeleeWeapon}.svg`,
+			type: ItemType.WeaponMelee,
+			name: systemData.usage || LocalizeGURPS.translations.TYPES.Item[ItemType.WeaponMelee],
+			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.WeaponMelee}.svg`,
 			system: systemData,
 			effects: [],
 			folder: null,
@@ -1327,7 +1327,7 @@ class RangedWeaponImporter extends ItemImporter {
 			id: item.id,
 			slug: "",
 			_migration: { version: null, previous: null },
-			type: ItemType.RangedWeapon,
+			type: ItemType.WeaponRanged,
 			damage: {
 				base: "",
 				st: stdmg.Option.Thrust,
@@ -1352,9 +1352,9 @@ class RangedWeaponImporter extends ItemImporter {
 
 		const newItem: RangedWeaponSource = {
 			_id: id,
-			type: ItemType.RangedWeapon,
-			name: systemData.usage || LocalizeGURPS.translations.TYPES.Item[ItemType.RangedWeapon],
-			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.RangedWeapon}.svg`,
+			type: ItemType.WeaponRanged,
+			name: systemData.usage || LocalizeGURPS.translations.TYPES.Item[ItemType.WeaponRanged],
+			img: `systems/${SYSTEM_NAME}/assets/icons/${ItemType.WeaponRanged}.svg`,
 			system: systemData,
 			effects: [],
 			folder: null,
@@ -1387,7 +1387,7 @@ const ItemImportHandlers: Record<ImportedItemType, ItemImporter> = {
 	[ImportedItemType.EquipmentModifierContainer]: new EquipmentModifierContainerImporter(),
 	[ImportedItemType.Note]: new NoteImporter(),
 	[ImportedItemType.NoteContainer]: new NoteContainerImporter(),
-	[ImportedItemType.MeleeWeapon]: new MeleeWeaponImporter(),
-	[ImportedItemType.RangedWeapon]: new RangedWeaponImporter(),
+	[ImportedItemType.WeaponMelee]: new MeleeWeaponImporter(),
+	[ImportedItemType.WeaponRanged]: new RangedWeaponImporter(),
 }
 export { ItemImporter }

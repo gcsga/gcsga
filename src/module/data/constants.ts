@@ -89,8 +89,8 @@ enum ItemType {
 	// LegacyItem = "equipment",
 	Effect = "effect",
 	Condition = "condition",
-	MeleeWeapon = "melee_weapon",
-	RangedWeapon = "ranged_weapon",
+	WeaponMelee = "melee_weapon",
+	WeaponRanged = "ranged_weapon",
 }
 
 type ItemTypes =
@@ -113,14 +113,14 @@ type ItemTypes =
 	// | ItemType.LegacyItem
 	| ItemType.Effect
 	| ItemType.Condition
-	| ItemType.MeleeWeapon
-	| ItemType.RangedWeapon
+	| ItemType.WeaponMelee
+	| ItemType.WeaponRanged
 
 type EffectType = ItemType.Effect | ItemType.Condition
 
-type WeaponType = ItemType.MeleeWeapon | ItemType.RangedWeapon
+type WeaponType = ItemType.WeaponMelee | ItemType.WeaponRanged
 
-const DefaultHaver = [ItemType.Skill, ItemType.Technique, ItemType.MeleeWeapon, ItemType.RangedWeapon]
+const DefaultHaver = [ItemType.Skill, ItemType.Technique, ItemType.WeaponMelee, ItemType.WeaponRanged]
 
 const ABSTRACT_CONTAINER_TYPES = new Set([
 	ItemType.Trait,

@@ -47,8 +47,8 @@ const itemTypes = new Set([
 	// ItemType.LegacyItem,
 	ItemType.Effect,
 	ItemType.Condition,
-	ItemType.MeleeWeapon,
-	ItemType.RangedWeapon,
+	ItemType.WeaponMelee,
+	ItemType.WeaponRanged,
 ])
 
 const isActorData = (docSource: CompendiumSource): docSource is ActorSourceGURPS => {

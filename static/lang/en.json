@@ -50,7 +50,18 @@
 					}
 				}
 			}
-		}
+		},
+		"TemplatePicker": {
+			"descriptionCount": "Pick {number}",
+			"descriptionPoints": "Pick {number} {points} worth",
+			"point": "point",
+			"points": "points"
+		},
+		"Tooltip": {
+			"skillEncumbrance": "<br>Encumbrance [{amount}]"
+		},
+		"SkillSpecialization": " ({specialization})",
+		"TechLevelShort": "/TL{level}"
 	},
 	"gurps": {
 		"ok": "OK",
@@ -1670,6 +1681,19 @@
 			"space": "Space Move"
 		},
 		"enum": {
+			"align": {
+				"start": "Start",
+				"middle": "Middle",
+				"end": "End",
+				"fill": "Fill"
+			},
+			"cell": {
+				"text": "Text",
+				"tags": "Tags",
+				"toggle": "Toggle",
+				"page_ref": "Page Ref",
+				"markdown": "Markdown"
+			},
 			"picker": {
 				"not_applicable": "Not Applicable",
 				"count": "Count",

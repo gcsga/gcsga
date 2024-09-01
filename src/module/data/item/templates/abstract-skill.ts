@@ -1,8 +1,9 @@
 import { ItemDataModel, ItemDataSchema } from "@module/data/abstract.ts"
 import fields = foundry.data.fields
-import { SkillLevel } from "@item/skill/data.ts"
-import { difficulty, TooltipGURPS } from "@util"
+import { difficulty, LocalizeGURPS, StringBuilder } from "@util"
 import { ItemType } from "@module/data/constants.ts"
+import { Nameable } from "@module/util/nameable.ts"
+import { SkillLevel } from "../helpers.ts"
 
 class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 	protected declare _skillLevel: SkillLevel
@@ -17,11 +18,33 @@ class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 		}
 	}
 
-	calculateLevel(): SkillLevel {
-		return (this._skillLevel ??= { level: 0, relativeLevel: 0, tooltip: new TooltipGURPS() })
+	get processedName(): string {
+		const buffer = new StringBuilder()
+		buffer.push(this.nameWithReplacements)
+		if (!this.tech_level !== null) {
+			buffer.push(
+				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.TechLevelShort, { level: this.tech_level }),
+			)
+		}
+		if (this.isOfType(ItemType.Skill)) {
+			buffer.push(
+				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.SkillSpecialization, {
+					specialization: this.specializationWithReplacements,
+				}),
+			)
+		}
+		return buffer.toString()
 	}
 
-	adjustedPoints(_tooltip?: TooltipGURPS): number {
+	get level(): SkillLevel {
+		return (this._skillLevel ??= this.calculateLevel())
+	}
+
+	calculateLevel(_excludes: Set<string> = new Set()): SkillLevel {
+		return (this._skillLevel ??= { level: 0, relativeLevel: 0, tooltip: "" })
+	}
+
+	adjustedPoints(_excludes: Set<string> = new Set()): number {
 		return this.points
 	}
 
@@ -72,6 +95,22 @@ class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 			}
 		}
 	}
+
+	/**  Replacements */
+	get nameWithReplacements(): string {
+		if (!this.isOfType(ItemType.Skill, ItemType.Technique, ItemType.Spell, ItemType.RitualMagicSpell)) return ""
+		return Nameable.apply(this.name, this.nameableReplacements)
+	}
+
+	get specializationWithReplacements(): string {
+		if (this.isOfType(ItemType.Skill)) return Nameable.apply(this.specialization, this.nameableReplacements)
+		return ""
+	}
+
+	get notesWithReplacements(): string {
+		if (!this.isOfType(ItemType.Skill, ItemType.Technique, ItemType.Spell, ItemType.RitualMagicSpell)) return ""
+		return Nameable.apply(this.notes, this.nameableReplacements)
+	}
 }
 
 interface AbstractSkillTemplate
@@ -85,5 +124,4 @@ type AbstractSkillTemplateSchema = ItemDataSchema & {
 	tech_level_required: fields.BooleanField<boolean, boolean, true, false, true>
 	points: fields.NumberField<number, number, true, false>
 }
-
 export { AbstractSkillTemplate, type AbstractSkillTemplateSchema }

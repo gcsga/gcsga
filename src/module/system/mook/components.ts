@@ -731,7 +731,7 @@ abstract class MookWeapon<TSchema extends MookWeaponSchema = MookWeaponSchema> e
 				weapons.push(
 					new MookRanged(
 						{
-							type: ItemType.RangedWeapon,
+							type: ItemType.WeaponRanged,
 							name,
 							accuracy,
 							range: half_damage > 0 && max_range > 0 ? `${half_damage}/${max_range}` : range,
@@ -752,7 +752,7 @@ abstract class MookWeapon<TSchema extends MookWeaponSchema = MookWeaponSchema> e
 				weapons.push(
 					new MookMelee(
 						{
-							type: ItemType.MeleeWeapon,
+							type: ItemType.WeaponMelee,
 							name,
 							reach,
 							strength: ST,
@@ -844,7 +844,7 @@ class MookMelee extends MookWeapon<MookMeleeSchema> {
 		const id = fu.randomID()
 		return [
 			{
-				type: ItemType.MeleeWeapon,
+				type: ItemType.WeaponMelee,
 				name: this.name,
 				_id: id,
 				flags: {
@@ -908,7 +908,7 @@ class MookRanged extends MookWeapon<MookRangedSchema> {
 		const id = fu.randomID()
 		return [
 			{
-				type: ItemType.RangedWeapon,
+				type: ItemType.WeaponRanged,
 				name: this.name,
 				_id: id,
 				flags: {

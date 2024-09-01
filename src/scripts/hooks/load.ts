@@ -91,8 +91,8 @@ export const Load = {
 			// [ItemType.LegacyItem]: LegacyItemSystemData,
 			[ItemType.Effect]: EffectSystemData,
 			[ItemType.Condition]: ConditionSystemData,
-			[ItemType.MeleeWeapon]: MeleeWeaponSystemData,
-			[ItemType.RangedWeapon]: RangedWeaponSystemData,
+			[ItemType.WeaponMelee]: MeleeWeaponSystemData,
+			[ItemType.WeaponRanged]: RangedWeaponSystemData,
 		}
 
 		CONFIG.Canvas.darknessColor = 0x2d2d52 // Lightness increased by ~0.4/10 (Munsell value)
@@ -140,8 +140,8 @@ export const Load = {
 			// [ItemType.LegacyItem]: "gcs-equipment",
 			[ItemType.Effect]: "gcs-effect",
 			[ItemType.Condition]: "gcs-condition",
-			[ItemType.MeleeWeapon]: "gcs-melee-weapon",
-			[ItemType.RangedWeapon]: "gcs-ranged-weapon",
+			[ItemType.WeaponMelee]: "gcs-melee-weapon",
+			[ItemType.WeaponRanged]: "gcs-ranged-weapon",
 		}
 
 		// Make available immediately on load for module subclassing

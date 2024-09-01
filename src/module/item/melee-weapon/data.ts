@@ -13,7 +13,7 @@ class MeleeWeaponSystemData extends AbstractWeaponSystemData<MeleeWeaponGURPS, M
 
 		return {
 			...super.defineSchema(),
-			type: new fields.StringField({ required: true, initial: ItemType.MeleeWeapon }),
+			type: new fields.StringField({ required: true, initial: ItemType.WeaponMelee }),
 			usage: new fields.StringField({
 				required: true,
 			}),
@@ -29,7 +29,7 @@ interface MeleeWeaponSystemData
 		ModelPropsFromSchema<MeleeWeaponSystemSchema> {}
 
 type MeleeWeaponSystemSchema = AbstractWeaponSystemSchema & {
-	type: fields.StringField<ItemType.MeleeWeapon, ItemType.MeleeWeapon, true, false, true>
+	type: fields.StringField<ItemType.WeaponMelee, ItemType.WeaponMelee, true, false, true>
 	reach: fields.StringField<string, string, true, false, true>
 	parry: fields.StringField<string, string, true, false, true>
 	block: fields.StringField<string, string, true, false, true>
@@ -37,7 +37,7 @@ type MeleeWeaponSystemSchema = AbstractWeaponSystemSchema & {
 
 type MeleeWeaponSystemSource = SourceFromSchema<MeleeWeaponSystemSchema>
 
-type MeleeWeaponSource = AbstractWeaponSource<ItemType.MeleeWeapon, MeleeWeaponSystemSource>
+type MeleeWeaponSource = AbstractWeaponSource<ItemType.WeaponMelee, MeleeWeaponSystemSource>
 
 export type { MeleeWeaponSource, MeleeWeaponSystemSource }
 export { MeleeWeaponSystemData }

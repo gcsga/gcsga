@@ -9,6 +9,7 @@ import { PrereqTemplate, PrereqTemplateSchema } from "./templates/prereqs.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
 import { StudyTemplate, StudyTemplateSchema } from "./templates/study.ts"
 import { ItemDataModel } from "../abstract.ts"
+import { Study } from "@system"
 
 class RitualMagicSpellData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -18,7 +19,7 @@ class RitualMagicSpellData extends ItemDataModel.mixin(
 	ReplacementTemplate,
 	AbstractSkillTemplate,
 ) {
-	static override weaponTypes = new Set([ItemType.MeleeWeapon, ItemType.RangedWeapon])
+	static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
 
 	static override defineSchema(): RitualMagicSpellSchema {
 		const fields = foundry.data.fields
@@ -79,7 +80,9 @@ class RitualMagicSpellData extends ItemDataModel.mixin(
 	}
 }
 
-interface RitualMagicSpellData extends ModelPropsFromSchema<RitualMagicSpellSchema> {}
+interface RitualMagicSpellData extends Omit<ModelPropsFromSchema<RitualMagicSpellSchema>, "study"> {
+	study: Study[]
+}
 
 type RitualMagicSpellSchema = BasicInformationTemplateSchema &
 	PrereqTemplateSchema &

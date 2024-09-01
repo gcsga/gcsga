@@ -168,7 +168,7 @@ class CharacterGURPS<
 				[
 					{
 						name: LocalizeGURPS.translations.gurps.character[gid.Thrust],
-						type: ItemType.MeleeWeapon,
+						type: ItemType.WeaponMelee,
 						system: {
 							usage: LocalizeGURPS.translations.gurps.character[gid.Thrust],
 							damage: {
@@ -190,7 +190,7 @@ class CharacterGURPS<
 				[
 					{
 						name: LocalizeGURPS.translations.gurps.character[gid.Swing],
-						type: ItemType.MeleeWeapon,
+						type: ItemType.WeaponMelee,
 						system: {
 							usage: LocalizeGURPS.translations.gurps.character[gid.Swing],
 							damage: {

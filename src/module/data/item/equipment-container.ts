@@ -17,7 +17,7 @@ class EquipmentContainerData extends ItemDataModel.mixin(
 ) {
 	static override childTypes = new Set([ItemType.Equipment, ItemType.EquipmentContainer])
 	static override modifierTypes = new Set([ItemType.EquipmentModifier, ItemType.EquipmentModifierContainer])
-	static override weaponTypes = new Set([ItemType.MeleeWeapon, ItemType.RangedWeapon])
+	static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
 
 	static override defineSchema(): EquipmentContainerSchema {
 		const fields = foundry.data.fields

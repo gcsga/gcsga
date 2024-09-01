@@ -25,7 +25,31 @@ export default class ApplicationV2<
 
 	static emittedEvents: readonly string[]
 
+	/**
+	 * Application instance configuration options.
+	 */
 	options: TConfig
+
+	#id: string
+
+	/**
+	 * Flag that this Application instance is renderable.
+	 * Applications are not renderable unless a subclass defines the _renderHTML and _replaceHTML methods.
+	 */
+	#renderable: boolean
+
+	/**
+	 * The outermost HTMLElement of this rendered Application.
+	 * For window applications this is ApplicationV2##frame.
+	 * For non-window applications this ApplicationV2##content.
+	 */
+	#element: HTMLDivElement
+
+	/**
+	 * The HTMLElement within which inner HTML is rendered.
+	 * For non-window applications this is the same as ApplicationV2##element.
+	 */
+	#content: HTMLElement
 
 	/** Convenience references to window header elements. */
 	get window(): {

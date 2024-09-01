@@ -129,12 +129,12 @@ export function registerSheets(): void {
 		label: game.i18n.localize("gurps.system.sheet.note_container"),
 	})
 	Items.registerSheet(SYSTEM_NAME, MeleeWeaponSheetGURPS, {
-		types: [ItemType.MeleeWeapon],
+		types: [ItemType.WeaponMelee],
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.melee_weapon"),
 	})
 	Items.registerSheet(SYSTEM_NAME, RangedWeaponSheetGURPS, {
-		types: [ItemType.RangedWeapon],
+		types: [ItemType.WeaponRanged],
 		makeDefault: true,
 		label: game.i18n.localize("gurps.system.sheet.ranged_weapon"),
 	})

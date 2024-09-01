@@ -573,7 +573,7 @@ interface ImportedNoteContainerSystemSource
 
 interface ImportedMeleeWeaponSystemSource {
 	id: StrictTIDString<ItemKind.WeaponMelee>
-	type: ImportedItemType.MeleeWeapon
+	type: ImportedItemType.WeaponMelee
 	damage: ImportedWeaponDamage
 	strength?: string
 	usage?: string
@@ -586,7 +586,7 @@ interface ImportedMeleeWeaponSystemSource {
 
 interface ImportedRangedWeaponSystemSource {
 	id: StrictTIDString<ItemKind.WeaponRanged>
-	type: ImportedItemType.RangedWeapon
+	type: ImportedItemType.WeaponRanged
 	damage: ImportedWeaponDamage
 	strength?: string
 	usage?: string

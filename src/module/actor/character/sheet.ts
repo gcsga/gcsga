@@ -154,7 +154,7 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS
 			conditional_modifiers: { items: this.actor.conditionalModifiers, types: [] },
 			melee: {
 				items: this._prepareItemCollection(
-					this.actor.itemCollections.equippedWeapons(ItemType.MeleeWeapon),
+					this.actor.itemCollections.equippedWeapons(ItemType.WeaponMelee),
 					null,
 					true,
 				),
@@ -162,7 +162,7 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS
 			},
 			ranged: {
 				items: this._prepareItemCollection(
-					this.actor.itemCollections.equippedWeapons(ItemType.RangedWeapon),
+					this.actor.itemCollections.equippedWeapons(ItemType.WeaponRanged),
 					null,
 					true,
 				),
