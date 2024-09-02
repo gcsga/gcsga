@@ -21,11 +21,15 @@
         },
         "modifiers": [
             {
-                "id": "to hit with melee combat (Crawling/Lying Down)",
+                "id": "to hit with melee attacks (Crawling/Lying Down)",
                 "modifier": -4
             },
             {
-                "id": "to active defenses (Crawling/Lying Down)",
+                "id": "to be hit with ranged attacks (Crawling/Lying Down)",
+                "modifier": -2
+            },
+            {
+                "id": "to Active Defense (Crawling/Lying Down)",
                 "modifier": -3
             }
         ],

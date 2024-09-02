@@ -10,36 +10,40 @@ export function getConditionList(): Record<ConditionID, Partial<ConditionSystemS
 		[ConditionID.PostureCrouch]: {
 			slug: ConditionID.PostureCrouch,
 			modifiers: [
-				{ id: LocalizeGURPS.translations.gurps.modifier.cover.crouching_no_cover, modifier: -2 },
-				{ id: LocalizeGURPS.translations.gurps.modifier.cover.melee_crouching, modifier: -2 },
-				{ id: LocalizeGURPS.translations.gurps.modifier.cover.ranged_crouching, modifier: -2 },
-				{ id: LocalizeGURPS.translations.gurps.modifier.cover.hit_ranged_crouching, modifier: -2 },
+				{ id: LocalizeGURPS.translations.gurps.modifier.cover.melee_crouch_kneel_sit, modifier: -2 },
+				{ id: LocalizeGURPS.translations.gurps.modifier.cover.ranged_crouch_kneel_sit, modifier: -2 },
 			],
 		},
 		[ConditionID.PostureKneel]: {
 			slug: ConditionID.PostureKneel,
 			modifiers: [
-				{ id: LocalizeGURPS.translations.gurps.modifier.cover.melee_kneeling, modifier: -2 },
-				{ id: LocalizeGURPS.translations.gurps.modifier.cover.defense_kneeling, modifier: -2 },
+				{ id: LocalizeGURPS.translations.gurps.modifier.cover.melee_crouch_kneel_sit, modifier: -2 },
+				{ id: LocalizeGURPS.translations.gurps.modifier.cover.ranged_crouch_kneel_sit, modifier: -2 },
+				{ id: LocalizeGURPS.translations.gurps.modifier.cover.defense_kneel_sit, modifier: -2 },
 			],
 		},
 		[ConditionID.PostureSit]: {
 			slug: ConditionID.PostureSit,
-			modifiers: [{ id: LocalizeGURPS.translations.gurps.modifier.cover.ranged_sitting, modifier: -2 }],
+			modifiers: [
+				{ id: LocalizeGURPS.translations.gurps.modifier.cover.melee_crouch_kneel_sit, modifier: -2 },
+				{ id: LocalizeGURPS.translations.gurps.modifier.cover.ranged_crouch_kneel_sit, modifier: -2 },
+				{ id: LocalizeGURPS.translations.gurps.modifier.cover.defense_kneel_sit, modifier: -2 },
+			],
 		},
 		[ConditionID.PostureCrawl]: {
 			slug: ConditionID.PostureCrawl,
 			modifiers: [
-				{ id: LocalizeGURPS.translations.gurps.modifier.cover.melee_crawling, modifier: -4 },
-				{ id: LocalizeGURPS.translations.gurps.modifier.cover.defense_crawling, modifier: -3 },
+				{ id: LocalizeGURPS.translations.gurps.modifier.cover.melee_crawl_prone, modifier: -4 },
+				{ id: LocalizeGURPS.translations.gurps.modifier.cover.ranged_crawl_prone, modifier: -2 },
+				{ id: LocalizeGURPS.translations.gurps.modifier.cover.defense_crawl_prone, modifier: -3 },
 			],
 		},
 		[ConditionID.PostureProne]: {
 			slug: ConditionID.PostureProne,
 			modifiers: [
-				{ id: LocalizeGURPS.translations.gurps.modifier.cover.prone_no_cover, modifier: -4 },
-				{ id: LocalizeGURPS.translations.gurps.modifier.cover.prone_head_up, modifier: -5 },
-				{ id: LocalizeGURPS.translations.gurps.modifier.cover.prone_head_down, modifier: -7 },
+				{ id: LocalizeGURPS.translations.gurps.modifier.cover.melee_crawl_prone, modifier: -4 },
+				{ id: LocalizeGURPS.translations.gurps.modifier.cover.ranged_crawl_prone, modifier: -2 },
+				{ id: LocalizeGURPS.translations.gurps.modifier.cover.defense_crawl_prone, modifier: -3 },
 			],
 		},
 		[ConditionID.Reeling]: {
