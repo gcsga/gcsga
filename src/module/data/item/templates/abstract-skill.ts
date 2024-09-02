@@ -4,6 +4,7 @@ import { difficulty, LocalizeGURPS, StringBuilder } from "@util"
 import { ItemType } from "@module/data/constants.ts"
 import { Nameable } from "@module/util/nameable.ts"
 import { SkillLevel } from "../helpers.ts"
+import { ItemTemplateType } from "../types.ts"
 
 class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 	protected declare _skillLevel: SkillLevel
@@ -20,7 +21,7 @@ class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 
 	get processedName(): string {
 		const buffer = new StringBuilder()
-		buffer.push(this.nameWithReplacements)
+		buffer.push(this.hasTemplate(ItemTemplateType.BasicInformation) ? this.nameWithReplacements : "")
 		if (!this.tech_level !== null) {
 			buffer.push(
 				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.TechLevelShort, { level: this.tech_level }),
@@ -44,7 +45,7 @@ class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 		return (this._skillLevel ??= { level: 0, relativeLevel: 0, tooltip: "" })
 	}
 
-	adjustedPoints(_excludes: Set<string> = new Set()): number {
+	adjustedPoints(..._args: any[]): number {
 		return this.points
 	}
 
@@ -97,19 +98,9 @@ class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 	}
 
 	/**  Replacements */
-	get nameWithReplacements(): string {
-		if (!this.isOfType(ItemType.Skill, ItemType.Technique, ItemType.Spell, ItemType.RitualMagicSpell)) return ""
-		return Nameable.apply(this.name, this.nameableReplacements)
-	}
-
 	get specializationWithReplacements(): string {
 		if (this.isOfType(ItemType.Skill)) return Nameable.apply(this.specialization, this.nameableReplacements)
 		return ""
-	}
-
-	get notesWithReplacements(): string {
-		if (!this.isOfType(ItemType.Skill, ItemType.Technique, ItemType.Spell, ItemType.RitualMagicSpell)) return ""
-		return Nameable.apply(this.notes, this.nameableReplacements)
 	}
 }
 

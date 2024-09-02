@@ -2,12 +2,11 @@ import { ActorDataModel } from "../abstract.ts"
 import fields = foundry.data.fields
 import {
 	SheetSettings,
-	AttributeGURPS,
 	ResourceTracker,
 	MoveType,
-	AttributeSchema,
 	ResourceTrackerSchema,
 	MoveTypeSchema,
+	AttributeGURPS,
 } from "@system"
 import { CharacterManeuver } from "@system/maneuver-manager.ts"
 import { PointsRecord, PointsRecordSchema } from "./fields/points-record.ts"
@@ -22,8 +21,13 @@ import {
 	SettingsHolderTemplate,
 	SettingsHolderTemplateSchema,
 } from "./templates/index.ts"
+import { AttributeHolderTemplate, AttributeHolderTemplateSchema } from "./templates/attribute-holder.ts"
 
-class CharacterData extends ActorDataModel.mixin(FeatureHolderTemplate, SettingsHolderTemplate) {
+class CharacterData extends ActorDataModel.mixin(
+	FeatureHolderTemplate,
+	SettingsHolderTemplate,
+	AttributeHolderTemplate,
+) {
 	static override defineSchema(): CharacterSchema {
 		const fields = foundry.data.fields
 
@@ -50,7 +54,7 @@ class CharacterData extends ActorDataModel.mixin(FeatureHolderTemplate, Settings
 				religion: new fields.StringField(),
 				portrait: new fields.StringField(),
 			}),
-			attributes: new fields.ArrayField(new fields.SchemaField(AttributeGURPS.defineSchema())),
+			// attributes: new fields.ArrayField(new fields.SchemaField(AttributeGURPS.defineSchema())),
 			resource_trackers: new fields.ArrayField(new fields.SchemaField(ResourceTracker.defineSchema())),
 			move_types: new fields.ArrayField(new fields.SchemaField(MoveType.defineSchema())),
 			move: new fields.SchemaField({
@@ -76,7 +80,7 @@ class CharacterData extends ActorDataModel.mixin(FeatureHolderTemplate, Settings
 		name: string,
 		specialization: string,
 		requirePoints: boolean,
-		excludes: Set<string>,
+		excludes: Set<string> = new Set(),
 	):
 		| (ItemGURPS2 &
 				({ type: ItemType.Skill; system: SkillData } | { type: ItemType.Technique; system: TechniqueData }))
@@ -105,13 +109,13 @@ class CharacterData extends ActorDataModel.mixin(FeatureHolderTemplate, Settings
 		name: string,
 		specialization: string,
 		requirePoints: boolean,
-		excludes: Set<string>,
+		excludes: Set<string> | null = null,
 	): (ItemGURPS2 &
 		({ type: ItemType.Skill; system: SkillData } | { type: ItemType.Technique; system: TechniqueData }))[] {
 		const list: ItemGURPS2[] = []
 		this.parent.items.forEach(sk => {
 			if (!sk.isOfType(ItemType.Skill, ItemType.Technique)) return
-			if (excludes.has(sk.system.processedName)) return
+			if (excludes?.has(sk.system.processedName)) return
 
 			if (!requirePoints || sk.type === ItemType.Technique || sk.system.adjustedPoints() > 0) {
 				if (equalFold(sk.system.nameWithReplacements, name)) {
@@ -125,17 +129,19 @@ class CharacterData extends ActorDataModel.mixin(FeatureHolderTemplate, Settings
 	}
 }
 
-interface CharacterData extends Omit<ModelPropsFromSchema<CharacterSchema>, "settings"> {
+interface CharacterData extends Omit<ModelPropsFromSchema<CharacterSchema>, "settings" | "attributes"> {
 	settings: SheetSettings
+	attributes: AttributeGURPS[]
 }
 
 type CharacterSchema = FeatureHolderTemplateSchema &
-	SettingsHolderTemplateSchema & {
+	SettingsHolderTemplateSchema &
+	AttributeHolderTemplateSchema & {
 		version: fields.NumberField<number, number, true, false, true>
 		created_date: fields.StringField
 		modified_date: fields.StringField
 		profile: fields.SchemaField<CharacterProfileSchema>
-		attributes: fields.ArrayField<fields.SchemaField<AttributeSchema>>
+		// attributes: fields.ArrayField<fields.SchemaField<AttributeSchema>>
 		resource_trackers: fields.ArrayField<fields.SchemaField<ResourceTrackerSchema>>
 		move_types: fields.ArrayField<fields.SchemaField<MoveTypeSchema>>
 		move: fields.SchemaField<CharacterMoveSchema>

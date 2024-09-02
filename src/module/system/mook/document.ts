@@ -509,13 +509,13 @@ class Mook extends foundry.abstract.DataModel<null, MookSchema> {
 	attributeBonusFor(
 		_attributeId: string | null,
 		_limitation: stlimit.Option,
-		_effective: boolean | null = null,
 		_tooltip: TooltipGURPS | null = null,
+		_temporary = false,
 	): number {
 		return 0
 	}
 
-	effectiveST(initialST: number): number {
+	temporaryST(initialST: number): number {
 		return initialST
 	}
 

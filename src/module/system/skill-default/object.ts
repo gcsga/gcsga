@@ -1,6 +1,6 @@
-import { ActorType, gid } from "@data"
+import { ActorType, SkillDefaultType, gid } from "@data"
 import { Nameable } from "@module/util/nameable.ts"
-import { SkillDefaultSchema, SkillDefaultType } from "./data.ts"
+import { SkillDefaultSchema } from "./data.ts"
 import { LocalizeGURPS, StringBuilder } from "@util"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { ActorGURPS2 } from "@module/document/actor.ts"

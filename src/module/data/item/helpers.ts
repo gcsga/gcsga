@@ -1,6 +1,6 @@
 import { ActorGURPS2 } from "@module/document/actor.ts"
-import { SkillDefault } from "@system"
-import { StringBuilder, TooltipGURPS, difficulty } from "@util"
+import { SheetSettings, SkillDefault } from "@system"
+import { LocalizeGURPS, StringBuilder, TooltipGURPS, difficulty, display } from "@util"
 import { ActorType, ItemType, gid } from "../constants.ts"
 
 function modifyPoints(points: number, modifier: number): number {
@@ -9,6 +9,25 @@ function modifyPoints(points: number, modifier: number): number {
 
 function calculateModifierPoints(points: number, modifier: number): number {
 	return (points * modifier) / 100
+}
+
+function addTooltipForSkillLevelAdj(
+	optionChecker: (option: display.Option) => boolean,
+	settings: SheetSettings,
+	level: SkillLevel,
+	buffer: StringBuilder,
+): void {
+	if (optionChecker(settings.skill_level_adj_display)) {
+		if (level.tooltip !== "" && level.tooltip !== LocalizeGURPS.translations.GURPS.Messages.NoAdditionalModifiers) {
+			let levelTooltip = level.tooltip
+			const msg = LocalizeGURPS.translations.GURPS.Messages.IncludesModifiersFrom
+			if (!levelTooltip.startsWith(msg)) levelTooltip = msg + ":" + levelTooltip
+			if (optionChecker(display.Option.Inline)) {
+				levelTooltip = levelTooltip.replaceAll(/:\n/, ": ").replaceAll(/\n/, ", ")
+			}
+			buffer.appendToNewLine(levelTooltip)
+		}
+	}
 }
 
 function calculateTechniqueLevel(
@@ -78,6 +97,11 @@ function calculateTechniqueLevel(
 			}
 		}
 	}
+	return {
+		level,
+		relativeLevel,
+		tooltip: tooltip.toString(),
+	}
 }
 
 interface SkillLevel {
@@ -86,5 +110,5 @@ interface SkillLevel {
 	tooltip: string
 }
 
-export { modifyPoints, calculateModifierPoints, calculateTechniqueLevel }
+export { modifyPoints, calculateModifierPoints, calculateTechniqueLevel, addTooltipForSkillLevelAdj }
 export type { SkillLevel }

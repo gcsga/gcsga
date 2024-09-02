@@ -364,7 +364,7 @@ class CharacterGURPS<
 		Array.from(this.attributes.values())
 			.filter(a => a.definition?.type === attribute.Type.Pool)
 			.forEach(a => {
-				if (!a.apply_ops) return
+				if (!a.applyOps) return
 				const threshold = a.currentThreshold
 				if (threshold && threshold.ops?.includes(op)) total += 1
 			})

@@ -5,13 +5,16 @@ import { ContainerTemplate, ContainerTemplateSchema } from "./templates/containe
 import { FeatureTemplate, FeatureTemplateSchema } from "./templates/features.ts"
 import { StudyTemplate, StudyTemplateSchema } from "./templates/study.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
-import { ItemType } from "../constants.ts"
+import { ActorType, ItemType } from "../constants.ts"
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { AbstractSkillTemplate, AbstractSkillTemplateSchema } from "./templates/abstract-skill.ts"
-import { SkillDefaultSchema, SkillDefault, Study } from "@system"
+import { SkillDefaultSchema, SkillDefault, Study, SheetSettings } from "@system"
 import { TechniqueDifficulty } from "../types.ts"
-import { difficulty } from "@util"
-import { calculateTechniqueLevel } from "./helpers.ts"
+import { LocalizeGURPS, StringBuilder, TooltipGURPS, difficulty, display } from "@util"
+import { addTooltipForSkillLevelAdj, calculateTechniqueLevel } from "./helpers.ts"
+import { ActorTemplateType } from "../actor/types.ts"
+import { ItemGURPS2 } from "@module/document/item.ts"
+import { SkillData } from "./index.ts"
 
 class TechniqueData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -56,6 +59,59 @@ class TechniqueData extends ItemDataModel.mixin(
 		}) as TechniqueSchema
 	}
 
+	secondaryText(optionChecker: (option: display.Option) => boolean): string {
+		const buffer = new StringBuilder()
+		const settings = SheetSettings.for(this.parent.actor)
+		if (optionChecker(settings.modifiers_display)) {
+			buffer.appendToNewLine(this.modifierNotes)
+		}
+		if (optionChecker(settings.notes_display)) {
+			buffer.appendToNewLine(this.processedNotes)
+			buffer.appendToNewLine(Study.progressText(Study.resolveHours(this), this.study_hours_needed, false))
+		}
+		addTooltipForSkillLevelAdj(optionChecker, settings, this.level, buffer)
+		return buffer.toString()
+	}
+
+	get modifierNotes(): string {
+		if (!this.actor) return ""
+		return LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.SkillDefault, {
+			name: this.default.fullName(this.actor, this.nameableReplacements),
+			modifier: this.default.modifier.signedString(),
+		})
+	}
+
+	get defaultSkill():
+		| (ItemGURPS2 &
+				({ type: ItemType.Skill; system: SkillData } | { type: ItemType.Technique; system: TechniqueData }))
+		| null {
+		const actor = this.actor as any
+		if (!actor) return null
+		if (!actor.isOfType(ActorType.Character)) return null
+		if (!this.default) return null
+		if (!this.default.skillBased) return null
+		return actor.system.bestSkillNamed(
+			this.default.nameWithReplacements(this.nameableReplacements),
+			this.default.specializationWithReplacements(this.nameableReplacements),
+			true,
+		)
+	}
+
+	override adjustedPoints(tooltip: TooltipGURPS | null = null, temporary = false): number {
+		let points = this.points
+		if (this.actor?.hasTemplate(ActorTemplateType.Features)) {
+			points += this.actor.system.skillPointBonusFor(
+				this.nameWithReplacements,
+				this.specializationWithReplacements,
+				this.tags,
+				tooltip,
+				temporary,
+			)
+			points = Math.max(points, 0)
+		}
+		return points
+	}
+
 	/** Calculates level, relative level, and relevant tooltip based on current state of
 	 *  data. Does not transform the object.
 	 */
@@ -75,6 +131,38 @@ class TechniqueData extends ItemDataModel.mixin(
 			this.limit,
 			excludes,
 		)
+	}
+
+	satisfied(tooltip: TooltipGURPS | null = null): boolean {
+		if (!this.default.skillBased) return true
+		const actor = this.actor
+		if (!actor?.isOfType(ActorType.Character)) {
+			return true
+		}
+
+		const sk = actor.system.bestSkillNamed(
+			this.default.nameWithReplacements(this.nameableReplacements),
+			this.default.specializationWithReplacements(this.nameableReplacements),
+			false,
+		)
+		const satisfied = sk !== null && (sk.isOfType(ItemType.Technique) || sk.system.points > 0)
+		if (!satisfied && tooltip !== null) {
+			tooltip.push(LocalizeGURPS.translations.GURPS.TooltipPrefix)
+			if (sk === null) {
+				tooltip.push(
+					LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.Technique.Skill, {
+						name: this.default.fullName(actor, this.nameableReplacements),
+					}),
+				)
+			} else {
+				tooltip.push(
+					LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.Technique.SkillWithPoints, {
+						name: this.default.fullName(actor, this.nameableReplacements),
+					}),
+				)
+			}
+		}
+		return satisfied
 	}
 }
 

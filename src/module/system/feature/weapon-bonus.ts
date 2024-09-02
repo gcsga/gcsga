@@ -1,10 +1,11 @@
 import { Int, LocalizeGURPS, TooltipGURPS, feature, wsel, wswitch } from "@util"
 import { BaseFeature } from "./base.ts"
 import { WeaponBonusSchema } from "./data.ts"
-import { AbstractWeaponGURPS, ItemGURPS } from "@item"
+import { AbstractWeaponGURPS } from "@item"
 import { ItemType } from "@module/data/constants.ts"
 import { NumericCriteria, StringCriteria } from "@module/util/index.ts"
 import { Nameable } from "@module/util/nameable.ts"
+import { ItemDataModel } from "@module/data/abstract.ts"
 
 class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 	// declare leveledAmount: WeaponLeveledAmount
@@ -35,7 +36,7 @@ class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 
 	constructor(
 		data: DeepPartial<SourceFromSchema<WeaponBonusSchema>>,
-		options?: DocumentConstructionContext<ItemGURPS>,
+		options?: DataModelConstructionOptions<ItemDataModel>,
 	) {
 		super(data, options)
 
@@ -46,14 +47,6 @@ class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 		this.tags = new StringCriteria(data.tags ?? undefined)
 	}
 
-	// adjustedAmountForWeapon(wpn: AbstractWeaponGURPS): number {
-	// 	if (this.type === feature.Type.WeaponMinSTBonus) {
-	// 		this.leveledAmount.dieCount = 1
-	// 	} else {
-	// 		this.leveledAmount.dieCount = Int.from(wpn.damage.base!.count)
-	// 	}
-	// 	return this.leveledAmount.adjustedAmount
-	// }
 	adjustedAmountForWeapon(wpn: AbstractWeaponGURPS): number {
 		if (this.type === feature.Type.WeaponMinSTBonus) {
 			this.dieCount = 1
@@ -106,9 +99,9 @@ class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 
 	get derivedLevel(): number {
 		if (this.subOwner?.isOfType(ItemType.Trait, ItemType.TraitModifier)) {
-			if (this.subOwner.isLeveled) return this.subOwner.levels
+			if (this.subOwner.system.isLeveled) return this.subOwner.system.levels
 		} else if (this.owner?.isOfType(ItemType.Trait, ItemType.TraitModifier)) {
-			if (this.owner.isLeveled) return this.owner.levels
+			if (this.owner.system.isLeveled) return this.owner.system.levels
 		}
 		return 0
 	}

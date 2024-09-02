@@ -28,7 +28,8 @@ class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, Fe
 	}
 
 	get trait(): (ItemGURPS2 & { system: TraitData }) | null {
-		return this._trait as ItemGURPS2 & { system: TraitData }
+		//@ts-expect-error type definition error
+		return (this._trait as ItemGURPS2 & { system: TraitData }) ?? null
 	}
 
 	set trait(trait: ItemGURPS2 | null) {
@@ -106,15 +107,6 @@ class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, Fe
 		if (this.notes !== "") buffer.push(` (${this.notesWithReplacements})`)
 		if (SheetSettings.for(this.parent.actor).show_trait_modifier_adj) buffer.push(` [${this.costDescription}]`)
 		return buffer.toString()
-	}
-
-	/**  Replacements */
-	get nameWithReplacements(): string {
-		return Nameable.apply(this.name, this.nameableReplacements)
-	}
-
-	get notesWithReplacements(): string {
-		return Nameable.apply(this.notes, this.nameableReplacements)
 	}
 
 	/** Nameables */

@@ -6,7 +6,7 @@ import { SpellSource, SpellSystemData } from "@item/spell/data.ts"
 import { TechniqueSource, TechniqueSystemData } from "@item/technique/data.ts"
 import { ActorType, ItemType } from "@module/data/constants.ts"
 import { Nameable } from "@module/util/nameable.ts"
-import { resolveStudyHours } from "@system"
+import { Study } from "@system"
 import { StringBuilder, TooltipGURPS, difficulty, study } from "@util"
 
 abstract class AbstractSkillGURPS<
@@ -179,7 +179,7 @@ abstract class AbstractSkillGURPS<
 	}
 
 	get studyHours(): number {
-		return resolveStudyHours(this.system.study ?? [])
+		return Study.resolveHours(this.system.study ?? [])
 	}
 
 	get studyHoursNeeded(): string {

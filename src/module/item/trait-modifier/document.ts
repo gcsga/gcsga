@@ -7,62 +7,62 @@ import { SheetSettings } from "@system"
 import { Nameable } from "@module/util/nameable.ts"
 
 class TraitModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {
-	override secondaryText(optionChecker: (option: display.Option) => boolean): string {
-		const settings = SheetSettings.for(this.actor)
-		if (optionChecker(settings.notes_display)) return this.localNotes
-		return ""
-	}
-
-	get levels(): number {
-		return this.system.levels
-	}
-
-	get costDescription(): string {
-		let base = ""
-		if (this.costType === tmcost.Type.Percentage) {
-			if (this.isLeveled) {
-				base = (this.cost * this.levels).signedString()
-			} else {
-				base = this.cost.signedString()
-			}
-			base += "%"
-		} else if (this.costType === tmcost.Type.Points) base = this.cost.signedString()
-		else if (this.costType === tmcost.Type.Multiplier) return `×${this.cost}`
-		return base
-	}
-
-	get enabled(): boolean {
-		return !this.system.disabled
-	}
-
-	get costType(): tmcost.Type {
-		return this.system.cost_type
-	}
-
-	get affects(): affects.Option {
-		return this.system.affects
-	}
-
-	get cost(): number {
-		return this.system.cost
-	}
-
-	get costModifier(): number {
-		if (this.levels > 0) return this.cost * this.levels
-		return this.cost
-	}
-
-	get fullDescription(): string {
-		const buffer = new StringBuilder()
-		buffer.push(this.formattedName)
-		if (this.localNotes !== "") buffer.push(` (${this.localNotes})`)
-		if (SheetSettings.for(this.actor).show_trait_modifier_adj) buffer.push(` [${this.costDescription}]`)
-		return buffer.toString()
-	}
-
-	get isLeveled(): boolean {
-		return this.costType === tmcost.Type.Percentage && this.levels > 0
-	}
+	// override secondaryText(optionChecker: (option: display.Option) => boolean): string {
+	// 	const settings = SheetSettings.for(this.actor)
+	// 	if (optionChecker(settings.notes_display)) return this.localNotes
+	// 	return ""
+	// }
+	//
+	// get levels(): number {
+	// 	return this.system.levels
+	// }
+	//
+	// get costDescription(): string {
+	// 	let base = ""
+	// 	if (this.costType === tmcost.Type.Percentage) {
+	// 		if (this.isLeveled) {
+	// 			base = (this.cost * this.levels).signedString()
+	// 		} else {
+	// 			base = this.cost.signedString()
+	// 		}
+	// 		base += "%"
+	// 	} else if (this.costType === tmcost.Type.Points) base = this.cost.signedString()
+	// 	else if (this.costType === tmcost.Type.Multiplier) return `×${this.cost}`
+	// 	return base
+	// }
+	//
+	// get enabled(): boolean {
+	// 	return !this.system.disabled
+	// }
+	//
+	// get costType(): tmcost.Type {
+	// 	return this.system.cost_type
+	// }
+	//
+	// get affects(): affects.Option {
+	// 	return this.system.affects
+	// }
+	//
+	// get cost(): number {
+	// 	return this.system.cost
+	// }
+	//
+	// get costModifier(): number {
+	// 	if (this.levels > 0) return this.cost * this.levels
+	// 	return this.cost
+	// }
+	//
+	// get fullDescription(): string {
+	// 	const buffer = new StringBuilder()
+	// 	buffer.push(this.formattedName)
+	// 	if (this.localNotes !== "") buffer.push(` (${this.localNotes})`)
+	// 	if (SheetSettings.for(this.actor).show_trait_modifier_adj) buffer.push(` [${this.costDescription}]`)
+	// 	return buffer.toString()
+	// }
+	//
+	// get isLeveled(): boolean {
+	// 	return this.costType === tmcost.Type.Percentage && this.levels > 0
+	// }
 
 	override getContextMenuItems(): ContextMenuEntry[] {
 		return [
@@ -101,26 +101,26 @@ class TraitModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> 
 		]
 	}
 
-	/**  Replacements */
-	get nameWithReplacements(): string {
-		return Nameable.apply(this.system.name, this.nameableReplacements)
-	}
-
-	get notesWithReplacements(): string {
-		return Nameable.apply(this.system.notes, this.nameableReplacements)
-	}
-
-	/** Nameables */
-	fillWithNameableKeys(m: Map<string, string>, existing?: Map<string, string>): void {
-		if (!this.enabled) return
-		if (!existing) existing = this.nameableReplacements
-
-		Nameable.extract(this.system.name, m, existing)
-		Nameable.extract(this.system.notes, m, existing)
-		for (const feature of this.features) {
-			feature.fillWithNameableKeys(m, existing)
-		}
-	}
+	///**  Replacements */
+	//get nameWithReplacements(): string {
+	//	return Nameable.apply(this.system.name, this.nameableReplacements)
+	//}
+	//
+	//get notesWithReplacements(): string {
+	//	return Nameable.apply(this.system.notes, this.nameableReplacements)
+	//}
+	//
+	///** Nameables */
+	//fillWithNameableKeys(m: Map<string, string>, existing?: Map<string, string>): void {
+	//	if (!this.enabled) return
+	//	if (!existing) existing = this.nameableReplacements
+	//
+	//	Nameable.extract(this.system.name, m, existing)
+	//	Nameable.extract(this.system.notes, m, existing)
+	//	for (const feature of this.features) {
+	//		feature.fillWithNameableKeys(m, existing)
+	//	}
+	//}
 }
 
 interface TraitModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {

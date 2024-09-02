@@ -1,6 +1,9 @@
 import { ItemDataModel } from "@module/data/abstract.ts"
 import fields = foundry.data.fields
 import { ItemGURPS2 } from "@module/document/item.ts"
+import { EvalEmbeddedRegex, replaceAllStringFunc } from "@util"
+import { Nameable } from "@module/util/nameable.ts"
+import { ItemTemplateType } from "../types.ts"
 
 class BasicInformationTemplate extends ItemDataModel<BasicInformationTemplateSchema> {
 	static override defineSchema(): BasicInformationTemplateSchema {
@@ -26,6 +29,21 @@ class BasicInformationTemplate extends ItemDataModel<BasicInformationTemplateSch
 
 	get combinedTags(): string {
 		return this.tags.join(", ")
+	}
+
+	get processedNotes(): string {
+		return replaceAllStringFunc(EvalEmbeddedRegex, this.notesWithReplacements, this.parent.actor)
+	}
+
+	/** Replacements */
+	get nameWithReplacements(): string {
+		if (this.hasTemplate(ItemTemplateType.Replacement)) return Nameable.apply(this.name, this.nameableReplacements)
+		return this.name
+	}
+
+	get notesWithReplacements(): string {
+		if (this.hasTemplate(ItemTemplateType.Replacement)) return Nameable.apply(this.notes, this.nameableReplacements)
+		return this.notes
 	}
 }
 

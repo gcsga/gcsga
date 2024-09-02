@@ -1,5 +1,5 @@
 import { ActorDataModel } from "@module/data/abstract.ts"
-import { gid } from "@module/data/constants.ts"
+import { ActorType, gid } from "@module/data/constants.ts"
 import { equalFold } from "@module/util/index.ts"
 import { Nameable } from "@module/util/nameable.ts"
 import {
@@ -14,13 +14,22 @@ import {
 	MoveBonus,
 	SheetSettings,
 } from "@system"
-import { TooltipGURPS, skillsel, stlimit } from "@util"
+import { TooltipGURPS, feature, skillsel, stlimit, wsel } from "@util"
 
 class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> {
 	declare features: FeatureSet
 
 	static override defineSchema(): FeatureHolderTemplateSchema {
 		return {}
+	}
+
+	// Placeholder used for size modifier bonus
+	get baseSizeModifier(): number {
+		return 0
+	}
+
+	get adjustedSizeModifier(): number {
+		return this.baseSizeModifier + this.attributeBonusFor(gid.SizeModifier)
 	}
 
 	/**
@@ -32,7 +41,7 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 	 */
 	attributeBonusFor(
 		attributeId: string,
-		limitation: stlimit.Option,
+		limitation: stlimit.Option = stlimit.Option.None,
 		tooltip: TooltipGURPS | null = null,
 		temporary = false,
 	): number {
@@ -136,6 +145,187 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 		}
 		return total
 	}
+
+	/**
+	 * @param name - Name of skill/technique
+	 * @param specialization - Specialization of skill/technique. Can be blank
+	 * @param tags - Tags of skill/technique.
+	 * @param tooltip - Reference to tooltip to which bonuses are appended
+	 * @param temporary - Is this feature provided by a temporary active effect?
+	 * @returns Total skill level bonus for the provided Skill(s).
+	 */
+	skillPointBonusFor(
+		name: string,
+		specialization: string,
+		tags: string[],
+		tooltip: TooltipGURPS | null = null,
+		temporary = false,
+	): number {
+		let total = 0
+		for (const bonus of this.features.skillPointBonuses) {
+			let replacements: Map<string, string> = new Map()
+			const na = bonus.owner
+			if (Nameable.isAccesser(na)) {
+				replacements = na.nameableReplacements
+			}
+			if (
+				bonus.name.matches(replacements, name) &&
+				bonus.specialization.matches(replacements, specialization) &&
+				bonus.tags.matchesList(replacements, ...tags) &&
+				bonus.temporary === temporary
+			) {
+				total += bonus.adjustedAmount
+				bonus.addToTooltip(tooltip)
+			}
+		}
+		return total
+	}
+
+	spellBonusFor(
+		name: string,
+		powerSource: string,
+		colleges: string[],
+		tags: string[],
+		tooltip: TooltipGURPS | null = null,
+		temporary = false,
+	): number {
+		let total = 0
+		for (const bonus of this.features.spellBonuses) {
+			let replacements: Map<string, string> = new Map()
+			const na = bonus.owner
+			if (Nameable.isAccesser(na)) {
+				replacements = na.nameableReplacements
+			}
+			if (
+				bonus.tags.matchesList(replacements, ...tags) &&
+				bonus.matchForType(replacements, name, powerSource, colleges) &&
+				bonus.temporary === temporary
+			) {
+				total += bonus.adjustedAmount
+				bonus.addToTooltip(tooltip)
+			}
+		}
+		return total
+	}
+
+	spellPointBonusFor(
+		name: string,
+		powerSource: string,
+		colleges: string[],
+		tags: string[],
+		tooltip: TooltipGURPS | null = null,
+		temporary = false,
+	): number {
+		let total = 0
+		for (const bonus of this.features.spellPointBonuses) {
+			let replacements: Map<string, string> = new Map()
+			const na = bonus.owner
+			if (Nameable.isAccesser(na)) {
+				replacements = na.nameableReplacements
+			}
+			if (
+				bonus.tags.matchesList(replacements, ...tags) &&
+				bonus.matchForType(replacements, name, powerSource, colleges) &&
+				bonus.temporary === temporary
+			) {
+				total += bonus.adjustedAmount
+				bonus.addToTooltip(tooltip)
+			}
+		}
+		return total
+	}
+
+	addWeaponWithSkillBonusesFor(
+		name: string,
+		specialization: string,
+		usage: string,
+		tags: string[],
+		dieCount: number,
+		tooltip: TooltipGURPS | null = null,
+		m: Set<WeaponBonus> = new Set(),
+		allowedFeatureTypes: Set<feature.Type> = new Set(),
+		temporary = false,
+	): Set<WeaponBonus> {
+		if (!this.isOfType(ActorType.Character)) {
+			console.error(`Adding weapon bonuses for actor type "${this.parent.type}" is not yet supported.`)
+			return m
+		}
+		let rsl = Number.MIN_SAFE_INTEGER
+		for (const sk of this.skillNamed(name, specialization, true)) {
+			if (rsl < sk.system.level.relativeLevel) rsl = sk.system.level.relativeLevel
+		}
+		for (const bonus of this.features.weaponBonuses) {
+			if (
+				allowedFeatureTypes.has(bonus.type) &&
+				bonus.selection_type == wsel.Type.WithRequiredSkill &&
+				bonus.level.matches(rsl) &&
+				bonus.temporary === temporary
+			) {
+				let replacements: Map<string, string> = new Map()
+				const na = bonus.owner
+				if (Nameable.isAccesser(na)) {
+					replacements = na.nameableReplacements
+				}
+				if (
+					bonus.name.matches(replacements, name) &&
+					bonus.specialization.matches(replacements, specialization) &&
+					bonus.usage.matches(replacements, usage) &&
+					bonus.tags.matchesList(replacements, ...tags)
+				) {
+					addWeaponBonusToSet(bonus, dieCount, tooltip, m)
+				}
+			}
+		}
+		return m
+	}
+
+	addNamedWeaponBonusesFor(
+		name: string,
+		usage: string,
+		tags: string[],
+		dieCount: number,
+		tooltip: TooltipGURPS | null = null,
+		m: Set<WeaponBonus> = new Set(),
+		allowedFeatureTypes: Set<feature.Type> = new Set(),
+		temporary = false,
+	) {
+		for (const bonus of this.features.weaponBonuses) {
+			if (
+				allowedFeatureTypes.has(bonus.type) &&
+				bonus.selection_type === wsel.Type.WithName &&
+				bonus.temporary === temporary
+			) {
+				let replacements: Map<string, string> = new Map()
+				const na = bonus.owner
+				if (Nameable.isAccesser(na)) {
+					replacements = na.nameableReplacements
+				}
+				if (
+					bonus.name.matches(replacements, name) &&
+					bonus.specialization.matches(replacements, usage) &&
+					bonus.tags.matchesList(replacements, ...tags)
+				) {
+					addWeaponBonusToSet(bonus, dieCount, tooltip, m)
+				}
+			}
+		}
+	}
+}
+
+function addWeaponBonusToSet(
+	bonus: WeaponBonus,
+	dieCount: number,
+	tooltip: TooltipGURPS | null = null,
+	m: Set<WeaponBonus>,
+): void {
+	const savedLevel = bonus.featureLevel
+	const savedDieCount = bonus.dieCount
+	bonus.dieCount = dieCount
+	bonus.featureLevel = bonus.derivedLevel
+	bonus.addToTooltip(tooltip)
+	bonus.featureLevel = savedLevel
+	bonus.dieCount = savedDieCount
+	m.add(bonus)
 }
 
 interface FeatureHolderTemplate extends ModelPropsFromSchema<FeatureHolderTemplateSchema> {}

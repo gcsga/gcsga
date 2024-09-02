@@ -1,5 +1,5 @@
 import { difficulty } from "@util"
-import { ConditionID, EFFECT_ACTION, ManeuverID } from "./constants.ts"
+import { ConditionID, EFFECT_ACTION, ManeuverID, gid } from "./constants.ts"
 
 enum ItemKind {
 	Campaign = "C",
@@ -214,6 +214,8 @@ interface MigratedDocumentMigrationRecord {
 
 type MigrationRecord = NewDocumentMigrationRecord | MigratedDocumentMigrationRecord
 
+type SkillDefaultType = gid.Block | gid.Parry | gid.Skill | gid.Ten | string
+
 export type {
 	AttributeEffect,
 	ConditionEffect,
@@ -225,6 +227,7 @@ export type {
 	// ModifierItem,
 	NewDocumentMigrationRecord,
 	Posture,
+	SkillDefaultType,
 	// RollModifier,
 	// RollModifierStack,
 	SkillDifficulty,
@@ -234,4 +237,4 @@ export type {
 	WeaponOwner,
 }
 
-export { AllManeuverIDs, AllPostures, ApplicableConditions, Postures, ItemKind }
+export { AllManeuverIDs, AllPostures, ApplicableConditions, ItemKind, Postures }

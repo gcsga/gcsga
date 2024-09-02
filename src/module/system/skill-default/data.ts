@@ -1,7 +1,5 @@
-import { gid } from "@module/data/constants.ts"
 import fields = foundry.data.fields
-
-export type SkillDefaultType = gid.Block | gid.Parry | gid.Skill | gid.Ten | string
+import { SkillDefaultType } from "@module/data/index.ts"
 
 export type SkillDefaultSchema = {
 	type: fields.StringField<SkillDefaultType, SkillDefaultType, true, false, true>

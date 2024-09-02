@@ -1,12 +1,12 @@
 import { ActorGURPS } from "@actor"
 import { AbstractContainerGURPS } from "@item"
 import { TraitSource, TraitSystemData } from "./data.ts"
-import { LocalizeGURPS, StringBuilder, affects, display, selfctrl, study, tmcost } from "@util"
-import { SheetSettings, resolveStudyHours, studyHoursProgressText } from "@system"
-import { ItemType } from "@module/data/constants.ts"
-import { ItemInstances } from "@item/types.ts"
-import { modifyPoints } from "@item/helpers.ts"
-import { Nameable } from "@module/util/nameable.ts"
+// import { LocalizeGURPS, StringBuilder, affects, display, selfctrl, study, tmcost } from "@util"
+// import { SheetSettings, Study } from "@system"
+// import { ItemType } from "@module/data/constants.ts"
+// import { ItemInstances } from "@item/types.ts"
+// import { modifyPoints } from "@item/helpers.ts"
+// import { Nameable } from "@module/util/nameable.ts"
 
 class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends AbstractContainerGURPS<TParent> {
 	// override get formattedName(): string {
@@ -14,7 +14,7 @@ class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 	// 	const levels = this.levels
 	// 	return `${name}${levels ? ` ${levels}` : ""}`
 	// }
-	//
+
 	// override secondaryText(optionChecker: (option: display.Option) => boolean): string {
 	// 	const buffer = new StringBuilder()
 	// 	const settings = SheetSettings.for(this.actor)
@@ -25,7 +25,7 @@ class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 	// 	if (optionChecker(settings.notes_display)) {
 	// 		buffer.appendToNewLine(this.notes.trim())
 	// 		buffer.appendToNewLine(
-	// 			studyHoursProgressText(resolveStudyHours(this.system.study), this.system.study_hours_needed, false),
+	// 			Study.progressText(Study.resolveHours(this.system.study), this.system.study_hours_needed, false),
 	// 		)
 	// 	}
 	// 	return buffer.toString()
@@ -215,7 +215,7 @@ class TraitGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends 
 	// }
 	//
 	// get studyHours(): number {
-	// 	return resolveStudyHours(this.system.study ?? [])
+	// 	return Study.resolveHours(this.system.study ?? [])
 	// }
 	//
 	// get studyHoursNeeded(): string {

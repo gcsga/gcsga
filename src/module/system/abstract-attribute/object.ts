@@ -1,11 +1,15 @@
 import type { AbstractAttributeDef } from "./definition.ts"
 import type { AbstractAttributeConstructionOptions, AbstractAttributeSchema } from "./data.ts"
-import type { ActorGURPS } from "@actor"
 // import { LaxSchemaField } from "@system/schema-data-fields.ts"
 import type { Mook } from "@system/mook/index.ts"
+import { ActorDataModel } from "@module/data/abstract.ts"
 
+// abstract class AbstractAttribute<
+// 	TActor extends ActorGURPS | Mook = ActorGURPS | Mook,
+// 	TSchema extends AbstractAttributeSchema = AbstractAttributeSchema,
+// > extends foundry.abstract.DataModel<TActor, TSchema> {
 abstract class AbstractAttribute<
-	TActor extends ActorGURPS | Mook = ActorGURPS | Mook,
+	TActor extends ActorDataModel | Mook = ActorDataModel | Mook,
 	TSchema extends AbstractAttributeSchema = AbstractAttributeSchema,
 > extends foundry.abstract.DataModel<TActor, TSchema> {
 	// protected declare static _schema: LaxSchemaField<AbstractAttributeSchema> | undefined
@@ -58,7 +62,7 @@ abstract class AbstractAttribute<
 	}
 
 	/** Effective value of the attribute, taking into account modifiers from temporary effects */
-	get effective(): number {
+	get temporaryMax(): number {
 		return this.max
 	}
 }

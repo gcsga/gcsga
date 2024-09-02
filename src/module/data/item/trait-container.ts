@@ -1,16 +1,7 @@
 import { ItemDataModel, ItemDataSchema } from "../abstract.ts"
 import fields = foundry.data.fields
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
-import {
-	EvalEmbeddedRegex,
-	StringBuilder,
-	align,
-	cell,
-	container,
-	display,
-	replaceAllStringFunc,
-	selfctrl,
-} from "@util"
+import { StringBuilder, align, cell, container, display, selfctrl } from "@util"
 import { PrereqTemplate, PrereqTemplateSchema } from "./templates/prereqs.ts"
 import { ContainerTemplate, ContainerTemplateSchema } from "./templates/container.ts"
 import { ItemType } from "../constants.ts"
@@ -133,10 +124,6 @@ class TraitContainerData extends ItemDataModel.mixin(
 		)
 	}
 
-	get processedNotes(): string {
-		return replaceAllStringFunc(EvalEmbeddedRegex, this.notesWithReplacements, this.parent.actor)
-	}
-
 	// Returns rendered notes from modifiers
 	get modifierNotes(): string {
 		const buffer = new StringBuilder()
@@ -172,11 +159,11 @@ class TraitContainerData extends ItemDataModel.mixin(
 	}
 
 	/** Replacements */
-	get nameWithReplacements(): string {
+	override get nameWithReplacements(): string {
 		return Nameable.apply(this.name, this.nameableReplacements)
 	}
 
-	get notesWithReplacements(): string {
+	override get notesWithReplacements(): string {
 		return Nameable.apply(this.notes, this.nameableReplacements)
 	}
 

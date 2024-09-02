@@ -60,8 +60,37 @@
 		"Tooltip": {
 			"skillEncumbrance": "<br>Encumbrance [{amount}]"
 		},
+		"SkillDefault": "Default: {name}{modifier}",
 		"SkillSpecialization": " ({specialization})",
-		"TechLevelShort": "/TL{level}"
+		"TechLevelShort": "/TL{level}",
+		"SpellRitual": {
+			"LessThan10": "Ritual: need both hands and feet free and must speak; Time: 2x",
+			"LessThan15": "Ritual: speak quietly and make a gesture",
+			"LessThan20": "Ritual: speak a word or two OR make a small gesture{time}",
+			"MoreThan20": "Ritual: none{time}{cost}",
+			"Time": "; Time: x1/{number}, rounded up, min 1 sec",
+			"Cost": "; Cost: -{number}"
+		},
+		"TooltipPrefix": "• ",
+		"Prereq": {
+			"RitualMagic": {
+				"College": "Must be assigned to a college",
+				"Skill": "Requires a skill named {name}",
+				"SkillFirst": "{name}  ({specialization})",
+				"SkillOr": "{existing} or {name} ({specialization})"
+			},
+			"Technique": {
+				"Skill": "Requires a skill named {name}",
+				"SkillWithPoints": "Requires at least 1 point in the skill named {name}"
+			}
+		},
+		"Messages": {
+			"NoAdditionalModifiers": "No additional modifiers",
+			"IncludesModifiersFrom": "Includes modifiers from",
+			"PageRefTooltip": "A reference to the book and page the item appears on e.g. B22 would refer to \"Basic Set\", page 22",
+			"LibSrcTooltip": "Indicates whether the data matches the source library it came from",
+			"ModifierEnabledTooltip": "Whether this modifier is enabled. Modifiers that are not enabled do not apply any features they may normally contribute."
+		}
 	},
 	"gurps": {
 		"ok": "OK",

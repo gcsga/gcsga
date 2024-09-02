@@ -10,8 +10,8 @@ export namespace spellmatch {
 
 	export namespace Type {
 		export interface Matcher {
-			matches: (s: string) => boolean
-			matchesList: (...s: string[]) => boolean
+			matches: (replacements: Map<string, string>, value: string) => boolean
+			matchesList: (replacements: Map<string, string>, ...values: string[]) => boolean
 		}
 
 		export function toString(T: Type): string {
@@ -20,6 +20,7 @@ export namespace spellmatch {
 
 		export function matchForType(
 			T: Type,
+			replacements: Map<string, string>,
 			matcher: Matcher,
 			name: string,
 			powerSource: string,
@@ -29,11 +30,11 @@ export namespace spellmatch {
 				case Type.AllColleges:
 					return true
 				case Type.CollegeName:
-					return matcher.matchesList(...colleges)
+					return matcher.matchesList(replacements, ...colleges)
 				case Type.PowerSource:
-					return matcher.matches(powerSource)
+					return matcher.matches(replacements, powerSource)
 				case Type.Name:
-					return matcher.matches(name)
+					return matcher.matches(replacements, name)
 			}
 		}
 	}

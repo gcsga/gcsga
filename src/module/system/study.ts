@@ -8,24 +8,6 @@ import { StudyTemplate } from "@module/data/item/templates/study.ts"
 // 	note?: string
 // }
 //
-export function studyHoursProgressText(hours: number, needed: study.Level | "", force: boolean): string {
-	if (hours <= 0) {
-		hours = 0
-		if (!force) return ""
-	}
-	return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.study.studied_alt, {
-		hours: hours,
-		total: needed,
-	})
-}
-
-export function resolveStudyHours(studyEntries: Study[]): number {
-	let total = 0
-	for (const entry of studyEntries) {
-		total += entry.hours * study.Type.multiplier(entry.type)
-	}
-	return total
-}
 
 class Study<TParent extends StudyTemplate = StudyTemplate> extends foundry.abstract.DataModel<TParent, StudySchema> {
 	static override defineSchema(): StudySchema {

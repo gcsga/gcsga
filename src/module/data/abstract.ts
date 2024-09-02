@@ -1,9 +1,9 @@
 import { ActorType, ItemType, SYSTEM_NAME } from "./constants.ts"
 import fields = foundry.data.fields
 import { ItemGURPS2 } from "@module/document/item.ts"
-import { ItemDataInstances } from "./item/types.ts"
+import { ItemDataInstances, ItemDataTemplates, ItemTemplateType } from "./item/types.ts"
 import { ActorGURPS2 } from "@module/document/actor.ts"
-import { ActorDataInstances } from "./actor/types.ts"
+import { ActorDataInstances, ActorDataTemplates, ActorTemplateType } from "./actor/types.ts"
 import { ErrorGURPS } from "@util"
 import { CellData } from "./item/fields/cell-data.ts"
 
@@ -302,8 +302,21 @@ interface SystemDataModel<TDocument extends foundry.abstract.Document, TSchema e
  * Variant of the SystemDataModel with some extra actor-specific handling.
  */
 class ActorDataModel<TSchema extends ActorDataSchema = ActorDataSchema> extends SystemDataModel<ActorGURPS2, TSchema> {
+	/**
+	 * Type safe way of verifying if an Actor is of a particular type.
+	 */
 	isOfType<T extends ActorType>(...types: T[]): this is ActorDataInstances[T] {
 		return types.some(t => this.parent.type === t)
+	}
+	/**
+	 * Type safe way of verifying if an Actor contains a template
+	 */
+	hasTemplate<T extends ActorTemplateType>(template: T): this is ActorDataTemplates[T] {
+		return this.constructor._schemaTemplates.some(t => t.name === template)
+	}
+
+	resolveVariable(_variableName: string): string {
+		throw ErrorGURPS(`ActorDataModel.resolveVariable must be implemented.`)
 	}
 
 	static override defineSchema(): ActorDataSchema {
@@ -323,13 +336,27 @@ type ActorDataSchema = {}
  * Variant of the SystemDataModel with support for rich item tooltips.
  */
 class ItemDataModel<TSchema extends ItemDataSchema = ItemDataSchema> extends SystemDataModel<ItemGURPS2, TSchema> {
+	/**
+	 * Type safe way of verifying if an Item is of a particular type.
+	 */
 	isOfType<T extends ItemType>(...types: T[]): this is ItemDataInstances[T] {
 		return types.some(t => this.parent.type === t)
+	}
+
+	/**
+	 * Type safe way of verifying if an Item contains a template
+	 */
+	hasTemplate<T extends ItemTemplateType>(template: T): this is ItemDataTemplates[T] {
+		return this.constructor._schemaTemplates.some(t => t.name === template)
 	}
 
 	/* -------------------------------------------- */
 	/*  Getters                                     */
 	/* -------------------------------------------- */
+
+	get actor(): ActorGURPS2 | null {
+		return this.parent.actor
+	}
 
 	get cellData(): Record<string, CellData> {
 		throw ErrorGURPS(`ItemGURPS.cellData must be implemented.`)
@@ -355,10 +382,6 @@ class ItemDataModel<TSchema extends ItemDataSchema = ItemDataSchema> extends Sys
 			{ inplace: false },
 		),
 	)
-
-	get nameWithReplacements(): string {
-		throw ErrorGURPS(`Accessor "nameWithRplacements" must be implemented`)
-	}
 }
 
 interface ItemDataModel<TSchema extends ItemDataSchema>

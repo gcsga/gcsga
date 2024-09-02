@@ -1,9 +1,9 @@
 import type { PoolThresholdSchema, ThresholdOp } from "./data.ts"
-import type { CharacterGURPS } from "@actor"
 import type { Mook } from "@system/mook/document.ts"
 import type { AttributeDef } from "./definition.ts"
 import type { ResourceTrackerDef } from "@system/resource-tracker/definition.ts"
 import { evaluateToNumber } from "@module/util/gcs/eval.ts"
+import { ActorDataModel } from "@module/data/abstract.ts"
 
 class PoolThreshold extends foundry.abstract.DataModel<AttributeDef | ResourceTrackerDef, PoolThresholdSchema> {
 	constructor(
@@ -24,7 +24,10 @@ class PoolThreshold extends foundry.abstract.DataModel<AttributeDef | ResourceTr
 		}
 	}
 
-	threshold(actor: CharacterGURPS | Mook): number {
+	// threshold(actor: CharacterGURPS | Mook): number {
+	// 	return evaluateToNumber(this.expression, actor)
+	// }
+	threshold(actor: ActorDataModel | Mook): number {
 		return evaluateToNumber(this.expression, actor)
 	}
 

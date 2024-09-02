@@ -10,8 +10,11 @@ import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./temp
 import { AbstractSkillTemplate, AbstractSkillTemplateSchema } from "./templates/abstract-skill.ts"
 import { SkillDefaultSchema, SkillDefault, Study, SheetSettings } from "@system"
 import { AttributeDifficulty, AttributeDifficultySchema } from "./fields/attribute-difficulty.ts"
-import { ErrorGURPS, LocalizeGURPS, TooltipGURPS, difficulty } from "@util"
-import { SkillLevel } from "./helpers.ts"
+import { ErrorGURPS, LocalizeGURPS, StringBuilder, TooltipGURPS, difficulty, display } from "@util"
+import { SkillLevel, addTooltipForSkillLevelAdj } from "./helpers.ts"
+import { ActorTemplateType } from "../actor/types.ts"
+import { TechniqueData } from "./technique.ts"
+import { ItemGURPS2 } from "@module/document/item.ts"
 
 class SkillData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -51,6 +54,64 @@ class SkillData extends ItemDataModel.mixin(
 		}) as SkillSchema
 	}
 
+	secondaryText(optionChecker: (option: display.Option) => boolean): string {
+		const buffer = new StringBuilder()
+		const settings = SheetSettings.for(this.parent.actor)
+		if (optionChecker(settings.modifiers_display)) {
+			buffer.appendToNewLine(this.modifierNotes)
+		}
+		if (optionChecker(settings.notes_display)) {
+			buffer.appendToNewLine(this.processedNotes)
+			buffer.appendToNewLine(Study.progressText(Study.resolveHours(this), this.study_hours_needed, false))
+		}
+		addTooltipForSkillLevelAdj(optionChecker, settings, this.level, buffer)
+		return buffer.toString()
+	}
+
+	get modifierNotes(): string {
+		if (this.difficulty.difficulty !== difficulty.Level.Wildcard) {
+			const defSkill = this.defaultSkill
+			if (defSkill !== null && this.defaulted_from !== null) {
+				return LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.SkillDefault, {
+					name: defSkill.system.processedName,
+					modifier: this.defaulted_from.modifier.signedString(),
+				})
+			}
+		}
+		return ""
+	}
+
+	get defaultSkill():
+		| (ItemGURPS2 &
+				({ type: ItemType.Skill; system: SkillData } | { type: ItemType.Technique; system: TechniqueData }))
+		| null {
+		const actor = this.actor as any
+		if (!actor) return null
+		if (!actor.isOfType(ActorType.Character)) return null
+		if (!this.defaulted_from) return null
+		if (!this.defaulted_from.skillBased) return null
+		return actor.system.bestSkillNamed(
+			this.defaulted_from.nameWithReplacements(this.nameableReplacements),
+			this.defaulted_from.specializationWithReplacements(this.nameableReplacements),
+			true,
+		)
+	}
+
+	override adjustedPoints(tooltip: TooltipGURPS | null = null, temporary = false): number {
+		let points = this.points
+		if (this.actor?.hasTemplate(ActorTemplateType.Features)) {
+			points += this.actor.system.skillPointBonusFor(
+				this.nameWithReplacements,
+				this.specializationWithReplacements,
+				this.tags,
+				tooltip,
+				temporary,
+			)
+			points = Math.max(points, 0)
+		}
+		return points
+	}
+
 	/** Calculates level, relative level, and relevant tooltip based on current state of
 	 *  data. Does not transform the object.
 	 */
@@ -74,7 +135,7 @@ class SkillData extends ItemDataModel.mixin(
 				level = Math.trunc(level / 2) + 5
 			}
 			if (this.difficulty.difficulty === difficulty.Level.Wildcard) {
-				points /= 3
+				points = Math.trunc(points / 3)
 			} else if (def !== null && def.points > 0) {
 				points += def.points
 			}

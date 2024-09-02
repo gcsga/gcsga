@@ -1,12 +1,10 @@
 import {
 	ErrorGURPS,
-	EvalEmbeddedRegex,
 	StringBuilder,
 	affects,
 	align,
 	cell,
 	display,
-	replaceAllStringFunc,
 	selfctrl,
 	tmcost,
 } from "@util"
@@ -77,6 +75,10 @@ class TraitData extends ItemDataModel.mixin(
 			round_down: new fields.BooleanField<boolean>({ initial: false }),
 			can_level: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
 		}) as unknown as TraitSchema
+	}
+
+	get isLeveled(): boolean {
+		return this.can_level
 	}
 
 	override get cellData() {
@@ -226,10 +228,6 @@ class TraitData extends ItemDataModel.mixin(
 		return buffer.toString()
 	}
 
-	get processedNotes(): string {
-		return replaceAllStringFunc(EvalEmbeddedRegex, this.notesWithReplacements, this.parent.actor)
-	}
-
 	// Returns rendered notes from modifiers
 	get modifierNotes(): string {
 		const buffer = new StringBuilder()
@@ -266,14 +264,6 @@ class TraitData extends ItemDataModel.mixin(
 	}
 
 	/** Replacements */
-	get nameWithReplacements(): string {
-		return Nameable.apply(this.name, this.nameableReplacements)
-	}
-
-	get notesWithReplacements(): string {
-		return Nameable.apply(this.notes, this.nameableReplacements)
-	}
-
 	get userDescWithReplacements(): string {
 		return Nameable.apply(this.userdesc, this.nameableReplacements)
 	}
