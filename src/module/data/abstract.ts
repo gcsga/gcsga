@@ -301,16 +301,17 @@ interface SystemDataModel<TDocument extends foundry.abstract.Document, TSchema e
 /**
  * Variant of the SystemDataModel with some extra actor-specific handling.
  */
-class ActorDataModel<TSchema extends fields.DataSchema = fields.DataSchema> extends SystemDataModel<
-	ActorGURPS2,
-	TSchema
-> {
+class ActorDataModel<TSchema extends ActorDataSchema = ActorDataSchema> extends SystemDataModel<ActorGURPS2, TSchema> {
 	isOfType<T extends ActorType>(...types: T[]): this is ActorDataInstances[T] {
 		return types.some(t => this.parent.type === t)
 	}
+
+	static override defineSchema(): ActorDataSchema {
+		return {}
+	}
 }
 
-interface ActorDataModel<TSchema extends fields.DataSchema>
+interface ActorDataModel<TSchema extends ActorDataSchema>
 	extends SystemDataModel<ActorGURPS2, TSchema>,
 		ModelPropsFromSchema<ActorDataSchema> {}
 
@@ -354,6 +355,10 @@ class ItemDataModel<TSchema extends ItemDataSchema = ItemDataSchema> extends Sys
 			{ inplace: false },
 		),
 	)
+
+	get nameWithReplacements(): string {
+		throw ErrorGURPS(`Accessor "nameWithRplacements" must be implemented`)
+	}
 }
 
 interface ItemDataModel<TSchema extends ItemDataSchema>

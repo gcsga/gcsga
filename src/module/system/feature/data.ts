@@ -20,7 +20,7 @@ export type BaseFeatureSchema<TType extends feature.Type> = {
 	type: fields.StringField<TType, TType, true>
 	amount: fields.NumberField<number, number, true, false>
 	per_level: fields.BooleanField
-	effective: fields.BooleanField<boolean, boolean, false>
+	temporary: fields.BooleanField<boolean, boolean, true, false, true>
 }
 
 // export type LeveledAmountSchema = {

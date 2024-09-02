@@ -1,7 +1,7 @@
 import { SystemDataModel, ActorDataModel } from "@module/data/abstract.ts"
 import { ActorType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { ItemGURPS2 } from "./item.ts"
-import { ActorDataInstances } from "@module/data/actor/types.ts"
+import { ActorDataInstances, ActorDataTemplates, ActorTemplateType } from "@module/data/actor/types.ts"
 import { Evaluator } from "@module/util/index.ts"
 
 class ActorGURPS2<TParent extends TokenDocument | null = TokenDocument | null> extends Actor<TParent> {
@@ -10,6 +10,13 @@ class ActorGURPS2<TParent extends TokenDocument | null = TokenDocument | null> e
 	 */
 	isOfType<T extends ActorType>(...types: T[]): this is { system: ActorDataInstances[T] } {
 		return types.some(t => this.type === t)
+	}
+
+	/**
+	 * Type safe way of verifying if an Item contains a template
+	 */
+	hasTemplate<T extends ActorTemplateType>(template: T): this is { system: ActorDataTemplates[T] } {
+		return this.system.constructor._schemaTemplates.some(t => t.name === template)
 	}
 
 	// Resolves an embedded expression

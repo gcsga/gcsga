@@ -27,7 +27,6 @@ abstract class BaseFeature<
 	private declare _owner: ItemGURPS2 | null
 	private declare _subOwner: ItemGURPS2 | null
 
-	declare effective: boolean
 	declare featureLevel: number
 
 	static get TYPES(): Readonly<Record<feature.Type, ConstructorOf<Feature>>> {
@@ -84,7 +83,7 @@ abstract class BaseFeature<
 			}),
 			amount: new fields.NumberField({ required: true, integer: true, initial: 1 }),
 			per_level: new fields.BooleanField({ initial: false }),
-			effective: new fields.BooleanField({ required: false, initial: false }),
+			temporary: new fields.BooleanField({ required: true, nullable: false, initial: false }),
 		}
 	}
 
@@ -92,7 +91,6 @@ abstract class BaseFeature<
 		super(data, options)
 		this._owner = null
 		this._subOwner = null
-		this.effective = false
 
 		this.featureLevel = 0
 		// this.leveledAmount = new LeveledAmount(data)
@@ -105,8 +103,8 @@ abstract class BaseFeature<
 	set owner(owner: ItemGURPS2 | null) {
 		this._owner = owner
 		if (owner !== null) {
-			if (owner.isOfType(ItemType.Effect, ItemType.Condition)) this.effective = true
-			else this.effective = false
+			if (owner.isOfType(ItemType.Effect, ItemType.Condition)) this.temporary = true
+			else this.temporary = false
 		}
 	}
 
@@ -131,7 +129,6 @@ abstract class BaseFeature<
 
 	get parentName(): string {
 		if (!this.owner) return LocalizeGURPS.translations.gurps.misc.unknown
-		// const owner = this.owner.formattedName
 		const owner = this.owner.system.nameWithReplacements
 		if (!this.subOwner) return owner
 		return `${owner} (${this.subOwner.system.nameWithReplacements})`

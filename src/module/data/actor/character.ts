@@ -1,7 +1,6 @@
 import { ActorDataModel } from "../abstract.ts"
 import fields = foundry.data.fields
 import {
-	SheetSettingsSchema,
 	SheetSettings,
 	AttributeGURPS,
 	ResourceTracker,
@@ -9,15 +8,6 @@ import {
 	AttributeSchema,
 	ResourceTrackerSchema,
 	MoveTypeSchema,
-	AttributeBonus,
-	CostReduction,
-	DRBonus,
-	SkillBonus,
-	SkillPointBonus,
-	SpellBonus,
-	WeaponBonus,
-	MoveBonus,
-	SpellPointBonus,
 } from "@system"
 import { CharacterManeuver } from "@system/maneuver-manager.ts"
 import { PointsRecord, PointsRecordSchema } from "./fields/points-record.ts"
@@ -26,18 +16,19 @@ import { equalFold } from "@module/util/index.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { SkillData } from "../item/skill.ts"
 import { TechniqueData } from "../item/technique.ts"
-import { TooltipGURPS, skillsel } from "@util"
-import { Nameable } from "@module/util/nameable.ts"
+import {
+	FeatureHolderTemplate,
+	FeatureHolderTemplateSchema,
+	SettingsHolderTemplate,
+	SettingsHolderTemplateSchema,
+} from "./templates/index.ts"
 
-class CharacterData extends ActorDataModel {
-	declare features: CharacterFeatures
-
+class CharacterData extends ActorDataModel.mixin(FeatureHolderTemplate, SettingsHolderTemplate) {
 	static override defineSchema(): CharacterSchema {
 		const fields = foundry.data.fields
 
 		return this.mergeSchema(super.defineSchema(), {
 			version: new fields.NumberField({ required: true, nullable: false, initial: 5 }),
-			settings: new fields.SchemaField<SheetSettingsSchema>(SheetSettings.defineSchema()),
 			created_date: new fields.StringField(),
 			modified_date: new fields.StringField(),
 			profile: new fields.SchemaField<CharacterProfileSchema>({
@@ -73,6 +64,14 @@ class CharacterData extends ActorDataModel {
 		}) as CharacterSchema
 	}
 
+	/**
+	 * Return the skill with the highest level matching the provided parameters.
+	 * @param name - Name of skill/technique to search for
+	 * @param specialization - Specialization to search for. Can be blank.
+	 * @param requirePoints - Does the skill need to have 1 or more points assigned?
+	 * @param excludes - Skills to exclude from the search
+	 * @returns Skill or Technique
+	 */
 	bestSkillNamed(
 		name: string,
 		specialization: string,
@@ -94,6 +93,14 @@ class CharacterData extends ActorDataModel {
 		return best as any
 	}
 
+	/**
+	 * Return array of skills matching the provieed parameters.
+	 * @param name - Name of skill/technique to search for
+	 * @param specialization - Specialization to search for. Can be blank.
+	 * @param requirePoints - Does the skill need to have 1 or more points assigned?
+	 * @param excludes - Skills to exclude from the search
+	 * @returns Array of Skills/Techniques
+	 */
 	skillNamed(
 		name: string,
 		specialization: string,
@@ -116,47 +123,25 @@ class CharacterData extends ActorDataModel {
 		})
 		return list as any
 	}
-
-	skillBonusFor(name: string, specialization: string, tags: string[], tooltip: TooltipGURPS): number {
-		let total = 0
-		for (const bonus of this.features.skillBonuses) {
-			if (bonus.selection_type === skillsel.Type.Name) {
-				let replacements: Map<string, string> = new Map()
-				const na = bonus.owner
-				if (Nameable.isAccesser(na)) {
-					replacements = na.nameableReplacements
-				}
-				if (
-					bonus.name.matches(replacements, name) &&
-					bonus.specialization.matches(replacements, specialization) &&
-					bonus.tags.matchesList(replacements, ...tags)
-				) {
-					total += bonus.adjustedAmount
-					bonus.addToTooltip(tooltip)
-				}
-			}
-		}
-		return total
-	}
 }
 
 interface CharacterData extends Omit<ModelPropsFromSchema<CharacterSchema>, "settings"> {
 	settings: SheetSettings
 }
 
-type CharacterSchema = {
-	version: fields.NumberField<number, number, true, false, true>
-	settings: fields.SchemaField<SheetSettingsSchema>
-	created_date: fields.StringField
-	modified_date: fields.StringField
-	profile: fields.SchemaField<CharacterProfileSchema>
-	attributes: fields.ArrayField<fields.SchemaField<AttributeSchema>>
-	resource_trackers: fields.ArrayField<fields.SchemaField<ResourceTrackerSchema>>
-	move_types: fields.ArrayField<fields.SchemaField<MoveTypeSchema>>
-	move: fields.SchemaField<CharacterMoveSchema>
-	total_points: fields.NumberField<number, number, true, false>
-	points_record: fields.ArrayField<fields.SchemaField<PointsRecordSchema>>
-}
+type CharacterSchema = FeatureHolderTemplateSchema &
+	SettingsHolderTemplateSchema & {
+		version: fields.NumberField<number, number, true, false, true>
+		created_date: fields.StringField
+		modified_date: fields.StringField
+		profile: fields.SchemaField<CharacterProfileSchema>
+		attributes: fields.ArrayField<fields.SchemaField<AttributeSchema>>
+		resource_trackers: fields.ArrayField<fields.SchemaField<ResourceTrackerSchema>>
+		move_types: fields.ArrayField<fields.SchemaField<MoveTypeSchema>>
+		move: fields.SchemaField<CharacterMoveSchema>
+		total_points: fields.NumberField<number, number, true, false>
+		points_record: fields.ArrayField<fields.SchemaField<PointsRecordSchema>>
+	}
 
 type CharacterProfileSchema = {
 	player_name: fields.StringField
@@ -183,30 +168,5 @@ type CharacterMoveSchema = {
 	posture: fields.StringField
 	type: fields.StringField
 }
-
-type CharacterFeatures = {
-	attributeBonuses: AttributeBonus[]
-	costReductions: CostReduction[]
-	drBonuses: DRBonus[]
-	skillBonuses: SkillBonus[]
-	skillPointBonuses: SkillPointBonus[]
-	spellBonuses: SpellBonus[]
-	spellPointBonuses: SpellPointBonus[]
-	weaponBonuses: WeaponBonus[]
-	moveBonuses: MoveBonus[]
-}
-
-// type PointBreakdownSchema = {
-// 	overspent: fields.BooleanField
-// 	ancestry: fields.NumberField<number, number, true, false, true>
-// 	attributes: fields.NumberField<number, number, true, false, true>
-// 	advantages: fields.NumberField<number, number, true, false, true>
-// 	disadvantages: fields.NumberField<number, number, true, false, true>
-// 	quirks: fields.NumberField<number, number, true, false, true>
-// 	skills: fields.NumberField<number, number, true, false, true>
-// 	spells: fields.NumberField<number, number, true, false, true>
-// 	total: fields.NumberField<number, number, true, false, true>
-// 	unspent: fields.NumberField<number, number, true, false, true>
-// }
 
 export { CharacterData }

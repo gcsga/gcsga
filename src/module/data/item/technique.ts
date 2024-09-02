@@ -56,6 +56,9 @@ class TechniqueData extends ItemDataModel.mixin(
 		}) as TechniqueSchema
 	}
 
+	/** Calculates level, relative level, and relevant tooltip based on current state of
+	 *  data. Does not transform the object.
+	 */
 	override calculateLevel(excludes: Set<string> = new Set()) {
 		const def = this.default ?? new SkillDefault({}, { parent: this.parent })
 

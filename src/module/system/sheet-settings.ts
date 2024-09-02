@@ -1,5 +1,5 @@
 import type { ActorGURPS, CharacterGURPS } from "@actor"
-import { ActorType, SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
+import { SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
 import { ErrorGURPS, LengthUnits, WeightUnits, display, paper, progression } from "@util"
 import { AttributeDefSchema } from "./attribute/data.ts"
 import { AttributeDef } from "./attribute/definition.ts"
@@ -11,6 +11,7 @@ import { ResourceTrackerDef } from "./resource-tracker/definition.ts"
 import fields = foundry.data.fields
 import { Mook } from "./mook/document.ts"
 import { ActorGURPS2 } from "@module/document/actor.ts"
+import { ActorTemplateType } from "@module/data/actor/types.ts"
 
 export interface PageSettings {
 	paper_size: paper.Size
@@ -146,14 +147,12 @@ class SheetSettings extends foundry.abstract.DataModel<CharacterGURPS, SheetSett
 	// }
 
 	static for(actor: ActorGURPS2 | Mook | null): SheetSettings {
-		if (actor instanceof ActorGURPS2)
-			if (actor.isOfType(ActorType.Character)) {
+		if (actor instanceof ActorGURPS2) {
+			if (actor.hasTemplate(ActorTemplateType.Settings)) {
 				return actor.system.settings
+			} else {
+				console.error(`Actor "${actor.name}" does not support Sheet Settings. Returning default settings.`)
 			}
-		if (actor) {
-			ErrorGURPS(
-				`Actor "${actor.name}" is of type "${actor.type}", which does not support Sheet Settings.Returning default settings.`,
-			)
 		} else {
 			ErrorGURPS(`Actor does not exist.Returning default settings.`)
 		}

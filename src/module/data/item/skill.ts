@@ -51,6 +51,9 @@ class SkillData extends ItemDataModel.mixin(
 		}) as SkillSchema
 	}
 
+	/** Calculates level, relative level, and relevant tooltip based on current state of
+	 *  data. Does not transform the object.
+	 */
 	override calculateLevel(_excludes: Set<string> = new Set()): SkillLevel {
 		let points = this.points
 		const name = this.nameWithReplacements
