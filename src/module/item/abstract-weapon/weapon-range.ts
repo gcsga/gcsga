@@ -1,9 +1,8 @@
-import { Int } from "@util/fxp.ts"
 import { WeaponField } from "./weapon-field.ts"
 import { wswitch } from "@util/enum/wswitch.ts"
 import { feature } from "@util/enum/feature.ts"
 import { AbstractWeaponGURPS } from "@item"
-import { TooltipGURPS } from "@util"
+import { Int, TooltipGURPS } from "@util"
 import { ActorType, ItemType } from "@module/data/constants.ts"
 export class WeaponRange extends WeaponField {
 	halfDamage = 0

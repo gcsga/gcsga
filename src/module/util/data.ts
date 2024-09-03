@@ -1,5 +1,4 @@
 import type { NumericCompareType, StringCompareType } from "@module/data/constants.ts"
-import type { WeightString } from "@util/weight.ts"
 import fields = foundry.data.fields
 
 type StringCriteriaSchema = {
@@ -14,7 +13,7 @@ type NumericCriteriaSchema = {
 
 type WeightCriteriaSchema = {
 	compare: fields.StringField<NumericCompareType, NumericCompareType, true, false, true>
-	qualifier: fields.StringField<WeightString, WeightString, true, false, true>
+	qualifier: fields.StringField<string, string, true, false, true>
 }
 
 export type { NumericCriteriaSchema, StringCriteriaSchema, WeightCriteriaSchema }

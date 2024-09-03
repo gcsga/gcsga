@@ -257,7 +257,7 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 		for (const bonus of this.features.weaponBonuses) {
 			if (
 				allowedFeatureTypes.has(bonus.type) &&
-				bonus.selection_type == wsel.Type.WithRequiredSkill &&
+				bonus.selection_type === wsel.Type.WithRequiredSkill &&
 				bonus.level.matches(rsl) &&
 				bonus.temporary === temporary
 			) {

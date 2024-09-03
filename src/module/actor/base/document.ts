@@ -41,8 +41,6 @@ import {
 	BodyGURPS,
 	CostReduction,
 	DRBonus,
-	Feature,
-	FeatureMap,
 	SkillBonus,
 	SkillPointBonus,
 	SpellBonus,
@@ -54,6 +52,7 @@ import * as R from "remeda"
 import { ActorFlagsGURPS, ActorSystemData, PrototypeTokenGURPS } from "./data.ts"
 import { ActorItemCollectionMap } from "./item-collection-map.ts"
 import type { ActorSheetGURPS } from "./sheet.ts"
+import { FeatureMap } from "@system/feature/types.ts"
 
 /**
  * Extend the base Actor class to implement additional logic specialized for GURPS.
@@ -158,6 +157,10 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 	): void {
 		super._onCreate(data, operation, userId)
 		LastActor.set(this)
+	}
+
+	hasTemplate(..._args: any[]): boolean {
+		return true
 	}
 
 	static override getDefaultArtwork(actorData: foundry.documents.ActorSource): {
@@ -574,7 +577,7 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 			if (skill.prereqsEmpty) continue
 			skill.unsatisfiedReason = ""
 			const tooltip = new TooltipGURPS()
-			let eqpPenalty = { value: false }
+			const eqpPenalty = { value: false }
 			satisfied = skill.prereqs.satisfied(this, skill, tooltip, eqpPenalty)
 
 			if (eqpPenalty) {
@@ -605,7 +608,7 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 			if (spell.prereqsEmpty) continue
 			spell.unsatisfiedReason = ""
 			const tooltip = new TooltipGURPS()
-			let eqpPenalty = { value: false }
+			const eqpPenalty = { value: false }
 			satisfied = spell.prereqs.satisfied(this, spell, tooltip, eqpPenalty)
 
 			if (eqpPenalty) {
@@ -637,7 +640,7 @@ class ActorGURPS<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS 
 				if (equipment.prereqsEmpty) continue
 				equipment.unsatisfiedReason = ""
 				const tooltip = new TooltipGURPS()
-				let eqpPenalty = { value: false }
+				const eqpPenalty = { value: false }
 				satisfied = equipment.prereqs.satisfied(actor, equipment, tooltip, eqpPenalty)
 				if (!satisfied) {
 					equipment.unsatisfiedReason = tooltip.toString()

@@ -1,6 +1,7 @@
-import { Fraction } from "@util/fxp.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { equalFold } from "@module/util/string-criteria.ts"
+import { Fraction } from "@util/fraction.ts"
+import { Weight } from "@util/weight.ts"
 
 export namespace emweight {
 	export enum Type {
@@ -67,6 +68,15 @@ export namespace emweight {
 				if (equalFold(one, s)) return one
 			}
 			return Types[0]
+		}
+
+		export function format(T: Type, s: string, defUnits: Weight.Unit): string {
+			const t = Type.determineModifierWeightValueTypeFromString(T, s)
+			let result = Value.format(t, Value.extractFraction(t, s))
+			if (t === Value.Addition) {
+				result += " " + Weight.trailingUnitFromString(s, defUnits)
+			}
+			return result
 		}
 	}
 

@@ -52,7 +52,7 @@ class AttributeHolderTemplate extends ActorDataModel<AttributeHolderTemplateSche
 		let total = 0
 		for (const attribute of this.attributes) {
 			const t = attribute.currentThreshold
-			if (t !== null && t.ops.includes(op)) total++
+			if (t !== null && t.ops.includes(op)) total += 1
 		}
 		return total
 	}

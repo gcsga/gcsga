@@ -1,8 +1,7 @@
 import { wswitch } from "@util/enum/wswitch.ts"
-import { Int } from "@util/fxp.ts"
 import { feature } from "@util/enum/feature.ts"
 import { AbstractWeaponGURPS } from "./document.ts"
-import { TooltipGURPS } from "@util"
+import { Int, TooltipGURPS } from "@util"
 
 export class WeaponROFMode {
 	shotsPerAttack = 0

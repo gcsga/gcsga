@@ -58,7 +58,7 @@ class TraitData extends ItemDataModel.mixin(
 				initial: selfctrl.Roll.NoCR,
 				nullable: false,
 			}),
-			cr_adj: new fields.StringField<selfctrl.Adjustment>({
+			cr_adj: new fields.StringField({
 				choices: selfctrl.Adjustments,
 				initial: selfctrl.Adjustment.NoCRAdj,
 			}),
@@ -131,7 +131,7 @@ class TraitData extends ItemDataModel.mixin(
 		let multiplier = selfctrl.Roll.multiplier(this.cr)
 		for (const mod of this.allModifiers) {
 			mod.system.trait = this.parent
-			let modifier = mod.system.costModifier
+			const modifier = mod.system.costModifier
 
 			switch (mod.system.cost_type) {
 				case tmcost.Type.Percentage: {
@@ -174,7 +174,7 @@ class TraitData extends ItemDataModel.mixin(
 			}
 		}
 		let modifiedBasePoints = basePoints
-		let leveledPoints = pointsPerLevel * levels
+		const leveledPoints = pointsPerLevel * levels
 		if (baseEnh !== 0 || baseLim !== 0 || levelEnh !== 0 || levelLim !== 0) {
 			if (SheetSettings.for(this.parent.actor).use_multiplicative_modifiers) {
 				if (baseEnh === levelEnh && baseLim === levelLim) {
@@ -283,7 +283,6 @@ class TraitData extends ItemDataModel.mixin(
 	}
 }
 
-//@ts-expect-error we'll fix this at some point
 interface TraitData extends Omit<ModelPropsFromSchema<TraitSchema>, "study"> {
 	study: Study[]
 }

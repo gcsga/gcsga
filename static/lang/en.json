@@ -90,7 +90,8 @@
 			"PageRefTooltip": "A reference to the book and page the item appears on e.g. B22 would refer to \"Basic Set\", page 22",
 			"LibSrcTooltip": "Indicates whether the data matches the source library it came from",
 			"ModifierEnabledTooltip": "Whether this modifier is enabled. Modifiers that are not enabled do not apply any features they may normally contribute."
-		}
+		},
+		"RatedStrength": "Rated ST {value}"
 	},
 	"gurps": {
 		"ok": "OK",

@@ -1,8 +1,7 @@
-import { Int } from "@util/fxp.ts"
 import { WeaponField } from "./weapon-field.ts"
 import { feature } from "@util/enum/feature.ts"
 import { AbstractWeaponGURPS } from "./document.ts"
-import { TooltipGURPS } from "@util"
+import { Int, TooltipGURPS } from "@util"
 
 export class WeaponRecoil extends WeaponField {
 	shot = 0

@@ -1,5 +1,5 @@
 import { LocalizeGURPS } from "../../util/localize.ts"
-import { Weight, WeightString, WeightUnits } from "../../util/weight.ts"
+import { Weight } from "../../util/weight.ts"
 import { AllNumericCompareTypes, NumericCompareType } from "@module/data/constants.ts"
 import type { ItemGURPS } from "@item"
 import type { WeightCriteriaSchema } from "./data.ts"
@@ -14,7 +14,7 @@ class WeightCriteria extends foundry.abstract.DataModel<ItemGURPS, WeightCriteri
 				initial: NumericCompareType.AnyNumber,
 			}),
 			qualifier: new fields.StringField({
-				initial: `0 ${WeightUnits.Pound}`,
+				initial: `0 ${Weight.Unit.Pound}`,
 			}),
 		}
 	}
@@ -23,9 +23,9 @@ class WeightCriteria extends foundry.abstract.DataModel<ItemGURPS, WeightCriteri
 		super(data)
 	}
 
-	matches(n: WeightString): boolean {
+	matches(n: number): boolean {
 		const qualifier = Weight.fromString(this.qualifier)
-		const value = Weight.fromString(n)
+		const value = Weight.fromString(n.toString())
 		switch (this.compare) {
 			case NumericCompareType.AnyNumber:
 				return true

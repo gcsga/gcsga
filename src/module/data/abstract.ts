@@ -101,7 +101,7 @@ class SystemDataModel<
 		systemFlagsModel: null,
 	})
 
-	get metadata() {
+	get metadata(): SystemDataModelMetadata {
 		return this.constructor.metadata
 	}
 
@@ -139,7 +139,7 @@ class SystemDataModel<
 	/* -------------------------------------------- */
 
 	/** @inheritdoc */
-	static override cleanData(source: object, options?: Record<string, unknown>) {
+	static override cleanData(source: object, options?: Record<string, unknown>): SourceFromSchema<fields.DataSchema> {
 		this._cleanData(source, options)
 		return super.cleanData(source, options)
 	}
@@ -259,7 +259,7 @@ class SystemDataModel<
 	/**
 	 * Mix multiple templates with the base type.
 	 */
-	static mixin<T extends Array<typeof SystemDataModel<any, any>>>(...templates: T): CombinedClass<T> {
+	static mixin<T extends (typeof SystemDataModel<any, any>)[]>(...templates: T): CombinedClass<T> {
 		for (const template of templates) {
 			if (!(template.prototype instanceof SystemDataModel)) {
 				throw new Error(`${template.name} is not a subclass of SystemDataModel`)
@@ -287,7 +287,7 @@ class SystemDataModel<
 			}
 		}
 
-		return Base as any
+		return Base as unknown as CombinedClass<T>
 	}
 }
 
@@ -308,6 +308,7 @@ class ActorDataModel<TSchema extends ActorDataSchema = ActorDataSchema> extends 
 	isOfType<T extends ActorType>(...types: T[]): this is ActorDataInstances[T] {
 		return types.some(t => this.parent.type === t)
 	}
+
 	/**
 	 * Type safe way of verifying if an Actor contains a template
 	 */

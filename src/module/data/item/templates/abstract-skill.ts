@@ -49,7 +49,7 @@ class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 		return this.points
 	}
 
-	setLevel(level: number) {
+	setLevel(level: number): DeepPartial<this["_source"]> {
 		return this.updateSource({ points: this.getPointsForLevel(level) })
 	}
 
@@ -76,7 +76,7 @@ class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 		}
 	}
 
-	incrementLevel() {
+	incrementLevel(): void {
 		const basePoints = this.points + 1
 		let maxPoints = basePoints
 

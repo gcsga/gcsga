@@ -1,6 +1,6 @@
 import type { ActorGURPS, CharacterGURPS } from "@actor"
 import { SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
-import { ErrorGURPS, LengthUnits, WeightUnits, display, paper, progression } from "@util"
+import { ErrorGURPS, Length, Weight, display, paper, progression } from "@util"
 import { AttributeDefSchema } from "./attribute/data.ts"
 import { AttributeDef } from "./attribute/definition.ts"
 import { BodyGURPS, BodySchema, BodySource } from "./hit-location/index.ts"
@@ -45,8 +45,8 @@ type SheetSettingsSchema = {
 	body_type: fields.SchemaField<BodySchema>
 	move_types: fields.ArrayField<fields.SchemaField<MoveTypeDefSchema>>
 	damage_progression: fields.StringField<progression.Option>
-	default_length_units: fields.StringField<LengthUnits>
-	default_weight_units: fields.StringField<WeightUnits>
+	default_length_units: fields.StringField<Length.Unit>
+	default_weight_units: fields.StringField<Weight.Unit>
 	user_description_display: fields.StringField<display.Option>
 	modifiers_display: fields.StringField<display.Option>
 	notes_display: fields.StringField<display.Option>
@@ -105,8 +105,8 @@ class SheetSettings extends foundry.abstract.DataModel<CharacterGURPS, SheetSett
 				},
 			}),
 			damage_progression: new fields.StringField<progression.Option>({ initial: defaults.damage_progression }),
-			default_length_units: new fields.StringField<LengthUnits>({ initial: defaults.default_length_units }),
-			default_weight_units: new fields.StringField<WeightUnits>({ initial: defaults.default_weight_units }),
+			default_length_units: new fields.StringField<Length.Unit>({ initial: defaults.default_length_units }),
+			default_weight_units: new fields.StringField<Weight.Unit>({ initial: defaults.default_weight_units }),
 			user_description_display: new fields.StringField<display.Option>({
 				initial: defaults.user_description_display,
 			}),

@@ -4,9 +4,9 @@ import { ItemType } from "@data"
 import { DiceGURPS } from "@module/dice/index.ts"
 import { SheetSettings } from "@system/sheet-settings.ts"
 import { TooltipGURPS, feature, progression, stdmg } from "@util"
-import { Int } from "@util/fxp.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { AbstractWeaponGURPS } from "./document.ts"
+import { Int } from "@util/int.ts"
 
 export type WeaponDamageSchema = {
 	type: fields.StringField<string, string, true, false, true>

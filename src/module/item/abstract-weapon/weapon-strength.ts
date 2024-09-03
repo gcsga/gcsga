@@ -1,11 +1,10 @@
-import { Int } from "@util/fxp.ts"
 import { WeaponField } from "./weapon-field.ts"
 import { wswitch } from "@util/enum/wswitch.ts"
 import { feature } from "@util/enum/feature.ts"
 import { ItemType } from "@data"
 import { ItemGURPS } from "@item/base/document.ts"
 import { AbstractWeaponGURPS } from "./document.ts"
-import { TooltipGURPS } from "@util"
+import { Int, TooltipGURPS } from "@util"
 
 export class WeaponStrength extends WeaponField {
 	min?: number

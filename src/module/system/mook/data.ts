@@ -2,7 +2,7 @@ import { ItemType } from "@data"
 import { WeaponDamageSchema } from "@item/abstract-weapon/weapon-damage.ts"
 import { AttributeDefSchema, AttributeSchema } from "@system/attribute/data.ts"
 import { MoveTypeDefSchema } from "@system/move-type/data.ts"
-import { WeightString, difficulty, progression, selfctrl } from "@util"
+import { Weight, difficulty, progression, selfctrl } from "@util"
 import fields = foundry.data.fields
 
 const regex_levels = /\s(\d+)$/
@@ -115,7 +115,7 @@ type MookEquipmentSchema = MookItemSchema & {
 	tech_level: fields.StringField<string, string, true, false, true>
 	legality_class: fields.StringField<string, string, true, false, true>
 	value: fields.NumberField<number, number, true, false, true>
-	weight: fields.StringField<WeightString, WeightString, true, false, true>
+	weight: fields.StringField<Weight.String, Weight.String, true, false, true>
 	uses: fields.NumberField<number, number, true, false, true>
 	max_uses: fields.NumberField<number, number, true, false, true>
 }

@@ -1,6 +1,6 @@
 import { ActorGURPS } from "@actor"
 import { LocalizeGURPS, StringBuilder, feature, selfctrl } from "@util"
-import { ConditionalModifierBonus, Feature, ReactionBonus } from "./feature/index.ts"
+// import { ConditionalModifierBonus, Feature, ReactionBonus } from "./feature/index.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { ActorItemCollectionMap } from "@actor/base/item-collection-map.ts"
 

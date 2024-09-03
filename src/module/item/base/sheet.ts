@@ -1,14 +1,6 @@
 import { ErrorGURPS, LocalizeGURPS, feature, generateId, htmlQuery, htmlQueryAll, prereq, study } from "@util"
 import { ItemGURPS } from "./document.ts"
-import {
-	AttributeBonus,
-	AttributeDefSchema,
-	AttributeGURPS,
-	Feature,
-	SkillDefault,
-	TraitPrereq,
-	WeaponBonus,
-} from "@system"
+import { AttributeDefSchema, AttributeGURPS, Feature, SkillDefault, TraitPrereq, WeaponBonus } from "@system"
 import { ActorType, ItemType, SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
 // import { ItemSubstitutionSheet } from "../../util/nameable.ts"
 import { PrereqList } from "@system/prereq/prereq-list.ts"
@@ -100,8 +92,8 @@ class ItemSheetGURPS<TItem extends ItemGURPS> extends ItemSheet<TItem, ItemSheet
 			if (!this.item.canContainFeatures()) return
 
 			const features = (this.item.system.features ?? []) as Feature[]
-			const att = new AttributeBonus({ type: feature.Type.AttributeBonus }, { parent: this.item })
-			features.push(att)
+			// const att = new AttributeBonus({ type: feature.Type.AttributeBonus }, { parent: this.item })
+			// features.push(att)
 			return this._updateObject(event, { ["system.features"]: features.map(e => e.toObject()) })
 		})
 

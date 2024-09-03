@@ -101,17 +101,17 @@ class TraitModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> 
 		]
 	}
 
-	///**  Replacements */
-	//get nameWithReplacements(): string {
+	/// **  Replacements */
+	// get nameWithReplacements(): string {
 	//	return Nameable.apply(this.system.name, this.nameableReplacements)
-	//}
+	// }
 	//
-	//get notesWithReplacements(): string {
+	// get notesWithReplacements(): string {
 	//	return Nameable.apply(this.system.notes, this.nameableReplacements)
-	//}
+	// }
 	//
-	///** Nameables */
-	//fillWithNameableKeys(m: Map<string, string>, existing?: Map<string, string>): void {
+	/// ** Nameables */
+	// fillWithNameableKeys(m: Map<string, string>, existing?: Map<string, string>): void {
 	//	if (!this.enabled) return
 	//	if (!existing) existing = this.nameableReplacements
 	//
@@ -120,7 +120,7 @@ class TraitModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> 
 	//	for (const feature of this.features) {
 	//		feature.fillWithNameableKeys(m, existing)
 	//	}
-	//}
+	// }
 }
 
 interface TraitModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | null> extends ItemGURPS<TParent> {

@@ -1,6 +1,6 @@
 import { ActorGURPS2 } from "@module/document/actor.ts"
 import { SheetSettings, SkillDefault } from "@system"
-import { LocalizeGURPS, StringBuilder, TooltipGURPS, WeightString, WeightUnits, difficulty, display, emcost } from "@util"
+import { Int, LocalizeGURPS, StringBuilder, TooltipGURPS, Weight, difficulty, display, emcost, emweight } from "@util"
 import { ActorType, ItemType, gid } from "../constants.ts"
 import { EquipmentModifierData } from "./equipment-modifier.ts"
 import { EquipmentFieldsTemplate } from "./templates/equipment-fields.ts"
@@ -138,11 +138,69 @@ function valueAdjustedForModifiers(
 
 function weightAdjustedForModifiers(
 	equipment: { system: EquipmentFieldsTemplate },
-	weight: WeightString,
+	weight: string,
 	modifiers: { system: EquipmentModifierData }[],
-	units: WeightUnits,
+	defUnits: Weight.Unit,
 ): number {
 	let percentages = 0
+	let [w] = Weight.fromString(weight)
+
+	for (const mod of modifiers) {
+		mod.system.equipment = equipment
+		if (mod.system.weight_type === emweight.Type.Original) {
+			const t = emweight.Type.determineModifierWeightValueTypeFromString(
+				emweight.Type.Original,
+				mod.system.weight,
+			)
+			const f = emweight.Value.extractFraction(t, mod.system.weight)
+			f.normalize()
+			f.numerator *= mod.system.weightMultiplier
+			const amt = f.value
+			if (t === emweight.Value.Addition) {
+				w += Weight.toPounds(amt, Weight.trailingUnitFromString(mod.system.weight, defUnits))
+			} else {
+				percentages += amt
+			}
+		}
+	}
+
+	if (percentages !== 0) w += Int.fromStringForced(weight) * (percentages / 100)
+
+	// Apply all base
+	w = processMultiplyAddWeightStep(equipment, emweight.Type.Base, w, defUnits, modifiers)
+
+	// Apply all final base
+	w = processMultiplyAddWeightStep(equipment, emweight.Type.FinalBase, w, defUnits, modifiers)
+
+	// Apply all final
+	w = processMultiplyAddWeightStep(equipment, emweight.Type.Final, w, defUnits, modifiers)
+
+	return Weight.from(Math.max(w, 0))
+}
+
+function extendedWeightAdjustedForModifiers(
+	equipment: { system: EquipmentFieldsTemplate },
+	defUnits: Weight.Unit,
+	qty: number,
+	baseWeight: string,
+	modifiers: { system: EquipmentModifierData }[],
+	features: Feature[],
+	children: { system: EquipmentFieldsTemplate }[],
+	forSkills: boolean,
+	weightIgnoredForSkills: boolean,
+): number {
+	if (qty <= 0) return 0
+
+	const base = 0
+	if (children.length !== 0) {
+		let contained = 0
+		for (const child of children) {
+			contained += Int.from(child.system.extendedWeight(forSkills, defUnits))
+		}
+		const [percentage, reduction] = [0, 0]
+		for (const feature of features) {
+		}
+	}
 }
 
 function processNonCFStep(
@@ -177,6 +235,36 @@ function processNonCFStep(
 	return cost
 }
 
+function processMultiplyAddWeightStep(
+	equipment: { system: EquipmentFieldsTemplate },
+	weightType: emweight.Type,
+	weight: number,
+	defUnits: Weight.Unit,
+	modifiers: { system: EquipmentModifierData }[],
+): number {
+	let sum = 0
+	for (const mod of modifiers) {
+		mod.system.equipment = equipment
+		if (mod.system.weight_type === weightType) {
+			const t = emweight.Type.determineModifierWeightValueTypeFromString(weightType, mod.system.weight)
+			const f = emweight.Value.extractFraction(t, mod.system.weight)
+			f.normalize()
+			f.numerator *= mod.system.weightMultiplier
+			switch (t) {
+				case emweight.Value.Addition:
+					sum += Weight.toPounds(f.value, Weight.trailingUnitFromString(mod.system.weight, defUnits))
+					break
+				case emweight.Value.PercentageMultiplier:
+					weight = Int.from((weight * f.numerator) / (f.denominator * 100))
+					break
+				case emweight.Value.Multiplier:
+					weight = Int.from((weight * f.numerator) / f.denominator)
+			}
+		}
+	}
+	return (weight += sum)
+}
+
 interface SkillLevel {
 	level: number
 	relativeLevel: number
@@ -190,5 +278,6 @@ export {
 	addTooltipForSkillLevelAdj,
 	valueAdjustedForModifiers,
 	weightAdjustedForModifiers,
+	extendedWeightAdjustedForModifiers,
 }
 export type { SkillLevel }

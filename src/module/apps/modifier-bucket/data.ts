@@ -1,5 +1,5 @@
 import { ModifierItem, RollModifierTags, SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
-import { Length, LengthUnits, LocalizeGURPS, objectHasKey } from "@util"
+import { Length, LocalizeGURPS, objectHasKey } from "@util"
 
 export function loadModifiers(): void {
 	const books = game.settings.get(SYSTEM_NAME, SETTINGS.BASE_BOOKS)
@@ -306,7 +306,7 @@ export function loadModifiers(): void {
 			[-13, 300],
 			[-14, 500],
 		].map(([r, d]) => {
-			const adjDistance = Length.format(Length.toInches(d, LengthUnits.Yard), LengthUnits.Yard)
+			const adjDistance = Length.format(Length.toInches(d, Length.Unit.Yard), Length.Unit.Yard)
 			return {
 				tags: [RollModifierTags.Range],
 				modifier: r,
@@ -319,7 +319,7 @@ export function loadModifiers(): void {
 			tags: [RollModifierTags.Range],
 			modifier: -15,
 			id: LocalizeGURPS.format(LocalizeGURPS.translations.gurps.modifier.speed.range, {
-				distance: `${Length.format(Length.toInches(500, LengthUnits.Yard), LengthUnits.Yard)}+`,
+				distance: `${Length.format(Length.toInches(500, Length.Unit.Yard), Length.Unit.Yard)}+`,
 			}),
 		},
 	]
@@ -352,7 +352,7 @@ export function loadModifiers(): void {
 	]
 
 	const modifiersSpeedTens: ModifierItem[] = [...Array(50).keys()].map(e => {
-		const adjDistance = Length.format(Length.toInches((e + 1) * 10, LengthUnits.Yard), LengthUnits.Yard)
+		const adjDistance = Length.format(Length.toInches((e + 1) * 10, Length.Unit.Yard), Length.Unit.Yard)
 		return {
 			tags: [RollModifierTags.Range],
 			modifier: -(e + 1),
@@ -389,13 +389,13 @@ export function loadModifiers(): void {
 		].map(([m, l]) => {
 			let size = ""
 			if (l < 12) {
-				size = `${Length.format(l, LengthUnits.Inch)} (${Length.format(l, LengthUnits.Centimeter)})`
+				size = `${Length.format(l, Length.Unit.Inch)} (${Length.format(l, Length.Unit.Centimeter)})`
 			} else if (l < 12 * 3) {
-				size = `${Length.format(l, LengthUnits.Feet)} (${Length.format(l, LengthUnits.Centimeter)})`
+				size = `${Length.format(l, Length.Unit.Feet)} (${Length.format(l, Length.Unit.Centimeter)})`
 			} else {
-				size = `${Length.format(l, LengthUnits.Yard)}/${Length.format(l, LengthUnits.Feet)} (${Length.format(
+				size = `${Length.format(l, Length.Unit.Yard)}/${Length.format(l, Length.Unit.Feet)} (${Length.format(
 					l,
-					LengthUnits.Meter,
+					Length.Unit.Meter,
 				)})`
 			}
 			return {

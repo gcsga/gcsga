@@ -1,7 +1,6 @@
 import { ManeuverID, NumericCompareType, StringCompareType } from "@module/data/constants.ts"
 import { ItemKind } from "@module/data/index.ts"
 import { MoveTypeOverrideConditionType, ThresholdOp } from "@system"
-import { LengthUnits, WeightUnits } from "@util"
 import {
 	affects,
 	attribute,
@@ -27,6 +26,8 @@ import {
 	wswitch,
 } from "@util/enum/index.ts"
 import { StrictTIDString } from "../tid.ts"
+import { Weight } from "@util/weight.ts"
+import { Length } from "@util/length.ts"
 
 // const GCS_FILE_VERSION = 4
 const GCS_FILE_VERSIONS = [4, 5]
@@ -50,11 +51,11 @@ export enum ImportedItemType {
 	EquipmentModifierContainer = "eqp_modifier_container",
 	Note = "note",
 	NoteContainer = "note_container",
-	MeleeWeapon = "melee_weapon",
-	RangedWeapon = "ranged_weapon",
+	WeaponMelee = "melee_weapon",
+	WeaponRanged = "ranged_weapon",
 }
 
-type ImportedWeight = `${number} ${WeightUnits}`
+type ImportedWeight = `${number} ${Weight.Unit}`
 
 type ImportedStringCriteria = {
 	compare?: StringCompareType
@@ -703,8 +704,8 @@ interface ImportedSheetSettings {
 	attributes?: ImportedAttributeDef[]
 	body_type?: ImportedBody
 	damage_progression: progression.Option
-	default_length_units: LengthUnits
-	default_weight_units: WeightUnits
+	default_length_units: Length.Unit
+	default_weight_units: Weight.Unit
 	user_description_display: display.Option
 	modifiers_display: display.Option
 	notes_display: display.Option

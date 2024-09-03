@@ -1,5 +1,5 @@
 import { RollType } from "@module/data/constants.ts"
-import { Int } from "@util/fxp.ts"
+import { Int } from "@util/int.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 
 export namespace selfctrl {

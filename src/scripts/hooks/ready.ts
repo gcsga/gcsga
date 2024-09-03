@@ -9,6 +9,7 @@ import { SetGameGURPS } from "@scripts/set-game-gurps.ts"
 import { storeInitialWorldVersions } from "@scripts/store-versions.ts"
 import { ColorSettings } from "@system/settings/colors.ts"
 import { createDragImage } from "@util/drag-image.ts"
+import { Int } from "@util/int.ts"
 
 export const Ready = {
 	listen: (): void => {
@@ -26,8 +27,7 @@ export const Ready = {
 			globalThis.GURPS = {
 				LastActor: await LastActor.get(),
 				LastToken: await LastActor.getToken(),
-				eval: evaluateToNumber,
-				item: ItemGURPS2,
+				Int,
 			}
 
 			// Determine whether a system migration is required and feasible

@@ -189,13 +189,10 @@ class SkillData extends ItemDataModel.mixin(
 	}
 }
 
-interface SkillData
-	// @ts-expect-error type error
-	extends Omit<ModelPropsFromSchema<SkillSchema>, "study" | "defaulted_from" | "defaults" | "container"> {
+interface SkillData extends Omit<ModelPropsFromSchema<SkillSchema>, "study" | "defaulted_from" | "defaults"> {
 	study: Study[]
 	defaulted_from: SkillDefault | null
 	defaults: SkillDefault[]
-	container: string | null
 }
 
 type SkillSchema = ItemDataSchema &

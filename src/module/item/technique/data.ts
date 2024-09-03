@@ -2,12 +2,12 @@ import { AbstractContainerSource } from "@item/abstract-container/data.ts"
 import { AbstractSkillSystemData, AbstractSkillSystemSchema } from "@item/abstract-skill/data.ts"
 import { ItemType, NumericCompareType } from "@module/data/constants.ts"
 import { TechniqueDifficulty } from "@module/data/types.ts"
-import { BasePrereq, Feature, Prereq, SkillDefault, SkillDefaultSchema } from "@system"
+import { BasePrereq, Prereq, SkillDefault, SkillDefaultSchema } from "@system"
 import { difficulty, feature, prereq } from "@util"
 import { TechniqueGURPS } from "./document.ts"
 import fields = foundry.data.fields
-import { BaseFeature } from "@system/feature/base.ts"
 import { RecordField } from "@system/schema-data-fields.ts"
+import { Feature, FeatureTypes } from "@system/feature/types.ts"
 
 class TechniqueSystemData extends AbstractSkillSystemData<TechniqueGURPS, TechniqueSystemSchema> {
 	static override defineSchema(): TechniqueSystemSchema {
@@ -36,7 +36,7 @@ class TechniqueSystemData extends AbstractSkillSystemData<TechniqueGURPS, Techni
 					},
 				],
 			}),
-			features: new fields.ArrayField(new fields.TypedSchemaField(BaseFeature.TYPES)),
+			features: new fields.ArrayField(new fields.TypedSchemaField(FeatureTypes)),
 			replacements: new RecordField(
 				new fields.StringField({ required: true, nullable: false }),
 				new fields.StringField({ required: true, nullable: false }),

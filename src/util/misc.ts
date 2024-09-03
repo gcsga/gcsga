@@ -225,8 +225,8 @@ function getCurrentTime(): string {
 	return new Date().toISOString()
 }
 
-///** Disgusting hack to get arrays and attribute threshold op boolean values working with prepareFormData */
-//function prepareFormData(formData: Record<string, unknown>, object: object): Record<string, unknown> {
+/// ** Disgusting hack to get arrays and attribute threshold op boolean values working with prepareFormData */
+// function prepareFormData(formData: Record<string, unknown>, object: object): Record<string, unknown> {
 //	function setArrayProperty(a: object[], index: number, prop: string, value: unknown): object[] {
 //		if (prop.match(/.\d+./)) {
 //			const inArrayKey = prop.split(/.\d+./)[0]
@@ -276,7 +276,7 @@ function getCurrentTime(): string {
 //		}
 //	}
 //	return formData
-//}
+// }
 
 /** Get a Tech Level as a number, given a string */
 function extractTechLevel(str: string): number {

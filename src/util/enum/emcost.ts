@@ -1,6 +1,6 @@
-import { Int } from "@util/fxp.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { equalFold } from "@module/util/string-criteria.ts"
+import { Int } from "@util/int.ts"
 
 export namespace emcost {
 	export enum Type {
@@ -64,6 +64,11 @@ export namespace emcost {
 				if (one === cvt) return cvt
 			}
 			return permitted[0]
+		}
+
+		export function format(T: Type, s: string): string {
+			const cvt = fromString(T, s)
+			return Value.format(cvt, Value.extractValue(cvt, s))
 		}
 	}
 

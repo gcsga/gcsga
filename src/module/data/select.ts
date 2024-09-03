@@ -22,8 +22,8 @@ import {
 	wswitch,
 } from "@util/enum/index.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { allLengthUnits } from "@util/length.ts"
-import { allWeightUnits } from "@util/weight.ts"
+import { Length } from "@util/length.ts"
+import { Weight } from "@util/weight.ts"
 import { AllManeuverIDs, AllPostures, ApplicableConditions } from "./types.ts"
 import {
 	AllNumericCompareTypes,
@@ -200,12 +200,12 @@ export function prepareSelectOptions(): void {
 				[c]: display.Option.toString(c),
 			})
 		}, {}),
-		length_units: allLengthUnits.reduce((acc, c) => {
+		length_units: Length.Units.reduce((acc, c) => {
 			return Object.assign(acc, {
 				[c]: LocalizeGURPS.translations.gurps.length_units[c],
 			})
 		}, {}),
-		weight_units: allWeightUnits.reduce((acc, c) => {
+		weight_units: Weight.Units.reduce((acc, c) => {
 			return Object.assign(acc, {
 				[c]: LocalizeGURPS.translations.gurps.weight_units[c],
 			})

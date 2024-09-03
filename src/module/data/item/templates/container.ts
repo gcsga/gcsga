@@ -52,7 +52,7 @@ class ContainerTemplate extends ItemDataModel<ContainerTemplateSchema> {
 
 		// Otherwise use local document collection
 		return (this.parent.isEmbedded ? this.parent.actor!.items : game.items).reduce((collection, item) => {
-			if (item.system.container === this.parent) collection.set(item.id, item)
+			if (item.system.container === this.parent.id) collection.set(item.id, item)
 			return collection
 		}, new Collection())
 	}
@@ -79,7 +79,7 @@ class ContainerTemplate extends ItemDataModel<ContainerTemplateSchema> {
 			if (item.hasTemplate(ItemTemplateType.Container))
 				(await item.system.allContents).forEach(i => collection.set(i.id, i))
 			return collection
-			//@ts-expect-error is ok
+			// @ts-expect-error is ok
 		}, new Collection<ItemGURPS2>())
 	}
 

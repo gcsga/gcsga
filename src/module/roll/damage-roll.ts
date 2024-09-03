@@ -49,7 +49,7 @@ export class DamageRollGURPS {
 
 	get displayString(): string {
 		let result =
-			this.groups.flat ?? `${this.groups.dice}d${this.groups.sides === "6" ? "" : this.groups.sides ?? ""}`
+			this.groups.flat ?? `${this.groups.dice}d${this.groups.sides === "6" ? "" : (this.groups.sides ?? "")}`
 		result += this.groups.sign
 			? `${this.groups.sign.replace("-", String.fromCharCode(8211))}${this.groups.adds}`
 			: ""

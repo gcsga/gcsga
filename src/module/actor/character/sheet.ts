@@ -75,6 +75,35 @@ class CharacterSheetGURPS<TActor extends CharacterGURPS> extends ActorSheetGURPS
 				this.actor.setFlag(SYSTEM_NAME, ActorFlags.AutoEncumbrance, value)
 			})
 		}
+
+		const test = html.querySelector("#footer") as HTMLElement
+		if (test) {
+			ContextMenu.create(this, test, "*", [
+				{
+					name: "no group test",
+					icon: "",
+					classes: "",
+					group: "",
+					callback: () => {},
+				},
+				{
+					name: "group test 1",
+					group: "test",
+					icon: "",
+					classes: "",
+					callback: () => {},
+				},
+				{
+					name: "group test 2",
+					group: "test",
+					icon: "",
+					classes: "",
+					callback: () => {},
+				},
+			])
+		} else {
+			console.error("big fart")
+		}
 	}
 
 	override get template(): string {

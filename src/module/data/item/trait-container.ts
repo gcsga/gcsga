@@ -82,9 +82,8 @@ class TraitContainerData extends ItemDataModel.mixin(
 	}
 
 	get enabled(): boolean {
-		return !this.disabled && this.container?.isOfType(ItemType.TraitContainer)
-			? this.container.system.enabled
-			: true
+		const container = this.parent.container as ItemGURPS2 | null
+		return !this.disabled && container?.isOfType(ItemType.TraitContainer) ? container.system.enabled : true
 	}
 
 	/** Returns trait point cost adjusted for enablement and modifiers */

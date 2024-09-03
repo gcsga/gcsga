@@ -13,14 +13,20 @@ export class StringBuilder {
 		return this.buffer.join("") ?? ""
 	}
 
+	// Returns the length of the buffer as a string
 	get length(): number {
+		return this.toString().length
+	}
+
+	// Returns the number of items in the buffer
+	get size(): number {
 		return this.buffer.length
 	}
 
 	appendToNewLine(str: string): number {
-		if (str === "") return this.length
-		if (this.length !== 0) this.push("<br>")
+		if (str === "") return this.size
+		if (this.size !== 0) this.push("<br>")
 		this.push(str)
-		return this.length
+		return this.size
 	}
 }

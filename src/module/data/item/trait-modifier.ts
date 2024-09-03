@@ -28,7 +28,7 @@ class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, Fe
 	}
 
 	get trait(): (ItemGURPS2 & { system: TraitData }) | null {
-		//@ts-expect-error type definition error
+		// @ts-expect-error type definition error
 		return (this._trait as ItemGURPS2 & { system: TraitData }) ?? null
 	}
 
@@ -122,9 +122,7 @@ class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, Fe
 	}
 }
 
-interface TraitModifierData extends Omit<ModelPropsFromSchema<TraitModifierSchema>, "container"> {
-	container: string | null
-}
+interface TraitModifierData extends ModelPropsFromSchema<TraitModifierSchema> {}
 
 type TraitModifierSchema = BasicInformationTemplateSchema &
 	FeatureTemplateSchema &

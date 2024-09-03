@@ -26,7 +26,10 @@ class SkillContainerSystemData extends AbstractContainerSystemData<SkillContaine
 			tags: new fields.ArrayField(new foundry.data.fields.StringField()),
 			template_picker: new fields.SchemaField(TemplatePicker.defineSchema()),
 			open: new fields.BooleanField({ initial: true }),
-			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField({required: true, nullable: false})),
+			replacements: new RecordField(
+				new fields.StringField({ required: true, nullable: false }),
+				new fields.StringField({ required: true, nullable: false }),
+			),
 		}
 	}
 }
@@ -45,7 +48,10 @@ type SkillContainerSystemSchema = AbstractContainerSystemSchema & {
 	tags: fields.ArrayField<fields.StringField>
 	template_picker: fields.SchemaField<TemplatePickerSchema>
 	open: fields.BooleanField
-	replacements: RecordField<fields.StringField<string, string, true, false, false>,  fields.StringField<string,string,true,false,false>>
+	replacements: RecordField<
+		fields.StringField<string, string, true, false, false>,
+		fields.StringField<string, string, true, false, false>
+	>
 }
 
 type SkillContainerSystemSource = SourceFromSchema<SkillContainerSystemSchema>

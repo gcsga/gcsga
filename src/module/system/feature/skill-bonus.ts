@@ -10,7 +10,12 @@ class SkillBonus extends BaseFeature<SkillBonusSchema> {
 
 		return {
 			...super.defineSchema(),
-			type: new fields.StringField({ required: true, nullable: false,  blank: false,initial: feature.Type.SkillBonus }),
+			type: new fields.StringField({
+				required: true,
+				nullable: false,
+				blank: false,
+				initial: feature.Type.SkillBonus,
+			}),
 			selection_type: new fields.StringField({ choices: skillsel.Types, initial: skillsel.Type.Name }),
 			name: new fields.SchemaField(StringCriteria.defineSchema()),
 			specialization: new fields.SchemaField(StringCriteria.defineSchema()),

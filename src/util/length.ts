@@ -1,11 +1,52 @@
-import { Int } from "./fxp.ts"
+import { Int } from "./int.ts"
 import { LocalizeGURPS } from "./localize.ts"
 
-// Export type Weight = number
-export class Length {
-	static format(inches: number, unit: LengthUnits): string {
+export namespace Length {
+	export enum Unit {
+		FeetAndInches = "ft_in",
+		Inch = "in",
+		Feet = "ft",
+		Yard = "yd",
+		Mile = "mi",
+		Centimeter = "cm",
+		Kilometer = "km",
+		Meter = "m",
+		AstronomicalUnit = "au",
+		Lightyear = "ly",
+		Parsec = "pc",
+	}
+
+	export const Units = [
+		Unit.FeetAndInches,
+		Unit.Inch,
+		Unit.Feet,
+		Unit.Yard,
+		Unit.Mile,
+		Unit.Centimeter,
+		Unit.Kilometer,
+		Unit.Meter,
+		Unit.AstronomicalUnit,
+		Unit.Lightyear,
+		Unit.Parsec,
+	]
+
+	export const Symbols: Record<Unit, string[]> = {
+		[Unit.FeetAndInches]: [],
+		[Unit.Inch]: ["in", "inch", "inches"],
+		[Unit.Feet]: ["ft", "foot", "feet"],
+		[Unit.Yard]: ["yd", "yard", "yards"],
+		[Unit.Mile]: ["mi", "mile", "miles"],
+		[Unit.Centimeter]: ["cm", "centimeter", "centimeters", "centimetre", "centimetres"],
+		[Unit.Kilometer]: ["km", "kilometer", "kilometers", "kilometre", "kilometres"],
+		[Unit.Meter]: ["m", "meter", "meters", "metre", "metres"],
+		[Unit.AstronomicalUnit]: ["au", "astronomical unit", "astronomical units"],
+		[Unit.Lightyear]: ["ly", "lightyear", "lightyears"],
+		[Unit.Parsec]: ["pc", "parsec", "parsecs"],
+	}
+
+	export function format(inches: number, unit: Unit): string {
 		switch (unit) {
-			case LengthUnits.FeetAndInches: {
+			case Unit.FeetAndInches: {
 				const oneFoot = 12
 				const feet = Math.trunc(inches / oneFoot)
 				inches -= feet * oneFoot
@@ -17,31 +58,31 @@ export class Length {
 				if (inches > 0) buffer += `${inches.toString()}"`
 				return buffer
 			}
-			case LengthUnits.Inch:
-			case LengthUnits.Feet:
-			case LengthUnits.Yard:
-			case LengthUnits.Meter:
-			case LengthUnits.Mile:
-			case LengthUnits.Centimeter:
-			case LengthUnits.Kilometer:
-			case LengthUnits.AstronomicalUnit:
-			case LengthUnits.Lightyear:
-			case LengthUnits.Parsec:
-				return `${Math.round(Length.fromInches(inches, unit) * 100) / 100} ${Length.f(unit)}`
+			case Unit.Inch:
+			case Unit.Feet:
+			case Unit.Yard:
+			case Unit.Meter:
+			case Unit.Mile:
+			case Unit.Centimeter:
+			case Unit.Kilometer:
+			case Unit.AstronomicalUnit:
+			case Unit.Lightyear:
+			case Unit.Parsec:
+				return `${Math.round(Length.fromInches(inches, unit) * 100) / 100} ${f(unit)}`
 			default:
-				return Length.format(inches, LengthUnits.FeetAndInches)
+				return Length.format(inches, Unit.FeetAndInches)
 		}
 	}
 
-	static fromString(text: string): number {
+	export function fromString(text: string): number {
 		text = text.replace(/^\+/g, "")
-		allLengthUnits.forEach(unit => {
-			if (text.endsWith(Length.f(unit))) {
-				const r = new RegExp(`${Length.f(unit)}$`)
+		Units.forEach(unit => {
+			if (text.endsWith(f(unit))) {
+				const r = new RegExp(`${f(unit)}$`)
 				const value = parseInt(text.replace(r, ""))
-				return Length.toInches(value, unit) as Length
+				return Length.toInches(value, unit)
 			}
-			return Length.toInches(Int.fromString(text)[0], LengthUnits.Inch)
+			return Length.toInches(Int.fromString(text)[0], Unit.Inch)
 		})
 		const feetIndex = text.indexOf("'")
 		const inchIndex = text.indexOf('"')
@@ -68,110 +109,68 @@ export class Length {
 		return feet * 12 + inches
 	}
 
-	static toInches(length: number, unit: LengthUnits): number {
+	export function toInches(length: number, unit: Unit): number {
 		switch (unit) {
-			case LengthUnits.FeetAndInches:
-			case LengthUnits.Inch:
+			case Unit.FeetAndInches:
+			case Unit.Inch:
 				return length
-			case LengthUnits.Feet:
+			case Unit.Feet:
 				return length * 12
-			case LengthUnits.Yard:
+			case Unit.Yard:
 				return length * 36
-			case LengthUnits.Mile:
+			case Unit.Mile:
 				return length * 63360
-			case LengthUnits.Centimeter:
+			case Unit.Centimeter:
 				return length / 2.5
-			case LengthUnits.Kilometer:
+			case Unit.Kilometer:
 				return length * 36000
-			case LengthUnits.Meter:
+			case Unit.Meter:
 				return length * 36
-			case LengthUnits.AstronomicalUnit:
+			case Unit.AstronomicalUnit:
 				// 93 million miles
 				return length * 63360 * 93000000
-			case LengthUnits.Lightyear:
+			case Unit.Lightyear:
 				// 5.865 trillion miles
 				return length * 63360 * (5.865 * 10 ** 12)
-			case LengthUnits.Parsec:
+			case Unit.Parsec:
 				// 3.26 lightyears
 				return length * 63360 * (3.26 * 5.865 * 10 ** 12)
 			default:
-				return Length.toInches(length, LengthUnits.FeetAndInches)
+				return Length.toInches(length, Unit.FeetAndInches)
 		}
 	}
 
-	static fromInches(length: number, unit: LengthUnits): number {
+	export function fromInches(length: number, unit: Unit): number {
 		switch (unit) {
-			case LengthUnits.FeetAndInches:
-			case LengthUnits.Inch:
+			case Unit.FeetAndInches:
+			case Unit.Inch:
 				return length
-			case LengthUnits.Feet:
+			case Unit.Feet:
 				return length / 12
-			case LengthUnits.Yard:
-			case LengthUnits.Meter:
+			case Unit.Yard:
+			case Unit.Meter:
 				return length / 36
-			case LengthUnits.Mile:
+			case Unit.Mile:
 				return length / 63360
-			case LengthUnits.Centimeter:
+			case Unit.Centimeter:
 				return length * 2.5
-			case LengthUnits.Kilometer:
+			case Unit.Kilometer:
 				return length / 36000
-			case LengthUnits.AstronomicalUnit:
+			case Unit.AstronomicalUnit:
 				// 93 million miles
 				return length / 63360 / 93000000
-			case LengthUnits.Lightyear:
+			case Unit.Lightyear:
 				// 5.865 trillion miles
 				return length / 63360 / (5.865 * 10 ** 12)
-			case LengthUnits.Parsec:
+			case Unit.Parsec:
 				// 3.26 lightyears
 				return length / 63360 / (3.26 * 5.865 * 10 ** 12)
 			default:
-				return Length.fromInches(length, LengthUnits.Yard)
+				return Length.fromInches(length, Unit.Yard)
 		}
 	}
 
-	private static f(u: LengthUnits) {
+	export function f(u: Unit): string {
 		return LocalizeGURPS.translations.gurps.length_units[u]
 	}
-}
-
-export enum LengthUnits {
-	FeetAndInches = "ft_in",
-	Inch = "in",
-	Feet = "ft",
-	Yard = "yd",
-	Mile = "mi",
-	Centimeter = "cm",
-	Kilometer = "km",
-	Meter = "m",
-	AstronomicalUnit = "au",
-	Lightyear = "ly",
-	Parsec = "pc",
-}
-
-export const allLengthUnits = [
-	LengthUnits.FeetAndInches,
-	LengthUnits.Inch,
-	LengthUnits.Feet,
-	LengthUnits.Yard,
-	LengthUnits.Mile,
-	LengthUnits.Centimeter,
-	LengthUnits.Kilometer,
-	LengthUnits.Meter,
-	LengthUnits.AstronomicalUnit,
-	LengthUnits.Lightyear,
-	LengthUnits.Parsec,
-]
-
-export const LengthSymbols: Record<LengthUnits, string[]> = {
-	[LengthUnits.FeetAndInches]: [],
-	[LengthUnits.Inch]: ["in", "inch", "inches"],
-	[LengthUnits.Feet]: ["ft", "foot", "feet"],
-	[LengthUnits.Yard]: ["yd", "yard", "yards"],
-	[LengthUnits.Mile]: ["mi", "mile", "miles"],
-	[LengthUnits.Centimeter]: ["cm", "centimeter", "centimeters", "centimetre", "centimetres"],
-	[LengthUnits.Kilometer]: ["km", "kilometer", "kilometers", "kilometre", "kilometres"],
-	[LengthUnits.Meter]: ["m", "meter", "meters", "metre", "metres"],
-	[LengthUnits.AstronomicalUnit]: ["au", "astronomical unit", "astronomical units"],
-	[LengthUnits.Lightyear]: ["ly", "lightyear", "lightyears"],
-	[LengthUnits.Parsec]: ["pc", "parsec", "parsecs"],
 }

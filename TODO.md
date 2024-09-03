@@ -1,6 +1,6 @@
 # BIG OL' TODO Document
 
-- re-do weight so it extends number or maybe make it an object with value and unit
+- fix features to get rid of circular imports
 
 ## Immediate TODO
 

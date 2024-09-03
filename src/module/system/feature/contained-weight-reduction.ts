@@ -1,8 +1,7 @@
-import { Int } from "@util/fxp.ts"
-import { Weight, WeightUnits } from "@util/weight.ts"
+import { Weight } from "@util/weight.ts"
 import { ContainedWeightReductionSchema } from "./data.ts"
 import { BaseFeature } from "./base.ts"
-import { feature } from "@util"
+import { Int, feature } from "@util"
 
 class ContainedWeightReduction extends BaseFeature<ContainedWeightReductionSchema> {
 	static override defineSchema(): ContainedWeightReductionSchema {
@@ -30,12 +29,12 @@ class ContainedWeightReduction extends BaseFeature<ContainedWeightReductionSchem
 		return Int.fromStringForced(this.reduction.substring(0, this.reduction.length - 1))
 	}
 
-	fixedReduction(defUnits: WeightUnits): number {
+	fixedReduction(defUnits: Weight.Unit): number {
 		if (this.isPercentageReduction) return 0
 		return Weight.fromString(this.reduction, defUnits)
 	}
 
-	static extractContainedWeightReduction(s: string, defUnits: WeightUnits): string {
+	static extractContainedWeightReduction(s: string, defUnits: Weight.Unit): string {
 		s = s.trim()
 		if (s.endsWith("%")) {
 			const v = Int.fromString(s.substring(0, s.length - 1).trim())

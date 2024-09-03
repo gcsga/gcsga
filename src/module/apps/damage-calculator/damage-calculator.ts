@@ -260,7 +260,7 @@ class DamageCalculator implements IDamageCalculator {
 	get damageTypeKey(): string {
 		return this.overrides.damageType
 			? this.overrides.damageType.id
-			: this.damageRoll.damageType?.id ?? DamageTypes.cr
+			: (this.damageRoll.damageType?.id ?? DamageTypes.cr)
 	}
 
 	set damageTypeOverride(key: string | undefined) {
@@ -961,7 +961,7 @@ class HitLocationDamage implements LocationDamage {
 				location:
 					this.locationName === DefaultHitLocations.LargeArea
 						? this.format("gurps.dmgcalc.description.large_area_injury")
-						: location?.table_name ?? "",
+						: (location?.table_name ?? ""),
 			}),
 		}
 	}
@@ -1030,7 +1030,7 @@ class HitLocationDamage implements LocationDamage {
 			location:
 				locationName === DefaultHitLocations.LargeArea
 					? this.format("gurps.dmgcalc.description.large_area_injury")
-					: location?.table_name ?? "",
+					: (location?.table_name ?? ""),
 		})
 
 		if (!location) return undefined

@@ -1,6 +1,6 @@
 import { SETTINGS, SYSTEM_NAME } from "@data"
 import { PartialSettingsData, SettingsMenuGURPS } from "./menu.ts"
-import { LengthUnits, WeightUnits, paper } from "@util"
+import { Length, Weight, paper } from "@util"
 import { display } from "@util/enum/display.ts"
 import { progression } from "@util/enum/progression.ts"
 
@@ -37,8 +37,8 @@ export class DefaultSheetSettings extends SettingsMenuGURPS {
 				hint: "",
 				type: Object,
 				default: {
-					default_length_units: LengthUnits.FeetAndInches,
-					default_weight_units: WeightUnits.Pound,
+					default_length_units: Length.Unit.FeetAndInches,
+					default_weight_units: Weight.Unit.Pound,
 					user_description_display: display.Option.Tooltip,
 					modifiers_display: display.Option.Inline,
 					notes_display: display.Option.Inline,

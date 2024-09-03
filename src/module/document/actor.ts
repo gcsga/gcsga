@@ -27,7 +27,7 @@ class ActorGURPS2<TParent extends TokenDocument | null = TokenDocument | null> e
 		return result
 	}
 
-	override prepareData() {
+	override prepareData(): void {
 		super.prepareData()
 		if (SYSTEM_NAME in this.flags && this._systemFlagsDataModel) {
 			// @ts-expect-error probably fine

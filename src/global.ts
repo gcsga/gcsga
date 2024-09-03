@@ -22,6 +22,7 @@ import { ItemsGURPS } from "@module/collection/items.ts"
 import { CombatGURPS, CombatantGURPS } from "@module/combat/index.ts"
 import { AttributeEffect, MANEUVER_DETAIL_SETTING } from "@module/data/index.ts"
 import { DiceGURPS } from "@module/dice/index.ts"
+import { ActorGURPS2 } from "@module/document/actor.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { JournalEntryGURPS } from "@module/journal-entry/document.ts"
 import { JournalEntryPageGURPS } from "@module/journal-entry/page/document.ts"
@@ -43,8 +44,10 @@ import { ManeuverManager } from "@system/maneuver-manager.ts"
 
 interface GameGURPS
 	extends Game<
-		ActorGURPS<null>,
-		Actors<ActorGURPS<null>>,
+		ActorGURPS2<null>,
+		// ActorGURPS<null>,
+		Actors<ActorGURPS2<null>>,
+		// Actors<ActorGURPS<null>>,
 		ChatMessageGURPS,
 		CombatGURPS,
 		ItemGURPS2<null>,
@@ -53,7 +56,8 @@ interface GameGURPS
 		// ItemsGURPS<ItemGURPS2<null>>,
 		Macro,
 		SceneGURPS,
-		UserGURPS
+		User<ActorGURPS2<null>>
+		// UserGURPS
 	> {
 	gurps: {
 		ConditionManager: typeof ConditionManager
@@ -71,8 +75,10 @@ interface GameGURPS
 }
 
 type ConfiguredConfig = Config<
-	ActiveEffectGURPS<ActorGURPS<TokenDocumentGURPS> | ItemGURPS | null>,
-	ActorGURPS,
+	ActiveEffect<ActorGURPS2<TokenDocument> | ItemGURPS2 | null>,
+	// ActiveEffectGURPS<ActorGURPS<TokenDocumentGURPS> | ItemGURPS | null>,
+	ActorGURPS2,
+	// ActorGURPS,
 	ActorDelta<TokenDocumentGURPS>,
 	ChatLogGURPS,
 	ChatMessage,
@@ -83,15 +89,18 @@ type ConfiguredConfig = Config<
 	ItemDirectoryGURPS,
 	CompendiumDirectoryGURPS,
 	Hotbar,
-	ItemGURPS,
+	ItemGURPS2,
+	// ItemGURPS,
 	Macro,
 	MeasuredTemplateDocument<SceneGURPS | null>,
 	RegionDocument<SceneGURPS | null>,
 	RegionBehavior<RegionDocument<SceneGURPS | null> | null>,
 	TileDocument<SceneGURPS | null>,
-	TokenDocumentGURPS<SceneGURPS | null>,
+	TokenDocument<Scene | null>,
+	// TokenDocumentGURPS<SceneGURPS | null>,
 	WallDocument<SceneGURPS | null>,
-	SceneGURPS,
+	Scene,
+	// SceneGURPS,
 	UserGURPS,
 	EffectsCanvasGroup,
 	JournalEntryGURPS,

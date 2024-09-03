@@ -26,7 +26,7 @@ class EquipmentContainerGURPS<
 		return Weight.fromString(this.system.weight, this.weightUnits)
 	}
 
-	get weightUnits(): WeightUnits {
+	get weightUnits(): Weight.Unit {
 		return SheetSettings.for(this.actor).default_weight_units
 	}
 
@@ -89,7 +89,7 @@ class EquipmentContainerGURPS<
 		return Int.from(value * this.system.quantity)
 	}
 
-	adjustedWeight(forSkills: boolean, defUnits: WeightUnits): number {
+	adjustedWeight(forSkills: boolean, defUnits: Weight.Unit): number {
 		if (forSkills && this.system.ignore_weight_for_skills) return 0
 		return weightAdjustedForModifiers(Weight.fromString(this.system.weight, defUnits), this.deepModifiers, defUnits)
 	}
@@ -98,7 +98,7 @@ class EquipmentContainerGURPS<
 		return Weight.format(this.adjustedWeight(false, this.weightUnits), this.weightUnits)
 	}
 
-	extendedWeight(forSkills: boolean, defUnits: WeightUnits): number {
+	extendedWeight(forSkills: boolean, defUnits: Weight.Unit): number {
 		return extendedWeightAdjustedForModifiers(
 			defUnits,
 			this.system.quantity,

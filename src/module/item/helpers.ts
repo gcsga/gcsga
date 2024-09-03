@@ -1,8 +1,8 @@
 import { ActorGURPS } from "@actor"
 import { TargetTrait, TargetTraitModifier } from "@module/apps/damage-calculator/index.ts"
 import { ABSTRACT_CONTAINER_TYPES, CONTAINER_TYPES, ItemType } from "@module/data/constants.ts"
-import { ConditionalModifier, ContainedWeightReduction, Feature } from "@system"
-import { Int, Weight, WeightUnits, emcost, emweight, setHasElement } from "@util"
+// import { ConditionalModifier, ContainedWeightReduction, Feature } from "@system"
+import { Int, Weight, emcost, emweight, setHasElement } from "@util"
 import { AbstractContainerGURPS } from "./abstract-container/document.ts"
 import { ItemGURPS } from "./base/document.ts"
 import { ItemSourceGURPS } from "./data/index.ts"
@@ -87,7 +87,7 @@ function itemIsOfType(item: ItemOrSource, ...types: string[]): boolean {
 function processMultiplyAddWeightStep(
 	type: emweight.Type,
 	weight: number,
-	units: WeightUnits,
+	units: Weight.Unit,
 	modifiers: Collection<EquipmentModifierGURPS>,
 ): number {
 	let w = 0
@@ -97,7 +97,7 @@ function processMultiplyAddWeightStep(
 			const t = emweight.Type.determineModifierWeightValueTypeFromString(type, mod.system.weight)
 			const amt = emweight.Value.extractFraction(t, mod.system.weight)
 			if (t === emweight.Value.Addition)
-				w += Weight.toPounds(amt.value, Weight.trailingWeightUnitsFromString(mod.system.weight, units))
+				w += Weight.toPounds(amt.value, Weight.trailingUnitFromString(mod.system.weight, units))
 			else if (t === emweight.Value.PercentageMultiplier)
 				weight = (weight * amt.numerator) / (amt.denominator * 100)
 			else if (t === emweight.Value.Multiplier) weight = (weight * amt.numerator) / amt.denominator
@@ -109,7 +109,7 @@ function processMultiplyAddWeightStep(
 function weightAdjustedForModifiers(
 	weight: number,
 	modifiers: Collection<EquipmentModifierGURPS>,
-	defUnits: WeightUnits,
+	defUnits: Weight.Unit,
 ): number {
 	let percentages = 0
 	let w = Int.from(weight)
@@ -123,7 +123,7 @@ function weightAdjustedForModifiers(
 			)
 			const amt = emweight.Value.extractFraction(t, mod.system.weight).value
 			if (t === emweight.Value.Addition) {
-				w += Weight.toPounds(amt, Weight.trailingWeightUnitsFromString(mod.system.weight, defUnits))
+				w += Weight.toPounds(amt, Weight.trailingUnitFromString(mod.system.weight, defUnits))
 			} else {
 				percentages += amt
 			}
@@ -139,7 +139,7 @@ function weightAdjustedForModifiers(
 }
 
 function extendedWeightAdjustedForModifiers(
-	defUnits: WeightUnits,
+	defUnits: Weight.Unit,
 	quantity: number,
 	baseWeight: number,
 	modifiers: Collection<EquipmentModifierGURPS>,

@@ -52,7 +52,7 @@ interface BasicInformationTemplate
 		ModelPropsFromSchema<BasicInformationTemplateSchema> {}
 
 type BasicInformationTemplateSchema = {
-	container: fields.ForeignDocumentField<ItemGURPS2>
+	container: fields.ForeignDocumentField<string>
 	name: fields.StringField<string, string, true, false, true>
 	reference: fields.StringField<string, string, true, false, true>
 	reference_highlight: fields.StringField<string, string, true, false, true>

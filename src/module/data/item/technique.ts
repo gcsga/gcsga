@@ -11,7 +11,7 @@ import { AbstractSkillTemplate, AbstractSkillTemplateSchema } from "./templates/
 import { SkillDefaultSchema, SkillDefault, Study, SheetSettings } from "@system"
 import { TechniqueDifficulty } from "../types.ts"
 import { LocalizeGURPS, StringBuilder, TooltipGURPS, difficulty, display } from "@util"
-import { addTooltipForSkillLevelAdj, calculateTechniqueLevel } from "./helpers.ts"
+import { SkillLevel, addTooltipForSkillLevelAdj, calculateTechniqueLevel } from "./helpers.ts"
 import { ActorTemplateType } from "../actor/types.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { SkillData } from "./index.ts"
@@ -115,7 +115,7 @@ class TechniqueData extends ItemDataModel.mixin(
 	/** Calculates level, relative level, and relevant tooltip based on current state of
 	 *  data. Does not transform the object.
 	 */
-	override calculateLevel(excludes: Set<string> = new Set()) {
+	override calculateLevel(excludes: Set<string> = new Set()): SkillLevel {
 		const def = this.default ?? new SkillDefault({}, { parent: this.parent })
 
 		return calculateTechniqueLevel(

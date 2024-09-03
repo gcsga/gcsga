@@ -62,4 +62,4 @@ type RollModifierStackSchema = {
 	open: fields.BooleanField<boolean, boolean, true, true, true>
 }
 
-export { RollModifier, RollModifierStack type RollModifierSchema, type RollModifierStackSchema }
+export { RollModifier, RollModifierStack, type RollModifierSchema, type RollModifierStackSchema }

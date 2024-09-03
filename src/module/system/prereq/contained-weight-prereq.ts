@@ -27,7 +27,7 @@ class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
 			qualifier: new fields.SchemaField(WeightCriteria.defineSchema(), {
 				initial: {
 					compare: NumericCompareType.AtLeastNumber,
-					qualifier: Weight.format(5, WeightUnits.Pound),
+					qualifier: Weight.format(5, Weight.Unit.Pound),
 				},
 			}),
 		}

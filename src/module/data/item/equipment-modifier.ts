@@ -1,4 +1,4 @@
-import { emcost, emweight } from "@util"
+import { StringBuilder, emcost, emweight } from "@util"
 import { ItemDataModel, ItemDataSchema } from "../abstract.ts"
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { FeatureTemplate, FeatureTemplateSchema } from "./templates/features.ts"
@@ -7,6 +7,7 @@ import fields = foundry.data.fields
 import { EquipmentData } from "./equipment.ts"
 import { EquipmentContainerData } from "./equipment-container.ts"
 import { EquipmentFieldsTemplate } from "./templates/index.ts"
+import { SheetSettings } from "@system"
 
 class EquipmentModifierData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -56,6 +57,45 @@ class EquipmentModifierData extends ItemDataModel.mixin(
 	get weightMultiplier(): number {
 		return multiplierForEquipmentModifier(this.equipment, this.weight_is_per_level)
 	}
+
+	get costDescription(): string {
+		if (this.cost_type === emcost.Type.Original && (this.cost === "" || this.cost === "+0")) return ""
+		return emcost.Type.format(this.cost_type, this.cost) + " " + this.cost_type.toString()
+	}
+
+	get weightDescription(): string {
+		if (this.weight_type === emweight.Type.Original && (this.weight === "" || this.weight.startsWith("+0")))
+			return ""
+		return (
+			emweight.Type.format(
+				this.weight_type,
+				this.weight,
+				SheetSettings.for(this.parent.actor).default_weight_units,
+			) +
+			" " +
+			this.cost_type.toString()
+		)
+	}
+
+	get fullDescription(): string {
+		const buffer = new StringBuilder()
+		buffer.push(this.nameWithReplacements)
+		const localNotes = this.processedNotes
+		if (localNotes !== "") {
+			buffer.push(` (${localNotes})`)
+		}
+		if (this.notes !== "") buffer.push(` (${this.notesWithReplacements})`)
+		if (SheetSettings.for(this.parent.actor).show_equipment_modifier_adj) {
+			const costDesc = this.costDescription
+			const weightDesc = this.weightDescription
+			if (costDesc !== "" || weightDesc !== "") {
+				if (costDesc !== "" && weightDesc !== "") buffer.push(` [${costDesc}; ${weightDesc}]`)
+				else if (costDesc !== "") buffer.push(` [${costDesc}]`)
+				else buffer.push(` [${weightDesc}]`)
+			}
+		}
+		return buffer.toString()
+	}
 }
 
 function multiplierForEquipmentModifier(
@@ -64,15 +104,13 @@ function multiplierForEquipmentModifier(
 ): number {
 	let multiplier = 0
 	if (isPerLevel && equipment !== null && equipment.system.isLeveled) {
-		multiplier = equipment.system.currentLevel
+		multiplier = equipment.system.level
 	}
 	if (multiplier <= 0) multiplier = 1
 	return multiplier
 }
 
-interface EquipmentModifierData extends Omit<ModelPropsFromSchema<EquipmentModifierSchema>, "container"> {
-	container: string | null
-}
+interface EquipmentModifierData extends ModelPropsFromSchema<EquipmentModifierSchema> {}
 
 type EquipmentModifierSchema = ItemDataSchema &
 	BasicInformationTemplateSchema &

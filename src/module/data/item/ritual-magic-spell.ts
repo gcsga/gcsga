@@ -130,7 +130,7 @@ class RitualMagicSpellData extends ItemDataModel.mixin(
 			modifier: -prereqCount,
 		})
 		if (college !== "") def.name = ""
-		let limit = 0
+		const limit = 0
 		const skilllevel = calculateTechniqueLevel(
 			this.actor,
 			new Map(),

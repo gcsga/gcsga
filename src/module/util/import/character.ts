@@ -27,7 +27,7 @@ import {
 	SheetSettingsSource,
 } from "@system"
 import { ManeuverManager } from "@system/maneuver-manager.ts"
-import { LengthUnits, LocalizeGURPS, WeightUnits, getCurrentTime } from "@util"
+import { Length, LocalizeGURPS, Weight, getCurrentTime } from "@util"
 import { display } from "@util/enum/display.ts"
 import { progression } from "@util/enum/progression.ts"
 import { GCACharacterImporter } from "./character-gca.ts"
@@ -179,8 +179,8 @@ export class CharacterImporter {
 			move_types: CharacterImporter.importMoveTypeSettings(third_party?.settings?.move_types),
 			body_type: CharacterImporter.importBody(data?.body_type),
 			damage_progression: data?.damage_progression ?? progression.Option.BasicSet,
-			default_length_units: data?.default_length_units ?? LengthUnits.FeetAndInches,
-			default_weight_units: data?.default_weight_units ?? WeightUnits.Pound,
+			default_length_units: data?.default_length_units ?? Length.Unit.FeetAndInches,
+			default_weight_units: data?.default_weight_units ?? Weight.Unit.Pound,
 			user_description_display: data?.user_description_display ?? display.Option.Tooltip,
 			modifiers_display: data?.modifiers_display ?? display.Option.Inline,
 			notes_display: data?.notes_display ?? display.Option.Inline,

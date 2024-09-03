@@ -11,11 +11,11 @@ export * from "./mook/index.ts"
 export * from "./move-type/index.ts"
 export * from "./prereq/index.ts"
 export * from "./resource-tracker/index.ts"
+export * from "./schema-data-fields.ts"
+export * from "./sheet-settings.ts"
 export * from "./skill-default/index.ts"
 export * from "./study.ts"
 export * from "./template-picker/document.ts"
-export * from "./sheet-settings.ts"
-export * from "./schema-data-fields.ts"
 
 export const AttributeDefClasses = {
 	attribute: AttributeDef,

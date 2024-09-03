@@ -1,10 +1,9 @@
-import { Int } from "@util/fxp.ts"
 import { WeaponField } from "./weapon-field.ts"
 import { wswitch } from "@util/enum/wswitch.ts"
 import { ActorType, gid } from "@data"
 import { feature } from "@util/enum/feature.ts"
 import { AbstractWeaponGURPS } from "./document.ts"
-import { TooltipGURPS } from "@util"
+import { Int, TooltipGURPS } from "@util"
 
 export class WeaponParry extends WeaponField {
 	no = false

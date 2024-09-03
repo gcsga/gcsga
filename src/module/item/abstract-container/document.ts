@@ -77,7 +77,7 @@ abstract class AbstractContainerGURPS<
 	// }
 
 	/** Reload this container's contents following Actor embedded-document preparation */
-	/*override prepareSiblingData(): void { */
+	/* override prepareSiblingData(): void { */
 	/*	super.prepareSiblingData() */
 	/**/
 	/*	if (this.system.container === this.id) this.setFlag(SYSTEM_NAME, ItemFlags.Container, null) */
@@ -94,7 +94,7 @@ abstract class AbstractContainerGURPS<
 	/*		) */
 	/*	} */
 	/*	this.itemCollections = new ItemItemCollectionMap(this.deepContents) */
-	/*} */
+	/* } */
 
 	get enabled(): boolean {
 		return true

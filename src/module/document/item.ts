@@ -23,7 +23,7 @@ class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extend
 	}
 
 	/** @inheritDoc */
-	override prepareData() {
+	override prepareData(): void {
 		super.prepareData()
 		if (SYSTEM_NAME in this.flags && this._systemFlagsDataModel) {
 			// @ts-expect-error probably fine
@@ -52,6 +52,7 @@ class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extend
 	get _systemFlagsDataModel(): typeof SystemDataModel | null {
 		return this.system?.metadata?.systemFlagsModel ?? null
 	}
+
 	/* -------------------------------------------- */
 	/*  Item Properties                             */
 	/* -------------------------------------------- */

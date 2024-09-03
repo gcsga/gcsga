@@ -432,10 +432,10 @@ class CharacterGURPS<
 		specialization: string,
 		requirePoints: boolean,
 		excludes: Set<string> | null,
-	): Array<SkillGURPS | TechniqueGURPS> {
+	): (SkillGURPS | TechniqueGURPS)[] {
 		if (!excludes) excludes = new Set()
 
-		const list: Array<SkillGURPS | TechniqueGURPS> = []
+		const list: (SkillGURPS | TechniqueGURPS)[] = []
 		this.itemCollections.skills.forEach(e => {
 			if (e.isOfType(ItemType.SkillContainer)) return
 			if (excludes.has(e.formattedName)) return
@@ -798,6 +798,8 @@ class CharacterGURPS<
 			unspent: 0,
 			total: 0,
 		}
+		// HACK: to remove
+		return pb
 		pb.attributes += Array.from(this.attributes.values()).reduce((acc, att) => {
 			return acc + att.points
 		}, 0)

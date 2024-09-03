@@ -24,7 +24,7 @@ class TemplatePicker extends foundry.abstract.DataModel<SystemDataModel, Templat
 				return LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.TemplatePicker.descriptionCount, {
 					number: this.qualifier.altString(),
 				})
-			case picker.Type.Points:
+			case picker.Type.Points: {
 				const points =
 					this.qualifier.qualifier === 1
 						? LocalizeGURPS.translations.GURPS.TemplatePicker.points
@@ -33,6 +33,7 @@ class TemplatePicker extends foundry.abstract.DataModel<SystemDataModel, Templat
 					number: this.qualifier.altString(),
 					points,
 				})
+			}
 			default:
 				return ""
 		}

@@ -12,7 +12,12 @@ class DRBonus extends BaseFeature<DRBonusSchema> {
 		return {
 			...super.defineSchema(),
 			// ...LeveledAmount.defineSchema(),
-			type: new fields.StringField({ required: true, nullable: false,  blank: false,initial: feature.Type.DRBonus }),
+			type: new fields.StringField({
+				required: true,
+				nullable: false,
+				blank: false,
+				initial: feature.Type.DRBonus,
+			}),
 			locations: new fields.ArrayField(new fields.StringField(), { initial: [gid.Torso] }),
 			specialization: new fields.StringField({ initial: gid.All }),
 		}

@@ -17,7 +17,10 @@ class NoteSystemData extends ItemSystemModel<NoteGURPS, NoteSystemSchema> {
 			}),
 			reference: new fields.StringField(),
 			reference_highlight: new fields.StringField(),
-			replacements: new RecordField(new fields.StringField({required: true, nullable: false}), new fields.StringField({required: true, nullable: false})),
+			replacements: new RecordField(
+				new fields.StringField({ required: true, nullable: false }),
+				new fields.StringField({ required: true, nullable: false }),
+			),
 		}
 	}
 }
@@ -29,7 +32,10 @@ type NoteSystemSchema = ItemSystemSchema & {
 	text: fields.StringField<string, string, true, false, true>
 	reference: fields.StringField
 	reference_highlight: fields.StringField
-	replacements: RecordField<fields.StringField<string, string, true, false, false>,  fields.StringField<string,string,true,false,false>>
+	replacements: RecordField<
+		fields.StringField<string, string, true, false, false>,
+		fields.StringField<string, string, true, false, false>
+	>
 }
 
 type NoteSystemSource = SourceFromSchema<NoteSystemSchema>

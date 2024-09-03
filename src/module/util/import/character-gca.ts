@@ -11,7 +11,7 @@ import {
 import { ActorFlags, ActorType, ManeuverID, SETTINGS, SYSTEM_NAME } from "@data"
 import { ItemSourceGURPS } from "@item/data/index.ts"
 import { ChatMessageGURPS } from "@module/chat-message/document.ts"
-import { LengthUnits, LocalizeGURPS, StringBuilder, WeightUnits, display, getCurrentTime, progression } from "@util"
+import { Length, LocalizeGURPS, StringBuilder, Weight, display, getCurrentTime, progression } from "@util"
 import { GCABody, GCABodyItem, GCACharacter } from "./data-gca.ts"
 import { GCAItemImporter } from "./item-gca.ts"
 import { GCAParser } from "./parse-gca.ts"
@@ -146,8 +146,8 @@ export class GCACharacterImporter {
 			move_types: GCACharacterImporter.importMoveTypeSettings(),
 			body_type: GCACharacterImporter.importBody(data.body, data),
 			damage_progression: progression.Option.BasicSet,
-			default_length_units: LengthUnits.FeetAndInches,
-			default_weight_units: WeightUnits.Pound,
+			default_length_units: Length.Unit.FeetAndInches,
+			default_weight_units: Weight.Unit.Pound,
 			user_description_display: display.Option.Tooltip,
 			modifiers_display: display.Option.Inline,
 			notes_display: display.Option.Inline,
@@ -240,7 +240,8 @@ export class GCACharacterImporter {
 				id,
 				adj: (e.score ?? 0) - parseInt(e.calcs?.basescore ?? "0"),
 				damage: 0,
-				apply_ops: false,
+				applyOps: false,
+				manualThreshold: null,
 			})
 		})
 		return atts

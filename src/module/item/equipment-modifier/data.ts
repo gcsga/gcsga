@@ -4,9 +4,8 @@ import { ItemSystemModel, ItemSystemSchema } from "@item/base/schema.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { emcost, emweight, feature } from "@util"
 import { EquipmentModifierGURPS } from "./document.ts"
-import { BaseFeature } from "@system/feature/base.ts"
-import { Feature } from "@system"
 import { RecordField } from "@system/schema-data-fields.ts"
+import { Feature, FeatureTypes } from "@system/feature/types.ts"
 
 class EquipmentModifierSystemData extends ItemSystemModel<EquipmentModifierGURPS, EquipmentModifierSystemSchema> {
 	static override defineSchema(): EquipmentModifierSystemSchema {
@@ -29,7 +28,7 @@ class EquipmentModifierSystemData extends ItemSystemModel<EquipmentModifierGURPS
 			tech_level: new fields.StringField(),
 			cost: new fields.StringField(),
 			weight: new fields.StringField(),
-			features: new fields.ArrayField(new fields.TypedSchemaField(BaseFeature.TYPES)),
+			features: new fields.ArrayField(new fields.TypedSchemaField(FeatureTypes)),
 			replacements: new RecordField(
 				new fields.StringField({ required: true, nullable: false }),
 				new fields.StringField({ required: true, nullable: false }),

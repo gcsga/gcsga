@@ -300,7 +300,8 @@ class AbstractContainerSheetGURPS<TItem extends AbstractContainerGURPS> extends 
 		const sheetData = await super.getData(options)
 		return {
 			...sheetData,
-			itemCollections: this._prepareItemCollections(),
+			// itemCollections: this._prepareItemCollections(),
+			itemCollections: {},
 		}
 	}
 

@@ -10,7 +10,12 @@ class ReactionBonus extends BaseFeature<ReactionBonusSchema> {
 		return {
 			...super.defineSchema(),
 			// ...LeveledAmount.defineSchema(),
-			type: new fields.StringField({ required: true, nullable: false,  blank: false,initial: feature.Type.ReactionBonus }),
+			type: new fields.StringField({
+				required: true,
+				nullable: false,
+				blank: false,
+				initial: feature.Type.ReactionBonus,
+			}),
 			situation: new fields.StringField({
 				initial: game.i18n.localize("gurps.feature.reaction_bonus"),
 			}),

@@ -4,12 +4,12 @@ import {
 	AbstractContainerSystemSchema,
 } from "@item/abstract-container/data.ts"
 import { ItemType, NumericCompareType, StringCompareType } from "@module/data/constants.ts"
-import { BasePrereq, Feature, Prereq, SkillBonus, Study } from "@system"
+import { BasePrereq, Prereq, SkillBonus, Study } from "@system"
 import { feature, prereq, selfctrl, skillsel, study } from "@util"
 import { TraitGURPS } from "./document.ts"
 import fields = foundry.data.fields
 import { RecordField } from "@system/schema-data-fields.ts"
-import { BaseFeature } from "@system/feature/base.ts"
+import { FeatureTypes } from "@system/feature/types.ts"
 
 function getCRFeatures(): Map<string, SkillBonus[]> {
 	return new Map([
@@ -59,7 +59,7 @@ class TraitSystemData extends AbstractContainerSystemData<TraitGURPS, TraitSyste
 					},
 				],
 			}),
-			features: new fields.ArrayField(new fields.TypedSchemaField(BaseFeature.TYPES)),
+			features: new fields.ArrayField(new fields.TypedSchemaField(FeatureTypes)),
 			study: new fields.ArrayField(new fields.ObjectField<Study>()),
 			cr: new fields.NumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>({
 				choices: selfctrl.Rolls,

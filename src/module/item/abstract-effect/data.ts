@@ -6,7 +6,7 @@ import { RollModifier } from "@module/data/types.ts"
 import { BaseFeature } from "@system/feature/base.ts"
 import { feature } from "@util"
 import { AbstractEffectGURPS } from "./document.ts"
-import { Feature } from "@system"
+import { Feature, FeatureTypes } from "@system/feature/types.ts"
 
 type EffectFlags = ItemFlagsGURPS & {
 	[SYSTEM_NAME]: {
@@ -31,7 +31,7 @@ abstract class AbstractEffectSystemData<
 
 		return {
 			...super.defineSchema(),
-			features: new fields.ArrayField(new fields.TypedSchemaField(BaseFeature.TYPES)),
+			features: new fields.ArrayField(new fields.TypedSchemaField(FeatureTypes)),
 			modifiers: new fields.ArrayField(new fields.ObjectField<RollModifier>()),
 			can_level: new fields.BooleanField(),
 			levels: new fields.SchemaField({ max: new fields.NumberField(), current: new fields.NumberField() }),

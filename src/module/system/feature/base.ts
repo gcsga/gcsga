@@ -3,21 +3,6 @@ import { LocalizeGURPS } from "@util/localize.ts"
 import { TooltipGURPS } from "@util"
 import { ItemType } from "@module/data/constants.ts"
 import { BaseFeatureSchema } from "./data.ts"
-import {
-	AttributeBonus,
-	ConditionalModifierBonus,
-	ContainedWeightReduction,
-	CostReduction,
-	DRBonus,
-	Feature,
-	MoveBonus,
-	ReactionBonus,
-	SkillBonus,
-	SkillPointBonus,
-	SpellBonus,
-	SpellPointBonus,
-	WeaponBonus,
-} from "./index.ts"
 import { ItemDataModel } from "@module/data/abstract.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 
@@ -29,46 +14,46 @@ abstract class BaseFeature<
 
 	declare featureLevel: number
 
-	static get TYPES(): Readonly<Record<feature.Type, ConstructorOf<Feature>>> {
-		return (BaseFeature.#TYPES ??= Object.freeze({
-			[feature.Type.AttributeBonus]: AttributeBonus,
-			[feature.Type.ConditionalModifierBonus]: ConditionalModifierBonus,
-			[feature.Type.DRBonus]: DRBonus,
-			[feature.Type.ReactionBonus]: ReactionBonus,
-			[feature.Type.SkillBonus]: SkillBonus,
-			[feature.Type.SkillPointBonus]: SkillPointBonus,
-			[feature.Type.SpellBonus]: SpellBonus,
-			[feature.Type.SpellPointBonus]: SpellPointBonus,
-			[feature.Type.WeaponBonus]: WeaponBonus,
-			[feature.Type.WeaponAccBonus]: WeaponBonus,
-			[feature.Type.WeaponScopeAccBonus]: WeaponBonus,
-			[feature.Type.WeaponDRDivisorBonus]: WeaponBonus,
-			[feature.Type.WeaponMinSTBonus]: WeaponBonus,
-			[feature.Type.WeaponMinReachBonus]: WeaponBonus,
-			[feature.Type.WeaponMaxReachBonus]: WeaponBonus,
-			[feature.Type.WeaponHalfDamageRangeBonus]: WeaponBonus,
-			[feature.Type.WeaponMinRangeBonus]: WeaponBonus,
-			[feature.Type.WeaponMaxRangeBonus]: WeaponBonus,
-			[feature.Type.WeaponRecoilBonus]: WeaponBonus,
-			[feature.Type.WeaponBulkBonus]: WeaponBonus,
-			[feature.Type.WeaponParryBonus]: WeaponBonus,
-			[feature.Type.WeaponBlockBonus]: WeaponBonus,
-			[feature.Type.WeaponRofMode1ShotsBonus]: WeaponBonus,
-			[feature.Type.WeaponRofMode1SecondaryBonus]: WeaponBonus,
-			[feature.Type.WeaponRofMode2ShotsBonus]: WeaponBonus,
-			[feature.Type.WeaponRofMode2SecondaryBonus]: WeaponBonus,
-			[feature.Type.WeaponNonChamberShotsBonus]: WeaponBonus,
-			[feature.Type.WeaponChamberShotsBonus]: WeaponBonus,
-			[feature.Type.WeaponShotDurationBonus]: WeaponBonus,
-			[feature.Type.WeaponReloadTimeBonus]: WeaponBonus,
-			[feature.Type.WeaponSwitch]: WeaponBonus,
-			[feature.Type.CostReduction]: CostReduction,
-			[feature.Type.ContainedWeightReduction]: ContainedWeightReduction,
-			[feature.Type.MoveBonus]: MoveBonus,
-		}))
-	}
-
-	static #TYPES: any
+	// static get TYPES(): Readonly<Record<feature.Type, ConstructorOf<Feature>>> {
+	// 	return (BaseFeature.#TYPES ??= Object.freeze({
+	// 		[feature.Type.AttributeBonus]: AttributeBonus,
+	// 		[feature.Type.ConditionalModifierBonus]: ConditionalModifierBonus,
+	// 		[feature.Type.DRBonus]: DRBonus,
+	// 		[feature.Type.ReactionBonus]: ReactionBonus,
+	// 		[feature.Type.SkillBonus]: SkillBonus,
+	// 		[feature.Type.SkillPointBonus]: SkillPointBonus,
+	// 		[feature.Type.SpellBonus]: SpellBonus,
+	// 		[feature.Type.SpellPointBonus]: SpellPointBonus,
+	// 		[feature.Type.WeaponBonus]: WeaponBonus,
+	// 		[feature.Type.WeaponAccBonus]: WeaponBonus,
+	// 		[feature.Type.WeaponScopeAccBonus]: WeaponBonus,
+	// 		[feature.Type.WeaponDRDivisorBonus]: WeaponBonus,
+	// 		[feature.Type.WeaponMinSTBonus]: WeaponBonus,
+	// 		[feature.Type.WeaponMinReachBonus]: WeaponBonus,
+	// 		[feature.Type.WeaponMaxReachBonus]: WeaponBonus,
+	// 		[feature.Type.WeaponHalfDamageRangeBonus]: WeaponBonus,
+	// 		[feature.Type.WeaponMinRangeBonus]: WeaponBonus,
+	// 		[feature.Type.WeaponMaxRangeBonus]: WeaponBonus,
+	// 		[feature.Type.WeaponRecoilBonus]: WeaponBonus,
+	// 		[feature.Type.WeaponBulkBonus]: WeaponBonus,
+	// 		[feature.Type.WeaponParryBonus]: WeaponBonus,
+	// 		[feature.Type.WeaponBlockBonus]: WeaponBonus,
+	// 		[feature.Type.WeaponRofMode1ShotsBonus]: WeaponBonus,
+	// 		[feature.Type.WeaponRofMode1SecondaryBonus]: WeaponBonus,
+	// 		[feature.Type.WeaponRofMode2ShotsBonus]: WeaponBonus,
+	// 		[feature.Type.WeaponRofMode2SecondaryBonus]: WeaponBonus,
+	// 		[feature.Type.WeaponNonChamberShotsBonus]: WeaponBonus,
+	// 		[feature.Type.WeaponChamberShotsBonus]: WeaponBonus,
+	// 		[feature.Type.WeaponShotDurationBonus]: WeaponBonus,
+	// 		[feature.Type.WeaponReloadTimeBonus]: WeaponBonus,
+	// 		[feature.Type.WeaponSwitch]: WeaponBonus,
+	// 		[feature.Type.CostReduction]: CostReduction,
+	// 		[feature.Type.ContainedWeightReduction]: ContainedWeightReduction,
+	// 		[feature.Type.MoveBonus]: MoveBonus,
+	// 	}))
+	// }
+	//
+	// static #TYPES: any
 
 	static override defineSchema(): BaseFeatureSchema<feature.Type> {
 		const fields = foundry.data.fields

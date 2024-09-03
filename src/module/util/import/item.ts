@@ -271,7 +271,7 @@ class TraitImporter extends ItemImporter {
 		}
 
 		item.modifiers?.reduce((acc, mod) => {
-			//@ts-expect-error not going to bother with a good return type for this yet
+			// @ts-expect-error not going to bother with a good return type for this yet
 			if ((context.fileVersion = 5)) mod.type = ItemImporter.getTypeFromKind(mod.id)
 			acc.push(
 				...ItemImportHandlers[mod.type].importItem(mod, { parentId: id, fileVersion: context.fileVersion }),
@@ -280,7 +280,7 @@ class TraitImporter extends ItemImporter {
 		}, results)
 
 		item.weapons?.reduce((acc, weapon) => {
-			//@ts-expect-error not going to bother with a good return type for this yet
+			// @ts-expect-error not going to bother with a good return type for this yet
 			if ((context.fileVersion = 5)) weapon.type = ItemImporter.getTypeFromKind(weapon.id)
 			acc.push(
 				...ItemImportHandlers[weapon.type].importItem(weapon, {
@@ -347,7 +347,7 @@ class TraitContainerImporter extends ItemImporter {
 		}
 
 		item.children?.reduce((acc, child) => {
-			//@ts-expect-error not going to bother with a good return type for this yet
+			// @ts-expect-error not going to bother with a good return type for this yet
 			if ((context.fileVersion = 5)) child.type = ItemImporter.getTypeFromKind(child.id)
 			acc.push(
 				...ItemImportHandlers[child.type].importItem(child, { parentId: id, fileVersion: context.fileVersion }),
@@ -356,7 +356,7 @@ class TraitContainerImporter extends ItemImporter {
 		}, results)
 
 		item.modifiers?.reduce((acc, mod) => {
-			//@ts-expect-error not going to bother with a good return type for this yet
+			// @ts-expect-error not going to bother with a good return type for this yet
 			if ((context.fileVersion = 5)) mod.type = ItemImporter.getTypeFromKind(mod.id)
 			acc.push(
 				...ItemImportHandlers[mod.type].importItem(mod, { parentId: id, fileVersion: context.fileVersion }),
@@ -460,7 +460,7 @@ class TraitModifierContainerImporter extends ItemImporter {
 		}
 
 		item.children?.reduce((acc, child) => {
-			//@ts-expect-error not going to bother with a good return type for this yet
+			// @ts-expect-error not going to bother with a good return type for this yet
 			if ((context.fileVersion = 5)) child.type = ItemImporter.getTypeFromKind(child.id)
 			acc.push(
 				...ItemImportHandlers[child.type].importItem(child, { parentId: id, fileVersion: context.fileVersion }),
@@ -529,7 +529,7 @@ class SkillImporter extends ItemImporter {
 		}
 
 		item.weapons?.reduce((acc, weapon) => {
-			//@ts-expect-error not going to bother with a good return type for this yet
+			// @ts-expect-error not going to bother with a good return type for this yet
 			if ((context.fileVersion = 5)) weapon.type = ItemImporter.getTypeFromKind(weapon.id)
 			acc.push(
 				...ItemImportHandlers[weapon.type].importItem(weapon, {
@@ -601,7 +601,7 @@ class TechniqueImporter extends ItemImporter {
 		}
 
 		item.weapons?.reduce((acc, weapon) => {
-			//@ts-expect-error not going to bother with a good return type for this yet
+			// @ts-expect-error not going to bother with a good return type for this yet
 			if ((context.fileVersion = 5)) weapon.type = ItemImporter.getTypeFromKind(weapon.id)
 			acc.push(
 				...ItemImportHandlers[weapon.type].importItem(weapon, {
@@ -659,7 +659,7 @@ class SkillContainerImporter extends ItemImporter {
 		}
 
 		item.children?.reduce((acc, child) => {
-			//@ts-expect-error not going to bother with a good return type for this yet
+			// @ts-expect-error not going to bother with a good return type for this yet
 			if ((context.fileVersion = 5)) child.type = ItemImporter.getTypeFromKind(child.id)
 			acc.push(
 				...ItemImportHandlers[child.type].importItem(child, { parentId: id, fileVersion: context.fileVersion }),
@@ -731,7 +731,7 @@ class SpellImporter extends ItemImporter {
 		}
 
 		item.weapons?.reduce((acc, weapon) => {
-			//@ts-expect-error not going to bother with a good return type for this yet
+			// @ts-expect-error not going to bother with a good return type for this yet
 			if ((context.fileVersion = 5)) weapon.type = ItemImporter.getTypeFromKind(weapon.id)
 			acc.push(
 				...ItemImportHandlers[weapon.type].importItem(weapon, {
@@ -808,7 +808,7 @@ class RitualMagicSpellImporter extends ItemImporter {
 		}
 
 		item.weapons?.reduce((acc, weapon) => {
-			//@ts-expect-error not going to bother with a good return type for this yet
+			// @ts-expect-error not going to bother with a good return type for this yet
 			if ((context.fileVersion = 5)) weapon.type = ItemImporter.getTypeFromKind(weapon.id)
 			acc.push(
 				...ItemImportHandlers[weapon.type].importItem(weapon, {
@@ -866,7 +866,7 @@ class SpellContainerImporter extends ItemImporter {
 		}
 
 		item.children?.reduce((acc, mod) => {
-			//@ts-expect-error not going to bother with a good return type for this yet
+			// @ts-expect-error not going to bother with a good return type for this yet
 			if ((context.fileVersion = 5)) mod.type = ItemImporter.getTypeFromKind(mod.id)
 			acc.push(
 				...ItemImportHandlers[item.type].importItem(mod, { parentId: id, fileVersion: context.fileVersion }),
@@ -933,7 +933,7 @@ class EquipmentImporter extends ItemImporter {
 		}
 
 		item.modifiers?.reduce((acc, mod) => {
-			//@ts-expect-error not going to bother with a good return type for this yet
+			// @ts-expect-error not going to bother with a good return type for this yet
 			if ((context.fileVersion = 5)) mod.type = ItemImporter.getTypeFromKind(mod.id)
 			acc.push(
 				...ItemImportHandlers[mod.type].importItem(mod, { parentId: id, fileVersion: context.fileVersion }),
@@ -942,7 +942,7 @@ class EquipmentImporter extends ItemImporter {
 		}, results)
 
 		item.weapons?.reduce((acc, weapon) => {
-			//@ts-expect-error not going to bother with a good return type for this yet
+			// @ts-expect-error not going to bother with a good return type for this yet
 			if ((context.fileVersion = 5)) weapon.type = ItemImporter.getTypeFromKind(weapon.id)
 			acc.push(
 				...ItemImportHandlers[weapon.type].importItem(weapon, {
@@ -1013,7 +1013,7 @@ class EquipmentContainerImporter extends ItemImporter {
 		}
 
 		item.children?.reduce((acc, child) => {
-			//@ts-expect-error not going to bother with a good return type for this yet
+			// @ts-expect-error not going to bother with a good return type for this yet
 			if ((context.fileVersion = 5)) child.type = ItemImporter.getTypeFromKind(child.id)
 			acc.push(
 				...ItemImportHandlers[child.type].importItem(child, { parentId: id, fileVersion: context.fileVersion }),
@@ -1022,7 +1022,7 @@ class EquipmentContainerImporter extends ItemImporter {
 		}, results)
 
 		item.modifiers?.reduce((acc, mod) => {
-			//@ts-expect-error not going to bother with a good return type for this yet
+			// @ts-expect-error not going to bother with a good return type for this yet
 			if ((context.fileVersion = 5)) mod.type = ItemImporter.getTypeFromKind(mod.id)
 			acc.push(
 				...ItemImportHandlers[mod.type].importItem(mod, { parentId: id, fileVersion: context.fileVersion }),
@@ -1031,7 +1031,7 @@ class EquipmentContainerImporter extends ItemImporter {
 		}, results)
 
 		item.weapons?.reduce((acc, weapon) => {
-			//@ts-expect-error not going to bother with a good return type for this yet
+			// @ts-expect-error not going to bother with a good return type for this yet
 			if ((context.fileVersion = 5)) weapon.type = ItemImporter.getTypeFromKind(weapon.id)
 			acc.push(
 				...ItemImportHandlers[weapon.type].importItem(weapon, {
@@ -1139,7 +1139,7 @@ class EquipmentModifierContainerImporter extends ItemImporter {
 		}
 
 		item.children?.reduce((acc, child) => {
-			//@ts-expect-error not going to bother with a good return type for this yet
+			// @ts-expect-error not going to bother with a good return type for this yet
 			if ((context.fileVersion = 5)) child.type = ItemImporter.getTypeFromKind(child.id)
 			acc.push(
 				...ItemImportHandlers[child.type].importItem(child, { parentId: id, fileVersion: context.fileVersion }),
@@ -1231,7 +1231,7 @@ class NoteContainerImporter extends ItemImporter {
 		}
 
 		item.children?.reduce((acc, child) => {
-			//@ts-expect-error not going to bother with a good return type for this yet
+			// @ts-expect-error not going to bother with a good return type for this yet
 			if ((context.fileVersion = 5)) child.type = ItemImporter.getTypeFromKind(child.id)
 			acc.push(
 				...ItemImportHandlers[child.type].importItem(child, { parentId: id, fileVersion: context.fileVersion }),

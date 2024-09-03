@@ -1,5 +1,5 @@
 import { RollModifierTags, SETTINGS, SSRT_SETTING, SYSTEM_NAME } from "@data"
-import { allLengthUnits, Length, LengthSymbols, LengthUnits, LocalizeGURPS } from "@util"
+import { Length, LocalizeGURPS } from "@util"
 import { TokenGURPS } from "../token/object.ts"
 import { UserGURPS } from "@module/user/document.ts"
 
@@ -7,15 +7,15 @@ class RulerGURPS extends Ruler<TokenGURPS, UserGURPS> {
 	protected override _getSegmentLabel(segment: RulerMeasurementSegment): string {
 		const totalDistance = this.totalDistance
 		let units = canvas.scene?.grid.units
-		Object.keys(LengthSymbols).forEach(k => {
-			if (units && LengthSymbols[k as LengthUnits].includes(units)) units = k as LengthUnits
+		Object.keys(Length.Symbols).forEach(k => {
+			if (units && Length.Symbols[k as Length.Unit].includes(units)) units = k as Length.Unit
 		})
-		if (!allLengthUnits.includes(units as LengthUnits)) units = LengthUnits.Yard
+		if (!Length.Units.includes(units as Length.Unit)) units = Length.Unit.Yard
 
 		let label = `${Math.round(segment.distance * 100) / 100} ${units}`
 		if (segment.last) label += ` [${Math.round(totalDistance * 100) / 100} ${units}]`
 
-		const yards = Length.fromInches(Length.toInches(totalDistance, units as LengthUnits), LengthUnits.Yard)
+		const yards = Length.fromInches(Length.toInches(totalDistance, units as Length.Unit), Length.Unit.Yard)
 		const mod = RulerGURPS.getRangeMod(yards)
 
 		game.gurps.modifierList.setRangeMod({

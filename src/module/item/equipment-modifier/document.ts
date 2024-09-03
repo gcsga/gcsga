@@ -31,7 +31,7 @@ class EquipmentModifierGURPS<TParent extends ActorGURPS | null = ActorGURPS | nu
 		return this.system.weight
 	}
 
-	get weightUnits(): WeightUnits {
+	get weightUnits(): Weight.Unit {
 		return SheetSettings.for(this.actor).default_weight_units
 	}
 

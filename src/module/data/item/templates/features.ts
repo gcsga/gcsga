@@ -1,7 +1,6 @@
 import fields = foundry.data.fields
 import { ItemDataModel, ItemDataSchema } from "@module/data/abstract.ts"
-import { Feature } from "@system"
-import { BaseFeature } from "@system/feature/base.ts"
+import { Feature, FeatureTypes } from "@system/feature/types.ts"
 import { feature } from "@util"
 
 class FeatureTemplate extends ItemDataModel<FeatureTemplateSchema> {
@@ -9,7 +8,7 @@ class FeatureTemplate extends ItemDataModel<FeatureTemplateSchema> {
 		const fields = foundry.data.fields
 		return {
 			...super.defineSchema(),
-			features: new fields.ArrayField(new fields.TypedSchemaField(BaseFeature.TYPES)),
+			features: new fields.ArrayField(new fields.TypedSchemaField(FeatureTypes)),
 		}
 	}
 }

@@ -5,11 +5,11 @@ import {
 	AbstractContainerSystemSchema,
 } from "@item/abstract-container/data.ts"
 import { ItemType, NumericCompareType } from "@module/data/constants.ts"
-import { WeightString, feature, prereq } from "@util"
+import { Weight, feature, prereq } from "@util"
 import { EquipmentContainerGURPS } from "./document.ts"
-import { BasePrereq, Feature, Prereq } from "@system"
-import { BaseFeature } from "@system/feature/base.ts"
+import { BasePrereq, Prereq } from "@system"
 import { RecordField } from "@system/schema-data-fields.ts"
+import { FeatureTypes } from "@system/feature/types.ts"
 
 class EquipmentContainerSystemData extends AbstractContainerSystemData<
 	EquipmentContainerGURPS,
@@ -34,7 +34,7 @@ class EquipmentContainerSystemData extends AbstractContainerSystemData<
 			rated_strength: new fields.NumberField({ integer: true, min: 0, nullable: true }),
 			quantity: new fields.NumberField({ integer: true, min: 0 }),
 			value: new fields.NumberField({ min: 0, nullable: false }),
-			weight: new fields.StringField<WeightString>(),
+			weight: new fields.StringField({ required: true, nullable: false }),
 			max_uses: new fields.NumberField({ integer: true, min: 0 }),
 			uses: new fields.NumberField({ integer: true, min: 0 }),
 			prereqs: new fields.ArrayField(new fields.TypedSchemaField(BasePrereq.TYPES), {
@@ -48,7 +48,7 @@ class EquipmentContainerSystemData extends AbstractContainerSystemData<
 					},
 				],
 			}),
-			features: new fields.ArrayField(new fields.TypedSchemaField(BaseFeature.TYPES)),
+			features: new fields.ArrayField(new fields.TypedSchemaField(FeatureTypes)),
 			equipped: new fields.BooleanField({ initial: true }),
 			ignore_weight_for_skills: new fields.BooleanField({ initial: false }),
 			open: new fields.BooleanField({ initial: true }),
@@ -77,7 +77,7 @@ type EquipmentContainerSystemSchema = AbstractContainerSystemSchema & {
 	rated_strength: fields.NumberField
 	quantity: fields.NumberField<number, number, true, false, true>
 	value: fields.NumberField<number, number, true, false, true>
-	weight: fields.StringField<WeightString>
+	weight: fields.StringField<Weight.String, Weight.String, true, false, true>
 	max_uses: fields.NumberField
 	uses: fields.NumberField
 	prereqs: fields.ArrayField<fields.TypedSchemaField<Record<prereq.Type, ConstructorOf<Prereq>>>>
