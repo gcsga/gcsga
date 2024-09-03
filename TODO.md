@@ -1,5 +1,7 @@
 # BIG OL' TODO Document
 
+- re-do weight so it extends number or maybe make it an object with value and unit
+
 ## Immediate TODO
 
 1. Refactor

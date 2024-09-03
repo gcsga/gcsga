@@ -369,7 +369,12 @@ class ItemDataModel<TSchema extends ItemDataSchema = ItemDataSchema> extends Sys
 	static override defineSchema(): ItemDataSchema {
 		const fields = foundry.data.fields
 		return {
-			container: new fields.ForeignDocumentField(ItemGURPS2, { idOnly: true }),
+			container: new fields.ForeignDocumentField(foundry.documents.BaseItem, {
+				required: true,
+				nullable: true,
+				idOnly: true,
+				initial: null,
+			}),
 		}
 	}
 
@@ -389,7 +394,7 @@ interface ItemDataModel<TSchema extends ItemDataSchema>
 		ModelPropsFromSchema<ItemDataSchema> {}
 
 type ItemDataSchema = {
-	container: fields.ForeignDocumentField<ItemGURPS2>
+	container: fields.ForeignDocumentField<string>
 }
 
 export { ItemDataModel, ActorDataModel, SystemDataModel, type ItemDataSchema }

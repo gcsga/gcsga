@@ -1,13 +1,4 @@
-import {
-	ErrorGURPS,
-	StringBuilder,
-	affects,
-	align,
-	cell,
-	display,
-	selfctrl,
-	tmcost,
-} from "@util"
+import { ErrorGURPS, StringBuilder, affects, align, cell, display, selfctrl, tmcost } from "@util"
 import { ItemDataModel } from "../abstract.ts"
 import { ItemType } from "../constants.ts"
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
@@ -17,7 +8,7 @@ import { PrereqTemplate, PrereqTemplateSchema } from "./templates/prereqs.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
 import { StudyTemplate, StudyTemplateSchema } from "./templates/study.ts"
 import fields = foundry.data.fields
-import { ItemGURPS2 } from "@module/document/item.ts"
+import type { ItemGURPS2 } from "@module/document/item.ts"
 import { TraitModifierData } from "./trait-modifier.ts"
 import { SheetSettings, Study } from "@system"
 import { Nameable } from "@module/util/nameable.ts"
@@ -81,52 +72,48 @@ class TraitData extends ItemDataModel.mixin(
 		return this.can_level
 	}
 
-	override get cellData() {
-		const cellData: Record<string, CellData> = {}
-		cellData.name = new CellData({
-			type: cell.Type.Text,
-			primary: this.processedName,
-			secondar: this.secondaryText(display.Option.isInline),
-			disabled: !this.enabled,
-			unsatisfiedReason: this.unsatisfiedReason,
-			tooltip: this.secondaryText(display.Option.isTooltip),
-		})
-		cellData.points = new CellData({
-			type: cell.Type.Text,
-			primary: this.adjustedPoints.toString(),
-			alignment: align.Option.End,
-		})
-		cellData.tags = new CellData({
-			type: cell.Type.Tags,
-			primary: this.combinedTags,
-		})
-		cellData.reference = new CellData({
-			type: cell.Type.PageRef,
-			primary: this.reference,
-			secondary: this.reference_highlight === "" ? this.nameWithReplacements : this.reference_highlight,
-		})
-		return cellData
+	override get cellData(): Record<string, CellData> {
+		return {
+			name: new CellData({
+				type: cell.Type.Text,
+				primary: this.processedName,
+				secondar: this.secondaryText(display.Option.isInline),
+				disabled: !this.enabled,
+				unsatisfiedReason: this.unsatisfiedReason,
+				tooltip: this.secondaryText(display.Option.isTooltip),
+			}),
+			points: new CellData({
+				type: cell.Type.Text,
+				primary: this.adjustedPoints.toString(),
+				alignment: align.Option.End,
+			}),
+			tags: new CellData({
+				type: cell.Type.Tags,
+				primary: this.combinedTags,
+			}),
+			reference: new CellData({
+				type: cell.Type.PageRef,
+				primary: this.reference,
+				secondary: this.reference_highlight === "" ? this.nameWithReplacements : this.reference_highlight,
+			}),
+		}
 	}
 
 	get enabled(): boolean {
 		if (this.disabled) return false
-		let p = this.container
-		while (p !== null) {
+		let p = this.parent
+		while (p.container !== null) {
+			p = p.container as ItemGURPS2
 			if (p.isOfType(ItemType.TraitContainer)) {
 				if (p.system.disabled) return false
-				p = p.system.container
 			}
 			throw ErrorGURPS("container of trait is not of type trait_container.")
 		}
 		return true
 	}
 
-	get allModifiers(): Collection<ItemGURPS2 & { system: TraitModifierData }> {
-		return new Collection(
-			Object.values(this.modifiers)
-				.filter(e => e.isOfType(ItemType.TraitModifier))
-				.map(e => [e.id, e]),
-		)
+	get allModifiers(): { system: TraitModifierData }[] {
+		return Object.values(this.modifiers).filter(e => e.isOfType(ItemType.TraitModifier))
 	}
 
 	/** Returns the current level of the trait or 0 if it is not leveled */
@@ -296,6 +283,7 @@ class TraitData extends ItemDataModel.mixin(
 	}
 }
 
+//@ts-expect-error we'll fix this at some point
 interface TraitData extends Omit<ModelPropsFromSchema<TraitSchema>, "study"> {
 	study: Study[]
 }

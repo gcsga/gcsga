@@ -11,10 +11,6 @@ export namespace emcost {
 	}
 
 	export namespace Type {
-		export function LastType(): Type {
-			return Type.Final
-		}
-
 		export function permitted(T: Type): Value[] {
 			if (Type.ensureValid(T) === Type.Base) return [Value.CostFactor, Value.Multiplier]
 			return [Value.Addition, Value.Percentage, Value.Multiplier]

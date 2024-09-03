@@ -122,7 +122,9 @@ class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, Fe
 	}
 }
 
-interface TraitModifierData extends ModelPropsFromSchema<TraitModifierSchema> {}
+interface TraitModifierData extends Omit<ModelPropsFromSchema<TraitModifierSchema>, "container"> {
+	container: string | null
+}
 
 type TraitModifierSchema = BasicInformationTemplateSchema &
 	FeatureTemplateSchema &

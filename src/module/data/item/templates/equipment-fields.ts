@@ -1,0 +1,171 @@
+import fields = foundry.data.fields
+import { ItemDataModel, ItemDataSchema } from "@module/data/abstract.ts"
+import { Weight, WeightString, WeightUnits, align, cell, display } from "@util"
+import { CellData } from "../fields/cell-data.ts"
+import { ItemTemplateType } from "../types.ts"
+import { SheetSettings } from "@system"
+import { ItemType } from "@module/data/constants.ts"
+import { EquipmentModifierData } from "../equipment-modifier.ts"
+import type { ItemGURPS2 } from "@module/document/item.ts"
+import { valueAdjustedForModifiers, weightAdjustedForModifiers } from "../helpers.ts"
+
+class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchema> {
+	static override defineSchema(): EquipmentFieldsTemplateSchema {
+		const fields = foundry.data.fields
+
+		return {
+			...super.defineSchema(),
+			tech_level: new fields.StringField({ required: true, nullable: false, initial: "" }),
+			legality_class: new fields.StringField({ required: true, nullable: false, initial: "" }),
+			rated_strength: new fields.NumberField({ integer: true, min: 0, nullable: true }),
+			quantity: new fields.NumberField({ required: true, nullable: false, integer: true, min: 0, initial: 0 }),
+			level: new fields.NumberField({ required: true, nullable: false, integer: true, min: 0, initial: 0 }),
+			value: new fields.NumberField({ required: true, nullable: false, min: 0, initial: 0 }),
+			weight: new fields.StringField({ required: true, nullable: false, initial: Weight.format(0) }),
+			max_uses: new fields.NumberField({ required: true, nullable: false, integer: true, min: 0, initial: 0 }),
+			uses: new fields.NumberField({ required: true, nullable: true, integer: true, min: 0, initial: null }),
+			equipped: new fields.BooleanField({ required: true, nullable: false, initial: true }),
+			ignore_weight_for_skills: new fields.BooleanField({ required: true, nullable: false, initial: false }),
+		}
+	}
+
+	override get cellData(): Record<string, CellData> {
+		let dim = this.quantity === 0
+		let c = this.parent
+		while (c.container !== null) {
+			c = c.container as ItemGURPS2
+			if (!c.hasTemplate(ItemTemplateType.EquipmentFields)) break
+			dim = c.system.quantity === 0
+		}
+		const weightUnits = SheetSettings.for(this.actor).default_weight_units
+
+		return {
+			equipped: new CellData({ type: cell.Type.Toggle, checked: this.equipped, alignment: align.Option.Middle }),
+			quantity: new CellData({
+				type: cell.Type.Text,
+				priamry: this.quantity.toLocaleString(),
+				alignment: align.Option.End,
+			}),
+			name: new CellData({
+				type: cell.Type.Text,
+				primary: this.processedName,
+				secondary: this.secondaryText(display.Option.isInline),
+				alignment: align.Option.Start,
+			}),
+			uses: new CellData({
+				type: cell.Type.Text,
+				primary: this.max_uses > 0 ? this.uses : "",
+				alignment: align.Option.End,
+			}),
+			TL: new CellData({
+				type: cell.Type.Text,
+				primary: this.tech_level,
+				alignment: align.Option.End,
+			}),
+			LC: new CellData({
+				type: cell.Type.Text,
+				primary: this.legality_class,
+				alignment: align.Option.End,
+			}),
+			cost: new CellData({
+				type: cell.Type.Text,
+				primary: this.adjustedValue().toLocaleString(),
+				alignment: align.Option.End,
+			}),
+			extendedCost: new CellData({
+				type: cell.Type.Text,
+				primary: this.extendedValue().toLocaleString(),
+				alignment: align.Option.End,
+			}),
+			weight: new CellData({
+				type: cell.Type.Text,
+				primary: this.adjustedWeight(false, weightUnits).toLocaleString(),
+				alignment: align.Option.End,
+			}),
+			extendedWeight: new CellData({
+				type: cell.Type.Text,
+				primary: this.extendedWeight(false, weightUnits).toLocaleString(),
+				alignment: align.Option.End,
+			}),
+			tags: new CellData({
+				type: cell.Type.Text,
+				primary: this.hasTemplate(ItemTemplateType.BasicInformation) ? this.combinedTags : "",
+				alignment: align.Option.Start,
+			}),
+			reference: new CellData({
+				type: cell.Type.PageRef,
+				primary: this.hasTemplate(ItemTemplateType.BasicInformation) ? this.reference : "",
+				secondary: this.hasTemplate(ItemTemplateType.BasicInformation)
+					? this.reference_highlight === ""
+						? this.nameWithReplacements
+						: this.reference_highlight
+					: "",
+			}),
+		}
+	}
+
+	adjustedValue(): number {
+		return valueAdjustedForModifiers(
+			this.parent as unknown as { system: EquipmentFieldsTemplate },
+			this.value,
+			this.allModifiers,
+		)
+	}
+
+	extendedValue(): number {
+		if (this.quantity <= 0) return 0
+		let value = this.adjustedValue()
+		if (this.isOfType(ItemType.EquipmentContainer))
+			for (const child of this.children) {
+				value += child.extendedValue
+			}
+		return value * this.quantity
+	}
+
+	adjustedWeight(forSkills: boolean, units: WeightUnits): number {
+		if (forSkills && this.ignore_weight_for_skills && this.equipped) {
+			return 0
+		}
+		return weightAdjustedForModifiers(
+			this.parent as unknown as { system: EquipmentFieldsTemplate },
+			this.weight,
+			this.allModifiers,
+			units,
+		)
+	}
+
+	extendedWeight(forSkills: boolean, units: WeightUnits): number {
+		return extendedWeightAdjustedForModifiers(
+			this,
+			units,
+			this.quantity,
+			this.weight,
+			this.allModifiers,
+			this.ignore_weight_for_skills && this.equipped,
+		)
+	}
+
+	get allModifiers(): { system: EquipmentModifierData }[] {
+		return Object.values(this.modifiers).filter(e => e.isOfType(ItemType.EquipmentModifier))
+	}
+}
+
+interface EquipmentFieldsTemplate extends ModelPropsFromSchema<EquipmentFieldsTemplateSchema> {
+	modifiers: Collection<ItemGURPS2>
+}
+
+type EquipmentFieldsTemplateSchema = ItemDataSchema & {
+	tech_level: fields.StringField<string, string, true, false, true>
+	legality_class: fields.StringField<string, string, true, false, true>
+	rated_strength: fields.NumberField<number, number, true, true, true>
+	quantity: fields.NumberField<number, number, true, false, true>
+	level: fields.NumberField<number, number, true, false, true>
+	value: fields.NumberField<number, number, true, false, true>
+	weight: fields.StringField<WeightString, WeightString, true, false, true>
+	max_uses: fields.NumberField<number, number, true, false, true>
+	uses: fields.NumberField<number, number, true, true, true>
+	equipped: fields.BooleanField<boolean, boolean, true, false, true>
+	ignore_weight_for_skills: fields.BooleanField<boolean, boolean, true, false, true>
+}
+
+export { EquipmentFieldsTemplate, type EquipmentFieldsTemplateSchema }

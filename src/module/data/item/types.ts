@@ -36,6 +36,7 @@ export enum ItemTemplateType {
 	Replacement = "ReplacementTemplate",
 	Study = "StudyTemplate",
 	SpellFields = "SpellFieldsTemplate",
+	EquipmentFields = "EquipmentFieldsTemplate",
 }
 
 export interface ItemDataTemplates {
@@ -49,4 +50,5 @@ export interface ItemDataTemplates {
 	[ItemTemplateType.Replacement]: ItemDataTemplate.ReplacementTemplate
 	[ItemTemplateType.Study]: ItemDataTemplate.StudyTemplate
 	[ItemTemplateType.SpellFields]: ItemDataTemplate.SpellFieldsTemplate
+	[ItemTemplateType.EquipmentFields]: ItemDataTemplate.EquipmentFieldsTemplate
 }

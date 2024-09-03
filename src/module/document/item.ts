@@ -52,6 +52,25 @@ class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extend
 	get _systemFlagsDataModel(): typeof SystemDataModel | null {
 		return this.system?.metadata?.systemFlagsModel ?? null
 	}
+	/* -------------------------------------------- */
+	/*  Item Properties                             */
+	/* -------------------------------------------- */
+	/**
+	 * The item that contains this item, if it is in a container. Returns a promise if the item is located
+	 * in a compendium pack.
+	 */
+	get container(): ItemGURPS2 | Promise<ItemGURPS2> | null {
+		if (!this.system.container) return null
+		if (this.isEmbedded) return this.actor!.items.get(this.system.container) ?? null
+		if (this.pack) {
+			return (
+				((game.packs.get(this.pack) as CompendiumCollection<ItemGURPS2<null>>).getDocument(
+					this.system.container,
+				) as Promise<ItemGURPS2<null>>) ?? null
+			)
+		}
+		return game.items.get(this.system.container) ?? null
+	}
 
 	/* -------------------------------------------- */
 	/*  Socket Event Handlers                       */

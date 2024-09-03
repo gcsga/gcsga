@@ -1,4 +1,4 @@
-import { ItemDataModel } from "../abstract.ts"
+import { ItemDataModel, ItemDataSchema } from "../abstract.ts"
 import fields = foundry.data.fields
 import { PrereqTemplate, PrereqTemplateSchema } from "./templates/prereqs.ts"
 import { ContainerTemplate, ContainerTemplateSchema } from "./templates/container.ts"
@@ -189,13 +189,17 @@ class SkillData extends ItemDataModel.mixin(
 	}
 }
 
-interface SkillData extends Omit<ModelPropsFromSchema<SkillSchema>, "study" | "defaulted_from" | "defaults"> {
+interface SkillData
+	// @ts-expect-error type error
+	extends Omit<ModelPropsFromSchema<SkillSchema>, "study" | "defaulted_from" | "defaults" | "container"> {
 	study: Study[]
 	defaulted_from: SkillDefault | null
 	defaults: SkillDefault[]
+	container: string | null
 }
 
-type SkillSchema = BasicInformationTemplateSchema &
+type SkillSchema = ItemDataSchema &
+	BasicInformationTemplateSchema &
 	PrereqTemplateSchema &
 	ContainerTemplateSchema &
 	FeatureTemplateSchema &

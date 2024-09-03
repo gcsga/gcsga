@@ -1,7 +1,9 @@
 import { ActorGURPS2 } from "@module/document/actor.ts"
 import { SheetSettings, SkillDefault } from "@system"
-import { LocalizeGURPS, StringBuilder, TooltipGURPS, difficulty, display } from "@util"
+import { LocalizeGURPS, StringBuilder, TooltipGURPS, WeightString, WeightUnits, difficulty, display, emcost } from "@util"
 import { ActorType, ItemType, gid } from "../constants.ts"
+import { EquipmentModifierData } from "./equipment-modifier.ts"
+import { EquipmentFieldsTemplate } from "./templates/equipment-fields.ts"
 
 function modifyPoints(points: number, modifier: number): number {
 	return points + calculateModifierPoints(points, modifier)
@@ -104,11 +106,89 @@ function calculateTechniqueLevel(
 	}
 }
 
+function valueAdjustedForModifiers(
+	equipment: { system: EquipmentFieldsTemplate },
+	value: number,
+	modifiers: { system: EquipmentModifierData }[],
+): number {
+	let cost = processNonCFStep(equipment, emcost.Type.Original, value, modifiers)
+
+	let cf = 0
+	for (const mod of modifiers) {
+		mod.system.equipment = equipment
+		if (mod.system.cost_type === emcost.Type.Base) {
+			const t = emcost.Type.fromString(emcost.Type.Base, mod.system.cost)
+			cf += emcost.Value.extractValue(t, mod.system.cost) * mod.system.costMultiplier
+			if (t === emcost.Value.Multiplier) cf -= 1
+		}
+	}
+	if (cf !== 0) {
+		cf = Math.max(cf, -80)
+		cost = cost * Math.max(cf, -80) + 1
+	}
+
+	// Apply all equipment final base cost
+	cost = processNonCFStep(equipment, emcost.Type.FinalBase, value, modifiers)
+
+	// Apply all equipment final cost
+	cost = processNonCFStep(equipment, emcost.Type.Final, value, modifiers)
+
+	return Math.max(cost, 0)
+}
+
+function weightAdjustedForModifiers(
+	equipment: { system: EquipmentFieldsTemplate },
+	weight: WeightString,
+	modifiers: { system: EquipmentModifierData }[],
+	units: WeightUnits,
+): number {
+	let percentages = 0
+}
+
+function processNonCFStep(
+	equipment: { system: EquipmentFieldsTemplate },
+	costType: emcost.Type,
+	value: number,
+	modifiers: { system: EquipmentModifierData }[],
+): number {
+	let [percentages, additions] = [0, 0]
+	let cost = value
+
+	for (const mod of modifiers) {
+		mod.system.equipment = equipment
+		if (mod.system.cost_type === costType) {
+			const t = emcost.Type.fromString(costType, mod.system.cost)
+			const amt = emcost.Value.extractValue(t, mod.system.cost) * mod.system.costMultiplier
+			switch (t) {
+				case emcost.Value.Addition:
+					additions += amt
+					break
+				case emcost.Value.Percentage:
+					percentages += amt
+					break
+				case emcost.Value.Multiplier:
+					cost *= amt
+			}
+		}
+	}
+
+	cost += additions
+	if (percentages !== 0) cost += value * (percentages / 100)
+	return cost
+}
+
 interface SkillLevel {
 	level: number
 	relativeLevel: number
 	tooltip: string
 }
 
-export { modifyPoints, calculateModifierPoints, calculateTechniqueLevel, addTooltipForSkillLevelAdj }
+export {
+	modifyPoints,
+	calculateModifierPoints,
+	calculateTechniqueLevel,
+	addTooltipForSkillLevelAdj,
+	valueAdjustedForModifiers,
+	weightAdjustedForModifiers,
+}
 export type { SkillLevel }
