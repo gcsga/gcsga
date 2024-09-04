@@ -1,9 +1,21 @@
 import { ActorGURPS2 } from "@module/document/actor.ts"
 import { SheetSettings, SkillDefault } from "@system"
-import { Int, LocalizeGURPS, StringBuilder, TooltipGURPS, Weight, difficulty, display, emcost, emweight } from "@util"
+import {
+	Int,
+	LocalizeGURPS,
+	StringBuilder,
+	TooltipGURPS,
+	Weight,
+	difficulty,
+	display,
+	emcost,
+	emweight,
+	feature,
+} from "@util"
 import { ActorType, ItemType, gid } from "../constants.ts"
 import { EquipmentModifierData } from "./equipment-modifier.ts"
 import { EquipmentFieldsTemplate } from "./templates/equipment-fields.ts"
+import { Feature } from "@system/feature/types.ts"
 
 function modifyPoints(points: number, modifier: number): number {
 	return points + calculateModifierPoints(points, modifier)
@@ -175,7 +187,7 @@ function weightAdjustedForModifiers(
 	// Apply all final
 	w = processMultiplyAddWeightStep(equipment, emweight.Type.Final, w, defUnits, modifiers)
 
-	return Weight.from(Math.max(w, 0))
+	return Int.from(Math.max(w, 0))
 }
 
 function extendedWeightAdjustedForModifiers(
@@ -191,16 +203,29 @@ function extendedWeightAdjustedForModifiers(
 ): number {
 	if (qty <= 0) return 0
 
-	const base = 0
+	let base = 0
+	if (!forSkills || !weightIgnoredForSkills) {
+		base = Int.from(weightAdjustedForModifiers(equipment, baseWeight, modifiers, defUnits))
+	}
 	if (children.length !== 0) {
 		let contained = 0
 		for (const child of children) {
 			contained += Int.from(child.system.extendedWeight(forSkills, defUnits))
 		}
-		const [percentage, reduction] = [0, 0]
-		for (const feature of features) {
+		let [percentage, reduction] = [0, 0]
+		for (const f of features) {
+			if (f.isOfType(feature.Type.ContainedWeightReduction)) {
+				if (f.isPercentageReduction) percentage += f.percentageReduction
+				else reduction += f.fixedReduction(defUnits)
+			}
 		}
+
+		if (percentage >= 100) contained = 0
+		else if (percentage > 0) contained -= Int.from((contained * percentage) / 100)
+
+		base += Math.max(contained - reduction, 0)
 	}
+	return Int.from(base * qty)
 }
 
 function processNonCFStep(

@@ -5,17 +5,13 @@ import { BaseFeature } from "./base.ts"
 import { Nameable } from "@module/util/nameable.ts"
 
 class SkillBonus extends BaseFeature<SkillBonusSchema> {
+	static override TYPE = feature.Type.SkillBonus
+
 	static override defineSchema(): SkillBonusSchema {
 		const fields = foundry.data.fields
 
 		return {
 			...super.defineSchema(),
-			type: new fields.StringField({
-				required: true,
-				nullable: false,
-				blank: false,
-				initial: feature.Type.SkillBonus,
-			}),
 			selection_type: new fields.StringField({ choices: skillsel.Types, initial: skillsel.Type.Name }),
 			name: new fields.SchemaField(StringCriteria.defineSchema()),
 			specialization: new fields.SchemaField(StringCriteria.defineSchema()),

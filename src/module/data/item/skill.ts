@@ -1,4 +1,4 @@
-import { ItemDataModel, ItemDataSchema } from "../abstract.ts"
+import { ItemDataModel } from "../abstract.ts"
 import fields = foundry.data.fields
 import { PrereqTemplate, PrereqTemplateSchema } from "./templates/prereqs.ts"
 import { ContainerTemplate, ContainerTemplateSchema } from "./templates/container.ts"
@@ -195,8 +195,7 @@ interface SkillData extends Omit<ModelPropsFromSchema<SkillSchema>, "study" | "d
 	defaults: SkillDefault[]
 }
 
-type SkillSchema = ItemDataSchema &
-	BasicInformationTemplateSchema &
+type SkillSchema = BasicInformationTemplateSchema &
 	PrereqTemplateSchema &
 	ContainerTemplateSchema &
 	FeatureTemplateSchema &

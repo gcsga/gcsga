@@ -1,6 +1,6 @@
 import { study } from "@util"
 import fields = foundry.data.fields
-import { ItemDataModel, ItemDataSchema } from "@module/data/abstract.ts"
+import { ItemDataModel } from "@module/data/abstract.ts"
 import { Study, StudySchema } from "@system"
 
 class StudyTemplate extends ItemDataModel<StudyTemplateSchema> {
@@ -23,7 +23,7 @@ interface StudyTemplate
 	study: Study[]
 }
 
-type StudyTemplateSchema = ItemDataSchema & {
+type StudyTemplateSchema = {
 	study: fields.ArrayField<fields.SchemaField<StudySchema>>
 	study_hours_needed: fields.StringField<study.Level>
 }

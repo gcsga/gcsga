@@ -32,7 +32,7 @@ class BasicInformationTemplate extends ItemDataModel<BasicInformationTemplateSch
 	}
 
 	get processedNotes(): string {
-		return replaceAllStringFunc(EvalEmbeddedRegex, this.notesWithReplacements, this.parent.actor)
+		return replaceAllStringFunc(EvalEmbeddedRegex, this.notesWithReplacements, this.actor)
 	}
 
 	/** Replacements */

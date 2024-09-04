@@ -1,4 +1,4 @@
-import { ItemDataModel, ItemDataSchema } from "@module/data/abstract.ts"
+import { ItemDataModel } from "@module/data/abstract.ts"
 import fields = foundry.data.fields
 import { RecordField } from "@system"
 
@@ -6,7 +6,6 @@ class ReplacementTemplate extends ItemDataModel<ReplacementTemplateSchema> {
 	static override defineSchema(): ReplacementTemplateSchema {
 		const fields = foundry.data.fields
 		return {
-			...super.defineSchema(),
 			replacements: new RecordField(
 				new fields.StringField({ required: true, nullable: false }),
 				new fields.StringField({ required: true, nullable: false }),
@@ -24,7 +23,7 @@ interface ReplacementTemplate
 	extends ItemDataModel<ReplacementTemplateSchema>,
 		ModelPropsFromSchema<ReplacementTemplateSchema> {}
 
-type ReplacementTemplateSchema = ItemDataSchema & {
+type ReplacementTemplateSchema = {
 	replacements: RecordField<
 		fields.StringField<string, string, true, false, false>,
 		fields.StringField<string, string, true, false, false>

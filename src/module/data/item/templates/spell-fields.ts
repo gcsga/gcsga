@@ -1,4 +1,4 @@
-import { ItemDataModel, ItemDataSchema } from "@module/data/abstract.ts"
+import { ItemDataModel } from "@module/data/abstract.ts"
 import fields = foundry.data.fields
 import { Nameable } from "@module/util/nameable.ts"
 import { EvalEmbeddedRegex, LocalizeGURPS, StringBuilder, display, replaceAllStringFunc } from "@util"
@@ -16,7 +16,6 @@ class SpellFieldsTemplate extends ItemDataModel<SpellFieldsTemplateSchema> {
 		const fields = foundry.data.fields
 
 		return {
-			...super.defineSchema(),
 			college: new fields.ArrayField<fields.StringField>(new foundry.data.fields.StringField()),
 			power_source: new fields.StringField<string, string, true, false, true>({
 				required: true,
@@ -145,7 +144,7 @@ class SpellFieldsTemplate extends ItemDataModel<SpellFieldsTemplateSchema> {
 
 interface SpellFieldsTemplate extends ModelPropsFromSchema<SpellFieldsTemplateSchema> {}
 
-type SpellFieldsTemplateSchema = ItemDataSchema & {
+type SpellFieldsTemplateSchema = {
 	college: fields.ArrayField<fields.StringField>
 	power_source: fields.StringField<string, string, true, false, true>
 	spell_class: fields.StringField<string, string, true, false, true>

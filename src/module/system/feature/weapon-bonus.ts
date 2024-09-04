@@ -8,16 +8,15 @@ import { Nameable } from "@module/util/nameable.ts"
 import { ItemDataModel } from "@module/data/abstract.ts"
 
 class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
-	// declare leveledAmount: WeaponLeveledAmount
 	declare dieCount: number
+
+	static override TYPE = feature.Type.WeaponBonus
 
 	static override defineSchema(): WeaponBonusSchema {
 		const fields = foundry.data.fields
 
 		return {
 			...super.defineSchema(),
-			// ...WeaponLeveledAmount.defineSchema(),
-			type: new fields.StringField({ required: true, nullable: false, blank: false }),
 			percent: new fields.BooleanField({ nullable: true }),
 			switch_type: new fields.StringField({ choices: wswitch.Types, nullable: true, initial: null }),
 			switch_type_value: new fields.BooleanField({ nullable: true, initial: null }),

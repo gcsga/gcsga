@@ -4,18 +4,13 @@ import { BaseFeature } from "./base.ts"
 import { Int, feature } from "@util"
 
 class ContainedWeightReduction extends BaseFeature<ContainedWeightReductionSchema> {
+	static override TYPE = feature.Type.ContainedWeightReduction
+
 	static override defineSchema(): ContainedWeightReductionSchema {
 		const fields = foundry.data.fields
 
 		return {
 			...super.defineSchema(),
-			// TODO: change for maybe percentage maybe number value (regex?)
-			type: new fields.StringField({
-				required: true,
-				nullable: false,
-				blank: false,
-				initial: feature.Type.ContainedWeightReduction,
-			}),
 			reduction: new fields.StringField({ initial: "0%" }),
 		}
 	}
@@ -31,7 +26,7 @@ class ContainedWeightReduction extends BaseFeature<ContainedWeightReductionSchem
 
 	fixedReduction(defUnits: Weight.Unit): number {
 		if (this.isPercentageReduction) return 0
-		return Weight.fromString(this.reduction, defUnits)
+		return Weight.fromString(this.reduction, defUnits)[0]
 	}
 
 	static extractContainedWeightReduction(s: string, defUnits: Weight.Unit): string {
@@ -40,7 +35,7 @@ class ContainedWeightReduction extends BaseFeature<ContainedWeightReductionSchem
 			const v = Int.fromString(s.substring(0, s.length - 1).trim())
 			return `${v.toString()}%`
 		}
-		const w = Weight.fromString(s, defUnits)
+		const [w] = Weight.fromString(s, defUnits)
 		return Weight.format(w)
 	}
 

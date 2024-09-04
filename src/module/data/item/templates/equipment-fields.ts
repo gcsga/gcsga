@@ -1,5 +1,5 @@
 import fields = foundry.data.fields
-import { ItemDataModel, ItemDataSchema } from "@module/data/abstract.ts"
+import { ItemDataModel } from "@module/data/abstract.ts"
 import { LocalizeGURPS, StringBuilder, Weight, align, cell, display } from "@util"
 import { CellData } from "../fields/cell-data.ts"
 import { ItemTemplateType } from "../types.ts"
@@ -197,12 +197,25 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 	}
 
 	extendedWeight(forSkills: boolean, units: Weight.Unit): number {
+		const features = this.hasTemplate(ItemTemplateType.Feature) ? this.features : []
+		let children: { system: EquipmentFieldsTemplate }[] = []
+		if (this.hasTemplate(ItemTemplateType.Container)) {
+			if (this.children instanceof Promise) {
+				;(async () => {
+					children = Array.from(await this.children) as unknown as { system: EquipmentFieldsTemplate }[]
+				})()
+			} else {
+				children = Array.from(this.children) as unknown as { system: EquipmentFieldsTemplate }[]
+			}
+		}
 		return extendedWeightAdjustedForModifiers(
-			this,
+			this.parent as unknown as { system: EquipmentFieldsTemplate },
 			units,
 			this.quantity,
 			this.weight,
 			this.allModifiers,
+			features,
+			children,
 			forSkills,
 			this.ignore_weight_for_skills && this.equipped,
 		)
@@ -219,7 +232,7 @@ interface EquipmentFieldsTemplate extends ModelPropsFromSchema<EquipmentFieldsTe
 	modifiers: Collection<ItemGURPS2>
 }
 
-type EquipmentFieldsTemplateSchema = ItemDataSchema & {
+type EquipmentFieldsTemplateSchema = {
 	tech_level: fields.StringField<string, string, true, false, true>
 	legality_class: fields.StringField<string, string, true, false, true>
 	rated_strength: fields.NumberField<number, number, true, false, true>

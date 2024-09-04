@@ -1,4 +1,4 @@
-import { ItemDataModel, ItemDataSchema } from "@module/data/abstract.ts"
+import { ItemDataModel } from "@module/data/abstract.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import fields = foundry.data.fields
@@ -8,7 +8,6 @@ class ContainerTemplate extends ItemDataModel<ContainerTemplateSchema> {
 	static override defineSchema(): ContainerTemplateSchema {
 		const fields = foundry.data.fields
 		return {
-			...super.defineSchema(),
 			open: new fields.BooleanField({ required: true, nullable: true, initial: null }),
 		}
 	}
@@ -52,6 +51,7 @@ class ContainerTemplate extends ItemDataModel<ContainerTemplateSchema> {
 
 		// Otherwise use local document collection
 		return (this.parent.isEmbedded ? this.parent.actor!.items : game.items).reduce((collection, item) => {
+			//@ts-expect-error container exists in all cases
 			if (item.system.container === this.parent.id) collection.set(item.id, item)
 			return collection
 		}, new Collection())
@@ -117,7 +117,7 @@ interface ContainerTemplate
 	constructor: typeof ContainerTemplate
 }
 
-type ContainerTemplateSchema = ItemDataSchema & {
+type ContainerTemplateSchema = {
 	open: fields.BooleanField<boolean, boolean, true, true>
 }
 

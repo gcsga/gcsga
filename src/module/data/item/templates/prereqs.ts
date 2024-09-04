@@ -1,5 +1,5 @@
 import fields = foundry.data.fields
-import { ItemDataModel, ItemDataSchema } from "@module/data/abstract.ts"
+import { ItemDataModel } from "@module/data/abstract.ts"
 import { NumericCompareType } from "@module/data/constants.ts"
 import { BasePrereq, type Prereq, type PrereqList } from "@system"
 import { ErrorGURPS, prereq } from "@util"
@@ -10,7 +10,6 @@ class PrereqTemplate extends ItemDataModel<PrereqTemplateSchema> {
 	static override defineSchema(): PrereqTemplateSchema {
 		const fields = foundry.data.fields
 		return {
-			...super.defineSchema(),
 			prereqs: new fields.ArrayField(new fields.TypedSchemaField(BasePrereq.TYPES), {
 				initial: [
 					{
@@ -35,7 +34,7 @@ class PrereqTemplate extends ItemDataModel<PrereqTemplateSchema> {
 
 interface PrereqTemplate extends ItemDataModel<PrereqTemplateSchema>, ModelPropsFromSchema<PrereqTemplateSchema> {}
 
-type PrereqTemplateSchema = ItemDataSchema & {
+type PrereqTemplateSchema = {
 	prereqs: fields.ArrayField<fields.TypedSchemaField<Record<prereq.Type, ConstructorOf<Prereq>>>>
 }
 

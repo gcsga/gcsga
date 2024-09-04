@@ -61,15 +61,18 @@ class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extend
 	 * in a compendium pack.
 	 */
 	get container(): ItemGURPS2 | Promise<ItemGURPS2> | null {
-		if (!this.system.container) return null
+		if (!Object.hasOwn(this.system, "container")) return null
+		//@ts-expect-error container exists in all cases
 		if (this.isEmbedded) return this.actor!.items.get(this.system.container) ?? null
 		if (this.pack) {
 			return (
 				((game.packs.get(this.pack) as CompendiumCollection<ItemGURPS2<null>>).getDocument(
+					//@ts-expect-error container exists in all cases
 					this.system.container,
 				) as Promise<ItemGURPS2<null>>) ?? null
 			)
 		}
+		//@ts-expect-error container exists in all cases
 		return game.items.get(this.system.container) ?? null
 	}
 

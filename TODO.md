@@ -1,7 +1,5 @@
 # BIG OL' TODO Document
 
-- fix features to get rid of circular imports
-
 ## Immediate TODO
 
 1. Refactor

@@ -1,18 +1,22 @@
 import { feature } from "@util/enum/feature.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
+import type { FeatureInstances } from "./types.ts"
 import { TooltipGURPS } from "@util"
 import { ItemType } from "@module/data/constants.ts"
 import { BaseFeatureSchema } from "./data.ts"
 import { ItemDataModel } from "@module/data/abstract.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 
-abstract class BaseFeature<
-	TSchema extends BaseFeatureSchema<feature.Type> = BaseFeatureSchema<feature.Type>,
-> extends foundry.abstract.DataModel<ItemDataModel, TSchema> {
+abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema> extends foundry.abstract.DataModel<
+	ItemDataModel,
+	TSchema
+> {
 	private declare _owner: ItemGURPS2 | null
 	private declare _subOwner: ItemGURPS2 | null
 
 	declare featureLevel: number
+
+	declare static TYPE: feature.Type
 
 	// static get TYPES(): Readonly<Record<feature.Type, ConstructorOf<Feature>>> {
 	// 	return (BaseFeature.#TYPES ??= Object.freeze({
@@ -55,7 +59,14 @@ abstract class BaseFeature<
 	//
 	// static #TYPES: any
 
-	static override defineSchema(): BaseFeatureSchema<feature.Type> {
+	/**
+	 * Type safe way of verifying if an Feature is of a particular type.
+	 */
+	isOfType<T extends feature.Type>(...types: T[]): this is FeatureInstances[T] {
+		return types.some(t => this.type === t)
+	}
+
+	static override defineSchema(): BaseFeatureSchema {
 		const fields = foundry.data.fields
 
 		return {
@@ -64,7 +75,7 @@ abstract class BaseFeature<
 				nullable: false,
 				blank: false,
 				choices: feature.Types,
-				initial: feature.Type.AttributeBonus,
+				initial: this.TYPE,
 			}),
 			amount: new fields.NumberField({ required: true, integer: true, initial: 1 }),
 			per_level: new fields.BooleanField({ initial: false }),
@@ -176,9 +187,9 @@ abstract class BaseFeature<
 	abstract fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void
 }
 
-interface BaseFeature<TSchema extends BaseFeatureSchema<feature.Type>>
+interface BaseFeature<TSchema extends BaseFeatureSchema>
 	extends foundry.abstract.DataModel<ItemDataModel, TSchema>,
-		Omit<ModelPropsFromSchema<BaseFeatureSchema<feature.Type>>, "type"> {
+		ModelPropsFromSchema<BaseFeatureSchema> {
 	consturctor: typeof BaseFeature<TSchema>
 }
 

@@ -9,3 +9,4 @@ export { ReplacementTemplate, type ReplacementTemplateSchema } from "./replaceme
 export { StudyTemplate, type StudyTemplateSchema } from "./study.ts"
 export { SpellFieldsTemplate, type SpellFieldsTemplateSchema } from "./spell-fields.ts"
 export { EquipmentFieldsTemplate, type EquipmentFieldsTemplateSchema } from "./equipment-fields.ts"
+export { NoteTemplate, type NoteTemplateSchema } from "./note.ts"

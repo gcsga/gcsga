@@ -1,5 +1,5 @@
 import { StringBuilder, emcost, emweight } from "@util"
-import { ItemDataModel, ItemDataSchema } from "../abstract.ts"
+import { ItemDataModel } from "../abstract.ts"
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { FeatureTemplate, FeatureTemplateSchema } from "./templates/features.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
@@ -112,8 +112,7 @@ function multiplierForEquipmentModifier(
 
 interface EquipmentModifierData extends ModelPropsFromSchema<EquipmentModifierSchema> {}
 
-type EquipmentModifierSchema = ItemDataSchema &
-	BasicInformationTemplateSchema &
+type EquipmentModifierSchema = BasicInformationTemplateSchema &
 	FeatureTemplateSchema &
 	ReplacementTemplateSchema & {
 		cost_type: fields.StringField<emcost.Type, emcost.Type, true, false, true>

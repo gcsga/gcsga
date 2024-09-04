@@ -1,4 +1,4 @@
-import { ItemDataModel, ItemDataSchema } from "@module/data/abstract.ts"
+import { ItemDataModel } from "@module/data/abstract.ts"
 import fields = foundry.data.fields
 import { SkillLevel } from "@item/skill/data.ts"
 import { DurationType, DurationTypes } from "@item/abstract-effect/data.ts"
@@ -11,7 +11,6 @@ class AbstractEffectTemplate extends ItemDataModel<AbstractEffectTemplateSchema>
 	static override defineSchema(): AbstractEffectTemplateSchema {
 		const fields = foundry.data.fields
 		return {
-			...super.defineSchema(),
 			modifiers: new fields.ArrayField(new fields.SchemaField(RollModifier.defineSchema())),
 			can_level: new fields.BooleanField(),
 			levels: new fields.SchemaField({ max: new fields.NumberField(), current: new fields.NumberField() }),
@@ -41,7 +40,7 @@ interface AbstractEffectTemplate
 	constructor: typeof AbstractEffectTemplate
 }
 
-type AbstractEffectTemplateSchema = ItemDataSchema & {
+type AbstractEffectTemplateSchema = {
 	modifiers: fields.ArrayField<fields.SchemaField<RollModifierSchema>>
 	can_level: fields.BooleanField
 	levels: fields.SchemaField<{

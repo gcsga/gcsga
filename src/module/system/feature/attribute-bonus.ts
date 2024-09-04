@@ -5,17 +5,13 @@ import { BaseFeature } from "./base.ts"
 import { feature } from "@util/enum/feature.ts"
 
 class AttributeBonus extends BaseFeature<AttributeBonusSchema> {
+	static override TYPE = feature.Type.AttributeBonus
+
 	static override defineSchema(): AttributeBonusSchema {
 		const fields = foundry.data.fields
 
 		return {
 			...super.defineSchema(),
-			type: new fields.StringField({
-				required: true,
-				nullable: false,
-				blank: false,
-				initial: feature.Type.AttributeBonus,
-			}),
 			attribute: new fields.StringField({ initial: gid.Strength }),
 			limitation: new fields.StringField({ choices: stlimit.Options, initial: stlimit.Option.None }),
 		}

@@ -6,18 +6,13 @@ import { BaseFeature } from "./base.ts"
 import { Nameable } from "@module/util/nameable.ts"
 
 class SkillPointBonus extends BaseFeature<SkillPointBonusSchema> {
+	static override TYPE = feature.Type.SkillPointBonus
+
 	static override defineSchema(): SkillPointBonusSchema {
 		const fields = foundry.data.fields
 
 		return {
 			...super.defineSchema(),
-			// ...LeveledAmount.defineSchema(),
-			type: new fields.StringField({
-				required: true,
-				nullable: false,
-				blank: false,
-				initial: feature.Type.SkillPointBonus,
-			}),
 			name: new fields.SchemaField(StringCriteria.defineSchema()),
 			specialization: new fields.SchemaField(StringCriteria.defineSchema()),
 			tags: new fields.SchemaField(StringCriteria.defineSchema()),

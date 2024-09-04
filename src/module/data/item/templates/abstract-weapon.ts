@@ -1,4 +1,4 @@
-import { ItemDataModel, ItemDataSchema } from "@module/data/abstract.ts"
+import { ItemDataModel } from "@module/data/abstract.ts"
 import fields = foundry.data.fields
 import { WeaponDamage, WeaponDamageSchema } from "@item/abstract-weapon/weapon-damage.ts"
 import { SkillDefault, SkillDefaultSchema } from "@system"
@@ -8,7 +8,6 @@ class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema>
 	static override defineSchema(): AbstractWeaponTemplateSchema {
 		const fields = foundry.data.fields
 		return {
-			...super.defineSchema(),
 			strength: new fields.StringField({
 				required: true,
 				nullable: false,
@@ -28,7 +27,7 @@ interface AbstractWeaponTemplate
 	constructor: typeof AbstractWeaponTemplate
 }
 
-type AbstractWeaponTemplateSchema = ItemDataSchema & {
+type AbstractWeaponTemplateSchema = {
 	strength: fields.StringField<string, string, true, false, true>
 	defaults: fields.ArrayField<fields.SchemaField<SkillDefaultSchema>>
 	damage: fields.SchemaField<WeaponDamageSchema>

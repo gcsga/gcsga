@@ -1,8 +1,14 @@
 import { ItemDataModel } from "../abstract.ts"
-import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
-import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
+import {
+	BasicInformationTemplate,
+	BasicInformationTemplateSchema,
+	NoteTemplate,
+	NoteTemplateSchema,
+	ReplacementTemplate,
+	ReplacementTemplateSchema,
+} from "./templates/index.ts"
 
-class NoteData extends ItemDataModel.mixin(BasicInformationTemplate, ReplacementTemplate) {
+class NoteData extends ItemDataModel.mixin(BasicInformationTemplate, ReplacementTemplate, NoteTemplate) {
 	static override defineSchema(): NoteSchema {
 		return this.mergeSchema(super.defineSchema(), {}) as NoteSchema
 	}
@@ -10,6 +16,6 @@ class NoteData extends ItemDataModel.mixin(BasicInformationTemplate, Replacement
 
 interface NoteData extends ModelPropsFromSchema<NoteSchema> {}
 
-type NoteSchema = BasicInformationTemplateSchema & ReplacementTemplateSchema & {}
+type NoteSchema = BasicInformationTemplateSchema & ReplacementTemplateSchema & NoteTemplateSchema
 
 export { NoteData, type NoteSchema }

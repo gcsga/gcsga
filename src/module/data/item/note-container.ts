@@ -1,10 +1,22 @@
 import { ItemDataModel } from "../abstract.ts"
-import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
-import { ContainerTemplate, ContainerTemplateSchema } from "./templates/container.ts"
 import { ItemType } from "../constants.ts"
-import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
+import {
+	BasicInformationTemplate,
+	BasicInformationTemplateSchema,
+	ContainerTemplate,
+	ContainerTemplateSchema,
+	NoteTemplate,
+	NoteTemplateSchema,
+	ReplacementTemplate,
+	ReplacementTemplateSchema,
+} from "./templates/index.ts"
 
-class NoteContainerData extends ItemDataModel.mixin(BasicInformationTemplate, ContainerTemplate, ReplacementTemplate) {
+class NoteContainerData extends ItemDataModel.mixin(
+	BasicInformationTemplate,
+	ContainerTemplate,
+	ReplacementTemplate,
+	NoteTemplate,
+) {
 	static override childTypes = new Set([ItemType.Note, ItemType.NoteContainer])
 
 	static override defineSchema(): NoteContainerSchema {
@@ -14,6 +26,9 @@ class NoteContainerData extends ItemDataModel.mixin(BasicInformationTemplate, Co
 
 interface NoteContainerData extends ModelPropsFromSchema<NoteContainerSchema> {}
 
-type NoteContainerSchema = BasicInformationTemplateSchema & ContainerTemplateSchema & ReplacementTemplateSchema & {}
+type NoteContainerSchema = BasicInformationTemplateSchema &
+	ContainerTemplateSchema &
+	ReplacementTemplateSchema &
+	NoteTemplateSchema
 
 export { NoteContainerData, type NoteContainerSchema }

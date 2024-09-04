@@ -1,4 +1,4 @@
-import { ItemDataModel, ItemDataSchema } from "@module/data/abstract.ts"
+import { ItemDataModel } from "@module/data/abstract.ts"
 import fields = foundry.data.fields
 import { difficulty, LocalizeGURPS, StringBuilder } from "@util"
 import { ItemType } from "@module/data/constants.ts"
@@ -12,7 +12,6 @@ class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 	static override defineSchema(): AbstractSkillTemplateSchema {
 		const fields = foundry.data.fields
 		return {
-			...super.defineSchema(),
 			tech_level: new fields.StringField({ required: true, nullable: true, initial: null }),
 			tech_level_required: new fields.BooleanField({ required: true, nullable: false, initial: false }),
 			points: new fields.NumberField({ integer: true, min: 0 }),
@@ -110,7 +109,7 @@ interface AbstractSkillTemplate
 	constructor: typeof AbstractSkillTemplate
 }
 
-type AbstractSkillTemplateSchema = ItemDataSchema & {
+type AbstractSkillTemplateSchema = {
 	tech_level: fields.StringField<string, string, true, true, true>
 	tech_level_required: fields.BooleanField<boolean, boolean, true, false, true>
 	points: fields.NumberField<number, number, true, false>

@@ -1,4 +1,4 @@
-import { ItemDataModel, ItemDataSchema } from "../abstract.ts"
+import { ItemDataModel } from "../abstract.ts"
 import fields = foundry.data.fields
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { StringBuilder, align, cell, container, display, selfctrl } from "@util"
@@ -194,8 +194,7 @@ interface TraitContainerData extends Omit<ModelPropsFromSchema<TraitContainerSch
 	template_picker: TemplatePicker
 }
 
-type TraitContainerSchema = ItemDataSchema &
-	BasicInformationTemplateSchema &
+type TraitContainerSchema = BasicInformationTemplateSchema &
 	PrereqTemplateSchema &
 	ContainerTemplateSchema &
 	ReplacementTemplateSchema & {

@@ -5,18 +5,13 @@ import { BaseFeature } from "./base.ts"
 import { Nameable } from "@module/util/nameable.ts"
 
 class SpellBonus extends BaseFeature<SpellBonusSchema> {
+	static override TYPE = feature.Type.SpellBonus
+
 	static override defineSchema(): SpellBonusSchema {
 		const fields = foundry.data.fields
 
 		return {
 			...super.defineSchema(),
-			// ...LeveledAmount.defineSchema(),
-			type: new fields.StringField({
-				required: true,
-				nullable: false,
-				blank: false,
-				initial: feature.Type.SpellBonus,
-			}),
 			match: new fields.StringField({ choices: spellmatch.Types, initial: spellmatch.Type.Name }),
 			name: new fields.SchemaField(StringCriteria.defineSchema()),
 			tags: new fields.SchemaField(StringCriteria.defineSchema()),
