@@ -36,6 +36,7 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 			uses: new fields.NumberField({ required: true, nullable: true, integer: true, min: 0, initial: null }),
 			equipped: new fields.BooleanField({ required: true, nullable: false, initial: true }),
 			ignore_weight_for_skills: new fields.BooleanField({ required: true, nullable: false, initial: false }),
+			other: new fields.BooleanField({ required: true, nullable: false, initial: false }),
 		}
 	}
 
@@ -244,6 +245,7 @@ type EquipmentFieldsTemplateSchema = {
 	uses: fields.NumberField<number, number, true, true, true>
 	equipped: fields.BooleanField<boolean, boolean, true, false, true>
 	ignore_weight_for_skills: fields.BooleanField<boolean, boolean, true, false, true>
+	other: fields.BooleanField<boolean, boolean, true, false, true>
 }
 
 export { EquipmentFieldsTemplate, type EquipmentFieldsTemplateSchema }

@@ -107,7 +107,6 @@ class SystemDataModel<
 
 	/* -------------------------------------------- */
 
-	/** @inheritdoc */
 	static override defineSchema(): fields.DataSchema {
 		const schema = {}
 		for (const template of this._schemaTemplates) {

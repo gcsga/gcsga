@@ -32,6 +32,10 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 		return this.baseSizeModifier + this.attributeBonusFor(gid.SizeModifier)
 	}
 
+	prepareEmbeddedDocuments(): void {}
+
+	processFeatures(): void {}
+
 	/**
 	 * @param attributeId - ID of attribute
 	 * @param limitation - Strength attribute limitation

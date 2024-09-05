@@ -3,8 +3,12 @@ import { ActorType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { ItemGURPS2 } from "./item.ts"
 import { ActorDataInstances, ActorDataTemplates, ActorTemplateType } from "@module/data/actor/types.ts"
 import { Evaluator } from "@module/util/index.ts"
+import { ItemCollectionsMap } from "@system/item-collections.ts"
 
 class ActorGURPS2<TParent extends TokenDocument | null = TokenDocument | null> extends Actor<TParent> {
+	// Map of item collections
+	declare itemCollections: ItemCollectionsMap<this>
+
 	/**
 	 * Type safe way of verifying if an Item is of a particular type.
 	 */
@@ -21,7 +25,7 @@ class ActorGURPS2<TParent extends TokenDocument | null = TokenDocument | null> e
 
 	// Resolves an embedded expression
 	embeddedEval(s: string): string {
-		const ev = new Evaluator({ resolver: this })
+		const ev = new Evaluator({ resolver: this.system })
 		const exp = s.slice(2, s.length - 2)
 		const result = ev.evaluate(exp)
 		return result
@@ -35,6 +39,19 @@ class ActorGURPS2<TParent extends TokenDocument | null = TokenDocument | null> e
 				parent: this,
 			})
 		}
+	}
+
+	override prepareBaseData(): void {
+		super.prepareBaseData()
+
+		this.itemCollections = new ItemCollectionsMap<this>(this.items)
+	}
+
+	override prepareEmbeddedDocuments(): void {
+		super.prepareEmbeddedDocuments()
+
+		// @ts-expect-error function exists
+		this.system._prepareEmbeddedDocuments?.()
 	}
 
 	/* -------------------------------------------- */
