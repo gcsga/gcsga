@@ -40,11 +40,18 @@ class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 		return (this._skillLevel ??= this.calculateLevel())
 	}
 
+	updateLevel(): boolean {
+		const saved = this.level
+		if (this.isOfType(ItemType.Skill)) this.defaulted_from = this.bestDefaultWithPoints(null)
+		this._skillLevel = this.calculateLevel()
+		return saved.level !== this.level.level
+	}
+
 	calculateLevel(_excludes: Set<string> = new Set()): SkillLevel {
 		return (this._skillLevel ??= { level: 0, relativeLevel: 0, tooltip: "" })
 	}
 
-	adjustedPoints(..._args: any[]): number {
+	adjustedPoints(..._args: unknown[]): number {
 		return this.points
 	}
 

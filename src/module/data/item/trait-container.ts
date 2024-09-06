@@ -54,7 +54,7 @@ class TraitContainerData extends ItemDataModel.mixin(
 		}) as TraitContainerSchema
 	}
 
-	override get cellData() {
+	override get cellData(): Record<string, CellData> {
 		const cellData: Record<string, CellData> = {}
 		cellData.name = new CellData({
 			type: cell.Type.Text,

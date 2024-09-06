@@ -25,15 +25,9 @@ export class HexagonalGrid extends BaseGrid {
 
 	override testAdjacency(coords1: HexagonalGridCoordinates, coords2: HexagonalGridCoordinates): boolean
 
-	override getShiftedOffset(
-		coords: HexagonalGridCoordinates,
-		direction: (typeof CONST.MOVEMENT_DIRECTIONS)[keyof typeof CONST.MOVEMENT_DIRECTIONS],
-	): GridOffset
+	override getShiftedOffset(coords: HexagonalGridCoordinates, direction: MovementDirection): GridOffset
 
-	override getShiftedPoint(
-		point: Point,
-		direction: (typeof CONST.MOVEMENT_DIRECTIONS)[keyof typeof CONST.MOVEMENT_DIRECTIONS],
-	): Point
+	override getShiftedPoint(point: Point, direction: MovementDirection): Point
 
 	/**
 	 * Returns the cube coordinates of the grid space corresponding to the given coordinates.
@@ -52,13 +46,10 @@ export class HexagonalGrid extends BaseGrid {
 	/**
 	 * Returns the cube coordinates of the grid space corresponding to the given coordinates
 	 * shifted by one grid space in the given direction.
-	 * @param  coords     The coordinates
-	 * @param  direction  The direction (see {@link CONST.MOVEMENT_DIRECTIONS})
+	 * @param  coords    The coordinates
+	 * @param  direction The direction (see {@link CONST.MOVEMENT_DIRECTIONS})
 	 */
-	getShiftedCube(
-		coords: HexagonalGridCoordinates,
-		direction: (typeof CONST.MOVEMENT_DIRECTIONS)[keyof typeof CONST.MOVEMENT_DIRECTIONS],
-	): HexagonalGridCube
+	getShiftedCube(coords: HexagonalGridCoordinates, direction: MovementDirection): HexagonalGridCube
 
 	override getTopLeftPoint(coords: HexagonalGridCoordinates): Point
 
@@ -147,6 +138,12 @@ export class HexagonalGrid extends BaseGrid {
 	static cubeDistance(a: HexagonalGridCube, b: HexagonalGridCube): number
 }
 
+export interface HexagonalGrid extends BaseGrid {
+	get isGridless(): false
+	get isHexagonal(): true
+	get isSquare(): false
+}
+
 declare global {
 	interface HexagonalGridConfiguration extends GridConfiguration {
 		/** Is this grid column-based (flat-topped) or row-based (pointy-topped)? Defaults to `false`. */
@@ -156,7 +153,7 @@ declare global {
 	}
 
 	/** Cube coordinates in a hexagonal grid. q + r + s = 0. */
-	interface HexagonalGridCube {
+	type HexagonalGridCube = {
 		/** The coordinate along the E-W (columns) or SW-NE (rows) axis. Equal to the offset column coordinate if column orientation. */
 		q: number
 		/** The coordinate along the NE-SW (columns) or N-S (rows) axis. Equal to the offset row coordinate if row orientation. */

@@ -8,7 +8,7 @@ import { PrereqTemplate, PrereqTemplateSchema } from "./templates/prereqs.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
 import { StudyTemplate, StudyTemplateSchema } from "./templates/study.ts"
 import fields = foundry.data.fields
-import type { ItemGURPS2 } from "@module/document/item.ts"
+import { ItemGURPS2 } from "@module/document/item.ts"
 import { TraitModifierData } from "./trait-modifier.ts"
 import { SheetSettings, Study } from "@system"
 import { Nameable } from "@module/util/nameable.ts"
@@ -112,8 +112,16 @@ class TraitData extends ItemDataModel.mixin(
 		return true
 	}
 
-	get allModifiers(): { system: TraitModifierData }[] {
-		return Object.values(this.modifiers).filter(e => e.isOfType(ItemType.TraitModifier))
+	get allModifiers(): (ItemGURPS2 & { system: TraitModifierData })[] {
+		let modifiers: Collection<ItemGURPS2> = new Collection()
+		if (this.modifiers instanceof Promise) {
+			;(async () => {
+				modifiers = await this.modifiers
+			})()
+		} else {
+			modifiers = this.modifiers
+		}
+		return modifiers.filter(e => e instanceof ItemGURPS2 && e.isOfType(ItemType.TraitModifier))
 	}
 
 	/** Returns the current level of the trait or 0 if it is not leveled */
@@ -126,7 +134,8 @@ class TraitData extends ItemDataModel.mixin(
 	get adjustedPoints(): number {
 		if (!this.enabled) return 0
 		let basePoints = this.base_points
-		let [levels, pointsPerLevel] = this.can_level ? [this.levels, this.points_per_level] : [0, 0]
+		const levels = this.can_level ? this.levels : 0
+		let pointsPerLevel = this.can_level ? this.points_per_level : 0
 		let [baseEnh, levelEnh, baseLim, levelLim] = [0, 0, 0, 0]
 		let multiplier = selfctrl.Roll.multiplier(this.cr)
 		for (const mod of this.allModifiers) {

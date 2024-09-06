@@ -85,11 +85,12 @@ class TechniqueData extends ItemDataModel.mixin(
 		| (ItemGURPS2 &
 				({ type: ItemType.Skill; system: SkillData } | { type: ItemType.Technique; system: TechniqueData }))
 		| null {
-		const actor = this.actor as any
+		const actor = this.actor
 		if (!actor) return null
 		if (!actor.isOfType(ActorType.Character)) return null
 		if (!this.default) return null
 		if (!this.default.skillBased) return null
+		// @ts-expect-error type instantiation too deep
 		return actor.system.bestSkillNamed(
 			this.default.nameWithReplacements(this.nameableReplacements),
 			this.default.specializationWithReplacements(this.nameableReplacements),

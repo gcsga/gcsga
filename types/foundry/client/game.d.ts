@@ -46,7 +46,10 @@ declare global {
 		}
 
 		/** The game World which is currently active */
-		world: object
+		world: {
+			id: string
+			title: string
+		}
 
 		/** Localization support */
 		i18n: Localization
@@ -77,6 +80,13 @@ declare global {
 
 		/** The id of the active game user */
 		userId: string
+
+		/* -------------------------------------------- */
+		/*  Helper Classes                              */
+		/* -------------------------------------------- */
+
+		/** The singleton compendium art manager. */
+		compendiumArt: foundry.helpers.CompendiumArt
 
 		/** A singleton instance of the Audio Helper class */
 		audio: AudioHelper

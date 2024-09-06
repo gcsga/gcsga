@@ -22,7 +22,7 @@ declare class FilePicker extends Application<FilePickerOptions> {
 	button: HTMLElement
 
 	/** The current set of file extensions which are being filtered upon */
-	extensions: string[]
+	extension: string[]
 
 	constructor(options: FilePickerOptions)
 

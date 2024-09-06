@@ -4,7 +4,7 @@ import { EXAMPLE_STATBLOCKS, Mook } from "@system/mook/index.ts"
 import { difficulty } from "@util"
 import { _defaultMookData } from "tests/mocks/game.ts"
 
-export function registerBatches(quench: Quench) {
+export function registerBatches(quench: Quench): void {
 	quench.registerBatch(
 		`${SYSTEM_NAME}.mook.skills`,
 		(context: QuenchBatchContext) => {

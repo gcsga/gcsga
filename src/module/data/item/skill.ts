@@ -97,6 +97,87 @@ class SkillData extends ItemDataModel.mixin(
 		)
 	}
 
+	bestDefaultWithPoints(excluded: SkillDefault | null): SkillDefault | null {
+		const best = this.bestDefault(excluded)
+		if (best !== null) {
+			const baseLine =
+				this.actor?.system.resolveAttributeCurrent(this.difficulty.attribute) +
+				Math.trunc(difficulty.Level.baseRelativeLevel(this.difficulty.difficulty))
+			const level = Math.trunc(best.level)
+			best.adjusted_level = level
+			switch (true) {
+				case level === baseLine:
+					best.points = 1
+					break
+				case level === baseLine + 1:
+					best.points = 1
+					break
+				case level > baseLine + 1:
+					best.points = 4 * (level - (baseLine + 1))
+					break
+				default:
+					best.points = -Math.max(0, level)
+			}
+		}
+		return best
+	}
+
+	bestDefault(excluded: SkillDefault | null): SkillDefault | null {
+		if (this.actor === null || this.defaults.length === 0) return null
+		const excludes: Set<string> = new Set()
+		excludes.add(this.processedName)
+		let bestDef: SkillDefault | null = null
+		let best = Number.MIN_SAFE_INTEGER
+		for (const def of this.resolveToSpecificDefaults()) {
+			if (def.equivalent(this.nameableReplacements, excluded) || this.inDefaultChain(def, new Set())) {
+				continue
+			}
+			const level = this.calcSkillDefaultLevel(def, excludes)
+			if (best < level) {
+				best = level
+				bestDef = def.cloneWithoutLevelOrPoints()
+				bestDef.level = level
+			}
+		}
+		return bestDef
+	}
+
+	calcSkillDefaultLevel(def: SkillDefault, excludes: Set<string>): number {
+		const actor = this.actor
+		if (actor === null) return 0
+		let level = def.skillLevel(actor, this.nameableReplacements, true, excludes, !this.isOfType(ItemType.Technique))
+		if (def.skillBased) {
+			const defName = def.nameWithReplacements(this.nameableReplacements)
+			const defSpec = def.specializationWithReplacements(this.nameableReplacements)
+			const other = actor?.system.bestSkillNamed(defName, defSpec, true, excludes) ?? null
+			if (other !== null) {
+				level -= actor.system.skillBonusFor(defName, defSpec, this.tags)
+			}
+		}
+		return level
+	}
+
+	resolveToSpecificDefaults(): SkillDefault[] {
+		const actor = this.actor
+		let result: SkillDefault[] = []
+		for (const def of this.defaults) {
+			if (actor === null || def === null || !def.skillBased) result.push(def)
+			else {
+				for (const one of actor.system.skillNamed(
+					def.nameWithReplacements(this.nameableReplacements),
+					def.specializationWithReplacements(this.nameableReplacements),
+					true,
+					new Set([this.processedName]),
+				)) {
+					const local = def.clone()
+					local.specialization = one.specialization
+					result.push(local)
+				}
+			}
+		}
+		return result
+	}
+
 	override adjustedPoints(tooltip: TooltipGURPS | null = null, temporary = false): number {
 		let points = this.points
 		if (this.actor?.hasTemplate(ActorTemplateType.Features)) {

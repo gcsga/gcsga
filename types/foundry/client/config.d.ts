@@ -6,13 +6,14 @@ import type {
 	PointSoundSource,
 	PointVisionSource,
 } from "../client-esm/canvas/sources/module.ts"
+import type { TokenRingConfig } from "../client-esm/canvas/tokens/module.ts"
 import type * as terms from "../client-esm/dice/terms/module.d.ts"
-import TypeDataModel from "../common/abstract/type-data.js"
-import { DataSchema } from "../common/data/fields.js"
+import abstract = foundry.abstract
+import data = foundry.data
 
 declare global {
 	interface Config<
-		// TAmbientLightDocument extends AmbientLightDocument<TScene | null>,
+		TAmbientLightDocument extends AmbientLightDocument<TScene | null>,
 		TActiveEffect extends ActiveEffect<TActor | TItem | null>,
 		TActor extends Actor<TTokenDocument | null>,
 		TActorDelta extends ActorDelta<TTokenDocument | null>,
@@ -53,6 +54,23 @@ declare global {
 			time: boolean
 		}
 
+		compendium: {
+			/**
+			 * Configure a table of compendium UUID redirects. Must be configured before the game *ready* hook is fired.
+			 *
+			 * @example Re-map individual UUIDs
+			 * ```js
+			 * CONFIG.compendium.uuidRedirects["Compendium.system.heroes.Actor.Tf0JDPzHOrIxz6BH"] = "Compendium.system.villains.Actor.DKYLeIliXXzlAZ2G";
+			 * ```
+			 *
+			 * @example Redirect UUIDs from one compendium to another.
+			 * ```js
+			 * CONFIG.compendium.uuidRedirects["Compendium.system.heroes"] = "Compendium.system.villains";
+			 * ```
+			 */
+			uuidRedirects: Record<string, string>
+		}
+
 		/** Configure the DatabaseBackend used to perform Document operations */
 		DatabaseBackend: foundry.data.ClientDatabaseBackend
 
@@ -65,7 +83,6 @@ declare global {
 				): TActor
 			}
 			collection: ConstructorOf<Actors<Actor<null>>>
-			dataModels: Record<string, ConstructorOf<TypeDataModel<Actor, DataSchema>>>
 			sheetClasses: Record<
 				string,
 				Record<
@@ -124,7 +141,7 @@ declare global {
 				new (data: PreCreate<TItem["_source"]>, context?: DocumentConstructionContext<TItem["parent"]>): TItem
 			}
 			collection: typeof Items
-			dataModels: Record<string, ConstructorOf<TypeDataModel<Item, DataSchema>>>
+			dataModels: Record<string, ConstructorOf<abstract.TypeDataModel<Item, data.fields.DataSchema>>>
 			typeIcons: Record<string, string>
 			typeLabels: Record<string, string | undefined>
 			sheetClasses: Record<
@@ -159,9 +176,7 @@ declare global {
 
 		/** Configuration for the JournalEntry entity */
 		JournalEntry: {
-			documentClass: {
-				new (data: PreCreate<TCombat["_source"]>, context?: DocumentConstructionContext<null>): TJournalEntry
-			}
+			documentClass: typeof JournalEntry
 			noteIcons: {
 				Anchor: string
 				[key: string]: string
@@ -173,32 +188,6 @@ declare global {
 					{
 						id: string
 						cls: typeof JournalSheet
-						default: boolean
-						label: string
-						canConfigure: boolean
-						canBeDefault: boolean
-					}
-				>
-			>
-			sidebarIcon: string
-		}
-
-		/** Configuration for the JournalEntryPage entity */
-		JournalEntryPage: {
-			documentClass: {
-				new (
-					data: PreCreate<TCombat["_source"]>,
-					context?: DocumentConstructionContext<TJournalEntryPage["parent"]>,
-				): TJournalEntryPage
-			}
-			defaultType: string
-			sheetClasses: Record<
-				string,
-				Record<
-					string,
-					{
-						id: string
-						cls: typeof JournalPageSheet
 						default: boolean
 						label: string
 						canConfigure: boolean
@@ -248,11 +237,10 @@ declare global {
 		/* -------------------------------------------- */
 
 		/** Configuration for the AmbientLight embedded document type and its representation on the game Canvas */
-		// AmbientLight: {
-		// 	documentClass: ConstructorOf<TAmbientLightDocument>
-		// 	objectClass: ConstructorOf<NonNullable<TAmbientLightDocument["object"]>>
-		// 	layerClass: ConstructorOf<NonNullable<TAmbientLightDocument["object"]>["layer"]>
-		// }
+		AmbientLight: {
+			documentClass: ConstructorOf<TAmbientLightDocument>
+			objectClass: ConstructorOf<NonNullable<TAmbientLightDocument["object"]>>
+		}
 
 		/** Configuration for the ActiveEffect embedded document type */
 		ActiveEffect: {
@@ -277,6 +265,34 @@ declare global {
 			) => TCombatant
 		}
 
+		/**
+		 * Configuration for the JournalEntryPage embedded document type.
+		 */
+		JournalEntryPage: {
+			documentClass: {
+				new (
+					data: PreCreate<TCombat["_source"]>,
+					context?: DocumentConstructionContext<TJournalEntryPage["parent"]>,
+				): TJournalEntryPage
+			}
+			defaultType: string
+			sheetClasses: Record<
+				string,
+				Record<
+					string,
+					{
+						id: string
+						cls: typeof JournalPageSheet
+						default: boolean
+						label: string
+						canConfigure: boolean
+						canBeDefault: boolean
+					}
+				>
+			>
+			sidebarIcon: string
+		}
+
 		/** Configuration for the MeasuredTemplate embedded document type and its representation on the game Canvas */
 		MeasuredTemplate: {
 			defaults: {
@@ -291,71 +307,40 @@ declare global {
 			}
 			documentClass: ConstructorOf<TMeasuredTemplateDocument>
 			objectClass: ConstructorOf<NonNullable<TMeasuredTemplateDocument["object"]>>
-			layerClass: ConstructorOf<NonNullable<TMeasuredTemplateDocument["object"]>["layer"]>
 		}
 
 		/** Configuration for the Region embedded document type and its representation on the game Canvas  */
 		Region: {
 			documentClass: ConstructorOf<TRegionDocument>
 			objectClass: ConstructorOf<TRegionDocument["object"]>
-			layerClass: ConstructorOf<NonNullable<TRegionDocument["object"]>["layer"]>
 		}
 
 		/** Configuration for the RegionBehavior embedded document type */
 		RegionBehavior: {
 			documentClass: ConstructorOf<TRegionBehavior>
-			dataModels: {
-				[key: string]: ConstructorOf<foundry.data.regionBehaviors.RegionBehaviorType>
-				adjustDarknessLevel: ConstructorOf<foundry.data.regionBehaviors.AdjustDarknessLevelRegionBehaviorType>
-				executeMacro: ConstructorOf<foundry.data.regionBehaviors.ExecuteMacroRegionBehaviorType>
-				executeScript: ConstructorOf<foundry.data.regionBehaviors.ExecuteScriptRegionBehaviorType>
-				pauseGame: ConstructorOf<foundry.data.regionBehaviors.PauseGameRegionBehaviorType>
-				suppressWeather: ConstructorOf<foundry.data.regionBehaviors.SuppressWeatherRegionBehaviorType>
-				teleportToken: ConstructorOf<foundry.data.regionBehaviors.TeleportTokenRegionBehaviorType>
-				toggleBehavior: ConstructorOf<foundry.data.regionBehaviors.ToggleBehaviorRegionBehaviorType>
-			}
-			typeIcons: {
-				[key: string]: string
-				adjustDarknessLevel: "fa-solid fa-circle-half-stroke"
-				executeMacro: "fa-solid fa-code"
-				executeScript: "fa-brands fa-js"
-				pauseGame: "fa-solid fa-pause"
-				suppressWeather: "fa-solid fa-cloud-slash"
-				teleportToken: "fa-solid fa-transporter-1"
-				toggleBehavior: "fa-solid fa-sliders"
-			}
-			typeLabels: {
-				[key: string]: string
-				adjustDarknessLevel: "TYPES.RegionBehavior.adjustDarknessLevel"
-				executeMacro: "TYPES.RegionBehavior.executeMacro"
-				executeScript: "TYPES.RegionBehavior.executeScript"
-				pauseGame: "TYPES.RegionBehavior.pauseGame"
-				suppressWeather: "TYPES.RegionBehavior.suppressWeather"
-				teleportToken: "TYPES.RegionBehavior.teleportToken"
-				toggleBehavior: "TYPES.RegionBehavior.toggleBehavior"
-			}
+			dataModels: Record<string, ConstructorOf<foundry.data.regionBehaviors.RegionBehaviorType>>
+			typeIcons: Record<string, string>
+			typeLabels: Record<string, string>
 		}
 
 		/** Configuration for the Tile embedded document type and its representation on the game Canvas */
 		Tile: {
 			documentClass: ConstructorOf<TTileDocument>
 			objectClass: ConstructorOf<NonNullable<TTileDocument["object"]>>
-			layerClass: ConstructorOf<TilesLayer<NonNullable<TTileDocument["object"]>>>
 		}
 
 		/** Configuration for the Token embedded document type and its representation on the game Canvas */
 		Token: {
 			documentClass: ConstructorOf<TTokenDocument>
 			objectClass: ConstructorOf<NonNullable<TTokenDocument["object"]>>
-			layerClass: ConstructorOf<NonNullable<TTokenDocument["object"]>["layer"]>
 			prototypeSheetClass: ConstructorOf<TTokenDocument["sheet"]>
+			ring: TokenRingConfig
 		}
 
 		/** Configuration for the Wall embedded document type and its representation on the game Canvas */
 		Wall: {
 			documentClass: ConstructorOf<TWallDocument>
 			objectClass: ConstructorOf<Wall<TWallDocument>>
-			layerClass: ConstructorOf<NonNullable<TWallDocument["object"]>["layer"]>
 		}
 
 		/* -------------------------------------------- */
@@ -384,14 +369,14 @@ declare global {
 			unexploredColor: number
 			darknessToDaylightAnimationMS: number
 			daylightToDarknessAnimationMS: number
-			// darknessSourceClass: ConstructorOf<
-			// 	PointDarknessSource<TAmbientLightDocument["object"] | TTokenDocument["object"]>
-			// >
-			// lightSourceClass: ConstructorOf<
-			// 	PointLightSource<TAmbientLightDocument["object"] | TTokenDocument["object"]>
-			// >
+			darknessSourceClass: ConstructorOf<
+				PointDarknessSource<TAmbientLightDocument["object"] | TTokenDocument["object"]>
+			>
+			lightSourceClass: ConstructorOf<
+				PointLightSource<TAmbientLightDocument["object"] | TTokenDocument["object"]>
+			>
 			globalLightSourceClass: ConstructorOf<GlobalLightSource>
-			rulerClass: ConstructorOf<Ruler<TTokenDocument["object"]>>
+			rulerClass: ConstructorOf<Ruler<TTokenDocument["object"]>> & { get canMeasure(): boolean }
 			visionSourceClass: ConstructorOf<PointVisionSource<TTokenDocument["object"]>>
 			soundSourceClass: ConstructorOf<PointSoundSource>
 			groups: {
@@ -453,10 +438,10 @@ declare global {
 					group: "interface"
 					layerClass: typeof SoundsLayer
 				}
-				// lighting: {
-				// 	group: "effects"
-				// 	layerClass: ConstructorOf<NonNullable<TAmbientLightDocument["object"]>["layer"]>
-				// }
+				lighting: {
+					group: "effects"
+					layerClass: ConstructorOf<NonNullable<TAmbientLightDocument["object"]>["layer"]>
+				}
 				controls: {
 					group: "interface"
 					layerClass: typeof ControlsLayer
@@ -479,179 +464,179 @@ declare global {
 			maxZoom: number
 			objectBorderThickness: number
 			lightAnimations: {
-				// flame: {
-				// 	label: "LIGHT.AnimationFlame"
-				// 	animation: PointLightSource<
-				// 		TAmbientLightDocument["object"] | TTokenDocument["object"]
-				// 	>["animateTorch"]
-				// 	illuminationShader: typeof PIXI.Shader
-				// 	colorationShader: typeof PIXI.Shader
-				// }
-				// torch: {
-				// 	label: "LIGHT.AnimationTorch"
-				// 	animation: PointLightSource<
-				// 		TAmbientLightDocument["object"] | TTokenDocument["object"]
-				// 	>["animateTorch"]
-				// 	illuminationShader: typeof PIXI.Shader
-				// 	colorationShader: typeof PIXI.Shader
-				// }
-				// pulse: {
-				// 	label: "LIGHT.AnimationPulse"
-				// 	animation: PointLightSource<
-				// 		TAmbientLightDocument["object"] | TTokenDocument["object"]
-				// 	>["animatePulse"]
-				// 	illuminationShader: typeof PIXI.Shader
-				// 	colorationShader: typeof PIXI.Shader
-				// }
-				// chroma: {
-				// 	label: "LIGHT.AnimationChroma"
-				// 	animation: PointLightSource<
-				// 		TAmbientLightDocument["object"] | TTokenDocument["object"]
-				// 	>["animateTime"]
-				// 	colorationShader: typeof PIXI.Shader
-				// }
-				// wave: {
-				// 	label: "LIGHT.AnimationWave"
-				// 	animation: PointLightSource<
-				// 		TAmbientLightDocument["object"] | TTokenDocument["object"]
-				// 	>["animateTime"]
-				// 	illuminationShader: typeof PIXI.Shader
-				// 	colorationShader: typeof PIXI.Shader
-				// }
-				// fog: {
-				// 	label: "LIGHT.AnimationFog"
-				// 	animation: PointLightSource<
-				// 		TAmbientLightDocument["object"] | TTokenDocument["object"]
-				// 	>["animateTime"]
-				// 	colorationShader: typeof PIXI.Shader
-				// }
-				// sunburst: {
-				// 	label: "LIGHT.AnimationSunburst"
-				// 	animation: PointLightSource<
-				// 		TAmbientLightDocument["object"] | TTokenDocument["object"]
-				// 	>["animateTime"]
-				// 	illuminationShader: typeof PIXI.Shader
-				// 	colorationShader: typeof PIXI.Shader
-				// }
-				// dome: {
-				// 	label: "LIGHT.AnimationLightDome"
-				// 	animation: PointLightSource<
-				// 		TAmbientLightDocument["object"] | TTokenDocument["object"]
-				// 	>["animateTime"]
-				// 	colorationShader: typeof PIXI.Shader
-				// }
-				// emanation: {
-				// 	label: "LIGHT.AnimationEmanation"
-				// 	animation: PointLightSource<
-				// 		TAmbientLightDocument["object"] | TTokenDocument["object"]
-				// 	>["animateTime"]
-				// 	colorationShader: typeof PIXI.Shader
-				// }
-				// hexa: {
-				// 	label: "LIGHT.AnimationHexaDome"
-				// 	animation: PointLightSource<
-				// 		TAmbientLightDocument["object"] | TTokenDocument["object"]
-				// 	>["animateTime"]
-				// 	colorationShader: typeof PIXI.Shader
-				// }
-				// ghost: {
-				// 	label: "LIGHT.AnimationGhostLight"
-				// 	animation: PointLightSource<
-				// 		TAmbientLightDocument["object"] | TTokenDocument["object"]
-				// 	>["animateTime"]
-				// 	illuminationShader: typeof PIXI.Shader
-				// 	colorationShader: typeof PIXI.Shader
-				// }
-				// energy: {
-				// 	label: "LIGHT.AnimationEnergyField"
-				// 	animation: PointLightSource<
-				// 		TAmbientLightDocument["object"] | TTokenDocument["object"]
-				// 	>["animateTime"]
-				// 	colorationShader: typeof PIXI.Shader
-				// }
-				// vortex: {
-				// 	label: "LIGHT.AnimationVortex"
-				// 	animation: PointLightSource<
-				// 		TAmbientLightDocument["object"] | TTokenDocument["object"]
-				// 	>["animateTime"]
-				// 	illuminationShader: typeof PIXI.Shader
-				// 	colorationShader: typeof PIXI.Shader
-				// }
-				// witchwave: {
-				// 	label: "LIGHT.AnimationBewitchingWave"
-				// 	animation: PointLightSource<
-				// 		TAmbientLightDocument["object"] | TTokenDocument["object"]
-				// 	>["animateTime"]
-				// 	colorationShader: typeof PIXI.Shader
-				// }
-				// rainbowswirl: {
-				// 	label: "LIGHT.AnimationSwirlingRainbow"
-				// 	animation: PointLightSource<
-				// 		TAmbientLightDocument["object"] | TTokenDocument["object"]
-				// 	>["animateTime"]
-				// 	colorationShader: typeof PIXI.Shader
-				// }
-				// radialrainbow: {
-				// 	label: "LIGHT.AnimationRadialRainbow"
-				// 	animation: PointLightSource<
-				// 		TAmbientLightDocument["object"] | TTokenDocument["object"]
-				// 	>["animateTime"]
-				// 	colorationShader: typeof PIXI.Shader
-				// }
-				// fairy: {
-				// 	label: "LIGHT.AnimationFairyLight"
-				// 	animation: PointLightSource<
-				// 		TAmbientLightDocument["object"] | TTokenDocument["object"]
-				// 	>["animateTime"]
-				// 	illuminationShader: typeof PIXI.Shader
-				// 	colorationShader: typeof PIXI.Shader
-				// }
-				// grid: {
-				// 	label: "LIGHT.AnimationForceGrid"
-				// 	animation: PointLightSource<
-				// 		TAmbientLightDocument["object"] | TTokenDocument["object"]
-				// 	>["animateTime"]
-				// 	colorationShader: typeof PIXI.Shader
-				// }
-				// starlight: {
-				// 	label: "LIGHT.AnimationStarLight"
-				// 	animation: PointLightSource<
-				// 		TAmbientLightDocument["object"] | TTokenDocument["object"]
-				// 	>["animateTime"]
-				// 	colorationShader: typeof PIXI.Shader
-				// }
-				// smokepatch: {
-				// 	label: "LIGHT.AnimationSmokePatch"
-				// 	animation: PointLightSource<
-				// 		TAmbientLightDocument["object"] | TTokenDocument["object"]
-				// 	>["animateTime"]
-				// 	illuminationShader: typeof PIXI.Shader
-				// 	colorationShader: typeof PIXI.Shader
-				// }
+				flame: {
+					label: "LIGHT.AnimationFlame"
+					animation: PointLightSource<
+						TAmbientLightDocument["object"] | TTokenDocument["object"]
+					>["animateTorch"]
+					illuminationShader: typeof PIXI.Shader
+					colorationShader: typeof PIXI.Shader
+				}
+				torch: {
+					label: "LIGHT.AnimationTorch"
+					animation: PointLightSource<
+						TAmbientLightDocument["object"] | TTokenDocument["object"]
+					>["animateTorch"]
+					illuminationShader: typeof PIXI.Shader
+					colorationShader: typeof PIXI.Shader
+				}
+				pulse: {
+					label: "LIGHT.AnimationPulse"
+					animation: PointLightSource<
+						TAmbientLightDocument["object"] | TTokenDocument["object"]
+					>["animatePulse"]
+					illuminationShader: typeof PIXI.Shader
+					colorationShader: typeof PIXI.Shader
+				}
+				chroma: {
+					label: "LIGHT.AnimationChroma"
+					animation: PointLightSource<
+						TAmbientLightDocument["object"] | TTokenDocument["object"]
+					>["animateTime"]
+					colorationShader: typeof PIXI.Shader
+				}
+				wave: {
+					label: "LIGHT.AnimationWave"
+					animation: PointLightSource<
+						TAmbientLightDocument["object"] | TTokenDocument["object"]
+					>["animateTime"]
+					illuminationShader: typeof PIXI.Shader
+					colorationShader: typeof PIXI.Shader
+				}
+				fog: {
+					label: "LIGHT.AnimationFog"
+					animation: PointLightSource<
+						TAmbientLightDocument["object"] | TTokenDocument["object"]
+					>["animateTime"]
+					colorationShader: typeof PIXI.Shader
+				}
+				sunburst: {
+					label: "LIGHT.AnimationSunburst"
+					animation: PointLightSource<
+						TAmbientLightDocument["object"] | TTokenDocument["object"]
+					>["animateTime"]
+					illuminationShader: typeof PIXI.Shader
+					colorationShader: typeof PIXI.Shader
+				}
+				dome: {
+					label: "LIGHT.AnimationLightDome"
+					animation: PointLightSource<
+						TAmbientLightDocument["object"] | TTokenDocument["object"]
+					>["animateTime"]
+					colorationShader: typeof PIXI.Shader
+				}
+				emanation: {
+					label: "LIGHT.AnimationEmanation"
+					animation: PointLightSource<
+						TAmbientLightDocument["object"] | TTokenDocument["object"]
+					>["animateTime"]
+					colorationShader: typeof PIXI.Shader
+				}
+				hexa: {
+					label: "LIGHT.AnimationHexaDome"
+					animation: PointLightSource<
+						TAmbientLightDocument["object"] | TTokenDocument["object"]
+					>["animateTime"]
+					colorationShader: typeof PIXI.Shader
+				}
+				ghost: {
+					label: "LIGHT.AnimationGhostLight"
+					animation: PointLightSource<
+						TAmbientLightDocument["object"] | TTokenDocument["object"]
+					>["animateTime"]
+					illuminationShader: typeof PIXI.Shader
+					colorationShader: typeof PIXI.Shader
+				}
+				energy: {
+					label: "LIGHT.AnimationEnergyField"
+					animation: PointLightSource<
+						TAmbientLightDocument["object"] | TTokenDocument["object"]
+					>["animateTime"]
+					colorationShader: typeof PIXI.Shader
+				}
+				vortex: {
+					label: "LIGHT.AnimationVortex"
+					animation: PointLightSource<
+						TAmbientLightDocument["object"] | TTokenDocument["object"]
+					>["animateTime"]
+					illuminationShader: typeof PIXI.Shader
+					colorationShader: typeof PIXI.Shader
+				}
+				witchwave: {
+					label: "LIGHT.AnimationBewitchingWave"
+					animation: PointLightSource<
+						TAmbientLightDocument["object"] | TTokenDocument["object"]
+					>["animateTime"]
+					colorationShader: typeof PIXI.Shader
+				}
+				rainbowswirl: {
+					label: "LIGHT.AnimationSwirlingRainbow"
+					animation: PointLightSource<
+						TAmbientLightDocument["object"] | TTokenDocument["object"]
+					>["animateTime"]
+					colorationShader: typeof PIXI.Shader
+				}
+				radialrainbow: {
+					label: "LIGHT.AnimationRadialRainbow"
+					animation: PointLightSource<
+						TAmbientLightDocument["object"] | TTokenDocument["object"]
+					>["animateTime"]
+					colorationShader: typeof PIXI.Shader
+				}
+				fairy: {
+					label: "LIGHT.AnimationFairyLight"
+					animation: PointLightSource<
+						TAmbientLightDocument["object"] | TTokenDocument["object"]
+					>["animateTime"]
+					illuminationShader: typeof PIXI.Shader
+					colorationShader: typeof PIXI.Shader
+				}
+				grid: {
+					label: "LIGHT.AnimationForceGrid"
+					animation: PointLightSource<
+						TAmbientLightDocument["object"] | TTokenDocument["object"]
+					>["animateTime"]
+					colorationShader: typeof PIXI.Shader
+				}
+				starlight: {
+					label: "LIGHT.AnimationStarLight"
+					animation: PointLightSource<
+						TAmbientLightDocument["object"] | TTokenDocument["object"]
+					>["animateTime"]
+					colorationShader: typeof PIXI.Shader
+				}
+				smokepatch: {
+					label: "LIGHT.AnimationSmokePatch"
+					animation: PointLightSource<
+						TAmbientLightDocument["object"] | TTokenDocument["object"]
+					>["animateTime"]
+					illuminationShader: typeof PIXI.Shader
+					colorationShader: typeof PIXI.Shader
+				}
 			}
 
 			darknessAnimations: {
-				// magicalGloom: {
-				// 	label: "LIGHT.AnimationMagicalGloom"
-				// 	animation: PointDarknessSource<
-				// 		TAmbientLightDocument["object"] | TTokenDocument["object"]
-				// 	>["animateTime"]
-				// 	darknessShader: typeof PIXI.Shader
-				// }
-				// roiling: {
-				// 	label: "LIGHT.AnimationRoilingMass"
-				// 	animation: PointDarknessSource<
-				// 		TAmbientLightDocument["object"] | TTokenDocument["object"]
-				// 	>["animateTime"]
-				// 	darknessShader: typeof PIXI.Shader
-				// }
-				// hole: {
-				// 	label: "LIGHT.AnimationBlackHole"
-				// 	animation: PointDarknessSource<
-				// 		TAmbientLightDocument["object"] | TTokenDocument["object"]
-				// 	>["animateTime"]
-				// 	darknessShader: typeof PIXI.Shader
-				// }
+				magicalGloom: {
+					label: "LIGHT.AnimationMagicalGloom"
+					animation: PointDarknessSource<
+						TAmbientLightDocument["object"] | TTokenDocument["object"]
+					>["animateTime"]
+					darknessShader: typeof PIXI.Shader
+				}
+				roiling: {
+					label: "LIGHT.AnimationRoilingMass"
+					animation: PointDarknessSource<
+						TAmbientLightDocument["object"] | TTokenDocument["object"]
+					>["animateTime"]
+					darknessShader: typeof PIXI.Shader
+				}
+				hole: {
+					label: "LIGHT.AnimationBlackHole"
+					animation: PointDarknessSource<
+						TAmbientLightDocument["object"] | TTokenDocument["object"]
+					>["animateTime"]
+					darknessShader: typeof PIXI.Shader
+				}
 			}
 
 			/** The set of VisionMode definitions which are available to be used for Token vision. */

@@ -6,7 +6,7 @@ import { ItemTemplateType } from "../types.ts"
 import { SheetSettings } from "@system"
 import { ItemType } from "@module/data/constants.ts"
 import { EquipmentModifierData } from "../equipment-modifier.ts"
-import type { ItemGURPS2 } from "@module/document/item.ts"
+import { ItemGURPS2 } from "@module/document/item.ts"
 import {
 	extendedWeightAdjustedForModifiers,
 	valueAdjustedForModifiers,
@@ -222,15 +222,23 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 		)
 	}
 
-	get allModifiers(): { system: EquipmentModifierData }[] {
-		return Object.values(this.modifiers).filter(e => e.isOfType(ItemType.EquipmentModifier))
+	get allModifiers(): (ItemGURPS2 & { system: EquipmentModifierData })[] {
+		let modifiers: Collection<ItemGURPS2> = new Collection()
+		if (this.modifiers instanceof Promise) {
+			;(async () => {
+				modifiers = await this.modifiers
+			})()
+		} else {
+			modifiers = this.modifiers
+		}
+		return modifiers.filter(e => e instanceof ItemGURPS2 && e.isOfType(ItemType.EquipmentModifier))
 	}
 }
 
 interface EquipmentFieldsTemplate extends ModelPropsFromSchema<EquipmentFieldsTemplateSchema> {
 	nameWithReplacements: string
 	processedNotes: string
-	modifiers: Collection<ItemGURPS2>
+	modifiers: Collection<ItemGURPS2> | Promise<Collection<ItemGURPS2>>
 }
 
 type EquipmentFieldsTemplateSchema = {

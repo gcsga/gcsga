@@ -7,7 +7,7 @@
 - items
   - type-based functionality
 - actors
-  - type-based fucntionality
+  - type-based functionality
 - character sheets
   - actorsheetv2
   - imitate GCS and newest GGA layout

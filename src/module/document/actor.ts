@@ -90,7 +90,6 @@ class ActorGURPS2<TParent extends TokenDocument | null = TokenDocument | null> e
 	): Promise<boolean | void> {
 		let allowed = await super._preCreate(data, options, user)
 		if (foundry.utils.isNewerVersion(game.version, 12)) return allowed
-		// @ts-expect-error function exists
 		if (allowed !== false) allowed = await this.system._preCreate?.(data, options, user)
 		return allowed
 	}

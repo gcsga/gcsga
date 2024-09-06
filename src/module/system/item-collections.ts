@@ -4,16 +4,18 @@ import { ActorGURPS2 } from "@module/document/actor.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import EmbeddedCollection from "types/foundry/common/abstract/embedded-collection.js"
 
-type ItemInst<T extends ItemType> = { system: ItemDataInstances[T] }
+type ItemInst<T extends ItemType> = ItemGURPS2 & { system: ItemDataInstances[T] }
 
 class ItemCollectionsMap<TActor extends ActorGURPS2> {
 	declare traits: Collection<ItemInst<ItemType.Trait> | ItemInst<ItemType.TraitContainer>>
 	declare skills: Collection<
 		ItemInst<ItemType.Skill> | ItemInst<ItemType.Technique> | ItemInst<ItemType.TraitContainer>
 	>
+
 	declare spells: Collection<
 		ItemInst<ItemType.Spell> | ItemInst<ItemType.RitualMagicSpell> | ItemInst<ItemType.SpellContainer>
 	>
+
 	declare equipment: Collection<ItemInst<ItemType.Equipment> | ItemInst<ItemType.EquipmentContainer>>
 	declare carriedEquipment: Collection<ItemInst<ItemType.Equipment> | ItemInst<ItemType.EquipmentContainer>>
 	declare otherEquipment: Collection<ItemInst<ItemType.Equipment> | ItemInst<ItemType.EquipmentContainer>>

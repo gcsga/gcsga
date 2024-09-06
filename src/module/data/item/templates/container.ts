@@ -51,7 +51,6 @@ class ContainerTemplate extends ItemDataModel<ContainerTemplateSchema> {
 
 		// Otherwise use local document collection
 		return (this.parent.isEmbedded ? this.parent.actor!.items : game.items).reduce((collection, item) => {
-			//@ts-expect-error container exists in all cases
 			if (item.system.container === this.parent.id) collection.set(item.id, item)
 			return collection
 		}, new Collection())

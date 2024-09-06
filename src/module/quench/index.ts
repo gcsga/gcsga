@@ -5,7 +5,7 @@ import * as MookSkills from "./mook/skills.ts"
 import * as MookSpells from "./mook/spells.ts"
 import * as MookAttacks from "./mook/attacks.ts"
 
-export function registerQuenchBatches(quench: Quench) {
+export function registerQuenchBatches(quench: Quench): void {
 	MookAttributes.registerBatches(quench)
 	MookTraits.registerBatches(quench)
 	MookSkills.registerBatches(quench)

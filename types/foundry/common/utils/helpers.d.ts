@@ -163,7 +163,7 @@ export function hasProperty(object: object, key: string): boolean
  *
  * @return         The value of the found property
  */
-export function getProperty<TValue = unknown>(object: object, key: string): TValue
+export function getProperty(object: object, key: string): unknown
 
 /**
  * A helper function which searches through an object to assign a value using a string key
@@ -301,21 +301,6 @@ export function logCompatibilityWarning(
 export * from "./http.ts"
 
 declare global {
-	/**
-	 * Read text data from a user provided File object
-	 * @param file           A File object
-	 * @return    A Promise which resolves to the loaded text data
-	 */
-	export function readTextFromFile(file: File): Promise<string>
-
-	/**
-	 * Export data content to be saved to a local file
-	 * @param {string} data       Data content converted to a string
-	 * @param {string} type       The type of
-	 * @param {string} filename   The filename of the resulting download
-	 */
-	export function saveDataToFile(data: string, type: string, filename: string): void
-
 	interface MergeObjectOptions {
 		/**
 		 * Control whether to insert new top-level objects into the resulting structure which do not previously exist

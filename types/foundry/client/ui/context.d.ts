@@ -1,5 +1,3 @@
-import ApplicationV2 from "../../client-esm/applications/api/application.js"
-
 export {}
 
 declare global {
@@ -52,8 +50,8 @@ declare global {
 		 * @param [options.hookName="EntryContext"]  The name of the hook to call.
 		 */
 		static create(
-			app: Application | ApplicationV2,
-			html: JQuery | HTMLElement,
+			app: Application,
+			html: JQuery,
 			selector: string,
 			menuItems: ContextMenuEntry[],
 			options?: { eventName?: string; hookName?: string },
@@ -102,10 +100,6 @@ declare global {
 		name: string
 		/** A string containing an HTML icon element for the menu item */
 		icon: string
-		/** Additional CSS classes to apply to thismenu item */
-		classes: string
-		/** An identifier for a group this entry belongs to */
-		group: string
 		/**
 		 * The function to call when the menu item is clicked. Receives the HTML element
 		 * of the entry that this context menu is for.

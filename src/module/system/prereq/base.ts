@@ -33,7 +33,7 @@ abstract class BasePrereq<TSchema extends BasePrereqSchema<prereq.Type> = BasePr
 		}))
 	}
 
-	static #TYPES: any
+	static #TYPES: Record<string, ConstructorOf<Prereq>>
 
 	static override defineSchema(): BasePrereqSchema<prereq.Type> {
 		const fields = foundry.data.fields

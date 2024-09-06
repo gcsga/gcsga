@@ -46,6 +46,46 @@ export namespace selfctrl {
 			return `<div data-type="${RollType.ControlRoll}" class="rollable">${Roll.toString(R)}</div>`
 		}
 
+		export function treatAs(R: Roll): Roll {
+			switch (R) {
+				case Roll.NoCR:
+				case Roll.CR6:
+				case Roll.CR9:
+				case Roll.CR12:
+				case Roll.CR15:
+					return R
+				case Roll.CR7:
+					return Roll.CR6
+				case Roll.CR8:
+				case Roll.CR10:
+					return Roll.CR9
+				case Roll.CR11:
+				case Roll.CR13:
+					return Roll.CR12
+				case Roll.CR14:
+					return Roll.CR15
+				default:
+					return Roll.NoCR
+			}
+		}
+
+		export function penalty(R: Roll): number {
+			switch (treatAs(R)) {
+				case Roll.NoCR:
+					return 0
+				case Roll.CR6:
+					return -4
+				case Roll.CR9:
+					return -3
+				case Roll.CR12:
+					return -2
+				case Roll.CR15:
+					return -1
+				default:
+					return 0
+			}
+		}
+
 		export function multiplier(R: Roll): number {
 			switch (R) {
 				case Roll.NoCR:

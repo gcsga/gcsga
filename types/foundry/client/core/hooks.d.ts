@@ -1,4 +1,4 @@
-import ApplicationV2 from "../../client-esm/applications/api/application.js"
+import type ApplicationV2 from "../../client-esm/applications/api/application.d.ts"
 
 export {}
 declare global {
@@ -56,22 +56,6 @@ declare global {
 		"getProseMirrorMenuDropDowns",
 		[foundry.prosemirror.ProseMirrorMenu, Record<string, ProseMirrorDropDownConfig>]
 	>
-	type HookParamsChatMessage = HookParameters<
-		"chatMessage",
-		[
-			ChatLog,
-			string,
-			{
-				speaker: {
-					actor: string | null
-					alias: string | null
-					scene: string | null
-					token: string | null
-				}
-				user: string | null
-			},
-		]
-	>
 
 	class Hooks {
 		/**
@@ -107,8 +91,6 @@ declare global {
 		static on(...args: HookParamsRender<Settings, "Settings">): number
 		static on(...args: HookParamsRender<SettingsConfig, "SettingsConfig">): number
 		static on(...args: HookParamsRender<TokenHUD, "TokenHUD">): number
-		static on(...args: HookParamsRender<Hotbar, "Hotbar">): number
-		static on(...args: HookParamsRender<PlayerList, "PlayerList">): number
 		static on(
 			...args: HookParamsRender<JournalPageSheet<JournalEntryPage<JournalEntry | null>>, "JournalPageSheet">
 		): number
@@ -124,7 +106,6 @@ declare global {
 		static on(...args: HookParamsUpdate<Scene, "Scene">): number
 		static on(...args: HookParamsUpdateWorldTime): number
 		static on(...args: HookParamsGetProseMirrorMenuDropDowns): number
-		static on(...args: HookParamsChatMessage): number
 		static on(...args: HookParameters<string, unknown[]>): number
 
 		/**

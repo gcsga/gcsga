@@ -38,13 +38,13 @@ class SkillDefault extends foundry.abstract.DataModel<ItemGURPS2, SkillDefaultSc
 		return SKILL_BASED_DEFAULT_TYPES.has(this.type) ?? false
 	}
 
-	equivalent(other?: SkillDefault): boolean {
+	equivalent(replacements: Map<string, string>, other: SkillDefault | null): boolean {
 		return (
-			!!other &&
+			other !== null &&
 			this.type === other.type &&
 			this.modifier === other.modifier &&
-			this.name === other.name &&
-			this.specialization === other.specialization
+			this.nameWithReplacements(replacements) === other.nameWithReplacements(replacements) &&
+			this.specializationWithReplacements(replacements) === other.specializationWithReplacements(replacements)
 		)
 	}
 

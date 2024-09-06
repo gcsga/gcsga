@@ -3,7 +3,7 @@ import { SYSTEM_NAME, gid } from "@module/data/constants.ts"
 import { EXAMPLE_STATBLOCKS, Mook } from "@system/mook/index.ts"
 import { _defaultMookData } from "tests/mocks/game.ts"
 
-export function registerBatches(quench: Quench) {
+export function registerBatches(quench: Quench): void {
 	quench.registerBatch(
 		`${SYSTEM_NAME}.mook.attributes`,
 		(context: QuenchBatchContext) => {

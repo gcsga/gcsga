@@ -217,6 +217,11 @@ declare global {
 
 	interface ResolvedUUID {
 		uuid?: string
+		/**
+		 * The type of Document referenced. Legacy compendium UUIDs will not populate this field if the compendium is
+		 * not active in the World.
+		 */
+		type: string | undefined
 		/** The parent collection. */
 		collection?: DocumentCollection<ClientDocument> | undefined
 		/** The parent document. */
@@ -255,7 +260,7 @@ declare global {
 		type: string
 		name: string
 		img: ImageFilePath
-		uuid: string
+		uuid: CompendiumUUID
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		[key: string]: any
 	}

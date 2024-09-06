@@ -76,15 +76,7 @@ class CharacterData extends ActorDataModel.mixin(
 	 * @param excludes - Skills to exclude from the search
 	 * @returns Skill or Technique
 	 */
-	bestSkillNamed(
-		name: string,
-		specialization: string,
-		requirePoints: boolean,
-		excludes: Set<string> = new Set(),
-	):
-		| (ItemGURPS2 &
-				({ type: ItemType.Skill; system: SkillData } | { type: ItemType.Technique; system: TechniqueData }))
-		| null {
+	bestSkillNamed(name: string, specialization: string, requirePoints: boolean, excludes: Set<string> = new Set()) {
 		let best: ItemGURPS2 | null = null
 		let level = Number.MIN_SAFE_INTEGER
 		for (const sk of this.skillNamed(name, specialization, requirePoints, excludes)) {
@@ -94,7 +86,7 @@ class CharacterData extends ActorDataModel.mixin(
 				level = skillLevel
 			}
 		}
-		return best as any
+		return best
 	}
 
 	/**
@@ -105,15 +97,10 @@ class CharacterData extends ActorDataModel.mixin(
 	 * @param excludes - Skills to exclude from the search
 	 * @returns Array of Skills/Techniques
 	 */
-	skillNamed(
-		name: string,
-		specialization: string,
-		requirePoints: boolean,
-		excludes: Set<string> | null = null,
-	): (ItemGURPS2 &
-		({ type: ItemType.Skill; system: SkillData } | { type: ItemType.Technique; system: TechniqueData }))[] {
+	skillNamed(name: string, specialization: string, requirePoints: boolean, excludes: Set<string> | null = null) {
 		const list: ItemGURPS2[] = []
-		this.parent.items.forEach(sk => {
+		// this.parent.items.forEach(sk => {
+		this.parent.itemCollections.skills.forEach(sk => {
 			if (!sk.isOfType(ItemType.Skill, ItemType.Technique)) return
 			if (excludes?.has(sk.system.processedName)) return
 
@@ -125,7 +112,7 @@ class CharacterData extends ActorDataModel.mixin(
 				}
 			}
 		})
-		return list as any
+		return list
 	}
 }
 

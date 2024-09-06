@@ -75,6 +75,7 @@ interface GameGURPS
 }
 
 type ConfiguredConfig = Config<
+		TAmbientLightDocument extends AmbientLightDocument<TScene | null>,
 	ActiveEffect<ActorGURPS2<TokenDocument> | ItemGURPS2 | null>,
 	// ActiveEffectGURPS<ActorGURPS<TokenDocumentGURPS> | ItemGURPS | null>,
 	ActorGURPS2,

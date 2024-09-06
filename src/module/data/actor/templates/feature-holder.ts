@@ -1,5 +1,5 @@
 import { ActorDataModel } from "@module/data/abstract.ts"
-import { ActorType, gid } from "@module/data/constants.ts"
+import { ActorType, ItemType, gid } from "@module/data/constants.ts"
 import { equalFold } from "@module/util/index.ts"
 import { Nameable } from "@module/util/nameable.ts"
 import {
@@ -14,7 +14,8 @@ import {
 	MoveBonus,
 	SheetSettings,
 } from "@system"
-import { TooltipGURPS, feature, skillsel, stlimit, wsel } from "@util"
+import { Feature } from "@system/feature/types.ts"
+import { TooltipGURPS, feature, selfctrl, skillsel, stlimit, wsel } from "@util"
 
 class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> {
 	declare features: FeatureSet
@@ -34,7 +35,45 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 
 	prepareEmbeddedDocuments(): void {}
 
-	processFeatures(): void {}
+	processFeatures(): void {
+		const itemCollections = this.parent.itemCollections
+		itemCollections.traits.forEach(trait => {
+			let levels = 0
+			if (trait.isOfType(ItemType.Trait)) {
+				if (trait.system.isLeveled) levels = Math.max(trait.system.levels, 0)
+				for (const f of trait.system.features) this._processFeature(trait, null, f, levels)
+				for (const f of featuresForSelfControlRoll(trait.system.cr, trait.system.cr_adj))
+					this._processFeature(trait, null, f, levels)
+				trait.system.allModifiers.forEach(mod => {
+					for (const f of mod.system.features) this._processFeature(mod, null, f, mod.system.currentLevel)
+				})
+			}
+		})
+		itemCollections.skills.forEach(skill => {
+			if (skill.isOfType(ItemType.Skill, ItemType.Technique)) {
+				for (const f of skill.system.features) this._processFeature(skill, null, f, skill.system.level.level)
+			}
+		})
+		itemCollections.carriedEquipment.forEach(equipment => {
+			if (!equipment.system.equipped || equipment.system.quantity <= 0) return
+			for (const f of equipment.system.features)
+				this._processFeature(equipment, null, f, Math.max(equipment.system.level, 0))
+			equipment.system.allModifiers.forEach(mod => {
+				for (const f of mod.system.features)
+					this._processFeature(mod, null, f, Math.max(equipment.system.level, 0))
+			})
+		})
+		itemCollections.effects.forEach(effect => {
+			for (const f of effect.system.features) this._processFeature(effect, null, f, effect.system.levels.current)
+		})
+	}
+
+	private _processFeature(
+		owner: Feature["owner"],
+		subOwner: Feature["subOwner"],
+		feature: Feature,
+		levels: number,
+	): void {}
 
 	/**
 	 * @param attributeId - ID of attribute
@@ -292,7 +331,7 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 		m: Set<WeaponBonus> = new Set(),
 		allowedFeatureTypes: Set<feature.Type> = new Set(),
 		temporary = false,
-	) {
+	): void {
 		for (const bonus of this.features.weaponBonuses) {
 			if (
 				allowedFeatureTypes.has(bonus.type) &&
@@ -330,6 +369,13 @@ function addWeaponBonusToSet(
 	bonus.featureLevel = savedLevel
 	bonus.dieCount = savedDieCount
 	m.add(bonus)
+}
+
+function featuresForSelfControlRoll(cr: selfctrl.Roll, adj: selfctrl.Adjustment): Feature[] {
+	if (adj !== selfctrl.Adjustment.MajorCostOfLivingIncrease) return []
+
+	const f = new SkillBonus({ name: { qualifier: "Merchant" }, amount: selfctrl.Roll.penalty(cr) })
+	return [f]
 }
 
 interface FeatureHolderTemplate extends ModelPropsFromSchema<FeatureHolderTemplateSchema> {}

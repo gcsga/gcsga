@@ -13,7 +13,10 @@ class AbstractEffectTemplate extends ItemDataModel<AbstractEffectTemplateSchema>
 		return {
 			modifiers: new fields.ArrayField(new fields.SchemaField(RollModifier.defineSchema())),
 			can_level: new fields.BooleanField(),
-			levels: new fields.SchemaField({ max: new fields.NumberField(), current: new fields.NumberField() }),
+			levels: new fields.SchemaField({
+				max: new fields.NumberField({ required: true, nullable: false, integer: true, initial: 0 }),
+				current: new fields.NumberField({ required: true, nullable: false, integer: true, initial: 0 }),
+			}),
 			duration: new fields.SchemaField({
 				type: new fields.StringField<DurationType, DurationType, true>({
 					required: true,
@@ -44,8 +47,8 @@ type AbstractEffectTemplateSchema = {
 	modifiers: fields.ArrayField<fields.SchemaField<RollModifierSchema>>
 	can_level: fields.BooleanField
 	levels: fields.SchemaField<{
-		max: fields.NumberField
-		current: fields.NumberField
+		max: fields.NumberField<number, number, true, false, true>
+		current: fields.NumberField<number, number, true, false, true>
 	}>
 	overlay: fields.BooleanField
 	duration: fields.SchemaField<{

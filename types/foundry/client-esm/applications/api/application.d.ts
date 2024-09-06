@@ -12,7 +12,7 @@ export default class ApplicationV2<
 	 */
 	static BASE_APPLICATION: ApplicationV2
 
-	static DEFAULT_OPTIONS: Partial<ApplicationConfiguration>
+	static DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration>
 
 	static RENDER_STATES: {
 		ERROR: -3
@@ -25,31 +25,7 @@ export default class ApplicationV2<
 
 	static emittedEvents: readonly string[]
 
-	/**
-	 * Application instance configuration options.
-	 */
 	options: TConfig
-
-	#id: string
-
-	/**
-	 * Flag that this Application instance is renderable.
-	 * Applications are not renderable unless a subclass defines the _renderHTML and _replaceHTML methods.
-	 */
-	#renderable: boolean
-
-	/**
-	 * The outermost HTMLElement of this rendered Application.
-	 * For window applications this is ApplicationV2##frame.
-	 * For non-window applications this ApplicationV2##content.
-	 */
-	#element: HTMLDivElement
-
-	/**
-	 * The HTMLElement within which inner HTML is rendered.
-	 * For non-window applications this is the same as ApplicationV2##element.
-	 */
-	#content: HTMLElement
 
 	/** Convenience references to window header elements. */
 	get window(): {
@@ -151,7 +127,7 @@ export default class ApplicationV2<
 	 * @param options  Options which configure application rendering behavior
 	 * @returns Context data for the render operation
 	 */
-	protected _prepareContext(options: TRenderOptions): Promise<ApplicationRenderContext>
+	protected _prepareContext(options: TRenderOptions): Promise<object>
 
 	/**
 	 * Configure the array of header control menu options
@@ -167,7 +143,7 @@ export default class ApplicationV2<
 	 * @returns            The result of HTML rendering may be implementation specific.
 	 *                     Whatever value is returned here is passed to _replaceHTML
 	 */
-	protected _renderHTML(context: ApplicationRenderContext, options: TRenderOptions): Promise<unknown>
+	protected _renderHTML(context: Record<string, unknown>, options: TRenderOptions): Promise<unknown>
 
 	/**
 	 * Replace the HTML of the application with the result provided by the rendering backend.
@@ -298,7 +274,7 @@ export default class ApplicationV2<
 	 * @param context      Prepared context data
 	 * @param options      Provided render options
 	 */
-	protected _preFirstRender(context: ApplicationRenderContext, options: TRenderOptions): Promise<void>
+	protected _preFirstRender(context: Record<string, unknown>, options: TRenderOptions): Promise<void>
 
 	/**
 	 * Actions performed after a first render of the Application.
@@ -306,7 +282,7 @@ export default class ApplicationV2<
 	 * @param context      Prepared context data
 	 * @param  options                 Provided render options
 	 */
-	protected _onFirstRender(context: ApplicationRenderContext, options: TRenderOptions): void
+	protected _onFirstRender(context: object, options: TRenderOptions): void
 
 	/**
 	 * Actions performed before any render of the Application.
@@ -314,7 +290,7 @@ export default class ApplicationV2<
 	 * @param context      Prepared context data
 	 * @param options      Provided render options
 	 */
-	protected _preRender(context: ApplicationRenderContext, options: TRenderOptions): Promise<void>
+	protected _preRender(context: object, options: TRenderOptions): Promise<void>
 
 	/**
 	 * Actions performed after any render of the Application.
@@ -322,7 +298,7 @@ export default class ApplicationV2<
 	 * @param context      Prepared context data
 	 * @param options      Provided render options
 	 */
-	protected _onRender(context: ApplicationRenderContext, options: TRenderOptions): void
+	protected _onRender(context: object, options: TRenderOptions): void
 
 	/**
 	 * Actions performed before closing the Application.

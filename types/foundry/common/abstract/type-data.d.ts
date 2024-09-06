@@ -77,4 +77,13 @@ export default class TypeDataModel<
 	 * Compute data fields whose values are not stored to the database.
 	 */
 	prepareDerivedData(): void
+
+	/**
+	 * Called by ClientDocument#_preCreate.
+	 */
+	_preCreate(
+		data: object,
+		options: DatabaseCreateOperation<abstract.Document | null>,
+		user: User,
+	): Promise<boolean | void>
 }
