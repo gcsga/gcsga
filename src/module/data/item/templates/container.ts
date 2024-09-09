@@ -50,10 +50,14 @@ class ContainerTemplate extends ItemDataModel<ContainerTemplateSchema> {
 		}
 
 		// Otherwise use local document collection
-		return (this.parent.isEmbedded ? this.parent.actor!.items : game.items).reduce((collection, item) => {
-			if (item.system.container === this.parent.id) collection.set(item.id, item)
-			return collection
-		}, new Collection())
+		return (this.parent.isEmbedded ? this.parent.actor!.items : game.items).reduce(
+			(collection: Collection<ItemGURPS2>, item: ItemGURPS2) => {
+				if (item.system.hasTemplate(ItemTemplateType.BasicInformation))
+					if (item.system.container === this.parent.id) collection.set(item.id, item)
+				return collection
+			},
+			new Collection(),
+		)
 	}
 
 	get allContents(): Collection<ItemGURPS2> | Promise<Collection<ItemGURPS2>> {

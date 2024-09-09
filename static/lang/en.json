@@ -1750,9 +1750,13 @@
 			},
 			"stdmg": {
 				"none": "None",
-				"thr": "Thrust",
+				"thr": "thr",
+				"lift_thr": "lifting thr",
+				"tk_thr": "telekinetic thr",
+				"sw": "sw",
+				"lift_sw": "lifting sw",
+				"tk_sw": "telekinetic sw",
 				"thr_leveled": "Thrust (leveled)",
-				"sw": "Swing",
 				"sw_leveled": "Swing (leveled)"
 			},
 			"wswitch": {

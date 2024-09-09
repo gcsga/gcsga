@@ -4,9 +4,13 @@ export namespace stdmg {
 	export enum Option {
 		None = "none",
 		Thrust = "thr",
-		LeveledThrust = "thr_leveled",
+		LiftingThrust = "lift_thr",
+		TelekineticThrust = "tk_thr",
 		Swing = "sw",
-		LeveledSwing = "sw_leveled",
+		LiftingSwing = "lift_sw",
+		TelekineticSwing = "tk_sw",
+		// OldLeveledThrust = "thr_leveled",
+		// OldLeveledSwing = "sw_leveled",
 	}
 
 	export namespace Option {
@@ -18,8 +22,12 @@ export namespace stdmg {
 	export const Options: Option[] = [
 		Option.None,
 		Option.Thrust,
-		Option.LeveledThrust,
+		Option.LiftingThrust,
+		Option.TelekineticThrust,
 		Option.Swing,
-		Option.LeveledSwing,
+		Option.LiftingSwing,
+		Option.TelekineticSwing,
+		// Option.LeveledThrust,
+		// Option.LeveledSwing,
 	]
 }

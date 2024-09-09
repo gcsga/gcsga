@@ -3,6 +3,7 @@ import fields = foundry.data.fields
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { AbstractWeaponTemplate, AbstractWeaponTemplateSchema } from "./templates/abstract-weapon.ts"
 import { Nameable } from "@module/util/nameable.ts"
+import { SkillDefault } from "@system"
 
 class WeaponMeleeData extends ItemDataModel.mixin(BasicInformationTemplate, AbstractWeaponTemplate) {
 	static override defineSchema(): WeaponMeleeSchema {
@@ -21,7 +22,9 @@ class WeaponMeleeData extends ItemDataModel.mixin(BasicInformationTemplate, Abst
 	}
 }
 
-interface WeaponMeleeData extends ModelPropsFromSchema<WeaponMeleeSchema> {}
+interface WeaponMeleeData extends Omit<ModelPropsFromSchema<WeaponMeleeSchema>, "defaults"> {
+	defaults: SkillDefault[]
+}
 
 type WeaponMeleeSchema = BasicInformationTemplateSchema &
 	AbstractWeaponTemplateSchema & {

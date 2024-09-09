@@ -4,10 +4,9 @@ import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./temp
 import { FeatureTemplate, FeatureTemplateSchema } from "./templates/features.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
 import fields = foundry.data.fields
-import { EquipmentData } from "./equipment.ts"
-import { EquipmentContainerData } from "./equipment-container.ts"
-import { EquipmentFieldsTemplate } from "./templates/index.ts"
 import { SheetSettings } from "@system"
+import { ItemType } from "../constants.ts"
+import { ItemInst } from "./helpers.ts"
 
 class EquipmentModifierData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -15,7 +14,7 @@ class EquipmentModifierData extends ItemDataModel.mixin(
 	ReplacementTemplate,
 ) {
 	/** Allows dynamic setting of containing trait for arbitrary value calculation */
-	private _equipment: { system: EquipmentFieldsTemplate } | null = null
+	private _equipment: ItemInst<ItemType.Equipment | ItemType.EquipmentContainer> | null = null
 
 	static override defineSchema(): EquipmentModifierSchema {
 		const fields = foundry.data.fields
@@ -42,12 +41,12 @@ class EquipmentModifierData extends ItemDataModel.mixin(
 		}) as EquipmentModifierSchema
 	}
 
-	get equipment(): { system: EquipmentFieldsTemplate } | null {
-		return (this._equipment as { system: EquipmentData | EquipmentContainerData }) ?? null
+	get equipment(): ItemInst<ItemType.Equipment | ItemType.EquipmentContainer> | null {
+		return (this._equipment as ItemInst<ItemType.Equipment | ItemType.EquipmentContainer>) ?? null
 	}
 
-	set equipment(trait: { system: EquipmentFieldsTemplate } | null) {
-		this._equipment = trait
+	set equipment(equipment: ItemInst<ItemType.Equipment | ItemType.EquipmentContainer> | null) {
+		this._equipment = equipment
 	}
 
 	get costMultiplier(): number {
@@ -99,7 +98,7 @@ class EquipmentModifierData extends ItemDataModel.mixin(
 }
 
 function multiplierForEquipmentModifier(
-	equipment: { system: EquipmentFieldsTemplate } | null,
+	equipment: ItemInst<ItemType.Equipment | ItemType.EquipmentContainer> | null,
 	isPerLevel: boolean,
 ): number {
 	let multiplier = 0

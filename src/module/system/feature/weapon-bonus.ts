@@ -1,11 +1,11 @@
 import { Int, LocalizeGURPS, TooltipGURPS, feature, wsel, wswitch } from "@util"
 import { BaseFeature } from "./base.ts"
 import { WeaponBonusSchema } from "./data.ts"
-import { AbstractWeaponGURPS } from "@item"
 import { ItemType } from "@module/data/constants.ts"
 import { NumericCriteria, StringCriteria } from "@module/util/index.ts"
 import { Nameable } from "@module/util/nameable.ts"
 import { ItemDataModel } from "@module/data/abstract.ts"
+import { AbstractWeaponTemplate } from "@module/data/item/templates/abstract-weapon.ts"
 
 class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 	declare dieCount: number
@@ -46,7 +46,7 @@ class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 		this.tags = new StringCriteria(data.tags ?? undefined)
 	}
 
-	adjustedAmountForWeapon(wpn: AbstractWeaponGURPS): number {
+	adjustedAmountForWeapon(wpn: AbstractWeaponTemplate): number {
 		if (this.type === feature.Type.WeaponMinSTBonus) {
 			this.dieCount = 1
 		} else {

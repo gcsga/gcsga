@@ -1,10 +1,8 @@
 import { ItemType } from "@module/data/constants.ts"
-import { ItemDataInstances } from "@module/data/item/types.ts"
+import { ItemInst } from "@module/data/item/helpers.ts"
 import { ActorGURPS2 } from "@module/document/actor.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import EmbeddedCollection from "types/foundry/common/abstract/embedded-collection.js"
-
-type ItemInst<T extends ItemType> = ItemGURPS2 & { system: ItemDataInstances[T] }
 
 class ItemCollectionsMap<TActor extends ActorGURPS2> {
 	declare traits: Collection<ItemInst<ItemType.Trait> | ItemInst<ItemType.TraitContainer>>

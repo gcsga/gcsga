@@ -5,13 +5,13 @@ import { CellData } from "../fields/cell-data.ts"
 import { ItemTemplateType } from "../types.ts"
 import { SheetSettings } from "@system"
 import { ItemType } from "@module/data/constants.ts"
-import { EquipmentModifierData } from "../equipment-modifier.ts"
-import { ItemGURPS2 } from "@module/document/item.ts"
 import {
+	ItemInst,
 	extendedWeightAdjustedForModifiers,
 	valueAdjustedForModifiers,
 	weightAdjustedForModifiers,
 } from "../helpers.ts"
+import { type ItemGURPS2 } from "@module/document/item.ts"
 
 class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchema> {
 	static override defineSchema(): EquipmentFieldsTemplateSchema {
@@ -94,7 +94,14 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 		let dim = this.quantity === 0
 		let c = this.parent
 		while (c.container !== null) {
-			c = c.container as ItemGURPS2
+			if (c.container instanceof Promise) {
+				;(async () => {
+					const container = await c.container
+					if (container !== null) c = container
+				})()
+			} else {
+				c = c.container
+			}
 			if (!c.hasTemplate(ItemTemplateType.EquipmentFields)) break
 			dim = c.system.quantity === 0
 		}
@@ -222,7 +229,7 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 		)
 	}
 
-	get allModifiers(): (ItemGURPS2 & { system: EquipmentModifierData })[] {
+	get allModifiers(): ItemInst<ItemType.EquipmentModifier>[] {
 		let modifiers: Collection<ItemGURPS2> = new Collection()
 		if (this.modifiers instanceof Promise) {
 			;(async () => {
@@ -231,7 +238,7 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 		} else {
 			modifiers = this.modifiers
 		}
-		return modifiers.filter(e => e instanceof ItemGURPS2 && e.isOfType(ItemType.EquipmentModifier))
+		return modifiers.filter(e => e.isOfType(ItemType.EquipmentModifier))
 	}
 }
 

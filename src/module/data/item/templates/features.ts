@@ -12,7 +12,7 @@ class FeatureTemplate extends ItemDataModel<FeatureTemplateSchema> {
 	}
 }
 
-interface FeatureTemplate extends ItemDataModel<FeatureTemplateSchema>, ModelPropsFromSchema<FeatureTemplateSchema> {}
+interface FeatureTemplate extends ModelPropsFromSchema<FeatureTemplateSchema> {}
 
 type FeatureTemplateSchema = {
 	features: fields.ArrayField<fields.TypedSchemaField<Record<feature.Type, ConstructorOf<Feature>>>>

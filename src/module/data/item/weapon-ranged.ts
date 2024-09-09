@@ -1,8 +1,13 @@
 import { ItemDataModel } from "../abstract.ts"
 import fields = foundry.data.fields
-import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
-import { AbstractWeaponTemplate, AbstractWeaponTemplateSchema } from "./templates/abstract-weapon.ts"
 import { Nameable } from "@module/util/nameable.ts"
+import { SkillDefault } from "@system"
+import {
+	AbstractWeaponTemplate,
+	AbstractWeaponTemplateSchema,
+	BasicInformationTemplate,
+	BasicInformationTemplateSchema,
+} from "./templates/index.ts"
 
 class WeaponRangedData extends ItemDataModel.mixin(BasicInformationTemplate, AbstractWeaponTemplate) {
 	static override defineSchema(): WeaponRangedSchema {
@@ -24,7 +29,9 @@ class WeaponRangedData extends ItemDataModel.mixin(BasicInformationTemplate, Abs
 	}
 }
 
-interface WeaponRangedData extends ModelPropsFromSchema<WeaponRangedSchema> {}
+interface WeaponRangedData extends Omit<ModelPropsFromSchema<WeaponRangedSchema>, "defaults"> {
+	defaults: SkillDefault[]
+}
 
 type WeaponRangedSchema = BasicInformationTemplateSchema &
 	AbstractWeaponTemplateSchema & {

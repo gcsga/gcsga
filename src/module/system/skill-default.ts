@@ -84,11 +84,11 @@ class SkillDefault extends foundry.abstract.DataModel<ItemGURPS2, SkillDefaultSc
 		switch (this.type) {
 			case gid.Parry:
 				best = this.best(actor, replacements, requirePoints, excludes)
-				if (best !== Number.MIN_SAFE_INTEGER) best = best / 2 + 3 + actor.system.parryBonus
+				if (best !== Number.MIN_SAFE_INTEGER) best = best / 2 + 3 + actor.system.bonuses.parry.value
 				return this.finalLevel(best)
 			case gid.Block:
 				best = this.best(actor, replacements, requirePoints, excludes)
-				if (best !== Number.MIN_SAFE_INTEGER) best = best / 2 + 3 + actor.system.blockBonus
+				if (best !== Number.MIN_SAFE_INTEGER) best = best / 2 + 3 + actor.system.bonuses.block.value
 				return this.finalLevel(best)
 			case gid.Skill:
 				return this.finalLevel(this.best(actor, replacements, requirePoints, excludes))
@@ -129,11 +129,11 @@ class SkillDefault extends foundry.abstract.DataModel<ItemGURPS2, SkillDefaultSc
 				return this.finalLevel(level)
 			case gid.Parry:
 				best = this.bestFast(actor, replacements, requirePoints, excludes)
-				if (best !== Number.MIN_SAFE_INTEGER) best = Math.floor(best / 2) + 3 + actor.system.parryBonus
+				if (best !== Number.MIN_SAFE_INTEGER) best = Math.floor(best / 2) + 3 + actor.system.bonuses.parry.value
 				return this.finalLevel(best)
 			case gid.Block:
 				best = this.bestFast(actor, replacements, requirePoints, excludes)
-				if (best !== Number.MIN_SAFE_INTEGER) best = Math.floor(best / 2) + 3 + actor.system.blockBonus
+				if (best !== Number.MIN_SAFE_INTEGER) best = Math.floor(best / 2) + 3 + actor.system.bonuses.block.value
 				return this.finalLevel(best)
 			case gid.Skill:
 				return this.finalLevel(this.bestFast(actor, replacements, requirePoints, excludes))

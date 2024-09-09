@@ -1,11 +1,19 @@
 import { ItemDataModel } from "../abstract.ts"
 import { ItemType } from "../constants.ts"
-import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
-import { ContainerTemplate, ContainerTemplateSchema } from "./templates/container.ts"
-import { FeatureTemplate, FeatureTemplateSchema } from "./templates/features.ts"
-import { PrereqTemplate, PrereqTemplateSchema } from "./templates/prereqs.ts"
-import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
-import { EquipmentFieldsTemplate, EquipmentFieldsTemplateSchema } from "./templates/equipment-fields.ts"
+import {
+	BasicInformationTemplate,
+	BasicInformationTemplateSchema,
+	ContainerTemplate,
+	ContainerTemplateSchema,
+	EquipmentFieldsTemplate,
+	EquipmentFieldsTemplateSchema,
+	FeatureTemplate,
+	FeatureTemplateSchema,
+	PrereqTemplate,
+	PrereqTemplateSchema,
+	ReplacementTemplate,
+	ReplacementTemplateSchema,
+} from "./templates/index.ts"
 
 class EquipmentData extends ItemDataModel.mixin(
 	BasicInformationTemplate,

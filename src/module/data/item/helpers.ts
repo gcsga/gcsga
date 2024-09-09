@@ -18,6 +18,8 @@ import { EquipmentFieldsTemplate } from "./templates/equipment-fields.ts"
 import { Feature } from "@system/feature/types.ts"
 import { AttributeDifficulty } from "./fields/attribute-difficulty.ts"
 import { ActorTemplateType } from "../actor/types.ts"
+import type { ItemGURPS2 } from "@module/document/item.ts"
+import { ItemDataInstances } from "./types.ts"
 
 function modifyPoints(points: number, modifier: number): number {
 	return points + calculateModifierPoints(points, modifier)
@@ -324,6 +326,8 @@ interface SkillLevel {
 	tooltip: string
 }
 
+type ItemInst<T extends ItemType> = ItemGURPS2 & { system: ItemDataInstances[T] }
+
 export {
 	modifyPoints,
 	calculateModifierPoints,
@@ -334,4 +338,4 @@ export {
 	extendedWeightAdjustedForModifiers,
 	formatRelativeSkill,
 }
-export type { SkillLevel }
+export type { SkillLevel, ItemInst }

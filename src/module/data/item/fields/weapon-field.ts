@@ -5,7 +5,8 @@ class WeaponField<
 	TParent extends AbstractWeaponTemplate = AbstractWeaponTemplate,
 	TSchema extends WeaponFieldSchema = WeaponFieldSchema,
 > extends foundry.abstract.DataModel<TParent, TSchema> {
-	static fromString<T extends WeaponField>(_s: string): T {
+	// @ts-expect-error abstract function
+	static fromString(s: string): WeaponField {
 		throw ErrorGURPS("Function #WeaponField.fromString must be implemented.")
 	}
 
@@ -13,8 +14,13 @@ class WeaponField<
 		throw ErrorGURPS("Function WeaponField.toString must be implemented.")
 	}
 
-	resolveValue<T extends this>(_w: TParent, _tooltip: TooltipGURPS): T {
+	// @ts-expect-error abstract function
+	resolveValue(w: TParent, tooltip: TooltipGURPS): WeaponField {
 		throw ErrorGURPS("Function WeaponField.resolveValue must be implemented.")
+	}
+
+	clean(): void {
+		throw ErrorGURPS("Function WeaponField.clean must be implemented.")
 	}
 }
 
