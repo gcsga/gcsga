@@ -1,6 +1,6 @@
 import { PoolThreshold } from "./pool-threshold.ts"
 import { TokenPool, gid } from "@data"
-import { ErrorGURPS, Int, attribute, stlimit } from "@util"
+import { ErrorGURPS, Int, attribute, stlimit, threshold } from "@util"
 import { AbstractAttribute } from "@system/abstract-attribute/object.ts"
 import { AttributeSchema } from "./data.ts"
 import { AttributeDef } from "./definition.ts"
@@ -39,12 +39,6 @@ class AttributeGURPS<
 			manualThreshold: new fields.NumberField({ required: true, nullable: true, initial: null }),
 		}
 	}
-
-	// overrideThreshold(value: PoolThreshold): Error | void {
-	// 	if (this.definition?.type !== attribute.Type.Pool)
-	// 		return ErrorGURPS(`Cannot set threshold for non-pool attribute "${this.definition?.fullName}"`)
-	// 	this._overridenThreshold = value
-	// }
 
 	get bonus(): number {
 		if (this.actor instanceof ActorDataModel && !this.actor.hasTemplate(ActorTemplateType.Features)) {
@@ -140,16 +134,6 @@ class AttributeGURPS<
 			if (this.current <= threshold.threshold(this.actor)) return threshold
 		}
 		return null
-
-		// if (!this.actor || !this.definition) return null
-		// if (this.definition.type !== attribute.Type.Pool) return null
-		// // if (this._overridenThreshold) return this._overridenThreshold
-		// if (this.manualThreshold !== null) return this.definition.thresholds[this.manualThreshold]
-		// // if (this.actor.flags[SYSTEM_NAME][ActorFlags.AutoThreshold].active === false) return this._manualThreshold
-		// for (const threshold of this.definition.thresholds ?? []) {
-		// 	if (this.current <= threshold.threshold(this.actor)) return threshold
-		// }
-		// return null
 	}
 
 	get isSeparator(): boolean {
@@ -190,11 +174,16 @@ class AttributeGURPS<
 			min: Number.MIN_SAFE_INTEGER,
 		}
 	}
+
+	static isThresholdOpMet(op: threshold.Op, attributes: AttributeGURPS[]): boolean {
+		for (const att of attributes) {
+			const t = att.currentThreshold
+			if (t !== null && t.ops.includes(op)) return true
+		}
+		return false
+	}
 }
 
-// interface AttributeGURPS
-// 	extends AbstractAttribute<CharacterGURPS | Mook, AttributeSchema>,
-// 		ModelPropsFromSchema<AttributeSchema> {}
 interface AttributeGURPS<TActor extends AttributeHolderTemplate | Mook>
 	extends AbstractAttribute<TActor, AttributeSchema>,
 		ModelPropsFromSchema<AttributeSchema> {}

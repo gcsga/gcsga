@@ -1,9 +1,10 @@
 import { ActorType, SkillDefaultType, gid } from "@data"
+import fields = foundry.data.fields
 import { Nameable } from "@module/util/nameable.ts"
-import { SkillDefaultSchema } from "./data.ts"
 import { LocalizeGURPS, StringBuilder } from "@util"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { ActorGURPS2 } from "@module/document/actor.ts"
+import { ActorTemplateType } from "@module/data/actor/types.ts"
 
 const SKILL_BASED_DEFAULT_TYPES: Set<string> = new Set([gid.Skill, gid.Parry, gid.Block])
 
@@ -38,6 +39,10 @@ class SkillDefault extends foundry.abstract.DataModel<ItemGURPS2, SkillDefaultSc
 		return SKILL_BASED_DEFAULT_TYPES.has(this.type) ?? false
 	}
 
+	cloneWithoutLevelOrPoints(): SkillDefault {
+		return this.clone({ level: 0, adjusted_level: 0, points: 0 })
+	}
+
 	equivalent(replacements: Map<string, string>, other: SkillDefault | null): boolean {
 		return (
 			other !== null &&
@@ -59,6 +64,10 @@ class SkillDefault extends foundry.abstract.DataModel<ItemGURPS2, SkillDefaultSc
 			else if (this.type === gid.Parry) buffer.push(` ${LocalizeGURPS.translations.gurps.attribute.parry}`)
 			else if (this.type === gid.Block) buffer.push(` ${LocalizeGURPS.translations.gurps.attribute.block}`)
 			return buffer.toString()
+		}
+		if (!actor.hasTemplate(ActorTemplateType.Attributes)) {
+			console.error(`Actor "${actor.name}" does not contain any attributes.`)
+			return ""
 		}
 		return actor.system.resolveAttributeName(this.type)
 	}
@@ -193,4 +202,14 @@ interface SkillDefault
 	extends foundry.abstract.DataModel<ItemGURPS2, SkillDefaultSchema>,
 		ModelPropsFromSchema<SkillDefaultSchema> {}
 
-export { SkillDefault }
+type SkillDefaultSchema = {
+	type: fields.StringField<SkillDefaultType, SkillDefaultType, true, false, true>
+	name: fields.StringField<string, string, true, true, true>
+	specialization: fields.StringField<string, string, true, true, true>
+	modifier: fields.NumberField<number, number, true, false, true>
+	level: fields.NumberField<number, number, true, false, true>
+	adjusted_level: fields.NumberField<number, number, true, false, true>
+	points: fields.NumberField<number, number, true, false, true>
+}
+
+export { SkillDefault, type SkillDefaultSchema }

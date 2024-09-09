@@ -10,11 +10,9 @@ import {
 } from "@system"
 import { CharacterManeuver } from "@system/maneuver-manager.ts"
 import { PointsRecord, PointsRecordSchema } from "./fields/points-record.ts"
-import { ItemType } from "../constants.ts"
+import { ItemType, gid } from "../constants.ts"
 import { equalFold } from "@module/util/index.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
-import { SkillData } from "../item/skill.ts"
-import { TechniqueData } from "../item/technique.ts"
 import {
 	FeatureHolderTemplate,
 	FeatureHolderTemplateSchema,
@@ -22,12 +20,24 @@ import {
 	SettingsHolderTemplateSchema,
 } from "./templates/index.ts"
 import { AttributeHolderTemplate, AttributeHolderTemplateSchema } from "./templates/attribute-holder.ts"
+import { ItemDataInstances } from "../item/types.ts"
+import { CharacterBonus, CharacterBonusSchema } from "./fields/bonus.ts"
+import { Int, damageProgression, encumbrance, progression, threshold } from "@util"
+import { DiceGURPS } from "@module/dice/index.ts"
+
+type ItemInst<T extends ItemType> = ItemGURPS2 & { system: ItemDataInstances[T] }
 
 class CharacterData extends ActorDataModel.mixin(
 	FeatureHolderTemplate,
 	SettingsHolderTemplate,
 	AttributeHolderTemplate,
 ) {
+	cache: CharacterCache = {
+		encumbranceLevel: null,
+		encumbranceLevelForSkills: null,
+		basicLift: null,
+	}
+
 	static override defineSchema(): CharacterSchema {
 		const fields = foundry.data.fields
 
@@ -65,6 +75,14 @@ class CharacterData extends ActorDataModel.mixin(
 			}),
 			total_points: new fields.NumberField(),
 			points_record: new fields.ArrayField(new fields.SchemaField(PointsRecord.defineSchema())),
+			bonuses: new fields.SchemaField({
+				liftingStrength: new fields.SchemaField(CharacterBonus.defineSchema()),
+				strikingStrength: new fields.SchemaField(CharacterBonus.defineSchema()),
+				throwingStrength: new fields.SchemaField(CharacterBonus.defineSchema()),
+				dodge: new fields.SchemaField(CharacterBonus.defineSchema()),
+				parry: new fields.SchemaField(CharacterBonus.defineSchema()),
+				block: new fields.SchemaField(CharacterBonus.defineSchema()),
+			}),
 		}) as CharacterSchema
 	}
 
@@ -76,7 +94,12 @@ class CharacterData extends ActorDataModel.mixin(
 	 * @param excludes - Skills to exclude from the search
 	 * @returns Skill or Technique
 	 */
-	bestSkillNamed(name: string, specialization: string, requirePoints: boolean, excludes: Set<string> = new Set()) {
+	bestSkillNamed(
+		name: string,
+		specialization: string,
+		requirePoints: boolean,
+		excludes: Set<string> = new Set(),
+	): ItemInst<ItemType.Skill | ItemType.Technique> | null {
 		let best: ItemGURPS2 | null = null
 		let level = Number.MIN_SAFE_INTEGER
 		for (const sk of this.skillNamed(name, specialization, requirePoints, excludes)) {
@@ -86,7 +109,7 @@ class CharacterData extends ActorDataModel.mixin(
 				level = skillLevel
 			}
 		}
-		return best
+		return best as ItemInst<ItemType.Skill | ItemType.Technique> | null
 	}
 
 	/**
@@ -97,7 +120,12 @@ class CharacterData extends ActorDataModel.mixin(
 	 * @param excludes - Skills to exclude from the search
 	 * @returns Array of Skills/Techniques
 	 */
-	skillNamed(name: string, specialization: string, requirePoints: boolean, excludes: Set<string> | null = null) {
+	skillNamed(
+		name: string,
+		specialization: string,
+		requirePoints: boolean,
+		excludes: Set<string> | null = null,
+	): ItemInst<ItemType.Skill | ItemType.Technique>[] {
 		const list: ItemGURPS2[] = []
 		// this.parent.items.forEach(sk => {
 		this.parent.itemCollections.skills.forEach(sk => {
@@ -112,7 +140,151 @@ class CharacterData extends ActorDataModel.mixin(
 				}
 			}
 		})
-		return list
+		return list as ItemInst<ItemType.Skill | ItemType.Technique>[]
+	}
+
+	/**
+	 * Encumbrance & Lifting
+	 */
+	encumbranceLevel(forSkills: boolean): encumbrance.Level {
+		if (forSkills) {
+			if (this.cache.encumbranceLevelForSkills !== null) return this.cache.encumbranceLevelForSkills
+		} else if (this.cache.encumbranceLevel !== null) return this.cache.encumbranceLevel
+		const carried = this.weightCarried(forSkills)
+		for (const level of encumbrance.Levels) {
+			if (carried <= this.maximumCarry(level)) {
+				if (forSkills) {
+					this.cache.encumbranceLevelForSkills = level
+				} else {
+					this.cache.encumbranceLevel = level
+				}
+				return level
+			}
+		}
+		if (forSkills) {
+			this.cache.encumbranceLevelForSkills = encumbrance.Level.ExtraHeavy
+		} else {
+			this.cache.encumbranceLevel = encumbrance.Level.ExtraHeavy
+		}
+		return encumbrance.Level.ExtraHeavy
+	}
+
+	weightCarried(forSkills: boolean): number {
+		let total = 0
+		for (const equipment of this.parent.itemCollections.carriedEquipment) {
+			total += equipment.system.extendedWeight(forSkills, this.settings.default_weight_units)
+		}
+		return total
+	}
+
+	maximumCarry(level: encumbrance.Level): number {
+		return Int.from(this.basicLift * encumbrance.Level.weightMultiplier(level))
+	}
+
+	get basicLift(): number {
+		if (this.cache.basicLift !== null) return this.cache.basicLift
+		this.cache.basicLift = this.basicLiftForST(this.liftingStrength)
+		return this.cache.basicLift
+	}
+
+	basicLiftForST(st: number): number {
+		st = Math.trunc(st)
+		if (AttributeGURPS.isThresholdOpMet(threshold.Op.HalveST, this.attributes)) {
+			st /= 2
+			if (st != Math.trunc(st)) {
+				st = Math.trunc(st) + 1
+			}
+		}
+		if (st < 1) return 0
+		let v = 0
+		if (this.settings.damage_progression === progression.Option.KnowingYourOwnStrength) {
+			let diff = 0
+			if (st > 19) {
+				diff = Math.trunc(st / 10) - 1
+				st -= diff * 10
+			}
+			v = Int.from(10 ** (st / 10) * 2)
+			if (st <= 6) {
+				v = Math.round(v * 10) / 10
+			} else {
+				v = Math.round(v)
+			}
+			v = v * Int.from(10 ** diff)
+		} else {
+			v = st ** 2 / 5
+		}
+		if (v >= 10) v = Math.round(v)
+		return Int.from(Math.trunc(v * 10) / 10)
+	}
+
+	/** Strength Types */
+	get strikingStrength(): number {
+		let st = 0
+		if (this.resolveAttribute(gid.StrikingStrength) !== null) {
+			st = this.resolveAttributeCurrent(gid.StrikingStrength)
+		} else {
+			st = Math.max(this.resolveAttributeCurrent(gid.StrikingStrength), 0)
+		}
+		st += this.bonuses.strikingStrength.value
+		return Math.trunc(st)
+	}
+
+	get liftingStrength(): number {
+		let st = 0
+		if (this.resolveAttribute(gid.LiftingStrength) !== null) {
+			st = this.resolveAttributeCurrent(gid.LiftingStrength)
+		} else {
+			st = Math.max(this.resolveAttributeCurrent(gid.LiftingStrength), 0)
+		}
+		st += this.bonuses.liftingStrength.value
+		return Math.trunc(st)
+	}
+
+	get throwingStrength(): number {
+		let st = 0
+		if (this.resolveAttribute(gid.ThrowingStrength) !== null) {
+			st = this.resolveAttributeCurrent(gid.ThrowingStrength)
+		} else {
+			st = Math.max(this.resolveAttributeCurrent(gid.ThrowingStrength), 0)
+		}
+		st += this.bonuses.throwingStrength.value
+		return Math.trunc(st)
+	}
+
+	get telekineticStrenght(): number {
+		let levels = 0
+		this.parent.itemCollections.traits.forEach(e => {
+			if (e.system.enabled && e.isOfType(ItemType.Trait) && e.system.isLeveled) {
+				if (equalFold(e.system.nameWithReplacements, "telekinesis")) {
+					levels += Math.max(e.system.levels, 0)
+				}
+			}
+		})
+		return Math.trunc(levels)
+	}
+
+	get thrust(): DiceGURPS {
+		return this.thrustFor(this.strikingStrength)
+	}
+
+	get liftingThrust(): DiceGURPS {
+		return this.thrustFor(this.liftingStrength)
+	}
+
+	thrustFor(st: number): DiceGURPS {
+		return damageProgression.thrustFor(this.settings.damage_progression, st)
+	}
+
+	get swing(): DiceGURPS {
+		return this.swingFor(this.strikingStrength)
+	}
+
+	get liftingSwing(): DiceGURPS {
+		return this.swingFor(this.liftingStrength)
+	}
+
+	swingFor(st: number): DiceGURPS {
+		return damageProgression.swingFor(this.settings.damage_progression, st)
 	}
 }
 
@@ -128,12 +300,19 @@ type CharacterSchema = FeatureHolderTemplateSchema &
 		created_date: fields.StringField
 		modified_date: fields.StringField
 		profile: fields.SchemaField<CharacterProfileSchema>
-		// attributes: fields.ArrayField<fields.SchemaField<AttributeSchema>>
 		resource_trackers: fields.ArrayField<fields.SchemaField<ResourceTrackerSchema>>
 		move_types: fields.ArrayField<fields.SchemaField<MoveTypeSchema>>
 		move: fields.SchemaField<CharacterMoveSchema>
 		total_points: fields.NumberField<number, number, true, false>
 		points_record: fields.ArrayField<fields.SchemaField<PointsRecordSchema>>
+		bonuses: fields.SchemaField<{
+			liftingStrength: fields.SchemaField<CharacterBonusSchema>
+			strikingStrength: fields.SchemaField<CharacterBonusSchema>
+			throwingStrength: fields.SchemaField<CharacterBonusSchema>
+			dodge: fields.SchemaField<CharacterBonusSchema>
+			parry: fields.SchemaField<CharacterBonusSchema>
+			block: fields.SchemaField<CharacterBonusSchema>
+		}>
 	}
 
 type CharacterProfileSchema = {
@@ -162,4 +341,9 @@ type CharacterMoveSchema = {
 	type: fields.StringField
 }
 
+type CharacterCache = {
+	encumbranceLevel: encumbrance.Level | null
+	encumbranceLevelForSkills: encumbrance.Level | null
+	basicLift: number | null
+}
 export { CharacterData }

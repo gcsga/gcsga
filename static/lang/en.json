@@ -58,7 +58,8 @@
 			"points": "points"
 		},
 		"Tooltip": {
-			"skillEncumbrance": "<br>Encumbrance [{amount}]"
+			"SkillEncumbrance": "<br>Encumbrance [{amount}]",
+			"IncludesModifiersFrom": "Includes modifiers from"
 		},
 		"SkillDefault": "Default: {name}{modifier}",
 		"SkillSpecialization": " ({specialization})",
@@ -1716,6 +1717,13 @@
 				"middle": "Middle",
 				"end": "End",
 				"fill": "Fill"
+			},
+			"encumbrance": {
+				"none": "None",
+				"light": "Light",
+				"medium": "Medium",
+				"heavy": "Heavy",
+				"extra_heavy": "X-Heavy"
 			},
 			"cell": {
 				"text": "Text",

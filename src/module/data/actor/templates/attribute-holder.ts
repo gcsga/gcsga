@@ -1,6 +1,7 @@
 import { ActorDataModel } from "@module/data/abstract.ts"
-import { AttributeDef, AttributeGURPS, AttributeSchema, ThresholdOp } from "@system"
+import { AttributeDef, AttributeGURPS, AttributeSchema } from "@system"
 import fields = foundry.data.fields
+import { threshold } from "@util"
 
 class AttributeHolderTemplate extends ActorDataModel<AttributeHolderTemplateSchema> {
 	static override defineSchema(): AttributeHolderTemplateSchema {
@@ -41,14 +42,14 @@ class AttributeHolderTemplate extends ActorDataModel<AttributeHolderTemplateSche
 	}
 
 	temporaryST(initialST: number): number {
-		const divisor = 2 * Math.min(this.countThresholdOpMet(ThresholdOp.HalveST), 2)
+		const divisor = 2 * Math.min(this.countThresholdOpMet(threshold.Op.HalveST), 2)
 		let ST = initialST
 		if (divisor > 0) ST = Math.ceil(initialST / divisor)
 		if (ST < 1 && initialST > 0) return 1
 		return ST
 	}
 
-	countThresholdOpMet(op: ThresholdOp): number {
+	countThresholdOpMet(op: threshold.Op): number {
 		let total = 0
 		for (const attribute of this.attributes) {
 			const t = attribute.currentThreshold
@@ -65,5 +66,4 @@ interface AttributeHolderTemplate extends Omit<ModelPropsFromSchema<AttributeHol
 type AttributeHolderTemplateSchema = {
 	attributes: fields.ArrayField<fields.SchemaField<AttributeSchema>>
 }
-
 export { AttributeHolderTemplate, type AttributeHolderTemplateSchema }

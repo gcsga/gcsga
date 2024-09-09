@@ -78,7 +78,7 @@ abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema
 				initial: this.TYPE,
 			}),
 			amount: new fields.NumberField({ required: true, integer: true, initial: 1 }),
-			per_level: new fields.BooleanField({ initial: false }),
+			per_level: new fields.BooleanField({ required: true, nullable: false, initial: false }),
 			temporary: new fields.BooleanField({ required: true, nullable: false, initial: false }),
 		}
 	}
@@ -89,7 +89,6 @@ abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema
 		this._subOwner = null
 
 		this.featureLevel = 0
-		// this.leveledAmount = new LeveledAmount(data)
 	}
 
 	get owner(): ItemGURPS2 | null {

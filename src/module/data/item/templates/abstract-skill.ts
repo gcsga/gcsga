@@ -5,6 +5,8 @@ import { ItemType } from "@module/data/constants.ts"
 import { Nameable } from "@module/util/nameable.ts"
 import { SkillLevel } from "../helpers.ts"
 import { ItemTemplateType } from "../types.ts"
+import { ActorTemplateType } from "@module/data/actor/types.ts"
+import { AttributeDifficulty, AttributeDifficultySchema } from "../fields/attribute-difficulty.ts"
 
 class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 	protected declare _skillLevel: SkillLevel
@@ -12,6 +14,7 @@ class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 	static override defineSchema(): AbstractSkillTemplateSchema {
 		const fields = foundry.data.fields
 		return {
+			difficulty: new fields.SchemaField(AttributeDifficulty.defineSchema()),
 			tech_level: new fields.StringField({ required: true, nullable: true, initial: null }),
 			tech_level_required: new fields.BooleanField({ required: true, nullable: false, initial: false }),
 			points: new fields.NumberField({ integer: true, min: 0 }),
@@ -38,6 +41,41 @@ class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 
 	get level(): SkillLevel {
 		return (this._skillLevel ??= this.calculateLevel())
+	}
+
+	get levelAsString(): string {
+		const level = Math.trunc(this.level.level)
+		if (level <= 0) return "-"
+		return level.toString()
+	}
+
+	get relativeLevel(): string {
+		if (this.level.level <= 0) return ""
+		const rsl = this.adjustedRelativeLevel
+		switch (true) {
+			case rsl === Number.MIN_SAFE_INTEGER:
+				return "-"
+			case this.parent.type === ItemType.Technique:
+				return rsl.signedString()
+			default: {
+				const actor = this.actor
+				if (!actor?.hasTemplate(ActorTemplateType.Attributes)) {
+					console.error("Erorr resolving relative level: Actor is not an attriubte holder.")
+					return "-"
+				}
+				return actor.system.resolveAttributeName(this.difficulty.attribute)
+			}
+		}
+	}
+
+	get adjustedRelativeLevel(): number {
+		if (this.actor !== null && this.level.level > 0) {
+			if (this.isOfType(ItemType.Technique)) {
+				return this.level.relativeLevel + this.default.modifier
+			}
+			return this.level.relativeLevel
+		}
+		return Number.MIN_SAFE_INTEGER
 	}
 
 	updateLevel(): boolean {
@@ -86,12 +124,7 @@ class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 		const basePoints = this.points + 1
 		let maxPoints = basePoints
 
-		let diff = difficulty.Level.Average
-
-		if (this.isOfType(ItemType.Skill, ItemType.Spell)) diff = this.difficulty.difficulty
-		else if (this.isOfType(ItemType.Technique, ItemType.RitualMagicSpell)) diff = this.difficulty
-
-		if (diff === difficulty.Level.Wildcard) maxPoints += 12
+		if (this.difficulty.difficulty === difficulty.Level.Wildcard) maxPoints += 12
 		else maxPoints += 4
 
 		const oldLevel = this._skillLevel.level
@@ -112,11 +145,13 @@ class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 
 interface AbstractSkillTemplate
 	extends ItemDataModel<AbstractSkillTemplateSchema>,
-		ModelPropsFromSchema<AbstractSkillTemplateSchema> {
+		Omit<ModelPropsFromSchema<AbstractSkillTemplateSchema>, "difficulty"> {
 	constructor: typeof AbstractSkillTemplate
+	difficulty: AttributeDifficulty
 }
 
 type AbstractSkillTemplateSchema = {
+	difficulty: fields.SchemaField<AttributeDifficultySchema>
 	tech_level: fields.StringField<string, string, true, true, true>
 	tech_level_required: fields.BooleanField<boolean, boolean, true, false, true>
 	points: fields.NumberField<number, number, true, false>

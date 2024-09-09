@@ -1,7 +1,6 @@
 import fields = foundry.data.fields
 import { ActorType, ItemType, gid } from "../constants.ts"
 import { LocalizeGURPS, StringBuilder, TooltipGURPS, difficulty } from "@util"
-import { TechniqueDifficulty } from "../types.ts"
 import { AbstractSkillTemplate, AbstractSkillTemplateSchema } from "./templates/abstract-skill.ts"
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { ContainerTemplate, ContainerTemplateSchema } from "./templates/container.ts"
@@ -14,6 +13,7 @@ import { SpellFieldsTemplate, SpellFieldsTemplateSchema } from "./templates/spel
 import { ActorTemplateType } from "../actor/types.ts"
 import { SkillLevel, calculateTechniqueLevel } from "./helpers.ts"
 import { Nameable } from "@module/util/nameable.ts"
+import { AttributeDifficulty } from "./fields/attribute-difficulty.ts"
 
 class RitualMagicSpellData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -30,10 +30,12 @@ class RitualMagicSpellData extends ItemDataModel.mixin(
 		const fields = foundry.data.fields
 
 		return this.mergeSchema(super.defineSchema(), {
-			difficulty: new fields.StringField<TechniqueDifficulty, TechniqueDifficulty, true, false, true>({
-				required: true,
-				nullable: false,
-				initial: difficulty.Level.Average,
+			difficulty: new fields.SchemaField(AttributeDifficulty.defineSchema(), {
+				initial: {
+					// TODO: review
+					attribute: "",
+					difficulty: difficulty.Level.Hard,
+				},
 			}),
 			base_skill: new fields.StringField<string, string, true, false, true>({
 				required: true,
@@ -80,7 +82,7 @@ class RitualMagicSpellData extends ItemDataModel.mixin(
 		const skillName = this.skillNameWithReplacements
 		const prereqCount = this.prereq_count
 		const tags = this.tags
-		const difficulty = this.difficulty
+		const difficulty = this.difficulty.difficulty
 		const points = this.adjustedPoints(null)
 
 		let skillLevel: SkillLevel = { level: Number.MIN_SAFE_INTEGER, relativeLevel: 0, tooltip: "" }
@@ -208,8 +210,9 @@ class RitualMagicSpellData extends ItemDataModel.mixin(
 	}
 }
 
-interface RitualMagicSpellData extends Omit<ModelPropsFromSchema<RitualMagicSpellSchema>, "study"> {
+interface RitualMagicSpellData extends Omit<ModelPropsFromSchema<RitualMagicSpellSchema>, "study" | "difficulty"> {
 	study: Study[]
+	difficulty: AttributeDifficulty
 }
 
 type RitualMagicSpellSchema = BasicInformationTemplateSchema &
@@ -219,7 +222,6 @@ type RitualMagicSpellSchema = BasicInformationTemplateSchema &
 	ReplacementTemplateSchema &
 	AbstractSkillTemplateSchema &
 	SpellFieldsTemplateSchema & {
-		difficulty: fields.StringField<TechniqueDifficulty, TechniqueDifficulty, true, false, true>
 		base_skill: fields.StringField<string, string, true, false, true>
 		prereq_count: fields.NumberField<number, number, true, false, true>
 	}

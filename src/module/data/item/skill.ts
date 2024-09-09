@@ -5,16 +5,27 @@ import { ContainerTemplate, ContainerTemplateSchema } from "./templates/containe
 import { FeatureTemplate, FeatureTemplateSchema } from "./templates/features.ts"
 import { StudyTemplate, StudyTemplateSchema } from "./templates/study.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
-import { ActorType, ItemType } from "../constants.ts"
+import { ActorType, ItemType, gid } from "../constants.ts"
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { AbstractSkillTemplate, AbstractSkillTemplateSchema } from "./templates/abstract-skill.ts"
 import { SkillDefaultSchema, SkillDefault, Study, SheetSettings } from "@system"
-import { AttributeDifficulty, AttributeDifficultySchema } from "./fields/attribute-difficulty.ts"
-import { ErrorGURPS, LocalizeGURPS, StringBuilder, TooltipGURPS, difficulty, display } from "@util"
-import { SkillLevel, addTooltipForSkillLevelAdj } from "./helpers.ts"
+import { AttributeDifficulty } from "./fields/attribute-difficulty.ts"
+import {
+	ErrorGURPS,
+	LocalizeGURPS,
+	StringBuilder,
+	TooltipGURPS,
+	align,
+	cell,
+	difficulty,
+	display,
+	encumbrance,
+} from "@util"
+import { SkillLevel, addTooltipForSkillLevelAdj, formatRelativeSkill } from "./helpers.ts"
 import { ActorTemplateType } from "../actor/types.ts"
 import { TechniqueData } from "./technique.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
+import { CellData } from "./fields/cell-data.ts"
 
 class SkillData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -38,7 +49,12 @@ class SkillData extends ItemDataModel.mixin(
 				nullable: false,
 				initial: "",
 			}),
-			difficulty: new fields.SchemaField(AttributeDifficulty.defineSchema()),
+			difficulty: new fields.SchemaField(AttributeDifficulty.defineSchema(), {
+				initial: {
+					attribute: gid.Dexterity,
+					difficulty: difficulty.Level.Average,
+				},
+			}),
 			encumbrance_penalty_multiplier: new fields.NumberField({
 				integer: true,
 				min: 0,
@@ -52,6 +68,65 @@ class SkillData extends ItemDataModel.mixin(
 			}),
 			defaults: new fields.ArrayField(new fields.SchemaField(SkillDefault.defineSchema())),
 		}) as SkillSchema
+	}
+
+	override get cellData(): Record<string, CellData> {
+		const levelTooltip = () => {
+			const tooltip = new TooltipGURPS()
+			const level = this.level
+			if (level.tooltip === "") return ""
+			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.IncludesModifiersFrom, ":")
+			tooltip.push(level.tooltip)
+			return tooltip.toString()
+		}
+
+		const tooltip = new TooltipGURPS()
+		const points = new CellData({
+			type: cell.Type.Text,
+			primary: this.adjustedPoints(tooltip),
+			align: align.Option.End,
+		})
+		if (tooltip.length !== 0) {
+			const pointsTooltip = new TooltipGURPS()
+			pointsTooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.IncludesModifiersFrom, ":")
+			pointsTooltip.push(tooltip.toString())
+			points.tooltip = pointsTooltip.toString()
+		}
+
+		return {
+			name: new CellData({
+				type: cell.Type.Text,
+				primary: this.processedName,
+				secondary: this.secondaryText(display.Option.isInline),
+				unsatisfiedReason: this.unsatisfiedReason,
+				tooltip: this.secondaryText(display.Option.isTooltip),
+			}),
+			difficulty: new CellData({
+				type: cell.Type.Text,
+				primary: this.difficulty.toString(),
+			}),
+			level: new CellData({
+				type: cell.Type.Text,
+				primary: this.levelAsString,
+				tooltip: levelTooltip(),
+				align: align.Option.End,
+			}),
+			relativeLevel: new CellData({
+				type: cell.Type.Text,
+				primary: formatRelativeSkill(this.actor, false, this.difficulty, this.adjustedRelativeLevel),
+				tooltip: levelTooltip(),
+			}),
+			points,
+			tags: new CellData({
+				type: cell.Type.Tags,
+				primary: this.combinedTags,
+			}),
+			reference: new CellData({
+				type: cell.Type.PageRef,
+				primary: this.reference,
+				secondary: this.reference_highlight === "" ? this.nameWithReplacements : this.reference_highlight,
+			}),
+		}
 	}
 
 	secondaryText(optionChecker: (option: display.Option) => boolean): string {
@@ -101,8 +176,9 @@ class SkillData extends ItemDataModel.mixin(
 		const best = this.bestDefault(excluded)
 		if (best !== null) {
 			const baseLine =
-				this.actor?.system.resolveAttributeCurrent(this.difficulty.attribute) +
-				Math.trunc(difficulty.Level.baseRelativeLevel(this.difficulty.difficulty))
+				(this.actor?.hasTemplate(ActorTemplateType.Attributes)
+					? this.actor?.system.resolveAttributeCurrent(this.difficulty.attribute)
+					: 0) + Math.trunc(difficulty.Level.baseRelativeLevel(this.difficulty.difficulty))
 			const level = Math.trunc(best.level)
 			best.adjusted_level = level
 			switch (true) {
@@ -144,7 +220,7 @@ class SkillData extends ItemDataModel.mixin(
 
 	calcSkillDefaultLevel(def: SkillDefault, excludes: Set<string>): number {
 		const actor = this.actor
-		if (actor === null) return 0
+		if (actor === null || !actor.isOfType(ActorType.Character)) return 0
 		let level = def.skillLevel(actor, this.nameableReplacements, true, excludes, !this.isOfType(ItemType.Technique))
 		if (def.skillBased) {
 			const defName = def.nameWithReplacements(this.nameableReplacements)
@@ -157,12 +233,31 @@ class SkillData extends ItemDataModel.mixin(
 		return level
 	}
 
+	inDefaultChain(def: SkillDefault | null, lookedAt: Set<string>): boolean {
+		const actor = this.actor
+		if (actor === null || def === null || !def.skillBased) return false
+		if (!actor.isOfType(ActorType.Character)) return false
+
+		for (const one of actor.system.skillNamed(
+			def.nameWithReplacements(this.nameableReplacements),
+			def.specializationWithReplacements(this.nameableReplacements),
+			true,
+			null,
+		)) {
+			if (one.id === this.parent.id) return true
+			if (!lookedAt.has(one.id)) lookedAt.add(one.id)
+			if (this.inDefaultChain(one.system.defaulted_from, lookedAt)) return true
+		}
+		return false
+	}
+
 	resolveToSpecificDefaults(): SkillDefault[] {
 		const actor = this.actor
 		let result: SkillDefault[] = []
 		for (const def of this.defaults) {
 			if (actor === null || def === null || !def.skillBased) result.push(def)
 			else {
+				if (!actor.isOfType(ActorType.Character)) continue
 				for (const one of actor.system.skillNamed(
 					def.nameWithReplacements(this.nameableReplacements),
 					def.specializationWithReplacements(this.nameableReplacements),
@@ -170,7 +265,7 @@ class SkillData extends ItemDataModel.mixin(
 					new Set([this.processedName]),
 				)) {
 					const local = def.clone()
-					local.specialization = one.specialization
+					local.specialization = one.system.specialization
 					result.push(local)
 				}
 			}
@@ -250,12 +345,14 @@ class SkillData extends ItemDataModel.mixin(
 					let bonus = actor.system.skillBonusFor(name, specialization, this.tags, tooltip)
 					level += bonus
 					relativeLevel += bonus
-					bonus = actor.system.encumbranceLevel(true).penalty * this.encumbrance_penalty_multiplier
+					bonus =
+						encumbrance.Level.penalty(actor.system.encumbranceLevel(true)) *
+						this.encumbrance_penalty_multiplier
 					level += bonus
 					if (bonus !== 0) {
 						tooltip.push(
-							LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Tooltip.skillEncumbrance, {
-								amouont: bonus.signedString(),
+							LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Tooltip.SkillEncumbrance, {
+								amount: bonus.signedString(),
 							}),
 						)
 					}
@@ -270,10 +367,12 @@ class SkillData extends ItemDataModel.mixin(
 	}
 }
 
-interface SkillData extends Omit<ModelPropsFromSchema<SkillSchema>, "study" | "defaulted_from" | "defaults"> {
+interface SkillData
+	extends Omit<ModelPropsFromSchema<SkillSchema>, "study" | "defaulted_from" | "defaults" | "difficulty"> {
 	study: Study[]
 	defaulted_from: SkillDefault | null
 	defaults: SkillDefault[]
+	difficulty: AttributeDifficulty
 }
 
 type SkillSchema = BasicInformationTemplateSchema &
@@ -284,7 +383,6 @@ type SkillSchema = BasicInformationTemplateSchema &
 	ReplacementTemplateSchema &
 	AbstractSkillTemplateSchema & {
 		specialization: fields.StringField<string, string, true, false, true>
-		difficulty: fields.SchemaField<AttributeDifficultySchema>
 		encumbrance_penalty_multiplier: fields.NumberField<number, number, true, false, true>
 		defaulted_from: fields.SchemaField<
 			SkillDefaultSchema,

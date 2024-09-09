@@ -1,4 +1,5 @@
 export { affects } from "./affects.ts"
+export { encumbrance } from "./encumbrance.ts"
 export { attribute } from "./attribute.ts"
 export { cell } from "./cell.ts"
 export { container } from "./container.ts"

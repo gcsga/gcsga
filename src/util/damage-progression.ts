@@ -1,11 +1,6 @@
 import { DiceGURPS } from "@module/dice/index.ts"
 import { progression } from "./enum/progression.ts"
 
-/**
- *
- * @param p
- * @param st
- */
 export function thrustFor(p: progression.Option, st: number): DiceGURPS {
 	let d = new DiceGURPS()
 	let r = 0
@@ -142,11 +137,6 @@ export function thrustFor(p: progression.Option, st: number): DiceGURPS {
 	}
 }
 
-/**
- *
- * @param p
- * @param st
- */
 export function swingFor(p: progression.Option, st: number): DiceGURPS {
 	switch (p) {
 		case progression.Option.BasicSet: {

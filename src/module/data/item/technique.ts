@@ -9,12 +9,13 @@ import { ActorType, ItemType } from "../constants.ts"
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { AbstractSkillTemplate, AbstractSkillTemplateSchema } from "./templates/abstract-skill.ts"
 import { SkillDefaultSchema, SkillDefault, Study, SheetSettings } from "@system"
-import { TechniqueDifficulty } from "../types.ts"
-import { LocalizeGURPS, StringBuilder, TooltipGURPS, difficulty, display } from "@util"
-import { SkillLevel, addTooltipForSkillLevelAdj, calculateTechniqueLevel } from "./helpers.ts"
+import { LocalizeGURPS, StringBuilder, TooltipGURPS, align, cell, difficulty, display } from "@util"
+import { SkillLevel, addTooltipForSkillLevelAdj, calculateTechniqueLevel, formatRelativeSkill } from "./helpers.ts"
 import { ActorTemplateType } from "../actor/types.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { SkillData } from "./index.ts"
+import { AttributeDifficulty } from "./fields/attribute-difficulty.ts"
+import { CellData } from "./fields/cell-data.ts"
 
 class TechniqueData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -31,10 +32,12 @@ class TechniqueData extends ItemDataModel.mixin(
 		const fields = foundry.data.fields
 
 		return this.mergeSchema(super.defineSchema(), {
-			difficulty: new fields.StringField({
-				required: true,
-				nullable: false,
-				initial: difficulty.Level.Average,
+			difficulty: new fields.SchemaField(AttributeDifficulty.defineSchema(), {
+				initial: {
+					// TODO: review
+					attribute: "",
+					difficulty: difficulty.Level.Hard,
+				},
 			}),
 			default: new fields.SchemaField(SkillDefault.defineSchema(), {
 				required: true,
@@ -57,6 +60,69 @@ class TechniqueData extends ItemDataModel.mixin(
 				initial: false,
 			}),
 		}) as TechniqueSchema
+	}
+
+	override get cellData(): Record<string, CellData> {
+		const levelTooltip = () => {
+			const tooltip = new TooltipGURPS()
+			const level = this.level
+			if (level.tooltip === "") return ""
+			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.IncludesModifiersFrom, ":")
+			tooltip.push(level.tooltip)
+			return tooltip.toString()
+		}
+
+		const tooltip = new TooltipGURPS()
+		const points = new CellData({
+			type: cell.Type.Text,
+			primary: this.adjustedPoints(tooltip),
+			align: align.Option.End,
+		})
+		if (tooltip.length !== 0) {
+			const pointsTooltip = new TooltipGURPS()
+			pointsTooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.IncludesModifiersFrom, ":")
+			pointsTooltip.push(tooltip.toString())
+			points.tooltip = pointsTooltip.toString()
+		}
+
+		return {
+			name: new CellData({
+				type: cell.Type.Text,
+				primary: this.processedName,
+				secondary: this.secondaryText(display.Option.isInline),
+				unsatisfiedReason: this.unsatisfiedReason,
+				tooltip: this.secondaryText(display.Option.isTooltip),
+			}),
+			difficulty: new CellData({
+				type: cell.Type.Text,
+				primary: this.difficulty.toString(),
+			}),
+			level: new CellData({
+				type: cell.Type.Text,
+				primary: this.levelAsString,
+				tooltip: levelTooltip(),
+				align: align.Option.End,
+			}),
+			relativeLevel: new CellData({
+				type: cell.Type.Text,
+				primary: formatRelativeSkill(this.actor, false, this.difficulty, this.adjustedRelativeLevel),
+				tooltip: levelTooltip(),
+			}),
+			points,
+			tags: new CellData({
+				type: cell.Type.Tags,
+				primary: this.combinedTags,
+			}),
+			reference: new CellData({
+				type: cell.Type.PageRef,
+				primary: this.reference,
+				secondary: this.reference_highlight === "" ? this.nameWithReplacements : this.reference_highlight,
+			}),
+		}
+	}
+
+	get specialization(): string {
+		return ""
 	}
 
 	secondaryText(optionChecker: (option: display.Option) => boolean): string {
@@ -126,7 +192,7 @@ class TechniqueData extends ItemDataModel.mixin(
 			this.specializationWithReplacements,
 			this.tags,
 			def,
-			this.difficulty,
+			this.difficulty.difficulty,
 			this.points,
 			true,
 			this.limit,
@@ -146,7 +212,7 @@ class TechniqueData extends ItemDataModel.mixin(
 			this.default.specializationWithReplacements(this.nameableReplacements),
 			false,
 		)
-		const satisfied = sk !== null && (sk.isOfType(ItemType.Technique) || sk.system.points > 0)
+		const satisfied = sk !== null && (sk.type === ItemType.Technique || sk.system.points > 0)
 		if (!satisfied && tooltip !== null) {
 			tooltip.push(LocalizeGURPS.translations.GURPS.TooltipPrefix)
 			if (sk === null) {
@@ -167,10 +233,16 @@ class TechniqueData extends ItemDataModel.mixin(
 	}
 }
 
-interface TechniqueData extends Omit<ModelPropsFromSchema<TechniqueSchema>, "study" | "defualt" | "defaults"> {
+interface TechniqueData
+	extends Omit<
+		ModelPropsFromSchema<TechniqueSchema>,
+		"study" | "default" | "defaults" | "defaulted_from" | "difficulty"
+	> {
 	study: Study[]
 	default: SkillDefault
+	defaulted_from: SkillDefault
 	defaults: SkillDefault[]
+	difficulty: AttributeDifficulty
 }
 
 type TechniqueSchema = BasicInformationTemplateSchema &
@@ -180,7 +252,6 @@ type TechniqueSchema = BasicInformationTemplateSchema &
 	StudyTemplateSchema &
 	ReplacementTemplateSchema &
 	AbstractSkillTemplateSchema & {
-		difficulty: fields.StringField<TechniqueDifficulty, TechniqueDifficulty, true, false, true>
 		default: fields.SchemaField<
 			SkillDefaultSchema,
 			SourceFromSchema<SkillDefaultSchema>,

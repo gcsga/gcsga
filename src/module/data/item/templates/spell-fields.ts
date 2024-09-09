@@ -1,11 +1,22 @@
 import { ItemDataModel } from "@module/data/abstract.ts"
 import fields = foundry.data.fields
 import { Nameable } from "@module/util/nameable.ts"
-import { EvalEmbeddedRegex, LocalizeGURPS, StringBuilder, display, replaceAllStringFunc } from "@util"
-import { SkillLevel, addTooltipForSkillLevelAdj } from "../helpers.ts"
+import {
+	ErrorGURPS,
+	EvalEmbeddedRegex,
+	LocalizeGURPS,
+	StringBuilder,
+	TooltipGURPS,
+	align,
+	cell,
+	display,
+	replaceAllStringFunc,
+} from "@util"
+import { SkillLevel, addTooltipForSkillLevelAdj, formatRelativeSkill } from "../helpers.ts"
 import { SheetSettings, Study } from "@system"
 import { ItemType } from "@module/data/constants.ts"
 import { ItemTemplateType } from "../types.ts"
+import { CellData } from "../fields/cell-data.ts"
 
 class SpellFieldsTemplate extends ItemDataModel<SpellFieldsTemplateSchema> {
 	// TODO: see if this causes issues
@@ -51,6 +62,96 @@ class SpellFieldsTemplate extends ItemDataModel<SpellFieldsTemplateSchema> {
 				required: true,
 				nullable: false,
 				initial: "Instant",
+			}),
+		}
+	}
+
+	override get cellData(): Record<string, CellData> {
+		const levelTooltip = () => {
+			const tooltip = new TooltipGURPS()
+			const level = this.level
+			if (level.tooltip === "") return ""
+			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.IncludesModifiersFrom, ":")
+			tooltip.push(level.tooltip)
+			return tooltip.toString()
+		}
+
+		if (!this.isOfType(ItemType.Spell, ItemType.RitualMagicSpell))
+			throw ErrorGURPS("Spell field template is somehow not a spell.")
+
+		const tooltip = new TooltipGURPS()
+		const points = new CellData({
+			type: cell.Type.Text,
+			primary: this.adjustedPoints(tooltip),
+			align: align.Option.End,
+		})
+		if (tooltip.length !== 0) {
+			const pointsTooltip = new TooltipGURPS()
+			pointsTooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.IncludesModifiersFrom, ":")
+			pointsTooltip.push(tooltip.toString())
+			points.tooltip = pointsTooltip.toString()
+		}
+
+		return {
+			name: new CellData({
+				type: cell.Type.Text,
+				primary: this.processedName,
+				secondary: this.secondaryText(display.Option.isInline),
+				unsatisfiedReason: this.unsatisfiedReason,
+				tooltip: this.secondaryText(display.Option.isTooltip),
+			}),
+			resist: new CellData({
+				type: cell.Type.Text,
+				primary: this.resistWithReplacements,
+			}),
+			class: new CellData({
+				type: cell.Type.Text,
+				primary: this.classWithReplacements,
+			}),
+			college: new CellData({
+				type: cell.Type.Text,
+				primary: this.collegeWithReplacements.join(", "),
+			}),
+			castingCost: new CellData({
+				type: cell.Type.Text,
+				primary: this.castingCostWithReplacements,
+			}),
+			maintenanceCost: new CellData({
+				type: cell.Type.Text,
+				primary: this.maintenanceCostWithReplacements,
+			}),
+			castingTime: new CellData({
+				type: cell.Type.Text,
+				primary: this.castingTimeWithReplacements,
+			}),
+			duration: new CellData({
+				type: cell.Type.Text,
+				primary: this.durationWithReplacements,
+			}),
+			difficulty: new CellData({
+				type: cell.Type.Text,
+				primary: this.difficulty.toString(),
+			}),
+			level: new CellData({
+				type: cell.Type.Text,
+				primary: this.levelAsString,
+				tooltip: levelTooltip(),
+				align: align.Option.End,
+			}),
+			relativeLevel: new CellData({
+				type: cell.Type.Text,
+				primary: formatRelativeSkill(this.actor, false, this.difficulty, this.adjustedRelativeLevel),
+				tooltip: levelTooltip(),
+			}),
+			points,
+			tags: new CellData({
+				type: cell.Type.Tags,
+				primary: this.combinedTags,
+			}),
+			reference: new CellData({
+				type: cell.Type.PageRef,
+				primary: this.reference,
+				secondary: this.reference_highlight === "" ? this.nameWithReplacements : this.reference_highlight,
 			}),
 		}
 	}

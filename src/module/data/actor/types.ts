@@ -12,9 +12,11 @@ export interface ActorDataInstances {
 export enum ActorTemplateType {
 	Settings = "SettingsHolderTemplate",
 	Features = "FeatureHolderTemplate",
+	Attributes = "AttributeHolderTemplate",
 }
 
 export interface ActorDataTemplates {
 	[ActorTemplateType.Settings]: ActorDataTemplate.SettingsHolderTemplate
 	[ActorTemplateType.Features]: ActorDataTemplate.FeatureHolderTemplate
+	[ActorTemplateType.Attributes]: ActorDataTemplate.AttributeHolderTemplate
 }

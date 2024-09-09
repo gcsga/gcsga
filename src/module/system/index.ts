@@ -13,9 +13,9 @@ export * from "./prereq/index.ts"
 export * from "./resource-tracker/index.ts"
 export * from "./schema-data-fields.ts"
 export * from "./sheet-settings.ts"
-export * from "./skill-default/index.ts"
+export * from "./skill-default.ts"
 export * from "./study.ts"
-export * from "./template-picker/document.ts"
+export * from "./template-picker.ts"
 
 export const AttributeDefClasses = {
 	attribute: AttributeDef,

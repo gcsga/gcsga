@@ -1,8 +1,7 @@
-import fields = foundry.data.fields
 import { Study } from "@system"
 import { ItemDataModel } from "../abstract.ts"
 import { ActorType, ItemType, gid } from "../constants.ts"
-import { AttributeDifficulty, AttributeDifficultySchema } from "./fields/attribute-difficulty.ts"
+import { AttributeDifficulty } from "./fields/attribute-difficulty.ts"
 import { LocalizeGURPS, StringBuilder, TooltipGURPS, difficulty } from "@util"
 import {
 	AbstractSkillTemplate,
@@ -114,8 +113,9 @@ class SpellData extends ItemDataModel.mixin(
 	}
 }
 
-interface SpellData extends Omit<ModelPropsFromSchema<SpellSchema>, "study"> {
+interface SpellData extends Omit<ModelPropsFromSchema<SpellSchema>, "study" | "difficulty"> {
 	study: Study[]
+	difficulty: AttributeDifficulty
 }
 
 type SpellSchema = BasicInformationTemplateSchema &
@@ -124,8 +124,6 @@ type SpellSchema = BasicInformationTemplateSchema &
 	StudyTemplateSchema &
 	ReplacementTemplateSchema &
 	AbstractSkillTemplateSchema &
-	SpellFieldsTemplateSchema & {
-		difficulty: fields.SchemaField<AttributeDifficultySchema>
-	}
+	SpellFieldsTemplateSchema & {}
 
 export { SpellData, type SpellSchema }

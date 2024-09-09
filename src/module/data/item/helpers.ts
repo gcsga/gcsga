@@ -16,6 +16,8 @@ import { ActorType, ItemType, gid } from "../constants.ts"
 import { EquipmentModifierData } from "./equipment-modifier.ts"
 import { EquipmentFieldsTemplate } from "./templates/equipment-fields.ts"
 import { Feature } from "@system/feature/types.ts"
+import { AttributeDifficulty } from "./fields/attribute-difficulty.ts"
+import { ActorTemplateType } from "../actor/types.ts"
 
 function modifyPoints(points: number, modifier: number): number {
 	return points + calculateModifierPoints(points, modifier)
@@ -290,6 +292,32 @@ function processMultiplyAddWeightStep(
 	return (weight += sum)
 }
 
+function formatRelativeSkill(
+	actor: ActorGURPS2 | null,
+	numOnly: boolean,
+	difficulty: AttributeDifficulty,
+	rsl: number,
+): string {
+	switch (true) {
+		case rsl === Number.MIN_SAFE_INTEGER:
+			return "-"
+		case numOnly:
+			return Math.trunc(rsl).signedString()
+		default: {
+			if (actor === null || !actor.hasTemplate(ActorTemplateType.Attributes)) {
+				console.error("Error formatting relative level: Actor is not an attribute holder.")
+				return "-"
+			}
+			let s = actor.system.resolveAttributeName(difficulty.attribute)
+			rsl = Math.trunc(rsl)
+			if (rsl !== 0) {
+				s += rsl.signedString()
+			}
+			return s
+		}
+	}
+}
+
 interface SkillLevel {
 	level: number
 	relativeLevel: number
@@ -304,5 +332,6 @@ export {
 	valueAdjustedForModifiers,
 	weightAdjustedForModifiers,
 	extendedWeightAdjustedForModifiers,
+	formatRelativeSkill,
 }
 export type { SkillLevel }

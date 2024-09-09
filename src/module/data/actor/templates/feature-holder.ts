@@ -15,7 +15,7 @@ import {
 	SheetSettings,
 } from "@system"
 import { Feature } from "@system/feature/types.ts"
-import { TooltipGURPS, feature, selfctrl, skillsel, stlimit, wsel } from "@util"
+import { ErrorGURPS, TooltipGURPS, feature, selfctrl, skillsel, stlimit, wsel } from "@util"
 
 class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> {
 	declare features: FeatureSet
@@ -71,9 +71,99 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 	private _processFeature(
 		owner: Feature["owner"],
 		subOwner: Feature["subOwner"],
-		feature: Feature,
+		bonus: Feature,
 		levels: number,
-	): void {}
+	): void {
+		bonus.owner = owner
+		bonus.subOwner = subOwner
+		bonus.featureLevel = levels
+
+		switch (true) {
+			case bonus.isOfType(feature.Type.AttributeBonus):
+				this.features.attributeBonuses.push(bonus)
+				break
+			case bonus.isOfType(feature.Type.CostReduction):
+				this.features.costReductions.push(bonus)
+				break
+			case bonus.isOfType(feature.Type.DRBonus):
+				{
+					// "this armor"
+					if (bonus.locations.length === 0) {
+						const eqp = bonus.owner
+						if (eqp?.isOfType(ItemType.Equipment, ItemType.EquipmentContainer)) {
+							const allLocations = new Set<string>()
+							const locationsMatched = new Set<string>()
+							for (const f2 of eqp.system.features) {
+								if (f2.isOfType(feature.Type.DRBonus) && f2.locations.length !== 0) {
+									for (const loc of f2.locations) {
+										allLocations.add(loc)
+									}
+									if (f2.specialization === bonus.specialization) {
+										for (const loc of f2.locations) {
+											locationsMatched.add(loc)
+										}
+										const additionalDRBonus = new DRBonus({
+											type: feature.Type.DRBonus,
+											locations: f2.locations,
+											specialization: bonus.specialization,
+											amount: bonus.amount,
+											per_level: bonus.per_level,
+										})
+										additionalDRBonus.owner = owner
+										additionalDRBonus.subOwner = subOwner
+										additionalDRBonus.featureLevel = levels
+										this.features.drBonuses.push(additionalDRBonus)
+									}
+								}
+							}
+							locationsMatched.forEach(e => {
+								allLocations.delete(e)
+							})
+							if (allLocations.size !== 0) {
+								const locations = Array.from(allLocations)
+								const additionalDRBonus = new DRBonus({
+									type: feature.Type.DRBonus,
+									locations,
+									specialization: bonus.specialization,
+									amount: bonus.amount,
+									per_level: bonus.per_level,
+								})
+								additionalDRBonus.owner = owner
+								additionalDRBonus.subOwner = subOwner
+								additionalDRBonus.featureLevel = levels
+								this.features.drBonuses.push(additionalDRBonus)
+							}
+						}
+					} else {
+						this.features.drBonuses.push(bonus)
+					}
+				}
+				break
+			case bonus.isOfType(feature.Type.SkillBonus):
+				this.features.skillBonuses.push(bonus)
+				break
+			case bonus.isOfType(feature.Type.SkillPointBonus):
+				this.features.skillPointBonuses.push(bonus)
+				break
+			case bonus.isOfType(feature.Type.SpellBonus):
+				this.features.spellBonuses.push(bonus)
+				break
+			case bonus.isOfType(feature.Type.SpellPointBonus):
+				this.features.spellPointBonuses.push(bonus)
+				break
+			case bonus.isOfType(...feature.WeaponBonusTypes):
+				this.features.weaponBonuses.push(bonus)
+				break
+			case bonus.isOfType(
+				feature.Type.ConditionalModifierBonus,
+				feature.Type.ContainedWeightReduction,
+				feature.Type.ReactionBonus,
+			):
+				break
+			default:
+				throw ErrorGURPS(`Unhandled feature type: "${bonus.type}"`)
+		}
+	}
 
 	/**
 	 * @param attributeId - ID of attribute
