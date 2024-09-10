@@ -13,9 +13,9 @@ import {
 	_create,
 } from "./common.ts"
 import { AnyPiercingType, DamageTypes } from "@module/apps/damage-calculator/damage-type.ts"
-import { DiceGURPS } from "@module/dice/index.ts"
 import { RollType } from "@module/data/index.ts"
 import { InjuryEffectType, ShockInjuryEffect } from "@module/apps/damage-calculator/injury-effect.ts"
+import { DiceGURPS } from "@system"
 
 const Head = ["Skull", "Eye", "Face"]
 const Limb = ["Arm", "Leg"]
@@ -48,7 +48,7 @@ describe.skip("Damage calculator", () => {
 		_roll.attacker = _attacker
 		_roll.armorDivisor = 1
 		_roll.damageType = DamageTypes.cr
-		_roll.dice = new DiceGURPS("2d")
+		_roll.dice = DiceGURPS.fromString("2d")
 		_roll.hits[0] = { basicDamage: 8, locationId: "Torso" }
 
 		_torso = new DamageHitLocation(
@@ -2112,12 +2112,12 @@ describe.skip("Damage calculator", () => {
 
 	describe("B414: Explosions.", () => {
 		beforeEach(() => {
-			_roll.dice = new DiceGURPS("3d")
+			_roll.dice = DiceGURPS.fromString("3d")
 			_roll.damageModifier = "ex"
 		})
 
 		it("An explosion inflicts “collateral damage” on everything within (2 × dice of damage) yards.", () => {
-			_roll.dice = new DiceGURPS("1d+3")
+			_roll.dice = DiceGURPS.fromString("1d+3")
 			_roll.hits[0].basicDamage = 9
 
 			const calc = _create(_roll, _target)
@@ -2149,7 +2149,7 @@ describe.skip("Damage calculator", () => {
 		})
 
 		it("If an explosive attack has an armor divisor, it does not apply to the collateral damage.", () => {
-			_roll.dice = new DiceGURPS("6d")
+			_roll.dice = DiceGURPS.fromString("6d")
 			_roll.hits[0].basicDamage = 24
 			_roll.armorDivisor = 3
 			_torso._map.set("all", 3)
@@ -2179,7 +2179,7 @@ describe.skip("Damage calculator", () => {
 		})
 
 		it("Internal Explosions: DR has no effect! In addition, treat the blast as an attack on the vitals, with a ×3 wounding modifier.", () => {
-			_roll.dice = new DiceGURPS("6d")
+			_roll.dice = DiceGURPS.fromString("6d")
 			_roll.hits[0].basicDamage = 24
 			_roll.internalExplosion = true
 			_torso._map.set("all", 3)

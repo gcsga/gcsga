@@ -2,8 +2,8 @@
 
 import { DamageType, DamageTypes } from "@module/apps/damage-calculator/damage-type.ts"
 import { DamageAttacker, DamageRoll } from "@module/apps/damage-calculator/index.ts"
-import { DiceGURPS } from "@module/dice/index.ts"
 import { DamageHitLocation, _Attacker, _DamageRoll, _Target, _create } from "./common.ts"
+import { DiceGURPS } from "@system"
 
 const Torso = "Torso"
 
@@ -33,7 +33,7 @@ describe.skip("Damage calculator", () => {
 		_roll.hits[0] = { basicDamage: 0, locationId: Torso }
 		_roll.armorDivisor = 1
 		_roll.damageType = DamageTypes.cr
-		_roll.dice = new DiceGURPS("2d")
+		_roll.dice = DiceGURPS.fromString("2d")
 
 		_torso = new DamageHitLocation(
 			{
@@ -1013,12 +1013,12 @@ describe.skip("Damage calculator", () => {
 
 	describe("B414: Explosions.", () => {
 		beforeEach(() => {
-			_roll.dice = new DiceGURPS("3d")
+			_roll.dice = DiceGURPS.fromString("3d")
 			_roll.damageModifier = "ex"
 		})
 
 		it("An explosion inflicts “collateral damage” on everything within (2 × dice of damage) yards.", () => {
-			_roll.dice = new DiceGURPS("1d+3")
+			_roll.dice = DiceGURPS.fromString("1d+3")
 			_roll.range = 3
 			_roll.hits[0].basicDamage = 9
 
@@ -1141,7 +1141,7 @@ describe.skip("Damage calculator", () => {
 		})
 
 		it.skip("If an explosive attack has an armor divisor, it does not apply to the collateral damage.", () => {
-			_roll.dice = new DiceGURPS("6d")
+			_roll.dice = DiceGURPS.fromString("6d")
 			_roll.hits[0].basicDamage = 24
 			_roll.armorDivisor = 3
 			_torso._map.set("all", 3)
@@ -1215,7 +1215,7 @@ describe.skip("Damage calculator", () => {
 		})
 
 		it("Internal Explosions: DR has no effect! In addition, treat the blast as an attack on the vitals, with a ×3 wounding modifier.", () => {
-			_roll.dice = new DiceGURPS("6d")
+			_roll.dice = DiceGURPS.fromString("6d")
 			_roll.hits[0].basicDamage = 24
 			_roll.internalExplosion = true
 			_torso._map.set("all", 3)

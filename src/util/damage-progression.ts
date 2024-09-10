@@ -1,4 +1,4 @@
-import { DiceGURPS } from "@module/dice/index.ts"
+import { DiceGURPS } from "@system"
 import { progression } from "./enum/progression.ts"
 
 export function thrustFor(p: progression.Option, st: number): DiceGURPS {

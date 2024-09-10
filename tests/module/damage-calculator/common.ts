@@ -9,7 +9,7 @@ import {
 	TargetTrait,
 	TargetTraitModifier,
 } from "@module/apps/damage-calculator/index.ts"
-import { DiceGURPS } from "@module/dice/index.ts"
+import { DiceGURPS } from "@system"
 import { BodyGURPS, HitLocation, HitLocationSchema } from "@system/hit-location/index.ts"
 import { TooltipGURPS } from "@util"
 
@@ -78,7 +78,7 @@ export class _DamageRoll implements DamageRoll {
 
 	attacker = new _Attacker()
 
-	dice = new DiceGURPS("2d")
+	dice = DiceGURPS.fromString("2d")
 
 	basicDamage = 0
 

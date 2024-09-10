@@ -1,6 +1,6 @@
 import { DamageType } from "./damage-type.ts"
-import { DiceGURPS } from "@module/dice/index.ts"
 import { gid } from "@data"
+import { DiceGURPS } from "@system"
 import { BodyGURPS, HitLocation } from "@system/hit-location/object.ts"
 
 export type HitLocationRollResult = {
@@ -48,7 +48,7 @@ export const HitLocationUtil = {
 		let result = undefined
 
 		// TODO For Dice So Nice to appear, put this roll into the chat log.
-		const roll = Roll.create(new DiceGURPS(hitLocationTable.roll).toString(true))
+		const roll = Roll.create(DiceGURPS.fromString(hitLocationTable.roll).toString(true))
 		// await roll.evaluate({ async: true })
 		await roll.evaluate()
 		const rollTotal = roll.total!

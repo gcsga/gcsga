@@ -21,7 +21,7 @@ export namespace wswitch {
 		TwoHanded = "two_handed",
 		Thrown = "thrown",
 		Unbalanced = "unbalanced",
-		TwoHandedAndUnreadyAfterAttack = "two_handed_unready",
+		TwoHandedUnready = "two_handed_unready",
 		MusketRest = "musket_rest",
 	}
 
@@ -51,7 +51,7 @@ export namespace wswitch {
 		Type.TwoHanded,
 		Type.Thrown,
 		Type.Unbalanced,
-		Type.TwoHandedAndUnreadyAfterAttack,
+		Type.TwoHandedUnready,
 		Type.MusketRest,
 	]
 }

@@ -15,6 +15,11 @@ class WeaponField<
 	}
 
 	// @ts-expect-error abstract function
+	tooltip(w: TParent): string {
+		throw ErrorGURPS("Function WeaponField.tooltip must be implemented.")
+	}
+
+	// @ts-expect-error abstract function
 	resolveValue(w: TParent, tooltip: TooltipGURPS): WeaponField {
 		throw ErrorGURPS("Function WeaponField.resolveValue must be implemented.")
 	}

@@ -21,7 +21,6 @@ import { ChatMessageGURPS } from "@module/chat-message/index.ts"
 import { ItemsGURPS } from "@module/collection/items.ts"
 import { CombatGURPS, CombatantGURPS } from "@module/combat/index.ts"
 import { AttributeEffect, MANEUVER_DETAIL_SETTING } from "@module/data/index.ts"
-import { DiceGURPS } from "@module/dice/index.ts"
 import { ActorGURPS2 } from "@module/document/actor.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { JournalEntryGURPS } from "@module/journal-entry/document.ts"
@@ -32,6 +31,7 @@ import { GURPSCONFIG } from "@scripts/config/index.ts"
 import { remigrate } from "@scripts/system/remigrate.ts"
 import {
 	AttributeDefSchema,
+	DiceGURPS,
 	HitLocationSchema,
 	HitLocationSource,
 	MookGeneratorSheet,

@@ -76,8 +76,24 @@ class WeaponReach extends WeaponField<WeaponMeleeData, WeaponReachSchema> {
 			tooltip,
 			feature.Type.WeaponMinReachBonus,
 			feature.Type.WeaponMaxReachBonus,
-		))
-			return result
+		)) {
+			const amt = bonus.adjustedAmountForWeapon(w)
+			if (bonus.type === feature.Type.WeaponMinReachBonus) {
+				if (bonus.percent) percentMin += amt
+				else result.min += amt
+			} else if (bonus.type === feature.Type.WeaponMaxReachBonus) {
+				if (bonus.percent) percentMax += amt
+				else result.max += amt
+			}
+		}
+		if (percentMin !== 0) {
+			result.min += Int.from((result.min * percentMin) / 100)
+		}
+		if (percentMax !== 0) {
+			result.max += Int.from((result.max * percentMin) / 100)
+		}
+		result.clean()
+		return result
 	}
 
 	override clean(): void {
