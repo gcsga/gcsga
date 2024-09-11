@@ -443,6 +443,35 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 			}
 		}
 	}
+
+	namedWeaponSkillBonusesFor(
+		name: string,
+		usage: string,
+		tags: string[],
+		temporary: boolean,
+		tooltip: TooltipGURPS | null,
+	): SkillBonus[] {
+		const bonuses: SkillBonus[] = []
+		for (const bonus of this.features.skillBonuses) {
+			if (bonus.selection_type === skillsel.Type.Name) {
+				let replacements: Map<string, string> = new Map()
+				const na = bonus.owner
+				if (Nameable.isAccesser(na)) {
+					replacements = na.nameableReplacements
+				}
+				if (
+					bonus.name.matches(replacements, name) &&
+					bonus.specialization.matches(replacements, usage) &&
+					bonus.tags.matchesList(replacements, ...tags) &&
+					bonus.temporary === temporary
+				) {
+					bonuses.push(bonus)
+					bonus.addToTooltip(tooltip)
+				}
+			}
+		}
+		return bonuses
+	}
 }
 
 function addWeaponBonusToSet(

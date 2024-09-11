@@ -1,7 +1,7 @@
 import { ItemDataModel } from "@module/data/abstract.ts"
 import fields = foundry.data.fields
 import { SkillDefault, SkillDefaultSchema, WeaponBonus } from "@system"
-import { TooltipGURPS, feature, stdmg, wsel, wswitch } from "@util"
+import { LocalizeGURPS, TooltipGURPS, encumbrance, feature, skillsel, wsel, wswitch } from "@util"
 import { ItemTemplateType } from "../types.ts"
 import { ActorType, ItemType } from "@module/data/constants.ts"
 import { Nameable } from "@module/util/nameable.ts"
@@ -26,10 +26,87 @@ class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema>
 		return this.parent.container.system.name
 	}
 
-	skillLevelBaseAdjustment(actor: this["actor"], tooltip: TooltipGURPS): number {
+	get usesCrossbowSkill(): boolean {
+		const replacements = this.nameableReplacements
+		return this.defaults.some(def => def.nameWithReplacements(replacements) === "Crossbow")
+	}
+
+	skillLevelBaseAdjustment(actor: this["actor"], tooltip: TooltipGURPS | null): number {
+		if (actor === null || !actor.isOfType(ActorType.Character)) return 0
+
+		const container = this.parent.container
+		if (container instanceof Promise || container === null) return 0
+		const tags = container.hasTemplate(ItemTemplateType.BasicInformation) ? container.system.tags : []
+
 		let adj = 0
-		let minSt = this.strength.resolveValue(this, null)
-		if (!this.isOfType(ItemType.WeaponRanged)||(this.range.musclePowered&&!this.usesCrossbowSkill))
+		let minST = this.strength.resolveValue(this, null).min
+		if (!this.isOfType(ItemType.WeaponRanged) || (this.range.musclePowered && !this.usesCrossbowSkill)) {
+			minST -= actor.system.strikingStrength
+		} else {
+			minST -= actor.system.liftingStrength
+		}
+		if (minST > 0) {
+			adj -= minST
+			if (tooltip !== null) {
+				tooltip.push("\n")
+				tooltip.push(
+					LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Tooltip.SkillLevelStrengthRequirement, {
+						name: this.processedName,
+						modifier: -minST,
+					}),
+				)
+			}
+		}
+		const nameQualifier = this.processedName
+		for (const bonus of actor.system.namedWeaponSkillBonusesFor(
+			nameQualifier,
+			this.usageWithReplacements,
+			tags,
+			false,
+			tooltip,
+		)) {
+			adj += bonus.adjustedAmount
+		}
+		if (container.hasTemplate(ItemTemplateType.Feature)) {
+			for (const f of container.system.features) {
+				adj += this.extractSkillBonusForThisWeapon(f, tooltip)
+			}
+		}
+		if (container.isOfType(ItemType.Trait, ItemType.Equipment, ItemType.EquipmentContainer)) {
+			for (const mod of container.system.allModifiers) {
+				for (const f of mod.system.features) {
+					adj += this.extractSkillBonusForThisWeapon(f, tooltip)
+				}
+			}
+		}
+		return adj
+	}
+
+	skillLevelPostAdjustment(actor: this["actor"], tooltip: TooltipGURPS | null): number {
+		if (actor === null || !actor.isOfType(ActorType.Character)) return 0
+
+		const penalty = encumbrance.Level.penalty(actor.system.encumbranceLevel(true))
+		if (penalty !== 0 && tooltip !== null) {
+			tooltip.push("\n")
+			tooltip.push(
+				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Tooltip.EncumbrancePenalty, {
+					modifier: penalty.signedString(),
+				}),
+			)
+		}
+		return penalty
+	}
+
+	extractSkillBonusForThisWeapon(f: Feature, tooltip: TooltipGURPS | null): number {
+		if (f.isOfType(feature.Type.SkillBonus)) {
+			if (f.selection_type === skillsel.Type.ThisWeapon) {
+				if (f.specialization.matches(this.nameableReplacements, this.usageWithReplacements)) {
+					f.addToTooltip(tooltip)
+					return f.adjustedAmount
+				}
+			}
+		}
+		return 0
 	}
 
 	resolveBoolFlag(switchType: wswitch.Type, initial: boolean): boolean {

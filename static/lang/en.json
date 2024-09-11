@@ -59,7 +59,9 @@
 		},
 		"Tooltip": {
 			"SkillEncumbrance": "<br>Encumbrance [{amount}]",
-			"IncludesModifiersFrom": "Includes modifiers from"
+			"IncludesModifiersFrom": "Includes modifiers from",
+			"SkillLevelStrengthRequirement": "{name} [{modifier} to skill level due to minimum ST requirement]",
+			"EncumbrancePenalty": "Encumbrance [{modifier}"
 		},
 		"SkillDefault": "Default: {name}{modifier}",
 		"SkillSpecialization": " ({specialization})",
