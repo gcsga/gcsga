@@ -2,6 +2,22 @@ import { ItemType } from "@module/data/constants.ts"
 import { LocalizeGURPS } from "./localize.ts"
 import { StringBuilder } from "./string-builder.ts"
 
+function trimS(str: string, substring: string): string {
+	if (!substring || !str.includes(substring)) {
+		return str
+	}
+
+	while (str.startsWith(substring)) {
+		str = str.slice(substring.length)
+	}
+
+	while (str.endsWith(substring)) {
+		str = str.slice(0, -substring.length)
+	}
+
+	return str
+}
+
 function generateId(): string {
 	const buffer = Array.from({ length: 12 }, () => Math.floor(Math.random() * 256))
 	return btoa(String.fromCharCode.apply(null, buffer)).replaceAll("+", "-").replaceAll("/", "_")
@@ -366,5 +382,6 @@ export {
 	signedInteger,
 	sluggify,
 	tupleHasValue,
+	trimS,
 	type SlugCamel,
 }

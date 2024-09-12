@@ -7,7 +7,7 @@ import EmbeddedCollection from "types/foundry/common/abstract/embedded-collectio
 class ItemCollectionsMap<TActor extends ActorGURPS2> {
 	declare traits: Collection<ItemInst<ItemType.Trait> | ItemInst<ItemType.TraitContainer>>
 	declare skills: Collection<
-		ItemInst<ItemType.Skill> | ItemInst<ItemType.Technique> | ItemInst<ItemType.TraitContainer>
+		ItemInst<ItemType.Skill> | ItemInst<ItemType.Technique> | ItemInst<ItemType.SkillContainer>
 	>
 
 	declare spells: Collection<

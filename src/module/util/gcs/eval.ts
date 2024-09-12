@@ -1,98 +1,147 @@
-import { ErrorGURPS } from "@util"
-import { eFunction, evalFunctions } from "./function.ts"
-import { evalOperators } from "./operator/functions.ts"
-import {
-	Operand,
-	Operator,
-	expressionOperand,
-	expressionOperator,
-	expressionTree,
-	parsedFunction,
-} from "./operator/types.ts"
-import { ActorInst } from "@module/data/actor/helpers.ts"
+import { ErrorGURPS, StringBuilder } from "@util"
+import { Operator } from "./operators.ts"
+import { type CharacterData } from "@module/data/actor/character.ts"
 import { ActorType } from "@module/data/constants.ts"
 
-// Evaluator is used to evaluate an expression. If you do not have any variables that will be resolved, you can leave
-// Resolver unset.
-class Evaluator {
-	// resolver: ActorGURPS | Mook
-	// resolver: ActorInst<ActorType.Character> | Mook
-	resolver: ActorInst<ActorType.Character>
+type VariableResolver = {
+	resolveVariable: (variableName: string) => string
+}
+export type ExpressionOperand = {
+	value: string
+	unaryOp: Operator
+}
+export type ExpressionOperator = {
+	// op: Operator | null
+	op: Operator | null
+	unaryOp: Operator | null
+}
+export type ExpressionTree = {
+	evaluator: Evaluator
+	left?: Operand
+	right?: Operand
+	op?: Operator
+	unaryOp?: Operator
+}
+// export type ExpressionTree =
+// 	| {
+// 			evaluator: Evaluator
+// 			left: Operand
+// 			right: Operand
+// 			op: Operator
+// 	  }
+// 	| {
+// 			evaluator: Evaluator
+// 			left: Operand
+// 			unaryOp: Operator
+// 	  }
+export type Function = (evaluator: Evaluator, args: string) => Operand
+export type ParsedFunction = {
+	unaryOp: Operator
+	func: Function
+	args: string
+}
+export type Operand = ExpressionOperand | ExpressionTree | ParsedFunction | number | boolean | string | null
 
-	operators: Operator[] = evalOperators(true)
+export function resolverIsCharacter(resolver: VariableResolver | null): resolver is CharacterData {
+	return resolver instanceof Actor && resolver.type == ActorType.Character
+}
 
-	functions: Map<string, eFunction> = evalFunctions()
+function isExpressionOperand(operand: Operand): operand is ExpressionOperand {
+	return (
+		typeof operand === "object" &&
+		operand !== null &&
+		"value" in operand &&
+		"unaryOp" in operand &&
+		typeof (operand as ExpressionOperand).value === "string" &&
+		(operand as ExpressionOperand).unaryOp instanceof Operator
+	)
+}
 
-	operandStack: Operand[] = []
+function isExpressionTree(operand: Operand): operand is ExpressionTree {
+	return (
+		typeof operand === "object" &&
+		operand !== null &&
+		"evaluator" in operand &&
+		"left" in operand &&
+		(operand as ExpressionTree).evaluator instanceof Evaluator &&
+		(("right" in operand && "op" in operand && (operand as any).op instanceof Operator) ||
+			("unaryOp" in operand && (operand as any).unaryOp instanceof Operator))
+	)
+}
 
-	operatorStack: expressionOperator[] = []
+function isParsedFunction(operand: Operand): operand is ParsedFunction {
+	return (
+		typeof operand === "object" &&
+		operand !== null &&
+		"unaryOp" in operand &&
+		"func" in operand &&
+		"args" in operand &&
+		(operand as ParsedFunction).unaryOp instanceof Operator &&
+		typeof (operand as ParsedFunction).func === "function" &&
+		typeof (operand as ParsedFunction).args === "string"
+	)
+}
 
-	// constructor(data: { resolver: ActorGURPS | Mook; operators?: Operator[]; functions?: Map<string, eFunction> }) {
-	// 	this.resolver = data.resolver
-	// 	this.operators = data.operators ?? evalOperators(true)
-	// 	this.functions = data.functions ?? evalFunctions()
-	// }
-	constructor(data: {
-		// resolver: ActorInst<ActorType.Character> | Mook
-		resolver: ActorInst<ActorType.Character>
-		operators?: Operator[]
-		functions?: Map<string, eFunction>
-	}) {
-		this.resolver = data.resolver
-		this.operators = data.operators ?? evalOperators(true)
-		this.functions = data.functions ?? evalFunctions()
+export class Evaluator {
+	resolver: VariableResolver | null
+	operators: Operator[]
+	functions: Map<string, Function>
+	operandStack: Operand[]
+	operatorStack: ExpressionOperator[]
+
+	constructor(resolver: Evaluator["resolver"], operators: Evaluator["operators"], functions: Evaluator["functions"]) {
+		this.resolver = resolver
+		this.operators = operators
+		this.functions = functions
+		this.operandStack = []
+		this.operatorStack = []
 	}
 
 	evaluate(expression: string): Operand {
-		this.parse(expression)
-		while (this.operatorStack.length !== 0) {
-			this.processTree()
+		try {
+			this.parse(expression)
+		} catch (err) {
+			console.error(err)
+			return null
 		}
+		while (this.operatorStack.length !== 0) this.processTree()
 		if (this.operandStack.length === 0) return ""
-		return this.evaluateOperand(this.operandStack[this.operandStack.length - 1])
+		return this.evaluateOperand(this.operandStack.at(-1))
 	}
 
 	evaluateNew(expression: string): Operand {
-		const other = new Evaluator({
-			resolver: this.resolver,
-			operators: this.operators,
-			functions: this.functions,
-		})
+		const other = new Evaluator(this.resolver, this.operators, this.functions)
 		return other.evaluate(expression)
 	}
 
 	parse(expression: string): void {
-		if (!expression) {
-			throw ErrorGURPS("No expression to parse!")
-		}
 		let unaryOp: Operator | null = null
 		let haveOperand = false
-		const haveOperator = false
 		this.operandStack = []
 		this.operatorStack = []
 		let i = 0
 		while (i < expression.length) {
 			const ch = expression[i]
-			if ([" ", "\t", "\n", "\r"].includes(ch)) {
+			if (ch === " " || ch === "\t" || ch === "\n" || ch === "\r") {
 				i += 1
 				continue
 			}
 			const [opIndex, op] = this.nextOperator(expression, i, null)
-			if (opIndex > i || opIndex === -1) {
-				i = this.processOperand(expression, i, opIndex, unaryOp)
+			if (opIndex > 1 || opIndex === -1) {
+				i = this.processOperand(expression, i, opIndex, unaryOp!)
 				haveOperand = true
 				unaryOp = null
 			}
 			if (opIndex === i) {
-				if (op && op.evaluateUnary && (haveOperator || i === 0)) {
+				if (op !== null && op.evaluateUnary !== null && i === 0) {
 					i = opIndex + op.symbol.length
-					if (unaryOp) console.error(`Consecutive unary operators are not allowed at index ${i}`)
+					if (unaryOp) throw ErrorGURPS(`consecutive unary operators are not allowed at index ${i}`)
 					unaryOp = op
 				} else {
 					i = this.processOperator(expression, opIndex, op, haveOperand, unaryOp)
 					unaryOp = null
 				}
-				if (!op || op.symbol !== ")") {
+				if (op === null || op.symbol !== ")") {
 					haveOperand = false
 				}
 			}
@@ -101,27 +150,35 @@ class Evaluator {
 
 	nextOperator(expression: string, start: number, match: Operator | null): [number, Operator | null] {
 		for (let i = start; i < expression.length; i++) {
-			if (match) {
+			if (match !== null) {
 				if (match.match(expression, i, expression.length)) return [i, match]
 			} else {
 				for (const op of this.operators) {
-					if (op.match(expression, i, expression.length)) return [i, op]
+					if (op.match(expression, i, expression.length)) {
+						return [i, op]
+					}
 				}
 			}
 		}
 		return [-1, null]
 	}
 
-	processOperand(expression: string, start: number, opIndex: number, unaryOp: Operator | null): number {
+	processOperand(expression: string, start: number, opIndex: number, unaryOp: Operator): number {
 		if (opIndex === -1) {
 			const text = expression.substring(start).trim()
-			if (text === "") console.error(`Expression is invalid at index ${start}`)
-			this.operandStack.push(new expressionOperand({ value: text, unaryOp: unaryOp }))
+			if (text === "") {
+				console.error(`expression is invalid at index ${start}`)
+				return -1
+			}
+			this.operandStack.push({ value: text, unaryOp })
 			return expression.length
 		}
 		const text = expression.substring(start, opIndex).trim()
-		if (text === "") console.error(`Expression is invalid at index ${start}`)
-		this.operandStack.push(new expressionOperand({ value: text, unaryOp: unaryOp }))
+		if (text === "") {
+			console.error(`expression is invalid at index ${start}`)
+			return -1
+		}
+		this.operandStack.push({ value: text, unaryOp })
 		return opIndex
 	}
 
@@ -132,52 +189,65 @@ class Evaluator {
 		haveOperand: boolean,
 		unaryOp: Operator | null,
 	): number {
-		if (haveOperand && op && op.symbol === "(") {
-			;[index, op] = this.processFunction(expression, index)
-			index += op?.symbol.length || 0
+		if (haveOperand && op !== null && op.symbol === "(") {
+			try {
+				;[index, op] = this.processFunction(expression, index)
+			} catch (err) {
+				console.log(err)
+				return -1
+			}
+			index += op!.symbol.length
 			let tmp: number
 			;[tmp, op] = this.nextOperator(expression, index, null)
-			if (!op) return index
+			if (op === null) return index
 			index = tmp
 		}
-		let stackOp: expressionOperator | null = null
-		switch (op!.symbol) {
+		switch (op?.symbol) {
 			case "(":
-				this.operatorStack.push(new expressionOperator({ op: op, unaryOp: unaryOp }))
+				this.operatorStack.push({ op, unaryOp })
 				break
-			case ")":
-				if (this.operatorStack.length > 0) stackOp = this.operatorStack[this.operatorStack.length - 1]
-				while (stackOp && stackOp.op?.symbol !== "(") {
-					this.processTree()
-					if (this.operatorStack.length > 0) stackOp = this.operatorStack[this.operatorStack.length - 1]
-					else stackOp = null
-				}
-				if (this.operatorStack.length === 0) console.error(`Invalid expression at index ${index}`)
-				stackOp = this.operatorStack[this.operatorStack.length - 1]
-				if (stackOp.op?.symbol !== "(") console.error(`Invalid expression at index ${index}`)
-				this.operatorStack.pop()
-				if (!stackOp?.unaryOp) {
-					const left = this.operandStack[this.operandStack.length - 1]
-					this.operandStack.pop()
-					this.operandStack.push(
-						new expressionTree({
-							evaluator: this,
-							left: left,
-							unaryOp: stackOp?.unaryOp,
-						}),
-					)
-				}
-				break
-			default:
+			case ")": {
+				let stackOp: ExpressionOperator | null = null
 				if (this.operatorStack.length > 0) {
-					stackOp = this.operatorStack[this.operatorStack.length - 1]
-					while (stackOp?.op?.precedence && op?.precedence && stackOp.op.precedence >= op.precedence) {
-						this.processTree()
-						if (this.operatorStack.length > 0) stackOp = this.operatorStack[this.operatorStack.length - 1]
-						else stackOp = null
+					stackOp = this.operatorStack.at(-1)!
+				}
+				while (stackOp !== null && stackOp.op!.symbol !== "(") {
+					this.processTree()
+					if (this.operatorStack.length > 0) {
+						stackOp = this.operatorStack.at(-1)!
+					} else {
+						stackOp = null
 					}
 				}
-				this.operatorStack.push(new expressionOperator({ op: op, unaryOp: unaryOp }))
+				if (this.operatorStack.length === 0) {
+					console.error(`invalid expression at index ${index}`)
+					return -1
+				}
+				stackOp = this.operatorStack.at(-1)!
+				if (stackOp.op?.symbol !== "(") {
+					console.error(`invalid expression at index ${index}`)
+					return -1
+				}
+				this.operatorStack.pop()
+				if (stackOp.unaryOp !== null) {
+					const left = this.operandStack.pop()!
+					this.operandStack.push({ evaluator: this, left, unaryOp: stackOp.unaryOp })
+				}
+				break
+			}
+			default:
+				if (this.operatorStack.length > 0) {
+					let stackOp: ExpressionOperator | null = this.operatorStack.at(-1) ?? null
+					while (stackOp !== null && stackOp.op!.precedence >= op!.precedence) {
+						this.processTree()
+						if (this.operatorStack.length > 0) {
+							stackOp = this.operatorStack.at(-1) ?? null
+						} else {
+							stackOp = null
+						}
+					}
+				}
+				this.operatorStack.push({ op, unaryOp })
 		}
 		return index + op!.symbol.length
 	}
@@ -188,8 +258,11 @@ class Evaluator {
 		let next = opIndex
 		while (parens > 0) {
 			;[next, op] = this.nextOperator(expression, next + 1, null)
-			if (!op) console.error(`Function not closed at index ${opIndex}`)
-			switch (op?.symbol) {
+			if (op === null) {
+				console.error(`function not closed at index ${opIndex}`)
+				return [-1, null]
+			}
+			switch (op.symbol) {
 				case "(":
 					parens += 1
 					break
@@ -198,135 +271,168 @@ class Evaluator {
 					break
 			}
 		}
-		if (this.operandStack.length === 0) console.error(`Invalid stack at index ${next}`)
-		const operand = this.operandStack[this.operandStack.length - 1] as expressionOperand
-		if (!operand) console.error(`Unexpected operand stack value at index ${next}`)
+		if (this.operandStack.length === 0) {
+			console.error(`invalid stack at index ${next}`)
+			return [-1, null]
+		}
+		const operand = this.operandStack.at(-1) ?? null
+		if (!isExpressionOperand(operand)) {
+			console.error(`unexpected operand stack value at index ${next}`)
+			return [-1, null]
+		}
 		this.operandStack.pop()
 		const f = this.functions.get(operand.value)
-		if (!f) console.error(`Function not defined: ${operand.value}`)
-		else
-			this.operandStack.push(
-				new parsedFunction({
-					function: f,
-					args: expression.substring(opIndex + 1, next),
-					unaryOp: operand.unaryOp,
-				}),
-			)
+		if (!f) {
+			console.error(`function not defined: ${operand.value}`)
+			return [-1, null]
+		}
+		this.operandStack.push({ func: f, args: expression.substring(opIndex + 1, next), unaryOp: operand.unaryOp })
 		return [next, op]
 	}
 
 	processTree(): void {
-		let [left, right]: Operand[] = [null, null]
-		if (this.operandStack.length > 0) right = this.operandStack.pop()
-		if (this.operandStack.length > 0) left = this.operandStack.pop()
-		const op = this.operatorStack.pop()
-		this.operandStack.push(
-			new expressionTree({
-				evaluator: this,
-				left: left,
-				right: right,
-				op: op?.op,
-			}),
-		)
+		let right: Operand | null = null
+		if (this.operandStack.length > 0) {
+			right = this.operandStack.pop()!
+		}
+		let left: Operand | null = null
+		if (this.operandStack.length > 0) {
+			left = this.operandStack.pop()!
+		}
+		const op = this.operatorStack.pop()!
+		this.operandStack.push({ evaluator: this, left, right, op: op.op! })
 	}
 
-	evaluateOperand(operand: Operand): Operand {
-		if (operand instanceof expressionTree) {
-			let left
-			let right
-			try {
-				left = operand.evaluator?.evaluateOperand(operand.left)
-				right = operand.evaluator?.evaluateOperand(operand.right)
-			} catch (err) {
-				console.error(err)
-				return null
+	evaluateOperand(operand: Operand = null): Operand {
+		switch (true) {
+			case isExpressionTree(operand): {
+				let left: Operand
+				try {
+					left = operand.evaluator.evaluateOperand(operand.left)
+				} catch (err) {
+					return null
+				}
+				let right: Operand
+				try {
+					right = operand.evaluator.evaluateOperand(operand.right)
+				} catch (err) {
+					return null
+				}
+				if (operand.left !== null && operand.right !== null) {
+					if (!operand.op || operand.op.evaluate === null) {
+						console.error("operator does not have Evaluate function defined")
+						return null
+					}
+					let v: Operand
+					try {
+						v = operand.op.evaluate(left, right)
+					} catch (err) {
+						console.error(err)
+						return null
+					}
+					if (operand.unaryOp && operand.unaryOp.evaluateUnary) {
+						return operand.unaryOp.evaluateUnary(v)
+					}
+					return v
+				}
+
+				let v: Operand
+				if (!operand.right) v = left
+				else v = right
+				if (v) {
+					try {
+						if (operand.unaryOp && operand.unaryOp.evaluateUnary) {
+							v = operand.unaryOp.evaluateUnary(v)
+						} else if (operand.op && operand.op.evaluateUnary) {
+							v = operand.op.evaluateUnary(v)
+						}
+					} catch (err) {
+						console.error(err)
+						return null
+					}
+				}
+
+				if (v === null) {
+					console.error("expression is invalid")
+					return null
+				}
+				return v
 			}
-			if (operand.left && operand.right) {
-				if (!operand.op?.evaluate) console.error("Operator does ot have Evaluate function defined")
+			case isExpressionOperand(operand): {
 				let v: Operand
 				try {
-					v = operand.op?.evaluate!(left, right)
+					v = this.replaceVariables(operand.value)
 				} catch (err) {
-					console.error(err)
+					console.log(err)
 					return null
 				}
 				if (operand.unaryOp && operand.unaryOp.evaluateUnary) return operand.unaryOp.evaluateUnary(v)
 				return v
 			}
-			let v: Operand
-			if (operand.right === undefined) v = left
-			else v = right
-			if (v) {
+			case isParsedFunction(operand): {
+				let s: string
 				try {
-					if (operand.unaryOp && operand.unaryOp.evaluateUnary) v = operand.unaryOp.evaluateUnary(v)
-					else if (operand.op && operand.op.evaluateUnary) v = operand.op.evaluateUnary(v)
+					s = this.replaceVariables(operand.args)
 				} catch (err) {
-					console.error(err)
+					console.log(err)
 					return null
 				}
+				let v: Operand
+				try {
+					v = operand.func(this, s)
+				} catch (err) {
+					console.log(err)
+					return null
+				}
+				if (operand.unaryOp && operand.unaryOp.evaluateUnary) return operand.unaryOp.evaluateUnary(v)
+				return v
 			}
-			if (v === undefined) console.error("Expression is invalid")
-			return v
-		} else if (operand instanceof expressionOperand) {
-			const v = this.replaceVariables(operand.value)
-			if (operand.unaryOp && operand.unaryOp.evaluateUnary) return operand.unaryOp.evaluateUnary(v)
-			// If (v === "false") return false
-			// if (v === "true") return true
-			return v
-		} else if (operand instanceof parsedFunction) {
-			const s = this.replaceVariables(operand.args)
-			const v = operand.function(this, s)
-			if (operand.unaryOp && operand.unaryOp.evaluateUnary) return operand.unaryOp.evaluateUnary(v)
-			return v
-		} else {
-			if (operand !== undefined) console.error("Invalid expression")
-			return null
+			default:
+				if (operand !== null) {
+					console.error("invalid expression")
+					return null
+				}
+				return null
 		}
 	}
 
 	replaceVariables(expression: string): string {
 		let dollar = expression.indexOf("$")
 		if (dollar === -1) return expression
-		if (!this.resolver) console.error(`No variable resolver, yet variables present at index ${dollar}`)
+		if (this.resolver === null) {
+			throw ErrorGURPS(`no variable resolver, yet variables present at index ${dollar}`)
+		}
 		while (dollar >= 0) {
 			let last = dollar
-			for (let i = 0; i < expression.substring(dollar + 1).split("").length; i++) {
-				const ch = expression.substring(dollar + 1).split("")[i]
-				if (ch.match("[a-zA-Z.#_]") || (i !== 0 && ch.match("[0-9]"))) last = dollar + 1 + i
-				else break
+			const tempExpression = expression.substring(dollar + 1)
+			for (let i = 0; i < tempExpression.length; i++) {
+				const ch = tempExpression[i]
+				if (
+					ch === "_" ||
+					ch === "." ||
+					ch === "#" ||
+					(ch >= "A" && ch <= "Z") ||
+					(ch >= "a" && ch <= "z") ||
+					(i !== 0 && ch >= "0" && ch <= "9")
+				) {
+					last = dollar + 1 + i
+				} else {
+					break
+				}
 			}
-			if (dollar === last) console.error(`Invalid variable at index ${dollar}`)
+			if (dollar === last) throw ErrorGURPS(`invalid variable at index ${dollar}`)
 			const name = expression.substring(dollar + 1, last + 1)
-			const v = this.resolver?.system.resolveVariable(name)
-			if (v?.trim() === "") {
-				console.error(`Unable to resolve variable $${name}`)
-				return "0"
+			const v = this.resolver.resolveVariable(name)
+			if (v.trim() === "") {
+				throw ErrorGURPS(`unable to resolve variable $${name}`)
 			}
-			let buffer = ""
-			if (dollar > 0) buffer += expression.substring(0, dollar)
-			buffer += v
-			if (last + 1 < expression.length) buffer += expression.substring(last + 1)
-			expression = buffer
+			const buffer = new StringBuilder()
+			if (dollar > 0) buffer.push(expression.substring(0, dollar))
+			buffer.push(v)
+			if (last + 1 < expression.length) buffer.push(expression.substring(last + 1))
+			expression = buffer.toString()
 			dollar = expression.indexOf("$")
 		}
 		return expression
 	}
-}
-
-export { Evaluator }
-
-// export function evaluateToNumber(expression: string, resolver: ActorInst<ActorType.Character> | Mook): number {
-export function evaluateToNumber(expression: string, resolver: ActorInst<ActorType.Character>): number {
-	let result: Operand = 0
-	try {
-		result = new Evaluator({ resolver: resolver }).evaluate(expression)
-	} catch (err) {
-		console.error(err, `Unable to resolve ${expression}`)
-		return 0
-	}
-	if (result === "") return 0
-	if (typeof result === "number") return parseFloat(result.toFixed(4))
-	else if (typeof parseFloat(result) === "number") return parseFloat(result)
-	console.error(`Unable to resolve ${expression} to a number`)
-	return 0
 }

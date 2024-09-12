@@ -35,6 +35,7 @@ class CharacterData extends ActorDataModel.mixin(
 		encumbranceLevelForSkills: null,
 		basicLift: null,
 	}
+	skillResolverExclusions: Set<string> | null = null
 
 	static override defineSchema(): CharacterSchema {
 		const fields = foundry.data.fields
@@ -82,6 +83,23 @@ class CharacterData extends ActorDataModel.mixin(
 				block: new fields.SchemaField(CharacterBonus.defineSchema()),
 			}),
 		}) as CharacterSchema
+	}
+
+	isSkillLevelResolutionExcluded(name: string, specialization: string): boolean {
+		return this.skillResolverExclusions?.has(this.skillLevelResolutionKey(name, specialization)) ?? false
+	}
+
+	registerSkillLevelResolutionExclusion(name: string, specialization: string): void {
+		if (!this.skillResolverExclusions) this.skillResolverExclusions = new Set()
+		this.skillResolverExclusions.add(this.skillLevelResolutionKey(name, specialization))
+	}
+
+	unregisterSkillLevelResolutionExclusion(name: string, specialization: string): void {
+		this.skillResolverExclusions?.delete(this.skillLevelResolutionKey(name, specialization))
+	}
+
+	skillLevelResolutionKey(name: string, specialization: string): string {
+		return name + "\u0000" + specialization
 	}
 
 	/**
