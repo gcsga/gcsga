@@ -50,7 +50,7 @@ class WeaponStrength extends WeaponField<AbstractWeaponTemplate, WeaponStrengthS
 	}
 
 	override resolveValue(w: AbstractWeaponTemplate, tooltip: TooltipGURPS | null): WeaponStrength {
-		const result = new WeaponStrength({})
+		const result = this.clone()
 		result.bipod = w.resolveBoolFlag(wswitch.Type.Bipod, result.bipod)
 		result.mounted = w.resolveBoolFlag(wswitch.Type.Mounted, result.mounted)
 		result.musketRest = w.resolveBoolFlag(wswitch.Type.MusketRest, result.musketRest)

@@ -55,7 +55,7 @@ export class WeaponRange extends WeaponField {
 	}
 
 	resolve(w: AbstractWeaponGURPS, tooltip: TooltipGURPS): WeaponRange {
-		const result = new WeaponRange()
+		const result = this.clone()
 		Object.assign(result, this)
 		result.musclePowered = w.resolveBoolFlag(wswitch.Type.MusclePowered, result.musclePowered)
 		result.inMiles = w.resolveBoolFlag(wswitch.Type.RangeInMiles, result.inMiles)

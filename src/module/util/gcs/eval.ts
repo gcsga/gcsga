@@ -1,5 +1,3 @@
-// import type { ActorGURPS } from "@actor"
-import type { Mook } from "@system/mook/index.ts"
 import { ErrorGURPS } from "@util"
 import { eFunction, evalFunctions } from "./function.ts"
 import { evalOperators } from "./operator/functions.ts"
@@ -11,13 +9,15 @@ import {
 	expressionTree,
 	parsedFunction,
 } from "./operator/types.ts"
-import { ActorDataModel } from "@module/data/abstract.ts"
+import { ActorInst } from "@module/data/actor/helpers.ts"
+import { ActorType } from "@module/data/constants.ts"
 
 // Evaluator is used to evaluate an expression. If you do not have any variables that will be resolved, you can leave
 // Resolver unset.
 class Evaluator {
 	// resolver: ActorGURPS | Mook
-	resolver: ActorDataModel | Mook
+	// resolver: ActorInst<ActorType.Character> | Mook
+	resolver: ActorInst<ActorType.Character>
 
 	operators: Operator[] = evalOperators(true)
 
@@ -32,7 +32,12 @@ class Evaluator {
 	// 	this.operators = data.operators ?? evalOperators(true)
 	// 	this.functions = data.functions ?? evalFunctions()
 	// }
-	constructor(data: { resolver: ActorDataModel | Mook; operators?: Operator[]; functions?: Map<string, eFunction> }) {
+	constructor(data: {
+		// resolver: ActorInst<ActorType.Character> | Mook
+		resolver: ActorInst<ActorType.Character>
+		operators?: Operator[]
+		functions?: Map<string, eFunction>
+	}) {
 		this.resolver = data.resolver
 		this.operators = data.operators ?? evalOperators(true)
 		this.functions = data.functions ?? evalFunctions()
@@ -292,7 +297,7 @@ class Evaluator {
 			}
 			if (dollar === last) console.error(`Invalid variable at index ${dollar}`)
 			const name = expression.substring(dollar + 1, last + 1)
-			const v = this.resolver?.resolveVariable(name)
+			const v = this.resolver?.system.resolveVariable(name)
 			if (v?.trim() === "") {
 				console.error(`Unable to resolve variable $${name}`)
 				return "0"
@@ -310,8 +315,8 @@ class Evaluator {
 
 export { Evaluator }
 
-// export function evaluateToNumber(expression: string, resolver: ActorGURPS | Mook): number {
-export function evaluateToNumber(expression: string, resolver: ActorDataModel | Mook): number {
+// export function evaluateToNumber(expression: string, resolver: ActorInst<ActorType.Character> | Mook): number {
+export function evaluateToNumber(expression: string, resolver: ActorInst<ActorType.Character>): number {
 	let result: Operand = 0
 	try {
 		result = new Evaluator({ resolver: resolver }).evaluate(expression)
@@ -325,11 +330,3 @@ export function evaluateToNumber(expression: string, resolver: ActorDataModel | 
 	console.error(`Unable to resolve ${expression} to a number`)
 	return 0
 }
-
-// export function parseInlineNoteExpressions(inString: string, resolver: CharacterResolver): string {
-// 	const regex_eval = /\|\|[^|]+\|\|/g
-// 	inString.match(regex_eval)?.forEach(e => {
-// 		inString = inString.replaceAll(e, new Evaluator({ resolver }).evaluate(e.replaceAll("||", "")))
-// 	})
-// 	return inString
-// }

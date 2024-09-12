@@ -1,6 +1,10 @@
 export class TooltipGURPS {
 	buffer: (string | TooltipGURPS)[] = []
 
+	clear(): void {
+		this.buffer = []
+	}
+
 	unshift(...args: (string | TooltipGURPS)[]): number {
 		for (const a of args) {
 			this.buffer.unshift(a)
@@ -54,7 +58,8 @@ export class TooltipGURPS {
 		return tooltip
 	}
 
-	appendToNewLine(str: string): number {
+	appendToNewLine(str: string | TooltipGURPS | null): number {
+		if (str === null) return this.size
 		if (str === "") return this.size
 		if (this.size !== 0) this.push("<br>")
 		this.push(str)

@@ -8,14 +8,14 @@ import {
 	AttributeDef,
 	BodyGURPS,
 	ConditionalModifier,
-	MoveBonusType,
+	// MoveBonusType,
 	MoveType,
 	MoveTypeDef,
 	ResourceTracker,
 	ResourceTrackerDef,
 	SkillBonus,
 	SkillDefault,
-	ThresholdOp,
+	// ThresholdOp,
 	WeaponBonus,
 	AttributeSchema,
 	ResourceTrackerSchema,
@@ -47,7 +47,7 @@ import {
 	wsel,
 } from "@util"
 import { addWeaponBonusToSet } from "@actor/helpers.ts"
-import { DiceGURPS } from "@module/dice/index.ts"
+// import { DiceGURPS } from "@module/dice/index.ts"
 import { ItemInstances } from "@item/types.ts"
 import { CharacterLifts } from "./lifts.ts"
 import { CharacterEncumbrance } from "./encumbrance.ts"

@@ -1,9 +1,7 @@
 /// <reference types="vite/client" />
 import { ActorGURPS } from "@actor"
-import { ItemGURPS } from "@item"
 import { EffectPanel } from "@item/abstract-effect/panel.ts"
 import { ConditionSource } from "@item/data/index.ts"
-import { ActiveEffectGURPS } from "@module/active-effect/index.ts"
 import {
 	CompendiumBrowser,
 	CompendiumBrowserSettings,
@@ -11,22 +9,17 @@ import {
 } from "@module/apps/compendium-browser/index.ts"
 import { ModifierBucket } from "@module/apps/modifier-bucket/button.ts"
 import { ModifierList } from "@module/apps/modifier-list/document.ts"
-import { ActorDirectoryGURPS } from "@module/apps/sidebar/actor-directory.ts"
 import { ChatLogGURPS } from "@module/apps/sidebar/chat-log.ts"
-import { CombatTrackerGURPS } from "@module/apps/sidebar/combat-tracker.ts"
 import { CompendiumDirectoryGURPS } from "@module/apps/sidebar/compendium-directory.ts"
-import { ItemDirectoryGURPS } from "@module/apps/sidebar/item-directory.ts"
 import { CanvasGURPS } from "@module/canvas/index.ts"
 import { ChatMessageGURPS } from "@module/chat-message/index.ts"
-import { ItemsGURPS } from "@module/collection/items.ts"
-import { CombatGURPS, CombatantGURPS } from "@module/combat/index.ts"
+import { CombatGURPS } from "@module/combat/index.ts"
 import { AttributeEffect, MANEUVER_DETAIL_SETTING } from "@module/data/index.ts"
 import { ActorGURPS2 } from "@module/document/actor.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { JournalEntryGURPS } from "@module/journal-entry/document.ts"
 import { JournalEntryPageGURPS } from "@module/journal-entry/page/document.ts"
-import { UserGURPS } from "@module/user/document.ts"
-import { SceneGURPS, TokenDocumentGURPS } from "@scene"
+import { TokenDocumentGURPS } from "@scene"
 import { GURPSCONFIG } from "@scripts/config/index.ts"
 import { remigrate } from "@scripts/system/remigrate.ts"
 import {
@@ -49,13 +42,15 @@ interface GameGURPS
 		Actors<ActorGURPS2<null>>,
 		// Actors<ActorGURPS<null>>,
 		ChatMessageGURPS,
-		CombatGURPS,
+		Combat,
+		// CombatGURPS,
 		ItemGURPS2<null>,
 		// ItemGURPS<null>,
 		Items<ItemGURPS2<null>>,
 		// ItemsGURPS<ItemGURPS2<null>>,
 		Macro,
-		SceneGURPS,
+		// SceneGURPS,
+		Scene,
 		User<ActorGURPS2<null>>
 		// UserGURPS
 	> {
@@ -75,34 +70,47 @@ interface GameGURPS
 }
 
 type ConfiguredConfig = Config<
-		TAmbientLightDocument extends AmbientLightDocument<TScene | null>,
+	AmbientLightDocument<Scene | null>,
+	// TAmbientLightDocument extends AmbientLightDocument<TScene | null>,
 	ActiveEffect<ActorGURPS2<TokenDocument> | ItemGURPS2 | null>,
 	// ActiveEffectGURPS<ActorGURPS<TokenDocumentGURPS> | ItemGURPS | null>,
 	ActorGURPS2,
 	// ActorGURPS,
-	ActorDelta<TokenDocumentGURPS>,
+	ActorDelta<TokenDocument>,
+	// ActorDelta<TokenDocumentGURPS>,
 	ChatLogGURPS,
 	ChatMessage,
-	CombatGURPS,
-	CombatantGURPS<CombatGURPS | null, TokenDocumentGURPS>,
-	CombatTrackerGURPS<CombatGURPS | null>,
-	ActorDirectoryGURPS<ActorGURPS<null>>,
-	ItemDirectoryGURPS,
+	Combat,
+	// CombatGURPS,
+	Combatant<Combat | null, TokenDocument>,
+	// CombatantGURPS<CombatGURPS | null, TokenDocumentGURPS>,
+	CombatTracker<Combat | null>,
+	// CombatTrackerGURPS<CombatGURPS | null>,
+	ActorDirectory<Actor<null>>,
+	// ActorDirectoryGURPS<ActorGURPS<null>>,
+	ItemDirectory<ItemGURPS2<null>>,
+	// ItemDirectoryGURPS,
 	CompendiumDirectoryGURPS,
 	Hotbar,
 	ItemGURPS2,
 	// ItemGURPS,
 	Macro,
-	MeasuredTemplateDocument<SceneGURPS | null>,
-	RegionDocument<SceneGURPS | null>,
-	RegionBehavior<RegionDocument<SceneGURPS | null> | null>,
-	TileDocument<SceneGURPS | null>,
+	MeasuredTemplateDocument<Scene | null>,
+	// MeasuredTemplateDocument<SceneGURPS | null>,
+	RegionDocument<Scene | null>,
+	// RegionDocument<SceneGURPS | null>,
+	RegionBehavior<RegionDocument<Scene | null> | null>,
+	// RegionBehavior<RegionDocument<SceneGURPS | null> | null>,
+	TileDocument<Scene | null>,
+	// TileDocument<SceneGURPS | null>,
 	TokenDocument<Scene | null>,
 	// TokenDocumentGURPS<SceneGURPS | null>,
-	WallDocument<SceneGURPS | null>,
+	WallDocument<Scene | null>,
+	// WallDocument<SceneGURPS | null>,
 	Scene,
 	// SceneGURPS,
-	UserGURPS,
+	User,
+	// UserGURPS,
 	EffectsCanvasGroup,
 	JournalEntryGURPS,
 	JournalEntryPageGURPS<JournalEntryGURPS>
@@ -136,11 +144,14 @@ declare global {
 
 		// eslint-disable-next-line no-var
 		var ui: FoundryUI<
-			ActorDirectoryGURPS<ActorGURPS<null>>,
-			ItemDirectory<ItemGURPS<null>>,
+			ActorDirectory<ActorGURPS2<null>>,
+			ItemDirectory<ItemGURPS2<null>>,
+			// ActorDirectoryGURPS<ActorGURPS<null>>,
+			// ItemDirectory<ItemGURPS<null>>,
 			ChatLogGURPS,
 			CompendiumDirectoryGURPS,
-			CombatTrackerGURPS<CombatGURPS | null>,
+			CombatTracker<Combat | null>,
+			// CombatTrackerGURPS<CombatGURPS | null>,
 			Hotbar
 		>
 

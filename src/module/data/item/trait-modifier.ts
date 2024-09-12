@@ -1,4 +1,4 @@
-import { StringBuilder, affects, tmcost } from "@util"
+import { StringBuilder, affects, align, cell, display, tmcost } from "@util"
 import { ItemDataModel } from "../abstract.ts"
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { FeatureTemplate, FeatureTemplateSchema } from "./templates/features.ts"
@@ -8,6 +8,7 @@ import { ItemGURPS2 } from "@module/document/item.ts"
 import { TraitData } from "./trait.ts"
 import { Nameable } from "@module/util/nameable.ts"
 import { SheetSettings } from "@system"
+import { CellData } from "./fields/cell-data.ts"
 
 class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, FeatureTemplate, ReplacementTemplate) {
 	/** Allows dynamic setting of containing trait for arbitrary value calculation */
@@ -25,6 +26,39 @@ class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, Fe
 			affects: new fields.StringField<affects.Option>(),
 			disabled: new fields.BooleanField({ initial: false }),
 		}) as TraitModifierSchema
+	}
+
+	override get cellData(): Record<string, CellData> {
+		return {
+			enabled: new CellData({
+				type: cell.Type.Toggle,
+				checked: this.enabled,
+				align: align.Option.Middle,
+			}),
+			name: new CellData({
+				type: cell.Type.Text,
+				primary: this.nameWithReplacements,
+				secondary: this.secondaryText(display.Option.isInline),
+				tooltip: this.secondaryText(display.Option.isTooltip),
+			}),
+			cost: new CellData({
+				type: cell.Type.Text,
+				primary: this.costDescription,
+			}),
+			tags: new CellData({
+				type: cell.Type.Tags,
+				primary: this.combinedTags,
+			}),
+			reference: new CellData({
+				type: cell.Type.PageRef,
+				primary: this.reference,
+				secondary: this.reference_highlight === "" ? this.nameWithReplacements : this.reference_highlight,
+			}),
+		}
+	}
+
+	get enabled(): boolean {
+		return !this.disabled
 	}
 
 	get trait(): (ItemGURPS2 & { system: TraitData }) | null {
@@ -77,6 +111,11 @@ class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, Fe
 			buffer.push(` ${this.currentLevel.toString()}`)
 		}
 		return buffer.toString()
+	}
+
+	secondaryText(optionChecker: (option: display.Option) => boolean): string {
+		if (optionChecker(SheetSettings.for(this.parent.actor).notes_display)) return this.notesWithReplacements
+		return ""
 	}
 
 	// Returns the formatted cost for display

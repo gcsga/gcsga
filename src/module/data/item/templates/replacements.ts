@@ -19,7 +19,9 @@ class ReplacementTemplate extends ItemDataModel<ReplacementTemplateSchema> {
 	}
 }
 
-interface ReplacementTemplate extends ModelPropsFromSchema<ReplacementTemplateSchema> {}
+interface ReplacementTemplate
+	extends ItemDataModel<ReplacementTemplateSchema>,
+		ModelPropsFromSchema<ReplacementTemplateSchema> {}
 
 type ReplacementTemplateSchema = {
 	replacements: RecordField<

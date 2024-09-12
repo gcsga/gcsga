@@ -36,7 +36,7 @@ export class WeaponStrength extends WeaponField {
 	}
 
 	resolve(w: AbstractWeaponGURPS, tooltip: TooltipGURPS | null): WeaponStrength {
-		const result = new WeaponStrength()
+		const result = this.clone()
 		Object.assign(result, this)
 		if (w.actor) {
 			if (

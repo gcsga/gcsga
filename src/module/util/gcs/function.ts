@@ -1,14 +1,11 @@
-import { DiceGURPS } from "@module/dice/index.ts"
-import { Evaluator } from "./eval.ts"
-import { ActorType, ItemType } from "@data"
+import { ActorType, ItemType } from "@module/data/constants.ts"
+import { DiceGURPS } from "@system"
 import { Length } from "@util"
 import { equalFold } from "../string-criteria.ts"
+import { Evaluator } from "./eval.ts"
 
 export type eFunction = (e: Evaluator, a: string) => unknown
 
-/**
- *
- */
 export function evalFunctions(): Map<string, eFunction> {
 	const m = new Map()
 	m.set("abs", evalAbsolute)
@@ -25,88 +22,53 @@ export function evalFunctions(): Map<string, eFunction> {
 	m.set("min", evalMinimum)
 	m.set("round", evalRound)
 	m.set("sqrt", evalSqrt)
-	m.set("dice", evalDice)
-	m.set("roll", evalRoll)
-	m.set("advantage_level", evalTraitLevel)
-	m.set("trait_level", evalTraitLevel)
-	m.set("dice", evalDice)
-	m.set("has_trait", evalHasTrait)
-	m.set("random_height", evalRandomHeight)
-	m.set("random_weight", evalRandomWeight)
-	m.set("roll", evalRoll)
-	m.set("signed", evalSigned)
-	m.set("skill_level", evalSkillLevel)
-	m.set("ssrt", evalSSRT)
-	m.set("ssrt_to_yards", evalSSRTYards)
-	m.set("enc", evalEncumbrance)
+	// m.set("dice", evalDice)
+	// m.set("roll", evalRoll)
+	// m.set("advantage_level", evalTraitLevel)
+	// m.set("trait_level", evalTraitLevel)
+	// m.set("dice", evalDice)
+	// m.set("has_trait", evalHasTrait)
+	// m.set("random_height", evalRandomHeight)
+	// m.set("random_weight", evalRandomWeight)
+	// m.set("roll", evalRoll)
+	// m.set("signed", evalSigned)
+	// m.set("skill_level", evalSkillLevel)
+	// m.set("ssrt", evalSSRT)
+	// m.set("ssrt_to_yards", evalSSRTYards)
+	// m.set("enc", evalEncumbrance)
 	return m
 }
 
-/**
- *
- * @param e
- * @param args
- */
 function evalAbsolute(e: Evaluator, args: string): number {
 	const value = evalToNumber(e, args)
 	return Math.abs(value)
 }
 
-/**
- *
- * @param e
- * @param args
- */
 function evalCubeRoot(e: Evaluator, args: string): number {
 	const value = evalToNumber(e, args)
 	return Math.cbrt(value)
 }
 
-/**
- *
- * @param e
- * @param args
- */
 function evalCeiling(e: Evaluator, args: string): number {
 	const value = evalToNumber(e, args)
 	return Math.ceil(value)
 }
 
-/**
- *
- * @param e
- * @param args
- */
 function evalBaseEExpontential(e: Evaluator, args: string): number {
 	const value = evalToNumber(e, args)
 	return Math.exp(value)
 }
 
-/**
- *
- * @param e
- * @param args
- */
 function evalBase2Expontential(e: Evaluator, args: string): number {
 	const value = evalToNumber(e, args)
 	return 2 ** value
 }
 
-/**
- *
- * @param e
- * @param args
- */
 function evalFloor(e: Evaluator, args: string): number {
 	const value = evalToNumber(e, args)
 	return Math.floor(value)
 }
 
-/**
- *
- * @param e
- * @param args
- */
 function evalIf(e: Evaluator, args: string): boolean {
 	let arg: string
 	;[arg, args] = nextArg(args)
@@ -119,11 +81,6 @@ function evalIf(e: Evaluator, args: string): boolean {
 	return Boolean(e.evaluateNew(arg))
 }
 
-/**
- *
- * @param e
- * @param args
- */
 function evalMaximum(e: Evaluator, args: string): number {
 	let max = Number.MIN_SAFE_INTEGER
 	while (args) {
@@ -135,11 +92,6 @@ function evalMaximum(e: Evaluator, args: string): number {
 	return max
 }
 
-/**
- *
- * @param e
- * @param args
- */
 function evalMinimum(e: Evaluator, args: string): number {
 	let min: number = Math.min()
 	while (args) {
@@ -151,61 +103,31 @@ function evalMinimum(e: Evaluator, args: string): number {
 	return min
 }
 
-/**
- *
- * @param e
- * @param args
- */
 function evalNaturalLog(e: Evaluator, args: string): number {
 	const value = evalToNumber(e, args)
 	return Math.log(value)
 }
 
-/**
- *
- * @param e
- * @param args
- */
 function evalNaturalLogSum(e: Evaluator, args: string): number {
 	const value = evalToNumber(e, args)
 	return Math.log1p(value)
 }
 
-/**
- *
- * @param e
- * @param args
- */
 function evalDecimalLog(e: Evaluator, args: string): number {
 	const value = evalToNumber(e, args)
 	return Math.log10(value)
 }
 
-/**
- *
- * @param e
- * @param args
- */
 function evalRound(e: Evaluator, args: string): number {
 	const value = evalToNumber(e, args)
 	return Math.round(value)
 }
 
-/**
- *
- * @param e
- * @param args
- */
 function evalSqrt(e: Evaluator, args: string): number {
 	const value = evalToNumber(e, args)
 	return Math.sqrt(value)
 }
 
-/**
- *
- * @param e
- * @param args
- */
 function evalDice(e: Evaluator, args: string): string {
 	const rollArgs: Record<string, number> = { sides: 6, count: 1, modifier: 1, multiplier: 1 }
 	const argArray = []
@@ -231,23 +153,13 @@ function evalDice(e: Evaluator, args: string): string {
 	return d.toString(true)
 }
 
-/**
- *
- * @param e
- * @param a
- */
 function evalRoll(e: Evaluator, a: string): number {
 	if (a.indexOf("(") !== -1) {
 		a = evalToString(e, a)
 	}
-	return new DiceGURPS(a).roll(false)
+	return DiceGURPS.fromString(a).roll(false)
 }
 
-/**
- *
- * @param e
- * @param a
- */
 function evalToBool(e: Evaluator, a: string): boolean {
 	const evaluated = e.evaluateNew(a)
 	switch (typeof evaluated) {
@@ -264,72 +176,56 @@ function evalToBool(e: Evaluator, a: string): boolean {
 	}
 }
 
-/**
- *
- * @param e
- * @param a
- */
 function evalSigned(e: Evaluator, a: string): string {
 	const n = evalToNumber(e, a)
 	return n.signedString()
 }
 
-/**
- *
- * @param e
- * @param arg
- */
 function evalSkillLevel(e: Evaluator, arg: string): number {
-	const entity = e.resolver
-	if (!(entity instanceof Actor && entity.isOfType(ActorType.Character))) return 0
+	const actor = e.resolver
+	if (!(actor instanceof Actor && actor.isOfType(ActorType.Character))) return 0
+
 	let [name, remaining] = nextArg(arg)
 	name = evalToString(e, name)
-	if (!name) return 0
-	name = name.trim()
-	let specialization: string
-	;[specialization, remaining] = nextArg(remaining)
-	specialization = specialization.trim()
-	if (!specialization || !evalToString(e, specialization)) return 0
-	specialization = specialization.replaceAll('"', "")
-	;[arg] = nextArg(remaining)
-	arg = arg.trim()
-	let relative = false
-	if (arg) relative = evalToBool(e, arg)
-
-	if (entity.isSkillLevelResolutionExcluded(name, specialization)) return 0
-
-	entity.registerSkillLevelResolutionExclusion(name, specialization)
-	let level = Number.MIN_SAFE_INTEGER
-
-	entity.itemCollections.skills.forEach(s => {
-		if (s.isOfType(ItemType.SkillContainer)) return
-		if (level !== Number.MIN_SAFE_INTEGER) return
-		if (equalFold(s.name || "", name) && equalFold(s.specialization, specialization)) {
-			s.updateLevel()
-			if (relative) level = s.level.relativeLevel
-			else level = s.level.level
-		}
-	})
-
-	entity.unregisterSkillLevelResolutionExclusion(name, specialization)
-	return level
+	// const entity = e.resolver
+	// let [name, remaining] = nextArg(arg)
+	// name = evalToString(e, name)
+	// if (!name) return 0
+	// name = name.trim()
+	// let specialization: string
+	// ;[specialization, remaining] = nextArg(remaining)
+	// specialization = specialization.trim()
+	// if (!specialization || !evalToString(e, specialization)) return 0
+	// specialization = specialization.replaceAll('"', "")
+	// ;[arg] = nextArg(remaining)
+	// arg = arg.trim()
+	// let relative = false
+	// if (arg) relative = evalToBool(e, arg)
+	//
+	// if (entity.system.isSkillLevelResolutionExcluded(name, specialization)) return 0
+	//
+	// entity.system.registerSkillLevelResolutionExclusion(name, specialization)
+	// let level = Number.MIN_SAFE_INTEGER
+	//
+	// entity.itemCollections.skills.forEach(s => {
+	// 	if (s.isOfType(ItemType.SkillContainer)) return
+	// 	if (level !== Number.MIN_SAFE_INTEGER) return
+	// 	if (equalFold(s.name || "", name) && equalFold(s.system.sp, specialization)) {
+	// 		s.system.updateLevel()
+	// 		if (relative) level = s.system.level.relativeLevel
+	// 		else level = s.system.level.level
+	// 	}
+	// })
+	//
+	// entity.system.unregisterSkillLevelResolutionExclusion(name, specialization)
+	// return level
 }
 
-/**
- *
- * @param e
- * @param arg
- */
 function evalToNumber(e: Evaluator, arg: string): number {
 	const evaluated = e.evaluateNew(arg)
 	return evalFrom(evaluated)
 }
 
-/**
- *
- * @param e
- * @param a
- */
 export function evalToString(e: Evaluator, a: string): string {
 	let evaluated: string | number | boolean
 	try {
@@ -767,10 +663,6 @@ function evalFrom(arg: boolean | string | number): number {
 	}
 }
 
-/**
- *
- * @param args
- */
 function nextArg(args: string): [string, string] {
 	let parens = 0
 	for (let i = 0; i < args.length; i++) {

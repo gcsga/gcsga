@@ -1,6 +1,6 @@
 import { ItemDataModel } from "@module/data/abstract.ts"
 import { ItemType } from "@module/data/constants.ts"
-import { ItemGURPS2 } from "@module/document/item.ts"
+import { type ItemGURPS2 } from "@module/document/item.ts"
 import fields = foundry.data.fields
 import { ItemTemplateType } from "../types.ts"
 

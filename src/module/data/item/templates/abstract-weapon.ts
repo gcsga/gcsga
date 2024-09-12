@@ -1,7 +1,7 @@
 import { ItemDataModel } from "@module/data/abstract.ts"
 import fields = foundry.data.fields
 import { SkillDefault, SkillDefaultSchema, WeaponBonus } from "@system"
-import { LocalizeGURPS, TooltipGURPS, encumbrance, feature, skillsel, wsel, wswitch } from "@util"
+import { LocalizeGURPS, StringBuilder, TooltipGURPS, encumbrance, feature, skillsel, wsel, wswitch } from "@util"
 import { ItemTemplateType } from "../types.ts"
 import { ActorType, ItemType } from "@module/data/constants.ts"
 import { Nameable } from "@module/util/nameable.ts"
@@ -26,9 +26,41 @@ class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema>
 		return this.parent.container.system.name
 	}
 
+	get processedNotes(): string {
+		const buffer = new StringBuilder()
+		const container = this.parent.container
+		if (!(container instanceof Promise) && container !== null) {
+			if (container.hasTemplate(ItemTemplateType.BasicInformation)) buffer.push(container.system.processedNotes)
+		}
+		buffer.appendToNewLine(this.usageNotesWithReplacements)
+		return buffer.toString()
+	}
+
 	get usesCrossbowSkill(): boolean {
 		const replacements = this.nameableReplacements
 		return this.defaults.some(def => def.nameWithReplacements(replacements) === "Crossbow")
+	}
+
+	skillLevel(tooltip: TooltipGURPS | null): number {
+		const actor = this.actor
+		if (actor === null || !actor.isOfType(ActorType.Character)) return 0
+
+		const primaryTooltip = tooltip !== null ? new TooltipGURPS() : null
+		const adj =
+			this.skillLevelBaseAdjustment(actor, primaryTooltip) + this.skillLevelPostAdjustment(actor, primaryTooltip)
+		let best = Number.MIN_SAFE_INTEGER
+		const replacements = this.nameableReplacements
+		for (const def of this.defaults) {
+			let level = def.skillLevelFast(actor, replacements, false, new Set(), true)
+			if (level !== Number.MIN_SAFE_INTEGER) {
+				level += adj
+				if (best < level) best = level
+			}
+		}
+		if (best === Number.MIN_SAFE_INTEGER) return 0
+		tooltip?.appendToNewLine(primaryTooltip)
+		if (best < 0) best = 0
+		return best
 	}
 
 	skillLevelBaseAdjustment(actor: this["actor"], tooltip: TooltipGURPS | null): number {
@@ -253,6 +285,11 @@ class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema>
 	get usageWithReplacements(): string {
 		if (!this.hasTemplate(ItemTemplateType.BasicInformation)) return ""
 		return Nameable.apply(this.name, this.nameableReplacements)
+	}
+
+	get usageNotesWithReplacements(): string {
+		if (!this.hasTemplate(ItemTemplateType.BasicInformation)) return ""
+		return Nameable.apply(this.notes, this.nameableReplacements)
 	}
 }
 

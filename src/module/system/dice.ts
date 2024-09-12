@@ -73,6 +73,55 @@ class DiceGURPS extends foundry.abstract.DataModel<foundry.abstract.DataModel, D
 		if (this.multiplier !== 1) str += `×${this.multiplier}`
 		return str
 	}
+
+	roll(extraDiceFromModifiers: boolean): number {
+		// eslint-disable-next-line prefer-const
+		let [count, result] = this.adjustedCountAndModifier(extraDiceFromModifiers)
+		if (this.sides > 1) {
+			for (let i = 0; i < count; i++) {
+				result += 1 + Math.floor(Math.random() * this.sides)
+			}
+		} else if (this.sides === 1) result = count
+		return result * this.multiplier
+	}
+
+	normalize(): void {
+		if (this.count! < 0) this.count = 0
+		if (this.sides! < 0) this.sides = 0
+		if (this.multiplier! < 1) this.multiplier = 1
+	}
+
+	adjustedCountAndModifier(applyExtractDiceFromModifiers: boolean): [number, number] {
+		let [count, modifier] = [0, 0]
+		this.normalize()
+		if (this.sides === 0) return [this.count, this.modifier]
+		count = this.count
+		modifier = this.modifier
+		if (applyExtractDiceFromModifiers && modifier > 0) {
+			const average = (this.sides + 1) / 2
+			if (this.sides % 2 === 1) {
+				// Odd number of sides, so average is a whole number
+				count += modifier / average
+				modifier %= average
+			} else {
+				// Even number of sides, so average has an extra half, which means
+				// we alternate
+				while (modifier > average) {
+					if (modifier > 2 * average) {
+						modifier -= 2 * average + 1
+						count += 2
+					} else {
+						modifier -= average + 1
+						count += 1
+					}
+				}
+			}
+		}
+		if (count < 0) count = 0
+		// HACK: not sure if this is the actual way to do it, maybe it doesn't work out
+		// like it should because JS doesn't have an explicit int type but Go does. Oh well.
+		return [count, Math.round(modifier)]
+	}
 }
 
 function extractValue(str: string, i: number): [number, number] {

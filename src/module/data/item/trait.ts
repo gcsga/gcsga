@@ -1,21 +1,26 @@
+import { type ItemGURPS2 } from "@module/document/item.ts"
+import { Nameable } from "@module/util/nameable.ts"
+import { SheetSettings, Study } from "@system"
 import { ErrorGURPS, StringBuilder, affects, align, cell, display, selfctrl, tmcost } from "@util"
 import { ItemDataModel } from "../abstract.ts"
 import { ItemType } from "../constants.ts"
-import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
-import { ContainerTemplate, ContainerTemplateSchema } from "./templates/container.ts"
-import { FeatureTemplate, FeatureTemplateSchema } from "./templates/features.ts"
-import { PrereqTemplate, PrereqTemplateSchema } from "./templates/prereqs.ts"
-import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
-import { StudyTemplate, StudyTemplateSchema } from "./templates/study.ts"
-import fields = foundry.data.fields
-import { ItemGURPS2 } from "@module/document/item.ts"
-import { TraitModifierData } from "./trait-modifier.ts"
-import { SheetSettings, Study } from "@system"
-import { Nameable } from "@module/util/nameable.ts"
-import { WeaponMeleeData } from "./weapon-melee.ts"
-import { WeaponRangedData } from "./weapon-ranged.ts"
 import { CellData } from "./fields/cell-data.ts"
-import { modifyPoints } from "./helpers.ts"
+import { ItemInst, modifyPoints } from "./helpers.ts"
+import {
+	BasicInformationTemplate,
+	BasicInformationTemplateSchema,
+	ContainerTemplate,
+	ContainerTemplateSchema,
+	FeatureTemplate,
+	FeatureTemplateSchema,
+	PrereqTemplate,
+	PrereqTemplateSchema,
+	ReplacementTemplate,
+	ReplacementTemplateSchema,
+	StudyTemplate,
+	StudyTemplateSchema,
+} from "./templates/index.ts"
+import fields = foundry.data.fields
 
 class TraitData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -112,7 +117,7 @@ class TraitData extends ItemDataModel.mixin(
 		return true
 	}
 
-	get allModifiers(): (ItemGURPS2 & { system: TraitModifierData })[] {
+	get allModifiers(): ItemInst<ItemType.TraitModifier>[] {
 		let modifiers: Collection<ItemGURPS2> = new Collection()
 		if (this.modifiers instanceof Promise) {
 			;(async () => {
@@ -121,7 +126,7 @@ class TraitData extends ItemDataModel.mixin(
 		} else {
 			modifiers = this.modifiers
 		}
-		return modifiers.filter(e => e instanceof ItemGURPS2 && e.isOfType(ItemType.TraitModifier))
+		return modifiers.filter(e => e.isOfType(ItemType.TraitModifier))
 	}
 
 	/** Returns the current level of the trait or 0 if it is not leveled */
@@ -284,11 +289,11 @@ class TraitData extends ItemDataModel.mixin(
 		for (const feature of this.features) {
 			feature.fillWithNameableKeys(m, existing)
 		}
-		;(
-			this.weapons as Collection<ItemGURPS2 & ({ system: WeaponMeleeData } | { system: WeaponRangedData })>
-		).forEach(weapon => {
-			weapon.system.fillWithNameableKeys(m, existing)
-		})
+		;(this.weapons as Collection<ItemInst<ItemType.WeaponMelee> | ItemInst<ItemType.WeaponRanged>>).forEach(
+			weapon => {
+				weapon.system.fillWithNameableKeys(m, existing)
+			},
+		)
 	}
 }
 

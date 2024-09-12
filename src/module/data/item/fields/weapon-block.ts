@@ -4,13 +4,11 @@ import { AbstractWeaponTemplate } from "../templates/abstract-weapon.ts"
 import { Int, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
 import { ActorType, gid } from "@module/data/constants.ts"
 
-class WeaponParry extends WeaponField<AbstractWeaponTemplate, WeaponParrySchema> {
-	static override defineSchema(): WeaponParrySchema {
+class WeaponBlock extends WeaponField<AbstractWeaponTemplate, WeaponBlockSchema> {
+	static override defineSchema(): WeaponBlockSchema {
 		const fields = foundry.data.fields
 		return {
-			canParry: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
-			fencing: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
-			unbalanced: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
+			canBlock: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
 			modifier: new fields.NumberField<number, number, true, false, true>({
 				required: true,
 				nullable: false,
@@ -19,14 +17,12 @@ class WeaponParry extends WeaponField<AbstractWeaponTemplate, WeaponParrySchema>
 		}
 	}
 
-	static override fromString(s: string): WeaponParry {
-		const wp = new WeaponParry({})
+	static override fromString(s: string): WeaponBlock {
+		const wp = new WeaponBlock({})
 		s = s.trim().toLowerCase()
 
 		if (s !== "" && s !== "-" && s !== "–" && !s.includes("no")) {
-			wp.canParry = true
-			wp.fencing = s.includes("f")
-			wp.unbalanced = s.includes("u")
+			wp.canBlock = true
 			;[wp.modifier] = Int.extract(s)
 			wp.clean()
 		}
@@ -34,21 +30,16 @@ class WeaponParry extends WeaponField<AbstractWeaponTemplate, WeaponParrySchema>
 	}
 
 	override toString(): string {
-		if (!this.canParry) return "No"
+		if (!this.canBlock) return "No"
 		const buffer = new StringBuilder()
 		buffer.push(this.modifier.toString())
-		if (this.fencing) buffer.push("F")
-		if (this.unbalanced) buffer.push("U")
 		return buffer.toString()
 	}
 
-	override resolveValue(w: AbstractWeaponTemplate, tooltip: TooltipGURPS): WeaponParry {
+	override resolveValue(w: AbstractWeaponTemplate, tooltip: TooltipGURPS): WeaponBlock {
 		const result = this.clone()
-		result.canParry = w.resolveBoolFlag(wswitch.Type.CanParry, result.canParry)
-		if (result.canParry) {
-			result.fencing = w.resolveBoolFlag(wswitch.Type.Fencing, result.fencing)
-			result.unbalanced = w.resolveBoolFlag(wswitch.Type.Unbalanced, result.unbalanced)
-
+		result.canBlock = w.resolveBoolFlag(wswitch.Type.CanBlock, result.canBlock)
+		if (result.canBlock) {
 			const actor = this.parent.actor
 			if (actor?.isOfType(ActorType.Character)) {
 				const primaryTooltip = new TooltipGURPS()
@@ -59,16 +50,16 @@ class WeaponParry extends WeaponField<AbstractWeaponTemplate, WeaponParrySchema>
 					let level = def.skillLevelFast(actor, w.nameableReplacements, false, new Set(), true)
 					if (level === Number.MIN_SAFE_INTEGER) continue
 					level += preAdj
-					if (def.type !== gid.Parry) level = Math.trunc(level / 2)
+					if (def.type !== gid.Block) level = Math.trunc(level / 2)
 					level += postAdj
 					if (best < level) best = level
 				}
 				if (best !== Number.MIN_SAFE_INTEGER) {
 					tooltip.appendToNewLine(primaryTooltip.toString())
-					result.modifier += 3 + best + actor.system.bonuses.parry.value
-					tooltip.appendToNewLine(actor.system.bonuses.parry.tooltip)
+					result.modifier += 3 + best + actor.system.bonuses.block.value
+					tooltip.appendToNewLine(actor.system.bonuses.block.tooltip)
 					let percentModifier = 0
-					for (const bonus of w.collectWeaponBonuses(1, tooltip, feature.Type.WeaponParryBonus)) {
+					for (const bonus of w.collectWeaponBonuses(1, tooltip, feature.Type.WeaponBlockBonus)) {
 						const amt = bonus.adjustedAmountForWeapon(w)
 						if (bonus.percent) percentModifier += amt
 						else result.modifier += amt
@@ -85,23 +76,17 @@ class WeaponParry extends WeaponField<AbstractWeaponTemplate, WeaponParrySchema>
 	}
 
 	override clean(): void {
-		if (!this.canParry) {
-			this.modifier = 0
-			this.fencing = false
-			this.unbalanced = false
-		}
+		if (!this.canBlock) this.modifier = 0
 	}
 }
 
-interface WeaponParry
-	extends WeaponField<AbstractWeaponTemplate, WeaponParrySchema>,
-		ModelPropsFromSchema<WeaponParrySchema> {}
+interface WeaponBlock
+	extends WeaponField<AbstractWeaponTemplate, WeaponBlockSchema>,
+		ModelPropsFromSchema<WeaponBlockSchema> {}
 
-type WeaponParrySchema = {
-	canParry: fields.BooleanField<boolean, boolean, true, false, true>
-	fencing: fields.BooleanField<boolean, boolean, true, false, true>
-	unbalanced: fields.BooleanField<boolean, boolean, true, false, true>
+type WeaponBlockSchema = {
+	canBlock: fields.BooleanField<boolean, boolean, true, false, true>
 	modifier: fields.NumberField<number, number, true, false, true>
 }
 
-export { WeaponParry, type WeaponParrySchema }
+export { WeaponBlock, type WeaponBlockSchema }

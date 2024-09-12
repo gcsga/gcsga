@@ -1,8 +1,8 @@
 import { ActorType, ItemType, SYSTEM_NAME } from "./constants.ts"
 import fields = foundry.data.fields
-import { ItemGURPS2 } from "@module/document/item.ts"
+import { type ItemGURPS2 } from "@module/document/item.ts"
 import { ItemDataInstances, ItemDataTemplates, ItemTemplateType } from "./item/types.ts"
-import { ActorGURPS2 } from "@module/document/actor.ts"
+import { type ActorGURPS2 } from "@module/document/actor.ts"
 import { ActorDataInstances, ActorDataTemplates, ActorTemplateType } from "./actor/types.ts"
 import { ErrorGURPS } from "@util"
 import { CellData } from "./item/fields/cell-data.ts"

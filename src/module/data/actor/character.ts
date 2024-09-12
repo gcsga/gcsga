@@ -7,6 +7,7 @@ import {
 	ResourceTrackerSchema,
 	MoveTypeSchema,
 	AttributeGURPS,
+	DiceGURPS,
 } from "@system"
 import { CharacterManeuver } from "@system/maneuver-manager.ts"
 import { PointsRecord, PointsRecordSchema } from "./fields/points-record.ts"
@@ -22,7 +23,6 @@ import {
 import { AttributeHolderTemplate, AttributeHolderTemplateSchema } from "./templates/attribute-holder.ts"
 import { CharacterBonus, CharacterBonusSchema } from "./fields/bonus.ts"
 import { Int, damageProgression, encumbrance, progression, threshold } from "@util"
-import { DiceGURPS } from "@module/dice/index.ts"
 import { ItemInst } from "../item/helpers.ts"
 
 class CharacterData extends ActorDataModel.mixin(

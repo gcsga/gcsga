@@ -61,7 +61,9 @@
 			"SkillEncumbrance": "<br>Encumbrance [{amount}]",
 			"IncludesModifiersFrom": "Includes modifiers from",
 			"SkillLevelStrengthRequirement": "{name} [{modifier} to skill level due to minimum ST requirement]",
-			"EncumbrancePenalty": "Encumbrance [{modifier}"
+			"EncumbrancePenalty": "Encumbrance [{modifier}",
+			"ROFMode1": "First mode:",
+			"ROFMode2": "Second mode:"
 		},
 		"SkillDefault": "Default: {name}{modifier}",
 		"SkillSpecialization": " ({specialization})",

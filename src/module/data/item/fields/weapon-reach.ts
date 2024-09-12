@@ -64,7 +64,7 @@ class WeaponReach extends WeaponField<WeaponMeleeData, WeaponReachSchema> {
 	}
 
 	override resolveValue(w: WeaponMeleeData, tooltip: TooltipGURPS): WeaponReach {
-		const result = new WeaponReach({})
+		const result = this.clone()
 		result.closeCombat = w.resolveBoolFlag(wswitch.Type.CloseCombat, result.closeCombat)
 		result.changeRequiresReady = w.resolveBoolFlag(
 			wswitch.Type.ReachChangeRequiresReady,

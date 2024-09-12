@@ -22,7 +22,7 @@ export class WeaponBulk extends WeaponField {
 	}
 
 	resolve(w: AbstractWeaponGURPS, tooltip: TooltipGURPS): WeaponBulk {
-		const result = new WeaponBulk()
+		const result = this.clone()
 		Object.assign(result, this)
 		for (const bonus of w.collectWeaponBonuses(1, tooltip, feature.Type.WeaponBulkBonus)) {
 			const amt = bonus.adjustedAmountForWeapon(w)

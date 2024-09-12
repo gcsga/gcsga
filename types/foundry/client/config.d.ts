@@ -83,6 +83,7 @@ declare global {
 				): TActor
 			}
 			collection: ConstructorOf<Actors<Actor<null>>>
+			dataModels: Record<string, ConstructorOf<abstract.TypeDataModel<Actor, data.fields.DataSchema>>>
 			sheetClasses: Record<
 				string,
 				Record<
@@ -141,7 +142,7 @@ declare global {
 				new (data: PreCreate<TItem["_source"]>, context?: DocumentConstructionContext<TItem["parent"]>): TItem
 			}
 			collection: typeof Items
-			dataModels: Record<string, ConstructorOf<abstract.TypeDataModel<Item, data.fields.DataSchema>>>
+			dataModels: Record<string, ConstructorOf<abstract.TypeDataModel<TItem, data.fields.DataSchema>>>
 			typeIcons: Record<string, string>
 			typeLabels: Record<string, string | undefined>
 			sheetClasses: Record<

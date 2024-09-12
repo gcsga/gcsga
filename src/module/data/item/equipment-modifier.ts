@@ -1,4 +1,4 @@
-import { StringBuilder, emcost, emweight } from "@util"
+import { StringBuilder, align, cell, display, emcost, emweight } from "@util"
 import { ItemDataModel } from "../abstract.ts"
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { FeatureTemplate, FeatureTemplateSchema } from "./templates/features.ts"
@@ -7,6 +7,7 @@ import fields = foundry.data.fields
 import { SheetSettings } from "@system"
 import { ItemType } from "../constants.ts"
 import { ItemInst } from "./helpers.ts"
+import { CellData } from "./fields/cell-data.ts"
 
 class EquipmentModifierData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -39,6 +40,52 @@ class EquipmentModifierData extends ItemDataModel.mixin(
 			cost: new fields.StringField({ required: true, nullable: false, initial: "0" }),
 			weight: new fields.StringField({ required: true, nullable: false, initial: "0" }),
 		}) as EquipmentModifierSchema
+	}
+
+	override get cellData(): Record<string, CellData> {
+		return {
+			enabled: new CellData({
+				type: cell.Type.Toggle,
+				checked: this.enabled,
+				align: align.Option.Middle,
+			}),
+			name: new CellData({
+				type: cell.Type.Text,
+				primary: this.nameWithReplacements,
+				secondary: this.secondaryText(display.Option.isInline),
+				tooltip: this.secondaryText(display.Option.isTooltip),
+			}),
+			techLevel: new CellData({
+				type: cell.Type.Text,
+				primary: this.tech_level,
+			}),
+			cost: new CellData({
+				type: cell.Type.Text,
+				primary: this.costDescription,
+			}),
+			weight: new CellData({
+				type: cell.Type.Text,
+				primary: this.weightDescription,
+			}),
+			tags: new CellData({
+				type: cell.Type.Tags,
+				primary: this.combinedTags,
+			}),
+			reference: new CellData({
+				type: cell.Type.PageRef,
+				primary: this.reference,
+				secondary: this.reference_highlight === "" ? this.nameWithReplacements : this.reference_highlight,
+			}),
+		}
+	}
+
+	get enabled(): boolean {
+		return !this.disabled
+	}
+
+	secondaryText(optionChecker: (option: display.Option) => boolean): string {
+		if (optionChecker(SheetSettings.for(this.parent.actor).notes_display)) return this.notesWithReplacements
+		return ""
 	}
 
 	get equipment(): ItemInst<ItemType.Equipment | ItemType.EquipmentContainer> | null {

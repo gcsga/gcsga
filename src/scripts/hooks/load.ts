@@ -1,58 +1,28 @@
-import { ActorProxyGURPS } from "@actor"
-import { CharacterSystemData } from "@actor/character/data.ts"
 import { ActorType, ItemType } from "@data"
-import { ItemProxyGURPS } from "@item"
-import { ConditionSystemData } from "@item/condition/data.ts"
-import { EffectSystemData } from "@item/effect/data.ts"
-import { EquipmentContainerSystemData } from "@item/equipment-container/data.ts"
-import { EquipmentModifierContainerSystemData } from "@item/equipment-modifier-container/data.ts"
-import { EquipmentModifierSystemData } from "@item/equipment-modifier/data.ts"
-import { EquipmentSystemData } from "@item/equipment/data.ts"
-import { MeleeWeaponSystemData } from "@item/melee-weapon/data.ts"
-import { NoteContainerSystemData } from "@item/note-container/data.ts"
-import { NoteSystemData } from "@item/note/data.ts"
-import { RangedWeaponSystemData } from "@item/ranged-weapon/data.ts"
-import { RitualMagicSpellSystemData } from "@item/ritual-magic-spell/data.ts"
-import { SkillContainerSystemData } from "@item/skill-container/data.ts"
-import { SkillSystemData } from "@item/skill/data.ts"
-import { SpellContainerSystemData } from "@item/spell-container/data.ts"
-import { SpellSystemData } from "@item/spell/data.ts"
-import { TechniqueSystemData } from "@item/technique/data.ts"
-import { TraitContainerSystemData } from "@item/trait-container/data.ts"
-import { TraitModifierContainerSystemData } from "@item/trait-modifier-container/data.ts"
-import { TraitModifierSystemData } from "@item/trait-modifier/data.ts"
-import { TraitSystemData } from "@item/trait/data.ts"
-import { ActiveEffectGURPS } from "@module/active-effect/index.ts"
 import { ChatMessageGURPS } from "@module/chat-message/document.ts"
-import { ItemsGURPS } from "@module/collection/items.ts"
-import { CombatGURPS } from "@module/combat/document.ts"
-import { CombatantGURPS } from "@module/combat/index.ts"
+import { CharacterData } from "@module/data/actor/character.ts"
+import * as ItemInstance from "@module/data/item/index.ts"
 import { ActorGURPS2 } from "@module/document/actor.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { JournalEntryGURPS } from "@module/journal-entry/document.ts"
 import { JournalEntryPageProxyGURPS } from "@module/journal-entry/page/document.ts"
-import { UserGURPS } from "@module/user/document.ts"
-import { TokenDocumentGURPS } from "@scene/token-document/document.ts"
-// import { TokenConfigGURPS } from "@scene/token-document/index.ts"
-import { ClientDatabaseBackendGURPS } from "@system/client-backend.ts"
 
 export const Load = {
 	listen(): void {
 		// Assign database backend to handle migrations
-		CONFIG.DatabaseBackend = new ClientDatabaseBackendGURPS()
+		// CONFIG.DatabaseBackend = new ClientDatabaseBackendGURPS()
 
 		// Assign document classes
-		CONFIG.ActiveEffect.documentClass = ActiveEffectGURPS
+		// CONFIG.ActiveEffect.documentClass = ActiveEffectGURPS
 		// CONFIG.Actor.collection = Actors
 		// CONFIG.Actor.documentClass = ActorProxyGURPS
 		CONFIG.Actor.documentClass = ActorGURPS2
-		CONFIG.ActorDelta.documentClass = ActorDelta
+		// CONFIG.ActorDelta.documentClass = ActorDelta
 		// CONFIG.AmbientLight.documentClass = AmbientLightDocument
 		CONFIG.ChatMessage.documentClass = ChatMessageGURPS
-		CONFIG.Combat.documentClass = CombatGURPS
-		CONFIG.Combatant.documentClass = CombatantGURPS
-		// @ts-expect-error probably fine
-		CONFIG.Item.collection = ItemsGURPS
+		// CONFIG.Combat.documentClass = CombatGURPS
+		// CONFIG.Combatant.documentClass = CombatantGURPS
+		// CONFIG.Item.collection = ItemsGURPS
 		// CONFIG.Item.documentClass = ItemProxyGURPS
 		CONFIG.Item.documentClass = ItemGURPS2
 		CONFIG.Macro.documentClass = Macro
@@ -61,40 +31,37 @@ export const Load = {
 		// CONFIG.Tile.documentClass = TileDocument
 		CONFIG.JournalEntry.documentClass = JournalEntryGURPS
 		CONFIG.JournalEntryPage.documentClass = JournalEntryPageProxyGURPS
-		CONFIG.Token.documentClass = TokenDocumentGURPS
+		// CONFIG.Token.documentClass = TokenDocumentGURPS
 		// CONFIG.Token.prototypeSheetClass = TokenConfigGURPS
-		CONFIG.User.documentClass = UserGURPS
+		// CONFIG.User.documentClass = UserGURPS
 
+		// @ts-expect-error is ok?
 		CONFIG.Actor.dataModels = {
-			[ActorType.Character]: CharacterSystemData,
+			[ActorType.Character]: CharacterData,
 		}
 
-		// CONFIG.Item.dataModels = {
-		// 	[ItemType.Trait]: TraitData,
-		// }
-
+		// @ts-expect-error is ok?
 		CONFIG.Item.dataModels = {
-			[ItemType.Trait]: TraitSystemData,
-			[ItemType.TraitContainer]: TraitContainerSystemData,
-			[ItemType.TraitModifier]: TraitModifierSystemData,
-			[ItemType.TraitModifierContainer]: TraitModifierContainerSystemData,
-			[ItemType.Skill]: SkillSystemData,
-			[ItemType.Technique]: TechniqueSystemData,
-			[ItemType.SkillContainer]: SkillContainerSystemData,
-			[ItemType.Spell]: SpellSystemData,
-			[ItemType.RitualMagicSpell]: RitualMagicSpellSystemData,
-			[ItemType.SpellContainer]: SpellContainerSystemData,
-			[ItemType.Equipment]: EquipmentSystemData,
-			[ItemType.EquipmentContainer]: EquipmentContainerSystemData,
-			[ItemType.EquipmentModifier]: EquipmentModifierSystemData,
-			[ItemType.EquipmentModifierContainer]: EquipmentModifierContainerSystemData,
-			[ItemType.Note]: NoteSystemData,
-			[ItemType.NoteContainer]: NoteContainerSystemData,
-			// [ItemType.LegacyItem]: LegacyItemSystemData,
-			[ItemType.Effect]: EffectSystemData,
-			[ItemType.Condition]: ConditionSystemData,
-			[ItemType.WeaponMelee]: MeleeWeaponSystemData,
-			[ItemType.WeaponRanged]: RangedWeaponSystemData,
+			[ItemType.Trait]: ItemInstance.TraitData,
+			[ItemType.TraitContainer]: ItemInstance.TraitContainerData,
+			[ItemType.TraitModifier]: ItemInstance.TraitModifierData,
+			[ItemType.TraitModifierContainer]: ItemInstance.TraitModifierContainerData,
+			[ItemType.Skill]: ItemInstance.SkillData,
+			[ItemType.Technique]: ItemInstance.TechniqueData,
+			[ItemType.SkillContainer]: ItemInstance.SkillContainerData,
+			[ItemType.Spell]: ItemInstance.SpellData,
+			[ItemType.RitualMagicSpell]: ItemInstance.RitualMagicSpellData,
+			[ItemType.SpellContainer]: ItemInstance.SpellContainerData,
+			[ItemType.Equipment]: ItemInstance.EquipmentData,
+			[ItemType.EquipmentContainer]: ItemInstance.EquipmentContainerData,
+			[ItemType.EquipmentModifier]: ItemInstance.EquipmentModifierData,
+			[ItemType.EquipmentModifierContainer]: ItemInstance.EquipmentModifierContainerData,
+			[ItemType.Note]: ItemInstance.NoteData,
+			[ItemType.NoteContainer]: ItemInstance.NoteContainerData,
+			[ItemType.Effect]: ItemInstance.EffectData,
+			[ItemType.Condition]: ItemInstance.ConditionData,
+			[ItemType.WeaponMelee]: ItemInstance.WeaponMeleeData,
+			[ItemType.WeaponRanged]: ItemInstance.WeaponRangedData,
 		}
 
 		CONFIG.Canvas.darknessColor = 0x2d2d52 // Lightness increased by ~0.4/10 (Munsell value)
