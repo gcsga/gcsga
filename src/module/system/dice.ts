@@ -1,5 +1,7 @@
+import { StringBuilder } from "@util"
 import fields = foundry.data.fields
 
+const EnforceGURPSFormat = true
 const negative = ["-", "–"] // Include the minus sign as well as dash.
 const times = ["x", "×"] // Include the times sign as well as 'x'.
 
@@ -74,6 +76,23 @@ class DiceGURPS extends foundry.abstract.DataModel<foundry.abstract.DataModel, D
 		return str
 	}
 
+	stringExtra(extraDiceFromModifiers: boolean): string {
+		const [count, modifier] = this.adjustedCountAndModifier(extraDiceFromModifiers)
+		let buffer = new StringBuilder()
+		if (count > 0) {
+			if (EnforceGURPSFormat || count > 1) buffer.push(count.toString())
+			buffer.push("d")
+			if (!EnforceGURPSFormat || this.sides !== 6) buffer.push(this.sides.toString())
+		}
+		if (modifier > 0) {
+			if (count !== 0 && this.sides !== 0) buffer.push("+")
+			buffer.push(modifier.toString())
+		} else if (modifier < 0) buffer.push(modifier.toString())
+		if (buffer.length === 0) buffer.push("0")
+		if (this.multiplier !== 1) buffer.push(`×${this.multiplier}`)
+		return buffer.toString()
+	}
+
 	roll(extraDiceFromModifiers: boolean): number {
 		// eslint-disable-next-line prefer-const
 		let [count, result] = this.adjustedCountAndModifier(extraDiceFromModifiers)
@@ -82,6 +101,15 @@ class DiceGURPS extends foundry.abstract.DataModel<foundry.abstract.DataModel, D
 				result += 1 + Math.floor(Math.random() * this.sides)
 			}
 		} else if (this.sides === 1) result = count
+		return result * this.multiplier
+	}
+
+	minimum(extraDiceFromModifiers: boolean): number {
+		// eslint-disable-next-line prefer-const
+		let [count, result] = this.adjustedCountAndModifier(extraDiceFromModifiers)
+		if (this.sides > 0) {
+			result += count
+		}
 		return result * this.multiplier
 	}
 

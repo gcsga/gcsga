@@ -267,7 +267,7 @@ class CharacterData extends ActorDataModel.mixin(
 		return Math.trunc(st)
 	}
 
-	get telekineticStrenght(): number {
+	get telekineticStrength(): number {
 		let levels = 0
 		this.parent.itemCollections.traits.forEach(e => {
 			if (e.system.enabled && e.isOfType(ItemType.Trait) && e.system.isLeveled) {

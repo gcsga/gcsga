@@ -44,59 +44,6 @@ import { DataModelValidationFailure } from "types/foundry/common/data/validation
 // 	}
 // }
 
-/** A `StringField` that does not cast the source value */
-class StrictStringField<
-	TSourceProp extends string,
-	TModelProp extends NonNullable<JSONValue> = TSourceProp,
-	TRequired extends boolean = false,
-	TNullable extends boolean = false,
-	THasInitial extends boolean = boolean,
-> extends foundry.data.fields.StringField<TSourceProp, TModelProp, TRequired, TNullable, THasInitial> {
-	protected override _cast(value: unknown): unknown {
-		return value
-	}
-}
-
-/** A sluggified string field */
-class SlugField<
-	TRequired extends boolean = true,
-	TNullable extends boolean = boolean,
-	THasInitial extends boolean = boolean,
-> extends StrictStringField<string, string, TRequired, TNullable, THasInitial> {
-	constructor(options: SlugFieldOptions<TRequired, TNullable, THasInitial> = {}) {
-		options.blank = false
-		options.camel ??= null
-		super(options)
-	}
-
-	protected static override get _defaults(): SlugFieldOptions<boolean, boolean, boolean> {
-		return { ...super._defaults, nullable: true, initial: null, camel: null }
-	}
-
-	protected override _cleanType(
-		value: Maybe<string>,
-		options?: CleanFieldOptions,
-	): MaybeSchemaProp<string, TRequired, TNullable, THasInitial>
-	protected override _cleanType(value: Maybe<string>, options?: CleanFieldOptions): unknown {
-		const slug = super._cleanType(value, options)
-		const camel = this.options.camel ?? null
-		return typeof slug === "string" ? sluggify(slug, { camel }) : slug
-	}
-}
-
-interface SlugField<
-	TRequired extends boolean = true,
-	TNullable extends boolean = boolean,
-	THasInitial extends boolean = boolean,
-> extends StrictStringField<string, string, TRequired, TNullable, THasInitial> {
-	options: SlugFieldOptions<TRequired, TNullable, THasInitial>
-}
-
-interface SlugFieldOptions<TRequired extends boolean, TNullable extends boolean, THasInitial extends boolean>
-	extends StringFieldOptions<string, TRequired, TNullable, THasInitial> {
-	camel?: SlugCamel
-}
-
 type RecordFieldModelProp<
 	TKeyField extends StringField<string, string, true, false, false> | NumberField<number, number, true, false, false>,
 	TValueField extends DataField,
@@ -244,15 +191,4 @@ class RecordField<
 	}
 }
 
-/** A field that always results in a value of `null` */
-class NullField extends foundry.data.fields.DataField<null, null, true, true, true> {
-	constructor() {
-		super({ required: true, nullable: true, initial: null })
-	}
-
-	protected override _cast(): null {
-		return null
-	}
-}
-
-export { NullField, RecordField, SlugField }
+export { RecordField }

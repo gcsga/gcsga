@@ -1,5 +1,5 @@
 import { DAMAGE_TYPE } from "@module/apps/damage-calculator/damage-type.ts"
-import { DiceGURPS } from "@module/dice/index.ts"
+import { DiceGURPS } from "@system"
 import { ErrorGURPS } from "@util"
 
 export const DamageRegEx =
@@ -29,7 +29,7 @@ export class DamageRollGURPS {
 	}
 
 	get dice(): DiceGURPS {
-		return new DiceGURPS(this.rollFormula)
+		return DiceGURPS.fromString(this.rollFormula)
 	}
 
 	get roll(): Roll {

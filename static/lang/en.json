@@ -96,7 +96,22 @@
 			"LibSrcTooltip": "Indicates whether the data matches the source library it came from",
 			"ModifierEnabledTooltip": "Whether this modifier is enabled. Modifiers that are not enabled do not apply any features they may normally contribute."
 		},
-		"RatedStrength": "Rated ST {value}"
+		"RatedStrength": "Rated ST {value}",
+		"Weapon": {
+			"ModifierPerDie": "({value} per die)"
+		},
+		"Enum": {
+			"stdmg": {
+				"leveled": "{value} (Leveled)",
+				"none": "None",
+				"thr": "thr",
+				"lift_thr": "lifting thr",
+				"tk_thr": "telekinetic thr",
+				"sw": "sw",
+				"lift_sw": "lifting sw",
+				"tk_sw": "telekinetic sw"
+			}
+		}
 	},
 	"gurps": {
 		"ok": "OK",
@@ -1932,6 +1947,7 @@
 				"weapon_acc_bonus": "Gives a weapon accuracy modifier of",
 				"weapon_scope_acc_bonus": "Gives a weapon scope accuracy modifier of",
 				"weapon_dr_divisor_bonus": "Gives a weapon DR divisor modifier of",
+				"weapon_effective_st_bonus": "Gives a weapon effective ST modifier of",
 				"weapon_min_st_bonus": "Gives a weapon minimum ST modifier of",
 				"weapon_min_reach_bonus": "Gives a weapon minimum reach modifier of",
 				"weapon_max_reach_bonus": "Gives a weapon maximum reach modifier of",

@@ -1,6 +1,6 @@
 import { ConditionID, EFFECT_ACTION, SETTINGS, SYSTEM_NAME, gid } from "@data"
-import { ThresholdOp } from "@system/attribute/data.ts"
 import { MoveTypeOverrideConditionType } from "@system/move-type/data.ts"
+import { threshold } from "@util"
 import { attribute } from "@util/enum/attribute.ts"
 
 export const defaultSettings = {
@@ -193,20 +193,20 @@ export const defaultSettings = {
 					{
 						state: "Unconscious",
 						expression: "-$fp",
-						ops: [ThresholdOp.HalveMove, ThresholdOp.HalveDodge, ThresholdOp.HalveST],
+						ops: [threshold.Op.HalveMove, threshold.Op.HalveDodge, threshold.Op.HalveST],
 					},
 					{
 						state: "Collapse",
 						explanation:
 							"Roll vs. Will to do anything besides talk or rest; failure causes unconsciousness\nEach FP you lose below 0 also causes 1 HP of injury\nMove, Dodge and ST are halved (B426)",
 						expression: "0",
-						ops: [ThresholdOp.HalveMove, ThresholdOp.HalveDodge, ThresholdOp.HalveST],
+						ops: [threshold.Op.HalveMove, threshold.Op.HalveDodge, threshold.Op.HalveST],
 					},
 					{
 						state: "Tired",
 						explanation: "Move, Dodge and ST are halved (B426)",
 						expression: "round($fp/3)",
-						ops: [ThresholdOp.HalveMove, ThresholdOp.HalveDodge, ThresholdOp.HalveST],
+						ops: [threshold.Op.HalveMove, threshold.Op.HalveDodge, threshold.Op.HalveST],
 					},
 					{
 						state: "Tiring",
@@ -230,48 +230,48 @@ export const defaultSettings = {
 					{
 						state: "Dead",
 						expression: "round(-$hp*5)",
-						ops: [ThresholdOp.HalveMove, ThresholdOp.HalveDodge],
+						ops: [threshold.Op.HalveMove, threshold.Op.HalveDodge],
 					},
 					{
 						state: "Dying #4",
 						explanation:
 							"Roll vs. HT to avoid death\nRoll vs. HT-4 every second to avoid falling unconscious\nMove and Dodge are halved (B419)",
 						expression: "round(-$hp*4)",
-						ops: [ThresholdOp.HalveMove, ThresholdOp.HalveDodge],
+						ops: [threshold.Op.HalveMove, threshold.Op.HalveDodge],
 					},
 					{
 						state: "Dying #3",
 						explanation:
 							"Roll vs. HT to avoid death\nRoll vs. HT-3 every second to avoid falling unconscious\nMove and Dodge are halved (B419)",
 						expression: "round(-$hp*3)",
-						ops: [ThresholdOp.HalveMove, ThresholdOp.HalveDodge],
+						ops: [threshold.Op.HalveMove, threshold.Op.HalveDodge],
 					},
 					{
 						state: "Dying #2",
 						explanation:
 							"Roll vs. HT to avoid death\nRoll vs. HT-2 every second to avoid falling unconscious\nMove and Dodge are halved (B419)",
 						expression: "round(-$hp*2)",
-						ops: [ThresholdOp.HalveMove, ThresholdOp.HalveDodge],
+						ops: [threshold.Op.HalveMove, threshold.Op.HalveDodge],
 					},
 					{
 						state: "Dying #1",
 						explanation:
 							"Roll vs. HT to avoid death\nRoll vs. HT-1 every second to avoid falling unconscious\nMove and Dodge are halved (B419)",
 						expression: "-$hp",
-						ops: [ThresholdOp.HalveMove, ThresholdOp.HalveDodge],
+						ops: [threshold.Op.HalveMove, threshold.Op.HalveDodge],
 					},
 					{
 						state: "Collapse",
 						explanation:
 							"Roll vs. HT every second to avoid falling unconscious\nMove and Dodge are halved (B419)",
 						expression: "round($hp/3)",
-						ops: [ThresholdOp.HalveMove, ThresholdOp.HalveDodge],
+						ops: [threshold.Op.HalveMove, threshold.Op.HalveDodge],
 					},
 					{
 						state: "Reeling",
 						explanation: "Move and Dodge are halved (B419)",
 						expression: "round($hp/3)",
-						ops: [ThresholdOp.HalveMove, ThresholdOp.HalveDodge],
+						ops: [threshold.Op.HalveMove, threshold.Op.HalveDodge],
 					},
 					{
 						state: "Wounded",

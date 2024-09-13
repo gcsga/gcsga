@@ -1,9 +1,11 @@
-import { RESERVED_IDS } from "@system/attribute/data.ts"
 import type { Mook } from "@system/mook/index.ts"
 import { getNewAttributeId, sanitizeId } from "@util"
 import { AbstractAttributeDefSchema } from "./data.ts"
 import { AbstractAttribute } from "./object.ts"
 import { ActorDataModel } from "@module/data/abstract.ts"
+import { gid } from "@module/data/constants.ts"
+
+export const RESERVED_IDS: string[] = [gid.Skill, gid.Parry, gid.Block, gid.Dodge, gid.SizeModifier, gid.Ten]
 
 // abstract class AbstractAttributeDef<
 // 	TActor extends ActorGURPS | Mook = ActorGURPS | Mook,

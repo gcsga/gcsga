@@ -15,7 +15,11 @@ export namespace stdmg {
 
 	export namespace Option {
 		export function toString(O: Option): string {
-			return LocalizeGURPS.translations.gurps.enum.stdmg[O]
+			return LocalizeGURPS.translations.GURPS.Enum.stdmg[O]
+		}
+
+		export function toStringLeveled(O: Option): string {
+			return LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Enum.stdmg.leveled, { value: toString(O) })
 		}
 	}
 

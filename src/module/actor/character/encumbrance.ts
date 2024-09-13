@@ -2,7 +2,7 @@ import type { CharacterGURPS } from "@actor"
 import { Encumbrance } from "./data.ts"
 import { Int, LocalizeGURPS, stlimit } from "@util"
 import { ActorFlags, SYSTEM_NAME, gid } from "@module/data/constants.ts"
-import { AttributeGURPS, AttributeDef, ThresholdOp } from "@system"
+import { AttributeGURPS, AttributeDef } from "@system"
 
 class CharacterEncumbrance<TOwner extends CharacterGURPS = CharacterGURPS> {
 	owner: TOwner
@@ -34,8 +34,8 @@ class CharacterEncumbrance<TOwner extends CharacterGURPS = CharacterGURPS> {
 	}
 
 	private _getLevels(basicLift: number): Encumbrance[] {
-		const dodgeOps = Math.max(2 * Math.min(this.owner.countThresholdOpMet(ThresholdOp.HalveDodge), 2), 1)
-		const moveOps = Math.max(2 * Math.min(this.owner.countThresholdOpMet(ThresholdOp.HalveMove), 2), 1)
+		const dodgeOps = Math.max(2 * Math.min(this.owner.countThresholdOpMet(threshold.Op.HalveDodge), 2), 1)
+		const moveOps = Math.max(2 * Math.min(this.owner.countThresholdOpMet(threshold.Op.HalveMove), 2), 1)
 
 		return [
 			{

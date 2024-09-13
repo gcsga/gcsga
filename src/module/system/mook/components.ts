@@ -19,7 +19,6 @@ import {
 	regex_points,
 } from "./data.ts"
 import { Mook } from "./document.ts"
-import { DiceGURPS } from "@module/dice/index.ts"
 import {
 	EquipmentSource,
 	ItemSourceGURPS,
@@ -32,6 +31,7 @@ import {
 	TraitSource,
 } from "@item/data/index.ts"
 import { WeaponDamage, WeaponDamageSchema } from "@item/abstract-weapon/weapon-damage.ts"
+import { DiceGURPS } from "../dice.ts"
 
 function cleanLine(text: string): string {
 	const start = text

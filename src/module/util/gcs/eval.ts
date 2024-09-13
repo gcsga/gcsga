@@ -1,9 +1,10 @@
-import { ErrorGURPS, StringBuilder } from "@util"
-import { Operator } from "./operators.ts"
+import { ErrorGURPS, Int, StringBuilder } from "@util"
+import { Operator, evalOperators } from "./operators.ts"
 import { type CharacterData } from "@module/data/actor/character.ts"
 import { ActorType } from "@module/data/constants.ts"
+import { evalFunctions } from "./function.ts"
 
-type VariableResolver = {
+export type VariableResolver = {
 	resolveVariable: (variableName: string) => string
 }
 export type ExpressionOperand = {
@@ -22,22 +23,10 @@ export type ExpressionTree = {
 	op?: Operator
 	unaryOp?: Operator
 }
-// export type ExpressionTree =
-// 	| {
-// 			evaluator: Evaluator
-// 			left: Operand
-// 			right: Operand
-// 			op: Operator
-// 	  }
-// 	| {
-// 			evaluator: Evaluator
-// 			left: Operand
-// 			unaryOp: Operator
-// 	  }
-export type Function = (evaluator: Evaluator, args: string) => Operand
+export type EvalFunction = (evaluator: Evaluator, args: string) => Operand
 export type ParsedFunction = {
 	unaryOp: Operator
-	func: Function
+	func: EvalFunction
 	args: string
 }
 export type Operand = ExpressionOperand | ExpressionTree | ParsedFunction | number | boolean | string | null
@@ -85,14 +74,14 @@ function isParsedFunction(operand: Operand): operand is ParsedFunction {
 export class Evaluator {
 	resolver: VariableResolver | null
 	operators: Operator[]
-	functions: Map<string, Function>
+	functions: Map<string, EvalFunction>
 	operandStack: Operand[]
 	operatorStack: ExpressionOperator[]
 
-	constructor(resolver: Evaluator["resolver"], operators: Evaluator["operators"], functions: Evaluator["functions"]) {
+	constructor(resolver: Evaluator["resolver"]) {
 		this.resolver = resolver
-		this.operators = operators
-		this.functions = functions
+		this.operators = evalOperators(true)
+		this.functions = evalFunctions()
 		this.operandStack = []
 		this.operatorStack = []
 	}
@@ -110,7 +99,7 @@ export class Evaluator {
 	}
 
 	evaluateNew(expression: string): Operand {
-		const other = new Evaluator(this.resolver, this.operators, this.functions)
+		const other = new Evaluator(this.resolver)
 		return other.evaluate(expression)
 	}
 
@@ -435,4 +424,27 @@ export class Evaluator {
 		}
 		return expression
 	}
+}
+
+export function evaluateToNumber(expression: string, resolver: VariableResolver): number {
+	let err: Error | null = null
+	let result: Operand
+	try {
+		result = new Evaluator(resolver).evaluate(expression)
+	} catch (err) {
+		console.error(`unable to resolve expression: ${err}`)
+		console.log(`expression: ${expression}`)
+		return 0
+	}
+	if (typeof result === "number") {
+		return Int.from(result)
+	}
+	if (typeof result === "string") {
+		let value: number
+		;[value, err] = Int.fromString(result)
+		if (err === null) return value
+	}
+	console.error(`unable to resolve expression: ${err}`)
+	console.log(`expression: ${expression}`)
+	return 0
 }

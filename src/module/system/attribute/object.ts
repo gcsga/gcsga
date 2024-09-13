@@ -1,15 +1,15 @@
-import { PoolThreshold } from "./pool-threshold.ts"
 import { TokenPool, gid } from "@data"
-import { ErrorGURPS, Int, attribute, stlimit, threshold } from "@util"
-import { AbstractAttribute } from "@system/abstract-attribute/object.ts"
-import { AttributeSchema } from "./data.ts"
-import { AttributeDef } from "./definition.ts"
-import { AbstractAttributeConstructionOptions } from "@system/abstract-attribute/data.ts"
-import { SheetSettings } from "@system/sheet-settings.ts"
-import { Mook } from "@system/mook/index.ts"
 import { ActorDataModel } from "@module/data/abstract.ts"
-import { ActorTemplateType } from "@module/data/actor/types.ts"
 import { AttributeHolderTemplate } from "@module/data/actor/templates/attribute-holder.ts"
+import { ActorTemplateType } from "@module/data/actor/types.ts"
+import { AbstractAttributeConstructionOptions, AbstractAttributeSchema } from "@system/abstract-attribute/data.ts"
+import { AbstractAttribute } from "@system/abstract-attribute/object.ts"
+import { Mook } from "@system/mook/index.ts"
+import { SheetSettings } from "@system/sheet-settings.ts"
+import { ErrorGURPS, Int, attribute, stlimit, threshold } from "@util"
+import { AttributeDef } from "./definition.ts"
+import { PoolThreshold } from "./pool-threshold.ts"
+import fields = foundry.data.fields
 
 // class AttributeGURPS extends AbstractAttribute<CharacterGURPS | Mook, AttributeSchema> {
 class AttributeGURPS<
@@ -65,7 +65,7 @@ class AttributeGURPS<
 		if (!definition) {
 			throw ErrorGURPS(`Attribute with ID ${this.id} has no definition`)
 		}
-		return new AttributeDef(definition)
+		return definition as AttributeDef<TActor>
 	}
 
 	override get max(): number {
@@ -188,4 +188,11 @@ interface AttributeGURPS<TActor extends AttributeHolderTemplate | Mook>
 	extends AbstractAttribute<TActor, AttributeSchema>,
 		ModelPropsFromSchema<AttributeSchema> {}
 
-export { AttributeGURPS }
+type AttributeSchema = AbstractAttributeSchema & {
+	adj: fields.NumberField<number, number, true, false, true>
+	damage: fields.NumberField<number, number, true, true, true>
+	applyOps: fields.BooleanField<boolean, boolean, true, true, true>
+	manualThreshold: fields.NumberField<number, number, true, true, true>
+}
+
+export { AttributeGURPS, type AttributeSchema }

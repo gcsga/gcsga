@@ -22,7 +22,7 @@ import {
 	TraitModifierSource,
 	TraitSource,
 } from "@item/data/index.ts"
-import { DiceGURPS } from "@module/dice/index.ts"
+import { DiceGURPS } from "../dice.ts"
 import { AttributeDef, AttributeGURPS } from "@system/attribute/index.ts"
 import { MoveTypeDef } from "@system/move-type/index.ts"
 

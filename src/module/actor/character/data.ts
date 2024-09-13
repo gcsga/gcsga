@@ -2,9 +2,9 @@ import fields = foundry.data.fields
 import type { ActorFlagsGURPS, BaseActorSourceGURPS } from "@actor/base/data.ts"
 import { ActorSystemModel, ActorSystemSchema } from "@actor/base/schema.ts"
 import { ActorFlags, ActorType, SYSTEM_NAME, gid } from "@data"
-import { DiceGURPS } from "@module/dice/index.ts"
 import {
 	AttributeGURPS,
+	DiceGURPS,
 	MoveType,
 	ResourceTracker,
 	SheetSettings,

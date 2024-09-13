@@ -1,9 +1,9 @@
 import type { ActorGURPS } from "@actor"
 import { gid } from "@data"
-import { DiceGURPS } from "@module/dice/index.ts"
 import { equalFold } from "@module/util/string-criteria.ts"
 import { StringBuilder, TooltipGURPS } from "@util"
 import type { BodySchema, BodySource, HitLocationSchema } from "./data.ts"
+import { DiceGURPS } from "@system/dice.ts"
 
 class HitLocation extends foundry.abstract.DataModel<BodyGURPS, HitLocationSchema> {
 	declare rollRange: string
@@ -170,7 +170,7 @@ class BodyGURPS extends foundry.abstract.DataModel<ActorGURPS | HitLocation, Bod
 	}
 
 	get processedRoll(): DiceGURPS {
-		return new DiceGURPS(this.roll)
+		return DiceGURPS.fromString(this.roll)
 	}
 
 	updateRollRanges(): void {

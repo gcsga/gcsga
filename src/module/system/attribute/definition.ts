@@ -1,15 +1,15 @@
-import { PoolThreshold } from "./pool-threshold.ts"
-import type { AttributeDefSchema } from "./data.ts"
+import { PoolThreshold, PoolThresholdSchema } from "./pool-threshold.ts"
+import fields = foundry.data.fields
 import { AbstractAttributeDef } from "@system/abstract-attribute/definition.ts"
 import { gid } from "@module/data/constants.ts"
-// import type { ActorGURPS, CharacterGURPS } from "@actor"
 import { AttributeGURPS } from "./object.ts"
 import { Mook } from "@system/mook/index.ts"
 import { attribute, progression } from "@util"
-import { evaluateToNumber } from "@module/util/gcs/eval.ts"
 import { ActorDataModel } from "@module/data/abstract.ts"
 import { ActorTemplateType } from "@module/data/actor/types.ts"
 import { AttributeHolderTemplate } from "@module/data/actor/templates/attribute-holder.ts"
+import { AbstractAttributeDefSchema } from "@system/abstract-attribute/data.ts"
+import { VariableResolver, evaluateToNumber } from "@module/util/index.ts"
 
 // class AttributeDef extends AbstractAttributeDef<CharacterGURPS | Mook, AttributeDefSchema> {
 class AttributeDef<
@@ -68,7 +68,7 @@ class AttributeDef<
 	// baseValue(resolver: ActorGURPS | Mook): number {
 	// 	return evaluateToNumber(this.base, resolver)
 	// }
-	baseValue(resolver: ActorDataModel | Mook): number {
+	baseValue(resolver: VariableResolver): number {
 		return evaluateToNumber(this.base, resolver)
 	}
 
@@ -100,15 +100,26 @@ class AttributeDef<
 	}
 }
 
-// interface AttributeDef
-// 	extends AbstractAttributeDef<CharacterGURPS | Mook, AttributeDefSchema>,
-// 		Omit<ModelPropsFromSchema<AttributeDefSchema>, "thresholds"> {
-// 	thresholds: PoolThreshold[] | null
-// }
 interface AttributeDef<TActor extends AttributeHolderTemplate | Mook>
 	extends AbstractAttributeDef<TActor, AttributeDefSchema>,
 		Omit<ModelPropsFromSchema<AttributeDefSchema>, "thresholds"> {
 	thresholds: PoolThreshold[] | null
 }
 
-export { AttributeDef }
+type AttributeDefSchema = AbstractAttributeDefSchema & {
+	type: fields.StringField<attribute.Type, attribute.Type, true>
+	name: fields.StringField<string, string, true, false, true>
+	full_name: fields.StringField<string, string, true, false, true>
+	cost_per_point: fields.NumberField<number, number, true, false, true>
+	cost_adj_percent_per_sm: fields.NumberField<number, number, true, false, true>
+	thresholds: fields.ArrayField<
+		fields.SchemaField<PoolThresholdSchema>,
+		Partial<SourceFromSchema<PoolThresholdSchema>>[],
+		ModelPropsFromSchema<PoolThresholdSchema>[],
+		false,
+		true
+	>
+	order: fields.NumberField<number, number, true, false, true>
+}
+
+export { AttributeDef, type AttributeDefSchema }

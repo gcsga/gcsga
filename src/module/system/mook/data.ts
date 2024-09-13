@@ -1,9 +1,10 @@
 import { ItemType } from "@data"
-import { WeaponDamageSchema } from "@item/abstract-weapon/weapon-damage.ts"
-import { AttributeDefSchema, AttributeSchema } from "@system/attribute/data.ts"
 import { MoveTypeDefSchema } from "@system/move-type/data.ts"
 import { Weight, difficulty, progression, selfctrl } from "@util"
 import fields = foundry.data.fields
+import { AttributeSchema } from "@system/attribute/object.ts"
+import { AttributeDefSchema } from "@system/attribute/definition.ts"
+import { WeaponDamageSchema } from "@module/data/item/fields/weapon-damage.ts"
 
 const regex_levels = /\s(\d+)$/
 const regex_cr = /\((CR:?)?\s*(\d+)\)/
