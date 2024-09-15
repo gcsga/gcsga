@@ -1,7 +1,7 @@
 import { RollType, SYSTEM_NAME, UserFlags } from "@data"
 import { ModifierBucketWindow } from "./window.ts"
-import { RollGURPS } from "@module/roll/index.ts"
 import { LastActor } from "@module/util/last-actor.ts"
+import { BasicRoll } from "@module/dice/basic-roll.ts"
 
 export class ModifierBucket extends Application {
 	window: ModifierBucketWindow
@@ -111,14 +111,16 @@ export class ModifierBucket extends Application {
 	// Roll 3d6
 	private async _onDiceClick(event: JQuery.ClickEvent): Promise<void> {
 		event.preventDefault()
-		return RollGURPS.handleRoll(game.user, game.user.character, {
-			name: "",
-			actor: game.user.character?.id ?? "",
-			user: game.user.id,
-			type: RollType.Generic,
-			formula: "3d6",
-			hidden: event.ctrlKey,
-		})
+		const roll = BasicRoll.create("3d6")
+		roll.toMessage()
+		// return RollGURPS.handleRoll(game.user, game.user.character, {
+		// 	name: "",
+		// 	actor: game.user.character?.id ?? "",
+		// 	user: game.user.id,
+		// 	type: RollType.Generic,
+		// 	formula: "3d6",
+		// 	hidden: event.ctrlKey,
+		// })
 	}
 
 	// Roll 1d6

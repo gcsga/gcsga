@@ -383,10 +383,6 @@ class ActorDataModel<
 	resolveVariable(_variableName: string): string {
 		throw ErrorGURPS(`ActorDataModel.resolveVariable must be implemented.`)
 	}
-
-	static override defineSchema(): ActorDataSchema {
-		return {}
-	}
 }
 
 // interface ActorDataModel<TDocument extends ActorGURPS2, TSchema extends ActorDataSchema>
@@ -447,20 +443,6 @@ class ItemDataModel<TSchema extends ItemDataSchema = ItemDataSchema> extends Sys
 
 	get ratedStrength(): number {
 		return 0
-	}
-
-	/* -------------------------------------------- */
-
-	static override defineSchema(): ItemDataSchema {
-		// const fields = foundry.data.fields
-		return {
-			// container: new fields.ForeignDocumentField(foundry.documents.BaseItem, {
-			// 	required: true,
-			// 	nullable: true,
-			// 	idOnly: true,
-			// 	initial: null,
-			// }),
-		}
 	}
 
 	/* -------------------------------------------- */

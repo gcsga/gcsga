@@ -8,9 +8,9 @@ class CombatantGURPS<
 	TTokenDocument extends TokenDocumentGURPS<Scene> | null = TokenDocumentGURPS<Scene> | null,
 > extends Combatant<TCombat, TTokenDocument> {}
 
-interface CombatantGURPS<TCombat extends Combat | null, TTokenDocument extends TokenDocumentGURPS<Scene> | null>
-	extends Combatant<TCombat, TTokenDocument> {
-	get actor(): NonNullable<TTokenDocument>["actor"]
-}
+// interface CombatantGURPS<TCombat extends Combat | null, TTokenDocument extends TokenDocumentGURPS<Scene> | null>
+// 	extends Combatant<TCombat, TTokenDocument> {
+// 	get actor(): NonNullable<TTokenDocument>["actor"]
+// }
 
 export { CombatantGURPS }

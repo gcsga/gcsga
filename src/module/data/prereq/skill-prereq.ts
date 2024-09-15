@@ -46,11 +46,11 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 	}
 
 	satisfied(actor: ActorGURPS2, exclude: unknown, tooltip: TooltipGURPS): boolean {
-		if (actor.isOfType(ActorType.Loot)) return true
+		if (!actor.isOfType(ActorType.Character)) return true
 		let satisfied = false
 		let techLevel = ""
 		if (exclude instanceof ItemGURPS2 && exclude.isOfType(ItemType.Skill, ItemType.Technique)) {
-			techLevel = exclude.techLevel
+			techLevel = exclude.system.tech_level ?? ""
 		}
 		for (const sk of actor.itemCollections.skills) {
 			if (sk.isOfType(ItemType.SkillContainer)) continue

@@ -4,11 +4,11 @@
 
 // export * from "./abstract-attribute/index.ts"
 // export * from "./attribute/index.ts"
-export * from "./conditional-modifier.ts"
+// export * from "./conditional-modifier.ts"
 // export * from "./dice.ts"
 // export * from "./feature/index.ts"
 // export * from "./hit-location/index.ts"
-export * from "./mook/index.ts"
+// export * from "./mook/index.ts"
 // // export * from "./move-type/index.ts"
 // export * from "./prereq/index.ts"
 // export * from "./resource-tracker/index.ts"

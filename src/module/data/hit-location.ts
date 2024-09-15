@@ -1,9 +1,10 @@
-import type { ActorGURPS } from "@actor"
 import fields = foundry.data.fields
-import { gid } from "@data"
+import { ActorType, gid } from "@data"
 import { equalFold } from "@module/util/string-criteria.ts"
 import { StringBuilder, TooltipGURPS } from "@util"
 import { DiceGURPS } from "./dice.ts"
+import { ActorInst } from "./actor/helpers.ts"
+import { ActorGURPS2 } from "@module/document/actor.ts"
 
 class HitLocation extends foundry.abstract.DataModel<BodyGURPS, HitLocationSchema> {
 	declare rollRange: string
@@ -46,7 +47,7 @@ class HitLocation extends foundry.abstract.DataModel<BodyGURPS, HitLocationSchem
 		return this.parent
 	}
 
-	get actor(): ActorGURPS {
+	get actor(): ActorInst<ActorType.Character> {
 		return this.owningTable.actor
 	}
 
@@ -82,7 +83,7 @@ class HitLocation extends foundry.abstract.DataModel<BodyGURPS, HitLocationSchem
 			)
 		}
 
-		drMap = this.actor.addDRBonusesFor(this.id, tooltip, drMap)
+		drMap = this.actor.system.addDRBonusesFor(this.id, tooltip, drMap)
 		if (this.owningTable && this.owningTable.owningLocation)
 			drMap = this.owningTable.owningLocation._DR(tooltip, drMap)
 
@@ -153,13 +154,13 @@ type HitLocationSource = Omit<SourceFromSchema<HitLocationSchema>, "sub_table"> 
 	sub_table: BodySource | null
 }
 
-class BodyGURPS extends foundry.abstract.DataModel<ActorGURPS | HitLocation, BodySchema> {
+class BodyGURPS extends foundry.abstract.DataModel<ActorGURPS2 | HitLocation, BodySchema> {
 	static override defineSchema(): BodySchema {
 		const fields = foundry.data.fields
 
 		return {
-			name: new fields.StringField({ initial: null }),
-			roll: new fields.StringField({ initial: "1d" }),
+			name: new fields.StringField({ required: true, nullable: true, initial: null }),
+			roll: new fields.StringField({ required: true, nullable: false, initial: "1d" }),
 			locations: new fields.ArrayField(new fields.SchemaField(HitLocation.defineSchema()), { initial: [] }),
 		}
 	}
@@ -177,7 +178,7 @@ class BodyGURPS extends foundry.abstract.DataModel<ActorGURPS | HitLocation, Bod
 		return null
 	}
 
-	get actor(): ActorGURPS {
+	get actor(): ActorInst<ActorType.Character> {
 		if (this.parent instanceof Actor) return this.parent
 		if (this.parent instanceof HitLocation) return this.owningLocation!.actor
 		throw new Error("HitLocation does not have a valid actor owner")
@@ -194,13 +195,13 @@ class BodyGURPS extends foundry.abstract.DataModel<ActorGURPS | HitLocation, Bod
 }
 
 interface BodyGURPS
-	extends foundry.abstract.DataModel<ActorGURPS | HitLocation, BodySchema>,
+	extends foundry.abstract.DataModel<ActorGURPS2 | HitLocation, BodySchema>,
 		Omit<ModelPropsFromSchema<BodySchema>, "locations"> {
 	locations: HitLocation[]
 }
 
 type BodySchema = {
-	name: fields.StringField<string, string, false, true>
+	name: fields.StringField<string, string, true, true, true>
 	roll: fields.StringField<string, string, true, false, true>
 	locations: fields.ArrayField<fields.SchemaField<HitLocationSchema>>
 }
@@ -209,7 +210,7 @@ type BodySource = Omit<SourceFromSchema<BodySchema>, "locations"> & {
 	locations: HitLocationSource[]
 }
 
-interface BodyConstructionOptions extends DataModelConstructionOptions<ActorGURPS | HitLocation> {
+interface BodyConstructionOptions extends DataModelConstructionOptions<ActorGURPS2 | HitLocation> {
 	owningLocation?: HitLocation | null
 }
 

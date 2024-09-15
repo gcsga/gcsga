@@ -115,7 +115,7 @@ class ColorConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2) {
 		}
 	}
 
-	#prepareColors(current: Record<string, object>): Record<string, SourceFromSchema<ColorSettingsEntrySchema>> {
+	#prepareColors(current: ColorSettings): Record<string, SourceFromSchema<ColorSettingsEntrySchema>> {
 		const colors: Record<string, SourceFromSchema<ColorSettingsEntrySchema>> = {}
 
 		for (const key in current) {

@@ -1,9 +1,10 @@
-import { DiceGURPS } from "@module/dice/index.ts"
-import { RollModifier, SYSTEM_NAME } from "@data"
 import { DnD } from "@util/drag-drop.ts"
-import { ChatMessageGURPS } from "@module/chat-message/index.ts"
 import { DAMAGE_TYPE } from "./damage-type.ts"
-import { ChatMessageSource } from "types/foundry/common/documents/module.js"
+import { DiceGURPS } from "@module/data/dice.ts"
+import { RollModifier } from "@module/data/roll-modifier.ts"
+import { ChatMessageGURPS } from "@module/document/chat-message.ts"
+import { SYSTEM_NAME } from "@module/data/constants.ts"
+import { ChatMessageSource } from "types/foundry/common/documents/chat-message.js"
 
 export enum DamageChatFlags {
 	Transfer = "transfer",

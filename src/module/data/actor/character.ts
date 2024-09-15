@@ -58,7 +58,6 @@ class CharacterData extends ActorDataModel.mixin(
 				religion: new fields.StringField(),
 				portrait: new fields.StringField(),
 			}),
-			// attributes: new fields.ArrayField(new fields.SchemaField(AttributeGURPS.defineSchema())),
 			resource_trackers: new fields.ArrayField(new fields.SchemaField(ResourceTracker.defineSchema())),
 			move_types: new fields.ArrayField(new fields.SchemaField(MoveType.defineSchema())),
 			move: new fields.SchemaField({

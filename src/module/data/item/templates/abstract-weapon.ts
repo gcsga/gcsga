@@ -11,6 +11,8 @@ import { Feature } from "@module/data/feature/types.ts"
 import { WeaponBonus } from "@module/data/feature/index.ts"
 
 class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema> {
+	protected declare _weaponLevel: number
+
 	static override defineSchema(): AbstractWeaponTemplateSchema {
 		const fields = foundry.data.fields
 		return {
@@ -40,6 +42,10 @@ class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema>
 	get usesCrossbowSkill(): boolean {
 		const replacements = this.nameableReplacements
 		return this.defaults.some(def => def.nameWithReplacements(replacements) === "Crossbow")
+	}
+
+	get level(): number {
+		return (this._weaponLevel ??= this.skillLevel(null))
 	}
 
 	skillLevel(tooltip: TooltipGURPS | null): number {

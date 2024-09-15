@@ -68,6 +68,7 @@ export namespace feature {
 		Type.WeaponAccBonus,
 		Type.WeaponScopeAccBonus,
 		Type.WeaponDRDivisorBonus,
+		Type.WeaponEffectiveSTBonus,
 		Type.WeaponMinSTBonus,
 		Type.WeaponMinReachBonus,
 		Type.WeaponMaxReachBonus,

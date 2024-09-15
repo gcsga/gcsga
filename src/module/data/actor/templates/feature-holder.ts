@@ -13,6 +13,7 @@ import {
 	WeaponBonus,
 } from "@module/data/feature/index.ts"
 import { Feature } from "@module/data/feature/types.ts"
+import { SheetSettings } from "@module/data/sheet-settings.ts"
 import { equalFold } from "@module/util/index.ts"
 import { Nameable } from "@module/util/nameable.ts"
 import { ErrorGURPS, TooltipGURPS, feature, selfctrl, skillsel, stlimit, wsel } from "@util"
@@ -243,7 +244,7 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 	 */
 	addDRBonusesFor(
 		locationId: string,
-		tooltip: TooltipGURPS,
+		tooltip: TooltipGURPS | null,
 		drMap: Map<string, number> = new Map(),
 		temporary = false,
 	): Map<string, number> {

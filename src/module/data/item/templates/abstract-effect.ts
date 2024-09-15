@@ -1,8 +1,8 @@
 import { ItemDataModel } from "@module/data/abstract.ts"
 import fields = foundry.data.fields
-import { CombatGURPS } from "@module/combat/document.ts"
 import { RollModifier, RollModifierSchema } from "@module/data/roll-modifier.ts"
 import { SkillLevel } from "../helpers.ts"
+import { CombatGURPS } from "@module/document/combat.ts"
 
 enum DurationType {
 	Seconds = "seconds",

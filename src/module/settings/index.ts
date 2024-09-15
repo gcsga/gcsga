@@ -1,5 +1,6 @@
-import { SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
+import { SETTINGS, SSRT_SETTING, SYSTEM_NAME } from "@module/data/constants.ts"
 import { ColorConfig } from "./color-config.ts"
+import { SheetSettingsConfig } from "./sheet-settings-config.ts"
 
 /**
  * Register all of the system's keybindings.
@@ -16,12 +17,60 @@ export function registerSystemKeybindings() {
  */
 export function registerSystemSettings(): void {
 	game.settings.registerMenu(SYSTEM_NAME, SETTINGS.COLORS, {
-		name: "gurps.settings.colors.name",
-		label: "gurps.settings.colors.label",
-		hint: "gurps.settings.colors.hint",
+		name: "GURPS.Settings.ColorConfig.Name",
+		label: "GURPS.Settings.ColorConfig.Label",
+		hint: "GURPS.Settings.ColorConfig.Hint",
 		icon: "fas fa-palette",
 		type: ColorConfig,
 		restricted: false,
+	})
+	ColorConfig.registerSettings()
+
+	game.settings.registerMenu(SYSTEM_NAME, SETTINGS.DEFAULT_SHEET_SETTINGS, {
+		name: "GURPS.Settings.SheetSettingsConfig.Name",
+		label: "GURPS.Settings.SheetSettingsConfig.Label",
+		hint: "GURPS.Settings.SheetSettingsConfig.Hint",
+		icon: "fas fa-palette",
+		type: SheetSettingsConfig,
+		restricted: false,
+	})
+	SheetSettingsConfig.registerSettings()
+
+	game.settings.register(SYSTEM_NAME, SETTINGS.BASE_BOOKS, {
+		name: "GURPS.Settings.BaseBooks.Name",
+		hint: "GURPS.Settings.BaseBooks.Hint",
+		scope: "world",
+		config: true,
+		type: String,
+		choices: {
+			gurps: "GURPS.Settings.BaseBooks.Choices.gurps",
+			lite: "GURPS.Settings.BaseBooks.Choices.lite",
+			dfrpg: "GURPS.Settings.BaseBooks.Choices.dfrpg",
+		},
+		default: "gurps",
+	})
+
+	game.settings.register(SYSTEM_NAME, SETTINGS.ROLL_FORMULA, {
+		name: "GURPS.Settings.RollFormula.Name",
+		hint: "GURPS.Settings.RollFormula.Hint",
+		scope: "world",
+		config: true,
+		type: String,
+		default: "3d6",
+	})
+
+	game.settings.register(SYSTEM_NAME, SETTINGS.SSRT, {
+		name: "GURPS.Settings.SSRT.Name",
+		hint: "GURPS.Settings.SSRT.Hint",
+		scope: "world",
+		config: true,
+		type: String,
+		choices: {
+			[SSRT_SETTING.STANDARD]: "GURPS.Settings.SSRT.Choices.standard",
+			[SSRT_SETTING.SIMPLIFIED]: "GURPS.Settings.SSRT.Choices.simplified",
+			[SSRT_SETTING.TENS]: "GURPS.Settings.SSRT.Choices.tens",
+		},
+		default: SSRT_SETTING.STANDARD,
 	})
 
 	// game.settings.registerMenu(SYSTEM_NAME, SETTINGS.DEFAULT_ATTRIBUTES, {

@@ -1,6 +1,6 @@
 import { ActorDataModel } from "@module/data/abstract.ts"
 import fields = foundry.data.fields
-import { SheetSettings, SheetSettingsSchema } from "@module/data/sheet-settings.ts"
+import { CharacterSheetSettingsSchema, SheetSettings } from "@module/data/sheet-settings.ts"
 
 class SettingsHolderTemplate extends ActorDataModel<SettingsHolderTemplateSchema> {
 	static override defineSchema(): SettingsHolderTemplateSchema {
@@ -15,7 +15,11 @@ class SettingsHolderTemplate extends ActorDataModel<SettingsHolderTemplateSchema
 interface SettingsHolderTemplate extends ModelPropsFromSchema<SettingsHolderTemplateSchema> {}
 
 type SettingsHolderTemplateSchema = {
-	settings: fields.SchemaField<SheetSettingsSchema, SourceFromSchema<SheetSettingsSchema>, SheetSettings>
+	settings: fields.SchemaField<
+		CharacterSheetSettingsSchema,
+		SourceFromSchema<CharacterSheetSettingsSchema>,
+		SheetSettings
+	>
 }
 
 export { SettingsHolderTemplate, type SettingsHolderTemplateSchema }

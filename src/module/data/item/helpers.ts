@@ -1,5 +1,4 @@
 import { ActorGURPS2 } from "@module/document/actor.ts"
-import { SheetSettings, SkillDefault } from "@system"
 import {
 	Int,
 	LocalizeGURPS,
@@ -18,6 +17,8 @@ import { ActorTemplateType } from "../actor/types.ts"
 import type { ItemGURPS2 } from "@module/document/item.ts"
 import { ItemDataInstances, ItemDataTemplates, ItemTemplateType } from "./types.ts"
 import { Feature } from "../feature/types.ts"
+import { SheetSettings } from "../sheet-settings.ts"
+import { SkillDefault } from "../skill-default.ts"
 
 function modifyPoints(points: number, modifier: number): number {
 	return points + calculateModifierPoints(points, modifier)

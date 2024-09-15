@@ -267,7 +267,7 @@ class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extend
 }
 
 type CreateWithContentsOptions = {
-	container?: ItemTemplateInst<ItemTemplateType.Container>
+	container: ItemTemplateInst<ItemTemplateType.Container> | null
 	keepId: boolean
 	transformAll?: (item: ItemGURPS2 | ItemGURPS2["_source"]) => ItemGURPS2["_source"] | Promise<ItemGURPS2["_source"]>
 	transformFirst?: (

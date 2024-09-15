@@ -1,9 +1,15 @@
 import { ActorType, ItemType } from "@data"
-import { ChatMessageGURPS } from "@module/chat-message/document.ts"
 import { CharacterData } from "@module/data/actor/character.ts"
+import { ItemsGURPS } from "@module/data/collections/items-collection.ts"
 import * as ItemInstance from "@module/data/item/index.ts"
+import { AttackRoll, BasicRoll, DamageRoll, SuccessRoll } from "@module/dice/index.ts"
 import { ActorGURPS2 } from "@module/document/actor.ts"
+import { ChatMessageGURPS } from "@module/document/chat-message.ts"
+import { CombatGURPS } from "@module/document/combat.ts"
+import { CombatantGURPS } from "@module/document/combatant.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
+import { TokenDocumentGURPS } from "@module/document/token.ts"
+import { UserGURPS } from "@module/document/user.ts"
 import { JournalEntryGURPS } from "@module/journal-entry/document.ts"
 import { JournalEntryPageProxyGURPS } from "@module/journal-entry/page/document.ts"
 
@@ -13,27 +19,25 @@ export const Load = {
 		// CONFIG.DatabaseBackend = new ClientDatabaseBackendGURPS()
 
 		// Assign document classes
-		// CONFIG.ActiveEffect.documentClass = ActiveEffectGURPS
-		// CONFIG.Actor.collection = Actors
-		// CONFIG.Actor.documentClass = ActorProxyGURPS
 		CONFIG.Actor.documentClass = ActorGURPS2
-		// CONFIG.ActorDelta.documentClass = ActorDelta
-		// CONFIG.AmbientLight.documentClass = AmbientLightDocument
 		CONFIG.ChatMessage.documentClass = ChatMessageGURPS
-		// CONFIG.Combat.documentClass = CombatGURPS
-		// CONFIG.Combatant.documentClass = CombatantGURPS
-		// CONFIG.Item.collection = ItemsGURPS
-		// CONFIG.Item.documentClass = ItemProxyGURPS
+		CONFIG.Dice
+		CONFIG.Combat.documentClass = CombatGURPS
+		CONFIG.Combatant.documentClass = CombatantGURPS
+		CONFIG.Item.collection = ItemsGURPS<ItemGURPS2<null>>
 		CONFIG.Item.documentClass = ItemGURPS2
 		CONFIG.Macro.documentClass = Macro
 		CONFIG.MeasuredTemplate.documentClass = MeasuredTemplateDocument
-		// CONFIG.Scene.documentClass = SceneGURPS
-		// CONFIG.Tile.documentClass = TileDocument
 		CONFIG.JournalEntry.documentClass = JournalEntryGURPS
 		CONFIG.JournalEntryPage.documentClass = JournalEntryPageProxyGURPS
-		// CONFIG.Token.documentClass = TokenDocumentGURPS
-		// CONFIG.Token.prototypeSheetClass = TokenConfigGURPS
-		// CONFIG.User.documentClass = UserGURPS
+		CONFIG.Token.documentClass = TokenDocumentGURPS
+		CONFIG.User.documentClass = UserGURPS
+
+		CONFIG.Dice.rolls = [BasicRoll, SuccessRoll, AttackRoll, DamageRoll]
+		CONFIG.Dice.Basic = BasicRoll
+		CONFIG.Dice.Success = SuccessRoll
+		CONFIG.Dice.Attack = AttackRoll
+		CONFIG.Dice.Damage = DamageRoll
 
 		// @ts-expect-error is ok?
 		CONFIG.Actor.dataModels = {

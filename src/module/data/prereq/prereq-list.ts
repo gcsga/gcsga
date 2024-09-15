@@ -1,10 +1,10 @@
-import { ActorGURPS } from "@actor"
 import { ActorType, NumericCompareType } from "@module/data/constants.ts"
 import { NumericCriteria } from "@module/util/index.ts"
 import { LocalizeGURPS, TooltipGURPS, extractTechLevel } from "@util"
 import { prereq } from "@util/enum/prereq.ts"
 import { BasePrereq, Prereq, PrereqListSchema } from "./index.ts"
 import { PrereqTemplate } from "@module/data/item/templates/prereqs.ts"
+import { ActorInst } from "../actor/helpers.ts"
 
 class PrereqList extends BasePrereq<PrereqListSchema> {
 	// constructor(data: DeepPartial<SourceFromSchema<PrereqListSchema>>, options?: PrereqConstructionOptions) {
@@ -44,14 +44,14 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 	}
 
 	satisfied(
-		actor: ActorGURPS,
+		actor: ActorInst<ActorType.Character>,
 		exclude: unknown,
 		tooltip: TooltipGURPS,
 		hasEquipmentPenalty: { value: boolean } = { value: false },
 	): boolean {
 		let actorTechLevel = "0"
 		if (actor.isOfType(ActorType.Character)) {
-			actorTechLevel = actor.techLevel
+			actorTechLevel = actor.system.profile.tech_level
 		}
 		if (this.when_tl.compare !== NumericCompareType.AnyNumber) {
 			let tl = extractTechLevel(actorTechLevel)

@@ -693,7 +693,7 @@ declare global {
 				[key: string]: ConstructorOf<terms.DiceTerm>
 			}
 			randomUniform: Function
-		}
+		} & Record<string, ConstructorOf<Roll>>
 
 		/** The control icons used for rendering common HUD operations */
 		controlIcons: ControlIconsConfig

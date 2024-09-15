@@ -2,12 +2,21 @@
 
 ## Left To Do
 
-- Roll Handlers
-  - Fix old functions \*
+- Prereq
+  - Re-do satisfied functions with replacements
+- Chat Messages
+  - Re-do roll message templates and damage message handling
+  - Move @module/util/chat.ts functionality to Chat Message
+- Settings
+  - Re-do menus
+    - Colors
+    - Attributes
+    - Resource Trackers
+    - Move Types
+    - Sheet Settings
+- CellData
+  - Condition
 - Item
-
-  - CellData
-    - Condition
 
 - Actor
   - Legacy Support?
@@ -30,4 +39,5 @@
 
 ## Done
 
--
+- Roll Handlers
+  - Fix old functions

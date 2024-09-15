@@ -5,7 +5,6 @@ import {
 	RollModifierStackSchema,
 } from "@module/data/roll-modifier.ts"
 import fields = foundry.data.fields
-import { ActorGURPS2 } from "@module/document/actor.ts"
 import { UserGURPS } from "@module/document/user.ts"
 
 class UserSystemFlags<TParent extends UserGURPS = UserGURPS> extends foundry.abstract.DataModel<
@@ -19,15 +18,15 @@ class UserSystemFlags<TParent extends UserGURPS = UserGURPS> extends foundry.abs
 			[UserFlags.ModifierStack]: new fields.ArrayField(new fields.SchemaField(RollModifier.defineSchema())),
 			[UserFlags.ModifierSticky]: new fields.BooleanField({ required: true, nullable: false, initial: false }),
 			[UserFlags.SavedStacks]: new fields.ArrayField(new fields.SchemaField(RollModifierStack.defineSchema())),
-			[UserFlags.LastActor]: new fields.ForeignDocumentField(ActorGURPS2, {
+			[UserFlags.LastActor]: new fields.DocumentUUIDField({
 				required: true,
 				nullable: true,
-				idOnly: true,
+				initial: null,
 			}),
-			[UserFlags.LastToken]: new fields.ForeignDocumentField(TokenDocument, {
+			[UserFlags.LastToken]: new fields.DocumentUUIDField({
 				required: true,
 				nullable: true,
-				idOnly: true,
+				initial: null,
 			}),
 			[UserFlags.SearchPackContents]: new fields.BooleanField(),
 		}
@@ -57,8 +56,8 @@ type UserSystemFlagsSchema = {
 	[UserFlags.SavedStacks]: fields.ArrayField<
 		fields.SchemaField<RollModifierStackSchema, SourceFromSchema<RollModifierStackSchema>, RollModifierStack>
 	>
-	[UserFlags.LastActor]: fields.ForeignDocumentField<string, true, true, true>
-	[UserFlags.LastToken]: fields.ForeignDocumentField<string, true, true, true>
+	[UserFlags.LastActor]: fields.DocumentUUIDField<ActorUUID, true, true, true>
+	[UserFlags.LastToken]: fields.DocumentUUIDField<TokenDocumentUUID, true, true, true>
 	[UserFlags.SearchPackContents]: fields.BooleanField<boolean, boolean, true, false, true>
 }
 

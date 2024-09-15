@@ -1,10 +1,9 @@
 import { SYSTEM_NAME } from "@data"
 import { ChatLogGURPS } from "@module/apps/sidebar/chat-log.ts"
 import { CombatTrackerGURPS } from "@module/apps/sidebar/combat-tracker.ts"
-import { CompendiumDirectoryGURPS } from "@module/apps/sidebar/compendium-directory.ts"
+// import { CompendiumDirectoryGURPS } from "@module/apps/sidebar/compendium-directory.ts"
 import { TokenGURPS } from "@module/canvas/token/index.ts"
 import * as SpeedProviderGURPS from "@module/modules/drag-ruler.ts"
-import { RollGURPS } from "@module/roll/index.ts"
 import { registerSystemSettings } from "@module/settings/index.ts"
 import { GURPSCONFIG } from "@scripts/config/index.ts"
 import { registerHandlebarsHelpers } from "@scripts/handlebars.ts"
@@ -52,9 +51,9 @@ export const Init = {
 			CONFIG.ui.combat = CombatTrackerGURPS
 			// CONFIG.ui.actors = ActorDirectoryGURPS
 			// CONFIG.ui.items = ItemDirectoryGURPS
-			CONFIG.ui.compendium = CompendiumDirectoryGURPS
+			// CONFIG.ui.compendium = CompendiumDirectoryGURPS
 
-			CONFIG.Dice.rolls.unshift(RollGURPS)
+			// CONFIG.Dice.rolls.unshift(RollGURPS)
 
 			SpeedProviderGURPS.init()
 

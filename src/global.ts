@@ -5,13 +5,14 @@ import { ModifierList } from "@module/apps/modifier-list/document.ts"
 import { ChatLogGURPS } from "@module/apps/sidebar/chat-log.ts"
 import { CompendiumDirectoryGURPS } from "@module/apps/sidebar/compendium-directory.ts"
 import { CanvasGURPS } from "@module/canvas/index.ts"
-import { ChatMessageGURPS } from "@module/chat-message/index.ts"
 import { ActorsGURPS } from "@module/data/collections/actors-collection.ts"
 import { ItemsGURPS } from "@module/data/collections/items-collection.ts"
 import { SETTINGS } from "@module/data/constants.ts"
 import { DiceGURPS } from "@module/data/dice.ts"
 import { ActorGURPS2 } from "@module/document/actor.ts"
+import { ChatMessageGURPS } from "@module/document/chat-message.ts"
 import { CombatGURPS } from "@module/document/combat.ts"
+import { CombatantGURPS } from "@module/document/combatant.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { TokenDocumentGURPS } from "@module/document/token.ts"
 import { UserGURPS } from "@module/document/user.ts"
@@ -20,8 +21,8 @@ import { JournalEntryPageGURPS } from "@module/journal-entry/page/document.ts"
 import { ColorSettings } from "@module/settings/color-config.ts"
 import { GURPSCONFIG } from "@scripts/config/index.ts"
 import { remigrate } from "@scripts/system/remigrate.ts"
-import { ConditionManager } from "@system/condition-manager.ts"
-import { ManeuverManager } from "@system/maneuver-manager.ts"
+// import { ConditionManager } from "@system/condition-manager.ts"
+// import { ManeuverManager } from "@system/maneuver-manager.ts"
 
 interface GameGURPS
 	extends Game<
@@ -36,14 +37,14 @@ interface GameGURPS
 		UserGURPS<ActorGURPS2<null>>
 	> {
 	gurps: {
-		ConditionManager: typeof ConditionManager
+		// ConditionManager: typeof ConditionManager
 		Dice: typeof DiceGURPS
-		ManeuverManager: typeof ManeuverManager
+		// ManeuverManager: typeof ManeuverManager
 		compendiumBrowser: CompendiumBrowser
-		effectPanel: EffectPanel
+		// effectPanel: EffectPanel
 		modifierBucket: ModifierBucket
 		modifierList: ModifierList
-		mook: typeof MookGeneratorSheet
+		// mook: typeof MookGeneratorSheet
 		system: {
 			remigrate: typeof remigrate
 		}
@@ -52,46 +53,28 @@ interface GameGURPS
 
 type ConfiguredConfig = Config<
 	AmbientLightDocument<Scene | null>,
-	// TAmbientLightDocument extends AmbientLightDocument<TScene | null>,
 	ActiveEffect<ActorGURPS2<TokenDocumentGURPS> | ItemGURPS2 | null>,
-	// ActiveEffectGURPS<ActorGURPS<TokenDocumentGURPS> | ItemGURPS | null>,
 	ActorGURPS2,
-	// ActorGURPS,
-	ActorDelta<TokenDocument>,
-	// ActorDelta<TokenDocumentGURPS>,
+	ActorDelta<TokenDocumentGURPS>,
 	ChatLogGURPS,
-	ChatMessage,
-	Combat,
-	// CombatGURPS,
-	Combatant<Combat | null, TokenDocument>,
-	// CombatantGURPS<CombatGURPS | null, TokenDocumentGURPS>,
-	CombatTracker<Combat | null>,
-	// CombatTrackerGURPS<CombatGURPS | null>,
-	ActorDirectory<Actor<null>>,
-	// ActorDirectoryGURPS<ActorGURPS<null>>,
+	ChatMessageGURPS,
+	CombatGURPS,
+	CombatantGURPS<CombatGURPS | null, TokenDocumentGURPS<Scene>>,
+	CombatTracker<CombatGURPS | null>,
+	ActorDirectory<ActorGURPS2<null>>,
 	ItemDirectory<ItemGURPS2<null>>,
-	// ItemDirectoryGURPS,
 	CompendiumDirectoryGURPS,
 	Hotbar,
 	ItemGURPS2,
-	// ItemGURPS,
 	Macro,
 	MeasuredTemplateDocument<Scene | null>,
-	// MeasuredTemplateDocument<SceneGURPS | null>,
 	RegionDocument<Scene | null>,
-	// RegionDocument<SceneGURPS | null>,
 	RegionBehavior<RegionDocument<Scene | null> | null>,
-	// RegionBehavior<RegionDocument<SceneGURPS | null> | null>,
 	TileDocument<Scene | null>,
-	// TileDocument<SceneGURPS | null>,
-	TokenDocument<Scene | null>,
-	// TokenDocumentGURPS<SceneGURPS | null>,
+	TokenDocumentGURPS<Scene | null>,
 	WallDocument<Scene | null>,
-	// WallDocument<SceneGURPS | null>,
 	Scene,
-	// SceneGURPS,
-	User,
-	// UserGURPS,
+	UserGURPS,
 	EffectsCanvasGroup,
 	JournalEntryGURPS,
 	JournalEntryPageGURPS<JournalEntryGURPS>
@@ -152,8 +135,9 @@ declare global {
 
 	interface ClientSettings {
 		get(module: "gcsga", key: SETTINGS.COLORS): ColorSettings
-		get(module: "gcsga", key: SETTINGS.SSRT): string
+		get(module: "gcsga", key: SETTINGS.SSRT): SSRT_SETTINGS
 		get(module: "gcsga", key: SETTINGS.ROLL_FORMULA): string
+		get(module: "gcsga", key: SETTINGS.BASE_BOOKS): string
 		// get(module: "gcsga", key: "default_sheet_settings.initial_points"): number
 		// get(module: "gcsga", key: "default_sheet_settings.tech_level"): string
 		// get(module: "gcsga", key: "default_sheet_settings.tech_level"): string

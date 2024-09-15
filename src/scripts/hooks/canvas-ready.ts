@@ -3,7 +3,7 @@ export const CanvasReady = {
 	listen: (): void => {
 		Hooks.on("canvasReady", () => {
 			// Effect Panel singleton application
-			game.gurps.effectPanel.render(true)
+			// game.gurps.effectPanel.render(true)
 			if (!canvas.scene) return
 
 			if (game.ready) canvas.scene.reset()

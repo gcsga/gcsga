@@ -27,15 +27,22 @@ interface RollModifier
 		ModelPropsFromSchema<RollModifierSchema> {}
 
 type RollModifierSchema = {
+	// The name attached to the modifier
 	id: fields.StringField<string, string, true, false, true>
+	// The value of the modifier itself
 	modifier: fields.NumberField<number, number, true, false, true>
+	// The type of roll it is attached to. TODO: is this needed?
 	rollType: fields.StringField<RollType, RollType, true, true, true>
+	// A set of tags for categorisation of the modifier
 	tags: fields.ArrayField<fields.StringField<string, string, true, false, true>>
+	// A pool attribute cost associated with the modifier
 	cost: fields.SchemaField<{
 		id: fields.StringField<string, string, true, false, true>
 		value: fields.NumberField<number, number, true, false, true>
 	}>
+	// A book reference for the modifier
 	reference: fields.StringField<string, string, true, true, true>
+	// TODO: what is this? is it needed?
 	target: fields.BooleanField<boolean, boolean, true, true, true>
 }
 
