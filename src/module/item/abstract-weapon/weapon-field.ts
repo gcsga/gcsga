@@ -1,3 +1,3 @@
-export class WeaponField {
-	current?: string
-}
+// export class WeaponField {
+// 	current?: string
+// }

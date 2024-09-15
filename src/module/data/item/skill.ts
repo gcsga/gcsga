@@ -8,7 +8,6 @@ import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/repl
 import { ActorType, ItemType, gid } from "../constants.ts"
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { AbstractSkillTemplate, AbstractSkillTemplateSchema } from "./templates/abstract-skill.ts"
-import { SkillDefaultSchema, SkillDefault, Study, SheetSettings } from "@system"
 import { AttributeDifficulty } from "./fields/attribute-difficulty.ts"
 import {
 	ErrorGURPS,
@@ -26,6 +25,9 @@ import { ActorTemplateType } from "../actor/types.ts"
 import { TechniqueData } from "./technique.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { CellData } from "./fields/cell-data.ts"
+import { SkillDefault, SkillDefaultSchema } from "../skill-default.ts"
+import { SheetSettings } from "../sheet-settings.ts"
+import { Study } from "../study.ts"
 
 class SkillData extends ItemDataModel.mixin(
 	BasicInformationTemplate,

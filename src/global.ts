@@ -1,58 +1,39 @@
 /// <reference types="vite/client" />
-import { ActorGURPS } from "@actor"
-import { EffectPanel } from "@item/abstract-effect/panel.ts"
-import { ConditionSource } from "@item/data/index.ts"
-import {
-	CompendiumBrowser,
-	CompendiumBrowserSettings,
-	CompendiumBrowserSources,
-} from "@module/apps/compendium-browser/index.ts"
+import { CompendiumBrowser } from "@module/apps/compendium-browser/index.ts"
 import { ModifierBucket } from "@module/apps/modifier-bucket/button.ts"
 import { ModifierList } from "@module/apps/modifier-list/document.ts"
 import { ChatLogGURPS } from "@module/apps/sidebar/chat-log.ts"
 import { CompendiumDirectoryGURPS } from "@module/apps/sidebar/compendium-directory.ts"
 import { CanvasGURPS } from "@module/canvas/index.ts"
 import { ChatMessageGURPS } from "@module/chat-message/index.ts"
-import { CombatGURPS } from "@module/combat/index.ts"
-import { AttributeEffect, MANEUVER_DETAIL_SETTING } from "@module/data/index.ts"
+import { ActorsGURPS } from "@module/data/collections/actors-collection.ts"
+import { ItemsGURPS } from "@module/data/collections/items-collection.ts"
+import { SETTINGS } from "@module/data/constants.ts"
+import { DiceGURPS } from "@module/data/dice.ts"
 import { ActorGURPS2 } from "@module/document/actor.ts"
+import { CombatGURPS } from "@module/document/combat.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
+import { TokenDocumentGURPS } from "@module/document/token.ts"
+import { UserGURPS } from "@module/document/user.ts"
 import { JournalEntryGURPS } from "@module/journal-entry/document.ts"
 import { JournalEntryPageGURPS } from "@module/journal-entry/page/document.ts"
-import { TokenDocumentGURPS } from "@scene"
+import { ColorSettings } from "@module/settings/color-config.ts"
 import { GURPSCONFIG } from "@scripts/config/index.ts"
 import { remigrate } from "@scripts/system/remigrate.ts"
-import {
-	AttributeDefSchema,
-	DiceGURPS,
-	HitLocationSchema,
-	HitLocationSource,
-	MookGeneratorSheet,
-	MoveTypeDefSchema,
-	ResourceTrackerDefSchema,
-	SheetSettingsSchema,
-} from "@system"
 import { ConditionManager } from "@system/condition-manager.ts"
 import { ManeuverManager } from "@system/maneuver-manager.ts"
 
 interface GameGURPS
 	extends Game<
 		ActorGURPS2<null>,
-		// ActorGURPS<null>,
-		Actors<ActorGURPS2<null>>,
-		// Actors<ActorGURPS<null>>,
+		ActorsGURPS,
 		ChatMessageGURPS,
-		Combat,
-		// CombatGURPS,
+		CombatGURPS,
 		ItemGURPS2<null>,
-		// ItemGURPS<null>,
-		Items<ItemGURPS2<null>>,
-		// ItemsGURPS<ItemGURPS2<null>>,
+		ItemsGURPS,
 		Macro,
-		// SceneGURPS,
 		Scene,
-		User<ActorGURPS2<null>>
-		// UserGURPS
+		UserGURPS<ActorGURPS2<null>>
 	> {
 	gurps: {
 		ConditionManager: typeof ConditionManager
@@ -72,7 +53,7 @@ interface GameGURPS
 type ConfiguredConfig = Config<
 	AmbientLightDocument<Scene | null>,
 	// TAmbientLightDocument extends AmbientLightDocument<TScene | null>,
-	ActiveEffect<ActorGURPS2<TokenDocument> | ItemGURPS2 | null>,
+	ActiveEffect<ActorGURPS2<TokenDocumentGURPS> | ItemGURPS2 | null>,
 	// ActiveEffectGURPS<ActorGURPS<TokenDocumentGURPS> | ItemGURPS | null>,
 	ActorGURPS2,
 	// ActorGURPS,
@@ -133,7 +114,7 @@ declare global {
 	namespace globalThis {
 		// eslint-disable-next-line no-var
 		var GURPS: {
-			LastActor: ActorGURPS | null
+			LastActor: ActorGURPS2 | null
 			LastToken: TokenDocumentGURPS | null
 			[key: string]: unknown
 		}
@@ -170,66 +151,69 @@ declare global {
 	interface Window {}
 
 	interface ClientSettings {
-		get(module: "gcsga", key: "default_sheet_settings.initial_points"): number
-		get(module: "gcsga", key: "default_sheet_settings.tech_level"): string
-		get(module: "gcsga", key: "default_sheet_settings.tech_level"): string
-		get(module: "gcsga", key: "default_sheet_settings.settings"): SourceFromSchema<SheetSettingsSchema>
-		get(module: "gcsga", key: "default_attributes.attributes"): SourceFromSchema<AttributeDefSchema>[]
-		get(module: "gcsga", key: "default_attributes.effects"): AttributeEffect[]
-		get(
-			module: "gcsga",
-			key: "default_resource_trackers.resource_trackers",
-		): SourceFromSchema<ResourceTrackerDefSchema>[]
-		get(module: "gcsga", key: "default_move_types.move_types"): SourceFromSchema<MoveTypeDefSchema>[]
-		get(module: "gcsga", key: "default_hit_locations.name"): string
-		get(module: "gcsga", key: "default_hit_locations.roll"): string
-		get(module: "gcsga", key: "default_hit_locations.locations"): HitLocationSource[]
-		get(module: "gcsga", key: "colors.colors"): Record<string, { light: string; dark: string }>
-		get(module: "gcsga", key: "colors.modePreference"): string
-		get(module: "gcsga", key: "automatic_unready"): boolean
-		get(module: "gcsga", key: "initiative_formula"): ((combatant: CombatGURPS["turns"][number]) => string) | null
-		get(module: "gcsga", setting: "compendium_browser_packs"): CompendiumBrowserSettings
-		get(module: "gcsga", setting: "compendium_browser_sources"): CompendiumBrowserSources
-		get(module: "gcsga", setting: "roll_formula"): string
-		get(module: "gcsga", setting: "world_schema_version"): number
-		get(module: "gcsga", setting: "maneuver_visiblity"): MANEUVER_DETAIL_SETTING
-		get(module: "gcsga", setting: "world_schema_version"): number
-		get(module: "gcsga", setting: "world_system_version"): string
+		get(module: "gcsga", key: SETTINGS.COLORS): ColorSettings
+		get(module: "gcsga", key: SETTINGS.SSRT): string
+		get(module: "gcsga", key: SETTINGS.ROLL_FORMULA): string
+		// get(module: "gcsga", key: "default_sheet_settings.initial_points"): number
+		// get(module: "gcsga", key: "default_sheet_settings.tech_level"): string
+		// get(module: "gcsga", key: "default_sheet_settings.tech_level"): string
+		// get(module: "gcsga", key: "default_sheet_settings.settings"): SourceFromSchema<SheetSettingsSchema>
+		// get(module: "gcsga", key: "default_attributes.attributes"): SourceFromSchema<AttributeDefSchema>[]
+		// get(module: "gcsga", key: "default_attributes.effects"): AttributeEffect[]
+		// get(
+		// 	module: "gcsga",
+		// 	key: "default_resource_trackers.resource_trackers",
+		// ): SourceFromSchema<ResourceTrackerDefSchema>[]
+		// get(module: "gcsga", key: "default_move_types.move_types"): SourceFromSchema<MoveTypeDefSchema>[]
+		// get(module: "gcsga", key: "default_hit_locations.name"): string
+		// get(module: "gcsga", key: "default_hit_locations.roll"): string
+		// get(module: "gcsga", key: "default_hit_locations.locations"): HitLocationSource[]
+		// get(module: "gcsga", key: "colors.colors"): Record<string, { light: string; dark: string }>
+		// get(module: "gcsga", key: "colors.modePreference"): string
+		// get(module: "gcsga", key: "automatic_unready"): boolean
+		// get(module: "gcsga", key: "initiative_formula"): ((combatant: CombatGURPS["turns"][number]) => string) | null
+		// get(module: "gcsga", setting: "compendium_browser_packs"): CompendiumBrowserSettings
+		// get(module: "gcsga", setting: "compendium_browser_sources"): CompendiumBrowserSources
+		// get(module: "gcsga", setting: "roll_formula"): string
+		// get(module: "gcsga", setting: "world_schema_version"): number
+		// get(module: "gcsga", setting: "maneuver_visiblity"): MANEUVER_DETAIL_SETTING
+		// get(module: "gcsga", setting: "world_schema_version"): number
+		// get(module: "gcsga", setting: "world_system_version"): string
 	}
 
 	interface ClientSettingsMap {
 		// get(key: "gcsga.worldClock.worldCreatedOn"): SettingConfig & { default: string }
-		get(key: "gcsga.default_sheet_settings.initial_points"): SettingConfig & { default: number }
-		get(key: "gcsga.default_sheet_settings.tech_level"): SettingConfig & { default: string }
-		get(key: "gcsga.default_sheet_settings.tech_level"): SettingConfig & { default: string }
-		get(
-			key: "gcsga.default_sheet_settings.settings",
-		): SettingConfig & { default: SourceFromSchema<SheetSettingsSchema> }
-		get(
-			key: "gcsga.default_attributes.attributes",
-		): SettingConfig & { default: SourceFromSchema<AttributeDefSchema>[] }
-		get(key: "gcsga.default_attributes.effects"): SettingConfig & { default: AttributeEffect[] }
-		get(
-			key: "gcsga.default_resource_trackers.resource_trackers",
-		): SettingConfig & { default: SourceFromSchema<ResourceTrackerDefSchema>[] }
-		get(
-			key: "gcsga.default_move_types.move_types",
-		): SettingConfig & { default: SourceFromSchema<MoveTypeDefSchema>[] }
-		get(key: "gcsga.default_hit_locations.name"): SettingConfig & { default: string }
-		get(key: "gcsga.default_hit_locations.roll"): SettingConfig & { default: string }
-		get(
-			key: "gcsga.default_hit_locations.locations",
-		): SettingConfig & { default: SourceFromSchema<HitLocationSchema>[] }
-		get(key: "gcsga.colors.modePreference"): SettingConfig & { default: string }
-		get(key: "gcsga.colors.colors"): SettingConfig & { default: Record<string, { light: string; dark: string }> }
-		get(key: "gcsga.automatic_unready"): SettingConfig & { default: boolean }
-		get(
-			key: "gcsga.initiative_formula",
-		): SettingConfig & { default: ((combatant: CombatGURPS["turns"][number]) => string) | null }
-		get(key: "gcsga.compendium_browser_packs"): SettingConfig & { default: CompendiumBrowserSettings }
-		get(key: "gcsga.compendium_browser_sources"): SettingConfig & { default: CompendiumBrowserSources }
-		get(key: "gcsga.roll_formula"): SettingConfig & { default: string }
-		get(key: "gcsga.world_schema_version"): SettingConfig & { default: number }
+		// get(key: "gcsga.default_sheet_settings.initial_points"): SettingConfig & { default: number }
+		// get(key: "gcsga.default_sheet_settings.tech_level"): SettingConfig & { default: string }
+		// get(key: "gcsga.default_sheet_settings.tech_level"): SettingConfig & { default: string }
+		// get(
+		// 	key: "gcsga.default_sheet_settings.settings",
+		// ): SettingConfig & { default: SourceFromSchema<SheetSettingsSchema> }
+		// get(
+		// 	key: "gcsga.default_attributes.attributes",
+		// ): SettingConfig & { default: SourceFromSchema<AttributeDefSchema>[] }
+		// get(key: "gcsga.default_attributes.effects"): SettingConfig & { default: AttributeEffect[] }
+		// get(
+		// 	key: "gcsga.default_resource_trackers.resource_trackers",
+		// ): SettingConfig & { default: SourceFromSchema<ResourceTrackerDefSchema>[] }
+		// get(
+		// 	key: "gcsga.default_move_types.move_types",
+		// ): SettingConfig & { default: SourceFromSchema<MoveTypeDefSchema>[] }
+		// get(key: "gcsga.default_hit_locations.name"): SettingConfig & { default: string }
+		// get(key: "gcsga.default_hit_locations.roll"): SettingConfig & { default: string }
+		// get(
+		// 	key: "gcsga.default_hit_locations.locations",
+		// ): SettingConfig & { default: SourceFromSchema<HitLocationSchema>[] }
+		// get(key: "gcsga.colors.modePreference"): SettingConfig & { default: string }
+		// get(key: "gcsga.colors.colors"): SettingConfig & { default: Record<string, { light: string; dark: string }> }
+		// get(key: "gcsga.automatic_unready"): SettingConfig & { default: boolean }
+		// get(
+		// 	key: "gcsga.initiative_formula",
+		// ): SettingConfig & { default: ((combatant: CombatGURPS["turns"][number]) => string) | null }
+		// get(key: "gcsga.compendium_browser_packs"): SettingConfig & { default: CompendiumBrowserSettings }
+		// get(key: "gcsga.compendium_browser_sources"): SettingConfig & { default: CompendiumBrowserSources }
+		// get(key: "gcsga.roll_formula"): SettingConfig & { default: string }
+		// get(key: "gcsga.world_schema_version"): SettingConfig & { default: number }
 	}
 
 	interface RollMathProxy {
@@ -243,8 +227,9 @@ declare global {
 	}
 
 	const BUILD_MODE: "development" | "production"
-	const CONDITION_SOURCES: ConditionSource[]
-	const MANEUVER_SOURCES: ConditionSource[]
+	//TODO: reenable
+	// const CONDITION_SOURCES: ConditionSource[]
+	// const MANEUVER_SOURCES: ConditionSource[]
 	// const EN_JSON: typeof EnJSON
 	// const ROLL_PARSER: string
 }

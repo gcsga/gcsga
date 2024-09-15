@@ -1,5 +1,5 @@
 import { DAMAGE_TYPE } from "@module/apps/damage-calculator/damage-type.ts"
-import { DiceGURPS } from "@system"
+import { DiceGURPS } from "@module/data/dice.ts"
 import { ErrorGURPS } from "@util"
 
 export const DamageRegEx =

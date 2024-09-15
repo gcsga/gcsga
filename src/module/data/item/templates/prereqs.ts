@@ -1,7 +1,7 @@
 import fields = foundry.data.fields
 import { ItemDataModel } from "@module/data/abstract.ts"
 import { NumericCompareType } from "@module/data/constants.ts"
-import { BasePrereq, type Prereq, type PrereqList } from "@system"
+import { BasePrereq, Prereq, PrereqList } from "@module/data/prereq/index.ts"
 import { ErrorGURPS, prereq } from "@util"
 
 class PrereqTemplate extends ItemDataModel<PrereqTemplateSchema> {

@@ -1,10 +1,9 @@
-import { ActorGURPS } from "@actor"
-import { ActorType, SYSTEM_NAME } from "@data"
-import { UserFlags } from "@module/user/data.ts"
-import { TokenDocumentGURPS } from "@scene/token-document/document.ts"
+import { ActorType, SYSTEM_NAME, UserFlags } from "@data"
+import { ActorGURPS2 } from "@module/document/actor.ts"
+import { TokenDocumentGURPS } from "@module/document/token.ts"
 
 export class LastActor {
-	static async set(actor: ActorGURPS, token?: TokenDocumentGURPS): Promise<void> {
+	static async set(actor: ActorGURPS2, token?: TokenDocumentGURPS): Promise<void> {
 		if (!actor.isOwner) {
 			console.warn(`${game.user.name} does not have ownership of ${actor.name}`)
 			return
@@ -19,10 +18,10 @@ export class LastActor {
 		game.gurps.modifierBucket.render()
 	}
 
-	static async get(): Promise<ActorGURPS | null> {
+	static async get(): Promise<ActorGURPS2 | null> {
 		const uuid: string = game.user.flags[SYSTEM_NAME]?.[UserFlags.LastActor] || ""
-		let actor = (await fromUuid(uuid)) as ActorGURPS | TokenDocument
-		if (actor instanceof TokenDocument) actor = actor.actor as ActorGURPS
+		let actor = (await fromUuid(uuid)) as ActorGURPS2 | TokenDocument
+		if (actor instanceof TokenDocument) actor = actor.actor as ActorGURPS2
 		if (actor) return actor
 		return null
 	}

@@ -1,5 +1,5 @@
 // export * as Chat from "./chat.ts"
-export * as damageProgression from "./damage-progression.ts"
+export * as damageProgression from "../module/util/damage-progression.ts"
 export * from "./dom.ts"
 export * from "./drag-drop.ts"
 export * from "./enum/index.ts"

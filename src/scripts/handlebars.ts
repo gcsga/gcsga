@@ -1,13 +1,13 @@
-import { CharacterGURPS } from "@actor"
-import { ItemGURPS, SkillGURPS } from "@item"
-import { ItemSourceGURPS } from "@item/data/index.ts"
-import { itemIsOfType } from "@item/helpers.ts"
 import { ItemType } from "@module/data/constants.ts"
-import { DiceGURPS } from "@module/dice/index.ts"
-import { Study } from "@system"
+import { DiceGURPS } from "@module/data/dice.ts"
+import { CharacterData } from "@module/data/index.ts"
+import { ItemInst } from "@module/data/item/helpers.ts"
+import { Study } from "@module/data/study.ts"
+import { ItemGURPS2 } from "@module/document/item.ts"
 import { LocalizeGURPS, isContainer, localeDate, objectHasKey, rgbToHex, study } from "@util"
 import { pageRef } from "@util/page-ref.ts"
 import { SafeString } from "handlebars"
+import { ItemSource } from "types/foundry/common/documents/item.js"
 
 class HandlebarsHelpersGURPS {
 	static rgbToHex(s: string): string {
@@ -22,7 +22,7 @@ class HandlebarsHelpersGURPS {
 		return n
 	}
 
-	static isContainer(item: ItemGURPS): boolean {
+	static isContainer(item: ItemGURPS2): boolean {
 		return isContainer(item)
 	}
 
@@ -199,7 +199,7 @@ class HandlebarsHelpersGURPS {
 
 	// May be temporary
 	static diceString(d: DiceGURPS): string {
-		return new DiceGURPS(d).stringExtra(false)
+		return d.stringExtra(false)
 	}
 
 	static sort<K extends string>(list: Record<K, number>[], key: K): unknown[] {
@@ -333,7 +333,7 @@ class HandlebarsHelpersGURPS {
 	// 	return data
 	// }
 
-	static overspent(actor: CharacterGURPS): boolean {
+	static overspent(actor: CharacterData): boolean {
 		return actor.pointBreakdown.unspent < 0
 	}
 
@@ -402,10 +402,10 @@ class HandlebarsHelpersGURPS {
 		})
 	}
 
-	static effective(a: SkillGURPS | { effective: number; current: number }): string {
+	static effective(a: ItemInst<ItemType.Skill> | { effective: number; current: number }): string {
 		if (a instanceof Item) {
 			if (a.type === ItemType.Skill) {
-				const sk = a as SkillGURPS
+				const sk = a
 				if (sk.effectiveLevel > sk.level.level) return "pos"
 				if (sk.effectiveLevel > sk.level.level) return "neg"
 				return ""
@@ -509,7 +509,7 @@ class HandlebarsHelpersGURPS {
 		return criteria ? "disabled" : ""
 	}
 
-	static dropdown(item: ItemGURPS | ItemSourceGURPS): string {
+	static dropdown(item: ItemGURPS2 | ItemSource): string {
 		if (!itemIsOfType(item, "container")) return `<div class="dropdown"></div>`
 		if (item.system.open)
 			return `<div class="dropdown"><a class="dropdown-toggle open gcs-circled-chevron-down"></a></div>`

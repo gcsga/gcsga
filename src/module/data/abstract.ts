@@ -1,14 +1,16 @@
 import { ActorType, ItemType, SYSTEM_NAME } from "./constants.ts"
+
 import fields = foundry.data.fields
-import { type ItemGURPS2 } from "@module/document/item.ts"
+import { ItemGURPS2 } from "@module/document/item.ts"
 import { ItemDataInstances, ItemDataTemplates, ItemTemplateType } from "./item/types.ts"
 import { type ActorGURPS2 } from "@module/document/actor.ts"
 import { ActorDataInstances, ActorDataTemplates, ActorTemplateType } from "./actor/types.ts"
 import { ErrorGURPS } from "@util"
 import { CellData } from "./item/fields/cell-data.ts"
+import { ItemTemplateInst } from "./item/helpers.ts"
 
 interface SystemDataModelMetadata {
-	systemFlagsModel: typeof SystemDataModel | null
+	systemFlagsModel: typeof foundry.abstract.DataModel | null
 }
 
 interface ItemDataModelMetadata extends SystemDataModelMetadata {
@@ -95,7 +97,6 @@ class SystemDataModel<
 
 	/**
 	 * Metadata that describes this DataModel.
-	 * @type {SystemDataModelMetadata}
 	 */
 	static metadata: SystemDataModelMetadata = Object.freeze({
 		systemFlagsModel: null,
@@ -137,7 +138,6 @@ class SystemDataModel<
 	/*  Data Cleaning                               */
 	/* -------------------------------------------- */
 
-	/** @inheritdoc */
 	static override cleanData(source: object, options?: Record<string, unknown>): SourceFromSchema<fields.DataSchema> {
 		this._cleanData(source, options)
 		return super.cleanData(source, options)
@@ -149,7 +149,6 @@ class SystemDataModel<
 	 * Performs cleaning without calling DataModel.cleanData.
 	 * @param {object} [source]         The source data
 	 * @param {object} [options={}]     Additional options (see DataModel.cleanData)
-	 * @protected
 	 */
 	static _cleanData(source: object, options?: Record<string, unknown>) {
 		for (const template of this._schemaTemplates) {
@@ -174,6 +173,65 @@ class SystemDataModel<
 			yield entry
 		}
 	}
+
+	/* -------------------------------------------- */
+	/*  Socket Event Handlers                       */
+	/* -------------------------------------------- */
+
+	/**
+	 * Pre-creation logic for this system data.
+	 * @param _data               The initial data object provided to the document creation request.
+	 * @param _options            Additional options which modify the creation request.
+	 * @param _user               The User requesting the document creation.
+	 * @returns {Promise<boolean|void>}   A return value of false indicates the creation operation should be cancelled.
+	 */
+	override async _preCreate(
+		_data: this["_source"],
+		_options: DatabaseCreateOperation<TDocument["parent"]>,
+		_user: User,
+	): Promise<boolean | void> {}
+
+	/**
+	 * Pre-update logic for this system data.
+	 * @param _data               The initial data object provided to the document creation request.
+	 * @param _options            Additional options which modify the creation request.
+	 * @param _user               The User requesting the document creation.
+	 * @returns {Promise<boolean|void>}   A return value of false indicates the creation operation should be cancelled.
+	 */
+	async _preUpdate(
+		_data: this["_source"],
+		_options: DatabaseUpdateOperation<TDocument["parent"]>,
+		_user: foundry.documents.BaseUser,
+	): Promise<boolean | void> {}
+
+	/**
+	 * Pre-delete logic for this system data.
+	 * @param _options            Additional options which modify the creation request.
+	 * @param _user               The User requesting the document creation.
+	 * @returns {Promise<boolean|void>}   A return value of false indicates the creation operation should be cancelled.
+	 */
+	async _preDelete(
+		_options: DatabaseDeleteOperation<TDocument["parent"]>,
+		_user: foundry.documents.BaseUser,
+	): Promise<boolean | void> {}
+
+	_onCreate(
+		_data: Partial<this["_source"]>,
+		_options: DatabaseCreateOperation<TDocument["parent"]>,
+		_userId: string,
+	) {}
+
+	/* -------------------------------------------- */
+
+	_onUpdate(
+		_changed: Partial<this["_source"]>,
+		_options: DatabaseUpdateOperation<TDocument["parent"]>,
+		_userId: string,
+	) {}
+
+	/* -------------------------------------------- */
+
+	_onDelete(_options: DatabaseDeleteOperation<TDocument["parent"]>, _userId: string) {}
 
 	/* -------------------------------------------- */
 	/*  Data Validation                             */
@@ -300,7 +358,14 @@ interface SystemDataModel<TDocument extends foundry.abstract.Document, TSchema e
 /**
  * Variant of the SystemDataModel with some extra actor-specific handling.
  */
-class ActorDataModel<TSchema extends ActorDataSchema = ActorDataSchema> extends SystemDataModel<ActorGURPS2, TSchema> {
+// class ActorDataModel<
+// 	TDocument extends ActorGURPS2 = ActorGURPS2,
+// 	TSchema extends ActorDataSchema = ActorDataSchema,
+// > extends SystemDataModel<TDocument, TSchema> {
+class ActorDataModel<
+	// TDocument extends ActorGURPS2 = ActorGURPS2,
+	TSchema extends ActorDataSchema = ActorDataSchema,
+> extends SystemDataModel<ActorGURPS2, TSchema> {
 	/**
 	 * Type safe way of verifying if an Actor is of a particular type.
 	 */
@@ -324,6 +389,9 @@ class ActorDataModel<TSchema extends ActorDataSchema = ActorDataSchema> extends 
 	}
 }
 
+// interface ActorDataModel<TDocument extends ActorGURPS2, TSchema extends ActorDataSchema>
+// 	extends SystemDataModel<TDocument, TSchema>,
+// 		ModelPropsFromSchema<ActorDataSchema> {}
 interface ActorDataModel<TSchema extends ActorDataSchema>
 	extends SystemDataModel<ActorGURPS2, TSchema>,
 		ModelPropsFromSchema<ActorDataSchema> {}
@@ -336,6 +404,11 @@ type ActorDataSchema = {}
  * Variant of the SystemDataModel with support for rich item tooltips.
  */
 class ItemDataModel<TSchema extends ItemDataSchema = ItemDataSchema> extends SystemDataModel<ItemGURPS2, TSchema> {
+	/**
+	 * Maximum depth items can be nested in containers.
+	 */
+	static MAX_DEPTH = 10
+
 	/**
 	 * Type safe way of verifying if an Item is of a particular type.
 	 */
@@ -358,13 +431,25 @@ class ItemDataModel<TSchema extends ItemDataSchema = ItemDataSchema> extends Sys
 		return this.parent.actor
 	}
 
+	/* -------------------------------------------- */
+
 	get cellData(): Record<string, CellData> {
 		throw ErrorGURPS(`ItemGURPS.cellData must be implemented.`)
 	}
 
+	/* -------------------------------------------- */
+
 	get contextMenuItmes(): ContextMenuEntry[] {
 		return []
 	}
+
+	/* -------------------------------------------- */
+
+	get ratedStrength(): number {
+		return 0
+	}
+
+	/* -------------------------------------------- */
 
 	static override defineSchema(): ItemDataSchema {
 		// const fields = foundry.data.fields
@@ -378,6 +463,8 @@ class ItemDataModel<TSchema extends ItemDataSchema = ItemDataSchema> extends Sys
 		}
 	}
 
+	/* -------------------------------------------- */
+
 	static override metadata: ItemDataModelMetadata = Object.freeze(
 		foundry.utils.mergeObject(
 			super.metadata,
@@ -387,6 +474,81 @@ class ItemDataModel<TSchema extends ItemDataSchema = ItemDataSchema> extends Sys
 			{ inplace: false },
 		),
 	)
+
+	/* -------------------------------------------- */
+	/*  Socket Event Handlers                       */
+	/* -------------------------------------------- */
+
+	/**
+	 * Trigger a render on all sheets for items within which this item is contained.
+	 */
+	async _renderContainers(
+		options: {
+			formerContainer?: ItemUUID
+		} & RenderOptions = {},
+	) {
+		// Render this item's container & any containers it is within
+		const parentContainers = await this.allContainers()
+		parentContainers.forEach(c => c.sheet?.render(false, options))
+
+		// Render the actor sheet, compendium, or sidebar
+		if (this.parent.isEmbedded) this.parent.actor!.sheet?.render(false, options)
+		else if (this.parent.pack) game.packs.get(this.parent.pack)!.apps.forEach(a => a.render(false, options))
+		else ui.sidebar.tabs.items.render(false, options)
+
+		// Render former container if it was moved between containers
+		if (options.formerContainer) {
+			const former = (await fromUuid(options.formerContainer)) as ItemGURPS2 | null
+			former?.render(false, options)
+			former?.system._renderContainers({ ...options, formerContainer: undefined })
+		}
+	}
+
+	/* -------------------------------------------- */
+
+	override _onCreate(
+		_data: Partial<this["_source"]>,
+		_options: DatabaseCreateOperation<ItemGURPS2["parent"]>,
+		_userId: string,
+	) {
+		this._renderContainers()
+	}
+
+	/* -------------------------------------------- */
+
+	override _onUpdate(
+		_changed: Partial<this["_source"]>,
+		options: ItemDatabaseUpdateOperation<ItemGURPS2["parent"]>,
+		_userId: string,
+	) {
+		this._renderContainers({ formerContainer: options.formerContainer })
+	}
+
+	/* -------------------------------------------- */
+
+	override _onDelete(_options: DatabaseDeleteOperation<ItemGURPS2["parent"]>, _userId: string) {
+		this._renderContainers()
+	}
+
+	/* -------------------------------------------- */
+	/*  Helper Methods                              */
+	/* -------------------------------------------- */
+
+	/**
+	 * All of the containers this item is within up to the parent actor or collection.
+	 */
+	async allContainers(): Promise<ItemTemplateInst<ItemTemplateType.Container>[]> {
+		let item = this.parent
+		let container
+		let depth = 0
+		const containers = []
+		while ((container = await item.container) && depth < ItemDataModel.MAX_DEPTH) {
+			containers.push(container)
+			item = container
+			depth++
+		}
+		return containers as ItemTemplateInst<ItemTemplateType.Container>[]
+	}
 }
 
 interface ItemDataModel<TSchema extends ItemDataSchema>
@@ -398,3 +560,9 @@ type ItemDataSchema = {
 }
 
 export { ItemDataModel, ActorDataModel, SystemDataModel, type ItemDataSchema }
+
+type ItemDatabaseUpdateOperation<TDocument extends foundry.abstract.Document | null> =
+	DatabaseUpdateOperation<TDocument> &
+		RenderOptions & {
+			formerContainer?: ItemUUID
+		}

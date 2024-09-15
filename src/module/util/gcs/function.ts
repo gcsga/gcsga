@@ -2,7 +2,7 @@ import { ErrorGURPS, Int, encumbrance, trimS } from "@util"
 import { equalFold } from "../string-criteria.ts"
 import { EvalFunction, Evaluator, Operand, resolverIsCharacter } from "./eval.ts"
 import { ItemType } from "@module/data/constants.ts"
-import { DiceGURPS } from "@system"
+import { DiceGURPS } from "@module/data/dice.ts"
 
 export function evalFunctions(): Map<string, EvalFunction> {
 	const m = new Map()
@@ -358,11 +358,11 @@ function evalWeaponDamage(e: Evaluator, args: string): string {
 	}
 	for (const w of actor.parent.itemCollections.meleeWeapons) {
 		if (equalFold(w.system.processedName, name) && equalFold(w.system.usageWithReplacements, usage))
-			return w.system.damage.resolvedDamage(null)
+			return w.system.damage.resolvedValue(null)
 	}
 	for (const w of actor.parent.itemCollections.rangedWeapons) {
 		if (equalFold(w.system.processedName, name) && equalFold(w.system.usageWithReplacements, usage))
-			return w.system.damage.resolvedDamage(null)
+			return w.system.damage.resolvedValue(null)
 	}
 	return ""
 }

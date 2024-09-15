@@ -44,7 +44,7 @@ class WeaponAccuracy extends WeaponField<WeaponRangedData, WeaponAccuracySchema>
 		return this.base.toString()
 	}
 
-	override resolveValue(w: WeaponRangedData, tooltip: TooltipGURPS): WeaponAccuracy {
+	override resolve(w: WeaponRangedData, tooltip: TooltipGURPS | null): WeaponAccuracy {
 		const result = this.clone()
 		result.jet = w.resolveBoolFlag(wswitch.Type.Jet, result.jet)
 

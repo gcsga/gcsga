@@ -36,7 +36,7 @@ class WeaponBlock extends WeaponField<AbstractWeaponTemplate, WeaponBlockSchema>
 		return buffer.toString()
 	}
 
-	override resolveValue(w: AbstractWeaponTemplate, tooltip: TooltipGURPS): WeaponBlock {
+	override resolve(w: AbstractWeaponTemplate, tooltip: TooltipGURPS | null): WeaponBlock {
 		const result = this.clone()
 		result.canBlock = w.resolveBoolFlag(wswitch.Type.CanBlock, result.canBlock)
 		if (result.canBlock) {
@@ -55,9 +55,9 @@ class WeaponBlock extends WeaponField<AbstractWeaponTemplate, WeaponBlockSchema>
 					if (best < level) best = level
 				}
 				if (best !== Number.MIN_SAFE_INTEGER) {
-					tooltip.appendToNewLine(primaryTooltip.toString())
+					tooltip?.appendToNewLine(primaryTooltip.toString())
 					result.modifier += 3 + best + actor.system.bonuses.block.value
-					tooltip.appendToNewLine(actor.system.bonuses.block.tooltip)
+					tooltip?.appendToNewLine(actor.system.bonuses.block.tooltip)
 					let percentModifier = 0
 					for (const bonus of w.collectWeaponBonuses(1, tooltip, feature.Type.WeaponBlockBonus)) {
 						const amt = bonus.adjustedAmountForWeapon(w)

@@ -1,0 +1,55 @@
+import fields = foundry.data.fields
+import type { AbstractAttributeDef } from "./abstract-attribute-definition.ts"
+import { ActorDataModel } from "@module/data/abstract.ts"
+import { ActorGURPS2 } from "@module/document/actor.ts"
+
+abstract class AbstractAttribute<
+	TActor extends ActorDataModel = ActorDataModel,
+	TSchema extends AbstractAttributeSchema = AbstractAttributeSchema,
+> extends foundry.abstract.DataModel<TActor, TSchema> {
+	static override defineSchema(): AbstractAttributeSchema {
+		const fields = foundry.data.fields
+
+		return {
+			id: new fields.StringField(),
+		}
+	}
+
+	constructor(data: DeepPartial<SourceFromSchema<TSchema>>, options?: AbstractAttributeConstructionOptions<TActor>) {
+		super(data, options)
+	}
+
+	abstract get definition(): AbstractAttributeDef<TActor> | null
+
+	get actor(): ActorGURPS2 {
+		return this.parent.parent
+	}
+
+	/** Effective value of the attribute, not taking into account modifiers from temporary effects */
+	get max(): number {
+		const def = this.definition
+		if (!def) return 0
+		return def.baseValue(this.parent)
+	}
+
+	/** Current value of the attribute, applies only to pools */
+	get current(): number {
+		return this.max
+	}
+
+	/** Effective value of the attribute, taking into account modifiers from temporary effects */
+	get temporaryMax(): number {
+		return this.max
+	}
+}
+
+type AbstractAttributeSchema = {
+	id: fields.StringField<string, string, true, false>
+}
+
+interface AbstractAttributeConstructionOptions<TActor extends ActorDataModel>
+	extends DataModelConstructionOptions<TActor> {
+	order?: number
+}
+
+export { AbstractAttribute, type AbstractAttributeSchema, type AbstractAttributeConstructionOptions }

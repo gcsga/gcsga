@@ -1,11 +1,10 @@
-import { ActorGURPS } from "@actor"
-import { ItemGURPS } from "@item"
-import { UserFlags } from "@module/user/data.ts"
 import { DnD, ErrorGURPS, fontAwesomeIcon, htmlQuery } from "@util"
 import MiniSearch from "minisearch"
 import { CompendiumMigrationStatus } from "../compendium-migration-status.ts"
-import { SYSTEM_NAME } from "@data"
+import { SYSTEM_NAME, UserFlags } from "@data"
 import { ItemCompendiumImporter } from "@module/util/index.ts"
+import { ActorGURPS2 } from "@module/document/actor.ts"
+import { ItemGURPS2 } from "@module/document/item.ts"
 
 class CompendiumDirectoryGURPS extends CompendiumDirectory {
 	static readonly STOP_WORDS = new Set(["of", "th", "the"])
@@ -82,7 +81,7 @@ class CompendiumDirectoryGURPS extends CompendiumDirectory {
 			},
 			callback: async $li => {
 				const compendium = game.packs.get($li.data("pack"), { strict: true }) as CompendiumCollection<
-					ActorGURPS<null> | ItemGURPS<null>
+					ActorGURPS2<null> | ItemGURPS2<null>
 				>
 				new CompendiumMigrationStatus(compendium).render(true)
 			},

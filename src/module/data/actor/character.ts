@@ -1,14 +1,5 @@
 import { ActorDataModel } from "../abstract.ts"
 import fields = foundry.data.fields
-import {
-	SheetSettings,
-	ResourceTracker,
-	MoveType,
-	ResourceTrackerSchema,
-	MoveTypeSchema,
-	AttributeGURPS,
-	DiceGURPS,
-} from "@system"
 import { CharacterManeuver } from "@system/maneuver-manager.ts"
 import { PointsRecord, PointsRecordSchema } from "./fields/points-record.ts"
 import { ItemType, gid } from "../constants.ts"
@@ -24,6 +15,10 @@ import { AttributeHolderTemplate, AttributeHolderTemplateSchema } from "./templa
 import { CharacterBonus, CharacterBonusSchema } from "./fields/bonus.ts"
 import { Int, damageProgression, encumbrance, progression, threshold } from "@util"
 import { ItemInst } from "../item/helpers.ts"
+import { ResourceTracker, ResourceTrackerSchema } from "../resource-tracker/index.ts"
+import { MoveType, MoveTypeSchema } from "../move-type/index.ts"
+import { AttributeGURPS } from "../attribute/index.ts"
+import { DiceGURPS } from "../dice.ts"
 
 class CharacterData extends ActorDataModel.mixin(
 	FeatureHolderTemplate,
@@ -304,10 +299,7 @@ class CharacterData extends ActorDataModel.mixin(
 	}
 }
 
-interface CharacterData extends Omit<ModelPropsFromSchema<CharacterSchema>, "settings" | "attributes"> {
-	settings: SheetSettings
-	attributes: AttributeGURPS[]
-}
+interface CharacterData extends ModelPropsFromSchema<CharacterSchema> {}
 
 type CharacterSchema = FeatureHolderTemplateSchema &
 	SettingsHolderTemplateSchema &
@@ -362,4 +354,4 @@ type CharacterCache = {
 	encumbranceLevelForSkills: encumbrance.Level | null
 	basicLift: number | null
 }
-export { CharacterData }
+export { CharacterData, type CharacterSchema, type CharacterProfileSchema }

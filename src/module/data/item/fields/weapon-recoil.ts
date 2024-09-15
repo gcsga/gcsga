@@ -1,9 +1,9 @@
+import { WeaponRangedData } from "../weapon-ranged.ts"
 import fields = foundry.data.fields
 import { WeaponField } from "./weapon-field.ts"
-import { Int, StringBuilder, TooltipGURPS, feature } from "@util"
-import * as weaponRangedTs from "../weapon-ranged.ts"
+import { Int, LocalizeGURPS, StringBuilder, TooltipGURPS, feature } from "@util"
 
-class WeaponRecoil extends WeaponField<weaponRangedTs.WeaponRangedData, WeaponRecoilSchema> {
+class WeaponRecoil extends WeaponField<WeaponRangedData, WeaponRecoilSchema> {
 	static override defineSchema(): WeaponRecoilSchema {
 		const fields = foundry.data.fields
 		return {
@@ -39,7 +39,13 @@ class WeaponRecoil extends WeaponField<weaponRangedTs.WeaponRangedData, WeaponRe
 		return buffer.toString()
 	}
 
-	override resolveValue(w: weaponRangedTs.WeaponRangedData, tooltip: TooltipGURPS): WeaponRecoil {
+	override tooltip(_w: WeaponRangedData): string {
+		if (this.shot !== 0 && this.slug !== 0 && this.shot !== this.slug)
+			LocalizeGURPS.translations.GURPS.Tooltip.Recoil
+		return ""
+	}
+
+	override resolve(w: WeaponRangedData, tooltip: TooltipGURPS | null): WeaponRecoil {
 		const result = this.clone()
 		if (this.shot > 0 || this.slug > 0) {
 			let percent = 0
@@ -72,7 +78,7 @@ class WeaponRecoil extends WeaponField<weaponRangedTs.WeaponRangedData, WeaponRe
 }
 
 interface WeaponRecoil
-	extends WeaponField<weaponRangedTs.WeaponRangedData, WeaponRecoilSchema>,
+	extends WeaponField<WeaponRangedData, WeaponRecoilSchema>,
 		ModelPropsFromSchema<WeaponRecoilSchema> {}
 
 type WeaponRecoilSchema = {

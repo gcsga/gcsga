@@ -1,31 +1,5 @@
-import { ActorGURPS } from "@actor"
-import {
-	CharacterFlagDefaults,
-	CharacterFlags,
-	CharacterMove,
-	CharacterProfile,
-	CharacterSource,
-	CharacterSystemSource,
-	PointsRecord,
-} from "@actor/character/data.ts"
 import { ActorFlags, ActorType, ManeuverID, SETTINGS, SYSTEM_NAME } from "@data"
-import { ItemSourceGURPS } from "@item/data/index.ts"
 import { ChatMessageGURPS } from "@module/chat-message/document.ts"
-import {
-	AttributeDefSchema,
-	AttributeSchema,
-	BlockLayoutKey,
-	BodySource,
-	HitLocationSource,
-	MoveTypeDefSchema,
-	MoveTypeOverrideSchema,
-	MoveTypeSchema,
-	PageSettings,
-	PoolThresholdSchema,
-	ResourceTrackerDefSchema,
-	ResourceTrackerSchema,
-	SheetSettingsSource,
-} from "@system"
 import { ManeuverManager } from "@system/maneuver-manager.ts"
 import { Length, LocalizeGURPS, Weight, getCurrentTime } from "@util"
 import { display } from "@util/enum/display.ts"
@@ -52,6 +26,16 @@ import {
 	ImportedThreshold,
 } from "./data.ts"
 import { ItemImporter } from "./item.ts"
+import { ActorGURPS2 } from "@module/document/actor.ts"
+import { CharacterProfileSchema, CharacterSchema } from "@module/data/actor/character.ts"
+import { ItemSource } from "types/foundry/common/documents/item.js"
+import { ActorSource } from "types/foundry/common/documents/actor.js"
+import { PointsRecord } from "@module/data/actor/fields/points-record.ts"
+import { AttributeDefSchema, AttributeSchema, PoolThresholdSchema } from "@module/data/attribute/index.ts"
+import { ResourceTrackerDefSchema, ResourceTrackerSchema } from "@module/data/resource-tracker/index.ts"
+import { MoveTypeDefSchema, MoveTypeOverrideSchema, MoveTypeSchema } from "@module/data/move-type/index.ts"
+import { BodySource, HitLocationSource } from "@module/data/hit-location.ts"
+import { BlockLayoutKey, PageSettings, SheetSettingsSchema } from "@module/data/sheet-settings.ts"
 
 export class CharacterImporter {
 	static async throwError(text: string): Promise<void> {
@@ -65,7 +49,7 @@ export class CharacterImporter {
 		})
 	}
 
-	static async importCharacter<TActor extends ActorGURPS>(
+	static async importCharacter<TActor extends ActorGURPS2>(
 		document: TActor,
 		file: { text: string; name: string; path: string },
 	): Promise<void> {
@@ -80,9 +64,7 @@ export class CharacterImporter {
 			else return CharacterImporter.throwError(LocalizeGURPS.translations.gurps.error.import.format_new)
 		}
 
-		const systemData: CharacterSystemSource = {
-			_migration: { version: null, previous: null },
-			type: ActorType.Character,
+		const systemData: Partial<SourceFromSchema<CharacterSchema>> = {
 			version: data.version,
 			total_points: data.total_points,
 			points_record: CharacterImporter.importPointsRecord(data.points_record ?? []),
@@ -96,20 +78,20 @@ export class CharacterImporter {
 			modified_date: data.modified_date,
 		}
 
-		if (systemData.settings.resource_trackers.length === 0)
+		if (systemData.settings?.resource_trackers.length === 0)
 			systemData.settings.resource_trackers = game.settings.get(
 				SYSTEM_NAME,
 				`${SETTINGS.DEFAULT_RESOURCE_TRACKERS}.resource_trackers`,
 			)
 
-		if (systemData.settings.move_types.length === 0)
+		if (systemData.settings?.move_types.length === 0)
 			systemData.settings.move_types = game.settings.get(SYSTEM_NAME, `${SETTINGS.DEFAULT_MOVE_TYPES}.move_types`)
 
 		const image = CharacterImporter.importPortrait(data.profile?.portrait)
 
 		const flags = CharacterImporter.importFlags(file)
 
-		const items: ItemSourceGURPS[] = []
+		const items: ItemSource[] = []
 		items.push(...ItemImporter.importItems(data.traits, { fileVersion: data.version }))
 		items.push(...ItemImporter.importItems(data.skills, { fileVersion: data.version }))
 		items.push(...ItemImporter.importItems(data.spells, { fileVersion: data.version }))
@@ -119,7 +101,7 @@ export class CharacterImporter {
 
 		const name = data.profile?.name ?? document.name ?? LocalizeGURPS.translations.TYPES.Actor[ActorType.Character]
 
-		const actorData: DeepPartial<CharacterSource> = {
+		const actorData: DeepPartial<ActorSource> = {
 			name,
 			img: image,
 			system: systemData,
@@ -146,7 +128,7 @@ export class CharacterImporter {
 		}) as PointsRecord[]
 	}
 
-	static importProfile(data?: ImportedCharacterProfile): CharacterProfile {
+	static importProfile(data?: ImportedCharacterProfile): SourceFromSchema<CharacterProfileSchema> {
 		return {
 			name: data?.name ?? "",
 			age: data?.age ?? "",
@@ -168,7 +150,10 @@ export class CharacterImporter {
 		}
 	}
 
-	static importSettings(data?: ImportedSheetSettings, third_party?: ImportedThirdPartyData): SheetSettingsSource {
+	static importSettings(
+		data?: ImportedSheetSettings,
+		third_party?: ImportedThirdPartyData,
+	): SourceFromSchema<SheetSettingsSchema> {
 		return {
 			page: CharacterImporter.importPage(data?.page),
 			block_layout: (data?.block_layout as BlockLayoutKey[]) ?? [],

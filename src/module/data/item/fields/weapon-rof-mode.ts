@@ -1,5 +1,5 @@
 import fields = foundry.data.fields
-import { Int, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
+import { Int, LocalizeGURPS, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
 import { type WeaponRangedData } from "../weapon-ranged.ts"
 import { WeaponField } from "./weapon-field.ts"
 
@@ -57,7 +57,50 @@ class WeaponROFMode extends WeaponField<WeaponRangedData, WeaponROFModeSchema> {
 		return buffer.toString()
 	}
 
-	override resolveValue(w: WeaponRangedData, tooltip: TooltipGURPS, firstMode: boolean): WeaponROFMode {
+	// Tooltip returns a tooltip for the data, if any. Call .resolve() prior to calling this method if you want the tooltip
+	// to be based on the resolved values.
+	override tooltip(_w: WeaponRangedData): string {
+		if (
+			this.shotsPerAttack <= 0 ||
+			(this.secondaryProjectiles <= 0 && !this.fullAutoOnly && !this.highCyclicControlledBursts)
+		)
+			return ""
+		const tooltip = new TooltipGURPS()
+		if (this.secondaryProjectiles > 0) {
+			const shotsText =
+				this.shotsPerAttack === 1
+					? LocalizeGURPS.translations.GURPS.Weapon.ShotsSingular
+					: LocalizeGURPS.translations.GURPS.Weapon.ShotsPlural
+
+			const projectilesText =
+				this.secondaryProjectiles === 1
+					? LocalizeGURPS.translations.GURPS.Weapon.ProjectilesSingular
+					: LocalizeGURPS.translations.GURPS.Weapon.ProjectilesPlural
+
+			tooltip.push(
+				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Tooltip.ROFModeSecondaryProjectiles, {
+					shotsCount: this.shotsPerAttack,
+					shotsText,
+					projectilesCount: this.secondaryProjectiles,
+					projectilesText,
+				}),
+			)
+		}
+
+		if (this.fullAutoOnly)
+			tooltip.appendToNewLine(
+				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Tooltip.ROFModeFullAutoOnly, {
+					min: Math.ceil(this.shotsPerAttack / 4),
+				}),
+			)
+
+		if (this.highCyclicControlledBursts)
+			tooltip.appendToNewLine(LocalizeGURPS.translations.GURPS.Tooltip.ROFModeHighCyclicControlledBursts)
+
+		return tooltip.toString()
+	}
+
+	override resolve(w: WeaponRangedData, tooltip: TooltipGURPS, firstMode: boolean): WeaponROFMode {
 		const result = this.clone()
 		let [shotsFeature, secondaryFeature] = firstMode
 			? [feature.Type.WeaponRofMode1ShotsBonus, feature.Type.WeaponRofMode1SecondaryBonus]

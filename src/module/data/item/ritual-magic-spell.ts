@@ -8,12 +8,13 @@ import { PrereqTemplate, PrereqTemplateSchema } from "./templates/prereqs.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
 import { StudyTemplate, StudyTemplateSchema } from "./templates/study.ts"
 import { ItemDataModel } from "../abstract.ts"
-import { SkillDefault, Study } from "@system"
 import { SpellFieldsTemplate, SpellFieldsTemplateSchema } from "./templates/spell-fields.ts"
 import { ActorTemplateType } from "../actor/types.ts"
 import { SkillLevel, calculateTechniqueLevel } from "./helpers.ts"
 import { Nameable } from "@module/util/nameable.ts"
 import { AttributeDifficulty } from "./fields/attribute-difficulty.ts"
+import { SkillDefault } from "../skill-default.ts"
+import { Study } from "../study.ts"
 
 class RitualMagicSpellData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -173,7 +174,7 @@ class RitualMagicSpellData extends ItemDataModel.mixin(
 		const colleges = this.collegeWithReplacements
 		if (colleges.length === 0) {
 			if (tooltip !== null) {
-				tooltip.push(LocalizeGURPS.translations.GURPS.TooltipPrefix)
+				tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.Prefix)
 				tooltip.push(LocalizeGURPS.translations.GURPS.Prereq.RitualMagic.College)
 			}
 			return false
@@ -183,7 +184,7 @@ class RitualMagicSpellData extends ItemDataModel.mixin(
 		}
 		if (actor.system.bestSkillNamed(this.skillNameWithReplacements, "", false) !== null) return true
 		if (tooltip !== null) {
-			tooltip.push(LocalizeGURPS.translations.GURPS.TooltipPrefix)
+			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.Prefix)
 			const name = this.skillNameWithReplacements
 			let buffer = LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.RitualMagic.SkillFirst, {
 				name,

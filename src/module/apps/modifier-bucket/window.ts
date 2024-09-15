@@ -1,9 +1,9 @@
-import { HOOKS, ModifierItem, RollModifierStack, SOCKET, SYSTEM_NAME } from "@data"
+import { HOOKS, SOCKET, SYSTEM_NAME, UserFlags } from "@data"
 import { ModifierBucket } from "./button.ts"
-import { UserFlags } from "@module/user/data.ts"
 import { LocalizeGURPS, htmlQuery, htmlQueryAll } from "@util"
 import { DialogGURPS } from "../dialog.ts"
 import { PDF } from "@module/util/index.ts"
+import { RollModifierStack } from "@module/data/roll-modifier.ts"
 
 export class ModifierBucketWindow extends Application {
 	refresh = foundry.utils.debounce(this.render, 100)
@@ -136,10 +136,12 @@ export class ModifierBucketWindow extends Application {
 								if (!name || name === "")
 									name = LocalizeGURPS.translations.gurps.system.modifier_bucket.untitled_stack
 								const savedStacks = game.user.flags[SYSTEM_NAME][UserFlags.SavedStacks]
-								savedStacks.push({
-									title: name,
-									items: modStack,
-								})
+								savedStacks.push(
+									new RollModifierStack({
+										title: name,
+										items: modStack,
+									}),
+								)
 								await game.user.setFlag(SYSTEM_NAME, UserFlags.SavedStacks, savedStacks)
 								Hooks.call(HOOKS.AddModifier)
 							},

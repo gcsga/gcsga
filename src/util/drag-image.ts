@@ -1,9 +1,8 @@
-import { getItemArtworkName } from "@item/helpers.ts"
 import { SYSTEM_NAME } from "@module/data/constants.ts"
 import { htmlQuery, htmlQueryAll } from "./dom.ts"
-import { ItemGURPS } from "@item"
+import { ItemGURPS2 } from "@module/document/item.ts"
 
-async function createDragImage(event: DragEvent | null, item: ItemGURPS | null): Promise<void> {
+async function createDragImage(event: DragEvent | null, item: ItemGURPS2 | null): Promise<void> {
 	const dragImage = document.createElement("div")
 	dragImage.innerHTML = await renderTemplate(`systems/${SYSTEM_NAME}/templates/system/drag-image.hbs`, {
 		name: item?.name ?? "",

@@ -1,55 +1,55 @@
-import { ActorGURPS } from "@actor"
-import type { SceneGURPS } from "../document.ts"
-import { TokenFlagsGURPS } from "./data.ts"
-import type { CombatGURPS, CombatantGURPS } from "@module/combat/index.ts"
-import type { TokenGURPS } from "@module/canvas/index.ts"
-import { ActorType, ConditionID, ManeuverID } from "@module/data/constants.ts"
-
-class TokenDocumentGURPS<TParent extends SceneGURPS | null = SceneGURPS | null> extends TokenDocument<TParent> {
-	/** Has this document completed `DataModel` initialization? */
-	declare initialized: boolean
-
-	/** This should be in Foundry core, but ... */
-	get scene(): this["parent"] {
-		return this.parent
-	}
-
-	protected override _initialize(options?: Record<string, unknown>): void {
-		this.initialized = false
-		super._initialize(options)
-	}
-
-	/** If embedded, don't prepare data if the parent's data model hasn't initialized all its properties */
-	override prepareData(): void {
-		if (this.initialized) return
-		if (!this.parent || this.parent.initialized) {
-			this.initialized = true
-			super.prepareData()
-		}
-	}
-
-	override hasStatusEffect(statusId: string): boolean {
-		// if (statusId === ConditionID.Dead) return this.overlayEffect === CONFIG.controlIcons.defeated
-		if (statusId === ConditionID.Dead) return !!this.actor?.statuses.has(ConditionID.Dead)
-		return this.actor?.itemCollections.conditions.some(e => e.system.slug === statusId) ?? false
-	}
-
-	override async toggleCombatant(options: { active?: boolean }): Promise<boolean> {
-		if (this.actor?.isOfType(ActorType.Character)) {
-			if (options.active || this.inCombat) await this.actor.setManeuver(null)
-			else await this.actor.setManeuver(ManeuverID.DoNothing)
-		}
-		return super.toggleCombatant(options)
-	}
-}
-
-interface TokenDocumentGURPS<TParent extends SceneGURPS | null = SceneGURPS | null> extends TokenDocument<TParent> {
-	flags: TokenFlagsGURPS
-
-	get actor(): ActorGURPS<this | null> | null
-	get combatant(): CombatantGURPS<CombatGURPS, this> | null
-	get object(): TokenGURPS<this> | null
-	// get sheet(): TokenConfigGURPS<this>
-}
-
-export { TokenDocumentGURPS }
+// import { ActorGURPS } from "@actor"
+// import type { SceneGURPS } from "../document.ts"
+// import { TokenFlagsGURPS } from "./data.ts"
+// import type { CombatGURPS, CombatantGURPS } from "@module/combat/index.ts"
+// import type { TokenGURPS } from "@module/canvas/index.ts"
+// import { ActorType, ConditionID, ManeuverID } from "@module/data/constants.ts"
+//
+// class TokenDocumentGURPS<TParent extends SceneGURPS | null = SceneGURPS | null> extends TokenDocument<TParent> {
+// 	/** Has this document completed `DataModel` initialization? */
+// 	declare initialized: boolean
+//
+// 	/** This should be in Foundry core, but ... */
+// 	get scene(): this["parent"] {
+// 		return this.parent
+// 	}
+//
+// 	protected override _initialize(options?: Record<string, unknown>): void {
+// 		this.initialized = false
+// 		super._initialize(options)
+// 	}
+//
+// 	/** If embedded, don't prepare data if the parent's data model hasn't initialized all its properties */
+// 	override prepareData(): void {
+// 		if (this.initialized) return
+// 		if (!this.parent || this.parent.initialized) {
+// 			this.initialized = true
+// 			super.prepareData()
+// 		}
+// 	}
+//
+// 	override hasStatusEffect(statusId: string): boolean {
+// 		// if (statusId === ConditionID.Dead) return this.overlayEffect === CONFIG.controlIcons.defeated
+// 		if (statusId === ConditionID.Dead) return !!this.actor?.statuses.has(ConditionID.Dead)
+// 		return this.actor?.itemCollections.conditions.some(e => e.system.slug === statusId) ?? false
+// 	}
+//
+// 	override async toggleCombatant(options: { active?: boolean }): Promise<boolean> {
+// 		if (this.actor?.isOfType(ActorType.Character)) {
+// 			if (options.active || this.inCombat) await this.actor.setManeuver(null)
+// 			else await this.actor.setManeuver(ManeuverID.DoNothing)
+// 		}
+// 		return super.toggleCombatant(options)
+// 	}
+// }
+//
+// interface TokenDocumentGURPS<TParent extends SceneGURPS | null = SceneGURPS | null> extends TokenDocument<TParent> {
+// 	flags: TokenFlagsGURPS
+//
+// 	get actor(): ActorGURPS<this | null> | null
+// 	get combatant(): CombatantGURPS<CombatGURPS, this> | null
+// 	get object(): TokenGURPS<this> | null
+// 	// get sheet(): TokenConfigGURPS<this>
+// }
+//
+// export { TokenDocumentGURPS }

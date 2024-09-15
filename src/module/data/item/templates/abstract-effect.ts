@@ -1,9 +1,17 @@
 import { ItemDataModel } from "@module/data/abstract.ts"
 import fields = foundry.data.fields
-import { SkillLevel } from "@item/skill/data.ts"
-import { DurationType, DurationTypes } from "@item/abstract-effect/data.ts"
 import { CombatGURPS } from "@module/combat/document.ts"
-import { RollModifier, RollModifierSchema } from "@system/roll-modifier.ts"
+import { RollModifier, RollModifierSchema } from "@module/data/roll-modifier.ts"
+import { SkillLevel } from "../helpers.ts"
+
+enum DurationType {
+	Seconds = "seconds",
+	Turns = "turns",
+	Rounds = "rounds",
+	None = "none",
+}
+
+const DurationTypes = [DurationType.Seconds, DurationType.Turns, DurationType.Rounds, DurationType.None] as const
 
 class AbstractEffectTemplate extends ItemDataModel<AbstractEffectTemplateSchema> {
 	protected declare _skillLevel: SkillLevel
@@ -63,4 +71,4 @@ type AbstractEffectTemplateSchema = {
 	}>
 }
 
-export { AbstractEffectTemplate, type AbstractEffectTemplateSchema }
+export { AbstractEffectTemplate, type AbstractEffectTemplateSchema, type DurationType, DurationTypes }

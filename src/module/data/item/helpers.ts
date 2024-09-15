@@ -13,13 +13,11 @@ import {
 	feature,
 } from "@util"
 import { ActorType, ItemType, gid } from "../constants.ts"
-import { EquipmentModifierData } from "./equipment-modifier.ts"
-import { EquipmentFieldsTemplate } from "./templates/equipment-fields.ts"
-import { Feature } from "@system/feature/types.ts"
 import { AttributeDifficulty } from "./fields/attribute-difficulty.ts"
 import { ActorTemplateType } from "../actor/types.ts"
 import type { ItemGURPS2 } from "@module/document/item.ts"
-import { ItemDataInstances } from "./types.ts"
+import { ItemDataInstances, ItemDataTemplates, ItemTemplateType } from "./types.ts"
+import { Feature } from "../feature/types.ts"
 
 function modifyPoints(points: number, modifier: number): number {
 	return points + calculateModifierPoints(points, modifier)
@@ -123,9 +121,9 @@ function calculateTechniqueLevel(
 }
 
 function valueAdjustedForModifiers(
-	equipment: { system: EquipmentFieldsTemplate },
+	equipment: ItemInst<ItemType.Equipment | ItemType.EquipmentContainer>,
 	value: number,
-	modifiers: { system: EquipmentModifierData }[],
+	modifiers: ItemInst<ItemType.EquipmentModifier>[],
 ): number {
 	let cost = processNonCFStep(equipment, emcost.Type.Original, value, modifiers)
 
@@ -153,9 +151,9 @@ function valueAdjustedForModifiers(
 }
 
 function weightAdjustedForModifiers(
-	equipment: { system: EquipmentFieldsTemplate },
+	equipment: ItemInst<ItemType.Equipment | ItemType.EquipmentContainer>,
 	weight: string,
-	modifiers: { system: EquipmentModifierData }[],
+	modifiers: ItemInst<ItemType.EquipmentModifier>[],
 	defUnits: Weight.Unit,
 ): number {
 	let percentages = 0
@@ -195,13 +193,13 @@ function weightAdjustedForModifiers(
 }
 
 function extendedWeightAdjustedForModifiers(
-	equipment: { system: EquipmentFieldsTemplate },
+	equipment: ItemInst<ItemType.Equipment | ItemType.EquipmentContainer>,
 	defUnits: Weight.Unit,
 	qty: number,
 	baseWeight: string,
-	modifiers: { system: EquipmentModifierData }[],
+	modifiers: ItemInst<ItemType.EquipmentModifier>[],
 	features: Feature[],
-	children: { system: EquipmentFieldsTemplate }[],
+	children: ItemInst<ItemType.Equipment | ItemType.EquipmentContainer>[],
 	forSkills: boolean,
 	weightIgnoredForSkills: boolean,
 ): number {
@@ -233,10 +231,10 @@ function extendedWeightAdjustedForModifiers(
 }
 
 function processNonCFStep(
-	equipment: { system: EquipmentFieldsTemplate },
+	equipment: ItemInst<ItemType.Equipment | ItemType.EquipmentContainer>,
 	costType: emcost.Type,
 	value: number,
-	modifiers: { system: EquipmentModifierData }[],
+	modifiers: ItemInst<ItemType.EquipmentModifier>[],
 ): number {
 	let [percentages, additions] = [0, 0]
 	let cost = value
@@ -265,11 +263,11 @@ function processNonCFStep(
 }
 
 function processMultiplyAddWeightStep(
-	equipment: { system: EquipmentFieldsTemplate },
+	equipment: ItemInst<ItemType.Equipment | ItemType.EquipmentContainer>,
 	weightType: emweight.Type,
 	weight: number,
 	defUnits: Weight.Unit,
-	modifiers: { system: EquipmentModifierData }[],
+	modifiers: ItemInst<ItemType.EquipmentModifier>[],
 ): number {
 	let sum = 0
 	for (const mod of modifiers) {
@@ -328,6 +326,8 @@ interface SkillLevel {
 
 type ItemInst<T extends ItemType> = ItemGURPS2 & { system: ItemDataInstances[T] }
 
+type ItemTemplateInst<T extends ItemTemplateType> = ItemGURPS2 & { system: ItemDataTemplates[T] }
+
 export {
 	modifyPoints,
 	calculateModifierPoints,
@@ -338,4 +338,4 @@ export {
 	extendedWeightAdjustedForModifiers,
 	formatRelativeSkill,
 }
-export type { SkillLevel, ItemInst }
+export type { SkillLevel, ItemInst, ItemTemplateInst }

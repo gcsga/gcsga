@@ -1,6 +1,5 @@
 import { type ItemGURPS2 } from "@module/document/item.ts"
 import { Nameable } from "@module/util/nameable.ts"
-import { SheetSettings, Study } from "@system"
 import { ErrorGURPS, StringBuilder, affects, align, cell, display, selfctrl, tmcost } from "@util"
 import { ItemDataModel } from "../abstract.ts"
 import { ItemType } from "../constants.ts"
@@ -21,6 +20,8 @@ import {
 	StudyTemplateSchema,
 } from "./templates/index.ts"
 import fields = foundry.data.fields
+import { SheetSettings } from "../sheet-settings.ts"
+import { Study } from "../study.ts"
 
 class TraitData extends ItemDataModel.mixin(
 	BasicInformationTemplate,

@@ -1,7 +1,7 @@
 import { WeaponField } from "./weapon-field.ts"
 import fields = foundry.data.fields
 import { AbstractWeaponTemplate } from "../templates/abstract-weapon.ts"
-import { Int, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
+import { Int, LocalizeGURPS, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
 import { ActorType, gid } from "@module/data/constants.ts"
 
 class WeaponParry extends WeaponField<AbstractWeaponTemplate, WeaponParrySchema> {
@@ -42,7 +42,26 @@ class WeaponParry extends WeaponField<AbstractWeaponTemplate, WeaponParrySchema>
 		return buffer.toString()
 	}
 
-	override resolveValue(w: AbstractWeaponTemplate, tooltip: TooltipGURPS): WeaponParry {
+	override tooltip(_w: AbstractWeaponTemplate): string {
+		if (!this.canParry || (!this.fencing && !this.unbalanced)) {
+			return ""
+		}
+		const tooltip = new TooltipGURPS()
+		if (this.fencing)
+			tooltip.push(
+				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Tooltip.ParryFencing, {
+					retreatingParry: this.modifier + 3,
+					normalParry: this.modifier + 1,
+				}),
+			)
+		if (this.unbalanced) {
+			if (tooltip.length !== 0) tooltip.push("\n\n")
+			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.ParryUnbalanced)
+		}
+		return tooltip.toString()
+	}
+
+	override resolve(w: AbstractWeaponTemplate, tooltip: TooltipGURPS | null): WeaponParry {
 		const result = this.clone()
 		result.canParry = w.resolveBoolFlag(wswitch.Type.CanParry, result.canParry)
 		if (result.canParry) {
@@ -64,9 +83,9 @@ class WeaponParry extends WeaponField<AbstractWeaponTemplate, WeaponParrySchema>
 					if (best < level) best = level
 				}
 				if (best !== Number.MIN_SAFE_INTEGER) {
-					tooltip.appendToNewLine(primaryTooltip.toString())
+					tooltip?.appendToNewLine(primaryTooltip.toString())
 					result.modifier += 3 + best + actor.system.bonuses.parry.value
-					tooltip.appendToNewLine(actor.system.bonuses.parry.tooltip)
+					tooltip?.appendToNewLine(actor.system.bonuses.parry.tooltip)
 					let percentModifier = 0
 					for (const bonus of w.collectWeaponBonuses(1, tooltip, feature.Type.WeaponParryBonus)) {
 						const amt = bonus.adjustedAmountForWeapon(w)

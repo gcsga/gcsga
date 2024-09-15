@@ -24,6 +24,8 @@ declare global {
 	 * ```
 	 */
 	class Actor<TParent extends TokenDocument | null = TokenDocument | null> extends ClientBaseActor<TParent> {
+		constructor(data: object, context?: DocumentConstructionContext<TParent>)
+
 		/** An object that tracks which tracks the changes to the data model which were applied by active effects */
 		overrides: Omit<DeepPartial<this["_source"]>, "prototypeToken">
 
@@ -81,9 +83,9 @@ declare global {
          * @param [document=false] Return the Document instance rather than the PlaceableObject
          * @return An array of Token instances in the current Scene which reference this Actor.
          */
-		getActiveTokens(linked: boolean | undefined, document: true): TokenDocument<Scene>[]
+		getActiveTokens(linked: boolean | undefined, document: true): NonNullable<TParent>[]
 		getActiveTokens(linked?: boolean | undefined, document?: false): Token<TokenDocument<Scene>>[]
-		getActiveTokens(linked?: boolean, document?: boolean): TokenDocument<Scene>[] | Token<TokenDocument<Scene>>[]
+		getActiveTokens(linked?: boolean, document?: boolean): NonNullable<TParent>[] | Token<TokenDocument<Scene>>[]
 
 		/**
 		 * Get all ActiveEffects that may apply to this Actor.

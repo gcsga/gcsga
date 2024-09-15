@@ -41,6 +41,8 @@ declare global {
 		pack?: string | null
 		/** A parent Document UUID provided when the parent instance is unavailable */
 		parentUuid?: DocumentUUID
+		/** Is the item being imported from a compendium? */
+		fromCompendium?: boolean
 	}
 
 	interface DatabaseUpdateOperation<TParent extends abstract.Document | null> {

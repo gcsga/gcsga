@@ -3,7 +3,6 @@ import { ItemDataModel } from "@module/data/abstract.ts"
 import { LocalizeGURPS, StringBuilder, Weight, align, cell, display } from "@util"
 import { CellData } from "../fields/cell-data.ts"
 import { ItemTemplateType } from "../types.ts"
-import { SheetSettings } from "@system"
 import { ItemType } from "@module/data/constants.ts"
 import {
 	ItemInst,
@@ -12,6 +11,7 @@ import {
 	weightAdjustedForModifiers,
 } from "../helpers.ts"
 import { type ItemGURPS2 } from "@module/document/item.ts"
+import { SheetSettings } from "@module/data/sheet-settings.ts"
 
 class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchema> {
 	static override defineSchema(): EquipmentFieldsTemplateSchema {
@@ -52,6 +52,10 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 
 	get isLeveled(): boolean {
 		return this.level > 0
+	}
+
+	override get ratedStrength(): number {
+		return this.rated_strength
 	}
 
 	secondaryText(optionChecker: (option: display.Option) => boolean): string {
@@ -174,7 +178,7 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 
 	adjustedValue(): number {
 		return valueAdjustedForModifiers(
-			this.parent as unknown as { system: EquipmentFieldsTemplate },
+			this.parent as ItemInst<ItemType.Equipment | ItemType.EquipmentContainer>,
 			this.value,
 			this.allModifiers,
 		)
@@ -197,7 +201,7 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 			return 0
 		}
 		return weightAdjustedForModifiers(
-			this.parent as unknown as { system: EquipmentFieldsTemplate },
+			this.parent as ItemInst<ItemType.Equipment | ItemType.EquipmentContainer>,
 			this.weight,
 			this.allModifiers,
 			units,
@@ -206,18 +210,20 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 
 	extendedWeight(forSkills: boolean, units: Weight.Unit): number {
 		const features = this.hasTemplate(ItemTemplateType.Feature) ? this.features : []
-		let children: { system: EquipmentFieldsTemplate }[] = []
+		let children: ItemInst<ItemType.Equipment | ItemType.EquipmentContainer>[] = []
 		if (this.hasTemplate(ItemTemplateType.Container)) {
 			if (this.children instanceof Promise) {
 				;(async () => {
-					children = Array.from(await this.children) as unknown as { system: EquipmentFieldsTemplate }[]
+					children = Array.from(await this.children) as ItemInst<
+						ItemType.Equipment | ItemType.EquipmentContainer
+					>[]
 				})()
 			} else {
-				children = Array.from(this.children) as unknown as { system: EquipmentFieldsTemplate }[]
+				children = Array.from(this.children) as ItemInst<ItemType.Equipment | ItemType.EquipmentContainer>[]
 			}
 		}
 		return extendedWeightAdjustedForModifiers(
-			this.parent as unknown as { system: EquipmentFieldsTemplate },
+			this.parent as ItemInst<ItemType.Equipment | ItemType.EquipmentContainer>,
 			units,
 			this.quantity,
 			this.weight,
@@ -245,7 +251,9 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 interface EquipmentFieldsTemplate extends ModelPropsFromSchema<EquipmentFieldsTemplateSchema> {
 	nameWithReplacements: string
 	processedNotes: string
-	modifiers: Collection<ItemGURPS2> | Promise<Collection<ItemGURPS2>>
+	modifiers:
+		| Collection<ItemInst<ItemType.EquipmentModifier | ItemType.EquipmentModifierContainer>>
+		| Promise<Collection<ItemInst<ItemType.EquipmentModifier | ItemType.EquipmentModifierContainer>>>
 }
 
 type EquipmentFieldsTemplateSchema = {

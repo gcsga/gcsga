@@ -4,9 +4,10 @@ import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./temp
 import { ContainerTemplate, ContainerTemplateSchema } from "./templates/container.ts"
 import { ItemType } from "../constants.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
-import { SheetSettings, TemplatePicker, TemplatePickerSchema } from "@system"
+import { TemplatePicker, TemplatePickerSchema } from "@system"
 import { cell, display, StringBuilder } from "@util"
 import { CellData } from "./fields/cell-data.ts"
+import { SheetSettings } from "../sheet-settings.ts"
 
 class SkillContainerData extends ItemDataModel.mixin(BasicInformationTemplate, ContainerTemplate, ReplacementTemplate) {
 	static override childTypes = new Set([ItemType.Skill, ItemType.SkillContainer, ItemType.Technique])

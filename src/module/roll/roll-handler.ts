@@ -1,22 +1,17 @@
-import {
-	AbstractSkillGURPS,
-	AbstractWeaponGURPS,
-	MeleeWeaponGURPS,
-	RangedWeaponGURPS,
-	TraitContainerGURPS,
-	TraitGURPS,
-} from "@item"
-import { ActorType, ItemType, RollModifier, RollType, SETTINGS, SYSTEM_NAME, gid } from "@data"
-import { UserFlags } from "@module/user/data.ts"
+import { ActorType, ItemType, RollType, SETTINGS, SYSTEM_NAME, UserFlags, gid } from "@data"
 import { ChatMessageGURPS } from "@module/chat-message/document.ts"
-import { UserGURPS } from "@module/user/document.ts"
-import { AttributeGURPS, BodyGURPS } from "@system"
 import { ErrorGURPS, LocalizeGURPS } from "@util"
-import { ActorGURPS } from "@actor"
 import { DamageChat, DamagePayload } from "@module/apps/damage-calculator/damage-chat-message.ts"
 import { DamageRollGURPS } from "./damage-roll.ts"
 import { HitLocationUtil } from "@module/apps/damage-calculator/hit-location-utils.ts"
 import { RollGURPS } from "./index.ts"
+import { AttributeGURPS } from "@module/data/attribute/index.ts"
+import { ItemInst, ItemTemplateInst } from "@module/data/item/helpers.ts"
+import { ItemTemplateType } from "@module/data/item/types.ts"
+import { BodyGURPS } from "@module/data/hit-location.ts"
+import { RollModifier } from "@module/data/roll-modifier.ts"
+import { ActorGURPS2 } from "@module/document/actor.ts"
+import { UserGURPS } from "@module/document/user.ts"
 
 enum RollSuccess {
 	Success = "success",
@@ -51,23 +46,23 @@ interface AttributeRollTypeData extends BaseRollTypeData<RollType.Attribute> {
 }
 interface SkillRollTypeData
 	extends BaseRollTypeData<RollType.Skill | RollType.SkillRelative | RollType.Spell | RollType.SpellRelative> {
-	item: AbstractSkillGURPS | null
+	item: ItemInst<ItemType.Skill | ItemType.Technique | ItemType.Spell | ItemType.RitualMagicSpell> | null
 }
 interface AttackRollTypeData extends BaseRollTypeData<RollType.Attack> {
-	item: AbstractWeaponGURPS | null
+	item: ItemTemplateInst<ItemTemplateType.AbstractWeapon> | null
 }
 interface DamageRollTypeData extends BaseRollTypeData<RollType.Damage> {
-	item: AbstractWeaponGURPS | null
+	item: ItemTemplateInst<ItemTemplateType.AbstractWeapon> | null
 	times?: number
 }
 interface ParryRollTypeData extends BaseRollTypeData<RollType.Parry> {
-	item: MeleeWeaponGURPS | null
+	item: ItemInst<ItemType.WeaponMelee> | null
 }
 interface BlockRollTypeData extends BaseRollTypeData<RollType.Block> {
-	item: MeleeWeaponGURPS | null
+	item: ItemInst<ItemType.WeaponMelee> | null
 }
 interface ControlRollTypeData extends BaseRollTypeData<RollType.ControlRoll> {
-	item: TraitGURPS | TraitContainerGURPS | null
+	item: ItemInst<ItemType.Trait | ItemType.TraitContainer> | null
 }
 interface LocationRollTypeData extends BaseRollTypeData<RollType.Location> {
 	body: BodyGURPS
@@ -171,7 +166,7 @@ abstract class RollTypeHandler<TData extends RollTypeData = RollTypeData> {
 		return ""
 	}
 
-	getActor(data: TData): ActorGURPS | null {
+	getActor(data: TData): ActorGURPS2 | null {
 		return game.actors.get(data.actor ?? "") ?? null
 	}
 
@@ -225,10 +220,10 @@ abstract class RollTypeHandler<TData extends RollTypeData = RollTypeData> {
 		const success = this.getSuccess(level, rollTotal)
 		const margin = Math.abs(level - rollTotal)
 		const from = this.getName(data)
-		const marginMod: RollModifier = {
+		const marginMod = new RollModifier({
 			modifier: margin,
 			id: LocalizeGURPS.format(LocalizeGURPS.translations.gurps.roll.success_from, { from }),
-		}
+		})
 		let marginClass = MODIFIER_CLASS_ZERO
 		let marginTemplate = "gurps.roll.just_made_it"
 		if ([RollSuccess.Failure, RollSuccess.CriticalFailure].includes(success)) {
@@ -270,13 +265,13 @@ class ModifierRollTypeHandler extends RollTypeHandler<ModifierRollTypeData> {
 	override async handleRollType(data: ModifierRollTypeData): Promise<void> {
 		const user = this.getUser(data)
 		if (!user) return
-		return user.addModifier({ id: data.name, modifier: data.modifier })
+		return user.addModifier(new RollModifier({ id: data.name, modifier: data.modifier }))
 	}
 }
 
 class AttributeRollTypeHandler extends RollTypeHandler<AttributeRollTypeData> {
 	override getLevel(data: AttributeRollTypeData): number {
-		return data.attribute.effective ?? 0
+		return data.attribute.temporaryMax ?? 0
 	}
 
 	override getName(data: AttributeRollTypeData): string {
@@ -290,7 +285,7 @@ class SkillRollTypeHandler extends RollTypeHandler<SkillRollTypeData> {
 	}
 
 	override getName(data: SkillRollTypeData): string {
-		return data.item?.formattedName ?? ""
+		return data.item?.system.processedName ?? ""
 	}
 
 	override getLevel(data: SkillRollTypeData): number {
@@ -301,7 +296,7 @@ class SkillRollTypeHandler extends RollTypeHandler<SkillRollTypeData> {
 		const actor = this.getActor(data)
 		if (!(data.item?.isOfType(ItemType.Skill) && actor?.isOfType(ActorType.Character)))
 			return super.getModifiers(data)
-		const encumbrance = actor.encumbrance.current
+		const encumbrance = actor.system.encumbrance.current
 		const encumbranceModifier: RollModifier = {
 			id: LocalizeGURPS.format(LocalizeGURPS.translations.gurps.roll.encumbrance, {
 				name: encumbrance.name,
@@ -338,7 +333,7 @@ class SkillRollTypeHandler extends RollTypeHandler<SkillRollTypeData> {
 
 class ControlRollTypeHandler extends RollTypeHandler<ControlRollTypeData> {
 	override getName(data: ControlRollTypeData): string {
-		return data.item?.formattedName ?? ""
+		return data.item?.system.processedName ?? ""
 	}
 
 	override getLevel(data: ControlRollTypeData): number {

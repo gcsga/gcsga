@@ -8,7 +8,6 @@ import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/repl
 import { ActorType, ItemType } from "../constants.ts"
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { AbstractSkillTemplate, AbstractSkillTemplateSchema } from "./templates/abstract-skill.ts"
-import { SkillDefaultSchema, SkillDefault, Study, SheetSettings } from "@system"
 import { LocalizeGURPS, StringBuilder, TooltipGURPS, align, cell, difficulty, display } from "@util"
 import { SkillLevel, addTooltipForSkillLevelAdj, calculateTechniqueLevel, formatRelativeSkill } from "./helpers.ts"
 import { ActorTemplateType } from "../actor/types.ts"
@@ -16,6 +15,9 @@ import { ItemGURPS2 } from "@module/document/item.ts"
 import { SkillData } from "./index.ts"
 import { AttributeDifficulty } from "./fields/attribute-difficulty.ts"
 import { CellData } from "./fields/cell-data.ts"
+import { SkillDefault, SkillDefaultSchema } from "../skill-default.ts"
+import { SheetSettings } from "../sheet-settings.ts"
+import { Study } from "../study.ts"
 
 class TechniqueData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -214,7 +216,7 @@ class TechniqueData extends ItemDataModel.mixin(
 		)
 		const satisfied = sk !== null && (sk.type === ItemType.Technique || sk.system.points > 0)
 		if (!satisfied && tooltip !== null) {
-			tooltip.push(LocalizeGURPS.translations.GURPS.TooltipPrefix)
+			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.Prefix)
 			if (sk === null) {
 				tooltip.push(
 					LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.Technique.Skill, {

@@ -7,7 +7,7 @@ import { ContainerTemplate, ContainerTemplateSchema } from "./templates/containe
 import { ItemType } from "../constants.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
 import { CellData } from "./fields/cell-data.ts"
-import { SheetSettings } from "@system"
+import { SheetSettings } from "../sheet-settings.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { Nameable } from "@module/util/nameable.ts"
 import { TraitModifierData } from "./trait-modifier.ts"

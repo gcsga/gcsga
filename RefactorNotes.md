@@ -2,32 +2,21 @@
 
 ## Left To Do
 
+- Roll Handlers
+  - Fix old functions \*
 - Item
 
-  - All Data Models
-
-    - Redefine schemas to remove omits and replace ModelProps with object type where appropriate
-
   - CellData
-
     - Condition
-    - Melee
-    - Ranged
 
-  - Weapons
-    - Weapon Damage \*
-
-- Items
-  - Hide items inside containers
 - Actor
   - Legacy Support?
 - Actors
-- GCS Functions
-
-  - Eval functions
 
 - Item Sheet
 - Actor Sheet
+  - Collapsible sidebar
+  - DND5e context menu
 - Token
 - Token Document
 - Combat
@@ -36,6 +25,8 @@
 - Modifier Bucket
   - Implement Fuzzy Search
   - Data Models
+- Conditions (from compendium ?) showing in token status
+- Quench tests
 
 ## Done
 

@@ -1,1 +1,1 @@
-export { LootGURPS } from "./document.ts"
+// export { LootGURPS } from "./document.ts"

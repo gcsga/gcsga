@@ -1,7 +1,6 @@
-import { RollType, SYSTEM_NAME } from "@data"
+import { RollType, SYSTEM_NAME, UserFlags } from "@data"
 import { ModifierBucketWindow } from "./window.ts"
 import { RollGURPS } from "@module/roll/index.ts"
-import { UserFlags } from "@module/user/data.ts"
 import { LastActor } from "@module/util/last-actor.ts"
 
 export class ModifierBucket extends Application {

@@ -846,6 +846,15 @@ export const TIMEOUTS: {
 	IP_DISCOVERY: 5000
 }
 
+export const SHOWDOWN_OPTIONS: {
+	disableForced4SpacesIndentedSublists: true
+	noHeaderId: true
+	parseImgDimensions: true
+	strikethrough: true
+	tables: true
+	tablesHeaderId: true
+}
+
 /** The Region events that are supported by core. */
 export const REGION_EVENTS: {
 	/** Triggered when the shapes or bottom/top elevation of the Region are changed. */

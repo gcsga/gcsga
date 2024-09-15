@@ -2,7 +2,6 @@ import { WeaponRangedData } from "../weapon-ranged.ts"
 import fields = foundry.data.fields
 import { WeaponField } from "./weapon-field.ts"
 import { Int, Length, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
-import { ItemType } from "@module/data/constants.ts"
 
 class WeaponRange extends WeaponField<WeaponRangedData, WeaponRangeSchema> {
 	static override defineSchema(): WeaponRangeSchema {
@@ -92,7 +91,7 @@ class WeaponRange extends WeaponField<WeaponRangedData, WeaponRangeSchema> {
 		return buffer.toString()
 	}
 
-	override resolveValue(w: WeaponRangedData, tooltip: TooltipGURPS): WeaponRange {
+	override resolve(w: WeaponRangedData, tooltip: TooltipGURPS | null): WeaponRange {
 		const result = this.clone()
 		result.musclePowered = w.resolveBoolFlag(wswitch.Type.MusclePowered, result.musclePowered)
 		result.inMiles = w.resolveBoolFlag(wswitch.Type.RangeInMiles, result.inMiles)
@@ -101,11 +100,8 @@ class WeaponRange extends WeaponField<WeaponRangedData, WeaponRangeSchema> {
 			let st = 0
 			if (this.item.container !== null) {
 				// HACK: to fix with proper Promise support
-				if (
-					!(this.item.container instanceof Promise) &&
-					this.item.container.isOfType(ItemType.Equipment, ItemType.EquipmentContainer)
-				) {
-					st = this.item.container.system.rated_strength
+				if (!(this.item.container instanceof Promise)) {
+					st = this.item.container.system.ratedStrength
 				}
 			}
 		}

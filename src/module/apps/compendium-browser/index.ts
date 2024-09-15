@@ -1,5 +1,4 @@
 import { ItemType, SETTINGS, SYSTEM_NAME } from "@data"
-import { UserGURPS } from "@module/user/document.ts"
 import {
 	DnD,
 	ErrorGURPS,
@@ -29,7 +28,8 @@ import {
 } from "./tabs/data.ts"
 import * as browserTabs from "./tabs/index.ts"
 import { PackLoader } from "./loader.ts"
-import { ItemGURPS } from "@item"
+import { ItemGURPS2 } from "@module/document/item.ts"
+import { UserGURPS } from "@module/document/user.ts"
 
 class CompendiumBrowser extends Application {
 	settings: CompendiumBrowserSettings
@@ -543,7 +543,7 @@ class CompendiumBrowser extends Application {
 			if (nameAnchor) {
 				nameAnchor.addEventListener("dblclick", async () => {
 					const document = await fromUuid(itemId)
-					if (document instanceof ItemGURPS) document.prepareSiblingData()
+					if (document instanceof ItemGURPS2) document.prepareSiblingData()
 					if (document?.sheet) {
 						document.sheet.render(true)
 					}

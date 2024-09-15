@@ -1,1 +1,1 @@
-export { TokenDocumentGURPS } from "./document.ts"
+// export { TokenDocumentGURPS } from "./document.ts"

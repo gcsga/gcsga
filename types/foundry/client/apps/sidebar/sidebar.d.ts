@@ -1,7 +1,26 @@
 /** Render the Sidebar container, and after rendering insert Sidebar tabs */
-declare class Sidebar extends Application {
+declare class Sidebar<
+	TChatLog extends ChatLog,
+	TCombatTracker extends CombatTracker<Combat, CombatTrackerOptions>,
+	TActorDirectory extends ActorDirectory<Actor<null>>,
+	TItemDirectory extends ItemDirectory<Item<null>>,
+	TJournalDirectory extends JournalDirectory<JournalEntry>,
+	TCompendiumDirectory extends CompendiumDirectory,
+> extends Application {
 	/** Singleton application instances for each sidebar tab */
-	tabs: Tabs
+	tabs: {
+		actor: TActorDirectory
+		cards: CardsDirectory<Cards>
+		chat: TChatLog
+		combat: TCombatTracker
+		compendium: TCompendiumDirectory
+		items: TItemDirectory
+		journal: TJournalDirectory
+		playlists: PlaylistDirectory<Playlist>
+		scenes: SceneDirectory<Scene>
+		settings: Settings
+		tables: RollTableDirectory
+	}
 
 	/** Track whether the sidebar container is currently collapsed */
 	_collapsed: boolean

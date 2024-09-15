@@ -1,10 +1,10 @@
-import { ActorGURPS } from "@actor"
-import { RollModifier, RollModifierTags, SETTINGS, SYSTEM_NAME } from "@module/data/index.ts"
-import { UserFlags } from "@module/user/data.ts"
+import { RollModifierTags, SETTINGS, SYSTEM_NAME, UserFlags } from "@module/data/index.ts"
+import { RollModifier } from "@module/data/roll-modifier.ts"
+import { ActorGURPS2 } from "@module/document/actor.ts"
 import { LastActor } from "@module/util/last-actor.ts"
 
 class ModifierList extends Application {
-	_tempRangeMod: RollModifier = { id: "", modifier: 0, tags: [RollModifierTags.Range] }
+	_tempRangeMod = new RollModifier({ id: "", modifier: 0, tags: [RollModifierTags.Range] })
 
 	static override get defaultOptions(): ApplicationOptions {
 		return fu.mergeObject(super.defaultOptions, {
@@ -32,7 +32,7 @@ class ModifierList extends Application {
 	override async getData(options?: Partial<ApplicationOptions> | undefined): Promise<object> {
 		const currentMods = game.user?.getFlag(SYSTEM_NAME, UserFlags.ModifierStack)
 		let targetMods: RollModifier[] = []
-		const actor = (game.user?.isGM ? await LastActor.get() : game.user?.character) as ActorGURPS
+		const actor = (game.user?.isGM ? await LastActor.get() : game.user?.character) as ActorGURPS2
 		game.user?.targets.forEach(e => {
 			targetMods = targetMods.concat(e.actor?.modifiers ?? [])
 		})
@@ -64,10 +64,10 @@ class ModifierList extends Application {
 
 	_onClickModifier(event: JQuery.ClickEvent): void {
 		event.preventDefault()
-		const modifier: RollModifier = {
+		const modifier = new RollModifier({
 			id: $(event.currentTarget).data("name"),
 			modifier: $(event.currentTarget).data("modifier"),
-		}
+		})
 		return game.user.addModifier(modifier)
 	}
 

@@ -76,7 +76,11 @@ declare global {
 	}
 
 	interface SettingsMenuConstructor {
-		new (object?: object, options?: Partial<FormApplicationOptions>): FormApplication
+		new (
+			object: object | undefined,
+			options: Partial<ApplicationConfiguration>,
+		): foundry.applications.api.ApplicationV2
+		// new (object?: object, options?: Partial<FormApplicationOptions>): FormApplication
 		registerSettings(): void
 	}
 
@@ -112,7 +116,7 @@ declare global {
 		/** The KeyboardEvent#code value from https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/code/code_values */
 		key: string | null
 		/** An array of modifiers keys from KeyboardManager.MODIFIER_KEYS which are required for this binding to be activated */
-		modifiers: ModifierKey[]
+		modifiers?: ModifierKey[]
 	}
 
 	/** An action that can occur when a key is pressed */

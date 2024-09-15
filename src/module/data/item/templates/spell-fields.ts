@@ -13,10 +13,11 @@ import {
 	replaceAllStringFunc,
 } from "@util"
 import { SkillLevel, addTooltipForSkillLevelAdj, formatRelativeSkill } from "../helpers.ts"
-import { SheetSettings, Study } from "@system"
 import { ItemType } from "@module/data/constants.ts"
 import { ItemTemplateType } from "../types.ts"
 import { CellData } from "../fields/cell-data.ts"
+import { SheetSettings } from "@module/data/sheet-settings.ts"
+import { Study } from "@module/data/study.ts"
 
 class SpellFieldsTemplate extends ItemDataModel<SpellFieldsTemplateSchema> {
 	// TODO: see if this causes issues

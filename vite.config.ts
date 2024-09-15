@@ -1,4 +1,3 @@
-import { execSync } from "child_process"
 import esbuild from "esbuild"
 import fs from "fs-extra"
 import path from "path"
@@ -8,9 +7,11 @@ import checker from "vite-plugin-checker"
 import { viteStaticCopy } from "vite-plugin-static-copy"
 import tsconfigPaths from "vite-tsconfig-paths"
 import packageJSON from "./package.json" assert { type: "json" }
-import { ConditionSource } from "@item/condition/data.ts"
+import { execSync } from "child_process"
 
-const CONDITION_SOURCES = ((): ConditionSource[] => {
+// TODO: reimplement
+// const CONDITION_SOURCES = ((): ItemSource & { system: SourceFromSchema<ConditionData> }[] => {
+const CONDITION_SOURCES = ((): never[] => {
 	const output = execSync("npm run build:conditions", { encoding: "utf-8" })
 	return JSON.parse(output.slice(output.indexOf("[")))
 })()
@@ -39,11 +40,11 @@ const config = Vite.defineConfig(({ command, mode }): Vite.UserConfig => {
 					async handler(code, chunk) {
 						return chunk.fileName.endsWith(".mjs")
 							? esbuild.transform(code, {
-								keepNames: true,
-								minifyIdentifiers: false,
-								minifySyntax: true,
-								minifyWhitespace: true,
-							})
+									keepNames: true,
+									minifyIdentifiers: false,
+									minifySyntax: true,
+									minifyWhitespace: true,
+								})
 							: code
 					},
 				},
@@ -148,7 +149,7 @@ const config = Vite.defineConfig(({ command, mode }): Vite.UserConfig => {
 				// 	].join(""),
 				// ),
 				output: {
-					assetFileNames: ({ name }): string => (name === "style.css" ? "styles/gurps.css" : name ?? ""),
+					assetFileNames: ({ name }): string => (name === "style.css" ? "styles/gurps.css" : (name ?? "")),
 					chunkFileNames: "[name].mjs",
 					entryFileNames: "gurps.mjs",
 					manualChunks: {

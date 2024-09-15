@@ -1,6 +1,6 @@
 import fields = foundry.data.fields
 import { WeaponField } from "./weapon-field.ts"
-import { Int, StringBuilder, TooltipGURPS, feature } from "@util"
+import { Int, LocalizeGURPS, StringBuilder, TooltipGURPS, feature } from "@util"
 import { WeaponRangedData } from "../weapon-ranged.ts"
 
 class WeaponBulk extends WeaponField<WeaponRangedData, WeaponBulkSchema> {
@@ -43,7 +43,34 @@ class WeaponBulk extends WeaponField<WeaponRangedData, WeaponBulkSchema> {
 		return buffer.toString()
 	}
 
-	override resolveValue(w: WeaponRangedData, tooltip: TooltipGURPS): WeaponBulk {
+	// Tooltip returns a tooltip for the data, if any. Call .resolve() prior to calling this method if you want the tooltip
+	// to be based on the resolved values.
+	override tooltip(w: WeaponRangedData): string {
+		if (!this.retractingStock) return ""
+		if (this.normal < 0) this.normal += 1
+		if (this.giant < 0) this.giant += 1
+		this.clean()
+
+		const accuracy = w.accuracy.resolve(w, null)
+		accuracy.base -= 1
+		accuracy.clean()
+		const recoil = w.recoil.resolve(w, null)
+		if (recoil.shot > 1) recoil.shot += 1
+		if (recoil.slug > 1) recoil.slug += 1
+		recoil.clean()
+		const minST = w.strength.resolve(w, null)
+		minST.min = Math.ceil(minST.min * 1.2)
+		minST.clean()
+
+		return LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Tooltip.RetractingStock, {
+			bulk: this.toString(),
+			accuracy: accuracy.toString(),
+			recoil: recoil.toString(),
+			strength: minST.toString(),
+		})
+	}
+
+	override resolve(w: WeaponRangedData, tooltip: TooltipGURPS): WeaponBulk {
 		const result = this.clone()
 		let percent = 0
 		for (const bonus of w.collectWeaponBonuses(1, tooltip, feature.Type.WeaponBulkBonus)) {

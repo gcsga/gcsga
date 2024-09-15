@@ -1,15 +1,12 @@
 import { ItemDataModel } from "../abstract.ts"
 import fields = foundry.data.fields
 import { Nameable } from "@module/util/nameable.ts"
-import { SkillDefault } from "@system"
 import {
 	AbstractWeaponTemplate,
 	AbstractWeaponTemplateSchema,
 	BasicInformationTemplate,
 	BasicInformationTemplateSchema,
 } from "./templates/index.ts"
-import { WeaponDamage } from "./fields/weapon-damage.ts"
-import { WeaponStrength } from "./fields/weapon-strength.ts"
 import { WeaponRange, WeaponRangeSchema } from "./fields/weapon-range.ts"
 import { WeaponAccuracy, WeaponAccuracySchema } from "./fields/weapon-accuracy.ts"
 import { WeaponROF, WeaponROFSchema } from "./fields/weapon-rof.ts"
@@ -48,35 +45,35 @@ class WeaponRangedData extends ItemDataModel.mixin(BasicInformationTemplate, Abs
 		let levelTooltip = addBuffer("", buffer)
 
 		buffer.clear()
-		const damage = this.damage.resolveValue(this, buffer)
+		const damage = this.damage.resolve(this, buffer)
 		let damageTooltip = addBuffer("", buffer)
 
 		buffer.clear()
-		const accuracy = this.accuracy.resolveValue(this, buffer)
+		const accuracy = this.accuracy.resolve(this, buffer)
 		let accuracyTooltip = addBuffer(accuracy.tooltip(this), buffer)
 
 		buffer.clear()
-		const range = this.range.resolveValue(this, buffer)
+		const range = this.range.resolve(this, buffer)
 		let rangeTooltip = addBuffer(range.tooltip(this), buffer)
 
 		buffer.clear()
-		const rateOfFire = this.rate_of_fire.resolveValue(this, buffer)
+		const rateOfFire = this.rate_of_fire.resolve(this, buffer)
 		let rateOfFireTooltip = addBuffer(rateOfFire.tooltip(this), buffer)
 
 		buffer.clear()
-		const shots = this.shots.resolveValue(this, buffer)
+		const shots = this.shots.resolve(this, buffer)
 		let shotsTooltip = addBuffer(shots.tooltip(this), buffer)
 
 		buffer.clear()
-		const bulk = this.bulk.resolveValue(this, buffer)
+		const bulk = this.bulk.resolve(this, buffer)
 		let bulkTooltip = addBuffer(bulk.tooltip(this), buffer)
 
 		buffer.clear()
-		const recoil = this.recoil.resolveValue(this, buffer)
+		const recoil = this.recoil.resolve(this, buffer)
 		let recoilTooltip = addBuffer(recoil.tooltip(this), buffer)
 
 		buffer.clear()
-		const strength = this.strength.resolveValue(this, buffer)
+		const strength = this.strength.resolve(this, buffer)
 		let strengthTooltip = addBuffer(strength.tooltip(this), buffer)
 
 		const data: Record<string, CellData> = {
@@ -107,30 +104,16 @@ class WeaponRangedData extends ItemDataModel.mixin(BasicInformationTemplate, Abs
 	}
 }
 
-interface WeaponRangedData
-	extends Omit<
-		ModelPropsFromSchema<WeaponRangedSchema>,
-		"defaults" | "strength" | "damage" | "accuracy" | "range" | "rate_of_fire" | "shots" | "bulk" | "recoil"
-	> {
-	defaults: SkillDefault[]
-	strength: WeaponStrength
-	damage: WeaponDamage
-	accuracy: WeaponAccuracy
-	range: WeaponRange
-	rate_of_fire: WeaponROF
-	shots: WeaponShots
-	bulk: WeaponBulk
-	recoil: WeaponRecoil
-}
+interface WeaponRangedData extends ModelPropsFromSchema<WeaponRangedSchema> {}
 
 type WeaponRangedSchema = BasicInformationTemplateSchema &
 	AbstractWeaponTemplateSchema & {
-		accuracy: fields.SchemaField<WeaponAccuracySchema>
-		range: fields.SchemaField<WeaponRangeSchema>
-		rate_of_fire: fields.SchemaField<WeaponROFSchema>
-		shots: fields.SchemaField<WeaponShotsSchema>
-		bulk: fields.SchemaField<WeaponBulkSchema>
-		recoil: fields.SchemaField<WeaponRecoilSchema>
+		accuracy: fields.SchemaField<WeaponAccuracySchema, SourceFromSchema<WeaponAccuracySchema>, WeaponAccuracy>
+		range: fields.SchemaField<WeaponRangeSchema, SourceFromSchema<WeaponRangeSchema>, WeaponRange>
+		rate_of_fire: fields.SchemaField<WeaponROFSchema, SourceFromSchema<WeaponROFSchema>, WeaponROF>
+		shots: fields.SchemaField<WeaponShotsSchema, SourceFromSchema<WeaponShotsSchema>, WeaponShots>
+		bulk: fields.SchemaField<WeaponBulkSchema, SourceFromSchema<WeaponBulkSchema>, WeaponBulk>
+		recoil: fields.SchemaField<WeaponRecoilSchema, SourceFromSchema<WeaponRecoilSchema>, WeaponRecoil>
 	}
 
 export { WeaponRangedData, type WeaponRangedSchema }

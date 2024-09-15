@@ -1,4 +1,3 @@
-import { MigrationRunnerBase } from "@module/migration/runner/base.ts"
 import fs from "fs"
 import path from "path"
 import coreIconsJSON from "../core-icons.json" assert { type: "json" }
@@ -6,9 +5,9 @@ import "./foundry-utils.ts"
 import { getFilesRecursively, PackError } from "./helpers.ts"
 import { DBFolder, LevelDatabase } from "./level-database.ts"
 import { PackEntry } from "./types.ts"
-import type { ActorSourceGURPS } from "@actor/data.ts"
-import type { ItemSourceGURPS } from "@item/data/index.ts"
 import { isObject, sluggify } from "@util/misc.ts"
+import { ActorSource } from "types/foundry/common/documents/actor.js"
+import { ItemSource } from "types/foundry/common/documents/item.js"
 
 interface PackMetadata {
 	system: string
@@ -17,11 +16,11 @@ interface PackMetadata {
 	type: CompendiumDocumentType
 }
 
-function isActorSource(docSource: PackEntry): docSource is ActorSourceGURPS {
+function isActorSource(docSource: PackEntry): docSource is ActorSource {
 	return "system" in docSource && isObject(docSource.system) && "items" in docSource && Array.isArray(docSource.items)
 }
 
-function isItemSource(docSource: PackEntry): docSource is ItemSourceGURPS {
+function isItemSource(docSource: PackEntry): docSource is ItemSource {
 	return (
 		"system" in docSource &&
 		"type" in docSource &&
@@ -96,7 +95,7 @@ class CompendiumPack {
 
 		this.data = parsedData
 
-		const imagePathsFromItemSystemData = (_item: ItemSourceGURPS): string[] => {
+		const imagePathsFromItemSystemData = (_item: ItemSource): string[] => {
 			return []
 		}
 
@@ -206,19 +205,19 @@ class CompendiumPack {
 			docSource.effects = []
 			docSource.flags.core = { sourceId: this.#sourceIdOf(docSource._id ?? "", { docType: "Actor" }) }
 			// this.#assertSizeValid(docSource)
-			docSource.system._migration = { version: MigrationRunnerBase.LATEST_SCHEMA_VERSION, previous: null }
-			for (const item of docSource.items) {
-				item.effects = []
-				item.system._migration = { version: MigrationRunnerBase.LATEST_SCHEMA_VERSION, previous: null }
-				CompendiumPack.convertUUIDs(item, { to: "ids", map: CompendiumPack.#namesToIds.Item })
-			}
+			// docSource.system._migration = { version: MigrationRunnerBase.LATEST_SCHEMA_VERSION, previous: null }
+			// for (const item of docSource.items) {
+			// 	item.effects = []
+			// 	item.system._migration = { version: MigrationRunnerBase.LATEST_SCHEMA_VERSION, previous: null }
+			// 	CompendiumPack.convertUUIDs(item, { to: "ids", map: CompendiumPack.#namesToIds.Item })
+			// }
 		}
 
 		if (isItemSource(docSource)) {
 			docSource.effects = []
 			docSource.flags.core = { sourceId: this.#sourceIdOf(docSource._id ?? "", { docType: "Item" }) }
-			docSource.system.slug = sluggify(docSource.name)
-			docSource.system._migration = { version: MigrationRunnerBase.LATEST_SCHEMA_VERSION, previous: null }
+			// docSource.system.slug = sluggify(docSource.name)
+			// docSource.system._migration = { version: MigrationRunnerBase.LATEST_SCHEMA_VERSION, previous: null }
 
 			// Convert uuids with names in GrantItem REs to well-formedness
 			CompendiumPack.convertUUIDs(docSource, { to: "ids", map: CompendiumPack.#namesToIds.Item })
@@ -257,7 +256,7 @@ class CompendiumPack {
 
 	/** Convert UUIDs in REs to resemble links by name or back again */
 	static convertUUIDs(
-		_source: ItemSourceGURPS,
+		_source: ItemSource,
 		// @ts-expect-error unused function
 		{ to, map }: { to: "ids" | "names"; map: Map<string, Map<string, string>> },
 	): void {}

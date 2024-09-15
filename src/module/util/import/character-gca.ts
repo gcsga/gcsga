@@ -1,34 +1,20 @@
-import { ActorGURPS } from "@actor"
-import {
-	CharacterFlagDefaults,
-	CharacterFlags,
-	CharacterMove,
-	CharacterProfile,
-	CharacterSource,
-	CharacterSystemSource,
-	PointsRecord,
-} from "@actor/character/data.ts"
 import { ActorFlags, ActorType, ManeuverID, SETTINGS, SYSTEM_NAME } from "@data"
-import { ItemSourceGURPS } from "@item/data/index.ts"
 import { ChatMessageGURPS } from "@module/chat-message/document.ts"
 import { Length, LocalizeGURPS, StringBuilder, Weight, display, getCurrentTime, progression } from "@util"
 import { GCABody, GCABodyItem, GCACharacter } from "./data-gca.ts"
 import { GCAItemImporter } from "./item-gca.ts"
 import { GCAParser } from "./parse-gca.ts"
 import { ManeuverManager } from "@system/maneuver-manager.ts"
-import {
-	AttributeDefSchema,
-	AttributeSchema,
-	BlockLayoutString,
-	BodySource,
-	HitLocationSource,
-	MoveTypeDefSchema,
-	MoveTypeSchema,
-	PageSettings,
-	ResourceTrackerDefSchema,
-	ResourceTrackerSchema,
-	SheetSettingsSource,
-} from "@system"
+import { ActorGURPS2 } from "@module/document/actor.ts"
+import { CharacterProfileSchema, CharacterSchema } from "@module/data/actor/character.ts"
+import { ItemSource } from "types/foundry/common/documents/item.js"
+import { ActorSource } from "types/foundry/common/documents/actor.js"
+import { PointsRecord } from "@module/data/actor/fields/points-record.ts"
+import { BlockLayoutString, PageSettings, SheetSettingsSchema } from "@system"
+import { MoveTypeDefSchema, MoveTypeSchema } from "@module/data/move-type/index.ts"
+import { ResourceTrackerDefSchema, ResourceTrackerSchema } from "@module/data/resource-tracker/index.ts"
+import { AttributeDefSchema, AttributeSchema } from "@module/data/attribute/index.ts"
+import { BodySource, HitLocationSource } from "@module/data/hit-location.ts"
 
 export class GCACharacterImporter {
 	static async throwError(text: string): Promise<void> {
@@ -42,7 +28,7 @@ export class GCACharacterImporter {
 		})
 	}
 
-	static async importCharacter<TActor extends ActorGURPS>(
+	static async importCharacter<TActor extends ActorGURPS2>(
 		document: TActor,
 		file: { text: string; name: string; path: string },
 	): Promise<void> {
@@ -50,9 +36,7 @@ export class GCACharacterImporter {
 
 		const date = getCurrentTime()
 
-		const systemData: CharacterSystemSource = {
-			_migration: { version: null, previous: null },
-			type: ActorType.Character,
+		const systemData: Partial<SourceFromSchema<CharacterSchema>> = {
 			version: 4,
 			total_points: data.campaign.totalpoints ?? 0,
 			points_record: GCACharacterImporter.importPointsRecord(data),
@@ -70,7 +54,7 @@ export class GCACharacterImporter {
 
 		const flags = GCACharacterImporter.importFlags(file)
 
-		const items: ItemSourceGURPS[] = []
+		const items: ItemSource[] = []
 		items.push(...GCAItemImporter.importAdvantages(data))
 		items.push(...GCAItemImporter.importDisadvantages(data))
 		items.push(...GCAItemImporter.importPerks(data))
@@ -83,9 +67,9 @@ export class GCACharacterImporter {
 		items.push(...GCAItemImporter.importTemplates(data))
 
 		const name =
-			systemData.profile.name ?? document.name ?? LocalizeGURPS.translations.TYPES.Actor[ActorType.Character]
+			systemData.profile?.name ?? document.name ?? LocalizeGURPS.translations.TYPES.Actor[ActorType.Character]
 
-		const actorData: DeepPartial<CharacterSource> = {
+		const actorData: DeepPartial<ActorSource> = {
 			name,
 			img: image,
 			system: systemData,
@@ -115,7 +99,7 @@ export class GCACharacterImporter {
 		})
 	}
 
-	static importProfile(data: GCACharacter): CharacterProfile {
+	static importProfile(data: GCACharacter): SourceFromSchema<CharacterProfileSchema> {
 		return {
 			name: data.name ?? "",
 			age: data.vitals?.age ?? "",
@@ -137,7 +121,7 @@ export class GCACharacterImporter {
 		}
 	}
 
-	static importSettings(data: GCACharacter): SheetSettingsSource {
+	static importSettings(data: GCACharacter): SourceFromSchema<SheetSettingsSchema> {
 		return {
 			page: GCACharacterImporter.importPage(),
 			block_layout: GCACharacterImporter.importBlockLayout(),

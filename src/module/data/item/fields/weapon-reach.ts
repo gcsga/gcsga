@@ -1,7 +1,7 @@
 import { WeaponMeleeData } from "../weapon-melee.ts"
 import fields = foundry.data.fields
 import { WeaponField } from "./weapon-field.ts"
-import { Int, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
+import { Int, LocalizeGURPS, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
 
 class WeaponReach extends WeaponField<WeaponMeleeData, WeaponReachSchema> {
 	static override defineSchema(): WeaponReachSchema {
@@ -63,7 +63,12 @@ class WeaponReach extends WeaponField<WeaponMeleeData, WeaponReachSchema> {
 		return buffer.toString()
 	}
 
-	override resolveValue(w: WeaponMeleeData, tooltip: TooltipGURPS): WeaponReach {
+	override tooltip(_w: WeaponMeleeData): string {
+		if (this.changeRequiresReady) return LocalizeGURPS.translations.GURPS.Tooltip.ReachChangeRequiresReady
+		return ""
+	}
+
+	override resolve(w: WeaponMeleeData, tooltip: TooltipGURPS | null): WeaponReach {
 		const result = this.clone()
 		result.closeCombat = w.resolveBoolFlag(wswitch.Type.CloseCombat, result.closeCombat)
 		result.changeRequiresReady = w.resolveBoolFlag(

@@ -4,7 +4,7 @@ import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./temp
 import { FeatureTemplate, FeatureTemplateSchema } from "./templates/features.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
 import fields = foundry.data.fields
-import { SheetSettings } from "@system"
+import { SheetSettings } from "../sheet-settings.ts"
 import { ItemType } from "../constants.ts"
 import { ItemInst } from "./helpers.ts"
 import { CellData } from "./fields/cell-data.ts"

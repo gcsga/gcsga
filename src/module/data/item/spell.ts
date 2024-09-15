@@ -1,4 +1,3 @@
-import { Study } from "@system"
 import { ItemDataModel } from "../abstract.ts"
 import { ActorType, ItemType, gid } from "../constants.ts"
 import { AttributeDifficulty } from "./fields/attribute-difficulty.ts"
@@ -21,6 +20,7 @@ import {
 } from "./templates/index.ts"
 import { ActorTemplateType } from "../actor/types.ts"
 import { SkillLevel } from "./helpers.ts"
+import { Study } from "../study.ts"
 
 class SpellData extends ItemDataModel.mixin(
 	BasicInformationTemplate,

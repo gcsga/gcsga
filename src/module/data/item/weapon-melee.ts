@@ -3,12 +3,9 @@ import fields = foundry.data.fields
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { AbstractWeaponTemplate, AbstractWeaponTemplateSchema } from "./templates/abstract-weapon.ts"
 import { Nameable } from "@module/util/nameable.ts"
-import { SkillDefault } from "@system"
 import { WeaponParry, WeaponParrySchema } from "./fields/weapon-parry.ts"
 import { WeaponReach, WeaponReachSchema } from "./fields/weapon-reach.ts"
 import { WeaponBlock, WeaponBlockSchema } from "./fields/weapon-block.ts"
-import { WeaponStrength } from "./fields/weapon-strength.ts"
-import { WeaponDamage } from "./fields/weapon-damage.ts"
 import { CellData } from "./fields/cell-data.ts"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
 
@@ -38,23 +35,23 @@ class WeaponMeleeData extends ItemDataModel.mixin(BasicInformationTemplate, Abst
 		let levelTooltip = addBuffer("", buffer)
 
 		buffer.clear()
-		const parry = this.parry.resolveValue(this, buffer)
+		const parry = this.parry.resolve(this, buffer)
 		let parryTooltip = addBuffer(parry.tooltip(this), buffer)
 
 		buffer.clear()
-		const block = this.block.resolveValue(this, buffer)
+		const block = this.block.resolve(this, buffer)
 		let blockTooltip = addBuffer("", buffer)
 
 		buffer.clear()
-		const damage = this.damage.resolveValue(this, buffer)
+		const damage = this.damage.resolve(this, buffer)
 		let damageTooltip = addBuffer("", buffer)
 
 		buffer.clear()
-		const reach = this.reach.resolveValue(this, buffer)
+		const reach = this.reach.resolve(this, buffer)
 		let reachTooltip = addBuffer(reach.tooltip(this), buffer)
 
 		buffer.clear()
-		const strength = this.strength.resolveValue(this, buffer)
+		const strength = this.strength.resolve(this, buffer)
 		let strengthTooltip = addBuffer(strength.tooltip(this), buffer)
 
 		const data: Record<string, CellData> = {
@@ -82,24 +79,13 @@ class WeaponMeleeData extends ItemDataModel.mixin(BasicInformationTemplate, Abst
 	}
 }
 
-interface WeaponMeleeData
-	extends Omit<
-		ModelPropsFromSchema<WeaponMeleeSchema>,
-		"defaults" | "damage" | "strength" | "reach" | "parry" | "block"
-	> {
-	defaults: SkillDefault[]
-	strength: WeaponStrength
-	damage: WeaponDamage
-	reach: WeaponReach
-	parry: WeaponParry
-	block: WeaponBlock
-}
+interface WeaponMeleeData extends ModelPropsFromSchema<WeaponMeleeSchema> {}
 
 type WeaponMeleeSchema = BasicInformationTemplateSchema &
 	AbstractWeaponTemplateSchema & {
-		reach: fields.SchemaField<WeaponReachSchema>
-		parry: fields.SchemaField<WeaponParrySchema>
-		block: fields.SchemaField<WeaponBlockSchema>
+		reach: fields.SchemaField<WeaponReachSchema, SourceFromSchema<WeaponReachSchema>, WeaponReach>
+		parry: fields.SchemaField<WeaponParrySchema, SourceFromSchema<WeaponParrySchema>, WeaponParry>
+		block: fields.SchemaField<WeaponBlockSchema, SourceFromSchema<WeaponBlockSchema>, WeaponBlock>
 	}
 
 export { WeaponMeleeData, type WeaponMeleeSchema }

@@ -1,20 +1,20 @@
 import { ActorDataModel } from "@module/data/abstract.ts"
 import { ActorType, ItemType, gid } from "@module/data/constants.ts"
-import { equalFold } from "@module/util/index.ts"
-import { Nameable } from "@module/util/nameable.ts"
+import { MoveBonusType } from "@module/data/feature/data.ts"
 import {
 	AttributeBonus,
 	CostReduction,
 	DRBonus,
+	MoveBonus,
 	SkillBonus,
 	SkillPointBonus,
 	SpellBonus,
 	SpellPointBonus,
 	WeaponBonus,
-	MoveBonus,
-	SheetSettings,
-} from "@system"
-import { Feature } from "@system/feature/types.ts"
+} from "@module/data/feature/index.ts"
+import { Feature } from "@module/data/feature/types.ts"
+import { equalFold } from "@module/util/index.ts"
+import { Nameable } from "@module/util/nameable.ts"
 import { ErrorGURPS, TooltipGURPS, feature, selfctrl, skillsel, stlimit, wsel } from "@util"
 
 class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> {
@@ -189,6 +189,34 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 				bonus.addToTooltip(tooltip)
 			}
 		}
+		return total
+	}
+
+	/**
+	 * @param moveTypeId - ID of move type
+	 * @param limitation - Strength attribute limitation
+	 * @param tooltip - Tooltip to append bonus annotation to
+	 * @param temporary - Is this feature provided by a temporary active effect?
+	 * @returns Total bonus value
+	 */
+	moveBonusFor(
+		moveTypeId: string,
+		limitation: MoveBonusType,
+		tooltip: TooltipGURPS | null = null,
+		temporary = false,
+	): number {
+		let total = 0
+		if (this.features)
+			for (const feature of this.features.moveBonuses) {
+				if (
+					feature.limitation === limitation &&
+					feature.move_type === moveTypeId &&
+					feature.temporary === temporary
+				) {
+					total += feature.adjustedAmount
+					feature.addToTooltip(tooltip)
+				}
+			}
 		return total
 	}
 

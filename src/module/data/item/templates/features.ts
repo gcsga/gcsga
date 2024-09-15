@@ -1,6 +1,6 @@
 import fields = foundry.data.fields
 import { ItemDataModel } from "@module/data/abstract.ts"
-import { Feature, FeatureTypes } from "@system/feature/types.ts"
+import { Feature, FeatureTypes } from "@module/data/feature/types.ts"
 import { feature } from "@util"
 
 class FeatureTemplate extends ItemDataModel<FeatureTemplateSchema> {

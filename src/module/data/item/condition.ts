@@ -3,19 +3,20 @@ import { AbstractEffectTemplate, AbstractEffectTemplateSchema } from "./template
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { FeatureTemplate, FeatureTemplateSchema } from "./templates/features.ts"
 import fields = foundry.data.fields
-import { AllConditionSubtypes } from "@item/condition/data.ts"
-import { RollModifier, RollModifierSchema } from "@system/roll-modifier.ts"
+import { RollModifier, RollModifierSchema } from "@module/data/roll-modifier.ts"
 
 enum ConditionSubtype {
 	Normal = "normal",
 	Posture = "posture",
 }
 
+const ConditionSubTypes: ConditionSubtype[] = [ConditionSubtype.Normal, ConditionSubtype.Posture]
+
 class ConditionData extends ItemDataModel.mixin(BasicInformationTemplate, FeatureTemplate, AbstractEffectTemplate) {
 	static override defineSchema(): ConditionSchema {
 		const fields = foundry.data.fields
 		return this.mergeSchema(super.defineSchema(), {
-			sub_type: new fields.StringField({ choices: AllConditionSubtypes, initial: ConditionSubtype.Normal }),
+			sub_type: new fields.StringField({ choices: ConditionSubTypes, initial: ConditionSubtype.Normal }),
 			checks: new fields.ArrayField(new fields.SchemaField(RollModifier.defineSchema())),
 			consequences: new fields.ArrayField(
 				new fields.SchemaField({

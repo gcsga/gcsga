@@ -9,8 +9,6 @@ import { CompendiumPack, isActorSource, isItemSource } from "./compendium-pack.t
 import { PackError, getFilesRecursively } from "./helpers.ts"
 import { DBFolder, LevelDatabase } from "./level-database.ts"
 import type { PackEntry } from "./types.ts"
-// import type { ActorSourceGURPS } from "@actor/data.ts"
-import type { ItemSourceGURPS } from "@item/data/index.ts"
 
 declare global {
 	interface Global {

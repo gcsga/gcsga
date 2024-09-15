@@ -41,14 +41,30 @@ class WeaponROF extends WeaponField<WeaponRangedData, WeaponROFSchema> {
 		return s1
 	}
 
-	override resolveValue(w: WeaponRangedData, tooltip: TooltipGURPS | null): WeaponROF {
+	override tooltip(w: WeaponRangedData): string {
+		if (this.jet) return ""
+		const buffer = new TooltipGURPS()
+		const t1 = this.mode1.tooltip(w)
+		const t2 = this.mode2.tooltip(w)
+		if (t1 !== "") {
+			if (t2 !== "") buffer.push(LocalizeGURPS.translations.GURPS.Tooltip.ROFMode1, "\n")
+			buffer.push(t1)
+		}
+		if (t2 !== "") {
+			if (t1 !== "") buffer.push(LocalizeGURPS.translations.GURPS.Tooltip.ROFMode2, "\n")
+			buffer.push(t2)
+		}
+		return buffer.toString()
+	}
+
+	override resolve(w: WeaponRangedData, tooltip: TooltipGURPS | null): WeaponROF {
 		const result = this.clone()
 		result.jet = w.resolveBoolFlag(wswitch.Type.Jet, result.jet)
 		if (!result.jet) {
 			const buf1 = new TooltipGURPS()
 			const buf2 = new TooltipGURPS()
-			result.mode1 = result.mode1.resolveValue(w, buf1, true)
-			result.mode2 = result.mode2.resolveValue(w, buf2, false)
+			result.mode1 = result.mode1.resolve(w, buf1, true)
+			result.mode2 = result.mode2.resolve(w, buf2, false)
 			if (tooltip !== null) {
 				if (buf1.length !== 0) {
 					if (buf2.length !== 0) {

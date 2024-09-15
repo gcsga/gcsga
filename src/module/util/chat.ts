@@ -1,10 +1,10 @@
-import { ActorGURPS } from "@actor"
-import { ActorType, GURPS_COMMANDS, RollModifier, RollType, gid } from "@data"
-import { MookGeneratorSheet } from "@system"
+import { ActorType, GURPS_COMMANDS, RollType, gid } from "@data"
 import { RollGURPS } from "@module/roll/index.ts"
 import { LastActor } from "./last-actor.ts"
 import { LocalizeGURPS } from "@util"
 import { RollTypeData } from "@module/roll/roll-handler.ts"
+import { RollModifier } from "@module/data/roll-modifier.ts"
+import { ActorGURPS2 } from "@module/document/actor.ts"
 
 export function parse(message: string): [string, string[]] {
 	for (const [rule, rgx] of Object.entries(GURPS_COMMANDS)) {
@@ -19,8 +19,9 @@ export function processMessage(message: string): boolean {
 	const [command, _match] = parse(message)
 	if (command === "none") return true
 	switch (command) {
+		// TODO: add back in
 		case "mook":
-			MookGeneratorSheet.init()
+			// MookGeneratorSheet.init()
 			return false
 	}
 	return true
@@ -70,7 +71,7 @@ async function _onHitsChange(event: JQuery.ClickEvent, delta: number): Promise<v
 async function _onModClick(event: JQuery.ClickEvent): Promise<void> {
 	event.preventDefault()
 	event.stopPropagation()
-	const mod: RollModifier = $(event.currentTarget).data("mod")
+	const mod = new RollModifier($(event.currentTarget).data("mod"))
 	return game.user.addModifier(mod)
 }
 
@@ -96,19 +97,19 @@ async function _onRollClick(event: JQuery.ClickEvent) {
 	const type: RollType = $(event.currentTarget).data("type")
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const data: any = { type: type, hidden: event.ctrlKey }
-	let actor: ActorGURPS | null = await LastActor.get()
+	let actor: ActorGURPS2 | null = await LastActor.get()
 	if (!actor?.isOfType(ActorType.Character)) return
 
 	if (type === RollType.Attribute) {
 		const id = $(event.currentTarget).data("json").id
-		if (id === gid.Dodge) data.attribute = actor?.dodgeAttribute
-		else data.attribute = actor?.attributes.get(id)
+		if (id === gid.Dodge) data.attribute = actor?.system.dodgeAttribute
+		else data.attribute = actor?.system.attributeMap.get(id)
 	} else if ([RollType.Skill, RollType.SkillRelative].includes(type)) {
 		if (actor.isOfType(ActorType.Character)) {
 			const itemData = $(event.currentTarget).data("json")
 
 			// Grab best skill or default
-			data.item = actor.bestSkillNamed(itemData.name!, itemData.specialization || "", false, null)
+			data.item = actor.system.bestSkillNamed(itemData.name!, itemData.specialization || "", false, new Set())
 
 			// Update level at least once to calculate default level
 			data.item.updateLevel()
@@ -127,7 +128,7 @@ async function _onRollClick(event: JQuery.ClickEvent) {
 	} else if ([RollType.Attack].includes(type)) {
 		const itemData = $(event.currentTarget).data("json")
 		data.item = actor.itemCollections.weapons.find(
-			e => e.itemName === itemData.itemName && e.usage === itemData.usage,
+			e => e.system.processedName === itemData.itemName && e.usage === itemData.usage,
 		)
 		if (!data.item || data.item.effectiveLevel === Number.MIN_SAFE_INTEGER) {
 			ui.notifications?.warn(LocalizeGURPS.translations.gurps.notification.no_default_skill)
@@ -139,11 +140,11 @@ async function _onRollClick(event: JQuery.ClickEvent) {
 		data.comment = $(event.currentTarget).data("comment")
 	}
 	if (type === RollType.Location) {
-		actor = (game.actors?.get($(event.currentTarget).data("actorId")) as ActorGURPS) ?? null
+		actor = (game.actors?.get($(event.currentTarget).data("actorId")) as ActorGURPS2) ?? null
 	}
 	if (type === RollType.Generic) data.formula = $(event.currentTarget).data("formula")
 
-	if (actor !== null) return RollGURPS.handleRoll(game.user, actor as ActorGURPS, data)
+	if (actor !== null) return RollGURPS.handleRoll(game.user, actor as ActorGURPS2, data)
 }
 
 /**
@@ -171,7 +172,7 @@ type DamageRollEventData = {
 
 function getDamageRollData(
 	eventData: DamageRollEventData,
-): { actor: ActorGURPS; data: Partial<RollTypeData> } | undefined {
+): { actor: ActorGURPS2; data: Partial<RollTypeData> } | undefined {
 	const type: RollType = eventData.type
 
 	if (type !== RollType.Damage) {

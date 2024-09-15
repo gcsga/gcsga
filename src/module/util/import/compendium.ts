@@ -2,9 +2,9 @@ import { SYSTEM_NAME } from "@data"
 import { ChatMessageGURPS } from "@module/chat-message/document.ts"
 import { LocalizeGURPS } from "@util"
 import { GCS_FILE_VERSIONS, ImportedItemLibrarySource } from "./data.ts"
-import { ItemGURPS } from "@item"
 import { DialogGURPS } from "@module/apps/dialog.ts"
 import { ItemImporter } from "./item.ts"
+import { ItemGURPS2 } from "@module/document/item.ts"
 
 class ItemCompendiumImporter {
 	static async throwError(text: string): Promise<void> {
@@ -91,7 +91,7 @@ class ItemCompendiumImporter {
 		ui.notifications.info(
 			LocalizeGURPS.format(LocalizeGURPS.translations.gurps.system.library_import.start, { pnumber: counter }),
 		)
-		await ItemGURPS.createDocuments(items, { pack: pack.collection, keepId: true })
+		await ItemGURPS2.createDocuments(items, { pack: pack.collection, keepId: true })
 		ui.notifications.info(
 			LocalizeGURPS.format(LocalizeGURPS.translations.gurps.system.library_import.finished, { number: counter }),
 		)

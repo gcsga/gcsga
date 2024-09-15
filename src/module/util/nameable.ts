@@ -1,6 +1,3 @@
-import { SYSTEM_NAME } from "@module/data/constants.ts"
-import { ItemGURPS } from "../item/base/document.ts"
-
 interface NameableFiller {
 	fillWithNameableKeys(m: Map<string, string>, existing?: Map<string, string>): void
 }
@@ -57,36 +54,3 @@ export namespace Nameable {
 		return Object.hasOwn(e, "applyNameableKeys")
 	}
 }
-
-// class ItemSubstitutionSheet<TItem extends ItemGURPS> extends ItemSheet<TItem> {
-// 	get item(): TItem {
-// 		return this.document
-// 	}
-//
-// 	override getData(
-// 		options?: Partial<DocumentSheetOptions> | undefined,
-// 	): ItemSubstitutionSheetData<TItem> | Promise<ItemSubstitutionSheetData<TItem>> {
-// 		return fu.mergeObject(super.getData(options), {
-// 			substitutionEntries: this.getSubstitutionEntries(),
-// 		}) as ItemSubstitutionSheetData<TItem>
-// 	}
-//
-// 	override get template(): string {
-// 		return `systems/${SYSTEM_NAME}/templates/item/substitution-sheet.hbs`
-// 	}
-//
-// 	getSubstitutionEntries(): Record<string, string> {
-// 		return Object.fromEntries(this.item.nameableReplacements)
-// 	}
-//
-// 	protected override async _updateObject(event: Event, formData: Record<string, unknown>): Promise<void> {
-// 		event.preventDefault()
-// 		this.item.update({ "system.replacements": formData })
-// 	}
-// }
-//
-// interface ItemSubstitutionSheetData<TItem extends ItemGURPS> extends DocumentSheetData<TItem> {
-// 	substitutionEntries: Record<string, string>
-// }
-//
-// export { ItemSubstitutionSheet }

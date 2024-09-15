@@ -31,8 +31,8 @@ import {
 	ContainedQuantityNumericCompareTypes,
 	EFFECT_ACTION,
 } from "./constants.ts"
-import { allMoveTypeOverrideConditions } from "@system"
-import { DurationTypes } from "@item/abstract-effect/data.ts"
+import { MoveTypeOverrideConditionTypes } from "./move-type/move-type-override.ts"
+import { DurationTypes } from "./item/templates/abstract-effect.ts"
 
 export function prepareSelectOptions(): void {
 	const SELECT_OPTIONS: Record<string, Record<string, string>> = {
@@ -210,7 +210,7 @@ export function prepareSelectOptions(): void {
 				[c]: LocalizeGURPS.translations.gurps.weight_units[c],
 			})
 		}, {}),
-		move_override: allMoveTypeOverrideConditions.reduce((acc, c) => {
+		move_override: MoveTypeOverrideConditionTypes.reduce((acc, c) => {
 			return Object.assign(acc, {
 				[c]: LocalizeGURPS.translations.gurps.enum.move_override[c],
 			})

@@ -1,13 +1,14 @@
 import { ItemDataModel } from "@module/data/abstract.ts"
 import fields = foundry.data.fields
-import { SkillDefault, SkillDefaultSchema, WeaponBonus } from "@system"
 import { LocalizeGURPS, StringBuilder, TooltipGURPS, encumbrance, feature, skillsel, wsel, wswitch } from "@util"
 import { ItemTemplateType } from "../types.ts"
 import { ActorType, ItemType } from "@module/data/constants.ts"
 import { Nameable } from "@module/util/nameable.ts"
-import { Feature } from "@system/feature/types.ts"
 import { WeaponStrength, WeaponStrengthSchema } from "../fields/weapon-strength.ts"
 import { WeaponDamage, WeaponDamageSchema } from "../fields/weapon-damage.ts"
+import { SkillDefault, SkillDefaultSchema } from "@module/data/skill-default.ts"
+import { Feature } from "@module/data/feature/types.ts"
+import { WeaponBonus } from "@module/data/feature/index.ts"
 
 class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema> {
 	static override defineSchema(): AbstractWeaponTemplateSchema {
@@ -71,7 +72,7 @@ class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema>
 		const tags = container.hasTemplate(ItemTemplateType.BasicInformation) ? container.system.tags : []
 
 		let adj = 0
-		let minST = this.strength.resolveValue(this, null).min
+		let minST = this.strength.resolve(this, null).min
 		if (!this.isOfType(ItemType.WeaponRanged) || (this.range.musclePowered && !this.usesCrossbowSkill)) {
 			minST -= actor.system.strikingStrength
 		} else {
@@ -295,19 +296,18 @@ class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema>
 
 interface AbstractWeaponTemplate
 	extends ItemDataModel<AbstractWeaponTemplateSchema>,
-		Omit<ModelPropsFromSchema<AbstractWeaponTemplateSchema>, "strength" | "defaults" | "damage"> {
+		ModelPropsFromSchema<AbstractWeaponTemplateSchema> {
 	constructor: typeof AbstractWeaponTemplate
 	nameableReplacements: Map<string, string>
-	strength: WeaponStrength
-	defaults: SkillDefault[]
 	tags: string[]
-	damage: WeaponDamage
 }
 
 type AbstractWeaponTemplateSchema = {
-	strength: fields.SchemaField<WeaponStrengthSchema>
-	defaults: fields.ArrayField<fields.SchemaField<SkillDefaultSchema>>
-	damage: fields.SchemaField<WeaponDamageSchema>
+	strength: fields.SchemaField<WeaponStrengthSchema, SourceFromSchema<WeaponStrengthSchema>, WeaponStrength>
+	defaults: fields.ArrayField<
+		fields.SchemaField<SkillDefaultSchema, SourceFromSchema<SkillDefaultSchema>, SkillDefault>
+	>
+	damage: fields.SchemaField<WeaponDamageSchema, SourceFromSchema<WeaponDamageSchema>, WeaponDamage>
 	unready: fields.BooleanField<boolean, boolean>
 }
 

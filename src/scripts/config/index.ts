@@ -1,6 +1,6 @@
-import { SkillGURPS } from "@item"
+import { ItemType } from "@module/data/constants.ts"
+import { ItemInst } from "@module/data/item/helpers.ts"
 import { JournalEntryPageGURPS, JournalEntryPagePDF } from "@module/journal-entry/page/document.ts"
-import { AttributeGURPS, MoveType, ResourceTracker } from "@system"
 
 const tokenHUDConditions = {
 	crouching: "gurps.status.crouching",
@@ -78,7 +78,7 @@ const tokenHUDManeuvers = {
 }
 
 export const GURPSCONFIG = {
-	skillDefaults: [] as SkillGURPS[],
+	skillDefaults: [] as ItemInst<ItemType.Skill>[],
 
 	statusEffects: {
 		conditions: tokenHUDConditions,
@@ -213,13 +213,13 @@ export const GURPSCONFIG = {
 	// 	} as Record<ItemType, ItemType[]>,
 	// },
 
-	Attribute: {
-		classes: {
-			attribute: AttributeGURPS,
-			resourceTracker: ResourceTracker,
-			moveType: MoveType,
-		},
-	},
+	// Attribute: {
+	// 	classes: {
+	// 		attribute: AttributeGURPS,
+	// 		resourceTracker: ResourceTracker,
+	// 		moveType: MoveType,
+	// 	},
+	// },
 
 	// Feature: {
 	// 	classes: {

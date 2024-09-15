@@ -1,7 +1,7 @@
 import { ActorDataModel } from "@module/data/abstract.ts"
-import { AttributeDef, AttributeGURPS, AttributeSchema } from "@system"
 import fields = foundry.data.fields
 import { threshold } from "@util"
+import { AttributeDef, AttributeGURPS, AttributeSchema } from "@module/data/attribute/index.ts"
 
 class AttributeHolderTemplate extends ActorDataModel<AttributeHolderTemplateSchema> {
 	static override defineSchema(): AttributeHolderTemplateSchema {
@@ -59,11 +59,11 @@ class AttributeHolderTemplate extends ActorDataModel<AttributeHolderTemplateSche
 	}
 }
 
-interface AttributeHolderTemplate extends Omit<ModelPropsFromSchema<AttributeHolderTemplateSchema>, "attributes"> {
-	attributes: AttributeGURPS[]
-}
+interface AttributeHolderTemplate extends ModelPropsFromSchema<AttributeHolderTemplateSchema> {}
 
 type AttributeHolderTemplateSchema = {
-	attributes: fields.ArrayField<fields.SchemaField<AttributeSchema>>
+	attributes: fields.ArrayField<
+		fields.SchemaField<AttributeSchema, SourceFromSchema<AttributeSchema>, AttributeGURPS>
+	>
 }
 export { AttributeHolderTemplate, type AttributeHolderTemplateSchema }

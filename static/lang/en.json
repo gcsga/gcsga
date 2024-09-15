@@ -58,12 +58,30 @@
 			"points": "points"
 		},
 		"Tooltip": {
+			"Prefix": "• ",
 			"SkillEncumbrance": "<br>Encumbrance [{amount}]",
 			"IncludesModifiersFrom": "Includes modifiers from",
 			"SkillLevelStrengthRequirement": "{name} [{modifier} to skill level due to minimum ST requirement]",
 			"EncumbrancePenalty": "Encumbrance [{modifier}",
 			"ROFMode1": "First mode:",
-			"ROFMode2": "Second mode:"
+			"ROFMode2": "Second mode:",
+			"RetractingStock": "*: Has a retracting stock. With the stock folded, the weapon's stats change to Bulk {bulk}, Accuracy {accuracy}, Recoil {recoil}, and minimum ST {strength}. Folding or unfolding the stock takes one Ready maneuver.",
+			"ReachChangeRequiresReady": "*: Changing reach requires a Ready maneuver.",
+			"ReloadTimeIsPerShot": "i: Reload time is per shot.",
+			"ROFModeSecondaryProjectiles": "This weapon fires {shotsCount} {shotsText} per attack and each shot releases {projectilesCount} smaller {projectilesText}.",
+			"ROFModeFullAutoOnly": "!: This weapon can only fire on full automatic. Minimum RoF is {min}.",
+			"ROFModeHighCyclicControlledBursts": "#: This weapon can fire in high cyclic controlled bursts, reducing Recoil to 1.",
+			"ParryFencing": "F: Fencing weapon. When retreating, your Parry is {retreatingParry} (instead of {normalParry}). You suffer a -2 cumulative penalty for multiple parries after the first on the same turn instead of the usual -4. Flails cannot be parried by this weapon.",
+			"ParryUnbalanced": "U: Unbalanced weapon. You cannot use it to parry if you have already used it to attack this turn (or vice-versa).",
+			"Recoil": "First Recoil value is for shot, second is for slugs",
+			"StrengthRated": "The weapon has a rated ST of {st}, which is used instead of the user's ST for all calculations except minimum ST.",
+			"StrengthMinimum": "The weapon has a minimum ST of {min}. If your ST is less than this, you will suffer a -1 to weapon skill per point of ST you lack and lose one extra FP at the end of any fight that lasts long enough to cost FP.",
+			"StrengthBipodReducedST": "B: Has an attached bipod. When used from a prone position, reduces the ST requirement to {st} and treats the attack as braced (add +1 to Accuracy).",
+			"StrengthBipodNoReducedST": "B: Has an attached bipod. When used from a prone position, treats the attack as braced (add +1 to Accuracy).",
+			"StrengthMounted": "M: Mounted. Ignore listed ST and Bulk when firing from its mount. Takes at least 3 Ready maneuvers to unmount or remount the weapon.",
+			"StrengthMusketRest": "R: Uses a Musket Rest. Any aimed shot fired while stationary and standing up is automatically braced (add +1 to Accuracy).",
+			"StrengthTwoHandedUnready": "‡: Requires two hands and becomes unready after you attack with it. If you have at least ST {st15}, you can used it two-handed without it becoming unready. If you have at least ST {st3}, you can use it one-handed with no readiness penalty.",
+			"StrengthTwoHanded": "†: Requires two hands. If you have at least ST {st15}, you can use it one-handed, but it becomes unready after you attack with it. If you have at least ST {st2}, you can use it one-handed with no readiness penalty."
 		},
 		"SkillDefault": "Default: {name}{modifier}",
 		"SkillSpecialization": " ({specialization})",
@@ -76,7 +94,6 @@
 			"Time": "; Time: x1/{number}, rounded up, min 1 sec",
 			"Cost": "; Cost: -{number}"
 		},
-		"TooltipPrefix": "• ",
 		"Prereq": {
 			"RitualMagic": {
 				"College": "Must be assigned to a college",
@@ -94,11 +111,16 @@
 			"IncludesModifiersFrom": "Includes modifiers from",
 			"PageRefTooltip": "A reference to the book and page the item appears on e.g. B22 would refer to \"Basic Set\", page 22",
 			"LibSrcTooltip": "Indicates whether the data matches the source library it came from",
-			"ModifierEnabledTooltip": "Whether this modifier is enabled. Modifiers that are not enabled do not apply any features they may normally contribute."
+			"ModifierEnabledTooltip": "Whether this modifier is enabled. Modifiers that are not enabled do not apply any features they may normally contribute.",
+			"ContainerMaxDepth": "Containers cannot be nested more than {depth} levels deep."
 		},
 		"RatedStrength": "Rated ST {value}",
 		"Weapon": {
-			"ModifierPerDie": "({value} per die)"
+			"ModifierPerDie": "({value} per die)",
+			"ShotsSingular": "shot",
+			"ShotsPlural": "shots",
+			"ProjectilesSingular": "projectile",
+			"ProjectilesPlural": "proectiles"
 		},
 		"Enum": {
 			"stdmg": {
@@ -866,6 +888,7 @@
 				"weapon_acc_bonus": "{level} to damage",
 				"weapon_scope_acc_bonus": "{level} to scope accuracy",
 				"weapon_dr_divisor_bonus": "{level} to DR divisor",
+				"weapon_effective_st_bonus": "{level} to effective ST",
 				"weapon_min_st_bonus": "{level} to minimum ST",
 				"weapon_min_reach_bonus": "{level} to minimum reach",
 				"weapon_max_reach_bonus": "{level} to maximum reach",

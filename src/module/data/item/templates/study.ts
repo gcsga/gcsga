@@ -1,7 +1,7 @@
 import { study } from "@util"
 import fields = foundry.data.fields
 import { ItemDataModel } from "@module/data/abstract.ts"
-import { Study, StudySchema } from "@system"
+import { Study, StudySchema } from "@module/data/study.ts"
 
 class StudyTemplate extends ItemDataModel<StudyTemplateSchema> {
 	static override defineSchema(): StudyTemplateSchema {
@@ -17,14 +17,10 @@ class StudyTemplate extends ItemDataModel<StudyTemplateSchema> {
 	}
 }
 
-interface StudyTemplate
-	extends ItemDataModel<StudyTemplateSchema>,
-		Omit<ModelPropsFromSchema<StudyTemplateSchema>, "study"> {
-	study: Study[]
-}
+interface StudyTemplate extends ItemDataModel<StudyTemplateSchema>, ModelPropsFromSchema<StudyTemplateSchema> {}
 
 type StudyTemplateSchema = {
-	study: fields.ArrayField<fields.SchemaField<StudySchema>>
+	study: fields.ArrayField<fields.SchemaField<StudySchema, SourceFromSchema<StudySchema>, Study>>
 	study_hours_needed: fields.StringField<study.Level>
 }
 
