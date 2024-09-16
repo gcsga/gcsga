@@ -1,13 +1,13 @@
 /// <reference types="vite/client" />
-import { CompendiumBrowser } from "@module/apps/compendium-browser/index.ts"
+// import { CompendiumBrowser } from "@module/apps/compendium-browser/index.ts"
 import { ModifierBucket } from "@module/apps/modifier-bucket/button.ts"
 import { ModifierList } from "@module/apps/modifier-list/document.ts"
 import { ChatLogGURPS } from "@module/apps/sidebar/chat-log.ts"
-import { CompendiumDirectoryGURPS } from "@module/apps/sidebar/compendium-directory.ts"
+// import { CompendiumDirectoryGURPS } from "@module/apps/sidebar/compendium-directory.ts"
 import { CanvasGURPS } from "@module/canvas/index.ts"
 import { ActorsGURPS } from "@module/data/collections/actors-collection.ts"
 import { ItemsGURPS } from "@module/data/collections/items-collection.ts"
-import { SETTINGS } from "@module/data/constants.ts"
+import { SETTINGS, SSRT_SETTING } from "@module/data/constants.ts"
 import { DiceGURPS } from "@module/data/dice.ts"
 import { ActorGURPS2 } from "@module/document/actor.ts"
 import { ChatMessageGURPS } from "@module/document/chat-message.ts"
@@ -40,7 +40,7 @@ interface GameGURPS
 		// ConditionManager: typeof ConditionManager
 		Dice: typeof DiceGURPS
 		// ManeuverManager: typeof ManeuverManager
-		compendiumBrowser: CompendiumBrowser
+		// compendiumBrowser: CompendiumBrowser
 		// effectPanel: EffectPanel
 		modifierBucket: ModifierBucket
 		modifierList: ModifierList
@@ -63,7 +63,8 @@ type ConfiguredConfig = Config<
 	CombatTracker<CombatGURPS | null>,
 	ActorDirectory<ActorGURPS2<null>>,
 	ItemDirectory<ItemGURPS2<null>>,
-	CompendiumDirectoryGURPS,
+	CompendiumDirectory,
+	// CompendiumDirectoryGURPS,
 	Hotbar,
 	ItemGURPS2,
 	Macro,
@@ -113,7 +114,8 @@ declare global {
 			// ActorDirectoryGURPS<ActorGURPS<null>>,
 			// ItemDirectory<ItemGURPS<null>>,
 			ChatLogGURPS,
-			CompendiumDirectoryGURPS,
+			CompendiumDirectory,
+			// CompendiumDirectoryGURPS,
 			CombatTracker<Combat | null>,
 			// CombatTrackerGURPS<CombatGURPS | null>,
 			Hotbar
@@ -135,7 +137,7 @@ declare global {
 
 	interface ClientSettings {
 		get(module: "gcsga", key: SETTINGS.COLORS): ColorSettings
-		get(module: "gcsga", key: SETTINGS.SSRT): SSRT_SETTINGS
+		get(module: "gcsga", key: SETTINGS.SSRT): SSRT_SETTING
 		get(module: "gcsga", key: SETTINGS.ROLL_FORMULA): string
 		get(module: "gcsga", key: SETTINGS.BASE_BOOKS): string
 		// get(module: "gcsga", key: "default_sheet_settings.initial_points"): number
@@ -166,6 +168,7 @@ declare global {
 	}
 
 	interface ClientSettingsMap {
+		get(key: `gcsga.${SETTINGS.COLORS}`): SettingConfig & { default: ColorSettings }
 		// get(key: "gcsga.worldClock.worldCreatedOn"): SettingConfig & { default: string }
 		// get(key: "gcsga.default_sheet_settings.initial_points"): SettingConfig & { default: number }
 		// get(key: "gcsga.default_sheet_settings.tech_level"): SettingConfig & { default: string }

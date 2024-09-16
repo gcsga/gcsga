@@ -113,7 +113,7 @@ class SheetSettingsConfig extends api.HandlebarsApplicationMixin(api.Application
 	}
 
 	static registerSettings(): void {
-		game.settings.register(SYSTEM_NAME, SETTINGS.COLORS, {
+		game.settings.register(SYSTEM_NAME, SETTINGS.DEFAULT_SHEET_SETTINGS, {
 			name: "",
 			scope: "client",
 			type: DefaultSheetSettings,

@@ -1,0 +1,63 @@
+// .fieldblock {
+// 	display: grid;
+// 	grid-template-columns: min-content 0fr 0fr 0fr min-content 0fr 0fr 0fr;
+// 	grid-gap: 5px;
+// 	padding: 5px;
+// 	input[type="color"] {
+// 		height: 24px;
+// 		width: 24px;
+// 		background-color: rgb(var(--color-control));
+// 		border: 1px solid rgb(var(--color-control-edge));
+// 		border-radius: 3px;
+// 		padding: 2px;
+// 		&::-webkit-color-swatch-wrapper {
+// 			padding: 0;
+// 		}
+// 		&::-webkit-color-swatch {
+// 			border: 1px solid rgb(var(--color-control-edge));
+// 			border-radius: 3px;
+// 		}
+// 	}
+// }
+
+#color-config {
+	header.table-header {
+		background: var(--color-text-dark-inactive);
+		padding: 0.5rem;
+		color: var(--color-text-light-highlight);
+		border: 1px solid var(--color-border-dark-4);
+		text-align: center;
+		font-weight: bold;
+		text-shadow: 1px 1px var(--color-shadow-dark);
+	}
+
+	.index {
+		flex: 0 0 200px;
+		text-align: left;
+		font-weight: bold;
+	}
+
+	ul.colors-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		max-height: 400px;
+		overflow: hidden auto;
+	}
+
+	li.color {
+		padding: 0.25rem 0.5rem;
+		border-bottom: 1px solid var(--color-border-dark-4);
+
+		.form-fields {
+			justify-content: space-around;
+		}
+	}
+}
+
+.theme-dark #color-config {
+	header.table-header {
+		background-color: var(--color-cool-4);
+		border-color: var(--color-cool-4);
+	}
+}

@@ -7,29 +7,31 @@ class ColorSettings extends foundry.abstract.DataModel<null, ColorSettingsSchema
 		const fields = foundry.data.fields
 		return {
 			banding: new fields.SchemaField(ColorSettingsEntry.defineSchema(), {
-				initial: { light: "#E8E8D8", dark: "#282820" },
+				initial: { light: "#E8E8D8", dark: "#282820", lightForeground: "#000000", darkForeground: "#FFFFFF" },
 			}),
 			error: new fields.SchemaField(ColorSettingsEntry.defineSchema(), {
-				initial: { light: "#851414", dark: "#851414" },
+				initial: { light: "#851414", dark: "#851414", lightForeground: "#000000", darkForeground: "#FFFFFF" },
 			}),
 			focus: new fields.SchemaField(ColorSettingsEntry.defineSchema(), {
-				initial: { light: "#006199", dark: "#0080CC" },
+				initial: { light: "#006199", dark: "#0080CC", lightForeground: "#000000", darkForeground: "#FFFFFF" },
 			}),
 			header: new fields.SchemaField(ColorSettingsEntry.defineSchema(), {
-				initial: { light: "#2B2B2B", dark: "#404040" },
+				initial: { light: "#2B2B2B", dark: "#404040", lightForeground: "#000000", darkForeground: "#FFFFFF" },
 			}),
 			surface: new fields.SchemaField(ColorSettingsEntry.defineSchema(), {
-				initial: { light: "#E8E8E8", dark: "#282828" },
+				initial: { light: "#E8E8E8", dark: "#282828", lightForeground: "#000000", darkForeground: "#FFFFFF" },
 			}),
 			tooltip: new fields.SchemaField(ColorSettingsEntry.defineSchema(), {
-				initial: { light: "#FFF4C6", dark: "#FFF299" },
+				initial: { light: "#FFF4C6", dark: "#FFF299", lightForeground: "#000000", darkForeground: "#FFFFFF" },
 			}),
 			warning: new fields.SchemaField(ColorSettingsEntry.defineSchema(), {
-				initial: { light: "#D94C00", dark: "#BF4300" },
+				initial: { light: "#D94C00", dark: "#BF4300", lightForeground: "#000000", darkForeground: "#FFFFFF" },
 			}),
 		}
 	}
 }
+
+interface ColorSettings extends ModelPropsFromSchema<ColorSettingsSchema> {}
 
 type ColorSettingsSchema = {
 	banding: fields.SchemaField<ColorSettingsEntrySchema>
@@ -47,6 +49,8 @@ class ColorSettingsEntry extends foundry.abstract.DataModel<ColorSettings, Color
 		return {
 			light: new fields.ColorField(),
 			dark: new fields.ColorField(),
+			lightForeground: new fields.ColorField(),
+			darkForeground: new fields.ColorField(),
 		}
 	}
 }
@@ -54,14 +58,11 @@ class ColorSettingsEntry extends foundry.abstract.DataModel<ColorSettings, Color
 type ColorSettingsEntrySchema = {
 	light: fields.ColorField<true, false, true>
 	dark: fields.ColorField<true, false, true>
+	lightForeground: fields.ColorField<true, false, true>
+	darkForeground: fields.ColorField<true, false, true>
 }
 
 class ColorConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2) {
-	constructor(object?: object, options?: Partial<ApplicationConfiguration>) {
-		console.log(object, options)
-		super(options ?? {})
-	}
-
 	static override DEFAULT_OPTIONS = {
 		id: "color-config",
 		tag: "form",
@@ -75,9 +76,9 @@ class ColorConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2) {
 			height: "auto",
 		},
 		form: {
-			submitOnChange: false,
-			closeOnSubmit: false,
 			handler: ColorConfig.#onSubmit,
+			submitOnChange: false,
+			closeOnSubmit: true,
 		},
 		actions: {
 			reset: ColorConfig.#onReset,
@@ -105,7 +106,8 @@ class ColorConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2) {
 	}
 
 	override async _prepareContext(_options = {}) {
-		const current = await game.settings.get(SYSTEM_NAME, SETTINGS.COLORS)
+		// const current = await game.settings.get(SYSTEM_NAME, SETTINGS.COLORS)
+		const current = game.settings.get(SYSTEM_NAME, SETTINGS.COLORS)
 		return {
 			colors: this.#prepareColors(current),
 			buttons: [
@@ -116,35 +118,54 @@ class ColorConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2) {
 	}
 
 	#prepareColors(current: ColorSettings): Record<string, SourceFromSchema<ColorSettingsEntrySchema>> {
-		const colors: Record<string, SourceFromSchema<ColorSettingsEntrySchema>> = {}
+		const fields: Record<string, any> = {}
 
-		for (const key in current) {
-			if (
-				typeof current[key] === "object" &&
-				current[key] !== null &&
-				"light" in current[key] &&
-				"dark" in current[key] &&
-				typeof (current[key] as SourceFromSchema<ColorSettingsEntrySchema>)["light"] === "string" &&
-				typeof (current[key] as SourceFromSchema<ColorSettingsEntrySchema>)["dark"] === "string"
-			) {
-				colors[key] = current[key] as SourceFromSchema<ColorSettingsEntrySchema>
+		for (const key of Object.keys(current.schema.fields)) {
+			const light = current[key as keyof ColorSettingsSchema].light
+			const dark = current[key as keyof ColorSettingsSchema].dark
+			fields[key] = {
+				name: key,
+				label: `GURPS.Settings.ColorConfig.Fields.${key}.Label`,
+				hint: `GURPS.Settings.ColorConfig.Fields.${key}.Hint`,
+				light: light.toString(),
+				dark: dark.toString(),
 			}
 		}
-		return colors
+		return fields
+	}
+
+	// https://24ways.org/2010/calculating-color-contrast
+	private static _getContrastingForeground(hexColor: HexColorString): HexColorString {
+		const r = parseInt(hexColor.substring(1, 3), 16)
+		const g = parseInt(hexColor.substring(3, 5), 16)
+		const b = parseInt(hexColor.substring(5, 7), 16)
+		const yiq = (r * 299 + g * 587 + b * 114) / 1000
+		return yiq >= 128 ? "#000000" : "#FFFFFF"
 	}
 
 	static async #onSubmit(
 		event: Event | SubmitEvent,
-		form: HTMLFormElement,
+		_form: HTMLFormElement,
 		formData: FormDataExtended,
 	): Promise<void> {
-		console.log(event)
-		console.log(form)
-		console.log(formData)
+		event.preventDefault()
+		let current = game.settings.get(SYSTEM_NAME, SETTINGS.COLORS).toObject()
+		current = fu.mergeObject(current, formData.object)
+		for (const key of ColorSettings.schema.keys() as (keyof ColorSettingsSchema)[]) {
+			current[key].lightForeground = ColorConfig._getContrastingForeground(current[key].light)
+			current[key].darkForeground = ColorConfig._getContrastingForeground(current[key].dark)
+		}
+		await game.settings.set(SYSTEM_NAME, SETTINGS.COLORS, current)
+		ui.notifications.info("GURPS.Settings.ColorConfig.MessageSubmit", { localize: true })
 	}
 
-	static async #onReset(...args: any[]): Promise<void> {
-		console.log(args)
+	static async #onReset(event: Event): Promise<void> {
+		event.preventDefault()
+		const defaults = game.settings.settings.get(`${SYSTEM_NAME}.${SETTINGS.COLORS}`).default
+		await game.settings.set(SYSTEM_NAME, SETTINGS.COLORS, defaults)
+		ui.notifications.info("GURPS.Settings.ColorConfig.MessageReset", { localize: true })
+		// HACK: to fix when types catch up
+		await (this as unknown as api.ApplicationV2).render()
 	}
 }
 

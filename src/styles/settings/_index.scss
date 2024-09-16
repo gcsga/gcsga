@@ -1,3 +1,5 @@
+@import "color_config";
+
 .button-parent {
 	display: grid;
 	grid-auto-flow: column;
@@ -48,10 +50,6 @@
 			grid-auto-flow: column;
 			grid-gap: 5px;
 		}
-	}
-
-	&#colors-settings {
-		@import "colors";
 	}
 
 	.window-content {

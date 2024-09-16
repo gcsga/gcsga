@@ -2,26 +2,24 @@
 
 ## Left To Do
 
-- Prereq
-  - Re-do satisfied functions with replacements \*1
-- Chat Messages \*5
+- Chat Messages \*4
   - Re-do roll message templates and damage message handling
   - Move @module/util/chat.ts functionality to Chat Message
-- Settings \*2
+- Settings \*1
   - Re-do menus \*1
-    - Colors \*1
-    - Attributes \*3
-    - Resource Trackers \*4
-    - Move Types \*5
-    - Sheet Settings \*2
+    - Colors \*DONE
+    - Attributes \*2
+    - Resource Trackers \*3
+    - Move Types \*4
+    - Sheet Settings \*1
   - Re-add old settings \*2
 - CellData
   - Condition
 - Item
 - Actor
   - Legacy Support?
-- Item Sheet \*4
-- Actor Sheet \*3
+- Item Sheet \*3
+- Actor Sheet \*2
   - Collapsible sidebar
   - DND5e context menu
 - Token

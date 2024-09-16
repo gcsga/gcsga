@@ -1,0 +1,19 @@
+<div>
+	<header class="table-header flexrow">
+		<label class="index">{{localize "GURPS.Settings.ColorConfig.Color"}}</label>
+		<label>{{localize "GURPS.Settings.ColorConfig.Light"}}</label>
+		<label>{{localize "GURPS.Settings.ColorConfig.Dark"}}</label>
+	</header>
+	<ul class="permissions-list">
+		{{#each colors as |c|}}
+		<li class="color form-group">
+			<label class="index">{{localize c.label}}</label>
+			<div class="form-fields">
+				<input type="color" name="{{c.name}}.light" value="{{c.light}}" />
+				<input type="color" name="{{c.name}}.dark" value="{{c.dark}}" />
+			</div>
+			<p class="hint">{{localize c.hint}}</p>
+		</li>
+		{{/each}}
+	</ul>
+</div>

@@ -181,6 +181,33 @@
 				"ends_with": "ends with \"{qualifier}\"",
 				"does_not_end_with": "does not end with \"{qualifier}\""
 			}
+		},
+		"Settings": {
+			"ColorConfig": {
+				"Name": "Colors",
+				"Label": "Configure Colors",
+				"Hint": "Configure colors used by the GURPS Game Aid.",
+				"Title": "Colors",
+				"Submit": "Apply Colors",
+				"MessageSubmit": "Updated Color configuration.",
+				"MessageReset": "Reset Color configuration to default values.",
+				"Reset": "Reset Colors",
+				"Color": "Color",
+				"Light": "Light",
+				"Dark": "Dark",
+				"Fields": {
+					"banding": {
+						"Label": "Banding",
+						"Hint": "Color used in every other item in a list."
+					},
+					"error": { "Label": "Error", "Hint": "Color used to indicate invaid fields." },
+					"focus": { "Label": "Focus", "Hint": "Color used for highlighted items." },
+					"header": { "Label": "Header", "Hint": "Color used for headers." },
+					"surface": { "Label": "Surface", "Hint": "Color used for backgrounds in most places." },
+					"tooltip": { "Label": "Tooltip", "Hint": "Color used for tooltip backgrounds." },
+					"warning": { "Label": "Warning", "Hint": "Color used for warnings." }
+				}
+			}
 		}
 	},
 	"gurps": {

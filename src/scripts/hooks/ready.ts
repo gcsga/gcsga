@@ -1,6 +1,7 @@
-import { SOCKET, TraitData } from "@data"
+import { SOCKET } from "@data"
 import { loadModifiers } from "@module/apps/modifier-bucket/data.ts"
 import { TokenHUDGURPS } from "@module/canvas/index.ts"
+import { ColorConfig } from "@module/settings/color-config.ts"
 // import { MigrationSummary } from "@module/migration-summary.ts"
 // import { MigrationList, MigrationRunner } from "@module/migration/index.ts"
 import { LastActor } from "@module/util/index.ts"
@@ -27,7 +28,7 @@ export const Ready = {
 				LastActor: await LastActor.get(),
 				LastToken: await LastActor.getToken(),
 				Int,
-				a: TraitData,
+				ColorConfig,
 			}
 
 			// Determine whether a system migration is required and feasible
