@@ -31,7 +31,7 @@ class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
 		}
 	}
 
-	satisfied(actor: ActorInst<ActorType.Character>, exclude: unknown, tooltip: TooltipGURPS): boolean {
+	satisfied(actor: ActorInst<ActorType.Character>, exclude: unknown, tooltip: TooltipGURPS | null): boolean {
 		let satisfied = false
 
 		if (exclude instanceof ItemGURPS2 && exclude.isOfType(ItemType.EquipmentContainer)) {
@@ -40,7 +40,7 @@ class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
 			satisfied = this.qualifier.matches(weight)
 		}
 		if (!this.has) satisfied = !satisfied
-		if (!satisfied) {
+		if (!satisfied && tooltip !== null) {
 			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.Prefix)
 			tooltip.push(
 				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.ContainedWeight, {

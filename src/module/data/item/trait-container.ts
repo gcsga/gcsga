@@ -86,6 +86,16 @@ class TraitContainerData extends ItemDataModel.mixin(
 		return !this.disabled && container?.isOfType(ItemType.TraitContainer) ? container.system.enabled : true
 	}
 
+	// Parity with Trait when needed
+	get isLeveled(): boolean {
+		return false
+	}
+
+	// Parity with Trait when needed
+	get levels(): number {
+		return 0
+	}
+
 	/** Returns trait point cost adjusted for enablement and modifiers */
 	get adjustedPoints(): number {
 		let points = 0

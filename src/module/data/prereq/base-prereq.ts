@@ -54,7 +54,7 @@ abstract class BasePrereq<TSchema extends BasePrereqSchema = BasePrereqSchema> e
 	abstract satisfied(
 		actor: ActorInst<ActorType.Character>,
 		exclude: unknown,
-		tooltip: TooltipGURPS,
+		tooltip: TooltipGURPS | null,
 		...args: unknown[]
 	): boolean
 

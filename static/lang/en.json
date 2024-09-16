@@ -112,6 +112,35 @@
 			"Technique": {
 				"Skill": "Requires a skill named {name}",
 				"SkillWithPoints": "Requires at least 1 point in the skill named {name}"
+			},
+			"EquippedEquipment": {
+				"Base": "{prefix}Has equipment which is equipped and whose name {name} {tags}",
+				"OneTag": "and at least one tag {value}",
+				"AllTags": "and all tags {value}"
+			},
+			"List": {
+				"All": "Requires all of:",
+				"NotAll": "Requires at least one of:"
+			},
+			"Skill": {
+				"Base": "{has} as skill whose name {name}{specialization}{level}",
+				"Specialization": ", specialization {value},",
+				"LevelNoTL": " and level {value}",
+				"LevelWithTL": " level {value} and tech level matches"
+			},
+			"Spell": {
+				"Base": "{has} {quantity} {spellText} {qualifier}",
+				"SpellSingular": "spell",
+				"SpellPlural": "spells",
+				"Any": "of any kind",
+				"CollegeCount": "from different colleges",
+				"Name": "whose name {value}",
+				"Tag": "whose tag {value}",
+				"College": "whose college {value}"
+			},
+			"Trait": {
+				"Base": "{has} a trait whose name {name}{notes} and level {level}",
+				"Notes": ", notes {value}"
 			}
 		},
 		"Messages": {
@@ -140,6 +169,17 @@
 				"sw": "sw",
 				"lift_sw": "lifting sw",
 				"tk_sw": "telekinetic sw"
+			},
+			"StringCompareType": {
+				"none": "is anything",
+				"is": "is \"{qualifier}\"",
+				"is_not": "is not \"{qualifier}\"",
+				"contains": "contains \"{qualifier}\"",
+				"does_not_contain": "does not contain \"{qualifier}\"",
+				"starts_with": "starts with \"{qualifier}\"",
+				"does_not_start_with": "does not start with \"{qualifier}\"",
+				"ends_with": "ends with \"{qualifier}\"",
+				"does_not_end_with": "does not end with \"{qualifier}\""
 			}
 		}
 	},

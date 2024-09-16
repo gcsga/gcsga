@@ -1,7 +1,7 @@
-import { BasePrereq, BasePrereqSchema, PrereqConstructionOptions } from "./base-prereq.ts"
+import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
 import fields = foundry.data.fields
 import { LocalizeGURPS, TooltipGURPS, prereq } from "@util"
-import { ActorType, ItemType, NumericCompareType, StringCompareType } from "@module/data/constants.ts"
+import { ActorType, NumericCompareType, StringCompareType } from "@module/data/constants.ts"
 import { NumericCriteria, NumericCriteriaSchema } from "@module/util/numeric-criteria.ts"
 import { StringCriteria, StringCriteriaSchema } from "@module/util/index.ts"
 import { Nameable } from "@module/util/nameable.ts"
@@ -38,37 +38,37 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 		}
 	}
 
-	satisfied(actor: ActorInst<ActorType.Character>, exclude: unknown, tooltip: TooltipGURPS): boolean {
-		if (actor.isOfType(ActorType.Loot)) return true
+	satisfied(actor: ActorInst<ActorType.Character>, exclude: unknown, tooltip: TooltipGURPS | null): boolean {
+		let replacements = new Map<string, string>()
+		if (Nameable.isAccesser(exclude)) replacements = exclude.nameableReplacements
 		let satisfied = false
-		for (const t of actor.itemTypes[ItemType.Trait]) {
-			if (exclude === t || !this.name.matches(t.name ?? "")) continue
-			let notes = t.system.notes
-			if (t.modifierNotes !== "") notes += `\n${t.modifierNotes}`
-			if (!this.notes.matches(notes)) continue
+		for (const t of actor.itemCollections.traits) {
+			if (exclude === t || this.name.matches(replacements, t.system.nameWithReplacements)) continue
+			let notes = t.system.processedNotes
+			const modNotes = t.system.modifierNotes
+			if (modNotes !== "") notes += "\n" + modNotes
+			if (!this.notes.matches(replacements, notes)) continue
 			let levels = 0
-			if (t.isLeveled) levels = Math.max(t.levels, 0)
+			if (t.system.isLeveled) levels = Math.max(t.system.levels, 0)
 			satisfied = this.level.matches(levels)
+			if (satisfied) break
 		}
 		if (!this.has) satisfied = !satisfied
-		if (!satisfied) {
-			tooltip.push(LocalizeGURPS.translations.gurps.prereq.prefix)
-			tooltip.push(LocalizeGURPS.translations.gurps.prereq.has[this.has ? "true" : "false"])
+
+		if (!satisfied && tooltip !== null) {
+			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.Prefix)
+			const notes =
+				this.notes.compare === StringCompareType.AnyString
+					? ""
+					: LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.Trait.Notes, {
+							value: this.notes.toString(replacements),
+						})
 			tooltip.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.trait.name, {
-					content: this.name.describe(),
-				}),
-			)
-			if (this.notes.compare !== StringCompareType.AnyString) {
-				tooltip.push(
-					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.trait.notes, {
-						content: this.notes.describe(),
-					}),
-				)
-			}
-			tooltip.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.trait.level, {
-					content: this.level.describe(),
+				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.Trait.Base, {
+					has: this.hasText,
+					name: this.name.toString(replacements),
+					notes,
+					level: this.level.toString(),
 				}),
 			)
 		}

@@ -4,6 +4,7 @@ import { ItemDataInstances, ItemDataTemplates, ItemTemplateType } from "@module/
 import { ItemTemplateInst } from "@module/data/item/helpers.ts"
 import { LocalizeGURPS } from "@util"
 import { ActorGURPS2 } from "./actor.ts"
+import { Nameable } from "@module/util/nameable.ts"
 
 class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extends Item<TParent> {
 	/**
@@ -11,6 +12,14 @@ class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extend
 	 */
 	get _systemFlagsDataModel(): typeof foundry.abstract.DataModel | null {
 		return this.system?.metadata?.systemFlagsModel ?? null
+	}
+
+	/* -------------------------------------------- */
+	/*  Getters                                     */
+	/* -------------------------------------------- */
+	get nameableReplacements(): Map<string, string> {
+		if (Nameable.isAccesser(this.system)) return this.system.nameableReplacements
+		return new Map()
 	}
 
 	/* -------------------------------------------- */

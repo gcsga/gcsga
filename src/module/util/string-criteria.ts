@@ -1,10 +1,10 @@
 import { LocalizeGURPS } from "../../util/localize.ts"
 import { AllStringCompareTypes, StringCompareType } from "@module/data/constants.ts"
 import type { StringCriteriaSchema } from "./data.ts"
-import type { ItemGURPS } from "@item"
 import { Nameable } from "./nameable.ts"
+import { ItemDataModel } from "@module/data/abstract.ts"
 
-class StringCriteria extends foundry.abstract.DataModel<ItemGURPS, StringCriteriaSchema> {
+class StringCriteria extends foundry.abstract.DataModel<ItemDataModel, StringCriteriaSchema> {
 	static override defineSchema(): StringCriteriaSchema {
 		const fields = foundry.data.fields
 
@@ -64,8 +64,12 @@ class StringCriteria extends foundry.abstract.DataModel<ItemGURPS, StringCriteri
 		}
 	}
 
-	override toString(): string {
-		return LocalizeGURPS.translations.gurps.string_criteria.string[this.compare]
+	override toString(replacements: Map<string, string> = new Map()): string {
+		return this.describe(Nameable.apply(this.qualifier, replacements))
+	}
+
+	toStringWithPrefix(replacements: Map<string, string>, prefix: string, notPrefix: string): string {
+		return this.describeWithPrefix(prefix, notPrefix, Nameable.apply(this.qualifier, replacements))
 	}
 
 	altString(): string {
@@ -80,15 +84,32 @@ class StringCriteria extends foundry.abstract.DataModel<ItemGURPS, StringCriteri
 		}
 	}
 
-	describe(): string {
-		const result = this.toString()
-		if (this.compare === StringCompareType.AnyString) return result
-		return `${result} "${this.qualifier}"`
+	describe(qualifier: string): string {
+		if (this.compare === StringCompareType.AnyString)
+			return LocalizeGURPS.translations.GURPS.Enum.StringCompareType[this.compare]
+		return LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Enum.StringCompareType[this.compare], {
+			qualifier,
+		})
+	}
+
+	describeWithPrefix(prefix: string, notPrefix: string, qualifier: string): string {
+		let info = ""
+		if (prefix === notPrefix)
+			info = LocalizeGURPS.format(prefix, {
+				value: LocalizeGURPS.translations.GURPS.Enum.StringCompareType[this.compare],
+			})
+		else {
+			info = LocalizeGURPS.format(notPrefix, {
+				value: LocalizeGURPS.translations.GURPS.Enum.StringCompareType[this.compare],
+			})
+		}
+		if (this.compare === StringCompareType.AnyString) return info
+		return LocalizeGURPS.format(info, { qualifier })
 	}
 }
 
 interface StringCriteria
-	extends foundry.abstract.DataModel<ItemGURPS, StringCriteriaSchema>,
+	extends foundry.abstract.DataModel<ItemDataModel, StringCriteriaSchema>,
 		ModelPropsFromSchema<StringCriteriaSchema> {}
 
 function equalFold(s: string, t: string): boolean {
@@ -102,85 +123,3 @@ function includesFold(s: string, t: string): boolean {
 }
 
 export { StringCriteria, type StringCriteriaSchema, equalFold, includesFold }
-
-// export class StringCriteria {
-// 	compare: StringCompareType
-//
-// 	qualifier: string
-//
-// 	constructor(data: DeepPartial<SourceFromSchema<StringCriteriaSchema>>) {
-// 		this.compare = data.compare ?? StringCompareType.AnyString
-// 		this.qualifier = data.qualifier ?? ""
-// 	}
-//
-// 	matches(s: string): boolean {
-// 		switch (this.compare) {
-// 			case StringCompareType.AnyString:
-// 				return true
-// 			case StringCompareType.IsString:
-// 				return equalFold(s, this.qualifier)
-// 			case StringCompareType.IsNotString:
-// 				return !equalFold(s, this.qualifier)
-// 			case StringCompareType.ContainsString:
-// 				return this.qualifier.toLowerCase().includes(s.toLowerCase())
-// 			case StringCompareType.DoesNotContainString:
-// 				return !this.qualifier.toLowerCase().includes(s.toLowerCase())
-// 			case StringCompareType.StartsWithString:
-// 				return this.qualifier.toLowerCase().startsWith(s.toLowerCase())
-// 			case StringCompareType.DoesNotStartWithString:
-// 				return !this.qualifier.toLowerCase().startsWith(s.toLowerCase())
-// 			case StringCompareType.EndsWithString:
-// 				return this.qualifier.toLowerCase().endsWith(s.toLowerCase())
-// 			case StringCompareType.DoesNotEndWithString:
-// 				return !this.qualifier.toLowerCase().endsWith(s.toLowerCase())
-// 		}
-// 	}
-//
-// 	matchesList(...s: string[]): boolean {
-// 		if (s.length === 0) return this.matches("")
-// 		let matches = 0
-// 		for (const one of s) {
-// 			if (this.matches(one)) matches += 1
-// 		}
-// 		switch (this.compare) {
-// 			case StringCompareType.AnyString:
-// 			case StringCompareType.IsString:
-// 			case StringCompareType.ContainsString:
-// 			case StringCompareType.StartsWithString:
-// 			case StringCompareType.EndsWithString:
-// 				return matches > 0
-// 			case StringCompareType.IsNotString:
-// 			case StringCompareType.DoesNotContainString:
-// 			case StringCompareType.DoesNotStartWithString:
-// 			case StringCompareType.DoesNotEndWithString:
-// 				return matches === s.length
-// 		}
-// 	}
-//
-// 	toString(): string {
-// 		return LocalizeGURPS.translations.gurps.string_criteria.string[this.compare]
-// 	}
-//
-// 	altString(): string {
-// 		switch (this.compare) {
-// 			case StringCompareType.IsNotString:
-// 			case StringCompareType.DoesNotContainString:
-// 			case StringCompareType.DoesNotStartWithString:
-// 			case StringCompareType.DoesNotEndWithString:
-// 				return LocalizeGURPS.translations.gurps.string_criteria.alt_string[this.compare]
-// 			default:
-// 				return this.toString()
-// 		}
-// 	}
-//
-// 	describe(): string {
-// 		const result = this.toString()
-// 		if (this.compare === StringCompareType.AnyString) return result
-// 		return `${result} "${this.qualifier}"`
-// 	}
-//
-// 	toObject(): SourceFromSchema<StringCriteriaSchema> {
-// 		return { compare: this.compare, qualifier: this.qualifier }
-// 	}
-// }
-//

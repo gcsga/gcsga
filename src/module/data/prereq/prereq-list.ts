@@ -1,4 +1,4 @@
-import { ActorType, ItemType, NumericCompareType } from "@module/data/constants.ts"
+import { ActorType, NumericCompareType } from "@module/data/constants.ts"
 import fields = foundry.data.fields
 import { NumericCriteria, NumericCriteriaSchema } from "@module/util/index.ts"
 import { LocalizeGURPS, TooltipGURPS, extractTechLevel } from "@util"
@@ -56,30 +56,30 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 	satisfied(
 		actor: ActorInst<ActorType.Character>,
 		exclude: unknown,
-		tooltip: TooltipGURPS,
+		tooltip: TooltipGURPS | null,
 		hasEquipmentPenalty: { value: boolean } = { value: false },
 	): boolean {
-		let actorTechLevel = "0"
-		if (actor.isOfType(ActorType.Character)) {
-			actorTechLevel = actor.system.profile.tech_level
-		}
 		if (this.when_tl.compare !== NumericCompareType.AnyNumber) {
-			let tl = extractTechLevel(actorTechLevel)
+			let tl = extractTechLevel(actor.system.profile.tech_level)
 			if (tl < 0) tl = 0
 			if (!this.when_tl.matches(tl)) return true
 		}
 		let count = 0
-		const local = new TooltipGURPS()
-		const eqpPenalty = { value: false }
+		let local: TooltipGURPS | null = null
+		if (tooltip !== null) local = new TooltipGURPS()
+		let eqpPenalty = false
 		for (const one of this.children) {
-			if (one.satisfied(actor, exclude, local, eqpPenalty)) count += 1
+			if (one.satisfied(actor, exclude, local, hasEquipmentPenalty)) count += 1
 		}
 		const satisfied = count === this.prereqs.length || (!this.all && count > 0)
 		if (!satisfied) {
-			if (eqpPenalty.value) hasEquipmentPenalty.value = true
-			tooltip.push(LocalizeGURPS.translations.gurps.prereq.prefix)
-			tooltip.push(LocalizeGURPS.translations.gurps.prereq.list[this.all ? "true" : "false"])
-			tooltip.push(local)
+			if (eqpPenalty) hasEquipmentPenalty.value = eqpPenalty
+			if (tooltip !== null && local !== null) {
+				tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.Prefix)
+				if (this.all) tooltip.push(LocalizeGURPS.translations.GURPS.Prereq.List.All)
+				else tooltip.push(LocalizeGURPS.translations.GURPS.Prereq.List.NotAll)
+				tooltip.push(local)
+			}
 		}
 		return satisfied
 	}

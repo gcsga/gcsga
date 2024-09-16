@@ -32,21 +32,37 @@ class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> 
 
 	satisfied(
 		actor: ActorInst<ActorType.Character>,
-		_exclude: unknown,
-		tooltip: TooltipGURPS,
+		exclude: unknown,
+		tooltip: TooltipGURPS | null,
 		hasEquipmentPenalty: { value: boolean },
 	): boolean {
-		const satisfied = actor.itemCollections.equipment.some(
-			eqp => eqp.system.equipped && this.name.matches(eqp.name ?? "") && eqp.system.quantity > 0,
-		)
+		let replacements: Map<string, string> = new Map()
+		if (Nameable.isAccesser(exclude)) replacements = exclude.nameableReplacements
+		let satisfied = false
+		for (const eqp of actor.itemCollections.equipment) {
+			satisfied =
+				exclude !== eqp &&
+				eqp.system.equipped &&
+				eqp.system.quantity > 0 &&
+				this.name.matches(replacements, eqp.system.nameWithReplacements) &&
+				this.tags.matchesList(replacements, ...eqp.system.tags)
+			if (satisfied) break
+		}
 		if (!satisfied) {
 			hasEquipmentPenalty.value = true
-			tooltip.push(LocalizeGURPS.translations.gurps.prereq.prefix)
-			tooltip.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.equipped_equipment, {
-					content: this.name.describe(),
-				}),
-			)
+			if (tooltip !== null) {
+				tooltip.push(
+					LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.EquippedEquipment.Base, {
+						prefix: LocalizeGURPS.translations.GURPS.Tooltip.Prefix,
+						name: this.name.toString(replacements),
+						tags: this.tags.toStringWithPrefix(
+							replacements,
+							LocalizeGURPS.translations.GURPS.Prereq.EquippedEquipment.OneTag,
+							LocalizeGURPS.translations.GURPS.Prereq.EquippedEquipment.AllTags,
+						),
+					}),
+				)
+			}
 		}
 		return satisfied
 	}

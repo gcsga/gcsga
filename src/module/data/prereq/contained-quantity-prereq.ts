@@ -25,14 +25,14 @@ class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> 
 		}
 	}
 
-	satisfied(_actor: unknown, exclude: unknown, tooltip: TooltipGURPS): boolean {
+	satisfied(_actor: unknown, exclude: unknown, tooltip: TooltipGURPS | null): boolean {
 		let satisfied = false
 		if (exclude instanceof ItemGURPS2 && exclude.isOfType(ItemType.EquipmentContainer)) {
 			const children = exclude.system.children
 			if (!(children instanceof Promise)) satisfied = this.qualifier.matches(children.size)
 		}
 		if (!this.has) satisfied = !satisfied
-		if (!satisfied) {
+		if (!satisfied && tooltip !== null) {
 			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.Prefix)
 			tooltip.push(
 				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.ContainedQuantity, {

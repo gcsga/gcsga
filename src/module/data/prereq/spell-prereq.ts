@@ -35,71 +35,72 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 		}
 	}
 
-	satisfied(actor: ActorInst<ActorType.Character>, exclude: unknown, tooltip: TooltipGURPS): boolean {
-		if (actor.isOfType(ActorType.Loot)) return true
-		let count = 0
-		const colleges: Set<string> = new Set()
+	satisfied(actor: ActorInst<ActorType.Character>, exclude: unknown, tooltip: TooltipGURPS | null): boolean {
+		let replacements = new Map<string, string>()
+		if (Nameable.isAccesser(exclude)) replacements = exclude.nameableReplacements
 		let techLevel = ""
-		if (exclude instanceof ItemGURPS2 && exclude.isOfType(ItemType.Spell, ItemType.RitualMagicSpell)) {
-			techLevel = exclude.techLevel
-		}
+		if (exclude instanceof ItemGURPS2 && exclude.isOfType(ItemType.Spell, ItemType.RitualMagicSpell))
+			techLevel = exclude.system.tech_level
+		let count = 0
+		const colleges = new Set<string>()
 		for (const sp of actor.itemCollections.spells) {
 			if (sp.isOfType(ItemType.SpellContainer)) continue
-			if (exclude === sp || sp.points === 0) continue
-			if (techLevel !== "" && sp.techLevel !== "" && techLevel !== sp.techLevel) continue
+			if (exclude === sp || sp.system.points == 0) continue
+			if (techLevel !== "" && sp.system.tech_level !== "" && techLevel !== sp.system.tech_level) continue
+
 			switch (this.sub_type) {
 				case spellcmp.Type.Name:
-					if (this.qualifier.matches(sp.name ?? "")) count += 1
+					if (this.qualifier.matches(replacements, sp.system.nameWithReplacements)) count += 1
 					break
 				case spellcmp.Type.Tag:
-					for (const one of sp.tags) {
-						if (this.qualifier.matches(one ?? "")) {
-							count += 1
-							break
-						}
-					}
+					if (this.qualifier.matchesList(replacements, ...sp.system.tags)) count += 1
 					break
 				case spellcmp.Type.College:
-					for (const one of sp.college) {
-						if (this.qualifier.matches(one ?? "")) {
-							count += 1
-							break
-						}
-					}
+					if (this.qualifier.matchesList(replacements, ...sp.system.collegeWithReplacements)) count += 1
 					break
 				case spellcmp.Type.CollegeCount:
-					for (const one of sp.college) colleges.add(one)
+					for (const one of sp.system.collegeWithReplacements) {
+						colleges.add(one)
+					}
 					break
 				case spellcmp.Type.Any:
 					count += 1
 			}
-			if (this.sub_type === spellcmp.Type.CollegeCount) count = colleges.size
 		}
+		if (this.sub_type === spellcmp.Type.CollegeCount) count = colleges.size
 		let satisfied = this.quantity.matches(count)
 		if (!this.has) satisfied = !satisfied
-		if (!satisfied) {
-			tooltip.push(LocalizeGURPS.translations.gurps.prereq.prefix)
-			tooltip.push(LocalizeGURPS.translations.gurps.prereq.has[this.has ? "true" : "false"])
-			if (this.sub_type === spellcmp.Type.CollegeCount) {
-				tooltip.push(
-					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.spell[this.sub_type], {
-						content: this.quantity.describe(),
-					}),
-				)
-			} else {
-				tooltip.push(this.quantity.describe())
-				if (this.quantity.qualifier === 1)
-					tooltip.push(
-						LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.spell.singular[this.sub_type], {
-							content: this.qualifier.describe(),
-						}),
-					)
-				tooltip.push(
-					LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.spell.multiple[this.sub_type], {
-						content: this.qualifier.describe(),
-					}),
-				)
-			}
+
+		if (!satisfied && tooltip !== null) {
+			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.Prefix)
+			const spellText =
+				this.quantity.qualifier === 1
+					? LocalizeGURPS.translations.GURPS.Prereq.Spell.SpellSingular
+					: LocalizeGURPS.translations.GURPS.Prereq.Spell.SpellPlural
+			const qualifier = (() => {
+				switch (this.sub_type) {
+					case spellcmp.Type.Any:
+						return LocalizeGURPS.translations.GURPS.Prereq.Spell.Any
+					case spellcmp.Type.CollegeCount:
+						return LocalizeGURPS.translations.GURPS.Prereq.Spell.CollegeCount
+					case spellcmp.Type.Name:
+						return LocalizeGURPS.translations.GURPS.Prereq.Spell.Name
+					case spellcmp.Type.Tag:
+						return LocalizeGURPS.translations.GURPS.Prereq.Spell.Tag
+					case spellcmp.Type.College:
+						return LocalizeGURPS.translations.GURPS.Prereq.Spell.College
+					default:
+						return LocalizeGURPS.translations.GURPS.Prereq.Spell.Any
+				}
+			})()
+			tooltip.push(
+				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.Spell.Base, {
+					has: this.hasText,
+					quantity: this.quantity.qualifier,
+					spellText,
+					qualifier: LocalizeGURPS.format(qualifier, { value: this.qualifier.toString(replacements) }),
+				}),
+			)
 		}
 		return satisfied
 	}

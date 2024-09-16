@@ -15,7 +15,7 @@ class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 		const fields = foundry.data.fields
 		return {
 			difficulty: new fields.SchemaField(AttributeDifficulty.defineSchema()),
-			tech_level: new fields.StringField({ required: true, nullable: true, initial: null }),
+			tech_level: new fields.StringField({ required: true, nullable: false, initial: "" }),
 			tech_level_required: new fields.BooleanField({ required: true, nullable: false, initial: false }),
 			points: new fields.NumberField({ integer: true, min: 0 }),
 		}
@@ -152,7 +152,7 @@ interface AbstractSkillTemplate
 
 type AbstractSkillTemplateSchema = {
 	difficulty: fields.SchemaField<AttributeDifficultySchema>
-	tech_level: fields.StringField<string, string, true, true, true>
+	tech_level: fields.StringField<string, string, true, false, true>
 	tech_level_required: fields.BooleanField<boolean, boolean, true, false, true>
 	points: fields.NumberField<number, number, true, false>
 }
