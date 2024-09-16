@@ -1,21 +1,16 @@
-import { StringCriteria } from "@module/util/string-criteria.ts"
-import { BasePrereq } from "./base.ts"
+import { StringCriteria, StringCriteriaSchema } from "@module/util/string-criteria.ts"
+import fields = foundry.data.fields
+import { BasePrereq, BasePrereqSchema, PrereqConstructionOptions } from "./base-prereq.ts"
 import { prereq } from "@util/enum/prereq.ts"
 import { ActorType, ItemType, NumericCompareType, StringCompareType } from "@module/data/constants.ts"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
-import { PrereqConstructionOptions, SkillPrereqSchema } from "./data.ts"
-import { NumericCriteria } from "@module/util/numeric-criteria.ts"
+import { NumericCriteria, NumericCriteriaSchema } from "@module/util/numeric-criteria.ts"
 import { Nameable } from "@module/util/nameable.ts"
 import { ActorGURPS2 } from "@module/document/actor.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 
 class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
-	constructor(data: DeepPartial<SourceFromSchema<SkillPrereqSchema>>, options?: PrereqConstructionOptions) {
-		super(data, options)
-		this.name = new StringCriteria(data.name ?? undefined)
-		this.level = new NumericCriteria(data.level ?? undefined)
-		this.specialization = new StringCriteria(data.specialization ?? undefined)
-	}
+	static override TYPE = prereq.Type.Skill
 
 	static override defineSchema(): SkillPrereqSchema {
 		const fields = foundry.data.fields
@@ -108,12 +103,13 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 	}
 }
 
-interface SkillPrereq
-	extends BasePrereq<SkillPrereqSchema>,
-		Omit<ModelPropsFromSchema<SkillPrereqSchema>, "name" | "level" | "specialization"> {
-	name: StringCriteria
-	level: NumericCriteria
-	specialization: StringCriteria
+interface SkillPrereq extends BasePrereq<SkillPrereqSchema>, ModelPropsFromSchema<SkillPrereqSchema> {}
+
+type SkillPrereqSchema = BasePrereqSchema & {
+	has: fields.BooleanField
+	name: fields.SchemaField<StringCriteriaSchema, SourceFromSchema<StringCriteriaSchema>, StringCriteria>
+	level: fields.SchemaField<NumericCriteriaSchema, SourceFromSchema<NumericCriteriaSchema>, NumericCriteria>
+	specialization: fields.SchemaField<StringCriteriaSchema, SourceFromSchema<StringCriteriaSchema>, StringCriteria>
 }
 
-export { SkillPrereq }
+export { SkillPrereq, type SkillPrereqSchema }

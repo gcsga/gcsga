@@ -1,29 +1,20 @@
-import { BasePrereq } from "./base.ts"
+import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
+import fields = foundry.data.fields
 import { prereq } from "@util/enum/prereq.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { ActorType, NumericCompareType, gid } from "@data"
 import { TooltipGURPS } from "@util"
-import { AttributePrereqSchema, PrereqConstructionOptions } from "./data.ts"
-import { NumericCriteria } from "@module/util/index.ts"
-import { ActorGURPS2 } from "@module/document/actor.ts"
+import { NumericCriteria, NumericCriteriaSchema } from "@module/util/index.ts"
+import { ActorInst } from "../actor/helpers.ts"
 
 class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
-	constructor(data: DeepPartial<SourceFromSchema<AttributePrereqSchema>>, options?: PrereqConstructionOptions) {
-		super(data, options)
-		this.qualifier = new NumericCriteria(data.qualifier)
-	}
+	static override TYPE = prereq.Type.Attribute
 
 	static override defineSchema(): AttributePrereqSchema {
 		const fields = foundry.data.fields
 
 		return {
 			...super.defineSchema(),
-			type: new fields.StringField({
-				required: true,
-				nullable: false,
-				blank: false,
-				initial: prereq.Type.Attribute,
-			}),
 			which: new fields.StringField({ initial: gid.Strength }),
 			has: new fields.BooleanField({ initial: true }),
 			combined_with: new fields.StringField({ initial: "" }),
@@ -36,26 +27,33 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 		}
 	}
 
-	satisfied(actor: ActorGURPS2, _exclude: unknown, tooltip: TooltipGURPS): boolean {
-		if (actor instanceof ActorGURPS2 && !actor.isOfType(ActorType.Character)) return true
+	satisfied(actor: ActorInst<ActorType.Character>, _exclude: unknown, tooltip: TooltipGURPS | null): boolean {
 		let value = actor.system.resolveAttributeCurrent(this.which)
 		if (this.combined_with !== "") value += actor.system.resolveAttributeCurrent(this.combined_with)
+
 		let satisfied = this.qualifier.matches(value)
 		if (!this.has) satisfied = !satisfied
-		if (!satisfied) {
-			tooltip.push(LocalizeGURPS.translations.gurps.prereq.prefix)
-			tooltip.push(LocalizeGURPS.translations.gurps.prereq.has[this.has ? "true" : "false"])
-			tooltip.push(" ")
-			tooltip.push(actor.system.resolveAttributeName(this.which))
+
+		if (!satisfied && tooltip !== null) {
+			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.Prefix)
 			if (this.combined_with !== "") {
-				tooltip.push("+")
-				tooltip.push(actor.system.resolveAttributeName(this.combined_with))
+				tooltip.push(
+					LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.Attribute.CombinedWith, {
+						has: this.hasText,
+						att1: this.which,
+						att2: this.combined_with,
+						qualifier: this.qualifier.toString(),
+					}),
+				)
+			} else {
+				tooltip.push(
+					LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.Attribute.NotCombinedWith, {
+						has: this.hasText,
+						att1: this.which,
+						qualifier: this.qualifier.toString(),
+					}),
+				)
 			}
-			tooltip.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.attribute.qualifier, {
-					content: this.qualifier.describe(),
-				}),
-			)
 		}
 		return satisfied
 	}
@@ -63,9 +61,12 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 	fillWithNameableKeys(_m: Map<string, string>, _existing: Map<string, string>): void {}
 }
 
-interface AttributePrereq
-	extends BasePrereq<AttributePrereqSchema>,
-		Omit<ModelPropsFromSchema<AttributePrereqSchema>, "qualifier"> {
-	qualifier: NumericCriteria
+interface AttributePrereq extends BasePrereq<AttributePrereqSchema>, ModelPropsFromSchema<AttributePrereqSchema> {}
+
+type AttributePrereqSchema = BasePrereqSchema & {
+	has: fields.BooleanField<boolean, boolean, true, false, true>
+	which: fields.StringField<string, string, true, false, true>
+	combined_with: fields.StringField<string, string, true, false, true>
+	qualifier: fields.SchemaField<NumericCriteriaSchema, SourceFromSchema<NumericCriteriaSchema>, NumericCriteria>
 }
 export { AttributePrereq }

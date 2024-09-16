@@ -1,20 +1,16 @@
 import { prereq } from "@util/enum/prereq.ts"
-import { BasePrereq } from "./base.ts"
+import fields = foundry.data.fields
+import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
 import { spellcmp } from "@util/enum/spellcmp.ts"
-import { PrereqConstructionOptions, SpellPrereqSchema } from "./data.ts"
 import { ActorType, ItemType, NumericCompareType, StringCompareType } from "@data"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
-import { NumericCriteria, StringCriteria } from "@module/util/index.ts"
+import { NumericCriteria, NumericCriteriaSchema, StringCriteria, StringCriteriaSchema } from "@module/util/index.ts"
 import { Nameable } from "@module/util/nameable.ts"
-import { ActorGURPS2 } from "@module/document/actor.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
+import { ActorInst } from "../actor/helpers.ts"
 
 class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
-	constructor(data: DeepPartial<SourceFromSchema<SpellPrereqSchema>>, options?: PrereqConstructionOptions) {
-		super(data, options)
-		this.qualifier = new StringCriteria(data.qualifier ?? undefined)
-		this.quantity = new NumericCriteria(data.quantity ?? undefined)
-	}
+	static override TYPE = prereq.Type.Spell
 
 	static override defineSchema(): SpellPrereqSchema {
 		const fields = foundry.data.fields
@@ -39,7 +35,7 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 		}
 	}
 
-	satisfied(actor: ActorGURPS2, exclude: unknown, tooltip: TooltipGURPS): boolean {
+	satisfied(actor: ActorInst<ActorType.Character>, exclude: unknown, tooltip: TooltipGURPS): boolean {
 		if (actor.isOfType(ActorType.Loot)) return true
 		let count = 0
 		const colleges: Set<string> = new Set()
@@ -119,10 +115,12 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 	}
 }
 
-interface SpellPrereq
-	extends BasePrereq<SpellPrereqSchema>,
-		Omit<ModelPropsFromSchema<SpellPrereqSchema>, "quantity" | "qualifier"> {
-	quantity: NumericCriteria
-	qualifier: StringCriteria
+interface SpellPrereq extends BasePrereq<SpellPrereqSchema>, ModelPropsFromSchema<SpellPrereqSchema> {}
+
+export type SpellPrereqSchema = BasePrereqSchema & {
+	has: fields.BooleanField
+	sub_type: fields.StringField<spellcmp.Type>
+	qualifier: fields.SchemaField<StringCriteriaSchema, SourceFromSchema<StringCriteriaSchema>, StringCriteria>
+	quantity: fields.SchemaField<NumericCriteriaSchema, SourceFromSchema<NumericCriteriaSchema>, NumericCriteria>
 }
 export { SpellPrereq }

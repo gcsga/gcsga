@@ -95,6 +95,14 @@
 			"Cost": "; Cost: -{number}"
 		},
 		"Prereq": {
+			"Has": "Has ",
+			"DoesNotHave": "Does not have",
+			"Attribute": {
+				"CombinedWith": "{has} {att1} + {att2} which {qualifier}",
+				"NotCombinedWith": "{has} {att1} which {qualifier}"
+			},
+			"ContainedQuantity": "{has} a contained quantity which {qualifier}",
+			"ContainedWeight": "{has} a contained weight which {qualifier}",
 			"RitualMagic": {
 				"College": "Must be assigned to a college",
 				"Skill": "Requires a skill named {name}",

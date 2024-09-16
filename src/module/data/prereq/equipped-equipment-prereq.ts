@@ -1,33 +1,20 @@
-import { StringCriteria } from "@module/util/string-criteria.ts"
-import { BasePrereq } from "./base.ts"
+import { StringCriteria, StringCriteriaSchema } from "@module/util/string-criteria.ts"
+import fields = foundry.data.fields
+import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
 import { prereq } from "@util/enum/prereq.ts"
-import { EquippedEquipmentPrereqSchema, PrereqConstructionOptions } from "./data.ts"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
-import { ActorGURPS } from "@actor"
-import { StringCompareType } from "@module/data/constants.ts"
+import { ActorType, StringCompareType } from "@module/data/constants.ts"
 import { Nameable } from "@module/util/nameable.ts"
+import { ActorInst } from "../actor/helpers.ts"
 
 class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> {
-	constructor(
-		data: DeepPartial<SourceFromSchema<EquippedEquipmentPrereqSchema>>,
-		options?: PrereqConstructionOptions,
-	) {
-		super(data, options)
-		this.name = new StringCriteria(data.name ?? undefined)
-		this.tags = new StringCriteria(data.tags ?? undefined)
-	}
+	static override TYPE = prereq.Type.EquippedEquipment
 
 	static override defineSchema(): EquippedEquipmentPrereqSchema {
 		const fields = foundry.data.fields
 
 		return {
 			...super.defineSchema(),
-			type: new fields.StringField({
-				required: true,
-				nullable: false,
-				blank: false,
-				initial: prereq.Type.EquippedEquipment,
-			}),
 			name: new fields.SchemaField(StringCriteria.defineSchema(), {
 				initial: {
 					compare: StringCompareType.IsString,
@@ -44,13 +31,13 @@ class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> 
 	}
 
 	satisfied(
-		actor: ActorGURPS,
+		actor: ActorInst<ActorType.Character>,
 		_exclude: unknown,
 		tooltip: TooltipGURPS,
 		hasEquipmentPenalty: { value: boolean },
 	): boolean {
 		const satisfied = actor.itemCollections.equipment.some(
-			eqp => eqp.equipped && this.name.matches(eqp.name ?? "") && eqp.system.quantity > 0,
+			eqp => eqp.system.equipped && this.name.matches(eqp.name ?? "") && eqp.system.quantity > 0,
 		)
 		if (!satisfied) {
 			hasEquipmentPenalty.value = true
@@ -72,9 +59,11 @@ class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> 
 
 interface EquippedEquipmentPrereq
 	extends BasePrereq<EquippedEquipmentPrereqSchema>,
-		Omit<ModelPropsFromSchema<EquippedEquipmentPrereqSchema>, "name" | "tags"> {
-	name: StringCriteria
-	tags: StringCriteria
+		ModelPropsFromSchema<EquippedEquipmentPrereqSchema> {}
+
+type EquippedEquipmentPrereqSchema = BasePrereqSchema & {
+	name: fields.SchemaField<StringCriteriaSchema, SourceFromSchema<StringCriteriaSchema>, StringCriteria>
+	tags: fields.SchemaField<StringCriteriaSchema, SourceFromSchema<StringCriteriaSchema>, StringCriteria>
 }
 
-export { EquippedEquipmentPrereq }
+export { EquippedEquipmentPrereq, type EquippedEquipmentPrereqSchema }

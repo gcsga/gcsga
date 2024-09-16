@@ -1,33 +1,20 @@
 import { prereq } from "@util/enum/prereq.ts"
+import fields = foundry.data.fields
 import { LocalizeGURPS } from "@util/localize.ts"
-import { BasePrereq } from "./base.ts"
-import { ContainedQuantityPrereqSchema, PrereqConstructionOptions } from "./data.ts"
+import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
 import { TooltipGURPS } from "@util"
 import { ItemType, NumericCompareType } from "@module/data/constants.ts"
-import { NumericCriteria } from "@module/util/numeric-criteria.ts"
-import { ActorGURPS2 } from "@module/document/actor.ts"
+import { NumericCriteria, NumericCriteriaSchema } from "@module/util/numeric-criteria.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 
 class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> {
-	constructor(
-		data: DeepPartial<SourceFromSchema<ContainedQuantityPrereqSchema>>,
-		options?: PrereqConstructionOptions,
-	) {
-		super(data, options)
-		this.qualifier = new NumericCriteria(data.qualifier)
-	}
+	static override TYPE = prereq.Type.ContainedQuantity
 
 	static override defineSchema(): ContainedQuantityPrereqSchema {
 		const fields = foundry.data.fields
 
 		return {
 			...super.defineSchema(),
-			type: new fields.StringField({
-				required: true,
-				nullable: false,
-				blank: false,
-				initial: prereq.Type.ContainedQuantity,
-			}),
 			has: new fields.BooleanField({ initial: true }),
 			qualifier: new fields.SchemaField(NumericCriteria.defineSchema(), {
 				initial: {
@@ -38,18 +25,19 @@ class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> 
 		}
 	}
 
-	satisfied(_actor: ActorGURPS2, exclude: unknown, tooltip: TooltipGURPS): boolean {
+	satisfied(_actor: unknown, exclude: unknown, tooltip: TooltipGURPS): boolean {
 		let satisfied = false
 		if (exclude instanceof ItemGURPS2 && exclude.isOfType(ItemType.EquipmentContainer)) {
-			satisfied = this.qualifier.matches(exclude.system.children.length)
+			const children = exclude.system.children
+			if (!(children instanceof Promise)) satisfied = this.qualifier.matches(children.size)
 		}
 		if (!this.has) satisfied = !satisfied
 		if (!satisfied) {
-			tooltip.push(LocalizeGURPS.translations.gurps.prereq.prefix)
-			tooltip.push(LocalizeGURPS.translations.gurps.prereq.has[this.has ? "true" : "false"])
+			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.Prefix)
 			tooltip.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.contained_quantity, {
-					content: this.qualifier.describe(),
+				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.ContainedQuantity, {
+					has: this.hasText,
+					qualifier: this.qualifier.toString(),
 				}),
 			)
 		}
@@ -61,7 +49,11 @@ class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> 
 
 interface ContainedQuantityPrereq
 	extends BasePrereq<ContainedQuantityPrereqSchema>,
-		Omit<ModelPropsFromSchema<ContainedQuantityPrereqSchema>, "qualifier"> {
-	qualifier: NumericCriteria
+		ModelPropsFromSchema<ContainedQuantityPrereqSchema> {}
+
+type ContainedQuantityPrereqSchema = BasePrereqSchema & {
+	has: fields.BooleanField<boolean, boolean, true, false, true>
+	qualifier: fields.SchemaField<NumericCriteriaSchema, SourceFromSchema<NumericCriteriaSchema>, NumericCriteria>
 }
-export { ContainedQuantityPrereq }
+
+export { ContainedQuantityPrereq, type ContainedQuantityPrereqSchema }

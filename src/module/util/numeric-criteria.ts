@@ -1,9 +1,9 @@
 import { AllNumericCompareTypes, NumericCompareType } from "@module/data/constants.ts"
-import type { ItemGURPS } from "@item"
 import { NumericCriteriaSchema } from "./data.ts"
 import { LocalizeGURPS } from "@util"
+import { ItemDataModel } from "@module/data/abstract.ts"
 
-class NumericCriteria extends foundry.abstract.DataModel<ItemGURPS, NumericCriteriaSchema> {
+class NumericCriteria extends foundry.abstract.DataModel<ItemDataModel, NumericCriteriaSchema> {
 	static override defineSchema(): NumericCriteriaSchema {
 		const fields = foundry.data.fields
 		return {
@@ -59,7 +59,7 @@ class NumericCriteria extends foundry.abstract.DataModel<ItemGURPS, NumericCrite
 }
 
 interface NumericCriteria
-	extends foundry.abstract.DataModel<ItemGURPS, NumericCriteriaSchema>,
+	extends foundry.abstract.DataModel<ItemDataModel, NumericCriteriaSchema>,
 		ModelPropsFromSchema<NumericCriteriaSchema> {}
 
 export { NumericCriteria, type NumericCriteriaSchema }

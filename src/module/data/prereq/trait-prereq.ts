@@ -1,19 +1,14 @@
-import { BasePrereq } from "./base.ts"
+import { BasePrereq, BasePrereqSchema, PrereqConstructionOptions } from "./base-prereq.ts"
+import fields = foundry.data.fields
 import { LocalizeGURPS, TooltipGURPS, prereq } from "@util"
-import { ActorGURPS } from "@actor"
 import { ActorType, ItemType, NumericCompareType, StringCompareType } from "@module/data/constants.ts"
-import { PrereqConstructionOptions, TraitPrereqSchema } from "./data.ts"
-import { NumericCriteria } from "@module/util/numeric-criteria.ts"
-import { StringCriteria } from "@module/util/index.ts"
+import { NumericCriteria, NumericCriteriaSchema } from "@module/util/numeric-criteria.ts"
+import { StringCriteria, StringCriteriaSchema } from "@module/util/index.ts"
 import { Nameable } from "@module/util/nameable.ts"
+import { ActorInst } from "../actor/helpers.ts"
 
 class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
-	constructor(data: DeepPartial<SourceFromSchema<TraitPrereqSchema>>, options?: PrereqConstructionOptions) {
-		super(data, options)
-		this.name = new StringCriteria(data.name ?? undefined)
-		this.level = new NumericCriteria(data.level ?? undefined)
-		this.notes = new StringCriteria(data.notes ?? undefined)
-	}
+	static override TYPE = prereq.Type.Trait
 
 	static override defineSchema(): TraitPrereqSchema {
 		const fields = foundry.data.fields
@@ -43,7 +38,7 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 		}
 	}
 
-	satisfied(actor: ActorGURPS, exclude: unknown, tooltip: TooltipGURPS): boolean {
+	satisfied(actor: ActorInst<ActorType.Character>, exclude: unknown, tooltip: TooltipGURPS): boolean {
 		if (actor.isOfType(ActorType.Loot)) return true
 		let satisfied = false
 		for (const t of actor.itemTypes[ItemType.Trait]) {
@@ -86,12 +81,13 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 	}
 }
 
-interface TraitPrereq
-	extends BasePrereq<TraitPrereqSchema>,
-		Omit<ModelPropsFromSchema<TraitPrereqSchema>, "name" | "level" | "notes"> {
-	name: StringCriteria
-	level: NumericCriteria
-	notes: StringCriteria
+interface TraitPrereq extends BasePrereq<TraitPrereqSchema>, ModelPropsFromSchema<TraitPrereqSchema> {}
+
+type TraitPrereqSchema = BasePrereqSchema & {
+	has: fields.BooleanField
+	name: fields.SchemaField<StringCriteriaSchema, SourceFromSchema<StringCriteriaSchema>, StringCriteria>
+	level: fields.SchemaField<NumericCriteriaSchema, SourceFromSchema<NumericCriteriaSchema>, NumericCriteria>
+	notes: fields.SchemaField<StringCriteriaSchema, SourceFromSchema<StringCriteriaSchema>, StringCriteria>
 }
 
-export { TraitPrereq }
+export { TraitPrereq, type TraitPrereqSchema }

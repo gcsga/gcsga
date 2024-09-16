@@ -1,17 +1,14 @@
-import { BasePrereq } from "./base.ts"
+import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
+import fields = foundry.data.fields
 import { LocalizeGURPS, TooltipGURPS, Weight, prereq } from "@util"
-import { ContainedWeightPrereqSchema, PrereqConstructionOptions } from "./data.ts"
-import { ItemType, NumericCompareType } from "@module/data/constants.ts"
-import { WeightCriteria } from "@module/util/weight-criteria.ts"
+import { ActorType, ItemType, NumericCompareType } from "@module/data/constants.ts"
+import { WeightCriteria, WeightCriteriaSchema } from "@module/util/weight-criteria.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
-import { ActorGURPS2 } from "@module/document/actor.ts"
 import { SheetSettings } from "../sheet-settings.ts"
+import { ActorInst } from "../actor/helpers.ts"
 
 class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
-	constructor(data: DeepPartial<SourceFromSchema<ContainedWeightPrereqSchema>>, options?: PrereqConstructionOptions) {
-		super(data, options)
-		this.qualifier = new WeightCriteria(data.qualifier)
-	}
+	static override TYPE = prereq.Type.ContainedWeight
 
 	static override defineSchema(): ContainedWeightPrereqSchema {
 		const fields = foundry.data.fields
@@ -34,22 +31,21 @@ class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
 		}
 	}
 
-	satisfied(actor: ActorGURPS2, exclude: unknown, tooltip: TooltipGURPS): boolean {
-		const units = SheetSettings.for(actor).default_weight_units
+	satisfied(actor: ActorInst<ActorType.Character>, exclude: unknown, tooltip: TooltipGURPS): boolean {
 		let satisfied = false
-		if (!(exclude instanceof ItemGURPS2) || !exclude.isOfType(ItemType.EquipmentContainer)) satisfied = true
-		else {
-			const eqp = exclude
-			const weight = eqp.system.extendedWeight(false, units) - eqp.system.adjustedWeight(false, units)
+
+		if (exclude instanceof ItemGURPS2 && exclude.isOfType(ItemType.EquipmentContainer)) {
+			const units = SheetSettings.for(actor).default_weight_units
+			const weight = exclude.system.extendedWeight(false, units) - exclude.system.adjustedWeight(false, units)
 			satisfied = this.qualifier.matches(weight)
 		}
 		if (!this.has) satisfied = !satisfied
 		if (!satisfied) {
-			tooltip.push(LocalizeGURPS.translations.gurps.prereq.prefix)
-			tooltip.push(LocalizeGURPS.translations.gurps.prereq.has[this.has ? "true" : "false"])
+			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.Prefix)
 			tooltip.push(
-				LocalizeGURPS.format(LocalizeGURPS.translations.gurps.prereq.contained_weight, {
-					content: this.qualifier.describe(),
+				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.ContainedWeight, {
+					has: this.hasText,
+					qualifier: this.qualifier.toString(),
 				}),
 			)
 		}
@@ -61,8 +57,11 @@ class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
 
 interface ContainedWeightPrereq
 	extends BasePrereq<ContainedWeightPrereqSchema>,
-		Omit<ModelPropsFromSchema<ContainedWeightPrereqSchema>, "qualifier"> {
-	qualifier: WeightCriteria
+		ModelPropsFromSchema<ContainedWeightPrereqSchema> {}
+
+type ContainedWeightPrereqSchema = BasePrereqSchema & {
+	has: fields.BooleanField
+	qualifier: fields.SchemaField<WeightCriteriaSchema, SourceFromSchema<WeightCriteriaSchema>, WeightCriteria>
 }
 
-export { ContainedWeightPrereq }
+export { ContainedWeightPrereq, type ContainedWeightPrereqSchema }

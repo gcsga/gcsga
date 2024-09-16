@@ -1,17 +1,27 @@
-import { ActorType, NumericCompareType } from "@module/data/constants.ts"
-import { NumericCriteria } from "@module/util/index.ts"
+import { ActorType, ItemType, NumericCompareType } from "@module/data/constants.ts"
+import fields = foundry.data.fields
+import { NumericCriteria, NumericCriteriaSchema } from "@module/util/index.ts"
 import { LocalizeGURPS, TooltipGURPS, extractTechLevel } from "@util"
 import { prereq } from "@util/enum/prereq.ts"
-import { BasePrereq, Prereq, PrereqListSchema } from "./index.ts"
+import { BasePrereq } from "./index.ts"
 import { PrereqTemplate } from "@module/data/item/templates/prereqs.ts"
 import { ActorInst } from "../actor/helpers.ts"
+import { BasePrereqSchema } from "./base-prereq.ts"
+import { Prereq } from "./types.ts"
+
+// const ValidPrereqParentTypes = Object.freeze([
+// 	ItemType.Trait,
+// 	ItemType.TraitContainer,
+// 	ItemType.Skill,
+// 	ItemType.Technique,
+// 	ItemType.Spell,
+// 	ItemType.RitualMagicSpell,
+// 	ItemType.Equipment,
+// 	ItemType.EquipmentContainer,
+// ])
 
 class PrereqList extends BasePrereq<PrereqListSchema> {
-	// constructor(data: DeepPartial<SourceFromSchema<PrereqListSchema>>, options?: PrereqConstructionOptions) {
-	// 	super(data, options)
-	//
-	// 	this.when_tl = new NumericCriteria(data.when_tl)
-	// }
+	static override TYPE = prereq.Type.List
 
 	static override defineSchema(): PrereqListSchema {
 		const fields = foundry.data.fields
@@ -38,7 +48,7 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 	get deepPrereqs(): string[] {
 		const prereqs = this.prereqs
 		for (const child of this.children) {
-			if (child.type === prereq.Type.List) prereqs.push(...child.deepPrereqs)
+			if (child.isOfType(prereq.Type.List)) prereqs.push(...child.deepPrereqs)
 		}
 		return prereqs
 	}
@@ -81,11 +91,12 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 	}
 }
 
-// interface PrereqList extends BasePrereq<PrereqListSchema>, ModelPropsFromSchema<PrereqListSchema>> {
-// }
+interface PrereqList extends BasePrereq<PrereqListSchema>, ModelPropsFromSchema<PrereqListSchema> {}
 
-interface PrereqList extends BasePrereq<PrereqListSchema>, Omit<ModelPropsFromSchema<PrereqListSchema>, "when_tl"> {
-	when_tl: NumericCriteria
+export type PrereqListSchema = BasePrereqSchema & {
+	all: fields.BooleanField<boolean, boolean, true, false, true>
+	when_tl: fields.SchemaField<NumericCriteriaSchema, SourceFromSchema<NumericCriteriaSchema>, NumericCriteria, false>
+	prereqs: fields.ArrayField<fields.StringField<string, string, true, false, true>>
 }
 
 export { PrereqList }
