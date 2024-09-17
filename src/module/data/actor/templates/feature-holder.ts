@@ -177,14 +177,14 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 		attributeId: string,
 		limitation: stlimit.Option = stlimit.Option.None,
 		tooltip: TooltipGURPS | null = null,
-		temporary = false,
+		temporary: boolean | null = null,
 	): number {
 		let total = 0
 		for (const bonus of this.features.attributeBonuses) {
 			if (
 				bonus.actualLimitation === limitation &&
 				bonus.attribute === attributeId &&
-				bonus.temporary === temporary
+				(temporary === null || bonus.temporary === temporary)
 			) {
 				total += bonus.adjustedAmount
 				bonus.addToTooltip(tooltip)
@@ -204,18 +204,18 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 		moveTypeId: string,
 		limitation: MoveBonusType,
 		tooltip: TooltipGURPS | null = null,
-		temporary = false,
+		temporary: boolean | null = null,
 	): number {
 		let total = 0
 		if (this.features)
-			for (const feature of this.features.moveBonuses) {
+			for (const bonus of this.features.moveBonuses) {
 				if (
-					feature.limitation === limitation &&
-					feature.move_type === moveTypeId &&
-					feature.temporary === temporary
+					bonus.limitation === limitation &&
+					bonus.move_type === moveTypeId &&
+					(temporary === null || bonus.temporary === temporary)
 				) {
-					total += feature.adjustedAmount
-					feature.addToTooltip(tooltip)
+					total += bonus.adjustedAmount
+					bonus.addToTooltip(tooltip)
 				}
 			}
 		return total
@@ -226,10 +226,10 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 	 * @param temporary - Is this feature provided by a temporary active effect?
 	 * @returns Total bonus value
 	 */
-	costReductionFor(attributeId: string, temporary = false): number {
+	costReductionFor(attributeId: string, temporary: boolean | null = null): number {
 		let total = 0
 		for (const bonus of this.features.costReductions) {
-			if (bonus.attribute === attributeId && bonus.temporary === temporary) {
+			if (bonus.attribute === attributeId && (temporary === null || bonus.temporary === temporary)) {
 				total += bonus.adjustedAmount
 			}
 		}
@@ -246,7 +246,7 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 		locationId: string,
 		tooltip: TooltipGURPS | null,
 		drMap: Map<string, number> = new Map(),
-		temporary = false,
+		temporary: boolean | null = null,
 	): Map<string, number> {
 		let isTopLevel = false
 		for (const location of SheetSettings.for(this.parent).body_type.locations) {
@@ -259,7 +259,7 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 			for (const location of bonus.locations) {
 				if (
 					((location === gid.All && isTopLevel) || equalFold(location, locationId)) &&
-					bonus.temporary === temporary
+					(temporary === null || bonus.temporary === temporary)
 				) {
 					const spec = bonus.specialization.toLowerCase()
 					drMap.set(spec, (drMap.get(spec) ?? 0) + bonus.adjustedAmount)
@@ -284,7 +284,7 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 		specialization: string,
 		tags: string[],
 		tooltip: TooltipGURPS | null = null,
-		temporary = false,
+		temporary: boolean | null = null,
 	): number {
 		let total = 0
 		for (const bonus of this.features.skillBonuses) {
@@ -298,7 +298,7 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 					bonus.name.matches(replacements, name) &&
 					bonus.specialization.matches(replacements, specialization) &&
 					bonus.tags.matchesList(replacements, ...tags) &&
-					bonus.temporary === temporary
+					(temporary === null || bonus.temporary === temporary)
 				) {
 					total += bonus.adjustedAmount
 					bonus.addToTooltip(tooltip)
@@ -321,7 +321,7 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 		specialization: string,
 		tags: string[],
 		tooltip: TooltipGURPS | null = null,
-		temporary = false,
+		temporary: boolean | null = null,
 	): number {
 		let total = 0
 		for (const bonus of this.features.skillPointBonuses) {
@@ -334,7 +334,7 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 				bonus.name.matches(replacements, name) &&
 				bonus.specialization.matches(replacements, specialization) &&
 				bonus.tags.matchesList(replacements, ...tags) &&
-				bonus.temporary === temporary
+				(temporary === null || bonus.temporary === temporary)
 			) {
 				total += bonus.adjustedAmount
 				bonus.addToTooltip(tooltip)
@@ -349,7 +349,7 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 		colleges: string[],
 		tags: string[],
 		tooltip: TooltipGURPS | null = null,
-		temporary = false,
+		temporary: boolean | null = null,
 	): number {
 		let total = 0
 		for (const bonus of this.features.spellBonuses) {
@@ -361,7 +361,7 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 			if (
 				bonus.tags.matchesList(replacements, ...tags) &&
 				bonus.matchForType(replacements, name, powerSource, colleges) &&
-				bonus.temporary === temporary
+				(temporary === null || bonus.temporary === temporary)
 			) {
 				total += bonus.adjustedAmount
 				bonus.addToTooltip(tooltip)
@@ -376,7 +376,7 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 		colleges: string[],
 		tags: string[],
 		tooltip: TooltipGURPS | null = null,
-		temporary = false,
+		temporary: boolean | null = null,
 	): number {
 		let total = 0
 		for (const bonus of this.features.spellPointBonuses) {
@@ -388,7 +388,7 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 			if (
 				bonus.tags.matchesList(replacements, ...tags) &&
 				bonus.matchForType(replacements, name, powerSource, colleges) &&
-				bonus.temporary === temporary
+				(temporary === null || bonus.temporary === temporary)
 			) {
 				total += bonus.adjustedAmount
 				bonus.addToTooltip(tooltip)
@@ -406,7 +406,7 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 		tooltip: TooltipGURPS | null = null,
 		m: Set<WeaponBonus> = new Set(),
 		allowedFeatureTypes: Set<feature.Type> = new Set(),
-		temporary = false,
+		temporary: boolean | null = null,
 	): Set<WeaponBonus> {
 		if (!this.isOfType(ActorType.Character)) {
 			console.error(`Adding weapon bonuses for actor type "${this.parent.type}" is not yet supported.`)
@@ -421,7 +421,7 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 				allowedFeatureTypes.has(bonus.type) &&
 				bonus.selection_type === wsel.Type.WithRequiredSkill &&
 				bonus.level.matches(rsl) &&
-				bonus.temporary === temporary
+				(temporary === null || bonus.temporary === temporary)
 			) {
 				let replacements: Map<string, string> = new Map()
 				const na = bonus.owner
@@ -449,13 +449,13 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 		tooltip: TooltipGURPS | null = null,
 		m: Set<WeaponBonus> = new Set(),
 		allowedFeatureTypes: Set<feature.Type> = new Set(),
-		temporary = false,
+		temporary: boolean | null = null,
 	): void {
 		for (const bonus of this.features.weaponBonuses) {
 			if (
 				allowedFeatureTypes.has(bonus.type) &&
 				bonus.selection_type === wsel.Type.WithName &&
-				bonus.temporary === temporary
+				(temporary === null || bonus.temporary === temporary)
 			) {
 				let replacements: Map<string, string> = new Map()
 				const na = bonus.owner
@@ -492,7 +492,7 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 					bonus.name.matches(replacements, name) &&
 					bonus.specialization.matches(replacements, usage) &&
 					bonus.tags.matchesList(replacements, ...tags) &&
-					bonus.temporary === temporary
+					(temporary === null || bonus.temporary === temporary)
 				) {
 					bonuses.push(bonus)
 					bonus.addToTooltip(tooltip)

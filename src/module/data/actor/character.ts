@@ -19,8 +19,6 @@ import { ResourceTracker, ResourceTrackerSchema } from "../resource-tracker/inde
 import { MoveType, MoveTypeSchema } from "../move-type/index.ts"
 import { AttributeGURPS } from "../attribute/index.ts"
 import { DiceGURPS } from "../dice.ts"
-import { ActorGURPS2 } from "@module/document/actor.ts"
-import { SheetSettings } from "../sheet-settings.ts"
 
 class CharacterData extends ActorDataModel.mixin(
 	FeatureHolderTemplate,
@@ -34,17 +32,17 @@ class CharacterData extends ActorDataModel.mixin(
 	}
 	skillResolverExclusions: Set<string> | null = null
 
-	constructor(
-		data: DeepPartial<SourceFromSchema<CharacterSchema>>,
-		options: DataModelConstructionOptions<ActorGURPS2>,
-	) {
-		super(data, options)
-		this.settings = new SheetSettings({ ...data.settings }, { ...options, parent: this })
-		this.attributes = data.attributes?.map(e => new AttributeGURPS({ ...e }, { ...options, parent: this })) ?? []
-		this.resource_trackers =
-			data.resource_trackers?.map(e => new ResourceTracker({ ...e }, { ...options, parent: this })) ?? []
-		this.move_types = data.move_types?.map(e => new MoveType({ ...e }, { ...options, parent: this })) ?? []
-	}
+	// constructor(
+	// 	data: DeepPartial<SourceFromSchema<CharacterSchema>>,
+	// 	options: DataModelConstructionOptions<ActorGURPS2>,
+	// ) {
+	// 	super(data, options)
+	// 	this.settings = new SheetSettings({ ...data.settings }, { ...options, parent: this })
+	// 	this.attributes = data.attributes?.map(e => new AttributeGURPS({ ...e }, { ...options, parent: this })) ?? []
+	// 	this.resource_trackers =
+	// 		data.resource_trackers?.map(e => new ResourceTracker({ ...e }, { ...options, parent: this })) ?? []
+	// 	this.move_types = data.move_types?.map(e => new MoveType({ ...e }, { ...options, parent: this })) ?? []
+	// }
 
 	static override defineSchema(): CharacterSchema {
 		const fields = foundry.data.fields

@@ -2,6 +2,7 @@
 
 ## Left To Do
 
+- Change Schema Fields to Embedded Data Fields where appropriate \*0 _MOST IMPORTANT_
 - Chat Messages \*4
   - Re-do roll message templates and damage message handling
   - Move @module/util/chat.ts functionality to Chat Message
