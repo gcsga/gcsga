@@ -1,1 +1,1 @@
-export { TokenGURPS } from "./object.ts"
+// export { TokenGURPS } from "./object.ts"

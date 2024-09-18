@@ -1,6 +1,5 @@
 import { ManeuverID, NumericCompareType, StringCompareType } from "@module/data/constants.ts"
 import { ItemKind } from "@module/data/index.ts"
-import { MoveTypeOverrideConditionType, ThresholdOp } from "@system"
 import {
 	affects,
 	attribute,
@@ -21,6 +20,7 @@ import {
 	stdmg,
 	stlimit,
 	study,
+	threshold,
 	tmcost,
 	wsel,
 	wswitch,
@@ -28,6 +28,7 @@ import {
 import { StrictTIDString } from "../tid.ts"
 import { Weight } from "@util/weight.ts"
 import { Length } from "@util/length.ts"
+import { MoveTypeOverrideConditionType } from "@module/data/move-type/move-type-override.ts"
 
 // const GCS_FILE_VERSION = 4
 const GCS_FILE_VERSIONS = [4, 5]
@@ -640,7 +641,7 @@ interface ImportedThreshold {
 	state: string
 	expression: string
 	explanation?: string
-	ops?: ThresholdOp[]
+	ops?: threshold.Op[]
 }
 
 interface ImportedAttributeDef {

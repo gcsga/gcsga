@@ -2,7 +2,7 @@ import { HOOKS, SOCKET, SYSTEM_NAME, UserFlags } from "@data"
 import { ModifierBucket } from "./button.ts"
 import { LocalizeGURPS, htmlQuery, htmlQueryAll } from "@util"
 import { DialogGURPS } from "../dialog.ts"
-import { PDF } from "@module/util/index.ts"
+// import { PDF } from "@module/util/index.ts"
 import { RollModifierStack } from "@module/data/roll-modifier.ts"
 
 export class ModifierBucketWindow extends Application {
@@ -72,7 +72,7 @@ export class ModifierBucketWindow extends Application {
 			modifier.addEventListener("click", ev => this._onClickModifier(ev))
 		for (const section of htmlQueryAll(html, ".collapsible"))
 			section.addEventListener("click", ev => this._onCollapseToggle(ev))
-		for (const ref of htmlQueryAll(html, "div.ref")) ref.addEventListener("click", ev => PDF.handle(ev))
+		// for (const ref of htmlQueryAll(html, "div.ref")) ref.addEventListener("click", ev => PDF.handle(ev))
 
 		// Save Current Bucket
 		htmlQuery(html, "#save-current")?.addEventListener("click", _ => this._onSaveCurrentStack())
@@ -198,38 +198,39 @@ export class ModifierBucketWindow extends Application {
 		game.socket?.emit(`system.${SYSTEM_NAME}`, { type: SOCKET.UPDATE_BUCKET, users: [player.id] })
 	}
 
-	override getData(options?: Partial<ApplicationOptions> | undefined): object | Promise<object> {
-		const modStack = game.user.flags[SYSTEM_NAME][UserFlags.ModifierStack]
+	override getData(_options?: Partial<ApplicationOptions> | undefined): object | Promise<object> {
+		// const modStack = game.user.flags[SYSTEM_NAME][UserFlags.ModifierStack]
 		const savedStacks = game.user.flags[SYSTEM_NAME][UserFlags.SavedStacks]
 
-		const commonMods = CONFIG.GURPS.commonMods
+		// const commonMods = CONFIG.GURPS.commonMods
 
-		commonMods.forEach((e: { title: string; items: ModifierItem[]; open?: boolean }, i: number) => {
-			e.open = this.categoriesOpen[i]
-		})
+		// commonMods.forEach((e: { title: string; items: ModifierItem[]; open?: boolean }, i: number) => {
+		// 	e.open = this.categoriesOpen[i]
+		// })
 
 		savedStacks.forEach((e: RollModifierStack, i: number) => {
 			e.editing = this.stackEditing === i
 			e.open = this.stacksOpen[i]
 		})
 
-		const genericMods = [-5, -4, -3, -2, -1, +1, +2, +3, +4, +5].map(e => {
-			return { modifier: e }
-		})
+		// const genericMods = [-5, -4, -3, -2, -1, +1, +2, +3, +4, +5].map(e => {
+		// 	return { modifier: e }
+		// })
+		//
+		// const players = game.users ?? []
 
-		const players = game.users ?? []
-
-		return fu.mergeObject(super.getData(options), {
-			value: this.value,
-			stackEditing: this.stackEditing,
-			players,
-			commonMods,
-			genericMods,
-			savedStacks,
-			meleeMods: CONFIG.GURPS.meleeMods,
-			rangedMods: CONFIG.GURPS.rangedMods,
-			defenseMods: CONFIG.GURPS.defenseMods,
-			currentMods: modStack,
-		})
+		return {}
+		// return fu.mergeObject(super.getData(options), {
+		// 	value: this.value,
+		// 	stackEditing: this.stackEditing,
+		// 	players,
+		// 	commonMods,
+		// 	genericMods,
+		// 	savedStacks,
+		// 	meleeMods: CONFIG.GURPS.meleeMods,
+		// 	rangedMods: CONFIG.GURPS.rangedMods,
+		// 	defenseMods: CONFIG.GURPS.defenseMods,
+		// 	currentMods: modStack,
+		// })
 	}
 }

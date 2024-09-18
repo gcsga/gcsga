@@ -14,7 +14,6 @@ class DefaultSheetSettings extends foundry.abstract.DataModel<null, SheetSetting
 				choices: progression.OptionsChoices,
 				initial: progression.Option.BasicSet,
 				label: "GURPS.Settings.SheetSettings.FIELDS.damage_progression.Name",
-				hint: "test hint",
 			}),
 			default_length_units: new fields.StringField({
 				required: true,

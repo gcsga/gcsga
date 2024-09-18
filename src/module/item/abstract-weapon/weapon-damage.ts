@@ -1,4 +1,4 @@
-import fields = foundry.data.fields
+// import fields = foundry.data.fields
 // import type { CharacterGURPS } from "@actor"
 // import { ItemType } from "@data"
 // import { SheetSettings } from "@module/data/sheet-settings.ts"

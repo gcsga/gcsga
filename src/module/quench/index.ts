@@ -5,7 +5,7 @@ import { Quench } from "@ethaks/fvtt-quench"
 // import * as MookSpells from "./mook/spells.ts"
 // import * as MookAttacks from "./mook/attacks.ts"
 
-export function registerQuenchBatches(quench: Quench): void {
+export function registerQuenchBatches(_quench: Quench): void {
 	// 	MookAttributes.registerBatches(quench)
 	// 	MookTraits.registerBatches(quench)
 	// 	MookSkills.registerBatches(quench)

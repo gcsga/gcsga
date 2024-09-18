@@ -3,12 +3,12 @@ import fs from "fs"
 import { JSDOM } from "jsdom"
 import path from "path"
 import process from "process"
-import * as R from "remeda"
+// import * as R from "remeda"
 import systemJSON from "../../static/system.json" assert { type: "json" }
-import { CompendiumPack, isActorSource, isItemSource } from "./compendium-pack.ts"
+// import { CompendiumPack, isActorSource, isItemSource } from "./compendium-pack.ts"
 import { PackError, getFilesRecursively } from "./helpers.ts"
 import { DBFolder, LevelDatabase } from "./level-database.ts"
-import type { PackEntry } from "./types.ts"
+// import type { PackEntry } from "./types.ts"
 
 declare global {
 	interface Global {
@@ -39,7 +39,7 @@ class PackExtractor {
 
 	/** The last actor inspected in `pruneTree` */
 	// #lastActor: ActorSourceGURPS | null = null
-	readonly #newDocIdMap: Record<string, string> = {}
+	// readonly #newDocIdMap: Record<string, string> = {}
 
 	readonly #idsToNames: {
 		[K in Extract<CompendiumDocumentType, "Actor" | "Item" | "JournalEntry" | "Macro" | "RollTable">]: Map<
@@ -162,38 +162,38 @@ class PackExtractor {
 			await fs.promises.writeFile(folderFilePath, this.#prettyPrintJSON(folders), "utf-8")
 		}
 
-		for (const source of packSources) {
-			// Remove or replace unwanted values from the document source
-			const preparedSource = this.#convertUUIDs(source, packDirectory)
-			// if ("items" in preparedSource && preparedSource.type === "npc" && !this.disablePresort) {
-			// 	preparedSource.items = this.#sortEmbeddedItems(preparedSource)
-			// } else
-			if (!this.#folderPathMap.get(preparedSource.folder ?? "")) {
-				delete (preparedSource as { folder?: unknown }).folder
-			}
-			const outData = this.#prettyPrintJSON(preparedSource)
-
-			// Remove all non-alphanumeric characters from the name
-			const slug = sluggify(preparedSource.name)
-			const outFileName = `${slug}.json`
-
-			// Handle subfolders
-			const subfolder = this.#folderPathMap.get(preparedSource.folder ?? "")
-			const outFolderPath = subfolder ? path.resolve(this.tempDataPath, subfolder) : outPath
-			if (subfolder && !fs.existsSync(outFolderPath)) {
-				fs.mkdirSync(outFolderPath, { recursive: true })
-			}
-			const outFilePath = path.resolve(outFolderPath, outFileName)
-
-			if (fs.existsSync(outFilePath)) {
-				throw PackError(`Error: Duplicate name "${preparedSource.name}" in pack: ${packDirectory}`)
-			}
-
-			this.#assertDocIdSame(preparedSource, outFilePath)
-
-			// Write the JSON file
-			await fs.promises.writeFile(outFilePath, outData, "utf-8")
-		}
+		// for (const source of packSources) {
+		// 	// Remove or replace unwanted values from the document source
+		// 	// const preparedSource = this.#convertUUIDs(source, packDirectory)
+		// 	// if ("items" in preparedSource && preparedSource.type === "npc" && !this.disablePresort) {
+		// 	// 	preparedSource.items = this.#sortEmbeddedItems(preparedSource)
+		// 	// } else
+		// 	if (!this.#folderPathMap.get(preparedSource.folder ?? "")) {
+		// 		delete (preparedSource as { folder?: unknown }).folder
+		// 	}
+		// 	const outData = this.#prettyPrintJSON(preparedSource)
+		//
+		// 	// Remove all non-alphanumeric characters from the name
+		// 	const slug = sluggify(preparedSource.name)
+		// 	const outFileName = `${slug}.json`
+		//
+		// 	// Handle subfolders
+		// 	const subfolder = this.#folderPathMap.get(preparedSource.folder ?? "")
+		// 	const outFolderPath = subfolder ? path.resolve(this.tempDataPath, subfolder) : outPath
+		// 	if (subfolder && !fs.existsSync(outFolderPath)) {
+		// 		fs.mkdirSync(outFolderPath, { recursive: true })
+		// 	}
+		// 	const outFilePath = path.resolve(outFolderPath, outFileName)
+		//
+		// 	if (fs.existsSync(outFilePath)) {
+		// 		throw PackError(`Error: Duplicate name "${preparedSource.name}" in pack: ${packDirectory}`)
+		// 	}
+		//
+		// 	this.#assertDocIdSame(preparedSource, outFilePath)
+		//
+		// 	// Write the JSON file
+		// 	await fs.promises.writeFile(outFilePath, outData, "utf-8")
+		// }
 
 		return packSources.length
 	}
@@ -219,365 +219,365 @@ class PackExtractor {
 		return `${newJson}\n`
 	}
 
-	#assertDocIdSame(newSource: PackEntry, jsonPath: string): void {
-		if (fs.existsSync(jsonPath)) {
-			const oldSource = JSON.parse(fs.readFileSync(jsonPath, { encoding: "utf-8" })) as PackEntry
-			if (oldSource._id !== newSource._id) {
-				throw PackError(
-					`The ID of doc "${newSource.name}" (${newSource._id}) does not match the current ID ` +
-						`(${oldSource._id}). Documents that are already in the system must keep their current ID.`,
-				)
-			}
-		}
-	}
+	// #assertDocIdSame(newSource: PackEntry, jsonPath: string): void {
+	// 	if (fs.existsSync(jsonPath)) {
+	// 		const oldSource = JSON.parse(fs.readFileSync(jsonPath, { encoding: "utf-8" })) as PackEntry
+	// 		if (oldSource._id !== newSource._id) {
+	// 			throw PackError(
+	// 				`The ID of doc "${newSource.name}" (${newSource._id}) does not match the current ID ` +
+	// 					`(${oldSource._id}). Documents that are already in the system must keep their current ID.`,
+	// 			)
+	// 		}
+	// 	}
+	// }
 
-	#convertUUIDs(docSource: PackEntry, packName: string): PackEntry {
-		this.#newDocIdMap[docSource._id!] = docSource.name
+	// #convertUUIDs(docSource: PackEntry, packName: string): PackEntry {
+	// 	this.#newDocIdMap[docSource._id!] = docSource.name
+	//
+	// 	const sanitized = this.#sanitizeDocument(docSource)
+	// 	if (isActorSource(sanitized)) {
+	// 		sanitized.items = sanitized.items.map(itemSource => {
+	// 			CompendiumPack.convertUUIDs(itemSource, { to: "names", map: this.#idsToNames.Item })
+	// 			return this.#sanitizeDocument(itemSource, { isEmbedded: true })
+	// 		})
+	// 	}
+	//
+	// 	if (isItemSource(sanitized)) {
+	// 		CompendiumPack.convertUUIDs(sanitized, { to: "names", map: this.#idsToNames.Item })
+	// 	}
+	//
+	// 	const docJSON = JSON.stringify(sanitized).replace(/@Compendium\[/g, "@UUID[Compendium.")
+	//
+	// 	// Link checks
+	// 	const { LINK_PATTERNS } = CompendiumPack
+	// 	const worldItemLinks = Array.from(docJSON.matchAll(LINK_PATTERNS.world))
+	// 	if (worldItemLinks.length > 0) {
+	// 		const linkString = worldItemLinks.map(match => match[0]).join(", ")
+	// 		throw PackError(`${docSource.name} (${packName}) has links to world items: ${linkString}`)
+	// 	}
+	//
+	// 	const compendiumLinks = Array.from(docJSON.matchAll(LINK_PATTERNS.uuid))
+	// 		.map(match => match[0])
+	// 		.filter(l => !l.includes("JournalEntryPage."))
+	//
+	// 	// Convert links by ID to links by name
+	// 	const notFound: string[] = []
+	// 	const convertedJson = compendiumLinks.reduce((partiallyConverted, linkById): string => {
+	// 		const components = new RegExp(LINK_PATTERNS.uuid.source)
+	// 		const parts = components.exec(linkById)
+	// 		if (!Array.isArray(parts)) {
+	// 			throw PackError("Unexpected error parsing compendium link")
+	// 		}
+	//
+	// 		const [packId, docType, docId] = parts.slice(1, 4)
+	// 		const packMap = this.#idsToNames[docType]?.get(packId)
+	// 		if (!packMap) {
+	// 			throw PackError(`Pack ${packId} has no ID-to-name map.`)
+	// 		}
+	//
+	// 		const docName = packMap.get(docId) ?? this.#newDocIdMap[docId]
+	// 		if (!docName) {
+	// 			notFound.push(parts[0].replace(/\{$/, ""))
+	// 			return partiallyConverted
+	// 		}
+	//
+	// 		const idPattern = new RegExp(`(?<!"_?id":")${docId}(?=\\])`, "g")
+	// 		// Remove link labels when the label is the same as the document name
+	// 		const labeledLinkPattern = (() => {
+	// 			const escapedDocName = docName.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&")
+	// 			return new RegExp(String.raw`(@UUID\[[^\]]+\])\{${escapedDocName}\}`)
+	// 		})()
+	// 		return partiallyConverted.replace(idPattern, docName).replace(labeledLinkPattern, "$1")
+	// 	}, docJSON)
+	//
+	// 	return JSON.parse(convertedJson) as PackEntry
+	// }
 
-		const sanitized = this.#sanitizeDocument(docSource)
-		if (isActorSource(sanitized)) {
-			sanitized.items = sanitized.items.map(itemSource => {
-				CompendiumPack.convertUUIDs(itemSource, { to: "names", map: this.#idsToNames.Item })
-				return this.#sanitizeDocument(itemSource, { isEmbedded: true })
-			})
-		}
-
-		if (isItemSource(sanitized)) {
-			CompendiumPack.convertUUIDs(sanitized, { to: "names", map: this.#idsToNames.Item })
-		}
-
-		const docJSON = JSON.stringify(sanitized).replace(/@Compendium\[/g, "@UUID[Compendium.")
-
-		// Link checks
-		const { LINK_PATTERNS } = CompendiumPack
-		const worldItemLinks = Array.from(docJSON.matchAll(LINK_PATTERNS.world))
-		if (worldItemLinks.length > 0) {
-			const linkString = worldItemLinks.map(match => match[0]).join(", ")
-			throw PackError(`${docSource.name} (${packName}) has links to world items: ${linkString}`)
-		}
-
-		const compendiumLinks = Array.from(docJSON.matchAll(LINK_PATTERNS.uuid))
-			.map(match => match[0])
-			.filter(l => !l.includes("JournalEntryPage."))
-
-		// Convert links by ID to links by name
-		const notFound: string[] = []
-		const convertedJson = compendiumLinks.reduce((partiallyConverted, linkById): string => {
-			const components = new RegExp(LINK_PATTERNS.uuid.source)
-			const parts = components.exec(linkById)
-			if (!Array.isArray(parts)) {
-				throw PackError("Unexpected error parsing compendium link")
-			}
-
-			const [packId, docType, docId] = parts.slice(1, 4)
-			const packMap = this.#idsToNames[docType]?.get(packId)
-			if (!packMap) {
-				throw PackError(`Pack ${packId} has no ID-to-name map.`)
-			}
-
-			const docName = packMap.get(docId) ?? this.#newDocIdMap[docId]
-			if (!docName) {
-				notFound.push(parts[0].replace(/\{$/, ""))
-				return partiallyConverted
-			}
-
-			const idPattern = new RegExp(`(?<!"_?id":")${docId}(?=\\])`, "g")
-			// Remove link labels when the label is the same as the document name
-			const labeledLinkPattern = (() => {
-				const escapedDocName = docName.replace(/[-/\\^$*+?.()|[\]{}]/g, "\\$&")
-				return new RegExp(String.raw`(@UUID\[[^\]]+\])\{${escapedDocName}\}`)
-			})()
-			return partiallyConverted.replace(idPattern, docName).replace(labeledLinkPattern, "$1")
-		}, docJSON)
-
-		return JSON.parse(convertedJson) as PackEntry
-	}
-
-	#sanitizeDocument<T extends PackEntry>(docSource: T, { isEmbedded } = { isEmbedded: false }): T {
-		// Clear non-core/gcsga flags
-		for (const flagScope in docSource.flags) {
-			if (!["core", "gcsga"].includes(flagScope) || !isEmbedded) {
-				delete docSource.flags[flagScope]
-			}
-		}
-
-		if (!isEmbedded) {
-			docSource.ownership = { default: docSource.ownership?.default ?? 0 }
-			delete (docSource as Partial<typeof docSource>).sort
-
-			if (isItemSource(docSource)) {
-				const slug = docSource.system.slug
-				if (typeof slug === "string" && slug !== sluggify(docSource.name)) {
-					console.warn(
-						`Warning: Name change detected on ${docSource.name}. ` +
-							"Please remember to create a slug migration before next release.",
-					)
-				}
-
-				delete (docSource.system as { slug?: unknown }).slug
-				docSource.flags = {}
-				// if (itemIsOfType(docSource, "physical")) {
-				// 	delete (docSource.system as { equipped?: unknown }).equipped
-				// } else if (docSource.type === "spell" || (docSource.type === "feat" && !docSource.system.location)) {
-				// 	delete (docSource.system as { location?: unknown }).location
-				// }
-			}
-		}
-
-		this.#pruneTree(docSource, docSource)
-
-		// Clean up description HTML
-		// const cleanDescription = (description: string): string => {
-		// 	if (!description) {
-		// 		return ""
-		// 	}
-		//
-		// 	const container = (() => {
-		// 		try {
-		// 			const div = document.createElement("div")
-		// 			div.innerHTML =
-		// 				description.startsWith("<p>") && /<\/(?:p|ol|ul|table)>$/.test(description)
-		// 					? description
-		// 					: `<p>${description}</p>`
-		// 			return div
-		// 		} catch (error) {
-		// 			console.error(error)
-		// 			throw PackError(
-		// 				`Failed to parse description of ${docSource.name} (${docSource._id}):\n${description}`,
-		// 			)
-		// 		}
-		// 	})()
-		//
-		// 	const textNodes: Text[] = []
-		// 	function pushTextNode(node: Node | null): void {
-		// 		if (!node) return
-		// 		if (node.nodeName === "#text" && node.nodeValue && node.nodeValue !== "\n") {
-		// 			textNodes.push(node as Text)
-		// 		}
-		// 		node.childNodes.forEach(n => {
-		// 			pushTextNode(n)
-		// 		})
-		// 	}
-		//
-		// 	pushTextNode(container)
-		//
-		// 	// Strip out span tags from AoN copypasta
-		// 	const selectors = ["span#ctl00_MainContent_DetailedOutput", "span.fontstyle0"]
-		// 	for (const selector of selectors) {
-		// 		container.querySelectorAll(selector).forEach(span => {
-		// 			span.replaceWith(span.innerHTML)
-		// 		})
-		// 	}
-		//
-		// 	return container.innerHTML
-		// 		.replace(/<([hb]r)>/g, "<$1 />") // Prefer self-closing tags
-		// 		.replace(/<\/p> ?<p>/g, "</p>\n<p>")
-		// 		.replace(/<p>[ \r\n]+/g, "<p>")
-		// 		.replace(/[ \r\n]+<\/p>/g, "</p>")
-		// 		.replace(/<(?:b|strong)>\s*/g, "<strong>")
-		// 		.replace(/\s*<\/(?:b|strong)>/g, "</strong>")
-		// 		.replace(/(<\/strong>)(\w)/g, "$1 $2")
-		// 		.replace(/\bpf2-icon\b/g, "action-glyph")
-		// 		.replace(/<p> *<\/p>/g, "")
-		// 		.replace(/<div> *<\/div>/g, "")
-		// 		.replace(/&nbsp;/g, " ")
-		// 		.replace(/\u2011/g, "-")
-		// 		.replace(/\s*\u2014\s*/g, "\u2014") // em dash
-		// 		.replace(/ {2,}/g, " ")
-		// 		.trim()
-		// 		.replace(/^<hr \/>/, "")
-		// 		.trim()
-		// }
-
-		// if ("system" in docSource) {
-		// 	if ("description" in docSource.system) {
-		// 		docSource.system.description.value = cleanDescription(docSource.system.description.value)
-		// 	} else if ("details" in docSource.system && "publicNotes" in docSource.system.details) {
-		// 		docSource.system.details.publicNotes = cleanDescription(docSource.system.details.publicNotes)
-		// 	}
-		// } else if ("content" in docSource && typeof docSource.content === "string") {
-		// 	docSource.content = cleanDescription(docSource.content)
-		// }
-
-		return docSource
-	}
+	// #sanitizeDocument<T extends PackEntry>(docSource: T, { isEmbedded } = { isEmbedded: false }): T {
+	// 	// Clear non-core/gcsga flags
+	// 	for (const flagScope in docSource.flags) {
+	// 		if (!["core", "gcsga"].includes(flagScope) || !isEmbedded) {
+	// 			delete docSource.flags[flagScope]
+	// 		}
+	// 	}
+	//
+	// 	if (!isEmbedded) {
+	// 		docSource.ownership = { default: docSource.ownership?.default ?? 0 }
+	// 		delete (docSource as Partial<typeof docSource>).sort
+	//
+	// 		if (isItemSource(docSource)) {
+	// 			const slug = docSource.system.slug
+	// 			if (typeof slug === "string" && slug !== sluggify(docSource.name)) {
+	// 				console.warn(
+	// 					`Warning: Name change detected on ${docSource.name}. ` +
+	// 						"Please remember to create a slug migration before next release.",
+	// 				)
+	// 			}
+	//
+	// 			delete (docSource.system as { slug?: unknown }).slug
+	// 			docSource.flags = {}
+	// 			// if (itemIsOfType(docSource, "physical")) {
+	// 			// 	delete (docSource.system as { equipped?: unknown }).equipped
+	// 			// } else if (docSource.type === "spell" || (docSource.type === "feat" && !docSource.system.location)) {
+	// 			// 	delete (docSource.system as { location?: unknown }).location
+	// 			// }
+	// 		}
+	// 	}
+	//
+	// 	this.#pruneTree(docSource, docSource)
+	//
+	// 	// Clean up description HTML
+	// 	// const cleanDescription = (description: string): string => {
+	// 	// 	if (!description) {
+	// 	// 		return ""
+	// 	// 	}
+	// 	//
+	// 	// 	const container = (() => {
+	// 	// 		try {
+	// 	// 			const div = document.createElement("div")
+	// 	// 			div.innerHTML =
+	// 	// 				description.startsWith("<p>") && /<\/(?:p|ol|ul|table)>$/.test(description)
+	// 	// 					? description
+	// 	// 					: `<p>${description}</p>`
+	// 	// 			return div
+	// 	// 		} catch (error) {
+	// 	// 			console.error(error)
+	// 	// 			throw PackError(
+	// 	// 				`Failed to parse description of ${docSource.name} (${docSource._id}):\n${description}`,
+	// 	// 			)
+	// 	// 		}
+	// 	// 	})()
+	// 	//
+	// 	// 	const textNodes: Text[] = []
+	// 	// 	function pushTextNode(node: Node | null): void {
+	// 	// 		if (!node) return
+	// 	// 		if (node.nodeName === "#text" && node.nodeValue && node.nodeValue !== "\n") {
+	// 	// 			textNodes.push(node as Text)
+	// 	// 		}
+	// 	// 		node.childNodes.forEach(n => {
+	// 	// 			pushTextNode(n)
+	// 	// 		})
+	// 	// 	}
+	// 	//
+	// 	// 	pushTextNode(container)
+	// 	//
+	// 	// 	// Strip out span tags from AoN copypasta
+	// 	// 	const selectors = ["span#ctl00_MainContent_DetailedOutput", "span.fontstyle0"]
+	// 	// 	for (const selector of selectors) {
+	// 	// 		container.querySelectorAll(selector).forEach(span => {
+	// 	// 			span.replaceWith(span.innerHTML)
+	// 	// 		})
+	// 	// 	}
+	// 	//
+	// 	// 	return container.innerHTML
+	// 	// 		.replace(/<([hb]r)>/g, "<$1 />") // Prefer self-closing tags
+	// 	// 		.replace(/<\/p> ?<p>/g, "</p>\n<p>")
+	// 	// 		.replace(/<p>[ \r\n]+/g, "<p>")
+	// 	// 		.replace(/[ \r\n]+<\/p>/g, "</p>")
+	// 	// 		.replace(/<(?:b|strong)>\s*/g, "<strong>")
+	// 	// 		.replace(/\s*<\/(?:b|strong)>/g, "</strong>")
+	// 	// 		.replace(/(<\/strong>)(\w)/g, "$1 $2")
+	// 	// 		.replace(/\bpf2-icon\b/g, "action-glyph")
+	// 	// 		.replace(/<p> *<\/p>/g, "")
+	// 	// 		.replace(/<div> *<\/div>/g, "")
+	// 	// 		.replace(/&nbsp;/g, " ")
+	// 	// 		.replace(/\u2011/g, "-")
+	// 	// 		.replace(/\s*\u2014\s*/g, "\u2014") // em dash
+	// 	// 		.replace(/ {2,}/g, " ")
+	// 	// 		.trim()
+	// 	// 		.replace(/^<hr \/>/, "")
+	// 	// 		.trim()
+	// 	// }
+	//
+	// 	// if ("system" in docSource) {
+	// 	// 	if ("description" in docSource.system) {
+	// 	// 		docSource.system.description.value = cleanDescription(docSource.system.description.value)
+	// 	// 	} else if ("details" in docSource.system && "publicNotes" in docSource.system.details) {
+	// 	// 		docSource.system.details.publicNotes = cleanDescription(docSource.system.details.publicNotes)
+	// 	// 	}
+	// 	// } else if ("content" in docSource && typeof docSource.content === "string") {
+	// 	// 	docSource.content = cleanDescription(docSource.content)
+	// 	// }
+	//
+	// 	return docSource
+	// }
 
 	/** Walk object tree and make appropriate deletions */
-	#pruneTree(docSource: PackEntry, topLevel: PackEntry): void {
-		type DocumentKey = keyof PackEntry
-
-		for (const key in docSource) {
-			if (key === "_id") {
-				topLevel = docSource
-				if (docSource.folder === null) {
-					delete (docSource as { folder?: null }).folder
-				}
-				delete (docSource as { _stats?: unknown })._stats
-
-				if ("img" in docSource && typeof docSource.img === "string") {
-					docSource.img = docSource.img.replace(
-						"https://assets.forge-vtt.com/bazaar/systems/gcsga/assets/",
-						"systems/gcsga/",
-					) as ImageFilePath
-				}
-
-				if (R.isPlainObject(docSource.flags?.gcsga) && Object.keys(docSource.flags.gcsga).length === 0) {
-					delete docSource.flags.gcsga
-				}
-				if (Object.keys(docSource.flags ?? {}).length === 0) {
-					delete (docSource as { flags?: object }).flags
-				}
-
-				if ("type" in docSource) {
-					if (isActorSource(docSource) || isItemSource(docSource)) {
-						docSource.name = docSource.name.trim()
-						delete (docSource as { ownership?: object }).ownership
-						delete (docSource as { effects?: object[] }).effects
-						delete (docSource.system as { _migration?: object })._migration
-					}
-
-					if (isActorSource(docSource)) {
-						// this.#lastActor = docSource
-
-						if (docSource.prototypeToken?.name === docSource.name) {
-							delete (docSource as { prototypeToken?: object }).prototypeToken
-						} else if (docSource.prototypeToken) {
-							const withToken: {
-								img: ImageFilePath
-								prototypeToken: DeepPartial<foundry.data.PrototypeTokenSource>
-							} = docSource
-							withToken.prototypeToken = { name: docSource.prototypeToken.name }
-							// Iconics have special tokens
-							if (withToken.img?.includes("iconics")) {
-								withToken.prototypeToken.texture = {
-									src: withToken.img.replace("Full", "") as ImageFilePath,
-								}
-							}
-						}
-
-						// if ("publication" in docSource.system.details) {
-						// 	const publication: Partial<PublicationData> = docSource.system.details.publication
-						// 	if (!publication.authors?.trim()) delete publication.authors
-						// }
-
-						// if (docSource.type === "character") {
-						// 	delete (docSource.system.details.biography as { visibility?: unknown }).visibility
-						// } else if (docSource.type === "npc") {
-						// 	const speed: Partial<NPCAttributesSource["speed"]> = docSource.system.attributes.speed
-						// 	if (!speed.details?.trim()) delete speed.details
-						//
-						// 	for (const key of Object.keys(docSource.system)) {
-						// 		if (!this.#npcSystemKeys.has(key)) {
-						// 			delete (docSource.system as NPCSystemSource & { extraneous?: unknown })[
-						// 				key as "extraneous"
-						// 			]
-						// 		}
-						// 	}
-						//
-						// 	if (docSource.system.perception.vision) {
-						// 		delete (docSource.system.perception as { vision?: unknown }).vision
-						// 	}
-						// }
-					} else if (isItemSource(docSource)) {
-						this.#pruneItem(docSource)
-					} else if (docSource.type !== "script") {
-						delete (docSource as Partial<PackEntry>).ownership
-					}
-				}
-			} else if (docSource[key as DocumentKey] instanceof Object) {
-				this.#pruneTree(docSource[key as DocumentKey] as unknown as PackEntry, topLevel)
-			}
-		}
-	}
+	// #pruneTree(docSource: PackEntry, topLevel: PackEntry): void {
+	// 	type DocumentKey = keyof PackEntry
+	//
+	// 	for (const key in docSource) {
+	// 		if (key === "_id") {
+	// 			topLevel = docSource
+	// 			if (docSource.folder === null) {
+	// 				delete (docSource as { folder?: null }).folder
+	// 			}
+	// 			delete (docSource as { _stats?: unknown })._stats
+	//
+	// 			if ("img" in docSource && typeof docSource.img === "string") {
+	// 				docSource.img = docSource.img.replace(
+	// 					"https://assets.forge-vtt.com/bazaar/systems/gcsga/assets/",
+	// 					"systems/gcsga/",
+	// 				) as ImageFilePath
+	// 			}
+	//
+	// 			if (R.isPlainObject(docSource.flags?.gcsga) && Object.keys(docSource.flags.gcsga).length === 0) {
+	// 				delete docSource.flags.gcsga
+	// 			}
+	// 			if (Object.keys(docSource.flags ?? {}).length === 0) {
+	// 				delete (docSource as { flags?: object }).flags
+	// 			}
+	//
+	// 			if ("type" in docSource) {
+	// 				if (isActorSource(docSource) || isItemSource(docSource)) {
+	// 					docSource.name = docSource.name.trim()
+	// 					delete (docSource as { ownership?: object }).ownership
+	// 					delete (docSource as { effects?: object[] }).effects
+	// 					delete (docSource.system as { _migration?: object })._migration
+	// 				}
+	//
+	// 				if (isActorSource(docSource)) {
+	// 					// this.#lastActor = docSource
+	//
+	// 					if (docSource.prototypeToken?.name === docSource.name) {
+	// 						delete (docSource as { prototypeToken?: object }).prototypeToken
+	// 					} else if (docSource.prototypeToken) {
+	// 						const withToken: {
+	// 							img: ImageFilePath
+	// 							prototypeToken: DeepPartial<foundry.data.PrototypeTokenSource>
+	// 						} = docSource
+	// 						withToken.prototypeToken = { name: docSource.prototypeToken.name }
+	// 						// Iconics have special tokens
+	// 						if (withToken.img?.includes("iconics")) {
+	// 							withToken.prototypeToken.texture = {
+	// 								src: withToken.img.replace("Full", "") as ImageFilePath,
+	// 							}
+	// 						}
+	// 					}
+	//
+	// 					// if ("publication" in docSource.system.details) {
+	// 					// 	const publication: Partial<PublicationData> = docSource.system.details.publication
+	// 					// 	if (!publication.authors?.trim()) delete publication.authors
+	// 					// }
+	//
+	// 					// if (docSource.type === "character") {
+	// 					// 	delete (docSource.system.details.biography as { visibility?: unknown }).visibility
+	// 					// } else if (docSource.type === "npc") {
+	// 					// 	const speed: Partial<NPCAttributesSource["speed"]> = docSource.system.attributes.speed
+	// 					// 	if (!speed.details?.trim()) delete speed.details
+	// 					//
+	// 					// 	for (const key of Object.keys(docSource.system)) {
+	// 					// 		if (!this.#npcSystemKeys.has(key)) {
+	// 					// 			delete (docSource.system as NPCSystemSource & { extraneous?: unknown })[
+	// 					// 				key as "extraneous"
+	// 					// 			]
+	// 					// 		}
+	// 					// 	}
+	// 					//
+	// 					// 	if (docSource.system.perception.vision) {
+	// 					// 		delete (docSource.system.perception as { vision?: unknown }).vision
+	// 					// 	}
+	// 					// }
+	// 				} else if (isItemSource(docSource)) {
+	// 					this.#pruneItem(docSource)
+	// 				} else if (docSource.type !== "script") {
+	// 					delete (docSource as Partial<PackEntry>).ownership
+	// 				}
+	// 			}
+	// 		} else if (docSource[key as DocumentKey] instanceof Object) {
+	// 			this.#pruneTree(docSource[key as DocumentKey] as unknown as PackEntry, topLevel)
+	// 		}
+	// 	}
+	// }
 
 	/**  Prune several common item data defaults */
-	#pruneItem(_source: ItemSourceGURPS): void {
-		// #pruneItem(source: ItemSourceGURPS): void {
-		// source.system.description = {
-		// 	gm: source.system.description.gm ?? "",
-		// 	value: source.system.description.value,
-		// }
-		//
-		// if (!source.system.description.gm.trim()) {
-		// 	delete (source.system.description as { gm?: unknown }).gm
-		// }
-		//
-		// if (source.system.traits?.otherTags?.length === 0) {
-		// 	delete (source.system.traits as { otherTags?: unknown }).otherTags
-		// }
-		//
-		// const publication: Partial<PublicationData> = source.system.publication
-		// if (!publication.authors?.trim()) delete publication.authors
-		//
-		// if (itemIsOfType(source, "physical")) {
-		// 	delete (source.system as { identification?: unknown }).identification
-		// 	if ("stackGroup" in source.system && !source.system.stackGroup) {
-		// 		delete (source.system as { stackGroup?: unknown }).stackGroup
-		// 	}
-		// 	if (source.type === "consumable" && !source.system.spell) {
-		// 		delete (source.system as { spell?: unknown }).spell
-		// 	}
-		//
-		// 	if (itemIsOfType(source, "armor", "shield", "weapon") && !source.system.specific) {
-		// 		delete (source.system as { specific?: unknown }).specific
-		// 	}
-		//
-		// 	if (source.system.subitems?.length === 0) {
-		// 		delete (source.system as { subitems?: unknown[] }).subitems
-		// 	}
-		//
-		// 	if (source.type === "weapon") {
-		// 		delete (source.system as { property1?: unknown }).property1
-		// 		if ("value" in source.system.damage) {
-		// 			delete source.system.damage.value
-		// 		}
-		// 		if (!source.system.damage.persistent) {
-		// 			delete (source.system.damage as { persistent?: unknown }).persistent
-		// 		}
-		// 	}
-		// } else if (source.type === "melee") {
-		// 	for (const formulaData of Object.values(source.system.damageRolls)) {
-		// 		if (!formulaData.category) {
-		// 			delete (formulaData as { category?: unknown }).category
-		// 		}
-		// 	}
-		// } else if (source.type === "action" && !source.system.deathNote) {
-		// 	delete (source.system as { deathNote?: boolean }).deathNote
-		// } else if (source.type === "effect") {
-		// 	delete (source.system as { context?: unknown }).context
-		// 	delete (source.system as { unidentified?: unknown }).unidentified
-		// 	if (!source.system.badge) {
-		// 		delete (source.system as { badge?: unknown }).badge
-		// 	}
-		// } else if (source.type === "feat") {
-		// 	const isFeat = !["ancestryfeature", "classfeature", "pfsboon", "deityboon", "curse"].includes(
-		// 		source.system.category,
-		// 	)
-		// 	if (isFeat && source.img === "systems/gcsga/icons/default-icons/feat.svg") {
-		// 		source.img = "systems/gcsga/icons/features/feats/feats.webp"
-		// 	}
-		//
-		// 	if (source.system.maxTakable === 1) {
-		// 		delete (source.system as { maxTakable?: number }).maxTakable
-		// 	}
-		// 	if (!source.system.onlyLevel1) {
-		// 		delete (source.system as { onlyLevel1?: boolean }).onlyLevel1
-		// 	}
-		// } else if (source.type === "spellcastingEntry") {
-		// 	if (this.#lastActor?.type === "npc") {
-		// 		delete (source.system as { ability?: unknown }).ability
-		// 	}
-		// 	if (source.system.showSlotlessLevels?.value === true) {
-		// 		delete (source.system as { showSlotlessLevels?: { value: boolean } }).showSlotlessLevels
-		// 	}
-		//
-		// 	source.system.slots = fu.diffObject(templateJSON.Item.spellcastingEntry.slots, source.system.slots)
-		// }
-		//
-		// for (const rule of source.system.rules) {
-		// 	this.#pruneRuleElement(rule)
-		// }
-	}
+	// #pruneItem(_source: ItemSourceGURPS): void {
+	// #pruneItem(source: ItemSourceGURPS): void {
+	// source.system.description = {
+	// 	gm: source.system.description.gm ?? "",
+	// 	value: source.system.description.value,
+	// }
+	//
+	// if (!source.system.description.gm.trim()) {
+	// 	delete (source.system.description as { gm?: unknown }).gm
+	// }
+	//
+	// if (source.system.traits?.otherTags?.length === 0) {
+	// 	delete (source.system.traits as { otherTags?: unknown }).otherTags
+	// }
+	//
+	// const publication: Partial<PublicationData> = source.system.publication
+	// if (!publication.authors?.trim()) delete publication.authors
+	//
+	// if (itemIsOfType(source, "physical")) {
+	// 	delete (source.system as { identification?: unknown }).identification
+	// 	if ("stackGroup" in source.system && !source.system.stackGroup) {
+	// 		delete (source.system as { stackGroup?: unknown }).stackGroup
+	// 	}
+	// 	if (source.type === "consumable" && !source.system.spell) {
+	// 		delete (source.system as { spell?: unknown }).spell
+	// 	}
+	//
+	// 	if (itemIsOfType(source, "armor", "shield", "weapon") && !source.system.specific) {
+	// 		delete (source.system as { specific?: unknown }).specific
+	// 	}
+	//
+	// 	if (source.system.subitems?.length === 0) {
+	// 		delete (source.system as { subitems?: unknown[] }).subitems
+	// 	}
+	//
+	// 	if (source.type === "weapon") {
+	// 		delete (source.system as { property1?: unknown }).property1
+	// 		if ("value" in source.system.damage) {
+	// 			delete source.system.damage.value
+	// 		}
+	// 		if (!source.system.damage.persistent) {
+	// 			delete (source.system.damage as { persistent?: unknown }).persistent
+	// 		}
+	// 	}
+	// } else if (source.type === "melee") {
+	// 	for (const formulaData of Object.values(source.system.damageRolls)) {
+	// 		if (!formulaData.category) {
+	// 			delete (formulaData as { category?: unknown }).category
+	// 		}
+	// 	}
+	// } else if (source.type === "action" && !source.system.deathNote) {
+	// 	delete (source.system as { deathNote?: boolean }).deathNote
+	// } else if (source.type === "effect") {
+	// 	delete (source.system as { context?: unknown }).context
+	// 	delete (source.system as { unidentified?: unknown }).unidentified
+	// 	if (!source.system.badge) {
+	// 		delete (source.system as { badge?: unknown }).badge
+	// 	}
+	// } else if (source.type === "feat") {
+	// 	const isFeat = !["ancestryfeature", "classfeature", "pfsboon", "deityboon", "curse"].includes(
+	// 		source.system.category,
+	// 	)
+	// 	if (isFeat && source.img === "systems/gcsga/icons/default-icons/feat.svg") {
+	// 		source.img = "systems/gcsga/icons/features/feats/feats.webp"
+	// 	}
+	//
+	// 	if (source.system.maxTakable === 1) {
+	// 		delete (source.system as { maxTakable?: number }).maxTakable
+	// 	}
+	// 	if (!source.system.onlyLevel1) {
+	// 		delete (source.system as { onlyLevel1?: boolean }).onlyLevel1
+	// 	}
+	// } else if (source.type === "spellcastingEntry") {
+	// 	if (this.#lastActor?.type === "npc") {
+	// 		delete (source.system as { ability?: unknown }).ability
+	// 	}
+	// 	if (source.system.showSlotlessLevels?.value === true) {
+	// 		delete (source.system as { showSlotlessLevels?: { value: boolean } }).showSlotlessLevels
+	// 	}
+	//
+	// 	source.system.slots = fu.diffObject(templateJSON.Item.spellcastingEntry.slots, source.system.slots)
+	// }
+	//
+	// for (const rule of source.system.rules) {
+	// 	this.#pruneRuleElement(rule)
+	// }
+	// }
 
 	// #pruneRuleElement(source: RuleElementSource): void {
 	// 	switch (source.key) {

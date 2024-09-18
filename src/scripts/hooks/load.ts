@@ -1,6 +1,6 @@
 import { ActorType, ItemType } from "@data"
 import { CharacterData } from "@module/data/actor/character.ts"
-import { ItemsGURPS } from "@module/data/collections/items-collection.ts"
+// import { ItemsGURPS } from "@module/data/collections/items-collection.ts"
 import * as ItemInstance from "@module/data/item/index.ts"
 import { AttackRoll, BasicRoll, DamageRoll, SuccessRoll } from "@module/dice/index.ts"
 import { ActorGURPS2 } from "@module/document/actor.ts"
@@ -24,7 +24,7 @@ export const Load = {
 		CONFIG.Dice
 		CONFIG.Combat.documentClass = CombatGURPS
 		CONFIG.Combatant.documentClass = CombatantGURPS
-		CONFIG.Item.collection = ItemsGURPS<ItemGURPS2<null>>
+		// CONFIG.Item.collection = ItemsGURPS<ItemGURPS2<null>>
 		CONFIG.Item.documentClass = ItemGURPS2
 		CONFIG.Macro.documentClass = Macro
 		CONFIG.MeasuredTemplate.documentClass = MeasuredTemplateDocument

@@ -20,7 +20,7 @@ class WeaponParry extends WeaponField<AbstractWeaponTemplate, WeaponParrySchema>
 	}
 
 	static override fromString(s: string): WeaponParry {
-		const wp = new WeaponParry({})
+		const wp = new WeaponParry().toObject()
 		s = s.trim().toLowerCase()
 
 		if (s !== "" && s !== "-" && s !== "–" && !s.includes("no")) {
@@ -28,9 +28,8 @@ class WeaponParry extends WeaponField<AbstractWeaponTemplate, WeaponParrySchema>
 			wp.fencing = s.includes("f")
 			wp.unbalanced = s.includes("u")
 			;[wp.modifier] = Int.extract(s)
-			wp.clean()
 		}
-		return wp
+		return new WeaponParry(wp)
 	}
 
 	override toString(): string {
@@ -62,7 +61,7 @@ class WeaponParry extends WeaponField<AbstractWeaponTemplate, WeaponParrySchema>
 	}
 
 	override resolve(w: AbstractWeaponTemplate, tooltip: TooltipGURPS | null): WeaponParry {
-		const result = this.clone()
+		const result = this.toObject()
 		result.canParry = w.resolveBoolFlag(wswitch.Type.CanParry, result.canParry)
 		if (result.canParry) {
 			result.fencing = w.resolveBoolFlag(wswitch.Type.Fencing, result.fencing)
@@ -99,16 +98,28 @@ class WeaponParry extends WeaponField<AbstractWeaponTemplate, WeaponParrySchema>
 				}
 			}
 		}
-		result.clean()
-		return result
+		return new WeaponParry(result)
 	}
 
-	override clean(): void {
-		if (!this.canParry) {
-			this.modifier = 0
-			this.fencing = false
-			this.unbalanced = false
+	static override cleanData(
+		source?: object | undefined,
+		options?: Record<string, unknown> | undefined,
+	): SourceFromSchema<fields.DataSchema> {
+		let { modifier, canParry, fencing, unbalanced }: Partial<SourceFromSchema<WeaponParrySchema>> = {
+			modifier: 0,
+			canParry: false,
+			fencing: false,
+			unbalanced: false,
+			...source,
 		}
+
+		if (!canParry) {
+			modifier = 0
+			fencing = false
+			unbalanced = false
+		}
+
+		return super.cleanData({ ...source, modifier, canParry, fencing, unbalanced }, options)
 	}
 }
 

@@ -1,8 +1,8 @@
-import { DiceGURPS } from "@module/dice/index.ts"
 import { DamageType, DamageTypes } from "./damage-type.ts"
 import { DamagePayload } from "./damage-chat-message.ts"
-import { BodyGURPS } from "@system/hit-location/object.ts"
 import { TooltipGURPS } from "@util"
+import { DiceGURPS } from "@module/data/dice.ts"
+import { BodyGURPS } from "@module/data/hit-location.ts"
 
 /**
  * The Damage Calculator needs three things: The DamageRoll, DamageHit, and DamageTarget.

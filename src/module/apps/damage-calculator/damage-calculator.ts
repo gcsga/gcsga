@@ -1,7 +1,3 @@
-import { RollModifier, RollType, gid } from "@module/data/index.ts"
-import { DiceGURPS } from "@module/dice/index.ts"
-import { TokenDocumentGURPS } from "@scene/token-document/index.ts"
-import { BodyGURPS, HitLocation } from "@system/hit-location/object.ts"
 import { Point } from "pixi.js"
 import { AnyPiercingType, DamageType, DamageTypes } from "./damage-type.ts"
 import { HitLocationUtil } from "./hit-location-utils.ts"
@@ -25,6 +21,11 @@ import {
 	ShockInjuryEffect,
 } from "./injury-effect.ts"
 import { RulerGURPS } from "@module/canvas/ruler/document.ts"
+import { DiceGURPS } from "@module/data/dice.ts"
+import { TokenDocumentGURPS } from "@module/document/token.ts"
+import { BodyGURPS, HitLocation } from "@module/data/hit-location.ts"
+import { RollModifier } from "@module/data/roll-modifier.ts"
+import { RollType, gid } from "@module/data/constants.ts"
 
 const Skull = "skull"
 const Eye = "eye"

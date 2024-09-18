@@ -3,8 +3,8 @@ import { DamageRoll, DamageTarget } from "./index.ts"
 import { SETTINGS, SYSTEM_NAME, gid } from "@data"
 import { HitLocationUtil } from "./hit-location-utils.ts"
 import { DamageTypes } from "./damage-type.ts"
-import { LocalizeGURPS, htmlQueryAll } from "@util"
-import { PDF } from "@module/util/index.ts"
+import { LocalizeGURPS } from "@util"
+// import { PDF } from "@module/util/index.ts"
 
 export class ApplyDamageDialog extends Application {
 	static async create(roll: DamageRoll, target: DamageTarget, options = {}): Promise<ApplyDamageDialog> {
@@ -71,12 +71,12 @@ export class ApplyDamageDialog extends Application {
 
 	override activateListeners($html: JQuery): void {
 		super.activateListeners($html)
-		const html = $html[0]
+		// const html = $html[0]
 
 		$html.find("[data-control]").on("change click", event => this._onApplyControl(event))
 		$html.find("[data-action]").on("change click", event => this._onApplyControl(event))
 
-		for (const ref of htmlQueryAll(html, "a.ref")) ref.addEventListener("click", ev => PDF.handle(ev))
+		// for (const ref of htmlQueryAll(html, "a.ref")) ref.addEventListener("click", ev => PDF.handle(ev))
 	}
 
 	_onApplyControl(event: JQuery.Event): void {

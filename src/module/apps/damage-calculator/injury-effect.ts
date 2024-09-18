@@ -1,4 +1,5 @@
-import { RollModifier, RollType, gid } from "@module/data/index.ts"
+import { RollType, gid } from "@module/data/constants.ts"
+import { RollModifier } from "@module/data/roll-modifier.ts"
 
 function getFormatFunction() {
 	const format = game

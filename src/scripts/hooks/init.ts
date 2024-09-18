@@ -1,9 +1,9 @@
 import { SYSTEM_NAME } from "@data"
-import { ChatLogGURPS } from "@module/apps/sidebar/chat-log.ts"
+// import { ChatLogGURPS } from "@module/apps/sidebar/chat-log.ts"
 import { CombatTrackerGURPS } from "@module/apps/sidebar/combat-tracker.ts"
 // import { CompendiumDirectoryGURPS } from "@module/apps/sidebar/compendium-directory.ts"
-import { TokenGURPS } from "@module/canvas/token/index.ts"
-import * as SpeedProviderGURPS from "@module/modules/drag-ruler.ts"
+// import { TokenGURPS } from "@module/canvas/token/index.ts"
+// import * as SpeedProviderGURPS from "@module/modules/drag-ruler.ts"
 import { registerSystemSettings } from "@module/settings/index.ts"
 import { GURPSCONFIG } from "@scripts/config/index.ts"
 import { registerHandlebarsHelpers } from "@scripts/handlebars.ts"
@@ -39,7 +39,7 @@ export const Init = {
 
 			CONFIG.GURPS = GURPSCONFIG
 
-			CONFIG.Token.objectClass = TokenGURPS
+			// CONFIG.Token.objectClass = TokenGURPS
 			CONFIG.statusEffects = Object.entries(CONFIG.GURPS.statusEffects.conditions).map(([id, name]) => ({
 				id,
 				name,
@@ -47,7 +47,7 @@ export const Init = {
 			}))
 			// CONFIG.Canvas.rulerClass = RulerGURPS
 
-			CONFIG.ui.chat = ChatLogGURPS
+			// CONFIG.ui.chat = ChatLogGURPS
 			CONFIG.ui.combat = CombatTrackerGURPS
 			// CONFIG.ui.actors = ActorDirectoryGURPS
 			// CONFIG.ui.items = ItemDirectoryGURPS
@@ -55,7 +55,7 @@ export const Init = {
 
 			// CONFIG.Dice.rolls.unshift(RollGURPS)
 
-			SpeedProviderGURPS.init()
+			// SpeedProviderGURPS.init()
 
 			registerFonts()
 			registerHandlebarsHelpers()

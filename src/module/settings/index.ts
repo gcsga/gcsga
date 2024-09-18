@@ -1,7 +1,7 @@
 import { SETTINGS, SSRT_SETTING, SYSTEM_NAME } from "@module/data/constants.ts"
 import { ColorConfig } from "./color-config.ts"
 import { SheetSettingsConfig } from "./sheet-settings-config.ts"
-import { AttributesConfig } from "./attribute-settings.ts"
+import { AttributesConfig } from "./attributes-config.ts"
 
 /**
  * Register all of the system's keybindings.

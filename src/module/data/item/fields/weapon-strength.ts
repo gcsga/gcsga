@@ -10,6 +10,7 @@ class WeaponStrength extends WeaponField<AbstractWeaponTemplate, WeaponStrengthS
 			min: new fields.NumberField<number, number, true, false, true>({
 				required: true,
 				nullable: false,
+				min: 0,
 				initial: 0,
 			}),
 			bipod: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
@@ -21,7 +22,7 @@ class WeaponStrength extends WeaponField<AbstractWeaponTemplate, WeaponStrengthS
 	}
 
 	static override fromString(s: string): WeaponStrength {
-		const ws = new WeaponStrength({})
+		const ws = new WeaponStrength().toObject()
 		s = s.replaceAll(" ", "")
 		if (s !== "") {
 			s = s.toLowerCase()
@@ -31,9 +32,8 @@ class WeaponStrength extends WeaponField<AbstractWeaponTemplate, WeaponStrengthS
 			ws.twoHanded = s.includes("†") || s.includes("*")
 			ws.twoHandedUnready = s.includes("‡")
 			;[ws.min] = Int.extract(s)
-			ws.clean()
 		}
-		return ws
+		return new WeaponStrength(ws)
 	}
 
 	override toString(): string {
@@ -109,7 +109,7 @@ class WeaponStrength extends WeaponField<AbstractWeaponTemplate, WeaponStrengthS
 	}
 
 	override resolve(w: AbstractWeaponTemplate, tooltip: TooltipGURPS | null): WeaponStrength {
-		const result = this.clone()
+		const result = this.toObject()
 		result.bipod = w.resolveBoolFlag(wswitch.Type.Bipod, result.bipod)
 		result.mounted = w.resolveBoolFlag(wswitch.Type.Mounted, result.mounted)
 		result.musketRest = w.resolveBoolFlag(wswitch.Type.MusketRest, result.musketRest)
@@ -124,13 +124,23 @@ class WeaponStrength extends WeaponField<AbstractWeaponTemplate, WeaponStrengthS
 		if (percentMin !== 0) {
 			result.min += Int.from((result.min * percentMin) / 100)
 		}
-		result.clean()
-		return result
+		return new WeaponStrength(result)
 	}
 
-	override clean(): void {
-		this.min = Math.max(this.min, 0)
-		if (this.twoHandedUnready && this.twoHandedUnready) this.twoHanded = false
+	static override cleanData(
+		source?: object | undefined,
+		options?: Record<string, unknown> | undefined,
+	): SourceFromSchema<fields.DataSchema> {
+		let { min, twoHanded, twoHandedUnready }: Partial<SourceFromSchema<WeaponStrengthSchema>> = {
+			min: 0,
+			twoHanded: false,
+			twoHandedUnready: false,
+			...source,
+		}
+
+		min = Math.max(min, 0)
+		if (twoHandedUnready && twoHandedUnready) twoHanded = false
+		return super.cleanData({ ...source, min, twoHanded, twoHandedUnready }, options)
 	}
 }
 

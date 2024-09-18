@@ -1,8 +1,7 @@
-import type { ActorGURPS } from "@actor"
-import type { ItemGURPS } from "@item"
-// import type { MacroGURPS } from "@module/macro.ts"
+import { ActorGURPS2 } from "@module/document/actor.ts"
+import { ItemGURPS2 } from "@module/document/item.ts"
 
-type CompendiumDocumentGURPS = ActorGURPS | ItemGURPS<ActorGURPS | null> | JournalEntry | Macro | RollTable
+type CompendiumDocumentGURPS = ActorGURPS2 | ItemGURPS2<null> | JournalEntry | Macro | RollTable
 type PackEntry = CompendiumDocumentGURPS["_source"]
 
 export type { PackEntry }

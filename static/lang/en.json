@@ -51,6 +51,28 @@
 				}
 			}
 		},
+		"Attribute": {
+			"Definition": {
+				"FIELDS": {
+					"Id": { "Name": "ID" },
+					"Name": { "Name": "Name" },
+					"FullName": { "Name": "Full Name" },
+					"Base": { "Name": "Base Value" },
+					"CostPerPoint": { "Name": "Cost per Point" },
+					"CostAdjPercentPerSm": { "Name": "SM Reduction" },
+					"Type": { "Name": "Attribute Type" },
+					"Thresholds": { "Name": "Thresholds" }
+				}
+			},
+			"Threshold": {
+				"FIELDS": {
+					"State": { "Name": "State" },
+					"Expression": { "Name": "Threshold" },
+					"Explanation": { "Name": "Explanation" },
+					"Ops": { "Name": "Ops" }
+				}
+			}
+		},
 		"TemplatePicker": {
 			"descriptionCount": "Pick {number}",
 			"descriptionPoints": "Pick {number} {points} worth",
@@ -160,6 +182,31 @@
 			"ProjectilesPlural": "proectiles"
 		},
 		"Enum": {
+			"attribute": {
+				"integer": "Integer",
+				"integer_ref": "Integer (Display Only)",
+				"decimal": "Decimal",
+				"decimal_ref": "Decimal (Display Only)",
+				"pool": "Pool",
+				"pool_ref": "Pool (Display Only for Maximum)",
+				"primary_separator": "Primary Separator",
+				"secondary_separator": "Secondary Separator",
+				"pool_separator": "Pool Separator"
+			},
+			"threshold": {
+				"halve_move": {
+					"Name": "Halve Move",
+					"Hint": "Halve Move (round up)"
+				},
+				"halve_dodge": {
+					"Name": "Halve Dodge",
+					"Hint": "Halve Dodge (round up)"
+				},
+				"halve_st": {
+					"Name": "Halve Strength",
+					"Hint": "Halve Strength (round up; does not affect HP and damage)"
+				}
+			},
 			"stdmg": {
 				"leveled": "{value} (Leveled)",
 				"none": "None",
@@ -319,7 +366,9 @@
 				"Submit": "Apply Default Attribute Settings",
 				"Reset": "Reset Default Attribute Settings",
 				"MessageSubmit": "Updated Default Attribute Settings configuration.",
-				"MessageReset": "Reset Default Attribute Settings configuration to default values."
+				"MessageReset": "Reset Default Attribute Settings configuration to default values.",
+				"ButtonAddAttribute": "Add Attribute",
+				"ButtonAddThreshold": "Add Threshold"
 			}
 		}
 	},

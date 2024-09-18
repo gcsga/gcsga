@@ -1,4 +1,4 @@
-import { RollType, SYSTEM_NAME, UserFlags } from "@data"
+import { SYSTEM_NAME, UserFlags } from "@data"
 import { ModifierBucketWindow } from "./window.ts"
 import { LastActor } from "@module/util/last-actor.ts"
 import { BasicRoll } from "@module/dice/basic-roll.ts"
@@ -77,13 +77,13 @@ export class ModifierBucket extends Application {
 	}
 
 	// Increase/Decrease modifier by 1 with the mouse wheel
-	async _onMouseWheel(event: WheelEvent): Promise<this> {
-		const delta = Math.round(event.deltaY / -100)
-		game.user.addModifier({
-			id: "",
-			modifier: delta,
-			tags: [],
-		})
+	async _onMouseWheel(_event: WheelEvent): Promise<this> {
+		// const delta = Math.round(event.deltaY / -100)
+		// game.user.addModifier({
+		// 	id: "",
+		// 	modifier: delta,
+		// 	tags: [],
+		// })
 		return this.render()
 	}
 
@@ -126,14 +126,14 @@ export class ModifierBucket extends Application {
 	// Roll 1d6
 	async _onDiceContextMenu(event: JQuery.ContextMenuEvent): Promise<void> {
 		event.preventDefault()
-		return RollGURPS.handleRoll(game.user, null, {
-			name: "",
-			actor: game.user.character?.id ?? "",
-			user: game.user.id,
-			type: RollType.Generic,
-			formula: "1d6",
-			hidden: event.ctrlKey,
-		})
+		// return RollGURPS.handleRoll(game.user, null, {
+		// 	name: "",
+		// 	actor: game.user.character?.id ?? "",
+		// 	user: game.user.id,
+		// 	type: RollType.Generic,
+		// 	formula: "1d6",
+		// 	hidden: event.ctrlKey,
+		// })
 	}
 
 	async _OnCurrentActorClick(event: JQuery.ClickEvent): Promise<unknown> {
@@ -150,7 +150,7 @@ export class ModifierBucket extends Application {
 
 	async clear(): Promise<unknown> {
 		await game.user?.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, [])
-		game.gurps.modifierList.render()
+		// game.gurps.modifierList.render()
 		return this.render(true)
 	}
 }

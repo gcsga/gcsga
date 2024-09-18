@@ -1,4 +1,4 @@
-import { ErrorGURPS, Int, encumbrance, trimS } from "@util"
+import { ErrorGURPS, Int, Length, encumbrance, trimS } from "@util"
 import { equalFold } from "../string-criteria.ts"
 import { EvalFunction, Evaluator, Operand, resolverIsCharacter } from "./eval.ts"
 import { ItemType } from "@module/data/constants.ts"
@@ -560,19 +560,19 @@ function evalSigned(e: Evaluator, args: string): string {
 
 function evalSSRT(e: Evaluator, args: string): number {
 	// Takes 3 args: length (number), units (string), flag (bool) indicating for size (true) or speed/range (false)
-	let arg: string
+	let arg = ""
 	;[arg, args] = nextArg(args)
 	let n: string
 	try {
-		n = evalToString(e, args)
+		n = evalToString(e, arg)
 	} catch (err) {
 		throw err
 	}
 
 	;[arg, args] = nextArg(args)
-	let units: string
+	let units = ""
 	try {
-		units = evalToString(e, args)
+		units = evalToString(e, arg)
 	} catch (err) {
 		throw err
 	}
@@ -580,10 +580,13 @@ function evalSSRT(e: Evaluator, args: string): number {
 	;[arg, args] = nextArg(args)
 	let wantSize: boolean
 	try {
-		wantSize = evalToBool(e, args)
+		wantSize = evalToBool(e, arg)
 	} catch (err) {
 		throw err
 	}
+
+	let length: number
+	length = Length.fromString(n + " " + units, Length.Unit.Yard)
 
 	let result = yardsToValue(length, wantSize)
 	if (!wantSize) result = -result
@@ -757,7 +760,7 @@ function evalRandomWeight(e: Evaluator, args: string): number {
 	;[arg, args] = nextArg(args)
 	let stDecimal: number
 	try {
-		stDecimal = evalToNumber(e, args)
+		stDecimal = evalToNumber(e, arg)
 	} catch (err) {
 		throw err
 	}

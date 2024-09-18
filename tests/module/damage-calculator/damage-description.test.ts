@@ -3,7 +3,7 @@
 import { DamageType, DamageTypes } from "@module/apps/damage-calculator/damage-type.ts"
 import { DamageAttacker, DamageRoll } from "@module/apps/damage-calculator/index.ts"
 import { DamageHitLocation, _Attacker, _DamageRoll, _Target, _create } from "./common.ts"
-import { DiceGURPS } from "@system"
+import { DiceGURPS } from "@module/data/dice.ts"
 
 const Torso = "Torso"
 

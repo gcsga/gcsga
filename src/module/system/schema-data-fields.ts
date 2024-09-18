@@ -1,5 +1,5 @@
 import * as R from "remeda"
-import { SlugCamel, sluggify } from "@util"
+// import { SlugCamel, sluggify } from "@util"
 import type {
 	CleanFieldOptions,
 	DataField,
@@ -10,7 +10,7 @@ import type {
 	ObjectFieldOptions,
 	SourcePropFromDataField,
 	StringField,
-	StringFieldOptions,
+	// StringFieldOptions,
 } from "types/foundry/common/data/fields.js"
 import { DataModelValidationFailure } from "types/foundry/common/data/validation-failure.js"
 

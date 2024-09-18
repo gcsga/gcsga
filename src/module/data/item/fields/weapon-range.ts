@@ -28,7 +28,7 @@ class WeaponRange extends WeaponField<WeaponRangedData, WeaponRangeSchema> {
 	}
 
 	static override fromString(s: string): WeaponRange {
-		const wr = new WeaponRange({})
+		const wr = new WeaponRange().toObject()
 		s = s.replaceAll(" ", "")
 		if (s !== "") {
 			s = s.toLowerCase().replaceAll(" ", "").replaceAll("×", "x")
@@ -57,10 +57,9 @@ class WeaponRange extends WeaponField<WeaponRangedData, WeaponRangeSchema> {
 				} else {
 					;[wr.max] = Int.extract(parts[0])
 				}
-				wr.clean()
 			}
 		}
-		return wr
+		return new WeaponRange(wr)
 	}
 
 	override toString(musclePowerIsresolved: boolean): string {
@@ -92,7 +91,7 @@ class WeaponRange extends WeaponField<WeaponRangedData, WeaponRangeSchema> {
 	}
 
 	override resolve(w: WeaponRangedData, tooltip: TooltipGURPS | null): WeaponRange {
-		const result = this.clone()
+		const result = this.toObject()
 		result.musclePowered = w.resolveBoolFlag(wswitch.Type.MusclePowered, result.musclePowered)
 		result.inMiles = w.resolveBoolFlag(wswitch.Type.RangeInMiles, result.inMiles)
 
@@ -103,6 +102,11 @@ class WeaponRange extends WeaponField<WeaponRangedData, WeaponRangeSchema> {
 				if (!(this.item.container instanceof Promise)) {
 					st = this.item.container.system.ratedStrength
 				}
+			}
+			if (st > 0) {
+				result.halfDamage = Math.max(Math.trunc(result.halfDamage * st), 0)
+				result.min = Math.max(Math.trunc(result.min * st), 0)
+				result.max = Math.max(Math.trunc(result.max * st), 0)
 			}
 		}
 		let [percentHalfDamage, percentMin, percentMax] = [0, 0, 0]
@@ -132,20 +136,31 @@ class WeaponRange extends WeaponField<WeaponRangedData, WeaponRangeSchema> {
 		if (percentMin !== 0) result.min += Math.trunc((result.min * percentMin) / 100)
 		if (percentMax !== 0) result.max += Math.trunc((result.max * percentMax) / 100)
 
-		result.clean()
-		return result
+		return new WeaponRange(result)
 	}
 
-	override clean(): void {
-		this.halfDamage = Math.max(this.halfDamage, 0)
-		this.min = Math.max(this.min, 0)
-		this.max = Math.max(this.max, 0)
-		if (this.min > this.max) {
-			;[this.min, this.max] = [this.max, this.min]
+	static override cleanData(
+		source?: object | undefined,
+		options?: Record<string, unknown> | undefined,
+	): SourceFromSchema<fields.DataSchema> {
+		let { halfDamage, min, max }: Partial<SourceFromSchema<WeaponRangeSchema>> = {
+			halfDamage: 0,
+			min: 0,
+			max: 0,
+			...source,
 		}
-		if (this.halfDamage < this.min || this.halfDamage >= this.max) {
-			this.halfDamage = 0
+
+		halfDamage = Math.max(halfDamage, 0)
+		min = Math.max(min, 0)
+		max = Math.max(max, 0)
+		if (min > max) {
+			;[min, max] = [max, min]
 		}
+		if (halfDamage < min || halfDamage >= max) {
+			halfDamage = 0
+		}
+
+		return super.cleanData({ ...source, min, max, halfDamage }, options)
 	}
 }
 

@@ -13,13 +13,16 @@ class AttributeDef<TActor extends AttributeHolderTemplate = AttributeHolderTempl
 	TActor,
 	AttributeDefSchema
 > {
-	constructor(
-		data: DeepPartial<SourceFromSchema<AttributeDefSchema>>,
-		options?: DataModelConstructionOptions<TActor>,
-	) {
-		super(data, options)
-		this.thresholds = data.thresholds?.map(threshold => new PoolThreshold(threshold!)) ?? []
-	}
+	// constructor(
+	// 	data?: DeepPartial<SourceFromSchema<AttributeDefSchema>>,
+	// 	options?: DataModelConstructionOptions<TActor>,
+	// ) {
+	// 	if ((data?.type === attribute.Type.Pool || data?.type === attribute.Type.PoolRef) && !data.thresholds) {
+	// 		console.log("pool")
+	// 		data.thresholds = [new PoolThreshold().toObject()]
+	// 	}
+	// 	super(data, options)
+	// }
 
 	static override defineSchema(): AttributeDefSchema {
 		const fields = foundry.data.fields
@@ -28,14 +31,41 @@ class AttributeDef<TActor extends AttributeHolderTemplate = AttributeHolderTempl
 			type: new fields.StringField({
 				required: true,
 				nullable: false,
-				choices: attribute.Types,
+				choices: attribute.TypesChoices,
 				initial: attribute.Type.Integer,
+				label: "GURPS.Attribute.Definition.FIELDS.Type.Name",
 			}),
-			id: new fields.StringField({ required: true, nullable: false, initial: "id" }),
-			base: new fields.StringField({ required: true, nullable: false, initial: "10" }),
-			name: new fields.StringField({ required: true, nullable: false, initial: "id" }),
-			full_name: new fields.StringField({ required: false, nullable: false, initial: "" }),
-			cost_per_point: new fields.NumberField({ required: true, nullable: false, min: 0 }),
+			id: new fields.StringField({
+				required: true,
+				nullable: false,
+				initial: "id",
+				label: "GURPS.Attribute.Definition.FIELDS.Id.Name",
+			}),
+			base: new fields.StringField({
+				required: true,
+				nullable: false,
+				initial: "10",
+				label: "GURPS.Attribute.Definition.FIELDS.Base.Name",
+			}),
+			name: new fields.StringField({
+				required: true,
+				nullable: false,
+				initial: "id",
+				label: "GURPS.Attribute.Definition.FIELDS.Name.Name",
+			}),
+			full_name: new fields.StringField({
+				required: false,
+				nullable: false,
+				initial: "",
+				label: "GURPS.Attribute.Definition.FIELDS.FullName.Name",
+			}),
+			cost_per_point: new fields.NumberField({
+				required: true,
+				nullable: false,
+				min: 0,
+				initial: 0,
+				label: "GURPS.Attribute.Definition.FIELDS.CostPerPoint.Name",
+			}),
 			cost_adj_percent_per_sm: new fields.NumberField({
 				required: false,
 				nullable: false,
@@ -43,13 +73,32 @@ class AttributeDef<TActor extends AttributeHolderTemplate = AttributeHolderTempl
 				min: 0,
 				max: 80,
 				initial: 0,
+				label: "GURPS.Attribute.Definition.FIELDS.CostAdjPercentPerSm.Name",
 			}),
 			thresholds: new fields.ArrayField(new fields.EmbeddedDataField(PoolThreshold), {
 				required: false,
 				nullable: false,
+				label: "GURPS.Attribute.Definition.FIELDS.Thresholds.Name",
 			}),
 			// order: new fields.NumberField({ required: false, nullable: false, min: 0, initial: 0 }),
 		}
+	}
+
+	static override cleanData(
+		source?: object | undefined,
+		options?: Record<string, unknown> | undefined,
+	): SourceFromSchema<fields.DataSchema> {
+		let { type, thresholds }: Partial<SourceFromSchema<AttributeDefSchema>> = {
+			type: undefined,
+			thresholds: undefined,
+			...source,
+		}
+		if (type === attribute.Type.Pool || type === attribute.Type.PoolRef) {
+			thresholds ||= [new PoolThreshold().toObject()]
+		} else {
+			thresholds = undefined
+		}
+		return super.cleanData({ ...source, type, thresholds }, options)
 	}
 
 	get fullName(): string {

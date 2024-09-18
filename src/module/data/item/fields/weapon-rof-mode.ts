@@ -27,7 +27,7 @@ class WeaponROFMode extends WeaponField<WeaponRangedData, WeaponROFModeSchema> {
 	}
 
 	static override fromString(s: string): WeaponROFMode {
-		const wr = new WeaponROFMode({})
+		const wr = new WeaponROFMode().toObject()
 		s = s.replaceAll(" ", "").toLowerCase().replaceAll(".", "x")
 		wr.fullAutoOnly = s.includes("!")
 		s = s.replaceAll("!", "")
@@ -41,8 +41,7 @@ class WeaponROFMode extends WeaponField<WeaponRangedData, WeaponROFModeSchema> {
 		if (parts.length > 1) {
 			;[wr.secondaryProjectiles] = Int.extract(parts[1])
 		}
-		wr.clean()
-		return wr
+		return new WeaponROFMode(wr)
 	}
 
 	override toString(): string {
@@ -101,7 +100,7 @@ class WeaponROFMode extends WeaponField<WeaponRangedData, WeaponROFModeSchema> {
 	}
 
 	override resolve(w: WeaponRangedData, tooltip: TooltipGURPS, firstMode: boolean): WeaponROFMode {
-		const result = this.clone()
+		const result = this.toObject()
 		let [shotsFeature, secondaryFeature] = firstMode
 			? [feature.Type.WeaponRofMode1ShotsBonus, feature.Type.WeaponRofMode1SecondaryBonus]
 			: [feature.Type.WeaponRofMode2ShotsBonus, feature.Type.WeaponRofMode2SecondaryBonus]
@@ -135,19 +134,42 @@ class WeaponROFMode extends WeaponField<WeaponRangedData, WeaponROFModeSchema> {
 
 		if (percentSPA !== 0) result.shotsPerAttack += Math.trunc((result.shotsPerAttack * percentSPA) / 100)
 		if (percentSP !== 0) result.secondaryProjectiles += Math.trunc((result.secondaryProjectiles * percentSP) / 100)
-		result.clean()
-		return result
+		return new WeaponROFMode(result)
 	}
 
-	override clean(): void {
-		this.shotsPerAttack = Math.max(Math.ceil(this.shotsPerAttack), 0)
-		if (this.shotsPerAttack === 0) {
-			this.secondaryProjectiles = 0
-			this.fullAutoOnly = false
-			this.highCyclicControlledBursts = false
-			return
+	static override cleanData(
+		source?: object | undefined,
+		options?: Record<string, unknown> | undefined,
+	): SourceFromSchema<fields.DataSchema> {
+		let {
+			shotsPerAttack,
+			secondaryProjectiles,
+			fullAutoOnly,
+			highCyclicControlledBursts,
+		}: Partial<SourceFromSchema<WeaponROFModeSchema>> = {
+			shotsPerAttack: 0,
+			secondaryProjectiles: 0,
+			fullAutoOnly: false,
+			highCyclicControlledBursts: false,
+			...source,
 		}
-		this.secondaryProjectiles = Math.max(Math.ceil(this.secondaryProjectiles), 0)
+
+		shotsPerAttack = Math.max(Math.ceil(shotsPerAttack), 0)
+		if (shotsPerAttack === 0) {
+			secondaryProjectiles = 0
+			fullAutoOnly = false
+			highCyclicControlledBursts = false
+			return super.cleanData(
+				{ ...source, shotsPerAttack, secondaryProjectiles, fullAutoOnly, highCyclicControlledBursts },
+				options,
+			)
+		}
+		secondaryProjectiles = Math.max(Math.ceil(secondaryProjectiles), 0)
+
+		return super.cleanData(
+			{ ...source, shotsPerAttack, secondaryProjectiles, fullAutoOnly, highCyclicControlledBursts },
+			options,
+		)
 	}
 }
 

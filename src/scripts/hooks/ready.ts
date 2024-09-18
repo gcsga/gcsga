@@ -1,10 +1,11 @@
 import { SOCKET } from "@data"
 import { loadModifiers } from "@module/apps/modifier-bucket/data.ts"
-import { TokenHUDGURPS } from "@module/canvas/index.ts"
-import { AttributesConfig } from "@module/settings/attribute-settings.ts"
+// import { TokenHUDGURPS } from "@module/canvas/index.ts"
+import { PoolThreshold } from "@module/data/attribute/pool-threshold.ts"
+import { AttributesConfig } from "@module/settings/attributes-config.ts"
 import { LastActor } from "@module/util/index.ts"
 import { SetGameGURPS } from "@scripts/set-game-gurps.ts"
-import { createDragImage } from "@util/drag-image.ts"
+// import { createDragImage } from "@util/drag-image.ts"
 import { Int } from "@util/int.ts"
 
 export const Ready = {
@@ -25,6 +26,7 @@ export const Ready = {
 				LastToken: await LastActor.getToken(),
 				Int,
 				AttributesConfig,
+				PoolThreshold,
 			}
 
 			// Determine whether a system migration is required and feasible
@@ -57,12 +59,12 @@ export const Ready = {
 			// })
 
 			// Enable drag image
-			createDragImage(null, null)
+			// createDragImage(null, null)
 
 			// Set default user flag state
-			if (canvas && canvas.hud) {
-				canvas.hud.token = new TokenHUDGURPS()
-			}
+			// if (canvas && canvas.hud) {
+			// 	canvas.hud.token = new TokenHUDGURPS()
+			// }
 
 			CONFIG.Combat.initiative.decimals = 5
 			// setInitiative()
@@ -71,7 +73,7 @@ export const Ready = {
 				switch (response.type as SOCKET) {
 					case SOCKET.UPDATE_BUCKET:
 						// Ui.notifications?.info(response.users)
-						game.gurps.modifierList.render()
+						// game.gurps.modifierList.render()
 						game.gurps.modifierBucket.render()
 						break
 					case SOCKET.INITIATIVE_CHANGED:

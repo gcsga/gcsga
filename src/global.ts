@@ -1,10 +1,10 @@
 /// <reference types="vite/client" />
 // import { CompendiumBrowser } from "@module/apps/compendium-browser/index.ts"
 import { ModifierBucket } from "@module/apps/modifier-bucket/button.ts"
-import { ModifierList } from "@module/apps/modifier-list/document.ts"
-import { ChatLogGURPS } from "@module/apps/sidebar/chat-log.ts"
+// import { ModifierList } from "@module/apps/modifier-list/document.ts"
+// import { ChatLogGURPS } from "@module/apps/sidebar/chat-log.ts"
 // import { CompendiumDirectoryGURPS } from "@module/apps/sidebar/compendium-directory.ts"
-import { CanvasGURPS } from "@module/canvas/index.ts"
+// import { CanvasGURPS } from "@module/canvas/index.ts"
 import { ActorsGURPS } from "@module/data/collections/actors-collection.ts"
 import { ItemsGURPS } from "@module/data/collections/items-collection.ts"
 import { SETTINGS, SSRT_SETTING } from "@module/data/constants.ts"
@@ -19,11 +19,11 @@ import { TokenDocumentGURPS } from "@module/document/token.ts"
 import { UserGURPS } from "@module/document/user.ts"
 import { JournalEntryGURPS } from "@module/journal-entry/document.ts"
 import { JournalEntryPageGURPS } from "@module/journal-entry/page/document.ts"
-import { AttributeSettings } from "@module/settings/attribute-settings.ts"
+import { AttributeSettings } from "@module/settings/attributes-config.ts"
 import { ColorSettings } from "@module/settings/color-config.ts"
 import { DefaultSheetSettings } from "@module/settings/sheet-settings-config.ts"
 import { GURPSCONFIG } from "@scripts/config/index.ts"
-import { remigrate } from "@scripts/system/remigrate.ts"
+// import { remigrate } from "@scripts/system/remigrate.ts"
 // import { ConditionManager } from "@system/condition-manager.ts"
 // import { ManeuverManager } from "@system/maneuver-manager.ts"
 
@@ -46,10 +46,10 @@ interface GameGURPS
 		// compendiumBrowser: CompendiumBrowser
 		// effectPanel: EffectPanel
 		modifierBucket: ModifierBucket
-		modifierList: ModifierList
+		// modifierList: ModifierList
 		// mook: typeof MookGeneratorSheet
 		system: {
-			remigrate: typeof remigrate
+			// remigrate: typeof remigrate
 		}
 	}
 }
@@ -59,7 +59,8 @@ type ConfiguredConfig = Config<
 	ActiveEffect<ActorGURPS2<TokenDocumentGURPS> | ItemGURPS2 | null>,
 	ActorGURPS2,
 	ActorDelta<TokenDocumentGURPS>,
-	ChatLogGURPS,
+	ChatLog,
+	// ChatLogGURPS,
 	ChatMessageGURPS,
 	CombatGURPS,
 	CombatantGURPS<CombatGURPS | null, TokenDocumentGURPS<Scene>>,
@@ -96,7 +97,8 @@ declare global {
 	}
 
 	const CONFIG: ConfigGURPS
-	const canvas: CanvasGURPS
+	// const canvas: CanvasGURPS
+	const canvas: Canvas
 
 	namespace globalThis {
 		// eslint-disable-next-line no-var
@@ -116,7 +118,8 @@ declare global {
 			ItemDirectory<ItemGURPS2<null>>,
 			// ActorDirectoryGURPS<ActorGURPS<null>>,
 			// ItemDirectory<ItemGURPS<null>>,
-			ChatLogGURPS,
+			ChatLog,
+			// ChatLogGURPS,
 			CompendiumDirectory,
 			// CompendiumDirectoryGURPS,
 			CombatTracker<Combat | null>,

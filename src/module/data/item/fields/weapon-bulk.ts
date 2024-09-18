@@ -10,11 +10,13 @@ class WeaponBulk extends WeaponField<WeaponRangedData, WeaponBulkSchema> {
 			normal: new fields.NumberField<number, number, true, false, true>({
 				required: true,
 				nullable: false,
+				min: 0,
 				initial: 0,
 			}),
 			giant: new fields.NumberField<number, number, true, false, true>({
 				required: true,
 				nullable: false,
+				min: 0,
 				initial: 0,
 			}),
 			retractingStock: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
@@ -22,7 +24,7 @@ class WeaponBulk extends WeaponField<WeaponRangedData, WeaponBulkSchema> {
 	}
 
 	static override fromString(s: string): WeaponBulk {
-		const wb = new WeaponBulk({})
+		const wb = new WeaponBulk().toObject()
 		s = s.replaceAll(" ", "").replaceAll(",", "")
 		wb.retractingStock = s.includes("*")
 		const parts = s.split("/")
@@ -30,8 +32,7 @@ class WeaponBulk extends WeaponField<WeaponRangedData, WeaponBulkSchema> {
 		if (parts.length > 1) {
 			;[wb.giant] = Int.extract(parts[1])
 		}
-		wb.clean()
-		return wb
+		return new WeaponBulk(wb)
 	}
 
 	override toString(): string {
@@ -49,18 +50,15 @@ class WeaponBulk extends WeaponField<WeaponRangedData, WeaponBulkSchema> {
 		if (!this.retractingStock) return ""
 		if (this.normal < 0) this.normal += 1
 		if (this.giant < 0) this.giant += 1
-		this.clean()
 
 		const accuracy = w.accuracy.resolve(w, null)
-		accuracy.base -= 1
-		accuracy.clean()
+		accuracy.updateSource({ base: accuracy.base - 1 })
 		const recoil = w.recoil.resolve(w, null)
-		if (recoil.shot > 1) recoil.shot += 1
+		if (recoil.shot > 1) recoil.updateSource({ shot: recoil.shot + 1 })
 		if (recoil.slug > 1) recoil.slug += 1
-		recoil.clean()
+		recoil.updateSource({ slug: recoil.slug + 1 })
 		const minST = w.strength.resolve(w, null)
-		minST.min = Math.ceil(minST.min * 1.2)
-		minST.clean()
+		minST.updateSource({ min: Math.ceil(minST.min * 1.2) })
 
 		return LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Tooltip.RetractingStock, {
 			bulk: this.toString(),
@@ -71,7 +69,7 @@ class WeaponBulk extends WeaponField<WeaponRangedData, WeaponBulkSchema> {
 	}
 
 	override resolve(w: WeaponRangedData, tooltip: TooltipGURPS): WeaponBulk {
-		const result = this.clone()
+		const result = this.toObject()
 		let percent = 0
 		for (const bonus of w.collectWeaponBonuses(1, tooltip, feature.Type.WeaponBulkBonus)) {
 			const amt = bonus.adjustedAmountForWeapon(w)
@@ -86,13 +84,7 @@ class WeaponBulk extends WeaponField<WeaponRangedData, WeaponBulkSchema> {
 			result.normal == Math.trunc((result.normal * percent) / 100)
 			result.giant == Math.trunc((result.giant * percent) / 100)
 		}
-		result.clean()
-		return result
-	}
-
-	override clean(): void {
-		this.normal = Math.min(this.normal, 0)
-		this.giant = Math.min(this.giant, 0)
+		return new WeaponBulk(result)
 	}
 }
 

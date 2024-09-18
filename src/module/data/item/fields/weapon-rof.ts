@@ -15,7 +15,7 @@ class WeaponROF extends WeaponField<WeaponRangedData, WeaponROFSchema> {
 	}
 
 	static override fromString(s: string): WeaponROF {
-		const wr = new WeaponROF({})
+		const wr = new WeaponROF().toObject()
 		s = s.replaceAll(" ", "").toLowerCase()
 		if (s.includes("")) {
 			wr.jet = true
@@ -26,8 +26,7 @@ class WeaponROF extends WeaponField<WeaponRangedData, WeaponROFSchema> {
 				wr.mode2 = WeaponROFMode.fromString(parts[0])
 			}
 		}
-		wr.clean()
-		return wr
+		return new WeaponROF(wr)
 	}
 
 	override toString(): string {
@@ -80,18 +79,7 @@ class WeaponROF extends WeaponField<WeaponRangedData, WeaponROFSchema> {
 				}
 			}
 		}
-		result.clean()
 		return result
-	}
-
-	override clean(): void {
-		if (this.jet) {
-			this.mode1 = new WeaponROFMode()
-			this.mode2 = new WeaponROFMode()
-			return
-		}
-		this.mode1.clean()
-		this.mode2.clean()
 	}
 }
 

@@ -112,57 +112,72 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 		const weightUnits = SheetSettings.for(this.actor).default_weight_units
 
 		return {
-			equipped: new CellData({ type: cell.Type.Toggle, checked: this.equipped, alignment: align.Option.Middle }),
+			equipped: new CellData({
+				type: cell.Type.Toggle,
+				checked: this.equipped,
+				alignment: align.Option.Middle,
+				dim,
+			}),
 			quantity: new CellData({
 				type: cell.Type.Text,
 				priamry: this.quantity.toLocaleString(),
 				alignment: align.Option.End,
+				dim,
 			}),
 			name: new CellData({
 				type: cell.Type.Text,
 				primary: this.processedName,
 				secondary: this.secondaryText(display.Option.isInline),
 				alignment: align.Option.Start,
+				dim,
 			}),
 			uses: new CellData({
 				type: cell.Type.Text,
 				primary: this.max_uses > 0 ? this.uses : "",
 				alignment: align.Option.End,
+				dim,
 			}),
 			TL: new CellData({
 				type: cell.Type.Text,
 				primary: this.tech_level,
 				alignment: align.Option.End,
+				dim,
 			}),
 			LC: new CellData({
 				type: cell.Type.Text,
 				primary: this.legality_class,
 				alignment: align.Option.End,
+				dim,
 			}),
 			cost: new CellData({
 				type: cell.Type.Text,
 				primary: this.adjustedValue().toLocaleString(),
 				alignment: align.Option.End,
+				dim,
 			}),
 			extendedCost: new CellData({
 				type: cell.Type.Text,
 				primary: this.extendedValue().toLocaleString(),
 				alignment: align.Option.End,
+				dim,
 			}),
 			weight: new CellData({
 				type: cell.Type.Text,
 				primary: this.adjustedWeight(false, weightUnits).toLocaleString(),
 				alignment: align.Option.End,
+				dim,
 			}),
 			extendedWeight: new CellData({
 				type: cell.Type.Text,
 				primary: this.extendedWeight(false, weightUnits).toLocaleString(),
 				alignment: align.Option.End,
+				dim,
 			}),
 			tags: new CellData({
 				type: cell.Type.Text,
 				primary: this.hasTemplate(ItemTemplateType.BasicInformation) ? this.combinedTags : "",
 				alignment: align.Option.Start,
+				dim,
 			}),
 			reference: new CellData({
 				type: cell.Type.PageRef,
@@ -172,6 +187,7 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 						? this.nameWithReplacements
 						: this.reference_highlight
 					: "",
+				dim,
 			}),
 		}
 	}

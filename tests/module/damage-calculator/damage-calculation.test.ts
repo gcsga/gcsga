@@ -15,7 +15,7 @@ import {
 import { AnyPiercingType, DamageTypes } from "@module/apps/damage-calculator/damage-type.ts"
 import { RollType } from "@module/data/index.ts"
 import { InjuryEffectType, ShockInjuryEffect } from "@module/apps/damage-calculator/injury-effect.ts"
-import { DiceGURPS } from "@system"
+import { DiceGURPS } from "@module/data/dice.ts"
 
 const Head = ["Skull", "Eye", "Face"]
 const Limb = ["Arm", "Leg"]

@@ -6,12 +6,13 @@ import {
 	AbstractAttributeSchema,
 } from "../abstract-attribute/abstract-attribute.ts"
 import { ActorTemplateType } from "../actor/types.ts"
-import { ActorDataModel } from "../abstract.ts"
+// import { ActorDataModel } from "../abstract.ts"
 import { ErrorGURPS, Int, attribute, stlimit, threshold } from "@util"
 import { AttributeDef } from "./attribute-definition.ts"
-import { gid } from "../constants.ts"
+// import { gid } from "../constants.ts"
 import { PoolThreshold } from "./pool-threshold.ts"
 import { TokenPool } from "../types.ts"
+import { SheetSettings } from "../sheet-settings.ts"
 
 class AttributeGURPS<TActor extends AttributeHolderTemplate = AttributeHolderTemplate> extends AbstractAttribute<
 	TActor,
@@ -40,27 +41,30 @@ class AttributeGURPS<TActor extends AttributeHolderTemplate = AttributeHolderTem
 	}
 
 	get bonus(): number {
-		if (this.actor instanceof ActorDataModel && !this.actor.hasTemplate(ActorTemplateType.Features)) {
-			console.warn(
-				`Actor "${this.actor.parent.name}" of type "${this.actor.parent.type}" is not compatible with attribute bonuses.`,
-			)
-			return 0
+		if (this.actor.hasTemplate(ActorTemplateType.Features)) {
+			return this.actor.system.attributeBonusFor(this.id, stlimit.Option.None)
 		}
-		return this.actor.attributeBonusFor(this.id, stlimit.Option.None)
+		// console.warn(
+		// 	`Actor "${this.actor?.parent?.name}" of type "${this.actor.parent.type}" is not compatible with attribute bonuses.`,
+		// )
+		return 0
 	}
 
 	get temporaryBonus(): number {
-		if (this.actor instanceof ActorDataModel && !this.actor.hasTemplate(ActorTemplateType.Features)) {
-			console.warn(
-				`Actor "${this.actor.parent.name}" of type "${this.actor.parent.type}" is not compatible with attribute bonuses.`,
-			)
-			return 0
+		if (this.actor.hasTemplate(ActorTemplateType.Features)) {
+			return this.actor.system.attributeBonusFor(this.id, stlimit.Option.None, null, true)
 		}
-		return this.actor.attributeBonusFor(this.id, stlimit.Option.None, null, true)
+		return 0
+		// if (this.actor instanceof ActorDataModel && !this.actor.hasTemplate(ActorTemplateType.Features)) {
+		// 	console.warn(
+		// 		`Actor "${this.actor.parent.name}" of type "${this.actor.parent.type}" is not compatible with attribute bonuses.`,
+		// 	)
+		// 	return 0
+		// }
 	}
 
 	get definition(): AttributeDef<TActor> {
-		const definition = SheetSettings.for(this.actor.parent).attributes.find(att => att.id === this.id)
+		const definition = SheetSettings.for(this.actor).attributes.find(att => att.id === this.id)
 		if (!definition) {
 			throw ErrorGURPS(`Attribute with ID ${this.id} has no definition`)
 		}
@@ -85,7 +89,8 @@ class AttributeGURPS<TActor extends AttributeHolderTemplate = AttributeHolderTem
 		if (!def) return 0
 		const eff = this.max + this.temporaryBonus
 		if (![attribute.Type.Decimal, attribute.Type.DecimalRef].includes(this.definition?.type)) return Math.floor(eff)
-		if (this.id === gid.Strength) return this.actor.temporaryST(eff)
+		// TODO: come back to this
+		// if (this.id === gid.Strength) return this.actor.system.temporaryST(eff)
 		return eff
 	}
 
@@ -94,17 +99,20 @@ class AttributeGURPS<TActor extends AttributeHolderTemplate = AttributeHolderTem
 		if (!def) return 0
 		let sm = 0
 		if (this.actor?.hasTemplate(ActorTemplateType.Features)) sm = this.actor.system.adjustedSizeModifier
-		return def.computeCost(this.actor, this.adj, this.costReduction, sm)
+		return def.computeCost(this.actor.system, this.adj, this.costReduction, sm)
 	}
 
 	get costReduction(): number {
-		if (this.actor instanceof ActorDataModel && !this.actor.hasTemplate(ActorTemplateType.Features)) {
-			console.warn(
-				`Actor "${this.actor.parent.name}" of type "${this.actor.parent.type}" is not compatible with attribute bonuses.`,
-			)
-			return 0
+		if (this.actor.hasTemplate(ActorTemplateType.Features)) {
+			return this.actor.system.costReductionFor(this.id)
 		}
-		return this.actor.costReductionFor(this.id)
+		return 0
+		// if (this.actor instanceof ActorDataModel && !this.actor.hasTemplate(ActorTemplateType.Features)) {
+		// 	console.warn(
+		// 		`Actor "${this.actor.parent.name}" of type "${this.actor.parent.type}" is not compatible with attribute bonuses.`,
+		// 	)
+		// 	return 0
+		// }
 	}
 
 	get currentThreshold(): PoolThreshold | null {
@@ -124,7 +132,7 @@ class AttributeGURPS<TActor extends AttributeHolderTemplate = AttributeHolderTem
 		if (this.manualThreshold !== null) return this.definition.thresholds[this.manualThreshold]
 
 		for (const threshold of this.definition.thresholds ?? []) {
-			if (this.current <= threshold.threshold(this.actor)) return threshold
+			if (this.current <= threshold.threshold(this.actor.system)) return threshold
 		}
 		return null
 	}

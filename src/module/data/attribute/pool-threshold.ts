@@ -8,12 +8,31 @@ class PoolThreshold extends foundry.abstract.DataModel<AttributeDef | ResourceTr
 	static override defineSchema(): PoolThresholdSchema {
 		const fields = foundry.data.fields
 		return {
-			state: new fields.StringField({ required: true, nullable: false, initial: "" }),
-			explanation: new fields.StringField({ required: false, nullable: false, initial: "" }),
-			expression: new fields.StringField({ required: true, nullable: false, initial: "" }),
+			state: new fields.StringField({
+				required: true,
+				nullable: false,
+				initial: "",
+				label: "GURPS.Attribute.Threshold.FIELDS.State.Name",
+			}),
+			explanation: new fields.StringField({
+				required: false,
+				nullable: false,
+				initial: "",
+				label: "GURPS.Attribute.Threshold.FIELDS.Explanation.Name",
+			}),
+			expression: new fields.StringField({
+				required: true,
+				nullable: false,
+				initial: "",
+				label: "GURPS.Attribute.Threshold.FIELDS.Expression.Name",
+			}),
 			ops: new fields.ArrayField(
-				new fields.StringField({ required: false, nullable: false, choices: threshold.Ops }),
-				{ required: false, nullable: false },
+				new fields.StringField({
+					required: false,
+					nullable: false,
+					choices: threshold.OpsChoices,
+				}),
+				{ required: false, nullable: false, label: "GURPS.Attribute.Threshold.FIELDS.Ops.Name" },
 			),
 		}
 	}

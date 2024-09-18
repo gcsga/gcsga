@@ -2,6 +2,8 @@
 
 ## Left To Do
 
+- Weapon Fields
+  - Change #clean for #cleanData
 - Change Schema Fields to Embedded Data Fields where appropriate \*0 _MOST IMPORTANT_
 - Chat Messages \*5
   - Re-do roll message templates and damage message handling
@@ -42,7 +44,4 @@
 
 ## Current Task Notes
 
-- Can add JS to dynamically change the hint text for damage progression when the value changes /\*
-- Can also look into other ways of displaying this information
-
-See what DataField#toFormGroup does
+- Currently adding an item necessitates submitting the form but this is not ideal. Would be better to re-render the form (or just the part) with the new data but not submit yet. Research how to do this.

@@ -23,7 +23,7 @@ class WeaponAccuracy extends WeaponField<WeaponRangedData, WeaponAccuracySchema>
 	}
 
 	static override fromString(s: string): WeaponAccuracy {
-		const wa = new WeaponAccuracy({})
+		const wa = new WeaponAccuracy().toObject()
 		s = s.replaceAll(" ", "").toLowerCase()
 		if (s.includes("jet")) wa.jet = true
 		else {
@@ -34,8 +34,7 @@ class WeaponAccuracy extends WeaponField<WeaponRangedData, WeaponAccuracySchema>
 				;[wa.scope] = Int.extract(parts[1])
 			}
 		}
-		wa.clean()
-		return wa
+		return new WeaponAccuracy(wa)
 	}
 
 	override toString(): string {
@@ -45,7 +44,7 @@ class WeaponAccuracy extends WeaponField<WeaponRangedData, WeaponAccuracySchema>
 	}
 
 	override resolve(w: WeaponRangedData, tooltip: TooltipGURPS | null): WeaponAccuracy {
-		const result = this.clone()
+		const result = this.toObject()
 		result.jet = w.resolveBoolFlag(wswitch.Type.Jet, result.jet)
 
 		if (!result.jet) {
@@ -74,18 +73,28 @@ class WeaponAccuracy extends WeaponField<WeaponRangedData, WeaponAccuracySchema>
 				if (percentScope !== 0) result.scope += Math.trunc((result.scope * percentScope) / 100)
 			}
 		}
-		result.clean()
-		return result
+		return new WeaponAccuracy(result)
 	}
 
-	override clean(): void {
-		if (this.jet) {
-			this.base = 0
-			this.scope = 0
-			return
+	static override cleanData(
+		source?: object | undefined,
+		options?: Record<string, unknown> | undefined,
+	): SourceFromSchema<fields.DataSchema> {
+		let { jet, base, scope }: Partial<SourceFromSchema<WeaponAccuracySchema>> = {
+			jet: false,
+			base: 0,
+			scope: 0,
+			...source,
 		}
-		this.base = Math.max(this.base, 0)
-		this.scope = Math.max(this.scope, 0)
+
+		if (jet) {
+			base = 0
+			scope = 0
+			return super.cleanData({ ...source, jet, base, scope }, options)
+		}
+		base = Math.max(base, 0)
+		scope = Math.max(scope, 0)
+		return super.cleanData({ ...source, jet, base, scope }, options)
 	}
 }
 

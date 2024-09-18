@@ -3,11 +3,11 @@ import type { AbstractSublevel } from "abstract-level"
 import { ClassicLevel, type DatabaseOptions } from "classic-level"
 import * as R from "remeda"
 import type { JournalEntryPageSchema } from "types/foundry/common/documents/journal-entry-page.d.ts"
-import type { TableResultSource } from "types/foundry/common/documents/module.d.ts"
+import type { ItemSource, TableResultSource } from "types/foundry/common/documents/module.d.ts"
 import systemJSON from "../../static/system.json" assert { type: "json" }
 import { PackError } from "./helpers.ts"
 import { PackEntry } from "./types.ts"
-import { ItemSourceGURPS } from "@item/data/index.ts"
+// import { ItemSourceGURPS } from "@item/data/index.ts"
 
 const DB_KEYS = ["actors", "items", "journal", "macros", "tables"] as const
 const EMBEDDED_KEYS = ["items", "pages", "results"] as const
@@ -148,7 +148,7 @@ type EmbeddedKey = (typeof EMBEDDED_KEYS)[number]
 
 type Sublevel<T> = AbstractSublevel<ClassicLevel<string, T>, string | Buffer | Uint8Array, string, T>
 
-type EmbeddedEntry = ItemSourceGURPS | SourceFromSchema<JournalEntryPageSchema> | TableResultSource
+type EmbeddedEntry = ItemSource | SourceFromSchema<JournalEntryPageSchema> | TableResultSource
 type DBEntry = Omit<PackEntry, "pages" | "items" | "results"> & {
 	folder?: string | null
 	items?: (EmbeddedEntry | string)[]

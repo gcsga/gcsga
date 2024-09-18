@@ -1,13 +1,13 @@
-import { ItemType } from "@module/data/constants.ts"
+// import { ItemType } from "@module/data/constants.ts"
 import { DiceGURPS } from "@module/data/dice.ts"
-import { CharacterData } from "@module/data/index.ts"
-import { ItemInst } from "@module/data/item/helpers.ts"
+// import { CharacterData } from "@module/data/index.ts"
+// import { ItemInst } from "@module/data/item/helpers.ts"
 import { Study } from "@module/data/study.ts"
-import { ItemGURPS2 } from "@module/document/item.ts"
-import { LocalizeGURPS, isContainer, localeDate, objectHasKey, rgbToHex, study } from "@util"
+// import { ItemGURPS2 } from "@module/document/item.ts"
+import { LocalizeGURPS, localeDate, objectHasKey, rgbToHex, study } from "@util"
 import { pageRef } from "@util/page-ref.ts"
 import { SafeString } from "handlebars"
-import { ItemSource } from "types/foundry/common/documents/item.js"
+// import { ItemSource } from "types/foundry/common/documents/item.js"
 
 class HandlebarsHelpersGURPS {
 	static rgbToHex(s: string): string {
@@ -22,9 +22,9 @@ class HandlebarsHelpersGURPS {
 		return n
 	}
 
-	static isContainer(item: ItemGURPS2): boolean {
-		return isContainer(item)
-	}
+	// static isContainer(item: ItemGURPS2): boolean {
+	// 	return isContainer(item)
+	// }
 
 	static signed(n: number, replaceMinus = true): string {
 		if (replaceMinus) return n >= 0 ? `+${n}` : `${String(n).replace("-", "−")}`
@@ -333,9 +333,9 @@ class HandlebarsHelpersGURPS {
 	// 	return data
 	// }
 
-	static overspent(actor: CharacterData): boolean {
-		return actor.pointBreakdown.unspent < 0
-	}
+	// static overspent(actor: CharacterData): boolean {
+	// 	return actor.pointBreakdown.unspent < 0
+	// }
 
 	// Static gmod() {
 	// 	let data = {}
@@ -402,22 +402,22 @@ class HandlebarsHelpersGURPS {
 		})
 	}
 
-	static effective(a: ItemInst<ItemType.Skill> | { effective: number; current: number }): string {
-		if (a instanceof Item) {
-			if (a.type === ItemType.Skill) {
-				const sk = a
-				if (sk.effectiveLevel > sk.level.level) return "pos"
-				if (sk.effectiveLevel > sk.level.level) return "neg"
-				return ""
-			}
-		}
-		const att = a as { effective: number; current: number }
-		if (att.effective && att.current) {
-			if (att.effective > att.current) return "pos"
-			if (att.effective < att.current) return "neg"
-		}
-		return ""
-	}
+	// static effective(a: ItemInst<ItemType.Skill> | { effective: number; current: number }): string {
+	// 	if (a instanceof Item) {
+	// 		if (a.type === ItemType.Skill) {
+	// 			const sk = a
+	// 			if (sk.effectiveLevel > sk.level.level) return "pos"
+	// 			if (sk.effectiveLevel > sk.level.level) return "neg"
+	// 			return ""
+	// 		}
+	// 	}
+	// 	const att = a as { effective: number; current: number }
+	// 	if (att.effective && att.current) {
+	// 		if (att.effective > att.current) return "pos"
+	// 		if (att.effective < att.current) return "neg"
+	// 	}
+	// 	return ""
+	// }
 
 	static define<K extends string>(name: K, value: object, options: { data: { root: Record<K, object> } }): void {
 		options.data.root[name] = value
@@ -509,12 +509,12 @@ class HandlebarsHelpersGURPS {
 		return criteria ? "disabled" : ""
 	}
 
-	static dropdown(item: ItemGURPS2 | ItemSource): string {
-		if (!itemIsOfType(item, "container")) return `<div class="dropdown"></div>`
-		if (item.system.open)
-			return `<div class="dropdown"><a class="dropdown-toggle open gcs-circled-chevron-down"></a></div>`
-		return `<div class="dropdown"><a class="dropdown-toggle closed gcs-circled-chevron-right"></a></div>`
-	}
+	// static dropdown(item: ItemGURPS2 | ItemSource): string {
+	// 	if (!itemIsOfType(item, "container")) return `<div class="dropdown"></div>`
+	// 	if (item.system.open)
+	// 		return `<div class="dropdown"><a class="dropdown-toggle open gcs-circled-chevron-down"></a></div>`
+	// 	return `<div class="dropdown"><a class="dropdown-toggle closed gcs-circled-chevron-right"></a></div>`
+	// }
 }
 
 export function registerHandlebarsHelpers(): void {
@@ -536,13 +536,13 @@ export function registerHandlebarsHelpers(): void {
 		diceString: HandlebarsHelpersGURPS.diceString,
 		diff: (v1, v2) => v1 - v2,
 		disabled: HandlebarsHelpersGURPS.disabled,
-		dropdown: HandlebarsHelpersGURPS.dropdown,
-		effective: HandlebarsHelpersGURPS.effective,
+		// dropdown: HandlebarsHelpersGURPS.dropdown,
+		// effective: HandlebarsHelpersGURPS.effective,
 		format: HandlebarsHelpersGURPS.format,
 		ifText: HandlebarsHelpersGURPS.conditionalText,
 		in: HandlebarsHelpersGURPS.in,
 		indent: HandlebarsHelpersGURPS.indent,
-		isContainer: HandlebarsHelpersGURPS.isContainer,
+		// isContainer: HandlebarsHelpersGURPS.isContainer,
 		join: HandlebarsHelpersGURPS.join,
 		json: HandlebarsHelpersGURPS.json,
 		length: HandlebarsHelpersGURPS.len,
@@ -550,7 +550,7 @@ export function registerHandlebarsHelpers(): void {
 		modifierCost: HandlebarsHelpersGURPS.modifierCost,
 		modifierString: HandlebarsHelpersGURPS.modifierString,
 		notEmpty: HandlebarsHelpersGURPS.notEmpty,
-		overspent: HandlebarsHelpersGURPS.overspent,
+		// overspent: HandlebarsHelpersGURPS.overspent,
 		pageRef: pageRef,
 		print: HandlebarsHelpersGURPS.print,
 		ref: HandlebarsHelpersGURPS.ref,

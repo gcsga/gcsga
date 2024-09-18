@@ -1,7 +1,7 @@
 import { HOOKS, RollModifierTags, SYSTEM_NAME, UserFlags, UserSystemFlags } from "@module/data/index.ts"
 import { ActorGURPS2 } from "./actor.ts"
 import { RollModifier } from "@module/data/roll-modifier.ts"
-import { TokenDocumentGURPS } from "./token.ts"
+// import { TokenDocumentGURPS } from "./token.ts"
 
 class UserGURPS<TActor extends ActorGURPS2<null> = ActorGURPS2<null>> extends User<TActor> {
 	/**
@@ -54,12 +54,12 @@ class UserGURPS<TActor extends ActorGURPS2<null> = ActorGURPS2<null>> extends Us
 		return total
 	}
 
-	get activeTokens(): TokenDocumentGURPS[] {
-		if (!canvas.ready || canvas.tokens.controlled.length === 0) {
-			return this.character?.getActiveTokens(true, true) ?? []
-		}
-		return canvas.tokens.controlled.filter(t => t.isOwner).map(t => t.document)
-	}
+	// get activeTokens(): TokenDocumentGURPS[] {
+	// 	if (!canvas.ready || canvas.tokens.controlled.length === 0) {
+	// 		return this.character?.getActiveTokens(true, true) ?? []
+	// 	}
+	// 	return canvas.tokens.controlled.filter(t => t.isOwner).map(t => t.document)
+	// }
 
 	addModifier(mod: RollModifier): void {
 		const modifierStack = this.flags[SYSTEM_NAME][UserFlags.ModifierStack]

@@ -17,21 +17,17 @@ class WeaponField<
 
 	// @ts-expect-error abstract function
 	override toString(...args: unknown[]): string {
-		throw ErrorGURPS("Function WeaponField.toString must be implemented.")
+		throw ErrorGURPS("Function WeaponField#toString must be implemented.")
 	}
 
 	// @ts-expect-error abstract function
 	tooltip(w: TParent): string {
-		throw ErrorGURPS("Function WeaponField.tooltip must be implemented.")
+		throw ErrorGURPS("Function WeaponField#tooltip must be implemented.")
 	}
 
 	// @ts-expect-error abstract function
 	resolve(w: TParent, tooltip: TooltipGURPS | null, ...args: unknown[]): WeaponField {
-		throw ErrorGURPS("Function WeaponField.resolve must be implemented.")
-	}
-
-	clean(): void {
-		throw ErrorGURPS("Function WeaponField.clean must be implemented.")
+		throw ErrorGURPS("Function WeaponField#resolve must be implemented.")
 	}
 }
 

@@ -1,28 +1,164 @@
 <div>
+	<button data-action="addItem" data-item-type="attribute">
+		<i class="fas fa-plus"></i>
+		<label inert>{{localize "GURPS.Settings.AttributesConfig.ButtonAddAttribute"}}</label>
+	</button>
+	<hr />
 	<ul class="attributes-list">
 		{{#each attributes as |attribute|}}
-		<li class="attribute">
-			<!--Attribute ID -->
-			{{formGroup attribute.schema.fields.id value=attribute.id localize=true}}
 
-			<!--Attribute Type -->
-			{{formGroup attribute.schema.fields.type value=attribute.type localize=true}}
+		<!-- Horizontal Line for all but first item-->
+		{{#unless @first}}
+		<hr />
+		{{/unless}}
+		<li class="attribute flexcol">
+			<div class="container flexrow">
+				<div class="buttons flexcol flex0">
+					<button
+						data-action="moveItemUp"
+						data-item-type="attribute"
+						data-item-index="{{@index}}"
+						class="fas fa-arrow-up"
+						{{disabled
+						@first}}
+					></button>
+					<button
+						data-action="moveItemDown"
+						data-item-type="attribute"
+						data-item-index="{{@index}}"
+						class="fas fa-arrow-down"
+						{{disabled
+						@last}}
+					></button>
+					<button
+						data-action="deleteItem"
+						data-item-type="attribute"
+						data-item-index="{{@index}}"
+						data-item-type="attribute"
+						class="fas fa-trash"
+						{{disabled
+						(and
+						@first
+						@last)}}
+					></button>
+				</div>
+				<div class="fields flexcol">
+					<!--Attribute ID -->
+					{{formGroup attribute.schema.fields.id name=(concat "attributes." @index ".id") value=attribute.id
+					localize=true}}
 
-			<!-- Short Name -->
-			{{formGroup attribute.schema.fields.name value=attribute.name localize=true}}
+					<!--Attribute Type -->
+					{{formGroup attribute.schema.fields.type name=(concat "attributes." @index ".type")
+					value=attribute.type localize=true}}
 
-			<!-- Full Name -->
-			{{formGroup attribute.schema.fields.full_name value=attribute.full_name localize=true}}
+					<!-- Short Name -->
+					{{formGroup attribute.schema.fields.name name=(concat "attributes." @index ".name")
+					value=attribute.name localize=true}}
 
-			<!-- Base Value -->
-			{{formGroup attribute.schema.fields.base value=attribute.base localize=true}}
+					<!-- Full Name -->
+					{{formGroup attribute.schema.fields.full_name name=(concat "attributes." @index ".full_name")
+					value=attribute.full_name localize=true}}
 
-			<!-- Cost Per Point -->
-			{{formGroup attribute.schema.fields.cost_per_point value=attribute.cost_per_point localize=true}}
+					<!-- Base Value -->
+					{{formGroup attribute.schema.fields.base name=(concat "attributes." @index ".base")
+					value=attribute.base localize=true}}
 
-			<!-- SM Reduction -->
-			{{formGroup attribute.schema.fields.cost_adj_percent_per_sm value=attribute.cost_adj_percent_per_sm
-			localize=true}}
+					<!-- Cost Per Point -->
+					{{formGroup attribute.schema.fields.cost_per_point name=(concat "attributes." @index
+					".cost_per_point") value=attribute.cost_per_point localize=true}}
+
+					<!-- SM Reduction -->
+					{{formGroup attribute.schema.fields.cost_adj_percent_per_sm name=(concat "attributes." @index
+					".cost_adj_percent_per_sm") value=attribute.cost_adj_percent_per_sm localize=true}}
+				</div>
+			</div>
+
+			<!-- Attribute Threshold -->
+			{{#if (or (eq attribute.type "pool") (eq attribute.type "pool_ref"))}}
+			<fieldset>
+				<legend>{{localize "GURPS.Attribute.Definition.FIELDS.Thresholds.Name"}}</legend>
+				<button data-action="addItem" data-item-type="threshold" data-item-index="{{@index}}">
+					<i class="fas fa-plus"></i>
+					<label inert>{{localize "GURPS.Settings.AttributesConfig.ButtonAddThreshold"}}</label>
+				</button>
+				<hr />
+				<ul class="thresholds-list">
+					{{#each attribute.thresholds as |threshold|}}
+
+					<!-- Horizontal Line for all but first item-->
+					{{#unless @first}}
+					<hr />
+					{{/unless}}
+					<li class="threshold flexrow" data-drag>
+						<div class="buttons flexcol flex0">
+							<button
+								data-action="moveItemUp"
+								data-item-type="threshold"
+								data-parent-index="{{@../index}}"
+								data-item-index="{{@index}}"
+								class="fas fa-arrow-up"
+								{{disabled
+								@first}}
+							></button>
+							<button
+								data-action="moveItemDown"
+								data-item-type="threshold"
+								data-parent-index="{{@../index}}"
+								data-item-index="{{@index}}"
+								class="fas fa-arrow-down"
+								{{disabled
+								@last}}
+							></button>
+							<button
+								data-action="deleteItem"
+								data-item-type="threshold"
+								data-parent-index="{{@../index}}"
+								data-item-index="{{@index}}"
+								class="fas fa-trash"
+								{{disabled
+								(and
+								@first
+								@last)}}
+							></button>
+						</div>
+						<div class="fields flexcol">
+							<!-- State -->
+							{{formGroup threshold.schema.fields.state name=(concat "attributes." @../index
+							".thresholds." @index ".state") value=threshold.state localize=true}}
+
+							<!-- Threshold -->
+							{{formGroup threshold.schema.fields.expression name=(concat "attributes." @../index
+							".thresholds." @index ".expression") value=threshold.expression localize=true}}
+
+							<!--Ops -->
+							{{#each @root.ops as |label op|}}
+							<div class="form-group">
+								<label>{{localize label}}</label>
+								{{#if (in threshold.ops op)}}
+								<input
+									type="checkbox"
+									name="attributes.{{@../../index}}.thresholds.{{@../index}}.ops.{{op}}"
+									checked
+								/>
+								{{else}}
+								<input
+									type="checkbox"
+									name="attributes.{{@../../index}}.thresholds.{{@../index}}.ops.{{op}}"
+								/>
+								{{/if}}
+							</div>
+							{{/each}}
+
+							<!-- Explanation -->
+							{{formGroup threshold.schema.fields.explanation name=(concat "attributes." @../index
+							".thresholds." @index ".explanation") value=threshold.explanation localize=true}}
+						</div>
+					</li>
+
+					{{/each}}
+				</ul>
+			</fieldset>
+			{{/if}}
 		</li>
 		{{/each}}
 	</ul>

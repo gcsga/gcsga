@@ -88,7 +88,7 @@ export namespace Length {
 		}
 	}
 
-	export function fromString(text: string): number {
+	export function fromString(text: string, defaultUnits: Unit): number {
 		text = text.replace(/^\+/g, "")
 		Units.forEach(unit => {
 			if (text.endsWith(f(unit))) {
@@ -102,7 +102,7 @@ export namespace Length {
 		const inchIndex = text.indexOf('"')
 		if (feetIndex === -1 && inchIndex === -1) {
 			// Assume inches
-			return parseInt(text)
+			return Length.toInches(parseInt(text), defaultUnits)
 		}
 		let feet = 0
 		let inches = 0

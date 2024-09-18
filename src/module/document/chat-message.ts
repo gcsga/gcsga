@@ -10,7 +10,7 @@ class ChatMessageGURPS extends ChatMessage {
 		return html
 	}
 
-	protected _enrichChatCard(html: HTMLElement): void {}
+	protected _enrichChatCard(_html: HTMLElement): void {}
 }
 
 interface ChatMessageGURPS extends ChatMessage {

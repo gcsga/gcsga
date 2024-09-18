@@ -1,0 +1,31 @@
+#attributes-config {
+	ul.attributes-list,
+	ul.thresholds-list {
+		overflow: hidden auto;
+		padding: 0;
+	}
+
+	ul.attributes-list {
+		max-height: 600px;
+	}
+
+	ul.thresholds-list {
+		max-height: 400px;
+	}
+
+	li.attribute div.container,
+	li.threshold {
+		gap: 0.5rem;
+	}
+
+	li.attribute,
+	li.threshold {
+		div.buttons,
+		div.fields {
+			gap: 0.5rem;
+		}
+	}
+
+	li.threshold {
+	}
+}

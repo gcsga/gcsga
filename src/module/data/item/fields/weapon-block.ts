@@ -18,15 +18,14 @@ class WeaponBlock extends WeaponField<AbstractWeaponTemplate, WeaponBlockSchema>
 	}
 
 	static override fromString(s: string): WeaponBlock {
-		const wp = new WeaponBlock({})
+		const wp = new WeaponBlock().toObject()
 		s = s.trim().toLowerCase()
 
 		if (s !== "" && s !== "-" && s !== "–" && !s.includes("no")) {
 			wp.canBlock = true
 			;[wp.modifier] = Int.extract(s)
-			wp.clean()
 		}
-		return wp
+		return new WeaponBlock(wp)
 	}
 
 	override toString(): string {
@@ -37,7 +36,7 @@ class WeaponBlock extends WeaponField<AbstractWeaponTemplate, WeaponBlockSchema>
 	}
 
 	override resolve(w: AbstractWeaponTemplate, tooltip: TooltipGURPS | null): WeaponBlock {
-		const result = this.clone()
+		const result = this.toObject()
 		result.canBlock = w.resolveBoolFlag(wswitch.Type.CanBlock, result.canBlock)
 		if (result.canBlock) {
 			const actor = this.parent.actor
@@ -71,12 +70,22 @@ class WeaponBlock extends WeaponField<AbstractWeaponTemplate, WeaponBlockSchema>
 				}
 			}
 		}
-		result.clean()
-		return result
+		return new WeaponBlock(result)
 	}
 
-	override clean(): void {
-		if (!this.canBlock) this.modifier = 0
+	static override cleanData(
+		source?: object | undefined,
+		options?: Record<string, unknown> | undefined,
+	): SourceFromSchema<fields.DataSchema> {
+		let { modifier, canBlock }: Partial<SourceFromSchema<WeaponBlockSchema>> = {
+			modifier: 0,
+			canBlock: false,
+			...source,
+		}
+
+		if (!canBlock) modifier = 0
+
+		return super.cleanData({ ...source, modifier, canBlock }, options)
 	}
 }
 

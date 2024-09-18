@@ -10,25 +10,27 @@ class WeaponRecoil extends WeaponField<WeaponRangedData, WeaponRecoilSchema> {
 			shot: new fields.NumberField<number, number, true, false, true>({
 				required: true,
 				nullable: false,
+				min: 0,
 				initial: 0,
 			}),
 			slug: new fields.NumberField<number, number, true, false, true>({
 				required: true,
 				nullable: false,
+				min: 0,
 				initial: 0,
 			}),
 		}
 	}
 
 	static override fromString(s: string): WeaponRecoil {
-		const wr = new WeaponRecoil({})
+		const wr = new WeaponRecoil().toObject()
 		s = s.replaceAll(" ", "").replaceAll(",", "")
 		const parts = s.split("/")
 		;[wr.shot] = Int.extract(parts[0])
 		if (parts.length > 1) {
 			;[wr.slug] = Int.extract(parts[1])
 		}
-		return wr
+		return new WeaponRecoil(wr)
 	}
 
 	override toString(): string {
@@ -46,7 +48,7 @@ class WeaponRecoil extends WeaponField<WeaponRangedData, WeaponRecoilSchema> {
 	}
 
 	override resolve(w: WeaponRangedData, tooltip: TooltipGURPS | null): WeaponRecoil {
-		const result = this.clone()
+		const result = this.toObject()
 		if (this.shot > 0 || this.slug > 0) {
 			let percent = 0
 			for (const bonus of w.collectWeaponBonuses(1, tooltip, feature.Type.WeaponRecoilBonus)) {
@@ -67,13 +69,7 @@ class WeaponRecoil extends WeaponField<WeaponRangedData, WeaponRecoilSchema> {
 			if (this.slug > 0) result.slug = Math.max(result.slug, 1)
 			else result.slug = 0
 		}
-		result.clean()
-		return result
-	}
-
-	override clean(): void {
-		this.shot = Math.max(this.shot, 0)
-		this.slug = Math.max(this.slug, 0)
+		return new WeaponRecoil(result)
 	}
 }
 

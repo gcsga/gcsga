@@ -34,7 +34,7 @@ export enum BlockLayoutKey {
 type BlockLayoutString = `${BlockLayoutKey}` | `${BlockLayoutKey} ${BlockLayoutKey}`
 
 type CharacterSheetSettingsSchema = SheetSettingsSchema & {
-	block_layout: fields.ArrayField<fields.StringField<BlockLayoutString>>
+	// block_layout: fields.ArrayField<fields.StringField<BlockLayoutString>>
 	attributes: fields.ArrayField<
 		fields.SchemaField<AttributeDefSchema, SourceFromSchema<AttributeDefSchema>, AttributeDef>
 	>

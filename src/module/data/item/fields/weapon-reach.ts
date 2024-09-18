@@ -23,7 +23,7 @@ class WeaponReach extends WeaponField<WeaponMeleeData, WeaponReachSchema> {
 	}
 
 	static override fromString(s: string): WeaponReach {
-		const wr = new WeaponReach({})
+		const wr = new WeaponReach({}).toObject()
 		s = s.replaceAll(" ", "")
 		if (s !== "") {
 			s = s.toLowerCase()
@@ -42,10 +42,9 @@ class WeaponReach extends WeaponField<WeaponMeleeData, WeaponReachSchema> {
 						}),
 					)
 				}
-				wr.clean()
 			}
 		}
-		return wr
+		return new WeaponReach(wr)
 	}
 
 	override toString(): string {
@@ -69,7 +68,7 @@ class WeaponReach extends WeaponField<WeaponMeleeData, WeaponReachSchema> {
 	}
 
 	override resolve(w: WeaponMeleeData, tooltip: TooltipGURPS | null): WeaponReach {
-		const result = this.clone()
+		const result = this.toObject()
 		result.closeCombat = w.resolveBoolFlag(wswitch.Type.CloseCombat, result.closeCombat)
 		result.changeRequiresReady = w.resolveBoolFlag(
 			wswitch.Type.ReachChangeRequiresReady,
@@ -97,19 +96,21 @@ class WeaponReach extends WeaponField<WeaponMeleeData, WeaponReachSchema> {
 		if (percentMax !== 0) {
 			result.max += Int.from((result.max * percentMin) / 100)
 		}
-		result.clean()
-		return result
+		return new WeaponReach(result)
 	}
 
-	override clean(): void {
-		this.min = Math.max(this.min, 0)
-		this.max = Math.max(this.max, 0)
-		if (this.min === 0 && this.max !== 0) {
-			this.min = 1
-		} else if (this.min !== 0 && this.max === 0) {
-			this.max = this.min
+	static override cleanData(
+		source?: object | undefined,
+		options?: Record<string, unknown> | undefined,
+	): SourceFromSchema<fields.DataSchema> {
+		let { min, max } = { min: 0, max: 0, ...source }
+		if (min === 0 && max !== 0) {
+			min = 1
+		} else if (min !== 0 && max === 0) {
+			max = min
 		}
-		this.max = Math.max(this.max, this.min)
+		max = Math.max(max, min)
+		return super.cleanData({ min, max }, options)
 	}
 }
 

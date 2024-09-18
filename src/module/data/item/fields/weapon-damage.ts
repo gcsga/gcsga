@@ -219,8 +219,6 @@ class WeaponDamage extends WeaponField<AbstractWeaponTemplate, WeaponDamageSchem
 		base = addDice(base, stDamage)
 		return base
 	}
-
-	override clean(): void {}
 }
 
 function multiplyDice(multiplier: number, d: DiceGURPS): void {

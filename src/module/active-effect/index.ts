@@ -1,1 +1,1 @@
-export { ActiveEffectGURPS } from "./document.ts"
+// export { ActiveEffectGURPS } from "./document.ts"

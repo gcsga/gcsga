@@ -33,7 +33,7 @@ class WeaponShots extends WeaponField<WeaponRangedData, WeaponShotsSchema> {
 	}
 
 	static override fromString(s: string): WeaponShots {
-		const ws = new WeaponShots({})
+		const ws = new WeaponShots().toObject()
 		s = s.toLowerCase().replaceAll(" ", "").replaceAll(",", "")
 		if (!s.includes("fp") && !s.includes("hrs") && !s.includes("day")) {
 			ws.thrown = s.includes("t")
@@ -47,8 +47,7 @@ class WeaponShots extends WeaponField<WeaponRangedData, WeaponShotsSchema> {
 				}
 			}
 		}
-		ws.clean()
-		return ws
+		return new WeaponShots(ws)
 	}
 
 	override toString(): string {
@@ -75,7 +74,7 @@ class WeaponShots extends WeaponField<WeaponRangedData, WeaponShotsSchema> {
 	}
 
 	override resolve(w: WeaponRangedData, tooltip: TooltipGURPS | null): WeaponShots {
-		const result = this.clone()
+		const result = this.toObject()
 		result.reloadTimeIsPerShot = w.resolveBoolFlag(wswitch.Type.ReloadTimeIsPerShot, result.reloadTimeIsPerShot)
 		result.thrown = w.resolveBoolFlag(wswitch.Type.Thrown, result.thrown)
 		let [percentCount, percentInChamber, percentDuration, percentReloadTime] = [0, 0, 0, 0]
@@ -111,27 +110,40 @@ class WeaponShots extends WeaponField<WeaponRangedData, WeaponShotsSchema> {
 		if (percentInChamber !== 0) result.inChamber += Math.trunc((result.inChamber * percentInChamber) / 100)
 		if (percentDuration !== 0) result.duration += Math.trunc((result.duration * percentDuration) / 100)
 		if (percentReloadTime !== 0) result.reloadTime += Math.trunc((result.reloadTime * percentReloadTime) / 100)
-		result.clean()
-		return result
+		return new WeaponShots(result)
 	}
 
-	override clean(): void {
-		this.reloadTime = Math.max(this.reloadTime, 0)
-		if (this.thrown) {
-			this.count = 0
-			this.inChamber = 0
-			this.duration = 0
-			return
+	static override cleanData(
+		source?: object | undefined,
+		options?: Record<string, unknown> | undefined,
+	): SourceFromSchema<fields.DataSchema> {
+		let { reloadTime, count, inChamber, duration, thrown }: Partial<SourceFromSchema<WeaponShotsSchema>> = {
+			reloadTime: 0,
+			count: 0,
+			inChamber: 0,
+			duration: 0,
+			thrown: false,
+			...source,
 		}
-		this.count = Math.max(this.count, 0)
-		if (this.count === 0) {
-			this.inChamber = 0
-			this.duration = 0
-			this.reloadTime = 0
-			return
+
+		reloadTime = Math.max(reloadTime, 0)
+		if (thrown) {
+			count = 0
+			inChamber = 0
+			duration = 0
+			return super.cleanData({ ...source, reloadTime, count, inChamber, duration, thrown }, options)
 		}
-		this.inChamber = Math.max(this.inChamber, 0)
-		this.duration = Math.max(this.duration, 0)
+		count = Math.max(count, 0)
+		if (count === 0) {
+			inChamber = 0
+			duration = 0
+			reloadTime = 0
+			return super.cleanData({ ...source, reloadTime, count, inChamber, duration, thrown }, options)
+		}
+		inChamber = Math.max(inChamber, 0)
+		duration = Math.max(duration, 0)
+
+		return super.cleanData({ ...source, reloadTime, count, inChamber, duration, thrown }, options)
 	}
 }
 

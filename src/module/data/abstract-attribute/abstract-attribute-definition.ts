@@ -15,9 +15,9 @@ abstract class AbstractAttributeDef<
 	protected _id: string
 	attributeClass = AbstractAttribute
 
-	constructor(data: DeepPartial<SourceFromSchema<TSchema>>, options?: DataModelConstructionOptions<TActor>) {
+	constructor(data?: DeepPartial<SourceFromSchema<TSchema>>, options?: DataModelConstructionOptions<TActor>) {
 		super(data, options)
-		this._id = sanitizeId(String(data.id ?? ""), false, RESERVED_IDS)
+		this._id = sanitizeId(String(data?.id ?? ""), false, RESERVED_IDS)
 	}
 
 	static override defineSchema(): AbstractAttributeDefSchema {

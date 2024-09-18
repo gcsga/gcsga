@@ -124,6 +124,7 @@ class SkillDefault extends foundry.abstract.DataModel<ItemGURPS2, SkillDefaultSc
 		if (!actor.isOfType(ActorType.Character)) return 0
 		switch (this.type) {
 			case gid.Dodge:
+				// @ts-expect-error TODO: come back and fix
 				level = actor.system.encumbrance.current.dodge.normal
 				if (rule_of_20 && level > 20) level = 20
 				return this.finalLevel(level)

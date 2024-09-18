@@ -179,7 +179,7 @@ class BodyGURPS extends foundry.abstract.DataModel<ActorGURPS2 | HitLocation, Bo
 	}
 
 	get actor(): ActorInst<ActorType.Character> {
-		if (this.parent instanceof Actor) return this.parent
+		if (this.parent instanceof Actor) return this.parent as ActorInst<ActorType.Character>
 		if (this.parent instanceof HitLocation) return this.owningLocation!.actor
 		throw new Error("HitLocation does not have a valid actor owner")
 	}

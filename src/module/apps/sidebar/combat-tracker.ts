@@ -1,6 +1,6 @@
-import { ActorType, ConditionID } from "@data"
-import { CombatantGURPS } from "@module/combat/combatant.ts"
-import { CombatGURPS } from "@module/combat/document.ts"
+import { ActorType } from "@data"
+import { CombatGURPS } from "@module/document/combat.ts"
+import { CombatantGURPS } from "@module/document/combatant.ts"
 
 export class CombatTrackerGURPS<TCombat extends CombatGURPS | null> extends CombatTracker<TCombat> {
 	override async _onToggleDefeatedStatus(combatant: CombatantGURPS<TCombat>): Promise<void> {
@@ -11,8 +11,8 @@ export class CombatTrackerGURPS<TCombat extends CombatGURPS | null> extends Comb
 		const actor = combatant.actor
 		if (!actor) return
 
-		if (isDefeated) await actor.increaseCondition(ConditionID.Dead)
-		else await actor.decreaseCondition(ConditionID.Dead)
+		// if (isDefeated) await actor.increaseCondition(ConditionID.Dead)
+		// else await actor.decreaseCondition(ConditionID.Dead)
 	}
 
 	override getData(options: CombatTrackerOptions): CombatTrackerData {

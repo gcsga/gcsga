@@ -1,8 +1,5 @@
-import { LocalizeGURPS } from "@util/localize.ts"
-
 export namespace threshold {
 	export enum Op {
-		Unknown = "unknown",
 		HalveMove = "halve_move",
 		HalveDodge = "halve_dodge",
 		HalveST = "halve_st",
@@ -15,13 +12,21 @@ export namespace threshold {
 		}
 
 		export function toString(O: Op): string {
-			return LocalizeGURPS.translations.gurps.enum.threshold.string[O]
+			return `GURPS.Enum.threshold.${O}.Name`
+			// return LocalizeGURPS.translations.gurps.enum.threshold.string[O]
 		}
 
 		export function altString(O: Op): string {
-			return LocalizeGURPS.translations.gurps.enum.threshold.alt_string[O]
+			return `GURPS.Enum.threshold.${O}.Hint`
+			// return LocalizeGURPS.translations.gurps.enum.threshold.alt_string[O]
 		}
 	}
 
-	export const Ops: Op[] = [Op.Unknown, Op.HalveMove, Op.HalveDodge, Op.HalveST]
+	export const Ops: Op[] = [Op.HalveMove, Op.HalveDodge, Op.HalveST]
+
+	export const OpsChoices: Readonly<Record<Op, string>> = Object.freeze({
+		[Op.HalveMove]: Op.toString(Op.HalveMove),
+		[Op.HalveDodge]: Op.toString(Op.HalveDodge),
+		[Op.HalveST]: Op.toString(Op.HalveST),
+	})
 }
