@@ -1,0 +1,29 @@
+<div>
+	<ul class="attributes-list">
+		{{#each attributes as |attribute|}}
+		<li class="attribute">
+			<!--Attribute ID -->
+			{{formGroup attribute.schema.fields.id value=attribute.id localize=true}}
+
+			<!--Attribute Type -->
+			{{formGroup attribute.schema.fields.type value=attribute.type localize=true}}
+
+			<!-- Short Name -->
+			{{formGroup attribute.schema.fields.name value=attribute.name localize=true}}
+
+			<!-- Full Name -->
+			{{formGroup attribute.schema.fields.full_name value=attribute.full_name localize=true}}
+
+			<!-- Base Value -->
+			{{formGroup attribute.schema.fields.base value=attribute.base localize=true}}
+
+			<!-- Cost Per Point -->
+			{{formGroup attribute.schema.fields.cost_per_point value=attribute.cost_per_point localize=true}}
+
+			<!-- SM Reduction -->
+			{{formGroup attribute.schema.fields.cost_adj_percent_per_sm value=attribute.cost_adj_percent_per_sm
+			localize=true}}
+		</li>
+		{{/each}}
+	</ul>
+</div>

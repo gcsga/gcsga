@@ -3,7 +3,7 @@ export default class ApplicationV2<
 	TConfig extends ApplicationConfiguration = ApplicationConfiguration,
 	TRenderOptions extends ApplicationRenderOptions = ApplicationRenderOptions,
 > {
-	constructor(options: Partial<TConfig>)
+	constructor(options?: Partial<TConfig>)
 
 	/**
 	 * Designates which upstream Application class in this class' inheritance chain is the base application.

@@ -180,6 +180,76 @@
 				"does_not_start_with": "does not start with \"{qualifier}\"",
 				"ends_with": "ends with \"{qualifier}\"",
 				"does_not_end_with": "does not end with \"{qualifier}\""
+			},
+			"progression": {
+				"basic_set": {
+					"Name": "Basic Set",
+					"Hint": "The standard damage progression"
+				},
+				"knowing_your_own_strength": {
+					"Name": "Knowing Your Own Strength",
+					"Hint": "From <a href='PY83:16'>Pyramid 3-83, pages 16-19</a>"
+				},
+				"no_school_grognard_damage": {
+					"Name": "No School Grognard Damage",
+					"Hint": "From <a href='https://noschoolgrognard.blogspot.com/2013/04/adjusting-swing-damage-in-dungeon.html'>Adjusting Swing Damage in Dungeon Fantasy</a>"
+				},
+				"thrust_equals_swing_minus_2": {
+					"Name": "Thrust = Swing-2",
+					"Hint": "From <a href='https://github.com/richardwilkes/gcs/issues/97'>Alternate Damage Scheme (Thr = Sw-2)</a>"
+				},
+				"swing_equals_thrust_plus_2": {
+					"Name": "Swing = Thrust+2",
+					"Hint": "From a <a href='https://gamingballistic.com/2020/12/04/df-eastmarch-boss-fight-and-house-rules/'>house rule</a> originating with Kevin Smyth"
+				},
+				"tbone_1": {
+					"Name": "T Bone's New Damage for ST (option 1)",
+					"Hint": "From <a href='https://www.gamesdiner.com/2009/10/new-st-damage/'>T Bone's Games Diner</a>"
+				},
+				"tbone_1_clean": {
+					"Name": "T Bone's New Damage for ST (option 1, cleaned)",
+					"Hint": "From <a href='https://www.gamesdiner.com/2009/10/new-st-damage/'>T Bone's Games Diner</a>"
+				},
+				"tbone_2": {
+					"Name": "T Bone's New Damage for ST (option 2)",
+					"Hint": "From <a href='https://www.gamesdiner.com/2009/10/new-st-damage/'>T Bone's Games Diner</a>"
+				},
+				"tbone_2_clean": {
+					"Name": "T Bone's New Damage for ST (option 2, cleaned)",
+					"Hint": "From <a href='https://www.gamesdiner.com/2009/10/new-st-damage/'>T Bone's Games Diner</a>"
+				},
+				"phoenix_flame_d3": {
+					"Name": "Phoenix Flame D3",
+					"Hint": "From a <a href='https://github.com/richardwilkes/gcs/pull/393'>house rule</a> that uses d3s instead of d6s for damage"
+				}
+			},
+			"Length": {
+				"ft_in": { "Name": "Feet & Inches" },
+				"in": { "Name": "in" },
+				"ft": { "Name": "ft" },
+				"yd": { "Name": "yd" },
+				"mi": { "Name": "mi" },
+				"cm": { "Name": "cm" },
+				"km": { "Name": "km" },
+				"m": { "Name": "m" },
+				"au": { "Name": "AU" },
+				"ly": { "Name": "ly" },
+				"pc": { "Name": "pc" }
+			},
+			"Weight": {
+				"lb": { "Name": "lb" },
+				"#": { "Name": "#" },
+				"oz": { "Name": "oz" },
+				"tn": { "Name": "tn" },
+				"t": { "Name": "t" },
+				"kg": { "Name": "kg" },
+				"g": { "Name": "g" }
+			},
+			"display": {
+				"not_shown": { "Name": "Not Shown" },
+				"inline": { "Name": "Inline" },
+				"tooltip": { "Name": "Tooltip" },
+				"inline_and_tooltip": { "Name": "Inline & Tooltip" }
 			}
 		},
 		"Settings": {
@@ -189,9 +259,9 @@
 				"Hint": "Configure colors used by the GURPS Game Aid.",
 				"Title": "Colors",
 				"Submit": "Apply Colors",
+				"Reset": "Reset Colors",
 				"MessageSubmit": "Updated Color configuration.",
 				"MessageReset": "Reset Color configuration to default values.",
-				"Reset": "Reset Colors",
 				"Color": "Color",
 				"Light": "Light",
 				"Dark": "Dark",
@@ -207,6 +277,49 @@
 					"tooltip": { "Label": "Tooltip", "Hint": "Color used for tooltip backgrounds." },
 					"warning": { "Label": "Warning", "Hint": "Color used for warnings." }
 				}
+			},
+			"SheetSettings": {
+				"Name": "Default Sheet Settings",
+				"Label": "Configure Default Sheet Settings",
+				"Title": "Default Sheet Settings",
+				"Hint": "Alter the default display and calculation options for all new Characters.",
+				"Submit": "Apply Default Sheet Settings",
+				"Reset": "Reset Default Sheet Settings",
+				"MessageSubmit": "Updated Default Sheet Settings configuration.",
+				"MessageReset": "Reset Default Sheet Settings configuration to default values.",
+				"FIELDSETS": {
+					"DamageOptions": "Damage Options",
+					"DisplayOptions": "Display Options",
+					"AlternativeRules": "Alternative Rules",
+					"UnitsOfMeasurement": "Units of Measurement",
+					"WhereToDisplay": "Where to display..."
+				},
+				"FIELDS": {
+					"damage_progression": { "Name": "Damage Progression" },
+					"default_length_units": { "Name": "Length Units" },
+					"default_weight_units": { "Name": "Weight Units" },
+					"exclude_unspent_points_from_total": { "Name": "Exclude unspent points from total" },
+					"modifiers_display": { "Name": "Modifiers" },
+					"notes_display": { "Name": "Notes" },
+					"show_equipment_modifier_adj": { "Name": "Show equipment modifier cost & weight adjustments" },
+					"show_spell_adj": { "Name": "Show spell ritual, cost & time adjustments" },
+					"show_trait_modifier_adj": { "Name": "Show trait modifier cost adjustments" },
+					"skill_level_adj_display": { "Name": "Skill Level Adjustments" },
+					"use_half_stat_defaults": { "Name": "Use Half-Stat Defaults (PY65:30)" },
+					"use_modifying_dice_plus_adds": { "Name": "Use Modifying Dice + Adds (B269)" },
+					"use_multiplicative_modifiers": { "Name": "Use Multiplicative Modifiers (P102)" },
+					"user_description_display": { "Name": "User Description" }
+				}
+			},
+			"AttributesConfig": {
+				"Name": "Default Attributes",
+				"Label": "Configure Default Attribute Settings",
+				"Title": "Default Attribute Settings",
+				"Hint": "Alter the default attributes used by all new Characters.",
+				"Submit": "Apply Default Attribute Settings",
+				"Reset": "Reset Default Attribute Settings",
+				"MessageSubmit": "Updated Default Attribute Settings configuration.",
+				"MessageReset": "Reset Default Attribute Settings configuration to default values."
 			}
 		}
 	},

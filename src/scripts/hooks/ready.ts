@@ -1,13 +1,9 @@
 import { SOCKET } from "@data"
 import { loadModifiers } from "@module/apps/modifier-bucket/data.ts"
 import { TokenHUDGURPS } from "@module/canvas/index.ts"
-import { ColorConfig } from "@module/settings/color-config.ts"
-// import { MigrationSummary } from "@module/migration-summary.ts"
-// import { MigrationList, MigrationRunner } from "@module/migration/index.ts"
+import { AttributesConfig } from "@module/settings/attribute-settings.ts"
 import { LastActor } from "@module/util/index.ts"
 import { SetGameGURPS } from "@scripts/set-game-gurps.ts"
-// import { storeInitialWorldVersions } from "@scripts/store-versions.ts"
-// import { ColorSettings } from "@system/settings/colors.ts"
 import { createDragImage } from "@util/drag-image.ts"
 import { Int } from "@util/int.ts"
 
@@ -28,7 +24,7 @@ export const Ready = {
 				LastActor: await LastActor.get(),
 				LastToken: await LastActor.getToken(),
 				Int,
-				ColorConfig,
+				AttributesConfig,
 			}
 
 			// Determine whether a system migration is required and feasible

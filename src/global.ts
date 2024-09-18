@@ -9,6 +9,7 @@ import { ActorsGURPS } from "@module/data/collections/actors-collection.ts"
 import { ItemsGURPS } from "@module/data/collections/items-collection.ts"
 import { SETTINGS, SSRT_SETTING } from "@module/data/constants.ts"
 import { DiceGURPS } from "@module/data/dice.ts"
+import { SheetSettings } from "@module/data/sheet-settings.ts"
 import { ActorGURPS2 } from "@module/document/actor.ts"
 import { ChatMessageGURPS } from "@module/document/chat-message.ts"
 import { CombatGURPS } from "@module/document/combat.ts"
@@ -18,7 +19,9 @@ import { TokenDocumentGURPS } from "@module/document/token.ts"
 import { UserGURPS } from "@module/document/user.ts"
 import { JournalEntryGURPS } from "@module/journal-entry/document.ts"
 import { JournalEntryPageGURPS } from "@module/journal-entry/page/document.ts"
+import { AttributeSettings } from "@module/settings/attribute-settings.ts"
 import { ColorSettings } from "@module/settings/color-config.ts"
+import { DefaultSheetSettings } from "@module/settings/sheet-settings-config.ts"
 import { GURPSCONFIG } from "@scripts/config/index.ts"
 import { remigrate } from "@scripts/system/remigrate.ts"
 // import { ConditionManager } from "@system/condition-manager.ts"
@@ -137,9 +140,11 @@ declare global {
 
 	interface ClientSettings {
 		get(module: "gcsga", key: SETTINGS.COLORS): ColorSettings
+		get(module: "gcsga", key: SETTINGS.DEFAULT_SHEET_SETTINGS): SheetSettings
 		get(module: "gcsga", key: SETTINGS.SSRT): SSRT_SETTING
 		get(module: "gcsga", key: SETTINGS.ROLL_FORMULA): string
 		get(module: "gcsga", key: SETTINGS.BASE_BOOKS): string
+		get(module: "gcsga", key: SETTINGS.DEFAULT_ATTRIBUTES): AttributeSettings
 		// get(module: "gcsga", key: "default_sheet_settings.initial_points"): number
 		// get(module: "gcsga", key: "default_sheet_settings.tech_level"): string
 		// get(module: "gcsga", key: "default_sheet_settings.tech_level"): string
@@ -169,6 +174,8 @@ declare global {
 
 	interface ClientSettingsMap {
 		get(key: `gcsga.${SETTINGS.COLORS}`): SettingConfig & { default: ColorSettings }
+		get(key: `gcsga.${SETTINGS.DEFAULT_SHEET_SETTINGS}`): SettingConfig & { default: DefaultSheetSettings }
+		get(key: `gcsga.${SETTINGS.DEFAULT_ATTRIBUTES}`): SettingConfig & { default: AttributeSettings }
 		// get(key: "gcsga.worldClock.worldCreatedOn"): SettingConfig & { default: string }
 		// get(key: "gcsga.default_sheet_settings.initial_points"): SettingConfig & { default: number }
 		// get(key: "gcsga.default_sheet_settings.tech_level"): SettingConfig & { default: string }

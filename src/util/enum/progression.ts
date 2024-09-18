@@ -1,5 +1,3 @@
-import { LocalizeGURPS } from "@util/localize.ts"
-
 export namespace progression {
 	export enum Option {
 		BasicSet = "basic_set",
@@ -16,10 +14,12 @@ export namespace progression {
 
 	export namespace Option {
 		export function toString(O: Option): string {
-			return LocalizeGURPS.translations.gurps.enum.progression.string[O]
+			return `GURPS.Enum.progression.${O}.Name`
+			// return LocalizeGURPS.translations.gurps.enum.progression.string[O]
 		}
-		export function altString(O: Option): string {
-			return LocalizeGURPS.translations.gurps.enum.progression.alt_string[O]
+		export function toAltString(O: Option): string {
+			return `GURPS.Enum.progression.${O}.Hint`
+			// return LocalizeGURPS.translations.gurps.enum.progression.alt_string[O]
 		}
 	}
 
@@ -35,4 +35,17 @@ export namespace progression {
 		Option.Tbone2Clean,
 		Option.PhoenixFlameD3,
 	]
+
+	export const OptionsChoices: Readonly<Record<Option, string>> = Object.freeze({
+		[Option.BasicSet]: Option.toString(Option.BasicSet),
+		[Option.KnowingYourOwnStrength]: Option.toString(Option.KnowingYourOwnStrength),
+		[Option.NoSchoolGrognardDamage]: Option.toString(Option.NoSchoolGrognardDamage),
+		[Option.ThrustEqualsSwingMinus2]: Option.toString(Option.ThrustEqualsSwingMinus2),
+		[Option.SwingEqualsThrustPlus2]: Option.toString(Option.SwingEqualsThrustPlus2),
+		[Option.Tbone1]: Option.toString(Option.Tbone1),
+		[Option.Tbone1Clean]: Option.toString(Option.Tbone1Clean),
+		[Option.Tbone2]: Option.toString(Option.Tbone2),
+		[Option.Tbone2Clean]: Option.toString(Option.Tbone2Clean),
+		[Option.PhoenixFlameD3]: Option.toString(Option.PhoenixFlameD3),
+	})
 }

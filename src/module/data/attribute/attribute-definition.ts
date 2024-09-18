@@ -26,21 +26,29 @@ class AttributeDef<TActor extends AttributeHolderTemplate = AttributeHolderTempl
 
 		return {
 			type: new fields.StringField({
+				required: true,
+				nullable: false,
 				choices: attribute.Types,
 				initial: attribute.Type.Integer,
 			}),
-			id: new fields.StringField({ initial: "id" }),
-			base: new fields.StringField({ initial: "10" }),
-			name: new fields.StringField({ initial: "id" }),
-			full_name: new fields.StringField({ initial: "" }),
-			cost_per_point: new fields.NumberField({ min: 0 }),
-			cost_adj_percent_per_sm: new fields.NumberField({ integer: true, min: 0, max: 80, initial: 0 }),
-			thresholds: new fields.ArrayField(new fields.SchemaField(PoolThreshold.defineSchema()), {
+			id: new fields.StringField({ required: true, nullable: false, initial: "id" }),
+			base: new fields.StringField({ required: true, nullable: false, initial: "10" }),
+			name: new fields.StringField({ required: true, nullable: false, initial: "id" }),
+			full_name: new fields.StringField({ required: false, nullable: false, initial: "" }),
+			cost_per_point: new fields.NumberField({ required: true, nullable: false, min: 0 }),
+			cost_adj_percent_per_sm: new fields.NumberField({
 				required: false,
-				nullable: true,
-				initial: null,
+				nullable: false,
+				integer: true,
+				min: 0,
+				max: 80,
+				initial: 0,
 			}),
-			order: new fields.NumberField({ min: 0 }),
+			thresholds: new fields.ArrayField(new fields.EmbeddedDataField(PoolThreshold), {
+				required: false,
+				nullable: false,
+			}),
+			// order: new fields.NumberField({ required: false, nullable: false, min: 0, initial: 0 }),
 		}
 	}
 
@@ -95,24 +103,23 @@ class AttributeDef<TActor extends AttributeHolderTemplate = AttributeHolderTempl
 
 interface AttributeDef<TActor extends AttributeHolderTemplate>
 	extends AbstractAttributeDef<TActor, AttributeDefSchema>,
-		Omit<ModelPropsFromSchema<AttributeDefSchema>, "thresholds"> {
-	thresholds: PoolThreshold[] | null
-}
+		ModelPropsFromSchema<AttributeDefSchema> {}
 
 type AttributeDefSchema = AbstractAttributeDefSchema & {
 	type: fields.StringField<attribute.Type, attribute.Type, true>
 	name: fields.StringField<string, string, true, false, true>
-	full_name: fields.StringField<string, string, true, false, true>
+	full_name: fields.StringField<string, string, false, false, true>
 	cost_per_point: fields.NumberField<number, number, true, false, true>
-	cost_adj_percent_per_sm: fields.NumberField<number, number, true, false, true>
+	cost_adj_percent_per_sm: fields.NumberField<number, number, false, false, true>
 	thresholds: fields.ArrayField<
-		fields.SchemaField<PoolThresholdSchema>,
+		fields.EmbeddedDataField<PoolThreshold>,
 		Partial<SourceFromSchema<PoolThresholdSchema>>[],
-		ModelPropsFromSchema<PoolThresholdSchema>[],
+		PoolThreshold[],
 		false,
-		true
+		false,
+		false
 	>
-	order: fields.NumberField<number, number, true, false, true>
+	// order: fields.NumberField<number, number, false, false, true>
 }
 
 export { AttributeDef, type AttributeDefSchema }

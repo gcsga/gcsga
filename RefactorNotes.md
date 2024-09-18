@@ -3,7 +3,7 @@
 ## Left To Do
 
 - Change Schema Fields to Embedded Data Fields where appropriate \*0 _MOST IMPORTANT_
-- Chat Messages \*4
+- Chat Messages \*5
   - Re-do roll message templates and damage message handling
   - Move @module/util/chat.ts functionality to Chat Message
 - Settings \*1
@@ -12,14 +12,15 @@
     - Attributes \*2
     - Resource Trackers \*3
     - Move Types \*4
-    - Sheet Settings \*1
+    - Sheet Settings \*DONE
   - Re-add old settings \*2
 - CellData
   - Condition
-- Item
+- Item \*3
+  - Add field label values for all fields
 - Actor
   - Legacy Support?
-- Item Sheet \*3
+- Item Sheet \*4
 - Actor Sheet \*2
   - Collapsible sidebar
   - DND5e context menu
@@ -38,3 +39,10 @@
 
 - Roll Handlers
   - Fix old functions
+
+## Current Task Notes
+
+- Can add JS to dynamically change the hint text for damage progression when the value changes /\*
+- Can also look into other ways of displaying this information
+
+See what DataField#toFormGroup does

@@ -1,5 +1,3 @@
-import { LocalizeGURPS } from "@util/localize.ts"
-
 export namespace display {
 	export enum Option {
 		NotShown = "not_shown",
@@ -10,7 +8,13 @@ export namespace display {
 
 	export namespace Option {
 		export function toString(O: Option): string {
-			return LocalizeGURPS.translations.gurps.enum.display[O]
+			return `GURPS.Enum.display.${O}.Name`
+			// return LocalizeGURPS.translations.gurps.enum.display[O]
+		}
+
+		export function toAltString(O: Option): string {
+			return `GURPS.Enum.display.${O}.Hint`
+			// return LocalizeGURPS.translations.gurps.enum.display[O]
 		}
 
 		export function isInline(O: Option): boolean {
@@ -23,4 +27,11 @@ export namespace display {
 	}
 
 	export const Options: Option[] = [Option.NotShown, Option.Inline, Option.Tooltip, Option.InlineAndTooltip]
+
+	export const OptionsChoices: Readonly<Record<Option, string>> = Object.freeze({
+		[Option.NotShown]: Option.toString(Option.NotShown),
+		[Option.Inline]: Option.toString(Option.Inline),
+		[Option.Tooltip]: Option.toString(Option.Tooltip),
+		[Option.InlineAndTooltip]: Option.toString(Option.InlineAndTooltip),
+	})
 }

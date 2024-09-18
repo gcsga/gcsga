@@ -1,6 +1,7 @@
 import { SETTINGS, SSRT_SETTING, SYSTEM_NAME } from "@module/data/constants.ts"
 import { ColorConfig } from "./color-config.ts"
 import { SheetSettingsConfig } from "./sheet-settings-config.ts"
+import { AttributesConfig } from "./attribute-settings.ts"
 
 /**
  * Register all of the system's keybindings.
@@ -27,14 +28,24 @@ export function registerSystemSettings(): void {
 	ColorConfig.registerSettings()
 
 	game.settings.registerMenu(SYSTEM_NAME, SETTINGS.DEFAULT_SHEET_SETTINGS, {
-		name: "GURPS.Settings.SheetSettingsConfig.Name",
-		label: "GURPS.Settings.SheetSettingsConfig.Label",
-		hint: "GURPS.Settings.SheetSettingsConfig.Hint",
-		icon: "fas fa-palette",
+		name: "GURPS.Settings.SheetSettings.Name",
+		label: "GURPS.Settings.SheetSettings.Label",
+		hint: "GURPS.Settings.SheetSettings.Hint",
+		icon: "gcs-settings",
 		type: SheetSettingsConfig,
 		restricted: false,
 	})
 	SheetSettingsConfig.registerSettings()
+
+	game.settings.registerMenu(SYSTEM_NAME, SETTINGS.DEFAULT_ATTRIBUTES, {
+		name: "GURPS.Settings.Attributes.Name",
+		label: "GURPS.Settings.Attributes.Label",
+		hint: "GURPS.Settings.Attributes.Hint",
+		icon: "gcs-settings",
+		type: AttributesConfig,
+		restricted: false,
+	})
+	AttributesConfig.registerSettings()
 
 	game.settings.register(SYSTEM_NAME, SETTINGS.BASE_BOOKS, {
 		name: "GURPS.Settings.BaseBooks.Name",

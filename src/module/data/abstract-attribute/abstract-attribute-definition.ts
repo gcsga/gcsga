@@ -1,4 +1,3 @@
-import type { Mook } from "@system/mook/index.ts"
 import fields = foundry.data.fields
 import { getNewAttributeId, sanitizeId } from "@util"
 import { AbstractAttribute } from "./abstract-attribute.ts"
@@ -8,7 +7,7 @@ import { gid } from "@module/data/constants.ts"
 export const RESERVED_IDS: string[] = [gid.Skill, gid.Parry, gid.Block, gid.Dodge, gid.SizeModifier, gid.Ten]
 
 abstract class AbstractAttributeDef<
-	TActor extends ActorDataModel | Mook = ActorDataModel | Mook,
+	TActor extends ActorDataModel | null = ActorDataModel | null,
 	TSchema extends AbstractAttributeDefSchema = AbstractAttributeDefSchema,
 > extends foundry.abstract.DataModel<TActor, TSchema> {
 	declare parent: TActor
@@ -59,7 +58,7 @@ abstract class AbstractAttributeDef<
 	}
 }
 
-interface AbstractAttributeDef<TActor extends ActorDataModel | Mook, TSchema extends AbstractAttributeDefSchema>
+interface AbstractAttributeDef<TActor extends ActorDataModel | null, TSchema extends AbstractAttributeDefSchema>
 	extends foundry.abstract.DataModel<TActor, TSchema>,
 		ModelPropsFromSchema<AbstractAttributeDefSchema> {}
 

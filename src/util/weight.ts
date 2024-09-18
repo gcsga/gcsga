@@ -13,6 +13,16 @@ export namespace Weight {
 
 	export const Units = [Unit.Pound, Unit.PoundAlt, Unit.Ounce, Unit.Ton, Unit.TonAlt, Unit.Kilogram, Unit.Gram]
 
+	export const UnitChoices: Readonly<Record<Unit, string>> = Object.freeze({
+		[Unit.Pound]: `GURPS.Enum.Weight.${Unit.Pound}.Name`,
+		[Unit.PoundAlt]: `GURPS.Enum.Weight.${Unit.PoundAlt}.Name`,
+		[Unit.Ounce]: `GURPS.Enum.Weight.${Unit.Ounce}.Name`,
+		[Unit.Ton]: `GURPS.Enum.Weight.${Unit.Ton}.Name`,
+		[Unit.TonAlt]: `GURPS.Enum.Weight.${Unit.TonAlt}.Name`,
+		[Unit.Kilogram]: `GURPS.Enum.Weight.${Unit.Kilogram}.Name`,
+		[Unit.Gram]: `GURPS.Enum.Weight.${Unit.Gram}.Name`,
+	})
+
 	export type String = `${string} ${Unit}`
 
 	export function fromNumber(value: number, unit: Unit): number {

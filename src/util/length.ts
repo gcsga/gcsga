@@ -30,6 +30,20 @@ export namespace Length {
 		Unit.Parsec,
 	]
 
+	export const UnitChoices: Readonly<Record<Unit, string>> = Object.freeze({
+		[Unit.FeetAndInches]: `GURPS.Enum.Length.${Unit.FeetAndInches}.Name`,
+		[Unit.Inch]: `GURPS.Enum.Length.${Unit.Inch}.Name`,
+		[Unit.Feet]: `GURPS.Enum.Length.${Unit.Feet}.Name`,
+		[Unit.Yard]: `GURPS.Enum.Length.${Unit.Yard}.Name`,
+		[Unit.Mile]: `GURPS.Enum.Length.${Unit.Mile}.Name`,
+		[Unit.Centimeter]: `GURPS.Enum.Length.${Unit.Centimeter}.Name`,
+		[Unit.Kilometer]: `GURPS.Enum.Length.${Unit.Kilometer}.Name`,
+		[Unit.Meter]: `GURPS.Enum.Length.${Unit.Meter}.Name`,
+		[Unit.AstronomicalUnit]: `GURPS.Enum.Length.${Unit.AstronomicalUnit}.Name`,
+		[Unit.Lightyear]: `GURPS.Enum.Length.${Unit.Lightyear}.Name`,
+		[Unit.Parsec]: `GURPS.Enum.Length.${Unit.Parsec}.Name`,
+	})
+
 	export const Symbols: Record<Unit, string[]> = {
 		[Unit.FeetAndInches]: [],
 		[Unit.Inch]: ["in", "inch", "inches"],

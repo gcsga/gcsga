@@ -1,0 +1,19 @@
+#sheet-settings-config {
+	div.form-group.damage-progression {
+		p.hint {
+			text-align: end;
+
+			a {
+				text-decoration: none;
+				font-style: italic;
+			}
+		}
+	}
+
+	fieldset#display-options,
+	fieldset#alternative-rules {
+		div.form-fields {
+			flex: 0;
+		}
+	}
+}

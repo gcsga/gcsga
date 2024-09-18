@@ -1,0 +1,61 @@
+<div>
+	<fieldset id="damage-options">
+		<legend>{{localize "GURPS.Settings.SheetSettings.FIELDSETS.DamageOptions"}}</legend>
+
+		<!-- Damage Progression -->
+		{{formGroup fields.damage_progression value=source.damage_progression localize=true
+		classes="damage-progression"}}
+	</fieldset>
+	<fieldset id="display-options">
+		<legend>{{localize "GURPS.Settings.SheetSettings.FIELDSETS.DisplayOptions"}}</legend>
+
+		<!-- Trait Modifier Cost Adjustments	 -->
+		{{formGroup fields.show_trait_modifier_adj value=source.show_trait_modifier_adj localize=true}}
+
+		<!-- Equipment Modifier Cost Adjustments	 -->
+		{{formGroup fields.show_equipment_modifier_adj value=source.show_equipment_modifier_adj localize=true}}
+
+		<!-- Spell Adjustments	 -->
+		{{formGroup fields.show_spell_adj value=source.show_spell_adj localize=true}}
+
+		<!-- Exclude unspent points from total -->
+		{{formGroup fields.exclude_unspent_points_from_total value=source.exclude_unspent_points_from_total
+		localize=true}}
+	</fieldset>
+	<fieldset id="alternative-rules">
+		<legend>{{localize "GURPS.Settings.SheetSettings.FIELDSETS.AlternativeRules"}}</legend>
+
+		<!-- Use Multiplicative Modiifiers -->
+		{{formGroup fields.use_multiplicative_modifiers value=source.use_multiplicative_modifiers localize=true}}
+
+		<!-- Use Half-Stat Defaults -->
+		{{formGroup fields.use_half_stat_defaults value=source.use_half_stat_defaults localize=true}}
+
+		<!-- Use Modifying Dice + Adds -->
+		{{formGroup fields.use_modifying_dice_plus_adds value=source.use_modifying_dice_plus_adds localize=true}}
+	</fieldset>
+	<fieldset id="units-of-measurement">
+		<legend>{{localize "GURPS.Settings.SheetSettings.FIELDSETS.UnitsOfMeasurement"}}</legend>
+
+		<!-- Length Units -->
+		{{formGroup fields.default_length_units value=source.default_length_units localize=true}}
+
+		<!-- Weight Units -->
+		{{formGroup fields.default_weight_units value=source.default_weight_units localize=true}}
+	</fieldset>
+	<fieldset id="where-to-display">
+		<legend>{{localize "GURPS.Settings.SheetSettings.FIELDSETS.WhereToDisplay"}}</legend>
+
+		<!-- User Description -->
+		{{formGroup fields.user_description_display value=source.user_description_display localize=true}}
+
+		<!-- Modifiers -->
+		{{formGroup fields.modifiers_display value=source.modifiers_display localize=true}}
+
+		<!-- Notes -->
+		{{formGroup fields.notes_display value=source.notes_display localize=true}}
+
+		<!-- Skill Level Adjustments -->
+		{{formGroup fields.skill_level_adj_display value=source.skill_level_adj_display localize=true}}
+	</fieldset>
+</div>
