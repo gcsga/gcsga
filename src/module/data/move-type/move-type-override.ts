@@ -14,24 +14,37 @@ const MoveTypeOverrideConditionTypes: MoveTypeOverrideConditionType[] = [
 	MoveTypeOverrideConditionType.Condition,
 ]
 
-class MoveTypeOverride extends foundry.abstract.DataModel<ActorDataModel, MoveTypeOverrideSchema> {
-	// constructor(
-	// 	data: DeepPartial<SourceFromSchema<MoveTypeOverrideSchema>>,
-	// 	options: DataModelConstructionOptions<ActorGURPS>,
-	// ) {
-	// 	super(data, options)
-	// }
+export const OverrideChoices: Readonly<Record<MoveTypeOverrideConditionType, string>> = Object.freeze({
+	[MoveTypeOverrideConditionType.Trait]: `GURPS.Enum.MoveTypeOverrideConditionType.Trait`,
+	[MoveTypeOverrideConditionType.Skill]: `GURPS.Enum.MoveTypeOverrideConditionType.Skill`,
+	[MoveTypeOverrideConditionType.Condition]: `GURPS.Enum.MoveTypeOverrideConditionType.Condition`,
+})
 
+class MoveTypeOverride extends foundry.abstract.DataModel<ActorDataModel, MoveTypeOverrideSchema> {
 	static override defineSchema(): MoveTypeOverrideSchema {
 		const fields = foundry.data.fields
 		return {
 			condition: new fields.SchemaField({
 				type: new fields.StringField<MoveTypeOverrideConditionType, MoveTypeOverrideConditionType, true>({
+					required: true,
+					nullable: false,
 					initial: MoveTypeOverrideConditionType.Trait,
+					choices: OverrideChoices,
+					label: "GURPS.MoveType.Override.FIELDS.Type.Name",
 				}),
-				qualifier: new fields.StringField(),
+				qualifier: new fields.StringField({
+					required: true,
+					nullable: false,
+					initial: "",
+					label: "GURPS.MoveType.Override.FIELDS.Qualifier.Name",
+				}),
 			}),
-			base: new fields.StringField(),
+			base: new fields.StringField({
+				required: true,
+				nullable: false,
+				initial: "$base_move",
+				label: "GURPS.MoveType.Override.FIELDS.Base.Name",
+			}),
 		}
 	}
 
@@ -58,7 +71,7 @@ interface MoveTypeOverride
 type MoveTypeOverrideSchema = {
 	condition: fields.SchemaField<{
 		type: fields.StringField<MoveTypeOverrideConditionType, MoveTypeOverrideConditionType, true, false, true>
-		qualifier: fields.StringField
+		qualifier: fields.StringField<string, string, true, false, true>
 	}>
 	base: fields.StringField<string, string, true, false, true>
 }

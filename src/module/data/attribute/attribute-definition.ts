@@ -13,17 +13,6 @@ class AttributeDef<TActor extends AttributeHolderTemplate = AttributeHolderTempl
 	TActor,
 	AttributeDefSchema
 > {
-	// constructor(
-	// 	data?: DeepPartial<SourceFromSchema<AttributeDefSchema>>,
-	// 	options?: DataModelConstructionOptions<TActor>,
-	// ) {
-	// 	if ((data?.type === attribute.Type.Pool || data?.type === attribute.Type.PoolRef) && !data.thresholds) {
-	// 		console.log("pool")
-	// 		data.thresholds = [new PoolThreshold().toObject()]
-	// 	}
-	// 	super(data, options)
-	// }
-
 	static override defineSchema(): AttributeDefSchema {
 		const fields = foundry.data.fields
 
@@ -80,7 +69,6 @@ class AttributeDef<TActor extends AttributeHolderTemplate = AttributeHolderTempl
 				nullable: false,
 				label: "GURPS.Attribute.Definition.FIELDS.Thresholds.Name",
 			}),
-			// order: new fields.NumberField({ required: false, nullable: false, min: 0, initial: 0 }),
 		}
 	}
 
@@ -168,7 +156,6 @@ type AttributeDefSchema = AbstractAttributeDefSchema & {
 		false,
 		false
 	>
-	// order: fields.NumberField<number, number, false, false, true>
 }
 
 export { AttributeDef, type AttributeDefSchema }

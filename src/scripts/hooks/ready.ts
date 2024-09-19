@@ -2,6 +2,8 @@ import { SOCKET } from "@data"
 import { loadModifiers } from "@module/apps/modifier-bucket/data.ts"
 // import { TokenHUDGURPS } from "@module/canvas/index.ts"
 import { PoolThreshold } from "@module/data/attribute/pool-threshold.ts"
+import { MoveTypeOverride } from "@module/data/move-type/move-type-override.ts"
+import { SheetSettings } from "@module/data/sheet-settings.ts"
 import { AttributesConfig } from "@module/settings/attributes-config.ts"
 import { LastActor } from "@module/util/index.ts"
 import { SetGameGURPS } from "@scripts/set-game-gurps.ts"
@@ -27,6 +29,8 @@ export const Ready = {
 				Int,
 				AttributesConfig,
 				PoolThreshold,
+				MoveTypeOverride,
+				SheetSettings,
 			}
 
 			// Determine whether a system migration is required and feasible

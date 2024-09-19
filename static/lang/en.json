@@ -73,6 +73,39 @@
 				}
 			}
 		},
+		"ResourceTracker": {
+			"Definition": {
+				"FIELDS": {
+					"Id": { "Name": "ID" },
+					"Name": { "Name": "Name" },
+					"FullName": { "Name": "Full Name" },
+					"Base": { "Name": "Base Value" },
+					"Max": { "Name": "Max" },
+					"Min": { "Name": "Min" },
+					"IsMaxEnforced": { "Name": "Enforced?" },
+					"IsMinEnforced": { "Name": "Enforced?" },
+					"Thresholds": { "Name": "Thresholds" }
+				}
+			}
+		},
+		"MoveType": {
+			"Definition": {
+				"FIELDS": {
+					"Id": { "Name": "ID" },
+					"Name": { "Name": "Name" },
+					"Base": { "Name": "Base Value" },
+					"CostPerPoint": { "Name": "Cost per Point" },
+					"Overrides": { "Name": "Overrides" }
+				}
+			},
+			"Override": {
+				"FIELDS": {
+					"Type": { "Name": "Type" },
+					"Qualifier": { "Name": "Qualifier" },
+					"Base": { "Name": "Base Value" }
+				}
+			}
+		},
 		"TemplatePicker": {
 			"descriptionCount": "Pick {number}",
 			"descriptionPoints": "Pick {number} {points} worth",
@@ -206,6 +239,11 @@
 					"Name": "Halve Strength",
 					"Hint": "Halve Strength (round up; does not affect HP and damage)"
 				}
+			},
+			"MoveTypeOverrideConditionType": {
+				"Trait": "Trait",
+				"Skill": "Skill",
+				"Condition": "Condition"
 			},
 			"stdmg": {
 				"leveled": "{value} (Leveled)",
@@ -359,16 +397,24 @@
 				}
 			},
 			"AttributesConfig": {
+				"TABS": {
+					"Attributes": "Attributes",
+					"ResourceTrackers": "Resource Trackers",
+					"MoveTypes": "Move Types"
+				},
 				"Name": "Default Attributes",
 				"Label": "Configure Default Attribute Settings",
 				"Title": "Default Attribute Settings",
-				"Hint": "Alter the default attributes used by all new Characters.",
-				"Submit": "Apply Default Attribute Settings",
-				"Reset": "Reset Default Attribute Settings",
+				"Hint": "Alter the default Attributes, Resource Trackers, and Move Types used by all new Characters.",
+				"Submit": "Apply Default Settings",
+				"Reset": "Reset Default Settings",
 				"MessageSubmit": "Updated Default Attribute Settings configuration.",
 				"MessageReset": "Reset Default Attribute Settings configuration to default values.",
 				"ButtonAddAttribute": "Add Attribute",
-				"ButtonAddThreshold": "Add Threshold"
+				"ButtonAddThreshold": "Add Threshold",
+				"ButtonAddResourceTracker": "Add Resource Tracker",
+				"ButtonAddMoveType": "Add Move Type",
+				"ButtonAddOverride": "Add Override"
 			}
 		}
 	},

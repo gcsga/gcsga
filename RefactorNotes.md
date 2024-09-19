@@ -11,9 +11,10 @@
 - Settings \*1
   - Re-do menus \*1
     - Colors \*DONE
-    - Attributes \*2
-    - Resource Trackers \*3
-    - Move Types \*4
+    - Attributes \*DONE
+    - Attribute Effects \*1
+    - Resource Trackers \*DONE
+    - Move Types \*DONE
     - Sheet Settings \*DONE
   - Re-add old settings \*2
 - CellData
@@ -45,3 +46,4 @@
 ## Current Task Notes
 
 - Currently moving items now works ok but form is not submitted when submitting form. To fix.
+- Could consider moving attribute array to its own datamodel extending an arrayfield
