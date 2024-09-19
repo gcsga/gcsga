@@ -4,10 +4,10 @@ import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./temp
 import { ContainerTemplate, ContainerTemplateSchema } from "./templates/container.ts"
 import { ItemType } from "../constants.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
-import { TemplatePicker, TemplatePickerSchema } from "@system"
 import { cell, display, StringBuilder } from "@util"
 import { CellData } from "./fields/cell-data.ts"
 import { SheetSettings } from "../sheet-settings.ts"
+import { TemplatePicker } from "./fields/template-picker.ts"
 
 class SkillContainerData extends ItemDataModel.mixin(BasicInformationTemplate, ContainerTemplate, ReplacementTemplate) {
 	static override childTypes = new Set([ItemType.Skill, ItemType.SkillContainer, ItemType.Technique])
@@ -15,7 +15,7 @@ class SkillContainerData extends ItemDataModel.mixin(BasicInformationTemplate, C
 	static override defineSchema(): SkillContainerSchema {
 		const fields = foundry.data.fields
 		return this.mergeSchema(super.defineSchema(), {
-			template_picker: new fields.SchemaField(TemplatePicker.defineSchema()),
+			template_picker: new fields.EmbeddedDataField(TemplatePicker),
 		}) as SkillContainerSchema
 	}
 
@@ -62,7 +62,7 @@ interface SkillContainerData extends ModelPropsFromSchema<SkillContainerSchema> 
 type SkillContainerSchema = BasicInformationTemplateSchema &
 	ContainerTemplateSchema &
 	ReplacementTemplateSchema & {
-		template_picker: fields.SchemaField<TemplatePickerSchema>
+		template_picker: fields.EmbeddedDataField<TemplatePicker, true, false, true>
 	}
 
 export { SkillContainerData, type SkillContainerSchema }

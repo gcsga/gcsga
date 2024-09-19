@@ -2,9 +2,8 @@ import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
 import fields = foundry.data.fields
 import { LocalizeGURPS, TooltipGURPS, prereq } from "@util"
 import { ActorType, NumericCompareType, StringCompareType } from "@module/data/constants.ts"
-import { NumericCriteria, NumericCriteriaSchema } from "@module/util/numeric-criteria.ts"
-import { StringCriteria, StringCriteriaSchema } from "@module/util/index.ts"
-import { Nameable } from "@module/util/nameable.ts"
+import { NumericCriteria } from "@module/util/numeric-criteria.ts"
+import { Nameable, StringCriteria } from "@module/util/index.ts"
 import { ActorInst } from "../actor/helpers.ts"
 
 class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
@@ -17,19 +16,25 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 			...super.defineSchema(),
 			type: new fields.StringField({ required: true, nullable: false, blank: false, initial: prereq.Type.Trait }),
 			has: new fields.BooleanField({ initial: true }),
-			name: new fields.SchemaField(StringCriteria.defineSchema(), {
+			name: new fields.EmbeddedDataField(StringCriteria, {
+				required: true,
+				nullable: false,
 				initial: {
 					compare: StringCompareType.IsString,
 					qualifier: "",
 				},
 			}),
-			level: new fields.SchemaField(NumericCriteria.defineSchema(), {
+			level: new fields.EmbeddedDataField(NumericCriteria, {
+				required: true,
+				nullable: false,
 				initial: {
 					compare: NumericCompareType.AtLeastNumber,
 					qualifier: 0,
 				},
 			}),
-			notes: new fields.SchemaField(StringCriteria.defineSchema(), {
+			notes: new fields.EmbeddedDataField(StringCriteria, {
+				required: true,
+				nullable: false,
 				initial: {
 					compare: StringCompareType.AnyString,
 					qualifier: "",
@@ -85,9 +90,9 @@ interface TraitPrereq extends BasePrereq<TraitPrereqSchema>, ModelPropsFromSchem
 
 type TraitPrereqSchema = BasePrereqSchema & {
 	has: fields.BooleanField
-	name: fields.SchemaField<StringCriteriaSchema, SourceFromSchema<StringCriteriaSchema>, StringCriteria>
-	level: fields.SchemaField<NumericCriteriaSchema, SourceFromSchema<NumericCriteriaSchema>, NumericCriteria>
-	notes: fields.SchemaField<StringCriteriaSchema, SourceFromSchema<StringCriteriaSchema>, StringCriteria>
+	name: fields.EmbeddedDataField<StringCriteria, true, false, true>
+	level: fields.EmbeddedDataField<NumericCriteria, true, false, true>
+	notes: fields.EmbeddedDataField<StringCriteria, true, false, true>
 }
 
 export { TraitPrereq, type TraitPrereqSchema }

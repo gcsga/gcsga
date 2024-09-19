@@ -1,9 +1,9 @@
+import { AbstractWeaponTemplate } from "../templates/index.ts"
 import fields = foundry.data.fields
 import { WeaponField } from "./weapon-field.ts"
 import { Int, LocalizeGURPS, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
-import { WeaponRangedData } from "../weapon-ranged.ts"
 
-class WeaponShots extends WeaponField<WeaponRangedData, WeaponShotsSchema> {
+class WeaponShots extends WeaponField<AbstractWeaponTemplate, WeaponShotsSchema> {
 	static override defineSchema(): WeaponShotsSchema {
 		const fields = foundry.data.fields
 		return {
@@ -68,12 +68,12 @@ class WeaponShots extends WeaponField<WeaponRangedData, WeaponShotsSchema> {
 		return buffer.toString()
 	}
 
-	override tooltip(_w: WeaponRangedData): string {
+	override tooltip(_w: AbstractWeaponTemplate): string {
 		if (this.reloadTimeIsPerShot) return LocalizeGURPS.translations.GURPS.Tooltip.ReloadTimeIsPerShot
 		return ""
 	}
 
-	override resolve(w: WeaponRangedData, tooltip: TooltipGURPS | null): WeaponShots {
+	override resolve(w: AbstractWeaponTemplate, tooltip: TooltipGURPS | null): WeaponShots {
 		const result = this.toObject()
 		result.reloadTimeIsPerShot = w.resolveBoolFlag(wswitch.Type.ReloadTimeIsPerShot, result.reloadTimeIsPerShot)
 		result.thrown = w.resolveBoolFlag(wswitch.Type.Thrown, result.thrown)
@@ -148,7 +148,7 @@ class WeaponShots extends WeaponField<WeaponRangedData, WeaponShotsSchema> {
 }
 
 interface WeaponShots
-	extends WeaponField<WeaponRangedData, WeaponShotsSchema>,
+	extends WeaponField<AbstractWeaponTemplate, WeaponShotsSchema>,
 		ModelPropsFromSchema<WeaponShotsSchema> {}
 
 type WeaponShotsSchema = {

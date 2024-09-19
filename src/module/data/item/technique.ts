@@ -15,7 +15,7 @@ import { ItemGURPS2 } from "@module/document/item.ts"
 import { SkillData } from "./index.ts"
 import { AttributeDifficulty } from "./fields/attribute-difficulty.ts"
 import { CellData } from "./fields/cell-data.ts"
-import { SkillDefault, SkillDefaultSchema } from "../skill-default.ts"
+import { SkillDefault } from "../skill-default.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { Study } from "../study.ts"
 
@@ -41,15 +41,15 @@ class TechniqueData extends ItemDataModel.mixin(
 					difficulty: difficulty.Level.Hard,
 				},
 			}),
-			default: new fields.SchemaField(SkillDefault.defineSchema(), {
+			default: new fields.EmbeddedDataField(SkillDefault, {
 				required: true,
 				nullable: true,
 			}),
-			defaulted_from: new fields.SchemaField(SkillDefault.defineSchema(), {
+			defaulted_from: new fields.EmbeddedDataField(SkillDefault, {
 				required: true,
 				nullable: true,
 			}),
-			defaults: new fields.ArrayField(new fields.SchemaField(SkillDefault.defineSchema())),
+			defaults: new fields.ArrayField(new fields.EmbeddedDataField(SkillDefault)),
 			limit: new fields.NumberField({
 				required: true,
 				nullable: true,
@@ -254,21 +254,9 @@ type TechniqueSchema = BasicInformationTemplateSchema &
 	StudyTemplateSchema &
 	ReplacementTemplateSchema &
 	AbstractSkillTemplateSchema & {
-		default: fields.SchemaField<
-			SkillDefaultSchema,
-			SourceFromSchema<SkillDefaultSchema>,
-			ModelPropsFromSchema<SkillDefaultSchema>,
-			true,
-			true
-		>
-		defaulted_from: fields.SchemaField<
-			SkillDefaultSchema,
-			SourceFromSchema<SkillDefaultSchema>,
-			ModelPropsFromSchema<SkillDefaultSchema>,
-			true,
-			true
-		>
-		defaults: fields.ArrayField<fields.SchemaField<SkillDefaultSchema>>
+		default: fields.EmbeddedDataField<SkillDefault, true, false, true>
+		defaulted_from: fields.EmbeddedDataField<SkillDefault, true, false, true>
+		defaults: fields.ArrayField<fields.EmbeddedDataField<SkillDefault>>
 		limit: fields.NumberField<number, number, true, true, true>
 		limited: fields.BooleanField<boolean, boolean, true, false, true>
 	}

@@ -32,7 +32,7 @@ export type ParsedFunction = {
 export type Operand = ExpressionOperand | ExpressionTree | ParsedFunction | number | boolean | string | null
 
 export function resolverIsCharacter(resolver: VariableResolver | null): resolver is CharacterData {
-	return resolver instanceof Actor && resolver.type == ActorType.Character
+	return resolver instanceof Actor && resolver.type === ActorType.Character
 }
 
 function isExpressionOperand(operand: Operand): operand is ExpressionOperand {
@@ -53,8 +53,8 @@ function isExpressionTree(operand: Operand): operand is ExpressionTree {
 		"evaluator" in operand &&
 		"left" in operand &&
 		(operand as ExpressionTree).evaluator instanceof Evaluator &&
-		(("right" in operand && "op" in operand && (operand as any).op instanceof Operator) ||
-			("unaryOp" in operand && (operand as any).unaryOp instanceof Operator))
+		(("right" in operand && "op" in operand && operand.op instanceof Operator) ||
+			("unaryOp" in operand && operand.unaryOp instanceof Operator))
 	)
 }
 

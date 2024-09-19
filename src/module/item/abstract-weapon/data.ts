@@ -27,7 +27,7 @@
 // 				initial: "Usage",
 // 			}),
 // 			usage_notes: new fields.StringField(),
-// 			defaults: new fields.ArrayField(new fields.SchemaField(SkillDefault.defineSchema())),
+// 			defaults: new fields.ArrayField(new fields.EmbeddedDataField(SkillDefault)),
 // 			damage: new fields.SchemaField(WeaponDamage.defineSchema()),
 // 		}
 // 	}

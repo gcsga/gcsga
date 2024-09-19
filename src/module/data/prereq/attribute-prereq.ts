@@ -4,7 +4,7 @@ import { prereq } from "@util/enum/prereq.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import { ActorType, NumericCompareType, gid } from "@data"
 import { TooltipGURPS } from "@util"
-import { NumericCriteria, NumericCriteriaSchema } from "@module/util/index.ts"
+import { NumericCriteria } from "@module/util/index.ts"
 import { ActorInst } from "../actor/helpers.ts"
 
 class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
@@ -18,7 +18,9 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 			which: new fields.StringField({ initial: gid.Strength }),
 			has: new fields.BooleanField({ initial: true }),
 			combined_with: new fields.StringField({ initial: "" }),
-			qualifier: new fields.SchemaField(NumericCriteria.defineSchema(), {
+			qualifier: new fields.EmbeddedDataField(NumericCriteria, {
+				required: true,
+				nullable: false,
 				initial: {
 					compare: NumericCompareType.AtLeastNumber,
 					qualifier: 10,
@@ -67,6 +69,6 @@ type AttributePrereqSchema = BasePrereqSchema & {
 	has: fields.BooleanField<boolean, boolean, true, false, true>
 	which: fields.StringField<string, string, true, false, true>
 	combined_with: fields.StringField<string, string, true, false, true>
-	qualifier: fields.SchemaField<NumericCriteriaSchema, SourceFromSchema<NumericCriteriaSchema>, NumericCriteria>
+	qualifier: fields.EmbeddedDataField<NumericCriteria, true, false, true>
 }
 export { AttributePrereq }

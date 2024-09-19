@@ -1,13 +1,13 @@
-import { StringCriteria, StringCriteriaSchema } from "@module/util/string-criteria.ts"
+import { StringCriteria } from "@module/util/string-criteria.ts"
 import fields = foundry.data.fields
 import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
 import { prereq } from "@util/enum/prereq.ts"
 import { ActorType, ItemType, NumericCompareType, StringCompareType } from "@module/data/constants.ts"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
-import { NumericCriteria, NumericCriteriaSchema } from "@module/util/numeric-criteria.ts"
-import { Nameable } from "@module/util/nameable.ts"
+import { NumericCriteria } from "@module/util/numeric-criteria.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { ActorInst } from "../actor/helpers.ts"
+import { Nameable } from "@module/util/index.ts"
 
 class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 	static override TYPE = prereq.Type.Skill
@@ -19,19 +19,25 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 			...super.defineSchema(),
 			type: new fields.StringField({ required: true, nullable: false, blank: false, initial: prereq.Type.Skill }),
 			has: new fields.BooleanField({ initial: true }),
-			name: new fields.SchemaField(StringCriteria.defineSchema(), {
+			name: new fields.EmbeddedDataField(StringCriteria, {
+				required: true,
+				nullable: false,
 				initial: {
 					compare: StringCompareType.IsString,
 					qualifier: "",
 				},
 			}),
-			level: new fields.SchemaField(NumericCriteria.defineSchema(), {
+			level: new fields.EmbeddedDataField(NumericCriteria, {
+				required: true,
+				nullable: false,
 				initial: {
 					compare: NumericCompareType.AtLeastNumber,
 					qualifier: 0,
 				},
 			}),
-			specialization: new fields.SchemaField(StringCriteria.defineSchema(), {
+			specialization: new fields.EmbeddedDataField(StringCriteria, {
+				required: true,
+				nullable: false,
 				initial: {
 					compare: StringCompareType.AnyString,
 					qualifier: "",
@@ -102,9 +108,9 @@ interface SkillPrereq extends BasePrereq<SkillPrereqSchema>, ModelPropsFromSchem
 
 type SkillPrereqSchema = BasePrereqSchema & {
 	has: fields.BooleanField
-	name: fields.SchemaField<StringCriteriaSchema, SourceFromSchema<StringCriteriaSchema>, StringCriteria>
-	level: fields.SchemaField<NumericCriteriaSchema, SourceFromSchema<NumericCriteriaSchema>, NumericCriteria>
-	specialization: fields.SchemaField<StringCriteriaSchema, SourceFromSchema<StringCriteriaSchema>, StringCriteria>
+	name: fields.EmbeddedDataField<StringCriteria, true, false, true>
+	level: fields.EmbeddedDataField<NumericCriteria, true, false, true>
+	specialization: fields.EmbeddedDataField<StringCriteria, true, false, true>
 }
 
 export { SkillPrereq, type SkillPrereqSchema }

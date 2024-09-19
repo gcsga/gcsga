@@ -1,9 +1,9 @@
 import fields = foundry.data.fields
 import { Int, LocalizeGURPS, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
-import { type WeaponRangedData } from "../weapon-ranged.ts"
 import { WeaponField } from "./weapon-field.ts"
+import { AbstractWeaponTemplate } from "../templates/index.ts"
 
-class WeaponROFMode extends WeaponField<WeaponRangedData, WeaponROFModeSchema> {
+class WeaponROFMode extends WeaponField<AbstractWeaponTemplate, WeaponROFModeSchema> {
 	static override defineSchema(): WeaponROFModeSchema {
 		const fields = foundry.data.fields
 		return {
@@ -58,7 +58,7 @@ class WeaponROFMode extends WeaponField<WeaponRangedData, WeaponROFModeSchema> {
 
 	// Tooltip returns a tooltip for the data, if any. Call .resolve() prior to calling this method if you want the tooltip
 	// to be based on the resolved values.
-	override tooltip(_w: WeaponRangedData): string {
+	override tooltip(_w: AbstractWeaponTemplate): string {
 		if (
 			this.shotsPerAttack <= 0 ||
 			(this.secondaryProjectiles <= 0 && !this.fullAutoOnly && !this.highCyclicControlledBursts)
@@ -99,9 +99,9 @@ class WeaponROFMode extends WeaponField<WeaponRangedData, WeaponROFModeSchema> {
 		return tooltip.toString()
 	}
 
-	override resolve(w: WeaponRangedData, tooltip: TooltipGURPS, firstMode: boolean): WeaponROFMode {
+	override resolve(w: AbstractWeaponTemplate, tooltip: TooltipGURPS, firstMode: boolean): WeaponROFMode {
 		const result = this.toObject()
-		let [shotsFeature, secondaryFeature] = firstMode
+		const [shotsFeature, secondaryFeature] = firstMode
 			? [feature.Type.WeaponRofMode1ShotsBonus, feature.Type.WeaponRofMode1SecondaryBonus]
 			: [feature.Type.WeaponRofMode2ShotsBonus, feature.Type.WeaponRofMode2SecondaryBonus]
 
@@ -174,7 +174,7 @@ class WeaponROFMode extends WeaponField<WeaponRangedData, WeaponROFModeSchema> {
 }
 
 interface WeaponROFMode
-	extends WeaponField<WeaponRangedData, WeaponROFModeSchema>,
+	extends WeaponField<AbstractWeaponTemplate, WeaponROFModeSchema>,
 		ModelPropsFromSchema<WeaponROFModeSchema> {}
 
 type WeaponROFModeSchema = {

@@ -1,9 +1,9 @@
-import { WeaponRangedData } from "../weapon-ranged.ts"
+import { AbstractWeaponTemplate } from "../templates/index.ts"
 import fields = foundry.data.fields
 import { WeaponField } from "./weapon-field.ts"
 import { Int, Length, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
 
-class WeaponRange extends WeaponField<WeaponRangedData, WeaponRangeSchema> {
+class WeaponRange extends WeaponField<AbstractWeaponTemplate, WeaponRangeSchema> {
 	static override defineSchema(): WeaponRangeSchema {
 		const fields = foundry.data.fields
 		return {
@@ -90,7 +90,7 @@ class WeaponRange extends WeaponField<WeaponRangedData, WeaponRangeSchema> {
 		return buffer.toString()
 	}
 
-	override resolve(w: WeaponRangedData, tooltip: TooltipGURPS | null): WeaponRange {
+	override resolve(w: AbstractWeaponTemplate, tooltip: TooltipGURPS | null): WeaponRange {
 		const result = this.toObject()
 		result.musclePowered = w.resolveBoolFlag(wswitch.Type.MusclePowered, result.musclePowered)
 		result.inMiles = w.resolveBoolFlag(wswitch.Type.RangeInMiles, result.inMiles)
@@ -165,7 +165,7 @@ class WeaponRange extends WeaponField<WeaponRangedData, WeaponRangeSchema> {
 }
 
 interface WeaponRange
-	extends WeaponField<WeaponRangedData, WeaponRangeSchema>,
+	extends WeaponField<AbstractWeaponTemplate, WeaponRangeSchema>,
 		ModelPropsFromSchema<WeaponRangeSchema> {}
 
 type WeaponRangeSchema = {

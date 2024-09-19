@@ -1,9 +1,9 @@
-import { WeaponMeleeData } from "../weapon-melee.ts"
 import fields = foundry.data.fields
 import { WeaponField } from "./weapon-field.ts"
 import { Int, LocalizeGURPS, StringBuilder, TooltipGURPS, feature, wswitch } from "@util"
+import { AbstractWeaponTemplate } from "../templates/index.ts"
 
-class WeaponReach extends WeaponField<WeaponMeleeData, WeaponReachSchema> {
+class WeaponReach extends WeaponField<AbstractWeaponTemplate, WeaponReachSchema> {
 	static override defineSchema(): WeaponReachSchema {
 		const fields = foundry.data.fields
 		return {
@@ -62,12 +62,12 @@ class WeaponReach extends WeaponField<WeaponMeleeData, WeaponReachSchema> {
 		return buffer.toString()
 	}
 
-	override tooltip(_w: WeaponMeleeData): string {
+	override tooltip(_w: AbstractWeaponTemplate): string {
 		if (this.changeRequiresReady) return LocalizeGURPS.translations.GURPS.Tooltip.ReachChangeRequiresReady
 		return ""
 	}
 
-	override resolve(w: WeaponMeleeData, tooltip: TooltipGURPS | null): WeaponReach {
+	override resolve(w: AbstractWeaponTemplate, tooltip: TooltipGURPS | null): WeaponReach {
 		const result = this.toObject()
 		result.closeCombat = w.resolveBoolFlag(wswitch.Type.CloseCombat, result.closeCombat)
 		result.changeRequiresReady = w.resolveBoolFlag(
@@ -115,7 +115,7 @@ class WeaponReach extends WeaponField<WeaponMeleeData, WeaponReachSchema> {
 }
 
 interface WeaponReach
-	extends WeaponField<WeaponMeleeData, WeaponReachSchema>,
+	extends WeaponField<AbstractWeaponTemplate, WeaponReachSchema>,
 		ModelPropsFromSchema<WeaponReachSchema> {}
 
 type WeaponReachSchema = {

@@ -2,8 +2,7 @@ import { Int, LocalizeGURPS, TooltipGURPS, feature, wsel, wswitch } from "@util"
 import { BaseFeature } from "./base-feature.ts"
 import { WeaponBonusSchema } from "./data.ts"
 import { ItemType } from "@module/data/constants.ts"
-import { NumericCriteria, StringCriteria } from "@module/util/index.ts"
-import { Nameable } from "@module/util/nameable.ts"
+import { Nameable, NumericCriteria, StringCriteria } from "@module/util/index.ts"
 import { ItemDataModel } from "@module/data/abstract.ts"
 import { AbstractWeaponTemplate } from "@module/data/item/templates/abstract-weapon.ts"
 
@@ -21,11 +20,15 @@ class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 			switch_type: new fields.StringField({ choices: wswitch.Types, nullable: true, initial: null }),
 			switch_type_value: new fields.BooleanField({ nullable: true, initial: null }),
 			selection_type: new fields.StringField({ choices: wsel.Types, initial: wsel.Type.WithRequiredSkill }),
-			name: new fields.SchemaField(StringCriteria.defineSchema(), { nullable: true }),
-			specialization: new fields.SchemaField(StringCriteria.defineSchema(), { nullable: true }),
-			level: new fields.SchemaField(NumericCriteria.defineSchema(), { nullable: true }),
-			usage: new fields.SchemaField(StringCriteria.defineSchema(), { nullable: true }),
-			tags: new fields.SchemaField(StringCriteria.defineSchema(), { nullable: true }),
+			name: new fields.EmbeddedDataField(StringCriteria, { required: true, nullable: true, initial: null }),
+			specialization: new fields.EmbeddedDataField(StringCriteria, {
+				required: true,
+				nullable: true,
+				initial: null,
+			}),
+			level: new fields.EmbeddedDataField(NumericCriteria, { required: true, nullable: true, initial: null }),
+			usage: new fields.EmbeddedDataField(StringCriteria, { required: true, nullable: true, initial: null }),
+			tags: new fields.EmbeddedDataField(StringCriteria, { required: true, nullable: true, initial: null }),
 			amount: new fields.NumberField({ integer: true, initial: 1 }),
 			leveled: new fields.BooleanField({ initial: false }),
 			per_die: new fields.BooleanField({ initial: false }),

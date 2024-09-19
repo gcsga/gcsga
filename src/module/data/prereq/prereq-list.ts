@@ -1,6 +1,6 @@
 import { ActorType, NumericCompareType } from "@module/data/constants.ts"
 import fields = foundry.data.fields
-import { NumericCriteria, NumericCriteriaSchema } from "@module/util/index.ts"
+import { NumericCriteria } from "@module/util/index.ts"
 import { LocalizeGURPS, TooltipGURPS, extractTechLevel } from "@util"
 import { prereq } from "@util/enum/prereq.ts"
 import { BasePrereq } from "./index.ts"
@@ -30,7 +30,7 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 			...super.defineSchema(),
 			type: new fields.StringField({ required: true, nullable: false, blank: false, initial: prereq.Type.List }),
 			all: new fields.BooleanField({ initial: true }),
-			when_tl: new fields.SchemaField(NumericCriteria.defineSchema()),
+			when_tl: new fields.EmbeddedDataField(NumericCriteria),
 			// prereqs: new fields.ArrayField(new fields.TypedSchemaField(BasePrereq.TYPES)),
 			prereqs: new fields.ArrayField(new fields.StringField({ required: true, nullable: false })),
 		}
@@ -67,7 +67,7 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 		let count = 0
 		let local: TooltipGURPS | null = null
 		if (tooltip !== null) local = new TooltipGURPS()
-		let eqpPenalty = false
+		const eqpPenalty = false
 		for (const one of this.children) {
 			if (one.satisfied(actor, exclude, local, hasEquipmentPenalty)) count += 1
 		}
@@ -95,7 +95,7 @@ interface PrereqList extends BasePrereq<PrereqListSchema>, ModelPropsFromSchema<
 
 export type PrereqListSchema = BasePrereqSchema & {
 	all: fields.BooleanField<boolean, boolean, true, false, true>
-	when_tl: fields.SchemaField<NumericCriteriaSchema, SourceFromSchema<NumericCriteriaSchema>, NumericCriteria, false>
+	when_tl: fields.EmbeddedDataField<NumericCriteria, true, false, true>
 	prereqs: fields.ArrayField<fields.StringField<string, string, true, false, true>>
 }
 

@@ -4,10 +4,10 @@ import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./temp
 import { ContainerTemplate, ContainerTemplateSchema } from "./templates/container.ts"
 import { ItemType } from "../constants.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
-import { TemplatePicker, TemplatePickerSchema } from "@system"
 import { cell, display, StringBuilder } from "@util"
 import { CellData } from "./fields/cell-data.ts"
 import { SheetSettings } from "../sheet-settings.ts"
+import { TemplatePicker } from "./fields/template-picker.ts"
 
 class SpellContainerData extends ItemDataModel.mixin(BasicInformationTemplate, ContainerTemplate, ReplacementTemplate) {
 	static override childTypes = new Set([ItemType.Spell, ItemType.SpellContainer, ItemType.RitualMagicSpell])
@@ -15,7 +15,7 @@ class SpellContainerData extends ItemDataModel.mixin(BasicInformationTemplate, C
 	static override defineSchema(): SpellContainerSchema {
 		const fields = foundry.data.fields
 		return this.mergeSchema(super.defineSchema(), {
-			template_picker: new fields.SchemaField(TemplatePicker.defineSchema()),
+			template_picker: new fields.EmbeddedDataField(TemplatePicker),
 		}) as SpellContainerSchema
 	}
 
@@ -69,7 +69,7 @@ interface SpellContainerData extends ModelPropsFromSchema<SpellContainerSchema> 
 type SpellContainerSchema = BasicInformationTemplateSchema &
 	ContainerTemplateSchema &
 	ReplacementTemplateSchema & {
-		template_picker: fields.SchemaField<TemplatePickerSchema>
+		template_picker: fields.EmbeddedDataField<TemplatePicker, true, false, true>
 	}
 
 export { SpellContainerData, type SpellContainerSchema }

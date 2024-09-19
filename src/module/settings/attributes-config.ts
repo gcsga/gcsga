@@ -123,7 +123,7 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 		this._cachedSettings = new AttributeSettings(value as Partial<SourceFromSchema<AttributeSettingsSchema>>)
 	}
 
-	override async _prepareContext(_options = {}) {
+	override async _prepareContext(_options = {}): Promise<object> {
 		const source = this.cachedSettings
 		const data = source
 		return {
@@ -216,7 +216,7 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 		// and delete original fields
 		const thresholdArrayData: Record<string, threshold.Op[]> = {}
 		for (const [key, value] of Object.entries(thresholdCheckboxData) as [string, boolean][]) {
-			let keyArray = key.split(".")
+			const keyArray = key.split(".")
 			const opValue = keyArray.pop() as threshold.Op
 			const keyArrayString = keyArray.join(".")
 
@@ -292,6 +292,7 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 		this.cachedSettings = source
 		await this.render()
 	}
+
 	static async #onMoveItemDown(this: AttributesConfig, event: Event): Promise<void> {
 		event.preventDefault()
 		event.stopImmediatePropagation()

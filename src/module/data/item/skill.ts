@@ -20,10 +20,8 @@ import {
 	display,
 	encumbrance,
 } from "@util"
-import { SkillLevel, addTooltipForSkillLevelAdj, formatRelativeSkill } from "./helpers.ts"
+import { ItemInst, SkillLevel, addTooltipForSkillLevelAdj, formatRelativeSkill } from "./helpers.ts"
 import { ActorTemplateType } from "../actor/types.ts"
-import { TechniqueData } from "./technique.ts"
-import { ItemGURPS2 } from "@module/document/item.ts"
 import { CellData } from "./fields/cell-data.ts"
 import { SkillDefault, SkillDefaultSchema } from "../skill-default.ts"
 import { SheetSettings } from "../sheet-settings.ts"
@@ -51,7 +49,7 @@ class SkillData extends ItemDataModel.mixin(
 				nullable: false,
 				initial: "",
 			}),
-			difficulty: new fields.SchemaField(AttributeDifficulty.defineSchema(), {
+			difficulty: new fields.EmbeddedDataField(AttributeDifficulty, {
 				initial: {
 					attribute: gid.Dexterity,
 					difficulty: difficulty.Level.Average,
@@ -68,7 +66,7 @@ class SkillData extends ItemDataModel.mixin(
 				nullable: true,
 				initial: null,
 			}),
-			defaults: new fields.ArrayField(new fields.SchemaField(SkillDefault.defineSchema())),
+			defaults: new fields.ArrayField(new fields.EmbeddedDataField(SkillDefault)),
 		}) as SkillSchema
 	}
 
@@ -158,11 +156,8 @@ class SkillData extends ItemDataModel.mixin(
 		return ""
 	}
 
-	get defaultSkill():
-		| (ItemGURPS2 &
-				({ type: ItemType.Skill; system: SkillData } | { type: ItemType.Technique; system: TechniqueData }))
-		| null {
-		const actor = this.actor as any
+	get defaultSkill(): ItemInst<ItemType.Skill | ItemType.Technique> | null {
+		const actor = this.actor
 		if (!actor) return null
 		if (!actor.isOfType(ActorType.Character)) return null
 		if (!this.defaulted_from) return null
@@ -255,7 +250,7 @@ class SkillData extends ItemDataModel.mixin(
 
 	resolveToSpecificDefaults(): SkillDefault[] {
 		const actor = this.actor
-		let result: SkillDefault[] = []
+		const result: SkillDefault[] = []
 		for (const def of this.defaults) {
 			if (actor === null || def === null || !def.skillBased) result.push(def)
 			else {
@@ -393,7 +388,7 @@ type SkillSchema = BasicInformationTemplateSchema &
 			true,
 			true
 		>
-		defaults: fields.ArrayField<fields.SchemaField<SkillDefaultSchema>>
+		defaults: fields.ArrayField<fields.EmbeddedDataField<SkillDefault>>
 	}
 
 export { SkillData, type SkillSchema }

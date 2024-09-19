@@ -162,7 +162,7 @@ class SheetSettingsConfig extends api.HandlebarsApplicationMixin(api.Application
 		})
 	}
 
-	override async _prepareContext(_options = {}) {
+	override async _prepareContext(_options = {}): Promise<object> {
 		const current = game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_SHEET_SETTINGS)
 		return {
 			fields: SheetSettings.schema.fields,
@@ -193,8 +193,8 @@ class SheetSettingsConfig extends api.HandlebarsApplicationMixin(api.Application
 		progressionField?.addEventListener("change", e => {
 			e.preventDefault()
 			e.stopImmediatePropagation()
-			const newValue = (e.currentTarget as any).value
-			const hintText = game.i18n.localize(progression.Option.toAltString(newValue))
+			const newValue = (e.currentTarget as HTMLSelectElement).value
+			const hintText = game.i18n.localize(progression.Option.toAltString(newValue as progression.Option))
 			if (hintElement) hintElement.innerHTML = hintText
 		})
 		return super._onRender(context, options)

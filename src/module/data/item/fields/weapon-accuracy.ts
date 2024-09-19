@@ -1,10 +1,10 @@
 import fields = foundry.data.fields
 import { WeaponField } from "./weapon-field.ts"
 import { Int, TooltipGURPS, feature, wswitch } from "@util"
-import { WeaponRangedData } from "../weapon-ranged.ts"
 import { ActorTemplateType } from "@module/data/actor/types.ts"
+import { AbstractWeaponTemplate } from "../templates/index.ts"
 
-class WeaponAccuracy extends WeaponField<WeaponRangedData, WeaponAccuracySchema> {
+class WeaponAccuracy extends WeaponField<AbstractWeaponTemplate, WeaponAccuracySchema> {
 	static override defineSchema(): WeaponAccuracySchema {
 		const fields = foundry.data.fields
 		return {
@@ -43,7 +43,7 @@ class WeaponAccuracy extends WeaponField<WeaponRangedData, WeaponAccuracySchema>
 		return this.base.toString()
 	}
 
-	override resolve(w: WeaponRangedData, tooltip: TooltipGURPS | null): WeaponAccuracy {
+	override resolve(w: AbstractWeaponTemplate, tooltip: TooltipGURPS | null): WeaponAccuracy {
 		const result = this.toObject()
 		result.jet = w.resolveBoolFlag(wswitch.Type.Jet, result.jet)
 
@@ -99,7 +99,7 @@ class WeaponAccuracy extends WeaponField<WeaponRangedData, WeaponAccuracySchema>
 }
 
 interface WeaponAccuracy
-	extends WeaponField<WeaponRangedData, WeaponAccuracySchema>,
+	extends WeaponField<AbstractWeaponTemplate, WeaponAccuracySchema>,
 		ModelPropsFromSchema<WeaponAccuracySchema> {}
 
 type WeaponAccuracySchema = {

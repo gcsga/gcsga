@@ -60,7 +60,7 @@ export function evalOperators(divideByZeroReturnsZero: boolean): Operator[] {
 
 function not(arg: Operand): boolean | null {
 	if (typeof arg === "boolean") return !arg
-	let v = fixedFrom(arg)
+	const v = fixedFrom(arg)
 	if (v === null) return null
 	if (v === 0) return true
 	return false

@@ -4,8 +4,7 @@ import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
 import { spellcmp } from "@util/enum/spellcmp.ts"
 import { ActorType, ItemType, NumericCompareType, StringCompareType } from "@data"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
-import { NumericCriteria, NumericCriteriaSchema, StringCriteria, StringCriteriaSchema } from "@module/util/index.ts"
-import { Nameable } from "@module/util/nameable.ts"
+import { Nameable, NumericCriteria, StringCriteria } from "@module/util/index.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { ActorInst } from "../actor/helpers.ts"
 
@@ -20,13 +19,17 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 			type: new fields.StringField({ required: true, nullable: false, blank: false, initial: prereq.Type.Spell }),
 			has: new fields.BooleanField({ initial: true }),
 			sub_type: new fields.StringField({ choices: spellcmp.Types, initial: spellcmp.Type.Name }),
-			qualifier: new fields.SchemaField(StringCriteria.defineSchema(), {
+			qualifier: new fields.EmbeddedDataField(StringCriteria, {
+				required: true,
+				nullable: false,
 				initial: {
 					compare: StringCompareType.IsString,
 					qualifier: "",
 				},
 			}),
-			quantity: new fields.SchemaField(NumericCriteria.defineSchema(), {
+			quantity: new fields.EmbeddedDataField(NumericCriteria, {
+				required: true,
+				nullable: false,
 				initial: {
 					compare: NumericCompareType.AtLeastNumber,
 					qualifier: 0,
@@ -35,7 +38,7 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 		}
 	}
 
-	satisfied(actor: ActorInst<ActorType.Character>, exclude: unknown, tooltip: TooltipGURPS | null): boolean {
+	satisfied(actor: ActorInst<ActorType.Character>, exclude: object, tooltip: TooltipGURPS | null): boolean {
 		let replacements = new Map<string, string>()
 		if (Nameable.isAccesser(exclude)) replacements = exclude.nameableReplacements
 		let techLevel = ""
@@ -45,7 +48,7 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 		const colleges = new Set<string>()
 		for (const sp of actor.itemCollections.spells) {
 			if (sp.isOfType(ItemType.SpellContainer)) continue
-			if (exclude === sp || sp.system.points == 0) continue
+			if (exclude === sp || sp.system.points === 0) continue
 			if (techLevel !== "" && sp.system.tech_level !== "" && techLevel !== sp.system.tech_level) continue
 
 			switch (this.sub_type) {
@@ -121,7 +124,7 @@ interface SpellPrereq extends BasePrereq<SpellPrereqSchema>, ModelPropsFromSchem
 export type SpellPrereqSchema = BasePrereqSchema & {
 	has: fields.BooleanField
 	sub_type: fields.StringField<spellcmp.Type>
-	qualifier: fields.SchemaField<StringCriteriaSchema, SourceFromSchema<StringCriteriaSchema>, StringCriteria>
-	quantity: fields.SchemaField<NumericCriteriaSchema, SourceFromSchema<NumericCriteriaSchema>, NumericCriteria>
+	qualifier: fields.EmbeddedDataField<StringCriteria, true, false, true>
+	quantity: fields.EmbeddedDataField<NumericCriteria, true, false, true>
 }
 export { SpellPrereq }

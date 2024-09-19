@@ -1,7 +1,7 @@
 import { ReactionBonusSchema } from "./data.ts"
 import { BaseFeature } from "./base-feature.ts"
-import { Nameable } from "@module/util/nameable.ts"
 import { feature } from "@util"
+import { Nameable } from "@module/util/index.ts"
 
 class ReactionBonus extends BaseFeature<ReactionBonusSchema> {
 	static override TYPE = feature.Type.ReactionBonus

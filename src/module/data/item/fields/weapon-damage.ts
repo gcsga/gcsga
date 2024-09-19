@@ -252,7 +252,7 @@ function addDice(left: DiceGURPS, right: DiceGURPS): DiceGURPS {
 function adjustDiceForPercentBonus(d: DiceGURPS, percent: number): DiceGURPS {
 	let count = d.count
 	let modifier = d.modifier
-	let averagePerDie = (d.sides + 1) / 2
+	const averagePerDie = (d.sides + 1) / 2
 	let average = averagePerDie * count + modifier
 	modifier = Int.from((modifier * (100 + percent)) / 100)
 	if (average < 0) count = Math.max(Int.from((count * (100 + percent)) / 100), 0)

@@ -4,7 +4,7 @@ import { ItemDataInstances, ItemDataTemplates, ItemTemplateType } from "@module/
 import { ItemTemplateInst } from "@module/data/item/helpers.ts"
 import { LocalizeGURPS } from "@util"
 import { ActorGURPS2 } from "./actor.ts"
-import { Nameable } from "@module/util/nameable.ts"
+import { Nameable } from "@module/util/index.ts"
 
 class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extends Item<TParent> {
 	/**
@@ -24,10 +24,10 @@ class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extend
 
 	/* -------------------------------------------- */
 
-	override prepareData() {
+	override prepareData(): void {
 		super.prepareData()
 		if (SYSTEM_NAME in this.flags && this._systemFlagsDataModel) {
-			//@ts-expect-error abstract class overwritten
+			// @ts-expect-error abstract class overwritten
 			this.flags[SYSTEM_NAME] = new this._systemFlagsDataModel(this._source.flags[SYSTEM_NAME], {
 				parent: this,
 			})
@@ -121,11 +121,11 @@ class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extend
 	 * @param userId  The id of the User requesting the document update
 	 */
 	protected override _onCreate(
-		data: Partial<this["_source"]>,
+		data: this["_source"],
 		options: DatabaseCreateOperation<TParent>,
 		userId: string,
 	): void {
-		super._onCreate(data as any, options, userId)
+		super._onCreate(data, options, userId)
 		if (foundry.utils.isNewerVersion(game.version, 12)) return
 		this.system._onCreate?.(data, options, userId)
 	}
@@ -171,11 +171,11 @@ class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extend
 		if (scope === SYSTEM_NAME && this._systemFlagsDataModel) {
 			let diff
 			const changes = foundry.utils.expandObject({ [key]: value })
-			//@ts-expect-error value exists
+			// @ts-expect-error value exists
 			if (this.flags[SYSTEM_NAME]) diff = this.flags[SYSTEM_NAME].updateSource(changes, { dryRun: true })
-			//@ts-expect-error abstract class overwritten
+			// @ts-expect-error abstract class overwritten
 			else diff = new this._systemFlagsDataModel(changes, { parent: this }).toObject()
-			//@ts-expect-error value exists
+			// @ts-expect-error value exists
 			return this.update({ flags: { [SYSTEM_NAME]: diff } })
 		}
 		return super.setFlag(scope, key, value)

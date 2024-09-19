@@ -2,11 +2,11 @@ import { ItemDataModel } from "@module/data/abstract.ts"
 import fields = foundry.data.fields
 import { difficulty, LocalizeGURPS, StringBuilder } from "@util"
 import { ItemType } from "@module/data/constants.ts"
-import { Nameable } from "@module/util/nameable.ts"
 import { SkillLevel } from "../helpers.ts"
 import { ItemTemplateType } from "../types.ts"
 import { ActorTemplateType } from "@module/data/actor/types.ts"
-import { AttributeDifficulty, AttributeDifficultySchema } from "../fields/attribute-difficulty.ts"
+import { AttributeDifficulty } from "../fields/attribute-difficulty.ts"
+import { Nameable } from "@module/util/index.ts"
 
 class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 	protected declare _skillLevel: SkillLevel
@@ -14,7 +14,7 @@ class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 	static override defineSchema(): AbstractSkillTemplateSchema {
 		const fields = foundry.data.fields
 		return {
-			difficulty: new fields.SchemaField(AttributeDifficulty.defineSchema()),
+			difficulty: new fields.EmbeddedDataField(AttributeDifficulty),
 			tech_level: new fields.StringField({ required: true, nullable: false, initial: "" }),
 			tech_level_required: new fields.BooleanField({ required: true, nullable: false, initial: false }),
 			points: new fields.NumberField({ integer: true, min: 0 }),
@@ -151,7 +151,7 @@ interface AbstractSkillTemplate
 }
 
 type AbstractSkillTemplateSchema = {
-	difficulty: fields.SchemaField<AttributeDifficultySchema>
+	difficulty: fields.EmbeddedDataField<AttributeDifficulty>
 	tech_level: fields.StringField<string, string, true, false, true>
 	tech_level_required: fields.BooleanField<boolean, boolean, true, false, true>
 	points: fields.NumberField<number, number, true, false>

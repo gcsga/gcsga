@@ -6,9 +6,9 @@ import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/repl
 import fields = foundry.data.fields
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { TraitData } from "./trait.ts"
-import { Nameable } from "@module/util/nameable.ts"
 import { CellData } from "./fields/cell-data.ts"
 import { SheetSettings } from "../sheet-settings.ts"
+import { Nameable } from "@module/util/index.ts"
 
 class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, FeatureTemplate, ReplacementTemplate) {
 	/** Allows dynamic setting of containing trait for arbitrary value calculation */

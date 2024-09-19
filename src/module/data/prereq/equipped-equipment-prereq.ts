@@ -1,11 +1,11 @@
-import { StringCriteria, StringCriteriaSchema } from "@module/util/string-criteria.ts"
+import { StringCriteria } from "@module/util/string-criteria.ts"
 import fields = foundry.data.fields
 import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
 import { prereq } from "@util/enum/prereq.ts"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
 import { ActorType, StringCompareType } from "@module/data/constants.ts"
-import { Nameable } from "@module/util/nameable.ts"
 import { ActorInst } from "../actor/helpers.ts"
+import { Nameable } from "@module/util/index.ts"
 
 class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> {
 	static override TYPE = prereq.Type.EquippedEquipment
@@ -15,13 +15,17 @@ class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> 
 
 		return {
 			...super.defineSchema(),
-			name: new fields.SchemaField(StringCriteria.defineSchema(), {
+			name: new fields.EmbeddedDataField(StringCriteria, {
+				required: true,
+				nullable: false,
 				initial: {
 					compare: StringCompareType.IsString,
 					qualifier: "",
 				},
 			}),
-			tags: new fields.SchemaField(StringCriteria.defineSchema(), {
+			tags: new fields.EmbeddedDataField(StringCriteria, {
+				required: true,
+				nullable: false,
 				initial: {
 					compare: StringCompareType.AnyString,
 					qualifier: "",
@@ -78,8 +82,8 @@ interface EquippedEquipmentPrereq
 		ModelPropsFromSchema<EquippedEquipmentPrereqSchema> {}
 
 type EquippedEquipmentPrereqSchema = BasePrereqSchema & {
-	name: fields.SchemaField<StringCriteriaSchema, SourceFromSchema<StringCriteriaSchema>, StringCriteria>
-	tags: fields.SchemaField<StringCriteriaSchema, SourceFromSchema<StringCriteriaSchema>, StringCriteria>
+	name: fields.EmbeddedDataField<StringCriteria, true, false, true>
+	tags: fields.EmbeddedDataField<StringCriteria, true, false, true>
 }
 
 export { EquippedEquipmentPrereq, type EquippedEquipmentPrereqSchema }

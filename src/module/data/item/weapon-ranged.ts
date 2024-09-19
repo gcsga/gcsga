@@ -1,32 +1,32 @@
 import { ItemDataModel } from "../abstract.ts"
 import fields = foundry.data.fields
-import { Nameable } from "@module/util/nameable.ts"
 import {
 	AbstractWeaponTemplate,
 	AbstractWeaponTemplateSchema,
 	BasicInformationTemplate,
 	BasicInformationTemplateSchema,
 } from "./templates/index.ts"
-import { WeaponRange, WeaponRangeSchema } from "./fields/weapon-range.ts"
-import { WeaponAccuracy, WeaponAccuracySchema } from "./fields/weapon-accuracy.ts"
-import { WeaponROF, WeaponROFSchema } from "./fields/weapon-rof.ts"
-import { WeaponShots, WeaponShotsSchema } from "./fields/weapon-shots.ts"
-import { WeaponBulk, WeaponBulkSchema } from "./fields/weapon-bulk.ts"
-import { WeaponRecoil, WeaponRecoilSchema } from "./fields/weapon-recoil.ts"
+import { WeaponRange } from "./fields/weapon-range.ts"
+import { WeaponAccuracy } from "./fields/weapon-accuracy.ts"
+import { WeaponROF } from "./fields/weapon-rof.ts"
+import { WeaponShots } from "./fields/weapon-shots.ts"
+import { WeaponBulk } from "./fields/weapon-bulk.ts"
+import { WeaponRecoil } from "./fields/weapon-recoil.ts"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
 import { CellData } from "./fields/cell-data.ts"
+import { Nameable } from "@module/util/index.ts"
 
 class WeaponRangedData extends ItemDataModel.mixin(BasicInformationTemplate, AbstractWeaponTemplate) {
 	static override defineSchema(): WeaponRangedSchema {
 		const fields = foundry.data.fields
 
 		return this.mergeSchema(super.defineSchema(), {
-			accuracy: new fields.SchemaField(WeaponAccuracy.defineSchema()),
-			range: new fields.SchemaField(WeaponRange.defineSchema()),
-			rate_of_fire: new fields.SchemaField(WeaponROF.defineSchema()),
-			shots: new fields.SchemaField(WeaponShots.defineSchema()),
-			bulk: new fields.SchemaField(WeaponBulk.defineSchema()),
-			recoil: new fields.SchemaField(WeaponRecoil.defineSchema()),
+			accuracy: new fields.EmbeddedDataField(WeaponAccuracy),
+			range: new fields.EmbeddedDataField(WeaponRange),
+			rate_of_fire: new fields.EmbeddedDataField(WeaponROF),
+			shots: new fields.EmbeddedDataField(WeaponShots),
+			bulk: new fields.EmbeddedDataField(WeaponBulk),
+			recoil: new fields.EmbeddedDataField(WeaponRecoil),
 		}) as WeaponRangedSchema
 	}
 
@@ -40,41 +40,41 @@ class WeaponRangedData extends ItemDataModel.mixin(BasicInformationTemplate, Abs
 			return tooltip
 		}
 
-		let buffer = new TooltipGURPS()
+		const buffer = new TooltipGURPS()
 		const level = this.skillLevel(buffer).toString()
-		let levelTooltip = addBuffer("", buffer)
+		const levelTooltip = addBuffer("", buffer)
 
 		buffer.clear()
 		const damage = this.damage.resolve(this, buffer)
-		let damageTooltip = addBuffer("", buffer)
+		const damageTooltip = addBuffer("", buffer)
 
 		buffer.clear()
 		const accuracy = this.accuracy.resolve(this, buffer)
-		let accuracyTooltip = addBuffer(accuracy.tooltip(this), buffer)
+		const accuracyTooltip = addBuffer(accuracy.tooltip(this), buffer)
 
 		buffer.clear()
 		const range = this.range.resolve(this, buffer)
-		let rangeTooltip = addBuffer(range.tooltip(this), buffer)
+		const rangeTooltip = addBuffer(range.tooltip(this), buffer)
 
 		buffer.clear()
 		const rateOfFire = this.rate_of_fire.resolve(this, buffer)
-		let rateOfFireTooltip = addBuffer(rateOfFire.tooltip(this), buffer)
+		const rateOfFireTooltip = addBuffer(rateOfFire.tooltip(this), buffer)
 
 		buffer.clear()
 		const shots = this.shots.resolve(this, buffer)
-		let shotsTooltip = addBuffer(shots.tooltip(this), buffer)
+		const shotsTooltip = addBuffer(shots.tooltip(this), buffer)
 
 		buffer.clear()
 		const bulk = this.bulk.resolve(this, buffer)
-		let bulkTooltip = addBuffer(bulk.tooltip(this), buffer)
+		const bulkTooltip = addBuffer(bulk.tooltip(this), buffer)
 
 		buffer.clear()
 		const recoil = this.recoil.resolve(this, buffer)
-		let recoilTooltip = addBuffer(recoil.tooltip(this), buffer)
+		const recoilTooltip = addBuffer(recoil.tooltip(this), buffer)
 
 		buffer.clear()
 		const strength = this.strength.resolve(this, buffer)
-		let strengthTooltip = addBuffer(strength.tooltip(this), buffer)
+		const strengthTooltip = addBuffer(strength.tooltip(this), buffer)
 
 		const data: Record<string, CellData> = {
 			name: new CellData({
@@ -108,12 +108,12 @@ interface WeaponRangedData extends ModelPropsFromSchema<WeaponRangedSchema> {}
 
 type WeaponRangedSchema = BasicInformationTemplateSchema &
 	AbstractWeaponTemplateSchema & {
-		accuracy: fields.SchemaField<WeaponAccuracySchema, SourceFromSchema<WeaponAccuracySchema>, WeaponAccuracy>
-		range: fields.SchemaField<WeaponRangeSchema, SourceFromSchema<WeaponRangeSchema>, WeaponRange>
-		rate_of_fire: fields.SchemaField<WeaponROFSchema, SourceFromSchema<WeaponROFSchema>, WeaponROF>
-		shots: fields.SchemaField<WeaponShotsSchema, SourceFromSchema<WeaponShotsSchema>, WeaponShots>
-		bulk: fields.SchemaField<WeaponBulkSchema, SourceFromSchema<WeaponBulkSchema>, WeaponBulk>
-		recoil: fields.SchemaField<WeaponRecoilSchema, SourceFromSchema<WeaponRecoilSchema>, WeaponRecoil>
+		accuracy: fields.EmbeddedDataField<WeaponAccuracy>
+		range: fields.EmbeddedDataField<WeaponRange>
+		rate_of_fire: fields.EmbeddedDataField<WeaponROF>
+		shots: fields.EmbeddedDataField<WeaponShots>
+		bulk: fields.EmbeddedDataField<WeaponBulk>
+		recoil: fields.EmbeddedDataField<WeaponRecoil>
 	}
 
 export { WeaponRangedData, type WeaponRangedSchema }

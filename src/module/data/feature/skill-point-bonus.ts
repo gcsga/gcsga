@@ -3,7 +3,7 @@ import { LocalizeGURPS } from "@util/localize.ts"
 import { TooltipGURPS, feature } from "@util"
 import { SkillPointBonusSchema } from "./data.ts"
 import { BaseFeature } from "./base-feature.ts"
-import { Nameable } from "@module/util/nameable.ts"
+import { Nameable } from "@module/util/index.ts"
 
 class SkillPointBonus extends BaseFeature<SkillPointBonusSchema> {
 	static override TYPE = feature.Type.SkillPointBonus
@@ -13,9 +13,9 @@ class SkillPointBonus extends BaseFeature<SkillPointBonusSchema> {
 
 		return {
 			...super.defineSchema(),
-			name: new fields.SchemaField(StringCriteria.defineSchema()),
-			specialization: new fields.SchemaField(StringCriteria.defineSchema()),
-			tags: new fields.SchemaField(StringCriteria.defineSchema()),
+			name: new fields.EmbeddedDataField(StringCriteria),
+			specialization: new fields.EmbeddedDataField(StringCriteria),
+			tags: new fields.EmbeddedDataField(StringCriteria),
 		}
 	}
 
@@ -49,12 +49,6 @@ class SkillPointBonus extends BaseFeature<SkillPointBonusSchema> {
 	}
 }
 
-interface SkillPointBonus
-	extends BaseFeature<SkillPointBonusSchema>,
-		Omit<ModelPropsFromSchema<SkillPointBonusSchema>, "name" | "specialization" | "tags"> {
-	name: StringCriteria
-	specialization: StringCriteria
-	tags: StringCriteria
-}
+interface SkillPointBonus extends BaseFeature<SkillPointBonusSchema>, ModelPropsFromSchema<SkillPointBonusSchema> {}
 
 export { SkillPointBonus }

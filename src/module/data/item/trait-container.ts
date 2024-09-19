@@ -9,10 +9,10 @@ import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/repl
 import { CellData } from "./fields/cell-data.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
-import { Nameable } from "@module/util/nameable.ts"
 import { TraitModifierData } from "./trait-modifier.ts"
-import { TemplatePicker, TemplatePickerSchema } from "./fields/template-picker.ts"
 import { calculateModifierPoints } from "./helpers.ts"
+import { TemplatePicker } from "./fields/template-picker.ts"
+import { Nameable } from "@module/util/index.ts"
 
 class TraitContainerData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -50,7 +50,7 @@ class TraitContainerData extends ItemDataModel.mixin(
 				initial: container.Type.Group,
 			}),
 			disabled: new fields.BooleanField({ required: true, nullable: false, initial: false }),
-			template_picker: new fields.SchemaField(TemplatePicker.defineSchema()),
+			template_picker: new fields.EmbeddedDataField(TemplatePicker),
 		}) as TraitContainerSchema
 	}
 
@@ -214,7 +214,7 @@ type TraitContainerSchema = BasicInformationTemplateSchema &
 		cr_adj: fields.StringField<selfctrl.Adjustment, selfctrl.Adjustment, true, false, true>
 		container_type: fields.StringField<container.Type>
 		disabled: fields.BooleanField
-		template_picker: fields.SchemaField<TemplatePickerSchema>
+		template_picker: fields.EmbeddedDataField<TemplatePicker, true, false, true>
 	}
 
 export { TraitContainerData, type TraitContainerSchema }

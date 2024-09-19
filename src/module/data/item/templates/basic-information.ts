@@ -2,8 +2,8 @@ import { ItemDataModel } from "@module/data/abstract.ts"
 import fields = foundry.data.fields
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { EvalEmbeddedRegex, replaceAllStringFunc } from "@util"
-import { Nameable } from "@module/util/nameable.ts"
 import { ItemTemplateType } from "../types.ts"
+import { Nameable } from "@module/util/index.ts"
 
 class BasicInformationTemplate extends ItemDataModel<BasicInformationTemplateSchema> {
 	static override defineSchema(): BasicInformationTemplateSchema {

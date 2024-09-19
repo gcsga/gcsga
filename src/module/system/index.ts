@@ -16,7 +16,7 @@ export * from "./schema-data-fields.ts"
 // export * from "../data/sheet-settings.ts"
 // export * from "./skill-default.ts"
 // export * from "../data/study.ts"
-export * from "./template-picker.ts"
+// export * from "./template-picker.ts"
 
 // export const AttributeDefClasses = {
 // 	attribute: AttributeDef,

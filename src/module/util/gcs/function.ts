@@ -143,19 +143,19 @@ function evalNaturalLog(e: Evaluator, args: string): Operand {
 }
 
 function evalNaturalLogSum(e: Evaluator, args: string): Operand {
-	let value = evalToFixed(e, args)
+	const value = evalToFixed(e, args)
 	if (value === null) return null
 	return Int.from(Math.log1p(value))
 }
 
 function evalRound(e: Evaluator, args: string): Operand {
-	let value = evalToFixed(e, args)
+	const value = evalToFixed(e, args)
 	if (value === null) return null
 	return Math.round(value)
 }
 
 function evalSquareRoot(e: Evaluator, args: string): Operand {
-	let value = evalToFixed(e, args)
+	const value = evalToFixed(e, args)
 	if (value === null) return null
 	return Int.from(Math.sqrt(value))
 }
@@ -170,13 +170,7 @@ function evalToFixed(e: Evaluator, arg: string): number {
 
 function evalToBool(e: Evaluator, args: string): boolean {
 	let evaluated: Operand
-	try {
-		evaluated = e.evaluateNew(args)
-	} catch (err) {
-		throw err
-		// console.log(err)
-		// return false
-	}
+	evaluated = e.evaluateNew(args)
 	switch (typeof evaluated) {
 		case "boolean":
 			return evaluated
@@ -184,7 +178,7 @@ function evalToBool(e: Evaluator, args: string): boolean {
 			return evaluated !== 0
 		case "string": {
 			evaluated = evaluated.toLowerCase()
-			return evaluated == "1" || evaluated === "true" || evaluated === "yes" || evaluated === "on"
+			return evaluated === "1" || evaluated === "true" || evaluated === "yes" || evaluated === "on"
 		}
 		default:
 			return false
@@ -192,44 +186,24 @@ function evalToBool(e: Evaluator, args: string): boolean {
 }
 
 function evalToNumber(e: Evaluator, args: string): number {
-	let evaluated: Operand
-	try {
-		evaluated = e.evaluateNew(args)
-	} catch (err) {
-		throw err
-		// console.error(err)
-		// return 0
-	}
+	const evaluated: Operand = e.evaluateNew(args)
 	return fixedFrom(evaluated)
 }
 
 function evalToString(e: Evaluator, args: string): string {
-	let v: Operand
-	try {
-		v = e.evaluateNew(args)
-	} catch (err) {
-		throw err
-	}
+	const v: Operand = e.evaluateNew(args)
 	return `${v}`
 }
 
 function evalEncumbrance(e: Evaluator, args: string): number {
+	// eslint-disbale-next-line prefer-const
 	let [arg, remaining] = nextArg(args)
-	let forSkills: boolean
-	try {
-		forSkills = evalToBool(e, arg)
-	} catch (err) {
-		throw err
-	}
+	const forSkills = evalToBool(e, arg)
 	let returnFactor = false
 	;[arg] = nextArg(remaining)
 	arg = arg.trim()
 	if (arg !== "") {
-		try {
-			returnFactor = evalToBool(e, remaining)
-		} catch (err) {
-			throw err
-		}
+		returnFactor = evalToBool(e, remaining)
 	}
 	const actor = e.resolver
 	if (!resolverIsCharacter(actor)) {
@@ -252,7 +226,7 @@ function evalSkillLevel(e: Evaluator, args: string): number {
 		name = evalToString(e, name)
 	} catch (err) {
 		console.error(err)
-		0
+		return 0
 	}
 
 	let specialization: string
@@ -263,7 +237,7 @@ function evalSkillLevel(e: Evaluator, args: string): number {
 			specialization = evalToString(e, specialization)
 		} catch (err) {
 			console.error(err)
-			0
+			return 0
 		}
 	}
 
@@ -275,7 +249,7 @@ function evalSkillLevel(e: Evaluator, args: string): number {
 			relative = evalToBool(e, arg)
 		} catch (err) {
 			console.error(err)
-			0
+			return 0
 		}
 	}
 
@@ -343,19 +317,9 @@ function evalWeaponDamage(e: Evaluator, args: string): string {
 	}
 	let arg: string
 	;[arg, args] = nextArg(args)
-	let name: string
-	try {
-		name = evalToString(e, trimS(arg, `"`))
-	} catch (err) {
-		throw err
-	}
+	const name = evalToString(e, trimS(arg, `"`))
 	;[arg] = nextArg(args)
-	let usage: string
-	try {
-		usage = evalToString(e, trimS(arg, `"`))
-	} catch (err) {
-		throw err
-	}
+	const usage = evalToString(e, trimS(arg, `"`))
 	for (const w of actor.parent.itemCollections.meleeWeapons) {
 		if (equalFold(w.system.processedName, name) && equalFold(w.system.usageWithReplacements, usage))
 			return w.system.damage.resolvedValue(null)
@@ -372,15 +336,10 @@ function evalDice(e: Evaluator, args: string): string {
 	while (args !== "") {
 		let arg: string
 		;[arg, args] = nextArg(args)
-		let n: number
-		try {
-			n = evalToNumber(e, arg)
-		} catch (err) {
-			throw err
-		}
+		const n = evalToNumber(e, arg)
 		argList.push(n)
 	}
-	let d: DiceGURPS
+	let d = new DiceGURPS()
 	switch (argList.length) {
 		case 1:
 			d = new DiceGURPS({ count: 1, sides: argList[0], multiplier: 1 })
@@ -404,21 +363,13 @@ function evalAddDice(e: Evaluator, args: string): string {
 	let first: string
 	;[first, args] = nextArg(args)
 	if (first.indexOf("(") !== -1) {
-		try {
-			first = evalToString(e, first)
-		} catch (err) {
-			throw err
-		}
+		first = evalToString(e, first)
 	}
 
 	let second: string
 	;[second, args] = nextArg(args)
 	if (second.indexOf("(") !== -1) {
-		try {
-			second = evalToString(e, second)
-		} catch (err) {
-			throw err
-		}
+		second = evalToString(e, second)
 	}
 
 	const d1 = DiceGURPS.fromString(first)
@@ -447,21 +398,13 @@ function evalSubtractDice(e: Evaluator, args: string): string {
 	let first: string
 	;[first, args] = nextArg(args)
 	if (first.indexOf("(") !== -1) {
-		try {
-			first = evalToString(e, first)
-		} catch (err) {
-			throw err
-		}
+		first = evalToString(e, first)
 	}
 
 	let second: string
 	;[second, args] = nextArg(args)
 	if (second.indexOf("(") !== -1) {
-		try {
-			second = evalToString(e, second)
-		} catch (err) {
-			throw err
-		}
+		second = evalToString(e, second)
 	}
 
 	const d1 = DiceGURPS.fromString(first)
@@ -488,73 +431,40 @@ function evalSubtractDice(e: Evaluator, args: string): string {
 }
 
 function evalDiceCount(e: Evaluator, args: string): number {
-	let d: DiceGURPS
-	try {
-		d = convertToDice(e, args)
-	} catch (err) {
-		throw err
-	}
+	const d = convertToDice(e, args)
 	return d.count
 }
 
 function evalDiceSides(e: Evaluator, args: string): number {
-	let d: DiceGURPS
-	try {
-		d = convertToDice(e, args)
-	} catch (err) {
-		throw err
-	}
+	const d = convertToDice(e, args)
 	return d.sides
 }
 
 function evalDiceModifier(e: Evaluator, args: string): number {
-	let d: DiceGURPS
-	try {
-		d = convertToDice(e, args)
-	} catch (err) {
-		throw err
-	}
+	const d = convertToDice(e, args)
 	return d.modifier
 }
 
 function evalDiceMultiplier(e: Evaluator, args: string): number {
-	let d: DiceGURPS
-	try {
-		d = convertToDice(e, args)
-	} catch (err) {
-		throw err
-	}
+	const d = convertToDice(e, args)
 	return d.multiplier
 }
 
 function evalRoll(e: Evaluator, args: string): number {
-	let d: DiceGURPS
-	try {
-		d = convertToDice(e, args)
-	} catch (err) {
-		throw err
-	}
+	const d = convertToDice(e, args)
 	return Int.from(d.roll(false))
 }
 
 function convertToDice(e: Evaluator, args: string): DiceGURPS {
 	if (args.indexOf("(") !== 1) {
-		try {
-			args = evalToString(e, args)
-		} catch (err) {
-			throw err
-		}
+		args = evalToString(e, args)
 	}
 	return DiceGURPS.fromString(args)
 }
 
 function evalSigned(e: Evaluator, args: string): string {
 	let n: number
-	try {
-		n = evalToNumber(e, args)
-	} catch (err) {
-		throw err
-	}
+	n = evalToNumber(e, args)
 	return n.signedString()
 }
 
@@ -563,27 +473,13 @@ function evalSSRT(e: Evaluator, args: string): number {
 	let arg = ""
 	;[arg, args] = nextArg(args)
 	let n: string
-	try {
-		n = evalToString(e, arg)
-	} catch (err) {
-		throw err
-	}
-
+	n = evalToString(e, arg)
 	;[arg, args] = nextArg(args)
 	let units = ""
-	try {
-		units = evalToString(e, arg)
-	} catch (err) {
-		throw err
-	}
-
+	units = evalToString(e, arg)
 	;[arg, args] = nextArg(args)
 	let wantSize: boolean
-	try {
-		wantSize = evalToBool(e, arg)
-	} catch (err) {
-		throw err
-	}
+	wantSize = evalToBool(e, arg)
 
 	let length: number
 	length = Length.fromString(n + " " + units, Length.Unit.Yard)
@@ -594,12 +490,7 @@ function evalSSRT(e: Evaluator, args: string): number {
 }
 
 function evalSSRTYards(e: Evaluator, args: string): number {
-	let v: number
-	try {
-		v = evalToNumber(e, args)
-	} catch (err) {
-		throw err
-	}
+	const v = evalToNumber(e, args)
 	return valueToYards(v)
 }
 
@@ -741,11 +632,7 @@ function evalRandomHeight(e: Evaluator, args: string): number {
 		return -1
 	}
 	let stDecimal: number
-	try {
-		stDecimal = evalToNumber(e, args)
-	} catch (err) {
-		throw err
-	}
+	stDecimal = evalToNumber(e, args)
 	const st = Int.from(stDecimal)
 	const r = (n: number) => Math.random() * n
 	return Int.from(68 + (st - 10) * 2 + (r(6) + 1) - (r(6) + 1))
@@ -756,23 +643,15 @@ function evalRandomWeight(e: Evaluator, args: string): number {
 	if (!resolverIsCharacter(actor)) {
 		return -1
 	}
-	let arg: string
+	let arg = ""
 	;[arg, args] = nextArg(args)
 	let stDecimal: number
-	try {
-		stDecimal = evalToNumber(e, arg)
-	} catch (err) {
-		throw err
-	}
+	stDecimal = evalToNumber(e, arg)
 	const st = Int.from(stDecimal)
 	let adj = 0
 	if (args !== "") {
 		let adjDecimal: number
-		try {
-			adjDecimal = evalToNumber(e, args)
-		} catch (err) {
-			throw err
-		}
+		adjDecimal = evalToNumber(e, args)
 		adj = Int.from(adjDecimal)
 	}
 	adj += 3 // average
@@ -848,7 +727,7 @@ function nextArg(args: string): [string, string] {
 			case ch === ")":
 				parens -= 1
 				break
-			case ch == "," && parens === 0:
+			case ch === "," && parens === 0:
 				return [args.substring(0, i), args.substring(i + 1)]
 		}
 	}
