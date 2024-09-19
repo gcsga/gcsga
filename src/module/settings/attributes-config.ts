@@ -11,6 +11,7 @@ import { threshold } from "@util"
 import { PoolThreshold } from "@module/data/attribute/pool-threshold.ts"
 import { ResourceTrackerDef, ResourceTrackerDefSchema } from "@module/data/resource-tracker/index.ts"
 import { MoveTypeDef, MoveTypeDefSchema } from "@module/data/move-type/move-type-definition.ts"
+import { MoveTypeOverride } from "@module/data/move-type/move-type-override.ts"
 
 class AttributeSettings extends foundry.abstract.DataModel<null, AttributeSettingsSchema> {
 	static override defineSchema(): AttributeSettingsSchema {
@@ -47,12 +48,17 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 	// Cached settings used for retaining progress without submitting changes
 	private declare _cachedSettings: AttributeSettings
 
+	// Set initial values for tabgroups
+	override tabGroups: Record<string, string> = {
+		primary: "attributes",
+	}
+
 	static override DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> & { dragDrop: DragDropConfiguration[] } = {
 		id: "attributes-config",
 		tag: "form",
 		window: {
 			contentClasses: ["standard-form"],
-			icon: "fa-solid fa-palette",
+			icon: "gcs-attribute",
 			title: "GURPS.Settings.AttributesConfig.Title",
 		},
 		position: {
@@ -89,6 +95,11 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 			template: `systems/${SYSTEM_NAME}/templates/apps/resource-trackers-config.hbs`,
 			scrollable: [".attributes-list", ".thresholds-list"],
 		},
+		moveTypes: {
+			id: "move-types",
+			template: `systems/${SYSTEM_NAME}/templates/apps/move-types-config.hbs`,
+			scrollable: [".attributes-list", ".thresholds-list"],
+		},
 		footer: {
 			template: "templates/generic/form-footer.hbs",
 		},
@@ -116,20 +127,7 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 		const source = this.cachedSettings
 		const data = source
 		return {
-			tabs: <Record<string, Partial<ApplicationTab>>>{
-				attributes: {
-					id: "attributes",
-					group: "default",
-					icon: "fas fa-palette",
-					label: "Attributes Tab",
-				},
-				resourceTrackers: {
-					id: "resource-trackers",
-					group: "default",
-					icon: "fas fa-palette",
-					label: "Resource Trackers Tab",
-				},
-			},
+			tabs: this._getTabs(),
 			attributes: data.attributes,
 			resourceTrackers: data.resource_trackers,
 			moveTypes: data.move_types,
@@ -145,6 +143,38 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 				{ type: "submit", icon: "fa-solid fa-save", label: "GURPS.Settings.AttributesConfig.Submit" },
 			],
 		}
+	}
+
+	protected _getTabs(): Record<string, Partial<ApplicationTab>> {
+		return this._markTabs({
+			attributes: {
+				id: "attributes",
+				group: "primary",
+				icon: "gcs-attribute",
+				label: "GURPS.Settings.AttributesConfig.TABS.Attributes",
+			},
+			resourceTrackers: {
+				id: "resource-trackers",
+				group: "primary",
+				icon: "gcs-coins",
+				label: "GURPS.Settings.AttributesConfig.TABS.ResourceTrackers",
+			},
+			moveTypes: {
+				id: "move-types",
+				group: "primary",
+				icon: "fa-solid fa-person-running",
+				label: "GURPS.Settings.AttributesConfig.TABS.MoveTypes",
+			},
+		})
+	}
+
+	protected _markTabs(tabs: Record<string, Partial<ApplicationTab>>): Record<string, Partial<ApplicationTab>> {
+		for (const v of Object.values(tabs)) {
+			v.active = this.tabGroups[v.group!] === v.id
+			v.cssClass = v.active ? "active" : ""
+			if ("tabs" in v) this._markTabs(v.tabs as Record<string, Partial<ApplicationTab>>)
+		}
+		return tabs
 	}
 
 	protected override async _preparePartContext(partId: string, context: Record<string, any>): Promise<object> {
@@ -182,7 +212,6 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 				(threshold.Ops as string[]).includes(key.split(".").at(-1) ?? ""),
 			),
 		)
-
 		// Transform all fields pertaining to threshold ops to fields of value type Array<threshold.Op>
 		// and delete original fields
 		const thresholdArrayData: Record<string, threshold.Op[]> = {}
@@ -223,24 +252,40 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 		const type = el.dataset.itemType
 
 		switch (type) {
-			case "attribute": {
+			case "attributes":
+			case "resource_trackers":
+			case "move_types": {
 				const index = parseInt(el.dataset.itemIndex ?? "")
 				if (isNaN(index)) return
-				const [attribute] = source.attributes.splice(index, 1)
+				const [attribute] = source[type].splice(index, 1)
 				if (!attribute) return
-				source.attributes.splice(index - 1, 0, attribute)
+				source[type].splice(index - 1, 0, attribute)
 				break
 			}
-			case "threshold": {
+			case "attribute_thresholds":
+			case "resource_tracker_thresholds": {
+				const parentType = type === "attribute_thresholds" ? "attributes" : "resource_trackers"
 				const index = parseInt(el.dataset.itemIndex ?? "")
 				const parentIndex = parseInt(el.dataset.parentIndex ?? "")
 				if (isNaN(index) || isNaN(parentIndex)) return
-				const thresholds = source.attributes[parentIndex].thresholds
+				const thresholds = source[parentType][parentIndex].thresholds
 				if (!thresholds) return
 				const [threshold] = thresholds.splice(index, 1)
 				if (!threshold) return
 				thresholds.splice(index - 1, 0, threshold)
-				source.attributes[parentIndex].thresholds = thresholds
+				source[parentType][parentIndex].thresholds = thresholds
+				break
+			}
+			case "move-type-override": {
+				const index = parseInt(el.dataset.itemIndex ?? "")
+				const parentIndex = parseInt(el.dataset.parentIndex ?? "")
+				if (isNaN(index) || isNaN(parentIndex)) return
+				const overrides = source.move_types[parentIndex].overrides
+				if (!overrides) return
+				const [override] = overrides.splice(index, 1)
+				if (!override) return
+				overrides.splice(index - 1, 0, override)
+				source.move_types[parentIndex].overrides = overrides
 			}
 		}
 
@@ -256,24 +301,40 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 		const type = el.dataset.itemType
 
 		switch (type) {
-			case "attribute": {
+			case "attributes":
+			case "resource_trackers":
+			case "move_types": {
 				const index = parseInt(el.dataset.itemIndex ?? "")
 				if (isNaN(index)) return
-				const [attribute] = source.attributes.splice(index, 1)
+				const [attribute] = source[type].splice(index, 1)
 				if (!attribute) return
-				source.attributes.splice(index + 1, 0, attribute)
+				source[type].splice(index + 1, 0, attribute)
 				break
 			}
-			case "threshold": {
+			case "attribute_thresholds":
+			case "resource_tracker_thresholds": {
+				const parentType = type === "attribute_thresholds" ? "attributes" : "resource_trackers"
 				const index = parseInt(el.dataset.itemIndex ?? "")
 				const parentIndex = parseInt(el.dataset.parentIndex ?? "")
 				if (isNaN(index) || isNaN(parentIndex)) return
-				const thresholds = source.attributes[parentIndex].thresholds
+				const thresholds = source[parentType][parentIndex].thresholds
 				if (!thresholds) return
 				const [threshold] = thresholds.splice(index, 1)
 				if (!threshold) return
 				thresholds.splice(index + 1, 0, threshold)
-				source.attributes[parentIndex].thresholds = thresholds
+				source[parentType][parentIndex].thresholds = thresholds
+				break
+			}
+			case "move-type-override": {
+				const index = parseInt(el.dataset.itemIndex ?? "")
+				const parentIndex = parseInt(el.dataset.parentIndex ?? "")
+				if (isNaN(index) || isNaN(parentIndex)) return
+				const overrides = source.move_types[parentIndex].overrides
+				if (!overrides) return
+				const [override] = overrides.splice(index, 1)
+				if (!override) return
+				overrides.splice(index + 1, 0, override)
+				source.move_types[parentIndex].overrides = overrides
 			}
 		}
 
@@ -289,17 +350,36 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 		const type = el.dataset.itemType
 
 		switch (type) {
-			case "attribute": {
+			case "attributes": {
 				source.attributes.push(new AttributeDef({}).toObject())
 				break
 			}
-			case "threshold": {
+			case "resource_trackers": {
+				source.resource_trackers.push(new ResourceTrackerDef({}).toObject())
+				break
+			}
+			case "move_types": {
+				source.move_types.push(new MoveTypeDef({}).toObject())
+				break
+			}
+			case "attribute_thresholds":
+			case "resource_tracker_thresholds": {
+				const parentType = type === "attribute_thresholds" ? "attributes" : "resource_trackers"
 				const index = parseInt(el.dataset.itemIndex ?? "")
 				if (isNaN(index)) return
-				const thresholds = source.attributes[index].thresholds
+				const thresholds = source[parentType][index].thresholds
 				if (!thresholds) return
 				thresholds.push(new PoolThreshold({}).toObject())
-				source.attributes[index].thresholds = thresholds
+				source[parentType][index].thresholds = thresholds
+				break
+			}
+			case "move_type_overrides": {
+				const index = parseInt(el.dataset.itemIndex ?? "")
+				if (isNaN(index)) return
+				const overrides = source.move_types[index].overrides
+				if (!overrides) return
+				overrides.push(new MoveTypeOverride({}).toObject())
+				source.move_types[index].overrides = overrides
 			}
 		}
 
@@ -314,19 +394,32 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 		const type = el.dataset.itemType
 
 		switch (type) {
-			case "attribute": {
+			case "attributes":
+			case "resource_trackers":
+			case "move_types": {
 				const index = parseInt(el.dataset.itemIndex ?? "")
 				if (isNaN(index)) return
-				source.attributes.splice(index, 1)
+				source[type].splice(index, 1)
 				break
 			}
-			case "threshold": {
+			case "attribute_thresholds":
+			case "resource_tracker_thresholds": {
+				const parentType = type === "attribute_thresholds" ? "attributes" : "resource_trackers"
 				const index = parseInt(el.dataset.itemIndex ?? "")
 				const parentIndex = parseInt(el.dataset.parentIndex ?? "")
 				if (isNaN(index) || isNaN(parentIndex)) return
-				const thresholds = source.attributes[parentIndex].thresholds
+				const thresholds = source[parentType][parentIndex].thresholds
 				if (!thresholds) return
 				thresholds.splice(index, 1)
+				break
+			}
+			case "move_type_overrides": {
+				const index = parseInt(el.dataset.itemIndex ?? "")
+				const parentIndex = parseInt(el.dataset.parentIndex ?? "")
+				if (isNaN(index) || isNaN(parentIndex)) return
+				const overrides = source.move_types[parentIndex].overrides
+				if (!overrides) return
+				overrides.splice(index, 1)
 			}
 		}
 
@@ -336,3 +429,4 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 }
 
 export { AttributesConfig, AttributeSettings }
+export type { AttributeSettingsSchema }

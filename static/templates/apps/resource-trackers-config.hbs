@@ -1,0 +1,172 @@
+<section class="tab {{tab.cssClass}}" data-group="primary" data-tab="resource-trackers">
+	<button data-action="addItem" data-item-type="resource_trackers">
+		<i class="fas fa-plus"></i>
+		<label inert>{{localize "GURPS.Settings.AttributesConfig.ButtonAddResourceTracker"}}</label>
+	</button>
+	<hr />
+	<ul class="attributes-list">
+		{{#each resourceTrackers as |tracker|}}
+
+		<!-- Horizontal Line for all but first item-->
+		{{#unless @first}}
+		<hr />
+		{{/unless}}
+		<li class="attribute flexcol">
+			<div class="container flexrow">
+				<div class="buttons flexcol flex0">
+					<button
+						data-action="moveItemUp"
+						data-item-type="resource_trackers"
+						data-item-index="{{@index}}"
+						class="fas fa-arrow-up"
+						{{disabled
+						@first}}
+					></button>
+					<button
+						data-action="moveItemDown"
+						data-item-type="resource_trackers"
+						data-item-index="{{@index}}"
+						class="fas fa-arrow-down"
+						{{disabled
+						@last}}
+					></button>
+					<button
+						data-action="deleteItem"
+						data-item-type="resource_trackers"
+						data-item-index="{{@index}}"
+						class="fas fa-trash"
+					></button>
+				</div>
+				<div class="fields flexcol">
+					<!-- Resource Tracker ID -->
+					{{formGroup tracker.schema.fields.id name=(concat "resource_trackers." @index ".id")
+					value=tracker.id localize=true}}
+
+					<!-- Short Name -->
+					{{formGroup tracker.schema.fields.name name=(concat "resource_trackers." @index ".name")
+					value=tracker.name localize=true}}
+
+					<!-- Full Name -->
+					{{formGroup tracker.schema.fields.full_name name=(concat "resource_trackers." @index ".full_name")
+					value=tracker.full_name localize=true}}
+
+					<!-- Base Value -->
+					{{formGroup tracker.schema.fields.base name=(concat "resource_trackers." @index ".base")
+					value=tracker.base localize=true}}
+
+					<!-- Max Value -->
+					<div class="form-group">
+						<label>{{localize tracker.schema.fields.max.label}}</label>
+						<div class="form-fields">
+							<!-- Resource Tracker Max Value	 -->
+							{{formInput tracker.schema.fields.max name=(concat "resource_trackers." @index ".max")
+							value=tracker.max}}
+							<!-- Is Resource Tracker Max Value	Enforced? -->
+							{{formInput tracker.schema.fields.isMaxEnforced name=(concat "resource_trackers." @index
+							".isMaxEnforced") value=tracker.isMaxEnforced}}
+							<label>{{localize tracker.schema.fields.isMaxEnforced.label}}</label>
+						</div>
+					</div>
+
+					<!-- Min Value -->
+					<div class="form-group">
+						<label>{{localize tracker.schema.fields.min.label}}</label>
+						<div class="form-fields">
+							<!-- Resource Tracker Min Value	 -->
+							{{formInput tracker.schema.fields.min name=(concat "resource_trackers." @index ".min")
+							value=tracker.min}}
+							<!-- Is Resource Tracker Min Value	Enforced? -->
+							{{formInput tracker.schema.fields.isMinEnforced name=(concat "resource_trackers." @index
+							".isMinEnforced") value=tracker.isMinEnforced}}
+							<label>{{localize tracker.schema.fields.isMinEnforced.label}}</label>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Resource Tracker Thresholds -->
+			<fieldset>
+				<legend>{{localize "GURPS.ResourceTracker.Definition.FIELDS.Thresholds.Name"}}</legend>
+				<button data-action="addItem" data-item-type="resource_tracker_thresholds" data-item-index="{{@index}}">
+					<i class="fas fa-plus"></i>
+					<label inert>{{localize "GURPS.Settings.AttributesConfig.ButtonAddThreshold"}}</label>
+				</button>
+				{{#if tracker.thresholds.length}}
+				<hr />
+				<ul class="thresholds-list">
+					{{#each tracker.thresholds as |threshold|}}
+
+					<!-- Horizontal Line for all but first item-->
+					{{#unless @first}}
+					<hr />
+					{{/unless}}
+					<li class="threshold flexrow" data-drag>
+						<div class="buttons flexcol flex0">
+							<button
+								data-action="moveItemUp"
+								data-item-type="resource_tracker_thresholds"
+								data-parent-index="{{@../index}}"
+								data-item-index="{{@index}}"
+								class="fas fa-arrow-up"
+								{{disabled
+								@first}}
+							></button>
+							<button
+								data-action="moveItemDown"
+								data-item-type="resource_tracker_thresholds"
+								data-parent-index="{{@../index}}"
+								data-item-index="{{@index}}"
+								class="fas fa-arrow-down"
+								{{disabled
+								@last}}
+							></button>
+							<button
+								data-action="deleteItem"
+								data-item-type="resource_tracker_thresholds"
+								data-parent-index="{{@../index}}"
+								data-item-index="{{@index}}"
+								class="fas fa-trash"
+							></button>
+						</div>
+						<div class="fields flexcol">
+							<!-- State -->
+							{{formGroup threshold.schema.fields.state name=(concat "resource_trackers." @../index
+							".thresholds." @index ".state") value=threshold.state localize=true}}
+
+							<!-- Threshold -->
+							{{formGroup threshold.schema.fields.expression name=(concat "resource_trackers." @../index
+							".thresholds." @index ".expression") value=threshold.expression localize=true}}
+
+							<!--Ops -->
+							{{#each @root.ops as |label op|}}
+							<div class="form-group">
+								<label>{{localize label}}</label>
+								{{#if (in threshold.ops op)}}
+								<input
+									type="checkbox"
+									name="resource_trackers.{{@../../index}}.thresholds.{{@../index}}.ops.{{op}}"
+									checked
+								/>
+								{{else}}
+								<input
+									type="checkbox"
+									name="resource_trackers.{{@../../index}}.thresholds.{{@../index}}.ops.{{op}}"
+								/>
+								{{/if}}
+							</div>
+							{{/each}}
+
+							<!-- Explanation -->
+							{{formGroup threshold.schema.fields.explanation name=(concat "resource_trackers." @../index
+							".thresholds." @index ".explanation") value=threshold.explanation localize=true}}
+						</div>
+					</li>
+
+					{{/each}}
+				</ul>
+				{{/if}}
+			</fieldset>
+		</li>
+		{{/each}}
+	</ul>
+</section>

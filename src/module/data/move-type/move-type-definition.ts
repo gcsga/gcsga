@@ -9,27 +9,41 @@ import {
 } from "../abstract-attribute/abstract-attribute-definition.ts"
 
 class MoveTypeDef extends AbstractAttributeDef<ActorDataModel, MoveTypeDefSchema> {
-	// constructor(
-	// 	data: DeepPartial<SourceFromSchema<MoveTypeDefSchema>>,
-	// 	options?: DataModelConstructionOptions<CharacterGURPS>,
-	// ) {
-	// 	super(data, options)
-	//
-	// 	if (data.overrides) {
-	// 		this.overrides = data.overrides.map(e => new MoveTypeOverride(e!, { parent: this.parent }))
-	// 	}
-	// }
-
 	static override defineSchema(): MoveTypeDefSchema {
 		const fields = foundry.data.fields
 
 		return {
-			id: new fields.StringField({ initial: "id" }),
-			base: new fields.StringField({ initial: "$basic_move" }),
-			name: new fields.StringField({ initial: "id" }),
-			cost_per_point: new fields.NumberField({ min: 0 }),
-			overrides: new fields.ArrayField(new fields.SchemaField(MoveTypeOverride.defineSchema())),
-			order: new fields.NumberField({ min: 0 }),
+			id: new fields.StringField({
+				required: true,
+				nullable: false,
+				initial: "id",
+				label: "GURPS.MoveType.Definition.FIELDS.Id.Name",
+			}),
+			base: new fields.StringField({
+				required: true,
+				nullable: false,
+				initial: "$basic_move",
+				label: "GURPS.MoveType.Definition.FIELDS.Base.Name",
+			}),
+			name: new fields.StringField({
+				required: true,
+				nullable: false,
+				initial: "id",
+				label: "GURPS.MoveType.Definition.FIELDS.Name.Name",
+			}),
+			cost_per_point: new fields.NumberField({
+				required: true,
+				nullable: false,
+				min: 0,
+				initial: 0,
+				label: "GURPS.MoveType.Definition.FIELDS.CostPerPoint.Name",
+			}),
+			overrides: new fields.ArrayField(new fields.EmbeddedDataField(MoveTypeOverride), {
+				required: true,
+				nullable: false,
+				initial: [],
+				label: "GURPS.MoveType.Definition.FIELDS.Overrides.Name",
+			}),
 		}
 	}
 
@@ -47,12 +61,15 @@ interface MoveTypeDef
 		ModelPropsFromSchema<MoveTypeDefSchema> {}
 
 type MoveTypeDefSchema = AbstractAttributeDefSchema & {
-	name: fields.StringField
-	cost_per_point: fields.NumberField
+	name: fields.StringField<string, string, true, false, true>
+	cost_per_point: fields.NumberField<number, number, true, false, true>
 	overrides: fields.ArrayField<
-		fields.SchemaField<MoveTypeOverrideSchema, SourceFromSchema<MoveTypeOverrideSchema>, MoveTypeOverride>
+		fields.EmbeddedDataField<MoveTypeOverride>,
+		Partial<SourceFromSchema<MoveTypeOverrideSchema>>[],
+		MoveTypeOverride[],
+		true,
+		false,
+		true
 	>
-	order: fields.NumberField
 }
-
 export { MoveTypeDef, type MoveTypeDefSchema }

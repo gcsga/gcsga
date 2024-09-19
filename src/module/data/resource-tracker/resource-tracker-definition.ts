@@ -15,16 +15,59 @@ class ResourceTrackerDef extends AbstractAttributeDef<ActorDataModel, ResourceTr
 	static override defineSchema(): ResourceTrackerDefSchema {
 		const fields = foundry.data.fields
 		return {
-			id: new fields.StringField({ initial: "id" }),
-			base: new fields.StringField({ initial: "10" }),
-			name: new fields.StringField({ initial: "id" }),
-			full_name: new fields.StringField(),
-			thresholds: new fields.ArrayField(new fields.SchemaField(PoolThreshold.defineSchema())),
-			max: new fields.NumberField({ integer: true, initial: 10 }),
-			min: new fields.NumberField({ integer: true, initial: 0 }),
-			isMaxEnforced: new fields.BooleanField({ initial: false }),
-			isMinEnforced: new fields.BooleanField({ initial: false }),
-			order: new fields.NumberField({ min: 0 }),
+			id: new fields.StringField({
+				required: true,
+				nullable: false,
+				initial: "id",
+				label: "GURPS.ResourceTracker.Definition.FIELDS.Id.Name",
+			}),
+			base: new fields.StringField({
+				required: true,
+				nullable: false,
+				initial: "10",
+				label: "GURPS.ResourceTracker.Definition.FIELDS.Base.Name",
+			}),
+			name: new fields.StringField({
+				required: true,
+				nullable: false,
+				initial: "id",
+				label: "GURPS.ResourceTracker.Definition.FIELDS.Name.Name",
+			}),
+			full_name: new fields.StringField({
+				required: false,
+				nullable: false,
+				initial: "",
+				label: "GURPS.ResourceTracker.Definition.FIELDS.FullName.Name",
+			}),
+			thresholds: new fields.ArrayField(new fields.EmbeddedDataField(PoolThreshold), {
+				required: true,
+				nullable: false,
+				label: "GURPS.ResourceTracker.Definition.FIELDS.Thresholds.Name",
+			}),
+			max: new fields.NumberField({
+				required: true,
+				nullable: false,
+				integer: true,
+				initial: 10,
+				label: "GURPS.ResourceTracker.Definition.FIELDS.Max.Name",
+			}),
+			min: new fields.NumberField({
+				integer: true,
+				initial: 0,
+				label: "GURPS.ResourceTracker.Definition.FIELDS.Min.Name",
+			}),
+			isMaxEnforced: new fields.BooleanField({
+				required: true,
+				nullable: false,
+				initial: false,
+				label: "GURPS.ResourceTracker.Definition.FIELDS.IsMaxEnforced.Name",
+			}),
+			isMinEnforced: new fields.BooleanField({
+				required: true,
+				nullable: false,
+				initial: false,
+				label: "GURPS.ResourceTracker.Definition.FIELDS.IsMinEnforced.Name",
+			}),
 		}
 	}
 
@@ -50,19 +93,23 @@ class ResourceTrackerDef extends AbstractAttributeDef<ActorDataModel, ResourceTr
 
 interface ResourceTrackerDef
 	extends AbstractAttributeDef<ActorDataModel, ResourceTrackerDefSchema>,
-		Omit<ModelPropsFromSchema<ResourceTrackerDefSchema>, "thresholds"> {
-	thresholds: PoolThreshold[]
-}
+		ModelPropsFromSchema<ResourceTrackerDefSchema> {}
 
 type ResourceTrackerDefSchema = AbstractAttributeDefSchema & {
-	name: fields.StringField
-	full_name: fields.StringField
+	name: fields.StringField<string, string, true, false, true>
+	full_name: fields.StringField<string, string, false, false, true>
 	max: fields.NumberField<number, number, true, false, true>
 	min: fields.NumberField<number, number, true, false, true>
-	isMaxEnforced: fields.BooleanField
-	isMinEnforced: fields.BooleanField
-	thresholds: fields.ArrayField<fields.SchemaField<PoolThresholdSchema>>
-	order: fields.NumberField
+	isMaxEnforced: fields.BooleanField<boolean, boolean, true, false, true>
+	isMinEnforced: fields.BooleanField<boolean, boolean, true, false, true>
+	thresholds: fields.ArrayField<
+		fields.EmbeddedDataField<PoolThreshold>,
+		Partial<SourceFromSchema<PoolThresholdSchema>>[],
+		PoolThreshold[],
+		true,
+		false,
+		true
+	>
 }
 
 export { ResourceTrackerDef, type ResourceTrackerDefSchema }

@@ -1,0 +1,125 @@
+<section class="tab {{tab.cssClass}}" data-group="primary" data-tab="move-types">
+	<button data-action="addItem" data-item-type="move_types">
+		<i class="fas fa-plus"></i>
+		<label inert>{{localize "GURPS.Settings.AttributesConfig.ButtonAddMoveType"}}</label>
+	</button>
+	<hr />
+	<ul class="attributes-list">
+		{{#each moveTypes as |moveType|}}
+		<!-- Horizontal Line for all but first item-->
+		{{#unless @first}}
+		<hr />
+		{{/unless}}
+		<li class="attribute flexcol">
+			<div class="container flexrow">
+				<div class="buttons flexcol flex0">
+					<button
+						data-action="moveItemUp"
+						data-item-type="move_types"
+						data-item-index="{{@index}}"
+						class="fas fa-arrow-up"
+						{{disabled
+						@first}}
+					></button>
+					<button
+						data-action="moveItemDown"
+						data-item-type="move_types"
+						data-item-index="{{@index}}"
+						class="fas fa-arrow-down"
+						{{disabled
+						@last}}
+					></button>
+					<button
+						data-action="deleteItem"
+						data-item-type="move_types"
+						data-item-index="{{@index}}"
+						class="fas fa-trash"
+					></button>
+				</div>
+				<div class="fields flexcol">
+					<!-- Move Type ID -->
+					{{formGroup moveType.schema.fields.id name=(concat "move_types." @index ".id") value=moveType.id
+					localize=true}}
+
+					<!-- Move Type Name -->
+					{{formGroup moveType.schema.fields.name name=(concat "move_types." @index ".name")
+					value=moveType.name localize=true}}
+
+					<!-- Base Value -->
+					{{formGroup moveType.schema.fields.base name=(concat "move_types." @index ".base")
+					value=moveType.base localize=true}}
+
+					<!-- Cost Per Point -->
+					{{formGroup moveType.schema.fields.cost_per_point name=(concat "move_types." @index
+					".cost_per_point") value=moveType.cost_per_point localize=true}}
+				</div>
+			</div>
+
+			<!-- Move Type Overrides -->
+			<fieldset>
+				<legend>{{localize "GURPS.MoveType.Definition.FIELDS.Overrides.Name"}}</legend>
+				<button data-action="addItem" data-item-type="move_type_overrides" data-item-index="{{@index}}">
+					<i class="fas fa-plus"></i>
+					<label inert>{{localize "GURPS.Settings.AttributesConfig.ButtonAddOverride"}}</label>
+				</button>
+				{{#if moveType.overrides.length}}
+				<hr />
+				<ul class="thresholds-list">
+					{{#each moveType.overrides as |override|}}
+
+					<!-- Horizontal Line for all but first item-->
+					{{#unless @first}}
+					<hr />
+					{{/unless}}
+					<li class="threshold flexrow" data-drag>
+						<div class="buttons flexcol flex0">
+							<button
+								data-action="moveItemUp"
+								data-item-type="move_type_overrides"
+								data-parent-index="{{@../index}}"
+								data-item-index="{{@index}}"
+								class="fas fa-arrow-up"
+								{{disabled
+								@first}}
+							></button>
+							<button
+								data-action="moveItemDown"
+								data-item-type="move_type_overrides"
+								data-parent-index="{{@../index}}"
+								data-item-index="{{@index}}"
+								class="fas fa-arrow-down"
+								{{disabled
+								@last}}
+							></button>
+							<button
+								data-action="deleteItem"
+								data-item-type="move_type_overrides"
+								data-parent-index="{{@../index}}"
+								data-item-index="{{@index}}"
+								class="fas fa-trash"
+							></button>
+						</div>
+						<div class="fields flexcol">
+							<!-- Condition Type -->
+							{{formGroup override.schema.fields.condition.fields.type name=(concat "move_types."
+							@../index ".overrides." @index ".condition.type") value=override.condition.type
+							localize=true}}
+
+							<!-- Condition Qualifier -->
+							{{formGroup override.schema.fields.condition.fields.qualifier name=(concat "move_types."
+							@../index ".overrides." @index ".condition.qualifier") value=override.condition.qualifier
+							localize=true}}
+
+							<!-- Explanation -->
+							{{formGroup override.schema.fields.base name=(concat "move_types." @../index ".overrides."
+							@index ".base") value=override.condition.base localize=true}}
+						</div>
+					</li>
+					{{/each}}
+				</ul>
+				{{/if}}
+			</fieldset>
+		</li>
+		{{/each}}
+	</ul>
+</section>

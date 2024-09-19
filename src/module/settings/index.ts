@@ -41,7 +41,7 @@ export function registerSystemSettings(): void {
 		name: "GURPS.Settings.AttributesConfig.Name",
 		label: "GURPS.Settings.AttributesConfig.Label",
 		hint: "GURPS.Settings.AttributesConfig.Hint",
-		icon: "gcs-settings",
+		icon: "gcs-attribute",
 		type: AttributesConfig,
 		restricted: false,
 	})

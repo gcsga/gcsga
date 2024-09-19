@@ -1,5 +1,5 @@
-<div>
-	<button data-action="addItem" data-item-type="attribute">
+<section class="tab {{tab.cssClass}}" data-group="primary" data-tab="attributes">
+	<button data-action="addItem" data-item-type="attributes">
 		<i class="fas fa-plus"></i>
 		<label inert>{{localize "GURPS.Settings.AttributesConfig.ButtonAddAttribute"}}</label>
 	</button>
@@ -16,7 +16,7 @@
 				<div class="buttons flexcol flex0">
 					<button
 						data-action="moveItemUp"
-						data-item-type="attribute"
+						data-item-type="attributes"
 						data-item-index="{{@index}}"
 						class="fas fa-arrow-up"
 						{{disabled
@@ -24,7 +24,7 @@
 					></button>
 					<button
 						data-action="moveItemDown"
-						data-item-type="attribute"
+						data-item-type="attributes"
 						data-item-index="{{@index}}"
 						class="fas fa-arrow-down"
 						{{disabled
@@ -32,9 +32,8 @@
 					></button>
 					<button
 						data-action="deleteItem"
-						data-item-type="attribute"
+						data-item-type="attributes"
 						data-item-index="{{@index}}"
-						data-item-type="attribute"
 						class="fas fa-trash"
 						{{disabled
 						(and
@@ -77,10 +76,12 @@
 			{{#if (or (eq attribute.type "pool") (eq attribute.type "pool_ref"))}}
 			<fieldset>
 				<legend>{{localize "GURPS.Attribute.Definition.FIELDS.Thresholds.Name"}}</legend>
-				<button data-action="addItem" data-item-type="threshold" data-item-index="{{@index}}">
+				<button data-action="addItem" data-item-type="attribute_thresholds" data-item-index="{{@index}}">
 					<i class="fas fa-plus"></i>
 					<label inert>{{localize "GURPS.Settings.AttributesConfig.ButtonAddThreshold"}}</label>
 				</button>
+
+				{{#if attribute.thresholds.length}}
 				<hr />
 				<ul class="thresholds-list">
 					{{#each attribute.thresholds as |threshold|}}
@@ -93,7 +94,7 @@
 						<div class="buttons flexcol flex0">
 							<button
 								data-action="moveItemUp"
-								data-item-type="threshold"
+								data-item-type="attribute_thresholds"
 								data-parent-index="{{@../index}}"
 								data-item-index="{{@index}}"
 								class="fas fa-arrow-up"
@@ -102,7 +103,7 @@
 							></button>
 							<button
 								data-action="moveItemDown"
-								data-item-type="threshold"
+								data-item-type="attribute_thresholds"
 								data-parent-index="{{@../index}}"
 								data-item-index="{{@index}}"
 								class="fas fa-arrow-down"
@@ -111,14 +112,10 @@
 							></button>
 							<button
 								data-action="deleteItem"
-								data-item-type="threshold"
+								data-item-type="attribute_thresholds"
 								data-parent-index="{{@../index}}"
 								data-item-index="{{@index}}"
 								class="fas fa-trash"
-								{{disabled
-								(and
-								@first
-								@last)}}
 							></button>
 						</div>
 						<div class="fields flexcol">
@@ -157,9 +154,10 @@
 
 					{{/each}}
 				</ul>
+				{{/if}}
 			</fieldset>
 			{{/if}}
 		</li>
 		{{/each}}
 	</ul>
-</div>
+</section>
