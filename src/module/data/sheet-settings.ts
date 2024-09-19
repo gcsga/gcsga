@@ -51,13 +51,13 @@ class SheetSettings extends foundry.abstract.DataModel<ActorDataModel, Character
 
 		const sheetSettings = game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_SHEET_SETTINGS)
 		const sheetSettingsSchema = DefaultSheetSettings.defineSchema()
-		for (const key of Object.keys(sheetSettingsSchema) as Array<keyof SheetSettingsSchema>) {
+		for (const key of Object.keys(sheetSettingsSchema) as (keyof SheetSettingsSchema)[]) {
 			sheetSettingsSchema[key].initial = sheetSettings[key]
 		}
 
 		const attributeSettings = game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_ATTRIBUTES)
 		const attributeSettingsSchema = AttributeSettings.defineSchema()
-		for (const key of Object.keys(attributeSettingsSchema) as Array<keyof AttributeSettingsSchema>) {
+		for (const key of Object.keys(attributeSettingsSchema) as (keyof AttributeSettingsSchema)[]) {
 			attributeSettingsSchema[key].initial = attributeSettings[key]
 		}
 

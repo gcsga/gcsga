@@ -30,6 +30,7 @@ class CharacterData extends ActorDataModel.mixin(
 		encumbranceLevelForSkills: null,
 		basicLift: null,
 	}
+
 	skillResolverExclusions: Set<string> | null = null
 
 	// constructor(
@@ -213,7 +214,7 @@ class CharacterData extends ActorDataModel.mixin(
 		st = Math.trunc(st)
 		if (AttributeGURPS.isThresholdOpMet(threshold.Op.HalveST, this.attributes)) {
 			st /= 2
-			if (st != Math.trunc(st)) {
+			if (st !== Math.trunc(st)) {
 				st = Math.trunc(st) + 1
 			}
 		}
@@ -335,29 +336,29 @@ type CharacterSchema = FeatureHolderTemplateSchema &
 	}
 
 type CharacterProfileSchema = {
-	player_name: fields.StringField
-	name: fields.StringField
-	title: fields.StringField
-	organization: fields.StringField
-	age: fields.StringField
-	birthday: fields.StringField
-	eyes: fields.StringField
-	hair: fields.StringField
-	skin: fields.StringField
-	handedness: fields.StringField
-	height: fields.StringField
-	weight: fields.StringField
-	SM: fields.NumberField
-	gender: fields.StringField
-	tech_level: fields.StringField
-	religion: fields.StringField
-	portrait: fields.StringField
+	player_name: fields.StringField<string, string, true, false, true>
+	name: fields.StringField<string, string, true, false, true>
+	title: fields.StringField<string, string, true, false, true>
+	organization: fields.StringField<string, string, true, false, true>
+	age: fields.StringField<string, string, true, false, true>
+	birthday: fields.StringField<string, string, true, false, true>
+	eyes: fields.StringField<string, string, true, false, true>
+	hair: fields.StringField<string, string, true, false, true>
+	skin: fields.StringField<string, string, true, false, true>
+	handedness: fields.StringField<string, string, true, false, true>
+	height: fields.StringField<string, string, true, false, true>
+	weight: fields.StringField<string, string, true, false, true>
+	SM: fields.NumberField<number, number, true, false, true>
+	gender: fields.StringField<string, string, true, false, true>
+	tech_level: fields.StringField<string, string, true, false, true>
+	religion: fields.StringField<string, string, true, false, true>
+	portrait: fields.StringField<string, string, true, false, true>
 }
 
 type CharacterMoveSchema = {
 	maneuver: fields.ObjectField<CharacterManeuver, CharacterManeuver, true, true>
-	posture: fields.StringField
-	type: fields.StringField
+	posture: fields.StringField<string, string, true, false, true>
+	type: fields.StringField<string, string, true, false, true>
 }
 
 type CharacterCache = {

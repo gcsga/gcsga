@@ -1,10 +1,10 @@
 import fields = foundry.data.fields
 import { WeaponField } from "./weapon-field.ts"
 import { LocalizeGURPS, TooltipGURPS, wswitch } from "@util"
-import { WeaponRangedData } from "../weapon-ranged.ts"
 import { WeaponROFMode, type WeaponROFModeSchema } from "./weapon-rof-mode.ts"
+import { AbstractWeaponTemplate } from "../templates/index.ts"
 
-class WeaponROF extends WeaponField<WeaponRangedData, WeaponROFSchema> {
+class WeaponROF extends WeaponField<AbstractWeaponTemplate, WeaponROFSchema> {
 	static override defineSchema(): WeaponROFSchema {
 		const fields = foundry.data.fields
 		return {
@@ -40,7 +40,7 @@ class WeaponROF extends WeaponField<WeaponRangedData, WeaponROFSchema> {
 		return s1
 	}
 
-	override tooltip(w: WeaponRangedData): string {
+	override tooltip(w: AbstractWeaponTemplate): string {
 		if (this.jet) return ""
 		const buffer = new TooltipGURPS()
 		const t1 = this.mode1.tooltip(w)
@@ -56,7 +56,7 @@ class WeaponROF extends WeaponField<WeaponRangedData, WeaponROFSchema> {
 		return buffer.toString()
 	}
 
-	override resolve(w: WeaponRangedData, tooltip: TooltipGURPS | null): WeaponROF {
+	override resolve(w: AbstractWeaponTemplate, tooltip: TooltipGURPS | null): WeaponROF {
 		const result = this.clone()
 		result.jet = w.resolveBoolFlag(wswitch.Type.Jet, result.jet)
 		if (!result.jet) {
@@ -84,7 +84,7 @@ class WeaponROF extends WeaponField<WeaponRangedData, WeaponROFSchema> {
 }
 
 interface WeaponROF
-	extends WeaponField<WeaponRangedData, WeaponROFSchema>,
+	extends WeaponField<AbstractWeaponTemplate, WeaponROFSchema>,
 		Omit<ModelPropsFromSchema<WeaponROFSchema>, "mode1" | "mode2"> {
 	mode1: WeaponROFMode
 	mode2: WeaponROFMode

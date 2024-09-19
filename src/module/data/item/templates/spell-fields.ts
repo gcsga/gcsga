@@ -1,6 +1,5 @@
 import { ItemDataModel } from "@module/data/abstract.ts"
 import fields = foundry.data.fields
-import { Nameable } from "@module/util/nameable.ts"
 import {
 	ErrorGURPS,
 	EvalEmbeddedRegex,
@@ -18,6 +17,7 @@ import { ItemTemplateType } from "../types.ts"
 import { CellData } from "../fields/cell-data.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
 import { Study } from "@module/data/study.ts"
+import { Nameable } from "@module/util/index.ts"
 
 class SpellFieldsTemplate extends ItemDataModel<SpellFieldsTemplateSchema> {
 	// TODO: see if this causes issues

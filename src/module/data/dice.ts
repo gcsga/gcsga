@@ -18,7 +18,7 @@ class DiceGURPS extends foundry.abstract.DataModel<foundry.abstract.DataModel, D
 
 	static fromString(str: string): DiceGURPS {
 		str = str.trim()
-		let dice = new DiceGURPS()
+		const dice = new DiceGURPS()
 		let i = 0
 		let ch: string
 		;[dice.count, i] = extractValue(str, 0)
@@ -78,7 +78,7 @@ class DiceGURPS extends foundry.abstract.DataModel<foundry.abstract.DataModel, D
 
 	stringExtra(extraDiceFromModifiers: boolean): string {
 		const [count, modifier] = this.adjustedCountAndModifier(extraDiceFromModifiers)
-		let buffer = new StringBuilder()
+		const buffer = new StringBuilder()
 		if (count > 0) {
 			if (EnforceGURPSFormat || count > 1) buffer.push(count.toString())
 			buffer.push("d")

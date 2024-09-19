@@ -26,8 +26,8 @@
 // 				required: true,
 // 			}),
 // 			encumbrance_penalty_multiplier: new fields.NumberField({ integer: true, min: 0, max: 9, initial: 0 }),
-// 			defaulted_from: new fields.SchemaField(SkillDefault.defineSchema()),
-// 			defaults: new fields.ArrayField(new fields.SchemaField(SkillDefault.defineSchema())),
+// 			defaulted_from: new fields.EmbeddedDataField(SkillDefault),
+// 			defaults: new fields.ArrayField(new fields.EmbeddedDataField(SkillDefault)),
 // 			prereqs: new fields.ArrayField(new fields.TypedSchemaField(BasePrereq.TYPES), {
 // 				initial: [
 // 					{

@@ -1,10 +1,10 @@
 import { ActorType, SkillDefaultType, gid } from "@data"
 import fields = foundry.data.fields
-import { Nameable } from "@module/util/nameable.ts"
 import { LocalizeGURPS, StringBuilder } from "@util"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { ActorGURPS2 } from "@module/document/actor.ts"
 import { ActorTemplateType } from "@module/data/actor/types.ts"
+import { Nameable } from "@module/util/index.ts"
 
 const SKILL_BASED_DEFAULT_TYPES: Set<string> = new Set([gid.Skill, gid.Parry, gid.Block])
 

@@ -1,9 +1,10 @@
+import { AbstractWeaponTemplate } from "../templates/index.ts"
 import fields = foundry.data.fields
 import { WeaponField } from "./weapon-field.ts"
 import { Int, LocalizeGURPS, StringBuilder, TooltipGURPS, feature } from "@util"
-import { WeaponRangedData } from "../weapon-ranged.ts"
+import { ItemType } from "@module/data/constants.ts"
 
-class WeaponBulk extends WeaponField<WeaponRangedData, WeaponBulkSchema> {
+class WeaponBulk extends WeaponField<AbstractWeaponTemplate, WeaponBulkSchema> {
 	static override defineSchema(): WeaponBulkSchema {
 		const fields = foundry.data.fields
 		return {
@@ -46,7 +47,9 @@ class WeaponBulk extends WeaponField<WeaponRangedData, WeaponBulkSchema> {
 
 	// Tooltip returns a tooltip for the data, if any. Call .resolve() prior to calling this method if you want the tooltip
 	// to be based on the resolved values.
-	override tooltip(w: WeaponRangedData): string {
+	override tooltip(w: AbstractWeaponTemplate): string {
+		if (!w.isOfType(ItemType.WeaponRanged)) return ""
+
 		if (!this.retractingStock) return ""
 		if (this.normal < 0) this.normal += 1
 		if (this.giant < 0) this.giant += 1
@@ -68,7 +71,7 @@ class WeaponBulk extends WeaponField<WeaponRangedData, WeaponBulkSchema> {
 		})
 	}
 
-	override resolve(w: WeaponRangedData, tooltip: TooltipGURPS): WeaponBulk {
+	override resolve(w: AbstractWeaponTemplate, tooltip: TooltipGURPS): WeaponBulk {
 		const result = this.toObject()
 		let percent = 0
 		for (const bonus of w.collectWeaponBonuses(1, tooltip, feature.Type.WeaponBulkBonus)) {
@@ -81,14 +84,16 @@ class WeaponBulk extends WeaponField<WeaponRangedData, WeaponBulkSchema> {
 			}
 		}
 		if (percent !== 0) {
-			result.normal == Math.trunc((result.normal * percent) / 100)
-			result.giant == Math.trunc((result.giant * percent) / 100)
+			result.normal = Math.trunc((result.normal * percent) / 100)
+			result.giant = Math.trunc((result.giant * percent) / 100)
 		}
 		return new WeaponBulk(result)
 	}
 }
 
-interface WeaponBulk extends WeaponField<WeaponRangedData, WeaponBulkSchema>, ModelPropsFromSchema<WeaponBulkSchema> {}
+interface WeaponBulk
+	extends WeaponField<AbstractWeaponTemplate, WeaponBulkSchema>,
+		ModelPropsFromSchema<WeaponBulkSchema> {}
 
 type WeaponBulkSchema = {
 	normal: fields.NumberField<number, number, true, false, true>

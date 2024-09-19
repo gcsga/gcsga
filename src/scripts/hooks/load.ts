@@ -21,7 +21,7 @@ export const Load = {
 		// Assign document classes
 		CONFIG.Actor.documentClass = ActorGURPS2
 		CONFIG.ChatMessage.documentClass = ChatMessageGURPS
-		CONFIG.Dice
+		// CONFIG.Dice = DiceGURPS
 		CONFIG.Combat.documentClass = CombatGURPS
 		CONFIG.Combatant.documentClass = CombatantGURPS
 		// CONFIG.Item.collection = ItemsGURPS<ItemGURPS2<null>>

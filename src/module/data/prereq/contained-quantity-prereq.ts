@@ -4,7 +4,7 @@ import { LocalizeGURPS } from "@util/localize.ts"
 import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
 import { TooltipGURPS } from "@util"
 import { ItemType, NumericCompareType } from "@module/data/constants.ts"
-import { NumericCriteria, NumericCriteriaSchema } from "@module/util/numeric-criteria.ts"
+import { NumericCriteria } from "@module/util/numeric-criteria.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 
 class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> {
@@ -16,7 +16,9 @@ class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> 
 		return {
 			...super.defineSchema(),
 			has: new fields.BooleanField({ initial: true }),
-			qualifier: new fields.SchemaField(NumericCriteria.defineSchema(), {
+			qualifier: new fields.EmbeddedDataField(NumericCriteria, {
+				required: true,
+				nullable: false,
 				initial: {
 					compare: NumericCompareType.AtLeastNumber,
 					qualifier: 1,
@@ -53,7 +55,7 @@ interface ContainedQuantityPrereq
 
 type ContainedQuantityPrereqSchema = BasePrereqSchema & {
 	has: fields.BooleanField<boolean, boolean, true, false, true>
-	qualifier: fields.SchemaField<NumericCriteriaSchema, SourceFromSchema<NumericCriteriaSchema>, NumericCriteria>
+	qualifier: fields.EmbeddedDataField<NumericCriteria, true, false, true>
 }
 
 export { ContainedQuantityPrereq, type ContainedQuantityPrereqSchema }

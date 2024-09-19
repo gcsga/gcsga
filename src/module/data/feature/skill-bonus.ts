@@ -2,7 +2,7 @@ import { StringCriteria } from "@module/util/string-criteria.ts"
 import { feature, skillsel } from "@util"
 import { SkillBonusSchema } from "./data.ts"
 import { BaseFeature } from "./base-feature.ts"
-import { Nameable } from "@module/util/nameable.ts"
+import { Nameable } from "@module/util/index.ts"
 
 class SkillBonus extends BaseFeature<SkillBonusSchema> {
 	static override TYPE = feature.Type.SkillBonus
@@ -13,9 +13,9 @@ class SkillBonus extends BaseFeature<SkillBonusSchema> {
 		return {
 			...super.defineSchema(),
 			selection_type: new fields.StringField({ choices: skillsel.Types, initial: skillsel.Type.Name }),
-			name: new fields.SchemaField(StringCriteria.defineSchema()),
-			specialization: new fields.SchemaField(StringCriteria.defineSchema()),
-			tags: new fields.SchemaField(StringCriteria.defineSchema()),
+			name: new fields.EmbeddedDataField(StringCriteria),
+			specialization: new fields.EmbeddedDataField(StringCriteria),
+			tags: new fields.EmbeddedDataField(StringCriteria),
 		}
 	}
 
@@ -36,12 +36,6 @@ class SkillBonus extends BaseFeature<SkillBonusSchema> {
 	}
 }
 
-interface SkillBonus
-	extends BaseFeature<SkillBonusSchema>,
-		Omit<ModelPropsFromSchema<SkillBonusSchema>, "name" | "specialization" | "tags"> {
-	name: StringCriteria
-	specialization: StringCriteria
-	tags: StringCriteria
-}
+interface SkillBonus extends BaseFeature<SkillBonusSchema>, ModelPropsFromSchema<SkillBonusSchema> {}
 
 export { SkillBonus }

@@ -2,7 +2,7 @@ import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
 import fields = foundry.data.fields
 import { LocalizeGURPS, TooltipGURPS, Weight, prereq } from "@util"
 import { ActorType, ItemType, NumericCompareType } from "@module/data/constants.ts"
-import { WeightCriteria, WeightCriteriaSchema } from "@module/util/weight-criteria.ts"
+import { WeightCriteria } from "@module/util/weight-criteria.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { ActorInst } from "../actor/helpers.ts"
@@ -22,7 +22,9 @@ class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
 				initial: prereq.Type.ContainedWeight,
 			}),
 			has: new fields.BooleanField({ initial: true }),
-			qualifier: new fields.SchemaField(WeightCriteria.defineSchema(), {
+			qualifier: new fields.EmbeddedDataField(WeightCriteria, {
+				required: true,
+				nullable: false,
 				initial: {
 					compare: NumericCompareType.AtLeastNumber,
 					qualifier: Weight.format(5, Weight.Unit.Pound),
@@ -61,7 +63,7 @@ interface ContainedWeightPrereq
 
 type ContainedWeightPrereqSchema = BasePrereqSchema & {
 	has: fields.BooleanField
-	qualifier: fields.SchemaField<WeightCriteriaSchema, SourceFromSchema<WeightCriteriaSchema>, WeightCriteria>
+	qualifier: fields.EmbeddedDataField<WeightCriteria, true, false, true>
 }
 
 export { ContainedWeightPrereq, type ContainedWeightPrereqSchema }

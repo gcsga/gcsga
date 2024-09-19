@@ -21,7 +21,7 @@ class ActorGURPS2<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS
 	override prepareData() {
 		super.prepareData()
 		if (SYSTEM_NAME in this.flags && this._systemFlagsDataModel) {
-			//@ts-expect-error abstract class overwritten
+			// @ts-expect-error abstract class overwritten
 			this.flags[SYSTEM_NAME] = new this._systemFlagsDataModel(this._source.flags[SYSTEM_NAME], {
 				parent: this,
 			})
@@ -115,11 +115,11 @@ class ActorGURPS2<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS
 	 * @param userId  The id of the User requesting the document update
 	 */
 	protected override _onCreate(
-		data: Partial<this["_source"]>,
+		data: this["_source"],
 		options: DatabaseCreateOperation<TParent>,
 		userId: string,
 	): void {
-		super._onCreate(data as any, options, userId)
+		super._onCreate(data, options, userId)
 		if (foundry.utils.isNewerVersion(game.version, 12)) return
 		this.system._onCreate?.(data, options, userId)
 	}
@@ -165,9 +165,9 @@ class ActorGURPS2<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS
 		if (scope === SYSTEM_NAME && this._systemFlagsDataModel) {
 			let diff
 			const changes = foundry.utils.expandObject({ [key]: value })
-			//@ts-expect-error value exists
+			// @ts-expect-error value exists
 			if (this.flags[SYSTEM_NAME]) diff = this.flags[SYSTEM_NAME].updateSource(changes, { dryRun: true })
-			//@ts-expect-error abstract class overwritten
+			// @ts-expect-error abstract class overwritten
 			else diff = new this._systemFlagsDataModel(changes, { parent: this }).toObject()
 			return this.update({ flags: { [SYSTEM_NAME]: diff } }) as unknown as this
 		}

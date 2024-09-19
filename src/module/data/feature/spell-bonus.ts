@@ -2,7 +2,7 @@ import { StringCriteria } from "@module/util/string-criteria.ts"
 import { feature, spellmatch } from "@util"
 import { SpellBonusSchema } from "./data.ts"
 import { BaseFeature } from "./base-feature.ts"
-import { Nameable } from "@module/util/nameable.ts"
+import { Nameable } from "@module/util/index.ts"
 
 class SpellBonus extends BaseFeature<SpellBonusSchema> {
 	static override TYPE = feature.Type.SpellBonus
@@ -13,8 +13,8 @@ class SpellBonus extends BaseFeature<SpellBonusSchema> {
 		return {
 			...super.defineSchema(),
 			match: new fields.StringField({ choices: spellmatch.Types, initial: spellmatch.Type.Name }),
-			name: new fields.SchemaField(StringCriteria.defineSchema()),
-			tags: new fields.SchemaField(StringCriteria.defineSchema()),
+			name: new fields.EmbeddedDataField(StringCriteria),
+			tags: new fields.EmbeddedDataField(StringCriteria),
 		}
 	}
 
@@ -37,12 +37,6 @@ class SpellBonus extends BaseFeature<SpellBonusSchema> {
 	}
 }
 
-interface SpellBonus
-	extends BaseFeature<SpellBonusSchema>,
-		Omit<ModelPropsFromSchema<SpellBonusSchema>, "name" | "specialization" | "tags"> {
-	name: StringCriteria
-	specialization: StringCriteria
-	tags: StringCriteria
-}
+interface SpellBonus extends BaseFeature<SpellBonusSchema>, ModelPropsFromSchema<SpellBonusSchema> {}
 
 export { SpellBonus }

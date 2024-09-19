@@ -224,7 +224,7 @@ declare global {
 	}
 
 	const BUILD_MODE: "development" | "production"
-	//TODO: reenable
+	// TODO: reenable
 	// const CONDITION_SOURCES: ConditionSource[]
 	// const MANEUVER_SOURCES: ConditionSource[]
 	// const EN_JSON: typeof EnJSON

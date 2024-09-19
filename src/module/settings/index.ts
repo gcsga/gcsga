@@ -6,7 +6,7 @@ import { AttributesConfig } from "./attributes-config.ts"
 /**
  * Register all of the system's keybindings.
  */
-export function registerSystemKeybindings() {
+export function registerSystemKeybindings(): void {
 	game.keybindings.register(SYSTEM_NAME, "skipDialogNormal", {
 		name: "KEYBINDINGS.DND5E.SkipDialogNormal",
 		editable: [{ key: "ShiftLeft" }, { key: "ShiftRight" }],

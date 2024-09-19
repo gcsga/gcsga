@@ -21,8 +21,8 @@
 // 			}),
 // 			difficulty: new fields.StringField({ initial: difficulty.Level.Average, required: true }),
 // 			points: new fields.NumberField({ integer: true, min: 0 }),
-// 			default: new fields.SchemaField(SkillDefault.defineSchema()),
-// 			defaults: new fields.ArrayField(new fields.SchemaField(SkillDefault.defineSchema())),
+// 			default: new fields.EmbeddedDataField(SkillDefault),
+// 			defaults: new fields.ArrayField(new fields.EmbeddedDataField(SkillDefault)),
 // 			limit: new fields.NumberField({ integer: true, initial: 0 }),
 // 			limited: new fields.BooleanField({ initial: false }),
 // 			prereqs: new fields.ArrayField(new fields.TypedSchemaField(BasePrereq.TYPES), {

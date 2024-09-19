@@ -11,10 +11,10 @@ import { ItemDataModel } from "../abstract.ts"
 import { SpellFieldsTemplate, SpellFieldsTemplateSchema } from "./templates/spell-fields.ts"
 import { ActorTemplateType } from "../actor/types.ts"
 import { SkillLevel, calculateTechniqueLevel } from "./helpers.ts"
-import { Nameable } from "@module/util/nameable.ts"
 import { AttributeDifficulty } from "./fields/attribute-difficulty.ts"
 import { SkillDefault } from "../skill-default.ts"
 import { Study } from "../study.ts"
+import { Nameable } from "@module/util/index.ts"
 
 class RitualMagicSpellData extends ItemDataModel.mixin(
 	BasicInformationTemplate,

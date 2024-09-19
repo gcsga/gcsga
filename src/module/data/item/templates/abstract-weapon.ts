@@ -3,12 +3,12 @@ import fields = foundry.data.fields
 import { LocalizeGURPS, StringBuilder, TooltipGURPS, encumbrance, feature, skillsel, wsel, wswitch } from "@util"
 import { ItemTemplateType } from "../types.ts"
 import { ActorType, ItemType } from "@module/data/constants.ts"
-import { Nameable } from "@module/util/nameable.ts"
-import { WeaponStrength, WeaponStrengthSchema } from "../fields/weapon-strength.ts"
-import { WeaponDamage, WeaponDamageSchema } from "../fields/weapon-damage.ts"
+import { WeaponStrength } from "../fields/weapon-strength.ts"
+import { WeaponDamage } from "../fields/weapon-damage.ts"
 import { SkillDefault, SkillDefaultSchema } from "@module/data/skill-default.ts"
 import { Feature } from "@module/data/feature/types.ts"
 import { WeaponBonus } from "@module/data/feature/index.ts"
+import { Nameable } from "@module/util/index.ts"
 
 class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema> {
 	protected declare _weaponLevel: number
@@ -16,9 +16,9 @@ class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema>
 	static override defineSchema(): AbstractWeaponTemplateSchema {
 		const fields = foundry.data.fields
 		return {
-			strength: new fields.SchemaField(WeaponStrength.defineSchema()),
-			defaults: new fields.ArrayField(new fields.SchemaField(SkillDefault.defineSchema())),
-			damage: new fields.SchemaField(WeaponDamage.defineSchema()),
+			strength: new fields.EmbeddedDataField(WeaponStrength),
+			defaults: new fields.ArrayField(new fields.EmbeddedDataField(SkillDefault)),
+			damage: new fields.EmbeddedDataField(WeaponDamage),
 			unready: new fields.BooleanField({ required: true, nullable: false, initial: false }),
 		}
 	}
@@ -309,11 +309,11 @@ interface AbstractWeaponTemplate
 }
 
 type AbstractWeaponTemplateSchema = {
-	strength: fields.SchemaField<WeaponStrengthSchema, SourceFromSchema<WeaponStrengthSchema>, WeaponStrength>
+	strength: fields.EmbeddedDataField<WeaponStrength>
 	defaults: fields.ArrayField<
 		fields.SchemaField<SkillDefaultSchema, SourceFromSchema<SkillDefaultSchema>, SkillDefault>
 	>
-	damage: fields.SchemaField<WeaponDamageSchema, SourceFromSchema<WeaponDamageSchema>, WeaponDamage>
+	damage: fields.EmbeddedDataField<WeaponDamage>
 	unready: fields.BooleanField<boolean, boolean>
 }
 

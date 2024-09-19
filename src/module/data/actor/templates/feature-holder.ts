@@ -14,8 +14,7 @@ import {
 } from "@module/data/feature/index.ts"
 import { Feature } from "@module/data/feature/types.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
-import { equalFold } from "@module/util/index.ts"
-import { Nameable } from "@module/util/nameable.ts"
+import { Nameable, equalFold } from "@module/util/index.ts"
 import { ErrorGURPS, TooltipGURPS, feature, selfctrl, skillsel, stlimit, wsel } from "@util"
 
 class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> {

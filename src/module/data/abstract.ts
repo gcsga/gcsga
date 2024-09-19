@@ -527,7 +527,7 @@ class ItemDataModel<TSchema extends ItemDataSchema = ItemDataSchema> extends Sys
 		while ((container = await item.container) && depth < ItemDataModel.MAX_DEPTH) {
 			containers.push(container)
 			item = container
-			depth++
+			depth += 1
 		}
 		return containers as ItemTemplateInst<ItemTemplateType.Container>[]
 	}

@@ -1,7 +1,6 @@
 import { SystemDataModel } from "@module/data/abstract.ts"
 import fields = foundry.data.fields
 import { LocalizeGURPS, picker } from "@util"
-import { NumericCriteriaSchema } from "@module/util/data.ts"
 import { NumericCriteria } from "@module/util/numeric-criteria.ts"
 
 class TemplatePicker extends foundry.abstract.DataModel<SystemDataModel, TemplatePickerSchema> {
@@ -14,7 +13,7 @@ class TemplatePicker extends foundry.abstract.DataModel<SystemDataModel, Templat
 				choices: picker.Types,
 				initial: picker.Type.NotApplicable,
 			}),
-			qualifier: new fields.SchemaField(NumericCriteria.defineSchema()),
+			qualifier: new fields.EmbeddedDataField(NumericCriteria),
 		}
 	}
 
@@ -48,7 +47,7 @@ interface TemplatePicker
 
 type TemplatePickerSchema = {
 	type: fields.StringField<picker.Type, picker.Type, true, false, true>
-	qualifier: fields.SchemaField<NumericCriteriaSchema>
+	qualifier: fields.EmbeddedDataField<NumericCriteria, true, false, true>
 }
 
 export { TemplatePicker, type TemplatePickerSchema }

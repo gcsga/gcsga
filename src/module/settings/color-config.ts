@@ -6,25 +6,25 @@ class ColorSettings extends foundry.abstract.DataModel<null, ColorSettingsSchema
 	static override defineSchema(): ColorSettingsSchema {
 		const fields = foundry.data.fields
 		return {
-			banding: new fields.SchemaField(ColorSettingsEntry.defineSchema(), {
+			banding: new fields.EmbeddedDataField(ColorSettingsEntry, {
 				initial: { light: "#E8E8D8", dark: "#282820", lightForeground: "#000000", darkForeground: "#FFFFFF" },
 			}),
-			error: new fields.SchemaField(ColorSettingsEntry.defineSchema(), {
+			error: new fields.EmbeddedDataField(ColorSettingsEntry, {
 				initial: { light: "#851414", dark: "#851414", lightForeground: "#000000", darkForeground: "#FFFFFF" },
 			}),
-			focus: new fields.SchemaField(ColorSettingsEntry.defineSchema(), {
+			focus: new fields.EmbeddedDataField(ColorSettingsEntry, {
 				initial: { light: "#006199", dark: "#0080CC", lightForeground: "#000000", darkForeground: "#FFFFFF" },
 			}),
-			header: new fields.SchemaField(ColorSettingsEntry.defineSchema(), {
+			header: new fields.EmbeddedDataField(ColorSettingsEntry, {
 				initial: { light: "#2B2B2B", dark: "#404040", lightForeground: "#000000", darkForeground: "#FFFFFF" },
 			}),
-			surface: new fields.SchemaField(ColorSettingsEntry.defineSchema(), {
+			surface: new fields.EmbeddedDataField(ColorSettingsEntry, {
 				initial: { light: "#E8E8E8", dark: "#282828", lightForeground: "#000000", darkForeground: "#FFFFFF" },
 			}),
-			tooltip: new fields.SchemaField(ColorSettingsEntry.defineSchema(), {
+			tooltip: new fields.EmbeddedDataField(ColorSettingsEntry, {
 				initial: { light: "#FFF4C6", dark: "#FFF299", lightForeground: "#000000", darkForeground: "#FFFFFF" },
 			}),
-			warning: new fields.SchemaField(ColorSettingsEntry.defineSchema(), {
+			warning: new fields.EmbeddedDataField(ColorSettingsEntry, {
 				initial: { light: "#D94C00", dark: "#BF4300", lightForeground: "#000000", darkForeground: "#FFFFFF" },
 			}),
 		}
@@ -34,13 +34,13 @@ class ColorSettings extends foundry.abstract.DataModel<null, ColorSettingsSchema
 interface ColorSettings extends ModelPropsFromSchema<ColorSettingsSchema> {}
 
 type ColorSettingsSchema = {
-	banding: fields.SchemaField<ColorSettingsEntrySchema>
-	error: fields.SchemaField<ColorSettingsEntrySchema>
-	focus: fields.SchemaField<ColorSettingsEntrySchema>
-	header: fields.SchemaField<ColorSettingsEntrySchema>
-	surface: fields.SchemaField<ColorSettingsEntrySchema>
-	tooltip: fields.SchemaField<ColorSettingsEntrySchema>
-	warning: fields.SchemaField<ColorSettingsEntrySchema>
+	banding: fields.EmbeddedDataField<ColorSettingsEntry>
+	error: fields.EmbeddedDataField<ColorSettingsEntry>
+	focus: fields.EmbeddedDataField<ColorSettingsEntry>
+	header: fields.EmbeddedDataField<ColorSettingsEntry>
+	surface: fields.EmbeddedDataField<ColorSettingsEntry>
+	tooltip: fields.EmbeddedDataField<ColorSettingsEntry>
+	warning: fields.EmbeddedDataField<ColorSettingsEntry>
 }
 
 class ColorSettingsEntry extends foundry.abstract.DataModel<ColorSettings, ColorSettingsEntrySchema> {
@@ -54,6 +54,8 @@ class ColorSettingsEntry extends foundry.abstract.DataModel<ColorSettings, Color
 		}
 	}
 }
+
+interface ColorSettingsEntry extends ModelPropsFromSchema<ColorSettingsEntrySchema> {}
 
 type ColorSettingsEntrySchema = {
 	light: fields.ColorField<true, false, true>
@@ -105,8 +107,7 @@ class ColorConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2) {
 		})
 	}
 
-	override async _prepareContext(_options = {}) {
-		// const current = await game.settings.get(SYSTEM_NAME, SETTINGS.COLORS)
+	override async _prepareContext(_options = {}): Promise<object> {
 		const current = game.settings.get(SYSTEM_NAME, SETTINGS.COLORS)
 		return {
 			colors: this.#prepareColors(current),
