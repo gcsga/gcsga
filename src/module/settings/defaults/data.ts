@@ -1,4 +1,8 @@
 import { AttributeDefSchema } from "@module/data/attribute/attribute-definition.ts"
+import { gid, ConditionID } from "@module/data/constants.ts"
+import { MoveTypeDefSchema } from "@module/data/move-type/move-type-definition.ts"
+import { MoveTypeOverrideConditionType } from "@module/data/move-type/move-type-override.ts"
+import { ResourceTrackerDefSchema } from "@module/data/resource-tracker/index.ts"
 import { attribute, threshold } from "@util"
 
 const DEFAULT_ATTRIBUTE_SETTINGS: Partial<SourceFromSchema<AttributeDefSchema>>[] = [
@@ -201,4 +205,107 @@ const DEFAULT_ATTRIBUTE_SETTINGS: Partial<SourceFromSchema<AttributeDefSchema>>[
 	},
 ]
 
-export { DEFAULT_ATTRIBUTE_SETTINGS }
+const DEFAULT_RESOURCE_TRACKER_SETTINGS: Partial<SourceFromSchema<ResourceTrackerDefSchema>>[] = []
+
+const DEFAULT_MOVE_TYPE_SETTINGS: Partial<SourceFromSchema<MoveTypeDefSchema>>[] = [
+	{
+		id: gid.Ground,
+		name: "Ground Move",
+		base: "$basic_move",
+		cost_per_point: 5,
+		overrides: [
+			{
+				condition: {
+					type: MoveTypeOverrideConditionType.Condition,
+					qualifier: ConditionID.PostureCrawl,
+				},
+				base: "floor($basic_move/3)",
+			},
+			{
+				condition: {
+					type: MoveTypeOverrideConditionType.Condition,
+					qualifier: ConditionID.PostureKneel,
+				},
+				base: "floor($basic_move/3)",
+			},
+			{
+				condition: {
+					type: MoveTypeOverrideConditionType.Condition,
+					qualifier: ConditionID.PostureCrouch,
+				},
+				base: "floor($basic_move*2/3)",
+			},
+			{
+				condition: {
+					type: MoveTypeOverrideConditionType.Condition,
+					qualifier: ConditionID.PostureProne,
+				},
+				base: "1",
+			},
+			{
+				condition: {
+					type: MoveTypeOverrideConditionType.Condition,
+					qualifier: ConditionID.PostureSit,
+				},
+				base: "0",
+			},
+		],
+	},
+	{
+		id: gid.Water,
+		name: "Water Move",
+		base: "$basic_move/5",
+		cost_per_point: 5,
+		overrides: [
+			{
+				condition: {
+					type: MoveTypeOverrideConditionType.Trait,
+					// TODO: replace with variable for better language support
+					qualifier: "Amphibious",
+				},
+				base: "$basic_move",
+			},
+			{
+				condition: {
+					type: MoveTypeOverrideConditionType.Trait,
+					// TODO: replace with variable for better language support
+					qualifier: "Aquatic",
+				},
+				base: "$basic_move",
+			},
+		],
+	},
+	{
+		id: gid.Air,
+		name: "Air Move",
+		base: "0",
+		cost_per_point: 5,
+		overrides: [
+			{
+				condition: {
+					type: MoveTypeOverrideConditionType.Trait,
+					// TODO: replace with variable for better language support
+					qualifier: "Flight",
+				},
+				base: "$basic_speed*2",
+			},
+			{
+				condition: {
+					type: MoveTypeOverrideConditionType.Trait,
+					// TODO: replace with variable for better language support
+					qualifier: "Walk on Air",
+				},
+				base: `$${gid.Ground}`,
+			},
+		],
+	},
+	{
+		id: gid.Space,
+		name: "Space Move",
+		base: "0",
+		cost_per_point: 5,
+		overrides: [],
+	},
+]
+
+export { DEFAULT_ATTRIBUTE_SETTINGS, DEFAULT_RESOURCE_TRACKER_SETTINGS, DEFAULT_MOVE_TYPE_SETTINGS }

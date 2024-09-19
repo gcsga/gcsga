@@ -2,9 +2,15 @@ import { SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
 import fields = foundry.data.fields
 import api = foundry.applications.api
 import { AttributeDef, AttributeDefSchema } from "@module/data/attribute/attribute-definition.ts"
-import { DEFAULT_ATTRIBUTE_SETTINGS } from "./defaults/data.ts"
+import {
+	DEFAULT_ATTRIBUTE_SETTINGS,
+	DEFAULT_MOVE_TYPE_SETTINGS,
+	DEFAULT_RESOURCE_TRACKER_SETTINGS,
+} from "./defaults/data.ts"
 import { threshold } from "@util"
 import { PoolThreshold } from "@module/data/attribute/pool-threshold.ts"
+import { ResourceTrackerDef, ResourceTrackerDefSchema } from "@module/data/resource-tracker/index.ts"
+import { MoveTypeDef, MoveTypeDefSchema } from "@module/data/move-type/move-type-definition.ts"
 
 class AttributeSettings extends foundry.abstract.DataModel<null, AttributeSettingsSchema> {
 	static override defineSchema(): AttributeSettingsSchema {
@@ -12,6 +18,12 @@ class AttributeSettings extends foundry.abstract.DataModel<null, AttributeSettin
 		return {
 			attributes: new fields.ArrayField(new fields.EmbeddedDataField(AttributeDef), {
 				initial: DEFAULT_ATTRIBUTE_SETTINGS,
+			}),
+			resource_trackers: new fields.ArrayField(new fields.EmbeddedDataField(ResourceTrackerDef), {
+				initial: DEFAULT_RESOURCE_TRACKER_SETTINGS,
+			}),
+			move_types: new fields.ArrayField(new fields.EmbeddedDataField(MoveTypeDef), {
+				initial: DEFAULT_MOVE_TYPE_SETTINGS,
 			}),
 		}
 	}
@@ -24,6 +36,11 @@ type AttributeSettingsSchema = {
 		fields.EmbeddedDataField<AttributeDef>,
 		Partial<SourceFromSchema<AttributeDefSchema>>[]
 	>
+	resource_trackers: fields.ArrayField<
+		fields.EmbeddedDataField<ResourceTrackerDef>,
+		Partial<SourceFromSchema<ResourceTrackerDefSchema>>[]
+	>
+	move_types: fields.ArrayField<fields.EmbeddedDataField<MoveTypeDef>, Partial<SourceFromSchema<MoveTypeDefSchema>>[]>
 }
 
 class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2) {
@@ -58,9 +75,18 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 	}
 
 	static override PARTS = {
+		tabs: {
+			id: "tabs",
+			template: "templates/generic/tab-navigation.hbs",
+		},
 		attributes: {
 			id: "attributes",
 			template: `systems/${SYSTEM_NAME}/templates/apps/attributes-config.hbs`,
+			scrollable: [".attributes-list", ".thresholds-list"],
+		},
+		resourceTrackers: {
+			id: "resource-trackers",
+			template: `systems/${SYSTEM_NAME}/templates/apps/resource-trackers-config.hbs`,
 			scrollable: [".attributes-list", ".thresholds-list"],
 		},
 		footer: {
@@ -88,9 +114,25 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 
 	override async _prepareContext(_options = {}) {
 		const source = this.cachedSettings
-		const data = this.#prepareAttributes(source as AttributeSettings)
+		const data = source
 		return {
+			tabs: <Record<string, Partial<ApplicationTab>>>{
+				attributes: {
+					id: "attributes",
+					group: "default",
+					icon: "fas fa-palette",
+					label: "Attributes Tab",
+				},
+				resourceTrackers: {
+					id: "resource-trackers",
+					group: "default",
+					icon: "fas fa-palette",
+					label: "Resource Trackers Tab",
+				},
+			},
 			attributes: data.attributes,
+			resourceTrackers: data.resource_trackers,
+			moveTypes: data.move_types,
 			ops: threshold.OpsChoices,
 			source: source,
 			buttons: [
@@ -103,6 +145,12 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 				{ type: "submit", icon: "fa-solid fa-save", label: "GURPS.Settings.AttributesConfig.Submit" },
 			],
 		}
+	}
+
+	protected override async _preparePartContext(partId: string, context: Record<string, any>): Promise<object> {
+		context.partId = `${this.id}-${partId}`
+		context.tab = context.tabs[partId]
+		return context
 	}
 
 	override _onRender(_context: object, _options: ApplicationRenderOptions): void {
@@ -118,10 +166,6 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 				await this.render()
 			})
 		}
-	}
-
-	#prepareAttributes(current: AttributeSettings): AttributeSettings {
-		return current
 	}
 
 	static async #onSubmit(
