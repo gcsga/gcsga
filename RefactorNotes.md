@@ -44,4 +44,4 @@
 
 ## Current Task Notes
 
-- Currently adding an item necessitates submitting the form but this is not ideal. Would be better to re-render the form (or just the part) with the new data but not submit yet. Research how to do this.
+- Currently moving items now works ok but form is not submitted when submitting form. To fix.

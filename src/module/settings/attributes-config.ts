@@ -2,9 +2,15 @@ import { SETTINGS, SYSTEM_NAME } from "@module/data/constants.ts"
 import fields = foundry.data.fields
 import api = foundry.applications.api
 import { AttributeDef, AttributeDefSchema } from "@module/data/attribute/attribute-definition.ts"
-import { DEFAULT_ATTRIBUTE_SETTINGS } from "./defaults/data.ts"
+import {
+	DEFAULT_ATTRIBUTE_SETTINGS,
+	DEFAULT_MOVE_TYPE_SETTINGS,
+	DEFAULT_RESOURCE_TRACKER_SETTINGS,
+} from "./defaults/data.ts"
 import { threshold } from "@util"
 import { PoolThreshold } from "@module/data/attribute/pool-threshold.ts"
+import { ResourceTrackerDef, ResourceTrackerDefSchema } from "@module/data/resource-tracker/index.ts"
+import { MoveTypeDef, MoveTypeDefSchema } from "@module/data/move-type/move-type-definition.ts"
 
 class AttributeSettings extends foundry.abstract.DataModel<null, AttributeSettingsSchema> {
 	static override defineSchema(): AttributeSettingsSchema {
@@ -12,6 +18,12 @@ class AttributeSettings extends foundry.abstract.DataModel<null, AttributeSettin
 		return {
 			attributes: new fields.ArrayField(new fields.EmbeddedDataField(AttributeDef), {
 				initial: DEFAULT_ATTRIBUTE_SETTINGS,
+			}),
+			resource_trackers: new fields.ArrayField(new fields.EmbeddedDataField(ResourceTrackerDef), {
+				initial: DEFAULT_RESOURCE_TRACKER_SETTINGS,
+			}),
+			move_types: new fields.ArrayField(new fields.EmbeddedDataField(MoveTypeDef), {
+				initial: DEFAULT_MOVE_TYPE_SETTINGS,
 			}),
 		}
 	}
@@ -24,9 +36,17 @@ type AttributeSettingsSchema = {
 		fields.EmbeddedDataField<AttributeDef>,
 		Partial<SourceFromSchema<AttributeDefSchema>>[]
 	>
+	resource_trackers: fields.ArrayField<
+		fields.EmbeddedDataField<ResourceTrackerDef>,
+		Partial<SourceFromSchema<ResourceTrackerDefSchema>>[]
+	>
+	move_types: fields.ArrayField<fields.EmbeddedDataField<MoveTypeDef>, Partial<SourceFromSchema<MoveTypeDefSchema>>[]>
 }
 
 class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2) {
+	// Cached settings used for retaining progress without submitting changes
+	private declare _cachedSettings: AttributeSettings
+
 	static override DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> & { dragDrop: DragDropConfiguration[] } = {
 		id: "attributes-config",
 		tag: "form",
@@ -40,7 +60,7 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 			height: "auto",
 		},
 		form: {
-			submitOnChange: true,
+			submitOnChange: false,
 			closeOnSubmit: false,
 			handler: AttributesConfig.#onSubmit,
 		},
@@ -55,9 +75,18 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 	}
 
 	static override PARTS = {
+		tabs: {
+			id: "tabs",
+			template: "templates/generic/tab-navigation.hbs",
+		},
 		attributes: {
 			id: "attributes",
 			template: `systems/${SYSTEM_NAME}/templates/apps/attributes-config.hbs`,
+			scrollable: [".attributes-list", ".thresholds-list"],
+		},
+		resourceTrackers: {
+			id: "resource-trackers",
+			template: `systems/${SYSTEM_NAME}/templates/apps/resource-trackers-config.hbs`,
 			scrollable: [".attributes-list", ".thresholds-list"],
 		},
 		footer: {
@@ -74,13 +103,38 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 		})
 	}
 
+	// Cached settings used for retaining progress without submitting changes
+	get cachedSettings(): AttributeSettings {
+		return (this._cachedSettings ??= game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_ATTRIBUTES))
+	}
+
+	set cachedSettings(value: unknown) {
+		this._cachedSettings = new AttributeSettings(value as Partial<SourceFromSchema<AttributeSettingsSchema>>)
+	}
+
 	override async _prepareContext(_options = {}) {
-		const current = game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_ATTRIBUTES)
-		const data = this.#prepareAttributes(current)
+		const source = this.cachedSettings
+		const data = source
 		return {
+			tabs: <Record<string, Partial<ApplicationTab>>>{
+				attributes: {
+					id: "attributes",
+					group: "default",
+					icon: "fas fa-palette",
+					label: "Attributes Tab",
+				},
+				resourceTrackers: {
+					id: "resource-trackers",
+					group: "default",
+					icon: "fas fa-palette",
+					label: "Resource Trackers Tab",
+				},
+			},
 			attributes: data.attributes,
+			resourceTrackers: data.resource_trackers,
+			moveTypes: data.move_types,
 			ops: threshold.OpsChoices,
-			source: current,
+			source: source,
 			buttons: [
 				{
 					type: "reset",
@@ -93,37 +147,78 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 		}
 	}
 
-	#prepareAttributes(current: AttributeSettings): AttributeSettings {
-		return current
+	protected override async _preparePartContext(partId: string, context: Record<string, any>): Promise<object> {
+		context.partId = `${this.id}-${partId}`
+		context.tab = context.tabs[partId]
+		return context
+	}
+
+	override _onRender(_context: object, _options: ApplicationRenderOptions): void {
+		const attributeTypeFields = this.element.querySelectorAll(`select[name$=".type"`)
+		for (const field of attributeTypeFields) {
+			field.addEventListener("change", async e => {
+				e.preventDefault()
+				e.stopImmediatePropagation()
+
+				const formData = new FormDataExtended(this.element)
+				const data = fu.expandObject(formData.object)
+				this.cachedSettings = data
+				await this.render()
+			})
+		}
 	}
 
 	static async #onSubmit(
+		this: AttributesConfig,
 		event: Event | SubmitEvent,
 		_form: HTMLFormElement,
 		formData: FormDataExtended,
 	): Promise<void> {
 		event.preventDefault()
-		const data = fu.expandObject(formData.object)
-		// console.log(new AttributeSettings(data as any))
 
+		// Grab all fields pertaining to threshold ops
+		const thresholdCheckboxData = Object.fromEntries(
+			Object.entries(formData.object).filter(([key]) =>
+				(threshold.Ops as string[]).includes(key.split(".").at(-1) ?? ""),
+			),
+		)
+
+		// Transform all fields pertaining to threshold ops to fields of value type Array<threshold.Op>
+		// and delete original fields
+		const thresholdArrayData: Record<string, threshold.Op[]> = {}
+		for (const [key, value] of Object.entries(thresholdCheckboxData) as [string, boolean][]) {
+			let keyArray = key.split(".")
+			const opValue = keyArray.pop() as threshold.Op
+			const keyArrayString = keyArray.join(".")
+
+			thresholdArrayData[keyArrayString] ??= []
+			if (value) thresholdArrayData[keyArrayString].push(opValue)
+
+			delete formData.object[key]
+		}
+
+		const data = fu.expandObject({ ...formData.object, ...thresholdArrayData })
+		this.cachedSettings = data
 		await game.settings.set(SYSTEM_NAME, SETTINGS.DEFAULT_ATTRIBUTES, data)
-		await (this as unknown as api.ApplicationV2).render()
+		await this.render()
 		ui.notifications.info("GURPS.Settings.AttributesConfig.MessageSubmit", { localize: true })
 	}
 
-	static async #onReset(event: Event): Promise<void> {
+	static async #onReset(this: AttributesConfig, event: Event): Promise<void> {
 		event.preventDefault()
 
 		const defaults = game.settings.settings.get(`${SYSTEM_NAME}.${SETTINGS.DEFAULT_ATTRIBUTES}`).default
+		this.cachedSettings = defaults
 		await game.settings.set(SYSTEM_NAME, SETTINGS.DEFAULT_ATTRIBUTES, defaults)
 		ui.notifications.info("GURPS.Settings.AttributesConfig.MessageReset", { localize: true })
-		// HACK: to fix when types catch up
-		await (this as unknown as api.ApplicationV2).render()
+		await this.render()
 	}
 
-	static async #onMoveItemUp(event: Event): Promise<void> {
+	static async #onMoveItemUp(this: AttributesConfig, event: Event): Promise<void> {
 		event.preventDefault()
-		const current = game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_ATTRIBUTES).toObject()
+		event.stopImmediatePropagation()
+
+		const source = this.cachedSettings.toObject()
 		const el = event.target as HTMLElement
 		const type = el.dataset.itemType
 
@@ -131,31 +226,32 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 			case "attribute": {
 				const index = parseInt(el.dataset.itemIndex ?? "")
 				if (isNaN(index)) return
-				const [attribute] = current.attributes.splice(index, 1)
+				const [attribute] = source.attributes.splice(index, 1)
 				if (!attribute) return
-				current.attributes.splice(index - 1, 0, attribute)
+				source.attributes.splice(index - 1, 0, attribute)
 				break
 			}
 			case "threshold": {
 				const index = parseInt(el.dataset.itemIndex ?? "")
 				const parentIndex = parseInt(el.dataset.parentIndex ?? "")
 				if (isNaN(index) || isNaN(parentIndex)) return
-				const thresholds = current.attributes[parentIndex].thresholds
+				const thresholds = source.attributes[parentIndex].thresholds
 				if (!thresholds) return
 				const [threshold] = thresholds.splice(index, 1)
 				if (!threshold) return
 				thresholds.splice(index - 1, 0, threshold)
-				current.attributes[parentIndex].thresholds = thresholds
+				source.attributes[parentIndex].thresholds = thresholds
 			}
 		}
 
-		await game.settings.set(SYSTEM_NAME, SETTINGS.DEFAULT_ATTRIBUTES, current)
-		// HACK: to fix when types catch up
-		await (this as unknown as api.ApplicationV2).render()
+		this.cachedSettings = source
+		await this.render()
 	}
-	static async #onMoveItemDown(event: Event): Promise<void> {
+	static async #onMoveItemDown(this: AttributesConfig, event: Event): Promise<void> {
 		event.preventDefault()
-		const current = game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_ATTRIBUTES).toObject()
+		event.stopImmediatePropagation()
+
+		const source = this.cachedSettings.toObject()
 		const el = event.target as HTMLElement
 		const type = el.dataset.itemType
 
@@ -163,59 +259,57 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 			case "attribute": {
 				const index = parseInt(el.dataset.itemIndex ?? "")
 				if (isNaN(index)) return
-				const [attribute] = current.attributes.splice(index, 1)
+				const [attribute] = source.attributes.splice(index, 1)
 				if (!attribute) return
-				current.attributes.splice(index + 1, 0, attribute)
+				source.attributes.splice(index + 1, 0, attribute)
 				break
 			}
 			case "threshold": {
 				const index = parseInt(el.dataset.itemIndex ?? "")
 				const parentIndex = parseInt(el.dataset.parentIndex ?? "")
 				if (isNaN(index) || isNaN(parentIndex)) return
-				const thresholds = current.attributes[parentIndex].thresholds
+				const thresholds = source.attributes[parentIndex].thresholds
 				if (!thresholds) return
 				const [threshold] = thresholds.splice(index, 1)
 				if (!threshold) return
 				thresholds.splice(index + 1, 0, threshold)
-				current.attributes[parentIndex].thresholds = thresholds
+				source.attributes[parentIndex].thresholds = thresholds
 			}
 		}
 
-		await game.settings.set(SYSTEM_NAME, SETTINGS.DEFAULT_ATTRIBUTES, current)
-		// HACK: to fix when types catch up
-		await (this as unknown as api.ApplicationV2).render()
+		this.cachedSettings = source
+		await this.render()
 	}
 
-	static async #onAddItem(event: Event): Promise<void> {
+	static async #onAddItem(this: AttributesConfig, event: Event): Promise<void> {
 		event.preventDefault()
 
-		const current = game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_ATTRIBUTES).toObject()
+		const source = this.cachedSettings.toObject()
 		const el = event.target as HTMLElement
 		const type = el.dataset.itemType
 
 		switch (type) {
 			case "attribute": {
-				current.attributes.push(new AttributeDef({}).toObject())
+				source.attributes.push(new AttributeDef({}).toObject())
 				break
 			}
 			case "threshold": {
 				const index = parseInt(el.dataset.itemIndex ?? "")
 				if (isNaN(index)) return
-				const thresholds = current.attributes[index].thresholds
+				const thresholds = source.attributes[index].thresholds
 				if (!thresholds) return
 				thresholds.push(new PoolThreshold({}).toObject())
-				current.attributes[index].thresholds = thresholds
+				source.attributes[index].thresholds = thresholds
 			}
 		}
 
-		await game.settings.set(SYSTEM_NAME, SETTINGS.DEFAULT_ATTRIBUTES, current)
-		// HACK: to fix when types catch up
-		await (this as unknown as api.ApplicationV2).render()
+		this.cachedSettings = source
+		await this.render()
 	}
 
-	static async #onDeleteItem(event: Event): Promise<void> {
+	static async #onDeleteItem(this: AttributesConfig, event: Event): Promise<void> {
 		event.preventDefault()
-		const current = game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_ATTRIBUTES).toObject()
+		const source = this.cachedSettings.toObject()
 		const el = event.target as HTMLElement
 		const type = el.dataset.itemType
 
@@ -223,22 +317,21 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 			case "attribute": {
 				const index = parseInt(el.dataset.itemIndex ?? "")
 				if (isNaN(index)) return
-				current.attributes.splice(index, 1)
+				source.attributes.splice(index, 1)
 				break
 			}
 			case "threshold": {
 				const index = parseInt(el.dataset.itemIndex ?? "")
 				const parentIndex = parseInt(el.dataset.parentIndex ?? "")
 				if (isNaN(index) || isNaN(parentIndex)) return
-				const thresholds = current.attributes[parentIndex].thresholds
+				const thresholds = source.attributes[parentIndex].thresholds
 				if (!thresholds) return
 				thresholds.splice(index, 1)
 			}
 		}
 
-		await game.settings.set(SYSTEM_NAME, SETTINGS.DEFAULT_ATTRIBUTES, current)
-		// HACK: to fix when types catch up
-		await (this as unknown as api.ApplicationV2).render()
+		this.cachedSettings = source
+		await this.render()
 	}
 }
 

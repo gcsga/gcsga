@@ -38,9 +38,9 @@ export function registerSystemSettings(): void {
 	SheetSettingsConfig.registerSettings()
 
 	game.settings.registerMenu(SYSTEM_NAME, SETTINGS.DEFAULT_ATTRIBUTES, {
-		name: "GURPS.Settings.Attributes.Name",
-		label: "GURPS.Settings.Attributes.Label",
-		hint: "GURPS.Settings.Attributes.Hint",
+		name: "GURPS.Settings.AttributesConfig.Name",
+		label: "GURPS.Settings.AttributesConfig.Label",
+		hint: "GURPS.Settings.AttributesConfig.Hint",
 		icon: "gcs-settings",
 		type: AttributesConfig,
 		restricted: false,
