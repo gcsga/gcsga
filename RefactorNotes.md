@@ -47,3 +47,4 @@
 
 - Could consider moving attribute array to its own datamodel extending an arrayfield
 - use a function to grab the initial attribute setting values, and anothet to set them. that way, you can extend the class abd override the functions for characters
+- need to move namespaces
