@@ -16,6 +16,7 @@
     - Resource Trackers \*DONE
     - Move Types \*DONE
     - Sheet Settings \*DONE
+    - Hit Locations: \*DONE
   - Re-add old settings \*2
 - CellData
   - Condition

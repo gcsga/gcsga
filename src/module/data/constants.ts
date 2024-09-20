@@ -9,36 +9,47 @@ enum COMPENDIA {
 
 // Settings
 enum SETTINGS {
+	// Menus
+	COLORS = "colors",
+	DEFAULT_SHEET_SETTINGS = "default_sheet_settings",
+	DEFAULT_ATTRIBUTES = "default_attributes",
+	DEFAULT_HIT_LOCATIONS = "default_hit_locations",
+	// Book Settings
+	BASE_BOOKS = "base_books",
 	BASIC_SET_PDF = "basic_set_pdf",
-	SERVER_SIDE_FILE_DIALOG = "server_side_file_dialog",
-	PORTRAIT_OVERWRITE = "portrait_overwrite",
-	COMPENDIUM_BROWSER_PACKS = "compendium_browser_packs",
-	COMPENDIUM_BROWSER_SOURCES = "compendium_browser_sources",
-	COMPENDIUM_SKILL_DEFAULTS = "compendium_skill_defaults",
+	// Rule Variations
+	ROLL_FORMULA = "roll_formula",
+	INITIATIVE_FORMULA = "initiative_formula",
+	SSRT = "ssrt",
+	DEFAULT_DAMAGE_LOCATION = "default_damage_location",
+	// QOL
+	AUTOMATIC_UNREADY = "automatic_unready",
+
+	// Token View
+	MANEUVER_DETAIL = "maneuver_detail",
 	SHOW_TOKEN_MODIFIERS = "enable_token_modifier_window",
-	IGNORE_IMPORT_NAME = "ignore_import_name",
+
+	// Not yet implemented
+	DAMAGE_TYPES = "damage_types",
+	ROLL_MODIFIERS = "roll_modifiers",
+
+	// Leagacy. Not in use.
+	PORTRAIT_OVERWRITE = "portrait_overwrite",
 	STATIC_IMPORT_HP_FP = "import_hp_fp",
 	STATIC_IMPORT_BODY_PLAN = "import_bodyplan",
 	STATIC_AUTOMATICALLY_SET_IGNOREQTY = "auto-ignore-qty",
-	COLORS = "colors",
 	SHOW_IMPORT_BUTTON = "show_import_button",
-	DEFAULT_ATTRIBUTES = "default_attributes",
-	DAMAGE_TYPES = "damage_types",
-	DEFAULT_RESOURCE_TRACKERS = "default_resource_trackers",
-	DEFAULT_HIT_LOCATIONS = "default_hit_locations",
-	DEFAULT_SHEET_SETTINGS = "default_sheet_settings",
-	DEFAULT_MOVE_TYPES = "default_move_types",
-	ROLL_MODIFIERS = "roll_modifiers",
-	DEFAULT_DAMAGE_LOCATION = "default_damage_location",
-	SSRT = "ssrt",
-	ROLL_FORMULA = "roll_formula",
-	INITIATIVE_FORMULA = "initiative_formula",
-	MODIFIER_LIST_COLLAPSE = "modifier_list_collapse",
-	BASE_BOOKS = "base_books",
-	AUTOMATIC_UNREADY = "automatic_unready",
+	IGNORE_IMPORT_NAME = "ignore_import_name",
 	WORLD_SYSTEM_VERSION = "world_system_version",
 	WORLD_SCHEMA_VERSION = "world_schema_version",
-	MANEUVER_DETAIL = "maneuver_detail",
+
+	// Compendium Browser. Not in use.
+	COMPENDIUM_BROWSER_PACKS = "compendium_browser_packs",
+	COMPENDIUM_BROWSER_SOURCES = "compendium_browser_sources",
+	COMPENDIUM_SKILL_DEFAULTS = "compendium_skill_defaults",
+
+	// ???
+	MODIFIER_LIST_COLLAPSE = "modifier_list_collapse",
 }
 
 enum SSRT_SETTING {
