@@ -1,9 +1,9 @@
-import { AttributeDefSchema } from "@module/data/attribute/attribute-definition.ts"
+import { type AttributeDefSchema } from "@module/data/attribute/attribute-definition.ts"
 import { gid, ConditionID } from "@module/data/constants.ts"
-import { BodySchema } from "@module/data/hit-location.ts"
-import { MoveTypeDefSchema } from "@module/data/move-type/move-type-definition.ts"
+import { type ActorBodySchema } from "@module/data/hit-location.ts"
+import { type MoveTypeDefSchema } from "@module/data/move-type/move-type-definition.ts"
 import { MoveTypeOverrideConditionType } from "@module/data/move-type/move-type-override.ts"
-import { ResourceTrackerDefSchema } from "@module/data/resource-tracker/index.ts"
+import { type ResourceTrackerDefSchema } from "@module/data/resource-tracker/index.ts"
 import { attribute, threshold } from "@util"
 
 const DEFAULT_ATTRIBUTE_SETTINGS: Partial<SourceFromSchema<AttributeDefSchema>>[] = [
@@ -309,7 +309,7 @@ const DEFAULT_MOVE_TYPE_SETTINGS: Partial<SourceFromSchema<MoveTypeDefSchema>>[]
 	},
 ]
 
-const DEFAULT_BODY_TYPE: SourceFromSchema<BodySchema> = {
+const DEFAULT_BODY_TYPE: DeepPartial<SourceFromSchema<ActorBodySchema>> = {
 	name: "Humanoid",
 	roll: "3d6",
 	locations: [

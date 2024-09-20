@@ -3,19 +3,70 @@ import { ActorType, gid } from "@data"
 import { equalFold } from "@module/util/string-criteria.ts"
 import { StringBuilder, TooltipGURPS } from "@util"
 import { DiceGURPS } from "./dice.ts"
-import { ActorInst } from "./actor/helpers.ts"
-import { ActorGURPS2 } from "@module/document/actor.ts"
+import { type ActorGURPS2 } from "@module/document/actor.ts"
 
-class HitLocation extends foundry.abstract.DataModel<BodyGURPS, HitLocationSchema> {
-	declare rollRange: string
-	declare sub_table: BodyGURPS | null
+type ActorBodySchema = {
+	name: fields.StringField<string, string, true, false, true>
+	roll: fields.StringField<string, string, true, false, true>
+	locations: fields.ArrayField<fields.SchemaField<HitLocationSchema>>
+	sub_tables: fields.ArrayField<fields.SchemaField<HitLocationSubTableSchema>>
+}
 
-	constructor(
-		data: DeepPartial<SourceFromSchema<HitLocationSchema>>,
-		options?: DataModelConstructionOptions<BodyGURPS>,
-	) {
-		super(data, options)
+type HitLocationSchema = {
+	id: fields.StringField<string, string, true, false, true>
+	choice_name: fields.StringField<string, string, true, false, true>
+	table_name: fields.StringField<string, string, true, false, true>
+	slots: fields.NumberField<number, number, true, false>
+	hit_penalty: fields.NumberField<number, number, true, false, true>
+	dr_bonus: fields.NumberField<number, number, true, false>
+	description: fields.StringField<string, string, true, true>
+	owningTableId: fields.StringField<string, string, false, true, true>
+	subTableId: fields.StringField<string, string, false, false, true>
+}
+
+type HitLocationSubTableSchema = {
+	id: fields.StringField<string, string, true, false, true>
+	name: fields.StringField<string, string, true, true, true>
+	roll: fields.StringField<string, string, true, false, true>
+	owningLocationId: fields.StringField<string, string, true, false, false>
+}
+
+// This is the root actor body object.
+// It contains flat arrays of hit locations and sub-tables as fields,
+// And contains accessors for a hierarchical list of hit locations and sub-tables
+class ActorBody extends foundry.abstract.DataModel<ActorGURPS2, ActorBodySchema> {
+	static override defineSchema(): ActorBodySchema {
+		const fields = foundry.data.fields
+		return {
+			name: new fields.StringField({ required: true, nullable: false, initial: "Humanoid" }),
+			roll: new fields.StringField({ required: true, nullable: false, initial: "3d6" }),
+			locations: new fields.ArrayField(new fields.SchemaField(HitLocation.defineSchema())),
+			sub_tables: new fields.ArrayField(new fields.SchemaField(HitLocationSubTable.defineSchema())),
+		}
 	}
+
+	get actor(): ActorGURPS2 {
+		return this.parent
+	}
+
+	// Hierarchical list of hit locatios with included sub tables
+	get hitLocations(): HitLocation[] {
+		return this.locations.map(e => new HitLocation(e))
+	}
+
+	get subTables(): HitLocationSubTable[] {
+		return this.sub_tables.map(e => new HitLocationSubTable(e))
+	}
+
+	get owningLocation(): null {
+		return null
+	}
+}
+
+interface ActorBody extends ModelPropsFromSchema<ActorBodySchema> {}
+
+class HitLocation extends foundry.abstract.DataModel<ActorBody, HitLocationSchema> {
+	declare rollRange: string
 
 	static override defineSchema(): HitLocationSchema {
 		const fields = foundry.data.fields
@@ -32,20 +83,28 @@ class HitLocation extends foundry.abstract.DataModel<BodyGURPS, HitLocationSchem
 			hit_penalty: new fields.NumberField({ initial: 0 }),
 			dr_bonus: new fields.NumberField({ initial: 0 }),
 			description: new fields.StringField({ nullable: true }),
-			sub_table: new fields.EmbeddedDataField(BodyGURPS, { required: false, nullable: true, initial: null }),
+			owningTableId: new fields.StringField({ required: false, nullable: true, initial: null }),
+			subTableId: new fields.StringField({ required: false, nullable: false, initial: undefined }),
+			// sub_table: new fields.EmbeddedDataField(BodyGURPS, { required: false, nullable: true, initial: null }),
 		}
+	}
+
+	get actor(): ActorGURPS2 {
+		return this.parent.actor
+	}
+
+	get owningTable(): ActorBody | HitLocationSubTable {
+		if (this.owningTableId === null) return this.parent
+		return this.parent.subTables.find(e => e.id === this.owningTableId)!
+	}
+
+	get subTable(): HitLocationSubTable | null {
+		if (!this.subTableId) return null
+		return this.parent.subTables.find(e => e.id === this.subTableId)!
 	}
 
 	get descriptionTooltip(): string {
 		return (this.description ?? "").replace(/\n/g, "<br>")
-	}
-
-	get owningTable(): BodyGURPS {
-		return this.parent
-	}
-
-	get actor(): ActorInst<ActorType.Character> {
-		return this.owningTable.actor
 	}
 
 	updateRollRange(start: number): number {
@@ -59,7 +118,7 @@ class HitLocation extends foundry.abstract.DataModel<BodyGURPS, HitLocationSchem
 			default:
 				this.rollRange = `${start}-${start + this.slots - 1}`
 		}
-		if (this.sub_table) this.sub_table.updateRollRanges()
+		if (this.subTable) this.subTable.updateRollRanges()
 		return start + this.slots
 	}
 
@@ -80,7 +139,9 @@ class HitLocation extends foundry.abstract.DataModel<BodyGURPS, HitLocationSchem
 			)
 		}
 
-		drMap = this.actor.system.addDRBonusesFor(this.id, tooltip, drMap)
+		drMap = this.actor.isOfType(ActorType.Character)
+			? this.actor.system.addDRBonusesFor(this.id, tooltip, drMap)
+			: new Map()
 		if (this.owningTable && this.owningTable.owningLocation)
 			drMap = this.owningTable.owningLocation._DR(tooltip, drMap)
 
@@ -131,57 +192,36 @@ class HitLocation extends foundry.abstract.DataModel<BodyGURPS, HitLocationSchem
 	}
 }
 
-// interface HitLocation
-// 	extends foundry.abstract.DataModel<BodyGURPS, HitLocationSchema>,
-// 		Omit<ModelPropsFromSchema<HitLocationSchema>, "sub_table"> {
-// 	sub_table: BodyGURPS | null
-// }
-//
-interface HitLocation
-	extends foundry.abstract.DataModel<BodyGURPS, HitLocationSchema>,
-		ModelPropsFromSchema<HitLocationSchema> {}
+interface HitLocation extends ModelPropsFromSchema<HitLocationSchema> {}
 
-type HitLocationSchema = {
-	id: fields.StringField<string, string, true, false, true>
-	choice_name: fields.StringField<string, string, true, false, true>
-	table_name: fields.StringField<string, string, true, false, true>
-	slots: fields.NumberField<number, number, true, false>
-	hit_penalty: fields.NumberField<number, number, true, false, true>
-	dr_bonus: fields.NumberField<number, number, true, false>
-	description: fields.StringField<string, string, true, true>
-	sub_table: fields.EmbeddedDataField<BodyGURPS, false, true, true>
-}
-// type HitLocationSource = Omit<SourceFromSchema<HitLocationSchema>, "sub_table"> & {
-// 	sub_table: BodySource | null
-// }
-
-class BodyGURPS extends foundry.abstract.DataModel<ActorGURPS2 | HitLocation, BodySchema> {
-	constructor(
-		data: DeepPartial<SourceFromSchema<BodySchema>>,
-		options?: DataModelConstructionOptions<ActorGURPS2 | HitLocation>,
-	) {
-		super(data, options)
-	}
-
-	static override defineSchema(): BodySchema {
+class HitLocationSubTable extends foundry.abstract.DataModel<ActorBody, HitLocationSubTableSchema> {
+	static override defineSchema(): HitLocationSubTableSchema {
 		const fields = foundry.data.fields
 
 		return {
+			id: new fields.StringField({
+				required: true,
+				nullable: false,
+				initial: (_: Record<string, unknown>) => {
+					return fu.randomID(12)
+				},
+			}),
 			name: new fields.StringField({ required: true, nullable: true, initial: null }),
 			roll: new fields.StringField({ required: true, nullable: false, initial: "1d" }),
-			locations: new fields.ArrayField(new fields.EmbeddedDataField(HitLocation), { initial: [] }),
+			owningLocationId: new fields.StringField({ required: true, nullable: false }),
 		}
 	}
 
-	get owningLocation(): HitLocation | null {
-		if (this.parent instanceof HitLocation) return this.parent
-		return null
+	get actor(): ActorGURPS2 {
+		return this.parent.actor
 	}
 
-	get actor(): ActorInst<ActorType.Character> {
-		if (this.parent instanceof Actor) return this.parent as ActorInst<ActorType.Character>
-		if (this.parent instanceof HitLocation) return this.owningLocation!.actor
-		throw new Error("HitLocation does not have a valid actor owner")
+	get owningLocation(): HitLocation {
+		return this.parent.hitLocations.find(e => e.subTableId === this.id)!
+	}
+
+	get locations(): HitLocation[] {
+		return this.parent.hitLocations.filter(e => e.owningTableId === this.id)
 	}
 
 	get processedRoll(): DiceGURPS {
@@ -194,16 +234,7 @@ class BodyGURPS extends foundry.abstract.DataModel<ActorGURPS2 | HitLocation, Bo
 	}
 }
 
-interface BodyGURPS
-	extends foundry.abstract.DataModel<ActorGURPS2 | HitLocation, BodySchema>,
-		Omit<ModelPropsFromSchema<BodySchema>, "locations"> {
-	locations: HitLocation[]
-}
+interface HitLocationSubTable extends ModelPropsFromSchema<HitLocationSubTableSchema> {}
 
-type BodySchema = {
-	name: fields.StringField<string, string, true, true, true>
-	roll: fields.StringField<string, string, true, false, true>
-	locations: fields.ArrayField<fields.EmbeddedDataField<HitLocation>, Partial<SourceFromSchema<HitLocationSchema>>[]>
-}
-
-export { BodyGURPS, HitLocation, type BodySchema, type HitLocationSchema }
+export { ActorBody, HitLocation, HitLocationSubTable }
+export type { ActorBodySchema, HitLocationSchema, HitLocationSubTableSchema }
