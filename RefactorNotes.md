@@ -45,5 +45,5 @@
 
 ## Current Task Notes
 
-- Currently moving items now works ok but form is not submitted when submitting form. To fix.
 - Could consider moving attribute array to its own datamodel extending an arrayfield
+- use a function to grab the initial attribute setting values, and anothet to set them. that way, you can extend the class abd override the functions for characters

@@ -116,11 +116,23 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 
 	// Cached settings used for retaining progress without submitting changes
 	get cachedSettings(): AttributeSettings {
-		return (this._cachedSettings ??= game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_ATTRIBUTES))
+		return (this._cachedSettings ??= this._getInitialSettings())
 	}
 
 	set cachedSettings(value: unknown) {
 		this._cachedSettings = new AttributeSettings(value as Partial<SourceFromSchema<AttributeSettingsSchema>>)
+	}
+
+	// Get the initial settings values for this menu.
+	// This function can be overriden for e.g. Actors
+	protected _getInitialSettings(): AttributeSettings {
+		return game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_ATTRIBUTES)
+	}
+
+	// Write changes made in this menu to a permanent dataset.
+	// This function can be overriden for e.g. Actors
+	protected async _setDatabaseSettings(data: object): Promise<void> {
+		await game.settings.set(SYSTEM_NAME, SETTINGS.DEFAULT_ATTRIBUTES, data)
 	}
 
 	override async _prepareContext(_options = {}): Promise<object> {
@@ -228,7 +240,7 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 
 		const data = fu.expandObject({ ...formData.object, ...thresholdArrayData })
 		this.cachedSettings = data
-		await game.settings.set(SYSTEM_NAME, SETTINGS.DEFAULT_ATTRIBUTES, data)
+		await this._setDatabaseSettings(data)
 		await this.render()
 		ui.notifications.info("GURPS.Settings.AttributesConfig.MessageSubmit", { localize: true })
 	}
@@ -238,7 +250,7 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 
 		const defaults = game.settings.settings.get(`${SYSTEM_NAME}.${SETTINGS.DEFAULT_ATTRIBUTES}`).default
 		this.cachedSettings = defaults
-		await game.settings.set(SYSTEM_NAME, SETTINGS.DEFAULT_ATTRIBUTES, defaults)
+		await this._setDatabaseSettings(defaults)
 		ui.notifications.info("GURPS.Settings.AttributesConfig.MessageReset", { localize: true })
 		await this.render()
 	}
