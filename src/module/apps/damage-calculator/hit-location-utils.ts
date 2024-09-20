@@ -1,5 +1,5 @@
 import { DiceGURPS } from "@module/data/dice.ts"
-import { HitLocation, BodyGURPS } from "@module/data/hit-location.ts"
+import { ActorBody, HitLocation } from "@module/data/hit-location.ts"
 import { DamageType } from "./damage-type.ts"
 import { gid } from "@data"
 
@@ -29,8 +29,8 @@ function convertRollStringToArrayOfInt(text: string) {
 }
 
 export const HitLocationUtil = {
-	getHitLocation: function (table: BodyGURPS, location: string): HitLocation | undefined {
-		return table.locations.find(it => it.id === location)
+	getHitLocation: function (table: ActorBody, location: string): HitLocation | undefined {
+		return table.hitLocations.find(it => it.id === location)
 	},
 
 	getHitLocationDR: function (location: HitLocation | undefined, damageType: DamageType): number {
@@ -44,7 +44,7 @@ export const HitLocationUtil = {
 		return false
 	},
 
-	rollRandomLocation: async function (hitLocationTable: BodyGURPS): Promise<HitLocationRollResult> {
+	rollRandomLocation: async function (hitLocationTable: ActorBody): Promise<HitLocationRollResult> {
 		let result = undefined
 
 		// TODO For Dice So Nice to appear, put this roll into the chat log.
@@ -53,7 +53,7 @@ export const HitLocationUtil = {
 		await roll.evaluate()
 		const rollTotal = roll.total!
 
-		for (const location of hitLocationTable.locations) {
+		for (const location of hitLocationTable.hitLocations) {
 			const x: number[] = convertRollStringToArrayOfInt(location.rollRange)
 			if (x.includes(rollTotal)) {
 				result = location

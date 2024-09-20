@@ -2,7 +2,7 @@ import { DamageType, DamageTypes } from "./damage-type.ts"
 import { DamagePayload } from "./damage-chat-message.ts"
 import { TooltipGURPS } from "@util"
 import { DiceGURPS } from "@module/data/dice.ts"
-import { BodyGURPS } from "@module/data/hit-location.ts"
+import { ActorBody } from "@module/data/hit-location.ts"
 
 /**
  * The Damage Calculator needs three things: The DamageRoll, DamageHit, and DamageTarget.
@@ -177,7 +177,7 @@ export interface DamageTarget {
 	// CharacterGURPS.attributes.get(gid.HitPoints).calc.
 	hitPoints: HitPointsCalc
 	// CharacterGURPS.BodyType.
-	hitLocationTable: BodyGURPS
+	hitLocationTable: ActorBody
 	// CharacterGURPS.traits.contents.filter(it => it instanceof TraitGURPS).
 	getTrait(name: string): TargetTrait | undefined
 	// CharacterGURPS.traits.contents.filter(it => it instanceof TraitGURPS).

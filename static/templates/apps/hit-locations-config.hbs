@@ -1,0 +1,159 @@
+<div>
+	<div class="fields flexcol">
+		<!--Body Type Name -->
+		{{formGroup body.schema.fields.name name="body_type.name" value=body.name localize=true}}
+
+		<!--Body Type Roll -->
+		<div class="form-group">
+			<button data-action="addLocation" data-sub-table="" class="fas fa-plus"></button>
+			<label>{{localize "GURPS.HitLocation.Table.FIELDS.Roll.Name"}}</label>
+			<div class="form-fields">{{formInput body.schema.fields.roll name="body_type.roll" value=body.roll}}</div>
+		</div>
+	</div>
+	<fieldset>
+		<ul class="locations-list flexcol">
+			{{#each body.hitLocations as |location|}}
+			<!-- Horizontal Line for all but first item-->
+			{{#unless @first}}
+			<hr />
+			{{/unless}}
+
+			<!-- Horizontal Line for all but first item-->
+			{{> locationEntry location=location}}
+
+			<!-- Nothing -->
+			{{/each}}
+		</ul>
+	</fieldset>
+</div>
+
+{{#* inline "locationEntry"}}
+<!-- HIDDEN - Owning Table ID -->
+<input
+	type="text"
+	name="body_type.locations.{{location.trueIndex}}.owningTableId"
+	value="{{location.owningTableId}}"
+	style="display: none"
+/>
+
+<li class="location flexcol">
+	<div class="container flexrow">
+		<div class="buttons flexcol flex0">
+			<button
+				data-action="moveItemUp"
+				data-item-index="{{location.trueIndex}}"
+				class="fas fa-arrow-up"
+				{{disabled
+				location.first}}
+			></button>
+			<button
+				data-action="moveItemDown"
+				data-item-index="{{location.trueIndex}}"
+				class="fas fa-arrow-down"
+				{{disabled
+				location.last}}
+			></button>
+			<button
+				data-action="deleteLocation"
+				data-item-index="{{location.trueIndex}}"
+				class="fas fa-trash"
+				{{disabled
+				(and
+				location.first
+				location.last)}}
+			></button>
+			<button
+				data-action="addSubTable"
+				data-item-index="{{location.trueIndex}}"
+				class="fas fa-indent"
+				{{disabled
+				location.subTable}}
+			></button>
+			{{#if location.subTable}}
+			<button
+				data-action="deleteSubTable"
+				data-item-index="{{location.trueIndex}}"
+				class="sticky-bottom fas fa-outdent"
+			></button>
+			{{/if}}
+		</div>
+		<div class="fields flexcol">
+			<!-- Location ID -->
+			{{formGroup location.schema.fields.id name=(concat "body_type.locations." location.trueIndex ".id")
+			value=location.id localize=true}}
+
+			<!-- Location Choice Name -->
+			{{formGroup location.schema.fields.choice_name name=(concat "body_type.locations." location.trueIndex
+			".choice_name") value=location.choice_name localize=true}}
+
+			<!-- Location Table Name -->
+			{{formGroup location.schema.fields.table_name name=(concat "body_type.locations." location.trueIndex
+			".table_name") value=location.table_name localize=true}}
+
+			<!-- Location Slots -->
+			{{formGroup location.schema.fields.slots name=(concat "body_type.locations." location.trueIndex ".slots")
+			value=location.slots localize=true}}
+
+			<!-- Location Hit Penalty -->
+			{{formGroup location.schema.fields.hit_penalty name=(concat "body_type.locations." location.trueIndex
+			".hit_penalty") value=location.hit_penalty localize=true}}
+
+			<!-- Location DR Bonus -->
+			{{formGroup location.schema.fields.dr_bonus name=(concat "body_type.locations." location.trueIndex
+			".dr_bonus") value=location.dr_bonus localize=true}}
+
+			<!-- Location Description -->
+			{{formGroup location.schema.fields.description name=(concat "body_type.locations." location.trueIndex
+			".description") value=location.description localize=true}}
+
+			<!-- Location Sub-Table -->
+			{{#if location.subTable}}
+
+			<!-- HIDDEN - Location Sub-Table ID -->
+			<input
+				type="text"
+				name="body_type.locations.{{location.trueIndex}}.subTableId"
+				value="{{location.subTableId}}"
+				style="display: none"
+			/>
+			<!-- HIDDEN - Sub-Table ID -->
+			<input
+				type="text"
+				name="body_type.sub_tables.{{location.subTable.trueIndex}}.id"
+				value="{{location.subTable.id}}"
+				style="display: none"
+			/>
+
+			<div class="form-group">
+				<button data-action="addLocation" data-sub-table="{{location.subTableId}}" class="fas fa-plus"></button>
+				<label>{{localize "GURPS.HitLocation.Table.FIELDS.SubRoll.Name"}}</label>
+				<div class="form-fields">
+					{{formInput location.subTable.schema.fields.roll name=(concat "body_type.sub_tables."
+					location.subTable.trueIndex ".roll") value=location.subTable.roll}}
+				</div>
+			</div>
+			{{/if}}
+		</div>
+	</div>
+
+	<!-- Location Sub-Table -->
+	{{#if location.subTable}}
+	<fieldset>
+		<ul class="locations-list flexcol">
+			{{#each location.subTable.hitLocations as |subLocation|}}
+			<!-- Horizontal Line for all but first item-->
+			{{#unless subLocation.first}}
+			<hr />
+			{{/unless}}
+
+			<!-- Horizontal Line for all but first item-->
+			{{> locationEntry location=subLocation}}
+
+			<!-- Nothing -->
+			{{/each}}
+		</ul>
+	</fieldset>
+
+	{{/if}}
+</li>
+{{/inline}}

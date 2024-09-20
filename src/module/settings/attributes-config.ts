@@ -129,6 +129,12 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 		return game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_ATTRIBUTES)
 	}
 
+	// Get the default settings values for this menu.
+	// This can be overriden to instead get the current game settings value if on an Actor
+	protected _getDefaultSettings(): AttributeSettings {
+		return game.settings.settings.get(`${SYSTEM_NAME}.${SETTINGS.DEFAULT_ATTRIBUTES}`).default
+	}
+
 	// Write changes made in this menu to a permanent dataset.
 	// This function can be overriden for e.g. Actors
 	protected async _setDatabaseSettings(data: object): Promise<void> {
@@ -246,7 +252,7 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 	static async #onReset(this: AttributesConfig, event: Event): Promise<void> {
 		event.preventDefault()
 
-		const defaults = game.settings.settings.get(`${SYSTEM_NAME}.${SETTINGS.DEFAULT_ATTRIBUTES}`).default
+		const defaults = this._getDefaultSettings()
 		this.cachedSettings = defaults
 		await this._setDatabaseSettings(defaults)
 		ui.notifications.info("GURPS.Settings.AttributesConfig.MessageReset", { localize: true })
