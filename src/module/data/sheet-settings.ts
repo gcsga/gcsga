@@ -1,12 +1,11 @@
 import { ErrorGURPS } from "@util"
-import fields = foundry.data.fields
 import { ActorGURPS2 } from "@module/document/actor.ts"
 import { ActorTemplateType } from "@module/data/actor/types.ts"
-import { BodyGURPS, BodySchema } from "./hit-location.ts"
 import { ActorDataModel } from "./abstract.ts"
 import { DefaultSheetSettings, SheetSettingsSchema } from "@module/settings/sheet-settings-config.ts"
 import { AttributeSettings, AttributeSettingsSchema } from "@module/settings/attributes-config.ts"
 import { SETTINGS, SYSTEM_NAME } from "./constants.ts"
+import { HitLocationSettings, HitLocationSettingsSchema } from "@module/settings/hit-location-config.ts"
 
 // export interface PageSettings {
 // 	paper_size: paper.Size
@@ -32,10 +31,7 @@ import { SETTINGS, SYSTEM_NAME } from "./constants.ts"
 //
 // type BlockLayoutString = `${BlockLayoutKey}` | `${BlockLayoutKey} ${BlockLayoutKey}`
 
-type CharacterSheetSettingsSchema = SheetSettingsSchema &
-	AttributeSettingsSchema & {
-		body_type: fields.SchemaField<BodySchema, SourceFromSchema<BodySchema>, BodyGURPS>
-	}
+type CharacterSheetSettingsSchema = SheetSettingsSchema & AttributeSettingsSchema & HitLocationSettingsSchema
 
 // type CharacterSheetSettingsSource = Omit<SourceFromSchema<CharacterSheetSettingsSchema>, "body_type"> & {
 // 	body_type: BodySource
@@ -47,8 +43,6 @@ class SheetSettings extends foundry.abstract.DataModel<ActorDataModel, Character
 	}
 
 	static override defineSchema(): CharacterSheetSettingsSchema {
-		const fields = foundry.data.fields
-
 		const sheetSettings = game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_SHEET_SETTINGS)
 		const sheetSettingsSchema = DefaultSheetSettings.defineSchema()
 		for (const key of Object.keys(sheetSettingsSchema) as (keyof SheetSettingsSchema)[]) {
@@ -61,10 +55,16 @@ class SheetSettings extends foundry.abstract.DataModel<ActorDataModel, Character
 			attributeSettingsSchema[key].initial = attributeSettings[key]
 		}
 
+		const hitLocationSettings = game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_HIT_LOCATIONS)
+		const hitLocationSettingsSchema = HitLocationSettings.defineSchema()
+		for (const key of Object.keys(hitLocationSettingsSchema) as (keyof HitLocationSettingsSchema)[]) {
+			hitLocationSettingsSchema[key].initial = hitLocationSettings[key]
+		}
+
 		return {
 			...sheetSettingsSchema,
 			...attributeSettingsSchema,
-			body_type: new fields.SchemaField(BodyGURPS.defineSchema()),
+			...hitLocationSettingsSchema,
 		}
 	}
 
@@ -86,9 +86,7 @@ class SheetSettings extends foundry.abstract.DataModel<ActorDataModel, Character
 	}
 }
 
-interface SheetSettings
-	extends foundry.abstract.DataModel<ActorDataModel, CharacterSheetSettingsSchema>,
-		ModelPropsFromSchema<CharacterSheetSettingsSchema> {}
+interface SheetSettings extends ModelPropsFromSchema<CharacterSheetSettingsSchema> {}
 
 export { SheetSettings }
 export type { CharacterSheetSettingsSchema }

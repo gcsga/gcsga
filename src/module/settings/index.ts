@@ -2,7 +2,7 @@ import { SETTINGS, SSRT_SETTING, SYSTEM_NAME } from "@module/data/constants.ts"
 import { ColorConfig } from "./color-config.ts"
 import { SheetSettingsConfig } from "./sheet-settings-config.ts"
 import { AttributesConfig } from "./attributes-config.ts"
-import { HitLocationsConfig } from "./hit-location-settings.ts"
+import { HitLocationsConfig } from "./hit-location-config.ts"
 
 /**
  * Register all of the system's keybindings.
