@@ -1,7 +1,7 @@
 import { LocalizeGURPS } from "@util/localize.ts"
 import { equalFold } from "@module/util/string-criteria.ts"
 import { Fraction } from "@util/fraction.ts"
-import { Weight } from "@util/weight.ts"
+import { Weight } from "@util"
 
 export namespace emweight {
 	export enum Type {

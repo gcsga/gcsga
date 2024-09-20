@@ -1,13 +1,12 @@
-import { ActorType, ItemType, SYSTEM_NAME } from "./constants.ts"
-
 import fields = foundry.data.fields
-import { ItemGURPS2 } from "@module/document/item.ts"
-import { ItemDataInstances, ItemDataTemplates, ItemTemplateType } from "./item/types.ts"
+import { ActorType, ItemType, SYSTEM_NAME } from "./constants.ts"
+import { type ItemGURPS2 } from "@module/document/item.ts"
+import type { ItemDataInstances, ItemDataTemplates, ItemTemplateType } from "./item/types.ts"
 import { type ActorGURPS2 } from "@module/document/actor.ts"
-import { ActorDataInstances, ActorDataTemplates, ActorTemplateType } from "./actor/types.ts"
-import { ErrorGURPS } from "@util"
-import { CellData } from "./item/fields/cell-data.ts"
-import { ItemTemplateInst } from "./item/helpers.ts"
+import { type ActorDataInstances, type ActorDataTemplates, type ActorTemplateType } from "./actor/types.ts"
+import { type CellData } from "./item/fields/cell-data.ts"
+import { type ItemTemplateInst } from "./item/helpers.ts"
+import { ErrorGURPS } from "@util/misc.ts"
 
 interface SystemDataModelMetadata {
 	systemFlagsModel: typeof foundry.abstract.DataModel | null

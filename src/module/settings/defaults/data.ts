@@ -1,5 +1,6 @@
 import { AttributeDefSchema } from "@module/data/attribute/attribute-definition.ts"
 import { gid, ConditionID } from "@module/data/constants.ts"
+import { BodySchema } from "@module/data/hit-location.ts"
 import { MoveTypeDefSchema } from "@module/data/move-type/move-type-definition.ts"
 import { MoveTypeOverrideConditionType } from "@module/data/move-type/move-type-override.ts"
 import { ResourceTrackerDefSchema } from "@module/data/resource-tracker/index.ts"
@@ -308,4 +309,140 @@ const DEFAULT_MOVE_TYPE_SETTINGS: Partial<SourceFromSchema<MoveTypeDefSchema>>[]
 	},
 ]
 
-export { DEFAULT_ATTRIBUTE_SETTINGS, DEFAULT_RESOURCE_TRACKER_SETTINGS, DEFAULT_MOVE_TYPE_SETTINGS }
+const DEFAULT_BODY_TYPE: SourceFromSchema<BodySchema> = {
+	name: "Humanoid",
+	roll: "3d6",
+	locations: [
+		{
+			id: "eye",
+			choice_name: "Eyes",
+			table_name: "Eyes",
+			slots: 0,
+			hit_penalty: -9,
+			dr_bonus: 0,
+			description:
+				"An attack that misses by 1 hits the torso instead. Only impaling (imp), piercing (pi-, pi, pi+, pi++), and tight-beam burning (burn) attacks can target the eye – and only from the front or sides. Injury over HP÷10 blinds the eye. Otherwise, treat as skull, but without the extra DR!",
+		},
+		{
+			id: "skull",
+			choice_name: "Skull",
+			table_name: "Skull",
+			slots: 2,
+			hit_penalty: -7,
+			dr_bonus: 2,
+			description:
+				"An attack that misses by 1 hits the torso instead. Wounding modifier is x4. Knockdown rolls are at -10. Critical hits use the Critical Head Blow Table (B556). Exception: These special effects do not apply to toxic (tox) damage.",
+		},
+		{
+			id: "face",
+			choice_name: "Face",
+			table_name: "Face",
+			slots: 1,
+			hit_penalty: -5,
+			dr_bonus: 0,
+			description:
+				"An attack that misses by 1 hits the torso instead. Jaw, cheeks, nose, ears, etc. If the target has an open-faced helmet, ignore its DR. Knockdown rolls are at -5. Critical hits use the Critical Head Blow Table (B556). Corrosion (cor) damage gets a x1½ wounding modifier, and if it inflicts a major wound, it also blinds one eye (both eyes on damage over full HP). Random attacks from behind hit the skull instead.",
+		},
+		{
+			id: "leg",
+			choice_name: "Leg",
+			table_name: "Right Leg",
+			slots: 2,
+			hit_penalty: -2,
+			dr_bonus: 0,
+			description:
+				"Reduce the wounding multiplier of large piercing (pi+), huge piercing (pi++), and impaling (imp) damage to x1. Any major wound (loss of over ½ HP from one blow) cripples the limb. Damage beyond that threshold is lost.",
+		},
+		{
+			id: "arm",
+			choice_name: "Arm",
+			table_name: "Right Arm",
+			slots: 1,
+			hit_penalty: -2,
+			dr_bonus: 0,
+			description:
+				"Reduce the wounding multiplier of large piercing (pi+), huge piercing (pi++), and impaling (imp) damage to x1. Any major wound (loss of over ½ HP from one blow) cripples the limb. Damage beyond that threshold is lost. If holding a shield, double the penalty to hit: -4 for shield arm instead of -2.",
+		},
+		{
+			id: "torso",
+			choice_name: "Torso",
+			table_name: "Torso",
+			slots: 2,
+			hit_penalty: 0,
+			dr_bonus: 0,
+			description: "",
+		},
+		{
+			id: "groin",
+			choice_name: "Groin",
+			table_name: "Groin",
+			slots: 1,
+			hit_penalty: -3,
+			dr_bonus: 0,
+			description:
+				"An attack that misses by 1 hits the torso instead. Human males and the males of similar species suffer double shock from crushing (cr) damage, and get -5 to knockdown rolls. Otherwise, treat as a torso hit.",
+		},
+		{
+			id: "arm",
+			choice_name: "Arm",
+			table_name: "Left Arm",
+			slots: 1,
+			hit_penalty: -2,
+			dr_bonus: 0,
+			description:
+				"Reduce the wounding multiplier of large piercing (pi+), huge piercing (pi++), and impaling (imp) damage to x1. Any major wound (loss of over ½ HP from one blow) cripples the limb. Damage beyond that threshold is lost. If holding a shield, double the penalty to hit: -4 for shield arm instead of -2.",
+		},
+		{
+			id: "leg",
+			choice_name: "Leg",
+			table_name: "Left Leg",
+			slots: 2,
+			hit_penalty: -2,
+			dr_bonus: 0,
+			description:
+				"Reduce the wounding multiplier of large piercing (pi+), huge piercing (pi++), and impaling (imp) damage to x1. Any major wound (loss of over ½ HP from one blow) cripples the limb. Damage beyond that threshold is lost.",
+		},
+		{
+			id: "hand",
+			choice_name: "Hand",
+			table_name: "Hand",
+			slots: 1,
+			hit_penalty: -4,
+			dr_bonus: 0,
+			description:
+				"If holding a shield, double the penalty to hit: -8 for shield hand instead of -4. Reduce the wounding multiplier of large piercing (pi+), huge piercing (pi++), and impaling (imp) damage to x1. Any major wound (loss of over ⅓ HP from one blow) cripples the extremity. Damage beyond that threshold is lost.",
+		},
+		{
+			id: "foot",
+			choice_name: "Foot",
+			table_name: "Foot",
+			slots: 1,
+			hit_penalty: -4,
+			dr_bonus: 0,
+			description:
+				"Reduce the wounding multiplier of large piercing (pi+), huge piercing (pi++), and impaling (imp) damage to x1. Any major wound (loss of over ⅓ HP from one blow) cripples the extremity. Damage beyond that threshold is lost.",
+		},
+		{
+			id: "neck",
+			choice_name: "Neck",
+			table_name: "Neck",
+			slots: 2,
+			hit_penalty: -5,
+			dr_bonus: 0,
+			description:
+				"An attack that misses by 1 hits the torso instead. Neck and throat. Increase the wounding multiplier of crushing (cr) and corrosion (cor) attacks to x1½, and that of cutting (cut) damage to x2. At the GM’s option, anyone killed by a cutting (cut) blow to the neck is decapitated!",
+		},
+		{
+			id: "vitals",
+			choice_name: "Vitals",
+			table_name: "Vitals",
+			slots: 0,
+			hit_penalty: -3,
+			dr_bonus: 0,
+			description:
+				"An attack that misses by 1 hits the torso instead. Heart, lungs, kidneys, etc. Increase the wounding modifier for an impaling (imp) or any piercing (pi-, pi, pi+, pi++) attack to x3. Increase the wounding modifier for a tight-beam burning (burn) attack to x2. Other attacks cannot target the vitals.",
+		},
+	],
+}
+
+export { DEFAULT_ATTRIBUTE_SETTINGS, DEFAULT_RESOURCE_TRACKER_SETTINGS, DEFAULT_MOVE_TYPE_SETTINGS, DEFAULT_BODY_TYPE }

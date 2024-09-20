@@ -137,14 +137,12 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 
 	override async _prepareContext(_options = {}): Promise<object> {
 		const source = this.cachedSettings
-		const data = source
 		return {
 			tabs: this._getTabs(),
-			attributes: data.attributes,
-			resourceTrackers: data.resource_trackers,
-			moveTypes: data.move_types,
+			attributes: source.attributes,
+			resourceTrackers: source.resource_trackers,
+			moveTypes: source.move_types,
 			ops: threshold.OpsChoices,
-			source: source,
 			buttons: [
 				{
 					type: "reset",
