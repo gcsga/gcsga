@@ -38,7 +38,7 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 		}
 	}
 
-	satisfied(actor: ActorInst<ActorType.Character>, exclude: object, tooltip: TooltipGURPS | null): boolean {
+	satisfied(actor: ActorInst<ActorType.Character>, exclude: unknown, tooltip: TooltipGURPS | null): boolean {
 		let replacements = new Map<string, string>()
 		if (Nameable.isAccesser(exclude)) replacements = exclude.nameableReplacements
 		let techLevel = ""

@@ -1,7 +1,7 @@
 import { DiceGURPS } from "@module/data/dice.ts"
 import { progression } from "@util"
 
-export function thrustFor(p: progression.Option, st: number): DiceGURPS {
+function thrustFor(p: progression.Option, st: number): DiceGURPS {
 	let d = new DiceGURPS()
 	let r = 0
 	switch (p) {
@@ -137,7 +137,7 @@ export function thrustFor(p: progression.Option, st: number): DiceGURPS {
 	}
 }
 
-export function swingFor(p: progression.Option, st: number): DiceGURPS {
+function swingFor(p: progression.Option, st: number): DiceGURPS {
 	switch (p) {
 		case progression.Option.BasicSet: {
 			if (st < 10)
@@ -204,4 +204,9 @@ export function swingFor(p: progression.Option, st: number): DiceGURPS {
 		default:
 			return swingFor(progression.Option.BasicSet, st)
 	}
+}
+
+export const DamageProgression = {
+	thrustFor,
+	swingFor,
 }

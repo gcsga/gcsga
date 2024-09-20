@@ -2,7 +2,7 @@ import { ErrorGURPS } from "@util"
 import fields = foundry.data.fields
 import { ActorGURPS2 } from "@module/document/actor.ts"
 import { ActorTemplateType } from "@module/data/actor/types.ts"
-import { BodyGURPS, BodySchema, BodySource } from "./hit-location.ts"
+import { BodyGURPS, BodySchema } from "./hit-location.ts"
 import { ActorDataModel } from "./abstract.ts"
 import { DefaultSheetSettings, SheetSettingsSchema } from "@module/settings/sheet-settings-config.ts"
 import { AttributeSettings, AttributeSettingsSchema } from "@module/settings/attributes-config.ts"
@@ -37,9 +37,9 @@ type CharacterSheetSettingsSchema = SheetSettingsSchema &
 		body_type: fields.SchemaField<BodySchema, SourceFromSchema<BodySchema>, BodyGURPS>
 	}
 
-type CharacterSheetSettingsSource = Omit<SourceFromSchema<CharacterSheetSettingsSchema>, "body_type"> & {
-	body_type: BodySource
-}
+// type CharacterSheetSettingsSource = Omit<SourceFromSchema<CharacterSheetSettingsSchema>, "body_type"> & {
+// 	body_type: BodySource
+// }
 
 class SheetSettings extends foundry.abstract.DataModel<ActorDataModel, CharacterSheetSettingsSchema> {
 	get actor(): ActorGURPS2 {
@@ -91,4 +91,4 @@ interface SheetSettings
 		ModelPropsFromSchema<CharacterSheetSettingsSchema> {}
 
 export { SheetSettings }
-export type { CharacterSheetSettingsSchema, CharacterSheetSettingsSource }
+export type { CharacterSheetSettingsSchema }
