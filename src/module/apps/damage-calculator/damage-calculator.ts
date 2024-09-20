@@ -23,9 +23,9 @@ import {
 import { RulerGURPS } from "@module/canvas/ruler/document.ts"
 import { DiceGURPS } from "@module/data/dice.ts"
 import { TokenDocumentGURPS } from "@module/document/token.ts"
-import { BodyGURPS, HitLocation } from "@module/data/hit-location.ts"
 import { RollModifier } from "@module/data/roll-modifier.ts"
 import { RollType, gid } from "@module/data/constants.ts"
+import { ActorBody, HitLocation } from "@module/data/hit-location.ts"
 
 const Skull = "skull"
 const Eye = "eye"
@@ -463,7 +463,7 @@ class DamageCalculator implements IDamageCalculator {
 
 	// === Target ===
 
-	get hitLocationTable(): BodyGURPS {
+	get hitLocationTable(): ActorBody {
 		return this.target.hitLocationTable
 	}
 
@@ -721,7 +721,7 @@ class HitLocationDamage implements LocationDamage {
 		return this.calculator.damagePool
 	}
 
-	get hitLocationTable(): BodyGURPS {
+	get hitLocationTable(): ActorBody {
 		return this.calculator.hitLocationTable
 	}
 
@@ -842,14 +842,14 @@ class HitLocationDamage implements LocationDamage {
 
 		return this.damageResistance
 
-		function leastProtectedLocationDR(hitLocationTable: BodyGURPS, damageType: DamageType) {
-			const allLocationsDR = hitLocationTable.locations
+		function leastProtectedLocationDR(hitLocationTable: ActorBody, damageType: DamageType) {
+			const allLocationsDR = hitLocationTable.hitLocations
 				.map(it => HitLocationUtil.getHitLocationDR(it, damageType))
 				.filter(it => it !== -1)
 			return Math.min(...allLocationsDR)
 		}
 
-		function torsoDR(hitLocationTable: BodyGURPS, damageType: DamageType) {
+		function torsoDR(hitLocationTable: ActorBody, damageType: DamageType) {
 			const torso = HitLocationUtil.getHitLocation(hitLocationTable, Torso)
 			return HitLocationUtil.getHitLocationDR(torso, damageType)
 		}
@@ -1327,7 +1327,7 @@ class HitLocationDamage implements LocationDamage {
 	}
 
 	get hitLocation(): HitLocation | undefined {
-		return this.hitLocationTable.locations.find(it => it.table_name === this.locationName)
+		return this.hitLocationTable.hitLocations.find(it => it.table_name === this.locationName)
 	}
 
 	get isLargeAreaInjury(): boolean {

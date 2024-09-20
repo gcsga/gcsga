@@ -15,6 +15,7 @@
 
 	li.attribute div.container,
 	li.threshold {
+		align-items: stretch;
 		gap: 0.5rem;
 		margin-right: 0.5rem;
 	}
@@ -25,8 +26,5 @@
 		div.fields {
 			gap: 0.5rem;
 		}
-	}
-
-	li.threshold {
 	}
 }

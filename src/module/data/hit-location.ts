@@ -8,27 +8,32 @@ import { type ActorGURPS2 } from "@module/document/actor.ts"
 type ActorBodySchema = {
 	name: fields.StringField<string, string, true, false, true>
 	roll: fields.StringField<string, string, true, false, true>
-	locations: fields.ArrayField<fields.SchemaField<HitLocationSchema>>
-	sub_tables: fields.ArrayField<fields.SchemaField<HitLocationSubTableSchema>>
+	locations: fields.ArrayField<fields.EmbeddedDataField<HitLocation>>
+	sub_tables: fields.ArrayField<
+		fields.EmbeddedDataField<HitLocationSubTable>,
+		Partial<SourceFromSchema<HitLocationSubTableSchema>>[],
+		HitLocationSubTable[],
+		false,
+		false,
+		true
+	>
 }
 
 type HitLocationSchema = {
 	id: fields.StringField<string, string, true, false, true>
 	choice_name: fields.StringField<string, string, true, false, true>
 	table_name: fields.StringField<string, string, true, false, true>
-	slots: fields.NumberField<number, number, true, false>
+	slots: fields.NumberField<number, number, true, false, true>
 	hit_penalty: fields.NumberField<number, number, true, false, true>
-	dr_bonus: fields.NumberField<number, number, true, false>
-	description: fields.StringField<string, string, true, true>
+	dr_bonus: fields.NumberField<number, number, true, false, true>
+	description: fields.StringField<string, string, true, false, true>
 	owningTableId: fields.StringField<string, string, false, true, true>
-	subTableId: fields.StringField<string, string, false, false, true>
+	subTableId: fields.StringField<string, string, false, true, true>
 }
 
 type HitLocationSubTableSchema = {
 	id: fields.StringField<string, string, true, false, true>
-	name: fields.StringField<string, string, true, true, true>
 	roll: fields.StringField<string, string, true, false, true>
-	owningLocationId: fields.StringField<string, string, true, false, false>
 }
 
 // This is the root actor body object.
@@ -38,10 +43,26 @@ class ActorBody extends foundry.abstract.DataModel<ActorGURPS2, ActorBodySchema>
 	static override defineSchema(): ActorBodySchema {
 		const fields = foundry.data.fields
 		return {
-			name: new fields.StringField({ required: true, nullable: false, initial: "Humanoid" }),
-			roll: new fields.StringField({ required: true, nullable: false, initial: "3d6" }),
-			locations: new fields.ArrayField(new fields.SchemaField(HitLocation.defineSchema())),
-			sub_tables: new fields.ArrayField(new fields.SchemaField(HitLocationSubTable.defineSchema())),
+			name: new fields.StringField({
+				required: true,
+				nullable: false,
+				initial: "Humanoid",
+				label: "GURPS.HitLocation.Table.FIELDS.Name.Name",
+			}),
+			roll: new fields.StringField({
+				required: true,
+				nullable: false,
+				initial: "3d6",
+				label: "GURPS.HitLocation.Table.FIELDS.Roll.Name",
+			}),
+			locations: new fields.ArrayField(new fields.EmbeddedDataField(HitLocation), {
+				label: "GURPS.HitLocation.Table.FIELDS.Locations.Name",
+			}),
+			sub_tables: new fields.ArrayField(new fields.EmbeddedDataField(HitLocationSubTable), {
+				required: false,
+				nullable: false,
+				initial: undefined,
+			}),
 		}
 	}
 
@@ -51,15 +72,51 @@ class ActorBody extends foundry.abstract.DataModel<ActorGURPS2, ActorBodySchema>
 
 	// Hierarchical list of hit locatios with included sub tables
 	get hitLocations(): HitLocation[] {
-		return this.locations.map(e => new HitLocation(e))
-	}
-
-	get subTables(): HitLocationSubTable[] {
-		return this.sub_tables.map(e => new HitLocationSubTable(e))
+		return this.locations.filter(e => e.owningTableId === null)
 	}
 
 	get owningLocation(): null {
 		return null
+	}
+
+	// Remove any orphaned sub_tables or locations
+	static override cleanData(
+		source?: object | undefined,
+		options?: Record<string, unknown> | undefined,
+	): SourceFromSchema<fields.DataSchema> {
+		function addRecursiveLocations(location: DeepPartial<SourceFromSchema<HitLocationSchema>>): void {
+			locationsToKeep.push(location)
+
+			if (location.subTableId === null) return
+			for (const newLocation of locations.filter(e => e!.owningTableId === location.subTableId)) {
+				addRecursiveLocations(newLocation!)
+			}
+		}
+		const bodySource = source as DeepPartial<SourceFromSchema<ActorBodySchema>>
+
+		const subTables = bodySource.sub_tables ?? []
+		const locations = bodySource.locations ?? []
+		for (const location of locations) {
+			if (location!.owningTableId === "") location!.owningTableId = null
+			location!.owningTableId ??= null
+			location!.subTableId ??= null
+		}
+
+		const locationsToKeep: Partial<SourceFromSchema<HitLocationSchema>>[] = []
+		for (const location of locations.filter(e => e!.owningTableId === null)) {
+			addRecursiveLocations(location!)
+		}
+
+		const tablesIdsToKeep = new Set<string>()
+		for (const location of locationsToKeep) {
+			if (location.owningTableId) tablesIdsToKeep.add(location.owningTableId)
+			if (location.subTableId) tablesIdsToKeep.add(location.subTableId)
+		}
+
+		bodySource.locations = locationsToKeep
+		bodySource.sub_tables = subTables.filter(e => tablesIdsToKeep.has(e!.id!))
+
+		return super.cleanData(bodySource, options)
 	}
 }
 
@@ -72,19 +129,50 @@ class HitLocation extends foundry.abstract.DataModel<ActorBody, HitLocationSchem
 		const fields = foundry.data.fields
 
 		return {
-			id: new fields.StringField({ initial: game.i18n.localize("gurps.placeholder.hit_location.id") }),
+			id: new fields.StringField({
+				required: true,
+				nullable: false,
+				initial: "id",
+				label: "GURPS.HitLocation.Location.FIELDS.Id.Name",
+			}),
 			choice_name: new fields.StringField({
-				initial: game.i18n.localize("gurps.placeholder.hit_location.choice_name"),
+				required: true,
+				nullable: false,
+				initial: "choice name",
+				label: "GURPS.HitLocation.Location.FIELDS.ChoiceName.Name",
 			}),
 			table_name: new fields.StringField({
-				initial: game.i18n.localize("gurps.placeholder.hit_location.table_name"),
+				required: true,
+				nullable: false,
+				initial: "table name",
+				label: "GURPS.HitLocation.Location.FIELDS.TableName.Name",
 			}),
-			slots: new fields.NumberField({ initial: 0 }),
-			hit_penalty: new fields.NumberField({ initial: 0 }),
-			dr_bonus: new fields.NumberField({ initial: 0 }),
-			description: new fields.StringField({ nullable: true }),
+			slots: new fields.NumberField({
+				required: true,
+				nullable: false,
+				initial: 0,
+				label: "GURPS.HitLocation.Location.FIELDS.Slots.Name",
+			}),
+			hit_penalty: new fields.NumberField({
+				required: true,
+				nullable: false,
+				initial: 0,
+				label: "GURPS.HitLocation.Location.FIELDS.HitPenalty.Name",
+			}),
+			dr_bonus: new fields.NumberField({
+				required: true,
+				nullable: false,
+				initial: 0,
+				label: "GURPS.HitLocation.Location.FIELDS.DrBonus.Name",
+			}),
+			description: new fields.StringField({
+				required: true,
+				nullable: false,
+				initial: "",
+				label: "GURPS.HitLocation.Location.FIELDS.Description.Name",
+			}),
 			owningTableId: new fields.StringField({ required: false, nullable: true, initial: null }),
-			subTableId: new fields.StringField({ required: false, nullable: false, initial: undefined }),
+			subTableId: new fields.StringField({ required: false, nullable: true, initial: null }),
 			// sub_table: new fields.EmbeddedDataField(BodyGURPS, { required: false, nullable: true, initial: null }),
 		}
 	}
@@ -95,16 +183,29 @@ class HitLocation extends foundry.abstract.DataModel<ActorBody, HitLocationSchem
 
 	get owningTable(): ActorBody | HitLocationSubTable {
 		if (this.owningTableId === null) return this.parent
-		return this.parent.subTables.find(e => e.id === this.owningTableId)!
+		return this.parent.sub_tables.find(e => e.id === this.owningTableId)!
 	}
 
 	get subTable(): HitLocationSubTable | null {
 		if (!this.subTableId) return null
-		return this.parent.subTables.find(e => e.id === this.subTableId)!
+		return this.parent.sub_tables.find(e => e.id === this.subTableId)!
 	}
 
 	get descriptionTooltip(): string {
 		return (this.description ?? "").replace(/\n/g, "<br>")
+	}
+
+	get trueIndex(): number {
+		return this.parent.locations.indexOf(this)
+	}
+
+	get first(): boolean {
+		if (this.owningTableId === null) return this.trueIndex === 0
+		return this.owningTable.hitLocations.indexOf(this) === 0
+	}
+
+	get last(): boolean {
+		return this.owningTable.hitLocations.indexOf(this) === this.owningTable.hitLocations.length - 1
 	}
 
 	updateRollRange(start: number): number {
@@ -199,16 +300,13 @@ class HitLocationSubTable extends foundry.abstract.DataModel<ActorBody, HitLocat
 		const fields = foundry.data.fields
 
 		return {
-			id: new fields.StringField({
+			id: new fields.StringField({ required: true, nullable: false, initial: "" }),
+			roll: new fields.StringField({
 				required: true,
 				nullable: false,
-				initial: (_: Record<string, unknown>) => {
-					return fu.randomID(12)
-				},
+				initial: "1d6",
+				label: "GURPS.HitLocation.Table.FIELDS.SubRoll.Name",
 			}),
-			name: new fields.StringField({ required: true, nullable: true, initial: null }),
-			roll: new fields.StringField({ required: true, nullable: false, initial: "1d" }),
-			owningLocationId: new fields.StringField({ required: true, nullable: false }),
 		}
 	}
 
@@ -217,20 +315,24 @@ class HitLocationSubTable extends foundry.abstract.DataModel<ActorBody, HitLocat
 	}
 
 	get owningLocation(): HitLocation {
-		return this.parent.hitLocations.find(e => e.subTableId === this.id)!
+		return this.parent.locations.find(e => e.subTableId === this.id)!
 	}
 
-	get locations(): HitLocation[] {
-		return this.parent.hitLocations.filter(e => e.owningTableId === this.id)
+	get hitLocations(): HitLocation[] {
+		return this.parent.locations.filter(e => e.owningTableId === this.id)
 	}
 
 	get processedRoll(): DiceGURPS {
 		return DiceGURPS.fromString(this.roll)
 	}
 
+	get trueIndex(): number {
+		return this.parent.sub_tables.indexOf(this)
+	}
+
 	updateRollRanges(): void {
 		let start = this.processedRoll.minimum(false)
-		if (this.locations) for (const location of this.locations) start = location.updateRollRange(start)
+		if (this.hitLocations) for (const location of this.hitLocations) start = location.updateRollRange(start)
 	}
 }
 

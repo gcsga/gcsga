@@ -106,6 +106,26 @@
 				}
 			}
 		},
+		"HitLocation": {
+			"Table": {
+				"FIELDS": {
+					"Name": { "Name": "Name" },
+					"Roll": { "Name": "Roll" },
+					"SubRoll": { "Name": "Sub-Roll" }
+				}
+			},
+			"Location": {
+				"FIELDS": {
+					"Id": { "Name": "ID" },
+					"ChoiceName": { "Name": "Choice Name" },
+					"TableName": { "Name": "Table Name" },
+					"Slots": { "Name": "Slots" },
+					"HitPenalty": { "Name": "Hit Penalty" },
+					"DrBonus": { "Name": "DR Bonus" },
+					"Description": { "Name": "Description" }
+				}
+			}
+		},
 		"TemplatePicker": {
 			"descriptionCount": "Pick {number}",
 			"descriptionPoints": "Pick {number} {points} worth",
@@ -415,6 +435,16 @@
 				"ButtonAddResourceTracker": "Add Resource Tracker",
 				"ButtonAddMoveType": "Add Move Type",
 				"ButtonAddOverride": "Add Override"
+			},
+			"HitLocationsConfig": {
+				"Name": "Default Hit Locations",
+				"Label": "Configure Default Hit Locations",
+				"Title": "Default Hit Locations",
+				"Hint": "Alter the default body type used by all new Characters.",
+				"Submit": "Apply Default Settings",
+				"Reset": "Reset Default Settings",
+				"MessageSubmit": "Updated Default Hit Location configuration.",
+				"MessageReset": "Reset Default Hit Location configuration to default values."
 			}
 		}
 	},

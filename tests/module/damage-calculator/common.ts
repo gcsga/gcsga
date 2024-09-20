@@ -10,7 +10,7 @@ import {
 	TargetTraitModifier,
 } from "@module/apps/damage-calculator/index.ts"
 import { DiceGURPS } from "@module/data/dice.ts"
-import { BodyGURPS, HitLocation, HitLocationSchema } from "@module/data/hit-location.ts"
+import { ActorBody, HitLocation, HitLocationSchema } from "@module/data/hit-location.ts"
 import { TooltipGURPS } from "@util"
 
 export class _Attacker implements DamageAttacker {
@@ -42,7 +42,7 @@ export class _Target implements DamageTarget {
 
 	_traits: TargetTrait[] = []
 
-	hitLocationTable: BodyGURPS = new BodyGURPS(_dummyHitLocationTable, { parent: this as any })
+	hitLocationTable: ActorBody = new ActorBody(_dummyHitLocationTable, { parent: this as any })
 
 	getTrait(name: string): TargetTrait | undefined {
 		return this._traits.find(it => it.name === name)
