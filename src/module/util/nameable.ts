@@ -10,21 +10,21 @@ interface NameableApplier extends NameableAccesser, NameableFiller {
 	applyNameableKeys(m: Map<string, string>): void
 }
 
-export function extract(str: string, m: Map<string, string>, existing: Map<string, string>): void {
+function extract(str: string, m: Map<string, string>, existing: Map<string, string>): void {
 	for (const key of [...str.matchAll(/@([^@]+)@/g)].map(e => e[1])) {
 		if (existing.has(key)) m.set(key, existing.get(key)!)
 		else m.set(key, key)
 	}
 }
 
-export function apply(str: string, m: Map<string, string>): string {
+function apply(str: string, m: Map<string, string>): string {
 	for (const [key, value] of m.entries()) {
 		str = str.replaceAll(`@${key}@`, value)
 	}
 	return str
 }
 
-export function applyToList(inputList: string[], m: Map<string, string>): string[] {
+function applyToList(inputList: string[], m: Map<string, string>): string[] {
 	if (inputList.length === 0) return []
 	const list: string[] = new Array(inputList.length)
 	for (let i = 0; i < list.length; i++) {
@@ -33,7 +33,7 @@ export function applyToList(inputList: string[], m: Map<string, string>): string
 	return list
 }
 
-export function reduce(needed: Map<string, string>, replacements: Map<string, string>): Map<string, string> {
+function reduce(needed: Map<string, string>, replacements: Map<string, string>): Map<string, string> {
 	const ret = new Map()
 	for (const [key, value] of replacements.entries()) {
 		if (needed.has(key)) ret.set(key, value)
@@ -41,14 +41,24 @@ export function reduce(needed: Map<string, string>, replacements: Map<string, st
 	return ret
 }
 
-export function isFiller(e: object): e is NameableFiller {
+function isFiller(e: object): e is NameableFiller {
 	return Object.hasOwn(e, "fillWithNameableKeys")
 }
 
-export function isAccesser(e: object): e is NameableAccesser {
+function isAccesser(e: object): e is NameableAccesser {
 	return Object.hasOwn(e, "nameableReplacements")
 }
 
-export function isApplier(e: object): e is NameableApplier {
+function isApplier(e: object): e is NameableApplier {
 	return Object.hasOwn(e, "applyNameableKeys")
+}
+
+export const Nameable = {
+	extract,
+	apply,
+	applyToList,
+	reduce,
+	isFiller,
+	isAccesser,
+	isApplier,
 }
