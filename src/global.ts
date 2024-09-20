@@ -21,6 +21,7 @@ import { JournalEntryGURPS } from "@module/journal-entry/document.ts"
 import { JournalEntryPageGURPS } from "@module/journal-entry/page/document.ts"
 import { AttributeSettings } from "@module/settings/attributes-config.ts"
 import { ColorSettings } from "@module/settings/color-config.ts"
+import { HitLocationSettings } from "@module/settings/hit-location-settings.ts"
 import { DefaultSheetSettings } from "@module/settings/sheet-settings-config.ts"
 import { GURPSCONFIG } from "@scripts/config/index.ts"
 // import { remigrate } from "@scripts/system/remigrate.ts"
@@ -148,6 +149,7 @@ declare global {
 		get(module: "gcsga", key: SETTINGS.ROLL_FORMULA): string
 		get(module: "gcsga", key: SETTINGS.BASE_BOOKS): string
 		get(module: "gcsga", key: SETTINGS.DEFAULT_ATTRIBUTES): AttributeSettings
+		get(module: "gcsga", key: SETTINGS.DEFAULT_HIT_LOCATIONS): HitLocationSettings
 		// get(module: "gcsga", key: "default_sheet_settings.initial_points"): number
 		// get(module: "gcsga", key: "default_sheet_settings.tech_level"): string
 		// get(module: "gcsga", key: "default_sheet_settings.tech_level"): string
@@ -179,6 +181,7 @@ declare global {
 		get(key: `gcsga.${SETTINGS.COLORS}`): SettingConfig & { default: ColorSettings }
 		get(key: `gcsga.${SETTINGS.DEFAULT_SHEET_SETTINGS}`): SettingConfig & { default: DefaultSheetSettings }
 		get(key: `gcsga.${SETTINGS.DEFAULT_ATTRIBUTES}`): SettingConfig & { default: AttributeSettings }
+		get(key: `gcsga.${SETTINGS.DEFAULT_HIT_LOCATIONS}`): SettingConfig & { default: HitLocationSettings }
 		// get(key: "gcsga.worldClock.worldCreatedOn"): SettingConfig & { default: string }
 		// get(key: "gcsga.default_sheet_settings.initial_points"): SettingConfig & { default: number }
 		// get(key: "gcsga.default_sheet_settings.tech_level"): SettingConfig & { default: string }

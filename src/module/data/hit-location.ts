@@ -10,6 +10,13 @@ class HitLocation extends foundry.abstract.DataModel<BodyGURPS, HitLocationSchem
 	declare rollRange: string
 	declare sub_table: BodyGURPS | null
 
+	constructor(
+		data: DeepPartial<SourceFromSchema<HitLocationSchema>>,
+		options?: DataModelConstructionOptions<BodyGURPS>,
+	) {
+		super(data, options)
+	}
+
 	static override defineSchema(): HitLocationSchema {
 		const fields = foundry.data.fields
 
@@ -25,17 +32,7 @@ class HitLocation extends foundry.abstract.DataModel<BodyGURPS, HitLocationSchem
 			hit_penalty: new fields.NumberField({ initial: 0 }),
 			dr_bonus: new fields.NumberField({ initial: 0 }),
 			description: new fields.StringField({ nullable: true }),
-		}
-	}
-
-	constructor(
-		data: DeepPartial<SourceFromSchema<HitLocationSchema>> & { sub_table?: BodySource | null },
-		options?: DataModelConstructionOptions<BodyGURPS>,
-	) {
-		super(data, options)
-		if (data.sub_table) {
-			const sub_table = data.sub_table as SourceFromSchema<BodySchema>
-			this.sub_table = new BodyGURPS(sub_table, { owningLocation: this })
+			sub_table: new fields.EmbeddedDataField(BodyGURPS, { required: false, nullable: true, initial: null }),
 		}
 	}
 
@@ -134,11 +131,15 @@ class HitLocation extends foundry.abstract.DataModel<BodyGURPS, HitLocationSchem
 	}
 }
 
+// interface HitLocation
+// 	extends foundry.abstract.DataModel<BodyGURPS, HitLocationSchema>,
+// 		Omit<ModelPropsFromSchema<HitLocationSchema>, "sub_table"> {
+// 	sub_table: BodyGURPS | null
+// }
+//
 interface HitLocation
 	extends foundry.abstract.DataModel<BodyGURPS, HitLocationSchema>,
-		Omit<ModelPropsFromSchema<HitLocationSchema>, "sub_table"> {
-	sub_table: BodyGURPS | null
-}
+		ModelPropsFromSchema<HitLocationSchema> {}
 
 type HitLocationSchema = {
 	id: fields.StringField<string, string, true, false, true>
@@ -148,28 +149,27 @@ type HitLocationSchema = {
 	hit_penalty: fields.NumberField<number, number, true, false, true>
 	dr_bonus: fields.NumberField<number, number, true, false>
 	description: fields.StringField<string, string, true, true>
+	sub_table: fields.EmbeddedDataField<BodyGURPS, false, true, true>
 }
-
-type HitLocationSource = Omit<SourceFromSchema<HitLocationSchema>, "sub_table"> & {
-	sub_table: BodySource | null
-}
+// type HitLocationSource = Omit<SourceFromSchema<HitLocationSchema>, "sub_table"> & {
+// 	sub_table: BodySource | null
+// }
 
 class BodyGURPS extends foundry.abstract.DataModel<ActorGURPS2 | HitLocation, BodySchema> {
+	constructor(
+		data: DeepPartial<SourceFromSchema<BodySchema>>,
+		options?: DataModelConstructionOptions<ActorGURPS2 | HitLocation>,
+	) {
+		super(data, options)
+	}
+
 	static override defineSchema(): BodySchema {
 		const fields = foundry.data.fields
 
 		return {
 			name: new fields.StringField({ required: true, nullable: true, initial: null }),
 			roll: new fields.StringField({ required: true, nullable: false, initial: "1d" }),
-			locations: new fields.ArrayField(new fields.SchemaField(HitLocation.defineSchema()), { initial: [] }),
-		}
-	}
-
-	constructor(data: DeepPartial<SourceFromSchema<BodySchema>>, options?: BodyConstructionOptions) {
-		super(data, options)
-
-		if (data.locations) {
-			this.locations = data.locations.map(e => new HitLocation(e!, { parent: this }))
+			locations: new fields.ArrayField(new fields.EmbeddedDataField(HitLocation), { initial: [] }),
 		}
 	}
 
@@ -203,15 +203,7 @@ interface BodyGURPS
 type BodySchema = {
 	name: fields.StringField<string, string, true, true, true>
 	roll: fields.StringField<string, string, true, false, true>
-	locations: fields.ArrayField<fields.SchemaField<HitLocationSchema>>
+	locations: fields.ArrayField<fields.EmbeddedDataField<HitLocation>, Partial<SourceFromSchema<HitLocationSchema>>[]>
 }
 
-type BodySource = Omit<SourceFromSchema<BodySchema>, "locations"> & {
-	locations: HitLocationSource[]
-}
-
-interface BodyConstructionOptions extends DataModelConstructionOptions<ActorGURPS2 | HitLocation> {
-	owningLocation?: HitLocation | null
-}
-
-export { BodyGURPS, HitLocation, type BodySchema, type HitLocationSchema, type BodySource, type HitLocationSource }
+export { BodyGURPS, HitLocation, type BodySchema, type HitLocationSchema }

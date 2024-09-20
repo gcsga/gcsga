@@ -1,7 +1,6 @@
-import { Weight } from "@util/weight.ts"
 import { ContainedWeightReductionSchema } from "./data.ts"
 import { BaseFeature } from "./base-feature.ts"
-import { Int, feature } from "@util"
+import { Int, Weight, feature } from "@util"
 
 class ContainedWeightReduction extends BaseFeature<ContainedWeightReductionSchema> {
 	static override TYPE = feature.Type.ContainedWeightReduction

@@ -5,6 +5,7 @@
  * @param original Some sort of data
  * @return The clone of that data
  */
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function deepClone<T>(original: T): T extends Set<any> | Map<any, any> | Collection<any> ? never : T {
 	// Simple types
@@ -390,6 +391,7 @@ function randomID(length = 16): string {
 }
 
 class DataModel {}
+class TypeDataModel {}
 
 const f = (global.foundry = {
 	utils: {
@@ -404,7 +406,8 @@ const f = (global.foundry = {
 		setProperty,
 	},
 	abstract: {
-		DataModel: DataModel,
+		DataModel,
+		TypeDataModel,
 	},
 } as unknown as typeof foundry)
 

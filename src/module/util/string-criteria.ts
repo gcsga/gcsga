@@ -1,8 +1,8 @@
 import { LocalizeGURPS } from "../../util/localize.ts"
 import { AllStringCompareTypes, StringCompareType } from "@module/data/constants.ts"
 import type { StringCriteriaSchema } from "./data.ts"
-import { Nameable } from "./nameable.ts"
 import { ItemDataModel } from "@module/data/abstract.ts"
+import { Nameable } from "./index.ts"
 
 class StringCriteria extends foundry.abstract.DataModel<ItemDataModel, StringCriteriaSchema> {
 	static override defineSchema(): StringCriteriaSchema {

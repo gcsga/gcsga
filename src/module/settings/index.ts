@@ -2,6 +2,7 @@ import { SETTINGS, SSRT_SETTING, SYSTEM_NAME } from "@module/data/constants.ts"
 import { ColorConfig } from "./color-config.ts"
 import { SheetSettingsConfig } from "./sheet-settings-config.ts"
 import { AttributesConfig } from "./attributes-config.ts"
+import { HitLocationsConfig } from "./hit-location-settings.ts"
 
 /**
  * Register all of the system's keybindings.
@@ -46,6 +47,16 @@ export function registerSystemSettings(): void {
 		restricted: false,
 	})
 	AttributesConfig.registerSettings()
+
+	game.settings.registerMenu(SYSTEM_NAME, SETTINGS.DEFAULT_HIT_LOCATIONS, {
+		name: "GURPS.Settings.HitLocationsConfig.Name",
+		label: "GURPS.Settings.HitLocationsConfig.Label",
+		hint: "GURPS.Settings.HitLocationsConfig.Hint",
+		icon: "gcs-body-type",
+		type: HitLocationsConfig,
+		restricted: false,
+	})
+	HitLocationsConfig.registerSettings()
 
 	game.settings.register(SYSTEM_NAME, SETTINGS.BASE_BOOKS, {
 		name: "GURPS.Settings.BaseBooks.Name",

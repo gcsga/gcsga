@@ -1,8 +1,8 @@
 import { LocalizeGURPS } from "../../util/localize.ts"
-import { Weight } from "../../util/weight.ts"
 import { AllNumericCompareTypes, NumericCompareType } from "@module/data/constants.ts"
 import type { WeightCriteriaSchema } from "./data.ts"
 import { ItemDataModel } from "@module/data/abstract.ts"
+import { Weight } from "@util"
 
 class WeightCriteria extends foundry.abstract.DataModel<ItemDataModel, WeightCriteriaSchema> {
 	static override defineSchema(): WeightCriteriaSchema {
