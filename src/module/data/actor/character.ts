@@ -3,7 +3,7 @@ import fields = foundry.data.fields
 import { CharacterManeuver } from "@system/maneuver-manager.ts"
 import { PointsRecord, PointsRecordSchema } from "./fields/points-record.ts"
 import { ItemType, gid } from "../constants.ts"
-import { equalFold } from "@module/util/index.ts"
+import { DamageProgression, equalFold } from "@module/util/index.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import {
 	FeatureHolderTemplate,
@@ -13,7 +13,7 @@ import {
 } from "./templates/index.ts"
 import { AttributeHolderTemplate, AttributeHolderTemplateSchema } from "./templates/attribute-holder.ts"
 import { CharacterBonus, CharacterBonusSchema } from "./fields/bonus.ts"
-import { Int, damageProgression, encumbrance, progression, threshold } from "@util"
+import { Int, encumbrance, progression, threshold } from "@util"
 import { ItemInst } from "../item/helpers.ts"
 import { ResourceTracker, ResourceTrackerSchema } from "../resource-tracker/index.ts"
 import { MoveType, MoveTypeSchema } from "../move-type/index.ts"
@@ -295,7 +295,7 @@ class CharacterData extends ActorDataModel.mixin(
 	}
 
 	thrustFor(st: number): DiceGURPS {
-		return damageProgression.thrustFor(this.settings.damage_progression, st)
+		return DamageProgression.thrustFor(this.settings.damage_progression, st)
 	}
 
 	get swing(): DiceGURPS {
@@ -307,7 +307,7 @@ class CharacterData extends ActorDataModel.mixin(
 	}
 
 	swingFor(st: number): DiceGURPS {
-		return damageProgression.swingFor(this.settings.damage_progression, st)
+		return DamageProgression.swingFor(this.settings.damage_progression, st)
 	}
 }
 

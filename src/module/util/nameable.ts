@@ -41,16 +41,16 @@ function reduce(needed: Map<string, string>, replacements: Map<string, string>):
 	return ret
 }
 
-function isFiller(e: object): e is NameableFiller {
-	return Object.hasOwn(e, "fillWithNameableKeys")
+function isFiller(e: unknown): e is NameableFiller {
+	return typeof e === "object" && e !== null && Object.hasOwn(e, "fillWithNameableKeys")
 }
 
-function isAccesser(e: object): e is NameableAccesser {
-	return Object.hasOwn(e, "nameableReplacements")
+function isAccesser(e: unknown): e is NameableAccesser {
+	return typeof e === "object" && e !== null && Object.hasOwn(e, "nameableReplacements")
 }
 
-function isApplier(e: object): e is NameableApplier {
-	return Object.hasOwn(e, "applyNameableKeys")
+function isApplier(e: unknown): e is NameableApplier {
+	return typeof e === "object" && e !== null && Object.hasOwn(e, "applyNameableKeys")
 }
 
 export const Nameable = {
