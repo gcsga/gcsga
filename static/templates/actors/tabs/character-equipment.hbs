@@ -1,0 +1,29 @@
+<section class="tab {{tab.cssClass}}" data-group="primary" data-tab="equipment">
+	<!-- Encumbrance -->
+	<div class="top">
+		{{#with encumbrance}}
+		<div id="encumbrance">
+			<div
+				class="meter progress"
+				role="meter"
+				aria-valuemin="0"
+				aria-valuenow="{{percentLoad}}"
+				aria-valuetext="{{currentLoad}}"
+				aria-valuemax="{{maxLoad}}"
+				style="--bar-percentage: {{percentLoad}}%;"
+			>
+				<div class="label">
+					<i class="fa-solid fa-weight-hanging"></i>
+					<span class="value">{{currentLoad}}</span>
+				</div>
+				<i class="breakpoint encumbrance-light arrow-up" role="presentation"></i>
+				<i class="breakpoint encumbrance-light arrow-down" role="presentation"></i>
+				<i class="breakpoint encumbrance-medium arrow-up" role="presentation"></i>
+				<i class="breakpoint encumbrance-medium arrow-down" role="presentation"></i>
+				<i class="breakpoint encumbrance-heavy arrow-up" role="presentation"></i>
+				<i class="breakpoint encumbrance-heavy arrow-down" role="presentation"></i>
+			</div>
+		</div>
+		{{/with}}
+	</div>
+</section>

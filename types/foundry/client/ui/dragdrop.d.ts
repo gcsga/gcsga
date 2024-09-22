@@ -74,10 +74,10 @@ declare global {
 
 	interface DragDropConfiguration {
 		/** The HTML selector which identifies draggable elements */
-		dragSelector: string
+		dragSelector: string | null
 
 		/** The HTML selector which identifies drop targets */
-		dropSelector: string
+		dropSelector: string | null
 
 		/** A set of permission checking functions for each action of the Drag and Drop workflow */
 		permissions?: Record<string, DocumentOwnershipLevel>

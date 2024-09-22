@@ -53,7 +53,7 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 		primary: "attributes",
 	}
 
-	static override DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> & { dragDrop: DragDropConfiguration[] } = {
+	static override DEFAULT_OPTIONS: DeepPartial<ApplicationConfiguration> = {
 		id: "attributes-config",
 		tag: "form",
 		window: {
@@ -77,7 +77,6 @@ class AttributesConfig extends api.HandlebarsApplicationMixin(api.ApplicationV2)
 			deleteItem: this.#onDeleteItem,
 			addItem: this.#onAddItem,
 		},
-		dragDrop: [{ dragSelector: "[data-drag]", dropSelector: "" }],
 	}
 
 	static override PARTS = {

@@ -7,7 +7,7 @@ import {
 } from "../abstract-attribute/abstract-attribute.ts"
 import { ActorTemplateType } from "../actor/types.ts"
 // import { ActorDataModel } from "../abstract.ts"
-import { ErrorGURPS, Int, attribute, stlimit, threshold } from "@util"
+import { Int, attribute, stlimit, threshold } from "@util"
 import { AttributeDef } from "./attribute-definition.ts"
 // import { gid } from "../constants.ts"
 import { PoolThreshold } from "./pool-threshold.ts"
@@ -41,8 +41,8 @@ class AttributeGURPS<TActor extends AttributeHolderTemplate = AttributeHolderTem
 	}
 
 	get bonus(): number {
-		if (this.actor.hasTemplate(ActorTemplateType.Features)) {
-			return this.actor.system.attributeBonusFor(this.id, stlimit.Option.None)
+		if (this.parent.hasTemplate(ActorTemplateType.Features)) {
+			return this.parent.attributeBonusFor(this.id, stlimit.Option.None)
 		}
 		// console.warn(
 		// 	`Actor "${this.actor?.parent?.name}" of type "${this.actor.parent.type}" is not compatible with attribute bonuses.`,
@@ -63,10 +63,11 @@ class AttributeGURPS<TActor extends AttributeHolderTemplate = AttributeHolderTem
 		// }
 	}
 
-	get definition(): AttributeDef<TActor> {
+	get definition(): AttributeDef | null {
 		const definition = SheetSettings.for(this.actor).attributes.find(att => att.id === this.id)
 		if (!definition) {
-			throw ErrorGURPS(`Attribute with ID ${this.id} has no definition`)
+			console.error(`Attribute with ID ${this.id} has no definition`)
+			return null
 		}
 		return definition as AttributeDef<TActor>
 	}

@@ -99,7 +99,7 @@ class SuccessRoll extends BaseRollGURPS {
 			const attribute = actor.system.resolveAttribute(options.item.uuid)
 			if (attribute === null) return data
 
-			data.name = attribute.definition.fullName
+			data.name = attribute.definition?.fullName
 			return data
 		}
 		switch (true) {

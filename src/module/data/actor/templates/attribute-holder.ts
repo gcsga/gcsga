@@ -17,13 +17,13 @@ class AttributeHolderTemplate extends ActorDataModel<AttributeHolderTemplateSche
 
 	resolveAttributeDef(id: string): AttributeDef | null {
 		if (this.attributeMap.has(id)) return this.attributeMap.get(id)!.definition
-		console.error(`No Attribute definition found for id "${id}"`)
+		// console.error(`No Attribute definition found for id "${id}"`)
 		return null
 	}
 
 	resolveAttribute(id: string): AttributeGURPS | null {
 		if (this.attributeMap.has(id)) return this.attributeMap.get(id)!
-		console.error(`No Attribute definition found for id "${id}"`)
+		// console.error(`No Attribute definition found for id "${id}"`)
 		return null
 	}
 
@@ -37,7 +37,7 @@ class AttributeHolderTemplate extends ActorDataModel<AttributeHolderTemplateSche
 
 	resolveAttributeCurrent(id: string): number {
 		if (this.attributeMap.has(id)) return this.attributeMap.get(id)!.current
-		console.error(`No Attribute found for id "${id}"`)
+		// console.error(`No Attribute found for id "${id}"`)
 		return Number.MIN_SAFE_INTEGER
 	}
 

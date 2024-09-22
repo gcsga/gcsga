@@ -1,24 +1,24 @@
 import fields = foundry.data.fields
-import { getNewAttributeId, sanitizeId } from "@util"
+import { getNewAttributeId } from "@util"
 import { AbstractAttribute } from "./abstract-attribute.ts"
-import { ActorDataModel } from "@module/data/abstract.ts"
 import { gid } from "@module/data/constants.ts"
+import { SheetSettings } from "../sheet-settings.ts"
+import { ActorGURPS2 } from "@module/document/actor.ts"
 
 export const RESERVED_IDS: string[] = [gid.Skill, gid.Parry, gid.Block, gid.Dodge, gid.SizeModifier, gid.Ten]
 
 abstract class AbstractAttributeDef<
-	TActor extends ActorDataModel | null = ActorDataModel | null,
 	TSchema extends AbstractAttributeDefSchema = AbstractAttributeDefSchema,
-> extends foundry.abstract.DataModel<TActor, TSchema> {
-	declare parent: TActor
+> extends foundry.abstract.DataModel<SheetSettings, TSchema> {
+	// declare parent: TActor
 
-	protected _id: string
+	// protected _id: string
 	attributeClass = AbstractAttribute
 
-	constructor(data?: DeepPartial<SourceFromSchema<TSchema>>, options?: DataModelConstructionOptions<TActor>) {
-		super(data, options)
-		this._id = sanitizeId(String(data?.id ?? ""), false, RESERVED_IDS)
-	}
+	// constructor(data?: DeepPartial<SourceFromSchema<TSchema>>, options?: DataModelConstructionOptions<TActor>) {
+	// 	super(data, options)
+	// 	this._id = sanitizeId(String(data?.id ?? ""), false, RESERVED_IDS)
+	// }
 
 	static override defineSchema(): AbstractAttributeDefSchema {
 		const fields = foundry.data.fields
@@ -29,19 +29,19 @@ abstract class AbstractAttributeDef<
 		}
 	}
 
-	get id(): string {
-		return this._id
+	// get id(): string {
+	// 	return this._id
+	// }
+	//
+	// set id(value: string) {
+	// 	this._id = sanitizeId(value, false, RESERVED_IDS)
+	// }
+
+	get actor(): ActorGURPS2 {
+		return this.parent.parent.parent
 	}
 
-	set id(value: string) {
-		this._id = sanitizeId(value, false, RESERVED_IDS)
-	}
-
-	get actor(): TActor {
-		return this.parent
-	}
-
-	abstract baseValue(resolver: TActor): number
+	abstract baseValue(resolver: unknown): number
 
 	abstract generateNewAttribute(): AbstractAttribute
 
@@ -58,8 +58,8 @@ abstract class AbstractAttributeDef<
 	}
 }
 
-interface AbstractAttributeDef<TActor extends ActorDataModel | null, TSchema extends AbstractAttributeDefSchema>
-	extends foundry.abstract.DataModel<TActor, TSchema>,
+interface AbstractAttributeDef<TSchema extends AbstractAttributeDefSchema>
+	extends foundry.abstract.DataModel<SheetSettings, TSchema>,
 		ModelPropsFromSchema<AbstractAttributeDefSchema> {}
 
 type AbstractAttributeDefSchema = {

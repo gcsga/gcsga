@@ -1,6 +1,6 @@
 import { ErrorGURPS, Int, StringBuilder } from "@util"
 import { Operator, evalOperators } from "./operators.ts"
-import { type CharacterData } from "@module/data/actor/character.ts"
+import { type CharacterDataGURPS } from "@module/data/actor/character.ts"
 import { ActorType } from "@module/data/constants.ts"
 import { evalFunctions } from "./function.ts"
 
@@ -31,7 +31,7 @@ export type ParsedFunction = {
 }
 export type Operand = ExpressionOperand | ExpressionTree | ParsedFunction | number | boolean | string | null
 
-export function resolverIsCharacter(resolver: VariableResolver | null): resolver is CharacterData {
+export function resolverIsCharacter(resolver: VariableResolver | null): resolver is CharacterDataGURPS {
 	return resolver instanceof Actor && resolver.type === ActorType.Character
 }
 
@@ -42,7 +42,8 @@ function isExpressionOperand(operand: Operand): operand is ExpressionOperand {
 		"value" in operand &&
 		"unaryOp" in operand &&
 		typeof (operand as ExpressionOperand).value === "string" &&
-		(operand as ExpressionOperand).unaryOp instanceof Operator
+		typeof (operand as ExpressionOperand).unaryOp === "object"
+		// (operand as ExpressionOperand).unaryOp instanceof Operator
 	)
 }
 
@@ -53,8 +54,10 @@ function isExpressionTree(operand: Operand): operand is ExpressionTree {
 		"evaluator" in operand &&
 		"left" in operand &&
 		(operand as ExpressionTree).evaluator instanceof Evaluator &&
-		(("right" in operand && "op" in operand && operand.op instanceof Operator) ||
-			("unaryOp" in operand && operand.unaryOp instanceof Operator))
+		// (("right" in operand && "op" in operand && operand.op instanceof Operator) ||
+		// 	("unaryOp" in operand && operand.unaryOp instanceof Operator))
+		(("right" in operand && "op" in operand && typeof operand.op === "object") ||
+			("unaryOp" in operand && typeof operand.unaryOp === "object"))
 	)
 }
 
@@ -65,7 +68,8 @@ function isParsedFunction(operand: Operand): operand is ParsedFunction {
 		"unaryOp" in operand &&
 		"func" in operand &&
 		"args" in operand &&
-		(operand as ParsedFunction).unaryOp instanceof Operator &&
+		// (operand as ParsedFunction).unaryOp instanceof Operator &&
+		typeof (operand as ParsedFunction).unaryOp === "object" &&
 		typeof (operand as ParsedFunction).func === "function" &&
 		typeof (operand as ParsedFunction).args === "string"
 	)
@@ -116,7 +120,7 @@ export class Evaluator {
 				continue
 			}
 			const [opIndex, op] = this.nextOperator(expression, i, null)
-			if (opIndex > 1 || opIndex === -1) {
+			if (opIndex > i || opIndex === -1) {
 				i = this.processOperand(expression, i, opIndex, unaryOp!)
 				haveOperand = true
 				unaryOp = null
@@ -182,7 +186,7 @@ export class Evaluator {
 			try {
 				;[index, op] = this.processFunction(expression, index)
 			} catch (err) {
-				console.log(err)
+				console.error(err)
 				return -1
 			}
 			index += op!.symbol.length
@@ -352,7 +356,7 @@ export class Evaluator {
 				try {
 					v = this.replaceVariables(operand.value)
 				} catch (err) {
-					console.log(err)
+					console.error(err)
 					return null
 				}
 				if (operand.unaryOp && operand.unaryOp.evaluateUnary) return operand.unaryOp.evaluateUnary(v)
@@ -363,14 +367,14 @@ export class Evaluator {
 				try {
 					s = this.replaceVariables(operand.args)
 				} catch (err) {
-					console.log(err)
+					console.error(err)
 					return null
 				}
 				let v: Operand
 				try {
 					v = operand.func(this, s)
 				} catch (err) {
-					console.log(err)
+					console.error(err)
 					return null
 				}
 				if (operand.unaryOp && operand.unaryOp.evaluateUnary) return operand.unaryOp.evaluateUnary(v)
@@ -433,7 +437,6 @@ export function evaluateToNumber(expression: string, resolver: VariableResolver)
 		result = new Evaluator(resolver).evaluate(expression)
 	} catch (err) {
 		console.error(`unable to resolve expression: ${err}`)
-		console.log(`expression: ${expression}`)
 		return 0
 	}
 	if (typeof result === "number") {
@@ -445,6 +448,5 @@ export function evaluateToNumber(expression: string, resolver: VariableResolver)
 		if (err === null) return value
 	}
 	console.error(`unable to resolve expression: ${err}`)
-	console.log(`expression: ${expression}`)
 	return 0
 }

@@ -3,601 +3,609 @@
 /* This is your Sass entry file */
 /* ---------------------------- */
 
-@import "boilerplate",
-	// GCS font and emojis
-	"fonts",
-	// Useful functions
-	"mixins",
-	// Character sheets
-	"actor",
-	// Foundry system stylings
-	"ui",
-	// Compendium browser
-	"packs",
-	// Item sheets
-	"item",
-	// Scene and scene-object sheets
-	"scene",
-	// GURPS settings apps
+// Shared Variables
+@import "variables",
+	// System Setting Menus
 	"settings",
-	// GURPS system apps
-	"system",
-	// Various constants
-	"variables",
-	// TODO: replace with system
-	"app";
-
-#drag-ghost {
-	position: absolute;
-	top: -1000px;
-	background-color: rgb(var(--color-selection));
-	color: rgb(var(--color-on-selection));
-	font: var(--font-system);
-	width: min-content;
-	display: grid;
-	grid-auto-flow: column;
-	padding: 4px 15px;
-	gap: 4px;
-	border: 1px solid rgb(var(--color-on-selection));
-	border-radius: 1000px;
-	text-align: center;
-	white-space: nowrap;
-	align-items: baseline;
-	opacity: 1;
-	mask-image: none;
-	-webkit-mask-image: none;
-
-	svg {
-		height: 1em;
-	}
-}
-
-* {
-	--color-border-highlight: rgba(var(--color-scroll-edge), 1);
-}
-
-::-webkit-scrollbar-track {
-	box-shadow: none;
-}
-
-::-webkit-scrollbar-thumb {
-	background: rgba(var(--color-scroll));
-	border-radius: 6px;
-
-	&:hover {
-		background: rgba(var(--color-scroll-rollover));
-	}
-}
-
-.gurps {
-	a {
-		&:hover,
-		&:active {
-			text-shadow: none;
-		}
-	}
-
-	hr {
-		border: 1px solid rgb(var(--color-divider));
-		width: 100%;
-		margin: 0;
-	}
-
-	input[type="text"],
-	input[type="search"],
-	input[type="number"] {
-		font: var(--font-field);
-		height: 24px;
-		width: 100%;
-		min-width: 40px;
-		border-radius: 0px;
-		background-color: rgb(var(--color-editable));
-		color: rgb(var(--color-on-editable));
-		border: 1px solid rgba(var(--color-control-edge));
-		padding: 1px 3px;
-
-		&:focus,
-		&:focus-visible {
-			box-shadow: none;
-			border-width: 2px;
-			padding: 0 2px;
-		}
-
-		&:disabled {
-			pointer-events: none;
-		}
-	}
-
-	input[type="checkbox"] {
-		appearance: none;
-		margin: 0;
-		background-color: rgb(var(--color-control));
-		color: rgb(var(--color-on-control)); // Redundant?
-		font: inherit;
-		width: 14px;
-		max-width: 14px;
-		height: 14px;
-		border: 1px solid rgb(var(--color-control-edge));
-		border-radius: 4px;
-		display: flex;
-		filter: none;
-
-		&:focus,
-		&:focus-visible {
-			border-width: 2px;
-			outline: none;
-			box-shadow: none;
-		}
-
-		&:active {
-			background-color: rgb(var(--color-pressed-control));
-		}
-
-		&::before {
-			font-family: "gcs";
-			font-size: var(--font-size-12);
-			content: "\e805";
-			opacity: 0;
-		}
-
-		&:checked::before {
-			opacity: 1;
-		}
-	}
-
-	.field {
-		display: flex;
-		align-items: start;
-		gap: 9px;
-		flex: 1;
-
-		&.no-stretch {
-			width: max-content;
-		}
-
-		input[type="number"] {
-			width: 60px;
-		}
-
-		label.check {
-			// display: grid;
-			// grid-template-columns: 1em auto;
-			gap: 3px;
-			height: 16px;
-			grid-row-gap: 0px;
-			white-space: nowrap;
-			font: var(--font-label);
-			font-size: var(--font-size-14);
-		}
-	}
-
-	.md {
-		font-family: var(--font-markdown);
-
-		*:not(hr) {
-			margin: 0;
-			border: 0;
-			font-size: 100%;
-			vertical-align: baseline;
-			font-weight: normal;
-		}
-
-		p {
-			margin-bottom: 0.5em;
-		}
-
-		h1,
-		h2,
-		h3,
-		h4,
-		h5,
-		h6 {
-			font-weight: 900;
-		}
-
-		h1 {
-			font-size: calc(2.5 * var(--font-size-14));
-		}
-
-		h2 {
-			font-size: calc(2 * var(--font-size-14));
-		}
-
-		h3 {
-			font-size: calc(1.75 * var(--font-size-14));
-		}
-
-		h4 {
-			font-size: calc(1.5 * var(--font-size-14));
-		}
-
-		h5 {
-			font-size: calc(1.25 * var(--font-size-14));
-		}
-
-		h6 {
-			font-size: calc(1 * var(--font-size-14));
-		}
-
-		strong {
-			font-weight: 700;
-		}
-
-		pre {
-			margin: 4px 0;
-			white-space: pre;
-		}
-
-		pre > code {
-			padding: 5px;
-			display: block;
-		}
-
-		code {
-			background-color: rgb(var(--color-content));
-			color: rgb(var(--color-on-content));
-		}
-
-		blockquote {
-			font-style: normal;
-			display: block;
-			padding: 5px;
-			border-left: 2px solid rgb(var(--color-accent));
-			background-color: rgb(var(--color-content));
-			color: rgb(var(--color-on-content));
-		}
-
-		a {
-			color: rgb(var(--color-link));
-
-			&:hover {
-				color: rgb(var(--color-link-rollover));
-			}
-
-			&:active {
-				color: rgb(var(--color-link-pressed));
-			}
-		}
-
-		table {
-			width: auto;
-
-			tr:nth-child(even) {
-				background-color: transparent;
-			}
-
-			td,
-			th {
-				padding: 5px;
-				border: 2px solid rgb(var(--color-divider));
-			}
-
-			thead {
-				th {
-					font-weight: 500;
-				}
-
-				background: transparent;
-				color: inherit;
-				text-shadow: none;
-			}
-		}
-	}
-}
-
-.gurps,
-.window-app.gurps {
-	// Header
-	header.window-header {
-		background-image: linear-gradient(rgba(var(--color-focused-tab), 1), rgba(var(--color-focused-tab), 1));
-		color: rgba(var(--color-on-focused-tab), 1);
-		border: none;
-		font: var(--font-system);
-		flex: 0 0 30px;
-		overflow: hidden;
-		padding: 0 8px;
-		line-height: 30px;
-	}
-
-	.window-title {
-		font: inherit;
-	}
-
-	.header-button:hover {
-		text-shadow: none;
-	}
-
-	// Content Background
-	.window-content {
-		height: 100%;
-		padding: 0px;
-		scroll-behavior: smooth;
-
-		background: rgb(var(--color-background));
-		color: rgb(var(--color-on-background));
-		// border-right: 2px solid transparent;
-
-		// Scrollbar
-		// scrollbar-gutter: stable;
-		// overflow-y: overlay;
-		// &::-webkit-scrollbar {
-		// 	width: 12px;
-		// }
-		&::-webkit-scrollbar-track {
-			box-shadow: none;
-		}
-
-		&::-webkit-scrollbar-thumb {
-			background: rgba(var(--color-scroll));
-			border-radius: 6px;
-
-			&:hover {
-				background: rgba(var(--color-scroll-rollover));
-			}
-		}
-	}
-
-	// Resize Handle
-	.window-resizable-handle {
-		background-color: rgb(var(--color-focused-tab));
-		color: rgb(var(--color-on-focused-tab));
-	}
-
-	select {
-		// align-self: center;
-		font: var(--font-system);
-		background-color: rgb(var(--color-control));
-		color: rgb(var(--color-on-control));
-		border: 1px solid rgb(var(--color-control-edge));
-		padding: 1px 3px;
-		border-radius: 3px;
-		height: 24px;
-		width: max-content;
-		align-items: self-end;
-
-		optgroup {
-			font: var(--font-system);
-			background-color: rgb(var(--color-header));
-			color: rgb(var(--color-on-header));
-			border: 1px solid rgb(var(--color-on-header));
-		}
-
-		option {
-			font: var(--font-system);
-			background-color: rgb(var(--color-control));
-			color: rgb(var(--color-on-control));
-			border: 1px solid rgb(var(--color-control-edge));
-		}
-
-		&:focus {
-			box-shadow: none;
-			border-width: 2px;
-			padding: 0px 2px;
-		}
-	}
-
-	button,
-	label.button {
-		justify-self: center;
-		width: min-content;
-		white-space: nowrap;
-		grid-area: button;
-		background-color: rgb(var(--color-control));
-		color: rgb(var(--color-on-control));
-		font: var(--font-system);
-		border: 1px solid rgb(var(--color-control-edge));
-		border-radius: 4px;
-		padding: 1px 6px;
-
-		&[disabled] {
-			cursor: default;
-			color: rgba(var(--color-on-control), 0.5);
-
-			&:active {
-				background-color: rgb(var(--color-control));
-				color: rgb(var(--color-on-control), 0.5);
-			}
-		}
-
-		&:hover,
-		&:focus {
-			box-shadow: none;
-		}
-
-		&:active {
-			background-color: rgb(var(--color-pressed-control));
-			color: rgb(var(--color-on-pressed-control));
-		}
-	}
-
-	input[type="text"],
-	input[type="search"],
-	input[type="number"] {
-		font: var(--font-field);
-		height: 24px;
-		width: 100%;
-		min-width: 40px;
-		border-radius: 0px;
-		background-color: rgb(var(--color-editable));
-		color: rgb(var(--color-on-editable));
-		border: 1px solid rgba(var(--color-control-edge));
-		padding: 1px 3px;
-
-		&:focus {
-			box-shadow: none;
-			border-width: 2px;
-			padding: 0 2px;
-		}
-
-		// &[readonly] {
-		// 	background-color: rgb(var(--color-background));
-		// 	color: rgb(var(--color-on-background));
-		// 	pointer-events: none;
-		// }
-		&:disabled {
-			// background-color: rgb(var(--color-background));
-			/* color: rgba(var(--color-on-editable), 0); // Invisible Text */
-			pointer-events: none;
-		}
-
-		&.invalid {
-			background-color: rgb(var(--color-error));
-			color: rgb(var(--color-on-error));
-		}
-	}
-
-	// input[type="checkbox"] {
-	// 	flex: 0 !important;
-	// 	appearance: none;
-	// 	margin: 0;
-	// 	background-color: rgb(var(--color-control));
-	// 	color: rgb(var(--color-on-control)); // Redundant?
-	// 	font: inherit;
-	// 	width: 14px;
-	// 	height: 14px;
-	// 	border: 1px solid rgb(var(--color-control-edge));
-	// 	border-radius: 4px;
-	// 	display: grid;
-	// 	place-content: center;
-	// 	filter: none;
-	// 	// translate: 0px 4px;
-	// 	&:focus {
-	// 		border-width: 2px;
-	// 	}
-	// 	&:active {
-	// 		background-color: rgb(var(--color-pressed-control));
-	// 	}
-	// 	&::before {
-	// 		font-family: "gcs";
-	// 		font-size: var(--font-size-12);
-	// 		content: "\e805";
-	// 		opacity: 0;
-	// 	}
-	// 	&:checked::before {
-	// 		opacity: 1;
-	// 	}
-	// }
-	textarea {
-		min-height: 24px;
-		padding: 1px 3px;
-		/* line-height: 24px; */
-		line-height: 0;
-		resize: none;
-		overflow-y: hidden;
-
-		&:focus-visible {
-			outline: none;
-		}
-	}
-
-	textarea,
-	input[type="text"],
-	input[type="number"] {
-		font: var(--font-field);
-		width: 100%;
-		min-width: 40px;
-		border-radius: 0px;
-		background-color: rgb(var(--color-editable));
-		color: rgb(var(--color-on-editable));
-		border: 1px solid rgba(var(--color-control-edge));
-		padding: 1px 3px;
-
-		&:focus {
-			box-shadow: none;
-			border-width: 2px;
-			padding: 0 2px;
-		}
-
-		&[readonly] {
-			background-color: transparent;
-			color: rgb(var(--color-on-background));
-			pointer-events: none;
-		}
-
-		&:disabled {
-			pointer-events: none;
-		}
-
-		&.number,
-		&[data-dtype="Number"] {
-			width: 93px;
-		}
-
-		&.calc {
-			width: 67px;
-		}
-	}
-
-	input[type="text"],
-	input[type="number"] {
-		height: 24px;
-	}
-
-	label.check {
-		display: grid;
-		grid-auto-flow: column;
-		grid-gap: 5px;
-		justify-content: left;
-	}
-
-	header {
-		grid-area: auto;
-		padding: var(--padding-header);
-		background-color: rgb(var(--color-header));
-		color: rgb(var(--color-on-header));
-		white-space: nowrap;
-	}
-}
-
-.button {
-	color: rgb(var(--color-icon-button));
-
-	&:hover {
-		color: rgb(var(--color-icon-button-rollover));
-	}
-}
-
-nav.nav-tabs {
-	display: flex;
-	margin-top: 5px;
-	border-bottom: 1px solid rgb(var(--color-divider));
-
-	a {
-		display: flex;
-		flex-grow: 1;
-		justify-content: space-evenly;
-		background-color: rgb(var(--color-control));
-		color: rgb(var(--color-on-control));
-		padding: 2px;
-		border: 1px solid rgb(var(--color-control-edge));
-		border-radius: 4px 4px 0 0;
-
-		&:hover {
-			text-shadow: none;
-		}
-
-		&.active {
-			background-color: rgb(var(--color-focused-tab));
-			color: rgb(var(--color-on-focused-tab));
-		}
-	}
-}
-
-#tooltip {
-	display: inline;
-	align-items: beginning;
-	position: absolute;
-	width: max-content;
-	max-width: 600px;
-	padding: 6px 8px;
-	background: rgb(var(--color-tooltip));
-	font-family: var(--font-primary);
-	font-size: var(--font-size-12);
-	line-height: var(--font-size-12);
-	color: rgb(var(--color-on-tooltip));
-	border: 1px solid rgb(var(--color-control-edge));
-	border-radius: 0;
-	box-shadow: none;
-	visibility: hidden;
-	text-align: left !important;
-}
+	// Actor Sheets
+	"actors",
+	// Custom GCS Font
+	"fonts";
+
+// @import // GCS font and emojis
+// 	"fonts",
+// 	// Useful functions
+// 	"mixins",
+// 	// Character sheets
+// 	"actor",
+// 	// Foundry system stylings
+// 	"ui",
+// 	// Compendium browser
+// 	"packs",
+// 	// Item sheets
+// 	"item",
+// 	// Scene and scene-object sheets
+// 	"scene",
+// 	// GURPS settings apps
+// 	"settings",
+// 	// GURPS system apps
+// 	"system",
+// 	// Various constants
+// 	"variables",
+// 	// TODO: replace with system
+// 	"app";
+
+// #drag-ghost {
+// 	position: absolute;
+// 	top: -1000px;
+// 	background-color: rgb(var(--color-selection));
+// 	color: rgb(var(--color-on-selection));
+// 	font: var(--font-system);
+// 	width: min-content;
+// 	display: grid;
+// 	grid-auto-flow: column;
+// 	padding: 4px 15px;
+// 	gap: 4px;
+// 	border: 1px solid rgb(var(--color-on-selection));
+// 	border-radius: 1000px;
+// 	text-align: center;
+// 	white-space: nowrap;
+// 	align-items: baseline;
+// 	opacity: 1;
+// 	mask-image: none;
+// 	-webkit-mask-image: none;
+//
+// 	svg {
+// 		height: 1em;
+// 	}
+// }
+//
+// * {
+// 	--color-border-highlight: rgba(var(--color-scroll-edge), 1);
+// }
+//
+// ::-webkit-scrollbar-track {
+// 	box-shadow: none;
+// }
+//
+// ::-webkit-scrollbar-thumb {
+// 	background: rgba(var(--color-scroll));
+// 	border-radius: 6px;
+//
+// 	&:hover {
+// 		background: rgba(var(--color-scroll-rollover));
+// 	}
+// }
+//
+// .gurps {
+// 	a {
+// 		&:hover,
+// 		&:active {
+// 			text-shadow: none;
+// 		}
+// 	}
+//
+// 	hr {
+// 		border: 1px solid rgb(var(--color-divider));
+// 		width: 100%;
+// 		margin: 0;
+// 	}
+//
+// 	input[type="text"],
+// 	input[type="search"],
+// 	input[type="number"] {
+// 		font: var(--font-field);
+// 		height: 24px;
+// 		width: 100%;
+// 		min-width: 40px;
+// 		border-radius: 0px;
+// 		background-color: rgb(var(--color-editable));
+// 		color: rgb(var(--color-on-editable));
+// 		border: 1px solid rgba(var(--color-control-edge));
+// 		padding: 1px 3px;
+//
+// 		&:focus,
+// 		&:focus-visible {
+// 			box-shadow: none;
+// 			border-width: 2px;
+// 			padding: 0 2px;
+// 		}
+//
+// 		&:disabled {
+// 			pointer-events: none;
+// 		}
+// 	}
+//
+// 	input[type="checkbox"] {
+// 		appearance: none;
+// 		margin: 0;
+// 		background-color: rgb(var(--color-control));
+// 		color: rgb(var(--color-on-control)); // Redundant?
+// 		font: inherit;
+// 		width: 14px;
+// 		max-width: 14px;
+// 		height: 14px;
+// 		border: 1px solid rgb(var(--color-control-edge));
+// 		border-radius: 4px;
+// 		display: flex;
+// 		filter: none;
+//
+// 		&:focus,
+// 		&:focus-visible {
+// 			border-width: 2px;
+// 			outline: none;
+// 			box-shadow: none;
+// 		}
+//
+// 		&:active {
+// 			background-color: rgb(var(--color-pressed-control));
+// 		}
+//
+// 		&::before {
+// 			font-family: "gcs";
+// 			font-size: var(--font-size-12);
+// 			content: "\e805";
+// 			opacity: 0;
+// 		}
+//
+// 		&:checked::before {
+// 			opacity: 1;
+// 		}
+// 	}
+//
+// 	.field {
+// 		display: flex;
+// 		align-items: start;
+// 		gap: 9px;
+// 		flex: 1;
+//
+// 		&.no-stretch {
+// 			width: max-content;
+// 		}
+//
+// 		input[type="number"] {
+// 			width: 60px;
+// 		}
+//
+// 		label.check {
+// 			// display: grid;
+// 			// grid-template-columns: 1em auto;
+// 			gap: 3px;
+// 			height: 16px;
+// 			grid-row-gap: 0px;
+// 			white-space: nowrap;
+// 			font: var(--font-label);
+// 			font-size: var(--font-size-14);
+// 		}
+// 	}
+//
+// 	.md {
+// 		font-family: var(--font-markdown);
+//
+// 		*:not(hr) {
+// 			margin: 0;
+// 			border: 0;
+// 			font-size: 100%;
+// 			vertical-align: baseline;
+// 			font-weight: normal;
+// 		}
+//
+// 		p {
+// 			margin-bottom: 0.5em;
+// 		}
+//
+// 		h1,
+// 		h2,
+// 		h3,
+// 		h4,
+// 		h5,
+// 		h6 {
+// 			font-weight: 900;
+// 		}
+//
+// 		h1 {
+// 			font-size: calc(2.5 * var(--font-size-14));
+// 		}
+//
+// 		h2 {
+// 			font-size: calc(2 * var(--font-size-14));
+// 		}
+//
+// 		h3 {
+// 			font-size: calc(1.75 * var(--font-size-14));
+// 		}
+//
+// 		h4 {
+// 			font-size: calc(1.5 * var(--font-size-14));
+// 		}
+//
+// 		h5 {
+// 			font-size: calc(1.25 * var(--font-size-14));
+// 		}
+//
+// 		h6 {
+// 			font-size: calc(1 * var(--font-size-14));
+// 		}
+//
+// 		strong {
+// 			font-weight: 700;
+// 		}
+//
+// 		pre {
+// 			margin: 4px 0;
+// 			white-space: pre;
+// 		}
+//
+// 		pre > code {
+// 			padding: 5px;
+// 			display: block;
+// 		}
+//
+// 		code {
+// 			background-color: rgb(var(--color-content));
+// 			color: rgb(var(--color-on-content));
+// 		}
+//
+// 		blockquote {
+// 			font-style: normal;
+// 			display: block;
+// 			padding: 5px;
+// 			border-left: 2px solid rgb(var(--color-accent));
+// 			background-color: rgb(var(--color-content));
+// 			color: rgb(var(--color-on-content));
+// 		}
+//
+// 		a {
+// 			color: rgb(var(--color-link));
+//
+// 			&:hover {
+// 				color: rgb(var(--color-link-rollover));
+// 			}
+//
+// 			&:active {
+// 				color: rgb(var(--color-link-pressed));
+// 			}
+// 		}
+//
+// 		table {
+// 			width: auto;
+//
+// 			tr:nth-child(even) {
+// 				background-color: transparent;
+// 			}
+//
+// 			td,
+// 			th {
+// 				padding: 5px;
+// 				border: 2px solid rgb(var(--color-divider));
+// 			}
+//
+// 			thead {
+// 				th {
+// 					font-weight: 500;
+// 				}
+//
+// 				background: transparent;
+// 				color: inherit;
+// 				text-shadow: none;
+// 			}
+// 		}
+// 	}
+// }
+//
+// .gurps,
+// .window-app.gurps {
+// 	// Header
+// 	header.window-header {
+// 		background-image: linear-gradient(rgba(var(--color-focused-tab), 1), rgba(var(--color-focused-tab), 1));
+// 		color: rgba(var(--color-on-focused-tab), 1);
+// 		border: none;
+// 		font: var(--font-system);
+// 		flex: 0 0 30px;
+// 		overflow: hidden;
+// 		padding: 0 8px;
+// 		line-height: 30px;
+// 	}
+//
+// 	.window-title {
+// 		font: inherit;
+// 	}
+//
+// 	.header-button:hover {
+// 		text-shadow: none;
+// 	}
+//
+// 	// Content Background
+// 	.window-content {
+// 		height: 100%;
+// 		padding: 0px;
+// 		scroll-behavior: smooth;
+//
+// 		background: rgb(var(--color-background));
+// 		color: rgb(var(--color-on-background));
+// 		// border-right: 2px solid transparent;
+//
+// 		// Scrollbar
+// 		// scrollbar-gutter: stable;
+// 		// overflow-y: overlay;
+// 		// &::-webkit-scrollbar {
+// 		// 	width: 12px;
+// 		// }
+// 		&::-webkit-scrollbar-track {
+// 			box-shadow: none;
+// 		}
+//
+// 		&::-webkit-scrollbar-thumb {
+// 			background: rgba(var(--color-scroll));
+// 			border-radius: 6px;
+//
+// 			&:hover {
+// 				background: rgba(var(--color-scroll-rollover));
+// 			}
+// 		}
+// 	}
+//
+// 	// Resize Handle
+// 	.window-resizable-handle {
+// 		background-color: rgb(var(--color-focused-tab));
+// 		color: rgb(var(--color-on-focused-tab));
+// 	}
+//
+// 	select {
+// 		// align-self: center;
+// 		font: var(--font-system);
+// 		background-color: rgb(var(--color-control));
+// 		color: rgb(var(--color-on-control));
+// 		border: 1px solid rgb(var(--color-control-edge));
+// 		padding: 1px 3px;
+// 		border-radius: 3px;
+// 		height: 24px;
+// 		width: max-content;
+// 		align-items: self-end;
+//
+// 		optgroup {
+// 			font: var(--font-system);
+// 			background-color: rgb(var(--color-header));
+// 			color: rgb(var(--color-on-header));
+// 			border: 1px solid rgb(var(--color-on-header));
+// 		}
+//
+// 		option {
+// 			font: var(--font-system);
+// 			background-color: rgb(var(--color-control));
+// 			color: rgb(var(--color-on-control));
+// 			border: 1px solid rgb(var(--color-control-edge));
+// 		}
+//
+// 		&:focus {
+// 			box-shadow: none;
+// 			border-width: 2px;
+// 			padding: 0px 2px;
+// 		}
+// 	}
+//
+// 	button,
+// 	label.button {
+// 		justify-self: center;
+// 		width: min-content;
+// 		white-space: nowrap;
+// 		grid-area: button;
+// 		background-color: rgb(var(--color-control));
+// 		color: rgb(var(--color-on-control));
+// 		font: var(--font-system);
+// 		border: 1px solid rgb(var(--color-control-edge));
+// 		border-radius: 4px;
+// 		padding: 1px 6px;
+//
+// 		&[disabled] {
+// 			cursor: default;
+// 			color: rgba(var(--color-on-control), 0.5);
+//
+// 			&:active {
+// 				background-color: rgb(var(--color-control));
+// 				color: rgb(var(--color-on-control), 0.5);
+// 			}
+// 		}
+//
+// 		&:hover,
+// 		&:focus {
+// 			box-shadow: none;
+// 		}
+//
+// 		&:active {
+// 			background-color: rgb(var(--color-pressed-control));
+// 			color: rgb(var(--color-on-pressed-control));
+// 		}
+// 	}
+//
+// 	input[type="text"],
+// 	input[type="search"],
+// 	input[type="number"] {
+// 		font: var(--font-field);
+// 		height: 24px;
+// 		width: 100%;
+// 		min-width: 40px;
+// 		border-radius: 0px;
+// 		background-color: rgb(var(--color-editable));
+// 		color: rgb(var(--color-on-editable));
+// 		border: 1px solid rgba(var(--color-control-edge));
+// 		padding: 1px 3px;
+//
+// 		&:focus {
+// 			box-shadow: none;
+// 			border-width: 2px;
+// 			padding: 0 2px;
+// 		}
+//
+// 		// &[readonly] {
+// 		// 	background-color: rgb(var(--color-background));
+// 		// 	color: rgb(var(--color-on-background));
+// 		// 	pointer-events: none;
+// 		// }
+// 		&:disabled {
+// 			// background-color: rgb(var(--color-background));
+// 			/* color: rgba(var(--color-on-editable), 0); // Invisible Text */
+// 			pointer-events: none;
+// 		}
+//
+// 		&.invalid {
+// 			background-color: rgb(var(--color-error));
+// 			color: rgb(var(--color-on-error));
+// 		}
+// 	}
+//
+// 	// input[type="checkbox"] {
+// 	// 	flex: 0 !important;
+// 	// 	appearance: none;
+// 	// 	margin: 0;
+// 	// 	background-color: rgb(var(--color-control));
+// 	// 	color: rgb(var(--color-on-control)); // Redundant?
+// 	// 	font: inherit;
+// 	// 	width: 14px;
+// 	// 	height: 14px;
+// 	// 	border: 1px solid rgb(var(--color-control-edge));
+// 	// 	border-radius: 4px;
+// 	// 	display: grid;
+// 	// 	place-content: center;
+// 	// 	filter: none;
+// 	// 	// translate: 0px 4px;
+// 	// 	&:focus {
+// 	// 		border-width: 2px;
+// 	// 	}
+// 	// 	&:active {
+// 	// 		background-color: rgb(var(--color-pressed-control));
+// 	// 	}
+// 	// 	&::before {
+// 	// 		font-family: "gcs";
+// 	// 		font-size: var(--font-size-12);
+// 	// 		content: "\e805";
+// 	// 		opacity: 0;
+// 	// 	}
+// 	// 	&:checked::before {
+// 	// 		opacity: 1;
+// 	// 	}
+// 	// }
+// 	textarea {
+// 		min-height: 24px;
+// 		padding: 1px 3px;
+// 		/* line-height: 24px; */
+// 		line-height: 0;
+// 		resize: none;
+// 		overflow-y: hidden;
+//
+// 		&:focus-visible {
+// 			outline: none;
+// 		}
+// 	}
+//
+// 	textarea,
+// 	input[type="text"],
+// 	input[type="number"] {
+// 		font: var(--font-field);
+// 		width: 100%;
+// 		min-width: 40px;
+// 		border-radius: 0px;
+// 		background-color: rgb(var(--color-editable));
+// 		color: rgb(var(--color-on-editable));
+// 		border: 1px solid rgba(var(--color-control-edge));
+// 		padding: 1px 3px;
+//
+// 		&:focus {
+// 			box-shadow: none;
+// 			border-width: 2px;
+// 			padding: 0 2px;
+// 		}
+//
+// 		&[readonly] {
+// 			background-color: transparent;
+// 			color: rgb(var(--color-on-background));
+// 			pointer-events: none;
+// 		}
+//
+// 		&:disabled {
+// 			pointer-events: none;
+// 		}
+//
+// 		&.number,
+// 		&[data-dtype="Number"] {
+// 			width: 93px;
+// 		}
+//
+// 		&.calc {
+// 			width: 67px;
+// 		}
+// 	}
+//
+// 	input[type="text"],
+// 	input[type="number"] {
+// 		height: 24px;
+// 	}
+//
+// 	label.check {
+// 		display: grid;
+// 		grid-auto-flow: column;
+// 		grid-gap: 5px;
+// 		justify-content: left;
+// 	}
+//
+// 	header {
+// 		grid-area: auto;
+// 		padding: var(--padding-header);
+// 		background-color: rgb(var(--color-header));
+// 		color: rgb(var(--color-on-header));
+// 		white-space: nowrap;
+// 	}
+// }
+//
+// .button {
+// 	color: rgb(var(--color-icon-button));
+//
+// 	&:hover {
+// 		color: rgb(var(--color-icon-button-rollover));
+// 	}
+// }
+//
+// nav.nav-tabs {
+// 	display: flex;
+// 	margin-top: 5px;
+// 	border-bottom: 1px solid rgb(var(--color-divider));
+//
+// 	a {
+// 		display: flex;
+// 		flex-grow: 1;
+// 		justify-content: space-evenly;
+// 		background-color: rgb(var(--color-control));
+// 		color: rgb(var(--color-on-control));
+// 		padding: 2px;
+// 		border: 1px solid rgb(var(--color-control-edge));
+// 		border-radius: 4px 4px 0 0;
+//
+// 		&:hover {
+// 			text-shadow: none;
+// 		}
+//
+// 		&.active {
+// 			background-color: rgb(var(--color-focused-tab));
+// 			color: rgb(var(--color-on-focused-tab));
+// 		}
+// 	}
+// }
+//
+// #tooltip {
+// 	display: inline;
+// 	align-items: beginning;
+// 	position: absolute;
+// 	width: max-content;
+// 	max-width: 600px;
+// 	padding: 6px 8px;
+// 	background: rgb(var(--color-tooltip));
+// 	font-family: var(--font-primary);
+// 	font-size: var(--font-size-12);
+// 	line-height: var(--font-size-12);
+// 	color: rgb(var(--color-on-tooltip));
+// 	border: 1px solid rgb(var(--color-control-edge));
+// 	border-radius: 0;
+// 	box-shadow: none;
+// 	visibility: hidden;
+// 	text-align: left !important;
+// }

@@ -1,6 +1,6 @@
 import { PoolThreshold, PoolThresholdSchema } from "./pool-threshold.ts"
 import fields = foundry.data.fields
-import { gid } from "@module/data/constants.ts"
+import { ActorType, gid } from "@module/data/constants.ts"
 import { AttributeGURPS } from "./attribute.ts"
 import { attribute, progression } from "@util"
 import { ActorDataModel } from "@module/data/abstract.ts"
@@ -8,11 +8,11 @@ import { ActorTemplateType } from "@module/data/actor/types.ts"
 import { AttributeHolderTemplate } from "@module/data/actor/templates/attribute-holder.ts"
 import { VariableResolver, evaluateToNumber } from "@module/util/index.ts"
 import { AbstractAttributeDef, AbstractAttributeDefSchema } from "../abstract-attribute/index.ts"
+import { type ActorInst } from "../actor/helpers.ts"
 
-class AttributeDef<TActor extends AttributeHolderTemplate = AttributeHolderTemplate> extends AbstractAttributeDef<
-	TActor,
-	AttributeDefSchema
-> {
+class AttributeDef<
+	TActor extends AttributeHolderTemplate = AttributeHolderTemplate,
+> extends AbstractAttributeDef<AttributeDefSchema> {
 	static override defineSchema(): AttributeDefSchema {
 		const fields = foundry.data.fields
 
@@ -134,13 +134,14 @@ class AttributeDef<TActor extends AttributeHolderTemplate = AttributeHolderTempl
 	}
 
 	generateNewAttribute(): AttributeGURPS {
-		return new AttributeGURPS({ id: this.id }, { parent: this.parent, order: 0 })
+		// @ts-expect-error infinite type
+		return new AttributeGURPS({ id: this.id }, { parent: this.actor.system, order: 0 })
 	}
 }
 
-interface AttributeDef<TActor extends AttributeHolderTemplate>
-	extends AbstractAttributeDef<TActor, AttributeDefSchema>,
-		ModelPropsFromSchema<AttributeDefSchema> {}
+interface AttributeDef extends AbstractAttributeDef<AttributeDefSchema>, ModelPropsFromSchema<AttributeDefSchema> {
+	get actor(): ActorInst<ActorType.Character>
+}
 
 type AttributeDefSchema = AbstractAttributeDefSchema & {
 	type: fields.StringField<attribute.Type, attribute.Type, true>

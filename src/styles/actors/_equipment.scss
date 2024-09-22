@@ -1,0 +1,36 @@
+#encumbrance {
+	.meter {
+		border-radius: 3px 3px 0 0;
+		height: 25px;
+		border: none;
+		border-bottom: 1px solid red;
+		overflow: hidden;
+		background: #0d0b0b;
+		display: flex;
+		align-items: center;
+		position: relative;
+
+		&:before {
+			content: "";
+			position: absolute;
+			block-size: 100%;
+			inline-size: calc(var(--bar-percentage) - 3px);
+			box-shadow: 0 0 6px rgba(0, 0, 0, 0.45);
+			clip-path: polygon(0 0, calc(100% + 6px) 0, calc(100% + 6px) 100%, 0 100%);
+			--bar-color-2: color-mix(in oklab, green, red var(--bar-percentage));
+			--bar-color-1: color-mix(in oklab, var(--bar-color-2), black 33%);
+			--bar-color-3: color-mix(in oklab, var(--bar-color-2), black 20%);
+			background: linear-gradient(to right, var(--bar-color-1), var(--bar-color-2));
+			border-right: 3px solid var(--bar-color-3);
+			border-radius: 3px 3px 0 0;
+		}
+	}
+
+	.label {
+		inline-size: 100%;
+		display: flex;
+		align-items: center;
+		gap: 0.1875rem;
+		position: relative;
+	}
+}

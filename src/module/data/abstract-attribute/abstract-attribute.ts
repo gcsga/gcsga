@@ -19,7 +19,7 @@ abstract class AbstractAttribute<
 		super(data, options)
 	}
 
-	abstract get definition(): AbstractAttributeDef<TActor> | null
+	abstract get definition(): AbstractAttributeDef | null
 
 	get actor(): ActorGURPS2 {
 		return this.parent.parent
@@ -29,7 +29,7 @@ abstract class AbstractAttribute<
 	get max(): number {
 		const def = this.definition
 		if (!def) return 0
-		return def.baseValue(this.parent)
+		return def.baseValue(this.actor.system)
 	}
 
 	/** Current value of the attribute, applies only to pools */
