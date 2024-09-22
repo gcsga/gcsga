@@ -1,0 +1,45 @@
+<!-- Header -->
+<header class="sheet-header">
+	<!-- Name & Title -->
+	<div class="name flexcol">
+		<!-- Name -->
+		{{#if editable}}
+		<input type="text" name="name" class="actor-name josefin-sans-regular" value="{{actor.name}}" />
+		{{else}}
+		<div class="actor-name josefin-sans-regular">{{actor.name}}</div>
+		{{/if}}
+
+		<!-- Title -->
+		{{#if editable}}
+		<input
+			type="text"
+			name="system.profile.title"
+			class="actor-title josefin-sans-regular"
+			value="{{system.profile.title}}"
+		/>
+		{{else}}
+		<div class="actor-title josefin-sans-regular">{{system.profile.title}}</div>
+		{{/if}}
+	</div>
+
+	<!-- Point Total -->
+	<div class="points">
+		<div id="point-total">250</div>
+		<div class="side">
+			<div class="cp">CP</div>
+			<a class="fa-solid fa-caret-down"></a>
+		</div>
+	</div>
+
+	<!-- Navigation Tabs -->
+	<div class="buttons">
+		<nav class="tabs" data-group="primary">
+			{{#each primaryTabs as |tab|}}
+			<a class="{{tab.cssClass}}" data-action="tab" data-group="{{tab.group}}" data-tab="{{tab.id}}">
+				<i class="{{tab.icon}}"></i>
+			</a>
+			{{/each}}
+		</nav>
+	</div>
+	<div class="header-bar"></div>
+</header>

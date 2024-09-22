@@ -42,7 +42,7 @@ declare global {
 		icon?: string | false
 
 		/** An array of window control entries */
-		controls: ApplicationHeaderControlsEntry[]
+		controls: Partial<ApplicationHeaderControlsEntry>[]
 
 		/**
 		 * Can the window app be minimized by double-clicking on the title
@@ -81,6 +81,10 @@ declare global {
 		action: string
 		/** Is the control button visible for the current client? */
 		visible: boolean
+		/** A key or value in CONST.DOCUMENT_OWNERSHIP_LEVELS that restricts
+		 * visibility of this option for the current user.
+		 * This option only applies to DocumentSheetV2 instances.*/
+		ownership: string | number
 	}
 
 	interface ApplicationConstructorParams {

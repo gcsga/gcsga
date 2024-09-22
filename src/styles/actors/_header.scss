@@ -1,0 +1,147 @@
+// Transparent buttons to apply own background to window header
+> header.window-header {
+	background: transparent;
+	position: relative;
+	z-index: 1;
+
+	border: none;
+	align-items: center;
+
+	// Make Window Icon and Title invisible in full sheet
+	h1.window-title,
+	i.window-icon {
+		opacity: 0;
+	}
+}
+
+// Move sheet content up into header
+section.window-content {
+	padding: 0;
+	margin-top: -36px;
+	&:before {
+		content: "";
+		position: absolute;
+		inset: 0 0 auto 0;
+		height: 100px;
+		border-radius: 10px;
+		opacity: 0.5;
+		background: url("/assets/header-background.webp") no-repeat top center / cover;
+		mask-image: linear-gradient(to bottom, black, rgba(0, 0, 0, 0.1) 99%, transparent 100%);
+	}
+}
+
+header.sheet-header {
+	background: none;
+	position: relative;
+
+	display: grid;
+	grid-template:
+		"name points"
+		"name buttons"
+		"bar bar";
+	grid-template-columns: 1fr 0fr;
+	grid-template-rows: 4.75rem 1.25rem 0.125rem;
+	flex: 0 0 7.5rem;
+
+	div.name {
+		padding: 2.5rem 1.5rem 0 3rem;
+
+		.actor-name {
+			font-size: 2.5rem;
+		}
+
+		.actor-title {
+			font-size: var(--font-size-14);
+		}
+	}
+
+	div.points {
+		grid-area: points;
+
+		background-color: #bbbbbb;
+		display: flex;
+		flex-direction: row;
+		padding: 0.0625rem;
+		border: 0.0625rem solid #bbbbbb;
+		border-radius: 0.375rem;
+		width: fit-content;
+
+		#point-total {
+			background-color: #191820;
+			height: fit-content;
+			padding: 0.125rem 0.25rem;
+			border-radius: 5px;
+
+			font-family: "DSEG7 Classic", monospace;
+			font-size: 1.25rem;
+			color: #69ea54;
+		}
+
+		.side {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			padding: 0 0.0625rem;
+			color: #191820;
+			font-family: "Josefin Sans", system-ui;
+			font-weight: 400;
+			font-size: 0.75rem;
+			font-style: normal;
+		}
+	}
+
+	div.buttons {
+		grid-area: buttons;
+		display: flex;
+		justify-content: flex-end;
+	}
+
+	nav.tabs {
+		flex: 0;
+		padding-right: 1.5rem;
+		gap: 0.375rem;
+
+		a {
+			height: 1.25rem;
+			width: 1.25rem;
+			background-color: #bbbbbb;
+			border-radius: 0.375rem;
+			box-shadow: inset 0 -0.125rem 0.25rem rgba(0, 0, 0, 0.4);
+
+			&:after {
+				content: "";
+				position: relative;
+				display: block;
+				height: 0.5rem;
+				width: 2.5rem;
+				left: -0.625rem;
+				top: -0.125rem;
+				background-color: #bbbbbb;
+				border-radius: 1.5rem/0.625rem;
+				box-shadow: inset 0 -0.125rem 0.25rem rgba(0, 0, 0, 0.2);
+				z-index: -1;
+			}
+
+			i {
+				color: #2a2a2a;
+				margin: auto;
+			}
+
+			&.active,
+			&:hover {
+				text-shadow: 0 0 0.625rem #bdbf93;
+				i {
+					color: #feffe5;
+					transform: translate(0, 0.05rem);
+				}
+			}
+		}
+	}
+	div.header-bar {
+		grid-area: bar;
+		background-color: #bbbbbb;
+		width: 100%;
+		height: 0.25rem;
+		box-shadow: inset 0 0 0.5rem rgba(0, 0, 0, 0.2);
+	}
+}

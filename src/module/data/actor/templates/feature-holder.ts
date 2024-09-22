@@ -33,8 +33,6 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 		return this.baseSizeModifier + this.attributeBonusFor(gid.SizeModifier)
 	}
 
-	prepareEmbeddedDocuments(): void {}
-
 	processFeatures(): void {
 		const itemCollections = this.parent.itemCollections
 		itemCollections.traits.forEach(trait => {

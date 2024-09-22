@@ -365,6 +365,9 @@ class ActorDataModel<
 	// TDocument extends ActorGURPS2 = ActorGURPS2,
 	TSchema extends ActorDataSchema = ActorDataSchema,
 > extends SystemDataModel<ActorGURPS2, TSchema> {
+	variableResolverExclusions = new Set<string>()
+	cachedVariables = new Map<string, string>()
+
 	/**
 	 * Type safe way of verifying if an Actor is of a particular type.
 	 */
@@ -382,6 +385,8 @@ class ActorDataModel<
 	resolveVariable(_variableName: string): string {
 		throw ErrorGURPS(`ActorDataModel.resolveVariable must be implemented.`)
 	}
+
+	_prepareEmbeddedDocuments(): void {}
 }
 
 // interface ActorDataModel<TDocument extends ActorGURPS2, TSchema extends ActorDataSchema>

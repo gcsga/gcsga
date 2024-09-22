@@ -3,8 +3,8 @@
 ## Left To Do
 
 - Weapon Fields
-  - Change #clean for #cleanData
-- Change Schema Fields to Embedded Data Fields where appropriate \*0 _MOST IMPORTANT_
+  - Change #clean for #cleanData \* DONE
+- Change Schema Fields to Embedded Data Fields where appropriate \*0 _MOST IMPORTANT_ DONE?
 - Chat Messages \*5
   - Re-do roll message templates and damage message handling
   - Move @module/util/chat.ts functionality to Chat Message
@@ -27,7 +27,11 @@
 - Item Sheet \*4
 - Actor Sheet \*2
   - Collapsible sidebar
+    - Option to hide atributes if not frequently used to decrease clutter?
+    - Pinned items
   - DND5e context menu
+  - Traits Tab
+    - Add fields for species, cultural familiarity, language, separate to own tables
 - Token
 - Token Document
 - Combat

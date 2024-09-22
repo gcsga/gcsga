@@ -210,8 +210,11 @@ class ActorGURPS2<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS
 	/* -------------------------------------------- */
 
 	override prepareBaseData(): void {
-		super.prepareBaseData()
+		// super.prepareBaseData()
 		this.itemCollections = new ItemCollectionsMap<this>(this.items)
+
+		this.system.prepareBaseData?.()
+		super.prepareBaseData()
 	}
 
 	/* -------------------------------------------- */
@@ -219,7 +222,6 @@ class ActorGURPS2<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS
 	override prepareEmbeddedDocuments(): void {
 		super.prepareEmbeddedDocuments()
 
-		// @ts-expect-error function exists
 		this.system._prepareEmbeddedDocuments?.()
 	}
 

@@ -1,0 +1,17 @@
+#character-sheet {
+	@import "header";
+
+	section.tab[data-tab="equipment"] {
+		@import "equipment";
+	}
+}
+
+#character-sheet.minimized {
+	> header.window-header {
+		// Make Window Icon and Title visible in minimized sheet
+		h1.window-title,
+		i.window-icon {
+			opacity: 1;
+		}
+	}
+}
