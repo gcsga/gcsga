@@ -1,4 +1,4 @@
-#character-sheet {
+.gurps.character.sheet {
 	@import "header";
 
 	section.tab[data-tab="equipment"] {
@@ -6,7 +6,7 @@
 	}
 }
 
-#character-sheet.minimized {
+.gurps.character.sheet.minimized {
 	> header.window-header {
 		// Make Window Icon and Title visible in minimized sheet
 		h1.window-title,

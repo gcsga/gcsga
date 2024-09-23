@@ -1,13 +1,13 @@
-import { StringCriteria } from "@module/util/string-criteria.ts"
 import fields = foundry.data.fields
 import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
 import { prereq } from "@util/enum/prereq.ts"
-import { ActorType, ItemType, NumericCompareType, StringCompareType } from "@module/data/constants.ts"
-import { LocalizeGURPS, TooltipGURPS } from "@util"
-import { NumericCriteria } from "@module/util/numeric-criteria.ts"
+import { ActorType, ItemType } from "@module/data/constants.ts"
+import { LocalizeGURPS, NumericComparison, StringComparison, TooltipGURPS } from "@util"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { ActorInst } from "../actor/helpers.ts"
 import { Nameable } from "@module/util/index.ts"
+import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
+import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
 
 class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 	static override TYPE = prereq.Type.Skill
@@ -19,27 +19,27 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 			...super.defineSchema(),
 			type: new fields.StringField({ required: true, nullable: false, blank: false, initial: prereq.Type.Skill }),
 			has: new fields.BooleanField({ initial: true }),
-			name: new fields.EmbeddedDataField(StringCriteria, {
+			name: new StringCriteriaField({
 				required: true,
 				nullable: false,
 				initial: {
-					compare: StringCompareType.IsString,
+					compare: StringComparison.Option.IsString,
 					qualifier: "",
 				},
 			}),
-			level: new fields.EmbeddedDataField(NumericCriteria, {
+			level: new NumericCriteriaField({
 				required: true,
 				nullable: false,
 				initial: {
-					compare: NumericCompareType.AtLeastNumber,
+					compare: NumericComparison.Option.AtLeastNumber,
 					qualifier: 0,
 				},
 			}),
-			specialization: new fields.EmbeddedDataField(StringCriteria, {
+			specialization: new StringCriteriaField({
 				required: true,
 				nullable: false,
 				initial: {
-					compare: StringCompareType.AnyString,
+					compare: StringComparison.Option.AnyString,
 					qualifier: "",
 				},
 			}),
@@ -73,7 +73,7 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 		if (!satisfied && tooltip !== null) {
 			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.Prefix)
 			const specialization =
-				this.specialization.compare === StringCompareType.AnyString
+				this.specialization.compare === StringComparison.Option.AnyString
 					? ""
 					: LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.Skill.Specialization, {
 							value: this.specialization.toString(replacements),
@@ -108,9 +108,9 @@ interface SkillPrereq extends BasePrereq<SkillPrereqSchema>, ModelPropsFromSchem
 
 type SkillPrereqSchema = BasePrereqSchema & {
 	has: fields.BooleanField
-	name: fields.EmbeddedDataField<StringCriteria, true, false, true>
-	level: fields.EmbeddedDataField<NumericCriteria, true, false, true>
-	specialization: fields.EmbeddedDataField<StringCriteria, true, false, true>
+	name: StringCriteriaField<true, false, true>
+	level: NumericCriteriaField<true, false, true>
+	specialization: StringCriteriaField<true, false, true>
 }
 
 export { SkillPrereq, type SkillPrereqSchema }

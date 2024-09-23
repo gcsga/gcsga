@@ -24,7 +24,7 @@ declare class FilePicker extends Application<FilePickerOptions> {
 	/** The current set of file extensions which are being filtered upon */
 	extension: string[]
 
-	constructor(options: FilePickerOptions)
+	constructor(options: Partial<FilePickerOptions>)
 
 	/** The allowed values for the type of this FilePicker instance. */
 	static FILE_TYPES: ["image", "audio", "video", "text", "imagevideo", "font", "folder", "any"]

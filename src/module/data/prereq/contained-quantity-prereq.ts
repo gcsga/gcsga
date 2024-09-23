@@ -2,10 +2,10 @@ import { prereq } from "@util/enum/prereq.ts"
 import fields = foundry.data.fields
 import { LocalizeGURPS } from "@util/localize.ts"
 import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
-import { TooltipGURPS } from "@util"
-import { ItemType, NumericCompareType } from "@module/data/constants.ts"
-import { NumericCriteria } from "@module/util/numeric-criteria.ts"
+import { NumericComparison, TooltipGURPS } from "@util"
+import { ItemType } from "@module/data/constants.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
+import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
 
 class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> {
 	static override TYPE = prereq.Type.ContainedQuantity
@@ -16,11 +16,11 @@ class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> 
 		return {
 			...super.defineSchema(),
 			has: new fields.BooleanField({ initial: true }),
-			qualifier: new fields.EmbeddedDataField(NumericCriteria, {
+			qualifier: new NumericCriteriaField({
 				required: true,
 				nullable: false,
 				initial: {
-					compare: NumericCompareType.AtLeastNumber,
+					compare: NumericComparison.Option.AtLeastNumber,
 					qualifier: 1,
 				},
 			}),
@@ -55,7 +55,7 @@ interface ContainedQuantityPrereq
 
 type ContainedQuantityPrereqSchema = BasePrereqSchema & {
 	has: fields.BooleanField<boolean, boolean, true, false, true>
-	qualifier: fields.EmbeddedDataField<NumericCriteria, true, false, true>
+	qualifier: NumericCriteriaField<true, false, true>
 }
 
 export { ContainedQuantityPrereq, type ContainedQuantityPrereqSchema }

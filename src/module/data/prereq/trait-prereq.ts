@@ -1,10 +1,11 @@
 import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
 import fields = foundry.data.fields
-import { LocalizeGURPS, TooltipGURPS, prereq } from "@util"
-import { ActorType, NumericCompareType, StringCompareType } from "@module/data/constants.ts"
-import { NumericCriteria } from "@module/util/numeric-criteria.ts"
-import { Nameable, StringCriteria } from "@module/util/index.ts"
+import { LocalizeGURPS, NumericComparison, StringComparison, TooltipGURPS, prereq } from "@util"
+import { ActorType } from "@module/data/constants.ts"
 import { ActorInst } from "../actor/helpers.ts"
+import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
+import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
+import { Nameable } from "@module/util/nameable.ts"
 
 class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 	static override TYPE = prereq.Type.Trait
@@ -16,27 +17,27 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 			...super.defineSchema(),
 			type: new fields.StringField({ required: true, nullable: false, blank: false, initial: prereq.Type.Trait }),
 			has: new fields.BooleanField({ initial: true }),
-			name: new fields.EmbeddedDataField(StringCriteria, {
+			name: new StringCriteriaField({
 				required: true,
 				nullable: false,
 				initial: {
-					compare: StringCompareType.IsString,
+					compare: StringComparison.Option.IsString,
 					qualifier: "",
 				},
 			}),
-			level: new fields.EmbeddedDataField(NumericCriteria, {
+			level: new NumericCriteriaField({
 				required: true,
 				nullable: false,
 				initial: {
-					compare: NumericCompareType.AtLeastNumber,
+					compare: NumericComparison.Option.AtLeastNumber,
 					qualifier: 0,
 				},
 			}),
-			notes: new fields.EmbeddedDataField(StringCriteria, {
+			notes: new StringCriteriaField({
 				required: true,
 				nullable: false,
 				initial: {
-					compare: StringCompareType.AnyString,
+					compare: StringComparison.Option.AnyString,
 					qualifier: "",
 				},
 			}),
@@ -63,7 +64,7 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 		if (!satisfied && tooltip !== null) {
 			tooltip.push(LocalizeGURPS.translations.GURPS.Tooltip.Prefix)
 			const notes =
-				this.notes.compare === StringCompareType.AnyString
+				this.notes.compare === StringComparison.Option.AnyString
 					? ""
 					: LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.Trait.Notes, {
 							value: this.notes.toString(replacements),
@@ -90,9 +91,9 @@ interface TraitPrereq extends BasePrereq<TraitPrereqSchema>, ModelPropsFromSchem
 
 type TraitPrereqSchema = BasePrereqSchema & {
 	has: fields.BooleanField
-	name: fields.EmbeddedDataField<StringCriteria, true, false, true>
-	level: fields.EmbeddedDataField<NumericCriteria, true, false, true>
-	notes: fields.EmbeddedDataField<StringCriteria, true, false, true>
+	name: StringCriteriaField<true, false, true>
+	level: NumericCriteriaField<true, false, true>
+	notes: StringCriteriaField<true, false, true>
 }
 
 export { TraitPrereq, type TraitPrereqSchema }

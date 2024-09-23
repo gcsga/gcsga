@@ -1,43 +1,42 @@
 import { LocalizeGURPS } from "../../util/localize.ts"
-import { AllStringCompareTypes, StringCompareType } from "@module/data/constants.ts"
-import type { StringCriteriaSchema } from "./data.ts"
+import fields = foundry.data.fields
 import { ItemDataModel } from "@module/data/abstract.ts"
 import { Nameable } from "./nameable.ts"
+import { StringComparison } from "@util"
 
 class StringCriteria extends foundry.abstract.DataModel<ItemDataModel, StringCriteriaSchema> {
 	static override defineSchema(): StringCriteriaSchema {
 		const fields = foundry.data.fields
 
 		return {
-			compare: new fields.StringField({ choices: AllStringCompareTypes, initial: StringCompareType.AnyString }),
+			compare: new fields.StringField({
+				choices: StringComparison.Options,
+				initial: StringComparison.Option.AnyString,
+			}),
 			qualifier: new fields.StringField(),
 		}
-	}
-
-	constructor(data?: DeepPartial<SourceFromSchema<StringCriteriaSchema>>) {
-		super(data)
 	}
 
 	matches(replacements: Map<string, string>, value: string): boolean {
 		value = Nameable.apply(value, replacements)
 		switch (this.compare) {
-			case StringCompareType.AnyString:
+			case StringComparison.Option.AnyString:
 				return true
-			case StringCompareType.IsString:
+			case StringComparison.Option.IsString:
 				return equalFold(value, this.qualifier)
-			case StringCompareType.IsNotString:
+			case StringComparison.Option.IsNotString:
 				return !equalFold(value, this.qualifier)
-			case StringCompareType.ContainsString:
+			case StringComparison.Option.ContainsString:
 				return this.qualifier.toLowerCase().includes(value.toLowerCase())
-			case StringCompareType.DoesNotContainString:
+			case StringComparison.Option.DoesNotContainString:
 				return !this.qualifier.toLowerCase().includes(value.toLowerCase())
-			case StringCompareType.StartsWithString:
+			case StringComparison.Option.StartsWithString:
 				return this.qualifier.toLowerCase().startsWith(value.toLowerCase())
-			case StringCompareType.DoesNotStartWithString:
+			case StringComparison.Option.DoesNotStartWithString:
 				return !this.qualifier.toLowerCase().startsWith(value.toLowerCase())
-			case StringCompareType.EndsWithString:
+			case StringComparison.Option.EndsWithString:
 				return this.qualifier.toLowerCase().endsWith(value.toLowerCase())
-			case StringCompareType.DoesNotEndWithString:
+			case StringComparison.Option.DoesNotEndWithString:
 				return !this.qualifier.toLowerCase().endsWith(value.toLowerCase())
 		}
 	}
@@ -50,16 +49,16 @@ class StringCriteria extends foundry.abstract.DataModel<ItemDataModel, StringCri
 			if (this.matches(replacements, one)) matches += 1
 		}
 		switch (this.compare) {
-			case StringCompareType.AnyString:
-			case StringCompareType.IsString:
-			case StringCompareType.ContainsString:
-			case StringCompareType.StartsWithString:
-			case StringCompareType.EndsWithString:
+			case StringComparison.Option.AnyString:
+			case StringComparison.Option.IsString:
+			case StringComparison.Option.ContainsString:
+			case StringComparison.Option.StartsWithString:
+			case StringComparison.Option.EndsWithString:
 				return matches > 0
-			case StringCompareType.IsNotString:
-			case StringCompareType.DoesNotContainString:
-			case StringCompareType.DoesNotStartWithString:
-			case StringCompareType.DoesNotEndWithString:
+			case StringComparison.Option.IsNotString:
+			case StringComparison.Option.DoesNotContainString:
+			case StringComparison.Option.DoesNotStartWithString:
+			case StringComparison.Option.DoesNotEndWithString:
 				return matches === value.length
 		}
 	}
@@ -74,10 +73,10 @@ class StringCriteria extends foundry.abstract.DataModel<ItemDataModel, StringCri
 
 	altString(): string {
 		switch (this.compare) {
-			case StringCompareType.IsNotString:
-			case StringCompareType.DoesNotContainString:
-			case StringCompareType.DoesNotStartWithString:
-			case StringCompareType.DoesNotEndWithString:
+			case StringComparison.Option.IsNotString:
+			case StringComparison.Option.DoesNotContainString:
+			case StringComparison.Option.DoesNotStartWithString:
+			case StringComparison.Option.DoesNotEndWithString:
 				return LocalizeGURPS.translations.gurps.string_criteria.alt_string[this.compare]
 			default:
 				return this.toString()
@@ -85,9 +84,9 @@ class StringCriteria extends foundry.abstract.DataModel<ItemDataModel, StringCri
 	}
 
 	describe(qualifier: string): string {
-		if (this.compare === StringCompareType.AnyString)
-			return LocalizeGURPS.translations.GURPS.Enum.StringCompareType[this.compare]
-		return LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Enum.StringCompareType[this.compare], {
+		if (this.compare === StringComparison.Option.AnyString)
+			return LocalizeGURPS.translations.GURPS.Enum.StringComparison[this.compare]
+		return LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Enum.StringComparison[this.compare], {
 			qualifier,
 		})
 	}
@@ -96,14 +95,14 @@ class StringCriteria extends foundry.abstract.DataModel<ItemDataModel, StringCri
 		let info = ""
 		if (prefix === notPrefix)
 			info = LocalizeGURPS.format(prefix, {
-				value: LocalizeGURPS.translations.GURPS.Enum.StringCompareType[this.compare],
+				value: LocalizeGURPS.translations.GURPS.Enum.StringComparison[this.compare],
 			})
 		else {
 			info = LocalizeGURPS.format(notPrefix, {
-				value: LocalizeGURPS.translations.GURPS.Enum.StringCompareType[this.compare],
+				value: LocalizeGURPS.translations.GURPS.Enum.StringComparison[this.compare],
 			})
 		}
-		if (this.compare === StringCompareType.AnyString) return info
+		if (this.compare === StringComparison.Option.AnyString) return info
 		return LocalizeGURPS.format(info, { qualifier })
 	}
 }
@@ -111,6 +110,11 @@ class StringCriteria extends foundry.abstract.DataModel<ItemDataModel, StringCri
 interface StringCriteria
 	extends foundry.abstract.DataModel<ItemDataModel, StringCriteriaSchema>,
 		ModelPropsFromSchema<StringCriteriaSchema> {}
+
+type StringCriteriaSchema = {
+	compare: fields.StringField<StringComparison.Option, StringComparison.Option, true, false, true>
+	qualifier: fields.StringField<string, string, true, false, true>
+}
 
 function equalFold(s: string, t: string): boolean {
 	if (!s || !t) return false

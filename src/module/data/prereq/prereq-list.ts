@@ -1,13 +1,13 @@
-import { ActorType, NumericCompareType } from "@module/data/constants.ts"
+import { ActorType } from "@module/data/constants.ts"
 import fields = foundry.data.fields
-import { NumericCriteria } from "@module/util/index.ts"
-import { LocalizeGURPS, TooltipGURPS, extractTechLevel } from "@util"
+import { LocalizeGURPS, NumericComparison, TooltipGURPS, extractTechLevel } from "@util"
 import { prereq } from "@util/enum/prereq.ts"
 import { BasePrereq } from "./index.ts"
 import { PrereqTemplate } from "@module/data/item/templates/prereqs.ts"
 import { ActorInst } from "../actor/helpers.ts"
 import { BasePrereqSchema } from "./base-prereq.ts"
 import { Prereq } from "./types.ts"
+import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
 
 // const ValidPrereqParentTypes = Object.freeze([
 // 	ItemType.Trait,
@@ -28,10 +28,10 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 
 		return {
 			...super.defineSchema(),
-			type: new fields.StringField({ required: true, nullable: false, blank: false, initial: prereq.Type.List }),
 			all: new fields.BooleanField({ initial: true }),
-			when_tl: new fields.EmbeddedDataField(NumericCriteria),
-			// prereqs: new fields.ArrayField(new fields.TypedSchemaField(BasePrereq.TYPES)),
+			when_tl: new NumericCriteriaField({
+				choices: NumericComparison.CustomOptionsChoices("GURPS.Item.Prereqs.FIELDS.WhenTL.Choices"),
+			}),
 			prereqs: new fields.ArrayField(new fields.StringField({ required: true, nullable: false })),
 		}
 	}
@@ -59,7 +59,7 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 		tooltip: TooltipGURPS | null,
 		hasEquipmentPenalty: { value: boolean } = { value: false },
 	): boolean {
-		if (this.when_tl.compare !== NumericCompareType.AnyNumber) {
+		if (this.when_tl.compare !== NumericComparison.Option.AnyNumber) {
 			let tl = extractTechLevel(actor.system.profile.tech_level)
 			if (tl < 0) tl = 0
 			if (!this.when_tl.matches(tl)) return true
@@ -95,7 +95,7 @@ interface PrereqList extends BasePrereq<PrereqListSchema>, ModelPropsFromSchema<
 
 export type PrereqListSchema = BasePrereqSchema & {
 	all: fields.BooleanField<boolean, boolean, true, false, true>
-	when_tl: fields.EmbeddedDataField<NumericCriteria, true, false, true>
+	when_tl: NumericCriteriaField
 	prereqs: fields.ArrayField<fields.StringField<string, string, true, false, true>>
 }
 

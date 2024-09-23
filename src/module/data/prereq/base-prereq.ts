@@ -25,7 +25,13 @@ abstract class BasePrereq<TSchema extends BasePrereqSchema = BasePrereqSchema> e
 
 		return {
 			id: new fields.StringField({ required: true, nullable: false, blank: false, initial: generateId }),
-			type: new fields.StringField({ required: true, nullable: false, blank: false, choices: prereq.Types }),
+			type: new fields.StringField({
+				required: true,
+				nullable: false,
+				blank: false,
+				choices: prereq.Types,
+				initial: this.TYPE,
+			}),
 		}
 	}
 
@@ -50,6 +56,8 @@ abstract class BasePrereq<TSchema extends BasePrereqSchema = BasePrereqSchema> e
 	constructor(data: DeepPartial<SourceFromSchema<TSchema>>, options?: PrereqConstructionOptions) {
 		super(data, options)
 	}
+
+	// abstract toFormElement(): HTMLElement
 
 	abstract satisfied(
 		actor: ActorInst<ActorType.Character>,

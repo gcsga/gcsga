@@ -1,16 +1,15 @@
-import { AllNumericCompareTypes, NumericCompareType } from "@module/data/constants.ts"
-import { NumericCriteriaSchema } from "./data.ts"
-import { LocalizeGURPS } from "@util"
+import fields = foundry.data.fields
+import { LocalizeGURPS, NumericComparison } from "@util"
 import { ItemDataModel } from "@module/data/abstract.ts"
 
 class NumericCriteria extends foundry.abstract.DataModel<ItemDataModel, NumericCriteriaSchema> {
 	static override defineSchema(): NumericCriteriaSchema {
 		const fields = foundry.data.fields
 		return {
-			compare: new fields.StringField<NumericCompareType, NumericCompareType, true>({
+			compare: new fields.StringField({
 				required: true,
-				choices: AllNumericCompareTypes,
-				initial: NumericCompareType.AnyNumber,
+				choices: NumericComparison.Options,
+				initial: NumericComparison.Option.AnyNumber,
 			}),
 			qualifier: new fields.NumberField(),
 		}
@@ -23,15 +22,15 @@ class NumericCriteria extends foundry.abstract.DataModel<ItemDataModel, NumericC
 	matches(n: number): boolean {
 		if (this.qualifier === null) this.qualifier = 0
 		switch (this.compare) {
-			case NumericCompareType.AnyNumber:
+			case NumericComparison.Option.AnyNumber:
 				return true
-			case NumericCompareType.EqualsNumber:
+			case NumericComparison.Option.EqualsNumber:
 				return n === this.qualifier
-			case NumericCompareType.NotEqualsNumber:
+			case NumericComparison.Option.NotEqualsNumber:
 				return n !== this.qualifier
-			case NumericCompareType.AtLeastNumber:
+			case NumericComparison.Option.AtLeastNumber:
 				return n >= this.qualifier
-			case NumericCompareType.AtMostNumber:
+			case NumericComparison.Option.AtMostNumber:
 				return n <= this.qualifier
 		}
 	}
@@ -46,13 +45,13 @@ class NumericCriteria extends foundry.abstract.DataModel<ItemDataModel, NumericC
 
 	describe(): string {
 		const result = this.toString()
-		if (this.compare === NumericCompareType.AnyNumber) return result
+		if (this.compare === NumericComparison.Option.AnyNumber) return result
 		return `${result} ${this.qualifier}`
 	}
 
 	altDescribe(): string {
 		let result = this.altString()
-		if (this.compare === NumericCompareType.AnyNumber) return result
+		if (this.compare === NumericComparison.Option.AnyNumber) return result
 		if (result !== "") result += " "
 		return result + (this.qualifier ?? 0).toString()
 	}
@@ -61,5 +60,10 @@ class NumericCriteria extends foundry.abstract.DataModel<ItemDataModel, NumericC
 interface NumericCriteria
 	extends foundry.abstract.DataModel<ItemDataModel, NumericCriteriaSchema>,
 		ModelPropsFromSchema<NumericCriteriaSchema> {}
+
+type NumericCriteriaSchema = {
+	compare: fields.StringField<NumericComparison.Option, NumericComparison.Option, true, false, true>
+	qualifier: fields.NumberField<number, number, true, true, true>
+}
 
 export { NumericCriteria, type NumericCriteriaSchema }

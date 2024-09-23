@@ -403,62 +403,43 @@ const SORTABLE_BASE_OPTIONS: Sortable.Options = {
 	delayOnTouchOnly: true,
 }
 
-enum NumericCompareType {
-	AnyNumber = "none",
-	EqualsNumber = "is",
-	NotEqualsNumber = "is_not",
-	AtLeastNumber = "at_least",
-	AtMostNumber = "at_most",
-}
+// const ContainedQuantityNumericCompareTypes: NumericCompareType[] = [
+// 	NumericCompareType.EqualsNumber,
+// 	NumericCompareType.AtLeastNumber,
+// 	NumericCompareType.AtMostNumber,
+// ]
 
-const AllNumericCompareTypes: NumericCompareType[] = [
-	NumericCompareType.AnyNumber,
-	NumericCompareType.EqualsNumber,
-	NumericCompareType.NotEqualsNumber,
-	NumericCompareType.AtLeastNumber,
-	NumericCompareType.AtMostNumber,
-]
+// enum StringCompareType {
+// 	AnyString = "none",
+// 	IsString = "is",
+// 	IsNotString = "is_not",
+// 	ContainsString = "contains",
+// 	DoesNotContainString = "does_not_contain",
+// 	StartsWithString = "starts_with",
+// 	DoesNotStartWithString = "does_not_start_with",
+// 	EndsWithString = "ends_with",
+// 	DoesNotEndWithString = "does_not_end_with",
+// }
 
-const ContainedQuantityNumericCompareTypes: NumericCompareType[] = [
-	NumericCompareType.EqualsNumber,
-	NumericCompareType.AtLeastNumber,
-	NumericCompareType.AtMostNumber,
-]
-
-enum StringCompareType {
-	AnyString = "none",
-	IsString = "is",
-	IsNotString = "is_not",
-	ContainsString = "contains",
-	DoesNotContainString = "does_not_contain",
-	StartsWithString = "starts_with",
-	DoesNotStartWithString = "does_not_start_with",
-	EndsWithString = "ends_with",
-	DoesNotEndWithString = "does_not_end_with",
-}
-
-const AllStringCompareTypes: StringCompareType[] = [
-	StringCompareType.AnyString,
-	StringCompareType.IsString,
-	StringCompareType.IsNotString,
-	StringCompareType.ContainsString,
-	StringCompareType.DoesNotContainString,
-	StringCompareType.StartsWithString,
-	StringCompareType.DoesNotStartWithString,
-	StringCompareType.EndsWithString,
-	StringCompareType.DoesNotEndWithString,
-]
+// const AllStringCompareTypes: StringCompareType[] = [
+// 	StringCompareType.AnyString,
+// 	StringCompareType.IsString,
+// 	StringCompareType.IsNotString,
+// 	StringCompareType.ContainsString,
+// 	StringCompareType.DoesNotContainString,
+// 	StringCompareType.StartsWithString,
+// 	StringCompareType.DoesNotStartWithString,
+// 	StringCompareType.EndsWithString,
+// 	StringCompareType.DoesNotEndWithString,
+// ]
 
 export {
 	ABSTRACT_CONTAINER_TYPES,
 	ActorFlags,
 	ActorType,
-	AllNumericCompareTypes,
-	AllStringCompareTypes,
 	COMPENDIA,
 	CONTAINER_TYPES,
 	ConditionID,
-	ContainedQuantityNumericCompareTypes,
 	DEFAULT_INITIATIVE_FORMULA,
 	DefaultHaver,
 	EFFECT_ACTION,
@@ -468,7 +449,6 @@ export {
 	ItemType,
 	MANEUVER_DETAIL_SETTING,
 	ManeuverID,
-	NumericCompareType,
 	RollModifierTags,
 	RollType,
 	SETTINGS,
@@ -476,7 +456,6 @@ export {
 	SORTABLE_BASE_OPTIONS,
 	SSRT_SETTING,
 	SYSTEM_NAME,
-	StringCompareType,
 	gid,
 }
 

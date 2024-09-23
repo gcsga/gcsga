@@ -517,8 +517,14 @@ class ItemDataModel<TSchema extends ItemDataSchema = ItemDataSchema> extends Sys
 	}
 
 	/* -------------------------------------------- */
-	/*  Helper Methods                              */
+	/*  Helpers                                     */
 	/* -------------------------------------------- */
+
+	/**
+	 * Prepare type-specific data for the Item sheet.
+	 * @param  context  Sheet context data.
+	 */
+	async getSheetData(_context: Record<string, unknown>): Promise<void> {}
 
 	/**
 	 * All of the containers this item is within up to the parent actor or collection.

@@ -38,16 +38,46 @@
 			"character": {}
 		},
 		"Item": {
-			"base": {
+			"BasicInformation": {
 				"FIELDS": {
-					"name": {
-						"hint": "The name of the item.",
-						"label": "Name"
-					},
-					"notes": {
-						"hint": "Helpful notes about the item.",
-						"label": "Notes"
+					"Notes": { "Name": "Notes" },
+					"Tags": { "Name": "Tags" },
+					"VttNotes": { "Name": "VTT Notes" },
+					"Reference": { "Name": "Reference" },
+					"Reference Highlight": { "Name": "Reference Higlight" }
+				}
+			},
+			"Prereqs": {
+				"DetailsLegend": "Prerequisites",
+				"FIELDS": {
+					"WhenTL": {
+						"Choices": {
+							"none": "When the Tech Level is anything",
+							"is": "When the Tech Level is",
+							"is_not": "When the Tech Level is not",
+							"at_least": "When the Tech Level is at least",
+							"at_most": "When the Tech Level is at most"
+						}
 					}
+				}
+			},
+			"Features": {
+				"DetailsLegend": "Features"
+			},
+			"Equipment": {
+				"DetailsLegend": "Equipment Details",
+				"FIELDS": {
+					"TechLevel": { "Name": "Tech Level" },
+					"LegalityClass": { "Name": "Legality Class" },
+					"Quantity": { "Name": "Quantity" },
+					"Equipped": { "Name": "Equipped" },
+					"Value": { "Name": "Value" },
+					"Weight": { "Name": "Weight" },
+					"Uses": { "Name": "Uses" },
+					"MaxUses": { "Name": "Maximum uses" },
+					"RatedStrength": { "Name": "Rated ST" },
+					"Level": { "Name": "Level" },
+					"IgnoreWeightForSkills": { "Name": "Ignore weight for skills" }
 				}
 			}
 		},
@@ -260,6 +290,24 @@
 					"Hint": "Halve Strength (round up; does not affect HP and damage)"
 				}
 			},
+			"NumericComparison": {
+				"none": "is anything",
+				"is": "is",
+				"is_not": "is not",
+				"at_least": "is at least",
+				"at_most": "is at most"
+			},
+			"StringComparison": {
+				"none": "is anything",
+				"is": "is \"{qualifier}\"",
+				"is_not": "is not \"{qualifier}\"",
+				"contains": "contains \"{qualifier}\"",
+				"does_not_contain": "does not contain \"{qualifier}\"",
+				"starts_with": "starts with \"{qualifier}\"",
+				"does_not_start_with": "does not start with \"{qualifier}\"",
+				"ends_with": "ends with \"{qualifier}\"",
+				"does_not_end_with": "does not end with \"{qualifier}\""
+			},
 			"MoveTypeOverrideConditionType": {
 				"Trait": "Trait",
 				"Skill": "Skill",
@@ -274,17 +322,6 @@
 				"sw": "sw",
 				"lift_sw": "lifting sw",
 				"tk_sw": "telekinetic sw"
-			},
-			"StringCompareType": {
-				"none": "is anything",
-				"is": "is \"{qualifier}\"",
-				"is_not": "is not \"{qualifier}\"",
-				"contains": "contains \"{qualifier}\"",
-				"does_not_contain": "does not contain \"{qualifier}\"",
-				"starts_with": "starts with \"{qualifier}\"",
-				"does_not_start_with": "does not start with \"{qualifier}\"",
-				"ends_with": "ends with \"{qualifier}\"",
-				"does_not_end_with": "does not end with \"{qualifier}\""
 			},
 			"progression": {
 				"basic_set": {

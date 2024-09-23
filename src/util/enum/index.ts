@@ -1,5 +1,7 @@
 export { affects } from "./affects.ts"
 export { encumbrance } from "./encumbrance.ts"
+export { NumericComparison } from "./numeric-comparison.ts"
+export { StringComparison } from "./string-comparison.ts"
 export { attribute } from "./attribute.ts"
 export { cell } from "./cell.ts"
 export { container } from "./container.ts"

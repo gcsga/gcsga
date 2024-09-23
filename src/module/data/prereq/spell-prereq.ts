@@ -2,11 +2,13 @@ import { prereq } from "@util/enum/prereq.ts"
 import fields = foundry.data.fields
 import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
 import { spellcmp } from "@util/enum/spellcmp.ts"
-import { ActorType, ItemType, NumericCompareType, StringCompareType } from "@data"
-import { LocalizeGURPS, TooltipGURPS } from "@util"
-import { Nameable, NumericCriteria, StringCriteria } from "@module/util/index.ts"
+import { ActorType, ItemType } from "@data"
+import { LocalizeGURPS, NumericComparison, StringComparison, TooltipGURPS } from "@util"
+import { Nameable } from "@module/util/index.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { ActorInst } from "../actor/helpers.ts"
+import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
+import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
 
 class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 	static override TYPE = prereq.Type.Spell
@@ -19,19 +21,19 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 			type: new fields.StringField({ required: true, nullable: false, blank: false, initial: prereq.Type.Spell }),
 			has: new fields.BooleanField({ initial: true }),
 			sub_type: new fields.StringField({ choices: spellcmp.Types, initial: spellcmp.Type.Name }),
-			qualifier: new fields.EmbeddedDataField(StringCriteria, {
+			qualifier: new StringCriteriaField({
 				required: true,
 				nullable: false,
 				initial: {
-					compare: StringCompareType.IsString,
+					compare: StringComparison.Option.IsString,
 					qualifier: "",
 				},
 			}),
-			quantity: new fields.EmbeddedDataField(NumericCriteria, {
+			quantity: new NumericCriteriaField({
 				required: true,
 				nullable: false,
 				initial: {
-					compare: NumericCompareType.AtLeastNumber,
+					compare: NumericComparison.Option.AtLeastNumber,
 					qualifier: 0,
 				},
 			}),
@@ -124,7 +126,7 @@ interface SpellPrereq extends BasePrereq<SpellPrereqSchema>, ModelPropsFromSchem
 export type SpellPrereqSchema = BasePrereqSchema & {
 	has: fields.BooleanField
 	sub_type: fields.StringField<spellcmp.Type>
-	qualifier: fields.EmbeddedDataField<StringCriteria, true, false, true>
-	quantity: fields.EmbeddedDataField<NumericCriteria, true, false, true>
+	qualifier: StringCriteriaField<true, false, true>
+	quantity: NumericCriteriaField<true, false, true>
 }
 export { SpellPrereq }

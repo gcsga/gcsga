@@ -1,9 +1,8 @@
 import fields = foundry.data.fields
 import { ItemDataModel } from "@module/data/abstract.ts"
-import { NumericCompareType } from "@module/data/constants.ts"
 import { PrereqList } from "@module/data/prereq/index.ts"
 import { Prereq, PrereqTypes } from "@module/data/prereq/types.ts"
-import { ErrorGURPS, prereq } from "@util"
+import { ErrorGURPS, NumericComparison, prereq } from "@util"
 
 class PrereqTemplate extends ItemDataModel<PrereqTemplateSchema> {
 	unsatisfiedReason: string | null = null
@@ -17,7 +16,7 @@ class PrereqTemplate extends ItemDataModel<PrereqTemplateSchema> {
 						type: prereq.Type.List,
 						id: "root",
 						all: true,
-						when_tl: { compare: NumericCompareType.AnyNumber, qualifier: 0 },
+						when_tl: { compare: NumericComparison.Option.AnyNumber, qualifier: 0 },
 						prereqs: [],
 					},
 				],

@@ -8,8 +8,8 @@ import { registerSystemSettings } from "@module/settings/index.ts"
 import { GURPSCONFIG } from "@scripts/config/index.ts"
 import { registerHandlebarsHelpers } from "@scripts/handlebars.ts"
 import { registerFonts } from "@scripts/register-fonts.ts"
-import { registerTemplates } from "@scripts/register-templates.ts"
 import { SetGameGURPS } from "@scripts/set-game-gurps.ts"
+import { preloadHandlebarsTemplates } from "@util/handlebars-partials.ts"
 
 const LEGAL =
 	"GURPS is a trademark of Steve Jackson Games, and its rules and art are copyrighted by Steve Jackson Games.\nAll rights are reserved by Steve Jackson Games.\nThis game aid is the original creation of Mikolaj Tomczynski and is released for free distribution, and not for resale, under the permissions granted by\nhttp://www.sjgames.com/general/online_policy.html"
@@ -61,7 +61,8 @@ export const Init = {
 			registerHandlebarsHelpers()
 			// registerSettings()
 			registerSystemSettings()
-			registerTemplates()
+			// registerTemplates()
+			preloadHandlebarsTemplates()
 
 			SetGameGURPS.onInit()
 		})

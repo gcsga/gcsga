@@ -8,9 +8,9 @@ class CharacterSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ActorShe
 		primary: "combat",
 	}
 
-	static override DEFAULT_OPTIONS: Partial<ApplicationConfiguration> & { dragDrop: DragDropConfiguration[] } = {
-		id: "character-sheet",
+	static override DEFAULT_OPTIONS: Partial<DocumentSheetConfiguration> & { dragDrop: DragDropConfiguration[] } = {
 		tag: "form",
+		classes: ["gurps", "actor", "character"],
 		window: {
 			contentClasses: [""],
 			icon: "gcs-character",

@@ -1,10 +1,13 @@
 import { Int, LocalizeGURPS, TooltipGURPS, feature, wsel, wswitch } from "@util"
+import fields = foundry.data.fields
 import { BaseFeature } from "./base-feature.ts"
-import { WeaponBonusSchema } from "./data.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { Nameable, NumericCriteria, StringCriteria } from "@module/util/index.ts"
 import { ItemDataModel } from "@module/data/abstract.ts"
 import { AbstractWeaponTemplate } from "@module/data/item/templates/abstract-weapon.ts"
+import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
+import { BaseFeatureSchema } from "./data.ts"
+import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
 
 class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 	declare dieCount: number
@@ -20,15 +23,11 @@ class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 			switch_type: new fields.StringField({ choices: wswitch.Types, nullable: true, initial: null }),
 			switch_type_value: new fields.BooleanField({ nullable: true, initial: null }),
 			selection_type: new fields.StringField({ choices: wsel.Types, initial: wsel.Type.WithRequiredSkill }),
-			name: new fields.EmbeddedDataField(StringCriteria, { required: true, nullable: true, initial: null }),
-			specialization: new fields.EmbeddedDataField(StringCriteria, {
-				required: true,
-				nullable: true,
-				initial: null,
-			}),
-			level: new fields.EmbeddedDataField(NumericCriteria, { required: true, nullable: true, initial: null }),
-			usage: new fields.EmbeddedDataField(StringCriteria, { required: true, nullable: true, initial: null }),
-			tags: new fields.EmbeddedDataField(StringCriteria, { required: true, nullable: true, initial: null }),
+			name: new StringCriteriaField({ required: true, nullable: false }),
+			specialization: new StringCriteriaField({ required: true, nullable: false }),
+			level: new NumericCriteriaField({ required: true, nullable: false }),
+			usage: new StringCriteriaField({ required: true, nullable: false }),
+			tags: new StringCriteriaField({ required: true, nullable: false }),
 			amount: new fields.NumberField({ integer: true, initial: 1 }),
 			leveled: new fields.BooleanField({ initial: false }),
 			per_die: new fields.BooleanField({ initial: false }),
@@ -137,23 +136,31 @@ class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 	}
 
 	fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {
-		Nameable.extract(this.specialization.qualifier, m, existing)
+		Nameable.extract(this.specialization?.qualifier ?? "", m, existing)
 		if (this.selection_type !== wsel.Type.ThisWeapon) {
-			Nameable.extract(this.name.qualifier, m, existing)
-			Nameable.extract(this.usage.qualifier, m, existing)
-			Nameable.extract(this.tags.qualifier, m, existing)
+			Nameable.extract(this.name?.qualifier ?? "", m, existing)
+			Nameable.extract(this.usage?.qualifier ?? "", m, existing)
+			Nameable.extract(this.tags?.qualifier ?? "", m, existing)
 		}
 	}
 }
 
-interface WeaponBonus
-	extends BaseFeature<WeaponBonusSchema>,
-		Omit<ModelPropsFromSchema<WeaponBonusSchema>, "name" | "specialization" | "level" | "usage" | "tags"> {
-	name: StringCriteria
-	specialization: StringCriteria
-	level: NumericCriteria
-	usage: StringCriteria
-	tags: StringCriteria
+interface WeaponBonus extends BaseFeature<WeaponBonusSchema>, ModelPropsFromSchema<WeaponBonusSchema> {}
+
+export type WeaponBonusSchema = BaseFeatureSchema & {
+	percent: fields.BooleanField<boolean, boolean, true, true>
+	switch_type: fields.StringField<wswitch.Type, wswitch.Type, true, true>
+	switch_type_value: fields.BooleanField<boolean, boolean, true, true>
+	selection_type: fields.StringField<wsel.Type, wsel.Type, true, false, true>
+	name: StringCriteriaField<true, false, true>
+	specialization: StringCriteriaField<true, false, true>
+	level: NumericCriteriaField<true, false, true>
+	usage: StringCriteriaField<true, false, true>
+	tags: StringCriteriaField<true, false, true>
+	amount: fields.NumberField<number, number, true, false>
+	leveled: fields.BooleanField<boolean, boolean, true, false, true>
+	per_die: fields.BooleanField<boolean, boolean, true, false, true>
+	effective: fields.BooleanField<boolean, boolean, false>
 }
 
 export { WeaponBonus }

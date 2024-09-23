@@ -1,0 +1,34 @@
+<!-- Header -->
+<header class="sheet-header">
+	<!-- Item Image -->
+	<div class="left">
+		{{#if editable}}
+		<img class="item-image" src="{{item.img}}" alt="{{item.name}}" data-action="editImage" />
+		{{else}}
+		<img class="item-image" src="{{item.img}}" alt="{{item.name}}" data-action="viewImage" />
+		{{/if}}
+	</div>
+
+	<!-- Item Name -->
+	<div class="middle">
+		{{#if editable}}
+		<input type="text" name="name" class="document-name josefin-sans-regular" value="{{item.name}}" />
+		{{else}}
+		<div class="document-name josefin-sans-regular">{{item.name}}</div>
+		{{/if}}
+		<div class="document-type josefin-sans-regular">{{localize (concat "TYPES.Item." item.type)}}</div>
+	</div>
+
+	<!-- TODO: Not sure if we're doing anything with this yet -->
+	<div class="right"></div>
+	<div class="bottom">
+		<nav class="tabs" data-group="primary">
+			{{#each tabs as |tab|}}
+			<a class="{{tab.cssClass}}" data-action="tab" data-group="{{tab.group}}" data-tab="{{tab.id}}">
+				<span>{{tab.label}}</span>
+			</a>
+			{{/each}}
+		</nav>
+		<hr />
+	</div>
+</header>

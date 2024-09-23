@@ -417,7 +417,7 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 			if (
 				allowedFeatureTypes.has(bonus.type) &&
 				bonus.selection_type === wsel.Type.WithRequiredSkill &&
-				bonus.level.matches(rsl) &&
+				bonus.level?.matches(rsl) &&
 				(temporary === null || bonus.temporary === temporary)
 			) {
 				let replacements: Map<string, string> = new Map()

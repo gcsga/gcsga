@@ -1,0 +1,31 @@
+<fieldset>
+	<legend>{{localize "GURPS.Item.Equipment.DetailsLegend"}}</legend>
+
+	<!-- Notes -->
+	{{formField fields.notes value=source.notes localize=true}}
+
+	<!-- Tech Level -->
+	{{formField fields.tech_level value=source.tech_level localize=true}}
+
+	<!-- Legality Class -->
+	{{formField fields.legality_class value=source.legality_class localize=true}}
+
+	<!-- Quantity / Equipped -->
+	<div class="form-group">
+		<label>{{localize "GURPS.Item.Equipment.FIELDS.Quantity.Name"}}</label>
+		<div class="form-fields">
+			<!-- Quantity -->
+			{{formInput fields.quantity value=source.quantity}}
+
+			<!-- Equipped -->
+			{{formInput fields.equipped value=source.equipped}}
+			<label>{{localize "GURPS.Item.Equipment.FIELDS.Equipped.Name"}}</label>
+		</div>
+	</div>
+
+	<!-- Tags -->
+	{{formField fields.tags value=source.tags localize=true}}
+
+	<!-- Reference -->
+	{{formField fields.reference value=source.reference localize=true}}
+</fieldset>

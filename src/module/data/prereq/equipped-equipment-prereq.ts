@@ -1,35 +1,26 @@
-import { StringCriteria } from "@module/util/string-criteria.ts"
-import fields = foundry.data.fields
 import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
 import { prereq } from "@util/enum/prereq.ts"
-import { LocalizeGURPS, TooltipGURPS } from "@util"
-import { ActorType, StringCompareType } from "@module/data/constants.ts"
+import { LocalizeGURPS, StringComparison, TooltipGURPS } from "@util"
+import { ActorType } from "@module/data/constants.ts"
 import { ActorInst } from "../actor/helpers.ts"
 import { Nameable } from "@module/util/index.ts"
+import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
 
 class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> {
 	static override TYPE = prereq.Type.EquippedEquipment
 
 	static override defineSchema(): EquippedEquipmentPrereqSchema {
-		const fields = foundry.data.fields
-
 		return {
 			...super.defineSchema(),
-			name: new fields.EmbeddedDataField(StringCriteria, {
+			name: new StringCriteriaField({
 				required: true,
 				nullable: false,
-				initial: {
-					compare: StringCompareType.IsString,
-					qualifier: "",
-				},
+				initial: { compare: StringComparison.Option.IsString, qualifier: "" },
 			}),
-			tags: new fields.EmbeddedDataField(StringCriteria, {
+			tags: new StringCriteriaField({
 				required: true,
 				nullable: false,
-				initial: {
-					compare: StringCompareType.AnyString,
-					qualifier: "",
-				},
+				initial: { compare: StringComparison.Option.AnyString, qualifier: "" },
 			}),
 		}
 	}
@@ -82,8 +73,8 @@ interface EquippedEquipmentPrereq
 		ModelPropsFromSchema<EquippedEquipmentPrereqSchema> {}
 
 type EquippedEquipmentPrereqSchema = BasePrereqSchema & {
-	name: fields.EmbeddedDataField<StringCriteria, true, false, true>
-	tags: fields.EmbeddedDataField<StringCriteria, true, false, true>
+	name: StringCriteriaField<true, false, true>
+	tags: StringCriteriaField<true, false, true>
 }
 
 export { EquippedEquipmentPrereq, type EquippedEquipmentPrereqSchema }

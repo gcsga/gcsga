@@ -4,6 +4,7 @@ import { ItemGURPS2 } from "@module/document/item.ts"
 import { EvalEmbeddedRegex, replaceAllStringFunc } from "@util"
 import { ItemTemplateType } from "../types.ts"
 import { Nameable } from "@module/util/index.ts"
+import { TagArrayField } from "../fields/tag-array-field.ts"
 
 class BasicInformationTemplate extends ItemDataModel<BasicInformationTemplateSchema> {
 	static override defineSchema(): BasicInformationTemplateSchema {
@@ -15,11 +16,28 @@ class BasicInformationTemplate extends ItemDataModel<BasicInformationTemplateSch
 				nullable: false,
 				initial: "",
 			}),
-			reference: new fields.StringField({ required: true, nullable: false, initial: "" }),
-			reference_highlight: new fields.StringField({ required: true, nullable: false, initial: "" }),
-			notes: new fields.StringField({ required: true, nullable: false, initial: "" }),
+			notes: new fields.StringField({
+				required: true,
+				nullable: false,
+				initial: "",
+				label: "GURPS.Item.BasicInformation.FIELDS.Notes.Name",
+			}),
+			tags: new TagArrayField(new fields.StringField(), {
+				initial: [],
+				label: "GURPS.Item.BasicInformation.FIELDS.Tags.Name",
+			}),
+			// tags: new fields.ArrayField(new foundry.data.fields.StringField(), {
+			// 	initial: [],
+			// 	label: "GURPS.Item.BasicInformation.FIELDS.Tags.Name",
+			// }),
 			vtt_notes: new fields.StringField({ required: true, nullable: false, initial: "" }),
-			tags: new fields.ArrayField(new foundry.data.fields.StringField()),
+			reference: new fields.StringField({
+				required: true,
+				nullable: false,
+				initial: "",
+				label: "GURPS.Item.BasicInformation.FIELDS.Reference.Name",
+			}),
+			reference_highlight: new fields.StringField({ required: true, nullable: false, initial: "" }),
 		}
 	}
 
@@ -54,11 +72,11 @@ interface BasicInformationTemplate
 type BasicInformationTemplateSchema = {
 	container: fields.ForeignDocumentField<string>
 	name: fields.StringField<string, string, true, false, true>
+	notes: fields.StringField<string, string, true, false, true>
+	tags: TagArrayField
+	vtt_notes: fields.StringField<string, string, true, false, true>
 	reference: fields.StringField<string, string, true, false, true>
 	reference_highlight: fields.StringField<string, string, true, false, true>
-	notes: fields.StringField<string, string, true, false, true>
-	vtt_notes: fields.StringField<string, string, true, false, true>
-	tags: fields.ArrayField<fields.StringField<string, string, true, false, true>>
 }
 
 export { BasicInformationTemplate, type BasicInformationTemplateSchema }

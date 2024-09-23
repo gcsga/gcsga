@@ -2,10 +2,10 @@ import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
 import fields = foundry.data.fields
 import { prereq } from "@util/enum/prereq.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import { ActorType, NumericCompareType, gid } from "@data"
-import { TooltipGURPS } from "@util"
-import { NumericCriteria } from "@module/util/index.ts"
+import { ActorType, gid } from "@data"
+import { NumericComparison, TooltipGURPS } from "@util"
 import { ActorInst } from "../actor/helpers.ts"
+import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
 
 class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 	static override TYPE = prereq.Type.Attribute
@@ -18,11 +18,11 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 			which: new fields.StringField({ initial: gid.Strength }),
 			has: new fields.BooleanField({ initial: true }),
 			combined_with: new fields.StringField({ initial: "" }),
-			qualifier: new fields.EmbeddedDataField(NumericCriteria, {
+			qualifier: new NumericCriteriaField({
 				required: true,
 				nullable: false,
 				initial: {
-					compare: NumericCompareType.AtLeastNumber,
+					compare: NumericComparison.Option.AtLeastNumber,
 					qualifier: 10,
 				},
 			}),
@@ -69,6 +69,6 @@ type AttributePrereqSchema = BasePrereqSchema & {
 	has: fields.BooleanField<boolean, boolean, true, false, true>
 	which: fields.StringField<string, string, true, false, true>
 	combined_with: fields.StringField<string, string, true, false, true>
-	qualifier: fields.EmbeddedDataField<NumericCriteria, true, false, true>
+	qualifier: NumericCriteriaField<true, false, true>
 }
 export { AttributePrereq }

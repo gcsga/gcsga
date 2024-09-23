@@ -1,17 +1,17 @@
 import { LocalizeGURPS } from "../../util/localize.ts"
-import { AllNumericCompareTypes, NumericCompareType } from "@module/data/constants.ts"
-import type { WeightCriteriaSchema } from "./data.ts"
+import fields = foundry.data.fields
 import { ItemDataModel } from "@module/data/abstract.ts"
-import { Weight } from "@util"
+import { NumericComparison, Weight } from "@util"
 
 class WeightCriteria extends foundry.abstract.DataModel<ItemDataModel, WeightCriteriaSchema> {
 	static override defineSchema(): WeightCriteriaSchema {
 		const fields = foundry.data.fields
 		return {
-			compare: new fields.StringField<NumericCompareType, NumericCompareType, true>({
+			compare: new fields.StringField({
 				required: true,
-				choices: AllNumericCompareTypes,
-				initial: NumericCompareType.AnyNumber,
+				nullable: false,
+				choices: NumericComparison.Options,
+				initial: NumericComparison.Option.AnyNumber,
 			}),
 			qualifier: new fields.StringField({
 				initial: `0 ${Weight.Unit.Pound}`,
@@ -27,15 +27,15 @@ class WeightCriteria extends foundry.abstract.DataModel<ItemDataModel, WeightCri
 		const qualifier = Weight.fromString(this.qualifier)
 		const value = Weight.fromString(n.toString())
 		switch (this.compare) {
-			case NumericCompareType.AnyNumber:
+			case NumericComparison.Option.AnyNumber:
 				return true
-			case NumericCompareType.EqualsNumber:
+			case NumericComparison.Option.EqualsNumber:
 				return value === qualifier
-			case NumericCompareType.NotEqualsNumber:
+			case NumericComparison.Option.NotEqualsNumber:
 				return value !== qualifier
-			case NumericCompareType.AtLeastNumber:
+			case NumericComparison.Option.AtLeastNumber:
 				return value >= qualifier
-			case NumericCompareType.AtMostNumber:
+			case NumericComparison.Option.AtMostNumber:
 				return value <= qualifier
 		}
 	}
@@ -50,13 +50,13 @@ class WeightCriteria extends foundry.abstract.DataModel<ItemDataModel, WeightCri
 
 	describe(): string {
 		const result = this.toString()
-		if (this.compare === NumericCompareType.AnyNumber) return result
+		if (this.compare === NumericComparison.Option.AnyNumber) return result
 		return `${result} ${this.qualifier}`
 	}
 
 	altDescribe(): string {
 		let result = this.altString()
-		if (this.compare === NumericCompareType.AnyNumber) return result
+		if (this.compare === NumericComparison.Option.AnyNumber) return result
 		if (result !== "") result += " "
 		return result + this.qualifier.toString()
 	}
@@ -65,5 +65,10 @@ class WeightCriteria extends foundry.abstract.DataModel<ItemDataModel, WeightCri
 interface WeightCriteria
 	extends foundry.abstract.DataModel<ItemDataModel, WeightCriteriaSchema>,
 		ModelPropsFromSchema<WeightCriteriaSchema> {}
+
+type WeightCriteriaSchema = {
+	compare: fields.StringField<NumericComparison.Option, NumericComparison.Option, true, false, true>
+	qualifier: fields.StringField<string, string, true, false, true>
+}
 
 export { WeightCriteria, type WeightCriteriaSchema }

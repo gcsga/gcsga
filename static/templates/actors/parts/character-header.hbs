@@ -1,12 +1,21 @@
 <!-- Header -->
 <header class="sheet-header">
+	<!-- actor Image -->
+	<div class="left">
+		{{#if editable}}
+		<img class="actor-image" src="{{actor.img}}" alt="{{actor.name}}" data-action="editImage" />
+		{{else}}
+		<img class="actor-image" src="{{actor.img}}" alt="{{actor.name}}" data-action="viewImage" />
+		{{/if}}
+	</div>
+
 	<!-- Name & Title -->
-	<div class="name flexcol">
+	<div class="middle">
 		<!-- Name -->
 		{{#if editable}}
-		<input type="text" name="name" class="actor-name josefin-sans-regular" value="{{actor.name}}" />
+		<input type="text" name="name" class="document-name josefin-sans-regular" value="{{actor.name}}" />
 		{{else}}
-		<div class="actor-name josefin-sans-regular">{{actor.name}}</div>
+		<div class="document-name josefin-sans-regular">{{actor.name}}</div>
 		{{/if}}
 
 		<!-- Title -->
@@ -23,16 +32,18 @@
 	</div>
 
 	<!-- Point Total -->
-	<div class="points">
-		<div id="point-total">250</div>
-		<div class="side">
-			<div class="cp">CP</div>
-			<a class="fa-solid fa-caret-down"></a>
+	<div class="right">
+		<div class="point-counter">
+			<div class="point-total">250</div>
+			<div class="side">
+				<div class="cp">CP</div>
+				<a class="fa-solid fa-caret-down"></a>
+			</div>
 		</div>
 	</div>
 
 	<!-- Navigation Tabs -->
-	<div class="buttons">
+	<div class="bottom">
 		<nav class="tabs" data-group="primary">
 			{{#each primaryTabs as |tab|}}
 			<a class="{{tab.cssClass}}" data-action="tab" data-group="{{tab.group}}" data-tab="{{tab.id}}">
@@ -41,5 +52,4 @@
 			{{/each}}
 		</nav>
 	</div>
-	<div class="header-bar"></div>
 </header>

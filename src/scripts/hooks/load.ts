@@ -39,7 +39,6 @@ export const Load = {
 		CONFIG.Dice.Attack = AttackRoll
 		CONFIG.Dice.Damage = DamageRoll
 
-		// @ts-expect-error is ok?
 		CONFIG.Actor.dataModels = {
 			[ActorType.Character]: CharacterDataGURPS,
 		}

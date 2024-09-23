@@ -1,6 +1,8 @@
-import { ManeuverID, NumericCompareType, StringCompareType } from "@module/data/constants.ts"
+import { ManeuverID } from "@module/data/constants.ts"
 import { ItemKind } from "@module/data/index.ts"
 import {
+	NumericComparison,
+	StringComparison,
 	affects,
 	attribute,
 	container,
@@ -59,17 +61,17 @@ export enum ImportedItemType {
 type ImportedWeight = `${number} ${Weight.Unit}`
 
 type ImportedStringCriteria = {
-	compare?: StringCompareType
+	compare?: StringComparison.Option
 	qualifier?: string
 }
 
 type ImportedNumericCriteria = {
-	compare?: NumericCompareType
+	compare?: NumericComparison.Option
 	qualifier?: number
 }
 
 type ImportedWeightCriteria = {
-	compare?: NumericCompareType
+	compare?: NumericComparison.Option
 	qualifier?: ImportedWeight
 }
 

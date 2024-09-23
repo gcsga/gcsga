@@ -18,6 +18,15 @@ class EquipmentContainerData extends ItemDataModel.mixin(
 	static override childTypes = new Set([ItemType.Equipment, ItemType.EquipmentContainer])
 	static override modifierTypes = new Set([ItemType.EquipmentModifier, ItemType.EquipmentModifierContainer])
 	static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
+
+	override async getSheetData(context: Record<string, unknown>): Promise<void> {
+		context.detailsParts = ["gurps.details-equipment"]
+		context.embedsParts = [
+			"gurps.embeds-equipment-children",
+			"gurps.embeds-equipment-modifiers",
+			"gurps.embeds-weapons",
+		]
+	}
 }
 
 type EquipmentContainerSchema = BasicInformationTemplateSchema &

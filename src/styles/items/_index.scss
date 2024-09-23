@@ -1,0 +1,31 @@
+.gurps.item.sheet {
+	@import "header";
+
+	fieldset {
+		padding: 0.5rem;
+		margin: 1rem;
+		display: flex;
+		flex-direction: column;
+		flex-wrap: nowrap;
+		gap: 0;
+		border-color: #bbb;
+		border-radius: 0.5rem;
+
+		select,
+		input[type="text"],
+		input[type="number"] {
+			height: 1.5rem;
+			line-height: 1.5rem;
+		}
+	}
+}
+
+.gurps.item.sheet.minimized {
+	> header.window-header {
+		// Make Window Icon and Title visible in minimized sheet
+		h1.window-title,
+		i.window-icon {
+			opacity: 1;
+		}
+	}
+}

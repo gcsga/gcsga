@@ -1,5 +1,9 @@
 # Refactor Notes
 
+## Priority
+
+- Prereq#toFormElement
+
 ## Left To Do
 
 - Weapon Fields
@@ -24,7 +28,8 @@
   - Add field label values for all fields
 - Actor
   - Legacy Support?
-- Item Sheet \*4
+- Item Sheet \*CURRENT
+  - Header color dependent on item type page color in GURPS Basic Set
 - Actor Sheet \*2
   - Collapsible sidebar
     - Option to hide atributes if not frequently used to decrease clutter?

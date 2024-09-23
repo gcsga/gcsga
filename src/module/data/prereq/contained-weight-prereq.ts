@@ -1,7 +1,7 @@
 import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
 import fields = foundry.data.fields
-import { LocalizeGURPS, TooltipGURPS, Weight, prereq } from "@util"
-import { ActorType, ItemType, NumericCompareType } from "@module/data/constants.ts"
+import { LocalizeGURPS, NumericComparison, TooltipGURPS, Weight, prereq } from "@util"
+import { ActorType, ItemType } from "@module/data/constants.ts"
 import { WeightCriteria } from "@module/util/weight-criteria.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { SheetSettings } from "../sheet-settings.ts"
@@ -26,7 +26,7 @@ class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
 				required: true,
 				nullable: false,
 				initial: {
-					compare: NumericCompareType.AtLeastNumber,
+					compare: NumericComparison.Option.AtLeastNumber,
 					qualifier: Weight.format(5, Weight.Unit.Pound),
 				},
 			}),

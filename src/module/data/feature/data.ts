@@ -1,7 +1,7 @@
 import { feature, skillsel, spellmatch, stlimit, wsel, wswitch } from "@util"
 import fields = foundry.data.fields
-import { NumericCriteria } from "@module/util/numeric-criteria.ts"
-import { StringCriteria } from "@module/util/string-criteria.ts"
+import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
+import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
 
 export enum MoveBonusType {
 	Base = "base",
@@ -48,27 +48,27 @@ export type ReactionBonusSchema = BaseFeatureSchema & {
 
 export type SkillBonusSchema = BaseFeatureSchema & {
 	selection_type: fields.StringField<skillsel.Type>
-	name: fields.EmbeddedDataField<StringCriteria>
-	specialization: fields.EmbeddedDataField<StringCriteria>
-	tags: fields.EmbeddedDataField<StringCriteria>
+	name: StringCriteriaField<true, false, true>
+	specialization: StringCriteriaField<true, false, true>
+	tags: StringCriteriaField<true, false, true>
 }
 
 export type SkillPointBonusSchema = BaseFeatureSchema & {
-	name: fields.EmbeddedDataField<StringCriteria>
-	specialization: fields.EmbeddedDataField<StringCriteria>
-	tags: fields.EmbeddedDataField<StringCriteria>
+	name: StringCriteriaField<true, false, true>
+	specialization: StringCriteriaField<true, false, true>
+	tags: StringCriteriaField<true, false, true>
 }
 
 export type SpellBonusSchema = BaseFeatureSchema & {
 	match: fields.StringField<spellmatch.Type>
-	name: fields.EmbeddedDataField<StringCriteria>
-	tags: fields.EmbeddedDataField<StringCriteria>
+	name: StringCriteriaField<true, false, true>
+	tags: StringCriteriaField<true, false, true>
 }
 
 export type SpellPointBonusSchema = BaseFeatureSchema & {
 	match: fields.StringField<spellmatch.Type>
-	name: fields.EmbeddedDataField<StringCriteria>
-	tags: fields.EmbeddedDataField<StringCriteria>
+	name: StringCriteriaField<true, false, true>
+	tags: StringCriteriaField<true, false, true>
 }
 
 export type WeaponBonusSchema = BaseFeatureSchema & {
@@ -76,11 +76,11 @@ export type WeaponBonusSchema = BaseFeatureSchema & {
 	switch_type: fields.StringField<wswitch.Type, wswitch.Type, true, true>
 	switch_type_value: fields.BooleanField<boolean, boolean, true, true>
 	selection_type: fields.StringField<wsel.Type>
-	name: fields.EmbeddedDataField<StringCriteria, true, true, true>
-	specialization: fields.EmbeddedDataField<StringCriteria, true, true, true>
-	level: fields.EmbeddedDataField<NumericCriteria, true, true, true>
-	usage: fields.EmbeddedDataField<StringCriteria, true, true, true>
-	tags: fields.EmbeddedDataField<StringCriteria, true, true, true>
+	name: StringCriteriaField<true, false, true>
+	specialization: StringCriteriaField<true, false, true>
+	level: NumericCriteriaField<true, false, true>
+	usage: StringCriteriaField<true, false, true>
+	tags: StringCriteriaField<true, false, true>
 	amount: fields.NumberField<number, number, true, false>
 	leveled: fields.BooleanField
 	per_die: fields.BooleanField

@@ -1,5 +1,6 @@
 import { CharacterSheetGURPS } from "@module/applications/actor/character-sheet.ts"
-import { ActorType, SYSTEM_NAME } from "@module/data/constants.ts"
+import { ItemSheetGURPS } from "@module/applications/item/item-sheet.ts"
+import { ActorType, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
 
 export function registerSheets(): void {
 	/** Actor Sheets */
@@ -7,6 +8,12 @@ export function registerSheets(): void {
 		types: [ActorType.Character],
 		makeDefault: true,
 		label: "GURPS Character Sheet V2",
+	})
+
+	Items.registerSheet(SYSTEM_NAME, ItemSheetGURPS, {
+		types: [ItemType.Equipment, ItemType.EquipmentContainer],
+		makeDefault: true,
+		label: "GURPS Item Sheet V2",
 	})
 
 	// Actor
