@@ -58,6 +58,12 @@
 							"at_least": "When the Tech Level is at least",
 							"at_most": "When the Tech Level is at most"
 						}
+					},
+					"All": {
+						"Choices": {
+							"true": "Requires all of:",
+							"false": "Requires at least one of:"
+						}
 					}
 				}
 			},
@@ -275,6 +281,16 @@
 				"primary_separator": "Primary Separator",
 				"secondary_separator": "Secondary Separator",
 				"pool_separator": "Pool Separator"
+			},
+			"prereq": {
+				"prereq_list": "a list",
+				"trait_prereq": "a trait",
+				"attribute_prereq": "the attribute",
+				"contained_quantity_prereq": "a contained quantity of",
+				"contained_weight_prereq": "a contained weight",
+				"equipped_equipment": "has equipped equipment",
+				"skill_prereq": "a skill",
+				"spell_prereq": "spell(s)"
 			},
 			"threshold": {
 				"halve_move": {

@@ -63,7 +63,7 @@ interface NumericCriteria
 
 type NumericCriteriaSchema = {
 	compare: fields.StringField<NumericComparison.Option, NumericComparison.Option, true, false, true>
-	qualifier: fields.NumberField<number, number, true, true, true>
+	qualifier: fields.NumberField<number, number, true, false, true>
 }
 
 export { NumericCriteria, type NumericCriteriaSchema }

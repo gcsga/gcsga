@@ -29,7 +29,7 @@ abstract class BasePrereq<TSchema extends BasePrereqSchema = BasePrereqSchema> e
 				required: true,
 				nullable: false,
 				blank: false,
-				choices: prereq.Types,
+				choices: prereq.TypesChoices,
 				initial: this.TYPE,
 			}),
 		}
@@ -53,11 +53,15 @@ abstract class BasePrereq<TSchema extends BasePrereqSchema = BasePrereqSchema> e
 		return LocalizeGURPS.translations.GURPS.Prereq.DoesNotHave
 	}
 
+	get element(): Handlebars.SafeString {
+		return new Handlebars.SafeString(this.toFormElement().outerHTML)
+	}
+
 	constructor(data: DeepPartial<SourceFromSchema<TSchema>>, options?: PrereqConstructionOptions) {
 		super(data, options)
 	}
 
-	// abstract toFormElement(): HTMLElement
+	abstract toFormElement(): HTMLElement
 
 	abstract satisfied(
 		actor: ActorInst<ActorType.Character>,

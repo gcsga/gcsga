@@ -16,7 +16,7 @@ export function createMultiSelectInput(config: MultiSelectInputConfig): HTMLMult
 export function createNumberInput(config: NumberInputConfig): HTMLInputElement
 
 /** Create a `<select>` element for a StringField. */
-export function createSelectInput(config: SelectInputConfig): HTMLSelectElement
+export function createSelectInput(config: FormInputConfig<string> & SelectInputConfig): HTMLSelectElement
 
 /** Create a `<textarea>` element for a StringField. */
 export function createTextareaInput(config: TextAreaInputConfig): HTMLTextAreaElement

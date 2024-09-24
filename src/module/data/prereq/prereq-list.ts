@@ -8,6 +8,8 @@ import { ActorInst } from "../actor/helpers.ts"
 import { BasePrereqSchema } from "./base-prereq.ts"
 import { Prereq } from "./types.ts"
 import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
+import { StringArrayField } from "../item/fields/string-array-field.ts"
+import { BooleanSelectField } from "../item/fields/boolean-select-field.ts"
 
 // const ValidPrereqParentTypes = Object.freeze([
 // 	ItemType.Trait,
@@ -24,15 +26,21 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 	static override TYPE = prereq.Type.List
 
 	static override defineSchema(): PrereqListSchema {
-		const fields = foundry.data.fields
-
 		return {
 			...super.defineSchema(),
-			all: new fields.BooleanField({ initial: true }),
+			all: new BooleanSelectField({
+				required: true,
+				nullable: false,
+				choices: {
+					true: "GURPS.Item.Prereqs.FIELDS.All.Choices.true",
+					false: "GURPS.Item.Prereqs.FIELDS.All.Choices.false",
+				},
+				initial: true,
+			}),
 			when_tl: new NumericCriteriaField({
 				choices: NumericComparison.CustomOptionsChoices("GURPS.Item.Prereqs.FIELDS.WhenTL.Choices"),
 			}),
-			prereqs: new fields.ArrayField(new fields.StringField({ required: true, nullable: false })),
+			prereqs: new StringArrayField({ required: true, nullable: false, initial: [] }),
 		}
 	}
 
@@ -45,10 +53,10 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 		return children
 	}
 
-	get deepPrereqs(): string[] {
+	get allChildren(): string[] {
 		const prereqs = this.prereqs
 		for (const child of this.children) {
-			if (child.isOfType(prereq.Type.List)) prereqs.push(...child.deepPrereqs)
+			if (child.isOfType(prereq.Type.List)) prereqs.push(...child.allChildren)
 		}
 		return prereqs
 	}
@@ -84,6 +92,70 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 		return satisfied
 	}
 
+	override toFormElement(): HTMLElement {
+		const element = document.createElement("li")
+		const prefix = `system.prereqs.${this.index}`
+		// Root element
+		element.classList.add("prereq")
+
+		// Disabled, invisible fields
+		const typeInput = this.schema.fields.type.toInput({
+			name: `${prefix}.type`,
+			value: this.type,
+			localize: true,
+			readonly: true,
+		}) as HTMLElement
+		typeInput.style.setProperty("display", "none")
+
+		const idInput = this.schema.fields.id.toInput({
+			name: `${prefix}.id`,
+			value: this.id,
+			readonly: true,
+		}) as HTMLElement
+		idInput.style.setProperty("display", "none")
+
+		const prereqsInput = this.schema.fields.prereqs.toInput({
+			name: `${prefix}.prereqs`,
+			value: this.prereqs.join(", "),
+			readonly: true,
+		}) as HTMLElement
+		prereqsInput.style.setProperty("display", "none")
+
+		element.append(typeInput, idInput, prereqsInput)
+
+		// When TL
+		const rowElement = document.createElement("div")
+		rowElement.classList.add("form-fields")
+		rowElement.append(
+			this.schema.fields.when_tl.fields.compare.toInput({
+				name: `${prefix}.when_tl.compare`,
+				value: this.when_tl.compare,
+			}) as HTMLElement,
+		)
+		rowElement.append(
+			this.schema.fields.when_tl.fields.qualifier.toInput({
+				name: `${prefix}.when_tl.qualifier`,
+				value: this.when_tl.qualifier?.toString(),
+				disabled: this.when_tl.compare === NumericComparison.Option.AnyNumber,
+			}) as HTMLElement,
+		)
+		rowElement.append(
+			this.schema.fields.all.toInput({
+				name: `${prefix}.all`,
+				value: this.all.toString(),
+				localize: true,
+			}) as HTMLElement,
+		)
+		element.append(rowElement)
+
+		// Child Prereqs
+		const listElement = document.createElement("ul")
+		listElement.append(...this.children.map(e => e.toFormElement()))
+		element.append(listElement)
+
+		return element
+	}
+
 	fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {
 		for (const prereq of this.children) {
 			prereq.fillWithNameableKeys(m, existing)
@@ -95,8 +167,8 @@ interface PrereqList extends BasePrereq<PrereqListSchema>, ModelPropsFromSchema<
 
 export type PrereqListSchema = BasePrereqSchema & {
 	all: fields.BooleanField<boolean, boolean, true, false, true>
-	when_tl: NumericCriteriaField
-	prereqs: fields.ArrayField<fields.StringField<string, string, true, false, true>>
+	when_tl: NumericCriteriaField<true, false, true>
+	prereqs: StringArrayField<true, false, true>
 }
 
 export { PrereqList }

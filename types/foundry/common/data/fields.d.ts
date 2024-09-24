@@ -643,6 +643,13 @@ export class StringField<
 	protected override _validateSpecial(value: unknown): boolean | void
 
 	protected _validateType(value: unknown): boolean | void
+
+	static _getChoices(options: {
+		choices: Record<any, any> | Array<any>
+		labelAttr?: string
+		valueAttr?: string
+		localize?: boolean
+	}): FormSelectOption[]
 }
 
 type ObjectFieldOptions<

@@ -1,5 +1,3 @@
-import { LocalizeGURPS } from "@util/localize.ts"
-
 export namespace prereq {
 	export enum Type {
 		List = "prereq_list",
@@ -14,7 +12,7 @@ export namespace prereq {
 
 	export namespace Type {
 		export function toString(T: Type): string {
-			return LocalizeGURPS.translations.gurps.enum.prereq[T]
+			return `GURPS.Enum.prereq.${T}`
 		}
 	}
 
@@ -28,6 +26,17 @@ export namespace prereq {
 		Type.Skill,
 		Type.Spell,
 	]
+
+	export const TypesChoices: Readonly<Record<Type, string>> = Object.freeze({
+		[Type.List]: Type.toString(Type.List),
+		[Type.Trait]: Type.toString(Type.Trait),
+		[Type.Attribute]: Type.toString(Type.Attribute),
+		[Type.ContainedQuantity]: Type.toString(Type.ContainedQuantity),
+		[Type.ContainedWeight]: Type.toString(Type.ContainedWeight),
+		[Type.EquippedEquipment]: Type.toString(Type.EquippedEquipment),
+		[Type.Skill]: Type.toString(Type.Skill),
+		[Type.Spell]: Type.toString(Type.Spell),
+	})
 
 	export const TypesWithoutList: Type[] = [
 		Type.Trait,

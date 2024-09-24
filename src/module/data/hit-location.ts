@@ -1,7 +1,7 @@
 import fields = foundry.data.fields
 import { ActorType, gid } from "@data"
 import { equalFold } from "@module/util/string-criteria.ts"
-import { StringBuilder, TooltipGURPS } from "@util"
+import { StringBuilder, TooltipGURPS, generateId } from "@util"
 import { DiceGURPS } from "./dice.ts"
 import { type ActorGURPS2 } from "@module/document/actor.ts"
 
@@ -300,7 +300,7 @@ class HitLocationSubTable extends foundry.abstract.DataModel<ActorBody, HitLocat
 		const fields = foundry.data.fields
 
 		return {
-			id: new fields.StringField({ required: true, nullable: false, initial: "" }),
+			id: new fields.StringField({ required: true, nullable: false, initial: generateId }),
 			roll: new fields.StringField({
 				required: true,
 				nullable: false,

@@ -4,7 +4,7 @@ import { ItemGURPS2 } from "@module/document/item.ts"
 import { EvalEmbeddedRegex, replaceAllStringFunc } from "@util"
 import { ItemTemplateType } from "../types.ts"
 import { Nameable } from "@module/util/index.ts"
-import { TagArrayField } from "../fields/tag-array-field.ts"
+import { StringArrayField } from "../fields/string-array-field.ts"
 
 class BasicInformationTemplate extends ItemDataModel<BasicInformationTemplateSchema> {
 	static override defineSchema(): BasicInformationTemplateSchema {
@@ -22,7 +22,9 @@ class BasicInformationTemplate extends ItemDataModel<BasicInformationTemplateSch
 				initial: "",
 				label: "GURPS.Item.BasicInformation.FIELDS.Notes.Name",
 			}),
-			tags: new TagArrayField(new fields.StringField(), {
+			tags: new StringArrayField({
+				required: true,
+				nullable: false,
 				initial: [],
 				label: "GURPS.Item.BasicInformation.FIELDS.Tags.Name",
 			}),
@@ -73,7 +75,7 @@ type BasicInformationTemplateSchema = {
 	container: fields.ForeignDocumentField<string>
 	name: fields.StringField<string, string, true, false, true>
 	notes: fields.StringField<string, string, true, false, true>
-	tags: TagArrayField
+	tags: StringArrayField<true, false, true>
 	vtt_notes: fields.StringField<string, string, true, false, true>
 	reference: fields.StringField<string, string, true, false, true>
 	reference_highlight: fields.StringField<string, string, true, false, true>

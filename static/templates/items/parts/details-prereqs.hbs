@@ -1,12 +1,6 @@
-<fieldset>
+<fieldset class="details-prereqs">
 	<legend>{{localize "GURPS.Item.Prereqs.DetailsLegend"}}</legend>
-	{{#with system.rootPrereq as |prereq|}}
-	<div class="form-fields">
-		<a class="fa-regular fa-circle-plus"></a>
-		<a class="fa-regular fa-circle-ellipsis-vertical"></a>
-		<!-- When TL -->
-		{{formInput prereq.schema.fields.when_tl.fields.compare value=prereq.when_tl.compare}}
-	</div>
-	<!-- End -->
-	{{/with}}
+	<ul>
+		{{{system.rootPrereq.element}}}
+	</ul>
 </fieldset>

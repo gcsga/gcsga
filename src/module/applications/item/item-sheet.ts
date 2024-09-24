@@ -139,6 +139,8 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 	): Promise<void> {
 		event.preventDefault()
 
+		console.log(formData.object)
+
 		await this.item.update(formData.object)
 	}
 }
