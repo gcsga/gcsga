@@ -50,46 +50,41 @@
 			"Prereqs": {
 				"DetailsLegend": "Prerequisites",
 				"FIELDS": {
-					"WhenTL": "When the Tech Level {value}",
-					"All": {
-						"Choices": {
-							"true": "Requires all of:",
-							"false": "Requires at least one of:"
-						}
-					},
-					"Has": {
-						"Choices": {
-							"true": "has",
-							"false": "does not have"
-						}
-					},
-					"Attribute": {
-						"Which": "{value}",
-						"CombinedWith": "combined with {value}",
-						"Compare": "which {value}"
+					"WhenTL": "When the Tech Level {value}"
+				},
+				"All": {
+					"Choices": {
+						"true": "Requires all of:",
+						"false": "Requires at least one of:"
 					}
-				}
-			},
-			"Features": {
-				"DetailsLegend": "Features"
-			},
-			"Equipment": {
-				"DetailsLegend": "Equipment Details",
-				"FIELDS": {
-					"TechLevel": { "Name": "Tech Level" },
-					"LegalityClass": { "Name": "Legality Class" },
-					"Quantity": { "Name": "Quantity" },
-					"Equipped": { "Name": "Equipped" },
-					"Value": { "Name": "Value" },
-					"Weight": { "Name": "Weight" },
-					"Uses": { "Name": "Uses" },
-					"MaxUses": { "Name": "Maximum uses" },
-					"RatedStrength": { "Name": "Rated ST" },
-					"Level": { "Name": "Level" },
-					"IgnoreWeightForSkills": { "Name": "Ignore weight for skills" }
+				},
+				"Attribute": {
+					"Which": "{value}",
+					"CombinedWith": "combined with {value}",
+					"Compare": "which {value}"
 				}
 			}
 		},
+		"Features": {
+			"DetailsLegend": "Features"
+		},
+		"Equipment": {
+			"DetailsLegend": "Equipment Details",
+			"FIELDS": {
+				"TechLevel": { "Name": "Tech Level" },
+				"LegalityClass": { "Name": "Legality Class" },
+				"Quantity": { "Name": "Quantity" },
+				"Equipped": { "Name": "Equipped" },
+				"Value": { "Name": "Value" },
+				"Weight": { "Name": "Weight" },
+				"Uses": { "Name": "Uses" },
+				"MaxUses": { "Name": "Maximum uses" },
+				"RatedStrength": { "Name": "Rated ST" },
+				"Level": { "Name": "Level" },
+				"IgnoreWeightForSkills": { "Name": "Ignore weight for skills" }
+			}
+		},
+
 		"Attribute": {
 			"SizeModifier": "Size Modifier",
 			"Parry": "Parry",

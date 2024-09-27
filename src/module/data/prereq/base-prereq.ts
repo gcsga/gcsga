@@ -7,6 +7,7 @@ import { ActorType } from "../constants.ts"
 import { PrereqTemplate } from "../item/templates/prereqs.ts"
 import { PrereqInstances } from "./types.ts"
 import fields = foundry.data.fields
+import { createButton } from "@module/applications/helpers.ts"
 
 abstract class BasePrereq<TSchema extends BasePrereqSchema = BasePrereqSchema> extends foundry.abstract.DataModel<
 	ItemDataModel,
@@ -61,7 +62,62 @@ abstract class BasePrereq<TSchema extends BasePrereqSchema = BasePrereqSchema> e
 		super(data, options)
 	}
 
-	abstract toFormElement(): HTMLElement
+	toFormElement(): HTMLElement {
+		const element = document.createElement("li")
+		const prefix = `system.prereqs.${this.index}`
+		// Root element
+		element.classList.add("prereq")
+
+		const idInput = this.schema.fields.id.toInput({
+			name: `${prefix}.id`,
+			value: this.id,
+			readonly: true,
+		}) as HTMLElement
+		idInput.style.setProperty("display", "none")
+
+		element.append(idInput)
+
+		const rowElement = document.createElement("div")
+		rowElement.classList.add("form-fields")
+
+		rowElement.append(
+			createButton({
+				icon: ["fa-regular", "fa-trash"],
+				label: "",
+				data: {
+					action: "deletePrereq",
+					index: this.index.toString(),
+				},
+			}),
+		)
+
+		rowElement.append(
+			(this.schema.fields as any).has.toInput({
+				name: `${prefix}.has`,
+				value: (this as any).has,
+				localize: true,
+			}) as HTMLElement,
+		)
+
+		const typeField = this.schema.fields.type
+		;(typeField as any).choices = prereq.TypesWithoutListChoices
+
+		rowElement.append(
+			typeField.toInput({
+				name: `${prefix}.type`,
+				value: this.type,
+				dataset: {
+					index: this.index.toString(),
+					action: "changePrereqType",
+				},
+				localize: true,
+			}) as HTMLElement,
+		)
+
+		element.append(rowElement)
+
+		return element
+	}
 
 	abstract satisfied(
 		actor: ActorInst<ActorType.Character>,

@@ -1,21 +1,27 @@
 import { prereq } from "@util/enum/prereq.ts"
-import fields = foundry.data.fields
 import { LocalizeGURPS } from "@util/localize.ts"
 import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
 import { NumericComparison, TooltipGURPS } from "@util"
 import { ItemType } from "@module/data/constants.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
+import { BooleanSelectField } from "../item/fields/boolean-select-field.ts"
 
 class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> {
 	static override TYPE = prereq.Type.ContainedQuantity
 
 	static override defineSchema(): ContainedQuantityPrereqSchema {
-		const fields = foundry.data.fields
-
 		return {
 			...super.defineSchema(),
-			has: new fields.BooleanField({ initial: true }),
+			has: new BooleanSelectField({
+				required: true,
+				nullable: false,
+				choices: {
+					true: "GURPS.Item.Prereqs.FIELDS.Has.Choices.true",
+					false: "GURPS.Item.Prereqs.FIELDS.Has.Choices.false",
+				},
+				initial: true,
+			}),
 			qualifier: new NumericCriteriaField({
 				required: true,
 				nullable: false,
@@ -54,7 +60,7 @@ interface ContainedQuantityPrereq
 		ModelPropsFromSchema<ContainedQuantityPrereqSchema> {}
 
 type ContainedQuantityPrereqSchema = BasePrereqSchema & {
-	has: fields.BooleanField<boolean, boolean, true, false, true>
+	has: BooleanSelectField<boolean, boolean, true, false, true>
 	qualifier: NumericCriteriaField<true, false, true>
 }
 

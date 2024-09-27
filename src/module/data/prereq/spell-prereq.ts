@@ -9,6 +9,7 @@ import { ItemGURPS2 } from "@module/document/item.ts"
 import { ActorInst } from "../actor/helpers.ts"
 import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
 import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
+import { BooleanSelectField } from "../item/fields/boolean-select-field.ts"
 
 class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 	static override TYPE = prereq.Type.Spell
@@ -18,8 +19,15 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 
 		return {
 			...super.defineSchema(),
-			type: new fields.StringField({ required: true, nullable: false, blank: false, initial: prereq.Type.Spell }),
-			has: new fields.BooleanField({ initial: true }),
+			has: new BooleanSelectField({
+				required: true,
+				nullable: false,
+				choices: {
+					true: "GURPS.Item.Prereqs.FIELDS.Has.Choices.true",
+					false: "GURPS.Item.Prereqs.FIELDS.Has.Choices.false",
+				},
+				initial: true,
+			}),
 			sub_type: new fields.StringField({ choices: spellcmp.Types, initial: spellcmp.Type.Name }),
 			qualifier: new StringCriteriaField({
 				required: true,
@@ -124,7 +132,7 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 interface SpellPrereq extends BasePrereq<SpellPrereqSchema>, ModelPropsFromSchema<SpellPrereqSchema> {}
 
 export type SpellPrereqSchema = BasePrereqSchema & {
-	has: fields.BooleanField
+	has: BooleanSelectField<boolean, boolean, true, false, true>
 	sub_type: fields.StringField<spellcmp.Type>
 	qualifier: StringCriteriaField<true, false, true>
 	quantity: NumericCriteriaField<true, false, true>

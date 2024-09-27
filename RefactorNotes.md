@@ -55,6 +55,13 @@
 
 ## Current Task Notes
 
+### TODO
+
+- put attributechoices in attribute/helpers.ts
+
 - Could consider moving attribute array to its own datamodel extending an arrayfield
-- use a function to grab the initial attribute setting values, and anothet to set them. that way, you can extend the class abd override the functions for characters
+- use a function to grab the initial attribute setting values, and anothet to set them. that way, you can extend the class and override the functions for characters
 - need to move namespaces
+- Replacements tab on item sheet
+- Toggle for showing replacements instead of placeholders (optional)
+- In non-edit mode, show replacements instead of substitutions maybe with indicating color background

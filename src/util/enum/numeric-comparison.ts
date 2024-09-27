@@ -23,7 +23,9 @@ export namespace NumericComparison {
 		[Option.AtMostNumber]: `GURPS.Enum.NumericComparison.${Option.AtMostNumber}`,
 	})
 
-	export function CustomOptionsChoices(prefix: string): Record<Option, string> {
-		return Object.fromEntries(Options.map(k => [k, game.i18n.localize(`${prefix}.${k}`)])) as Record<Option, string>
+	export function CustomOptionsChoices(key: string): Record<Option, string> {
+		return Object.fromEntries(
+			Options.map(k => [k, game.i18n.format(key, { value: game.i18n.localize(OptionsChoices[k]) })]),
+		) as Record<Option, string>
 	}
 }

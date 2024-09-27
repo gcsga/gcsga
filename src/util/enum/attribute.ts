@@ -1,5 +1,3 @@
-import { equalFold } from "@module/util/string-criteria.ts"
-
 export namespace attribute {
 	export enum Type {
 		Integer = "integer",
@@ -11,32 +9,6 @@ export namespace attribute {
 		PrimarySeparator = "primary_separator",
 		SecondarySeparator = "secondary_separator",
 		PoolSeparator = "pool_separator",
-	}
-
-	export namespace Type {
-		export function LastType(): Type {
-			return Type.PoolSeparator
-		}
-
-		export function index(T: Type): number {
-			return Types.indexOf(T)
-		}
-
-		export function ensureValid(T: Type): Type {
-			if (index(T) <= Types.length) return T
-			return Types[0]
-		}
-
-		export function toString(T: Type): string {
-			return `GURPS.Enum.attribute.${T}`
-		}
-
-		export function extractType(s: string): Type {
-			for (const one of Types) {
-				if (equalFold(one, s)) return one
-			}
-			return Types[0]
-		}
 	}
 
 	export const Types: Type[] = [
@@ -62,4 +34,45 @@ export namespace attribute {
 		[Type.SecondarySeparator]: Type.toString(Type.SecondarySeparator),
 		[Type.PoolSeparator]: Type.toString(Type.PoolSeparator),
 	})
+
+	export namespace Type {
+		export function index(T: Type): number {
+			return Types.indexOf(T)
+		}
+
+		export function toString(T: Type): string {
+			return `GURPS.Enum.attribute.Type.${T}`
+		}
+	}
+
+	export enum Placement {
+		Automatic = "automatic",
+		Primary = "primary",
+		Secondary = "secondary",
+		Hidden = "hidden",
+	}
+
+	export const Placements: Placement[] = [
+		Placement.Automatic,
+		Placement.Primary,
+		Placement.Secondary,
+		Placement.Hidden,
+	]
+
+	export const PlacementsChoices: Readonly<Record<Placement, string>> = Object.freeze({
+		[Placement.Automatic]: Placement.toString(Placement.Automatic),
+		[Placement.Primary]: Placement.toString(Placement.Primary),
+		[Placement.Secondary]: Placement.toString(Placement.Secondary),
+		[Placement.Hidden]: Placement.toString(Placement.Hidden),
+	})
+
+	export namespace Placement {
+		export function index(P: Placement): number {
+			return Placements.indexOf(P)
+		}
+
+		export function toString(P: Placement): string {
+			return `GURPS.Enum.attribute.Placement.${P}`
+		}
+	}
 }

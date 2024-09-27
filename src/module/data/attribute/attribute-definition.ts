@@ -24,6 +24,13 @@ class AttributeDef<
 				initial: attribute.Type.Integer,
 				label: "GURPS.Attribute.Definition.FIELDS.Type.Name",
 			}),
+			placement: new fields.StringField({
+				required: false,
+				nullable: false,
+				choices: attribute.PlacementsChoices,
+				initial: attribute.Placement.Automatic,
+				label: "GURPS.Attribute.Definition.FIELDS.Placement.Name",
+			}),
 			id: new fields.StringField({
 				required: true,
 				nullable: false,
@@ -102,9 +109,36 @@ class AttributeDef<
 
 	get isPrimary(): boolean {
 		if (this.type === attribute.Type.PrimarySeparator) return true
-		if ([attribute.Type.SecondarySeparator, attribute.Type.PoolSeparator, attribute.Type.Pool].includes(this.type))
+		if (
+			this.type === attribute.Type.Pool ||
+			this.type === attribute.Type.PoolRef ||
+			this.type === attribute.Type.SecondarySeparator ||
+			this.isSeparator
+		)
 			return false
+		if (this.placement === attribute.Placement.Primary) return true
 		return !isNaN(parseInt(this.base))
+	}
+
+	get isSecondary(): boolean {
+		if (this.type === attribute.Type.SecondarySeparator) return true
+		if (
+			this.type === attribute.Type.Pool ||
+			this.type === attribute.Type.PoolRef ||
+			this.type === attribute.Type.PrimarySeparator ||
+			this.isSeparator
+		)
+			return false
+		if (this.placement === attribute.Placement.Secondary) return true
+		return isNaN(parseInt(this.base))
+	}
+
+	get isSeparator(): boolean {
+		return [
+			attribute.Type.PrimarySeparator,
+			attribute.Type.SecondarySeparator,
+			attribute.Type.PoolSeparator,
+		].includes(this.type)
 	}
 
 	baseValue(resolver: VariableResolver): number {
@@ -134,7 +168,6 @@ class AttributeDef<
 	}
 
 	generateNewAttribute(): AttributeGURPS {
-		// @ts-expect-error infinite type
 		return new AttributeGURPS({ id: this.id }, { parent: this.actor.system, order: 0 })
 	}
 }
@@ -144,7 +177,8 @@ interface AttributeDef extends AbstractAttributeDef<AttributeDefSchema>, ModelPr
 }
 
 type AttributeDefSchema = AbstractAttributeDefSchema & {
-	type: fields.StringField<attribute.Type, attribute.Type, true>
+	type: fields.StringField<attribute.Type, attribute.Type, true, false, true>
+	placement: fields.StringField<attribute.Placement, attribute.Placement, false, false, true>
 	name: fields.StringField<string, string, true, false, true>
 	full_name: fields.StringField<string, string, false, false, true>
 	cost_per_point: fields.NumberField<number, number, true, false, true>

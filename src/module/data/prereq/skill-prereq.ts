@@ -1,4 +1,3 @@
-import fields = foundry.data.fields
 import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
 import { prereq } from "@util/enum/prereq.ts"
 import { ActorType, ItemType } from "@module/data/constants.ts"
@@ -8,17 +7,23 @@ import { ActorInst } from "../actor/helpers.ts"
 import { Nameable } from "@module/util/index.ts"
 import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
 import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
+import { BooleanSelectField } from "../item/fields/boolean-select-field.ts"
 
 class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 	static override TYPE = prereq.Type.Skill
 
 	static override defineSchema(): SkillPrereqSchema {
-		const fields = foundry.data.fields
-
 		return {
 			...super.defineSchema(),
-			type: new fields.StringField({ required: true, nullable: false, blank: false, initial: prereq.Type.Skill }),
-			has: new fields.BooleanField({ initial: true }),
+			has: new BooleanSelectField({
+				required: true,
+				nullable: false,
+				choices: {
+					true: "GURPS.Item.Prereqs.FIELDS.Has.Choices.true",
+					false: "GURPS.Item.Prereqs.FIELDS.Has.Choices.false",
+				},
+				initial: true,
+			}),
 			name: new StringCriteriaField({
 				required: true,
 				nullable: false,
@@ -107,7 +112,7 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 interface SkillPrereq extends BasePrereq<SkillPrereqSchema>, ModelPropsFromSchema<SkillPrereqSchema> {}
 
 type SkillPrereqSchema = BasePrereqSchema & {
-	has: fields.BooleanField
+	has: BooleanSelectField<boolean, boolean, true, false, true>
 	name: StringCriteriaField<true, false, true>
 	level: NumericCriteriaField<true, false, true>
 	specialization: StringCriteriaField<true, false, true>

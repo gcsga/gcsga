@@ -1,5 +1,10 @@
 import { SYSTEM_NAME } from "@module/data/constants.ts"
+import { ItemTemplateType } from "@module/data/item/types.ts"
+import { AttributePrereq } from "@module/data/prereq/index.ts"
+import { PrereqList, PrereqListSchema } from "@module/data/prereq/prereq-list.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
+import { prereq } from "@util/enum/index.ts"
+import { generateId } from "@util/misc.ts"
 
 const { api, sheets } = foundry.applications
 
@@ -20,7 +25,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			resizable: true,
 		},
 		position: {
-			width: 500,
+			width: 650,
 			height: "auto",
 		},
 		form: {
@@ -31,6 +36,9 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		actions: {
 			viewImage: this.#onViewImage,
 			editImage: this.#onEditImage,
+			addPrereq: this.#onAddPrereq,
+			addPrereqList: this.#onAddPrereqList,
+			changePrereqType: this.#onChangePrereqType,
 		},
 		dragDrop: [{ dragSelector: "item-list .item", dropSelector: null }],
 	}
@@ -108,6 +116,59 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			left: this.position.left! + 10,
 		})
 		await fp.browse(this.item.img)
+	}
+
+	static async #onAddPrereq(this: ItemSheetGURPS, event: Event): Promise<void> {
+		event.preventDefault()
+		event.stopImmediatePropagation()
+
+		const element = event.target as HTMLElement
+		const index = parseInt(element.dataset.index ?? "")
+		if (isNaN(index)) return
+		const item = this.item
+		if (!item.hasTemplate(ItemTemplateType.Prereq)) return
+
+		const prereqs = item.system.toObject().prereqs
+		const newId = generateId()
+		;(prereqs[index] as SourceFromSchema<PrereqListSchema>).prereqs.push(newId)
+		prereqs.push(new AttributePrereq({ id: newId }).toObject())
+
+		await this.item.update({ "system.prereqs": prereqs })
+	}
+
+	static async #onAddPrereqList(this: ItemSheetGURPS, event: Event): Promise<void> {
+		event.preventDefault()
+		event.stopImmediatePropagation()
+
+		const element = event.target as HTMLElement
+		const index = parseInt(element.dataset.index ?? "")
+		if (isNaN(index)) return
+		const item = this.item
+		if (!item.hasTemplate(ItemTemplateType.Prereq)) return
+
+		const prereqs = item.system.toObject().prereqs
+		const newId = generateId()
+		;(prereqs[index] as SourceFromSchema<PrereqListSchema>).prereqs.push(newId)
+		prereqs.push(new PrereqList({ id: newId }).toObject())
+
+		await this.item.update({ "system.prereqs": prereqs })
+	}
+
+	static async #onChangePrereqType(this: ItemSheetGURPS, event: Event): Promise<void> {
+		event.preventDefault()
+		event.stopImmediatePropagation()
+
+		const element = event.target as HTMLSelectElement
+		const index = parseInt(element.dataset.index ?? "")
+		if (isNaN(index)) return
+		const value = element.value as prereq.Type
+		const item = this.item
+		if (!item.hasTemplate(ItemTemplateType.Prereq)) return
+
+		const prereqs = item.system.toObject().prereqs
+		prereqs[index].type = value
+
+		await this.item.update({ "system.prereqs": prereqs })
 	}
 
 	override async _prepareContext(options = {}): Promise<object> {

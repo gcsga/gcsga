@@ -10,17 +10,7 @@ import { Prereq } from "./types.ts"
 import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
 import { StringArrayField } from "../item/fields/string-array-field.ts"
 import { BooleanSelectField } from "../item/fields/boolean-select-field.ts"
-
-// const ValidPrereqParentTypes = Object.freeze([
-// 	ItemType.Trait,
-// 	ItemType.TraitContainer,
-// 	ItemType.Skill,
-// 	ItemType.Technique,
-// 	ItemType.Spell,
-// 	ItemType.RitualMagicSpell,
-// 	ItemType.Equipment,
-// 	ItemType.EquipmentContainer,
-// ])
+import { createButton } from "@module/applications/helpers.ts"
 
 class PrereqList extends BasePrereq<PrereqListSchema> {
 	static override TYPE = prereq.Type.List
@@ -38,7 +28,7 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 				initial: true,
 			}),
 			when_tl: new NumericCriteriaField({
-				choices: NumericComparison.CustomOptionsChoices("GURPS.Item.Prereqs.FIELDS.WhenTL.Choices"),
+				choices: NumericComparison.CustomOptionsChoices("GURPS.Item.Prereqs.FIELDS.WhenTL"),
 			}),
 			prereqs: new StringArrayField({ required: true, nullable: false, initial: [] }),
 		}
@@ -123,9 +113,31 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 
 		element.append(typeInput, idInput, prereqsInput)
 
-		// When TL
 		const rowElement = document.createElement("div")
 		rowElement.classList.add("form-fields")
+
+		// Buttons
+		const addPrereqButton = createButton({
+			icon: ["fa-regular", "fa-plus"],
+			label: "",
+			data: {
+				action: "addPrereq",
+				index: this.index.toString(),
+			},
+		})
+		rowElement.append(addPrereqButton)
+
+		const addPrereqListButton = createButton({
+			icon: ["fa-regular", "fa-ellipsis-vertical"],
+			label: "",
+			data: {
+				action: "addPrereqList",
+				index: this.index.toString(),
+			},
+		})
+		rowElement.append(addPrereqListButton)
+
+		// When TL
 		rowElement.append(
 			this.schema.fields.when_tl.fields.compare.toInput({
 				name: `${prefix}.when_tl.compare`,
@@ -139,6 +151,8 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 				disabled: this.when_tl.compare === NumericComparison.Option.AnyNumber,
 			}) as HTMLElement,
 		)
+
+		// All
 		rowElement.append(
 			this.schema.fields.all.toInput({
 				name: `${prefix}.all`,
@@ -146,6 +160,7 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 				localize: true,
 			}) as HTMLElement,
 		)
+
 		element.append(rowElement)
 
 		// Child Prereqs

@@ -47,4 +47,14 @@ export namespace prereq {
 		Type.Skill,
 		Type.Spell,
 	]
+
+	export const TypesWithoutListChoices: Readonly<Partial<Record<Type, string>>> = Object.freeze({
+		[Type.Trait]: Type.toString(Type.Trait),
+		[Type.Attribute]: Type.toString(Type.Attribute),
+		[Type.ContainedQuantity]: Type.toString(Type.ContainedQuantity),
+		[Type.ContainedWeight]: Type.toString(Type.ContainedWeight),
+		[Type.EquippedEquipment]: Type.toString(Type.EquippedEquipment),
+		[Type.Skill]: Type.toString(Type.Skill),
+		[Type.Spell]: Type.toString(Type.Spell),
+	})
 }

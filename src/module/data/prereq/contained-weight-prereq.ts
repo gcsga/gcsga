@@ -6,6 +6,7 @@ import { WeightCriteria } from "@module/util/weight-criteria.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { ActorInst } from "../actor/helpers.ts"
+import { BooleanSelectField } from "../item/fields/boolean-select-field.ts"
 
 class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
 	static override TYPE = prereq.Type.ContainedWeight
@@ -15,13 +16,15 @@ class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
 
 		return {
 			...super.defineSchema(),
-			type: new fields.StringField({
+			has: new BooleanSelectField({
 				required: true,
 				nullable: false,
-				blank: false,
-				initial: prereq.Type.ContainedWeight,
+				choices: {
+					true: "GURPS.Item.Prereqs.FIELDS.Has.Choices.true",
+					false: "GURPS.Item.Prereqs.FIELDS.Has.Choices.false",
+				},
+				initial: true,
 			}),
-			has: new fields.BooleanField({ initial: true }),
 			qualifier: new fields.EmbeddedDataField(WeightCriteria, {
 				required: true,
 				nullable: false,
@@ -62,7 +65,7 @@ interface ContainedWeightPrereq
 		ModelPropsFromSchema<ContainedWeightPrereqSchema> {}
 
 type ContainedWeightPrereqSchema = BasePrereqSchema & {
-	has: fields.BooleanField
+	has: BooleanSelectField<boolean, boolean, true, false, true>
 	qualifier: fields.EmbeddedDataField<WeightCriteria, true, false, true>
 }
 

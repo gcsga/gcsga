@@ -50,6 +50,10 @@
 					{{formGroup attribute.schema.fields.type name=(concat "attributes." @index ".type")
 					value=attribute.type localize=true}}
 
+					<!--Attribute Placement -->
+					{{formGroup attribute.schema.fields.placement name=(concat "attributes." @index ".placement")
+					value=attribute.placement localize=true}}
+
 					<!-- Short Name -->
 					{{formGroup attribute.schema.fields.name name=(concat "attributes." @index ".name")
 					value=attribute.name localize=true}}

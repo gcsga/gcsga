@@ -6,10 +6,8 @@ import {
 	AbstractAttributeSchema,
 } from "../abstract-attribute/abstract-attribute.ts"
 import { ActorTemplateType } from "../actor/types.ts"
-// import { ActorDataModel } from "../abstract.ts"
 import { Int, attribute, stlimit, threshold } from "@util"
 import { AttributeDef } from "./attribute-definition.ts"
-// import { gid } from "../constants.ts"
 import { PoolThreshold } from "./pool-threshold.ts"
 import { TokenPool } from "../types.ts"
 import { SheetSettings } from "../sheet-settings.ts"
@@ -44,9 +42,6 @@ class AttributeGURPS<TActor extends AttributeHolderTemplate = AttributeHolderTem
 		if (this.parent.hasTemplate(ActorTemplateType.Features)) {
 			return this.parent.attributeBonusFor(this.id, stlimit.Option.None)
 		}
-		// console.warn(
-		// 	`Actor "${this.actor?.parent?.name}" of type "${this.actor.parent.type}" is not compatible with attribute bonuses.`,
-		// )
 		return 0
 	}
 
@@ -55,12 +50,6 @@ class AttributeGURPS<TActor extends AttributeHolderTemplate = AttributeHolderTem
 			return this.actor.system.attributeBonusFor(this.id, stlimit.Option.None, null, true)
 		}
 		return 0
-		// if (this.actor instanceof ActorDataModel && !this.actor.hasTemplate(ActorTemplateType.Features)) {
-		// 	console.warn(
-		// 		`Actor "${this.actor.parent.name}" of type "${this.actor.parent.type}" is not compatible with attribute bonuses.`,
-		// 	)
-		// 	return 0
-		// }
 	}
 
 	get definition(): AttributeDef | null {
@@ -108,12 +97,6 @@ class AttributeGURPS<TActor extends AttributeHolderTemplate = AttributeHolderTem
 			return this.actor.system.costReductionFor(this.id)
 		}
 		return 0
-		// if (this.actor instanceof ActorDataModel && !this.actor.hasTemplate(ActorTemplateType.Features)) {
-		// 	console.warn(
-		// 		`Actor "${this.actor.parent.name}" of type "${this.actor.parent.type}" is not compatible with attribute bonuses.`,
-		// 	)
-		// 	return 0
-		// }
 	}
 
 	get currentThreshold(): PoolThreshold | null {
