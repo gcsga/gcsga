@@ -168,6 +168,7 @@ class AttributeDef<
 	}
 
 	generateNewAttribute(): AttributeGURPS {
+		// @ts-expect-error infinite type
 		return new AttributeGURPS({ id: this.id }, { parent: this.actor.system, order: 0 })
 	}
 }
