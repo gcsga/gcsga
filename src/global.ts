@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 // import { CompendiumBrowser } from "@module/apps/compendium-browser/index.ts"
-import { ModifierBucket } from "@module/apps/modifier-bucket/button.ts"
+// import { ModifierBucket } from "@module/apps/modifier-bucket/button.ts"
 // import { ModifierList } from "@module/apps/modifier-list/document.ts"
 // import { ChatLogGURPS } from "@module/apps/sidebar/chat-log.ts"
 // import { CompendiumDirectoryGURPS } from "@module/apps/sidebar/compendium-directory.ts"
@@ -46,7 +46,7 @@ interface GameGURPS
 		// ManeuverManager: typeof ManeuverManager
 		// compendiumBrowser: CompendiumBrowser
 		// effectPanel: EffectPanel
-		modifierBucket: ModifierBucket
+		// modifierBucket: ModifierBucket
 		// modifierList: ModifierList
 		// mook: typeof MookGeneratorSheet
 		system: {
@@ -104,8 +104,8 @@ declare global {
 	namespace globalThis {
 		// eslint-disable-next-line no-var
 		var GURPS: {
-			LastActor: ActorGURPS2 | null
-			LastToken: TokenDocumentGURPS | null
+			// LastActor: ActorGURPS2 | null
+			// LastToken: TokenDocumentGURPS | null
 			[key: string]: unknown
 		}
 		// eslint-disable-next-line no-var

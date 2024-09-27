@@ -23,21 +23,60 @@ export namespace StringComparison {
 		Option.DoesNotEndWithString,
 	]
 
-	export const OptionsChoices: Readonly<Record<Option, string>> = Object.freeze({
-		[Option.AnyString]: `GURPS.Enum.StringComparison.${Option.AnyString}`,
-		[Option.IsString]: `GURPS.Enum.StringComparison.${Option.IsString}`,
-		[Option.IsNotString]: `GURPS.Enum.StringComparison.${Option.IsNotString}`,
-		[Option.ContainsString]: `GURPS.Enum.StringComparison.${Option.ContainsString}`,
-		[Option.DoesNotContainString]: `GURPS.Enum.StringComparison.${Option.DoesNotContainString}`,
-		[Option.StartsWithString]: `GURPS.Enum.StringComparison.${Option.StartsWithString}`,
-		[Option.DoesNotStartWithString]: `GURPS.Enum.StringComparison.${Option.DoesNotStartWithString}`,
-		[Option.EndsWithString]: `GURPS.Enum.StringComparison.${Option.EndsWithString}`,
-		[Option.DoesNotEndWithString]: `GURPS.Enum.StringComparison.${Option.DoesNotEndWithString}`,
-	})
+	export function toString(O: Option): string {
+		return `GURPS.Enum.StringComparison.${O}.Name`
+	}
 
-	export function CustomOptionsChoices(key: string): Record<Option, string> {
+	export function altString(O: Option): string {
+		return `GURPS.Enum.StringComparison.${O}.NamePlural`
+	}
+
+	export function tooltipString(O: Option): string {
+		return `GURPS.Enum.StringComparison.${O}.Tooltip`
+	}
+
+	export const OptionsChoices: Readonly<Record<Option, string>> = Object.freeze(
+		Object.fromEntries(Options.map(O => [O, StringComparison.toString(O)])) as Record<Option, string>,
+	)
+
+	export function CustomOptionsChoices(key: string, exclude: Option[] = []): Record<Option, string> {
 		return Object.fromEntries(
-			Options.map(k => [k, game.i18n.format(key, { value: game.i18n.localize(OptionsChoices[k]) })]),
+			Options.filter(k => !exclude.includes(k)).map(k => [
+				k,
+				game.i18n.format(key, { value: game.i18n.localize(StringComparison.toString(k)) }),
+			]),
 		) as Record<Option, string>
+	}
+
+	export function CustomOptionsChoicesPlural(keySingle: string, keyPlural: string): Record<Option, string> {
+		return {
+			[Option.AnyString]: game.i18n.format(keySingle, {
+				value: game.i18n.localize(StringComparison.toString(Option.AnyString)),
+			}),
+			[Option.IsString]: game.i18n.format(keySingle, {
+				value: game.i18n.localize(StringComparison.toString(Option.IsString)),
+			}),
+			[Option.IsNotString]: game.i18n.format(keyPlural, {
+				value: game.i18n.localize(StringComparison.altString(Option.IsNotString)),
+			}),
+			[Option.ContainsString]: game.i18n.format(keySingle, {
+				value: game.i18n.localize(StringComparison.toString(Option.ContainsString)),
+			}),
+			[Option.DoesNotContainString]: game.i18n.format(keyPlural, {
+				value: game.i18n.localize(StringComparison.altString(Option.DoesNotContainString)),
+			}),
+			[Option.StartsWithString]: game.i18n.format(keySingle, {
+				value: game.i18n.localize(StringComparison.toString(Option.StartsWithString)),
+			}),
+			[Option.DoesNotStartWithString]: game.i18n.format(keyPlural, {
+				value: game.i18n.localize(StringComparison.altString(Option.DoesNotStartWithString)),
+			}),
+			[Option.EndsWithString]: game.i18n.format(keySingle, {
+				value: game.i18n.localize(StringComparison.toString(Option.EndsWithString)),
+			}),
+			[Option.DoesNotEndWithString]: game.i18n.format(keyPlural, {
+				value: game.i18n.localize(StringComparison.altString(Option.DoesNotEndWithString)),
+			}),
+		}
 	}
 }

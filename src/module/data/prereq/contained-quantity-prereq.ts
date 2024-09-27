@@ -6,6 +6,7 @@ import { ItemType } from "@module/data/constants.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
 import { BooleanSelectField } from "../item/fields/boolean-select-field.ts"
+import { createButton } from "@module/applications/helpers.ts"
 
 class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> {
 	static override TYPE = prereq.Type.ContainedQuantity
@@ -25,8 +26,19 @@ class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> 
 			qualifier: new NumericCriteriaField({
 				required: true,
 				nullable: false,
+				choices: {
+					[NumericComparison.Option.EqualsNumber]: game.i18n.localize(
+						"GURPS.Item.Prereqs.FIELDS.Quantity.Equals",
+					),
+					[NumericComparison.Option.AtLeastNumber]: game.i18n.localize(
+						"GURPS.Item.Prereqs.FIELDS.Quantity.AtLeast",
+					),
+					[NumericComparison.Option.AtMostNumber]: game.i18n.localize(
+						"GURPS.Item.Prereqs.FIELDS.Quantity.AtMost",
+					),
+				},
 				initial: {
-					compare: NumericComparison.Option.AtLeastNumber,
+					compare: NumericComparison.Option.AtMostNumber,
 					qualifier: 1,
 				},
 			}),
@@ -50,6 +62,76 @@ class ContainedQuantityPrereq extends BasePrereq<ContainedQuantityPrereqSchema> 
 			)
 		}
 		return satisfied
+	}
+
+	override toFormElement(): HTMLElement {
+		const element = document.createElement("li")
+		const prefix = `system.prereqs.${this.index}`
+		// Root element
+		element.classList.add("prereq")
+
+		const idInput = this.schema.fields.id.toInput({
+			name: `${prefix}.id`,
+			value: this.id,
+			readonly: true,
+		}) as HTMLElement
+		idInput.style.setProperty("display", "none")
+
+		element.append(idInput)
+
+		const rowElement = document.createElement("div")
+		rowElement.classList.add("form-fields")
+
+		rowElement.append(
+			createButton({
+				icon: ["fa-regular", "fa-trash"],
+				label: "",
+				data: {
+					action: "deletePrereq",
+					id: this.id,
+				},
+			}),
+		)
+
+		rowElement.append(
+			(this.schema.fields as any).has.toInput({
+				name: `${prefix}.has`,
+				value: (this as any).has,
+				localize: true,
+			}) as HTMLElement,
+		)
+		const typeField = this.schema.fields.type
+		;(typeField as any).choices = prereq.TypesWithoutListChoices
+
+		rowElement.append(
+			typeField.toInput({
+				name: `${prefix}.type`,
+				value: this.type,
+				dataset: {
+					index: this.index.toString(),
+					action: "changePrereqType",
+				},
+				localize: true,
+			}) as HTMLElement,
+		)
+
+		rowElement.append(
+			this.schema.fields.qualifier.fields.compare.toInput({
+				name: `${prefix}.qualifier.compare`,
+				value: this.qualifier.compare,
+				localize: true,
+			}) as HTMLElement,
+		)
+		rowElement.append(
+			this.schema.fields.qualifier.fields.qualifier.toInput({
+				name: `${prefix}.qualifier.qualifier`,
+				value: this.qualifier.qualifier.toString(),
+			}) as HTMLElement,
+		)
+
+		element.append(rowElement)
+
+		return element
 	}
 
 	fillWithNameableKeys(_m: Map<string, string>, _existing: Map<string, string>): void {}

@@ -1,8 +1,8 @@
-import { LocalizeGURPS } from "../../util/localize.ts"
 import fields = foundry.data.fields
 import { ItemDataModel } from "@module/data/abstract.ts"
 import { Nameable } from "./nameable.ts"
-import { StringComparison } from "@util"
+import { StringComparison } from "@util/enum/string-comparison.ts"
+import { LocalizeGURPS } from "@util/localize.ts"
 
 class StringCriteria extends foundry.abstract.DataModel<ItemDataModel, StringCriteriaSchema> {
 	static override defineSchema(): StringCriteriaSchema {
@@ -10,10 +10,13 @@ class StringCriteria extends foundry.abstract.DataModel<ItemDataModel, StringCri
 
 		return {
 			compare: new fields.StringField({
-				choices: StringComparison.Options,
+				required: true,
+				nullable: false,
+				blank: false,
+				choices: StringComparison.OptionsChoices,
 				initial: StringComparison.Option.AnyString,
 			}),
-			qualifier: new fields.StringField(),
+			qualifier: new fields.StringField({ required: true, nullable: false }),
 		}
 	}
 
@@ -85,8 +88,8 @@ class StringCriteria extends foundry.abstract.DataModel<ItemDataModel, StringCri
 
 	describe(qualifier: string): string {
 		if (this.compare === StringComparison.Option.AnyString)
-			return LocalizeGURPS.translations.GURPS.Enum.StringComparison[this.compare]
-		return LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Enum.StringComparison[this.compare], {
+			return LocalizeGURPS.translations.GURPS.Enum.StringComparison[this.compare].Tooltip
+		return LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Enum.StringComparison[this.compare].Tooltip, {
 			qualifier,
 		})
 	}
@@ -95,11 +98,11 @@ class StringCriteria extends foundry.abstract.DataModel<ItemDataModel, StringCri
 		let info = ""
 		if (prefix === notPrefix)
 			info = LocalizeGURPS.format(prefix, {
-				value: LocalizeGURPS.translations.GURPS.Enum.StringComparison[this.compare],
+				value: LocalizeGURPS.translations.GURPS.Enum.StringComparison[this.compare].Tooltip,
 			})
 		else {
 			info = LocalizeGURPS.format(notPrefix, {
-				value: LocalizeGURPS.translations.GURPS.Enum.StringComparison[this.compare],
+				value: LocalizeGURPS.translations.GURPS.Enum.StringComparison[this.compare].Tooltip,
 			})
 		}
 		if (this.compare === StringComparison.Option.AnyString) return info

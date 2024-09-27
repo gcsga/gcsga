@@ -117,25 +117,38 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 		rowElement.classList.add("form-fields")
 
 		// Buttons
-		const addPrereqButton = createButton({
-			icon: ["fa-regular", "fa-plus"],
-			label: "",
-			data: {
-				action: "addPrereq",
-				index: this.index.toString(),
-			},
-		})
-		rowElement.append(addPrereqButton)
-
-		const addPrereqListButton = createButton({
-			icon: ["fa-regular", "fa-ellipsis-vertical"],
-			label: "",
-			data: {
-				action: "addPrereqList",
-				index: this.index.toString(),
-			},
-		})
-		rowElement.append(addPrereqListButton)
+		rowElement.append(
+			createButton({
+				icon: ["fa-regular", "fa-plus"],
+				label: "",
+				data: {
+					action: "addPrereq",
+					index: this.index.toString(),
+				},
+			}),
+		)
+		rowElement.append(
+			createButton({
+				icon: ["fa-regular", "fa-ellipsis-vertical"],
+				label: "",
+				data: {
+					action: "addPrereqList",
+					index: this.index.toString(),
+				},
+			}),
+		)
+		if (this.id !== "root") {
+			rowElement.append(
+				createButton({
+					icon: ["fa-regular", "fa-trash"],
+					label: "",
+					data: {
+						action: "deletePrereq",
+						id: this.id,
+					},
+				}),
+			)
+		}
 
 		// When TL
 		rowElement.append(

@@ -103,6 +103,69 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 		return satisfied
 	}
 
+	override toFormElement(): HTMLElement {
+		const prefix = `system.prereqs.${this.index}`
+
+		// Root element
+		const element = super.toFormElement()
+
+		// Name
+		const rowElement1 = document.createElement("div")
+		rowElement1.classList.add("form-fields")
+		rowElement1.append(
+			this.schema.fields.name.fields.compare.toInput({
+				name: `${prefix}.name.compare`,
+				value: this.name.compare,
+				localize: true,
+			}) as HTMLElement,
+		)
+		rowElement1.append(
+			this.schema.fields.name.fields.qualifier.toInput({
+				name: `${prefix}.name.qualifier`,
+				value: this.name.qualifier,
+			}) as HTMLElement,
+		)
+		element.append(rowElement1)
+
+		// Notes
+		const rowElement2 = document.createElement("div")
+		rowElement2.classList.add("form-fields")
+		rowElement2.append(
+			this.schema.fields.specialization.fields.compare.toInput({
+				name: `${prefix}.specialization.compare`,
+				value: this.specialization.compare,
+				localize: true,
+			}) as HTMLElement,
+		)
+		rowElement2.append(
+			this.schema.fields.specialization.fields.qualifier.toInput({
+				name: `${prefix}.specialization.qualifier`,
+				value: this.specialization.qualifier,
+			}) as HTMLElement,
+		)
+		element.append(rowElement2)
+
+		// Level
+		const rowElement3 = document.createElement("div")
+		rowElement3.classList.add("form-fields")
+		rowElement3.append(
+			this.schema.fields.level.fields.compare.toInput({
+				name: `${prefix}.level.compare`,
+				value: this.level.compare,
+				localize: true,
+			}) as HTMLElement,
+		)
+		rowElement3.append(
+			this.schema.fields.level.fields.qualifier.toInput({
+				name: `${prefix}.level.qualifier`,
+				value: this.level.qualifier.toString(),
+			}) as HTMLElement,
+		)
+		element.append(rowElement3)
+
+		return element
+	}
+
 	fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {
 		Nameable.extract(this.name.qualifier, m, existing)
 		Nameable.extract(this.specialization.qualifier, m, existing)

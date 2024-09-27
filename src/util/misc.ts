@@ -1,4 +1,4 @@
-import { ItemType } from "@module/data/constants.ts"
+// import { ItemType } from "@module/data/constants.ts"
 import { LocalizeGURPS } from "./localize.ts"
 import { StringBuilder } from "./string-builder.ts"
 
@@ -304,18 +304,18 @@ function rgbToHex(input: string): string {
 	return "#" + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1)
 }
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
-function isContainer(item: { type: ItemType }): boolean {
-	return [
-		ItemType.TraitContainer,
-		ItemType.SkillContainer,
-		ItemType.SpellContainer,
-		ItemType.EquipmentContainer,
-		ItemType.TraitModifierContainer,
-		ItemType.EquipmentModifierContainer,
-		ItemType.NoteContainer,
-	].includes(item.type)
-}
+// // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types, @typescript-eslint/no-explicit-any
+// function isContainer(item: { type: ItemType }): boolean {
+// 	return [
+// 		ItemType.TraitContainer,
+// 		ItemType.SkillContainer,
+// 		ItemType.SpellContainer,
+// 		ItemType.EquipmentContainer,
+// 		ItemType.TraitModifierContainer,
+// 		ItemType.EquipmentModifierContainer,
+// 		ItemType.NoteContainer,
+// 	].includes(item.type)
+// }
 
 function localeDate(str: string): string {
 	const date = new Date(str)
@@ -367,7 +367,7 @@ export {
 	generateId,
 	getCurrentTime,
 	getNewAttributeId,
-	isContainer,
+	// isContainer,
 	isObject,
 	localeDate,
 	localizer,

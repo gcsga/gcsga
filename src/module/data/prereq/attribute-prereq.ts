@@ -99,7 +99,7 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 				choices: combinedWithChoices.choices,
 				initial: combinedWithChoices.current,
 			}),
-			qualifier: new NumericCriteriaField({
+			value: new NumericCriteriaField({
 				required: true,
 				nullable: false,
 				choices: NumericComparison.CustomOptionsChoices(localizationKey),
@@ -115,7 +115,7 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 		let value = actor.system.resolveAttributeCurrent(this.which)
 		if (this.combined_with !== "") value += actor.system.resolveAttributeCurrent(this.combined_with)
 
-		let satisfied = this.qualifier.matches(value)
+		let satisfied = this.value.matches(value)
 		if (!this.has) satisfied = !satisfied
 
 		if (!satisfied && tooltip !== null) {
@@ -126,7 +126,7 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 						has: this.hasText,
 						att1: this.which,
 						att2: this.combined_with,
-						qualifier: this.qualifier.toString(),
+						qualifier: this.value.toString(),
 					}),
 				)
 			} else {
@@ -134,7 +134,7 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 					LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Prereq.Attribute.NotCombinedWith, {
 						has: this.hasText,
 						att1: this.which,
-						qualifier: this.qualifier.toString(),
+						qualifier: this.value.toString(),
 					}),
 				)
 			}
@@ -150,9 +150,6 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 
 		const rowElement = document.createElement("div")
 		rowElement.classList.add("form-fields")
-
-		// Button
-		rowElement.append()
 
 		// Which
 		rowElement.append(
@@ -172,17 +169,17 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 
 		// Compare
 		rowElement.append(
-			this.schema.fields.qualifier.fields.compare.toInput({
-				name: `${prefix}.qualifier.compare`,
-				value: this.qualifier.compare,
+			this.schema.fields.value.fields.compare.toInput({
+				name: `${prefix}.value.compare`,
+				value: this.value.compare,
 			}) as HTMLElement,
 		)
 
 		// Qualifier
 		rowElement.append(
-			this.schema.fields.qualifier.fields.qualifier.toInput({
-				name: `${prefix}.qualifier.qualifier`,
-				value: this.qualifier.qualifier.toString(),
+			this.schema.fields.value.fields.qualifier.toInput({
+				name: `${prefix}.value.qualifier`,
+				value: this.value.qualifier.toString(),
 			}) as HTMLElement,
 		)
 
@@ -200,6 +197,6 @@ type AttributePrereqSchema = BasePrereqSchema & {
 	has: BooleanSelectField<boolean, boolean, true, false, true>
 	which: fields.StringField<string, string, true, false, true>
 	combined_with: fields.StringField<string, string, true, false, true>
-	qualifier: NumericCriteriaField<true, false, true>
+	value: NumericCriteriaField<true, false, true>
 }
 export { AttributePrereq }

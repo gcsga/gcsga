@@ -57,6 +57,11 @@
 							"false": "Requires at least one of:"
 						}
 					},
+					"Quantity": {
+						"Equals": "exactly",
+						"AtLeast": "at least",
+						"AtMost": "at most"
+					},
 					"Has": {
 						"Choices": {
 							"true": "has",
@@ -67,6 +72,19 @@
 						"Which": "{value}",
 						"CombinedWith": "combined with {value}",
 						"Compare": "which {value}"
+					},
+					"Trait": {
+						"Name": "whose name {value}",
+						"Notes": "and whose notes {value}",
+						"Level": "and whose level {value}"
+					},
+					"ContainedWeight": {
+						"Qualifier": "which {value}"
+					},
+					"EquippedEquipment": {
+						"Name": "whose name {value}",
+						"TagsSingle": "and at least one tag {value}",
+						"TagsPlural": "and all tags {value} "
 					}
 				}
 			},
@@ -299,6 +317,13 @@
 				"skill_prereq": "a skill",
 				"spell_prereq": "spell(s)"
 			},
+			"spellcmp": {
+				"name": "whose name",
+				"tag": "with a tag which ",
+				"college": "whose college name",
+				"college_count": "from different colleges",
+				"any": " of any kind"
+			},
 			"threshold": {
 				"halve_move": {
 					"Name": "Halve Move",
@@ -314,22 +339,67 @@
 				}
 			},
 			"NumericComparison": {
-				"none": "is anything",
-				"is": "is",
-				"is_not": "is not",
-				"at_least": "is at least",
-				"at_most": "is at most"
+				"none": { "Name": "is anything", "Tooltip": "is anything" },
+				"is": { "Name": "is", "Tooltip": "is \"{qualifier}\"" },
+				"is_not": { "Name": "is not", "Tooltip": "is not \"{qualifier}\"" },
+				"at_least": { "Name": "is at least", "Tooltip": "is at least \"{qualifier}\"" },
+				"at_most": { "Name": "is at most", "Tooltip": "is at most \"{qualifier}\"" }
 			},
 			"StringComparison": {
-				"none": "is anything",
-				"is": "is \"{qualifier}\"",
-				"is_not": "is not \"{qualifier}\"",
-				"contains": "contains \"{qualifier}\"",
-				"does_not_contain": "does not contain \"{qualifier}\"",
-				"starts_with": "starts with \"{qualifier}\"",
-				"does_not_start_with": "does not start with \"{qualifier}\"",
-				"ends_with": "ends with \"{qualifier}\"",
-				"does_not_end_with": "does not end with \"{qualifier}\""
+				"none": {
+					"Name": "is anything",
+					"NamePlural": "are anything",
+					"Tooltip": "is anything",
+					"TooltipPlural": "are anything"
+				},
+				"is": {
+					"Name": "is",
+					"NamePlural": "are",
+					"Tooltip": "is \"{qualifier}\"",
+					"TooltipPlural": "are \"{qualifier}\""
+				},
+				"is_not": {
+					"Name": "is not",
+					"NamePlural": "are not",
+					"Tooltip": "is not \"{qualifier}\"",
+					"TooltipPlural": "are not \"{qualifier}\""
+				},
+				"contains": {
+					"Name": "contains",
+					"NamePlural": "contain",
+					"Tooltip": "contains \"{qualifier}\"",
+					"TooltipPlural": "contain \"{qualifier}\""
+				},
+				"does_not_contain": {
+					"Name": "does not contain",
+					"NamePlural": "do not contain",
+					"Tooltip": "does not contain \"{qualifier}\"",
+					"TooltipPlural": "do not contain \"{qualifier}\""
+				},
+				"starts_with": {
+					"Name": "starts with",
+					"NamePlural": "start with",
+					"Tooltip": "starts with \"{qualifier}\"",
+					"TooltipPlural": "start with \"{qualifier}\""
+				},
+				"does_not_start_with": {
+					"Name": "does not start with",
+					"NamePlural": "do not start with",
+					"Tooltip": "does not start with \"{qualifier}\"",
+					"TooltipPlural": "do not start with \"{qualifier}\""
+				},
+				"ends_with": {
+					"Name": "ends with",
+					"NamePlural": "end with",
+					"Tooltip": "ends with \"{qualifier}\"",
+					"TooltipPlural": "end with \"{qualifier}\""
+				},
+				"does_not_end_with": {
+					"Name": "does not end with",
+					"NamePlural": "do not end with",
+					"Tooltip": "does not end with \"{qualifier}\"",
+					"TooltipPlural": "do not end with \"{qualifier}\""
+				}
 			},
 			"MoveTypeOverrideConditionType": {
 				"Trait": "Trait",

@@ -25,6 +25,7 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 			name: new StringCriteriaField({
 				required: true,
 				nullable: false,
+				choices: StringComparison.CustomOptionsChoices("GURPS.Item.Prereqs.FIELDS.Trait.Name"),
 				initial: {
 					compare: StringComparison.Option.IsString,
 					qualifier: "",
@@ -33,6 +34,7 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 			level: new NumericCriteriaField({
 				required: true,
 				nullable: false,
+				choices: NumericComparison.CustomOptionsChoices("GURPS.Item.Prereqs.FIELDS.Trait.Level"),
 				initial: {
 					compare: NumericComparison.Option.AtLeastNumber,
 					qualifier: 0,
@@ -41,6 +43,7 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 			notes: new StringCriteriaField({
 				required: true,
 				nullable: false,
+				choices: StringComparison.CustomOptionsChoices("GURPS.Item.Prereqs.FIELDS.Trait.Notes"),
 				initial: {
 					compare: StringComparison.Option.AnyString,
 					qualifier: "",
@@ -84,6 +87,69 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 			)
 		}
 		return satisfied
+	}
+
+	override toFormElement(): HTMLElement {
+		const prefix = `system.prereqs.${this.index}`
+
+		// Root element
+		const element = super.toFormElement()
+
+		// Name
+		const rowElement1 = document.createElement("div")
+		rowElement1.classList.add("form-fields")
+		rowElement1.append(
+			this.schema.fields.name.fields.compare.toInput({
+				name: `${prefix}.name.compare`,
+				value: this.name.compare,
+				localize: true,
+			}) as HTMLElement,
+		)
+		rowElement1.append(
+			this.schema.fields.name.fields.qualifier.toInput({
+				name: `${prefix}.name.qualifier`,
+				value: this.name.qualifier,
+			}) as HTMLElement,
+		)
+		element.append(rowElement1)
+
+		// Notes
+		const rowElement2 = document.createElement("div")
+		rowElement2.classList.add("form-fields")
+		rowElement2.append(
+			this.schema.fields.notes.fields.compare.toInput({
+				name: `${prefix}.notes.compare`,
+				value: this.notes.compare,
+				localize: true,
+			}) as HTMLElement,
+		)
+		rowElement2.append(
+			this.schema.fields.notes.fields.qualifier.toInput({
+				name: `${prefix}.notes.qualifier`,
+				value: this.notes.qualifier,
+			}) as HTMLElement,
+		)
+		element.append(rowElement2)
+
+		// Level
+		const rowElement3 = document.createElement("div")
+		rowElement3.classList.add("form-fields")
+		rowElement3.append(
+			this.schema.fields.level.fields.compare.toInput({
+				name: `${prefix}.level.compare`,
+				value: this.level.compare,
+				localize: true,
+			}) as HTMLElement,
+		)
+		rowElement3.append(
+			this.schema.fields.level.fields.qualifier.toInput({
+				name: `${prefix}.level.qualifier`,
+				value: this.level.qualifier.toString(),
+			}) as HTMLElement,
+		)
+		element.append(rowElement3)
+
+		return element
 	}
 
 	fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {

@@ -74,7 +74,6 @@ abstract class BasePrereq<TSchema extends BasePrereqSchema = BasePrereqSchema> e
 			readonly: true,
 		}) as HTMLElement
 		idInput.style.setProperty("display", "none")
-
 		element.append(idInput)
 
 		const rowElement = document.createElement("div")
@@ -86,7 +85,7 @@ abstract class BasePrereq<TSchema extends BasePrereqSchema = BasePrereqSchema> e
 				label: "",
 				data: {
 					action: "deletePrereq",
-					index: this.index.toString(),
+					id: this.id,
 				},
 			}),
 		)
@@ -98,7 +97,6 @@ abstract class BasePrereq<TSchema extends BasePrereqSchema = BasePrereqSchema> e
 				localize: true,
 			}) as HTMLElement,
 		)
-
 		const typeField = this.schema.fields.type
 		;(typeField as any).choices = prereq.TypesWithoutListChoices
 

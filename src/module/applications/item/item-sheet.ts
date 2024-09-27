@@ -2,6 +2,7 @@ import { SYSTEM_NAME } from "@module/data/constants.ts"
 import { ItemTemplateType } from "@module/data/item/types.ts"
 import { AttributePrereq } from "@module/data/prereq/index.ts"
 import { PrereqList, PrereqListSchema } from "@module/data/prereq/prereq-list.ts"
+import { PrereqTypes } from "@module/data/prereq/types.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { prereq } from "@util/enum/index.ts"
 import { generateId } from "@util/misc.ts"
@@ -38,6 +39,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			editImage: this.#onEditImage,
 			addPrereq: this.#onAddPrereq,
 			addPrereqList: this.#onAddPrereqList,
+			deletePrereq: this.#onDeletePrereq,
 			changePrereqType: this.#onChangePrereqType,
 		},
 		dragDrop: [{ dragSelector: "item-list .item", dropSelector: null }],
@@ -154,6 +156,41 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		await this.item.update({ "system.prereqs": prereqs })
 	}
 
+	static async #onDeletePrereq(this: ItemSheetGURPS, event: Event): Promise<void> {
+		event.preventDefault()
+		event.stopImmediatePropagation()
+
+		function addNestedIds(id: string): void {
+			const entry = prereqs.find(e => e.id === id)
+			if (!entry) return
+			idsToDelete.push(entry.id)
+
+			if (entry.isOfType(prereq.Type.List)) {
+				for (const childId of entry.prereqs) {
+					addNestedIds(childId)
+				}
+			}
+		}
+
+		const element = event.target as HTMLElement
+		const id = element.dataset.id as string
+		const item = this.item
+		if (!item.hasTemplate(ItemTemplateType.Prereq)) return
+
+		const idsToDelete = <string[]>[]
+		const prereqs = item.system.prereqs
+		let prereqObj = item.system.toObject().prereqs
+		addNestedIds(id)
+		const parentIndex = prereqs.findIndex(e => (e as SourceFromSchema<PrereqListSchema>).prereqs?.includes(id))
+		if (parentIndex !== -1)
+			(prereqObj[parentIndex] as SourceFromSchema<PrereqListSchema>).prereqs = (
+				prereqObj[parentIndex] as SourceFromSchema<PrereqListSchema>
+			).prereqs.filter(e => e !== id)
+		prereqObj = prereqObj.filter(e => !idsToDelete.includes(e.id))
+
+		await this.item.update({ "system.prereqs": prereqObj })
+	}
+
 	static async #onChangePrereqType(this: ItemSheetGURPS, event: Event): Promise<void> {
 		event.preventDefault()
 		event.stopImmediatePropagation()
@@ -166,7 +203,9 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		if (!item.hasTemplate(ItemTemplateType.Prereq)) return
 
 		const prereqs = item.system.toObject().prereqs
-		prereqs[index].type = value
+
+		const id = prereqs[index].id
+		prereqs.splice(index, 1, new PrereqTypes[value]({ id }).toObject())
 
 		await this.item.update({ "system.prereqs": prereqs })
 	}
@@ -200,10 +239,12 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 	): Promise<void> {
 		event.preventDefault()
 
-		console.log(formData.object)
-
 		await this.item.update(formData.object)
 	}
+}
+
+interface ItemSheetGURPS {
+	constructor: typeof ItemSheetGURPS
 }
 
 export { ItemSheetGURPS }

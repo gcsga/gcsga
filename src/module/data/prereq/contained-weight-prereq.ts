@@ -1,19 +1,16 @@
 import { BasePrereq, BasePrereqSchema } from "./base-prereq.ts"
-import fields = foundry.data.fields
 import { LocalizeGURPS, NumericComparison, TooltipGURPS, Weight, prereq } from "@util"
 import { ActorType, ItemType } from "@module/data/constants.ts"
-import { WeightCriteria } from "@module/util/weight-criteria.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { ActorInst } from "../actor/helpers.ts"
 import { BooleanSelectField } from "../item/fields/boolean-select-field.ts"
+import { WeightCriteriaField } from "../item/fields/weight-criteria-field.ts"
 
 class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
 	static override TYPE = prereq.Type.ContainedWeight
 
 	static override defineSchema(): ContainedWeightPrereqSchema {
-		const fields = foundry.data.fields
-
 		return {
 			...super.defineSchema(),
 			has: new BooleanSelectField({
@@ -25,11 +22,12 @@ class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
 				},
 				initial: true,
 			}),
-			qualifier: new fields.EmbeddedDataField(WeightCriteria, {
+			qualifier: new WeightCriteriaField({
 				required: true,
 				nullable: false,
+				choices: NumericComparison.CustomOptionsChoices("GURPS.Item.Prereqs.FIELDS.ContainedWeight.Qualifier"),
 				initial: {
-					compare: NumericComparison.Option.AtLeastNumber,
+					compare: NumericComparison.Option.AtMostNumber,
 					qualifier: Weight.format(5, Weight.Unit.Pound),
 				},
 			}),
@@ -57,6 +55,33 @@ class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
 		return satisfied
 	}
 
+	override toFormElement(): HTMLElement {
+		const prefix = `system.prereqs.${this.index}`
+
+		// Root element
+		const element = super.toFormElement()
+
+		// Name
+		const rowElement = document.createElement("div")
+		rowElement.classList.add("form-fields")
+		rowElement.append(
+			this.schema.fields.qualifier.fields.compare.toInput({
+				name: `${prefix}.qualifier.compare`,
+				value: this.qualifier.compare,
+				localize: true,
+			}) as HTMLElement,
+		)
+		rowElement.append(
+			this.schema.fields.qualifier.fields.qualifier.toInput({
+				name: `${prefix}.qualifier.qualifier`,
+				value: this.qualifier.qualifier,
+			}) as HTMLElement,
+		)
+		element.append(rowElement)
+
+		return element
+	}
+
 	fillWithNameableKeys(_m: Map<string, string>, _existing: Map<string, string>): void {}
 }
 
@@ -66,7 +91,7 @@ interface ContainedWeightPrereq
 
 type ContainedWeightPrereqSchema = BasePrereqSchema & {
 	has: BooleanSelectField<boolean, boolean, true, false, true>
-	qualifier: fields.EmbeddedDataField<WeightCriteria, true, false, true>
+	qualifier: WeightCriteriaField<true, false, true>
 }
 
 export { ContainedWeightPrereq, type ContainedWeightPrereqSchema }

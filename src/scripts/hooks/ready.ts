@@ -3,7 +3,7 @@ import { loadModifiers } from "@module/apps/modifier-bucket/data.ts"
 import { CharacterDataGURPS } from "@module/data/actor/character.ts"
 import { AttributesConfig } from "@module/settings/attributes-config.ts"
 import { HitLocationsConfig } from "@module/settings/hit-location-config.ts"
-import { Evaluator, LastActor } from "@module/util/index.ts"
+import { Evaluator } from "@module/util/index.ts"
 import { SetGameGURPS } from "@scripts/set-game-gurps.ts"
 import { Int } from "@util/int.ts"
 
@@ -21,8 +21,8 @@ export const Ready = {
 			// getDefaultSkills()
 
 			globalThis.GURPS = {
-				LastActor: await LastActor.get(),
-				LastToken: await LastActor.getToken(),
+				// LastActor: await LastActor.get(),
+				// LastToken: await LastActor.getToken(),
 				Int,
 				AttributesConfig,
 				HitLocationsConfig,
@@ -75,7 +75,7 @@ export const Ready = {
 					case SOCKET.UPDATE_BUCKET:
 						// Ui.notifications?.info(response.users)
 						// game.gurps.modifierList.render()
-						game.gurps.modifierBucket.render()
+						// game.gurps.modifierBucket.render()
 						break
 					case SOCKET.INITIATIVE_CHANGED:
 						// eslint-disable-next-line @typescript-eslint/no-explicit-any

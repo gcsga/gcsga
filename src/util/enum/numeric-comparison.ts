@@ -15,17 +15,24 @@ export namespace NumericComparison {
 		Option.AtMostNumber,
 	]
 
-	export const OptionsChoices: Readonly<Record<Option, string>> = Object.freeze({
-		[Option.AnyNumber]: `GURPS.Enum.NumericComparison.${Option.AnyNumber}`,
-		[Option.EqualsNumber]: `GURPS.Enum.NumericComparison.${Option.EqualsNumber}`,
-		[Option.NotEqualsNumber]: `GURPS.Enum.NumericComparison.${Option.NotEqualsNumber}`,
-		[Option.AtLeastNumber]: `GURPS.Enum.NumericComparison.${Option.AtLeastNumber}`,
-		[Option.AtMostNumber]: `GURPS.Enum.NumericComparison.${Option.AtMostNumber}`,
-	})
+	export function toString(O: Option): string {
+		return `GURPS.Enum.NumericComparison.${O}.Name`
+	}
 
-	export function CustomOptionsChoices(key: string): Record<Option, string> {
+	export function altString(O: Option): string {
+		return `GURPS.Enum.NumericComparison.${O}.Tooltip`
+	}
+
+	export const OptionsChoices: Readonly<Record<Option, string>> = Object.freeze(
+		Object.fromEntries(Options.map(O => [O, NumericComparison.toString(O)])) as Record<Option, string>,
+	)
+
+	export function CustomOptionsChoices(key: string, exclude: Option[] = []): Record<Option, string> {
 		return Object.fromEntries(
-			Options.map(k => [k, game.i18n.format(key, { value: game.i18n.localize(OptionsChoices[k]) })]),
+			Options.filter(k => !exclude.includes(k)).map(k => [
+				k,
+				game.i18n.format(key, { value: game.i18n.localize(NumericComparison.toString(k)) }),
+			]),
 		) as Record<Option, string>
 	}
 }

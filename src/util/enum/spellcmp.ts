@@ -1,5 +1,3 @@
-import { LocalizeGURPS } from "@util/localize.ts"
-
 export namespace spellcmp {
 	export enum Type {
 		Name = "name",
@@ -11,7 +9,7 @@ export namespace spellcmp {
 
 	export namespace Type {
 		export function toString(T: Type): string {
-			return LocalizeGURPS.translations.gurps.enum.spellcmp[T]
+			return `GURPS.Enum.spellcmp.${T}`
 		}
 
 		export function usesStringCriteria(T: Type): boolean {
@@ -20,4 +18,12 @@ export namespace spellcmp {
 	}
 
 	export const Types: Type[] = [Type.Name, Type.Tag, Type.College, Type.CollegeCount, Type.Any]
+
+	export const TypesChoices: Readonly<Record<Type, string>> = Object.freeze({
+		[Type.Name]: Type.toString(Type.Name),
+		[Type.Tag]: Type.toString(Type.Tag),
+		[Type.College]: Type.toString(Type.College),
+		[Type.CollegeCount]: Type.toString(Type.CollegeCount),
+		[Type.Any]: Type.toString(Type.Any),
+	})
 }

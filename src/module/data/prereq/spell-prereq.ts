@@ -10,6 +10,7 @@ import { ActorInst } from "../actor/helpers.ts"
 import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
 import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
 import { BooleanSelectField } from "../item/fields/boolean-select-field.ts"
+import { createButton } from "@module/applications/helpers.ts"
 
 class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 	static override TYPE = prereq.Type.Spell
@@ -28,21 +29,38 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 				},
 				initial: true,
 			}),
-			sub_type: new fields.StringField({ choices: spellcmp.Types, initial: spellcmp.Type.Name }),
-			qualifier: new StringCriteriaField({
+			sub_type: new fields.StringField({
 				required: true,
 				nullable: false,
-				initial: {
-					compare: StringComparison.Option.IsString,
-					qualifier: "",
-				},
+				choices: spellcmp.TypesChoices,
+				initial: spellcmp.Type.Name,
 			}),
 			quantity: new NumericCriteriaField({
 				required: true,
 				nullable: false,
+				choices: {
+					[NumericComparison.Option.EqualsNumber]: game.i18n.localize(
+						"GURPS.Item.Prereqs.FIELDS.Quantity.Equals",
+					),
+					[NumericComparison.Option.AtLeastNumber]: game.i18n.localize(
+						"GURPS.Item.Prereqs.FIELDS.Quantity.AtLeast",
+					),
+					[NumericComparison.Option.AtMostNumber]: game.i18n.localize(
+						"GURPS.Item.Prereqs.FIELDS.Quantity.AtMost",
+					),
+				},
 				initial: {
 					compare: NumericComparison.Option.AtLeastNumber,
 					qualifier: 0,
+				},
+			}),
+			qualifier: new StringCriteriaField({
+				required: true,
+				nullable: false,
+				choices: StringComparison.OptionsChoices,
+				initial: {
+					compare: StringComparison.Option.IsString,
+					qualifier: "",
 				},
 			}),
 		}
@@ -118,6 +136,97 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 		return satisfied
 	}
 
+	override toFormElement(): HTMLElement {
+		const element = document.createElement("li")
+		const prefix = `system.prereqs.${this.index}`
+		// Root element
+		element.classList.add("prereq")
+
+		const idInput = this.schema.fields.id.toInput({
+			name: `${prefix}.id`,
+			value: this.id,
+			readonly: true,
+		}) as HTMLElement
+		idInput.style.setProperty("display", "none")
+
+		element.append(idInput)
+
+		// Quantity
+		const rowElement1 = document.createElement("div")
+		rowElement1.classList.add("form-fields")
+		rowElement1.append(
+			createButton({
+				icon: ["fa-regular", "fa-trash"],
+				label: "",
+				data: {
+					action: "deletePrereq",
+					id: this.id,
+				},
+			}),
+		)
+		rowElement1.append(
+			(this.schema.fields as any).has.toInput({
+				name: `${prefix}.has`,
+				value: (this as any).has,
+				localize: true,
+			}) as HTMLElement,
+		)
+		rowElement1.append(
+			this.schema.fields.quantity.fields.compare.toInput({
+				name: `${prefix}.quantity.compare`,
+				value: this.quantity.compare,
+				localize: true,
+			}) as HTMLElement,
+		)
+		rowElement1.append(
+			this.schema.fields.quantity.fields.qualifier.toInput({
+				name: `${prefix}.quantity.qualifier`,
+				value: this.quantity.qualifier.toString(),
+			}) as HTMLElement,
+		)
+		const typeField = this.schema.fields.type
+		;(typeField as any).choices = prereq.TypesWithoutListChoices
+		rowElement1.append(
+			typeField.toInput({
+				name: `${prefix}.type`,
+				value: this.type,
+				dataset: {
+					index: this.index.toString(),
+					action: "changePrereqType",
+				},
+				localize: true,
+			}) as HTMLElement,
+		)
+		element.append(rowElement1)
+
+		// Qualifier
+		const rowElement2 = document.createElement("div")
+		rowElement2.classList.add("form-fields")
+		rowElement2.append(
+			this.schema.fields.sub_type.toInput({
+				name: `${prefix}.sub_type`,
+				value: this.sub_type,
+				localize: true,
+			}) as HTMLElement,
+		)
+		rowElement2.append(
+			this.schema.fields.qualifier.fields.compare.toInput({
+				name: `${prefix}.qualifier.compare`,
+				value: this.qualifier.compare,
+				localize: true,
+			}) as HTMLElement,
+		)
+		rowElement2.append(
+			this.schema.fields.qualifier.fields.qualifier.toInput({
+				name: `${prefix}.qualifier.qualifier`,
+				value: this.qualifier.qualifier,
+			}) as HTMLElement,
+		)
+		element.append(rowElement2)
+
+		return element
+	}
+
 	fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {
 		if (
 			this.sub_type === spellcmp.Type.Name ||
@@ -133,8 +242,8 @@ interface SpellPrereq extends BasePrereq<SpellPrereqSchema>, ModelPropsFromSchem
 
 export type SpellPrereqSchema = BasePrereqSchema & {
 	has: BooleanSelectField<boolean, boolean, true, false, true>
-	sub_type: fields.StringField<spellcmp.Type>
-	qualifier: StringCriteriaField<true, false, true>
+	sub_type: fields.StringField<spellcmp.Type, spellcmp.Type, true, false, true>
 	quantity: NumericCriteriaField<true, false, true>
+	qualifier: StringCriteriaField<true, false, true>
 }
 export { SpellPrereq }
