@@ -1,12 +1,13 @@
 import { feature } from "@util/enum/feature.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
-import type { FeatureInstances } from "./types.ts"
+import type { Feature, FeatureInstances } from "./types.ts"
 import { TooltipGURPS } from "@util"
 import { ItemType } from "@module/data/constants.ts"
 import { BaseFeatureSchema } from "./data.ts"
 import { ItemDataModel } from "@module/data/abstract.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { ItemTemplateType } from "@module/data/item/types.ts"
+import { createButton } from "@module/applications/helpers.ts"
 
 abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema> extends foundry.abstract.DataModel<
 	ItemDataModel,
@@ -33,11 +34,16 @@ abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema
 				required: true,
 				nullable: false,
 				blank: false,
-				choices: feature.Types,
+				choices: feature.TypesChoices,
 				initial: this.TYPE,
 			}),
 			amount: new fields.NumberField({ required: true, integer: true, initial: 1 }),
-			per_level: new fields.BooleanField({ required: true, nullable: false, initial: false }),
+			per_level: new fields.BooleanField({
+				required: true,
+				nullable: false,
+				initial: false,
+				label: "PER LEVEL???",
+			}),
 			temporary: new fields.BooleanField({ required: true, nullable: false, initial: false }),
 		}
 	}
@@ -70,8 +76,12 @@ abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema
 		this._subOwner = subOwner
 	}
 
-	// get levels(): number {
-	// 	return this.leveledAmount.level
+	get index(): number {
+		if (!this.parent.hasTemplate(ItemTemplateType.Feature)) return -1
+		return this.parent.features.indexOf(this as unknown as Feature)
+	}
+
+	// get levels(): number HTMLElemene/ 	return this.leveledAmount.level
 	// }
 	//
 	// set levels(level: number) {
@@ -101,21 +111,9 @@ abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema
 		return amt
 	}
 
-	// get adjustedAmount(): number {
-	// 	return this.leveledAmount.adjustedAmount
-	// }
-
-	// get amount(): number {
-	// 	return this.leveledAmount?.amount
-	// }
-	//
-	// set amount(amt: number) {
-	// 	if (!this.leveledAmount) {
-	// 		// @ts-expect-error should be fine, but only works for levelable features
-	// 		this.leveledAmount = new LeveledAmount(this._source)
-	// 	}
-	// 	this.leveledAmount.amount = amt
-	// }
+	get element(): Handlebars.SafeString {
+		return new Handlebars.SafeString(this.toFormElement().outerHTML)
+	}
 
 	addToTooltip(tooltip: TooltipGURPS | null): void {
 		return this.basicAddToTooltip(tooltip)
@@ -144,6 +142,68 @@ abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema
 				base: amt,
 			})
 		return amt
+	}
+
+	toFormElement(): HTMLElement {
+		const element = document.createElement("li")
+		const prefix = `system.features.${this.index}`
+
+		const temporaryInput = this.schema.fields.type.toInput({
+			name: `${prefix}.id`,
+			value: this.type,
+			readonly: true,
+		}) as HTMLElement
+		temporaryInput.style.setProperty("display", "none")
+		element.append(temporaryInput)
+
+		const rowElement = document.createElement("div")
+		rowElement.classList.add("form-fields")
+
+		rowElement.append(
+			createButton({
+				icon: ["fa-regular", "fa-trash"],
+				label: "",
+				data: {
+					action: "deleteFeature",
+					index: this.index.toString(),
+				},
+			}),
+		)
+
+		rowElement.append(
+			this.schema.fields.type.toInput({
+				name: `${prefix}.type`,
+				value: this.type,
+				dataset: {
+					selector: "feature-type",
+					index: this.index.toString(),
+				},
+				localize: true,
+			}) as HTMLElement,
+		)
+
+		rowElement.append(
+			this.schema.fields.amount.toInput({
+				name: `${prefix}.amount`,
+				value: this.amount.toString(),
+				localize: true,
+			}) as HTMLElement,
+		)
+
+		const perLevelLabelElement = document.createElement("label")
+		perLevelLabelElement.append(
+			this.schema.fields.per_level.toInput({
+				name: `${prefix}.per_level`,
+				value: this.per_level,
+				localize: true,
+			}) as HTMLElement,
+		)
+		perLevelLabelElement.innerHTML += this.schema.fields.per_level.options.label ?? ""
+		rowElement.append(perLevelLabelElement)
+
+		element.append(rowElement)
+
+		return element
 	}
 
 	abstract fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void

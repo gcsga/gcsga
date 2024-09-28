@@ -4,10 +4,10 @@ import { LocalizeGURPS, TooltipGURPS, generateId, prereq } from "@util"
 import { ItemDataModel } from "../abstract.ts"
 import { ActorInst } from "../actor/helpers.ts"
 import { ActorType } from "../constants.ts"
-import { PrereqTemplate } from "../item/templates/prereqs.ts"
 import { PrereqInstances } from "./types.ts"
 import fields = foundry.data.fields
 import { createButton } from "@module/applications/helpers.ts"
+import { ItemTemplateType } from "../item/types.ts"
 
 abstract class BasePrereq<TSchema extends BasePrereqSchema = BasePrereqSchema> extends foundry.abstract.DataModel<
 	ItemDataModel,
@@ -45,7 +45,8 @@ abstract class BasePrereq<TSchema extends BasePrereqSchema = BasePrereqSchema> e
 	}
 
 	get index(): number {
-		return (this.parent as unknown as PrereqTemplate).prereqs.findIndex(e => e.id === this.id)
+		if (!this.parent.hasTemplate(ItemTemplateType.Prereq)) return -1
+		return this.parent.prereqs.findIndex(e => e.id === this.id)
 	}
 
 	get hasText(): string {
@@ -105,8 +106,8 @@ abstract class BasePrereq<TSchema extends BasePrereqSchema = BasePrereqSchema> e
 				name: `${prefix}.type`,
 				value: this.type,
 				dataset: {
+					selector: "prereq-type",
 					index: this.index.toString(),
-					action: "changePrereqType",
 				},
 				localize: true,
 			}) as HTMLElement,

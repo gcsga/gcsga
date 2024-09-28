@@ -1,5 +1,3 @@
-import { LocalizeGURPS } from "@util/localize.ts"
-
 export namespace feature {
 	export enum Type {
 		AttributeBonus = "attribute_bonus",
@@ -46,7 +44,7 @@ export namespace feature {
 		}
 
 		export function toString(T: Type): string {
-			return LocalizeGURPS.translations.gurps.enum.feature[T]
+			return `GURPS.Enum.feature.${T}`
 		}
 
 		export function isWeaponType(T: Type): T is feature.WeaponBonusType {
@@ -121,6 +119,10 @@ export namespace feature {
 		Type.WeaponReloadTimeBonus,
 		Type.WeaponSwitch,
 	] as const
+
+	export const TypesChoices: Readonly<Record<Type, string>> = Object.freeze(
+		Object.fromEntries(Types.map(T => [T, Type.toString(T)])) as Record<Type, string>,
+	)
 
 	export type WeaponBonusType = (typeof WeaponBonusTypes)[number]
 }

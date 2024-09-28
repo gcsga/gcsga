@@ -1,10 +1,12 @@
 import { SYSTEM_NAME } from "@module/data/constants.ts"
+import { AttributeBonus } from "@module/data/feature/attribute-bonus.ts"
+import { FeatureTypes } from "@module/data/feature/types.ts"
 import { ItemTemplateType } from "@module/data/item/types.ts"
 import { AttributePrereq } from "@module/data/prereq/index.ts"
 import { PrereqList, PrereqListSchema } from "@module/data/prereq/prereq-list.ts"
 import { PrereqTypes } from "@module/data/prereq/types.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
-import { prereq } from "@util/enum/index.ts"
+import { feature, prereq } from "@util/enum/index.ts"
 import { generateId } from "@util/misc.ts"
 
 const { api, sheets } = foundry.applications
@@ -40,7 +42,8 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			addPrereq: this.#onAddPrereq,
 			addPrereqList: this.#onAddPrereqList,
 			deletePrereq: this.#onDeletePrereq,
-			changePrereqType: this.#onChangePrereqType,
+			addFeature: this.#onAddFeature,
+			deleteFeature: this.#onDeleteFeature,
 		},
 		dragDrop: [{ dragSelector: "item-list .item", dropSelector: null }],
 	}
@@ -191,7 +194,36 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		await this.item.update({ "system.prereqs": prereqObj })
 	}
 
-	static async #onChangePrereqType(this: ItemSheetGURPS, event: Event): Promise<void> {
+	static async #onAddFeature(this: ItemSheetGURPS, event: Event): Promise<void> {
+		event.preventDefault()
+		event.stopImmediatePropagation()
+
+		const item = this.item
+		if (!item.hasTemplate(ItemTemplateType.Feature)) return
+
+		const features = item.system.toObject().features
+		features.push(new AttributeBonus({}).toObject())
+
+		await this.item.update({ "system.features": features })
+	}
+
+	static async #onDeleteFeature(this: ItemSheetGURPS, event: Event): Promise<void> {
+		event.preventDefault()
+		event.stopImmediatePropagation()
+
+		const element = event.target as HTMLElement
+		const index = parseInt(element.dataset.index ?? "")
+		if (isNaN(index)) return
+		const item = this.item
+		if (!item.hasTemplate(ItemTemplateType.Feature)) return
+
+		const features = item.system.toObject().features
+		features.splice(index, 1)
+
+		await this.item.update({ "system.features": features })
+	}
+
+	async _onChangePrereqType(event: Event): Promise<void> {
 		event.preventDefault()
 		event.stopImmediatePropagation()
 
@@ -207,7 +239,36 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		const id = prereqs[index].id
 		prereqs.splice(index, 1, new PrereqTypes[value]({ id }).toObject())
 
-		await this.item.update({ "system.prereqs": prereqs })
+		this.item.update({ "system.prereqs": prereqs })
+	}
+
+	async _onChangeFeatureType(event: Event): Promise<void> {
+		event.preventDefault()
+		event.stopImmediatePropagation()
+
+		const element = event.target as HTMLSelectElement
+		const index = parseInt(element.dataset.index ?? "")
+		if (isNaN(index)) return
+		const value = element.value as feature.Type
+		const item = this.item
+		if (!item.hasTemplate(ItemTemplateType.Feature)) return
+
+		const features = item.system.toObject().features
+
+		features.splice(index, 1, new FeatureTypes[value]().toObject())
+
+		this.item.update({ "system.features": features })
+	}
+
+	protected override _onRender(_context: object, _options: ApplicationRenderOptions): void {
+		const prereqTypeFields = this.element.querySelectorAll("[data-selector='prereq-type'")
+		for (const input of prereqTypeFields) {
+			input.addEventListener("change", event => this._onChangePrereqType(event))
+		}
+		const featureTypeFields = this.element.querySelectorAll("[data-selector='feature-type'")
+		for (const input of featureTypeFields) {
+			input.addEventListener("change", event => this._onChangeFeatureType(event))
+		}
 	}
 
 	override async _prepareContext(options = {}): Promise<object> {
@@ -238,7 +299,6 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		formData: FormDataExtended,
 	): Promise<void> {
 		event.preventDefault()
-
 		await this.item.update(formData.object)
 	}
 }

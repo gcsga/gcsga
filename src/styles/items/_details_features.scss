@@ -1,9 +1,6 @@
-fieldset.details-prereqs {
+fieldset.details-features {
 	ul {
 		list-style: none;
-	}
-
-	> ul {
 		padding: 0;
 		margin: 0;
 	}
@@ -21,7 +18,6 @@ fieldset.details-prereqs {
 			display: flex;
 			flex-direction: row;
 			gap: 0.5rem;
-
 			select {
 				width: fit-content;
 			}

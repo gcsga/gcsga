@@ -104,8 +104,8 @@ class EquippedEquipmentPrereq extends BasePrereq<EquippedEquipmentPrereqSchema> 
 				name: `${prefix}.type`,
 				value: this.type,
 				dataset: {
+					selector: "prereq-type",
 					index: this.index.toString(),
-					action: "changePrereqType",
 				},
 				localize: true,
 			}) as HTMLElement,

@@ -7,8 +7,6 @@
 ## Left To Do
 
 - Weapon Fields
-  - Change #clean for #cleanData \* DONE
-- Change Schema Fields to Embedded Data Fields where appropriate \*0 _MOST IMPORTANT_ DONE?
 - Chat Messages \*5
   - Re-do roll message templates and damage message handling
   - Move @module/util/chat.ts functionality to Chat Message
@@ -30,6 +28,23 @@
   - Legacy Support?
 - Item Sheet \*CURRENT
   - Header color dependent on item type page color in GURPS Basic Set
+  - Prereqs \*DONE
+  - Features \* CURRENT
+  - Defaults
+  - Equipment \*DONE
+  - Trait
+  - Trait Container
+  - Spell
+  - Skill
+  - RPM Spell
+  - Technique
+  - Container
+  - Note
+  - Note Container
+  - Effect
+  - Melee Weapon
+  - Ranged Weapon
+  - Replacements Tab
 - Actor Sheet \*2
   - Collapsible sidebar
     - Option to hide atributes if not frequently used to decrease clutter?
@@ -52,16 +67,11 @@
 
 - Roll Handlers
   - Fix old functions
+- Change #clean for #cleanData \* DONE
+- Change Schema Fields to Embedded Data Fields where appropriate \*0 _MOST IMPORTANT_ DONE?
 
 ## Current Task Notes
 
-### TODO
-
-- put attributechoices in attribute/helpers.ts
-
-- Could consider moving attribute array to its own datamodel extending an arrayfield
-- use a function to grab the initial attribute setting values, and anothet to set them. that way, you can extend the class and override the functions for characters
-- need to move namespaces
 - Replacements tab on item sheet
 - Toggle for showing replacements instead of placeholders (optional)
 - In non-edit mode, show replacements instead of substitutions maybe with indicating color background

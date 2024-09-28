@@ -17,9 +17,14 @@
 			height: 1.5rem;
 			line-height: 1.5rem;
 		}
+
+		label:has(input[type="checkbox"]) {
+			display: flex;
+			flex-direction: row;
+		}
 	}
 
-	@import "details_prereqs";
+	@import "details_prereqs", "details_features";
 }
 
 .gurps.item.sheet.minimized {

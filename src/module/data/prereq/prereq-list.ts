@@ -178,7 +178,14 @@ class PrereqList extends BasePrereq<PrereqListSchema> {
 
 		// Child Prereqs
 		const listElement = document.createElement("ul")
-		listElement.append(...this.children.map(e => e.toFormElement()))
+		this.children.forEach((child, index) => {
+			if (index !== 0) {
+				const hr = document.createElement("hr")
+				listElement.append(hr)
+			}
+			listElement.append(child.toFormElement())
+		})
+		// listElement.append(...this.children.map(e => e.toFormElement()))
 		element.append(listElement)
 
 		return element

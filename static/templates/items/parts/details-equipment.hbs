@@ -18,8 +18,12 @@
 			{{formInput fields.quantity value=source.quantity}}
 
 			<!-- Equipped -->
-			{{formInput fields.equipped value=source.equipped}}
-			<label>{{localize "GURPS.Item.Equipment.FIELDS.Equipped.Name"}}</label>
+			<label>
+				<!-- Input -->
+				{{formInput fields.equipped value=source.equipped}}
+				<!-- Label Contents -->
+				{{localize "GURPS.Item.Equipment.FIELDS.Equipped.Name"}}
+			</label>
 		</div>
 	</div>
 
