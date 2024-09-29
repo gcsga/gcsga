@@ -4,6 +4,10 @@
 	<ul>
 		<!-- Iterate over features -->
 		{{#each system.features as |feature|}}
+		<!-- Gap between entries -->
+		{{#unless @first}}
+		<hr />
+		{{/unless}}
 		<!-- Generated feature partial -->
 		{{feature.element}}
 		<!-- End Loop -->

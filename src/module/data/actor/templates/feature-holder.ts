@@ -1,6 +1,5 @@
 import { ActorDataModel } from "@module/data/abstract.ts"
 import { ActorType, ItemType, gid } from "@module/data/constants.ts"
-import { MoveBonusType } from "@module/data/feature/data.ts"
 import {
 	AttributeBonus,
 	CostReduction,
@@ -12,6 +11,7 @@ import {
 	SpellPointBonus,
 	WeaponBonus,
 } from "@module/data/feature/index.ts"
+import { MoveBonusType } from "@module/data/feature/move-bonus.ts"
 import { Feature } from "@module/data/feature/types.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
 import { Nameable, equalFold } from "@module/util/index.ts"

@@ -1,8 +1,9 @@
 import { StringCriteria } from "@module/util/string-criteria.ts"
+import fields = foundry.data.fields
 import { feature, skillsel } from "@util"
-import { SkillBonusSchema } from "./data.ts"
-import { BaseFeature } from "./base-feature.ts"
+import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
 import { Nameable } from "@module/util/index.ts"
+import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
 
 class SkillBonus extends BaseFeature<SkillBonusSchema> {
 	static override TYPE = feature.Type.SkillBonus
@@ -38,4 +39,11 @@ class SkillBonus extends BaseFeature<SkillBonusSchema> {
 
 interface SkillBonus extends BaseFeature<SkillBonusSchema>, ModelPropsFromSchema<SkillBonusSchema> {}
 
-export { SkillBonus }
+type SkillBonusSchema = BaseFeatureSchema & {
+	selection_type: fields.StringField<skillsel.Type>
+	name: StringCriteriaField<true, false, true>
+	specialization: StringCriteriaField<true, false, true>
+	tags: StringCriteriaField<true, false, true>
+}
+
+export { SkillBonus, type SkillBonusSchema }

@@ -1,8 +1,9 @@
+import { Nameable } from "@module/util/index.ts"
 import { StringCriteria } from "@module/util/string-criteria.ts"
 import { feature, spellmatch } from "@util"
-import { SpellBonusSchema } from "./data.ts"
-import { BaseFeature } from "./base-feature.ts"
-import { Nameable } from "@module/util/index.ts"
+import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
+import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
+import fields = foundry.data.fields
 
 class SpellBonus extends BaseFeature<SpellBonusSchema> {
 	static override TYPE = feature.Type.SpellBonus
@@ -39,4 +40,10 @@ class SpellBonus extends BaseFeature<SpellBonusSchema> {
 
 interface SpellBonus extends BaseFeature<SpellBonusSchema>, ModelPropsFromSchema<SpellBonusSchema> {}
 
-export { SpellBonus }
+type SpellBonusSchema = BaseFeatureSchema & {
+	match: fields.StringField<spellmatch.Type>
+	name: StringCriteriaField<true, false, true>
+	tags: StringCriteriaField<true, false, true>
+}
+
+export { SpellBonus, type SpellBonusSchema }

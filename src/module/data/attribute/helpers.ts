@@ -14,15 +14,19 @@ function getAttributeChoices(
 	if (options.ten) choices["10"] = game.i18n.format(localizationKey, { value: "10" })
 	let addedDodge = false
 	for (const def of list) {
-		if (def.id === gid.Dodge) if (!options.dodge) continue
-		addedDodge = true
+		if (def.id === gid.Dodge) {
+			if (!options.dodge) continue
+			addedDodge = true
+		}
 		choices[def.id] = game.i18n.format(localizationKey, { value: def.name })
 	}
 
-	if (options.ten)
-		choices[gid.SizeModifier] = game.i18n.format(localizationKey, { value: "GURPS.Attribute.SizeModifier" })
+	if (options.size)
+		choices[gid.SizeModifier] = game.i18n.format(localizationKey, {
+			value: game.i18n.localize("GURPS.Attribute.SizeModifier"),
+		})
 	if (options.dodge && !addedDodge)
-		choices[gid.Dodge] = game.i18n.format(localizationKey, { value: "GURPS.Attribute.Dodgee" })
+		choices[gid.Dodge] = game.i18n.format(localizationKey, { value: game.i18n.localize("GURPS.Attribute.Dodge") })
 	if (options.parry)
 		choices[gid.Parry] = game.i18n.format(localizationKey, { value: game.i18n.localize("GURPS.Attribute.Parry") })
 	if (options.block)

@@ -1,9 +1,9 @@
-import { StringCriteria } from "@module/util/string-criteria.ts"
-import { LocalizeGURPS } from "@util/localize.ts"
-import { TooltipGURPS, feature } from "@util"
-import { SkillPointBonusSchema } from "./data.ts"
-import { BaseFeature } from "./base-feature.ts"
 import { Nameable } from "@module/util/index.ts"
+import { StringCriteria } from "@module/util/string-criteria.ts"
+import { TooltipGURPS, feature } from "@util"
+import { LocalizeGURPS } from "@util/localize.ts"
+import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
+import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
 
 class SkillPointBonus extends BaseFeature<SkillPointBonusSchema> {
 	static override TYPE = feature.Type.SkillPointBonus
@@ -51,4 +51,10 @@ class SkillPointBonus extends BaseFeature<SkillPointBonusSchema> {
 
 interface SkillPointBonus extends BaseFeature<SkillPointBonusSchema>, ModelPropsFromSchema<SkillPointBonusSchema> {}
 
-export { SkillPointBonus }
+type SkillPointBonusSchema = BaseFeatureSchema & {
+	name: StringCriteriaField<true, false, true>
+	specialization: StringCriteriaField<true, false, true>
+	tags: StringCriteriaField<true, false, true>
+}
+
+export { SkillPointBonus, type SkillPointBonusSchema }

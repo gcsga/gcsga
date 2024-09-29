@@ -63,7 +63,7 @@ class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
 
 		// Name
 		const rowElement = document.createElement("div")
-		rowElement.classList.add("form-fields")
+		rowElement.classList.add("form-fields", "secondary")
 		rowElement.append(
 			this.schema.fields.qualifier.fields.compare.toInput({
 				name: `${prefix}.qualifier.compare`,

@@ -1,6 +1,7 @@
 fieldset.details-prereqs {
 	ul {
 		list-style: none;
+		padding-left: 2.125rem;
 	}
 
 	> ul {
@@ -18,6 +19,9 @@ fieldset.details-prereqs {
 		gap: 0.5rem;
 
 		.form-fields {
+			&.secondary {
+				padding-left: 2.125rem;
+			}
 			display: flex;
 			flex-direction: row;
 			gap: 0.5rem;

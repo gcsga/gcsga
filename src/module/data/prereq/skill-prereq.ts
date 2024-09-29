@@ -111,7 +111,7 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 
 		// Name
 		const rowElement1 = document.createElement("div")
-		rowElement1.classList.add("form-fields")
+		rowElement1.classList.add("form-fields", "secondary")
 		rowElement1.append(
 			this.schema.fields.name.fields.compare.toInput({
 				name: `${prefix}.name.compare`,
@@ -129,7 +129,7 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 
 		// Notes
 		const rowElement2 = document.createElement("div")
-		rowElement2.classList.add("form-fields")
+		rowElement2.classList.add("form-fields", "secondary")
 		rowElement2.append(
 			this.schema.fields.specialization.fields.compare.toInput({
 				name: `${prefix}.specialization.compare`,
@@ -147,7 +147,7 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 
 		// Level
 		const rowElement3 = document.createElement("div")
-		rowElement3.classList.add("form-fields")
+		rowElement3.classList.add("form-fields", "secondary")
 		rowElement3.append(
 			this.schema.fields.level.fields.compare.toInput({
 				name: `${prefix}.level.compare`,

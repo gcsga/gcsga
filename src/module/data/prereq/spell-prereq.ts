@@ -153,7 +153,7 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 
 		// Quantity
 		const rowElement1 = document.createElement("div")
-		rowElement1.classList.add("form-fields")
+		rowElement1.classList.add("form-fields", "secondary")
 		rowElement1.append(
 			createButton({
 				icon: ["fa-regular", "fa-trash"],
@@ -201,7 +201,7 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 
 		// Qualifier
 		const rowElement2 = document.createElement("div")
-		rowElement2.classList.add("form-fields")
+		rowElement2.classList.add("form-fields", "secondary")
 		rowElement2.append(
 			this.schema.fields.sub_type.toInput({
 				name: `${prefix}.sub_type`,

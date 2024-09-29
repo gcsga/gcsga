@@ -3,9 +3,9 @@ import { LocalizeGURPS } from "@util/localize.ts"
 import type { Feature, FeatureInstances } from "./types.ts"
 import { TooltipGURPS } from "@util"
 import { ItemType } from "@module/data/constants.ts"
-import { BaseFeatureSchema } from "./data.ts"
 import { ItemDataModel } from "@module/data/abstract.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
+import fields = foundry.data.fields
 import { ItemTemplateType } from "@module/data/item/types.ts"
 import { createButton } from "@module/applications/helpers.ts"
 
@@ -42,7 +42,7 @@ abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema
 				required: true,
 				nullable: false,
 				initial: false,
-				label: "PER LEVEL???",
+				label: "GURPS.Item.Features.FIELDS.PerLevel",
 			}),
 			temporary: new fields.BooleanField({ required: true, nullable: false, initial: false }),
 		}
@@ -198,7 +198,7 @@ abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema
 				localize: true,
 			}) as HTMLElement,
 		)
-		perLevelLabelElement.innerHTML += this.schema.fields.per_level.options.label ?? ""
+		perLevelLabelElement.innerHTML += game.i18n.localize(this.schema.fields.per_level.options.label ?? "")
 		rowElement.append(perLevelLabelElement)
 
 		element.append(rowElement)
@@ -215,4 +215,11 @@ interface BaseFeature<TSchema extends BaseFeatureSchema>
 	consturctor: typeof BaseFeature<TSchema>
 }
 
-export { BaseFeature }
+type BaseFeatureSchema = {
+	type: fields.StringField<feature.Type, feature.Type, true>
+	amount: fields.NumberField<number, number, true, false>
+	per_level: fields.BooleanField
+	temporary: fields.BooleanField<boolean, boolean, true, false, true>
+}
+
+export { BaseFeature, type BaseFeatureSchema }

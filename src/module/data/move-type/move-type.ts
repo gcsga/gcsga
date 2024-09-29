@@ -5,10 +5,10 @@ import {
 	AbstractAttributeConstructionOptions,
 	AbstractAttributeSchema,
 } from "../abstract-attribute/index.ts"
-import { MoveBonusType } from "../feature/data.ts"
 import { ActorDataModel } from "../abstract.ts"
 import { ActorTemplateType } from "../actor/types.ts"
 import { SheetSettings } from "../sheet-settings.ts"
+import { MoveBonusType } from "../feature/move-bonus.ts"
 
 class MoveType extends AbstractAttribute<ActorDataModel, MoveTypeSchema> {
 	order: number

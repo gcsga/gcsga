@@ -1,6 +1,6 @@
 import { gid } from "@data"
-import { CostReductionSchema } from "./data.ts"
-import { BaseFeature } from "./base-feature.ts"
+import fields = foundry.data.fields
+import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
 import { feature } from "@util"
 
 class CostReduction extends BaseFeature<CostReductionSchema> {
@@ -21,4 +21,9 @@ class CostReduction extends BaseFeature<CostReductionSchema> {
 
 interface CostReduction extends BaseFeature<CostReductionSchema>, ModelPropsFromSchema<CostReductionSchema> {}
 
-export { CostReduction }
+type CostReductionSchema = BaseFeatureSchema & {
+	attribute: fields.StringField<string, string, true, false, true>
+	percentage: fields.NumberField<number, number, true, false, true>
+}
+
+export { CostReduction, type CostReductionSchema }

@@ -89,7 +89,13 @@
 				}
 			},
 			"Features": {
-				"DetailsLegend": "Features"
+				"DetailsLegend": "Features",
+				"FIELDS": {
+					"PerLevel": "per level",
+					"Attribute": {
+						"Attribute": "to {value}"
+					}
+				}
 			},
 			"Equipment": {
 				"DetailsLegend": "Equipment Details",
@@ -353,6 +359,12 @@
 				"cost_reduction": "Reduces the attribute cost of",
 				"contained_weight_reduction": "Reduces the contained weight by",
 				"move_bonus": "Gives a move bonus of"
+			},
+			"stlimit": {
+				"none": "",
+				"striking_only": "for striking only",
+				"lifting_only": "for lifting only",
+				"throwing_only": "for throwing only"
 			},
 			"spellcmp": {
 				"name": "whose name",

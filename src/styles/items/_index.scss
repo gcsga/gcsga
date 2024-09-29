@@ -1,6 +1,20 @@
 .gurps.item.sheet {
 	@import "header";
 
+	max-height: 100%;
+	overflow: auto;
+
+	// max-height: 800px;
+	// min-height: 300px;
+	// // min-width: fit-content;
+	// overflow-y: hidden;
+	// section.tab {
+	// 	// max-height: 800px;
+	// 	// min-width: fit-content;
+	// 	// overflow-y: hidden;
+	// 	overflow-y: scroll;
+	// }
+
 	fieldset {
 		padding: 0.5rem;
 		margin: 1rem;
@@ -21,6 +35,8 @@
 		label:has(input[type="checkbox"]) {
 			display: flex;
 			flex-direction: row;
+			white-space: nowrap;
+			align-items: center;
 		}
 	}
 

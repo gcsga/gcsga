@@ -1,5 +1,5 @@
-import { ContainedWeightReductionSchema } from "./data.ts"
-import { BaseFeature } from "./base-feature.ts"
+import fields = foundry.data.fields
+import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
 import { Int, Weight, feature } from "@util"
 
 class ContainedWeightReduction extends BaseFeature<ContainedWeightReductionSchema> {
@@ -45,4 +45,7 @@ interface ContainedWeightReduction
 	extends BaseFeature<ContainedWeightReductionSchema>,
 		ModelPropsFromSchema<ContainedWeightReductionSchema> {}
 
-export { ContainedWeightReduction }
+type ContainedWeightReductionSchema = BaseFeatureSchema & {
+	reduction: fields.StringField<string, string, true, false, true>
+}
+export { ContainedWeightReduction, type ContainedWeightReductionSchema }

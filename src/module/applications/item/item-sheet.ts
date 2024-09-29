@@ -1,5 +1,6 @@
-import { SYSTEM_NAME } from "@module/data/constants.ts"
+import { SYSTEM_NAME, gid } from "@module/data/constants.ts"
 import { AttributeBonus } from "@module/data/feature/attribute-bonus.ts"
+import { DRBonusSchema } from "@module/data/feature/dr-bonus.ts"
 import { FeatureTypes } from "@module/data/feature/types.ts"
 import { ItemTemplateType } from "@module/data/item/types.ts"
 import { AttributePrereq } from "@module/data/prereq/index.ts"
@@ -29,7 +30,9 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		},
 		position: {
 			width: 650,
-			height: "auto",
+			// width: "fit-content",
+			// height: "auto",
+			// scale: 1.5,
 		},
 		form: {
 			submitOnChange: true,
@@ -44,6 +47,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			deletePrereq: this.#onDeletePrereq,
 			addFeature: this.#onAddFeature,
 			deleteFeature: this.#onDeleteFeature,
+			toggleDrBonusLocation: this.#onToggleDrBonusLocation,
 		},
 		dragDrop: [{ dragSelector: "item-list .item", dropSelector: null }],
 	}
@@ -52,18 +56,22 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		header: {
 			id: "header",
 			template: `systems/${SYSTEM_NAME}/templates/items/parts/item-header.hbs`,
+			scrollable: [""],
 		},
 		descriptionTab: {
 			id: "description",
 			template: `systems/${SYSTEM_NAME}/templates/items/tabs/item-description.hbs`,
+			scrollable: [""],
 		},
 		detailsTab: {
 			id: "details",
 			template: `systems/${SYSTEM_NAME}/templates/items/tabs/item-details.hbs`,
+			scrollable: [""],
 		},
 		embedsTab: {
 			id: "embeds",
 			template: `systems/${SYSTEM_NAME}/templates/items/tabs/item-embeds.hbs`,
+			scrollable: [""],
 		},
 	}
 
@@ -260,6 +268,24 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		this.item.update({ "system.features": features })
 	}
 
+	static async #onToggleDrBonusLocation(this: ItemSheetGURPS, event: Event): Promise<void> {
+		event.preventDefault()
+		event.stopImmediatePropagation()
+
+		const element = event.target as HTMLSelectElement
+		const index = parseInt(element.dataset.index ?? "")
+		if (isNaN(index)) return
+		const locationId = element.dataset.location ?? ""
+
+		const item = this.item
+		if (!item.hasTemplate(ItemTemplateType.Feature)) return
+		const bonus = item.system.toObject().features[index] as SourceFromSchema<DRBonusSchema>
+		if (bonus.locations.includes(locationId)) bonus.locations = bonus.locations.filter(e => e !== locationId)
+		else bonus.locations.push(locationId)
+
+		await this.item.update({ [`system.features.${index}`]: bonus })
+	}
+
 	protected override _onRender(_context: object, _options: ApplicationRenderOptions): void {
 		const prereqTypeFields = this.element.querySelectorAll("[data-selector='prereq-type'")
 		for (const input of prereqTypeFields) {
@@ -299,6 +325,16 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		formData: FormDataExtended,
 	): Promise<void> {
 		event.preventDefault()
+
+		for (const key of Object.keys(formData.object)) {
+			if (key.endsWith("locations")) {
+				const value = formData.object[key] === gid.All ? [gid.All] : []
+				formData.object[key] = value
+			}
+		}
+
+		console.log(formData.object)
+
 		await this.item.update(formData.object)
 	}
 }

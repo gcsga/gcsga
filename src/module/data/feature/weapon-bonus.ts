@@ -1,12 +1,11 @@
 import { Int, LocalizeGURPS, TooltipGURPS, feature, wsel, wswitch } from "@util"
 import fields = foundry.data.fields
-import { BaseFeature } from "./base-feature.ts"
+import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { Nameable, NumericCriteria, StringCriteria } from "@module/util/index.ts"
 import { ItemDataModel } from "@module/data/abstract.ts"
 import { AbstractWeaponTemplate } from "@module/data/item/templates/abstract-weapon.ts"
 import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
-import { BaseFeatureSchema } from "./data.ts"
 import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
 
 class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
@@ -147,7 +146,7 @@ class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 
 interface WeaponBonus extends BaseFeature<WeaponBonusSchema>, ModelPropsFromSchema<WeaponBonusSchema> {}
 
-export type WeaponBonusSchema = BaseFeatureSchema & {
+type WeaponBonusSchema = BaseFeatureSchema & {
 	percent: fields.BooleanField<boolean, boolean, true, true>
 	switch_type: fields.StringField<wswitch.Type, wswitch.Type, true, true>
 	switch_type_value: fields.BooleanField<boolean, boolean, true, true>
@@ -163,4 +162,4 @@ export type WeaponBonusSchema = BaseFeatureSchema & {
 	effective: fields.BooleanField<boolean, boolean, false>
 }
 
-export { WeaponBonus }
+export { WeaponBonus, type WeaponBonusSchema }

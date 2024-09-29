@@ -2,7 +2,7 @@
 
 ## Priority
 
-- Prereq#toFormElement
+- Feature#toFormElement
 
 ## Left To Do
 
@@ -72,6 +72,7 @@
 
 ## Current Task Notes
 
+- Save last added prereq/feature as in GCS
 - Replacements tab on item sheet
 - Toggle for showing replacements instead of placeholders (optional)
 - In non-edit mode, show replacements instead of substitutions maybe with indicating color background

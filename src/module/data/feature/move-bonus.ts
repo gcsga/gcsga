@@ -1,7 +1,12 @@
-import { MoveBonusSchema, MoveBonusType } from "./data.ts"
+import fields = foundry.data.fields
 import { gid } from "@data"
-import { BaseFeature } from "./base-feature.ts"
+import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
 import { feature } from "@util"
+
+enum MoveBonusType {
+	Base = "base",
+	Enhanced = "enhanced",
+}
 
 class MoveBonus extends BaseFeature<MoveBonusSchema> {
 	static override TYPE = feature.Type.MoveBonus
@@ -21,4 +26,9 @@ class MoveBonus extends BaseFeature<MoveBonusSchema> {
 
 interface MoveBonus extends BaseFeature<MoveBonusSchema>, ModelPropsFromSchema<MoveBonusSchema> {}
 
-export { MoveBonus }
+type MoveBonusSchema = BaseFeatureSchema & {
+	move_type: fields.StringField<string, string, true, false, true>
+	limitation: fields.StringField<MoveBonusType, MoveBonusType, true, false, true>
+}
+
+export { MoveBonus, MoveBonusType, type MoveBonusSchema }

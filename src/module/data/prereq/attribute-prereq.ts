@@ -149,7 +149,7 @@ class AttributePrereq extends BasePrereq<AttributePrereqSchema> {
 		const element = super.toFormElement()
 
 		const rowElement = document.createElement("div")
-		rowElement.classList.add("form-fields")
+		rowElement.classList.add("form-fields", "secondary")
 
 		// Which
 		rowElement.append(
@@ -199,4 +199,5 @@ type AttributePrereqSchema = BasePrereqSchema & {
 	combined_with: fields.StringField<string, string, true, false, true>
 	qualifier: NumericCriteriaField<true, false, true>
 }
-export { AttributePrereq }
+
+export { AttributePrereq, type AttributePrereqSchema }
