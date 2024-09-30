@@ -30,6 +30,11 @@
 		input[type="number"] {
 			height: 1.5rem;
 			line-height: 1.5rem;
+
+			&:disabled {
+				// Show disabled fields as transparent.
+				color: transparent;
+			}
 		}
 
 		label:has(input[type="checkbox"]) {

@@ -1,5 +1,3 @@
-import { LocalizeGURPS } from "@util/localize.ts"
-
 export namespace spellmatch {
 	export enum Type {
 		AllColleges = "all_colleges",
@@ -15,7 +13,7 @@ export namespace spellmatch {
 		}
 
 		export function toString(T: Type): string {
-			return LocalizeGURPS.translations.gurps.enum.spellmatch[T]
+			return `GURPS.Enum.spellmatch.${T}`
 		}
 
 		export function matchForType(
@@ -40,4 +38,8 @@ export namespace spellmatch {
 	}
 
 	export const Types: Type[] = [Type.AllColleges, Type.CollegeName, Type.PowerSource, Type.Name]
+
+	export const TypesChoices: Readonly<Record<Type, string>> = Object.freeze(
+		Object.fromEntries(Types.map(T => [T, Type.toString(T)])) as Record<Type, string>,
+	)
 }

@@ -94,6 +94,26 @@
 					"PerLevel": "per level",
 					"Attribute": {
 						"Attribute": "to {value}"
+					},
+					"DRBonus": {
+						"Locations": {
+							"All": "to all locations",
+							"Some": "to these locations:"
+						},
+						"SpecializationBefore": "against",
+						"SpecializationAfter": "attacks"
+					},
+					"SkillBonus": {
+						"Specialization": "and whose specialization {value}",
+						"Usage": "and whose usage {value}",
+						"TagsSingle": "and at least one tag {value}",
+						"TagsPlural": "and all tags {value} "
+					},
+					"SkillPointBonus": {
+						"Name": "to skills whose name {value}",
+						"Specialization": "and whose specialization {value}",
+						"TagsSingle": "and at least one tag {value}",
+						"TagsPlural": "and all tags {value} "
 					}
 				}
 			},
@@ -312,6 +332,17 @@
 				"primary_separator": "Primary Separator",
 				"secondary_separator": "Secondary Separator",
 				"pool_separator": "Pool Separator"
+			},
+			"skillsel": {
+				"skills_with_name": "to skills whose name",
+				"this_weapon": "to this weapon",
+				"weapons_with_name": "to weapons whose name"
+			},
+			"spellmatch": {
+				"all_colleges": "to all colleges",
+				"college_name": "to the college whose name",
+				"power_source_name": "to the power source whose name",
+				"spell_name": "to the spell whose name"
 			},
 			"prereq": {
 				"prereq_list": "a list",

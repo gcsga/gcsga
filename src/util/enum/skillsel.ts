@@ -1,5 +1,3 @@
-import { LocalizeGURPS } from "@util/localize.ts"
-
 export namespace skillsel {
 	export enum Type {
 		Name = "skills_with_name",
@@ -14,9 +12,13 @@ export namespace skillsel {
 		}
 
 		export function toString(T: Type): string {
-			return LocalizeGURPS.translations.gurps.enum.skillsel[T]
+			return `GURPS.Enum.skillsel.${T}`
 		}
 	}
 
 	export const Types: Type[] = [Type.Name, Type.ThisWeapon, Type.WeaponsWithName]
+
+	export const TypesChoices: Readonly<Record<Type, string>> = Object.freeze(
+		Object.fromEntries(Types.map(T => [T, Type.toString(T)])) as Record<Type, string>,
+	)
 }

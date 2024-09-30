@@ -78,14 +78,15 @@ class DRBonus extends BaseFeature<DRBonusSchema> {
 			foundry.applications.fields.createSelectInput({
 				name: `system.features.${0}.locations`,
 				value: this.locations[0] === gid.All ? gid.All : "",
+				localize: true,
 				options: [
 					{
 						value: gid.All,
-						label: "ALL LOCATIONS",
+						label: "GURPS.Item.Features.FIELDS.DRBonus.Locations.All",
 					},
 					{
 						value: "",
-						label: "THESE LOCATIONS",
+						label: "GURPS.Item.Features.FIELDS.DRBonus.Locations.Some",
 					},
 				],
 			}),
@@ -117,6 +118,10 @@ class DRBonus extends BaseFeature<DRBonusSchema> {
 			element.append(rowElement2)
 		}
 
+		const labelBefore = document.createElement("label")
+		labelBefore.innerHTML = game.i18n.localize("GURPS.Item.Features.FIELDS.DRBonus.SpecializationBefore")
+		rowElement3.append(labelBefore)
+
 		rowElement3.append(
 			this.schema.fields.specialization.toInput({
 				name: `${prefix}.specialization`,
@@ -124,6 +129,10 @@ class DRBonus extends BaseFeature<DRBonusSchema> {
 				localize: true,
 			}) as HTMLElement,
 		)
+
+		const labelAfter = document.createElement("label")
+		labelAfter.innerHTML = game.i18n.localize("GURPS.Item.Features.FIELDS.DRBonus.SpecializationAfter")
+		rowElement3.append(labelAfter)
 
 		element.append(rowElement3)
 
