@@ -64,7 +64,7 @@
 		"prettier": "3.3.3",
 		"prompts": "^2.4.2",
 		"prosemirror-view": "1.32.5",
-		"sass": "^1.75.0",
+		"sass": "^1.79.4",
 		"socket.io": "4.7.5",
 		"socket.io-client": "4.7.5",
 		"tinymce": "7.2.1",
