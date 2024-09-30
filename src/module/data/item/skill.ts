@@ -23,9 +23,10 @@ import {
 import { ItemInst, SkillLevel, addTooltipForSkillLevelAdj, formatRelativeSkill } from "./helpers.ts"
 import { ActorTemplateType } from "../actor/types.ts"
 import { CellData } from "./fields/cell-data.ts"
-import { SkillDefault, SkillDefaultSchema } from "../skill-default.ts"
+import { SkillDefault } from "../skill-default.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { Study } from "../study.ts"
+import { SkillDefaultTemplate, SkillDefaultTemplateSchema } from "./templates/defaults.ts"
 
 class SkillData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -34,11 +35,17 @@ class SkillData extends ItemDataModel.mixin(
 	FeatureTemplate,
 	StudyTemplate,
 	ReplacementTemplate,
+	SkillDefaultTemplate,
 	AbstractSkillTemplate,
 ) {
 	static override _systemType = ItemType.Skill
 
 	static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
+
+	override async getSheetData(context: Record<string, unknown>): Promise<void> {
+		context.detailsParts = ["gurps.details-prereqs", "gurps.details-features", "gurps.details-defaults"]
+		context.embedsParts = ["gurps.embeds-weapons"]
+	}
 
 	static override defineSchema(): SkillSchema {
 		const fields = foundry.data.fields
@@ -61,12 +68,12 @@ class SkillData extends ItemDataModel.mixin(
 				max: 9,
 				initial: 0,
 			}),
-			defaulted_from: new fields.SchemaField(SkillDefault.defineSchema(), {
+			defaulted_from: new fields.EmbeddedDataField(SkillDefault, {
 				required: true,
 				nullable: true,
 				initial: null,
 			}),
-			defaults: new fields.ArrayField(new fields.EmbeddedDataField(SkillDefault)),
+			// defaults: new fields.ArrayField(new fields.EmbeddedDataField(SkillDefault)),
 		}) as SkillSchema
 	}
 
@@ -364,13 +371,7 @@ class SkillData extends ItemDataModel.mixin(
 	}
 }
 
-interface SkillData
-	extends Omit<ModelPropsFromSchema<SkillSchema>, "study" | "defaulted_from" | "defaults" | "difficulty"> {
-	study: Study[]
-	defaulted_from: SkillDefault | null
-	defaults: SkillDefault[]
-	difficulty: AttributeDifficulty
-}
+interface SkillData extends ModelPropsFromSchema<SkillSchema> {}
 
 type SkillSchema = BasicInformationTemplateSchema &
 	PrereqTemplateSchema &
@@ -378,17 +379,12 @@ type SkillSchema = BasicInformationTemplateSchema &
 	FeatureTemplateSchema &
 	StudyTemplateSchema &
 	ReplacementTemplateSchema &
+	SkillDefaultTemplateSchema &
 	AbstractSkillTemplateSchema & {
 		specialization: fields.StringField<string, string, true, false, true>
 		encumbrance_penalty_multiplier: fields.NumberField<number, number, true, false, true>
-		defaulted_from: fields.SchemaField<
-			SkillDefaultSchema,
-			SourceFromSchema<SkillDefaultSchema>,
-			ModelPropsFromSchema<SkillDefaultSchema>,
-			true,
-			true
-		>
-		defaults: fields.ArrayField<fields.EmbeddedDataField<SkillDefault>>
+		defaulted_from: fields.EmbeddedDataField<SkillDefault, true, true, true>
+		// defaults: fields.ArrayField<fields.EmbeddedDataField<SkillDefault>>
 	}
 
 export { SkillData, type SkillSchema }

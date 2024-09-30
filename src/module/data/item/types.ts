@@ -32,6 +32,7 @@ export enum ItemTemplateType {
 	Container = "ContainerTemplate",
 	BasicInformation = "BasicInformationTemplate",
 	Feature = "FeatureTemplate",
+	Default = "SkillDefaultTemplate",
 	Prereq = "PrereqTemplate",
 	Replacement = "ReplacementTemplate",
 	Study = "StudyTemplate",
@@ -46,6 +47,7 @@ export interface ItemDataTemplates {
 	[ItemTemplateType.Container]: ItemDataTemplate.ContainerTemplate
 	[ItemTemplateType.BasicInformation]: ItemDataTemplate.BasicInformationTemplate
 	[ItemTemplateType.Feature]: ItemDataTemplate.FeatureTemplate
+	[ItemTemplateType.Default]: ItemDataTemplate.SkillDefaultTemplate
 	[ItemTemplateType.Prereq]: ItemDataTemplate.PrereqTemplate
 	[ItemTemplateType.Replacement]: ItemDataTemplate.ReplacementTemplate
 	[ItemTemplateType.Study]: ItemDataTemplate.StudyTemplate

@@ -1,23 +1,18 @@
 import { ActorType, SkillDefaultType, gid } from "@data"
 import fields = foundry.data.fields
 import { LocalizeGURPS, StringBuilder } from "@util"
-import { ItemGURPS2 } from "@module/document/item.ts"
 import { ActorGURPS2 } from "@module/document/actor.ts"
 import { ActorTemplateType } from "@module/data/actor/types.ts"
 import { Nameable } from "@module/util/index.ts"
+import { ItemTemplateType } from "./item/types.ts"
+import { createButton } from "@module/applications/helpers.ts"
+import { ItemDataModel } from "./abstract.ts"
+import { getAttributeChoices } from "./attribute/helpers.ts"
 
 const SKILL_BASED_DEFAULT_TYPES: Set<string> = new Set([gid.Skill, gid.Parry, gid.Block])
 
 // class SkillDefault<TItem extends ItemGURPS = ItemGURPS> extends foundry.abstract.DataModel<TItem, SkillDefaultSchema> {
-class SkillDefault extends foundry.abstract.DataModel<ItemGURPS2, SkillDefaultSchema> {
-	constructor(
-		data: DeepPartial<SourceFromSchema<SkillDefaultSchema>>,
-		// options?: DataModelConstructionOptions<TItem>,
-		options?: DataModelConstructionOptions<ItemGURPS2>,
-	) {
-		super(data, options)
-	}
-
+class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaultSchema> {
 	static override defineSchema(): SkillDefaultSchema {
 		const fields = foundry.data.fields
 
@@ -37,6 +32,84 @@ class SkillDefault extends foundry.abstract.DataModel<ItemGURPS2, SkillDefaultSc
 
 	get skillBased(): boolean {
 		return SKILL_BASED_DEFAULT_TYPES.has(this.type) ?? false
+	}
+
+	get index(): number {
+		if (!this.parent.hasTemplate(ItemTemplateType.Default)) return -1
+		return this.parent.defaults.indexOf(this)
+	}
+
+	get element(): Handlebars.SafeString {
+		return new Handlebars.SafeString(this.toFormElement().outerHTML)
+	}
+
+	toFormElement(): HTMLElement {
+		const element = document.createElement("li")
+		const prefix = `system.defaults.${this.index}`
+
+		const choices = Object.entries(
+			getAttributeChoices(this.parent.actor, this.type, "", {
+				blank: false,
+				ten: true,
+				size: false,
+				dodge: true,
+				parry: true,
+				block: true,
+				skill: true,
+			}).choices,
+		).map(([value, label]) => {
+			return { value, label }
+		})
+
+		const rowElement = document.createElement("div")
+		rowElement.classList.add("form-fields")
+
+		rowElement.append(
+			createButton({
+				icon: ["fa-regular", "fa-trash"],
+				label: "",
+				data: {
+					action: "deleteDefault",
+					index: this.index.toString(),
+				},
+			}),
+		)
+
+		rowElement.append(
+			foundry.applications.fields.createSelectInput({
+				name: `${prefix}.type`,
+				value: this.type,
+				localize: true,
+				options: choices,
+			}),
+		)
+
+		rowElement.append(
+			this.schema.fields.name.toInput({
+				name: `${prefix}.name`,
+				value: this.name ?? "",
+				disabled: this.type !== gid.Skill,
+			}) as HTMLElement,
+		)
+
+		rowElement.append(
+			this.schema.fields.specialization.toInput({
+				name: `${prefix}.specialization`,
+				value: this.specialization ?? "",
+				disabled: this.type !== gid.Skill,
+			}) as HTMLElement,
+		)
+
+		rowElement.append(
+			this.schema.fields.modifier.toInput({
+				name: `${prefix}.modifier`,
+				value: this.modifier.signedString(),
+			}) as HTMLElement,
+		)
+
+		element.append(rowElement)
+
+		return element
 	}
 
 	cloneWithoutLevelOrPoints(): SkillDefault {
@@ -200,7 +273,7 @@ class SkillDefault extends foundry.abstract.DataModel<ItemGURPS2, SkillDefaultSc
 
 // interface SkillDefault<TItem extends ItemGURPS>
 interface SkillDefault
-	extends foundry.abstract.DataModel<ItemGURPS2, SkillDefaultSchema>,
+	extends foundry.abstract.DataModel<ItemDataModel, SkillDefaultSchema>,
 		ModelPropsFromSchema<SkillDefaultSchema> {}
 
 type SkillDefaultSchema = {

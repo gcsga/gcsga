@@ -5,22 +5,23 @@ import { ItemTemplateType } from "../types.ts"
 import { ActorType, ItemType } from "@module/data/constants.ts"
 import { WeaponStrength } from "../fields/weapon-strength.ts"
 import { WeaponDamage } from "../fields/weapon-damage.ts"
-import { SkillDefault, SkillDefaultSchema } from "@module/data/skill-default.ts"
+import { SkillDefault } from "@module/data/skill-default.ts"
 import { Feature } from "@module/data/feature/types.ts"
 import { WeaponBonus } from "@module/data/feature/index.ts"
 import { Nameable } from "@module/util/index.ts"
+import { SkillDefaultTemplate, SkillDefaultTemplateSchema } from "./defaults.ts"
 
-class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema> {
+class AbstractWeaponTemplate extends ItemDataModel.mixin(SkillDefaultTemplate) {
 	protected declare _weaponLevel: number
 
 	static override defineSchema(): AbstractWeaponTemplateSchema {
 		const fields = foundry.data.fields
-		return {
+		return super.mergeSchema(super.defineSchema(), {
 			strength: new fields.EmbeddedDataField(WeaponStrength),
-			defaults: new fields.ArrayField(new fields.EmbeddedDataField(SkillDefault)),
+			// defaults: new fields.ArrayField(new fields.EmbeddedDataField(SkillDefault)),
 			damage: new fields.EmbeddedDataField(WeaponDamage),
 			unready: new fields.BooleanField({ required: true, nullable: false, initial: false }),
-		}
+		}) as AbstractWeaponTemplateSchema
 	}
 
 	get processedName(): string {
@@ -300,19 +301,17 @@ class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema>
 	}
 }
 
-interface AbstractWeaponTemplate
-	extends ItemDataModel<AbstractWeaponTemplateSchema>,
-		ModelPropsFromSchema<AbstractWeaponTemplateSchema> {
+interface AbstractWeaponTemplate extends ModelPropsFromSchema<AbstractWeaponTemplateSchema> {
 	constructor: typeof AbstractWeaponTemplate
 	nameableReplacements: Map<string, string>
 	tags: string[]
 }
 
-type AbstractWeaponTemplateSchema = {
+type AbstractWeaponTemplateSchema = SkillDefaultTemplateSchema & {
 	strength: fields.EmbeddedDataField<WeaponStrength>
-	defaults: fields.ArrayField<
-		fields.SchemaField<SkillDefaultSchema, SourceFromSchema<SkillDefaultSchema>, SkillDefault>
-	>
+	// defaults: fields.ArrayField<
+	// 	fields.SchemaField<SkillDefaultSchema, SourceFromSchema<SkillDefaultSchema>, SkillDefault>
+	// >
 	damage: fields.EmbeddedDataField<WeaponDamage>
 	unready: fields.BooleanField<boolean, boolean>
 }

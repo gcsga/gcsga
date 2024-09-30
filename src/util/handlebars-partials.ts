@@ -5,6 +5,7 @@ export async function preloadHandlebarsTemplates(): Promise<void> {
 		// Item Detsils Partials
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-prereqs.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-features.hbs`,
+		`systems/${SYSTEM_NAME}/templates/items/parts/details-defaults.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-equipment.hbs`,
 
 		// Item Embeds Partials

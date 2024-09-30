@@ -6,6 +6,7 @@ import { ItemTemplateType } from "@module/data/item/types.ts"
 import { AttributePrereq } from "@module/data/prereq/index.ts"
 import { PrereqList, PrereqListSchema } from "@module/data/prereq/prereq-list.ts"
 import { PrereqTypes } from "@module/data/prereq/types.ts"
+import { SkillDefault } from "@module/data/skill-default.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { feature, prereq } from "@util/enum/index.ts"
 import { generateId } from "@util/misc.ts"
@@ -48,6 +49,8 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			addFeature: this.#onAddFeature,
 			deleteFeature: this.#onDeleteFeature,
 			toggleDrBonusLocation: this.#onToggleDrBonusLocation,
+			addDefault: this.#onAddDefault,
+			deleteDefault: this.#onDeleteDefault,
 		},
 		dragDrop: [{ dragSelector: "item-list .item", dropSelector: null }],
 	}
@@ -229,6 +232,35 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		features.splice(index, 1)
 
 		await this.item.update({ "system.features": features })
+	}
+
+	static async #onAddDefault(this: ItemSheetGURPS, event: Event): Promise<void> {
+		event.preventDefault()
+		event.stopImmediatePropagation()
+
+		const item = this.item
+		if (!item.hasTemplate(ItemTemplateType.Default)) return
+
+		const defaults = item.system.toObject().defaults
+		defaults.push(new SkillDefault({}).toObject())
+
+		await this.item.update({ "system.defaults": defaults })
+	}
+
+	static async #onDeleteDefault(this: ItemSheetGURPS, event: Event): Promise<void> {
+		event.preventDefault()
+		event.stopImmediatePropagation()
+
+		const element = event.target as HTMLElement
+		const index = parseInt(element.dataset.index ?? "")
+		if (isNaN(index)) return
+		const item = this.item
+		if (!item.hasTemplate(ItemTemplateType.Default)) return
+
+		const defaults = item.system.toObject().defaults
+		defaults.splice(index, 1)
+
+		await this.item.update({ "system.defaults": defaults })
 	}
 
 	async _onChangePrereqType(event: Event): Promise<void> {

@@ -18,6 +18,7 @@ import { CellData } from "./fields/cell-data.ts"
 import { SkillDefault } from "../skill-default.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { Study } from "../study.ts"
+import { SkillDefaultTemplate, SkillDefaultTemplateSchema } from "./templates/defaults.ts"
 
 class TechniqueData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -26,6 +27,7 @@ class TechniqueData extends ItemDataModel.mixin(
 	FeatureTemplate,
 	StudyTemplate,
 	ReplacementTemplate,
+	SkillDefaultTemplate,
 	AbstractSkillTemplate,
 ) {
 	static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
@@ -49,7 +51,7 @@ class TechniqueData extends ItemDataModel.mixin(
 				required: true,
 				nullable: true,
 			}),
-			defaults: new fields.ArrayField(new fields.EmbeddedDataField(SkillDefault)),
+			// defaults: new fields.ArrayField(new fields.EmbeddedDataField(SkillDefault)),
 			limit: new fields.NumberField({
 				required: true,
 				nullable: true,
@@ -185,7 +187,7 @@ class TechniqueData extends ItemDataModel.mixin(
 	 *  data. Does not transform the object.
 	 */
 	override calculateLevel(excludes: Set<string> = new Set()): SkillLevel {
-		const def = this.default ?? new SkillDefault({}, { parent: this.parent })
+		const def = this.default ?? new SkillDefault({})
 
 		return calculateTechniqueLevel(
 			this.parent.actor,
@@ -235,17 +237,7 @@ class TechniqueData extends ItemDataModel.mixin(
 	}
 }
 
-interface TechniqueData
-	extends Omit<
-		ModelPropsFromSchema<TechniqueSchema>,
-		"study" | "default" | "defaults" | "defaulted_from" | "difficulty"
-	> {
-	study: Study[]
-	default: SkillDefault
-	defaulted_from: SkillDefault
-	defaults: SkillDefault[]
-	difficulty: AttributeDifficulty
-}
+interface TechniqueData extends ModelPropsFromSchema<TechniqueSchema> {}
 
 type TechniqueSchema = BasicInformationTemplateSchema &
 	PrereqTemplateSchema &
@@ -253,10 +245,11 @@ type TechniqueSchema = BasicInformationTemplateSchema &
 	FeatureTemplateSchema &
 	StudyTemplateSchema &
 	ReplacementTemplateSchema &
+	SkillDefaultTemplateSchema &
 	AbstractSkillTemplateSchema & {
 		default: fields.EmbeddedDataField<SkillDefault, true, false, true>
 		defaulted_from: fields.EmbeddedDataField<SkillDefault, true, false, true>
-		defaults: fields.ArrayField<fields.EmbeddedDataField<SkillDefault>>
+		// defaults: fields.ArrayField<fields.EmbeddedDataField<SkillDefault>>
 		limit: fields.NumberField<number, number, true, true, true>
 		limited: fields.BooleanField<boolean, boolean, true, false, true>
 	}
