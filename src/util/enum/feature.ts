@@ -124,5 +124,12 @@ export namespace feature {
 		Object.fromEntries(Types.map(T => [T, Type.toString(T)])) as Record<Type, string>,
 	)
 
+	export const TypesWithoutContainedWeightReductionChoices: Readonly<Record<Type, string>> = Object.freeze(
+		Object.fromEntries(TypesWithoutContainedWeightReduction.map(T => [T, Type.toString(T)])) as Record<
+			Type,
+			string
+		>,
+	)
+
 	export type WeaponBonusType = (typeof WeaponBonusTypes)[number]
 }

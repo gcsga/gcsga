@@ -263,7 +263,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 
 		const features = item.system.toObject().features
 
-		features.splice(index, 1, new FeatureTypes[value]().toObject())
+		features.splice(index, 1, new FeatureTypes[value]({ type: value }).toObject())
 
 		this.item.update({ "system.features": features })
 	}
@@ -333,7 +333,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			}
 		}
 
-		console.log(formData.object)
+		// console.log(formData.object)
 
 		await this.item.update(formData.object)
 	}

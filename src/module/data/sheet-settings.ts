@@ -69,7 +69,11 @@ class SheetSettings extends foundry.abstract.DataModel<ActorDataModel, Character
 	}
 
 	static default(): SheetSettings {
-		return new SheetSettings({})
+		return new SheetSettings({
+			...game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_SHEET_SETTINGS),
+			...game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_ATTRIBUTES),
+			...game.settings.get(SYSTEM_NAME, SETTINGS.DEFAULT_HIT_LOCATIONS),
+		})
 	}
 
 	static for(actor: ActorGURPS2 | null): SheetSettings {

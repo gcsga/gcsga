@@ -101,7 +101,7 @@ class WeaponDamage extends WeaponField<AbstractWeaponTemplate, WeaponDamageSchem
 					if (bonus.percent) percentDamageBonus += amt
 					else {
 						if (adjustForPhoenixFlame) {
-							if (bonus.leveled) amt /= 2
+							if (bonus.per_level) amt /= 2
 							if (bonus.per_die) amt /= 2
 						}
 						base.modifier += amt

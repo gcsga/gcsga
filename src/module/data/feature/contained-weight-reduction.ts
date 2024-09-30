@@ -1,16 +1,16 @@
-import fields = foundry.data.fields
+import { createButton } from "@module/applications/helpers.ts"
 import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
 import { Int, Weight, feature } from "@util"
+import { SheetSettings } from "../sheet-settings.ts"
+import { WeightField } from "../item/fields/weight-field.ts"
 
 class ContainedWeightReduction extends BaseFeature<ContainedWeightReductionSchema> {
 	static override TYPE = feature.Type.ContainedWeightReduction
 
 	static override defineSchema(): ContainedWeightReductionSchema {
-		const fields = foundry.data.fields
-
 		return {
 			...super.defineSchema(),
-			reduction: new fields.StringField({ initial: "0%" }),
+			reduction: new WeightField({ required: true, nullable: false, initial: "0%", allowPercent: true }),
 		}
 	}
 
@@ -38,6 +38,64 @@ class ContainedWeightReduction extends BaseFeature<ContainedWeightReductionSchem
 		return Weight.format(w)
 	}
 
+	override toFormElement(): HTMLElement {
+		const element = document.createElement("li")
+		const prefix = `system.features.${this.index}`
+
+		const temporaryInput = this.schema.fields.type.toInput({
+			name: `${prefix}.id`,
+			value: this.type,
+			readonly: true,
+		}) as HTMLElement
+		temporaryInput.style.setProperty("display", "none")
+		element.append(temporaryInput)
+
+		const rowElement = document.createElement("div")
+		rowElement.classList.add("form-fields")
+
+		rowElement.append(
+			createButton({
+				icon: ["fa-regular", "fa-trash"],
+				label: "",
+				data: {
+					action: "deleteFeature",
+					index: this.index.toString(),
+				},
+			}),
+		)
+
+		rowElement.append(
+			foundry.applications.fields.createSelectInput({
+				name: `${prefix}.type`,
+				value: this.type,
+				dataset: {
+					selector: "feature-type",
+					index: this.index.toString(),
+				},
+				localize: true,
+				options: this._getTypeChoices(),
+			}),
+		)
+
+		const settings = SheetSettings.for(this.parent.actor)
+		rowElement.append(
+			this.schema.fields.reduction.toInput({
+				name: `${prefix}.reduction`,
+				value: this.isPercentageReduction
+					? this.reduction
+					: Weight.format(
+							Weight.fromStringForced(this.reduction, settings.default_weight_units),
+							settings.default_weight_units,
+						),
+				localize: true,
+			}) as HTMLElement,
+		)
+
+		element.append(rowElement)
+
+		return element
+	}
+
 	fillWithNameableKeys(_m: Map<string, string>, _existing: Map<string, string>): void {}
 }
 
@@ -46,6 +104,6 @@ interface ContainedWeightReduction
 		ModelPropsFromSchema<ContainedWeightReductionSchema> {}
 
 type ContainedWeightReductionSchema = BaseFeatureSchema & {
-	reduction: fields.StringField<string, string, true, false, true>
+	reduction: WeightField<string, string, true, false, true>
 }
 export { ContainedWeightReduction, type ContainedWeightReductionSchema }

@@ -114,6 +114,21 @@
 						"Specialization": "and whose specialization {value}",
 						"TagsSingle": "and at least one tag {value}",
 						"TagsPlural": "and all tags {value} "
+					},
+					"WeaponBonus": {
+						"Specialization": "and whose specialization {value}",
+						"Usage": "and whose usage {value}",
+						"Level": "and whose relative skill level {value}",
+						"PerDie": "per die",
+						"Percent": "as a %"
+					},
+					"CostReduction": {
+						"Attribute": "{value}",
+						"Reduction": "by {value}%"
+					},
+					"MoveBonus": {
+						"Base": "to base move",
+						"Enhanced": "to enhanced move"
 					}
 				}
 			},
@@ -335,6 +350,11 @@
 			},
 			"skillsel": {
 				"skills_with_name": "to skills whose name",
+				"this_weapon": "to this weapon",
+				"weapons_with_name": "to weapons whose name"
+			},
+			"wsel": {
+				"weapons_with_required_skill": "to weapons whose required skill name",
 				"this_weapon": "to this weapon",
 				"weapons_with_name": "to weapons whose name"
 			},

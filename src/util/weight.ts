@@ -42,7 +42,7 @@ export namespace Weight {
 			if (text.endsWith(unit)) {
 				const r = new RegExp(`${unit}$`)
 				const [value, error] = Int.fromString(text.replace(r, "").trim())
-				if (error === null) {
+				if (error !== null) {
 					return [0, error]
 				}
 				return [toPounds(value, unit), null]

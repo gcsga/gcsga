@@ -98,9 +98,9 @@ abstract class BasePrereq<TSchema extends BasePrereqSchema = BasePrereqSchema> e
 				localize: true,
 			}) as HTMLElement,
 		)
+
 		const typeField = this.schema.fields.type
 		;(typeField as any).choices = prereq.TypesWithoutListChoices
-
 		rowElement.append(
 			typeField.toInput({
 				name: `${prefix}.type`,

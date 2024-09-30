@@ -1,5 +1,3 @@
-import { LocalizeGURPS } from "@util/localize.ts"
-
 export namespace wsel {
 	export enum Type {
 		WithRequiredSkill = "weapons_with_required_skill",
@@ -14,8 +12,12 @@ export namespace wsel {
 		}
 
 		export function toString(T: Type): string {
-			return LocalizeGURPS.translations.gurps.enum.wsel[T]
+			return `GURPS.Enum.wsel.${T}`
 		}
 	}
 	export const Types: Type[] = [Type.WithRequiredSkill, Type.ThisWeapon, Type.WithName]
+
+	export const TypesChoices: Readonly<Record<Type, string>> = Object.freeze(
+		Object.fromEntries(Types.map(T => [T, Type.toString(T)])) as Record<Type, string>,
+	)
 }

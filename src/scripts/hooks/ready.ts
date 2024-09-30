@@ -1,10 +1,12 @@
 import { SOCKET } from "@data"
 import { loadModifiers } from "@module/apps/modifier-bucket/data.ts"
 import { CharacterDataGURPS } from "@module/data/actor/character.ts"
+import { SheetSettings } from "@module/data/sheet-settings.ts"
 import { AttributesConfig } from "@module/settings/attributes-config.ts"
 import { HitLocationsConfig } from "@module/settings/hit-location-config.ts"
 import { Evaluator } from "@module/util/index.ts"
 import { SetGameGURPS } from "@scripts/set-game-gurps.ts"
+import { Weight } from "@util"
 import { Int } from "@util/int.ts"
 
 export const Ready = {
@@ -28,6 +30,8 @@ export const Ready = {
 				HitLocationsConfig,
 				CharacterData: CharacterDataGURPS,
 				Evaluator,
+				SheetSettings,
+				Weight,
 			}
 
 			// Determine whether a system migration is required and feasible

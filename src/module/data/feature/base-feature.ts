@@ -115,6 +115,16 @@ abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema
 		return new Handlebars.SafeString(this.toFormElement().outerHTML)
 	}
 
+	protected _getTypeChoices(): { value: string; label: string }[] {
+		const choices = this.parent.isOfType(ItemType.EquipmentContainer)
+			? feature.TypesChoices
+			: feature.TypesWithoutContainedWeightReductionChoices
+
+		return Object.entries(choices).map(([value, label]) => {
+			return { value, label }
+		})
+	}
+
 	addToTooltip(tooltip: TooltipGURPS | null): void {
 		return this.basicAddToTooltip(tooltip)
 	}
@@ -171,7 +181,7 @@ abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema
 		)
 
 		rowElement.append(
-			this.schema.fields.type.toInput({
+			foundry.applications.fields.createSelectInput({
 				name: `${prefix}.type`,
 				value: this.type,
 				dataset: {
@@ -179,7 +189,8 @@ abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema
 					index: this.index.toString(),
 				},
 				localize: true,
-			}) as HTMLElement,
+				options: this._getTypeChoices(),
+			}),
 		)
 
 		rowElement.append(

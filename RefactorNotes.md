@@ -29,9 +29,10 @@
 - Item Sheet \*CURRENT
   - Header color dependent on item type page color in GURPS Basic Set
   - Prereqs \*DONE
-  - Features \* CURRENT
-  - Defaults
+  - Features \* DONE
+  - Defaults \* CURRENT
   - Equipment \*DONE
+  - Equipment Container
   - Trait
   - Trait Container
   - Spell

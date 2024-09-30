@@ -8,6 +8,11 @@ enum MoveBonusType {
 	Enhanced = "enhanced",
 }
 
+const MoveBonusTypeChoices = Object.freeze({
+	[MoveBonusType.Base]: "GURPS.Item.Features.FIELDS.MoveBonus.Base",
+	[MoveBonusType.Enhanced]: "GURPS.Item.Features.FIELDS.MoveBonus.Enhanced",
+})
+
 class MoveBonus extends BaseFeature<MoveBonusSchema> {
 	static override TYPE = feature.Type.MoveBonus
 
@@ -17,8 +22,48 @@ class MoveBonus extends BaseFeature<MoveBonusSchema> {
 		return {
 			...super.defineSchema(),
 			move_type: new fields.StringField({ initial: gid.Ground }),
-			limitation: new fields.StringField({ choices: Object.values(MoveBonusType), initial: MoveBonusType.Base }),
+			limitation: new fields.StringField({
+				required: true,
+				nullable: false,
+				blank: false,
+				choices: MoveBonusTypeChoices,
+				initial: MoveBonusType.Base,
+			}),
 		}
+	}
+
+	override toFormElement(): HTMLElement {
+		const prefix = `system.features.${this.index}`
+		const element = super.toFormElement()
+
+		const rowElement = document.createElement("div")
+		rowElement.classList.add("form-fields", "secondary")
+
+		rowElement.append(
+			foundry.applications.fields.createSelectInput({
+				name: `${prefix}.attribute`,
+				value: this.move_type,
+				localize: true,
+				options: [
+					{ value: gid.Ground, label: "GROUND" },
+					{ value: gid.Water, label: "WATER" },
+					{ value: gid.Air, label: "AIR" },
+					{ value: gid.Space, label: "SPACE" },
+				],
+			}),
+		)
+
+		rowElement.append(
+			this.schema.fields.limitation.toInput({
+				name: `${prefix}.limitation`,
+				value: this.limitation,
+				localize: true,
+			}) as HTMLElement,
+		)
+
+		element.append(rowElement)
+
+		return element
 	}
 
 	fillWithNameableKeys(_m: Map<string, string>, _existing: Map<string, string>): void {}

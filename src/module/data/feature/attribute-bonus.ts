@@ -53,15 +53,30 @@ class AttributeBonus extends BaseFeature<AttributeBonusSchema> {
 		const prefix = `system.features.${this.index}`
 		const element = super.toFormElement()
 
+		const attributeChoices = Object.entries(
+			getAttributeChoices(this.parent.actor, this.attribute, "GURPS.Item.Features.FIELDS.Attribute.Attribute", {
+				blank: false,
+				ten: false,
+				size: true,
+				dodge: true,
+				parry: true,
+				block: true,
+				skill: false,
+			}).choices,
+		).map(([value, label]) => {
+			return { value, label }
+		})
+
 		const rowElement = document.createElement("div")
 		rowElement.classList.add("form-fields", "secondary")
 
 		rowElement.append(
-			this.schema.fields.attribute.toInput({
+			foundry.applications.fields.createSelectInput({
 				name: `${prefix}.attribute`,
 				value: this.attribute,
 				localize: true,
-			}) as HTMLElement,
+				options: attributeChoices,
+			}),
 		)
 
 		rowElement.append(
