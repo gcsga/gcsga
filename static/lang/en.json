@@ -132,6 +132,14 @@
 					}
 				}
 			},
+			"Defaults": {
+				"DetailsLegend": "Defaults",
+				"FIELDS": {
+					"Attribute": "{value}",
+					"Name": "Name",
+					"Specialization": "Specialization"
+				}
+			},
 			"Equipment": {
 				"DetailsLegend": "Equipment Details",
 				"FIELDS": {
@@ -151,6 +159,7 @@
 		},
 		"Attribute": {
 			"SizeModifier": "Size Modifier",
+			"Dodge": "Dodge",
 			"Parry": "Parry",
 			"Block": "Block",
 			"Skill": "Skill",

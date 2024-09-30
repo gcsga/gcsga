@@ -16,7 +16,7 @@ const { api, sheets } = foundry.applications
 class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<ItemGURPS2>) {
 	// Set initial values for tabgroups
 	override tabGroups: Record<string, string> = {
-		primary: "description",
+		primary: "details",
 	}
 
 	static override DEFAULT_OPTIONS: Partial<DocumentSheetConfiguration> & { dragDrop: DragDropConfiguration[] } = {

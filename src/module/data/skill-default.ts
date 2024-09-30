@@ -17,7 +17,7 @@ class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaul
 		const fields = foundry.data.fields
 
 		return {
-			type: new fields.StringField<SkillDefaultType, SkillDefaultType, true>({
+			type: new fields.StringField({
 				required: true,
 				initial: gid.Dexterity,
 			}),
@@ -48,7 +48,7 @@ class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaul
 		const prefix = `system.defaults.${this.index}`
 
 		const choices = Object.entries(
-			getAttributeChoices(this.parent.actor, this.type, "", {
+			getAttributeChoices(this.parent.actor, this.type, "GURPS.Item.Defaults.FIELDS.Attribute", {
 				blank: false,
 				ten: true,
 				size: false,
@@ -88,6 +88,8 @@ class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaul
 			this.schema.fields.name.toInput({
 				name: `${prefix}.name`,
 				value: this.name ?? "",
+				localize: true,
+				placeholder: game.i18n.localize("GURPS.Item.Defaults.FIELDS.Name"),
 				disabled: this.type !== gid.Skill,
 			}) as HTMLElement,
 		)
@@ -96,6 +98,8 @@ class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaul
 			this.schema.fields.specialization.toInput({
 				name: `${prefix}.specialization`,
 				value: this.specialization ?? "",
+				localize: true,
+				placeholder: game.i18n.localize("GURPS.Item.Defaults.FIELDS.Specialization"),
 				disabled: this.type !== gid.Skill,
 			}) as HTMLElement,
 		)

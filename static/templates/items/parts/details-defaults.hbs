@@ -1,0 +1,16 @@
+<fieldset class="details-defaults">
+	<legend>{{localize "GURPS.Item.Defaults.DetailsLegend"}}</legend>
+	<button data-action="addDefault"><i class="fa-regular fa-plus"></i></button>
+	<ul>
+		<!-- Iterate over features -->
+		{{#each system.defaults as |default|}}
+		<!-- Gap between entries -->
+		{{#unless @first}}
+		<hr />
+		{{/unless}}
+		<!-- Generated feature partial -->
+		{{default.element}}
+		<!-- End Loop -->
+		{{/each}}
+	</ul>
+</fieldset>
