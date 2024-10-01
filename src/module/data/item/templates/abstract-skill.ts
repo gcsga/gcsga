@@ -15,9 +15,26 @@ class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 		const fields = foundry.data.fields
 		return {
 			difficulty: new fields.EmbeddedDataField(AttributeDifficulty),
-			tech_level: new fields.StringField({ required: true, nullable: false, initial: "" }),
-			tech_level_required: new fields.BooleanField({ required: true, nullable: false, initial: false }),
-			points: new fields.NumberField({ integer: true, min: 0 }),
+			tech_level: new fields.StringField({
+				required: true,
+				nullable: false,
+				initial: "",
+				label: "GURPS.Item.Skill.FIELDS.TechLevel.Name",
+			}),
+			tech_level_required: new fields.BooleanField({
+				required: true,
+				nullable: false,
+				initial: false,
+				label: "GURPS.Item.Skill.FIELDS.TechLevelRequired.Name",
+			}),
+			points: new fields.NumberField({
+				required: true,
+				nullable: false,
+				integer: true,
+				min: 0,
+				initial: 0,
+				label: "GURPS.Item.Skill.FIELDS.Points.Name",
+			}),
 		}
 	}
 
@@ -154,6 +171,6 @@ type AbstractSkillTemplateSchema = {
 	difficulty: fields.EmbeddedDataField<AttributeDifficulty>
 	tech_level: fields.StringField<string, string, true, false, true>
 	tech_level_required: fields.BooleanField<boolean, boolean, true, false, true>
-	points: fields.NumberField<number, number, true, false>
+	points: fields.NumberField<number, number, true, false, true>
 }
 export { AbstractSkillTemplate, type AbstractSkillTemplateSchema }

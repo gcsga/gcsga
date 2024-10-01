@@ -1,4 +1,3 @@
-import { LocalizeGURPS } from "@util/localize.ts"
 import { equalFold } from "@module/util/string-criteria.ts"
 
 export namespace difficulty {
@@ -17,7 +16,7 @@ export namespace difficulty {
 		}
 
 		export function toString(L: Level): string {
-			return LocalizeGURPS.translations.gurps.enum.difficulty[L]
+			return `GURPS.Enum.difficulty.${L}`
 		}
 
 		export function baseRelativeLevel(L: Level): number {
@@ -45,4 +44,13 @@ export namespace difficulty {
 	export const Levels: Level[] = [Level.Easy, Level.Average, Level.Hard, Level.VeryHard, Level.Wildcard]
 
 	export const TechniqueLevels = [Level.Average, Level.Hard] as const
+
+	export function LevelsChoices(localizationKey: string, exclude: Level[] = []): Record<Level, string> {
+		return Object.fromEntries(
+			Levels.filter(k => !exclude.includes(k)).map(k => [
+				k,
+				game.i18n.format(localizationKey, { value: game.i18n.localize(Level.toString(k)) }),
+			]),
+		) as Record<Level, string>
+	}
 }

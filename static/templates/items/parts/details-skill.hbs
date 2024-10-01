@@ -1,0 +1,67 @@
+{{print attributeChoices}}
+<fieldset>
+	<legend>{{localize "GURPS.Item.Skill.DetailsLegend"}}</legend>
+	<!-- If item is not owned, points field should be invisible -->
+	{{#unless item.isOwned}}
+	<input name="system.points" value="0" style="display: none" />
+	{{/unless}}
+
+	<!-- Specialization -->
+	{{formField fields.specialization value=source.specialization localize=true}}
+
+	<!-- Tech Level -->
+	<div class="form-group">
+		<label>{{localize "GURPS.Item.Skill.FIELDS.TechLevel.Name"}}</label>
+		<div class="form-fields">
+			<!-- Tech Level Number -->
+			{{formInput fields.tech_level value=source.tech_level disabled=(not source.tech_level_required)}}
+			<!-- Tech Level Enabled -->
+			<label>
+				<!-- Input -->
+				{{formInput fields.tech_level_required value=source.tech_level_required}}
+				<!-- Label Contents -->
+				{{localize "GURPS.Item.Skill.FIELDS.TechLevelRequired.Name"}}
+			</label>
+		</div>
+	</div>
+
+	<!-- Notes -->
+	{{formField fields.notes value=source.notes localize=true}}
+
+	<!-- Tags -->
+	{{formField fields.tags value=source.tags localize=true}}
+
+	<!-- Difficulty -->
+	<div class="form-group">
+		<label>{{localize "GURPS.Item.Skill.FIELDS.Difficulty.Name"}}</label>
+		<div class="form-fields">
+			<!-- Attribute -->
+			{{formInput fields.difficulty.fields.attribute value=source.difficulty.attribute}}
+			<!-- / -->
+			<label>/</label>
+			<!-- Difficulty -->
+			{{formInput fields.difficulty.fields.difficulty value=source.difficulty.difficulty}}
+		</div>
+	</div>
+
+	<!-- Encumbrance Penalty -->
+	{{formField fields.encumbrance_penalty_multiplier value=source.encumbrance_penalty_multiplier localize=true}}
+
+	<!-- Points & Level -->
+	{{#if item.isOwned}}
+	<div class="form-group">
+		<label>{{localize "GURPS.Item.Skill.FIELDS.Points.Name"}}</label>
+		<div class="form-fields">
+			<!-- Points -->
+			{{formInput fields.points value=source.points}}
+
+			<!-- Level -->
+			<label>{{localize "GURPS.Item.Skill.FIELDS.Level.Name"}}</label>
+			<input type="text" readonly value="source.level" />
+		</div>
+	</div>
+	{{/if}}
+
+	<!-- Reference -->
+	{{formField fields.reference value=source.reference localize=true}}
+</fieldset>

@@ -1,3 +1,4 @@
+import { getAttributeChoices } from "@module/data/attribute/helpers.ts"
 import { SYSTEM_NAME, gid } from "@module/data/constants.ts"
 import { AttributeBonus } from "@module/data/feature/attribute-bonus.ts"
 import { DRBonusSchema } from "@module/data/feature/dr-bonus.ts"
@@ -347,6 +348,19 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 	protected override async _preparePartContext(partId: string, context: Record<string, any>): Promise<object> {
 		context.partId = `${this.id}-${partId}`
 		context.tab = context.tabs[partId]
+
+		if (partId === "details-skill") this._prepareSkillPartContext(context)
+		return context
+	}
+
+	protected async _prepareSkillPartContext(context: Record<string, any>): Promise<object> {
+		if (!this.item.hasTemplate(ItemTemplateType.AbstractSkill)) return context
+		context.attributeChoices = getAttributeChoices(
+			this.item.actor,
+			this.item.system.difficulty.attribute,
+			"GURPS.Item.Skill.FIELDS.Difficulty.Attribute",
+			{ blank: false, ten: true, size: false, dodge: false, parry: false, block: false, skill: false },
+		)
 		return context
 	}
 

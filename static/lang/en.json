@@ -155,6 +155,29 @@
 					"Level": { "Name": "Level" },
 					"IgnoreWeightForSkills": { "Name": "Ignore weight for skills" }
 				}
+			},
+			"Skill": {
+				"DetailsLegend": "Skill Details",
+				"FIELDS": {
+					"Specialization": { "Name": "Specialization" },
+					"TechLevel": { "Name": "Tech Level" },
+					"TechLevelRequired": { "Name": "Required" },
+					"Difficulty": {
+						"Name": "Difficulty",
+						"Attribute": "{value}",
+						"Difficulty": "{value}"
+					},
+					"EncumbrancePenaltyMultiplier": {
+						"Name": "Encumbrance Penalty",
+						"After": "times the current encumbrance level"
+					},
+					"Points": {
+						"Name": "Points"
+					},
+					"Level": {
+						"Name": "Level"
+					}
+				}
 			}
 		},
 		"Attribute": {
@@ -356,6 +379,13 @@
 				"primary_separator": "Primary Separator",
 				"secondary_separator": "Secondary Separator",
 				"pool_separator": "Pool Separator"
+			},
+			"difficulty": {
+				"e": "E",
+				"a": "A",
+				"h": "H",
+				"vh": "VH",
+				"w": "W"
 			},
 			"skillsel": {
 				"skills_with_name": "to skills whose name",

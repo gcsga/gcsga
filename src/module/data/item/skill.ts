@@ -43,7 +43,12 @@ class SkillData extends ItemDataModel.mixin(
 	static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
 
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
-		context.detailsParts = ["gurps.details-prereqs", "gurps.details-features", "gurps.details-defaults"]
+		context.detailsParts = [
+			"gurps.details-skill",
+			"gurps.details-prereqs",
+			"gurps.details-features",
+			"gurps.details-defaults",
+		]
 		context.embedsParts = ["gurps.embeds-weapons"]
 	}
 
@@ -55,18 +60,21 @@ class SkillData extends ItemDataModel.mixin(
 				required: true,
 				nullable: false,
 				initial: "",
+				label: "GURPS.Item.Skill.FIELDS.Specialization.Name",
 			}),
 			difficulty: new fields.EmbeddedDataField(AttributeDifficulty, {
 				initial: {
 					attribute: gid.Dexterity,
 					difficulty: difficulty.Level.Average,
 				},
+				label: "GURPS.Item.Skill.FIELDS.Difficulty.Name",
 			}),
 			encumbrance_penalty_multiplier: new fields.NumberField({
 				integer: true,
 				min: 0,
 				max: 9,
 				initial: 0,
+				label: "GURPS.Item.Skill.FIELDS.EncumbrancePenaltyMultiplier.Name",
 			}),
 			defaulted_from: new fields.EmbeddedDataField(SkillDefault, {
 				required: true,
