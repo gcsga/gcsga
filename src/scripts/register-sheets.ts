@@ -11,7 +11,7 @@ export function registerSheets(): void {
 	})
 
 	Items.registerSheet(SYSTEM_NAME, ItemSheetGURPS, {
-		types: [ItemType.Equipment, ItemType.EquipmentContainer, ItemType.Skill],
+		types: [ItemType.Equipment, ItemType.EquipmentContainer, ItemType.Skill, ItemType.Technique],
 		makeDefault: true,
 		label: "GURPS Item Sheet V2",
 	})

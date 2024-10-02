@@ -73,6 +73,7 @@
 
 ## Current Task Notes
 
+- AttributeDifficultyField to allow dynamically assigning attribute options (such as "blank" between skill and technique)
 - Save last added prereq/feature as in GCS
 - Replacements tab on item sheet
 - Toggle for showing replacements instead of placeholders (optional)

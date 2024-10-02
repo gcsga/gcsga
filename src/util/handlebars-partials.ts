@@ -8,6 +8,7 @@ export async function preloadHandlebarsTemplates(): Promise<void> {
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-defaults.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-equipment.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-skill.hbs`,
+		`systems/${SYSTEM_NAME}/templates/items/parts/details-technique.hbs`,
 
 		// Item Embeds Partials
 		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-equipment-children.hbs`,

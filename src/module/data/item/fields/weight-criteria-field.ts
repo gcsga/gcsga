@@ -1,6 +1,6 @@
 import { NumericComparison } from "@util"
 import fields = foundry.data.fields
-import { WeightCriteria } from "@module/util/index.ts"
+import { WeightCriteria } from "../compontents/weight-criteria.ts"
 
 class WeightCriteriaField<
 	TRequired extends boolean = true,

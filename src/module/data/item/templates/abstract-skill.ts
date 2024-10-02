@@ -5,8 +5,9 @@ import { ItemType } from "@module/data/constants.ts"
 import { SkillLevel } from "../helpers.ts"
 import { ItemTemplateType } from "../types.ts"
 import { ActorTemplateType } from "@module/data/actor/types.ts"
-import { AttributeDifficulty } from "../fields/attribute-difficulty.ts"
+import { AttributeDifficulty } from "../compontents/attribute-difficulty.ts"
 import { Nameable } from "@module/util/index.ts"
+import { AttributeDifficultyField } from "../fields/attribute-difficulty-field.ts"
 
 class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 	protected declare _skillLevel: SkillLevel
@@ -14,7 +15,7 @@ class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 	static override defineSchema(): AbstractSkillTemplateSchema {
 		const fields = foundry.data.fields
 		return {
-			difficulty: new fields.EmbeddedDataField(AttributeDifficulty),
+			difficulty: new AttributeDifficultyField(),
 			tech_level: new fields.StringField({
 				required: true,
 				nullable: false,
@@ -168,7 +169,7 @@ interface AbstractSkillTemplate
 }
 
 type AbstractSkillTemplateSchema = {
-	difficulty: fields.EmbeddedDataField<AttributeDifficulty>
+	difficulty: AttributeDifficultyField
 	tech_level: fields.StringField<string, string, true, false, true>
 	tech_level_required: fields.BooleanField<boolean, boolean, true, false, true>
 	points: fields.NumberField<number, number, true, false, true>

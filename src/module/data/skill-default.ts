@@ -11,7 +11,6 @@ import { getAttributeChoices } from "./attribute/helpers.ts"
 
 const SKILL_BASED_DEFAULT_TYPES: Set<string> = new Set([gid.Skill, gid.Parry, gid.Block])
 
-// class SkillDefault<TItem extends ItemGURPS = ItemGURPS> extends foundry.abstract.DataModel<TItem, SkillDefaultSchema> {
 class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaultSchema> {
 	static override defineSchema(): SkillDefaultSchema {
 		const fields = foundry.data.fields
@@ -275,7 +274,6 @@ class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaul
 	}
 }
 
-// interface SkillDefault<TItem extends ItemGURPS>
 interface SkillDefault
 	extends foundry.abstract.DataModel<ItemDataModel, SkillDefaultSchema>,
 		ModelPropsFromSchema<SkillDefaultSchema> {}

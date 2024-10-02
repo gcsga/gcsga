@@ -1,6 +1,6 @@
 import fields = foundry.data.fields
 import { ActorType, gid } from "@data"
-import { equalFold } from "@module/util/string-criteria.ts"
+import { equalFold } from "@module/data/item/compontents/string-criteria.ts"
 import { StringBuilder, TooltipGURPS, generateId } from "@util"
 import { DiceGURPS } from "./dice.ts"
 import { type ActorGURPS2 } from "@module/document/actor.ts"

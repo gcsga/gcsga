@@ -13,12 +13,12 @@ import { SkillLevel, addTooltipForSkillLevelAdj, calculateTechniqueLevel, format
 import { ActorTemplateType } from "../actor/types.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { SkillData } from "./index.ts"
-import { AttributeDifficulty } from "./fields/attribute-difficulty.ts"
-import { CellData } from "./fields/cell-data.ts"
+import { CellData } from "./compontents/cell-data.ts"
 import { SkillDefault } from "../skill-default.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { Study } from "../study.ts"
 import { SkillDefaultTemplate, SkillDefaultTemplateSchema } from "./templates/defaults.ts"
+import { AttributeDifficultyField } from "./fields/attribute-difficulty-field.ts"
 
 class TechniqueData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -32,16 +32,43 @@ class TechniqueData extends ItemDataModel.mixin(
 ) {
 	static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
 
+	constructor(
+		data?: DeepPartial<SourceFromSchema<TechniqueSchema>>,
+		options?: DataModelConstructionOptions<ItemGURPS2 | null>,
+	) {
+		super(data, options)
+		;(this.difficulty.schema as any).difficultyChoices = difficulty.LevelsChoices(
+			"GURPS.Item.Skill.FIELDS.Difficulty.Difficulty",
+			[difficulty.Level.Easy, difficulty.Level.VeryHard, difficulty.Level.Wildcard],
+		)
+	}
+
+	override async getSheetData(context: Record<string, unknown>): Promise<void> {
+		context.detailsParts = [
+			"gurps.details-technique",
+			"gurps.details-prereqs",
+			"gurps.details-features",
+			"gurps.details-defaults",
+		]
+		context.embedsParts = ["gurps.embeds-weapons"]
+	}
+
 	static override defineSchema(): TechniqueSchema {
 		const fields = foundry.data.fields
 
 		return this.mergeSchema(super.defineSchema(), {
-			difficulty: new fields.SchemaField(AttributeDifficulty.defineSchema(), {
+			difficulty: new AttributeDifficultyField({
 				initial: {
-					// TODO: review
 					attribute: "",
-					difficulty: difficulty.Level.Hard,
+					difficulty: difficulty.Level.Average,
 				},
+				attributeChoices: { "": "" },
+				difficultyChoices: difficulty.LevelsChoices("GURPS.Item.Skill.FIELDS.Difficulty.Difficulty", [
+					difficulty.Level.Easy,
+					difficulty.Level.VeryHard,
+					difficulty.Level.Wildcard,
+				]),
+				label: "GURPS.Item.Skill.FIELDS.Difficulty.Name",
 			}),
 			default: new fields.EmbeddedDataField(SkillDefault, {
 				required: true,

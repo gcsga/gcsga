@@ -6,7 +6,7 @@ import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/repl
 import fields = foundry.data.fields
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { TraitData } from "./trait.ts"
-import { CellData } from "./fields/cell-data.ts"
+import { CellData } from "./compontents/cell-data.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { Nameable } from "@module/util/index.ts"
 

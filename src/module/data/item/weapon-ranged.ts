@@ -13,7 +13,7 @@ import { WeaponShots } from "./fields/weapon-shots.ts"
 import { WeaponBulk } from "./fields/weapon-bulk.ts"
 import { WeaponRecoil } from "./fields/weapon-recoil.ts"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
-import { CellData } from "./fields/cell-data.ts"
+import { CellData } from "./compontents/cell-data.ts"
 import { Nameable } from "@module/util/index.ts"
 
 class WeaponRangedData extends ItemDataModel.mixin(BasicInformationTemplate, AbstractWeaponTemplate) {

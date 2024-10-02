@@ -5,7 +5,7 @@ import { AbstractWeaponTemplate, AbstractWeaponTemplateSchema } from "./template
 import { WeaponParry } from "./fields/weapon-parry.ts"
 import { WeaponReach } from "./fields/weapon-reach.ts"
 import { WeaponBlock } from "./fields/weapon-block.ts"
-import { CellData } from "./fields/cell-data.ts"
+import { CellData } from "./compontents/cell-data.ts"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
 import { Nameable } from "@module/util/index.ts"
 

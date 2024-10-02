@@ -8,7 +8,6 @@ import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/repl
 import { ActorType, ItemType, gid } from "../constants.ts"
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { AbstractSkillTemplate, AbstractSkillTemplateSchema } from "./templates/abstract-skill.ts"
-import { AttributeDifficulty } from "./fields/attribute-difficulty.ts"
 import {
 	ErrorGURPS,
 	LocalizeGURPS,
@@ -22,11 +21,14 @@ import {
 } from "@util"
 import { ItemInst, SkillLevel, addTooltipForSkillLevelAdj, formatRelativeSkill } from "./helpers.ts"
 import { ActorTemplateType } from "../actor/types.ts"
-import { CellData } from "./fields/cell-data.ts"
+import { CellData } from "./compontents/cell-data.ts"
 import { SkillDefault } from "../skill-default.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { Study } from "../study.ts"
 import { SkillDefaultTemplate, SkillDefaultTemplateSchema } from "./templates/defaults.ts"
+import { ItemGURPS2 } from "@module/document/item.ts"
+import { AttributeDifficultyField } from "./fields/attribute-difficulty-field.ts"
+import { getAttributeChoices } from "../attribute/helpers.ts"
 
 class SkillData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -41,6 +43,19 @@ class SkillData extends ItemDataModel.mixin(
 	static override _systemType = ItemType.Skill
 
 	static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
+
+	constructor(
+		data?: DeepPartial<SourceFromSchema<SkillSchema>>,
+		options?: DataModelConstructionOptions<ItemGURPS2 | null>,
+	) {
+		super(data, options)
+		;(this.difficulty.schema as any).attributeChoices = getAttributeChoices(
+			this.parent.actor,
+			this.difficulty.attribute,
+			"GURPS.Item.Skill.FIELDS.Difficulty.Attribute",
+			{ blank: false, ten: true, size: false, dodge: false, parry: false, block: false, skill: false },
+		).choices
+	}
 
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = [
@@ -62,13 +77,26 @@ class SkillData extends ItemDataModel.mixin(
 				initial: "",
 				label: "GURPS.Item.Skill.FIELDS.Specialization.Name",
 			}),
-			difficulty: new fields.EmbeddedDataField(AttributeDifficulty, {
+			difficulty: new AttributeDifficultyField({
 				initial: {
 					attribute: gid.Dexterity,
 					difficulty: difficulty.Level.Average,
 				},
+				attributeChoices: getAttributeChoices(
+					null,
+					gid.Dexterity,
+					"GURPS.Item.Skill.FIELDS.Difficulty.Attribute",
+					{ blank: false, ten: true, size: false, dodge: false, parry: false, block: false, skill: false },
+				).choices,
 				label: "GURPS.Item.Skill.FIELDS.Difficulty.Name",
 			}),
+			// difficulty: new fields.EmbeddedDataField(AttributeDifficulty, {
+			// 	initial: {
+			// 		attribute: gid.Dexterity,
+			// 		difficulty: difficulty.Level.Average,
+			// 	},
+			// 	label: "GURPS.Item.Skill.FIELDS.Difficulty.Name",
+			// }),
 			encumbrance_penalty_multiplier: new fields.NumberField({
 				integer: true,
 				min: 0,

@@ -1,4 +1,3 @@
-{{print attributeChoices}}
 <fieldset>
 	<legend>{{localize "GURPS.Item.Skill.DetailsLegend"}}</legend>
 	<!-- If item is not owned, points field should be invisible -->
@@ -36,7 +35,7 @@
 		<label>{{localize "GURPS.Item.Skill.FIELDS.Difficulty.Name"}}</label>
 		<div class="form-fields">
 			<!-- Attribute -->
-			{{formInput fields.difficulty.fields.attribute value=source.difficulty.attribute}}
+			{{formInput fields.difficulty.fields.attribute value=source.difficulty.attribute options=attributeChoices}}
 			<!-- / -->
 			<label>/</label>
 			<!-- Difficulty -->

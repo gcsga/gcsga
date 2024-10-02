@@ -12,7 +12,7 @@ import {
 	feature,
 } from "@util"
 import { ActorType, ItemType, gid } from "../constants.ts"
-import { AttributeDifficulty } from "./fields/attribute-difficulty.ts"
+import { AttributeDifficulty } from "./compontents/attribute-difficulty.ts"
 import { ActorTemplateType } from "../actor/types.ts"
 import type { ItemGURPS2 } from "@module/document/item.ts"
 import { ItemDataInstances, ItemDataTemplates, ItemTemplateType } from "./types.ts"

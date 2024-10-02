@@ -3,9 +3,9 @@ import fields = foundry.data.fields
 import { TooltipGURPS, feature } from "@util"
 import { gid } from "@module/data/constants.ts"
 import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
-import { equalFold } from "@module/util/index.ts"
 import { StringArrayField } from "../item/fields/string-array-field.ts"
 import { SheetSettings } from "../sheet-settings.ts"
+import { equalFold } from "../item/compontents/index.ts"
 
 class DRBonus extends BaseFeature<DRBonusSchema> {
 	static override TYPE = feature.Type.DRBonus

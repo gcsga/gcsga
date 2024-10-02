@@ -1,5 +1,5 @@
 import { LocalizeGURPS } from "@util/localize.ts"
-import { equalFold } from "@module/util/string-criteria.ts"
+import { equalFold } from "@module/data/item/compontents/string-criteria.ts"
 
 export namespace tmcost {
 	export enum Type {

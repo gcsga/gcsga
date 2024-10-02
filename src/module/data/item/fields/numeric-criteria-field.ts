@@ -1,6 +1,6 @@
 import { NumericComparison } from "@util"
 import fields = foundry.data.fields
-import { NumericCriteria } from "@module/util/index.ts"
+import { NumericCriteria } from "../compontents/numeric-criteria.ts"
 
 class NumericCriteriaField<
 	TRequired extends boolean = true,

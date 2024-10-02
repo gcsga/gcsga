@@ -14,7 +14,7 @@ import {
 import { SkillLevel, addTooltipForSkillLevelAdj, formatRelativeSkill } from "../helpers.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { ItemTemplateType } from "../types.ts"
-import { CellData } from "../fields/cell-data.ts"
+import { CellData } from "../compontents/cell-data.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
 import { Study } from "@module/data/study.ts"
 import { Nameable } from "@module/util/index.ts"

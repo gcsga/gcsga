@@ -1,4 +1,4 @@
-import { LocalizeGURPS } from "../../util/localize.ts"
+import { LocalizeGURPS } from "../../../../util/localize.ts"
 import fields = foundry.data.fields
 import { ItemDataModel } from "@module/data/abstract.ts"
 import { NumericComparison, Weight } from "@util"

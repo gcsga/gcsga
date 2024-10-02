@@ -1,7 +1,7 @@
 import { difficulty } from "@util"
 import fields = foundry.data.fields
 import { ItemDataModel } from "@module/data/abstract.ts"
-import { gid } from "@module/data/constants.ts"
+import { ItemType, gid } from "@module/data/constants.ts"
 import { getAttributeChoices } from "@module/data/attribute/helpers.ts"
 
 class AttributeDifficulty extends foundry.abstract.DataModel<ItemDataModel, AttributeDifficultySchema> {
@@ -9,23 +9,23 @@ class AttributeDifficulty extends foundry.abstract.DataModel<ItemDataModel, Attr
 		data?: DeepPartial<SourceFromSchema<AttributeDifficultySchema>>,
 		options?: DataModelConstructionOptions<ItemDataModel>,
 	) {
+		console.log(data, options)
 		super(data, options)
-		if (options?.parent) {
-			;(this.schema.fields.attribute as any).choices = getAttributeChoices(
-				this.parent.actor,
-				this.attribute,
-				"GURPS.Item.Skill.FIELDS.Difficulty.Attribute",
-				{
-					blank: false,
-					ten: true,
-					size: false,
-					dodge: false,
-					parry: false,
-					block: false,
-					skill: false,
-				},
-			).choices
-		}
+		const blank = options?.parent?.parent.type === ItemType.Technique
+		;(this.schema.fields.attribute as any).choices = getAttributeChoices(
+			options?.parent?.actor ?? null,
+			this.attribute,
+			"GURPS.Item.Skill.FIELDS.Difficulty.Attribute",
+			{
+				blank,
+				ten: true,
+				size: false,
+				dodge: false,
+				parry: false,
+				block: false,
+				skill: false,
+			},
+		).choices
 	}
 
 	static override defineSchema(): AttributeDifficultySchema {
@@ -50,7 +50,7 @@ class AttributeDifficulty extends foundry.abstract.DataModel<ItemDataModel, Attr
 			attribute: new fields.StringField({
 				required: true,
 				nullable: false,
-				blank: false,
+				blank: true,
 				choices: attributeChoices,
 				initial: gid.Dexterity,
 			}),

@@ -1,6 +1,6 @@
 import { ItemDataModel } from "../abstract.ts"
 import { ActorType, ItemType, gid } from "../constants.ts"
-import { AttributeDifficulty } from "./fields/attribute-difficulty.ts"
+import { AttributeDifficulty } from "./compontents/attribute-difficulty.ts"
 import { LocalizeGURPS, StringBuilder, TooltipGURPS, difficulty } from "@util"
 import {
 	AbstractSkillTemplate,

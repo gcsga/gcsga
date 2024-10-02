@@ -1,5 +1,5 @@
 import { getAttributeChoices } from "@module/data/attribute/helpers.ts"
-import { SYSTEM_NAME, gid } from "@module/data/constants.ts"
+import { ItemType, SYSTEM_NAME, gid } from "@module/data/constants.ts"
 import { AttributeBonus } from "@module/data/feature/attribute-bonus.ts"
 import { DRBonusSchema } from "@module/data/feature/dr-bonus.ts"
 import { FeatureTypes } from "@module/data/feature/types.ts"
@@ -349,7 +349,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		context.partId = `${this.id}-${partId}`
 		context.tab = context.tabs[partId]
 
-		if (partId === "details-skill") this._prepareSkillPartContext(context)
+		if (partId === "details" && this.item.type === ItemType.Skill) this._prepareSkillPartContext(context)
 		return context
 	}
 
