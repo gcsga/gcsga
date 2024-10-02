@@ -19,14 +19,28 @@
 			{{formInput fields.default.fields.type value=source.default.type}}
 
 			<!-- Name -->
-			{{formInput fields.default.fields.name value=source.default.name disabled=(ne source.default.type "skill")}}
+			{{formInput fields.default.fields.name value=source.default.name disabled=(ne source.default.type "skill")
+			placeholder=(localize "GURPS.Item.Technique.FIELDS.Default.Skill") localize=true}}
 
 			<!-- Specialization -->
 			{{formInput fields.default.fields.specialization value=source.default.specialization disabled=(ne
-			source.default.type "skill")}}
+			source.default.type "skill") placeholder=(localize "GURPS.Item.Technique.FIELDS.Default.Specialization") }}
 
 			<!-- Modifier -->
 			{{formInput fields.default.fields.modifier value=source.default.modifier }}
+		</div>
+	</div>
+	<div class="form-group">
+		<label></label>
+		<div class="form-fields">
+			<label>
+				<!-- Input -->
+				{{formInput fields.limited value=source.limited}}
+				<!-- Label Contents -->
+				{{localize "GURPS.Item.Technique.FIELDS.Limited.Name"}}
+			</label>
+			<!-- Cannot Exceed -->
+			{{formInput fields.limit value=source.limit disabled=(not source.limited)}}
 		</div>
 	</div>
 
@@ -36,14 +50,14 @@
 	<!-- Points & Level -->
 	{{#if item.isOwned}}
 	<div class="form-group">
-		<label>{{localize "GURPS.Item.Skill.FIELDS.Points.Name"}}</label>
+		<label>{{localize "GURPS.Item.Technique.FIELDS.Points.Name"}}</label>
 		<div class="form-fields">
 			<!-- Points -->
 			{{formInput fields.points value=source.points}}
 
 			<!-- Level -->
-			<label>{{localize "GURPS.Item.Skill.FIELDS.Level.Name"}}</label>
-			<input type="text" readonly value="source.level" />
+			<label>{{localize "GURPS.Item.Technique.FIELDS.Level.Name"}}</label>
+			<input tabindex="-1" type="text" readonly value="{{levelField}}" />
 		</div>
 	</div>
 	{{/if}}

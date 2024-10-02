@@ -171,12 +171,23 @@
 						"Name": "Encumbrance Penalty",
 						"After": "times the current encumbrance level"
 					},
-					"Points": {
-						"Name": "Points"
+					"Points": { "Name": "Points" },
+					"Level": { "Name": "Level" }
+				}
+			},
+			"Technique": {
+				"DetailsLegend": "Technique Details",
+				"FIELDS": {
+					"Default": {
+						"Name": "Defaults To",
+						"Type": "{value}",
+						"Skill": "Skill",
+						"Specialization": "Specialization"
 					},
-					"Level": {
-						"Name": "Level"
-					}
+					"Difficulty": { "Name": "Difficulty" },
+					"Points": { "Name": "Points" },
+					"Level": { "Name": "Level" },
+					"Limited": { "Name": "Cannot exceed default skill level by more than" }
 				}
 			}
 		},
@@ -266,6 +277,14 @@
 			"point": "point",
 			"points": "points"
 		},
+		"AttributeDifficulty": {
+			"AttributeKey": "{value}",
+			"DifficultyKey": "{value}",
+			"FIELDS": {
+				"Attribute": { "Name": "Attribute" },
+				"Difficulty": { "Name": "Difficulty" }
+			}
+		},
 		"Tooltip": {
 			"Prefix": "• ",
 			"SkillEncumbrance": "<br>Encumbrance [{amount}]",
@@ -292,7 +311,9 @@
 			"StrengthTwoHandedUnready": "‡: Requires two hands and becomes unready after you attack with it. If you have at least ST {st15}, you can used it two-handed without it becoming unready. If you have at least ST {st3}, you can use it one-handed with no readiness penalty.",
 			"StrengthTwoHanded": "†: Requires two hands. If you have at least ST {st15}, you can use it one-handed, but it becomes unready after you attack with it. If you have at least ST {st2}, you can use it one-handed with no readiness penalty."
 		},
-		"SkillDefault": "Default: {name}{modifier}",
+		"SkillDefault": {
+			"Notes": "Default: {name}{modifier}"
+		},
 		"SkillSpecialization": " ({specialization})",
 		"TechLevelShort": "/TL{level}",
 		"SpellRitual": {

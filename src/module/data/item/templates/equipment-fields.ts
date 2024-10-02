@@ -103,7 +103,9 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 	// Returns the formatted name for display
 	get processedName(): string {
 		const buffer = new StringBuilder()
-		buffer.push(this.nameWithReplacements)
+		if (this.hasTemplate(ItemTemplateType.BasicInformation)) {
+			buffer.push(this.nameWithReplacements)
+		}
 		if (this.isLeveled) {
 			buffer.push(` ${this.level.toString()}`)
 		}
@@ -325,7 +327,6 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 }
 
 interface EquipmentFieldsTemplate extends ModelPropsFromSchema<EquipmentFieldsTemplateSchema> {
-	nameWithReplacements: string
 	processedNotes: string
 	modifiers:
 		| Collection<ItemInst<ItemType.EquipmentModifier | ItemType.EquipmentModifierContainer>>
@@ -346,5 +347,4 @@ type EquipmentFieldsTemplateSchema = {
 	ignore_weight_for_skills: fields.BooleanField<boolean, boolean, true, false, true>
 	other: fields.BooleanField<boolean, boolean, true, false, true>
 }
-
 export { EquipmentFieldsTemplate, type EquipmentFieldsTemplateSchema }

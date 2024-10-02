@@ -1,9 +1,5 @@
 # Refactor Notes
 
-## Priority
-
-- Feature#toFormElement
-
 ## Left To Do
 
 - Weapon Fields

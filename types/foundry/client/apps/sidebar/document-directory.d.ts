@@ -94,6 +94,18 @@ declare global {
 		 * @param html The context menu HTML being rendered for the directory
 		 */
 		protected _contextMenu(html: JQuery): void
+
+		/**
+		 * Get the dropped Entry from the drop data
+		 * @param  data The data being dropped
+		 */
+		protected _getDroppedEntryFromData(data: object): Promise<TDocument>
+
+		/**
+		 * Check if an Entry is already present in the Collection
+		 * @param entry     The Entry being dropped
+		 */
+		protected _entryAlreadyExists(entry: TDocument): boolean
 	}
 
 	interface SidebarDirectoryOptions extends ApplicationOptions {

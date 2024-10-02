@@ -1,12 +1,12 @@
 import fields = foundry.data.fields
 import { ItemDataModel } from "@module/data/abstract.ts"
-import { SkillDefault } from "@module/data/skill-default.ts"
+import { SkillDefaultField } from "../fields/skill-default-field.ts"
 
 class SkillDefaultTemplate extends ItemDataModel<SkillDefaultTemplateSchema> {
 	static override defineSchema(): SkillDefaultTemplateSchema {
 		const fields = foundry.data.fields
 		return {
-			defaults: new fields.ArrayField(new fields.EmbeddedDataField(SkillDefault)),
+			defaults: new fields.ArrayField(new SkillDefaultField()),
 		}
 	}
 }
@@ -14,7 +14,7 @@ class SkillDefaultTemplate extends ItemDataModel<SkillDefaultTemplateSchema> {
 interface SkillDefaultTemplate extends ModelPropsFromSchema<SkillDefaultTemplateSchema> {}
 
 type SkillDefaultTemplateSchema = {
-	defaults: fields.ArrayField<fields.EmbeddedDataField<SkillDefault>>
+	defaults: fields.ArrayField<SkillDefaultField>
 }
 
 export { SkillDefaultTemplate, type SkillDefaultTemplateSchema }

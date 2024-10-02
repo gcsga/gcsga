@@ -31,6 +31,16 @@ export default class DocumentSheetV2<
 	 * @returns Prepared submission data as an object
 	 */
 	protected _prepareSubmitData(event: SubmitEvent, form: HTMLFormElement, formData: FormDataExtended): object
+
+	/* -------------------------------------------- */
+
+	/**
+	 * Programmatically submit a DocumentSheetV2 instance, providing additional data to be merged with form data.
+	 * @param {object} options
+	 * @param {object} [options.updateData]           Additional data merged with processed form data
+	 * @returns {Promise<void>}
+	 */
+	submit(options?: { updateData: any; [key: string]: any }): Promise<void>
 }
 
 declare global {

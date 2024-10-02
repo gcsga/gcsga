@@ -69,7 +69,7 @@ class SpellPrereq extends BasePrereq<SpellPrereqSchema> {
 	satisfied(actor: ActorInst<ActorType.Character>, exclude: unknown, tooltip: TooltipGURPS | null): boolean {
 		let replacements = new Map<string, string>()
 		if (Nameable.isAccesser(exclude)) replacements = exclude.nameableReplacements
-		let techLevel = ""
+		let techLevel: string | null = null
 		if (exclude instanceof ItemGURPS2 && exclude.isOfType(ItemType.Spell, ItemType.RitualMagicSpell))
 			techLevel = exclude.system.tech_level
 		let count = 0

@@ -1,6 +1,6 @@
 import { ItemDataModel } from "@module/data/abstract.ts"
 import fields = foundry.data.fields
-import { difficulty, LocalizeGURPS, StringBuilder } from "@util"
+import { difficulty, Int, LocalizeGURPS, StringBuilder } from "@util"
 import { ItemType } from "@module/data/constants.ts"
 import { SkillLevel } from "../helpers.ts"
 import { ItemTemplateType } from "../types.ts"
@@ -18,8 +18,8 @@ class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 			difficulty: new AttributeDifficultyField(),
 			tech_level: new fields.StringField({
 				required: true,
-				nullable: false,
-				initial: "",
+				nullable: true,
+				initial: null,
 				label: "GURPS.Item.Skill.FIELDS.TechLevel.Name",
 			}),
 			tech_level_required: new fields.BooleanField({
@@ -38,11 +38,17 @@ class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 			}),
 		}
 	}
+	static override _cleanData(
+		source: DeepPartial<SourceFromSchema<AbstractSkillTemplateSchema>> & { [key: string]: unknown },
+		_options?: Record<string, unknown>,
+	): void {
+		source.tech_level = source.tech_level_required ? source.tech_level || "" : null
+	}
 
 	get processedName(): string {
 		const buffer = new StringBuilder()
 		buffer.push(this.hasTemplate(ItemTemplateType.BasicInformation) ? this.nameWithReplacements : "")
-		if (!this.tech_level !== null) {
+		if (this.tech_level_required) {
 			buffer.push(
 				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.TechLevelShort, { level: this.tech_level }),
 			)
@@ -61,12 +67,14 @@ class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 		return (this._skillLevel ??= this.calculateLevel())
 	}
 
+	// Level as number or "-"
 	get levelAsString(): string {
 		const level = Math.trunc(this.level.level)
 		if (level <= 0) return "-"
 		return level.toString()
 	}
 
+	// Relative level in the format e.g "DX+1"
 	get relativeLevel(): string {
 		if (this.level.level <= 0) return ""
 		const rsl = this.adjustedRelativeLevel
@@ -78,10 +86,10 @@ class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 			default: {
 				const actor = this.actor
 				if (!actor?.hasTemplate(ActorTemplateType.Attributes)) {
-					console.error("Erorr resolving relative level: Actor is not an attriubte holder.")
+					console.error("Error resolving relative level: Actor is not an attriubte holder.")
 					return "-"
 				}
-				return actor.system.resolveAttributeName(this.difficulty.attribute)
+				return actor.system.resolveAttributeName(this.difficulty.attribute) + Int.stringWithSign(rsl)
 			}
 		}
 	}
@@ -170,7 +178,7 @@ interface AbstractSkillTemplate
 
 type AbstractSkillTemplateSchema = {
 	difficulty: AttributeDifficultyField
-	tech_level: fields.StringField<string, string, true, false, true>
+	tech_level: fields.StringField<string, string, true, true, true>
 	tech_level_required: fields.BooleanField<boolean, boolean, true, false, true>
 	points: fields.NumberField<number, number, true, false, true>
 }

@@ -24,18 +24,6 @@ fieldset.details-defaults {
 		}
 	}
 
-	input[type="text"] {
-		&::placeholder {
-			opacity: 0.5;
-		}
-		&:disabled {
-			&::placeholder {
-				color: transparent;
-			}
-			color: transparent;
-		}
-	}
-
 	> button {
 		margin-bottom: 0.5rem;
 	}

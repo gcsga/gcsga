@@ -5,7 +5,7 @@ import { ContainerTemplate, ContainerTemplateSchema } from "./templates/containe
 import { FeatureTemplate, FeatureTemplateSchema } from "./templates/features.ts"
 import { StudyTemplate, StudyTemplateSchema } from "./templates/study.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
-import { ActorType, ItemType } from "../constants.ts"
+import { ActorType, ItemType, gid } from "../constants.ts"
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { AbstractSkillTemplate, AbstractSkillTemplateSchema } from "./templates/abstract-skill.ts"
 import { LocalizeGURPS, StringBuilder, TooltipGURPS, align, cell, difficulty, display } from "@util"
@@ -14,11 +14,13 @@ import { ActorTemplateType } from "../actor/types.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { SkillData } from "./index.ts"
 import { CellData } from "./compontents/cell-data.ts"
-import { SkillDefault } from "../skill-default.ts"
+import { SkillDefault } from "./compontents/skill-default.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { Study } from "../study.ts"
 import { SkillDefaultTemplate, SkillDefaultTemplateSchema } from "./templates/defaults.ts"
 import { AttributeDifficultyField } from "./fields/attribute-difficulty-field.ts"
+import { SkillDefaultField } from "./fields/skill-default-field.ts"
+import { getAttributeChoices } from "../attribute/helpers.ts"
 
 class TechniqueData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -38,9 +40,15 @@ class TechniqueData extends ItemDataModel.mixin(
 	) {
 		super(data, options)
 		;(this.difficulty.schema as any).difficultyChoices = difficulty.LevelsChoices(
-			"GURPS.Item.Skill.FIELDS.Difficulty.Difficulty",
+			"GURPS.AttributeDifficulty.DifficultyKey",
 			[difficulty.Level.Easy, difficulty.Level.VeryHard, difficulty.Level.Wildcard],
 		)
+		;(this.default.schema as any).typeChoices = getAttributeChoices(
+			this.parent.actor,
+			this.default.type,
+			"GURPS.AttributeDifficulty.AttributeKey",
+			{ blank: false, ten: true, size: false, dodge: true, parry: true, block: true, skill: true },
+		).choices
 	}
 
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
@@ -63,16 +71,25 @@ class TechniqueData extends ItemDataModel.mixin(
 					difficulty: difficulty.Level.Average,
 				},
 				attributeChoices: { "": "" },
-				difficultyChoices: difficulty.LevelsChoices("GURPS.Item.Skill.FIELDS.Difficulty.Difficulty", [
+				difficultyChoices: difficulty.LevelsChoices("GURPS.AttributeDifficulty.AttributeKey", [
 					difficulty.Level.Easy,
 					difficulty.Level.VeryHard,
 					difficulty.Level.Wildcard,
 				]),
 				label: "GURPS.Item.Skill.FIELDS.Difficulty.Name",
 			}),
-			default: new fields.EmbeddedDataField(SkillDefault, {
+			default: new SkillDefaultField({
 				required: true,
 				nullable: true,
+				initial: {
+					type: gid.Skill,
+					name: "Skill",
+					specialization: "",
+					modifier: 0,
+					level: 0,
+					adjusted_level: 0,
+					points: 0,
+				},
 			}),
 			defaulted_from: new fields.EmbeddedDataField(SkillDefault, {
 				required: true,
@@ -152,6 +169,13 @@ class TechniqueData extends ItemDataModel.mixin(
 		}
 	}
 
+	static override _cleanData(
+		source: DeepPartial<SourceFromSchema<TechniqueSchema>> & { [key: string]: unknown },
+		_options?: Record<string, unknown>,
+	): void {
+		source.limit = source.limited ? source.limit || 0 : null
+	}
+
 	get specialization(): string {
 		return ""
 	}
@@ -172,7 +196,7 @@ class TechniqueData extends ItemDataModel.mixin(
 
 	get modifierNotes(): string {
 		if (!this.actor) return ""
-		return LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.SkillDefault, {
+		return LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.SkillDefault.Notes, {
 			name: this.default.fullName(this.actor, this.nameableReplacements),
 			modifier: this.default.modifier.signedString(),
 		})
@@ -274,8 +298,8 @@ type TechniqueSchema = BasicInformationTemplateSchema &
 	ReplacementTemplateSchema &
 	SkillDefaultTemplateSchema &
 	AbstractSkillTemplateSchema & {
-		default: fields.EmbeddedDataField<SkillDefault, true, false, true>
-		defaulted_from: fields.EmbeddedDataField<SkillDefault, true, false, true>
+		default: SkillDefaultField<true, false, true>
+		defaulted_from: SkillDefaultField<true, false, true>
 		// defaults: fields.ArrayField<fields.EmbeddedDataField<SkillDefault>>
 		limit: fields.NumberField<number, number, true, true, true>
 		limited: fields.BooleanField<boolean, boolean, true, false, true>

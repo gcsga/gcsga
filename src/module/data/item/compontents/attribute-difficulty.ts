@@ -9,13 +9,12 @@ class AttributeDifficulty extends foundry.abstract.DataModel<ItemDataModel, Attr
 		data?: DeepPartial<SourceFromSchema<AttributeDifficultySchema>>,
 		options?: DataModelConstructionOptions<ItemDataModel>,
 	) {
-		console.log(data, options)
 		super(data, options)
 		const blank = options?.parent?.parent.type === ItemType.Technique
 		;(this.schema.fields.attribute as any).choices = getAttributeChoices(
 			options?.parent?.actor ?? null,
 			this.attribute,
-			"GURPS.Item.Skill.FIELDS.Difficulty.Attribute",
+			"GURPS.AttributeDifficulty.AttributeKey",
 			{
 				blank,
 				ten: true,
@@ -31,20 +30,15 @@ class AttributeDifficulty extends foundry.abstract.DataModel<ItemDataModel, Attr
 	static override defineSchema(): AttributeDifficultySchema {
 		const fields = foundry.data.fields
 
-		const attributeChoices = getAttributeChoices(
-			null,
-			gid.Dexterity,
-			"GURPS.Item.Skill.FIELDS.Difficulty.Attribute",
-			{
-				blank: false,
-				ten: true,
-				size: false,
-				dodge: false,
-				parry: false,
-				block: false,
-				skill: false,
-			},
-		).choices
+		const attributeChoices = getAttributeChoices(null, gid.Dexterity, "GURPS.AttributeDifficulty.AttributeKey", {
+			blank: false,
+			ten: true,
+			size: false,
+			dodge: false,
+			parry: false,
+			block: false,
+			skill: false,
+		}).choices
 
 		return {
 			attribute: new fields.StringField({
@@ -53,13 +47,15 @@ class AttributeDifficulty extends foundry.abstract.DataModel<ItemDataModel, Attr
 				blank: true,
 				choices: attributeChoices,
 				initial: gid.Dexterity,
+				label: "GURPS.AttributeDifficulty.FIELDS.Attribute.Name",
 			}),
 			difficulty: new fields.StringField({
 				required: true,
 				nullable: false,
 				blank: false,
-				choices: difficulty.LevelsChoices("GURPS.Item.Skill.FIELDS.Difficulty.Difficulty"),
+				choices: difficulty.LevelsChoices("GURPS.AttributeDifficulty.DifficultyKey"),
 				initial: difficulty.Level.Average,
+				label: "GURPS.AttributeDifficulty.FIELDS.Difficulty.Name",
 			}),
 		}
 	}

@@ -120,9 +120,15 @@ function extract(input: string): [value: number, remainder: string] {
 	return [value, input.slice(last)]
 }
 
+function stringWithSign(value: number): string {
+	if (value === 0) return "+0"
+	return value.signedString()
+}
+
 export const Int = {
 	from,
 	fromString,
 	fromStringForced,
 	extract,
+	stringWithSign,
 }

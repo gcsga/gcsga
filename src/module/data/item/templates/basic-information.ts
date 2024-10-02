@@ -28,10 +28,6 @@ class BasicInformationTemplate extends ItemDataModel<BasicInformationTemplateSch
 				initial: [],
 				label: "GURPS.Item.BasicInformation.FIELDS.Tags.Name",
 			}),
-			// tags: new fields.ArrayField(new foundry.data.fields.StringField(), {
-			// 	initial: [],
-			// 	label: "GURPS.Item.BasicInformation.FIELDS.Tags.Name",
-			// }),
 			vtt_notes: new fields.StringField({ required: true, nullable: false, initial: "" }),
 			reference: new fields.StringField({
 				required: true,
@@ -50,15 +46,16 @@ class BasicInformationTemplate extends ItemDataModel<BasicInformationTemplateSch
 	get combinedTags(): string {
 		return this.tags.join(", ")
 	}
-
 	get processedNotes(): string {
 		return replaceAllStringFunc(EvalEmbeddedRegex, this.notesWithReplacements, this.actor)
 	}
 
 	/** Replacements */
 	get nameWithReplacements(): string {
-		if (this.hasTemplate(ItemTemplateType.Replacement)) return Nameable.apply(this.name, this.nameableReplacements)
-		return this.name
+		console.log("hey")
+		if (this.hasTemplate(ItemTemplateType.Replacement))
+			return Nameable.apply(this.parent.name, this.nameableReplacements)
+		return this.parent.name
 	}
 
 	get notesWithReplacements(): string {

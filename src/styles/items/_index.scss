@@ -2,8 +2,12 @@
 	@import "header";
 
 	border-radius: 0.625rem;
-	max-height: 100%;
-	overflow: auto;
+
+	section.tab {
+		max-height: 100%;
+		overflow-y: auto;
+		overflow-x: hidden;
+	}
 
 	// max-height: 800px;
 	// min-height: 300px;
@@ -32,10 +36,17 @@
 			height: 1.5rem;
 			line-height: 1.5rem;
 
-			&:disabled {
-				// Show disabled fields as transparent.
-				color: transparent;
+			&::placeholder {
+				opacity: 0.5;
 			}
+
+			// Show disabled fields as transparent.
+			// &:disabled {
+			// 	&::placeholder {
+			// 		color: transparent;
+			// 	}
+			// 	color: transparent;
+			// }
 		}
 
 		label:has(input[type="checkbox"]) {

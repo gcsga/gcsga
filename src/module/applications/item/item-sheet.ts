@@ -1,4 +1,3 @@
-import { getAttributeChoices } from "@module/data/attribute/helpers.ts"
 import { ItemType, SYSTEM_NAME, gid } from "@module/data/constants.ts"
 import { AttributeBonus } from "@module/data/feature/attribute-bonus.ts"
 import { DRBonusSchema } from "@module/data/feature/dr-bonus.ts"
@@ -7,7 +6,7 @@ import { ItemTemplateType } from "@module/data/item/types.ts"
 import { AttributePrereq } from "@module/data/prereq/index.ts"
 import { PrereqList, PrereqListSchema } from "@module/data/prereq/prereq-list.ts"
 import { PrereqTypes } from "@module/data/prereq/types.ts"
-import { SkillDefault } from "@module/data/skill-default.ts"
+import { SkillDefault } from "@module/data/item/compontents/skill-default.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { feature, prereq } from "@util/enum/index.ts"
 import { generateId } from "@util/misc.ts"
@@ -15,6 +14,13 @@ import { generateId } from "@util/misc.ts"
 const { api, sheets } = foundry.applications
 
 class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<ItemGURPS2>) {
+	static MODES = {
+		PLAY: 1,
+		EDIT: 2,
+	}
+
+	protected _mode = this.constructor.MODES.PLAY
+
 	// Set initial values for tabgroups
 	override tabGroups: Record<string, string> = {
 		primary: "details",
@@ -32,6 +38,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		},
 		position: {
 			width: 650,
+			height: 700,
 			// width: "fit-content",
 			// height: "auto",
 			// scale: 1.5,
@@ -52,6 +59,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			toggleDrBonusLocation: this.#onToggleDrBonusLocation,
 			addDefault: this.#onAddDefault,
 			deleteDefault: this.#onDeleteDefault,
+			toggleMode: this.#onToggleMode,
 		},
 		dragDrop: [{ dragSelector: "item-list .item", dropSelector: null }],
 	}
@@ -136,6 +144,8 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 	}
 
 	static async #onAddPrereq(this: ItemSheetGURPS, event: Event): Promise<void> {
+		console.log("#onAddPrereq")
+		console.trace()
 		event.preventDefault()
 		event.stopImmediatePropagation()
 
@@ -319,7 +329,8 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		await this.item.update({ [`system.features.${index}`]: bonus })
 	}
 
-	protected override _onRender(_context: object, _options: ApplicationRenderOptions): void {
+	protected override _onRender(context: object, options: ApplicationRenderOptions): void {
+		super._onRender(context, options)
 		const prereqTypeFields = this.element.querySelectorAll("[data-selector='prereq-type'")
 		for (const input of prereqTypeFields) {
 			input.addEventListener("change", event => this._onChangePrereqType(event))
@@ -328,12 +339,34 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		for (const input of featureTypeFields) {
 			input.addEventListener("change", event => this._onChangeFeatureType(event))
 		}
+		if (!this.isEditable) this._disableFields()
+	}
+
+	protected _disableFields() {
+		const selector = `.window-content :is(${[
+			"INPUT",
+			"SELECT",
+			"TEXTAREA",
+			"BUTTON",
+			"COLOR-PICKER",
+			"DOCUMENT-TAGS",
+			"FILE-PICKER",
+			"HUE-SLIDER",
+			"MULTI-SELECT",
+			"PROSE-MIRROR",
+			"RANGE-PICKER",
+			"STRING-TAGS",
+		].join(", ")}):not(.interface-only)`
+		for (const element of this.element.querySelectorAll(selector) as NodeListOf<HTMLInputElement>) {
+			if (element.tagName === "TEXTAREA") element.readOnly = true
+			else element.disabled = true
+		}
 	}
 
 	override async _prepareContext(options = {}): Promise<object> {
 		const context: Record<string, unknown> = {}
 		await this.item.system.getSheetData(context)
-		return {
+		const obj = {
 			...super._prepareContext(options),
 			fields: this.item.system.schema.fields,
 			tabs: this._getTabs(),
@@ -342,25 +375,26 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			source: this.item.system.toObject(),
 			detailsParts: context.detailsParts ?? [],
 			embedsParts: context.embedsParts ?? [],
+			editable: this.isEditable && this._mode === this.constructor.MODES.EDIT,
 		}
+		console.log(obj)
+		return obj
 	}
 
 	protected override async _preparePartContext(partId: string, context: Record<string, any>): Promise<object> {
+		// console.log(partId, context)
 		context.partId = `${this.id}-${partId}`
 		context.tab = context.tabs[partId]
 
-		if (partId === "details" && this.item.type === ItemType.Skill) this._prepareSkillPartContext(context)
+		if (partId === "detailsTab" && (this.item.type === ItemType.Skill || this.item.type === ItemType.Technique))
+			this._prepareSkillPartContext(context)
 		return context
 	}
 
 	protected async _prepareSkillPartContext(context: Record<string, any>): Promise<object> {
 		if (!this.item.hasTemplate(ItemTemplateType.AbstractSkill)) return context
-		context.attributeChoices = getAttributeChoices(
-			this.item.actor,
-			this.item.system.difficulty.attribute,
-			"GURPS.Item.Skill.FIELDS.Difficulty.Attribute",
-			{ blank: false, ten: true, size: false, dodge: false, parry: false, block: false, skill: false },
-		)
+		if (this.item.system.level.level === Number.MIN_SAFE_INTEGER) context.levelField = "-"
+		else context.levelField = `${this.item.system.levelAsString}/${this.item.system.relativeLevel}`
 		return context
 	}
 
@@ -371,6 +405,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		formData: FormDataExtended,
 	): Promise<void> {
 		event.preventDefault()
+		event.stopImmediatePropagation()
 
 		for (const key of Object.keys(formData.object)) {
 			if (key.endsWith("locations")) {
@@ -382,6 +417,32 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		// console.log(formData.object)
 
 		await this.item.update(formData.object)
+	}
+
+	static async #onToggleMode(this: ItemSheetGURPS, event: Event): Promise<void> {
+		const toggle = event.target as HTMLButtonElement
+		toggle.classList.toggle("fa-lock")
+		toggle.classList.toggle("fa-unlock")
+
+		const { MODES } = this.constructor
+		if (this._mode === MODES.PLAY) this._mode = MODES.EDIT
+		else this._mode = MODES.PLAY
+		await this.submit()
+		this.render()
+	}
+
+	protected override async _renderFrame(options: ApplicationRenderOptions): Promise<HTMLElement> {
+		const frame = await super._renderFrame(options)
+
+		if (this.isEditable) {
+			const toggleLabel = game.i18n.localize("GURPS.Sheets.ToggleMode")
+			const toggleIcon = this._mode === this.constructor.MODES.PLAY ? "fa-solid fa-lock" : "fa-solid fa-unlock"
+			const toggle = `<button type="button" class="header-control ${toggleIcon}" data-action="toggleMode"
+data-tooltip="${toggleLabel}" aria-label="${toggleLabel}"></button>`
+			this.window.icon.insertAdjacentHTML("beforebegin", toggle)
+		}
+
+		return frame
 	}
 }
 

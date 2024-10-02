@@ -1,4 +1,5 @@
 import { SYSTEM_NAME } from "@data"
+import { ItemDirectoryGURPS } from "@module/applications/item/item-directory.ts"
 // import { ChatLogGURPS } from "@module/apps/sidebar/chat-log.ts"
 import { CombatTrackerGURPS } from "@module/apps/sidebar/combat-tracker.ts"
 // import { CompendiumDirectoryGURPS } from "@module/apps/sidebar/compendium-directory.ts"
@@ -50,7 +51,7 @@ export const Init = {
 			// CONFIG.ui.chat = ChatLogGURPS
 			CONFIG.ui.combat = CombatTrackerGURPS
 			// CONFIG.ui.actors = ActorDirectoryGURPS
-			// CONFIG.ui.items = ItemDirectoryGURPS
+			CONFIG.ui.items = ItemDirectoryGURPS
 			// CONFIG.ui.compendium = CompendiumDirectoryGURPS
 
 			// CONFIG.Dice.rolls.unshift(RollGURPS)

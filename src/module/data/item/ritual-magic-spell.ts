@@ -12,7 +12,7 @@ import { SpellFieldsTemplate, SpellFieldsTemplateSchema } from "./templates/spel
 import { ActorTemplateType } from "../actor/types.ts"
 import { SkillLevel, calculateTechniqueLevel } from "./helpers.ts"
 import { AttributeDifficulty } from "./compontents/attribute-difficulty.ts"
-import { SkillDefault } from "../skill-default.ts"
+import { SkillDefault } from "./compontents/skill-default.ts"
 import { Study } from "../study.ts"
 import { Nameable } from "@module/util/index.ts"
 

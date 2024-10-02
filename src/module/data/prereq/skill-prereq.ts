@@ -55,7 +55,7 @@ class SkillPrereq extends BasePrereq<SkillPrereqSchema> {
 		let replacements = new Map<string, string>()
 		if (Nameable.isAccesser(exclude)) replacements = exclude.nameableReplacements
 		let satisfied = false
-		let techLevel = ""
+		let techLevel: string | null = null
 		if (exclude instanceof ItemGURPS2 && exclude.isOfType(ItemType.Skill, ItemType.Technique)) {
 			techLevel = exclude.system.tech_level
 		}

@@ -1,6 +1,6 @@
 import { ActorType, ItemType } from "@data"
 import { CharacterDataGURPS } from "@module/data/actor/character.ts"
-// import { ItemsGURPS } from "@module/data/collections/items-collection.ts"
+import { ItemsGURPS } from "@module/data/collections/items-collection.ts"
 import * as ItemInstance from "@module/data/item/index.ts"
 import { AttackRoll, BasicRoll, DamageRoll, SuccessRoll } from "@module/dice/index.ts"
 import { ActorGURPS2 } from "@module/document/actor.ts"
@@ -24,8 +24,9 @@ export const Load = {
 		// CONFIG.Dice = DiceGURPS
 		CONFIG.Combat.documentClass = CombatGURPS
 		CONFIG.Combatant.documentClass = CombatantGURPS
-		// CONFIG.Item.collection = ItemsGURPS<ItemGURPS2<null>>
 		CONFIG.Item.documentClass = ItemGURPS2
+		// @ts-expect-error not sure why it's complaining
+		CONFIG.Item.collection = ItemsGURPS
 		CONFIG.Macro.documentClass = Macro
 		CONFIG.MeasuredTemplate.documentClass = MeasuredTemplateDocument
 		CONFIG.JournalEntry.documentClass = JournalEntryGURPS
@@ -43,7 +44,7 @@ export const Load = {
 			[ActorType.Character]: CharacterDataGURPS,
 		}
 
-		// @ts-expect-error is ok?
+		// @ts-expect-error infinite type
 		CONFIG.Item.dataModels = {
 			[ItemType.Trait]: ItemInstance.TraitData,
 			[ItemType.TraitContainer]: ItemInstance.TraitContainerData,

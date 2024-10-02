@@ -235,7 +235,7 @@ class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extend
 	 */
 	static async createWithContents(
 		items: ItemGURPS2[] | Collection<ItemGURPS2>,
-		options: CreateWithContentsOptions,
+		options: Partial<CreateWithContentsOptions> = {},
 	): Promise<ItemGURPS2["_source"][]> {
 		options.keepId ??= false
 		let depth = 0

@@ -1,6 +1,7 @@
 import { SOCKET } from "@data"
 import { loadModifiers } from "@module/apps/modifier-bucket/data.ts"
 import { CharacterDataGURPS } from "@module/data/actor/character.ts"
+import { formatRelativeSkill } from "@module/data/item/helpers.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
 import { AttributesConfig } from "@module/settings/attributes-config.ts"
 import { HitLocationsConfig } from "@module/settings/hit-location-config.ts"
@@ -32,6 +33,7 @@ export const Ready = {
 				Evaluator,
 				SheetSettings,
 				Weight,
+				formatRelativeSkill,
 			}
 
 			// Determine whether a system migration is required and feasible

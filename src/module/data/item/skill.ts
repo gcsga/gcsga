@@ -22,7 +22,7 @@ import {
 import { ItemInst, SkillLevel, addTooltipForSkillLevelAdj, formatRelativeSkill } from "./helpers.ts"
 import { ActorTemplateType } from "../actor/types.ts"
 import { CellData } from "./compontents/cell-data.ts"
-import { SkillDefault } from "../skill-default.ts"
+import { SkillDefault } from "./compontents/skill-default.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { Study } from "../study.ts"
 import { SkillDefaultTemplate, SkillDefaultTemplateSchema } from "./templates/defaults.ts"
@@ -52,7 +52,7 @@ class SkillData extends ItemDataModel.mixin(
 		;(this.difficulty.schema as any).attributeChoices = getAttributeChoices(
 			this.parent.actor,
 			this.difficulty.attribute,
-			"GURPS.Item.Skill.FIELDS.Difficulty.Attribute",
+			"GURPS.AttributeDifficulty.AttributeKey",
 			{ blank: false, ten: true, size: false, dodge: false, parry: false, block: false, skill: false },
 		).choices
 	}
@@ -82,12 +82,15 @@ class SkillData extends ItemDataModel.mixin(
 					attribute: gid.Dexterity,
 					difficulty: difficulty.Level.Average,
 				},
-				attributeChoices: getAttributeChoices(
-					null,
-					gid.Dexterity,
-					"GURPS.Item.Skill.FIELDS.Difficulty.Attribute",
-					{ blank: false, ten: true, size: false, dodge: false, parry: false, block: false, skill: false },
-				).choices,
+				attributeChoices: getAttributeChoices(null, gid.Dexterity, "GURPS.AttributeDifficulty.AttributeKey", {
+					blank: false,
+					ten: true,
+					size: false,
+					dodge: false,
+					parry: false,
+					block: false,
+					skill: false,
+				}).choices,
 				label: "GURPS.Item.Skill.FIELDS.Difficulty.Name",
 			}),
 			// difficulty: new fields.EmbeddedDataField(AttributeDifficulty, {
@@ -190,7 +193,7 @@ class SkillData extends ItemDataModel.mixin(
 		if (this.difficulty.difficulty !== difficulty.Level.Wildcard) {
 			const defSkill = this.defaultSkill
 			if (defSkill !== null && this.defaulted_from !== null) {
-				return LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.SkillDefault, {
+				return LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.SkillDefault.Notes, {
 					name: defSkill.system.processedName,
 					modifier: this.defaulted_from.modifier.signedString(),
 				})
@@ -338,7 +341,8 @@ class SkillData extends ItemDataModel.mixin(
 		const def = this.defaulted_from
 
 		const actor = this.parent.actor
-		if (!actor?.isOfType(ActorType.Character)) {
+		if (!actor) return { level: 0, relativeLevel: 0, tooltip: "" }
+		if (actor && !actor.isOfType(ActorType.Character)) {
 			throw ErrorGURPS("Actor is not character. Functionality not implemented.")
 		}
 

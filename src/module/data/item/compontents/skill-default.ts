@@ -4,10 +4,10 @@ import { LocalizeGURPS, StringBuilder } from "@util"
 import { ActorGURPS2 } from "@module/document/actor.ts"
 import { ActorTemplateType } from "@module/data/actor/types.ts"
 import { Nameable } from "@module/util/index.ts"
-import { ItemTemplateType } from "./item/types.ts"
+import { ItemTemplateType } from "../types.ts"
 import { createButton } from "@module/applications/helpers.ts"
-import { ItemDataModel } from "./abstract.ts"
-import { getAttributeChoices } from "./attribute/helpers.ts"
+import { ItemDataModel } from "../../abstract.ts"
+import { getAttributeChoices } from "../../attribute/helpers.ts"
 
 const SKILL_BASED_DEFAULT_TYPES: Set<string> = new Set([gid.Skill, gid.Parry, gid.Block])
 

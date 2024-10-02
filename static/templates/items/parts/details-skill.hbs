@@ -35,7 +35,7 @@
 		<label>{{localize "GURPS.Item.Skill.FIELDS.Difficulty.Name"}}</label>
 		<div class="form-fields">
 			<!-- Attribute -->
-			{{formInput fields.difficulty.fields.attribute value=source.difficulty.attribute options=attributeChoices}}
+			{{formInput fields.difficulty.fields.attribute value=source.difficulty.attribute}}
 			<!-- / -->
 			<label>/</label>
 			<!-- Difficulty -->
@@ -56,7 +56,7 @@
 
 			<!-- Level -->
 			<label>{{localize "GURPS.Item.Skill.FIELDS.Level.Name"}}</label>
-			<input type="text" readonly value="source.level" />
+			<input tabindex="-1" type="text" readonly value="{{levelField}}" />
 		</div>
 	</div>
 	{{/if}}
