@@ -35,6 +35,11 @@ class SpellData extends ItemDataModel.mixin(
 ) {
 	static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
 
+	override async getSheetData(context: Record<string, unknown>): Promise<void> {
+		context.detailsParts = ["gurps.details-spell", "gurps.details-prereqs"]
+		context.embedsParts = ["gurps.embeds-weapons"]
+	}
+
 	static override defineSchema(): SpellSchema {
 		return this.mergeSchema(super.defineSchema(), {
 			difficulty: new AttributeDifficultyField({

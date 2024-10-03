@@ -137,7 +137,7 @@ class SystemDataModel<
 	/*  Data Cleaning                               */
 	/* -------------------------------------------- */
 
-	static override cleanData(source: object, options?: Record<string, unknown>): SourceFromSchema<fields.DataSchema> {
+	static override cleanData(source?: object, options?: Record<string, unknown>): SourceFromSchema<fields.DataSchema> {
 		this._cleanData(source, options)
 		return super.cleanData(source, options)
 	}
@@ -149,7 +149,7 @@ class SystemDataModel<
 	 * @param {object} [source]         The source data
 	 * @param {object} [options={}]     Additional options (see DataModel.cleanData)
 	 */
-	static _cleanData(source: object, options?: Record<string, unknown>) {
+	static _cleanData(source?: object, options?: Record<string, unknown>) {
 		for (const template of this._schemaTemplates) {
 			template._cleanData(source, options)
 		}

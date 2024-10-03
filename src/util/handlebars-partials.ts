@@ -9,6 +9,8 @@ export async function preloadHandlebarsTemplates(): Promise<void> {
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-equipment.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-skill.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-technique.hbs`,
+		`systems/${SYSTEM_NAME}/templates/items/parts/details-spell.hbs`,
+		`systems/${SYSTEM_NAME}/templates/items/parts/details-ritual-magic-spell.hbs`,
 
 		// Item Embeds Partials
 		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-equipment-children.hbs`,

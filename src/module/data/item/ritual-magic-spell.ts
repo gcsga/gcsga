@@ -26,6 +26,11 @@ class RitualMagicSpellData extends ItemDataModel.mixin(
 ) {
 	static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
 
+	override async getSheetData(context: Record<string, unknown>): Promise<void> {
+		context.detailsParts = ["gurps.details-ritual-magic-spell", "gurps.details-prereqs"]
+		context.embedsParts = ["gurps.embeds-weapons"]
+	}
+
 	static override defineSchema(): RitualMagicSpellSchema {
 		const fields = foundry.data.fields
 
@@ -41,17 +46,19 @@ class RitualMagicSpellData extends ItemDataModel.mixin(
 					difficulty.Level.VeryHard,
 					difficulty.Level.Wildcard,
 				]),
-				label: "GURPS.Item.RitualMagicSpell.FIELDS.Difficulty.Name",
+				label: "GURPS.Item.Spell.FIELDS.Difficulty.Name",
 			}),
 			base_skill: new fields.StringField<string, string, true, false, true>({
 				required: true,
 				nullable: false,
 				initial: "Ritual Magic",
+				label: "GURPS.Item.RitualMagicSpell.FIELDS.BaseSkill.Name",
 			}),
 			prereq_count: new fields.NumberField<number, number, true, false, true>({
 				required: true,
 				nullable: false,
 				initial: 0,
+				label: "GURPS.Item.RitualMagicSpell.FIELDS.PrereqCount.Name",
 			}),
 		}) as RitualMagicSpellSchema
 	}

@@ -1,9 +1,5 @@
 <fieldset>
 	<legend>{{localize "GURPS.Item.Skill.DetailsLegend"}}</legend>
-	<!-- If item is not owned, points field should be invisible -->
-	{{#unless item.isOwned}}
-	<input name="system.points" value="0" style="display: none" />
-	{{/unless}}
 
 	<!-- Notes -->
 	{{formField fields.notes value=source.notes localize=true}}

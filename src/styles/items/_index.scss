@@ -41,12 +41,16 @@
 			}
 
 			// Show disabled fields as transparent.
-			// &:disabled {
-			// 	&::placeholder {
-			// 		color: transparent;
-			// 	}
-			// 	color: transparent;
-			// }
+			&:disabled {
+				&::placeholder {
+					color: transparent;
+				}
+				// color: transparent;
+			}
+		}
+
+		.form-fields {
+			white-space: nowrap;
 		}
 
 		label:has(input[type="checkbox"]) {

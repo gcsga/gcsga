@@ -39,10 +39,12 @@ class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 		}
 	}
 	static override _cleanData(
-		source: DeepPartial<SourceFromSchema<AbstractSkillTemplateSchema>> & { [key: string]: unknown },
+		source?: DeepPartial<SourceFromSchema<AbstractSkillTemplateSchema>> & { [key: string]: unknown },
 		_options?: Record<string, unknown>,
 	): void {
-		source.tech_level = source.tech_level_required ? source.tech_level || "" : null
+		if (source && Object.hasOwn(source, "tech_level_required")) {
+			source.tech_level = source.tech_level_required ? source.tech_level || "" : null
+		}
 	}
 
 	get processedName(): string {

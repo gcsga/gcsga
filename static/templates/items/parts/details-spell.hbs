@@ -1,8 +1,5 @@
 <fieldset>
-	<legend>{{localize "GURPS.Item.Skill.DetailsLegend"}}</legend>
-
-	<!-- Specialization -->
-	{{formField fields.specialization value=source.specialization localize=true}}
+	<legend>{{localize "GURPS.Item.Spell.DetailsLegend"}}</legend>
 
 	<!-- Tech Level -->
 	<div class="form-group">
@@ -20,15 +17,18 @@
 		</div>
 	</div>
 
-	<!-- Notes -->
-	{{formField fields.notes value=source.notes localize=true}}
+	<!-- College -->
+	{{formField fields.college value=source.college localize=true}}
 
-	<!-- Tags -->
-	{{formField fields.tags value=source.tags localize=true}}
+	<!-- Class -->
+	{{formField fields.spell_class value=source.spell_class localize=true}}
+
+	<!-- Power Source -->
+	{{formField fields.power_source value=source.power_source localize=true}}
 
 	<!-- Difficulty -->
 	<div class="form-group">
-		<label>{{localize "GURPS.Item.Skill.FIELDS.Difficulty.Name"}}</label>
+		<label>{{localize "GURPS.Item.Spell.FIELDS.Difficulty.Name"}}</label>
 		<div class="form-fields">
 			<!-- Attribute -->
 			{{formInput fields.difficulty.fields.attribute value=source.difficulty.attribute}}
@@ -38,9 +38,6 @@
 			{{formInput fields.difficulty.fields.difficulty value=source.difficulty.difficulty}}
 		</div>
 	</div>
-
-	<!-- Encumbrance Penalty -->
-	{{formField fields.encumbrance_penalty_multiplier value=source.encumbrance_penalty_multiplier localize=true}}
 
 	<!-- Points & Level -->
 	{{#if item.isOwned}}
@@ -56,6 +53,27 @@
 		</div>
 	</div>
 	{{/if}}
+
+	<!-- Resistance -->
+	{{formField fields.resist value=source.resist localize=true}}
+
+	<!-- Casting Cost -->
+	{{formField fields.casting_cost value=source.casting_cost localize=true}}
+
+	<!-- Maintenance Cost -->
+	{{formField fields.maintenance_cost value=source.maintenance_cost localize=true}}
+
+	<!-- Casting Tiem -->
+	{{formField fields.casting_time value=source.casting_time localize=true}}
+
+	<!-- Casting Duration -->
+	{{formField fields.duration value=source.duration localize=true}}
+
+	<!-- Notes -->
+	{{formField fields.notes value=source.notes localize=true}}
+
+	<!-- Tags -->
+	{{formField fields.tags value=source.tags localize=true}}
 
 	<!-- Reference -->
 	{{formField fields.reference value=source.reference localize=true}}

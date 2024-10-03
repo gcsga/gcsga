@@ -200,6 +200,26 @@
 					"Level": { "Name": "Level" },
 					"Limited": { "Name": "Cannot exceed default skill level by more than" }
 				}
+			},
+			"Spell": {
+				"DetailsLegend": "Spell Details",
+				"FIELDS": {
+					"College": { "Name": "College" },
+					"Class": { "Name": "Class" },
+					"PowerSource": { "Name": "Power Source" },
+					"Difficulty": { "Name": "Difficulty" },
+					"Resist": { "Name": "Resistance" },
+					"CastingCost": { "Name": "Casting Cost" },
+					"MaintenanceCost": { "Name": "Maintenance Cost" },
+					"CastingTime": { "Name": "Cating Time" },
+					"Duration": { "Name": "Casting Duration" }
+				}
+			},
+			"RitualMagicSpell": {
+				"FIELDS": {
+					"BaseSkill": { "Name": "Base Skill" },
+					"PrereqCount": { "Name": "Prerequisite Count" }
+				}
 			}
 		},
 		"Attribute": {

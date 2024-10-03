@@ -1,0 +1,82 @@
+<fieldset>
+	<legend>{{localize "GURPS.Item.Spell.DetailsLegend"}}</legend>
+
+	<!-- Tech Level -->
+	<div class="form-group">
+		<label>{{localize "GURPS.Item.Skill.FIELDS.TechLevel.Name"}}</label>
+		<div class="form-fields">
+			<!-- Tech Level Number -->
+			{{formInput fields.tech_level value=source.tech_level disabled=(not source.tech_level_required)}}
+			<!-- Tech Level Enabled -->
+			<label>
+				<!-- Input -->
+				{{formInput fields.tech_level_required value=source.tech_level_required}}
+				<!-- Label Contents -->
+				{{localize "GURPS.Item.Skill.FIELDS.TechLevelRequired.Name"}}
+			</label>
+		</div>
+	</div>
+
+	<!-- College -->
+	{{formField fields.college value=source.college localize=true}}
+
+	<!-- Class -->
+	{{formField fields.spell_class value=source.spell_class localize=true}}
+
+	<!-- Power Source -->
+	{{formField fields.power_source value=source.power_source localize=true}}
+
+	<!-- Base Skill -->
+	{{formField fields.base_skill value=source.base_skill localize=true}}
+
+	<!-- Difficulty -->
+	<div class="form-group">
+		<label>{{localize "GURPS.Item.Spell.FIELDS.Difficulty.Name"}}</label>
+		<div class="form-fields">
+			<!-- Difficulty -->
+			{{formInput fields.difficulty.fields.difficulty value=source.difficulty.difficulty}}
+			<label>{{localize "GURPS.Item.RitualMagicSpell.FIELDS.PrereqCount.Name"}}</label>
+			<!-- Prereq Count -->
+			{{formInput fields.prereq_count value=source.prereq_count}}
+		</div>
+	</div>
+
+	<!-- Points & Level -->
+	{{#if item.isOwned}}
+	<div class="form-group">
+		<label>{{localize "GURPS.Item.Skill.FIELDS.Points.Name"}}</label>
+		<div class="form-fields">
+			<!-- Points -->
+			{{formInput fields.points value=source.points}}
+
+			<!-- Level -->
+			<label>{{localize "GURPS.Item.Skill.FIELDS.Level.Name"}}</label>
+			<input tabindex="-1" type="text" readonly value="{{levelField}}" />
+		</div>
+	</div>
+	{{/if}}
+
+	<!-- Resistance -->
+	{{formField fields.resist value=source.resist localize=true}}
+
+	<!-- Casting Cost -->
+	{{formField fields.casting_cost value=source.casting_cost localize=true}}
+
+	<!-- Maintenance Cost -->
+	{{formField fields.maintenance_cost value=source.maintenance_cost localize=true}}
+
+	<!-- Casting Tiem -->
+	{{formField fields.casting_time value=source.casting_time localize=true}}
+
+	<!-- Casting Duration -->
+	{{formField fields.duration value=source.duration localize=true}}
+
+	<!-- Notes -->
+	{{formField fields.notes value=source.notes localize=true}}
+
+	<!-- Tags -->
+	{{formField fields.tags value=source.tags localize=true}}
+
+	<!-- Reference -->
+	{{formField fields.reference value=source.reference localize=true}}
+</fieldset>

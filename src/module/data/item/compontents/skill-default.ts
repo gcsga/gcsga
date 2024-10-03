@@ -29,6 +29,18 @@ class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaul
 		}
 	}
 
+	static override cleanData(
+		source: DeepPartial<SourceFromSchema<SkillDefaultSchema>> & { [key: string]: unknown },
+		options?: Record<string, unknown>,
+	): SourceFromSchema<SkillDefaultSchema> {
+		if (source.type) {
+			source.name = SKILL_BASED_DEFAULT_TYPES.has(source.type) ? source.name || "" : null
+			source.specialization = SKILL_BASED_DEFAULT_TYPES.has(source.type) ? source.specialization || "" : null
+		}
+
+		return super.cleanData(source, options) as SourceFromSchema<SkillDefaultSchema>
+	}
+
 	get skillBased(): boolean {
 		return SKILL_BASED_DEFAULT_TYPES.has(this.type) ?? false
 	}
@@ -89,7 +101,7 @@ class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaul
 				value: this.name ?? "",
 				localize: true,
 				placeholder: game.i18n.localize("GURPS.Item.Defaults.FIELDS.Name"),
-				disabled: this.type !== gid.Skill,
+				disabled: !SKILL_BASED_DEFAULT_TYPES.has(this.type),
 			}) as HTMLElement,
 		)
 
@@ -99,7 +111,7 @@ class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaul
 				value: this.specialization ?? "",
 				localize: true,
 				placeholder: game.i18n.localize("GURPS.Item.Defaults.FIELDS.Specialization"),
-				disabled: this.type !== gid.Skill,
+				disabled: !SKILL_BASED_DEFAULT_TYPES.has(this.type),
 			}) as HTMLElement,
 		)
 
