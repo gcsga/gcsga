@@ -11,10 +11,9 @@ import { ItemDataModel } from "../abstract.ts"
 import { SpellFieldsTemplate, SpellFieldsTemplateSchema } from "./templates/spell-fields.ts"
 import { ActorTemplateType } from "../actor/types.ts"
 import { SkillLevel, calculateTechniqueLevel } from "./helpers.ts"
-import { AttributeDifficulty } from "./compontents/attribute-difficulty.ts"
 import { SkillDefault } from "./compontents/skill-default.ts"
-import { Study } from "../study.ts"
 import { Nameable } from "@module/util/index.ts"
+import { AttributeDifficultyField } from "./fields/attribute-difficulty-field.ts"
 
 class RitualMagicSpellData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -31,12 +30,18 @@ class RitualMagicSpellData extends ItemDataModel.mixin(
 		const fields = foundry.data.fields
 
 		return this.mergeSchema(super.defineSchema(), {
-			difficulty: new fields.SchemaField(AttributeDifficulty.defineSchema(), {
+			difficulty: new AttributeDifficultyField({
 				initial: {
-					// TODO: review
 					attribute: "",
-					difficulty: difficulty.Level.Hard,
+					difficulty: difficulty.Level.Average,
 				},
+				attributeChoices: { "": "" },
+				difficultyChoices: difficulty.LevelsChoices("GURPS.AttributeDifficulty.AttributeKey", [
+					difficulty.Level.Easy,
+					difficulty.Level.VeryHard,
+					difficulty.Level.Wildcard,
+				]),
+				label: "GURPS.Item.RitualMagicSpell.FIELDS.Difficulty.Name",
 			}),
 			base_skill: new fields.StringField<string, string, true, false, true>({
 				required: true,
@@ -211,10 +216,7 @@ class RitualMagicSpellData extends ItemDataModel.mixin(
 	}
 }
 
-interface RitualMagicSpellData extends Omit<ModelPropsFromSchema<RitualMagicSpellSchema>, "study" | "difficulty"> {
-	study: Study[]
-	difficulty: AttributeDifficulty
-}
+interface RitualMagicSpellData extends ModelPropsFromSchema<RitualMagicSpellSchema> {}
 
 type RitualMagicSpellSchema = BasicInformationTemplateSchema &
 	PrereqTemplateSchema &

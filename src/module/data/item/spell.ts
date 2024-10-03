@@ -21,6 +21,8 @@ import {
 import { ActorTemplateType } from "../actor/types.ts"
 import { SkillLevel } from "./helpers.ts"
 import { Study } from "../study.ts"
+import { AttributeDifficultyField } from "./fields/attribute-difficulty-field.ts"
+import { getAttributeChoices } from "../attribute/helpers.ts"
 
 class SpellData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -34,12 +36,22 @@ class SpellData extends ItemDataModel.mixin(
 	static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
 
 	static override defineSchema(): SpellSchema {
-		const fields = foundry.data.fields
 		return this.mergeSchema(super.defineSchema(), {
-			difficulty: new fields.SchemaField(AttributeDifficulty.defineSchema(), {
-				required: true,
-				nullable: false,
-				initial: { attribute: gid.Intelligence, difficulty: difficulty.Level.Hard },
+			difficulty: new AttributeDifficultyField({
+				initial: {
+					attribute: gid.Intelligence,
+					difficulty: difficulty.Level.Hard,
+				},
+				attributeChoices: getAttributeChoices(null, gid.Dexterity, "GURPS.AttributeDifficulty.AttributeKey", {
+					blank: false,
+					ten: true,
+					size: false,
+					dodge: false,
+					parry: false,
+					block: false,
+					skill: false,
+				}).choices,
+				label: "GURPS.Item.Spell.FIELDS.Difficulty.Name",
 			}),
 		}) as SpellSchema
 	}

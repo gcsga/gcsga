@@ -1,4 +1,5 @@
 interface CreateButtonOptions {
+	type: "button" | "submit" | "reset"
 	classes: string[]
 	icon: string[]
 	label: string
@@ -10,6 +11,9 @@ function createButton(options: Partial<CreateButtonOptions>): HTMLButtonElement 
 
 	if (options.classes) button.classList.add(...options.classes)
 	if (options.label) button.innerHTML = options.label
+
+	if (options.type) button.type = options.type
+	else button.type = "button"
 
 	if (options.icon) {
 		const icon = document.createElement("i")

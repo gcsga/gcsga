@@ -70,42 +70,61 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			template: `systems/${SYSTEM_NAME}/templates/items/parts/item-header.hbs`,
 			scrollable: [""],
 		},
-		descriptionTab: {
+		description: {
 			id: "description",
 			template: `systems/${SYSTEM_NAME}/templates/items/tabs/item-description.hbs`,
 			scrollable: [""],
 		},
-		detailsTab: {
+		details: {
 			id: "details",
 			template: `systems/${SYSTEM_NAME}/templates/items/tabs/item-details.hbs`,
 			scrollable: [""],
 		},
-		embedsTab: {
+		embeds: {
 			id: "embeds",
 			template: `systems/${SYSTEM_NAME}/templates/items/tabs/item-embeds.hbs`,
 			scrollable: [""],
 		},
+		replacements: {
+			id: "replacements",
+			template: `systems/${SYSTEM_NAME}/templates/items/tabs/item-replacements.hbs`,
+			scrollable: [""],
+		},
+	}
+
+	protected override _configureRenderOptions(options: ApplicationRenderOptions) {
+		super._configureRenderOptions(options)
+		if (!this.item.hasTemplate(ItemTemplateType.Replacement))
+			options.parts = options.parts?.filter(e => e !== "replacements")
+		if (!this.item.hasTemplate(ItemTemplateType.Container))
+			options.parts = options.parts?.filter(e => e !== "embeds")
 	}
 
 	_getTabs(): Record<string, Partial<ApplicationTab>> {
 		return this._markTabs({
-			descriptionTab: {
+			description: {
 				id: "description",
 				group: "primary",
 				icon: "",
-				label: "DESCRIPTION",
+				label: "GURPS.Sheets.Item.Tabs.Description",
 			},
-			detailsTab: {
+			details: {
 				id: "details",
 				group: "primary",
 				icon: "",
-				label: "DETAILS",
+				label: "GURPS.Sheets.Item.Tabs.Details",
 			},
-			embedsTab: {
+			embeds: {
 				id: "embeds",
 				group: "primary",
 				icon: "",
-				label: "EMBEDS",
+				label: "GURPS.Sheets.Item.Tabs.Embeds",
+			},
+			replacements: {
+				id: "replacements",
+				group: "primary",
+				icon: "",
+				label: "GURPS.Sheets.Item.Tabs.Replacements",
 			},
 		})
 	}
@@ -386,7 +405,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		context.partId = `${this.id}-${partId}`
 		context.tab = context.tabs[partId]
 
-		if (partId === "detailsTab" && (this.item.type === ItemType.Skill || this.item.type === ItemType.Technique))
+		if (partId === "details" && (this.item.type === ItemType.Skill || this.item.type === ItemType.Technique))
 			this._prepareSkillPartContext(context)
 		return context
 	}

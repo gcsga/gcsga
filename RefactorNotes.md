@@ -1,5 +1,10 @@
 # Refactor Notes
 
+## Current Tasks
+
+- Add embeds and nameable tab
+- Hide some tabs if components not present
+
 ## Left To Do
 
 - Weapon Fields

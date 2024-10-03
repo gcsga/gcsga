@@ -31,6 +31,17 @@
 		}
 	},
 	"GURPS": {
+		"Sheets": {
+			"ToggleMode": "Toggle Mode",
+			"Item": {
+				"Tabs": {
+					"Description": "Description",
+					"Details": "Details",
+					"Embeds": "Contents",
+					"Replacements": "Replacements"
+				}
+			}
+		},
 		"Actor": {
 			"base": {
 				"portrait": "Portrait"

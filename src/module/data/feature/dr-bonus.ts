@@ -76,7 +76,7 @@ class DRBonus extends BaseFeature<DRBonusSchema> {
 
 		rowElement1.append(
 			foundry.applications.fields.createSelectInput({
-				name: `system.features.${0}.locations`,
+				name: `${prefix}.locations`,
 				value: this.locations[0] === gid.All ? gid.All : "",
 				localize: true,
 				options: [

@@ -18,6 +18,7 @@ import { CellData } from "../compontents/cell-data.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
 import { Study } from "@module/data/study.ts"
 import { Nameable } from "@module/util/index.ts"
+import { StringArrayField } from "../fields/string-array-field.ts"
 
 class SpellFieldsTemplate extends ItemDataModel<SpellFieldsTemplateSchema> {
 	// TODO: see if this causes issues
@@ -28,41 +29,53 @@ class SpellFieldsTemplate extends ItemDataModel<SpellFieldsTemplateSchema> {
 		const fields = foundry.data.fields
 
 		return {
-			college: new fields.ArrayField<fields.StringField>(new foundry.data.fields.StringField()),
+			college: new StringArrayField({
+				required: true,
+				nullable: false,
+				initial: [],
+				label: "GURPS.Item.Skill.FIELDS.Specialization.College.Name",
+			}),
 			power_source: new fields.StringField<string, string, true, false, true>({
 				required: true,
 				nullable: false,
 				initial: "Arcane",
+				label: "GURPS.Item.Skill.FIELDS.Specialization.PowerSource.Name",
 			}),
 			spell_class: new fields.StringField<string, string, true, false, true>({
 				required: true,
 				nullable: false,
 				initial: "Regular",
+				label: "GURPS.Item.Skill.FIELDS.Specialization.Class.Name",
 			}),
 			resist: new fields.StringField<string, string, true, false, true>({
 				required: true,
 				nullable: false,
 				initial: "",
+				label: "GURPS.Item.Skill.FIELDS.Specialization.Resist.Name",
 			}),
 			casting_cost: new fields.StringField<string, string, true, false, true>({
 				required: true,
 				nullable: false,
 				initial: "1",
+				label: "GURPS.Item.Skill.FIELDS.Specialization.CastingCost.Name",
 			}),
 			maintenance_cost: new fields.StringField<string, string, true, false, true>({
 				required: true,
 				nullable: false,
 				initial: "",
+				label: "GURPS.Item.Skill.FIELDS.Specialization.MaintenanceCost.Name",
 			}),
 			casting_time: new fields.StringField<string, string, true, false, true>({
 				required: true,
 				nullable: false,
 				initial: "1 sec",
+				label: "GURPS.Item.Skill.FIELDS.Specialization.CastingTime.Name",
 			}),
 			duration: new fields.StringField<string, string, true, false, true>({
 				required: true,
 				nullable: false,
 				initial: "Instant",
+				label: "GURPS.Item.Skill.FIELDS.Specialization.Duration.Name",
 			}),
 		}
 	}
@@ -247,7 +260,7 @@ class SpellFieldsTemplate extends ItemDataModel<SpellFieldsTemplateSchema> {
 interface SpellFieldsTemplate extends ModelPropsFromSchema<SpellFieldsTemplateSchema> {}
 
 type SpellFieldsTemplateSchema = {
-	college: fields.ArrayField<fields.StringField>
+	college: StringArrayField<true, false, true>
 	power_source: fields.StringField<string, string, true, false, true>
 	spell_class: fields.StringField<string, string, true, false, true>
 	resist: fields.StringField<string, string, true, false, true>
