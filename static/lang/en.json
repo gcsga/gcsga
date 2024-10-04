@@ -220,6 +220,27 @@
 					"BaseSkill": { "Name": "Base Skill" },
 					"PrereqCount": { "Name": "Prerequisite Count" }
 				}
+			},
+			"Trait": {
+				"DetailsLegend": "Trait Details",
+				"FIELDS": {
+					"BasePoints": { "Name": "Base Cost" },
+					"Cr": { "Name": "Self-Control Roll" },
+					"CrAdj": { "Name": "CR Adjustment" },
+					"Enabled": { "Name": "Enabled" },
+					"Levels": { "Name": "Levels" },
+					"Points": { "Name": "Point Cost" },
+					"PointsPerLevel": { "Name": "Cost Per Level" },
+					"RoundDown": { "Name": "Round Down" },
+					"UserDesc": { "Name": "User Description" }
+				}
+			},
+			"TraitContainer": {
+				"DetailsLegend": "Trait Container Details",
+				"FIELDS": {
+					"Ancestry": { "Name": "Ancestry" },
+					"ContainerType": { "Name": "Container Type" }
+				}
 			}
 		},
 		"Attribute": {
@@ -431,6 +452,50 @@
 				"primary_separator": "Primary Separator",
 				"secondary_separator": "Secondary Separator",
 				"pool_separator": "Pool Separator"
+			},
+			"container": {
+				"group": { "Name": "Group", "Tag": "" },
+				"alternative_abilities": { "Name": "Alternative Abilities", "Tag": "Alternate" },
+				"ancestry": { "Name": "Ancestry", "Tag": "Meta" },
+				"attributes": { "Name": "Attribute", "Tag": "Attribute" },
+				"meta_trait": { "Name": "Meta-Trait", "Tag": "Ancestry" }
+			},
+			"selfctrl": {
+				"Roll": {
+					"0": "None Required",
+					"6": "CR: 6 (Resist Rarely)",
+					"9": "CR: 9 (Resist Fairly Often)",
+					"12": "CR: 12 (Resist Quite Often)",
+					"15": "CR: 15 (Resist Almost All The Time)",
+					"NonStandard": "CR: {number} (non-standard)"
+				},
+				"Adjustment": {
+					"none": { "Name": "None", "Tooltip": "None" },
+					"action_penalty": {
+						"Name": "Includes an Action Penalty for Failure",
+						"Tooltip": "{penalty} Action Penalty"
+					},
+					"reaction_penalty": {
+						"Name": "Includes a Reaction Penalty for Failure",
+						"Tooltip": "{penalty} Reaction Penalty"
+					},
+					"fright_check_penalty": {
+						"Name": "Includes a Fright Check Penalty",
+						"Tooltip": "{penalty} Fright Check Penalty"
+					},
+					"fright_check_bonus": {
+						"Name": "Includes a Fright Check Bonus",
+						"Tooltip": "+{penalty} Fright Check Bonus"
+					},
+					"minor_cost_of_living_increase": {
+						"Name": "Includes a Minor Cost of Living Increase",
+						"Tooltip": "+{penalty}% Cost of Living Increase"
+					},
+					"major_cost_of_living_increase": {
+						"Name": "Includes a Major Cost of Living Increase and Merchant Skill Penalty",
+						"Tooltip": "+{penalty}% Cost of Living Increase"
+					}
+				}
 			},
 			"difficulty": {
 				"e": "E",

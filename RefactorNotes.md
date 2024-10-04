@@ -2,8 +2,7 @@
 
 ## Current Tasks
 
-- Add embeds and nameable tab
-- Hide some tabs if components not present
+- Add ancestry setting for trait containers
 
 ## Left To Do
 
@@ -37,7 +36,7 @@
   - Trait
   - Trait Container
   - Spell
-  - Skill
+  - Skill \*DONE
   - RPM Spell
   - Technique
   - Container

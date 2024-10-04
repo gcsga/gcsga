@@ -1,6 +1,5 @@
 import { RollType } from "@module/data/constants.ts"
 import { Int } from "@util/int.ts"
-import { LocalizeGURPS } from "@util/localize.ts"
 
 export namespace selfctrl {
 	export enum Roll {
@@ -34,9 +33,9 @@ export namespace selfctrl {
 				case Roll.CR9:
 				case Roll.CR12:
 				case Roll.CR15:
-					return LocalizeGURPS.translations.gurps.enum.selfctrl.roll[R]
+					return `GURPS.Enum.selfctrl.Roll.${R}`
 				default:
-					return LocalizeGURPS.format(LocalizeGURPS.translations.gurps.enum.selfctrl.roll.non_standard, {
+					return game?.i18n?.format("GURPS.Enum.selfctrl.Roll.NonStandard", {
 						number: R,
 					})
 			}
@@ -151,11 +150,11 @@ export namespace selfctrl {
 		}
 
 		export function toString(A: Adjustment): string {
-			return LocalizeGURPS.translations.gurps.enum.selfctrl.adjustment.string[A]
+			return `GURPS.Enum.selfctrl.Adjustment.${A}.Name`
 		}
 
 		export function altString(A: Adjustment): string {
-			return LocalizeGURPS.translations.gurps.enum.selfctrl.adjustment.alt_string[A]
+			return `GURPS.Enum.selfctrl.Adjustment.${A}.Tooltip`
 		}
 
 		export function adjustment(A: Adjustment, cr: Roll): number {
@@ -183,12 +182,9 @@ export namespace selfctrl {
 				case A === Adjustment.NoCRAdj:
 					return Adjustment.altString(A)
 				default:
-					return LocalizeGURPS.format(
-						LocalizeGURPS.translations.gurps.enum.selfctrl.adjustment.alt_string[A],
-						{
-							penalty: Adjustment.adjustment(A, cr),
-						},
-					)
+					return game?.i18n?.format(altString(A), {
+						penalty: Adjustment.adjustment(A, cr),
+					})
 			}
 		}
 	}
@@ -202,4 +198,14 @@ export namespace selfctrl {
 		Adjustment.MinorCostOfLivingIncrease,
 		Adjustment.MajorCostOfLivingIncrease,
 	]
+
+	export function RollsChoices(): Readonly<Record<Roll, string>> {
+		return Object.freeze(Object.fromEntries(Rolls.map(T => [T, Roll.toString(T)])) as Record<Roll, string>)
+	}
+
+	export function AdjustmentsChoices(): Readonly<Record<Adjustment, string>> {
+		return Object.freeze(
+			Object.fromEntries(Adjustments.map(T => [T, Adjustment.toString(T)])) as Record<Adjustment, string>,
+		)
+	}
 }

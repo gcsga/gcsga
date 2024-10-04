@@ -377,7 +377,7 @@ class CharacterDataGURPS extends ActorDataModel.mixin(
 		this.parent.itemCollections.traits.forEach(e => {
 			if (e.system.enabled && e.isOfType(ItemType.Trait) && e.system.isLeveled) {
 				if (equalFold(e.system.nameWithReplacements, "telekinesis")) {
-					levels += Math.max(e.system.levels, 0)
+					levels += Math.max(e.system.levels ?? 0, 0)
 				}
 			}
 		})

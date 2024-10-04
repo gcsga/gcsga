@@ -131,9 +131,9 @@ class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 
 	get derivedLevel(): number {
 		if (this.subOwner?.isOfType(ItemType.Trait, ItemType.TraitModifier)) {
-			if (this.subOwner.system.isLeveled) return this.subOwner.system.levels
+			if (this.subOwner.system.isLeveled) return this.subOwner.system.levels ?? 0
 		} else if (this.owner?.isOfType(ItemType.Trait, ItemType.TraitModifier)) {
-			if (this.owner.system.isLeveled) return this.owner.system.levels
+			if (this.owner.system.isLeveled) return this.owner.system.levels ?? 0
 		}
 		return 0
 	}

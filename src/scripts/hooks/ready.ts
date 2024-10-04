@@ -5,7 +5,7 @@ import { formatRelativeSkill } from "@module/data/item/helpers.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
 import { AttributesConfig } from "@module/settings/attributes-config.ts"
 import { HitLocationsConfig } from "@module/settings/hit-location-config.ts"
-import { Evaluator } from "@module/util/index.ts"
+import { Evaluator, Nameable } from "@module/util/index.ts"
 import { SetGameGURPS } from "@scripts/set-game-gurps.ts"
 import { Weight } from "@util"
 import { Int } from "@util/int.ts"
@@ -34,6 +34,7 @@ export const Ready = {
 				SheetSettings,
 				Weight,
 				formatRelativeSkill,
+				Nameable,
 			}
 
 			// Determine whether a system migration is required and feasible

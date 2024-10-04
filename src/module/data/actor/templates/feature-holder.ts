@@ -39,7 +39,7 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 		itemCollections.traits.forEach(trait => {
 			let levels = 0
 			if (trait.isOfType(ItemType.Trait)) {
-				if (trait.system.isLeveled) levels = Math.max(trait.system.levels, 0)
+				if (trait.system.isLeveled) levels = Math.max(trait.system.levels ?? 0, 0)
 				for (const f of trait.system.features) this._processFeature(trait, null, f, levels)
 				for (const f of featuresForSelfControlRoll(trait.system.cr, trait.system.cr_adj))
 					this._processFeature(trait, null, f, levels)

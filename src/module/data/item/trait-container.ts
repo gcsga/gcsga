@@ -25,31 +25,54 @@ class TraitContainerData extends ItemDataModel.mixin(
 	static override childTypes = new Set([ItemType.Trait, ItemType.TraitContainer])
 	static override modifierTypes = new Set([ItemType.TraitModifier, ItemType.TraitModifierContainer])
 
+	override async getSheetData(context: Record<string, unknown>): Promise<void> {
+		context.detailsParts = ["gurps.details-trait-container", "gurps.details-prereqs"]
+		context.embedsParts = ["gurps.embeds-weapons"]
+	}
+
 	static override defineSchema(): TraitContainerSchema {
 		const fields = foundry.data.fields
 
 		return this.mergeSchema(super.defineSchema(), {
-			ancestry: new fields.StringField({ required: true, nullable: false, initial: "" }),
-			userdesc: new fields.StringField({ required: true, nullable: false, initial: "" }),
+			ancestry: new fields.StringField({
+				required: true,
+				nullable: false,
+				initial: "",
+				label: "GURPS.Item.TraitContainer.FIELDS.Ancestry.Name",
+			}),
+			userdesc: new fields.StringField({
+				required: true,
+				nullable: false,
+				initial: "",
+				label: "GURPS.Item.Trait.FIELDS.UserDesc.Name",
+			}),
 			cr: new fields.NumberField({
 				required: true,
 				nullable: false,
-				choices: selfctrl.Rolls,
+				choices: selfctrl.RollsChoices,
 				initial: selfctrl.Roll.NoCR,
+				label: "GURPS.Item.Trait.FIELDS.Cr.Name",
 			}),
 			cr_adj: new fields.StringField({
 				required: true,
 				nullable: false,
-				choices: selfctrl.Adjustments,
+				choices: selfctrl.AdjustmentsChoices,
 				initial: selfctrl.Adjustment.NoCRAdj,
+				label: "GURPS.Item.Trait.FIELDS.CrAdj.Name",
 			}),
 			container_type: new fields.StringField({
 				required: true,
 				nullable: false,
-				choices: container.Types,
+				choices: container.TypesChoices,
 				initial: container.Type.Group,
+				label: "GURPS.Item.TraitContainer.FIELDS.ContainerType.Name",
 			}),
-			disabled: new fields.BooleanField({ required: true, nullable: false, initial: false }),
+			disabled: new fields.BooleanField({
+				required: true,
+				nullable: false,
+				initial: false,
+				label: "GURPS.Item.Trait.FIELDS.Disabled.Name",
+			}),
 			template_picker: new fields.EmbeddedDataField(TemplatePicker),
 		}) as TraitContainerSchema
 	}
@@ -79,6 +102,10 @@ class TraitContainerData extends ItemDataModel.mixin(
 			secondary: this.reference_highlight === "" ? this.nameWithReplacements : this.reference_highlight,
 		})
 		return cellData
+	}
+
+	get processedName(): string {
+		return this.nameWithReplacements
 	}
 
 	get enabled(): boolean {
@@ -169,7 +196,7 @@ class TraitContainerData extends ItemDataModel.mixin(
 
 	/** Replacements */
 	override get nameWithReplacements(): string {
-		return Nameable.apply(this.name, this.nameableReplacements)
+		return Nameable.apply(this.parent.name, this.nameableReplacements)
 	}
 
 	override get notesWithReplacements(): string {
@@ -200,20 +227,18 @@ class TraitContainerData extends ItemDataModel.mixin(
 	}
 }
 
-interface TraitContainerData extends Omit<ModelPropsFromSchema<TraitContainerSchema>, "template_picker"> {
-	template_picker: TemplatePicker
-}
+interface TraitContainerData extends ModelPropsFromSchema<TraitContainerSchema> {}
 
 type TraitContainerSchema = BasicInformationTemplateSchema &
 	PrereqTemplateSchema &
 	ContainerTemplateSchema &
 	ReplacementTemplateSchema & {
-		ancestry: fields.StringField<string, string, true, false, true>
+		ancestry: fields.StringField<string, string, true, true, true>
 		userdesc: fields.StringField<string, string, true, false, true>
 		cr: fields.NumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>
 		cr_adj: fields.StringField<selfctrl.Adjustment, selfctrl.Adjustment, true, false, true>
-		container_type: fields.StringField<container.Type>
-		disabled: fields.BooleanField
+		container_type: fields.StringField<container.Type, container.Type, true, false, true>
+		disabled: fields.BooleanField<boolean, boolean, true, false, true>
 		template_picker: fields.EmbeddedDataField<TemplatePicker, true, false, true>
 	}
 

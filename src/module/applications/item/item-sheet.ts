@@ -433,7 +433,10 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			}
 		}
 
-		// console.log(formData.object)
+		if (this.item.type === ItemType.Trait || this.item.type === ItemType.TraitContainer) {
+			formData.object["system.disabled"] = Boolean(!formData.object["system.enabled"])
+			delete formData.object["system.enabled"]
+		}
 
 		await this.item.update(formData.object)
 	}

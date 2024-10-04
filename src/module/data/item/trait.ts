@@ -36,41 +36,70 @@ class TraitData extends ItemDataModel.mixin(
 	static override modifierTypes = new Set([ItemType.TraitModifier, ItemType.TraitModifierContainer])
 	static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
 
+	override async getSheetData(context: Record<string, unknown>): Promise<void> {
+		context.detailsParts = ["gurps.details-trait", "gurps.details-prereqs", "gurps.details-features"]
+		context.embedsParts = ["gurps.embeds-weapons"]
+	}
+
 	static override defineSchema(): TraitSchema {
 		const fields = foundry.data.fields
 
 		return this.mergeSchema(super.defineSchema(), {
-			userdesc: new fields.StringField<string, string>(),
-			base_points: new fields.NumberField<number, number, true, false>({
+			userdesc: new fields.StringField({
+				required: true,
+				nullable: false,
+				initial: "",
+				label: "GURPS.Item.Trait.FIELDS.UserDesc.Name",
+			}),
+			base_points: new fields.NumberField({
 				required: true,
 				nullable: false,
 				integer: true,
 				initial: 0,
+				label: "GURPS.Item.Trait.FIELDS.BasePoints.Name",
 			}),
-			levels: new fields.NumberField<number, number, true, false, true>({
+			levels: new fields.NumberField({
 				required: true,
-				nullable: false,
+				nullable: true,
 				min: 0,
-				initial: 0,
+				initial: null,
+				label: "GURPS.Item.Trait.FIELDS.Levels.Name",
 			}),
-			points_per_level: new fields.NumberField<number, number, true, false, true>({
+			points_per_level: new fields.NumberField({
 				required: true,
+				nullable: true,
 				integer: true,
-				nullable: false,
-				initial: 0,
+				initial: null,
+				label: "GURPS.Item.Trait.FIELDS.PointsPerLevel.Name",
 			}),
-			cr: new fields.NumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>({
-				choices: selfctrl.Rolls,
+			cr: new fields.NumberField({
+				choices: selfctrl.RollsChoices(),
 				initial: selfctrl.Roll.NoCR,
 				nullable: false,
+				label: "GURPS.Item.Trait.FIELDS.Cr.Name",
 			}),
 			cr_adj: new fields.StringField({
-				choices: selfctrl.Adjustments,
+				choices: selfctrl.AdjustmentsChoices(),
 				initial: selfctrl.Adjustment.NoCRAdj,
+				label: "GURPS.Item.Trait.FIELDS.CrAdj.Name",
 			}),
-			disabled: new fields.BooleanField<boolean>({ initial: false }),
-			round_down: new fields.BooleanField<boolean>({ initial: false }),
-			can_level: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
+			disabled: new fields.BooleanField({
+				required: true,
+				nullable: false,
+				initial: false,
+				label: "GURPS.Item.Trait.FIELDS.Disabled.Name",
+			}),
+			round_down: new fields.BooleanField({
+				required: true,
+				nullable: false,
+				initial: false,
+				label: "GURPS.Item.Trait.FIELDS.RoundDown.Name",
+			}),
+			can_level: new fields.BooleanField({
+				required: true,
+				nullable: false,
+				initial: false,
+			}),
 		}) as unknown as TraitSchema
 	}
 
@@ -105,6 +134,14 @@ class TraitData extends ItemDataModel.mixin(
 		}
 	}
 
+	static override _cleanData(
+		source: DeepPartial<SourceFromSchema<TraitSchema>> & { [key: string]: unknown },
+		_options?: Record<string, unknown>,
+	): void {
+		source.levels = source.can_level ? source.levels || 0 : null
+		source.points_per_level = source.can_level ? source.points_per_level || 0 : null
+	}
+
 	get enabled(): boolean {
 		if (this.disabled) return false
 		let p = this.parent
@@ -132,7 +169,7 @@ class TraitData extends ItemDataModel.mixin(
 
 	/** Returns the current level of the trait or 0 if it is not leveled */
 	get currentLevel(): number {
-		if (this.enabled && this.can_level) return this.levels
+		if (this.enabled && this.can_level) return this.levels ?? 0
 		return 0
 	}
 
@@ -140,8 +177,8 @@ class TraitData extends ItemDataModel.mixin(
 	get adjustedPoints(): number {
 		if (!this.enabled) return 0
 		let basePoints = this.base_points
-		const levels = this.can_level ? this.levels : 0
-		let pointsPerLevel = this.can_level ? this.points_per_level : 0
+		const levels = this.can_level ? (this.levels ?? 0) : 0
+		let pointsPerLevel = this.can_level ? (this.points_per_level ?? 0) : 0
 		let [baseEnh, levelEnh, baseLim, levelLim] = [0, 0, 0, 0]
 		let multiplier = selfctrl.Roll.multiplier(this.cr)
 		for (const mod of this.allModifiers) {
@@ -225,7 +262,7 @@ class TraitData extends ItemDataModel.mixin(
 		const buffer = new StringBuilder()
 		buffer.push(this.nameWithReplacements)
 		if (this.can_level) {
-			buffer.push(` ${this.levels.toString()}`)
+			buffer.push(` ${(this.levels ?? 0).toString()}`)
 		}
 		return buffer.toString()
 	}
@@ -308,10 +345,10 @@ type TraitSchema = BasicInformationTemplateSchema &
 	FeatureTemplateSchema &
 	StudyTemplateSchema &
 	ReplacementTemplateSchema & {
-		userdesc: fields.StringField<string, string>
+		userdesc: fields.StringField<string, string, true, false, true>
 		base_points: fields.NumberField<number, number, true, false, true>
-		levels: fields.NumberField<number, number, true, false, true>
-		points_per_level: fields.NumberField<number, number, true, false, true>
+		levels: fields.NumberField<number, number, true, true, true>
+		points_per_level: fields.NumberField<number, number, true, true, true>
 		cr: fields.NumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>
 		cr_adj: fields.StringField<selfctrl.Adjustment>
 		disabled: fields.BooleanField<boolean>

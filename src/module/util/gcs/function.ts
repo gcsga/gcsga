@@ -302,8 +302,8 @@ function evalTraitLevel(e: Evaluator, args: string): number {
 		if (trait.isOfType(ItemType.TraitContainer)) continue
 		if (equalFold(trait.system.nameWithReplacements, args)) {
 			if (trait.system.isLeveled) {
-				if (levels === -1) levels = trait.system.levels
-				else levels += trait.system.levels
+				if (levels === -1) levels = trait.system.levels ?? 0
+				else levels += trait.system.levels ?? 0
 			}
 		}
 	}

@@ -1,0 +1,62 @@
+<fieldset>
+	<legend>{{localize "GURPS.Item.Trait.DetailsLegend"}}</legend>
+
+	<!-- Notes -->
+	{{formField fields.notes value=source.notes localize=true}}
+
+	<!-- User Description -->
+	{{formField fields.userdesc value=source.userdesc localize=true}}
+
+	<!-- Tags -->
+	{{formField fields.tags value=source.tags localize=true}}
+
+	<!-- Enabled -->
+	<div class="form-group">
+		<label>{{localize "GURPS.Item.Trait.FIELDS.Enabled.Name"}}</label>
+		<div class="form-fields">
+			<!-- Tech Level Number -->
+			{{formInput fields.disabled value=(not source.disabled) name="system.enabled"}}
+		</div>
+	</div>
+
+	<!-- Point Cost -->
+	<div class="form-group">
+		<label>{{localize "GURPS.Item.Trait.FIELDS.Points.Name"}}</label>
+		<div class="form-fields">
+			<!-- Point Cost -->
+			<input type="text" value="{{system.adjustedPoints}}" disabled />
+			<label>{{localize "GURPS.Item.Trait.FIELDS.RoundDown.Name"}}</label>
+			<!-- Round Down -->
+			{{formInput fields.round_down value=source.round_down}}
+		</div>
+	</div>
+
+	<!-- Base Cost -->
+	{{formField fields.base_points value=source.base_points localize=true}}
+
+	<!-- Cost Per Level-->
+	<div class="form-group">
+		<label>
+			<!-- Checkbox -->
+			{{formInput fields.can_level value=source.can_level}}
+			<!-- Label -->
+			{{localize "GURPS.Item.Trait.FIELDS.Levels.Name"}}
+		</label>
+		<div class="form-fields">
+			<!-- Level Number -->
+			{{formInput fields.levels value=source.levels disabled=(not source.can_level)}}
+			<label>{{localize "GURPS.Item.Trait.FIELDS.PointsPerLevel.Name"}}</label>
+			<!-- Points Per Level-->
+			{{formInput fields.points_per_level value=source.points_per_level disabled=(not source.can_level)}}
+		</div>
+	</div>
+
+	<!-- CR -->
+	{{formField fields.cr value=source.cr localize=true}}
+
+	<!-- CR Adjustment -->
+	{{formField fields.cr_adj value=source.cr_adj localize=true}}
+
+	<!-- Reference -->
+	{{formField fields.reference value=source.reference localize=true}}
+</fieldset>

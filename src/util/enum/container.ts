@@ -1,4 +1,3 @@
-import { LocalizeGURPS } from "@util/localize.ts"
 import { equalFold } from "@module/data/item/compontents/string-criteria.ts"
 
 export namespace container {
@@ -17,11 +16,11 @@ export namespace container {
 		}
 
 		export function toString(T: Type): string {
-			return LocalizeGURPS.translations.gurps.enum.container.string[T]
+			return `GURPS.Enum.container.${T}.Name`
 		}
 
 		export function inlineTag(T: Type): string {
-			return LocalizeGURPS.translations.gurps.enum.container.tag[T]
+			return `GURPS.Enum.container.${T}.Tag`
 		}
 
 		export function extractType(s: string): Type {
@@ -33,4 +32,8 @@ export namespace container {
 	}
 
 	export const Types: Type[] = [Type.Group, Type.AlternativeAbilities, Type.Ancestry, Type.Attributes, Type.MetaTrait]
+
+	export const TypesChoices: Readonly<Record<Type, string>> = Object.freeze(
+		Object.fromEntries(Types.map(T => [T, Type.toString(T)])) as Record<Type, string>,
+	)
 }

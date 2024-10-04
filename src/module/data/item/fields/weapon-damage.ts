@@ -191,7 +191,7 @@ class WeaponDamage extends WeaponField<AbstractWeaponTemplate, WeaponDamageSchem
 		let base = new DiceGURPS({ sides: 6, multiplier: 6 })
 		if (this.base !== null) base = this.base
 		if (container !== null && !(container instanceof Promise) && container.isOfType(ItemType.Trait)) {
-			if (container.system.can_level) multiplyDice(container.system.levels, base)
+			if (container.system.can_level) multiplyDice(container.system.levels ?? 0, base)
 		}
 		let stDamage: DiceGURPS
 		switch (this.st) {
@@ -214,7 +214,7 @@ class WeaponDamage extends WeaponField<AbstractWeaponTemplate, WeaponDamageSchem
 			!(container instanceof Promise) &&
 			container.isOfType(ItemType.Trait)
 		) {
-			multiplyDice(container.system.levels, stDamage)
+			multiplyDice(container.system.levels ?? 0, stDamage)
 		}
 		base = addDice(base, stDamage)
 		return base

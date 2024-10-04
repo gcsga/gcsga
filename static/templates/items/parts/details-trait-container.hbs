@@ -1,0 +1,37 @@
+<fieldset>
+	<legend>{{localize "GURPS.Item.TraitContainer.DetailsLegend"}}</legend>
+
+	<!-- Notes -->
+	{{formField fields.notes value=source.notes localize=true}}
+
+	<!-- User Description -->
+	{{formField fields.userdesc value=source.userdesc localize=true}}
+
+	<!-- Tags -->
+	{{formField fields.tags value=source.tags localize=true}}
+
+	<!-- Enabled -->
+	<div class="form-group">
+		<label>{{localize "GURPS.Item.Trait.FIELDS.Enabled.Name"}}</label>
+		<div class="form-fields">
+			<!-- Tech Level Number -->
+			{{formInput fields.disabled value=(not source.disabled) name="system.enabled"}}
+		</div>
+	</div>
+
+	<!-- CR -->
+	{{formField fields.cr value=source.cr localize=true}}
+
+	<!-- CR Adjustment -->
+	{{formField fields.cr_adj value=source.cr_adj localize=true}}
+
+	<!-- Container Type -->
+	{{formField fields.container_type value=source.container_type localize=true}}
+
+	<!-- Ancestry -->
+	{{formField fields.ancestry value=source.ancestry localize=true disabled=(not (eq source.container_type
+	"ancestry"))}}
+
+	<!-- Reference -->
+	{{formField fields.reference value=source.reference localize=true}}
+</fieldset>

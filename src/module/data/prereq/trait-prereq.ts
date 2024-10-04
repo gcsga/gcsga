@@ -63,7 +63,7 @@ class TraitPrereq extends BasePrereq<TraitPrereqSchema> {
 			if (modNotes !== "") notes += "\n" + modNotes
 			if (!this.notes.matches(replacements, notes)) continue
 			let levels = 0
-			if (t.system.isLeveled) levels = Math.max(t.system.levels, 0)
+			if (t.system.isLeveled) levels = Math.max(t.system.levels ?? 0, 0)
 			satisfied = this.level.matches(levels)
 			if (satisfied) break
 		}
