@@ -5,7 +5,7 @@ import { gid } from "@module/data/constants.ts"
 import { BaseFeature, BaseFeatureSchema } from "./base-feature.ts"
 import { StringArrayField } from "../item/fields/string-array-field.ts"
 import { SheetSettings } from "../sheet-settings.ts"
-import { equalFold } from "../item/compontents/index.ts"
+import { equalFold } from "../item/components/index.ts"
 
 class DRBonus extends BaseFeature<DRBonusSchema> {
 	static override TYPE = feature.Type.DRBonus

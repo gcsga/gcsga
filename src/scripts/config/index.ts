@@ -1,6 +1,6 @@
 import { ItemType } from "@module/data/constants.ts"
 import { ItemInst } from "@module/data/item/helpers.ts"
-import { JournalEntryPageGURPS, JournalEntryPagePDF } from "@module/journal-entry/page/document.ts"
+// import { JournalEntryPageGURPS, JournalEntryPagePDF } from "@module/journal-entry/page/document.ts"
 
 const tokenHUDConditions = {
 	crouching: "gurps.status.crouching",
@@ -273,14 +273,14 @@ export const GURPSCONFIG = {
 	// 	},
 	// },
 
-	JournalEntryPage: {
-		documentClasses: {
-			pdf: JournalEntryPagePDF,
-			image: JournalEntryPageGURPS,
-			text: JournalEntryPageGURPS,
-			video: JournalEntryPageGURPS,
-		},
-	},
+	// JournalEntryPage: {
+	// 	documentClasses: {
+	// 		pdf: JournalEntryPagePDF,
+	// 		image: JournalEntryPageGURPS,
+	// 		text: JournalEntryPageGURPS,
+	// 		video: JournalEntryPageGURPS,
+	// 	},
+	// },
 
 	select: {
 		cr_level: {},

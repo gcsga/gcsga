@@ -11,7 +11,7 @@ import { ItemDataModel } from "../abstract.ts"
 import { SpellFieldsTemplate, SpellFieldsTemplateSchema } from "./templates/spell-fields.ts"
 import { ActorTemplateType } from "../actor/types.ts"
 import { SkillLevel, calculateTechniqueLevel } from "./helpers.ts"
-import { SkillDefault } from "./compontents/skill-default.ts"
+import { SkillDefault } from "./components/skill-default.ts"
 import { Nameable } from "@module/util/index.ts"
 import { AttributeDifficultyField } from "./fields/attribute-difficulty-field.ts"
 

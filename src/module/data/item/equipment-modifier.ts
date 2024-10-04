@@ -7,7 +7,7 @@ import fields = foundry.data.fields
 import { SheetSettings } from "../sheet-settings.ts"
 import { ItemType } from "../constants.ts"
 import { ItemInst } from "./helpers.ts"
-import { CellData } from "./compontents/cell-data.ts"
+import { CellData } from "./components/cell-data.ts"
 
 class EquipmentModifierData extends ItemDataModel.mixin(
 	BasicInformationTemplate,

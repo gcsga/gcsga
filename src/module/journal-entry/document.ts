@@ -1,3 +1,3 @@
-class JournalEntryGURPS extends JournalEntry {}
-
-export { JournalEntryGURPS }
+// class JournalEntryGURPS extends JournalEntry {}
+//
+// export { JournalEntryGURPS }

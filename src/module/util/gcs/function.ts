@@ -1,5 +1,5 @@
 import { ErrorGURPS, Int, Length, encumbrance, trimS } from "@util"
-import { equalFold } from "../../data/item/compontents/string-criteria.ts"
+import { equalFold } from "../../data/item/components/string-criteria.ts"
 import { EvalFunction, Evaluator, Operand, resolverIsCharacter } from "./eval.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { DiceGURPS } from "@module/data/dice.ts"

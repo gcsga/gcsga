@@ -1,4 +1,4 @@
-import { SkillDefault } from "../compontents/skill-default.ts"
+import { SkillDefault } from "../components/skill-default.ts"
 import fields = foundry.data.fields
 
 interface SkillDefaultFieldOptions<

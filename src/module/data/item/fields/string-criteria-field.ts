@@ -1,6 +1,6 @@
 import { StringComparison } from "@util/enum/index.ts"
 import fields = foundry.data.fields
-import { StringCriteria } from "../compontents/string-criteria.ts"
+import { StringCriteria } from "../components/string-criteria.ts"
 
 class StringCriteriaField<
 	TRequired extends boolean = true,

@@ -2,7 +2,7 @@ import { type ItemGURPS2 } from "@module/document/item.ts"
 import { ErrorGURPS, StringBuilder, affects, align, cell, display, selfctrl, tmcost } from "@util"
 import { ItemDataModel } from "../abstract.ts"
 import { ItemType } from "../constants.ts"
-import { CellData } from "./compontents/cell-data.ts"
+import { CellData } from "./components/cell-data.ts"
 import { ItemInst, modifyPoints } from "./helpers.ts"
 import {
 	BasicInformationTemplate,

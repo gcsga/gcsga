@@ -17,8 +17,8 @@ import { CombatantGURPS } from "@module/document/combatant.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { TokenDocumentGURPS } from "@module/document/token.ts"
 import { UserGURPS } from "@module/document/user.ts"
-import { JournalEntryGURPS } from "@module/journal-entry/document.ts"
-import { JournalEntryPageGURPS } from "@module/journal-entry/page/document.ts"
+// import { JournalEntryGURPS } from "@module/journal-entry/document.ts"
+// import { JournalEntryPageGURPS } from "@module/journal-entry/page/document.ts"
 import { AttributeSettings } from "@module/settings/attributes-config.ts"
 import { ColorSettings } from "@module/settings/color-config.ts"
 import { HitLocationSettings } from "@module/settings/hit-location-config.ts"
@@ -82,8 +82,10 @@ type ConfiguredConfig = Config<
 	Scene,
 	UserGURPS,
 	EffectsCanvasGroup,
-	JournalEntryGURPS,
-	JournalEntryPageGURPS<JournalEntryGURPS>
+	JournalEntry,
+	JournalEntryPage<JournalEntry>
+	// JournalEntryGURPS,
+	// JournalEntryPageGURPS<JournalEntryGURPS>
 >
 
 declare global {

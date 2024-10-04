@@ -1,0 +1,59 @@
+<form class="{{cssClass}} flexcol" autocomplete="off">
+	<!-- Header -->
+	<div class="form-group">
+		<label>{{localize "GURPS.JournalEntryPage.Ancestry.FIELDS.Name.Name"}}</label>
+		<div class="form-fields">
+			<!-- Name -->
+			{{formInput page.schema.fields.name value=page.name}}
+		</div>
+	</div>
+	<!-- Common Options -->
+	{{#with fields.common_options.fields as |fields|}}
+
+	<!-- Height Formula -->
+	{{formField fields.height_formula value=@root.source.common_options.height_formula localize=true}}
+
+	<!-- Weight Formula -->
+	{{formField fields.weight_formula value=@root.source.common_options.weight_formula localize=true}}
+
+	<!-- Age Formula -->
+	{{formField fields.age_formula value=@root.source.common_options.age_formula localize=true}}
+
+	<!-- End	 -->
+	{{/with}}
+
+	<!-- Hair Options -->
+	<fieldset>
+		<legend>{{localize "GURPS.JournalEntryPage.Ancestry.HairOptions.Name"}}</legend>
+		<ul>
+			{{#each system.common_options.hair_options as |option|}} {{option.element}} {{/each}}
+		</ul>
+	</fieldset>
+
+	<!-- Eye Options -->
+	<fieldset>
+		<legend>{{localize "GURPS.JournalEntryPage.Ancestry.EyeOptions.Name"}}</legend>
+		<ul>
+			{{#each system.common_options.eye_options as |option|}} {{option.element}} {{/each}}
+		</ul>
+	</fieldset>
+
+	<!-- Skin Options -->
+	<fieldset>
+		<legend>{{localize "GURPS.JournalEntryPage.Ancestry.SkinOptions.Name"}}</legend>
+		<ul>
+			{{#each system.common_options.skin_options as |option|}} {{option.element}} {{/each}}
+		</ul>
+	</fieldset>
+
+	<!-- Handedness Options -->
+	<fieldset>
+		<legend>{{localize "GURPS.JournalEntryPage.Ancestry.HandednessOptions.Name"}}</legend>
+		<ul>
+			{{#each system.common_options.handedness_options as |option|}} {{option.element}} {{/each}}
+		</ul>
+	</fieldset>
+
+	<!-- Footer -->
+	{{> journalEntryPageFooter}}
+</form>

@@ -4,7 +4,7 @@ import { type ItemGURPS2 } from "@module/document/item.ts"
 import type { ItemDataInstances, ItemDataTemplates, ItemTemplateType } from "./item/types.ts"
 import { type ActorGURPS2 } from "@module/document/actor.ts"
 import { type ActorDataInstances, type ActorDataTemplates, type ActorTemplateType } from "./actor/types.ts"
-import { type CellData } from "./item/compontents/cell-data.ts"
+import { type CellData } from "./item/components/cell-data.ts"
 import { type ItemTemplateInst } from "./item/helpers.ts"
 import { ErrorGURPS } from "@util/misc.ts"
 

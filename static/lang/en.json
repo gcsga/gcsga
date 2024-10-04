@@ -243,6 +243,16 @@
 				}
 			}
 		},
+		"JournalEntryPage": {
+			"Ancestry": {
+				"FIELDS": {
+					"Name": { "Name": "Ancestry Name" },
+					"HeightFormula": { "Name": "Height Formula" },
+					"WeightFormula": { "Name": "Weight Formula" },
+					"AgeFormula": { "Name": "Age Formula" }
+				}
+			}
+		},
 		"Attribute": {
 			"SizeModifier": "Size Modifier",
 			"Dodge": "Dodge",

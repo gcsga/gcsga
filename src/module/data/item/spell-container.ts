@@ -5,7 +5,7 @@ import { ContainerTemplate, ContainerTemplateSchema } from "./templates/containe
 import { ItemType } from "../constants.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
 import { cell, display, StringBuilder } from "@util"
-import { CellData } from "./compontents/cell-data.ts"
+import { CellData } from "./components/cell-data.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { TemplatePicker } from "./fields/template-picker.ts"
 

@@ -5,7 +5,7 @@ import { ItemType } from "@module/data/constants.ts"
 import { SkillLevel } from "../helpers.ts"
 import { ItemTemplateType } from "../types.ts"
 import { ActorTemplateType } from "@module/data/actor/types.ts"
-import { AttributeDifficulty } from "../compontents/attribute-difficulty.ts"
+import { AttributeDifficulty } from "../components/attribute-difficulty.ts"
 import { Nameable } from "@module/util/index.ts"
 import { AttributeDifficultyField } from "../fields/attribute-difficulty-field.ts"
 

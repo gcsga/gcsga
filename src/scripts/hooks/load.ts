@@ -1,7 +1,8 @@
 import { ActorType, ItemType } from "@data"
-import { CharacterDataGURPS } from "@module/data/actor/character.ts"
 import { ItemsGURPS } from "@module/data/collections/items-collection.ts"
 import * as ItemInstance from "@module/data/item/index.ts"
+import * as ActorInstance from "@module/data/actor/index.ts"
+import { AncestryData } from "@module/data/journal-entry-page/ancestry.ts"
 import { AttackRoll, BasicRoll, DamageRoll, SuccessRoll } from "@module/dice/index.ts"
 import { ActorGURPS2 } from "@module/document/actor.ts"
 import { ChatMessageGURPS } from "@module/document/chat-message.ts"
@@ -10,8 +11,6 @@ import { CombatantGURPS } from "@module/document/combatant.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { TokenDocumentGURPS } from "@module/document/token.ts"
 import { UserGURPS } from "@module/document/user.ts"
-import { JournalEntryGURPS } from "@module/journal-entry/document.ts"
-import { JournalEntryPageProxyGURPS } from "@module/journal-entry/page/document.ts"
 
 export const Load = {
 	listen(): void {
@@ -29,8 +28,8 @@ export const Load = {
 		CONFIG.Item.collection = ItemsGURPS
 		CONFIG.Macro.documentClass = Macro
 		CONFIG.MeasuredTemplate.documentClass = MeasuredTemplateDocument
-		CONFIG.JournalEntry.documentClass = JournalEntryGURPS
-		CONFIG.JournalEntryPage.documentClass = JournalEntryPageProxyGURPS
+		// CONFIG.JournalEntry.documentClass = JournalEntryGURPS
+		// CONFIG.JournalEntryPage.documentClass = JournalEntryPageProxyGURPS
 		CONFIG.Token.documentClass = TokenDocumentGURPS
 		CONFIG.User.documentClass = UserGURPS
 
@@ -40,8 +39,9 @@ export const Load = {
 		CONFIG.Dice.Attack = AttackRoll
 		CONFIG.Dice.Damage = DamageRoll
 
+		// @ts-expect-error infinite type
 		CONFIG.Actor.dataModels = {
-			[ActorType.Character]: CharacterDataGURPS,
+			[ActorType.Character]: ActorInstance.CharacterDataGURPS,
 		}
 
 		// @ts-expect-error infinite type
@@ -66,6 +66,10 @@ export const Load = {
 			[ItemType.Condition]: ItemInstance.ConditionData,
 			[ItemType.WeaponMelee]: ItemInstance.WeaponMeleeData,
 			[ItemType.WeaponRanged]: ItemInstance.WeaponRangedData,
+		}
+
+		CONFIG.JournalEntryPage.dataModels = {
+			ancestry: AncestryData,
 		}
 
 		CONFIG.Canvas.darknessColor = 0x2d2d52 // Lightness increased by ~0.4/10 (Munsell value)

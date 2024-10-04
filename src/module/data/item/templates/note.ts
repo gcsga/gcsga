@@ -1,7 +1,7 @@
 import { ItemDataModel } from "@module/data/abstract.ts"
 import fields = foundry.data.fields
 import { EvalEmbeddedRegex, cell, replaceAllStringFunc } from "@util"
-import { CellData } from "../compontents/cell-data.ts"
+import { CellData } from "../components/cell-data.ts"
 
 class NoteTemplate extends ItemDataModel<NoteTemplateSchema> {
 	static override defineSchema(): NoteTemplateSchema {

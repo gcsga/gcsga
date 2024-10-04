@@ -1,4 +1,4 @@
-import { equalFold } from "@module/data/item/compontents/string-criteria.ts"
+import { equalFold } from "@module/data/item/components/string-criteria.ts"
 
 export namespace container {
 	export enum Type {

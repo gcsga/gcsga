@@ -26,5 +26,8 @@
 			"condition",
 			"equipment"
 		]
+	},
+	"JournalEntryPage": {
+		"types": ["text", "pdf", "video", "image", "ancestry"]
 	}
 }

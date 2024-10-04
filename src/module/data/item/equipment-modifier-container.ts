@@ -5,7 +5,7 @@ import { ItemType } from "../constants.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { cell, display } from "@util"
-import { CellData } from "./compontents/cell-data.ts"
+import { CellData } from "./components/cell-data.ts"
 
 class EquipmentModifierContainerData extends ItemDataModel.mixin(
 	BasicInformationTemplate,

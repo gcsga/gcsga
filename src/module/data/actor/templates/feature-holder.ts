@@ -13,7 +13,7 @@ import {
 } from "@module/data/feature/index.ts"
 import { MoveBonusType } from "@module/data/feature/move-bonus.ts"
 import { Feature } from "@module/data/feature/types.ts"
-import { equalFold } from "@module/data/item/compontents/index.ts"
+import { equalFold } from "@module/data/item/components/index.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
 import { Nameable } from "@module/util/index.ts"
 import { ErrorGURPS, TooltipGURPS, feature, selfctrl, skillsel, stlimit, wsel } from "@util"

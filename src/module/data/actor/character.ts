@@ -19,7 +19,7 @@ import { MoveType, MoveTypeSchema } from "../move-type/index.ts"
 import { AttributeGURPS } from "../attribute/index.ts"
 import { DiceGURPS } from "../dice.ts"
 import { CharacterEncumbrance } from "./fields/character-encumbrance.ts"
-import { equalFold } from "../item/compontents/index.ts"
+import { equalFold } from "../item/components/index.ts"
 
 class CharacterDataGURPS extends ActorDataModel.mixin(
 	FeatureHolderTemplate,

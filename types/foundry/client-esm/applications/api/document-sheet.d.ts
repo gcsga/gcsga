@@ -48,7 +48,8 @@ declare global {
 		/** The Document instance associated with this sheet */
 		document: Document
 		/** A permission level in CONST.DOCUMENT_OWNERSHIP_LEVELS */
-		viewPermission: number
+		// viewPermission: number
+		viewPermission: DocumentOwnershipString | DocumentOwnershipLevel
 		/** A permission level in CONST.DOCUMENT_OWNERSHIP_LEVELS */
 		editPermission: number
 		/** Allow sheet configuration as a header button */

@@ -1,4 +1,4 @@
-import { AttributeDifficulty } from "../compontents/attribute-difficulty.ts"
+import { AttributeDifficulty } from "../components/attribute-difficulty.ts"
 import fields = foundry.data.fields
 import { difficulty } from "@util"
 

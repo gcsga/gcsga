@@ -1,5 +1,6 @@
 import { CharacterSheetGURPS } from "@module/applications/actor/character-sheet.ts"
 import { ItemSheetGURPS } from "@module/applications/item/item-sheet.ts"
+import { AncestrySheet } from "@module/applications/journal-entry-page/ancestry-sheet.ts"
 import { ActorType, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
 
 export function registerSheets(): void {
@@ -23,6 +24,13 @@ export function registerSheets(): void {
 		],
 		makeDefault: true,
 		label: "GURPS Item Sheet V2",
+	})
+
+	// TODO: update types so Journal Entry Pages get their own DocumentSheetV2 subclass
+	DocumentSheetConfig.registerSheet(JournalEntryPage, SYSTEM_NAME, AncestrySheet as any, {
+		types: ["ancestry"],
+		makeDefault: true,
+		label: "Ancestry Sheet",
 	})
 
 	// Actor

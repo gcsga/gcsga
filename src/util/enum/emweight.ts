@@ -1,5 +1,5 @@
 import { LocalizeGURPS } from "@util/localize.ts"
-import { equalFold } from "@module/data/item/compontents/string-criteria.ts"
+import { equalFold } from "@module/data/item/components/string-criteria.ts"
 import { Fraction } from "@util/fraction.ts"
 import { Weight } from "@util/weight.ts"
 

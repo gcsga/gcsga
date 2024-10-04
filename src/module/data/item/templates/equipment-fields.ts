@@ -1,7 +1,7 @@
 import fields = foundry.data.fields
 import { ItemDataModel } from "@module/data/abstract.ts"
 import { LocalizeGURPS, StringBuilder, Weight, align, cell, display } from "@util"
-import { CellData } from "../compontents/cell-data.ts"
+import { CellData } from "../components/cell-data.ts"
 import { ItemTemplateType } from "../types.ts"
 import { ItemType } from "@module/data/constants.ts"
 import {

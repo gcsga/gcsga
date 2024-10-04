@@ -276,6 +276,7 @@ declare global {
 					context?: DocumentConstructionContext<TJournalEntryPage["parent"]>,
 				): TJournalEntryPage
 			}
+			dataModels: Record<string, ConstructorOf<abstract.TypeDataModel<TJournalEntryPage, data.fields.DataSchema>>>
 			defaultType: string
 			sheetClasses: Record<
 				string,

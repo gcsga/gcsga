@@ -12,13 +12,13 @@ import {
 	feature,
 } from "@util"
 import { ActorType, ItemType, gid } from "../constants.ts"
-import { AttributeDifficulty } from "./compontents/attribute-difficulty.ts"
+import { AttributeDifficulty } from "./components/attribute-difficulty.ts"
 import { ActorTemplateType } from "../actor/types.ts"
 import type { ItemGURPS2 } from "@module/document/item.ts"
 import { ItemDataInstances, ItemDataTemplates, ItemTemplateType } from "./types.ts"
 import { Feature } from "../feature/types.ts"
 import { SheetSettings } from "../sheet-settings.ts"
-import { SkillDefault } from "./compontents/skill-default.ts"
+import { SkillDefault } from "./components/skill-default.ts"
 
 function modifyPoints(points: number, modifier: number): number {
 	return points + calculateModifierPoints(points, modifier)
