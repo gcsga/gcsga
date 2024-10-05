@@ -1,6 +1,5 @@
 import fields = foundry.data.fields
 import { getNewAttributeId } from "@util"
-import { AbstractAttribute } from "./abstract-attribute.ts"
 import { gid } from "@module/data/constants.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { ActorGURPS2 } from "@module/document/actor.ts"
@@ -13,7 +12,7 @@ abstract class AbstractAttributeDef<
 	// declare parent: TActor
 
 	// protected _id: string
-	attributeClass = AbstractAttribute
+	// static attributeClass: typeof AbstractAttribute = AbstractAttribute
 
 	// constructor(data?: DeepPartial<SourceFromSchema<TSchema>>, options?: DataModelConstructionOptions<TActor>) {
 	// 	super(data, options)
@@ -43,7 +42,7 @@ abstract class AbstractAttributeDef<
 
 	abstract baseValue(resolver: unknown): number
 
-	abstract generateNewAttribute(): AbstractAttribute
+	// abstract generateNewAttribute(): AbstractAttribute
 
 	static createInstance<T extends AbstractAttributeDef>(
 		this: new (source: DeepPartial<SourceFromSchema<AbstractAttributeDefSchema>>) => T,

@@ -1,29 +1,14 @@
 import fields = foundry.data.fields
 import { MoveTypeDef } from "./move-type-definition.ts"
-import {
-	AbstractAttribute,
-	AbstractAttributeConstructionOptions,
-	AbstractAttributeSchema,
-} from "../abstract-attribute/index.ts"
+import { AbstractAttribute, AbstractAttributeSchema } from "../abstract-attribute/index.ts"
 import { ActorDataModel } from "../abstract.ts"
 import { ActorTemplateType } from "../actor/types.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { MoveBonusType } from "../feature/move-bonus.ts"
 
 class MoveType extends AbstractAttribute<ActorDataModel, MoveTypeSchema> {
-	order: number
-
-	constructor(
-		data: DeepPartial<SourceFromSchema<MoveTypeSchema>>,
-		options?: AbstractAttributeConstructionOptions<ActorDataModel>,
-	) {
-		super(data, options)
-		this.order = options?.order ?? 0
-	}
-
 	static override defineSchema(): MoveTypeSchema {
 		const fields = foundry.data.fields
-
 		return {
 			...super.defineSchema(),
 			adj: new fields.NumberField({ initial: 0 }),

@@ -1,7 +1,6 @@
 import { PoolThreshold, PoolThresholdSchema } from "./pool-threshold.ts"
 import fields = foundry.data.fields
 import { ActorType, gid } from "@module/data/constants.ts"
-import { AttributeGURPS } from "./attribute.ts"
 import { attribute, progression } from "@util"
 import { ActorDataModel } from "@module/data/abstract.ts"
 import { ActorTemplateType } from "@module/data/actor/types.ts"
@@ -13,6 +12,8 @@ import { type ActorInst } from "../actor/helpers.ts"
 class AttributeDef<
 	TActor extends AttributeHolderTemplate = AttributeHolderTemplate,
 > extends AbstractAttributeDef<AttributeDefSchema> {
+	// static override attributeClass = AttributeGURPS
+
 	static override defineSchema(): AttributeDefSchema {
 		const fields = foundry.data.fields
 
@@ -27,6 +28,7 @@ class AttributeDef<
 			placement: new fields.StringField({
 				required: false,
 				nullable: false,
+				blank: false,
 				choices: attribute.PlacementsChoices,
 				initial: attribute.Placement.Automatic,
 				label: "GURPS.Attribute.Definition.FIELDS.Placement.Name",
@@ -167,10 +169,9 @@ class AttributeDef<
 		return Math.round(cost)
 	}
 
-	generateNewAttribute(): AttributeGURPS {
-		// @ts-expect-error infinite type
-		return new AttributeGURPS({ id: this.id }, { parent: this.actor.system, order: 0 })
-	}
+	// generateNewAttribute(): AttributeGURPS {
+	// 	return new AttributeGURPS({ id: this.id }, { parent: this.actor.system, order: 0 })
+	// }
 }
 
 interface AttributeDef extends AbstractAttributeDef<AttributeDefSchema>, ModelPropsFromSchema<AttributeDefSchema> {

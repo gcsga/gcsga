@@ -1,9 +1,9 @@
-import { ActorDataModel } from "@module/data/abstract.ts"
+import { type ActorDataModel } from "@module/data/abstract.ts"
 import fields = foundry.data.fields
-import { encumbrance } from "@util"
-import { CharacterDataGURPS } from "../character.ts"
+import { ErrorGURPS, encumbrance } from "@util"
 import { ActorInst } from "../helpers.ts"
 import { ActorType } from "@module/data/constants.ts"
+import { ActorGURPS2 } from "@module/document/actor.ts"
 
 type CharacterEncumbranceSchema = {
 	levels: fields.ArrayField<fields.EmbeddedDataField<CharacterEncumbranceEntry>>
@@ -53,24 +53,27 @@ class CharacterEncumbrance extends foundry.abstract.DataModel<ActorDataModel, Ch
 		return this.levels.at(-1)!.maxLoad
 	}
 
-	static for(actor: CharacterDataGURPS): CharacterEncumbrance {
-		const currentLevel = actor.encumbranceLevel(false)
+	static for(actor: ActorGURPS2): CharacterEncumbrance {
+		if (!actor.isOfType(ActorType.Character)) {
+			throw ErrorGURPS("Actor is not a character!")
+		}
+		const currentLevel = actor.system.encumbranceLevel(false)
 		const levels = encumbrance.Levels.map(level => {
 			return {
 				level,
 				name: encumbrance.Level.toString(level),
-				maxLoad: actor.maximumCarry(level),
-				move: actor.move(level),
-				dodge: actor.dodge(level),
+				maxLoad: actor.system.maximumCarry(level),
+				move: actor.system.move(level),
+				dodge: actor.system.dodge(level),
 			}
 		})
 		return new CharacterEncumbrance(
 			{
 				levels,
 				current: encumbrance.Levels.indexOf(currentLevel),
-				overencumbered: actor.weightCarried(false) > levels.at(-1)!.maxLoad,
+				overencumbered: actor.system.weightCarried(false) > levels.at(-1)!.maxLoad,
 			},
-			{ parent: actor },
+			{ parent: actor.system },
 		)
 	}
 }

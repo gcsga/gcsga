@@ -100,7 +100,15 @@ class CharacterDataGURPS extends ActorDataModel.mixin(
 			moveBonuses: [],
 		}
 
-		this.attributes = this.settings.attributes.map(e => e.generateNewAttribute())
+		this.attributes = this.settings.attributes.map(
+			e =>
+				new AttributeGURPS(
+					{
+						id: e.id,
+					},
+					{ parent: this },
+				),
+		)
 	}
 
 	protected _clearCache(): void {
@@ -227,7 +235,7 @@ class CharacterDataGURPS extends ActorDataModel.mixin(
 	}
 
 	get encumbrance(): CharacterEncumbrance {
-		return CharacterEncumbrance.for(this)
+		return CharacterEncumbrance.for(this.parent)
 	}
 
 	/**

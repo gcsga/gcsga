@@ -1,59 +1,144 @@
-<form class="{{cssClass}} flexcol" autocomplete="off">
+<form class="{{cssClass}} flexcol standard-form" autocomplete="off">
 	<!-- Header -->
 	<div class="form-group">
-		<label>{{localize "GURPS.JournalEntryPage.Ancestry.FIELDS.Name.Name"}}</label>
+		<label>{{localize "GURPS.JournalEntryPage.Ancestry.FIELDS.AncestryName.Name"}}</label>
 		<div class="form-fields">
 			<!-- Name -->
 			{{formInput page.schema.fields.name value=page.name}}
 		</div>
 	</div>
+
 	<!-- Common Options -->
-	{{#with fields.common_options.fields as |fields|}}
+	{{> optionFields fields=fields.common_options.fields parent=system.common_options}}
 
-	<!-- Height Formula -->
-	{{formField fields.height_formula value=@root.source.common_options.height_formula localize=true}}
-
-	<!-- Weight Formula -->
-	{{formField fields.weight_formula value=@root.source.common_options.weight_formula localize=true}}
-
-	<!-- Age Formula -->
-	{{formField fields.age_formula value=@root.source.common_options.age_formula localize=true}}
-
-	<!-- End	 -->
-	{{/with}}
-
-	<!-- Hair Options -->
 	<fieldset>
-		<legend>{{localize "GURPS.JournalEntryPage.Ancestry.HairOptions.Name"}}</legend>
+		<legend>Gender Options</legend>
+		<button type="button" class="fa-regular fa-plus" data-action="addGenderOption"></button>
 		<ul>
-			{{#each system.common_options.hair_options as |option|}} {{option.element}} {{/each}}
+			<!-- Gender Options Options -->
+			{{#each system.gender_options}}
+
+			<!-- Horizontal Line	 -->
+			{{#unless @first}}
+			<hr />
+			{{/unless}}
+
+			<li>
+				<button
+					type="button"
+					class="fa-regular fa-trash"
+					data-action="deleteGenderOption"
+					data-index="{{@index}}"
+				></button>
+				<div class="flexcol">
+					<!-- Weight -->
+					{{formField this.schema.fields.weight value=this.weight name=(concat "system.gender_options." @index
+					".weight" ) localize=true}}
+
+					<!-- Name -->
+					{{formField this.schema.fields.value.fields.name value=this.value.name name=(concat
+					"system.gender_options." @index ".value.name" ) localize=true}}
+
+					<!-- Rest of the fields-->
+					{{> optionFields fields=this.schema.fields.value.fields parent=this.value}}
+				</div>
+			</li>
+			{{/each}}
 		</ul>
 	</fieldset>
-
-	<!-- Eye Options -->
-	<fieldset>
-		<legend>{{localize "GURPS.JournalEntryPage.Ancestry.EyeOptions.Name"}}</legend>
-		<ul>
-			{{#each system.common_options.eye_options as |option|}} {{option.element}} {{/each}}
-		</ul>
-	</fieldset>
-
-	<!-- Skin Options -->
-	<fieldset>
-		<legend>{{localize "GURPS.JournalEntryPage.Ancestry.SkinOptions.Name"}}</legend>
-		<ul>
-			{{#each system.common_options.skin_options as |option|}} {{option.element}} {{/each}}
-		</ul>
-	</fieldset>
-
-	<!-- Handedness Options -->
-	<fieldset>
-		<legend>{{localize "GURPS.JournalEntryPage.Ancestry.HandednessOptions.Name"}}</legend>
-		<ul>
-			{{#each system.common_options.handedness_options as |option|}} {{option.element}} {{/each}}
-		</ul>
-	</fieldset>
-
-	<!-- Footer -->
-	{{> journalEntryPageFooter}}
 </form>
+
+{{#* inline "optionFields"}}
+<!-- Height Formula -->
+{{formField fields.height_formula value=parent.height_formula name=(concat parent.path ".height_formula" )
+localize=true}}
+
+<!-- Weight Formula -->
+{{formField fields.weight_formula value=parent.weight_formula name=(concat parent.path ".weight_formula")
+localize=true}}
+
+<!-- Age Formula -->
+{{formField fields.age_formula value=parent.age_formula name=(concat parent.path ".age_formula") localize=true}}
+
+<!-- Name Generators -->
+<fieldset>
+	<legend>{{localize "GURPS.JournalEntryPage.Ancestry.FIELDS.NameGenerators.Name"}}</legend>
+	<button
+		type="button"
+		class="fa-regular fa-plus"
+		data-action="addNameGenerator"
+		data-path="{{parent.path}}.name_generators"
+	></button>
+	<ul>
+		{{#each parent.name_generators as |generator|}}
+		<li class="flexrow">
+			<button
+				type="button"
+				class="fa-regular fa-trash"
+				data-action="deleteNameGenerator"
+				data-path="{{../parent.path}}.name_generators"
+				data-index="{{@index}}"
+			></button>
+			{{formInput ../parent.schema.fields.name_generators.element name=(concat ../parent.path ".name_generators."
+			@index) value=generator}}
+		</li>
+		{{/each}}
+	</ul>
+</fieldset>
+
+<!-- Hair Options -->
+<fieldset>
+	<legend>{{localize "GURPS.JournalEntryPage.Ancestry.FIELDS.HairOptions.Name"}}</legend>
+	<button
+		type="button"
+		class="fa-regular fa-plus"
+		data-action="addStringOption"
+		data-path="{{parent.path}}.hair_options"
+	></button>
+	<ul>
+		{{#each parent.hair_options as |option|}} {{option.element}} {{/each}}
+	</ul>
+</fieldset>
+
+<!-- Eye Options -->
+<fieldset>
+	<legend>{{localize "GURPS.JournalEntryPage.Ancestry.FIELDS.EyeOptions.Name"}}</legend>
+	<button
+		type="button"
+		class="fa-regular fa-plus"
+		data-action="addStringOption"
+		data-path="{{parent.path}}.eye_options"
+	></button>
+	<ul>
+		{{#each parent.eye_options as |option|}} {{option.element}} {{/each}}
+	</ul>
+</fieldset>
+
+<!-- Skin Options -->
+<fieldset>
+	<legend>{{localize "GURPS.JournalEntryPage.Ancestry.FIELDS.SkinOptions.Name"}}</legend>
+	<button
+		type="button"
+		class="fa-regular fa-plus"
+		data-action="addStringOption"
+		data-path="{{parent.path}}.skin_options"
+	></button>
+	<ul>
+		{{#each parent.skin_options as |option|}} {{option.element}} {{/each}}
+	</ul>
+</fieldset>
+
+<!-- Handedness Options -->
+<fieldset>
+	<legend>{{localize "GURPS.JournalEntryPage.Ancestry.FIELDS.HandednessOptions.Name"}}</legend>
+	<button
+		type="button"
+		class="fa-regular fa-plus"
+		data-action="addStringOption"
+		data-path="{{parent.path}}.handedness_options"
+	></button>
+	<ul>
+		{{#each parent.handedness_options as |option|}} {{option.element}} {{/each}}
+	</ul>
+</fieldset>
+{{/inline}}

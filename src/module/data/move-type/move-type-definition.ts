@@ -1,13 +1,14 @@
 import { MoveTypeOverride, MoveTypeOverrideSchema } from "./move-type-override.ts"
 import fields = foundry.data.fields
 import { VariableResolver, evaluateToNumber } from "@module/util/gcs/eval.ts"
-import { MoveType } from "./move-type.ts"
 import {
 	AbstractAttributeDef,
 	AbstractAttributeDefSchema,
 } from "../abstract-attribute/abstract-attribute-definition.ts"
 
 class MoveTypeDef extends AbstractAttributeDef<MoveTypeDefSchema> {
+	// static override attributeClass = MoveType
+
 	static override defineSchema(): MoveTypeDefSchema {
 		const fields = foundry.data.fields
 
@@ -50,9 +51,9 @@ class MoveTypeDef extends AbstractAttributeDef<MoveTypeDefSchema> {
 		return evaluateToNumber(this.base, resolver)
 	}
 
-	override generateNewAttribute(): MoveType {
-		return new MoveType({ id: this.id }, { parent: this.actor.system, order: 0 })
-	}
+	// override generateNewAttribute(): MoveType {
+	// 	return new MoveType({ id: this.id }, { parent: this.actor.system, order: 0 })
+	// }
 }
 
 interface MoveTypeDef extends AbstractAttributeDef<MoveTypeDefSchema>, ModelPropsFromSchema<MoveTypeDefSchema> {}

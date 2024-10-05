@@ -1,17 +1,9 @@
 import fields = foundry.data.fields
-import { ResourceTracker } from "./resource-tracker.ts"
 import { ActorDataModel } from "../abstract.ts"
 import { PoolThreshold, PoolThresholdSchema } from "../attribute/index.ts"
 import { AbstractAttributeDef, AbstractAttributeDefSchema } from "../abstract-attribute/index.ts"
 
 class ResourceTrackerDef extends AbstractAttributeDef<ResourceTrackerDefSchema> {
-	// constructor(
-	// 	data: DeepPartial<SourceFromSchema<ResourceTrackerDefSchema>>,
-	// 	options?: DataModelConstructionOptions<ActorDataModel>,
-	// ) {
-	// 	super(data, options)
-	// }
-
 	static override defineSchema(): ResourceTrackerDefSchema {
 		const fields = foundry.data.fields
 		return {
@@ -86,9 +78,9 @@ class ResourceTrackerDef extends AbstractAttributeDef<ResourceTrackerDefSchema> 
 		return this.max
 	}
 
-	override generateNewAttribute(): ResourceTracker {
-		return new ResourceTracker({ id: this.id }, { parent: this.actor.system, order: 0 })
-	}
+	// override generateNewAttribute(): ResourceTracker {
+	// 	return new ResourceTracker({ id: this.id }, { parent: this.actor.system, order: 0 })
+	// }
 }
 
 interface ResourceTrackerDef

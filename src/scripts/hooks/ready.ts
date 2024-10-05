@@ -1,6 +1,7 @@
 import { SOCKET } from "@data"
 import { loadModifiers } from "@module/apps/modifier-bucket/data.ts"
 import { CharacterDataGURPS } from "@module/data/actor/character.ts"
+import { AttributeDef } from "@module/data/attribute/attribute-definition.ts"
 import { formatRelativeSkill } from "@module/data/item/helpers.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
 import { AttributesConfig } from "@module/settings/attributes-config.ts"
@@ -28,6 +29,7 @@ export const Ready = {
 				// LastToken: await LastActor.getToken(),
 				Int,
 				AttributesConfig,
+				AttributeDef,
 				HitLocationsConfig,
 				CharacterData: CharacterDataGURPS,
 				Evaluator,

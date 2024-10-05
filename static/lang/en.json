@@ -246,10 +246,19 @@
 		"JournalEntryPage": {
 			"Ancestry": {
 				"FIELDS": {
-					"Name": { "Name": "Ancestry Name" },
+					"AncestryName": { "Name": "Ancestry Name" },
+					"Name": { "Name": "Gender Name" },
 					"HeightFormula": { "Name": "Height Formula" },
 					"WeightFormula": { "Name": "Weight Formula" },
-					"AgeFormula": { "Name": "Age Formula" }
+					"AgeFormula": { "Name": "Age Formula" },
+					"HairOptions": { "Name": "Hair Options" },
+					"EyeOptions": { "Name": "Eye Options" },
+					"SkinOptions": { "Name": "Skin Options" },
+					"HandednessOptions": { "Name": "Handedness Options" },
+					"GenderOptions": { "Name": "Gender Options" },
+					"NameGenerators": { "Name": "Name Generators" },
+					"Weight": { "Name": "Weight" },
+					"Value": { "Name": "Value" }
 				}
 			}
 		},
@@ -262,12 +271,13 @@
 			"Definition": {
 				"FIELDS": {
 					"Id": { "Name": "ID" },
+					"Type": { "Name": "Attribute Type" },
+					"Placement": { "Name": "Placement" },
 					"Name": { "Name": "Name" },
 					"FullName": { "Name": "Full Name" },
 					"Base": { "Name": "Base Value" },
 					"CostPerPoint": { "Name": "Cost per Point" },
 					"CostAdjPercentPerSm": { "Name": "SM Reduction" },
-					"Type": { "Name": "Attribute Type" },
 					"Thresholds": { "Name": "Thresholds" }
 				}
 			},
@@ -453,15 +463,23 @@
 		},
 		"Enum": {
 			"attribute": {
-				"integer": "Integer",
-				"integer_ref": "Integer (Display Only)",
-				"decimal": "Decimal",
-				"decimal_ref": "Decimal (Display Only)",
-				"pool": "Pool",
-				"pool_ref": "Pool (Display Only for Maximum)",
-				"primary_separator": "Primary Separator",
-				"secondary_separator": "Secondary Separator",
-				"pool_separator": "Pool Separator"
+				"Type": {
+					"integer": "Integer",
+					"integer_ref": "Integer (Display Only)",
+					"decimal": "Decimal",
+					"decimal_ref": "Decimal (Display Only)",
+					"pool": "Pool",
+					"pool_ref": "Pool (Display Only for Maximum)",
+					"primary_separator": "Primary Separator",
+					"secondary_separator": "Secondary Separator",
+					"pool_separator": "Pool Separator"
+				},
+				"Placement": {
+					"automatic": "Automatic",
+					"primary": "Primary",
+					"secondary": "Secondary",
+					"hidden": "Hidden"
+				}
 			},
 			"container": {
 				"group": { "Name": "Group", "Tag": "" },

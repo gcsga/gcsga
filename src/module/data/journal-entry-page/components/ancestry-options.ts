@@ -1,7 +1,8 @@
-import { VariableResolver, evaluateToNumber } from "@module/util/index.ts"
-import fields = foundry.data.fields
-import { Length, Weight } from "@util"
 import { createButton } from "@module/applications/helpers.ts"
+import { VariableResolver, evaluateToNumber } from "@module/util/index.ts"
+import { Length, Weight } from "@util"
+import { AncestryData } from "../ancestry.ts"
+import fields = foundry.data.fields
 
 const DEFAULTS = {
 	HEIGHT: 64,
@@ -14,7 +15,21 @@ const DEFAULTS = {
 	MAXIMUM_RANDOM_TRIES: 5,
 }
 
-class AncestryOptions extends foundry.abstract.DataModel<foundry.abstract.DataModel, AncestryOptionsSchema> {
+enum WeightedStringOptionType {
+	Hair = "hair_options",
+	Eye = "eye_options",
+	Skin = "skin_options",
+	Handedness = "handedness_options",
+}
+
+const WeightedStringOptionTypes = [
+	WeightedStringOptionType.Hair,
+	WeightedStringOptionType.Eye,
+	WeightedStringOptionType.Skin,
+	WeightedStringOptionType.Handedness,
+]
+
+class AncestryOptions extends foundry.abstract.DataModel<AncestryData | WeightedAncestryOption, AncestryOptionsSchema> {
 	static override defineSchema(): AncestryOptionsSchema {
 		const fields = foundry.data.fields
 
@@ -45,7 +60,7 @@ class AncestryOptions extends foundry.abstract.DataModel<foundry.abstract.DataMo
 			}),
 			hair_options: new fields.ArrayField(
 				new fields.EmbeddedDataField(WeightedStringOption, {
-					initial: { type: "hair_options", weight: 1, value: "" },
+					initial: { type: WeightedStringOptionType.Hair, weight: 1, value: "" },
 				}),
 				{
 					label: "GURPS.JournalEntryPage.Ancestry.FIELDS.HairOptions.Name",
@@ -53,7 +68,7 @@ class AncestryOptions extends foundry.abstract.DataModel<foundry.abstract.DataMo
 			),
 			eye_options: new fields.ArrayField(
 				new fields.EmbeddedDataField(WeightedStringOption, {
-					initial: { type: "eye_options", weight: 1, value: "" },
+					initial: { type: WeightedStringOptionType.Eye, weight: 1, value: "" },
 				}),
 				{
 					label: "GURPS.JournalEntryPage.Ancestry.FIELDS.EyeOptions.Name",
@@ -61,7 +76,7 @@ class AncestryOptions extends foundry.abstract.DataModel<foundry.abstract.DataMo
 			),
 			skin_options: new fields.ArrayField(
 				new fields.EmbeddedDataField(WeightedStringOption, {
-					initial: { type: "skin_options", weight: 1, value: "" },
+					initial: { type: WeightedStringOptionType.Skin, weight: 1, value: "" },
 				}),
 				{
 					label: "GURPS.JournalEntryPage.Ancestry.FIELDS.SkinOptions.Name",
@@ -69,7 +84,7 @@ class AncestryOptions extends foundry.abstract.DataModel<foundry.abstract.DataMo
 			),
 			handedness_options: new fields.ArrayField(
 				new fields.EmbeddedDataField(WeightedStringOption, {
-					initial: { type: "handedness_options", weight: 1, value: "" },
+					initial: { type: WeightedStringOptionType.Handedness, weight: 1, value: "" },
 				}),
 				{
 					label: "GURPS.JournalEntryPage.Ancestry.FIELDS.HandednessOptions.Name",
@@ -78,14 +93,42 @@ class AncestryOptions extends foundry.abstract.DataModel<foundry.abstract.DataMo
 			name_generators: new fields.ArrayField(
 				new fields.ForeignDocumentField(RollTable, {
 					required: true,
-					nullable: false,
-					idOnly: false,
+					nullable: true,
+					idOnly: true,
 				}),
 				{
 					label: "GURPS.JournalEntryPage.Ancestry.FIELDS.NameGenerators.Name",
 				},
 			),
 		}
+	}
+
+	get path(): string {
+		const parent = this.parent
+		if (parent instanceof AncestryData) return `system.common_options`
+		else {
+			return `system.gender_options.${this.index}.value`
+		}
+	}
+
+	get index(): number {
+		if (this.parent instanceof AncestryData) return -1
+		return (this.parent.parent as AncestryData).gender_options.indexOf(this.parent as WeightedAncestryOption)
+	}
+
+	get nameGenerators(): RollTable[] {
+		const generators: RollTable[] = []
+		for (const id of this.name_generators) {
+			if (id === null) continue
+			const table = game.tables.get(id)
+			if (!table) continue
+			generators.push(table)
+		}
+		return generators
+	}
+
+	get generatorAnchors(): Handlebars.SafeString[] {
+		return this.nameGenerators.map(e => new Handlebars.SafeString(e.toAnchor().outerHTML))
 	}
 
 	randomHeight(resolver: VariableResolver, not: number): number {
@@ -141,8 +184,9 @@ class AncestryOptions extends foundry.abstract.DataModel<foundry.abstract.DataMo
 
 	async randomName(): Promise<string> {
 		const names: string[] = []
-		for (const generator of this.name_generators) {
-			const result = (await generator.draw()).results[0]
+		for (const generator of this.nameGenerators) {
+			const result = (await generator?.draw())?.results[0] ?? null
+			if (result === null) continue
 			if (result.type !== foundry.CONST.TABLE_RESULT_TYPES.TEXT) {
 				ui.notifications.error("Drawn name result is not text.")
 			}
@@ -152,14 +196,6 @@ class AncestryOptions extends foundry.abstract.DataModel<foundry.abstract.DataMo
 		return names.join("")
 	}
 }
-
-type WeightedStringOptionType = "eye_options" | "skin_options" | "hair_options" | "handedness_options"
-const WeightedStringOptionTypes: WeightedStringOptionType[] = [
-	"eye_options",
-	"skin_options",
-	"hair_options",
-	"handedness_options",
-]
 
 class WeightedStringOption extends foundry.abstract.DataModel<AncestryOptions, WeightedStringOptionSchema> {
 	constructor(
@@ -176,7 +212,6 @@ class WeightedStringOption extends foundry.abstract.DataModel<AncestryOptions, W
 				required: true,
 				nullable: false,
 				blank: false,
-				readonly: true,
 				choices: WeightedStringOptionTypes,
 			}),
 			weight: new fields.NumberField({ required: true, nullable: false, initial: 0 }),
@@ -201,20 +236,10 @@ class WeightedStringOption extends foundry.abstract.DataModel<AncestryOptions, W
 	}
 
 	get array(): WeightedStringOption[] {
-		switch (this.type) {
-			case "eye_options":
-				return this.parent.eye_options
-			case "hair_options":
-				return this.parent.hair_options
-			case "skin_options":
-				return this.parent.skin_options
-			case "handedness_options":
-				return this.parent.handedness_options
-		}
+		return this.parent[this.type]
 	}
 
 	get index(): number {
-		if (this.parent instanceof AncestryOptions) return -1
 		return this.array.indexOf(this)
 	}
 
@@ -222,9 +247,22 @@ class WeightedStringOption extends foundry.abstract.DataModel<AncestryOptions, W
 		return new Handlebars.SafeString(this.toFormElement().outerHTML)
 	}
 
+	get path(): string {
+		return `${this.parent.path}.${this.type}`
+	}
+
 	toFormElement(): HTMLElement {
 		const element = document.createElement("li")
-		const prefix = `system.features.${this.index}`
+		const path = this.path
+		const index = this.index
+
+		const typeField = foundry.applications.fields.createTextInput({
+			name: `${path}.${index}.type`,
+			value: this.type,
+			readonly: true,
+		})
+		typeField.style.setProperty("display", "none")
+		element.append(typeField)
 
 		const rowElement = document.createElement("div")
 		rowElement.classList.add("form-fields")
@@ -235,29 +273,30 @@ class WeightedStringOption extends foundry.abstract.DataModel<AncestryOptions, W
 				label: "",
 				data: {
 					action: "deleteStringOption",
-					index: this.index.toString(),
+					path,
+					index: index.toString(),
 				},
 			}),
 		)
 
 		rowElement.append(
 			this.schema.fields.weight.toInput({
-				name: `${prefix}.value`,
+				name: `${path}.${index}.weight`,
 				value: this.weight.toString(),
 				localize: true,
 				placeholder: game.i18n.localize(
-					"GURPS.JournalEntryPage.Ancestry.WeightedStringOption.FIELDS.Weight.Name",
+					game.i18n.localize("GURPS.JournalEntryPage.Ancestry.FIELDS.Weight.Name"),
 				),
 			}) as HTMLElement,
 		)
 
 		rowElement.append(
 			this.schema.fields.value.toInput({
-				name: `${prefix}.value`,
+				name: `${path}.${index}.value`,
 				value: this.value.toString(),
 				localize: true,
 				placeholder: game.i18n.localize(
-					"GURPS.JournalEntryPage.Ancestry.valueedStringOption.FIELDS.Value.Name",
+					game.i18n.localize("GURPS.JournalEntryPage.Ancestry.FIELDS.Value.Name"),
 				),
 			}) as HTMLElement,
 		)
@@ -267,21 +306,23 @@ class WeightedStringOption extends foundry.abstract.DataModel<AncestryOptions, W
 	}
 }
 
-class WeightedAncestryOptions extends foundry.abstract.DataModel<
-	foundry.abstract.DataModel,
-	WeightedAncestryOptionsSchema
-> {
+class WeightedAncestryOption extends foundry.abstract.DataModel<AncestryData, WeightedAncestryOptionsSchema> {
 	static override defineSchema(): WeightedAncestryOptionsSchema {
 		const fields = foundry.data.fields
 		return {
-			weight: new fields.NumberField({ required: true, nullable: false, initial: 0 }),
+			weight: new fields.NumberField({
+				required: true,
+				nullable: false,
+				initial: 0,
+				label: "GURPS.JournalEntryPage.Ancestry.FIELDS.Weight.Name",
+			}),
 			value: new fields.EmbeddedDataField(AncestryOptions),
 		}
 	}
 }
 
 interface AncestryOptions extends ModelPropsFromSchema<AncestryOptionsSchema> {}
-interface WeightedAncestryOptions extends ModelPropsFromSchema<WeightedAncestryOptionsSchema> {}
+interface WeightedAncestryOption extends ModelPropsFromSchema<WeightedAncestryOptionsSchema> {}
 interface WeightedStringOption extends ModelPropsFromSchema<WeightedStringOptionSchema> {}
 
 type AncestryOptionsSchema = {
@@ -293,7 +334,7 @@ type AncestryOptionsSchema = {
 	eye_options: fields.ArrayField<fields.EmbeddedDataField<WeightedStringOption>>
 	skin_options: fields.ArrayField<fields.EmbeddedDataField<WeightedStringOption>>
 	handedness_options: fields.ArrayField<fields.EmbeddedDataField<WeightedStringOption>>
-	name_generators: fields.ArrayField<fields.ForeignDocumentField<RollTable, true, false, true>>
+	name_generators: fields.ArrayField<fields.ForeignDocumentField<string, true, true, true>>
 }
 
 type WeightedAncestryOptionsSchema = {
@@ -307,4 +348,12 @@ type WeightedStringOptionSchema = {
 	value: fields.StringField<string, string, true, false, true>
 }
 
-export { AncestryOptions, WeightedAncestryOptions, WeightedStringOption }
+export {
+	AncestryOptions,
+	WeightedAncestryOption,
+	WeightedStringOption,
+	type AncestryOptionsSchema,
+	type WeightedAncestryOptionsSchema,
+	type WeightedStringOptionSchema,
+	type WeightedStringOptionType,
+}

@@ -1,25 +1,110 @@
 {{#if data.title.show}}
 <header class="journal-page-header">
-	<h{{data.title.level}}>{{data.name}}</h{{data.title.level}}>
+	<h1>{{data.name}}</h1>
 </header>
 {{/if}}
 <section class="journal-page-content">
 	<!-- Common Options -->
-	{{#with fields.common_options.fields as |fields|}}
-	<p>
-		<b>{{localize fields.height_formula.options.label}}:</b>
-		{{@root.source.common_options.height_formula}}
-	</p>
+	{{> optionFields fields=fields.common_options.fields parent=system.common_options}}
 
-	<p>
-		<b>{{localize fields.weight_formula.options.label}}:</b>
-		{{@root.source.common_options.weight_formula}}
-	</p>
+	<!-- Genders -->
+	<h2>Gender Options</h2>
+	<ul>
+		{{#each system.gender_options}}
+		<li>
+			<p>
+				<b>{{localize this.schema.fields.weight.options.label}}:</b>
+				{{this.weight}}
+			</p>
 
-	<p>
-		<b>{{localize fields.age_formula.options.label}}:</b>
-		{{@root.source.common_options.age_formula}}
-	</p>
+			<p>
+				<b>{{localize this.schema.fields.value.fields.name.options.label}}:</b>
+				{{this.value.name}}
+			</p>
 
-	{{/with}}
+			{{> optionFields fields=this.schema.fields.value.fields parent=this.value}}
+		</li>
+		{{/each}}
+	</ul>
 </section>
+
+<!-- Gender Option -->
+{{#* inline "optionFields"}}
+
+<!-- Height Formula -->
+{{#if parent.height_formula}}
+<p>
+	<b>{{localize fields.height_formula.options.label}}:</b>
+	{{parent.height_formula}}
+</p>
+{{/if}}
+
+<!-- Height Formula -->
+{{#if parent.weight_formula}}
+<p>
+	<b>{{localize fields.weight_formula.options.label}}:</b>
+	{{parent.weight_formula}}
+</p>
+{{/if}}
+
+<!-- Age Formula -->
+{{#if parent.age_formula}}
+<p>
+	<b>{{localize fields.age_formula.options.label}}:</b>
+	{{parent.age_formula}}
+</p>
+{{/if}}
+
+<!-- Name Generators -->
+{{#if parent.name_generators.length}}
+<b>{{localize fields.name_generators.options.label}}</b>
+<ul>
+	{{#each parent.generatorAnchors as |generator|}}
+	<li>{{generator}}</li>
+	{{/each}}
+</ul>
+{{/if}}
+
+<!-- Hair Options -->
+{{#if parent.hair_options.length}}
+<b>{{localize fields.hair_options.options.label}}:</b>
+<ul>
+	{{#each parent.hair_options as |option|}} {{> stringOption option=option}} {{/each}}
+</ul>
+{{/if}}
+
+<!-- Eye Options -->
+{{#if parent.eye_options.length}}
+<b>{{localize fields.eye_options.options.label}}:</b>
+<ul>
+	{{#each parent.eye_options as |option|}} {{> stringOption option=option}} {{/each}}
+</ul>
+{{/if}}
+
+<!-- Skin Options -->
+{{#if parent.skin_options.length}}
+<b>{{localize fields.skin_options.options.label}}:</b>
+<ul>
+	{{#each parent.skin_options as |option|}} {{> stringOption option=option}} {{/each}}
+</ul>
+{{/if}}
+
+<!-- Skin Options -->
+{{#if parent.handedness_options.length}}
+<b>{{localize fields.handedness_options.options.label}}:</b>
+<ul>
+	{{#each parent.handedness_options as |option|}} {{> stringOption option=option}} {{/each}}
+</ul>
+{{/if}}
+
+<!-- End -->
+{{/inline}}
+
+<!-- String Option -->
+{{#* inline "stringOption"}}
+
+<li>
+	<b>{{option.value}}</b>
+	: {{option.weight}}
+</li>
+{{/inline}}

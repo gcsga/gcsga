@@ -6,12 +6,12 @@ import { ActorGURPS2 } from "@module/document/actor.ts"
 abstract class AbstractAttribute<
 	TActor extends ActorDataModel = ActorDataModel,
 	TSchema extends AbstractAttributeSchema = AbstractAttributeSchema,
-> extends foundry.abstract.DataModel<TActor, TSchema> {
+> extends foundry.abstract.DataModel<ActorDataModel, TSchema> {
 	static override defineSchema(): AbstractAttributeSchema {
 		const fields = foundry.data.fields
 
 		return {
-			id: new fields.StringField(),
+			id: new fields.StringField({ required: true, nullable: false, initial: "id" }),
 		}
 	}
 
