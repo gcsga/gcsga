@@ -15,6 +15,9 @@ export async function preloadHandlebarsTemplates(): Promise<void> {
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-technique.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-trait-container.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-trait.hbs`,
+		`systems/${SYSTEM_NAME}/templates/items/parts/details-weapon-melee.hbs`,
+		`systems/${SYSTEM_NAME}/templates/items/parts/details-weapon-ranged.hbs`,
+		`systems/${SYSTEM_NAME}/templates/items/parts/fields-weapon-damage.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/note-preview.hbs`,
 
 		// Item Embeds Partials

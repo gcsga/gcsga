@@ -25,6 +25,8 @@ export function registerSheets(): void {
 			ItemType.Technique,
 			ItemType.Trait,
 			ItemType.TraitContainer,
+			ItemType.WeaponMelee,
+			ItemType.WeaponRanged,
 		],
 		makeDefault: true,
 		label: "GURPS Item Sheet V2",

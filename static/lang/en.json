@@ -245,12 +245,77 @@
 			"Container": {
 				"DetailsLegend": "Container Details"
 			},
-
 			"Note": {
 				"DetailsLegend": "Note Details",
 				"FormattedLegend": "Markdown Preview",
 				"FIELDS": {
 					"Text": { "Name": "Notes" }
+				}
+			},
+			"Weapon": {
+				"FIELDS": {
+					"Strength": {
+						"Name": "Minimum ST",
+						"TwoHanded": "Two-handed",
+						"TwoHandedUnready": "Two-handed & unready",
+						"Bipod": "Has bipod",
+						"Mounted": "Mounted",
+						"MusketRest": "Uses a musket rest"
+					}
+				}
+			},
+			"WeaponMelee": {
+				"DetailsLegend": "Melee Weapon Details",
+				"FIELDS": {
+					"Parry": {
+						"Name": "Parry",
+						"Fencing": "Fencing",
+						"Unbalanced": "Unbalanced"
+					},
+					"Block": { "Name": "Block" }
+				}
+			},
+			"WeaponRanged": {
+				"DetailsLegend": "Ranged Weapon Details",
+				"FIELDS": {
+					"Accuracy": {
+						"Name": "Accuracy",
+						"Scope": "Scope",
+						"Jet": "Jet"
+					},
+					"Range": {
+						"Name": "Range",
+						"HalfDamage": "½ Damage",
+						"Minimum": "Minimum",
+						"MusclePowered": "Muscle-powered",
+						"InMiles": "Ranges are in miles"
+					},
+					"RateOfFire": {
+						"Name": "Rate of Fire",
+						"Mode1": "Mode 1",
+						"Mode2": "Mode 2",
+						"ShotsPerAttack": "per attack with",
+						"SecondaryProjectiles": "secondary projectiles",
+						"FullAutoOnly": "Fully Automatic Only",
+						"HighCyclicControlledBursts": "High-cyclic Controlled Bursts"
+					},
+					"Shots": {
+						"Name": "Shots",
+						"InChamber": "In Chamber",
+						"Duration": "Duratin",
+						"ReloadTime": "Reload Time",
+						"ReloadTimeIsPerShot": "In Chamber",
+						"Thrown": "Thrown Weapon"
+					},
+					"Bulk": {
+						"Name": "Bulk",
+						"Giant": "For Giants",
+						"RetractingStock": "Retracting Stock"
+					},
+					"Recoil": {
+						"Name": "Recoil",
+						"Slug": "For Slugs"
+					}
 				}
 			}
 		},

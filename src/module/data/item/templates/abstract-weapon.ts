@@ -18,17 +18,21 @@ class AbstractWeaponTemplate extends ItemDataModel.mixin(SkillDefaultTemplate) {
 		const fields = foundry.data.fields
 		return super.mergeSchema(super.defineSchema(), {
 			strength: new fields.EmbeddedDataField(WeaponStrength),
-			// defaults: new fields.ArrayField(new fields.EmbeddedDataField(SkillDefault)),
 			damage: new fields.EmbeddedDataField(WeaponDamage),
+			// Is the weapon currently unready?
 			unready: new fields.BooleanField({ required: true, nullable: false, initial: false }),
 		}) as AbstractWeaponTemplateSchema
 	}
 
 	get processedName(): string {
-		if (this.parent.container === null || this.parent.container instanceof Promise) return ""
-		if (!this.parent.container.hasTemplate(ItemTemplateType.BasicInformation)) return ""
-		return this.parent.container.system.name
+		return this.parent.name
 	}
+
+	// get processedName(): string {
+	// 	if (this.parent.container === null || this.parent.container instanceof Promise) return ""
+	// 	if (!this.parent.container.hasTemplate(ItemTemplateType.BasicInformation)) return ""
+	// 	return this.parent.container.system.name
+	// }
 
 	get processedNotes(): string {
 		const buffer = new StringBuilder()

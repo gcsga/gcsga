@@ -10,6 +10,10 @@ import { LocalizeGURPS, TooltipGURPS } from "@util"
 import { Nameable } from "@module/util/index.ts"
 
 class WeaponMeleeData extends ItemDataModel.mixin(BasicInformationTemplate, AbstractWeaponTemplate) {
+	override async getSheetData(context: Record<string, unknown>): Promise<void> {
+		context.detailsParts = ["gurps.details-weapon-melee", "gurps.details-defaults"]
+	}
+
 	static override defineSchema(): WeaponMeleeSchema {
 		const fields = foundry.data.fields
 

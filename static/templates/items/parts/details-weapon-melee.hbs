@@ -1,0 +1,75 @@
+<fieldset>
+	<legend>{{localize "GURPS.Item.WeaponMelee.DetailsLegend"}}</legend>
+
+	<!-- Notes -->
+	{{formField fields.notes value=source.notes localize=true}}
+
+	<!-- Parry -->
+	<div class="form-group">
+		<label>
+			<!-- Can Parry? -->
+			{{formInput fields.parry.fields.canParry value=source.parry.canParry}}
+			<!-- Label -->
+			{{localize "GURPS.Item.WeapoMelee.FIELDS.Parry.Name"}}
+		</label>
+		<div class="form-fields">
+			<!-- Modifier -->
+			{{formInput fields.parry.fields.modifier value=source.parry.modifier disabled=(not source.parry.canParry)}}
+
+			<!-- Fencing -->
+			<label>
+				<!-- Checkbox-->
+				{{formInput fields.parry.fields.fencing value=source.parry.fencing disabled=(not
+				source.parry.canParry)}}
+				<!-- Label -->
+				{{localize "GURPS.Item.WeapoMelee.FIELDS.Parry.Fencing"}}
+			</label>
+			<!-- Unbalanced -->
+			<label>
+				<!-- Checkbox-->
+				{{formInput fields.parry.fields.unbalanced value=source.parry.unbalanced disabled=(not
+				source.parry.canParry)}}
+				<!-- Label -->
+				{{localize "GURPS.Item.WeapoMelee.FIELDS.Parry.Unbalanced"}}
+			</label>
+		</div>
+	</div>
+
+	<!-- Block -->
+	<div class="form-group">
+		<label>
+			<!-- Can Block? -->
+			{{formInput fields.block.fields.canBlock value=source.block.canBlock}}
+			<!-- Label -->
+			{{localize "GURPS.Item.WeapoMelee.FIELDS.Block.Name"}}
+		</label>
+		<div class="form-fields">
+			<!-- Modifier -->
+			{{formInput fields.block.fields.modifier value=source.block.modifier disabled=(not source.block.canBlock)}}
+		</div>
+	</div>
+
+	{{> "gurps.fields-weapon-damage"}}
+
+	<!-- Minimum ST -->
+	<div class="form-group">
+		<label>{{localize "GURPS.Item.Weapon.FIELDS.Strength.Name"}}</label>
+		<div class="form-fields">
+			{{formInput fields.strength.fields.min value=source.strength.min}}
+
+			<label>
+				<!-- Two-Handed -->
+				{{formInput fields.strength.fields.twoHanded value=source.strength.twoHanded}}
+				<!-- Label -->
+				{{localize "GURPS.Item.Weapon.FIELDS.Strength.TwoHanded"}}
+			</label>
+
+			<label>
+				<!-- Two-Handed & Unready -->
+				{{formInput fields.strength.fields.twoHandedUnready value=source.strength.twoHandedUnready}}
+				<!-- Label -->
+				{{localize "GURPS.Item.Weapon.FIELDS.Strength.TwoHandedUnready"}}
+			</label>
+		</div>
+	</div>
+</fieldset>

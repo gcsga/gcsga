@@ -17,6 +17,9 @@ import { CellData } from "./components/cell-data.ts"
 import { Nameable } from "@module/util/index.ts"
 
 class WeaponRangedData extends ItemDataModel.mixin(BasicInformationTemplate, AbstractWeaponTemplate) {
+	override async getSheetData(context: Record<string, unknown>): Promise<void> {
+		context.detailsParts = ["gurps.details-weapon-ranged", "gurps.details-defaults"]
+	}
 	static override defineSchema(): WeaponRangedSchema {
 		const fields = foundry.data.fields
 

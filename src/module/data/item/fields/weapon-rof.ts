@@ -1,15 +1,15 @@
 import fields = foundry.data.fields
 import { WeaponField } from "./weapon-field.ts"
 import { LocalizeGURPS, TooltipGURPS, wswitch } from "@util"
-import { WeaponROFMode, type WeaponROFModeSchema } from "./weapon-rof-mode.ts"
+import { WeaponROFMode } from "./weapon-rof-mode.ts"
 import { AbstractWeaponTemplate } from "../templates/index.ts"
 
 class WeaponROF extends WeaponField<AbstractWeaponTemplate, WeaponROFSchema> {
 	static override defineSchema(): WeaponROFSchema {
 		const fields = foundry.data.fields
 		return {
-			mode1: new fields.SchemaField(WeaponROFMode.defineSchema()),
-			mode2: new fields.SchemaField(WeaponROFMode.defineSchema()),
+			mode1: new fields.EmbeddedDataField(WeaponROFMode),
+			mode2: new fields.EmbeddedDataField(WeaponROFMode),
 			jet: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: false }),
 		}
 	}
@@ -85,14 +85,11 @@ class WeaponROF extends WeaponField<AbstractWeaponTemplate, WeaponROFSchema> {
 
 interface WeaponROF
 	extends WeaponField<AbstractWeaponTemplate, WeaponROFSchema>,
-		Omit<ModelPropsFromSchema<WeaponROFSchema>, "mode1" | "mode2"> {
-	mode1: WeaponROFMode
-	mode2: WeaponROFMode
-}
+		ModelPropsFromSchema<WeaponROFSchema> {}
 
 type WeaponROFSchema = {
-	mode1: fields.SchemaField<WeaponROFModeSchema>
-	mode2: fields.SchemaField<WeaponROFModeSchema>
+	mode1: fields.EmbeddedDataField<WeaponROFMode>
+	mode2: fields.EmbeddedDataField<WeaponROFMode>
 	jet: fields.BooleanField<boolean, boolean, true, false, true>
 }
 
