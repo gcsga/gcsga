@@ -1,0 +1,13 @@
+<fieldset>
+	<legend>{{localize "GURPS.Item.Note.DetailsLegend"}}</legend>
+
+	<div class="form-group">
+		<label>{{localize "GURPS.Item.Note.FIELDS.Text.Name"}}</label>
+		<div class="form-fields">
+			<textarea name="system.text">{{source.text}}</textarea>
+		</div>
+	</div>
+
+	<!-- Reference -->
+	{{formField fields.reference value=source.reference localize=true}}
+</fieldset>

@@ -3,17 +3,19 @@ import { SYSTEM_NAME } from "@data"
 export async function preloadHandlebarsTemplates(): Promise<void> {
 	const partials = [
 		// Item Detsils Partials
-		`systems/${SYSTEM_NAME}/templates/items/parts/details-prereqs.hbs`,
-		`systems/${SYSTEM_NAME}/templates/items/parts/details-features.hbs`,
+		`systems/${SYSTEM_NAME}/templates/items/parts/details-container.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-defaults.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-equipment.hbs`,
-		`systems/${SYSTEM_NAME}/templates/items/parts/details-skill.hbs`,
-		`systems/${SYSTEM_NAME}/templates/items/parts/details-technique.hbs`,
-		`systems/${SYSTEM_NAME}/templates/items/parts/details-spell.hbs`,
+		`systems/${SYSTEM_NAME}/templates/items/parts/details-features.hbs`,
+		`systems/${SYSTEM_NAME}/templates/items/parts/details-note.hbs`,
+		`systems/${SYSTEM_NAME}/templates/items/parts/details-prereqs.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-ritual-magic-spell.hbs`,
-		`systems/${SYSTEM_NAME}/templates/items/parts/details-trait.hbs`,
+		`systems/${SYSTEM_NAME}/templates/items/parts/details-skill.hbs`,
+		`systems/${SYSTEM_NAME}/templates/items/parts/details-spell.hbs`,
+		`systems/${SYSTEM_NAME}/templates/items/parts/details-technique.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-trait-container.hbs`,
-		`systems/${SYSTEM_NAME}/templates/items/parts/details-container.hbs`,
+		`systems/${SYSTEM_NAME}/templates/items/parts/details-trait.hbs`,
+		`systems/${SYSTEM_NAME}/templates/items/parts/note-preview.hbs`,
 
 		// Item Embeds Partials
 		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-equipment-children.hbs`,

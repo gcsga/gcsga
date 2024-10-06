@@ -24,6 +24,10 @@ class NoteTemplate extends ItemDataModel<NoteTemplateSchema> {
 	}
 
 	get processedName(): string {
+		return this.parent.name
+	}
+
+	get processedText(): Handlebars.SafeString {
 		const showdownOptions = { ...CONST.SHOWDOWN_OPTIONS }
 
 		Object.entries(showdownOptions).forEach(([k, v]) => {
@@ -34,7 +38,7 @@ class NoteTemplate extends ItemDataModel<NoteTemplateSchema> {
 		let text = this.text
 		text = replaceAllStringFunc(EvalEmbeddedRegex, text, this.actor)
 
-		return converter.makeHtml(text)?.replaceAll(/\s\+/g, "\r")
+		return new Handlebars.SafeString(converter.makeHtml(text)?.replaceAll(/\s\+/g, "\r"))
 	}
 }
 

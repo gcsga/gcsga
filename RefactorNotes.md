@@ -39,15 +39,15 @@
   - Spell Container \* DONE
   - RPM Spell \* DONE
   - Technique \* DONE
-  - Note
-  - Note Container
+  - Note \* DONE
+  - Note Container \* DONE
   - Effect
-  - Melee Weapon
+  - Melee Weapon \* CURRENT
   - Ranged Weapon
   - Replacements Tab
 - Actor Sheet \*2
   - Collapsible sidebar
-    - Option to hide atributes if not frequently used to decrease clutter?
+    - Option to hide attributes if not frequently used to decrease clutter?
     - Pinned items
   - DND5e context menu
   - Traits Tab
@@ -67,8 +67,8 @@
 
 - Roll Handlers
   - Fix old functions
-- Change #clean for #cleanData \* DONE
-- Change Schema Fields to Embedded Data Fields where appropriate \*0 _MOST IMPORTANT_ DONE?
+- Change #clean for #cleanData
+- Change Schema Fields to Embedded Data Fields where appropriate
 
 ## Current Task Notes
 

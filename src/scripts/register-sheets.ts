@@ -15,6 +15,8 @@ export function registerSheets(): void {
 		types: [
 			ItemType.Equipment,
 			ItemType.EquipmentContainer,
+			ItemType.Note,
+			ItemType.NoteContainer,
 			ItemType.RitualMagicSpell,
 			ItemType.Skill,
 			ItemType.SkillContainer,

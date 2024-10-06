@@ -244,6 +244,14 @@
 			},
 			"Container": {
 				"DetailsLegend": "Container Details"
+			},
+
+			"Note": {
+				"DetailsLegend": "Note Details",
+				"FormattedLegend": "Markdown Preview",
+				"FIELDS": {
+					"Text": { "Name": "Notes" }
+				}
 			}
 		},
 		"JournalEntryPage": {

@@ -9,6 +9,10 @@ import {
 } from "./templates/index.ts"
 
 class NoteData extends ItemDataModel.mixin(BasicInformationTemplate, ReplacementTemplate, NoteTemplate) {
+	override async getSheetData(context: Record<string, unknown>): Promise<void> {
+		context.detailsParts = ["gurps.details-note", "gurps.note-preview"]
+	}
+
 	static override defineSchema(): NoteSchema {
 		return this.mergeSchema(super.defineSchema(), {}) as NoteSchema
 	}
