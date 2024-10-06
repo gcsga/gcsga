@@ -14,13 +14,17 @@
 			<!-- Type -->
 			{{formInput fields.default.fields.type value=source.default.type}}
 
+			<!-- Only display these fields if defualt is skill-based -->
+			{{#if system.default.skillBased}}
 			<!-- Name -->
-			{{formInput fields.default.fields.name value=source.default.name disabled=(ne source.default.type "skill")
-			placeholder=(localize "GURPS.Item.Technique.FIELDS.Default.Skill") localize=true}}
+			{{formInput fields.default.fields.name value=source.default.name placeholder=(localize
+			"GURPS.Item.Technique.FIELDS.Default.Skill") localize=true}}
 
 			<!-- Specialization -->
-			{{formInput fields.default.fields.specialization value=source.default.specialization disabled=(ne
-			source.default.type "skill") placeholder=(localize "GURPS.Item.Technique.FIELDS.Default.Specialization") }}
+			{{formInput fields.default.fields.specialization value=source.default.specialization placeholder=(localize
+			"GURPS.Item.Technique.FIELDS.Default.Specialization") }}
+			<!-- End If -->
+			{{/if}}
 
 			<!-- Modifier -->
 			{{formInput fields.default.fields.modifier value=source.default.modifier }}

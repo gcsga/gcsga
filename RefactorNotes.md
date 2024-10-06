@@ -2,8 +2,6 @@
 
 ## Current Tasks
 
-- Add ancestry setting for trait containers
-
 ## Left To Do
 
 - Weapon Fields
@@ -30,14 +28,14 @@
   - Header color dependent on item type page color in GURPS Basic Set
   - Prereqs \*DONE
   - Features \* DONE
-  - Defaults \* CURRENT
-  - Equipment \*DONE
-  - Equipment Container
-  - Trait
-  - Trait Container
-  - Spell
+  - Defaults \* DONE
+  - Equipment \* DONE
+  - Equipment Container \* DONE
+  - Trait \*DONE
+  - Trait Container \*DONE
+  - Spell \*DONE
   - Skill \*DONE
-  - RPM Spell
+  - RPM Spell \*DONE
   - Technique
   - Container
   - Note
