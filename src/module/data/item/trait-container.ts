@@ -34,10 +34,10 @@ class TraitContainerData extends ItemDataModel.mixin(
 		const fields = foundry.data.fields
 
 		return this.mergeSchema(super.defineSchema(), {
-			ancestry: new fields.StringField({
-				required: true,
-				nullable: false,
-				initial: "",
+			ancestry: new fields.ForeignDocumentField(JournalEntryPage, {
+				nullable: true,
+				initial: null,
+				idOnly: true,
 				label: "GURPS.Item.TraitContainer.FIELDS.Ancestry.Name",
 			}),
 			userdesc: new fields.StringField({
@@ -75,6 +75,16 @@ class TraitContainerData extends ItemDataModel.mixin(
 			}),
 			template_picker: new fields.EmbeddedDataField(TemplatePicker),
 		}) as TraitContainerSchema
+	}
+
+	get ancestryChoices(): Record<string, string> {
+		const ancestries: Record<string, string> = { "": "" }
+		for (const entry of game.journal) {
+			for (const page of entry.pages) {
+				if (page.type === "ancestry") ancestries[page.id] = page.name
+			}
+		}
+		return ancestries
 	}
 
 	override get cellData(): Record<string, CellData> {
@@ -233,7 +243,7 @@ type TraitContainerSchema = BasicInformationTemplateSchema &
 	PrereqTemplateSchema &
 	ContainerTemplateSchema &
 	ReplacementTemplateSchema & {
-		ancestry: fields.StringField<string, string, true, true, true>
+		ancestry: fields.ForeignDocumentField<string, true, true, true>
 		userdesc: fields.StringField<string, string, true, false, true>
 		cr: fields.NumberField<selfctrl.Roll, selfctrl.Roll, true, false, true>
 		cr_adj: fields.StringField<selfctrl.Adjustment, selfctrl.Adjustment, true, false, true>

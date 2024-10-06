@@ -29,8 +29,18 @@
 	{{formField fields.container_type value=source.container_type localize=true}}
 
 	<!-- Ancestry -->
-	{{formField fields.ancestry value=source.ancestry localize=true disabled=(not (eq source.container_type
-	"ancestry"))}}
+	<div class="form-group">
+		<label>{{localize "GURPS.Item.TraitContainer.FIELDS.Ancestry.Name"}}</label>
+		<div class="form-fields">
+			{{#if (eq source.container_type "ancestry")}}
+			<select name="system.ancestry">
+				{{selectOptions system.ancestryChoices selected=source.ancestry localize=true}}
+			</select>
+			{{else}}
+			<select name="system.ancestry" disabled></select>
+			{{/if}}
+		</div>
+	</div>
 
 	<!-- Reference -->
 	{{formField fields.reference value=source.reference localize=true}}
