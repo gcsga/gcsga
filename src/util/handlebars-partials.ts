@@ -13,6 +13,7 @@ export async function preloadHandlebarsTemplates(): Promise<void> {
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-ritual-magic-spell.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-trait.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-trait-container.hbs`,
+		`systems/${SYSTEM_NAME}/templates/items/parts/details-container.hbs`,
 
 		// Item Embeds Partials
 		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-equipment-children.hbs`,

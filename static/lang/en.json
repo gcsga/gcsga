@@ -241,6 +241,9 @@
 					"Ancestry": { "Name": "Ancestry" },
 					"ContainerType": { "Name": "Container Type" }
 				}
+			},
+			"Container": {
+				"DetailsLegend": "Container Details"
 			}
 		},
 		"JournalEntryPage": {

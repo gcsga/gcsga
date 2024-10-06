@@ -12,6 +12,11 @@ import { TemplatePicker } from "./fields/template-picker.ts"
 class SpellContainerData extends ItemDataModel.mixin(BasicInformationTemplate, ContainerTemplate, ReplacementTemplate) {
 	static override childTypes = new Set([ItemType.Spell, ItemType.SpellContainer, ItemType.RitualMagicSpell])
 
+	override async getSheetData(context: Record<string, unknown>): Promise<void> {
+		context.detailsParts = ["gurps.details-container"]
+		context.embedsParts = ["gurps.embeds-children"]
+	}
+
 	static override defineSchema(): SpellContainerSchema {
 		const fields = foundry.data.fields
 		return this.mergeSchema(super.defineSchema(), {

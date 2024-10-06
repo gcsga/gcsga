@@ -26,18 +26,19 @@
   - Legacy Support?
 - Item Sheet \*CURRENT
   - Header color dependent on item type page color in GURPS Basic Set
-  - Prereqs \*DONE
+  - Prereqs \* DONE
   - Features \* DONE
   - Defaults \* DONE
   - Equipment \* DONE
   - Equipment Container \* DONE
   - Trait \*DONE
-  - Trait Container \*DONE
-  - Spell \*DONE
+  - Trait Container \* DONE
   - Skill \*DONE
-  - RPM Spell \*DONE
-  - Technique
-  - Container
+  - Skill Container \* DONE
+  - Spell \*DONE
+  - Spell Container \* DONE
+  - RPM Spell \* DONE
+  - Technique \* DONE
   - Note
   - Note Container
   - Effect
