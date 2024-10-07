@@ -42,8 +42,8 @@
   - Note \* DONE
   - Note Container \* DONE
   - Effect
-  - Melee Weapon \* CURRENT
-  - Ranged Weapon
+  - Melee Weapon \* DONE
+  - Ranged Weapon \* DONE
   - Replacements Tab
 - Actor Sheet \*2
   - Collapsible sidebar
