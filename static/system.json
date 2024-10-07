@@ -3,6 +3,17 @@
 	"title": "GURPS 4e (EXPERIMENTAL)",
 	"description": "GURPS 4th Edition, unofficial game aid for FoundryVTT.",
 	"version": "1.0.0-alpha.8",
+	"compatibility": {
+		"minimum": "12.331",
+		"verified": "12"
+	},
+	"license": "MIT",
+	"readme": "README.md",
+	"url": "https://github.com/gcsga/gcsga",
+	"manifest": "this is autoreplaced",
+	"download": "this is autoreplaced",
+	"bugs": "https://github.com/gcsga/gcsga/issues",
+	"changelog": "",
 	"authors": [
 		{
 			"name": "Chris Normand",
@@ -20,14 +31,43 @@
 			"discord": "sasiedny"
 		}
 	],
-	"compatibility": {
-		"minimum": 12,
-		"verified": "12.331",
-		"maximum": 12
-	},
-	"scripts": [],
 	"esmodules": ["gurps.mjs"],
 	"styles": ["styles/gurps.css"],
+	"documentTypes": {
+		"ActiveEffect": {
+			"effect": {},
+			"condition": {}
+		},
+		"Actor": {
+			"character": {},
+			"character_gcs": {},
+			"loot": {}
+		},
+		"Item": {
+			"eqp_modifier": {},
+			"eqp_modifier_container": {},
+			"equipment": {},
+			"equipment_container": {},
+			"equipment_gcs": {},
+			"melee_weapon": {},
+			"modifier": {},
+			"modifier_container": {},
+			"note": {},
+			"note_container": {},
+			"ranged_weapon": {},
+			"ritual_magic_spell": {},
+			"skill": {},
+			"skill_container": {},
+			"spell": {},
+			"spell_container": {},
+			"technique": {},
+			"trait": {},
+			"trait_container": {}
+		},
+		"JournalEntryPage": {
+			"ancestry": {}
+		}
+	},
 	"packs": [
 		{
 			"name": "basic-set-traits",
@@ -61,7 +101,6 @@
 			"packs": ["basic-set-traits"]
 		}
 	],
-	"relationships": {},
 	"languages": [
 		{
 			"lang": "en",
@@ -69,18 +108,11 @@
 			"path": "lang/en.json"
 		}
 	],
-	"url": "https://github.com/gcsga/gcsga",
-	"manifest": "this is autoreplaced",
-	"download": "this is autoreplaced",
-	"license": "MIT",
-	"readme": "README.md",
-	"bugs": "https://github.com/gcsga/gcsga/issues",
-	"changelog": "",
+	"socket": true,
 	"grid": {
 		"distance": 1,
 		"units": "yd"
 	},
 	"primaryTokenAttribute": "pools.hp",
-	"socket": true,
 	"secondaryTokenAttribute": "pools.fp"
 }

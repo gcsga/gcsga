@@ -1,0 +1,45 @@
+<section class="tab {{tab.cssClass}}" data-group="primary" data-tab="effects">
+	<fieldset class="effect-effects">
+		<legend>Effect Changes</legend>
+		<button type="button" data-action="addEffectChange"><i class="fa-regular fa-plus"></i></button>
+		<ul>
+			{{#each data.changes as |change i|}}
+			<!-- Horizontal line between entries -->
+			{{#unless @first}}
+			<hr />
+			{{/unless}}
+			<li>
+				<div class="form-fields">
+					<button
+						type="button"
+						class="fa-regular fa-trash"
+						data-action="deleteEffectChange"
+						data-index="{{i}}"
+					></button>
+					<input
+						type="text"
+						name="changes.{{i}}.key"
+						value="{{change.key}}"
+						placeholder="{{localize 'EFFECT.ChangeKey'}}"
+					/>
+					<select
+						name="changes.{{i}}.mode"
+						data-dtype="Number"
+						placeholder="{{localize 'EFFECT.ChangeMode'}}"
+					>
+						{{selectOptions ../modes selected=change.mode}}
+					</select>
+					<input
+						type="text"
+						name="changes.{{i}}.value"
+						value="{{change.value}}"
+						placeholder="{{localize 'EFFECT.ChangeValue'}}"
+					/>
+				</div>
+			</li>
+			{{/each}}
+		</ul>
+	</fieldset>
+
+	{{> "gurps.details-features"}}
+</section>

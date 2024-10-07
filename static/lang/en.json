@@ -25,8 +25,10 @@
 			"note": "Note",
 			"note_container": "Note Container",
 			"melee_weapon": "Melee Weapon",
-			"ranged_weapon": "Ranged Weapon",
-			"effect": "Active Effect",
+			"ranged_weapon": "Ranged Weapon"
+		},
+		"ActiveEffect": {
+			"effect": "Effect",
 			"condition": "Condition"
 		}
 	},
@@ -39,6 +41,13 @@
 					"Details": "Details",
 					"Embeds": "Contents",
 					"Replacements": "Replacements"
+				}
+			},
+			"Effect": {
+				"Tabs": {
+					"Details": "Details",
+					"Duration": "Duration",
+					"Effects": "Effects"
 				}
 			}
 		},

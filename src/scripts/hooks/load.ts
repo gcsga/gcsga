@@ -1,7 +1,8 @@
-import { ActorType, ItemType } from "@data"
+import { ActorType, EffectType, ItemType } from "@data"
+import * as EffectInstance from "@module/data/active-effect/index.ts"
+import * as ActorInstance from "@module/data/actor/index.ts"
 import { ItemsGURPS } from "@module/data/collections/items-collection.ts"
 import * as ItemInstance from "@module/data/item/index.ts"
-import * as ActorInstance from "@module/data/actor/index.ts"
 import { AncestryData } from "@module/data/journal-entry-page/ancestry.ts"
 import { AttackRoll, BasicRoll, DamageRoll, SuccessRoll } from "@module/dice/index.ts"
 import { ActorGURPS2 } from "@module/document/actor.ts"
@@ -9,6 +10,7 @@ import { ChatMessageGURPS } from "@module/document/chat-message.ts"
 import { CombatGURPS } from "@module/document/combat.ts"
 import { CombatantGURPS } from "@module/document/combatant.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
+import { ActiveEffectGURPS } from "@module/document/active-effect.ts"
 import { TokenDocumentGURPS } from "@module/document/token.ts"
 import { UserGURPS } from "@module/document/user.ts"
 
@@ -20,7 +22,7 @@ export const Load = {
 		// Assign document classes
 		CONFIG.Actor.documentClass = ActorGURPS2
 		CONFIG.ChatMessage.documentClass = ChatMessageGURPS
-		// CONFIG.Dice = DiceGURPS
+		CONFIG.ActiveEffect.documentClass = ActiveEffectGURPS
 		CONFIG.Combat.documentClass = CombatGURPS
 		CONFIG.Combatant.documentClass = CombatantGURPS
 		CONFIG.Item.documentClass = ItemGURPS2
@@ -46,26 +48,31 @@ export const Load = {
 
 		// @ts-expect-error infinite type
 		CONFIG.Item.dataModels = {
-			[ItemType.Trait]: ItemInstance.TraitData,
-			[ItemType.TraitContainer]: ItemInstance.TraitContainerData,
-			[ItemType.TraitModifier]: ItemInstance.TraitModifierData,
-			[ItemType.TraitModifierContainer]: ItemInstance.TraitModifierContainerData,
-			[ItemType.Skill]: ItemInstance.SkillData,
-			[ItemType.Technique]: ItemInstance.TechniqueData,
-			[ItemType.SkillContainer]: ItemInstance.SkillContainerData,
-			[ItemType.Spell]: ItemInstance.SpellData,
-			[ItemType.RitualMagicSpell]: ItemInstance.RitualMagicSpellData,
-			[ItemType.SpellContainer]: ItemInstance.SpellContainerData,
-			[ItemType.Equipment]: ItemInstance.EquipmentData,
+			// [ItemType.Condition]: ItemInstance.ConditionData,
+			// [ItemType.Effect]: ItemInstance.EffectData,
 			[ItemType.EquipmentContainer]: ItemInstance.EquipmentContainerData,
-			[ItemType.EquipmentModifier]: ItemInstance.EquipmentModifierData,
 			[ItemType.EquipmentModifierContainer]: ItemInstance.EquipmentModifierContainerData,
-			[ItemType.Note]: ItemInstance.NoteData,
+			[ItemType.EquipmentModifier]: ItemInstance.EquipmentModifierData,
+			[ItemType.Equipment]: ItemInstance.EquipmentData,
 			[ItemType.NoteContainer]: ItemInstance.NoteContainerData,
-			[ItemType.Effect]: ItemInstance.EffectData,
-			[ItemType.Condition]: ItemInstance.ConditionData,
+			[ItemType.Note]: ItemInstance.NoteData,
+			[ItemType.RitualMagicSpell]: ItemInstance.RitualMagicSpellData,
+			[ItemType.SkillContainer]: ItemInstance.SkillContainerData,
+			[ItemType.Skill]: ItemInstance.SkillData,
+			[ItemType.SpellContainer]: ItemInstance.SpellContainerData,
+			[ItemType.Spell]: ItemInstance.SpellData,
+			[ItemType.Technique]: ItemInstance.TechniqueData,
+			[ItemType.TraitContainer]: ItemInstance.TraitContainerData,
+			[ItemType.TraitModifierContainer]: ItemInstance.TraitModifierContainerData,
+			[ItemType.TraitModifier]: ItemInstance.TraitModifierData,
+			[ItemType.Trait]: ItemInstance.TraitData,
 			[ItemType.WeaponMelee]: ItemInstance.WeaponMeleeData,
 			[ItemType.WeaponRanged]: ItemInstance.WeaponRangedData,
+		}
+
+		CONFIG.ActiveEffect.dataModels = {
+			[EffectType.Effect]: EffectInstance.EffectData,
+			[EffectType.Condition]: EffectInstance.ConditionData,
 		}
 
 		CONFIG.JournalEntryPage.dataModels = {
@@ -93,8 +100,8 @@ export const Load = {
 		// Inline link icons
 		CONFIG.Actor.typeIcons = {
 			[ActorType.Character]: "gcs-character",
-			[ActorType.LegacyCharacter]: "gcs-character",
-			[ActorType.LegacyEnemy]: "gcs-character",
+			// [ActorType.LegacyCharacter]: "gcs-character",
+			// [ActorType.LegacyEnemy]: "gcs-character",
 			[ActorType.Loot]: "fa-solid fa-gem",
 		}
 		CONFIG.Item.typeIcons = {
@@ -115,8 +122,8 @@ export const Load = {
 			[ItemType.Note]: "gcs-note",
 			[ItemType.NoteContainer]: "gcs-note",
 			// [ItemType.LegacyItem]: "gcs-equipment",
-			[ItemType.Effect]: "gcs-effect",
-			[ItemType.Condition]: "gcs-condition",
+			// [ItemType.Effect]: "gcs-effect",
+			// [ItemType.Condition]: "gcs-condition",
 			[ItemType.WeaponMelee]: "gcs-melee-weapon",
 			[ItemType.WeaponRanged]: "gcs-ranged-weapon",
 		}

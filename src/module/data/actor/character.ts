@@ -100,7 +100,7 @@ class CharacterDataGURPS extends ActorDataModel.mixin(
 			moveBonuses: [],
 		}
 
-		this.attributes = this.settings.attributes.map(
+		this.attributes.list = this.settings.attributes.map(
 			e =>
 				new AttributeGURPS(
 					{
@@ -135,7 +135,7 @@ class CharacterDataGURPS extends ActorDataModel.mixin(
 				return result
 			}
 			const parts = variableName.split(".", 2)
-			const attr = this.attributeMap.get(parts[0]) ?? null
+			const attr = this.attributes.map.get(parts[0]) ?? null
 			if (attr === null) {
 				return ""
 			}
@@ -318,7 +318,7 @@ class CharacterDataGURPS extends ActorDataModel.mixin(
 
 	basicLiftForST(st: number): number {
 		st = Math.trunc(st)
-		if (AttributeGURPS.isThresholdOpMet(threshold.Op.HalveST, this.attributes)) {
+		if (AttributeGURPS.isThresholdOpMet(threshold.Op.HalveST, this.attributes.list)) {
 			st /= 2
 			if (st !== Math.trunc(st)) {
 				st = Math.trunc(st) + 1

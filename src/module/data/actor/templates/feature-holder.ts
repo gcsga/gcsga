@@ -1,5 +1,5 @@
 import { ActorDataModel } from "@module/data/abstract.ts"
-import { ActorType, ItemType, gid } from "@module/data/constants.ts"
+import { ActorType, EffectType, ItemType, gid } from "@module/data/constants.ts"
 import {
 	AttributeBonus,
 	CostReduction,
@@ -15,6 +15,8 @@ import { MoveBonusType } from "@module/data/feature/move-bonus.ts"
 import { Feature } from "@module/data/feature/types.ts"
 import { equalFold } from "@module/data/item/components/index.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
+import { ActiveEffectGURPS } from "@module/document/active-effect.ts"
+import { ItemGURPS2 } from "@module/document/item.ts"
 import { Nameable } from "@module/util/index.ts"
 import { ErrorGURPS, TooltipGURPS, feature, selfctrl, skillsel, stlimit, wsel } from "@util"
 
@@ -62,7 +64,10 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 					this._processFeature(mod, null, f, Math.max(equipment.system.level, 0))
 			})
 		})
-		itemCollections.effects.forEach(effect => {
+		this.parent.effects.forEach(effect => {
+			if (!(effect instanceof ActiveEffectGURPS)) return
+			if (!effect.isOfType(EffectType.Effect, EffectType.Condition)) return
+
 			for (const f of effect.system.features) this._processFeature(effect, null, f, effect.system.levels.current)
 		})
 	}
@@ -89,7 +94,10 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 					// "this armor"
 					if (bonus.locations.length === 0) {
 						const eqp = bonus.owner
-						if (eqp?.isOfType(ItemType.Equipment, ItemType.EquipmentContainer)) {
+						if (
+							eqp instanceof ItemGURPS2 &&
+							eqp?.isOfType(ItemType.Equipment, ItemType.EquipmentContainer)
+						) {
 							const allLocations = new Set<string>()
 							const locationsMatched = new Set<string>()
 							for (const f2 of eqp.system.features) {

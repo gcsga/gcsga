@@ -1,0 +1,74 @@
+<fieldset>
+	<legend>{{localize "GURPS.Item.Effect.DetailsLegend"}}</legend>
+
+	<!-- Notes -->
+	{{formField fields.notes value=source.notes localize=true}}
+
+	<!-- Levels -->
+	<div class="form-group">
+		{{formInput fields.can_level value=source.can_level }}
+		<label>{{localize "GURPS.Item.Effect.FIELDS.Levels.Name"}}</label>
+		<div class="form-fields">
+			<!-- Current -->
+			{{formInput fields.levels.fields.current value=source.levels.current disabled=(not source.can_level)}}
+			<label>{{localize "GURPS.Item.Effect.FIELDS.Levels.Max"}}</label>
+			<!-- Max -->
+			{{formInput fields.levels.fields.max value=source.levels.max disabled=(not source.can_level)}}
+		</div>
+	</div>
+
+	<!-- Duration -->
+	{{formField fields.duration.fields.type value=source.duration.type localize=true}}
+
+	<div class="form-group">
+		<label></label>
+		<div class="form-fields">
+			<!-- Tech Level Number -->
+			{{formInput fields.tech_level value=source.tech_level disabled=(not source.tech_level_required)}}
+			<!-- Tech Level Enabled -->
+			<label>
+				<!-- Input -->
+				{{formInput fields.tech_level_required value=source.tech_level_required}}
+				<!-- Label Contents -->
+				{{localize "GURPS.Item.Skill.FIELDS.TechLevelRequired.Name"}}
+			</label>
+		</div>
+	</div>
+
+	<!-- Tags -->
+	{{formField fields.tags value=source.tags localize=true}}
+
+	<!-- Difficulty -->
+	<div class="form-group">
+		<label>{{localize "GURPS.Item.Skill.FIELDS.Difficulty.Name"}}</label>
+		<div class="form-fields">
+			<!-- Attribute -->
+			{{formInput fields.difficulty.fields.attribute value=source.difficulty.attribute}}
+			<!-- / -->
+			<label>/</label>
+			<!-- Difficulty -->
+			{{formInput fields.difficulty.fields.difficulty value=source.difficulty.difficulty}}
+		</div>
+	</div>
+
+	<!-- Encumbrance Penalty -->
+	{{formField fields.encumbrance_penalty_multiplier value=source.encumbrance_penalty_multiplier localize=true}}
+
+	<!-- Points & Level -->
+	{{#if item.isOwned}}
+	<div class="form-group">
+		<label>{{localize "GURPS.Item.Skill.FIELDS.Points.Name"}}</label>
+		<div class="form-fields">
+			<!-- Points -->
+			{{formInput fields.points value=source.points}}
+
+			<!-- Level -->
+			<label>{{localize "GURPS.Item.Skill.FIELDS.Level.Name"}}</label>
+			<input tabindex="-1" type="text" readonly value="{{levelField}}" />
+		</div>
+	</div>
+	{{/if}}
+
+	<!-- Reference -->
+	{{formField fields.reference value=source.reference localize=true}}
+</fieldset>

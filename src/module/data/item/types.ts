@@ -3,30 +3,30 @@ import * as ItemInstance from "./index.ts"
 import * as ItemDataTemplate from "./templates/index.ts"
 
 export interface ItemDataInstances {
-	[ItemType.Trait]: ItemInstance.TraitData
-	[ItemType.TraitContainer]: ItemInstance.TraitContainerData
-	[ItemType.TraitModifier]: ItemInstance.TraitModifierData
-	[ItemType.TraitModifierContainer]: ItemInstance.TraitModifierContainerData
-	[ItemType.Skill]: ItemInstance.SkillData
-	[ItemType.Technique]: ItemInstance.TechniqueData
-	[ItemType.SkillContainer]: ItemInstance.SkillContainerData
-	[ItemType.Spell]: ItemInstance.SpellData
-	[ItemType.RitualMagicSpell]: ItemInstance.RitualMagicSpellData
-	[ItemType.SpellContainer]: ItemInstance.SpellContainerData
-	[ItemType.Equipment]: ItemInstance.EquipmentData
+	// [ItemType.Condition]: ItemInstance.ConditionData
+	// [ItemType.Effect]: ItemInstance.EffectData
 	[ItemType.EquipmentContainer]: ItemInstance.EquipmentContainerData
-	[ItemType.EquipmentModifier]: ItemInstance.EquipmentModifierData
 	[ItemType.EquipmentModifierContainer]: ItemInstance.EquipmentModifierContainerData
-	[ItemType.Note]: ItemInstance.NoteData
+	[ItemType.EquipmentModifier]: ItemInstance.EquipmentModifierData
+	[ItemType.Equipment]: ItemInstance.EquipmentData
 	[ItemType.NoteContainer]: ItemInstance.NoteContainerData
-	[ItemType.Effect]: ItemInstance.EffectData
-	[ItemType.Condition]: ItemInstance.ConditionData
+	[ItemType.Note]: ItemInstance.NoteData
+	[ItemType.RitualMagicSpell]: ItemInstance.RitualMagicSpellData
+	[ItemType.SkillContainer]: ItemInstance.SkillContainerData
+	[ItemType.Skill]: ItemInstance.SkillData
+	[ItemType.SpellContainer]: ItemInstance.SpellContainerData
+	[ItemType.Spell]: ItemInstance.SpellData
+	[ItemType.Technique]: ItemInstance.TechniqueData
+	[ItemType.TraitContainer]: ItemInstance.TraitContainerData
+	[ItemType.TraitModifierContainer]: ItemInstance.TraitModifierContainerData
+	[ItemType.TraitModifier]: ItemInstance.TraitModifierData
+	[ItemType.Trait]: ItemInstance.TraitData
 	[ItemType.WeaponMelee]: ItemInstance.WeaponMeleeData
 	[ItemType.WeaponRanged]: ItemInstance.WeaponRangedData
 }
 
 export enum ItemTemplateType {
-	AbstractEffect = "AbstractEffectTemplate",
+	// AbstractEffect = "AbstractEffectTemplate",
 	AbstractSkill = "AbstractSkillTemplate",
 	AbstractWeapon = "AbstractWeaponTemplate",
 	Container = "ContainerTemplate",
@@ -41,7 +41,7 @@ export enum ItemTemplateType {
 }
 
 export interface ItemDataTemplates {
-	[ItemTemplateType.AbstractEffect]: ItemDataTemplate.AbstractEffectTemplate
+	// [ItemTemplateType.AbstractEffect]: ItemDataTemplate.AbstractEffectTemplate
 	[ItemTemplateType.AbstractSkill]: ItemDataTemplate.AbstractSkillTemplate
 	[ItemTemplateType.AbstractWeapon]: ItemDataTemplate.AbstractWeaponTemplate
 	[ItemTemplateType.Container]: ItemDataTemplate.ContainerTemplate

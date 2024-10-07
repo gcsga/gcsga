@@ -401,7 +401,6 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 	}
 
 	protected override async _preparePartContext(partId: string, context: Record<string, any>): Promise<object> {
-		// console.log(partId, context)
 		context.partId = `${this.id}-${partId}`
 		context.tab = context.tabs[partId]
 

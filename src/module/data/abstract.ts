@@ -1,5 +1,5 @@
 import fields = foundry.data.fields
-import { ActorType, ItemType, SYSTEM_NAME } from "./constants.ts"
+import { ActorType, EffectType, ItemType, SYSTEM_NAME } from "./constants.ts"
 import { type ItemGURPS2 } from "@module/document/item.ts"
 import type { ItemDataInstances, ItemDataTemplates, ItemTemplateType } from "./item/types.ts"
 import { type ActorGURPS2 } from "@module/document/actor.ts"
@@ -7,6 +7,8 @@ import { type ActorDataInstances, type ActorDataTemplates, type ActorTemplateTyp
 import { type CellData } from "./item/components/cell-data.ts"
 import { type ItemTemplateInst } from "./item/helpers.ts"
 import { ErrorGURPS } from "@util/misc.ts"
+import { ActiveEffectGURPS } from "@module/document/active-effect.ts"
+import { EffectDataInstances } from "./active-effect/types.ts"
 
 interface SystemDataModelMetadata {
 	systemFlagsModel: typeof foundry.abstract.DataModel | null
@@ -357,14 +359,7 @@ interface SystemDataModel<TDocument extends foundry.abstract.Document, TSchema e
 /**
  * Variant of the SystemDataModel with some extra actor-specific handling.
  */
-// class ActorDataModel<
-// 	TDocument extends ActorGURPS2 = ActorGURPS2,
-// 	TSchema extends ActorDataSchema = ActorDataSchema,
-// > extends SystemDataModel<TDocument, TSchema> {
-class ActorDataModel<
-	// TDocument extends ActorGURPS2 = ActorGURPS2,
-	TSchema extends ActorDataSchema = ActorDataSchema,
-> extends SystemDataModel<ActorGURPS2, TSchema> {
+class ActorDataModel<TSchema extends ActorDataSchema = ActorDataSchema> extends SystemDataModel<ActorGURPS2, TSchema> {
 	variableResolverExclusions = new Set<string>()
 	cachedVariables = new Map<string, string>()
 
@@ -389,14 +384,48 @@ class ActorDataModel<
 	_prepareEmbeddedDocuments(): void {}
 }
 
-// interface ActorDataModel<TDocument extends ActorGURPS2, TSchema extends ActorDataSchema>
-// 	extends SystemDataModel<TDocument, TSchema>,
-// 		ModelPropsFromSchema<ActorDataSchema> {}
 interface ActorDataModel<TSchema extends ActorDataSchema>
 	extends SystemDataModel<ActorGURPS2, TSchema>,
 		ModelPropsFromSchema<ActorDataSchema> {}
 
 type ActorDataSchema = {}
+
+/**
+ * Variant of the SystemDataModel with support for rich active effect tooltips.
+ */
+class EffectDataModel<TSchema extends EffectDataSchema = EffectDataSchema> extends SystemDataModel<
+	ActiveEffectGURPS,
+	TSchema
+> {
+	/**
+	 * Type safe way of verifying if an Item is of a particular type.
+	 */
+	isOfType<T extends EffectType>(...types: T[]): this is EffectDataInstances[T] {
+		return types.some(t => this.parent.type === t)
+	}
+
+	/* -------------------------------------------- */
+	/*  Getters                                     */
+	/* -------------------------------------------- */
+
+	get item(): ItemGURPS2 | null {
+		const parent = this.parent.parent
+		if (parent instanceof Item) return parent
+		return null
+	}
+
+	get actor(): ActorGURPS2 | null {
+		const parent = this.parent.parent
+		if (parent instanceof Actor) return parent
+		return parent.parent
+	}
+}
+
+interface EffectDataModel<TSchema extends EffectDataSchema>
+	extends SystemDataModel<ActiveEffectGURPS, TSchema>,
+		ModelPropsFromSchema<EffectDataSchema> {}
+
+type EffectDataSchema = {}
 
 /* -------------------------------------------- */
 
@@ -547,11 +576,9 @@ interface ItemDataModel<TSchema extends ItemDataSchema>
 	extends SystemDataModel<ItemGURPS2, TSchema>,
 		ModelPropsFromSchema<ItemDataSchema> {}
 
-type ItemDataSchema = {
-	// container: fields.ForeignDocumentField<string>
-}
+type ItemDataSchema = {}
 
-export { ItemDataModel, ActorDataModel, SystemDataModel, type ItemDataSchema }
+export { ItemDataModel, ActorDataModel, SystemDataModel, type ItemDataSchema, EffectDataModel }
 
 type ItemDatabaseUpdateOperation<TDocument extends foundry.abstract.Document | null> =
 	DatabaseUpdateOperation<TDocument> &

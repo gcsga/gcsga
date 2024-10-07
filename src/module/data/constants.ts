@@ -98,8 +98,8 @@ enum ItemType {
 	Note = "note",
 	NoteContainer = "note_container",
 	// LegacyItem = "equipment",
-	Effect = "effect",
-	Condition = "condition",
+	// Effect = "effect",
+	// Condition = "condition",
 	WeaponMelee = "melee_weapon",
 	WeaponRanged = "ranged_weapon",
 }
@@ -122,57 +122,57 @@ type ItemTypes =
 	| ItemType.Note
 	| ItemType.NoteContainer
 	// | ItemType.LegacyItem
-	| ItemType.Effect
-	| ItemType.Condition
+	// | ItemType.Effect
+	// | ItemType.Condition
 	| ItemType.WeaponMelee
 	| ItemType.WeaponRanged
 
-type EffectType = ItemType.Effect | ItemType.Condition
+// type EffectType = ItemType.Effect | ItemType.Condition
 
 type WeaponType = ItemType.WeaponMelee | ItemType.WeaponRanged
 
 const DefaultHaver = [ItemType.Skill, ItemType.Technique, ItemType.WeaponMelee, ItemType.WeaponRanged]
 
-const ABSTRACT_CONTAINER_TYPES = new Set([
-	ItemType.Trait,
-	ItemType.TraitContainer,
-	ItemType.TraitModifierContainer,
-	ItemType.Skill,
-	ItemType.Technique,
-	ItemType.SkillContainer,
-	ItemType.Spell,
-	ItemType.RitualMagicSpell,
-	ItemType.SpellContainer,
-	ItemType.Equipment,
-	ItemType.EquipmentContainer,
-	ItemType.EquipmentModifierContainer,
-	ItemType.NoteContainer,
-] as const)
+// const ABSTRACT_CONTAINER_TYPES = new Set([
+// 	ItemType.Trait,
+// 	ItemType.TraitContainer,
+// 	ItemType.TraitModifierContainer,
+// 	ItemType.Skill,
+// 	ItemType.Technique,
+// 	ItemType.SkillContainer,
+// 	ItemType.Spell,
+// 	ItemType.RitualMagicSpell,
+// 	ItemType.SpellContainer,
+// 	ItemType.Equipment,
+// 	ItemType.EquipmentContainer,
+// 	ItemType.EquipmentModifierContainer,
+// 	ItemType.NoteContainer,
+// ] as const)
+//
+// const CONTAINER_TYPES = new Set([
+// 	ItemType.TraitContainer,
+// 	ItemType.TraitModifierContainer,
+// 	ItemType.SkillContainer,
+// 	ItemType.SpellContainer,
+// 	ItemType.EquipmentContainer,
+// 	ItemType.EquipmentModifierContainer,
+// 	ItemType.NoteContainer,
+// ] as const)
 
-const CONTAINER_TYPES = new Set([
-	ItemType.TraitContainer,
-	ItemType.TraitModifierContainer,
-	ItemType.SkillContainer,
-	ItemType.SpellContainer,
-	ItemType.EquipmentContainer,
-	ItemType.EquipmentModifierContainer,
-	ItemType.NoteContainer,
-] as const)
-
-type ContainerType =
-	| ItemType.Trait
-	| ItemType.TraitContainer
-	| ItemType.TraitModifierContainer
-	| ItemType.Skill
-	| ItemType.Technique
-	| ItemType.SkillContainer
-	| ItemType.Spell
-	| ItemType.RitualMagicSpell
-	| ItemType.SpellContainer
-	| ItemType.Equipment
-	| ItemType.EquipmentContainer
-	| ItemType.EquipmentModifierContainer
-	| ItemType.NoteContainer
+// type ContainerType =
+// 	| ItemType.Trait
+// 	| ItemType.TraitContainer
+// 	| ItemType.TraitModifierContainer
+// 	| ItemType.Skill
+// 	| ItemType.Technique
+// 	| ItemType.SkillContainer
+// 	| ItemType.Spell
+// 	| ItemType.RitualMagicSpell
+// 	| ItemType.SpellContainer
+// 	| ItemType.Equipment
+// 	| ItemType.EquipmentContainer
+// 	| ItemType.EquipmentModifierContainer
+// 	| ItemType.NoteContainer
 
 enum ItemFlags {
 	Deprecation = "deprecation",
@@ -181,6 +181,14 @@ enum ItemFlags {
 	Unready = "unready",
 	Overlay = "overlay", // used for effects only
 }
+
+// Active Effect
+enum EffectType {
+	Effect = "effect",
+	Condition = "condition",
+}
+
+type EffectTypes = EffectType.Effect | EffectType.Condition
 
 enum ConditionID {
 	// Posture
@@ -279,7 +287,7 @@ enum ActorType {
 	// Character = "character",
 	Character = "character_gcs",
 	LegacyCharacter = "character",
-	LegacyEnemy = "enemy",
+	// LegacyEnemy = "enemy",
 	Loot = "loot",
 	// MassCombatElement = "element",
 	// Vehicle = "vehicle",
@@ -434,15 +442,16 @@ const SORTABLE_BASE_OPTIONS: Sortable.Options = {
 // ]
 
 export {
-	ABSTRACT_CONTAINER_TYPES,
+	// ABSTRACT_CONTAINER_TYPES,
 	ActorFlags,
 	ActorType,
 	COMPENDIA,
-	CONTAINER_TYPES,
+	// CONTAINER_TYPES,
 	ConditionID,
 	DEFAULT_INITIATIVE_FORMULA,
 	DefaultHaver,
 	EFFECT_ACTION,
+	EffectType,
 	GURPS_COMMANDS,
 	HOOKS,
 	ItemFlags,
@@ -459,4 +468,4 @@ export {
 	gid,
 }
 
-export type { ContainerType, EffectType, ItemTypes, WeaponType }
+export type { EffectTypes, ItemTypes, WeaponType }

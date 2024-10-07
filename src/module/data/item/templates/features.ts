@@ -1,9 +1,11 @@
 import fields = foundry.data.fields
-import { ItemDataModel } from "@module/data/abstract.ts"
+import { SystemDataModel } from "@module/data/abstract.ts"
 import { Feature, FeatureTypes } from "@module/data/feature/types.ts"
+import { ItemGURPS2 } from "@module/document/item.ts"
+import { ActiveEffectGURPS } from "@module/document/active-effect.ts"
 import { feature } from "@util"
 
-class FeatureTemplate extends ItemDataModel<FeatureTemplateSchema> {
+class FeatureTemplate extends SystemDataModel<ItemGURPS2 | ActiveEffectGURPS, FeatureTemplateSchema> {
 	static override defineSchema(): FeatureTemplateSchema {
 		const fields = foundry.data.fields
 		return {

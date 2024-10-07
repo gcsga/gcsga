@@ -41,10 +41,12 @@
   - Technique \* DONE
   - Note \* DONE
   - Note Container \* DONE
-  - Effect
   - Melee Weapon \* DONE
   - Ranged Weapon \* DONE
   - Replacements Tab
+- Effect Sheet \* CURRENT
+  - Effect
+  - Condition
 - Actor Sheet \*2
   - Collapsible sidebar
     - Option to hide attributes if not frequently used to decrease clutter?

@@ -1,7 +1,8 @@
+import { ActiveEffectSheetGURPS } from "@module/applications/active-effect/active-effect-sheet.ts"
 import { CharacterSheetGURPS } from "@module/applications/actor/character-sheet.ts"
 import { ItemSheetGURPS } from "@module/applications/item/item-sheet.ts"
 import { AncestrySheet } from "@module/applications/journal-entry-page/ancestry-sheet.ts"
-import { ActorType, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
+import { ActorType, EffectType, ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
 
 export function registerSheets(): void {
 	/** Actor Sheets */
@@ -30,6 +31,10 @@ export function registerSheets(): void {
 		],
 		makeDefault: true,
 		label: "GURPS Item Sheet V2",
+	})
+
+	DocumentSheetConfig.registerSheet(ActiveEffect, SYSTEM_NAME, ActiveEffectSheetGURPS as any, {
+		types: [EffectType.Effect, EffectType.Condition],
 	})
 
 	// TODO: update types so Journal Entry Pages get their own DocumentSheetV2 subclass

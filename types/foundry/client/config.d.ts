@@ -251,6 +251,7 @@ declare global {
 					context?: DocumentConstructionContext<TActiveEffect["parent"]>,
 				): TActiveEffect
 			}
+			dataModels: Record<string, ConstructorOf<abstract.TypeDataModel<TActiveEffect, data.fields.DataSchema>>>
 		}
 
 		/** Configuration for the ActorDelta embedded document type. */

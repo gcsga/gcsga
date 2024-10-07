@@ -1,6 +1,7 @@
 import { evaluateToNumber } from "@module/util/gcs/eval.ts"
 import fields = foundry.data.fields
 import { ActorDataModel } from "../abstract.ts"
+import { EffectType } from "../constants.ts"
 
 enum MoveTypeOverrideConditionType {
 	Trait = "trait",
@@ -55,7 +56,9 @@ class MoveTypeOverride extends foundry.abstract.DataModel<ActorDataModel, MoveTy
 			case MoveTypeOverrideConditionType.Trait:
 				return resolver.parent.itemCollections.traits.some(e => e.name === this.condition.qualifier)
 			case MoveTypeOverrideConditionType.Condition:
-				return resolver.parent.itemCollections.conditions.some(e => e.system.name === this.condition.qualifier)
+				return resolver.parent.effects.some(
+					e => e.isOfType(EffectType.Condition) && e.name === this.condition.qualifier,
+				)
 		}
 	}
 

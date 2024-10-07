@@ -8,6 +8,7 @@ import { StringCriteriaField } from "../item/fields/string-criteria-field.ts"
 import { NumericCriteriaField } from "../item/fields/numeric-criteria-field.ts"
 import { createButton } from "@module/applications/helpers.ts"
 import { BooleanSelectField } from "../item/fields/boolean-select-field.ts"
+import { ActiveEffectGURPS } from "@module/document/active-effect.ts"
 
 class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 	declare dieCount: number
@@ -130,6 +131,8 @@ class WeaponBonus extends BaseFeature<WeaponBonusSchema> {
 	}
 
 	get derivedLevel(): number {
+		if (this.owner instanceof ActiveEffectGURPS || this.subOwner instanceof ActiveEffectGURPS) return 0
+
 		if (this.subOwner?.isOfType(ItemType.Trait, ItemType.TraitModifier)) {
 			if (this.subOwner.system.isLeveled) return this.subOwner.system.levels ?? 0
 		} else if (this.owner?.isOfType(ItemType.Trait, ItemType.TraitModifier)) {

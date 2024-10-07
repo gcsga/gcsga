@@ -55,16 +55,16 @@ export interface ActiveEffectMetadata extends DocumentMetadata {
 	isEmbedded: true
 }
 
-type ActiveEffectSchema = {
+type ActiveEffectSchema<TType extends string = string, TSystemSource extends object = object> = {
 	_id: fields.DocumentIdField
 	name: fields.StringField<string, string, true, false, false>
+	type: fields.StringField<TType, TType, true, false, false>
 	changes: fields.ArrayField<fields.SchemaField<EffectChangeSchema>>
-	system: fields.TypeDataField
-	type: fields.StringField<string, string, false, true, true>
+	system: fields.TypeDataField<TSystemSource>
 	disabled: fields.BooleanField
 	duration: fields.SchemaField<EffectDurationSchema>
 	description: fields.HTMLField
-	img: fields.FilePathField<ImageFilePath>
+	img: fields.FilePathField<ImageFilePath, ImageFilePath, false, false, true>
 	origin: fields.StringField<ActorUUID | ItemUUID, ActorUUID | ItemUUID, false, true, true>
 	tint: fields.ColorField
 	transfer: fields.BooleanField

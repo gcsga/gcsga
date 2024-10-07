@@ -10,6 +10,7 @@ import { ItemsGURPS } from "@module/data/collections/items-collection.ts"
 import { SETTINGS, SSRT_SETTING } from "@module/data/constants.ts"
 import { DiceGURPS } from "@module/data/dice.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
+import { ActiveEffectGURPS } from "@module/document/active-effect.ts"
 import { ActorGURPS2 } from "@module/document/actor.ts"
 import { ChatMessageGURPS } from "@module/document/chat-message.ts"
 import { CombatGURPS } from "@module/document/combat.ts"
@@ -57,7 +58,7 @@ interface GameGURPS
 
 type ConfiguredConfig = Config<
 	AmbientLightDocument<Scene | null>,
-	ActiveEffect<ActorGURPS2<TokenDocumentGURPS> | ItemGURPS2 | null>,
+	ActiveEffectGURPS,
 	ActorGURPS2,
 	ActorDelta<TokenDocumentGURPS>,
 	ChatLog,

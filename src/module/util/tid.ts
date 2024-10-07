@@ -50,10 +50,10 @@ class TID {
 				case ItemType.NoteContainer:
 					return ItemKind.NoteContainer
 				// case ItemType.LegacyItem: return ItemKind.Equipment
-				case ItemType.Effect:
-					return ItemKind.Effect
-				case ItemType.Condition:
-					return ItemKind.Condition
+				// case ItemType.Effect:
+				// 	return ItemKind.Effect
+				// case ItemType.Condition:
+				// 	return ItemKind.Condition
 				case ItemType.WeaponMelee:
 					return ItemKind.WeaponMelee
 				case ItemType.WeaponRanged:
@@ -103,9 +103,9 @@ class TID {
 				return ItemType.NoteContainer
 			// case ItemKind.LegacyItem: return ItemType.Equipment
 			case ItemKind.Effect:
-				return ItemType.Effect
-			case ItemKind.Condition:
-				return ItemType.Condition
+			// 	return ItemType.Effect
+			// case ItemKind.Condition:
+			// 	return ItemType.Condition
 			case ItemKind.WeaponMelee:
 				return ItemType.WeaponMelee
 			case ItemKind.WeaponRanged:

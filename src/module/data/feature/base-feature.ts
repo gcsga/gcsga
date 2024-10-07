@@ -3,18 +3,19 @@ import { LocalizeGURPS } from "@util/localize.ts"
 import type { Feature, FeatureInstances } from "./types.ts"
 import { TooltipGURPS } from "@util"
 import { ItemType } from "@module/data/constants.ts"
-import { ItemDataModel } from "@module/data/abstract.ts"
+import { EffectDataModel, ItemDataModel } from "@module/data/abstract.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import fields = foundry.data.fields
 import { ItemTemplateType } from "@module/data/item/types.ts"
 import { createButton } from "@module/applications/helpers.ts"
+import { ActiveEffectGURPS } from "@module/document/active-effect.ts"
 
 abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema> extends foundry.abstract.DataModel<
-	ItemDataModel,
+	ItemDataModel | EffectDataModel,
 	TSchema
 > {
-	private declare _owner: ItemGURPS2 | null
-	private declare _subOwner: ItemGURPS2 | null
+	private declare _owner: ItemGURPS2 | ActiveEffectGURPS | null
+	private declare _subOwner: ItemGURPS2 | ActiveEffectGURPS | null
 
 	declare featureLevel: number
 
@@ -56,29 +57,31 @@ abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema
 		this.featureLevel = 0
 	}
 
-	get owner(): ItemGURPS2 | null {
+	get owner(): ItemGURPS2 | ActiveEffectGURPS | null {
 		return this._owner
 	}
 
-	set owner(owner: ItemGURPS2 | null) {
+	set owner(owner: ItemGURPS2 | ActiveEffectGURPS | null) {
 		this._owner = owner
 		if (owner !== null) {
-			if (owner.isOfType(ItemType.Effect, ItemType.Condition)) this.temporary = true
+			if (owner instanceof ActiveEffectGURPS) this.temporary = true
+			// if (owner.isOfType(ItemType.Effect, ItemType.Condition)) this.temporary = true
 			else this.temporary = false
 		}
 	}
 
-	get subOwner(): ItemGURPS2 | null {
+	get subOwner(): ItemGURPS2 | ActiveEffectGURPS | null {
 		return this._subOwner
 	}
 
-	set subOwner(subOwner: ItemGURPS2 | null) {
+	set subOwner(subOwner: ItemGURPS2 | ActiveEffectGURPS | null) {
 		this._subOwner = subOwner
 	}
 
 	get index(): number {
-		if (!this.parent.hasTemplate(ItemTemplateType.Feature)) return -1
-		return this.parent.features.indexOf(this as unknown as Feature)
+		if (this.parent instanceof ItemDataModel && !this.parent.hasTemplate(ItemTemplateType.Feature)) return -1
+
+		return (this.parent as any).features.indexOf(this as unknown as Feature)
 	}
 
 	// get levels(): number HTMLElemene/ 	return this.leveledAmount.level
@@ -93,10 +96,14 @@ abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema
 
 	get parentName(): string {
 		if (!this.owner) return LocalizeGURPS.translations.gurps.misc.unknown
+		if (this.owner instanceof ActiveEffectGURPS) return this.owner.name
+
 		if (!this.owner.hasTemplate(ItemTemplateType.BasicInformation))
 			return LocalizeGURPS.translations.gurps.misc.unknown
 		const owner = this.owner.system.nameWithReplacements
 		if (!this.subOwner) return owner
+		if (this.subOwner instanceof ActiveEffectGURPS) return this.subOwner.name
+
 		if (!this.subOwner.hasTemplate(ItemTemplateType.BasicInformation))
 			return LocalizeGURPS.translations.gurps.misc.unknown
 		return `${owner} (${this.subOwner.system.nameWithReplacements})`
@@ -116,9 +123,10 @@ abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema
 	}
 
 	protected _getTypeChoices(): { value: string; label: string }[] {
-		const choices = this.parent.isOfType(ItemType.EquipmentContainer)
-			? feature.TypesChoices
-			: feature.TypesWithoutContainedWeightReductionChoices
+		const choices =
+			!(this.parent instanceof ItemDataModel) || this.parent.isOfType(ItemType.EquipmentContainer)
+				? feature.TypesChoices
+				: feature.TypesWithoutContainedWeightReductionChoices
 
 		return Object.entries(choices).map(([value, label]) => {
 			return { value, label }
@@ -221,7 +229,7 @@ abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema
 }
 
 interface BaseFeature<TSchema extends BaseFeatureSchema>
-	extends foundry.abstract.DataModel<ItemDataModel, TSchema>,
+	extends foundry.abstract.DataModel<ItemDataModel | EffectDataModel, TSchema>,
 		ModelPropsFromSchema<BaseFeatureSchema> {
 	consturctor: typeof BaseFeature<TSchema>
 }

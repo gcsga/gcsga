@@ -5,9 +5,11 @@ import { Evaluator } from "@module/util/index.ts"
 import { ItemCollectionsMap } from "@system/item-collections.ts"
 import { ItemGURPS2 } from "./item.ts"
 import { type TokenDocumentGURPS } from "./token.ts"
+import { ActiveEffectGURPS } from "./active-effect.ts"
 
 class ActorGURPS2<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null> extends Actor<TParent> {
 	declare items: foundry.abstract.EmbeddedCollection<ItemGURPS2<this>>
+	declare effects: foundry.abstract.EmbeddedCollection<ActiveEffectGURPS<this>>
 
 	/**
 	 * Get the data model that represents system flags.
