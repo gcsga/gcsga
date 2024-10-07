@@ -10,7 +10,7 @@
 			<!-- Can Parry? -->
 			{{formInput fields.parry.fields.canParry value=source.parry.canParry}}
 			<!-- Label -->
-			{{localize "GURPS.Item.WeapoMelee.FIELDS.Parry.Name"}}
+			{{localize "GURPS.Item.WeaponMelee.FIELDS.Parry.Name"}}
 		</label>
 		<div class="form-fields">
 			<!-- Modifier -->
@@ -22,7 +22,7 @@
 				{{formInput fields.parry.fields.fencing value=source.parry.fencing disabled=(not
 				source.parry.canParry)}}
 				<!-- Label -->
-				{{localize "GURPS.Item.WeapoMelee.FIELDS.Parry.Fencing"}}
+				{{localize "GURPS.Item.WeaponMelee.FIELDS.Parry.Fencing"}}
 			</label>
 			<!-- Unbalanced -->
 			<label>
@@ -30,10 +30,12 @@
 				{{formInput fields.parry.fields.unbalanced value=source.parry.unbalanced disabled=(not
 				source.parry.canParry)}}
 				<!-- Label -->
-				{{localize "GURPS.Item.WeapoMelee.FIELDS.Parry.Unbalanced"}}
+				{{localize "GURPS.Item.WeaponMelee.FIELDS.Parry.Unbalanced"}}
 			</label>
 		</div>
 	</div>
+
+	<hr />
 
 	<!-- Block -->
 	<div class="form-group">
@@ -41,13 +43,15 @@
 			<!-- Can Block? -->
 			{{formInput fields.block.fields.canBlock value=source.block.canBlock}}
 			<!-- Label -->
-			{{localize "GURPS.Item.WeapoMelee.FIELDS.Block.Name"}}
+			{{localize "GURPS.Item.WeaponMelee.FIELDS.Block.Name"}}
 		</label>
 		<div class="form-fields">
 			<!-- Modifier -->
 			{{formInput fields.block.fields.modifier value=source.block.modifier disabled=(not source.block.canBlock)}}
 		</div>
 	</div>
+
+	<hr />
 
 	{{> "gurps.fields-weapon-damage"}}
 

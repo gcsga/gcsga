@@ -356,7 +356,8 @@ function evalDice(e: Evaluator, args: string): string {
 		default:
 			throw ErrorGURPS("invalid dice specification")
 	}
-	return d.toString(true)
+	// return d.toString(true)
+	return d.toString()
 }
 
 function evalAddDice(e: Evaluator, args: string): string {
@@ -391,7 +392,8 @@ function evalAddDice(e: Evaluator, args: string): string {
 
 	d1.count += d2.count
 	d1.modifier += d2.modifier
-	return d1.toString(true)
+	// return d1.toString(true)
+	return d1.toString()
 }
 
 function evalSubtractDice(e: Evaluator, args: string): string {
@@ -427,7 +429,8 @@ function evalSubtractDice(e: Evaluator, args: string): string {
 	d1.count -= d2.count
 	d1.count = Math.max(d1.count, 0)
 	d1.modifier -= d2.modifier
-	return d1.toString(true)
+	// return d1.toString(true)
+	return d1.toString()
 }
 
 function evalDiceCount(e: Evaluator, args: string): number {

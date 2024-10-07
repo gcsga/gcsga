@@ -261,6 +261,17 @@
 						"Bipod": "Has bipod",
 						"Mounted": "Mounted",
 						"MusketRest": "Uses a musket rest"
+					},
+					"Damage": {
+						"Name": "Damage",
+						"Leveled": "(leveled)",
+						"ModifierPerDie": "per die",
+						"ArmorDivisor": "Armor Divisor",
+						"Type": "Type",
+						"StMul": "Multiply ST used for sw or thr damage calculation by",
+						"Fragmentation": "Fragmentation",
+						"FragmentationArmorDivisor": "Armor Divisor",
+						"FragmentationType": "Type"
 					}
 				}
 			},

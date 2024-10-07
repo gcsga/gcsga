@@ -18,7 +18,8 @@ class DiceGURPS extends foundry.abstract.DataModel<foundry.abstract.DataModel, D
 
 	static fromString(str: string): DiceGURPS {
 		str = str.trim()
-		const dice = new DiceGURPS()
+		// const dice = new DiceGURPS()
+		const dice = { sides: 0, count: 0, modifier: 0, multiplier: 0 }
 		let i = 0
 		let ch: string
 		;[dice.count, i] = extractValue(str, 0)
@@ -53,27 +54,38 @@ class DiceGURPS extends foundry.abstract.DataModel<foundry.abstract.DataModel, D
 
 		if (dice.multiplier === 0) dice.multiplier = 1
 
-		dice.clean()
-		return dice
+		return new DiceGURPS(dice)
 	}
 
-	clean(): void {
-		if (this.count < 0) this.count = 0
-		if (this.sides < 0) this.sides = 0
-		if (this.multiplier < 1) this.multiplier = 1
+	static override cleanData(
+		source?: (Partial<SourceFromSchema<DiceSchema>> & { [key: string]: unknown }) | undefined,
+		options?: Record<string, unknown> | undefined,
+	): SourceFromSchema<DiceSchema> {
+		source ??= {}
+		source.count ??= 0
+		source.sides ??= 0
+		source.multiplier ??= 0
+		source.modifier ??= 0
+
+		if (source.count < 0) source.count = 0
+		if (source.sides < 0) source.sides = 0
+		if (source.multiplier < 1) source.multiplier = 1
+
+		return super.cleanData(source, options) as SourceFromSchema<DiceSchema>
 	}
 
-	override toString(keepSix: boolean): string {
-		let str = ""
-		str += this.count
-		str += "d"
-		if (this.sides !== 6 || keepSix) str += this.sides
-		if (this.modifier) {
-			str += this.modifier > 0 ? "+" : "-"
-			str += Math.abs(this.modifier)
-		}
-		if (this.multiplier !== 1) str += `×${this.multiplier}`
-		return str
+	override toString(): string {
+		return this.stringExtra(false)
+		// let str = ""
+		// str += this.count
+		// str += "d"
+		// if (this.sides !== 6 || keepSix) str += this.sides
+		// if (this.modifier) {
+		// 	str += this.modifier > 0 ? "+" : "-"
+		// 	str += Math.abs(this.modifier)
+		// }
+		// if (this.multiplier !== 1) str += `×${this.multiplier}`
+		// return str
 	}
 
 	stringExtra(extraDiceFromModifiers: boolean): string {
@@ -153,6 +165,7 @@ class DiceGURPS extends foundry.abstract.DataModel<foundry.abstract.DataModel, D
 }
 
 function extractValue(str: string, i: number): [number, number] {
+	str = str.trim()
 	let value = 0
 	while (i < str.length) {
 		const ch = str[i]

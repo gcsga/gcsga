@@ -1,5 +1,3 @@
-import { LocalizeGURPS } from "@util/localize.ts"
-
 export namespace stdmg {
 	export enum Option {
 		None = "none",
@@ -15,11 +13,11 @@ export namespace stdmg {
 
 	export namespace Option {
 		export function toString(O: Option): string {
-			return LocalizeGURPS.translations.GURPS.Enum.stdmg[O]
+			return `GURPS.Enum.stdmg.${O}`
 		}
 
 		export function toStringLeveled(O: Option): string {
-			return LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Enum.stdmg.leveled, { value: toString(O) })
+			return game?.i18n?.format("GURPS.Enum.stdmg.Leveled", { value: `GURPS.Enum.stdmg.${O}` })
 		}
 	}
 
@@ -34,4 +32,8 @@ export namespace stdmg {
 		// Option.LeveledThrust,
 		// Option.LeveledSwing,
 	]
+
+	export const OptionsChoices: Readonly<Record<Option, string>> = Object.freeze(
+		Object.fromEntries(Options.map(O => [O, Option.toString(O)])) as Record<Option, string>,
+	)
 }

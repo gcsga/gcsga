@@ -1,1 +1,64 @@
-<span>BRUH</span>
+<div class="form-group">
+	<label>{{localize "GURPS.Item.Weapon.FIELDS.Damage.Name"}}</label>
+	<div class="form-fields">
+		<!-- ST -->
+		{{formInput fields.damage.fields.st value=source.damage.st localize=true}}
+
+		<!-- Leveled -->
+		<label>
+			<!-- Checkbox-->
+			{{formInput fields.damage.fields.leveled value=source.damage.leveled}}
+			<!-- Label -->
+			{{localize "GURPS.Item.Weapon.FIELDS.Damage.Leveled"}}
+		</label>
+
+		<!-- Base -->
+		{{formInput fields.damage.fields.base name="system.damage.base" value=system.damage.base}}
+
+		<!-- Modifier Per DIe -->
+		{{formInput fields.damage.fields.modifier_per_die value=source.damage.modifier_per_die}}
+		<label>{{localize "GURPS.Item.Weapon.FIELDS.Damage.ModifierPerDie"}}</label>
+	</div>
+</div>
+
+<div class="form-group">
+	<label></label>
+	<div class="form-fields">
+		<label>{{localize "GURPS.Item.Weapon.FIELDS.Damage.ArmorDivisor"}}</label>
+		<!-- Armor Divisor -->
+		{{formInput fields.damage.fields.armor_divisor value=source.damage.armor_divisor}}
+
+		<label>{{localize "GURPS.Item.Weapon.FIELDS.Damage.Type"}}</label>
+		<!-- Type -->
+		{{formInput fields.damage.fields.type value=source.damage.type}}
+	</div>
+</div>
+
+<hr />
+
+<div class="form-group">
+	<label></label>
+	<div class="form-fields">
+		<label>{{localize "GURPS.Item.Weapon.FIELDS.Damage.StMul"}}</label>
+		<!-- ST Multiplier -->
+		{{formInput fields.damage.fields.st_mul value=source.damage.st_mul}}
+	</div>
+</div>
+
+<div class="form-group">
+	<label>{{localize "GURPS.Item.Weapon.FIELDS.Damage.Fragmentation"}}</label>
+	<div class="form-fields">
+		<!-- Base -->
+		{{formInput fields.damage.fields.fragmentation value=system.damage.fragmentation}}
+
+		<label>{{localize "GURPS.Item.Weapon.FIELDS.Damage.FragmentationArmorDivisor"}}</label>
+
+		{{formInput fields.damage.fields.fragmentation_armor_divisor value=source.damage.fragmentation_armor_divisor}}
+
+		<!-- Type -->
+		<label>{{localize "GURPS.Item.Weapon.FIELDS.Damage.FragmentationType"}}</label>
+		{{formInput fields.damage.fields.fragmentation_type value=source.damage.fragmentation_type}}
+	</div>
+</div>
+
+<hr />

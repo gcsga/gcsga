@@ -5,6 +5,7 @@ import { Int, LocalizeGURPS, StringBuilder, TooltipGURPS, feature, progression, 
 import { ActorType, ItemType, gid } from "@module/data/constants.ts"
 import { DiceGURPS, DiceSchema } from "@module/data/dice.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
+import { DiceField } from "./dice-field.ts"
 
 class WeaponDamage extends WeaponField<AbstractWeaponTemplate, WeaponDamageSchema> {
 	static override defineSchema(): WeaponDamageSchema {
@@ -14,14 +15,19 @@ class WeaponDamage extends WeaponField<AbstractWeaponTemplate, WeaponDamageSchem
 			st: new fields.StringField({
 				required: true,
 				nullable: false,
-				choices: stdmg.Options,
+				choices: stdmg.OptionsChoices,
 				initial: stdmg.Option.Thrust,
 			}),
 			leveled: new fields.BooleanField({ required: true, nullable: false, initial: false }),
 			st_mul: new fields.NumberField({ required: true, nullable: false, initial: 0 }),
-			base: new fields.SchemaField(DiceGURPS.defineSchema()),
+			// base: new fields.SchemaField(DiceGURPS.defineSchema()),
+			// base: new fields.EmbeddedDataField(DiceGURPS),
+			// base: new fields.EmbeddedDataField(DiceGURPS),
+			base: new DiceField(),
 			armor_divisor: new fields.NumberField({ required: true, nullable: false, initial: 0 }),
-			fragmentation: new fields.SchemaField(DiceGURPS.defineSchema()),
+			// fragmentation: new fields.SchemaField(DiceGURPS.defineSchema()),
+			// fragmentation: new fields.EmbeddedDataField(DiceGURPS),
+			fragmentation: new DiceField(),
 			fragmentation_armor_divisor: new fields.NumberField({ required: true, nullable: false, initial: 0 }),
 			fragmentation_type: new fields.StringField({ required: true, nullable: false, initial: "" }),
 			modifier_per_die: new fields.NumberField({ required: true, nullable: false, initial: 0 }),
