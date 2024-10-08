@@ -21,7 +21,8 @@
   - Replacements Tab
 - Effect Sheet \* CURRENT
   - Effect \* DONE
-  - Condition \* CURRENT
+  - Roll Modifiers \* DONE
+  - Description \* CURRENT
 - Actor Sheet \*2
   - Collapsible sidebar
     - Option to hide attributes if not frequently used to decrease clutter?

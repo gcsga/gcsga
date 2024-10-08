@@ -8,8 +8,15 @@
 
 	<div class="form-group stacked">
 		<label>{{ localize "EFFECT.Description" }}</label>
-		{{editor descriptionHTML target="description" button=false editable=true engine="prosemirror"
-		collaborate=false}}
+		<prose-mirror
+			name="description"
+			data-document-u-u-i-d="{{effect.uuid}}"
+			value="{{data.description}}"
+			collaborate="false"
+			toggled="false"
+		>
+			{{{enrichedDescription}}}
+		</prose-mirror>
 	</div>
 
 	<div class="form-group">

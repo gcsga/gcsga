@@ -309,6 +309,8 @@ declare global {
 		rollData?: Record<string, unknown>
 		/** A document to resolve relative UUIDs against. */
 		relativeTo?: ClientDocument
+		// TODO: does this exist?
+		async?: boolean
 	}
 
 	interface TextEditorEnricherConfig {

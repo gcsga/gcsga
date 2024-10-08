@@ -69,11 +69,8 @@ class ActiveEffectSheetGURPS extends api.HandlebarsApplicationMixin(api.Document
 	}
 
 	override async _prepareContext(options = {}): Promise<object> {
-		const descriptionHTML = await TextEditor.enrichHTML(this.effect.description, { secrets: this.effect.isOwner })
-
-		const obj = {
+		const context: Record<string, unknown> = {
 			...super._prepareContext(options),
-			descriptionHTML,
 			fields: this.effect.system.schema.fields,
 			tabs: this._getTabs(),
 			effect: this.effect,
@@ -87,8 +84,13 @@ class ActiveEffectSheetGURPS extends api.HandlebarsApplicationMixin(api.Document
 				return obj
 			}, {}),
 		}
-		console.log(obj)
-		return obj
+
+		context.enrichedDescription = await TextEditor.enrichHTML(this.effect.description, {
+			secrets: this.effect.isOwner,
+			async: true,
+		})
+
+		return context
 	}
 
 	protected override async _preparePartContext(partId: string, context: Record<string, any>): Promise<object> {
