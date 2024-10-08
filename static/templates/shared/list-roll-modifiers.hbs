@@ -1,0 +1,16 @@
+<fieldset class="list-roll-modifiers">
+	<legend>{{localize "GURPS.RollModifier.DetailsLegend"}}</legend>
+	<button type="button" data-action="addRollModifier"><i class="fa-regular fa-plus"></i></button>
+	<ul>
+		<!-- Iterate over features -->
+		{{#each system.modifiers as |modifier|}}
+		<!-- Gap between entries -->
+		{{#unless @first}}
+		<hr />
+		{{/unless}}
+		<!-- Generated feature partial -->
+		{{modifier.element}}
+		<!-- End Loop -->
+		{{/each}}
+	</ul>
+</fieldset>

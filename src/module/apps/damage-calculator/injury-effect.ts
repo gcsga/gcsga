@@ -1,4 +1,4 @@
-import { RollType, gid } from "@module/data/constants.ts"
+import { gid } from "@module/data/constants.ts"
 import { RollModifier } from "@module/data/roll-modifier.ts"
 
 function getFormatFunction() {
@@ -134,7 +134,8 @@ enum InjuryEffectType {
 class KnockdownCheck extends EffectCheck {
 	constructor(modifier = 0) {
 		super(
-			[<RollModifier>{ id: gid.Health, rollType: RollType.Attribute, modifier: modifier }],
+			// [<RollModifier>{ id: gid.Health, rollType: RollType.Attribute, modifier: modifier }],
+			[<RollModifier>{ label: gid.Health, modifier: modifier }],
 			[
 				new CheckFailureConsequence("stun", 0),
 				new CheckFailureConsequence("fall prone", 0),

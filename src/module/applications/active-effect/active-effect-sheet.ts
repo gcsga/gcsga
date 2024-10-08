@@ -2,6 +2,7 @@ import { ActiveEffectGURPS } from "@module/document/active-effect.ts"
 import api = foundry.applications.api
 import { EffectType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { AttributeBonus } from "@module/data/feature/attribute-bonus.ts"
+import { RollModifier } from "@module/data/roll-modifier.ts"
 
 class ActiveEffectSheetGURPS extends api.HandlebarsApplicationMixin(api.DocumentSheetV2<ActiveEffectGURPS>) {
 	// Set initial values for tabgroups
@@ -33,6 +34,8 @@ class ActiveEffectSheetGURPS extends api.HandlebarsApplicationMixin(api.Document
 			editImage: this.#onEditImage,
 			addFeature: this.#onAddFeature,
 			deleteFeature: this.#onDeleteFeature,
+			addRollModifier: this.#onAddRollModifier,
+			deleteRollModifier: this.#onDeleteRollModifier,
 			addEffectChange: this.#onAddEffectChange,
 			deleteEffectChange: this.#onDeleteEffectChange,
 		},
@@ -177,6 +180,35 @@ class ActiveEffectSheetGURPS extends api.HandlebarsApplicationMixin(api.Document
 		features.splice(index, 1)
 
 		await this.effect.update({ "system.features": features })
+	}
+
+	static async #onAddRollModifier(this: ActiveEffectSheetGURPS, event: Event): Promise<void> {
+		event.preventDefault()
+		event.stopImmediatePropagation()
+
+		const effect = this.effect
+		if (!effect.isOfType(EffectType.Effect, EffectType.Condition)) return
+
+		const modifiers = (effect.system.toObject() as any).modifiers
+		modifiers.push(new RollModifier().toObject())
+
+		await this.effect.update({ "system.modifiers": modifiers })
+	}
+
+	static async #onDeleteRollModifier(this: ActiveEffectSheetGURPS, event: Event): Promise<void> {
+		event.preventDefault()
+		event.stopImmediatePropagation()
+
+		const element = event.target as HTMLElement
+		const index = parseInt(element.dataset.index ?? "")
+		if (isNaN(index)) return
+		const effect = this.effect
+		if (!effect.isOfType(EffectType.Effect, EffectType.Condition)) return
+
+		const modifiers = (effect.system.toObject() as any).modifiers
+		modifiers.splice(index, 1)
+
+		await this.effect.update({ "system.modifiers": modifiers })
 	}
 
 	static async #onAddEffectChange(this: ActiveEffectSheetGURPS, event: Event): Promise<void> {

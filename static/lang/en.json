@@ -57,6 +57,15 @@
 			},
 			"character": {}
 		},
+		"RollModifier": {
+			"DetailsLegend": "Roll Modifiers",
+			"FIELDS": {
+				"Label": { "Name": "Label" },
+				"Modifier": { "Name": "Modifier" },
+				"Tags": { "Name": "Tags" },
+				"Cost": { "Name": "Cost", "Id": "Attribute ID", "Value": "Value" }
+			}
+		},
 		"Item": {
 			"BasicInformation": {
 				"FIELDS": {

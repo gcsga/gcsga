@@ -67,10 +67,10 @@ class UserGURPS<TActor extends ActorGURPS2<null> = ActorGURPS2<null>> extends Us
 			const oldMod = modifierStack.find(e => e.tags?.includes(RollModifierTags.Range))
 			if (oldMod) {
 				oldMod.modifier = mod.modifier
-				oldMod.id = mod.id
+				oldMod.label = mod.label
 			} else modifierStack.push(mod)
 		} else {
-			const oldMod = modifierStack.find(e => e.id === mod.id)
+			const oldMod = modifierStack.find(e => e.label === mod.label)
 			if (oldMod) oldMod.modifier += mod.modifier
 			else modifierStack.push(mod)
 		}

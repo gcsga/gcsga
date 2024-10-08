@@ -2,6 +2,9 @@ import { SYSTEM_NAME } from "@data"
 
 export async function preloadHandlebarsTemplates(): Promise<void> {
 	const partials = [
+		// Shared Partials
+		`systems/${SYSTEM_NAME}/templates/shared/list-roll-modifiers.hbs`,
+
 		// Item Detsils Partials
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-container.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-defaults.hbs`,

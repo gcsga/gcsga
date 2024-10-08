@@ -24,7 +24,7 @@ import { RulerGURPS } from "@module/canvas/ruler/document.ts"
 import { DiceGURPS } from "@module/data/dice.ts"
 import { TokenDocumentGURPS } from "@module/document/token.ts"
 import { RollModifier } from "@module/data/roll-modifier.ts"
-import { RollType, gid } from "@module/data/constants.ts"
+import { gid } from "@module/data/constants.ts"
 import { ActorBody, HitLocation } from "@module/data/hit-location.ts"
 
 const Skull = "skull"
@@ -685,9 +685,12 @@ class DamageCalculator implements IDamageCalculator {
 			[
 				new EffectCheck(
 					[
-						<RollModifier>{ id: gid.Dexterity, rollType: RollType.Attribute, modifier: penalty },
-						<RollModifier>{ id: "Acrobatics", rollType: RollType.Skill, modifier: penalty },
-						<RollModifier>{ id: "Judo", rollType: RollType.Skill, modifier: penalty },
+						// <RollModifier>{ id: gid.Dexterity, rollType: RollType.Attribute, modifier: penalty },
+						// <RollModifier>{ id: "Acrobatics", rollType: RollType.Skill, modifier: penalty },
+						// <RollModifier>{ id: "Judo", rollType: RollType.Skill, modifier: penalty },
+						<RollModifier>{ label: gid.Dexterity, modifier: penalty },
+						<RollModifier>{ label: "Acrobatics", modifier: penalty },
+						<RollModifier>{ label: "Judo", modifier: penalty },
 					],
 					[new CheckFailureConsequence("fall prone", 0)],
 				),
