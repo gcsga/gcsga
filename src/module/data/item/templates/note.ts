@@ -8,13 +8,14 @@ class NoteTemplate extends ItemDataModel<NoteTemplateSchema> {
 		const fields = foundry.data.fields
 
 		return {
-			text: new fields.StringField({ required: true, nullable: false, initial: "" }),
+			// text: new fields.StringField({ required: true, nullable: false, initial: "" }),
+			text: new fields.HTMLField({ required: true, nullable: false, initial: "" }),
 		}
 	}
 
 	override get cellData(): Record<string, CellData> {
 		return {
-			text: new CellData({ type: cell.Type.Markdown, primary: this.processedName }),
+			text: new CellData({ type: cell.Type.Markdown, primary: this.enrichedText }),
 			reference: new CellData({
 				type: cell.Type.PageRef,
 				primary: this.reference,
@@ -27,19 +28,27 @@ class NoteTemplate extends ItemDataModel<NoteTemplateSchema> {
 		return this.parent.name
 	}
 
-	get processedText(): Handlebars.SafeString {
-		const showdownOptions = { ...CONST.SHOWDOWN_OPTIONS }
-
-		Object.entries(showdownOptions).forEach(([k, v]) => {
-			showdown.setOption(k, v)
-		})
-
-		const converter = new showdown.Converter()
+	get enrichedText(): Promise<string> {
 		let text = this.text
 		text = replaceAllStringFunc(EvalEmbeddedRegex, text, this.actor)
-
-		return new Handlebars.SafeString(converter.makeHtml(text)?.replaceAll(/\s\+/g, "\r"))
+		return TextEditor.enrichHTML(text, {
+			async: false,
+		})
 	}
+
+	// get processedText(): Handlebars.SafeString {
+	// 	const showdownOptions = { ...CONST.SHOWDOWN_OPTIONS }
+	//
+	// 	Object.entries(showdownOptions).forEach(([k, v]) => {
+	// 		showdown.setOption(k, v)
+	// 	})
+	//
+	// 	const converter = new showdown.Converter()
+	// 	let text = this.text
+	// 	text = replaceAllStringFunc(EvalEmbeddedRegex, text, this.actor)
+	//
+	// 	return new Handlebars.SafeString(converter.makeHtml(text)?.replaceAll(/\s\+/g, "\r"))
+	// }
 }
 
 interface NoteTemplate extends ModelPropsFromSchema<NoteTemplateSchema> {
@@ -48,7 +57,7 @@ interface NoteTemplate extends ModelPropsFromSchema<NoteTemplateSchema> {
 }
 
 type NoteTemplateSchema = {
-	text: fields.StringField<string, string, true, false, true>
+	text: fields.HTMLField<string, string, true, false, true>
 }
 
 export { NoteTemplate, type NoteTemplateSchema }

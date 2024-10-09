@@ -38,6 +38,7 @@ class SpellData extends ItemDataModel.mixin(
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = ["gurps.details-spell", "gurps.details-prereqs"]
 		context.embedsParts = ["gurps.embeds-weapons"]
+		context.headerFilter = "hue-rotate(359deg) saturate(0.57) brightness(0.86);"
 	}
 
 	static override defineSchema(): SpellSchema {

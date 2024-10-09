@@ -26,31 +26,31 @@ export interface ItemDataInstances {
 }
 
 export enum ItemTemplateType {
-	// AbstractEffect = "AbstractEffectTemplate",
 	AbstractSkill = "AbstractSkillTemplate",
 	AbstractWeapon = "AbstractWeaponTemplate",
-	Container = "ContainerTemplate",
 	BasicInformation = "BasicInformationTemplate",
-	Feature = "FeatureTemplate",
+	Container = "ContainerTemplate",
 	Default = "SkillDefaultTemplate",
+	EquipmentFields = "EquipmentFieldsTemplate",
+	Feature = "FeatureTemplate",
+	Note = "NoteTemplate",
 	Prereq = "PrereqTemplate",
 	Replacement = "ReplacementTemplate",
-	Study = "StudyTemplate",
 	SpellFields = "SpellFieldsTemplate",
-	EquipmentFields = "EquipmentFieldsTemplate",
+	Study = "StudyTemplate",
 }
 
 export interface ItemDataTemplates {
-	// [ItemTemplateType.AbstractEffect]: ItemDataTemplate.AbstractEffectTemplate
 	[ItemTemplateType.AbstractSkill]: ItemDataTemplate.AbstractSkillTemplate
 	[ItemTemplateType.AbstractWeapon]: ItemDataTemplate.AbstractWeaponTemplate
-	[ItemTemplateType.Container]: ItemDataTemplate.ContainerTemplate
 	[ItemTemplateType.BasicInformation]: ItemDataTemplate.BasicInformationTemplate
-	[ItemTemplateType.Feature]: ItemDataTemplate.FeatureTemplate
+	[ItemTemplateType.Container]: ItemDataTemplate.ContainerTemplate
 	[ItemTemplateType.Default]: ItemDataTemplate.SkillDefaultTemplate
+	[ItemTemplateType.EquipmentFields]: ItemDataTemplate.EquipmentFieldsTemplate
+	[ItemTemplateType.Feature]: ItemDataTemplate.FeatureTemplate
+	[ItemTemplateType.Note]: ItemDataTemplate.NoteTemplate
 	[ItemTemplateType.Prereq]: ItemDataTemplate.PrereqTemplate
 	[ItemTemplateType.Replacement]: ItemDataTemplate.ReplacementTemplate
-	[ItemTemplateType.Study]: ItemDataTemplate.StudyTemplate
 	[ItemTemplateType.SpellFields]: ItemDataTemplate.SpellFieldsTemplate
-	[ItemTemplateType.EquipmentFields]: ItemDataTemplate.EquipmentFieldsTemplate
+	[ItemTemplateType.Study]: ItemDataTemplate.StudyTemplate
 }

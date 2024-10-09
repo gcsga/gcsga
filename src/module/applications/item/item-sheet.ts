@@ -350,6 +350,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 
 	protected override _onRender(context: object, options: ApplicationRenderOptions): void {
 		super._onRender(context, options)
+
 		const prereqTypeFields = this.element.querySelectorAll("[data-selector='prereq-type'")
 		for (const input of prereqTypeFields) {
 			input.addEventListener("change", event => this._onChangePrereqType(event))
@@ -394,9 +395,9 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			source: this.item.system.toObject(),
 			detailsParts: context.detailsParts ?? [],
 			embedsParts: context.embedsParts ?? [],
+			headerFilter: context.headerFilter ?? "",
 			editable: this.isEditable && this._mode === this.constructor.MODES.EDIT,
 		}
-		console.log(obj)
 		return obj
 	}
 
@@ -404,8 +405,18 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		context.partId = `${this.id}-${partId}`
 		context.tab = context.tabs[partId]
 
-		if (partId === "details" && (this.item.type === ItemType.Skill || this.item.type === ItemType.Technique))
-			this._prepareSkillPartContext(context)
+		if (partId === "details") {
+			switch (this.item.type) {
+				case ItemType.Skill:
+				case ItemType.Technique:
+					this._prepareSkillPartContext(context)
+					break
+				case ItemType.Note:
+				case ItemType.NoteContainer:
+					this._prepareNoteContext(context)
+					break
+			}
+		}
 		return context
 	}
 
@@ -413,6 +424,12 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		if (!this.item.hasTemplate(ItemTemplateType.AbstractSkill)) return context
 		if (this.item.system.level.level === Number.MIN_SAFE_INTEGER) context.levelField = "-"
 		else context.levelField = `${this.item.system.levelAsString}/${this.item.system.relativeLevel}`
+		return context
+	}
+
+	protected async _prepareNoteContext(context: Record<string, any>): Promise<object> {
+		if (!this.item.hasTemplate(ItemTemplateType.Note)) return context
+		context.enrichedText = await this.item.system.enrichedText
 		return context
 	}
 

@@ -65,6 +65,7 @@ class SkillData extends ItemDataModel.mixin(
 			"gurps.details-defaults",
 		]
 		context.embedsParts = ["gurps.embeds-weapons"]
+		context.headerFilter = "hue-rotate(256deg) saturate(0.32) brightness(1.29);"
 	}
 
 	static override defineSchema(): SkillSchema {

@@ -1,3 +1,66 @@
+/*
+ * The following are the colors of chapter headings in "GURPS: Basic Set"
+ * to be used for item heeadings based on type
+ */
+:root {
+	--color-contents: #3f5541; // CHARACTER
+	--color-character: #911416;
+	--color-advantages: #0078b4;
+	--color-disadvantages: #894c33; // TRAIT
+	--color-skills: #463c98; // SKILL & TECHNIQUE
+	--color-spells: #911416; // SPELLS
+	--color-psionics: #007d72;
+	--color-equipment: #007cb9; // EQUIPMENT
+	--color-character-development: #7c3193;
+	--color-lists: #00723e;
+	--color-iconic-characters: #a40775;
+	--color-index: #572f77; // NOTES
+	--color-success-rolls: #2f5f5a;
+	--color-combat: #004f7e; // WEAPON
+}
+
+.charater {
+	// filter: hue-rotate(125deg) saturate(0.26) brightness(0.34/0.54);
+	// filter: hue-rotate(125deg) saturate(0.26) brightness(0.63);
+	filter: hue-rotate(152deg) saturate(0.34) brightness(1.13);
+}
+
+.trait {
+	// filter: hue-rotate(17deg) saturate(0.63) brightness(0.39/0.54);
+	// filter: hue-rotate(17deg) saturate(0.63) brightness(0.72);
+	filter: hue-rotate(46deg) saturate(0.58) brightness(1.39);
+}
+
+.skill {
+	// filter: hue-rotate(247deg) saturate(0.61) brightness(0.31/0.54);
+	// filter: hue-rotate(247deg) saturate(0.61) brightness(0.57);
+	filter: hue-rotate(256deg) saturate(0.32) brightness(1.29);
+}
+
+.spell {
+	// filter: hue-rotate(359deg) saturate(0.86) brightness(0.31/0.54);
+	// filter: hue-rotate(359deg) saturate(0.86) brightness(0.57);
+	filter: hue-rotate(359deg) saturate(0.57) brightness(0.86);
+}
+
+.equipment {
+	// filter: hue-rotate(200deg) saturate(1) brightness(0.49/0.54);
+	// filter: hue-rotate(200deg) saturate(1) brightness(0.91);
+	filter: hue-rotate(192deg) saturate(1) brightness(1.2);
+}
+
+.note {
+	// filter: hue-rotate(273deg) saturate(0.61) brightness(0.28/0.54);
+	// filter: hue-rotate(273deg) saturate(0.61) brightness(0.52);
+	filter: hue-rotate(279deg) saturate(0.27) brightness(1.15);
+}
+
+.weapon {
+	// filter: hue-rotate(202deg) saturate(1) brightness(0.32/0.54);
+	// filter: hue-rotate(202deg) saturate(1) brightness(0.59);
+	filter: hue-rotate(194deg) saturate(1) brightness(0.81);
+}
+
 // Transparent buttons to apply own background to window header
 > header.window-header {
 	background: transparent;
@@ -26,7 +89,7 @@ section.window-content {
 		border-radius: 0.625rem;
 		opacity: 0.5;
 		background: url("/assets/header-background.webp") no-repeat top center / cover;
-		filter: hue-rotate(45deg);
+		filter: var(--header-filter);
 		mask-image: linear-gradient(to bottom, black, transparent);
 	}
 }

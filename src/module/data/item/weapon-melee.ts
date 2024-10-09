@@ -12,6 +12,7 @@ import { Nameable } from "@module/util/index.ts"
 class WeaponMeleeData extends ItemDataModel.mixin(BasicInformationTemplate, AbstractWeaponTemplate) {
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = ["gurps.details-weapon-melee", "gurps.details-defaults"]
+		context.headerFilter = "hue-rotate(194deg) saturate(1) brightness(0.81);"
 	}
 
 	static override defineSchema(): WeaponMeleeSchema {
