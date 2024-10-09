@@ -207,9 +207,9 @@ class SystemDataModel<
 
 	/**
 	 * Pre-delete logic for this system data.
-	 * @param _options            Additional options which modify the creation request.
-	 * @param _user               The User requesting the document creation.
-	 * @returns {Promise<boolean|void>}   A return value of false indicates the creation operation should be cancelled.
+	 * @param _options Additional options which modify the creation request.
+	 * @param _user    The User requesting the document creation.
+	 * @returns        A return value of false indicates the creation operation should be cancelled.
 	 */
 	async _preDelete(
 		_options: DatabaseDeleteOperation<TDocument["parent"]>,
@@ -238,7 +238,6 @@ class SystemDataModel<
 	/*  Data Validation                             */
 	/* -------------------------------------------- */
 
-	/** @inheritdoc */
 	override validate(options = {}) {
 		if (this.constructor._enableV10Validation === false) return true
 		return super.validate(options)
@@ -248,7 +247,6 @@ class SystemDataModel<
 	/*  Data Validation                             */
 	/* -------------------------------------------- */
 
-	/** @inheritdoc */
 	static override validateJoint(data: SourceFromSchema<fields.DataSchema>) {
 		this._validateJoint(data)
 		return super.validateJoint(data)
@@ -258,11 +256,10 @@ class SystemDataModel<
 
 	/**
 	 * Performs joint validation without calling DataModel.validateJoint.
-	 * @param {object} data     The source data
-	 * @throws                  An error if a validation failure is detected
-	 * @protected
+	 * @param  data The source data
+	 * @throws      An error if a validation failure is detected
 	 */
-	static _validateJoint(data: SourceFromSchema<fields.DataSchema>) {
+	protected static _validateJoint(data: SourceFromSchema<fields.DataSchema>) {
 		for (const template of this._schemaTemplates) {
 			template._validateJoint(data)
 		}

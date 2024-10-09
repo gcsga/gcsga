@@ -149,7 +149,7 @@ class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, Fe
 	}
 
 	/** Nameables */
-	fillWithNameableKeys(m: Map<string, string>, existing?: Map<string, string>): void {
+	override fillWithNameableKeys(m: Map<string, string>, existing?: Map<string, string>): void {
 		if (this.disabled) return
 		if (!existing) existing = this.nameableReplacements
 

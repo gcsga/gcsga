@@ -2,8 +2,7 @@
 
 ## Current Tasks
 
-- Replace makeshift markdown editor in notes and note containers with prosemirror
-  - Will need to convert to HTML on import but that's fine
+- Add #fillWithNameableKeys for all items with nameable functionality
 
 ## Left To Do
 
@@ -20,7 +19,6 @@
 - Actor
   - Legacy Support?
 - Item Sheet \* CURRENT
-  - Header color dependent on item type page color in GURPS Basic Set \* CURRENT
   - Replacements Tab
     - Toggle for showing replacements instead of placeholders (optional)
     - In non-edit mode, show replacements instead of substitutions maybe with indicating color background
@@ -54,6 +52,7 @@
 - Change #clean for #cleanData
 - Change Schema Fields to Embedded Data Fields where appropriate
 - Item Sheet
+  - Header color dependent on item type page color in GURPS Basic Set
   - Prereqs
   - Features
   - Defaults

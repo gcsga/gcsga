@@ -219,7 +219,7 @@ class TraitContainerData extends ItemDataModel.mixin(
 	}
 
 	/** Nameables */
-	fillWithNameableKeys(m: Map<string, string>, existing?: Map<string, string>): void {
+	override fillWithNameableKeys(m: Map<string, string>, existing?: Map<string, string>): void {
 		this._fillWithLocalNameableKeys(m, existing)
 		this.allModifiers.forEach(mod => {
 			mod.system.fillWithNameableKeys(m, mod.system.nameableReplacements)

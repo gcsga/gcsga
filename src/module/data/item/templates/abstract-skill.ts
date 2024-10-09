@@ -55,7 +55,7 @@ class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.TechLevelShort, { level: this.tech_level }),
 			)
 		}
-		if (this.isOfType(ItemType.Skill)) {
+		if (this.isOfType(ItemType.Skill) && this.specializationWithReplacements !== "") {
 			buffer.push(
 				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.SkillSpecialization, {
 					specialization: this.specializationWithReplacements,

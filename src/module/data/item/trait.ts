@@ -309,17 +309,16 @@ class TraitData extends ItemDataModel.mixin(
 	}
 
 	/** Nameables */
-	fillWithNameableKeys(m: Map<string, string>, existing?: Map<string, string>): void {
-		this._fillWithLocalNameableKeys(m, existing)
+	override fillWithNameableKeys(m: Map<string, string>, existing?: Map<string, string>): void {
+		super.fillWithNameableKeys(m, existing)
+
+		this._fillWithLocalNameableKeys(m, existing!)
 		this.allModifiers.forEach(mod => {
 			mod.system.fillWithNameableKeys(m, mod.system.nameableReplacements)
 		})
 	}
 
-	protected _fillWithLocalNameableKeys(m: Map<string, string>, existing?: Map<string, string>): void {
-		if (!existing) existing = this.nameableReplacements
-
-		Nameable.extract(this.name, m, existing)
+	protected _fillWithLocalNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {
 		Nameable.extract(this.notes, m, existing)
 		Nameable.extract(this.userdesc, m, existing)
 		if (this.rootPrereq) {
