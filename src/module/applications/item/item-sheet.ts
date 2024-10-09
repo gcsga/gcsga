@@ -30,7 +30,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		tag: "form",
 		classes: ["gurps", "item"],
 		window: {
-			contentClasses: [""],
+			contentClasses: [],
 			icon: "gcs-character",
 			title: "",
 			controls: [],
@@ -91,6 +91,12 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			scrollable: [""],
 		},
 	}
+
+	// constructor(options: DocumentSheetConfiguration) {
+	// 	super(options)
+	// 	this.options.window.contentClasses ??= []
+	// 	this.options.window.contentClasses.push(this.item.type)
+	// }
 
 	protected override _configureRenderOptions(options: ApplicationRenderOptions) {
 		super._configureRenderOptions(options)
@@ -350,7 +356,6 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 
 	protected override _onRender(context: object, options: ApplicationRenderOptions): void {
 		super._onRender(context, options)
-
 		const prereqTypeFields = this.element.querySelectorAll("[data-selector='prereq-type'")
 		for (const input of prereqTypeFields) {
 			input.addEventListener("change", event => this._onChangePrereqType(event))
@@ -360,6 +365,8 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			input.addEventListener("change", event => this._onChangeFeatureType(event))
 		}
 		if (!this.isEditable) this._disableFields()
+
+		this.element.classList.add(this.item.type)
 	}
 
 	protected _disableFields() {
@@ -479,7 +486,6 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 data-tooltip="${toggleLabel}" aria-label="${toggleLabel}"></button>`
 			this.window.icon.insertAdjacentHTML("beforebegin", toggle)
 		}
-
 		return frame
 	}
 }

@@ -1,3 +1,7 @@
+&.character_gcs {
+	--filter-header: hue-rotate(152deg) saturate(0.34) brightness(1.13);
+}
+
 // Transparent buttons to apply own background to window header
 > header.window-header {
 	background: transparent;
@@ -24,8 +28,9 @@ section.window-content {
 		inset: 0 0 auto 0;
 		height: 160px;
 		border-radius: 10px;
-		opacity: 0.5;
+		// opacity: 0.5;
 		background: url("/assets/header-background.webp") no-repeat top center / cover;
+		filter: var(--filter-header);
 		mask-image: linear-gradient(to bottom, black, rgba(0, 0, 0, 0.1) 99%, transparent 100%);
 	}
 }

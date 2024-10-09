@@ -143,6 +143,11 @@ class CharacterSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ActorShe
 		}
 	}
 
+	protected override _onRender(context: object, options: ApplicationRenderOptions): void {
+		super._onRender(context, options)
+		this.element.classList.add(this.actor.type)
+	}
+
 	protected override async _preparePartContext(partId: string, context: Record<string, any>): Promise<object> {
 		context.partId = `${this.id}-${partId}`
 		context.tab = context.tabs[partId]
