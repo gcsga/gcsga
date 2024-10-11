@@ -3,21 +3,21 @@ import { ItemTemplateType } from "../item/types.ts"
 import { ItemTemplateInst } from "../item/helpers.ts"
 import { SYSTEM_NAME } from "../constants.ts"
 
-class ItemsGURPS extends Items<ItemGURPS2<null>> {
+class ItemsGURPS<TItem extends ItemGURPS2<null>> extends Items<TItem> {
 	static entryPartial = `systems/${SYSTEM_NAME}/templates/sidebar/partials/item-partial.hbs`
 
-	override _getVisibleTreeContents(): ItemGURPS2<null>[] {
+	override _getVisibleTreeContents(): TItem[] {
 		return this.contents.filter(
 			e => !e.hasTemplate(ItemTemplateType.BasicInformation) || !this.has(e.system.container ?? ""),
 		)
 	}
 
 	override async importFromCompendium(
-		pack: CompendiumCollection<ItemGURPS2<null>>,
+		pack: CompendiumCollection<TItem>,
 		id: string,
 		updateData?: Record<string, unknown> | undefined,
 		operation?: Partial<DatabaseCreateOperation<null>> | undefined,
-	): Promise<ItemGURPS2<null> | null> {
+	): Promise<TItem> {
 		const created = (await super.importFromCompendium(
 			pack,
 			id,
@@ -35,19 +35,19 @@ class ItemsGURPS extends Items<ItemGURPS2<null>> {
 					keepId: operation?.keepId ?? false,
 					transformAll: (item: ItemGURPS2 | ItemGURPS2["_source"]) =>
 						this.fromCompendium(
-							item as ItemGURPS2<null> | ItemGURPS2["_source"],
+							item as TItem | TItem["_source"],
 							fromOptions,
 						) as ItemGURPS2<null>["_source"],
 				})
 				await ItemGURPS2.createDocuments(toCreate, { fromCompendium: true, keepId: true })
 			}
 		}
-		return created as ItemGURPS2<null> | null
+		return created as unknown as TItem
 	}
 }
 
-interface ItemsGURPS extends Items<ItemGURPS2<null>> {
-	constructor: typeof ItemsGURPS
+interface ItemsGURPS<TItem extends ItemGURPS2<null>> extends Items<TItem> {
+	// constructor: typeof ItemsGURPS
 }
 
 export { ItemsGURPS }

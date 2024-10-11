@@ -18,6 +18,10 @@ class EquipmentModifierData extends ItemDataModel.mixin(
 	/** Allows dynamic setting of containing trait for arbitrary value calculation */
 	private declare _equipment: ItemInst<ItemType.Equipment | ItemType.EquipmentContainer> | null
 
+	override async getSheetData(context: Record<string, unknown>): Promise<void> {
+		context.detailsParts = ["gurps.details-equipment-modifier"]
+	}
+
 	static override defineSchema(): EquipmentModifierSchema {
 		const fields = foundry.data.fields
 
@@ -25,14 +29,14 @@ class EquipmentModifierData extends ItemDataModel.mixin(
 			cost_type: new fields.StringField({
 				required: true,
 				nullable: false,
-				choices: emcost.Types,
+				choices: emcost.TypesChoices,
 				initial: emcost.Type.Original,
 			}),
 			cost_is_per_level: new fields.BooleanField({ required: true, nullable: false, initial: false }),
 			weight_type: new fields.StringField({
 				required: true,
 				nullable: false,
-				choices: emweight.Types,
+				choices: emweight.TypesChoices,
 				initial: emweight.Type.Original,
 			}),
 			weight_is_per_level: new fields.BooleanField({ required: true, nullable: false, initial: false }),
@@ -78,6 +82,11 @@ class EquipmentModifierData extends ItemDataModel.mixin(
 				secondary: this.reference_highlight === "" ? this.nameWithReplacements : this.reference_highlight,
 			}),
 		}
+	}
+
+	// Returns the formatted name for display
+	get processedName(): string {
+		return this.nameWithReplacements
 	}
 
 	get enabled(): boolean {

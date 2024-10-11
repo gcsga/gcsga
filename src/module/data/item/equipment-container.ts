@@ -27,7 +27,6 @@ class EquipmentContainerData extends ItemDataModel.mixin(
 			"gurps.embeds-equipment-modifiers",
 			"gurps.embeds-weapons",
 		]
-		context.headerFilter = "hue-rotate(192deg) saturate(1) brightness(1.2);"
 	}
 
 	/** Features */

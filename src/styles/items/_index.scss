@@ -52,6 +52,9 @@
 			margin: 0.2rem 0;
 		}
 
+		select {
+			width: fit-content;
+		}
 		select,
 		input[type="text"],
 		input[type="number"] {

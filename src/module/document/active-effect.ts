@@ -2,7 +2,7 @@ import { EffectType } from "@module/data/constants.ts"
 import { ActorGURPS2 } from "./actor.ts"
 import { ItemGURPS2 } from "./item.ts"
 import { EffectDataInstances } from "@module/data/active-effect/types.ts"
-import { EffectDataModel } from "@module/data/abstract.ts"
+import { EffectDataModel } from "@module/data/active-effect/abstract.ts"
 
 class ActiveEffectGURPS<
 	TParent extends ActorGURPS2 | ItemGURPS2 = ActorGURPS2 | ItemGURPS2,

@@ -19,7 +19,6 @@ import { Nameable } from "@module/util/index.ts"
 class WeaponRangedData extends ItemDataModel.mixin(BasicInformationTemplate, AbstractWeaponTemplate) {
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = ["gurps.details-weapon-ranged", "gurps.details-defaults"]
-		context.headerFilter = "hue-rotate(194deg) saturate(1) brightness(0.81);"
 	}
 	static override defineSchema(): WeaponRangedSchema {
 		const fields = foundry.data.fields

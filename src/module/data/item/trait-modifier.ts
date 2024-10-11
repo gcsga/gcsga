@@ -13,6 +13,10 @@ import { ItemType } from "../constants.ts"
 import { FeatureSet } from "../feature/types.ts"
 
 class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, FeatureTemplate, ReplacementTemplate) {
+	override async getSheetData(context: Record<string, unknown>): Promise<void> {
+		context.detailsParts = ["gurps.details-trait-modifier"]
+	}
+
 	/** Allows dynamic setting of containing trait for arbitrary value calculation */
 	private declare _trait: ItemGURPS2 | null
 	static override defineSchema(): TraitModifierSchema {
@@ -20,12 +24,43 @@ class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, Fe
 
 		return this.mergeSchema(super.defineSchema(), {
 			...super.defineSchema(),
-			cost: new fields.NumberField(),
-			levels: new fields.NumberField(),
-			cost_type: new fields.StringField<tmcost.Type>(),
-			use_level_from_trait: new fields.BooleanField<boolean>({ required: true, nullable: false, initial: true }),
-			affects: new fields.StringField<affects.Option>(),
-			disabled: new fields.BooleanField({ initial: false }),
+			cost: new fields.NumberField({
+				required: true,
+				nullable: false,
+				initial: 0,
+				label: "GURPS.Item.TraitModifier.FIELDS.Cost.Name",
+			}),
+			levels: new fields.NumberField({
+				required: true,
+				nullable: true,
+				initial: null,
+				label: "GURPS.Item.TraitModifier.FIELDS.Cost.Name",
+			}),
+			cost_type: new fields.StringField({
+				required: true,
+				nullable: false,
+				choices: tmcost.TypesChoices,
+				initial: tmcost.Type.Percentage,
+			}),
+			use_level_from_trait: new fields.BooleanField({
+				required: true,
+				nullable: false,
+				initial: true,
+				label: "GURPS.Item.TraitModifier.FIELDS.UseLevelFromTrait.Name",
+			}),
+			affects: new fields.StringField({
+				required: true,
+				nullable: false,
+				blank: false,
+				choices: affects.OptionsChoices,
+				initial: affects.Option.Total,
+			}),
+			disabled: new fields.BooleanField({
+				required: true,
+				nullable: false,
+				initial: false,
+				label: "GURPS.Item.TraitModifier.FIELDS.Enabled.Name",
+			}),
 		}) as TraitModifierSchema
 	}
 
@@ -133,23 +168,24 @@ class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, Fe
 		return ""
 	}
 
-	// Returns the formatted cost for display
-	get costDescription(): string {
-		let base = ""
+	get costWithType(): string {
 		switch (this.cost_type) {
 			case tmcost.Type.Percentage:
-				base = this.costModifier.signedString() + tmcost.Type.toString(tmcost.Type.Percentage)
-				break
+				return (
+					this.costModifier.signedString() + game.i18n.localize(tmcost.Type.toString(tmcost.Type.Percentage))
+				)
 			case tmcost.Type.Points:
-				base = this.costModifier.signedString()
-				break
+				return this.costModifier.signedString()
 			case tmcost.Type.Multiplier:
-				base = tmcost.Type.toString(tmcost.Type.Multiplier) + this.costModifier.signedString()
-				break
-			default:
-				console.error(`unknown cost type: "${this.cost_type}"`)
-				base = this.costModifier.signedString() + tmcost.Type.toString(tmcost.Type.Percentage)
+				return (
+					game.i18n.localize(tmcost.Type.toString(tmcost.Type.Multiplier)) + this.costModifier.signedString()
+				)
 		}
+	}
+
+	// Returns the formatted cost for display
+	get costDescription(): string {
+		let base = this.costWithType
 		const desc = affects.Option.altString(this.affects)
 		if (desc !== "") base += ` ${desc}`
 		return base

@@ -346,6 +346,28 @@
 						"Slug": "For Slugs"
 					}
 				}
+			},
+			"TraitModifier": {
+				"DetailsLegend": "Trait Modifier Details",
+				"FIELDS": {
+					"Enabled": { "Name": "Enabled" },
+					"Points": { "Name": "Points" },
+					"Levels": { "Name": "Levels" },
+					"Total": { "Name": "Total" },
+					"UseLevelFromTrait": { "Name": "Use level from trait" }
+				}
+			},
+			"EquipmentModifier": {
+				"DetailsLegend": "Equipment Modifier Details",
+				"FIELDS": {
+					"Enabled": { "Name": "Enabled" },
+					"TechLevel": { "Name": "Tech Level" },
+					"Points": { "Name": "Points" },
+					"Levels": { "Name": "Levels" },
+					"Total": { "Name": "Total" },
+					"CostIsPerLevel": { "Name": "Per Level" },
+					"WeightIsPerLevel": { "Name": "Per Level" }
+				}
 			}
 		},
 		"JournalEntryPage": {
@@ -567,6 +589,56 @@
 			"ProjectilesPlural": "proectiles"
 		},
 		"Enum": {
+			"affects": {
+				"total": { "Name": "to cost", "Alt": "" },
+				"base_only": { "Name": "to base cost only", "Alt": "(base only)" },
+				"levels_only": { "Name": "to leveled cost only", "Alt": "(levels only)" }
+			},
+			"emcost": {
+				"Type": {
+					"to_original_cost": {
+						"Name": "to original cost",
+						"Alt": "\"+5\", \"-5\", \"+10%\", \"-10%\", \"x3.2\""
+					},
+					"to_base_cost": { "Name": "to base cost", "Alt": "\"x2\", \"+2 CF\", \"-0.2 CF\"" },
+					"to_final_base_cost": {
+						"Name": "to final base cost",
+						"Alt": "\"+5\", \"-5\", \"+10%\", \"-10%\", \"x3.2\""
+					},
+					"to_final_cost": { "Name": "to final cost", "Alt": "\"+5\", \"-5\", \"+10%\", \"-10%\", \"x3.2\"" }
+				},
+				"Value": {
+					"+": { "Name": "+" },
+					"%": { "Name": "%" },
+					"x": { "Name": "x" },
+					"cf": { "Name": "CF" }
+				}
+			},
+			"emweight": {
+				"Type": {
+					"to_original_weight": {
+						"Name": "to original weight",
+						"Alt": "\"+5 lb\", \"-5 lb\", \"+10%\", \"-10%\""
+					},
+					"to_base_weight": {
+						"Name": "to base weight",
+						"Alt": "\"+5 lb\", \"-5 lb\", \"x10%\", \"x3\", \"x2/3\""
+					},
+					"to_final_base_weight": {
+						"Name": "to final base weight",
+						"Alt": "\"+5 lb\", \"-5 lb\", \"x10%\", \"x3\", \"x2/3\""
+					},
+					"to_final_weight": {
+						"Name": "to final weight",
+						"Alt": "\"+5 lb\", \"-5 lb\", \"x10%\", \"x3\", \"x2/3\""
+					}
+				}
+			},
+			"tmcost": {
+				"percentage": { "Name": "%" },
+				"points": { "Name": "points" },
+				"multiplier": { "Name": "×" }
+			},
 			"attribute": {
 				"Type": {
 					"integer": "Integer",
@@ -2669,18 +2741,6 @@
 				"skill": "Has a skill whose name is",
 				"condition": "Has a condition whose ID is"
 			},
-			"affects": {
-				"string": {
-					"total": "to cost",
-					"base_only": "to base cost only",
-					"levels_only": "to leveled cost only"
-				},
-				"alt_string": {
-					"total": "",
-					"base_only": "(base only)",
-					"levels_only": "(levels only)"
-				}
-			},
 			"container": {
 				"string": {
 					"group": "Group",
@@ -2726,44 +2786,6 @@
 				"orientation": {
 					"portrait": "Portrait",
 					"landscape": "Landscape"
-				}
-			},
-			"emcost": {
-				"type": {
-					"string": {
-						"to_original_cost": "to original cost",
-						"to_base_cost": "to base cost",
-						"to_final_base_cost": "to final base cost",
-						"to_final_cost": "to final cost"
-					},
-					"alt_string": {
-						"to_original_cost": "\"+5\", \"-5\", \"+10%\", \"-10%\", \"x3.2\"",
-						"to_base_cost": "\"x2\", \"+2 CF\", \"-0.2 CF\"",
-						"to_final_base_cost": "\"+5\", \"-5\", \"+10%\", \"-10%\", \"x3.2\"",
-						"to_final_cost": "\"+5\", \"-5\", \"+10%\", \"-10%\", \"x3.2\""
-					}
-				},
-				"value": {
-					"+": "+",
-					"%": "%",
-					"x": "x",
-					"cf": "CF"
-				}
-			},
-			"emweight": {
-				"type": {
-					"string": {
-						"to_original_weight": "to original weight",
-						"to_base_weight": "to base weight",
-						"to_final_base_weight": "to final base weight",
-						"to_final_weight": "to final weight"
-					},
-					"alt_string": {
-						"to_original_weight": "\"+5 lb\", \"-5 lb\", \"+10%\", \"-10%\"",
-						"to_base_weight": "\"+5 lb\", \"-5 lb\", \"x10%\", \"x3\", \"x2/3\"",
-						"to_final_base_weight": "\"+5 lb\", \"-5 lb\", \"x10%\", \"x3\", \"x2/3\"",
-						"to_final_weight": "\"+5 lb\", \"-5 lb\", \"x10%\", \"x3\", \"x2/3\""
-					}
 				}
 			},
 			"attribute": {
@@ -2889,11 +2911,6 @@
 						"major_cost_of_living_increase": "+{penalty}% Cost of Living Increase"
 					}
 				}
-			},
-			"tmcost": {
-				"percentage": "%",
-				"points": "points",
-				"multiplier": "×"
 			},
 			"study": {
 				"type": {

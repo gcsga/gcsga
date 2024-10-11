@@ -6,6 +6,7 @@ import { ActiveEffectGURPS } from "./active-effect.ts"
 import { ItemGURPS2 } from "./item.ts"
 import { type TokenDocumentGURPS } from "./token.ts"
 import { ActorDataModel } from "@module/data/actor/abstract.ts"
+import { ActorSystemFlags } from "./actor-system-flags.ts"
 
 class ActorGURPS2<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null> extends Actor<TParent> {
 	declare items: foundry.abstract.EmbeddedCollection<ItemGURPS2<this>>
@@ -14,8 +15,7 @@ class ActorGURPS2<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS
 	/**
 	 * Get the data model that represents system flags.
 	 */
-	// TODO: change to actor specific
-	get _systemFlagsDataModel(): typeof foundry.abstract.DataModel | null {
+	get _systemFlagsDataModel(): ConstructorOf<ActorSystemFlags> | null {
 		return this.system?.metadata?.systemFlagsModel ?? null
 	}
 
@@ -26,7 +26,7 @@ class ActorGURPS2<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS
 		if (SYSTEM_NAME in this.flags && this._systemFlagsDataModel) {
 			this.flags[SYSTEM_NAME] = new this._systemFlagsDataModel(this._source.flags[SYSTEM_NAME], {
 				parent: this,
-			})
+			}) as unknown as Record<string, unknown>
 		}
 	}
 
@@ -167,7 +167,8 @@ class ActorGURPS2<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS
 		if (scope === SYSTEM_NAME && this._systemFlagsDataModel) {
 			let diff
 			const changes = foundry.utils.expandObject({ [key]: value })
-			if (this.flags[SYSTEM_NAME]) diff = this.flags[SYSTEM_NAME].updateSource(changes, { dryRun: true })
+			if (this.flags[SYSTEM_NAME])
+				diff = (this.flags[SYSTEM_NAME] as unknown as ActorSystemFlags).updateSource(changes, { dryRun: true })
 			else diff = new this._systemFlagsDataModel(changes, { parent: this }).toObject()
 			return this.update({ flags: { [SYSTEM_NAME]: diff } }) as unknown as this
 		}

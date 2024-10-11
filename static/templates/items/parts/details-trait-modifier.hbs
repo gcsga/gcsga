@@ -1,0 +1,53 @@
+<fieldset>
+	<legend>{{localize "GURPS.Item.TraitModifier.DetailsLegend"}}</legend>
+
+	<!-- Notes -->
+	{{formField fields.notes value=source.notes localize=true}}
+
+	<!-- Enabled -->
+	<div class="form-group">
+		<label>{{localize "GURPS.Item.TraitModifier.FIELDS.Enabled.Name"}}</label>
+		<div class="form-fields">{{formInput fields.disabled value=(not source.disabled) name="system.enabled"}}</div>
+	</div>
+
+	<!-- Point Cost -->
+	<div class="form-group">
+		<label>{{localize "GURPS.Item.Trait.FIELDS.Points.Name"}}</label>
+		<div class="form-fields">
+			<!-- Point Cost -->
+			{{formInput fields.cost value=source.cost}}
+			<!-- Cost Type-->
+			{{formInput fields.cost_type value=source.cost_type localize=true}}
+			<!-- Affects -->
+			{{formInput fields.affects value=source.affects localize=true}}
+		</div>
+	</div>
+
+	<!-- Levels -->
+	<div class="form-group">
+		<label>{{localize "GURPS.Item.TraitModifier.FIELDS.Levels.Name"}}</label>
+		<div class="form-fields">
+			<!-- Level Number -->
+			{{formInput fields.levels value=source.levels disabled=source.use_level_from_trait}}
+			<label>
+				<!-- Use Level From Trait -->
+				{{formInput fields.use_level_from_trait value=source.use_level_from_trait}}
+				<!-- Label -->
+				{{localize "GURPS.Item.Trait.FIELDS.PointsPerLevel.Name"}}
+			</label>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<label>{{localize "GURPS.Item.TraitModifier.FIELDS.Total.Name"}}</label>
+		<div class="form-fields">
+			<input type="text" value="{{system.costWithType}}" disabled />
+		</div>
+	</div>
+
+	<!-- Tags -->
+	{{formField fields.tags value=source.tags localize=true}}
+
+	<!-- Reference -->
+	{{formField fields.reference value=source.reference localize=true}}
+</fieldset>

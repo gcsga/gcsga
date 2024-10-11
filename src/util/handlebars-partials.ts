@@ -8,6 +8,7 @@ export async function preloadHandlebarsTemplates(): Promise<void> {
 		// Item Detsils Partials
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-container.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-defaults.hbs`,
+		`systems/${SYSTEM_NAME}/templates/items/parts/details-equipment-modifier.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-equipment.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-features.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-note.hbs`,
@@ -17,6 +18,7 @@ export async function preloadHandlebarsTemplates(): Promise<void> {
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-spell.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-technique.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-trait-container.hbs`,
+		`systems/${SYSTEM_NAME}/templates/items/parts/details-trait-modifier.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-trait.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-weapon-melee.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/details-weapon-ranged.hbs`,

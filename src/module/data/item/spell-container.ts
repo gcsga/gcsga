@@ -15,7 +15,6 @@ class SpellContainerData extends ItemDataModel.mixin(BasicInformationTemplate, C
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = ["gurps.details-container"]
 		context.embedsParts = ["gurps.embeds-children"]
-		context.headerFilter = "hue-rotate(359deg) saturate(0.57) brightness(0.86);"
 	}
 
 	static override defineSchema(): SpellContainerSchema {

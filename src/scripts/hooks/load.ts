@@ -26,7 +26,7 @@ export const Load = {
 		CONFIG.Combat.documentClass = CombatGURPS
 		CONFIG.Combatant.documentClass = CombatantGURPS
 		CONFIG.Item.documentClass = ItemGURPS2
-		CONFIG.Item.collection = ItemsGURPS
+		CONFIG.Item.collection = ItemsGURPS<ItemGURPS2<null>>
 		CONFIG.Macro.documentClass = Macro
 		CONFIG.MeasuredTemplate.documentClass = MeasuredTemplateDocument
 		// CONFIG.JournalEntry.documentClass = JournalEntryGURPS
@@ -40,10 +40,12 @@ export const Load = {
 		CONFIG.Dice.Attack = AttackRoll
 		CONFIG.Dice.Damage = DamageRoll
 
+		// @ts-expect-error infinite type
 		CONFIG.Actor.dataModels = {
 			[ActorType.Character]: ActorInstance.CharacterDataGURPS,
 		}
 
+		// @ts-expect-error infinite type
 		CONFIG.Item.dataModels = {
 			// [ItemType.Condition]: ItemInstance.ConditionData,
 			// [ItemType.Effect]: ItemInstance.EffectData,
@@ -68,7 +70,9 @@ export const Load = {
 		}
 
 		CONFIG.ActiveEffect.dataModels = {
+			// @ts-expect-error doesn't like parent type
 			[EffectType.Effect]: EffectInstance.EffectData,
+			// @ts-expect-error doesn't like parent type
 			[EffectType.Condition]: EffectInstance.ConditionData,
 		}
 

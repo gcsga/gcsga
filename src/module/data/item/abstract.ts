@@ -6,9 +6,10 @@ import { type CellData } from "./components/cell-data.ts"
 import { type ItemTemplateInst } from "./helpers.ts"
 import { ErrorGURPS } from "@util/misc.ts"
 import { SystemDataModel, SystemDataModelMetadata } from "../abstract.ts"
+import { ItemSystemFlags } from "@module/document/item-system-flags.ts"
 
 interface ItemDataModelMetadata extends SystemDataModelMetadata {
-	singleton: boolean
+	systemFlagsModel: ConstructorOf<ItemSystemFlags> | null
 }
 
 /**
@@ -63,14 +64,12 @@ class ItemDataModel<TSchema extends ItemDataSchema = ItemDataSchema> extends Sys
 	/* -------------------------------------------- */
 
 	static override metadata: ItemDataModelMetadata = Object.freeze(
-		foundry.utils.mergeObject(
-			super.metadata,
-			{
-				singleton: false,
-			},
-			{ inplace: false },
-		),
+		foundry.utils.mergeObject(super.metadata, { systemFlagsModel: ItemSystemFlags }, { inplace: false }),
 	)
+
+	override get metadata(): ItemDataModelMetadata {
+		return (this.constructor as typeof ItemDataModel).metadata
+	}
 
 	/* -------------------------------------------- */
 	/*  Socket Event Handlers                       */

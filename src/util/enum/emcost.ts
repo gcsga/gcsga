@@ -1,4 +1,3 @@
-import { LocalizeGURPS } from "@util/localize.ts"
 import { equalFold } from "@module/data/item/components/string-criteria.ts"
 import { Int } from "@util/int.ts"
 
@@ -26,19 +25,11 @@ export namespace emcost {
 		}
 
 		export function toString(T: Type): string {
-			return LocalizeGURPS.translations.gurps.enum.emcost.type.string[T]
+			return `GURPS.Enum.emcost.Type.${T}.Name`
 		}
 
 		export function altString(T: Type): string {
-			switch (T) {
-				case Type.Original:
-				case Type.Base:
-				case Type.FinalBase:
-				case Type.Final:
-					return LocalizeGURPS.translations.gurps.enum.emcost.type.alt_string[T]
-				default:
-					return Types[0].toString()
-			}
+			return `GURPS.Enum.emcost.Type.${T}.Alt`
 		}
 
 		export function stringWithExample(T: Type): string {
@@ -74,6 +65,13 @@ export namespace emcost {
 
 	export const Types: Type[] = [Type.Original, Type.Base, Type.FinalBase, Type.Final]
 
+	export const TypesChoices: Readonly<Record<Type, string>> = Object.freeze({
+		[Type.Original]: Type.toString(Type.Original),
+		[Type.Base]: Type.toString(Type.Base),
+		[Type.FinalBase]: Type.toString(Type.FinalBase),
+		[Type.Final]: Type.toString(Type.Final),
+	})
+
 	export enum Value {
 		Addition = "+",
 		Percentage = "%",
@@ -92,15 +90,7 @@ export namespace emcost {
 		}
 
 		export function toString(V: Value): string {
-			switch (V) {
-				case Value.Addition:
-				case Value.Percentage:
-				case Value.Multiplier:
-				case Value.CostFactor:
-					return LocalizeGURPS.translations.gurps.enum.emcost.value[V]
-				default:
-					return Value.toString(Values[0])
-			}
+			return `GURPS.Enum.emcost.Value.${V}.Name`
 		}
 
 		export function format(V: Value, value: number): string {

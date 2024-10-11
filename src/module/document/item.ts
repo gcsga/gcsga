@@ -5,12 +5,13 @@ import { ItemTemplateInst } from "@module/data/item/helpers.ts"
 import { LocalizeGURPS } from "@util"
 import { ActorGURPS2 } from "./actor.ts"
 import { Nameable } from "@module/util/index.ts"
+import { ItemSystemFlags } from "./item-system-flags.ts"
 
 class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extends Item<TParent> {
 	/**
 	 * Get the data model that represents system flags.
 	 */
-	get _systemFlagsDataModel(): typeof foundry.abstract.DataModel | null {
+	get _systemFlagsDataModel(): ConstructorOf<ItemSystemFlags> | null {
 		return this.system?.metadata?.systemFlagsModel ?? null
 	}
 
@@ -21,6 +22,11 @@ class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extend
 		if (Nameable.isAccesser(this.system)) return this.system.nameableReplacements
 		return new Map()
 	}
+	/* -------------------------------------------- */
+
+	get isContainer(): boolean {
+		return this.hasTemplate(ItemTemplateType.Container)
+	}
 
 	/* -------------------------------------------- */
 
@@ -29,7 +35,7 @@ class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extend
 		if (SYSTEM_NAME in this.flags && this._systemFlagsDataModel) {
 			this.flags[SYSTEM_NAME] = new this._systemFlagsDataModel(this._source.flags[SYSTEM_NAME], {
 				parent: this,
-			})
+			}) as unknown as Record<string, unknown>
 		}
 	}
 
@@ -170,9 +176,10 @@ class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extend
 		if (scope === SYSTEM_NAME && this._systemFlagsDataModel) {
 			let diff
 			const changes = foundry.utils.expandObject({ [key]: value })
-			if (this.flags[SYSTEM_NAME]) diff = this.flags[SYSTEM_NAME].updateSource(changes, { dryRun: true })
+			if (this.flags[SYSTEM_NAME])
+				diff = (this.flags[SYSTEM_NAME] as unknown as ItemSystemFlags).updateSource(changes, { dryRun: true })
 			else diff = new this._systemFlagsDataModel(changes, { parent: this }).toObject()
-			return this.update({ flags: { [SYSTEM_NAME]: diff } })
+			return this.update({ flags: { [SYSTEM_NAME]: diff } }) as unknown as this
 		}
 		return super.setFlag(scope, key, value)
 	}

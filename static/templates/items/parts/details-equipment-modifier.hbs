@@ -1,0 +1,55 @@
+<fieldset>
+	<legend>{{localize "GURPS.Item.EquipmentModifier.DetailsLegend"}}</legend>
+
+	<!-- Notes -->
+	{{formField fields.notes value=source.notes localize=true}}
+
+	<!-- Tech Level-->
+	{{formField fields.tech_level value=source.tech_level localize=true}}
+
+	<!-- Enabled -->
+	<div class="form-group">
+		<label>{{localize "GURPS.Item.EquipmentModifier.FIELDS.Enabled.Name"}}</label>
+		<div class="form-fields">{{formInput fields.disabled value=(not source.disabled) name="system.enabled"}}</div>
+	</div>
+
+	<!-- Cost -->
+	<div class="form-group">
+		<label>{{localize "GURPS.Item.EquipmentModifier.FIELDS.Points.Name"}}</label>
+		<div class="form-fields">
+			<!-- Cost Value-->
+			{{formInput fields.cost value=source.cost}}
+			<!-- Cost Type -->
+			{{formInput fields.cost_type value=source.cost_type localize=true}}
+			<label>
+				<!-- Cost is per level -->
+				{{formInput fields.cost_is_per_level value=source.cost_is_per_level}}
+				<!-- Label -->
+				{{localize "GURPS.Item.EquipmentModifier.FIELDS.CostIsPerLevel.Name"}}
+			</label>
+		</div>
+	</div>
+
+	<!-- Weight -->
+	<div class="form-group">
+		<label>{{localize "GURPS.Item.EquipmentModifier.FIELDS.Points.Name"}}</label>
+		<div class="form-fields">
+			<!-- Weight Value-->
+			{{formInput fields.weight value=source.weight}}
+			<!-- Weight Type -->
+			{{formInput fields.weight_type value=source.weight_type localize=true}}
+			<label>
+				<!-- Weight is per level -->
+				{{formInput fields.weight_is_per_level value=source.weight_is_per_level}}
+				<!-- Label -->
+				{{localize "GURPS.Item.EquipmentModifier.FIELDS.WeightIsPerLevel.Name"}}
+			</label>
+		</div>
+	</div>
+
+	<!-- Tags -->
+	{{formField fields.tags value=source.tags localize=true}}
+
+	<!-- Reference -->
+	{{formField fields.reference value=source.reference localize=true}}
+</fieldset>

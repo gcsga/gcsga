@@ -1,4 +1,3 @@
-import { LocalizeGURPS } from "@util/localize.ts"
 import { equalFold } from "@module/data/item/components/string-criteria.ts"
 import { Fraction } from "@util/fraction.ts"
 import { Weight } from "@util/weight.ts"
@@ -31,27 +30,11 @@ export namespace emweight {
 		}
 
 		export function toString(T: Type): string {
-			switch (T) {
-				case Type.Original:
-				case Type.Base:
-				case Type.FinalBase:
-				case Type.Final:
-					return LocalizeGURPS.translations.gurps.enum.emweight.type.string[T]
-				default:
-					return Types[0].toString()
-			}
+			return `GURPS.Enum.emweight.Type.${T}.Name`
 		}
 
 		export function altString(T: Type): string {
-			switch (T) {
-				case Type.Original:
-				case Type.Base:
-				case Type.FinalBase:
-				case Type.Final:
-					return LocalizeGURPS.translations.gurps.enum.emweight.type.alt_string[T]
-				default:
-					return Types[0].toString()
-			}
+			return `GURPS.Enum.emweight.Type.${T}.Alt`
 		}
 
 		export function stringWithExample(T: Type): string {
@@ -81,6 +64,13 @@ export namespace emweight {
 	}
 
 	export const Types: Type[] = [Type.Original, Type.Base, Type.FinalBase, Type.Final]
+
+	export const TypesChoices: Readonly<Record<Type, string>> = Object.freeze({
+		[Type.Original]: Type.toString(Type.Original),
+		[Type.Base]: Type.toString(Type.Base),
+		[Type.FinalBase]: Type.toString(Type.FinalBase),
+		[Type.Final]: Type.toString(Type.Final),
+	})
 
 	export enum Value {
 		Addition = "+",

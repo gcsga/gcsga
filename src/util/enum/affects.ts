@@ -1,4 +1,3 @@
-import { LocalizeGURPS } from "@util/localize.ts"
 import { equalFold } from "@module/data/item/components/string-criteria.ts"
 
 export namespace affects {
@@ -15,11 +14,11 @@ export namespace affects {
 		}
 
 		export function toString(O: Option): string {
-			return LocalizeGURPS.translations.gurps.enum.affects.string[O]
+			return `GURPS.Enum.affects.${O}.Name`
 		}
 
 		export function altString(O: Option): string {
-			return LocalizeGURPS.translations.gurps.enum.affects.alt_string[O]
+			return `GURPS.Enum.affects.${O}.Alt`
 		}
 
 		export function extractOption(s: string): Option {
@@ -30,4 +29,10 @@ export namespace affects {
 		}
 	}
 	export const Options: Option[] = [Option.Total, Option.BaseOnly, Option.LevelsOnly]
+
+	export const OptionsChoices: Readonly<Record<Option, string>> = Object.freeze({
+		[Option.Total]: Option.toString(Option.Total),
+		[Option.BaseOnly]: Option.toString(Option.BaseOnly),
+		[Option.LevelsOnly]: Option.toString(Option.LevelsOnly),
+	})
 }

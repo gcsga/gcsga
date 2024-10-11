@@ -7,7 +7,7 @@ declare global {
 	 * @see {@link documents.Items}            The world-level collection of Item documents
 	 * @see {@link applications.ItemSheet}     The Item configuration application
 	 */
-	class Item<TParent extends Actor | null = Actor | null> extends ClientBaseItem<TParent> {
+	class Item<TParent extends Actor | null> extends ClientBaseItem<TParent> {
 		/** A convenience alias of Item#parent which is more semantically intuitive */
 		get actor(): TParent
 

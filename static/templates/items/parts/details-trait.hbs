@@ -1,5 +1,5 @@
 <fieldset>
-	<legend>{{localize "GURPS.Item.Trait.DetailsLegend"}}</legend>
+	<legend>{{localize "GURPS.Item.TraitModifier.DetailsLegend"}}</legend>
 
 	<!-- Notes -->
 	{{formField fields.notes value=source.notes localize=true}}
@@ -12,20 +12,17 @@
 
 	<!-- Enabled -->
 	<div class="form-group">
-		<label>{{localize "GURPS.Item.Trait.FIELDS.Enabled.Name"}}</label>
-		<div class="form-fields">
-			<!-- Tech Level Number -->
-			{{formInput fields.disabled value=(not source.disabled) name="system.enabled"}}
-		</div>
+		<label>{{localize "GURPS.Item.TraitModifier.FIELDS.Enabled.Name"}}</label>
+		<div class="form-fields">{{formInput fields.disabled value=(not source.disabled) name="system.enabled"}}</div>
 	</div>
 
 	<!-- Point Cost -->
 	<div class="form-group">
-		<label>{{localize "GURPS.Item.Trait.FIELDS.Points.Name"}}</label>
+		<label>{{localize "GURPS.Item.TraitModifier.FIELDS.Points.Name"}}</label>
 		<div class="form-fields">
 			<!-- Point Cost -->
 			<input type="text" value="{{system.adjustedPoints}}" disabled />
-			<label>{{localize "GURPS.Item.Trait.FIELDS.RoundDown.Name"}}</label>
+			<label>{{localize "GURPS.Item.TraitModifier.FIELDS.RoundDown.Name"}}</label>
 			<!-- Round Down -->
 			{{formInput fields.round_down value=source.round_down}}
 		</div>
@@ -40,12 +37,12 @@
 			<!-- Checkbox -->
 			{{formInput fields.can_level value=source.can_level}}
 			<!-- Label -->
-			{{localize "GURPS.Item.Trait.FIELDS.Levels.Name"}}
+			{{localize "GURPS.Item.TraitModifier.FIELDS.Levels.Name"}}
 		</label>
 		<div class="form-fields">
 			<!-- Level Number -->
 			{{formInput fields.levels value=source.levels disabled=(not source.can_level)}}
-			<label>{{localize "GURPS.Item.Trait.FIELDS.PointsPerLevel.Name"}}</label>
+			<label>{{localize "GURPS.Item.TraitModifier.FIELDS.PointsPerLevel.Name"}}</label>
 			<!-- Points Per Level-->
 			{{formInput fields.points_per_level value=source.points_per_level disabled=(not source.can_level)}}
 		</div>

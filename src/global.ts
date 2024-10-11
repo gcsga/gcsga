@@ -36,7 +36,7 @@ interface GameGURPS
 		ChatMessageGURPS,
 		CombatGURPS,
 		ItemGURPS2<null>,
-		ItemsGURPS,
+		ItemsGURPS<ItemGURPS2<null>>,
 		Macro,
 		Scene,
 		UserGURPS<ActorGURPS2<null>>

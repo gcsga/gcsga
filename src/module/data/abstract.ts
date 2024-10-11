@@ -1,8 +1,9 @@
+import { DocumentSystemFlags } from "@module/document/system-flags.ts"
 import fields = foundry.data.fields
 import { SYSTEM_NAME } from "./constants.ts"
 
 interface SystemDataModelMetadata {
-	systemFlagsModel: typeof foundry.abstract.DataModel | null
+	systemFlagsModel: ConstructorOf<DocumentSystemFlags> | null
 }
 
 // Type to get the instance type of a class constructor

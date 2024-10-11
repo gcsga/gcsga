@@ -174,7 +174,6 @@ class AbstractSkillTemplate extends ItemDataModel<AbstractSkillTemplateSchema> {
 interface AbstractSkillTemplate
 	extends ItemDataModel<AbstractSkillTemplateSchema>,
 		Omit<ModelPropsFromSchema<AbstractSkillTemplateSchema>, "difficulty"> {
-	constructor: typeof AbstractSkillTemplate
 	difficulty: AttributeDifficulty
 }
 

@@ -7,7 +7,9 @@ declare global {
 	 * Each ActiveEffect belongs to the effects collection of its parent Document.
 	 * Each ActiveEffect contains a ActiveEffectData object which provides its source data.
 	 */
-	class ActiveEffect<TParent extends Actor | Item | null> extends ClientBaseActiveEffect<TParent> {
+	class ActiveEffect<
+		TParent extends Actor | Item | null = Actor | Item | null,
+	> extends ClientBaseActiveEffect<TParent> {
 		constructor(data: PreCreate<ActiveEffectSource>, context?: DocumentConstructionContext<TParent>)
 
 		/** A cached reference to the source name to avoid recurring database lookups */

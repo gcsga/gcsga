@@ -309,7 +309,6 @@ class AbstractWeaponTemplate extends ItemDataModel.mixin(SkillDefaultTemplate) {
 }
 
 interface AbstractWeaponTemplate extends ModelPropsFromSchema<AbstractWeaponTemplateSchema> {
-	constructor: typeof AbstractWeaponTemplate
 	nameableReplacements: Map<string, string>
 	tags: string[]
 }

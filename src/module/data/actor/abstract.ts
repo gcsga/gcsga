@@ -2,7 +2,12 @@ import { ActorType } from "../constants.ts"
 import { type ActorGURPS2 } from "@module/document/actor.ts"
 import { type ActorDataInstances, type ActorDataTemplates, type ActorTemplateType } from "./types.ts"
 import { ErrorGURPS } from "@util/misc.ts"
-import { SystemDataModel } from "../abstract.ts"
+import { SystemDataModel, SystemDataModelMetadata } from "../abstract.ts"
+import { ActorSystemFlags } from "@module/document/actor-system-flags.ts"
+
+interface ActorDataModelMetadata extends SystemDataModelMetadata {
+	systemFlagsModel: ConstructorOf<ActorSystemFlags> | null
+}
 
 /**
  * Variant of the SystemDataModel with some extra actor-specific handling.
@@ -10,6 +15,16 @@ import { SystemDataModel } from "../abstract.ts"
 class ActorDataModel<TSchema extends ActorDataSchema = ActorDataSchema> extends SystemDataModel<ActorGURPS2, TSchema> {
 	variableResolverExclusions = new Set<string>()
 	cachedVariables = new Map<string, string>()
+
+	/* -------------------------------------------- */
+
+	static override metadata: ActorDataModelMetadata = Object.freeze(
+		foundry.utils.mergeObject(super.metadata, { systemFlagsModel: ActorSystemFlags }, { inplace: false }),
+	)
+
+	override get metadata(): ActorDataModelMetadata {
+		return (this.constructor as typeof ActorDataModel).metadata
+	}
 
 	/**
 	 * Type safe way of verifying if an Actor is of a particular type.

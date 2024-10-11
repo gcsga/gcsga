@@ -1,4 +1,3 @@
-import { LocalizeGURPS } from "@util/localize.ts"
 import { equalFold } from "@module/data/item/components/string-criteria.ts"
 
 export namespace tmcost {
@@ -10,7 +9,7 @@ export namespace tmcost {
 
 	export namespace Type {
 		export function toString(T: Type): string {
-			return LocalizeGURPS.translations.gurps.enum.tmcost[T]
+			return `GURPS.Enum.tmcost.${T}.Name`
 		}
 
 		export function ensureValid(T: Type): Type {
@@ -27,4 +26,10 @@ export namespace tmcost {
 	}
 
 	export const Types: Type[] = [Type.Percentage, Type.Points, Type.Multiplier]
+
+	export const TypesChoices: Readonly<Record<Type, string>> = Object.freeze({
+		[Type.Percentage]: Type.toString(Type.Percentage),
+		[Type.Points]: Type.toString(Type.Points),
+		[Type.Multiplier]: Type.toString(Type.Multiplier),
+	})
 }

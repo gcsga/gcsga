@@ -26,7 +26,7 @@ declare global {
 		TItemDirectory extends ItemDirectory<Item<null>>,
 		TCompendiumDirectory extends CompendiumDirectory,
 		THotbar extends Hotbar,
-		TItem extends Item<TActor | null>,
+		TItem extends Item,
 		TMacro extends Macro,
 		TMeasuredTemplateDocument extends MeasuredTemplateDocument<TScene | null>,
 		TRegionDocument extends RegionDocument<TScene | null>,
@@ -141,7 +141,7 @@ declare global {
 			documentClass: {
 				new (data: PreCreate<TItem["_source"]>, context?: DocumentConstructionContext<TItem["parent"]>): TItem
 			}
-			collection: typeof Items
+			collection: ConstructorOf<Items<Item<null>>>
 			dataModels: Record<string, ConstructorOf<abstract.TypeDataModel<TItem, data.fields.DataSchema>>>
 			typeIcons: Record<string, string>
 			typeLabels: Record<string, string | undefined>

@@ -16,6 +16,8 @@ export function registerSheets(): void {
 		types: [
 			ItemType.Equipment,
 			ItemType.EquipmentContainer,
+			ItemType.EquipmentModifier,
+			ItemType.EquipmentModifierContainer,
 			ItemType.Note,
 			ItemType.NoteContainer,
 			ItemType.RitualMagicSpell,
@@ -25,6 +27,8 @@ export function registerSheets(): void {
 			ItemType.SpellContainer,
 			ItemType.Technique,
 			ItemType.Trait,
+			ItemType.TraitModifier,
+			ItemType.TraitModifierContainer,
 			ItemType.TraitContainer,
 			ItemType.WeaponMelee,
 			ItemType.WeaponRanged,

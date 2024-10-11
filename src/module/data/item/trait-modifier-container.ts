@@ -14,6 +14,11 @@ class TraitModifierContainerData extends ItemDataModel.mixin(
 ) {
 	static override childTypes = new Set([ItemType.TraitModifier, ItemType.TraitModifierContainer])
 
+	override async getSheetData(context: Record<string, unknown>): Promise<void> {
+		context.detailsParts = ["gurps.details-container"]
+		context.embedsParts = ["gurps.embeds-children"]
+	}
+
 	static override defineSchema(): TraitModifierContainerSchema {
 		return this.mergeSchema(super.defineSchema(), {}) as TraitModifierContainerSchema
 	}

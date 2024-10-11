@@ -15,7 +15,6 @@ class SkillContainerData extends ItemDataModel.mixin(BasicInformationTemplate, C
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = ["gurps.details-container"]
 		context.embedsParts = ["gurps.embeds-children"]
-		context.headerFilter = "hue-rotate(256deg) saturate(0.32) brightness(1.29);"
 	}
 
 	static override defineSchema(): SkillContainerSchema {

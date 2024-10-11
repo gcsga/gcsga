@@ -14,6 +14,11 @@ class EquipmentModifierContainerData extends ItemDataModel.mixin(
 ) {
 	static override childTypes = new Set([ItemType.EquipmentModifier, ItemType.EquipmentModifierContainer])
 
+	override async getSheetData(context: Record<string, unknown>): Promise<void> {
+		context.detailsParts = ["gurps.details-container"]
+		context.embedsParts = ["gurps.embeds-children"]
+	}
+
 	static override defineSchema(): EquipmentModifierContainerSchema {
 		return this.mergeSchema(super.defineSchema(), {}) as EquipmentModifierContainerSchema
 	}

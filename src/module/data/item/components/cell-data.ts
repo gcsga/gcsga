@@ -29,6 +29,17 @@ class CellData extends foundry.abstract.DataModel<SystemDataModel, CellDataSchem
 			inlineTag: new fields.StringField({ required: true, nullable: true, initial: null }),
 		}
 	}
+
+	get element(): Handlebars.SafeString {
+		return new Handlebars.SafeString(this.toFormElement().outerHTML)
+	}
+
+	toFormElement(): HTMLElement {
+		const element = document.createElement("div")
+		console.log(this, this.schema.name)
+
+		return element
+	}
 }
 
 interface CellData
