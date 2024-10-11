@@ -12,9 +12,7 @@
 //
 // class DataModel<TSchema extends object = object, TParent extends DataModel | null = null> {
 // 	constructor(
-// 		// @ts-expect-error not properly defined
 // 		data: TSchema = {},
-// 		// @ts-expect-error not properly defined
 // 		options: DataModelConstructionOptions<TParent> = { parent: null, strict: true },
 // 	) {
 // 		// Parent model

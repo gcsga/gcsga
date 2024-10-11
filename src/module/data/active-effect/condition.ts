@@ -1,9 +1,7 @@
 import fields = foundry.data.fields
-import { feature } from "@util"
-import { Feature, FeatureTypes } from "../feature/types.ts"
-import { FeatureTemplateSchema } from "../item/templates/features.ts"
+import { FeatureTemplate, FeatureTemplateSchema } from "../item/templates/features.ts"
 import { RollModifier } from "../roll-modifier.ts"
-import { EffectDataModel } from "../abstract.ts"
+import { EffectDataModel } from "./abstract.ts"
 
 enum ConditionSubtype {
 	Normal = "normal",
@@ -12,12 +10,11 @@ enum ConditionSubtype {
 
 const ConditionSubTypes: ConditionSubtype[] = [ConditionSubtype.Normal, ConditionSubtype.Posture]
 
-class ConditionData extends EffectDataModel {
+class ConditionData extends EffectDataModel.mixin(FeatureTemplate) {
 	static override defineSchema(): ConditionSchema {
 		const fields = foundry.data.fields
 
-		return {
-			features: new fields.ArrayField(new fields.TypedSchemaField(FeatureTypes)),
+		return this.mergeSchema(super.defineSchema(), {
 			can_level: new fields.BooleanField({ required: true, nullable: false, initial: false }),
 			levels: new fields.SchemaField({
 				max: new fields.NumberField({ required: true, nullable: false, integer: true, initial: 0 }),
@@ -31,14 +28,13 @@ class ConditionData extends EffectDataModel {
 					margin: new fields.NumberField(),
 				}),
 			),
-		}
+		}) as ConditionSchema
 	}
 }
 
 interface ConditionData extends ModelPropsFromSchema<ConditionSchema> {}
 
 type ConditionSchema = FeatureTemplateSchema & {
-	features: fields.ArrayField<fields.TypedSchemaField<Record<feature.Type, ConstructorOf<Feature>>>>
 	modifiers: fields.ArrayField<fields.EmbeddedDataField<RollModifier>>
 	can_level: fields.BooleanField<boolean, boolean, true, false, true>
 	levels: fields.SchemaField<{

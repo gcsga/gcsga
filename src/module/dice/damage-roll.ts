@@ -13,14 +13,14 @@ class DamageRoll extends BaseRollGURPS {
 		if (!this.options.item) return null
 		const itemType = this.options.item.type
 		if (itemType === "thrust" || itemType === "swing") return null
-		const item = fromUuid(this.options.item.uuid)
+
+		const item = fromUuidSync(this.options.item.uuid)
 		if (!(item instanceof ItemGURPS2)) return null
-		if (!item.isOfType(ItemType.WeaponMelee, ItemType.WeaponRanged)) {
-			console.error("Damage Roll item is not a weapon")
-			return null
-		}
-		// @ts-expect-error type instantiation infinite
-		return item
+
+		if (item.type === ItemType.WeaponMelee || item.type === ItemType.WeaponRanged)
+			return item as ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>
+		console.error("Damage Roll item is not a weapon")
+		return null
 	}
 
 	override get total(): number | undefined {

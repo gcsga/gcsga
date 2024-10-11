@@ -92,6 +92,12 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		},
 	}
 
+	// constructor(options: DocumentSheetConfiguration) {
+	// 	super(options)
+	// 	this.options.window.contentClasses ??= []
+	// 	this.options.window.contentClasses.push(this.item.type)
+	// }
+
 	protected override _configureRenderOptions(options: ApplicationRenderOptions) {
 		super._configureRenderOptions(options)
 		if (!this.item.hasTemplate(ItemTemplateType.Replacement))

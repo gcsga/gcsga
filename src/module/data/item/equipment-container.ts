@@ -1,4 +1,4 @@
-import { ItemDataModel } from "../abstract.ts"
+import { ItemDataModel } from "./abstract.ts"
 import { ItemType } from "../constants.ts"
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { ContainerTemplate, ContainerTemplateSchema } from "./templates/container.ts"
@@ -6,6 +6,7 @@ import { FeatureTemplate, FeatureTemplateSchema } from "./templates/features.ts"
 import { PrereqTemplate, PrereqTemplateSchema } from "./templates/prereqs.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
 import { EquipmentFieldsTemplate, EquipmentFieldsTemplateSchema } from "./templates/equipment-fields.ts"
+import { FeatureSet } from "../feature/types.ts"
 
 class EquipmentContainerData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -27,6 +28,15 @@ class EquipmentContainerData extends ItemDataModel.mixin(
 			"gurps.embeds-weapons",
 		]
 		context.headerFilter = "hue-rotate(192deg) saturate(1) brightness(1.2);"
+	}
+
+	/** Features */
+	override addFeaturesToSet(featureSet: FeatureSet): void {
+		if (!this.equipped) return
+
+		for (const f of this.features) {
+			this._addFeatureToSet(f, featureSet, 0)
+		}
 	}
 }
 

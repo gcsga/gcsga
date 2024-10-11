@@ -1,4 +1,4 @@
-import { ItemDataModel } from "../abstract.ts"
+import { ItemDataModel } from "./abstract.ts"
 import fields = foundry.data.fields
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { ContainerTemplate, ContainerTemplateSchema } from "./templates/container.ts"

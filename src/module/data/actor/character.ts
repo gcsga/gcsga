@@ -1,4 +1,3 @@
-import { ActorDataModel } from "../abstract.ts"
 import fields = foundry.data.fields
 import { PointsRecord, PointsRecordSchema } from "./fields/points-record.ts"
 import { ItemType, gid } from "../constants.ts"
@@ -20,6 +19,7 @@ import { AttributeGURPS } from "../attribute/index.ts"
 import { DiceGURPS } from "../dice.ts"
 import { CharacterEncumbrance } from "./fields/character-encumbrance.ts"
 import { equalFold } from "../item/components/index.ts"
+import { ActorDataModel } from "./abstract.ts"
 
 class CharacterDataGURPS extends ActorDataModel.mixin(
 	FeatureHolderTemplate,
@@ -267,7 +267,7 @@ class CharacterDataGURPS extends ActorDataModel.mixin(
 	weightCarried(forSkills: boolean): number {
 		let total = 0
 		for (const equipment of this.parent.itemCollections.carriedEquipment) {
-			total += equipment.system.extendedWeight(forSkills, this.settings.default_weight_units)
+			total += equipment.system.extendedWeight(forSkills, this.settings.default_weight_units) as number
 		}
 		return total
 	}

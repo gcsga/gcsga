@@ -102,3 +102,15 @@ export interface FeatureInstances {
 	[feature.Type.ContainedWeightReduction]: FeatureType.ContainedWeightReduction
 	[feature.Type.MoveBonus]: FeatureType.MoveBonus
 }
+
+export type FeatureSet = {
+	attributeBonuses: FeatureType.AttributeBonus[]
+	costReductions: FeatureType.CostReduction[]
+	drBonuses: FeatureType.DRBonus[]
+	skillBonuses: FeatureType.SkillBonus[]
+	skillPointBonuses: FeatureType.SkillPointBonus[]
+	spellBonuses: FeatureType.SpellBonus[]
+	spellPointBonuses: FeatureType.SpellPointBonus[]
+	weaponBonuses: FeatureType.WeaponBonus[]
+	moveBonuses: FeatureType.MoveBonus[]
+}

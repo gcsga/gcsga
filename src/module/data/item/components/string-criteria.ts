@@ -1,5 +1,5 @@
 import fields = foundry.data.fields
-import { ItemDataModel } from "@module/data/abstract.ts"
+import { ItemDataModel } from "@module/data/item/abstract.ts"
 import { Nameable } from "../../../util/nameable.ts"
 import { StringComparison } from "@util/enum/string-comparison.ts"
 import { LocalizeGURPS } from "@util/localize.ts"

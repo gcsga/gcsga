@@ -1,11 +1,11 @@
-import { ActorDataModel } from "@module/data/abstract.ts"
-import { ActorType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { ActorDataInstances, ActorDataTemplates, ActorTemplateType } from "@module/data/actor/types.ts"
+import { ActorType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { Evaluator } from "@module/util/index.ts"
 import { ItemCollectionsMap } from "@system/item-collections.ts"
+import { ActiveEffectGURPS } from "./active-effect.ts"
 import { ItemGURPS2 } from "./item.ts"
 import { type TokenDocumentGURPS } from "./token.ts"
-import { ActiveEffectGURPS } from "./active-effect.ts"
+import { ActorDataModel } from "@module/data/actor/abstract.ts"
 
 class ActorGURPS2<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS | null> extends Actor<TParent> {
 	declare items: foundry.abstract.EmbeddedCollection<ItemGURPS2<this>>
@@ -14,6 +14,7 @@ class ActorGURPS2<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS
 	/**
 	 * Get the data model that represents system flags.
 	 */
+	// TODO: change to actor specific
 	get _systemFlagsDataModel(): typeof foundry.abstract.DataModel | null {
 		return this.system?.metadata?.systemFlagsModel ?? null
 	}
@@ -23,7 +24,6 @@ class ActorGURPS2<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS
 	override prepareData() {
 		super.prepareData()
 		if (SYSTEM_NAME in this.flags && this._systemFlagsDataModel) {
-			// @ts-expect-error abstract class overwritten
 			this.flags[SYSTEM_NAME] = new this._systemFlagsDataModel(this._source.flags[SYSTEM_NAME], {
 				parent: this,
 			})
@@ -167,9 +167,7 @@ class ActorGURPS2<TParent extends TokenDocumentGURPS | null = TokenDocumentGURPS
 		if (scope === SYSTEM_NAME && this._systemFlagsDataModel) {
 			let diff
 			const changes = foundry.utils.expandObject({ [key]: value })
-			// @ts-expect-error value exists
 			if (this.flags[SYSTEM_NAME]) diff = this.flags[SYSTEM_NAME].updateSource(changes, { dryRun: true })
-			// @ts-expect-error abstract class overwritten
 			else diff = new this._systemFlagsDataModel(changes, { parent: this }).toObject()
 			return this.update({ flags: { [SYSTEM_NAME]: diff } }) as unknown as this
 		}

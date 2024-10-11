@@ -671,7 +671,7 @@ class DamageCalculator implements IDamageCalculator {
 		return undefined
 	}
 
-	// @ts-expect-error unused
+	// @ts-expect-error unused for now TODO: re-enable
 	private knockbackEffects(knockback: number): InjuryEffect[] {
 		if (knockback === 0) return []
 
@@ -1191,7 +1191,7 @@ class HitLocationDamage implements LocationDamage {
 		return []
 	}
 
-	// @ts-expect-error unused
+	// @ts-expect-error unused for now TODO: re-enable
 	private majorWoundEffects(results: DamageResults, locationName: string): InjuryEffect[] {
 		const wounds = []
 
@@ -1243,7 +1243,7 @@ class HitLocationDamage implements LocationDamage {
 		return wounds
 	}
 
-	// @ts-expect-error unused
+	// @ts-expect-error unused for now TODO: re-enable
 	private miscellaneousEffects(results: DamageResults, locationName: string): InjuryEffect[] {
 		const location = this.hitLocation
 
@@ -1426,7 +1426,7 @@ class HitLocationDamage implements LocationDamage {
 	/**
 	 * @returns {number} yards of knockback, if any.
 	 */
-	// @ts-expect-error unused
+	// @ts-expect-error unused for now TODO: re-enable
 	private knockback(results: DamageResults): number {
 		if (this.isDamageTypeKnockbackEligible) {
 			if (this.damageType === DamageTypes.cut && results.penetratingDamage!.value > 0) return 0

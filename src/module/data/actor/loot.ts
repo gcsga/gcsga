@@ -1,4 +1,4 @@
-import { ActorDataModel } from "../abstract.ts"
+import { ActorDataModel } from "./abstract.ts"
 
 class LootData extends ActorDataModel {}
 

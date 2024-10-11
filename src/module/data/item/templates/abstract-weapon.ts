@@ -1,4 +1,4 @@
-import { ItemDataModel } from "@module/data/abstract.ts"
+import { ItemDataModel } from "@module/data/item/abstract.ts"
 import fields = foundry.data.fields
 import { LocalizeGURPS, StringBuilder, TooltipGURPS, encumbrance, feature, skillsel, wsel, wswitch } from "@util"
 import { ItemTemplateType } from "../types.ts"
@@ -10,6 +10,7 @@ import { Feature } from "@module/data/feature/types.ts"
 import { WeaponBonus } from "@module/data/feature/index.ts"
 import { Nameable } from "@module/util/index.ts"
 import { SkillDefaultTemplate, SkillDefaultTemplateSchema } from "./defaults.ts"
+import { ItemInst, ItemTemplateInst } from "../helpers.ts"
 
 class AbstractWeaponTemplate extends ItemDataModel.mixin(SkillDefaultTemplate) {
 	protected declare _weaponLevel: number
@@ -117,7 +118,7 @@ class AbstractWeaponTemplate extends ItemDataModel.mixin(SkillDefaultTemplate) {
 			}
 		}
 		if (container.isOfType(ItemType.Trait, ItemType.Equipment, ItemType.EquipmentContainer)) {
-			for (const mod of container.system.allModifiers) {
+			for (const mod of container.system.allModifiers as Collection<ItemInst<ItemType.TraitModifier>>) {
 				for (const f of mod.system.features) {
 					adj += this.extractSkillBonusForThisWeapon(f, tooltip)
 				}
@@ -225,13 +226,15 @@ class AbstractWeaponTemplate extends ItemDataModel.mixin(SkillDefaultTemplate) {
 			for (const f of parent.system.features) {
 				this.extractWeaponBonus(f, bonusSet, allowed, dieCount, tooltip)
 			}
-			if (parent.isOfType(ItemType.Trait, ItemType.Equipment, ItemType.EquipmentContainer)) {
-				for (const mod of parent.system.allModifiers) {
-					for (const f of mod.system.features) {
-						const bonus = f.clone()
-						bonus.subOwner = mod
-						this.extractWeaponBonus(bonus, bonusSet, allowed, dieCount, tooltip)
-					}
+		}
+		if (parent.hasTemplate(ItemTemplateType.Container)) {
+			// TODO: verify that this works for items inside of compendia
+			const modifiers = parent.system.allModifiers as Collection<ItemTemplateInst<ItemTemplateType.Feature>>
+			for (const mod of modifiers) {
+				for (const f of mod.system.features) {
+					const bonus = f.clone()
+					bonus.subOwner = mod
+					this.extractWeaponBonus(bonus, bonusSet, allowed, dieCount, tooltip)
 				}
 			}
 		}

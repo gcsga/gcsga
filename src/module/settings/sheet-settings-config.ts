@@ -207,7 +207,7 @@ class SheetSettingsConfig extends api.HandlebarsApplicationMixin(api.Application
 	): Promise<void> {
 		event.preventDefault()
 
-		const data = new DefaultSheetSettings(formData.object as SheetSettingsSchema)
+		const data = new DefaultSheetSettings(formData.object)
 		game.settings.set(SYSTEM_NAME, SETTINGS.DEFAULT_SHEET_SETTINGS, data)
 		ui.notifications.info("GURPS.Settings.SheetSettings.MessageSubmit", { localize: true })
 	}

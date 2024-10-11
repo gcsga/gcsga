@@ -15,7 +15,6 @@ class UserGURPS<TActor extends ActorGURPS2<null> = ActorGURPS2<null>> extends Us
 	override prepareData() {
 		super.prepareData()
 		if (SYSTEM_NAME in this.flags && this._systemFlagsDataModel) {
-			// @ts-expect-error abstract class overwritten
 			this.flags[SYSTEM_NAME] = new this._systemFlagsDataModel(this._source.flags[SYSTEM_NAME], {
 				parent: this,
 			})
@@ -29,7 +28,6 @@ class UserGURPS<TActor extends ActorGURPS2<null> = ActorGURPS2<null>> extends Us
 			let diff
 			const changes = foundry.utils.expandObject({ [key]: value })
 			if (this.flags[SYSTEM_NAME]) diff = this.flags[SYSTEM_NAME].updateSource(changes, { dryRun: true })
-			// @ts-expect-error abstract class overwritten
 			else diff = new this._systemFlagsDataModel(changes, { parent: this }).toObject()
 			return this.update({ flags: { [SYSTEM_NAME]: diff } }) as unknown as this
 		}

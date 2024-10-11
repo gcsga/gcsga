@@ -220,7 +220,8 @@ class CompendiumPack {
 			// docSource.system._migration = { version: MigrationRunnerBase.LATEST_SCHEMA_VERSION, previous: null }
 
 			// Convert uuids with names in GrantItem REs to well-formedness
-			CompendiumPack.convertUUIDs(docSource, { to: "ids", map: CompendiumPack.#namesToIds.Item })
+			// CompendiumPack.convertUUIDs(docSource, { to: "ids", map: CompendiumPack.#namesToIds.Item })
+			CompendiumPack.convertUUIDs(docSource)
 		}
 
 		const replace = (match: string, packId: string, docType: string, docName: string): string => {
@@ -257,8 +258,7 @@ class CompendiumPack {
 	/** Convert UUIDs in REs to resemble links by name or back again */
 	static convertUUIDs(
 		_source: ItemSource,
-		// @ts-expect-error unused function
-		{ to, map }: { to: "ids" | "names"; map: Map<string, Map<string, string>> },
+		// { to, map }: { to: "ids" | "names"; map: Map<string, Map<string, string>> },
 	): void {}
 
 	static convertUUID<TUUID extends string>(uuid: TUUID, { to, map }: ConvertUUIDOptions): TUUID {

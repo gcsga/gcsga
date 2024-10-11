@@ -3,7 +3,6 @@
 //
 // export const init = function (): void {
 // 	Hooks.once("dragRuler.ready", SpeedProvider => {
-// 		// @ts-expect-error SpeedProvider not declared
 // 		class SpeedProviderGURPS extends SpeedProvider {
 // 			get colors() {
 // 				return [
@@ -23,7 +22,6 @@
 // 			}
 // 		}
 //
-// 		// @ts-expect-error dragRuler not imported or defined
 // 		dragRuler.registerSystem(SYSTEM_NAME, SpeedProviderGURPS)
 // 	})
 // }

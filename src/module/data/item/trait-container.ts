@@ -1,4 +1,4 @@
-import { ItemDataModel } from "../abstract.ts"
+import { ItemDataModel } from "./abstract.ts"
 import fields = foundry.data.fields
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { StringBuilder, align, cell, container, display, selfctrl } from "@util"
@@ -9,10 +9,11 @@ import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/repl
 import { CellData } from "./components/cell-data.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
-import { TraitModifierData } from "./trait-modifier.ts"
-import { calculateModifierPoints } from "./helpers.ts"
+import { ItemInst, calculateModifierPoints } from "./helpers.ts"
 import { TemplatePicker } from "./fields/template-picker.ts"
 import { Nameable } from "@module/util/index.ts"
+import { MaybePromise } from "../types.ts"
+import { ItemTemplateType } from "./types.ts"
 
 class TraitContainerData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -93,7 +94,7 @@ class TraitContainerData extends ItemDataModel.mixin(
 		cellData.name = new CellData({
 			type: cell.Type.Text,
 			primary: this.nameWithReplacements,
-			secondar: this.secondaryText(display.Option.isInline),
+			secondary: this.secondaryText(display.Option.isInline),
 			disabled: !this.enabled,
 			unsatisfiedReason: this.unsatisfiedReason,
 			tooltip: this.secondaryText(display.Option.isTooltip),
@@ -134,6 +135,11 @@ class TraitContainerData extends ItemDataModel.mixin(
 		return 0
 	}
 
+	// Parity with Trait when needed
+	get currentLevel(): number {
+		return 0
+	}
+
 	/** Returns trait point cost adjusted for enablement and modifiers */
 	get adjustedPoints(): number {
 		let points = 0
@@ -163,17 +169,43 @@ class TraitContainerData extends ItemDataModel.mixin(
 		return points
 	}
 
-	get allModifiers(): Collection<ItemGURPS2 & { system: TraitModifierData }> {
-		return new Collection(
-			Object.values(this.modifiers)
-				.filter(e => e.isOfType(ItemType.TraitModifier))
-				.map(e => [e.id, e]),
-		)
+	override get allModifiers(): MaybePromise<Collection<ItemInst<ItemType.TraitModifier>>> {
+		if (!this.parent) return new Collection()
+		if (this.parent.pack) return this._allModifiers()
+
+		const allModifiers = new Collection<ItemInst<ItemType.TraitModifier>>()
+
+		for (const item of <Collection<ItemGURPS2>>this.contents) {
+			if (item.type === ItemType.TraitModifier) allModifiers.set(item.id, <ItemInst<ItemType.TraitModifier>>item)
+
+			if (item.hasTemplate(ItemTemplateType.Container))
+				for (const contents of <Collection<ItemGURPS2>>item.system.allContents) {
+					if (contents.type === ItemType.TraitModifier)
+						allModifiers.set(contents.id, <ItemInst<ItemType.TraitModifier>>contents)
+				}
+		}
+		return allModifiers
+	}
+
+	private async _allModifiers(): Promise<Collection<ItemInst<ItemType.TraitModifier>>> {
+		const allModifiers = new Collection<ItemInst<ItemType.TraitModifier>>()
+
+		for (const item of await this.contents) {
+			if (item.type === ItemType.TraitModifier) allModifiers.set(item.id, <ItemInst<ItemType.TraitModifier>>item)
+
+			if (item.hasTemplate(ItemTemplateType.Container))
+				for (const contents of await item.system.allContents) {
+					if (contents.type === ItemType.TraitModifier)
+						allModifiers.set(contents.id, <ItemInst<ItemType.TraitModifier>>contents)
+				}
+		}
+		return allModifiers
 	}
 
 	// Returns rendered notes from modifiers
-	get modifierNotes(): string {
+	get modifierNotes(): MaybePromise<string> {
 		const buffer = new StringBuilder()
+
 		if (this.cr !== selfctrl.Roll.NoCR) {
 			buffer.push(selfctrl.Roll.toRollableButton(this.cr))
 			if (this.cr_adj !== selfctrl.Adjustment.NoCRAdj) {
@@ -181,7 +213,24 @@ class TraitContainerData extends ItemDataModel.mixin(
 				buffer.push(selfctrl.Adjustment.description(this.cr_adj, this.cr))
 			}
 		}
-		this.allModifiers.forEach(mod => {
+		const modifiers = this.allModifiers
+		if (modifiers instanceof Promise) return this._modifierNotes(buffer, modifiers)
+
+		modifiers.forEach(mod => {
+			if (mod.system.disabled) return
+			if (buffer.length !== 0) buffer.push("; ")
+			buffer.push(mod.system.fullDescription)
+		})
+		return buffer.toString()
+	}
+
+	private async _modifierNotes(
+		buffer: StringBuilder,
+		modifiers: Promise<Collection<ItemInst<ItemType.TraitModifier>>>,
+	): Promise<string> {
+		const resolvedModifiers = await Promise.resolve(modifiers)
+
+		resolvedModifiers.forEach(mod => {
 			if (mod.system.disabled) return
 			if (buffer.length !== 0) buffer.push("; ")
 			buffer.push(mod.system.fullDescription)
@@ -197,7 +246,8 @@ class TraitContainerData extends ItemDataModel.mixin(
 			buffer.push(userDesc)
 		}
 		if (optionChecker(settings.modifiers_display)) {
-			buffer.appendToNewLine(this.modifierNotes)
+			// TODO: check if we can avoid async here
+			buffer.appendToNewLine(this.modifierNotes as string)
 		}
 		if (optionChecker(settings.notes_display)) {
 			buffer.appendToNewLine(this.processedNotes)
@@ -219,21 +269,24 @@ class TraitContainerData extends ItemDataModel.mixin(
 	}
 
 	/** Nameables */
-	override fillWithNameableKeys(m: Map<string, string>, existing?: Map<string, string>): void {
-		this._fillWithLocalNameableKeys(m, existing)
-		this.allModifiers.forEach(mod => {
-			mod.system.fillWithNameableKeys(m, mod.system.nameableReplacements)
-		})
-	}
+	override fillWithNameableKeys(
+		m: Map<string, string>,
+		existing: Map<string, string> = this.nameableReplacements,
+	): void {
+		super.fillWithNameableKeys(m, existing)
 
-	protected _fillWithLocalNameableKeys(m: Map<string, string>, existing?: Map<string, string>): void {
-		if (!existing) existing = this.nameableReplacements
-
-		Nameable.extract(this.name, m, existing)
 		Nameable.extract(this.notes, m, existing)
 		Nameable.extract(this.userdesc, m, existing)
-		if (this.rootPrereq) {
-			this.rootPrereq.fillWithNameableKeys(m, existing)
+
+		this._fillWithNameableKeysFromPrereqs(m, existing)
+		this._fillWithNameableKeysFromEmbeds(m)
+	}
+
+	protected async _fillWithNameableKeysFromEmbeds(m: Map<string, string>): Promise<void> {
+		const modifiers = await this.allModifiers
+
+		for (const modifier of modifiers) {
+			modifier.system.fillWithNameableKeys(m, modifier.system.nameableReplacements)
 		}
 	}
 }

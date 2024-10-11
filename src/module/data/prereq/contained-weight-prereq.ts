@@ -39,7 +39,9 @@ class ContainedWeightPrereq extends BasePrereq<ContainedWeightPrereqSchema> {
 
 		if (exclude instanceof ItemGURPS2 && exclude.isOfType(ItemType.EquipmentContainer)) {
 			const units = SheetSettings.for(actor).default_weight_units
-			const weight = exclude.system.extendedWeight(false, units) - exclude.system.adjustedWeight(false, units)
+			const weight =
+				(exclude.system.extendedWeight(false, units) as number) -
+				(exclude.system.adjustedWeight(false, units) as number)
 			satisfied = this.qualifier.matches(weight)
 		}
 		if (!this.has) satisfied = !satisfied

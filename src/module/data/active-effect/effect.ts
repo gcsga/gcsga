@@ -1,27 +1,24 @@
-import { feature } from "@util"
-import { Feature, FeatureTypes } from "../feature/types.ts"
 import { RollModifier } from "../roll-modifier.ts"
 import fields = foundry.data.fields
-import { EffectDataModel } from "../abstract.ts"
+import { EffectDataModel } from "./abstract.ts"
+import { FeatureTemplate, FeatureTemplateSchema } from "../item/templates/features.ts"
 
-class EffectData extends EffectDataModel {
+class EffectData extends EffectDataModel.mixin(FeatureTemplate) {
 	static override defineSchema(): EffectSchema {
-		return {
-			features: new fields.ArrayField(new fields.TypedSchemaField(FeatureTypes)),
+		return this.mergeSchema(super.defineSchema(), {
 			modifiers: new fields.ArrayField(new fields.EmbeddedDataField(RollModifier)),
 			can_level: new fields.BooleanField({ required: true, nullable: false, initial: false }),
 			levels: new fields.SchemaField({
 				max: new fields.NumberField({ required: true, nullable: false, integer: true, initial: 0 }),
 				current: new fields.NumberField({ required: true, nullable: false, integer: true, initial: 0 }),
 			}),
-		}
+		}) as EffectSchema
 	}
 }
 
 interface EffectData extends ModelPropsFromSchema<EffectSchema> {}
 
-type EffectSchema = {
-	features: fields.ArrayField<fields.TypedSchemaField<Record<feature.Type, ConstructorOf<Feature>>>>
+type EffectSchema = FeatureTemplateSchema & {
 	modifiers: fields.ArrayField<fields.EmbeddedDataField<RollModifier>>
 	can_level: fields.BooleanField<boolean, boolean, true, false, true>
 	levels: fields.SchemaField<{

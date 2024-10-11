@@ -1,7 +1,23 @@
 import { type ItemGURPS2 } from "@module/document/item.ts"
-import { ErrorGURPS, StringBuilder, affects, align, cell, display, selfctrl, tmcost } from "@util"
-import { ItemDataModel } from "../abstract.ts"
+import { Nameable } from "@module/util/index.ts"
+import {
+	ErrorGURPS,
+	StringBuilder,
+	StringComparison,
+	affects,
+	align,
+	cell,
+	display,
+	feature,
+	selfctrl,
+	tmcost,
+} from "@util"
+import { ItemDataModel } from "./abstract.ts"
 import { ItemType } from "../constants.ts"
+import { FeatureSet, FeatureTypes } from "../feature/types.ts"
+import { SheetSettings } from "../sheet-settings.ts"
+import { Study } from "../study.ts"
+import { MaybePromise } from "../types.ts"
 import { CellData } from "./components/cell-data.ts"
 import { ItemInst, modifyPoints } from "./helpers.ts"
 import {
@@ -18,10 +34,8 @@ import {
 	StudyTemplate,
 	StudyTemplateSchema,
 } from "./templates/index.ts"
+import { ItemTemplateType } from "./types.ts"
 import fields = foundry.data.fields
-import { SheetSettings } from "../sheet-settings.ts"
-import { Study } from "../study.ts"
-import { Nameable } from "@module/util/index.ts"
 
 class TraitData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -113,7 +127,7 @@ class TraitData extends ItemDataModel.mixin(
 			name: new CellData({
 				type: cell.Type.Text,
 				primary: this.processedName,
-				secondar: this.secondaryText(display.Option.isInline),
+				secondary: this.secondaryText(display.Option.isInline),
 				disabled: !this.enabled,
 				unsatisfiedReason: this.unsatisfiedReason,
 				tooltip: this.secondaryText(display.Option.isTooltip),
@@ -156,16 +170,37 @@ class TraitData extends ItemDataModel.mixin(
 		return true
 	}
 
-	get allModifiers(): ItemInst<ItemType.TraitModifier>[] {
-		let modifiers: Collection<ItemGURPS2> = new Collection()
-		if (this.modifiers instanceof Promise) {
-			;(async () => {
-				modifiers = await this.modifiers
-			})()
-		} else {
-			modifiers = this.modifiers
+	override get allModifiers(): MaybePromise<Collection<ItemInst<ItemType.TraitModifier>>> {
+		if (!this.parent) return new Collection()
+		if (this.parent.pack) return this._allModifiers()
+
+		const allModifiers = new Collection<ItemInst<ItemType.TraitModifier>>()
+
+		for (const item of <Collection<ItemGURPS2>>this.contents) {
+			if (item.type === ItemType.TraitModifier) allModifiers.set(item.id, <ItemInst<ItemType.TraitModifier>>item)
+
+			if (item.hasTemplate(ItemTemplateType.Container))
+				for (const contents of <Collection<ItemGURPS2>>item.system.allContents) {
+					if (contents.type === ItemType.TraitModifier)
+						allModifiers.set(contents.id, <ItemInst<ItemType.TraitModifier>>contents)
+				}
 		}
-		return modifiers.filter(e => e.isOfType(ItemType.TraitModifier))
+		return allModifiers
+	}
+
+	private async _allModifiers(): Promise<Collection<ItemInst<ItemType.TraitModifier>>> {
+		const allModifiers = new Collection<ItemInst<ItemType.TraitModifier>>()
+
+		for (const item of await this.contents) {
+			if (item.type === ItemType.TraitModifier) allModifiers.set(item.id, <ItemInst<ItemType.TraitModifier>>item)
+
+			if (item.hasTemplate(ItemTemplateType.Container))
+				for (const contents of await item.system.allContents) {
+					if (contents.type === ItemType.TraitModifier)
+						allModifiers.set(contents.id, <ItemInst<ItemType.TraitModifier>>contents)
+				}
+		}
+		return allModifiers
 	}
 
 	/** Returns the current level of the trait or 0 if it is not leveled */
@@ -182,8 +217,9 @@ class TraitData extends ItemDataModel.mixin(
 		let pointsPerLevel = this.can_level ? (this.points_per_level ?? 0) : 0
 		let [baseEnh, levelEnh, baseLim, levelLim] = [0, 0, 0, 0]
 		let multiplier = selfctrl.Roll.multiplier(this.cr)
-		for (const mod of this.allModifiers) {
-			mod.system.trait = this.parent
+		// TODO: see if this works
+		for (const mod of this.allModifiers as Collection<ItemInst<ItemType.TraitModifier>>) {
+			mod.system.trait = this.parent as any
 			const modifier = mod.system.costModifier
 
 			switch (mod.system.cost_type) {
@@ -269,7 +305,7 @@ class TraitData extends ItemDataModel.mixin(
 	}
 
 	// Returns rendered notes from modifiers
-	get modifierNotes(): string {
+	get modifierNotes(): MaybePromise<string> {
 		const buffer = new StringBuilder()
 		if (this.cr !== selfctrl.Roll.NoCR) {
 			buffer.push(selfctrl.Roll.toRollableButton(this.cr))
@@ -278,7 +314,25 @@ class TraitData extends ItemDataModel.mixin(
 				buffer.push(selfctrl.Adjustment.description(this.cr_adj, this.cr))
 			}
 		}
-		this.allModifiers.forEach(mod => {
+
+		const modifiers = this.allModifiers
+		if (modifiers instanceof Promise) return this._modifierNotes(buffer, modifiers)
+
+		modifiers.forEach(mod => {
+			if (mod.system.disabled) return
+			if (buffer.length !== 0) buffer.push("; ")
+			buffer.push(mod.system.fullDescription)
+		})
+		return buffer.toString()
+	}
+
+	private async _modifierNotes(
+		buffer: StringBuilder,
+		modifiers: Promise<Collection<ItemInst<ItemType.TraitModifier>>>,
+	): Promise<string> {
+		const resolvedModifiers = await Promise.resolve(modifiers)
+
+		resolvedModifiers.forEach(mod => {
 			if (mod.system.disabled) return
 			if (buffer.length !== 0) buffer.push("; ")
 			buffer.push(mod.system.fullDescription)
@@ -294,7 +348,8 @@ class TraitData extends ItemDataModel.mixin(
 			buffer.push(userDesc)
 		}
 		if (optionChecker(settings.modifiers_display)) {
-			buffer.appendToNewLine(this.modifierNotes)
+			// TODO: check if this works
+			buffer.appendToNewLine(this.modifierNotes as string)
 		}
 		if (optionChecker(settings.notes_display)) {
 			buffer.appendToNewLine(this.processedNotes)
@@ -303,40 +358,69 @@ class TraitData extends ItemDataModel.mixin(
 		return buffer.toString()
 	}
 
+	/** Features */
+	override addFeaturesToSet(featureSet: FeatureSet): void {
+		if (!this.enabled) return
+
+		const levels = this.isLeveled ? Math.max(this.levels ?? 0) : 0
+		for (const f of this.features) {
+			this._addFeatureToSet(f, featureSet, levels)
+		}
+
+		const cr = this.cr
+		const adj = this.cr_adj
+		if (adj === selfctrl.Adjustment.MajorCostOfLivingIncrease) {
+			this._addFeatureToSet(
+				new FeatureTypes[feature.Type.SkillBonus](
+					{
+						name: { compare: StringComparison.Option.IsString, qualifier: "Merchant" },
+						amount: selfctrl.Roll.penalty(cr),
+					},
+					{ parent: this },
+				),
+				featureSet,
+				levels,
+			)
+		}
+	}
+
 	/** Replacements */
 	get userDescWithReplacements(): string {
 		return Nameable.apply(this.userdesc, this.nameableReplacements)
 	}
 
 	/** Nameables */
-	override fillWithNameableKeys(m: Map<string, string>, existing?: Map<string, string>): void {
+	override fillWithNameableKeys(
+		m: Map<string, string>,
+		existing: Map<string, string> = this.nameableReplacements,
+	): void {
 		super.fillWithNameableKeys(m, existing)
 
-		this._fillWithLocalNameableKeys(m, existing!)
-		this.allModifiers.forEach(mod => {
-			mod.system.fillWithNameableKeys(m, mod.system.nameableReplacements)
-		})
-	}
-
-	protected _fillWithLocalNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {
 		Nameable.extract(this.notes, m, existing)
 		Nameable.extract(this.userdesc, m, existing)
-		if (this.rootPrereq) {
-			this.rootPrereq.fillWithNameableKeys(m, existing)
+
+		this._fillWithNameableKeysFromPrereqs(m, existing)
+		this._fillWithNameableKeysFromEmbeds(m, existing)
+	}
+
+	protected async _fillWithNameableKeysFromEmbeds(
+		m: Map<string, string>,
+		existing: Map<string, string>,
+	): Promise<void> {
+		const modifiers = await this.allModifiers
+		const weapons = await this.weapons
+
+		for (const modifier of modifiers) {
+			modifier.system.fillWithNameableKeys(m, modifier.system.nameableReplacements)
 		}
-		for (const feature of this.features) {
-			feature.fillWithNameableKeys(m, existing)
+		for (const weapon of weapons) {
+			weapon.system.fillWithNameableKeys(m, existing)
 		}
-		;(this.weapons as Collection<ItemInst<ItemType.WeaponMelee> | ItemInst<ItemType.WeaponRanged>>).forEach(
-			weapon => {
-				weapon.system.fillWithNameableKeys(m, existing)
-			},
-		)
 	}
 }
 
-interface TraitData extends Omit<ModelPropsFromSchema<TraitSchema>, "study"> {
-	study: Study[]
+interface TraitData extends ModelPropsFromSchema<TraitSchema> {
+	get weapons(): MaybePromise<Collection<ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>>>
 }
 
 type TraitSchema = BasicInformationTemplateSchema &

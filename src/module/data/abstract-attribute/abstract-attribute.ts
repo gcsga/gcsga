@@ -1,6 +1,6 @@
 import fields = foundry.data.fields
 import type { AbstractAttributeDef } from "./abstract-attribute-definition.ts"
-import { ActorDataModel } from "@module/data/abstract.ts"
+import { ActorDataModel } from "@module/data/actor/abstract.ts"
 import { ActorGURPS2 } from "@module/document/actor.ts"
 
 abstract class AbstractAttribute<

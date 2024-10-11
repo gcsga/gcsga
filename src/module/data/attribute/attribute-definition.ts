@@ -2,7 +2,7 @@ import { PoolThreshold, PoolThresholdSchema } from "./pool-threshold.ts"
 import fields = foundry.data.fields
 import { ActorType, gid } from "@module/data/constants.ts"
 import { attribute, progression } from "@util"
-import { ActorDataModel } from "@module/data/abstract.ts"
+import { ActorDataModel } from "@module/data/actor/abstract.ts"
 import { ActorTemplateType } from "@module/data/actor/types.ts"
 import { AttributeHolderTemplate } from "@module/data/actor/templates/attribute-holder.ts"
 import { VariableResolver, evaluateToNumber } from "@module/util/index.ts"

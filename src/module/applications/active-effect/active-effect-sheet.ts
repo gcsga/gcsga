@@ -69,6 +69,9 @@ class ActiveEffectSheetGURPS extends api.HandlebarsApplicationMixin(api.Document
 	}
 
 	override async _prepareContext(options = {}): Promise<object> {
+		const modes = Object.fromEntries(
+			Object.entries(CONST.ACTIVE_EFFECT_MODES).map(e => [e[1], game.i18n.localize(`EFFECT.MODE_${e[0]}`)]),
+		)
 		const context: Record<string, unknown> = {
 			...super._prepareContext(options),
 			fields: this.effect.system.schema.fields,
@@ -78,11 +81,7 @@ class ActiveEffectSheetGURPS extends api.HandlebarsApplicationMixin(api.Document
 			system: this.effect.system,
 			source: this.effect.system.toObject(),
 			editable: this.isEditable,
-			modes: Object.entries(CONST.ACTIVE_EFFECT_MODES).reduce((obj, e) => {
-				// @ts-expect-error unknown type
-				obj[e[1]] = game.i18n.localize(`EFFECT.MODE_${e[0]}`)
-				return obj
-			}, {}),
+			modes,
 		}
 
 		context.enrichedDescription = await TextEditor.enrichHTML(this.effect.description, {
@@ -219,8 +218,7 @@ class ActiveEffectSheetGURPS extends api.HandlebarsApplicationMixin(api.Document
 		const effect = this.effect
 
 		const changes = effect.toObject().changes
-		// @ts-expect-error priority key missing, is ok
-		changes.push({ key: "", mode: CONST.ACTIVE_EFFECT_MODES.ADD, value: "" })
+		changes.push({ key: "", mode: CONST.ACTIVE_EFFECT_MODES.ADD, value: "", priority: 0 })
 
 		await this.effect.update({ changes: changes }, { render: true })
 	}

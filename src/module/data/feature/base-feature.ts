@@ -1,14 +1,15 @@
+import { createButton } from "@module/applications/helpers.ts"
+import { ItemDataModel } from "@module/data/item/abstract.ts"
+import { ItemType } from "@module/data/constants.ts"
+import { ItemTemplateType } from "@module/data/item/types.ts"
+import { ActiveEffectGURPS } from "@module/document/active-effect.ts"
+import { type ItemGURPS2 } from "@module/document/item.ts"
+import { TooltipGURPS } from "@util"
 import { feature } from "@util/enum/feature.ts"
 import { LocalizeGURPS } from "@util/localize.ts"
 import type { Feature, FeatureInstances } from "./types.ts"
-import { TooltipGURPS } from "@util"
-import { ItemType } from "@module/data/constants.ts"
-import { EffectDataModel, ItemDataModel } from "@module/data/abstract.ts"
-import { ItemGURPS2 } from "@module/document/item.ts"
 import fields = foundry.data.fields
-import { ItemTemplateType } from "@module/data/item/types.ts"
-import { createButton } from "@module/applications/helpers.ts"
-import { ActiveEffectGURPS } from "@module/document/active-effect.ts"
+import { EffectDataModel } from "../active-effect/abstract.ts"
 
 abstract class BaseFeature<TSchema extends BaseFeatureSchema = BaseFeatureSchema> extends foundry.abstract.DataModel<
 	ItemDataModel | EffectDataModel,

@@ -1,7 +1,7 @@
 import { evaluateToNumber } from "@module/util/gcs/eval.ts"
 import fields = foundry.data.fields
-import { ActorDataModel } from "../abstract.ts"
 import { EffectType } from "../constants.ts"
+import { ActorDataModel } from "../actor/abstract.ts"
 
 enum MoveTypeOverrideConditionType {
 	Trait = "trait",

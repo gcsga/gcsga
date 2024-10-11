@@ -19,6 +19,7 @@ import { ItemDataInstances, ItemDataTemplates, ItemTemplateType } from "./types.
 import { Feature } from "../feature/types.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { SkillDefault } from "./components/skill-default.ts"
+import { MaybePromise } from "../types.ts"
 
 function modifyPoints(points: number, modifier: number): number {
 	return points + calculateModifierPoints(points, modifier)
@@ -124,7 +125,7 @@ function calculateTechniqueLevel(
 function valueAdjustedForModifiers(
 	equipment: ItemInst<ItemType.Equipment | ItemType.EquipmentContainer>,
 	value: number,
-	modifiers: ItemInst<ItemType.EquipmentModifier>[],
+	modifiers: Collection<ItemInst<ItemType.EquipmentModifier>>,
 ): number {
 	let cost = processNonCFStep(equipment, emcost.Type.Original, value, modifiers)
 
@@ -154,11 +155,14 @@ function valueAdjustedForModifiers(
 function weightAdjustedForModifiers(
 	equipment: ItemInst<ItemType.Equipment | ItemType.EquipmentContainer>,
 	weight: string,
-	modifiers: ItemInst<ItemType.EquipmentModifier>[],
+	modifiers: MaybePromise<Collection<ItemInst<ItemType.EquipmentModifier>>>,
 	defUnits: Weight.Unit,
-): number {
+): MaybePromise<number> {
 	let percentages = 0
 	let [w] = Weight.fromString(weight)
+	modifiers = (modifiers instanceof Promise ? modifiers.then(c => c) : modifiers) as Collection<
+		ItemInst<ItemType.EquipmentModifier>
+	>
 
 	for (const mod of modifiers) {
 		mod.system.equipment = equipment
@@ -198,22 +202,22 @@ function extendedWeightAdjustedForModifiers(
 	defUnits: Weight.Unit,
 	qty: number,
 	baseWeight: string,
-	modifiers: ItemInst<ItemType.EquipmentModifier>[],
+	modifiers: MaybePromise<Collection<ItemInst<ItemType.EquipmentModifier>>>,
 	features: Feature[],
 	children: ItemInst<ItemType.Equipment | ItemType.EquipmentContainer>[],
 	forSkills: boolean,
 	weightIgnoredForSkills: boolean,
-): number {
+): MaybePromise<number> {
 	if (qty <= 0) return 0
 
 	let base = 0
 	if (!forSkills || !weightIgnoredForSkills) {
-		base = Int.from(weightAdjustedForModifiers(equipment, baseWeight, modifiers, defUnits))
+		base = Int.from(weightAdjustedForModifiers(equipment, baseWeight, modifiers, defUnits) as number)
 	}
 	if (children.length !== 0) {
 		let contained = 0
 		for (const child of children) {
-			contained += Int.from(child.system.extendedWeight(forSkills, defUnits))
+			contained += Int.from(child.system.extendedWeight(forSkills, defUnits) as number)
 		}
 		let [percentage, reduction] = [0, 0]
 		for (const f of features) {
@@ -235,7 +239,7 @@ function processNonCFStep(
 	equipment: ItemInst<ItemType.Equipment | ItemType.EquipmentContainer>,
 	costType: emcost.Type,
 	value: number,
-	modifiers: ItemInst<ItemType.EquipmentModifier>[],
+	modifiers: Collection<ItemInst<ItemType.EquipmentModifier>>,
 ): number {
 	let [percentages, additions] = [0, 0]
 	let cost = value
@@ -268,7 +272,7 @@ function processMultiplyAddWeightStep(
 	weightType: emweight.Type,
 	weight: number,
 	defUnits: Weight.Unit,
-	modifiers: ItemInst<ItemType.EquipmentModifier>[],
+	modifiers: Collection<ItemInst<ItemType.EquipmentModifier>>,
 ): number {
 	let sum = 0
 	for (const mod of modifiers) {

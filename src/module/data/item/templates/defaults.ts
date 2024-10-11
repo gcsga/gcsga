@@ -1,5 +1,5 @@
 import fields = foundry.data.fields
-import { ItemDataModel } from "@module/data/abstract.ts"
+import { ItemDataModel } from "@module/data/item/abstract.ts"
 import { SkillDefaultField } from "../fields/skill-default-field.ts"
 
 class SkillDefaultTemplate extends ItemDataModel<SkillDefaultTemplateSchema> {

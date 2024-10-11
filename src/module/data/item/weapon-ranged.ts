@@ -1,4 +1,4 @@
-import { ItemDataModel } from "../abstract.ts"
+import { ItemDataModel } from "./abstract.ts"
 import fields = foundry.data.fields
 import {
 	AbstractWeaponTemplate,
@@ -89,14 +89,15 @@ class WeaponRangedData extends ItemDataModel.mixin(BasicInformationTemplate, Abs
 				primary: this.usageWithReplacements,
 			}),
 			level: new CellData({ primary: level, tooltip: levelTooltip }),
-			damage: new CellData({ primary: damage, tooltip: damageTooltip }),
-			accuracy: new CellData({ primary: accuracy, tooltip: accuracyTooltip }),
-			range: new CellData({ primary: range, tooltip: rangeTooltip }),
-			rateOfFire: new CellData({ primary: rateOfFire, tooltip: rateOfFireTooltip }),
-			shots: new CellData({ primary: shots, tooltip: shotsTooltip }),
-			bulk: new CellData({ primary: bulk, tooltip: bulkTooltip }),
-			recoil: new CellData({ primary: recoil, tooltip: recoilTooltip }),
-			strength: new CellData({ primary: strength, tooltip: strengthTooltip }),
+			damage: new CellData({ primary: damage.toString(), tooltip: damageTooltip }),
+			accuracy: new CellData({ primary: accuracy.toString(), tooltip: accuracyTooltip }),
+			// TODO: revise
+			range: new CellData({ primary: range.toString(true), tooltip: rangeTooltip }),
+			rateOfFire: new CellData({ primary: rateOfFire.toString(), tooltip: rateOfFireTooltip }),
+			shots: new CellData({ primary: shots.toString(), tooltip: shotsTooltip }),
+			bulk: new CellData({ primary: bulk.toString(), tooltip: bulkTooltip }),
+			recoil: new CellData({ primary: recoil.toString(), tooltip: recoilTooltip }),
+			strength: new CellData({ primary: strength.toString(), tooltip: strengthTooltip }),
 		}
 
 		return data

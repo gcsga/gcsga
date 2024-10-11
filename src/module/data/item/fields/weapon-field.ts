@@ -10,23 +10,19 @@ class WeaponField<
 		return this.parent.parent
 	}
 
-	// @ts-expect-error abstract function
-	static fromString(s: string): WeaponField {
+	static fromString(_s: string): WeaponField {
 		throw ErrorGURPS("Function #WeaponField.fromString must be implemented.")
 	}
 
-	// @ts-expect-error abstract function
-	override toString(...args: unknown[]): string {
+	override toString(..._args: unknown[]): string {
 		throw ErrorGURPS("Function WeaponField#toString must be implemented.")
 	}
 
-	// @ts-expect-error abstract function
-	tooltip(w: TParent): string {
+	tooltip(_w: TParent): string {
 		throw ErrorGURPS("Function WeaponField#tooltip must be implemented.")
 	}
 
-	// @ts-expect-error abstract function
-	resolve(w: TParent, tooltip: TooltipGURPS | null, ...args: unknown[]): WeaponField {
+	resolve(_w: TParent, _tooltip: TooltipGURPS | null, ..._args: unknown[]): WeaponField {
 		throw ErrorGURPS("Function WeaponField#resolve must be implemented.")
 	}
 }

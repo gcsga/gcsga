@@ -1,4 +1,4 @@
-import { type ActorDataModel } from "@module/data/abstract.ts"
+import { type ActorDataModel } from "@module/data/actor/abstract.ts"
 import fields = foundry.data.fields
 import { ErrorGURPS, encumbrance } from "@util"
 import { ActorInst } from "../helpers.ts"

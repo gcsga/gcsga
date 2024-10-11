@@ -144,7 +144,6 @@
 // 	static importFeatures(
 // 		featureList?: ImportedFeature[],
 // 	): SourceFromTypedSchemaTypes<Record<feature.Type, ConstructorOf<Feature>>>[] {
-// 		// @ts-expect-error should be fine
 // 		return featureList ?? []
 // 	}
 //
@@ -165,7 +164,6 @@
 // 	}
 //
 // 	static importTemplatePicker(templatePicker?: ImportedTemplatePicker): SourceFromSchema<TemplatePickerSchema> {
-// 		// @ts-expect-error not necessary
 // 		return templatePicker ?? { type: picker.Type.NotApplicable, qualifier: {} }
 // 	}
 //
@@ -271,7 +269,6 @@
 // 		}
 //
 // 		item.modifiers?.reduce((acc, mod) => {
-// 			// @ts-expect-error not going to bother with a good return type for this yet
 // 			if ((context.fileVersion = 5)) mod.type = ItemImporter.getTypeFromKind(mod.id)
 // 			acc.push(
 // 				...ItemImportHandlers[mod.type].importItem(mod, { parentId: id, fileVersion: context.fileVersion }),
@@ -280,7 +277,6 @@
 // 		}, results)
 //
 // 		item.weapons?.reduce((acc, weapon) => {
-// 			// @ts-expect-error not going to bother with a good return type for this yet
 // 			if ((context.fileVersion = 5)) weapon.type = ItemImporter.getTypeFromKind(weapon.id)
 // 			acc.push(
 // 				...ItemImportHandlers[weapon.type].importItem(weapon, {
@@ -347,7 +343,6 @@
 // 		}
 //
 // 		item.children?.reduce((acc, child) => {
-// 			// @ts-expect-error not going to bother with a good return type for this yet
 // 			if ((context.fileVersion = 5)) child.type = ItemImporter.getTypeFromKind(child.id)
 // 			acc.push(
 // 				...ItemImportHandlers[child.type].importItem(child, { parentId: id, fileVersion: context.fileVersion }),
@@ -356,7 +351,6 @@
 // 		}, results)
 //
 // 		item.modifiers?.reduce((acc, mod) => {
-// 			// @ts-expect-error not going to bother with a good return type for this yet
 // 			if ((context.fileVersion = 5)) mod.type = ItemImporter.getTypeFromKind(mod.id)
 // 			acc.push(
 // 				...ItemImportHandlers[mod.type].importItem(mod, { parentId: id, fileVersion: context.fileVersion }),
@@ -460,7 +454,6 @@
 // 		}
 //
 // 		item.children?.reduce((acc, child) => {
-// 			// @ts-expect-error not going to bother with a good return type for this yet
 // 			if ((context.fileVersion = 5)) child.type = ItemImporter.getTypeFromKind(child.id)
 // 			acc.push(
 // 				...ItemImportHandlers[child.type].importItem(child, { parentId: id, fileVersion: context.fileVersion }),
@@ -529,7 +522,6 @@
 // 		}
 //
 // 		item.weapons?.reduce((acc, weapon) => {
-// 			// @ts-expect-error not going to bother with a good return type for this yet
 // 			if ((context.fileVersion = 5)) weapon.type = ItemImporter.getTypeFromKind(weapon.id)
 // 			acc.push(
 // 				...ItemImportHandlers[weapon.type].importItem(weapon, {
@@ -601,7 +593,6 @@
 // 		}
 //
 // 		item.weapons?.reduce((acc, weapon) => {
-// 			// @ts-expect-error not going to bother with a good return type for this yet
 // 			if ((context.fileVersion = 5)) weapon.type = ItemImporter.getTypeFromKind(weapon.id)
 // 			acc.push(
 // 				...ItemImportHandlers[weapon.type].importItem(weapon, {
@@ -659,7 +650,6 @@
 // 		}
 //
 // 		item.children?.reduce((acc, child) => {
-// 			// @ts-expect-error not going to bother with a good return type for this yet
 // 			if ((context.fileVersion = 5)) child.type = ItemImporter.getTypeFromKind(child.id)
 // 			acc.push(
 // 				...ItemImportHandlers[child.type].importItem(child, { parentId: id, fileVersion: context.fileVersion }),
@@ -731,7 +721,6 @@
 // 		}
 //
 // 		item.weapons?.reduce((acc, weapon) => {
-// 			// @ts-expect-error not going to bother with a good return type for this yet
 // 			if ((context.fileVersion = 5)) weapon.type = ItemImporter.getTypeFromKind(weapon.id)
 // 			acc.push(
 // 				...ItemImportHandlers[weapon.type].importItem(weapon, {
@@ -808,7 +797,6 @@
 // 		}
 //
 // 		item.weapons?.reduce((acc, weapon) => {
-// 			// @ts-expect-error not going to bother with a good return type for this yet
 // 			if ((context.fileVersion = 5)) weapon.type = ItemImporter.getTypeFromKind(weapon.id)
 // 			acc.push(
 // 				...ItemImportHandlers[weapon.type].importItem(weapon, {
@@ -866,7 +854,6 @@
 // 		}
 //
 // 		item.children?.reduce((acc, mod) => {
-// 			// @ts-expect-error not going to bother with a good return type for this yet
 // 			if ((context.fileVersion = 5)) mod.type = ItemImporter.getTypeFromKind(mod.id)
 // 			acc.push(
 // 				...ItemImportHandlers[item.type].importItem(mod, { parentId: id, fileVersion: context.fileVersion }),
@@ -933,7 +920,6 @@
 // 		}
 //
 // 		item.modifiers?.reduce((acc, mod) => {
-// 			// @ts-expect-error not going to bother with a good return type for this yet
 // 			if ((context.fileVersion = 5)) mod.type = ItemImporter.getTypeFromKind(mod.id)
 // 			acc.push(
 // 				...ItemImportHandlers[mod.type].importItem(mod, { parentId: id, fileVersion: context.fileVersion }),
@@ -942,7 +928,6 @@
 // 		}, results)
 //
 // 		item.weapons?.reduce((acc, weapon) => {
-// 			// @ts-expect-error not going to bother with a good return type for this yet
 // 			if ((context.fileVersion = 5)) weapon.type = ItemImporter.getTypeFromKind(weapon.id)
 // 			acc.push(
 // 				...ItemImportHandlers[weapon.type].importItem(weapon, {
@@ -1013,7 +998,6 @@
 // 		}
 //
 // 		item.children?.reduce((acc, child) => {
-// 			// @ts-expect-error not going to bother with a good return type for this yet
 // 			if ((context.fileVersion = 5)) child.type = ItemImporter.getTypeFromKind(child.id)
 // 			acc.push(
 // 				...ItemImportHandlers[child.type].importItem(child, { parentId: id, fileVersion: context.fileVersion }),
@@ -1022,7 +1006,6 @@
 // 		}, results)
 //
 // 		item.modifiers?.reduce((acc, mod) => {
-// 			// @ts-expect-error not going to bother with a good return type for this yet
 // 			if ((context.fileVersion = 5)) mod.type = ItemImporter.getTypeFromKind(mod.id)
 // 			acc.push(
 // 				...ItemImportHandlers[mod.type].importItem(mod, { parentId: id, fileVersion: context.fileVersion }),
@@ -1031,7 +1014,6 @@
 // 		}, results)
 //
 // 		item.weapons?.reduce((acc, weapon) => {
-// 			// @ts-expect-error not going to bother with a good return type for this yet
 // 			if ((context.fileVersion = 5)) weapon.type = ItemImporter.getTypeFromKind(weapon.id)
 // 			acc.push(
 // 				...ItemImportHandlers[weapon.type].importItem(weapon, {
@@ -1139,7 +1121,6 @@
 // 		}
 //
 // 		item.children?.reduce((acc, child) => {
-// 			// @ts-expect-error not going to bother with a good return type for this yet
 // 			if ((context.fileVersion = 5)) child.type = ItemImporter.getTypeFromKind(child.id)
 // 			acc.push(
 // 				...ItemImportHandlers[child.type].importItem(child, { parentId: id, fileVersion: context.fileVersion }),
@@ -1231,7 +1212,6 @@
 // 		}
 //
 // 		item.children?.reduce((acc, child) => {
-// 			// @ts-expect-error not going to bother with a good return type for this yet
 // 			if ((context.fileVersion = 5)) child.type = ItemImporter.getTypeFromKind(child.id)
 // 			acc.push(
 // 				...ItemImportHandlers[child.type].importItem(child, { parentId: id, fileVersion: context.fileVersion }),

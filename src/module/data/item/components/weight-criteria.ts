@@ -1,6 +1,6 @@
 import { LocalizeGURPS } from "../../../../util/localize.ts"
 import fields = foundry.data.fields
-import { ItemDataModel } from "@module/data/abstract.ts"
+import { ItemDataModel } from "@module/data/item/abstract.ts"
 import { NumericComparison, Weight } from "@util"
 
 class WeightCriteria extends foundry.abstract.DataModel<ItemDataModel, WeightCriteriaSchema> {

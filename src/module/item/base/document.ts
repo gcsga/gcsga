@@ -145,11 +145,9 @@
 // 			return (
 // 				this.system.features?.map(feature => {
 // 					const FeatureConstructor = CONFIG.GURPS.Feature.classes[feature.type]
-// 					// @ts-expect-error invalid schema maybe
 // 					const f = new FeatureConstructor(feature as FeatureSchema, { parent: this })
 // 					f.owner = this
 // 					if (this.isOfType(ItemType.Trait)) {
-// 						// @ts-expect-error infinite instantiation
 // 						if (this.isLeveled && !(f instanceof ContainedWeightReduction)) f.levels = this.levels
 // 					}
 // 					return f
@@ -440,7 +438,6 @@
 // 	}
 //
 // 	get localNotes(): string {
-// 		// @ts-expect-error doesn't exist here but does elsewhere
 // 		return this.system.notes ?? ""
 // 	}
 //

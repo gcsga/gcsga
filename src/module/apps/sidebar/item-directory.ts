@@ -68,11 +68,10 @@
 // 		// }
 // 		//
 // 		// // Sort within to the closest Folder
-// 		// // @ts-expect-error bad type
 // 		// else sortData.target = null
 // 		//
 // 		// // Determine siblings
-// 		// sortData.siblings = collection.filter(
+// 		// tsortData.siblings = collection.filter(
 // 		// 	d => (d instanceof ItemGURPS) && !this._entryIsSelf(d, entry) && !!folder && this._entryBelongsToFolder(d, folder),
 // 		// )
 // 		//

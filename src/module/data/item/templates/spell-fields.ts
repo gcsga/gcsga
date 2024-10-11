@@ -1,4 +1,4 @@
-import { ItemDataModel } from "@module/data/abstract.ts"
+import { ItemDataModel } from "@module/data/item/abstract.ts"
 import fields = foundry.data.fields
 import {
 	ErrorGURPS,
@@ -96,8 +96,8 @@ class SpellFieldsTemplate extends ItemDataModel<SpellFieldsTemplateSchema> {
 		const tooltip = new TooltipGURPS()
 		const points = new CellData({
 			type: cell.Type.Text,
-			primary: this.adjustedPoints(tooltip),
-			align: align.Option.End,
+			primary: this.adjustedPoints(tooltip).toString(),
+			alignment: align.Option.End,
 		})
 		if (tooltip.length !== 0) {
 			const pointsTooltip = new TooltipGURPS()
@@ -150,7 +150,7 @@ class SpellFieldsTemplate extends ItemDataModel<SpellFieldsTemplateSchema> {
 				type: cell.Type.Text,
 				primary: this.levelAsString,
 				tooltip: levelTooltip(),
-				align: align.Option.End,
+				alignment: align.Option.End,
 			}),
 			relativeLevel: new CellData({
 				type: cell.Type.Text,

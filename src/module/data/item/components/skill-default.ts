@@ -6,8 +6,8 @@ import { ActorTemplateType } from "@module/data/actor/types.ts"
 import { Nameable } from "@module/util/index.ts"
 import { ItemTemplateType } from "../types.ts"
 import { createButton } from "@module/applications/helpers.ts"
-import { ItemDataModel } from "../../abstract.ts"
 import { getAttributeChoices } from "../../attribute/helpers.ts"
+import { ItemDataModel } from "../abstract.ts"
 
 const SKILL_BASED_DEFAULT_TYPES: Set<string> = new Set([gid.Skill, gid.Parry, gid.Block])
 
@@ -212,8 +212,7 @@ class SkillDefault extends foundry.abstract.DataModel<ItemDataModel, SkillDefaul
 		if (!actor.isOfType(ActorType.Character)) return 0
 		switch (this.type) {
 			case gid.Dodge:
-				// @ts-expect-error TODO: come back and fix
-				level = actor.system.encumbrance.current.dodge.normal
+				level = actor.system.encumbrance.currentLevel.dodge
 				if (rule_of_20 && level > 20) level = 20
 				return this.finalLevel(level)
 			case gid.Parry:

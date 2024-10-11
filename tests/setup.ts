@@ -5,7 +5,6 @@
 // import { MockToken } from "./mocks/token.ts"
 // import { MockUser } from "./mocks/user.ts"
 //
-// // @ts-expect-error it's a mock dude
 // global.game = Object.freeze({
 // 	settings: Object.freeze({
 // 		get: (_module: string, _settingKey: string) => {
@@ -42,7 +41,6 @@
 // 	},
 // })
 //
-// // // @ts-expect-error it's a mock dude
 // // global.foundry = Object.freeze({
 // // 	abstract: {
 // // 		DataModel: class {},
@@ -61,47 +59,26 @@
 // // 	},
 // // })
 //
-// // @ts-expect-error it's a mock dude
 // global.foundry = mockFoundry
-// // @ts-expect-error it's a mock dude
 // global.User = MockUser
-// // @ts-expect-error it's a mock dude
 // global.Actor = MockActor
-// // @ts-expect-error it's a mock dude
 // global.Item = MockItem
-// // @ts-expect-error it's a mock dude
 // global.Token = MockToken
-// // @ts-expect-error it's a mock dude
 // global.FormApplication = class {}
-// // @ts-expect-error it's a mock dude
 // global.Roll = class {}
-// // @ts-expect-error it's a mock dude
 // global.Application = class {}
-// // @ts-expect-error it's a mock dude
 // global.Dialog = class {}
-// // @ts-expect-error it's a mock dude
 // global.ChatMessage = class {}
-// // @ts-expect-error it's a mock dude
 // global.Ruler = class {}
-// // @ts-expect-error it's a mock dude
 // global.FilePicker = class {}
-// // @ts-expect-error it's a mock dude
 // global.JournalEntryPage = class {}
-// // @ts-expect-error it's a mock dude
 // global.JournalPageSheet = class {}
-// // @ts-expect-error it's a mock dude
 // global.JournalPDFPageSheet = class {}
-// // @ts-expect-error it's a mock dude
 // global.CombatTracker = class {}
-// // @ts-expect-error it's a mock dude
 // global.ItemDirectory = class {}
-// // @ts-expect-error it's a mock dude
 // global.Combat = class {}
-// // @ts-expect-error it's a mock dude
 // global.Combatant = class {}
-// // @ts-expect-error it's a mock dude
 // global.DocumentSheet = class {}
-// // @ts-expect-error it's a mock dude
 // global.Hooks = class {
 // 	static on(..._args: unknown[]) {}
 // }

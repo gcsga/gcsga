@@ -2,6 +2,8 @@
 
 ## Current Tasks
 
+- Add embeds tab functionality for easier testing.
+- Fix all functions which call document children where the result may be a Promise
 - Add #fillWithNameableKeys for all items with nameable functionality
 
 ## Left To Do
@@ -32,7 +34,7 @@
     - Option to hide attributes if not frequently used to decrease clutter?
     - Pinned items
   - DND5e context menu
-  - Traits Tab
+  - Traits Tab.
     - Add fields for species, cultural familiarity, language, separate to own tables
 - Token
 - Token Document

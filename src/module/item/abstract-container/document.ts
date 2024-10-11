@@ -55,7 +55,6 @@
 // 			collection.set(item.id, item)
 // 			if (item.isOfType("abstract-container")) (await item.deepContents).forEach(i => collection.set(i.id, i))
 // 			return collection
-// 			// @ts-expect-error not a promise but it's ok
 // 		}, new Collection<ItemGURPS>())
 // 	}
 //

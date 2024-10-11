@@ -1,19 +1,20 @@
 import { StringBuilder, affects, align, cell, display, tmcost } from "@util"
-import { ItemDataModel } from "../abstract.ts"
+import { ItemDataModel } from "./abstract.ts"
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { FeatureTemplate, FeatureTemplateSchema } from "./templates/features.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
 import fields = foundry.data.fields
 import { ItemGURPS2 } from "@module/document/item.ts"
-import { TraitData } from "./trait.ts"
 import { CellData } from "./components/cell-data.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { Nameable } from "@module/util/index.ts"
+import { ItemInst } from "./helpers.ts"
+import { ItemType } from "../constants.ts"
+import { FeatureSet } from "../feature/types.ts"
 
 class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, FeatureTemplate, ReplacementTemplate) {
 	/** Allows dynamic setting of containing trait for arbitrary value calculation */
-	private _trait: ItemGURPS2 | null = null
-
+	private declare _trait: ItemGURPS2 | null
 	static override defineSchema(): TraitModifierSchema {
 		const fields = foundry.data.fields
 
@@ -33,7 +34,7 @@ class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, Fe
 			enabled: new CellData({
 				type: cell.Type.Toggle,
 				checked: this.enabled,
-				align: align.Option.Middle,
+				alignment: align.Option.Middle,
 			}),
 			name: new CellData({
 				type: cell.Type.Text,
@@ -61,13 +62,27 @@ class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, Fe
 		return !this.disabled
 	}
 
-	get trait(): (ItemGURPS2 & { system: TraitData }) | null {
-		// @ts-expect-error type definition error
-		return (this._trait as ItemGURPS2 & { system: TraitData }) ?? null
+	get trait(): ItemInst<ItemType.Trait | ItemType.TraitContainer> | null {
+		return (this._trait = this._getTrait())
 	}
 
-	set trait(trait: ItemGURPS2 | null) {
+	set trait(trait: ItemInst<ItemType.Trait | ItemType.TraitContainer> | null) {
 		this._trait = trait
+	}
+
+	private _getTrait(): ItemInst<ItemType.Trait | ItemType.TraitContainer> | null {
+		let container = this.parent.container
+		// TODO: get rid of when we figure out Promise handling
+		if (container instanceof Promise) return null
+		if (container === null) return null
+		let i = 0
+		while (!container.isOfType(ItemType.Trait, ItemType.TraitContainer) && i < ItemDataModel.MAX_DEPTH) {
+			container = container.container
+			if (container instanceof Promise) return null
+			if (container === null) return null
+			if (container.isOfType(ItemType.Trait, ItemType.TraitContainer)) break
+		}
+		return container as ItemInst<ItemType.Trait | ItemType.TraitContainer>
 	}
 
 	get costModifier(): number {
@@ -77,7 +92,7 @@ class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, Fe
 	get isLeveled(): boolean {
 		if (this.use_level_from_trait) {
 			if (this.trait === null) return false
-			return this.trait.system.can_level
+			return this.trait.system.isLeveled
 		}
 		return this.levels > 0
 	}
@@ -93,7 +108,7 @@ class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, Fe
 		if (!this.isLeveled) return 1
 		let multiplier = 0
 		if (this.use_level_from_trait) {
-			if (this.trait !== null && this.trait.system.can_level) {
+			if (this.trait !== null && this.trait.system.isLeveled) {
 				multiplier = this.trait.system.currentLevel
 			}
 		} else {
@@ -146,6 +161,16 @@ class TraitModifierData extends ItemDataModel.mixin(BasicInformationTemplate, Fe
 		if (this.notes !== "") buffer.push(` (${this.notesWithReplacements})`)
 		if (SheetSettings.for(this.parent.actor).show_trait_modifier_adj) buffer.push(` [${this.costDescription}]`)
 		return buffer.toString()
+	}
+
+	/** Features */
+	override addFeaturesToSet(featureSet: FeatureSet): void {
+		if (!this.enabled) return
+		if (!this.trait || !this.trait.system.enabled) return
+
+		for (const f of this.features) {
+			this._addFeatureToSet(f, featureSet, 0)
+		}
 	}
 
 	/** Nameables */

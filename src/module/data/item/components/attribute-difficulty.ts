@@ -1,6 +1,6 @@
 import { difficulty } from "@util"
 import fields = foundry.data.fields
-import { ItemDataModel } from "@module/data/abstract.ts"
+import { ItemDataModel } from "@module/data/item/abstract.ts"
 import { ItemType, gid } from "@module/data/constants.ts"
 import { getAttributeChoices } from "@module/data/attribute/helpers.ts"
 

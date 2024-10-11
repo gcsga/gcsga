@@ -9,10 +9,7 @@ export default abstract class DataModel<
 	TParent extends DataModel | null = _DataModel | null,
 	TSchema extends fields.DataSchema = fields.DataSchema,
 > {
-	constructor(
-		data?: DeepPartial<SourceFromSchema<fields.DataSchema>>,
-		options?: DataModelConstructionOptions<TParent>,
-	)
+	constructor(data?: DeepPartial<SourceFromSchema<TSchema>>, options?: DataModelConstructionOptions<TParent>)
 
 	/**
 	 * The source data object for this DataModel instance.

@@ -33,7 +33,6 @@ class RulerGURPS extends Ruler<Token, UserGURPS> {
 
 		// protected override _endMeasurement(): void {
 		// 	// TODO: fix
-		// 	// @ts-expect-error no idea what draggedEntity is
 		// 	const addRangeMod = this.draggedEntity
 		// 	super._endMeasurement()
 		// 	if (addRangeMod) {

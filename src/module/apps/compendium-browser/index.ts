@@ -443,7 +443,6 @@
 // 					// 		Array.isArray(selections) &&
 // 					// 		selections.every(
 // 					// 			(s: unknown): s is { value: string; label: string } =>
-// 					// 				// @ts-expect-error to look at later
 // 					// 				R.isObject<{ value: unknown }>(s) && typeof s["value"] === "string",
 // 					// 		)
 // 					//

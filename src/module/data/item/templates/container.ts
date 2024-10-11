@@ -1,8 +1,9 @@
-import { ItemDataModel } from "@module/data/abstract.ts"
+import { ItemDataModel } from "@module/data/item/abstract.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { type ItemGURPS2 } from "@module/document/item.ts"
 import fields = foundry.data.fields
 import { ItemTemplateType } from "../types.ts"
+import { MaybePromise } from "@module/data/types.ts"
 
 class ContainerTemplate extends ItemDataModel<ContainerTemplateSchema> {
 	static override defineSchema(): ContainerTemplateSchema {
@@ -37,13 +38,12 @@ class ContainerTemplate extends ItemDataModel<ContainerTemplateSchema> {
 	/**
 	 * Get all of the items contained in this container. A promise if item is within a compendium.
 	 */
-	get contents(): Collection<ItemGURPS2> | Promise<Collection<ItemGURPS2>> {
+	get contents(): MaybePromise<Collection<ItemGURPS2>> {
 		if (!this.parent) return new Collection()
 
 		// If in a compendium, fetch using getDocuments and return a promise
 		if (this.parent.pack && !this.parent.isEmbedded) {
-			// @ts-expect-error will be fixed when migrating document class
-			const pack = game.packs.get(this.parent.pack) as CompendiumCollection<ItemGURPS2>
+			const pack = game.packs.get(this.parent.pack) as CompendiumCollection<ItemGURPS2<null>>
 			return pack!
 				.getDocuments({ system: { container: this.parent.id } })
 				.then(d => new Collection(d.map(d => [d.id, d])))
@@ -60,33 +60,38 @@ class ContainerTemplate extends ItemDataModel<ContainerTemplateSchema> {
 		)
 	}
 
-	get allContents(): Collection<ItemGURPS2> | Promise<Collection<ItemGURPS2>> {
+	get allContents(): MaybePromise<Collection<ItemGURPS2>> {
 		if (!this.parent) return new Collection()
 		if (this.parent.pack) return this._allContents()
 
-		return (this.contents as Collection<ItemGURPS2>).reduce(
-			(collection: Collection<ItemGURPS2>, item: ItemGURPS2) => {
-				collection.set(item.id, item)
-				if (item.hasTemplate(ItemTemplateType.Container))
-					(item.system.allContents as Collection<ItemGURPS2>).forEach(i => collection.set(i.id, i))
-				return collection
-			},
-			new Collection(),
-		)
+		const allContents = new Collection<ItemGURPS2>()
+
+		for (const item of <Collection<ItemGURPS2>>this.contents) {
+			allContents.set(item.id, item)
+
+			if (item.hasTemplate(ItemTemplateType.Container))
+				for (const contents of <Collection<ItemGURPS2>>item.system.allContents) {
+					allContents.set(contents.id, contents)
+				}
+		}
+		return allContents
 	}
 
 	private async _allContents(): Promise<Collection<ItemGURPS2>> {
-		return (await this.contents).reduce(async (promise: Promise<Collection<ItemGURPS2>>, item: ItemGURPS2) => {
-			const collection = await promise
-			collection.set(item.id, item)
+		const allContents = new Collection<ItemGURPS2>()
+
+		for (const item of await this.contents) {
+			allContents.set(item.id, item)
+
 			if (item.hasTemplate(ItemTemplateType.Container))
-				(await item.system.allContents).forEach(i => collection.set(i.id, i))
-			return collection
-			// @ts-expect-error is ok
-		}, new Collection<ItemGURPS2>())
+				for (const contents of await item.system.allContents) {
+					allContents.set(contents.id, contents)
+				}
+		}
+		return allContents
 	}
 
-	get children(): Collection<ItemGURPS2> | Promise<Collection<ItemGURPS2>> {
+	get children(): MaybePromise<Collection<ItemGURPS2>> {
 		if (!this.parent || this.constructor.childTypes.size === 0) return new Collection()
 		return new Collection(
 			Object.values(this.contents)
@@ -95,7 +100,7 @@ class ContainerTemplate extends ItemDataModel<ContainerTemplateSchema> {
 		)
 	}
 
-	get modifiers(): Collection<ItemGURPS2> | Promise<Collection<ItemGURPS2>> {
+	get modifiers(): MaybePromise<Collection<ItemGURPS2>> {
 		if (!this.parent || this.constructor.modifierTypes.size === 0) return new Collection()
 		return new Collection(
 			Object.values(this.contents)
@@ -104,7 +109,12 @@ class ContainerTemplate extends ItemDataModel<ContainerTemplateSchema> {
 		)
 	}
 
-	get weapons(): Collection<ItemGURPS2> | Promise<Collection<ItemGURPS2>> {
+	// This is overridden in Trait and Equipment
+	get allModifiers(): MaybePromise<Collection<ItemGURPS2>> {
+		return this.modifiers
+	}
+
+	get weapons(): MaybePromise<Collection<ItemGURPS2>> {
 		if (!this.parent || this.constructor.modifierTypes.size === 0) return new Collection()
 		return new Collection(
 			Object.values(this.contents)

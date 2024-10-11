@@ -1,7 +1,7 @@
 import fields = foundry.data.fields
-import { ActorDataModel } from "../abstract.ts"
 import { PoolThreshold, PoolThresholdSchema } from "../attribute/index.ts"
 import { AbstractAttributeDef, AbstractAttributeDefSchema } from "../abstract-attribute/index.ts"
+import { ActorDataModel } from "../actor/abstract.ts"
 
 class ResourceTrackerDef extends AbstractAttributeDef<ResourceTrackerDefSchema> {
 	static override defineSchema(): ResourceTrackerDefSchema {

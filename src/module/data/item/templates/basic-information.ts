@@ -1,4 +1,4 @@
-import { ItemDataModel } from "@module/data/abstract.ts"
+import { ItemDataModel } from "@module/data/item/abstract.ts"
 import fields = foundry.data.fields
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { EvalEmbeddedRegex, replaceAllStringFunc } from "@util"

@@ -1,11 +1,13 @@
+import { MaybePromise } from "@module/data/types.ts"
+
 export class StringBuilder {
-	buffer: string[]
+	buffer: MaybePromise<string>[]
 
 	constructor() {
 		this.buffer = []
 	}
 
-	push(...args: string[]): number {
+	push(...args: MaybePromise<string>[]): number {
 		return this.buffer.push(...args)
 	}
 
@@ -15,7 +17,7 @@ export class StringBuilder {
 
 	// Returns the length of the buffer as a string
 	get length(): number {
-		return this.toString().length
+		return this.buffer.length
 	}
 
 	// Returns the number of items in the buffer
@@ -23,7 +25,7 @@ export class StringBuilder {
 		return this.buffer.length
 	}
 
-	appendToNewLine(str: string): number {
+	appendToNewLine(str: MaybePromise<string>): number {
 		if (str === "") return this.size
 		if (this.size !== 0) this.push("<br>")
 		this.push(str)

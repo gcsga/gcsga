@@ -1,6 +1,6 @@
 import { study } from "@util"
 import fields = foundry.data.fields
-import { ItemDataModel } from "@module/data/abstract.ts"
+import { ItemDataModel } from "@module/data/item/abstract.ts"
 import { Study, StudySchema } from "@module/data/study.ts"
 
 class StudyTemplate extends ItemDataModel<StudyTemplateSchema> {

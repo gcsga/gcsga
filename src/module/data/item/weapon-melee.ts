@@ -1,4 +1,4 @@
-import { ItemDataModel } from "../abstract.ts"
+import { ItemDataModel } from "./abstract.ts"
 import fields = foundry.data.fields
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { AbstractWeaponTemplate, AbstractWeaponTemplateSchema } from "./templates/abstract-weapon.ts"
@@ -68,11 +68,11 @@ class WeaponMeleeData extends ItemDataModel.mixin(BasicInformationTemplate, Abst
 				primary: this.usageWithReplacements,
 			}),
 			level: new CellData({ primary: level, tooltip: levelTooltip }),
-			damage: new CellData({ primary: damage, tooltip: damageTooltip }),
-			parry: new CellData({ primary: parry, tooltip: parryTooltip }),
-			block: new CellData({ primary: block, tooltip: blockTooltip }),
-			reach: new CellData({ primary: reach, tooltip: reachTooltip }),
-			strength: new CellData({ primary: strength, tooltip: strengthTooltip }),
+			damage: new CellData({ primary: damage.toString(), tooltip: damageTooltip }),
+			parry: new CellData({ primary: parry.toString(), tooltip: parryTooltip }),
+			block: new CellData({ primary: block.toString(), tooltip: blockTooltip }),
+			reach: new CellData({ primary: reach.toString(), tooltip: reachTooltip }),
+			strength: new CellData({ primary: strength.toString(), tooltip: strengthTooltip }),
 		}
 
 		return data

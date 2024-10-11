@@ -1,4 +1,4 @@
-import { ActorDataModel } from "@module/data/abstract.ts"
+import { ActorDataModel } from "@module/data/actor/abstract.ts"
 import fields = foundry.data.fields
 import { SheetSettings } from "@module/data/sheet-settings.ts"
 

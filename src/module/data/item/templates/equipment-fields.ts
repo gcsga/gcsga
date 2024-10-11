@@ -1,5 +1,5 @@
 import fields = foundry.data.fields
-import { ItemDataModel } from "@module/data/abstract.ts"
+import { ItemDataModel } from "@module/data/item/abstract.ts"
 import { LocalizeGURPS, StringBuilder, Weight, align, cell, display } from "@util"
 import { CellData } from "../components/cell-data.ts"
 import { ItemTemplateType } from "../types.ts"
@@ -12,6 +12,7 @@ import {
 } from "../helpers.ts"
 import { type ItemGURPS2 } from "@module/document/item.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
+import { MaybePromise } from "@module/data/types.ts"
 
 class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchema> {
 	static override defineSchema(): EquipmentFieldsTemplateSchema {
@@ -146,9 +147,23 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 	}
 
 	// Returns rendered notes from modifiers
-	get modifierNotes(): string {
+	get modifierNotes(): MaybePromise<string> {
+		if (this.parent.pack) return this._modifierNotes()
 		const buffer = new StringBuilder()
-		this.allModifiers.forEach(mod => {
+
+		;(this.allModifiers as Collection<ItemInst<ItemType.EquipmentModifier>>).forEach(mod => {
+			if (mod.system.disabled) return
+			if (buffer.length !== 0) buffer.push("; ")
+			buffer.push(mod.system.fullDescription)
+		})
+		return buffer.toString()
+	}
+
+	private async _modifierNotes(): Promise<string> {
+		const buffer = new StringBuilder()
+		const modifiers = await this.allModifiers
+
+		modifiers.forEach(mod => {
 			if (mod.system.disabled) return
 			if (buffer.length !== 0) buffer.push("; ")
 			buffer.push(mod.system.fullDescription)
@@ -182,7 +197,7 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 			}),
 			quantity: new CellData({
 				type: cell.Type.Text,
-				priamry: this.quantity.toLocaleString(),
+				primary: this.quantity.toLocaleString(),
 				alignment: align.Option.End,
 				dim,
 			}),
@@ -195,7 +210,7 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 			}),
 			uses: new CellData({
 				type: cell.Type.Text,
-				primary: this.max_uses > 0 ? this.uses : "",
+				primary: this.max_uses > 0 ? this.uses?.toString() : "",
 				alignment: align.Option.End,
 				dim,
 			}),
@@ -254,27 +269,27 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 		}
 	}
 
-	adjustedValue(): number {
+	async adjustedValue(): Promise<number> {
 		return valueAdjustedForModifiers(
 			this.parent as ItemInst<ItemType.Equipment | ItemType.EquipmentContainer>,
 			this.value,
-			this.allModifiers,
+			await this.allModifiers,
 		)
 	}
 
-	extendedValue(): number {
+	async extendedValue(): Promise<number> {
 		if (this.quantity <= 0) return 0
-		let value = this.adjustedValue()
+		let value = await this.adjustedValue()
 		if (this.isOfType(ItemType.EquipmentContainer)) {
 			const children = this.children as Collection<ItemGURPS2>
 			for (const child of children) {
-				if (child.hasTemplate(ItemTemplateType.EquipmentFields)) value += child.system.extendedValue()
+				if (child.hasTemplate(ItemTemplateType.EquipmentFields)) value += await child.system.extendedValue()
 			}
 		}
 		return value * this.quantity
 	}
 
-	adjustedWeight(forSkills: boolean, units: Weight.Unit): number {
+	adjustedWeight(forSkills: boolean, units: Weight.Unit): MaybePromise<number> {
 		if (forSkills && this.ignore_weight_for_skills && this.equipped) {
 			return 0
 		}
@@ -286,7 +301,7 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 		)
 	}
 
-	extendedWeight(forSkills: boolean, units: Weight.Unit): number {
+	extendedWeight(forSkills: boolean, units: Weight.Unit): MaybePromise<number> {
 		const features = this.hasTemplate(ItemTemplateType.Feature) ? this.features : []
 		let children: ItemInst<ItemType.Equipment | ItemType.EquipmentContainer>[] = []
 		if (this.hasTemplate(ItemTemplateType.Container)) {
@@ -313,16 +328,39 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 		)
 	}
 
-	get allModifiers(): ItemInst<ItemType.EquipmentModifier>[] {
-		let modifiers: Collection<ItemGURPS2> = new Collection()
-		if (this.modifiers instanceof Promise) {
-			;(async () => {
-				modifiers = await this.modifiers
-			})()
-		} else {
-			modifiers = this.modifiers
+	get allModifiers(): MaybePromise<Collection<ItemInst<ItemType.EquipmentModifier>>> {
+		if (!this.parent) return new Collection()
+		if (this.parent.pack) return this._allModifiers()
+
+		const allModifiers = new Collection<ItemInst<ItemType.EquipmentModifier>>()
+
+		for (const item of <Collection<ItemGURPS2>>(this as any).contents) {
+			if (item.type === ItemType.EquipmentModifier)
+				allModifiers.set(item.id, <ItemInst<ItemType.EquipmentModifier>>item)
+
+			if (item.hasTemplate(ItemTemplateType.Container))
+				for (const contents of <Collection<ItemGURPS2>>item.system.allContents) {
+					if (contents.type === ItemType.EquipmentModifier)
+						allModifiers.set(contents.id, <ItemInst<ItemType.EquipmentModifier>>contents)
+				}
 		}
-		return modifiers.filter(e => e.isOfType(ItemType.EquipmentModifier))
+		return allModifiers
+	}
+
+	private async _allModifiers(): Promise<Collection<ItemInst<ItemType.EquipmentModifier>>> {
+		const allModifiers = new Collection<ItemInst<ItemType.EquipmentModifier>>()
+
+		for (const item of <Collection<ItemGURPS2>>(this as any).contents) {
+			if (item.type === ItemType.EquipmentModifier)
+				allModifiers.set(item.id, <ItemInst<ItemType.EquipmentModifier>>item)
+
+			if (item.hasTemplate(ItemTemplateType.Container))
+				for (const contents of await item.system.allContents) {
+					if (contents.type === ItemType.EquipmentModifier)
+						allModifiers.set(contents.id, <ItemInst<ItemType.EquipmentModifier>>contents)
+				}
+		}
+		return allModifiers
 	}
 }
 

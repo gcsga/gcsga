@@ -1,4 +1,4 @@
-import { ItemDataModel } from "../abstract.ts"
+import { ItemDataModel } from "./abstract.ts"
 import fields = foundry.data.fields
 import { PrereqTemplate, PrereqTemplateSchema } from "./templates/prereqs.ts"
 import { ContainerTemplate, ContainerTemplateSchema } from "./templates/container.ts"
@@ -9,10 +9,15 @@ import { ActorType, ItemType, gid } from "../constants.ts"
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { AbstractSkillTemplate, AbstractSkillTemplateSchema } from "./templates/abstract-skill.ts"
 import { LocalizeGURPS, StringBuilder, TooltipGURPS, align, cell, difficulty, display } from "@util"
-import { SkillLevel, addTooltipForSkillLevelAdj, calculateTechniqueLevel, formatRelativeSkill } from "./helpers.ts"
+import {
+	ItemInst,
+	SkillLevel,
+	addTooltipForSkillLevelAdj,
+	calculateTechniqueLevel,
+	formatRelativeSkill,
+} from "./helpers.ts"
 import { ActorTemplateType } from "../actor/types.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
-import { SkillData } from "./index.ts"
 import { CellData } from "./components/cell-data.ts"
 import { SkillDefault } from "./components/skill-default.ts"
 import { SheetSettings } from "../sheet-settings.ts"
@@ -124,8 +129,8 @@ class TechniqueData extends ItemDataModel.mixin(
 		const tooltip = new TooltipGURPS()
 		const points = new CellData({
 			type: cell.Type.Text,
-			primary: this.adjustedPoints(tooltip),
-			align: align.Option.End,
+			primary: this.adjustedPoints(tooltip).toString(),
+			alignment: align.Option.End,
 		})
 		if (tooltip.length !== 0) {
 			const pointsTooltip = new TooltipGURPS()
@@ -150,7 +155,7 @@ class TechniqueData extends ItemDataModel.mixin(
 				type: cell.Type.Text,
 				primary: this.levelAsString,
 				tooltip: levelTooltip(),
-				align: align.Option.End,
+				alignment: align.Option.End,
 			}),
 			relativeLevel: new CellData({
 				type: cell.Type.Text,
@@ -203,16 +208,12 @@ class TechniqueData extends ItemDataModel.mixin(
 		})
 	}
 
-	get defaultSkill():
-		| (ItemGURPS2 &
-				({ type: ItemType.Skill; system: SkillData } | { type: ItemType.Technique; system: TechniqueData }))
-		| null {
+	get defaultSkill(): ItemInst<ItemType.Skill | ItemType.Technique> | null {
 		const actor = this.actor
 		if (!actor) return null
 		if (!actor.isOfType(ActorType.Character)) return null
 		if (!this.default) return null
 		if (!this.default.skillBased) return null
-		// @ts-expect-error type instantiation too deep
 		return actor.system.bestSkillNamed(
 			this.default.nameWithReplacements(this.nameableReplacements),
 			this.default.specializationWithReplacements(this.nameableReplacements),
@@ -301,7 +302,6 @@ type TechniqueSchema = BasicInformationTemplateSchema &
 	AbstractSkillTemplateSchema & {
 		default: SkillDefaultField<true, false, true>
 		defaulted_from: SkillDefaultField<true, false, true>
-		// defaults: fields.ArrayField<fields.EmbeddedDataField<SkillDefault>>
 		limit: fields.NumberField<number, number, true, true, true>
 		limited: fields.BooleanField<boolean, boolean, true, false, true>
 	}

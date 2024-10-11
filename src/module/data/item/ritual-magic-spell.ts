@@ -7,7 +7,7 @@ import { ContainerTemplate, ContainerTemplateSchema } from "./templates/containe
 import { PrereqTemplate, PrereqTemplateSchema } from "./templates/prereqs.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
 import { StudyTemplate, StudyTemplateSchema } from "./templates/study.ts"
-import { ItemDataModel } from "../abstract.ts"
+import { ItemDataModel } from "./abstract.ts"
 import { SpellFieldsTemplate, SpellFieldsTemplateSchema } from "./templates/spell-fields.ts"
 import { ActorTemplateType } from "../actor/types.ts"
 import { SkillLevel, calculateTechniqueLevel } from "./helpers.ts"

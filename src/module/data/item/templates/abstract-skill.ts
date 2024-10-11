@@ -1,4 +1,4 @@
-import { ItemDataModel } from "@module/data/abstract.ts"
+import { ItemDataModel } from "@module/data/item/abstract.ts"
 import fields = foundry.data.fields
 import { difficulty, Int, LocalizeGURPS, StringBuilder } from "@util"
 import { ItemType } from "@module/data/constants.ts"

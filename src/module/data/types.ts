@@ -1,6 +1,8 @@
 import { difficulty } from "@util"
 import { ConditionID, EFFECT_ACTION, ManeuverID, gid } from "./constants.ts"
 
+type MaybePromise<T> = T | Promise<T>
+
 enum ItemKind {
 	Campaign = "C",
 	ConditionalModifier = "c",
@@ -221,6 +223,7 @@ export type {
 	ConditionEffect,
 	EffectID,
 	ImagePath,
+	MaybePromise,
 	MigratedDocumentMigrationRecord,
 	MigrationRecord,
 	// ModifierHeader,

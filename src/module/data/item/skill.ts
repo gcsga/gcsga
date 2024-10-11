@@ -1,4 +1,4 @@
-import { ItemDataModel } from "../abstract.ts"
+import { ItemDataModel } from "./abstract.ts"
 import fields = foundry.data.fields
 import { PrereqTemplate, PrereqTemplateSchema } from "./templates/prereqs.ts"
 import { ContainerTemplate, ContainerTemplateSchema } from "./templates/container.ts"
@@ -29,6 +29,7 @@ import { SkillDefaultTemplate, SkillDefaultTemplateSchema } from "./templates/de
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { AttributeDifficultyField } from "./fields/attribute-difficulty-field.ts"
 import { getAttributeChoices } from "../attribute/helpers.ts"
+import { Nameable } from "@module/util/nameable.ts"
 
 class SkillData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -130,8 +131,8 @@ class SkillData extends ItemDataModel.mixin(
 		const tooltip = new TooltipGURPS()
 		const points = new CellData({
 			type: cell.Type.Text,
-			primary: this.adjustedPoints(tooltip),
-			align: align.Option.End,
+			primary: this.adjustedPoints(tooltip).toString(),
+			alignment: align.Option.End,
 		})
 		if (tooltip.length !== 0) {
 			const pointsTooltip = new TooltipGURPS()
@@ -156,7 +157,7 @@ class SkillData extends ItemDataModel.mixin(
 				type: cell.Type.Text,
 				primary: this.levelAsString,
 				tooltip: levelTooltip(),
-				align: align.Option.End,
+				alignment: align.Option.End,
 			}),
 			relativeLevel: new CellData({
 				type: cell.Type.Text,
@@ -330,6 +331,26 @@ class SkillData extends ItemDataModel.mixin(
 			points = Math.max(points, 0)
 		}
 		return points
+	}
+
+	override fillWithNameableKeys(
+		m: Map<string, string>,
+		existing: Map<string, string> = this.nameableReplacements,
+	): void {
+		super.fillWithNameableKeys(m, existing)
+
+		Nameable.extract(this.notes, m, existing)
+		Nameable.extract(this.specialization, m, existing)
+		// if (this.hasPrereqs) this.rootPrereq.fillWithNameableKeys(m, existing)
+		// for (const default of this.defaults) {
+		// 	default.fillWithNameableKeys(m,existing)
+		// }
+		// for (const feature of this.features) {
+		// 	feature.fillWithNameableKeys(m,existing)
+		// }
+		// for (const weapon of this.weapons) {
+		// 	weapon.system.fillWithNameableKeys(m,existing)
+		// }
 	}
 
 	/** Calculates level, relative level, and relevant tooltip based on current state of

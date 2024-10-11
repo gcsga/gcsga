@@ -5717,7 +5717,7 @@ export class ClientBaseItem<
 	 * Serialize salient information about this Document when dragging it.
 	 * @returns An object of drag data.
 	 */
-	toDragData(): { type: string; [key: string]: unknown }
+	toDragData(): { type: string; x: number; y: number; [key: string]: unknown }
 
 	/**
 	 * A helper function to handle obtaining the relevant Document from dropped data provided via a DataTransfer event.

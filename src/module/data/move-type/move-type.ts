@@ -1,10 +1,10 @@
 import fields = foundry.data.fields
 import { MoveTypeDef } from "./move-type-definition.ts"
 import { AbstractAttribute, AbstractAttributeSchema } from "../abstract-attribute/index.ts"
-import { ActorDataModel } from "../abstract.ts"
 import { ActorTemplateType } from "../actor/types.ts"
 import { SheetSettings } from "../sheet-settings.ts"
 import { MoveBonusType } from "../feature/move-bonus.ts"
+import { ActorDataModel } from "../actor/abstract.ts"
 
 class MoveType extends AbstractAttribute<ActorDataModel, MoveTypeSchema> {
 	static override defineSchema(): MoveTypeSchema {

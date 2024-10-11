@@ -1,6 +1,6 @@
-import { ActorDataModel } from "../abstract.ts"
 import { AttributeGURPS, AttributeSchema } from "./attribute.ts"
 import fields = foundry.data.fields
+import { ActorDataModel } from "../actor/abstract.ts"
 
 class Attributes extends foundry.abstract.DataModel<ActorDataModel, AttributesSchema> {
 	declare _map: Map<string, AttributeGURPS>

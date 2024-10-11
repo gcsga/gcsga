@@ -1,13 +1,13 @@
 import { ActorGURPS2 } from "@module/document/actor.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { LocalizeGURPS, TooltipGURPS, generateId, prereq } from "@util"
-import { ItemDataModel } from "../abstract.ts"
 import { ActorInst } from "../actor/helpers.ts"
 import { ActorType } from "../constants.ts"
 import { PrereqInstances } from "./types.ts"
 import fields = foundry.data.fields
 import { createButton } from "@module/applications/helpers.ts"
 import { ItemTemplateType } from "../item/types.ts"
+import { ItemDataModel } from "../item/abstract.ts"
 
 abstract class BasePrereq<TSchema extends BasePrereqSchema = BasePrereqSchema> extends foundry.abstract.DataModel<
 	ItemDataModel,

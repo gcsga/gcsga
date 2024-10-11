@@ -1,5 +1,6 @@
-import { ItemDataModel } from "../abstract.ts"
+import { ItemDataModel } from "./abstract.ts"
 import { ItemType } from "../constants.ts"
+import { FeatureSet } from "../feature/types.ts"
 import {
 	BasicInformationTemplate,
 	BasicInformationTemplateSchema,
@@ -30,6 +31,15 @@ class EquipmentData extends ItemDataModel.mixin(
 		context.detailsParts = ["gurps.details-equipment", "gurps.details-prereqs", "gurps.details-features"]
 		context.embedsParts = ["gurps.embeds-equipment-modifiers", "gurps.embeds-weapons"]
 		context.headerFilter = "hue-rotate(192deg) saturate(1) brightness(1.2);"
+	}
+
+	/** Features */
+	override addFeaturesToSet(featureSet: FeatureSet): void {
+		if (!this.equipped) return
+
+		for (const f of this.features) {
+			this._addFeatureToSet(f, featureSet, 0)
+		}
 	}
 }
 

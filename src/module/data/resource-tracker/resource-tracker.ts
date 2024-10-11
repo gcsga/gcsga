@@ -2,13 +2,13 @@ import fields = foundry.data.fields
 import type { TokenPool } from "@module/data/types.ts"
 import type { ResourceTrackerDef } from "./resource-tracker-definition.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
-import { ActorDataModel } from "../abstract.ts"
 import {
 	AbstractAttribute,
 	AbstractAttributeConstructionOptions,
 	AbstractAttributeSchema,
 } from "../abstract-attribute/index.ts"
 import { PoolThreshold } from "../attribute/index.ts"
+import { ActorDataModel } from "../actor/abstract.ts"
 
 class ResourceTracker extends AbstractAttribute<ActorDataModel, ResourceTrackerSchema> {
 	order: number

@@ -1,4 +1,4 @@
-import { ItemDataModel } from "@module/data/abstract.ts"
+import { ItemDataModel } from "@module/data/item/abstract.ts"
 import fields = foundry.data.fields
 import { EvalEmbeddedRegex, cell, replaceAllStringFunc } from "@util"
 import { CellData } from "../components/cell-data.ts"
@@ -15,7 +15,8 @@ class NoteTemplate extends ItemDataModel<NoteTemplateSchema> {
 
 	override get cellData(): Record<string, CellData> {
 		return {
-			text: new CellData({ type: cell.Type.Markdown, primary: this.enrichedText }),
+			// TODO: revise
+			text: new CellData({ type: cell.Type.Markdown, primary: this.enrichedText as unknown as string }),
 			reference: new CellData({
 				type: cell.Type.PageRef,
 				primary: this.reference,

@@ -1,4 +1,4 @@
-import { ItemDataModel } from "../abstract.ts"
+import { ItemDataModel } from "./abstract.ts"
 import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
 import { ContainerTemplate, ContainerTemplateSchema } from "./templates/container.ts"
 import { ItemType } from "../constants.ts"

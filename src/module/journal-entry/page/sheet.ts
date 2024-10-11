@@ -37,7 +37,6 @@
 // 	_getViewerParams(): URLSearchParams {
 // 		const params = new URLSearchParams()
 // 		if (this.object.src) {
-// 			// @ts-expect-error no definitions yet
 // 			const src = URL.parseSafe(this.object.src) ? this.object.src : foundry.utils.getRoute(this.object.src)
 // 			params.append("file", src)
 // 		}

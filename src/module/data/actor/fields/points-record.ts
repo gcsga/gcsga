@@ -1,4 +1,4 @@
-import { ActorDataModel } from "@module/data/abstract.ts"
+import { ActorDataModel } from "@module/data/actor/abstract.ts"
 import fields = foundry.data.fields
 
 class PointsRecord extends foundry.abstract.DataModel<ActorDataModel, PointsRecordSchema> {

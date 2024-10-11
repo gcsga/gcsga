@@ -1,24 +1,14 @@
-import { ActorDataModel } from "@module/data/abstract.ts"
-import { ActorType, EffectType, ItemType, gid } from "@module/data/constants.ts"
-import {
-	AttributeBonus,
-	CostReduction,
-	DRBonus,
-	MoveBonus,
-	SkillBonus,
-	SkillPointBonus,
-	SpellBonus,
-	SpellPointBonus,
-	WeaponBonus,
-} from "@module/data/feature/index.ts"
+import { ActorDataModel } from "@module/data/actor/abstract.ts"
+import { ActorType, EffectType, gid } from "@module/data/constants.ts"
+import { SkillBonus, WeaponBonus } from "@module/data/feature/index.ts"
 import { MoveBonusType } from "@module/data/feature/move-bonus.ts"
-import { Feature } from "@module/data/feature/types.ts"
+import { FeatureSet } from "@module/data/feature/types.ts"
 import { equalFold } from "@module/data/item/components/index.ts"
+import { ItemTemplateType } from "@module/data/item/types.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
-import { ActiveEffectGURPS } from "@module/document/active-effect.ts"
-import { ItemGURPS2 } from "@module/document/item.ts"
+import { MaybePromise } from "@module/data/types.ts"
 import { Nameable } from "@module/util/index.ts"
-import { ErrorGURPS, TooltipGURPS, feature, selfctrl, skillsel, stlimit, wsel } from "@util"
+import { TooltipGURPS, feature, skillsel, stlimit, wsel } from "@util"
 
 class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> {
 	declare features: FeatureSet
@@ -36,140 +26,25 @@ class FeatureHolderTemplate extends ActorDataModel<FeatureHolderTemplateSchema> 
 		return this.baseSizeModifier + this.attributeBonusFor(gid.SizeModifier)
 	}
 
-	processFeatures(): void {
-		const itemCollections = this.parent.itemCollections
-		itemCollections.traits.forEach(trait => {
-			let levels = 0
-			if (trait.isOfType(ItemType.Trait)) {
-				if (trait.system.isLeveled) levels = Math.max(trait.system.levels ?? 0, 0)
-				for (const f of trait.system.features) this._processFeature(trait, null, f, levels)
-				for (const f of featuresForSelfControlRoll(trait.system.cr, trait.system.cr_adj))
-					this._processFeature(trait, null, f, levels)
-				trait.system.allModifiers.forEach(mod => {
-					for (const f of mod.system.features) this._processFeature(mod, null, f, mod.system.currentLevel)
-				})
-			}
-		})
-		itemCollections.skills.forEach(skill => {
-			if (skill.isOfType(ItemType.Skill, ItemType.Technique)) {
-				for (const f of skill.system.features) this._processFeature(skill, null, f, skill.system.level.level)
-			}
-		})
-		itemCollections.carriedEquipment.forEach(equipment => {
-			if (!equipment.system.equipped || equipment.system.quantity <= 0) return
-			for (const f of equipment.system.features)
-				this._processFeature(equipment, null, f, Math.max(equipment.system.level, 0))
-			equipment.system.allModifiers.forEach(mod => {
-				for (const f of mod.system.features)
-					this._processFeature(mod, null, f, Math.max(equipment.system.level, 0))
-			})
+	processFeatures(): MaybePromise<void> {
+		const features: FeatureSet = {
+			attributeBonuses: [],
+			costReductions: [],
+			drBonuses: [],
+			skillBonuses: [],
+			skillPointBonuses: [],
+			spellBonuses: [],
+			spellPointBonuses: [],
+			weaponBonuses: [],
+			moveBonuses: [],
+		}
+
+		this.parent.items.forEach(item => {
+			if (item.hasTemplate(ItemTemplateType.Feature)) item.system.addFeaturesToSet(features)
 		})
 		this.parent.effects.forEach(effect => {
-			if (!(effect instanceof ActiveEffectGURPS)) return
-			if (!effect.isOfType(EffectType.Effect, EffectType.Condition)) return
-
-			for (const f of effect.system.features) this._processFeature(effect, null, f, effect.system.levels.current)
+			if (effect.isOfType(EffectType.Effect, EffectType.Condition)) effect.system.addFeaturesToSet(features)
 		})
-	}
-
-	private _processFeature(
-		owner: Feature["owner"],
-		subOwner: Feature["subOwner"],
-		bonus: Feature,
-		levels: number,
-	): void {
-		bonus.owner = owner
-		bonus.subOwner = subOwner
-		bonus.featureLevel = levels
-
-		switch (true) {
-			case bonus.isOfType(feature.Type.AttributeBonus):
-				this.features.attributeBonuses.push(bonus)
-				break
-			case bonus.isOfType(feature.Type.CostReduction):
-				this.features.costReductions.push(bonus)
-				break
-			case bonus.isOfType(feature.Type.DRBonus):
-				{
-					// "this armor"
-					if (bonus.locations.length === 0) {
-						const eqp = bonus.owner
-						if (
-							eqp instanceof ItemGURPS2 &&
-							eqp?.isOfType(ItemType.Equipment, ItemType.EquipmentContainer)
-						) {
-							const allLocations = new Set<string>()
-							const locationsMatched = new Set<string>()
-							for (const f2 of eqp.system.features) {
-								if (f2.isOfType(feature.Type.DRBonus) && f2.locations.length !== 0) {
-									for (const loc of f2.locations) {
-										allLocations.add(loc)
-									}
-									if (f2.specialization === bonus.specialization) {
-										for (const loc of f2.locations) {
-											locationsMatched.add(loc)
-										}
-										const additionalDRBonus = new DRBonus({
-											type: feature.Type.DRBonus,
-											locations: f2.locations,
-											specialization: bonus.specialization,
-											amount: bonus.amount,
-											per_level: bonus.per_level,
-										})
-										additionalDRBonus.owner = owner
-										additionalDRBonus.subOwner = subOwner
-										additionalDRBonus.featureLevel = levels
-										this.features.drBonuses.push(additionalDRBonus)
-									}
-								}
-							}
-							locationsMatched.forEach(e => {
-								allLocations.delete(e)
-							})
-							if (allLocations.size !== 0) {
-								const locations = Array.from(allLocations)
-								const additionalDRBonus = new DRBonus({
-									type: feature.Type.DRBonus,
-									locations,
-									specialization: bonus.specialization,
-									amount: bonus.amount,
-									per_level: bonus.per_level,
-								})
-								additionalDRBonus.owner = owner
-								additionalDRBonus.subOwner = subOwner
-								additionalDRBonus.featureLevel = levels
-								this.features.drBonuses.push(additionalDRBonus)
-							}
-						}
-					} else {
-						this.features.drBonuses.push(bonus)
-					}
-				}
-				break
-			case bonus.isOfType(feature.Type.SkillBonus):
-				this.features.skillBonuses.push(bonus)
-				break
-			case bonus.isOfType(feature.Type.SkillPointBonus):
-				this.features.skillPointBonuses.push(bonus)
-				break
-			case bonus.isOfType(feature.Type.SpellBonus):
-				this.features.spellBonuses.push(bonus)
-				break
-			case bonus.isOfType(feature.Type.SpellPointBonus):
-				this.features.spellPointBonuses.push(bonus)
-				break
-			case bonus.isOfType(...feature.WeaponBonusTypes):
-				this.features.weaponBonuses.push(bonus)
-				break
-			case bonus.isOfType(
-				feature.Type.ConditionalModifierBonus,
-				feature.Type.ContainedWeightReduction,
-				feature.Type.ReactionBonus,
-			):
-				break
-			default:
-				throw ErrorGURPS(`Unhandled feature type: "${bonus.type}"`)
-		}
 	}
 
 	/**
@@ -525,27 +400,8 @@ function addWeaponBonusToSet(
 	m.add(bonus)
 }
 
-function featuresForSelfControlRoll(cr: selfctrl.Roll, adj: selfctrl.Adjustment): Feature[] {
-	if (adj !== selfctrl.Adjustment.MajorCostOfLivingIncrease) return []
-
-	const f = new SkillBonus({ name: { qualifier: "Merchant" }, amount: selfctrl.Roll.penalty(cr) })
-	return [f]
-}
-
 interface FeatureHolderTemplate extends ModelPropsFromSchema<FeatureHolderTemplateSchema> {}
 
 type FeatureHolderTemplateSchema = {}
-
-type FeatureSet = {
-	attributeBonuses: AttributeBonus[]
-	costReductions: CostReduction[]
-	drBonuses: DRBonus[]
-	skillBonuses: SkillBonus[]
-	skillPointBonuses: SkillPointBonus[]
-	spellBonuses: SpellBonus[]
-	spellPointBonuses: SpellPointBonus[]
-	weaponBonuses: WeaponBonus[]
-	moveBonuses: MoveBonus[]
-}
 
 export { FeatureHolderTemplate, type FeatureHolderTemplateSchema }

@@ -1,5 +1,5 @@
 import fields = foundry.data.fields
-import { ItemDataModel } from "@module/data/abstract.ts"
+import { ItemDataModel } from "@module/data/item/abstract.ts"
 import { PrereqList } from "@module/data/prereq/index.ts"
 import { Prereq, PrereqTypes } from "@module/data/prereq/types.ts"
 import { ErrorGURPS, NumericComparison, prereq } from "@util"
@@ -29,6 +29,15 @@ class PrereqTemplate extends ItemDataModel<PrereqTemplateSchema> {
 		if (!rootPrereq) throw ErrorGURPS("Item has no root prerequisite!")
 		if (!rootPrereq.isOfType(prereq.Type.List)) throw ErrorGURPS("Root prerequisite is not a prerequisite list!")
 		return rootPrereq
+	}
+
+	get hasPrereqs(): boolean {
+		return this.rootPrereq.children.length !== 0
+	}
+
+	protected _fillWithNameableKeysFromPrereqs(m: Map<string, string>, existing: Map<string, string>): void {
+		if (!this.hasPrereqs) return
+		this.rootPrereq.fillWithNameableKeys(m, existing)
 	}
 }
 

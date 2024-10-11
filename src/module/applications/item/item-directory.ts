@@ -12,8 +12,8 @@ class ItemDirectoryGURPS extends ItemDirectory<ItemGURPS2<null>> {
 		// Create item and its contents if it doesn't already exist here
 		if (!this._entryAlreadyExists(item)) {
 			const toCreate = await ItemGURPS2.createWithContents([item])
-			// @ts-expect-error bad type
-			const folder = target?.closest("[data-folder-id]")?.dataset.folderId
+			const folderElement = target?.closest("[data-folder-id") as HTMLElement
+			const folder = folderElement.dataset.folderId
 			if (folder) toCreate.map(d => (d.folder = folder))
 			;[item] = (await ItemGURPS2.createDocuments(toCreate, { keepId: true })) as [ItemGURPS2<null>]
 		}
@@ -22,7 +22,6 @@ class ItemDirectoryGURPS extends ItemDirectory<ItemGURPS2<null>> {
 		else if ((item.system as any).container) await item.update({ "system.container": null })
 
 		// Let parent method perform sorting
-		// @ts-expect-error bad type
 		super._handleDroppedEntry(target, item.toDragData())
 	}
 }

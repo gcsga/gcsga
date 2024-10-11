@@ -1,4 +1,4 @@
-import { ItemDataModel } from "@module/data/abstract.ts"
+import { ItemDataModel } from "@module/data/item/abstract.ts"
 import { ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { ItemDataInstances, ItemDataTemplates, ItemTemplateType } from "@module/data/item/types.ts"
 import { ItemTemplateInst } from "@module/data/item/helpers.ts"
@@ -27,7 +27,6 @@ class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extend
 	override prepareData(): void {
 		super.prepareData()
 		if (SYSTEM_NAME in this.flags && this._systemFlagsDataModel) {
-			// @ts-expect-error abstract class overwritten
 			this.flags[SYSTEM_NAME] = new this._systemFlagsDataModel(this._source.flags[SYSTEM_NAME], {
 				parent: this,
 			})
@@ -171,11 +170,8 @@ class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extend
 		if (scope === SYSTEM_NAME && this._systemFlagsDataModel) {
 			let diff
 			const changes = foundry.utils.expandObject({ [key]: value })
-			// @ts-expect-error value exists
 			if (this.flags[SYSTEM_NAME]) diff = this.flags[SYSTEM_NAME].updateSource(changes, { dryRun: true })
-			// @ts-expect-error abstract class overwritten
 			else diff = new this._systemFlagsDataModel(changes, { parent: this }).toObject()
-			// @ts-expect-error value exists
 			return this.update({ flags: { [SYSTEM_NAME]: diff } })
 		}
 		return super.setFlag(scope, key, value)
@@ -208,18 +204,15 @@ class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extend
 	 */
 	get container(): ItemGURPS2 | Promise<ItemGURPS2> | null {
 		if (!Object.hasOwn(this.system, "container")) return null
-		// @ts-expect-error container exists in all cases
-		if (this.isEmbedded) return this.actor!.items.get(this.system.container) ?? null
+		if (this.isEmbedded) return this.actor!.items.get((this.system as any).container) ?? null
 		if (this.pack) {
 			return (
 				((game.packs.get(this.pack) as CompendiumCollection<ItemGURPS2<null>>).getDocument(
-					// @ts-expect-error container exists in all cases
-					this.system.container,
+					(this.system as any).container,
 				) as Promise<ItemGURPS2<null>>) ?? null
 			)
 		}
-		// @ts-expect-error container exists in all cases
-		return game.items.get(this.system.container) ?? null
+		return game.items.get((this.system as any).container) ?? null
 	}
 
 	/**

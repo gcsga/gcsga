@@ -1,11 +1,11 @@
 import { ErrorGURPS } from "@util"
 import { ActorGURPS2 } from "@module/document/actor.ts"
 import { ActorTemplateType } from "@module/data/actor/types.ts"
-import { ActorDataModel } from "./abstract.ts"
 import { DefaultSheetSettings, SheetSettingsSchema } from "@module/settings/sheet-settings-config.ts"
 import { AttributeSettings, AttributeSettingsSchema } from "@module/settings/attributes-config.ts"
 import { SETTINGS, SYSTEM_NAME } from "./constants.ts"
 import { HitLocationSettings, HitLocationSettingsSchema } from "@module/settings/hit-location-config.ts"
+import { ActorDataModel } from "./actor/abstract.ts"
 
 // export interface PageSettings {
 // 	paper_size: paper.Size
