@@ -52,13 +52,6 @@ class UserGURPS<TActor extends ActorGURPS2<null> = ActorGURPS2<null>> extends Us
 		return total
 	}
 
-	// get activeTokens(): TokenDocumentGURPS[] {
-	// 	if (!canvas.ready || canvas.tokens.controlled.length === 0) {
-	// 		return this.character?.getActiveTokens(true, true) ?? []
-	// 	}
-	// 	return canvas.tokens.controlled.filter(t => t.isOwner).map(t => t.document)
-	// }
-
 	addModifier(mod: RollModifier): void {
 		const modifierStack = this.flags[SYSTEM_NAME][UserFlags.ModifierStack]
 		if (mod.tags?.includes(RollModifierTags.Range)) {

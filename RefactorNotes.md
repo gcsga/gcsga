@@ -5,6 +5,38 @@
 - Add embeds tab functionality for easier testing.
 - Fix all functions which call document children where the result may be a Promise
 - Add #fillWithNameableKeys for all items with nameable functionality
+  - equipment
+  - trait modifier
+  - skill
+  - equipment modifier
+  - spell
+  - trait
+  - melee weaopn
+  - ranged weapon
+  -
+  - prereqs
+  - contained weight
+  - attribute
+  - contained quantity
+  - prereq list
+  - skill prereq
+  - spell prereq
+  - trait prereq
+  -
+  -
+  - features
+  - dr bonus
+  - att bonuscond mod
+  - contained weight reduciton
+  - cost reduction
+  - reaction bonus
+  - skil bonus
+  - skill point bonus
+  - spell bonus
+  - spell point bonus
+  - weapon bonus
+  -
+  - skill default
 
 ## Left To Do
 
