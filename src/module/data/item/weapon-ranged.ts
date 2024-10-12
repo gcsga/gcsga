@@ -14,7 +14,6 @@ import { WeaponBulk } from "./fields/weapon-bulk.ts"
 import { WeaponRecoil } from "./fields/weapon-recoil.ts"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
 import { CellData } from "./components/cell-data.ts"
-import { Nameable } from "@module/util/index.ts"
 
 class WeaponRangedData extends ItemDataModel.mixin(BasicInformationTemplate, AbstractWeaponTemplate) {
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
@@ -100,11 +99,6 @@ class WeaponRangedData extends ItemDataModel.mixin(BasicInformationTemplate, Abs
 		}
 
 		return data
-	}
-
-	fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {
-		Nameable.extract(this.name, m, existing)
-		Nameable.extract(this.notes, m, existing)
 	}
 }
 

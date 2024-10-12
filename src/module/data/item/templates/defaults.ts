@@ -9,6 +9,13 @@ class SkillDefaultTemplate extends ItemDataModel<SkillDefaultTemplateSchema> {
 			defaults: new fields.ArrayField(new SkillDefaultField()),
 		}
 	}
+
+	/** Namebales */
+	protected _fillWithNameableKeysFromDefaults(m: Map<string, string>, existing: Map<string, string>): void {
+		for (const feature of this.defaults) {
+			feature.fillWithNameableKeys(m, existing)
+		}
+	}
 }
 
 interface SkillDefaultTemplate extends ModelPropsFromSchema<SkillDefaultTemplateSchema> {}

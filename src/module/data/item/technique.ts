@@ -26,6 +26,8 @@ import { SkillDefaultTemplate, SkillDefaultTemplateSchema } from "./templates/de
 import { AttributeDifficultyField } from "./fields/attribute-difficulty-field.ts"
 import { SkillDefaultField } from "./fields/skill-default-field.ts"
 import { getAttributeChoices } from "../attribute/helpers.ts"
+import { MaybePromise } from "../types.ts"
+import { Nameable } from "@module/util/nameable.ts"
 
 class TechniqueData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -287,9 +289,39 @@ class TechniqueData extends ItemDataModel.mixin(
 		}
 		return satisfied
 	}
+
+	/** Namebales */
+	override fillWithNameableKeys(
+		m: Map<string, string>,
+		existing: Map<string, string> = this.nameableReplacements,
+	): void {
+		super.fillWithNameableKeys(m, existing)
+
+		Nameable.extract(this.notes, m, existing)
+		Nameable.extract(this.specialization, m, existing)
+		this.default.fillWithNameableKeys(m, existing)
+
+		this._fillWithNameableKeysFromPrereqs(m, existing)
+		this._fillWithNameableKeysFromFeatures(m, existing)
+		this._fillWithNameableKeysFromDefaults(m, existing)
+		this._fillWithNameableKeysFromEmbeds(m, existing)
+	}
+
+	protected async _fillWithNameableKeysFromEmbeds(
+		m: Map<string, string>,
+		existing: Map<string, string>,
+	): Promise<void> {
+		const weapons = await this.weapons
+
+		for (const weapon of weapons) {
+			weapon.system.fillWithNameableKeys(m, existing)
+		}
+	}
 }
 
-interface TechniqueData extends ModelPropsFromSchema<TechniqueSchema> {}
+interface TechniqueData extends ModelPropsFromSchema<TechniqueSchema> {
+	get weapons(): MaybePromise<Collection<ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>>>
+}
 
 type TechniqueSchema = BasicInformationTemplateSchema &
 	PrereqTemplateSchema &

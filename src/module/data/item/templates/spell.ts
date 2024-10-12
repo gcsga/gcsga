@@ -11,7 +11,7 @@ import {
 	display,
 	replaceAllStringFunc,
 } from "@util"
-import { SkillLevel, addTooltipForSkillLevelAdj, formatRelativeSkill } from "../helpers.ts"
+import { ItemInst, addTooltipForSkillLevelAdj, formatRelativeSkill } from "../helpers.ts"
 import { ItemType } from "@module/data/constants.ts"
 import { ItemTemplateType } from "../types.ts"
 import { CellData } from "../components/cell-data.ts"
@@ -19,16 +19,28 @@ import { SheetSettings } from "@module/data/sheet-settings.ts"
 import { Study } from "@module/data/study.ts"
 import { Nameable } from "@module/util/index.ts"
 import { StringArrayField } from "../fields/string-array-field.ts"
+import { AbstractSkillTemplate, AbstractSkillTemplateSchema } from "./abstract-skill.ts"
+import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./basic-information.ts"
+import { ContainerTemplate, ContainerTemplateSchema } from "./container.ts"
+import { PrereqTemplate, PrereqTemplateSchema } from "./prereqs.ts"
+import { ReplacementTemplate, ReplacementTemplateSchema } from "./replacements.ts"
+import { StudyTemplate, StudyTemplateSchema } from "./study.ts"
+import { ActorTemplateType } from "@module/data/actor/types.ts"
+import { MaybePromise } from "@module/data/types.ts"
 
-class SpellFieldsTemplate extends ItemDataModel<SpellFieldsTemplateSchema> {
+class SpellTemplate extends ItemDataModel.mixin(
+	BasicInformationTemplate,
+	PrereqTemplate,
+	ContainerTemplate,
+	StudyTemplate,
+	ReplacementTemplate,
+	AbstractSkillTemplate,
+) {
 	// TODO: see if this causes issues
-	declare nameableReplacements: Map<string, string>
-	declare level: SkillLevel
-
-	static override defineSchema(): SpellFieldsTemplateSchema {
+	static override defineSchema(): SpellTemplateSchema {
 		const fields = foundry.data.fields
 
-		return {
+		return this.mergeSchema(super.defineSchema(), {
 			college: new StringArrayField({
 				required: true,
 				nullable: false,
@@ -77,7 +89,7 @@ class SpellFieldsTemplate extends ItemDataModel<SpellFieldsTemplateSchema> {
 				initial: "Instant",
 				label: "GURPS.Item.Spell.FIELDS.Duration.Name",
 			}),
-		}
+		}) as SpellTemplateSchema
 	}
 
 	override get cellData(): Record<string, CellData> {
@@ -170,6 +182,16 @@ class SpellFieldsTemplate extends ItemDataModel<SpellFieldsTemplateSchema> {
 		}
 	}
 
+	override get processedName(): string {
+		const buffer = new StringBuilder()
+		buffer.push(this.nameWithReplacements)
+		if (this.tech_level_required)
+			buffer.push(
+				LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.TechLevelShort, { level: this.tech_level }),
+			)
+		return buffer.toString()
+	}
+
 	secondaryText(optionChecker: (option: display.Option) => boolean): string {
 		const buffer = new StringBuilder()
 		const settings = SheetSettings.for(this.parent.actor)
@@ -183,9 +205,25 @@ class SpellFieldsTemplate extends ItemDataModel<SpellFieldsTemplateSchema> {
 		return buffer.toString()
 	}
 
-	get processedNotes(): string {
+	override get processedNotes(): string {
 		const notes = this.isOfType(ItemType.Spell, ItemType.RitualMagicSpell) ? this.notesWithReplacements : ""
 		return replaceAllStringFunc(EvalEmbeddedRegex, notes, this.parent.actor)
+	}
+
+	override adjustedPoints(tooltip: TooltipGURPS | null = null, temporary = false): number {
+		let points = this.points
+		if (this.actor?.hasTemplate(ActorTemplateType.Features)) {
+			points += this.actor.system.spellPointBonusFor(
+				this.nameWithReplacements,
+				this.powerSourceWithReplacements,
+				this.collegeWithReplacements,
+				this.tags,
+				tooltip,
+				temporary,
+			)
+			points = Math.max(points, 0)
+		}
+		return points
 	}
 
 	// Displayed rituals value based on spell level
@@ -223,6 +261,37 @@ class SpellFieldsTemplate extends ItemDataModel<SpellFieldsTemplateSchema> {
 		}
 	}
 
+	/** Nameables */
+	override fillWithNameableKeys(
+		m: Map<string, string>,
+		existing: Map<string, string> = this.nameableReplacements,
+	): void {
+		super.fillWithNameableKeys(m, existing)
+
+		Nameable.extract(this.notes, m, existing)
+		Nameable.extract(this.power_source, m, existing)
+		Nameable.extract(this.spell_class, m, existing)
+		Nameable.extract(this.resist, m, existing)
+		Nameable.extract(this.casting_cost, m, existing)
+		Nameable.extract(this.maintenance_cost, m, existing)
+		Nameable.extract(this.casting_time, m, existing)
+		Nameable.extract(this.duration, m, existing)
+
+		this._fillWithNameableKeysFromPrereqs(m, existing)
+		this._fillWithNameableKeysFromEmbeds(m, existing)
+	}
+
+	protected async _fillWithNameableKeysFromEmbeds(
+		m: Map<string, string>,
+		existing: Map<string, string>,
+	): Promise<void> {
+		const weapons = await this.weapons
+
+		for (const weapon of weapons) {
+			weapon.system.fillWithNameableKeys(m, existing)
+		}
+	}
+
 	/**  Replacements */
 	get powerSourceWithReplacements(): string {
 		return Nameable.apply(this.power_source, this.nameableReplacements)
@@ -257,17 +326,24 @@ class SpellFieldsTemplate extends ItemDataModel<SpellFieldsTemplateSchema> {
 	}
 }
 
-interface SpellFieldsTemplate extends ModelPropsFromSchema<SpellFieldsTemplateSchema> {}
-
-type SpellFieldsTemplateSchema = {
-	college: StringArrayField<true, false, true>
-	power_source: fields.StringField<string, string, true, false, true>
-	spell_class: fields.StringField<string, string, true, false, true>
-	resist: fields.StringField<string, string, true, false, true>
-	casting_cost: fields.StringField<string, string, true, false, true>
-	maintenance_cost: fields.StringField<string, string, true, false, true>
-	casting_time: fields.StringField<string, string, true, false, true>
-	duration: fields.StringField<string, string, true, false, true>
+interface SpellTemplate extends ModelPropsFromSchema<SpellTemplateSchema> {
+	get weapons(): MaybePromise<Collection<ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>>>
 }
 
-export { SpellFieldsTemplate, type SpellFieldsTemplateSchema }
+type SpellTemplateSchema = BasicInformationTemplateSchema &
+	PrereqTemplateSchema &
+	ContainerTemplateSchema &
+	StudyTemplateSchema &
+	ReplacementTemplateSchema &
+	AbstractSkillTemplateSchema & {
+		college: StringArrayField<true, false, true>
+		power_source: fields.StringField<string, string, true, false, true>
+		spell_class: fields.StringField<string, string, true, false, true>
+		resist: fields.StringField<string, string, true, false, true>
+		casting_cost: fields.StringField<string, string, true, false, true>
+		maintenance_cost: fields.StringField<string, string, true, false, true>
+		casting_time: fields.StringField<string, string, true, false, true>
+		duration: fields.StringField<string, string, true, false, true>
+	}
+
+export { SpellTemplate, type SpellTemplateSchema }

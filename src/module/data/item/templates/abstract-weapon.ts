@@ -29,12 +29,6 @@ class AbstractWeaponTemplate extends ItemDataModel.mixin(SkillDefaultTemplate) {
 		return this.parent.name
 	}
 
-	// get processedName(): string {
-	// 	if (this.parent.container === null || this.parent.container instanceof Promise) return ""
-	// 	if (!this.parent.container.hasTemplate(ItemTemplateType.BasicInformation)) return ""
-	// 	return this.parent.container.system.name
-	// }
-
 	get processedNotes(): string {
 		const buffer = new StringBuilder()
 		const container = this.parent.container
@@ -297,6 +291,15 @@ class AbstractWeaponTemplate extends ItemDataModel.mixin(SkillDefaultTemplate) {
 		}
 	}
 
+	/** Nameables */
+	fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {
+		Nameable.extract(this.parent.name, m, existing)
+		Nameable.extract(this.notes, m, existing)
+
+		this._fillWithNameableKeysFromDefaults(m, existing)
+	}
+
+	/** Replacements */
 	get usageWithReplacements(): string {
 		if (!this.hasTemplate(ItemTemplateType.BasicInformation)) return ""
 		return Nameable.apply(this.name, this.nameableReplacements)
@@ -309,15 +312,14 @@ class AbstractWeaponTemplate extends ItemDataModel.mixin(SkillDefaultTemplate) {
 }
 
 interface AbstractWeaponTemplate extends ModelPropsFromSchema<AbstractWeaponTemplateSchema> {
+	constructor: typeof AbstractWeaponTemplate
 	nameableReplacements: Map<string, string>
+	notes: string
 	tags: string[]
 }
 
 type AbstractWeaponTemplateSchema = SkillDefaultTemplateSchema & {
 	strength: fields.EmbeddedDataField<WeaponStrength>
-	// defaults: fields.ArrayField<
-	// 	fields.SchemaField<SkillDefaultSchema, SourceFromSchema<SkillDefaultSchema>, SkillDefault>
-	// >
 	damage: fields.EmbeddedDataField<WeaponDamage>
 	unready: fields.BooleanField<boolean, boolean>
 }

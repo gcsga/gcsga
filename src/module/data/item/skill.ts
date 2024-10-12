@@ -30,6 +30,7 @@ import { ItemGURPS2 } from "@module/document/item.ts"
 import { AttributeDifficultyField } from "./fields/attribute-difficulty-field.ts"
 import { getAttributeChoices } from "../attribute/helpers.ts"
 import { Nameable } from "@module/util/nameable.ts"
+import { MaybePromise } from "../types.ts"
 
 class SkillData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -94,13 +95,6 @@ class SkillData extends ItemDataModel.mixin(
 				}).choices,
 				label: "GURPS.Item.Skill.FIELDS.Difficulty.Name",
 			}),
-			// difficulty: new fields.EmbeddedDataField(AttributeDifficulty, {
-			// 	initial: {
-			// 		attribute: gid.Dexterity,
-			// 		difficulty: difficulty.Level.Average,
-			// 	},
-			// 	label: "GURPS.Item.Skill.FIELDS.Difficulty.Name",
-			// }),
 			encumbrance_penalty_multiplier: new fields.NumberField({
 				integer: true,
 				min: 0,
@@ -113,7 +107,6 @@ class SkillData extends ItemDataModel.mixin(
 				nullable: true,
 				initial: null,
 			}),
-			// defaults: new fields.ArrayField(new fields.EmbeddedDataField(SkillDefault)),
 		}) as SkillSchema
 	}
 
@@ -332,6 +325,7 @@ class SkillData extends ItemDataModel.mixin(
 		return points
 	}
 
+	/** Namebales */
 	override fillWithNameableKeys(
 		m: Map<string, string>,
 		existing: Map<string, string> = this.nameableReplacements,
@@ -340,16 +334,22 @@ class SkillData extends ItemDataModel.mixin(
 
 		Nameable.extract(this.notes, m, existing)
 		Nameable.extract(this.specialization, m, existing)
-		// if (this.hasPrereqs) this.rootPrereq.fillWithNameableKeys(m, existing)
-		// for (const default of this.defaults) {
-		// 	default.fillWithNameableKeys(m,existing)
-		// }
-		// for (const feature of this.features) {
-		// 	feature.fillWithNameableKeys(m,existing)
-		// }
-		// for (const weapon of this.weapons) {
-		// 	weapon.system.fillWithNameableKeys(m,existing)
-		// }
+
+		this._fillWithNameableKeysFromPrereqs(m, existing)
+		this._fillWithNameableKeysFromFeatures(m, existing)
+		this._fillWithNameableKeysFromDefaults(m, existing)
+		this._fillWithNameableKeysFromEmbeds(m, existing)
+	}
+
+	protected async _fillWithNameableKeysFromEmbeds(
+		m: Map<string, string>,
+		existing: Map<string, string>,
+	): Promise<void> {
+		const weapons = await this.weapons
+
+		for (const weapon of weapons) {
+			weapon.system.fillWithNameableKeys(m, existing)
+		}
 	}
 
 	/** Calculates level, relative level, and relevant tooltip based on current state of
@@ -432,7 +432,9 @@ class SkillData extends ItemDataModel.mixin(
 	}
 }
 
-interface SkillData extends ModelPropsFromSchema<SkillSchema> {}
+interface SkillData extends ModelPropsFromSchema<SkillSchema> {
+	get weapons(): MaybePromise<Collection<ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>>>
+}
 
 type SkillSchema = BasicInformationTemplateSchema &
 	PrereqTemplateSchema &

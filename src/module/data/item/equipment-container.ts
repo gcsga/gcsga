@@ -1,21 +1,12 @@
-import { ItemDataModel } from "./abstract.ts"
 import { ItemType } from "../constants.ts"
-import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./templates/basic-information.ts"
-import { ContainerTemplate, ContainerTemplateSchema } from "./templates/container.ts"
-import { FeatureTemplate, FeatureTemplateSchema } from "./templates/features.ts"
-import { PrereqTemplate, PrereqTemplateSchema } from "./templates/prereqs.ts"
-import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
-import { EquipmentFieldsTemplate, EquipmentFieldsTemplateSchema } from "./templates/equipment-fields.ts"
 import { FeatureSet } from "../feature/types.ts"
+import { ItemGURPS2 } from "@module/document/item.ts"
+import { EquipmentFieldsTemplate } from "./templates/equipment-fields.ts"
+import { ItemTemplateType } from "./types.ts"
+import { MaybePromise } from "../types.ts"
+import { ItemInst } from "./helpers.ts"
 
-class EquipmentContainerData extends ItemDataModel.mixin(
-	BasicInformationTemplate,
-	PrereqTemplate,
-	ContainerTemplate,
-	FeatureTemplate,
-	ReplacementTemplate,
-	EquipmentFieldsTemplate,
-) {
+class EquipmentContainerData extends EquipmentFieldsTemplate {
 	static override childTypes = new Set([ItemType.Equipment, ItemType.EquipmentContainer])
 	static override modifierTypes = new Set([ItemType.EquipmentModifier, ItemType.EquipmentModifierContainer])
 	static override weaponTypes = new Set([ItemType.WeaponMelee, ItemType.WeaponRanged])
@@ -29,6 +20,16 @@ class EquipmentContainerData extends ItemDataModel.mixin(
 		]
 	}
 
+	override async extendedValue(): Promise<number> {
+		if (this.quantity <= 0) return 0
+		let value = await this.adjustedValue()
+		const children = this.children as Collection<ItemGURPS2>
+		for (const child of children) {
+			if (child.hasTemplate(ItemTemplateType.EquipmentFields)) value += await child.system.extendedValue()
+		}
+		return value * this.quantity
+	}
+
 	/** Features */
 	override addFeaturesToSet(featureSet: FeatureSet): void {
 		if (!this.equipped) return
@@ -37,13 +38,26 @@ class EquipmentContainerData extends ItemDataModel.mixin(
 			this._addFeatureToSet(f, featureSet, 0)
 		}
 	}
+
+	/** Nameables */
+	protected override async _fillWithNameableKeysFromEmbeds(
+		m: Map<string, string>,
+		existing: Map<string, string>,
+	): Promise<void> {
+		const modifiers = await this.allModifiers
+		const weapons = await this.weapons
+
+		for (const modifier of modifiers) {
+			modifier.system.fillWithNameableKeys(m, modifier.system.nameableReplacements)
+		}
+		for (const weapon of weapons) {
+			weapon.system.fillWithNameableKeys(m, existing)
+		}
+	}
 }
 
-type EquipmentContainerSchema = BasicInformationTemplateSchema &
-	PrereqTemplateSchema &
-	ContainerTemplateSchema &
-	FeatureTemplateSchema &
-	ReplacementTemplateSchema &
-	EquipmentFieldsTemplateSchema
+interface EquipmentContainerData {
+	get children(): MaybePromise<Collection<ItemInst<ItemType.Equipment | ItemType.EquipmentContainer>>>
+}
 
-export { EquipmentContainerData, type EquipmentContainerSchema }
+export { EquipmentContainerData }

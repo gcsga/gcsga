@@ -399,6 +399,7 @@ class TraitData extends ItemDataModel.mixin(
 		Nameable.extract(this.userdesc, m, existing)
 
 		this._fillWithNameableKeysFromPrereqs(m, existing)
+		this._fillWithNameableKeysFromFeatures(m, existing)
 		this._fillWithNameableKeysFromEmbeds(m, existing)
 	}
 

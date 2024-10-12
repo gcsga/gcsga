@@ -1,25 +1,37 @@
-import fields = foundry.data.fields
-import { ItemDataModel } from "@module/data/item/abstract.ts"
-import { LocalizeGURPS, StringBuilder, Weight, align, cell, display } from "@util"
-import { CellData } from "../components/cell-data.ts"
-import { ItemTemplateType } from "../types.ts"
 import { ItemType } from "@module/data/constants.ts"
+import { FeatureSet } from "@module/data/feature/types.ts"
+import { SheetSettings } from "@module/data/sheet-settings.ts"
+import { MaybePromise } from "@module/data/types.ts"
+import { ItemGURPS2 } from "@module/document/item.ts"
+import { Nameable } from "@module/util/nameable.ts"
+import { LocalizeGURPS, StringBuilder, Weight, align, cell, display } from "@util"
+import { ItemDataModel } from "../abstract.ts"
+import { CellData } from "../components/cell-data.ts"
 import {
 	ItemInst,
 	extendedWeightAdjustedForModifiers,
 	valueAdjustedForModifiers,
 	weightAdjustedForModifiers,
 } from "../helpers.ts"
-import { type ItemGURPS2 } from "@module/document/item.ts"
-import { SheetSettings } from "@module/data/sheet-settings.ts"
-import { MaybePromise } from "@module/data/types.ts"
+import { ItemTemplateType } from "../types.ts"
+import { BasicInformationTemplate, BasicInformationTemplateSchema } from "./basic-information.ts"
+import { ContainerTemplate, ContainerTemplateSchema } from "./container.ts"
+import { FeatureTemplate, FeatureTemplateSchema } from "./features.ts"
+import { PrereqTemplate, PrereqTemplateSchema } from "./prereqs.ts"
+import { ReplacementTemplate, ReplacementTemplateSchema } from "./replacements.ts"
+import fields = foundry.data.fields
 
-class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchema> {
+class EquipmentFieldsTemplate extends ItemDataModel.mixin(
+	BasicInformationTemplate,
+	PrereqTemplate,
+	FeatureTemplate,
+	ContainerTemplate,
+	ReplacementTemplate,
+) {
 	static override defineSchema(): EquipmentFieldsTemplateSchema {
 		const fields = foundry.data.fields
 
-		return {
-			...super.defineSchema(),
+		return this.mergeSchema(super.defineSchema(), {
 			tech_level: new fields.StringField({
 				required: true,
 				nullable: false,
@@ -98,7 +110,7 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 				label: "GURPS.Item.Equipment.FIELDS.IgnoreWeightForSkills.Name",
 			}),
 			other: new fields.BooleanField({ required: true, nullable: false, initial: false }),
-		}
+		}) as EquipmentFieldsTemplateSchema
 	}
 
 	// Returns the formatted name for display
@@ -173,19 +185,19 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 
 	override get cellData(): Record<string, CellData> {
 		let dim = this.quantity === 0
-		let c = this.parent
-		while (c.container !== null) {
-			if (c.container instanceof Promise) {
-				;(async () => {
-					const container = await c.container
-					if (container !== null) c = container
-				})()
-			} else {
-				c = c.container
-			}
-			if (!c.hasTemplate(ItemTemplateType.EquipmentFields)) break
-			dim = c.system.quantity === 0
-		}
+		// let c = this.parent
+		// while (c.container !== null) {
+		// 	if (c.container instanceof Promise) {
+		// 		;(async () => {
+		// 			const container = await c.container
+		// 			if (container !== null) c = container
+		// 		})()
+		// 	} else {
+		// 		c = c.container
+		// 	}
+		// 	if (!c.hasTemplate(ItemTemplateType.EquipmentFields)) break
+		// 	dim = c.system.quantity === 0
+		// }
 		const weightUnits = SheetSettings.for(this.actor).default_weight_units
 
 		return {
@@ -278,15 +290,7 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 	}
 
 	async extendedValue(): Promise<number> {
-		if (this.quantity <= 0) return 0
-		let value = await this.adjustedValue()
-		if (this.isOfType(ItemType.EquipmentContainer)) {
-			const children = this.children as Collection<ItemGURPS2>
-			for (const child of children) {
-				if (child.hasTemplate(ItemTemplateType.EquipmentFields)) value += await child.system.extendedValue()
-			}
-		}
-		return value * this.quantity
+		return this.adjustedValue()
 	}
 
 	adjustedWeight(forSkills: boolean, units: Weight.Unit): MaybePromise<number> {
@@ -328,7 +332,7 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 		)
 	}
 
-	get allModifiers(): MaybePromise<Collection<ItemInst<ItemType.EquipmentModifier>>> {
+	override get allModifiers(): MaybePromise<Collection<ItemInst<ItemType.EquipmentModifier>>> {
 		if (!this.parent) return new Collection()
 		if (this.parent.pack) return this._allModifiers()
 
@@ -362,27 +366,69 @@ class EquipmentFieldsTemplate extends ItemDataModel<EquipmentFieldsTemplateSchem
 		}
 		return allModifiers
 	}
+
+	/** Features */
+	override addFeaturesToSet(featureSet: FeatureSet): void {
+		if (!this.equipped) return
+
+		for (const f of this.features) {
+			this._addFeatureToSet(f, featureSet, 0)
+		}
+	}
+
+	/** Nameables */
+	override fillWithNameableKeys(
+		m: Map<string, string>,
+		existing: Map<string, string> = this.nameableReplacements,
+	): void {
+		super.fillWithNameableKeys(m, existing)
+
+		Nameable.extract(this.notes, m, existing)
+
+		this._fillWithNameableKeysFromPrereqs(m, existing)
+		this._fillWithNameableKeysFromFeatures(m, existing)
+		this._fillWithNameableKeysFromEmbeds(m, existing)
+	}
+
+	protected async _fillWithNameableKeysFromEmbeds(
+		m: Map<string, string>,
+		existing: Map<string, string>,
+	): Promise<void> {
+		const modifiers = await this.allModifiers
+		const weapons = await this.weapons
+
+		for (const modifier of modifiers) {
+			modifier.system.fillWithNameableKeys(m, modifier.system.nameableReplacements)
+		}
+		for (const weapon of weapons) {
+			weapon.system.fillWithNameableKeys(m, existing)
+		}
+	}
 }
 
 interface EquipmentFieldsTemplate extends ModelPropsFromSchema<EquipmentFieldsTemplateSchema> {
-	processedNotes: string
-	modifiers:
-		| Collection<ItemInst<ItemType.EquipmentModifier | ItemType.EquipmentModifierContainer>>
-		| Promise<Collection<ItemInst<ItemType.EquipmentModifier | ItemType.EquipmentModifierContainer>>>
+	get modifiers(): MaybePromise<
+		Collection<ItemInst<ItemType.EquipmentModifier | ItemType.EquipmentModifierContainer>>
+	>
+	get weapons(): MaybePromise<Collection<ItemInst<ItemType.WeaponMelee | ItemType.WeaponRanged>>>
 }
 
-type EquipmentFieldsTemplateSchema = {
-	tech_level: fields.StringField<string, string, true, false, true>
-	legality_class: fields.StringField<string, string, true, false, true>
-	rated_strength: fields.NumberField<number, number, true, false, true>
-	quantity: fields.NumberField<number, number, true, false, true>
-	level: fields.NumberField<number, number, true, false, true>
-	value: fields.NumberField<number, number, true, false, true>
-	weight: fields.StringField<string, string, true, false, true>
-	max_uses: fields.NumberField<number, number, true, false, true>
-	uses: fields.NumberField<number, number, true, true, true>
-	equipped: fields.BooleanField<boolean, boolean, true, false, true>
-	ignore_weight_for_skills: fields.BooleanField<boolean, boolean, true, false, true>
-	other: fields.BooleanField<boolean, boolean, true, false, true>
-}
+type EquipmentFieldsTemplateSchema = ContainerTemplateSchema &
+	ReplacementTemplateSchema &
+	BasicInformationTemplateSchema &
+	PrereqTemplateSchema &
+	FeatureTemplateSchema & {
+		tech_level: fields.StringField<string, string, true, false, true>
+		legality_class: fields.StringField<string, string, true, false, true>
+		rated_strength: fields.NumberField<number, number, true, false, true>
+		quantity: fields.NumberField<number, number, true, false, true>
+		level: fields.NumberField<number, number, true, false, true>
+		value: fields.NumberField<number, number, true, false, true>
+		weight: fields.StringField<string, string, true, false, true>
+		max_uses: fields.NumberField<number, number, true, false, true>
+		uses: fields.NumberField<number, number, true, true, true>
+		equipped: fields.BooleanField<boolean, boolean, true, false, true>
+		ignore_weight_for_skills: fields.BooleanField<boolean, boolean, true, false, true>
+		other: fields.BooleanField<boolean, boolean, true, false, true>
+	}
 export { EquipmentFieldsTemplate, type EquipmentFieldsTemplateSchema }

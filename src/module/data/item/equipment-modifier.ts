@@ -9,6 +9,7 @@ import { ItemType } from "../constants.ts"
 import { ItemInst } from "./helpers.ts"
 import { CellData } from "./components/cell-data.ts"
 import { FeatureSet } from "../feature/types.ts"
+import { Nameable } from "@module/util/nameable.ts"
 
 class EquipmentModifierData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -176,6 +177,17 @@ class EquipmentModifierData extends ItemDataModel.mixin(
 		for (const f of this.features) {
 			this._addFeatureToSet(f, featureSet, 0)
 		}
+	}
+
+	/** Nameables */
+	override fillWithNameableKeys(
+		m: Map<string, string>,
+		existing: Map<string, string> = this.nameableReplacements,
+	): void {
+		if (this.disabled) return
+
+		Nameable.extract(this.notes, m, existing)
+		this._fillWithNameableKeysFromFeatures(m, existing)
 	}
 }
 

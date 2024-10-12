@@ -7,7 +7,6 @@ import { WeaponReach } from "./fields/weapon-reach.ts"
 import { WeaponBlock } from "./fields/weapon-block.ts"
 import { CellData } from "./components/cell-data.ts"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
-import { Nameable } from "@module/util/index.ts"
 
 class WeaponMeleeData extends ItemDataModel.mixin(BasicInformationTemplate, AbstractWeaponTemplate) {
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
@@ -75,11 +74,6 @@ class WeaponMeleeData extends ItemDataModel.mixin(BasicInformationTemplate, Abst
 		}
 
 		return data
-	}
-
-	fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {
-		Nameable.extract(this.name, m, existing)
-		Nameable.extract(this.notes, m, existing)
 	}
 }
 

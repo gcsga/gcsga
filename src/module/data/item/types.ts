@@ -36,7 +36,7 @@ export enum ItemTemplateType {
 	Note = "NoteTemplate",
 	Prereq = "PrereqTemplate",
 	Replacement = "ReplacementTemplate",
-	SpellFields = "SpellFieldsTemplate",
+	SpellFields = "SpellTemplate",
 	Study = "StudyTemplate",
 }
 
@@ -51,6 +51,6 @@ export interface ItemDataTemplates {
 	[ItemTemplateType.Note]: ItemDataTemplate.NoteTemplate
 	[ItemTemplateType.Prereq]: ItemDataTemplate.PrereqTemplate
 	[ItemTemplateType.Replacement]: ItemDataTemplate.ReplacementTemplate
-	[ItemTemplateType.SpellFields]: ItemDataTemplate.SpellFieldsTemplate
+	[ItemTemplateType.SpellFields]: ItemDataTemplate.SpellTemplate
 	[ItemTemplateType.Study]: ItemDataTemplate.StudyTemplate
 }
