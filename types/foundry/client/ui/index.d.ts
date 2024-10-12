@@ -18,6 +18,7 @@ declare global {
 		TCompendiumDirectory extends CompendiumDirectory,
 		TCombatTracker extends CombatTracker<Combat | null>,
 		THotbar extends Hotbar,
+		TContextMenu extends ContextMenu,
 	> {
 		actors: TActorDirectory
 		chat: TChatLog
@@ -27,10 +28,18 @@ declare global {
 		items: TItemDirectory
 		notifications: Notifications
 		settings: Settings
-		sidebar: Sidebar
+		sidebar: Sidebar<
+			TChatLog,
+			CombatTracker<Combat>,
+			TActorDirectory,
+			TItemDirectory,
+			JournalDirectory<JournalEntry>,
+			TCompendiumDirectory
+		>
 		tables: RollTableDirectory
 		windows: Record<number, Application>
 		hotbar: THotbar
 		nav: SceneNavigation
+		context?: TContextMenu
 	}
 }

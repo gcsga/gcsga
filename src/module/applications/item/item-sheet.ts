@@ -1,4 +1,4 @@
-import { ItemType, SYSTEM_NAME, gid } from "@module/data/constants.ts"
+import { HOOKS, ItemType, SYSTEM_NAME, gid } from "@module/data/constants.ts"
 import { AttributeBonus } from "@module/data/feature/attribute-bonus.ts"
 import { DRBonusSchema } from "@module/data/feature/dr-bonus.ts"
 import { FeatureTypes } from "@module/data/feature/types.ts"
@@ -10,21 +10,47 @@ import { SkillDefault } from "@module/data/item/components/skill-default.ts"
 import { ItemGURPS2 } from "@module/document/item.ts"
 import { feature, prereq } from "@util/enum/index.ts"
 import { generateId } from "@util/misc.ts"
+import { ActiveEffectGURPS } from "@module/document/active-effect.ts"
+import { ContextMenuGURPS } from "../context-menu.ts"
+import { MaybePromise } from "@module/data/types.ts"
 
 const { api, sheets } = foundry.applications
 
 class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<ItemGURPS2>) {
+	constructor(options = {}) {
+		super(options)
+		this.#dragDrop = this.#createDragDropHandlers()
+	}
+
+	/* -------------------------------------------- */
+
+	#dragDrop: DragDrop[]
+
+	/* -------------------------------------------- */
+
+	get dragDrop(): DragDrop[] {
+		return this.#dragDrop
+	}
+
+	/* -------------------------------------------- */
+
 	static MODES = {
 		PLAY: 1,
 		EDIT: 2,
 	}
 
+	/* -------------------------------------------- */
+
 	protected _mode = this.constructor.MODES.PLAY
+
+	/* -------------------------------------------- */
 
 	// Set initial values for tabgroups
 	override tabGroups: Record<string, string> = {
-		primary: "details",
+		primary: "embeds",
 	}
+
+	/* -------------------------------------------- */
 
 	static override DEFAULT_OPTIONS: Partial<DocumentSheetConfiguration> & { dragDrop: DragDropConfiguration[] } = {
 		tag: "form",
@@ -61,8 +87,10 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			deleteDefault: this.#onDeleteDefault,
 			toggleMode: this.#onToggleMode,
 		},
-		dragDrop: [{ dragSelector: "item-list .item", dropSelector: null }],
+		dragDrop: [{ dragSelector: ".items-list .item", dropSelector: null }],
 	}
+
+	/* -------------------------------------------- */
 
 	static override PARTS = {
 		header: {
@@ -92,11 +120,176 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		},
 	}
 
-	// constructor(options: DocumentSheetConfiguration) {
-	// 	super(options)
-	// 	this.options.window.contentClasses ??= []
-	// 	this.options.window.contentClasses.push(this.item.type)
-	// }
+	/* -------------------------------------------- */
+	/*   Drag & Drop                                */
+	/* -------------------------------------------- */
+
+	#createDragDropHandlers() {
+		return this.options.dragDrop.map(d => {
+			d.permissions = {
+				dragstart: this._canDragStart.bind(this),
+				drop: this._canDragDrop.bind(this),
+			}
+			d.callbacks = {
+				dragstart: this._onDragStart.bind(this),
+				dragover: this._onDragOver.bind(this),
+				drop: this._onDrop.bind(this),
+			}
+			return new DragDrop(d)
+		})
+	}
+
+	/* -------------------------------------------- */
+
+	protected _canDragStart(_selector: string): boolean {
+		return this.isEditable
+	}
+
+	/* -------------------------------------------- */
+
+	protected _canDragDrop(_selector: string): boolean {
+		return this.isEditable
+	}
+
+	/* -------------------------------------------- */
+
+	async _onDragStart(event: DragEvent) {
+		const li = event.currentTarget as HTMLElement
+		if ((event.target as HTMLElement).classList.contains("content-link")) return
+
+		let dragData
+
+		// Active Effect
+		if (li.dataset.effectId) {
+			const effect = this.item.effects.get(li.dataset.effectId) as ActiveEffectGURPS
+			dragData = effect?.toDragData()
+		} else if (this.item.hasTemplate(ItemTemplateType.Container) && li.dataset.itemId) {
+			const item = await this.item.system.getContainedItem(li.dataset.itemId)
+			dragData = item?.toDragData()
+		}
+
+		if (!dragData) return
+
+		// Set data transfer
+		event.dataTransfer?.setData("text/plain", JSON.stringify(dragData))
+	}
+
+	/* -------------------------------------------- */
+
+	async _onDragOver(_event: DragEvent) {}
+
+	/* -------------------------------------------- */
+
+	protected async _onDrop(event: DragEvent) {
+		const data = TextEditor.getDragEventData(event)
+		const item = this.item
+
+		const allowed = Hooks.call(`${SYSTEM_NAME}.${HOOKS.DROP_ITEM_SHEET_DATA}`, item, this, data)
+		if (allowed === false) return
+
+		switch (data.type) {
+			case "ActiveEffect":
+				return this._onDropActiveEffect(event, data)
+			case "Item":
+				return this._onDropItem(event, data)
+		}
+		return false
+	}
+
+	/* -------------------------------------------- */
+
+	protected async _onDropActiveEffect(_event: DragEvent, data: object) {
+		const effect = await ActiveEffectGURPS.fromDropData(data)
+		if (!this.item.isOwner || !effect || this.item.uuid === effect.parent?.uuid || this.item.uuid === effect.origin)
+			return false
+		const effectData = effect.toObject()
+		const options = { parent: this.item, keepOrigin: false }
+
+		return ActiveEffectGURPS.create(effectData, options)
+	}
+
+	/* -------------------------------------------- */
+
+	protected async _onDropItem(event: DragEvent, data: object) {
+		if (!this.item.hasTemplate(ItemTemplateType.Container)) return
+		const item = await ItemGURPS2.fromDropData(data)
+		if (!this.item.isOwner || !item) return
+		if (!this.item.system.constructor.contentsTypes.has(item.type as ItemType)) {
+			ui.notifications.error("GURPS.Error.InvalidContentsTypeForContainer", { localize: true })
+			return
+		}
+
+		// If item already exists in this container, just adjust its sorting
+		if ((item.system as any).container === this.item.id) {
+			return this._onSortItem(event, item)
+		}
+
+		// Prevent dropping containers within themselves
+		const parentContainers = await this.item.system.allContainers()
+		if (this.item.uuid === item.uuid || parentContainers.includes(item as any)) {
+			ui.notifications.error("GURPS.Error.ContainerRecursiveError", { localize: true })
+			return false
+		}
+
+		// If item already exists in same DocumentCollection, just adjust its container property
+		if (item.actor === this.item.actor && item.pack === this.item.pack) {
+			return await item.update({ folder: this.item.folder, "system.container": this.item.id })!
+		}
+
+		// Otherwise, create a new item & contents in this context
+		const toCreate = await ItemGURPS2.createWithContents([item], {
+			container: this.item as any,
+		})
+		if (this.item.folder) toCreate.forEach(d => (d.folder = this.item.folder!.id))
+		return ItemGURPS2.createDocuments(toCreate, { pack: this.item.pack, parent: this.item.actor, keepId: true })
+	}
+
+	/* -------------------------------------------- */
+
+	protected async _onSortItem(event: DragEvent, item: ItemGURPS2) {
+		if (!this.item.hasTemplate(ItemTemplateType.Container)) return
+
+		const dropTarget = (event.target as HTMLElement).closest("[data-item-id]") as HTMLElement
+		if (!dropTarget) return
+		const contents = await this.item.system.contents
+		const target = contents.get(dropTarget.dataset.itemId ?? "")!
+
+		// Don't sort on yourself
+		if (item.id === target.id) return
+
+		// Identify sibling items based on adjacent HTML elements
+		const siblings = []
+		for (const el of dropTarget.parentElement!.children) {
+			const siblingId = (el as HTMLElement).dataset.itemId
+			if (siblingId && siblingId !== item.id) siblings.push(contents.get(siblingId))
+		}
+
+		// Perform the sort
+		const sortUpdates = SortingHelpers.performIntegerSort(item, { target, siblings })
+		const updateData = sortUpdates.map(u => {
+			const update = u.update
+			update._id = u.target.id
+			return update
+		})
+
+		// Perform the update
+		Item.updateDocuments(updateData, { pack: this.item.pack, parent: this.item.actor })
+	}
+
+	/* -------------------------------------------- */
+	/*  Helpers                                     */
+	/* -------------------------------------------- */
+
+	/**
+	 * Retrieve an item with the specified ID.
+	 */
+	getItem(id: string): MaybePromise<ItemGURPS2 | null> {
+		if (this.item.hasTemplate(ItemTemplateType.Container)) return this.item.system.getContainedItem(id)
+		return null
+		// return this.document.items.get(id)
+	}
+
+	/* -------------------------------------------- */
 
 	protected override _configureRenderOptions(options: ApplicationRenderOptions) {
 		super._configureRenderOptions(options)
@@ -105,6 +298,8 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		if (!this.item.hasTemplate(ItemTemplateType.Container))
 			options.parts = options.parts?.filter(e => e !== "embeds")
 	}
+
+	/* -------------------------------------------- */
 
 	_getTabs(): Record<string, Partial<ApplicationTab>> {
 		return this._markTabs({
@@ -135,6 +330,8 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		})
 	}
 
+	/* -------------------------------------------- */
+
 	protected _markTabs(tabs: Record<string, Partial<ApplicationTab>>): Record<string, Partial<ApplicationTab>> {
 		for (const v of Object.values(tabs)) {
 			v.active = this.tabGroups[v.group!] === v.id
@@ -144,12 +341,16 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		return tabs
 	}
 
+	/* -------------------------------------------- */
+
 	static async #onViewImage(this: ItemSheetGURPS, event: Event): Promise<void> {
 		event.preventDefault()
 		const title = this.item.name
 		// const title = this.item.system.identified === false ? this.item.system.unidentified.name : this.item.name
 		new ImagePopout(this.item.img, { title, uuid: this.item.uuid }).render(true)
 	}
+
+	/* -------------------------------------------- */
 
 	static async #onEditImage(this: ItemSheetGURPS, event: Event): Promise<void> {
 		const img = event.currentTarget as HTMLImageElement
@@ -168,9 +369,9 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		await fp.browse(this.item.img)
 	}
 
+	/* -------------------------------------------- */
+
 	static async #onAddPrereq(this: ItemSheetGURPS, event: Event): Promise<void> {
-		console.log("#onAddPrereq")
-		console.trace()
 		event.preventDefault()
 		event.stopImmediatePropagation()
 
@@ -187,6 +388,8 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 
 		await this.item.update({ "system.prereqs": prereqs })
 	}
+
+	/* -------------------------------------------- */
 
 	static async #onAddPrereqList(this: ItemSheetGURPS, event: Event): Promise<void> {
 		event.preventDefault()
@@ -206,6 +409,8 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		await this.item.update({ "system.prereqs": prereqs })
 	}
 
+	/* -------------------------------------------- */
+
 	static async #onDeletePrereq(this: ItemSheetGURPS, event: Event): Promise<void> {
 		event.preventDefault()
 		event.stopImmediatePropagation()
@@ -221,6 +426,8 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 				}
 			}
 		}
+
+		/* -------------------------------------------- */
 
 		const element = event.target as HTMLElement
 		const id = element.dataset.id as string
@@ -241,6 +448,8 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		await this.item.update({ "system.prereqs": prereqObj })
 	}
 
+	/* -------------------------------------------- */
+
 	static async #onAddFeature(this: ItemSheetGURPS, event: Event): Promise<void> {
 		event.preventDefault()
 		event.stopImmediatePropagation()
@@ -253,6 +462,8 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 
 		await this.item.update({ "system.features": features })
 	}
+
+	/* -------------------------------------------- */
 
 	static async #onDeleteFeature(this: ItemSheetGURPS, event: Event): Promise<void> {
 		event.preventDefault()
@@ -269,6 +480,8 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 
 		await this.item.update({ "system.features": features })
 	}
+
+	/* -------------------------------------------- */
 
 	static async #onAddDefault(this: ItemSheetGURPS, event: Event): Promise<void> {
 		event.preventDefault()
@@ -298,6 +511,8 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 
 		await this.item.update({ "system.defaults": defaults })
 	}
+
+	/* -------------------------------------------- */
 
 	async _onChangePrereqType(event: Event): Promise<void> {
 		event.preventDefault()
@@ -336,6 +551,8 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		this.item.update({ "system.features": features })
 	}
 
+	/* -------------------------------------------- */
+
 	static async #onToggleDrBonusLocation(this: ItemSheetGURPS, event: Event): Promise<void> {
 		event.preventDefault()
 		event.stopImmediatePropagation()
@@ -354,6 +571,8 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		await this.item.update({ [`system.features.${index}`]: bonus })
 	}
 
+	/* -------------------------------------------- */
+
 	protected override _onRender(context: object, options: ApplicationRenderOptions): void {
 		super._onRender(context, options)
 		const prereqTypeFields = this.element.querySelectorAll("[data-selector='prereq-type'")
@@ -367,7 +586,12 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		if (!this.isEditable) this._disableFields()
 
 		this.element.classList.add(this.item.type)
+		this.#dragDrop.forEach(d => d.bind(this.element))
+
+		new ContextMenuGURPS(this.element, "[data-item-id]", [], { onOpen: this._onOpenContextMenu.bind(this) })
 	}
+
+	/* -------------------------------------------- */
 
 	protected _disableFields() {
 		const selector = `.window-content :is(${[
@@ -408,6 +632,8 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		return obj
 	}
 
+	/* -------------------------------------------- */
+
 	protected override async _preparePartContext(partId: string, context: Record<string, any>): Promise<object> {
 		context.partId = `${this.id}-${partId}`
 		context.tab = context.tabs[partId]
@@ -427,6 +653,8 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		return context
 	}
 
+	/* -------------------------------------------- */
+
 	protected async _prepareSkillPartContext(context: Record<string, any>): Promise<object> {
 		if (!this.item.hasTemplate(ItemTemplateType.AbstractSkill)) return context
 		if (this.item.system.level.level === Number.MIN_SAFE_INTEGER) context.levelField = "-"
@@ -434,11 +662,15 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		return context
 	}
 
+	/* -------------------------------------------- */
+
 	protected async _prepareNoteContext(context: Record<string, any>): Promise<object> {
 		if (!this.item.hasTemplate(ItemTemplateType.Note)) return context
 		context.enrichedText = await this.item.system.enrichedText
 		return context
 	}
+
+	/* -------------------------------------------- */
 
 	static async #onSubmit(
 		this: ItemSheetGURPS,
@@ -464,6 +696,8 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		await this.item.update(formData.object)
 	}
 
+	/* -------------------------------------------- */
+
 	static async #onToggleMode(this: ItemSheetGURPS, event: Event): Promise<void> {
 		const toggle = event.target as HTMLButtonElement
 		toggle.classList.toggle("fa-lock")
@@ -475,6 +709,32 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 		await this.submit()
 		this.render()
 	}
+
+	/* -------------------------------------------- */
+
+	protected _onOpenContextMenu(element: HTMLElement): void {
+		const item = this.getItem((element.closest("[data-item-id]") as HTMLElement)?.dataset.itemId ?? "")
+		// Parts of ContextMenu doesn't play well with promises, so don't show menus for containers in packs
+		if (!item || item instanceof Promise) return
+		if (ui.context) {
+			ui.context.menuItems = this._getContextOptions(item, element)
+			Hooks.call(`${SYSTEM_NAME}.${HOOKS.GET_ITEM_CONTEXT_OPTIONS}`, item, ui.context.menuItems)
+		}
+	}
+
+	/* -------------------------------------------- */
+
+	protected _getContextOptions(item: ItemGURPS2, element: HTMLElement): ContextMenuEntry[] {
+		return [
+			{
+				name: "test",
+				icon: "<i class='fas fa-skull'></i>",
+				callback: () => null,
+			},
+		]
+	}
+
+	/* -------------------------------------------- */
 
 	protected override async _renderFrame(options: ApplicationRenderOptions): Promise<HTMLElement> {
 		const frame = await super._renderFrame(options)
@@ -492,6 +752,7 @@ data-tooltip="${toggleLabel}" aria-label="${toggleLabel}"></button>`
 
 interface ItemSheetGURPS {
 	constructor: typeof ItemSheetGURPS
+	options: DocumentSheetConfiguration & { dragDrop: DragDropConfiguration[] }
 }
 
 export { ItemSheetGURPS }

@@ -81,51 +81,68 @@ const DEFAULT_INITIATIVE_FORMULA = (): string => {
 // Item
 enum ItemType {
 	Trait = "trait",
-	TraitContainer = "trait_container",
-	TraitModifier = "modifier",
-	TraitModifierContainer = "modifier_container",
+	TraitContainer = "traitContainer",
+	TraitModifier = "traitModifier",
+	TraitModifierContainer = "traitModifierContainer",
 	Skill = "skill",
 	Technique = "technique",
-	SkillContainer = "skill_container",
+	SkillContainer = "skillContainer",
 	Spell = "spell",
-	RitualMagicSpell = "ritual_magic_spell",
-	SpellContainer = "spell_container",
-	Equipment = "equipment_gcs",
-	// Equipment = "equipment",
-	EquipmentContainer = "equipment_container",
-	EquipmentModifier = "eqp_modifier",
-	EquipmentModifierContainer = "eqp_modifier_container",
+	RitualMagicSpell = "ritualMagicSpell",
+	SpellContainer = "spellContainer",
+	Equipment = "equipment",
+	EquipmentContainer = "equipmentContainer",
+	EquipmentModifier = "equipmentModifier",
+	EquipmentModifierContainer = "equipmentModifierContainer",
 	Note = "note",
-	NoteContainer = "note_container",
-	// LegacyItem = "equipment",
-	// Effect = "effect",
-	// Condition = "condition",
-	WeaponMelee = "melee_weapon",
-	WeaponRanged = "ranged_weapon",
+	NoteContainer = "noteContainer",
+	WeaponMelee = "weaponMelee",
+	WeaponRanged = "weaponRanged",
 }
 
-type ItemTypes =
-	| ItemType.Trait
-	| ItemType.TraitContainer
-	| ItemType.TraitModifier
-	| ItemType.TraitModifierContainer
-	| ItemType.Skill
-	| ItemType.Technique
-	| ItemType.SkillContainer
-	| ItemType.Spell
-	| ItemType.RitualMagicSpell
-	| ItemType.SpellContainer
-	| ItemType.Equipment
-	| ItemType.EquipmentContainer
-	| ItemType.EquipmentModifier
-	| ItemType.EquipmentModifierContainer
-	| ItemType.Note
-	| ItemType.NoteContainer
-	// | ItemType.LegacyItem
-	// | ItemType.Effect
-	// | ItemType.Condition
-	| ItemType.WeaponMelee
-	| ItemType.WeaponRanged
+const ItemTypes = [
+	ItemType.Trait,
+	ItemType.TraitContainer,
+	ItemType.TraitModifier,
+	ItemType.TraitModifierContainer,
+	ItemType.Skill,
+	ItemType.Technique,
+	ItemType.SkillContainer,
+	ItemType.Spell,
+	ItemType.RitualMagicSpell,
+	ItemType.SpellContainer,
+	ItemType.Equipment,
+	ItemType.EquipmentContainer,
+	ItemType.EquipmentModifier,
+	ItemType.EquipmentModifierContainer,
+	ItemType.Note,
+	ItemType.NoteContainer,
+	ItemType.WeaponMelee,
+	ItemType.WeaponRanged,
+]
+
+// type ItemTypes =
+// 	| ItemType.Trait
+// 	| ItemType.TraitContainer
+// 	| ItemType.TraitModifier
+// 	| ItemType.TraitModifierContainer
+// 	| ItemType.Skill
+// 	| ItemType.Technique
+// 	| ItemType.SkillContainer
+// 	| ItemType.Spell
+// 	| ItemType.RitualMagicSpell
+// 	| ItemType.SpellContainer
+// 	| ItemType.Equipment
+// 	| ItemType.EquipmentContainer
+// 	| ItemType.EquipmentModifier
+// 	| ItemType.EquipmentModifierContainer
+// 	| ItemType.Note
+// 	| ItemType.NoteContainer
+// 	// | ItemType.LegacyItem
+// 	// | ItemType.Effect
+// 	// | ItemType.Condition
+// 	| ItemType.WeaponMelee
+// 	| ItemType.WeaponRanged
 
 // type EffectType = ItemType.Effect | ItemType.Condition
 
@@ -284,9 +301,9 @@ enum ManeuverID {
 
 // Actor
 enum ActorType {
-	// Character = "character",
-	Character = "character_gcs",
-	LegacyCharacter = "character",
+	Character = "character",
+	// Character = "character_gcs",
+	LegacyCharacter = "legacyCharacter",
 	// LegacyEnemy = "enemy",
 	Loot = "loot",
 	// MassCombatElement = "element",
@@ -384,7 +401,9 @@ const GURPS_COMMANDS = (() => {
 })()
 
 enum HOOKS {
-	AddModifier = "addModifier",
+	ADD_MODIFEIR = "addModifier",
+	DROP_ITEM_SHEET_DATA = "dropItemSheetData",
+	GET_ITEM_CONTEXT_OPTIONS = "getItemContextOptions",
 }
 
 const SORTABLE_BASE_OPTIONS: Sortable.Options = {
@@ -466,6 +485,8 @@ export {
 	SSRT_SETTING,
 	SYSTEM_NAME,
 	gid,
+	ItemTypes,
 }
 
-export type { EffectTypes, ItemTypes, WeaponType }
+// export type { EffectTypes, ItemTypes, WeaponType }
+export type { EffectTypes, WeaponType }

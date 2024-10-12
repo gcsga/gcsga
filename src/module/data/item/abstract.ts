@@ -159,10 +159,10 @@ interface ItemDataModel<TSchema extends ItemDataSchema>
 
 type ItemDataSchema = {}
 
-export { ItemDataModel, type ItemDataSchema }
-
 type ItemDatabaseUpdateOperation<TDocument extends foundry.abstract.Document | null> =
 	DatabaseUpdateOperation<TDocument> &
 		RenderOptions & {
 			formerContainer?: ItemUUID
 		}
+
+export { ItemDataModel, type ItemDataSchema, type ItemDatabaseUpdateOperation }

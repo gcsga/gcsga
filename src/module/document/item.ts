@@ -2,10 +2,9 @@ import { ItemDataModel } from "@module/data/item/abstract.ts"
 import { ItemType, SYSTEM_NAME } from "@module/data/constants.ts"
 import { ItemDataInstances, ItemDataTemplates, ItemTemplateType } from "@module/data/item/types.ts"
 import { ItemTemplateInst } from "@module/data/item/helpers.ts"
-import { LocalizeGURPS } from "@util"
-import { ActorGURPS2 } from "./actor.ts"
-import { Nameable } from "@module/util/index.ts"
+import { type ActorGURPS2 } from "./actor.ts"
 import { ItemSystemFlags } from "./item-system-flags.ts"
+import { Nameable } from "@module/util/nameable.ts"
 
 class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extends Item<TParent> {
 	/**
@@ -70,10 +69,8 @@ class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extend
 		options: DatabaseCreateOperation<TParent>,
 		user: User,
 	): Promise<boolean | void> {
-		let allowed = await super._preCreate(data, options, user)
-		if (foundry.utils.isNewerVersion(game.version, 12)) return allowed
-		if (allowed !== false) allowed = await this.system._preCreate?.(data, options, user)
-		return allowed
+		if ((await super._preCreate(data, options, user)) === false) return false
+		return await this.system._preCreate?.(data, options, user)
 	}
 
 	/* -------------------------------------------- */
@@ -91,10 +88,13 @@ class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extend
 		options: DatabaseUpdateOperation<TParent>,
 		user: foundry.documents.BaseUser,
 	): Promise<boolean | void> {
-		let allowed = await super._preUpdate(changed, options, user)
-		if (foundry.utils.isNewerVersion(game.version, 12)) return allowed
-		if (allowed !== false) allowed = await this.system._preUpdate?.(changed, options, user)
-		return allowed
+		if ((await super._preUpdate(changed, options, user)) === false) return false
+
+		if (foundry.utils.hasProperty(changed, "system.container")) {
+			;(options as any).formerContainer = (await this.container)?.uuid
+		}
+
+		return await this.system._preUpdate?.(changed, options, user)
 	}
 
 	/* -------------------------------------------- */
@@ -188,6 +188,8 @@ class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extend
 	/*  Helper Functions                            */
 	/* -------------------------------------------- */
 
+	/* -------------------------------------------- */
+
 	/**
 	 * Type safe way of verifying if an Item is of a particular type.
 	 */
@@ -243,9 +245,7 @@ class ItemGURPS2<TParent extends ActorGURPS2 | null = ActorGURPS2 | null> extend
 			depth = 1 + (await options.container.system.allContainers()).length
 			if (depth > ItemDataModel.MAX_DEPTH) {
 				ui.notifications.warn(
-					LocalizeGURPS.format(LocalizeGURPS.translations.GURPS.Messages.ContainerMaxDepth, {
-						depth: ItemDataModel.MAX_DEPTH,
-					}),
+					game.i18n.format("GURPS.Messages.ContainerMaxDepth", { depth: ItemDataModel.MAX_DEPTH }),
 				)
 				return []
 			}

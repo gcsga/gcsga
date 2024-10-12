@@ -2,13 +2,14 @@
 <li
 	class="item"
 	data-item-name="{{item.name}}"
-	data-entry-id="{{item.id}}"
+	data-item-id="{{item.id}}"
 	data-item-sort="{{item.sort}}"
 	data-uuid="{{item.uuid}}"
 	draggable="true"
 >
-	<div class="item-row">{{#each item.cellData as |cell key|}} {{cell.element}} {{/each}}</div>
-	{{#if (eq item.type "eqp_modifier_container")}}
+	{{print item}} {{print system}}
+	<div class="item-row">{{#each item.system.cellData as |cell key|}} {{cell.element}} {{/each}}</div>
+	{{#if (eq item.type "equipmentModifierContainer")}}
 	<ul class="item-list">
 		{{#each item.children}} {{>item item=this}} {{/each}}
 	</ul>
@@ -16,8 +17,16 @@
 </li>
 {{/inline}}
 
-<label>hi</label>
-<div class="inventory-list">
+<div class="items-section" data-types="{{join system.modifierTypes ','}}">
+	<div class="items-header">
+		<i class="fa-solid fa-checkmark"></i>
+		<div class="item-header">Equipment Modifier</div>
+		<div class="item-header">TL</div>
+		<div class="item-header">Cost Adjustment</div>
+		<div class="item-header">Weight Adjustment</div>
+		<div class="item-header">Tags</div>
+		<i class="gcs-reference"></i>
+	</div>
 	<ul class="item-list">
 		{{#each system.modifiers}} {{> item item=this}} {{/each}}
 	</ul>

@@ -1,31 +1,31 @@
 {
 	"TYPES": {
 		"Actor": {
-			"character": "Character (Legacy)",
-			"character_gcs": "Character",
+			"legacyCharacter": "Character (Legacy)",
+			"character": "Character",
 			"enemy": "Enemy (Legacy)",
 			"loot": "Loot"
 		},
 		"Item": {
 			"trait": "Trait",
-			"trait_container": "Trait Container",
-			"modifier": "Trait Modifier",
-			"modifier_container": "Trait Modifier Container",
+			"traitContainer": "Trait Container",
+			"traitModifier": "Trait Modifier",
+			"traitModifierContainer": "Trait Modifier Container",
 			"skill": "Skill",
 			"technique": "Technique",
-			"skill_container": "Skill Container",
+			"skillContainer": "Skill Container",
 			"spell": "Spell",
-			"ritual_magic_spell": "Ritual Magic Spell",
-			"spell_container": "Spell Container",
-			"equipment": "Equipment (Legacy)",
-			"equipment_gcs": "Equipment",
-			"equipment_container": "Equipment Container",
-			"eqp_modifier": "Equipment Modifier",
-			"eqp_modifier_container": "Equipment Modifier Container",
+			"ritualMagicSpell": "Ritual Magic Spell",
+			"spellContainer": "Spell Container",
+			"legacyEquipment": "Equipment (Legacy)",
+			"equipment": "Equipment",
+			"equipmentContainer": "Equipment Container",
+			"equipmentModifier": "Equipment Modifier",
+			"equipmentModifierContainer": "Equipment Modifier Container",
 			"note": "Note",
-			"note_container": "Note Container",
-			"melee_weapon": "Melee Weapon",
-			"ranged_weapon": "Ranged Weapon"
+			"noteContainer": "Note Container",
+			"weaponMelee": "Melee Weapon",
+			"weaponRanged": "Ranged Weapon"
 		},
 		"ActiveEffect": {
 			"effect": "Effect",
@@ -33,6 +33,10 @@
 		}
 	},
 	"GURPS": {
+		"Error": {
+			"InvalidContentsTypeForContainer": "This container cannot contain contents of this type.",
+			"ContainerRecursiveError": "Container cannot be dragged into itself or one of its contained items."
+		},
 		"Sheets": {
 			"ToggleMode": "Toggle Mode",
 			"Item": {

@@ -1,0 +1,21 @@
+#context-menu.gurps {
+	z-index: var(--z-index-tooltip);
+	border-radius: 3px;
+	font-size: var(--font-size-13);
+	border: none;
+	color: var(--color-text-dark-primary);
+	width: max-content;
+	min-width: 145px;
+
+	// [data-group-id]:has(li) {
+	// 	position: relative;
+	// 	margin-block-start: 0.5rem;
+	// 	&::before {
+	// 		content: "";
+	// 		position: absolute;
+	// 		inset-inline: 1rem;
+	// 		inset-block-start: -0.25rem;
+	// 		border-block-start: 1px solid rgb(255 255 255 / 0.15);
+	// 	}
+	// }
+}

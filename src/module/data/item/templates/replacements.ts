@@ -1,7 +1,7 @@
 import { ItemDataModel } from "@module/data/item/abstract.ts"
 import fields = foundry.data.fields
-import { RecordField } from "@system"
 import { Nameable } from "@module/util/nameable.ts"
+import { RecordField } from "@module/data/fields/record-field.ts"
 
 class ReplacementTemplate extends ItemDataModel<ReplacementTemplateSchema> {
 	static override defineSchema(): ReplacementTemplateSchema {

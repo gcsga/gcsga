@@ -7,8 +7,14 @@ import { WeaponReach } from "./fields/weapon-reach.ts"
 import { WeaponBlock } from "./fields/weapon-block.ts"
 import { CellData } from "./components/cell-data.ts"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
+import { SkillDefaultTemplate, SkillDefaultTemplateSchema } from "./templates/defaults.ts"
+import { Nameable } from "@module/util/nameable.ts"
 
-class WeaponMeleeData extends ItemDataModel.mixin(BasicInformationTemplate, AbstractWeaponTemplate) {
+class WeaponMeleeData extends ItemDataModel.mixin(
+	BasicInformationTemplate,
+	AbstractWeaponTemplate,
+	SkillDefaultTemplate,
+) {
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = ["gurps.details-weapon-melee", "gurps.details-defaults"]
 	}
@@ -75,12 +81,21 @@ class WeaponMeleeData extends ItemDataModel.mixin(BasicInformationTemplate, Abst
 
 		return data
 	}
+
+	/** Nameables */
+	fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {
+		Nameable.extract(this.parent.name, m, existing)
+		Nameable.extract(this.notes, m, existing)
+
+		this._fillWithNameableKeysFromDefaults(m, existing)
+	}
 }
 
 interface WeaponMeleeData extends ModelPropsFromSchema<WeaponMeleeSchema> {}
 
 type WeaponMeleeSchema = BasicInformationTemplateSchema &
-	AbstractWeaponTemplateSchema & {
+	AbstractWeaponTemplateSchema &
+	SkillDefaultTemplateSchema & {
 		reach: fields.EmbeddedDataField<WeaponReach>
 		parry: fields.EmbeddedDataField<WeaponParry>
 		block: fields.EmbeddedDataField<WeaponBlock>

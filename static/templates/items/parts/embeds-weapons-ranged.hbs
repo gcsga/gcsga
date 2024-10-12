@@ -1,0 +1,30 @@
+{{#* inline "item"}}
+<li
+	class="item"
+	data-item-name="{{item.name}}"
+	data-item-id="{{item.id}}"
+	data-item-sort="{{item.sort}}"
+	data-uuid="{{item.uuid}}"
+	draggable="true"
+>
+	<div class="item-row">{{#each item.cellData as |cell key|}} {{cell.element}} {{/each}}</div>
+</li>
+{{/inline}}
+
+<div class="inventory-list">
+	<div class="items-header">
+		<i class="fa-solid fa-checkmark"></i>
+		<div class="item-header">Ranged Weapon Usage</div>
+		<div class="item-header">SL</div>
+		<div class="item-header">Acc</div>
+		<div class="item-header">Damage</div>
+		<div class="item-header">RoF</div>
+		<div class="item-header">Shots</div>
+		<div class="item-header">Bulk</div>
+		<div class="item-header">Recoil</div>
+		<div class="item-header">ST</div>
+	</div>
+	<ul class="item-list">
+		{{#each system.itemTypes.weaponRanged}} {{> item item=this}} {{/each}}
+	</ul>
+</div>

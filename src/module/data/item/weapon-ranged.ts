@@ -5,6 +5,8 @@ import {
 	AbstractWeaponTemplateSchema,
 	BasicInformationTemplate,
 	BasicInformationTemplateSchema,
+	SkillDefaultTemplate,
+	SkillDefaultTemplateSchema,
 } from "./templates/index.ts"
 import { WeaponRange } from "./fields/weapon-range.ts"
 import { WeaponAccuracy } from "./fields/weapon-accuracy.ts"
@@ -14,8 +16,13 @@ import { WeaponBulk } from "./fields/weapon-bulk.ts"
 import { WeaponRecoil } from "./fields/weapon-recoil.ts"
 import { LocalizeGURPS, TooltipGURPS } from "@util"
 import { CellData } from "./components/cell-data.ts"
+import { Nameable } from "@module/util/nameable.ts"
 
-class WeaponRangedData extends ItemDataModel.mixin(BasicInformationTemplate, AbstractWeaponTemplate) {
+class WeaponRangedData extends ItemDataModel.mixin(
+	BasicInformationTemplate,
+	AbstractWeaponTemplate,
+	SkillDefaultTemplate,
+) {
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = ["gurps.details-weapon-ranged", "gurps.details-defaults"]
 	}
@@ -100,12 +107,21 @@ class WeaponRangedData extends ItemDataModel.mixin(BasicInformationTemplate, Abs
 
 		return data
 	}
+
+	/** Nameables */
+	fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {
+		Nameable.extract(this.parent.name, m, existing)
+		Nameable.extract(this.notes, m, existing)
+
+		this._fillWithNameableKeysFromDefaults(m, existing)
+	}
 }
 
 interface WeaponRangedData extends ModelPropsFromSchema<WeaponRangedSchema> {}
 
 type WeaponRangedSchema = BasicInformationTemplateSchema &
-	AbstractWeaponTemplateSchema & {
+	AbstractWeaponTemplateSchema &
+	SkillDefaultTemplateSchema & {
 		accuracy: fields.EmbeddedDataField<WeaponAccuracy>
 		range: fields.EmbeddedDataField<WeaponRange>
 		rate_of_fire: fields.EmbeddedDataField<WeaponROF>

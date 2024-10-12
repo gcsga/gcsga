@@ -9,20 +9,19 @@ import { SkillDefault } from "@module/data/item/components/skill-default.ts"
 import { Feature } from "@module/data/feature/types.ts"
 import { WeaponBonus } from "@module/data/feature/index.ts"
 import { Nameable } from "@module/util/index.ts"
-import { SkillDefaultTemplate, SkillDefaultTemplateSchema } from "./defaults.ts"
 import { ItemInst, ItemTemplateInst } from "../helpers.ts"
 
-class AbstractWeaponTemplate extends ItemDataModel.mixin(SkillDefaultTemplate) {
+class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema> {
 	protected declare _weaponLevel: number
 
 	static override defineSchema(): AbstractWeaponTemplateSchema {
 		const fields = foundry.data.fields
-		return super.mergeSchema(super.defineSchema(), {
+		return {
 			strength: new fields.EmbeddedDataField(WeaponStrength),
 			damage: new fields.EmbeddedDataField(WeaponDamage),
 			// Is the weapon currently unready?
 			unready: new fields.BooleanField({ required: true, nullable: false, initial: false }),
-		}) as AbstractWeaponTemplateSchema
+		}
 	}
 
 	get processedName(): string {
@@ -291,14 +290,6 @@ class AbstractWeaponTemplate extends ItemDataModel.mixin(SkillDefaultTemplate) {
 		}
 	}
 
-	/** Nameables */
-	fillWithNameableKeys(m: Map<string, string>, existing: Map<string, string>): void {
-		Nameable.extract(this.parent.name, m, existing)
-		Nameable.extract(this.notes, m, existing)
-
-		this._fillWithNameableKeysFromDefaults(m, existing)
-	}
-
 	/** Replacements */
 	get usageWithReplacements(): string {
 		if (!this.hasTemplate(ItemTemplateType.BasicInformation)) return ""
@@ -316,9 +307,10 @@ interface AbstractWeaponTemplate extends ModelPropsFromSchema<AbstractWeaponTemp
 	nameableReplacements: Map<string, string>
 	notes: string
 	tags: string[]
+	defaults: SkillDefault[]
 }
 
-type AbstractWeaponTemplateSchema = SkillDefaultTemplateSchema & {
+type AbstractWeaponTemplateSchema = {
 	strength: fields.EmbeddedDataField<WeaponStrength>
 	damage: fields.EmbeddedDataField<WeaponDamage>
 	unready: fields.BooleanField<boolean, boolean>

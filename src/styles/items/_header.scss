@@ -20,33 +20,33 @@
 // }
 
 &.trait,
-&.trait_container,
-&.modifier,
-&.modifier_container {
+&.traitContainer,
+&.traitModifier,
+&.traitModifierContainer {
 	--filter-header: hue-rotate(46deg) saturate(0.58) brightness(1.39);
 }
 &.skill,
 &.technique,
-&.skill_container {
+&.skillContainer {
 	--filter-header: hue-rotate(256deg) saturate(0.32) brightness(1.29);
 }
 &.spell,
-&.ritual_magic_spell,
-&.spell_container {
+&.ritualMagicSpell,
+&.spellContainer {
 	--filter-header: hue-rotate(359deg) saturate(0.57) brightness(0.86);
 }
-&.equipment_gcs,
-&.equipment_container,
-&.eqp_modifier,
-&.eqp_modifier_container {
+&.equipment,
+&.equipmentContainer,
+&.equipmentModifier,
+&.equipmentModifierContainer {
 	--filter-header: hue-rotate(192deg) saturate(1) brightness(1.2);
 }
 &.note,
-&.note_container {
+&.noteContainer {
 	--filter-header: hue-rotate(279deg) saturate(0.27) brightness(1.15);
 }
-&.melee_weapon,
-&.ranged_weapon {
+&.weaponMelee,
+&.weaponRanged {
 	--filter-header: hue-rotate(194deg) saturate(1) brightness(0.81);
 }
 

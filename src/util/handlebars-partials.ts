@@ -28,7 +28,8 @@ export async function preloadHandlebarsTemplates(): Promise<void> {
 		// Item Embeds Partials
 		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-equipment-children.hbs`,
 		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-equipment-modifiers.hbs`,
-		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-weapons.hbs`,
+		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-weapons-melee.hbs`,
+		`systems/${SYSTEM_NAME}/templates/items/parts/embeds-weapons-ranged.hbs`,
 	]
 
 	const paths = <Record<string, string>>{}

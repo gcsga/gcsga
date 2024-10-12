@@ -28,7 +28,7 @@ class TraitContainerData extends ItemDataModel.mixin(
 
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = ["gurps.details-trait-container", "gurps.details-prereqs"]
-		context.embedsParts = ["gurps.embeds-weapons"]
+		context.embedsParts = ["gurps.embeds-weapons-melee", "gurps.embeds-weapons-ranged"]
 	}
 
 	static override defineSchema(): TraitContainerSchema {

@@ -16,7 +16,8 @@ class EquipmentContainerData extends EquipmentFieldsTemplate {
 		context.embedsParts = [
 			"gurps.embeds-equipment-children",
 			"gurps.embeds-equipment-modifiers",
-			"gurps.embeds-weapons",
+			"gurps.embeds-weapons-melee",
+			"gurps.embeds-weapons-ranged",
 		]
 	}
 

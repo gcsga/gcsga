@@ -66,7 +66,7 @@ class UserGURPS<TActor extends ActorGURPS2<null> = ActorGURPS2<null>> extends Us
 			else modifierStack.push(mod)
 		}
 		this.setFlag(SYSTEM_NAME, UserFlags.ModifierStack, modifierStack)
-		Hooks.call(HOOKS.AddModifier)
+		Hooks.call(HOOKS.ADD_MODIFEIR)
 	}
 }
 

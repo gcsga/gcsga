@@ -36,7 +36,12 @@ class CellData extends foundry.abstract.DataModel<SystemDataModel, CellDataSchem
 
 	toFormElement(): HTMLElement {
 		const element = document.createElement("div")
-		console.log(this, this.schema.name)
+		if (this.type === cell.Type.Toggle) {
+			if (this.checked) element.innerHTML = "X"
+		}
+		if (this.type === cell.Type.Text) {
+			element.innerHTML = this.primary ?? ""
+		}
 
 		return element
 	}

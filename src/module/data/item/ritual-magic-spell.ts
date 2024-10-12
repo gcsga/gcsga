@@ -12,7 +12,7 @@ class RitualMagicSpellData extends SpellTemplate {
 
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = ["gurps.details-ritual-magic-spell", "gurps.details-prereqs"]
-		context.embedsParts = ["gurps.embeds-weapons"]
+		context.embedsParts = ["gurps.embeds-weapons-melee", "gurps.embeds-weapons-ranged"]
 	}
 
 	static override defineSchema(): RitualMagicSpellSchema {

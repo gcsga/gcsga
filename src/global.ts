@@ -5,9 +5,11 @@
 // import { ChatLogGURPS } from "@module/apps/sidebar/chat-log.ts"
 // import { CompendiumDirectoryGURPS } from "@module/apps/sidebar/compendium-directory.ts"
 // import { CanvasGURPS } from "@module/canvas/index.ts"
+import { ContextMenuGURPS } from "@module/applications/context-menu.ts"
+import { ItemDirectoryGURPS } from "@module/applications/item/item-directory.ts"
 import { ActorsGURPS } from "@module/data/collections/actors-collection.ts"
 import { ItemsGURPS } from "@module/data/collections/items-collection.ts"
-import { SETTINGS, SSRT_SETTING } from "@module/data/constants.ts"
+import { ItemType, SETTINGS, SSRT_SETTING } from "@module/data/constants.ts"
 import { DiceGURPS } from "@module/data/dice.ts"
 import { SheetSettings } from "@module/data/sheet-settings.ts"
 import { ActiveEffectGURPS } from "@module/document/active-effect.ts"
@@ -54,6 +56,10 @@ interface GameGURPS
 			// remigrate: typeof remigrate
 		}
 	}
+
+	documentTypes: {
+		Item: ItemType[]
+	} & Record<string, string[]>
 }
 
 type ConfiguredConfig = Config<
@@ -119,16 +125,12 @@ declare global {
 		// eslint-disable-next-line no-var
 		var ui: FoundryUI<
 			ActorDirectory<ActorGURPS2<null>>,
-			ItemDirectory<ItemGURPS2<null>>,
-			// ActorDirectoryGURPS<ActorGURPS<null>>,
-			// ItemDirectory<ItemGURPS<null>>,
+			ItemDirectoryGURPS,
 			ChatLog,
-			// ChatLogGURPS,
 			CompendiumDirectory,
-			// CompendiumDirectoryGURPS,
 			CombatTracker<Combat | null>,
-			// CombatTrackerGURPS<CombatGURPS | null>,
-			Hotbar
+			Hotbar,
+			ContextMenuGURPS
 		>
 
 		// Add functions to the `Math` namespace for use in `Roll` formulas

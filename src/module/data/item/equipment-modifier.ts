@@ -132,7 +132,11 @@ class EquipmentModifierData extends ItemDataModel.mixin(
 
 	get costDescription(): string {
 		if (this.cost_type === emcost.Type.Original && (this.cost === "" || this.cost === "+0")) return ""
-		return emcost.Type.format(this.cost_type, this.cost) + " " + this.cost_type.toString()
+		return (
+			emcost.Type.format(this.cost_type, this.cost) +
+			" " +
+			game.i18n.localize(emcost.Type.toString(this.cost_type))
+		)
 	}
 
 	get weightDescription(): string {
@@ -145,7 +149,7 @@ class EquipmentModifierData extends ItemDataModel.mixin(
 				SheetSettings.for(this.parent.actor).default_weight_units,
 			) +
 			" " +
-			this.cost_type.toString()
+			game.i18n.localize(emcost.Type.toString(this.cost_type))
 		)
 	}
 

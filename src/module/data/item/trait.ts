@@ -52,7 +52,7 @@ class TraitData extends ItemDataModel.mixin(
 
 	override async getSheetData(context: Record<string, unknown>): Promise<void> {
 		context.detailsParts = ["gurps.details-trait", "gurps.details-prereqs", "gurps.details-features"]
-		context.embedsParts = ["gurps.embeds-weapons"]
+		context.embedsParts = ["gurps.embeds-weapons-melee", "gurps.embeds-weapons-ranged"]
 	}
 
 	static override defineSchema(): TraitSchema {
@@ -149,11 +149,13 @@ class TraitData extends ItemDataModel.mixin(
 	}
 
 	static override _cleanData(
-		source: DeepPartial<SourceFromSchema<TraitSchema>> & { [key: string]: unknown },
+		source?: DeepPartial<SourceFromSchema<TraitSchema>> & { [key: string]: unknown },
 		_options?: Record<string, unknown>,
 	): void {
-		source.levels = source.can_level ? source.levels || 0 : null
-		source.points_per_level = source.can_level ? source.points_per_level || 0 : null
+		if (source) {
+			source.levels = source.can_level ? source.levels || 0 : null
+			source.points_per_level = source.can_level ? source.points_per_level || 0 : null
+		}
 	}
 
 	get enabled(): boolean {

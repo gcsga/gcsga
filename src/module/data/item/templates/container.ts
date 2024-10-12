@@ -1,9 +1,10 @@
 import { ItemDataModel } from "@module/data/item/abstract.ts"
-import { ItemType } from "@module/data/constants.ts"
+import { ItemType, ItemTypes } from "@module/data/constants.ts"
 import { type ItemGURPS2 } from "@module/document/item.ts"
 import fields = foundry.data.fields
-import { ItemTemplateType } from "../types.ts"
+import { ItemDataInstances, ItemTemplateType } from "../types.ts"
 import { MaybePromise } from "@module/data/types.ts"
+import { ItemInst } from "../helpers.ts"
 
 class ContainerTemplate extends ItemDataModel<ContainerTemplateSchema> {
 	static override defineSchema(): ContainerTemplateSchema {
@@ -35,12 +36,35 @@ class ContainerTemplate extends ItemDataModel<ContainerTemplateSchema> {
 	 */
 	static weaponTypes: Set<ItemType> = new Set()
 
+	get itemTypes(): MaybePromise<{ [K in keyof ItemDataInstances]: ItemInst<K>[] }> {
+		if (this.parent.pack) return this.#itemTypes()
+		const contents = this.contents as Collection<ItemGURPS2>
+
+		const types = Object.fromEntries(ItemTypes.map((t: ItemType) => [t, []]))
+		for (const item of contents) {
+			//@ts-expect-error ill-defined types for now
+			types[item.type].push(item as any)
+		}
+		//@ts-expect-error ill-defined types for now
+		return types
+	}
+
+	async #itemTypes(): Promise<{ [K in keyof ItemDataInstances]: ItemInst<K>[] }> {
+		const contents = await this.contents
+
+		const types = Object.fromEntries(ItemTypes.map((t: ItemType) => [t, []]))
+		for (const item of contents.values()) {
+			//@ts-expect-error ill-defined types for now
+			types[item.type].push(item)
+		}
+		//@ts-expect-error ill-defined types for now
+		return types
+	}
+
 	/**
 	 * Get all of the items contained in this container. A promise if item is within a compendium.
 	 */
 	get contents(): MaybePromise<Collection<ItemGURPS2>> {
-		if (!this.parent) return new Collection()
-
 		// If in a compendium, fetch using getDocuments and return a promise
 		if (this.parent.pack && !this.parent.isEmbedded) {
 			const pack = game.packs.get(this.parent.pack) as CompendiumCollection<ItemGURPS2<null>>
@@ -60,8 +84,13 @@ class ContainerTemplate extends ItemDataModel<ContainerTemplateSchema> {
 		)
 	}
 
+	getContainedItem(id: string): MaybePromise<ItemGURPS2> | null {
+		if (this.parent?.isEmbedded) return this.parent.actor!.items.get(id) ?? null
+		if (this.parent?.pack) return (game.packs.get(this.parent.pack)?.getDocument(id) as Promise<ItemGURPS2>) ?? null
+		return game.items.get(id) ?? null
+	}
+
 	get allContents(): MaybePromise<Collection<ItemGURPS2>> {
-		if (!this.parent) return new Collection()
 		if (this.parent.pack) return this._allContents()
 
 		const allContents = new Collection<ItemGURPS2>()
@@ -92,20 +121,36 @@ class ContainerTemplate extends ItemDataModel<ContainerTemplateSchema> {
 	}
 
 	get children(): MaybePromise<Collection<ItemGURPS2>> {
-		if (!this.parent || this.constructor.childTypes.size === 0) return new Collection()
+		if (this.constructor.childTypes.size === 0) return new Collection()
+		if (this.parent?.pack) return this.#children()
+
+		const contents = this.contents as Collection<ItemGURPS2>
 		return new Collection(
-			Object.values(this.contents)
-				.filter(e => this.constructor.childTypes.has(e.type))
-				.map(e => [e.id, e]),
+			contents.filter(e => this.constructor.childTypes.has(e.type as ItemType)).map(e => [e.id, e]),
+		)
+	}
+
+	async #children(): Promise<Collection<ItemGURPS2>> {
+		const contents = await this.contents
+		return new Collection(
+			contents.filter(e => this.constructor.childTypes.has(e.type as ItemType)).map(e => [e.id, e]),
 		)
 	}
 
 	get modifiers(): MaybePromise<Collection<ItemGURPS2>> {
-		if (!this.parent || this.constructor.modifierTypes.size === 0) return new Collection()
+		if (this.constructor.modifierTypes.size === 0) return new Collection()
+		if (this.parent?.pack) return this.#modifiers()
+
+		const contents = this.contents as Collection<ItemGURPS2>
 		return new Collection(
-			Object.values(this.contents)
-				.filter(e => this.constructor.modifierTypes.has(e.type))
-				.map(e => [e.id, e]),
+			contents.filter(e => this.constructor.modifierTypes.has(e.type as ItemType)).map(e => [e.id, e]),
+		)
+	}
+
+	async #modifiers(): Promise<Collection<ItemGURPS2>> {
+		const contents = await this.contents
+		return new Collection(
+			contents.filter(e => this.constructor.childTypes.has(e.type as ItemType)).map(e => [e.id, e]),
 		)
 	}
 
@@ -115,11 +160,19 @@ class ContainerTemplate extends ItemDataModel<ContainerTemplateSchema> {
 	}
 
 	get weapons(): MaybePromise<Collection<ItemGURPS2>> {
-		if (!this.parent || this.constructor.modifierTypes.size === 0) return new Collection()
+		if (this.constructor.modifierTypes.size === 0) return new Collection()
+		if (this.parent?.pack) return this.#weapons()
+
+		const contents = this.contents as Collection<ItemGURPS2>
 		return new Collection(
-			Object.values(this.contents)
-				.filter(e => this.constructor.modifierTypes.has(e.type))
-				.map(e => [e.id, e]),
+			contents.filter(e => this.constructor.weaponTypes.has(e.type as ItemType)).map(e => [e.id, e]),
+		)
+	}
+
+	async #weapons(): Promise<Collection<ItemGURPS2>> {
+		const contents = await this.contents
+		return new Collection(
+			contents.filter(e => this.constructor.weaponTypes.has(e.type as ItemType)).map(e => [e.id, e]),
 		)
 	}
 }
