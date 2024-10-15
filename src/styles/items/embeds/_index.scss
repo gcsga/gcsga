@@ -3,14 +3,10 @@ section.inventory-list {
 		div.items-header {
 			display: flex;
 			align-items: stretch;
-			background-color: blue;
-			color: red;
-
-			> div.item-header {
-				display: flex;
-				justify-content: center;
-				padding: 0;
-			}
+			background-color: #2c2f33; // Dark muted background
+			color: #d1d1d1; // Light grey text for headers
+			border-radius: 0.25rem 0.25rem 0 0;
+			border-bottom: 1px solid #3a3d41; // Thin border separating the header
 		}
 
 		ul.item-list {
@@ -20,12 +16,80 @@ section.inventory-list {
 		}
 
 		li.item {
-			border-bottom: 1px solid green;
+			margin-bottom: 0;
+			background-color: #25282b; // Slightly darker shade for odd rows
+			color: #e1e1e1; // Off-white text color
+
+			&:nth-child(even) {
+				background-color: #2f3338; // Neutral grey/soft navy for even rows
+			}
+
+			&:last-child {
+				border-radius: 0 0 0.25rem 0.25rem;
+			}
+
+			&:hover {
+				background-color: #3a6479; // Soft blue hover effect
+			}
 
 			div.item-row {
 				display: flex;
 				align-items: stretch;
 			}
+		}
+	}
+
+	.item-header,
+	.item-detail {
+		align-items: center;
+		display: flex;
+		font-size: 0.8rem;
+		height: 1.625rem;
+		justify-content: center;
+		padding: 0.3rem 0;
+
+		&:last-child {
+			border-right: 0;
+		}
+
+		&.item-name {
+			flex: 1;
+		}
+
+		&.item-toggle {
+			width: 2rem;
+			&.enabled {
+				color: #e1e1e1;
+			}
+			&:hover {
+				color: #5db7de; // Light blue tint when hovering over checkmark
+			}
+		}
+
+		&.item-tech-level {
+			width: 2.25rem;
+		}
+
+		&.item-cost-adjustment {
+			width: 10rem;
+		}
+
+		&.item-weight-adjustment {
+			width: 10rem;
+		}
+
+		&.item-tags {
+			width: 4rem;
+		}
+
+		&.item-reference {
+			width: 4rem;
+		}
+	}
+
+	.item-detail {
+		&.item-toggle {
+			color: #000000;
 		}
 	}
 }

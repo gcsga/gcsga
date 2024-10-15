@@ -4,7 +4,7 @@ import { ContainerTemplate, ContainerTemplateSchema } from "./templates/containe
 import { ItemType } from "../constants.ts"
 import { ReplacementTemplate, ReplacementTemplateSchema } from "./templates/replacements.ts"
 import { SheetSettings } from "../sheet-settings.ts"
-import { cell, display } from "@util"
+import { align, cell, display } from "@util"
 import { CellData } from "./components/cell-data.ts"
 
 class EquipmentModifierContainerData extends ItemDataModel.mixin(
@@ -25,24 +25,33 @@ class EquipmentModifierContainerData extends ItemDataModel.mixin(
 
 	override get cellData(): Record<string, CellData> {
 		return {
-			enabled: new CellData(),
+			enabled: new CellData({
+				type: cell.Type.Toggle,
+				checked: false,
+				alignment: align.Option.Middle,
+				classList: ["item-toggle"],
+			}),
 			name: new CellData({
 				type: cell.Type.Text,
 				primary: this.nameWithReplacements,
 				secondary: this.secondaryText(display.Option.isInline),
 				tooltip: this.secondaryText(display.Option.isTooltip),
+				classList: ["item-name"],
 			}),
-			techLevel: new CellData(),
-			cost: new CellData(),
-			weight: new CellData(),
-			tags: new CellData({
-				type: cell.Type.Tags,
-				primary: this.combinedTags,
+			techLevel: new CellData({
+				type: cell.Type.Text,
+				primary: "",
+				classList: ["item-tech-level"],
 			}),
-			reference: new CellData({
-				type: cell.Type.PageRef,
-				primary: this.reference,
-				secondary: this.reference_highlight === "" ? this.nameWithReplacements : this.reference_highlight,
+			cost: new CellData({
+				type: cell.Type.Text,
+				primary: "",
+				classList: ["item-cost-adjustment"],
+			}),
+			weight: new CellData({
+				type: cell.Type.Text,
+				primary: "",
+				classList: ["item-weight-adjustment"],
 			}),
 		}
 	}

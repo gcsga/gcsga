@@ -1,4 +1,3 @@
-import { LocalizeGURPS } from "@util/localize.ts"
 import { equalFold } from "@module/data/item/components/string-criteria.ts"
 
 export namespace cell {
@@ -17,7 +16,7 @@ export namespace cell {
 		}
 
 		export function toString(T: Type): string {
-			return LocalizeGURPS.translations.gurps.enum.cell[T]
+			return `GURPS.Enum.cell.${T}`
 		}
 
 		export function extractType(s: string): Type {

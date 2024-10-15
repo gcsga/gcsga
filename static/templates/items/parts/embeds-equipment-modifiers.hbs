@@ -19,13 +19,12 @@
 
 <div class="items-section" data-types="{{join system.modifierTypes ','}}">
 	<div class="items-header">
-		<i class="fa-solid fa-checkmark"></i>
-		<div class="item-header">Equipment Modifier</div>
-		<div class="item-header">TL</div>
-		<div class="item-header">Cost Adjustment</div>
-		<div class="item-header">Weight Adjustment</div>
-		<div class="item-header">Tags</div>
-		<i class="gcs-reference"></i>
+		<i class="fa-solid fa-check item-header item-toggle"></i>
+		<div class="item-header item-name">Equipment Modifier</div>
+		<div class="item-header item-tech-level">TL</div>
+		<div class="item-header item-cost-adjustment">Cost Adjustment</div>
+		<div class="item-header item-weight-adjustment">Weight Adjustment</div>
+		<div class="item-header item-controls"></div>
 	</div>
 	<ul class="item-list">
 		{{#each system.modifiers}} {{> item item=this}} {{/each}}

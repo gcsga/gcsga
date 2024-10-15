@@ -366,7 +366,8 @@
 				"FIELDS": {
 					"Enabled": { "Name": "Enabled" },
 					"TechLevel": { "Name": "Tech Level" },
-					"Points": { "Name": "Points" },
+					"CostModifier": { "Name": "Cost Modifier" },
+					"WeightModifier": { "Name": "Weigh Modifier" },
 					"Levels": { "Name": "Levels" },
 					"Total": { "Name": "Total" },
 					"CostIsPerLevel": { "Name": "Per Level" },

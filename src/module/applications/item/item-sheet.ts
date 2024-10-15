@@ -86,6 +86,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			addDefault: this.#onAddDefault,
 			deleteDefault: this.#onDeleteDefault,
 			toggleMode: this.#onToggleMode,
+			toggleCheckbox: this.#onToggleCheckbox,
 		},
 		dragDrop: [{ dragSelector: ".items-list .item", dropSelector: null }],
 	}
@@ -688,7 +689,12 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 			}
 		}
 
-		if (this.item.type === ItemType.Trait || this.item.type === ItemType.TraitContainer) {
+		if (
+			this.item.type === ItemType.Trait ||
+			this.item.type === ItemType.TraitContainer ||
+			this.item.type === ItemType.TraitModifier ||
+			this.item.type === ItemType.EquipmentModifier
+		) {
 			formData.object["system.disabled"] = Boolean(!formData.object["system.enabled"])
 			delete formData.object["system.enabled"]
 		}
@@ -712,6 +718,34 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 
 	/* -------------------------------------------- */
 
+	static async #onToggleCheckbox(this: ItemSheetGURPS, event: Event): Promise<void> {
+		const toggle = event.target as HTMLElement
+		const itemId = (toggle.closest("li.item") as HTMLElement)?.dataset.itemId ?? null
+
+		if (itemId === null) {
+			console.error("#onToggleCheckbox action failed: No itemId found")
+			return
+		}
+
+		const disabled = !toggle.classList.contains("enabled")
+		toggle.classList.toggle("enabled")
+		const item = this.item
+		if (!item.hasTemplate(ItemTemplateType.Container)) {
+			console.error(`#onToggleCheckbox action failed: container is not a valid Container Item.`)
+			return
+		}
+
+		const childItem = await item.system.getContainedItem(itemId)
+		if (!childItem) {
+			console.error(`#onToggleCheckbox action failed: no item with ID "${itemId} found."`)
+			return
+		}
+
+		await childItem.update({ "system.disabled": !disabled })
+	}
+
+	/* -------------------------------------------- */
+
 	protected _onOpenContextMenu(element: HTMLElement): void {
 		const item = this.getItem((element.closest("[data-item-id]") as HTMLElement)?.dataset.itemId ?? "")
 		// Parts of ContextMenu doesn't play well with promises, so don't show menus for containers in packs
@@ -724,7 +758,7 @@ class ItemSheetGURPS extends api.HandlebarsApplicationMixin(sheets.ItemSheetV2<I
 
 	/* -------------------------------------------- */
 
-	protected _getContextOptions(item: ItemGURPS2, element: HTMLElement): ContextMenuEntry[] {
+	protected _getContextOptions(_item: ItemGURPS2, _element: HTMLElement): ContextMenuEntry[] {
 		return [
 			{
 				name: "test",

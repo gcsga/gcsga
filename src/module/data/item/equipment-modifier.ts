@@ -42,7 +42,12 @@ class EquipmentModifierData extends ItemDataModel.mixin(
 			}),
 			weight_is_per_level: new fields.BooleanField({ required: true, nullable: false, initial: false }),
 			disabled: new fields.BooleanField({ required: true, nullable: false, initial: false }),
-			tech_level: new fields.StringField({ required: true, nullable: false, initial: "" }),
+			tech_level: new fields.StringField({
+				required: true,
+				nullable: false,
+				initial: "",
+				label: "GURPS.Item.EquipmentModifier.FIELDS.TechLevel.Name",
+			}),
 			cost: new fields.StringField({ required: true, nullable: false, initial: "0" }),
 			weight: new fields.StringField({ required: true, nullable: false, initial: "0" }),
 		}) as EquipmentModifierSchema
@@ -54,33 +59,29 @@ class EquipmentModifierData extends ItemDataModel.mixin(
 				type: cell.Type.Toggle,
 				checked: this.enabled,
 				alignment: align.Option.Middle,
+				classList: ["item-toggle"],
 			}),
 			name: new CellData({
 				type: cell.Type.Text,
 				primary: this.nameWithReplacements,
 				secondary: this.secondaryText(display.Option.isInline),
 				tooltip: this.secondaryText(display.Option.isTooltip),
+				classList: ["item-name"],
 			}),
 			techLevel: new CellData({
 				type: cell.Type.Text,
 				primary: this.tech_level,
+				classList: ["item-tech-level"],
 			}),
 			cost: new CellData({
 				type: cell.Type.Text,
 				primary: this.costDescription,
+				classList: ["item-cost-adjustment"],
 			}),
 			weight: new CellData({
 				type: cell.Type.Text,
 				primary: this.weightDescription,
-			}),
-			tags: new CellData({
-				type: cell.Type.Tags,
-				primary: this.combinedTags,
-			}),
-			reference: new CellData({
-				type: cell.Type.PageRef,
-				primary: this.reference,
-				secondary: this.reference_highlight === "" ? this.nameWithReplacements : this.reference_highlight,
+				classList: ["item-weight-adjustment"],
 			}),
 		}
 	}
@@ -149,7 +150,7 @@ class EquipmentModifierData extends ItemDataModel.mixin(
 				SheetSettings.for(this.parent.actor).default_weight_units,
 			) +
 			" " +
-			game.i18n.localize(emcost.Type.toString(this.cost_type))
+			game.i18n.localize(emweight.Type.toString(this.weight_type))
 		)
 	}
 

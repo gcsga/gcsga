@@ -4,6 +4,10 @@
 	section.tab[data-tab="equipment"] {
 		@import "equipment";
 	}
+
+	section.window-content {
+		background: var(--gurps-color-dark-gray);
+	}
 }
 
 .gurps.character.sheet.minimized {

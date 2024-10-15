@@ -98,12 +98,12 @@ export namespace emcost {
 				case Value.Addition:
 					return value.signedString()
 				case Value.Percentage:
-					return value.signedString() + Value.toString(V)
+					return value.signedString() + game.i18n.localize(Value.toString(V))
 				case Value.Multiplier:
 					if (value <= 0) value = 1
-					return Value.toString(V) + value.toString()
+					return Value.toString(V) + game.i18n.localize(value.toString())
 				case Value.CostFactor:
-					return `${value.signedString()} ${Value.toString(V)}`
+					return `${value.signedString()} ${game.i18n.localize(Value.toString(V))}`
 				default:
 					return Value.format(Value.Addition, value)
 			}

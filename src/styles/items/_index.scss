@@ -30,17 +30,22 @@
 .gurps.item.sheet {
 	@import "header";
 
+	min-width: 600px;
 	border-radius: 0.625rem;
+
+	section.window-content {
+		background: var(--gurps-color-dark-gray);
+	}
 
 	section.tab {
 		max-height: 100%;
 		overflow-y: auto;
 		overflow-x: hidden;
+		padding: 1rem;
 	}
 
 	fieldset {
 		padding: 0.5rem;
-		margin: 1rem;
 		display: flex;
 		flex-direction: column;
 		flex-wrap: nowrap;
