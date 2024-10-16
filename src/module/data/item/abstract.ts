@@ -7,6 +7,7 @@ import { type ItemTemplateInst } from "./helpers.ts"
 import { ErrorGURPS } from "@util/misc.ts"
 import { SystemDataModel, SystemDataModelMetadata } from "../abstract.ts"
 import { ItemSystemFlags } from "@module/document/item-system-flags.ts"
+import { SheetButton } from "./components/sheet-button.ts"
 
 interface ItemDataModelMetadata extends SystemDataModelMetadata {
 	systemFlagsModel: ConstructorOf<ItemSystemFlags> | null
@@ -46,7 +47,13 @@ class ItemDataModel<TSchema extends ItemDataSchema = ItemDataSchema> extends Sys
 	/* -------------------------------------------- */
 
 	get cellData(): Record<string, CellData> {
-		throw ErrorGURPS(`ItemGURPS.cellData must be implemented.`)
+		throw ErrorGURPS(`ItemGURPS#cellData must be implemented.`)
+	}
+
+	/* -------------------------------------------- */
+
+	get sheetButtons(): SheetButton[] {
+		return []
 	}
 
 	/* -------------------------------------------- */

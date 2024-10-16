@@ -17,6 +17,7 @@ class AbstractWeaponTemplate extends ItemDataModel<AbstractWeaponTemplateSchema>
 	static override defineSchema(): AbstractWeaponTemplateSchema {
 		const fields = foundry.data.fields
 		return {
+			...super.defineSchema(),
 			strength: new fields.EmbeddedDataField(WeaponStrength),
 			damage: new fields.EmbeddedDataField(WeaponDamage),
 			// Is the weapon currently unready?

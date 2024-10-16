@@ -8,7 +8,8 @@ class ItemsGURPS<TItem extends ItemGURPS2<null>> extends Items<TItem> {
 
 	override _getVisibleTreeContents(): TItem[] {
 		return this.contents.filter(
-			e => !e.hasTemplate(ItemTemplateType.BasicInformation) || !this.has(e.system.container ?? ""),
+			e =>
+				e.visible && (!e.hasTemplate(ItemTemplateType.BasicInformation) || !this.has(e.system.container ?? "")),
 		)
 	}
 

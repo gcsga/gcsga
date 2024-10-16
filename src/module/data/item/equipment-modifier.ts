@@ -7,9 +7,9 @@ import fields = foundry.data.fields
 import { SheetSettings } from "../sheet-settings.ts"
 import { ItemType } from "../constants.ts"
 import { ItemInst } from "./helpers.ts"
-import { CellData } from "./components/cell-data.ts"
 import { FeatureSet } from "../feature/types.ts"
 import { Nameable } from "@module/util/nameable.ts"
+import { CellData, SheetButton } from "./components/index.ts"
 
 class EquipmentModifierData extends ItemDataModel.mixin(
 	BasicInformationTemplate,
@@ -84,6 +84,20 @@ class EquipmentModifierData extends ItemDataModel.mixin(
 				classList: ["item-weight-adjustment"],
 			}),
 		}
+	}
+
+	override get sheetButtons(): SheetButton[] {
+		return [
+			// @ts-expect-error infinite type here somehow
+			new SheetButton(
+				{
+					classList: ["fa-solid", "fa-ellipsis-vertical"],
+					action: "openItemContextMenu",
+					permission: foundry.CONST.DOCUMENT_OWNERSHIP_LEVELS.OWNER,
+				},
+				{ parent: this },
+			),
+		]
 	}
 
 	// Returns the formatted name for display

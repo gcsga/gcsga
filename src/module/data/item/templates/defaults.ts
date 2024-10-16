@@ -6,6 +6,7 @@ class SkillDefaultTemplate extends ItemDataModel<SkillDefaultTemplateSchema> {
 	static override defineSchema(): SkillDefaultTemplateSchema {
 		const fields = foundry.data.fields
 		return {
+			...super.defineSchema(),
 			defaults: new fields.ArrayField(new SkillDefaultField()),
 		}
 	}
